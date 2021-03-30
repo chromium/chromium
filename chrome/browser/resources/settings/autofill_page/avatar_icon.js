@@ -10,7 +10,7 @@
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {StoredAccount, SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.m.js';
+import {StoredAccount, SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.js';
 
 Polymer({
   is: 'settings-avatar-icon',

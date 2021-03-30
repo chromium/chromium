@@ -4,8 +4,6 @@
 
 #include "chrome/chrome_cleaner/ipc/mock_chrome_prompt_ipc.h"
 
-#include <string>
-
 namespace chrome_cleaner {
 
 MockChromePromptIPC::MockChromePromptIPC() = default;
@@ -19,12 +17,6 @@ void MockChromePromptIPC::PostPromptUserTask(
     PromptUserCallback callback) {
   MockPostPromptUserTask(files_to_delete, registry_keys, extension_ids,
                          &callback);
-}
-
-void MockChromePromptIPC::PostDisableExtensionsTask(
-    const std::vector<std::wstring>& extension_ids,
-    DisableExtensionsCallback callback) {
-  MockPostDisableExtensionsTask(extension_ids, &callback);
 }
 
 }  // namespace chrome_cleaner

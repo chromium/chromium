@@ -7,20 +7,18 @@
 #include "base/check.h"
 #include "base/strings/stringprintf.h"
 #include "content/web_test/renderer/web_frame_test_proxy.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/test/test_web_frame_content_dumper.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_frame.h"
-#include "third_party/blink/public/web/web_frame_content_dumper.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
 namespace content {
 
+using blink::TestWebFrameContentDumper;
 using blink::WebFrame;
-using blink::WebFrameContentDumper;
 using blink::WebLocalFrame;
-using blink::WebSize;
 
 namespace {
 
@@ -40,15 +38,16 @@ std::string DumpFrameHeaderIfNeeded(WebLocalFrame* frame) {
 
 std::string DumpFrameScrollPosition(WebLocalFrame* frame) {
   std::string result;
-  WebSize offset = frame->GetScrollOffset();
-  if (offset.width > 0 || offset.height > 0) {
+  gfx::ScrollOffset offset = frame->GetScrollOffset();
+  if (offset.x() > 0 || offset.y() > 0) {
     if (frame->Parent()) {
       auto* frame_proxy = static_cast<WebFrameTestProxy*>(frame->Client());
       result = std::string("frame '") + frame_proxy->GetFrameNameForWebTests() +
                "' ";
     }
-    base::StringAppendF(&result, "scrolled to %d,%d\n", offset.width,
-                        offset.height);
+    base::StringAppendF(&result, "scrolled to %d,%d\n",
+                        base::ClampFloor(offset.x()),
+                        base::ClampFloor(offset.y()));
   }
 
   return result;
@@ -70,18 +69,19 @@ std::string DumpLayoutAsString(WebLocalFrame* frame, TextResultType type) {
       break;
     case TextResultType::kMarkup:
       result += DumpFrameHeaderIfNeeded(frame);
-      result += WebFrameContentDumper::DumpAsMarkup(frame).Utf8();
+      result += TestWebFrameContentDumper::DumpAsMarkup(frame).Utf8();
       result += "\n";
       break;
     case TextResultType::kLayout:
     case TextResultType::kLayoutAsPrinting:
       if (!frame->Parent()) {
-        WebFrameContentDumper::LayoutAsTextControls layout_text_behavior =
-            WebFrameContentDumper::kLayoutAsTextNormal;
+        TestWebFrameContentDumper::LayoutAsTextControls layout_text_behavior =
+            TestWebFrameContentDumper::kLayoutAsTextNormal;
         if (type == TextResultType::kLayoutAsPrinting)
-          layout_text_behavior |= WebFrameContentDumper::kLayoutAsTextPrinting;
+          layout_text_behavior |=
+              TestWebFrameContentDumper::kLayoutAsTextPrinting;
 
-        result += WebFrameContentDumper::DumpLayoutTreeAsText(
+        result += TestWebFrameContentDumper::DumpLayoutTreeAsText(
                       frame, layout_text_behavior)
                       .Utf8();
       }

@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/css/style_rule_keyframe.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/feature_policy/layout_animations_policy.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -19,6 +18,7 @@
 #include "third_party/blink/renderer/core/html/imports/html_imports_controller.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/permissions_policy/layout_animations_policy.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -53,27 +53,25 @@ CSSParserContext::CSSParserContext(const CSSParserContext* other,
   is_ad_related_ = other->is_ad_related_;
 }
 
-CSSParserContext::CSSParserContext(
-    const CSSParserContext* other,
-    const KURL& base_url,
-    bool origin_clean,
-    network::mojom::ReferrerPolicy referrer_policy,
-    const WTF::TextEncoding& charset,
-    const Document* use_counter_document)
-    : CSSParserContext(
-          base_url,
-          origin_clean,
-          charset,
-          other->mode_,
-          other->match_mode_,
-          other->profile_,
-          Referrer(base_url.StrippedForUseAsReferrer(), referrer_policy),
-          other->is_html_document_,
-          other->use_legacy_background_size_shorthand_behavior_,
-          other->secure_context_mode_,
-          other->world_,
-          use_counter_document,
-          other->resource_fetch_restriction_) {
+CSSParserContext::CSSParserContext(const CSSParserContext* other,
+                                   const KURL& base_url,
+                                   bool origin_clean,
+                                   const Referrer& referrer,
+                                   const WTF::TextEncoding& charset,
+                                   const Document* use_counter_document)
+    : CSSParserContext(base_url,
+                       origin_clean,
+                       charset,
+                       other->mode_,
+                       other->match_mode_,
+                       other->profile_,
+                       referrer,
+                       other->is_html_document_,
+                       other->use_legacy_background_size_shorthand_behavior_,
+                       other->secure_context_mode_,
+                       other->world_,
+                       use_counter_document,
+                       other->resource_fetch_restriction_) {
   is_ad_related_ = other->is_ad_related_;
 }
 
@@ -96,18 +94,23 @@ CSSParserContext::CSSParserContext(CSSParserMode mode,
                        ResourceFetchRestriction::kNone) {}
 
 CSSParserContext::CSSParserContext(const Document& document)
-    : CSSParserContext(document,
-                       document.BaseURL(),
-                       true /* origin_clean */,
-                       document.GetReferrerPolicy(),
-                       WTF::TextEncoding(),
-                       kLiveProfile) {}
+    : CSSParserContext(
+          document,
+          document.BaseURL(),
+          true /* origin_clean */,
+          Referrer(document.GetExecutionContext()
+                       ? document.GetExecutionContext()->OutgoingReferrer()
+                       : String(),  // GetExecutionContext() only returns null
+                                    // in tests.
+                   document.GetReferrerPolicy()),
+          WTF::TextEncoding(),
+          kLiveProfile) {}
 
 CSSParserContext::CSSParserContext(
     const Document& document,
     const KURL& base_url_override,
     bool origin_clean,
-    network::mojom::ReferrerPolicy referrer_policy_override,
+    const Referrer& referrer,
     const WTF::TextEncoding& charset,
     SelectorProfile profile,
     enum ResourceFetchRestriction resource_fetch_restriction)
@@ -122,8 +125,7 @@ CSSParserContext::CSSParserContext(
                      : kHTMLStandardMode)
               : document.InQuirksMode() ? kHTMLQuirksMode : kHTMLStandardMode,
           profile,
-          Referrer(base_url_override.StrippedForUseAsReferrer(),
-                   referrer_policy_override),
+          referrer,
           IsA<HTMLDocument>(document),
           document.GetSettings()
               ? document.GetSettings()
@@ -213,7 +215,7 @@ const CSSParserContext* StrictCSSParserContext(
   if (!context) {
     context = MakeGarbageCollected<CSSParserContext>(kHTMLStandardMode,
                                                      secure_context_mode);
-    context.RegisterAsStaticReference();
+    LEAK_SANITIZER_IGNORE_OBJECT(&context);
   }
 
   return context;

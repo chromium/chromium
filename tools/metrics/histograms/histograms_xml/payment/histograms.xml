@@ -60,6 +60,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="PaymentRequest.Events2" units="bitfield value"
+    expires_after="2021-08-01">
+  <owner>danyao@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    The 2.0 version of Events. A bitfield representing the different events that
+    happened during the Payment Request.
+  </summary>
+</histogram>
+
 <histogram name="PaymentRequest.JourneyLoggerHasRecorded" enum="Boolean"
     expires_after="2021-08-01">
   <owner>danyao@chromium.org</owner>
@@ -133,6 +143,81 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     True when chrome crawls to refetch the missing icon of an already installed
     payment app.
+  </summary>
+</histogram>
+
+<histogram
+    name="PaymentRequest.SecurePaymentConfirmation.Funnel.AuthenticationDialogResult"
+    enum="SecurePaymentConfirmationAuthenticationDialogResult"
+    expires_after="2021-08-01">
+  <owner>danyao@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    Records the action performed by the user on the Secure Payment confirmation
+    dialog. The result is Accepted if the affirmitive button is pressed,
+    Canceled if the dialog is canceled, or Closed if it is otherwise closed.
+    Logged when the user interacts with the dialog or the dialog is otherwise
+    closed.
+  </summary>
+</histogram>
+
+<histogram
+    name="PaymentRequest.SecurePaymentConfirmation.Funnel.EnrollDialogResult"
+    enum="SecurePaymentConfirmationEnrollDialogResult"
+    expires_after="2021-08-01">
+  <owner>rouslan@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    Records the result of the Secure Payment Confirmation enrollment dialog. The
+    result is Accepted if the user has clicked to confirm the enrollment, such
+    as via the &quot;Use Touch ID&quot; button, Canceled if the user has clicked
+    the button to cancel the enrollment, or Closed if the user has closed the
+    dialog in any way, such as by closing the tab. Logged when the enrollment
+    dialog closes.
+  </summary>
+</histogram>
+
+<histogram
+    name="PaymentRequest.SecurePaymentConfirmation.Funnel.EnrollDialogShown"
+    enum="SecurePaymentConfirmationEnrollDialogShown"
+    expires_after="2021-08-01">
+  <owner>rouslan@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    Records whether the website was able to display the Secure Payment
+    Confirmation enrollment dialog. The result is Shown if the dialog was
+    displayed to the user or CouldNotShow if the dialog could not be displayed,
+    e.g., if another enrollment dialog was already displaying. Logged in the
+    browser process when a website attempts to display the enrollment dialog.
+  </summary>
+</histogram>
+
+<histogram
+    name="PaymentRequest.SecurePaymentConfirmation.Funnel.EnrollSystemPromptResult"
+    enum="SecurePaymentConfirmationEnrollSystemPromptResult"
+    expires_after="2021-08-01">
+  <owner>rouslan@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    Records the result of the FIDO system prompt, which is shown after the
+    Secure Payment Confirmation enrollment dialog is accepted. The result is
+    Accepted if the prompt is successful, i.e., the user has approved the FIDO
+    system prompt, or Canceled if the prompt is canceled or failed. Logged when
+    the FIDO system prompt closes.
+  </summary>
+</histogram>
+
+<histogram
+    name="PaymentRequest.SecurePaymentConfirmation.Funnel.SystemPromptResult"
+    enum="SecurePaymentConfirmationSystemPromptResult"
+    expires_after="2021-08-01">
+  <owner>danyao@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    Records the result of the FIDO system prompt, which is shown after the
+    Secure Payment Confirmation dialog is accepted. The result is Accepted if
+    the prompt is successful, or Canceled if the prompt is canceled. Logged when
+    the FIDO system prompt closes.
   </summary>
 </histogram>
 

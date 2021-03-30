@@ -4,10 +4,13 @@
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> sa iyong mga tab ang hindi nagamit nitong nakaraan. Isara ang mga ito?</translation>
 <translation id="1181037720776840403">Alisin</translation>
 <translation id="125153950246128346">I-tap para tumingin ng iba pang tab</translation>
+<translation id="1302104331113804646">Mga setting ng pagsubaybay sa presyo</translation>
+<translation id="1378979118429748177">Maabisuhan kapag bumaba ang mga presyo</translation>
 <translation id="1657719826150349398">Ilipat ang tab sa ibaba</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}one{<ph name="TABS_COUNT_MANY" /> tab}other{<ph name="TABS_COUNT_MANY" /> na tab}}</translation>
 <translation id="2277224997687551299">I-edit ang pangalan ng grupo</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Alisin ang <ph name="TABS_COUNT_ONE" /> piniling tab sa grupo.}one{Alisin ang <ph name="TABS_COUNT_MANY" /> piniling tab sa grupo.}other{Alisin ang <ph name="TABS_COUNT_MANY" /> na piniling tab sa grupo.}}</translation>
+<translation id="2479148705183875116">Pumunta sa Mga Setting</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{I-collapse ang <ph name="TABS_COUNT_ONE" /> tab.}one{I-collapse ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> tab.}other{I-collapse ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> na tab.}}</translation>
 <translation id="2569352796411618312">Suhestyon: <ph name="NUMBER_OF_TABS" /> sa iyong mga tab ang hindi nagamit nitong nakaraan. Isara ang mga ito?</translation>
 <translation id="257674075312929031">Pangkat</translation>
@@ -15,13 +18,16 @@
 <translation id="2671423594960767771">Ibahagi ang pangkat</translation>
 <translation id="2759453070259087442">I-expand ang grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="NUMBER_OF_TABS" /> (na) tab.</translation>
 <translation id="2977480621796371840">Alisin sa grupo</translation>
+<translation id="3291470810748040983">Makakatanggap ka ng alerto kapag may mas mababang presyo sa isang nakabukas na tab</translation>
 <translation id="3328308545011660196">Suhestyon: Mukhang magkaugnay ang <ph name="NUMBER_OF_TABS" /> (na) tab. Igrupo ang mga ito?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{I-collapse ang <ph name="TABS_COUNT_ONE" /> tab.}one{I-collapse ang grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_MANY" /> tab.}other{I-collapse ang grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_MANY" /> na tab.}}</translation>
+<translation id="3882834874697329510">Para makakuha ng alerto sa isang bukas na tab kapag may mas mababang presyo, i-on ang mga notification sa Mga Setting.</translation>
+<translation id="3940195383040445971">Subaybayan ang mga presyo sa mga tab</translation>
+<translation id="3996880007329611795">Maabisuhan</translation>
 <translation id="4133493477912226187">Mukhang magkaugnay ang <ph name="NUMBER_OF_TABS" /> (na) tab. Igrupo ang mga ito?</translation>
 <translation id="4212246570487010370">Magpatuloy sa pag-browse</translation>
 <translation id="4450893287417543264">Huwag ipakitang muli</translation>
 <translation id="4648718555153979859">Magkakasama sa pangkat ang iyong mga tab dito</translation>
-<translation id="4922064041913095674">Tingnan kung aling item sa iyong mga nakabukas na tab ang may mas magandang presyo</translation>
 <translation id="492284538114688557">May nakitang pagbaba ng presyo</translation>
 <translation id="5007392906805964215">Suriin</translation>
 <translation id="5073204694187207510">Itago ang fullscreen grid</translation>
@@ -30,6 +36,7 @@
 <translation id="5533021382642990449">Ipakita sa ibang pagkakataon</translation>
 <translation id="5558362125926932819">Isara ang grupo ng tab na may <ph name="NUMBER_OF_TABS" /> (na) tab</translation>
 <translation id="5580090775658607195">Naigrupo ang <ph name="TAB_COUNT" /> tab</translation>
+<translation id="575494663145460764">Makatanggap ng mga alerto para sa mga pagbaba sa presyo?</translation>
 <translation id="58326064309361797">I-drag ang mga tab para pagpangkatin ang mga ito</translation>
 <translation id="5846292395804797011">Isara ang grupong <ph name="TITLE_OF_GROUP" /> na may <ph name="NUMBER_OF_TABS" /> (na) tab</translation>
 <translation id="6040143037577758943">Isara</translation>
@@ -41,6 +48,7 @@
 <translation id="6856809498882026482">Itago ang multi-select mode</translation>
 <translation id="7151209024774799310">Mag-alis ng mga tab sa grupo</translation>
 <translation id="7204204600596740190">Multi-select mode</translation>
+<translation id="7352298686197644113">Tingnan kung aling item sa iyong mga nakabukas na tab ang may mas mababang presyo</translation>
 <translation id="753732157349120914">Tab Switcher</translation>
 <translation id="7559245342362162951">Ipakita ang mga tab ng grupo sa fullscreen grid</translation>
 <translation id="7792771145871471484">Suriin ang mga suhestyon.</translation>
@@ -52,7 +60,10 @@
 <translation id="8304833501377495048">Huwag ipakita ulit ang tabstrip?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Isara ang <ph name="TABS_COUNT_ONE" /> napiling tab}one{Isara ang <ph name="TABS_COUNT_MANY" /> napiling tab}other{Isara ang <ph name="TABS_COUNT_MANY" /> na napiling tab}}</translation>
 <translation id="8557923272772633250">I-expand ang grupo ng tab na may <ph name="NUMBER_OF_TABS" /> (na) tab.</translation>
+<translation id="860282621117673749">Mga alerto sa pagbaba ng presyo</translation>
+<translation id="8714939927607906138">Mas mababang presyo</translation>
 <translation id="8749939518995770034">Nakasarang tabstrip</translation>
+<translation id="8820741577754260431">Tingnan ang mga pagbaba ng presyo sa iyong mga tab</translation>
 <translation id="9150694013019234766">Magpalipat-lipat sa mga tab sa iyong grupo ng tab malapit sa ibaba ng screen</translation>
 <translation id="9169594135889675189">Magdagdag ng bagong tab sa grupo</translation>
 <translation id="959682366969460160">Maging organisado</translation>

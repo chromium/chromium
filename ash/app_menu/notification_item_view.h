@@ -10,7 +10,6 @@
 
 #include "ash/app_menu/app_menu_export.h"
 #include "ash/app_menu/notification_menu_view.h"
-#include "base/strings/string16.h"
 #include "ui/views/animation/slide_out_controller_delegate.h"
 #include "ui/views/view.h"
 
@@ -36,16 +35,16 @@ class APP_MENU_EXPORT NotificationItemView : public views::View {
   NotificationItemView(
       NotificationMenuView::Delegate* delegate,
       views::SlideOutControllerDelegate* slide_out_controller_delegate,
-      const base::string16& title,
-      const base::string16& message,
+      const std::u16string& title,
+      const std::u16string& message,
       const gfx::Image& icon,
       const std::string& notification_id);
 
   ~NotificationItemView() override;
 
   // Updates the contents of the view.
-  void UpdateContents(const base::string16& title,
-                      const base::string16& message,
+  void UpdateContents(const std::u16string& title,
+                      const std::u16string& message,
                       const gfx::Image& icon);
 
   // views::View overrides:
@@ -57,8 +56,8 @@ class APP_MENU_EXPORT NotificationItemView : public views::View {
   void OnGestureEvent(ui::GestureEvent* event) override;
 
   const std::string& notification_id() const { return notification_id_; }
-  const base::string16& title() const { return title_; }
-  const base::string16& message() const { return message_; }
+  const std::u16string& title() const { return title_; }
+  const std::u16string& message() const { return message_; }
   const message_center::ProportionalImageView& proportional_image_view() const {
     return *proportional_icon_view_;
   }
@@ -83,8 +82,8 @@ class APP_MENU_EXPORT NotificationItemView : public views::View {
   std::unique_ptr<views::SlideOutController> slide_out_controller_;
 
   // Notification properties.
-  base::string16 title_;
-  base::string16 message_;
+  std::u16string title_;
+  std::u16string message_;
 
   // The identifier used by MessageCenter to identify this notification.
   const std::string notification_id_;

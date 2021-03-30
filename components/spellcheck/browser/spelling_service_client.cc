@@ -59,7 +59,7 @@ SpellingServiceClient::~SpellingServiceClient() = default;
 bool SpellingServiceClient::RequestTextCheck(
     content::BrowserContext* context,
     ServiceType type,
-    const base::string16& text,
+    const std::u16string& text,
     TextCheckCompleteCallback callback) {
   DCHECK(type == SUGGEST || type == SPELLCHECK);
   if (!context || !IsAvailable(context, type)) {
@@ -80,9 +80,9 @@ bool SpellingServiceClient::RequestTextCheck(
 
   // Replace typographical apostrophes with typewriter apostrophes, so that
   // server word breaker behaves correctly.
-  const base::char16 kApostrophe = 0x27;
-  const base::char16 kRightSingleQuotationMark = 0x2019;
-  base::string16 text_copy = text;
+  const char16_t kApostrophe = 0x27;
+  const char16_t kRightSingleQuotationMark = 0x2019;
+  std::u16string text_copy = text;
   std::replace(text_copy.begin(), text_copy.end(), kRightSingleQuotationMark,
                kApostrophe);
 
@@ -283,7 +283,7 @@ bool SpellingServiceClient::ParseResponse(
     }
 
     base::DictionaryValue* suggestion = nullptr;
-    base::string16 replacement;
+    std::u16string replacement;
     if (!suggestions->GetDictionary(0, &suggestion) ||
         !suggestion->GetString("suggestion", &replacement)) {
       return false;
@@ -298,7 +298,7 @@ bool SpellingServiceClient::ParseResponse(
 SpellingServiceClient::TextCheckCallbackData::TextCheckCallbackData(
     std::unique_ptr<network::SimpleURLLoader> simple_url_loader,
     TextCheckCompleteCallback callback,
-    base::string16 text)
+    std::u16string text)
     : simple_url_loader(std::move(simple_url_loader)),
       callback(std::move(callback)),
       text(text) {}
@@ -313,7 +313,7 @@ void SpellingServiceClient::OnSimpleLoaderComplete(
                       base::TimeTicks::Now() - request_start);
 
   TextCheckCompleteCallback callback = std::move(it->get()->callback);
-  base::string16 text = it->get()->text;
+  std::u16string text = it->get()->text;
   bool success = false;
   std::vector<SpellCheckResult> results;
   if (response_body)

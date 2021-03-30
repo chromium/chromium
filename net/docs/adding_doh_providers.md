@@ -98,6 +98,11 @@ Chrome team on approval of the request.
         `display_globally` is set. Format is the two-letter ISO 3166-1 country
         codes. The provider will be displayed to users when the OS region
         settings consider the OS to be in one of the given countries.
+    *   `logging_level` should be set to `kExtra` for any entry for which
+        logging/monitoring/etc is especially important. This should be the case
+        only for the couple most-used providers in the list, newly-entered
+        providers with some risk of issues, or providers with a history of
+        issues requiring that provider to be disabled for auto upgrade.
 1.  Update histogram entries as necessary.
     *   If new providers were added, new `provider` strings must be added to the
         [`DohProviderId`](/tools/metrics/histograms/histograms_xml/histogram_suffixes_list.xml)

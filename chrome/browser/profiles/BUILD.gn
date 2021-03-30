@@ -2,6 +2,47 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+source_set("profile") {
+  sources = [
+    "profile.cc",
+    "profile.h",
+    "profile_observer.h",
+  ]
+
+  # Cannot depend on //chrome/browser:browser.
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/browser/browsing_data:constants",
+    "//chrome/common:buildflags",
+    "//chrome/common:constants",
+    "//components/data_reduction_proxy/core/browser",
+    "//components/keyed_service/content",
+    "//components/language/core/browser",
+    "//components/media_router/common",
+    "//components/pref_registry",
+    "//components/sync/driver",
+    "//components/variations",
+    "//content/public/browser",
+    "//extensions/buildflags",
+  ]
+  if (enable_extensions) {
+    deps += [ "//extensions/browser" ]
+  }
+  if (is_chromeos_ash) {
+    deps += [ "//ash/constants" ]
+  }
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/lacros" ]
+  }
+  if (is_android) {
+    deps += [ "//chrome/browser/profiles/android:jni_headers" ]
+  }
+}
+
 if (is_android) {
   import("//build/config/android/rules.gni")
 

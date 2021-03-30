@@ -61,18 +61,17 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
       const net::SiteForCookies& site_for_cookies,
       const net::IsolationInfo& isolation_info,
       std::vector<mojom::HttpHeaderPtr> additional_headers,
-      int32_t process_id,
-      int32_t render_frame_id,
       const url::Origin& origin,
       uint32_t options,
       net::NetworkTrafficAnnotationTag traffic_annotation,
       HasRawHeadersAccess has_raw_cookie_access,
       mojo::PendingRemote<mojom::WebSocketHandshakeClient> handshake_client,
-      mojo::PendingRemote<mojom::AuthenticationHandler> auth_handler,
+      mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
+          url_loader_network_observer,
+      mojo::PendingRemote<mojom::WebSocketAuthenticationHandler> auth_handler,
       mojo::PendingRemote<mojom::TrustedHeaderClient> header_client,
       base::Optional<WebSocketThrottler::PendingConnection>
           pending_connection_tracker,
-      DataPipeUseTracker,
       base::TimeDelta delay);
   ~WebSocket() override;
 
@@ -179,9 +178,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
   WebSocketFactory* const factory_;
   mojo::Receiver<mojom::WebSocket> receiver_{this};
 
+  mojo::Remote<mojom::URLLoaderNetworkServiceObserver>
+      url_loader_network_observer_;
   mojo::Remote<mojom::WebSocketHandshakeClient> handshake_client_;
   mojo::Remote<mojom::WebSocketClient> client_;
-  mojo::Remote<mojom::AuthenticationHandler> auth_handler_;
+  mojo::Remote<mojom::WebSocketAuthenticationHandler> auth_handler_;
   mojo::Remote<mojom::TrustedHeaderClient> header_client_;
 
   base::Optional<WebSocketThrottler::PendingConnection>
@@ -196,9 +197,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
   const uint32_t options_;
 
   const net::NetworkTrafficAnnotationTag traffic_annotation_;
-
-  const int32_t child_id_;
-  const int32_t frame_id_;
 
   // The web origin to use for the WebSocket.
   const url::Origin origin_;
@@ -221,8 +219,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
   base::queue<DataFrame> pending_send_data_frames_;
   bool wait_for_readable_ = false;
   bool blocked_on_websocket_channel_ = false;
-
-  DataPipeUseTracker data_pipe_use_tracker_;
 
   // True if we should preserve the old behaviour where <=64KB messages were
   // never fragmented.

@@ -16,8 +16,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace syncer {
@@ -67,6 +67,7 @@ TEST(SyncPolicyHandlerTest, SyncTypesListDisabled) {
   // Start with prefs enabled so we can sense that they have changed.
   PrefValueMap prefs;
   prefs.SetBoolean(prefs::kSyncBookmarks, true);
+  prefs.SetBoolean(prefs::kSyncReadingList, true);
   prefs.SetBoolean(prefs::kSyncPreferences, true);
   prefs.SetBoolean(prefs::kSyncAutofill, true);
   prefs.SetBoolean(prefs::kSyncThemes, true);
@@ -75,6 +76,7 @@ TEST(SyncPolicyHandlerTest, SyncTypesListDisabled) {
   policy::PolicyMap policy;
   base::ListValue disabled_types;
   disabled_types.AppendString("bookmarks");
+  disabled_types.AppendString("readingList");
   disabled_types.AppendString("preferences");
   policy.Set(policy::key::kSyncTypesListDisabled,
              policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
@@ -85,6 +87,8 @@ TEST(SyncPolicyHandlerTest, SyncTypesListDisabled) {
   // Prefs in the policy should be disabled.
   bool enabled;
   ASSERT_TRUE(prefs.GetBoolean(prefs::kSyncBookmarks, &enabled));
+  EXPECT_FALSE(enabled);
+  ASSERT_TRUE(prefs.GetBoolean(prefs::kSyncReadingList, &enabled));
   EXPECT_FALSE(enabled);
   ASSERT_TRUE(prefs.GetBoolean(prefs::kSyncPreferences, &enabled));
   EXPECT_FALSE(enabled);

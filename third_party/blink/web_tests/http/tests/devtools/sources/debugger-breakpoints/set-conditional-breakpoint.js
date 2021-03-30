@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests setting breakpoints.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.navigatePromise('resources/set-breakpoint.html');
 
@@ -22,7 +22,8 @@
         SourcesTestRunner
             .createNewBreakpoint(currentSourceFrame, 13, 'true', true)
             .then(() => SourcesTestRunner.waitBreakpointSidebarPane())
-            .then(() => SourcesTestRunner.runTestFunction());
+            .then(() => setTimeout(() =>
+                SourcesTestRunner.runTestFunction(), 1));
       }
 
       async function didPause(callFrames) {

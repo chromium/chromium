@@ -64,6 +64,7 @@ class LocalFrame;
 class HTTPHeaderMap;
 class KURL;
 class NetworkResourcesData;
+enum class RenderBlockingBehavior : uint8_t;
 class Resource;
 class ResourceError;
 class ResourceResponse;
@@ -100,13 +101,13 @@ class CORE_EXPORT InspectorNetworkAgent final
                       ResourceRequest&,
                       ResourceLoaderOptions&,
                       ResourceType);
-  void WillSendRequest(uint64_t identifier,
-                       DocumentLoader*,
+  void WillSendRequest(DocumentLoader*,
                        const KURL& fetch_context_url,
                        const ResourceRequest&,
                        const ResourceResponse& redirect_response,
                        const FetchInitiatorInfo&,
-                       ResourceType);
+                       ResourceType,
+                       RenderBlockingBehavior);
   void WillSendNavigationRequest(uint64_t identifier,
                                  DocumentLoader*,
                                  const KURL&,
@@ -200,6 +201,7 @@ class CORE_EXPORT InspectorNetworkAgent final
   void WebTransportCreated(ExecutionContext*,
                            uint64_t transport_id,
                            const KURL& request_url);
+  void WebTransportConnectionEstablished(uint64_t transport_id);
   void WebTransportClosed(uint64_t transport_id);
 
   void SetDevToolsIds(ResourceRequest& request, const FetchInitiatorInfo&);
@@ -246,6 +248,12 @@ class CORE_EXPORT InspectorNetworkAgent final
   void getRequestPostData(const String& request_id,
                           std::unique_ptr<GetRequestPostDataCallback>) override;
 
+  protocol::Response setAcceptedEncodings(
+      std::unique_ptr<protocol::Array<protocol::Network::ContentEncoding>>
+          encodings) override;
+
+  protocol::Response clearAcceptedEncodingsOverride() override;
+
   // Called from other agents.
   protocol::Response GetResponseBody(const String& request_id,
                                      String* content,
@@ -258,8 +266,7 @@ class CORE_EXPORT InspectorNetworkAgent final
 
  private:
   void Enable();
-  void WillSendRequestInternal(uint64_t identifier,
-                               DocumentLoader*,
+  void WillSendRequestInternal(DocumentLoader*,
                                const KURL& fetch_context_url,
                                const ResourceRequest&,
                                const ResourceResponse& redirect_response,
@@ -306,6 +313,7 @@ class CORE_EXPORT InspectorNetworkAgent final
   InspectorAgentState::Integer total_buffer_size_;
   InspectorAgentState::Integer resource_buffer_size_;
   InspectorAgentState::Integer max_post_data_size_;
+  InspectorAgentState::BooleanMap accepted_encodings_;
 };
 
 }  // namespace blink

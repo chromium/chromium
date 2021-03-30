@@ -19,6 +19,7 @@
 
 #include "absl/container/inlined_vector.h"
 #include "absl/strings/internal/cord_rep_flat.h"
+#include "absl/strings/internal/cord_rep_ring.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -48,6 +49,9 @@ void CordRep::Destroy(CordRep* rep) {
         rep = left;
         continue;
       }
+    } else if (rep->tag == RING) {
+      CordRepRing::Destroy(rep->ring());
+      rep = nullptr;
     } else if (rep->tag == EXTERNAL) {
       CordRepExternal::Delete(rep);
       rep = nullptr;

@@ -157,8 +157,8 @@ TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromValue_Empty) {
 TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromValue_NoEnd) {
   base::DictionaryValue value;
   base::DictionaryValue start;
-  EXPECT_TRUE(
-      start.SetIntKey(WeeklyTime::kDayOfWeek, kWeekdays[start_day_of_week()]));
+  EXPECT_TRUE(start.SetStringKey(WeeklyTime::kDayOfWeek,
+                                 WeeklyTime::kWeekDays[start_day_of_week()]));
   EXPECT_TRUE(start.SetIntKey(WeeklyTime::kTime, start_time()));
   value.SetKey(WeeklyTimeInterval::kStart, std::move(start));
 
@@ -169,8 +169,8 @@ TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromValue_NoEnd) {
 TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromValue_NoStart) {
   base::DictionaryValue value;
   base::DictionaryValue end;
-  EXPECT_TRUE(
-      end.SetIntKey(WeeklyTime::kDayOfWeek, kWeekdays[end_day_of_week()]));
+  EXPECT_TRUE(end.SetStringKey(WeeklyTime::kDayOfWeek,
+                               WeeklyTime::kWeekDays[end_day_of_week()]));
   EXPECT_TRUE(end.SetIntKey(WeeklyTime::kTime, end_time()));
   value.SetKey(WeeklyTimeInterval::kEnd, std::move(end));
 
@@ -181,12 +181,13 @@ TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromValue_NoStart) {
 TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromValue_InvalidStart) {
   base::DictionaryValue value;
   base::DictionaryValue start;
-  EXPECT_TRUE(start.SetIntKey(WeeklyTime::kDayOfWeek, kWeekdays[0]));
+  EXPECT_TRUE(
+      start.SetStringKey(WeeklyTime::kDayOfWeek, WeeklyTime::kWeekDays[0]));
   EXPECT_TRUE(start.SetIntKey(WeeklyTime::kTime, start_time()));
   value.SetKey(WeeklyTimeInterval::kStart, std::move(start));
   base::DictionaryValue end;
-  EXPECT_TRUE(
-      end.SetIntKey(WeeklyTime::kDayOfWeek, kWeekdays[end_day_of_week()]));
+  EXPECT_TRUE(end.SetStringKey(WeeklyTime::kDayOfWeek,
+                               WeeklyTime::kWeekDays[end_day_of_week()]));
   EXPECT_TRUE(end.SetIntKey(WeeklyTime::kTime, end_time()));
   value.SetKey(WeeklyTimeInterval::kEnd, std::move(end));
 
@@ -197,12 +198,13 @@ TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromValue_InvalidStart) {
 TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromValue_InvalidEnd) {
   base::DictionaryValue value;
   base::DictionaryValue start;
-  EXPECT_TRUE(
-      start.SetIntKey(WeeklyTime::kDayOfWeek, kWeekdays[start_day_of_week()]));
+  EXPECT_TRUE(start.SetStringKey(WeeklyTime::kDayOfWeek,
+                                 WeeklyTime::kWeekDays[start_day_of_week()]));
   EXPECT_TRUE(start.SetIntKey(WeeklyTime::kTime, start_time()));
   value.SetKey(WeeklyTimeInterval::kStart, std::move(start));
   base::DictionaryValue end;
-  EXPECT_TRUE(end.SetIntKey(WeeklyTime::kDayOfWeek, kWeekdays[0]));
+  EXPECT_TRUE(
+      end.SetStringKey(WeeklyTime::kDayOfWeek, WeeklyTime::kWeekDays[0]));
   EXPECT_TRUE(end.SetIntKey(WeeklyTime::kTime, end_time()));
   value.SetKey(WeeklyTimeInterval::kEnd, std::move(end));
 
@@ -213,13 +215,13 @@ TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromValue_InvalidEnd) {
 TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromValue_Valid) {
   base::DictionaryValue value;
   base::DictionaryValue start;
-  EXPECT_TRUE(
-      start.SetIntKey(WeeklyTime::kDayOfWeek, kWeekdays[start_day_of_week()]));
+  EXPECT_TRUE(start.SetStringKey(WeeklyTime::kDayOfWeek,
+                                 WeeklyTime::kWeekDays[start_day_of_week()]));
   EXPECT_TRUE(start.SetIntKey(WeeklyTime::kTime, start_time()));
   value.SetKey(WeeklyTimeInterval::kStart, std::move(start));
   base::DictionaryValue end;
-  EXPECT_TRUE(
-      end.SetIntKey(WeeklyTime::kDayOfWeek, kWeekdays[end_day_of_week()]));
+  EXPECT_TRUE(end.SetStringKey(WeeklyTime::kDayOfWeek,
+                               WeeklyTime::kWeekDays[end_day_of_week()]));
   EXPECT_TRUE(end.SetIntKey(WeeklyTime::kTime, end_time()));
   value.SetKey(WeeklyTimeInterval::kEnd, std::move(end));
 

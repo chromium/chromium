@@ -128,7 +128,6 @@ public class FindInPageTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(82)
     public void testHideOnNavigate() {
         setUp("shakespeare.html");
 

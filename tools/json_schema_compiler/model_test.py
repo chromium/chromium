@@ -40,6 +40,14 @@ class ModelTest(unittest.TestCase):
         'path/to/idl_namespace_non_specific_platforms.idl')
     self.idl_namespace_non_specific_platforms = self.model.namespaces.get(
         'idl_namespace_non_specific_platforms')
+    self.returns_async_json = CachedLoad('test/returns_async.json')
+    self.model.AddNamespace(self.returns_async_json[0],
+        'path/to/returns_async.json')
+    self.returns_async = self.model.namespaces.get('returns_async')
+    self.idl_returns_async_idl = Load('test/idl_returns_async.idl')
+    self.model.AddNamespace(self.idl_returns_async_idl[0],
+        'path/to/idl_returns_async.idl')
+    self.idl_returns_async = self.model.namespaces.get('idl_returns_async')
     self.nodoc_json = CachedLoad('test/namespace_nodoc.json')
     self.model.AddNamespace(self.nodoc_json[0],
         'path/to/namespace_nodoc.json')
@@ -49,8 +57,20 @@ class ModelTest(unittest.TestCase):
         'path/to/namespace_fakeapi.json')
     self.fakeapi = self.model.namespaces.get('fakeapi')
 
+    self.function_platforms_idl = Load('test/function_platforms.idl')
+    self.model.AddNamespace(self.function_platforms_idl[0],
+      '/path/to/function_platforms.idl')
+    self.function_platforms = self.model.namespaces.get('function_platforms')
+
+    self.function_platform_win_linux_json = CachedLoad(
+        'test/function_platform_win_linux.json')
+    self.model.AddNamespace(self.function_platform_win_linux_json[0],
+        'path/to/function_platform_win_linux.json')
+    self.function_platform_win_linux = self.model.namespaces.get(
+        'function_platform_win_linux')
+
   def testNamespaces(self):
-    self.assertEquals(8, len(self.model.namespaces))
+    self.assertEquals(12, len(self.model.namespaces))
     self.assertTrue(self.permissions)
 
   def testHasFunctions(self):
@@ -99,12 +119,37 @@ class ModelTest(unittest.TestCase):
     self.assertRaises(model.ParseException, self.model.AddNamespace,
         self.permissions_json[0], 'path/to/something.json')
 
+  def testDefaultSpecifiedRedundantly(self):
+    test_json = CachedLoad('test/redundant_default_attribute.json')
+    self.assertRaisesRegexp(
+        model.ParseException,
+        'Model parse exception at:\nredundantDefaultAttribute\noptionalFalse\n'
+        '  in path/to/redundant_default_attribute.json\n'
+        'The attribute "optional" is specified as "False", but this is the '
+        'default value if the attribute is not included\. It should be '
+        'removed\.',
+        self.model.AddNamespace,
+        test_json[0],
+        'path/to/redundant_default_attribute.json')
+
   def testDescription(self):
     self.assertFalse(
         self.permissions.functions['contains'].params[0].description)
     self.assertEquals(
         'True if the extension has the specified permissions.', self.
         permissions.functions['contains'].returns_async.params[0].description)
+
+  def testAsyncPromise(self):
+    supportsPromises = self.returns_async.functions['supportsPromises']
+    self.assertTrue(supportsPromises.returns_async.can_return_promise)
+    doesNotSupportPromises = self.returns_async.functions[
+        'doesNotSupportPromises']
+    self.assertFalse(doesNotSupportPromises.returns_async.can_return_promise)
+    supportsPromisesIdl = self.idl_returns_async.functions['supportsPromises']
+    self.assertTrue(supportsPromisesIdl.returns_async.can_return_promise)
+    doesNotSupportPromisesIdl = self.idl_returns_async.functions[
+        'doesNotSupportPromises']
+    self.assertFalse(doesNotSupportPromisesIdl.returns_async.can_return_promise)
 
   def testPropertyUnixName(self):
     param = self.tabs.functions['move'].params[0]
@@ -146,11 +191,25 @@ class ModelTest(unittest.TestCase):
     self.assertEqual([Platforms.CHROMEOS],
                      self.idl_namespace_chromeos.platforms)
     self.assertEqual(
-        [Platforms.CHROMEOS, Platforms.CHROMEOS_TOUCH, Platforms.LINUX,
-         Platforms.MAC, Platforms.WIN],
+        [Platforms.CHROMEOS, Platforms.LINUX, Platforms.MAC, Platforms.WIN],
         self.idl_namespace_all_platforms.platforms)
     self.assertEqual(None,
         self.idl_namespace_non_specific_platforms.platforms)
+
+  def testPlatformsOnFunctionsIDL(self):
+    function_win_linux = self.function_platforms.functions['function_win_linux']
+    self.assertEqual([Platforms.WIN, Platforms.LINUX],
+        function_win_linux.platforms)
+
+    function_all = self.function_platforms.functions['function_all']
+    self.assertIsNone(function_all.platforms)
+
+    function_cros = self.function_platforms.functions['function_cros']
+    self.assertEqual([Platforms.CHROMEOS], function_cros.platforms)
+
+  def testPlatformsOnFunctionsJSON(self):
+    test_function = self.function_platform_win_linux.functions['test']
+    self.assertEqual([Platforms.WIN, Platforms.LINUX], test_function.platforms)
 
   def testHasNoDoc(self):
     fakeapi_NoDocType = self.fakeapi.types['NoDocType']

@@ -44,7 +44,7 @@ public class TabUiFeatureUtilities {
     public static final String THUMBNAIL_ASPECT_RATIO_PARAM = "thumbnail_aspect_ratio";
     public static final DoubleCachedFieldTrialParameter THUMBNAIL_ASPECT_RATIO =
             new DoubleCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, THUMBNAIL_ASPECT_RATIO_PARAM, 1.0);
+                    ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, THUMBNAIL_ASPECT_RATIO_PARAM, 0.85);
 
     private static final String SEARCH_CHIP_PARAM = "enable_search_term_chip";
     public static final BooleanCachedFieldTrialParameter ENABLE_SEARCH_CHIP =
@@ -107,9 +107,6 @@ public class TabUiFeatureUtilities {
      * @return Whether the Grid Tab Switcher UI is enabled and available for use.
      */
     public static boolean isGridTabSwitcherEnabled() {
-        // Disable grid tab switcher if stack tab switcher is enabled for the start surface.
-        if (StartSurfaceConfiguration.isStartSurfaceStackTabSwitcherEnabled()) return false;
-
         // Disable grid tab switcher for tablet.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(
                     ContextUtils.getApplicationContext())) {
@@ -118,7 +115,6 @@ public class TabUiFeatureUtilities {
 
         // Having Tab Groups or Start implies Grid Tab Switcher.
         return (!DeviceClassManager.enableAccessibilityLayout()
-                       && CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID)
                        && isTabManagementModuleSupported())
                 || isTabGroupsAndroidEnabled() || StartSurfaceConfiguration.isStartSurfaceEnabled();
     }
@@ -127,9 +123,6 @@ public class TabUiFeatureUtilities {
      * @return Whether the tab group feature is enabled and available for use.
      */
     public static boolean isTabGroupsAndroidEnabled() {
-        // Disable tab groups if stack tab switcher is enabled for the start surface.
-        if (StartSurfaceConfiguration.isStartSurfaceStackTabSwitcherEnabled()) return false;
-
         // Disable tab group for tablet.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(
                     ContextUtils.getApplicationContext())) {

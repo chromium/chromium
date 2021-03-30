@@ -1,3 +1,5 @@
+CONSOLE WARNING: line 18: SharedArrayBuffer will require cross-origin isolation as of M91, around May 2021. See https://developer.chrome.com/blog/enabling-shared-array-buffer/ for more details.
+CONSOLE WARNING: line 2: SharedArrayBuffer will require cross-origin isolation as of M91, around May 2021. See https://developer.chrome.com/blog/enabling-shared-array-buffer/ for more details.
 Test that Atomics.wait is not allowed on the main thread.
 
 PASS: Calling Atomics.wait on the main thread throws.

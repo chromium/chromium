@@ -4,10 +4,10 @@
 
 #include "components/signin/internal/base/account_manager_facade_android.h"
 
-#include "components/signin/core/browser/android/jni_headers/AccountManagerFacadeProvider_jni.h"
+#include "components/signin/public/android/jni_headers/AccountManagerFacadeProvider_jni.h"
 
 base::android::ScopedJavaLocalRef<jobject>
 AccountManagerFacadeAndroid::GetJavaObject() {
-  return Java_AccountManagerFacadeProvider_getInstance(
+  return signin::Java_AccountManagerFacadeProvider_getInstance(
       base::android::AttachCurrentThread());
 }

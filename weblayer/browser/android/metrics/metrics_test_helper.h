@@ -41,10 +41,9 @@ void RemoveTestGmsBridge();
 // See comment for kDelayConsent.
 void RunConsentCallback(bool has_consent);
 
-// See Profile::Create()'s comments for the semantics of |name|.
-ProfileImpl* CreateProfile(const std::string& name);
+ProfileImpl* CreateProfile(const std::string& name, bool incognito = false);
 
-void DestroyProfile(const std::string& name);
+void DestroyProfile(const std::string& name, bool incognito = false);
 
 }  // namespace weblayer
 

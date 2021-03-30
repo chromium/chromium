@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/passphrase_enums.h"
-#include "components/sync/nigori/nigori.h"
+#include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/protocol/sync.pb.h"
 
 namespace syncer {
@@ -122,6 +122,10 @@ class SyncEncryptionHandler {
   // TODO(crbug.com/): Rename to something like NotifyStateToObservers() or
   // even delete this API altogether.
   virtual bool Init() = 0;
+
+  // TODO(crbug.com/1178418): Add similar getters for the rest of the state
+  // notified to the observers.
+  virtual Cryptographer* GetCryptographer() = 0;
 
   // Attempts to re-encrypt encrypted data types using the passphrase provided.
   // Notifies observers of the result of the operation via OnPassphraseAccepted

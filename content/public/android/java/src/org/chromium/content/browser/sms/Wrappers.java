@@ -59,9 +59,11 @@ class Wrappers {
     static class WebOTPServiceContext extends ContextWrapper {
         private BroadcastReceiver mVerificationReceiver;
         private BroadcastReceiver mUserConsentReceiver;
+        private final SmsProviderGms mSmsProviderGms;
 
-        public WebOTPServiceContext(Context context) {
+        public WebOTPServiceContext(Context context, SmsProviderGms provider) {
             super(context);
+            mSmsProviderGms = provider;
         }
 
         public SmsVerificationReceiver getRegisteredVerificationReceiver() {
@@ -70,6 +72,10 @@ class Wrappers {
 
         public SmsUserConsentReceiver getRegisteredUserConsentReceiver() {
             return (SmsUserConsentReceiver) mUserConsentReceiver;
+        }
+
+        public SmsVerificationReceiver createVerificationReceiverForTesting() {
+            return new SmsVerificationReceiver(mSmsProviderGms, this);
         }
 
         // ---------------------------------------------------------------------

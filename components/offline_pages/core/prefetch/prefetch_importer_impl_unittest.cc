@@ -22,7 +22,7 @@ const int64_t kTestOfflineID = 111;
 const int64_t kTestOfflineIDFailedToAdd = 223344;
 
 const ClientId kTestClientID("Foo", "C56A4180-65AA-42EC-A945-5FD21DEC0538");
-const base::string16 kTestTitle = base::UTF8ToUTF16("Hello");
+const std::u16string kTestTitle = u"Hello";
 const base::FilePath kTestFilePath(FILE_PATH_LITERAL("foo"));
 const int64_t kTestFileSize = 88888;
 

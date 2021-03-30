@@ -226,9 +226,9 @@ bool HasModulesToShow(Profile* profile) {
   // Modules won't have lasting effect if profile is ephemeral, so we can skip.
   ProfileAttributesStorage& storage =
       g_browser_process->profile_manager()->GetProfileAttributesStorage();
-  ProfileAttributesEntry* entry = nullptr;
-  if (storage.GetProfileAttributesWithPath(profile->GetPath(), &entry) &&
-      entry->IsEphemeral()) {
+  ProfileAttributesEntry* entry =
+      storage.GetProfileAttributesWithPath(profile->GetPath());
+  if (entry && entry->IsEphemeral()) {
     return false;
   }
 

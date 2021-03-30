@@ -8,13 +8,6 @@
 
 namespace metrics {
 
-void UnsentLogStoreMetricsImpl::RecordLogReadStatus(
-    UnsentLogStoreMetrics::LogReadStatus status) {
-  base::UmaHistogramEnumeration("PrefService.PersistentLogRecallProtobufs",
-                                status,
-                                UnsentLogStoreMetrics::END_RECALL_STATUS);
-}
-
 void UnsentLogStoreMetricsImpl::RecordCompressionRatio(size_t compressed_size,
                                                        size_t original_size) {
   base::UmaHistogramPercentageObsoleteDoNotUse(

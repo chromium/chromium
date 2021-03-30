@@ -124,7 +124,8 @@ std::unique_ptr<policy::PolicyMap> GetGoogleUpdatePolicies(
         auto split = base::SplitString(
             initial_value, L",", base::WhitespaceHandling::TRIM_WHITESPACE,
             base::SplitResult::SPLIT_WANT_NONEMPTY);
-        return base::Value(split.size() == 3 ? split[index] : L"");
+        return base::Value(
+            base::WideToUTF8(split.size() == 3 ? split[index] : L""));
       };
       AddPolicy(kUpdatesSuppressedStartHour, policy.Get(), *policies,
                 base::BindRepeating(extract_value, 0));
@@ -195,7 +196,9 @@ std::unique_ptr<policy::PolicyMap> GetLegacyGoogleUpdatePolicies(
   if (SUCCEEDED(last_com_res) &&
       download_preference_group_policy.Length() > 0) {
     AddPolicy(kDownloadPreference,
-              base::Value(download_preference_group_policy.Get()), *policies);
+              base::Value(base::AsStringPiece16(
+                  download_preference_group_policy.Get())),
+              *policies);
   }
 
   DWORD effective_policy_for_app_installs;
@@ -254,7 +257,8 @@ std::unique_ptr<policy::PolicyMap> GetLegacyGoogleUpdatePolicies(
   last_com_res = policy_status->get_targetVersionPrefix(
       app_id.Get(), target_version_prefix.Receive());
   if (SUCCEEDED(last_com_res) && target_version_prefix.Length() > 0) {
-    AddPolicy(kTargetVersionPrefix, base::Value(target_version_prefix.Get()),
+    AddPolicy(kTargetVersionPrefix,
+              base::Value(base::AsStringPiece16(target_version_prefix.Get())),
               *policies);
   }
 
@@ -268,7 +272,7 @@ std::unique_ptr<GoogleUpdateState> GetLegacyGoogleUpdateState() {
   auto result = std::make_unique<GoogleUpdateState>();
   const auto version = state->find("version");
   if (version != state->end())
-    result->version = base::AsString16(base::ASCIIToWide(version->second));
+    result->version = base::ASCIIToWide(version->second);
 
   return result;
 }

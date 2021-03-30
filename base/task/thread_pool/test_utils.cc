@@ -51,8 +51,10 @@ bool MockJobTaskRunner::PostDelayedTask(const Location& from_here,
                                         TimeDelta delay) {
   DCHECK_EQ(delay, TimeDelta());  // Jobs doesn't support delayed tasks.
 
-  if (!PooledTaskRunnerDelegate::Exists())
+  if (!PooledTaskRunnerDelegate::MatchesCurrentDelegate(
+          pooled_task_runner_delegate_)) {
     return false;
+  }
 
   auto job_task = base::MakeRefCounted<MockJobTask>(std::move(closure));
   scoped_refptr<JobTaskSource> task_source = job_task->GetJobTaskSource(

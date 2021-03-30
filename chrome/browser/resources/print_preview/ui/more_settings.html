@@ -18,8 +18,9 @@
 
   :host cr-expand-button {
     flex: 1;
-    margin-inline-end: calc(var(--print-preview-sidebar-margin) + 6px);
-    margin-inline-start: var(--print-preview-sidebar-margin);
+    /* Padding here as cr-expand-button has a background on hover. */
+    padding-inline-end: calc(var(--print-preview-sidebar-margin) + 6px);
+    padding-inline-start: var(--print-preview-sidebar-margin);
     --cr-expand-button-size: 28px;
   }
 
@@ -32,7 +33,7 @@
   }
 </style>
 <div on-click="toggleExpandButton_" actionable>
-  <cr-expand-button alt="$i18n{moreOptionsLabel}"
+  <cr-expand-button aria-label="$i18n{moreOptionsLabel}"
       expanded="{{settingsExpandedByUser}}" disabled="[[disabled]]">
     <div id="label">$i18n{moreOptionsLabel}</div>
   </cr-expand-button>

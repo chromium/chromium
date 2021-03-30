@@ -15,6 +15,7 @@
 #include "base/macros.h"
 #include "base/notreached.h"
 #include "base/single_thread_task_runner.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/win/registry.h"
@@ -36,16 +37,20 @@ namespace {
 // for .txt files, "JPEG Image" for .jpg files, etc. If the registry doesn't
 // have an entry for the file type, we return false, true if the description was
 // found. 'file_ext' must be in form ".txt".
-bool GetRegistryDescriptionFromExtension(const base::string16& file_ext,
-                                         base::string16* reg_description) {
+bool GetRegistryDescriptionFromExtension(const std::u16string& file_ext,
+                                         std::u16string* reg_description) {
   DCHECK(reg_description);
-  base::win::RegKey reg_ext(HKEY_CLASSES_ROOT, file_ext.c_str(), KEY_READ);
-  base::string16 reg_app;
+  base::win::RegKey reg_ext(HKEY_CLASSES_ROOT, base::as_wcstr(file_ext),
+                            KEY_READ);
+  std::wstring reg_app;
   if (reg_ext.ReadValue(nullptr, &reg_app) == ERROR_SUCCESS &&
       !reg_app.empty()) {
     base::win::RegKey reg_link(HKEY_CLASSES_ROOT, reg_app.c_str(), KEY_READ);
-    if (reg_link.ReadValue(nullptr, reg_description) == ERROR_SUCCESS)
+    std::wstring description;
+    if (reg_link.ReadValue(nullptr, &description) == ERROR_SUCCESS) {
+      *reg_description = base::WideToUTF16(description);
       return true;
+    }
   }
   return false;
 }
@@ -61,12 +66,12 @@ bool GetRegistryDescriptionFromExtension(const base::string16& file_ext,
 // from the registry. If the file extension does not exist in the registry, a
 // default description will be created (e.g. "qqq" yields "QQQ File").
 std::vector<FileFilterSpec> FormatFilterForExtensions(
-    const std::vector<base::string16>& file_ext,
-    const std::vector<base::string16>& ext_desc,
+    const std::vector<std::u16string>& file_ext,
+    const std::vector<std::u16string>& ext_desc,
     bool include_all_files,
     bool keep_extension_visible) {
-  const base::string16 all_ext = L"*.*";
-  const base::string16 all_desc =
+  const std::u16string all_ext = u"*.*";
+  const std::u16string all_desc =
       l10n_util::GetStringUTF16(IDS_APP_SAVEAS_ALL_FILES);
 
   DCHECK(file_ext.size() >= ext_desc.size());
@@ -78,8 +83,8 @@ std::vector<FileFilterSpec> FormatFilterForExtensions(
   result.reserve(file_ext.size() + 1);
 
   for (size_t i = 0; i < file_ext.size(); ++i) {
-    base::string16 ext = file_ext[i];
-    base::string16 desc;
+    std::u16string ext = file_ext[i];
+    std::u16string desc;
     if (i < ext_desc.size())
       desc = ext_desc[i];
 
@@ -91,16 +96,16 @@ std::vector<FileFilterSpec> FormatFilterForExtensions(
     }
 
     if (desc.empty()) {
-      DCHECK(ext.find(L'.') != base::string16::npos);
-      base::string16 first_extension = ext.substr(ext.find(L'.'));
-      size_t first_separator_index = first_extension.find(L';');
-      if (first_separator_index != base::string16::npos)
+      DCHECK(ext.find(u'.') != std::u16string::npos);
+      std::u16string first_extension = ext.substr(ext.find(u'.'));
+      size_t first_separator_index = first_extension.find(u';');
+      if (first_separator_index != std::u16string::npos)
         first_extension = first_extension.substr(0, first_separator_index);
 
       // Find the extension name without the preceeding '.' character.
-      base::string16 ext_name = first_extension;
-      size_t ext_index = ext_name.find_first_not_of(L'.');
-      if (ext_index != base::string16::npos)
+      std::u16string ext_name = first_extension;
+      size_t ext_index = ext_name.find_first_not_of(u'.');
+      if (ext_index != std::u16string::npos)
         ext_name = ext_name.substr(ext_index);
 
       if (!GetRegistryDescriptionFromExtension(first_extension, &desc)) {
@@ -112,12 +117,12 @@ std::vector<FileFilterSpec> FormatFilterForExtensions(
         include_all_files = true;
       }
       if (desc.empty())
-        desc = L"*." + ext_name;
+        desc = u"*." + ext_name;
     } else if (keep_extension_visible) {
       // Having '*' in the description could cause the windows file dialog to
       // not include the file extension in the file dialog. So strip out any '*'
       // characters if `keep_extension_visible` is set.
-      base::ReplaceChars(desc, L"*", L"", &desc);
+      base::ReplaceChars(desc, u"*", base::StringPiece16(), &desc);
     }
 
     result.push_back({desc, ext});
@@ -158,7 +163,7 @@ class SelectFileDialogImpl : public ui::SelectFileDialog,
  protected:
   // SelectFileDialog implementation:
   void SelectFileImpl(Type type,
-                      const base::string16& title,
+                      const std::u16string& title,
                       const base::FilePath& default_path,
                       const FileTypeInfo* file_types,
                       int file_type_index,
@@ -210,11 +215,11 @@ SelectFileDialogImpl::~SelectFileDialogImpl() = default;
 void DoSelectFileOnDialogTaskRunner(
     const ExecuteSelectFileCallback& execute_select_file_callback,
     SelectFileDialog::Type type,
-    const base::string16& title,
+    const std::u16string& title,
     const base::FilePath& default_path,
     const std::vector<ui::FileFilterSpec>& filter,
     int file_type_index,
-    const base::string16& default_extension,
+    const std::wstring& default_extension,
     HWND owner,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
     OnSelectFileExecutedCallback on_select_file_executed_callback) {
@@ -228,7 +233,7 @@ void DoSelectFileOnDialogTaskRunner(
 
 void SelectFileDialogImpl::SelectFileImpl(
     Type type,
-    const base::string16& title,
+    const std::u16string& title,
     const base::FilePath& default_path,
     const FileTypeInfo* file_types,
     int file_type_index,
@@ -312,15 +317,15 @@ std::vector<FileFilterSpec> SelectFileDialogImpl::GetFilterForFileTypes(
   if (!file_types)
     return std::vector<FileFilterSpec>();
 
-  std::vector<base::string16> exts;
+  std::vector<std::u16string> exts;
   for (size_t i = 0; i < file_types->extensions.size(); ++i) {
-    const std::vector<base::string16>& inner_exts = file_types->extensions[i];
-    base::string16 ext_string;
+    const std::vector<std::wstring>& inner_exts = file_types->extensions[i];
+    std::u16string ext_string;
     for (size_t j = 0; j < inner_exts.size(); ++j) {
       if (!ext_string.empty())
-        ext_string.push_back(L';');
-      ext_string.append(L"*.");
-      ext_string.append(inner_exts[j]);
+        ext_string.push_back(u';');
+      ext_string.append(u"*.");
+      ext_string.append(base::WideToUTF16(inner_exts[j]));
     }
     exts.push_back(ext_string);
   }

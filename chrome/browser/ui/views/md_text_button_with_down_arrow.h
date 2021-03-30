@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_MD_TEXT_BUTTON_WITH_DOWN_ARROW_H_
 #define CHROME_BROWSER_UI_VIEWS_MD_TEXT_BUTTON_WITH_DOWN_ARROW_H_
 
+#include <string>
+
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace views {
 
@@ -15,8 +17,13 @@ namespace views {
 // right side.
 class MdTextButtonWithDownArrow : public MdTextButton {
  public:
+  METADATA_HEADER(MdTextButtonWithDownArrow);
+
   MdTextButtonWithDownArrow(PressedCallback callback,
-                            const base::string16& text);
+                            const std::u16string& text);
+  MdTextButtonWithDownArrow(const MdTextButtonWithDownArrow&) = delete;
+  MdTextButtonWithDownArrow& operator=(const MdTextButtonWithDownArrow&) =
+      delete;
   ~MdTextButtonWithDownArrow() override;
 
  protected:
@@ -25,8 +32,6 @@ class MdTextButtonWithDownArrow : public MdTextButton {
 
  private:
   void SetDropArrowImage();
-
-  DISALLOW_COPY_AND_ASSIGN(MdTextButtonWithDownArrow);
 };
 
 }  // namespace views

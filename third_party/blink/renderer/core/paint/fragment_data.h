@@ -8,6 +8,7 @@
 #include "base/optional.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
+#include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/ref_counted_property_tree_state.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -26,6 +27,9 @@ class CORE_EXPORT FragmentData {
   }
   FragmentData& EnsureNextFragment();
   void ClearNextFragment() { DestroyTail(); }
+
+  FragmentData& LastFragment();
+  const FragmentData& LastFragment() const;
 
   // Physical offset of this fragment's local border box's top-left position
   // from the origin of the transform node of the fragment's property tree
@@ -175,6 +179,19 @@ class CORE_EXPORT FragmentData {
     }
   }
 
+  void SetCullRect(const CullRect& cull_rect) {
+    EnsureRareData().cull_rect_ = cull_rect;
+  }
+  CullRect GetCullRect() const {
+    return rare_data_ ? rare_data_->cull_rect_ : CullRect();
+  }
+  void SetContentsCullRect(const CullRect& contents_cull_rect) {
+    EnsureRareData().contents_cull_rect_ = contents_cull_rect;
+  }
+  CullRect GetContentsCullRect() const {
+    return rare_data_ ? rare_data_->contents_cull_rect_ : CullRect();
+  }
+
   // This is the complete set of property nodes that is inherited
   // from the ancestor before applying any local CSS properties,
   // but includes paint offset transform.
@@ -242,6 +259,8 @@ class CORE_EXPORT FragmentData {
     bool is_clip_path_cache_valid = false;
     base::Optional<IntRect> clip_path_bounding_box;
     scoped_refptr<const RefCountedPath> clip_path_path;
+    CullRect cull_rect_;
+    CullRect contents_cull_rect_;
     std::unique_ptr<FragmentData> next_fragment_;
   };
 

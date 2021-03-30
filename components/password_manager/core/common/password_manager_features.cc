@@ -24,11 +24,27 @@ const base::Feature kChangePasswordAffiliationInfo = {
 // Enables submission detection for forms dynamically cleared but not removed
 // from the page.
 const base::Feature kDetectFormSubmissionOnFormClear = {
-    "DetectFormSubmissionOnFormClear", base::FEATURE_DISABLED_BY_DEFAULT};
+    "DetectFormSubmissionOnFormClear",
+#if defined(OS_IOS)
+    base::FEATURE_DISABLED_BY_DEFAULT
+#else
+    base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+};
 
 // Enables the editing of passwords in Chrome settings.
 const base::Feature kEditPasswordsInSettings = {
+#if defined(OS_ANDROID) || defined(OS_IOS)
     "EditPasswordsInSettings", base::FEATURE_DISABLED_BY_DEFAULT};
+#else
+    "EditPasswordsInSettings", base::FEATURE_ENABLED_BY_DEFAULT};
+#endif
+
+// Enables UI that allows the user to create a strong password even if the field
+// wasn't parsed as a new password field.
+// TODO(crbug/1181254): Remove once it's launched.
+const base::Feature kEnableManualPasswordGeneration = {
+    "EnableManualPasswordGeneration", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables UI in settings that allows the user to move multiple passwords to the
 // account storage.
@@ -48,7 +64,12 @@ const base::Feature kEnablePasswordsAccountStorage = {
 
 const base::Feature KEnablePasswordGenerationForClearTextFields = {
     "EnablePasswordGenerationForClearTextFields",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Enables filling password on a website when there is saved password on
+// affiliated website.
+const base::Feature kFillingAcrossAffiliatedWebsites{
+    "FillingAcrossAffiliatedWebsites", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables showing UI button in password fallback sheet.
 // The button opens a different sheet that allows filling a password from any
@@ -60,6 +81,12 @@ const base::Feature kFillingPasswordsFromAnyOrigin{
 // selection, rather than autofilling on page load, with highlighting of fields.
 const base::Feature kFillOnAccountSelect = {"fill-on-account-select",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables finding a confirmation password field during saving by inspecting the
+// values of the fields. Used as a kill switch.
+// TODO(crbug.com/1164861): Remove once confirmed to be safe (around M92 or so).
+const base::Feature kInferConfirmationPasswordField = {
+    "InferConfirmationPasswordField", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables password change flow from leaked password dialog.
 const base::Feature kPasswordChange = {"PasswordChange",
@@ -87,10 +114,6 @@ const base::Feature kPasswordReuseDetectionEnabled = {
 const base::Feature kPasswordScriptsFetching = {
     "PasswordScriptsFetching", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables checking credentials for weakness in Password Check.
-const base::Feature kPasswordsWeaknessCheck = {
-    "PasswordsWeaknessCheck", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables showing UI which allows users to easily revert their choice to
 // never save passwords on a certain website.
 const base::Feature kRecoverFromNeverSaveAndroid = {
@@ -100,11 +123,15 @@ const base::Feature kRecoverFromNeverSaveAndroid = {
 // dynamic form change.
 const base::Feature kReparseServerPredictionsFollowingFormChange = {
     "ReparseServerPredictionsFollowingFormChange",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables considering secondary server field predictions during form parsing.
 const base::Feature kSecondaryServerFieldPredictions = {
-    "SecondaryServerFieldPredictions", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SecondaryServerFieldPredictions", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Enables syncing of compromised credentials.
+const base::Feature kSyncingCompromisedCredentials = {
+    "SyncingCompromisedCredentials", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Treat heuritistics to find new password fields as reliable. This enables
 // password generation on more forms, but could lead to false positives.
@@ -117,7 +144,7 @@ const base::Feature kUseOfHashAffiliationFetcher = {
 
 // Enables support of filling and saving on username first flow.
 const base::Feature kUsernameFirstFlow = {"UsernameFirstFlow",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Field trial identifier for password generation requirements.
 const char kGenerationRequirementsFieldTrial[] =
@@ -155,6 +182,19 @@ const char kMaxMoveToAccountOffersForNonOptedInUser[] =
     "max_move_to_account_offers_for_non_opted_in_user";
 
 const int kMaxMoveToAccountOffersForNonOptedInUserDefaultValue = 5;
+
+// If set to true, Chrome will default to saving to the profile store for users
+// who haven't made an explicit choice yet.
+const char kSaveToProfileStoreByDefault[] = "save_to_profile_store_by_default";
+
+const bool kSaveToProfileStoreByDefaultDefaultValue = false;
+
+// If set to true, Chrome will set the default store to the account store when
+// the user opts in. This is mostly meaningful together with
+// |kSaveToProfileStoreByDefault|.
+const char kSaveToAccountStoreOnOptIn[] = "save_to_account_store_on_optin";
+
+const bool kSaveToAccountStoreOnOptInDefaultValue = false;
 
 }  // namespace features
 

@@ -43,7 +43,7 @@
 #include "ui/gfx/text_elider.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -164,12 +164,14 @@ std::string GetReauthAccessPointHistogramSuffix(
 
 namespace signin_ui_util {
 
-base::string16 GetAuthenticatedUsername(Profile* profile) {
+std::u16string GetAuthenticatedUsername(Profile* profile) {
   DCHECK(profile);
   std::string user_display_name;
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  if (identity_manager->HasPrimaryAccount()) {
-    user_display_name = identity_manager->GetPrimaryAccountInfo().email;
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    user_display_name =
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+            .email;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // See https://crbug.com/994798 for details.
     user_manager::User* user =
@@ -242,7 +244,8 @@ void EnableSyncFromPromo(
   Profile* profile = browser->profile();
   DCHECK(!profile->IsOffTheRecord());
 
-  if (IdentityManagerFactory::GetForProfile(profile)->HasPrimaryAccount()) {
+  if (IdentityManagerFactory::GetForProfile(profile)->HasPrimaryAccount(
+          signin::ConsentLevel::kSync)) {
     DVLOG(1) << "There is already a primary account.";
     return;
   }
@@ -294,7 +297,7 @@ std::vector<AccountInfo> GetAccountsForDicePromos(Profile* profile) {
 
   // Compute the default account.
   CoreAccountId default_account_id =
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kNotRequired);
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
 
   // Fetch account information for each id and make sure that the first account
   // in the list matches the unconsented primary account (if available).
@@ -322,14 +325,14 @@ AccountInfo GetSingleAccountForDicePromos(Profile* profile) {
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-base::string16 GetShortProfileIdentityToDisplay(
+std::u16string GetShortProfileIdentityToDisplay(
     const ProfileAttributesEntry& profile_attributes_entry,
     Profile* profile) {
   DCHECK(profile);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  CoreAccountInfo core_info = identity_manager->GetPrimaryAccountInfo(
-      signin::ConsentLevel::kNotRequired);
+  CoreAccountInfo core_info =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   // If there's no unconsented primary account, simply return the name of the
   // profile according to profile attributes.
   if (core_info.IsEmpty())

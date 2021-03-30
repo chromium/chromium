@@ -23,10 +23,6 @@
 #include "ui/accessibility/ax_tree_update_forward.h"
 #endif
 
-namespace IPC {
-class Message;
-}
-
 namespace printing {
 
 class PrintManager : public content::WebContentsObserver,
@@ -61,7 +57,13 @@ class PrintManager : public content::WebContentsObserver,
   void ShowInvalidPrinterSettingsError() override;
   void PrintingFailed(int32_t cookie) override;
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+  void SetupScriptedPrintPreview(
+      SetupScriptedPrintPreviewCallback callback) override;
   void ShowScriptedPrintPreview(bool source_is_modifiable) override;
+  void RequestPrintPreview(mojom::RequestPrintPreviewParamsPtr params) override;
+  void CheckForCancel(int32_t preview_ui_id,
+                      int32_t request_id,
+                      CheckForCancelCallback callback) override;
 #endif
 
  protected:
@@ -69,7 +71,7 @@ class PrintManager : public content::WebContentsObserver,
 
   // Helper method to determine if PrintRenderFrame associated remote interface
   // is still connected.
-  bool IsPrintRenderFrameConnected(content::RenderFrameHost* rfh);
+  bool IsPrintRenderFrameConnected(content::RenderFrameHost* rfh) const;
 
   // Helper method to fetch the PrintRenderFrame associated remote interface
   // pointer.
@@ -80,17 +82,7 @@ class PrintManager : public content::WebContentsObserver,
   void PrintingRenderFrameDeleted();
 
   // content::WebContentsObserver
-  bool OnMessageReceived(const IPC::Message& message,
-                         content::RenderFrameHost* render_frame_host) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
-
-  // IPC handling support
-  struct FrameDispatchHelper;
-
-  // IPC handlers
-  virtual void OnScriptedPrint(content::RenderFrameHost* render_frame_host,
-                               const mojom::ScriptedPrintParams& params,
-                               IPC::Message* reply_msg) = 0;
 
   uint32_t number_pages_ = 0;  // Number of pages to print in the print job.
   int cookie_ = 0;        // The current document cookie.

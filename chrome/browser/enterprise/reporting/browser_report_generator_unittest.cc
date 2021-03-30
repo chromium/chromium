@@ -5,9 +5,9 @@
 #include "chrome/browser/enterprise/reporting/browser_report_generator_desktop.h"
 
 #include <memory>
+#include <string>
 
 #include "base/files/file_path.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
@@ -73,7 +73,7 @@ class BrowserReportGeneratorTest : public ::testing::Test,
   void InitializeProfile() {
     profile_manager_.profile_attributes_storage()->AddProfile(
         profile_manager()->profiles_dir().AppendASCII(kProfileId),
-        base::ASCIIToUTF16(kProfileName), std::string(), base::string16(),
+        base::ASCIIToUTF16(kProfileName), std::string(), std::u16string(),
         false, 0, std::string(), EmptyAccountId());
   }
 

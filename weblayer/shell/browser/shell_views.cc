@@ -27,6 +27,8 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/test/desktop_test_views_delegate.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/desktop_aura/desktop_screen.h"
@@ -51,6 +53,8 @@ namespace {
 class ShellWindowDelegateView : public views::WidgetDelegateView,
                                 public views::TextfieldController {
  public:
+  METADATA_HEADER(ShellWindowDelegateView);
+
   enum UIControl { BACK_BUTTON, FORWARD_BUTTON, STOP_BUTTON };
 
   explicit ShellWindowDelegateView(Shell* shell) : shell_(shell) {
@@ -58,7 +62,10 @@ class ShellWindowDelegateView : public views::WidgetDelegateView,
     InitShellWindow();
   }
 
-  ~ShellWindowDelegateView() override {}
+  ShellWindowDelegateView(const ShellWindowDelegateView&) = delete;
+  ShellWindowDelegateView& operator=(const ShellWindowDelegateView&) = delete;
+
+  ~ShellWindowDelegateView() override = default;
 
   // Update the state of UI controls
   void SetAddressBarURL(const GURL& url) {
@@ -85,7 +92,7 @@ class ShellWindowDelegateView : public views::WidgetDelegateView,
     GetWidget()->SetBounds(bounds);
   }
 
-  void SetWindowTitle(const base::string16& title) { title_ = title; }
+  void SetWindowTitle(const std::u16string& title) { title_ = title; }
 
   void EnableUIControl(UIControl control, bool is_enabled) {
     if (control == BACK_BUTTON) {
@@ -138,7 +145,7 @@ class ShellWindowDelegateView : public views::WidgetDelegateView,
     auto back_button = std::make_unique<views::MdTextButton>(
         base::BindRepeating(&Shell::GoBackOrForward,
                             base::Unretained(shell_.get()), -1),
-        base::ASCIIToUTF16("Back"));
+        u"Back");
     gfx::Size back_button_size = back_button->GetPreferredSize();
     toolbar_column_set->AddColumn(
         views::GridLayout::CENTER, views::GridLayout::CENTER, 0,
@@ -148,7 +155,7 @@ class ShellWindowDelegateView : public views::WidgetDelegateView,
     auto forward_button = std::make_unique<views::MdTextButton>(
         base::BindRepeating(&Shell::GoBackOrForward,
                             base::Unretained(shell_.get()), 1),
-        base::ASCIIToUTF16("Forward"));
+        u"Forward");
     gfx::Size forward_button_size = forward_button->GetPreferredSize();
     toolbar_column_set->AddColumn(
         views::GridLayout::CENTER, views::GridLayout::CENTER, 0,
@@ -157,7 +164,7 @@ class ShellWindowDelegateView : public views::WidgetDelegateView,
     // Refresh button
     auto refresh_button = std::make_unique<views::MdTextButton>(
         base::BindRepeating(&Shell::Reload, base::Unretained(shell_.get())),
-        base::ASCIIToUTF16("Refresh"));
+        u"Refresh");
     gfx::Size refresh_button_size = refresh_button->GetPreferredSize();
     toolbar_column_set->AddColumn(
         views::GridLayout::CENTER, views::GridLayout::CENTER, 0,
@@ -166,7 +173,7 @@ class ShellWindowDelegateView : public views::WidgetDelegateView,
     // Stop button
     auto stop_button = std::make_unique<views::MdTextButton>(
         base::BindRepeating(&Shell::Stop, base::Unretained(shell_.get())),
-        base::ASCIIToUTF16("Stop (100%)"));
+        u"Stop (100%)");
     int stop_button_width = stop_button->GetPreferredSize().width();
     toolbar_column_set->AddColumn(views::GridLayout::FILL,
                                   views::GridLayout::CENTER, 0,
@@ -175,7 +182,7 @@ class ShellWindowDelegateView : public views::WidgetDelegateView,
     toolbar_column_set->AddPaddingColumn(0, 2);
     // URL entry
     auto url_entry = std::make_unique<views::Textfield>();
-    url_entry->SetAccessibleName(base::ASCIIToUTF16("Enter URL"));
+    url_entry->SetAccessibleName(u"Enter URL");
     url_entry->set_controller(this);
     url_entry->SetTextInputType(ui::TextInputType::TEXT_INPUT_TYPE_URL);
     toolbar_column_set->AddColumn(
@@ -218,7 +225,7 @@ class ShellWindowDelegateView : public views::WidgetDelegateView,
 
   // Overridden from TextfieldController
   void ContentsChanged(views::Textfield* sender,
-                       const base::string16& new_contents) override {}
+                       const std::u16string& new_contents) override {}
 
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override {
@@ -237,7 +244,7 @@ class ShellWindowDelegateView : public views::WidgetDelegateView,
   }
 
   // Overridden from WidgetDelegateView
-  base::string16 GetWindowTitle() const override { return title_; }
+  std::u16string GetWindowTitle() const override { return title_; }
 
   // Overridden from View
   gfx::Size GetMinimumSize() const override {
@@ -268,7 +275,7 @@ class ShellWindowDelegateView : public views::WidgetDelegateView,
   std::unique_ptr<Shell> shell_;
 
   // Window title
-  base::string16 title_;
+  std::u16string title_;
 
   // Toolbar view contains forward/backward/reload button and URL entry
   View* toolbar_view_ = nullptr;
@@ -281,9 +288,10 @@ class ShellWindowDelegateView : public views::WidgetDelegateView,
   // Contents view contains the WebBrowser view
   View* contents_view_ = nullptr;
   views::WebView* web_view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellWindowDelegateView);
 };
+
+BEGIN_METADATA(ShellWindowDelegateView, views::WidgetDelegateView)
+END_METADATA
 
 }  // namespace
 
@@ -376,7 +384,7 @@ void Shell::Close() {
   window_widget_->CloseNow();
 }
 
-void Shell::PlatformSetTitle(const base::string16& title) {
+void Shell::PlatformSetTitle(const std::u16string& title) {
   ShellWindowDelegateView* delegate_view =
       static_cast<ShellWindowDelegateView*>(window_widget_->widget_delegate());
   delegate_view->SetWindowTitle(title);

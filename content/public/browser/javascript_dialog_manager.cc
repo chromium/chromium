@@ -9,7 +9,7 @@ namespace content {
 bool JavaScriptDialogManager::HandleJavaScriptDialog(
     WebContents* web_contents,
     bool accept,
-    const base::string16* prompt_override) {
+    const std::u16string* prompt_override) {
   return false;
 }
 

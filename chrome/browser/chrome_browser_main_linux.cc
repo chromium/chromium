@@ -22,12 +22,13 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/dbus/bluez_dbus_thread_manager.h"
-#include "media/audio/audio_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/installer/util/google_update_settings.h"
-#else
+#endif
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/command_line.h"
 #include "base/linux_util.h"
 #include "chrome/common/chrome_paths_internal.h"
@@ -55,9 +56,6 @@ void ChromeBrowserMainPartsLinux::PreProfileInit() {
       base::BindOnce(base::IgnoreResult(&base::GetLinuxDistro)));
 #endif
 
-  media::AudioManager::SetGlobalAppName(
-      l10n_util::GetStringUTF8(IDS_SHORT_PRODUCT_NAME));
-
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Set up crypt config. This should be kept in sync with the OSCrypt parts of
   // SystemNetworkContextManager::OnNetworkServiceCreated.
@@ -79,27 +77,6 @@ void ChromeBrowserMainPartsLinux::PreProfileInit() {
   ChromeBrowserMainPartsPosix::PreProfileInit();
 }
 
-void ChromeBrowserMainPartsLinux::PostProfileInit() {
-  ChromeBrowserMainPartsPosix::PostProfileInit();
-
-  bool breakpad_registered;
-  if (crash_reporter::IsCrashpadEnabled()) {
-    // If we're using crashpad, there's no breakpad and crashpad is always
-    // registered as a crash handler. Since setting |breakpad_registered| to
-    // true all the time isn't useful, we overload the meaning of the breakpad
-    // registration metric to mean "is crash reporting enabled", since that's
-    // what breakpad registration effectively meant in the days before crashpad.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    breakpad_registered = GoogleUpdateSettings::GetCollectStatsConsent();
-#else
-    breakpad_registered = crash_reporter::GetUploadsEnabled();
-#endif
-  } else {
-    breakpad_registered = breakpad::IsCrashReporterEnabled();
-  }
-  g_browser_process->metrics_service()->RecordBreakpadRegistration(
-      breakpad_registered);
-}
 
 void ChromeBrowserMainPartsLinux::PostMainMessageLoopStart() {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

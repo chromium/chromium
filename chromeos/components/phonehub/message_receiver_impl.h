@@ -7,7 +7,7 @@
 
 #include "chromeos/components/phonehub/message_receiver.h"
 
-#include "chromeos/components/phonehub/connection_manager.h"
+#include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
 
 namespace chromeos {
 namespace phonehub {
@@ -15,16 +15,17 @@ namespace phonehub {
 // MessageReceiver implementation that observes all received messages from
 // the remote phone and notifies clients of the received messages.
 class MessageReceiverImpl : public MessageReceiver,
-                            public ConnectionManager::Observer {
+                            public secure_channel::ConnectionManager::Observer {
  public:
-  MessageReceiverImpl(ConnectionManager* connection_manager);
+  explicit MessageReceiverImpl(
+      secure_channel::ConnectionManager* connection_manager);
   ~MessageReceiverImpl() override;
 
  private:
-  // ConnectionManager::Observer:
+  // secure_channel::ConnectionManager::Observer:
   void OnMessageReceived(const std::string& payload) override;
 
-  ConnectionManager* connection_manager_;
+  secure_channel::ConnectionManager* connection_manager_;
 };
 
 }  // namespace phonehub

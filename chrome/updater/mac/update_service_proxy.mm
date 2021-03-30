@@ -21,9 +21,8 @@
 #import "chrome/updater/app/server/mac/service_protocol.h"
 #import "chrome/updater/app/server/mac/update_service_wrappers.h"
 #import "chrome/updater/mac/xpc_service_names.h"
-#include "chrome/updater/service_scope.h"
 #include "chrome/updater/update_service.h"
-#include "chrome/updater/updater_version.h"
+#include "chrome/updater/updater_scope.h"
 #include "components/update_client/update_client_errors.h"
 
 using base::SysUTF8ToNSString;
@@ -108,6 +107,17 @@ using base::SysUTF8ToNSString;
                             reply:reply];
 }
 
+- (void)runPeriodicTasksWithReply:(void (^)(void))reply {
+  auto errorHandler = ^(NSError* xpcError) {
+    LOG(ERROR) << "XPC connection failed: "
+               << base::SysNSStringToUTF8([xpcError description]);
+    reply();
+  };
+
+  [[_updateCheckXPCConnection remoteObjectProxyWithErrorHandler:errorHandler]
+      runPeriodicTasksWithReply:reply];
+}
+
 - (void)checkForUpdatesWithUpdateState:
             (id<CRUUpdateStateObserving> _Nonnull)updateState
                                  reply:(void (^_Nonnull)(int rc))reply {
@@ -144,12 +154,12 @@ using base::SysUTF8ToNSString;
 
 namespace updater {
 
-UpdateServiceProxy::UpdateServiceProxy(ServiceScope scope) {
+UpdateServiceProxy::UpdateServiceProxy(UpdaterScope scope) {
   switch (scope) {
-    case ServiceScope::kSystem:
+    case UpdaterScope::kSystem:
       client_.reset([[CRUUpdateServiceProxyImpl alloc] initPrivileged]);
       break;
-    case ServiceScope::kUser:
+    case UpdaterScope::kUser:
       client_.reset([[CRUUpdateServiceProxyImpl alloc] init]);
       break;
   }
@@ -179,8 +189,7 @@ void UpdateServiceProxy::RegisterApp(
       std::move(callback);
 
   auto reply = ^(int error) {
-    RegistrationResponse response;
-    response.status_code = error;
+    RegistrationResponse response(error);
     callback_runner_->PostTask(
         FROM_HERE, base::BindOnce(std::move(block_callback), response));
   };
@@ -194,6 +203,16 @@ void UpdateServiceProxy::RegisterApp(
                                       request.existence_checker_path
                                           .AsUTF8Unsafe())
                             reply:reply];
+}
+
+void UpdateServiceProxy::RunPeriodicTasks(base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  __block base::OnceClosure block_callback = std::move(callback);
+  auto reply = ^() {
+    callback_runner_->PostTask(FROM_HERE,
+                               base::BindOnce(std::move(block_callback)));
+  };
+  [client_ runPeriodicTasksWithReply:reply];
 }
 
 void UpdateServiceProxy::UpdateAll(StateChangeCallback state_update,

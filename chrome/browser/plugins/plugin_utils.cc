@@ -5,7 +5,7 @@
 #include "chrome/browser/plugins/plugin_utils.h"
 
 #include "base/values.h"
-#include "chrome/browser/profiles/profile_io_data.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/plugin_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"

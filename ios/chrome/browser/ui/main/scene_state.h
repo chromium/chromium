@@ -76,7 +76,8 @@ typedef NS_ENUM(NSUInteger, SceneActivationLevel) {
 @property(nonatomic, strong, readonly) id<BrowserInterfaceProvider>
     interfaceProvider;
 
-// The persistent identifier for the scene session.
+// The persistent identifier for the scene session. This should be used instead
+// of -[UISceneSession persistentIdentifier].
 @property(nonatomic, readonly) NSString* sceneSessionID;
 
 // True if First Run UI (terms of service & sync sign-in) is being presented
@@ -107,6 +108,16 @@ typedef NS_ENUM(NSUInteger, SceneActivationLevel) {
 // A flag that keeps track of the UI initialization for the controlled scene.
 @property(nonatomic, assign) BOOL hasInitializedUI;
 
+// YES if the QR scanner is visible.
+@property(nonatomic, assign) BOOL QRScannerVisible;
+
+// YES if the visible NTP should be modified for the Start Surface.
+//
+// This flag is set by SceneController to YES when the Start Surface should be
+// shown. It is checked by the NewTabPageCoordinator to modify the NTP
+// accordingly, and then reset it to NO.
+@property(nonatomic, assign) BOOL modifytVisibleNTPForStartSurface;
+
 // Adds an observer to this scene state. The observers will be notified about
 // scene state changes per SceneStateObserver protocol.
 - (void)addObserver:(id<SceneStateObserver>)observer;
@@ -119,6 +130,14 @@ typedef NS_ENUM(NSUInteger, SceneActivationLevel) {
 
 // Array of all agents added to this scene state.
 - (NSArray*)connectedAgents;
+
+// Retrieves per-session preference for |key|. May return nil if the key is
+// not found.
+- (NSObject*)sessionObjectForKey:(NSString*)key;
+
+// Stores |object| as a per-session preference if supported by the device or
+// into NSUserDefaults otherwise (old table, phone, ...).
+- (void)setSessionObject:(NSObject*)object forKey:(NSString*)key;
 
 @end
 

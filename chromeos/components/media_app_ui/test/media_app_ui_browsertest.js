@@ -7,7 +7,7 @@
  */
 GEN('#include "chromeos/components/media_app_ui/test/media_app_ui_browsertest.h"');
 
-GEN('#include "chromeos/constants/chromeos_features.h"');
+GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "third_party/blink/public/common/features.h"');
 
@@ -400,28 +400,6 @@ TEST_F('MediaAppUIBrowserTest', 'LaunchUnopenableFile', async () => {
   testDone();
 });
 
-// Tests that unopenable files in the same directory are ignored at launch.
-TEST_F('MediaAppUIBrowserTest', 'LaunchWithUnopenableSibling', async () => {
-  const validHandle =
-      fileToFileHandle(await createTestImageFile(123, 456, 'allowed.png'));
-  const notAllowedHandle =
-      new FakeFileSystemFileHandle('not_allowed.png', 'image/png');
-  notAllowedHandle.getFileSync = () => {
-    throw new DOMException(
-        'Fake NotAllowedError for LaunchWithUnopenableSibling test.',
-        'NotAllowedError');
-  };
-
-  await launchWithHandles([validHandle, notAllowedHandle]);
-  const result = await waitForImageAndGetWidth('allowed.png');
-
-  assertEquals(`${TEST_IMAGE_WIDTH}`, result);
-  assertEquals(currentFiles.length, 1);  // Unopenable file ignored at launch.
-  assertEquals(currentFiles[0].handle.name, 'allowed.png');
-  assertEquals(await getFileErrors(), '');  // Ignored => no errors.
-  testDone();
-});
-
 // Tests that a file that becomes inaccessible after the initial app launch is
 // ignored on navigation, and shows an error when navigated to itself.
 TEST_F('MediaAppUIBrowserTest', 'NavigateWithUnopenableSibling', async () => {
@@ -512,7 +490,7 @@ TEST_F('MediaAppUIBrowserTest', 'FileThatBecomesDirectory', async () => {
 TEST_F('MediaAppUIBrowserTest', 'CanOpenFeedbackDialog', async () => {
   const result = await mediaAppPageHandler.openFeedbackDialog();
 
-  assertEquals(result.errorMessage, '');
+  assertEquals(result.errorMessage, null);
   testDone();
 });
 
@@ -590,6 +568,36 @@ TEST_F('MediaAppUIBrowserTest', 'OverwriteOriginalPickerFallback', async () => {
   assertEquals(pickedFile.lastWritable.writes.length, 1);
   assertDeepEquals(
       pickedFile.lastWritable.writes[0], {position: 0, size: 'Foo'.length});
+  testDone();
+});
+
+// Tests that invalid characters in file extensions are stripped before being
+// passed to showSaveFilePicker.
+TEST_F('MediaAppUIBrowserTest', 'FilePickerValidateExtension', async () => {
+  function pick(suggestedName, mimeType = 'image/jpeg') {
+    return new Promise(resolve => {
+      window.showSaveFilePicker = options => {
+        resolve(options.types.map(t => Object.values(t.accept || {})));
+        // The handle is unused in the test, but needed to keep closure happy.
+        return Promise.resolve(/** @type {!FileSystemFileHandle}*/ (null));
+      };
+      pickWritableFile(suggestedName, mimeType);
+    });
+  }
+
+  assertDeepEquals(await pick('foo.jpg'), [[['.jpg']]]);
+  assertDeepEquals(await pick('foo.jfif'), [[['.jfif']]]);
+  assertDeepEquals(await pick('foo'), [[['.foo']]]);
+  assertDeepEquals(await pick('foo.png'), [[['.png']]]);
+  assertDeepEquals(await pick('foo.jpg.jpg'), [[['.jpg']]]);
+  assertDeepEquals(await pick('jpg.jpg (1)'), [[['.jpg1']]]);
+  assertDeepEquals(await pick(''), [[['.']]]);
+  assertDeepEquals(await pick('foo.bar.jpg (1) - _baz'), [[['.jpg1baz']]]);
+  assertDeepEquals(await pick('foo.svg+xml'), [[['.svg+xml']]]);
+
+  // Ideally, double-barrelled extensions like this would be handled better. But
+  // the only way to do that is with a hardcoded list of exceptions.
+  assertDeepEquals(await pick('foo.tar.gz'), [[['.gz']]]);
   testDone();
 });
 
@@ -1086,24 +1094,25 @@ TEST_F('MediaAppUIBrowserTest', 'RelatedFiles', async () => {
     {name: 'matryoshka.MKV'},
     {name: 'noext', type: ''},
     {name: 'other.txt', type: 'text/plain'},
+    {name: 'subtitles.vtt'},
     {name: 'text.txt', type: 'text/plain'},
     {name: 'world.webm', type: 'video/webm'},
   ];
   const directory = await createMockTestDirectory(testFiles);
-  const [html, jpg, gif, emkv, mkv, MKV, ext, other, txt, webm] =
+  const [html, jpg, gif, emkv, mkv, MKV, ext, other, vtt, txt, webm] =
       directory.getFilesSync();
 
   await loadFilesWithoutSendingToGuest(directory, mkv);
-  assertFilesToBe([mkv, MKV, webm, jpg, gif], 'mkv');
+  assertFilesToBe([mkv, MKV, vtt, webm, jpg, gif], 'mkv');
 
   await loadFilesWithoutSendingToGuest(directory, jpg);
-  assertFilesToBe([jpg, gif, mkv, MKV, webm], 'jpg');
+  assertFilesToBe([jpg, gif, mkv, MKV, vtt, webm], 'jpg');
 
   await loadFilesWithoutSendingToGuest(directory, gif);
-  assertFilesToBe([gif, mkv, MKV, webm, jpg], 'gif');
+  assertFilesToBe([gif, mkv, MKV, vtt, webm, jpg], 'gif');
 
   await loadFilesWithoutSendingToGuest(directory, webm);
-  assertFilesToBe([webm, jpg, gif, mkv, MKV], 'webm');
+  assertFilesToBe([webm, jpg, gif, mkv, MKV, vtt], 'webm');
 
   await loadFilesWithoutSendingToGuest(directory, txt);
   assertFilesToBe([txt, other], 'txt');
@@ -1163,6 +1172,35 @@ TEST_F('MediaAppUIBrowserTest', 'SortedFilesByName', async () => {
   await launchWithFiles(files);
 
   assertFilesToBe(filesInReverseLexicographicOrder);
+
+  testDone();
+});
+
+// Tests that getFile is not called on all files in a directory on launch with
+// default sort order. This is to avoid a series of slow file system api calls
+// due to b/172529567.
+TEST_F('MediaAppUIBrowserTest', 'GetFileNotCalledOnAllFiles', async () => {
+  const handles = [
+    fileToFileHandle(await createTestImageFile(1, 1, '1.png')),
+    fileToFileHandle(await createTestImageFile(1, 1, '2.png')),
+    fileToFileHandle(await createTestImageFile(1, 1, '3.png')),
+    fileToFileHandle(await createTestImageFile(1, 1, '4.png')),
+  ];
+  const getFileCalls = [];
+  for (const handle of handles) {
+    handle.getFileSync = () => {
+      getFileCalls.push(handle.name);
+    };
+  }
+
+  await launchWithHandles(handles);
+
+  // Expect only the current file to have been opened. Note the current file is
+  // opened twice since the file is force refreshed before being sent over to
+  // the guest in addition to the original open.
+  assertEquals(getFileCalls.length, 2);
+  assertEquals(getFileCalls[0], '1.png');
+  assertEquals(getFileCalls[1], '1.png');
 
   testDone();
 });

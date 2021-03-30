@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
@@ -105,20 +106,70 @@ class InstallFinalizerUnitTest : public WebAppTest {
 TEST_F(InstallFinalizerUnitTest, BasicInstallSucceeds) {
   auto info = std::make_unique<WebApplicationInfo>();
   info->start_url = GURL("https://foo.example");
-  info->title = base::ASCIIToUTF16("Foo Title");
+  info->title = u"Foo Title";
   InstallFinalizer::FinalizeOptions options;
   options.install_source = webapps::WebappInstallSource::INTERNAL_DEFAULT;
 
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
 
   EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
-  EXPECT_FALSE(result.installed_app_id.empty());
+  EXPECT_EQ(result.installed_app_id, GenerateAppIdFromURL(info->start_url));
+}
+
+TEST_F(InstallFinalizerUnitTest, ConcurrentInstallSucceeds) {
+  auto info1 = std::make_unique<WebApplicationInfo>();
+  info1->start_url = GURL("https://foo1.example");
+  info1->title = u"Foo1 Title";
+
+  auto info2 = std::make_unique<WebApplicationInfo>();
+  info2->start_url = GURL("https://foo2.example");
+  info2->title = u"Foo2 Title";
+
+  InstallFinalizer::FinalizeOptions options;
+  options.install_source = webapps::WebappInstallSource::INTERNAL_DEFAULT;
+
+  base::RunLoop run_loop;
+  bool callback1_called = false;
+  bool callback2_called = false;
+
+  // Start install finalization for the 1st app.
+  {
+    finalizer().FinalizeInstall(
+        *info1, options,
+        base::BindLambdaForTesting([&](const AppId& installed_app_id,
+                                       InstallResultCode code) {
+          EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
+          EXPECT_EQ(installed_app_id, GenerateAppIdFromURL(info1->start_url));
+          callback1_called = true;
+          if (callback2_called)
+            run_loop.Quit();
+        }));
+  }
+
+  // Start install finalization for the 2nd app.
+  {
+    finalizer().FinalizeInstall(
+        *info2, options,
+        base::BindLambdaForTesting([&](const AppId& installed_app_id,
+                                       InstallResultCode code) {
+          EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
+          EXPECT_EQ(installed_app_id, GenerateAppIdFromURL(info2->start_url));
+          callback2_called = true;
+          if (callback1_called)
+            run_loop.Quit();
+        }));
+  }
+
+  run_loop.Run();
+
+  EXPECT_TRUE(callback1_called);
+  EXPECT_TRUE(callback2_called);
 }
 
 TEST_F(InstallFinalizerUnitTest, InstallStoresLatestWebAppInstallSource) {
   auto info = std::make_unique<WebApplicationInfo>();
   info->start_url = GURL("https://foo.example");
-  info->title = base::ASCIIToUTF16("Foo Title");
+  info->title = u"Foo Title";
   InstallFinalizer::FinalizeOptions options;
   options.install_source = webapps::WebappInstallSource::INTERNAL_DEFAULT;
 

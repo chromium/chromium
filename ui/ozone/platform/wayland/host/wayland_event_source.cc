@@ -17,6 +17,8 @@
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/events/ozone/layout/keyboard_layout_engine.h"
+#include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/events/pointer_details.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -85,17 +87,6 @@ bool WaylandEventSource::StopProcessingEvents() {
   return event_watcher_->StopProcessingEvents();
 }
 
-void WaylandEventSource::OnKeyboardCreated(WaylandKeyboard* keyboard) {
-  DCHECK(keyboard);
-  keyboard_ = keyboard;
-}
-
-void WaylandEventSource::OnKeyboardDestroyed(WaylandKeyboard* keyboard) {
-  DCHECK_EQ(keyboard_, keyboard);
-  keyboard_modifiers_ = 0;
-  keyboard_ = nullptr;
-}
-
 void WaylandEventSource::OnKeyboardFocusChanged(WaylandWindow* window,
                                                 bool focused) {
   DCHECK(window);
@@ -109,14 +100,15 @@ void WaylandEventSource::OnKeyboardModifiersChanged(int modifiers) {
 uint32_t WaylandEventSource::OnKeyboardKeyEvent(EventType type,
                                                 DomCode dom_code,
                                                 bool repeat,
-                                                base::TimeTicks timestamp) {
+                                                base::TimeTicks timestamp,
+                                                int device_id) {
   DCHECK(type == ET_KEY_PRESSED || type == ET_KEY_RELEASED);
-  if (!keyboard_)
-    return POST_DISPATCH_NONE;
 
   DomKey dom_key;
   KeyboardCode key_code;
-  if (!keyboard_->Decode(dom_code, keyboard_modifiers_, &dom_key, &key_code)) {
+  auto* layout_engine = KeyboardLayoutEngineManager::GetKeyboardLayoutEngine();
+  if (!layout_engine || !layout_engine->Lookup(dom_code, keyboard_modifiers_,
+                                               &dom_key, &key_code)) {
     LOG(ERROR) << "Failed to decode key event.";
     return POST_DISPATCH_NONE;
   }
@@ -128,30 +120,12 @@ uint32_t WaylandEventSource::OnKeyboardKeyEvent(EventType type,
 
   KeyEvent event(type, key_code, dom_code, keyboard_modifiers_, dom_key,
                  timestamp);
-  event.set_source_device_id(keyboard_->device_id());
+  event.set_source_device_id(device_id);
   return DispatchEvent(&event);
-}
-
-void WaylandEventSource::OnPointerCreated(WaylandPointer* pointer) {
-  DCHECK(pointer);
-  pointer_ = pointer;
-}
-
-void WaylandEventSource::OnPointerDestroyed(WaylandPointer* pointer) {
-  DCHECK_EQ(pointer_, pointer);
-
-  // Clear focused window, if any.
-  HandlePointerFocusChange(nullptr);
-
-  ResetPointerFlags();
-  pointer_ = nullptr;
 }
 
 void WaylandEventSource::OnPointerFocusChanged(WaylandWindow* window,
                                                const gfx::PointF& location) {
-  if (!pointer_)
-    return;
-
   // Save new pointer location.
   pointer_location_ = location;
 
@@ -173,9 +147,6 @@ void WaylandEventSource::OnPointerButtonEvent(EventType type,
                                               WaylandWindow* window) {
   DCHECK(type == ET_MOUSE_PRESSED || type == ET_MOUSE_RELEASED);
   DCHECK(HasAnyPointerButtonFlag(changed_button));
-
-  if (!pointer_)
-    return;
 
   auto* prev_focused_window = window_with_pointer_focus_;
   if (window)
@@ -210,6 +181,10 @@ void WaylandEventSource::OnPointerAxisEvent(const gfx::Vector2d& offset) {
   DispatchEvent(&event);
   current_pointer_frame_.dx += offset.x();
   current_pointer_frame_.dy += offset.y();
+}
+
+void WaylandEventSource::OnResetPointerFlags() {
+  ResetPointerFlags();
 }
 
 void WaylandEventSource::OnPointerFrameEvent() {
@@ -253,17 +228,6 @@ void WaylandEventSource::OnPointerAxisStopEvent(uint32_t axis) {
     current_pointer_frame_.dx = 0;
   }
   current_pointer_frame_.is_axis_stop = true;
-}
-
-void WaylandEventSource::OnTouchCreated(WaylandTouch* touch) {
-  DCHECK(touch);
-  touch_ = touch;
-}
-
-void WaylandEventSource::OnTouchDestroyed(WaylandTouch* touch) {
-  DCHECK_EQ(touch_, touch);
-  touch_points_.clear();
-  touch_ = nullptr;
 }
 
 void WaylandEventSource::OnTouchPressEvent(WaylandWindow* window,

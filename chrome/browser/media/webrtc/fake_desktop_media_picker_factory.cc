@@ -29,26 +29,31 @@ void FakeDesktopMediaPicker::Show(
   bool show_screens = false;
   bool show_windows = false;
   bool show_tabs = false;
+  bool show_current_tab = false;
   picker_params_ = params;
 
   for (auto& source_list : source_lists) {
     switch (source_list->GetMediaListType()) {
-      case content::DesktopMediaID::TYPE_NONE:
+      case DesktopMediaList::Type::kNone:
         break;
-      case content::DesktopMediaID::TYPE_SCREEN:
+      case DesktopMediaList::Type::kScreen:
         show_screens = true;
         break;
-      case content::DesktopMediaID::TYPE_WINDOW:
+      case DesktopMediaList::Type::kWindow:
         show_windows = true;
         break;
-      case content::DesktopMediaID::TYPE_WEB_CONTENTS:
+      case DesktopMediaList::Type::kWebContents:
         show_tabs = true;
+        break;
+      case DesktopMediaList::Type::kCurrentTab:
+        show_current_tab = true;
         break;
     }
   }
   EXPECT_EQ(expectation_->expect_screens, show_screens);
   EXPECT_EQ(expectation_->expect_windows, show_windows);
   EXPECT_EQ(expectation_->expect_tabs, show_tabs);
+  EXPECT_EQ(expectation_->expect_current_tab, show_current_tab);
   EXPECT_EQ(expectation_->expect_audio, params.request_audio);
   EXPECT_EQ(params.modality, ui::ModalType::MODAL_TYPE_CHILD);
 
@@ -96,7 +101,8 @@ std::unique_ptr<DesktopMediaPicker> FakeDesktopMediaPickerFactory::CreatePicker(
 
 std::vector<std::unique_ptr<DesktopMediaList>>
 FakeDesktopMediaPickerFactory::CreateMediaList(
-    const std::vector<content::DesktopMediaID::Type>& types) {
+    const std::vector<DesktopMediaList::Type>& types,
+    content::WebContents* web_contents) {
   EXPECT_LE(current_test_, tests_count_);
   std::vector<std::unique_ptr<DesktopMediaList>> media_lists;
   for (auto source_type : types)

@@ -27,7 +27,6 @@
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
-#include "third_party/skia/include/effects/SkOffsetImageFilter.h"
 
 namespace blink {
 
@@ -59,13 +58,13 @@ FloatRect FEOffset::MapEffect(const FloatRect& rect) const {
 
 sk_sp<PaintFilter> FEOffset::CreateImageFilter() {
   Filter* filter = this->GetFilter();
-  PaintFilter::CropRect crop_rect = GetCropRect();
+  base::Optional<PaintFilter::CropRect> crop_rect = GetCropRect();
   return sk_make_sp<OffsetPaintFilter>(
       SkFloatToScalar(filter->ApplyHorizontalScale(dx_)),
       SkFloatToScalar(filter->ApplyVerticalScale(dy_)),
       paint_filter_builder::Build(InputEffect(0),
                                   OperatingInterpolationSpace()),
-      &crop_rect);
+      base::OptionalOrNullptr(crop_rect));
 }
 
 WTF::TextStream& FEOffset::ExternalRepresentation(WTF::TextStream& ts,

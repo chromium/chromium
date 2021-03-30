@@ -359,7 +359,7 @@ class AddUpdateBrandCodeWorkItemTest
         HKEY_LOCAL_MACHINE, &registry_override_hklm_path_));
   }
 
-  void SetupExpectations(const base::string16& brand,
+  void SetupExpectations(const std::wstring& brand,
                          StrictMock<MockWorkItemList>* work_item_list) {
     if (!brand.empty()) {
       base::win::RegKey key(installer_state_->root_key(),
@@ -390,7 +390,7 @@ class AddUpdateBrandCodeWorkItemTest
   std::unique_ptr<InstallationState> installation_state_;
   std::unique_ptr<InstallerState> installer_state_;
   registry_util::RegistryOverrideManager registry_override_;
-  base::string16 registry_override_hklm_path_;
+  std::wstring registry_override_hklm_path_;
   base::win::ScopedDomainStateForTesting scoped_domain_state_;
   base::win::ScopedDeviceRegisteredWithManagementForTesting
       scoped_registration_state_;

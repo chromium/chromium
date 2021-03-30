@@ -88,10 +88,8 @@ class BroadcastingReceiver : public mojom::VideoFrameHandler {
   void OnNewBuffer(int32_t buffer_id,
                    media::mojom::VideoBufferHandlePtr buffer_handle) override;
   void OnFrameReadyInBuffer(
-      int32_t buffer_id,
-      int32_t frame_feedback_id,
-      mojo::PendingRemote<mojom::ScopedAccessPermission> access_permission,
-      media::mojom::VideoFrameInfoPtr frame_info) override;
+      mojom::ReadyFrameInBufferPtr buffer,
+      std::vector<mojom::ReadyFrameInBufferPtr> scaled_buffers) override;
   void OnBufferRetired(int32_t buffer_id) override;
   void OnError(media::VideoCaptureError error) override;
   void OnFrameDropped(media::VideoCaptureFrameDropReason reason) override;
@@ -137,6 +135,10 @@ class BroadcastingReceiver : public mojom::VideoFrameHandler {
     bool on_started_has_been_called_;
     bool on_started_using_gpu_decode_has_been_called_;
   };
+
+  mojom::ReadyFrameInBufferPtr CreateReadyFrameInBufferForClient(
+      mojom::ReadyFrameInBufferPtr& buffer,
+      BufferContext* buffer_context);
 
   void OnClientFinishedConsumingFrame(int32_t buffer_context_id);
   void OnClientDisconnected(int32_t client_id);

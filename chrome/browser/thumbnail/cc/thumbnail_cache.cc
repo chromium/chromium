@@ -28,6 +28,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkData.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkMallocPixelRef.h"
 #include "third_party/skia/include/core/SkPixelRef.h"
 #include "ui/android/resources/ui_resource_provider.h"
@@ -720,18 +721,23 @@ void ThumbnailCache::JpegProcessingTask(
     double jpeg_aspect_ratio,
     SkBitmap bitmap,
     base::OnceCallback<void(std::vector<uint8_t>)> post_processing_task) {
-  // In portrait mode, we want to show thumbnails in squares.
-  // Therefore, the thumbnail saved in portrait mode needs to be cropped to
-  // a square, or it would be vertically center-aligned, and the top would
-  // be hidden.
-  // It's fine to horizontally center-align thumbnail saved in landscape
-  // mode.
+  // We want to show thumbnails in a specific aspect ratio. Therefore, the
+  // thumbnail saved needs to be cropped to the target aspect ratio, otherwise
+  // it would be vertically center-aligned and the top would be hidden in
+  // portrait mode, or it would be shown in the wrong aspect ratio in
+  // landscape mode.
   int scale = 2;
   double aspect_ratio = clampAspectRatio(jpeg_aspect_ratio, 0.5, 2.0);
-  SkIRect dest_subset = {
-      0, 0, bitmap.width() / scale,
-      std::min(bitmap.height() / scale,
-               (int)(bitmap.width() / scale / aspect_ratio))};
+
+  int width = std::min(bitmap.width() / scale,
+                       (int)(bitmap.height() * aspect_ratio / scale));
+  int height = std::min(bitmap.height() / scale,
+                        (int)(bitmap.width() / aspect_ratio / scale));
+  // When cropping the thumbnails, we want to keep the top center portion.
+  int begin_x = (bitmap.width() / scale - width) / 2;
+  int end_x = begin_x + width;
+  SkIRect dest_subset = {begin_x, 0, end_x, height};
+
   SkBitmap result_bitmap = skia::ImageOperations::Resize(
       bitmap, skia::ImageOperations::RESIZE_BETTER, bitmap.width() / scale,
       bitmap.height() / scale, dest_subset);
@@ -990,7 +996,7 @@ void ThumbnailCache::DecompressionTask(
       raw_data_small.allocPixels(SkImageInfo::MakeN32(
           content_size.width(), content_size.height(), kOpaque_SkAlphaType));
       SkCanvas small_canvas(raw_data_small);
-      small_canvas.drawBitmap(raw_data, 0, 0);
+      small_canvas.drawImage(raw_data.asImage(), 0, 0);
       raw_data_small.setImmutable();
     }
   }
@@ -1021,7 +1027,7 @@ std::pair<SkBitmap, float> ThumbnailCache::CreateApproximation(
   dst_bitmap.eraseColor(0);
   SkCanvas canvas(dst_bitmap);
   canvas.scale(new_scale, new_scale);
-  canvas.drawBitmap(bitmap, 0, 0, nullptr);
+  canvas.drawImage(bitmap.asImage(), 0, 0);
   dst_bitmap.setImmutable();
 
   return std::make_pair(dst_bitmap, new_scale * scale);

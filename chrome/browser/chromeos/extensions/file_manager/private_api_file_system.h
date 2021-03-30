@@ -19,6 +19,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/extensions/file_manager/file_stream_string_converter.h"
+#include "chrome/browser/chromeos/extensions/file_manager/files_extension_function.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_base.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "components/drive/file_errors.h"
@@ -72,7 +73,7 @@ class FileManagerPrivateEnableExternalFileSchemeFunction
 
 // Grants R/W permissions to profile-specific directories (Drive, Downloads)
 // from other profiles.
-class FileManagerPrivateGrantAccessFunction : public ExtensionFunction {
+class FileManagerPrivateGrantAccessFunction : public FilesExtensionFunction {
  public:
   FileManagerPrivateGrantAccessFunction();
 
@@ -95,7 +96,7 @@ class FileManagerPrivateGrantAccessFunction : public ExtensionFunction {
 // directories.
 class FileWatchFunctionBase : public LoggedExtensionFunction {
  public:
-  using ResponseCallback = base::Callback<void(bool success)>;
+  using ResponseCallback = base::OnceCallback<void(bool success)>;
 
   // Calls Respond() with |success| converted to base::Value.
   void RespondWith(bool success);
@@ -186,12 +187,12 @@ class FileManagerPrivateGetSizeStatsFunction : public LoggedExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void OnGetDriveAvailableSpace(drive::FileError error,
-                                int64_t bytes_total,
-                                int64_t bytes_used);
-
   void OnGetMtpAvailableSpace(device::mojom::MtpStorageInfoPtr mtp_storage_info,
                               const bool error);
+
+  void OnGetDocumentsProviderAvailableSpace(const bool error,
+                                            const uint64_t available_bytes,
+                                            const uint64_t capacity_bytes);
 
   void OnGetSizeStats(const uint64_t* total_size,
                       const uint64_t* remaining_size);

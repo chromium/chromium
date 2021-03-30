@@ -21,6 +21,7 @@
 #include "components/viz/common/quads/largest_draw_quad.h"
 #include "components/viz/common/quads/quad_list.h"
 #include "components/viz/common/quads/render_pass_internal.h"
+#include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/common/viz_common_export.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/rect.h"
@@ -67,6 +68,7 @@ class VIZ_COMMON_EXPORT CompositorRenderPass : public RenderPassInternal {
               const cc::FilterOperations& filters,
               const cc::FilterOperations& backdrop_filters,
               const base::Optional<gfx::RRectF>& backdrop_filter_bounds,
+              SubtreeCaptureId subtree_capture_id,
               bool has_transparent_background,
               bool cache_render_pass,
               bool has_damage_from_contributing_content,
@@ -84,6 +86,10 @@ class VIZ_COMMON_EXPORT CompositorRenderPass : public RenderPassInternal {
 
   // Uniquely identifies the render pass in the compositor's current frame.
   CompositorRenderPassId id;
+
+  // A unique ID that identifies a layer subtree which produces this render
+  // pass, so that it can be captured by a FrameSinkVideoCapturer.
+  SubtreeCaptureId subtree_capture_id;
 
   // For testing functions.
   // TODO(vmpstr): See if we can clean these up by moving the tests to use

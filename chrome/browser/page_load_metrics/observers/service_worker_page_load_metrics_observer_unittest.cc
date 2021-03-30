@@ -16,7 +16,6 @@
 namespace {
 
 const char kDefaultTestUrl[] = "https://google.com/";
-const char kInboxTestUrl[] = "https://inbox.google.com/test";
 const char kSearchTestUrl[] = "https://www.google.com/search?q=test";
 
 }  // namespace
@@ -65,20 +64,6 @@ class ServiceWorkerPageLoadMetricsObserverTest
 
     tester()->histogram_tester().ExpectTotalCount(
         internal::kHistogramServiceWorkerLargestContentfulPaint, 0);
-  }
-
-  void AssertNoInboxHistogramsLogged() {
-    tester()->histogram_tester().ExpectTotalCount(
-        internal::kHistogramServiceWorkerParseStartInbox, 0);
-    tester()->histogram_tester().ExpectTotalCount(
-        internal::kHistogramServiceWorkerFirstContentfulPaintInbox, 0);
-    tester()->histogram_tester().ExpectTotalCount(
-        internal::kHistogramServiceWorkerParseStartToFirstContentfulPaintInbox,
-        0);
-    tester()->histogram_tester().ExpectTotalCount(
-        internal::kHistogramServiceWorkerDomContentLoadedInbox, 0);
-    tester()->histogram_tester().ExpectTotalCount(
-        internal::kHistogramServiceWorkerLoadInbox, 0);
   }
 
   void AssertNoSearchHistogramsLogged() {
@@ -136,7 +121,6 @@ class ServiceWorkerPageLoadMetricsObserverTest
 
 TEST_F(ServiceWorkerPageLoadMetricsObserverTest, NoMetrics) {
   AssertNoServiceWorkerHistogramsLogged();
-  AssertNoInboxHistogramsLogged();
   AssertNoSearchHistogramsLogged();
   AssertNoSearchNoSWHistogramsLogged();
   EXPECT_EQ(0ul, tester()->test_ukm_recorder().entries_count());
@@ -150,7 +134,6 @@ TEST_F(ServiceWorkerPageLoadMetricsObserverTest, NoServiceWorker) {
   tester()->SimulateTimingUpdate(timing);
 
   AssertNoServiceWorkerHistogramsLogged();
-  AssertNoInboxHistogramsLogged();
   AssertNoSearchHistogramsLogged();
   AssertNoSearchNoSWHistogramsLogged();
   // Only a DocumentCreated entry and an Unload entry is logged for creation of
@@ -242,7 +225,6 @@ TEST_F(ServiceWorkerPageLoadMetricsObserverTest, WithServiceWorker) {
         entry, GURL(kDefaultTestUrl));
   }
 
-  AssertNoInboxHistogramsLogged();
   AssertNoSearchHistogramsLogged();
   AssertNoSearchNoSWHistogramsLogged();
 }
@@ -295,101 +277,6 @@ TEST_F(ServiceWorkerPageLoadMetricsObserverTest, WithServiceWorkerBackground) {
     tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(
         entry, GURL(kDefaultTestUrl));
   }
-
-  AssertNoInboxHistogramsLogged();
-  AssertNoSearchHistogramsLogged();
-  AssertNoSearchNoSWHistogramsLogged();
-}
-
-TEST_F(ServiceWorkerPageLoadMetricsObserverTest, InboxSite) {
-  page_load_metrics::mojom::PageLoadTiming timing;
-  InitializeTestPageLoadTiming(&timing);
-
-  NavigateAndCommit(GURL(kInboxTestUrl));
-  page_load_metrics::mojom::FrameMetadata metadata;
-  metadata.behavior_flags |=
-      blink::LoadingBehaviorFlag::kLoadingBehaviorServiceWorkerControlled;
-  tester()->SimulateTimingAndMetadataUpdate(timing, metadata);
-
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramServiceWorkerParseStart, 1);
-  tester()->histogram_tester().ExpectBucketCount(
-      internal::kHistogramServiceWorkerParseStart,
-      timing.parse_timing->parse_start.value().InMilliseconds(), 1);
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramServiceWorkerParseStartInbox, 1);
-  tester()->histogram_tester().ExpectBucketCount(
-      internal::kHistogramServiceWorkerParseStartInbox,
-      timing.parse_timing->parse_start.value().InMilliseconds(), 1);
-
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramServiceWorkerFirstPaint, 1);
-  tester()->histogram_tester().ExpectBucketCount(
-      internal::kHistogramServiceWorkerFirstPaint,
-      timing.paint_timing->first_paint.value().InMilliseconds(), 1);
-
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramServiceWorkerFirstContentfulPaint, 1);
-  tester()->histogram_tester().ExpectBucketCount(
-      internal::kHistogramServiceWorkerFirstContentfulPaint,
-      timing.paint_timing->first_contentful_paint.value().InMilliseconds(), 1);
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramServiceWorkerFirstContentfulPaintInbox, 1);
-  tester()->histogram_tester().ExpectBucketCount(
-      internal::kHistogramServiceWorkerFirstContentfulPaintInbox,
-      timing.paint_timing->first_contentful_paint.value().InMilliseconds(), 1);
-
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kBackgroundHistogramServiceWorkerFirstContentfulPaint, 0);
-
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramServiceWorkerParseStartToFirstContentfulPaint, 1);
-  tester()->histogram_tester().ExpectBucketCount(
-      internal::kHistogramServiceWorkerParseStartToFirstContentfulPaint,
-      (timing.paint_timing->first_contentful_paint.value() -
-       timing.parse_timing->parse_start.value())
-          .InMilliseconds(),
-      1);
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramServiceWorkerParseStartToFirstContentfulPaintInbox,
-      1);
-  tester()->histogram_tester().ExpectBucketCount(
-      internal::kHistogramServiceWorkerParseStartToFirstContentfulPaintInbox,
-      (timing.paint_timing->first_contentful_paint.value() -
-       timing.parse_timing->parse_start.value())
-          .InMilliseconds(),
-      1);
-
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramServiceWorkerDomContentLoaded, 1);
-  tester()->histogram_tester().ExpectBucketCount(
-      internal::kHistogramServiceWorkerDomContentLoaded,
-      timing.document_timing->dom_content_loaded_event_start.value()
-          .InMilliseconds(),
-      1);
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramServiceWorkerDomContentLoadedInbox, 1);
-  tester()->histogram_tester().ExpectBucketCount(
-      internal::kHistogramServiceWorkerDomContentLoadedInbox,
-      timing.document_timing->dom_content_loaded_event_start.value()
-          .InMilliseconds(),
-      1);
-
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramServiceWorkerLoad, 1);
-  tester()->histogram_tester().ExpectBucketCount(
-      internal::kHistogramServiceWorkerLoad,
-      timing.document_timing->load_event_start.value().InMilliseconds(), 1);
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramServiceWorkerLoadInbox, 1);
-  tester()->histogram_tester().ExpectBucketCount(
-      internal::kHistogramServiceWorkerLoadInbox,
-      timing.document_timing->load_event_start.value().InMilliseconds(), 1);
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramServiceWorkerParseStart, 1);
-  tester()->histogram_tester().ExpectBucketCount(
-      internal::kHistogramServiceWorkerParseStart,
-      timing.parse_timing->parse_start.value().InMilliseconds(), 1);
 
   AssertNoSearchHistogramsLogged();
   AssertNoSearchNoSWHistogramsLogged();
@@ -485,7 +372,6 @@ TEST_F(ServiceWorkerPageLoadMetricsObserverTest, SearchSite) {
       internal::kHistogramServiceWorkerParseStart,
       timing.parse_timing->parse_start.value().InMilliseconds(), 1);
 
-  AssertNoInboxHistogramsLogged();
   AssertNoSearchNoSWHistogramsLogged();
 }
 
@@ -528,7 +414,6 @@ TEST_F(ServiceWorkerPageLoadMetricsObserverTest, SearchNoSWSite) {
       timing.document_timing->load_event_start.value().InMilliseconds(), 1);
 
   AssertNoServiceWorkerHistogramsLogged();
-  AssertNoInboxHistogramsLogged();
   AssertNoSearchHistogramsLogged();
 }
 

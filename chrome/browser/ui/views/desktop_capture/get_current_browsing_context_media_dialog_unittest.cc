@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_manager.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/web_modal/test_web_contents_modal_dialog_host.h"
@@ -27,13 +28,18 @@
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/web_dialogs/web_dialog_web_contents_delegate.h"
 
+// All tests are flaky on Win10: https://crbug.com/1181150
+#if !defined(OS_WIN)
 namespace {
 #if defined(OS_MAC)
-constexpr ui::KeyboardCode kAcceptKey = ui::VKEY_SPACE;
+constexpr ui::KeyboardCode kDefaultKey = ui::VKEY_SPACE;
 #else
-constexpr ui::KeyboardCode kAcceptKey = ui::VKEY_RETURN;
+constexpr ui::KeyboardCode kDefaultKey = ui::VKEY_RETURN;
 #endif
 }  // namespace
+#endif
+
+enum AutoAction { kNone, kAutoAccept, kAutoReject };
 
 namespace views {
 
@@ -50,7 +56,8 @@ class GetCurrentBrowsingContextMediaDialogTest
  public:
   void CustomSetUp(bool request_audio,
                    bool approve_audio_by_default,
-                   bool is_closed_called) {
+                   bool is_closed_called = true,
+                   AutoAction auto_action = kNone) {
 #if defined(OS_MAC)
     // These tests create actual child Widgets, which normally have a closure
     // animation on Mac; inhibit it here to avoid the tests flakily hanging.
@@ -87,21 +94,29 @@ class GetCurrentBrowsingContextMediaDialogTest
     dialog_params.web_contents = web_contents_.get();
     dialog_params.context = GetContext();
     dialog_params.parent = parent_widget_->GetNativeWindow();
-    dialog_params.app_name = base::ASCIIToUTF16("OriginApp");
-    dialog_params.target_name = base::ASCIIToUTF16("TargetApp");
+    dialog_params.app_name = u"OriginApp";
+    dialog_params.target_name = u"TargetApp";
     dialog_params.request_audio = request_audio;
     dialog_params.approve_audio_by_default = approve_audio_by_default;
 
-    EXPECT_CALL(mock_dialog_observer_, OnDialogOpened());
-    if (is_closed_called) {
-      EXPECT_CALL(mock_dialog_observer_, OnDialogClosed());
+    EXPECT_CALL(mock_dialog_observer_, OnDialogOpened()).Times(1);
+    EXPECT_CALL(mock_dialog_observer_, OnDialogClosed())
+        .Times(is_closed_called ? 1 : 0);
+
+    if (auto_action == kAutoAccept) {
+      base::CommandLine::ForCurrentProcess()->AppendSwitch(
+          switches::kThisTabCaptureAutoAccept);
+    }
+    if (auto_action == kAutoReject) {
+      base::CommandLine::ForCurrentProcess()->AppendSwitch(
+          switches::kThisTabCaptureAutoReject);
     }
 
-    dialog_.Show(
+    dialog_ = std::make_unique<GetCurrentBrowsingContextMediaDialog>();
+    dialog_->Show(
         dialog_params, {},
         base::BindOnce(&GetCurrentBrowsingContextMediaDialogTest::OnDialogDone,
                        base::Unretained(this)));
-
     render_process_id_ = web_contents_->GetMainFrame()->GetProcess()->GetID();
     render_frame_id_ = web_contents_->GetMainFrame()->GetRoutingID();
   }
@@ -123,12 +138,12 @@ class GetCurrentBrowsingContextMediaDialogTest
     details.set_tap_count(2);
     ui::GestureEvent double_tap(/*x=*/10, /*y=*/10, /*flags=*/0,
                                 base::TimeTicks(), details);
-    dialog_.GetHostForTesting()->GetOkButton()->OnGestureEvent(&double_tap);
+    dialog_->GetHostForTesting()->GetOkButton()->OnGestureEvent(&double_tap);
   }
 
   void SimulateKeyPress(ui::KeyboardCode key) {
     ui::KeyEvent event(ui::ET_KEY_PRESSED, key, ui::EF_NONE);
-    dialog_.GetHostForTesting()->GetWidget()->OnKeyEvent(&event);
+    dialog_->GetHostForTesting()->GetWidget()->OnKeyEvent(&event);
   }
 
   void OnDialogDone(content::DesktopMediaID dialog_id) {
@@ -143,7 +158,7 @@ class GetCurrentBrowsingContextMediaDialogTest
   std::unique_ptr<content::WebContents> web_contents_;
   // dialog_ is responsible for creating the confirmation dialog and is
   // used to access the host for testing.
-  GetCurrentBrowsingContextMediaDialog dialog_;
+  std::unique_ptr<GetCurrentBrowsingContextMediaDialog> dialog_;
   MockDialogObserver mock_dialog_observer_;
   MockWebContentsDelegate web_delegate_;
   std::unique_ptr<web_modal::TestWebContentsModalDialogHost> dialog_host_;
@@ -152,44 +167,43 @@ class GetCurrentBrowsingContextMediaDialogTest
   base::RunLoop run_loop_;
 };
 
+// All tests are flaky on Win10: https://crbug.com/1181150
+#if !defined(OS_WIN)
 TEST_F(GetCurrentBrowsingContextMediaDialogTest, CancelButtonAlwaysEnabled) {
   CustomSetUp(/*request_audio=*/true, /*approve_audio_by_default=*/true,
               /*is_closed_called=*/false);
-  EXPECT_TRUE(dialog_.GetHostForTesting()->IsDialogButtonEnabled(
+  EXPECT_TRUE(dialog_->GetHostForTesting()->IsDialogButtonEnabled(
       ui::DIALOG_BUTTON_CANCEL));
 }
 
 TEST_F(GetCurrentBrowsingContextMediaDialogTest, ShareButtonAlwaysEnabled) {
   CustomSetUp(/*request_audio=*/true, /*approve_audio_by_default=*/true,
               /*is_closed_called=*/false);
-  EXPECT_TRUE(
-      dialog_.GetHostForTesting()->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  EXPECT_TRUE(dialog_->GetHostForTesting()->IsDialogButtonEnabled(
+      ui::DIALOG_BUTTON_OK));
 }
 
 TEST_F(GetCurrentBrowsingContextMediaDialogTest, DefaultAudioSelection) {
-  CustomSetUp(/*request_audio=*/true, /*approve_audio_by_default=*/true,
-              /*is_closed_called=*/true);
+  CustomSetUp(/*request_audio=*/true, /*approve_audio_by_default=*/true);
   content::DesktopMediaID kResultId(
       content::DesktopMediaID::TYPE_WEB_CONTENTS, 0,
       content::WebContentsMediaCaptureId(render_process_id_, render_frame_id_));
   kResultId.audio_share = true;
-  dialog_.GetHostForTesting()->AcceptDialog();
+  dialog_->GetHostForTesting()->AcceptDialog();
   EXPECT_EQ(kResultId, WaitForDialogDone());
 }
 
 TEST_F(GetCurrentBrowsingContextMediaDialogTest,
        DoneCallbackCalledWhenWindowClosed) {
-  CustomSetUp(/*request_audio=*/true, /*approve_audio_by_default=*/true,
-              /*is_closed_called=*/true);
-  dialog_.GetHostForTesting()->Close();
+  CustomSetUp(/*request_audio=*/true, /*approve_audio_by_default=*/true);
+  dialog_->GetHostForTesting()->Close();
   EXPECT_EQ(content::DesktopMediaID(), WaitForDialogDone());
 }
 
 TEST_F(GetCurrentBrowsingContextMediaDialogTest,
        DoneCallbackCalledWhenWindowClosedWithoutCheckboxTicked) {
-  CustomSetUp(/*request_audio=*/true, /*approve_audio_by_default=*/false,
-              /*is_closed_called=*/true);
-  dialog_.GetHostForTesting()->Close();
+  CustomSetUp(/*request_audio=*/true, /*approve_audio_by_default=*/false);
+  dialog_->GetHostForTesting()->Close();
   EXPECT_EQ(content::DesktopMediaID(), WaitForDialogDone());
 }
 
@@ -197,25 +211,23 @@ TEST_F(GetCurrentBrowsingContextMediaDialogTest,
 // is checked.
 TEST_F(GetCurrentBrowsingContextMediaDialogTest,
        DoneCallbackCalledWithAudioShare) {
-  CustomSetUp(/*request_audio=*/true, /*approve_audio_by_default=*/true,
-              /*is_closed_called=*/true);
+  CustomSetUp(/*request_audio=*/true, /*approve_audio_by_default=*/true);
   content::DesktopMediaID kResultId(
       content::DesktopMediaID::TYPE_WEB_CONTENTS, 0,
       content::WebContentsMediaCaptureId(render_process_id_, render_frame_id_));
   kResultId.audio_share = true;
-  dialog_.GetHostForTesting()->AcceptDialog();
+  dialog_->GetHostForTesting()->AcceptDialog();
   EXPECT_EQ(kResultId, WaitForDialogDone());
 }
 
 // Verifies that audio share information is recorded if there is no checkbox.
 TEST_F(GetCurrentBrowsingContextMediaDialogTest,
        DoneCallbackCalledWithNoAudioShare) {
-  CustomSetUp(/*request_audio=*/false, /*approve_audio_by_default=*/true,
-              /*is_closed_called=*/true);
+  CustomSetUp(/*request_audio=*/false, /*approve_audio_by_default=*/true);
   content::DesktopMediaID kResultId(
       content::DesktopMediaID::TYPE_WEB_CONTENTS, 0,
       content::WebContentsMediaCaptureId(render_process_id_, render_frame_id_));
-  dialog_.GetHostForTesting()->AcceptDialog();
+  dialog_->GetHostForTesting()->AcceptDialog();
   EXPECT_EQ(kResultId, WaitForDialogDone());
 }
 
@@ -223,39 +235,35 @@ TEST_F(GetCurrentBrowsingContextMediaDialogTest,
 // is not checked.
 TEST_F(GetCurrentBrowsingContextMediaDialogTest,
        DoneCallbackCalledWithAudioShareFalse) {
-  CustomSetUp(/*request_audio=*/true, /*approve_audio_by_default=*/false,
-              /*is_closed_called=*/true);
+  CustomSetUp(/*request_audio=*/true, /*approve_audio_by_default=*/false);
   content::DesktopMediaID kResultId(
       content::DesktopMediaID::TYPE_WEB_CONTENTS, 0,
       content::WebContentsMediaCaptureId(render_process_id_, render_frame_id_));
-  dialog_.GetHostForTesting()->AcceptDialog();
+  dialog_->GetHostForTesting()->AcceptDialog();
   EXPECT_EQ(kResultId, WaitForDialogDone());
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(GetCurrentBrowsingContextMediaDialogTest, PressingDefaultButtonCancels) {
-  CustomSetUp(/*request_audio=*/true, /*approve_audio_by_default=*/true,
-              /*is_closed_called=*/true);
-  SimulateKeyPress(kAcceptKey);
+  CustomSetUp(/*request_audio=*/true, /*approve_audio_by_default=*/true);
+  SimulateKeyPress(kDefaultKey);
   EXPECT_EQ(content::DesktopMediaID(), WaitForDialogDone());
 }
 #endif
 
 TEST_F(GetCurrentBrowsingContextMediaDialogTest, ShareButtonAccepts) {
-  CustomSetUp(/*request_audio=*/true, /*approve_audio_by_default=*/true,
-              /*is_closed_called=*/true);
+  CustomSetUp(/*request_audio=*/true, /*approve_audio_by_default=*/true);
   content::DesktopMediaID kResultId(
       content::DesktopMediaID::TYPE_WEB_CONTENTS, 0,
       content::WebContentsMediaCaptureId(render_process_id_, render_frame_id_));
   kResultId.audio_share = true;
-  dialog_.GetHostForTesting()->GetOkButton()->OnKeyPressed(
-      ui::KeyEvent(ui::ET_KEY_PRESSED, kAcceptKey, 0));
+  dialog_->GetHostForTesting()->GetOkButton()->OnKeyPressed(
+      ui::KeyEvent(ui::ET_KEY_PRESSED, kDefaultKey, 0));
   EXPECT_EQ(kResultId, WaitForDialogDone());
 }
 
 TEST_F(GetCurrentBrowsingContextMediaDialogTest, DoubleTapOnShare) {
-  CustomSetUp(/*request_audio=*/true, /*approve_audio_by_default=*/true,
-              /*is_closed_called=*/true);
+  CustomSetUp(/*request_audio=*/true, /*approve_audio_by_default=*/true);
   content::DesktopMediaID kResultId(
       content::DesktopMediaID::TYPE_WEB_CONTENTS, 0,
       content::WebContentsMediaCaptureId(render_process_id_, render_frame_id_));
@@ -264,12 +272,28 @@ TEST_F(GetCurrentBrowsingContextMediaDialogTest, DoubleTapOnShare) {
   EXPECT_EQ(kResultId, WaitForDialogDone());
 }
 
+TEST_F(GetCurrentBrowsingContextMediaDialogTest, AutoAcceptTabCapture) {
+  CustomSetUp(/*request_audio=*/true, /*approve_audio_by_default=*/true,
+              /*is_closed_called=*/true, /*auto_action=*/kAutoAccept);
+  content::DesktopMediaID kResultId(
+      content::DesktopMediaID::TYPE_WEB_CONTENTS, 0,
+      content::WebContentsMediaCaptureId(render_process_id_, render_frame_id_));
+  kResultId.audio_share = true;
+  EXPECT_EQ(kResultId, WaitForDialogDone());
+}
+
+TEST_F(GetCurrentBrowsingContextMediaDialogTest, AutoRejectTabCapture) {
+  CustomSetUp(/*request_audio=*/true, /*approve_audio_by_default=*/true,
+              /*is_closed_called=*/true, /*auto_action=*/kAutoReject);
+  EXPECT_EQ(content::DesktopMediaID(), WaitForDialogDone());
+}
+
 // Validates that the cancel button is initially focused and enabled.
 TEST_F(GetCurrentBrowsingContextMediaDialogTest, InitiallyFocusesCancel) {
   CustomSetUp(/*request_audio=*/true, /*approve_audio_by_default=*/true,
               /*is_closed_called=*/false);
-  EXPECT_EQ(dialog_.GetHostForTesting()->GetCancelButton(),
-            dialog_.GetHostForTesting()->GetInitiallyFocusedView());
+  EXPECT_EQ(dialog_->GetHostForTesting()->GetCancelButton(),
+            dialog_->GetHostForTesting()->GetInitiallyFocusedView());
 }
 
 // Validate that the title of the confirmation box shows the correct text.
@@ -277,9 +301,10 @@ TEST_F(GetCurrentBrowsingContextMediaDialogTest,
        ConfirmationBoxShowsCorrectTitle) {
   CustomSetUp(/*request_audio=*/true, /*approve_audio_by_default=*/true,
               /*is_closed_called=*/false);
-  EXPECT_EQ(dialog_.GetHostForTesting()->GetWindowTitle(),
+  EXPECT_EQ(dialog_->GetHostForTesting()->GetWindowTitle(),
             l10n_util::GetStringUTF16(
                 IDS_GET_CURRENT_BROWSING_CONTEXT_MEDIA_DIALOG_TITLE));
 }
+#endif
 
 }  // namespace views

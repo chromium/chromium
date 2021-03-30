@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_overlay_play_button_element.h"
 
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -15,6 +14,7 @@
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace {
 
@@ -99,11 +99,11 @@ bool MediaControlOverlayPlayButtonElement::KeepEventInNode(
   return MediaControlElementsHelper::IsUserInteractionEvent(event);
 }
 
-WebSize MediaControlOverlayPlayButtonElement::GetSizeOrDefault() const {
+gfx::Size MediaControlOverlayPlayButtonElement::GetSizeOrDefault() const {
   // The size should come from the internal button which actually displays the
   // button.
   return MediaControlElementsHelper::GetSizeOrDefault(
-      *internal_button_, WebSize(kInnerButtonSize, kInnerButtonSize));
+      *internal_button_, gfx::Size(kInnerButtonSize, kInnerButtonSize));
 }
 
 void MediaControlOverlayPlayButtonElement::SetIsDisplayed(bool displayed) {

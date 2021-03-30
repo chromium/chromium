@@ -52,6 +52,7 @@ void NewEmptyWindow(Profile* profile);
 
 // Opens a new window with the default blank tab. This bypasses metrics and
 // various internal bookkeeping; NewEmptyWindow (above) is preferred.
+// Returns nullptr if browser creation is not possible.
 Browser* OpenEmptyWindow(Profile* profile);
 
 // Opens a new window with the tabs from |profile|'s TabRestoreService.
@@ -79,6 +80,7 @@ void NewWindow(Browser* browser);
 void NewIncognitoWindow(Profile* profile);
 void CloseWindow(Browser* browser);
 void NewTab(Browser* browser);
+void NewTabToRight(Browser* browser);
 void CloseTab(Browser* browser);
 bool CanZoomIn(content::WebContents* contents);
 bool CanZoomOut(content::WebContents* contents);
@@ -143,12 +145,14 @@ void BookmarkAllTabs(Browser* browser);
 bool CanBookmarkAllTabs(const Browser* browser);
 bool CanMoveActiveTabToReadLater(Browser* browser);
 bool MoveCurrentTabToReadLater(Browser* browser);
+bool MoveTabToReadLater(Browser* browser, content::WebContents* web_contents);
 bool MarkCurrentTabAsReadInReadLater(Browser* browser);
 bool IsCurrentTabUnreadInReadLater(Browser* browser);
+void MaybeShowBookmarkBarForReadLater(Browser* browser);
+void ShowOffersAndRewardsForPage(Browser* browser);
 void SaveCreditCard(Browser* browser);
 void MigrateLocalCards(Browser* browser);
-void MaybeShowSaveLocalCardSignInPromo(Browser* browser);
-void CloseSaveLocalCardSignInPromo(Browser* browser);
+void SaveAutofillAddress(Browser* browser);
 void Translate(Browser* browser);
 void ManagePasswordsForPage(Browser* browser);
 void SendTabToSelfFromPageAction(Browser* browser);
@@ -218,6 +222,7 @@ bool CanToggleCaretBrowsing(Browser* browser);
 void ToggleCaretBrowsing(Browser* browser);
 void PromptToNameWindow(Browser* browser);
 void ToggleCommander(Browser* browser);
+void ExecuteUIDebugCommand(int id, const Browser* browser);
 
 base::Optional<int> GetKeyboardFocusedTabIndex(const Browser* browser);
 

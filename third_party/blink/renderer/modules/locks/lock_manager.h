@@ -82,12 +82,8 @@ class LockManager final : public ScriptWrappable,
   HeapHashSet<Member<LockRequestImpl>> pending_requests_;
   HeapHashSet<Member<Lock>> held_locks_;
 
-  HeapMojoRemote<mojom::blink::LockManager,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      service_;
-  HeapMojoRemote<mojom::blink::FeatureObserver,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      observer_;
+  HeapMojoRemote<mojom::blink::LockManager> service_;
+  HeapMojoRemote<mojom::blink::FeatureObserver> observer_;
 
   base::Optional<bool> cached_allowed_;
 

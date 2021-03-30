@@ -9,6 +9,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -18,6 +19,10 @@ class DiceTabHelperTest : public ChromeRenderViewHostTestHarness {
  public:
   DiceTabHelperTest() {
     signin_url_ = GaiaUrls::GetInstance()->signin_chrome_sync_dice();
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kBackForwardCache, {}},
+         {features::kBackForwardCacheMemoryControls, {}}},
+        {});
   }
 
   // Does a navigation to Gaia and initializes the tab helper.
@@ -38,6 +43,7 @@ class DiceTabHelperTest : public ChromeRenderViewHostTestHarness {
   }
 
   GURL signin_url_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests DiceTabHelper intialization.
@@ -104,6 +110,16 @@ TEST_F(DiceTabHelperTest, SigninPageStatus) {
   simulator->Start();
   EXPECT_FALSE(dice_tab_helper->IsChromeSigninPage());
   simulator->Commit();
+  EXPECT_FALSE(dice_tab_helper->IsChromeSigninPage());
+
+  // Go Back to the signin page
+  content::NavigationSimulator::GoBack(web_contents());
+  // IsChromeSigninPage() returns false after navigating away from the
+  // signin page.
+  EXPECT_FALSE(dice_tab_helper->IsChromeSigninPage());
+
+  // Navigate away from the signin page
+  content::NavigationSimulator::GoForward(web_contents());
   EXPECT_FALSE(dice_tab_helper->IsChromeSigninPage());
 }
 

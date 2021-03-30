@@ -380,12 +380,12 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
   const Member<SelectionController> selection_controller_;
 
   // TODO(lanwei): Remove the below timers for updating hover and cursor.
-  TaskRunnerTimer<EventHandler> hover_timer_;
+  HeapTaskRunnerTimer<EventHandler> hover_timer_;
 
   // TODO(rbyers): Mouse cursor update is page-wide, not per-frame.  Page-wide
   // state should move out of EventHandler to a new PageEventHandler class.
   // crbug.com/449649
-  TaskRunnerTimer<EventHandler> cursor_update_timer_;
+  HeapTaskRunnerTimer<EventHandler> cursor_update_timer_;
 
   Member<Element> capturing_mouse_events_element_;
   // |capturing_subframe_element_| has similar functionality as
@@ -416,7 +416,7 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
 
   double max_mouse_moved_duration_;
 
-  TaskRunnerTimer<EventHandler> active_interval_timer_;
+  HeapTaskRunnerTimer<EventHandler> active_interval_timer_;
 
   // last_show_press_timestamp_ prevents the active state rewrited by
   // following events too soon (less than 0.15s). It is ok we only record

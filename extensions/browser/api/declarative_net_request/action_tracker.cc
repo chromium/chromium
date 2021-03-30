@@ -182,7 +182,8 @@ void ActionTracker::OnRuleMatched(const RequestAction& request_action,
                                                 false /* clear_badge_text */);
 }
 
-void ActionTracker::OnPreferenceEnabled(const ExtensionId& extension_id) const {
+void ActionTracker::OnActionCountAsBadgeTextPreferenceEnabled(
+    const ExtensionId& extension_id) const {
   DCHECK(extension_prefs_->GetDNRUseActionCountAsBadgeText(extension_id));
 
   for (auto it = rules_tracked_.begin(); it != rules_tracked_.end(); ++it) {

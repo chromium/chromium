@@ -5,9 +5,9 @@
 #include "components/enterprise/browser/reporting/report_generator.h"
 
 #include <set>
+#include <string>
 
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -173,7 +173,7 @@ class ReportGeneratorTest : public ::testing::Test,
         case kIdle:
           profile_manager_.profile_attributes_storage()->AddProfile(
               profile_manager()->profiles_dir().AppendASCII(profile_name),
-              base::ASCIIToUTF16(profile_name), std::string(), base::string16(),
+              base::ASCIIToUTF16(profile_name), std::string(), std::u16string(),
               false, 0, std::string(), EmptyAccountId());
           break;
         case kActive:

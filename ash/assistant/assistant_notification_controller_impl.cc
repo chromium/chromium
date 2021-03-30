@@ -15,7 +15,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/services/assistant/public/cpp/assistant_notification.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -35,9 +35,9 @@ constexpr char kNotifierId[] = "assistant";
 std::unique_ptr<message_center::Notification> CreateSystemNotification(
     const message_center::NotifierId& notifier_id,
     const chromeos::assistant::AssistantNotification& notification) {
-  const base::string16 title = base::UTF8ToUTF16(notification.title);
-  const base::string16 message = base::UTF8ToUTF16(notification.message);
-  const base::string16 display_source =
+  const std::u16string title = base::UTF8ToUTF16(notification.title);
+  const std::u16string message = base::UTF8ToUTF16(notification.message);
+  const std::u16string display_source =
       l10n_util::GetStringUTF16(IDS_ASH_ASSISTANT_NOTIFICATION_DISPLAY_SOURCE);
 
   message_center::RichNotificationData data;
@@ -97,20 +97,31 @@ AssistantNotificationControllerImpl::~AssistantNotificationControllerImpl() {
 
 void AssistantNotificationControllerImpl::SetAssistant(
     chromeos::assistant::Assistant* assistant) {
+  receiver_.reset();
+
   assistant_ = assistant;
+
+  if (assistant)
+    receiver_.Bind(assistant_->GetPendingNotificationDelegate());
 }
 
 // AssistantNotificationController --------------------------------------
-
-void AssistantNotificationControllerImpl::AddOrUpdateNotification(
-    AssistantNotification&& notification) {
-  model_.AddOrUpdateNotification(std::move(notification));
-}
 
 void AssistantNotificationControllerImpl::RemoveNotificationById(
     const std::string& id,
     bool from_server) {
   model_.RemoveNotificationById(id, from_server);
+}
+
+void AssistantNotificationControllerImpl::SetQuietMode(bool enabled) {
+  message_center::MessageCenter::Get()->SetQuietMode(enabled);
+}
+
+// NotificationDelegate ------------------------------------------------------
+
+void AssistantNotificationControllerImpl::AddOrUpdateNotification(
+    AssistantNotification notification) {
+  model_.AddOrUpdateNotification(std::move(notification));
 }
 
 void AssistantNotificationControllerImpl::RemoveNotificationByGroupingKey(
@@ -122,10 +133,6 @@ void AssistantNotificationControllerImpl::RemoveNotificationByGroupingKey(
 void AssistantNotificationControllerImpl::RemoveAllNotifications(
     bool from_server) {
   model_.RemoveAllNotifications(from_server);
-}
-
-void AssistantNotificationControllerImpl::SetQuietMode(bool enabled) {
-  message_center::MessageCenter::Get()->SetQuietMode(enabled);
 }
 
 // AssistantNotificationModelObserver ------------------------------------------
@@ -174,7 +181,7 @@ void AssistantNotificationControllerImpl::OnAllNotificationsRemoved(
 void AssistantNotificationControllerImpl::OnNotificationClicked(
     const std::string& id,
     const base::Optional<int>& button_index,
-    const base::Optional<base::string16>& reply) {
+    const base::Optional<std::u16string>& reply) {
   const AssistantNotification* notification = model_.GetNotificationById(id);
   if (!notification)
     return;

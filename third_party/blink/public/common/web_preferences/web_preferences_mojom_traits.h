@@ -17,37 +17,37 @@ namespace mojo {
 template <>
 struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
                                         blink::web_pref::WebPreferences> {
-  static const std::map<std::string, base::string16>& standard_font_family_map(
+  static const std::map<std::string, std::u16string>& standard_font_family_map(
       const blink::web_pref::WebPreferences& r) {
     return r.standard_font_family_map;
   }
 
-  static const std::map<std::string, base::string16>& fixed_font_family_map(
+  static const std::map<std::string, std::u16string>& fixed_font_family_map(
       const blink::web_pref::WebPreferences& r) {
     return r.fixed_font_family_map;
   }
 
-  static const std::map<std::string, base::string16>& serif_font_family_map(
+  static const std::map<std::string, std::u16string>& serif_font_family_map(
       const blink::web_pref::WebPreferences& r) {
     return r.serif_font_family_map;
   }
 
-  static const std::map<std::string, base::string16>&
+  static const std::map<std::string, std::u16string>&
   sans_serif_font_family_map(const blink::web_pref::WebPreferences& r) {
     return r.sans_serif_font_family_map;
   }
 
-  static const std::map<std::string, base::string16>& cursive_font_family_map(
+  static const std::map<std::string, std::u16string>& cursive_font_family_map(
       const blink::web_pref::WebPreferences& r) {
     return r.cursive_font_family_map;
   }
 
-  static const std::map<std::string, base::string16>& fantasy_font_family_map(
+  static const std::map<std::string, std::u16string>& fantasy_font_family_map(
       const blink::web_pref::WebPreferences& r) {
     return r.fantasy_font_family_map;
   }
 
-  static const std::map<std::string, base::string16>&
+  static const std::map<std::string, std::u16string>&
   pictograph_font_family_map(const blink::web_pref::WebPreferences& r) {
     return r.pictograph_font_family_map;
   }
@@ -358,6 +358,16 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
   static bool sync_xhr_in_documents_enabled(
       const blink::web_pref::WebPreferences& r) {
     return r.sync_xhr_in_documents_enabled;
+  }
+
+  static bool target_blank_implies_no_opener_enabled_will_be_removed(
+      const blink::web_pref::WebPreferences& r) {
+    return r.target_blank_implies_no_opener_enabled_will_be_removed;
+  }
+
+  static bool allow_non_empty_navigator_plugins(
+      const blink::web_pref::WebPreferences& r) {
+    return r.allow_non_empty_navigator_plugins;
   }
 
   static uint32_t number_of_cpu_cores(
@@ -750,6 +760,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
   static bool touch_drag_drop_enabled(
       const blink::web_pref::WebPreferences& r) {
     return r.touch_drag_drop_enabled;
+  }
+
+  static bool webxr_immersive_ar_allowed(
+      const blink::web_pref::WebPreferences& r) {
+    return r.webxr_immersive_ar_allowed;
   }
 
   static bool Read(blink::mojom::WebPreferencesDataView r,

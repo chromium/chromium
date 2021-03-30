@@ -4,7 +4,7 @@
 
 #include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
 
-#include "chromeos/constants/chromeos_features.h"
+#include "ash/constants/ash_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
@@ -26,6 +26,7 @@ const char kPhoneHubNotificationsAllowedPrefName[] =
 const char kPhoneHubTaskContinuationAllowedPrefName[] =
     "phone_hub_task_continuation.allowed";
 const char kWifiSyncAllowedPrefName[] = "wifi_sync.allowed";
+const char kEcheAllowedPrefName[] = "eche.allowed";
 
 // "Enabled by user" preferences:
 const char kBetterTogetherSuiteEnabledPrefName[] =
@@ -39,6 +40,7 @@ const char kPhoneHubNotificationsEnabledPrefName[] =
     "phone_hub_notifications.enabled";
 const char kPhoneHubTaskContinuationEnabledPrefName[] =
     "phone_hub_task_continuation.enabled";
+const char kEcheEnabledPrefName[] = "eche.enabled";
 
 void RegisterFeaturePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kInstantTetheringAllowedPrefName, true);
@@ -49,17 +51,23 @@ void RegisterFeaturePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kPhoneHubNotificationsAllowedPrefName, true);
   registry->RegisterBooleanPref(kPhoneHubTaskContinuationAllowedPrefName, true);
   registry->RegisterBooleanPref(kWifiSyncAllowedPrefName, true);
+  registry->RegisterBooleanPref(kEcheAllowedPrefName, true);
 
   registry->RegisterBooleanPref(kBetterTogetherSuiteEnabledPrefName, true);
   registry->RegisterBooleanPref(kInstantTetheringEnabledPrefName, true);
   registry->RegisterBooleanPref(kMessagesEnabledPrefName, true);
   registry->RegisterBooleanPref(kSmartLockEnabledDeprecatedPrefName, true);
   registry->RegisterBooleanPref(kSmartLockEnabledPrefName, true);
+  registry->RegisterBooleanPref(kEcheEnabledPrefName, true);
 
   // This pref should be disabled for existing Better Together users;
   // they must go to settings to explicitly enable PhoneHub.
   registry->RegisterBooleanPref(kPhoneHubEnabledPrefName, false);
-  registry->RegisterBooleanPref(kPhoneHubNotificationsEnabledPrefName, true);
+
+  // This pref is disabled by default; it should not be enabled until access is
+  // granted from the phone.
+  registry->RegisterBooleanPref(kPhoneHubNotificationsEnabledPrefName, false);
+
   registry->RegisterBooleanPref(kPhoneHubTaskContinuationEnabledPrefName, true);
 }
 
@@ -78,7 +86,7 @@ bool IsFeatureAllowed(mojom::Feature feature, const PrefService* pref_service) {
       static const mojom::Feature kTopLevelFeaturesInSuite[] = {
           mojom::Feature::kInstantTethering, mojom::Feature::kMessages,
           mojom::Feature::kPhoneHub,         mojom::Feature::kSmartLock,
-          mojom::Feature::kWifiSync,
+          mojom::Feature::kWifiSync,         mojom::Feature::kEche,
       };
       for (mojom::Feature feature : kTopLevelFeaturesInSuite) {
         if (IsFeatureAllowed(feature, pref_service))
@@ -113,9 +121,47 @@ bool IsFeatureAllowed(mojom::Feature feature, const PrefService* pref_service) {
       return features::IsWifiSyncAndroidEnabled() &&
              pref_service->GetBoolean(kWifiSyncAllowedPrefName);
 
+    case mojom::Feature::kEche:
+      return features::IsEcheSWAEnabled() &&
+             pref_service->GetBoolean(kEcheAllowedPrefName);
+
     default:
       NOTREACHED();
       return false;
+  }
+}
+
+bool IsDefaultFeatureEnabledValue(mojom::Feature feature,
+                                  const PrefService* pref_service) {
+  switch (feature) {
+    case mojom::Feature::kBetterTogetherSuite:
+      return pref_service->FindPreference(kBetterTogetherSuiteEnabledPrefName)
+          ->IsDefaultValue();
+    case mojom::Feature::kInstantTethering:
+      return pref_service->FindPreference(kInstantTetheringEnabledPrefName)
+          ->IsDefaultValue();
+    case mojom::Feature::kMessages:
+      return pref_service->FindPreference(kMessagesEnabledPrefName)
+          ->IsDefaultValue();
+    case mojom::Feature::kSmartLock:
+      return pref_service->FindPreference(kSmartLockEnabledPrefName)
+          ->IsDefaultValue();
+    case mojom::Feature::kPhoneHub:
+      return pref_service->FindPreference(kPhoneHubEnabledPrefName)
+          ->IsDefaultValue();
+    case mojom::Feature::kPhoneHubNotifications:
+      return pref_service->FindPreference(kPhoneHubNotificationsEnabledPrefName)
+          ->IsDefaultValue();
+    case mojom::Feature::kPhoneHubTaskContinuation:
+      return pref_service
+          ->FindPreference(kPhoneHubTaskContinuationEnabledPrefName)
+          ->IsDefaultValue();
+    case mojom::Feature::kWifiSync:
+      NOTREACHED();
+      return false;
+    case mojom::Feature::kEche:
+      return pref_service->FindPreference(kEcheEnabledPrefName)
+          ->IsDefaultValue();
   }
 }
 

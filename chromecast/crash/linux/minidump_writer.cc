@@ -34,22 +34,25 @@ int DumpState(const std::string& minidump_name) {
 MinidumpWriter::MinidumpWriter(MinidumpGenerator* minidump_generator,
                                const std::string& minidump_filename,
                                const MinidumpParams& params,
-                               DumpStateCallback dump_state_cb)
+                               DumpStateCallback dump_state_cb,
+                               const std::vector<Attachment>* attachments)
     : minidump_generator_(minidump_generator),
       minidump_path_(minidump_filename),
       params_(params),
+      attachments_(attachments),
       dump_state_cb_(std::move(dump_state_cb)) {}
 
 MinidumpWriter::MinidumpWriter(MinidumpGenerator* minidump_generator,
                                const std::string& minidump_filename,
-                               const MinidumpParams& params)
+                               const MinidumpParams& params,
+                               const std::vector<Attachment>* attachments)
     : MinidumpWriter(minidump_generator,
                      minidump_filename,
                      params,
-                     base::BindOnce(&DumpState)) {}
+                     base::BindOnce(&DumpState),
+                     attachments) {}
 
-MinidumpWriter::~MinidumpWriter() {
-}
+MinidumpWriter::~MinidumpWriter() {}
 
 bool MinidumpWriter::DoWork() {
   // If path is not absolute, append it to |dump_path_|.
@@ -76,10 +79,33 @@ bool MinidumpWriter::DoWork() {
     return false;
   }
 
+  // Add attachments to dumpinfo and copy the temporary attachments to the dump
+  // path.
+  std::unique_ptr<std::vector<std::string>> attachment_files;
+  if (attachments_) {
+    attachment_files = std::make_unique<std::vector<std::string>>();
+    for (auto& attachment : *attachments_) {
+      base::FilePath attachment_path(attachment.file_path);
+      if (attachment.is_static || dump_path_ == attachment_path.DirName()) {
+        attachment_files->push_back(attachment.file_path);
+        continue;
+      }
+
+      base::FilePath temporary_path =
+          dump_path_.Append(attachment_path.BaseName());
+      if (!base::CopyFile(attachment_path, temporary_path)) {
+        LOG(WARNING) << "Could not copy attachment " << attachment_path.value()
+                     << " to " << temporary_path.value();
+      } else {
+        attachment_files->push_back(temporary_path.value());
+      }
+    }
+  }
+
   // Add this entry to the lockfile.
   const DumpInfo info(minidump_path_.value(),
                       minidump_path_.value() + kDumpStateSuffix,
-                      base::Time::Now(), params_);
+                      base::Time::Now(), params_, attachment_files.get());
   if (!AddEntryToLockFile(info)) {
     LOG(ERROR) << "lockfile logging failed";
     return false;

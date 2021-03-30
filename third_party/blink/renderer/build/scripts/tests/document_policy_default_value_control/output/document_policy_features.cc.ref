@@ -1,0 +1,53 @@
+// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+
+#include "base/no_destructor.h"
+#include "base/feature_list.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/feature_policy/document_policy_features.h"
+#include "third_party/blink/public/common/feature_policy/policy_value.h"
+#include "third_party/blink/public/mojom/feature_policy/policy_value.mojom.h"
+#include "third_party/blink/public/mojom/feature_policy/document_policy_feature.mojom.h"
+
+
+namespace blink {
+
+const DocumentPolicyFeatureInfoMap& GetDocumentPolicyFeatureInfoMap() {
+  static const base::NoDestructor<DocumentPolicyFeatureInfoMap> feature_info_map([] {
+    DocumentPolicyFeatureInfoMap map({        {
+          mojom::DocumentPolicyFeature::kDefaultValueFeatureForTest,
+          {
+            "test-feature",
+            PolicyValue::CreateBool(true)
+          }
+        },        {
+          mojom::DocumentPolicyFeature::kDefault,
+          {
+            "*",
+            PolicyValue::CreateBool(true)
+          }
+        },    });        if (base::FeatureList::IsEnabled(features::kDocumentPolicyRuntimeFlag1ForTest)) {
+          map.find(mojom::DocumentPolicyFeature::kDefaultValueFeatureForTest)->second.default_value =
+            PolicyValue::CreateBool(false);
+        } else         if (base::FeatureList::IsEnabled(features::kDocumentPolicyRuntimeFlag2ForTest)) {
+          map.find(mojom::DocumentPolicyFeature::kDefaultValueFeatureForTest)->second.default_value =
+            PolicyValue::CreateBool(true);
+        }
+    return map;
+  }());
+  return *feature_info_map;
+}
+
+const DocumentPolicyNameFeatureMap& GetDocumentPolicyNameFeatureMap() {
+  static const base::NoDestructor<DocumentPolicyNameFeatureMap> name_feature_map([] {
+    DocumentPolicyNameFeatureMap map;
+    for (const auto& entry : GetDocumentPolicyFeatureInfoMap())
+      map.emplace(entry.second.feature_name, entry.first);
+    return map;
+  }());
+  return *name_feature_map;
+}
+
+} // namespace blink

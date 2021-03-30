@@ -23,16 +23,6 @@ class QuickAnswersNotice;
 namespace ash {
 class QuickAnswersUiController;
 
-enum class QuickAnswersVisibility {
-  // Quick Answers UI is hidden and the previous session has finished.
-  kClosed = 0,
-  // Quick Answers session is initializing and the UI will be shown when the
-  // context is ready.
-  kPending = 1,
-  // Quick Answers UI is visible.
-  kVisible = 2,
-};
-
 // Implementation of QuickAnswerController. It fetches quick answers
 // result via QuickAnswersClient and manages quick answers UI.
 class ASH_EXPORT QuickAnswersControllerImpl
@@ -66,6 +56,8 @@ class ASH_EXPORT QuickAnswersControllerImpl
   chromeos::quick_answers::QuickAnswersDelegate* GetQuickAnswersDelegate()
       override;
 
+  QuickAnswersVisibility GetVisibilityForTesting() const override;
+
   // QuickAnswersDelegate:
   void OnQuickAnswerReceived(
       std::unique_ptr<chromeos::quick_answers::QuickAnswer> answer) override;
@@ -96,8 +88,6 @@ class ASH_EXPORT QuickAnswersControllerImpl
     return quick_answers_ui_controller_.get();
   }
 
-  QuickAnswersVisibility visibility() const { return visibility_; }
-
   chromeos::quick_answers::QuickAnswersNotice* GetNoticeControllerForTesting() {
     return notice_controller_.get();
   }
@@ -115,8 +105,8 @@ class ASH_EXPORT QuickAnswersControllerImpl
   bool ShouldShowUserNotice() const;
   // Show the user notice view. Does nothing if the view is already
   // visible.
-  void ShowUserNotice(const base::string16& intent_type,
-                      const base::string16& intent_text);
+  void ShowUserNotice(const std::u16string& intent_type,
+                      const std::u16string& intent_text);
 
   chromeos::quick_answers::QuickAnswersRequest BuildRequest();
 

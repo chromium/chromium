@@ -2,14 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(__ANDROID__)
-// Post-L versions of bionic define the GNU-specific strerror_r if _GNU_SOURCE
-// is defined, but the symbol is renamed to __gnu_strerror_r which only exists
-// on those later versions. To preserve ABI compatibility with older versions,
-// undefine _GNU_SOURCE and use the POSIX version.
-#undef _GNU_SOURCE
-#endif
-
 #include "base/posix/safe_strerror.h"
 
 #include <errno.h>
@@ -21,6 +13,11 @@
 namespace base {
 
 #if defined(__GLIBC__) || defined(OS_NACL)
+#define USE_HISTORICAL_STRERRO_R 1
+// Post-L versions of bionic define the GNU-specific strerror_r if _GNU_SOURCE
+// is defined, but the symbol is renamed to __gnu_strerror_r which only exists
+// on those later versions. For parity, add the same condition as bionic.
+#elif defined(__BIONIC__) && defined(_GNU_SOURCE) && __ANDROID_API__ >= 23
 #define USE_HISTORICAL_STRERRO_R 1
 #else
 #define USE_HISTORICAL_STRERRO_R 0

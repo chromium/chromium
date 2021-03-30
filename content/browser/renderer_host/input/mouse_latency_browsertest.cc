@@ -76,11 +76,13 @@ namespace content {
 // the event could occur in either.
 class TracingRenderWidgetHost : public RenderWidgetHostImpl {
  public:
-  TracingRenderWidgetHost(RenderWidgetHostDelegate* delegate,
+  TracingRenderWidgetHost(FrameTree* frame_tree,
+                          RenderWidgetHostDelegate* delegate,
                           AgentSchedulingGroupHost& agent_scheduling_group,
                           int32_t routing_id,
                           bool hidden)
-      : RenderWidgetHostImpl(/*self_owned=*/false,
+      : RenderWidgetHostImpl(frame_tree,
+                             /*self_owned=*/false,
                              delegate,
                              agent_scheduling_group,
                              routing_id,
@@ -107,12 +109,13 @@ class TracingRenderWidgetHostFactory : public RenderWidgetHostFactory {
   }
 
   std::unique_ptr<RenderWidgetHostImpl> CreateRenderWidgetHost(
+      FrameTree* frame_tree,
       RenderWidgetHostDelegate* delegate,
       AgentSchedulingGroupHost& agent_scheduling_group,
       int32_t routing_id,
       bool hidden) override {
     return std::make_unique<TracingRenderWidgetHost>(
-        delegate, agent_scheduling_group, routing_id, hidden);
+        frame_tree, delegate, agent_scheduling_group, routing_id, hidden);
   }
 
  private:
@@ -125,8 +128,11 @@ class MouseLatencyBrowserTest : public ContentBrowserTest {
   ~MouseLatencyBrowserTest() override {}
 
   RenderWidgetHostImpl* GetWidgetHost() {
-    return RenderWidgetHostImpl::From(
-        shell()->web_contents()->GetRenderViewHost()->GetWidget());
+    return RenderWidgetHostImpl::From(shell()
+                                          ->web_contents()
+                                          ->GetMainFrame()
+                                          ->GetRenderViewHost()
+                                          ->GetWidget());
   }
 
   void OnSyntheticGestureCompleted(SyntheticGesture::Result result) {
@@ -154,7 +160,7 @@ class MouseLatencyBrowserTest : public ContentBrowserTest {
   // Generate mouse events for a synthetic click at |point|.
   void DoSyncClick(const gfx::PointF& position) {
     SyntheticTapGestureParams params;
-    params.gesture_source_type = SyntheticGestureParams::MOUSE_INPUT;
+    params.gesture_source_type = content::mojom::GestureSourceType::kMouseInput;
     params.position = position;
     params.duration_ms = 100;
     std::unique_ptr<SyntheticTapGesture> gesture(
@@ -197,7 +203,7 @@ class MouseLatencyBrowserTest : public ContentBrowserTest {
   void DoSyncCoalescedMouseWheel(const gfx::PointF position,
                                  const gfx::Vector2dF& delta) {
     SyntheticSmoothScrollGestureParams params;
-    params.gesture_source_type = SyntheticGestureParams::MOUSE_INPUT;
+    params.gesture_source_type = content::mojom::GestureSourceType::kMouseInput;
     params.anchor = position;
     params.distances.push_back(delta);
 

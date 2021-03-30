@@ -37,9 +37,6 @@ class CONTENT_EXPORT RenderThreadObserver {
   // Called when the renderer cache of the plugin list has changed.
   virtual void PluginListChanged() {}
 
-  // Called when the network state changes.
-  virtual void NetworkStateChanged(bool online) {}
-
  private:
   DISALLOW_COPY_AND_ASSIGN(RenderThreadObserver);
 };

@@ -7,8 +7,8 @@
     `Tests content is moved from cached resource to resource agent's data storage when cached resource is destroyed.\n`
   );
 
-  await TestRunner.loadModule('network_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('network');
 
   await TestRunner.evaluateInPagePromise(`

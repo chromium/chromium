@@ -12,6 +12,7 @@
 #include "content/common/content_export.h"
 
 namespace content {
+class BrowserContext;
 
 // Each StoragePartition is uniquely identified by which partition domain
 // it belongs to (such as an app or the browser itself), the user supplied
@@ -23,7 +24,9 @@ class CONTENT_EXPORT StoragePartitionConfig {
   StoragePartitionConfig(const StoragePartitionConfig&);
   StoragePartitionConfig& operator=(const StoragePartitionConfig&);
 
-  static StoragePartitionConfig CreateDefault();
+  // Creates a default config for |browser_context|. If |browser_context| is an
+  // off-the-record profile, then the config will have |in_memory_| set to true.
+  static StoragePartitionConfig CreateDefault(BrowserContext* browser_context);
 
   // Creates a config tied to a specific domain.
   // The |partition_domain| is [a-z]* UTF-8 string, specifying the domain in
@@ -31,8 +34,12 @@ class CONTENT_EXPORT StoragePartitionConfig {
   // be an empty string. Within a domain, partitions can be uniquely identified
   // by the combination of |partition_name| and |in_memory| values. When a
   // partition is not to be persisted, the |in_memory| value must be set to
-  // true.
-  static StoragePartitionConfig Create(const std::string& partition_domain,
+  // true. If |browser_context| is an off-the-record profile, then the config
+  // will have |in_memory_| set to true independent of what is specified in
+  // the |in_memory| parameter. This is because these profiles are not allowed
+  // to persist information on disk.
+  static StoragePartitionConfig Create(BrowserContext* browser_context,
+                                       const std::string& partition_domain,
                                        const std::string& partition_name,
                                        bool in_memory);
 
@@ -43,10 +50,6 @@ class CONTENT_EXPORT StoragePartitionConfig {
   // Returns true if this config was created by CreateDefault() or is
   // a copy of a config created with that method.
   bool is_default() const { return partition_domain_.empty(); }
-
-  // Returns a copy of this config that has the same partition_domain
-  // and partition_name, but the in_memeory field is always set to true.
-  StoragePartitionConfig CopyWithInMemorySet() const;
 
   // In some cases we want a "child" storage partition to resolve blob URLs that
   // were created by their "parent", while not allowing the reverse. To enable
@@ -91,6 +94,47 @@ class CONTENT_EXPORT StoragePartitionConfig {
   bool in_memory_ = false;
   FallbackMode fallback_to_partition_domain_for_blob_urls_ =
       FallbackMode::kNone;
+};
+
+CONTENT_EXPORT std::ostream& operator<<(std::ostream& out,
+                                        const StoragePartitionConfig& config);
+
+// Represents the storage partition ID that is used as the key for the
+// SessionStorageNamespaceMap. This type is to help facilitate migrating the
+// map key away from a string to a StoragePartitionConfig.
+class CONTENT_EXPORT StoragePartitionId {
+ public:
+  explicit StoragePartitionId(BrowserContext* browser_context);
+  StoragePartitionId(const std::string& partition_id,
+                     const StoragePartitionConfig& config);
+  StoragePartitionId(const StoragePartitionId&) = default;
+  StoragePartitionId& operator=(const StoragePartitionId&) = default;
+
+  const StoragePartitionConfig& config() const { return config_; }
+
+  bool operator==(const StoragePartitionId& rhs) const {
+    return id_ == rhs.id_;
+  }
+  bool operator!=(const StoragePartitionId& rhs) const {
+    return id_ != rhs.id_;
+  }
+  bool operator<(const StoragePartitionId& rhs) const { return id_ < rhs.id_; }
+
+  // String representation of this object for debug logging purposes.
+  std::string ToString() const;
+
+ private:
+  std::string id_;
+
+  // Config generated with the same information used to generate `id_`.
+  // Currently this field is being used to determine if we can replace the
+  // string representation with a StoragePartitionConfig. This field is
+  // intentionally left out of the comparison operators because we want equality
+  // and less-than to work the exact same way they did before this field was
+  // added. This field is only intended to be used by code in
+  // NavigationControllerImpl to establish whether it is safe to change the
+  // StoragePartitionId representation.
+  StoragePartitionConfig config_;
 };
 
 }  // namespace content

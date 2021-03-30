@@ -54,6 +54,7 @@ class ModulatorImplBase : public Modulator {
   }
 
   void FetchTree(const KURL&,
+                 ModuleType,
                  ResourceFetcher* fetch_client_settings_object_fetcher,
                  mojom::blink::RequestContextType context_type,
                  network::mojom::RequestDestination destination,
@@ -71,12 +72,12 @@ class ModulatorImplBase : public Modulator {
                    ModuleGraphLevel,
                    ModuleScriptCustomFetchType,
                    SingleModuleClient*) override;
-  ModuleScript* GetFetchedModuleScript(const KURL&) override;
+  ModuleScript* GetFetchedModuleScript(const KURL&, ModuleType) override;
   bool HasValidContext() override;
   KURL ResolveModuleSpecifier(const String& module_request,
                               const KURL& base_url,
                               String* failure_reason) final;
-  void ResolveDynamically(const String& specifier,
+  void ResolveDynamically(const ModuleRequest& module_request,
                           const KURL&,
                           const ReferrerScriptInfo&,
                           ScriptPromiseResolver*) override;
@@ -85,13 +86,19 @@ class ModulatorImplBase : public Modulator {
   ScriptValue CreateTypeError(const String& message) const override;
   ScriptValue CreateSyntaxError(const String& message) const override;
   void RegisterImportMap(const ImportMap*, ScriptValue error_to_rethrow) final;
-  bool IsAcquiringImportMaps() const final { return acquiring_import_maps_; }
-  void ClearIsAcquiringImportMaps() final { acquiring_import_maps_ = false; }
+  AcquiringImportMapsState GetAcquiringImportMapsState() const final {
+    return acquiring_import_maps_;
+  }
+  void SetAcquiringImportMapsState(AcquiringImportMapsState value) final {
+    acquiring_import_maps_ = value;
+  }
   ModuleImportMeta HostGetImportMetaProperties(
       v8::Local<v8::Module>) const override;
   ScriptValue InstantiateModule(v8::Local<v8::Module>, const KURL&) override;
   Vector<ModuleRequest> ModuleRequestsFromModuleRecord(
       v8::Local<v8::Module>) override;
+  ModuleType ModuleTypeFromRequest(
+      const ModuleRequest& module_request) const override;
 
   // Populates |reason| and returns true if the dynamic import is disallowed on
   // the associated execution context. In that case, a caller of this function
@@ -113,10 +120,11 @@ class ModulatorImplBase : public Modulator {
 
   Member<const ImportMap> import_map_;
 
-  // https://github.com/WICG/import-maps/blob/master/spec.md#when-import-maps-can-be-encountered
-  // Each realm (environment settings object) has a boolean, acquiring import
-  // maps. It is initially true. [spec text]
-  bool acquiring_import_maps_ = true;
+  // https://wicg.github.io/import-maps/#document-acquiring-import-maps
+  // Each Document has an acquiring import maps boolean. It is initially true.
+  // [spec text]
+  AcquiringImportMapsState acquiring_import_maps_ =
+      AcquiringImportMapsState::kAcquiring;
 };
 
 }  // namespace blink

@@ -1,0 +1,9 @@
+<html>
+<head></head>
+<body>This page has a different permissions policy header.
+<p>
+Note that we can't use use allow="geolocation" here, as this will redirect to a
+different origin, and we don't know the port which will be used.
+<iframe src="/cross-site/b.com/title2.html" allow="geolocation *"></iframe>
+</body>
+</html>

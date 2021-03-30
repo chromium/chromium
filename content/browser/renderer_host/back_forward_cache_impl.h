@@ -56,7 +56,7 @@ class CONTENT_EXPORT BackForwardCacheImpl : public BackForwardCache {
   static MessageHandlingPolicyWhenCached
   GetChannelAssociatedMessageHandlingPolicy();
 
-  struct Entry {
+  struct CONTENT_EXPORT Entry {
     using RenderFrameProxyHostMap =
         std::unordered_map<int32_t /* SiteInstance ID */,
                            std::unique_ptr<RenderFrameProxyHost>>;
@@ -93,7 +93,7 @@ class CONTENT_EXPORT BackForwardCacheImpl : public BackForwardCache {
     DISALLOW_COPY_AND_ASSIGN(Entry);
   };
 
-  BackForwardCacheImpl();
+  explicit BackForwardCacheImpl();
   ~BackForwardCacheImpl();
 
   // Returns whether a RenderFrameHost can be stored into the BackForwardCache
@@ -178,6 +178,14 @@ class CONTENT_EXPORT BackForwardCacheImpl : public BackForwardCache {
   // return true even when BackForwardCache is disabled for metrics purposes.
   bool IsAllowed(const GURL& current_url);
 
+  // This is a wrapper around the flag that indicates whether or not the
+  // feature usage should be checked only after receiving an ack from the
+  // renderer process to ensure that the features cleaned up in pagehide and
+  // other event handlers are acoounted for.
+  // TODO(crbug.com/1129331): Remove this when we implement the logic to
+  // consider cache size limit.
+  bool CheckFeatureUsageOnlyAfterAck();
+
   // Returns the task runner that should be used by the eviction timer.
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() {
     return task_runner_for_testing_ ? task_runner_for_testing_
@@ -198,11 +206,12 @@ class CONTENT_EXPORT BackForwardCacheImpl : public BackForwardCache {
   // Destroys all evicted frames in the BackForwardCache.
   void DestroyEvictedFrames();
 
-  // Helper for recursively checking each child. See CanStorePageNow() and
-  // CanPotentiallyStorePageLater().
-  void CheckDynamicStatesOnSubtree(
+  // Helper for recursively checking each child's usage of blocklisted features.
+  // See CanStorePageNow() and CanPotentiallyStorePageLater().
+  void CheckDynamicBlocklistedFeaturesOnSubtree(
       BackForwardCacheCanStoreDocumentResult* result,
       RenderFrameHostImpl* render_frame_host);
+
   void CanStoreRenderFrameHostLater(
       BackForwardCacheCanStoreDocumentResult* result,
       RenderFrameHostImpl* render_frame_host);
@@ -243,8 +252,9 @@ class CONTENT_EXPORT BackForwardCacheTestDelegate {
   BackForwardCacheTestDelegate();
   virtual ~BackForwardCacheTestDelegate();
 
-  virtual void OnDisabledForFrameWithReason(GlobalFrameRoutingId id,
-                                            base::StringPiece reason) = 0;
+  virtual void OnDisabledForFrameWithReason(
+      GlobalFrameRoutingId id,
+      BackForwardCache::DisabledReason reason) = 0;
 };
 
 }  // namespace content

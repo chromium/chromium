@@ -4,11 +4,12 @@
 
 #include "components/suggestions/webui/suggestions_source.h"
 
+#include <string>
+
 #include "base/barrier_closure.h"
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -56,7 +57,7 @@ std::string RenderOutputHtml(const std::string& base_url,
     const ChromeSuggestion& suggestion = profile.suggestions(i);
     base::TimeDelta remaining_time =
         base::TimeDelta::FromMicroseconds(suggestion.expiry_ts() - now);
-    base::string16 remaining_time_formatted = ui::TimeFormat::Detailed(
+    std::u16string remaining_time_formatted = ui::TimeFormat::Detailed(
         ui::TimeFormat::Format::FORMAT_DURATION,
         ui::TimeFormat::Length::LENGTH_LONG, -1, remaining_time);
     std::string line;

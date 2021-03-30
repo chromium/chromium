@@ -13,6 +13,7 @@
 #include "ipc/ipc_message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 
 namespace content {
 class ResourceContext;
@@ -48,7 +49,7 @@ class MojoSafeBrowsingImpl : public mojom::SafeBrowsing {
       const std::string& method,
       const net::HttpRequestHeaders& headers,
       int32_t load_flags,
-      blink::mojom::ResourceType resource_type,
+      network::mojom::RequestDestination request_destination,
       bool has_user_gesture,
       bool originated_from_service_worker,
       CreateCheckerAndCheckCallback callback) override;

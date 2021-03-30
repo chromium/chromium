@@ -19,6 +19,7 @@ std::unique_ptr<syncer::DeviceInfo> CreateFakeDeviceInfo(
       manufacturer_name, model_name, last_updated_timestamp,
       syncer::DeviceInfoUtil::GetPulseInterval(),
       /*send_tab_to_self_receiving_enabled=*/false, sharing_info,
+      /*paask_info=*/base::nullopt,
       /*fcm_registration_token=*/std::string(),
       /*interested_data_types=*/syncer::ModelTypeSet());
 }

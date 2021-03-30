@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/mobile_metrics/mobile_friendliness_checker.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/page/viewport_description.h"
 
 namespace blink {
 
@@ -105,7 +106,7 @@ void ViewportData::UpdateViewportDescription() {
   if (document_->GetFrame()->IsMainFrame()) {
     document_->GetPage()->GetChromeClient().DispatchViewportPropertiesDidChange(
         GetViewportDescription());
-    document_->View()->GetMobileFriendlinessChecker().NotifyViewportUpdated(
+    document_->View()->GetMobileFriendlinessChecker()->NotifyViewportUpdated(
         GetViewportDescription());
   }
 }

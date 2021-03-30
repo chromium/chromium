@@ -67,9 +67,8 @@ public class IphMessageService extends MessageService {
     public void addObserver(MessageObserver observer) {
         super.addObserver(observer);
         mTracker.addOnInitializedCallback(result -> {
-            assert mTracker.isInitialized();
-
             if (mTracker.wouldTriggerHelpUI(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE)) {
+                assert mTracker.isInitialized();
                 sendAvailabilityNotification(
                         new IphMessageData(this::review, (int messageType) -> dismiss()));
             }

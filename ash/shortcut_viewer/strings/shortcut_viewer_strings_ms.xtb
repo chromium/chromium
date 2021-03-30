@@ -23,11 +23,13 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Tambahkan www. dan .com pada input dalam bar alamat, kemudian buka halaman</translation>
+<translation id="1768987374400973299">Ambil tangkapan skrin/rakaman</translation>
 <translation id="1872219238824176091">Alih keluar meja semasa</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, kemudian <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> atau <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">Pergi ke tab seterusnya</translation>
 <translation id="2010818616644390445">Pergi ke tab terakhir dalam tetingkap</translation>
 <translation id="2040706009561734834">Buka/tutup pelancar</translation>
+<translation id="2086334242442703436">Buka Pemilih Emoji</translation>
 <translation id="2088054208777350526">Cari pintasan papan kekunci</translation>
 <translation id="2125211348069077981"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="E" /> atau <ph name="F" /></translation>
 <translation id="2145908266289632567">Suntingan Teks</translation>
@@ -46,6 +48,7 @@
 <translation id="2480851840841871861">Buka Google Assistant</translation>
 <translation id="2488661730534396940">Aktifkan meja di sebelah kiri</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516999188535378855">Buka Apl Diagnostics</translation>
 <translation id="2530339807289914946">Tatal ke bawah halaman web</translation>
 <translation id="2530896289327917474">Hidupkan atau matikan semak imbas karet</translation>
 <translation id="2574014812750545982">Tetapkan semula tahap zum pada halaman</translation>
@@ -110,6 +113,7 @@
 <translation id="4801989101741319327">Alihkan ke akhir perkataan seterusnya</translation>
 <translation id="4866066940972151697">Aktifkan meja di sebelah kanan</translation>
 <translation id="4916163929714267752">Buka pautan dalam tetingkap baharu</translation>
+<translation id="492453977506755176">Kekunci mod tangkap</translation>
 <translation id="5030659775136592441">Tunjukkan pengurus penanda halaman</translation>
 <translation id="5034421018520995080">Pergi ke bahagian atas halaman</translation>
 <translation id="5042305953558921026">Kekunci mod ikhtisar</translation>
@@ -132,6 +136,7 @@
 <translation id="5899919361772749550">Tunjukkan atau sembunyikan konsol Alat Pembangun</translation>
 <translation id="5919628958418675842">Hidupkan atau matikan skrin privasi</translation>
 <translation id="5921745308587794300">Putar tetingkap</translation>
+<translation id="5926306472221400972">Ambil tangkapan skrin bagi skrin penuh</translation>
 <translation id="6022924867608035986">Kosongkan teks kotak carian</translation>
 <translation id="6045998054441862242">Hidupkan mod kontras tinggi</translation>
 <translation id="6052614013050385269">Klik kanan pautan</translation>
@@ -149,6 +154,7 @@
 <translation id="6445033640292336367">Kembalikan tab ke kedudukan asal</translation>
 <translation id="6474744297082284761">Zum keluar (apabila didok ATAU pembesar skrin penuh didayakan)</translation>
 <translation id="649811797655257835">Pilih fail, kemudian tekan <ph name="SPACE" /></translation>
+<translation id="6551886416582667425">Ambil tangkapan skrin/rakaman separa</translation>
 <translation id="6556040137485212400">Buka tetingkap yang tidak digunakan untuk tempoh yang paling lama</translation>
 <translation id="666343722268997814">Buka menu klik kanan untuk item yang diserlahkan</translation>
 <translation id="6671538777808758331">Pergi ke padanan seterusnya untuk carian anda</translation>
@@ -175,6 +181,7 @@
 <translation id="7611271430932669992">Alihkan fokus ke tetingkap timbul dan dialog</translation>
 <translation id="7635348532214572995">Gerakkan ikon apl sekeliling grid apl</translation>
 <translation id="766326951329901120">Tampal kandungan dari papan keratan sebagai teks biasa</translation>
+<translation id="7673453620027697230">Ambil tangkapan skrin/rakaman tetingkap</translation>
 <translation id="7703010453515335249">tanda kurung kiri</translation>
 <translation id="7724603315864178912">Potong</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, kemudian <ph name="SPACE" /> atau <ph name="ENTER" /></translation>

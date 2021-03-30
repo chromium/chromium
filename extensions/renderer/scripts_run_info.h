@@ -13,6 +13,7 @@
 
 #include "base/macros.h"
 #include "base/timer/elapsed_timer.h"
+#include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
 
 namespace content {
@@ -27,7 +28,7 @@ struct ScriptsRunInfo {
   typedef std::map<std::string, std::set<std::string> > ExecutingScriptsMap;
 
   ScriptsRunInfo(content::RenderFrame* render_frame,
-                 UserScript::RunLocation location);
+                 mojom::RunLocation location);
   ~ScriptsRunInfo();
 
   // The number of CSS scripts injected.
@@ -47,7 +48,7 @@ struct ScriptsRunInfo {
   // true, this also informs the browser of the script run.
   void LogRun(bool send_script_activity);
 
-  static void LogLongInjectionTaskTime(UserScript::RunLocation run_location,
+  static void LogLongInjectionTaskTime(mojom::RunLocation run_location,
                                        const base::TimeDelta& elapsed);
 
  private:
@@ -57,7 +58,7 @@ struct ScriptsRunInfo {
   int routing_id_;
 
   // The run location at which injection is happening.
-  UserScript::RunLocation run_location_;
+  mojom::RunLocation run_location_;
 
   // The url of the frame, preserved for the same reason as the routing id.
   GURL frame_url_;

@@ -99,7 +99,7 @@ void SuggestionWindowView::Show(const SuggestionDetails& details) {
 
 void SuggestionWindowView::ShowMultipleCandidates(
     const chromeos::AssistiveWindowProperties& properties) {
-  const std::vector<base::string16>& candidates = properties.candidates;
+  const std::vector<std::u16string>& candidates = properties.candidates;
   ResizeCandidateArea(candidates.size());
   for (size_t i = 0; i < candidates.size(); ++i) {
     auto* const candidate =

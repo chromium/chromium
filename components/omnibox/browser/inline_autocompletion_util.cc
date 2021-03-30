@@ -4,8 +4,8 @@
 
 #include "inline_autocompletion_util.h"
 
-size_t FindAtWordbreak(const base::string16& text,
-                       const base::string16& search,
+size_t FindAtWordbreak(const std::u16string& text,
+                       const std::u16string& search,
                        size_t search_start) {
   std::vector<size_t> word_starts;
   String16VectorFromString16(text, false, &word_starts);
@@ -25,8 +25,8 @@ size_t FindAtWordbreak(const base::string16& text,
 }
 
 std::vector<std::pair<size_t, size_t>> FindWordsSequentiallyAtWordbreak(
-    const base::string16& text,
-    const base::string16& search) {
+    const std::u16string& text,
+    const std::u16string& search) {
   std::vector<std::pair<size_t, size_t>> occurrences;
   size_t cursor = 0u;
   std::vector<size_t> search_word_starts{};
@@ -40,7 +40,7 @@ std::vector<std::pair<size_t, size_t>> FindWordsSequentiallyAtWordbreak(
         search
             .substr(search_word_starts[i],
                     i == search_word_starts.size() - 1
-                        ? base::string16::npos
+                        ? std::u16string::npos
                         : search_word_starts[i + 1] - search_word_starts[i])
             .substr(search_word.size());
     if ((cursor = FindAtWordbreak(text, search_word, cursor)) ==

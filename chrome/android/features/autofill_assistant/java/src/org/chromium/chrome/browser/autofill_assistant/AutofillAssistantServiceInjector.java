@@ -17,7 +17,7 @@ public class AutofillAssistantServiceInjector {
         /**
          * Returns a pointer to a native service instance, or 0 if no service was created.
          */
-        long createNativeService();
+        long createNativeService(long nativeClientAndroid);
     }
 
     /**
@@ -65,12 +65,12 @@ public class AutofillAssistantServiceInjector {
      * <p>Please note: the caller must ensure to take ownership of the returned native pointer,
      * else it will leak!</p>
      */
-    public static long getServiceToInject() {
+    public static long getServiceToInject(long nativeClientAndroid) {
         if (sNativeServiceProvider == null) {
             return 0;
         }
 
-        return sNativeServiceProvider.createNativeService();
+        return sNativeServiceProvider.createNativeService(nativeClientAndroid);
     }
 
     /**

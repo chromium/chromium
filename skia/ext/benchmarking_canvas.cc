@@ -137,10 +137,9 @@ std::unique_ptr<base::Value> AsValue(SkCanvas::PointMode mode) {
 std::unique_ptr<base::Value> AsValue(const SkColorFilter& filter) {
   std::unique_ptr<base::DictionaryValue> val(new base::DictionaryValue());
 
-  if (unsigned flags = filter.getFlags()) {
+  if (filter.isAlphaUnchanged()) {
     FlagsBuilder builder('|');
-    builder.addFlag(flags & SkColorFilter::kAlphaUnchanged_Flag,
-                    "kAlphaUnchanged_Flag");
+    builder.addFlag(true, "kAlphaUnchanged_Flag");
 
     val->SetString("flags", builder.str());
   }
@@ -562,30 +561,34 @@ void BenchmarkingCanvas::onDrawPicture(const SkPicture* picture,
   INHERITED::onDrawPicture(picture, matrix, op.paint());
 }
 
-void BenchmarkingCanvas::onDrawImage(const SkImage* image,
-                                     SkScalar left,
-                                     SkScalar top,
-                                     const SkPaint* paint) {
+void BenchmarkingCanvas::onDrawImage2(const SkImage* image,
+                                      SkScalar left,
+                                      SkScalar top,
+                                      const SkSamplingOptions& sampling,
+                                      const SkPaint* paint) {
   DCHECK(image);
   AutoOp op(this, "DrawImage", paint);
   op.addParam("image", AsValue(*image));
   op.addParam("left", AsValue(left));
   op.addParam("top", AsValue(top));
 
-  INHERITED::onDrawImage(image, left, top, op.paint());
+  INHERITED::onDrawImage2(image, left, top, sampling, op.paint());
 }
 
-void BenchmarkingCanvas::onDrawImageRect(const SkImage* image, const SkRect* src,
-                                         const SkRect& dst, const SkPaint* paint,
-                                         SrcRectConstraint constraint) {
+void BenchmarkingCanvas::onDrawImageRect2(const SkImage* image,
+                                          const SkRect& src,
+                                          const SkRect& dst,
+                                          const SkSamplingOptions& sampling,
+                                          const SkPaint* paint,
+                                          SrcRectConstraint constraint) {
   DCHECK(image);
   AutoOp op(this, "DrawImageRect", paint);
   op.addParam("image", AsValue(*image));
-  if (src)
-    op.addParam("src", AsValue(*src));
+  op.addParam("src", AsValue(src));
   op.addParam("dst", AsValue(dst));
 
-  INHERITED::onDrawImageRect(image, src, dst, op.paint(), constraint);
+  INHERITED::onDrawImageRect2(image, src, dst, sampling, op.paint(),
+                              constraint);
 }
 
 void BenchmarkingCanvas::onDrawTextBlob(const SkTextBlob* blob, SkScalar x, SkScalar y,

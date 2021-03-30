@@ -16,11 +16,30 @@ SelectToSpeakMouseSelectionTest = class extends SelectToSpeakE2ETest {
     chrome.tts = this.mockTts;
   }
 
+  /** @override */
+  setUp() {
+    var runTest = this.deferRunTest(WhenTestDone.EXPECT);
+
+    window.EventType = chrome.automation.EventType;
+    window.SelectToSpeakState = chrome.accessibilityPrivate.SelectToSpeakState;
+
+    (async function() {
+      await importModule(
+          'selectToSpeak', '/select_to_speak/select_to_speak_main.js');
+      await importModule(
+          'SELECT_TO_SPEAK_TRAY_CLASS_NAME', '/select_to_speak/ui_manager.js');
+      await importModule(
+          'SelectToSpeakConstants',
+          '/select_to_speak/select_to_speak_constants.js');
+      runTest();
+    })();
+  }
+
   tapTrayButton(desktop, callback) {
     const button = desktop.find({
-      roleType: 'button',
       attributes: {className: SELECT_TO_SPEAK_TRAY_CLASS_NAME}
     });
+
     callback = this.newCallback(callback);
     selectToSpeak.onStateChangeRequestedCallbackForTest_ =
         this.newCallback(() => {
@@ -218,8 +237,9 @@ TEST_F(
           });
     });
 
+// TODO(crbug.com/1177140) Re-enable test
 TEST_F(
-    'SelectToSpeakMouseSelectionTest', 'DoesNotSpeakOnlyTheTrayButton',
+    'SelectToSpeakMouseSelectionTest', 'DISABLED_DoesNotSpeakOnlyTheTrayButton',
     function() {
       // The tray button itself should not be spoken when clicked in selection
       // mode per UI review (but if more elements are being verbalized than just
@@ -231,7 +251,6 @@ TEST_F(
         this.tapTrayButton(desktop, () => {
           assertEquals(selectToSpeak.state_, SelectToSpeakState.SELECTING);
           const button = desktop.find({
-            roleType: 'button',
             attributes: {className: SELECT_TO_SPEAK_TRAY_CLASS_NAME}
           });
 

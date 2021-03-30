@@ -37,7 +37,7 @@ class FakeVideoDecoderTest
  public:
   FakeVideoDecoderTest()
       : decoder_(new FakeVideoDecoder(
-            "FakeVideoDecoder",
+            0xFACCE,
             GetParam().decoding_delay,
             GetParam().max_decode_requests,
             base::BindRepeating(&FakeVideoDecoderTest::OnBytesDecoded,
@@ -91,7 +91,7 @@ class FakeVideoDecoderTest
   }
 
   void FrameReady(scoped_refptr<VideoFrame> frame) {
-    DCHECK(!frame->metadata()->end_of_stream);
+    DCHECK(!frame->metadata().end_of_stream);
     last_decoded_frame_ = std::move(frame);
     num_decoded_frames_++;
   }
@@ -288,7 +288,7 @@ TEST_P(FakeVideoDecoderTest, Read_DecodingDelay) {
 
 TEST_P(FakeVideoDecoderTest, Read_ZeroDelay) {
   decoder_ = std::make_unique<FakeVideoDecoder>(
-      "FakeVideoDecoder", 0, 1,
+      999, 0, 1,
       base::BindRepeating(&FakeVideoDecoderTest::OnBytesDecoded,
                           base::Unretained(this)));
   Initialize();

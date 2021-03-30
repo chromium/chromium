@@ -101,6 +101,7 @@ component("compositor") {
     "//ui/events",
     "//ui/gfx",
     "//ui/gfx/animation",
+    "//ui/gfx/animation/keyframe",
     "//ui/gfx/geometry",
     "//ui/gl",
   ]
@@ -151,6 +152,8 @@ static_library("test_support") {
     "test/test_suite.h",
     "test/test_utils.cc",
     "test/test_utils.h",
+    "test/throughput_report_checker.cc",
+    "test/throughput_report_checker.h",
   ]
 
   if (is_android) {
@@ -241,6 +244,7 @@ test("compositor_unittests") {
     "layer_owner_unittest.cc",
     "layer_unittest.cc",
     "run_all_unittests.cc",
+    "throughput_tracker_unittest.cc",
     "total_animation_throughput_reporter_unittest.cc",
     "transform_animation_curve_adapter_unittest.cc",
   ]
@@ -270,5 +274,14 @@ test("compositor_unittests") {
 
   if (is_linux || is_chromeos) {
     deps += [ "//third_party/mesa_headers" ]
+  }
+
+  if (is_fuchsia) {
+    additional_manifest_fragments = [
+      # TODO(crbug.com/1185811): Figure out why jit_capabilities is needed.
+      "//build/config/fuchsia/test/jit_capabilities.test-cmx",
+
+      "//build/config/fuchsia/test/present_view_capabilities.test-cmx",
+    ]
   }
 }

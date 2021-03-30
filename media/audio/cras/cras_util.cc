@@ -128,6 +128,7 @@ std::vector<CrasDevice> CrasGetAudioDevices(DeviceType type) {
   }
   if (rc < 0) {
     LOG(ERROR) << "Failed to get devices: " << std::strerror(rc);
+    CrasDisconnect(&client);
     return devices;
   }
 
@@ -161,13 +162,18 @@ bool CrasHasKeyboardMic() {
       cras_client_get_input_devices(client, devs, nodes, &num_devs, &num_nodes);
   if (rc < 0) {
     LOG(ERROR) << "Failed to get devices: " << std::strerror(rc);
+    CrasDisconnect(&client);
     return false;
   }
 
   for (size_t i = 0; i < num_nodes; i++) {
-    if (std::string(nodes[i].type) == kKeyBoardMic)
+    if (std::string(nodes[i].type) == kKeyBoardMic) {
+      CrasDisconnect(&client);
       return true;
+    }
   }
+
+  CrasDisconnect(&client);
   return false;
 }
 

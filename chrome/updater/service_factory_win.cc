@@ -5,7 +5,7 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
-#include "chrome/updater/service_scope.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/win/update_service_internal_proxy.h"
 #include "chrome/updater/win/update_service_proxy.h"
 #include "chrome/updater/win/wrl_module.h"
@@ -18,8 +18,7 @@ namespace {
 class WRLModuleInitializer {
  public:
   WRLModuleInitializer() {
-    Microsoft::WRL::Module<Microsoft::WRL::OutOfProc>::Create(
-        []() { DVLOG(2) << "COM client is shutting down."; });
+    Microsoft::WRL::Module<Microsoft::WRL::OutOfProc>::GetModule();
   }
 
   static const WRLModuleInitializer& Get() {

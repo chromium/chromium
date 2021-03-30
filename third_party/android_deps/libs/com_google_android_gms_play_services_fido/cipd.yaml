@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:18.1.0-cr0
+# cipd create --pkg-def cipd.yaml -tag version:19.0.0-beta-cr0
 package: chromium/third_party/android_deps/libs/com_google_android_gms_play_services_fido
 description: "play-services-fido"
 data:
-- file: play-services-fido-18.1.0.aar
+- file: play-services-fido-19.0.0-beta.aar

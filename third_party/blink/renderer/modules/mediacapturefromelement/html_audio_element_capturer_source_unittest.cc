@@ -17,6 +17,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/webaudiosourceprovider_impl.h"
 #include "third_party/blink/public/web/web_heap.h"
+#include "third_party/blink/renderer/modules/mediastream/mock_media_stream_audio_sink.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
@@ -30,19 +31,6 @@ static const int kAudioTrackSampleRate = 48000;
 static const int kAudioTrackSamplesPerBuffer =
     kAudioTrackSampleRate * kBufferDurationMs /
     base::Time::kMillisecondsPerSecond;
-
-class MockMediaStreamAudioSink final : public blink::WebMediaStreamAudioSink {
- public:
-  MockMediaStreamAudioSink() : blink::WebMediaStreamAudioSink() {}
-  ~MockMediaStreamAudioSink() override = default;
-
-  MOCK_METHOD1(OnSetFormat, void(const media::AudioParameters& params));
-  MOCK_METHOD2(OnData,
-               void(const media::AudioBus& audio_bus,
-                    base::TimeTicks estimated_capture_time));
-
-  DISALLOW_COPY_AND_ASSIGN(MockMediaStreamAudioSink);
-};
 
 // This test needs to bundle together plenty of objects, namely:
 // - a WebAudioSourceProviderImpl, which in turn needs an Audio Sink, in this

@@ -11,9 +11,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
+#include "components/feed/core/v2/common_enums.h"
 #include "components/feed/core/v2/enums.h"
-#include "components/feed/core/v2/feed_stream.h"
+#include "components/feed/core/v2/public/feed_api.h"
+#include "components/feed/core/v2/public/web_feed_subscriptions.h"
+#include "components/feed/core/v2/types.h"
 
+class PrefService;
 namespace feed {
 
 // Reports UMA metrics for feed.
@@ -30,31 +34,21 @@ class MetricsReporter {
   MetricsReporter(const MetricsReporter&) = delete;
   MetricsReporter& operator=(const MetricsReporter&) = delete;
 
-  // User interactions. See |FeedStreamApi| for definitions.
+  // User interactions. See |FeedApi| for definitions.
 
-  virtual void ContentSliceViewed(SurfaceId surface_id, int index_in_stream);
+  virtual void ContentSliceViewed(const StreamType& stream_type,
+                                  int index_in_stream);
   void FeedViewed(SurfaceId surface_id);
-  void OpenAction(int index_in_stream);
+  void OpenAction(const StreamType& stream_type, int index_in_stream);
   void OpenVisitComplete(base::TimeDelta visit_time);
-  void OpenInNewTabAction(int index_in_stream);
-  void OpenInNewIncognitoTabAction();
-  void SendFeedbackAction();
-  void LearnMoreAction();
-  void DownloadAction();
-  void NavigationStarted();
+  void OpenInNewTabAction(const StreamType& stream_type, int index_in_stream);
   void PageLoaded();
-  void RemoveAction();
-  void NotInterestedInAction();
-  void ManageInterestsAction();
-  void ContextMenuOpened();
-  void EphemeralStreamChange();
-  void EphemeralStreamChangeRejected();
-  void TurnOnAction();
-  void TurnOffAction();
+  void OtherUserAction(const StreamType& stream_type,
+                       FeedUserActionType action_type);
 
   // Indicates the user scrolled the feed by |distance_dp| and then stopped
   // scrolling.
-  void StreamScrolled(int distance_dp);
+  void StreamScrolled(const StreamType& stream_type, int distance_dp);
   void StreamScrollStart();
 
   // Called when the Feed surface is opened and closed.
@@ -70,6 +64,8 @@ class MetricsReporter {
 
   virtual void OnLoadStream(LoadStreamStatus load_from_store_status,
                             LoadStreamStatus final_status,
+                            bool loaded_new_content_from_network,
+                            base::TimeDelta stored_content_age,
                             std::unique_ptr<LoadLatencyTimes> load_latencies);
   virtual void OnBackgroundRefresh(LoadStreamStatus final_status);
   virtual void OnLoadMoreBegin(SurfaceId surface_id);
@@ -90,31 +86,50 @@ class MetricsReporter {
   static void NoticeCardFulfilled(bool response_has_notice_card);
   static void NoticeCardFulfilledObsolete(bool response_has_notice_card);
 
+  // Web Feed events.
+  void OnFollowAttempt(const WebFeedSubscriptions::FollowWebFeedResult& result);
+  void OnUnfollowAttempt(
+      const WebFeedSubscriptions::UnfollowWebFeedResult& status);
+
  private:
+  // State replicated for reporting per-stream-type metrics.
+  struct StreamStats {
+    bool engaged_simple_reported_ = false;
+    bool engaged_reported_ = false;
+    bool scrolled_reported_ = false;
+  };
   base::WeakPtr<MetricsReporter> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
+
   void ReportPersistentDataIfDayIsDone();
   void CardOpenBegin();
   void CardOpenTimeout(base::TimeTicks start_ticks);
   void ReportCardOpenEndIfNeeded(bool success);
-  void RecordEngagement(int scroll_distance_dp, bool interacted);
+  void RecordEngagement(const StreamType& stream_type,
+                        int scroll_distance_dp,
+                        bool interacted);
   void TrackTimeSpentInFeed(bool interacted_or_scrolled);
-  void RecordInteraction();
+  void RecordInteraction(const StreamType& stream_type);
   void ReportOpenFeedIfNeeded(SurfaceId surface_id, bool success);
   void ReportGetMoreIfNeeded(SurfaceId surface_id, bool success);
   void FinalizeMetrics();
   void FinalizeVisit();
+  StreamStats& ForStream(const StreamType& stream_type);
 
   PrefService* profile_prefs_;
+
+  StreamStats for_you_stats_;
+  StreamStats web_feed_stats_;
+
+  // State below here is shared between all stream types.
+
   // Persistent data stored in prefs. Data is read in the constructor, and then
   // written back to prefs on backgrounding.
   PersistentMetricsData persistent_data_;
 
   base::TimeTicks visit_start_time_;
-  bool engaged_simple_reported_ = false;
-  bool engaged_reported_ = false;
-  bool scrolled_reported_ = false;
+
   // The time a surface was opened, for surfaces still waiting for content.
   std::map<SurfaceId, base::TimeTicks> surfaces_waiting_for_content_;
   // The time a surface requested more content, for surfaces still waiting for

@@ -153,7 +153,7 @@ TEST_F(UnifiedSystemTrayTest, ShowBubble_MultipleDisplays_OpenedOnSameDisplay) {
   // See crbug.com/937420.
   for (int i = 0; i < screen->GetNumDisplays(); ++i) {
     auto* system_tray = GetPrimaryUnifiedSystemTray();
-    system_tray->ShowBubble(true /* show_by_click */);
+    system_tray->ShowBubble();
     const gfx::Rect primary_display_bounds = GetPrimaryDisplay().bounds();
     const gfx::Rect tray_bubble_bounds =
         GetPrimaryUnifiedSystemTray()->GetBubbleBoundsInScreen();

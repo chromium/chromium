@@ -14,7 +14,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 import {isChildVisible} from '../test_util.m.js';
 
-import {getFakeAccountsList, TestAuthenticator, TestInlineLoginBrowserProxy} from './inline_login_test_util.js';
+import {fakeAuthExtensionData, getFakeAccountsList, TestAuthenticator, TestInlineLoginBrowserProxy} from './inline_login_test_util.js';
 
 window.inline_login_test = {};
 const inline_login_test = window.inline_login_test;
@@ -67,6 +67,7 @@ suite(inline_login_test.suiteName, () => {
   });
 
   test(assert(inline_login_test.TestNames.Initialize), () => {
+    webUIListenerCallback('load-auth-extension', fakeAuthExtensionData);
     // 'Add account' screen should be shown.
     assertTrue(isVisible(`#${inlineLoginComponent.View.addAccount}`));
     if (isChromeOS) {
@@ -87,12 +88,6 @@ suite(inline_login_test.suiteName, () => {
   });
 
   test(assert(inline_login_test.TestNames.WebUICallbacks), () => {
-    const fakeAuthExtensionData = {
-      hl: 'hl',
-      gaiaUrl: 'gaiaUrl',
-      authMode: 1,
-      email: 'example@gmail.com',
-    };
     webUIListenerCallback('load-auth-extension', fakeAuthExtensionData);
     assertEquals(1, testAuthenticator.loadCalls);
     assertEquals(fakeAuthExtensionData, testAuthenticator.data);

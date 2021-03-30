@@ -4,8 +4,8 @@
 
 #include "chrome/browser/chromeos/policy/powerwash_requirements_checker.h"
 
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
@@ -23,7 +23,7 @@ using ::testing::HasSubstr;
 class PowerwashRequirementsCheckerTest : public BrowserWithTestWindowTest {
  public:
   PowerwashRequirementsCheckerTest()
-      : fake_user_manager_(new chromeos::FakeChromeUserManager()),
+      : fake_user_manager_(new ash::FakeChromeUserManager()),
         scoped_user_manager_(base::WrapUnique(fake_user_manager_)) {}
 
   void SetUp() override {
@@ -67,9 +67,9 @@ class PowerwashRequirementsCheckerTest : public BrowserWithTestWindowTest {
   }
 
  private:
-  chromeos::ScopedCrosSettingsTestHelper settings_helper_{
+  ash::ScopedCrosSettingsTestHelper settings_helper_{
       /* create_settings_service=*/false};
-  chromeos::FakeChromeUserManager* fake_user_manager_;
+  ash::FakeChromeUserManager* fake_user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
 };
 

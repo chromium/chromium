@@ -49,7 +49,7 @@ if (is_android) {
   }
 
   android_library("translate_infobar_event_enum_java") {
-    deps = [ "//third_party/android_deps:androidx_annotation_annotation_java" ]
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
 
     srcjar_deps = [ ":translate_infobar_event_enum" ]
   }

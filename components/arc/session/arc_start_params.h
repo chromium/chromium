@@ -33,6 +33,17 @@ struct StartParams {
     M16G,
   };
 
+  enum class UsapProfile {
+    // Default USAP profile suitable for all devices.
+    DEFAULT = 0,
+    // USAP profile suitable for 4G devices.
+    M4G,
+    // USAP profile suitable for 8G devices.
+    M8G,
+    // USAP profile suitable for 16G devices.
+    M16G,
+  };
+
   StartParams();
   ~StartParams();
   StartParams(StartParams&& other);
@@ -50,15 +61,27 @@ struct StartParams {
 
   DalvikMemoryProfile dalvik_memory_profile = DalvikMemoryProfile::DEFAULT;
 
+  UsapProfile usap_profile = UsapProfile::DEFAULT;
+
   // Experiment flag for ARC Custom Tabs.
   bool arc_custom_tabs_experiment = false;
 
   // Flag to disable system default apps.
   bool arc_disable_system_default_app = false;
 
+  // Flag to disable scheduling of media store periodic maintenance tasks.
+  bool disable_media_store_maintenance = false;
+
+  // Flag to disable Download provider in cache based tests in order to prevent
+  // installing content, that is impossible to control in ARC and which causes
+  // flakiness in tests.
+  bool disable_download_provider = false;
+
   // The number of logical CPU cores that are currently disabled on the host.
-  // This parameter is used only for starting ARCVM.
   uint32_t num_cores_disabled = 0;
+
+  // Enables developer options used to generate Play Auto Install rosters.
+  bool arc_generate_play_auto_install = false;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(StartParams);

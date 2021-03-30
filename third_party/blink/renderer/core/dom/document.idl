@@ -21,9 +21,8 @@
 // https://html.spec.whatwg.org/C/#the-document-object
 enum DocumentReadyState { "loading", "interactive", "complete" };
 
-
-// https://w3c.github.io/page-visibility/#visibility-states-and-the-visibilitystate-enum
-enum VisibilityState { "hidden", "visible", "prerender"};
+// https://w3c.github.io/page-visibility/#visibilitystate-enum
+enum VisibilityState { "hidden", "visible" };
 
 // https://wicg.github.io/cors-rfc1918/#feature-detect
 enum AddressSpace { "local", "private", "public" };
@@ -175,6 +174,9 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     readonly attribute VisibilityState visibilityState;
     readonly attribute boolean wasDiscarded;
 
+    // https://jeremyroman.github.io/alternate-loading-modes/#dom-document-prerendering
+    [RuntimeEnabled=Prerender2] readonly attribute boolean prerendering;
+
     // CORS and RFC1918
     // https://wicg.github.io/cors-rfc1918/#feature-detect
     [CallWith=ScriptState, RuntimeEnabled=AddressSpace, ImplementedAs=addressSpaceForBindings] readonly attribute AddressSpace addressSpace;
@@ -188,7 +190,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
 
     // Interest Cohort API
     // TODO(yaoxia): Add web tests. http://crbug/1130074.
-    [CallWith=ScriptState, NewObject, RuntimeEnabled=InterestCohortAPI, MeasureAs=InterestCohortAPI_interestCohort_Method] Promise<DOMString> interestCohort();
+    [CallWith=ScriptState, RaisesException, NewObject, SecureContext, RuntimeEnabled=InterestCohortAPI, MeasureAs=InterestCohortAPI_interestCohort_Method] Promise<InterestCohort> interestCohort();
 
     // Text fragment directive API
     // https://wicg.github.io/scroll-to-text-fragment/#feature-detectability
@@ -211,6 +213,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     attribute EventHandler onbeforecut;
     attribute EventHandler onbeforepaste;
     attribute EventHandler onfreeze;
+    [RuntimeEnabled=Prerender2] attribute EventHandler onprerenderingchange;
     attribute EventHandler onresume;
     attribute EventHandler onsearch;
     attribute EventHandler onsecuritypolicyviolation;

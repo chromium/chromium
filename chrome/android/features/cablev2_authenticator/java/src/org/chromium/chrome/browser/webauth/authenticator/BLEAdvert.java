@@ -46,7 +46,7 @@ class BLEAdvert implements Closeable {
                 (new AdvertiseSettings.Builder())
                         .setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY)
                         .setConnectable(false)
-                        .setTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_MEDIUM)
+                        .setTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_HIGH)
                         .build();
         ParcelUuid fidoUuid = new ParcelUuid(UUID.fromString(CABLE_UUID));
 

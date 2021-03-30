@@ -35,21 +35,21 @@ class DeviceManagementResponse;
 
 namespace policy {
 
-// Construct the private set membership identifier. See
+// Construct the PSM (private set membership) identifier. See
 // go/cros-enterprise-psm and go/cros-client-psm for more details.
 private_membership::rlwe::RlwePlaintextId ConstructDeviceRlweId(
     const std::string& device_serial_number,
     const std::string& device_rlz_brand_code);
 
-// A class that handles all communications related to private set membership
-// protocol with DMServer. Also, upon successful determination, it caches the
-// membership state of a given identifier in the local_state PrefService.
-// Upon a failed determination it won't allow another membership check.
-class PrivateSetMembershipHelper;
+// A class that handles all communications related to PSM protocol with
+// DMServer. Also, upon successful determination, it caches the membership state
+// of a given identifier in the local_state PrefService. Upon a failed
+// determination it won't allow another membership check.
+class PsmHelper;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class PrivateSetMembershipStatus {
+enum class PsmStatus {
   kAttempt = 0,
   kSuccessfulDetermination = 1,
   kError = 2,
@@ -59,13 +59,23 @@ enum class PrivateSetMembershipStatus {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class PrivateSetMembershipHashDanceComparison {
+enum class PsmHashDanceComparison {
   kEqualResults = 0,
   kDifferentResults = 1,
   kPSMErrorHashDanceSuccess = 2,
   kPSMSuccessHashDanceError = 3,
   kBothError = 4,
   kMaxValue = kBothError,
+};
+
+// Indicates all possible different results of PSM and Hash dance protocols,
+// after both protocols have executed successfully. These values are persisted
+// to logs. Entries should not be renumbered and numeric values should never be
+// reused.
+enum class PsmHashDanceDifferentResultsComparison {
+  kHashDanceTruePsmFalse = 0,
+  kPsmTrueHashDanceFalse = 1,
+  kMaxValue = kPsmTrueHashDanceFalse,
 };
 
 // Interacts with the device management service and determines whether this
@@ -127,12 +137,11 @@ class AutoEnrollmentClientImpl
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
   void OnConnectionChanged(network::mojom::ConnectionType type) override;
 
-  // Sets the private set membership RLWE client for testing through
-  // |private_set_membership_helper_|, if the protocol is enabled. Also, the
-  // |private_set_membership_rlwe_client| has to be non-null.
-  void SetPrivateSetMembershipRlweClientForTesting(
+  // Sets the PSM RLWE client for testing through |psm_helper_|, if the protocol
+  // is enabled. Also, the |psm_rlwe_client| has to be non-null.
+  void SetPsmRlweClientForTesting(
       std::unique_ptr<private_membership::rlwe::PrivateMembershipRlweClient>
-          private_set_membership_rlwe_client,
+          psm_rlwe_client,
       const private_membership::rlwe::RlwePlaintextId& psm_rlwe_id);
 
  private:
@@ -154,8 +163,7 @@ class AutoEnrollmentClientImpl
       int power_limit,
       base::Optional<int> power_outdated_server_detect,
       std::string uma_suffix,
-      std::unique_ptr<PrivateSetMembershipHelper>
-          private_set_membership_helper);
+      std::unique_ptr<PsmHelper> psm_helper);
 
   // Tries to load the result of a previous execution of the protocol from
   // local state. Returns true if that decision has been made and is valid.
@@ -165,11 +173,11 @@ class AutoEnrollmentClientImpl
   // Returns true if progress has been made, false if the protocol is done.
   bool RetryStep();
 
-  // Retries running private set membership protocol, if the protocol
+  // Retries running PSM protocol, if the protocol
   // is enabled and it is possible to start. Returns true if the protocol is
   // enabled or it's in progress, false if the protocol is done. Note that the
   // PSM protocol is only performed once per OOBE flow.
-  bool PrivateSetMembershipRetryStep();
+  bool PsmRetryStep();
 
   // Cleans up and invokes |progress_callback_|.
   void ReportProgress(AutoEnrollmentState state);
@@ -218,10 +226,9 @@ class AutoEnrollmentClientImpl
   // Updates the UMA histogram for successful hash dance.
   void RecordHashDanceSuccessTimeHistogram();
 
-  // Records the UMA histogram comparing results of hash dance and private set
-  // membership. This function should be called after PSM and hash dance
-  // requests finished.
-  void RecordPrivateSetMembershipHashDanceComparison();
+  // Records the UMA histogram comparing results of hash dance and PSM. This
+  // function should be called after PSM and hash dance requests finished.
+  void RecordPsmHashDanceComparison();
 
   // Callback to invoke when the protocol generates a relevant event. This can
   // be either successful completion or an error that requires external action.
@@ -260,7 +267,7 @@ class AutoEnrollmentClientImpl
   DeviceManagementService* device_management_service_;
   // Indicates whether Hash dance i.e. DeviceAutoEnrollmentRequest or
   // DeviceStateRetrievalRequest is in progress. Note that is not affected by
-  // private set membership protocol, whether it's in progress or not.
+  // PSM protocol, whether it's in progress or not.
   std::unique_ptr<DeviceManagementService::Job> request_job_;
 
   // PrefService where the protocol's results are cached.
@@ -277,8 +284,8 @@ class AutoEnrollmentClientImpl
   std::unique_ptr<StateDownloadMessageProcessor>
       state_download_message_processor_;
 
-  // Obtains the device state using private set membership protocol.
-  std::unique_ptr<PrivateSetMembershipHelper> private_set_membership_helper_;
+  // Obtains the device state using PSM protocol.
+  std::unique_ptr<PsmHelper> psm_helper_;
 
   // Times used to determine the duration of the protocol, and the extra time
   // needed to complete after the signin was complete.
@@ -296,9 +303,9 @@ class AutoEnrollmentClientImpl
   // |AutoEnrollmentclient| used for initial enrollment.
   const std::string uma_suffix_;
 
-  // Whether this instance already recorded the comparison of private set
-  // membership and hash dance. This is required because we do not want to
-  // record the result again on a hash dance retry.
+  // Whether this instance already recorded the comparison of PSM and hash
+  // dance. This is required because we do not want to record the result again
+  // on a hash dance retry.
   bool recorded_psm_hash_dance_comparison_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(AutoEnrollmentClientImpl);

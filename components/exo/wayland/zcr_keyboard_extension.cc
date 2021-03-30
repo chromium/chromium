@@ -27,6 +27,9 @@ class WaylandExtendedKeyboardImpl : public KeyboardObserver {
     keyboard_->AddObserver(this);
     keyboard_->SetNeedKeyboardKeyAcks(true);
   }
+  WaylandExtendedKeyboardImpl(const WaylandExtendedKeyboardImpl&) = delete;
+  WaylandExtendedKeyboardImpl& operator=(const WaylandExtendedKeyboardImpl&) =
+      delete;
   ~WaylandExtendedKeyboardImpl() override {
     if (keyboard_) {
       keyboard_->RemoveObserver(this);
@@ -47,8 +50,6 @@ class WaylandExtendedKeyboardImpl : public KeyboardObserver {
 
  private:
   Keyboard* keyboard_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandExtendedKeyboardImpl);
 };
 
 void extended_keyboard_destroy(wl_client* client, wl_resource* resource) {

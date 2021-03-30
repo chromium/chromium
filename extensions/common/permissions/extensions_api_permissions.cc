@@ -55,7 +55,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
     {APIPermission::kDeclarativeWebRequest, "declarativeWebRequest"},
     {APIPermission::kDiagnostics, "diagnostics",
      APIPermissionInfo::kFlagCannotBeOptional},
-    {APIPermission::kDisplaySource, "displaySource"},
     {APIPermission::kDns, "dns"},
     {APIPermission::kExternallyConnectableAllUrls,
      "externally_connectable.all_urls",

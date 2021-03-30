@@ -7,98 +7,8 @@ import("//tools/polymer/polymer.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../os_settings.gni")
 
-js_type_check("closure_compile") {
-  deps = [
-    ":album_item",
-    ":album_list",
-    ":ambient_mode_browser_proxy",
-    ":ambient_mode_page",
-    ":ambient_mode_photos_page",
-    ":art_album_dialog",
-    ":constants",
-    ":topic_source_item",
-    ":topic_source_list",
-  ]
-}
-
-js_library("ambient_mode_browser_proxy") {
-  deps = [
-    ":constants",
-    "//ui/webui/resources/js:cr",
-  ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-js_library("ambient_mode_page") {
-  deps = [
-    ":ambient_mode_browser_proxy",
-    ":constants",
-    "..:deep_linking_behavior",
-    "..:os_route",
-    "../..:router",
-    "../../prefs:prefs_behavior",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("ambient_mode_photos_page") {
-  deps = [
-    ":ambient_mode_browser_proxy",
-    ":constants",
-    "..:os_route",
-    "../..:router",
-    "../localized_link:localized_link",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("constants") {
-}
-
-js_library("topic_source_item") {
-  deps = [
-    ":constants",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:i18n_behavior",
-  ]
-}
-
-js_library("topic_source_list") {
-  deps = [
-    ":constants",
-    "//ui/webui/resources/js:cr",
-  ]
-}
-
-js_library("album_item") {
-  deps = [
-    ":constants",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:i18n_behavior",
-  ]
-}
-
-js_library("album_list") {
-  deps = [
-    ":constants",
-    "//ui/webui/resources/js:cr",
-  ]
-}
-
-js_library("art_album_dialog") {
-  deps = [
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:i18n_behavior",
-  ]
-}
-
 js_type_check("closure_compile_module") {
+  closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
     ":album_item.m",
@@ -107,6 +17,7 @@ js_type_check("closure_compile_module") {
     ":ambient_mode_page.m",
     ":ambient_mode_photos_page.m",
     ":art_album_dialog.m",
+    ":text_with_tooltip.m",
     ":topic_source_item.m",
     ":topic_source_list.m",
   ]
@@ -131,8 +42,8 @@ js_library("ambient_mode_page.m") {
     ":constants.m",
     "..:deep_linking_behavior.m",
     "..:os_route.m",
-    "../..:router.m",
-    "../../prefs:prefs_behavior.m",
+    "../..:router",
+    "../../prefs:prefs_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
@@ -146,7 +57,7 @@ js_library("ambient_mode_photos_page.m") {
     ":ambient_mode_browser_proxy.m",
     ":constants.m",
     "..:os_route.m",
-    "../..:router.m",
+    "../..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -154,6 +65,14 @@ js_library("ambient_mode_photos_page.m") {
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
   extra_deps = [ ":ambient_mode_photos_page_module" ]
+}
+
+js_library("text_with_tooltip.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/ambient_mode_page/text_with_tooltip.m.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":text_with_tooltip_module" ]
 }
 
 js_library("topic_source_item.m") {
@@ -188,7 +107,9 @@ js_library("album_item.m") {
 js_library("album_list.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/ambient_mode_page/album_list.m.js" ]
   deps = [
-    ":constants",
+    ":constants.m",
+    "..:os_route.m",
+    "../..:global_scroll_target_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":album_list_module" ]
@@ -211,6 +132,7 @@ group("polymer3_elements") {
     ":ambient_mode_photos_page_module",
     ":art_album_dialog_module",
     ":modulize",
+    ":text_with_tooltip_module",
     ":topic_source_item_module",
     ":topic_source_list_module",
   ]
@@ -228,6 +150,17 @@ polymer_modulizer("ambient_mode_page") {
 polymer_modulizer("ambient_mode_photos_page") {
   js_file = "ambient_mode_photos_page.js"
   html_file = "ambient_mode_photos_page.html"
+  html_type = "dom-module"
+  migrated_imports = os_settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
+  auto_imports =
+      os_settings_auto_imports +
+      [ "ui/webui/resources/html/assert.html|assert,assertNotReached" ]
+}
+
+polymer_modulizer("text_with_tooltip") {
+  js_file = "text_with_tooltip.js"
+  html_file = "text_with_tooltip.html"
   html_type = "dom-module"
   migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites

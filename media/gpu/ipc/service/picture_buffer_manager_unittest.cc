@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "media/base/simple_sync_token_client.h"
 #include "media/gpu/test/fake_command_buffer_helper.h"
+#include "media/video/video_decode_accelerator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -39,14 +40,19 @@ class PictureBufferManagerImplTest : public testing::Test {
     pbm_->Initialize(environment_.GetMainThreadTaskRunner(), cbh_);
   }
 
-  std::vector<PictureBuffer> CreateARGBPictureBuffers(uint32_t count) {
+  std::vector<PictureBuffer> CreateARGBPictureBuffers(
+      uint32_t count,
+      VideoDecodeAccelerator::TextureAllocationMode mode =
+          VideoDecodeAccelerator::TextureAllocationMode::kAllocateGLTextures) {
     return pbm_->CreatePictureBuffers(count, PIXEL_FORMAT_ARGB, 1,
-                                      gfx::Size(320, 240), GL_TEXTURE_2D,
-                                      false /* use_shared_image */);
+                                      gfx::Size(320, 240), GL_TEXTURE_2D, mode);
   }
 
-  PictureBuffer CreateARGBPictureBuffer() {
-    std::vector<PictureBuffer> picture_buffers = CreateARGBPictureBuffers(1);
+  PictureBuffer CreateARGBPictureBuffer(
+      VideoDecodeAccelerator::TextureAllocationMode mode =
+          VideoDecodeAccelerator::TextureAllocationMode::kAllocateGLTextures) {
+    std::vector<PictureBuffer> picture_buffers =
+        CreateARGBPictureBuffers(1, mode);
     DCHECK_EQ(picture_buffers.size(), 1U);
     return picture_buffers[0];
   }
@@ -94,6 +100,17 @@ TEST_F(PictureBufferManagerImplTest, CreatePictureBuffer) {
   Initialize();
   PictureBuffer pb = CreateARGBPictureBuffer();
   EXPECT_TRUE(cbh_->HasTexture(pb.client_texture_ids()[0]));
+}
+
+TEST_F(PictureBufferManagerImplTest, CreatePictureBuffer_SharedImage) {
+  Initialize();
+  PictureBuffer pb1 = CreateARGBPictureBuffer(
+      VideoDecodeAccelerator::TextureAllocationMode::kDoNotAllocateGLTextures);
+  EXPECT_EQ(pb1.client_texture_ids().size(), 0u);
+
+  PictureBuffer pb2 = CreateARGBPictureBuffer(
+      VideoDecodeAccelerator::TextureAllocationMode::kAllocateGLTextures);
+  EXPECT_TRUE(cbh_->HasTexture(pb2.client_texture_ids()[0]));
 }
 
 TEST_F(PictureBufferManagerImplTest, CreatePictureBuffer_ContextLost) {

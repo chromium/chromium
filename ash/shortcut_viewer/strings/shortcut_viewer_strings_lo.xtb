@@ -23,11 +23,13 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">ເພີ່ມ www. ແລະ .com ໃສ່ຂໍ້ຄວາມທີ່ປ້ອນເຂົ້າໃນແຖບທີ່ຢູ່, ຈາກນັ້ນເປີດໜ້າເວັບ</translation>
+<translation id="1768987374400973299">ຖ່າຍຮູບ/ບັນທຶກໜ້າຈໍ</translation>
 <translation id="1872219238824176091">ລຶບພື້ນທີ່ເຮັດວຽກປັດຈຸບັນອອກ</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, ຈາກນັ້ນ <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> ຫຼື <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">ໄປຫາແຖບຕໍ່ໄປ</translation>
 <translation id="2010818616644390445">ໄປຫາແຖບສຸດທ້າຍໃນໜ້າຈໍ</translation>
 <translation id="2040706009561734834">ເປີດ/ປິດຕົວເປີດໃຊ້</translation>
+<translation id="2086334242442703436">ເປີດຕົວເລືອກອີໂມຈິ</translation>
 <translation id="2088054208777350526">ຊອກຫາທາງລັດແປ້ນພິມ</translation>
 <translation id="2125211348069077981"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="E" /> ຫຼື <ph name="F" /></translation>
 <translation id="2145908266289632567">ການແກ້ໄຂຂໍ້ຄວາມ</translation>
@@ -46,6 +48,7 @@
 <translation id="2480851840841871861">ເປີດຜູ້ຊ່ວຍ Google</translation>
 <translation id="2488661730534396940">ເປີດນຳໃຊ້ພື້ນທີ່ເຮັດວຽກຢູ່ເບື້ອງຊ້າຍ</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516999188535378855">ເປີດແອັບການວິນິໄສ</translation>
 <translation id="2530339807289914946">ເລື່ອນໜ້າເວັບລົງ</translation>
 <translation id="2530896289327917474">ເປີດ ຫຼື ປິດການຮຽກເບິ່ງດ້ວຍແປ້ນພິມ</translation>
 <translation id="2574014812750545982">ຣີເຊັດລະດັບການຊູມໃນໜ້າ</translation>
@@ -110,6 +113,7 @@
 <translation id="4801989101741319327">ຍ້າຍໄປຈຸດສິ້ນສຸດຂອງຄຳຕໍ່ໄປ</translation>
 <translation id="4866066940972151697">ເປີດນຳໃຊ້ພື້ນທີ່ເຮັດວຽກຢູ່ດ້ານຂວາ</translation>
 <translation id="4916163929714267752">ເປີດລິ້ງນີ້ໃນໜ້າຈໍໃໝ່</translation>
+<translation id="492453977506755176">ປຸ່ມສຳລັບໂໝດຖ່າຍຮູບ</translation>
 <translation id="5030659775136592441">ສະແດງຕົວຈັດການບຸກມາກ</translation>
 <translation id="5034421018520995080">ໄປຫາສ່ວນເທິງຂອງໜ້າ</translation>
 <translation id="5042305953558921026">ປຸ່ມໂໝດພາບຮວມ</translation>
@@ -132,6 +136,7 @@
 <translation id="5899919361772749550">ສະແດງ ຫຼື ເຊື່ອງຄອນໂຊນເຄື່ອງມືຜູ້ພັດທະນາ</translation>
 <translation id="5919628958418675842">ເປີດ ຫຼື ປິດໜ້າຈໍຄວາມເປັນສ່ວນຕົວ</translation>
 <translation id="5921745308587794300">ໝຸນໜ້າຈໍ</translation>
+<translation id="5926306472221400972">ຖ່າຍຮູບໜ້າຈໍແບບເຕັມຈໍ</translation>
 <translation id="6022924867608035986">ລຶບລ້າງຂໍ້ຄວາມໃນກ່ອງຊອກຫາ</translation>
 <translation id="6045998054441862242">ເປີດໂໝດຄວາມຄົມຊັດສູງ</translation>
 <translation id="6052614013050385269">ຄລິກຂວາໃສ່ລິ້ງ</translation>
@@ -149,6 +154,7 @@
 <translation id="6445033640292336367">ນຳແຖບກັບຄືນສູ່ຕຳແໜ່ງເດີມຂອງທ່ານ</translation>
 <translation id="6474744297082284761">ຊູມອອກ (ເມື່ອດັອກ ຫຼື ເປີດນຳໃຊ້ແວ່ນຂະຫຍາຍເຕັມຈໍ)</translation>
 <translation id="649811797655257835">ເລືອກໄຟລ໌, ແລ້ວກົດ <ph name="SPACE" /></translation>
+<translation id="6551886416582667425">ຖ່າຍຮູບໜ້າຈໍ/ບັນທຶກໜ້າຈໍບາງສ່ວນ</translation>
 <translation id="6556040137485212400">ເປີດໜ້າຈໍທີ່ບໍ່ໄດ້ໃຊ້ເປັນໄລຍະເວລາດົນສຸດ</translation>
 <translation id="666343722268997814">ເປີດເມນູຄລິກຂວາສຳລັບລາຍການທີ່ໄຮໄລ້ໄວ້</translation>
 <translation id="6671538777808758331">ໄປຫາຜົນທີ່ກົງກັນຕໍ່ໄປສຳລັບການຊອກຫາຂອງທ່ານ</translation>
@@ -175,6 +181,7 @@
 <translation id="7611271430932669992">ຍ້າຍໂຟກັສໃສ່ປັອບອັບ ແລະ ກ່ອງໂຕ້ຕອບ</translation>
 <translation id="7635348532214572995">ຍ້າຍໄອຄອນແອັບອ້ອມຕາໜ່າງແອັບ</translation>
 <translation id="766326951329901120">ວາງເນື້ອຫາຈາກຄລິບບອດເປັນຂໍ້ຄວາມທຳມະດາ</translation>
+<translation id="7673453620027697230">ຖ່າຍຮູບໜ້າຈໍ/ບັນທຶກໜ້າຈໍ</translation>
 <translation id="7703010453515335249">ວົງເລັບເປີດ</translation>
 <translation id="7724603315864178912">ຕັດ</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, ຈາກນັ້ນ <ph name="SPACE" /> ຫຼື <ph name="ENTER" /></translation>

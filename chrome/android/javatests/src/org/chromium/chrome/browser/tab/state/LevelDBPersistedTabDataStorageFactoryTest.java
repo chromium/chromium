@@ -48,20 +48,20 @@ public class LevelDBPersistedTabDataStorageFactoryTest {
     private Profile mProfile2;
 
     @Mock
-    private LevelDBPersistedTabDataStorage.Natives mLevelDBPersistedTabDataStorage;
+    private LevelDBPersistedDataStorage.Natives mLevelDBPersistedTabDataStorage;
 
     @Before
     public void setUp() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
         MockitoAnnotations.initMocks(this);
-        mMocker.mock(LevelDBPersistedTabDataStorageJni.TEST_HOOKS, mLevelDBPersistedTabDataStorage);
+        mMocker.mock(LevelDBPersistedDataStorageJni.TEST_HOOKS, mLevelDBPersistedTabDataStorage);
         doNothing()
                 .when(mLevelDBPersistedTabDataStorage)
-                .init(any(LevelDBPersistedTabDataStorage.class), any(BrowserContextHandle.class));
+                .init(any(LevelDBPersistedDataStorage.class), any(BrowserContextHandle.class));
         doNothing().when(mLevelDBPersistedTabDataStorage).destroy(anyLong());
         doReturn(false).when(mProfile1).isOffTheRecord();
         doReturn(false).when(mProfile2).isOffTheRecord();
-        LevelDBPersistedTabDataStorage.setSkipNativeAssertionsForTesting(true);
+        LevelDBPersistedDataStorage.setSkipNativeAssertionsForTesting(true);
     }
 
     @UiThreadTest

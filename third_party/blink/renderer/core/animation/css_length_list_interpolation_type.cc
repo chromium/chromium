@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/animation/underlying_length_checker.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -56,11 +57,12 @@ static InterpolationValue MaybeConvertLengthList(
 }
 
 InterpolationValue CSSLengthListInterpolationType::MaybeConvertInitial(
-    const StyleResolverState&,
+    const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
   Vector<Length> initial_length_list;
-  if (!LengthListPropertyFunctions::GetInitialLengthList(CssProperty(),
-                                                         initial_length_list))
+  if (!LengthListPropertyFunctions::GetInitialLengthList(
+          CssProperty(), state.GetDocument().GetStyleResolver().InitialStyle(),
+          initial_length_list))
     return nullptr;
   return MaybeConvertLengthList(initial_length_list, 1);
 }

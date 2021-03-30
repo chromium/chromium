@@ -53,11 +53,7 @@ Vector<String> LayoutObjectToDebugStringList(NGInlineCursor cursor) {
 }
 
 class NGInlineCursorTest : public NGLayoutTest,
-                           private ScopedLayoutNGFragmentItemForTest,
                            public testing::WithParamInterface<bool> {
- public:
-  NGInlineCursorTest() : ScopedLayoutNGFragmentItemForTest(GetParam()) {}
-
  protected:
   NGInlineCursor SetupCursor(const String& html) {
     SetBodyInnerHTML(html);

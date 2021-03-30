@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">عنصر قائمة</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">التمرير السريع بإصبعين إلى يسار الشاشة</translation>
-<translation id="1016393160682012902">‏يمكنك الضغط على مفتاح qwerty أو مفتاح لغة برايل القابل لإعادة التحميل أو إيماءة اللمس لمعرفة وظيفته، ويمكنك الضغط على الزر control مع w أو الزر escape للخروج.</translation>
 <translation id="1022586497894531524">‏هل تستخدم التعليقات والملاحظات المنطوقة في ChromeVox لأول مرة؟ يشرح هذا البرنامج التعليمي السريع أساسيات بدء استخدام ChromeVox.</translation>
 <translation id="1025074108959230262">تم إيقاف وضع التثبيت</translation>
 <translation id="1031961866430398710">ثم</translation>
@@ -151,6 +150,7 @@
 <translation id="2045055672832940894">ليس هناك عنصر تحكم سابق.</translation>
 <translation id="2045606329038304310">التحكُّم بحقل النموذج</translation>
 <translation id="2063539687800151747">عبارة مقتبسة</translation>
+<translation id="2074531330963286860">هناك إجراءات متاحة. اضغط على مفتاح "البحث" + مفتاح "." (النقطة) للاطّلاع عليها.</translation>
 <translation id="2086961585857038472">الكلمة التالية</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">ar</translation>
@@ -976,6 +976,7 @@
 <translation id="827266600368092403">بدء الاختيار أو إنهاؤه</translation>
 <translation id="827422111966801947">نيلي</translation>
 <translation id="8276439074553447000">الانتقال إلى العنصر السابق القابل للتركيز</translation>
+<translation id="8279039817939141096">‏يمكنك النقر على مفتاح qwerty أو مفتاح لغة برايل القابل لإعادة التحميل أو إيماءة اللمس لمعرفة وظيفته. ويمكنك الضغط على Ctrl+W أو على مفتاح المسافة مع Z، أو التمرير سريعًا بإصبعين إلى جهة اليسار، أو الضغط على المفتاح Esc للخروج.</translation>
 <translation id="8283603667300770666">حقل النموذج التالي</translation>
 <translation id="8310185481635255431">ليس هناك رابط تالٍ.</translation>
 <translation id="831207808878314375">تعريف</translation>

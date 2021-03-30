@@ -9,14 +9,14 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/chromeos/arc/arc_util.h"
-#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
-#include "chrome/browser/chromeos/login/ui/login_display_host.h"
+#include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/chromeos/policy/affiliation_mixin.h"
 #include "chrome/browser/chromeos/policy/affiliation_test_helper.h"
 #include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/settings/cros_settings_names.h"
@@ -76,7 +76,7 @@ class UnaffiliatedArcAllowedTest
   void RefreshPolicyAndWaitUntilDeviceSettingsUpdated() {
     base::RunLoop run_loop;
     base::CallbackListSubscription subscription =
-        chromeos::CrosSettings::Get()->AddSettingsObserver(
+        ash::CrosSettings::Get()->AddSettingsObserver(
             chromeos::kUnaffiliatedArcAllowed, run_loop.QuitClosure());
     RefreshDevicePolicy();
     run_loop.Run();

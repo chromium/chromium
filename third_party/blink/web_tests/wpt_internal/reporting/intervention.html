@@ -1,0 +1,51 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/intervention.js"></script>
+
+<div id="target" style="padding: 10px; background-color: blue;">
+  <p>Testing intervention reports and ReportingObserver</p>
+</div>
+
+<script>
+async_test(function(test) {
+  var kInterventionReport = 2531; // From web_feature.mojom.
+
+  var observer = new ReportingObserver(function(reports, observer) {
+    test.step(function() {
+      assert_equals(reports.length, 1);
+      assert_true(internals.isUseCounted(document, kInterventionReport));
+
+      // Ensure that the contents of the report are valid.
+      assert_equals(reports[0].type, "intervention");
+      assert_true(reports[0].url.endsWith("reporting/intervention.html"));
+      assert_equals(typeof reports[0].body.id, "string");
+      assert_true(reports[0].body.sourceFile.endsWith(
+          "reporting/resources/intervention.js"));
+      assert_equals(typeof reports[0].body.lineNumber, "number");
+      assert_equals(typeof reports[0].body.columnNumber, "number");
+      assert_equals(typeof reports[0].body.message, "string");
+
+      // Ensure the toJSON call is successful.
+      const reportJSON = reports[0].toJSON();
+      assert_equals(reportJSON.type, reports[0].type);
+      assert_equals(reportJSON.url, reports[0].url);
+      assert_equals(typeof reportJSON.body, "object");
+      assert_equals(reportJSON.body.id, reports[0].body.id);
+      assert_equals(reportJSON.body.message, reports[0].body.message);
+      assert_equals(reportJSON.body.sourceFile, reports[0].body.sourceFile);
+      assert_equals(reportJSON.body.lineNumber, reports[0].body.lineNumber);
+      assert_equals(reportJSON.body.columnNumber, reports[0].body.columnNumber);
+      // Ensure that report can be successfully JSON serialized.
+      assert_false(JSON.stringify(reports[0]) === "{}");
+      assert_equals(JSON.stringify(reports[0]), JSON.stringify(reportJSON));
+    });
+
+    test.done();
+  });
+  observer.observe();
+
+  assert_false(internals.isUseCounted(document, kInterventionReport));
+  causeIntervention();
+}, "Intervention report");
+</script>

@@ -5,7 +5,7 @@
 #ifndef CHROME_CREDENTIAL_PROVIDER_GAIACP_AUTH_UTILS_H_
 #define CHROME_CREDENTIAL_PROVIDER_GAIACP_AUTH_UTILS_H_
 
-#include "base/strings/string16.h"
+#include <string>
 
 #include "chrome/credential_provider/gaiacp/stdafx.h"
 
@@ -16,7 +16,7 @@ HRESULT GetAuthenticationPackageId(ULONG* id);
 
 HRESULT DetermineUserSidFromAuthenticationBuffer(
     const CREDENTIAL_PROVIDER_CREDENTIAL_SERIALIZATION* cpcs,
-    base::string16* sid);
+    std::wstring* sid);
 
 HRESULT BuildCredPackAuthenticationBuffer(
     BSTR domain,

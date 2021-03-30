@@ -7,8 +7,41 @@ import("//extensions/buildflags/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
+source_set("data_decoder_util") {
+  deps = [
+    "//base",
+    "//services/data_decoder/public/cpp",
+  ]
+  sources = [
+    "data_decoder_util.cc",
+    "data_decoder_util.h",
+  ]
+}
+
+static_library("media_router_feature") {
+  sources = [
+    "media_router_feature.cc",
+    "media_router_feature.h",
+  ]
+  public_deps = [ "//base" ]
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
+    "//components/prefs:prefs",
+    "//components/user_prefs:user_prefs",
+    "//content/public/browser",
+    "//content/public/common",
+    "//crypto",
+    "//extensions/buildflags:buildflags",
+    "//media",
+    "//ui/base:buildflags",
+  ]
+}
+
 static_library("router") {
   deps = [
+    ":data_decoder_util",
+    ":media_router_feature",
     "//base",
     "//chrome:strings",
     "//chrome/common:constants",
@@ -30,6 +63,7 @@ static_library("router") {
     "//components/media_router/browser",
     "//components/media_router/common",
     "//components/media_router/common/mojom:media_router",
+    "//components/sessions:sessions",
   ]
   sources = [
     "chrome_media_router_factory.cc",
@@ -42,6 +76,9 @@ static_library("router") {
     deps += [
       "discovery",
       "//build:chromeos_buildflags",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/profiles:profile",
+      "//components/embedder_support:browser_util",
       "//components/mirroring/mojom:host",
       "//components/mirroring/mojom:service",
 
@@ -53,18 +90,20 @@ static_library("router") {
       "//components/paint_preview/buildflags",
       "//components/signin/public/base:signin_buildflags",
       "//components/translate/content/common",
+      "//components/ukm/content:content",
+      "//components/version_info:version_info",
       "//extensions/browser",
       "//extensions/buildflags",
       "//extensions/common",
       "//mojo/public/cpp/bindings",
+      "//services/metrics/public/cpp:ukm_builders",
+      "//third_party/openscreen/src/cast/common/channel/proto:channel_proto",
       "//ui/base:buildflags",
     ]
 
     public_deps += [ "//components/media_router/common/mojom:logger" ]
 
     sources += [
-      "data_decoder_util.cc",
-      "data_decoder_util.h",
       "event_page_request_manager.cc",
       "event_page_request_manager.h",
       "event_page_request_manager_factory.cc",
@@ -131,6 +170,8 @@ static_library("router") {
         "mojo/media_route_provider_util_win.cc",
         "mojo/media_route_provider_util_win.h",
       ]
+
+      deps += [ "//chrome/installer/util:with_no_strings" ]
     }
 
     if (enable_openscreen) {
@@ -158,6 +199,7 @@ if (!is_android) {
     deps = [
       "discovery",
       "//chrome/test:test_support",
+      "//components/media_router/browser:test_support",
       "//components/media_router/common/mojom:media_router",
       "//components/media_router/common/mojom:media_router_test_interfaces",
       "//extensions/browser",
@@ -191,13 +233,21 @@ source_set("unittests") {
   ]
 
   deps = [
+    ":media_router_feature",
     ":router",
     "//base",
     "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//components/cast_channel:cast_channel",
+    "//components/cast_channel:test_support",
     "//components/media_router/browser:test_support",
     "//components/media_router/common:test_support",
+    "//content/test:test_support",
+    "//media:test_support",
+    "//services/data_decoder/public/cpp:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/display:test_support",
   ]
 
   if (!is_android) {
@@ -214,7 +264,6 @@ source_set("unittests") {
       "discovery/dial/safe_dial_app_info_parser_unittest.cc",
       "discovery/dial/safe_dial_device_description_parser_unittest.cc",
       "discovery/discovery_network_list_unittest.cc",
-      "discovery/discovery_network_monitor_metric_observer_unittest.cc",
       "discovery/discovery_network_monitor_unittest.cc",
       "discovery/mdns/cast_media_sink_service_impl_unittest.cc",
       "discovery/mdns/cast_media_sink_service_unittest.cc",
@@ -252,6 +301,7 @@ source_set("unittests") {
     ]
     deps += [
       ":test_support",
+      "//chrome/browser/media/router/discovery:discovery",
       "//chrome/test:test_support",
       "//components/sync_preferences:test_support",
       "//content/test:test_support",

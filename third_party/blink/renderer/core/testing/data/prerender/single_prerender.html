@@ -1,7 +1,7 @@
 <html>
   <head></head>
   <body>
-    <link id="theprerender" rel=prerender href="http://prerender.com/"/>
+    <link id="theprerender" rel=prerender href="/prerender"/>
 
     <script>
       var prerender = document.getElementById('theprerender');
@@ -15,13 +15,13 @@
       function mutateTarget()
       {
           var link = document.getElementById('theprerender');
-          link.href = "http://mutated.com/";
+          link.href = "/mutated";
       }
 
       function mutateRel()
       {
           var link = document.getElementById('theprerender');
-          link.rel = "something-else";
+          link.rel = "/something-else";
       }
     </script>
   </body>

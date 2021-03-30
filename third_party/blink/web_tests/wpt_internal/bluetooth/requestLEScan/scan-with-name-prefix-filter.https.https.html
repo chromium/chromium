@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script src="/bluetooth/resources/bluetooth-scanning-helpers.js"></script>
+<script>
+'use strict';
+const test_desc = 'requestLEScan with name prefix filter.';
+let scan_result;
+
+bluetooth_test(async (t) => {
+  const fake_central =
+      await navigator.bluetooth.test.simulateCentral({state: 'powered-on'});
+
+  await callWithTrustedClick(
+      async () => {scan_result = await navigator.bluetooth.requestLEScan(
+                       {filters: [{namePrefix: 'Health'}]})});
+  assert_equals(scan_result.filters[0].namePrefix, 'Health')
+
+  const eventWatcher =
+      new EventWatcher(t, navigator.bluetooth, ['advertisementreceived']);
+
+  let promise = eventWatcher.wait_for('advertisementreceived').then(e => {
+    assert_equals(e.name, 'Health Thermometer');
+  });
+
+  let scan = {
+    deviceAddress: '09:09:09:09:09:09',
+    rssi: 100,
+    scanRecord: {
+      txPower: 20,
+    },
+  };
+
+  // This scan has a name which doesn't match our filters namePrefix
+  scan.scanRecord.name = 'Not a Health Thermometer';
+  fake_central.simulateAdvertisementReceived(scan);
+
+  // Our filter is looking for this name
+  scan.scanRecord.name = 'Health Thermometer';
+  fake_central.simulateAdvertisementReceived(scan);
+  return promise;
+}, test_desc);
+</script>

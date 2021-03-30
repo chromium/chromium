@@ -42,6 +42,7 @@ class MockSSLHostStateDelegate : public SSLHostStateDelegate {
 
  private:
   std::set<std::string> exceptions_;
+  std::set<std::string> hosts_ran_insecure_content_;
 };
 
 }  // namespace content

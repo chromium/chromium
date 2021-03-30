@@ -2,11 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-(function() {
+import {Polymer, html} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assert} from '//resources/js/assert.m.js';
+import '//resources/js/util.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import '//resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
+import '//resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
+import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
+import '//resources/cr_elements/shared_style_css.m.js';
+import '//resources/cr_elements/shared_vars_css.m.js';
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import {SyncBrowserProxy, SyncBrowserProxyImpl, StatusAction, SyncStatus, SyncPrefs} from './sync_browser_proxy.js';
+import {loadTimeData} from '../i18n_setup.js';
+import {Route, Router, RouteObserverBehavior} from '../router.js';
+import '../settings_shared_css.js';
+
 
 /**
  * Names of the individual data type properties to be cached from
- * settings.SyncPrefs when the user checks 'Sync All'.
+ * SyncPrefs when the user checks 'Sync All'.
  * @type {!Array<string>}
  */
 const SyncPrefsIndividualDataTypes = [
@@ -41,6 +56,8 @@ const RadioButtonNames = {
 Polymer({
   is: 'settings-sync-controls',
 
+  _template: html`{__html_template__}`,
+
   behaviors: [WebUIListenerBehavior],
 
   properties: {
@@ -54,13 +71,13 @@ Polymer({
 
     /**
      * The current sync preferences, supplied by SyncBrowserProxy.
-     * @type {settings.SyncPrefs|undefined}
+     * @type {SyncPrefs|undefined}
      */
     syncPrefs: Object,
 
     /**
      * The current sync status, supplied by the parent.
-     * @type {settings.SyncStatus}
+     * @type {SyncStatus}
      */
     syncStatus: {
       type: Object,
@@ -68,7 +85,7 @@ Polymer({
     },
   },
 
-  /** @private {?settings.SyncBrowserProxy} */
+  /** @private {?SyncBrowserProxy} */
   browserProxy_: null,
 
   /**
@@ -80,7 +97,7 @@ Polymer({
 
   /** @override */
   created() {
-    this.browserProxy_ = settings.SyncBrowserProxyImpl.getInstance();
+    this.browserProxy_ = SyncBrowserProxyImpl.getInstance();
   },
 
   /** @override */
@@ -88,8 +105,10 @@ Polymer({
     this.addWebUIListener(
         'sync-prefs-changed', this.handleSyncPrefsChanged_.bind(this));
 
-    const router = settings.Router.getInstance();
-    if (router.getCurrentRoute() === router.getRoutes().SYNC_ADVANCED) {
+    const router = Router.getInstance();
+    if (router.getCurrentRoute() ===
+        /** @type {{ SYNC_ADVANCED: !Route }} */
+        (router.getRoutes()).SYNC_ADVANCED) {
       this.browserProxy_.didNavigateToSyncPage();
     }
   },
@@ -204,10 +223,16 @@ Polymer({
 
   /** @private */
   syncStatusChanged_() {
-    const router = settings.Router.getInstance();
-    if (router.getCurrentRoute() === router.getRoutes().SYNC_ADVANCED &&
+    const router = Router.getInstance();
+    const routes =
+        /**
+         * @type {{ SYNC: !Route,
+         *           SYNC_ADVANCED: !Route }}
+         */
+        (router.getRoutes());
+    if (router.getCurrentRoute() === routes.SYNC_ADVANCED &&
         this.syncControlsHidden_()) {
-      router.navigateTo(router.getRoutes().SYNC);
+      router.navigateTo(routes.SYNC);
     }
   },
 
@@ -227,9 +252,8 @@ Polymer({
 
     return !!this.syncStatus.hasError &&
         this.syncStatus.statusAction !==
-        settings.StatusAction.ENTER_PASSPHRASE &&
+        StatusAction.ENTER_PASSPHRASE &&
         this.syncStatus.statusAction !==
-        settings.StatusAction.RETRIEVE_TRUSTED_VAULT_KEYS;
+        StatusAction.RETRIEVE_TRUSTED_VAULT_KEYS;
   },
 });
-})();

@@ -12,29 +12,32 @@
 #include "components/exo/seat.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
+#include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 
 namespace exo {
-
 namespace {
+
+using ::ui::mojom::DragOperation;
 
 constexpr base::TimeDelta kDataOfferDestructionTimeout =
     base::TimeDelta::FromMilliseconds(1000);
 
-ui::DragDropTypes::DragOperation DndActionToDragOperation(
-    DndAction dnd_action) {
+DragOperation DndActionToDragOperation(DndAction dnd_action) {
   switch (dnd_action) {
     case DndAction::kMove:
-      return ui::DragDropTypes::DRAG_MOVE;
+      return DragOperation::kMove;
     case DndAction::kCopy:
-      return ui::DragDropTypes::DRAG_COPY;
+      return DragOperation::kCopy;
     case DndAction::kAsk:
-      return ui::DragDropTypes::DRAG_LINK;
+      return DragOperation::kLink;
     case DndAction::kNone:
-      return ui::DragDropTypes::DRAG_NONE;
+      return DragOperation::kNone;
   }
 }
 
@@ -97,15 +100,28 @@ void DataDevice::OnDragEntered(const ui::DropTargetEvent& event) {
   delegate_->OnEnter(surface, event.location_f(), *data_offer_->get());
 }
 
-int DataDevice::OnDragUpdated(const ui::DropTargetEvent& event) {
+aura::client::DragUpdateInfo DataDevice::OnDragUpdated(
+    const ui::DropTargetEvent& event) {
   if (!data_offer_)
-    return ui::DragDropTypes::DRAG_NONE;
+    return aura::client::DragUpdateInfo();
+
+  ui::EndpointType endpoint_type = ui::EndpointType::kDefault;
+  Surface* surface = GetEffectiveTargetForEvent(event);
+  if (surface) {
+    endpoint_type =
+        seat_->data_exchange_delegate()->GetDataTransferEndpointType(
+            surface->window());
+  }
+  aura::client::DragUpdateInfo drag_info(
+      ui::DragDropTypes::DRAG_NONE, ui::DataTransferEndpoint(endpoint_type));
 
   delegate_->OnMotion(event.time_stamp(), event.location_f());
 
   // TODO(hirono): dnd_action() here may not be updated. Chrome needs to provide
   // a way to update DND action asynchronously.
-  return DndActionToDragOperation(data_offer_->get()->dnd_action());
+  drag_info.drag_operation = static_cast<int>(
+      DndActionToDragOperation(data_offer_->get()->dnd_action()));
+  return drag_info;
 }
 
 void DataDevice::OnDragExited() {
@@ -116,9 +132,9 @@ void DataDevice::OnDragExited() {
   data_offer_.reset();
 }
 
-int DataDevice::OnPerformDrop(const ui::DropTargetEvent& event) {
+DragOperation DataDevice::OnPerformDrop(const ui::DropTargetEvent& event) {
   if (!data_offer_)
-    return ui::DragDropTypes::DRAG_NONE;
+    return DragOperation::kNone;
 
   DndAction dnd_action = data_offer_->get()->dnd_action();
 
@@ -134,7 +150,7 @@ int DataDevice::OnPerformDrop(const ui::DropTargetEvent& event) {
   run_loop.Run();
 
   if (!alive)
-    return ui::DragDropTypes::DRAG_NONE;
+    return DragOperation::kNone;
 
   if (quit_closure_) {
     // DataOffer not destroyed by the client until the timeout.
@@ -144,7 +160,7 @@ int DataDevice::OnPerformDrop(const ui::DropTargetEvent& event) {
   }
 
   if (!drop_succeeded_)
-    return ui::DragDropTypes::DRAG_NONE;
+    return DragOperation::kNone;
 
   return DndActionToDragOperation(dnd_action);
 }
@@ -206,7 +222,7 @@ void DataDevice::SetSelectionToCurrentClipboardData() {
   DCHECK(focused_surface_);
   DataOffer* data_offer = delegate_->OnDataOffer();
   data_offer->SetClipboardData(
-      *ui::Clipboard::GetForCurrentThread(),
+      seat_->data_exchange_delegate(), *ui::Clipboard::GetForCurrentThread(),
       seat_->data_exchange_delegate()->GetDataTransferEndpointType(
           focused_surface_->get()->window()));
   delegate_->OnSelection(*data_offer);

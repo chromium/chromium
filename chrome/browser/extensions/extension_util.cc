@@ -13,7 +13,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/banners/app_banner_manager.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_sync_service.h"
 #include "chrome/browser/extensions/launch_util.h"
@@ -28,6 +27,7 @@
 #include "chrome/common/extensions/api/url_handlers/url_handlers_parser.h"
 #include "chrome/common/extensions/sync_helper.h"
 #include "components/variations/variations_associated_data.h"
+#include "components/webapps/browser/banners/app_banner_manager.h"
 #include "content/public/browser/site_instance.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
@@ -36,6 +36,7 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_icon_set.h"
+#include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/app_isolation_info.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
@@ -46,8 +47,8 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #endif
 
 namespace extensions {
@@ -117,8 +118,8 @@ void SetIsIncognitoEnabled(const std::string& extension_id,
       return;
 
     // TODO(treib,kalman): Should this be Manifest::IsComponentLocation(..)?
-    // (which also checks for EXTERNAL_COMPONENT).
-    if (extension->location() == Manifest::COMPONENT) {
+    // (which also checks for kExternalComponent).
+    if (extension->location() == mojom::ManifestLocation::kComponent) {
       // This shouldn't be called for component extensions unless it is called
       // by sync, for syncable component extensions.
       // See http://crbug.com/112290 and associated CLs for the sordid history.
@@ -203,6 +204,17 @@ bool IsAppLaunchableWithoutEnabling(const std::string& extension_id,
 
 bool ShouldSync(const Extension* extension,
                 content::BrowserContext* context) {
+  ExtensionManagement* extension_management =
+      ExtensionManagementFactory::GetForBrowserContext(context);
+  // Update URL is overridden only for non webstore extensions and offstore
+  // extensions should not be synced.
+  if (extension_management->IsUpdateUrlOverridden(extension->id())) {
+    const GURL update_url =
+        extension_management->GetEffectiveUpdateURL(*extension);
+    DCHECK(!extension_urls::IsWebstoreUpdateUrl(update_url))
+        << "Update URL cannot be overridden to be the webstore URL!";
+    return false;
+  }
   return sync_helper::IsSyncable(extension) &&
          !ExtensionPrefs::Get(context)->DoNotSync(extension->id());
 }
@@ -297,6 +309,19 @@ std::unique_ptr<const PermissionSet> GetInstallPromptPermissionSetForExtension(
                                                         optional_permissions);
   }
   return permissions_to_display;
+}
+
+std::vector<content::BrowserContext*> GetAllRelatedProfiles(Profile* profile) {
+  std::vector<Profile*> off_the_record_profiles =
+      profile->GetAllOffTheRecordProfiles();
+
+  std::vector<content::BrowserContext*> related_contexts;
+  related_contexts.reserve(1 + off_the_record_profiles.size());
+  related_contexts.push_back(profile->GetOriginalProfile());
+  for (Profile* off_the_record_profile : off_the_record_profiles)
+    related_contexts.push_back(off_the_record_profile);
+
+  return related_contexts;
 }
 
 }  // namespace util

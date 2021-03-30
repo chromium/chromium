@@ -116,7 +116,27 @@ suite(printer_status_test_cros.suiteName, function() {
          },
          {
            reason: PrinterStatusReason.PRINTER_QUEUE_FULL,
-           severity: PrinterStatusSeverity.REPORT
+           severity: PrinterStatusSeverity.UNKNOWN_SEVERITY
+         }
+       ],
+     },
+     {
+       printerId: 'ID8',
+       statusReasons: [{
+         reason: PrinterStatusReason.UNKNOWN_REASON,
+         severity: PrinterStatusSeverity.UNKNOWN_SEVERITY
+       }],
+     },
+     {
+       printerId: 'ID9',
+       statusReasons: [
+         {
+           reason: PrinterStatusReason.UNKNOWN_REASON,
+           severity: PrinterStatusSeverity.UNKNOWN_SEVERITY
+         },
+         {
+           reason: PrinterStatusReason.NO_ERROR,
+           severity: PrinterStatusSeverity.UNKNOWN_SEVERITY
          }
        ],
      }]
@@ -143,6 +163,15 @@ suite(printer_status_test_cros.suiteName, function() {
    */
   function escapeForwardSlahes(value) {
     return value.replace(/\//g, '\\/');
+  }
+
+  /**
+   * @param {!PrintPreviewDestinationDropdownCrosElement} dropdown
+   * @param {string} key
+   * @return {string}
+   */
+  function getIconString(dropdown, key) {
+    return dropdown.$$(`#${escapeForwardSlahes(key)}`).firstChild.icon;
   }
 
   setup(function() {
@@ -178,6 +207,10 @@ suite(printer_status_test_cros.suiteName, function() {
             createDestination('ID6', 'Six', DestinationOrigin.CROS);
         const destination7 =
             createDestination('ID7', 'Seven', DestinationOrigin.CROS);
+        const destination8 =
+            createDestination('ID8', 'Eight', DestinationOrigin.CROS);
+        const destination9 =
+            createDestination('ID9', 'Nine', DestinationOrigin.CROS);
 
         return waitBeforeNextRender(destinationSelect)
             .then(() => {
@@ -192,6 +225,8 @@ suite(printer_status_test_cros.suiteName, function() {
                 destination5,
                 destination6,
                 destination7,
+                destination8,
+                destination9,
               ];
 
               return whenStatusRequestsDone;
@@ -200,35 +235,60 @@ suite(printer_status_test_cros.suiteName, function() {
               return waitBeforeNextRender(destinationSelect);
             })
             .then(() => {
-              const dropdown = destinationSelect.$$('#dropdown');
+              const dropdown =
+                  /** @type {!PrintPreviewDestinationDropdownCrosElement} */ (
+                      destinationSelect.$$('#dropdown'));
+
+              // No error printer status.
               assertEquals(
                   'print-preview:printer-status-green',
-                  dropdown.$$(`#${escapeForwardSlahes(destination1.key)}`)
-                      .firstChild.icon);
+                  getIconString(dropdown, destination1.key));
+
+              // No error printer status + error printer status with unknown
+              // severity.
               assertEquals(
                   'print-preview:printer-status-green',
-                  dropdown.$$(`#${escapeForwardSlahes(destination2.key)}`)
-                      .firstChild.icon);
+                  getIconString(dropdown, destination2.key));
+
+              // No error printer status + error printer status with report
+              // severity.
               assertEquals(
                   'print-preview:printer-status-green',
-                  dropdown.$$(`#${escapeForwardSlahes(destination3.key)}`)
-                      .firstChild.icon);
+                  getIconString(dropdown, destination3.key));
+
+              // No error printer status + error printer status with warning
+              // severity.
               assertEquals(
                   'print-preview:printer-status-red',
-                  dropdown.$$(`#${escapeForwardSlahes(destination4.key)}`)
-                      .firstChild.icon);
+                  getIconString(dropdown, destination4.key));
+
+              // No error printer status + error printer status with error
+              // severity.
               assertEquals(
                   'print-preview:printer-status-red',
-                  dropdown.$$(`#${escapeForwardSlahes(destination5.key)}`)
-                      .firstChild.icon);
+                  getIconString(dropdown, destination5.key));
+
+              // Error printer status with unknown severity + error printer
+              // status with error severity.
               assertEquals(
                   'print-preview:printer-status-red',
-                  dropdown.$$(`#${escapeForwardSlahes(destination6.key)}`)
-                      .firstChild.icon);
+                  getIconString(dropdown, destination6.key));
+
+              // Error printer status with unknown severity + error printer
+              // status with report severity.
+              assertEquals(
+                  'print-preview:printer-status-green',
+                  getIconString(dropdown, destination7.key));
+
+              // Unknown reason printer status.
               assertEquals(
                   'print-preview:printer-status-grey',
-                  dropdown.$$(`#${escapeForwardSlahes(destination7.key)}`)
-                      .firstChild.icon);
+                  getIconString(dropdown, destination8.key));
+
+              // No error printer status + unknown reason printer status.
+              assertEquals(
+                  'print-preview:printer-status-green',
+                  getIconString(dropdown, destination9.key));
             });
         });
 
@@ -551,12 +611,6 @@ suite(destination_select_test_cros.suiteName, function() {
   }
 
   test(assert(destination_select_test_cros.TestNames.UpdateStatus), function() {
-    loadTimeData.overrideValues(
-        {cloudPrintDeprecationWarningsSuppressed: true});
-
-    // Repopulate |recentDestinationList| to have
-    // |cloudPrintDeprecationWarningsSuppressed| take effect during creation of
-    // new Destinations.
     populateRecentDestinationList();
     destinationSelect.recentDestinationList = recentDestinationList;
 
@@ -566,12 +620,6 @@ suite(destination_select_test_cros.suiteName, function() {
   });
 
   test(assert(destination_select_test_cros.TestNames.ChangeIcon), function() {
-    loadTimeData.overrideValues(
-        {cloudPrintDeprecationWarningsSuppressed: true});
-
-    // Repopulate |recentDestinationList| to have
-    // |cloudPrintDeprecationWarningsSuppressed| take effect during creation of
-    // new Destinations.
     populateRecentDestinationList();
     destinationSelect.recentDestinationList = recentDestinationList;
 

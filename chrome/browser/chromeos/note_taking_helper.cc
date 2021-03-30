@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "apps/launcher.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/stylus_utils.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -18,16 +19,15 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
+#include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/lock_screen_apps/state_controller.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/arc/arc_util.h"
-#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
-#include "chrome/browser/chromeos/lock_screen_apps/state_controller.h"
 #include "chrome/browser/chromeos/note_taking_controller_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
@@ -356,14 +356,14 @@ void NoteTakingHelper::SetProfileWithEnabledLockScreenApps(Profile* profile) {
   pref_change_registrar_.Init(profile->GetPrefs());
   pref_change_registrar_.Add(
       prefs::kNoteTakingAppsLockScreenAllowlist,
-      base::Bind(&NoteTakingHelper::OnAllowedNoteTakingAppsChanged,
-                 base::Unretained(this)));
+      base::BindRepeating(&NoteTakingHelper::OnAllowedNoteTakingAppsChanged,
+                          base::Unretained(this)));
   OnAllowedNoteTakingAppsChanged();
 }
 
 NoteTakingHelper::NoteTakingHelper()
     : launch_chrome_app_callback_(
-          base::Bind(&apps::LaunchPlatformAppWithAction)),
+          base::BindRepeating(&apps::LaunchPlatformAppWithAction)),
       note_taking_controller_client_(
           std::make_unique<NoteTakingControllerClient>(this)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -547,10 +547,18 @@ NoteTakingHelper::LaunchResult NoteTakingHelper::LaunchAppInternal(
       return LaunchResult::ANDROID_NOT_RUNNING;
 
     GURL clip_data_uri;
+    bool requires_sharing = false;
     if (!path.empty()) {
-      if (!file_manager::util::ConvertPathToArcUrl(path, &clip_data_uri) ||
+      if (!file_manager::util::ConvertPathToArcUrl(path, &clip_data_uri,
+                                                   &requires_sharing) ||
           !clip_data_uri.is_valid()) {
         LOG(WARNING) << "Failed to convert " << path.value() << " to ARC URI";
+        return LaunchResult::ANDROID_FAILED_TO_CONVERT_PATH;
+      }
+      // TODO(b/177651157): To support annotating image from Google Drive.
+      if (requires_sharing) {
+        LOG(ERROR) << "Can't launch Android app with path " << path.value()
+                   << ". NoteTakingHelper does not handle path sharing yet.";
         return LaunchResult::ANDROID_FAILED_TO_CONVERT_PATH;
       }
     }

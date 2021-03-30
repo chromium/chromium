@@ -45,7 +45,7 @@ void UsbServiceAndroid::DeviceAttached(JNIEnv* env,
   scoped_refptr<UsbDeviceAndroid> device =
       UsbDeviceAndroid::Create(env, weak_factory_.GetWeakPtr(), usb_device);
   AddDevice(device);
-  NotifyDeviceAdded(device, /*is_restricted_device=*/false);
+  NotifyDeviceAdded(device);
 }
 
 void UsbServiceAndroid::DeviceDetached(JNIEnv* env,
@@ -63,7 +63,7 @@ void UsbServiceAndroid::DeviceDetached(JNIEnv* env,
   USB_LOG(USER) << "USB device removed: id=" << device->device_id()
                 << " guid=" << device->guid();
 
-  NotifyDeviceRemoved(device, /*is_restricted_device=*/false);
+  NotifyDeviceRemoved(device);
 }
 
 void UsbServiceAndroid::DevicePermissionRequestComplete(

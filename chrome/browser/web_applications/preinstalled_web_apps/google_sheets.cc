@@ -116,7 +116,7 @@ ExternalInstallOptions GetConfigForGoogleSheets() {
         GURL("https://docs.google.com/spreadsheets/?usp=installed_webapp");
     info->scope = GURL("https://docs.google.com/spreadsheets/");
     info->display_mode = DisplayMode::kBrowser;
-    info->icon_bitmaps_any = LoadBundledIcons(
+    info->icon_bitmaps.any = LoadBundledIcons(
         {IDR_PREINSTALLED_WEB_APPS_GOOGLE_SHEETS_ICON_192_PNG});
     return info;
   });

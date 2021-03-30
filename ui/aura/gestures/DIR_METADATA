@@ -1,4 +1,4 @@
-monorail:  {
+monorail: {
   component: "UI>Input"
 }
 team_email: "input-dev@chromium.org"

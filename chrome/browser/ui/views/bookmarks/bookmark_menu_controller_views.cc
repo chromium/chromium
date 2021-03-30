@@ -13,6 +13,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/page_navigator.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -24,13 +25,15 @@ using bookmarks::BookmarkNode;
 using content::PageNavigator;
 using views::MenuItemView;
 
-BookmarkMenuController::BookmarkMenuController(Browser* browser,
-                                               PageNavigator* page_navigator,
-                                               views::Widget* parent,
-                                               const BookmarkNode* node,
-                                               size_t start_child_index,
-                                               bool for_drop)
-    : menu_delegate_(new BookmarkMenuDelegate(browser, page_navigator, parent)),
+BookmarkMenuController::BookmarkMenuController(
+    Browser* browser,
+    base::RepeatingCallback<content::PageNavigator*()> get_navigator,
+    views::Widget* parent,
+    const BookmarkNode* node,
+    size_t start_child_index,
+    bool for_drop)
+    : menu_delegate_(
+          new BookmarkMenuDelegate(browser, std::move(get_navigator), parent)),
       node_(node),
       observer_(nullptr),
       for_drop_(for_drop),
@@ -75,12 +78,9 @@ MenuItemView* BookmarkMenuController::context_menu() const {
   return menu_delegate_->context_menu();
 }
 
-void BookmarkMenuController::SetPageNavigator(PageNavigator* navigator) {
-  menu_delegate_->SetPageNavigator(navigator);
-}
-
-base::string16 BookmarkMenuController::GetTooltipText(int id,
-                                                const gfx::Point& p) const {
+std::u16string BookmarkMenuController::GetTooltipText(
+    int id,
+    const gfx::Point& p) const {
   return menu_delegate_->GetTooltipText(id, p);
 }
 
@@ -114,17 +114,19 @@ bool BookmarkMenuController::CanDrop(MenuItemView* menu,
   return menu_delegate_->CanDrop(menu, data);
 }
 
-int BookmarkMenuController::GetDropOperation(
+ui::mojom::DragOperation BookmarkMenuController::GetDropOperation(
     MenuItemView* item,
     const ui::DropTargetEvent& event,
     DropPosition* position) {
   return menu_delegate_->GetDropOperation(item, event, position);
 }
 
-int BookmarkMenuController::OnPerformDrop(MenuItemView* menu,
-                                          DropPosition position,
-                                          const ui::DropTargetEvent& event) {
-  int result = menu_delegate_->OnPerformDrop(menu, position, event);
+ui::mojom::DragOperation BookmarkMenuController::OnPerformDrop(
+    MenuItemView* menu,
+    DropPosition position,
+    const ui::DropTargetEvent& event) {
+  ui::mojom::DragOperation result =
+      menu_delegate_->OnPerformDrop(menu, position, event);
   if (for_drop_)
     delete this;
   return result;

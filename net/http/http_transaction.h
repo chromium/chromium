@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "net/base/completion_once_callback.h"
+#include "net/base/completion_repeating_callback.h"
 #include "net/base/load_states.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_export.h"
@@ -55,12 +56,9 @@ class NET_EXPORT_PRIVATE HttpTransaction {
   // authentication is required. We should notify this callback that a
   // connection was established, even though the stream might not be ready for
   // us to send data through it.
-  //
-  // TODO(crbug.com/591068): Allow ERR_IO_PENDING, add a new state machine state
-  // to wait on a callback (either passed to this callback or a new explicit
-  // method like ResumeNetworkStart()) to be called before continuing.
   using ConnectedCallback =
-      base::RepeatingCallback<int(const TransportInfo& info)>;
+      base::RepeatingCallback<int(const TransportInfo& info,
+                                  CompletionOnceCallback callback)>;
 
   // Stops any pending IO and destroys the transaction object.
   virtual ~HttpTransaction() {}
@@ -200,6 +198,8 @@ class NET_EXPORT_PRIVATE HttpTransaction {
   virtual void SetConnectedCallback(const ConnectedCallback& callback) = 0;
 
   virtual void SetRequestHeadersCallback(RequestHeadersCallback callback) = 0;
+  virtual void SetEarlyResponseHeadersCallback(
+      ResponseHeadersCallback callback) = 0;
   virtual void SetResponseHeadersCallback(ResponseHeadersCallback callback) = 0;
 
   // Resumes the transaction after being deferred.

@@ -11,16 +11,13 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
-#include "chrome/browser/chromeos/borealis/borealis_service.h"
-#include "chrome/browser/chromeos/borealis/borealis_shutdown_monitor.h"
-#include "chrome/browser/chromeos/borealis/borealis_util.h"
-#include "chrome/browser/chromeos/crosapi/browser_manager.h"
+#include "chrome/browser/ash/crosapi/browser_manager.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"
 #include "chrome/browser/chromeos/crostini/crostini_terminal.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_manager.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_manager_factory.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/extensions/context_menu_matcher.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -125,12 +122,13 @@ void AppServiceContextMenu::ExecuteCommand(int command_id, int event_flags) {
 
     case ash::APP_CONTEXT_MENU_NEW_WINDOW:
       if (app_type_ == apps::mojom::AppType::kLacros)
-        crosapi::BrowserManager::Get()->NewWindow();
+        crosapi::BrowserManager::Get()->NewWindow(/*incognito=*/false);
       else
         controller()->CreateNewWindow(/*incognito=*/false);
       break;
 
     case ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW:
+      // TODO(crbug.com/1188020): Support Incognito window of Lacros.
       controller()->CreateNewWindow(/*incognito=*/true);
       break;
 
@@ -141,10 +139,6 @@ void AppServiceContextMenu::ExecuteCommand(int command_id, int event_flags) {
       } else if (app_id() == plugin_vm::kPluginVmShelfAppId) {
         plugin_vm::PluginVmManagerFactory::GetForProfile(profile())
             ->StopPluginVm(plugin_vm::kPluginVmName, /*force=*/false);
-      } else if (app_id() == borealis::kBorealisAppId) {
-        borealis::BorealisService::GetForProfile(profile())
-            ->ShutdownMonitor()
-            .ShutdownNow();
       } else {
         LOG(ERROR) << "App " << app_id()
                    << " should not have a shutdown guest OS command.";
@@ -271,7 +265,7 @@ void AppServiceContextMenu::OnGetMenuModel(
   if (!build_extension_menu_before_default)
     BuildExtensionAppShortcutsMenu(menu_model.get());
 
-  app_shortcut_items_ = std::make_unique<arc::ArcAppShortcutItems>();
+  app_shortcut_items_ = std::make_unique<apps::AppShortcutItems>();
   for (size_t i = index; i < menu_items->items.size(); i++) {
     if (menu_items->items[i]->type == apps::mojom::MenuItemType::kCommand) {
       AddContextMenuOption(
@@ -297,7 +291,7 @@ void AppServiceContextMenu::BuildExtensionAppShortcutsMenu(
   // Assign unique IDs to commands added by the app itself.
   int index = ash::USE_LAUNCH_TYPE_COMMAND_END;
   extension_menu_items_->AppendExtensionItems(
-      extensions::MenuItem::ExtensionKey(app_id()), base::string16(), &index,
+      extensions::MenuItem::ExtensionKey(app_id()), std::u16string(), &index,
       false /*is_action_menu*/);
 
   const int appended_count = index - ash::USE_LAUNCH_TYPE_COMMAND_END;

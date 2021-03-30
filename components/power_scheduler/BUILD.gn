@@ -1,0 +1,39 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("power_scheduler") {
+  sources = [
+    "power_mode.cc",
+    "power_mode.h",
+    "power_mode_arbiter.cc",
+    "power_mode_arbiter.h",
+    "power_mode_voter.cc",
+    "power_mode_voter.h",
+    "traced_power_mode.cc",
+    "traced_power_mode.h",
+  ]
+
+  if (is_android) {
+    sources += [
+      "power_scheduler.cc",
+      "power_scheduler.h",
+    ]
+  }
+
+  defines = [ "IS_POWER_SCHEDULER_IMPL" ]
+
+  deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "power_mode_arbiter_unittest.cc" ]
+
+  deps = [
+    ":power_scheduler",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

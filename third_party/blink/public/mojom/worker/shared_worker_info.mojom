@@ -17,8 +17,7 @@ import "url/mojom/url.mojom";
 struct SharedWorkerInfo {
   url.mojom.Url url;
   WorkerOptions options;
-  string content_security_policy;
-  network.mojom.ContentSecurityPolicyType content_security_policy_type;
+  array<network.mojom.ContentSecurityPolicy> content_security_policies;
   network.mojom.IPAddressSpace creation_address_space;
   FetchClientSettingsObject outside_fetch_client_settings_object;
 };

@@ -1,0 +1,16 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<form id="form" action=""></form>
+<script>
+async_test(t => {
+  appHistory.onnavigate = t.step_func_done(e => {
+    assert_true(e.cancelable);
+    assert_true(e.canRespond);
+    assert_false(e.userInitiated);
+    assert_true(e.hashChange);
+    assert_equals(e.formData, null);
+  });
+  location.href = "#";
+}, "location API fires navigate event");
+</script>

@@ -82,7 +82,7 @@ bool ExtensionDevToolsInfoBarDelegate::ShouldExpire(
   return false;
 }
 
-base::string16 ExtensionDevToolsInfoBarDelegate::GetMessageText() const {
+std::u16string ExtensionDevToolsInfoBarDelegate::GetMessageText() const {
   return l10n_util::GetStringFUTF16(IDS_DEV_TOOLS_INFOBAR_LABEL,
                                     extension_name_);
 }

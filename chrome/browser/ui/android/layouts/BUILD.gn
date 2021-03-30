@@ -8,7 +8,9 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/layouts/CompositorModelChangeProcessor.java",
     "java/src/org/chromium/chrome/browser/layouts/EventFilter.java",
+    "java/src/org/chromium/chrome/browser/layouts/FilterLayoutStateObserver.java",
     "java/src/org/chromium/chrome/browser/layouts/LayoutManager.java",
+    "java/src/org/chromium/chrome/browser/layouts/LayoutManagerProvider.java",
     "java/src/org/chromium/chrome/browser/layouts/LayoutStateProvider.java",
     "java/src/org/chromium/chrome/browser/layouts/LayoutType.java",
     "java/src/org/chromium/chrome/browser/layouts/SceneOverlay.java",
@@ -24,9 +26,8 @@ android_library("java") {
   deps = [
     "third_party/float_property:java",
     "//base:base_java",
-    "//base:jni_java",
     "//components/browser_ui/widget/android:java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_java",
   ]
 }
@@ -56,6 +57,7 @@ java_library("junit") {
 
   sources = [
     "java/src/org/chromium/chrome/browser/layouts/CompositorModelChangeProcessorUnitTest.java",
+    "java/src/org/chromium/chrome/browser/layouts/FilterLayoutStateObserverTest.java",
     "java/src/org/chromium/chrome/browser/layouts/animation/CompositorAnimationHandlerTest.java",
     "java/src/org/chromium/chrome/browser/layouts/animation/CompositorAnimatorTest.java",
   ]

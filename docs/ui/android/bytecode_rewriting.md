@@ -53,6 +53,23 @@ related to this should get detected by
 [compile_java.py](https://source.chromium.org/chromium/chromium/src/+/master:build/android/gyp/compile_java.py),
 and print a message pointing users here, which is likely why you're reading this :)
 
+If you need to apply FragmentActivityReplacer to a given target then add …
+
+```
+bytecode_rewriter_target = "//build/android/bytecode:fragment_activity_replacer"
+```
+
+… to the build configuration for that target.
+
+If you still get a build or runtime error related to a FragmentActivity after adding in the
+replacer, then the library may actually rely on the Activity being a FragmentActivity. If so, it
+likely won't work with WebLayer as-is. If you know there are no plans to use the library in
+WebLayer, you can try adding this instead:
+
+```
+bytecode_rewriter_target = "//build/android/bytecode:fragment_activity_replacer_single_androidx"
+```
+
 ## How does this affect my code?
 
 The goal is for these changes to be as transparent as possible; most code shouldn't run into issues.

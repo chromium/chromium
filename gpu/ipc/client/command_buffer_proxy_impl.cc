@@ -11,9 +11,11 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/histogram.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/gpu_control_client.h"
@@ -68,8 +70,7 @@ ContextResult CommandBufferProxyImpl::Initialize(
     const gpu::ContextCreationAttribs& attribs,
     const GURL& active_url) {
   DCHECK(!share_group || (stream_id_ == share_group->stream_id_));
-  TRACE_EVENT1("gpu", "GpuChannelHost::CreateViewCommandBuffer",
-               "surface_handle", surface_handle);
+  TRACE_EVENT0("gpu", "GpuChannelHost::CreateViewCommandBuffer");
 
   // Drop the |channel_| if this method does not succeed and early-outs, to
   // prevent cleanup on destruction.
@@ -485,8 +486,13 @@ void CommandBufferProxyImpl::SetLock(base::Lock* lock) {
 
 void CommandBufferProxyImpl::EnsureWorkVisible() {
   // Don't send messages once disconnected.
-  if (!disconnected_)
-    channel_->VerifyFlush(UINT32_MAX);
+  if (disconnected_)
+    return;
+
+  const base::ElapsedTimer elapsed_timer;
+  channel_->VerifyFlush(UINT32_MAX);
+  GetUMAHistogramEnsureWorkVisibleDuration()->Add(
+      elapsed_timer.Elapsed().InMicroseconds());
 }
 
 gpu::CommandBufferNamespace CommandBufferProxyImpl::GetNamespaceID() const {
@@ -753,6 +759,63 @@ void CommandBufferProxyImpl::TryUpdateStateDontReportError() {
 gpu::CommandBufferSharedState* CommandBufferProxyImpl::shared_state() const {
   return reinterpret_cast<gpu::CommandBufferSharedState*>(
       shared_state_mapping_.memory());
+}
+
+base::HistogramBase*
+CommandBufferProxyImpl::GetUMAHistogramEnsureWorkVisibleDuration() {
+  if (!uma_histogram_ensure_work_visible_duration_) {
+    // Combine two linear histograms:
+    // 1/4 ms buckets in 0..15ms = 60 buckets
+    // 1/4 s buckets in 25ms .. 30s = 120 buckets
+    // This gives good cardinality for both VSYNC intervals and 30s watchdog:
+    // 0.00 ms
+    // 0.25 ms
+    // 0.50 ms
+    // 0.75 ms
+    // 1.00 ms
+    // 1.25 ms
+    // 1.50 ms
+    // ...
+    // 14.00 ms
+    // 14.25 ms
+    // 14.50 ms
+    // 14.75 ms
+    // 15.00 ms
+    // 0.25 s
+    // 0.50 s
+    // 0.75 s
+    // 1.00 s
+    // 1.25 s
+    // 1.50 s
+    // ...
+    // 29.00 s
+    // 29.25 s
+    // 29.50 s
+    // 29.75 s
+    //
+    // Histogram values are in microseconds.
+
+    std::vector<base::HistogramBase::Sample> intervals;
+    constexpr base::HistogramBase::Sample k15Milliseconds = 15 * 1000;
+    constexpr base::HistogramBase::Sample k30Seconds = 30 * 1000 * 1000;
+    constexpr int kFirstPartCount = 60;
+    constexpr int kSecondPartCount = 120;
+    intervals.reserve(kFirstPartCount + kSecondPartCount);
+    for (int i = 0; i <= kFirstPartCount; ++i) {
+      intervals.push_back(k15Milliseconds /
+                          static_cast<float>(kFirstPartCount) * i);
+    }
+    // 0 index was already populated by the first part.
+    for (int i = 1; i < kSecondPartCount; ++i) {
+      intervals.push_back(k30Seconds / static_cast<float>(kSecondPartCount) *
+                          i);
+    }
+    uma_histogram_ensure_work_visible_duration_ =
+        base::CustomHistogram::FactoryGet(
+            "GPU.EnsureWorkVisibleDuration", intervals,
+            base::HistogramBase::kUmaTargetedHistogramFlag);
+  }
+  return uma_histogram_ensure_work_visible_duration_;
 }
 
 void CommandBufferProxyImpl::OnSwapBuffersCompleted(

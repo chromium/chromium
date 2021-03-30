@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/ui_base_switches_util.h"
@@ -21,7 +22,9 @@
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/canvas.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/drag_controller.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_targeter.h"
@@ -61,9 +64,10 @@ class MouseEnterExitEvent : public ui::MouseEvent {
 // is the reason this system exists at all).
 class AnnounceTextView : public View {
  public:
+  METADATA_HEADER(AnnounceTextView);
   ~AnnounceTextView() override = default;
 
-  void Announce(const base::string16& text) {
+  void Announce(const std::u16string& text) {
     // TODO(crbug.com/1024898): Use kLiveRegionChanged when supported across
     // screen readers and platforms. See bug for details.
     announce_text_ = text;
@@ -76,11 +80,15 @@ class AnnounceTextView : public View {
     // May require setting kLiveStatus, kContainerLiveStatus to "polite".
     node_data->role = ax::mojom::Role::kAlert;
     node_data->SetName(announce_text_);
+    node_data->AddState(ax::mojom::State::kInvisible);
   }
 
  private:
-  base::string16 announce_text_;
+  std::u16string announce_text_;
 };
+
+BEGIN_METADATA(AnnounceTextView, View)
+END_METADATA
 
 // This event handler receives events in the pre-target phase and takes care of
 // the following:
@@ -258,11 +266,12 @@ void RootView::DeviceScaleFactorChanged(float old_device_scale_factor,
 
 // Accessibility ---------------------------------------------------------------
 
-void RootView::AnnounceText(const base::string16& text) {
+void RootView::AnnounceText(const std::u16string& text) {
 #if defined(OS_APPLE)
-  // MacOSX has its own API for making announcements; see AnnounceText()
-  // override in ax_platform_node_mac.[h|mm]
-  NOTREACHED();
+  gfx::NativeViewAccessible native = GetViewAccessibility().GetNativeObject();
+  auto* ax_node = ui::AXPlatformNode::FromNativeViewAccessible(native);
+  if (ax_node)
+    ax_node->AnnounceText(text);
 #else
   DCHECK(GetWidget());
   DCHECK(GetContentsView());
@@ -461,7 +470,12 @@ void RootView::OnMouseReleased(const ui::MouseEvent& event) {
     // We allow the view to delete us from the event dispatch callback. As such,
     // configure state such that we're done first, then call View.
     View* mouse_pressed_handler = mouse_pressed_handler_;
+
+    // The gesture handler should not be reset when handling the mouse release.
+    // Otherwise, the gesture movements in progress such as the gesture scroll
+    // is interrupted.
     SetMouseHandler(nullptr);
+
     ui::EventDispatchDetails dispatch_details =
         DispatchEvent(mouse_pressed_handler, &mouse_released);
     if (dispatch_details.dispatcher_destroyed)
@@ -483,7 +497,7 @@ void RootView::OnMouseCaptureLost() {
     // configure state such that we're done first, then call View.
     View* mouse_pressed_handler = mouse_pressed_handler_;
     View* gesture_handler = gesture_handler_;
-    SetMouseHandler(nullptr);
+    SetMouseAndGestureHandler(nullptr);
     if (mouse_pressed_handler)
       mouse_pressed_handler->OnMouseCaptureLost();
     else
@@ -623,12 +637,9 @@ bool RootView::OnMouseWheel(const ui::MouseWheelEvent& event) {
   return event.handled();
 }
 
-void RootView::SetMouseHandler(View* new_mh) {
-  // If we're clearing the mouse handler, clear explicit_mouse_handler_ as well.
-  explicit_mouse_handler_ = (new_mh != nullptr);
-  mouse_pressed_handler_ = new_mh;
-  gesture_handler_ = new_mh;
-  drag_info_.Reset();
+void RootView::SetMouseAndGestureHandler(View* new_handler) {
+  SetMouseHandler(new_handler);
+  gesture_handler_ = new_handler;
 }
 
 void RootView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -744,6 +755,13 @@ ui::EventDispatchDetails RootView::NotifyEnterExitOfDescendant(
   return ui::EventDispatchDetails();
 }
 
+void RootView::SetMouseHandler(View* new_mouse_handler) {
+  // If we're clearing the mouse handler, clear explicit_mouse_handler_ as well.
+  explicit_mouse_handler_ = (new_mouse_handler != nullptr);
+  mouse_pressed_handler_ = new_mouse_handler;
+  drag_info_.Reset();
+}
+
 bool RootView::CanDispatchToTarget(ui::EventTarget* target) {
   return event_dispatch_target_ == target;
 }
@@ -775,7 +793,7 @@ ui::EventDispatchDetails RootView::PostDispatchEvent(ui::EventTarget* target,
     // In case a drag was in progress, reset all the handlers. Otherwise, just
     // reset the gesture handler.
     if (gesture_handler_ && gesture_handler_ == mouse_pressed_handler_)
-      SetMouseHandler(nullptr);
+      SetMouseAndGestureHandler(nullptr);
     else
       gesture_handler_ = nullptr;
   }

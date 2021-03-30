@@ -25,7 +25,6 @@ class NativeUnwinderMac : public Unwinder {
   bool CanUnwindFrom(const Frame& current_frame) const override;
   UnwindResult TryUnwind(RegisterContext* thread_context,
                          uintptr_t stack_top,
-                         ModuleCache* module_cache,
                          std::vector<Frame>* stack) const override;
 
  private:
@@ -36,8 +35,7 @@ class NativeUnwinderMac : public Unwinder {
   // Returns the result from unw_step.
   int UnwindStep(unw_context_t* unwind_context,
                  unw_cursor_t* cursor,
-                 bool at_first_frame,
-                 ModuleCache* module_cache) const;
+                 bool at_first_frame) const;
 
   Optional<UnwindResult> CheckPostconditions(int step_result,
                                              unw_word_t prev_rsp,

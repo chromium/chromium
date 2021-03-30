@@ -19,6 +19,10 @@
 #include "ui/events/devices/device_data_manager_test_api.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/dbus/u2f/u2f_client.h"
+#endif
+
 namespace {
 
 const char kTouchEventFeatureDetectionEnabledHistogramName[] =
@@ -32,6 +36,21 @@ class ChromeBrowserMainExtraPartsMetricsTest : public testing::Test {
   ~ChromeBrowserMainExtraPartsMetricsTest() override;
 
  protected:
+  void SetUp() override {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // ChromeBrowserMainExtraPartsMetrics::RecordMetrics() requires a U2FClient,
+    // which would ordinarily have been set up by browser DBus initialization.
+    chromeos::U2FClient::InitializeFake();
+#endif
+  }
+
+  void TearDown() override {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    task_environment_.RunUntilIdle();
+    chromeos::U2FClient::Shutdown();
+#endif
+  }
+
 #if defined(USE_OZONE) || defined(USE_X11)
   ui::DeviceDataManagerTestApi device_data_manager_test_api_;
 #endif

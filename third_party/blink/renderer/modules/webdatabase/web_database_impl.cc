@@ -4,20 +4,29 @@
 
 #include "third_party/blink/renderer/modules/webdatabase/web_database_impl.h"
 
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/renderer/modules/webdatabase/database_tracker.h"
 #include "third_party/blink/renderer/modules/webdatabase/quota_tracker.h"
 
 namespace blink {
 
+namespace {
+
+WebDatabaseImpl& GetWebDatabase() {
+  DEFINE_STATIC_LOCAL(WebDatabaseImpl, web_database, ());
+  return web_database;
+}
+
+}  // namespace
+
 WebDatabaseImpl::WebDatabaseImpl() = default;
 
 WebDatabaseImpl::~WebDatabaseImpl() = default;
 
-void WebDatabaseImpl::Create(
+void WebDatabaseImpl::Bind(
     mojo::PendingReceiver<mojom::blink::WebDatabase> receiver) {
-  mojo::MakeSelfOwnedReceiver(std::make_unique<WebDatabaseImpl>(),
-                              std::move(receiver));
+  // This should be called only once per process on RenderProcessWillLaunch.
+  DCHECK(!GetWebDatabase().receiver_.is_bound());
+  GetWebDatabase().receiver_.Bind(std::move(receiver));
 }
 
 void WebDatabaseImpl::UpdateSize(

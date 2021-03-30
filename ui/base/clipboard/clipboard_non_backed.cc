@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
@@ -31,8 +32,8 @@
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/ozone/buildflags.h"
 
 namespace ui {
 
@@ -113,7 +114,7 @@ class ClipboardInternal {
   }
 
   // Reads text from the ClipboardData.
-  void ReadText(base::string16* result) const {
+  void ReadText(std::u16string* result) const {
     std::string utf8_result;
     ReadAsciiText(&utf8_result);
     *result = base::UTF8ToUTF16(utf8_result);
@@ -134,7 +135,7 @@ class ClipboardInternal {
   }
 
   // Reads HTML from the ClipboardData.
-  void ReadHTML(base::string16* markup,
+  void ReadHTML(std::u16string* markup,
                 std::string* src_url,
                 uint32_t* fragment_start,
                 uint32_t* fragment_end) const {
@@ -157,7 +158,7 @@ class ClipboardInternal {
   }
 
   // Reads SVG from the ClipboardData.
-  void ReadSvg(base::string16* markup) const {
+  void ReadSvg(std::u16string* markup) const {
     markup->clear();
 
     if (!HasFormat(ClipboardInternalFormat::kSvg))
@@ -195,8 +196,8 @@ class ClipboardInternal {
   }
 
   // Reads data of type |type| from the ClipboardData.
-  void ReadCustomData(const base::string16& type,
-                      base::string16* result) const {
+  void ReadCustomData(const std::u16string& type,
+                      std::u16string* result) const {
     result->clear();
     const ClipboardData* data = GetData();
     if (!HasFormat(ClipboardInternalFormat::kCustom))
@@ -206,8 +207,13 @@ class ClipboardInternal {
                           data->custom_data_data().size(), type, result);
   }
 
+  // Reads filenames from the ClipboardData.
+  const std::vector<ui::FileInfo>& ReadFilenames() const {
+    return GetData()->filenames();
+  }
+
   // Reads bookmark from the ClipboardData.
-  void ReadBookmark(base::string16* title, std::string* url) const {
+  void ReadBookmark(std::u16string* title, std::string* url) const {
     if (title)
       title->clear();
     if (url)
@@ -248,7 +254,7 @@ class ClipboardInternal {
     auto* data = GetData();
     if (!policy_controller || !data)
       return true;
-    return policy_controller->IsDataReadAllowed(data->source(), data_dst);
+    return policy_controller->IsClipboardReadAllowed(data->source(), data_dst);
   }
 
  private:
@@ -304,6 +310,11 @@ class ClipboardDataBuilder {
     data->SetRTFData(std::string(rtf_data, rtf_len));
   }
 
+  static void WriteFilenames(std::vector<ui::FileInfo> filenames) {
+    ClipboardData* data = GetCurrentData();
+    data->set_filenames(std::move(filenames));
+  }
+
   static void WriteBookmark(const char* title_data,
                             size_t title_len,
                             const char* url_data,
@@ -349,15 +360,6 @@ class ClipboardDataBuilder {
 
 ClipboardData* ClipboardDataBuilder::current_data_ = nullptr;
 
-// linux-chromeos uses non-backed clipboard by default, but supports ozone x11
-// with flag --use-system-clipbboard.
-#if !BUILDFLAG(IS_CHROMEOS_ASH) || !BUILDFLAG(OZONE_PLATFORM_X11)
-// Clipboard factory method.
-Clipboard* Clipboard::Create() {
-  return new ClipboardNonBacked;
-}
-#endif
-
 // static
 ClipboardNonBacked* ClipboardNonBacked::GetForCurrentThread() {
   auto* clipboard = Clipboard::GetForCurrentThread();
@@ -399,6 +401,12 @@ std::unique_ptr<ClipboardData> ClipboardNonBacked::WriteClipboardData(
 
 void ClipboardNonBacked::OnPreShutdown() {}
 
+DataTransferEndpoint* ClipboardNonBacked::GetSource(
+    ClipboardBuffer buffer) const {
+  const ClipboardData* data = clipboard_internal_->GetData();
+  return data ? data->source() : nullptr;
+}
+
 uint64_t ClipboardNonBacked::GetSequenceNumber(ClipboardBuffer buffer) const {
   DCHECK(CalledOnValidThread());
   return clipboard_internal_->sequence_number();
@@ -433,6 +441,11 @@ bool ClipboardNonBacked::IsFormatAvailable(
   if (format == ClipboardFormatType::GetWebKitSmartPasteType())
     return clipboard_internal_->IsFormatAvailable(
         ClipboardInternalFormat::kWeb);
+  // Only support filenames if chrome://flags#clipboard-filenames is enabled.
+  if (format == ClipboardFormatType::GetFilenamesType() &&
+      base::FeatureList::IsEnabled(features::kClipboardFilenames))
+    return clipboard_internal_->IsFormatAvailable(
+        ClipboardInternalFormat::kFilenames);
   const ClipboardData* data = clipboard_internal_->GetData();
   return data && data->custom_data_format() == format.GetName();
 }
@@ -446,7 +459,7 @@ void ClipboardNonBacked::Clear(ClipboardBuffer buffer) {
 void ClipboardNonBacked::ReadAvailableTypes(
     ClipboardBuffer buffer,
     const DataTransferEndpoint* data_dst,
-    std::vector<base::string16>* types) const {
+    std::vector<std::u16string>* types) const {
   DCHECK(CalledOnValidThread());
   DCHECK(types);
 
@@ -466,6 +479,9 @@ void ClipboardNonBacked::ReadAvailableTypes(
         base::UTF8ToUTF16(ClipboardFormatType::GetRtfType().GetName()));
   if (IsFormatAvailable(ClipboardFormatType::GetBitmapType(), buffer, data_dst))
     types->push_back(base::UTF8ToUTF16(kMimeTypePNG));
+  if (IsFormatAvailable(ClipboardFormatType::GetFilenamesType(), buffer,
+                        data_dst))
+    types->push_back(base::UTF8ToUTF16(kMimeTypeURIList));
 
   if (clipboard_internal_->IsFormatAvailable(
           ClipboardInternalFormat::kCustom) &&
@@ -476,13 +492,13 @@ void ClipboardNonBacked::ReadAvailableTypes(
   }
 }
 
-std::vector<base::string16>
+std::vector<std::u16string>
 ClipboardNonBacked::ReadAvailablePlatformSpecificFormatNames(
     ClipboardBuffer buffer,
     const DataTransferEndpoint* data_dst) const {
   DCHECK(CalledOnValidThread());
 
-  std::vector<base::string16> types;
+  std::vector<std::u16string> types;
 
   if (!clipboard_internal_->IsReadAllowed(data_dst))
     return types;
@@ -511,7 +527,7 @@ ClipboardNonBacked::ReadAvailablePlatformSpecificFormatNames(
 
 void ClipboardNonBacked::ReadText(ClipboardBuffer buffer,
                                   const DataTransferEndpoint* data_dst,
-                                  base::string16* result) const {
+                                  std::u16string* result) const {
   DCHECK(CalledOnValidThread());
 
   if (!clipboard_internal_->IsReadAllowed(data_dst))
@@ -543,7 +559,7 @@ void ClipboardNonBacked::ReadAsciiText(ClipboardBuffer buffer,
 
 void ClipboardNonBacked::ReadHTML(ClipboardBuffer buffer,
                                   const DataTransferEndpoint* data_dst,
-                                  base::string16* markup,
+                                  std::u16string* markup,
                                   std::string* src_url,
                                   uint32_t* fragment_start,
                                   uint32_t* fragment_end) const {
@@ -562,7 +578,7 @@ void ClipboardNonBacked::ReadHTML(ClipboardBuffer buffer,
 
 void ClipboardNonBacked::ReadSvg(ClipboardBuffer buffer,
                                  const DataTransferEndpoint* data_dst,
-                                 base::string16* result) const {
+                                 std::u16string* result) const {
   DCHECK(CalledOnValidThread());
 
   if (!clipboard_internal_->IsReadAllowed(data_dst))
@@ -607,9 +623,9 @@ void ClipboardNonBacked::ReadImage(ClipboardBuffer buffer,
 }
 
 void ClipboardNonBacked::ReadCustomData(ClipboardBuffer buffer,
-                                        const base::string16& type,
+                                        const std::u16string& type,
                                         const DataTransferEndpoint* data_dst,
-                                        base::string16* result) const {
+                                        std::u16string* result) const {
   DCHECK(CalledOnValidThread());
 
   if (!clipboard_internal_->IsReadAllowed(data_dst))
@@ -623,8 +639,25 @@ void ClipboardNonBacked::ReadCustomData(ClipboardBuffer buffer,
 #endif
 }
 
+void ClipboardNonBacked::ReadFilenames(
+    ClipboardBuffer buffer,
+    const DataTransferEndpoint* data_dst,
+    std::vector<ui::FileInfo>* result) const {
+  DCHECK(CalledOnValidThread());
+
+  if (!clipboard_internal_->IsReadAllowed(data_dst))
+    return;
+
+  RecordRead(ClipboardFormatMetric::kFilenames);
+  *result = clipboard_internal_->ReadFilenames();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ClipboardMonitor::GetInstance()->NotifyClipboardDataRead();
+#endif
+}
+
 void ClipboardNonBacked::ReadBookmark(const DataTransferEndpoint* data_dst,
-                                      base::string16* title,
+                                      std::u16string* title,
                                       std::string* url) const {
   DCHECK(CalledOnValidThread());
 
@@ -705,6 +738,10 @@ void ClipboardNonBacked::WriteSvg(const char* markup_data, size_t markup_len) {
 
 void ClipboardNonBacked::WriteRTF(const char* rtf_data, size_t data_len) {
   ClipboardDataBuilder::WriteRTF(rtf_data, data_len);
+}
+
+void ClipboardNonBacked::WriteFilenames(std::vector<ui::FileInfo> filenames) {
+  ClipboardDataBuilder::WriteFilenames(std::move(filenames));
 }
 
 void ClipboardNonBacked::WriteBookmark(const char* title_data,

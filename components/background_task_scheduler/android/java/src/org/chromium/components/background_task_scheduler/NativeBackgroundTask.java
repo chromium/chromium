@@ -128,7 +128,6 @@ public abstract class NativeBackgroundTask implements BackgroundTask {
         if (isNativeLoadedInFullBrowserMode()) {
             mRunningInMinimalBrowserMode = false;
             getUmaReporter().reportNativeTaskStarted(mTaskId, mRunningInMinimalBrowserMode);
-            mDelegate.recordMemoryUsageWithRandomDelay(mTaskId, mRunningInMinimalBrowserMode);
             PostTask.postTask(UiThreadTaskTraits.DEFAULT, startWithNativeRunnable);
             return;
         }
@@ -151,8 +150,8 @@ public abstract class NativeBackgroundTask implements BackgroundTask {
                 }
 
                 // Start native initialization.
-                mDelegate.initializeNativeAsync(mTaskId, mRunningInMinimalBrowserMode,
-                        startWithNativeRunnable, rescheduleRunnable);
+                mDelegate.initializeNativeAsync(
+                        mRunningInMinimalBrowserMode, startWithNativeRunnable, rescheduleRunnable);
             }
         });
     }

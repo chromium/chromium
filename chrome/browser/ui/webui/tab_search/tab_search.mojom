@@ -6,14 +6,16 @@ module tab_search.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 
-// Collection of WindowTabs of a profile.
-struct ProfileTabs {
-  array<WindowTabs> windows;
+// Collection of window details associated with a profile.
+struct ProfileData {
+  array<Window> windows;
+  array<RecentlyClosedTab> recently_closed_tabs;
 };
 
-// Collection of Tab of a window.
-struct WindowTabs {
+// Properties and tabs associated with a window.
+struct Window {
   bool active;
+  uint32 height;
   array<Tab> tabs;
 };
 
@@ -50,8 +52,32 @@ struct Tab {
   // Whether the tab strip should show the icon.
   bool show_icon;
 
-  // Time ticks when the tab is last active.
+  // Time ticks when the tab is last active. This value is used to order open
+  // tabs by recency.
   mojo_base.mojom.TimeTicks last_active_time_ticks;
+
+  // String representing the elapsed time since the tab was last active.
+  string last_active_elapsed_text;
+};
+
+// Information about a recently closed tab.
+struct RecentlyClosedTab {
+  // The unique identifier of the tab.
+  int32 tab_id;
+
+  // The title of the tab.
+  string title;
+
+  // The URL of the tab.
+  // TODO(crbug.com/1099917): Change this and elsewhere to use url.mojom.Url.
+  string url;
+
+  // Elapsed time since the tab was last closed. This value is used to order
+  // closed tabs by recency.
+  mojo_base.mojom.Time last_active_time_ticks;
+
+  // String representing the elapsed time since the tab was closed.
+  string last_active_elapsed_text;
 };
 
 // Collection of tab groups.
@@ -83,8 +109,8 @@ interface PageHandler {
   // Close a specific tab.
   CloseTab(int32 tab_id);
 
-  // Get tabs grouped by windows for the current profile.
-  GetProfileTabs() => (ProfileTabs profile_tabs);
+  // Get window and tab data for the current profile.
+  GetProfileData() => (ProfileData profile_data);
 
   // Get tab groups for the current profile.
   GetTabGroups() => (TabGroups tab_groups);
@@ -95,6 +121,9 @@ interface PageHandler {
   // Switch to a specific tab.
   SwitchToTab(SwitchToTabInfo switch_to_tab_info);
 
+  // Open a recently closed tab.
+  OpenRecentlyClosedTab(int32 tab_id);
+
   // Notify the backend that the UI is ready to be shown.
   ShowUI();
 
@@ -104,12 +133,17 @@ interface PageHandler {
 
 // WebUI-side handler for requests from the browser.
 interface Page {
-  // Callback when any tabs in the current profile are
-  // selected/inserted/moved/replaced
-  TabsChanged();
+  // Called when we require a full refresh of the JS's tab list data structures.
+  // Typically used when tabs in the current profile are deleted, inserted,
+  // moved or replaced.
+  // `profile_tabs` is a collection of all open tabs in the current profile.
+  // This is always populated with at least 1 (the currently active) tab.
+  TabsChanged(ProfileData profile_tabs);
 
-  // Callback when a tab is updated within the same web contents.
-  // e.g. url, title or favicon changed.
+  // Called when a tab's data has changed and we need only issue an update for
+  // that specific tab in the JS's data structures. Typically used for url,
+  // title, or favicon changes. `tab` is always populated with the latest data
+  // for the affected tab.
   TabUpdated(Tab tab);
 
   // Callback when tabs are removed.

@@ -138,10 +138,10 @@ TEST_F(SpeechRecognitionEngineTest, SingleDefinitiveResult) {
   results.push_back(blink::mojom::SpeechRecognitionResult::New());
   blink::mojom::SpeechRecognitionResultPtr& result = results.back();
   result->is_provisional = false;
-  result->hypotheses.push_back(blink::mojom::SpeechRecognitionHypothesis::New(
-      base::UTF8ToUTF16("hypothesis 1"), 0.1F));
-  result->hypotheses.push_back(blink::mojom::SpeechRecognitionHypothesis::New(
-      base::UTF8ToUTF16("hypothesis 2"), 0.2F));
+  result->hypotheses.push_back(
+      blink::mojom::SpeechRecognitionHypothesis::New(u"hypothesis 1", 0.1F));
+  result->hypotheses.push_back(
+      blink::mojom::SpeechRecognitionHypothesis::New(u"hypothesis 2", 0.2F));
 
   ProvideMockResultDownstream(result);
   ExpectResultsReceived(results);
@@ -170,7 +170,7 @@ TEST_F(SpeechRecognitionEngineTest, SeveralStreamingResults) {
     result->is_provisional = (i % 2 == 0);  // Alternate result types.
     float confidence = result->is_provisional ? 0.0F : (i * 0.1F);
     result->hypotheses.push_back(blink::mojom::SpeechRecognitionHypothesis::New(
-        base::UTF8ToUTF16("hypothesis"), confidence));
+        u"hypothesis", confidence));
 
     ProvideMockResultDownstream(result);
     ExpectResultsReceived(results);
@@ -188,7 +188,7 @@ TEST_F(SpeechRecognitionEngineTest, SeveralStreamingResults) {
   blink::mojom::SpeechRecognitionResultPtr& result = results.back();
   result->is_provisional = false;
   result->hypotheses.push_back(blink::mojom::SpeechRecognitionHypothesis::New(
-      base::UTF8ToUTF16("The final result"), 1.0F));
+      u"The final result", 1.0F));
   ProvideMockResultDownstream(result);
   ExpectResultsReceived(results);
   ASSERT_TRUE(engine_under_test_->IsRecognitionPending());
@@ -214,8 +214,8 @@ TEST_F(SpeechRecognitionEngineTest, NoFinalResultAfterAudioChunksEnded) {
   std::vector<blink::mojom::SpeechRecognitionResultPtr> results;
   results.push_back(blink::mojom::SpeechRecognitionResult::New());
   blink::mojom::SpeechRecognitionResultPtr& result = results.back();
-  result->hypotheses.push_back(blink::mojom::SpeechRecognitionHypothesis::New(
-      base::UTF8ToUTF16("hypothesis"), 1.0F));
+  result->hypotheses.push_back(
+      blink::mojom::SpeechRecognitionHypothesis::New(u"hypothesis", 1.0F));
   ProvideMockResultDownstream(result);
   ExpectResultsReceived(results);
   ASSERT_TRUE(engine_under_test_->IsRecognitionPending());
@@ -260,8 +260,8 @@ TEST_F(SpeechRecognitionEngineTest, ReRequestData) {
   std::vector<blink::mojom::SpeechRecognitionResultPtr> results;
   results.push_back(blink::mojom::SpeechRecognitionResult::New());
   blink::mojom::SpeechRecognitionResultPtr& result = results.back();
-  result->hypotheses.push_back(blink::mojom::SpeechRecognitionHypothesis::New(
-      base::UTF8ToUTF16("hypothesis"), 1.0F));
+  result->hypotheses.push_back(
+      blink::mojom::SpeechRecognitionHypothesis::New(u"hypothesis", 1.0F));
   ProvideMockResultDownstream(result);
   ExpectResultsReceived(results);
   ASSERT_TRUE(engine_under_test_->IsRecognitionPending());
@@ -312,7 +312,7 @@ TEST_F(SpeechRecognitionEngineTest, NoMatchError) {
   blink::mojom::SpeechRecognitionResultPtr& result = results.back();
   result->is_provisional = true;
   result->hypotheses.push_back(blink::mojom::SpeechRecognitionHypothesis::New(
-      base::UTF8ToUTF16("The final result"), 0.0F));
+      u"The final result", 0.0F));
   ProvideMockResultDownstream(result);
   ExpectResultsReceived(results);
   ASSERT_TRUE(engine_under_test_->IsRecognitionPending());
@@ -390,8 +390,8 @@ TEST_F(SpeechRecognitionEngineTest, Stability) {
   results.push_back(blink::mojom::SpeechRecognitionResult::New());
   blink::mojom::SpeechRecognitionResultPtr& result = results.back();
   result->is_provisional = true;
-  result->hypotheses.push_back(blink::mojom::SpeechRecognitionHypothesis::New(
-      base::UTF8ToUTF16("foo"), 0.5));
+  result->hypotheses.push_back(
+      blink::mojom::SpeechRecognitionHypothesis::New(u"foo", 0.5));
 
   // Check that the protobuf generated the expected result.
   ExpectResultsReceived(results);
@@ -471,8 +471,8 @@ TEST_F(SpeechRecognitionEngineTest, SendPreamble) {
   results.push_back(blink::mojom::SpeechRecognitionResult::New());
   blink::mojom::SpeechRecognitionResultPtr& result = results.back();
   result->is_provisional = false;
-  result->hypotheses.push_back(blink::mojom::SpeechRecognitionHypothesis::New(
-      base::UTF8ToUTF16("hypothesis 1"), 0.1F));
+  result->hypotheses.push_back(
+      blink::mojom::SpeechRecognitionHypothesis::New(u"hypothesis 1", 0.1F));
 
   ProvideMockResultDownstream(result);
   ExpectResultsReceived(results);
@@ -567,10 +567,14 @@ void SpeechRecognitionEngineTest::ProvideMockResponseStartDownstreamIfNeeded() {
       net::HttpUtil::AssembleRawHeaders(headers));
   downstream_request->client->OnReceiveResponse(std::move(head));
 
-  mojo::DataPipe data_pipe;
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  ASSERT_EQ(mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle),
+            MOJO_RESULT_OK);
+
   downstream_request->client->OnStartLoadingResponseBody(
-      std::move(data_pipe.consumer_handle));
-  downstream_data_pipe_ = std::move(data_pipe.producer_handle);
+      std::move(consumer_handle));
+  downstream_data_pipe_ = std::move(producer_handle);
 }
 
 void SpeechRecognitionEngineTest::ProvideMockProtoResultDownstream(
@@ -709,20 +713,22 @@ std::string SpeechRecognitionEngineTest::ConsumeChunkedUploadData() {
       EXPECT_TRUE(upstream_request);
       EXPECT_TRUE(upstream_request->request.request_body);
       EXPECT_EQ(1u, upstream_request->request.request_body->elements()->size());
-      EXPECT_EQ(
-          network::mojom::DataElementType::kChunkedDataPipe,
-          (*upstream_request->request.request_body->elements())[0].type());
-      network::TestURLLoaderFactory::PendingRequest* mutable_upstream_request =
-          const_cast<network::TestURLLoaderFactory::PendingRequest*>(
-              upstream_request);
-      chunked_data_pipe_getter_.Bind((*mutable_upstream_request->request
-                                           .request_body->elements_mutable())[0]
-                                         .ReleaseChunkedDataPipeGetter());
+      auto& element =
+          (*upstream_request->request.request_body->elements_mutable())[0];
+      if (element.type() != network::DataElement::Tag::kChunkedDataPipe) {
+        ADD_FAILURE() << "element type mismatch";
+        return "";
+      }
+      chunked_data_pipe_getter_.Bind(
+          element.As<network::DataElementChunkedDataPipe>()
+              .ReleaseChunkedDataPipeGetter());
     }
-    mojo::DataPipe data_pipe;
-    chunked_data_pipe_getter_->StartReading(
-        std::move(data_pipe.producer_handle));
-    upstream_data_pipe_ = std::move(data_pipe.consumer_handle);
+    mojo::ScopedDataPipeProducerHandle producer_handle;
+    mojo::ScopedDataPipeConsumerHandle consumer_handle;
+    EXPECT_EQ(mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle),
+              MOJO_RESULT_OK);
+    chunked_data_pipe_getter_->StartReading(std::move(producer_handle));
+    upstream_data_pipe_ = std::move(consumer_handle);
   }
   EXPECT_TRUE(upstream_data_pipe_.is_valid());
 

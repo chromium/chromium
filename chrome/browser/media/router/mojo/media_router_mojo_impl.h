@@ -20,7 +20,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_controller.h"
 #include "components/media_router/browser/issue_manager.h"
@@ -156,6 +155,7 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
   friend class MediaRouterFactory;
   friend class MediaRouterMojoImplTest;
   friend class MediaRouterMojoTest;
+  friend class MediaRouterNativeIntegrationBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(MediaRouterMojoImplTest, JoinRouteTimedOutFails);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterMojoImplTest,
                            JoinRouteIncognitoMismatchFails);

@@ -40,9 +40,7 @@ class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
 
   // The style at the end of this break token. The next line should start with
   // this style.
-  const ComputedStyle* Style() const {
-    return style_.get();
-  }
+  const ComputedStyle* Style() const { return style_.get(); }
 
   unsigned ItemIndex() const {
     return item_index_;

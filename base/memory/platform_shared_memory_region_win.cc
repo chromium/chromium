@@ -227,7 +227,7 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
   }
 
   // Aligning may overflow so check that the result doesn't decrease.
-  size_t rounded_size = bits::Align(size, kSectionSize);
+  size_t rounded_size = bits::AlignUp(size, kSectionSize);
   if (rounded_size < size ||
       rounded_size > static_cast<size_t>(std::numeric_limits<int>::max())) {
     return {};
@@ -249,7 +249,7 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
     return {};
   }
 
-  string16 name;
+  std::u16string name;
   if (win::GetVersion() < win::Version::WIN8_1) {
     // Windows < 8.1 ignores DACLs on certain unnamed objects (like shared
     // sections). So, we generate a random name when we need to enforce

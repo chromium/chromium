@@ -262,6 +262,40 @@ class CryptohomeClientImpl : public CryptohomeClient {
   }
 
   // CryptohomeClient override.
+  void StartAuthSession(
+      const cryptohome::AccountIdentifier& account,
+      const cryptohome::StartAuthSessionRequest& request,
+      DBusMethodCallback<cryptohome::BaseReply> callback) override {
+    dbus::MethodCall method_call(cryptohome::kCryptohomeInterface,
+                                 cryptohome::kCryptohomeStartAuthSession);
+    dbus::MessageWriter writer(&method_call);
+
+    writer.AppendProtoAsArrayOfBytes(account);
+    writer.AppendProtoAsArrayOfBytes(request);
+
+    proxy_->CallMethod(
+        &method_call, kTpmDBusTimeoutMs,
+        base::BindOnce(&CryptohomeClientImpl::OnBaseReplyMethod,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  // CryptohomeClient override.
+  void AuthenticateAuthSessionRequest(
+      const cryptohome::AuthenticateAuthSessionRequest& request,
+      DBusMethodCallback<cryptohome::BaseReply> callback) override {
+    dbus::MethodCall method_call(
+        cryptohome::kCryptohomeInterface,
+        cryptohome::kCryptohomeAuthenticateAuthSession);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendProtoAsArrayOfBytes(request);
+
+    proxy_->CallMethod(
+        &method_call, kTpmDBusTimeoutMs,
+        base::BindOnce(&CryptohomeClientImpl::OnBaseReplyMethod,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  // CryptohomeClient override.
   void Pkcs11IsTpmTokenReady(DBusMethodCallback<bool> callback) override {
     dbus::MethodCall method_call(cryptohome::kCryptohomeInterface,
                                  cryptohome::kCryptohomePkcs11IsTpmTokenReady);
@@ -415,6 +449,23 @@ class CryptohomeClientImpl : public CryptohomeClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void ListKeysEx(const cryptohome::AccountIdentifier& id,
+                  const cryptohome::AuthorizationRequest& auth,
+                  const cryptohome::ListKeysRequest& request,
+                  DBusMethodCallback<cryptohome::BaseReply> callback) override {
+    const char* method_name = cryptohome::kCryptohomeListKeysEx;
+    dbus::MethodCall method_call(cryptohome::kCryptohomeInterface, method_name);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendProtoAsArrayOfBytes(id);
+    writer.AppendProtoAsArrayOfBytes(auth);
+    writer.AppendProtoAsArrayOfBytes(request);
+
+    proxy_->CallMethod(
+        &method_call, kTpmDBusTimeoutMs,
+        base::BindOnce(&CryptohomeClientImpl::OnBaseReplyMethod,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   void MountEx(const cryptohome::AccountIdentifier& id,
                const cryptohome::AuthorizationRequest& auth,
                const cryptohome::MountRequest& request,
@@ -531,27 +582,6 @@ class CryptohomeClientImpl : public CryptohomeClient {
         &method_call, kTpmDBusTimeoutMs,
         base::BindOnce(&CryptohomeClientImpl::OnBaseReplyMethod,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  }
-
-  void GetBootAttribute(
-      const cryptohome::GetBootAttributeRequest& request,
-      DBusMethodCallback<cryptohome::BaseReply> callback) override {
-    CallCryptohomeMethod(cryptohome::kCryptohomeGetBootAttribute, request,
-                         std::move(callback));
-  }
-
-  void SetBootAttribute(
-      const cryptohome::SetBootAttributeRequest& request,
-      DBusMethodCallback<cryptohome::BaseReply> callback) override {
-    CallCryptohomeMethod(cryptohome::kCryptohomeSetBootAttribute, request,
-                         std::move(callback));
-  }
-
-  void FlushAndSignBootAttributes(
-      const cryptohome::FlushAndSignBootAttributesRequest& request,
-      DBusMethodCallback<cryptohome::BaseReply> callback) override {
-    CallCryptohomeMethod(cryptohome::kCryptohomeFlushAndSignBootAttributes,
-                         request, std::move(callback));
   }
 
   void RemoveFirmwareManagementParametersFromTpm(
@@ -719,20 +749,6 @@ class CryptohomeClientImpl : public CryptohomeClient {
     blocking_method_caller_.reset(new BlockingMethodCaller(bus, proxy));
 
     proxy_->ConnectToSignal(
-        cryptohome::kCryptohomeInterface, cryptohome::kSignalAsyncCallStatus,
-        base::BindRepeating(&CryptohomeClientImpl::AsyncCallStatusReceived,
-                            weak_ptr_factory_.GetWeakPtr()),
-        base::BindOnce(&CryptohomeClientImpl::OnSignalConnected,
-                       weak_ptr_factory_.GetWeakPtr()));
-    proxy_->ConnectToSignal(
-        cryptohome::kCryptohomeInterface,
-        cryptohome::kSignalAsyncCallStatusWithData,
-        base::BindRepeating(
-            &CryptohomeClientImpl::AsyncCallStatusWithDataReceived,
-            weak_ptr_factory_.GetWeakPtr()),
-        base::BindOnce(&CryptohomeClientImpl::OnSignalConnected,
-                       weak_ptr_factory_.GetWeakPtr()));
-    proxy_->ConnectToSignal(
         cryptohome::kCryptohomeInterface, cryptohome::kSignalLowDiskSpace,
         base::BindRepeating(&CryptohomeClientImpl::LowDiskSpaceReceived,
                             weak_ptr_factory_.GetWeakPtr()),
@@ -749,23 +765,6 @@ class CryptohomeClientImpl : public CryptohomeClient {
   }
 
  private:
-  // Handles the result of AsyncXXX methods.
-  void OnAsyncMethodCall(AsyncMethodCallback callback,
-                         dbus::Response* response) {
-    if (!response) {
-      std::move(callback).Run(base::nullopt);
-      return;
-    }
-    dbus::MessageReader reader(response);
-    int async_id = 0;
-    if (!reader.PopInt32(&async_id)) {
-      LOG(ERROR) << "Invalid response: " << response->ToString();
-      std::move(callback).Run(base::nullopt);
-      return;
-    }
-    std::move(callback).Run(async_id);
-  }
-
   // Handles the result of GetSystemSalt().
   void OnGetSystemSalt(DBusMethodCallback<std::vector<uint8_t>> callback,
                        dbus::Response* response) {
@@ -925,39 +924,6 @@ class CryptohomeClientImpl : public CryptohomeClient {
       return;
     }
     std::move(callback).Run(std::move(token_info));
-  }
-
-  // Handles AsyncCallStatus signal.
-  void AsyncCallStatusReceived(dbus::Signal* signal) {
-    dbus::MessageReader reader(signal);
-    int async_id = 0;
-    bool return_status = false;
-    int return_code = 0;
-    if (!reader.PopInt32(&async_id) || !reader.PopBool(&return_status) ||
-        !reader.PopInt32(&return_code)) {
-      LOG(ERROR) << "Invalid signal: " << signal->ToString();
-      return;
-    }
-    for (auto& observer : observer_list_)
-      observer.AsyncCallStatus(async_id, return_status, return_code);
-  }
-
-  // Handles AsyncCallStatusWithData signal.
-  void AsyncCallStatusWithDataReceived(dbus::Signal* signal) {
-    dbus::MessageReader reader(signal);
-    int async_id = 0;
-    bool return_status = false;
-    const uint8_t* return_data_buffer = NULL;
-    size_t return_data_length = 0;
-    if (!reader.PopInt32(&async_id) || !reader.PopBool(&return_status) ||
-        !reader.PopArrayOfBytes(&return_data_buffer, &return_data_length)) {
-      LOG(ERROR) << "Invalid signal: " << signal->ToString();
-      return;
-    }
-    std::string return_data(reinterpret_cast<const char*>(return_data_buffer),
-                            return_data_length);
-    for (auto& observer : observer_list_)
-      observer.AsyncCallStatusWithData(async_id, return_status, return_data);
   }
 
   // Handles LowDiskSpace signal.

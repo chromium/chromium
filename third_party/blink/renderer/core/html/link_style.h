@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/html/link_resource.h"
 #include "third_party/blink/renderer/core/loader/resource/css_style_sheet_resource.h"
-#include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -75,6 +74,7 @@ class LinkStyle final : public LinkResource, ResourceClient {
   Member<CSSStyleSheet> sheet_;
   DisabledState disabled_state_;
   PendingSheetType pending_sheet_type_;
+  RenderBlockingBehavior render_blocking_behavior_;
   StyleEngineContext style_engine_context_;
   bool explicitly_enabled_;
   bool loading_;

@@ -18,25 +18,23 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_threadsafe.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "content/browser/service_worker/service_worker_info.h"
 #include "content/browser/service_worker/service_worker_process_manager.h"
 #include "content/browser/service_worker/service_worker_registration_status.h"
 #include "content/browser/service_worker/service_worker_registry.h"
-#include "content/browser/service_worker/service_worker_storage.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/service_worker_context.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 
 class GURL;
 
-namespace base {
-class FilePath;
-}
-
 namespace storage {
+class QuotaClientCallbackWrapper;
 class QuotaManagerProxy;
 class SpecialStoragePolicy;
 }  // namespace storage
@@ -46,11 +44,12 @@ namespace content {
 class ServiceWorkerContextCoreObserver;
 class ServiceWorkerContextWrapper;
 class ServiceWorkerJobCoordinator;
+class ServiceWorkerQuotaClient;
 class ServiceWorkerRegistration;
 class URLLoaderFactoryGetter;
 
 // This class manages data associated with service workers.
-// The class is single threaded and should only be used on the IO thread.
+// The class is single threaded and should only be used on the UI thread.
 // In chromium, there is one instance per storagepartition. This class
 // is the root of the containment hierarchy for service worker data
 // associated with a particular partition.
@@ -100,15 +99,11 @@ class CONTENT_EXPORT ServiceWorkerContextCore
     DISALLOW_COPY_AND_ASSIGN(ContainerHostIterator);
   };
 
-  // This is owned by the StoragePartition, which will supply it with
-  // the local path on disk. Given an empty |user_data_directory|,
-  // nothing will be stored on disk. |observer_list| is created in
+  // This is owned by ServiceWorkerContextWrapper. |observer_list| is created in
   // ServiceWorkerContextWrapper. When Notify() of |observer_list| is called in
   // ServiceWorkerContextCore, the methods of ServiceWorkerContextCoreObserver
   // will be called on the thread which called AddObserver() of |observer_list|.
   ServiceWorkerContextCore(
-      const base::FilePath& user_data_directory,
-      scoped_refptr<base::SequencedTaskRunner> database_task_runner,
       storage::QuotaManagerProxy* quota_manager_proxy,
       storage::SpecialStoragePolicy* special_storage_policy,
       URLLoaderFactoryGetter* url_loader_factory_getter,
@@ -159,14 +154,14 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   void OnVersionStateChanged(ServiceWorkerVersion* version) override;
   void OnDevToolsRoutingIdChanged(ServiceWorkerVersion* version) override;
   void OnErrorReported(ServiceWorkerVersion* version,
-                       const base::string16& error_message,
+                       const std::u16string& error_message,
                        int line_number,
                        int column_number,
                        const GURL& source_url) override;
   void OnReportConsoleMessage(ServiceWorkerVersion* version,
                               blink::mojom::ConsoleMessageSource source,
                               blink::mojom::ConsoleMessageLevel message_level,
-                              const base::string16& message,
+                              const std::u16string& message,
                               int line_number,
                               const GURL& source_url) override;
 
@@ -453,6 +448,26 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   const scoped_refptr<ServiceWorkerContextObserverList> observer_list_;
 
   int next_embedded_worker_id_ = 0;
+
+  // ServiceWorkerQuotaClient assumes that this context always has an associated
+  // ServiceWorkerRegistry, so `quota_client_` must be declared after
+  // `registry_`.
+  //
+  // ServiceWorkerQuotaClient is held via a std::unique_ptr so it can be
+  // transferred (along with any state it may hold) to a different
+  // ServiceWorkerContextCore by the logic kicked off from
+  // ServiceWorkerRegistry::ScheduleDeleteAndStartOver().
+  std::unique_ptr<ServiceWorkerQuotaClient> quota_client_;
+  std::unique_ptr<storage::QuotaClientCallbackWrapper> quota_client_wrapper_;
+
+  // ServiceWorkerQuotaClient's mojo pipe to QuotaManager is disconnected when
+  // the mojo::Receiver is destroyed.
+  //
+  // This receiver is held via a std::unique_ptr so it can be transferred (along
+  // with its mojo pipe) to a different ServiceWorkerContextCore by the logic
+  // kicked off from ServiceWorkerRegistry::ScheduleDeleteAndStartOver().
+  std::unique_ptr<mojo::Receiver<storage::mojom::QuotaClient>>
+      quota_client_receiver_;
 
   base::WeakPtrFactory<ServiceWorkerContextCore> weak_factory_{this};
 

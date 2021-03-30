@@ -92,6 +92,9 @@ std::unique_ptr<std::string> DeviceCommandRunRoutineJob::Payload::Serialize() {
   return std::make_unique<std::string>(std::move(payload));
 }
 
+// static
+constexpr char DeviceCommandRunRoutineJob::kStunServerHostnameFieldName[];
+
 DeviceCommandRunRoutineJob::DeviceCommandRunRoutineJob() = default;
 
 DeviceCommandRunRoutineJob::~DeviceCommandRunRoutineJob() = default;
@@ -570,6 +573,21 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
               &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
               weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
               std::move(failed_callback)));
+      break;
+    }
+    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::
+        kVideoConferencing: {
+      std::string* stun_server_hostname =
+          params_dict_.FindStringKey(kStunServerHostnameFieldName);
+      chromeos::cros_healthd::ServiceConnection::GetInstance()
+          ->RunVideoConferencingRoutine(
+              stun_server_hostname
+                  ? base::make_optional<std::string>(*stun_server_hostname)
+                  : base::nullopt,
+              base::BindOnce(
+                  &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+                  weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
+                  std::move(failed_callback)));
       break;
     }
   }

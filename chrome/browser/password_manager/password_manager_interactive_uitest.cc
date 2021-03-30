@@ -25,6 +25,7 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "third_party/blink/public/common/switches.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/password_manager/password_manager_signin_intercept_test_helper.h"
@@ -60,6 +61,13 @@ class PasswordManagerInteractiveTest
         set_wait_for_server_predictions_for_filling(false);
   }
   ~PasswordManagerInteractiveTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PasswordManagerInteractiveTestBase::SetUpCommandLine(command_line);
+    // Some builders are flaky due to slower loading interacting with
+    // deferred commits.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest, UsernameChanged) {
@@ -71,8 +79,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest, UsernameChanged) {
   password_manager::PasswordForm signin_form;
   signin_form.signon_realm = embedded_test_server()->base_url().spec();
   signin_form.url = embedded_test_server()->base_url();
-  signin_form.username_value = base::ASCIIToUTF16("temp");
-  signin_form.password_value = base::ASCIIToUTF16("random");
+  signin_form.username_value = u"temp";
+  signin_form.password_value = u"random";
   password_store->AddLogin(signin_form);
 
   // Load the page to have the saved credentials autofilled.
@@ -110,10 +118,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest, UsernameChanged) {
       password_store->stored_passwords();
   EXPECT_EQ(1u, stored_passwords.size());
   EXPECT_EQ(2u, stored_passwords.begin()->second.size());
-  EXPECT_EQ(base::UTF8ToUTF16("temp"),
-            (stored_passwords.begin()->second)[0].username_value);
-  EXPECT_EQ(base::UTF8ToUTF16("temporary"),
-            (stored_passwords.begin()->second)[1].username_value);
+  EXPECT_EQ(u"temp", (stored_passwords.begin()->second)[0].username_value);
+  EXPECT_EQ(u"temporary", (stored_passwords.begin()->second)[1].username_value);
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
@@ -181,8 +187,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   password_manager::PasswordForm signin_form;
   signin_form.signon_realm = embedded_test_server()->base_url().spec();
   signin_form.url = embedded_test_server()->base_url();
-  signin_form.username_value = base::ASCIIToUTF16("temp");
-  signin_form.password_value = base::ASCIIToUTF16("random");
+  signin_form.username_value = u"temp";
+  signin_form.password_value = u"random";
   password_store->AddLogin(signin_form);
 
   NavigateToFile("/password/password_form.html");
@@ -328,8 +334,8 @@ IN_PROC_BROWSER_TEST_F(
               .get());
   password_manager::PasswordForm signin_form;
   signin_form.signon_realm = embedded_test_server()->base_url().spec();
-  signin_form.username_value = base::ASCIIToUTF16("temp");
-  signin_form.password_value = base::ASCIIToUTF16("old_pw");
+  signin_form.username_value = u"temp";
+  signin_form.password_value = u"old_pw";
   password_store->AddLogin(signin_form);
 
   NavigateToFile("/password/cleared_change_password_forms.html");
@@ -372,8 +378,8 @@ IN_PROC_BROWSER_TEST_F(
               .get());
   password_manager::PasswordForm signin_form;
   signin_form.signon_realm = embedded_test_server()->base_url().spec();
-  signin_form.username_value = base::ASCIIToUTF16("temp");
-  signin_form.password_value = base::ASCIIToUTF16("old_pw");
+  signin_form.username_value = u"temp";
+  signin_form.password_value = u"old_pw";
   password_store->AddLogin(signin_form);
 
   for (bool all_fields_cleared : {false, true}) {
@@ -431,8 +437,8 @@ IN_PROC_BROWSER_TEST_F(
               .get());
   password_manager::PasswordForm signin_form;
   signin_form.signon_realm = embedded_test_server()->base_url().spec();
-  signin_form.username_value = base::ASCIIToUTF16("temp");
-  signin_form.password_value = base::ASCIIToUTF16("old_pw");
+  signin_form.username_value = u"temp";
+  signin_form.password_value = u"old_pw";
   password_store->AddLogin(signin_form);
 
   for (bool relevant_fields_cleared : {false, true}) {

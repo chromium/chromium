@@ -1,0 +1,8 @@
+include_rules = [
+  "+components/password_manager/core/browser/password_reuse_detector.h",
+  "+components/sessions/core/session_id.h",
+  "+components/url_formatter",
+  "+components/signin/public/identity_manager/account_info.h",
+  "+ios/web/public/thread/web_thread.h",
+  "+ui/gfx/geometry",
+]

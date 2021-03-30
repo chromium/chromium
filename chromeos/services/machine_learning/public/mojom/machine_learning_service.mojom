@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Next MinVersion: 1
+
 // Top-level API of the Machine Learning Service: loading models for inference.
 
 // NOTE: This mojom exists in two places and must be kept in sync:
@@ -26,6 +28,7 @@ import "chromeos/services/machine_learning/public/mojom/text_classifier.mojom";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+[Stable, Extensible]
 enum LoadModelResult {
   OK = 0,
   MODEL_SPEC_ERROR = 1,
@@ -36,6 +39,7 @@ enum LoadModelResult {
 
 // Top-level interface between Chromium and the ML Service daemon.
 // Next ordinal: 8
+[Stable, Uuid="9e5e4750-40cc-4eda-ac09-3457d06a45ab"]
 interface MachineLearningService {
   // Binds another pipe to this instance.
   Clone@5(pending_receiver<MachineLearningService> receiver);

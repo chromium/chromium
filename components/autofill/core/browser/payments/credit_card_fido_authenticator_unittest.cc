@@ -20,7 +20,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -114,6 +113,7 @@ class CreditCardFIDOAuthenticatorTest : public testing::Test {
     personal_data_manager_.Init(/*profile_database=*/database_,
                                 /*account_database=*/nullptr,
                                 /*pref_service=*/autofill_client_.GetPrefs(),
+                                /*local_state=*/autofill_client_.GetPrefs(),
                                 /*identity_manager=*/nullptr,
                                 /*client_profile_validator=*/nullptr,
                                 /*history_service=*/nullptr,

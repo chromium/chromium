@@ -9,7 +9,8 @@
     {
       "name": "LayoutNGBlockFlow DIV class='filtered box'",
       "position": [8, 8],
-      "bounds": [144, 144]
+      "bounds": [144, 144],
+      "contentsOpaqueForText": true
     },
     {
       "name": "LayoutNGBlockFlow DIV class='compositing box'",

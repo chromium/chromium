@@ -18,6 +18,7 @@ Before:
       "name": "LayoutNGBlockFlow (relative positioned) DIV class='container'",
       "position": [18, 230],
       "bounds": [174, 562],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#FFFFFF"
     },
     {
@@ -108,7 +109,8 @@ After:
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='first-green-box' class='box green rotate-45deg'",
       "position": [18, 328],
-      "bounds": [174, 464]
+      "bounds": [174, 464],
+      "contentsOpaqueForText": true
     },
     {
       "name": "VerticalScrollbar",

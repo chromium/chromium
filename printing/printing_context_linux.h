@@ -47,7 +47,7 @@ class PRINTING_EXPORT PrintingContextLinux : public PrintingContext {
   Result UpdatePrinterSettings(bool external_preview,
                                bool show_system_dialog,
                                int page_count) override;
-  Result NewDocument(const base::string16& document_name) override;
+  Result NewDocument(const std::u16string& document_name) override;
   Result NewPage() override;
   Result PageDone() override;
   Result DocumentDone() override;
@@ -56,7 +56,7 @@ class PRINTING_EXPORT PrintingContextLinux : public PrintingContext {
   printing::NativeDrawingContext context() const override;
 
  private:
-  base::string16 document_name_;
+  std::u16string document_name_;
   PrintDialogGtkInterface* print_dialog_;
 };
 

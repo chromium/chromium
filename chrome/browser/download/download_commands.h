@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_DOWNLOAD_COMMANDS_H_
 #define CHROME_BROWSER_DOWNLOAD_DOWNLOAD_COMMANDS_H_
 
+#include <string>
+
 #include "base/gtest_prod_util.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "content/public/browser/page_navigator.h"
 #include "ui/gfx/image/image.h"

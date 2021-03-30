@@ -8,8 +8,11 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_device.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_socket.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -60,14 +63,28 @@ class FakeServerSocket : public bluetooth::mojom::ServerSocket {
     on_destroy_callback_ = std::move(callback);
   }
 
+  void SetAcceptShouldBlock(bool block) { accept_should_block_ = block; }
+
  private:
   // bluetooth::mojom::ServerSocket:
   void Accept(AcceptCallback callback) override {
+    if (accept_should_block_) {
+      accept_callback_ = std::move(callback);
+      return;
+    }
     std::move(callback).Run(std::move(accept_connection_result_));
   }
+  void Disconnect(DisconnectCallback callback) override {
+    if (accept_callback_) {
+      std::move(accept_callback_).Run(nullptr);
+    }
+    std::move(callback).Run();
+  }
 
+  AcceptCallback accept_callback_;
   bluetooth::mojom::AcceptConnectionResultPtr accept_connection_result_;
   base::OnceClosure on_destroy_callback_;
+  bool accept_should_block_;
 };
 
 }  // namespace
@@ -124,16 +141,15 @@ TEST_F(BluetoothServerSocketTest, TestAccept_Success) {
 
   mojo::ScopedDataPipeProducerHandle receive_pipe_producer_handle;
   mojo::ScopedDataPipeConsumerHandle receive_pipe_consumer_handle;
-  ASSERT_EQ(
-      MOJO_RESULT_OK,
-      mojo::CreateDataPipe(/*options=*/nullptr, &receive_pipe_producer_handle,
-                           &receive_pipe_consumer_handle));
+  ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(/*options=*/nullptr,
+                                                 receive_pipe_producer_handle,
+                                                 receive_pipe_consumer_handle));
 
   mojo::ScopedDataPipeProducerHandle send_pipe_producer_handle;
   mojo::ScopedDataPipeConsumerHandle send_pipe_consumer_handle;
-  ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(/*options=*/nullptr,
-                                                 &send_pipe_producer_handle,
-                                                 &send_pipe_consumer_handle));
+  ASSERT_EQ(MOJO_RESULT_OK,
+            mojo::CreateDataPipe(/*options=*/nullptr, send_pipe_producer_handle,
+                                 send_pipe_consumer_handle));
 
   mojo::PendingRemote<bluetooth::mojom::Socket> pending_socket;
 
@@ -159,11 +175,40 @@ TEST_F(BluetoothServerSocketTest, TestAccept_NoConnection) {
   EXPECT_FALSE(bluetooth_server_socket_->Accept());
 }
 
+TEST_F(BluetoothServerSocketTest, TestCloseInterruptsBlockingAccept) {
+  base::RunLoop run_loop;
+  fake_server_socket_->SetOnDestroyCallback(run_loop.QuitClosure());
+  fake_server_socket_->SetAcceptShouldBlock(true);
+  auto close_socket_task_runner =
+      base::ThreadPool::CreateSingleThreadTaskRunner(
+          {base::MayBlock()},
+          base::SingleThreadTaskRunnerThreadMode::DEDICATED);
+
+  close_socket_task_runner->PostDelayedTask(
+      FROM_HERE, base::BindLambdaForTesting([&] {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
+        bluetooth_server_socket_->Close();
+      }),
+      base::TimeDelta::FromSeconds(1));
+
+  base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
+  EXPECT_FALSE(bluetooth_server_socket_->Accept());
+  run_loop.Run();
+}
+
 TEST_F(BluetoothServerSocketTest, TestClose) {
   base::RunLoop run_loop;
   fake_server_socket_->SetOnDestroyCallback(run_loop.QuitClosure());
   bluetooth_server_socket_->Close();
   run_loop.Run();
+}
+
+TEST_F(BluetoothServerSocketTest, TestCloseThenAccept) {
+  base::RunLoop run_loop;
+  fake_server_socket_->SetOnDestroyCallback(run_loop.QuitClosure());
+  bluetooth_server_socket_->Close();
+  run_loop.Run();
+  ASSERT_FALSE(bluetooth_server_socket_->Accept());
 }
 
 TEST_F(BluetoothServerSocketTest, TestDestroy) {

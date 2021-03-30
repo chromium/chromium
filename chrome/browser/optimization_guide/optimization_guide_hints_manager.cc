@@ -25,32 +25,33 @@
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_navigation_data.h"
-#include "chrome/browser/optimization_guide/optimization_guide_permissions_util.h"
-#include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/google/core/common/google_util.h"
-#include "components/optimization_guide/bloom_filter.h"
-#include "components/optimization_guide/hint_cache.h"
-#include "components/optimization_guide/hints_component_util.h"
-#include "components/optimization_guide/hints_fetcher_factory.h"
-#include "components/optimization_guide/hints_processing_util.h"
-#include "components/optimization_guide/optimization_filter.h"
-#include "components/optimization_guide/optimization_guide_constants.h"
-#include "components/optimization_guide/optimization_guide_decider.h"
-#include "components/optimization_guide/optimization_guide_enums.h"
-#include "components/optimization_guide/optimization_guide_features.h"
-#include "components/optimization_guide/optimization_guide_prefs.h"
-#include "components/optimization_guide/optimization_guide_service.h"
-#include "components/optimization_guide/optimization_guide_store.h"
-#include "components/optimization_guide/optimization_guide_switches.h"
-#include "components/optimization_guide/optimization_guide_util.h"
-#include "components/optimization_guide/optimization_metadata.h"
+#include "components/optimization_guide/content/browser/optimization_guide_decider.h"
+#include "components/optimization_guide/core/bloom_filter.h"
+#include "components/optimization_guide/core/hint_cache.h"
+#include "components/optimization_guide/core/hints_component_util.h"
+#include "components/optimization_guide/core/hints_fetcher_factory.h"
+#include "components/optimization_guide/core/hints_processing_util.h"
+#include "components/optimization_guide/core/optimization_filter.h"
+#include "components/optimization_guide/core/optimization_guide_constants.h"
+#include "components/optimization_guide/core/optimization_guide_enums.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_permissions_util.h"
+#include "components/optimization_guide/core/optimization_guide_prefs.h"
+#include "components/optimization_guide/core/optimization_guide_store.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/core/optimization_hints_component_update_listener.h"
+#include "components/optimization_guide/core/optimization_metadata.h"
+#include "components/optimization_guide/core/tab_url_provider.h"
+#include "components/optimization_guide/core/top_host_provider.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "components/optimization_guide/top_host_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/network_service_instance.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source.h"
@@ -60,14 +61,9 @@
 namespace {
 
 // The component version used with a manual config. This ensures that any hint
-// component received from the OptimizationGuideService on a subsequent startup
-// will have a newer version than it.
+// component received from the Optimization Hints component on a subsequent
+// startup will have a newer version than it.
 constexpr char kManualConfigComponentVersion[] = "0.0.0";
-
-// Delay until successfully fetched hints should be updated by requesting from
-// the remote Optimization Guide Service.
-constexpr base::TimeDelta kUpdateFetchedHintsDelay =
-    base::TimeDelta::FromHours(24);
 
 // Provides a random time delta in seconds between |kFetchRandomMinDelay| and
 // |kFetchRandomMaxDelay|.
@@ -251,14 +247,13 @@ bool ShouldIgnoreNewlyRegisteredOptimizationType(
 }  // namespace
 
 OptimizationGuideHintsManager::OptimizationGuideHintsManager(
-    optimization_guide::OptimizationGuideService* optimization_guide_service,
     Profile* profile,
     PrefService* pref_service,
     optimization_guide::OptimizationGuideStore* hint_store,
     optimization_guide::TopHostProvider* top_host_provider,
+    optimization_guide::TabUrlProvider* tab_url_provider,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : optimization_guide_service_(optimization_guide_service),
-      background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+    : background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT})),
       profile_(profile),
       pref_service_(pref_service),
@@ -272,11 +267,13 @@ OptimizationGuideHintsManager::OptimizationGuideHintsManager(
               url_loader_factory,
               optimization_guide::features::
                   GetOptimizationGuideServiceGetHintsURL(),
-              pref_service)),
+              pref_service,
+              content::GetNetworkConnectionTracker())),
       external_app_packages_approved_for_fetch_(
           optimization_guide::features::
               ExternalAppPackageNamesApprovedForFetch()),
       top_host_provider_(top_host_provider),
+      tab_url_provider_(tab_url_provider),
       clock_(base::DefaultClock::GetInstance()) {
   g_browser_process->network_quality_tracker()
       ->AddEffectiveConnectionTypeObserver(this);
@@ -298,8 +295,8 @@ OptimizationGuideHintsManager::~OptimizationGuideHintsManager() {
 }
 
 void OptimizationGuideHintsManager::Shutdown() {
-  if (optimization_guide_service_)
-    optimization_guide_service_->RemoveObserver(this);
+  optimization_guide::OptimizationHintsComponentUpdateListener::GetInstance()
+      ->RemoveObserver(this);
 
   g_browser_process->network_quality_tracker()
       ->RemoveEffectiveConnectionTypeObserver(this);
@@ -312,6 +309,34 @@ void OptimizationGuideHintsManager::Shutdown() {
   // Try to cancel all tasks if we've been shutdown so it doesn't call back to
   // us.
   hints_component_processing_task_tracker_.TryCancelAll();
+}
+
+// static
+optimization_guide::OptimizationGuideDecision OptimizationGuideHintsManager::
+    GetOptimizationGuideDecisionFromOptimizationTypeDecision(
+        optimization_guide::OptimizationTypeDecision
+            optimization_type_decision) {
+  switch (optimization_type_decision) {
+    case optimization_guide::OptimizationTypeDecision::
+        kAllowedByOptimizationFilter:
+    case optimization_guide::OptimizationTypeDecision::kAllowedByHint:
+      return optimization_guide::OptimizationGuideDecision::kTrue;
+    case optimization_guide::OptimizationTypeDecision::kUnknown:
+    case optimization_guide::OptimizationTypeDecision::
+        kHadOptimizationFilterButNotLoadedInTime:
+    case optimization_guide::OptimizationTypeDecision::
+        kHadHintButNotLoadedInTime:
+    case optimization_guide::OptimizationTypeDecision::
+        kHintFetchStartedButNotAvailableInTime:
+    case optimization_guide::OptimizationTypeDecision::kDeciderNotInitialized:
+      return optimization_guide::OptimizationGuideDecision::kUnknown;
+    case optimization_guide::OptimizationTypeDecision::kNotAllowedByHint:
+    case optimization_guide::OptimizationTypeDecision::kNoMatchingPageHint:
+    case optimization_guide::OptimizationTypeDecision::kNoHintAvailable:
+    case optimization_guide::OptimizationTypeDecision::
+        kNotAllowedByOptimizationFilter:
+      return optimization_guide::OptimizationGuideDecision::kFalse;
+  }
 }
 
 void OptimizationGuideHintsManager::OnHintsComponentAvailable(
@@ -533,8 +558,8 @@ void OptimizationGuideHintsManager::OnHintCacheInitialized() {
 
   // Register as an observer regardless of hint proto override usage. This is
   // needed as a signal during testing.
-  if (optimization_guide_service_)
-    optimization_guide_service_->AddObserver(this);
+  optimization_guide::OptimizationHintsComponentUpdateListener::GetInstance()
+      ->AddObserver(this);
 }
 
 void OptimizationGuideHintsManager::UpdateComponentHints(
@@ -569,7 +594,7 @@ void OptimizationGuideHintsManager::OnComponentHintsUpdated(
       optimization_guide::kComponentHintsUpdatedResultHistogramString,
       hints_updated);
 
-  MaybeScheduleTopHostsHintsFetch();
+  MaybeScheduleActiveTabsHintsFetch();
 
   MaybeRunUpdateClosure(std::move(update_closure));
 }
@@ -592,55 +617,86 @@ void OptimizationGuideHintsManager::SetClockForTesting(
   clock_ = clock;
 }
 
-void OptimizationGuideHintsManager::MaybeScheduleTopHostsHintsFetch() {
-  if (!top_host_provider_ ||
-      !IsUserPermittedToFetchFromRemoteOptimizationGuide(profile_)) {
+void OptimizationGuideHintsManager::MaybeScheduleActiveTabsHintsFetch() {
+  if (!optimization_guide::IsUserPermittedToFetchFromRemoteOptimizationGuide(
+          profile_->IsOffTheRecord(), pref_service_)) {
     return;
   }
 
-  if (!optimization_guide::features::ShouldBatchUpdateHintsForTopHosts())
+  if (!optimization_guide::features::
+          ShouldBatchUpdateHintsForActiveTabsAndTopHosts()) {
     return;
+  }
 
   if (optimization_guide::switches::ShouldOverrideFetchHintsTimer()) {
     SetLastHintsFetchAttemptTime(clock_->Now());
-    FetchTopHostsHints();
-  } else if (!top_hosts_hints_fetch_timer_.IsRunning()) {
+    FetchHintsForActiveTabs();
+  } else if (!active_tabs_hints_fetch_timer_.IsRunning()) {
     // Only Schedule this is the time is not already running.
-    ScheduleTopHostsHintsFetch();
+    ScheduleActiveTabsHintsFetch();
   }
 }
 
-void OptimizationGuideHintsManager::ScheduleTopHostsHintsFetch() {
-  DCHECK(!top_hosts_hints_fetch_timer_.IsRunning());
+void OptimizationGuideHintsManager::ScheduleActiveTabsHintsFetch() {
+  DCHECK(!active_tabs_hints_fetch_timer_.IsRunning());
 
-  const base::TimeDelta time_until_update_time =
-      hint_cache_->GetFetchedHintsUpdateTime() - clock_->Now();
-  base::TimeDelta fetcher_delay;
-  if (time_until_update_time <= base::TimeDelta()) {
+  const base::TimeDelta active_tabs_refresh_duration =
+      optimization_guide::features::GetActiveTabsFetchRefreshDuration();
+  const base::TimeDelta time_since_last_fetch =
+      clock_->Now() - GetLastHintsFetchAttemptTime();
+  if (time_since_last_fetch >= active_tabs_refresh_duration) {
     // Fetched hints in the store should be updated and an attempt has not
-    // been made in last |kUpdateFetchedHintsDelay|.
+    // been made in last
+    // |optimization_guide::features::GetActiveTabsFetchRefreshDuration()|.
     SetLastHintsFetchAttemptTime(clock_->Now());
-    top_hosts_hints_fetch_timer_.Start(
+    active_tabs_hints_fetch_timer_.Start(
         FROM_HERE, RandomFetchDelay(), this,
-        &OptimizationGuideHintsManager::FetchTopHostsHints);
+        &OptimizationGuideHintsManager::FetchHintsForActiveTabs);
   } else {
     // If the fetched hints in the store are still up-to-date, set a timer
     // for when the hints need to be updated.
-    fetcher_delay = time_until_update_time;
-    top_hosts_hints_fetch_timer_.Start(
+    base::TimeDelta fetcher_delay =
+        active_tabs_refresh_duration - time_since_last_fetch;
+    active_tabs_hints_fetch_timer_.Start(
         FROM_HERE, fetcher_delay, this,
-        &OptimizationGuideHintsManager::ScheduleTopHostsHintsFetch);
+        &OptimizationGuideHintsManager::ScheduleActiveTabsHintsFetch);
   }
 }
 
-void OptimizationGuideHintsManager::FetchTopHostsHints() {
-  DCHECK(top_host_provider_);
+const std::vector<GURL>
+OptimizationGuideHintsManager::GetActiveTabURLsToRefresh() {
+  if (!tab_url_provider_)
+    return {};
 
-  if (registered_optimization_types_.empty())
+  std::vector<GURL> active_tab_urls = tab_url_provider_->GetUrlsOfActiveTabs(
+      optimization_guide::features::GetActiveTabsStalenessTolerance());
+
+  std::set<GURL> urls_to_refresh;
+  for (const auto& url : active_tab_urls) {
+    if (!hint_cache_->HasURLKeyedEntryForURL(url))
+      urls_to_refresh.insert(url);
+  }
+  return std::vector<GURL>(urls_to_refresh.begin(), urls_to_refresh.end());
+}
+
+void OptimizationGuideHintsManager::FetchHintsForActiveTabs() {
+  active_tabs_hints_fetch_timer_.Stop();
+  active_tabs_hints_fetch_timer_.Start(
+      FROM_HERE,
+      optimization_guide::features::GetActiveTabsFetchRefreshDuration(), this,
+      &OptimizationGuideHintsManager::ScheduleActiveTabsHintsFetch);
+
+  if (!HasOptimizationTypeToFetchFor())
     return;
 
-  std::vector<std::string> top_hosts = top_host_provider_->GetTopHosts();
-  if (top_hosts.empty())
+  std::vector<std::string> top_hosts;
+  if (top_host_provider_)
+    top_hosts = top_host_provider_->GetTopHosts();
+
+  const std::vector<GURL> active_tab_urls_to_refresh =
+      GetActiveTabURLsToRefresh();
+
+  if (top_hosts.empty() && active_tab_urls_to_refresh.empty())
     return;
 
   if (!batch_update_hints_fetcher_) {
@@ -648,28 +704,47 @@ void OptimizationGuideHintsManager::FetchTopHostsHints() {
     batch_update_hints_fetcher_ = hints_fetcher_factory_->BuildInstance();
   }
 
+  // Add hosts of active tabs to list of hosts to fetch for. Since we are mainly
+  // fetching for updated information on tabs, add those to the front of the
+  // list.
+  base::flat_set<std::string> top_hosts_set =
+      base::flat_set<std::string>(top_hosts.begin(), top_hosts.end());
+  for (const auto& url : active_tab_urls_to_refresh) {
+    if (!url.has_host() ||
+        top_hosts_set.find(url.host()) == top_hosts_set.end()) {
+      continue;
+    }
+    if (!hint_cache_->HasHint(url.host())) {
+      top_hosts_set.insert(url.host());
+      top_hosts.insert(top_hosts.begin(), url.host());
+    }
+  }
+
   batch_update_hints_fetcher_->FetchOptimizationGuideServiceHints(
-      top_hosts, std::vector<GURL>{}, registered_optimization_types_,
+      top_hosts, active_tab_urls_to_refresh, registered_optimization_types_,
       optimization_guide::proto::CONTEXT_BATCH_UPDATE,
       base::BindOnce(
-          &OptimizationGuideHintsManager::OnTopHostsHintsFetched,
-          ui_weak_ptr_factory_.GetWeakPtr(),
-          base::flat_set<std::string>(top_hosts.begin(), top_hosts.end())));
+          &OptimizationGuideHintsManager::OnHintsForActiveTabsFetched,
+          ui_weak_ptr_factory_.GetWeakPtr(), top_hosts_set,
+          base::flat_set<GURL>(active_tab_urls_to_refresh.begin(),
+                               active_tab_urls_to_refresh.end())));
 }
 
-void OptimizationGuideHintsManager::OnTopHostsHintsFetched(
+void OptimizationGuideHintsManager::OnHintsForActiveTabsFetched(
     const base::flat_set<std::string>& hosts_fetched,
+    const base::flat_set<GURL>& urls_fetched,
     base::Optional<std::unique_ptr<optimization_guide::proto::GetHintsResponse>>
         get_hints_response) {
   if (!get_hints_response)
     return;
 
   hint_cache_->UpdateFetchedHints(
-      std::move(*get_hints_response), clock_->Now() + kUpdateFetchedHintsDelay,
-      hosts_fetched,
-      /*urls_fetched=*/{},
+      std::move(*get_hints_response),
+      clock_->Now() +
+          optimization_guide::features::GetActiveTabsFetchRefreshDuration(),
+      hosts_fetched, urls_fetched,
       base::BindOnce(
-          &OptimizationGuideHintsManager::OnFetchedTopHostsHintsStored,
+          &OptimizationGuideHintsManager::OnFetchedActiveTabsHintsStored,
           ui_weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -689,7 +764,9 @@ void OptimizationGuideHintsManager::OnPageNavigationHintsFetched(
   }
 
   hint_cache_->UpdateFetchedHints(
-      std::move(*get_hints_response), clock_->Now() + kUpdateFetchedHintsDelay,
+      std::move(*get_hints_response),
+      clock_->Now() +
+          optimization_guide::features::GetActiveTabsFetchRefreshDuration(),
       page_navigation_hosts_requested, page_navigation_urls_requested,
       base::BindOnce(
           &OptimizationGuideHintsManager::OnFetchedPageNavigationHintsStored,
@@ -697,7 +774,7 @@ void OptimizationGuideHintsManager::OnPageNavigationHintsFetched(
           navigation_url, page_navigation_hosts_requested));
 }
 
-void OptimizationGuideHintsManager::OnFetchedTopHostsHintsStored() {
+void OptimizationGuideHintsManager::OnFetchedActiveTabsHintsStored() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   LOCAL_HISTOGRAM_BOOLEAN("OptimizationGuide.FetchedHints.Stored", true);
 
@@ -710,11 +787,6 @@ void OptimizationGuideHintsManager::OnFetchedTopHostsHintsStored() {
   }
 
   hint_cache_->PurgeExpiredFetchedHints();
-
-  top_hosts_hints_fetch_timer_.Stop();
-  top_hosts_hints_fetch_timer_.Start(
-      FROM_HERE, hint_cache_->GetFetchedHintsUpdateTime() - clock_->Now(), this,
-      &OptimizationGuideHintsManager::ScheduleTopHostsHintsFetch);
 }
 
 void OptimizationGuideHintsManager::OnFetchedPageNavigationHintsStored(
@@ -998,7 +1070,7 @@ void OptimizationGuideHintsManager::CanApplyOptimizationAsync(
   optimization_guide::OptimizationTypeDecision type_decision =
       CanApplyOptimization(navigation_url, navigation_id, optimization_type,
                            &metadata);
-  optimization_guide::OptimizationGuideDecision decision = optimization_guide::
+  optimization_guide::OptimizationGuideDecision decision =
       GetOptimizationGuideDecisionFromOptimizationTypeDecision(type_decision);
   // It's possible that a hint that applies to |navigation_url| will come in
   // later, so only run the callback if we are sure we can apply the decision.
@@ -1191,9 +1263,8 @@ void OptimizationGuideHintsManager::OnReadyToInvokeRegisteredCallbacks(
           CanApplyOptimization(navigation_url, navigation_id, opt_type,
                                &metadata);
       optimization_guide::OptimizationGuideDecision decision =
-          optimization_guide::
-              GetOptimizationGuideDecisionFromOptimizationTypeDecision(
-                  type_decision);
+          GetOptimizationGuideDecisionFromOptimizationTypeDecision(
+              type_decision);
       base::UmaHistogramEnumeration(
           "OptimizationGuide.ApplyDecisionAsync." +
               optimization_guide::GetStringNameForOptimizationType(opt_type),
@@ -1230,8 +1301,10 @@ bool OptimizationGuideHintsManager::IsAllowedToFetchNavigationHints(
   if (!HasOptimizationTypeToFetchFor())
     return false;
 
-  if (!IsUserPermittedToFetchFromRemoteOptimizationGuide(profile_))
+  if (!optimization_guide::IsUserPermittedToFetchFromRemoteOptimizationGuide(
+          profile_->IsOffTheRecord(), pref_service_)) {
     return false;
+  }
   DCHECK(!profile_->IsOffTheRecord());
 
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS())

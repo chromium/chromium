@@ -23,11 +23,13 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Thêm www. và .com vào nội dung mà bạn nhập trên thanh địa chỉ rồi mở trang</translation>
+<translation id="1768987374400973299">Chụp ảnh/ghi màn hình</translation>
 <translation id="1872219238824176091">Xóa không gian làm việc hiện tại</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, rồi đến <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> hoặc <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">Chuyển sang thẻ tiếp theo</translation>
 <translation id="2010818616644390445">Chuyển đến thẻ cuối cùng trong cửa sổ</translation>
 <translation id="2040706009561734834">Mở/đóng trình chạy</translation>
+<translation id="2086334242442703436">Mở Bộ chọn biểu tượng cảm xúc</translation>
 <translation id="2088054208777350526">Tìm kiếm phím tắt</translation>
 <translation id="2125211348069077981"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="E" /> hoặc <ph name="F" /></translation>
 <translation id="2145908266289632567">Chỉnh sửa văn bản</translation>
@@ -46,6 +48,7 @@
 <translation id="2480851840841871861">Mở Trợ lý Google</translation>
 <translation id="2488661730534396940">Kích hoạt không gian làm việc ở bên trái</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516999188535378855">Mở ứng dụng Chẩn đoán</translation>
 <translation id="2530339807289914946">Cuộn xuống dưới trang web</translation>
 <translation id="2530896289327917474">Bật hoặc tắt tính năng duyệt web có con nháy</translation>
 <translation id="2574014812750545982">Đặt lại mức thu phóng trên trang</translation>
@@ -61,7 +64,7 @@
 <translation id="2872353916818027657">Hoán đổi màn hình chính</translation>
 <translation id="2914313326123580426">Hiển thị hoặc ẩn bảng Công cụ dành cho nhà phát triển</translation>
 <translation id="292495055542441795">Bật/tắt chế độ toàn màn hình</translation>
-<translation id="3020183492814296499">Phím tắt</translation>
+<translation id="3020183492814296499">Lối tắt</translation>
 <translation id="3084301071537457911">Đánh dấu mục tiếp theo trên giá</translation>
 <translation id="309173601632226815">Đánh dấu nút trình khởi chạy trên giá</translation>
 <translation id="3105917916468784889">Chụp ảnh màn hình</translation>
@@ -74,7 +77,7 @@
 <translation id="353037708190149633">Lưu tất cả các trang đang mở trong cửa sổ hiện tại của bạn làm dấu trang trong một thư mục mới</translation>
 <translation id="355103131818127604">Mở liên kết trong thẻ mới trên nền</translation>
 <translation id="3622741593887335780">Phóng to (khi gắn đế HOẶC bật tính năng phóng to toàn màn hình)</translation>
-<translation id="3633851487917460983">Mở khay nhớ tạm</translation>
+<translation id="3633851487917460983">Mở bảng nhớ tạm</translation>
 <translation id="3649256019230929621">Thu nhỏ cửa sổ</translation>
 <translation id="3655154169297074232">Thẻ và cửa sổ</translation>
 <translation id="3668361878347172356">Làm lại thao tác bạn thực hiện gần đây nhất</translation>
@@ -92,7 +95,7 @@
 <translation id="4035482366624727273">Chọn mọi nội dung trên trang</translation>
 <translation id="4060703249685950734">Mở lại cửa sổ hoặc thẻ mà bạn đã đóng gần đây nhất</translation>
 <translation id="4090342722461256974">Nhấn và giữ <ph name="ALT" /><ph name="SEPARATOR" /><ph name="SHIFT" /> rồi nhấn vào <ph name="TAB" /> cho đến khi chuyển đến cửa sổ mà bạn muốn mở, sau đó thả tổ hợp phím ra.</translation>
-<translation id="4092538597492297615">Sao chép nội dung đã chọn vào khay nhớ tạm</translation>
+<translation id="4092538597492297615">Sao chép nội dung đã chọn vào bảng nhớ tạm</translation>
 <translation id="4101772068965291327">Mở trang chủ</translation>
 <translation id="4123108089450197101">Lưu liên kết làm dấu trang</translation>
 <translation id="4141203561740478845">Đánh dấu hàng bằng thanh địa chỉ</translation>
@@ -110,6 +113,7 @@
 <translation id="4801989101741319327">Di chuyển đến cuối từ tiếp theo</translation>
 <translation id="4866066940972151697">Kích hoạt không gian làm việc ở bên phải</translation>
 <translation id="4916163929714267752">Mở liên kết trong cửa sổ mới</translation>
+<translation id="492453977506755176">Phím kích hoạt chế độ chụp</translation>
 <translation id="5030659775136592441">Hiển thị trình quản lý dấu trang</translation>
 <translation id="5034421018520995080">Chuyển tới đầu trang</translation>
 <translation id="5042305953558921026">Phím chế độ tổng quan</translation>
@@ -132,6 +136,7 @@
 <translation id="5899919361772749550">Hiển thị hoặc ẩn bảng điều khiển Công cụ dành cho nhà phát triển</translation>
 <translation id="5919628958418675842">Bật/tắt màn hình bảo vệ quyền riêng tư</translation>
 <translation id="5921745308587794300">Xoay cửa sổ</translation>
+<translation id="5926306472221400972">Chụp ảnh toàn màn hình</translation>
 <translation id="6022924867608035986">Xóa văn bản trong hộp tìm kiếm</translation>
 <translation id="6045998054441862242">Bật chế độ tương phản cao</translation>
 <translation id="6052614013050385269">Nhấp chuột phải vào một liên kết</translation>
@@ -149,6 +154,7 @@
 <translation id="6445033640292336367">Đưa thẻ về vị trí ban đầu</translation>
 <translation id="6474744297082284761">Thu nhỏ (khi gắn đế HOẶC bật phóng to toàn màn hình)</translation>
 <translation id="649811797655257835">Chọn tệp, rồi nhấn phím <ph name="SPACE" /></translation>
+<translation id="6551886416582667425">Chụp/ghi một phần màn hình</translation>
 <translation id="6556040137485212400">Mở cửa sổ chưa sử dụng trong thời gian dài nhất</translation>
 <translation id="666343722268997814">Mở menu nhấp chuột phải cho mục được đánh dấu</translation>
 <translation id="6671538777808758331">Chuyển sang kết quả phù hợp tiếp theo cho tìm kiếm của bạn</translation>
@@ -174,7 +180,8 @@
 <translation id="7500368597227394048">dấu gạch nối</translation>
 <translation id="7611271430932669992">Di chuyển tiêu điểm đến cửa sổ bật lên và hộp thoại</translation>
 <translation id="7635348532214572995">Di chuyển một biểu tượng ứng dụng xung quanh lưới ứng dụng</translation>
-<translation id="766326951329901120">Dán nội dung từ khay nhớ tạm dưới dạng văn bản thuần túy</translation>
+<translation id="766326951329901120">Dán nội dung từ bảng nhớ tạm dưới dạng văn bản thuần túy</translation>
+<translation id="7673453620027697230">Chụp/ghi màn hình cửa sổ</translation>
 <translation id="7703010453515335249">dấu ngoặc vuông trái</translation>
 <translation id="7724603315864178912">Cắt</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, rồi đến <ph name="SPACE" /> hoặc <ph name="ENTER" /></translation>
@@ -205,7 +212,7 @@
 <translation id="8982190978301344584">Hiện menu hiển thị danh sách trình chỉnh sửa phương thức nhập có sẵn</translation>
 <translation id="8990356943438003669"><ph name="ALT" /><ph name="SEPARATOR" /> 1 đến 8</translation>
 <translation id="9005984960510803406">Mở cửa sổ Crosh</translation>
-<translation id="9041599225465145264">Dán nội dung từ khay nhớ tạm</translation>
+<translation id="9041599225465145264">Dán nội dung từ bảng nhớ tạm</translation>
 <translation id="9052808072970550123">Chuyển sang người dùng tiếp theo</translation>
 <translation id="906458777597946297">Phóng to cửa sổ</translation>
 <translation id="9072882242928138086"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" />, sau đó là <ph name="LEFT" />/<ph name="RIGHT" /> hoặc <ph name="UP" />/<ph name="DOWN" /></translation>

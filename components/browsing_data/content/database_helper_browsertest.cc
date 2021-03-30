@@ -4,9 +4,15 @@
 
 #include <stdint.h>
 
+#include <list>
+#include <string>
+#include <vector>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -19,6 +25,10 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "storage/browser/database/database_tracker.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 using content::BrowserContext;
 using content::BrowserThread;
@@ -49,10 +59,10 @@ class DatabaseHelperTest : public content::ContentBrowserTest {
     base::RunLoop run_loop;
     db_tracker->task_runner()->PostTaskAndReply(
         FROM_HERE, base::BindLambdaForTesting([&]() {
-          base::string16 db_name = base::ASCIIToUTF16("db");
-          base::string16 description = base::ASCIIToUTF16("db_description");
+          std::u16string db_name = u"db";
+          std::u16string description = u"db_description";
           int64_t size;
-          db_tracker->DatabaseOpened(kTestIdentifier1, db_name, description, 1,
+          db_tracker->DatabaseOpened(kTestIdentifier1, db_name, description,
                                      &size);
           db_tracker->DatabaseClosed(kTestIdentifier1, db_name);
           base::FilePath db_path1 =
@@ -60,7 +70,7 @@ class DatabaseHelperTest : public content::ContentBrowserTest {
           base::CreateDirectory(db_path1.DirName());
           ASSERT_EQ(0, base::WriteFile(db_path1, nullptr, 0));
           db_tracker->DatabaseOpened(kTestIdentifierExtension, db_name,
-                                     description, 1, &size);
+                                     description, &size);
           db_tracker->DatabaseClosed(kTestIdentifierExtension, db_name);
           base::FilePath db_path2 =
               db_tracker->GetFullDBFilePath(kTestIdentifierExtension, db_name);
@@ -102,8 +112,8 @@ IN_PROC_BROWSER_TEST_F(DatabaseHelperTest, CannedAddDatabase) {
   helper->Add(origin2);
 
   TestCompletionCallback callback;
-  helper->StartFetching(base::Bind(&TestCompletionCallback::callback,
-                                   base::Unretained(&callback)));
+  helper->StartFetching(base::BindOnce(&TestCompletionCallback::callback,
+                                       base::Unretained(&callback)));
 
   std::list<content::StorageUsageInfo> result = callback.result();
 
@@ -123,8 +133,8 @@ IN_PROC_BROWSER_TEST_F(DatabaseHelperTest, CannedUnique) {
   helper->Add(origin);
 
   TestCompletionCallback callback;
-  helper->StartFetching(base::Bind(&TestCompletionCallback::callback,
-                                   base::Unretained(&callback)));
+  helper->StartFetching(base::BindOnce(&TestCompletionCallback::callback,
+                                       base::Unretained(&callback)));
 
   std::list<content::StorageUsageInfo> result = callback.result();
 

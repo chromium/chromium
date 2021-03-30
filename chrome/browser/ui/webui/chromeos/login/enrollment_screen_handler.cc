@@ -16,16 +16,16 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/ash/authpolicy/authpolicy_helper.h"
+#include "chrome/browser/ash/login/error_screens_histogram_helper.h"
+#include "chrome/browser/ash/login/help_app_launcher.h"
+#include "chrome/browser/ash/login/oobe_screen.h"
+#include "chrome/browser/ash/login/screens/network_error.h"
+#include "chrome/browser/ash/login/signin_partition_manager.h"
+#include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/authpolicy/authpolicy_helper.h"
-#include "chrome/browser/chromeos/login/error_screens_histogram_helper.h"
-#include "chrome/browser/chromeos/login/help_app_launcher.h"
-#include "chrome/browser/chromeos/login/oobe_screen.h"
-#include "chrome/browser/chromeos/login/screens/network_error.h"
-#include "chrome/browser/chromeos/login/signin_partition_manager.h"
-#include "chrome/browser/chromeos/login/ui/login_display_host.h"
-#include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/policy/enrollment_requisition_manager.h"
 #include "chrome/browser/chromeos/policy/policy_oauth2_token_fetcher.h"
@@ -341,7 +341,7 @@ void EnrollmentScreenHandler::ShowEnrollmentSpinnerScreen() {
 
 void EnrollmentScreenHandler::SetEnterpriseDomainInfo(
     const std::string& manager,
-    const base::string16& device_type) {
+    const std::u16string& device_type) {
   CallJS("login.OAuthEnrollmentScreen.setEnterpriseDomainInfo", manager,
          device_type);
 }
@@ -384,6 +384,10 @@ void EnrollmentScreenHandler::ShowOtherError(
       return;
   }
   NOTREACHED();
+}
+
+void EnrollmentScreenHandler::Shutdown() {
+  shutdown_ = true;
 }
 
 void EnrollmentScreenHandler::ShowEnrollmentStatus(
@@ -846,7 +850,11 @@ void EnrollmentScreenHandler::OnGetCookiesForCompleteLogin(
 void EnrollmentScreenHandler::OnCookieWaitTimeout() {
   LOG(ERROR) << "Timeout waiting for OAuth cookie";
   oauth_code_waiter_.reset();
-  ShowError(IDS_LOGIN_FATAL_ERROR_NO_AUTH_TOKEN, true);
+
+  // If enrollment ends and the browser is being restarted, the renderers are
+  // killed so we can not talk to them anymore.
+  if (!shutdown_)
+    ShowError(IDS_LOGIN_FATAL_ERROR_NO_AUTH_TOKEN, true);
 }
 
 void EnrollmentScreenHandler::HandleAdCompleteLogin(
@@ -928,6 +936,11 @@ void EnrollmentScreenHandler::DoShow() {
 
 void EnrollmentScreenHandler::DoShowWithPartition(
     const std::string& partition_name) {
+  // If enrollment ends and the browser is being restarted, the renderers are
+  // killed so we can not talk to them anymore.
+  if (shutdown_)
+    return;
+
   base::DictionaryValue screen_data;
 
   screen_data.SetString("webviewPartitionName", partition_name);

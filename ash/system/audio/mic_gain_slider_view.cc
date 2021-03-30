@@ -12,8 +12,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/layout/box_layout.h"
 
-using chromeos::CrasAudioHandler;
-
 namespace ash {
 
 MicGainSliderView::MicGainSliderView(MicGainSliderController* controller,
@@ -75,7 +73,7 @@ void MicGainSliderView::Update(bool by_user) {
   button()->SetToggled(!is_muted);
   button()->SetVectorIcon(is_muted ? kMutedMicrophoneIcon
                                    : kImeMenuMicrophoneIcon);
-  base::string16 state_tooltip_text =
+  std::u16string state_tooltip_text =
       l10n_util::GetStringUTF16(is_muted ? IDS_ASH_STATUS_TRAY_MIC_STATE_MUTED
                                          : IDS_ASH_STATUS_TRAY_MIC_STATE_ON);
   button()->SetTooltipText(l10n_util::GetStringFUTF16(

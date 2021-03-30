@@ -15,6 +15,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/scoped_bstr.h"
@@ -104,7 +105,7 @@ void LoadPaper(const wchar_t* printer,
     paper.size_um.SetSize(sizes[i].x * kToUm, sizes[i].y * kToUm);
     if (!names.empty()) {
       const wchar_t* name_start = names[i].chars;
-      base::string16 tmp_name(name_start, kMaxPaperName);
+      std::wstring tmp_name(name_start, kMaxPaperName);
       // Trim trailing zeros.
       tmp_name = tmp_name.c_str();
       paper.display_name = base::WideToUTF8(tmp_name);
@@ -259,7 +260,7 @@ bool PrintBackendWin::GetPrinterSemanticCapsAndDefaults(
     return false;
   const wchar_t* name = info_5.get()->pPrinterName;
   const wchar_t* port = info_5.get()->pPortName;
-  DCHECK_EQ(name, base::UTF8ToUTF16(printer_name));
+  DCHECK_EQ(name, base::UTF8ToWide(printer_name));
 
   PrinterSemanticCapsAndDefaults caps;
 
@@ -330,8 +331,8 @@ bool PrintBackendWin::GetPrinterCapsAndDefaults(
     return false;
 
   HPTPROVIDER provider = nullptr;
-  std::wstring printer_name_wide = base::UTF8ToWide(printer_name);
-  HRESULT hr = XPSModule::OpenProvider(printer_name_wide, 1, &provider);
+  std::wstring wide_printer_name = base::UTF8ToWide(printer_name);
+  HRESULT hr = XPSModule::OpenProvider(wide_printer_name, 1, &provider);
   if (!provider)
     return true;
 
@@ -353,7 +354,7 @@ bool PrintBackendWin::GetPrinterCapsAndDefaults(
       printer_info->caps_mime_type = "text/xml";
     }
     ScopedPrinterHandle printer_handle;
-    if (printer_handle.OpenPrinterWithName(printer_name_wide.c_str())) {
+    if (printer_handle.OpenPrinterWithName(wide_printer_name.c_str())) {
       std::unique_ptr<DEVMODE, base::FreeDeleter> devmode_out(
           CreateDevMode(printer_handle.Get(), nullptr));
       if (!devmode_out)

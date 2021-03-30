@@ -33,10 +33,9 @@ class SpecialStoragePolicy;
 
 // Stores all origin scoped quota managed data and metadata.
 //
-// Instances are owned by QuotaManager. There is one instance per QuotaManager
-// instance.
-// All the methods of this class, except the constructor, must called on the DB
-// thread.
+// Instances are owned by QuotaManagerImpl. There is one instance per
+// QuotaManagerImpl instance. All the methods of this class, except the
+// constructor, must called on the DB thread.
 class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
  public:
   struct COMPONENT_EXPORT(STORAGE_BROWSER) OriginInfoTableEntry {
@@ -53,15 +52,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
     base::Time last_modified_time;
   };
 
-  // Constants for {Get,Set}QuotaConfigValue keys.
-  static const char kDesiredAvailableSpaceKey[];
-  static const char kTemporaryQuotaOverrideKey[];
-
   // If 'path' is empty, an in memory database will be used.
   explicit QuotaDatabase(const base::FilePath& path);
   ~QuotaDatabase();
-
-  void CloseDatabase();
 
   // Returns whether the record could be found.
   bool GetHostQuota(const std::string& host,
@@ -110,9 +103,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
 
   bool DeleteOriginInfo(const url::Origin& origin,
                         blink::mojom::StorageType type);
-
-  bool GetQuotaConfigValue(const char* key, int64_t* value);
-  bool SetQuotaConfigValue(const char* key, int64_t value);
 
   // Sets |origin| to the least recently used origin of origins not included
   // in |exceptions| and not granted the special unlimited storage right.
@@ -207,7 +197,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   static base::Time TimeFromSqlValue(int64_t time);
   static int64_t TimeToSqlValue(const base::Time& time);
 
-  base::FilePath db_file_path_;
+  const base::FilePath db_file_path_;
 
   std::unique_ptr<sql::Database> db_;
   std::unique_ptr<sql::MetaTable> meta_table_;
@@ -217,7 +207,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   base::OneShotTimer timer_;
 
   friend class QuotaDatabaseTest;
-  friend class QuotaManager;
+  friend class QuotaManagerImpl;
 
   static const TableSchema kTables[];
   static const IndexSchema kIndexes[];

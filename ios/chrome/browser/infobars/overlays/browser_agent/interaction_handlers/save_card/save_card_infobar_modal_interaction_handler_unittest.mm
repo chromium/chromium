@@ -8,14 +8,11 @@
 
 #include "base/guid.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/infobars/core/infobar_feature.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/common/infobar_banner_interaction_handler.h"
 #include "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/test/mock_autofill_save_card_infobar_delegate_mobile.h"
-#import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #include "testing/platform_test.h"
 #include "url/gurl.h"
 
@@ -30,8 +27,6 @@ class SaveCardInfobarModalInteractionHandlerTest : public PlatformTest {
       : delegate_factory_(),
         prefs_(autofill::test::PrefServiceForTesting()),
         card_(base::GenerateGUID(), "https://www.example.com/") {
-    scoped_feature_list_.InitWithFeatures({kIOSInfobarUIReboot},
-                                          {kInfobarUIRebootOnlyiOS13});
     infobar_ = std::make_unique<InfoBarIOS>(
         InfobarType::kInfobarTypeSaveCard,
         MockAutofillSaveCardInfoBarDelegateMobileFactory::
@@ -45,7 +40,6 @@ class SaveCardInfobarModalInteractionHandlerTest : public PlatformTest {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   SaveCardInfobarModalInteractionHandler handler_;
   MockAutofillSaveCardInfoBarDelegateMobileFactory delegate_factory_;
   std::unique_ptr<PrefService> prefs_;
@@ -54,9 +48,9 @@ class SaveCardInfobarModalInteractionHandlerTest : public PlatformTest {
 };
 
 TEST_F(SaveCardInfobarModalInteractionHandlerTest, UpdateCredentials) {
-  base::string16 cardholder_name = base::SysNSStringToUTF16(@"test name");
-  base::string16 expiration_date_month = base::SysNSStringToUTF16(@"06");
-  base::string16 expiration_date_year = base::SysNSStringToUTF16(@"2023");
+  std::u16string cardholder_name = base::SysNSStringToUTF16(@"test name");
+  std::u16string expiration_date_month = base::SysNSStringToUTF16(@"06");
+  std::u16string expiration_date_year = base::SysNSStringToUTF16(@"2023");
   EXPECT_CALL(mock_delegate(),
               UpdateAndAccept(cardholder_name, expiration_date_month,
                               expiration_date_year));

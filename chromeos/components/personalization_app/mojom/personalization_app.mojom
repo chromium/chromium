@@ -1,0 +1,15 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromeos.personalization_app.mojom;
+
+// Provides APIs to retrieve Wallpaper information. This API is exposed only to
+// the Personalization App (chrome://personalization).
+interface WallpaperProvider {
+
+    // Test call to make sure mojom API is correctly wired up. Will replace with
+    // functional behavior in follow up CL.
+    // TODO(b/182012641) add wallpaper API code here.
+    Initialize() => (bool success);
+};

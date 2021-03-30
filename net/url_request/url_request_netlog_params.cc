@@ -32,7 +32,7 @@ base::Value NetLogURLRequestStartParams(
     const std::string& method,
     int load_flags,
     PrivacyMode privacy_mode,
-    const NetworkIsolationKey& network_isolation_key,
+    const IsolationInfo& isolation_info,
     const SiteForCookies& site_for_cookies,
     const base::Optional<url::Origin>& initiator,
     int64_t upload_id) {
@@ -42,7 +42,20 @@ base::Value NetLogURLRequestStartParams(
   dict.SetIntKey("load_flags", load_flags);
   dict.SetStringKey("privacy_mode", PrivacyModeToDebugString(privacy_mode));
   dict.SetStringKey("network_isolation_key",
-                    network_isolation_key.ToDebugString());
+                    isolation_info.network_isolation_key().ToDebugString());
+  std::string request_type;
+  switch (isolation_info.request_type()) {
+    case IsolationInfo::RequestType::kMainFrame:
+      request_type = "main frame";
+      break;
+    case IsolationInfo::RequestType::kSubFrame:
+      request_type = "subframe";
+      break;
+    case IsolationInfo::RequestType::kOther:
+      request_type = "other";
+      break;
+  }
+  dict.SetStringKey("request_type", request_type);
   dict.SetStringKey("site_for_cookies", site_for_cookies.ToDebugString());
   dict.SetStringKey("initiator", initiator.has_value() ? initiator->Serialize()
                                                        : "not an origin");

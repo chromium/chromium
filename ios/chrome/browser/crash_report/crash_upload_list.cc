@@ -6,6 +6,8 @@
 
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "components/crash/core/browser/crash_upload_list_crashpad.h"
+#include "components/crash/core/common/reporter_running_ios.h"
 #include "components/upload_list/crash_upload_list.h"
 #include "components/upload_list/text_log_upload_list.h"
 #include "ios/chrome/browser/chrome_paths.h"
@@ -13,6 +15,9 @@
 namespace ios {
 
 scoped_refptr<UploadList> CreateCrashUploadList() {
+  if (crash_reporter::IsCrashpadRunning())
+    return new CrashUploadListCrashpad();
+
   base::FilePath crash_dir_path;
   base::PathService::Get(ios::DIR_CRASH_DUMPS, &crash_dir_path);
   base::FilePath upload_log_path =

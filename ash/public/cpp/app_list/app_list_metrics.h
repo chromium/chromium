@@ -79,7 +79,7 @@ enum SearchResultType {
   // A zero-state result representing a local file.
   ZERO_STATE_FILE,
   // A result from the Drive QuickAccess provider.
-  DRIVE_QUICK_ACCESS,
+  ZERO_STATE_DRIVE,
   // A result from the Assistant provider.
   ASSISTANT,
   // An OsSettingsResult.
@@ -94,6 +94,18 @@ enum SearchResultType {
   BOREALIS_APP,
   // A Help App (aka Explore) Result.
   HELP_APP,
+  // A result from omnibox for query suggestion.
+  OMNIBOX_SEARCH_SUGGEST_ENTITY,
+  // A result from omnibox for suggested navigation.
+  OMNIBOX_NAVSUGGEST,
+  // An answer rich entity result from omnibox.
+  OMNIBOX_RICH_ENTITY_ANSWER,
+  // A rich entity result from omnibox with image icon.
+  OMNIBOX_RICH_ENTITY_IMAGE_ENTITY,
+  // A local file search result.
+  FILE_SEARCH,
+  // A Drive file search result.
+  DRIVE_SEARCH,
   // Boundary is always last.
   SEARCH_RESULT_TYPE_BOUNDARY
 };

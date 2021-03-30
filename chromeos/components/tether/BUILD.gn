@@ -115,10 +115,10 @@ static_library("tether") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chromeos/components/multidevice/logging",
     "//chromeos/components/tether/proto",
-    "//chromeos/constants",
     "//chromeos/dbus/power",
     "//chromeos/login/login_state",
     "//chromeos/network",
@@ -203,7 +203,6 @@ static_library("test_support") {
     "//chromeos/components/multidevice",
     "//chromeos/components/multidevice:test_support",
     "//chromeos/components/tether/proto",
-    "//chromeos/constants",
     "//chromeos/network:test_support",
     "//chromeos/services/device_sync/public/cpp:test_support",
     "//chromeos/services/secure_channel/public/cpp/client:test_support",
@@ -265,7 +264,6 @@ source_set("unit_tests") {
     "//chromeos/components/multidevice",
     "//chromeos/components/multidevice:test_support",
     "//chromeos/components/tether/proto",
-    "//chromeos/constants",
     "//chromeos/dbus/power",
     "//chromeos/login/login_state",
     "//chromeos/network:test_support",

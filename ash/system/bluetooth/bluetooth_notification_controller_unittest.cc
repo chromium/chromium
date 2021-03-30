@@ -109,7 +109,7 @@ class BluetoothNotificationControllerTest : public AshTestBase {
             BluetoothNotificationController::
                 kBluetoothDeviceDiscoverableNotificationId);
     EXPECT_TRUE(visible_notification);
-    EXPECT_EQ(base::string16(), visible_notification->title());
+    EXPECT_EQ(std::u16string(), visible_notification->title());
     EXPECT_EQ(
         l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH_DISCOVERABLE,
                                    base::UTF8ToUTF16(kTestAdapterName),
@@ -129,7 +129,7 @@ class BluetoothNotificationControllerTest : public AshTestBase {
         test_message_center_.FindVisibleNotificationById(
             BluetoothNotificationController::GetPairedNotificationId(device));
     EXPECT_TRUE(visible_notification);
-    EXPECT_EQ(base::string16(), visible_notification->title());
+    EXPECT_EQ(std::u16string(), visible_notification->title());
     EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIRED,
                                          device->GetNameForDisplay()),
               visible_notification->message());

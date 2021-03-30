@@ -5,17 +5,10 @@
 #ifndef UI_ACCESSIBILITY_AX_NODE_POSITION_H_
 #define UI_ACCESSIBILITY_AX_NODE_POSITION_H_
 
-#include <stdint.h>
-
-#include <vector>
-
-#include "base/containers/stack.h"
-#include "base/strings/string16.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_position.h"
-#include "ui/accessibility/ax_tree_id.h"
 
 namespace ui {
 
@@ -35,46 +28,6 @@ class AX_EXPORT AXNodePosition : public AXPosition<AXNodePosition, AXNode> {
   AXNodePosition(const AXNodePosition& other);
 
   AXPositionInstance Clone() const override;
-
-  base::string16 GetText() const override;
-  bool IsInLineBreak() const override;
-  bool IsInTextObject() const override;
-  bool IsInWhiteSpace() const override;
-  int MaxTextOffset() const override;
-
- protected:
-  void AnchorChild(int child_index,
-                   AXTreeID* tree_id,
-                   AXNode::AXID* child_id) const override;
-  int AnchorChildCount() const override;
-  int AnchorUnignoredChildCount() const override;
-  int AnchorIndexInParent() const override;
-  int AnchorSiblingCount() const override;
-  base::stack<AXNode*> GetAncestorAnchors() const override;
-  AXNode* GetLowestUnignoredAncestor() const override;
-  void AnchorParent(AXTreeID* tree_id, AXNode::AXID* parent_id) const override;
-  AXNode* GetNodeInTree(AXTreeID tree_id, AXNode::AXID node_id) const override;
-  AXNode::AXID GetAnchorID(AXNode* node) const override;
-  AXTreeID GetTreeID(AXNode* node) const override;
-
-  bool IsEmbeddedObjectInParent() const override;
-  bool IsInLineBreakingObject() const override;
-  ax::mojom::Role GetAnchorRole() const override;
-  ax::mojom::Role GetRole(AXNode* node) const override;
-  AXNodeTextStyles GetTextStyles() const override;
-  std::vector<int32_t> GetWordStartOffsets() const override;
-  std::vector<int32_t> GetWordEndOffsets() const override;
-  AXNode::AXID GetNextOnLineID(AXNode::AXID node_id) const override;
-  AXNode::AXID GetPreviousOnLineID(AXNode::AXID node_id) const override;
-
- private:
-  // Returns the parent node of the provided child. Returns the parent
-  // node's tree id and node id through the provided output parameters,
-  // |parent_tree_id| and |parent_id|.
-  static AXNode* GetParent(AXNode* child,
-                           AXTreeID child_tree_id,
-                           AXTreeID* parent_tree_id,
-                           AXNode::AXID* parent_id);
 };
 
 }  // namespace ui

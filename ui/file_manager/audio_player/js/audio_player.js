@@ -5,11 +5,11 @@
 // clang-format off
 // #import '../elements/audio_player.m.js';
 // #import {dashToCamelCase} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {ExternallyUnmountedEvent} from '../../externs/volume_manager.m.js';
-// #import {FilteredVolumeManager} from '../../base/js/filtered_volume_manager.m.js';
-// #import {AllowedPaths} from '../../base/js/volume_manager_types.m.js';
-// #import {MediaSessionPlaybackState} from '../../base/js/mediasession_types.m.js';
-// #import * as appUtilWrapped from '../../base/js/app_util.m.js'; const {appUtil} = appUtilWrapped;
+// #import {ExternallyUnmountedEvent} from '../../file_manager/externs/volume_manager.m.js';
+// #import {FilteredVolumeManager} from '../../file_manager/common/js/filtered_volume_manager.m.js';
+// #import {AllowedPaths} from '../../file_manager/common/js/volume_manager_types.m.js';
+// #import {MediaSessionPlaybackState} from '../../file_manager/common/js/mediasession_types.m.js';
+// #import * as appUtilWrapped from '../../file_manager/common/js/app_util.m.js'; const {appUtil} = appUtilWrapped;
 // #import * as wrappedAsyncUtil from '../../file_manager/common/js/async_util.m.js'; const {AsyncUtil} = wrappedAsyncUtil;
 // #import * as wrappedUtil from '../../file_manager/common/js/util.m.js'; const {util} = wrappedUtil;
 // #import {ContentMetadataProvider} from '../../file_manager/foreground/js/metadata/content_metadata_provider.m.js';
@@ -142,15 +142,11 @@
       this.player_.ariaExpandArtworkLabel =
           strings['AUDIO_PLAYER_ARTWORK_EXPAND_BUTTON_LABEL'];
 
-      /**
-       * Overrided metadata worker's path.
-       * @type {string}
-       */
-      ContentMetadataProvider.WORKER_SCRIPT =
+      // Override metadata worker's path.
+      ContentMetadataProvider.configure(
           util.isAudioPlayerJsModulesEnabled() ? '/js/metadata_worker.m.js' :
-                                                 '/js/metadata_worker.js';
-      ContentMetadataProvider.loadAsModule =
-          util.isAudioPlayerJsModulesEnabled();
+                                                 '/js/metadata_worker.js',
+          /*isModule=*/ util.isAudioPlayerJsModulesEnabled());
 
       this.metadataModel_ = MetadataModel.create(this.volumeManager_);
       this.resolveMetadataModel_();

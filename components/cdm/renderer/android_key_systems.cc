@@ -15,7 +15,7 @@
 #include "media/media_buildflags.h"
 #if BUILDFLAG(ENABLE_WIDEVINE)
 #include "components/cdm/renderer/widevine_key_system_properties.h"
-#include "third_party/widevine/cdm/widevine_cdm_common.h"
+#include "third_party/widevine/cdm/widevine_cdm_common.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)
 
 using media::EmeConfigRule;
@@ -79,10 +79,6 @@ class AndroidPlatformKeySystemProperties : public KeySystemProperties {
   }
 
   EmeSessionTypeSupport GetPersistentLicenseSessionSupport() const override {
-    return EmeSessionTypeSupport::NOT_SUPPORTED;
-  }
-  EmeSessionTypeSupport GetPersistentUsageRecordSessionSupport()
-      const override {
     return EmeSessionTypeSupport::NOT_SUPPORTED;
   }
   EmeFeatureSupport GetPersistentStateSupport() const override {
@@ -154,7 +150,6 @@ void AddAndroidWidevine(
         Robustness::HW_SECURE_CRYPTO,  // Max audio robustness.
         Robustness::HW_SECURE_ALL,     // Max video robustness.
         persistent_license_support,    // persistent-license.
-        EmeSessionTypeSupport::NOT_SUPPORTED,  // persistent-release-message.
         EmeFeatureSupport::ALWAYS_ENABLED,     // Persistent state.
         EmeFeatureSupport::ALWAYS_ENABLED));   // Distinctive identifier.
   } else {

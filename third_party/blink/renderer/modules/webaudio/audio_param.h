@@ -184,7 +184,8 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   bool HasSampleAccurateValues() {
     bool has_values =
         timeline_.HasValues(destination_handler_->CurrentSampleFrame(),
-                            destination_handler_->SampleRate());
+                            destination_handler_->SampleRate(),
+                            GetDeferredTaskHandler().RenderQuantumFrames());
 
     return has_values || NumberOfRenderingConnections();
   }

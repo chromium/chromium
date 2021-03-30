@@ -35,17 +35,13 @@ void CSSGlobalRuleSet::Update(Document& document) {
 
   is_dirty_ = false;
   features_.Clear();
-  has_fullscreen_ua_style_ = false;
 
   CSSDefaultStyleSheets& default_style_sheets =
       CSSDefaultStyleSheets::Instance();
-  if (default_style_sheets.DefaultStyle()) {
-    features_.Add(default_style_sheets.DefaultStyle()->Features());
-    has_fullscreen_ua_style_ = default_style_sheets.FullscreenStyleSheet();
-  }
 
-  if (document.IsViewSource())
-    features_.Add(default_style_sheets.DefaultViewSourceStyle()->Features());
+  has_fullscreen_ua_style_ = default_style_sheets.FullscreenStyleSheet();
+
+  default_style_sheets.CollectFeaturesTo(document, features_);
 
   if (watched_selectors_rule_set_)
     features_.Add(watched_selectors_rule_set_->Features());

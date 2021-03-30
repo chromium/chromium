@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.autofill_assistant;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -13,6 +14,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FieldTrialList;
+import org.chromium.base.Log;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill_assistant.metrics.DropOutReason;
@@ -30,6 +32,9 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvi
 
 /** Facade for starting Autofill Assistant on a custom tab. */
 public class AutofillAssistantFacade {
+    /** Used for logging. */
+    private static final String TAG = "AutofillAssistant";
+
     /**
      * Synthetic field trial names and group names should match those specified in
      * google3/analysis/uma/dashboards/
@@ -47,11 +52,11 @@ public class AutofillAssistantFacade {
      */
     private static final String LITE_SCRIPT_EXPERIMENT_TRIAL =
             "AutofillAssistantLiteScriptExperiment";
-    private static final String LITE_SCRIPT_EXPERIMENT_TRIAL_CONTROL = "Control";
-    private static final String LITE_SCRIPT_EXPERIMENT_TRIAL_EXPERIMENT = "Experiment";
+    private static final String TRIGGER_SCRIPT_EXPERIMENT_TRIAL_CONTROL = "Control";
+    private static final String TRIGGER_SCRIPT_EXPERIMENT_TRIAL_EXPERIMENT = "Experiment";
 
     /** Returns true if conditions are satisfied to attempt to start Autofill Assistant. */
-    private static boolean isConfigured(AutofillAssistantArguments arguments) {
+    private static boolean isConfigured(TriggerContext arguments) {
         return arguments.areMandatoryParametersSet();
     }
 
@@ -62,7 +67,7 @@ public class AutofillAssistantFacade {
      */
     public static void start(ChromeActivity activity) {
         start(activity,
-                AutofillAssistantArguments.newBuilder()
+                TriggerContext.newBuilder()
                         .fromBundle(activity.getInitialIntent().getExtras())
                         .withInitialUrl(activity.getInitialIntent().getDataString())
                         .build());
@@ -70,16 +75,18 @@ public class AutofillAssistantFacade {
 
     /**
      * Starts Autofill Assistant.
-     * @param activity {@link ChromeActivity} the activity on which the Autofill Assistant is being
+     * @param activity {@link Activity} the activity on which the Autofill Assistant is being
      *         started.
      * @param bundleExtras {@link Bundle} the extras which were used to start the Autofill
      *         Assistant.
      * @param initialUrl the initial URL the Autofill Assistant should be started on.
      */
-    public static void start(
-            ChromeActivity activity, @Nullable Bundle bundleExtras, String initialUrl) {
-        start(activity,
-                AutofillAssistantArguments.newBuilder()
+    public static void start(Activity activity, @Nullable Bundle bundleExtras, String initialUrl) {
+        // TODO(crbug.com/1155809): Remove ChromeActivity reference.
+        assert activity instanceof ChromeActivity;
+        ChromeActivity chromeActivity = (ChromeActivity) activity;
+        start(chromeActivity,
+                TriggerContext.newBuilder()
                         .fromBundle(bundleExtras)
                         .withInitialUrl(initialUrl)
                         .build());
@@ -89,14 +96,14 @@ public class AutofillAssistantFacade {
      * Starts Autofill Assistant.
      * @param activity {@link ChromeActivity} the activity on which the Autofill Assistant is being
      *         started.
-     * @param arguments {@link AutofillAssistantArguments} the arguments which were used to start
-     *          the Autofill Assistant.
+     * @param triggerContext {@link TriggerContext} the trigger context, containing startup
+     *         parameters and information.
      */
-    public static void start(ChromeActivity activity, AutofillAssistantArguments arguments) {
+    public static void start(ChromeActivity activity, TriggerContext triggerContext) {
         // Register synthetic trial as soon as possible.
         UmaSessionStats.registerSyntheticFieldTrial(TRIGGERED_SYNTHETIC_TRIAL, ENABLED_GROUP);
         // Synthetic trial for experiments.
-        String experimentIds = arguments.getExperimentIds();
+        String experimentIds = triggerContext.getExperimentIds();
         if (!experimentIds.isEmpty()) {
             for (String experimentId : experimentIds.split(",")) {
                 UmaSessionStats.registerSyntheticFieldTrial(
@@ -104,64 +111,65 @@ public class AutofillAssistantFacade {
             }
         }
 
+        String intent = triggerContext.getParameters().get("INTENT");
         // Have an "attempted starts" baseline for the drop out histogram.
-        AutofillAssistantMetrics.recordDropOut(DropOutReason.AA_START);
+        AutofillAssistantMetrics.recordDropOut(DropOutReason.AA_START, intent);
         waitForTabWithWebContents(activity, tab -> {
-            if (arguments.containsTriggerScript() || arguments.requestsTriggerScript()
-                    || arguments.containsBase64TriggerScripts()) {
+            if (triggerContext.containsTriggerScript()) {
                 // Create a field trial and assign experiment arm based on script parameter. This
                 // is needed to tag UKM data to allow for A/B experiment comparisons.
                 FieldTrialList.createFieldTrial(LITE_SCRIPT_EXPERIMENT_TRIAL,
-                        arguments.isLiteScriptExperiment() ? LITE_SCRIPT_EXPERIMENT_TRIAL_EXPERIMENT
-                                                           : LITE_SCRIPT_EXPERIMENT_TRIAL_CONTROL);
+                        triggerContext.isTriggerScriptExperiment()
+                                ? TRIGGER_SCRIPT_EXPERIMENT_TRIAL_EXPERIMENT
+                                : TRIGGER_SCRIPT_EXPERIMENT_TRIAL_CONTROL);
 
                 // Record this as soon as possible, to establish a baseline.
                 AutofillAssistantMetrics.recordLiteScriptStarted(
                         tab.getWebContents(), LiteScriptStarted.LITE_SCRIPT_INTENT_RECEIVED);
 
-                // Legacy, remove as soon as possible. Trigger scripts before M-88 were tied to the
-                // regular autofill assistant Chrome setting. Since M-88, they also respect the new
-                // proactive help setting.
-                if (arguments.containsTriggerScript()
-                        && (!AutofillAssistantPreferencesUtil.isAutofillAssistantSwitchOn()
-                                || !AutofillAssistantPreferencesUtil.isProactiveHelpSwitchOn())) {
-                    if (AutofillAssistantPreferencesUtil
-                                    .isAutofillAssistantLiteScriptCancelThresholdReached()) {
-                        AutofillAssistantMetrics.recordLiteScriptStarted(tab.getWebContents(),
-                                LiteScriptStarted.LITE_SCRIPT_CANCELED_TWO_TIMES);
-                    }
-                    return;
-                }
-
                 if (AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntryIfInstalled()
-                        == null) {
-                    // Opt-out users who don't have DFM installed.
-                    AutofillAssistantMetrics.recordLiteScriptStarted(
-                            tab.getWebContents(), LiteScriptStarted.LITE_SCRIPT_DFM_UNAVAILABLE);
+                                == null
+                        && triggerContext.containsTriggerScript()
+                        && !ChromeFeatureList.isEnabled(
+                                ChromeFeatureList
+                                        .AUTOFILL_ASSISTANT_LOAD_DFM_FOR_TRIGGER_SCRIPTS)) {
+                    Log.v(TAG,
+                            "TriggerScript stopping: DFM module not available and on-demand"
+                                    + " installation is disabled.");
                     return;
                 }
             }
 
-            AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntry(
-                    tab, (moduleEntry) -> {
-                        if (moduleEntry == null || activity.isActivityFinishingOrDestroyed()) {
-                            AutofillAssistantMetrics.recordDropOut(
-                                    DropOutReason.DFM_INSTALL_FAILED);
-                            return;
+            if (AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntryIfInstalled() == null) {
+                AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntry(tab, (moduleEntry) -> {
+                    if (moduleEntry == null || activity.isActivityFinishingOrDestroyed()) {
+                        AutofillAssistantMetrics.recordDropOut(
+                                DropOutReason.DFM_INSTALL_FAILED, intent);
+                        if (triggerContext.containsTriggerScript()) {
+                            AutofillAssistantMetrics.recordLiteScriptFinished(tab.getWebContents(),
+                                    LiteScriptStarted.LITE_SCRIPT_DFM_UNAVAILABLE);
+                            Log.v(TAG, "TriggerScript stopping: failed to install DFM");
                         }
-
-                        moduleEntry.start(
-                                BottomSheetControllerProvider.from(activity.getWindowAndroid()),
-                                activity.getBrowserControlsManager(),
-                                activity.getCompositorViewHolder(), activity, tab.getWebContents(),
-                                activity.getWindowAndroid().getKeyboardDelegate(),
-                                activity.getWindowAndroid().getApplicationBottomInsetProvider(),
-                                activity.getActivityTabProvider(),
-                                activity instanceof CustomTabActivity, arguments.getInitialUrl(),
-                                arguments.getParameters(), arguments.getExperimentIds(),
-                                arguments.getCallerAccount(), arguments.getUserName());
-                    });
+                        return;
+                    }
+                    start(activity, triggerContext, moduleEntry);
+                }, /* showUi = */ !triggerContext.containsTriggerScript());
+            } else {
+                start(activity, triggerContext,
+                        AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntryIfInstalled());
+            }
         });
+    }
+
+    private static void start(ChromeActivity activity, TriggerContext arguments,
+            AutofillAssistantModuleEntry module) {
+        module.start(BottomSheetControllerProvider.from(activity.getWindowAndroid()),
+                activity.getBrowserControlsManager(), activity.getCompositorViewHolder(), activity,
+                activity.getCurrentWebContents(), activity.getWindowAndroid().getKeyboardDelegate(),
+                activity.getWindowAndroid().getApplicationBottomInsetProvider(),
+                activity.getActivityTabProvider(), activity instanceof CustomTabActivity,
+                arguments.getInitialUrl(), arguments.getParameters(), arguments.getExperimentIds(),
+                arguments.getCallerEmail(), arguments.getOriginalDeeplink());
     }
 
     /**
@@ -213,9 +221,8 @@ public class AutofillAssistantFacade {
 
     public static boolean isAutofillAssistantEnabled(Intent intent) {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ASSISTANT)
-                && AutofillAssistantFacade.isConfigured(AutofillAssistantArguments.newBuilder()
-                                                                .fromBundle(intent.getExtras())
-                                                                .build());
+                && AutofillAssistantFacade.isConfigured(
+                        TriggerContext.newBuilder().fromBundle(intent.getExtras()).build());
     }
 
     public static boolean isAutofillAssistantByIntentTriggeringEnabled(Intent intent) {

@@ -17,9 +17,9 @@
 #include "ui/base/clipboard/clipboard_format_type.h"
 #import "ui/base/clipboard/clipboard_util_mac.h"
 #include "ui/base/clipboard/custom_data_helper.h"
+#include "ui/base/clipboard/file_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #import "ui/base/dragdrop/cocoa_dnd_util.h"
-#include "ui/base/dragdrop/file_info/file_info.h"
 #include "url/gurl.h"
 
 @interface CrPasteboardItemWrapper : NSObject <NSPasteboardWriting>
@@ -144,13 +144,13 @@ bool OSExchangeDataProviderMac::DidOriginateFromRenderer() const {
   return false;
 }
 
-void OSExchangeDataProviderMac::SetString(const base::string16& string) {
+void OSExchangeDataProviderMac::SetString(const std::u16string& string) {
   [GetPasteboard() setString:base::SysUTF16ToNSString(string)
                      forType:NSPasteboardTypeString];
 }
 
 void OSExchangeDataProviderMac::SetURL(const GURL& url,
-                                       const base::string16& title) {
+                                       const std::u16string& title) {
   base::scoped_nsobject<NSPasteboardItem> item =
       ClipboardUtil::PasteboardItemFromUrl(base::SysUTF8ToNSString(url.spec()),
                                            base::SysUTF16ToNSString(title));
@@ -183,7 +183,7 @@ void OSExchangeDataProviderMac::SetPickledData(
   [GetPasteboard() setData:ns_data forType:format.ToNSString()];
 }
 
-bool OSExchangeDataProviderMac::GetString(base::string16* data) const {
+bool OSExchangeDataProviderMac::GetString(std::u16string* data) const {
   DCHECK(data);
   NSString* item = [GetPasteboard() stringForType:NSPasteboardTypeString];
   if (item) {
@@ -193,7 +193,7 @@ bool OSExchangeDataProviderMac::GetString(base::string16* data) const {
 
   // There was no NSString, check for an NSURL.
   GURL url;
-  base::string16 title;
+  std::u16string title;
   bool result = GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES,
                                &url, &title);
   if (result)
@@ -204,7 +204,7 @@ bool OSExchangeDataProviderMac::GetString(base::string16* data) const {
 
 bool OSExchangeDataProviderMac::GetURLAndTitle(FilenameToURLPolicy policy,
                                                GURL* url,
-                                               base::string16* title) const {
+                                               std::u16string* title) const {
   DCHECK(url);
   DCHECK(title);
 
@@ -268,13 +268,13 @@ bool OSExchangeDataProviderMac::GetPickledData(
 }
 
 bool OSExchangeDataProviderMac::HasString() const {
-  base::string16 string;
+  std::u16string string;
   return GetString(&string);
 }
 
 bool OSExchangeDataProviderMac::HasURL(FilenameToURLPolicy policy) const {
   GURL url;
-  base::string16 title;
+  std::u16string title;
   return GetURLAndTitle(policy, &url, &title);
 }
 

@@ -2,15 +2,19 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-iconset-svg/iron-iconset-svg.html">
 
 <link rel="import" href="/components/common_styles.html">
-<link rel="import" href="/components/hd_iron_icon.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
-<link rel="import" href="/components/oobe_dialog.html">
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
+<link rel="import" href="/components/login_screen_behavior.html">
+<link rel="import" href="/components/multi_step_behavior.html">
 
 <iron-iconset-svg name="oobe-welcome-32" size="32">
   <svg>
@@ -33,34 +37,63 @@
   </svg>
 </iron-iconset-svg>
 
-<iron-iconset-svg name="oobe-welcome-64" size="64">
-  <svg>
-    <defs>
-      <g id="accessibility" fill-rule="evenodd">
-        <path d="M32 5.333c2.933 0 5.333 2.415 5.333 5.367 0 2.95-2.4 5.366-5.333 5.366-2.933 0-5.333-2.415-5.333-5.366 0-2.952 2.4-5.367 5.333-5.367zM40 24v35h-5V43h-6v16.006h-5V24H8v-4.915h48V24H40z"></path>
-      </g>
-      <g id="language" fill-rule="evenodd">
-        <text font-family="RobotoMono-Regular, Roboto Mono" font-size="20" transform="translate(0 -71)">
-          <tspan x="1" y="19">Language</tspan>
-        </text>
-        <path d="M31.973 5.333C17.253 5.333 5.333 17.28 5.333 32c0 14.72 11.92 26.667 26.64 26.667C46.72 58.667 58.667 46.72 58.667 32c0-14.72-11.947-26.667-26.694-26.667zm18.48 16h-7.866c-.854-3.333-2.08-6.533-3.68-9.493 4.906 1.68 8.986 5.093 11.546 9.493zM32 10.773c2.213 3.2 3.947 6.747 5.093 10.56H26.907c1.146-3.813 2.88-7.36 5.093-10.56zm-20.64 26.56c-.427-1.706-.693-3.493-.693-5.333 0-1.84.266-3.627.693-5.333h9.013C20.16 28.427 20 30.187 20 32c0 1.813.16 3.573.373 5.333H11.36zm2.187 5.334h7.866c.854 3.333 2.08 6.533 3.68 9.493-4.906-1.68-8.986-5.067-11.546-9.493zm7.866-21.334h-7.866c2.56-4.426 6.64-7.813 11.546-9.493-1.6 2.96-2.826 6.16-3.68 9.493zM32 53.227c-2.213-3.2-3.947-6.747-5.093-10.56h10.186c-1.146 3.813-2.88 7.36-5.093 10.56zm6.24-15.894H25.76c-.24-1.76-.427-3.52-.427-5.333 0-1.813.187-3.6.427-5.333h12.48c.24 1.733.427 3.52.427 5.333 0 1.813-.187 3.573-.427 5.333zm.667 14.827c1.6-2.96 2.826-6.16 3.68-9.493h7.866c-2.56 4.4-6.64 7.813-11.546 9.493zm4.72-14.827c.213-1.76.373-3.52.373-5.333 0-1.813-.16-3.573-.373-5.333h9.013c.427 1.706.693 3.493.693 5.333 0 1.84-.266 3.627-.693 5.333h-9.013z"></path>
-      </g>
-      <g id="settings" fill="none" fill-rule="evenodd">
-        <path d="M0 0h64v64H0z"></path>
-        <path d="M51.813 34.6c.107-.853.187-1.72.187-2.6 0-.88-.08-1.747-.187-2.6l5.64-4.413c.507-.4.654-1.12.32-1.707l-5.333-9.24a1.32 1.32 0 0 0-1.627-.573l-6.64 2.68a20.234 20.234 0 0 0-4.506-2.627l-1-7.067a1.371 1.371 0 0 0-1.334-1.12H26.667c-.667 0-1.214.494-1.32 1.12l-1 7.067a19.734 19.734 0 0 0-4.507 2.627l-6.64-2.68c-.6-.227-1.293 0-1.627.573L6.24 23.28a1.336 1.336 0 0 0 .32 1.707l5.627 4.413C12.08 30.253 12 31.12 12 32c0 .88.08 1.747.187 2.6L6.56 39.013a1.33 1.33 0 0 0-.32 1.707l5.333 9.24c.334.573 1.027.813 1.627.573l6.64-2.68a20.234 20.234 0 0 0 4.507 2.627l1 7.067c.106.626.653 1.12 1.32 1.12h10.666c.667 0 1.214-.494 1.32-1.12l1-7.067a19.734 19.734 0 0 0 4.507-2.627l6.64 2.68c.6.227 1.293 0 1.627-.573l5.333-9.24a1.336 1.336 0 0 0-.32-1.707L51.813 34.6zM32 41.333A9.327 9.327 0 0 1 22.667 32 9.327 9.327 0 0 1 32 22.667 9.327 9.327 0 0 1 41.333 32 9.327 9.327 0 0 1 32 41.333z" fill="#4285F4" fill-rule="nonzero"></path>
-      </g>
-      <g id="timezone" fill-rule="evenodd">
-        <path d="M31.987 5.333C17.253 5.333 5.333 17.267 5.333 32c0 14.733 11.92 26.667 26.654 26.667 14.733 0 26.68-11.934 26.68-26.667 0-14.733-11.947-26.667-26.68-26.667zm.013 48c-11.787 0-21.333-9.546-21.333-21.333 0-11.787 9.546-21.333 21.333-21.333 11.787 0 21.333 9.546 21.333 21.333 0 11.787-9.546 21.333-21.333 21.333z"></path>
-        <path d="M33.333 18.667h-4v16l13.987 8.4 2.013-3.28-12-7.12"></path>
-      </g>
-    </defs>
-  </svg>
-</iron-iconset-svg>
-
 <dom-module id="oobe-welcome-element">
   <template>
-    <style include="oobe-dialog-host"></style>
-    <link rel="stylesheet" href="oobe_welcome.css">
+    <style include="oobe-dialog-host">
+      :host {
+        --oobe-dialog-list-item-border: 1px solid var(--google-grey-200);
+        --oobe-a11y-dialog-list-item-border: 1px solid var(--google-grey-200);
+        color: var(--oobe-text-color);
+        font-family: var(--oobe-default-font-family);
+        font-size: var(--oobe-default-font-size);
+        font-weight: var(--oobe-default-font-weight);
+        line-height: var(--oobe-default-line-height);
+      }
+
+      /************* Language Screen **************/
+      #languageScreen .language-selection-entry {
+        border-top: var(--oobe-dialog-list-item-border);
+        min-height: var(--selection-entry-height);
+      }
+
+      #languageScreen .language-selection-entry:last-of-type {
+        border-bottom: var(--oobe-dialog-list-item-border);
+      }
+
+      /************* Accessibility Screen **************/
+      #accessibilityScreen oobe-a11y-option {
+        border-top: var(--oobe-a11y-dialog-list-item-border);
+        min-height: var(--a11y-option-height);
+      }
+
+      #accessibilityScreen oobe-a11y-option:last-of-type {
+        border-bottom: var(--oobe-a11y-dialog-list-item-border);
+      }
+
+      /************* Timezone Screen **************/
+      #timezoneScreen .timezone-selection-entry {
+        border-top: var(--oobe-dialog-list-item-border);
+        min-height: var(--selection-entry-height);
+      }
+
+      #timezoneScreen .timezone-selection-entry:last-of-type {
+        border-bottom: var(--oobe-dialog-list-item-border);
+      }
+
+      /************* Advanced Options screen **************/
+      #oobeAdvancedOptionsScreen .advanced-options-entry {
+        border-top: var(--oobe-dialog-list-item-border);
+        min-height: 64px;
+      }
+
+      #oobeAdvancedOptionsScreen .advanced-options-entry:last-of-type {
+        border-bottom: var(--oobe-dialog-list-item-border);
+      }
+
+      #oobeAdvancedOptionsScreen .advanced-option-subtitle {
+        color: var(--google-grey-refresh-700);
+      }
+    </style>
     <oobe-welcome-dialog id="welcomeScreen" role="dialog" for-step="greeting"
         aria-label$="[[i18nDynamic(locale, 'welcomeScreenGreeting')]]"
         current-language="[[currentLanguage]]"
@@ -76,18 +109,17 @@
             "[[isTimezoneButtonVisible_(highlightStrength)]]"
         debugging-link-visible="[[debuggingLinkVisible_]]">
     </oobe-welcome-dialog>
-    <oobe-dialog id="languageScreen" role="dialog" for-step="language"
-        has-buttons title-key="languageSectionTitle"
+    <oobe-adaptive-dialog id="languageScreen" role="dialog" for-step="language"
         aria-label$="[[i18nDynamic(locale, 'languageSectionTitle')]]">
-      <hd-iron-icon slot="oobe-icon"
-          icon1x="oobe-welcome-32:language" icon2x="oobe-welcome-64:language">
-      </hd-iron-icon>
-      <div id="setup-container" slot="footer" class="layout vertical">
+      <iron-icon slot="icon" icon="oobe-32:language"></iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'languageSectionTitle')]]
+      </h1>
+      <div id="setup-container" slot="content" class="landscape-header-aligned">
         <div id="languageDropdownContainer"
             class="flex layout center horizontal justified
                 language-selection-entry">
-          <div id="language-dropdown" class=
-              "language-selection-title layout vertical center-justified">
+          <div id="language-dropdown">
             [[i18nDynamic(locale, 'languageDropdownTitle')]]
           </div>
           <oobe-i18n-dropdown id="languageSelect" items="[[languages]]"
@@ -99,8 +131,7 @@
         <div id="keyboardDropdownContainer"
             class="flex layout center horizontal justified
                language-selection-entry">
-          <div  id="keyboard-dropdown" class=
-              "language-selection-title layout vertical center-justified">
+          <div id="keyboard-dropdown">
             [[i18nDynamic(locale, 'keyboardDropdownTitle')]]
           </div>
           <oobe-i18n-dropdown id="keyboardSelect" items="[[keyboards]]"
@@ -110,20 +141,22 @@
           </oobe-i18n-dropdown>
         </div>
       </div>
-      <div slot="bottom-buttons" class="layout horizontal end-justified">
+      <div slot="bottom-buttons">
         <oobe-text-button id="ok-button-language" text-key="oobeOKButtonText"
             inverse on-click="closeLanguageSection_"></oobe-text-button>
       </div>
-    </oobe-dialog>
-    <oobe-dialog id="accessibilityScreen" role="dialog" for-step="accessibility"
-        has-buttons title-key="accessibilitySectionTitle"
-        subtitle-key="accessibilitySectionHint"
+    </oobe-adaptive-dialog>
+    <oobe-adaptive-dialog id="accessibilityScreen" role="dialog"
+        for-step="accessibility"
         aria-label$="[[i18nDynamic(locale, 'accessibilitySectionTitle')]]">
-      <hd-iron-icon slot="oobe-icon"
-          icon1x="oobe-welcome-32:accessibility"
-          icon2x="oobe-welcome-64:accessibility">
-      </hd-iron-icon>
-      <div slot="footer" class="layout vertical scroll">
+      <iron-icon slot="icon" icon="oobe-32:accessibility"></iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'accessibilitySectionTitle')]]
+      </h1>
+      <p slot="subtitle">
+        [[i18nDynamic(locale, 'accessibilitySectionHint')]]
+      </p>
+      <div slot="content" class="layout vertical">
         <oobe-a11y-option id="accessibility-spoken-feedback"
             checked="[[a11yStatus.spokenFeedbackEnabled]]"
             on-change="onA11yOptionChanged_"
@@ -225,23 +258,22 @@
           </span>
         </oobe-a11y-option>
       </div>
-      <div slot="bottom-buttons" class="layout horizontal end-justified">
+      <div slot="bottom-buttons">
         <oobe-text-button id="ok-button-accessibility"
             text-key="oobeOKButtonText" inverse
             on-click="closeAccessibilitySection_"></oobe-text-button>
       </div>
-    </oobe-dialog>
-    <oobe-dialog id="timezoneScreen" role="dialog" for-step="timezone"
-        has-buttons title-key="timezoneSectionTitle"
+    </oobe-adaptive-dialog>
+    <oobe-adaptive-dialog id="timezoneScreen" role="dialog" for-step="timezone"
         aria-label$="[[i18nDynamic(locale, 'timezoneSectionTitle')]]">
-      <hd-iron-icon slot="oobe-icon"
-          icon1x="oobe-welcome-32:timezone" icon2x="oobe-welcome-64:timezone">
-      </hd-iron-icon>
-      <div slot="footer" class="layout vertical">
+      <iron-icon slot="icon" icon="oobe-32:timezone"></iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'timezoneSectionTitle')]]
+      </h1>
+      <div slot="content" class="landscape-header-aligned">
         <div class="flex layout center horizontal justified
               timezone-selection-entry">
-          <div class=
-              "timezone-selection-title layout vertical center-justified">
+          <div>
             [[i18nDynamic(locale, 'timezoneDropdownTitle')]]
           </div>
           <oobe-i18n-dropdown id="timezoneSelect" items="[[timezones]]"
@@ -251,23 +283,23 @@
           </oobe-i18n-dropdown>
         </div>
       </div>
-      <div slot="bottom-buttons" class="layout horizontal end-justified">
+      <div slot="bottom-buttons">
         <oobe-text-button id="ok-button-timezone" text-key="oobeOKButtonText"
             inverse on-click="closeTimezoneSection_"></oobe-text-button>
       </div>
-    </oobe-dialog>
-    <oobe-dialog id="oobeAdvancedOptionsScreen" role="dialog"
-        for-step="advanced-options" has-buttons
-        title-key="advancedOptionsSectionTitle"
+    </oobe-adaptive-dialog>
+    <oobe-adaptive-dialog id="oobeAdvancedOptionsScreen" role="dialog"
+        for-step="advanced-options"
         aria-label$="[[i18nDynamic(locale, 'advancedOptionsSectionTitle')]]">
-      <hd-iron-icon slot="oobe-icon"
-          icon1x="oobe-welcome-32:settings" icon2x="oobe-welcome-64:settings">
-      </hd-iron-icon>
-      <div slot="footer" class="layout vertical">
+      <iron-icon slot="icon" icon="oobe-32:gear"></iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'advancedOptionsSectionTitle')]]
+      </h1>
+      <div slot="content" class="landscape-header-aligned">
         <div class="flex layout vertical center-justified
             advanced-options-entry">
           <button on-click="onCFMBootstrappingClicked_">
-            <div class="advanced-option-title">
+            <div>
               [[i18nDynamic(locale, 'advancedOptionsCFMSetupTitle')]]
             </div>
             <div class="advanced-option-subtitle">
@@ -278,7 +310,7 @@
         <div class="flex layout vertical center-justified
             advanced-options-entry">
           <button on-click="onDeviceRequisitionClicked_">
-            <div class="advanced-option-title">
+            <div>
               [[i18nDynamic(locale, 'advancedOptionsDeviceRequisitionTitle')]]
             </div>
             <div class="advanced-option-subtitle">
@@ -287,12 +319,12 @@
           </button>
         </div>
       </div>
-      <div slot="bottom-buttons" class="layout horizontal end-justified">
+      <div slot="bottom-buttons">
         <oobe-text-button id="ok-button-advanced-options"
             text-key="oobeOKButtonText" inverse
             on-click="closeAdvancedOptionsSection_"></oobe-text-button>
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
     <!-- Demo Mode confirmation dialog -->
     <oobe-modal-dialog id="demoModeConfirmationDialog">
       <div slot="title">
@@ -308,6 +340,36 @@
         <oobe-text-button inverse on-click="onDemoModeDialogConfirmTap_"
             id="okButton"
             text-key="enableDemoModeDialogConfirm"></oobe-text-button>
+      </div>
+    </oobe-modal-dialog>
+
+    <!-- Remora requisition dialog -->
+    <oobe-modal-dialog id="remoraRequisitionDialog">
+      <div slot="title">
+        [[i18nDynamic(locale, 'deviceRequisitionRemoraPromptText')]]
+      </div>
+      <div slot="buttons">
+        <oobe-text-button border on-click="onRemoraCancel_"
+            text-key="deviceRequisitionRemoraPromptCancel"></oobe-text-button>
+        <oobe-text-button inverse on-click="onRemoraConfirm_"
+            text-key="deviceRequisitionRemoraPromptOk"></oobe-text-button>
+      </div>
+    </oobe-modal-dialog>
+
+    <!-- Edit requisition dialog -->
+    <oobe-modal-dialog id="editRequisitionDialog">
+      <div slot="title">
+        [[i18nDynamic(locale, 'deviceRequisitionPromptText')]]
+      </div>
+      <cr-input id="editRequisitionInput" slot="content"
+          placeholder="[[i18nDynamic(locale,
+              'advancedOptionsDeviceRequisitionTitle')]]">
+      </cr-input>
+      <div slot="buttons">
+        <oobe-text-button border on-click="onEditRequisitionCancel_"
+            text-key="deviceRequisitionPromptCancel"></oobe-text-button>
+        <oobe-text-button inverse on-click="onEditRequisitionConfirm_"
+            text-key="deviceRequisitionPromptOk"></oobe-text-button>
       </div>
     </oobe-modal-dialog>
   </template>

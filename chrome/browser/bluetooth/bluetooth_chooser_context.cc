@@ -133,11 +133,10 @@ BluetoothChooserContext::BluetoothChooserContext(Profile* profile)
 BluetoothChooserContext::~BluetoothChooserContext() = default;
 
 WebBluetoothDeviceId BluetoothChooserContext::GetWebBluetoothDeviceId(
-    const url::Origin& requesting_origin,
-    const url::Origin& embedding_origin,
+    const url::Origin& origin,
     const std::string& device_address) {
   const std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      object_list = GetGrantedObjects(requesting_origin, embedding_origin);
+      object_list = GetGrantedObjects(origin);
   for (const auto& object : object_list) {
     const base::Value& device = object->value;
     DCHECK(IsValidObject(device));
@@ -149,8 +148,7 @@ WebBluetoothDeviceId BluetoothChooserContext::GetWebBluetoothDeviceId(
   }
 
   // Check if the device has been assigned an ID through an LE scan.
-  auto scanned_devices_it =
-      scanned_devices_.find({requesting_origin, embedding_origin});
+  auto scanned_devices_it = scanned_devices_.find(origin);
   if (scanned_devices_it == scanned_devices_.end())
     return {};
 
@@ -161,17 +159,14 @@ WebBluetoothDeviceId BluetoothChooserContext::GetWebBluetoothDeviceId(
 }
 
 std::string BluetoothChooserContext::GetDeviceAddress(
-    const url::Origin& requesting_origin,
-    const url::Origin& embedding_origin,
+    const url::Origin& origin,
     const WebBluetoothDeviceId& device_id) {
-  base::Value device =
-      FindDeviceObject(requesting_origin, embedding_origin, device_id);
+  base::Value device = FindDeviceObject(origin, device_id);
   if (!device.is_none())
     return *device.FindStringKey(kDeviceAddressKey);
 
   // Check if the device ID corresponds to a device detected via an LE scan.
-  auto scanned_devices_it =
-      scanned_devices_.find({requesting_origin, embedding_origin});
+  auto scanned_devices_it = scanned_devices_.find(origin);
   if (scanned_devices_it == scanned_devices_.end())
     return std::string();
 
@@ -183,33 +178,29 @@ std::string BluetoothChooserContext::GetDeviceAddress(
 }
 
 WebBluetoothDeviceId BluetoothChooserContext::AddScannedDevice(
-    const url::Origin& requesting_origin,
-    const url::Origin& embedding_origin,
+    const url::Origin& origin,
     const std::string& device_address) {
   // Check if a WebBluetoothDeviceId already exists for the device with
-  // |device_address| for the current origin pair.
-  const auto granted_id = GetWebBluetoothDeviceId(
-      requesting_origin, embedding_origin, device_address);
+  // |device_address| for the current origin.
+  const auto granted_id = GetWebBluetoothDeviceId(origin, device_address);
   if (granted_id.IsValid())
     return granted_id;
 
-  DeviceAddressToIdMap& address_to_id_map =
-      scanned_devices_[{requesting_origin, embedding_origin}];
+  DeviceAddressToIdMap& address_to_id_map = scanned_devices_[origin];
   auto scanned_id = WebBluetoothDeviceId::Create();
   address_to_id_map.emplace(device_address, scanned_id);
   return scanned_id;
 }
 
 WebBluetoothDeviceId BluetoothChooserContext::GrantServiceAccessPermission(
-    const url::Origin& requesting_origin,
-    const url::Origin& embedding_origin,
+    const url::Origin& origin,
     const device::BluetoothDevice* device,
     const blink::mojom::WebBluetoothRequestDeviceOptions* options) {
-  // If |requesting_origin| and |embedding_origin| already have permission to
-  // access the device with |device_address|, update the allowed GATT services
-  // by performing a union of |services|.
+  // If |origin| already has permission to access the device with
+  // |device_address|, update the allowed GATT services by performing a union of
+  // |services|.
   const std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      object_list = GetGrantedObjects(requesting_origin, embedding_origin);
+      object_list = GetGrantedObjects(origin);
   const std::string& device_address = device->GetAddress();
   for (const auto& object : object_list) {
     base::Value& device_object = object->value;
@@ -221,7 +212,7 @@ WebBluetoothDeviceId BluetoothChooserContext::GrantServiceAccessPermission(
 
       AddUnionOfServicesTo(options, &new_device_object);
       AddManufacturerDataTo(options, &new_device_object);
-      UpdateObjectPermission(requesting_origin, embedding_origin, device_object,
+      UpdateObjectPermission(origin, device_object,
                              std::move(new_device_object));
       return device_id;
     }
@@ -232,8 +223,7 @@ WebBluetoothDeviceId BluetoothChooserContext::GrantServiceAccessPermission(
   // Remove the ID from the temporary |scanned_devices_| map to avoid
   // duplication, since the ID will now be stored in HostContentSettingsMap.
   WebBluetoothDeviceId device_id;
-  auto scanned_devices_it =
-      scanned_devices_.find({requesting_origin, embedding_origin});
+  auto scanned_devices_it = scanned_devices_.find(origin);
   if (scanned_devices_it != scanned_devices_.end()) {
     auto& address_to_id_map = scanned_devices_it->second;
     auto address_to_id_it = address_to_id_map.find(device_address);
@@ -252,38 +242,31 @@ WebBluetoothDeviceId BluetoothChooserContext::GrantServiceAccessPermission(
 
   base::Value permission_object =
       DeviceInfoToDeviceObject(device, options, device_id);
-  GrantObjectPermission(requesting_origin, embedding_origin,
-                        std::move(permission_object));
+  GrantObjectPermission(origin, std::move(permission_object));
   return device_id;
 }
 
 bool BluetoothChooserContext::HasDevicePermission(
-    const url::Origin& requesting_origin,
-    const url::Origin& embedding_origin,
+    const url::Origin& origin,
     const WebBluetoothDeviceId& device_id) {
-  base::Value device =
-      FindDeviceObject(requesting_origin, embedding_origin, device_id);
+  base::Value device = FindDeviceObject(origin, device_id);
   return !device.is_none();
 }
 
 bool BluetoothChooserContext::IsAllowedToAccessAtLeastOneService(
-    const url::Origin& requesting_origin,
-    const url::Origin& embedding_origin,
+    const url::Origin& origin,
     const WebBluetoothDeviceId& device_id) {
-  base::Value device =
-      FindDeviceObject(requesting_origin, embedding_origin, device_id);
+  base::Value device = FindDeviceObject(origin, device_id);
   if (device.is_none())
     return false;
   return !device.FindDictKey(kServicesKey)->DictEmpty();
 }
 
 bool BluetoothChooserContext::IsAllowedToAccessService(
-    const url::Origin& requesting_origin,
-    const url::Origin& embedding_origin,
+    const url::Origin& origin,
     const WebBluetoothDeviceId& device_id,
     const BluetoothUUID& service) {
-  base::Value device =
-      FindDeviceObject(requesting_origin, embedding_origin, device_id);
+  base::Value device = FindDeviceObject(origin, device_id);
   if (device.is_none())
     return false;
 
@@ -292,12 +275,10 @@ bool BluetoothChooserContext::IsAllowedToAccessService(
 }
 
 bool BluetoothChooserContext::IsAllowedToAccessManufacturerData(
-    const url::Origin& requesting_origin,
-    const url::Origin& embedding_origin,
+    const url::Origin& origin,
     const WebBluetoothDeviceId& device_id,
     uint16_t manufacturer_code) {
-  base::Value device =
-      FindDeviceObject(requesting_origin, embedding_origin, device_id);
+  base::Value device = FindDeviceObject(origin, device_id);
   if (device.is_none())
     return false;
 
@@ -328,17 +309,16 @@ bool BluetoothChooserContext::IsValidObject(const base::Value& object) {
          object.FindDictKey(kServicesKey);
 }
 
-base::string16 BluetoothChooserContext::GetObjectDisplayName(
+std::u16string BluetoothChooserContext::GetObjectDisplayName(
     const base::Value& object) {
   return base::UTF8ToUTF16(*object.FindStringKey(kDeviceNameKey));
 }
 
 base::Value BluetoothChooserContext::FindDeviceObject(
-    const url::Origin& requesting_origin,
-    const url::Origin& embedding_origin,
+    const url::Origin& origin,
     const blink::WebBluetoothDeviceId& device_id) {
   const std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      object_list = GetGrantedObjects(requesting_origin, embedding_origin);
+      object_list = GetGrantedObjects(origin);
   for (const auto& object : object_list) {
     base::Value device = std::move(object->value);
     DCHECK(IsValidObject(device));

@@ -7,12 +7,19 @@
 #include <algorithm>
 #include <utility>
 
+#include "build/build_config.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 
 namespace viz {
 namespace {
+
+// The minimum number of frames for which a frame interval preference should
+// persist before we toggle to it. This is only applied when lowering the frame
+// rate. If the new preference is higher than the current setting, it is applied
+// immediately.
+constexpr size_t kMinNumOfFramesToToggleInterval = 6;
 
 bool AreAlmostEqual(base::TimeDelta a, base::TimeDelta b) {
   if (a.is_min() || b.is_min() || a.is_max() || b.is_max())
@@ -36,10 +43,9 @@ FrameRateDecider::ScopedAggregate::~ScopedAggregate() {
 FrameRateDecider::FrameRateDecider(SurfaceManager* surface_manager,
                                    Client* client,
                                    bool hw_support_for_multiple_refresh_rates,
-                                   bool supports_set_frame_rate,
-                                   size_t num_of_frames_to_toggle_interval)
+                                   bool supports_set_frame_rate)
     : supported_intervals_{BeginFrameArgs::DefaultInterval()},
-      min_num_of_frames_to_toggle_interval_(num_of_frames_to_toggle_interval),
+      min_num_of_frames_to_toggle_interval_(kMinNumOfFramesToToggleInterval),
       surface_manager_(surface_manager),
       client_(client),
       hw_support_for_multiple_refresh_rates_(
@@ -273,7 +279,14 @@ void FrameRateDecider::SetPreferredInterval(
 }
 
 bool FrameRateDecider::multiple_refresh_rates_supported() const {
+  // TODO(crbug/1156136): This should work on all platforms, but currently
+  // causes pages to freeze on android when removing a camera track from a video
+  // element. Reenable once the root cause is fixed.
+#if defined(OS_WIN)
   return supports_set_frame_rate_ || supported_intervals_.size() > 1u;
+#else
+  return supported_intervals_.size() > 1u;
+#endif
 }
 
 }  // namespace viz

@@ -372,14 +372,18 @@ class WPTExpectationsUpdater(object):
                 elif target[key] == source[key]:
                     pass
                 else:
-                    # Temporary logging for https://crbug.com/1154650.
+                    # We have two different SimpleTestResults for the same test
+                    # from two different builders. This can happen when a CQ bot
+                    # and a blink-rel bot run on the same platform. We union the
+                    # actual statuses from both builders.
                     _log.info(
-                        'Error: mismatching key values in merge_dicts.\n'
-                        'target[key]: %s\nsource[key]: %s', target[key],
-                        source[key])
-                    raise ValueError(
-                        'The key: %s already exists in the target dictionary.'
-                        % '.'.join(path))
+                        "Joining differing results for path %s, key %s\n target:%s\nsource:%s"
+                        % (path, key, target[key], source[key]))
+                    target[key] = SimpleTestResult(
+                        expected=target[key].expected,
+                        actual='%s %s' %
+                        (target[key].actual, source[key].actual),
+                        bug=target[key].bug)
             else:
                 target[key] = source[key]
         return target

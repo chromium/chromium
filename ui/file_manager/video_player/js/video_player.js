@@ -4,11 +4,11 @@
 
 // clang-format off
 // #import './error_util.m.js';
-// #import {util} from '../../file_manager/common/js/util.m.js';
+// #import {util} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/util.m.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {appUtil} from '../../base/js/app_util.m.js';
-// #import {AllowedPaths} from '../../base/js/volume_manager_types.m.js';
-// #import {FilteredVolumeManager} from '../../base/js/filtered_volume_manager.m.js';
+// #import {appUtil} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/app_util.m.js';
+// #import {AllowedPaths} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/volume_manager_types.m.js';
+// #import {FilteredVolumeManager} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/filtered_volume_manager.m.js';
 // #import {NativeControlsVideoPlayer} from './video_player_native_controls.m.js';
 // #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // #import {metrics} from './video_player_metrics.m.js';

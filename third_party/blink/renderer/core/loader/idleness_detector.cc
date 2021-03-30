@@ -223,6 +223,7 @@ void IdlenessDetector::NetworkQuietTimerFired(TimerBase*) {
 
 void IdlenessDetector::Trace(Visitor* visitor) const {
   visitor->Trace(local_frame_);
+  visitor->Trace(network_quiet_timer_);
 }
 
 }  // namespace blink

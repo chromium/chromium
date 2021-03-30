@@ -5,9 +5,10 @@
 #ifndef ASH_SHORTCUT_VIEWER_VIEWS_KSV_SEARCH_BOX_VIEW_H_
 #define ASH_SHORTCUT_VIEWER_VIEWS_KSV_SEARCH_BOX_VIEW_H_
 
+#include <string>
+
 #include "ash/search_box/search_box_view_base.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 
 namespace ash {
 class SearchBoxViewDelegate;
@@ -26,7 +27,7 @@ class KSVSearchBoxView : public ash::SearchBoxViewBase {
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnKeyEvent(ui::KeyEvent* event) override;
 
-  void SetAccessibleValue(const base::string16& value);
+  void SetAccessibleValue(const std::u16string& value);
 
   // SearchBoxViewBase:
   void OnSearchBoxActiveChanged(bool active) override;
@@ -40,7 +41,7 @@ class KSVSearchBoxView : public ash::SearchBoxViewBase {
   void SetPlaceholderTextAttributes();
 
   // Accessibility data value. Used to pronounce the number of search results.
-  base::string16 accessible_value_;
+  std::u16string accessible_value_;
 
   DISALLOW_COPY_AND_ASSIGN(KSVSearchBoxView);
 };

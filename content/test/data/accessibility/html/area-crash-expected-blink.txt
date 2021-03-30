@@ -1,9 +1,6 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer
-++++++staticText name='foo'
-++++++++staticText name='foo'
-++++++++++inlineTextBox name='foo'
 ++++++staticText name=' '
 ++++++++inlineTextBox name=' '
 ++++++staticText name='done'

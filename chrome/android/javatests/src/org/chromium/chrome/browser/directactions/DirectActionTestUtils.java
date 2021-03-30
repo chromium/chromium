@@ -71,7 +71,7 @@ class DirectActionTestUtils {
     static void allowGoForward(ChromeActivityTestRule<?> rule) throws Exception {
         ChromeActivity activity = rule.getActivity();
         String initialUrl = TestThreadUtils.runOnUiThreadBlocking(
-                () -> activity.getCurrentWebContents().getLastCommittedUrl());
+                () -> activity.getCurrentWebContents().getLastCommittedUrl().getSpec());
 
         // Any built-in page that is not about:blank and is reasonably cheap to render will do,
         // here.

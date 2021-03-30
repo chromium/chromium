@@ -4,12 +4,12 @@
 
 #include <map>
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_move_support.h"
@@ -47,8 +47,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::ASCIIToUTF16;
-using password_manager::CompromisedCredentials;
+using password_manager::InsecureCredential;
 using password_manager::MockPasswordFormManagerForUI;
 using password_manager::MockPasswordStore;
 using password_manager::PasswordForm;
@@ -211,11 +210,11 @@ password_manager::PasswordForm BuildFormFromLoginAndURL(
   return form;
 }
 
-CompromisedCredentials CreateCompromised(const PasswordForm& form) {
-  return CompromisedCredentials(form.signon_realm, form.username_value,
-                                base::Time(),
-                                password_manager::CompromiseType::kLeaked,
-                                password_manager::IsMuted(false));
+InsecureCredential CreateInsecureCredential(const PasswordForm& form) {
+  return InsecureCredential(form.signon_realm, form.username_value,
+                            base::Time(),
+                            password_manager::InsecureType::kLeaked,
+                            password_manager::IsMuted(false));
 }
 
 }  // namespace
@@ -269,21 +268,21 @@ void ManagePasswordsUIControllerTest::SetUp() {
 
   test_local_form_.url = GURL("http://example.com/login");
   test_local_form_.signon_realm = test_local_form_.url.GetOrigin().spec();
-  test_local_form_.username_value = ASCIIToUTF16("username");
-  test_local_form_.username_element = ASCIIToUTF16("username_element");
-  test_local_form_.password_value = ASCIIToUTF16("12345");
-  test_local_form_.password_element = ASCIIToUTF16("password_element");
+  test_local_form_.username_value = u"username";
+  test_local_form_.username_element = u"username_element";
+  test_local_form_.password_value = u"12345";
+  test_local_form_.password_element = u"password_element";
 
   test_federated_form_.url = GURL("http://example.com/login");
   test_federated_form_.signon_realm =
       test_federated_form_.url.GetOrigin().spec();
-  test_federated_form_.username_value = ASCIIToUTF16("username");
+  test_federated_form_.username_value = u"username";
   test_federated_form_.federation_origin =
       url::Origin::Create(GURL("https://federation.test/"));
 
   submitted_form_ = test_local_form_;
-  submitted_form_.username_value = ASCIIToUTF16("submitted_username");
-  submitted_form_.password_value = ASCIIToUTF16("pass12345");
+  submitted_form_.username_value = u"submitted_username";
+  submitted_form_.password_value = u"pass12345";
 
   // We need to be on a "webby" URL for most tests.
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
@@ -326,9 +325,9 @@ ManagePasswordsUIControllerTest::CreateFormManagerWithBestMatches(
       .Times(AtMost(1))
       .WillOnce(
           Return(base::span<const password_manager::InteractionsStats>()));
-  EXPECT_CALL(*form_manager, GetCompromisedCredentials())
+  EXPECT_CALL(*form_manager, GetInsecureCredentials())
       .Times(AtMost(1))
-      .WillOnce(Return(base::span<const CompromisedCredentials>()));
+      .WillOnce(Return(base::span<const InsecureCredential>()));
   EXPECT_CALL(*form_manager, GetPendingCredentials())
       .WillRepeatedly(ReturnRef(submitted_form_));
   EXPECT_CALL(*form_manager, GetMetricsRecorder())
@@ -440,7 +439,7 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordSubmittedBubbleNotSuppressed) {
   auto test_form_manager = CreateFormManagerWithBestMatches(&best_matches);
   std::vector<password_manager::InteractionsStats> stats(1);
   stats[0].origin_domain = submitted_form().url.GetOrigin();
-  stats[0].username_value = ASCIIToUTF16("not my username");
+  stats[0].username_value = u"not my username";
   stats[0].dismissal_count = kGreatDissmisalCount;
   EXPECT_CALL(*test_form_manager, GetInteractionsStats)
       .WillRepeatedly(Return(stats));
@@ -487,8 +486,6 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordSaved) {
   controller()->SavePassword(submitted_form().username_value,
                              submitted_form().password_value);
   ExpectIconAndControllerStateIs(password_manager::ui::MANAGE_STATE);
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.PasswordSavedWithManualFallback", false, 1);
 }
 
 TEST_F(ManagePasswordsUIControllerTest, PasswordSavedUKMRecording) {
@@ -522,19 +519,18 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordSavedUKMRecording) {
         .WillRepeatedly(Return(recorder.get()));
     EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
     EXPECT_CALL(*test_form_manager,
-                OnUpdateUsernameFromPrompt(ASCIIToUTF16("other_username")))
+                OnUpdateUsernameFromPrompt(std::u16string(u"other_username")))
         .Times(test.edit_username);
     EXPECT_CALL(*test_form_manager,
-                OnUpdatePasswordFromPrompt(ASCIIToUTF16("other_pwd")))
+                OnUpdatePasswordFromPrompt(std::u16string(u"other_pwd")))
         .Times(test.change_password);
     EXPECT_CALL(*test_form_manager, Save());
     controller()->OnPasswordSubmitted(std::move(test_form_manager));
 
     controller()->SavePassword(
-        test.edit_username ? base::UTF8ToUTF16("other_username")
+        test.edit_username ? u"other_username"
                            : submitted_form().username_value,
-        test.change_password ? base::UTF8ToUTF16("other_pwd")
-                             : submitted_form().password_value);
+        test.change_password ? u"other_pwd" : submitted_form().password_value);
     ExpectIconAndControllerStateIs(password_manager::ui::MANAGE_STATE);
 
     // Fake navigation so that the old form manager gets destroyed and
@@ -731,7 +727,7 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordSubmittedToNonWebbyURL) {
 }
 
 TEST_F(ManagePasswordsUIControllerTest, BlocklistedElsewhere) {
-  base::string16 kTestUsername = ASCIIToUTF16("test_username");
+  std::u16string kTestUsername = u"test_username";
   std::vector<const PasswordForm*> forms;
   forms.push_back(&test_local_form());
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
@@ -927,7 +923,7 @@ TEST_F(ManagePasswordsUIControllerTest, AutoSigninFirstRun) {
 TEST_F(ManagePasswordsUIControllerTest, AutoSigninFirstRunAfterAutofill) {
   // Setup the managed state first.
   const PasswordForm* test_form_ptr = &test_local_form();
-  const base::string16 kTestUsername = test_form_ptr->username_value;
+  const std::u16string kTestUsername = test_form_ptr->username_value;
   std::vector<const PasswordForm*> forms;
   forms.push_back(test_form_ptr);
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
@@ -973,7 +969,7 @@ TEST_F(ManagePasswordsUIControllerTest, AutofillDuringAutoSignin) {
                              url::Origin::Create(test_local_form().url));
   ExpectIconAndControllerStateIs(password_manager::ui::AUTO_SIGNIN_STATE);
   std::vector<const PasswordForm*> forms;
-  base::string16 kTestUsername = test_local_form().username_value;
+  std::u16string kTestUsername = test_local_form().username_value;
   forms.push_back(&test_local_form());
   controller()->OnPasswordAutofilled(
       forms, url::Origin::Create(forms.front()->url), nullptr);
@@ -982,7 +978,7 @@ TEST_F(ManagePasswordsUIControllerTest, AutofillDuringAutoSignin) {
 }
 
 TEST_F(ManagePasswordsUIControllerTest, InactiveOnPSLMatched) {
-  base::string16 kTestUsername = ASCIIToUTF16("test_username");
+  std::u16string kTestUsername = u"test_username";
   std::vector<const PasswordForm*> forms;
   PasswordForm psl_matched_test_form(test_local_form());
   psl_matched_test_form.is_public_suffix_match = true;
@@ -1016,8 +1012,6 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordUpdated) {
   controller()->SavePassword(submitted_form().username_value,
                              submitted_form().password_value);
   ExpectIconAndControllerStateIs(password_manager::ui::MANAGE_STATE);
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.PasswordSavedWithManualFallback", false, 1);
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   controller()->OnBubbleHidden();
 }
@@ -1110,8 +1104,6 @@ TEST_F(ManagePasswordsUIControllerTest, ManualFallbackForSaving_UseFallback) {
     auto* entry = entries[0];
     EXPECT_EQ(source_id, entry->source_id);
 
-    histogram_tester.ExpectUniqueSample(
-        "PasswordManager.PasswordSavedWithManualFallback", true, 1);
     test_ukm_recorder.ExpectEntryMetric(
         entry, UkmEntry::kUser_Action_TriggeredManualFallbackForSavingName, 1u);
   }
@@ -1258,8 +1250,8 @@ TEST_F(ManagePasswordsUIControllerTest,
   std::vector<const PasswordForm*> matches;
   auto test_form_manager = CreateFormManagerWithBestMatches(&matches);
   PasswordForm pending = test_local_form();
-  pending.username_value = ASCIIToUTF16("manual_username");
-  pending.password_value = ASCIIToUTF16("manual_pass1234");
+  pending.username_value = u"manual_username";
+  pending.password_value = u"manual_pass1234";
   EXPECT_CALL(*test_form_manager, GetPendingCredentials())
       .WillRepeatedly(ReturnRef(pending));
 
@@ -1280,9 +1272,9 @@ TEST_F(ManagePasswordsUIControllerTest,
 
   // It should have no effect as the bubble was already open.
   ExpectIconAndControllerStateIs(password_manager::ui::PENDING_PASSWORD_STATE);
-  EXPECT_EQ(ASCIIToUTF16("manual_username"),
+  EXPECT_EQ(u"manual_username",
             controller()->GetPendingPassword().username_value);
-  EXPECT_EQ(ASCIIToUTF16("manual_pass1234"),
+  EXPECT_EQ(u"manual_pass1234",
             controller()->GetPendingPassword().password_value);
 }
 
@@ -1492,7 +1484,7 @@ TEST_F(ManagePasswordsUIControllerTest, OpenSafeStateBubble) {
       password_manager::prefs::kLastTimePasswordCheckCompleted,
       (base::Time::Now() - base::TimeDelta::FromMinutes(1)).ToDoubleT());
   submitted_form() = test_local_form();
-  submitted_form().password_value = base::ASCIIToUTF16("new_password");
+  submitted_form().password_value = u"new_password";
 
   std::vector<const PasswordForm*> best_matches = {&test_local_form()};
   auto test_form_manager = CreateFormManagerWithBestMatches(&best_matches);
@@ -1501,11 +1493,11 @@ TEST_F(ManagePasswordsUIControllerTest, OpenSafeStateBubble) {
   controller()->OnPasswordSubmitted(std::move(test_form_manager));
 
   EXPECT_CALL(*test_form_manager_raw, Save());
-  std::vector<CompromisedCredentials> saved = {
-      CreateCompromised(test_local_form())};
-  // Pretend that the current credential was compromised but with the updated
+  std::vector<InsecureCredential> saved = {
+      CreateInsecureCredential(test_local_form())};
+  // Pretend that the current credential was insecure but with the updated
   // password not anymore.
-  EXPECT_CALL(*test_form_manager_raw, GetCompromisedCredentials())
+  EXPECT_CALL(*test_form_manager_raw, GetInsecureCredentials())
       .WillOnce(Return(saved));
   controller()->SavePassword(submitted_form().username_value,
                              submitted_form().password_value);
@@ -1514,7 +1506,7 @@ TEST_F(ManagePasswordsUIControllerTest, OpenSafeStateBubble) {
   controller()->OnBubbleHidden();
   saved = {};
   EXPECT_CALL(*client().GetProfilePasswordStore(),
-              GetAllCompromisedCredentialsImpl)
+              GetAllInsecureCredentialsImpl)
       .WillOnce(Return(saved));
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   WaitForPasswordStore();
@@ -1525,8 +1517,11 @@ TEST_F(ManagePasswordsUIControllerTest, OpenSafeStateBubble) {
 }
 
 TEST_F(ManagePasswordsUIControllerTest, OpenMoreToFixBubble) {
+  profile()->GetPrefs()->SetDouble(
+      password_manager::prefs::kLastTimePasswordCheckCompleted,
+      (base::Time::Now() - base::TimeDelta::FromMinutes(1)).ToDoubleT());
   submitted_form() = test_local_form();
-  submitted_form().password_value = base::ASCIIToUTF16("new_password");
+  submitted_form().password_value = u"new_password";
 
   std::vector<const PasswordForm*> best_matches = {&test_local_form()};
   auto test_form_manager = CreateFormManagerWithBestMatches(&best_matches);
@@ -1535,20 +1530,20 @@ TEST_F(ManagePasswordsUIControllerTest, OpenMoreToFixBubble) {
   controller()->OnPasswordSubmitted(std::move(test_form_manager));
 
   EXPECT_CALL(*test_form_manager_raw, Save());
-  std::vector<CompromisedCredentials> saved = {
-      CreateCompromised(test_local_form())};
-  // Pretend that the current credential was compromised.
-  EXPECT_CALL(*test_form_manager_raw, GetCompromisedCredentials())
+  std::vector<InsecureCredential> saved = {
+      CreateInsecureCredential(test_local_form())};
+  // Pretend that the current credential was insecure.
+  EXPECT_CALL(*test_form_manager_raw, GetInsecureCredentials())
       .WillOnce(Return(saved));
   controller()->SavePassword(submitted_form().username_value,
                              submitted_form().password_value);
   // The bubble gets hidden after the user clicks on save.
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   controller()->OnBubbleHidden();
-  // There are more compromised credentials to fix.
-  saved[0].username = base::ASCIIToUTF16("another username");
+  // There are more insecure credentials to fix.
+  saved[0].username = u"another username";
   EXPECT_CALL(*client().GetProfilePasswordStore(),
-              GetAllCompromisedCredentialsImpl)
+              GetAllInsecureCredentialsImpl)
       .WillOnce(Return(saved));
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   WaitForPasswordStore();
@@ -1558,7 +1553,13 @@ TEST_F(ManagePasswordsUIControllerTest, OpenMoreToFixBubble) {
       password_manager::ui::PASSWORD_UPDATED_MORE_TO_FIX);
 }
 
-TEST_F(ManagePasswordsUIControllerTest, OpenUnsafeStateBubble) {
+TEST_F(ManagePasswordsUIControllerTest, NoMoreToFixBubbleIfPromoStillOpen) {
+  profile()->GetPrefs()->SetDouble(
+      password_manager::prefs::kLastTimePasswordCheckCompleted,
+      (base::Time::Now() - base::TimeDelta::FromMinutes(1)).ToDoubleT());
+  submitted_form() = test_local_form();
+  submitted_form().password_value = u"new_password";
+
   std::vector<const PasswordForm*> best_matches = {&test_local_form()};
   auto test_form_manager = CreateFormManagerWithBestMatches(&best_matches);
   MockPasswordFormManagerForUI* test_form_manager_raw = test_form_manager.get();
@@ -1566,47 +1567,18 @@ TEST_F(ManagePasswordsUIControllerTest, OpenUnsafeStateBubble) {
   controller()->OnPasswordSubmitted(std::move(test_form_manager));
 
   EXPECT_CALL(*test_form_manager_raw, Save());
-  std::vector<CompromisedCredentials> saved;
-  // Pretend that the current credential was clean.
-  EXPECT_CALL(*test_form_manager_raw, GetCompromisedCredentials())
-      .WillOnce(Return(saved));
-  controller()->SavePassword(submitted_form().username_value,
-                             submitted_form().password_value);
-  // The bubble gets hidden after the user clicks on save.
-  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
-  controller()->OnBubbleHidden();
-  // There are compromised credentials to fix.
-  saved = {CreateCompromised(test_local_form())};
-  EXPECT_CALL(*client().GetProfilePasswordStore(),
-              GetAllCompromisedCredentialsImpl)
-      .WillOnce(Return(saved));
-  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
-  WaitForPasswordStore();
-
-  EXPECT_TRUE(controller()->opened_automatic_bubble());
-  ExpectIconAndControllerStateIs(
-      password_manager::ui::PASSWORD_UPDATED_UNSAFE_STATE);
-}
-
-TEST_F(ManagePasswordsUIControllerTest, NoUnsafeStateBubbleIfPromoStillOpen) {
-  std::vector<const PasswordForm*> best_matches = {&test_local_form()};
-  auto test_form_manager = CreateFormManagerWithBestMatches(&best_matches);
-  MockPasswordFormManagerForUI* test_form_manager_raw = test_form_manager.get();
-  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
-  controller()->OnPasswordSubmitted(std::move(test_form_manager));
-
-  EXPECT_CALL(*test_form_manager_raw, Save());
-  std::vector<CompromisedCredentials> saved;
-  // Pretend that the current credential was clean.
-  EXPECT_CALL(*test_form_manager_raw, GetCompromisedCredentials())
+  std::vector<InsecureCredential> saved = {
+      CreateInsecureCredential(test_local_form())};
+  // Pretend that the current credential was insecure.
+  EXPECT_CALL(*test_form_manager_raw, GetInsecureCredentials())
       .WillOnce(Return(saved));
   controller()->SavePassword(submitted_form().username_value,
                              submitted_form().password_value);
   // The sign-in promo bubble stays open, the warning isn't shown.
-  // There are compromised credentials to fix.
-  saved = {CreateCompromised(test_local_form())};
+  // There are insecure credentials to fix.
+  saved[0].username = u"another username";
   EXPECT_CALL(*client().GetProfilePasswordStore(),
-              GetAllCompromisedCredentialsImpl)
+              GetAllInsecureCredentialsImpl)
       .Times(testing::AtMost(1))
       .WillOnce(Return(saved));
   WaitForPasswordStore();

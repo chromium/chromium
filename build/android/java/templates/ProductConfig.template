@@ -20,21 +20,12 @@ package PACKAGE;
  *  Product configuration. Generated on a per-target basis.
  */
 public class ProductConfig {
-
-    // Sorted list of locales that have a compressed .pak within assets.
-    // Stored as an array because AssetManager.list() is slow.
-#if defined(COMPRESSED_LOCALE_LIST)
-    public static final String[] COMPRESSED_LOCALES = COMPRESSED_LOCALE_LIST;
-#else
-    public static final String[] COMPRESSED_LOCALES = {};
-#endif
-
     // Sorted list of locales that have an uncompressed .pak within assets.
     // Stored as an array because AssetManager.list() is slow.
-#if defined(UNCOMPRESSED_LOCALE_LIST)
-    public static final String[] UNCOMPRESSED_LOCALES = UNCOMPRESSED_LOCALE_LIST;
+#if defined(LOCALE_LIST)
+    public static final String[] LOCALES = LOCALE_LIST;
 #else
-    public static final String[] UNCOMPRESSED_LOCALES = {};
+    public static final String[] LOCALES = {};
 #endif
 
    public static MAYBE_FINAL boolean USE_CHROMIUM_LINKER MAYBE_USE_CHROMIUM_LINKER;

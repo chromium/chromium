@@ -233,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
     // Wait to see the size sent to the child RenderWidget.
     while (true) {
       base::Optional<blink::VisualProperties> properties =
-          child_rwh->GetLastVisualPropertiesSentToRendererForTesting();
+          child_rwh->LastComputedVisualProperties();
       if (properties && properties->visible_viewport_size == initial_size)
         break;
       base::RunLoop().RunUntilIdle();
@@ -250,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
     // Wait to see the size sent to the child RenderWidget.
     while (true) {
       base::Optional<blink::VisualProperties> properties =
-          nested_child_rwh->GetLastVisualPropertiesSentToRendererForTesting();
+          nested_child_rwh->LastComputedVisualProperties();
       if (properties &&
           properties->visible_viewport_size == nested_initial_size)
         break;
@@ -279,14 +279,14 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
     // Wait to see both RenderWidgets receive the message.
     while (true) {
       base::Optional<blink::VisualProperties> properties =
-          root_rwh->GetLastVisualPropertiesSentToRendererForTesting();
+          root_rwh->LastComputedVisualProperties();
       if (properties && properties->visible_viewport_size == resize_to)
         break;
       base::RunLoop().RunUntilIdle();
     }
     while (true) {
       base::Optional<blink::VisualProperties> properties =
-          child_rwh->GetLastVisualPropertiesSentToRendererForTesting();
+          child_rwh->LastComputedVisualProperties();
       if (properties && properties->visible_viewport_size == resize_to)
         break;
       base::RunLoop().RunUntilIdle();
@@ -310,14 +310,14 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
     // Wait to see both RenderWidgets receive the message.
     while (true) {
       base::Optional<blink::VisualProperties> properties =
-          nested_root_rwh->GetLastVisualPropertiesSentToRendererForTesting();
+          nested_root_rwh->LastComputedVisualProperties();
       if (properties && properties->visible_viewport_size == resize_to)
         break;
       base::RunLoop().RunUntilIdle();
     }
     while (true) {
       base::Optional<blink::VisualProperties> properties =
-          nested_child_rwh->GetLastVisualPropertiesSentToRendererForTesting();
+          nested_child_rwh->LastComputedVisualProperties();
       if (properties && properties->visible_viewport_size == resize_to)
         break;
       base::RunLoop().RunUntilIdle();
@@ -350,14 +350,14 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
     // waterfall to pass the new |visible_viewport_size| down.
     while (true) {
       base::Optional<blink::VisualProperties> properties =
-          root_rwh->GetLastVisualPropertiesSentToRendererForTesting();
+          root_rwh->LastComputedVisualProperties();
       if (properties && properties->visible_viewport_size == auto_resize_to)
         break;
       base::RunLoop().RunUntilIdle();
     }
     while (true) {
       base::Optional<blink::VisualProperties> properties =
-          child_rwh->GetLastVisualPropertiesSentToRendererForTesting();
+          child_rwh->LastComputedVisualProperties();
       if (properties && properties->visible_viewport_size == auto_resize_to)
         break;
       base::RunLoop().RunUntilIdle();
@@ -556,7 +556,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
   base::Optional<blink::VisualProperties> properties =
       oopchild->current_frame_host()
           ->GetRenderWidgetHost()
-          ->GetLastVisualPropertiesSentToRendererForTesting();
+          ->LastComputedVisualProperties();
   EXPECT_TRUE(properties);
   EXPECT_TRUE(properties->local_surface_id);
   viz::LocalSurfaceId oopchild_initial_lsid =
@@ -564,7 +564,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
 
   properties = oopdescendant->current_frame_host()
                    ->GetRenderWidgetHost()
-                   ->GetLastVisualPropertiesSentToRendererForTesting();
+                   ->LastComputedVisualProperties();
   EXPECT_TRUE(properties);
   EXPECT_TRUE(properties->local_surface_id);
   viz::LocalSurfaceId oopdescendant_initial_lsid =
@@ -583,7 +583,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
       base::Optional<blink::VisualProperties> properties =
           oopchild->current_frame_host()
               ->GetRenderWidgetHost()
-              ->GetLastVisualPropertiesSentToRendererForTesting();
+              ->LastComputedVisualProperties();
       if (properties && properties->local_surface_id &&
           oopchild_initial_lsid < properties->local_surface_id) {
         EXPECT_EQ(properties->root_widget_window_segments, expected_segments);
@@ -595,7 +595,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
       base::Optional<blink::VisualProperties> properties =
           oopdescendant->current_frame_host()
               ->GetRenderWidgetHost()
-              ->GetLastVisualPropertiesSentToRendererForTesting();
+              ->LastComputedVisualProperties();
       if (properties && properties->local_surface_id &&
           oopdescendant_initial_lsid < properties->local_surface_id) {
         EXPECT_EQ(properties->root_widget_window_segments, expected_segments);
@@ -617,7 +617,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
       base::Optional<blink::VisualProperties> properties =
           oopdescendant->current_frame_host()
               ->GetRenderWidgetHost()
-              ->GetLastVisualPropertiesSentToRendererForTesting();
+              ->LastComputedVisualProperties();
       // This check is needed, since we'll get an IPC originating from
       // RenderWidgetHostImpl immediately after the frame is added with the
       // incorrect value (the segments are cascaded from the parent renderer

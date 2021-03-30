@@ -13,12 +13,7 @@
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/offline_items_collection/core/offline_content_aggregator.h"
 #include "content/public/browser/background_fetch_delegate.h"
-
-namespace {
-constexpr char kBackgroundFetchNamespacePrefix[] = "background_fetch";
-}  // namespace
 
 // static
 BackgroundFetchDelegateImpl* BackgroundFetchDelegateFactory::GetForProfile(
@@ -46,11 +41,7 @@ BackgroundFetchDelegateFactory::~BackgroundFetchDelegateFactory() {}
 
 KeyedService* BackgroundFetchDelegateFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  std::string provider_namespace =
-      offline_items_collection::OfflineContentAggregator::CreateUniqueNameSpace(
-          kBackgroundFetchNamespacePrefix, context->IsOffTheRecord());
-  return new BackgroundFetchDelegateImpl(Profile::FromBrowserContext(context),
-                                         provider_namespace);
+  return new BackgroundFetchDelegateImpl(Profile::FromBrowserContext(context));
 }
 
 content::BrowserContext* BackgroundFetchDelegateFactory::GetBrowserContextToUse(

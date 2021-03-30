@@ -52,7 +52,8 @@ void NGConstraintSpaceBuilder::SetPercentageResolutionSize(
           percentage_resolution_size.block_size;
     }
   } else {
-    AdjustInlineSizeIfNeeded(&percentage_resolution_size.block_size);
+    if (adjust_inline_size_if_needed_)
+      AdjustInlineSizeIfNeeded(&percentage_resolution_size.block_size);
 
     space_.bitfields_.percentage_inline_storage =
         GetPercentageStorage(percentage_resolution_size.block_size,

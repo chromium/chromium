@@ -74,17 +74,6 @@ class AssistantTestMixin : public InProcessBrowserTestMixin {
   // displaying the query input text field.
   void SendTextQuery(const std::string& query);
 
-  // Check if the |expected_value| is equal to the result of running
-  // |value_callback|.  This method will block and continuously try the
-  // comparison above until it succeeds, or timeout.
-  //
-  // NOTE: This is a template method. If you need to use it with a new type,
-  // you may see a link error. You will need to manually instantiate for the
-  // new type.  Please see .cc file for examples.
-  template <typename T>
-  void ExpectResult(T expected_value,
-                    base::RepeatingCallback<T()> value_callback);
-
   // Synchronize an async method call to make testing simpler. |func| is the
   // async method to be invoked, the inner callback is the result callback. The
   // result with type |T| will be the return value.

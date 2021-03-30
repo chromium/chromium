@@ -5,6 +5,7 @@
 #include "ui/accessibility/platform/uia_registrar_win.h"
 #include <wrl/implements.h>
 #include "base/stl_util.h"
+#include "ui/accessibility/accessibility_features.h"
 
 namespace ui {
 
@@ -17,29 +18,46 @@ UiaRegistrarWin::UiaRegistrarWin() {
                               &registrar)))
     return;
 
+  // Register the custom UIA event that represents the test end event for the
+  // UIA test suite.
+  UIAutomationEventInfo test_complete_event_info = {
+      kUiaEventTestCompleteSentinelGuid, L"kUiaTestCompleteSentinel"};
+  registrar->RegisterEvent(&test_complete_event_info, &test_complete_event_id_);
+
   // Register the custom UIA property that represents the unique id of an UIA
   // element which also matches its corresponding IA2 element's unique id.
   UIAutomationPropertyInfo unique_id_property_info = {
       kUiaPropertyUniqueIdGuid, L"UniqueId", UIAutomationType_String};
   registrar->RegisterProperty(&unique_id_property_info,
-                              &uia_unique_id_property_id_);
+                              &unique_id_property_id_);
 
-  // Register the custom UIA event that represents the test end event for the
-  // UIA test suite.
-  UIAutomationEventInfo test_complete_event_info = {
-      kUiaEventTestCompleteSentinelGuid, L"kUiaTestCompleteSentinel"};
-  registrar->RegisterEvent(&test_complete_event_info,
-                           &uia_test_complete_event_id_);
+  if (features::IsAccessibilityAriaVirtualContentEnabled()) {
+    // Register the custom UIA property that represents the value for the
+    // 'aria-virtualcontent' attribute.
+    UIAutomationPropertyInfo virtual_content_property_info = {
+        kUiaPropertyVirtualContentGuid, L"VirtualContent",
+        UIAutomationType_String};
+    registrar->RegisterProperty(&virtual_content_property_info,
+                                &virtual_content_property_id_);
+  }
 }
 
 UiaRegistrarWin::~UiaRegistrarWin() = default;
 
-PROPERTYID UiaRegistrarWin::GetUiaUniqueIdPropertyId() const {
-  return uia_unique_id_property_id_;
+// UIA custom events.
+EVENTID UiaRegistrarWin::GetTestCompleteEventId() const {
+  return test_complete_event_id_;
 }
 
-EVENTID UiaRegistrarWin::GetUiaTestCompleteEventId() const {
-  return uia_test_complete_event_id_;
+// UIA custom properties.
+PROPERTYID UiaRegistrarWin::GetUniqueIdPropertyId() const {
+  return unique_id_property_id_;
+}
+
+PROPERTYID UiaRegistrarWin::GetVirtualContentPropertyId() const {
+  if (!features::IsAccessibilityAriaVirtualContentEnabled())
+    return 0;
+  return virtual_content_property_id_;
 }
 
 const UiaRegistrarWin& UiaRegistrarWin::GetInstance() {

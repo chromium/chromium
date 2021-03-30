@@ -7,11 +7,12 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/task/post_task.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "components/feedback/feedback_report.h"
 #include "components/feedback/feedback_switches.h"
 #include "components/variations/net/variations_http_headers.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/browser/storage_partition.h"
 #include "net/base/load_flags.h"
 #include "net/url_request/url_fetcher.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -44,10 +45,6 @@ base::TimeDelta g_minimum_retry_delay = base::TimeDelta::FromMinutes(60);
 // dispatched, this is the time to wait for the on-going dispatching to finish.
 base::TimeDelta g_dispatching_wait_delay = base::TimeDelta::FromSeconds(4);
 
-base::FilePath GetPathFromContext(content::BrowserContext* context) {
-  return context->GetPath().Append(kFeedbackReportPath);
-}
-
 GURL GetFeedbackPostGURL() {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
@@ -56,20 +53,35 @@ GURL GetFeedbackPostGURL() {
                   : kFeedbackPostUrl);
 }
 
+// Creates a new SingleThreadTaskRunner that is used to run feedback blocking
+// background work.
+scoped_refptr<base::SingleThreadTaskRunner> CreateUploaderTaskRunner() {
+  // Uses a BLOCK_SHUTDOWN file task runner to prevent losing reports or
+  // corrupting report's files.
+  return base::ThreadPool::CreateSingleThreadTaskRunner(
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
+}
+
 }  // namespace
 
 FeedbackUploader::FeedbackUploader(
-    content::BrowserContext* context,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : context_(context),
-      feedback_reports_path_(GetPathFromContext(context)),
-      task_runner_(task_runner),
-      feedback_post_url_(GetFeedbackPostGURL()),
-      retry_delay_(g_minimum_retry_delay),
-      is_dispatching_(false) {
-  DCHECK(task_runner_);
-  DCHECK(context_);
-}
+    bool is_off_the_record,
+    const base::FilePath& state_path,
+    SharedURLLoaderFactoryGetter shared_url_loader_factory_getter)
+    : FeedbackUploader(is_off_the_record,
+                       state_path,
+                       std::move(shared_url_loader_factory_getter),
+                       nullptr) {}
+
+FeedbackUploader::FeedbackUploader(
+    bool is_off_the_record,
+    const base::FilePath& state_path,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
+    : FeedbackUploader(is_off_the_record,
+                       state_path,
+                       SharedURLLoaderFactoryGetter(),
+                       shared_url_loader_factory) {}
 
 FeedbackUploader::~FeedbackUploader() {}
 
@@ -132,6 +144,21 @@ bool FeedbackUploader::ReportsUploadTimeComparator::operator()(
   return a->upload_at() > b->upload_at();
 }
 
+FeedbackUploader::FeedbackUploader(
+    bool is_off_the_record,
+    const base::FilePath& state_path,
+    SharedURLLoaderFactoryGetter url_loader_factory_getter,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    : url_loader_factory_getter_(std::move(url_loader_factory_getter)),
+      url_loader_factory_(url_loader_factory),
+      feedback_reports_path_(state_path.Append(kFeedbackReportPath)),
+      task_runner_(CreateUploaderTaskRunner()),
+      feedback_post_url_(GetFeedbackPostGURL()),
+      retry_delay_(g_minimum_retry_delay),
+      is_off_the_record_(is_off_the_record) {
+  DCHECK(!!url_loader_factory_getter_ != !!url_loader_factory_);
+}
+
 void FeedbackUploader::AppendExtraHeadersToUploadRequest(
     network::ResourceRequest* resource_request) {}
 
@@ -173,8 +200,8 @@ void FeedbackUploader::DispatchReport() {
   // Tell feedback server about the variation state of this install.
   variations::AppendVariationsHeaderUnknownSignedIn(
       feedback_post_url_,
-      context_->IsOffTheRecord() ? variations::InIncognito::kYes
-                                 : variations::InIncognito::kNo,
+      is_off_the_record_ ? variations::InIncognito::kYes
+                         : variations::InIncognito::kNo,
       resource_request.get());
 
   if (report_being_dispatched_->has_email()) {
@@ -190,12 +217,10 @@ void FeedbackUploader::DispatchReport() {
   auto it = uploads_in_progress_.insert(uploads_in_progress_.begin(),
                                         std::move(simple_url_loader));
 
-  // Creating the StoragePartitionImpl is costly, so don't do it until
-  // necessary (most importantly, avoid doing so during startup).
   if (!url_loader_factory_) {
-    url_loader_factory_ =
-        content::BrowserContext::GetDefaultStoragePartition(context_)
-            ->GetURLLoaderFactoryForBrowserProcess();
+    // Lazily create the URLLoaderFactory.
+    url_loader_factory_ = std::move(url_loader_factory_getter_).Run();
+    DCHECK(url_loader_factory_);
   }
 
   simple_url_loader_ptr->DownloadToStringOfUnboundedSizeUntilCrashAndDie(

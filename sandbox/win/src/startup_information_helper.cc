@@ -14,7 +14,9 @@
 #include "base/win/startup_information.h"
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/app_container_profile.h"
+#include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/security_capabilities.h"
+#include "sandbox/win/src/win_utils.h"
 
 namespace sandbox {
 using base::win::StartupInformation;
@@ -39,6 +41,7 @@ void StartupInformationHelper::SetDesktop(std::wstring desktop) {
 void StartupInformationHelper::SetMitigations(MitigationFlags flags) {
   ConvertProcessMitigationsToPolicy(flags, &mitigations_[0],
                                     &mitigations_size_);
+  ConvertProcessMitigationsToComponentFilter(flags, &component_filter_);
 }
 
 void StartupInformationHelper::SetRestrictChildProcessCreation(bool restrict) {
@@ -85,6 +88,9 @@ int StartupInformationHelper::CountAttributes() {
   if (mitigations_[0] || mitigations_[1])
     ++attribute_count;
 
+  if (component_filter_.ComponentFlags)
+    ++attribute_count;
+
   if (restrict_child_process_creation_)
     ++attribute_count;
 
@@ -115,6 +121,16 @@ bool StartupInformationHelper::BuildStartupInformation() {
     if (!startup_info_.UpdateProcThreadAttribute(
             PROC_THREAD_ATTRIBUTE_MITIGATION_POLICY, &mitigations_[0],
             mitigations_size_)) {
+      return false;
+    }
+    expected_attributes--;
+  }
+
+  if (component_filter_.ComponentFlags) {
+    if (!startup_info_.UpdateProcThreadAttribute(
+            PROC_THREAD_ATTRIBUTE_COMPONENT_FILTER, &component_filter_,
+            sizeof(component_filter_)) &&
+        ::GetLastError() != ERROR_NOT_SUPPORTED) {
       return false;
     }
     expected_attributes--;

@@ -10,11 +10,13 @@ namespace offline_items_collection {
 FilteredOfflineItemObserver::FilteredOfflineItemObserver(
     OfflineContentProvider* provider)
     : provider_(provider) {
-  provider_->AddObserver(this);
+  observation_.Observe(provider_);
 }
 
-FilteredOfflineItemObserver::~FilteredOfflineItemObserver() {
-  provider_->RemoveObserver(this);
+FilteredOfflineItemObserver::~FilteredOfflineItemObserver() = default;
+
+void FilteredOfflineItemObserver::OnContentProviderGoingDown() {
+  observation_.Reset();
 }
 
 void FilteredOfflineItemObserver::AddObserver(const ContentId& id,
@@ -33,7 +35,7 @@ void FilteredOfflineItemObserver::RemoveObserver(const ContentId& id,
 
   it->second->RemoveObserver(observer);
 
-  if (!it->second->might_have_observers())
+  if (it->second->empty())
     observers_.erase(it);
 }
 

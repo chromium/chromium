@@ -65,11 +65,11 @@ class GoogleUpdateSettingsTest : public testing::Test {
     // Install a basic InstallDetails instance.
     install_static::ScopedInstallDetails details(install == SYSTEM_INSTALL);
 
-    base::string16 value;
+    std::wstring value;
     // Before anything is set, ReadExperimentLabels should succeed but return
     // an empty string.
     EXPECT_TRUE(GoogleUpdateSettings::ReadExperimentLabels(&value));
-    EXPECT_EQ(base::string16(), value);
+    EXPECT_EQ(std::wstring(), value);
 
     EXPECT_TRUE(
         GoogleUpdateSettings::SetExperimentLabels(kTestExperimentLabel));
@@ -78,10 +78,9 @@ class GoogleUpdateSettingsTest : public testing::Test {
     RegKey key;
     HKEY root =
         install == SYSTEM_INSTALL ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
-    base::string16 state_key =
-        install == SYSTEM_INSTALL
-            ? install_static::GetClientStateMediumKeyPath()
-            : install_static::GetClientStateKeyPath();
+    std::wstring state_key = install == SYSTEM_INSTALL
+                                 ? install_static::GetClientStateMediumKeyPath()
+                                 : install_static::GetClientStateKeyPath();
 
     EXPECT_EQ(ERROR_SUCCESS,
               key.Open(root, state_key.c_str(), KEY_QUERY_VALUE));
@@ -94,21 +93,21 @@ class GoogleUpdateSettingsTest : public testing::Test {
 
     // Now that the label is set, test the delete functionality. An empty label
     // should result in deleting the value.
-    EXPECT_TRUE(GoogleUpdateSettings::SetExperimentLabels(base::string16()));
+    EXPECT_TRUE(GoogleUpdateSettings::SetExperimentLabels(std::wstring()));
     EXPECT_EQ(ERROR_SUCCESS,
               key.Open(root, state_key.c_str(), KEY_QUERY_VALUE));
     EXPECT_EQ(ERROR_FILE_NOT_FOUND,
               key.ReadValue(google_update::kExperimentLabels, &value));
     EXPECT_TRUE(GoogleUpdateSettings::ReadExperimentLabels(&value));
-    EXPECT_EQ(base::string16(), value);
+    EXPECT_EQ(std::wstring(), value);
     key.Close();
   }
 
   // Creates "ap" key with the value given as parameter. Also adds work
   // items to work_item_list given so that they can be rolled back later.
-  bool CreateApKey(WorkItemList* work_item_list, const base::string16& value) {
+  bool CreateApKey(WorkItemList* work_item_list, const std::wstring& value) {
     HKEY reg_root = HKEY_CURRENT_USER;
-    base::string16 reg_key = GetApKeyPath();
+    std::wstring reg_key = GetApKeyPath();
     work_item_list->AddCreateRegKeyWorkItem(reg_root, reg_key,
                                             WorkItem::kWow64Default);
     work_item_list->AddSetRegValueWorkItem(
@@ -123,18 +122,18 @@ class GoogleUpdateSettingsTest : public testing::Test {
 
   // Returns the key path of "ap" key, e.g.:
   // Google\Update\ClientState\<kTestProductGuid>
-  base::string16 GetApKeyPath() {
-    base::string16 reg_key(google_update::kRegPathClientState);
+  std::wstring GetApKeyPath() {
+    std::wstring reg_key(google_update::kRegPathClientState);
     reg_key.append(L"\\");
     reg_key.append(kTestProductGuid);
     return reg_key;
   }
 
   // Utility method to read "ap" key value
-  base::string16 ReadApKeyValue() {
+  std::wstring ReadApKeyValue() {
     RegKey key;
-    base::string16 ap_key_value;
-    base::string16 reg_key = GetApKeyPath();
+    std::wstring ap_key_value;
+    std::wstring reg_key = GetApKeyPath();
     if (key.Open(HKEY_CURRENT_USER, reg_key.c_str(), KEY_ALL_ACCESS) ==
         ERROR_SUCCESS) {
       key.ReadValue(google_update::kRegApField, &ap_key_value);
@@ -143,13 +142,13 @@ class GoogleUpdateSettingsTest : public testing::Test {
     return ap_key_value;
   }
 
-  bool SetUpdatePolicyForAppGuid(const base::string16& app_guid,
+  bool SetUpdatePolicyForAppGuid(const std::wstring& app_guid,
                                  GoogleUpdateSettings::UpdatePolicy policy) {
     RegKey policy_key;
     if (policy_key.Create(HKEY_LOCAL_MACHINE,
                           GoogleUpdateSettings::kPoliciesKey,
                           KEY_SET_VALUE) == ERROR_SUCCESS) {
-      base::string16 app_update_override(
+      std::wstring app_update_override(
           GoogleUpdateSettings::kUpdateOverrideValuePrefix);
       app_update_override.append(app_guid);
       return policy_key.WriteValue(app_update_override.c_str(),
@@ -159,12 +158,12 @@ class GoogleUpdateSettingsTest : public testing::Test {
   }
 
   GoogleUpdateSettings::UpdatePolicy GetUpdatePolicyForAppGuid(
-      const base::string16& app_guid) {
+      const std::wstring& app_guid) {
     RegKey policy_key;
     if (policy_key.Create(HKEY_LOCAL_MACHINE,
                           GoogleUpdateSettings::kPoliciesKey,
                           KEY_QUERY_VALUE) == ERROR_SUCCESS) {
-      base::string16 app_update_override(
+      std::wstring app_update_override(
           GoogleUpdateSettings::kUpdateOverrideValuePrefix);
       app_update_override.append(app_guid);
 
@@ -323,8 +322,8 @@ TEST_F(GoogleUpdateSettingsTest, UpdateInstallStatusTest) {
 
   work_item_list.reset(WorkItem::CreateWorkItemList());
   // Test the case of when "ap" key doesnt exist at all
-  base::string16 ap_key_value = ReadApKeyValue();
-  base::string16 reg_key = GetApKeyPath();
+  std::wstring ap_key_value = ReadApKeyValue();
+  std::wstring reg_key = GetApKeyPath();
   HKEY reg_root = HKEY_CURRENT_USER;
   bool ap_key_deleted = false;
   RegKey key;
@@ -476,7 +475,7 @@ TEST_F(GoogleUpdateSettingsTest, GetAppUpdatePolicyDefaultOverride) {
 
 // Test that an app-specific override is used if present.
 TEST_F(GoogleUpdateSettingsTest, GetAppUpdatePolicyAppOverride) {
-  base::string16 app_policy_value(
+  std::wstring app_policy_value(
       GoogleUpdateSettings::kUpdateOverrideValuePrefix);
   app_policy_value.append(kTestProductGuid);
 
@@ -656,8 +655,8 @@ TEST_F(GoogleUpdateSettingsTest, GetDownloadPreference) {
   EXPECT_EQ(ERROR_SUCCESS,
             policy_key.WriteValue(
                 GoogleUpdateSettings::kDownloadPreferencePolicyValue,
-                base::string16(32, L'a').c_str()));
-  EXPECT_STREQ(base::string16(32, L'a').c_str(),
+                std::wstring(32, L'a').c_str()));
+  EXPECT_STREQ(std::wstring(32, L'a').c_str(),
                GoogleUpdateSettings::GetDownloadPreference().c_str());
 
   // Expect an empty string when an unsupported policy is set.
@@ -677,7 +676,7 @@ TEST_F(GoogleUpdateSettingsTest, GetDownloadPreference) {
   EXPECT_EQ(ERROR_SUCCESS,
             policy_key.WriteValue(
                 GoogleUpdateSettings::kDownloadPreferencePolicyValue,
-                base::string16(33, L'a').c_str()));
+                std::wstring(33, L'a').c_str()));
   EXPECT_TRUE(GoogleUpdateSettings::GetDownloadPreference().empty());
 }
 
@@ -693,7 +692,7 @@ class SetProgressTest : public GoogleUpdateSettingsTest,
 };
 
 TEST_P(SetProgressTest, SetProgress) {
-  base::string16 path(google_update::kRegPathClientState);
+  std::wstring path(google_update::kRegPathClientState);
   path += L"\\";
   path += kTestProductGuid;
 
@@ -740,7 +739,7 @@ const wchar_t GetUninstallCommandLine::kDummyCommand[] =
 // Tests that GetUninstallCommandLine returns an empty string if there's no
 // Software\Google\Update key.
 TEST_P(GetUninstallCommandLine, TestNoKey) {
-  EXPECT_EQ(base::string16(),
+  EXPECT_EQ(std::wstring(),
             GoogleUpdateSettings::GetUninstallCommandLine(system_install_));
 }
 
@@ -748,7 +747,7 @@ TEST_P(GetUninstallCommandLine, TestNoKey) {
 // UninstallCmdLine value in the Software\Google\Update key.
 TEST_P(GetUninstallCommandLine, TestNoValue) {
   RegKey(root_key_, google_update::kRegPathGoogleUpdate, KEY_SET_VALUE);
-  EXPECT_EQ(base::string16(),
+  EXPECT_EQ(std::wstring(),
             GoogleUpdateSettings::GetUninstallCommandLine(system_install_));
 }
 
@@ -757,7 +756,7 @@ TEST_P(GetUninstallCommandLine, TestNoValue) {
 TEST_P(GetUninstallCommandLine, TestEmptyValue) {
   RegKey(root_key_, google_update::kRegPathGoogleUpdate, KEY_SET_VALUE)
       .WriteValue(google_update::kRegUninstallCmdLine, L"");
-  EXPECT_EQ(base::string16(),
+  EXPECT_EQ(std::wstring(),
             GoogleUpdateSettings::GetUninstallCommandLine(system_install_));
 }
 
@@ -766,10 +765,10 @@ TEST_P(GetUninstallCommandLine, TestEmptyValue) {
 TEST_P(GetUninstallCommandLine, TestRealValue) {
   RegKey(root_key_, google_update::kRegPathGoogleUpdate, KEY_SET_VALUE)
       .WriteValue(google_update::kRegUninstallCmdLine, kDummyCommand);
-  EXPECT_EQ(base::string16(kDummyCommand),
+  EXPECT_EQ(std::wstring(kDummyCommand),
             GoogleUpdateSettings::GetUninstallCommandLine(system_install_));
   // Make sure that there's no value in the other level (user or system).
-  EXPECT_EQ(base::string16(),
+  EXPECT_EQ(std::wstring(),
             GoogleUpdateSettings::GetUninstallCommandLine(!system_install_));
 }
 
@@ -825,7 +824,7 @@ TEST_P(GetGoogleUpdateVersion, TestEmptyValue) {
 TEST_P(GetGoogleUpdateVersion, TestRealValue) {
   RegKey(root_key_, google_update::kRegPathGoogleUpdate, KEY_SET_VALUE)
       .WriteValue(google_update::kRegGoogleUpdateVersion, kDummyVersion);
-  base::Version expected(base::UTF16ToUTF8(kDummyVersion));
+  base::Version expected(base::WideToASCII(kDummyVersion));
   EXPECT_EQ(expected,
             GoogleUpdateSettings::GetGoogleUpdateVersion(system_install_));
   // Make sure that there's no value in the other level (user or system).
@@ -888,7 +887,7 @@ class CollectStatsConsent : public ::testing::TestWithParam<StatsState> {
   void SetUp() override;
   void ApplySetting(StatsState::StateSetting setting,
                     HKEY root_key,
-                    const base::string16& reg_key);
+                    const std::wstring& reg_key);
 
   registry_util::RegistryOverrideManager override_manager_;
   std::unique_ptr<install_static::ScopedInstallDetails> scoped_install_details_;
@@ -920,7 +919,7 @@ void CollectStatsConsent::SetUp() {
 // Write the correct value to represent |setting| in the registry.
 void CollectStatsConsent::ApplySetting(StatsState::StateSetting setting,
                                        HKEY root_key,
-                                       const base::string16& reg_key) {
+                                       const std::wstring& reg_key) {
   if (setting != StatsState::NO_SETTING) {
     DWORD value = setting != StatsState::FALSE_SETTING ? 1 : 0;
     ASSERT_EQ(ERROR_SUCCESS,
@@ -953,7 +952,7 @@ TEST_P(CollectStatsConsent, SetCollectStatsConsent) {
   EXPECT_TRUE(GoogleUpdateSettings::SetCollectStatsConsent(
       !GetParam().is_consent_granted()));
 
-  const base::string16 reg_key =
+  const std::wstring reg_key =
       GetParam().system_level() ? install_static::GetClientStateMediumKeyPath()
                                 : install_static::GetClientStateKeyPath();
   DWORD value = 0;

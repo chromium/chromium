@@ -35,7 +35,8 @@ class PasswordSyncBridge : public syncer::ModelTypeSyncBridge {
   PasswordSyncBridge(
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
       PasswordStoreSync* password_store_sync,
-      const base::RepeatingClosure& sync_enabled_or_disabled_cb);
+      const base::RepeatingClosure& sync_enabled_or_disabled_cb,
+      ForceInitialSyncCycle force_initial_sync = ForceInitialSyncCycle(false));
   ~PasswordSyncBridge() override;
 
   // Notifies the bridge of changes to the password database. Callers are
@@ -72,7 +73,7 @@ class PasswordSyncBridge : public syncer::ModelTypeSyncBridge {
   base::Optional<syncer::ModelError> CleanupPasswordStore();
 
   // Retrieves the storage keys of all unsynced passwords in the store.
-  std::set<int> GetUnsyncedPasswordsStorageKeys();
+  std::set<FormPrimaryKey> GetUnsyncedPasswordsStorageKeys();
 
   // Password store responsible for persistence.
   PasswordStoreSync* const password_store_sync_;

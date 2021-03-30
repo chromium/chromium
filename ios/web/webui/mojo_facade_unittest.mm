@@ -53,7 +53,7 @@ class FakeWebStateWithMojoFacade : public FakeWebState {
 
   void SetFacade(MojoFacade* facade) { facade_ = facade; }
 
-  void ExecuteJavaScript(const base::string16& javascript) override {
+  void ExecuteJavaScript(const std::u16string& javascript) override {
     FakeWebState::ExecuteJavaScript(javascript);
     // Cancel the watch immediately to ensure there are no additional
     // notifications.

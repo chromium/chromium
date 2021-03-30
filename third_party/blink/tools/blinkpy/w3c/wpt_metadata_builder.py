@@ -40,6 +40,8 @@ TEST_TIMEOUT = 1 << 5  # 32
 TEST_CRASH = 1 << 6  # 64
 # The test failed a precondition assertion
 TEST_PRECONDITION_FAILED = 1 << 7  # 128
+# The test is annotated to use checked-in metadata, other statuses are ignored
+USE_CHECKED_IN_METADATA = 1 << 8  # 256
 
 
 class WPTMetadataBuilder(object):
@@ -58,6 +60,7 @@ class WPTMetadataBuilder(object):
         self.checked_in_metadata_dir = ""
         self.process_baselines = True
         self.handle_annotations = True
+        self.checked_in_metadata_copied = set()
 
     def run(self, args=None):
         """Main entry point to parse flags and execute the script."""
@@ -112,10 +115,12 @@ class WPTMetadataBuilder(object):
 
     @staticmethod
     def status_bitmap_to_string(test_status_bitmap):
+        # Nearly all statuses are the result of translating baselines or
+        # expectations. The exception is explicitly flagging the test to use
+        # checked-in metadata which must contain the correct subtest statuses.
+        # We ensure that translation and checked-in metadata aren't mixed.
+        assert not test_status_bitmap & USE_CHECKED_IN_METADATA, "illegal mix of translation and checked-in-metadata"
         statuses = []
-        result = ""
-        if test_status_bitmap & SUBTEST_FAIL:
-            result += "  blink_expect_any_subtest_status: True # wpt_metadata_builder.py\n"
 
         if test_status_bitmap & HARNESS_ERROR:
             statuses.append("ERROR")
@@ -136,17 +141,31 @@ class WPTMetadataBuilder(object):
         if test_status_bitmap & TEST_PRECONDITION_FAILED:
             statuses.append("PRECONDITION_FAILED")
 
+        # Since status translation is lossy, we always instruct wptrunner to
+        # ignore subtest statuses.
+        result = "  blink_expect_any_subtest_status: True # wpt_metadata_builder.py\n"
         if statuses:
             result += "  expected: [%s]\n" % ", ".join(statuses)
         return result
 
     def _build_metadata_and_write(self):
         """Build the metadata files and write them to disk."""
-        if os.path.exists(self.metadata_output_dir):
+        if self.fs.exists(self.metadata_output_dir):
             _log.debug("Output dir exists, deleting: %s",
                        self.metadata_output_dir)
-            import shutil
-            shutil.rmtree(self.metadata_output_dir)
+            self.fs.rmtree(self.metadata_output_dir)
+
+        # Start by populating any metadata that is checked into the source tree.
+        # We will later determine, for each test, whether some other status
+        # should overwrite this.
+        if self.checked_in_metadata_dir and self.fs.exists(
+                self.checked_in_metadata_dir):
+            _log.info("Copying checked-in WPT metadata before translated "
+                      "files.")
+            self._copy_checked_in_metadata()
+        else:
+            _log.warning("Not using checked-in WPT metadata, path is empty or "
+                         "does not exist: %s" % self.checked_in_metadata_dir)
 
         tests_for_metadata = self.get_tests_needing_metadata()
         _log.info("Found %d tests requiring metadata", len(tests_for_metadata))
@@ -155,21 +174,13 @@ class WPTMetadataBuilder(object):
                 test_name, test_status_bitmap)
             if not filename or not file_contents:
                 continue
-            self._write_to_file(filename, file_contents)
-
-        if self.checked_in_metadata_dir and os.path.exists(
-                self.checked_in_metadata_dir):
-            _log.info("Copying checked-in WPT metadata on top of translated "
-                      "files.")
-            self._copy_checked_in_metadata()
-        else:
-            _log.warning("Not using checked-in WPT metadata, path is empty or "
-                         "does not exist: %s" % self.checked_in_metadata_dir)
+            self._write_translated_metadata_to_file(filename, file_contents)
 
         # Finally, output a stamp file with the same name as the output
         # directory. The stamp file is empty, it's only used for its mtime.
         # This makes the GN build system happy (see crbug.com/995112).
-        with open(self.metadata_output_dir + ".stamp", "w"):
+        with self.fs.open_text_file_for_writing(self.metadata_output_dir +
+                                                ".stamp"):
             pass
 
     def _copy_checked_in_metadata(self):
@@ -189,15 +200,33 @@ class WPTMetadataBuilder(object):
             if not self.fs.exists(self.fs.dirname(output_path)):
                 self.fs.maybe_make_directory(self.fs.dirname(output_path))
             _log.debug("Copying %s to %s" % (filename, output_path))
+            # Keep track that we copied this file. We may need to purge it if
+            # another status overwrites it.
+            self.checked_in_metadata_copied.add(output_path)
             self.fs.copyfile(filename, output_path)
 
-    def _write_to_file(self, filename, file_contents):
+    def _write_translated_metadata_to_file(self, filename, file_contents):
+        # It's possible that a metadata file was checked in and copied to this
+        # location. If that's the case, we want to delete the file to purge the
+        # checked-in contents before writing the translated contents. This must
+        # only happen the first time we write, since we may need to append more
+        # translated tests to this same file.
+        if filename in self.checked_in_metadata_copied:
+            _log.debug(
+                "Checked-in metadata exists, overwriting with translation: %s"
+                % filename)
+            self.fs.remove(filename)
+            # Remove the file from the copied list so we don't try deleting it
+            # again.
+            self.checked_in_metadata_copied.remove(filename)
+
         # Write the contents to the file name
-        if not os.path.exists(os.path.dirname(filename)):
-            os.makedirs(os.path.dirname(filename))
+        if not self.fs.exists(os.path.dirname(filename)):
+            self.fs.maybe_make_directory(self.fs.dirname(filename))
+
         # Note that we append to the metadata file in order to allow multiple
         # tests to be present in the same .ini file (ie: for multi-global tests)
-        with open(filename, "a") as metadata_file:
+        with self.fs.open_text_file_for_appending(filename) as metadata_file:
             metadata_file.write(file_contents)
 
     def get_tests_needing_metadata(self):
@@ -214,22 +243,19 @@ class WPTMetadataBuilder(object):
         """
         tests_needing_metadata = defaultdict(int)
         for test_name in self.port.tests(paths=["external/wpt"]):
-            # First check for expectations. If a test is skipped then we do not
-            # look for more statuses
+            # First, check if the test has a baseline. Other forms of
+            # expectations may overwrite this.
+            if self.process_baselines:
+                test_baseline = self.port.expected_text(test_name)
+                if test_baseline:
+                    self._handle_test_with_baseline(test_name, test_baseline,
+                                                    tests_needing_metadata)
+
+            # Next check for expectations, which could overwrite baselines
             expectation_line = self.expectations.get_expectations(test_name)
             self._handle_test_with_expectation(test_name, expectation_line,
                                                tests_needing_metadata)
-            if self._test_was_skipped(test_name, tests_needing_metadata):
-                # Do not consider other statuses if a test is skipped
-                continue
 
-            # Check if the test has a baseline
-            if self.process_baselines:
-                test_baseline = self.port.expected_text(test_name)
-                if not test_baseline:
-                    continue
-                self._handle_test_with_baseline(test_name, test_baseline,
-                                                tests_needing_metadata)
         return tests_needing_metadata
 
     def _handle_test_with_expectation(self, test_name, expectation_line,
@@ -237,6 +263,14 @@ class WPTMetadataBuilder(object):
         """Handles a single test expectation and updates |status_dict|."""
         test_statuses = expectation_line.results
         annotations = expectation_line.trailing_comments
+
+        # If a test is annotated to use checked-in metadata then that overrides
+        # other statuses and we exit early.
+        if self.handle_annotations and annotations:
+            if "wpt_use_checked_in_metadata" in annotations:
+                status_dict[test_name] |= USE_CHECKED_IN_METADATA
+                return
+
         if ResultType.Skip in test_statuses:
             # Skips are handled alone, so don't look at any other statuses
             status_dict[test_name] |= SKIP_TEST
@@ -351,6 +385,14 @@ class WPTMetadataBuilder(object):
         # Ignore expectations for non-WPT tests
         if (not chromium_test_name
                 or not chromium_test_name.startswith('external/wpt')):
+            return None, None
+
+        # Also ignore any test annotated to use checked-in metadata. By
+        # definition, the metadata is already there, so there is no metadata to
+        # be built by this code.
+        if test_status_bitmap & USE_CHECKED_IN_METADATA:
+            _log.debug("Using checked-in metadata for test %s" %
+                       chromium_test_name)
             return None, None
 
         # Split the test name by directory. We omit the first 2 entries because

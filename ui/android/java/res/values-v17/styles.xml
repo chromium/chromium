@@ -235,7 +235,7 @@
         <item name="android:textColor">@color/default_text_color_light_list</item>
     </style>
     <style name="TextAppearance.TextMediumThick.Secondary.Light" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/default_text_color_light_list</item>
+        <item name="android:textColor">@color/default_text_color_secondary_light_list</item>
     </style>
 
     <style name="TextAppearance.TextLarge.Secondary.Light" tools:ignore="UnusedResources">

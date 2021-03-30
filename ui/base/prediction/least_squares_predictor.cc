@@ -82,7 +82,8 @@ gfx::Matrix3F LeastSquaresPredictor::GetXMatrix() const {
 }
 
 std::unique_ptr<InputPredictor::InputData>
-LeastSquaresPredictor::GeneratePrediction(base::TimeTicks predict_time) const {
+LeastSquaresPredictor::GeneratePrediction(base::TimeTicks predict_time,
+                                          base::TimeDelta frame_interval) {
   if (!HasPrediction())
     return nullptr;
 

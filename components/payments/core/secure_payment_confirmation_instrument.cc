@@ -16,7 +16,7 @@ SecurePaymentConfirmationInstrument::SecurePaymentConfirmationInstrument() =
 SecurePaymentConfirmationInstrument::SecurePaymentConfirmationInstrument(
     std::vector<uint8_t> credential_id,
     const std::string& relying_party_id,
-    const base::string16& label,
+    const std::u16string& label,
     std::vector<uint8_t> icon)
     : credential_id(std::move(credential_id)),
       relying_party_id(relying_party_id),

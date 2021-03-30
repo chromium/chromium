@@ -17,6 +17,7 @@
 #include "mojo/public/cpp/bindings/lib/buffer.h"
 #include "mojo/public/cpp/bindings/lib/handle_serialization.h"
 #include "mojo/public/cpp/bindings/lib/map_serialization.h"
+#include "mojo/public/cpp/bindings/lib/message_fragment.h"
 #include "mojo/public/cpp/bindings/lib/string_serialization.h"
 #include "mojo/public/cpp/bindings/lib/template_util.h"
 #include "mojo/public/cpp/bindings/map_traits_flat_map.h"
@@ -36,12 +37,9 @@ struct MojomSerializationImplTraits<
     MojomType,
     typename std::enable_if<
         BelongsTo<MojomType, MojomTypeCategory::kStruct>::value>::type> {
-  template <typename MaybeConstUserType, typename WriterType>
-  static void Serialize(MaybeConstUserType& input,
-                        Buffer* buffer,
-                        WriterType* writer,
-                        SerializationContext* context) {
-    mojo::internal::Serialize<MojomType>(input, buffer, writer, context);
+  template <typename MaybeConstUserType, typename FragmentType>
+  static void Serialize(MaybeConstUserType& input, FragmentType& fragment) {
+    mojo::internal::Serialize<MojomType>(input, fragment);
   }
 };
 
@@ -50,28 +48,22 @@ struct MojomSerializationImplTraits<
     MojomType,
     typename std::enable_if<
         BelongsTo<MojomType, MojomTypeCategory::kUnion>::value>::type> {
-  template <typename MaybeConstUserType, typename WriterType>
-  static void Serialize(MaybeConstUserType& input,
-                        Buffer* buffer,
-                        WriterType* writer,
-                        SerializationContext* context) {
-    mojo::internal::Serialize<MojomType>(input, buffer, writer,
-                                         false /* inline */, context);
+  template <typename MaybeConstUserType, typename FragmentType>
+  static void Serialize(MaybeConstUserType& input, FragmentType& fragment) {
+    mojo::internal::Serialize<MojomType>(input, fragment, false /* inline */);
   }
 };
 
 template <typename MojomType, typename UserType>
 mojo::Message SerializeAsMessageImpl(UserType* input) {
-  SerializationContext context;
   // Note that this is only called by application code serializing a structure
   // manually (e.g. for storage). As such we don't want Mojo's soft message size
   // limits to be applied.
   mojo::Message message(0, 0, 0, 0, MOJO_CREATE_MESSAGE_FLAG_UNLIMITED_SIZE,
                         nullptr);
-  typename MojomTypeTraits<MojomType>::Data::BufferWriter writer;
-  MojomSerializationImplTraits<MojomType>::Serialize(
-      *input, message.payload_buffer(), &writer, &context);
-  message.AttachHandlesFromSerializationContext(&context);
+  MessageFragment<typename MojomTypeTraits<MojomType>::Data> fragment(message);
+  MojomSerializationImplTraits<MojomType>::Serialize(*input, fragment);
+  message.SerializeHandles(/*group_controller=*/nullptr);
   return message;
 }
 
@@ -89,9 +81,9 @@ DataArrayType SerializeImpl(UserType* input) {
 }
 
 template <typename MojomType, typename UserType>
-bool DeserializeImpl(const void* data,
+bool DeserializeImpl(Message& message,
+                     const void* data,
                      size_t data_num_bytes,
-                     std::vector<mojo::ScopedHandle> handles,
                      UserType* output,
                      bool (*validate_func)(const void*, ValidationContext*)) {
   static_assert(BelongsTo<MojomType, MojomTypeCategory::kStruct>::value ||
@@ -114,15 +106,14 @@ bool DeserializeImpl(const void* data,
   }
 
   DCHECK(base::IsValueInRangeForNumericType<uint32_t>(data_num_bytes));
-  ValidationContext validation_context(
-      input_buffer, static_cast<uint32_t>(data_num_bytes), handles.size(), 0);
+  ValidationContext validation_context(input_buffer,
+                                       static_cast<uint32_t>(data_num_bytes),
+                                       message.handles()->size(), 0);
   bool result = false;
   if (validate_func(input_buffer, &validation_context)) {
-    SerializationContext context;
-    *context.mutable_handles() = std::move(handles);
     result = Deserialize<MojomType>(
         reinterpret_cast<DataType*>(const_cast<void*>(input_buffer)), output,
-        &context);
+        &message);
   }
 
   if (aligned_input_buffer)

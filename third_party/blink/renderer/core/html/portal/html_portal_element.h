@@ -140,8 +140,8 @@ class CORE_EXPORT HTMLPortalElement : public HTMLFrameOwnerElement {
 
   // HTMLFrameOwnerElement overrides
   void DisconnectContentFrame() override;
-  ParsedFeaturePolicy ConstructContainerPolicy() const override {
-    return ParsedFeaturePolicy();
+  ParsedPermissionsPolicy ConstructContainerPolicy() const override {
+    return ParsedPermissionsPolicy();
   }
   void AttachLayoutTree(AttachContext& context) override;
   network::mojom::ReferrerPolicy ReferrerPolicyAttribute() override;

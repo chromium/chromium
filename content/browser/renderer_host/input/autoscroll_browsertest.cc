@@ -14,8 +14,6 @@
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "ui/events/base_event_utils.h"
 
-using blink::WebInputEvent;
-
 namespace {
 
 const std::string kAutoscrollDataURL = R"HTML(
@@ -100,8 +98,11 @@ class AutoscrollBrowserTest : public ContentBrowserTest {
 
  protected:
   RenderWidgetHostImpl* GetWidgetHost() {
-    return RenderWidgetHostImpl::From(
-        shell()->web_contents()->GetRenderViewHost()->GetWidget());
+    return RenderWidgetHostImpl::From(shell()
+                                          ->web_contents()
+                                          ->GetMainFrame()
+                                          ->GetRenderViewHost()
+                                          ->GetWidget());
   }
 
   void LoadURL(const std::string& page_data) {
@@ -111,7 +112,7 @@ class AutoscrollBrowserTest : public ContentBrowserTest {
     RenderWidgetHostImpl* host = GetWidgetHost();
     host->GetView()->SetSize(gfx::Size(400, 400));
 
-    base::string16 ready_title(base::ASCIIToUTF16("ready"));
+    std::u16string ready_title(u"ready");
     TitleWatcher watcher(shell()->web_contents(), ready_title);
     ignore_result(watcher.WaitAndGetTitle());
 
@@ -221,9 +222,9 @@ IN_PROC_BROWSER_TEST_F(AutoscrollBrowserTest, AutoscrollFlingGSBDeltaHints) {
 
 // Tests that the GSU and GSE events generated from the autoscroll fling have
 // non-zero positions in widget.
-// Disabled due to flakiness. See https://crbug.com/930011.
-IN_PROC_BROWSER_TEST_F(AutoscrollBrowserTest,
-                       DISABLED_GSUGSEValidPositionInWidget) {
+//
+// Temporarily enabled to investigate flakiness. See https://crbug.com/930011.
+IN_PROC_BROWSER_TEST_F(AutoscrollBrowserTest, GSUGSEValidPositionInWidget) {
   LoadURL(kAutoscrollDataURL);
 
   // Start autoscroll with middle click.

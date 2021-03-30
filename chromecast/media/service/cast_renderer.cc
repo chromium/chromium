@@ -198,9 +198,12 @@ void CastRenderer::OnGetMultiroomInfo(
           ? MediaPipelineDeviceParams::kModeIgnorePts
           : MediaPipelineDeviceParams::kModeSyncPts;
 
-  MediaPipelineDeviceParams params(
-      sync_type, backend_task_runner_.get(), AudioContentType::kMedia,
-      ::media::AudioDeviceDescription::kDefaultDeviceId);
+  const std::string& device_id =
+      (multiroom_info->output_device_id.empty()
+           ? ::media::AudioDeviceDescription::kDefaultDeviceId
+           : multiroom_info->output_device_id);
+  MediaPipelineDeviceParams params(sync_type, backend_task_runner_.get(),
+                                   AudioContentType::kMedia, device_id);
   params.session_id = application_media_info->application_session_id;
   params.multiroom = multiroom_info->multiroom;
   params.audio_channel = multiroom_info->audio_channel;
@@ -232,7 +235,7 @@ void CastRenderer::OnGetMultiroomInfo(
     AvPipelineClient audio_client;
     audio_client.waiting_cb = base::BindRepeating(&CastRenderer::OnWaiting,
                                                   weak_factory_.GetWeakPtr());
-    audio_client.eos_cb = base::BindOnce(
+    audio_client.eos_cb = base::BindRepeating(
         &CastRenderer::OnEnded, weak_factory_.GetWeakPtr(), STREAM_AUDIO);
     audio_client.playback_error_cb =
         base::BindRepeating(&CastRenderer::OnError, weak_factory_.GetWeakPtr());
@@ -256,7 +259,7 @@ void CastRenderer::OnGetMultiroomInfo(
     VideoPipelineClient video_client;
     video_client.av_pipeline_client.waiting_cb = base::BindRepeating(
         &CastRenderer::OnWaiting, weak_factory_.GetWeakPtr());
-    video_client.av_pipeline_client.eos_cb = base::BindOnce(
+    video_client.av_pipeline_client.eos_cb = base::BindRepeating(
         &CastRenderer::OnEnded, weak_factory_.GetWeakPtr(), STREAM_VIDEO);
     video_client.av_pipeline_client.playback_error_cb =
         base::BindRepeating(&CastRenderer::OnError, weak_factory_.GetWeakPtr());

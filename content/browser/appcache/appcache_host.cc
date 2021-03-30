@@ -69,7 +69,7 @@ bool CanAccessDocumentURL(ChildProcessSecurityPolicyImpl::Handle* handle,
          document_url == GURL("data:,") ||  // CSP blocked_urls.
          (document_url.SchemeIsBlob() &&    // <iframe src="blob:null/xx"> case.
           url::Origin::Create(document_url).opaque()) ||
-         handle->CanAccessDataForOrigin(document_url);
+         handle->CanAccessDataForOrigin(url::Origin::Create(document_url));
 }
 
 base::debug::CrashKeyString* GetDocumentUrlCrashKey() {
@@ -172,7 +172,8 @@ void AppCacheHost::SelectCache(const GURL& document_url,
   }
 
   if (!manifest_url.is_empty() &&
-      !security_policy_handle()->CanAccessDataForOrigin(manifest_url)) {
+      !security_policy_handle()->CanAccessDataForOrigin(
+          url::Origin::Create(manifest_url))) {
     mojo::ReportBadMessage("ACH_SELECT_CACHE_MANIFEST_URL_ACCESS_NOT_ALLOWED");
     return;
   }
@@ -404,7 +405,8 @@ void AppCacheHost::GetResourceList(GetResourceListCallback callback) {
 std::unique_ptr<AppCacheRequestHandler> AppCacheHost::CreateRequestHandler(
     std::unique_ptr<AppCacheRequest> request,
     network::mojom::RequestDestination request_destination,
-    bool should_reset_appcache) {
+    bool should_reset_appcache,
+    int frame_tree_node_id) {
   if (AppCacheRequestHandler::IsMainRequestDestination(request_destination)) {
     // Store the first party origin so that it can be used later in SelectCache
     // for checking whether the creation of the appcache is allowed.
@@ -412,13 +414,15 @@ std::unique_ptr<AppCacheRequestHandler> AppCacheHost::CreateRequestHandler(
     site_for_cookies_initialized_ = true;
     top_frame_origin_ = request->GetTopFrameOrigin();
     return base::WrapUnique(new AppCacheRequestHandler(
-        this, request_destination, should_reset_appcache, std::move(request)));
+        this, request_destination, should_reset_appcache, std::move(request),
+        frame_tree_node_id));
   }
 
   if ((associated_cache() && associated_cache()->is_complete()) ||
       is_selection_pending()) {
     return base::WrapUnique(new AppCacheRequestHandler(
-        this, request_destination, should_reset_appcache, std::move(request)));
+        this, request_destination, should_reset_appcache, std::move(request),
+        frame_tree_node_id));
   }
   return nullptr;
 }

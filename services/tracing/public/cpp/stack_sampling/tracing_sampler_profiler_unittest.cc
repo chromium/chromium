@@ -10,11 +10,11 @@
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
-#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/trace_event/trace_buffer.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "services/tracing/perfetto/test_utils.h"
 #include "services/tracing/public/cpp/buildflags.h"
 #include "services/tracing/public/cpp/perfetto/producer_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -67,19 +67,18 @@ class LoaderLockEventAnalyzer {
 
 #endif  // BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
 
-class TracingSampleProfilerTest : public testing::Test {
+class TracingSampleProfilerTest : public TracingUnitTest {
  public:
   TracingSampleProfilerTest() = default;
   ~TracingSampleProfilerTest() override = default;
 
   void SetUp() override {
+    TracingUnitTest::SetUp();
+
     events_stack_received_count_ = 0u;
-    PerfettoTracedProcess::ResetTaskRunnerForTesting();
-    PerfettoTracedProcess::GetTaskRunner()->GetOrCreateTaskRunner();
 
-    auto perfetto_wrapper = std::make_unique<PerfettoTaskRunner>(
-        task_environment_.GetMainThreadTaskRunner());
-
+    auto perfetto_wrapper = std::make_unique<base::tracing::PerfettoTaskRunner>(
+        base::ThreadTaskRunnerHandle::Get());
     producer_ =
         std::make_unique<TestProducerClient>(std::move(perfetto_wrapper),
                                              /*log_only_main_thread=*/false);
@@ -93,12 +92,13 @@ class TracingSampleProfilerTest : public testing::Test {
   }
 
   void TearDown() override {
-    // Be sure there is no pending/running tasks.
-    task_environment_.RunUntilIdle();
-
 #if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
     TracingSamplerProfiler::SetLoaderLockSamplerForTesting(nullptr);
 #endif
+
+    producer_.reset();
+
+    TracingUnitTest::TearDown();
   }
 
   void BeginTrace() {
@@ -145,8 +145,6 @@ class TracingSampleProfilerTest : public testing::Test {
   const TestProducerClient* producer() const { return producer_.get(); }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
-
   // We want our singleton torn down after each test.
   base::ShadowingAtExitManager at_exit_manager_;
   base::trace_event::TraceResultBuffer trace_buffer_;
@@ -428,23 +426,25 @@ TEST_F(TracingSampleProfilerTest, SampleLoaderLockWithoutMock) {
 
 #endif  // BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
 
-class TracingProfileBuilderTest : public testing::Test {
+class TracingProfileBuilderTest : public TracingUnitTest {
  public:
   void SetUp() override {
-    auto perfetto_wrapper = std::make_unique<PerfettoTaskRunner>(
-        task_environment_.GetMainThreadTaskRunner());
+    TracingUnitTest::SetUp();
+
+    auto perfetto_wrapper = std::make_unique<base::tracing::PerfettoTaskRunner>(
+        base::ThreadTaskRunnerHandle::Get());
     producer_client_ = std::make_unique<TestProducerClient>(
         std::move(perfetto_wrapper), /*log_only_main_thread=*/false);
   }
 
-  void TearDown() override { producer_client_.reset(); }
+  void TearDown() override {
+    producer_client_.reset();
+    TracingUnitTest::TearDown();
+  }
 
   TestProducerClient* producer() { return producer_client_.get(); }
 
  private:
-  // Should be the first member.
-  base::test::TaskEnvironment task_environment_;
-
   std::unique_ptr<TestProducerClient> producer_client_;
 };
 

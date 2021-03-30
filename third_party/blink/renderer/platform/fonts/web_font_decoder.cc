@@ -37,7 +37,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
-#include "third_party/ots/include/ots-memory-stream.h"
+#include "third_party/ots/src/include/ots-memory-stream.h"
 #include "third_party/skia/include/core/SkStream.h"
 
 #include <hb.h>

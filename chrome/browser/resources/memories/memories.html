@@ -1,0 +1,30 @@
+<!doctype html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+<head>
+  <meta charset="utf-8">
+  <meta name="color-scheme" content="light dark">
+  <title>$i18n{title}</title>
+  <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+  <style>
+    html {
+      background: var(--md-background-color);
+    }
+
+    body {
+      font-size: 16px;  /* TODO(crbug.com/1173990): Remove once fixed. */
+      margin: 0;
+    }
+
+    html,
+    body,
+    memories-app {
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <script type="module" src="memories.js"></script>
+  <memories-app></memories-app>
+</body>
+</html>

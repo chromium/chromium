@@ -1,0 +1,16 @@
+Tests framework ignore list patterns for various URLs.
+
+Testing "http://www.example.com/foo/jquery-1.7-min.js"
+Testing "https://www.example.com/jquery.js?version=1.7"
+Testing "http://www.google.com/jsapi"
+Testing "https://www.google.com/jsapi/"
+Testing "http://www.google.com"
+Testing "http://www.google.com/"
+Testing "data:text/html,foo"
+Testing "about:blank"
+Testing ""
+Testing "chrome-extension://extensionName/main.js"
+Testing "extensions::unload_events"
+
+PASS
+

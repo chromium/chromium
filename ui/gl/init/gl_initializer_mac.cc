@@ -16,13 +16,13 @@
 #include "base/native_library.h"
 #include "base/path_service.h"
 #include "base/threading/thread_restrictions.h"
-#include "ui/gl/buildflags.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gpu_switching_manager.h"
+#include "ui/gl/init/gl_initializer.h"
 
 #if defined(USE_EGL)
 #include "ui/gl/gl_egl_api_implementation.h"
@@ -97,7 +97,7 @@ const char kEGLANGLELibraryName[] = "libEGL.dylib";
 const char kGLESv2SwiftShaderLibraryName[] = "libswiftshader_libGLESv2.dylib";
 const char kEGLSwiftShaderLibraryName[] = "libswiftshader_libEGL.dylib";
 
-bool InitializeStaticEGLInternal(GLImplementation implementation) {
+bool InitializeStaticEGLInternalFromLibrary(GLImplementation implementation) {
   // Some unit test targets depend on Angle/SwiftShader but aren't built
   // as app bundles. In that case, the .dylib is next to the executable.
   base::FilePath base_dir;
@@ -123,6 +123,9 @@ bool InitializeStaticEGLInternal(GLImplementation implementation) {
   } else {
     glesv2_path = base_dir.Append(kGLESv2ANGLELibraryName);
     egl_path = base_dir.Append(kEGLANGLELibraryName);
+#if BUILDFLAG(USE_STATIC_ANGLE)
+    NOTREACHED();
+#endif
   }
 
   base::NativeLibrary gles_library = LoadLibraryAndPrintError(glesv2_path);
@@ -152,8 +155,26 @@ bool InitializeStaticEGLInternal(GLImplementation implementation) {
   // currently
   AddGLNativeLibrary(gles_library);
   AddGLNativeLibrary(egl_library);
-  SetGLImplementation(implementation);
 
+  return true;
+}
+
+bool InitializeStaticEGLInternal(GLImplementationParts implementation) {
+#if BUILDFLAG(USE_STATIC_ANGLE)
+  if (implementation.gl == kGLImplementationEGLANGLE) {
+    // Use ANGLE if it is requested and it is statically linked
+    if (!InitializeStaticANGLEEGL())
+      return false;
+  } else if (!InitializeStaticEGLInternalFromLibrary(implementation.gl)) {
+    return false;
+  }
+#else
+  if (!InitializeStaticEGLInternalFromLibrary(implementation.gl)) {
+    return false;
+  }
+#endif  // !BUILDFLAG(USE_STATIC_ANGLE)
+
+  SetGLImplementationParts(implementation);
   InitializeStaticGLBindingsGL();
   InitializeStaticGLBindingsEGL();
 
@@ -188,7 +209,7 @@ bool InitializeGLOneOffPlatform() {
   }
 }
 
-bool InitializeStaticGLBindings(GLImplementation implementation) {
+bool InitializeStaticGLBindings(GLImplementationParts implementation) {
   // Prevent reinitialization with a different implementation. Once the gpu
   // unit tests have initialized with kGLImplementationMock, we don't want to
   // later switch to another GL implementation.
@@ -200,11 +221,11 @@ bool InitializeStaticGLBindings(GLImplementation implementation) {
   // one-time initialization cost is small, between 2 and 5 ms.
   base::ThreadRestrictions::ScopedAllowIO allow_io;
 
-  switch (implementation) {
+  switch (implementation.gl) {
     case kGLImplementationDesktopGL:
     case kGLImplementationDesktopGLCoreProfile:
     case kGLImplementationAppleGL:
-      return InitializeStaticCGLInternal(implementation);
+      return InitializeStaticCGLInternal(implementation.gl);
 #if defined(USE_EGL)
     case kGLImplementationEGLGLES2:
     case kGLImplementationEGLANGLE:
@@ -213,7 +234,7 @@ bool InitializeStaticGLBindings(GLImplementation implementation) {
 #endif  // #if defined(USE_EGL)
     case kGLImplementationMockGL:
     case kGLImplementationStubGL:
-      SetGLImplementation(implementation);
+      SetGLImplementationParts(implementation);
       InitializeStaticGLBindingsGL();
       return true;
     default:

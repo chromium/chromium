@@ -37,6 +37,12 @@ bool OverlayProcessorWin::IsOverlaySupported() const {
   return true;
 }
 
+gfx::Rect OverlayProcessorWin::GetPreviousFrameOverlaysBoundingRect() const {
+  // TODO(dcastagna): Implement me.
+  NOTIMPLEMENTED();
+  return gfx::Rect();
+}
+
 gfx::Rect OverlayProcessorWin::GetAndResetOverlayDamage() {
   return gfx::Rect();
 }
@@ -56,10 +62,13 @@ void OverlayProcessorWin::ProcessForOverlays(
   TRACE_EVENT0("viz", "OverlayProcessorWin::ProcessForOverlays");
 
   auto* root_render_pass = render_passes->back().get();
-  // Skip overlay processing if we have copy request.
-  if (!root_render_pass->copy_requests.empty()) {
-    damage_rect->Union(dc_layer_overlay_processor_
-                           ->previous_frame_overlay_damage_contribution());
+
+  // Skip overlay processing if we have copy request or video capture is
+  // enabled. When video capture is enabled, some frames might not have copy
+  // request.
+  if (!root_render_pass->copy_requests.empty() || is_video_capture_enabled_) {
+    damage_rect->Union(
+        dc_layer_overlay_processor_->PreviousFrameOverlayDamageContribution());
     // Update damage rect before calling ClearOverlayState, otherwise
     // previous_frame_overlay_rect_union will be empty.
     dc_layer_overlay_processor_->ClearOverlayState();
@@ -73,8 +82,7 @@ void OverlayProcessorWin::ProcessForOverlays(
   // supporting RGB10 format. Let overlay deal with HDR content in this
   // situation.
   bool supports_rgb10a2_overlay =
-      (gl::GetOverlaySupportFlags(DXGI_FORMAT_R10G10B10A2_UNORM) != 0 ||
-       output_surface_->capabilities().forces_rgb10a2_overlay_support_flags);
+      gl::GetOverlaySupportFlags(DXGI_FORMAT_R10G10B10A2_UNORM) != 0;
   if (root_render_pass->content_color_usage == gfx::ContentColorUsage::kHDR &&
       !supports_rgb10a2_overlay) {
     return;
@@ -105,6 +113,10 @@ void OverlayProcessorWin::ProcessForOverlays(
 
 bool OverlayProcessorWin::NeedsSurfaceDamageRectList() const {
   return true;
+}
+
+void OverlayProcessorWin::SetIsVideoCaptureEnabled(bool enabled) {
+  is_video_capture_enabled_ = enabled;
 }
 
 }  // namespace viz

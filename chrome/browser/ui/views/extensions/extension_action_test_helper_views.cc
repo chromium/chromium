@@ -74,11 +74,11 @@ class ExtensionActionTestHelperViews::TestToolbarActionsBarHelper
 ExtensionActionTestHelperViews::~ExtensionActionTestHelperViews() = default;
 
 int ExtensionActionTestHelperViews::NumberOfBrowserActions() {
-  return browser_actions_container_->num_toolbar_actions();
+  return browser_actions_container_->GetNumToolbarActions();
 }
 
 int ExtensionActionTestHelperViews::VisibleBrowserActions() {
-  return browser_actions_container_->VisibleBrowserActions();
+  return browser_actions_container_->GetVisibleBrowserActions();
 }
 
 void ExtensionActionTestHelperViews::InspectPopup(int index) {
@@ -115,7 +115,7 @@ std::string ExtensionActionTestHelperViews::GetExtensionId(int index) {
 }
 
 std::string ExtensionActionTestHelperViews::GetTooltip(int index) {
-  base::string16 tooltip =
+  std::u16string tooltip =
       browser_actions_container_->GetToolbarActionViewAt(index)->GetTooltipText(
           gfx::Point());
   return base::UTF16ToUTF8(tooltip);

@@ -81,6 +81,11 @@ template("chrome_common_shared_library") {
       deps += [ "//chrome:chrome_android_core" ]
     }
 
+    if (!(defined(invoker.testonly) && invoker.testonly)) {
+      configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
+      configs += [ "//build/config/compiler:thinlto_optimize_max" ]
+    }
+
     configs += [ "//build/config/compiler:chrome_orderfile_config" ]
 
     # Use a dynamically-generated linker script.

@@ -19,7 +19,6 @@
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
-#include "storage/browser/quota/padding_key.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace content {

@@ -82,7 +82,7 @@ class InMemoryHistoryBackend : public HistoryServiceObserver {
   void OnKeywordSearchTermUpdated(HistoryService* history_service,
                                   const URLRow& row,
                                   KeywordID keyword_id,
-                                  const base::string16& term) override;
+                                  const std::u16string& term) override;
   void OnKeywordSearchTermDeleted(HistoryService* history_service,
                                   URLID url_id) override;
 

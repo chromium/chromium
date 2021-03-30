@@ -19,7 +19,11 @@ DownloadShelfContextMenuView::DownloadShelfContextMenuView(
     : DownloadShelfContextMenu(download_item_view->model()),
       download_item_view_(download_item_view) {}
 
-DownloadShelfContextMenuView::~DownloadShelfContextMenuView() {}
+DownloadShelfContextMenuView::DownloadShelfContextMenuView(
+    DownloadUIModel* download_ui_model)
+    : DownloadShelfContextMenu(download_ui_model) {}
+
+DownloadShelfContextMenuView::~DownloadShelfContextMenuView() = default;
 
 void DownloadShelfContextMenuView::Run(
     views::Widget* parent_widget,
@@ -64,7 +68,10 @@ void DownloadShelfContextMenuView::ExecuteCommand(int command_id,
   DownloadCommands::Command command =
       static_cast<DownloadCommands::Command>(command_id);
 
-  if (command == DownloadCommands::KEEP) {
+  if (command == DownloadCommands::KEEP && download_item_view_) {
+    // TODO(kerenzhu): We will need SBER in WebUI download shelf.
+    // Refactor this feature out of DownloadItemView so that it can be used in
+    // WebUI.
     download_item_view_->MaybeSubmitDownloadToFeedbackService(
         DownloadCommands::KEEP);
   } else {

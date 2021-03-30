@@ -45,6 +45,13 @@ constexpr int kInvalidUtteranceId = -1;
 const wchar_t kAttributesKey[] = L"Attributes";
 const wchar_t kLanguageValue[] = L"Language";
 
+// Original blog detailing how to use this registry.
+// https://social.msdn.microsoft.com/Forums/en-US/8bbe761c-69c7-401c-8261-1442935c57c8/why-isnt-my-program-detecting-all-tts-voices
+// Microsoft docs on how to view system registry keys.
+// https://docs.microsoft.com/en-us/troubleshoot/windows-client/deployment/view-system-registry-with-64-bit-windows
+const wchar_t* kSPCategoryOneCoreVoices =
+    L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Speech_OneCore\\Voices";
+
 // This COM interface is receiving the TTS events on the ISpVoice asynchronous
 // worker thread and is emitting a notification task
 // TtsPlatformImplBackgroundWorker::SendTtsEvent(...) on the worker sequence.
@@ -120,6 +127,10 @@ class TtsPlatformImplBackgroundWorker {
  private:
   void GetVoices(std::vector<VoiceData>* voices);
 
+  // Search the newer OneCore or the older SAPI locations for voice tokens.
+  // This ensures new voices are shown and that the method works on Windows 7.
+  bool GetVoiceTokens(Microsoft::WRL::ComPtr<IEnumSpObjectTokens>* out_tokens);
+
   void SetVoiceFromName(const std::string& name);
 
   // These apply to the current utterance only that is currently being processed
@@ -184,6 +195,8 @@ class TtsPlatformImplWin : public TtsPlatformImpl {
                      const UtteranceContinuousParameters& params,
                      base::OnceCallback<void(bool)> on_speak_finished,
                      const std::string& parsed_utterance);
+
+  void FinishCurrentUtterance();
 
   // These variables hold the platform state.
   bool paused_ = false;
@@ -260,12 +273,12 @@ void TtsPlatformImplBackgroundWorker::ProcessSpeech(
     // The TTS api allows a range of -10 to 10 for speech pitch:
     // https://docs.microsoft.com/en-us/previous-versions/windows/desktop/ms720500(v%3Dvs.85)
     // Note that the API requires an integer value, so be sure to cast the pitch
-    // value to an int before calling NumberToString16. TODO(dtseng): cleanup if
+    // value to an int before calling NumberToWString. TODO(dtseng): cleanup if
     // we ever use any other properties that require xml.
     double adjusted_pitch =
         std::max<double>(-10, std::min<double>(params.pitch * 10 - 10, 10));
     std::wstring adjusted_pitch_string =
-        base::NumberToString16(static_cast<int>(adjusted_pitch));
+        base::NumberToWString(static_cast<int>(adjusted_pitch));
     prefix = L"<pitch absmiddle=\"" + adjusted_pitch_string + L"\">";
     suffix = L"</pitch>";
   }
@@ -292,6 +305,16 @@ void TtsPlatformImplBackgroundWorker::ProcessSpeech(
   bool success = (result == S_OK);
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(on_speak_finished), success));
+}
+
+void TtsPlatformImplWin::FinishCurrentUtterance() {
+  if (paused_)
+    Resume();
+
+  DCHECK(is_speaking_);
+  DCHECK_NE(utterance_id_, kInvalidUtteranceId);
+  is_speaking_ = false;
+  utterance_id_ = kInvalidUtteranceId;
 }
 
 void TtsPlatformImplBackgroundWorker::StopSpeaking(bool paused) {
@@ -402,8 +425,9 @@ void TtsPlatformImplBackgroundWorker::GetVoices(
 
   Microsoft::WRL::ComPtr<IEnumSpObjectTokens> voice_tokens;
   unsigned long voice_count;
-  if (S_OK != SpEnumTokens(SPCAT_VOICES, NULL, NULL, &voice_tokens))
+  if (!this->GetVoiceTokens(&voice_tokens)) {
     return;
+  }
   if (S_OK != voice_tokens->GetCount(&voice_count))
     return;
 
@@ -454,8 +478,9 @@ void TtsPlatformImplBackgroundWorker::SetVoiceFromName(
 
   Microsoft::WRL::ComPtr<IEnumSpObjectTokens> voice_tokens;
   unsigned long voice_count;
-  if (S_OK != SpEnumTokens(SPCAT_VOICES, NULL, NULL, &voice_tokens))
+  if (!this->GetVoiceTokens(&voice_tokens)) {
     return;
+  }
   if (S_OK != voice_tokens->GetCount(&voice_count))
     return;
 
@@ -472,6 +497,16 @@ void TtsPlatformImplBackgroundWorker::SetVoiceFromName(
       break;
     }
   }
+}
+
+bool TtsPlatformImplBackgroundWorker::GetVoiceTokens(
+    Microsoft::WRL::ComPtr<IEnumSpObjectTokens>* out_tokens) {
+  if (S_OK ==
+      SpEnumTokens(kSPCategoryOneCoreVoices, NULL, NULL, &(*out_tokens))) {
+  } else if (S_OK != SpEnumTokens(SPCAT_VOICES, NULL, NULL, &(*out_tokens))) {
+    return false;
+  }
+  return true;
 }
 
 //
@@ -518,8 +553,8 @@ void TtsPlatformImplWin::Speak(
 bool TtsPlatformImplWin::StopSpeaking() {
   DCHECK(BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
-  worker_.Post(FROM_HERE, &TtsPlatformImplBackgroundWorker::StopSpeaking,
-               paused_);
+  worker_.AsyncCall(&TtsPlatformImplBackgroundWorker::StopSpeaking)
+      .WithArgs(paused_);
   paused_ = false;
 
   is_speaking_ = false;
@@ -534,7 +569,7 @@ void TtsPlatformImplWin::Pause() {
 
   if (paused_ || !is_speaking_)
     return;
-  worker_.Post(FROM_HERE, &TtsPlatformImplBackgroundWorker::Pause);
+  worker_.AsyncCall(&TtsPlatformImplBackgroundWorker::Pause);
   paused_ = true;
 }
 
@@ -542,10 +577,10 @@ void TtsPlatformImplWin::Resume() {
   DCHECK(BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   DCHECK(platform_initialized_);
 
-  if (!paused_ || !is_speaking_)
+  if (!paused_)
     return;
 
-  worker_.Post(FROM_HERE, &TtsPlatformImplBackgroundWorker::Resume);
+  worker_.AsyncCall(&TtsPlatformImplBackgroundWorker::Resume);
   paused_ = false;
 }
 
@@ -564,7 +599,7 @@ void TtsPlatformImplWin::GetVoices(std::vector<VoiceData>* out_voices) {
 void TtsPlatformImplWin::Shutdown() {
   // This is required to ensures the object is released before the COM is
   // uninitialized. Otherwise, this is causing shutdown hangs.
-  worker_.Post(FROM_HERE, &TtsPlatformImplBackgroundWorker::Shutdown);
+  worker_.AsyncCall(&TtsPlatformImplBackgroundWorker::Shutdown);
 }
 
 void TtsPlatformImplWin::OnInitializeComplete(bool success,
@@ -586,10 +621,8 @@ void TtsPlatformImplWin::OnSpeakScheduled(
 
   // If the utterance was not able to be emitted, stop the speaking. There
   // won't be any asynchronous TTS event to confirm the end of the speech.
-  if (!success) {
-    is_speaking_ = false;
-    utterance_id_ = kInvalidUtteranceId;
-  }
+  if (!success)
+    FinishCurrentUtterance();
 
   // Pass the results to our caller.
   std::move(on_speak_finished).Run(success);
@@ -600,10 +633,7 @@ void TtsPlatformImplWin::OnSpeakFinished(int utterance_id) {
   if (utterance_id != utterance_id_)
     return;
 
-  DCHECK(is_speaking_);
-  DCHECK_NE(utterance_id_, kInvalidUtteranceId);
-  is_speaking_ = false;
-  utterance_id_ = kInvalidUtteranceId;
+  FinishCurrentUtterance();
 }
 
 void TtsPlatformImplWin::ProcessSpeech(
@@ -615,9 +645,9 @@ void TtsPlatformImplWin::ProcessSpeech(
     const std::string& parsed_utterance) {
   DCHECK(BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
-  worker_.Post(FROM_HERE, &TtsPlatformImplBackgroundWorker::ProcessSpeech,
-               utterance_id, lang, voice, params, std::move(on_speak_finished),
-               parsed_utterance);
+  worker_.AsyncCall(&TtsPlatformImplBackgroundWorker::ProcessSpeech)
+      .WithArgs(utterance_id, lang, voice, params, std::move(on_speak_finished),
+                parsed_utterance);
 }
 
 TtsPlatformImplWin::TtsPlatformImplWin()
@@ -625,7 +655,7 @@ TtsPlatformImplWin::TtsPlatformImplWin()
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
       worker_(worker_task_runner_, worker_task_runner_) {
   DCHECK(BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  worker_.Post(FROM_HERE, &TtsPlatformImplBackgroundWorker::Initialize);
+  worker_.AsyncCall(&TtsPlatformImplBackgroundWorker::Initialize);
 }
 
 // static

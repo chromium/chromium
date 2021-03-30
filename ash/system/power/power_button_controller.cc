@@ -103,8 +103,7 @@ PowerButtonController::PowerButtonController(
     BacklightsForcedOffSetter* backlights_forced_off_setter)
     : backlights_forced_off_setter_(backlights_forced_off_setter),
       lock_state_controller_(Shell::Get()->lock_state_controller()),
-      tick_clock_(base::DefaultTickClock::GetInstance()),
-      backlights_forced_off_observer_(this) {
+      tick_clock_(base::DefaultTickClock::GetInstance()) {
   ProcessCommandLine();
   display_controller_ = std::make_unique<PowerButtonDisplayController>(
       backlights_forced_off_setter_, tick_clock_);
@@ -121,7 +120,7 @@ PowerButtonController::PowerButtonController(
 
   auto* shell = Shell::Get();
   shell->display_configurator()->AddObserver(this);
-  backlights_forced_off_observer_.Add(backlights_forced_off_setter);
+  backlights_forced_off_observation_.Observe(backlights_forced_off_setter);
   shell->tablet_mode_controller()->AddObserver(this);
   shell->lock_state_controller()->AddObserver(this);
   shell->session_controller()->AddObserver(this);
@@ -140,7 +139,10 @@ PowerButtonController::~PowerButtonController() {
 
 void PowerButtonController::OnPreShutdownTimeout() {
   lock_state_controller_->StartShutdownAnimation(ShutdownReason::POWER_BUTTON);
-  DCHECK(menu_widget_);
+  // |menu_widget_| might be reset on login status change while shutting down.
+  if (!menu_widget_)
+    return;
+
   static_cast<PowerButtonMenuScreenView*>(menu_widget_->GetContentsView())
       ->power_button_menu_view()
       ->FocusPowerOffButton();
@@ -391,7 +393,7 @@ void PowerButtonController::OnGetSwitchStates(
 }
 
 void PowerButtonController::OnAccelerometerUpdated(
-    scoped_refptr<const AccelerometerUpdate> update) {
+    const AccelerometerUpdate& update) {
   DCHECK(base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kAshEnableTabletMode));
 

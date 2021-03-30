@@ -22,13 +22,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="Media.AImageReaderGLOwner.AcquireImageResult"
-    enum="MediaStatus" expires_after="2018-11-25">
+    enum="MediaStatus" expires_after="2021-11-25">
   <owner>vikassoni@chromium.org</owner>
-  <summary>Error codes to handle AImage and AImageReader api calls.</summary>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Error codes to handle AImage and AImageReader api calls. This is recorded
+    when AImageReader acquireNextImage or acquireLatestImage is called and the
+    returned code is other than AMEDIA_OK. This histogram was enabled in the
+    past and became absolete on 2018-11-25.
+  </summary>
 </histogram>
 
 <histogram name="Media.Android.BackgroundVideoTime" units="ms"
     expires_after="2020-04-05">
+  <obsolete>
+    Removed as of 2021/02.
+  </obsolete>
   <owner>mlamouri@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -41,7 +50,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Android.MediaPlayerSuccess" enum="MediaPlayerExitStatus"
-    expires_after="2021-06-06">
+    expires_after="2021-08-08">
   <owner>tguilbert@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>Android: Whether MediaPlayer exited without errors.</summary>
@@ -127,14 +136,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Autoplay" enum="AutoplaySource"
-    expires_after="2021-06-01">
+    expires_after="2021-08-01">
   <owner>mlamouri@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>Records the autoplay source of audios.</summary>
 </histogram>
 
 <histogram name="Media.Audio.Capture.DetectedMissingCallbacks"
-    enum="BooleanMissingCallbacks" expires_after="2021-06-01">
+    enum="BooleanMissingCallbacks" expires_after="2021-08-01">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -144,7 +153,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Capture.FramesProvided" units="frames"
-    expires_after="2021-04-04">
+    expires_after="2021-09-05">
   <owner>guidou@chromium.org</owner>
   <owner>armax@chromium.org</owner>
   <summary>
@@ -163,7 +172,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Capture.Glitches" units="glitches"
-    expires_after="2021-06-01">
+    expires_after="2021-08-01">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -174,7 +183,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Capture.HighLatencyCallbackError"
-    enum="BooleanError" expires_after="2021-04-05">
+    enum="BooleanError" expires_after="2022-04-05">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -184,7 +193,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Capture.InputStreamDuration" units="ms"
-    expires_after="2021-04-05">
+    expires_after="2022-04-05">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -195,7 +204,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Capture.LargestGlitchMs" units="ms"
-    expires_after="2021-06-01">
+    expires_after="2021-08-01">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -206,7 +215,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Capture.LostFramesInMs" units="ms"
-    expires_after="2021-06-01">
+    expires_after="2021-08-01">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -218,7 +227,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Capture.LowLatencyCallbackError"
-    enum="BooleanError" expires_after="2021-06-06">
+    enum="BooleanError" expires_after="2021-08-08">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -296,7 +305,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Capture.StreamCallbackError2"
-    enum="AudioCaptureDeviceError" expires_after="2021-04-25">
+    enum="AudioCaptureDeviceError" expires_after="2021-08-09">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -316,7 +325,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Capture.Win.InitError" enum="Hresult"
-    expires_after="2021-05-02">
+    expires_after="2021-07-27">
   <owner>tommi@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
@@ -327,7 +336,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Capture.Win.InitError.FormatRelated"
-    enum="AudioStreamFormatRelatedInitError" expires_after="2021-05-02">
+    enum="AudioStreamFormatRelatedInitError" expires_after="2021-07-27">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -339,7 +348,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Capture.Win.Open" enum="AudioStreamOpenResult"
-    expires_after="2021-05-30">
+    expires_after="2021-08-01">
   <owner>gudiou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -364,9 +373,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.CoreAudioDispatchOverrideInitResult"
-    enum="CoreAudioDispatchOverrideInitResult" expires_after="2021-04-01">
+    enum="CoreAudioDispatchOverrideInitResult" expires_after="2022-04-01">
   <owner>guidou@chromium.org</owner>
-  <owner>armax@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
   <summary>
     Tracks support and initialization success/failure of the CoreAudio dispatch
     override hotfix. Logged during initialization of AudioManagerMac. The fix is
@@ -375,9 +384,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.CoreAudioDispatchOverrideLookupEvent"
-    enum="CoreAudioDispatchOverrideLookupEvent" expires_after="2021-04-01">
+    enum="CoreAudioDispatchOverrideLookupEvent" expires_after="2022-04-01">
   <owner>guidou@chromium.org</owner>
-  <owner>armax@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
   <summary>
     Logged whenever the CoreAudio dispatch override hotfix needs to look up the
     calling function using dladdr(). Once ResumeIO and PauseIO have been
@@ -396,7 +405,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.InputStartupSuccessMac" enum="BooleanSuccess"
-    expires_after="2021-07-01">
+    expires_after="2021-09-05">
   <owner>henrika@chromium.org</owner>
   <owner>webrtc-audio@google.com</owner>
   <summary>
@@ -427,7 +436,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.OutputDeviceAuthorizationTime" units="ms"
-    expires_after="2021-06-06">
+    expires_after="2021-08-08">
   <owner>armax@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
@@ -449,9 +458,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Processing.CaptureDelayMs" units="ms"
-    expires_after="2021-04-01">
-  <owner>armax@chromium.org</owner>
+    expires_after="2022-04-01">
   <owner>guidou@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
   <summary>
     The time, in milliseconds, between when a block of audio is read from the
     soundcard and when it's presented to the audio processor. Used in
@@ -460,9 +469,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Processing.CaptureDelayVarianceMs"
-    units="ms squared" expires_after="2021-04-01">
-  <owner>armax@chromium.org</owner>
+    units="ms squared" expires_after="2022-04-01">
   <owner>guidou@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
   <summary>
     The variance of the capture delay in milliseconds (see
     Media.Audio.Processing.CaptureDelayMs). Logged once every second and
@@ -471,9 +480,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Processing.RenderDelayMs" units="ms"
-    expires_after="2021-04-01">
-  <owner>armax@chromium.org</owner>
+    expires_after="2022-04-01">
   <owner>guidou@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
   <summary>
     The time, in milliseconds, between when a block of audio is presented to the
     audio processor and the time it's played out on the soundcard. Used in
@@ -482,9 +491,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Processing.RenderDelayVarianceMs"
-    units="ms squared" expires_after="2021-04-01">
-  <owner>armax@chromium.org</owner>
+    units="ms squared" expires_after="2022-04-01">
   <owner>guidou@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
   <summary>
     The variance of the render delay in milliseconds (see
     Media.Audio.Processing.RenderDelayMs). Logged once every second and
@@ -493,7 +502,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Processing.TotalDelayMs" units="ms"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>armax@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <summary>
@@ -503,9 +512,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Processing.TotalDelayVarianceMs"
-    units="ms squared" expires_after="2021-04-01">
-  <owner>armax@chromium.org</owner>
+    units="ms squared" expires_after="2022-04-01">
   <owner>guidou@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
   <summary>
     The variance of the total delay in milliseconds (see
     Media.Audio.Processing.TotalDelayMs). Logged once every second and
@@ -526,7 +535,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Render.FramesRequested" units="frames"
-    expires_after="2021-06-27">
+    expires_after="2021-08-29">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -541,9 +550,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Render.GetSourceDataTime.WebRTC"
-    units="microseconds" expires_after="2021-06-06">
+    units="microseconds" expires_after="2021-08-08">
   <owner>guidou@chromium.org</owner>
-  <owner>armax@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
   <summary>
     The time spent to get audio data from the source. For WebRTC, it's the time
     spent in WebRtcAudioRenderer::SourceCallback. Logged every function call,
@@ -558,9 +567,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Render.GetSourceDataTimeMax.WebRTC"
-    units="microseconds" expires_after="2021-06-06">
+    units="microseconds" expires_after="2021-08-08">
   <owner>guidou@chromium.org</owner>
-  <owner>armax@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
   <summary>
     The maximum time spent to get audio data from the source during a session.
     For WebRTC, it's the time spent in WebRtcAudioRenderer::SourceCallback. A
@@ -575,7 +584,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Render.Glitches" units="glitches"
-    expires_after="2021-06-01">
+    expires_after="2021-08-01">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -586,7 +595,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Render.LargestGlitchMs" units="ms"
-    expires_after="2021-06-01">
+    expires_after="2021-08-01">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -597,7 +606,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Render.LostFramesInMs" units="ms"
-    expires_after="2021-06-01">
+    expires_after="2021-08-01">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -623,7 +632,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Render.OutputDeviceAuthorizationTimedOut"
-    enum="BooleanTimedOut" expires_after="2021-06-06">
+    enum="BooleanTimedOut" expires_after="2021-08-08">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -633,8 +642,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Render.OutputDeviceStatus"
-    enum="OutputDeviceStatus" expires_after="2021-06-06">
-  <owner>armax@chromium.org</owner>
+    enum="OutputDeviceStatus" expires_after="2021-08-08">
   <owner>dalecurtis@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
@@ -655,7 +663,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Media.Audio.Render.SinkCache.GetOutputDeviceInfoCacheUtilization"
-    enum="GetOutputDeviceInfoCacheHit" expires_after="2021-06-06">
+    enum="GetOutputDeviceInfoCacheHit" expires_after="2021-08-08">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -665,7 +673,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Render.SinkCache.InfoSinkReusedForOutput"
-    enum="BooleanReused" expires_after="2021-04-05">
+    enum="BooleanReused" expires_after="2022-04-05">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -677,7 +685,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Render.SinkCache.UsedForSinkCreation"
-    enum="BooleanUsage" expires_after="2021-04-05">
+    enum="BooleanUsage" expires_after="2021-08-09">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -783,7 +791,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.AudioCapturerAudioGlitches" enum="AudioGlitchResult"
-    expires_after="2021-06-01">
+    expires_after="2021-08-01">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -793,7 +801,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.AudioCapturerDroppedData" units="%"
-    expires_after="2021-06-01">
+    expires_after="2021-08-01">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -823,14 +831,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.AudioCodecProfile.AAC" enum="AudioCodecProfile"
-    expires_after="2021-05-23">
+    expires_after="2021-07-27">
   <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>Audio codec profile used in HTML5 media for AAC playback.</summary>
 </histogram>
 
 <histogram name="Media.AudioInputCbErrorMac" units="OSStatus"
-    expires_after="2021-06-20">
+    expires_after="2021-08-22">
   <owner>henrika@chromium.org</owner>
   <owner>webrtc-audio@google.com</owner>
   <summary>
@@ -847,7 +855,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.AudioInputControllerSessionSilenceReport"
-    enum="AudioInputSilenceReport" expires_after="2021-06-01">
+    enum="AudioInputSilenceReport" expires_after="2021-08-01">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -865,7 +873,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.AudioOutputController.CallbackError" enum="BooleanError"
-    expires_after="2021-04-05">
+    expires_after="2021-08-09">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -890,7 +898,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.AudioOutputController.ProxyStreamCreationResult"
-    enum="AudioOutputStreamCreationResult" expires_after="2021-04-05">
+    enum="AudioOutputStreamCreationResult" expires_after="2022-04-05">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -904,7 +912,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Media.AudioOutputController.ProxyStreamCreationResultForDeviceChange"
-    enum="AudioOutputStreamCreationResult" expires_after="2021-04-05">
+    enum="AudioOutputStreamCreationResult" expires_after="2022-04-05">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -938,7 +946,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Media.AudioOutputResampler.OpenLowLatencyStream"
     enum="AudioOutputResamplerLowLatencyOpenStreamResult"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>armax@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
@@ -1031,7 +1039,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.AudioRendererAudioGlitches" enum="AudioGlitchResult"
-    expires_after="2021-06-01">
+    expires_after="2021-08-01">
   <owner>henrika@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -1041,7 +1049,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.AudioRendererImpl.SinkStatus" enum="OutputDeviceStatus"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>armax@chromium.org</owner>
   <owner>dalecurtis@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
@@ -1056,7 +1064,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.AudioRendererMissedDeadline" units="%"
-    expires_after="2021-06-01">
+    expires_after="2021-08-01">
   <owner>dalecurtis@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -1066,8 +1074,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.AudioService.AudioManagerStartupTime" units="ms"
-    expires_after="2021-04-05">
-  <owner>armax@chromium.org</owner>
+    expires_after="2022-04-05">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -1137,7 +1144,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Capabilities.DecodingInfo.Time.Video" units="ms"
-    expires_after="2021-05-23">
+    expires_after="2021-07-27">
   <owner>chcunningham@chromium.org</owner>
   <owner>mlamouri@google.com</owner>
   <owner>media-dev@chromium.org</owner>
@@ -1148,7 +1155,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Capabilities.DecodingInfo.Time.Video.Clear" units="ms"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>chcunningham@chromium.org</owner>
   <owner>mlamouri@google.com</owner>
   <owner>media-dev@chromium.org</owner>
@@ -1226,7 +1233,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Controls.Show.Audio" enum="MediaControlsShowReason"
-    expires_after="2021-05-30">
+    expires_after="2021-08-01">
   <owner>mlamouri@chromium.org</owner>
   <summary>
     Record whether the default media controls of an audio element were shown and
@@ -1237,7 +1244,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Controls.Show.Video" enum="MediaControlsShowReason"
-    expires_after="2021-05-30">
+    expires_after="2021-08-01">
   <owner>mlamouri@chromium.org</owner>
   <summary>
     Record whether the default media controls of a video element were shown and
@@ -1293,8 +1300,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Media.D3D11.AV1Status" enum="MediaStatusCode"
+    expires_after="2021-06-13">
+  <owner>liberato@chromium.org</owner>
+  <owner>tmathmeyer@chromium.org</owner>
+  <summary>
+    This records the media::StatusCode from the AV1 accelerator. It is emitted
+    when the accelerator encounters an error during decoding.
+  </summary>
+</histogram>
+
 <histogram name="Media.D3D11.DecoderLifetimeProgression"
-    enum="D3D11LifetimeProgression" expires_after="2021-06-13">
+    enum="D3D11LifetimeProgression" expires_after="2021-08-15">
   <owner>liberato@chromium.org</owner>
   <owner>tmathmeyer@chromium.org</owner>
   <summary>
@@ -1304,8 +1321,40 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Media.D3D11.H264Status" enum="MediaStatusCode"
+    expires_after="2021-08-15">
+  <owner>liberato@chromium.org</owner>
+  <owner>tmathmeyer@chromium.org</owner>
+  <summary>
+    This records the media::StatusCode from the H264 accelerator. It is emitted
+    when the accelerator encounters an error during decoding.
+  </summary>
+</histogram>
+
+<histogram name="Media.D3D11.NotifyErrorStatus" enum="MediaStatusCode"
+    expires_after="2021-08-15">
+  <owner>liberato@chromium.org</owner>
+  <owner>tmathmeyer@chromium.org</owner>
+  <summary>
+    This records the media::StatusCode that was sent to NotifyError. kOk is not
+    recorded here. It is recorded when D3D11VideoDecoder reports an error to the
+    client. For decoder failures, an additional status code may be logged by the
+    accelerator -- see Media.D3D11{H264,VP9}Status for that.
+  </summary>
+</histogram>
+
+<histogram name="Media.D3D11.VP9Status" enum="MediaStatusCode"
+    expires_after="2021-08-15">
+  <owner>liberato@chromium.org</owner>
+  <owner>tmathmeyer@chromium.org</owner>
+  <summary>
+    This records the media::StatusCode from the VP9 accelerator. It is emitted
+    when the accelerator encounters an error during decoding.
+  </summary>
+</histogram>
+
 <histogram name="Media.D3D11.WasVideoSupported"
-    enum="D3D11VideoNotSupportedReason" expires_after="2021-06-13">
+    enum="D3D11VideoNotSupportedReason" expires_after="2021-08-15">
   <owner>liberato@chromium.org</owner>
   <owner>sandersd@chromium.org</owner>
   <owner>tmathmeyer@chromium.org</owner>
@@ -1393,6 +1442,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Media.DXVAVDA.DecoderLifetimeProgression"
+    enum="DXVALifetimeProgression" expires_after="2021-08-15">
+  <owner>liberato@chromium.org</owner>
+  <owner>tmathmeyer@chromium.org</owner>
+  <summary>
+    This enum allows us to count DXVAVideoDecoderWin specific crashes and
+    initialization failures. This is recorded whenever the decoder is
+    initialized or destroyed, or encounters an error.
+  </summary>
+</histogram>
+
 <histogram name="Media.DXVAVDA.PictureBufferMechanism"
     enum="PictureBufferMechanism" expires_after="2020-10-11">
   <owner>liberato@chromium.org</owner>
@@ -1405,7 +1465,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.DXVAVDA.UseD3D11" enum="DXVADXVersion"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>liberato@chromium.org</owner>
   <owner>tmathmeyer@chromium.org</owner>
   <owner>sandersd@chromium.org</owner>
@@ -1416,14 +1476,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Media.EME" enum="CdmPromiseResult"
-    expires_after="2021-05-07">
-  <owner>sandersd@chromium.org</owner>
+    expires_after="2022-05-07">
+  <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>Result of EME promises that were handled by Chromium code.</summary>
 </histogram>
 
 <histogram name="Media.EME.CdmFileIO.FileSizeKBOnError" units="KB"
-    expires_after="2021-05-07">
+    expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1434,7 +1494,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.CdmFileIO.FileSizeKBOnFirstRead" units="KB"
-    expires_after="2021-05-07">
+    expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1444,7 +1504,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Media.EME.CdmFileIO.TimeTo" units="ms"
-    expires_after="2021-05-07">
+    expires_after="2021-09-12">
   <owner>jrummell@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1454,7 +1514,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.CdmHostVerificationStatus"
-    enum="CdmHostVerificationStatus" expires_after="2021-05-07">
+    enum="CdmHostVerificationStatus" expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1463,7 +1523,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.CdmInterfaceVersion" enum="GenericEnum"
-    expires_after="2021-05-07">
+    expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1474,7 +1534,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.CdmLoadErrorCode" enum="WinGetLastError"
-    expires_after="2021-05-07">
+    expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1483,20 +1543,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.CdmLoadResult" enum="CdmLoadResult"
-    expires_after="2021-06-20">
+    expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>The result from an attempt to load a library CDM.</summary>
 </histogram>
 
-<histogram name="Media.EME.CdmLoadTime" units="ms" expires_after="2021-06-20">
+<histogram name="Media.EME.CdmLoadTime" units="ms" expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>The time spent to load a library CDM.</summary>
 </histogram>
 
 <histogram base="true" name="Media.EME.CreateCdm" enum="BooleanSuccess"
-    expires_after="2021-05-07">
+    expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1507,10 +1567,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Media.EME.CreateCdmTime" units="ms"
-    expires_after="2021-05-07">
+    expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>The time it takes to create the CDM instance.</summary>
+</histogram>
+
+<histogram base="true" name="Media.EME.CreateSession.SessionType"
+    enum="EmeSessionType" expires_after="2022-05-07">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>EME session type passed into CreateSession.</summary>
 </histogram>
 
 <histogram name="Media.EME.CrosCdmType" enum="CrosCdmType"
@@ -1533,7 +1600,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.EncryptedEvent" enum="BooleanEncryptedEvent"
-    expires_after="2021-05-07">
+    expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1546,7 +1613,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.EncryptedMediaEnabled" enum="BooleanEnabled"
-    expires_after="2021-05-07">
+    expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1558,7 +1625,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.EncryptionScheme.Initial.Audio"
-    enum="MediaEncryptionScheme" expires_after="2021-05-07">
+    enum="MediaEncryptionScheme" expires_after="2022-05-07">
   <owner>jrummell@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1568,7 +1635,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.EncryptionScheme.Initial.Video"
-    enum="MediaEncryptionScheme" expires_after="2021-05-07">
+    enum="MediaEncryptionScheme" expires_after="2022-05-07">
   <owner>jrummell@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1578,7 +1645,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.IsIncognito" enum="BooleanIncognito"
-    expires_after="2021-05-07">
+    expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1589,14 +1656,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Media.EME.KeyStatusSystemCode"
-    enum="CdmSystemCode" expires_after="2021-05-07">
+    enum="CdmSystemCode" expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>System code count associated with key status.</summary>
 </histogram>
 
 <histogram base="true" name="Media.EME.LibraryCdmAvailable"
-    enum="BooleanAvailable" expires_after="2021-05-07">
+    enum="BooleanAvailable" expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1608,7 +1675,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.MaxCdmProcessCount" units="processes"
-    expires_after="2021-05-07">
+    expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1619,7 +1686,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.MediaCryptoAvailable" enum="BooleanAvailable"
-    expires_after="2021-05-07">
+    expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1629,7 +1696,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.MediaDrm.GetOriginIdResult" enum="GetOriginIdResult"
-    expires_after="M90">
+    expires_after="2022-02-01">
   <owner>jrummell@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1641,7 +1708,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Media.EME.MediaDrm.PreprovisionedOriginId.NonPerAppProvisioningDevice"
-    units="units" expires_after="M90">
+    units="units" expires_after="2022-02-01">
   <owner>jrummell@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1652,7 +1719,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Media.EME.MediaDrm.PreprovisionedOriginId.PerAppProvisioningDevice"
-    units="units" expires_after="M90">
+    units="units" expires_after="2022-02-01">
   <owner>jrummell@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1662,7 +1729,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.MediaDrmBridge.KeySystemSupport"
-    enum="BooleanSupported" expires_after="2021-05-07">
+    enum="BooleanSupported" expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1672,7 +1739,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.MojoCdm.ConnectionError"
-    enum="BooleanConnectionError" expires_after="2021-05-07">
+    enum="BooleanConnectionError" expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1684,7 +1751,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.OutputProtection" enum="MediaOutputProtectionStatus"
-    expires_after="2021-05-07">
+    expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1704,8 +1771,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.RequestMediaKeySystemAccess"
-    enum="RequestMediaKeySystemAccessStatus" expires_after="2021-06-20">
-  <owner>sandersd@chromium.org</owner>
+    enum="RequestMediaKeySystemAccessStatus" expires_after="2022-05-07">
+  <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
     Key system support query status and result, as reported by
@@ -1715,21 +1782,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Media.EME.SystemCode" enum="CdmSystemCode"
-    expires_after="2021-05-07">
+    expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>System code count in promise rejection.</summary>
 </histogram>
 
 <histogram base="true" name="Media.EME.TimeTo" units="ms"
-    expires_after="2021-05-07">
+    expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>The time it takes to resolve a EME promise.</summary>
 </histogram>
 
 <histogram name="Media.EME.UrlProvisionFetcher.ResponseCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="M90">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-02-01">
   <owner>jrummell@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1739,7 +1806,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.EME.Widevine.VideoCapability.HasEmptyRobustness"
-    enum="BooleanEmpty" expires_after="2021-06-20">
+    enum="BooleanEmpty" expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1847,7 +1914,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Feeds.AggregateWatchtime" units="ms"
-    expires_after="2021-06-07">
+    expires_after="2021-08-09">
   <owner>beccahughes@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1858,7 +1925,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Feeds.Feed.ReadResult" enum="MediaFeedReadResult"
-    expires_after="2021-05-09">
+    expires_after="2021-08-09">
   <owner>beccahughes@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1921,7 +1988,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.GlobalMediaControls.DismissReason"
-    enum="GlobalMediaControlsDismissReason" expires_after="2021-06-20">
+    enum="GlobalMediaControlsDismissReason" expires_after="2021-08-22">
   <owner>steimel@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1931,8 +1998,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Media.GlobalMediaControls.EntryPoint"
+    enum="GlobalMediaControlsEntryPoint" expires_after="2022-02-01">
+  <owner>takumif@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Records the entry point whenever the user opens the Global Media Controls
+    UI.
+  </summary>
+</histogram>
+
 <histogram name="Media.GlobalMediaControls.InteractionDelayAfterPause"
-    units="ms" expires_after="2021-06-27">
+    units="ms" expires_after="2021-08-29">
   <owner>steimel@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1955,7 +2033,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.GlobalMediaControls.RepeatUsage" enum="BooleanIsRepeat"
-    expires_after="2021-06-20">
+    expires_after="2021-08-22">
   <owner>steimel@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1966,7 +2044,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.GlobalMediaControls.UserActionFocus"
-    enum="BooleanFocused" expires_after="2021-05-30">
+    enum="BooleanFocused" expires_after="2021-08-01">
   <owner>steimel@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1996,7 +2074,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.GpuMemoryBufferVideoFramePool.UnsupportedFormat"
-    enum="VideoPixelFormatUnion" expires_after="M82">
+    enum="VideoPixelFormatUnion" expires_after="2022-01-06">
   <owner>dcastagna@chromium.org</owner>
   <owner>mcasas@chromium.org</owner>
   <summary>
@@ -2040,7 +2118,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.HardwareKeyPressed" enum="MediaHardwareKeyAction"
-    expires_after="2021-06-27">
+    expires_after="2021-08-29">
   <owner>steimel@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -2062,7 +2140,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.HighLatencyAudioCaptureStartupSuccess"
-    enum="AudioCaptureStartupResult" expires_after="2021-05-30">
+    enum="AudioCaptureStartupResult" expires_after="2021-08-01">
   <owner>armax@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
@@ -2073,7 +2151,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.History.DatabaseSize" units="KB"
-    expires_after="2021-05-09">
+    expires_after="2021-08-09">
   <owner>beccahughes@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -2082,7 +2160,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.History.Init.Result" enum="MediaHistoryInitResult"
-    expires_after="2021-05-09">
+    expires_after="2021-08-09">
   <owner>beccahughes@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -2093,7 +2171,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.History.Init.ResultAfterDelete"
-    enum="MediaHistoryInitResult" expires_after="2021-05-09">
+    enum="MediaHistoryInitResult" expires_after="2021-08-09">
   <owner>beccahughes@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -2318,7 +2396,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.LinuxAudioIO" enum="LinuxAudioIO"
-    expires_after="2021-06-20">
+    expires_after="2021-08-22">
   <owner>dalecurtis@chromium.org</owner>
   <summary>
     Audio IO layer used by the Linux OS, sampled once at startup of the browser.
@@ -2326,7 +2404,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.LoadType" enum="MediaLoadType"
-    expires_after="2021-05-07">
+    expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -2375,7 +2453,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.LowLatencyAudioCaptureStartupSuccess"
-    enum="AudioCaptureStartupResult" expires_after="2021-05-30">
+    enum="AudioCaptureStartupResult" expires_after="2021-08-01">
   <owner>armax@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
@@ -2397,7 +2475,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.MeanTimeBetweenRebuffers" units="ms"
-    expires_after="2021-06-20">
+    expires_after="2021-08-22">
   <owner>dalecurtis@chromium.org</owner>
   <summary>
     The total watch time (see Media.WatchTime) of a given playback divided by
@@ -2406,7 +2484,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.MediaElement.ContentTypeParseable"
-    enum="ContentTypeParseableResult" expires_after="2021-05-07">
+    enum="ContentTypeParseableResult" expires_after="2021-07-27">
   <owner>jrummell@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -2516,7 +2594,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.MojoVideoDecoder.InitialPlaybackErrorCodecCounter"
-    units="instances" expires_after="2021-06-20">
+    units="instances" expires_after="2021-08-22">
   <owner>eugene@chromium.org</owner>
   <owner>liberato@chromium.org</owner>
   <summary>
@@ -2527,7 +2605,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.MojoVideoDecoder.InitialPlaybackSuccessCodecCounter"
-    units="instances" expires_after="2021-06-20">
+    units="instances" expires_after="2021-08-22">
   <owner>eugene@chromium.org</owner>
   <owner>liberato@chromium.org</owner>
   <summary>
@@ -2535,6 +2613,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     frame) when an instance of MojoVideoDecoder successfuly decode the first 150
     frames of a video stream.
   </summary>
+</histogram>
+
+<histogram name="Media.MojoVideoDecoderServiceTiming.{Impl}.{Method}"
+    units="ms" expires_after="M95">
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    The duration of MojoVideoDecoderService method calls. Recorded every call.
+  </summary>
+  <token key="Impl">
+    <variant name="Alternate"
+        summary="Timing for the kAlternate media::VideoDecoderImplementation."/>
+    <variant name="Default"
+        summary="Timing for the kDefault media::VideoDecoderImplementation."/>
+  </token>
+  <token key="Method">
+    <variant name="Construct" summary="The time taken for Construct()."/>
+    <variant name="Destruct" summary="Time time taken for destruction."/>
+  </token>
 </histogram>
 
 <histogram name="Media.MSE.AudioCodec" enum="MSECodec" expires_after="never">
@@ -2553,7 +2650,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Media.MSE.CodecChangeTime" units="ms"
-    expires_after="2021-05-30">
+    expires_after="2021-08-01">
   <owner>wolenetz@chromium.org</owner>
   <owner>sandersd@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
@@ -2575,7 +2672,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.MSE.DetectedShakaPackagerInMp4" enum="BooleanDetected"
-    expires_after="2021-06-20">
+    expires_after="2021-08-22">
   <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -2596,7 +2693,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.MSE.Mp4ConsecutiveEmptySamples" units="samples"
-    expires_after="2021-05-30">
+    expires_after="2021-08-01">
   <owner>wolenetz@chromium.org</owner>
   <owner>sandersd@chromium.org</owner>
   <summary>
@@ -2609,7 +2706,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.MSE.Mp4EmptySamplesInTRun" units="samples"
-    expires_after="2021-05-30">
+    expires_after="2021-08-01">
   <owner>wolenetz@chromium.org</owner>
   <owner>sandersd@chromium.org</owner>
   <summary>
@@ -2620,7 +2717,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.MSE.Mp4SampleSize" units="bytes"
-    expires_after="2021-05-30">
+    expires_after="2021-08-01">
   <owner>wolenetz@chromium.org</owner>
   <owner>sandersd@chromium.org</owner>
   <summary>
@@ -2631,7 +2728,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.MSE.Mp4TrunSampleCount" units="samples"
-    expires_after="2021-05-30">
+    expires_after="2021-08-01">
   <owner>wolenetz@chromium.org</owner>
   <owner>sandersd@chromium.org</owner>
   <summary>
@@ -2689,7 +2786,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Notification.ArtworkPresent" enum="Boolean"
-    expires_after="2021-06-20">
+    expires_after="2021-08-22">
   <owner>beccahughes@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -2735,14 +2832,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Media.Notification.Cast.StartStop"
+    enum="GlobalMediaControlsCastActionAndEntryPoint"
+    expires_after="2022-02-01">
+  <owner>takumif@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Recorded when the user starts or stops a Cast session. Records the action
+    and how the Global Media Controls UI was opened.
+  </summary>
+</histogram>
+
 <histogram name="Media.Notification.Cast.UserAction" enum="MediaSessionAction"
     expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
-    The action (e.g. pause) that a user clicked on a Cast media notification
-    (including ones for Cast sessions).
+    Records the type of the action (e.g. pause) whenever the user makes an
+    action on a Cast media notification. Starting and stopping casting is
+    recorded in Media.Notification.Cast.StartStop.
   </summary>
 </histogram>
 
@@ -2756,7 +2866,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Notification.Count" units="count"
-    expires_after="2021-06-20">
+    expires_after="2021-08-22">
   <owner>beccahughes@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -2767,7 +2877,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Notification.MetadataPresent"
-    enum="MediaNotificationMetadata" expires_after="2021-06-20">
+    enum="MediaNotificationMetadata" expires_after="2021-08-22">
   <owner>beccahughes@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -2778,7 +2888,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Notification.Source" enum="MediaNotificationSource"
-    expires_after="2021-04-18">
+    expires_after="2021-09-05">
   <owner>beccahughes@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -2789,7 +2899,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Notification.UserAction" enum="MediaSessionAction"
-    expires_after="2021-06-20">
+    expires_after="2021-08-22">
   <owner>beccahughes@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -2799,7 +2909,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.OutputStreamDuration" units="ms"
-    expires_after="2021-06-01">
+    expires_after="2021-08-01">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -2822,6 +2932,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Media.Pepper.PlayedSound" enum="Boolean"
     expires_after="2021-03-01">
+  <obsolete>
+    Deprecated as of 2021/01.
+  </obsolete>
   <owner>mlamouri@google.com</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -2870,7 +2983,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.PipelineStatus" enum="PipelineStatus"
-    expires_after="2021-06-20">
+    expires_after="2021-08-22">
   <owner>prabhur@chromium.org</owner>
   <owner>dalecurtis@chromium.org</owner>
   <summary>
@@ -2880,7 +2993,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.PipelineStatus.Start" enum="PipelineStatus"
-    expires_after="2021-05-07">
+    expires_after="2021-08-09">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -2942,7 +3055,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Remoting.AllowedByPage" enum="BooleanEnabled"
-    expires_after="2021-07-01">
+    expires_after="2021-09-05">
   <owner>miu@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
@@ -2968,7 +3081,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Remoting.AudioCodec" enum="AudioCodec"
-    expires_after="2021-07-01">
+    expires_after="2021-09-05">
   <owner>miu@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
@@ -2993,8 +3106,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Media.Remoting.Compatibility" enum="RemotingCompatibility"
+    expires_after="2022-02-01">
+  <owner>takumif@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Whether the given media is compatible with media remoting. Recorded whenever
+    the conditions are met to start remoting (e.g. the media element is the
+    dominant page content and is not paused).
+  </summary>
+</histogram>
+
 <histogram name="Media.Remoting.SessionDuration" units="ms"
-    expires_after="2021-07-01">
+    expires_after="2021-09-05">
   <owner>miu@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
@@ -3002,7 +3126,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Remoting.SessionStartTrigger"
-    enum="RemotingStartTrigger" expires_after="2021-07-01">
+    enum="RemotingStartTrigger" expires_after="2021-09-05">
   <owner>miu@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
@@ -3010,7 +3134,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Remoting.SessionStopTrigger" enum="RemotingStopTrigger"
-    expires_after="2021-07-01">
+    expires_after="2021-09-05">
 <!-- Name completed by histogram_suffixes name="RemotingSessionDuration" -->
 
   <owner>miu@chromium.org</owner>
@@ -3020,7 +3144,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Remoting.ShortSessionDuration" units="ms"
-    expires_after="2021-07-01">
+    expires_after="2021-09-05">
   <owner>miu@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
@@ -3041,7 +3165,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Remoting.TimeUntilRemoteInitialized" units="ms"
-    expires_after="2021-07-01">
+    expires_after="2021-09-05">
   <owner>miu@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
@@ -3052,7 +3176,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Remoting.TrackConfiguration"
-    enum="RemotingTrackConfiguration" expires_after="2021-07-01">
+    enum="RemotingTrackConfiguration" expires_after="2021-09-05">
   <owner>miu@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
@@ -3060,7 +3184,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Remoting.VideoAspectRatio" units="%"
-    expires_after="2021-07-01">
+    expires_after="2021-09-05">
   <owner>miu@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
@@ -3078,7 +3202,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Remoting.VideoCodec" enum="VideoCodec"
-    expires_after="2021-07-01">
+    expires_after="2021-09-05">
   <owner>miu@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
@@ -3086,7 +3210,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Remoting.VideoCodecProfile" enum="VideoCodecProfile"
-    expires_after="2021-07-01">
+    expires_after="2021-09-05">
   <owner>miu@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
@@ -3094,15 +3218,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Remoting.VideoNaturalWidth" units="pixels"
-    expires_after="2021-07-01">
+    expires_after="2021-09-05">
   <owner>miu@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Video width while remoting content.</summary>
 </histogram>
 
+<histogram name="Media.Remoting.VideoPixelRateSupport"
+    enum="RemotingVideoPixelRateSupport" expires_after="2022-02-01">
+  <owner>takumif@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Pixels-per-second in a video and whether the receiver supports its playback.
+    Recorded whenever we are about to start media remoting a video.
+  </summary>
+</histogram>
+
 <histogram name="Media.RtcLowLatencyVideoRenderer.AverageQueueLengthX10"
-    units="frames" expires_after="2021-05-31">
+    units="frames" expires_after="2021-08-09">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -3113,7 +3247,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.RtcLowLatencyVideoRenderer.DrainedFramesPermille"
-    units="permille" expires_after="2021-05-31">
+    units="permille" expires_after="2021-08-09">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -3124,7 +3258,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.RtcLowLatencyVideoRenderer.DroppedFramesPermille"
-    units="permille" expires_after="2021-05-31">
+    units="permille" expires_after="2021-08-09">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -3135,7 +3269,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.RtcLowLatencyVideoRenderer.EnterDrainModeCount"
-    units="count" expires_after="2021-05-31">
+    units="count" expires_after="2021-08-09">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -3156,7 +3290,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.RtcLowLatencyVideoRenderer.NoNewFrameToRenderPermille"
-    units="permille" expires_after="2021-05-31">
+    units="permille" expires_after="2021-08-09">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -3167,7 +3301,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.RtcLowLatencyVideoRenderer.ReduceSteadyStateCount"
-    units="count" expires_after="2021-05-31">
+    units="count" expires_after="2021-08-09">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -3178,7 +3312,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.RtcLowLatencyVideoRenderer.TotalFrames" units="frames"
-    expires_after="2021-05-31">
+    expires_after="2021-08-09">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -3189,7 +3323,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.RtcLowLatencyVideoRenderer.TryToRenderFrameCount"
-    units="count" expires_after="2021-05-31">
+    units="count" expires_after="2021-08-09">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -3233,7 +3367,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.RTCVideoDecoderInitializationLatencyMs" units="ms"
-    expires_after="2021-05-02">
+    expires_after="2021-09-12">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -3296,7 +3430,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Session.ActiveTime" units="ms"
-    expires_after="2021-06-01">
+    expires_after="2021-08-01">
   <owner>mlamouri@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -3309,7 +3443,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Session.Pause" enum="MediaSessionActionSource"
-    expires_after="2021-06-01">
+    expires_after="2021-08-01">
   <owner>mlamouri@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -3319,7 +3453,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Session.Play" enum="MediaSessionActionSource"
-    expires_after="2021-06-01">
+    expires_after="2021-08-01">
   <owner>mlamouri@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -3329,7 +3463,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Session.RequestAudioFocusResult" enum="BooleanSuccess"
-    expires_after="2021-06-01">
+    expires_after="2021-08-01">
   <owner>mlamouri@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -3338,7 +3472,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Session.Stop" enum="MediaSessionActionSource"
-    expires_after="2021-06-01">
+    expires_after="2021-08-01">
   <owner>mlamouri@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -3348,7 +3482,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Session.Suspended" enum="MediaSessionSuspendedSource"
-    expires_after="2021-06-01">
+    expires_after="2021-08-01">
   <owner>mlamouri@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -3532,6 +3666,31 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Size of HTML5 media (when known), in MB.</summary>
 </histogram>
 
+<histogram
+    name="Media.Ui.GetCurrentBrowsingContextMedia.ExplicitSelection.UserInteraction"
+    enum="GetCurrentBrowsingContextMediaExplicitSelectionUserInteraction"
+    expires_after="2022-01-01">
+  <owner>eladalon@chromium.org</owner>
+  <owner>guidou@chromium.org</owner>
+  <owner>agpalak@chromium.org</owner>
+  <summary>
+    Records the result of the user's interaction with the media picker dialog
+    which is displayed following a call to getCurrentBrowsingContextMedia. This
+    histogram refers to the explicit-selection variant of the dialog.
+  </summary>
+</histogram>
+
+<histogram name="Media.Ui.GetDisplayMedia.UserInteraction"
+    enum="GetDisplayMediaUserInteraction" expires_after="2022-01-01">
+  <owner>eladalon@chromium.org</owner>
+  <owner>guidou@chromium.org</owner>
+  <owner>agpalak@chromium.org</owner>
+  <summary>
+    Records the result of the user's interaction with the media picker dialog
+    which is displayed following a call to getDisplayMedia.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Media.UnderflowDuration2" units="ms"
     expires_after="never">
 <!-- expires-never: Media pipeline health metric. -->
@@ -3589,7 +3748,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.VAJDA.ResponseToClient"
-    enum="MjpegDecodeAcceleratorErrorCode" expires_after="2020-03-21">
+    enum="MjpegDecodeAcceleratorErrorCode" expires_after="2022-01-07">
   <owner>andrescj@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <summary>
@@ -3618,7 +3777,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Video.Autoplay" enum="AutoplaySource"
-    expires_after="2021-06-01">
+    expires_after="2021-08-01">
   <owner>mlamouri@google.com</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -3635,7 +3794,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Video.Autoplay.Muted.PlayMethod.BecomesVisible"
-    enum="Boolean" expires_after="2021-06-01">
+    enum="Boolean" expires_after="2021-08-01">
   <owner>mlamouri@google.com</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -3648,7 +3807,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Video.Autoplay.Muted.PlayMethod.OffscreenDuration"
-    units="ms" expires_after="2021-06-01">
+    units="ms" expires_after="2021-08-01">
   <owner>mlamouri@google.com</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -3658,7 +3817,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Video.Autoplay.Muted.UnmuteAction" enum="BooleanSuccess"
-    expires_after="2021-06-01">
+    expires_after="2021-08-01">
   <owner>mlamouri@google.com</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -3733,7 +3892,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Media.Video.Roughness" units="ms" expires_after="2021-05-09">
+<histogram name="Media.Video.Roughness" units="ms" expires_after="2021-09-12">
   <owner>eugene@chromium.org</owner>
   <owner>videostack-eng@chromium.org</owner>
   <summary>
@@ -3761,7 +3920,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.VideoCapture.DelayUntilFirstFrame" units="ms"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>guidou@chromium.org</owner>
   <owner>armax@chromium.org</owner>
   <summary>
@@ -3772,7 +3931,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.VideoCapture.Device.SupportedPixelFormat"
-    enum="VideoPixelFormatUnion" expires_after="M92">
+    enum="VideoPixelFormatUnion" expires_after="2021-08-09">
   <owner>eshr@google.com</owner>
   <owner>handellm@google.com</owner>
   <summary>
@@ -3784,7 +3943,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.VideoCapture.Device.SupportedResolution"
-    enum="VideoResolutionDesignation" expires_after="M92">
+    enum="VideoResolutionDesignation" expires_after="2021-08-09">
   <owner>eshr@google.com</owner>
   <owner>handellm@google.com</owner>
   <summary>
@@ -3797,7 +3956,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.VideoCapture.Error" enum="VideoCaptureError"
-    expires_after="2021-05-02">
+    expires_after="2021-09-05">
   <owner>mcasas@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>armax@chromium.org</owner>
@@ -3811,7 +3970,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.VideoCapture.FrameDrop"
-    enum="VideoCaptureFrameDropReason" expires_after="2021-05-02">
+    enum="VideoCaptureFrameDropReason" expires_after="2021-09-05">
   <owner>mcasas@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>armax@chromium.org</owner>
@@ -3828,7 +3987,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.VideoCapture.FrameRate" units="fps"
-    expires_after="2021-05-02">
+    expires_after="2021-09-05">
   <owner>mcasas@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>armax@chromium.org</owner>
@@ -3846,6 +4005,51 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Video Capture Device captured frame height in pixels. The collection is made
     in the VideoCaptureController upon reception of the first frame.
+  </summary>
+</histogram>
+
+<histogram name="Media.VideoCapture.Mac.Device.CapturedIOSurface"
+    enum="Boolean" expires_after="2021-08-09">
+  <owner>eshr@google.com</owner>
+  <owner>handellm@google.com</owner>
+  <summary>
+    A count of how often the capture device delivers an IOSurface to the capture
+    pipeline. This is recorded once per opening of the camera, when the first
+    video frame is captured.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.VideoCapture.Mac.Device.CapturedWithRequestedPixelFormat"
+    enum="Boolean" expires_after="2021-08-09">
+  <owner>eshr@google.com</owner>
+  <owner>handellm@google.com</owner>
+  <summary>
+    A boolean count of how often the requested pixel format is the one that was
+    actually captured. This is recorded once per opening of the camera, when the
+    first video frame is captured.
+  </summary>
+</histogram>
+
+<histogram name="Media.VideoCapture.Mac.Device.CapturedWithRequestedResolution"
+    enum="ResolutionComparison" expires_after="2021-08-09">
+  <owner>eshr@google.com</owner>
+  <owner>handellm@google.com</owner>
+  <summary>
+    An enumeration count of whether or not the requested resolution equals the
+    captured resolution, detailing which dimensions differ in the enum. This is
+    recorded once per opening of the camera, when the first video frame is
+    captured.
+  </summary>
+</histogram>
+
+<histogram name="Media.VideoCapture.Mac.Device.RequestedPixelFormat"
+    enum="VideoPixelFormatUnion" expires_after="2021-08-09">
+  <owner>eshr@google.com</owner>
+  <owner>handellm@google.com</owner>
+  <summary>
+    Counts the pixel formats requested by the VideoCaptureDevice on Mac. This is
+    recorded when the first video frame is captured.
   </summary>
 </histogram>
 
@@ -3914,6 +4118,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Media.VideoCapture.Start" enum="Boolean"
+    expires_after="2022-01-26">
+  <owner>toprice@chromium.org</owner>
+  <owner>guidou@chromium.org</owner>
+  <summary>
+    Counts the start attempts for video capture, to be compared with the
+    StartOutcome enum histogram.
+  </summary>
+</histogram>
+
+<histogram name="Media.VideoCapture.StartOutcome"
+    enum="VideoCaptureStartOutcome" expires_after="2022-01-26">
+  <owner>toprice@chromium.org</owner>
+  <owner>guidou@chromium.org</owner>
+  <summary>
+    Counts the times Starting video capture results in success or failure (due
+    to eg timeouts etc).
+  </summary>
+</histogram>
+
 <histogram name="Media.VideoCapture.Width" units="pixels" expires_after="M99">
   <owner>mcasas@chromium.org</owner>
   <owner>handellm@chromium.org</owner>
@@ -3953,9 +4177,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Media.VideoCapture.Windows.NumberOfRetriesNeededForMFGetDeviceStreamCategory"
-    units="retries" expires_after="2021-02-01">
+    units="retries" expires_after="2022-02-01">
   <owner>guidou@chromium.org</owner>
-  <owner>armax@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
   <summary>
     Counts how many retries are needed for calls to MediaFoundation function
     GetDeviceStreamCategory before getting a result different from
@@ -3965,9 +4189,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Media.VideoCapture.Windows.NumberOfRetriesNeededForMFGetDeviceStreamCount"
-    units="retries" expires_after="2021-02-01">
+    units="retries" expires_after="2022-02-01">
   <owner>guidou@chromium.org</owner>
-  <owner>armax@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
   <summary>
     Counts how many retries are needed for calls to MediaFoundation function
     GetDeviceStreamCount before getting a result different from
@@ -3989,8 +4213,32 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Measures the time taken for VideoCaptureManager::</summary>
 </histogram>
 
+<histogram name="Media.VideoCaptureManager.DeviceSessionLockDuration"
+    units="ms" expires_after="M95">
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Records the length of time the screen was locked while a device capture
+    session is active. An entry is recorded upon screen unlock or upon closure
+    of all active device capture sessions.
+  </summary>
+</histogram>
+
+<histogram name="Media.VideoCaptureManager.DeviceSessionWasLocked"
+    enum="Boolean" expires_after="M95">
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Indicates if a device capture session encountered a screen lock during its
+    lifetime. An entry is recorded once upon session closure.
+  </summary>
+</histogram>
+
 <histogram name="Media.VideoCaptureManager.Event" enum="VideoCaptureEvent"
     expires_after="M82">
+  <obsolete>
+    Expired in M82.
+  </obsolete>
   <owner>chfremer@chromium.org</owner>
   <owner>mcasas@chromium.org</owner>
   <summary>
@@ -4136,7 +4384,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Media.VideoHeight.Initial" units="pixels"
-    expires_after="2021-05-07">
+    expires_after="2021-08-22">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -4146,7 +4394,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.VideoPersistence.AttemptResult"
-    enum="VideoPersistenceAttemptResult" expires_after="M93">
+    enum="VideoPersistenceAttemptResult" expires_after="2021-09-19">
   <owner>mlamouri@google.com</owner>
   <owner>peconn@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
@@ -4157,7 +4405,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.VideoPersistence.ControlsType"
-    enum="VideoPersistenceControlsType" expires_after="M93">
+    enum="VideoPersistenceControlsType" expires_after="2021-09-19">
   <owner>mlamouri@google.com</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -4178,7 +4426,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.VideoPersistence.EndReason"
-    enum="VideoPersistenceEndReason" expires_after="M93">
+    enum="VideoPersistenceEndReason" expires_after="2021-09-19">
   <owner>mlamouri@google.com</owner>
   <owner>peconn@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
@@ -4201,7 +4449,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.VideoRenderer.LowDelay" enum="Boolean"
-    expires_after="2021-05-07">
+    expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -4258,7 +4506,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Media.WatchTime" units="ms" expires_after="2021-06-20">
+<histogram name="Media.WatchTime" units="ms" expires_after="2021-08-22">
   <owner>dalecurtis@chromium.org</owner>
   <summary>
     Watch time is defined as the amount of elapsed media time for audio+video
@@ -4442,7 +4690,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Cast.Channel.ConnectResult" enum="BooleanSuccess"
-    expires_after="2021-07-01">
+    expires_after="2021-09-05">
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4452,7 +4700,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Cast.Channel.Error"
-    enum="MediaRouterCastChannelError" expires_after="2021-07-01">
+    enum="MediaRouterCastChannelError" expires_after="2021-09-05">
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4463,7 +4711,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Cast.Discovery.CachedSinksAvailableCount"
-    units="devices" expires_after="2021-07-01">
+    units="devices" expires_after="2021-09-05">
   <owner>btolsch@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4473,7 +4721,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Cast.Discovery.ConnectedDevicesCount"
-    units="devices" expires_after="2021-07-01">
+    units="devices" expires_after="2021-09-05">
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4483,7 +4731,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Cast.Discovery.KnownDevicesCount" units="devices"
-    expires_after="2021-07-01">
+    expires_after="2021-09-05">
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4493,7 +4741,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Cast.Discovery.SinkSource"
-    enum="MediaRouterCastSinkSource" expires_after="2021-07-01">
+    enum="MediaRouterCastSinkSource" expires_after="2021-09-05">
   <owner>btolsch@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>The source of discovery for a newly-created Cast sink.</summary>
@@ -4510,7 +4758,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Cast.LaunchSessionResponse.AppType"
-    enum="MediaRouterResponseReceiverAppType" expires_after="2021-06-08">
+    enum="MediaRouterResponseReceiverAppType" expires_after="2021-08-09">
   <owner>muyaoxu@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4602,7 +4850,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.CastStreaming.Start.Failure"
-    enum="MirrorFailureType" expires_after="2021-06-06">
+    enum="MirrorFailureType" expires_after="2021-08-09">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4634,7 +4882,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.CastWebSenderExtensionLoaded"
-    enum="BooleanEnabled" expires_after="2021-04-04">
+    enum="BooleanEnabled" expires_after="2022-04-04">
   <owner>rwkeane@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4644,7 +4892,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Cloud.PrefAtDialogOpen" enum="BooleanEnabled"
-    expires_after="2021-02-01">
+    expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4654,7 +4902,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Cloud.PrefAtInit" enum="BooleanEnabled"
-    expires_after="2021-02-01">
+    expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4762,6 +5010,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="MediaRouter.NetworkMonitor.ConnectionType"
     enum="DiscoveryNetworkMonitorConnectionType" expires_after="2021-06-06">
+  <obsolete>
+    Unused after 2021-01-06.
+  </obsolete>
   <owner>btolsch@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4773,6 +5024,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="MediaRouter.NetworkMonitor.NetworkChangeEventDelta" units="ms"
     expires_after="2021-02-01">
+  <obsolete>
+    Unused after 2021-01-06.
+  </obsolete>
   <owner>btolsch@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4791,7 +5045,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.PresentationRequest.UrlBySink"
-    enum="PresentationUrlBySink" expires_after="2021-07-01">
+    enum="PresentationUrlBySink" expires_after="2021-09-05">
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4843,7 +5097,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Provider.Version" enum="MediaRouteProviderVersion"
-    expires_after="2021-02-01">
+    expires_after="2022-02-01">
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4853,7 +5107,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Provider.WakeReason"
-    enum="MediaRouteProviderWakeReason" expires_after="2021-05-16">
+    enum="MediaRouteProviderWakeReason" expires_after="2022-02-01">
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4862,7 +5116,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MediaRouter.Provider.Wakeup" enum="MediaRouteProviderWakeup"
-    expires_after="2021-02-01">
+    expires_after="2022-02-01">
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4975,6 +5229,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Counts the number of devices known and populated to the Media Router dialog
     three seconds after the dialog loads. Always expected to be non-negative.
+    This includes data recorded from Clank, which uses Android's MediaRouter
+    framework.
   </summary>
 </histogram>
 

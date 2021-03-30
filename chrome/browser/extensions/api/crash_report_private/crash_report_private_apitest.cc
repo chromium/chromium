@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_features.h"
 #include "base/system/sys_info.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
-#include "chrome/browser/chromeos/web_applications/system_web_app_integration_test.h"
+#include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/error_reporting/mock_chrome_js_error_report_processor.h"
 #include "chrome/browser/extensions/api/crash_report_private/crash_report_private_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/crash/content/browser/error_reporting/mock_crash_endpoint.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
@@ -119,8 +119,9 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, Basic) {
                    "\\d+&browser_"
                    "version=1.2.3.4&channel=Stable&"
                    "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2F&"
-                   "os=ChromeOS&os_version=7.20.1"
-                   "&prod=Chrome_ChromeOS&renderer_process_uptime_ms=\\d+&src="
+                   "os=ChromeOS"
+                   "&prod=Chrome_ChromeOS&renderer_process_uptime_ms=\\d+&"
+                   "source_system=crash_report_api&src="
                    "http%3A%2F%2Fwww.test."
                    "com%2F&type=JavascriptError&url=%2F&ver=1.2.3.4"));
   EXPECT_EQ(report->content, "");
@@ -151,9 +152,10 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, ExtraParamsAndStackTrace) {
                    "\\d+&browser_"
                    "version=1.2.3.4&channel=Stable&column=456&"
                    "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2Ffoo"
-                   "&line=123&os=ChromeOS&os_version=7.20.1"
+                   "&line=123&os=ChromeOS"
                    "&prod=Chrome%2520\\(Chrome%2520OS\\)&renderer_process_"
                    "uptime_ms=\\d+&"
+                   "source_system=crash_report_api&"
                    "src=http%3A%2F%2Fwww.test.com%2Ffoo&"
                    "type=JavascriptError&url=%2Ffoo&ver=1.0.0.0"));
   EXPECT_EQ(report->content, "   at <anonymous>:1:1");
@@ -182,8 +184,9 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, StackTraceWithErrorMessage) {
                    "\\d+&browser_version=1.2."
                    "3.4&channel=Stable&column=456&"
                    "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2Ffoo&"
-                   "line=123&os=ChromeOS&os_version=7.20.1"
-                   "&prod=TestApp&renderer_process_uptime_ms=\\d+&src=http%3A%"
+                   "line=123&os=ChromeOS"
+                   "&prod=TestApp&renderer_process_uptime_ms=\\d+&"
+                   "source_system=crash_report_api&src=http%3A%"
                    "2F%2Fwww.test.com%2Ffoo&type="
                    "JavascriptError&url=%2Ffoo&ver=1.0.0.0"));
   EXPECT_EQ(report->content, "");
@@ -215,8 +218,8 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, RedactMessage) {
           "3.4&channel=Stable&column=456&"
           "error_message=%5BMAC%20OUI%3D06%3A00%3A00%20IFACE%3D1%5D&"
           "full_url=http%3A%2F%2Fwww.test.com%2Ffoo&line=123&os=ChromeOS&"
-          "os_version=7.20.1"
-          "&prod=TestApp&renderer_process_uptime_ms=\\d+&src=http%3A%2F%2Fwww."
+          "prod=TestApp&renderer_process_uptime_ms=\\d+&"
+          "source_system=crash_report_api&src=http%3A%2F%2Fwww."
           "test.com%2Ffoo&type="
           "JavascriptError&url=%2Ffoo&ver=1.0.0.0"));
   EXPECT_EQ(report->content, "");
@@ -255,27 +258,6 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, SuppressedIfDevtoolsOpen) {
   ASSERT_FALSE(report);
 }
 
-// Ensures that reportError checks user consent for data collection on the
-// correct thread and correctly handles the case where consent is not given.
-IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, NoConsent) {
-  constexpr char kTestScript[] = R"(
-    chrome.crashReportPrivate.reportError({
-        message: "hi",
-        url: "http://www.test.com",
-      },
-      () => {
-        window.domAutomationController.send(chrome.runtime.lastError ?
-            chrome.runtime.lastError.message : "")
-      });
-  )";
-
-  crash_endpoint_->set_consented(false);
-  EXPECT_EQ("", ExecuteScriptInBackgroundPage(extension_->id(), kTestScript));
-  // The server should not receive any reports.
-  const base::Optional<MockCrashEndpoint::Report>& report = last_report();
-  EXPECT_FALSE(report);
-}
-
 // Test REGULAR_TABBED is detected when |CrashReportPrivate| is called from a
 // tab's |web_contents|.
 IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, CalledFromWebContentsInTab) {
@@ -306,8 +288,9 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, CalledFromWebContentsInTab) {
                    "\\d+&browser_"
                    "version=1.2.3.4&channel=Stable&"
                    "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2F&"
-                   "os=ChromeOS&os_version=7.20.1"
-                   "&prod=Chrome_ChromeOS&renderer_process_uptime_ms=\\d+&src="
+                   "os=ChromeOS"
+                   "&prod=Chrome_ChromeOS&renderer_process_uptime_ms=\\d+&"
+                   "source_system=crash_report_api&src="
                    "http%3A%2F%2Fwww.test."
                    "com%2F&type=JavascriptError&url=%2F&ver=1.2.3.4&window_"
                    "type=REGULAR_TABBED"));
@@ -356,8 +339,9 @@ IN_PROC_BROWSER_TEST_P(CrashReportPrivateCalledFromSwaTest,
                    "\\d+&browser_"
                    "version=1.2.3.4&channel=Stable&"
                    "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2F&"
-                   "os=ChromeOS&os_version=7.20.1"
-                   "&prod=Chrome_ChromeOS&renderer_process_uptime_ms=\\d+&src="
+                   "os=ChromeOS"
+                   "&prod=Chrome_ChromeOS&renderer_process_uptime_ms=\\d+&"
+                   "source_system=crash_report_api&src="
                    "http%3A%2F%2Fwww.test."
                    "com%2F&type=JavascriptError&url=%2F&ver=1.2.3.4&window_"
                    "type=WEB_APP"));
@@ -390,15 +374,16 @@ IN_PROC_BROWSER_TEST_P(CrashReportPrivateCalledFromSwaTest,
                    "\\d+&browser_"
                    "version=1.2.3.4&channel=Stable&"
                    "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2F&"
-                   "os=ChromeOS&os_version=7.20.1"
-                   "&prod=Chrome_ChromeOS&renderer_process_uptime_ms=\\d+&src="
+                   "os=ChromeOS"
+                   "&prod=Chrome_ChromeOS&renderer_process_uptime_ms=\\d+&"
+                   "source_system=crash_report_api&src="
                    "http%3A%2F%2Fwww.test."
                    "com%2F&type=JavascriptError&url=%2F&ver=1.2.3.4&window_"
                    "type=SYSTEM_WEB_APP"));
   EXPECT_EQ(report.content, "");
 }
 
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_WEB_APP_INFO_INSTALL_P(
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     CrashReportPrivateCalledFromSwaTest);
 
 }  // namespace extensions

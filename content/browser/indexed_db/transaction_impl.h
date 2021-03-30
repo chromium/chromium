@@ -6,12 +6,12 @@
 #define CONTENT_BROWSER_INDEXED_DB_TRANSACTION_IMPL_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string16.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
@@ -37,7 +37,7 @@ class TransactionImpl : public blink::mojom::IDBTransaction {
 
   // blink::mojom::IDBTransaction implementation
   void CreateObjectStore(int64_t object_store_id,
-                         const base::string16& name,
+                         const std::u16string& name,
                          const blink::IndexedDBKeyPath& key_path,
                          bool auto_increment) override;
   void DeleteObjectStore(int64_t object_store_id) override;

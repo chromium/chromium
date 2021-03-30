@@ -29,7 +29,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/arc/arc_util.h"
+#include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "components/arc/arc_prefs.h"
 #endif
@@ -101,7 +101,7 @@ AppManagementPageHandler::AppManagementPageHandler(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (arc::IsArcAllowedForProfile(profile_)) {
-    arc_app_list_prefs_observer_.Add(ArcAppListPrefs::Get(profile_));
+    arc_app_list_prefs_observation_.Observe(ArcAppListPrefs::Get(profile_));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }

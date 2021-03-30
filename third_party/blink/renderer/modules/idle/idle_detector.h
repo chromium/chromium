@@ -75,10 +75,7 @@ class IdleDetector final : public EventTargetWithInlineData,
 
   // Holds a pipe which the service uses to notify this object
   // when the idle state has changed.
-  HeapMojoReceiver<mojom::blink::IdleMonitor,
-                   IdleDetector,
-                   HeapMojoWrapperMode::kWithoutContextObserver>
-      receiver_;
+  HeapMojoReceiver<mojom::blink::IdleMonitor, IdleDetector> receiver_;
 };
 
 }  // namespace blink

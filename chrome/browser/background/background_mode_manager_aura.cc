@@ -13,7 +13,7 @@ void BackgroundModeManager::EnableLaunchOnStartup(bool should_launch) {
 }
 
 void BackgroundModeManager::DisplayClientInstalledNotification(
-    const base::string16& name) {
+    const std::u16string& name) {
   NOTIMPLEMENTED();
 }
 

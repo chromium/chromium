@@ -13,6 +13,8 @@
 #include "gpu/gpu_gles2_export.h"
 #include "third_party/skia/include/gpu/GrContextOptions.h"
 
+class GrDirectContext;
+
 namespace gpu {
 namespace raster {
 
@@ -56,6 +58,8 @@ class GPU_GLES2_EXPORT GrShaderCache
   size_t num_cache_entries() const { return store_.size(); }
   size_t curr_size_bytes_for_testing() const { return curr_size_bytes_; }
 
+  void StoreVkPipelineCacheIfNeeded(GrDirectContext* gr_context);
+
  private:
   static constexpr int32_t kInvalidClientId = 0;
 
@@ -83,7 +87,13 @@ class GPU_GLES2_EXPORT GrShaderCache
     bool operator==(const CacheData& other) const;
 
     sk_sp<SkData> data;
+
+    // Indicates that this cache entry needs to be written to the disk.
     bool pending_disk_write = true;
+
+    // Indicates that this cache entry was loaded from the disk and hasn't been
+    // read yet.
+    bool prefetched_but_not_read = false;
   };
 
   struct CacheKeyHash {
@@ -96,9 +106,11 @@ class GPU_GLES2_EXPORT GrShaderCache
 
   Store::iterator AddToCache(CacheKey key, CacheData data);
   template <typename Iterator>
-  void EraseFromCache(Iterator it);
+  void EraseFromCache(Iterator it, bool overwriting);
 
   void WriteToDisk(const CacheKey& key, CacheData* data);
+
+  bool IsVkPipelineCacheEntry(const CacheKey& key);
 
   size_t cache_size_limit_;
   size_t curr_size_bytes_ = 0u;
@@ -108,6 +120,9 @@ class GPU_GLES2_EXPORT GrShaderCache
   base::flat_set<int32_t> client_ids_to_cache_on_disk_;
 
   int32_t current_client_id_ = kInvalidClientId;
+
+  bool need_store_pipeline_cache_ = false;
+  const bool enable_vk_pipeline_cache_;
 
   DISALLOW_COPY_AND_ASSIGN(GrShaderCache);
 };

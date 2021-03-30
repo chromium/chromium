@@ -14,8 +14,8 @@
 // static
 void QuietNotificationPermissionUiState::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterListPref(prefs::kNotificationPermissionActions,
-                             PrefRegistry::LOSSY_PREF);
+  registry->RegisterDictionaryPref(prefs::kPermissionActions,
+                                   PrefRegistry::LOSSY_PREF);
   // TODO(crbug.com/1001857): Consider making this syncable.
   registry->RegisterBooleanPref(prefs::kEnableQuietNotificationPermissionUi,
                                 false /* default_value */);
@@ -31,6 +31,8 @@ void QuietNotificationPermissionUiState::RegisterProfilePrefs(
   registry->RegisterIntegerPref(
       prefs::kQuietNotificationPermissionUiEnablingMethod,
       static_cast<int>(EnablingMethod::kUnspecified));
+  registry->RegisterTimePref(prefs::kQuietNotificationPermissionUiDisabledTime,
+                             base::Time());
 }
 
 // static

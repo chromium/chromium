@@ -95,7 +95,7 @@ def main():
 
     open(args.output_file, 'wb').write(
         generate_gperf(gperf_path,
-                       open(infile).read(), gperf_args))
+                       open(infile).read(), gperf_args).encode('utf-8'))
 
 
 if __name__ == '__main__':

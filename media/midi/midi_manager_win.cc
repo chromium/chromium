@@ -24,7 +24,6 @@
 #include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
@@ -352,8 +351,7 @@ class MidiManagerWin::InPort final : public Port {
              caps.wMid,
              caps.wPid,
              caps.vDriverVersion,
-             base::WideToUTF8(
-                 base::string16(caps.szPname, wcslen(caps.szPname))),
+             base::WideToUTF8(std::wstring(caps.szPname, wcslen(caps.szPname))),
              caps.ManufacturerGuid),
         manager_(manager),
         in_handle_(kInvalidInHandle),
@@ -471,8 +469,7 @@ class MidiManagerWin::OutPort final : public Port {
              caps.wMid,
              caps.wPid,
              caps.vDriverVersion,
-             base::WideToUTF8(
-                 base::string16(caps.szPname, wcslen(caps.szPname))),
+             base::WideToUTF8(std::wstring(caps.szPname, wcslen(caps.szPname))),
              caps.ManufacturerGuid),
         software_(caps.wTechnology == MOD_SWSYNTH),
         out_handle_(kInvalidOutHandle) {}

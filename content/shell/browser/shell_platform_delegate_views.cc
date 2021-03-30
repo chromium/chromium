@@ -32,6 +32,8 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/test/desktop_test_views_delegate.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -73,11 +75,14 @@ namespace {
 // Maintain the UI controls and web view for content shell
 class ShellView : public views::View, public views::TextfieldController {
  public:
+  METADATA_HEADER(ShellView);
+
   enum UIControl { BACK_BUTTON, FORWARD_BUTTON, STOP_BUTTON };
 
   explicit ShellView(Shell* shell) : shell_(shell) { InitShellWindow(); }
-
-  ~ShellView() override {}
+  ShellView(const ShellView&) = delete;
+  ShellView& operator=(const ShellView&) = delete;
+  ~ShellView() override = default;
 
   // Update the state of UI controls
   void SetAddressBarURL(const GURL& url) {
@@ -161,7 +166,7 @@ class ShellView : public views::View, public views::TextfieldController {
       auto back_button = std::make_unique<views::MdTextButton>(
           base::BindRepeating(&Shell::GoBackOrForward,
                               base::Unretained(shell_.get()), -1),
-          base::ASCIIToUTF16("Back"));
+          u"Back");
       gfx::Size back_button_size = back_button->GetPreferredSize();
       toolbar_column_set->AddColumn(
           views::GridLayout::CENTER, views::GridLayout::CENTER, 0,
@@ -171,7 +176,7 @@ class ShellView : public views::View, public views::TextfieldController {
       auto forward_button = std::make_unique<views::MdTextButton>(
           base::BindRepeating(&Shell::GoBackOrForward,
                               base::Unretained(shell_.get()), 1),
-          base::ASCIIToUTF16("Forward"));
+          u"Forward");
       gfx::Size forward_button_size = forward_button->GetPreferredSize();
       toolbar_column_set->AddColumn(
           views::GridLayout::CENTER, views::GridLayout::CENTER, 0,
@@ -180,7 +185,7 @@ class ShellView : public views::View, public views::TextfieldController {
       // Refresh button
       auto refresh_button = std::make_unique<views::MdTextButton>(
           base::BindRepeating(&Shell::Reload, base::Unretained(shell_.get())),
-          base::ASCIIToUTF16("Refresh"));
+          u"Refresh");
       gfx::Size refresh_button_size = refresh_button->GetPreferredSize();
       toolbar_column_set->AddColumn(
           views::GridLayout::CENTER, views::GridLayout::CENTER, 0,
@@ -189,7 +194,7 @@ class ShellView : public views::View, public views::TextfieldController {
       // Stop button
       auto stop_button = std::make_unique<views::MdTextButton>(
           base::BindRepeating(&Shell::Stop, base::Unretained(shell_.get())),
-          base::ASCIIToUTF16("Stop"));
+          u"Stop");
       gfx::Size stop_button_size = stop_button->GetPreferredSize();
       toolbar_column_set->AddColumn(
           views::GridLayout::CENTER, views::GridLayout::CENTER, 0,
@@ -198,7 +203,7 @@ class ShellView : public views::View, public views::TextfieldController {
       toolbar_column_set->AddPaddingColumn(0, 2);
       // URL entry
       auto url_entry = std::make_unique<views::Textfield>();
-      url_entry->SetAccessibleName(base::ASCIIToUTF16("Enter URL"));
+      url_entry->SetAccessibleName(u"Enter URL");
       url_entry->set_controller(this);
       url_entry->SetTextInputType(ui::TextInputType::TEXT_INPUT_TYPE_URL);
       toolbar_column_set->AddColumn(views::GridLayout::FILL,
@@ -241,7 +246,7 @@ class ShellView : public views::View, public views::TextfieldController {
   }
   // Overridden from TextfieldController
   void ContentsChanged(views::Textfield* sender,
-                       const base::string16& new_contents) override {}
+                       const std::u16string& new_contents) override {}
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override {
     if (key_event.type() == ui::ET_KEY_PRESSED && sender == url_entry_ &&
@@ -287,7 +292,7 @@ class ShellView : public views::View, public views::TextfieldController {
   std::unique_ptr<Shell> shell_;
 
   // Window title
-  base::string16 title_;
+  std::u16string title_;
 
   // Toolbar view contains forward/backward/reload button and URL entry
   View* toolbar_view_ = nullptr;
@@ -300,9 +305,10 @@ class ShellView : public views::View, public views::TextfieldController {
   // Contents view contains the web contents view
   View* contents_view_ = nullptr;
   views::WebView* web_view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellView);
 };
+
+BEGIN_METADATA(ShellView, views::View)
+END_METADATA
 
 ShellView* ShellViewForWidget(views::Widget* widget) {
   return static_cast<ShellView*>(widget->widget_delegate()->GetContentsView());
@@ -425,7 +431,7 @@ void ShellPlatformDelegate::SetAddressBarURL(Shell* shell, const GURL& url) {
 void ShellPlatformDelegate::SetIsLoading(Shell* shell, bool loading) {}
 
 void ShellPlatformDelegate::SetTitle(Shell* shell,
-                                     const base::string16& title) {
+                                     const std::u16string& title) {
   DCHECK(base::Contains(shell_data_map_, shell));
   ShellData& shell_data = shell_data_map_[shell];
 

@@ -38,6 +38,7 @@ enum LoginAcceleratorAction {
   kEditDeviceRequisition,
   kDeviceRequisitionRemora,
   kStartDemoMode,
+  kLaunchDiagnostics,
 };
 
 struct LoginAcceleratorData {

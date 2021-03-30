@@ -67,6 +67,11 @@ class HeaderRewritingURLLoaderClient : public network::mojom::URLLoaderClient {
 
  private:
   // network::mojom::URLLoaderClient implementation:
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
+    DCHECK(url_loader_client_.is_bound());
+    url_loader_client_->OnReceiveEarlyHints(std::move(early_hints));
+  }
+
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head) override {
     DCHECK(url_loader_client_.is_bound());
@@ -147,7 +152,6 @@ class ServiceWorkerSubresourceLoader::StreamWaiter
 
 ServiceWorkerSubresourceLoader::ServiceWorkerSubresourceLoader(
     mojo::PendingReceiver<network::mojom::URLLoader> receiver,
-    int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const network::ResourceRequest& resource_request,
@@ -166,7 +170,6 @@ ServiceWorkerSubresourceLoader::ServiceWorkerSubresourceLoader(
       fetch_request_restarted_(false),
       body_reading_complete_(false),
       side_data_reading_complete_(false),
-      routing_id_(routing_id),
       request_id_(request_id),
       options_(options),
       traffic_annotation_(traffic_annotation),
@@ -237,7 +240,7 @@ void ServiceWorkerSubresourceLoader::DispatchFetchEvent() {
       // The controller was lost after this loader or its loader factory was
       // created.
       fallback_factory_->CreateLoaderAndStart(
-          url_loader_receiver_.Unbind(), routing_id_, request_id_, options_,
+          url_loader_receiver_.Unbind(), request_id_, options_,
           resource_request_, url_loader_client_.Unbind(), traffic_annotation_);
       delete this;
       return;
@@ -285,6 +288,33 @@ void ServiceWorkerSubresourceLoader::DispatchFetchEventForSubresource() {
   }
 
   auto params = blink::mojom::DispatchFetchEventParams::New();
+  auto* body = resource_request_.request_body.get();
+  network::DataElementChunkedDataPipe chunked_data_pipe;
+  if (body) {
+    auto& elements = *body->elements_mutable();
+
+    if (elements.size() > 0 &&
+        elements[0].type() == network::DataElement::Tag::kChunkedDataPipe) {
+      // The streaming body (i.e., body with null source in spec words) needs
+      // extra handling here because it is not copyable.
+      // Note: DataElementChunkedDataPipe can be used in `elements` only if
+      // `elements` consists of one element, as noted in url_loader.mojom.
+      //
+      // We swap `elements[0]` with an invalid endpoint, to allow network
+      // fallback.
+      // TODO(crbug.com/1165690): Ideally we should tee the stream, give one
+      // endpoint to the fetch handler and give another to the network service,
+      // as specified at https://github.com/whatwg/fetch/pull/1144.
+      chunked_data_pipe =
+          std::move(elements[0].As<network::DataElementChunkedDataPipe>());
+      mojo::PendingRemote<network::mojom::ChunkedDataPipeGetter> invalid_getter;
+      auto unused = invalid_getter.InitWithNewPipeAndPassReceiver();
+      elements[0] = network::DataElement(network::DataElementChunkedDataPipe(
+          std::move(invalid_getter),
+          network::DataElementChunkedDataPipe::ReadOnlyOnce(true)));
+    }
+  }
+
   params->request = blink::mojom::FetchAPIRequest::From(resource_request_);
   params->client_id = controller_connector_->client_id();
 
@@ -300,6 +330,11 @@ void ServiceWorkerSubresourceLoader::DispatchFetchEventForSubresource() {
       std::move(params), std::move(response_callback),
       base::BindOnce(&ServiceWorkerSubresourceLoader::OnFetchEventFinished,
                      weak_factory_.GetWeakPtr()));
+
+  if (chunked_data_pipe.chunked_data_pipe_getter()) {
+    (*resource_request_.request_body->elements_mutable())[0] =
+        network::DataElement(std::move(chunked_data_pipe));
+  }
 }
 
 void ServiceWorkerSubresourceLoader::OnFetchEventFinished(
@@ -422,8 +457,8 @@ void ServiceWorkerSubresourceLoader::OnFallback(
                               client.InitWithNewPipeAndPassReceiver());
 
   fallback_factory_->CreateLoaderAndStart(
-      url_loader_receiver_.Unbind(), routing_id_, request_id_, options_,
-      resource_request_, std::move(client), traffic_annotation_);
+      url_loader_receiver_.Unbind(), request_id_, options_, resource_request_,
+      std::move(client), traffic_annotation_);
 
   // Per spec, redirects after this point are not intercepted by the service
   // worker again (https://crbug.com/517364). So this loader is done.
@@ -460,9 +495,6 @@ void ServiceWorkerSubresourceLoader::StartResponse(
   }
 
   ServiceWorkerLoaderHelpers::SaveResponseInfo(*response, response_head_.get());
-  ServiceWorkerLoaderHelpers::SaveResponseHeaders(
-      response->status_code, response->status_text, response->headers,
-      response_head_.get());
   response_head_->response_start = base::TimeTicks::Now();
   response_head_->load_timing.receive_headers_start = base::TimeTicks::Now();
   response_head_->load_timing.receive_headers_end =
@@ -562,7 +594,7 @@ void ServiceWorkerSubresourceLoader::CommitResponseBody(
 void ServiceWorkerSubresourceLoader::CommitEmptyResponseAndComplete() {
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
-  if (CreateDataPipe(nullptr, &producer_handle, &consumer_handle) !=
+  if (CreateDataPipe(nullptr, producer_handle, consumer_handle) !=
       MOJO_RESULT_OK) {
     CommitCompleted(net::ERR_INSUFFICIENT_RESOURCES);
     return;
@@ -675,7 +707,19 @@ void ServiceWorkerSubresourceLoader::FollowRedirect(
       TRACE_ID_WITH_SCOPE(kServiceWorkerSubresourceLoaderScope,
                           TRACE_ID_LOCAL(request_id_)),
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "new_url",
-      redirect_info_->new_url.spec());
+      redirect_info_ ? redirect_info_->new_url.spec() : "(none)");
+
+  // In rare cases, the client seems to call FollowRedirect() when we aren't
+  // expecting it. Just complete with error if we have not already completed.
+  // https://crbug.com/1162035
+  if (!redirect_info_) {
+    if (status_ != Status::kCompleted)
+      CommitCompleted(net::ERR_INVALID_REDIRECT);
+    return;
+  }
+
+  DCHECK_EQ(status_, Status::kSentRedirect);
+
   // TODO(arthursonzogni, juncai): This seems to be correctly implemented, but
   // not used so far. Add tests and remove this DCHECK to support this feature
   // if needed. See https://crbug.com/845683.
@@ -684,7 +728,6 @@ void ServiceWorkerSubresourceLoader::FollowRedirect(
          "https://crbug.com/845683";
   DCHECK(!new_url.has_value()) << "Redirect with modified url was not "
                                   "supported yet. crbug.com/845683";
-  DCHECK(redirect_info_);
 
   bool should_clear_upload = false;
   net::RedirectUtil::UpdateHttpRequest(
@@ -830,7 +873,6 @@ void ServiceWorkerSubresourceLoaderFactory::AddPendingWorkerTimingReceiver(
 
 void ServiceWorkerSubresourceLoaderFactory::CreateLoaderAndStart(
     mojo::PendingReceiver<network::mojom::URLLoader> receiver,
-    int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const network::ResourceRequest& resource_request,
@@ -841,7 +883,7 @@ void ServiceWorkerSubresourceLoaderFactory::CreateLoaderAndStart(
   // the request, passes the request to the fallback factory, and
   // destructs itself (while the loader client continues to work).
   new ServiceWorkerSubresourceLoader(
-      std::move(receiver), routing_id, request_id, options, resource_request,
+      std::move(receiver), request_id, options, resource_request,
       std::move(client), traffic_annotation, controller_connector_,
       fallback_factory_, task_runner_, weak_factory_.GetWeakPtr());
 }

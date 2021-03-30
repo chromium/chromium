@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verifies that RequestHTMLView's iframe src is URI encoded`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   const dataUrl = `data:text/html,<body><p>octothorp: #</p><p>hello world!<p>%3Cp%3EURI%20encoded%20tag!%3C%2Fp%3E</body>`;

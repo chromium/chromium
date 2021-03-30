@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_MACHINE_LEARNING_USER_SETTINGS_EVENT_LOGGER_H_
 #define ASH_SYSTEM_MACHINE_LEARNING_USER_SETTINGS_EVENT_LOGGER_H_
 
+#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/shell_observer.h"
 #include "ash/system/bluetooth/tray_bluetooth_helper.h"
@@ -13,7 +14,6 @@
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
-#include "chromeos/audio/cras_audio_handler.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 
@@ -29,7 +29,7 @@ static constexpr base::TimeDelta kSliderDelay = base::TimeDelta::FromSeconds(1);
 // This class handles logging for settings changes that are initiated by the
 // user from the quick settings tray. Exported for tests.
 class ASH_EXPORT UserSettingsEventLogger
-    : public chromeos::CrasAudioHandler::AudioObserver,
+    : public CrasAudioHandler::AudioObserver,
       public chromeos::PowerManagerClient::Observer,
       public ShellObserver,
       public VideoDetector::Observer {
@@ -65,7 +65,7 @@ class ASH_EXPORT UserSettingsEventLogger
   void LogAccessibilityUkmEvent(UserSettingsEvent::Event::AccessibilityId id,
                                 bool enabled);
 
-  // chromeos::CrasAudioHandler::AudioObserver overrides:
+  // CrasAudioHandler::AudioObserver overrides:
   void OnOutputNodeVolumeChanged(uint64_t node, int volume) override;
   void OnOutputMuteChanged(bool mute_on) override;
   void OnOutputStarted() override;

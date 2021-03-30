@@ -204,7 +204,8 @@ TEST_P(WaitableEventWatcherTest, StartWatchingInCallback) {
   RunLoop().Run();
 }
 
-TEST_P(WaitableEventWatcherTest, MultipleWatchersManual) {
+// Disabled due to flakes; see https://crbug.com/1188547.
+TEST_P(WaitableEventWatcherTest, DISABLED_MultipleWatchersManual) {
   test::TaskEnvironment task_environment(GetParam());
 
   WaitableEvent event(WaitableEvent::ResetPolicy::MANUAL,

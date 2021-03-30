@@ -34,22 +34,7 @@ void TutorialServiceImpl::GetTutorials(MultipleItemCallback callback) {
 
 void TutorialServiceImpl::GetTutorial(FeatureType feature_type,
                                       SingleItemCallback callback) {
-  tutorial_manager_->GetTutorials(base::BindOnce(
-      &TutorialServiceImpl::OnGetTutorials, weak_ptr_factory_.GetWeakPtr(),
-      std::move(callback), feature_type));
-}
-
-void TutorialServiceImpl::OnGetTutorials(SingleItemCallback callback,
-                                         FeatureType feature_type,
-                                         std::vector<Tutorial> tutorials) {
-  for (const Tutorial& tutorial : tutorials) {
-    if (tutorial.feature == feature_type) {
-      std::move(callback).Run(tutorial);
-      return;
-    }
-  }
-
-  std::move(callback).Run(base::nullopt);
+  tutorial_manager_->GetTutorial(feature_type, std::move(callback));
 }
 
 void TutorialServiceImpl::StartFetchIfNecessary() {
@@ -85,6 +70,12 @@ void TutorialServiceImpl::OnFetchFinished(
 
 const std::vector<std::string>& TutorialServiceImpl::GetSupportedLanguages() {
   return tutorial_manager_->GetSupportedLanguages();
+}
+
+const std::vector<std::string>&
+TutorialServiceImpl::GetAvailableLanguagesForTutorial(
+    FeatureType feature_type) {
+  return tutorial_manager_->GetAvailableLanguagesForTutorial(feature_type);
 }
 
 base::Optional<std::string> TutorialServiceImpl::GetPreferredLocale() {

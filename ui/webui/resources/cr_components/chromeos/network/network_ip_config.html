@@ -23,7 +23,7 @@
           managedProperties.ipAddressConfigType)]]">
       </cr-policy-indicator>
       <cr-toggle id="autoConfigIpToggle" checked="{{automatic_}}"
-          disabled="[[!canChangeIPConfigType_(managedProperties)]]"
+          disabled="[[!canChangeIPConfigType_(managedProperties, disabled)]]"
           on-change="onAutomaticChange_"
           aria-labelledby="autoIPConfigLabel">
       </cr-toggle>
@@ -31,10 +31,12 @@
     <template is="dom-if" if="[[hasIpConfigFields_(ipConfig_)]]">
       <div class="property-box single-column indented stretch">
         <network-property-list-mojo fields="[[ipConfigFields_]]"
+            all-fields-read-only="[[automatic_]]"
             property-dict="[[ipConfig_]]"
             edit-field-types="[[getIPEditFields_(automatic_,
                 managedProperties)]]"
-            on-property-change="onIPChange_">
+            on-property-change="onIPChange_"
+            disabled="[[disabled]]">
         </network-property-list-mojo>
       </div>
     </template>

@@ -32,8 +32,10 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Promise;
 import org.chromium.base.UserDataHost;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabImpl;
@@ -83,6 +85,8 @@ public final class PageViewObserverTest {
     private WindowAndroid mWindowAndroid;
     @Mock
     private ChromeActivity mChromeActivity;
+    @Mock
+    private Supplier<TabContentManager> mTabContentManagerSupplier;
     @Captor
     private ArgumentCaptor<TabObserver> mTabObserverCaptor;
     @Captor
@@ -232,7 +236,7 @@ public final class PageViewObserverTest {
         doReturn(STARTING_URL).when(mTab).getUrl();
         doReturn(true).when(mSuspensionTracker).isWebsiteSuspended(STARTING_FQDN);
         observer.notifySiteSuspensionChanged(STARTING_FQDN, true);
-        assertTrue(SuspendedTab.from(mTab).isShowing());
+        assertTrue(SuspendedTab.from(mTab, mTabContentManagerSupplier).isShowing());
         reset(mEventTracker);
 
         onHidden(mTab, TabHidingType.ACTIVITY_HIDDEN);
@@ -301,7 +305,7 @@ public final class PageViewObserverTest {
         doReturn(true).when(mSuspensionTracker).isWebsiteSuspended(STARTING_FQDN);
         didAddTab(mTab2, TabLaunchType.FROM_EXTERNAL_APP);
 
-        assertEquals(SuspendedTab.from(mTab2).getFqdn(), STARTING_FQDN);
+        assertEquals(SuspendedTab.from(mTab2, mTabContentManagerSupplier).getFqdn(), STARTING_FQDN);
     }
 
     @Test
@@ -338,7 +342,7 @@ public final class PageViewObserverTest {
         doReturn(true).when(mSuspensionTracker).isWebsiteSuspended(DIFFERENT_FQDN);
         updateUrl(mTab, DIFFERENT_URL);
 
-        SuspendedTab suspendedTab = SuspendedTab.from(mTab);
+        SuspendedTab suspendedTab = SuspendedTab.from(mTab, mTabContentManagerSupplier);
         assertEquals(suspendedTab.getFqdn(), DIFFERENT_FQDN);
     }
 
@@ -351,7 +355,7 @@ public final class PageViewObserverTest {
         doReturn(true).when(mSuspensionTracker).isWebsiteSuspended(DIFFERENT_FQDN);
         updateUrl(mTab, DIFFERENT_URL);
 
-        SuspendedTab suspendedTab = SuspendedTab.from(mTab);
+        SuspendedTab suspendedTab = SuspendedTab.from(mTab, mTabContentManagerSupplier);
         assertTrue(suspendedTab.isShowing());
 
         updateUrl(mTab, STARTING_URL);
@@ -365,11 +369,11 @@ public final class PageViewObserverTest {
 
         doReturn(STARTING_URL).when(mTab).getUrl();
         observer.notifySiteSuspensionChanged(STARTING_FQDN, true);
-        assertTrue(SuspendedTab.from(mTab).isShowing());
+        assertTrue(SuspendedTab.from(mTab, mTabContentManagerSupplier).isShowing());
 
         // Trying to suspend the site again shouldn't have an effect.
         observer.notifySiteSuspensionChanged(STARTING_FQDN, true);
-        assertTrue(SuspendedTab.from(mTab).isShowing());
+        assertTrue(SuspendedTab.from(mTab, mTabContentManagerSupplier).isShowing());
     }
 
     @Test
@@ -380,7 +384,7 @@ public final class PageViewObserverTest {
         doReturn(STARTING_URL).when(mTab).getUrl();
         observer.notifySiteSuspensionChanged(STARTING_FQDN, true);
 
-        SuspendedTab suspendedTab = SuspendedTab.from(mTab);
+        SuspendedTab suspendedTab = SuspendedTab.from(mTab, mTabContentManagerSupplier);
         assertEquals(STARTING_FQDN, suspendedTab.getFqdn());
 
         doReturn(true).when(mSuspensionTracker).isWebsiteSuspended(DIFFERENT_FQDN);
@@ -397,7 +401,7 @@ public final class PageViewObserverTest {
         doReturn(STARTING_URL).when(mTab).getUrl();
         observer.notifySiteSuspensionChanged(STARTING_FQDN, true);
 
-        SuspendedTab suspendedTab = SuspendedTab.from(mTab);
+        SuspendedTab suspendedTab = SuspendedTab.from(mTab, mTabContentManagerSupplier);
         assertTrue(suspendedTab.isShowing());
 
         doReturn(false).when(mSuspensionTracker).isWebsiteSuspended(STARTING_FQDN);
@@ -413,7 +417,7 @@ public final class PageViewObserverTest {
         doReturn(STARTING_URL).when(mTab).getUrl();
         observer.notifySiteSuspensionChanged(STARTING_FQDN, true);
 
-        SuspendedTab suspendedTab = SuspendedTab.from(mTab);
+        SuspendedTab suspendedTab = SuspendedTab.from(mTab, mTabContentManagerSupplier);
         assertTrue(suspendedTab.isShowing());
 
         observer.notifySiteSuspensionChanged(STARTING_FQDN, false);
@@ -432,7 +436,7 @@ public final class PageViewObserverTest {
         doReturn(STARTING_URL).when(mTab).getUrl();
         observer.notifySiteSuspensionChanged(STARTING_FQDN, true);
 
-        SuspendedTab suspendedTab = SuspendedTab.from(mTab);
+        SuspendedTab suspendedTab = SuspendedTab.from(mTab, mTabContentManagerSupplier);
         assertTrue(suspendedTab.isShowing());
 
         doReturn(true).when(mSuspensionTracker).isWebsiteSuspended(DIFFERENT_FQDN);
@@ -450,7 +454,7 @@ public final class PageViewObserverTest {
         updateUrl(mTab, STARTING_URL);
 
         observer.notifySiteSuspensionChanged(STARTING_FQDN, false);
-        assertFalse(SuspendedTab.from(mTab).isShowing());
+        assertFalse(SuspendedTab.from(mTab, mTabContentManagerSupplier).isShowing());
     }
 
     @Test
@@ -509,8 +513,8 @@ public final class PageViewObserverTest {
     }
 
     private PageViewObserver createPageViewObserver() {
-        PageViewObserver observer = new PageViewObserver(
-                mActivity, mTabModelSelector, mEventTracker, mTokenTracker, mSuspensionTracker);
+        PageViewObserver observer = new PageViewObserver(mActivity, mTabModelSelector,
+                mEventTracker, mTokenTracker, mSuspensionTracker, mTabContentManagerSupplier);
         verify(mTabModel, times(1)).addObserver(mTabModelObserverCaptor.capture());
         if (mTabModelSelector.getCurrentTab() != null) {
             verify(mTabModelSelector.getCurrentTab(), times(1))

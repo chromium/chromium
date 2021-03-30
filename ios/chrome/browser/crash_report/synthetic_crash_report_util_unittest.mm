@@ -40,6 +40,7 @@ TEST_F(SyntheticCrashReportUtilTest, CreateSyntheticCrashReportForUte) {
   NSString* const kOSVersion = @"OSVersion";
   previous_session.OSVersion = kOSVersion;
   previous_session.terminatedDuringSessionRestoration = YES;
+  previous_session.applicationWillTerminateWasReceived = YES;
   NSString* const kURL = @"URL";
   previous_session.reportParameters = @{@"url" : kURL};
   previous_session.sessionStartTime = [NSDate date];
@@ -109,7 +110,7 @@ TEST_F(SyntheticCrashReportUtilTest, CreateSyntheticCrashReportForUte) {
 
   // Verify config file content. Config file has the following format:
   // <Key1>\n<Value1Length>\n<Value1>\n...<KeyN>\n<ValueNLength>\n<ValueN>
-  ASSERT_EQ(58U, config_lines.size())
+  ASSERT_EQ(61U, config_lines.size())
       << "<content>" << config_content << "</content>";
 
   EXPECT_EQ("MinidumpDir", config_lines[0]);
@@ -202,6 +203,11 @@ TEST_F(SyntheticCrashReportUtilTest, CreateSyntheticCrashReportForUte) {
   EXPECT_EQ(base::NumberToString(base::NumberToString(kMemoryFootprint).size()),
             config_lines[56]);
   EXPECT_EQ(base::NumberToString(kMemoryFootprint), config_lines[57]);
+
+  EXPECT_EQ("BreakpadServerParameterPrefix_crashed_after_app_will_terminate",
+            config_lines[58]);
+  EXPECT_EQ(base::NumberToString(strlen(kYesString)), config_lines[59]);
+  EXPECT_EQ(kYesString, config_lines[60]);
 
   // Read minidump file. It must be empty as there is no stack trace, but
   // Breakpad will not upload config without minidump file.

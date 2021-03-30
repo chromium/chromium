@@ -79,7 +79,7 @@
       {
         "id": "SwitchAccessMenuAction",
         "type": "string",
-        "enum": [ "copy", "cut", "decrement", "dictation", "endTextSelection", "increment", "jumpToBeginningOfText", "jumpToEndOfText", "keyboard", "leftClick", "moveBackwardOneCharOfText", "moveBackwardOneWordOfText", "moveCursor", "moveDownOneLineOfText", "moveForwardOneCharOfText", "moveForwardOneWordOfText", "moveUpOneLineOfText", "paste", "pointScan", "rightClick", "scrollDown", "scrollLeft", "scrollRight", "scrollUp", "select", "settings", "startTextSelection" ],
+        "enum": [ "copy", "cut", "decrement", "dictation", "endTextSelection", "increment", "itemScan", "jumpToBeginningOfText", "jumpToEndOfText", "keyboard", "leftClick", "moveBackwardOneCharOfText", "moveBackwardOneWordOfText", "moveCursor", "moveDownOneLineOfText", "moveForwardOneCharOfText", "moveForwardOneWordOfText", "moveUpOneLineOfText", "paste", "pointScan", "rightClick", "scrollDown", "scrollLeft", "scrollRight", "scrollUp", "select", "settings", "startTextSelection" ],
         "description": "Available actions to be shown in the Switch Access menu. Must be kept in sync with the strings in ash/system/accessibility/switch_access_menu_view.cc"
       },
       {
@@ -234,6 +234,13 @@
         "description": "Actions that can be performed in the Select-to-speak panel."
       }
     ],
+    "properties": {
+      "IS_DEFAULT_EVENT_SOURCE_TOUCH": {
+        "type": "integer",
+        "value": 0,
+        "description": "Property to indicate whether event source should default to touch."
+      }
+    },
     "functions": [
       {
         "name": "getDisplayNameForLocale",
@@ -586,6 +593,36 @@
             "type": "number",
             "description": "Current reading speed (TTS speech rate).",
             "optional": true
+          }
+        ],
+        "platforms": ["chromeos"]
+      },
+      {
+        "name": "showConfirmationDialog",
+        "type": "function",
+        "description": "Shows a confirmation dialog.",
+        "parameters": [
+          {
+            "name": "title",
+            "type": "string",
+            "description": "The title of the confirmation dialog."
+          },
+          {
+            "name": "description",
+            "type": "string",
+            "description": "The description to show within the confirmation dialog."
+          },
+          {
+            "name": "callback",
+            "type": "function",
+            "description": "Called when the dialog is confirmed or cancelled.",
+            "parameters": [
+              {
+                "type": "boolean",
+                "name": "confirmed",
+                "description": "True if the dialog was confirmed, false if it was canceled or closed."
+              }
+            ]
           }
         ],
         "platforms": ["chromeos"]

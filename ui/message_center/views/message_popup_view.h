@@ -5,7 +5,7 @@
 #ifndef UI_MESSAGE_CENTER_VIEWS_MESSAGE_POPUP_VIEW_H_
 #define UI_MESSAGE_CENTER_VIEWS_MESSAGE_POPUP_VIEW_H_
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -21,8 +21,12 @@ class Notification;
 class MESSAGE_CENTER_EXPORT MessagePopupView : public views::WidgetDelegateView,
                                                public views::WidgetObserver {
  public:
+  METADATA_HEADER(MessagePopupView);
+
   MessagePopupView(const Notification& notification,
                    MessagePopupCollection* popup_collection);
+  MessagePopupView(const MessagePopupView&) = delete;
+  MessagePopupView& operator=(const MessagePopupView&) = delete;
   ~MessagePopupView() override;
 
   // Update notification contents to |notification|. Virtual for unit testing.
@@ -54,7 +58,6 @@ class MESSAGE_CENTER_EXPORT MessagePopupView : public views::WidgetDelegateView,
   void OnMouseExited(const ui::MouseEvent& event) override;
   void ChildPreferredSizeChanged(views::View* child) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  const char* GetClassName() const override;
   void OnDisplayChanged() override;
   void OnWorkAreaChanged() override;
   void OnFocus() override;
@@ -70,7 +73,7 @@ class MESSAGE_CENTER_EXPORT MessagePopupView : public views::WidgetDelegateView,
 
  protected:
   // For unit testing.
-  MessagePopupView(MessagePopupCollection* popup_collection);
+  explicit MessagePopupView(MessagePopupCollection* popup_collection);
 
  private:
   // True if the view has a widget and the widget is not closed.
@@ -86,9 +89,8 @@ class MESSAGE_CENTER_EXPORT MessagePopupView : public views::WidgetDelegateView,
   bool is_hovered_ = false;
   bool is_active_ = false;
 
-  ScopedObserver<views::Widget, views::WidgetObserver> observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MessagePopupView);
+  base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
+      this};
 };
 
 }  // namespace message_center

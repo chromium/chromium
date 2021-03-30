@@ -132,6 +132,8 @@ std::unique_ptr<base::DictionaryValue> BuildTargetDescriptor(
 
 std::unique_ptr<base::DictionaryValue> BuildTargetDescriptor(
     content::RenderViewHost* rvh) {
+  TRACE_EVENT1("accessibility", "BuildTargetDescriptor", "render_view_host",
+               rvh);
   content::WebContents* web_contents =
       content::WebContents::FromRenderViewHost(rvh);
   ui::AXMode accessibility_mode;
@@ -604,8 +606,7 @@ void AccessibilityUIMessageHandler::RequestWebContentsTree(
       content::WebContents::FromRenderViewHost(rvh);
   // No matter the state of the current web_contents, we want to force the mode
   // because we are about to show the accessibility tree
-  web_contents->SetAccessibilityMode(
-      ui::AXMode(ui::AXMode::kNativeAPIs | ui::AXMode::kWebContents));
+  web_contents->SetAccessibilityMode(ui::AXMode(ui::kAXModeBasic));
   // Enable AXMode to access to AX objects.
   ui::AXPlatformNode::NotifyAddAXModeFlags(ui::kAXModeComplete);
 

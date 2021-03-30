@@ -56,17 +56,30 @@
   <message name="IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_TITLE" desc="Name of the setting to enable Live Caption feature.">
     Live Caption
   </message>
-  <message name="IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE" desc="Description text for Live Caption feature. When media is playing (such as a video) the user will see captions on the screen. Only works in Chrome browser initially.">
-    Automatically creates captions for media in Chrome browser (currently available in English only)
-  </message>
+  <if expr="chromeos">
+    <message name="IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE_ENGLISH_ONLY" desc="Description text for Live Caption feature. When audio or video is playing, the user will see captions on the screen. Only works in Chrome browser initially. Currently only works for English media.">
+      Automatically creates captions for media in Chrome browser (currently available in English). Audio and captions are processed locally and never leave the device.
+    </message>
+    <message name="IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE" desc="Description text for Live Caption feature. When audio or video is playing, the user will see captions on the screen. Only works in Chrome browser initially.">
+      Automatically creates captions for media in Chrome browser. Audio and captions are processed locally and never leave the device.
+    </message>
+  </if>
+  <if expr="not chromeos">
+    <message name="IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE_ENGLISH_ONLY" desc="Description text for Live Caption feature. When audio or video is playing, the user will see captions on the screen. Currently only works for English media.">
+      Automatically creates captions for English audio and video. Audio and captions never leave your device.
+    </message>
+    <message name="IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE" desc="Description text for Live Caption feature. When audio or video is playing, the user will see captions on the screen.">
+      Automatically creates captions for audio and video. Audio and captions never leave your device.
+    </message>
+  </if>
   <message name="IDS_SETTINGS_CAPTIONS_LIVE_CAPTION_DOWNLOAD_PROGRESS" desc="Download progress indicator after Live Caption is enabled. The user needs to download certain files for the feature to work.">
     Downloading speech recognition files... <ph name="PERCENT">$1<ex>17</ex></ph>%
   </message>
   <message name="IDS_SETTINGS_CAPTIONS_LIVE_CAPTION_DOWNLOAD_COMPLETE" desc="Success message when Live Caption files have completed downloading.">
-    Speech recognition files downloaded
+    Speech files downloaded
   </message>
   <message name="IDS_SETTINGS_CAPTIONS_LIVE_CAPTION_DOWNLOAD_ERROR" desc="Error message when Live Caption files can’t be downloaded.">
-    The required files can't be downloaded. Try again later.
+    Can't download speech files. Try again later.
   </message>
   <message name="IDS_SETTINGS_ENABLE_CARET_BROWSING_TITLE" desc="Name of the setting to enable Caret Browsing, which allows you to move around any web page using a text caret.">
     Navigate pages with a text cursor
@@ -252,6 +265,9 @@
   </message>
   <message name="IDS_SETTINGS_AUTOFILL_ADDRESSES_EMAIL" desc="This is the label for the field that lets a user modify the email address that will be used when auto-filling forms on the web.">
     Email
+  </message>
+  <message name="IDS_SETTINGS_AUTOFILL_ADDRESS_HONORIFIC_LABEL" desc="This is the label for the field that lets the user modify their honorific for an address. A honorific is an optional, title like Mr, Dr, etc, which can accompany one's name.">
+    Title
   </message>
   <message name="IDS_SETTINGS_AUTOFILL_CREDIT_CARD_TYPE_COLUMN_LABEL" desc="Label for the column containing the type of credit card that is saved. The type is in the format: `Visa ****1234`.">
     Type
@@ -669,7 +685,7 @@
 
 
   <!-- Default Browser Page -->
-  <if expr="not chromeos">
+  <if expr="not chromeos and not lacros">
     <message name="IDS_SETTINGS_DEFAULT_BROWSER" desc="Name of the Default Browser page, which allows users to set which browser will open .html files within the OS.">
       Default browser
     </message>
@@ -985,11 +1001,6 @@
     Notifications will be disabled
   </message>
 
-  <!-- Printing (used by OS Settings page) -->
-  <message name="IDS_SETTINGS_PRINTING" desc="Title of the printing page and navigation item to get there.">
-    Printing
-  </message>
-
   <!-- Downloads Page -->
   <message name="IDS_SETTINGS_DOWNLOADS" desc="Name of the settings page which displays download preferences.">
     Downloads
@@ -1095,6 +1106,12 @@
   <message name="IDS_SETTINGS_LANGUAGES_TRANSLATE_TARGET" desc="The label under a language's name in a list of enabled languages indicating that pages will be translated to this language.">
     This language is used when translating pages
   </message>
+  <message name="IDS_SETTINGS_LANGUAGES_MANAGED_DIALOG_TITLE" desc="Title text for the dialog informing users that the language they tried modifying is managed.">
+    Language is set by your Organization
+  </message>
+  <message name="IDS_SETTINGS_LANGUAGES_MANAGED_DIALOG_BODY" desc="Body text for the dialog informing users that the language they tried modifying is managed.">
+    Your administrator has set a default language which cannot be modified.
+  </message>
   <if expr="chromeos">
     <message name="IDS_SETTINGS_LANGUAGES_KEYBOARD_APPS" desc="Title for the list of keyboard apps installed via Play Store by the user.">
       Keyboard apps
@@ -1167,16 +1184,58 @@
   <message name="IDS_SETTINGS_PRIVACY" desc="Name of the settings page which allows users to modify privacy and security settings.">
     Privacy and security
   </message>
+  <message name="IDS_SETTINGS_PRIVACY_V2" desc="Name of the settings page which allows users to modify privacy and security settings.">
+    Security and Privacy
+  </message>
   <message name="IDS_SETTINGS_PRIVACY_MORE" desc="Label on the expansion button to show more privacy settings.">
     More
   </message>
 
   <!-- Privacy Sandbox -->
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_TITLE" desc="The title of the Privacy Sandbox page">
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_TITLE" desc="The title of the Privacy Sandbox page. 'Privacy Sandbox' is a noun phrase (title case).">
     Privacy Sandbox
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_HEADING" desc="The heading displayed at the top of the Privacy Sandbox page">
-    The Privacy Sandbox
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_HEADING" desc="The heading displayed at the top of the Privacy Sandbox page. 'Privacy Sandbox' is a noun phrase (title case).">
+    About Privacy Sandbox
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_EXPLANATION1" desc="Part 1 of the explanation of the Privacy Sandbox, shown on the Privacy Sandbox Page.">
+    Privacy Sandbox is an ongoing initiative to preserve the open web that will help safeguard you from tracking mechanisms.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_EXPLANATION2" desc="Part 2 of the explanation of the Privacy Sandbox, shown on the Privacy Sandbox Page.">
+    Today, websites rely on many technologies, like third-party cookies, for important services like showing relevant ads and measuring a site’s performance.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_EXPLANATION3" desc="Part 3 of the explanation of the Privacy Sandbox, shown on the Privacy Sandbox Page.">
+    Privacy Sandbox preserves the vitality of the open web by creating better ways to perform these services—without breaking sites, and while preventing you from being surreptitiously tracked across the web.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_EXPLANATION4" desc="Part 4 of the explanation of the Privacy Sandbox, shown on the Privacy Sandbox Page. The 'Learn more' link navigates the user to a page with more details.">
+    Privacy Sandbox is still in active development and is available in selected regions. For now, sites may try out Privacy Sandbox while continuing to use current web technologies like third-party cookies. <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_SETTING_TITLE" desc="Title of the description of the setting to enable or disable the Privacy Sandbox.">
+    Privacy Sandbox trials
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_SETTING_EXPLANATION1" desc="Part 1 of the explanation of the setting to enable or disable the Privacy Sandbox.">
+    When enabled, sites may use the privacy-preserving techniques shown here to provide their content and services. These include alternatives to cross-site tracking. More trials may be added over time.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_SETTING_EXPLANATION2" desc="Part 2 of the explanation of the setting to enable or disable the Privacy Sandbox.">
+    Advertisers can learn when thousands of users share a similar interest—like a crowd at a concert—and select ads for the crowd, rather than an individual person.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_SETTING_EXPLANATION3" desc="Part 3 of the explanation of the setting to enable or disable the Privacy Sandbox.">
+    Advertisers can study the effectiveness of ads in a way that does not track you across sites.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_DETAILS" desc="Label of a button in the Privacy Sandbox page that leads the user to more details about the Privacy Sandbox.">
+    Details
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_TRIALS_ENABLED" desc="A short description that informs the user that the Privacy Sandbox trial features are enabled.">
+    Trial features are on
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_TRIALS_DISABLED" desc="A short description that informs the user that the Privacy Sandbox trial features are disabled.">
+    Trial features are off
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_COOKIES_DIALOG" desc="Text of a dialog shown to users when they interacted with cookies to make them aware of the Privacy Sandbox.">
+    Learn about and control new technologies that aim to replace third-party cookies
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_COOKIES_DIALOG_MORE" desc="Label on the button in the dialog shown to users when they interacted with cookies to make them aware of the Privacy Sandbox.">
+    More
   </message>
 
   <!-- Safety check -->
@@ -1227,6 +1286,9 @@
   </message>
   <message name="IDS_SETTINGS_SAFETY_CHECK_PARENT_BUTTON_ARIA_LABEL" desc="Accessibility text for the button with which the user can quickly check whether their safety-related settings are fully protecting them.">
     Run safety check now
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_CHECK_PARENT_RUN_AGAIN_BUTTON_ARIA_LABEL" desc="Accessibility text for the button with which the user can run the safety check again.">
+    Run safety check again
   </message>
   <message name="IDS_SETTINGS_SAFETY_CHECK_ICON_RUNNING_ARIA_LABEL" desc="Accessibility text for a safety check child icon, that indicates that the child check is running.">
     Running
@@ -1384,6 +1446,9 @@
   <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_DESC" desc="Description of safe browsing enhanced protection mode">
     Faster, proactive protection against dangerous websites, downloads, and extensions. Warns you about password breaches. Requires browsing data to be sent to Google.
   </message>
+  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_EXPAND_ACCESSIBILITY_LABEL" desc="Label for the button that toggles showing the detailed description of safe browsing enhanced protection. Only visible by screen reader software.">
+    Show enhanced protection details
+  </message>
   <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_BULLET_ONE" desc="First bullet point under the safe browsing enhanced protection mode">
     Predicts and warns you about dangerous events before they happen
   </message>
@@ -1404,6 +1469,9 @@
   </message>
   <message name="IDS_SETTINGS_SAFEBROWSING_STANDARD_DESC" desc="Description for safe browsing standard protection mode">
     Standard protection against websites, downloads, and extensions that are known to be dangerous.
+  </message>
+  <message name="IDS_SETTINGS_SAFEBROWSING_STANDARD_EXPAND_ACCESSIBILITY_LABEL" desc="Label for the button that toggles showing the detailed description of safe browsing standard protection. Only visible by screen reader software.">
+    Show standard protection details
   </message>
   <message name="IDS_SETTINGS_SAFEBROWSING_STANDARD_BULLET_ONE" desc="First bullet point under the safe browsing standard protection mode">
     Detects and warns you about dangerous events when they happen
@@ -1537,44 +1605,32 @@
   <message name="IDS_SETTINGS_RECENT_PERMISSIONS_NO_CHANGES" desc="Text shown to a user when they have not changed any site permissions instead of showing recently changed permissions">
     No recently changed permissions
   </message>
-  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_CHANGE_AUTOBLOCKED_SENTENCE_START" desc="An indicator that a specific permission has been automatically blocked by the browser, This will be used to start a sentence or by itself">
-    Automatically blocked <ph name="PERMISSION">$1<ex>Notifications</ex></ph>
+  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_ALLOWED_ONE_ITEM" desc="Indicates that the user recently allowed one permission for a website.">
+    Allowed <ph name="PERMISSION">$1<ex>location</ex></ph>
   </message>
-  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_CHANGE_BLOCKED_SENTENCE_START" desc="An indicator that a specific permission has been blocked for a website by the user. This will be used to start a sentence or by itself">
-    Blocked <ph name="PERMISSION">$1<ex>Location</ex></ph>
+  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_ALLOWED_TWO_ITEMS" desc="Indicates that the user recently allowed two permissions for a website.">
+    Allowed <ph name="PERMISSION_1">$1<ex>location</ex></ph>, <ph name="PERMISSION_2">$2<ex>notifications</ex></ph>
   </message>
-  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_CHANGE_ALLOWED_SENTENCE_START" desc="An indicator that a specific permission has been allowed for a website by the user. This will be used to start a sentence or by itself">
-    Allowed <ph name="PERMISSION">$1<ex>Camera</ex></ph>
+  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_ALLOWED_MORE_THAN_TWO_ITEMS" desc="Indicates that the user recently allowed more than two permissions for a website.">
+    Allowed <ph name="PERMISSION">$1<ex>location</ex></ph> and <ph name="COUNT">$2<ex>2</ex></ph> more
   </message>
-  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_CHANGE_AUTOBLOCKED" desc="An indicator that a specific permission has been automatically blocked by the browser, This will be used inside a sentance">
-    automatically blocked <ph name="PERMISSION">$1<ex>Notifications</ex></ph>
+  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_AUTOMATICALLY_BLOCKED_ONE_ITEM" desc="Indicates that recently a permission for a website has been automatically blocked by the browser">
+    Automatically blocked <ph name="PERMISSION">$1<ex>location</ex></ph>
   </message>
-  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_CHANGE_BLOCKED" desc="An indicator that a specific permission has been blocked for a website by the user. This will be used inside a sentance">
-    blocked <ph name="PERMISSION">$1<ex>Location</ex></ph>
+  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_AUTOMATICALLY_BLOCKED_TWO_ITEMS" desc="Indicates that recently two permissions for a website have been automatically blocked by the browser">
+    Automatically blocked <ph name="PERMISSION_1">$1<ex>location</ex></ph>, <ph name="PERMISSION_2">$2<ex>notifications</ex></ph>
   </message>
-  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_CHANGE_ALLOWED" desc="An indicator that a specific permission has been allowed for a website by the user. This will be used inside of a sentance">
-    allowed <ph name="PERMISSION">$1<ex>Camera</ex></ph>
+  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_AUTOMATICALLY_BLOCKED_MORE_THAN_TWO_ITEMS" desc="Indicates that recently more than two permissions for a website have been automatically blocked by the browser">
+    Automatically blocked <ph name="PERMISSION">$1<ex>location</ex></ph> and <ph name="COUNT">$2<ex>2</ex></ph> more
   </message>
-  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_TWO_ITEMS" desc="A list containing two permissions which have recently changed">
-    <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START">$1<ex>Automatically blocked Notifications</ex></ph>, <ph name="RECENT_PERMISSIONS_CHANGE">$2<ex>blocked Location</ex></ph>
+  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_BLOCKED_ONE_ITEM" desc="Indicates that the user recently blocked one permission for a website.">
+    Blocked <ph name="PERMISSION">$1<ex>location</ex></ph>
   </message>
-  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_THREE_ITEMS" desc="A list containing three permissions which have recently changed">
-    <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START">$1<ex>Automatically blocked Notifications</ex></ph>, <ph name="RECENT_PERMISSIONS_CHANGE_1">$2<ex>blocked Location</ex></ph>, <ph name="RECENT_PERMISSIONS_CHANGE_2">$3<ex>allowed Camera</ex></ph>
+  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_BLOCKED_TWO_ITEMS" desc="Indicates that the user recently blocked two permissions for a website.">
+    Blocked <ph name="PERMISSION_1">$1<ex>location</ex></ph>, <ph name="PERMISSION_2">$2<ex>notifications</ex></ph>
   </message>
-  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_OVER_THREE_ITEMS" desc="A list containing three permissions that have recently changed, but indicating that more have also changed recently">
-    <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START">$1<ex>Automatically blocked Notifications</ex></ph>, <ph name="RECENT_PERMISSIONS_CHANGE_1">$2<ex>blocked Location</ex></ph>, <ph name="RECENT_PERMISSIONS_CHANGE_2">$3<ex>allowed Camera</ex></ph>, and more
-  </message>
-  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_ONE_ITEM_INCOGNITO" desc="A list containing a single permission which has recently changed in the users incognito session">
-    Current incognito session: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START">$1<ex>automatically blocked Notifications</ex></ph>
-  </message>
-  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_TWO_ITEMS_INCOGNITO" desc="A list containing two permissions which have recently changed in the users incognito session">
-    Current incognito session: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START">$1<ex>automatically blocked Notifications</ex></ph>, <ph name="RECENT_PERMISSIONS_CHANGE_1">$2<ex>blocked Location</ex></ph>
-  </message>
-  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_THREE_ITEMS_INCOGNITO" desc="A list containing three permissions which have recently changed in the users incognito session">
-    Current incognito session: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START">$1<ex>automatically blocked Notifications</ex></ph>, <ph name="RECENT_PERMISSIONS_CHANGE_1">$2<ex>blocked Location</ex></ph>, <ph name="RECENT_PERMISSIONS_CHANGE_2">$3<ex>allowed Camera</ex></ph>
-  </message>
-  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_OVER_THREE_ITEMS_INCOGNITO" desc="A list containing three permissions that have recently changed, but indicating that more have also changed recently">
-    Current incognito session: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START">$1<ex>automatically blocked Notifications</ex></ph>, <ph name="RECENT_PERMISSIONS_CHANGE_1">$2<ex>blocked Location</ex></ph>, <ph name="RECENT_PERMISSIONS_CHANGE_2">$3<ex>allowed Camera</ex></ph>, and more
+  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_BLOCKED_MORE_THAN_TWO_ITEMS" desc="Indicates that the user recently allowed more than two permissions for a website.">
+    Blocked <ph name="PERMISSION">$1<ex>location</ex></ph> and <ph name="COUNT">$2<ex>2</ex></ph> more
   </message>
 
   <!-- Reset Settings Page -->
@@ -1733,7 +1789,7 @@
     Sites can ask to track your camera position
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_AR_BLOCKED" desc="Label for the disabled option of the augmented reality content setting.">
-    Block sites from tracking your camera position
+    Don't allow sites to track your camera position
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_AR_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the augmented reality content setting.">
     Allowed to track your camera position
@@ -1748,7 +1804,7 @@
     Sites can ask to automatically download multiple files (recommended)
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_AUTOMATIC_DOWNLOADS_BLOCKED" desc="Label for the disabled option of the automatic downloads content setting.">
-    Block sites from automatically downloading multiple files
+    Don't allow sites to automatically download multiple files
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_AUTOMATIC_DOWNLOADS_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the automatic downloads content setting.">
     Allowed to automatically download multiple files
@@ -1757,19 +1813,28 @@
     Not allowed to automatically download multiple files
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_BACKGROUND_SYNC_DESCRIPTION" desc="Description of the background sync content setting.">
-    After you leave or go offline, sites usually keep syncing to finish tasks, like uploading photos or sending a chat message
+    After you leave a site, it can keep syncing to finish tasks, like uploading photos or sending a chat message
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_BACKGROUND_SYNC_ALLOWED" desc="Label for the enabled option of the background sync content setting.">
     Recently closed sites can finish sending and receiving data (recommended)
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_BACKGROUND_SYNC_BLOCKED" desc="Label for the disabled option of the background sync content setting.">
-    Block closed sites from sending and receiving data
+    Don't allow closed sites to finish sending or receiving data
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_BACKGROUND_SYNC_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the background sync content setting.">
     Allowed to finish sending and receiving data
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_BACKGROUND_SYNC_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the background sync content setting.">
     Not allowed to finish sending or receiving data
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_DEVICES_DESCRIPTION" desc="Description of the bluetooth devices site setting.">
+    Sites usually connect to Bluetooth devices for features like setting up or syncing a low-energy beacon, a health or fitness tracker, or a smart light bulb
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_DEVICES_ALLOWED" desc="Label for the enabled option of bluetooth devices site setting.">
+    Sites can ask to connect to Bluetooth devices
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_DEVICES_BLOCKED" desc="Label for the disabled option of the bluetooth devices site setting.">
+    Don't allow sites to connect to Bluetooth devices
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CAMERA_DESCRIPTION" desc="Description of the camera content setting.">
     Sites usually use your video camera for communication features like video chatting
@@ -1778,7 +1843,7 @@
     Sites can ask to use your camera (recommended)
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CAMERA_BLOCKED" desc="Label for the disabled option of the camera content setting.">
-    Block sites from using your camera
+    Don't allow sites to use your camera
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CAMERA_BLOCKED_SUB_LABEL" desc="Sub-label for the disabled option of the camera content setting.">
     Features that need a camera won't work
@@ -1796,7 +1861,7 @@
     Sites can ask to see text and images on your clipboard
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CLIPBOARD_BLOCKED" desc="Label for the disabled option of the clipboard content setting.">
-    Block sites from seeing text and images on your clipboard
+    Don't allow sites to see text or images on your clipboard
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CLIPBOARD_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the clipboard content setting.">
     Allowed to see your clipboard
@@ -1804,17 +1869,95 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_CLIPBOARD_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the clipboard content setting.">
     Not allowed to see your clipboard
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_DEVICE_USE_DESCRIPTION" desc="Description of the device use content setting.">
+    Sites usually detect when you're actively using your device to set your availability on chat apps
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_DEVICE_USE_ALLOWED" desc="Label for the enabled option of the device use content setting.">
+    Sites can ask to know when you're actively using your device
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_DEVICE_USE_BLOCKED" desc="Label for the disabled option of the device use content setting.">
+    Don't allow sites to know when you're actively using your device
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_DEVICE_USE_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the device use content setting.">
+    Allowed to know when you're actively using your device
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_DEVICE_USE_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the device use content setting.">
+    Not allowed to know when you're actively using your device
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_WRITE_DESCRIPTION" desc="Description of the file system write content setting.">
     Sites usually access files and folders on your device for features like automatically saving your work
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_WRITE_ALLOWED" desc="Label for the enabled option of the file system write content setting.">
-    Sites can ask to edit files or folders on your device (recommended)
+    Sites can ask to edit files and folders on your device (recommended)
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_WRITE_BLOCKED" desc="Label for the disabled option of the file system write content setting.">
-    Block sites from editing files and folders on your device
+    Don't allow sites to edit files or folders on your device
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_WRITE_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the file system write content setting.">
-    Not allowed to edit files and folders on your device
+    Not allowed to edit files or folders on your device
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FONTS_DESCRIPTION" desc="Description of the fonts content setting.">
+    Sites usually use your fonts so you can create high-fidelity content with online design and graphics tools
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FONTS_ALLOWED" desc="Label for the enabled option of the fonts content setting.">
+    Sites can ask to use fonts installed on your device
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FONTS_BLOCKED" desc="Label for the disabled option of the fonts content setting.">
+    Don't allow sites to use fonts installed on your device
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FONTS_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the fonts content setting.">
+    Allowed to use fonts installed on your device
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FONTS_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the fonts content setting.">
+    Not allowed to use fonts installed on your device
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_HID_DEVICES_DESCRIPTION" desc="Description of the hid devices site setting.">
+    Sites usually connect to HID devices for features that use uncommon keyboards, game controllers, and other devices
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_HID_DEVICES_ALLOWED" desc="Label for the enabled option of hid devices site setting.">
+    Sites can ask to connect to HID devices
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_HID_DEVICES_BLOCKED" desc="Label for the disabled option of the hid devices site setting.">
+    Don't allow sites to connect to HID devices
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_IMAGES_DESCRIPTION" desc="Description of the images content setting.">
+    Sites usually show images to provide illustration, like photos for online stores or news articles
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_IMAGES_ALLOWED" desc="Label for the enabled option of the images content setting.">
+    Sites can show images (recommended)
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_IMAGES_BLOCKED" desc="Label for the disabled option of the images content setting.">
+    Don't allow sites to show images
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_IMAGES_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the images content setting.">
+    Allowed to show images
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_IMAGES_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the images content setting.">
+    Not allowed to show images
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_INSECURE_CONTENT_DESCRIPTION" desc="Label explaining the insecure content content setting. Insecure content refers to content served over HTTP, secure sites refers to sites served over HTTPS.">
+    Secure sites might embed content like images or web frames that aren't secure
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_INSECURE_CONTENT_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the insecure content content setting.">
+    Allowed to show insecure content
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_INSECURE_CONTENT_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the insecure content content setting.">
+    Not allowed to show insecure content
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_DESCRIPTION" desc="Description of the Javascript content setting.">
+    Sites usually use Javascript to display interactive features, like video games or web forms
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_ALLOWED" desc="Label for the enabled option of the Javascript content setting.">
+    Sites can use Javascript (recommended)
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_BLOCKED" desc="Label for the disabled option of the Javascript content setting.">
+    Don't allow sites to use Javascript
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the Javascript content setting.">
+    Allowed to use Javascript
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the Javascript content setting.">
+    Not allowed to use Javascript
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_LOCATION_DESCRIPTION" desc="Description of the location content setting.">
     Sites usually use your location for relevant features or info, like local news or nearby shops
@@ -1823,7 +1966,7 @@
     Sites can ask for your location (recommended)
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_LOCATION_BLOCKED" desc="Label for the disabled option of the location content setting.">
-    Block sites from seeing your location
+    Don't allow sites to see your location
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_LOCATION_BLOCKED_SUB_LABEL" desc="Sub-label for the disabled option of the location content setting.">
     Features that need your location won't work
@@ -1834,36 +1977,6 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_LOCATION_BLOCKED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the blocked content setting.">
     Not allowed to see your location
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_IMAGES_DESCRIPTION" desc="Description of the images content setting.">
-    Sites usually show images to provide illustration, like photos for online stores or news articles
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_IMAGES_ALLOWED" desc="Label for the enabled option of the images content setting.">
-    Sites can show images (recommended)
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_IMAGES_BLOCKED" desc="Label for the disabled option of the images content setting.">
-    Block images
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_IMAGES_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the images content setting.">
-    Allowed to show images
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_IMAGES_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the images content setting.">
-    Not allowed to show images
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_DESCRIPTION" desc="Description of the Javascript content setting.">
-    Sites usually use Javascript to display interactive features, like video games or web forms
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_ALLOWED" desc="Label for the enabled option of the Javascript content setting.">
-    Sites can use Javascript (recommended)
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_BLOCKED" desc="Label for the disabled option of the Javascript content setting.">
-    Block Javascript
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the Javascript content setting.">
-    Allowed to use Javascript
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the Javascript content setting.">
-    Not allowed to use Javascript
-  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIC_DESCRIPTION" desc="Description of the microphone content setting.">
     Sites usually use your microphone for communication features like video chatting
   </message>
@@ -1871,7 +1984,7 @@
     Sites can ask to use your microphone (recommended)
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIC_BLOCKED" desc="Label for the disabled option of the microphone content setting.">
-    Block sites from using your microphone
+    Don't allow sites to use your microphone
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIC_BLOCKED_SUB_LABEL" desc="Sub-label for the disabled option of the microphone content setting.">
     Features that need a microphone won't work
@@ -1889,7 +2002,7 @@
     Sites can ask to connect to MIDI devices
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIDI_BLOCKED" desc="Label for the disabled option of the MIDI devices content setting.">
-    Block sites from connecting to MIDI devices
+    Don't allow sites to connect to MIDI devices
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIDI_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the MIDI devices content setting.">
     Allowed to connect to MIDI devices
@@ -1897,11 +2010,23 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIDI_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the MIDI devices content setting.">
     Not allowed to connect to MIDI devices
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_INSECURE_CONTENT_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the insecure content content setting.">
-    Allowed to show insecure content
+  <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_DESCRIPTION" desc="Description of the motion sensors content setting.">
+    Sites usually use your device's motion sensors for features like virtual reality or fitness tracking
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_INSECURE_CONTENT_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the insecure content content setting.">
-    Not allowed to show insecure content
+  <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_ALLOWED" desc="Label for the enabled option of the motion sensors content setting.">
+    Sites can use motion sensors
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_BLOCKED" desc="Label for the disabled option of the motion sensors content setting.">
+    Don't allow sites to use motion sensors
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_BLOCKED_SUB_LABEL" desc="Sub label for the disabled option of the motion sensors content setting.">
+    Features that need motion sensors won't work
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the motion sensors content setting.">
+    Allowed to use motion sensors
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the motion sensors content setting.">
+    Not allowed to use motion sensors
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS_DESCRIPTION" desc="Description of the notifications content setting.">
     Sites usually send notifications to let you know about breaking news or chat messages
@@ -1910,13 +2035,13 @@
     Sites can ask to send notifications
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS_PARTIAL" desc="Label for the partial option of the notifications content setting.">
-    Use quieter messaging (recommended)
+    Use quieter messaging
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS_PARTIAL_SUB_LABEL" desc="Sub-label for the partial option of the notifications content setting.">
-    Sites can't interrupt you by asking to send notifications
+    Sites are blocked from interrupting you when they ask to send notifications
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS_BLOCKED" desc="Label for the blocked option of the notifications content setting.">
-    Block notifications
+    Don't allow sites to send notifications
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS_BLOCKED_SUB_LABEL" desc="Sub-label for the blocked option of the notifications content setting.">
     Features that need notifications won't work
@@ -1934,13 +2059,19 @@
     Sites can install payment handlers (recommended)
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_PAYMENT_HANDLERS_BLOCKED" desc="Label for the disabled option of the payment handlers content setting.">
-    Block payment handlers
+    Don't allow sites to install payment handlers
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_PAYMENT_HANDLERS_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the payment handlers content setting.">
     Allowed to install payment handlers
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_PAYMENT_HANDLERS_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the payment handlers content setting.">
     Not allowed to install payment handlers
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_PDFS_DESCRIPTION" desc="Description of the pdfs content setting.">
+    Sites sometimes publish PDFs, like documents, contracts, and forms
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_PDFS_ALLOWED" desc="Label for the enabled option of the pdfs content setting.">
+    Download PDFs
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_POPUPS_DESCRIPTION" desc="Description of the pop-ups content setting.">
     Sites might send pop-ups to show ads, or use redirects to lead you to websites you may not want to visit
@@ -1949,7 +2080,7 @@
     Sites can send pop-ups and use redirects
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_POPUPS_BLOCKED" desc="Label for the disabled option of the pop-ups content setting.">
-    Block pop-ups and redirects (recommended)
+    Don't allow sites to send pop-ups or use redirects (recommended)
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_POPUPS_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the pop-ups content setting.">
     Allowed to send pop-ups and use redirects
@@ -1964,7 +2095,7 @@
     Sites can ask to play protected content (recommended)
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_BLOCKED" desc="Label for the disabled option of the protected content content setting.">
-    Block protected content
+    Don't allow sites to play protected content
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the protected content content setting.">
     Allowed to play protected content
@@ -1972,32 +2103,26 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the protected content content setting.">
     Not allowed to play protected content
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_DESCRIPTION" desc="Description of the motion sensors content setting.">
-    Sites usually use your device's motion sensors for features like virtual reality or step counting
+  <message name="IDS_SETTINGS_SITE_SETTINGS_PROTOCOL_HANDLERS_DESCRIPTION" desc="Description of the protocol handlers content setting.">
+    Sites can handle special tasks when you click on certain types of links, like creating a new message in your email client or adding new events to your online calendar
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_ALLOWED" desc="Label for the enabled option of the motion sensors content setting.">
-    Sites can use motion sensors
+  <message name="IDS_SETTINGS_SITE_SETTINGS_PROTOCOL_HANDLERS_ALLOWED" desc="Label for the enabled option of protocol handlers site setting.">
+    Sites can ask to handle protocols
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_BLOCKED" desc="Label for the disabled option of the motion sensors content setting.">
-    Block sites from using motion sensors
+  <message name="IDS_SETTINGS_SITE_SETTINGS_PROTOCOL_HANDLERS_BLOCKED" desc="Label for the disabled option of the protocol handlers site setting.">
+    Don't allow sites to handle protocols
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_BLOCKED_SUB_LABEL" desc="Sub label for the disabled option of the motion sensors content setting.">
-    Features that need motion sensors won't work
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the motion sensors content setting.">
-    Allowed to use motion sensors
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the motion sensors content setting.">
-    Not allowed to use motion sensors
+  <message name="IDS_SETTINGS_SITE_SETTINGS_PROTOCOL_HANDLERS_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the protocol handlers site setting.">
+    Not allowed to handle protocols
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SERIAL_PORTS_DESCRIPTION" desc="Description of the serial ports content setting.">
-    Sites usually connect to serial devices for data transfer features, like setting up your network
+    Sites usually connect to serial ports for data transfer features, like setting up your network
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SERIAL_PORTS_ALLOWED" desc="Label for the enabled option of the serial ports content setting.">
-    Sites can ask to connect to serial devices
+    Sites can ask to connect to serial ports
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SERIAL_PORTS_BLOCKED" desc="Label for the disabled option of the serial ports content setting.">
-    Block sites from connecting to serial devices
+    Don't allow sites to connect to serial ports
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SOUND_DESCRIPTION" desc="Description of the sound content setting.">
     Sites might play sound to provide audio for music, videos, and other media
@@ -2006,7 +2131,7 @@
     Sites can play sound (recommended)
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SOUND_BLOCKED" desc="Label for the disabled option of the sound content setting.">
-    Mute sound
+    Don't allow sites to play sound
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SOUND_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the sound content setting.">
     Allowed to play sound
@@ -2021,7 +2146,7 @@
     Sites can ask to connect to USB devices
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_USB_BLOCKED" desc="Label for the disabled option of the USB devices content setting.">
-    Block sites from connecting to USB devices
+    Don't allow sites to connect to USB devices
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_VR_DESCRIPTION" desc="Description of the virtual reality content setting.">
     Sites usually use your virtual reality devices and data to let you enter VR sessions
@@ -2030,13 +2155,13 @@
     Sites can ask to use virtual reality devices and data
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_VR_BLOCKED" desc="Label for the disabled option of the virtual reality content setting.">
-    Block sites from using virtual reality devices and data
+    Don't allow sites to use virtual reality devices or data
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_VR_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the virtual reality content setting.">
     Allowed to use virtual reality devices and data
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_VR_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the virtual reality content setting.">
-    Not allowed to use virtual reality devices and data
+    Not allowed to use virtual reality devices or data
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_ZOOM_LEVELS_DESCRIPTION" desc="Description of the zoom levels content setting.">
     You can set how much you zoom in or out on certain websites
@@ -2044,8 +2169,14 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_ADS" desc="Label for the ads site settings.">
     Ads
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_ADS_MID_SENTENCE" desc="Label for the ads site setting when used mid-sentence.">
+    ads
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_AR" desc="Label for the AR site settings.">
     Augmented reality
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_AR_MID_SENTENCE" desc="Label for the AR site setting when used mid-sentence.">
+    augmented reality
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_AR_ASK" desc="The ask label for the AR feature in site settings.">
     Ask when a site wants to create a 3D map of your surroundings or track camera position
@@ -2059,17 +2190,29 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_AUTOMATIC_DOWNLOADS" desc="Label for the automatic downloads site settings.">
     Automatic downloads
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_AUTOMATIC_DOWNLOADS_MID_SENTENCE" desc="Label for the automatic downloads site setting when used mid-sentence.">
+    automatic downloads
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_BACKGROUND_SYNC" desc="Label for the background sync site settings.">
     Background sync
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_BACKGROUND_SYNC_MID_SENTENCE" desc="Label for the background sync site setting when used mid-sentence.">
+    background sync
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CAMERA" desc="Label for the camera site settings.">
     Camera
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_CAMERA_MID_SENTENCE" desc="Label for the camera site setting when used mid-sentence">
+    camera
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CAMERA_LABEL" desc="The accessibility label of the 'camera device' select menu">
     Camera
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CLIPBOARD" desc="Label for the clipboard site settings.">
     Clipboard
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_CLIPBOARD_MID_SENTENCE" desc="Label for the clipboard site setting when used mid-sentence.">
+    clipboard
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CLIPBOARD_ASK" desc="The ask label for clipboard access in site settings.">
     Ask when a site wants to see text and images copied to the clipboard
@@ -2143,14 +2286,26 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_COOKIES" desc="Label for the cookies and site data site settings.">
     Cookies and site data
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_COOKIES_MID_SENTENCE" desc="Label for the cookies and site data setting when used mid-sentence">
+    cookies and site data
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_HANDLERS" desc="Label for the protocol handlers (e.g. mailto) in site settings.">
     Handlers
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_HANDLERS_MID_SENTENCE" desc="Label for the protocol handlers (e.g. mailto) site setting when used mid-sentence">
+    handlers
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_LOCATION" desc="Label for the geolocation site settings." meaning="Geolocation">
     Location
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_LOCATION_MID_SENTENCE" desc="Label for the geolocation site setting when used mid-sentence." meaning="Geolocation">
+    location
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIC" desc="Label for the microphone site settings.">
     Microphone
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_MIC_MID_SENTENCE" desc="Label for the microphone site setting when used mid-sentence.">
+    microphone
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIC_LABEL" desc="The accessibility label of the 'microphone device' select menu">
     Microphone
@@ -2158,7 +2313,13 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS" desc="Label for notifications sites site settings.">
     Notifications
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS_MID_SENTENCE" desc="Label for notifications sites site settings when used mid-sentence">
+    notifications
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_HID_DEVICES" desc="Label for HID devices in site settings.">
+    HID devices
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_HID_DEVICES_MID_SENTENCE" desc="Label for HID devices in site settings when used mid-sentence.">
     HID devices
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_HID_DEVICES_ASK" desc="The ask label for HID devices in site settings.">
@@ -2173,8 +2334,14 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_IMAGES" desc="Label for the images site settings.">
     Images
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_IMAGES_MID_SENTENCE" desc="Label for the images site setting when used mid-sentence.">
+    images
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_INSECURE_CONTENT" desc="Label for the insecure content site settings. This setting controls whether HTTP content will be displayed on HTTPS sites.">
     Insecure content
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_INSECURE_CONTENT_MID_SENTENCE" desc="Label for the insecure content site settings when used mid-sentence. This setting controls whether HTTP content will be displayed on HTTPS sites.">
+    insecure content
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_INSECURE_CONTENT_BLOCK" desc="Label explaining that insecure content is blocked by default in secure sites. Insecure content refers to content served over HTTP, secure sites refers to sites served over HTTPS.">
     Insecure content is blocked by default on secure sites
@@ -2182,8 +2349,14 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT" desc="Label for the javascript site settings.">
     JavaScript
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_MID_SENTENCE" desc="Label for the javascript site setting when used mid-sentence.">
+    Javascript
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_PAYMENT_HANDLER" desc="Label for the payment handler site settings.">
-    Payment Handlers
+    Payment handlers
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_PAYMENT_HANDLER_MID_SENTENCE" desc="Label for the payment handler site setting when used mid-sentence.">
+    payment handlers
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_PAYMENT_HANDLER_ALLOW" desc="The allow label for payment handler installation in site settings.">
     Allow sites to install payment handlers
@@ -2203,8 +2376,15 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_POPUPS" desc="Label for the pop-ups and redirects site settings.">
     Pop-ups and redirects
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_POPUPS_MID_SENTENCE" desc="Label for the pop-ups and redirects site setting when
+    used mid-sentence.">
+    pop-ups and redirects
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT" desc="Label for the protected content site settings.">
     Protected content
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_MID_SENTENCE" desc="Label for the protected content site settings when used mid-sentence.">
+    protected content
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_IDENTIFIERS" desc="Label for the permission to allow a site to use unique identifiers to access protected content in site details.">
     Protected content identifiers
@@ -2214,6 +2394,9 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_VR" desc="Label for the VR site settings.">
     Virtual reality
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_VR_MID_SENTENCE" desc="Label for the VR site setting when used mid-sentence.">
+    virtual reality
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_VR_ASK" desc="The ask label for the VR feature in site settings.">
     Ask when a site wants to use your virtual reality devices and data
@@ -2238,6 +2421,9 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIDI_DEVICES" desc="Label for the MIDI devices in site settings.">
     MIDI devices
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_MIDI_DEVICES_MID_SENTENCE" desc="Label for the MIDI devices in site settings when used mid-sentence.">
+    MIDI devices
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIDI_DEVICES_ASK" desc="The ask label for MIDI devices in site settings.">
     Ask when a site wants to use system exclusive messages to access MIDI devices
   </message>
@@ -2250,13 +2436,25 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_SOUND" desc="Label for the sound site settings.">
     Sound
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_SOUND_MID_SENTENCE" desc="Label for the sound site setting when used mid-sentence">
+    sound
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SENSORS" desc="Label for the sensors permission in Site Settings. Sensors are motion and light sensors, specifically accelerometers, gyroscope, magnetometers, and ambient-light sensors">
     Motion or light sensors
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_SENSORS_MID_SENTENCE" desc="Label for the sensors permission in Site Settings when used mid-sentence. Sensors are motion and light sensors, specifically accelerometers, gyroscope, magnetometers, and ambient-light sensors">
+    motion or light sensors
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS" desc="Label for the motion sensors permission in Site Settings. Motion sensors are accelerometers, gyroscopes and magnetometers.">
     Motion sensors
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_MID_SENTENCE" desc="Label for the motion sensors permission in Site Settings when used mid-sentence. Motion sensors are accelerometers, gyroscopes and magnetometers.">
+    motion sensors
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_DEVICES" desc="Label for Bluetooth devices in site settings.">
+    Bluetooth devices
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_DEVICES_MID_SENTENCE" desc="Label for Bluetooth devices in site settings when used mid-sentence.">
     Bluetooth devices
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_DEVICES_ASK" desc="The ask label for Bluetooth devices in site settings.">
@@ -2271,6 +2469,9 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_USB_DEVICES" desc="Label for USB devices in site settings.">
     USB devices
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_USB_DEVICES_MID_SENTENCE" desc="Label for USB devices in site settings when used mid-sentence.">
+    USB devices
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_USB_DEVICES_ASK" desc="The ask label for USB devices in site settings.">
     Ask when a site wants to access USB devices
   </message>
@@ -2283,6 +2484,9 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_SERIAL_PORTS" desc="Label for serial ports in site settings.">
     Serial ports
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_SERIAL_PORTS_MID_SENTENCE" desc="Label for serial ports in site settings when used mid-sentence.">
+    serial ports
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SERIAL_PORTS_ASK" desc="The ask label for serial ports in site settings.">
     Ask when a site wants to access serial ports
   </message>
@@ -2292,16 +2496,19 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_SERIAL_PORTS_BLOCK" desc="The block label for serial ports in site settings.">
     Do not allow any sites to access serial ports
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_NATIVE_FILE_SYSTEM_WRITE" desc="Label for native file system write permission, which enables sites to save changes to the original files that were selected by the user.">
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_ACCESS_WRITE" desc="Label for File System Access write permission, which enables sites to save changes to the original files that were selected by the user.">
     File editing
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_NATIVE_FILE_SYSTEM_WRITE_ASK" desc="The ask label for native file system write permission in site settings.">
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_ACCESS_WRITE_MID_SENTENCE" desc="Label for File System Access write permission when used mid-sentence, which enables sites to save changes to the original files that were selected by the user.">
+    file editing
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_ACCESS_WRITE_ASK" desc="The ask label for File System Access write permission in site settings.">
     Ask when a site wants to edit files or folders on your device
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_NATIVE_FILE_SYSTEM_WRITE_ASK_RECOMMENDED" desc="The ask label for native file system write permission in site settings (with the 'recommended' suffix).">
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_ACCESS_WRITE_ASK_RECOMMENDED" desc="The ask label for File System Access write permission in site settings (with the 'recommended' suffix).">
     Ask when a site wants to edit files or folders on your device (recommended)
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_NATIVE_FILE_SYSTEM_WRITE_BLOCK" desc="The block label for native file system write permission in site settings.">
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_ACCESS_WRITE_BLOCK" desc="The block label for File System Access write permission in site settings.">
     Do not allow any sites to edit files or folders on your device
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_REMOVE_ZOOM_LEVEL" desc="Title tooltip and accessibility text for the button to remove zoom levels in site settings">
@@ -2309,6 +2516,9 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_ZOOM_LEVELS" desc="Label for the Zoom levels category in site settings.">
     Zoom levels
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_ZOOM_LEVELS_MID_SENTENCE" desc="Label for the Zoom levels category in site settings when used mid-sentence">
+    zoom levels
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MAY_SAVE_COOKIES" desc="Label for the cookies option description site settings.">
     Sites can save and read cookie data
@@ -2439,6 +2649,9 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_WINDOW_PLACEMENT" desc="Label for the window placement site settings.">
     Window placement
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_WINDOW_PLACEMENT_MID_SENTENCE" desc="Label for the window placement site setting when use mid sentence">
+    window placement
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_WINDOW_PLACEMENT_ASK" desc="The ask label for the window placement site settings.">
     Ask when a site wants to open and place windows on your screens
   </message>
@@ -2448,6 +2661,9 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_WINDOW_PLACEMENT_BLOCK" desc="The block label for the window placement site settings.">
     Block sites from opening and placing windows on your screens
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FONT_ACCESS_MID_SENTENCE" desc="The label for the local font access site setting when used mid-sentence.">
+    fonts
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_FONT_ACCESS_ASK" desc="The ask label for the local font access site settings.">
     Ask when a site wants to use fonts installed on your device
   </message>
@@ -2455,13 +2671,16 @@
     Block sites from using fonts installed on your device
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_IDLE_DETECTION" desc="Label for the idle detection site settings.">
-    Your presence
+    Your device use
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_IDLE_DETECTION_MID_SENTENCE" desc="Label for the idle detection site setting when used mid-sentence.">
+    your device use
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_IDLE_DETECTION_ASK" desc="The ask label for the idle detection site settings.">
-    Ask when a site wants to know when you're present
+    Ask when a site wants to know when you're actively using this device
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_IDLE_DETECTION_BLOCK" desc="The block label for the idle detection site settings.">
-    Block sites from knowing when you're present
+    Block sites from knowing when you're actively using this device
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_ALLOWED" desc="A generic Allowed label to show in Site Settings when Allow is NOT the recommended option.">
     Allowed
@@ -2714,7 +2933,7 @@
     Current incognito session only
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_INCOGNITO_SITE_EXCEPTION_DESC" desc="The text displayed in order to explain to a user that a content setting only applies to the current incognito session.">
-    This exception will be automatically removed after you exit the current Incognito session
+    This custom setting will be removed when you close all your Incognito windows
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_NO_ZOOMED_SITES" desc="A label explaining that no sites have a configured zoom in/out value.">
     No sites have been zoomed in or out
@@ -2732,6 +2951,9 @@
     No sites found
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_SCANNING" desc="The label that is used to show the Bluetooth scanning site settings to the user.">
+    Bluetooth scanning
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_SCANNING_MID_SENTENCE" desc="The label that is used to show the Bluetooth scanning site settings to the user when used mid-sentence.">
     Bluetooth scanning
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_SCANNING_ASK" desc="The label that is used to show the Bluetooth scanning setting is set to ask in site settings.">
@@ -2890,9 +3112,6 @@
     </message>
     <message name="IDS_SETTINGS_CUSTOMIZE_PROFILE" desc="Title of the manage profile subpage. This is a subpage to customize Chrome Profile.">
       Customize profile
-    </message>
-    <message name="IDS_SETTING_NAME_YOUR_PROFILE" desc="Title of the edit local profile name section on the manage profile page.">
-      Name your profile
     </message>
     <message name="IDS_SETTINGS_PICK_A_THEME_COLOR" desc="Title of edit profile theme color section on the manage profile page.">
       Pick a theme color
@@ -3053,7 +3272,7 @@
   </message>
 
   <!-- System Page -->
-  <if expr="not chromeos">
+  <if expr="not chromeos and not lacros">
     <message name="IDS_SETTINGS_SYSTEM" desc="Title of the system settings.">
       System
     </message>
@@ -3078,12 +3297,6 @@
     </message>
     <message name="IDS_SETTINGS_RESET_CLEANUP_DETAILS_EXPLANATION" desc="Text that appears below the list of files, programs, and registry entries to be removed by Chrome as part of a cleanup process. 'privacy white paper' is a guide to Chrome's privacy policy and practices. In 'unwanted software protection,' the word 'unwanted' modifies 'software,' i.e. 'protection from unwanted software'.">
       Items not listed here will also be removed, if needed. Learn more about &lt;a href=&quot;<ph name="URL">$1<ex>https://www.google.com/chrome/browser/privacy/whitepaper.html#unwantedsoftware</ex></ph>&quot;&gt;unwanted software protection&lt;/a&gt; in the Chrome privacy white paper.
-    </message>
-    <message name="IDS_SETTINGS_RESET_CLEANUP_DETAILS_EXTENSIONS" desc="Introduces a bullet list containing the names of extensions to be removed by Chrome.">
-      Extensions to be removed:
-    </message>
-    <message name="IDS_SETTINGS_RESET_CLEANUP_DETAILS_EXTENSION_UNKNOWN" desc="Text for a list item among a list of extensions, where we could not determine the name of the extension being cleaned up.">
-      Unknown extension with ID <ph name="EXTENSION_ID">$1<ex>exampleextensionababababcdcdcdcd</ex></ph>
     </message>
     <message name="IDS_SETTINGS_RESET_CLEANUP_DETAILS_FILES_AND_PROGRAMS" desc="Introduces a bullet list containing the names of files and programs to be quarantined by Chrome (i.e. removed from the original location, moved and archived in the Quarantine folder).">
       Files and programs to be quarantined:
@@ -3294,6 +3507,9 @@
   </message>
   <message name="IDS_SETTINGS_SECURITY_KEYS_PIN_INCORRECT_RETRIES_PL" desc="A message shown to the user when they enter an incorrect PIN for a security key. PINs, in this context, are short, often numeric codes that are often used with, for example, ATM cards. Security keys are external devices used to authenticate people.">
     Incorrect PIN. You have <ph name="RETRIES">$1<ex>8</ex></ph> attempts remaining.
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_KEYS_SAME_PIN_AS_CURRENT" desc="Error message. Displayed when the user attempts to set a new PIN for their security key, and the new PIN is the same as the currently set PIN. PINs, in this context, are short, often numeric codes that are often used with, for example, ATM cards. Security keys are external devices used to authenticate people.">
+    Create a new PIN that's different from your current PIN
   </message>
   <message name="IDS_SETTINGS_SECURITY_KEYS_NEW_PIN" desc="A message shown when a user is trying to set a PIN on a security key. PINs, in this context, are short, often numeric codes that are often used with, for example, ATM cards. Security keys are external devices used to authenticate people.">
     {MIN_PIN_LENGTH, plural,

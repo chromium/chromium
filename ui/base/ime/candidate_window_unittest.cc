@@ -41,8 +41,8 @@ TEST(CandidateWindow, IsEqualTest) {
   CandidateWindow cw1;
   CandidateWindow cw2;
 
-  const base::string16 kSampleString1 = base::UTF8ToUTF16("Sample 1");
-  const base::string16 kSampleString2 = base::UTF8ToUTF16("Sample 2");
+  const std::u16string kSampleString1 = u"Sample 1";
+  const std::u16string kSampleString2 = u"Sample 2";
 
   EXPECT_TRUE(cw1.IsEqual(cw2));
   EXPECT_TRUE(cw2.IsEqual(cw1));
@@ -138,7 +138,7 @@ TEST(CandidateWindow, CopyFromTest) {
   CandidateWindow cw1;
   CandidateWindow cw2;
 
-  const base::string16 kSampleString = base::UTF8ToUTF16("Sample");
+  const std::u16string kSampleString = u"Sample";
 
   cw1.set_page_size(1);
   cw1.set_cursor_position(2);

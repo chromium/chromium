@@ -446,8 +446,6 @@ COMPONENT_EXPORT(DEVICE_FIDO) extern const char kCtap2_1Version[];
 
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionHmacSecret[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionCredProtect[];
-COMPONENT_EXPORT(DEVICE_FIDO)
-extern const char kExtensionAndroidClientData[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionLargeBlobKey[];
 
 // Maximum number of seconds the browser waits for Bluetooth authenticator to
@@ -476,10 +474,6 @@ enum class CredProtectRequest : uint8_t {
   kUVRequired = 3,
   kUVOrCredIDRequiredOrBetter = 255,
 };
-
-// The map key for inserting the googleAndroidClientDataExtension output into a
-// CTAP2 makeCredential or getAssertion response.
-constexpr int kAndroidClientDataExtOutputKey = 0xf0;
 
 // PINUVAuthProtocol is the version number of a PIN/UV auth protocol.
 enum class PINUVAuthProtocol : uint8_t {

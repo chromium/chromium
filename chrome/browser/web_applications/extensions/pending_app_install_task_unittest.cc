@@ -248,7 +248,6 @@ class TestPendingAppInstallFinalizer : public InstallFinalizer {
   // url and the result of trying to uninstall it.
   std::map<GURL, std::pair<AppId, bool>>
       next_uninstall_external_web_app_results_;
-
 };
 
 }  // namespace
@@ -281,7 +280,8 @@ class PendingAppInstallTaskTest : public ChromeRenderViewHostTestHarness {
     auto os_integration_manager = std::make_unique<TestOsIntegrationManager>(
         profile(), /*app_shortcut_manager=*/nullptr,
         /*file_handler_manager=*/nullptr,
-        /*protocol_handler_manager=*/nullptr);
+        /*protocol_handler_manager=*/nullptr,
+        /*url_handler_manager*/ nullptr);
     os_integration_manager_ = os_integration_manager.get();
 
     auto ui_manager = std::make_unique<TestWebAppUiManager>();
@@ -330,7 +330,7 @@ class PendingAppInstallTaskTest : public ChromeRenderViewHostTestHarness {
         GetFactoryForRetriever(std::move(data_retriever)));
     auto manifest = std::make_unique<blink::Manifest>();
     manifest->start_url = options.install_url;
-    manifest->name = base::ASCIIToUTF16("Manifest Name");
+    manifest->name = u"Manifest Name";
 
     data_retriever_->SetRendererWebApplicationInfo(
         std::make_unique<WebApplicationInfo>());
@@ -374,8 +374,7 @@ class PendingAppInstallTaskWithRunOnOsLoginTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(PendingAppInstallTaskTest,
-       WebAppOrShortcutFromContents_InstallationSucceeds) {
+TEST_F(PendingAppInstallTaskTest, InstallSucceeds) {
   auto task = GetInstallationTaskWithTestMocks(
       {WebAppUrl(), DisplayMode::kUndefined,
        ExternalInstallSource::kInternalDefault});
@@ -418,8 +417,7 @@ TEST_F(PendingAppInstallTaskTest,
   run_loop.Run();
 }
 
-TEST_F(PendingAppInstallTaskTest,
-       WebAppOrShortcutFromContents_InstallationFails) {
+TEST_F(PendingAppInstallTaskTest, InstallFails) {
   auto task = GetInstallationTaskWithTestMocks(
       {WebAppUrl(), DisplayMode::kStandalone,
        ExternalInstallSource::kInternalDefault});
@@ -449,8 +447,7 @@ TEST_F(PendingAppInstallTaskTest,
   run_loop.Run();
 }
 
-TEST_F(PendingAppInstallTaskTest,
-       WebAppOrShortcutFromContents_NoDesktopShortcut) {
+TEST_F(PendingAppInstallTaskTest, InstallNoDesktopShortcut) {
   ExternalInstallOptions install_options(
       WebAppUrl(), DisplayMode::kStandalone,
       ExternalInstallSource::kInternalDefault);
@@ -483,8 +480,7 @@ TEST_F(PendingAppInstallTaskTest,
   run_loop.Run();
 }
 
-TEST_F(PendingAppInstallTaskTest,
-       WebAppOrShortcutFromContents_NoQuickLaunchBarShortcut) {
+TEST_F(PendingAppInstallTaskTest, InstallNoQuickLaunchBarShortcut) {
   ExternalInstallOptions install_options(
       WebAppUrl(), DisplayMode::kStandalone,
       ExternalInstallSource::kInternalDefault);
@@ -516,9 +512,8 @@ TEST_F(PendingAppInstallTaskTest,
   run_loop.Run();
 }
 
-TEST_F(
-    PendingAppInstallTaskTest,
-    WebAppOrShortcutFromContents_NoDesktopShortcutAndNoQuickLaunchBarShortcut) {
+TEST_F(PendingAppInstallTaskTest,
+       InstallNoDesktopShortcutAndNoQuickLaunchBarShortcut) {
   ExternalInstallOptions install_options(
       WebAppUrl(), DisplayMode::kStandalone,
       ExternalInstallSource::kInternalDefault);
@@ -551,8 +546,7 @@ TEST_F(
   run_loop.Run();
 }
 
-TEST_F(PendingAppInstallTaskTest,
-       WebAppOrShortcutFromContents_ForcedContainerWindow) {
+TEST_F(PendingAppInstallTaskTest, InstallForcedContainerWindow) {
   auto install_options =
       ExternalInstallOptions(WebAppUrl(), DisplayMode::kStandalone,
                              ExternalInstallSource::kInternalDefault);
@@ -575,8 +569,7 @@ TEST_F(PendingAppInstallTaskTest,
   run_loop.Run();
 }
 
-TEST_F(PendingAppInstallTaskTest,
-       WebAppOrShortcutFromContents_ForcedContainerTab) {
+TEST_F(PendingAppInstallTaskTest, InstallForcedContainerTab) {
   auto install_options =
       ExternalInstallOptions(WebAppUrl(), DisplayMode::kBrowser,
                              ExternalInstallSource::kInternalDefault);
@@ -599,7 +592,7 @@ TEST_F(PendingAppInstallTaskTest,
   run_loop.Run();
 }
 
-TEST_F(PendingAppInstallTaskTest, WebAppOrShortcutFromContents_DefaultApp) {
+TEST_F(PendingAppInstallTaskTest, InstallDefaultApp) {
   auto install_options =
       ExternalInstallOptions(WebAppUrl(), DisplayMode::kUndefined,
                              ExternalInstallSource::kInternalDefault);
@@ -624,7 +617,7 @@ TEST_F(PendingAppInstallTaskTest, WebAppOrShortcutFromContents_DefaultApp) {
   run_loop.Run();
 }
 
-TEST_F(PendingAppInstallTaskTest, WebAppOrShortcutFromContents_AppFromPolicy) {
+TEST_F(PendingAppInstallTaskTest, InstallAppFromPolicy) {
   auto install_options =
       ExternalInstallOptions(WebAppUrl(), DisplayMode::kUndefined,
                              ExternalInstallSource::kExternalPolicy);
@@ -679,7 +672,7 @@ TEST_F(PendingAppInstallTaskTest, InstallPlaceholder) {
         EXPECT_EQ(WebAppUrl(), web_app_info.start_url);
         EXPECT_TRUE(web_app_info.open_as_window);
         EXPECT_TRUE(web_app_info.icon_infos.empty());
-        EXPECT_TRUE(web_app_info.icon_bitmaps_any.empty());
+        EXPECT_TRUE(web_app_info.icon_bitmaps.any.empty());
 
         run_loop.Quit();
       }));
@@ -719,7 +712,7 @@ TEST_F(PendingAppInstallTaskTest, InstallPlaceholderNoCreateOsShorcuts) {
         EXPECT_EQ(WebAppUrl(), web_app_info.start_url);
         EXPECT_TRUE(web_app_info.open_as_window);
         EXPECT_TRUE(web_app_info.icon_infos.empty());
-        EXPECT_TRUE(web_app_info.icon_bitmaps_any.empty());
+        EXPECT_TRUE(web_app_info.icon_bitmaps.any.empty());
 
         run_loop.Quit();
       }));
@@ -984,7 +977,7 @@ TEST_F(PendingAppInstallTaskTest, InstallURLLoadFailed) {
   }
 }
 
-TEST_F(PendingAppInstallTaskTest, FailedWebContentsDestroyed) {
+TEST_F(PendingAppInstallTaskTest, InstallFailedWebContentsDestroyed) {
   ExternalInstallOptions install_options(
       GURL(), DisplayMode::kStandalone,
       ExternalInstallSource::kInternalDefault);
@@ -1005,8 +998,97 @@ TEST_F(PendingAppInstallTaskTest, FailedWebContentsDestroyed) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(PendingAppInstallTaskWithRunOnOsLoginTest,
-       WebAppOrShortcutFromContents_RunOnOsLogin) {
+TEST_F(PendingAppInstallTaskTest, InstallWithWebAppInfoSucceeds) {
+  ExternalInstallOptions options(WebAppUrl(), DisplayMode::kStandalone,
+                                 ExternalInstallSource::kSystemInstalled);
+  options.only_use_app_info_factory = true;
+  options.app_info_factory = base::BindLambdaForTesting([]() {
+    auto info = std::make_unique<WebApplicationInfo>();
+    info->start_url = WebAppUrl();
+    info->scope = WebAppUrl().GetWithoutFilename();
+    info->title = u"Foo Web App";
+    return info;
+  });
+
+  PendingAppInstallTask task(
+      profile(), /*url_loader=*/nullptr, registrar(), os_integration_manager(),
+      ui_manager(), finalizer(), install_manager(), std::move(options));
+
+  finalizer()->SetNextFinalizeInstallResult(
+      WebAppUrl(), InstallResultCode::kSuccessNewInstall);
+
+  base::RunLoop run_loop;
+  task.Install(
+      /*web_contents=*/nullptr,
+      base::BindLambdaForTesting([&](base::Optional<AppId> app_id,
+                                     PendingAppManager::InstallResult result) {
+        base::Optional<AppId> id =
+            ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
+                .LookupAppId(WebAppUrl());
+        EXPECT_EQ(InstallResultCode::kSuccessOfflineOnlyInstall, result.code);
+        EXPECT_TRUE(app_id.has_value());
+
+        EXPECT_FALSE(IsPlaceholderApp(profile(), WebAppUrl()));
+
+        EXPECT_EQ(app_id.value(), id.value());
+
+        // Installing with an App Info doesn't call into OS Integration Manager.
+        // This might be an issue for default apps.
+        EXPECT_FALSE(
+            os_integration_manager()->get_last_install_options().has_value());
+
+        EXPECT_EQ(0u, finalizer()->num_reparent_tab_calls());
+
+        EXPECT_TRUE(web_app_info().open_as_window);
+        EXPECT_EQ(webapps::WebappInstallSource::SYSTEM_DEFAULT,
+                  finalize_options().install_source);
+
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(PendingAppInstallTaskTest, InstallWithWebAppInfoFails) {
+  ExternalInstallOptions options(WebAppUrl(), DisplayMode::kStandalone,
+                                 ExternalInstallSource::kSystemInstalled);
+  options.only_use_app_info_factory = true;
+  options.app_info_factory = base::BindLambdaForTesting([]() {
+    auto info = std::make_unique<WebApplicationInfo>();
+    info->start_url = WebAppUrl();
+    info->scope = WebAppUrl().GetWithoutFilename();
+    info->title = u"Foo Web App";
+    return info;
+  });
+
+  PendingAppInstallTask task(
+      profile(), /*url_loader=*/nullptr, registrar(), os_integration_manager(),
+      ui_manager(), finalizer(), install_manager(), std::move(options));
+
+  finalizer()->SetNextFinalizeInstallResult(
+      WebAppUrl(), InstallResultCode::kWriteDataFailed);
+
+  base::RunLoop run_loop;
+
+  task.Install(
+      web_contents(),
+      base::BindLambdaForTesting([&](base::Optional<AppId> app_id,
+                                     PendingAppManager::InstallResult result) {
+        base::Optional<AppId> id =
+            ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
+                .LookupAppId(WebAppUrl());
+
+        EXPECT_EQ(InstallResultCode::kWriteDataFailed, result.code);
+        EXPECT_FALSE(app_id.has_value());
+
+        EXPECT_FALSE(id.has_value());
+
+        run_loop.Quit();
+      }));
+
+  run_loop.Run();
+}
+
+TEST_F(PendingAppInstallTaskWithRunOnOsLoginTest, InstallRunOnOsLogin) {
   ExternalInstallOptions install_options(
       WebAppUrl(), DisplayMode::kStandalone,
       ExternalInstallSource::kInternalDefault);
@@ -1043,8 +1125,7 @@ TEST_F(PendingAppInstallTaskWithRunOnOsLoginTest,
   run_loop.Run();
 }
 
-TEST_F(PendingAppInstallTaskWithRunOnOsLoginTest,
-       WebAppOrShortcutFromContents_NoRunOnOsLogin) {
+TEST_F(PendingAppInstallTaskWithRunOnOsLoginTest, InstallNoRunOnOsLogin) {
   ExternalInstallOptions install_options(
       WebAppUrl(), DisplayMode::kStandalone,
       ExternalInstallSource::kInternalDefault);

@@ -280,7 +280,7 @@ std::unique_ptr<icu::MessageFormat> Formatter::CreateFallbackFormat(
 std::unique_ptr<icu::MessageFormat> Formatter::InitFormat(
     const Pluralities& pluralities) {
   if (!formatter_force_fallback) {
-    base::string16 pattern = l10n_util::GetStringUTF16(pluralities.id);
+    std::u16string pattern = l10n_util::GetStringUTF16(pluralities.id);
     UErrorCode error = U_ZERO_ERROR;
     std::unique_ptr<icu::MessageFormat> format(new icu::MessageFormat(
         icu::UnicodeString(false, pattern.data(), pattern.length()), error));

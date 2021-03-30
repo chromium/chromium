@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "components/search_engines/template_url_id.h"
 #include "url/gurl.h"
@@ -31,8 +30,8 @@ struct TemplateURLData {
   // value, instead of current time.
   // StringPiece in arguments is used to pass const char* pointer members
   // of PrepopulatedEngine structure which can be nullptr.
-  TemplateURLData(const base::string16& name,
-                  const base::string16& keyword,
+  TemplateURLData(const std::u16string& name,
+                  const std::u16string& keyword,
                   base::StringPiece search_url,
                   base::StringPiece suggest_url,
                   base::StringPiece image_url,
@@ -53,12 +52,12 @@ struct TemplateURLData {
   // A short description of the template. This is the name we show to the user
   // in various places that use TemplateURLs. For example, the location bar
   // shows this when the user selects a substituting match.
-  void SetShortName(const base::string16& short_name);
-  const base::string16& short_name() const { return short_name_; }
+  void SetShortName(const std::u16string& short_name);
+  const std::u16string& short_name() const { return short_name_; }
 
   // The shortcut for this TemplateURL.  |keyword| must be non-empty.
-  void SetKeyword(const base::string16& keyword);
-  const base::string16& keyword() const { return keyword_; }
+  void SetKeyword(const std::u16string& keyword);
+  const std::u16string& keyword() const { return keyword_; }
 
   // The raw URL for the TemplateURL, which may not be valid as-is (e.g. because
   // it requires substitutions first).  This must be non-empty.
@@ -157,8 +156,8 @@ struct TemplateURLData {
  private:
   // Private so we can enforce using the setters and thus enforce that these
   // fields are never empty.
-  base::string16 short_name_;
-  base::string16 keyword_;
+  std::u16string short_name_;
+  std::u16string keyword_;
   std::string url_;
 };
 

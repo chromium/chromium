@@ -8,6 +8,7 @@
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "build/branding_buildflags.h"');
+GEN('#include "build/chromeos_buildflags.h"');
 GEN('#include "chrome/common/chrome_features.h"');
 GEN('#include "components/autofill/core/common/autofill_features.h"');
 GEN('#include "components/password_manager/core/common/password_manager_features.h"');
@@ -74,14 +75,6 @@ var CrSettingsLanguagesPageV3Test = class extends CrSettingsV3BrowserTest {
   }
 };
 
-TEST_F('CrSettingsLanguagesPageV3Test', 'AddLanguagesDialog', function() {
-  mocha.grep(languages_page_tests.TestNames.AddLanguagesDialog).run();
-});
-
-TEST_F('CrSettingsLanguagesPageV3Test', 'LanguageMenu', function() {
-  mocha.grep(languages_page_tests.TestNames.LanguageMenu).run();
-});
-
 TEST_F('CrSettingsLanguagesPageV3Test', 'Spellcheck', function() {
   mocha.grep(languages_page_tests.TestNames.Spellcheck).run();
 });
@@ -92,7 +85,16 @@ TEST_F('CrSettingsLanguagesPageV3Test', 'SpellcheckOfficialBuild', function() {
 });
 GEN('#endif');
 
-GEN('#if defined(OS_CHROMEOS)');
+GEN('#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)');
+TEST_F(
+    'CrSettingsLanguagesPageV3Test', 'RestructuredLanguageSettings',
+    function() {
+      mocha.grep(languages_page_tests.TestNames.RestructuredLanguageSettings)
+          .run();
+    });
+GEN('#endif');
+
+GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
 TEST_F(
     'CrSettingsLanguagesPageV3Test', 'ChromeOSLanguagesSettingsUpdate',
     function() {
@@ -100,6 +102,37 @@ TEST_F(
           .run();
     });
 GEN('#endif');
+
+// eslint-disable-next-line no-var
+var CrSettingsLanguagesSubpageV3Test = class extends CrSettingsV3BrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/languages_subpage_tests.js';
+  }
+};
+
+TEST_F('CrSettingsLanguagesSubpageV3Test', 'AddLanguagesDialog', function() {
+  mocha.grep(languages_subpage_tests.TestNames.AddLanguagesDialog).run();
+});
+
+TEST_F('CrSettingsLanguagesSubpageV3Test', 'LanguageMenu', function() {
+  mocha.grep(languages_subpage_tests.TestNames.LanguageMenu).run();
+});
+
+// eslint-disable-next-line no-var
+var CrSettingsLanguagesPageMetricsV3Test =
+    class extends CrSettingsV3BrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/languages_page_metrics_test_browser.js';
+  }
+};
+
+TEST_F(
+    'CrSettingsLanguagesPageMetricsV3Test', 'LanguagesPageMetricsBrowser',
+    function() {
+      runMochaSuite('LanguagesPageMetricsBrowser');
+    });
 
 // eslint-disable-next-line no-var
 var CrSettingsClearBrowsingDataV3Test = class extends CrSettingsV3BrowserTest {
@@ -125,7 +158,7 @@ TEST_F('CrSettingsClearBrowsingDataV3Test', 'InstalledApps', () => {
   runMochaSuite('InstalledApps');
 });
 
-GEN('#if !defined(OS_CHROMEOS)');
+GEN('#if !BUILDFLAG(IS_CHROMEOS_ASH)');
 TEST_F(
     'CrSettingsClearBrowsingDataV3Test', 'ClearBrowsingDataDesktop',
     function() {
@@ -179,6 +212,7 @@ TEST_F('CrSettingsAutofillSectionCompanyEnabledV3Test', 'All', function() {
   // Use 'EnableCompanyName' to inform tests that the feature is enabled.
   const loadTimeDataOverride = {};
   loadTimeDataOverride['EnableCompanyName'] = true;
+  loadTimeDataOverride['showHonorific'] = true;
   loadTimeData.overrideValues(loadTimeDataOverride);
   mocha.run();
 });
@@ -253,6 +287,11 @@ var CrSettingsPasswordsCheckV3Test = class extends CrSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://settings/test_loader.html?module=settings/password_check_test.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {enabled: ['features::kSafetyCheckWeakPasswords']};
   }
 };
 
@@ -377,11 +416,6 @@ var CrSettingsPrivacyPageV3Test = class extends CrSettingsV3BrowserTest {
   get browsePreload() {
     return 'chrome://settings/test_loader.html?module=settings/privacy_page_test.js';
   }
-
-  /** @override */
-  get featureList() {
-    return {enabled: ['features::kPrivacySandboxSettings']};
-  }
 };
 
 TEST_F('CrSettingsPrivacyPageV3Test', 'PrivacyPageTests', function() {
@@ -392,6 +426,11 @@ TEST_F('CrSettingsPrivacyPageV3Test', 'ContentSettingsRedesign', function() {
   runMochaSuite('ContentSettingsRedesign');
 });
 
+TEST_F(
+    'CrSettingsPrivacyPageV3Test', 'PrivacySandboxSettingsEnabled', function() {
+      runMochaSuite('PrivacySandboxSettingsEnabled');
+    });
+
 // TODO(crbug.com/1043665): flaky crash on Linux Tests (dbg).
 TEST_F(
     'CrSettingsPrivacyPageV3Test', 'DISABLED_PrivacyPageSoundTests',
@@ -401,8 +440,7 @@ TEST_F(
 
 // TODO(crbug.com/1113912): flaky failure on multiple platforms
 TEST_F(
-    'CrSettingsPrivacyPageV3Test', 'DISABLED_HappinessTrackingSurveysTests',
-    function() {
+    'CrSettingsPrivacyPageV3Test', 'DISABLED_HappinessTrackingSurveysTests', function() {
       runMochaSuite('HappinessTrackingSurveys');
     });
 
@@ -433,7 +471,7 @@ TEST_F('CrSettingsRouteV3Test', 'DynamicParameters', function() {
 
 // Copied from Polymer 2 test:
 // Failing on ChromiumOS dbg. https://crbug.com/709442
-GEN('#if (defined(OS_WIN) || defined(OS_CHROMEOS)) && !defined(NDEBUG)');
+GEN('#if (defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)) && !defined(NDEBUG)');
 GEN('#define MAYBE_NonExistentRoute DISABLED_NonExistentRoute');
 GEN('#else');
 GEN('#define MAYBE_NonExistentRoute NonExistentRoute');
@@ -493,8 +531,8 @@ TEST_F('CrSettingsAdvancedPageV3Test', 'MAYBE_Load', function() {
  ['PeoplePage', 'people_page_test.js'],
  ['PeoplePageSyncControls', 'people_page_sync_controls_test.js'],
  ['PeoplePageSyncPage', 'people_page_sync_page_test.js'],
- ['Prefs', 'prefs_tests.m.js'],
- ['PrefUtil', 'pref_util_tests.m.js'],
+ ['Prefs', 'prefs_tests.js'],
+ ['PrefUtil', 'pref_util_tests.js'],
  ['ProtocolHandlers', 'protocol_handlers_tests.js'],
  ['RecentSitePermissions', 'recent_site_permissions_test.js'],
  // Flaky on all OSes. TODO(crbug.com/1127733): Enable the test.
@@ -512,12 +550,12 @@ TEST_F('CrSettingsAdvancedPageV3Test', 'MAYBE_Load', function() {
  ['SiteFavicon', 'site_favicon_test.js'],
  ['SiteListEntry', 'site_list_entry_tests.js'],
  ['SiteSettingsPage', 'site_settings_page_test.js'],
- ['Slider', 'settings_slider_tests.m.js'],
+ ['Slider', 'settings_slider_tests.js'],
  ['StartupUrlsPage', 'startup_urls_page_test.js'],
  ['Subpage', 'settings_subpage_test.js'],
  ['SyncAccountControl', 'sync_account_control_test.js'],
- ['Textarea', 'settings_textarea_tests.m.js'],
- ['ToggleButton', 'settings_toggle_button_tests.m.js'],
+ ['Textarea', 'settings_textarea_tests.js'],
+ ['ToggleButton', 'settings_toggle_button_tests.js'],
  ['ZoomLevels', 'zoom_levels_tests.js'],
 ].forEach(test => registerTest(...test));
 
@@ -528,27 +566,31 @@ GEN('#if !defined(OS_MAC) || defined(NDEBUG)');
 ].forEach(test => registerTest(...test));
 GEN('#endif  // !defined(OS_MAC) || defined(NDEBUG)');
 
-GEN('#if defined(OS_CHROMEOS)');
+GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
 [['LanguagesPageMetricsChromeOS', 'languages_page_metrics_test_cros.js'],
  ['PasswordsSectionCros', 'passwords_section_test_cros.js'],
  ['PeoplePageChromeOS', 'people_page_test_cros.js'],
  // Copied from Polymer 2 test. TODO(crbug.com/929455): flaky, fix.
  ['SiteListChromeOS', 'site_list_tests_cros.js', 'DISABLED_AndroidSmsInfo'],
 ].forEach(test => registerTest(...test));
-GEN('#endif  // defined(OS_CHROMEOS)');
+GEN('#endif  // BUILDFLAG(IS_CHROMEOS_ASH)');
 
 GEN('#if !defined(OS_MAC)');
 [['EditDictionaryPage', 'edit_dictionary_page_test.js'],
 ].forEach(test => registerTest(...test));
 GEN('#endif  //!defined(OS_MAC)');
 
-GEN('#if !defined(OS_CHROMEOS)');
+GEN('#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)');
 [['DefaultBrowser', 'default_browser_browsertest.js'],
- ['ImportDataDialog', 'import_data_dialog_test.js'],
- ['PeoplePageManageProfile', 'people_page_manage_profile_test.js'],
  ['SystemPage', 'system_page_tests.js'],
 ].forEach(test => registerTest(...test));
-GEN('#endif  // !defined(OS_CHROMEOS)');
+GEN('#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)');
+
+GEN('#if !BUILDFLAG(IS_CHROMEOS_ASH)');
+[['ImportDataDialog', 'import_data_dialog_test.js'],
+ ['PeoplePageManageProfile', 'people_page_manage_profile_test.js'],
+].forEach(test => registerTest(...test));
+GEN('#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)');
 
 GEN('#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)');
 [['ChromeCleanupPage', 'chrome_cleanup_page_test.js'],
@@ -556,9 +598,10 @@ GEN('#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)');
 ].forEach(test => registerTest(...test));
 GEN('#endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)');
 
-GEN('#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !defined(OS_CHROMEOS)');
+GEN('#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH)');
 registerTest('MetricsReporting', 'metrics_reporting_tests.js');
-GEN('#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !defined(OS_CHROMEOS)');
+GEN('#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) ' +
+    '&& !BUILDFLAG(IS_CHROMEOS_ASH)');
 
 function registerTest(testName, module, caseName) {
   const className = `CrSettings${testName}V3Test`;

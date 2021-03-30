@@ -12,7 +12,6 @@
 <translation id="10614374240317010">ఎప్పటికి సేవ్ చెయ్యబడవు</translation>
 <translation id="1067922213147265141">ఇతర Google సర్వీసులు</translation>
 <translation id="107147699690128016">మీరు ఫైల్ ఎక్స్‌టెన్షన్‌ను మార్చితే, ఫైల్ వేరే అప్లికేషన్‌లో తెరవబడవచ్చు. అది మీ పరికరానికి హానికరంగా పరిణమించే అవకాశం ఉంటుంది.</translation>
-<translation id="1094515529340404628">Web crowd, యాడ్ కొలత</translation>
 <translation id="1100066534610197918">సమూహంలో కొత్త ట్యాబ్‌లో తెరువు</translation>
 <translation id="1105960400813249514">స్క్రీన్ క్యాప్చర్</translation>
 <translation id="1111673857033749125">మీ ఇతర పరికరాల్లో సేవ్ చేసిన బుక్‌మార్క్‌లు ఇక్కడ చూపబడతాయి.</translation>
@@ -37,12 +36,10 @@
 <translation id="1208340532756947324">మీ అన్ని పరికరాలలోనూ సమకాలీకరణ చేయాలన్నా లేదా మీ అభిరుచికి అనుగుణంగా సెట్ చేయాలన్నా, తప్పనిసరిగా సమకాలీకరణ ఎంపికను ఆన్ చేయాలి</translation>
 <translation id="1209206284964581585">ప్రస్తుతానికి దాచు</translation>
 <translation id="1227058898775614466">నావిగేషన్ చరిత్ర</translation>
-<translation id="1229399675748764149">ఈ పేజీను మీ హోమ్‌పేజీగా చేసుకోండి</translation>
 <translation id="1231733316453485619">సమకాలీకరణను ఆన్ చేయాలా?</translation>
 <translation id="123724288017357924">కాష్ కంటెంట్ విస్మరించి ప్రస్తుత పేజీ మళ్లీ లోడ్ చేయండి</translation>
 <translation id="124678866338384709">ప్రస్తుత ట్యాబ్‌ను మూసివేయండి</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">పఠన జాబితా</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" />ను షేర్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="1283039547216852943">విస్త‌రించ‌డానికి నొక్కండి</translation>
 <translation id="1285310382777185058">భాషను మార్చండి</translation>
@@ -57,12 +54,13 @@
 <translation id="1327257854815634930">నావిగేషన్ చరిత్ర తెరిచి ఉంది</translation>
 <translation id="1331212799747679585">Chromeని అప్‌డేట్ చేయడం సాధ్యపడదు. మరిన్ని ఎంపికలు</translation>
 <translation id="1332501820983677155">Google Chrome లక్షణ సత్వరమార్గాలు</translation>
-<translation id="133857033449832692"><ph name="LANG" />ను డౌన్‌లోడ్ చేస్తోంది…</translation>
+<translation id="1344653310988386453">హైలైట్ చేసిన టెక్స్ట్‌కు లింక్‌ను చేర్చండి</translation>
 <translation id="1347468774581902829">యాక్టివిటీని మేనేజ్ చేయండి</translation>
 <translation id="1360432990279830238">సైన్ అవుట్ చేసి, సమకాలీకరణను ఆఫ్ చేయలా?</translation>
 <translation id="1373696734384179344">ఎంచుకున్న కంటెంట్‌ను డౌన్‌లోడ్ చేయడానికి తగినంత మెమరీ లేదు.</translation>
 <translation id="1376578503827013741">గణిస్తోంది...</translation>
 <translation id="1383876407941801731">సెర్చ్</translation>
+<translation id="1384704387250346179"><ph name="BEGIN_NEW" />కొత్తది<ph name="END_NEW" /> Google Lensతో ఇమేజ్‌ను అనువదించండి</translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> రోజుల క్రితం యాక్టివ్‌గా ఉంది</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" />తో వెతకండి</translation>
 <translation id="1406000523432664303">“ట్రాక్ చేయవద్దు”</translation>
@@ -71,15 +69,15 @@
 <translation id="1409879593029778104">ఫైల్ ఇప్పటికే ఉన్నందున <ph name="FILE_NAME" /> డౌన్‌లోడ్ నిరోధించబడింది.</translation>
 <translation id="1414981605391750300">Googleని సంప్రదిస్తోంది. ఇందుకు ఒక నిమిషం పట్టవచ్చు…</translation>
 <translation id="1416550906796893042">అప్లికేషన్ వెర్షన్</translation>
-<translation id="1430915738399379752">ముద్రించు</translation>
+<translation id="1430915738399379752">ప్రింట్</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> షేర్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="1477626028522505441">సర్వర్ సమస్యల కారణంగా <ph name="FILE_NAME" /> డౌన్‌లోడ్ విఫలమైంది.</translation>
+<translation id="1492417797159476138">మీరు ఇప్పటికే ఈ సైట్ కోసం ఈ యూజర్‌నేమ్‌ను సేవ్ చేశారు</translation>
 <translation id="1506061864768559482">సెర్చ్ ఇంజిన్</translation>
 <translation id="1513352483775369820">బుక్‌మార్క్‌లు మరియు వెబ్ చరిత్ర</translation>
 <translation id="1513858653616922153">పాస్‌వర్డ్‌ను తొలగించు</translation>
 <translation id="1521774566618522728">ఈ రోజు యాక్టివ్‌గా ఉంది</translation>
 <translation id="1538801903729528855">వెబ్‌లో మెరుగైన వాయిస్ అనుభవాన్ని పొందండి</translation>
-<translation id="1543538514740974167">ఇక్కడకు త్వరగా చేరుకోండి</translation>
 <translation id="1544826120773021464">మీ Google ఖాతాను నిర్వహించడానికి, "ఖాతాను నిర్వహించు" బటన్‌ను నొక్కండి</translation>
 <translation id="1549000191223877751">వేరే విండోకు తరలించు</translation>
 <translation id="1553358976309200471">Chromeని నవీకరించు</translation>
@@ -99,6 +97,8 @@
 <translation id="1692118695553449118">సమకాలీకరణ ఆన్‌లో ఉంది</translation>
 <translation id="1697284962337958118">దీనికి జోడించు</translation>
 <translation id="1718835860248848330">చివరి గంట</translation>
+<translation id="1724977129262658800">మీ పాస్‌వర్డ్‌ను ఎడిట్ చేయడానికి అన్‌లాక్ చేయండి</translation>
+<translation id="173522743738009831">గోప్యతా పరిరక్షణ టెక్నాలజీల సెట్ గురించి</translation>
 <translation id="1736419249208073774">అన్వేషించండి</translation>
 <translation id="1749561566933687563">మీ బుక్‌మార్క్‌లను సమకాలీకరించండి</translation>
 <translation id="17513872634828108">తెరిచిన ట్యాబ్‍లు</translation>
@@ -107,7 +107,7 @@
 <translation id="1782483593938241562">ముగింపు తేదీ <ph name="DATE" /></translation>
 <translation id="1791662854739702043">వ్యవస్థాపించబడింది</translation>
 <translation id="1792959175193046959">డిఫాల్ట్ డౌన్‌లోడ్ స్థానాన్ని ఎప్పుడైనా మార్చుకోండి</translation>
-<translation id="1795251344124198516">Chrome, Chrome OS అదనపు సేవా నిబంధనలు</translation>
+<translation id="1795251344124198516">Chrome, Chrome OS అదనపు సర్వీస్ నియమాలు</translation>
 <translation id="1807246157184219062">లేత</translation>
 <translation id="1810845389119482123">ప్రారంభ సింక్ సెటప్ పూర్తి కాలేదు</translation>
 <translation id="1821253160463689938">మీ ప్రాధాన్యతలను గుర్తుంచుకోవడానికి కుక్కీలను ఉపయోగిస్తుంది, మీరు ఆ పేజీలను సందర్శించకపోయినా కూడా అది అమలవుతుంది</translation>
@@ -132,6 +132,7 @@
 <translation id="1960290143419248813">Chrome అప్‌డేట్‌లకు ఈ Android వెర్షన్‌లో మద్దతు లేదు</translation>
 <translation id="1963976881984600709">ప్రామాణిక రక్షణ</translation>
 <translation id="1966710179511230534">దయచేసి మీ సైన్-ఇన్ వివరాలను అప్‌డేట్ చేయండి.</translation>
+<translation id="1973912524893600642">డేటాను అలాగే ఉంచు</translation>
 <translation id="1974060860693918893">అధునాతన సెట్టింగ్‌లు</translation>
 <translation id="1984417487208496350">రక్షణ లేదు (సిఫార్సు చేయడం లేదు)</translation>
 <translation id="1984705450038014246">మీ Chrome డేటాను సింక్ చేయండి</translation>
@@ -139,13 +140,13 @@
 <translation id="1987739130650180037"><ph name="MESSAGE" /> <ph name="LINK_NAME" /> బటన్</translation>
 <translation id="1993768208584545658"><ph name="SITE" /> దీనితో జత చేయాలనుకుంటోంది</translation>
 <translation id="2000419248597011803">అడ్రస్ బార్, సెర్చ్ బాక్స్‌లలో చేసే సెర్చ్‌లు, కొన్ని కుక్కీలను మీరు ఆటోమేటిక్ ఆప్షన్‌గా సెట్ చేసిన సెర్చ్ ఇంజిన్‌కు పంపుతుంది</translation>
-<translation id="2002537628803770967">Google Pay ఉపయోగిస్తున్న క్రెడిట్ కార్డ్‌లు,చిరునామాలు</translation>
-<translation id="2010780124464321179">హైలైట్ చేయబడిన టెక్స్ట్‌కు లింక్‌ను క్రియేట్ చేయడం సాధ్యపడదు. పేజీకి లింక్‌ను షేర్ చేయండి.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ఫైల్}other{# ఫైల్‌లు}}</translation>
 <translation id="2017836877785168846">చిరునామా బార్‌లో చరిత్రను మరియు స్వీయ పూరణలను క్లియర్ చేస్తుంది.</translation>
 <translation id="2021896219286479412">పూర్తి స్క్రీన్ సైట్ నియంత్రణలు</translation>
 <translation id="2038563949887743358">డెస్క్‌టాప్ సైట్ అభ్యర్థనను ఆన్ చేయండి</translation>
+<translation id="2039379262107991683">రిమైండర్ పొందటానికి పేజీలను మీ చదవాల్సిన లిస్ట్‌కు జోడించండి</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> డేటాను Chromeలో కూడా కలిగి ఉంటుంది</translation>
+<translation id="2046634576464120978">రిజిస్ట్రేషన్ విఫలమైంది</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2052422354554967744">ఇంటర్నెట్‌లో సెర్చ్ చేయండి</translation>
 <translation id="2056878612599315956">సైట్ పాజ్ చేయబడింది</translation>
@@ -164,7 +165,6 @@
 <translation id="2126426811489709554">Chrome ఆధారితం</translation>
 <translation id="2131665479022868825"><ph name="DATA" /> ఆదా చేయబడింది</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> మూసివేయబడింది</translation>
-<translation id="2139186145475833000">హోమ్ స్క్రీన్‌కు జోడించు</translation>
 <translation id="214888715418183969">మీరు Chromeతో సౌకర్యవంతంగా షేర్ చేసుకోగలిగేవి ఎంచుకోండి. మీరు షేర్ చేసే కొలమానాలు, Chrome ఫీచర్‌లు, పనితీరు, ఇంకా స్థిరత్వాన్ని మెరుగుపరచడంలో సహాయపడతాయి.</translation>
 <translation id="2154484045852737596">కార్డ్‌ను సవరించండి</translation>
 <translation id="2154710561487035718">URLను కాపీ చేయి</translation>
@@ -178,10 +178,12 @@
 <translation id="2195339740518523951">Chrome అత్యంత శక్తివంతమైన రక్షణను పొందండి</translation>
 <translation id="2200113223741723867">డేటా వినియోగ షేరింగ్‌ను మేనేజ్ చేయండి</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" />గా కొనసాగించు</translation>
+<translation id="22320125457191592">మీ కోసం</translation>
 <translation id="2234876718134438132">సింక్, Google సర్వీసులు</translation>
 <translation id="2239812875700136898">Discover కోసం ఆప్షన్‌లు' అనే బటన్ ద్వారా మీకు కనపడే కథనాలను నియంత్రించండి</translation>
 <translation id="2259659629660284697">పాస్‌వర్డ్‌లను ఎగుమతి చేయండి…</translation>
 <translation id="2276696007612801991">మీ పాస్‌వర్డ్‌లను చెక్ చేయడానికి Google ఖాతాకు సైన్ ఇన్ చేయండి</translation>
+<translation id="2278052315791335171">ఈ పాస్‌వర్డ్‌ను తొలగించడం వలన <ph name="SITE" />లో మీ ఖాతా తొలగించబడదు</translation>
 <translation id="2286841657746966508">బిల్లింగ్ చిరునామా</translation>
 <translation id="230115972905494466">అనుకూల పరికరాలు ఏవీ కనుగొనబడలేదు</translation>
 <translation id="230155349749732438">ఈ సెట్టింగ్‌ను ఉపయోగించడానికి '<ph name="BEGIN_LINK" />సెర్చ్‌లను, బ్రౌజింగ్‌ను మెరుగుపరచండి<ph name="END_LINK" />' తప్పనిసరిగా ఆన్ చేయబడి ఉండాలి</translation>
@@ -190,6 +192,11 @@
 <translation id="2321958826496381788">మీరు దీనిని సౌకర్యవంతంగా చదవగలిగే వరకు స్లైడర్‌ను లాగండి. పేరాపై రెండుసార్లు నొక్కిన తర్వాత వచనం కనీసం ఇంత పెద్దదిగా కనిపించాలి.</translation>
 <translation id="2323763861024343754">సైట్ నిల్వ</translation>
 <translation id="2328985652426384049">సైన్ ఇన్ చేయడం సాధ్యపడదు</translation>
+<translation id="2336549603503100420">ఎనేబుల్ చేసినప్పుడు, సైట్‌లు వారి కంటెంట్, అలాగే సర్వీస్‌లను అందించడం కోసం, ఇక్కడ చూపిన గోప్యతా-సంరక్షణ పద్ధతులను ఉపయోగించవచ్చు. వీటిలో క్రాస్-సైట్ ట్రాకింగ్ ప్రత్యామ్నాయాలు కలిగి ఉంటాయి. కాలానుగుణంగా మరిన్ని ట్రయల్‌లు జోడించబడవచ్చు.
+
+<ph name="BEGIN_LIST_ITEM1" />సంగీత కచేరీలోని క్రౌడ్ వలె — వేలాది యూజర్‌లు ఒకే రకమైన ఆసక్తిని షేర్ చేసుకున్నప్పుడు అడ్వర్టయిజర్‌లు తెలుసుకొనవచ్చు, అలాగే ఒక వ్యక్తి కోసం కాకుండా, క్రౌడ్ కోసం యాడ్‌లను ఎంచుకోవచ్చు.<ph name="END_LIST_ITEM1" />
+
+<ph name="BEGIN_LIST_ITEM2" />అడ్వర్టయిజర్‌లు సైట్‌లలో మిమ్మల్ని ట్రాక్ చేయని విధంగా యాడ్‌ల ప్రభావాన్ని అధ్యయనం చేయవచ్చు.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="234265804618409743">మీ కెమెరాను తెరవడం సాధ్యపడలేదు. ఏదో పొరపాటు జరిగింది.</translation>
 <translation id="2345671828921229300">వెతకడానికి, ఒక పదాన్ని తాకి &amp; అలాగే నొక్కి ఉంచండి</translation>
 <translation id="2349710944427398404">ఖాతాలు, బుక్‌మార్క్‌లు, సేవ్ చేసిన సెట్టింగ్‌లతో సహా Chrome ఉపయోగించిన మొత్తం డేటా</translation>
@@ -199,7 +206,6 @@
 <translation id="2387895666653383613">వచన ప్రమాణం</translation>
 <translation id="2394602618534698961">మీరు డౌన్‌లోడ్ చేసే ఫైల్‌లు ఇక్కడ కనిపిస్తాయి</translation>
 <translation id="2407481962792080328">మీ Google ఖాతాకు మీరు సైన్ ఇన్ చేసినప్పుడు, ఈ ఫీచర్ ఆన్ చేయబడుతుంది</translation>
-<translation id="2407674018644220013"><ph name="APP_NAME" />ను మీ ఆటోమేటిక్ సెట్టింగ్‌గా సెట్ చేయాలా?</translation>
 <translation id="2410754283952462441">ఖాతాను ఎంచుకోండి</translation>
 <translation id="2414886740292270097">ముదురు</translation>
 <translation id="2426805022920575512">మరొక ఖాతాను ఎంచుకోండి</translation>
@@ -211,11 +217,9 @@
 <translation id="2459390580524506445">మెరుగైన వాయిస్ సెర్చ్</translation>
 <translation id="246532703174860178">షేర్ చేయండి</translation>
 <translation id="247737702124049222">ఇమేజ్ వివరణలు ఆన్ చేయబడ్డాయి</translation>
-<translation id="2478076885740497414">అనువర్తనాన్ని ఇన్‌స్టాల్ చేయండి</translation>
-<translation id="2479148705183875116">సెట్టింగ్‌లకు వెళ్లు</translation>
 <translation id="2482878487686419369">నోటిఫికేషన్‌లు</translation>
 <translation id="2494974097748878569">Chromeలో Google అసిస్టెంట్</translation>
-<translation id="2496180316473517155">బ్రౌజింగ్ చరిత్ర</translation>
+<translation id="2496180316473517155">బ్రౌజింగ్ హిస్టరీ</translation>
 <translation id="2497852260688568942">సింక్‌ను మీ నిర్వాహకులు నిలిపివేశారు</translation>
 <translation id="250020030759455918">మీరు Chromeలో మీ <ph name="SITE_NAME" /> సైన్ ఇన్ స్టేటస్, బ్రౌజింగ్ డేటా ఇంకా సైట్ డేటాను చూస్తారు</translation>
 <translation id="2512164632052122970">కంటెంట్ భాషలు</translation>
@@ -226,9 +230,7 @@
 <translation id="2532336938189706096">వెబ్ వీక్షణ</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> అంశాలు తొలగించబడ్డాయి</translation>
 <translation id="2536728043171574184">ఈ పేజీ ఆఫ్‌లైన్ కాపీని వీక్షిస్తున్నారు</translation>
-<translation id="2537178555904266562">పాస్‌వర్డ్‌లను సింక్ చేయడంలో ఎర్రర్ ఏర్పడింది</translation>
 <translation id="2546283357679194313">కుక్కీలు మరియు సైట్ డేటా</translation>
-<translation id="2562889244313180139">గుర్తించలేని మారుపేరును ఉపయోగించడం ద్వారా మీకు మరింత సంబంధిత అనుభవాన్ని అందించడానికి వెబ్‌సైట్‌లను, యాప్‌లను అనుమతిస్తుంది.</translation>
 <translation id="2567385386134582609">చిత్రం</translation>
 <translation id="2571711316400087311">ఇతర భాషల్లో ఉన్న పేజీలను Google Translateకు పంపే సదుపాయాన్ని అందించండి</translation>
 <translation id="2581165646603367611">ఇది Chrome ముఖ్యమైనదిగా భావించని కుక్కీలు, కాష్, సైట్‌ల ఇతర డేటాను తీసివేస్తుంది.</translation>
@@ -244,7 +246,7 @@
 <translation id="2689830683995595741">Chromeను ఉపయోగించడం ద్వారా, మీరు <ph name="BEGIN_LINK1" />Google సేవా నిబంధనలు<ph name="END_LINK1" />, అలాగే <ph name="BEGIN_LINK2" />Google Chrome, Chrome OS అదనపు సేవా నిబంధనలు<ph name="END_LINK2" />కు అంగీకరిస్తున్నారు. <ph name="BEGIN_LINK3" />Family Linkతో మేనేజ్ చేస్తున్న Google ఖాతాల కోసం గోప్యతా ప్రకటన<ph name="END_LINK3" /> కూడా వర్తిస్తుంది.</translation>
 <translation id="2704606927547763573">కాపీ చేయబడింది</translation>
 <translation id="2707726405694321444">పేజీని రిఫ్రెష్ చేయండి</translation>
-<translation id="2709516037105925701">ఆటో-ఫిల్</translation>
+<translation id="271033894570825754">కొత్తది</translation>
 <translation id="2718352093833049315">Wi-Fiలో మాత్రమే</translation>
 <translation id="2718846868787000099">కంటెంట్‌ను మీ ప్రాధాన్య భాషల్లో చూపించడానికి, మీరు సందర్శించే సైట్‌లు మీ ప్రాధాన్యతలను చూడగలవు</translation>
 <translation id="2723001399770238859">ఆడియో</translation>
@@ -257,13 +259,13 @@
 <translation id="2779651927720337254">విఫలమైంది</translation>
 <translation id="2781151931089541271">1 సెకను మిగిలి ఉంది</translation>
 <translation id="2801022321632964776">Chrome యొక్క తాజా వెర్షన్‌లో మీ భాషను పొందడానికి అప్‌డేట్ చేయండి</translation>
-<translation id="2810645512293415242">డేటాను సేవ్ చేయడానికి మరియు మరింత వేగంగా లోడ్ చేయడానికి సరళీకరించిన పేజీ.</translation>
-<translation id="281504910091592009">మీ <ph name="BEGIN_LINK" />Google ఖాతా<ph name="END_LINK" />లో సేవ్ చేసిన పాస్‌వర్డ్‌లను చూడండి మరియు నిర్వహించండి</translation>
+<translation id="2805756323405976993">యాప్స్</translation>
+<translation id="281504910091592009">మీ <ph name="BEGIN_LINK" />Google ఖాతా<ph name="END_LINK" />లో సేవ్ చేసిన పాస్‌వర్డ్‌లను చూడండి, మేనేజ్ చేయండి</translation>
 <translation id="2818669890320396765">ఇక ఎప్పుడు ఎక్కడ బుక్‌మార్క్‌లను సెట్‌ చేసినా ఆటోమాటిక్‌గా మీ అన్ని పరికరాలలోనూ పొందాలనుకుంటే, సైన్ ఇన్ చేసి, సమకాలీకరణ ఎంపికను ఆన్ చేయండి</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
-<translation id="2833452327385637152">పదం లేదా ఫ్రేజ్ కోసం సెర్చ్ చేయడానికి, దానిని ట్యాప్ చేయడానికి బదులుగా దానిని నొక్కి, పట్టుకోండి</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 రోజు క్రితం తనిఖీ చేసింది}other{# రోజుల క్రితం తనిఖీ చేసింది}}</translation>
 <translation id="2842985007712546952">మూల ఫోల్డర్</translation>
+<translation id="2856503607207334158">సైన్ ఇన్ చేయడం విఫలమైంది</translation>
 <translation id="2860954141821109167">ఈ పరికరంలో ఫోన్ యాప్ ప్రారంభించబడిందని నిర్ధారించుకోండి</translation>
 <translation id="2870560284913253234">సైట్</translation>
 <translation id="2876369937070532032">మీ భద్రతకు ప్రమాదం పొంచి ఉన్నప్పుడు, మీరు సందర్శించే కొన్ని పేజీల URLలను Googleకు పంపుతుంది</translation>
@@ -298,6 +300,7 @@
 <translation id="3058498974290601450">సెట్టింగ్‌లలో ఎప్పుడైనా మీరు సింక్‌ను ఆన్ చేయవచ్చు</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> బుక్‌మార్క్}other{<ph name="BOOKMARKS_COUNT_MANY" /> బుక్‌మార్క్‌లు}}</translation>
 <translation id="3062802207422175757">Chromeలోని మీ అభిరుచులకు అనుగుణమైన కథనాలు</translation>
+<translation id="3070005020161560471">ఆటోమేటిక్‌గా అనువదించాల్సినవి</translation>
 <translation id="3089395242580810162">అజ్ఞాత ట్యాబ్‌లో తెరువు</translation>
 <translation id="3098745985164956033">మీ కోసం వివరణలను మెరుగుపరచడానికి కొన్ని ఇమేజ్‌లు Googleకు పంపబడ్డాయి</translation>
 <translation id="3114507951000454849">ఈరోజు వార్తలను చదవండి <ph name="NEWS_ICON" /></translation>
@@ -314,6 +317,7 @@
 <translation id="3208584281581115441">ఇప్పుడే చెక్ చేయండి</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> తొలగించబడింది</translation>
 <translation id="321773570071367578">మీరు మీ రహస్య పదబంధాన్ని మర్చిపోతే లేదా ఈ సెట్టింగ్‌ను మార్చాలనుకుంటే, <ph name="BEGIN_LINK" />సింక్‌ను రీసెట్ చేయండి<ph name="END_LINK" /></translation>
+<translation id="3220943972464248773">మీ పాస్‌వర్డ్‌లను సింక్ చేయడానికి, అది మీరేనని వెరిఫై చేయండి</translation>
 <translation id="3227557059438308877">'సెక్యూరిటీ కీ'గా Google Chrome</translation>
 <translation id="3232754137068452469">వెబ్ యాప్‌</translation>
 <translation id="3236059992281584593">1 నిమిషం మిగిలి ఉంది</translation>
@@ -332,13 +336,11 @@
 <translation id="3290991969712132877">ఈ పేజీని త్వరగా యాక్సెస్ చేయడానికి, 'మరిన్ని ఎంపికలు' బటన్ నుండి మీ మొదటి స్క్రీన్‌కు దీనిని జోడించండి</translation>
 <translation id="3295530008794733555">మరింత వేగంగా బ్రౌజ్ చేయండి. తక్కువ డేటాని ఉపయోగించండి.</translation>
 <translation id="3297344142967351106">వాయిస్ సహాయం</translation>
-<translation id="3298243779924642547">లైట్</translation>
 <translation id="3303414029551471755">కంటెంట్‌ను డౌన్‌లోడ్ చేయడం కొనసాగించాలా?</translation>
 <translation id="3315103659806849044">మీరు ప్రస్తుతం మీ సింక్, Google సేవా సెట్టింగ్‌లను అనుకూలీకరిస్తున్నారు. సింక్‌ను ఆన్ చేయడం పూర్తి చేయడానికి, స్క్రీన్ దిగువ భాగం సమీపంలోని నిర్ధారించు బటన్‌ను నొక్కండి. పైకి నావిగేట్ చేయి</translation>
 <translation id="3334729583274622784">ఫైల్ ఎక్స్‌టెన్షన్‌ను మార్చాలా?</translation>
 <translation id="3341058695485821946">మీరు ఎంత డేటాను సేవ్ చేసారో చూడండి</translation>
 <translation id="3350687908700087792">అన్ని అజ్ఞాత ట్యాబ్‌లను మూసివేయండి</translation>
-<translation id="3353615205017136254">Google అందించిన లైట్ పేజీ. అసలు పేజీని లోడ్ చేయడానికి అసలైన దానిని లోడ్ చేయి బటన్‌ను నొక్కండి.</translation>
 <translation id="3359667936385849800">మీ ప్రస్తుత సర్వీస్ ప్రొవైడర్‌ను ఉపయోగించండి</translation>
 <translation id="3367813778245106622">సింక్‌ను ప్రారంభించడానికి మళ్లీ సైన్ ఇన్ చేయండి</translation>
 <translation id="337236281855091893">వెతకడానికి, పదాన్ని ట్యాప్ చేయడానికి బదులు దాన్ని తాకి &amp; అలాగే నొక్కి ఉంచండి</translation>
@@ -347,9 +349,19 @@
 <translation id="3384347053049321195">చిత్రాన్ని షేర్‌ చేయి</translation>
 <translation id="3387650086002190359">ఫైల్ సిస్టమ్ లోపాల కారణంగా <ph name="FILE_NAME" /> డౌన్‌లోడ్ విఫలమైంది.</translation>
 <translation id="3389286852084373014">వచనం చాలా పెద్దదిగా ఉంది</translation>
+<translation id="3391512812407811893">గోప్యతా పరిరక్షణ టెక్నాలజీల సెట్ ట్రయల్‌లు</translation>
 <translation id="3398320232533725830">బుక్‌మార్క్‌ల నిర్వాహికి తెరవండి</translation>
 <translation id="3414952576877147120">పరిమాణం:</translation>
+<translation id="3429160811076349561">ట్రయల్ ఫీచర్‌లు ఆఫ్ చేయబడి ఉన్నాయి</translation>
+<translation id="3440975416244667276">మరింత సంబంధిత సమాచారం కోసం తాకి, నొక్కి ఉంచండి</translation>
 <translation id="3443221991560634068">ప్రస్తుత పేజీని మళ్లీ లోడ్ చేయండి</translation>
+<translation id="3451542610083122179">గోప్యతా పరిరక్షణ టెక్నాలజీల సెట్ అనేది ఓపెన్ వెబ్‌ను సంరక్షించడానికి కొనసాగిస్తున్న కార్యక్రమం, ఇది ట్రాకింగ్ విధానాల నుండి మిమ్మల్ని రక్షించడంలో సహాయపడుతుంది.
+
+ఈ రోజుల్లో, వెబ్‌సైట్‌లు సందర్భోచిత యాడ్‌లను చూపించడం, అలాగే సైట్ పనితీరును అంచనా వేయటం వంటి ముఖ్యమైన సర్వీస్‌ల కోసం థర్డ్-పార్టీ కుక్కీల వంటి అనేక టెక్నాలజీలపై ఆధారపడుతున్నాయి.
+
+సైట్‌లను విచ్ఛిన్నం చేయకుండా, అలాగే వెబ్‌లో రహస్యంగా ట్రాక్ చేయబడకుండా మిమ్మల్ని నిరోధిస్తూ, ఈ సర్వీస్‌లను అమలు చేయడానికి మెరుగైన మార్గాలను క్రియేట్ చేయడం ద్వారా గోప్యతా పరిరక్షణ టెక్నాలజీల సెట్ ఓపెన్ వెబ్ యొక్క ప్రాముఖ్యతను రక్షిస్తుంది.
+
+గోప్యతా పరిరక్షణ టెక్నాలజీల సెట్ ఇప్పటికీ యాక్టివ్ డెవలప్‌మెంట్‌లో ఉంది, అలాగే ఎంచుకున్న ప్రాంతాలలో అందుబాటులో ఉంది. ప్రస్తుతానికి, థర్డ్-పార్టీ కుక్కీల వంటి ప్రస్తుత వెబ్ టెక్నాలజీలను ఉపయోగించడం కొనసాగిస్తూ సైట్‌లు గోప్యతా పరిరక్షణ టెక్నాలజీల సెట్‌ను ట్రై చేయవచ్చు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">మీరు మీ శోధన ఇంజిన్‌ను ఎంచుకోవచ్చు</translation>
 <translation id="3492207499832628349">కొత్త అజ్ఞాత ట్యాబ్</translation>
 <translation id="3493531032208478708">సూచించిన కంటెంట్ గురించి <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
@@ -379,7 +391,6 @@
 <translation id="3658159451045945436">రీసెట్ చేసినట్లయితే, సందర్శించిన సైట్‌ల జాబితాతో పాటు మీ డేటా ఆదాల చరిత్ర తొలగించబడుతుంది.</translation>
 <translation id="3687645719033307815">మీరు ఈ పేజీ ప్రివ్యూను చూస్తున్నారు</translation>
 <translation id="3692944402865947621">నిల్వ స్థానాన్ని చేరుకోలేకపోయిన కారణంగా <ph name="FILE_NAME" /> డౌన్‌లోడ్ విఫలమైంది.</translation>
-<translation id="3701167022068948696">ఇప్పుడే పరిష్కరించు</translation>
 <translation id="371230970611282515">ప్రమాదకరమైన సంఘటనలు జరగడానికి ముందే, వాటిని గుర్తించి, మిమ్మల్ని హెచ్చరిస్తుంది.</translation>
 <translation id="3714981814255182093">శోధన పట్టీని తెరవండి</translation>
 <translation id="3716182511346448902">ఈ పేజీ చాలా మెమరీని ఉపయోగిస్తోంది, కాబట్టి దీన్ని Chrome పాజ్ చేయబడింది.</translation>
@@ -396,7 +407,6 @@
 <translation id="3773856050682458546">మీరు సందర్శించే వెబ్‌సైట్‌లు, మీరు ఉపయోగించే యాప్‌ల గురించి ప్రాథమిక డేటా, ఇంకా సమాచారం</translation>
 <translation id="3775705724665058594">మీ పరికరాలకు పంపండి</translation>
 <translation id="3778956594442850293">హోమ్ స్క్రీన్‌కు జోడించబడింది</translation>
-<translation id="3789841737615482174">ఇన్‌స్టాల్ చేయి</translation>
 <translation id="3810838688059735925">వీడియో</translation>
 <translation id="3810973564298564668">నిర్వహించు</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> డౌన్‌లోడ్‌లు తొలగించబడ్డాయి</translation>
@@ -406,7 +416,6 @@
 <translation id="3894427358181296146">ఫోల్డర్‌ను జోడించండి</translation>
 <translation id="3895926599014793903">జూమ్ చేయడాన్ని నిర్బంధంగా ప్రారంభించు</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" />ని అప్‌డేట్ చేయి</translation>
-<translation id="3909763690984331376">భద్రతా తనిఖీ <ph name="BEGIN_NEW" />కొత్తది<ph name="END_NEW" /></translation>
 <translation id="3912508018559818924">వెబ్ నుండి ఉత్తమమైనది కనుగొంటోంది…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> ఆన్‌లో ఉంది</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -416,7 +425,6 @@
 <translation id="395206256282351086">శోధన మరియు సైట్ సూచనలు నిలిపివేయబడ్డాయి</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{కనెక్ట్ అయినప్పుడు, Chrome మీ పేజీని లోడ్ చేస్తుంది}other{కనెక్ట్ అయినప్పుడు, Chrome మీ పేజీలను లోడ్ చేస్తుంది}}</translation>
 <translation id="3963007978381181125">Google Payకి సంబంధించిన చెల్లింపు పద్ధతులు మరియు చిరునామాలు రహస్య పదబంధం ఎన్‌క్రిప్షన్‌లో ఉండవు. మీ రహస్య పదబంధాన్ని కలిగి ఉన్నవారు మాత్రమే మీ ఎన్‌క్రిప్ట్ చేసిన డేటాను చదవగలరు. రహస్య పదబంధం Google ద్వారా ఎవరికీ పంపబడదు లేదా నిల్వ చేయబడదు. మీరు మీ రహస్య పదబంధాన్ని మర్చిపోతే లేదా ఈ సెట్టింగ్‌ను మార్చాలనుకుంటే, సమకాలీకరణను రీసెట్ చేయాల్సి ఉంటుంది. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
-<translation id="3967822245660637423">డౌన్‌లోడ్ పూర్తయింది</translation>
 <translation id="3969142555815019568">Chrome మీ పాస్‌వర్డ్‌లను చెక్ చేయలేదు</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> Chromeలో తెరవబడుతుంది. కొనసాగడం ద్వారా, మీరు <ph name="BEGIN_LINK1" />Google సేవా నిబంధనలు<ph name="END_LINK1" />, అలాగే <ph name="BEGIN_LINK2" />Google Chrome, Chrome OS అదనపు సేవా నిబంధనలు<ph name="END_LINK2" />కు అంగీకరిస్తున్నారు. <ph name="BEGIN_LINK3" />Family Linkతో మేనేజ్ చేస్తున్న Google ఖాతాల కోసం గోప్యతా ప్రకటన<ph name="END_LINK3" /> కూడా వర్తిస్తుంది.</translation>
 <translation id="397583555483684758">సమకాలీకరణ పని చేయడం ఆగిపోయింది</translation>
@@ -436,6 +444,7 @@
 <translation id="4095146165863963773">యాప్‌ డేటాను తొలగించాలా?</translation>
 <translation id="4095189195365058471">తర్వాత చదవండి <ph name="BEGIN_NEW" />కొత్తది<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">వినియోగ గణాంకాలు, క్రాష్ నివేదికలను Googleకు పంపి, తద్వారా Chromeను మెరుగుపరచడంలో సహాయపడండి.</translation>
+<translation id="4108314971463891922">ఫాలో అవ్వండి</translation>
 <translation id="4108998448622696017">ప్రమాదకరమైన సంఘటనలు జరిగినప్పుడు గుర్తించి, మిమ్మల్ని హెచ్చరిస్తుంది.</translation>
 <translation id="4116038641877404294">పేజీలను ఆఫ్‌లైన్‌లో ఉపయోగించడం కోసం వాటిని డౌన్‌లోడ్ చేసుకోండి</translation>
 <translation id="4135200667068010335">ట్యాబ్‌ను షేర్ చేయాల్సిన పరికరాల జాబితా మూసివేయబడింది.</translation>
@@ -454,30 +463,30 @@
 <translation id="4250229828105606438">స్క్రీన్‌షాట్</translation>
 <translation id="4256782883801055595">ఓపెన్ సోర్స్ లైసెన్స్‌లు</translation>
 <translation id="4263656433980196874">Assistant వాయిస్ సెర్చ్ సమ్మతి UI పూర్తి ఎత్తులో తెరవబడింది</translation>
-<translation id="4269820728363426813">లింక్ చిరునామాను కాపీ చేయి</translation>
+<translation id="4269820728363426813">లింక్ అడ్రస్‌ను కాపీ చేయండి</translation>
 <translation id="4298388696830689168">లింక్ చేసిన సైట్‌లు</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">ప్రాథమికాలు</translation>
 <translation id="4314815835985389558">సింక్‌ను నిర్వహించండి</translation>
 <translation id="4320177379694898372">ఇంటర్నెట్ కనెక్షన్ లేదు</translation>
 <translation id="4321739720395210191">మీ కెమెరాను తెరవడం సాధ్యపడలేదు. మీ పరికరాన్ని పునఃప్రారంభించి, ఆపై మళ్లీ ప్రయత్నించండి.</translation>
+<translation id="433213510553688132">ఫాలో చేస్తున్నారు...</translation>
 <translation id="4335835283689002019">సురక్షిత బ్రౌజింగ్ ఆఫ్‌లో ఉంది</translation>
 <translation id="4351244548802238354">డైలాగ్‌ను మూసివేయి</translation>
 <translation id="4378154925671717803">ఫోన్</translation>
-<translation id="4382908510000698092">Chrome భాషగా ఉపయోగించు</translation>
 <translation id="4384468725000734951">శోధన కోసం Sogouను ఉపయోగిస్తుంది</translation>
 <translation id="4404568932422911380">బుక్‌మార్క్‌లు లేవు</translation>
 <translation id="4405224443901389797">ఇక్కడికి తరలించండి…</translation>
 <translation id="4411535500181276704">లైట్ మోడ్</translation>
 <translation id="4415276339145661267">మీ Google ఖాతాను మేనేజ్ చేయండి</translation>
 <translation id="4427306783828095590">ఫిషింగ్, అలాగే మాల్‌వేర్‌ను బ్లాక్ చేయడానికి మెరుగుపరచిన రక్షణ మరింత చేయగలదు</translation>
-<translation id="4440958355523780886">Google నుండి లైట్ పేజీ అందించబడింది. అసలు పేజీని లోడ్ చేయడానికి నొక్కండి.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ట్యాబ్‌ను మూసివేయండి</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" />కి బుక్‌మార్క్ చేసారు</translation>
 <translation id="4472118726404937099">మీ అన్ని పరికరాలలో సమకాలీకరణ చేయాలన్నా లేదా మీ అభిరుచికి అనుగుణంగా సెట్ చేయాలన్నా, సైన్ ఇన్ చేసి సమకాలీకరణ ఎంపికను ఆన్ చేయాలి</translation>
 <translation id="447252321002412580">Chrome ఫీచర్‌లు మరియు పనితీరును మెరుగుపరచడంలో సహాయపడండి</translation>
 <translation id="4479972344484327217">Chromeలో <ph name="MODULE" /> ఇన్‌స్టాల్ చేయబడుతోంది…</translation>
 <translation id="4487967297491345095">Chrome యాప్‌ డేటా మొత్తం శాశ్వతంగా తొలగించబడుతుంది. డేటాలో అన్ని ఫైల్‌లు, సెట్టింగ్‌లు, ఖాతాలు, డేటాబేస్‌లు మొదలైనవి ఉంటాయి.</translation>
+<translation id="449126573531210296">సింక్ చేయబడిన పాస్‌వర్డ్‌లను మీ Google ఖాతాతో ఎన్‌క్రిప్ట్ చేయండి</translation>
 <translation id="4493497663118223949">లైట్ మోడ్ ఆన్ చేయబడింది</translation>
 <translation id="4508528996305412043">ఫీడ్ కార్డ్ మెనూ తెరవబడింది</translation>
 <translation id="4508642716788467538">మీ భాషను ఎంచుకోండి</translation>
@@ -489,8 +498,10 @@
 <translation id="4532845899244822526">ఫోల్డర్‌ను ఎంచుకోండి</translation>
 <translation id="4538018662093857852">లైట్ మోడ్‌ని ఆన్ చేయండి</translation>
 <translation id="4550003330909367850">ఇక్కడ మీ పాస్‌వర్డ్‌ను వీక్షించడానికి లేదా కాపీ చేయడానికి, ఈ డివైజ్‌లో స్క్రీన్ లాక్‌ను సెట్ చేయండి.</translation>
+<translation id="4554077758708533499">USB కేబుల్‌తో కనెక్ట్ చేయబడింది</translation>
 <translation id="4557685098773234337">ఇక్కడికి త్వరగా చేరుకోవడనికి, ఈ పేజీని మీ మొదటి స్క్రీన్‌కు జోడించండి</translation>
 <translation id="4558311620361989323">వెబ్‌పేజీ షార్ట్‌క‌ట్‌లు</translation>
+<translation id="4561730552726921821">రిజిస్ట్రేషన్ విజయవంతమైంది</translation>
 <translation id="4561979708150884304">కనెక్షన్ లేదు</translation>
 <translation id="4565377596337484307">పాస్‌వర్డ్‌ను దాచిపెట్టు</translation>
 <translation id="4572422548854449519">నిర్వాహిత ఖాతాకు సైన్ ఇన్ చేయండి</translation>
@@ -498,8 +509,8 @@
 <translation id="4587589328781138893">సైట్‌లు</translation>
 <translation id="4594952190837476234">ఈ ఆఫ్‌లైన్ పేజీ <ph name="CREATION_TIME" />కి చెందినది మరియు ఆన్‌లైన్ వెర్షన్ వేరుగా ఉండవచ్చు.</translation>
 <translation id="4605958867780575332">ఈ అంశం తీసివేయబడింది: <ph name="ITEM_TITLE" /></translation>
-<translation id="4614535611158687827">తర్వాత కోసం పేజీలను సేవ్ చేసి, ఒక రిమైండర్‌ను పొందండి</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" />ని తెరువు</translation>
+<translation id="4619564267100705184">ఇది మీరే అని వెరిఫై చేయండి</translation>
 <translation id="4634124774493850572">పాస్‌వర్డ్‌ను ఉపయోగించు</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 చోరీకి గురైన పాస్‌వర్డ్}other{# చోరీకి గురైన పాస్‌వర్డ్‌లు}}</translation>
 <translation id="4650364565596261010">సిస్టమ్ డిఫాల్ట్</translation>
@@ -507,7 +518,6 @@
 <translation id="4662373422909645029">మారుపేరులో అంకెలు ఉండరాదు</translation>
 <translation id="4663499661119906179">మీ కోసం ఉన్న టాప్ సైట్‍లు అలాగే కథనాలను చూడండి</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> బుక్‌మార్క్‌లు తొలగించబడ్డాయి</translation>
-<translation id="4665282149850138822"><ph name="NAME" /> మీ హోమ్ స్క్రీన్‌కు జోడించబడింది</translation>
 <translation id="4668347365065281350">కుక్కీలు, స్థానికంగా నిల్వ చేసిన ఇతర డేటాతో సహా సైట్‌లలో నిల్వ చేసిన మొత్తం డేటా</translation>
 <translation id="4684427112815847243">అంతా సింక్ చేయండి</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
@@ -551,7 +561,7 @@
 <translation id="4882831918239250449">Search, యాడ్స్‌లతో పాటు మరిన్నింటిని వ్యక్తిగతీకరించడానికి మీ బ్రౌజింగ్ హిస్టరీ ఎలా ఉపయోగించబడుతుందో నియంత్రించండి</translation>
 <translation id="4885273946141277891">మద్దతు లేనన్ని సార్లు Chromeను ప్రారంభించడానికి ప్రయత్నించారు.</translation>
 <translation id="4908869848243824489">Google ద్వారా Discover</translation>
-<translation id="4910889077668685004">చెల్లింపు అనువర్తనాలు</translation>
+<translation id="4910889077668685004">చెల్లింపు యాప్‌లు</translation>
 <translation id="4913161338056004800">గణాంకాలను రీసెట్ చేయి</translation>
 <translation id="4913169188695071480">రీఫ్రెష్ చేయడం ఆపివేయి</translation>
 <translation id="4915549754973153784">పరికరాల కోసం స్కాన్ చేస్తున్నప్పుడు <ph name="BEGIN_LINK" />సహాయం పొందండి<ph name="END_LINK" />…</translation>
@@ -572,7 +582,6 @@
 <translation id="5004416275253351869">Google కార్యకలాప నియంత్రణలు</translation>
 <translation id="5005498671520578047">పాస్‌వర్డ్ కాపీచేయడం</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> దీనికి కనెక్ట్ చేయాలనుకుంటోంది</translation>
-<translation id="5013696553129441713">కొత్త సూచనలు ఏవీ లేవు</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">అనుమతించు</translation>
 <translation id="5040262127954254034">గోప్యత</translation>
@@ -585,19 +594,24 @@
 <translation id="5132942445612118989">అన్ని పరికరాల్లో మీ పాస్‌వర్డ్‌లు, చరిత్ర, మరిన్నింటిని సింక్ చేయండి</translation>
 <translation id="5136035049889637840">ఇలాంటి ప్రోడక్ట్‌ కొను <ph name="BEGIN_NEW" />కొత్తది<ph name="END_NEW" /></translation>
 <translation id="5139940364318403933">Google డిస్క్‌ని ఎలా ఉపయోగించాలో తెలుసుకోండి</translation>
-<translation id="5152843274749979095">మద్దతు గల అనువర్తనాలు ఏవీ ఇన్‌స్టాల్ చేయబడలేదు</translation>
+<translation id="5152843274749979095">మద్దతు గల యాప్‌లు ఏవీ ఇన్‌స్టాల్ చేయబడలేదు</translation>
 <translation id="5161254044473106830">శీర్షిక అవసరం</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 డౌన్‌లోడ్ విఫలమైంది.}other{# డౌన్‌లోడ్‌లు విఫలమయ్యాయి.}}</translation>
 <translation id="5170568018924773124">ఫోల్డర్‌లో చూపించు</translation>
 <translation id="5184329579814168207">Chromeలో తెరువు</translation>
+<translation id="5191251636205085390">థర్డ్-పార్టీ కుక్కీలను భర్తీ చేయడానికి, అలాగే వాటిని కంట్రోల్ చేయడానికి ఉద్దేశించిన కొత్త టెక్నాలిజీల గురించి తెలుసుకోండి</translation>
 <translation id="5193988420012215838">మీ క్లిప్‌బోర్డ్‌కు కోడ్ కాపీ చేయబడింది</translation>
 <translation id="5199929503336119739">కార్యాలయ ప్రొఫైల్</translation>
+<translation id="5204967432542742771">పాస్‌వర్డ్‌ని నమోదు చేయండి</translation>
 <translation id="5210286577605176222">మునుపటి ట్యాబ్‌కు వెళ్లండి</translation>
 <translation id="5210365745912300556">ట్యాబ్‌ను మూసివేయి</translation>
 <translation id="5213672942202814946">వాయిస్ సెర్చ్‌ను ఉపయోగించండి</translation>
+<translation id="5215116848420601511">Google Payని ఉపయోగిస్తున్న చెల్లింపు పద్ధతులు మరియు చిరునామాలు</translation>
 <translation id="5222676887888702881">సైన్ ఔట్</translation>
+<translation id="5227554086496586518">సెర్చ్ ఫలితాలను చూడటానికి ట్యాప్ చేయండి</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> సమీపంలోని బ్లూటూత్ పరికరాల కోసం స్కాన్ చేయాలనుకుంటోంది. కింది పరికరాలు కనుగొనబడ్డాయి:</translation>
 <translation id="5233638681132016545">కొత్త‌ టాబ్</translation>
+<translation id="5250483651202458397">స్క్రీన్‌షాట్. మూసివేయడానికి ట్యాప్ చేయండి.</translation>
 <translation id="526421993248218238">ఈ పేజీని లోడ్ చేయడం సాధ్యం కాదు</translation>
 <translation id="5271967389191913893">పరికరం డౌన్‌లోడ్ చేయాల్సిన కంటెంట్‌ను తెరవలేదు.</translation>
 <translation id="5292796745632149097">ఈ పరికరానికి పంపండి</translation>
@@ -611,11 +625,12 @@
 <translation id="5355191726083956201">మెరుగైన రక్షణ ఆన్‌లో ఉంది</translation>
 <translation id="5357811892247919462">ట్యాబ్‌ను అందుకున్నారు</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> ట్యాబ్ తెరవబడి ఉంది, ట్యాబ్‌లను మార్చడం కోసం నొక్కండి}other{<ph name="OPEN_TABS_MANY" /> ట్యాబ్‌లు తెరవబడి ఉన్నాయి, ట్యాబ్‌లను మార్చడం కోసం నొక్కండి}}</translation>
+<translation id="5375577065097716013"><ph name="BEGIN_NEW" />కొత్తది<ph name="END_NEW" /> Google Lensతో ఇమేజ్‌ను సెర్చ్ చేయి</translation>
 <translation id="5403644198645076998">నిర్దిష్ట సైట్‌లను మాత్రమే అనుమతించండి</translation>
 <translation id="5414836363063783498">ధృవీకరిస్తోంది...</translation>
 <translation id="5423934151118863508">మీరు అత్యంత ఎక్కువగా సందర్శించిన పేజీలు ఇక్కడ కనిపిస్తాయి</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB అందుబాటులో ఉంది</translation>
-<translation id="543338862236136125">పాస్‌వర్డ్‌ను సవరించు</translation>
+<translation id="543338862236136125">పాస్‌వర్డ్‌ను ఎడిట్ చేయండి</translation>
 <translation id="5433691172869980887">వినియోగదారు పేరు కాపీ చేయబడింది</translation>
 <translation id="543509235395288790"><ph name="COUNT" /> ఫైల్‌లను డౌన్‌లోడ్ చేస్తోంది (<ph name="MEGABYTES" />).</translation>
 <translation id="5441466871879044658">ఈ భాషలోకి అనువదించు</translation>
@@ -635,19 +650,21 @@
 <translation id="5524843473235508879">మళ్లింపు బ్లాక్ చేయబడింది.</translation>
 <translation id="5527082711130173040">పరికరాల కోసం స్కాన్ చేయడానికి Chromeకు స్థాన యాక్సెస్ అవసరం. <ph name="BEGIN_LINK1" />అనుమతులను అప్‌డేట్ చేయండి<ph name="END_LINK1" />. అలాగే స్థాన యాక్సెస్ <ph name="BEGIN_LINK2" />ఈ పరికరానికి ఆఫ్ చేయబడింది<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">అజ్ఞాత ట్యాబ్‌లను మూసివేయి</translation>
-<translation id="5530920986376047241">పేజీలను తిరిగి కనుగొనడానికి మీరు వాటిని మీ చదవాల్సిన లిస్ట్‌కు సేవ్ చేయవచ్చు</translation>
 <translation id="5534640966246046842">సైట్ కాపీ చేయబడింది</translation>
+<translation id="5548606607480005320">భద్రతా చెక్-అప్</translation>
 <translation id="5556459405103347317">మళ్లీ లోడ్ చేయి</translation>
 <translation id="5561549206367097665">నెట్‌వర్క్ కోసం వేచి ఉంది…</translation>
 <translation id="55737423895878184">స్థానం మరియు నోటిఫికేషన్‌లు అనుమతించబడతాయి</translation>
 <translation id="5578795271662203820">ఈ చిత్రం కోసం <ph name="SEARCH_ENGINE" />లో వెతకండి</translation>
 <translation id="5581519193887989363">మీరు ఎప్పుడైనా <ph name="BEGIN_LINK1" />సెట్టింగ్‌ల<ph name="END_LINK1" /> ద్వారా వేటిని సింక్ చేయాలో ఎంచుకోవచ్చు.</translation>
-<translation id="5595485650161345191">చిరునామాను సవరించు</translation>
 <translation id="5599455543593328020">అజ్ఞాత మోడ్</translation>
 <translation id="5599941490345670218">Google Assistant మీకోసం వెబ్‌సైట్‌లు అంతటా చర్యలను పూర్తి చేయగలదు</translation>
 <translation id="5620163320393916465">సేవ్ చేసిన పాస్‌వర్డ్‌లు ఏవీ లేవు</translation>
 <translation id="5620928963363755975">'మరిన్ని ఎంపికలు' బటన్ నొక్కి, డౌన్‌లోడ్‌లలో మీ ఫైల్‌లు మరియు పేజీలను కనుగొనండి</translation>
+<translation id="562168087174703495">హైలైట్ చేసిన టెక్స్ట్‌కు లింక్‌ను క్రియేట్ చేయడం సాధపడదు. పేజీకి లింక్‌ను షేర్ చేయండి.</translation>
+<translation id="562289928968387744">ప్రతిస్పందనలను మేనేజ్ చేయండి</translation>
 <translation id="5626134646977739690">పేరు:</translation>
+<translation id="5628604359369369630">చదవనివి - ఆఫ్‌లైన్‌లో అందుబాటులో ఉన్నాయి</translation>
 <translation id="5639724618331995626">అన్ని సైట్‌లను అనుమతించండి</translation>
 <translation id="5648166631817621825">గత 7 రోజులు</translation>
 <translation id="5655963694829536461">మీ డౌన్‌లోడ్‌లను వెతకండి</translation>
@@ -656,7 +673,6 @@
 <translation id="5668404140385795438">దగ్గరకు జూమ్ చేయడాన్ని నిరోధించడానికి ప్రయత్నించే వెబ్‌సైట్ అభ్యర్థనను పట్టించుకోదు</translation>
 <translation id="5683547024293500885">అప్‌డేట్‌లను Chrome చెక్ చేయలేదు</translation>
 <translation id="5686790454216892815">ఫైల్ పేరు చాలా పొడవుగా ఉంది</translation>
-<translation id="5687809546194252819"><ph name="APP_NAME" /> రీస్టార్ట్ సమయంలో <ph name="LANGUAGE" />ని ఉపయోగిస్తుంది.</translation>
 <translation id="569536719314091526">మరిన్ని ఎంపికలు బటన్‌ని ఉపయోగించి ఈ పేజీని ఏ భాషలోకైనా అనువదించుకోవచ్చు</translation>
 <translation id="5696597120588531049">డేటా ఉల్లంఘనలు, సురక్షితం కాని వెబ్‌సైట్‌లు, మరిన్నింటి నుండి మిమ్మల్ని సురక్షితంగా ఉంచడంలో Chrome సహాయపడగలదు</translation>
 <translation id="5697688514913266141">మీ ఫైల్ <ph name="BEGIN_BOLD" /><ph name="DIRECTORY" /><ph name="END_BOLD" />లో సేవ్ చేయబడుతుంది. <ph name="BEGIN_LINK2" />ఎడిట్<ph name="END_LINK2" />.</translation>
@@ -675,6 +691,7 @@
 <translation id="5765780083710877561">వివరణ:</translation>
 <translation id="5767013862801005129"><ph name="TAB_TITLE" /> రీస్టోర్ చేయబడింది, ట్యాబ్</translation>
 <translation id="5776970333778123608">ముఖ్యంగా పరిగణించని డేటా</translation>
+<translation id="5780792035410621042">పాస్‌వర్డ్‌లను కాపీ చేయడానికి, ముందుగా మీ పరికరంలో స్క్రీన్ లాక్‍ను సెట్ చేయండి</translation>
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" />లో <ph name="SPACE_USED" /> ఉపయోగించబడింది</translation>
 <translation id="5795872532621730126">శోధన, బ్రౌజ్</translation>
 <translation id="5797070761912323120">శోధన, ప్రకటనలు, ఇతర Google సేవలను వ్యక్తిగతీకరించడానికి Google మీ చరిత్రను ఉపయోగించే అవకాశం ఉంటుంది</translation>
@@ -711,13 +728,10 @@
 <translation id="5962718611393537961">కుదించడానికి నొక్కండి</translation>
 <translation id="5964805880140440652">ఈ పేజీని మరొక పరికరానికి షేర్ చేయడానికి, Chrome సెట్టింగ్‌లలో సింక్‌ను ఆన్ చేయండి</translation>
 <translation id="5964869237734432770">ఇమేజ్ వివరణలను ఆపివేయి</translation>
-<translation id="5979084224081478209">పాస్‌వర్డ్‌లను తనిఖీ చేయి</translation>
+<translation id="5979084224081478209">పాస్‌వర్డ్‌లను చెక్ చేయండి</translation>
 <translation id="5982307838673692400">అజ్ఞాత ట్యాబ్‌ను తెరవండి</translation>
 <translation id="6000066717592683814">Googleని ఉంచు</translation>
 <translation id="6005538289190791541">సూచించబడిన పాస్‌వర్డ్‌</translation>
-<translation id="6012539369710767899">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{మీ వద్ద <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> పేజీ ఉంది}other{మీ వద్ద <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> పేజీలు ఉన్నాయి}}</translation>
-<translation id="6014293228235665243">చదవనివి</translation>
-<translation id="6018309500671889594">గుర్తించలేని మారుపేరును ఉపయోగించడం ద్వారా యాడ్ క్యాంపెయిన్‌లను అధ్యయనం చేయడానికి అడ్వర్టయిజర్‌లను అనుమతిస్తుంది.</translation>
 <translation id="6036057147555329831">అదనపు ICU</translation>
 <translation id="6039379616847168523">తదుపరి ట్యాబ్‌కు వెళ్లండి</translation>
 <translation id="6040143037577758943">మూసివేయి</translation>
@@ -734,11 +748,11 @@
 <translation id="6122831415929794347">సురక్షిత బ్రౌజింగ్‌ను ఆఫ్ చేయాలా?</translation>
 <translation id="6127379762771434464">అంశాన్ని తీసివేసారు</translation>
 <translation id="6137022273846704445"><ph name="APP_NAME" /> భాష</translation>
+<translation id="6138832295072039549">ఇక్కడ మీ సైట్ సెట్టింగ్‌లు మార్చండి</translation>
 <translation id="6140709049082532940">మెరుగైన రక్షణ:</translation>
 <translation id="6140912465461743537">దేశం/ప్రాంతం</translation>
 <translation id="614940544461990577">ఇలా చేసి ప్రయత్నించండి:</translation>
 <translation id="6154478581116148741">ఈ పరికరం నుండి మీ పాస్‌వర్డ్‌లను ఎగుమతి చేయడానికి సెట్టింగ్‌లలో స్క్రీన్ లాక్‌ను ఆన్ చేయండి</translation>
-<translation id="6157392216611456285"><ph name="APP_NAME" />ను ఎంచుకోండి</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> డేటా పొదుపులు</translation>
 <translation id="6186394685773237175">చోరీకి గురైన పాస్‌వర్డ్‌లు ఏవీ కనుగొనబడలేదు</translation>
 <translation id="6192907950379606605">ఇమేజ్ వివరణలను పొందండి</translation>
@@ -750,7 +764,6 @@
 <translation id="6232535412751077445">“ట్రాక్ చేయవద్దు”ను ప్రారంభించడం వ‌ల్ల‌ మీ బ్రౌజింగ్ ట్రాఫిక్‌తో పాటు ఒక అభ్యర్థన చేర్చబడుతుంది. ఆ అభ్యర్థనకు వెబ్‌సైట్ ప్రతిస్పందించిందా లేదా మరియు అభ్యర్థన ఎలా ప‌రిగ‌ణించ‌బ‌డింది అనే వాటిపై ఏ ప్రభావం అయినా ఆధారపడి ఉంటుంది. 
 
 ఉదాహరణకు, కొన్ని వెబ్‌సైట్‌లు ఈ అభ్యర్థనకు ప్రతిస్పందనగా మీరు సందర్శించిన ఇతర వెబ్‌సైట్‌ల ఆధారితం కాని ప్రకటనలను మీకు చూపుతాయి. అనేక వెబ్‌సైట్‌లు భద్రతను మెరుగుపరచడం, కంటెంట్, ప్రకటనలు మరియు సిఫార్సులను అందించడం మరియు నివేదన గణాంకాలను రూపొందించడం మొదలైనవాటి కోసం ఇప్పటికీ మీ బ్రౌజింగ్ డేటాను సేకరించి, ఉపయోగిస్తాయి.</translation>
-<translation id="6243852395147506234">ఆఫ్‌లైన్ కోసం సిద్ధంగా ఉంది</translation>
 <translation id="624789221780392884">అప్‌డేట్‌ సిద్ధంగా ఉంది</translation>
 <translation id="6255999984061454636">కంటెంట్ సూచనలు</translation>
 <translation id="6277522088822131679">పేజీని ముద్రిస్తున్నప్పుడు సమస్య ఏర్పడింది. దయచేసి మళ్లీ ప్రయత్నించండి.</translation>
@@ -763,14 +776,15 @@
 <translation id="6312687380483398334">వెబ్ యాప్‌లు (నిశ్శబ్దం)</translation>
 <translation id="6316139424528454185">Android వెర్షన్‌కు మద్దతు లేదు</translation>
 <translation id="6324034347079777476">Android సిస్టమ్ సమకాలీకరణ నిలిపివేయబడింది</translation>
+<translation id="6324977638108296054">హైలైట్ చేసిన టెక్స్ట్‌కు లింక్ క్రియేట్ చేయబడదు</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> ద్వారా భాగస్వామ్యం చేయి</translation>
 <translation id="6337234675334993532">ఎన్‌క్రిప్షన్</translation>
 <translation id="6341580099087024258">ఫైల్‌లను ఎక్కడ సేవ్ చేయాలో అడుగు</translation>
 <translation id="6342069812937806050">ఇప్పుడే</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">చదివినట్లుగా గుర్తించు</translation>
+<translation id="6363990818884053551">సింక్‌ను ప్రారంభించడానికి, అది మీరేనని వెరిఫై చేయండి</translation>
 <translation id="6364438453358674297">చరిత్ర నుండి సూచనను తీసివేయాలా?</translation>
-<translation id="6366047038980456022">మీరు ఆన్‌లైన్‌లో సురక్షితంగా పని చేయడానికి, రూపొందించడానికి, అలాగే అన్వేషించడానికి అవసరమైన స్మార్ట్‌లను, వేగాన్ని <ph name="APP_NAME" /> కలిగి ఉంది</translation>
 <translation id="6378173571450987352">వివరాలు: ఉపయోగించిన డేటా మొత్తం ద్వారా క్రమీకరించబడ్డాయి</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> Chromeలో తెరవబడుతుంది. కొనసాగడం ద్వారా, మీరు <ph name="BEGIN_LINK1" />Google సేవా నిబంధనలు<ph name="END_LINK1" />, అలాగే <ph name="BEGIN_LINK2" />Google Chrome, Chrome OS అదనపు సేవా నిబంధనలు<ph name="END_LINK2" />కు అంగీకరిస్తున్నారు.</translation>
 <translation id="6381421346744604172">వెబ్‌సైట్‌లు ముదురు రంగులో చేయి</translation>
@@ -794,6 +808,8 @@
 <translation id="6475951671322991020">వీడియోను డౌన్‌లోడ్ చేయి</translation>
 <translation id="6477928892249167417">ఈ సైట్‌లు మీకు ముఖ్యమైనవిగా అనిపిస్తున్నాయి:</translation>
 <translation id="6482749332252372425">నిల్వ స్థలం లేనందున <ph name="FILE_NAME" /> డౌన్‌లోడ్ విఫలమైంది.</translation>
+<translation id="6489610539826642779">చదవాల్సిన లిస్ట్ <ph name="BEGIN_NEW" />కొత్తది<ph name="END_NEW" /></translation>
+<translation id="6490496612063106490">హైలైట్ చేయబడిన టెక్స్ట్‌కు లింక్</translation>
 <translation id="6496823230996795692">మొదటి సారి <ph name="APP_NAME" />ని ఉపయోగించడానికి, దయచేసి ఇంటర్నెట్‌కు కనెక్ట్ చేయండి.</translation>
 <translation id="6508722015517270189">Chromeను పునఃప్రారంభించండి</translation>
 <translation id="6527303717912515753">భాగస్వామ్యం చేయి</translation>
@@ -827,12 +843,11 @@
 <translation id="6656545060687952787">పరికరాల కోసం స్కాన్ చేయడానికి Chromeకు స్థాన యాక్సెస్ అవసరం. <ph name="BEGIN_LINK" />అనుమతులను అప్‌డేట్ చేయండి<ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">పాస్‌వర్డ్</translation>
 <translation id="6659594942844771486">ట్యాబ్</translation>
-<translation id="6663079968236414793">టెక్స్ట్‌కు లింక్</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />లో తెరువు</translation>
 <translation id="666981079809192359">Chrome గోప్యతా నోటీసు</translation>
 <translation id="6671495933530132209">చిత్రాన్ని కాపీ చేయి</translation>
+<translation id="6674571176963658787">సింక్‌ను ప్రారంభించడానికి, రహస్య పదబంధాన్ని ఎంటర్ చేయండి</translation>
 <translation id="6676840375528380067">ఈ పరికరం నుండి మీ Chrome డేటాని తీసివేయాలా?</translation>
-<translation id="6691888250440401212">1. <ph name="APP_NAME" />ను ఎంచుకోండి\n2. “ఆటోమేటిక్ సెట్టింగ్‌గా సెట్ చేయి”ని ట్యాప్ చేయండి</translation>
 <translation id="6697492270171225480">పేజీ కనుగొనబడనప్పుడు అటువంటి పేజీల కోసం సూచనలను చూపుతుంది</translation>
 <translation id="6698801883190606802">సమకాలీకరించిన డేటాను నిర్వహించండి</translation>
 <translation id="6699370405921460408">మీరు సందర్శించే పేజీలను Google సర్వర్‌లు ఆప్టిమైజ్ చేస్తాయి.</translation>
@@ -843,6 +858,7 @@
 <translation id="6767294960381293877">ట్యాబ్‌ను షేర్ చేయాల్సిన పరికరాల జాబితా సగం ఎత్తులో తెరవబడింది.</translation>
 <translation id="6783942555455976443">ఈ పేజీని తర్వాత కోసం సేవ్ చేసి, ఒక రిమైండర్‌ను పొందండి</translation>
 <translation id="6811034713472274749">పేజీ వీక్షించడానికి సిద్ధంగా ఉంది</translation>
+<translation id="6813446258015311409">Chromeకు సైన్ ఇన్ చేయండి, తెరవబడింది.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, ట్యాబ్‌ను ఎంచుకున్నారు</translation>
 <translation id="6845325883481699275">Chrome భద్రతను మెరుగుపరచడంలో సహాయం చేయండి</translation>
@@ -850,6 +866,7 @@
 <translation id="6850409657436465440">మీ డౌన్‌లోడ్‌‌ ఇప్పటికీ జరుగుతోంది</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> ట్యాబ్‌లు మూసివేయబడ్డాయి</translation>
 <translation id="685850645784703949">Google ద్వారా Discover - ఆఫ్‌లో ఉంది</translation>
+<translation id="686366188661646310">పాస్‌వర్డ్‌ను తొలగించాలా?</translation>
 <translation id="6864459304226931083">చిత్రాన్ని డౌన్‌లోడ్ చేయి</translation>
 <translation id="6865313869410766144">ఆటో-ఫిల్ ఫారమ్ డేటా</translation>
 <translation id="6882836635272038266">ప్రమాదకరంగా గుర్తించిన వెబ్‌సైట్‌లు, డౌన్‌లోడ్‌లు, ఎక్స్‌టెన్షన్‌ల నుండి ప్రామాణిక రక్షణ.</translation>
@@ -863,21 +880,19 @@
 
 మీరు <ph name="BEGIN_BOLD2" />అజ్ఞాత మోడ్‌లోని అన్ని ట్యాబ్‌లను మూసినప్పుడే<ph name="END_BOLD2" /> మీ అజ్ఞాత సెషన్‌లోని డేటా Chrome నుండి క్లియర్ చేయబడుతుంది.</translation>
 <translation id="6942665639005891494">సెట్టింగ్‌ల మెనూ ఎంపికను ఉపయోగించి డిఫాల్ట్ డౌన్‌లోడ్ స్థానాన్ని మార్చండి</translation>
+<translation id="694267552845942083">మీరు ప్రస్తుతం మీ సింక్ సెట్టింగ్‌లను అనుకూలీకరిస్తున్నారు. సింక్‌ను ఆన్ చేయడం పూర్తి చేయడానికి, స్క్రీన్ దిగువ భాగం సమీపంలోని 'నిర్ధారించు' బటన్‌ను ట్యాప్ చేయండి. పైకి నావిగేట్ చేయి</translation>
 <translation id="6945221475159498467">ఎంచుకోండి</translation>
 <translation id="6955535239952325894">మేనేజ్ అవుతోన్న బ్రౌజర్‌లలో ఈ సెట్టింగ్ డిజేబుల్ చేయబడింది.</translation>
 <translation id="6963766334940102469">బుక్‌మార్క్‌లను తొలగించు</translation>
 <translation id="6979737339423435258">మొత్తం సమయం</translation>
 <translation id="6981982820502123353">యాక్సెసిబిలిటీ</translation>
 <translation id="6989267951144302301">డౌన్‌లోడ్ సాధ్యపడలేదు</translation>
-<translation id="6990079615885386641">Google Play Store నుండి యాప్‌ను పొందండి: <ph name="APP_ACTION" /></translation>
 <translation id="6995899638241819463">మీరు ఉపయోగించే పాస్‌వర్డ్‌లు, ఏదైనా డేటా ఉల్లంఘనలో బహిర్గతమైతే మిమ్మల్ని హెచ్చరిస్తుంది</translation>
 <translation id="7015203776128479407">ప్రాథమిక సింక్ సెటప్ పూర్తి కాలేదు. సింక్ ఆఫ్‌లో ఉంది.</translation>
 <translation id="7022756207310403729">బ్రౌజర్‌లో తెరువు</translation>
 <translation id="702463548815491781">TalkBack లేదా స్విచ్ యాక్సెస్ ఆన్‌లో ఉన్నప్పుడు సిఫార్సు చేయబడింది</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> రీస్టోర్ చేయబడింది</translation>
 <translation id="7029809446516969842">పాస్‌వర్డ్‌లు</translation>
-<translation id="7030675613184250187">మీ చదివే జాబితాకు పేజీలను సేవ్ చేయడం ద్వారా మీరు వాటిని మళ్లీ చూడగలరు లేదా ఆఫ్‌లైన్‌లో చదవగలరు.</translation>
-<translation id="703523980599857277">హోమ్ పేజీని మార్చు</translation>
 <translation id="7054588988317389591">ఇమేజ్ వివరణలను పొందాలనుకుంటున్నారా?</translation>
 <translation id="7055152154916055070">మళ్లింపు బ్లాక్ చేయబడింది:</translation>
 <translation id="7063006564040364415">సింక్ సర్వర్‌కు కనెక్ట్ చేయడం సాధ్యపడలేదు.</translation>
@@ -888,10 +903,8 @@
 <translation id="7088681679121566888">Chrome అప్‌డేట్ చేసి ఉంది</translation>
 <translation id="7106762743910369165">మీ బ్రౌజర్ మీ సంస్థ ద్వారా మేనేజ్ చేయబడుతుంది</translation>
 <translation id="7121362699166175603">చిరునామా బార్‌లో చరిత్ర, స్వీయపూరింపులను తొలగిస్తుంది. మీ Google ఖాతా <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />లో ఇతర రూపాల్లో ఉన్న బ్రౌజింగ్ చరిత్రను కలిగి ఉండవచ్చు.</translation>
-<translation id="7128355412245153445">మీరు హోమ్ బటన్‌ను ట్యాప్ చేసినప్పుడల్లా మీ టాప్ సైట్‌లు, ఇటీవలి కథనాలను చూస్తారు</translation>
 <translation id="7138678301420049075">ఇతర</translation>
 <translation id="7146622961999026732">ఈ సైట్‌లు, యాప్‌లు మీకు ముఖ్యమైనవిగా అనిపిస్తున్నాయి:</translation>
-<translation id="7149158118503947153"><ph name="DOMAIN_NAME" /> నుండి <ph name="BEGIN_LINK" />అసలైన పేజీని లోడ్ చేయండి<ph name="END_LINK" /></translation>
 <translation id="7149893636342594995">గత 72 గంటలు</translation>
 <translation id="7173114856073700355">సెట్టింగ్‌లను తెరువు</translation>
 <translation id="7177466738963138057">మీరు దీన్ని తర్వాత సెట్టింగ్‌లలో మార్చవచ్చు</translation>
@@ -900,7 +913,6 @@
 <translation id="718926126787620637">పూర్తి ఎత్తులో తెరవబడిన బుక్‌మార్క్ ఫోల్డర్‌ల లిస్ట్</translation>
 <translation id="7189372733857464326">Google Play సేవల నవీకరణ పూర్తి కావడానికి వేచి ఉంది</translation>
 <translation id="7191430249889272776">బ్యాక్‌గ్రౌండ్‌లో ట్యాబ్ తెరవబడింది.</translation>
-<translation id="720894724577012575">కేటగిరీలు: <ph name="COMMA_SEPERATED_CATEGORY_LIST" />.</translation>
 <translation id="7233236755231902816">మీ భాషలో వెబ్‌ను చూడడానికి, Chrome యొక్క తాజా వెర్షన్‌ను డౌన్‌లోడ్ చేసుకోండి</translation>
 <translation id="7248069434667874558">Chromeలో <ph name="TARGET_DEVICE_NAME" />కు సింక్ ఆన్ చేయబడి ఉందని నిర్ధారించుకోండి</translation>
 <translation id="7274013316676448362">బ్లాక్ చేసిన సైట్</translation>
@@ -914,6 +926,7 @@
 <translation id="7304873321153398381">ఆఫ్‌లైన్‌లో ఉన్నారు. Chrome మీ పాస్‌వర్డ్‌లను చెక్ చేయలేదు.</translation>
 <translation id="7313188324932846546">సింక్‌ను సెటప్ చేయడానికి ట్యాప్ చేయండి</translation>
 <translation id="7328017930301109123">లైట్ మోడ్‌లో, Chrome పేజీలను వేగంగా లోడ్ చేస్తుంది, అలాగే 60 శాతం తక్కువ డేటాను ఉపయోగిస్తుంది.</translation>
+<translation id="7332075081379534664">సైన్ ఇన్ విజయవంతమైంది</translation>
 <translation id="7333031090786104871">ఇంకా మునుపటి సైట్‌ను జోడిస్తోంది</translation>
 <translation id="7340958967809483333">Discover కోసం ఆప్షన్‌లు</translation>
 <translation id="7352651011704765696">ఏదో తప్పు జరిగింది</translation>
@@ -926,7 +939,6 @@
 <translation id="7403691278183511381">Chrome మొదటి అమలు అనుభవం</translation>
 <translation id="741204030948306876">సరే, సమ్మతమే</translation>
 <translation id="7413229368719586778">ప్రారంభ తేదీ <ph name="DATE" /></translation>
-<translation id="7416941666639889592">Web Crowdలో చేరడం ద్వారా, వ్యక్తిగతంగా గుర్తించగలిగే సమాచారాన్ని ఉపయోగించకుండానే మీ వెబ్ అనుభవాన్ని సంబంధితంగా చేయడానికి మీరు వెబ్‌సైట్‌లను అనుమతిస్తారు. ఒక సంగీత కచేరీలో పాల్గొనే క్రౌడ్ మాదిరిగానే, వేలాది మంది యూజర్‌లు ఒకే విధమైన ఆసక్తిని పంచుకుంటారని వెబ్‌సైట్‌లు, అడ్వర్టయిజర్‌లకు తెలుస్తుంది.</translation>
 <translation id="7431991332293347422">శోధనలు మరియు మరిన్నింటిని వ్యక్తిగతీకరించడానికి మీ బ్రౌజింగ్ చరిత్ర ఎలా ఉపయోగించబడుతుందో నియంత్రించండి</translation>
 <translation id="7435356471928173109">మీ అడ్మినిస్ట్రేటర్ ఆఫ్ చేశారు</translation>
 <translation id="7437998757836447326">Chrome నుండి సైన్ అవుట్ చేయండి</translation>
@@ -938,6 +950,7 @@
 <translation id="7475688122056506577">SD కార్డ్ కనుగొనబడలేదు. మీ ఫైల్‌లలో కొన్ని ఉండకపోవచ్చు.</translation>
 <translation id="7479104141328977413">ట్యాబ్ నిర్వహణ</translation>
 <translation id="7481312909269577407">ఫార్వర్డ్</translation>
+<translation id="7481864133709957613">ఈ పేజీ నుండి సెర్చ్ చేయడానికి, ట్యాప్ చేయడానికి బదులుగా పదాలను తాకి, నొక్కి ఉంచండి</translation>
 <translation id="7482656565088326534">ప్రివ్యూ ట్యాబ్</translation>
 <translation id="7484997419527351112">Discover - ఆఫ్‌లో ఉంది</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (నవీకరించినది <ph name="TIME_SINCE_UPDATE" />)</translation>
@@ -946,8 +959,9 @@
 <translation id="7507207699631365376">ఈ ప్రొవైడర్ <ph name="BEGIN_LINK" />గోప్యతా పాలసీ<ph name="END_LINK" />ని చూడండి</translation>
 <translation id="7514365320538308">డౌన్‌లోడ్ చేయి</translation>
 <translation id="751961395872307827">సైట్‌కు కనెక్ట్ చేయడం సాధ్యపడలేదు</translation>
+<translation id="752220631458524187">మీ చర్యలు పూర్తయిన తర్వాత డిస్‌కనెక్ట్ చేయండి</translation>
+<translation id="7523960634226602883">Google Lensను ఉపయోగించి మీ కెమెరాతో సెర్చ్ చేయండి</translation>
 <translation id="753225086557513863">తరువాత డౌన్‌లోడ్ చేయడానికి షెడ్యూల్ చేయబడింది</translation>
-<translation id="7542481630195938534">సూచనలను పొందడం సాధ్యపడదు</translation>
 <translation id="7559975015014302720">లైట్ మోడ్ ఆఫ్ చేయబడింది</translation>
 <translation id="7562080006725997899">బ్రౌజింగ్ డేటాను తీసివేస్తోంది</translation>
 <translation id="756809126120519699">Chrome డేటా తీసివేయబడింది</translation>
@@ -966,7 +980,7 @@
 <translation id="7630202231528827509">ప్రొవైడర్ URL</translation>
 <translation id="7638584964844754484">రహస్య పదబంధం చెల్లదు</translation>
 <translation id="7641339528570811325">బ్రౌజింగ్ డేటాను తీసివేయి…</translation>
-<translation id="7648422057306047504">పాస్‌వర్డ్‌లను Google ఆధారాలతో ఎన్‌క్రిప్ట్ చేయి</translation>
+<translation id="7646772052135772216">పాస్‌వర్డ్ సింక్ పనిచేయడం లేదు</translation>
 <translation id="7658239707568436148">రద్దు చేయి</translation>
 <translation id="7665369617277396874">ఖాతాను జోడించండి</translation>
 <translation id="766587987807204883">కథనాలు ఇక్కడ కనిపిస్తాయి, మీరు ఆఫ్‌లైన్‌లో ఉన్నప్పటికీ కూడా వీటిని చదవవచ్చు</translation>
@@ -975,7 +989,6 @@
 <translation id="7704317875155739195">ఆటో-ఫిల్ సెర్చ్‌లు, URLలు</translation>
 <translation id="7707922173985738739">మొబైల్ డేటాను ఉపయోగిస్తుంది</translation>
 <translation id="7725024127233776428">మీరు బుక్‌మార్క్ చేసే పేజీలు ఇక్కడ కనిపిస్తాయి</translation>
-<translation id="7735637452482172701">స్క్రీన్ లాక్‌తో అన్‌లాక్ చేయి</translation>
 <translation id="7746457520633464754">Chrome ప్రమాదకరమైన యాప్‌లు, సైట్‌లను గుర్తించడానికి, మీరు సందర్శించే కొన్ని పేజీల URLలు, పరిమిత సిస్టమ్ సమాచారం, కొంత పేజీ కంటెంట్‌ను Googleకు పంపుతుంది</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> నుండి షేర్ చేయబడిన వచనం</translation>
 <translation id="7761849928583394409">తేదీ, సమయం ఎంచుకోండి</translation>
@@ -986,7 +999,6 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">కొత్త కథనాల కోసం తర్వాత మళ్లీ చెక్ చేయండి</translation>
 <translation id="7786595606756654269">వెబ్‌లో సెర్చ్ చేయడం కోసం, అలాగే మీరు తెరిచిన సైట్‌లతో ఎంగేజ్ అయ్యి ఉండటం కోసం Google Assistant మెరుగైన వాయిస్ అనుభవాన్ని అందిస్తుంది. Google Assistant మీరు దానితో ఉపయోగించే సైట్ల URL, అలాగే కంటెంట్‌లను అందుకుంటుంది.</translation>
-<translation id="7790349552933995572">హోమ్ స్క్రీన్</translation>
 <translation id="7791543448312431591">జోడించు</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> ట్యాబ్‌లు రీస్టోర్ చేయబడ్డాయి</translation>
 <translation id="780301667611848630">వద్దు , ధన్యవాదాలు</translation>
@@ -998,11 +1010,14 @@
 <translation id="784934925303690534">సమయ పరిధి</translation>
 <translation id="7851858861565204677">ఇతర పరికరాలు</translation>
 <translation id="7857691613771368249">ఫైల్స్‌ను సేవ్ చేయవలసి వచ్చినప్పుడు అనుమతి అడగాలి</translation>
+<translation id="7859988229622350291">వీటిని ఎప్పటికీ అనువదించవద్దు</translation>
 <translation id="7875915731392087153">ఇమెయిల్‌ను సృష్టించండి</translation>
 <translation id="7876243839304621966">అన్నీ తొలగించు</translation>
+<translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{మీకు <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> చదవని పేజీ ఉంది}other{మీకు <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> చదవని పేజీలు ఉన్నాయి}}</translation>
 <translation id="7882131421121961860">చరిత్ర ఏదీ కనుగొనబడలేదు</translation>
 <translation id="7886917304091689118">Chromeలో అమలు అవుతోంది</translation>
 <translation id="789763218334337857">Chromeను ఉపయోగించడం ఎలా</translation>
+<translation id="7903184275147100332">దీనికి ఒక నిమిషం పట్టవచ్చు</translation>
 <translation id="7919123827536834358">ఈ భాషలను ఆటోమేటిక్‌గా అనువదించు</translation>
 <translation id="7925590027513907933">{FILE_COUNT,plural, =1{ఫైల్‌ను డౌన్‌లోడ్ చేస్తోంది.}other{# ఫైల్‌లను డౌన్‌లోడ్ చేస్తోంది.}}</translation>
 <translation id="7926975587469166629">కార్డ్ మారుపేరు</translation>
@@ -1024,6 +1039,7 @@
 <translation id="8015452622527143194">పేజీలో ఉన్నవ‌న్నీ, తిరిగి డిఫాల్ట్ సైజ్‌కు తీసుకురండి</translation>
 <translation id="8026334261755873520">బ్రౌజింగ్ డేటా క్లియర్ చేయండి</translation>
 <translation id="8027863900915310177">ఎక్కడ డౌన్‌లోడ్ చేయాలో ఎంచుకోండి</translation>
+<translation id="8032569120109842252">ఫాలో చేస్తున్నారు</translation>
 <translation id="8035133914807600019">కొత్త ఫోల్డర్…</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> రోజులు మిగిలి ఉంది</translation>
 <translation id="8037801708772278989">ఇప్పుడే తనిఖీ చేసింది</translation>
@@ -1035,7 +1051,9 @@
 <translation id="806745655614357130">నా డేటాను విడిగా ఉంచండి</translation>
 <translation id="8073388330009372546">కొత్త ట్యాబ్‌లో చిత్రం తెరువు</translation>
 <translation id="8076492880354921740">ట్యాబ్‌లు</translation>
+<translation id="8078096376109663956">టెక్స్ట్‌ను మాత్రమే షేర్ చేయండి</translation>
 <translation id="8084114998886531721">సేవ్ చేసిన పాస్‌వర్డ్</translation>
+<translation id="808747664143081553">పరికరానికి కనెక్ట్ చేయబడింది</translation>
 <translation id="8103578431304235997">అజ్ఞాత ట్యాబ్</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">ఇక ఎప్పుడు ఎక్కడ బుక్‌మార్క్‌లను సెట్‌ చేసినా ఆటోమాటిక్‌గా మీ అన్ని పరికరాలలో పొందాలనుకుంటే, సమకాలీకరణ ఎంపికని ఆన్ చేయండి</translation>
@@ -1048,6 +1066,7 @@
 <translation id="8156139159503939589">మీరు ఏ భాషలను చదవగలరు?</translation>
 <translation id="8168435359814927499">కంటెంట్</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> ఫైల్‌లు మిగిలి ఉన్నాయి</translation>
+<translation id="8189750580333936930">గోప్యతా పరిరక్షణ టెక్నాలజీల సెట్</translation>
 <translation id="8190358571722158785">1 రోజు మిగిలి ఉంది</translation>
 <translation id="8200772114523450471">మ‌ళ్లీ ప్రారంభించు</translation>
 <translation id="8209050860603202033">చిత్రాన్ని తెరువు</translation>
@@ -1056,7 +1075,6 @@
 <translation id="8218622182176210845">మీ ఖాతాను నిర్వహించండి</translation>
 <translation id="8223642481677794647">ఫీడ్ కార్డ్ మెనూ</translation>
 <translation id="8224471946457685718">మీ కోసం అందించే కథనాలను Wi-Fi ద్వారా డౌన్‌లోడ్ చేసుకోండి</translation>
-<translation id="8232956427053453090">డేటాను అలాగే ఉంచు</translation>
 <translation id="8233540874193135768">QR కోడ్‌ను స్కాన్ చేయడానికి, కెమెరా ఉన్న పరికరాన్ని ఉపయోగించండి.</translation>
 <translation id="8250920743982581267">పత్రాలు</translation>
 <translation id="825412236959742607">ఈ పేజీ చాలా మెమరీని ఉపయోగిస్తుంది, కాబట్టి Chrome కొంత కంటెంట్‌ను తీసివేసింది.</translation>
@@ -1066,19 +1084,19 @@
 <translation id="8274165955039650276">డౌన్‌లోడ్‌లు చూడండి</translation>
 <translation id="8281886186245836920">దాటవేయి</translation>
 <translation id="8284326494547611709">క్యాప్షన్‌లు</translation>
+<translation id="829672787777123339">మీ పరికరానికి కనెక్ట్ అవుతోంది…</translation>
 <translation id="8310344678080805313">ప్రామాణిక ట్యాబ్‌లు</translation>
 <translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> మరియు మరిన్ని సైట్‌లు</translation>
 <translation id="8327155640814342956">ఉత్తమ బ్రౌజింగ్ అనుభవం కోసం, Chromeను అప్‌డేట్ చేయడానికి అనుమతించండి</translation>
+<translation id="834313815369870491">ఈ సైట్‌లను ఎప్పటికీ అనువదించవద్దు</translation>
 <translation id="8349013245300336738">వినియోగించిన డేటా పరిమాణం ద్వారా క్రమీకరించు</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> డౌన్‌లోడ్‌లు రీస్టోర్ చేయబడ్డాయి</translation>
 <translation id="8364299278605033898">ప్రసిద్ధ వెబ్‌సైట్‌లను చూడండి</translation>
 <translation id="8368027906805972958">తెలియని లేదా మద్దతు లేని పరికరం (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> సిద్ధంగా ఉంది.</translation>
 <translation id="8393700583063109961">సందేశాన్ని పంపండి</translation>
-<translation id="8407396331882458341">1. <ph name="APP_NAME" />ను ఎంచుకోండి\n2. “ఎల్లప్పుడూ”ను ట్యాప్ చేయండి</translation>
 <translation id="8410695015584479363">ధరలను ట్రాక్ చేయండి</translation>
 <translation id="8413126021676339697">పూర్తి చరిత్రను చూపించు</translation>
-<translation id="8425213833346101688">మార్చు</translation>
 <translation id="8427875596167638501">ప్రివ్యూ ట్యాబ్ సగం తెరవబడింది</translation>
 <translation id="8428213095426709021">సెట్టింగ్‌లు</translation>
 <translation id="8438566539970814960">సెర్చ్‌లను, బ్రౌజింగ్‌ను మెరుగుపరచండి</translation>
@@ -1087,8 +1105,9 @@
 <translation id="8445448999790540984">పాస్‌వర్డ్‌లను ఎగుమతి చేయడం సాధ్యం కాదు</translation>
 <translation id="8461694314515752532">మీ స్వంత సమకాలీకరణ రహస్య పదబంధంతో సమకాలీకరించబడిన డేటాని ఎన్‌క్రిప్ట్ చేయండి</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> ఇంటర్నెట్‌కు కనెక్ట్ చేయబడి ఉందని నిర్ధారించుకోండి</translation>
+<translation id="8473863474539038330">అడ్రస్‌లు, మరికొన్ని వివరాలు</translation>
+<translation id="8481980314595922412">ట్రయల్ ఫీచర్‌లు ఆన్ చేయబడ్డాయి</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
-<translation id="8487700953926739672">ఆఫ్‌లైన్‌లో అందుబాటు</translation>
 <translation id="8489271220582375723">చరిత్ర పేజీని తెరవండి</translation>
 <translation id="8493948351860045254">స్థలాన్ని ఖాళీ చేయి</translation>
 <translation id="8497726226069778601">ఇక్కడ చూడటానికి ఏమీ లేదు… ఇప్పటికీ</translation>
@@ -1103,14 +1122,14 @@
 <translation id="8555836665334561807">Wi-Fiలో</translation>
 <translation id="8559990750235505898">ఇతర భాషలలో పేజీలను అనువదించడాన్ని ఆఫర్ చేస్తుంది</translation>
 <translation id="8560602726703398413">బుక్‌మార్క్‌లలో మీ చదవాల్సిన లిస్ట్‌ను కనుగొనండి</translation>
-<translation id="8561196567344536112">1. సెట్టింగ్‌లకు వెళ్లండి\n2. “బ్రౌజర్ యాప్”ను ట్యాప్ చేయండి\n3. <ph name="APP_NAME" />ను ఎంచుకోండి</translation>
 <translation id="8562452229998620586">సేవ్ చేయబడిన పాస్‌వర్డ్‌లు ఇక్కడ కనిపిస్తాయి.</translation>
 <translation id="8569404424186215731"><ph name="DATE" /> నుండి</translation>
 <translation id="8571213806525832805">గత 4 వారాలు</translation>
 <translation id="8572344201470131220">ఇమేజ్ కాపీ చేయబడింది</translation>
 <translation id="8583805026567836021">ఖాతా డేటాను క్లియర్ చేస్తోంది</translation>
-<translation id="8587585930972369234">సెర్చ్ చేయడానికి నొక్కి, పట్టుకోండి</translation>
 <translation id="860043288473659153">కార్డుదారుని పేరు</translation>
+<translation id="8602358303461588329">Chromeకు సైన్ ఇన్ చేయండి, మూసివేయబడింది.</translation>
+<translation id="860282621117673749">ధర తగ్గింపు అలర్ట్‌లు</translation>
 <translation id="8616006591992756292">మీ Google ఖాతా <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />లో ఇతర రూపాల్లో ఉన్న బ్రౌజింగ్ చరిత్రను కలిగి ఉండవచ్చు.</translation>
 <translation id="8617240290563765734">డౌన్‌లోడ్ చేసిన కంటెంట్‌లో పేర్కొన్న సూచిత URLని తెరవాలా?</translation>
 <translation id="8636825310635137004">మీ ఇతర పరికరాల నుండి మీ ట్యాబ్‌లను పొందడానికి, సమకాలీకరణను ఆన్ చేయండి</translation>
@@ -1127,9 +1146,9 @@
 <translation id="8712637175834984815">అర్థమైంది</translation>
 <translation id="8725066075913043281">మళ్ళీ ప్రయత్నించండి</translation>
 <translation id="8748850008226585750">కంటెంట్‌లు దాచబడ్డాయి</translation>
+<translation id="8773160212632396039">రిక్వెస్ట్‌ను ప్రాసెస్ చేస్తోంది</translation>
 <translation id="8788265440806329501">నావిగేషన్ చరిత్ర మూసివేయబడింది</translation>
 <translation id="8788968922598763114">చివరగా మూసివేసిన ట్యాబ్‌ను మళ్లీ తెరవండి</translation>
-<translation id="8795672590390389447">గోప్యతా శాండ్‌బాక్స్</translation>
 <translation id="8798449543960971550">చదవండి</translation>
 <translation id="8812260976093120287">కొన్ని వెబ్‌సైట్‌ల‌లో, మీరు మీ పరికరంలో ఎగువ పేర్కొన్న మద్దతు గల చెల్లింపు యాప్‌లతోచెల్లించవచ్చు.</translation>
 <translation id="881688628773363275">ప్రివ్యూ ట్యాబ్‌లో ఉన్న కంటెంట్‌ను చూడటం సాధ్యం కాదు.</translation>
@@ -1166,7 +1185,7 @@
 <translation id="9042893549633094279">గోప్యత, సెక్యూరిటీ</translation>
 <translation id="9050666287014529139">రహస్య పదబంధం</translation>
 <translation id="9063523880881406963">డెస్క్‌టాప్ సైట్ అభ్యర్థనను ఆఫ్ చేయండి</translation>
-<translation id="9065203028668620118">సవరించు</translation>
+<translation id="9065203028668620118">ఎడిట్</translation>
 <translation id="9065383040763568503">Chrome ముఖ్యమైనదిగా భావించని నిల్వ చేసిన డేటా (ఉదా. సేవ్ చేసిన సెట్టింగ్‌లు లేని సైట్‌లు లేదా మీరు తరచుగా సందర్శించని సైట్‌లు)</translation>
 <translation id="9069543557624799859"><ph name="TIME" />కు డౌన్‌లోడ్ చేయడం ప్రారంభమవుతుంది.</translation>
 <translation id="9069999660519089861">చదవని పేజీలు ఏవీ లేవు</translation>
@@ -1187,7 +1206,6 @@
 <translation id="9149286894143103695">ఈ సైట్‌ను ఈ ఫోన్ మొదటి స్క్రీన్‌కు జోడించండి, తద్వారా మీరు దానిని త్వరగా యాక్సెస్ చేయవచ్చు</translation>
 <translation id="9155898266292537608">ఒక పదంపై నొక్కడం ద్వారా కూడా మీరు త్వరగా వెతకవచ్చు</translation>
 <translation id="9169507124922466868">నావిగేషన్ చరిత్ర సగం తెరిచి ఉంది</translation>
-<translation id="9191031968346938109">దీనికి జోడించు…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 నిమిషం క్రితం తనిఖీ చేసింది}other{# నిమిషాల క్రితం తనిఖీ చేసింది}}</translation>
 <translation id="9204836675896933765">1 ఫైల్ మిగిలి ఉంది</translation>
 <translation id="9206873250291191720">A</translation>
@@ -1196,7 +1214,6 @@
 <translation id="926205370408745186">డిజిటల్ సంక్షేమం నుండి మీ Chrome కార్యకలాపాన్ని తీసివేస్తుంది</translation>
 <translation id="927968626442779827">Google Chromeలోని లైట్ మోడ్‌ను ఉపయోగించండి</translation>
 <translation id="932327136139879170">హోమ్</translation>
-<translation id="93753284658583800">హోమ్ పేజీ మార్చబడింది</translation>
 <translation id="938850635132480979">ఎర్రర్: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">రహస్య పదబంధాన్ని నమోదు చేయండి</translation>
 <translation id="948039501338975565">బుక్‌మార్క్ ఫోల్డర్‌ల లిస్ట్</translation>
@@ -1204,7 +1221,6 @@
 <translation id="962979164594783469">ఈ యాప్‌ను ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="968900484120156207">మీరు సందర్శించే పేజీలు ఇక్కడ కనిపిస్తాయి</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> నిమిషాలు మిగిలి ఉంది</translation>
-<translation id="974555521953189084">సింక్‌ను ప్రారంభించడానికి మీ రహస్య పదబంధాన్ని నమోదు చేయండి</translation>
 <translation id="981121421437150478">ఆఫ్‌లైన్</translation>
 <translation id="983192555821071799">అన్ని ట్యాబ్‌లను మూసివేయి</translation>
 <translation id="987264212798334818">సాధారణం</translation>

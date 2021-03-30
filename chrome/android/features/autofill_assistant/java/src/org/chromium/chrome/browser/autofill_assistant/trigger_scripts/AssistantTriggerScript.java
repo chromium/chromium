@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.autofill_assistant.AssistantBottomSheetConten
 import org.chromium.chrome.browser.autofill_assistant.AssistantRootViewContainer;
 import org.chromium.chrome.browser.autofill_assistant.BottomSheetUtils;
 import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
+import org.chromium.chrome.browser.autofill_assistant.ScrollToHideGestureListener;
 import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChip;
 import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChipViewHolder;
 import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantDimension;
@@ -30,6 +31,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 
@@ -60,10 +62,9 @@ public class AssistantTriggerScript {
 
     private AssistantHeaderCoordinator mHeaderCoordinator;
     private AssistantHeaderModel mHeaderModel;
+    private ScrollToHideGestureListener mGestureListener;
     private LinearLayout mChipsContainer;
     private final int mInnerChipSpacing;
-    /** Height of the bottom sheet's shadow, used to compute the viewport resize offset. */
-    private final int mShadowHeight;
     /** Whether the visual viewport should be resized while the trigger script is shown. */
     private boolean mResizeVisualViewport;
 
@@ -107,13 +108,11 @@ public class AssistantTriggerScript {
         };
         mInnerChipSpacing = mContext.getResources().getDimensionPixelSize(
                 R.dimen.autofill_assistant_actions_spacing);
-        mShadowHeight = mContext.getResources().getDimensionPixelSize(
-                R.dimen.bottom_sheet_toolbar_shadow_height);
     }
 
     private void createBottomSheetContents() {
-        mContent =
-                new AssistantBottomSheetContent(mContext, () -> new AssistantBottomBarDelegate() {
+        mContent = new AssistantBottomSheetContent(
+                mContext, () -> new AssistantBottomBarDelegate() {
                     @Override
                     public boolean onBackButtonPressed() {
                         return mDelegate.onBackButtonPressed();
@@ -127,7 +126,30 @@ public class AssistantTriggerScript {
                         assert false : "This should never happen";
                         mDelegate.onBottomSheetClosedWithSwipe();
                     }
+                }) {
+            @Override
+            public boolean setContentSizeListener(@Nullable ContentSizeListener listener) {
+                return super.setContentSizeListener(new ContentSizeListener() {
+                    @Override
+                    public void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
+                        if (mGestureListener != null
+                                && (mGestureListener.isScrolling()
+                                        || mGestureListener.isSheetHidden()
+                                        || mGestureListener.isSheetSettling())) {
+                            // Prevent the bottom sheet from being reset and moving back
+                            // to its normal position while scrolling or running a settle
+                            // animation controlled by the scroll-to-hide gesture listener.
+                            return;
+                        }
+                        // This happens when hide sheet is immediately called after expand sheet.
+                        if (listener == null) {
+                            return;
+                        }
+                        listener.onSizeChanged(width, height, oldWidth, oldHeight);
+                    }
                 });
+            }
+        };
         // Allow swipe-to-dismiss.
         mContent.setPeekModeDisabled(true);
 
@@ -152,6 +174,7 @@ public class AssistantTriggerScript {
     }
 
     public void destroy() {
+        disableScrollToHide();
         mBottomSheetController.removeObserver(mBottomSheetObserver);
         if (mHeaderCoordinator != null) {
             mHeaderCoordinator.destroy();
@@ -250,7 +273,7 @@ public class AssistantTriggerScript {
         addChipsToContainer(mChipsContainer, mRightAlignedChips);
     }
 
-    public boolean show(boolean resizeVisualViewport) {
+    public boolean show(boolean resizeVisualViewport, boolean scrollToHide) {
         if (mHeaderModel == null || mHeaderCoordinator == null) {
             assert false : "createHeaderAndGetModel() must be called before show()";
             return false;
@@ -262,10 +285,14 @@ public class AssistantTriggerScript {
         mBottomSheetController.addObserver(mBottomSheetObserver);
         BottomSheetUtils.showContentAndMaybeExpand(mBottomSheetController, mContent,
                 /* shouldExpand = */ true, /* animate = */ mAnimateBottomSheet);
+
+        if (scrollToHide) enableScrollToHide();
+
         return true;
     }
 
     public void hide() {
+        disableScrollToHide();
         mBottomSheetController.removeObserver(mBottomSheetObserver);
         mBottomSheetController.hideContent(mContent, /* animate = */ mAnimateBottomSheet);
         mResizeVisualViewport = false;
@@ -277,10 +304,8 @@ public class AssistantTriggerScript {
             setVisualViewportResizing(0);
             return;
         }
-        // In order to align the bottom of a website with the top of the bottom sheet, we need to
-        // remove the shadow height from the sheet's current offset. Note that mShadowHeight is
-        // different from the sheet controller's getTopShadowHeight().
-        setVisualViewportResizing(mBottomSheetController.getCurrentOffset() - mShadowHeight);
+
+        setVisualViewportResizing(mBottomSheetController.getCurrentOffset());
     }
 
     /**
@@ -296,5 +321,19 @@ public class AssistantTriggerScript {
         }
 
         mInsetSupplier.set(resizing);
+    }
+
+    private void disableScrollToHide() {
+        if (mGestureListener == null) return;
+
+        GestureListenerManager.fromWebContents(mWebContents).removeListener(mGestureListener);
+        mGestureListener = null;
+    }
+
+    private void enableScrollToHide() {
+        if (mGestureListener != null) return;
+
+        mGestureListener = new ScrollToHideGestureListener(mBottomSheetController, mContent);
+        GestureListenerManager.fromWebContents(mWebContents).addListener(mGestureListener);
     }
 }

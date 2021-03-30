@@ -12,7 +12,7 @@
 {%-   for param in struct.packed.packed_fields_in_ordinal_order %}
   {{param.field.kind|cpp_wrapper_call_type}} p_{{param.field.name}}{};
 {%-   endfor %}
-  {{struct.name}}DataView input_data_view({{params}}, &serialization_context);
+  {{struct.name}}DataView input_data_view({{params}}, {{message}});
   {{struct_macros.deserialize(struct, "input_data_view", "p_%s", "success")}}
   if (!success) {
     ReportValidationErrorForMessage(
@@ -301,7 +301,6 @@ bool {{class_name}}_{{method.name}}_ForwardToCallback::Accept(
   TRACE_EVENT1("mojom", "{{namespace_as_string}}::{{class_name}}::{{method.name}}Callback",
                "message", message->name());
 #endif
-  mojo::internal::MessageDispatchContext dispatch_context(message);
 {%-     if method|method_supports_lazy_serialization %}
   if (!message->is_serialized()) {
     auto context =
@@ -326,8 +325,6 @@ bool {{class_name}}_{{method.name}}_ForwardToCallback::Accept(
               message->mutable_payload());
 
 {%-     set desc = class_name~"::"~method.name~" response" %}
-  mojo::internal::SerializationContext serialization_context;
-  serialization_context.TakeHandlesFromMessage(message);
   {{alloc_params(method.response_param_struct, "params", "message", method.sequential_ordinal, "true")}}
   if (!callback_.is_null())
     std::move(callback_).Run({{pass_params(method.response_parameters)}});
@@ -410,8 +407,6 @@ bool {{class_name}}_{{method.name}}_HandleSyncResponse::Accept(
           message->mutable_payload());
 
 {%-       set desc = class_name~"::"~method.name~" response" %}
-  mojo::internal::SerializationContext serialization_context;
-  serialization_context.TakeHandlesFromMessage(message);
   {{alloc_params(method.response_param_struct, "params", "message", method.sequential_ordinal, "true")}}
 
 {%-       for param in method.response_parameters %}
@@ -433,9 +428,6 @@ bool {{class_name}}StubDispatch::Accept(
     {{interface.name}}* impl,
     mojo::Message* message) {
 {%- if interface.methods %}
-  mojo::internal::MessageDispatchContext dispatch_context(message);
-  mojo::internal::SerializationContext serialization_context;
-  serialization_context.TakeHandlesFromMessage(message);
   switch (message->header()->name) {
 {%-   for method in interface.methods %}
     case internal::k{{class_name}}_{{method.name}}_Name: {
@@ -493,9 +485,6 @@ bool {{class_name}}StubDispatch::AcceptWithResponder(
     mojo::Message* message,
     std::unique_ptr<mojo::MessageReceiverWithStatus> responder) {
 {%- if interface.methods %}
-  mojo::internal::MessageDispatchContext dispatch_context(message);
-  mojo::internal::SerializationContext serialization_context;
-  serialization_context.TakeHandlesFromMessage(message);
   const bool message_is_sync = message->has_flag(mojo::Message::kFlagIsSync);
   const uint64_t request_id = message->request_id();
   ALLOW_UNUSED_LOCAL(message_is_sync);

@@ -11,6 +11,7 @@ namespace {
 // Store the key as the thread destruction callback doesn't get it.
 PartitionTlsKey g_key;
 void (*g_destructor)(void*) = nullptr;
+void (*g_on_dll_process_detach)() = nullptr;
 
 // Static callback function to call with each thread termination.
 void NTAPI PartitionTlsOnThreadExit(PVOID module,
@@ -18,6 +19,9 @@ void NTAPI PartitionTlsOnThreadExit(PVOID module,
                                     PVOID reserved) {
   if (reason != DLL_THREAD_DETACH && reason != DLL_PROCESS_DETACH)
     return;
+
+  if (reason == DLL_PROCESS_DETACH && g_on_dll_process_detach)
+    g_on_dll_process_detach();
 
   if (g_destructor) {
     void* per_thread_data = PartitionTlsGet(g_key);
@@ -39,6 +43,10 @@ bool PartitionTlsCreate(PartitionTlsKey* key, void (*destructor)(void*)) {
     return true;
   }
   return false;
+}
+
+void PartitionTlsSetOnDllProcessDetach(void (*callback)()) {
+  g_on_dll_process_detach = callback;
 }
 
 }  // namespace internal

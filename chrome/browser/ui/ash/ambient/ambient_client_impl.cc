@@ -7,14 +7,14 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "base/callback.h"
-#include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/channel_info.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
@@ -61,8 +61,7 @@ bool HasPrimaryAccount(const Profile* profile) {
   if (!identity_manager)
     return false;
 
-  return identity_manager->HasPrimaryAccount(
-      signin::ConsentLevel::kNotRequired);
+  return identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 }
 
 bool IsEmailDomainSupported(const user_manager::User* user) {
@@ -120,8 +119,8 @@ void AmbientClientImpl::RequestAccessToken(GetAccessTokenCallback callback) {
       IdentityManagerFactory::GetForProfile(profile);
   DCHECK(identity_manager);
 
-  CoreAccountInfo account_info = identity_manager->GetPrimaryAccountInfo(
-      signin::ConsentLevel::kNotRequired);
+  CoreAccountInfo account_info =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   const signin::ScopeSet scopes{kPhotosOAuthScope, kBackdropOAuthScope};
   // TODO(b/148463064): Handle retry refresh token and multiple requests.
   // Currently only one request is allowed.

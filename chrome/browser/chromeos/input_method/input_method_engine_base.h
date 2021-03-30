@@ -63,7 +63,9 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
     virtual void OnActivate(const std::string& engine_id) = 0;
 
     // Called when a text field gains focus, and will be sending key events.
+    // `context_id` is a unique ID given to this focus session.
     virtual void OnFocus(
+        int context_id,
         const IMEEngineHandlerInterface::InputContext& context) = 0;
 
     // Called when a text field loses focus, and will no longer generate events.
@@ -87,7 +89,7 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
 
     // Called when a surrounding text is changed.
     virtual void OnSurroundingTextChanged(const std::string& engine_id,
-                                          const base::string16& text,
+                                          const std::u16string& text,
                                           int cursor_pos,
                                           int anchor_pos,
                                           int offset_pos) = 0;
@@ -126,15 +128,12 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
       Profile* profile);
 
   // IMEEngineHandlerInterface overrides.
-  void FocusIn(const ui::IMEEngineHandlerInterface::InputContext& input_context)
-      override;
-  void FocusOut() override;
   void Enable(const std::string& component_id) override;
   void Disable() override;
   void Reset() override;
   void ProcessKeyEvent(const ui::KeyEvent& key_event,
                        KeyEventDoneCallback callback) override;
-  void SetSurroundingText(const base::string16& text,
+  void SetSurroundingText(const std::u16string& text,
                           uint32_t cursor_pos,
                           uint32_t anchor_pos,
                           uint32_t offset_pos) override;
@@ -149,7 +148,9 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
 
   // Commit the specified text to the specified context.  Fails if the context
   // is not focused.
-  bool CommitText(int context_id, const char* text, std::string* error);
+  bool CommitText(int context_id,
+                  const std::u16string& text,
+                  std::string* error);
 
   // Notifies InputContextHandler to commit any composition text.
   // Set |reset_engine| to false if the event was from the extension.
@@ -287,17 +288,13 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
 
   // Notifies InputContextHanlder to commit |text|.
   virtual void CommitTextToInputContext(int context_id,
-                                        const std::string& text) = 0;
+                                        const std::u16string& text) = 0;
 
   // Notifies InputContextHandler to delete surrounding text.
   void DeleteSurroundingTextToInputContext(int offset, size_t number_of_chars);
 
   // Sends the key event to the window tree host.
   virtual bool SendKeyEvent(const ui::KeyEvent& event, std::string* error) = 0;
-
-  // Used to verify that a key event is valid before precessing it in the
-  // current context.
-  virtual bool IsValidKeyEvent(const ui::KeyEvent* ui_event) = 0;
 
   ui::TextInputType current_input_type_;
 
@@ -330,12 +327,8 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
   std::vector<gfx::Rect> composition_bounds_;
 
   // The text to be committed from calling input.ime.commitText API.
-  std::string text_;
+  std::u16string text_;
   bool commit_text_changed_;
-
-  // Indicates whether the IME extension is currently handling a physical key
-  // event. This is used in CommitText/UpdateCompositionText/etc.
-  bool handling_key_event_;
 
  private:
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

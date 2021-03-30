@@ -10,11 +10,6 @@ import android.app.role.RoleManager;
 import android.content.Context;
 import android.content.Intent;
 
-import androidx.annotation.VisibleForTesting;
-
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoDialog.DialogStyle;
-import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoMetrics.UIDismissalReason;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserState;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -23,13 +18,9 @@ import org.chromium.ui.base.WindowAndroid;
  * trigger dialogs.
  */
 public class DefaultBrowserPromoManager {
-    private static final String SKIP_PRIMER_PARAM = "skip_primer";
-    static final String P_NO_DEFAULT_PROMO_STRATEGY = "p_no_default_promo";
-
     private final Activity mActivity;
-    private DefaultBrowserPromoDialog mDialog;
-    private @DefaultBrowserState int mCurrentState;
-    private WindowAndroid mWindowAndroid;
+    private final @DefaultBrowserState int mCurrentState;
+    private final WindowAndroid mWindowAndroid;
 
     /**
      * @param activity Activity to show promo dialogs.
@@ -45,43 +36,9 @@ public class DefaultBrowserPromoManager {
 
     @SuppressLint({"WrongConstant", "NewApi"})
     void promoByRoleManager() {
-        boolean shouldSkipPrimer = ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.ANDROID_DEFAULT_BROWSER_PROMO, SKIP_PRIMER_PARAM, false);
-        Runnable onOK = () -> {
-            RoleManager roleManager =
-                    (RoleManager) mActivity.getSystemService(Context.ROLE_SERVICE);
+        RoleManager roleManager = (RoleManager) mActivity.getSystemService(Context.ROLE_SERVICE);
 
-            DefaultBrowserPromoMetrics.recordRoleManagerShow(mCurrentState);
-            if (!shouldSkipPrimer) {
-                DefaultBrowserPromoMetrics.recordUiDismissalReason(
-                        mCurrentState, UIDismissalReason.CHANGE_DEFAULT);
-            }
-
-            Intent intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_BROWSER);
-            mWindowAndroid.showCancelableIntent(intent, (window, resultCode, data) -> {
-                DefaultBrowserPromoMetrics.recordOutcome(mCurrentState,
-                        DefaultBrowserPromoDeps.getInstance().getCurrentDefaultBrowserState());
-            }, null);
-        };
-        if (shouldSkipPrimer) {
-            onOK.run();
-        } else {
-            showDialog(DefaultBrowserPromoDialog.DialogStyle.ROLE_MANAGER, onOK);
-        }
-    }
-
-    private void showDialog(@DialogStyle int style, Runnable okCallback) {
-        mDialog = DefaultBrowserPromoDialog.createDialog(mActivity, style, okCallback, () -> {
-            DefaultBrowserPromoMetrics.recordUiDismissalReason(
-                    mCurrentState, UIDismissalReason.NO_THANKS);
-        });
-
-        DefaultBrowserPromoMetrics.recordDialogShow(mCurrentState);
-        mDialog.show();
-    }
-
-    @VisibleForTesting
-    DefaultBrowserPromoDialog getDialogForTesting() {
-        return mDialog;
+        Intent intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_BROWSER);
+        mWindowAndroid.showCancelableIntent(intent, (window, resultCode, data) -> {}, null);
     }
 }

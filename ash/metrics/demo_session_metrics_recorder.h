@@ -13,7 +13,7 @@
 #include "ash/public/cpp/app_types.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/base/user_activity/user_activity_observer.h"
@@ -139,8 +139,8 @@ class ASH_EXPORT DemoSessionMetricsRecorder
 
   std::unique_ptr<base::RepeatingTimer> timer_;
 
-  ScopedObserver<ui::UserActivityDetector, ui::UserActivityObserver> observer_{
-      this};
+  base::ScopedObservation<ui::UserActivityDetector, ui::UserActivityObserver>
+      observation_{this};
 
   class ActiveAppArcPackageNameObserver;
   class UniqueAppsLaunchedArcPackageNameObserver;

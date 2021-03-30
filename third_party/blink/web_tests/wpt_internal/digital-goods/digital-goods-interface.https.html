@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Digital Goods API: Test calls from WebIDL to mojo and back.</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script type="module">
+import {digital_goods_test} from './resources/mock-digital-goods-service.js';
+
+digital_goods_test(async service => {
+  assert_not_equals(service, undefined);
+}, {title: 'Digital goods service exists.'});
+
+digital_goods_test(async service => {
+  assert_not_equals(service, null);
+}, {title: 'Digital goods service is available.'});
+
+digital_goods_test(async service => {
+  assert_equals(service, null);
+}, {
+  paymentMethod: 'https://not.known/payment/method',
+  title: 'Digital goods service null for unknown payment method.'
+});
+
+digital_goods_test(async service => {
+  const response = await service.getDetails(['id2']);
+  assert_equals(response.length, 1);
+  assert_equals(response[0].itemId, 'id2');
+  assert_equals(response[0].title, 'title:id2');
+  assert_equals(response[0].description, 'description:id2');
+  assert_equals(response[0].price.currency, 'AUD');
+  assert_equals(response[0].price.value, '2.00');
+  assert_equals(response[0].subscriptionPeriod, undefined);
+  assert_equals(response[0].freeTrialPeriod, undefined);
+  assert_equals(response[0].introductoryPrice, undefined);
+  assert_equals(response[0].introductoryPricePeriod, undefined);
+}, {title: 'GetDetails round trip, required fields.'});
+
+digital_goods_test(async service => {
+  const response = await service.getDetails(['id1']);
+  assert_equals(response.length, 1);
+  assert_equals(response[0].itemId, 'id1');
+  assert_equals(response[0].title, 'title:id1');
+  assert_equals(response[0].description, 'description:id1');
+  assert_equals(response[0].price.currency, 'AUD');
+  assert_equals(response[0].price.value, '1.00');
+  assert_equals(response[0].subscriptionPeriod, 'P1Y');
+  assert_equals(response[0].freeTrialPeriod, 'P1M');
+  assert_equals(response[0].introductoryPrice.currency, 'JPY');
+  assert_equals(response[0].introductoryPrice.value, '2');
+  assert_equals(response[0].introductoryPricePeriod, 'P1D');
+}, {title: 'GetDetails round trip, optional fields.'});
+
+digital_goods_test(async service => {
+  const response = await service.getDetails(['id1', 'id2', 'id3', 'id4']);
+  assert_equals(response.length, 4);
+  const responseIds = response.map(i => i.itemId);
+  assert_array_equals(responseIds, ['id1', 'id2', 'id3', 'id4']);
+}, {title: 'GetDetails multiple IDs.'});
+
+digital_goods_test(async service => {
+  try {
+    await service.getDetails([]);
+    assert_unreached();
+  } catch (error) {
+    assert_equals(error.message, 'Must specify at least one item ID.');
+  }
+}, {title: 'GetDetails no IDs should error.'});
+
+digital_goods_test(async service => {
+  const response = await service.getDetails(['gone']);
+  assert_equals(response.length, 0);
+}, {title: 'GetDetails none found.'});
+
+digital_goods_test(async service => {
+  const response = await service.getDetails(['id1', 'gone1', 'id2', 'gone2']);
+  assert_equals(response.length, 2);
+}, {title: 'GetDetails not all found.'});
+
+digital_goods_test(async service => {
+  try {
+    await service.getDetails(['fail']);
+    assert_unreached();
+  } catch (error) {
+    assert_equals(error, 'error');
+  }
+}, {title: 'GetDetails internal error.'});
+
+digital_goods_test(async service => {
+  const response = await service.acknowledge('token1', 'repeatable');
+  assert_equals(response, undefined);
+}, {
+  expectedAction: 'acknowledge:token1 true',
+  title: 'Acknowledge repeatable purchase.'
+});
+
+digital_goods_test(async service => {
+  const response = await service.acknowledge('token1', 'onetime');
+  assert_equals(response, undefined);
+}, {
+  expectedAction: 'acknowledge:token1 false',
+  title: 'Acknowledge one-time purchase.'
+});
+
+digital_goods_test(async service => {
+  try {
+    await service.acknowledge('fail', 'repeatable');
+    assert_unreached();
+  } catch (error) {
+    assert_equals(error, 'error');
+  }
+}, {title: 'Acknowledge bad ID should error.'});
+
+digital_goods_test(async service => {
+  try {
+    await service.acknowledge('token1', 'badPurchaseType');
+    assert_unreached();
+  } catch (error) {
+    assert_regexp_match(error.message, /not a valid enum value of type PurchaseType/);
+  }
+}, {title: 'Acknowledge bad purchase type should error.'});
+
+
+digital_goods_test(async service => {
+  const response = await service.listPurchases();
+  assert_equals(response.length, 10);
+
+  assert_equals(response[0].itemId, 'id:0');
+  assert_equals(response[0].purchaseToken, 'purchaseToken:0');
+  assert_equals(response[0].acknowledged, false);
+  assert_equals(response[0].purchaseState, undefined);
+  // 0 time value passed through as 0.
+  assert_equals(response[0].purchaseTime, 0);
+  assert_equals(response[0].willAutoRenew, false);
+
+  assert_equals(response[1].acknowledged, true);
+  assert_equals(response[1].purchaseState, 'purchased');
+  // Expecting 1 second in ms after Unix epoch.
+  assert_equals(response[1].purchaseTime, 1000);
+  assert_equals(response[1].willAutoRenew, true);
+
+  assert_equals(response[2].purchaseState, 'pending');
+  // Expecting 2 seconds in ms after Unix epoch.
+  assert_equals(response[2].purchaseTime, 2000);
+
+}, {title: 'ListPurchases round trip.'});
+
+digital_goods_test(async service => {
+  const response1 = await service.getDetails(['id1']);
+  assert_equals(response1.length, 1);
+  gc();
+  const response2 = await service.getDetails(['id2']);
+  assert_equals(response2.length, 1);
+  gc();
+  const response3 = await service.getDetails(['id3']);
+  assert_equals(response3.length, 1);
+}, {title: 'DigitalGoods referenced by scripts should survive garbage collector.'});
+
+</script>
+</body>
+</html>

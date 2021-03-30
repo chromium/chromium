@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/loader/document_load_timing.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -184,7 +185,12 @@ TEST(PerformanceLifetimeTest, SurviveContextSwitch) {
 
   // Simulate changing the document while keeping the window.
   std::unique_ptr<WebNavigationParams> params =
-      WebNavigationParams::CreateWithHTMLBuffer(SharedBuffer::Create(), url);
+      WebNavigationParams::CreateWithHTMLBufferForTesting(
+          SharedBuffer::Create(), url);
+  MockPolicyContainerHost mock_policy_container_host;
+  params->policy_container = std::make_unique<WebPolicyContainer>(
+      WebPolicyContainerPolicies(),
+      mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote());
   page_holder->GetFrame().Loader().CommitNavigation(std::move(params), nullptr);
 
   EXPECT_EQ(perf, DOMWindowPerformance::performance(

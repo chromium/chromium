@@ -32,7 +32,7 @@ TestCertVerifierServiceFactoryImpl::~TestCertVerifierServiceFactoryImpl() =
 
 void TestCertVerifierServiceFactoryImpl::GetNewCertVerifier(
     mojo::PendingReceiver<mojom::CertVerifierService> receiver,
-    network::mojom::CertVerifierCreationParamsPtr creation_params) {
+    mojom::CertVerifierCreationParamsPtr creation_params) {
   if (!delegate_) {
     InitDelegate();
   }

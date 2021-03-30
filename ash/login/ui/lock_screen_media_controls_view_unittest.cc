@@ -40,7 +40,7 @@ const int kAppIconSize = 20;
 constexpr int kArtworkViewHeight = 48;
 constexpr int kArtworkCornerRadius = 4;
 
-const base::string16 kTestAppName = base::ASCIIToUTF16("Test app");
+const std::u16string kTestAppName = u"Test app";
 
 MediaSessionAction kActionButtonOrder[] = {
     MediaSessionAction::kPreviousTrack, MediaSessionAction::kSeekBackward,
@@ -247,7 +247,7 @@ class LockScreenMediaControlsViewTest : public LoginTestBase {
     return header_row()->app_icon_for_testing();
   }
 
-  const base::string16& GetAppName() const {
+  const std::u16string& GetAppName() const {
     return header_row()->app_name_for_testing();
   }
 
@@ -283,23 +283,23 @@ TEST_F(LockScreenMediaControlsViewTest, DoNotUpdateMetadataBetweenSessions) {
   // Set metadata for current session
   media_session::MediaMetadata metadata;
   metadata.source_title = kTestAppName;
-  metadata.title = base::ASCIIToUTF16("title");
-  metadata.artist = base::ASCIIToUTF16("artist");
+  metadata.title = u"title";
+  metadata.artist = u"artist";
 
   media_controls_view_->MediaSessionMetadataChanged(metadata);
 
   // Simulate new media session starting.
-  metadata.source_title = base::ASCIIToUTF16("AppName2");
-  metadata.title = base::ASCIIToUTF16("title2");
-  metadata.artist = base::ASCIIToUTF16("artist2");
+  metadata.source_title = u"AppName2";
+  metadata.title = u"title2";
+  metadata.artist = u"artist2";
 
   SimulateMediaSessionChanged(
       media_session::mojom::MediaPlaybackState::kPlaying);
   media_controls_view_->MediaSessionMetadataChanged(metadata);
 
   EXPECT_EQ(kTestAppName, GetAppName());
-  EXPECT_EQ(base::ASCIIToUTF16("title"), title_label()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("artist"), artist_label()->GetText());
+  EXPECT_EQ(u"title", title_label()->GetText());
+  EXPECT_EQ(u"artist", artist_label()->GetText());
 }
 
 TEST_F(LockScreenMediaControlsViewTest, DoNotUpdateArtworkBetweenSessions) {
@@ -424,7 +424,7 @@ TEST_F(LockScreenMediaControlsViewTest, PlayPauseButtonTooltipCheck) {
   EnableAction(MediaSessionAction::kPause);
 
   auto* button = GetButtonForAction(MediaSessionAction::kPause);
-  base::string16 tooltip = button->GetTooltipText(gfx::Point());
+  std::u16string tooltip = button->GetTooltipText(gfx::Point());
   EXPECT_FALSE(tooltip.empty());
 
   media_session::mojom::MediaSessionInfoPtr session_info(
@@ -433,7 +433,7 @@ TEST_F(LockScreenMediaControlsViewTest, PlayPauseButtonTooltipCheck) {
       media_session::mojom::MediaPlaybackState::kPaused;
   media_controls_view_->MediaSessionInfoChanged(session_info.Clone());
 
-  base::string16 new_tooltip = button->GetTooltipText(gfx::Point());
+  std::u16string new_tooltip = button->GetTooltipText(gfx::Point());
   EXPECT_FALSE(new_tooltip.empty());
   EXPECT_NE(tooltip, new_tooltip);
 }
@@ -696,8 +696,8 @@ TEST_F(LockScreenMediaControlsViewTest, UpdateMetadata) {
       GetAppName());
 
   metadata.source_title = kTestAppName;
-  metadata.title = base::ASCIIToUTF16("title");
-  metadata.artist = base::ASCIIToUTF16("artist");
+  metadata.title = u"title";
+  metadata.artist = u"artist";
 
   media_controls_view_->MediaSessionMetadataChanged(metadata);
 
@@ -839,15 +839,15 @@ TEST_F(LockScreenMediaControlsViewTest, AccessibleNodeData) {
 
   // Update the metadata.
   media_session::MediaMetadata metadata;
-  metadata.title = base::ASCIIToUTF16("title");
-  metadata.artist = base::ASCIIToUTF16("artist");
+  metadata.title = u"title";
+  metadata.artist = u"artist";
   media_controls_view_->MediaSessionMetadataChanged(metadata);
   media_controls_view_->GetAccessibleNodeData(&data);
 
   // Verify that the accessible name updates with the metadata.
   EXPECT_TRUE(
       data.HasStringAttribute(ax::mojom::StringAttribute::kRoleDescription));
-  EXPECT_EQ(base::ASCIIToUTF16("title - artist"),
+  EXPECT_EQ(u"title - artist",
             data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }
 

@@ -18,7 +18,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
-namespace fuchsia {
 
 class ServiceDirectoryTestBase : public testing::Test {
  public:
@@ -46,7 +45,6 @@ class ServiceDirectoryTestBase : public testing::Test {
   DISALLOW_COPY_AND_ASSIGN(ServiceDirectoryTestBase);
 };
 
-}  // namespace fuchsia
 }  // namespace base
 
 #endif  // BASE_FUCHSIA_SERVICE_DIRECTORY_TEST_BASE_H_

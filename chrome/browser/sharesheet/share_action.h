@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_SHARESHEET_SHARE_ACTION_H_
 #define CHROME_BROWSER_SHARESHEET_SHARE_ACTION_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/views/view.h"
 
 namespace gfx {
@@ -21,7 +23,7 @@ class ShareAction {
  public:
   virtual ~ShareAction() = default;
 
-  virtual const base::string16 GetActionName() = 0;
+  virtual const std::u16string GetActionName() = 0;
 
   virtual const gfx::VectorIcon& GetActionIcon() = 0;
 
@@ -53,6 +55,11 @@ class ShareAction {
   // hosted document.
   virtual bool ShouldShowAction(const apps::mojom::IntentPtr& intent,
                                 bool contains_hosted_document);
+
+  // Invoked when the accelerator has been pressed.
+  // ShareAction should return true if the accelerator has been processed and
+  // false otherwise. If not processed, the Sharesheet will close.
+  virtual bool OnAcceleratorPressed(const ui::Accelerator& accelerator);
 };
 
 }  // namespace sharesheet

@@ -10,7 +10,6 @@
 #include <stdint.h>
 
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -298,8 +297,6 @@ bool WebpDecoder::DoSendData() {
   } else {
     result_data = output_buffer_;
   }
-  UMA_HISTOGRAM_ENUMERATION("WebP.DecodedImageFormat", format,
-                            DECODED_FORMAT_COUNT);
   delegate_->SetImageFeatures([result_data length], format);
   delegate_->OnDataDecoded(result_data);
   output_buffer_ = nil;

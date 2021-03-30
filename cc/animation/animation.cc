@@ -18,7 +18,6 @@
 #include "cc/animation/keyframe_effect.h"
 #include "cc/animation/scroll_offset_animation_curve.h"
 #include "cc/animation/scroll_timeline.h"
-#include "cc/animation/transform_operations.h"
 #include "cc/trees/property_animation_state.h"
 
 namespace cc {
@@ -239,7 +238,8 @@ void Animation::ActivateKeyframeModels() {
 
 KeyframeModel* Animation::GetKeyframeModel(
     TargetProperty::Type target_property) const {
-  return keyframe_effect_->GetKeyframeModel(target_property);
+  return KeyframeModel::ToCcKeyframeModel(
+      keyframe_effect_->GetKeyframeModel(target_property));
 }
 
 std::string Animation::ToString() const {

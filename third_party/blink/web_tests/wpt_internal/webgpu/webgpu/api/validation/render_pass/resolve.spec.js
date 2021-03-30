@@ -1,40 +1,36 @@
 /**
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
- **/ export const description = `API Validation Tests for RenderPass Resolve.
-
-  Test Coverage:
-    - When resolveTarget is not null:
-      - Test that the colorAttachment is multisampled:
-        - A single sampled colorAttachment should generate an error.
-      - Test that the resolveTarget is single sampled:
-        - A multisampled resolveTarget should generate an error.
-      - Test that the resolveTarget has usage OUTPUT_ATTACHMENT:
-        - A resolveTarget without usage OUTPUT_ATTACHMENT should generate an error.
-      - Test that the resolveTarget's texture view describes a single subresource:
-        - A resolveTarget texture view with base mip {0, base mip > 0} and mip count of 1 should be
-          valid.
-          - An error should be generated when the resolve target view mip count is not 1 and base
-            mip is {0, base mip > 0}.
-        - A resolveTarget texture view with base array layer {0, base array layer > 0} and array
-          layer count of 1 should be valid.
-          - An error should be generated when the resolve target view array layer count is not 1 and
-            base array layer is {0, base array layer > 0}.
-      - Test that the resolveTarget's format is the same as the colorAttachment:
-        - An error should be generated when the resolveTarget's format does not match the
-          colorAttachment's format.
-      - Test that the resolveTarget's size is the same the colorAttachment:
-        - An error should be generated when the resolveTarget's height or width are not equal to
-          the colorAttachment's height or width.`;
+ **/ export const description = `
+Validation tests for render pass resolve.
+`;
 import { makeTestGroup } from '../../../../common/framework/test_group.js';
 import { GPUConst } from '../../../constants.js';
-
-import { ValidationTest } from './../validation_test.js';
+import { ValidationTest } from '../validation_test.js';
 
 const kNumColorAttachments = 4;
 
 export const g = makeTestGroup(ValidationTest);
 
 g.test('resolve_attachment')
+  .desc(
+    `
+Test various validation behaviors when a resolveTarget is provided.
+
+- base case (valid).
+- resolve source is not multisampled.
+- resolve target is not single sampled.
+- resolve target missing RENDER_ATTACHMENT usage.
+- resolve target must have exactly one subresource:
+    - base mip level {0, >0}, mip level count {1, >1}.
+    - base array layer {0, >0}, array layer count {1, >1}.
+    - TODO: test zero subresources
+- resolve source and target have different formats.
+    - rgba8unorm -> {bgra8unorm, rgba8unorm-srgb}
+    - {bgra8unorm, rgba8unorm-srgb} -> rgba8unorm
+    - test with other color attachments having a different format
+- resolve source and target have different sizes.
+`
+  )
   .params([
     // control case should be valid
     { _valid: true },
@@ -42,7 +38,7 @@ g.test('resolve_attachment')
     { colorAttachmentSamples: 1, _valid: false },
     // a multisampled resolve target should cause a validation error.
     { resolveTargetSamples: 4, _valid: false },
-    // resolveTargetUsage without OUTPUT_ATTACHMENT usage should cause a validation error.
+    // resolveTargetUsage without RENDER_ATTACHMENT usage should cause a validation error.
     { resolveTargetUsage: GPUConst.TextureUsage.COPY_SRC, _valid: false },
     // non-zero resolve target base mip level should be valid.
     {
@@ -87,7 +83,7 @@ g.test('resolve_attachment')
       otherAttachmentFormat = 'rgba8unorm',
       colorAttachmentSamples = 4,
       resolveTargetSamples = 1,
-      resolveTargetUsage = GPUTextureUsage.COPY_SRC | GPUTextureUsage.OUTPUT_ATTACHMENT,
+      resolveTargetUsage = GPUTextureUsage.COPY_SRC | GPUTextureUsage.RENDER_ATTACHMENT,
       resolveTargetViewMipCount = 1,
       resolveTargetViewBaseMipLevel = 0,
       resolveTargetViewArrayLayerCount = 1,
@@ -114,9 +110,14 @@ g.test('resolve_attachment')
           // Create the color attachment with resolve target with the configurable parameters.
           const resolveSourceColorAttachment = t.device.createTexture({
             format: colorAttachmentFormat,
-            size: { width: colorAttachmentWidth, height: colorAttachmentHeight, depth: 1 },
+            size: {
+              width: colorAttachmentWidth,
+              height: colorAttachmentHeight,
+              depthOrArrayLayers: 1,
+            },
+
             sampleCount: colorAttachmentSamples,
-            usage: GPUTextureUsage.COPY_SRC | GPUTextureUsage.OUTPUT_ATTACHMENT,
+            usage: GPUTextureUsage.COPY_SRC | GPUTextureUsage.RENDER_ATTACHMENT,
           });
 
           const resolveTarget = t.device.createTexture({
@@ -124,7 +125,8 @@ g.test('resolve_attachment')
             size: {
               width: resolveTargetWidth,
               height: resolveTargetHeight,
-              depth: resolveTargetViewBaseArrayLayer + resolveTargetViewArrayLayerCount,
+              depthOrArrayLayers:
+                resolveTargetViewBaseArrayLayer + resolveTargetViewArrayLayerCount,
             },
 
             sampleCount: resolveTargetSamples,
@@ -148,9 +150,14 @@ g.test('resolve_attachment')
           // and sample count must match the resolve source color attachment to be valid.
           const colorAttachment = t.device.createTexture({
             format: otherAttachmentFormat,
-            size: { width: colorAttachmentWidth, height: colorAttachmentHeight, depth: 1 },
+            size: {
+              width: colorAttachmentWidth,
+              height: colorAttachmentHeight,
+              depthOrArrayLayers: 1,
+            },
+
             sampleCount: colorAttachmentSamples,
-            usage: GPUTextureUsage.COPY_SRC | GPUTextureUsage.OUTPUT_ATTACHMENT,
+            usage: GPUTextureUsage.COPY_SRC | GPUTextureUsage.RENDER_ATTACHMENT,
           });
 
           const resolveTarget = t.device.createTexture({
@@ -158,11 +165,11 @@ g.test('resolve_attachment')
             size: {
               width: colorAttachmentWidth,
               height: colorAttachmentHeight,
-              depth: 1,
+              depthOrArrayLayers: 1,
             },
 
             sampleCount: 1,
-            usage: GPUTextureUsage.COPY_SRC | GPUTextureUsage.OUTPUT_ATTACHMENT,
+            usage: GPUTextureUsage.COPY_SRC | GPUTextureUsage.RENDER_ATTACHMENT,
           });
 
           renderPassColorAttachmentDescriptors.push({

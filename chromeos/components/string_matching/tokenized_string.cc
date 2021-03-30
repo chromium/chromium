@@ -19,7 +19,7 @@ namespace string_matching {
 
 using base::i18n::BreakIterator;
 
-TokenizedString::TokenizedString(const base::string16& text, Mode mode)
+TokenizedString::TokenizedString(const std::u16string& text, Mode mode)
     : text_(text) {
   switch (mode) {
     case Mode::kCamelCase:
@@ -47,7 +47,7 @@ void TokenizedString::Tokenize() {
     if (!break_iter.IsWord())
       continue;
 
-    const base::string16 word(break_iter.GetString());
+    const std::u16string word(break_iter.GetString());
     const size_t word_start = break_iter.prev();
     TermBreakIterator term_iter(word);
     while (term_iter.Advance()) {
@@ -83,7 +83,7 @@ void TokenizedString::TokenizeWords() {
     // 1. Whitespace chars only: generate a token from |text_| in the range of
     //    [start, end). Also reset |start| and |end| for next token.
     // 2. A punctuation: do nothing and Advance.
-    const base::string16 word(break_iter.GetString());
+    const std::u16string word(break_iter.GetString());
     const bool only_whitechars =
         base::ContainsOnlyChars(word, base::kWhitespaceUTF16);
     if (only_whitechars) {

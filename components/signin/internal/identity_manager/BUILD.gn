@@ -73,7 +73,6 @@ source_set("identity_manager") {
       "profile_oauth2_token_service_delegate_android.h",
     ]
     deps += [
-      "//components/signin/core/browser/android:jni_headers",
       "//components/signin/internal/base",
       "//components/signin/public/android:jni_headers",
     ]
@@ -90,13 +89,12 @@ source_set("identity_manager") {
     sources += [
       "profile_oauth2_token_service_delegate_chromeos.cc",
       "profile_oauth2_token_service_delegate_chromeos.h",
+      "profile_oauth2_token_service_delegate_chromeos_legacy.cc",
+      "profile_oauth2_token_service_delegate_chromeos_legacy.h",
     ]
-    public_deps += [ "//chromeos/components/account_manager" ]
+    public_deps += [ "//ash/components/account_manager" ]
 
-    deps += [
-      "//chromeos/constants",
-      "//components/user_manager",
-    ]
+    deps += [ "//components/user_manager" ]
   } else {
     sources += [
       "primary_account_policy_manager_impl.cc",
@@ -180,7 +178,7 @@ source_set("unit_tests") {
   if (is_chromeos_ash) {
     sources += [ "profile_oauth2_token_service_delegate_chromeos_unittest.cc" ]
 
-    deps += [ "//chromeos/components/account_manager" ]
+    deps += [ "//ash/components/account_manager" ]
   } else {
     sources += [ "primary_account_policy_manager_impl_unittest.cc" ]
   }
@@ -214,6 +212,7 @@ static_library("test_support") {
       "test_profile_oauth2_token_service_delegate_chromeos.cc",
       "test_profile_oauth2_token_service_delegate_chromeos.h",
     ]
+    deps = [ "//chromeos/crosapi/mojom" ]
   }
 
   public_deps = [

@@ -30,10 +30,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_point.h"
 
-#include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/transforms/affine_transform.h"
-#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -51,40 +48,6 @@ SVGPropertyBase* SVGPoint::CloneForAnimation(const String& value) const {
   // SVGPoint is not animated by itself.
   NOTREACHED();
   return nullptr;
-}
-
-template <typename CharType>
-SVGParsingError SVGPoint::Parse(const CharType* ptr, const CharType* end) {
-  float x = 0;
-  float y = 0;
-  if (!ParseNumber(ptr, end, x) ||
-      !ParseNumber(ptr, end, y, kDisallowWhitespace))
-    return SVGParseStatus::kExpectedNumber;
-
-  if (SkipOptionalSVGSpaces(ptr, end)) {
-    // Nothing should come after the second number.
-    return SVGParseStatus::kTrailingGarbage;
-  }
-
-  value_ = FloatPoint(x, y);
-  return SVGParseStatus::kNoError;
-}
-
-FloatPoint SVGPoint::MatrixTransform(const AffineTransform& transform) const {
-  double new_x, new_y;
-  transform.Map(static_cast<double>(X()), static_cast<double>(Y()), new_x,
-                new_y);
-  return FloatPoint::NarrowPrecision(new_x, new_y);
-}
-
-SVGParsingError SVGPoint::SetValueAsString(const String& string) {
-  if (string.IsEmpty()) {
-    value_ = FloatPoint(0.0f, 0.0f);
-    return SVGParseStatus::kNoError;
-  }
-  return WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {
-    return Parse(chars, chars + length);
-  });
 }
 
 String SVGPoint::ValueAsString() const {

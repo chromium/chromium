@@ -1,0 +1,55 @@
+<style>
+  :host {
+    display: block;
+    padding: 10px 0;
+    position: relative;
+  }
+
+  #vertical-line {
+    --vertical-line-width: 2px;
+    border-inline-start: var(--vertical-line-width) solid var(--image-background-color);
+    height: 100%;
+    left: calc((var(--visit-row-favicon-size) - var(--vertical-line-width)) / 2);
+    position: absolute;
+  }
+
+  :host-context([dir='rtl']) #vertical-line {
+    left: unset;
+    right: calc((var(--visit-row-favicon-size) - var(--vertical-line-width)) / 2);
+  }
+
+  :host(:last-of-type) #vertical-line {
+    display: none;
+  }
+
+  cr-expand-button {
+    --cr-active-background-color: transparent;
+    --cr-hover-background-color: transparent;
+    --cr-section-vertical-padding: 0;
+  }
+
+  #related-visits {
+    margin-inline-start: 52px;
+  }
+
+  #related-visits visit-row {
+    padding: 4px 0;
+  }
+</style>
+<div id="vertical-line"></div>
+<template is="dom-if" if="[[visit.relatedVisits.length]]">
+  <cr-expand-button expanded="{{expanded_}}">
+    <visit-row is-top-visit visit="[[visit]]" on-visit-click="onVisitClick_">
+    </visit-row>
+  </cr-expand-button>
+  <iron-collapse opened="[[expanded_]]">
+    <div id="related-visits">
+      <template is="dom-repeat" items="[[visit.relatedVisits]]">
+        <visit-row visit="[[item]]"></visit-row>
+      </template>
+    </div>
+  </iron-collapse>
+</template>
+<template is="dom-if" if="[[!visit.relatedVisits.length]]">
+  <visit-row is-top-visit visit="[[visit]]"></visit-row>
+</template>

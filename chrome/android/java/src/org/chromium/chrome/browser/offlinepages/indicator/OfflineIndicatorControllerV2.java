@@ -15,7 +15,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
-import org.chromium.base.TimeUtilsJni;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -26,7 +25,6 @@ import org.chromium.content_public.common.ContentSwitches;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Class that controls visibility and content of {@link StatusIndicatorCoordinator} to relay
@@ -55,8 +53,12 @@ public class OfflineIndicatorControllerV2 {
     // frequently.
     static final long STATUS_INDICATOR_COOLDOWN_BEFORE_NEXT_ACTION_MS = 5000;
 
+    public static final String OFFLINE_INDICATOR_SHOWN_DURATION_V2 =
+            "OfflineIndicator.ShownDurationV2";
+
     private static OfflineDetector sMockOfflineDetector;
     private static Supplier<Long> sMockElapsedTimeSupplier;
+    private static OfflineIndicatorMetricsDelegate sMockOfflineIndicatorMetricsDelegate;
 
     private Context mContext;
     private StatusIndicatorCoordinator mStatusIndicator;
@@ -72,7 +74,9 @@ public class OfflineIndicatorControllerV2 {
     private Runnable mUpdateStatusIndicatorDelayedRunnable;
     private long mLastActionTime;
     private boolean mIsOffline;
-    private long mTimeShownMs;
+    private boolean mIsOfflineStateInitialized;
+    private boolean mIsForeground;
+    private OfflineIndicatorMetricsDelegate mMetricsDelegate;
 
     /**
      * Constructs the offline indicator.
@@ -101,19 +105,30 @@ public class OfflineIndicatorControllerV2 {
         mStatusIndicator = statusIndicator;
         mHandler = new Handler();
 
+        if (sMockOfflineIndicatorMetricsDelegate != null) {
+            mMetricsDelegate = sMockOfflineIndicatorMetricsDelegate;
+        } else {
+            mMetricsDelegate = new OfflineIndicatorMetricsDelegate();
+        }
+
         // If we're offline at start-up, we should have a small enough last action time so that we
         // don't wait for the cool-down.
         mLastActionTime = getElapsedTime() - STATUS_INDICATOR_COOLDOWN_BEFORE_NEXT_ACTION_MS;
         if (sMockOfflineDetector != null) {
             mOfflineDetector = sMockOfflineDetector;
         } else {
-            mOfflineDetector =
-                    new OfflineDetector((Boolean offline) -> onConnectionStateChanged(offline));
+            mOfflineDetector = new OfflineDetector((Boolean offline)
+                                                           -> onConnectionStateChanged(offline),
+                    (Boolean isForeground) -> onApplicationStateChanged(isForeground));
         }
+
+        // Initializes the application state.
+        onApplicationStateChanged(mOfflineDetector.isApplicationForeground());
 
         mShowRunnable = () -> {
             RecordUserAction.record("OfflineIndicator.Shown");
-            mTimeShownMs = TimeUnit.MICROSECONDS.toMillis(TimeUtilsJni.get().getTimeTicksNowUs());
+
+            mMetricsDelegate.onIndicatorShown();
 
             setLastActionTime();
 
@@ -135,11 +150,8 @@ public class OfflineIndicatorControllerV2 {
 
         mUpdateAndHideRunnable = () -> {
             RecordUserAction.record("OfflineIndicator.Hidden");
-            final long shownDuration =
-                    TimeUnit.MICROSECONDS.toMillis(TimeUtilsJni.get().getTimeTicksNowUs())
-                    - mTimeShownMs;
-            RecordHistogram.recordMediumTimesHistogram(
-                    "OfflineIndicator.ShownDuration", shownDuration);
+
+            mMetricsDelegate.onIndicatorHidden();
 
             setLastActionTime();
 
@@ -175,7 +187,7 @@ public class OfflineIndicatorControllerV2 {
     }
 
     public void onConnectionStateChanged(boolean offline) {
-        if (mIsOffline == offline) {
+        if (mIsOfflineStateInitialized && mIsOffline == offline) {
             return;
         }
 
@@ -190,6 +202,17 @@ public class OfflineIndicatorControllerV2 {
         }
 
         updateStatusIndicator(offline);
+    }
+
+    public void onApplicationStateChanged(boolean isForeground) {
+        if (mIsForeground == isForeground) return;
+
+        if (isForeground) {
+            mMetricsDelegate.onAppForegrounded();
+        } else {
+            mMetricsDelegate.onAppBackgrounded();
+        }
+        mIsForeground = isForeground;
     }
 
     public void destroy() {
@@ -213,6 +236,14 @@ public class OfflineIndicatorControllerV2 {
 
     private void updateStatusIndicator(boolean offline) {
         mIsOffline = offline;
+        if (!mIsOfflineStateInitialized) {
+            mMetricsDelegate.onOfflineStateInitialized(/*isOffline=*/offline);
+        }
+        if (!mIsOfflineStateInitialized && !offline) {
+            mIsOfflineStateInitialized = true;
+            return;
+        }
+        mIsOfflineStateInitialized = true;
         int surfaceState;
         if (mIsUrlBarFocusedSupplier.get()) {
             // We should clear the runnable if we would be assigning an unnecessary show or hide
@@ -263,5 +294,11 @@ public class OfflineIndicatorControllerV2 {
     @VisibleForTesting
     void setHandlerForTesting(Handler handler) {
         mHandler = handler;
+    }
+
+    @VisibleForTesting
+    static void setMockOfflineIndicatorMetricsDelegate(
+            OfflineIndicatorMetricsDelegate offlineIndicatorMetricsDelegate) {
+        sMockOfflineIndicatorMetricsDelegate = offlineIndicatorMetricsDelegate;
     }
 }

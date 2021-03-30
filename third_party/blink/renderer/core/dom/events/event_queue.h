@@ -40,7 +40,7 @@ class CORE_EXPORT EventQueue final : public GarbageCollected<EventQueue>,
                                      public ExecutionContextLifecycleObserver {
  public:
   EventQueue(ExecutionContext*, TaskType);
-  ~EventQueue();
+  ~EventQueue() override;
 
   void Trace(Visitor*) const override;
   bool EnqueueEvent(const base::Location&, Event&);

@@ -7,6 +7,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './data_point.js';
 import './diagnostics_card.js';
 import './diagnostics_shared_css.js';
+import './icons.js';
 import './realtime_cpu_chart.js';
 import './routine_section.js';
 import './strings.m.js';
@@ -67,13 +68,9 @@ Polymer({
     /** @type {boolean} */
     isTestRunning: {
       type: Boolean,
+      value: false,
       notify: true,
     },
-
-    /** @type {number} */
-    cpuMaxClockSpeedKhz_: {
-      type: Number,
-    }
   },
 
   /** @override */
@@ -130,10 +127,9 @@ Polymer({
    * @private
    */
   onSystemInfoReceived_(systemInfo) {
-    // TODO(michaelcheco): Update when number of cores is added to the api.
     this.cpuChipInfo_ = loadTimeData.getStringF(
-        'cpuChipText', systemInfo.cpuModelName, systemInfo.cpuThreadsCount);
-    this.cpuMaxClockSpeedKhz_ = systemInfo.cpuMaxClockSpeedKhz;
+        'cpuChipText', systemInfo.cpuModelName, systemInfo.cpuThreadsCount,
+        this.convertKhzToGhz_(systemInfo.cpuMaxClockSpeedKhz));
   },
 
   /** @protected */
@@ -144,7 +140,6 @@ Polymer({
 
   /** @protected */
   getCpuUsageTooltipText_() {
-    // TODO(michaelcheco): Update when number of cores is added to the api.
     return loadTimeData.getString('cpuUsageTooltipText');
   },
 
@@ -158,12 +153,15 @@ Polymer({
   },
 
   /** @protected */
-  getCpuSpeed_() {
-    if (this.cpuMaxClockSpeedKhz_) {
-      return loadTimeData.getStringF(
-          'cpuSpeedText',
-          this.convertKhzToGhz_(this.cpuUsage_.scalingCurrentFrequencyKhz),
-          this.convertKhzToGhz_(this.cpuMaxClockSpeedKhz_));
-    }
+  getCurrentCpuSpeed_() {
+    return loadTimeData.getStringF(
+        'currentCpuSpeedText',
+        this.convertKhzToGhz_(this.cpuUsage_.scalingCurrentFrequencyKhz));
+  },
+
+  /** @protected */
+  getEstimateRuntimeInMinutes_() {
+    // Each routine runs for a minute
+    return this.routines_.length;
   },
 });

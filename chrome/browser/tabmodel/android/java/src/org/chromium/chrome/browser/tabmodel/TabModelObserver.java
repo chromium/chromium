@@ -38,8 +38,18 @@ public interface TabModelObserver {
      *
      * @param tabId The ID of the tab that was destroyed.
      * @param incognito True if the closed tab was incognito.
+     *
+     * @deprecated Use {@link #didCloseTab(Tab)} instead
      */
+    @Deprecated
     default void didCloseTab(int tabId, boolean incognito) {}
+
+    /**
+     * Called right after {@code tab} has been destroyed.
+     *
+     * @param tab The tab that was closed.
+     */
+    default void didCloseTab(Tab tab) {}
 
     /**
      * Called before a tab will be added to the {@link TabModel}.
@@ -97,6 +107,11 @@ public interface TabModelObserver {
      * @param isAllTabs Whether |tabs| are all the tabs.
      */
     default void multipleTabsPendingClosure(List<Tab> tabs, boolean isAllTabs) {}
+
+    /**
+     * Called when an "all tabs" closure will happen.
+     */
+    default void willCloseAllTabs(boolean incognito) {}
 
     /**
      * Called when an "all tabs" closure has been committed and can't be undone anymore.

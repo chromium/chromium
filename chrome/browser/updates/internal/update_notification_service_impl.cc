@@ -16,9 +16,9 @@
 #include "chrome/browser/notifications/scheduler/public/notification_schedule_service.h"
 #include "chrome/browser/notifications/scheduler/public/schedule_service_utils.h"
 #include "chrome/browser/notifications/scheduler/public/throttle_config.h"
-#include "chrome/browser/updates/update_notification_config.h"
-#include "chrome/browser/updates/update_notification_info.h"
-#include "chrome/browser/updates/update_notification_service_bridge.h"
+#include "chrome/browser/updates/update_notification_config.h"  // nogncheck
+#include "chrome/browser/updates/update_notification_info.h"    // nogncheck
+#include "chrome/browser/updates/update_notification_service_bridge.h"  // nogncheck
 
 namespace updates {
 

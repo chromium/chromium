@@ -79,17 +79,16 @@ class VIZ_SERVICE_EXPORT OutputSurface {
     bool supports_post_sub_buffer = false;
     // Whether this OutputSurface supports commit overlay planes.
     bool supports_commit_overlay_planes = false;
+    // Whether this OutputSurface permits scheduling an isothetic sub-rectangle
+    // (i.e. viewport) of its contents for display, allowing the DirectRenderer
+    // to apply resize optimization by padding to its width/height.
+    bool supports_viewporter = false;
     // Whether this OutputSurface supports gpu vsync callbacks.
     bool supports_gpu_vsync = false;
     // OutputSurface's orientation mode.
     OrientationMode orientation_mode = OrientationMode::kLogic;
     // Whether this OutputSurface supports direct composition layers.
     bool supports_dc_layers = false;
-    // Set RGB10A2 overlay support flags true by force, which is used for
-    // playing hdr video.
-    // TODO(richard.li@intel.com): Remove this when Intel fixs its overlay caps.
-    // checking bug in their driver.
-    bool forces_rgb10a2_overlay_support_flags = false;
     // Whether this OutputSurface should skip DrawAndSwap(). This is true for
     // the unified display on Chrome OS. All drawing is handled by the physical
     // displays so the unified display should skip that work.
@@ -98,6 +97,9 @@ class VIZ_SERVICE_EXPORT OutputSurface {
     // When this is false contents outside the damaged area might need to be
     // recomposited to the surface.
     bool only_invalidates_damage_rect = true;
+    // Whether OutputSurface::GetTargetDamageBoundingRect is implemented and
+    // will return a bounding rectangle of the target buffer invalidated area.
+    bool supports_target_damage = false;
     // Whether the gpu supports surfaceless surface (equivalent of using buffer
     // queue).
     bool supports_surfaceless = false;
@@ -118,6 +120,13 @@ class VIZ_SERVICE_EXPORT OutputSurface {
     // Some new Intel GPUs support two YUV MPO planes. Promoting two videos
     // to hardware overlays in these platforms will benefit power consumption.
     bool supports_two_yuv_hardware_overlays = false;
+    // True if the OS supports delegated ink trails.
+    // This is currently only implemented on Win10 with DirectComposition on the
+    // SkiaRenderer.
+    bool supports_delegated_ink = false;
+    // True if the OutputSurface can resize to match the size of the root
+    // surface. E.g. Wayland protocol allows this.
+    bool resize_based_on_root_surface = false;
 
     // SkColorType for all supported buffer formats.
     SkColorType sk_color_types[static_cast<int>(gfx::BufferFormat::LAST) + 1] =

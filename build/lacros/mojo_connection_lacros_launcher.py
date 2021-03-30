@@ -36,6 +36,9 @@ import sys
 import subprocess
 
 
+_NUM_FDS_MAX = 3
+
+
 # contextlib.nullcontext is introduced in 3.7, while Python version on
 # CrOS is still 3.6. This is for backward compatibility.
 class NullContext:
@@ -63,22 +66,34 @@ def _ReceiveFDs(sock):
   fds = array.array("i")  # Array of ints
   # Along with the file descriptor, ash-chrome also sends the version in the
   # regular data.
-  version, ancdata, _, _ = sock.recvmsg(1, socket.CMSG_LEN(fds.itemsize))
+  version, ancdata, _, _ = sock.recvmsg(
+      1, socket.CMSG_LEN(fds.itemsize * _NUM_FDS_MAX))
   for cmsg_level, cmsg_type, cmsg_data in ancdata:
     if cmsg_level == socket.SOL_SOCKET and cmsg_type == socket.SCM_RIGHTS:
-      # New ash-chrome returns two FDs: one for mojo connection, and the second
-      # for the startup data FD. Old one returns only the mojo connection.
-      # TODO(crbug.com/1156033): Clean up the code after dropping the
-      # old protocol support.
-      assert len(cmsg_data) in (fds.itemsize, fds.itemsize *
-                                2), ('Expecting exactly 1 or 2 FDs')
+      # There are three versions currently this script supports.
+      # The oldest one: ash-chrome returns one FD, the mojo connection of
+      # old bootstrap procedure (i.e., it will be BrowserService).
+      # The middle one: ash-chrome returns two FDs, the mojo connection of
+      # old bootstrap procedure, and the second for the start up data FD.
+      # The newest one: ash-chrome returns three FDs, the mojo connection of
+      # old bootstrap procedure, the second for the start up data FD, and
+      # the third for another mojo connection of new bootstrap procedure.
+      # TODO(crbug.com/1156033): Clean up the code to drop the support of
+      # oldest one after M91.
+      # TODO(crbug.com/1180712): Clean up the mojo procedure support of the
+      # the middle one after M92.
+      cmsg_len_candidates = [(i + 1) * fds.itemsize
+                             for i in range(_NUM_FDS_MAX)]
+      assert len(cmsg_data) in cmsg_len_candidates, (
+          'CMSG_LEN is unexpected: %d' % (len(cmsg_data), ))
       fds.frombytes(cmsg_data[:])
 
   assert version == b'\x00', 'Expecting version code to be 0'
-  assert len(fds) in (1, 2), 'Expecting exactly 1 or 2 FDs'
-  mojo_fd = os.fdopen(fds[0])
+  assert len(fds) in (1, 2, 3), 'Expecting exactly 1, 2, or 3 FDs'
+  legacy_mojo_fd = os.fdopen(fds[0])
   startup_fd = None if len(fds) < 2 else os.fdopen(fds[1])
-  return mojo_fd, startup_fd
+  mojo_fd = None if len(fds) < 3 else os.fdopen(fds[2])
+  return legacy_mojo_fd, startup_fd, mojo_fd
 
 
 def _MaybeClosing(fileobj):
@@ -106,18 +121,25 @@ def Main():
 
   with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
     sock.connect(flags.socket_path.as_posix())
-    mojo_connection, startup_connection = _ReceiveFDs(sock)
-    assert mojo_connection, ('Failed to connect to the socket: %s' %
-                             flags.socket_path.as_posix())
+    legacy_mojo_connection, startup_connection, mojo_connection = (
+        _ReceiveFDs(sock))
 
-  with _MaybeClosing(mojo_connection), _MaybeClosing(startup_connection):
-    cmd = args + [
-        '--mojo-platform-channel-handle=%d' % mojo_connection.fileno()
-    ]
-    pass_fds = [mojo_connection.fileno()]
+  with _MaybeClosing(legacy_mojo_connection), \
+       _MaybeClosing(startup_connection), \
+       _MaybeClosing(mojo_connection):
+    cmd = args[:]
+    pass_fds = []
+    if legacy_mojo_connection:
+      cmd.append('--mojo-platform-channel-handle=%d' %
+                 legacy_mojo_connection.fileno())
+      pass_fds.append(legacy_mojo_connection.fileno())
     if startup_connection:
       cmd.append('--cros-startup-data-fd=%d' % startup_connection.fileno())
       pass_fds.append(startup_connection.fileno())
+    if mojo_connection:
+      cmd.append('--crosapi-mojo-platform-channel-handle=%d' %
+                 mojo_connection.fileno())
+      pass_fds.append(mojo_connection.fileno())
     proc = subprocess.Popen(cmd, pass_fds=pass_fds)
 
   return proc.wait()

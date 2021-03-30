@@ -23,11 +23,15 @@ source_set("audio") {
 
   deps = [
     "//components/prefs",
+    "//extensions/common",
     "//extensions/common/api",
   ]
 
   if (is_chromeos_ash) {
-    deps += [ "//chromeos/audio" ]
+    deps += [
+      "//ash/components/audio",
+      "//content/public/browser",
+    ]
     sources += [ "audio_service_chromeos.cc" ]
   } else {
     sources += [ "audio_service.cc" ]

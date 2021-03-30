@@ -72,6 +72,8 @@ class TileFetcherImpl : public TileFetcher {
   // TileFetcher implementation.
   void StartFetchForTiles(FinishedCallback callback) override {
     auto resource_request = BuildGetRequest();
+    if (!resource_request)
+      return;
     url_loader_ = network::SimpleURLLoader::Create(
         std::move(resource_request), kQueryTilesFetcherTrafficAnnotation);
     url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
@@ -82,25 +84,28 @@ class TileFetcherImpl : public TileFetcher {
 
   // Build the request to get tile info.
   std::unique_ptr<network::ResourceRequest> BuildGetRequest() {
+    if (url_.is_empty() && g_override_url_for_testing.Get().is_empty())
+      return nullptr;
     auto request = std::make_unique<network::ResourceRequest>();
     request->method = net::HttpRequestHeaders::kGetMethod;
     request->headers.SetHeader("x-goog-api-key", api_key_);
     request->headers.SetHeader("X-Client-Version", client_version_);
     request->headers.SetHeader(net::HttpRequestHeaders::kContentType,
                                kRequestContentType);
-    request->url =
-        net::AppendOrReplaceQueryParameter(url_, "country_code", country_code_);
-    if (!experiment_tag_.empty()) {
-      request->url = net::AppendOrReplaceQueryParameter(
-          request->url, "experiment_tag", experiment_tag_);
+    if (!g_override_url_for_testing.Get().is_empty()) {
+      request->url = g_override_url_for_testing.Get();
+    } else {
+      request->url = net::AppendOrReplaceQueryParameter(url_, "country_code",
+                                                        country_code_);
+      if (!experiment_tag_.empty()) {
+        request->url = net::AppendOrReplaceQueryParameter(
+            request->url, "experiment_tag", experiment_tag_);
+      }
     }
     if (!accept_languages_.empty()) {
       request->headers.SetHeader(net::HttpRequestHeaders::kAcceptLanguage,
                                  accept_languages_);
     }
-
-    if (!g_override_url_for_testing.Get().is_empty())
-      request->url = g_override_url_for_testing.Get();
 
     return request;
   }

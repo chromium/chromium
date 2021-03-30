@@ -61,8 +61,6 @@ class WaylandTouch {
 
 class WaylandTouch::Delegate {
  public:
-  virtual void OnTouchCreated(WaylandTouch* touch) = 0;
-  virtual void OnTouchDestroyed(WaylandTouch* touch) = 0;
   virtual void OnTouchPressEvent(WaylandWindow* window,
                                  const gfx::PointF& location,
                                  base::TimeTicks timestamp,

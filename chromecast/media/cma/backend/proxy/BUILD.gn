@@ -34,11 +34,20 @@ chromecast_media_grpc_library("cast_audio_decoder_service_proto") {
 
 cast_source_set("proxy") {
   sources = [
+    "audio_channel_broker_impl.cc",
+    "audio_channel_broker_impl.h",
+    "audio_decoder_pipeline_node.cc",
+    "audio_decoder_pipeline_node.h",
+    "buffer_id_manager.cc",
+    "buffer_id_manager.h",
     "cast_runtime_audio_channel_broker.cc",
     "cast_runtime_audio_channel_broker.h",
+    "cast_runtime_audio_channel_endpoint_manager.h",
     "cma_backend_proxy.cc",
     "cma_backend_proxy.h",
     "cma_proxy_handler.h",
+    "media_pipeline_buffer_extension.cc",
+    "media_pipeline_buffer_extension.h",
     "multizone_audio_decoder_proxy.h",
     "multizone_audio_decoder_proxy_impl.cc",
     "multizone_audio_decoder_proxy_impl.h",
@@ -60,6 +69,6 @@ cast_source_set("proxy") {
 
   if (!enable_chromium_runtime_cast_renderer ||
       chromecast_branding == "public") {
-    sources += [ "audio_channel_broker_simple.cc" ]
+    sources += [ "cast_runtime_audio_channel_endpoint_simple.cc" ]
   }
 }

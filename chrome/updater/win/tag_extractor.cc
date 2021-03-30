@@ -10,10 +10,10 @@
 
 #include <algorithm>
 #include <limits>
+#include <string>
 #include <vector>
 
 #include "base/numerics/checked_math.h"
-#include "base/strings/string16.h"
 #include "base/win/pe_image_reader.h"
 #include "build/build_config.h"
 #include "chrome/updater/win/tag_extractor_impl.h"

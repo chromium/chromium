@@ -1,0 +1,118 @@
+<form id="tambah-alamat" class="form-horizontal" novalidate="novalidate">
+  <div class="form-group">
+    <div class="col-xs-12">
+      <label for="alamat" class="control-label">Nama Alamat <span class="asterisk-alert">*</span></label>
+      <input type="text" class="form-control" id="txtAddAddressNewAddress" name="txtAddAddressNewAddress" placeholder=""
+        maxlength="30" autocomplete="off" aria-required="true">
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-xs-6">
+      <label for="nama" class="control-label">Nama Penerima <span class="asterisk-alert">*</span></label>
+      <input type="text" class="form-control" id="txtNameNewAddress" name="txtNameNewAddress" placeholder=""
+        maxlength="30" autocomplete="off" aria-required="true">
+    </div>
+    <div class="col-xs-6">
+      <label for="telephone" class="control-label">Telepon <span class="asterisk-alert">*</span></label>
+      <input type="tel" class="form-control" id="txtHandphoneNewAddress" name="txtHandphoneNewAddress" placeholder=""
+        maxlength="16" autocomplete="off" aria-required="true">
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-xs-6">
+      <label for="provinsi" class="control-label">Provinsi <span class="asterisk-alert">*</span></label>
+      <select class="form-control" id="listProvince" name="listProvince" aria-required="true">
+        <option value="">Pilih Provinsi</option>
+        <option value="51">BALI</option>
+        <option value="19">BANGKA BELITUNG</option>
+        <option value="36">BANTEN</option>
+        <option value="17">BENGKULU</option>
+        <option value="34">DI YOGYAKARTA</option>
+        <option value="31">DKI JAKARTA</option>
+        <option value="75">GORONTALO</option>
+        <option value="15">JAMBI</option>
+        <option value="32">JAWA BARAT</option>
+        <option value="33">JAWA TENGAH</option>
+        <option value="35">JAWA TIMUR</option>
+        <option value="61">KALIMANTAN BARAT</option>
+        <option value="63">KALIMANTAN SELATAN</option>
+        <option value="62">KALIMANTAN TENGAH</option>
+        <option value="64">KALIMANTAN TIMUR</option>
+        <option value="65">KALIMANTAN UTARA</option>
+        <option value="82">KEPULAUAN MALUKU</option>
+        <option value="21">KEPULAUAN RIAU</option>
+        <option value="18">LAMPUNG</option>
+        <option value="81">MALUKU</option>
+        <option value="11">NANGGROE ACEH DARUSSALAM (NAD)</option>
+        <option value="52">NUSA TENGGARA BARAT (NTB)</option>
+        <option value="53">NUSA TENGGARA TIMUR (NTT)</option>
+        <option value="94">PAPUA</option>
+        <option value="91">PAPUA BARAT</option>
+        <option value="14">RIAU</option>
+        <option value="76">SULAWESI BARAT</option>
+        <option value="73">SULAWESI SELATAN</option>
+        <option value="72">SULAWESI TENGAH</option>
+        <option value="74">SULAWESI TENGGARA</option>
+        <option value="71">SULAWESI UTARA</option>
+        <option value="13">SUMATERA BARAT</option>
+        <option value="16">SUMATERA SELATAN</option>
+        <option value="12">SUMATERA UTARA</option>
+      </select>
+    </div>
+    <div class="col-xs-6">
+      <label for="KotaKabupaten" class="control-label">Kota/kabupaten <span class="asterisk-alert">*</span></label>
+      <select class="form-control" id="listCity" name="listCity" aria-required="true">
+        <option value="">Pilih Kabupaten</option>
+      </select>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-xs-6">
+      <label for="kecamatan" class="control-label">Kecamatan <span class="asterisk-alert">*</span></label>
+      <select class="form-control" id="listDistrict" name="listDistrict" aria-required="true">
+        <option value="">Pilih Kecamatan</option>
+      </select>
+    </div>
+    <div class="col-xs-6">
+      <label for="kelurahan" class="control-label">Kelurahan <span class="asterisk-alert">*</span></label>
+      <select class="form-control" id="listVillage" name="listVillage" aria-required="true">
+        <option value="">Pilih Kelurahan</option>
+      </select>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-xs-12">
+      <label for="alamatlengkap" class="control-label">Alamat <span class="asterisk-alert">*</span></label>
+      <textarea class="form-control" id="txtAddressNewAddress" name="txtAddressNewAddress" placeholder=""
+        aria-required="true"></textarea>
+      <p class="error_validate" style="color:#999; font-style:italic;">Mohon masukkan alamat dengan lengkap (Nama Jalan,
+        Nama Perumahan, Blok Rumah, Nomor Rumah, RT/RW).</p>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-xs-6">
+      <label for="kodepos" class="control-label">Kode pos <span class="asterisk-alert">*</span></label>
+      <input type="text" class="form-control" id="txtPostalCodeNewAddress" name="txtPostalCodeNewAddress" placeholder=""
+        maxlength="5" autocomplete="off" aria-required="true">
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-xs-12">
+      <div id="address-map" class="pin-alamat" data-attr="addAddress" data-mapid="map" data-inputid="pac-input"></div>
+    </div>
+  </div>
+  <input type="hidden" id="addLat" name="addressLat" value="">
+  <input type="hidden" id="addLng" name="addressLng" value="">
+  <div class="form-group">
+    <div class="col-xs-offset-4 col-xs-8 alamat-checkbox">
+      <input type="checkbox" id="isDelivery" name="isDelivery"> Atur Sebagai Default Pengiriman
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-xs-8"></div>
+    <div class="col-xs-4">
+      <button type="button" id="btnAddNewAddress"
+        class="btn btn-default btn-simpan btn-simpan-small2 mb-10">SIMPAN</button>
+    </div>
+  </div>
+</form>

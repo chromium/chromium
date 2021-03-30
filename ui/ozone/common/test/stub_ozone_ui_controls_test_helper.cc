@@ -17,10 +17,6 @@ OzoneUIControlsTestHelper* PrintErrorAndReturnNullptr() {
 }
 }  // namespace
 
-OzoneUIControlsTestHelper* CreateOzoneUIControlsTestHelperWayland() {
-  return PrintErrorAndReturnNullptr();
-}
-
 OzoneUIControlsTestHelper* CreateOzoneUIControlsTestHelperWindows() {
   return PrintErrorAndReturnNullptr();
 }

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that console fills the empty element below the prompt editor.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await ConsoleTestRunner.waitForPendingViewportUpdates();
   const consoleView = Console.ConsoleView.instance();

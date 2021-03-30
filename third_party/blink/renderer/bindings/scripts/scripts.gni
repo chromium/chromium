@@ -66,8 +66,7 @@ idl_compiler_files = get_path_info(
 #   component_info_file = output pickle file for component wide info.
 #   deps = dependencies
 template("compute_interfaces_info") {
-  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-  python2_action(target_name) {
+  action(target_name) {
     script = "$bindings_scripts_dir/compute_interfaces_info_individual.py"
     if (defined(invoker.visibility)) {
       visibility = invoker.visibility
@@ -114,8 +113,7 @@ template("compute_interfaces_info") {
 #   output_file = The .in file to write, relative to the blink_gen_dir.
 #   suffix = (Optional) String to be passed to script via --suffix
 template("generate_event_interfaces") {
-  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-  python2_action(target_name) {
+  action(target_name) {
     # Write the file list to a unique temp file to avoid blowing out the
     # command line length limit.
     idl_files_list = "$target_gen_dir/${target_name}_file_list.tmp"
@@ -166,7 +164,6 @@ template("idl_compiler") {
       idl_lexer_parser_files + idl_compiler_files  # to be explicit (covered by
                                                    # parsetab)
   _inputs += [
-    "$bindings_scripts_output_dir/lextab.py",
     "$bindings_scripts_output_dir/parsetab.pickle",
     "$bindings_scripts_output_dir/cached_jinja_templates.stamp",
     "$bindings_dir/IDLExtendedAttributes.txt",
@@ -199,8 +196,7 @@ template("idl_compiler") {
 
   # Spawning a python process per IDL file is slow. Use a single action
   # instead (crbug.com/821256).
-  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-  python2_action(target_name) {
+  action(target_name) {
     script = _script
     inputs = _inputs
     public_deps = _public_deps
@@ -249,8 +245,7 @@ template("idl_compiler") {
 template("idl_impl") {
   dictionary_impl_output_dir = "$root_gen_dir/third_party/blink/renderer/"
 
-  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-  python2_action(target_name) {
+  action(target_name) {
     script = "//third_party/blink/renderer/bindings/scripts/idl_compiler.py"
     idl_files_list = "$target_gen_dir/${target_name}_file_list.tmp"
     write_file(idl_files_list, rebase_path(invoker.dict_idls, root_build_dir))
@@ -259,7 +254,6 @@ template("idl_impl") {
         idl_lexer_parser_files + idl_compiler_files  # to be explicit (covered
                                                      # by parsetab)
     inputs += [
-      "$bindings_scripts_output_dir/lextab.py",
       "$bindings_scripts_output_dir/parsetab.pickle",
       "$bindings_scripts_output_dir/cached_jinja_templates.stamp",
       "$bindings_dir/IDLExtendedAttributes.txt",
@@ -444,8 +438,7 @@ template("generate_global_constructors") {
 #   deps = dependencies
 #
 template("generate_origin_trial_features") {
-  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-  python2_action(target_name) {
+  action(target_name) {
     script = "//third_party/blink/renderer/bindings/scripts/generate_origin_trial_features.py"
 
     # Write the file list to a unique temp file to avoid blowing out the

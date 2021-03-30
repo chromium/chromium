@@ -28,7 +28,6 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)

@@ -68,7 +68,7 @@ sql::InitStatus MediaHistoryImagesTable::CreateTableIfNonExistent() {
 base::Optional<int64_t> MediaHistoryImagesTable::SaveOrGetImage(
     const GURL& url,
     const url::Origin& playback_origin,
-    const base::string16& mime_type) {
+    const std::u16string& mime_type) {
   DCHECK_LT(0, DB()->transaction_nesting());
   if (!CanAccessDatabase())
     return base::nullopt;

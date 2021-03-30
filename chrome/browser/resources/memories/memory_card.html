@@ -1,0 +1,138 @@
+<style include="cr-shared-style">
+  :host {
+    background-color: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--pill-border-radius);
+    box-sizing: border-box;
+    display: block;
+    padding: var(--memory-card-padding);
+    width: var(--memory-card-width);
+  }
+
+  .section + .section {
+    margin-top: 16px;
+  }
+
+  .section .header {
+    font-size: 0.875rem;  /* 14px */
+    line-height: 20px;
+  }
+
+  #queries {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  search-query {
+    margin-top: 10px;
+  }
+
+  search-query:not(:last-of-type) {
+    margin-inline-end: 10px;
+  }
+
+  #tab-groups-and-bookmarks {
+    display: flex;
+  }
+
+  memory-tile {
+    --tile-width: 160px;
+    margin-top: 10px;
+    width: var(--tile-width);
+  }
+
+  memory-tile:not(:last-of-type) {
+    /* There can be a maximum of 4 tiles in a row. Calculate the space between
+       them accordingly. */
+    margin-inline-end: calc((var(--memory-card-width) -
+                             2 * var(--memory-card-padding) -
+                             4 * var(--tile-width)) / 3);
+  }
+
+  .tab-group .thumbnails {
+    --thumbnail-margin: 4px;
+    --thumbnail-size: 60px;
+    background-color: var(--image-background-color);
+    border-radius: var(--image-border-radius);
+    box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
+    height: var(--tile-width);
+    /* There can be a maximum of 4 thumbnails in a 2x2 grid. Calculate the
+       padding accordingly. */
+    padding: calc((var(--tile-width) -
+                   2 * (var(--thumbnail-size) + 2 * var(--thumbnail-margin))
+                   ) / 2);
+    width: var(--tile-width);
+  }
+
+  .tab-group page-thumbnail {
+    --thumbnail-max-height: var(--thumbnail-size);
+    --thumbnail-max-width: var(--thumbnail-size);
+    margin: var(--thumbnail-margin);
+  }
+
+  .bookmark page-thumbnail {
+    --thumbnail-max-height: var(--tile-width);
+    --thumbnail-max-width: var(--tile-width);
+  }
+
+  .bookmark [slot='secondaryCaption'] {
+    align-items: center;
+    display: flex;
+  }
+
+  .bookmark page-favicon {
+    flex-shrink: 0;
+    height: 16px;
+    width: 16px;
+  }
+
+  .bookmark .hostname {
+    margin-inline-start: 8px;
+  }
+</style>
+<div class="section" hidden="[[!memory.relatedSearches.length]]">
+  <div class="header">$i18n{relatedSearchesSectionHeader}</div>
+  <div id="queries">
+    <template is="dom-repeat" items="[[memory.relatedSearches]]">
+      <search-query search-query="[[item]]"></search-query>
+    </template>
+  </div>
+</div>
+<div class="section" hidden="[[!hasRelatedTabGroupsOrBookmarks_]]">
+  <div class="header">$i18n{relatedTabGroupsAndBookmarksSectionHeader}</div>
+  <div id="tab-groups-and-bookmarks">
+    <template is="dom-repeat"
+        items="[[arrayItems_(memory.relatedTabGroups, 2)]]" as="tabGroup">
+      <memory-tile class="tab-group">
+        <div slot="main" class="thumbnails">
+          <template is="dom-repeat" items="[[arrayItems_(tabGroup.pages, 4)]]">
+            <page-thumbnail is-clickable page="[[item]]"></page-thumbnail>
+          </template>
+        </div>
+        <div slot="primaryCaption">[[decodeMojoString16(tabGroup.title)]]</div>
+        <div slot="secondaryCaption">$i18n{tabGroupTileCaption}</div>
+      </memory-tile>
+    </template>
+    <template is="dom-repeat" items="[[arrayItems_(memory.bookmarks, 2)]]">
+      <memory-tile url="[[item.url]]" class="bookmark">
+        <page-thumbnail slot="main" is-bookmark page="[[item]]" tabindex="-1">
+        </page-thumbnail>
+        <div slot="primaryCaption">[[decodeMojoString16(item.title)]]</div>
+        <div slot="secondaryCaption">
+          <page-favicon url="[[item.url]]"></page-favicon>
+          <span class="hostname">[[getHostnameFromUrl_(item.url)]]</span>
+        </div>
+      </memory-tile>
+    </template>
+  </div>
+</div>
+<div class="section" hidden="[[!memory.topVisits.length]]">
+  <div class="header">$i18n{topVisitsSectionHeader}</div>
+  <div id="top-visits">
+    <template is="dom-repeat" items="[[memory.topVisits]]">
+      <top-visit visit="[[item]]"></top-visit>
+    </template>
+  </div>
+</div>

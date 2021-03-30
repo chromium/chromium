@@ -12,7 +12,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/extension_registry.h"
@@ -117,12 +117,12 @@ class UserScriptListener : public content::NotificationObserver,
                        content::BrowserContext* browser_context) override;
   void OnUserScriptLoaderDestroyed(UserScriptLoader* loader) override;
 
-  ScopedObserver<extensions::ExtensionRegistry,
-                 extensions::ExtensionRegistryObserver>
-      extension_registry_observer_{this};
-  ScopedObserver<extensions::UserScriptLoader,
-                 extensions::UserScriptLoader::Observer>
-      user_script_loader_observer_{this};
+  base::ScopedMultiSourceObservation<extensions::ExtensionRegistry,
+                                     extensions::ExtensionRegistryObserver>
+      extension_registry_observations_{this};
+  base::ScopedMultiSourceObservation<extensions::UserScriptLoader,
+                                     extensions::UserScriptLoader::Observer>
+      user_script_loader_observations_{this};
 
   content::NotificationRegistrar registrar_;
 

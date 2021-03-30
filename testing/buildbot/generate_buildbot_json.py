@@ -389,6 +389,9 @@ class BBJSONGenerator(object):
   def is_chromeos(self, tester_config):
     return tester_config.get('os_type') == 'chromeos'
 
+  def is_lacros(self, tester_config):
+    return tester_config.get('os_type') == 'lacros'
+
   def is_linux(self, tester_config):
     return tester_config.get('os_type') == 'linux'
 
@@ -576,6 +579,7 @@ class BBJSONGenerator(object):
         args.extend(val)
 
     add_conditional_args('desktop_args', lambda cfg: not self.is_android(cfg))
+    add_conditional_args('lacros_args', self.is_lacros)
     add_conditional_args('linux_args', self.is_linux)
     add_conditional_args('android_args', self.is_android)
     add_conditional_args('chromeos_args', self.is_chromeos)
@@ -698,6 +702,24 @@ class BBJSONGenerator(object):
           'script': '//testing/trigger_scripts/chromeos_device_trigger.py',
         }
 
+  def add_logdog_butler_cipd_package(self, tester_config, result):
+    if not tester_config.get('skip_cipd_packages', False):
+      cipd_packages = result['swarming'].get('cipd_packages', [])
+      already_added = len([
+          package for package in cipd_packages
+          if package.get('cipd_package', "").find('logdog/butler') > 0
+      ]) > 0
+      if not already_added:
+        cipd_packages.append({
+            'cipd_package':
+            'infra/tools/luci/logdog/butler/${platform}',
+            'location':
+            'bin',
+            'revision':
+            'git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c',
+        })
+        result['swarming']['cipd_packages'] = cipd_packages
+
   def add_android_presentation_args(self, tester_config, test_name, result):
     args = result.get('args', [])
     bucket = tester_config.get('results_bucket', 'chromium-result-details')
@@ -714,16 +736,6 @@ class BBJSONGenerator(object):
         'script': '//build/android/pylib/results/presentation/'
           'test_results_presentation.py',
       }
-    if not tester_config.get('skip_cipd_packages', False):
-      cipd_packages = result['swarming'].get('cipd_packages', [])
-      cipd_packages.append(
-        {
-          'cipd_package': 'infra/tools/luci/logdog/butler/${platform}',
-          'location': 'bin',
-          'revision': 'git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c',
-        }
-      )
-      result['swarming']['cipd_packages'] = cipd_packages
     if not tester_config.get('skip_output_links', False):
       result['swarming']['output_links'] = [
         {
@@ -754,10 +766,13 @@ class BBJSONGenerator(object):
     self.initialize_args_for_test(
         result, tester_config, additional_arg_keys=['gtest_args'])
     if self.is_android(tester_config) and tester_config.get(
-        'use_swarming',
-        True) and not test_config.get('use_isolated_scripts_api', False):
-      self.add_android_presentation_args(tester_config, test_name, result)
-      result['args'] = result.get('args', []) + ['--recover-devices']
+        'use_swarming', True):
+      if not test_config.get('use_isolated_scripts_api', False):
+        # TODO(https://crbug.com/1137998) make Android presentation work with
+        # isolated scripts in test_results_presentation.py merge script
+        self.add_android_presentation_args(tester_config, test_name, result)
+        result['args'] = result.get('args', []) + ['--recover-devices']
+      self.add_logdog_butler_cipd_package(tester_config, result)
 
     result = self.update_and_cleanup_test(
         result, test_name, tester_name, tester_config, waterfall)
@@ -788,8 +803,13 @@ class BBJSONGenerator(object):
     result['name'] = result.get('name', test_name)
     self.initialize_swarming_dictionary_for_test(result, tester_config)
     self.initialize_args_for_test(result, tester_config)
-    if tester_config.get('use_android_presentation', False):
-      self.add_android_presentation_args(tester_config, test_name, result)
+    if self.is_android(tester_config) and tester_config.get(
+        'use_swarming', True):
+      if tester_config.get('use_android_presentation', False):
+        # TODO(https://crbug.com/1137998) make Android presentation work with
+        # isolated scripts in test_results_presentation.py merge script
+        self.add_android_presentation_args(tester_config, test_name, result)
+      self.add_logdog_butler_cipd_package(tester_config, result)
     result = self.update_and_cleanup_test(
         result, test_name, tester_name, tester_config, waterfall)
     self.add_common_test_properties(result, tester_config)
@@ -1448,11 +1468,6 @@ class BBJSONGenerator(object):
         'ANGLE GPU Android Release (Nexus 5X)',
         'ANGLE GPU Linux Release (Intel HD 630)',
         'ANGLE GPU Linux Release (NVIDIA)',
-        'ANGLE GPU Mac Release (Intel)',
-        'ANGLE GPU Mac Retina Release (AMD)',
-        'ANGLE GPU Mac Retina Release (NVIDIA)',
-        'ANGLE GPU Win10 x64 Release (Intel HD 630)',
-        'ANGLE GPU Win10 x64 Release (NVIDIA)',
         'Optional Android Release (Nexus 5X)',
         'Optional Linux Release (Intel HD 630)',
         'Optional Linux Release (NVIDIA)',
@@ -1481,6 +1496,14 @@ class BBJSONGenerator(object):
         'win32-dbg',
         'win-archive-dbg',
         'win32-archive-dbg',
+        # New LTC isn't created when LTC becomes LTS, so these builders can go
+        # away
+        "chromeos-arm-generic-ltc",
+        "chromeos-betty-pi-arc-chrome-ltc",
+        "chromeos-eve-chrome-ltc",
+        "chromeos-kevin-chrome-ltc",
+        "linux-chromeos-ltc",
+        "linux64-ltc",
         # TODO(https://crbug.com/1127088): remove once LTS version has been set
         "chromeos-arm-generic-lts",
         "chromeos-betty-pi-arc-chrome-lts",

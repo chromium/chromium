@@ -29,10 +29,10 @@ class TestClient : public TestContentClient {
  public:
   ~TestClient() override {}
 
-  base::string16 GetLocalizedString(int message_id) override {
+  std::u16string GetLocalizedString(int message_id) override {
     if (message_id == kDummyStringId)
       return base::UTF8ToUTF16(kDummyString);
-    return base::string16();
+    return std::u16string();
   }
 
   base::RefCountedMemory* GetDataResourceBytes(int resource_id) override {
@@ -130,7 +130,7 @@ TEST_F(WebUIDataSourceTest, SomeValues) {
   source()->AddInteger("counter", 10);
   source()->AddInteger("debt", -456);
   source()->AddDouble("threshold", 0.55);
-  source()->AddString("planet", base::ASCIIToUTF16("pluto"));
+  source()->AddString("planet", u"pluto");
   source()->AddLocalizedString("button", kDummyStringId);
   StartDataRequest("strings.js", base::BindOnce(&SomeValuesCallback));
 }
@@ -238,6 +238,7 @@ TEST_F(WebUIDataSourceTest, MimeType) {
   EXPECT_EQ(GetMimeType("foopng"), html);
   EXPECT_EQ(GetMimeType("foo.png"), png);
   EXPECT_EQ(GetMimeType(".png.foo"), html);
+  EXPECT_EQ(GetMimeType(".woff2"), "application/font-woff2");
 
   // With query strings.
   EXPECT_EQ(GetMimeType("foo?abc?abc"), html);

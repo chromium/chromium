@@ -29,7 +29,7 @@ void WaitForDocumentAction::InternalProcessAction(
     WaitForReadyState();
     return;
   }
-  delegate_->ShortWaitForElement(
+  delegate_->ShortWaitForElementWithSlowWarning(
       frame_selector,
       base::BindOnce(
           &WaitForDocumentAction::OnWaitForElementTimed,

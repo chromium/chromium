@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">Item sa listahan</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">Mag-swipe pakanan gamit ang dalawang daliri</translation>
-<translation id="1016393160682012902">Pumindot ng qwerty key, nare-refresh na braille key, o touch gesture para malaman ang function nito. Pindutin ng control at w o escape para lumabas.</translation>
 <translation id="1022586497894531524">Unang beses mo bang gagamitin ang pasalitang feedback ng ChromeVox? Ipinapaliwanag sa maikling tutorial na ito ang mga kinakailangan para sa pagsisimula sa ChromeVox.</translation>
 <translation id="1025074108959230262">Na-disable ang sticky mode</translation>
 <translation id="1031961866430398710">pagkatapos</translation>
@@ -150,6 +149,7 @@
 <translation id="2045055672832940894">Walang nakaraang kontrol</translation>
 <translation id="2045606329038304310">Kontrol ng field ng form</translation>
 <translation id="2063539687800151747">Epigraph</translation>
+<translation id="2074531330963286860">Mga available na pagkilos. Pindutin ang Search+Period para tingnan</translation>
 <translation id="2086961585857038472">Susunod na Salita</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">fil</translation>
@@ -782,6 +782,7 @@
 <translation id="6837853484260746864">Pumili ng boses:</translation>
 <translation id="6858047746862060282">Prologue</translation>
 <translation id="6859876496651143278">Mag-swipe pakaliwa gamit ang isang daliri</translation>
+<translation id="6861391673272648730">Ino-off nito ang screen. Puwede mong i-on ulit ang screen gamit ang Search + Brightness up. Gusto mo ba itong i-off?</translation>
 <translation id="6865519907510167493">Mali ang Spelling</translation>
 <translation id="6873188295213080042">Hint: Pindutin nang matagal ang Search at pindutin ang mga arrow key para mag-navigate.</translation>
 <translation id="6894148351896207544">Sabihin ang kasalukuyang oras at petsa</translation>
@@ -976,6 +977,7 @@
 <translation id="827266600368092403">Simulan o tapusin ang pagpipilian</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8276439074553447000">Lumaktaw sa nakaraang napo-focus na item</translation>
+<translation id="8279039817939141096">Pumindot ng qwerty key, nare-refresh na braille key, o touch gesture para malaman ang function nito. Pindutin ang control at w, space at Z, mag-swipe pakaliwa gamit ang dalawang daliri, o escape para lumabas</translation>
 <translation id="8283603667300770666">Susunod na field ng form</translation>
 <translation id="8310185481635255431">Walang susunod na link</translation>
 <translation id="831207808878314375">Kahulugan</translation>

@@ -45,6 +45,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
+using extensions::mojom::ManifestLocation;
+
 namespace extensions {
 namespace file_util {
 namespace {
@@ -193,7 +195,7 @@ void UninstallExtension(const base::FilePath& extensions_dir,
 }
 
 scoped_refptr<Extension> LoadExtension(const base::FilePath& extension_path,
-                                       Manifest::Location location,
+                                       ManifestLocation location,
                                        int flags,
                                        std::string* error) {
   return LoadExtension(extension_path, nullptr, std::string(), location, flags,
@@ -202,7 +204,7 @@ scoped_refptr<Extension> LoadExtension(const base::FilePath& extension_path,
 
 scoped_refptr<Extension> LoadExtension(const base::FilePath& extension_path,
                                        const std::string& extension_id,
-                                       Manifest::Location location,
+                                       ManifestLocation location,
                                        int flags,
                                        std::string* error) {
   return LoadExtension(extension_path, nullptr, extension_id, location, flags,
@@ -213,7 +215,7 @@ scoped_refptr<Extension> LoadExtension(
     const base::FilePath& extension_path,
     const base::FilePath::CharType* manifest_file,
     const std::string& extension_id,
-    Manifest::Location location,
+    ManifestLocation location,
     int flags,
     std::string* error) {
   std::unique_ptr<base::DictionaryValue> manifest;
@@ -492,7 +494,7 @@ bool ValidateExtensionIconSet(const ExtensionIconSet& icon_set,
       return false;
     }
 
-    if (extension->location() == Manifest::UNPACKED) {
+    if (extension->location() == ManifestLocation::kUnpacked) {
       const bool is_sufficiently_visible =
           image_util::IsIconAtPathSufficientlyVisible(path);
       const bool is_sufficiently_visible_rendered =

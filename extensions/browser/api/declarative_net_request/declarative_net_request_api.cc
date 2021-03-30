@@ -69,7 +69,7 @@ ExtensionFunction::ResponseAction
 DeclarativeNetRequestUpdateDynamicRulesFunction::Run() {
   using Params = dnr_api::UpdateDynamicRules::Params;
 
-  base::string16 error;
+  std::u16string error;
   std::unique_ptr<Params> params(Params::Create(*args_, &error));
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
@@ -164,7 +164,7 @@ ExtensionFunction::ResponseAction
 DeclarativeNetRequestUpdateSessionRulesFunction::Run() {
   using Params = dnr_api::UpdateSessionRules::Params;
 
-  base::string16 error;
+  std::u16string error;
   std::unique_ptr<Params> params(Params::Create(*args_, &error));
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
@@ -189,7 +189,7 @@ DeclarativeNetRequestUpdateSessionRulesFunction::Run() {
       base::BindOnce(&DeclarativeNetRequestUpdateSessionRulesFunction::
                          OnSessionRulesUpdated,
                      this));
-  return did_respond() ? AlreadyResponded() : RespondLater();
+  return RespondLater();
 }
 
 void DeclarativeNetRequestUpdateSessionRulesFunction::OnSessionRulesUpdated(
@@ -228,7 +228,7 @@ DeclarativeNetRequestUpdateEnabledRulesetsFunction::Run() {
   using RulesetID = declarative_net_request::RulesetID;
   using DNRManifestData = declarative_net_request::DNRManifestData;
 
-  base::string16 error;
+  std::u16string error;
   std::unique_ptr<Params> params(Params::Create(*args_, &error));
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
@@ -341,7 +341,7 @@ ExtensionFunction::ResponseAction
 DeclarativeNetRequestGetMatchedRulesFunction::Run() {
   using Params = dnr_api::GetMatchedRules::Params;
 
-  base::string16 error;
+  std::u16string error;
   std::unique_ptr<Params> params(Params::Create(*args_, &error));
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
@@ -355,6 +355,17 @@ DeclarativeNetRequestGetMatchedRulesFunction::Run() {
 
     if (params->filter->min_time_stamp)
       min_time_stamp = base::Time::FromJsTime(*params->filter->min_time_stamp);
+  }
+
+  // Return an error if an invalid tab ID is specified. The unknown tab ID is
+  // valid as it would cause the API call to return all rules matched that were
+  // not associated with any currently open tabs.
+  if (tab_id && *tab_id != extension_misc::kUnknownTabId &&
+      !ExtensionsBrowserClient::Get()->IsValidTabId(browser_context(),
+                                                    *tab_id)) {
+    return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+        declarative_net_request::kTabNotFoundError,
+        base::NumberToString(*tab_id))));
   }
 
   std::string permission_error;
@@ -403,7 +414,7 @@ ExtensionFunction::ResponseAction
 DeclarativeNetRequestSetExtensionActionOptionsFunction::Run() {
   using Params = dnr_api::SetExtensionActionOptions::Params;
 
-  base::string16 error;
+  std::u16string error;
   std::unique_ptr<Params> params(Params::Create(*args_, &error));
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
@@ -432,7 +443,7 @@ DeclarativeNetRequestSetExtensionActionOptionsFunction::Run() {
     // the action count for the extension's icon and show the default badge
     // text if set.
     if (use_action_count_as_badge_text)
-      action_tracker.OnPreferenceEnabled(extension_id());
+      action_tracker.OnActionCountAsBadgeTextPreferenceEnabled(extension_id());
     else {
       DCHECK(ExtensionsAPIClient::Get());
       ExtensionsAPIClient::Get()->ClearActionCount(browser_context(),
@@ -472,7 +483,7 @@ ExtensionFunction::ResponseAction
 DeclarativeNetRequestIsRegexSupportedFunction::Run() {
   using Params = dnr_api::IsRegexSupported::Params;
 
-  base::string16 error;
+  std::u16string error;
   std::unique_ptr<Params> params(Params::Create(*args_, &error));
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());

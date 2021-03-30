@@ -7,19 +7,40 @@
 
 namespace blink {
 
-PlatformNotificationAction::PlatformNotificationAction() {}
-
-PlatformNotificationAction::PlatformNotificationAction(
-    const PlatformNotificationAction& other) = default;
-
-PlatformNotificationAction::~PlatformNotificationAction() {}
-
 PlatformNotificationData::PlatformNotificationData()
     : direction(mojom::NotificationDirection::LEFT_TO_RIGHT) {}
 
 PlatformNotificationData::PlatformNotificationData(
-    const PlatformNotificationData& other) = default;
+    const PlatformNotificationData& other) {
+  *this = other;
+}
 
-PlatformNotificationData::~PlatformNotificationData() {}
+PlatformNotificationData& PlatformNotificationData::operator=(
+    const PlatformNotificationData& other) {
+  if (&other == this)
+    return *this;
+
+  title = other.title;
+  direction = other.direction;
+  lang = other.lang;
+  body = other.body;
+  tag = other.tag;
+  image = other.image;
+  icon = other.icon;
+  badge = other.badge;
+  vibration_pattern = other.vibration_pattern;
+  timestamp = other.timestamp;
+  renotify = other.renotify;
+  silent = other.silent;
+  require_interaction = other.require_interaction;
+  data = other.data;
+  for (auto& action : other.actions)
+    actions.push_back(action.Clone());
+  show_trigger_timestamp = other.show_trigger_timestamp;
+
+  return *this;
+}
+
+PlatformNotificationData::~PlatformNotificationData() = default;
 
 }  // namespace blink

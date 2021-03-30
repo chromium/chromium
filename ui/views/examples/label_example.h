@@ -33,7 +33,7 @@ class VIEWS_EXAMPLES_EXPORT LabelExample : public ExampleBase,
 
   // TextfieldController:
   void ContentsChanged(Textfield* sender,
-                       const base::string16& new_contents) override;
+                       const std::u16string& new_contents) override;
 
  private:
   // Add a customizable label and various controls to modify its presentation.

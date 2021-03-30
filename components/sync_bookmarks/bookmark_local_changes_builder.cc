@@ -47,22 +47,37 @@ syncer::CommitRequestDataList BookmarkLocalChangesBuilder::BuildCommitRequests(
     data->creation_time = syncer::ProtoTimeToTime(metadata->creation_time());
     data->modification_time =
         syncer::ProtoTimeToTime(metadata->modification_time());
+
+    if (bookmark_tracker_->bookmark_client_tags_in_protocol_enabled()) {
+      DCHECK(!metadata->client_tag_hash().empty());
+      data->client_tag_hash =
+          syncer::ClientTagHash::FromHashed(metadata->client_tag_hash());
+      DCHECK(metadata->is_deleted() ||
+             data->client_tag_hash ==
+                 syncer::ClientTagHash::FromUnhashed(
+                     syncer::BOOKMARKS,
+                     entity->bookmark_node()->guid().AsLowercaseString()));
+    }
+
     if (!metadata->is_deleted()) {
       const bookmarks::BookmarkNode* node = entity->bookmark_node();
       // Skip current entity if its favicon is not loaded yet. It will be
       // committed once the favicon is loaded in
       // BookmarkModelObserverImpl::BookmarkNodeFaviconChanged.
       if (!node->is_folder() && !node->is_favicon_loaded() &&
-          !node->is_permanent_node() &&
-          base::FeatureList::IsEnabled(
-              switches::kSyncDoNotCommitBookmarksWithoutFavicon)) {
+          !node->is_permanent_node()) {
         // Force the favicon to be loaded. The worker will be nudged for commit
         // in BookmarkModelObserverImpl::BookmarkNodeFaviconChanged() once
         // favicon is loaded.
         bookmark_model_->GetFavicon(node);
         continue;
       }
+
       DCHECK(node);
+      DCHECK_EQ(syncer::ClientTagHash::FromUnhashed(
+                    syncer::BOOKMARKS, node->guid().AsLowercaseString()),
+                syncer::ClientTagHash::FromHashed(metadata->client_tag_hash()));
+
       const bookmarks::BookmarkNode* parent = node->parent();
       const SyncedBookmarkTracker::Entity* parent_entity =
           bookmark_tracker_->GetEntityForBookmarkNode(parent);
@@ -78,12 +93,8 @@ syncer::CommitRequestDataList BookmarkLocalChangesBuilder::BuildCommitRequests(
       data->unique_position = metadata->unique_position();
       // Assign specifics only for the non-deletion case. In case of deletion,
       // EntityData should contain empty specifics to indicate deletion.
-      // TODO(crbug.com/978430): has_final_guid() should be enough below
-      // assuming that all codepaths that populate the final GUID make sure the
-      // local model has the appropriate GUID too (and update if needed).
       data->specifics = CreateSpecificsFromBookmarkNode(
-          node, bookmark_model_, /*force_favicon_load=*/true,
-          entity->final_guid_matches(node->guid()));
+          node, bookmark_model_, /*force_favicon_load=*/true);
       // TODO(crbug.com/1058376): check after finishing if we need to use full
       // title instead of legacy canonicalized one.
       data->name = data->specifics.bookmark().legacy_canonicalized_title();

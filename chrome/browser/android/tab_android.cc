@@ -44,7 +44,7 @@
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/common/url_constants.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/url_formatter/url_fixer.h"
 #include "content/public/browser/browser_thread.h"
@@ -116,6 +116,25 @@ TabAndroid* TabAndroid::GetNativeTab(JNIEnv* env, const JavaRef<jobject>& obj) {
   return reinterpret_cast<TabAndroid*>(Java_TabImpl_getNativePtr(env, obj));
 }
 
+std::vector<TabAndroid*> TabAndroid::GetAllNativeTabs(
+    JNIEnv* env,
+    const ScopedJavaLocalRef<jobjectArray>& obj_array) {
+  std::vector<TabAndroid*> tab_native_ptrs;
+  ScopedJavaLocalRef<jlongArray> j_tabs_ptr =
+      Java_TabImpl_getAllNativePtrs(env, obj_array);
+  if (j_tabs_ptr.is_null())
+    return tab_native_ptrs;
+
+  std::vector<jlong> tab_ptr;
+  base::android::JavaLongArrayToLongVector(env, j_tabs_ptr, &tab_ptr);
+
+  for (size_t i = 0; i < tab_ptr.size(); ++i) {
+    tab_native_ptrs.push_back(reinterpret_cast<TabAndroid*>(tab_ptr[i]));
+  }
+
+  return tab_native_ptrs;
+}
+
 void TabAndroid::AttachTabHelpers(content::WebContents* web_contents) {
   DCHECK(web_contents);
 
@@ -155,12 +174,12 @@ bool TabAndroid::IsNativePage() const {
   return Java_TabImpl_isNativePage(env, weak_java_tab_.get(env));
 }
 
-base::string16 TabAndroid::GetTitle() const {
+std::u16string TabAndroid::GetTitle() const {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jstring> java_title =
       Java_TabImpl_getTitle(env, weak_java_tab_.get(env));
   return java_title ? base::android::ConvertJavaStringToUTF16(java_title)
-                    : base::string16();
+                    : std::u16string();
 }
 
 GURL TabAndroid::GetURL() const {
@@ -373,7 +392,8 @@ TabAndroid::TabLoadStatus TabAndroid::LoadUrl(
     jboolean has_user_gesture,
     jboolean should_clear_history_list,
     jlong input_start_timestamp,
-    jlong intent_received_timestamp) {
+    jlong intent_received_timestamp,
+    jint ua_override_option) {
   if (!web_contents())
     return PAGE_LOAD_FAILED;
 
@@ -430,6 +450,9 @@ TabAndroid::TabLoadStatus TabAndroid::LoadUrl(
       load_params.input_start =
           base::TimeTicks::FromUptimeMillis(intent_received_timestamp);
     }
+    load_params.override_user_agent =
+        static_cast<NavigationController::UserAgentOverrideOption>(
+            ua_override_option);
     web_contents()->GetController().LoadURLWithParams(load_params);
   }
   return DEFAULT_PAGE_LOAD;
@@ -441,7 +464,7 @@ void TabAndroid::SetActiveNavigationEntryTitleForUrl(
     const JavaParamRef<jstring>& jtitle) {
   DCHECK(web_contents());
 
-  base::string16 title;
+  std::u16string title;
   if (jtitle)
     title = base::android::ConvertJavaStringToUTF16(env, jtitle);
 

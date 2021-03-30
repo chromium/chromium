@@ -176,6 +176,19 @@ chrome.fileManagerPrivate.DriveSyncErrorType = {
 };
 
 /** @enum {string} */
+chrome.fileManagerPrivate.DriveConfirmDialogType = {
+  ENABLE_DOCS_OFFLINE: 'enable_docs_offline',
+};
+
+/** @enum {string} */
+chrome.fileManagerPrivate.DriveDialogResult = {
+  NOT_DISPLAYED: 'not_displayed',
+  ACCEPT: 'accept',
+  REJECT: 'reject',
+  DISMISS: 'dismiss',
+};
+
+/** @enum {string} */
 chrome.fileManagerPrivate.TaskResult = {
   OPENED: 'opened',
   MESSAGE_SENT: 'message_sent',
@@ -269,6 +282,13 @@ chrome.fileManagerPrivate.CrostiniEventType = {
   UNSHARE: 'unshare',
   DROP_FAILED_PLUGIN_VM_DIRECTORY_NOT_SHARED:
       'drop_failed_plugin_vm_directory_not_shared',
+};
+
+/** @enum {string} */
+chrome.fileManagerPrivate.SharesheetLaunchSource = {
+  CONTEXT_MENU: 'context_menu',
+  SHARESHEET_BUTTON: 'sharesheet_button',
+  UNKNOWN: 'unknown',
 };
 
 /**
@@ -401,6 +421,14 @@ chrome.fileManagerPrivate.FileTransferStatus;
  * }}
  */
 chrome.fileManagerPrivate.DriveSyncErrorEvent;
+
+/**
+ * @typedef {{
+ *   type: !chrome.fileManagerPrivate.DriveConfirmDialogType,
+ *   fileUrl: string
+ * }}
+ */
+chrome.fileManagerPrivate.DriveConfirmDialogEvent;
 
 /**
  * @typedef {{
@@ -583,6 +611,14 @@ chrome.fileManagerPrivate.MediaMetadata;
  * }}
  */
 chrome.fileManagerPrivate.HoldingSpaceState;
+
+/**
+ * @typedef {{
+ *   volumeId: string,
+ *   writable: boolean,
+ * }}
+ */
+chrome.fileManagerPrivate.GetVolumeRootOptions;
 
 /**
  * Logout the current user for navigating to the re-authentication screen for
@@ -1034,6 +1070,14 @@ chrome.fileManagerPrivate.getDirectorySize = function(entry, callback) {};
 chrome.fileManagerPrivate.getRecentFiles = function(restriction, fileType, callback) {};
 
 /**
+ * Requests the root directory of a volume. The ID of the volume must be
+ * specified as |volumeId| of the |options| paramter.
+ * @param {!chrome.fileManagerPrivate.GetVolumeRootOptions} options
+ * @param {function(!DirectoryEntry)} callback
+ */
+chrome.fileManagerPrivate.getVolumeRoot = function(options, callback) {};
+
+/**
  * Starts and mounts crostini container.
  * @param {function()} callback Callback called after the crostini container
  *     is started and mounted.
@@ -1174,9 +1218,11 @@ chrome.fileManagerPrivate.sharesheetHasTargets = function(entries, callback) {};
  * Invoke Sharesheet for selected files. If not possible, then returns
  * an error via chrome.runtime.lastError. |entries| Array of selected entries.
  * @param {!Array<!Entry>} entries
+ * @param {chrome.fileManagerPrivate.SharesheetLaunchSource} launchSource
  * @param {function()} callback
  */
-chrome.fileManagerPrivate.invokeSharesheet = function(entries, callback) {};
+chrome.fileManagerPrivate.invokeSharesheet = function(
+    entries, launchSource, callback) {};
 
 /**
  * Adds or removes a list of entries to temporary holding space. Any entries
@@ -1204,6 +1250,12 @@ chrome.fileManagerPrivate.getHoldingSpaceState = function(callback) {};
  */
 chrome.fileManagerPrivate.isTabletModeEnabled = function(callback) {};
 
+/**
+ * Notifies Drive about the result of the last dialog shown.
+ * @param {chrome.fileManagerPrivate.DriveDialogResult} result
+ */
+chrome.fileManagerPrivate.notifyDriveDialogResult = function(result) {};
+
 /** @type {!ChromeEvent} */
 chrome.fileManagerPrivate.onMountCompleted;
 
@@ -1230,6 +1282,9 @@ chrome.fileManagerPrivate.onDeviceChanged;
 
 /** @type {!ChromeEvent} */
 chrome.fileManagerPrivate.onDriveSyncError;
+
+/** @type {!ChromeEvent} */
+chrome.fileManagerPrivate.onDriveConfirmDialog;
 
 /** @type {!ChromeEvent} */
 chrome.fileManagerPrivate.onAppsUpdated;

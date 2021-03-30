@@ -14,26 +14,30 @@
 namespace component_updater {
 
 // Success callback to be run after the component is downloaded.
-using OnSODAComponentReadyCallback =
+using OnSodaComponentInstalledCallback =
     base::RepeatingCallback<void(const base::FilePath&)>;
 
-class SODAComponentInstallerPolicy : public ComponentInstallerPolicy {
- public:
-  explicit SODAComponentInstallerPolicy(OnSODAComponentReadyCallback callback);
-  ~SODAComponentInstallerPolicy() override;
+using OnSodaComponentReadyCallback = base::OnceClosure;
 
-  SODAComponentInstallerPolicy(const SODAComponentInstallerPolicy&) = delete;
-  SODAComponentInstallerPolicy& operator=(const SODAComponentInstallerPolicy&) =
+class SodaComponentInstallerPolicy : public ComponentInstallerPolicy {
+ public:
+  explicit SodaComponentInstallerPolicy(
+      OnSodaComponentInstalledCallback on_installed_callback,
+      OnSodaComponentReadyCallback on_ready_callback);
+  ~SodaComponentInstallerPolicy() override;
+
+  SodaComponentInstallerPolicy(const SodaComponentInstallerPolicy&) = delete;
+  SodaComponentInstallerPolicy& operator=(const SodaComponentInstallerPolicy&) =
       delete;
 
   static const std::string GetExtensionId();
-  static void UpdateSODAComponentOnDemand();
+  static void UpdateSodaComponentOnDemand();
 
   static update_client::CrxInstaller::Result SetComponentDirectoryPermission(
       const base::FilePath& install_dir);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(SODAComponentInstallerTest,
+  FRIEND_TEST_ALL_PREFIXES(SodaComponentInstallerTest,
                            ComponentReady_CallsLambda);
 
   // The following methods override ComponentInstallerPolicy.
@@ -52,9 +56,9 @@ class SODAComponentInstallerPolicy : public ComponentInstallerPolicy {
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
-  std::vector<std::string> GetMimeTypes() const override;
 
-  OnSODAComponentReadyCallback on_component_ready_callback_;
+  OnSodaComponentInstalledCallback on_installed_callback_;
+  OnSodaComponentReadyCallback on_ready_callback_;
 };
 
 // Registers user preferences related to the Speech On-Device API (SODA)
@@ -66,11 +70,13 @@ void RegisterPrefsForSodaComponent(PrefRegistrySimple* registry);
 void RegisterSodaComponent(ComponentUpdateService* cus,
                            PrefService* profile_prefs,
                            PrefService* global_prefs,
-                           base::OnceClosure callback);
+                           base::OnceClosure on_ready_callback,
+                           base::OnceClosure on_registered_callback);
 
 void RegisterSodaLanguageComponent(ComponentUpdateService* cus,
                                    PrefService* profile_prefs,
-                                   PrefService* global_prefs);
+                                   PrefService* global_prefs,
+                                   base::OnceClosure on_ready_callback);
 
 }  // namespace component_updater
 

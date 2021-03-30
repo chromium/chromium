@@ -12,7 +12,6 @@
 #include "base/values.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/proximity_auth/proximity_auth_pref_names.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -61,9 +60,9 @@ void ProximityAuthProfilePrefManager::StartSyncingToLocalState(
     return;
   }
 
-  base::Closure on_pref_changed_callback =
-      base::Bind(&ProximityAuthProfilePrefManager::SyncPrefsToLocalState,
-                 weak_ptr_factory_.GetWeakPtr());
+  auto on_pref_changed_callback = base::BindRepeating(
+      &ProximityAuthProfilePrefManager::SyncPrefsToLocalState,
+      weak_ptr_factory_.GetWeakPtr());
 
   registrar_.Init(pref_service_);
   registrar_.Add(chromeos::multidevice_setup::kSmartLockAllowedPrefName,
@@ -123,6 +122,9 @@ void ProximityAuthProfilePrefManager::SetIsEasyUnlockEnabled(
 }
 
 bool ProximityAuthProfilePrefManager::IsEasyUnlockEnabled() const {
+  // Note: if GetFeatureState() is called in the first few hundred milliseconds
+  // of user session startup, it can incorrectly return a feature-default state
+  // of kProhibitedByPolicy. See https://crbug.com/1154766 for more.
   return multidevice_setup_client_->GetFeatureState(
              chromeos::multidevice_setup::mojom::Feature::kSmartLock) ==
          chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser;
@@ -175,7 +177,10 @@ void ProximityAuthProfilePrefManager::SetHasShownLoginDisabledMessage(
     bool has_shown) {
   // This is persisted within SyncPrefsToLocalState() instead, since the local
   // state must act as the source of truth for this pref.
-  NOTREACHED();
+
+  // TODO(crbug.com/1152491): Add a NOTREACHED() to ensure this method is not
+  // called. It is currently incorrectly, though harmlessly, called by virtual
+  // Chrome OS on Linux.
 }
 
 bool ProximityAuthProfilePrefManager::HasShownLoginDisabledMessage() const {

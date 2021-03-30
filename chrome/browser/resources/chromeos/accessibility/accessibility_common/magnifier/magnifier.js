@@ -20,6 +20,13 @@ export class Magnifier {
      */
     this.screenMagnifierFocusFollowing_;
 
+    /**
+     * Whether magnifier is current initializing, and so should ignore
+     * focus updates.
+     * @private {boolean}
+     */
+    this.isInitializing_ = true;
+
     /** @private {!EventHandler} */
     this.focusHandler_ = new EventHandler(
         [], chrome.automation.EventType.FOCUS, this.onFocus_.bind(this));
@@ -52,6 +59,19 @@ export class Magnifier {
       this.activeDescendantHandler_.setNodes(desktop);
       this.activeDescendantHandler_.start();
     });
+
+    this.isInitializing_ = true;
+
+    setTimeout(() => {
+      this.isInitializing_ = false;
+    }, Magnifier.IGNORE_FOCUS_UPDATES_INITIALIZATION_MS);
+  }
+
+  /**
+   * Sets |isInitializing_| inside tests to skip ignoring initial focus updates.
+   */
+  setIsInitializingForTest(isInitializing) {
+    this.isInitializing_ = isInitializing;
   }
 
   /**
@@ -78,9 +98,10 @@ export class Magnifier {
    * following for docked magnifier.
    */
   shouldFollowFocus() {
-    return this.type === Magnifier.Type.DOCKED ||
-        this.type === Magnifier.Type.FULL_SCREEN &&
-        this.screenMagnifierFocusFollowing_;
+    return !this.isInitializing_ &&
+        (this.type === Magnifier.Type.DOCKED ||
+         this.type === Magnifier.Type.FULL_SCREEN &&
+             this.screenMagnifierFocusFollowing_);
   }
 
   /**
@@ -146,3 +167,10 @@ Magnifier.Prefs = {
   SCREEN_MAGNIFIER_FOCUS_FOLLOWING:
       'settings.a11y.screen_magnifier_focus_following',
 };
+
+/**
+ * Duration of time directly after startup of magnifier to ignore focus updates,
+ * to prevent the magnified region from jumping.
+ * @const {number}
+ */
+Magnifier.IGNORE_FOCUS_UPDATES_INITIALIZATION_MS = 500;

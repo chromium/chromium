@@ -44,7 +44,8 @@ const char kAccountsPrefDeviceLocalAccountAutoLoginBailoutEnabled[] =
     "cros.accounts.deviceLocalAccountAutoLoginBailoutEnabled";
 const char kAccountsPrefDeviceLocalAccountPromptForNetworkWhenOffline[] =
     "cros.accounts.deviceLocalAccountPromptForNetworkWhenOffline";
-// TODO(crbug.com/866790): Check it is not used anymore and remove it.
+// TODO(crbug/1155729): Check it is not used anymore for deprecated supervised
+// users and remove it.
 const char kAccountsPrefSupervisedUsersEnabled[] =
     "cros.accounts.supervisedUsersEnabled";
 const char kAccountsPrefTransferSAMLCookies[] =
@@ -212,6 +213,10 @@ const char kReportDeviceVpdInfo[] = "cros.device_status.report_device_vpd_info";
 const char kReportDeviceSystemInfo[] =
     "cros.device_status.report_device_system_info";
 
+// A boolean pref that determines whether the user's print job history is
+// reported.
+const char kReportDevicePrintJobs[] = "cros.device_status.report_print_jobs";
+
 // Determines whether heartbeats should be sent to the policy service via
 // the GCM channel.
 const char kHeartbeatEnabled[] = "cros.device_status.heartbeat_enabled";
@@ -236,11 +241,6 @@ const char kAllowRedeemChromeOsRegistrationOffers[] =
 // A list pref storing the feature flags (in the chrome://flags sense) that
 // should to be applied at the login screen.
 const char kFeatureFlags[] = "cros.feature_flags";
-
-// A list pref storing the flags that need to be applied to the browser upon
-// start-up. This lists raw flags, which isn't ideal since Chrome can't easily
-// tie this back to feature flags. Deprecated in favor of kFeatureFlags.
-const char kStartUpFlagsDeprecated[] = "cros.startup_flags";
 
 // A string pref for the restrict parameter to be appended to the Variations URL
 // when pinging the Variations server.
@@ -442,6 +442,10 @@ const char kPluginVmAllowed[] = "cros.device.plugin_vm_allowed";
 // A string pref that specifies PluginVm license key for this device.
 const char kPluginVmLicenseKey[] = "cros.device.plugin_vm_license_key";
 
+// A boolean pref that indicates whether Borealis is allowed to run on this
+// device.
+const char kBorealisAllowedForDevice[] = "cros.device.borealis_allowed";
+
 // An enum pref specifying the case when device needs to reboot on user sign
 // out.
 const char kDeviceRebootOnUserSignout[] = "cros.device.reboot_on_user_signout";
@@ -492,4 +496,16 @@ const char kDeviceCrostiniArcAdbSideloadingAllowed[] =
 // A boolean pref controlling showing the low disk space notification.
 const char kDeviceShowLowDiskSpaceNotification[] =
     "cros.device.show_low_disk_space_notification";
+
+// Boolean pref indicating whether data access is enabled for
+// Thunderbolt/USB4 peripherals. Enabling this pref disables the data access
+// protection and will allow the aforementioned peripheral devices to be fully
+// connected via PCIe tunneling.
+const char kDevicePeripheralDataAccessEnabled[] =
+    "cros.device.peripheral_data_access_enabled";
+
+// A list of dictionaries indicating USB devices that may be used by chrome.usb.
+const char kUsbDetachableAllowlist[] = "cros.device.usb_detachable_allowlist";
+const char kUsbDetachableAllowlistKeyVid[] = "vid";
+const char kUsbDetachableAllowlistKeyPid[] = "pid";
 }  // namespace chromeos

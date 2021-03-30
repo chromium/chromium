@@ -74,15 +74,6 @@ class ProcessManagerTest : public ExtensionsTest {
     return &process_manager_delegate_;
   }
 
-  // Returns true if the notification |type| is registered for |manager| with
-  // source |context|. Pass NULL for |context| for all sources.
-  static bool IsRegistered(ProcessManager* manager,
-                           int type,
-                           BrowserContext* context) {
-    return manager->registrar_.IsRegistered(
-        manager, type, content::Source<BrowserContext>(context));
-  }
-
  private:
   std::unique_ptr<ExtensionRegistry>
       extension_registry_;  // Shared between BrowserContexts.
@@ -90,34 +81,6 @@ class ProcessManagerTest : public ExtensionsTest {
 
   DISALLOW_COPY_AND_ASSIGN(ProcessManagerTest);
 };
-
-// Test that notification registration works properly.
-TEST_F(ProcessManagerTest, ExtensionNotificationRegistration) {
-  // Test for a normal context ProcessManager.
-  std::unique_ptr<ProcessManager> manager1(ProcessManager::CreateForTesting(
-      original_context(), extension_registry()));
-
-  EXPECT_EQ(original_context(), manager1->browser_context());
-  EXPECT_EQ(0u, manager1->background_hosts().size());
-
-  // It observes other notifications from this context.
-  EXPECT_TRUE(IsRegistered(manager1.get(),
-                           extensions::NOTIFICATION_EXTENSION_HOST_DESTROYED,
-                           original_context()));
-
-  // Test for an incognito context ProcessManager.
-  std::unique_ptr<ProcessManager> manager2(
-      ProcessManager::CreateIncognitoForTesting(
-          incognito_context(), original_context(), extension_registry()));
-
-  EXPECT_EQ(incognito_context(), manager2->browser_context());
-  EXPECT_EQ(0u, manager2->background_hosts().size());
-
-  // Notifications are observed for the incognito context.
-  EXPECT_TRUE(IsRegistered(manager2.get(),
-                           extensions::NOTIFICATION_EXTENSION_HOST_DESTROYED,
-                           incognito_context()));
-}
 
 // Test that startup background hosts are created when the extension system
 // becomes ready.

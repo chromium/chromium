@@ -223,6 +223,14 @@ TEST_F(ReadableStreamTest, GetReader) {
   EXPECT_TRUE(stream->IsDisturbed());
 }
 
+// Regression test for https://crbug.com/1187774
+TEST_F(ReadableStreamTest, TypeStringEquality) {
+  V8TestingScope scope;
+  ScriptValue byte_stream =
+      EvalWithPrintingError(&scope, "new ReadableStream({type: 'b' + 'ytes'})");
+  EXPECT_FALSE(byte_stream.IsEmpty());
+}
+
 // Testing getReader with mode BYOB.
 TEST_F(ReadableStreamTest, GetBYOBReader) {
   V8TestingScope scope;

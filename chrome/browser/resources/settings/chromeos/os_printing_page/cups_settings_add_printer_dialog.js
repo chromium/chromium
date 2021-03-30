@@ -35,8 +35,6 @@ function getEmptyPrinter_() {
     printerAddress: '',
     printerDescription: '',
     printerId: '',
-    printerManufacturer: '',
-    printerModel: '',
     printerMakeAndModel: '',
     printerName: '',
     printerPPDPath: '',

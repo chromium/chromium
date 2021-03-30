@@ -27,9 +27,11 @@
 #include "ui/gfx/codec/png_codec.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/login/users/scoped_test_user_manager.h"
-#include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #endif
+
+using extensions::mojom::ManifestLocation;
 
 namespace extensions {
 
@@ -68,8 +70,8 @@ class ExtensionWebUITest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  chromeos::ScopedTestUserManager test_user_manager_;
+  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+  ash::ScopedTestUserManager test_user_manager_;
 #endif
 };
 
@@ -87,7 +89,7 @@ TEST_F(ExtensionWebUITest, ExtensionURLOverride) {
   scoped_refptr<const Extension> ext_unpacked(
       ExtensionBuilder()
           .SetManifest(manifest.Build())
-          .SetLocation(Manifest::UNPACKED)
+          .SetLocation(ManifestLocation::kUnpacked)
           .SetID("abcdefghijabcdefghijabcdefghijaa")
           .Build());
   extension_service_->AddExtension(ext_unpacked.get());
@@ -123,7 +125,7 @@ TEST_F(ExtensionWebUITest, ExtensionURLOverride) {
   scoped_refptr<const Extension> ext_component(
       ExtensionBuilder()
           .SetManifest(manifest2.Build())
-          .SetLocation(Manifest::COMPONENT)
+          .SetLocation(ManifestLocation::kComponent)
           .SetID("bbabcdefghijabcdefghijabcdefghij")
           .Build());
   extension_service_->AddComponentExtension(ext_component.get());
@@ -265,7 +267,7 @@ TEST_F(ExtensionWebUITest, TestNumExtensionsOverridingURL) {
         DictionaryBuilder().Set("newtab", "newtab.html").Build();
     scoped_refptr<const Extension> extension =
         ExtensionBuilder(name)
-            .SetLocation(Manifest::INTERNAL)
+            .SetLocation(ManifestLocation::kInternal)
             .SetManifestKey("chrome_url_overrides",
                             std::move(chrome_url_overrides))
             .Build();

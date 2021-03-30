@@ -39,6 +39,11 @@ class MemoryUsageChecker {
         // only check the lower bound.
         EXPECT_LE(1000000u, entry->bytes_used);
         ++actual_context_count;
+        if (entry->token.Is<DedicatedWorkerToken>()) {
+          EXPECT_EQ(String("http://fake.url/"), entry->url);
+        } else {
+          EXPECT_FALSE(entry->url);
+        }
       }
     }
     EXPECT_EQ(expected_context_count_, actual_context_count);
@@ -116,7 +121,8 @@ TEST_F(V8DetailedMemoryReporterImplWorkerTest, GetV8MemoryUsage) {
     globalThis.root = {
       array: new Uint8Array(1000000)
     };)JS";
-  StartWorker(source_code);
+  StartWorker();
+  EvaluateClassicScript(source_code);
   WaitUntilWorkerIsRunning();
   V8DetailedMemoryReporterImpl reporter;
   // We expect to see two isolates: the main isolate and the worker isolate.

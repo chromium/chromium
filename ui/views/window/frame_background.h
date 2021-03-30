@@ -36,9 +36,6 @@ class VIEWS_EXPORT FrameBackground {
   // Sets whether the frame to be drawn should have focus.
   void set_is_active(bool is_active) { is_active_ = is_active; }
 
-  // Sets whether the frame to be drawn is in incognito mode.
-  void set_incognito(bool incognito) { incognito_ = incognito; }
-
   // Sets the theme image for the top of the window.  May be null (empty).
   // Memory is owned by the caller.
   void set_theme_image(const gfx::ImageSkia& image) { theme_image_ = image; }
@@ -90,7 +87,6 @@ class VIEWS_EXPORT FrameBackground {
   SkColor frame_color_ = 0;
   bool use_custom_frame_ = true;
   bool is_active_ = true;
-  bool incognito_ = false;
   gfx::ImageSkia theme_image_;
   int theme_image_y_inset_ = 0;
   gfx::ImageSkia theme_overlay_image_;

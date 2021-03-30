@@ -30,8 +30,6 @@
 
 using ::testing::_;
 using ::testing::Invoke;
-using ::testing::Mock;
-using ::testing::NiceMock;
 
 namespace device {
 
@@ -54,7 +52,7 @@ ACTION_P2(ExpectGuidAndThen, expected_guid, callback) {
 class USBDeviceManagerImplTest : public testing::Test {
  public:
   USBDeviceManagerImplTest() {
-    auto mock_usb_service = std::make_unique<NiceMock<MockUsbService>>();
+    auto mock_usb_service = std::make_unique<MockUsbService>();
     mock_usb_service_ = mock_usb_service.get();
     device_manager_instance_ =
         std::make_unique<DeviceManagerImpl>(std::move(mock_usb_service));
@@ -155,6 +153,7 @@ TEST_F(USBDeviceManagerImplTest, GetDevice) {
     base::RunLoop loop;
     mojo::Remote<mojom::UsbDevice> device;
     device_manager->GetDevice(mock_device->guid(),
+                              /*blocked_interface_classes=*/{},
                               device.BindNewPipeAndPassReceiver(),
                               /*device_client=*/mojo::NullRemote());
     // Close is a no-op if the device hasn't been opened but ensures that the
@@ -164,7 +163,7 @@ TEST_F(USBDeviceManagerImplTest, GetDevice) {
   }
 
   mojo::Remote<mojom::UsbDevice> bad_device;
-  device_manager->GetDevice("not a real guid",
+  device_manager->GetDevice("not a real guid", /*blocked_interface_classes=*/{},
                             bad_device.BindNewPipeAndPassReceiver(),
                             /*device_client=*/mojo::NullRemote());
 
@@ -231,97 +230,6 @@ TEST_F(USBDeviceManagerImplTest, Client) {
     loop.Run();
   }
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Test that UsbService::GetDevices() is called with the correct argument for
-// |allow_restricted_devices|. The actual filtering of devices in
-// UsbServiceLinux is tested in UsbServiceLinuxTest.
-TEST_F(USBDeviceManagerImplTest, RestrictedDevicesWhenGettingDevices) {
-  mojo::Remote<UsbDeviceManager> device_manager;
-  device_manager_instance_->AddReceiver(
-      device_manager.BindNewPipeAndPassReceiver());
-
-  std::set<std::string> guids;
-
-  MockDeviceManagerClient mock_client;
-  {
-    EXPECT_CALL(*mock_usb_service_,
-                GetDevices(/*allow_restricted_devices=*/false, _));
-    base::RunLoop loop;
-    device_manager->EnumerateDevicesAndSetClient(
-        mock_client.CreateRemoteAndBind(),
-        base::BindOnce(&ExpectDevicesAndThen, guids, loop.QuitClosure()));
-    loop.Run();
-    Mock::VerifyAndClearExpectations(mock_usb_service_);
-  }
-
-  MockDeviceManagerClient mock_vm_client;
-  {
-    EXPECT_CALL(*mock_usb_service_,
-                GetDevices(/*allow_restricted_devices=*/true, _));
-    base::RunLoop loop;
-    device_manager->EnumerateDevicesAndSetVmSharingClient(
-        mock_vm_client.CreateRemoteAndBind(),
-        base::BindOnce(&ExpectDevicesAndThen, guids, loop.QuitClosure()));
-    loop.Run();
-    Mock::VerifyAndClearExpectations(mock_usb_service_);
-  }
-
-  {
-    EXPECT_CALL(*mock_usb_service_,
-                GetDevices(/*allow_restricted_devices=*/false, _));
-    base::RunLoop loop;
-    device_manager->GetDevices(
-        nullptr,
-        base::BindOnce(&ExpectDevicesAndThen, guids, loop.QuitClosure()));
-    loop.Run();
-    Mock::VerifyAndClearExpectations(mock_usb_service_);
-  }
-}
-
-TEST_F(USBDeviceManagerImplTest, RestrictedDevicesInClientCallbacks) {
-  mojo::Remote<UsbDeviceManager> device_manager;
-  device_manager_instance_->AddReceiver(
-      device_manager.BindNewPipeAndPassReceiver());
-
-  std::set<std::string> guids;
-
-  MockDeviceManagerClient mock_client;
-  MockDeviceManagerClient mock_vm_client;
-  {
-    base::RunLoop loop;
-    base::RepeatingClosure barrier =
-        base::BarrierClosure(/*num_closures=*/2, loop.QuitClosure());
-    device_manager->EnumerateDevicesAndSetClient(
-        mock_client.CreateRemoteAndBind(),
-        base::BindOnce(&ExpectDevicesAndThen, guids, barrier));
-    device_manager->EnumerateDevicesAndSetVmSharingClient(
-        mock_vm_client.CreateRemoteAndBind(),
-        base::BindOnce(&ExpectDevicesAndThen, guids, barrier));
-    loop.Run();
-  }
-
-  scoped_refptr<MockUsbDevice> device =
-      new MockUsbDevice(0x1234, 0x5678, "ACME", "Frobinator", "ABCDEF");
-  mock_usb_service_->AddDevice(device, /*is_restricted_device=*/true);
-  mock_usb_service_->RemoveDevice(device, /*is_restricted_device=*/true);
-
-  {
-    EXPECT_CALL(mock_client, DoOnDeviceAdded(_)).Times(0);
-    EXPECT_CALL(mock_client, DoOnDeviceRemoved(_)).Times(0);
-
-    base::RunLoop loop;
-    base::RepeatingClosure barrier =
-        base::BarrierClosure(/*num_closures=*/2, loop.QuitClosure());
-    testing::InSequence s;
-    EXPECT_CALL(mock_vm_client, DoOnDeviceAdded(_))
-        .WillOnce(ExpectGuidAndThen(device->guid(), barrier));
-    EXPECT_CALL(mock_vm_client, DoOnDeviceRemoved(_))
-        .WillOnce(ExpectGuidAndThen(device->guid(), barrier));
-    loop.Run();
-  }
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace usb
 }  // namespace device

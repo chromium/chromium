@@ -228,6 +228,50 @@ TEST_F(PrefetchProxyPrefetchMetricsCollectorTest, Mainframe404ResponseCode) {
       << ActualUkmEntriesToDebugString(entries);
 }
 
+TEST_F(PrefetchProxyPrefetchMetricsCollectorTest, DecoySuccess) {
+  GURL mainframe_url("https://test.com");
+
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  {
+    auto collector =
+        base::MakeRefCounted<PrefetchProxyPrefetchMetricsCollector>(
+            kNavigationStartTime, kID);
+
+    // Ensure that it is ok to report it as not eligible, then still send the
+    // decoy.
+    collector->OnMainframeResourceNotEligible(
+        mainframe_url,
+        /*prediction_position=*/0,
+        PrefetchProxyPrefetchStatus::kPrefetchNotEligibleUserHasCookies);
+
+    collector->OnDecoyPrefetchComplete(
+        mainframe_url,
+        /*prediction_position=*/0,
+        MakeHead("HTTP/1.1 200 OK\n", base::TimeDelta::FromMilliseconds(5)),
+        MakeCompletionStatus(net::OK, 123,
+                             base::TimeDelta::FromMilliseconds(10)));
+
+    collector->OnMainframeNavigatedTo(mainframe_url);
+  }
+
+  std::vector<UkmEntry> expected_entries{
+      UkmEntry{kID,
+               {
+                   {"DataLength", ukm::GetExponentialBucketMinForBytes(123)},
+                   {"FetchDurationMS", 5},
+                   {"LinkClicked", 1},
+                   {"LinkPosition", 0},
+                   {"NavigationStartToFetchStartMS", 5},
+                   {"ResourceType", 1},
+                   {"Status", 29},
+               }},
+  };
+  auto entries = ukm_recorder.GetEntries(kEventName, kAllEventMetrics);
+  EXPECT_THAT(entries, testing::UnorderedElementsAreArray(expected_entries))
+      << ActualUkmEntriesToDebugString(entries);
+}
+
 TEST_F(PrefetchProxyPrefetchMetricsCollectorTest, NoResponseHead) {
   GURL mainframe_url("https://eligible.com");
 
@@ -288,6 +332,41 @@ TEST_F(PrefetchProxyPrefetchMetricsCollectorTest, NetError) {
                    {"NavigationStartToFetchStartMS", 5},
                    {"ResourceType", 1},
                    {"Status", 11},
+               }},
+  };
+  auto entries = ukm_recorder.GetEntries(kEventName, kAllEventMetrics);
+  EXPECT_THAT(entries, testing::UnorderedElementsAreArray(expected_entries))
+      << ActualUkmEntriesToDebugString(entries);
+}
+
+TEST_F(PrefetchProxyPrefetchMetricsCollectorTest, DecoyNetError) {
+  GURL mainframe_url("https://test.com");
+
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  {
+    auto collector =
+        base::MakeRefCounted<PrefetchProxyPrefetchMetricsCollector>(
+            kNavigationStartTime, kID);
+
+    collector->OnDecoyPrefetchComplete(
+        mainframe_url,
+        /*prediction_position=*/0,
+        MakeHead("HTTP/1.1 200 OK\n", base::TimeDelta::FromMilliseconds(5)),
+        MakeCompletionStatus(net::ERR_FAILED, 123,
+                             base::TimeDelta::FromMilliseconds(10)));
+  }
+
+  std::vector<UkmEntry> expected_entries{
+      UkmEntry{kID,
+               {
+                   {"DataLength", ukm::GetExponentialBucketMinForBytes(123)},
+                   {"FetchDurationMS", 5},
+                   {"LinkClicked", 0},
+                   {"LinkPosition", 0},
+                   {"NavigationStartToFetchStartMS", 5},
+                   {"ResourceType", 1},
+                   {"Status", 29},
                }},
   };
   auto entries = ukm_recorder.GetEntries(kEventName, kAllEventMetrics);

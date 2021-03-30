@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/mru_cache.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/safe_search_api/url_checker_client.h"
 #include "url/gurl.h"
@@ -70,6 +71,8 @@ class URLChecker {
 
   base::MRUCache<GURL, CheckResult> cache_;
   base::TimeDelta cache_timeout_;
+
+  base::WeakPtrFactory<URLChecker> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(URLChecker);
 };

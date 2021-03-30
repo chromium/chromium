@@ -53,9 +53,7 @@ class MODULES_EXPORT SensorProviderProxy final
   void OnSensorProviderConnectionError();
 
   HeapHashSet<WeakMember<SensorProxy>> sensor_proxies_;
-  HeapMojoRemote<device::mojom::blink::SensorProvider,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      sensor_provider_;
+  HeapMojoRemote<device::mojom::blink::SensorProvider> sensor_provider_;
   bool inspector_mode_;
 
   DISALLOW_COPY_AND_ASSIGN(SensorProviderProxy);

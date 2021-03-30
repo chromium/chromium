@@ -8,7 +8,7 @@
 
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/settings/cros_settings_provider.h"
 #include "components/account_id/account_id.h"
@@ -25,7 +25,7 @@ constexpr char kNewUserAddedHistogramName[] = "FamilyUser.NewUserAdded";
 constexpr char kDeviceOwnerHistogramName[] = "FamilyUser.DeviceOwner";
 constexpr char kFamilyLinkUsersCountHistogramName[] =
     "FamilyUser.FamilyLinkUsersCount";
-constexpr char kTotalUsersCountHistogramName[] = "FamilyUser.TotalUsersCount";
+constexpr char kGaiaUsersCountHistogramName[] = "FamilyUser.GaiaUsersCount";
 
 }  // namespace
 
@@ -55,21 +55,26 @@ FamilyUserDeviceMetrics::GetFamilyLinkUsersCountHistogramNameForTest() {
   return kFamilyLinkUsersCountHistogramName;
 }
 
-const char* FamilyUserDeviceMetrics::GetTotalUsersCountHistogramNameForTest() {
-  return kTotalUsersCountHistogramName;
+const char* FamilyUserDeviceMetrics::GetGaiaUsersCountHistogramNameForTest() {
+  return kGaiaUsersCountHistogramName;
 }
 
 void FamilyUserDeviceMetrics::OnNewDay() {
   const user_manager::UserList& users = user_manager_->GetUsers();
-  base::UmaHistogramCounts100(kTotalUsersCountHistogramName, users.size());
-
   int family_link_users_count = 0;
+  int gaia_users_count = 0;
+
   for (const user_manager::User* user : users) {
+    if (user->HasGaiaAccount())
+      gaia_users_count++;
+
     if (user->IsChild())
       family_link_users_count++;
   }
+
   base::UmaHistogramCounts100(kFamilyLinkUsersCountHistogramName,
                               family_link_users_count);
+  base::UmaHistogramCounts100(kGaiaUsersCountHistogramName, gaia_users_count);
 
   // If ownership is not established yet, OwnershipStatusChanged() will
   // report the device ownership.
@@ -90,10 +95,11 @@ void FamilyUserDeviceMetrics::OnUserSessionStarted(bool is_primary_user) {
       user_manager_->GetPrimaryUser()->GetType();
 
   NewUserAdded new_user_type = NewUserAdded::kOtherUserAdded;
-  if (type == user_manager::USER_TYPE_CHILD)
+  if (type == user_manager::USER_TYPE_CHILD) {
     new_user_type = NewUserAdded::kFamilyLinkUserAdded;
-  else if (type == user_manager::USER_TYPE_REGULAR)
+  } else if (type == user_manager::USER_TYPE_REGULAR) {
     new_user_type = NewUserAdded::kRegularUserAdded;
+  }
 
   base::UmaHistogramEnumeration(kNewUserAddedHistogramName, new_user_type);
 }

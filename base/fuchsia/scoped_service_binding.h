@@ -24,7 +24,6 @@ class PseudoDir;
 }  // namespace vfs
 
 namespace base {
-namespace fuchsia {
 
 template <typename Interface>
 class BASE_EXPORT ScopedServiceBinding {
@@ -123,7 +122,6 @@ class BASE_EXPORT ScopedSingleClientServiceBinding {
   DISALLOW_COPY_AND_ASSIGN(ScopedSingleClientServiceBinding);
 };
 
-}  // namespace fuchsia
 }  // namespace base
 
 #endif  // BASE_FUCHSIA_SCOPED_SERVICE_BINDING_H_

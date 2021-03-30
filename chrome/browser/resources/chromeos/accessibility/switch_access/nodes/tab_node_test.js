@@ -9,15 +9,12 @@ SwitchAccessTabNodeTest = class extends SwitchAccessE2ETest {
   setUp() {
     var runTest = this.deferRunTest(WhenTestDone.EXPECT);
     (async function() {
-      let module = await import('/switch_access/nodes/back_button_node.js');
-      window.BackButtonNode = module.BackButtonNode;
-
-      module = await import('/switch_access/navigator.js');
-      window.Navigator = module.Navigator;
-
-      module = await import('/switch_access/switch_access_constants.js');
-      window.SwitchAccessMenuAction = module.SwitchAccessMenuAction;
-
+      await importModule(
+          'BackButtonNode', '/switch_access/nodes/back_button_node.js');
+      await importModule('Navigator', '/switch_access/navigator.js');
+      await importModule(
+          'SwitchAccessMenuAction',
+          '/switch_access/switch_access_constants.js');
       runTest();
     })();
   }
@@ -41,10 +38,10 @@ TEST_F('SwitchAccessTabNodeTest', 'FindCloseButton', function() {
 
 TEST_F('SwitchAccessTabNodeTest', 'Construction', function() {
   this.runWithLoadedDesktop((desktop) => {
-    Navigator.instance.moveTo_(
+    Navigator.byItem.moveTo_(
         desktop.find({role: chrome.automation.RoleType.TAB}));
 
-    const tab = Navigator.instance.node_;
+    const tab = Navigator.byItem.node_;
     assertEquals(
         chrome.automation.RoleType.TAB, tab.role, 'Tab node is not a tab');
     assertTrue(tab.isGroup(), 'Tab node should be a group');
@@ -54,16 +51,16 @@ TEST_F('SwitchAccessTabNodeTest', 'Construction', function() {
         chrome.accessibilityPrivate.SwitchAccessMenuAction.SELECT,
         tab.actions[0], 'Tab as a group should have the action SELECT');
 
-    Navigator.instance.node_.doDefaultAction();
+    Navigator.byItem.node_.doDefaultAction();
 
-    const tabAsRoot = Navigator.instance.group_;
+    const tabAsRoot = Navigator.byItem.group_;
     assertTrue(
         RectUtil.equal(tab.location, tabAsRoot.location),
         'Tab location should not change when treated as root');
     assertEquals(
         3, tabAsRoot.children.length, 'Tab as root should have 3 children');
 
-    const tabToSelect = Navigator.instance.node_;
+    const tabToSelect = Navigator.byItem.node_;
     assertEquals(
         chrome.automation.RoleType.TAB, tabToSelect.role,
         'Tab node to select is not a tab');
@@ -79,9 +76,9 @@ TEST_F('SwitchAccessTabNodeTest', 'Construction', function() {
         null, tabToSelect.asRootNode(),
         'Tab node to select should not be a root node');
 
-    Navigator.instance.moveForward();
+    Navigator.byItem.moveForward();
 
-    const close = Navigator.instance.node_;
+    const close = Navigator.byItem.node_;
     assertEquals(
         chrome.automation.RoleType.BUTTON, close.role,
         'Close button is not a button');
@@ -99,9 +96,9 @@ TEST_F('SwitchAccessTabNodeTest', 'Construction', function() {
 
     BackButtonNode
         .locationForTesting = {top: 10, left: 10, width: 10, height: 10};
-    Navigator.instance.moveForward();
+    Navigator.byItem.moveForward();
     assertTrue(
-        Navigator.instance.node_ instanceof BackButtonNode,
+        Navigator.byItem.node_ instanceof BackButtonNode,
         'Third node should be a BackButtonNode');
   });
 });

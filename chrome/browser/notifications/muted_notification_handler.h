@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "url/gurl.h"
 
@@ -47,7 +46,7 @@ class MutedNotificationHandler : public NotificationHandler {
                const GURL& origin,
                const std::string& notification_id,
                const base::Optional<int>& action_index,
-               const base::Optional<base::string16>& reply,
+               const base::Optional<std::u16string>& reply,
                base::OnceClosure completed_closure) override;
   void OnClose(Profile* profile,
                const GURL& origin,

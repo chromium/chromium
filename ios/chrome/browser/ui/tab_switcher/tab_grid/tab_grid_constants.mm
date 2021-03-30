@@ -25,11 +25,13 @@ NSString* const kTabGridIncognitoTabsEmptyStateIdentifier =
 NSString* const kTabGridRegularTabsEmptyStateIdentifier =
     @"TabGridRegularTabsEmptyStateIdentifier";
 NSString* const kTabGridScrollViewIdentifier = @"kTabGridScrollViewIdentifier";
+NSString* const kRegularTabGridIdentifier = @"kRegularTabGridIdentifier";
+NSString* const kIncognitoTabGridIdentifier = @"kIncognitoTabGridIdentifier";
 
 // The color of the text buttons in the toolbars.
 const int kTabGridToolbarTextButtonColor = 0xFFFFFF;
 
-// Colors for the empty state.
+// Colors for the empty state and disabled tab view.
 const int kTabGridEmptyStateTitleTextColor = 0xF8F9FA;
 const int kTabGridEmptyStateBodyTextColor = 0xBDC1C6;
 
@@ -50,10 +52,6 @@ const CGFloat kTabGridFloatingButtonHorizontalInset = 20.0f;
 // Intrinsic heights of the tab grid toolbars.
 const CGFloat kTabGridTopToolbarHeight = 52.0f;
 const CGFloat kTabGridBottomToolbarHeight = 44.0f;
-
-// The delay (in milliseconds) after closing the last incognito tab and before
-// automatically scrolling to the regular tabs panel.
-const int64_t kTabGridScrollAnimationDelayInMilliseconds = 300;
 
 // The distance travelled by the thumb strip thumbnails during the slide-in
 // animation of the thumb strip reveal transition.

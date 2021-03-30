@@ -7,6 +7,7 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
 #include "third_party/blink/renderer/bindings/core/v8/module_request.h"
+#include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_fetch_request.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_tree_linker_registry.h"
 #include "third_party/blink/renderer/core/script/module_script.h"
@@ -32,8 +33,24 @@
 
 namespace blink {
 
+namespace {
+
+struct ModuleScriptFetchTarget {
+  ModuleScriptFetchTarget(KURL url,
+                          ModuleType module_type,
+                          TextPosition position)
+      : url(url), module_type(module_type), position(position) {}
+
+  KURL url;
+  ModuleType module_type;
+  TextPosition position;
+};
+
+}  // namespace
+
 void ModuleTreeLinker::Fetch(
     const KURL& url,
+    const ModuleType& module_type,
     ResourceFetcher* fetch_client_settings_object_fetcher,
     mojom::blink::RequestContextType context_type,
     network::mojom::RequestDestination destination,
@@ -46,7 +63,7 @@ void ModuleTreeLinker::Fetch(
       fetch_client_settings_object_fetcher, context_type, destination,
       modulator, custom_fetch_type, registry, client);
   registry->AddFetcher(fetcher);
-  fetcher->FetchRoot(url, options);
+  fetcher->FetchRoot(url, module_type, options);
   DCHECK(fetcher->IsFetching());
 }
 
@@ -170,14 +187,18 @@ void ModuleTreeLinker::AdvanceState(State new_state) {
 // #fetch-a-module-script-tree, #fetch-an-import()-module-script-graph, and
 // #fetch-a-module-worker-script-tree.
 void ModuleTreeLinker::FetchRoot(const KURL& original_url,
+                                 ModuleType module_type,
                                  const ScriptFetchOptions& options) {
 #if DCHECK_IS_ON()
   original_url_ = original_url;
+  module_type_ = module_type;
   root_is_inline_ = false;
 #endif
 
   // https://wicg.github.io/import-maps/#wait-for-import-maps
-  modulator_->ClearIsAcquiringImportMaps();
+  // 1.2. Set document’s acquiring import maps to false. [spec text]
+  modulator_->SetAcquiringImportMapsState(
+      Modulator::AcquiringImportMapsState::kAfterModuleScriptLoad);
 
   AdvanceState(State::kFetchingSelf);
 
@@ -206,6 +227,8 @@ void ModuleTreeLinker::FetchRoot(const KURL& original_url,
     return;
   }
 
+  CHECK_NE(module_type, ModuleType::kInvalid);
+
   // <spec label="fetch-a-module-script-tree" step="3">Let visited set be « url
   // ».</spec>
   //
@@ -214,7 +237,7 @@ void ModuleTreeLinker::FetchRoot(const KURL& original_url,
   //
   // <spec label="fetch-a-module-worker-script-tree" step="4">Let visited set be
   // « url ».</spec>
-  visited_set_.insert(url);
+  visited_set_.insert(std::make_pair(url, module_type));
 
   // <spec label="fetch-a-module-script-tree" step="1">Fetch a single module
   // script given url, settings object, "script", options, settings object,
@@ -228,9 +251,9 @@ void ModuleTreeLinker::FetchRoot(const KURL& original_url,
   // module script given url, fetch client settings object, destination,
   // options, module map settings object, "client", and with the top-level
   // module fetch flag set. ...</spec>
-  ModuleScriptFetchRequest request(url, context_type_, destination_, options,
-                                   Referrer::ClientReferrerString(),
-                                   TextPosition::MinimumPosition());
+  ModuleScriptFetchRequest request(
+      url, module_type, context_type_, destination_, options,
+      Referrer::ClientReferrerString(), TextPosition::MinimumPosition());
   ++num_incomplete_fetches_;
   modulator_->FetchSingle(request, fetch_client_settings_object_fetcher_.Get(),
                           ModuleGraphLevel::kTopLevelModuleFetch,
@@ -244,13 +267,16 @@ void ModuleTreeLinker::FetchRootInline(ModuleScript* module_script) {
 #if DCHECK_IS_ON()
   original_url_ = module_script->BaseURL();
   url_ = original_url_;
+  module_type_ = ModuleType::kJavaScript;
   root_is_inline_ = true;
 #endif
 
   // https://wicg.github.io/import-maps/#wait-for-import-maps
+  // 1.2. Set document’s acquiring import maps to false. [spec text]
   //
   // TODO(hiroshige): This should be done before |module_script| is created.
-  modulator_->ClearIsAcquiringImportMaps();
+  modulator_->SetAcquiringImportMapsState(
+      Modulator::AcquiringImportMapsState::kAfterModuleScriptLoad);
 
   AdvanceState(State::kFetchingSelf);
 
@@ -338,6 +364,8 @@ void ModuleTreeLinker::NotifyModuleLoadFinished(ModuleScript* module_script) {
 
 // <specdef
 // href="https://html.spec.whatwg.org/C/#fetch-the-descendants-of-a-module-script">
+// See also https://github.com/whatwg/html/pull/5658/ which adds ModuleRequest
+// and module type to the HTML spec.
 void ModuleTreeLinker::FetchDescendants(const ModuleScript* module_script) {
   DCHECK(module_script);
 
@@ -375,44 +403,44 @@ void ModuleTreeLinker::FetchDescendants(const ModuleScript* module_script) {
   // Note: We defer this bail-out until the end of the procedure. The rest of
   // the procedure will be no-op anyway if record.[[RequestedModules]] is empty.
 
-  // <spec step="4">Let urls be a new empty list.</spec>
-  Vector<KURL> urls;
-  Vector<TextPosition> positions;
+  // <spec step="4">Let moduleRequests be a new empty list.</spec>
+  Vector<ModuleScriptFetchTarget> module_requests;
 
-  // <spec step="5">For each string requested of
+  // <spec step="5">For each ModuleRequest Record requested of
   // record.[[RequestedModules]],</spec>
-  Vector<ModuleRequest> module_requests =
+  Vector<ModuleRequest> record_requested_modules =
       modulator_->ModuleRequestsFromModuleRecord(record);
 
-  for (const auto& module_request : module_requests) {
+  for (const auto& requested : record_requested_modules) {
     // <spec step="5.1">Let url be the result of resolving a module specifier
-    // given module script's base URL and requested.</spec>
-    KURL url = module_script->ResolveModuleSpecifier(module_request.specifier);
+    // given module script's base URL and requested.[[Specifier]].</spec>
+    KURL url = module_script->ResolveModuleSpecifier(requested.specifier);
+    ModuleType module_type = modulator_->ModuleTypeFromRequest(requested);
 
     // <spec step="5.2">Assert: url is never failure, because resolving a module
     // specifier must have been previously successful with these same two
     // arguments.</spec>
     CHECK(url.IsValid()) << "ModuleScript::ResolveModuleSpecifier() impl must "
                             "return a valid url.";
+    CHECK_NE(module_type, ModuleType::kInvalid);
 
-    // <spec step="5.3">If visited set does not contain url, then:</spec>
-    if (!visited_set_.Contains(url)) {
-      // <spec step="5.3.1">Append url to urls.</spec>
-      urls.push_back(url);
+    // <spec step="5.4">If visited set does not contain (url, module type),
+    // then:</spec>
+    if (!visited_set_.Contains(std::make_pair(url, module_type))) {
+      // <spec step="5.4.1">Append (url, module type) to moduleRequests.</spec>
+      module_requests.emplace_back(url, module_type, requested.position);
 
-      // <spec step="5.3.2">Append url to visited set.</spec>
-      visited_set_.insert(url);
-
-      positions.push_back(module_request.position);
+      // <spec step="5.4.2">Append (url, module type) to visited set.</spec>
+      visited_set_.insert(std::make_pair(url, module_type));
     }
   }
 
-  if (urls.IsEmpty()) {
+  if (module_requests.IsEmpty()) {
     // <spec step="3">... if record.[[RequestedModules]] is empty,
     // asynchronously complete this algorithm with module script.</spec>
     //
-    // Also, if record.[[RequestedModules]] is not empty but |urls| is
-    // empty here, we complete this algorithm.
+    // Also, if record.[[RequestedModules]] is not empty but |module_requests|
+    // is empty here, we complete this algorithm.
     FinalizeFetchDescendantsForOneModuleScript();
     return;
   }
@@ -435,24 +463,27 @@ void ModuleTreeLinker::FetchDescendants(const ModuleScript* module_script) {
                              module_script->FetchOptions().ParserState(),
                              module_script->FetchOptions().CredentialsMode(),
                              module_script->FetchOptions().GetReferrerPolicy(),
-                             mojom::FetchImportanceMode::kImportanceAuto);
+                             mojom::blink::FetchImportanceMode::kImportanceAuto,
+                             RenderBlockingBehavior::kNonBlocking);
 
-  // <spec step="8">For each url in urls, ...</spec>
+  // <spec step="8">For each moduleRequest in moduleRequests, ...</spec>
   //
   // <spec step="8">... These invocations of the internal module script graph
   // fetching procedure should be performed in parallel to each other.
   // ...</spec>
-  for (wtf_size_t i = 0; i < urls.size(); ++i) {
+  for (const auto& module_request : module_requests) {
     // <spec step="8">... perform the internal module script graph fetching
-    // procedure given url, fetch client settings object, destination, options,
-    // module script's settings object, visited set, and module script's base
-    // URL. ...</spec>
+    // procedure given moduleRequest, fetch client settings object, destination,
+    // options, module script's settings object, visited set, and module
+    // script's base URL. ...</spec>
     ModuleScriptFetchRequest request(
-        urls[i], context_type_, destination_, options,
-        module_script->BaseURL().GetString(), positions[i]);
+        module_request.url, module_request.module_type, context_type_,
+        destination_, options, module_script->BaseURL().GetString(),
+        module_request.position);
 
     // <spec label="IMSGF" step="1">Assert: visited set contains url.</spec>
-    DCHECK(visited_set_.Contains(request.Url()));
+    DCHECK(visited_set_.Contains(
+        std::make_pair(request.Url(), request.GetExpectedModuleType())));
 
     ++num_incomplete_fetches_;
 
@@ -583,6 +614,8 @@ ScriptValue ModuleTreeLinker::FindFirstParseError(
     // moduleScript's base URL and that item. ...</spec>
     KURL child_url =
         module_script->ResolveModuleSpecifier(module_request.specifier);
+    ModuleType child_module_type =
+        modulator_->ModuleTypeFromRequest(module_request);
 
     // <spec step="5.2">... (None of these will ever fail, as otherwise
     // moduleScript would have been marked as itself having a parse
@@ -590,13 +623,14 @@ ScriptValue ModuleTreeLinker::FindFirstParseError(
     CHECK(child_url.IsValid())
         << "ModuleScript::ResolveModuleSpecifier() impl must "
            "return a valid url.";
+    CHECK_NE(child_module_type, ModuleType::kInvalid);
 
     // <spec step="5.3">Let childModules be the list obtained by getting each
     // value in moduleMap whose key is given by an item of childURLs.</spec>
     //
     // <spec step="5.4">For each childModule of childModules:</spec>
     const ModuleScript* child_module =
-        modulator_->GetFetchedModuleScript(child_url);
+        modulator_->GetFetchedModuleScript(child_url, child_module_type);
 
     // <spec step="5.4.1">Assert: childModule is a module script (i.e., it is
     // not "fetching" or null); ...</spec>
@@ -623,10 +657,29 @@ ScriptValue ModuleTreeLinker::FindFirstParseError(
 }
 
 #if DCHECK_IS_ON()
+std::ostream& operator<<(std::ostream& stream, ModuleType module_type) {
+  switch (module_type) {
+    case ModuleType::kInvalid:
+      stream << "Invalid";
+      break;
+    case ModuleType::kJavaScript:
+      stream << "JavaScript";
+      break;
+    case ModuleType::kJSON:
+      stream << "JSON";
+      break;
+    case ModuleType::kCSS:
+      stream << "CSS";
+      break;
+  }
+  return stream;
+}
+
 std::ostream& operator<<(std::ostream& stream, const ModuleTreeLinker& linker) {
   stream << "ModuleTreeLinker[" << &linker
          << ", original_url=" << linker.original_url_.GetString()
          << ", url=" << linker.url_.GetString()
+         << ", module_type=" << linker.module_type_
          << ", inline=" << linker.root_is_inline_ << "]";
   return stream;
 }

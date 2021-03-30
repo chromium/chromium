@@ -23,6 +23,7 @@
     {
       "name": "LayoutImage IMG class='accelerated'",
       "bounds": [160, 90],
+      "contentsOpaqueForText": true,
       "transform": 1
     },
     {

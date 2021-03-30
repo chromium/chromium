@@ -8,7 +8,9 @@ import argparse
 import bisect
 import calendar
 import collections
+import copy
 import datetime
+import functools
 import gzip
 import itertools
 import logging
@@ -20,11 +22,13 @@ import string
 import subprocess
 import sys
 import tempfile
+import time
 import zipfile
 import zlib
 
 import apkanalyzer
 import ar
+import data_quality
 import demangle
 import describe
 import file_format
@@ -52,14 +56,12 @@ _OWNERS_COMPONENT_REGEX = re.compile(r'^\s*#\s*COMPONENT:\s*(\S+)',
 _OWNERS_FILE_PATH_REGEX = re.compile(r'^\s*file://(\S+)', re.MULTILINE)
 
 _UNCOMPRESSED_COMPRESSION_RATIO_THRESHOLD = 0.9
-_APKS_MAIN_APK = 'splits/base-master.apk'
 
 # Holds computation state that is live only when an output directory exists.
 _OutputDirectoryContext = collections.namedtuple('_OutputDirectoryContext', [
     'elf_object_paths',  # Only when elf_path is also provided.
     'known_inputs',  # Only when elf_path is also provided.
     'output_directory',
-    'source_mapper',
     'thin_archives',
 ])
 
@@ -282,15 +284,21 @@ def _NormalizeSourcePath(path):
 
 def _ExtractSourcePathsAndNormalizeObjectPaths(raw_symbols, source_mapper):
   """Fills in the |source_path| attribute and normalizes |object_path|."""
+  logging.info('Normalizing dex symbol paths')
+  dex_and_other = models.DEX_SECTIONS + (models.SECTION_OTHER, )
+  for symbol in raw_symbols:
+    if symbol.source_path and symbol.section_name in dex_and_other:
+      symbol.generated_source, symbol.source_path = _NormalizeSourcePath(
+          symbol.source_path)
+
   if source_mapper:
     logging.info('Looking up source paths from ninja files')
     for symbol in raw_symbols:
-      object_path = symbol.object_path
       if symbol.IsDex() or symbol.IsOther():
-        if symbol.source_path:
-          symbol.generated_source, symbol.source_path = _NormalizeSourcePath(
-              symbol.source_path)
-      elif object_path:
+        continue
+      # Native symbols and pak symbols use object paths.
+      object_path = symbol.object_path
+      if object_path:
         # We don't have source info for prebuilt .a files.
         if not os.path.isabs(object_path) and not object_path.startswith('..'):
           source_path = source_mapper.FindSourceForPath(object_path)
@@ -748,8 +756,8 @@ def LoadAndPostProcessDeltaSizeInfo(path, file_obj=None):
   return before_size_info, after_size_info
 
 
-def _CollectModuleSizes(minimal_apks_path):
-  sizes_by_module = collections.defaultdict(int)
+def _GetModuleInfoList(minimal_apks_path):
+  module_info_list = []
   with zipfile.ZipFile(minimal_apks_path) as z:
     for info in z.infolist():
       # E.g.:
@@ -760,7 +768,14 @@ def _CollectModuleSizes(minimal_apks_path):
       # TODO(agrieve): Might be worth measuring a non-en locale as well.
       m = re.match(r'splits/(.*)-master\.apk', info.filename)
       if m:
-        sizes_by_module[m.group(1)] += info.file_size
+        module_info_list.append((m.group(1), info.file_size))
+  return sorted(module_info_list)
+
+
+def _CollectModuleSizes(minimal_apks_path):
+  sizes_by_module = collections.defaultdict(int)
+  for module_name, file_size in _GetModuleInfoList(minimal_apks_path):
+    sizes_by_module[module_name] += file_size
   return sizes_by_module
 
 
@@ -811,7 +826,7 @@ def CreateMetadata(args, linker_name, build_config):
   if linker_name:
     update_build_config(models.BUILD_CONFIG_LINKER_NAME, linker_name)
 
-  # Deduce GIT revision.
+  # Deduce GIT revision (cached via @lru_cache).
   git_rev = _DetectGitRevision(args.source_directory)
   if git_rev:
     update_build_config(models.BUILD_CONFIG_GIT_REVISION, git_rev)
@@ -834,14 +849,19 @@ def CreateMetadata(args, linker_name, build_config):
     metadata[models.METADATA_MAP_FILENAME] = shorten_path(args.map_file)
 
   if args.minimal_apks_file:
-    sizes_by_module = _CollectModuleSizes(args.minimal_apks_file)
     metadata[models.METADATA_APK_FILENAME] = shorten_path(
         args.minimal_apks_file)
-    for name, size in sizes_by_module.items():
-      key = models.METADATA_APK_SIZE
-      if name != 'base':
-        key += '-' + name
-      metadata[key] = size
+    if args.split_name and args.split_name != 'base':
+      metadata[models.METADATA_APK_SIZE] = os.path.getsize(args.apk_file)
+      metadata[models.METADATA_APK_SPLIT_NAME] = args.split_name
+      metadata[models.METADATA_APK_SPLIT_ON_DEMAND] = _IsOnDemand(args.apk_file)
+    else:
+      sizes_by_module = _CollectModuleSizes(args.minimal_apks_file)
+      for name, size in sizes_by_module.items():
+        key = models.METADATA_APK_SIZE
+        if name != 'base':
+          key += '-' + name
+        metadata[key] = size
   elif args.apk_file:
     metadata[models.METADATA_APK_FILENAME] = shorten_path(args.apk_file)
     metadata[models.METADATA_APK_SIZE] = os.path.getsize(args.apk_file)
@@ -1050,11 +1070,13 @@ def _ComputePakFileSymbols(
       k: id_map[id(v)]
       for k, v in contents.resources.items() if id_map[id(v)] != k
   }
-  # Longest locale pak is: es-419.pak.
-  # Only non-translated .pak files are: resources.pak, chrome_100_percent.pak.
-  if len(posixpath.basename(file_name)) <= 10:
+  name = posixpath.basename(file_name)
+  # Hyphens used for language regions. E.g.: en-GB.pak, sr-Latn.pak, ...
+  # Longest translated .pak file without hyphen: fil.pak
+  if '-' in name or len(name) <= 7:
     section_name = models.SECTION_PAK_TRANSLATIONS
   else:
+    # E.g.: resources.pak, chrome_100_percent.pak.
     section_name = models.SECTION_PAK_NONTRANSLATED
   overhead = (12 + 6) * compression_ratio  # Header size plus extra offset
   # Key just needs to be unique from other IDs and pak overhead symbols.
@@ -1539,23 +1561,18 @@ def CreateContainerAndSymbols(knobs=None,
 
   outdir_context = None
   source_mapper = None
-  if output_directory:
+  section_ranges = {}
+  raw_symbols = []
+  if opts.analyze_native and output_directory:
     # Start by finding the elf_object_paths, so that nm can run on them while
     # the linker .map is being parsed.
-    logging.info('Parsing ninja files.')
-    source_mapper, ninja_elf_object_paths = (
-        ninja_parser.Parse(output_directory, elf_path))
+    target_elf_path = elf_path
+    if map_path and '__combined.so.map' in map_path:
+      target_elf_path = elf_path.replace('.so', '__combined.so')
+    logging.info('Parsing ninja files, looking for %s.', target_elf_path)
 
-    # If no symbols came from the library, it's because it's a partition
-    # extracted from a combined library. Look there instead.
-    if not ninja_elf_object_paths and elf_path:
-      combined_elf_path = elf_path.replace('.so', '__combined.so')
-      logging.info('Found no objects in %s, trying %s', elf_path,
-                   combined_elf_path)
-      source_mapper, ninja_elf_object_paths = (ninja_parser.Parse(
-          output_directory, combined_elf_path))
-      if ninja_elf_object_paths:
-        assert map_path and '__combined.so.map' in map_path
+    source_mapper, ninja_elf_object_paths = ninja_parser.Parse(
+        output_directory, target_elf_path)
 
     logging.debug('Parsed %d .ninja files.', source_mapper.parsed_file_count)
     assert not elf_path or ninja_elf_object_paths, (
@@ -1582,7 +1599,6 @@ def CreateContainerAndSymbols(knobs=None,
         elf_object_paths=elf_object_paths,
         known_inputs=known_inputs,
         output_directory=output_directory,
-        source_mapper=source_mapper,
         thin_archives=thin_archives)
 
   if opts.analyze_native:
@@ -1593,8 +1609,6 @@ def CreateContainerAndSymbols(knobs=None,
         opts.track_string_literals,
         outdir_context=outdir_context,
         linker_name=linker_name)
-  else:
-    section_ranges, raw_symbols, object_paths_by_name = {}, [], None
 
   if apk_elf_result:
     section_ranges, elf_overhead_size = _ParseApkElfSectionRanges(
@@ -1730,6 +1744,7 @@ def CreateSizeInfo(build_config,
   return models.SizeInfo(build_config, container_list, all_raw_symbols)
 
 
+@functools.lru_cache
 def _DetectGitRevision(directory):
   """Runs git rev-parse to get the SHA1 hash of the current revision.
 
@@ -1794,6 +1809,7 @@ def _CountRelocationsFromElf(elf_path, tool_prefix):
   return int(relocations, 16)
 
 
+@functools.lru_cache
 def _ParseGnArgs(args_path):
   """Returns a list of normalized "key=value" strings."""
   args = {}
@@ -1881,6 +1897,13 @@ def _AddContainerArguments(parser):
       action='store_true',
       help='Include a padding field for each symbol, instead of rederiving '
       'from consecutive symbols on file load.')
+  parser.add_argument(
+      '--check-data-quality',
+      action='store_true',
+      help='Perform sanity checks to ensure there is no missing data.')
+
+  # The split_name arg is used for bundles to identify DFMs.
+  parser.set_defaults(split_name=None)
 
 
 def AddArguments(parser):
@@ -2011,10 +2034,11 @@ def _DeduceNativeInfo(tentative_output_dir, apk_path, elf_path, map_path,
     if not map_path.endswith('.map') and not map_path.endswith('.map.gz'):
       on_config_error('Expected --map-file to end with .map or .map.gz')
   elif elf_path:
-    # Look for a .map file named for either the ELF file, or in the
-    # partitioned native library case, the combined ELF file from which the
-    # main library was extracted. Note that we don't yet have |tool_prefix| to
-    # use here, but that's not a problem for this use case.
+    # TODO(agrieve): Support breaking down partitions.
+    is_partition = elf_path.endswith('_partition.so')
+    if is_partition:
+      on_config_error('Found unexpected _partition.so: ' + elf_path)
+
     if _ElfIsMainPartition(elf_path, ''):
       map_path = elf_path.replace('.so', '__combined.so') + '.map'
     else:
@@ -2023,6 +2047,8 @@ def _DeduceNativeInfo(tentative_output_dir, apk_path, elf_path, map_path,
       map_path += '.gz'
 
   if not os.path.exists(map_path):
+    # Consider a missing linker map fatal only for the base module. For .so
+    # files in feature modules, allow skipping breakdowns.
     on_config_error(
         'Could not find .map(.gz)? file. Ensure you have built with '
         'is_official_build=true and generate_linker_map=true, or use '
@@ -2076,14 +2102,7 @@ def _ReadMultipleArgsFromFile(ssargs_file, on_config_error):
                                      on_config_error)
 
 
-def _ProcessContainerArgs(top_args, sub_args, main_file, on_config_error):
-  if hasattr(sub_args, 'name'):
-    container_name = sub_args.name
-  else:
-    container_name = os.path.basename(main_file)
-  if set(container_name) & set('<>'):
-    parser.error('Container name cannot have characters in "<>"')
-
+def _ProcessContainerArgs(top_args, sub_args, container_name, on_config_error):
   # Copy output_directory, tool_prefix, etc. into sub_args.
   for k, v in top_args.__dict__.items():
     sub_args.__dict__.setdefault(k, v)
@@ -2099,11 +2118,15 @@ def _ProcessContainerArgs(top_args, sub_args, main_file, on_config_error):
       sub_args, apk_prefix)
   linker_name = None
   if opts.analyze_native:
-    sub_args.elf_file, sub_args.map_file, apk_so_path = _DeduceNativeInfo(
-        top_args.output_directory, sub_args.apk_file, sub_args.elf_file
-        or sub_args.aux_elf_file, sub_args.map_file, on_config_error)
-    if not (sub_args.elf_file or sub_args.map_file or apk_so_path):
+    is_base_module = sub_args.split_name in (None, 'base')
+    # We don't yet support analyzing .so files outside of base modules.
+    if not is_base_module:
       opts.analyze_native = False
+    else:
+      sub_args.elf_file, sub_args.map_file, apk_so_path = _DeduceNativeInfo(
+          top_args.output_directory, sub_args.apk_file, sub_args.elf_file
+          or sub_args.aux_elf_file, sub_args.map_file, on_config_error)
+
   if opts.analyze_native:
     if sub_args.map_file:
       linker_name = _DetectLinkerName(sub_args.map_file)
@@ -2125,11 +2148,37 @@ def _ProcessContainerArgs(top_args, sub_args, main_file, on_config_error):
     size_info_prefix = os.path.join(top_args.output_directory, 'size-info',
                                     os.path.basename(apk_prefix))
 
+  # Need one or the other to have native symbols.
+  if not sub_args.elf_file and not sub_args.map_file:
+    opts.analyze_native = False
+
   container_args = {k: v for k, v in sub_args.__dict__.items()}
   container_args.update(opts.__dict__)
   logging.info('Container Params: %r', container_args)
   return (sub_args, opts, container_name, apk_so_path, resources_pathmap_path,
           linker_name, size_info_prefix)
+
+
+def _IsOnDemand(apk_path):
+  # Check if the manifest specifies whether or not to extract native libs.
+  output = subprocess.check_output([
+      path_util.GetAapt2Path(), 'dump', 'xmltree', '--file',
+      'AndroidManifest.xml', apk_path
+  ]).decode('ascii')
+
+  def parse_attr(name):
+    # http://schemas.android.com/apk/res/android:isFeatureSplit(0x0101055b)=true
+    # http://schemas.android.com/apk/distribution:onDemand=true
+    m = re.search(name + r'(?:\(.*?\))?=(\w+)', output)
+    return m and m.group(1) == 'true'
+
+  is_feature_split = parse_attr('android:isFeatureSplit')
+  # Can use <dist:on-demand>, or <module dist:onDemand="true">.
+  on_demand = parse_attr(
+      'distribution:onDemand') or 'distribution:on-demand' in output
+  on_demand = bool(on_demand and is_feature_split)
+
+  return on_demand
 
 
 def _IterSubArgs(top_args, on_config_error):
@@ -2167,28 +2216,46 @@ def _IterSubArgs(top_args, on_config_error):
   # Each element in |sub_args_list| specifies a container.
   for sub_args in sub_args_list:
     main_file = _IdentifyInputFile(sub_args, on_config_error)
+    if hasattr(sub_args, 'name'):
+      container_name = sub_args.name
+    else:
+      container_name = os.path.basename(main_file)
+    if set(container_name) & set('<>'):
+      parser.error('Container name cannot have characters in "<>"')
+
 
     # If needed, extract .apk file to a temp file and process that instead.
     if sub_args.minimal_apks_file:
-      with zip_util.UnzipToTemp(sub_args.minimal_apks_file,
-                                _APKS_MAIN_APK) as temp:
-        sub_args.apk_file = temp
-        yield _ProcessContainerArgs(top_args, sub_args, main_file,
-                                    on_config_error)
+      for module_name, _ in _GetModuleInfoList(sub_args.minimal_apks_file):
+        with zip_util.UnzipToTemp(
+            sub_args.minimal_apks_file,
+            'splits/{}-master.apk'.format(module_name)) as temp:
+          module_sub_args = copy.copy(sub_args)
+          module_sub_args.apk_file = temp
+          module_sub_args.split_name = module_name
+          module_sub_args.name = '{}/{}.apk'.format(container_name, module_name)
+          if module_name != 'base':
+            # TODO(crbug.com/1143690): Fix native analysis for split APKs.
+            module_sub_args.map_file = None
+          yield _ProcessContainerArgs(top_args, module_sub_args,
+                                      module_sub_args.name, on_config_error)
     else:
-      yield _ProcessContainerArgs(top_args, sub_args, main_file,
+      yield _ProcessContainerArgs(top_args, sub_args, container_name,
                                   on_config_error)
 
 
 def Run(top_args, on_config_error):
   if not top_args.size_file.endswith('.size'):
     on_config_error('size_file must end with .size')
+  if top_args.check_data_quality:
+    start_time = time.time()
 
   knobs = SectionSizeKnobs()
   build_config = {}
   seen_container_names = set()
   container_list = []
   raw_symbols_list = []
+
   # Iterate over each container.
   for (sub_args, opts, container_name, apk_so_path, resources_pathmap_path,
        linker_name, size_info_prefix) in _IterSubArgs(top_args,
@@ -2227,7 +2294,7 @@ def Run(top_args, on_config_error):
                              normalize_names=False)
 
   if logging.getLogger().isEnabledFor(logging.DEBUG):
-    for line in describe.DescribeSizeInfoCoverage(size_info):
+    for line in data_quality.DescribeSizeInfoCoverage(size_info):
       logging.debug(line)
   logging.info('Recorded info for %d symbols', len(size_info.raw_symbols))
   for container in size_info.containers:
@@ -2240,3 +2307,12 @@ def Run(top_args, on_config_error):
                            include_padding=top_args.include_padding)
   size_in_mb = os.path.getsize(top_args.size_file) / 1024.0 / 1024.0
   logging.info('Done. File size is %.2fMiB.', size_in_mb)
+
+  if top_args.check_data_quality:
+    logging.info('Checking data quality')
+    data_quality.CheckDataQuality(size_info, top_args.track_string_literals)
+    duration = (time.time() - start_time) / 60
+    if duration > 10:
+      raise data_quality.QualityCheckError(
+          'Command should not take longer than 10 minutes.'
+          ' Took {:.1f} minutes.'.format(duration))

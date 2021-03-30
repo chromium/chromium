@@ -20,6 +20,12 @@ id<GREYMatcher> WindowWithNumber(int window_number) {
   return [ChromeMatchersAppInterface windowWithNumber:window_number];
 }
 
+id<GREYMatcher> MatchInWindowWithNumber(int window_number,
+                                        id<GREYMatcher> matcher) {
+  return grey_allOf(matcher, grey_ancestor(WindowWithNumber(window_number)),
+                    nil);
+}
+
 id<GREYMatcher> ButtonWithAccessibilityLabel(NSString* label) {
   return [ChromeMatchersAppInterface buttonWithAccessibilityLabel:label];
 }
@@ -345,6 +351,11 @@ id<GREYMatcher> SettingsMenuBackButton() {
   return [ChromeMatchersAppInterface settingsMenuBackButton];
 }
 
+id<GREYMatcher> SettingsMenuBackButton(int window_number) {
+  return [ChromeMatchersAppInterface
+      settingsMenuBackButtonInWindowWithNumber:window_number];
+}
+
 id<GREYMatcher> SettingsMenuPrivacyButton() {
   return [ChromeMatchersAppInterface settingsMenuPrivacyButton];
 }
@@ -538,6 +549,18 @@ id<GREYMatcher> TabGridOtherDevicesPanelButton() {
   return [ChromeMatchersAppInterface tabGridOtherDevicesPanelButton];
 }
 
+id<GREYMatcher> TabGridBackground() {
+  return [ChromeMatchersAppInterface tabGridBackground];
+}
+
+id<GREYMatcher> RegularTabGrid() {
+  return [ChromeMatchersAppInterface regularTabGrid];
+}
+
+id<GREYMatcher> IncognitoTabGrid() {
+  return [ChromeMatchersAppInterface incognitoTabGrid];
+}
+
 id<GREYMatcher> TabGridCloseButtonForCellAtIndex(unsigned int index) {
   return [ChromeMatchersAppInterface tabGridCloseButtonForCellAtIndex:index];
 }
@@ -674,6 +697,14 @@ id<GREYMatcher> ManualFallbackCreditCardTableViewWindowMatcher() {
 
 id<GREYMatcher> ActivityViewHeader(NSString* page_title) {
   return [ChromeMatchersAppInterface activityViewHeaderWithTitle:page_title];
+}
+
+id<GREYMatcher> ManualFallbackSuggestPasswordMatcher() {
+  return [ChromeMatchersAppInterface manualFallbackSuggestPasswordMatcher];
+}
+
+id<GREYMatcher> UseSuggestedPasswordMatcher() {
+  return [ChromeMatchersAppInterface useSuggestedPasswordMatcher];
 }
 
 }  // namespace chrome_test_util

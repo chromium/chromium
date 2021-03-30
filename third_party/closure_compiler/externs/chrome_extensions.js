@@ -233,72 +233,6 @@ if (Math.random() < 1) {  // always true but the compiler doesn't know that
 }
 
 
-/**
- * @see https://developer.chrome.com/extensions/accessibilityFeatures
- * @const
- */
-chrome.accessibilityFeatures = {};
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.spokenFeedback;
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.largeCursor;
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.stickyKeys;
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.highContrast;
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.screenMagnifier;
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.autoclick;
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.virtualKeyboard;
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.caretHighlight;
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.cursorHighlight;
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.cursorColor;
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.dockedMagnifier;
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.focusHighlight;
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.selectToSpeak;
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.switchAccess;
-
-
-/** @type {!ChromeSetting} */
-chrome.accessibilityFeatures.animationPolicy;
-
 
 /**
  * @const
@@ -3593,9 +3527,12 @@ chrome.pageAction.hide = function(tabId) {};
 /**
  * @param {Object} details An object which has 'tabId' and either
  *     'imageData' or 'path'.
+ * @param {(function(): void)=} callback The callback function. If an error
+ * occurs setting the icon, chrome.runtime.lastError will be set to the error
+ * message.
  * @return {undefined}
  */
-chrome.pageAction.setIcon = function(details) {};
+chrome.pageAction.setIcon = function(details, callback) {};
 
 
 /**
@@ -3614,9 +3551,12 @@ chrome.pageAction.setTitle = function(details) {};
 
 /**
  * @param {number} tabId Tab Id.
+ * @param {(function(): void)=} callback The callback function. If an error
+ * occurs showing the pageAction, chrome.runtime.lastError will be set to the
+ * error message.
  * @return {undefined}
  */
-chrome.pageAction.show = function(tabId) {};
+chrome.pageAction.show = function(tabId, callback) {};
 
 
 /** @type {!ChromeEvent} */
@@ -4418,151 +4358,6 @@ chrome.idle.onStateChanged;
 
 
 /**
- * Chrome Text-to-Speech API.
- * @const
- * @see https://developer.chrome.com/extensions/tts.html
- */
-chrome.tts = {};
-
-
-
-/**
- * An event from the TTS engine to communicate the status of an utterance.
- * @constructor
- */
-function TtsEvent() {}
-
-
-/** @type {string} */
-TtsEvent.prototype.type;
-
-
-/** @type {number} */
-TtsEvent.prototype.charIndex;
-
-
-/** @type {string} */
-TtsEvent.prototype.errorMessage;
-
-
-/**
- * The speech options for the TTS engine.
- * @record
- * @see https://developer.chrome.com/apps/tts#type-TtsOptions
- */
-function TtsOptions() {}
-
-/** @type {boolean|undefined} */
-TtsOptions.prototype.enqueue;
-
-/** @type {string|undefined} */
-TtsOptions.prototype.voiceName;
-
-/** @type {string|undefined} */
-TtsOptions.prototype.extensionId;
-
-/** @type {string|undefined} */
-TtsOptions.prototype.lang;
-
-/** @type {number|undefined} */
-TtsOptions.prototype.rate;
-
-/** @type {number|undefined} */
-TtsOptions.prototype.pitch;
-
-/** @type {number|undefined} */
-TtsOptions.prototype.volume;
-
-/** @type {!Array<string>|undefined} */
-TtsOptions.prototype.requiredEventTypes;
-
-/** @type {!Array<string>|undefined} */
-TtsOptions.prototype.desiredEventTypes;
-
-/** @type {!function(!TtsEvent)|undefined} */
-TtsOptions.prototype.onEvent;
-
-
-/**
- * A description of a voice available for speech synthesis.
- * @constructor
- */
-function TtsVoice() {}
-
-
-/** @type {string} */
-TtsVoice.prototype.voiceName;
-
-
-/** @type {string} */
-TtsVoice.prototype.lang;
-
-
-/** @type {string} */
-TtsVoice.prototype.gender;
-
-
-/** @type {string} */
-TtsVoice.prototype.extensionId;
-
-
-/** @type {Array<string>} */
-TtsVoice.prototype.eventTypes;
-
-
-/**
- * Gets an array of all available voices.
- * @param {function(Array<TtsVoice>)=} opt_callback An optional callback
- *     function.
- * @return {undefined}
- */
-chrome.tts.getVoices = function(opt_callback) {};
-
-
-/**
- * Checks if the engine is currently speaking.
- * @param {function(boolean)=} opt_callback The callback function.
- * @return {undefined}
- */
-chrome.tts.isSpeaking = function(opt_callback) {};
-
-
-/**
- * Speaks text using a text-to-speech engine.
- * @param {string} utterance The text to speak, either plain text or a complete,
- *     well-formed SSML document. Speech engines that do not support SSML will
- *     strip away the tags and speak the text. The maximum length of the text is
- *     32,768 characters.
- * @param {TtsOptions=} options The speech options.
- * @param {function()=} callback Called right away, before speech finishes.
- * @return {undefined}
- */
-chrome.tts.speak = function(utterance, options, callback) {};
-
-
-/**
- * Stops any current speech.
- * @return {undefined}
- */
-chrome.tts.stop = function() {};
-
-
-/**
- * @const
- * @see https://developer.chrome.com/extensions/ttsEngine.html
- */
-chrome.ttsEngine = {};
-
-
-/** @type {!ChromeEvent} */
-chrome.ttsEngine.onSpeak;
-
-
-/** @type {!ChromeEvent} */
-chrome.ttsEngine.onStop;
-
-
-/**
  * @const
  * @see https://developer.chrome.com/extensions/contentSettings.html
  */
@@ -4861,8 +4656,11 @@ chrome.identity.launchWebAuthFlow = function(details, callback) {};
 chrome.identity.WebAuthFlowDetails;
 
 
+/** @typedef {?{id: string, email: string}} */
+chrome.identity.ProfileUserInfo;
+
 /**
- * @param {function(!Object):void} callback
+ * @param {function(!chrome.identity.ProfileUserInfo):void} callback
  * @return {undefined}
  */
 chrome.identity.getProfileUserInfo = function(callback) {};
@@ -7190,60 +6988,6 @@ chrome.system.network.NetworkInterface.prototype.address;
 
 /** @const {number} The prefix length */
 chrome.system.network.NetworkInterface.prototype.prefixLength;
-
-/**
- * @const
- * @see https://developer.chrome.com/apps/system_powerSource
- */
-chrome.system.powerSource = {};
-
-/**
- * @enum {string}
- */
-chrome.system.powerSource.PowerSourceType = {
-  UNKNOWN: '',
-  MAINS: '',
-  USB: '',
-};
-
-/**
- * PowerSourceInfo
- * @constructor
- */
-chrome.system.powerSource.PowerSourceInfo = function() {};
-
-/** @type {!chrome.system.powerSource.PowerSourceType} */
-chrome.system.powerSource.PowerSourceInfo.prototype.type;
-
-/** @type {number|undefined} */
-chrome.system.powerSource.PowerSourceInfo.prototype.maxPower;
-
-/** @type {boolean} */
-chrome.system.powerSource.PowerSourceInfo.prototype.active;
-
-/**
- * Requests information on attached power sources.
- *
- * @param {function(!Array<!chrome.system.powerSource.PowerSourceType>):void}
- *     callback The callback to invoke with the results or undefined if the
- *     power source information is not known.
- */
-chrome.system.powerSource.getPowerSourceInfo = function(callback) {};
-
-/**
- * Requests a power source status update. Resulting power source
- * status updates are observable using onPowerChanged.
- */
-chrome.system.powerSource.requestStatusUpdate = function() {};
-
-/**
- * Event for changes in the set of connected power sources.
- *
- * It takes an additional, optional `extraInfoSpec` argument, which we ignore.
- * @type {!ChromeBaseEvent<function(string,
- *     !chrome.system.powerSource.PowerSourceInfo): (boolean|undefined)>}
- */
-chrome.system.powerSource.onPowerChanged;
 
 
 /**
@@ -10079,36 +9823,6 @@ chrome.serial.onReceiveError;
 ////////////////////////////////////////////////////////////////////////////////
 /////////////////////////// Chrome Private APIs ////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-
-
-/** @const */
-chrome.screenlockPrivate = {};
-
-
-/**
- * @param {string} message Displayed on the unlock screen.
- * @return {undefined}
- */
-chrome.screenlockPrivate.showMessage = function(message) {};
-
-
-/**
- * @param {function(boolean)} callback
- * @return {undefined}
- */
-chrome.screenlockPrivate.getLocked = function(callback) {};
-
-
-/**
- * @param {boolean} locked If true and the screen is unlocked, locks the screen.
- *     If false and the screen is locked, unlocks the screen.
- * @return {undefined}
- */
-chrome.screenlockPrivate.setLocked = function(locked) {};
-
-
-/** @type {!ChromeBooleanEvent} */
-chrome.screenlockPrivate.onChanged;
 
 
 /**

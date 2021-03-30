@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "chrome/browser/task_manager/providers/web_contents/renderer_task.h"
 #include "extensions/browser/extension_icon_image.h"
-#include "extensions/common/view_type.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 
 namespace extensions {
 class Extension;
@@ -25,7 +25,7 @@ class ExtensionTask
  public:
   ExtensionTask(content::WebContents* web_contents,
                 const extensions::Extension* extension,
-                extensions::ViewType view_type);
+                extensions::mojom::ViewType view_type);
   ~ExtensionTask() override;
 
   // task_manager::RendererTask
@@ -43,10 +43,9 @@ class ExtensionTask
  private:
   // If |extension| is nullptr, this method will get the title from
   // the |web_contents|.
-  base::string16 GetExtensionTitle(
-      content::WebContents* web_contents,
-      const extensions::Extension* extension,
-      extensions::ViewType view_type) const;
+  std::u16string GetExtensionTitle(content::WebContents* web_contents,
+                                   const extensions::Extension* extension,
+                                   extensions::mojom::ViewType view_type) const;
 
   // This is called upon the creation of this task to load the extension icon
   // for the first time if any.
@@ -57,7 +56,7 @@ class ExtensionTask
   // The favicon of the extension represented by this task.
   std::unique_ptr<extensions::IconImage> extension_icon_;
 
-  const extensions::ViewType view_type_;
+  const extensions::mojom::ViewType view_type_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionTask);
 };

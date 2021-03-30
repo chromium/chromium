@@ -112,12 +112,23 @@ TestNavigationObserver::~TestNavigationObserver() {
 }
 
 void TestNavigationObserver::Wait() {
+  TRACE_EVENT1("test", "TestNavigationObserver::Wait", "params",
+               [&](perfetto::TracedValue ctx) {
+                 // TODO(crbug.com/1183371): Replace this with passing more
+                 // parameters to TRACE_EVENT directly when available.
+                 auto dict = std::move(ctx).WriteDictionary();
+                 dict.Add("wait_event", wait_event_);
+                 dict.Add("ignore_uncommitted_navigations",
+                          ignore_uncommitted_navigations_);
+                 dict.Add("target_url", target_url_);
+                 dict.Add("target_error", target_error_);
+               });
   message_loop_runner_->Run();
 }
 
 void TestNavigationObserver::WaitForNavigationFinished() {
   wait_event_ = WaitEvent::kNavigationFinished;
-  message_loop_runner_->Run();
+  Wait();
 }
 
 void TestNavigationObserver::StartWatchingNewWebContents() {

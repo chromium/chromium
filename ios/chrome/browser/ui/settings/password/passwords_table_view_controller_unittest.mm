@@ -48,7 +48,7 @@
 #error "This file requires ARC support."
 #endif
 
-using password_manager::CompromiseType;
+using password_manager::InsecureType;
 using password_manager::TestPasswordStore;
 using password_manager::MockBulkLeakCheckService;
 using ::testing::Return;
@@ -153,7 +153,7 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
   void ChangePasswordCheckState(PasswordCheckUIState state) {
     PasswordsTableViewController* passwords_controller =
         static_cast<PasswordsTableViewController*>(controller());
-    NSInteger count = GetTestStore().compromised_credentials().size();
+    NSInteger count = GetTestStore().insecure_credentials().size();
     [passwords_controller setPasswordCheckUIState:state
                         compromisedPasswordsCount:count];
   }
@@ -169,11 +169,11 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
     auto form = std::make_unique<password_manager::PasswordForm>();
     form->url = GURL("http://www.example.com/accounts/LoginAuth");
     form->action = GURL("http://www.example.com/accounts/Login");
-    form->username_element = base::ASCIIToUTF16("Email");
-    form->username_value = base::ASCIIToUTF16("test@egmail.com");
-    form->password_element = base::ASCIIToUTF16("Passwd");
-    form->password_value = base::ASCIIToUTF16("test");
-    form->submit_element = base::ASCIIToUTF16("signIn");
+    form->username_element = u"Email";
+    form->username_value = u"test@egmail.com";
+    form->password_element = u"Passwd";
+    form->password_value = u"test";
+    form->submit_element = u"signIn";
     form->signon_realm = "http://www.example.com/";
     form->scheme = password_manager::PasswordForm::Scheme::kHtml;
     form->blocked_by_user = false;
@@ -185,11 +185,11 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
     auto form = std::make_unique<password_manager::PasswordForm>();
     form->url = GURL("http://www.example2.com/accounts/LoginAuth");
     form->action = GURL("http://www.example2.com/accounts/Login");
-    form->username_element = base::ASCIIToUTF16("Email");
-    form->username_value = base::ASCIIToUTF16("test@egmail.com");
-    form->password_element = base::ASCIIToUTF16("Passwd");
-    form->password_value = base::ASCIIToUTF16("test");
-    form->submit_element = base::ASCIIToUTF16("signIn");
+    form->username_element = u"Email";
+    form->username_value = u"test@egmail.com";
+    form->password_element = u"Passwd";
+    form->password_value = u"test";
+    form->submit_element = u"signIn";
     form->signon_realm = "http://www.example2.com/";
     form->scheme = password_manager::PasswordForm::Scheme::kHtml;
     form->blocked_by_user = false;
@@ -202,11 +202,11 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
     auto form = std::make_unique<password_manager::PasswordForm>();
     form->url = GURL("http://www.secret.com/login");
     form->action = GURL("http://www.secret.com/action");
-    form->username_element = base::ASCIIToUTF16("email");
-    form->username_value = base::ASCIIToUTF16("test@secret.com");
-    form->password_element = base::ASCIIToUTF16("password");
-    form->password_value = base::ASCIIToUTF16("cantsay");
-    form->submit_element = base::ASCIIToUTF16("signIn");
+    form->username_element = u"email";
+    form->username_value = u"test@secret.com";
+    form->password_element = u"password";
+    form->password_value = u"cantsay";
+    form->submit_element = u"signIn";
     form->signon_realm = "http://www.secret.com/";
     form->scheme = password_manager::PasswordForm::Scheme::kHtml;
     form->blocked_by_user = true;
@@ -219,29 +219,21 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
     auto form = std::make_unique<password_manager::PasswordForm>();
     form->url = GURL("http://www.secret2.com/login");
     form->action = GURL("http://www.secret2.com/action");
-    form->username_element = base::ASCIIToUTF16("email");
-    form->username_value = base::ASCIIToUTF16("test@secret2.com");
-    form->password_element = base::ASCIIToUTF16("password");
-    form->password_value = base::ASCIIToUTF16("cantsay");
-    form->submit_element = base::ASCIIToUTF16("signIn");
+    form->username_element = u"email";
+    form->username_value = u"test@secret2.com";
+    form->password_element = u"password";
+    form->password_value = u"cantsay";
+    form->submit_element = u"signIn";
     form->signon_realm = "http://www.secret2.com/";
     form->scheme = password_manager::PasswordForm::Scheme::kHtml;
     form->blocked_by_user = true;
     AddPasswordForm(std::move(form));
   }
 
-  password_manager::CompromisedCredentials MakeCompromised(
-      base::StringPiece signon_realm,
-      base::StringPiece username) {
-    return password_manager::CompromisedCredentials(
-        std::string(signon_realm), base::ASCIIToUTF16(username),
-        base::Time::Now(), CompromiseType::kLeaked,
-        password_manager::IsMuted(false));
-  }
-
-  void AddCompromisedCredential1() {
-    GetTestStore().AddCompromisedCredentials(
-        MakeCompromised("http://www.example.com/", "test@egmail.com"));
+  void AddCompromisedCredential() {
+    GetTestStore().AddInsecureCredential(password_manager::InsecureCredential(
+        "http://www.example.com/", u"test@egmail.com", base::Time::Now(),
+        InsecureType::kLeaked, password_manager::IsMuted(false)));
     RunUntilIdle();
   }
 
@@ -420,7 +412,7 @@ TEST_F(PasswordsTableViewControllerTest,
   CheckTextCellTextWithId(IDS_IOS_EXPORT_PASSWORDS,
                           GetSectionIndex(SavedPasswords), 0);
 
-  EXPECT_NSEQ(UIColor.cr_labelColor, exportButton.textColor);
+  EXPECT_NSEQ(UIColor.cr_secondaryLabelColor, exportButton.textColor);
   EXPECT_TRUE(exportButton.accessibilityTraits &
               UIAccessibilityTraitNotEnabled);
 
@@ -428,7 +420,7 @@ TEST_F(PasswordsTableViewControllerTest,
   AddBlockedForm1();
   // The export button should still be disabled as exporting blocked forms
   // is not currently supported.
-  EXPECT_NSEQ(UIColor.cr_labelColor, exportButton.textColor);
+  EXPECT_NSEQ(UIColor.cr_secondaryLabelColor, exportButton.textColor);
   EXPECT_TRUE(exportButton.accessibilityTraits &
               UIAccessibilityTraitNotEnabled);
 }
@@ -465,7 +457,7 @@ TEST_F(PasswordsTableViewControllerTest, TestExportButtonDisabledEditMode) {
 
   [passwords_controller setEditing:YES animated:NO];
 
-  EXPECT_NSEQ(UIColor.cr_labelColor, exportButton.textColor);
+  EXPECT_NSEQ(UIColor.cr_secondaryLabelColor, exportButton.textColor);
   EXPECT_TRUE(exportButton.accessibilityTraits &
               UIAccessibilityTraitNotEnabled);
 }
@@ -589,7 +581,7 @@ TEST_F(PasswordsTableViewControllerTest, PasswordCheckStateSafe) {
 // Test verifies unsafe state of password check cell.
 TEST_F(PasswordsTableViewControllerTest, PasswordCheckStateUnSafe) {
   AddSavedForm1();
-  AddCompromisedCredential1();
+  AddCompromisedCredential();
   ChangePasswordCheckState(PasswordCheckStateUnSafe);
 
   CheckTextCellTextWithId(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON,

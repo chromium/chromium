@@ -49,13 +49,13 @@ TEST_F(InterestedDataTypesManagerTest, ShouldNotifyOnChange) {
 
 TEST_F(InterestedDataTypesManagerTest,
        ShouldInitializeOnFirstSetInterestedDataTypes) {
-  EXPECT_FALSE(manager_.IsInitialized());
+  EXPECT_FALSE(manager_.GetInterestedDataTypes().has_value());
   manager_.SetInterestedDataTypes(ModelTypeSet(BOOKMARKS, PREFERENCES),
                                   base::DoNothing());
-  EXPECT_TRUE(manager_.IsInitialized());
+  EXPECT_TRUE(manager_.GetInterestedDataTypes().has_value());
   manager_.SetInterestedDataTypes(ModelTypeSet(BOOKMARKS, PREFERENCES, NIGORI),
                                   base::DoNothing());
-  EXPECT_TRUE(manager_.IsInitialized());
+  EXPECT_TRUE(manager_.GetInterestedDataTypes().has_value());
 }
 
 }  // namespace

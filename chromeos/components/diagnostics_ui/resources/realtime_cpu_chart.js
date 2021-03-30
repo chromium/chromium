@@ -152,7 +152,7 @@ Polymer({
   ready() {
     this.setScaling_();
     this.initializeChart_();
-    window.addEventListener('resize', (e) => this.updateChartWidth_());
+    window.addEventListener('resize', () => this.updateChartWidth_());
 
     // Set the initial chart width.
     this.updateChartWidth_();
@@ -160,8 +160,6 @@ Polymer({
 
   /** @private */
   updateChartWidth_() {
-    // TODO(michaelcheco): Enforce 600px as the minimum window size.
-
     // parseFloat() is used to convert the string returned by
     // getComputedStyleValue() into a number ("642px" --> 642).
     this.width_ = parseFloat(this.getComputedStyleValue('--chart-width'));
@@ -208,6 +206,19 @@ Polymer({
         d3.scaleLinear().domain([0, this.numDataPoints_ - 2]).range([
           0, this.graphWidth_
         ]);
+
+    // Draw the y-axis legend and also draw the horizontal gridlines by
+    // reversing the ticks back into the chart body.
+    const chartGroup = d3.select(this.$$('#chartGroup'));
+    chartGroup.select('#gridLines')
+        .call(
+            d3.axisLeft(/** @type {!d3.LinearScale} */ (this.yAxisScaleFn_))
+                .tickValues(this.yAxisTicks_)
+                .tickFormat((y) => this.getPercentageLabel_(y))
+                .tickPadding(this.padding_.tick)
+                .tickSize(-this.graphWidth_)  // Extend the ticks into the
+                                              // entire graph as gridlines.
+        );
   },
 
   /** @private */
@@ -218,18 +229,6 @@ Polymer({
     chartGroup.attr(
         'transform',
         'translate(' + this.padding_.left + ',' + this.padding_.top + ')');
-
-    // Draw the y-axis legend and also draw the horizontal gridlines by
-    // reversing the ticks back into the chart body.
-    chartGroup.select('#gridLines')
-        .call(
-            d3.axisLeft(/** @type {!d3.LinearScale} */ (this.yAxisScaleFn_))
-                .tickValues(this.yAxisTicks_)
-                .tickFormat((y) => this.getPercentageLabel_(y))
-                .tickPadding(this.padding_.tick)
-                .tickSize(-this.graphWidth_)  // Extend the ticks into the
-                                              // entire graph as gridlines.
-        );
 
     const plotGroup = d3.select(this.$$('#plotGroup'));
 

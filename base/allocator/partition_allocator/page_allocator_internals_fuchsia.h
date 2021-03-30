@@ -47,6 +47,7 @@ zx_vm_option_t PageAccessibilityToZxVmOptions(
     case PageRead:
       return ZX_VM_PERM_READ;
     case PageReadWrite:
+    case PageReadWriteTagged:
       return ZX_VM_PERM_READ | ZX_VM_PERM_WRITE;
     case PageReadExecute:
       return ZX_VM_PERM_READ | ZX_VM_PERM_EXECUTE;
@@ -149,7 +150,7 @@ bool TrySetSystemPagesAccessInternal(
     void* address,
     size_t length,
     PageAccessibilityConfiguration accessibility) {
-  zx_status_t status = zx::vmar::root_self()->protect2(
+  zx_status_t status = zx::vmar::root_self()->protect(
       PageAccessibilityToZxVmOptions(accessibility),
       reinterpret_cast<uint64_t>(address), length);
   return status == ZX_OK;
@@ -159,7 +160,7 @@ void SetSystemPagesAccessInternal(
     void* address,
     size_t length,
     PageAccessibilityConfiguration accessibility) {
-  zx_status_t status = zx::vmar::root_self()->protect2(
+  zx_status_t status = zx::vmar::root_self()->protect(
       PageAccessibilityToZxVmOptions(accessibility),
       reinterpret_cast<uint64_t>(address), length);
   ZX_CHECK(status == ZX_OK, status);
@@ -205,6 +206,20 @@ void RecommitSystemPagesInternal(
   if (accessibility_disposition == PageUpdatePermissions) {
     SetSystemPagesAccess(address, length, accessibility);
   }
+}
+
+bool TryRecommitSystemPagesInternal(
+    void* address,
+    size_t length,
+    PageAccessibilityConfiguration accessibility,
+    PageAccessibilityDisposition accessibility_disposition) {
+  // On Fuchsia systems, the caller needs to simply read the memory to recommit
+  // it. However, if decommit changed the permissions, recommit has to change
+  // them back.
+  if (accessibility_disposition == PageUpdatePermissions) {
+    return TrySetSystemPagesAccess(address, length, accessibility);
+  }
+  return true;
 }
 
 }  // namespace base

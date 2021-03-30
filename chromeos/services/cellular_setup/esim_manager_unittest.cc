@@ -37,15 +37,25 @@ TEST_F(ESimManagerTest, ListChangeNotification) {
   // Verify that available euicc list change is notified.
   ASSERT_EQ(1, observer()->available_euicc_list_change_count());
 
+  // Add an installed profile and verify the profile list change is notified to
+  // observer.
   HermesEuiccClient::TestInterface* euicc_test =
       HermesEuiccClient::Get()->GetTestInterface();
   dbus::ObjectPath active_profile_path = euicc_test->AddFakeCarrierProfile(
-      dbus::ObjectPath(kTestEuiccPath), hermes::profile::State::kActive, "");
-  dbus::ObjectPath pending_profile_path = euicc_test->AddFakeCarrierProfile(
-      dbus::ObjectPath(kTestEuiccPath), hermes::profile::State::kPending, "");
+      dbus::ObjectPath(kTestEuiccPath), hermes::profile::State::kActive, "",
+      /*service_only=*/false);
+  // Wait for events to propagate.
   base::RunLoop().RunUntilIdle();
-  // Verify the profile list change is notified to observer.
-  ASSERT_EQ(2u, observer()->profile_list_change_calls().size());
+  EXPECT_EQ(1u, observer()->profile_list_change_calls().size());
+
+  // Add a pending profile and verify the profile list change is notified to
+  // observer.
+  dbus::ObjectPath pending_profile_path = euicc_test->AddFakeCarrierProfile(
+      dbus::ObjectPath(kTestEuiccPath), hermes::profile::State::kPending, "",
+      /*service_only=*/false);
+  // Wait for events to propagate.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(2u, observer()->profile_list_change_calls().size());
 }
 
 TEST_F(ESimManagerTest, EuiccChangeNotification) {
@@ -65,7 +75,8 @@ TEST_F(ESimManagerTest, ESimProfileChangeNotification) {
   HermesEuiccClient::TestInterface* euicc_test =
       HermesEuiccClient::Get()->GetTestInterface();
   dbus::ObjectPath profile_path = euicc_test->AddFakeCarrierProfile(
-      dbus::ObjectPath(kTestEuiccPath), hermes::profile::kActive, "");
+      dbus::ObjectPath(kTestEuiccPath), hermes::profile::kActive, "",
+      /*service_only=*/false);
   base::RunLoop().RunUntilIdle();
 
   HermesProfileClient::Properties* dbus_properties =

@@ -106,7 +106,6 @@ void PrefetchURLLoaderService::GetFactory(
 
 void PrefetchURLLoaderService::CreateLoaderAndStart(
     mojo::PendingReceiver<network::mojom::URLLoader> receiver,
-    int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const network::ResourceRequest& resource_request_in,
@@ -209,7 +208,7 @@ void PrefetchURLLoaderService::CreateLoaderAndStart(
   // TODO(kinuko): Revisit this.
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<PrefetchURLLoader>(
-          routing_id, request_id, options, current_context.frame_tree_node_id,
+          request_id, options, current_context.frame_tree_node_id,
           resource_request,
           resource_request.trusted_params
               ? resource_request.trusted_params->isolation_info

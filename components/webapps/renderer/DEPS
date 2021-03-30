@@ -1,0 +1,9 @@
+include_rules = [
+  "+content/public/renderer",
+  "+mojo/public/cpp",
+  "+services/service_manager",
+  "+third_party/blink/public/common",
+  "+third_party/blink/public/platform",
+  "+third_party/blink/public/web",
+  "+ui/gfx",
+]

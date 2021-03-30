@@ -6,6 +6,8 @@
 
 #import <AppKit/AppKit.h>
 
+#include "chrome/services/mac_notifications/public/cpp/notification_operation.h"
+
 @implementation NotificationBuilderBase
 
 - (instancetype)initWithCloseLabel:(NSString*)closeLabel
@@ -67,11 +69,10 @@
   }
 }
 
-- (void)setTag:(NSString*)tag {
-  if (tag.length) {
-    [_notificationData setObject:tag
-                          forKey:notification_constants::kNotificationTag];
-  }
+- (void)setIdentifier:(NSString*)identifier {
+  DCHECK(identifier.length);
+  [_notificationData setObject:identifier
+                        forKey:notification_constants::kNotificationIdentifier];
 }
 
 - (void)setOrigin:(NSString*)origin {
@@ -108,10 +109,34 @@
                         forKey:notification_constants::kNotificationType];
 }
 
+- (void)setRenotify:(BOOL)renotify {
+  [_notificationData setObject:[NSNumber numberWithBool:renotify]
+                        forKey:notification_constants::kNotificationRenotify];
+}
+
 - (void)setShowSettingsButton:(BOOL)showSettingsButton {
   [_notificationData
       setObject:[NSNumber numberWithBool:showSettingsButton]
          forKey:notification_constants::kNotificationHasSettingsButton];
+}
+
+- (void)setIcon:(NSImage*)icon {
+  if (!icon)
+    return;
+
+  [_notificationData setObject:icon
+                        forKey:notification_constants::kNotificationIcon];
+}
+
+- (void)setClosedFromAlert:(BOOL)fromAlert {
+  [_notificationData
+      setObject:@(static_cast<int>(NotificationOperation::NOTIFICATION_CLOSE))
+         forKey:notification_constants::kNotificationOperation];
+  [_notificationData
+      setObject:@(notification_constants::kNotificationInvalidButtonIndex)
+         forKey:notification_constants::kNotificationButtonIndex];
+  [_notificationData setObject:@(fromAlert)
+                        forKey:notification_constants::kNotificationIsAlert];
 }
 
 - (NSDictionary*)buildDictionary {

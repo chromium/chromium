@@ -27,8 +27,8 @@ void AutoSignInBubbleController::OnAutoSignInToastTimeout() {
   dismissal_reason_ = metrics_util::AUTO_SIGNIN_TOAST_TIMEOUT;
 }
 
-base::string16 AutoSignInBubbleController::GetTitle() const {
-  return base::string16();
+std::u16string AutoSignInBubbleController::GetTitle() const {
+  return std::u16string();
 }
 
 void AutoSignInBubbleController::ReportInteractions() {

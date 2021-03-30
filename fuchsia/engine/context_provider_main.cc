@@ -62,9 +62,9 @@ int ContextProviderMain() {
   // Publish the ContextProvider and Debug services.
   sys::OutgoingDirectory* const directory =
       base::ComponentContextForProcess()->outgoing().get();
-  base::fuchsia::ScopedServiceBinding<fuchsia::web::ContextProvider> binding(
+  base::ScopedServiceBinding<fuchsia::web::ContextProvider> binding(
       directory, &context_provider);
-  base::fuchsia::ScopedServiceBinding<fuchsia::web::Debug> debug_binding(
+  base::ScopedServiceBinding<fuchsia::web::Debug> debug_binding(
       directory->debug_dir(), &context_provider);
 
   // Publish version information for this component to Inspect.

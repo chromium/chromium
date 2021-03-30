@@ -33,7 +33,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_WINDOW_OR_WORKER_GLOBAL_SCOPE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_WINDOW_OR_WORKER_GLOBAL_SCOPE_H_
 
-#include "third_party/blink/renderer/bindings/core/v8/image_bitmap_source.h"
+#include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -42,14 +44,9 @@ namespace blink {
 
 class EventTarget;
 class ExceptionState;
-class ImageBitmapOptions;
-class ScriptPromise;
 class ScriptState;
 class ScriptValue;
 class V8Function;
-
-typedef HTMLImageElementOrSVGImageElementOrHTMLVideoElementOrHTMLCanvasElementOrBlobOrImageDataOrImageBitmapOrOffscreenCanvas
-    ImageBitmapSourceUnion;
 
 class CORE_EXPORT WindowOrWorkerGlobalScope {
   STATIC_ONLY(WindowOrWorkerGlobalScope);
@@ -84,21 +81,6 @@ class CORE_EXPORT WindowOrWorkerGlobalScope {
                          const HeapVector<ScriptValue>&);
   static void clearTimeout(EventTarget&, int timeout_id);
   static void clearInterval(EventTarget&, int timeout_id);
-
-  static ScriptPromise createImageBitmap(ScriptState*,
-                                         EventTarget&,
-                                         const ImageBitmapSourceUnion&,
-                                         const ImageBitmapOptions*,
-                                         ExceptionState&);
-  static ScriptPromise createImageBitmap(ScriptState*,
-                                         EventTarget&,
-                                         const ImageBitmapSourceUnion&,
-                                         int sx,
-                                         int sy,
-                                         int sw,
-                                         int sh,
-                                         const ImageBitmapOptions*,
-                                         ExceptionState&);
 
   static bool crossOriginIsolated(const ExecutionContext&);
 };

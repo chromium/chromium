@@ -2,32 +2,80 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
-import("../../optimize_webui.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+import("../../tools/optimize_webui.gni")
 
-optimize_webui("build") {
-  host = "internet_detail_dialog"
-  html_in_files = [ "internet_detail_dialog.html" ]
-  html_out_files = [ "vulcanized.html" ]
+preprocess_folder = "preprocessed"
+preprocess_gen_manifest = "preprocessed_gen_manifest.json"
 
-  input = rebase_path(".", root_build_dir)
-  js_out_files = [ "crisper.js" ]
-  excludes = [ "chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom.html" ]
+if (optimize_webui) {
+  build_manifest = "build_manifest.json"
 
-  deps = []
+  optimize_webui("build") {
+    host = "internet-detail-dialog"
+    js_out_files = [ "internet_detail_dialog.rollup.js" ]
+    js_module_in_files = [ "internet_detail_dialog.js" ]
+    input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
+
+    out_manifest = "$target_gen_dir/$build_manifest"
+    excludes = [
+      "chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-lite.js",
+      "chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-lite.js",
+      "chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js",
+      "chrome://resources/mojo/services/network/public/mojom/ip_address.mojom-lite.js",
+    ]
+
+    deps = [
+      ":preprocess_generated",
+      "../../../../../ui/webui/resources:preprocess",
+    ]
+  }
+}
+
+generate_grd("build_grd") {
+  input_files = [ "internet_detail_dialog_container.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+  if (optimize_webui) {
+    deps = [ ":build" ]
+    resource_path_rewrites =
+        [ "internet_detail_dialog.rollup.js|internet_detail_dialog.js" ]
+    manifest_files = [ "$target_gen_dir/$build_manifest" ]
+  } else {
+    deps = [ ":preprocess_generated" ]
+    manifest_files = [ "$target_gen_dir/$preprocess_gen_manifest" ]
+  }
+  grd_prefix = "internet_detail_dialog"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+}
+
+preprocess_if_expr("preprocess_generated") {
+  deps = [ ":web_components" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
+  in_files = [ "internet_detail_dialog.js" ]
 }
 
 js_type_check("closure_compile") {
+  is_polymer3 = true
   deps = [ ":internet_detail_dialog" ]
 }
 
 js_library("internet_detail_dialog") {
   deps = [
-    "//ui/webui/resources/cr_components/chromeos/network:cr_policy_network_behavior_mojo",
-    "//ui/webui/resources/cr_components/chromeos/network:network_listener_behavior",
-    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:i18n_behavior",
+    "//ui/webui/resources/cr_components/chromeos/network:cr_policy_network_behavior_mojo.m",
+    "//ui/webui/resources/cr_components/chromeos/network:network_listener_behavior.m",
+    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
   ]
   externs_list = [ "$externs_path/chrome_send.js" ]
+}
+
+html_to_js("web_components") {
+  js_files = [ "internet_detail_dialog.js" ]
 }

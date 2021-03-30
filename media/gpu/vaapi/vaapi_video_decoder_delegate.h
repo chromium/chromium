@@ -15,15 +15,17 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/decryptor.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/subsample_entry.h"
 #include "third_party/libva_protected_content/va_protected_content.h"
+#include "ui/gfx/geometry/rect.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_context.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace media {
 
@@ -61,6 +63,12 @@ class VaapiVideoDecoderDelegate {
   VaapiVideoDecoderDelegate& operator=(const VaapiVideoDecoderDelegate&) =
       delete;
 
+  // Should be called when kTryAgain is returned from decoding to determine if
+  // we should try to recover the session by sending a kDecodeStateLost message
+  // up through the WaitingCB in the decoder. Returns true if we should send the
+  // kDecodeStateLost message.
+  bool HasInitiatedProtectedRecovery();
+
  protected:
   // Sets the |decrypt_config| currently active for this stream. Returns true if
   // that config is compatible with the existing one (for example, you can't
@@ -71,6 +79,7 @@ class VaapiVideoDecoderDelegate {
     kNotCreated,
     kInProcess,
     kCreated,
+    kNeedsRecovery,
     kFailed
   };
 
@@ -83,18 +92,41 @@ class VaapiVideoDecoderDelegate {
   // |subsamples| is for the current slice. |size| is the size of the slice
   // data. This should be called if IsEncrypted() is true even if the current
   // data is not encrypted (i.e. |subsamples| is empty).
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ProtectedSessionState SetupDecryptDecode(
       bool full_sample,
       size_t size,
       VAEncryptionParameters* crypto_params,
       std::vector<VAEncryptionSegmentInfo>* segments,
       const std::vector<SubsampleEntry>& subsamples);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Returns true if we are handling encrypted content, in which case
   // SetupDecryptDecode() should be called for every slice.
   bool IsEncryptedSession() const {
     return encryption_scheme_ != EncryptionScheme::kUnencrypted;
   }
+
+  // Should be called by subclasses if a failure occurs during actual decoding.
+  // This will check if we are using protected mode and it's in a state that
+  // can be recovered which should resolve the error. If this method returns
+  // true, then the caller should return kTryAgain from the accelerator to kick
+  // off the rest of the recovery process.
+  bool NeedsProtectedSessionRecovery();
+
+  // Should be invoked by subclasses if they successfully decoded protected
+  // video. This is so we can reset our tracker to indicate we successfully
+  // recovered from protected session loss. It is fine to call this method on
+  // every successful protected decode.
+  void ProtectedDecodedSucceeded();
+
+  // Fills *|proc_buffer| with the proper parameters for decode scaling and
+  // returns true if that buffer was filled in and should be submitted, false
+  // otherwise.
+  bool FillDecodeScalingIfNeeded(const gfx::Rect& decode_visible_rect,
+                                 VASurfaceID decode_surface_id,
+                                 scoped_refptr<VASurface> output_surface,
+                                 VAProcPipelineParameterBuffer* proc_buffer);
 
   // Both owned by caller.
   DecodeSurfaceHandler<VASurface>* const vaapi_dec_;
@@ -112,13 +144,24 @@ class VaapiVideoDecoderDelegate {
   ProtectedSessionUpdateCB on_protected_session_update_cb_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::ChromeOsCdmContext* chromeos_cdm_context_{nullptr};  // Not owned.
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   EncryptionScheme encryption_scheme_;
   ProtectedSessionState protected_session_state_;
   std::unique_ptr<DecryptConfig> decrypt_config_;
-  bool full_sample_;
   std::vector<uint8_t> hw_identifier_;
   std::map<std::string, std::vector<uint8_t>> hw_key_data_map_;
+  base::TimeTicks last_key_retrieval_time_;
+  // We need to hold onto these across a call since the VABuffer will reference
+  // their pointers, so declare them here to allow for that. These are used in
+  // the decode scaling operation.
+  VARectangle src_region_;
+  VARectangle dst_region_;
+  VASurfaceID scaled_surface_id_;
+
+  // This gets set to true if we indicated we should try to recover from
+  // protected session loss. We use this so that we don't go into a loop where
+  // we repeatedly retry recovery over and over.
+  bool performing_recovery_;
 
   base::WeakPtrFactory<VaapiVideoDecoderDelegate> weak_factory_{this};
 };

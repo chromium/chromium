@@ -10,13 +10,11 @@
 namespace android_webview {
 class AwGLSurfaceExternalStencil : public AwGLSurface {
  public:
-  AwGLSurfaceExternalStencil();
+  explicit AwGLSurfaceExternalStencil(bool is_angle);
 
   AwGLSurfaceExternalStencil(const AwGLSurfaceExternalStencil&) = delete;
   AwGLSurfaceExternalStencil& operator=(const AwGLSurfaceExternalStencil&) =
       delete;
-
-  void SetClipRectangle(gfx::Rect clip_rect);
 
   unsigned int GetBackingFramebufferObject() override;
   gfx::SwapResult SwapBuffers(PresentationCallback callback) override;

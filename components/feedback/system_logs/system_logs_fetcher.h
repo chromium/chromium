@@ -15,6 +15,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "components/feedback/feedback_common.h"
 #include "components/feedback/redaction_tool.h"
@@ -80,6 +81,8 @@ class SystemLogsFetcher {
 
   // Runs the callback provided to Fetch and posts a task to delete |this|.
   void RunCallbackAndDeleteSoon();
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   std::vector<std::unique_ptr<SystemLogsSource>> data_sources_;
   SysLogsFetcherCallback callback_;

@@ -6,14 +6,12 @@
 
 #include "media/media_buildflags.h"
 #include "net/http/http_request_headers.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/web_package/signed_exchange_consts.h"
 #include "third_party/blink/public/common/web_package/web_package_request_matcher.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/link_header.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 
@@ -31,19 +29,13 @@ constexpr char kAllowedAltSxg[] = "allowed-alt-sxg";
 const char kDefaultAcceptHeader[] = "*/*";
 const char kStylesheetAcceptHeader[] = "text/css,*/*;q=0.1";
 
-const char* ImageAcceptHeader() {
-  static constexpr char kImageAcceptHeaderWithAvif[] =
-      "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8";
-  static constexpr size_t kOffset = sizeof("image/avif,") - 1;
 #if BUILDFLAG(ENABLE_AV1_DECODER)
-  static const char* header = base::FeatureList::IsEnabled(features::kAVIF)
-                                  ? kImageAcceptHeaderWithAvif
-                                  : kImageAcceptHeaderWithAvif + kOffset;
+constexpr char kImageAcceptHeader[] =
+    "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8";
 #else
-  static const char* header = kImageAcceptHeaderWithAvif + kOffset;
+constexpr char kImageAcceptHeader[] =
+    "image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8";
 #endif
-  return header;
-}
 
 using AlternateSignedExchangeMachingKey =
     std::pair<String /* anchor */,
@@ -148,7 +140,7 @@ AlternateSignedExchangeResourceInfo::FindMatchingEntry(
   if (resource_type == ResourceType::kCSSStyleSheet) {
     accept_header = kStylesheetAcceptHeader;
   } else if (resource_type == ResourceType::kImage) {
-    accept_header = ImageAcceptHeader();
+    accept_header = kImageAcceptHeader;
   }
   return FindMatchingEntry(url, accept_header, languages);
 }
@@ -162,7 +154,7 @@ AlternateSignedExchangeResourceInfo::FindMatchingEntry(
   if (request_context == mojom::blink::RequestContextType::STYLE) {
     accept_header = kStylesheetAcceptHeader;
   } else if (request_context == mojom::blink::RequestContextType::IMAGE) {
-    accept_header = ImageAcceptHeader();
+    accept_header = kImageAcceptHeader;
   }
   return FindMatchingEntry(url, accept_header, languages);
 }

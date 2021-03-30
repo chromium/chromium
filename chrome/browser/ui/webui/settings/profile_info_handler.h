@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -50,7 +50,7 @@ class ProfileInfoHandler : public SettingsPageUIHandler,
 
   // ProfileAttributesStorage::Observer implementation.
   void OnProfileNameChanged(const base::FilePath& profile_path,
-                            const base::string16& old_profile_name) override;
+                            const std::u16string& old_profile_name) override;
   void OnProfileAvatarChanged(const base::FilePath& profile_path) override;
 
  private:
@@ -75,12 +75,14 @@ class ProfileInfoHandler : public SettingsPageUIHandler,
   Profile* profile_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ScopedObserver<user_manager::UserManager, user_manager::UserManager::Observer>
-      user_manager_observer_{this};
+  base::ScopedObservation<user_manager::UserManager,
+                          user_manager::UserManager::Observer>
+      user_manager_observation_{this};
 #endif
 
-  ScopedObserver<ProfileAttributesStorage, ProfileAttributesStorage::Observer>
-      profile_observer_{this};
+  base::ScopedObservation<ProfileAttributesStorage,
+                          ProfileAttributesStorage::Observer>
+      profile_observation_{this};
 
   // Used to cancel callbacks when JavaScript becomes disallowed.
   base::WeakPtrFactory<ProfileInfoHandler> callback_weak_ptr_factory_{this};

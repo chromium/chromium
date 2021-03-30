@@ -62,7 +62,7 @@ We currently use `postMessage()` to expose certain APIs to `chrome-untrusted://`
 We are hoping to move to Mojo to improve auditability of these APIs and to make the security review required.
 
 ## Can chrome-untrusted:// be the main document or does it need to be embedded in a `chrome://` page?
-Yes, `chrome-untrusted://` can be the main document, although the most common case is for `chrome://` to embed a `chrome-untrusted://` page.
+Yes, `chrome-untrusted://` can be the main document, although the most common case is for a `chrome://` page to embed a `chrome-untrusted://` subframe.
 
 That said, the `chrome-untrusted://` scheme is an implementation detail of the WebUI and should never be shown to users. This should be factored into account when deciding whether or not to use `chrome-untrusted://` as the main document.
 

@@ -34,6 +34,7 @@ message WebAppProtocolHandler {
 
 message WebAppUrlHandlerProto {
   required string origin = 1;
+  required bool has_origin_wildcard = 2;
 }
 
 // A set to track simultaneous installs and uninstalls from multiple install
@@ -52,6 +53,35 @@ message ChromeOSDataProto {
   required bool show_in_search = 2;
   required bool show_in_management = 3;
   required bool is_disabled = 4;
+  optional bool oem_installed = 5;
+}
+
+// Properties for System Web Apps.
+message SystemWebAppDataProto {
+  enum SystemAppType {
+    FILE_MANAGER = 1;
+    TELEMETRY = 2;
+    SAMPLE = 3;
+    SETTINGS = 4;
+    CAMERA = 5;
+    TERMINAL = 6;
+    MEDIA = 7;
+    HELP = 8;
+    PRINT_MANAGEMENT = 9;
+    SCANNING = 10;
+    DIAGNOSTICS = 11;
+    CONNECTIVITY_DIAGNOSTICS = 12;
+    ECHE = 13;
+    CROSH = 14;
+    PERSONALIZATION = 15;
+  };
+
+  optional SystemAppType system_app_type = 1;
+}
+
+// Properties for System Web Apps.
+message ClientDataProto {
+  optional SystemWebAppDataProto system_web_app_data = 1;
 }
 
 // Properties for a WebApp's shortcuts menu item.
@@ -153,7 +183,8 @@ message WebAppProto {
   // for web_app::RunOnOsLoginMode definition, which this enum should be in sync
   // with.
   enum RunOnOsLoginMode {
-    // UNDEFINED if optional |user_run_on_os_login_mode| is absent.
+    // NOT_RUN if optional |user_run_on_os_login_mode| is absent.
+    NOT_RUN = 0;
     WINDOWED = 1;
     MINIMIZED = 2;
   }
@@ -166,4 +197,23 @@ message WebAppProto {
   optional string launch_query_params = 26;
 
   repeated WebAppUrlHandlerProto url_handlers = 27;
+
+  optional ClientDataProto client_data = 28;
+
+  // This enum should be synced with |ManifestCaptureLinks| in
+  // third_party/blink/public/mojom/manifest/manifest.mojom
+  enum CaptureLinks {
+    // UNDEFINED if optional |capture_links| is absent.
+    NONE = 1;
+    NEW_CLIENT = 2;
+    EXISTING_CLIENT_NAVIGATE = 3;
+  }
+
+  optional CaptureLinks capture_links = 29;
+
+  optional string manifest_url = 30;
+
+  // Last time the Badging API was used.
+  // ms since the Unix epoch. See sync/base/time.h.
+  optional int64 last_badging_time = 31;
 }

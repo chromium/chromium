@@ -2,14 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, DuplexMode, MarginsType, PrinterType, ScalingType, Size} from 'chrome://print/print_preview.js';
+import {Cdd, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, DuplexMode, MarginsType, PrinterType, ScalingType, Size} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isChromeOS} from 'chrome://resources/js/cr.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {getCddTemplateWithAdvancedSettings} from 'chrome://test/print_preview/print_preview_test_utils.js';
-import {eventToPromise} from 'chrome://test/test_util.m.js';
+
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from '../chai_assert.js';
+import {eventToPromise} from '../test_util.m.js';
+
+import {getCddTemplateWithAdvancedSettings} from './print_preview_test_utils.js';
 
 window.model_test = {};
+const model_test = window.model_test;
+
 model_test.suiteName = 'ModelTest';
 /** @enum {string} */
 model_test.TestNames = {
@@ -22,12 +28,14 @@ model_test.TestNames = {
 };
 
 suite(model_test.suiteName, function() {
-  let model = null;
+  /** @type {!PrintPreviewModelElement} */
+  let model;
 
   /** @override */
   setup(function() {
-    PolymerTest.clearBody();
-    model = document.createElement('print-preview-model');
+    document.body.innerHTML = '';
+    model = /** @type {!PrintPreviewModelElement} */ (
+        document.createElement('print-preview-model'));
     document.body.appendChild(model);
   });
 
@@ -158,7 +166,7 @@ suite(model_test.suiteName, function() {
    */
   test(assert(model_test.TestNames.SetPolicySettings), function() {
     model.setSetting('headerFooter', false);
-    assertFalse(model.settings.headerFooter.value);
+    assertFalse(/** @type {boolean} */ (model.settings.headerFooter.value));
 
     // Sets to true, but doesn't mark as controlled by a policy.
     model.setPolicySettings({headerFooter: {defaultMode: true}});
@@ -167,18 +175,18 @@ suite(model_test.suiteName, function() {
       headerFooter: false,
     }));
     model.applyStickySettings();
-    assertTrue(model.settings.headerFooter.value);
+    assertTrue(/** @type {boolean} */ (model.settings.headerFooter.value));
     model.setSetting('headerFooter', false);
-    assertFalse(model.settings.headerFooter.value);
+    assertFalse(/** @type {boolean} */ (model.settings.headerFooter.value));
 
     model.setPolicySettings({headerFooter: {allowedMode: true}});
     model.applyStickySettings();
-    assertTrue(model.settings.headerFooter.value);
+    assertTrue(/** @type {boolean} */ (model.settings.headerFooter.value));
 
     model.setSetting('headerFooter', false);
     // The value didn't change after setSetting(), because the policy takes
     // priority.
-    assertTrue(model.settings.headerFooter.value);
+    assertTrue(/** @type {boolean} */ (model.settings.headerFooter.value));
   });
 
   /** @param {!Destination} testDestination */
@@ -236,6 +244,7 @@ suite(model_test.suiteName, function() {
       isScalingDisabled: false,
       fitToPageScaling: 100,
       pageCount: 3,
+      isFromArc: false,
       title: 'title',
     };
     model.pageSize = new Size(612, 792);
@@ -263,7 +272,7 @@ suite(model_test.suiteName, function() {
         'FooDevice', DestinationType.LOCAL, origin, 'FooName',
         DestinationConnectionStatus.ONLINE);
     testDestination.capabilities =
-        getCddTemplateWithAdvancedSettings(2).capabilities;
+        getCddTemplateWithAdvancedSettings(2, 'FooDevice').capabilities;
 
     if (isChromeOS) {
       // Make device managed. It's used for testing pin setting behavior.
@@ -307,7 +316,7 @@ suite(model_test.suiteName, function() {
         paperType: 0,
       };
     }
-    expectEquals(JSON.stringify(expectedDefaultTicketObject), defaultTicket);
+    assertEquals(JSON.stringify(expectedDefaultTicketObject), defaultTicket);
 
     // Toggle all the values and create a new print ticket.
     toggleSettings(testDestination);
@@ -353,7 +362,7 @@ suite(model_test.suiteName, function() {
       };
     }
 
-    expectEquals(JSON.stringify(expectedNewTicketObject), newTicket);
+    assertEquals(JSON.stringify(expectedNewTicketObject), newTicket);
   });
 
   /**
@@ -368,7 +377,7 @@ suite(model_test.suiteName, function() {
         'FooCloudDevice', DestinationType.GOOGLE, DestinationOrigin.COOKIES,
         'FooCloudName', DestinationConnectionStatus.ONLINE);
     testDestination.capabilities =
-        getCddTemplateWithAdvancedSettings(2).capabilities;
+        getCddTemplateWithAdvancedSettings(2, 'FooDevice').capabilities;
     model.destination = testDestination;
 
     const defaultTicket = model.createCloudJobTicket(testDestination);
@@ -396,7 +405,7 @@ suite(model_test.suiteName, function() {
         ],
       },
     });
-    expectEquals(expectedDefaultTicket, defaultTicket);
+    assertEquals(expectedDefaultTicket, defaultTicket);
 
     // Toggle all the values and create a new cloud job ticket.
     toggleSettings(testDestination);
@@ -425,7 +434,7 @@ suite(model_test.suiteName, function() {
         ],
       },
     });
-    expectEquals(expectedNewTicket, newTicket);
+    assertEquals(expectedNewTicket, newTicket);
   });
 
   test(assert(model_test.TestNames.ChangeDestination), function() {
@@ -433,7 +442,7 @@ suite(model_test.suiteName, function() {
         'FooDevice', DestinationType.LOCAL, DestinationOrigin.LOCAL, 'FooName',
         DestinationConnectionStatus.ONLINE);
     testDestination.capabilities =
-        getCddTemplateWithAdvancedSettings(2).capabilities;
+        getCddTemplateWithAdvancedSettings(2, 'FooDevice').capabilities;
     // Make black and white printing the default.
     testDestination.capabilities.printer.color = {
       option: [
@@ -446,7 +455,7 @@ suite(model_test.suiteName, function() {
         'BarDevice', DestinationType.LOCAL, DestinationOrigin.LOCAL, 'BarName',
         DestinationConnectionStatus.ONLINE);
     testDestination2.capabilities =
-        Object.assign({}, testDestination.capabilities);
+        /** @type {!Cdd} */ (Object.assign({}, testDestination.capabilities));
 
     // Initialize
     initializeModel();
@@ -486,7 +495,7 @@ suite(model_test.suiteName, function() {
         'Device1', DestinationType.LOCAL, DestinationOrigin.LOCAL, 'One',
         DestinationConnectionStatus.ONLINE);
     testDestination3.capabilities =
-        Object.assign({}, testDestination.capabilities);
+        /** @type {!Cdd} */ (Object.assign({}, testDestination.capabilities));
     testDestination3.capabilities.printer.media_size = {
       option: [
         {

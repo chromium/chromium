@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/views/accessible_pane_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace views {
 class FlexLayout;
@@ -16,12 +17,16 @@ class FlexLayout;
 class NewTabButton;
 class TabSearchButton;
 class TabStrip;
+class TipMarqueeView;
 
 // Container for the tabstrip, new tab button, and reserved grab handle space.
 class TabStripRegionView final : public views::AccessiblePaneView,
                                  views::ViewObserver {
  public:
+  METADATA_HEADER(TabStripRegionView);
   explicit TabStripRegionView(std::unique_ptr<TabStrip> tab_strip);
+  TabStripRegionView(const TabStripRegionView&) = delete;
+  TabStripRegionView& operator=(const TabStripRegionView&) = delete;
   ~TabStripRegionView() override;
 
   // Returns true if the specified rect intersects the window caption area of
@@ -41,12 +46,13 @@ class TabStripRegionView final : public views::AccessiblePaneView,
 
   TabSearchButton* tab_search_button() { return tab_search_button_; }
 
+  TipMarqueeView* tip_marquee_view() { return tip_marquee_view_; }
+
   views::View* reserved_grab_handle_space_for_testing() {
     return reserved_grab_handle_space_;
   }
 
   // views::AccessiblePaneView:
-  const char* GetClassName() const override;
   void ChildPreferredSizeChanged(views::View* child) override;
   gfx::Size GetMinimumSize() const override;
   void OnThemeChanged() override;
@@ -61,9 +67,7 @@ class TabStripRegionView final : public views::AccessiblePaneView,
   // TODO(958173): Override OnBoundsChanged to cancel tabstrip animations.
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(TabStripRegionView);
-
-  int CalculateTabStripAvailableWidth();
+  int GetTabStripAvailableWidth() const;
 
   // Scrolls the tabstrip towards the first tab in the tabstrip.
   void ScrollTowardsLeadingTab();
@@ -75,6 +79,10 @@ class TabStripRegionView final : public views::AccessiblePaneView,
   // whenever any input of the computation of the border's sizing changes.
   void UpdateNewTabButtonBorder();
 
+  // Changes the visibility of the scroll buttons, so they're hidden if they
+  // aren't needed to control tabstrip scrolling.
+  void UpdateScrollButtonVisibility();
+
   views::FlexLayout* layout_manager_ = nullptr;
   views::View* tab_strip_container_;
   views::View* reserved_grab_handle_space_;
@@ -83,6 +91,11 @@ class TabStripRegionView final : public views::AccessiblePaneView,
   TabSearchButton* tab_search_button_ = nullptr;
   views::ImageButton* leading_scroll_button_;
   views::ImageButton* trailing_scroll_button_;
+  // The views, owned by |scroll_container_|, that indicate that there are more
+  // tabs overflowing to the left or right.
+  views::View* left_overflow_indicator_;
+  views::View* right_overflow_indicator_;
+  TipMarqueeView* tip_marquee_view_ = nullptr;
 
   const base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(

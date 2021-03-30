@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 
 namespace password_manager {
 
@@ -39,10 +38,10 @@ class DataAccessor {
   // Advance the "reading head" to the next whole-byte boundary, if needed, then
   // return the string stored in the next |length| characters, advancing the
   // "reading head" to point past the read data. A "character" means byte for
-  // std::string and two bytes for base::string16. At most 256 bytes can be
+  // std::string and two bytes for std::u16string. At most 256 bytes can be
   // consumed at once, hence |length| is restricted as noted below.
   std::string ConsumeString(size_t length);       // |length| <= 256
-  base::string16 ConsumeString16(size_t length);  // |length| <= 128
+  std::u16string ConsumeString16(size_t length);  // |length| <= 128
 
  private:
   // Helper for |ConsumeString*|. It combines the |data_| and padding, if

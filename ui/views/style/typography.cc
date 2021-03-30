@@ -20,6 +20,12 @@ void ValidateContextAndStyle(int context, int style) {
 
 }  // namespace
 
+ui::ResourceBundle::FontDetails GetFontDetails(int context, int style) {
+  ValidateContextAndStyle(context, style);
+  return LayoutProvider::Get()->GetTypographyProvider().GetFontDetails(context,
+                                                                       style);
+}
+
 const gfx::FontList& GetFont(int context, int style) {
   ValidateContextAndStyle(context, style);
   return LayoutProvider::Get()->GetTypographyProvider().GetFont(context, style);

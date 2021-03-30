@@ -33,6 +33,7 @@ class BindingManager implements ComponentCallbacks2 {
     // Delays used when clearing moderate binding pool when onSentToBackground happens.
     private static final long MODERATE_BINDING_POOL_CLEARER_DELAY_MILLIS = 10 * 1000;
 
+    private final boolean mBindWaiveCpu;
     private final Set<ChildProcessConnection> mConnections = new ArraySet<ChildProcessConnection>();
     // Can be -1 to mean no max size.
     private final int mMaxSize;
@@ -109,7 +110,7 @@ class BindingManager implements ComponentCallbacks2 {
         if (connection == mWaivedConnection) {
             mWaivedConnection = null;
         } else {
-            connection.removeModerateBinding();
+            removeModerateBinding(connection);
         }
     }
 
@@ -121,11 +122,11 @@ class BindingManager implements ComponentCallbacks2 {
         if (lowestRanked == mWaivedConnection) return;
         if (mWaivedConnection != null) {
             assert mConnections.contains(mWaivedConnection);
-            mWaivedConnection.addModerateBinding();
+            addModerateBinding(mWaivedConnection);
             mWaivedConnection = null;
         }
         if (!mConnections.contains(lowestRanked)) return;
-        lowestRanked.removeModerateBinding();
+        removeModerateBinding(lowestRanked);
         mWaivedConnection = lowestRanked;
     }
 
@@ -150,22 +151,26 @@ class BindingManager implements ComponentCallbacks2 {
     /**
      * Construct instance without maxsize and can support arbitrary number of connections.
      */
-    BindingManager(Context context, Iterable<ChildProcessConnection> ranking) {
-        this(-1, ranking, context);
+    BindingManager(
+            Context context, Iterable<ChildProcessConnection> ranking, boolean bindWaiveCpu) {
+        this(-1, ranking, context, bindWaiveCpu);
     }
 
     /**
      * Construct instance with maxSize.
      */
-    BindingManager(Context context, int maxSize, Iterable<ChildProcessConnection> ranking) {
-        this(maxSize, ranking, context);
+    BindingManager(Context context, int maxSize, Iterable<ChildProcessConnection> ranking,
+            boolean bindWaiveCpu) {
+        this(maxSize, ranking, context, bindWaiveCpu);
         assert maxSize > 0;
     }
 
-    private BindingManager(int maxSize, Iterable<ChildProcessConnection> ranking, Context context) {
+    private BindingManager(int maxSize, Iterable<ChildProcessConnection> ranking, Context context,
+            boolean bindWaiveCpu) {
         assert LauncherThread.runningOnLauncherThread();
         Log.i(TAG, "Moderate binding enabled: maxSize=%d", maxSize);
 
+        mBindWaiveCpu = bindWaiveCpu;
         mMaxSize = maxSize;
         mRanking = ranking;
         assert mMaxSize > 0 || mMaxSize == -1;
@@ -195,7 +200,7 @@ class BindingManager implements ComponentCallbacks2 {
         // Note that the size of connections is currently fairly small (40).
         // If it became bigger we should consider using an alternate data structure.
         boolean alreadyInQueue = !mConnections.add(connection);
-        if (!alreadyInQueue) connection.addModerateBinding();
+        if (!alreadyInQueue) addModerateBinding(connection);
         assert mMaxSize == -1 || mConnections.size() <= mMaxSize;
     }
 
@@ -210,5 +215,13 @@ class BindingManager implements ComponentCallbacks2 {
     // adding and removing connection.
     public void rankingChanged() {
         ensureLowestRankIsWaived();
+    }
+
+    private void addModerateBinding(ChildProcessConnection connection) {
+        connection.addModerateBinding(mBindWaiveCpu);
+    }
+
+    private void removeModerateBinding(ChildProcessConnection connection) {
+        connection.removeModerateBinding(mBindWaiveCpu);
     }
 }

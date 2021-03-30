@@ -3,21 +3,18 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/banners/app_banner_manager_browsertest_base.h"
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
-#include "chrome/browser/banners/app_banner_metrics.h"
-#include "chrome/browser/banners/app_banner_settings_helper.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -32,10 +29,10 @@
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/webapps/browser/banners/app_banner_metrics.h"
+#include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/extension.h"
@@ -72,26 +69,6 @@ class AppBannerManagerDesktopBrowserTest
       const AppBannerManagerDesktopBrowserTest&) = delete;
 };
 
-// A dedicated test fixture for DisplayOverride, which is supported
-// only for the new web apps mode, and requires a command line switch
-// to enable manifest parsing.
-class AppBannerManagerDesktopBrowserTest_DisplayOverride
-    : public AppBannerManagerDesktopBrowserTest {
- public:
-  AppBannerManagerDesktopBrowserTest_DisplayOverride() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kWebAppManifestDisplayOverride);
-  }
-
-  AppBannerManagerDesktopBrowserTest_DisplayOverride(
-      const AppBannerManagerDesktopBrowserTest_DisplayOverride&) = delete;
-  AppBannerManagerDesktopBrowserTest_DisplayOverride& operator=(
-      const AppBannerManagerDesktopBrowserTest_DisplayOverride&) = delete;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
                        WebAppBannerResolvesUserChoice) {
   base::HistogramTester tester;
@@ -119,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
   }
 
   // Ensure that the userChoice promise resolves.
-  const base::string16 title = base::ASCIIToUTF16("Got userChoice: accepted");
+  const std::u16string title = u"Got userChoice: accepted";
   content::TitleWatcher watcher(web_contents, title);
   EXPECT_EQ(title, watcher.WaitAndGetTitle());
 
@@ -169,8 +146,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
   }
 
   // Ensure that the appinstalled event fires.
-  const base::string16 title =
-      base::ASCIIToUTF16("Got appinstalled: listener, attr");
+  const std::u16string title = u"Got appinstalled: listener, attr";
   content::TitleWatcher watcher(web_contents, title);
   EXPECT_EQ(title, watcher.WaitAndGetTitle());
 }
@@ -281,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
-                       PolicyAppInstalled_NoPrompt) {
+                       PolicyAppInstalled_Prompt) {
   TestAppBannerManagerDesktop* manager =
       TestAppBannerManagerDesktop::FromWebContents(
           browser()->tab_strip_model()->GetActiveWebContents());
@@ -300,12 +276,12 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
 
     ui_test_utils::NavigateToURL(browser(), GetBannerURL());
     run_loop.Run();
-    EXPECT_EQ(State::COMPLETE, manager->state());
+    EXPECT_EQ(State::PENDING_PROMPT, manager->state());
   }
 
-  EXPECT_EQ(AppBannerManager::InstallableWebAppCheckResult::kNoAlreadyInstalled,
+  EXPECT_EQ(AppBannerManager::InstallableWebAppCheckResult::kPromotable,
             manager->GetInstallableWebAppCheckResultForTesting());
-  EXPECT_FALSE(manager->IsPromptAvailableForTesting());
+  EXPECT_TRUE(manager->IsPromptAvailableForTesting());
 }
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
@@ -352,8 +328,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
   EXPECT_TRUE(manager->IsPromptAvailableForTesting());
 }
 
-IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest_DisplayOverride,
-                       InstallPromptAfterUserMenuInstall) {
+IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
+                       InstallPromptAfterUserMenuInstall_DisplayOverride) {
   base::HistogramTester tester;
 
   TestAppBannerManagerDesktop* manager =
@@ -384,8 +360,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest_DisplayOverride,
                             blink::mojom::DisplayMode::kMinimalUi, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest_DisplayOverride,
-                       WebAppBannerResolvesUserChoice) {
+IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
+                       WebAppBannerResolvesUserChoice_DisplayOverride) {
   base::HistogramTester tester;
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -414,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest_DisplayOverride,
   }
 
   // Ensure that the userChoice promise resolves.
-  const base::string16 title = base::ASCIIToUTF16("Got userChoice: accepted");
+  const std::u16string title = u"Got userChoice: accepted";
   content::TitleWatcher watcher(web_contents, title);
   EXPECT_EQ(title, watcher.WaitAndGetTitle());
 
@@ -422,8 +398,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest_DisplayOverride,
                             blink::mojom::DisplayMode::kStandalone, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest_DisplayOverride,
-                       PolicyAppInstalled_NoPrompt) {
+IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
+                       PolicyAppInstalled_Prompt_DisplayOverride) {
   TestAppBannerManagerDesktop* manager =
       TestAppBannerManagerDesktop::FromWebContents(
           browser()->tab_strip_model()->GetActiveWebContents());
@@ -443,12 +419,12 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest_DisplayOverride,
 
     ui_test_utils::NavigateToURL(browser(), GetBannerURL());
     run_loop.Run();
-    EXPECT_EQ(State::COMPLETE, manager->state());
+    EXPECT_EQ(State::PENDING_PROMPT, manager->state());
   }
 
-  EXPECT_EQ(AppBannerManager::InstallableWebAppCheckResult::kNoAlreadyInstalled,
+  EXPECT_EQ(AppBannerManager::InstallableWebAppCheckResult::kPromotable,
             manager->GetInstallableWebAppCheckResultForTesting());
-  EXPECT_FALSE(manager->IsPromptAvailableForTesting());
+  EXPECT_TRUE(manager->IsPromptAvailableForTesting());
 }
 
 }  // namespace webapps

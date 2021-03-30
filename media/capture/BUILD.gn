@@ -38,11 +38,14 @@ component("capture_base") {
     "video/video_capture_device_info.h",
     "video_capture_types.cc",
     "video_capture_types.h",
+    "video_frame_feedback.cc",
+    "video_frame_feedback.h",
   ]
   deps = [
     "//base",
     "//base:i18n",
-    "//media",
+    "//media:shared_memory_support",
+    "//media/base:video_facing",
     "//ui/gfx",
   ]
 }
@@ -129,6 +132,7 @@ component("capture_lib") {
     "video/video_capture_system.h",
     "video/video_capture_system_impl.cc",
     "video/video_capture_system_impl.h",
+    "video/video_frame_receiver.cc",
     "video/video_frame_receiver.h",
     "video/video_frame_receiver_on_task_runner.cc",
     "video/video_frame_receiver_on_task_runner.h",
@@ -190,8 +194,11 @@ component("capture_lib") {
       "video/mac/video_capture_device_factory_mac.mm",
       "video/mac/video_capture_device_mac.h",
       "video/mac/video_capture_device_mac.mm",
+      "video/mac/video_capture_metrics_mac.h",
+      "video/mac/video_capture_metrics_mac.mm",
     ]
     deps += [
+      "//components/crash/core/common:crash_key",
       "//services/video_capture/public/uma",
       "//third_party/decklink",
     ]
@@ -213,6 +220,8 @@ component("capture_lib") {
       "video/win/capability_list_win.h",
       "video/win/filter_base_win.cc",
       "video/win/filter_base_win.h",
+      "video/win/gpu_memory_buffer_tracker.cc",
+      "video/win/gpu_memory_buffer_tracker.h",
       "video/win/metrics.cc",
       "video/win/metrics.h",
       "video/win/pin_base_win.cc",
@@ -222,6 +231,8 @@ component("capture_lib") {
       "video/win/sink_filter_win.h",
       "video/win/sink_input_pin_win.cc",
       "video/win/sink_input_pin_win.h",
+      "video/win/video_capture_buffer_tracker_factory_win.cc",
+      "video/win/video_capture_buffer_tracker_factory_win.h",
       "video/win/video_capture_device_factory_win.cc",
       "video/win/video_capture_device_factory_win.h",
       "video/win/video_capture_device_mf_win.cc",
@@ -230,19 +241,15 @@ component("capture_lib") {
       "video/win/video_capture_device_utils_win.h",
       "video/win/video_capture_device_win.cc",
       "video/win/video_capture_device_win.h",
-      "video/win/video_capture_dxgi_device_manager.cc",
-      "video/win/video_capture_dxgi_device_manager.h",
     ]
     deps += [ "//media/base/win:media_foundation_util" ]
     libs = [
-      "d3d11.lib",
       "mf.lib",
       "mfplat.lib",
       "mfreadwrite.lib",
       "mfuuid.lib",
     ]
     ldflags = [
-      "/DELAYLOAD:d3d11.dll",
       "/DELAYLOAD:mf.dll",
       "/DELAYLOAD:mfplat.dll",
       "/DELAYLOAD:mfreadwrite.dll",
@@ -330,11 +337,12 @@ component("capture_lib") {
     ]
     public_deps += [ "//media/capture/video/chromeos/public" ]
     deps += [
+      "//ash/constants",
       "//build/config/linux/libdrm",
-      "//chromeos/constants",
       "//chromeos/dbus/power",
       "//components/chromeos_camera:mojo_mjpeg_decode_accelerator",
       "//components/chromeos_camera/common",
+      "//components/device_event_log",
       "//gpu/ipc/common:common",
       "//media/capture/video/chromeos/mojom:cros_camera",
       "//third_party/libsync",
@@ -477,6 +485,9 @@ test("capture_unittests") {
       "video/fuchsia/video_capture_device_factory_fuchsia_test.cc",
       "video/fuchsia/video_capture_device_fuchsia_test.cc",
     ]
+    additional_manifest_fragments = [
+      "//build/config/fuchsia/test/web_engine_required_capabilities.test-cmx",
+    ]
   }
 
   if (is_mac) {
@@ -493,6 +504,7 @@ test("capture_unittests") {
       "video/mac/video_capture_device_avfoundation_mac_unittest.mm",
       "video/mac/video_capture_device_factory_mac_unittest.mm",
       "video/mac/video_capture_device_mac_unittest.mm",
+      "video/mac/video_capture_metrics_mac_unittest.mm",
     ]
     frameworks = [
       "AVFoundation.framework",
@@ -500,10 +512,14 @@ test("capture_unittests") {
       "CoreVideo.framework",
       "IOSurface.framework",
     ]
+    deps += [ "//third_party/ocmock" ]
   }
 
   if (is_win) {
     sources += [
+      "video/win/d3d_capture_test_utils.cc",
+      "video/win/d3d_capture_test_utils.h",
+      "video/win/gpu_memory_buffer_tracker_unittest.cc",
       "video/win/video_capture_device_factory_win_unittest.cc",
       "video/win/video_capture_device_mf_win_unittest.cc",
     ]
@@ -512,6 +528,7 @@ test("capture_unittests") {
       "mfplat.lib",
       "mfreadwrite.lib",
       "mfuuid.lib",
+      "dxguid.lib",
     ]
     ldflags = [
       "/DELAYLOAD:mf.dll",

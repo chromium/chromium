@@ -12,21 +12,28 @@
 FakeUsbChooserController::FakeUsbChooserController(int device_count)
     : ChooserController(nullptr, 0, 0), device_count_(device_count) {
   set_title_for_testing(l10n_util::GetStringFUTF16(
-      IDS_USB_DEVICE_CHOOSER_PROMPT_ORIGIN, base::ASCIIToUTF16("example.com")));
+      IDS_USB_DEVICE_CHOOSER_PROMPT_ORIGIN, u"example.com"));
 }
 
-base::string16 FakeUsbChooserController::GetNoOptionsText() const {
+std::u16string FakeUsbChooserController::GetNoOptionsText() const {
   return l10n_util::GetStringUTF16(IDS_DEVICE_CHOOSER_NO_DEVICES_FOUND_PROMPT);
 }
 
-base::string16 FakeUsbChooserController::GetOkButtonLabel() const {
+std::u16string FakeUsbChooserController::GetOkButtonLabel() const {
   return l10n_util::GetStringUTF16(IDS_USB_DEVICE_CHOOSER_CONNECT_BUTTON_TEXT);
+}
+
+std::pair<std::u16string, std::u16string>
+FakeUsbChooserController::GetThrobberLabelAndTooltip() const {
+  return {
+      l10n_util::GetStringUTF16(IDS_USB_DEVICE_CHOOSER_LOADING_LABEL),
+      l10n_util::GetStringUTF16(IDS_USB_DEVICE_CHOOSER_LOADING_LABEL_TOOLTIP)};
 }
 
 size_t FakeUsbChooserController::NumOptions() const {
   return device_count_;
 }
 
-base::string16 FakeUsbChooserController::GetOption(size_t index) const {
+std::u16string FakeUsbChooserController::GetOption(size_t index) const {
   return base::ASCIIToUTF16(base::StringPrintf("Device #%zu", index));
 }

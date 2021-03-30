@@ -34,7 +34,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif
 
@@ -67,8 +67,8 @@ scoped_refptr<Extension> LoadExtension(const std::string& filename,
   std::unique_ptr<base::DictionaryValue> value = LoadManifestFile(path, error);
   if (!value)
     return nullptr;
-  return Extension::Create(path.DirName(), Manifest::UNPACKED, *value,
-                           Extension::NO_FLAGS, error);
+  return Extension::Create(path.DirName(), mojom::ManifestLocation::kUnpacked,
+                           *value, Extension::NO_FLAGS, error);
 }
 
 }  // namespace
@@ -83,7 +83,7 @@ class UserScriptListenerTest : public testing::Test {
   void SetUp() override {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<chromeos::FakeChromeUserManager>());
+        std::make_unique<ash::FakeChromeUserManager>());
 #endif
     ASSERT_TRUE(profile_manager_->SetUp());
     profile_ = profile_manager_->CreateTestingProfile("test-profile");

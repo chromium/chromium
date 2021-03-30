@@ -12,7 +12,6 @@
 #include "build/build_config.h"
 #include "components/discardable_memory/service/discardable_shared_memory_manager.h"
 #include "components/printing/browser/service_sandbox_type.h"
-#include "components/printing/common/print_messages.h"
 #include "components/services/print_compositor/public/cpp/print_service_mojo_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -50,7 +49,8 @@ ContentToFrameMap ConvertContentInfoMap(
     auto proxy_token = entry.second;
     // Find the RenderFrameHost that the proxy id corresponds to.
     content::RenderFrameHost* rfh =
-        content::RenderFrameHost::FromPlaceholderToken(process_id, proxy_token);
+        content::RenderFrameHost::FromPlaceholderToken(
+            process_id, blink::RemoteFrameToken(proxy_token));
     if (!rfh) {
       // If the corresponding RenderFrameHost cannot be found, just skip it.
       continue;

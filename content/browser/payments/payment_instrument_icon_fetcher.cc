@@ -4,12 +4,12 @@
 
 #include "content/browser/payments/payment_instrument_icon_fetcher.h"
 
+#include <limits>
 #include <utility>
 
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/task/post_task.h"
 #include "components/payments/content/icon/icon_size.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
@@ -39,7 +39,9 @@ void OnIconFetched(
 
   if (bitmap.drawsNothing()) {
     if (icons.empty()) {
-      base::PostTask(FROM_HERE, {ServiceWorkerContext::GetCoreThreadId()},
+      BrowserThread::GetTaskRunnerForThread(
+          ServiceWorkerContext::GetCoreThreadId())
+          ->PostTask(FROM_HERE,
                      base::BindOnce(std::move(callback), std::string()));
     } else {
       // If could not download or decode the chosen image(e.g. not supported,
@@ -57,8 +59,8 @@ void OnIconFetched(
       base::StringPiece(reinterpret_cast<const char*>(&bitmap_data[0]),
                         bitmap_data.size()),
       &encoded_data);
-  base::PostTask(FROM_HERE, {ServiceWorkerContext::GetCoreThreadId()},
-                 base::BindOnce(std::move(callback), encoded_data));
+  BrowserThread::GetTaskRunnerForThread(ServiceWorkerContext::GetCoreThreadId())
+      ->PostTask(FROM_HERE, base::BindOnce(std::move(callback), encoded_data));
 }
 
 void DownloadBestMatchingIcon(
@@ -69,7 +71,9 @@ void DownloadBestMatchingIcon(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (web_contents == nullptr) {
-    base::PostTask(FROM_HERE, {ServiceWorkerContext::GetCoreThreadId()},
+    BrowserThread::GetTaskRunnerForThread(
+        ServiceWorkerContext::GetCoreThreadId())
+        ->PostTask(FROM_HERE,
                    base::BindOnce(std::move(callback), std::string()));
     return;
   }
@@ -85,7 +89,9 @@ void DownloadBestMatchingIcon(
     // developers in advance unlike when fetching or decoding fails. We already
     // checked whether they are valid in renderer side. So, if the icon url is
     // invalid, it's something wrong.
-    base::PostTask(FROM_HERE, {ServiceWorkerContext::GetCoreThreadId()},
+    BrowserThread::GetTaskRunnerForThread(
+        ServiceWorkerContext::GetCoreThreadId())
+        ->PostTask(FROM_HERE,
                    base::BindOnce(std::move(callback), std::string()));
     return;
   }
@@ -101,6 +107,7 @@ void DownloadBestMatchingIcon(
       web_contents, icon_url,
       payments::IconSizeCalculator::IdealIconHeight(native_view),
       payments::IconSizeCalculator::MinimumIconHeight(),
+      /* maximum_icon_size_in_px= */ std::numeric_limits<int>::max(),
       base::BindOnce(&OnIconFetched, web_contents, copy_icons,
                      std::move(callback)),
       false /* square_only */);

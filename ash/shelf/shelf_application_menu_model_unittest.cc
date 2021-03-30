@@ -47,7 +47,7 @@ class ShelfApplicationMenuModelTestAPI {
 
 // Verifies the menu contents given an empty item list.
 TEST(ShelfApplicationMenuModelTest, VerifyContentsWithNoMenuItems) {
-  base::string16 title = base::ASCIIToUTF16("title");
+  std::u16string title = u"title";
   ShelfApplicationMenuModel menu(title, {}, nullptr);
   // Expect the title and a separator.
   ASSERT_EQ(2, menu.GetItemCount());
@@ -60,14 +60,14 @@ TEST(ShelfApplicationMenuModelTest, VerifyContentsWithNoMenuItems) {
 // Verifies the menu contents given a non-empty item list.
 TEST(ShelfApplicationMenuModelTest, VerifyContentsWithMenuItems) {
   ShelfApplicationMenuModel::Items items;
-  base::string16 title1 = base::ASCIIToUTF16("title1");
-  base::string16 title2 = base::ASCIIToUTF16("title2");
-  base::string16 title3 = base::ASCIIToUTF16("title3");
+  std::u16string title1 = u"title1";
+  std::u16string title2 = u"title2";
+  std::u16string title3 = u"title3";
   items.push_back({items.size(), title1, gfx::ImageSkia()});
   items.push_back({items.size(), title2, gfx::ImageSkia()});
   items.push_back({items.size(), title3, gfx::ImageSkia()});
 
-  base::string16 title = base::ASCIIToUTF16("title");
+  std::u16string title = u"title";
   ShelfApplicationMenuModel menu(title, std::move(items), nullptr);
   ShelfApplicationMenuModelTestAPI menu_test_api(&menu);
 
@@ -96,7 +96,7 @@ TEST(ShelfApplicationMenuModelTest, VerifyHistogramBuckets) {
   const int kNumMenuItemsEnabled = 7;
 
   base::HistogramTester histogram_tester;
-  ShelfApplicationMenuModel menu(base::ASCIIToUTF16("title"), {}, nullptr);
+  ShelfApplicationMenuModel menu(u"title", {}, nullptr);
   ShelfApplicationMenuModelTestAPI menu_test_api(&menu);
   menu_test_api.RecordMenuItemSelectedMetrics(kCommandId, kNumMenuItemsEnabled);
 
@@ -114,7 +114,7 @@ TEST(ShelfApplicationMenuModelTest, VerifyHistogramOnExecute) {
   base::HistogramTester histogram_tester;
 
   ShelfApplicationMenuModel::Items items(1);
-  base::string16 title = base::ASCIIToUTF16("title");
+  std::u16string title = u"title";
   ShelfApplicationMenuModel menu(title, std::move(items), nullptr);
   menu.ExecuteCommand(0, 0);
 

@@ -16,6 +16,7 @@
 #include "chrome/browser/signin/reauth_util.h"
 #include "chrome/browser/ui/signin_reauth_view_controller.h"
 #include "chrome/browser/ui/webui/signin/signin_reauth_handler.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -28,6 +29,7 @@
 #include "google_apis/gaia/core_account_id.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/webui/resource_path.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/image/image.h"
 #include "ui/resources/grit/webui_generated_resources.h"
@@ -41,7 +43,7 @@ std::string GetAccountImageURL(Profile* profile) {
   // TODO(crbug.com/1083429): generalize for arbitrary accounts by passing an
   // account id as a method parameter.
   CoreAccountId account_id =
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kNotRequired);
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   // Sync shouldn't be enabled. Otherwise, the primary account and the first
   // cookie account may diverge.
   DCHECK(!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
@@ -62,30 +64,24 @@ SigninReauthUI::SigninReauthUI(content::WebUI* web_ui)
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUISigninReauthHost);
-  source->UseStringsJs();
-  source->EnableReplaceI18nInJS();
+  webui::SetJSModuleDefaults(source);
   source->SetDefaultResource(IDR_SIGNIN_REAUTH_HTML);
-  source->AddResourcePath("signin_reauth_app.js", IDR_SIGNIN_REAUTH_APP_JS);
-  source->AddResourcePath("signin_reauth_browser_proxy.js",
-                          IDR_SIGNIN_REAUTH_BROWSER_PROXY_JS);
-  source->AddResourcePath("signin_shared_css.js", IDR_SIGNIN_SHARED_CSS_JS);
+
+  static constexpr webui::ResourcePath kResources[] = {
+      {"signin_reauth_app.js", IDR_SIGNIN_REAUTH_APP_JS},
+      {"signin_reauth_browser_proxy.js", IDR_SIGNIN_REAUTH_BROWSER_PROXY_JS},
+      {"signin_shared_css.js", IDR_SIGNIN_SHARED_CSS_JS},
+      {"signin_vars_css.js", IDR_SIGNIN_VARS_CSS_JS},
+      // Resources for the account passwords reauth.
+      {"images/signin_reauth_illustration.svg",
+       IDR_SIGNIN_REAUTH_IMAGES_ACCOUNT_PASSWORDS_REAUTH_ILLUSTRATION_SVG},
+      {"images/signin_reauth_illustration_dark.svg",
+       IDR_SIGNIN_REAUTH_IMAGES_ACCOUNT_PASSWORDS_REAUTH_ILLUSTRATION_DARK_SVG},
+  };
+  source->AddResourcePaths(kResources);
+
   source->AddString("accountImageUrl", GetAccountImageURL(profile));
 
-  // Resources for testing.
-  source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources chrome://test 'self';");
-  source->DisableTrustedTypesCSP();
-  source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
-  source->AddResourcePath("test_loader.html", IDR_WEBUI_HTML_TEST_LOADER_HTML);
-
-  // Resources for the account passwords reauth.
-  source->AddResourcePath(
-      "images/signin_reauth_illustration.svg",
-      IDR_SIGNIN_REAUTH_IMAGES_ACCOUNT_PASSWORDS_REAUTH_ILLUSTRATION_SVG);
-  source->AddResourcePath(
-      "images/signin_reauth_illustration_dark.svg",
-      IDR_SIGNIN_REAUTH_IMAGES_ACCOUNT_PASSWORDS_REAUTH_ILLUSTRATION_DARK_SVG);
   AddStringResource(source, "signinReauthTitle",
                     IDS_ACCOUNT_PASSWORDS_REAUTH_TITLE);
   AddStringResource(source, "signinReauthDesc",

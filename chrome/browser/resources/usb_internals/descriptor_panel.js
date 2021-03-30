@@ -518,7 +518,7 @@ export class DescriptorPanel {
       {
         label: 'Class Code: ',
         size: 1,
-        formatter: formatByte,
+        formatter: formatClassCode,
       },
       {
         label: 'Subclass Code: ',
@@ -3141,6 +3141,74 @@ function formatFeatureRegistryPropertyDataType(rawData, offset) {
  */
 function formatUnknown(rawData, offset) {
   return '';
+}
+
+/**
+ * Returns a class code string with a description.
+ * @param {!Uint8Array} rawData
+ * @param {number} offset The offset of current field.
+ * @return {string}
+ */
+function formatClassCode(rawData, offset) {
+  return renderClassCodeWithDescription(rawData[offset]);
+}
+
+/**
+ * Returns a class code string with a description.
+ * @param {number} classCode
+ * @return {string}
+ */
+export function renderClassCodeWithDescription(classCode) {
+  const blockedByWebUsb = '(blocked by WebUSB)';
+  // USB Class Codes are defined by the USB-IF:
+  // https://www.usb.org/defined-class-codes
+  switch (classCode) {
+    case 0x00:
+      return `${classCode} (Device)`;
+    case 0x01:
+      return `${classCode} (Audio) ${blockedByWebUsb}`;
+    case 0x02:
+      return `${classCode} (Communications and CDC Control)`;
+    case 0x03:
+      return `${classCode} (HID) ${blockedByWebUsb}`;
+    case 0x05:
+      return `${classCode} (Physical)`;
+    case 0x06:
+      return `${classCode} (Still Imaging)`;
+    case 0x07:
+      return `${classCode} (Printer)`;
+    case 0x08:
+      return `${classCode} (Mass Storage) ${blockedByWebUsb}`;
+    case 0x09:
+      return `${classCode} (Hub)`;
+    case 0x0A:
+      return `${classCode} (CDC-Data)`;
+    case 0x0B:
+      return `${classCode} (Smart Card) ${blockedByWebUsb}`;
+    case 0x0D:
+      return `${classCode} (Content Security)`;
+    case 0x0E:
+      return `${classCode} (Video) ${blockedByWebUsb}`;
+    case 0x0F:
+      return `${classCode} (Personal Healthcare)`;
+    case 0x10:
+      return `${classCode} (Audio/Video Devices) ${blockedByWebUsb}`;
+    case 0x11:
+      return `${classCode} (Billboard Device)`;
+    case 0x12:
+      return `${classCode} (USB Type-C Bridge Device)`;
+    case 0xDC:
+      return `${classCode} (Diagnostic Device)`;
+    case 0xE0:
+      return `${classCode} (Wireless Controller) ${blockedByWebUsb}`;
+    case 0xEF:
+      return `${classCode} (Miscellaneous)`;
+    case 0xFE:
+      return `${classCode} (Application Specific)`;
+    case 0xFF:
+      return `${classCode} (Vendor Specific)`;
+  }
+  return `${classCode}`;
 }
 
 /**

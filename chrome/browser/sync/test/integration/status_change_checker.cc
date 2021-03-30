@@ -20,12 +20,12 @@ constexpr base::TimeDelta kDefaultTimeout = base::TimeDelta::FromSeconds(30);
 
 base::TimeDelta GetTimeoutFromCommandLineOrDefault() {
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          "sync-status-change-checker-timeout")) {
+          switches::kStatusChangeCheckerTimeoutInSeconds)) {
     return kDefaultTimeout;
   }
   std::string timeout_string(
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          "sync-status-change-checker-timeout"));
+          switches::kStatusChangeCheckerTimeoutInSeconds));
   int timeout_in_seconds = 0;
   if (!base::StringToInt(timeout_string, &timeout_in_seconds)) {
     LOG(FATAL) << "Timeout value \"" << timeout_string << "\" was parsed as "
@@ -35,6 +35,9 @@ base::TimeDelta GetTimeoutFromCommandLineOrDefault() {
 }
 
 }  // namespace
+
+const char switches::kStatusChangeCheckerTimeoutInSeconds[] =
+    "sync-status-change-checker-timeout";
 
 StatusChangeChecker::StatusChangeChecker()
     : timeout_(GetTimeoutFromCommandLineOrDefault()),

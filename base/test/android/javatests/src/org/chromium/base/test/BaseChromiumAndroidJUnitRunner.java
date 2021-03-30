@@ -37,17 +37,18 @@ import dalvik.system.DexFile;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.BuildConfig;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.LifetimeAssert;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.MainDex;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.multidex.ChromiumMultiDexInstaller;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.InMemorySharedPreferences;
 import org.chromium.base.test.util.InMemorySharedPreferencesContext;
 import org.chromium.base.test.util.ScalableTimeout;
+import org.chromium.build.BuildConfig;
 
 import java.io.File;
 import java.io.IOException;
@@ -104,9 +105,9 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
     // crashed.
     private static final String BUNDLE_STACK_ID = "stack";
 
-    private static final long WAIT_FOR_IDLE_TIMEOUT_MS = ScalableTimeout.scaleTimeout(10000L);
+    private static final long WAIT_FOR_IDLE_TIMEOUT_MS = 10000L;
 
-    private static final long FINISH_APP_TASKS_TIMEOUT_MS = ScalableTimeout.scaleTimeout(3000L);
+    private static final long FINISH_APP_TASKS_TIMEOUT_MS = 3000L;
     private static final long FINISH_APP_TASKS_POLL_INTERVAL_MS = 100;
 
     static InMemorySharedPreferencesContext sInMemorySharedPreferencesContext;
@@ -494,6 +495,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
 
         try {
             checkOrDeleteOnDiskSharedPreferences(true);
+            UmaRecorderHolder.resetForTesting();
 
             // There is a bug on L and below that DestroyActivitiesRule does not cause onStop and
             // onDestroy. On other versions, DestroyActivitiesRule may still fail flakily. Ignore
@@ -546,7 +548,8 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         for (ActivityManager.AppTask task : activityManager.getAppTasks()) {
             task.finishAndRemoveTask();
         }
-        long endTime = SystemClock.uptimeMillis() + FINISH_APP_TASKS_TIMEOUT_MS;
+        long endTime = SystemClock.uptimeMillis()
+                + ScalableTimeout.scaleTimeout(FINISH_APP_TASKS_TIMEOUT_MS);
         while (activityManager.getAppTasks().size() != 0 && SystemClock.uptimeMillis() < endTime) {
             try {
                 Thread.sleep(FINISH_APP_TASKS_POLL_INTERVAL_MS);

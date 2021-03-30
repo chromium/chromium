@@ -111,6 +111,7 @@ class CONTENT_EXPORT NavigationBodyLoader
                         bool use_isolated_code_cache) override;
 
   // network::mojom::URLLoaderClient
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head) override;
   void OnReceiveRedirect(

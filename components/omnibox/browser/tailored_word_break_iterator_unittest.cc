@@ -10,8 +10,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(TailoredWordBreakIterator, BreakWord) {
-  base::string16 underscore(base::UTF8ToUTF16("_"));
-  base::string16 str(base::UTF8ToUTF16("_foo_bar!_\npouet_boom"));
+  std::u16string underscore(u"_");
+  std::u16string str(base::UTF8ToUTF16("_foo_bar!_\npouet_boom"));
   TailoredWordBreakIterator iter(str, TailoredWordBreakIterator::BREAK_WORD);
   ASSERT_TRUE(iter.Init());
   EXPECT_TRUE(iter.Advance());
@@ -19,16 +19,16 @@ TEST(TailoredWordBreakIterator, BreakWord) {
   EXPECT_EQ(underscore, iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_TRUE(iter.IsWord());
-  EXPECT_EQ(base::UTF8ToUTF16("foo"), iter.GetString());
+  EXPECT_EQ(u"foo", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
   EXPECT_EQ(underscore, iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_TRUE(iter.IsWord());
-  EXPECT_EQ(base::UTF8ToUTF16("bar"), iter.GetString());
+  EXPECT_EQ(u"bar", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(base::UTF8ToUTF16("!"), iter.GetString());
+  EXPECT_EQ(u"!", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
   EXPECT_EQ(underscore, iter.GetString());
@@ -37,13 +37,13 @@ TEST(TailoredWordBreakIterator, BreakWord) {
   EXPECT_EQ(base::UTF8ToUTF16("\n"), iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_TRUE(iter.IsWord());
-  EXPECT_EQ(base::UTF8ToUTF16("pouet"), iter.GetString());
+  EXPECT_EQ(u"pouet", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
   EXPECT_EQ(underscore, iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_TRUE(iter.IsWord());
-  EXPECT_EQ(base::UTF8ToUTF16("boom"), iter.GetString());
+  EXPECT_EQ(u"boom", iter.GetString());
   EXPECT_FALSE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
   EXPECT_FALSE(iter.Advance());

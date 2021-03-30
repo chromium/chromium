@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "third_party/skia/include/core/SkSize.h"
+
 class SkBitmap;
 
 namespace pp {
@@ -14,6 +16,9 @@ class ImageData;
 }  // namespace pp
 
 namespace chrome_pdf {
+
+// Creates an SkBitmap of a given `size`.
+SkBitmap CreateN32PremulSkBitmap(const SkISize& size);
 
 // Creates an SkBitmap from a pp::ImageData. The SkBitmap takes ownership of the
 // pp::ImageData, and shares ownership of the underlying pixel memory. (Note

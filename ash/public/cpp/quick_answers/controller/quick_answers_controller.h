@@ -20,6 +20,16 @@ struct Context;
 
 namespace ash {
 
+enum class QuickAnswersVisibility {
+  // Quick Answers UI is hidden and the previous session has finished.
+  kClosed = 0,
+  // Quick Answers session is initializing and the UI will be shown when the
+  // context is ready.
+  kPending = 1,
+  // Quick Answers UI is visible.
+  kVisible = 2,
+};
+
 // A controller to manage quick answers UI.
 class ASH_PUBLIC_EXPORT QuickAnswersController {
  public:
@@ -62,6 +72,8 @@ class ASH_PUBLIC_EXPORT QuickAnswersController {
 
   virtual chromeos::quick_answers::QuickAnswersDelegate*
   GetQuickAnswersDelegate() = 0;
+
+  virtual QuickAnswersVisibility GetVisibilityForTesting() const = 0;
 };
 
 }  // namespace ash

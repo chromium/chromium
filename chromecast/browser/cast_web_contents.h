@@ -13,7 +13,6 @@
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/process/process.h"
-#include "base/strings/string16.h"
 #include "chromecast/common/mojom/feature_manager.mojom.h"
 #include "content/public/common/media_playback_renderer_type.mojom.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
@@ -62,10 +61,10 @@ struct RendererFeature {
 // sub-frame errors.
 //
 // We consider the CastWebContents to be in a LOADED state when the content of
-// the main frame is fully loaded and running (all resources fetched, JS is
-// running). Iframes might still be loading in this case, but in general we
-// consider the page to be in a presentable state at this stage, so it is
-// appropriate to display the WebContents to the user.
+// the main frame is fully loaded and running (all resources fetched,
+// redirection finished, JS is running). Iframes might still be loading in this
+// case, but in general we consider the page to be in a presentable state at
+// this stage, so it is appropriate to display the WebContents to the user.
 //
 // During or after the page is loaded, there are multiple error conditions that
 // can occur. The following events will cause the page to enter an ERROR state:
@@ -161,9 +160,8 @@ class CastWebContents {
 
     // These methods are calls forwarded from WebContentsObserver.
     virtual void MainFrameResized(const gfx::Rect& bounds) {}
-    virtual void UpdateTitle(const base::string16& title) {}
+    virtual void UpdateTitle(const std::u16string& title) {}
     virtual void UpdateFaviconURL(GURL icon_url) {}
-    virtual void DidFinishBlockedNavigation(GURL url) {}
     virtual void DidFirstVisuallyNonEmptyPaint() {}
 
     // Notifies that a resource for the main frame failed to load.
@@ -233,6 +231,9 @@ class CastWebContents {
     // activity hosted by this CastWebContents.
     // No filters implies no restrictions.
     base::Optional<std::vector<std::string>> url_filters = base::nullopt;
+    // Whether WebRTC peer connections are allowed to use legacy versions of the
+    // TLS/DTLS protocols.
+    bool webrtc_allow_legacy_tls_protocols = false;
 
     InitParams();
     InitParams(const InitParams& other);
@@ -336,9 +337,6 @@ class CastWebContents {
   virtual on_load_script_injector::OnLoadScriptInjectorHost<std::string>*
   script_injector() = 0;
 
-  // Injects on-load scripts into the WebContents' main frame.
-  virtual void InjectScriptsIntoMainFrame() = 0;
-
   // Posts a message to the frame's onMessage handler.
   //
   // `target_origin` restricts message delivery to the specified origin.
@@ -359,7 +357,7 @@ class CastWebContents {
   // default-constructed callback. If provided, the callback
   // will be invoked on the UI thread.
   virtual void ExecuteJavaScript(
-      const base::string16& javascript,
+      const std::u16string& javascript,
       base::OnceCallback<void(base::Value)> callback) = 0;
 
   // ===========================================================================

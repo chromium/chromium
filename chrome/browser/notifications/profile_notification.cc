@@ -7,6 +7,8 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "components/account_id/account_id.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -42,13 +44,24 @@ ProfileNotification::ProfileNotification(
     notification_.set_profile_id(
         multi_user_util::GetAccountIdFromProfile(profile).GetUserEmail());
   }
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(https://crbug.com/2673648): Add a stable identifier to the
+  // notification that allows Lacros to be launched into the correct profile if
+  // it is not running.
+
+  // On Lacros notifications should not keep the browser alive, as they are
+  // persisted by the OS in a hidden tray.
 #else
-  // This ScopedKeepAlive prevents the browser process from shutting down when
+  // These keepalives prevent the browser process from shutting down when
   // the last browser window is closed and there are open notifications. It's
   // not used on Chrome OS as closing the last browser window never shuts down
-  // the process.
+  // the process or delete the Profile.
   keep_alive_ = std::make_unique<ScopedKeepAlive>(
       KeepAliveOrigin::NOTIFICATION, KeepAliveRestartOption::DISABLED);
+  if (profile_) {
+    profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
+        profile, ProfileKeepAliveOrigin::kNotification);
+  }
 #endif
 }
 

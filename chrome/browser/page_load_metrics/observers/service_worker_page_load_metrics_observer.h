@@ -26,15 +26,7 @@ extern const char kHistogramServiceWorkerParseStartToFirstContentfulPaint[];
 extern const char kHistogramServiceWorkerDomContentLoaded[];
 extern const char kHistogramServiceWorkerLoad[];
 extern const char kHistogramServiceWorkerLargestContentfulPaint[];
-
-extern const char kHistogramServiceWorkerParseStartInbox[];
-extern const char kHistogramServiceWorkerFirstContentfulPaintInbox[];
 extern const char kHistogramServiceWorkerFirstInputDelay[];
-extern const char
-    kHistogramServiceWorkerParseStartToFirstContentfulPaintInbox[];
-extern const char kHistogramServiceWorkerDomContentLoadedInbox[];
-extern const char kHistogramServiceWorkerLoadInbox[];
-
 extern const char kHistogramServiceWorkerParseStartSearch[];
 extern const char kHistogramServiceWorkerFirstContentfulPaintSearch[];
 extern const char

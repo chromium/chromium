@@ -31,9 +31,8 @@ namespace {
 class TestObserver : public ScreenBacklightObserver {
  public:
   explicit TestObserver(BacklightsForcedOffSetter* backlights_forced_off_setter)
-      : backlights_forced_off_setter_(backlights_forced_off_setter),
-        scoped_observer_(this) {
-    scoped_observer_.Add(backlights_forced_off_setter);
+      : backlights_forced_off_setter_(backlights_forced_off_setter) {
+    scoped_observation_.Observe(backlights_forced_off_setter);
   }
 
   ~TestObserver() override = default;
@@ -56,8 +55,8 @@ class TestObserver : public ScreenBacklightObserver {
 
   std::vector<bool> forced_off_states_;
 
-  ScopedObserver<BacklightsForcedOffSetter, ScreenBacklightObserver>
-      scoped_observer_;
+  base::ScopedObservation<BacklightsForcedOffSetter, ScreenBacklightObserver>
+      scoped_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };

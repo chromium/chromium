@@ -62,7 +62,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/error_page/content/browser/net_error_auto_reloader.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/db/database_manager.h"
@@ -103,8 +103,7 @@
 #include "url/url_canon.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chromeos/constants/chromeos_switches.h"
+#include "ash/constants/ash_switches.h"
 #endif
 
 #if !BUILDFLAG(SAFE_BROWSING_DB_LOCAL)
@@ -121,7 +120,7 @@ namespace safe_browsing {
 namespace {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-const char kBlacklistResource[] = "/blacklisted/script.js";
+const char kBlocklistResource[] = "/blacklisted/script.js";
 const char kMaliciousResource[] = "/malware/script.js";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const char kEmptyPage[] = "/empty.html";
@@ -615,9 +614,9 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, UnwantedImgIgnored) {
   EXPECT_FALSE(got_hit_report());
 }
 
-// Proceeding through an interstitial should cause it to get whitelisted for
+// Proceeding through an interstitial should cause it to get allowlisted for
 // that user.
-IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, MalwareWithWhitelist) {
+IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, MalwareWithAllowlist) {
   GURL url = embedded_test_server()->GetURL(kEmptyPage);
 
   // After adding the URL to SafeBrowsing database and full hash cache, we
@@ -643,7 +642,7 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, MalwareWithWhitelist) {
   observer.WaitForNavigationFinished();
   EXPECT_FALSE(ShowingInterstitialPage());
 
-  // Navigate to kEmptyPage again -- should hit the whitelist this time.
+  // Navigate to kEmptyPage again -- should hit the allowlist this time.
   EXPECT_CALL(observer_, OnSafeBrowsingHit(IsUnsafeResourceFor(url))).Times(0);
   ui_test_utils::NavigateToURL(browser(), url);
   EXPECT_FALSE(ShowingInterstitialPage());
@@ -1199,18 +1198,18 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, CheckDownloadUrlRedirects) {
 // This test is only enabled when GOOGLE_CHROME_BRANDING is true because the
 // store that this test uses is only populated on GOOGLE_CHROME_BRANDING builds.
 IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, CheckResourceUrl) {
-  GURL blacklist_url = embedded_test_server()->GetURL(kBlacklistResource);
+  GURL blocklist_url = embedded_test_server()->GetURL(kBlocklistResource);
   GURL malware_url = embedded_test_server()->GetURL(kMaliciousResource);
-  std::string blacklist_url_hash, malware_url_hash;
+  std::string blocklist_url_hash, malware_url_hash;
 
   scoped_refptr<TestSBClient> client(new TestSBClient);
   {
-    MarkUrlForResourceUnexpired(blacklist_url);
-    blacklist_url_hash = V4ProtocolManagerUtil::GetFullHash(blacklist_url);
+    MarkUrlForResourceUnexpired(blocklist_url);
+    blocklist_url_hash = V4ProtocolManagerUtil::GetFullHash(blocklist_url);
 
-    client->CheckResourceUrl(blacklist_url);
-    EXPECT_EQ(SB_THREAT_TYPE_BLACKLISTED_RESOURCE, client->GetThreatType());
-    EXPECT_EQ(blacklist_url_hash, client->GetThreatHash());
+    client->CheckResourceUrl(blocklist_url);
+    EXPECT_EQ(SB_THREAT_TYPE_BLOCKLISTED_RESOURCE, client->GetThreatType());
+    EXPECT_EQ(blocklist_url_hash, client->GetThreatHash());
   }
   {
     MarkUrlForMalwareUnexpired(malware_url);
@@ -1218,10 +1217,10 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, CheckResourceUrl) {
     malware_url_hash = V4ProtocolManagerUtil::GetFullHash(malware_url);
 
     // Since we're checking a resource url, we should receive result that it's
-    // a blacklisted resource, not a malware.
+    // a blocklisted resource, not a malware.
     client = new TestSBClient;
     client->CheckResourceUrl(malware_url);
-    EXPECT_EQ(SB_THREAT_TYPE_BLACKLISTED_RESOURCE, client->GetThreatType());
+    EXPECT_EQ(SB_THREAT_TYPE_BLOCKLISTED_RESOURCE, client->GetThreatType());
     EXPECT_EQ(malware_url_hash, client->GetThreatHash());
   }
 

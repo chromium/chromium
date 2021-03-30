@@ -23,6 +23,15 @@ class FeaturePodControllerBase;
 // A toggle button with an icon used by feature pods and in other places.
 class FeaturePodIconButton : public views::ImageButton {
  public:
+  // Used to determine how the button will behave when disabled.
+  enum class DisabledButtonBehavior {
+    // The button will display toggle button as off.
+    kNone = 0,
+
+    // The button will display on/off status of toggle.
+    kCanDisplayDisabledToggleValue = 1,
+  };
+
   FeaturePodIconButton(PressedCallback callback, bool is_togglable);
   ~FeaturePodIconButton() override;
 
@@ -31,6 +40,10 @@ class FeaturePodIconButton : public views::ImageButton {
 
   // Sets the button's icon.
   void SetVectorIcon(const gfx::VectorIcon& icon);
+
+  void set_button_behavior(DisabledButtonBehavior button_behavior) {
+    button_behavior_ = button_behavior;
+  }
 
   // views::ImageButton:
   void PaintButtonContents(gfx::Canvas* canvas) override;
@@ -55,6 +68,8 @@ class FeaturePodIconButton : public views::ImageButton {
   // True if the button is currently toggled.
   bool toggled_ = false;
 
+  DisabledButtonBehavior button_behavior_ = DisabledButtonBehavior::kNone;
+
   const gfx::VectorIcon* icon_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(FeaturePodIconButton);
@@ -67,13 +82,13 @@ class FeaturePodLabelButton : public views::Button {
   ~FeaturePodLabelButton() override;
 
   // Set the text of label shown below the icon. See FeaturePodButton::SetLabel.
-  void SetLabel(const base::string16& label);
-  const base::string16& GetLabelText() const;
+  void SetLabel(const std::u16string& label);
+  const std::u16string& GetLabelText() const;
 
   // Set the text of sub-label shown below the label.
   // See FeaturePodButton::SetSubLabel.
-  void SetSubLabel(const base::string16& sub_label);
-  const base::string16& GetSubLabelText() const;
+  void SetSubLabel(const std::u16string& sub_label);
+  const std::u16string& GetSubLabelText() const;
 
   // Show arrow to indicate that the feature has a detailed view.
   // See FeaturePodButton::ShowDetailedViewArrow.
@@ -123,19 +138,19 @@ class ASH_EXPORT FeaturePodButton : public views::View {
   void SetVectorIcon(const gfx::VectorIcon& icon);
 
   // Set the text of label shown below the icon.
-  void SetLabel(const base::string16& label);
+  void SetLabel(const std::u16string& label);
 
   // Set the text of sub-label shown below the label.
-  void SetSubLabel(const base::string16& sub_label);
+  void SetSubLabel(const std::u16string& sub_label);
 
   // Set the tooltip text of the icon button.
-  void SetIconTooltip(const base::string16& text);
+  void SetIconTooltip(const std::u16string& text);
 
   // Set the tooltip text of the label button.
-  void SetLabelTooltip(const base::string16& text);
+  void SetLabelTooltip(const std::u16string& text);
 
   // Convenience method to set both icon and label tooltip texts.
-  void SetIconAndLabelTooltips(const base::string16& text);
+  void SetIconAndLabelTooltips(const std::u16string& text);
 
   // Show arrow to indicate that the feature has a detailed view.
   void ShowDetailedViewArrow();

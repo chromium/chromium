@@ -55,8 +55,8 @@ class LeakDetectionDelegateInterface {
   // Pass parameters by value because the caller can be destroyed here.
   virtual void OnLeakDetectionDone(bool is_leaked,
                                    GURL url,
-                                   base::string16 username,
-                                   base::string16 password) = 0;
+                                   std::u16string username,
+                                   std::u16string password) = 0;
 
   virtual void OnError(LeakDetectionError error) = 0;
 };

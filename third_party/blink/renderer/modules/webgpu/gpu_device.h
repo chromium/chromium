@@ -17,6 +17,7 @@
 namespace blink {
 
 class ExecutionContext;
+class HTMLVideoElement;
 class GPUAdapter;
 class GPUAdapter;
 class GPUBuffer;
@@ -58,22 +59,26 @@ class GPUDevice final : public EventTargetWithInlineData,
   explicit GPUDevice(ExecutionContext* execution_context,
                      scoped_refptr<DawnControlClientHolder> dawn_control_client,
                      GPUAdapter* adapter,
-                     uint64_t client_id,
+                     WGPUDevice dawn_device,
                      const GPUDeviceDescriptor* descriptor);
-  ~GPUDevice() override;
 
   void Trace(Visitor* visitor) const override;
 
   // gpu_device.idl
   GPUAdapter* adapter() const;
-  Vector<String> extensions() const;
+  Vector<String> features() const;
+  Vector<String> extensions();
   ScriptPromise lost(ScriptState* script_state);
 
+  GPUQueue* queue();
   GPUQueue* defaultQueue();
 
   GPUBuffer* createBuffer(const GPUBufferDescriptor* descriptor);
   GPUTexture* createTexture(const GPUTextureDescriptor* descriptor,
                             ExceptionState& exception_state);
+  GPUTexture* experimentalImportTexture(HTMLVideoElement* video,
+                                        unsigned int usage_flags,
+                                        ExceptionState& exception_state);
   GPUSampler* createSampler(const GPUSamplerDescriptor* descriptor);
 
   GPUBindGroup* createBindGroup(const GPUBindGroupDescriptor* descriptor,
@@ -91,6 +96,12 @@ class GPUDevice final : public EventTargetWithInlineData,
       ScriptState* script_state,
       const GPURenderPipelineDescriptor* descriptor);
   GPUComputePipeline* createComputePipeline(
+      const GPUComputePipelineDescriptor* descriptor);
+  ScriptPromise createRenderPipelineAsync(
+      ScriptState* script_state,
+      const GPURenderPipelineDescriptor* descriptor);
+  ScriptPromise createComputePipelineAsync(
+      ScriptState* script_state,
       const GPUComputePipelineDescriptor* descriptor);
   ScriptPromise createReadyRenderPipeline(
       ScriptState* script_state,
@@ -129,23 +140,27 @@ class GPUDevice final : public EventTargetWithInlineData,
                                WGPUErrorType type,
                                const char* message);
 
-  void OnCreateReadyRenderPipelineCallback(ScriptPromiseResolver* resolver,
-                                           WGPUCreateReadyPipelineStatus status,
+  void OnCreateRenderPipelineAsyncCallback(ScriptPromiseResolver* resolver,
+                                           WGPUCreatePipelineAsyncStatus status,
                                            WGPURenderPipeline render_pipeline,
                                            const char* message);
-  void OnCreateReadyComputePipelineCallback(
+  void OnCreateComputePipelineAsyncCallback(
       ScriptPromiseResolver* resolver,
-      WGPUCreateReadyPipelineStatus status,
+      WGPUCreatePipelineAsyncStatus status,
       WGPUComputePipeline compute_pipeline,
       const char* message);
 
   Member<GPUAdapter> adapter_;
-  Vector<String> extension_name_list_;
+  Vector<String> feature_name_list_;
   Member<GPUQueue> queue_;
   Member<LostProperty> lost_property_;
   std::unique_ptr<
       DawnCallback<base::RepeatingCallback<void(WGPUErrorType, const char*)>>>
       error_callback_;
+  // lost_callback_ is stored as a unique_ptr since it may never be called.
+  // We need to be sure to free it on deletion of the device.
+  // Inside OnDeviceLostError we'll release the unique_ptr to avoid a double
+  // free.
   std::unique_ptr<DawnCallback<base::OnceCallback<void(const char*)>>>
       lost_callback_;
 

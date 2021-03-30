@@ -10,6 +10,7 @@
 #include "base/task/post_task.h"
 #include "base/values.h"
 #import "ios/web/find_in_page/find_in_page_constants.h"
+#import "ios/web/find_in_page/find_in_page_java_script_feature.h"
 #import "ios/web/public/find_in_page/find_in_page_manager_delegate.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #include "ios/web/public/js_messaging/web_frame_util.h"
@@ -20,20 +21,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-// Timeout for the find within JavaScript in milliseconds.
-const double kFindInPageFindTimeout = 100.0;
-
-// Value returned when |kFindInPageSearch| call times out.
-const int kFindInPagePending = -1;
-
-// The timeout for JavaScript function calls in milliseconds. Important that
-// this is longer than |kFindInPageFindTimeout| to allow for incomplete find to
-// restart again. If this timeout hits, then something went wrong with the find
-// and find in page should not continue.
-const double kJavaScriptFunctionCallTimeout = 200.0;
-}  // namespace
 
 namespace web {
 
@@ -122,16 +109,13 @@ void FindInPageManagerImpl::StartSearch(NSString* query) {
     return;
   }
 
-  std::vector<base::Value> params;
-  params.push_back(base::Value(base::SysNSStringToUTF8(query)));
-  params.push_back(base::Value(kFindInPageFindTimeout));
   for (WebFrame* frame : all_frames) {
-    bool result = frame->CallJavaScriptFunction(
-        kFindInPageSearch, params,
+    bool result = FindInPageJavaScriptFeature::GetInstance()->Search(
+        frame, base::SysNSStringToUTF8(query),
         base::BindOnce(&FindInPageManagerImpl::ProcessFindInPageResult,
                        weak_factory_.GetWeakPtr(), frame->GetFrameId(),
-                       last_find_request_.GetRequestId()),
-        base::TimeDelta::FromMilliseconds(kJavaScriptFunctionCallTimeout));
+                       last_find_request_.GetRequestId()));
+
     if (!result) {
       // Calling JavaScript function failed or the frame does not support
       // messaging.
@@ -151,9 +135,8 @@ void FindInPageManagerImpl::StopFinding() {
   last_find_request_.Reset(/*new_query=*/nil,
                            /*new_pending_frame_call_count=*/0);
 
-  std::vector<base::Value> params;
   for (WebFrame* frame : web_state_->GetWebFramesManager()->GetAllWebFrames()) {
-    frame->CallJavaScriptFunction(kFindInPageStop, params);
+    FindInPageJavaScriptFeature::GetInstance()->Stop(frame);
   }
   if (delegate_) {
     delegate_->DidHighlightMatches(web_state_,
@@ -166,9 +149,10 @@ bool FindInPageManagerImpl::CanSearchContent() {
   return web_state_->ContentIsHTML();
 }
 
-void FindInPageManagerImpl::ProcessFindInPageResult(const std::string& frame_id,
-                                                    const int unique_id,
-                                                    const base::Value* result) {
+void FindInPageManagerImpl::ProcessFindInPageResult(
+    const std::string& frame_id,
+    const int unique_id,
+    base::Optional<int> result_matches) {
   if (unique_id != last_find_request_.GetRequestId()) {
     // New find was started or current find was stopped.
     return;
@@ -179,32 +163,23 @@ void FindInPageManagerImpl::ProcessFindInPageResult(const std::string& frame_id,
   }
 
   WebFrame* frame = GetWebFrameWithId(web_state_, frame_id);
-  if (!result || !frame) {
+  if (!result_matches || !frame) {
     // The frame no longer exists or the function call timed out. In both cases,
     // result will be null.
     // Zero out count to ensure every frame is updated for every find.
     last_find_request_.SetMatchCountForFrame(0, frame_id);
   } else {
-    int match_count = 0;
-    if (result->is_double()) {
-      // Valid match number returned. If not, match count will be 0 in order to
-      // zero-out count from previous find.
-      match_count = static_cast<int>(result->GetDouble());
-    }
     // If response is equal to kFindInPagePending, find did not finish in the
     // JavaScript. Call pumpSearch to continue find.
-    if (match_count == kFindInPagePending) {
-      std::vector<base::Value> params;
-      params.push_back(base::Value(kFindInPageFindTimeout));
-      frame->CallJavaScriptFunction(
-          kFindInPagePump, params,
+    if (result_matches.value() == find_in_page::kFindInPagePending) {
+      FindInPageJavaScriptFeature::GetInstance()->Pump(
+          frame,
           base::BindOnce(&FindInPageManagerImpl::ProcessFindInPageResult,
-                         weak_factory_.GetWeakPtr(), frame_id, unique_id),
-          base::TimeDelta::FromMilliseconds(kJavaScriptFunctionCallTimeout));
+                         weak_factory_.GetWeakPtr(), frame_id, unique_id));
       return;
     }
 
-    last_find_request_.SetMatchCountForFrame(match_count, frame_id);
+    last_find_request_.SetMatchCountForFrame(result_matches.value(), frame_id);
   }
   last_find_request_.DidReceiveFindResponseFromOneFrame();
   if (last_find_request_.AreAllFindResponsesReturned()) {
@@ -283,14 +258,10 @@ void FindInPageManagerImpl::SelectCurrentMatch() {
   web::WebFrame* frame =
       GetWebFrameWithId(web_state_, last_find_request_.GetSelectedFrameId());
   if (frame) {
-    std::vector<base::Value> params;
-    params.push_back(
-        base::Value(last_find_request_.GetCurrentSelectedMatchFrameIndex()));
-    frame->CallJavaScriptFunction(
-        kFindInPageSelectAndScrollToMatch, params,
+    FindInPageJavaScriptFeature::GetInstance()->SelectMatch(
+        frame, last_find_request_.GetCurrentSelectedMatchFrameIndex(),
         base::BindOnce(&FindInPageManagerImpl::SelectDidFinish,
-                       weak_factory_.GetWeakPtr()),
-        base::TimeDelta::FromMilliseconds(kJavaScriptFunctionCallTimeout));
+                       weak_factory_.GetWeakPtr()));
   }
 }
 

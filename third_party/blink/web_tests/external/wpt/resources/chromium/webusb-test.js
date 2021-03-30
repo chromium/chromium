@@ -16,6 +16,19 @@ let internal = {
   messagePort: null,
 };
 
+let mojom = {};
+
+async function loadMojomDefinitions() {
+  const deviceMojom =
+      await import('/gen/services/device/public/mojom/usb_device.mojom.m.js');
+  const serviceMojom = await import(
+      '/gen/third_party/blink/public/mojom/usb/web_usb_service.mojom.m.js');
+  return {
+    ...deviceMojom,
+    ...serviceMojom,
+  };
+}
+
 function getMessagePort(target) {
   return new Promise(resolve => {
     target.addEventListener('message', messageEvent => {
@@ -93,29 +106,29 @@ function fakeDeviceInitToDeviceInfo(guid, init) {
           var endpointInfo = {
             endpointNumber: endpoint.endpointNumber,
             packetSize: endpoint.packetSize,
-            synchronizationType: device.mojom.UsbSynchronizationType.NONE,
-            usageType: device.mojom.UsbUsageType.DATA,
+            synchronizationType: mojom.UsbSynchronizationType.NONE,
+            usageType: mojom.UsbUsageType.DATA,
             pollingInterval: 0,
             extraData: new Uint8Array()
           };
           switch (endpoint.direction) {
-          case "in":
-            endpointInfo.direction = device.mojom.UsbTransferDirection.INBOUND;
-            break;
-          case "out":
-            endpointInfo.direction = device.mojom.UsbTransferDirection.OUTBOUND;
-            break;
+            case "in":
+              endpointInfo.direction = mojom.UsbTransferDirection.INBOUND;
+              break;
+            case "out":
+              endpointInfo.direction = mojom.UsbTransferDirection.OUTBOUND;
+              break;
           }
           switch (endpoint.type) {
-          case "bulk":
-            endpointInfo.type = device.mojom.UsbTransferType.BULK;
-            break;
-          case "interrupt":
-            endpointInfo.type = device.mojom.UsbTransferType.INTERRUPT;
-            break;
-          case "isochronous":
-            endpointInfo.type = device.mojom.UsbTransferType.ISOCHRONOUS;
-            break;
+            case "bulk":
+              endpointInfo.type = mojom.UsbTransferType.BULK;
+              break;
+            case "interrupt":
+              endpointInfo.type = mojom.UsbTransferType.INTERRUPT;
+              break;
+            case "isochronous":
+              endpointInfo.type = mojom.UsbTransferType.ISOCHRONOUS;
+              break;
           }
           alternateInfo.endpoints.push(endpointInfo);
         });
@@ -173,7 +186,7 @@ class FakeDevice {
   open() {
     assert_false(this.opened_);
     this.opened_ = true;
-    return Promise.resolve({ error: device.mojom.UsbOpenDeviceError.OK });
+    return Promise.resolve({error: mojom.UsbOpenDeviceError.OK});
   }
 
   close() {
@@ -193,17 +206,33 @@ class FakeDevice {
     return Promise.resolve({ success: true });
   }
 
-  claimInterface(interfaceNumber) {
+  async claimInterface(interfaceNumber) {
     assert_true(this.opened_);
     assert_false(this.currentConfiguration_ == null, 'device configured');
     assert_false(this.claimedInterfaces_.has(interfaceNumber),
                  'interface already claimed');
 
-    // Blink should never request an invalid interface.
-    assert_true(this.currentConfiguration_.interfaces.some(
-            iface => iface.interfaceNumber == interfaceNumber));
+    const protectedInterfaces = new Set([
+      mojom.USB_AUDIO_CLASS,
+      mojom.USB_HID_CLASS,
+      mojom.USB_MASS_STORAGE_CLASS,
+      mojom.USB_SMART_CARD_CLASS,
+      mojom.USB_VIDEO_CLASS,
+      mojom.USB_AUDIO_VIDEO_CLASS,
+      mojom.USB_WIRELESS_CLASS,
+    ]);
+
+    let iface = this.currentConfiguration_.interfaces.find(
+        iface => iface.interfaceNumber == interfaceNumber);
+    // Blink should never request an invalid interface or alternate.
+    assert_false(iface == undefined);
+    if (iface.alternates.some(
+            alt => protectedInterfaces.has(alt.interfaceClass))) {
+      return {result: mojom.UsbClaimInterfaceResult.kProtectedClass};
+    }
+
     this.claimedInterfaces_.set(interfaceNumber, 0);
-    return Promise.resolve({ success: true });
+    return {result: mojom.UsbClaimInterfaceResult.kSuccess};
   }
 
   releaseInterface(interfaceNumber) {
@@ -244,36 +273,35 @@ class FakeDevice {
   async controlTransferIn(params, length, timeout) {
     assert_true(this.opened_);
 
-    if ((params.recipient == device.mojom.UsbControlTransferRecipient.INTERFACE ||
-         params.recipient == device.mojom.UsbControlTransferRecipient.ENDPOINT) &&
+    if ((params.recipient == mojom.UsbControlTransferRecipient.INTERFACE ||
+         params.recipient == mojom.UsbControlTransferRecipient.ENDPOINT) &&
         this.currentConfiguration_ == null) {
       return {
-        status: device.mojom.UsbTransferStatus.PERMISSION_DENIED,
+        status: mojom.UsbTransferStatus.PERMISSION_DENIED,
       };
     }
 
     return {
-      status: device.mojom.UsbTransferStatus.OK,
-      data: [length >> 8, length & 0xff, params.request, params.value >> 8,
-             params.value & 0xff, params.index >> 8, params.index & 0xff]
+      status: mojom.UsbTransferStatus.OK,
+      data: [
+        length >> 8, length & 0xff, params.request, params.value >> 8,
+        params.value & 0xff, params.index >> 8, params.index & 0xff
+      ]
     };
   }
 
   async controlTransferOut(params, data, timeout) {
     assert_true(this.opened_);
 
-    if ((params.recipient == device.mojom.UsbControlTransferRecipient.INTERFACE ||
-         params.recipient == device.mojom.UsbControlTransferRecipient.ENDPOINT) &&
+    if ((params.recipient == mojom.UsbControlTransferRecipient.INTERFACE ||
+         params.recipient == mojom.UsbControlTransferRecipient.ENDPOINT) &&
         this.currentConfiguration_ == null) {
       return {
-        status: device.mojom.UsbTransferStatus.PERMISSION_DENIED,
+        status: mojom.UsbTransferStatus.PERMISSION_DENIED,
       };
     }
 
-    return {
-      status: device.mojom.UsbTransferStatus.OK,
-      bytesWritten: data.byteLength
-    };
+    return {status: mojom.UsbTransferStatus.OK, bytesWritten: data.byteLength};
   }
 
   genericTransferIn(endpointNumber, length, timeout) {
@@ -283,20 +311,15 @@ class FakeDevice {
     let data = new Array(length);
     for (let i = 0; i < length; ++i)
       data[i] = i & 0xff;
-    return Promise.resolve({
-      status: device.mojom.UsbTransferStatus.OK,
-      data: data
-    });
+    return Promise.resolve({status: mojom.UsbTransferStatus.OK, data: data});
   }
 
   genericTransferOut(endpointNumber, data, timeout) {
     assert_true(this.opened_);
     assert_false(this.currentConfiguration_ == null, 'device configured');
     // TODO(reillyg): Assert that endpoint is valid.
-    return Promise.resolve({
-      status: device.mojom.UsbTransferStatus.OK,
-      bytesWritten: data.byteLength
-    });
+    return Promise.resolve(
+        {status: mojom.UsbTransferStatus.OK, bytesWritten: data.byteLength});
   }
 
   isochronousTransferIn(endpointNumber, packetLengths, timeout) {
@@ -312,7 +335,7 @@ class FakeDevice {
       packets[i] = {
         length: packetLengths[i],
         transferredLength: packetLengths[i],
-        status: device.mojom.UsbTransferStatus.OK
+        status: mojom.UsbTransferStatus.OK
       };
     }
     return Promise.resolve({ data: data, packets: packets });
@@ -327,7 +350,7 @@ class FakeDevice {
       packets[i] = {
         length: packetLengths[i],
         transferredLength: packetLengths[i],
-        status: device.mojom.UsbTransferStatus.OK
+        status: mojom.UsbTransferStatus.OK
       };
     }
     return Promise.resolve({ packets: packets });
@@ -336,7 +359,7 @@ class FakeDevice {
 
 class FakeWebUsbService {
   constructor() {
-    this.bindingSet_ = new mojo.BindingSet(blink.mojom.WebUsbService);
+    this.receiver_ = new mojom.WebUsbServiceReceiver(this);
     this.devices_ = new Map();
     this.devicesByGuid_ = new Map();
     this.client_ = null;
@@ -344,7 +367,7 @@ class FakeWebUsbService {
   }
 
   addBinding(handle) {
-    this.bindingSet_.addBinding(this, handle);
+    this.receiver_.$.bindHandle(handle);
   }
 
   addDevice(fakeDevice, info) {
@@ -352,7 +375,7 @@ class FakeWebUsbService {
       fakeDevice: fakeDevice,
       guid: (this.nextGuid_++).toString(),
       info: info,
-      bindingArray: []
+      receivers: [],
     };
     this.devices_.set(fakeDevice, device);
     this.devicesByGuid_.set(device.guid, device);
@@ -365,8 +388,8 @@ class FakeWebUsbService {
     if (!device)
       throw new Error('Cannot remove unknown device.');
 
-    for (var binding of device.bindingArray)
-      binding.close();
+    for (const receiver of device.receivers)
+      receiver.$.close();
     this.devices_.delete(device.fakeDevice);
     this.devicesByGuid_.delete(device.guid);
     if (this.client_) {
@@ -377,8 +400,8 @@ class FakeWebUsbService {
 
   removeAllDevices() {
     this.devices_.forEach(device => {
-      for (var binding of device.bindingArray)
-        binding.close();
+      for (const receiver of device.receivers)
+        receiver.$.close();
       this.client_.onDeviceRemoved(
           fakeDeviceInitToDeviceInfo(device.guid, device.info));
     });
@@ -397,17 +420,16 @@ class FakeWebUsbService {
   getDevice(guid, request) {
     let retrievedDevice = this.devicesByGuid_.get(guid);
     if (retrievedDevice) {
-      let binding = new mojo.Binding(
-          device.mojom.UsbDevice,
-          new FakeDevice(retrievedDevice.info),
-          request);
-      binding.setConnectionErrorHandler(() => {
+      const receiver =
+          new mojom.UsbDeviceReceiver(new FakeDevice(retrievedDevice.info));
+      receiver.$.bindHandle(request.handle);
+      receiver.onConnectionError.addListener(() => {
         if (retrievedDevice.fakeDevice.onclose)
           retrievedDevice.fakeDevice.onclose();
       });
-      retrievedDevice.bindingArray.push(binding);
+      retrievedDevice.receivers.push(receiver);
     } else {
-      request.close();
+      request.handle.close();
     }
   }
 
@@ -422,8 +444,8 @@ class FakeWebUsbService {
     });
   }
 
-  setClient(clientInfo) {
-    this.client_ = new device.mojom.UsbDeviceManagerClientAssociatedPtr(clientInfo);
+  setClient(client) {
+    this.client_ = client;
   }
 }
 
@@ -474,9 +496,10 @@ class USBTest {
       getMessagePort(window);
     }
 
+    mojom = await loadMojomDefinitions();
     internal.webUsbService = new FakeWebUsbService();
     internal.webUsbServiceInterceptor =
-        new MojoInterfaceInterceptor(blink.mojom.WebUsbService.name);
+        new MojoInterfaceInterceptor(mojom.WebUsbService.$interfaceName);
     internal.webUsbServiceInterceptor.oninterfacerequest =
         e => internal.webUsbService.addBinding(e.handle);
     internal.webUsbServiceInterceptor.start();
@@ -498,7 +521,7 @@ class USBTest {
       return new Promise(resolve => {
         internal.messagePort.onmessage = channelEvent => {
           switch (channelEvent.data.type) {
-            case blink.mojom.WebUsbService.name:
+            case mojom.WebUsbService.$interfaceName:
               internal.webUsbService.addBinding(channelEvent.data.handle);
               break;
             case 'Complete':
@@ -507,10 +530,11 @@ class USBTest {
           }
         };
         internal.messagePort.postMessage({
-          type: 'Attach' ,
+          type: 'Attach',
           interfaces: [
-            blink.mojom.WebUsbService.name,
-          ]});
+            mojom.WebUsbService.$interfaceName,
+          ]
+        });
       });
     });
   }

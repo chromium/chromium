@@ -35,7 +35,7 @@ class NET_EXPORT_PRIVATE NetworkDelegateErrorObserver
       const scoped_refptr<base::SingleThreadTaskRunner>& origin_runner);
 
   // ProxyResolverErrorObserver implementation.
-  void OnPACScriptError(int line_number, const base::string16& error) override;
+  void OnPACScriptError(int line_number, const std::u16string& error) override;
 
  private:
   class Core;

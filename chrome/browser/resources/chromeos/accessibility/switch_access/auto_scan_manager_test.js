@@ -12,19 +12,13 @@ SwitchAccessAutoScanManagerTest = class extends SwitchAccessE2ETest {
   setUp() {
     var runTest = this.deferRunTest(WhenTestDone.EXPECT);
     (async () => {
-      let module = await import('/switch_access/nodes/back_button_node.js');
-      window.BackButtonNode = module.BackButtonNode;
-
-      module = await import('/switch_access/nodes/basic_node.js');
-      window.BasicNode = module.BasicNode;
-      window.BasicRootNode = module.BasicRootNode;
-
-      module = await import('/switch_access/auto_scan_manager.js');
-      window.AutoScanManager = module.AutoScanManager;
-
-      module = await import('/switch_access/navigator.js');
-      window.Navigator = module.Navigator;
-
+      await importModule(
+          'BackButtonNode', '/switch_access/nodes/back_button_node.js');
+      await importModule(
+          ['BasicNode', 'BasicRootNode'], '/switch_access/nodes/basic_node.js');
+      await importModule(
+          'AutoScanManager', '/switch_access/auto_scan_manager.js');
+      await importModule('Navigator', '/switch_access/navigator.js');
       AutoScanManager.instance.primaryScanTime_ = 1000;
       // Use intervalCount and intervalDelay to check how many intervals are
       // currently running (should be no more than 1) and the current delay.
@@ -33,7 +27,7 @@ SwitchAccessAutoScanManagerTest = class extends SwitchAccessE2ETest {
       window.defaultSetInterval = window.setInterval;
       window.defaultClearInterval = window.clearInterval;
       this.defaultMoveForward =
-          Navigator.instance.moveForward.bind(Navigator.instance);
+          Navigator.byItem.moveForward.bind(Navigator.byItem);
       this.moveForwardCount = 0;
 
       window.setInterval = function(func, delay) {
@@ -51,7 +45,7 @@ SwitchAccessAutoScanManagerTest = class extends SwitchAccessE2ETest {
         window.defaultClearInterval(intervalId);
       };
 
-      Navigator.instance.moveForward = () => {
+      Navigator.byItem.moveForward = () => {
         this.moveForwardCount++;
         this.onMoveForward_ && this.onMoveForward_();
         this.defaultMoveForward();

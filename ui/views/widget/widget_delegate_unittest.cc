@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "base/test/bind.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
 #include "ui/views/view_tracker.h"
@@ -111,6 +113,26 @@ TEST_F(WidgetDelegateTest, OverlayViewFactoryCanReplaceOverlayView) {
 
   auto overlay = base::WrapUnique<View>(delegate->CreateOverlayView());
   EXPECT_EQ(tracker.view(), overlay.get());
+}
+
+TEST_F(WidgetDelegateTest, AppIconCanDifferFromWindowIcon) {
+  auto delegate = std::make_unique<WidgetDelegate>();
+
+  gfx::ImageSkia window_icon = gfx::test::CreateImageSkia(16, 16);
+  delegate->SetIcon(window_icon);
+  gfx::ImageSkia app_icon = gfx::test::CreateImageSkia(48, 48);
+  delegate->SetAppIcon(app_icon);
+  EXPECT_TRUE(delegate->GetWindowIcon().BackedBySameObjectAs(window_icon));
+  EXPECT_TRUE(delegate->GetWindowAppIcon().BackedBySameObjectAs(app_icon));
+}
+
+TEST_F(WidgetDelegateTest, AppIconFallsBackToWindowIcon) {
+  auto delegate = std::make_unique<WidgetDelegate>();
+
+  gfx::ImageSkia window_icon = gfx::test::CreateImageSkia(16, 16);
+  delegate->SetIcon(window_icon);
+  // Don't set an independent app icon.
+  EXPECT_TRUE(delegate->GetWindowAppIcon().BackedBySameObjectAs(window_icon));
 }
 
 }  // namespace

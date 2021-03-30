@@ -87,10 +87,9 @@
 #include "components/error_page/common/localized_error.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/network_hints/renderer/web_prescient_networking_impl.h"
-#include "components/no_state_prefetch/common/prerender_types.mojom.h"
 #include "components/no_state_prefetch/common/prerender_url_loader_throttle.h"
 #include "components/no_state_prefetch/renderer/no_state_prefetch_client.h"
-#include "components/no_state_prefetch/renderer/prerender_helper.h"
+#include "components/no_state_prefetch/renderer/no_state_prefetch_helper.h"
 #include "components/no_state_prefetch/renderer/prerender_render_frame_observer.h"
 #include "components/no_state_prefetch/renderer/prerender_utils.h"
 #include "components/page_load_metrics/renderer/metrics_render_frame_observer.h"
@@ -102,6 +101,7 @@
 #include "components/subresource_filter/content/renderer/subresource_filter_agent.h"
 #include "components/subresource_filter/content/renderer/unverified_ruleset_dealer.h"
 #include "components/subresource_filter/core/common/common_features.h"
+#include "components/subresource_redirect/common/subresource_redirect_features.h"
 #include "components/sync/engine/sync_engine_switches.h"
 #include "components/translate/content/renderer/per_frame_translate_agent.h"
 #include "components/translate/core/common/translate_util.h"
@@ -110,6 +110,7 @@
 #include "components/version_info/version_info.h"
 #include "components/visitedlink/renderer/visitedlink_reader.h"
 #include "components/web_cache/renderer/web_cache_impl.h"
+#include "components/webapps/renderer/web_page_metadata_agent.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -119,7 +120,6 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_visitor.h"
 #include "content/public/renderer/render_view.h"
-#include "content/public/renderer/render_view_observer.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ipc/ipc_sync_channel.h"
 #include "media/base/media_switches.h"
@@ -127,6 +127,7 @@
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
+#include "pdf/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -164,10 +165,14 @@
 
 #if defined(OS_ANDROID)
 #include "chrome/renderer/sandbox_status_extension_android.h"
+#include "components/continuous_search/renderer/search_result_extractor_impl.h"  // nogncheck
+#include "components/embedder_support/android/common/url_constants.h"
 #else
+#include "chrome/renderer/cart/commerce_hint_agent.h"
 #include "chrome/renderer/media/chrome_speech_recognition_client.h"
 #include "chrome/renderer/searchbox/searchbox.h"
 #include "chrome/renderer/searchbox/searchbox_extension.h"
+#include "components/search/ntp_features.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(ENABLE_NACL)
@@ -177,7 +182,6 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/common/initialize_extensions_client.h"
-#include "chrome/common/url_loader_factory_proxy.mojom.h"
 #include "chrome/renderer/extensions/chrome_extensions_renderer_client.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_urls.h"
@@ -186,10 +190,13 @@
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/guest_view/mime_handler_view/mime_handler_view_container_manager.h"
 #include "extensions/renderer/renderer_extension_registry.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view.h"
+#endif
+
+#if BUILDFLAG(ENABLE_PDF_UNSEASONED)
+#include "pdf/pdf_view_web_plugin.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -416,7 +423,7 @@ void ChromeContentRendererClient::RenderThreadStarted() {
 
 #if defined(OS_ANDROID)
   WebSecurityPolicy::RegisterURLSchemeAsAllowedForReferrer(
-      WebString::FromUTF8(chrome::kAndroidAppScheme));
+      WebString::FromUTF8(embedder_support::kAndroidAppScheme));
 #endif
 
   // chrome-search: pages should not be accessible by bookmarklets
@@ -428,12 +435,6 @@ void ChromeContentRendererClient::RenderThreadStarted() {
   pdf_print_client_.reset(new ChromePDFPrintClient());
   pdf::PepperPDFHost::SetPrintClient(pdf_print_client_.get());
 #endif
-
-  for (auto& origin_or_hostname_pattern :
-       network::SecureOriginAllowlist::GetInstance().GetCurrentAllowlist()) {
-    WebSecurityPolicy::AddOriginToTrustworthySafelist(
-        WebString::FromUTF8(origin_or_hostname_pattern));
-  }
 
   for (auto& scheme :
        secure_origin_allowlist::GetSchemesBypassingSecureContextCheck()) {
@@ -527,6 +528,16 @@ void ChromeContentRendererClient::RenderFrameCreated(
   }
 #endif
 
+  if (render_frame->IsMainFrame())
+    new webapps::WebPageMetadataAgent(render_frame);
+
+#if defined(OS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kContinuousSearch) &&
+      render_frame->IsMainFrame()) {
+    continuous_search::SearchResultExtractorImpl::Create(render_frame);
+  }
+#endif
+
   new NetErrorHelper(render_frame);
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -534,13 +545,15 @@ void ChromeContentRendererClient::RenderFrameCreated(
 #endif
 
   if (!render_frame->IsMainFrame()) {
-    auto* prerender_helper = prerender::PrerenderHelper::Get(
-        render_frame->GetRenderView()->GetMainRenderFrame());
-    if (prerender_helper) {
+    auto* main_frame_no_state_prefetch_helper =
+        prerender::NoStatePrefetchHelper::Get(
+            render_frame->GetRenderView()->GetMainRenderFrame());
+    if (main_frame_no_state_prefetch_helper) {
       // Avoid any race conditions from having the browser tell subframes that
-      // they're prerendering.
-      new prerender::PrerenderHelper(render_frame,
-                                     prerender_helper->histogram_prefix());
+      // they're no-state prefetching.
+      new prerender::NoStatePrefetchHelper(
+          render_frame,
+          main_frame_no_state_prefetch_helper->histogram_prefix());
     }
   }
 
@@ -595,9 +608,11 @@ void ChromeContentRendererClient::RenderFrameCreated(
         std::make_unique<subresource_filter::AdResourceTracker>();
     metrics_render_frame_observer->SetAdResourceTracker(
         ad_resource_tracker.get());
-    new subresource_filter::SubresourceFilterAgent(
-        render_frame, subresource_filter_ruleset_dealer_.get(),
-        std::move(ad_resource_tracker));
+    auto* subresource_filter_agent =
+        new subresource_filter::SubresourceFilterAgent(
+            render_frame, subresource_filter_ruleset_dealer_.get(),
+            std::move(ad_resource_tracker));
+    subresource_filter_agent->Initialize();
   }
 
   if (lite_video::IsLiteVideoEnabled())
@@ -605,10 +620,10 @@ void ChromeContentRendererClient::RenderFrameCreated(
 
   new previews::ResourceLoadingHintsAgent(associated_interfaces, render_frame);
 
-  if (subresource_redirect::IsPublicImageHintsBasedCompressionEnabled()) {
+  if (subresource_redirect::ShouldEnablePublicImageHintsBasedCompression()) {
     new subresource_redirect::PublicImageHintsDeciderAgent(
         associated_interfaces, render_frame);
-  } else if (subresource_redirect::IsLoginRobotsCheckedCompressionEnabled()) {
+  } else if (subresource_redirect::ShouldEnableRobotsRulesFetching()) {
     new subresource_redirect::LoginRobotsDeciderAgent(associated_interfaces,
                                                       render_frame);
   }
@@ -623,6 +638,11 @@ void ChromeContentRendererClient::RenderFrameCreated(
       render_frame->IsMainFrame()) {
     new SearchBox(render_frame);
   }
+
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpChromeCartModule) &&
+      render_frame->IsMainFrame()) {
+    new cart::CommerceHintAgent(render_frame);
+  }
 #endif  // !defined(OS_ANDROID)
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
@@ -636,7 +656,7 @@ void ChromeContentRendererClient::RenderFrameCreated(
 
 void ChromeContentRendererClient::RenderViewCreated(
     content::RenderView* render_view) {
-  new prerender::NoStatePrefetchClient(render_view);
+  new prerender::NoStatePrefetchClient(render_view->GetWebView());
 }
 
 SkBitmap* ChromeContentRendererClient::GetSadPluginBitmap() {
@@ -726,12 +746,11 @@ bool ChromeContentRendererClient::OverrideCreatePlugin(
   if (orig_mime_type == kPDFMimeType) {
     ReportPDFLoadStatus(
         PDFLoadStatus::kShowedDisabledPluginPlaceholderForEmbeddedPdf);
-    if (base::FeatureList::IsEnabled(features::kClickToOpenPDFPlaceholder)) {
-      PDFPluginPlaceholder* placeholder =
-          PDFPluginPlaceholder::CreatePDFPlaceholder(render_frame, params);
-      *plugin = placeholder->plugin();
-      return true;
-    }
+
+    PDFPluginPlaceholder* placeholder =
+        PDFPluginPlaceholder::CreatePDFPlaceholder(render_frame, params);
+    *plugin = placeholder->plugin();
+    return true;
   }
   auto* placeholder = NonLoadablePluginPlaceholder::CreateNotSupportedPlugin(
       render_frame, params);
@@ -780,7 +799,7 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
     const chrome::mojom::PluginInfo& plugin_info) {
   const WebPluginInfo& info = plugin_info.plugin;
   const std::string& actual_mime_type = plugin_info.actual_mime_type;
-  const base::string16& group_name = plugin_info.group_name;
+  const std::u16string& group_name = plugin_info.group_name;
   const std::string& identifier = plugin_info.group_identifier;
   chrome::mojom::PluginStatus status = plugin_info.status;
   GURL url(original_params.url);
@@ -850,7 +869,7 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
 
     auto create_blocked_plugin = [&render_frame, &params, &info, &identifier,
                                   &group_name](int template_id,
-                                               const base::string16& message) {
+                                               const std::u16string& message) {
       return ChromePluginPlaceholder::CreateBlockedPlugin(
           render_frame, params, info, identifier, group_name, template_id,
           message);
@@ -954,22 +973,32 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
                   : PDFLoadStatus::kLoadedEmbeddedPdfWithPdfium);
         }
 
-        // Delay loading plugins if prerendering.
-        // TODO(mmenke):  In the case of prerendering, feed into
+        // Delay loading plugins if no-state prefetching.
+        // TODO(mmenke):  In the case of NoStatePrefetch, feed into
         //                ChromeContentRendererClient::CreatePlugin instead, to
         //                reduce the chance of future regressions.
-        bool is_prerendering =
-            prerender::PrerenderHelper::IsPrerendering(render_frame);
+        bool is_no_state_prefetching =
+            prerender::NoStatePrefetchHelper::IsPrefetching(render_frame);
 
-        if (is_prerendering) {
+        if (is_no_state_prefetching) {
           placeholder = ChromePluginPlaceholder::CreateBlockedPlugin(
               render_frame, params, info, identifier, group_name,
               IDR_BLOCKED_PLUGIN_HTML,
               l10n_util::GetStringFUTF16(IDS_PLUGIN_BLOCKED, group_name));
-          placeholder->set_blocked_for_prerendering(is_prerendering);
+          placeholder->set_blocked_for_prerendering(is_no_state_prefetching);
           placeholder->AllowLoading();
           break;
         }
+
+#if BUILDFLAG(ENABLE_PDF_UNSEASONED)
+        if (info.name ==
+            ASCIIToUTF16(ChromeContentClient::kPDFInternalPluginName)) {
+          // Create unseasoned PDF plugin directly, for development purposes.
+          // TODO(crbug.com/1123621): Implement a more permanent solution once
+          // the new PDF viewer process model is approved and in place.
+          return new chrome_pdf::PdfViewWebPlugin(params);
+        }
+#endif  // BUILDFLAG(ENABLE_PDF_UNSEASONED)
 
         return render_frame->CreatePlugin(info, params);
       }
@@ -981,12 +1010,9 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
           ReportPDFLoadStatus(
               PDFLoadStatus::kShowedDisabledPluginPlaceholderForEmbeddedPdf);
 
-          if (base::FeatureList::IsEnabled(
-                  features::kClickToOpenPDFPlaceholder)) {
-            return PDFPluginPlaceholder::CreatePDFPlaceholder(render_frame,
-                                                              params)
-                ->plugin();
-          }
+          return PDFPluginPlaceholder::CreatePDFPlaceholder(render_frame,
+                                                            params)
+              ->plugin();
         }
 
         placeholder = create_blocked_plugin(
@@ -1071,28 +1097,6 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
         content_settings_agent->DidBlockContentType(content_type);
         break;
       }
-      case chrome::mojom::PluginStatus::kComponentUpdateRequired: {
-        placeholder = create_blocked_plugin(
-            IDR_BLOCKED_PLUGIN_HTML,
-            l10n_util::GetStringFUTF16(IDS_PLUGIN_OUTDATED, group_name));
-        placeholder->AllowLoading();
-        mojo::AssociatedRemote<chrome::mojom::PluginHost> plugin_host;
-        render_frame->GetRemoteAssociatedInterfaces()->GetInterface(
-            plugin_host.BindNewEndpointAndPassReceiver());
-        plugin_host->BlockedComponentUpdatedPlugin(
-            placeholder->BindPluginRenderer(), identifier);
-        break;
-      }
-
-      case chrome::mojom::PluginStatus::kRestartRequired: {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-        placeholder =
-            create_blocked_plugin(IDR_BLOCKED_PLUGIN_HTML,
-                                  l10n_util::GetStringFUTF16(
-                                      IDS_PLUGIN_RESTART_REQUIRED, group_name));
-#endif
-        break;
-      }
     }
   }
   placeholder->SetStatus(status);
@@ -1108,7 +1112,7 @@ GURL ChromeContentRendererClient::GetNaClContentHandlerURL(
     const content::WebPluginInfo& plugin) {
   // Look for the manifest URL among the MIME type's additonal parameters.
   const char kNaClPluginManifestAttribute[] = "nacl";
-  base::string16 nacl_attr = ASCIIToUTF16(kNaClPluginManifestAttribute);
+  std::u16string nacl_attr = ASCIIToUTF16(kNaClPluginManifestAttribute);
   for (size_t i = 0; i < plugin.mime_types.size(); ++i) {
     if (plugin.mime_types[i].mime_type == actual_mime_type) {
       for (const auto& p : plugin.mime_types[i].additional_params) {
@@ -1218,9 +1222,9 @@ void ChromeContentRendererClient::PrepareErrorPage(
     std::string* error_html) {
   NetErrorHelper::Get(render_frame)
       ->PrepareErrorPage(
-          error_page::Error::NetError(web_error.url(), web_error.reason(),
-                                      web_error.resolve_error_info(),
-                                      web_error.has_copy_in_cache()),
+          error_page::Error::NetError(
+              web_error.url(), web_error.reason(), web_error.extended_reason(),
+              web_error.resolve_error_info(), web_error.has_copy_in_cache()),
           http_method == "POST", error_html);
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -1309,10 +1313,8 @@ void ChromeContentRendererClient::WillSendRequest(
 }
 
 bool ChromeContentRendererClient::IsPrefetchOnly(
-    content::RenderFrame* render_frame,
-    const blink::WebURLRequest& request) {
-  return prerender::PrerenderHelper::GetPrerenderMode(render_frame) ==
-         prerender::mojom::PrerenderMode::kPrefetchOnly;
+    content::RenderFrame* render_frame) {
+  return prerender::NoStatePrefetchHelper::IsPrefetching(render_frame);
 }
 
 uint64_t ChromeContentRendererClient::VisitedLinkHash(const char* canonical_url,
@@ -1404,7 +1406,7 @@ SpellCheck* ChromeContentRendererClient::GetSpellCheck() {
 }
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
 
-std::unique_ptr<content::WebSocketHandshakeThrottleProvider>
+std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
 ChromeContentRendererClient::CreateWebSocketHandshakeThrottleProvider() {
   return std::make_unique<WebSocketHandshakeThrottleProviderImpl>(
       browser_interface_broker_.get());
@@ -1420,7 +1422,7 @@ bool ChromeContentRendererClient::IsKeySystemsUpdateNeeded() {
 }
 
 bool ChromeContentRendererClient::ShouldReportDetailedMessageForSource(
-    const base::string16& source) {
+    const std::u16string& source) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   return extensions::IsSourceFromAnExtension(source);
 #else
@@ -1494,10 +1496,11 @@ void ChromeContentRendererClient::
   // Web Share is conditionally enabled here in chrome/, to avoid it being
   // made available in other clients of content/ that do not have a Web Share
   // Mojo implementation (e.g. WebView).  Web Share is shipped on Android.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN) || defined(OS_MAC)
   if (base::FeatureList::IsEnabled(features::kWebShare))
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN) || defined(OS_MAC) || \
+    defined(OS_ANDROID)
     blink::WebRuntimeFeatures::EnableWebShare(true);
 #endif
 
@@ -1594,9 +1597,9 @@ GURL ChromeContentRendererClient::OverrideFlashEmbedWithHTML(const GURL& url) {
   return FlashEmbedRewrite::RewriteFlashEmbedURL(url);
 }
 
-std::unique_ptr<content::URLLoaderThrottleProvider>
+std::unique_ptr<blink::URLLoaderThrottleProvider>
 ChromeContentRendererClient::CreateURLLoaderThrottleProvider(
-    content::URLLoaderThrottleProviderType provider_type) {
+    blink::URLLoaderThrottleProviderType provider_type) {
   return std::make_unique<URLLoaderThrottleProviderImpl>(
       browser_interface_broker_.get(), provider_type, this);
 }
@@ -1632,61 +1635,3 @@ void ChromeContentRendererClient::DidSetUserAgent(
   printing::SetAgent(user_agent);
 #endif
 }
-
-bool ChromeContentRendererClient::RequiresHtmlImports(const GURL& url) {
-  if (url.SchemeIs(content::kChromeUIScheme)) {
-    base::StringPiece host_piece = url.host_piece();
-    // TODO(crbug.com/1014322): Remove when migrated to Polymer3.
-    return host_piece == chrome::kChromeUIMdUserManagerHost ||
-           host_piece == content::kChromeUIResourcesHost ||
-           // TODO(crbug.com/1006778): Remove when chrome://tracing is fully
-           // removed.
-           host_piece == content::kChromeUITracingHost ||
-           // TODO(crbug.com/1110954): Remove when migrated away from HTML
-           // imports.
-           host_piece == chrome::kChromeUIBluetoothInternalsHost ||
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-           // TODO(crbug.com/1111430): Remove when migrated to Polymer3.
-           host_piece == chrome::kChromeUIAccountManagerErrorHost ||
-           host_piece == chrome::kChromeUIAccountManagerWelcomeHost ||
-           host_piece == chrome::kChromeUIAccountMigrationWelcomeHost ||
-           // TODO(crbug.com/1111430): Remove when migrated to Polymer3.
-           host_piece == chrome::kChromeUIAddSupervisionHost ||
-           // TODO(crbug.com/1111849): Remove when migrated to Polymer3.
-           host_piece == chrome::kChromeUIAssistantOptInHost ||
-           // TODO(crbug.com/1111477): Remove when migrated to Polymer3.
-           host_piece == chrome::kChromeUICellularSetupHost ||
-           // TODO(crbug.com/1090884): Remove when migrated to Polymer3.
-           host_piece == chrome::kChromeUIInternetConfigDialogHost ||
-           // TODO(crbug.com/1090883): Remove when migrated to Polymer3.
-           host_piece == chrome::kChromeUIInternetDetailDialogHost ||
-           // TODO(crbug.com/1022196): Remove when migrated to Polymer3.
-           host_piece == chrome::kChromeUIMultiDeviceSetupHost ||
-           // TODO(crbug.com/1111852): Remove when migrated to Polymer3.
-           host_piece == chrome::kChromeUINetworkHost ||
-           // TODO(crbug.com/1045266): Remove when migrated to Polymer3.
-           host_piece == chrome::kChromeUIOSSettingsHost ||
-           // TODO(crbug.com/1022192): Remove when migrated to Polymer3.
-           host_piece == chrome::kChromeUIPasswordChangeHost ||
-#endif
-           false;
-  }
-  return false;
-}
-
-// When extension is not available, we don't need to proxy the URLLoaderFactory.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-void ChromeContentRendererClient::MaybeProxyURLLoaderFactory(
-    content::RenderFrame* render_frame,
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory>* factory_receiver) {
-  mojo::PendingRemote<network::mojom::URLLoaderFactory> original_factory;
-  mojo::PendingReceiver<::network::mojom::URLLoaderFactory> proxied_factory(
-      std::move(*factory_receiver));
-  *factory_receiver = original_factory.InitWithNewPipeAndPassReceiver();
-  mojo::Remote<chrome::mojom::UrlLoaderFactoryProxy> url_loader_factory_proxy;
-  render_frame->GetBrowserInterfaceBroker()->GetInterface(
-      url_loader_factory_proxy.BindNewPipeAndPassReceiver());
-  url_loader_factory_proxy->GetProxiedURLLoaderFactory(
-      std::move(original_factory), std::move(proxied_factory));
-}
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)

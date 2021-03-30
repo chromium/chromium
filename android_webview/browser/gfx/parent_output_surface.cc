@@ -78,7 +78,7 @@ void ParentOutputSurface::OnPresentation(
   // The start/end swap times are only best-effort. It is not possible to get
   // the real swap times for WebView.
   AddLatencyInfoSwapTimes(&latency_info, swap_start, base::TimeTicks::Now());
-  latency_tracker_.OnGpuSwapBuffersCompleted(latency_info);
+  latency_tracker_.OnGpuSwapBuffersCompleted(std::move(latency_info));
   client_->DidReceivePresentationFeedback(feedback);
 }
 

@@ -135,7 +135,8 @@ std::vector<std::unique_ptr<HidCollection>> HidCollection::BuildCollections(
       case HidReportDescriptorItem::kTagDelimiter:
         // Update the value associated with a local or global item in the item
         // state table.
-        state.SetItemValue(current_item->tag(), current_item->GetShortData());
+        state.SetItemValue(current_item->tag(), current_item->GetShortData(),
+                           current_item->payload_size());
         break;
       default:
         break;

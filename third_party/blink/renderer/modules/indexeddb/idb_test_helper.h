@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_IDB_TEST_HELPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_IDB_TEST_HELPER_H_
 
+#include <memory>
+
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
 #include "v8/include/v8.h"

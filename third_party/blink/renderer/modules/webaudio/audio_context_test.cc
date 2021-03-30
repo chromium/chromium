@@ -93,7 +93,8 @@ class AudioContextTest : public PageTestBase {
 
   void SetUp() override {
     PageTestBase::SetUp(IntSize());
-    CoreInitializer::GetInstance().ProvideModulesToPage(GetPage(), nullptr);
+    CoreInitializer::GetInstance().ProvideModulesToPage(GetPage(),
+                                                        base::EmptyString());
   }
 
   void ResetAudioContextManagerForAudioContext(AudioContext* audio_context) {

@@ -9,6 +9,7 @@ import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../os_cr_elements.gni")
 
 js_type_check("closure_compile") {
+  uses_legacy_modules = true
   deps = [
     ":cr_camera",
     ":cr_picture_list",

@@ -5,9 +5,13 @@
 #include "components/exo/keyboard.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/public/cpp/app_types.h"
 #include "ash/public/cpp/ash_pref_names.h"
+#include "ash/public/cpp/external_arc/overlay/arc_overlay_manager.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_helper.h"
+#include "ash/test/test_widget_builder.h"
+#include "ash/test/test_window_builder.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -32,6 +36,7 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
+#include "ui/views/controls/textfield/textfield.h"
 
 namespace exo {
 namespace {
@@ -345,14 +350,17 @@ TEST_F(KeyboardTest, OnKeyboardKey) {
 
   // Key events should be ignored when the focused window is not an
   // exo::Surface.
-  auto window = CreateChildWindow(shell_surface->GetWidget()->GetNativeWindow(),
-                                  gfx::Rect(buffer_size));
-  // Moving the focus away will trigger the fallback path in GetEffectiveFocus.
-  // TODO(oshima): Consider removing the fallback path.
+  std::unique_ptr<aura::Window> window =
+      ash::ChildTestWindowBuilder(shell_surface->GetWidget()->GetNativeWindow(),
+                                  gfx::Rect(buffer_size))
+          .Build();
+  // Moving the focus away will reset the focused surface.
   EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface.get()))
-      .WillOnce(testing::Return(true));
+      .Times(0);
   focus_client->FocusWindow(window.get());
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
+  EXPECT_FALSE(seat.GetFocusedSurface());
+  EXPECT_FALSE(keyboard.focused_surface_for_testing());
 
   EXPECT_CALL(*delegate_ptr,
               OnKeyboardKey(testing::_, ui::DomCode::ARROW_LEFT, true))
@@ -454,6 +462,82 @@ TEST_F(KeyboardTest, OnKeyboardKey_NotSendKeyIfConsumedByIme) {
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
   input_method->SetFocusedTextInputClient(nullptr);
+}
+
+TEST_F(KeyboardTest, FocusWithArcOverlay) {
+  auto delegate = std::make_unique<NiceMockKeyboardDelegate>();
+  // Just allow any surface to receive focus.
+  EXPECT_CALL(*delegate, CanAcceptKeyboardEventsForSurface(::testing::_))
+      .WillRepeatedly(testing::Return(true));
+  Seat seat;
+  Keyboard keyboard(std::move(delegate), &seat);
+
+  // TODO(oshima): Create a TestExoWindowBuilder.
+  class TestPropertyResolver : public exo::WMHelper::AppPropertyResolver {
+   public:
+    TestPropertyResolver() = default;
+    ~TestPropertyResolver() override = default;
+    void PopulateProperties(
+        const std::string& app_id,
+        const std::string& startup_id,
+        bool for_creation,
+        ui::PropertyHandler& out_properties_container) override {
+      out_properties_container.SetProperty(
+          aura::client::kAppType, static_cast<int>(ash::AppType::ARC_APP));
+    }
+  };
+  WMHelper::GetInstance()->RegisterAppPropertyResolver(
+      std::make_unique<TestPropertyResolver>());
+
+  ash::ArcOverlayManager arc_overlay_manager_;
+
+  auto* widget1 = ash::TestWidgetBuilder()
+                      .SetBounds(gfx::Rect(200, 200))
+                      .BuildOwnedByNativeWidget();
+  views::Textfield* textfield1 = new views::Textfield();
+  widget1->GetContentsView()->AddChildView(textfield1);
+  textfield1->SetBounds(0, 0, 100, 100);
+
+  auto* widget2 = ash::TestWidgetBuilder()
+                      .SetBounds(gfx::Rect(200, 200))
+                      .BuildOwnedByNativeWidget();
+
+  auto hold = arc_overlay_manager_.RegisterHostWindow(
+      "test", widget1->GetNativeWindow());
+
+  std::unique_ptr<Surface> surface(new Surface);
+  std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
+  gfx::Size buffer_size(10, 10);
+  std::unique_ptr<Buffer> buffer(
+      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+  surface->SetClientSurfaceId("billing_id:test");
+  surface->Attach(buffer.get());
+  surface->Commit();
+  EXPECT_TRUE(shell_surface->GetWidget());
+
+  // The overlay should have the focus when created.
+  EXPECT_EQ(keyboard.focused_surface_for_testing(), surface.get());
+
+  widget2->Activate();
+  EXPECT_FALSE(keyboard.focused_surface_for_testing());
+
+  // Activating the host widget should set the focus back to the overlay.
+  widget1->Activate();
+  EXPECT_EQ(keyboard.focused_surface_for_testing(), surface.get());
+
+  constexpr char kFocusedViewClassName[] = "OverlayNativeViewHost";
+  EXPECT_STREQ(kFocusedViewClassName,
+               widget1->GetFocusManager()->GetFocusedView()->GetClassName());
+
+  // Tabbing should not move the focus away from the overlay.
+  ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
+  generator.PressKey(ui::VKEY_TAB, 0);
+
+  EXPECT_STREQ(kFocusedViewClassName,
+               widget1->GetFocusManager()->GetFocusedView()->GetClassName());
+  EXPECT_EQ(keyboard.focused_surface_for_testing(), surface.get());
+
+  widget1->CloseNow();
 }
 
 TEST_F(KeyboardTest, OnKeyboardModifiers) {
@@ -1114,5 +1198,6 @@ TEST_F(KeyboardTest, AckKeyboardKeyExpiredWithMovingFocusAccelerator) {
   // is made on the methods above, rather than in the destructor.
   testing::Mock::VerifyAndClearExpectations(&delegate);
 }
+
 }  // namespace
 }  // namespace exo

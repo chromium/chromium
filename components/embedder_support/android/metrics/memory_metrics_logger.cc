@@ -54,14 +54,16 @@ void RecordMemoryMetricsImpl(
             process_dump.os_dump().private_footprint_kb / 1024);
         break;
       }
+      case memory_instrumentation::mojom::ProcessType::GPU: {
+        MEMORY_METRICS_HISTOGRAM_MB(
+            GetPrivateFootprintHistogramName(HistogramProcessType::kGpu),
+            process_dump.os_dump().private_footprint_kb / 1024);
+        break;
+      }
 
       // Currently this class only records metrics for the browser and
       // renderer process, as it originated from WebView, where there are no
       // other processes.
-      // TODO(weblayer-team): refactor to allow the embedder to record GPU
-      // metrics.
-      case memory_instrumentation::mojom::ProcessType::GPU:
-        FALLTHROUGH;
       case memory_instrumentation::mojom::ProcessType::ARC:
         FALLTHROUGH;
       case memory_instrumentation::mojom::ProcessType::UTILITY:

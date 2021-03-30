@@ -29,7 +29,7 @@ struct AvPipelineClient {
   ::media::WaitingCB waiting_cb;
 
   // End of stream notification.
-  base::OnceClosure eos_cb;
+  base::RepeatingClosure eos_cb;
 
   // Asynchronous playback error notification.
   ::media::PipelineStatusCB playback_error_cb;

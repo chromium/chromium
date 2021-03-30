@@ -126,6 +126,7 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource {
   void ClearAccessibilityNodes();
 
   content::RenderAccessibility* GetRenderAccessibility();
+  content::RenderAccessibility* GetRenderAccessibilityIfEnabled();
   std::unique_ptr<gfx::Transform> MakeTransformFromViewInfo() const;
 
   ui::AXTreeData tree_data_;

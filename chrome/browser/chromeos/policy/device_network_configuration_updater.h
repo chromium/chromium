@@ -16,13 +16,16 @@
 #include "components/onc/onc_constants.h"
 #include "net/cert/x509_certificate.h"
 
+namespace ash {
+class CrosSettings;
+}  // namespace ash
+
 namespace base {
 class DictionaryValue;
 class ListValue;
 }
 
 namespace chromeos {
-class CrosSettings;
 class ManagedNetworkConfigurationHandler;
 class NetworkDeviceHandler;
 }
@@ -52,7 +55,7 @@ class DeviceNetworkConfigurationUpdater : public NetworkConfigurationUpdater {
       PolicyService* policy_service,
       chromeos::ManagedNetworkConfigurationHandler* network_config_handler,
       chromeos::NetworkDeviceHandler* network_device_handler,
-      chromeos::CrosSettings* cros_settings,
+      ash::CrosSettings* cros_settings,
       const DeviceAssetIDFetcher& device_asset_id_fetcher);
 
  private:
@@ -60,7 +63,7 @@ class DeviceNetworkConfigurationUpdater : public NetworkConfigurationUpdater {
       PolicyService* policy_service,
       chromeos::ManagedNetworkConfigurationHandler* network_config_handler,
       chromeos::NetworkDeviceHandler* network_device_handler,
-      chromeos::CrosSettings* cros_settings,
+      ash::CrosSettings* cros_settings,
       const DeviceAssetIDFetcher& device_asset_id_fetcher);
 
   // NetworkConfigurationUpdater:
@@ -72,7 +75,7 @@ class DeviceNetworkConfigurationUpdater : public NetworkConfigurationUpdater {
   void OnDataRoamingSettingChanged();
 
   chromeos::NetworkDeviceHandler* network_device_handler_;
-  chromeos::CrosSettings* cros_settings_;
+  ash::CrosSettings* cros_settings_;
   base::CallbackListSubscription data_roaming_setting_subscription_;
 
   // Returns the device's administrator-set asset id.

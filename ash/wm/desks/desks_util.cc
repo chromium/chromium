@@ -10,7 +10,11 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_grid.h"
+#include "ash/wm/overview/overview_session.h"
 #include "ash/wm/window_util.h"
 #include "ui/aura/window.h"
 
@@ -166,6 +170,21 @@ ui::Compositor* GetSelectedCompositorForPerformanceMetrics() {
                             : Shell::GetPrimaryRootWindow();
   DCHECK(selected_root);
   return selected_root->layer()->GetCompositor();
+}
+
+bool IsDraggingAnyDesk() {
+  OverviewSession* overview_session =
+      Shell::Get()->overview_controller()->overview_session();
+  if (!overview_session)
+    return false;
+
+  for (auto& grid : overview_session->grid_list()) {
+    const DesksBarView* desks_bar_view = grid->desks_bar_view();
+    if (desks_bar_view && desks_bar_view->IsDraggingDesk())
+      return true;
+  }
+
+  return false;
 }
 
 }  // namespace desks_util

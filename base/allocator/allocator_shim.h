@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/base_export.h"
 #include "build/build_config.h"
 
@@ -146,7 +147,7 @@ BASE_EXPORT void InsertAllocatorDispatch(AllocatorDispatch* dispatch);
 // in malloc(), which we really don't want.
 BASE_EXPORT void RemoveAllocatorDispatchForTesting(AllocatorDispatch* dispatch);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(OS_WIN)
 // Configures the allocator for the caller's allocation domain. Allocations that
 // take place prior to this configuration step will succeed, but will not
 // benefit from its one-time mitigations. As such, this function must be called
@@ -161,11 +162,14 @@ BASE_EXPORT void InitializeAllocatorShim();
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 BASE_EXPORT void EnablePartitionAllocMemoryReclaimer();
+
+BASE_EXPORT void ReconfigurePartitionAllocLazyCommit();
+
+BASE_EXPORT void ConfigurePartitionRefCountSupport(bool enable_ref_count);
 #endif
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_ALLOW_PCSCAN
 BASE_EXPORT void EnablePCScan();
-BASE_EXPORT void EnablePCScanIfNeeded();
 #endif
 
 }  // namespace allocator

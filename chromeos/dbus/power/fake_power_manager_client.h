@@ -326,4 +326,9 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::FakePowerManagerClient;
+}
+
 #endif  // CHROMEOS_DBUS_POWER_FAKE_POWER_MANAGER_CLIENT_H_

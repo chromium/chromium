@@ -144,11 +144,11 @@ class Observer : public ProvidedFileSystemObserver {
                         const Watcher& watcher,
                         storage::WatcherManager::ChangeType change_type,
                         const ProvidedFileSystemObserver::Changes& changes,
-                        const base::Closure& callback) override {
+                        base::OnceClosure callback) override {
     EXPECT_EQ(kFileSystemId, file_system_info.file_system_id());
     change_events_.push_back(
         std::make_unique<ChangeEvent>(change_type, changes));
-    complete_callback_ = callback;
+    complete_callback_ = std::move(callback);
   }
 
   void OnWatcherTagUpdated(const ProvidedFileSystemInfo& file_system_info,
@@ -166,9 +166,8 @@ class Observer : public ProvidedFileSystemObserver {
   // Completes handling the OnWatcherChanged event.
   void CompleteOnWatcherChanged() {
     DCHECK(!complete_callback_.is_null());
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  complete_callback_);
-    complete_callback_ = base::Closure();
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, std::move(complete_callback_));
   }
 
   int list_changed_counter() const { return list_changed_counter_; }
@@ -181,7 +180,7 @@ class Observer : public ProvidedFileSystemObserver {
   std::vector<std::unique_ptr<ChangeEvent>> change_events_;
   int list_changed_counter_;
   int tag_updated_counter_;
-  base::Closure complete_callback_;
+  base::OnceClosure complete_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(Observer);
 };
@@ -275,27 +274,29 @@ class FileSystemProviderProvidedFileSystemTest : public testing::Test {
 
 TEST_F(FileSystemProviderProvidedFileSystemTest, AutoUpdater) {
   Log log;
-  base::Closure firstCallback;
-  base::Closure secondCallback;
+  base::OnceClosure first_callback;
+  base::OnceClosure second_callback;
 
   {
     // Auto updater is ref counted, and bound to all callbacks.
-    scoped_refptr<AutoUpdater> auto_updater(new AutoUpdater(
-        base::Bind(&LogStatus, base::Unretained(&log), base::File::FILE_OK)));
+    scoped_refptr<AutoUpdater> auto_updater(new AutoUpdater(base::BindOnce(
+        &LogStatus, base::Unretained(&log), base::File::FILE_OK)));
 
-    firstCallback = auto_updater->CreateCallback();
-    secondCallback = auto_updater->CreateCallback();
+    first_callback = auto_updater->CreateCallback();
+    second_callback = auto_updater->CreateCallback();
   }
 
   // Getting out of scope, should not invoke updating if there are pending
   // callbacks.
   EXPECT_EQ(0u, log.size());
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, firstCallback);
+  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                std::move(first_callback));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0u, log.size());
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, secondCallback);
+  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                std::move(second_callback));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, log.size());
 }
@@ -303,8 +304,8 @@ TEST_F(FileSystemProviderProvidedFileSystemTest, AutoUpdater) {
 TEST_F(FileSystemProviderProvidedFileSystemTest, AutoUpdater_NoCallbacks) {
   Log log;
   {
-    scoped_refptr<AutoUpdater> auto_updater(new AutoUpdater(
-        base::Bind(&LogStatus, base::Unretained(&log), base::File::FILE_OK)));
+    scoped_refptr<AutoUpdater> auto_updater(new AutoUpdater(base::BindOnce(
+        &LogStatus, base::Unretained(&log), base::File::FILE_OK)));
   }
   EXPECT_EQ(1u, log.size());
 }
@@ -312,9 +313,9 @@ TEST_F(FileSystemProviderProvidedFileSystemTest, AutoUpdater_NoCallbacks) {
 TEST_F(FileSystemProviderProvidedFileSystemTest, AutoUpdater_CallbackIgnored) {
   Log log;
   {
-    scoped_refptr<AutoUpdater> auto_updater(new AutoUpdater(
-        base::Bind(&LogStatus, base::Unretained(&log), base::File::FILE_OK)));
-    base::Closure callback = auto_updater->CreateCallback();
+    scoped_refptr<AutoUpdater> auto_updater(new AutoUpdater(base::BindOnce(
+        &LogStatus, base::Unretained(&log), base::File::FILE_OK)));
+    base::OnceClosure callback = auto_updater->CreateCallback();
     // The callback gets out of scope, so the ref counted auto updater instance
     // gets deleted. Still, updating shouldn't be invoked, since the callback
     // wasn't executed.
@@ -337,7 +338,8 @@ TEST_F(FileSystemProviderProvidedFileSystemTest, AddWatcher_NotFound) {
       GURL(kOrigin), base::FilePath(kDirectoryPath), false /* recursive */,
       false /* persistent */,
       base::BindOnce(&LogStatus, base::Unretained(&log)),
-      base::Bind(&LogNotification, base::Unretained(&notification_log)));
+      base::BindRepeating(&LogNotification,
+                          base::Unretained(&notification_log)));
   base::RunLoop().RunUntilIdle();
 
   // The directory should not become watched because of an error.
@@ -396,7 +398,8 @@ TEST_F(FileSystemProviderProvidedFileSystemTest, AddWatcher_PersistentIllegal) {
         GURL(kOrigin), base::FilePath(kDirectoryPath), false /* recursive */,
         true /* persistent */,
         base::BindOnce(&LogStatus, base::Unretained(&log)),
-        base::Bind(&LogNotification, base::Unretained(&notification_log)));
+        base::BindRepeating(&LogNotification,
+                            base::Unretained(&notification_log)));
     base::RunLoop().RunUntilIdle();
 
     ASSERT_EQ(1u, log.size());
@@ -532,7 +535,8 @@ TEST_F(FileSystemProviderProvidedFileSystemTest, AddWatcher_MultipleOrigins) {
         GURL(kOrigin), base::FilePath(kDirectoryPath), false /* recursive */,
         false /* persistent */,
         base::BindOnce(&LogStatus, base::Unretained(&log)),
-        base::Bind(&LogNotification, base::Unretained(&notification_log)));
+        base::BindRepeating(&LogNotification,
+                            base::Unretained(&notification_log)));
     base::RunLoop().RunUntilIdle();
 
     ASSERT_EQ(1u, log.size());
@@ -566,7 +570,8 @@ TEST_F(FileSystemProviderProvidedFileSystemTest, AddWatcher_MultipleOrigins) {
         GURL(kAnotherOrigin), base::FilePath(kDirectoryPath),
         true /* recursive */, false /* persistent */,
         base::BindOnce(&LogStatus, base::Unretained(&log)),
-        base::Bind(&LogNotification, base::Unretained(&notification_log)));
+        base::BindRepeating(&LogNotification,
+                            base::Unretained(&notification_log)));
     base::RunLoop().RunUntilIdle();
 
     ASSERT_EQ(1u, log.size());
@@ -652,7 +657,8 @@ TEST_F(FileSystemProviderProvidedFileSystemTest, RemoveWatcher) {
         GURL(kOrigin), base::FilePath(kDirectoryPath), false /* recursive */,
         false /* persistent */,
         base::BindOnce(&LogStatus, base::Unretained(&log)),
-        base::Bind(&LogNotification, base::Unretained(&notification_log)));
+        base::BindRepeating(&LogNotification,
+                            base::Unretained(&notification_log)));
     base::RunLoop().RunUntilIdle();
 
     ASSERT_EQ(1u, log.size());
@@ -691,7 +697,8 @@ TEST_F(FileSystemProviderProvidedFileSystemTest, RemoveWatcher) {
         GURL(kOrigin), base::FilePath(kDirectoryPath), false /* recursive */,
         false /* persistent */,
         base::BindOnce(&LogStatus, base::Unretained(&log)),
-        base::Bind(&LogNotification, base::Unretained(&notification_log)));
+        base::BindRepeating(&LogNotification,
+                            base::Unretained(&notification_log)));
     base::RunLoop().RunUntilIdle();
 
     ASSERT_EQ(1u, log.size());
@@ -740,7 +747,8 @@ TEST_F(FileSystemProviderProvidedFileSystemTest, Notify) {
         GURL(kOrigin), base::FilePath(kDirectoryPath), false /* recursive */,
         false /* persistent */,
         base::BindOnce(&LogStatus, base::Unretained(&log)),
-        base::Bind(&LogNotification, base::Unretained(&notification_log)));
+        base::BindRepeating(&LogNotification,
+                            base::Unretained(&notification_log)));
     base::RunLoop().RunUntilIdle();
 
     ASSERT_EQ(1u, log.size());
@@ -851,7 +859,7 @@ TEST_F(FileSystemProviderProvidedFileSystemTest, OpenedFiles) {
   OpenFileLog log;
   provided_file_system_->OpenFile(
       base::FilePath(kFilePath), OPEN_FILE_MODE_WRITE,
-      base::Bind(LogOpenFile, base::Unretained(&log)));
+      base::BindOnce(LogOpenFile, base::Unretained(&log)));
   base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(1u, log.size());
@@ -885,7 +893,7 @@ TEST_F(FileSystemProviderProvidedFileSystemTest, OpenedFiles_OpeningFailure) {
   OpenFileLog log;
   provided_file_system_->OpenFile(
       base::FilePath(kFilePath), OPEN_FILE_MODE_WRITE,
-      base::Bind(LogOpenFile, base::Unretained(&log)));
+      base::BindOnce(LogOpenFile, base::Unretained(&log)));
   base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(1u, log.size());
@@ -904,7 +912,7 @@ TEST_F(FileSystemProviderProvidedFileSystemTest, OpenedFile_ClosingFailure) {
   OpenFileLog log;
   provided_file_system_->OpenFile(
       base::FilePath(kFilePath), OPEN_FILE_MODE_WRITE,
-      base::Bind(LogOpenFile, base::Unretained(&log)));
+      base::BindOnce(LogOpenFile, base::Unretained(&log)));
   base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(1u, log.size());

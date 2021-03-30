@@ -4,11 +4,12 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/kerberos_accounts_handler.h"
 
+#include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
@@ -20,7 +21,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -48,7 +48,7 @@ void AddKerberosTitleStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_KERBEROS_ACCOUNTS_SUBMENU_LABEL},
       {"kerberosAccountsPageTitle", IDS_SETTINGS_KERBEROS_ACCOUNTS_PAGE_TITLE},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
 // Adds flags related to Kerberos settings visibility and its corresponding
@@ -110,12 +110,14 @@ void AddKerberosAddAccountDialogStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_KERBEROS_CONFIG_ERROR_SECTION_NOT_SUPPORTED},
       {"kerberosConfigErrorKrb5FailedToParse",
        IDS_SETTINGS_KERBEROS_CONFIG_ERROR_KRB5_FAILED_TO_PARSE},
+      {"kerberosConfigErrorTooManyNestedGroups",
+       IDS_SETTINGS_KERBEROS_CONFIG_ERROR_TOO_MANY_NESTED_GROUPS},
       {"addKerberosAccountRefreshButtonLabel",
        IDS_SETTINGS_ADD_KERBEROS_ACCOUNT_REFRESH_BUTTON_LABEL},
       {"addKerberosAccount", IDS_SETTINGS_ADD_KERBEROS_ACCOUNT},
       {"refreshKerberosAccount", IDS_SETTINGS_REFRESH_KERBEROS_ACCOUNT},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   PrefService* local_state = g_browser_process->local_state();
 
@@ -154,7 +156,7 @@ void AddKerberosAccountsPageStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_KERBEROS_ACCOUNTS_ACCOUNT_REFRESHED_TIP},
       {"kerberosAccountsSignedIn", IDS_SETTINGS_KERBEROS_ACCOUNTS_SIGNED_IN},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   PrefService* local_state = g_browser_process->local_state();
 
@@ -266,7 +268,7 @@ void KerberosAccountsHandler::OnListAccounts(
     // 'nn days' otherwise.
     base::TimeDelta tgt_validity =
         base::TimeDelta::FromSeconds(account.tgt_validity_seconds());
-    const base::string16 valid_for_duration = ui::TimeFormat::Detailed(
+    const std::u16string valid_for_duration = ui::TimeFormat::Detailed(
         ui::TimeFormat::FORMAT_DURATION, ui::TimeFormat::LENGTH_LONG,
         tgt_validity < base::TimeDelta::FromDays(1) ? -1 : 0, tgt_validity);
 
@@ -394,11 +396,11 @@ void KerberosAccountsHandler::HandleSetAsActiveKerberosAccount(
 }
 
 void KerberosAccountsHandler::OnJavascriptAllowed() {
-  credentials_manager_observer_.Add(kerberos_credentials_manager_);
+  credentials_manager_observation_.Observe(kerberos_credentials_manager_);
 }
 
 void KerberosAccountsHandler::OnJavascriptDisallowed() {
-  credentials_manager_observer_.RemoveAll();
+  credentials_manager_observation_.Reset();
 }
 
 void KerberosAccountsHandler::OnAccountsChanged() {

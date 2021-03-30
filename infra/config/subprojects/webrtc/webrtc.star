@@ -62,6 +62,7 @@ builder(
 builder(
     name = "WebRTC Chromium Linux Tester",
     triggered_by = ["WebRTC Chromium Linux Builder"],
+    os = os.LINUX_BIONIC,
 )
 
 builder(

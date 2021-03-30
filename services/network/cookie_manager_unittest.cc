@@ -16,8 +16,10 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "net/base/features.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
@@ -33,6 +35,7 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/session_cleanup_cookie_store.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -56,6 +59,8 @@
 namespace network {
 namespace {
 using base::StrCat;
+using testing::IsEmpty;
+using testing::UnorderedElementsAre;
 
 using CookieDeletionInfo = net::CookieDeletionInfo;
 
@@ -65,6 +70,16 @@ const base::FilePath::CharType kTestCookiesFilename[] =
 constexpr char kCookieDomain[] = "foo_host.com";
 constexpr char kCookieURL[] = "http://foo_host.com";
 constexpr char kCookieHttpsURL[] = "https://foo_host.com";
+
+MATCHER_P(CookieWithName, name, "") {
+  return testing::ExplainMatchResult(testing::Eq(name), arg.Name(),
+                                     result_listener);
+}
+
+MATCHER_P(CookieAccessWithName, name, "") {
+  return testing::ExplainMatchResult(CookieWithName(name), arg.cookie,
+                                     result_listener);
+}
 
 // Wraps a mojom::CookieManager in synchronous, blocking calls to make
 // it easier to test.
@@ -281,9 +296,12 @@ class SynchronousCookieManager {
 
 class CookieManagerTest : public testing::Test {
  public:
-  CookieManagerTest() { InitializeCookieService(nullptr, nullptr); }
+  CookieManagerTest() {
+    scoped_feature_list_.Init();
+    InitializeCookieService(nullptr, nullptr);
+  }
 
-  ~CookieManagerTest() override {}
+  ~CookieManagerTest() override = default;
 
   // Tear down the remote service.
   void NukeService() { cookie_service_.reset(); }
@@ -296,6 +314,9 @@ class CookieManagerTest : public testing::Test {
     net::CookieOptions options;
     options.set_same_site_cookie_context(
         net::CookieOptions::SameSiteCookieContext::MakeInclusive());
+    options.set_same_party_cookie_context_type(
+        net::CookieOptions::SamePartyCookieContextType::kSameParty);
+    options.set_is_in_nontrivial_first_party_set(true);
     if (can_modify_httponly)
       options.set_include_httponly();
 
@@ -349,6 +370,10 @@ class CookieManagerTest : public testing::Test {
 
   bool connection_error_seen() const { return connection_error_seen_; }
 
+  base::test::ScopedFeatureList& scoped_feature_list() {
+    return scoped_feature_list_;
+  }
+
  protected:
   void InitializeCookieService(
       scoped_refptr<net::CookieMonster::PersistentCookieStore> store,
@@ -390,6 +415,7 @@ class CookieManagerTest : public testing::Test {
 
   bool connection_error_seen_;
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<net::CookieMonster> cookie_monster_;
   std::unique_ptr<net::URLRequestContext> url_request_context_;
   std::unique_ptr<CookieManager> cookie_service_;
@@ -795,6 +821,167 @@ TEST_F(CookieManagerTest, GetCookieListSameSite) {
   excluded_cookies = service_wrapper()->GetExcludedCookieList(
       GURL("https://foo_host.com/with/path"), options);
   ASSERT_EQ(0u, excluded_cookies.size());
+}
+
+TEST_F(CookieManagerTest, GetCookieListSameParty) {
+  scoped_feature_list().Reset();
+  scoped_feature_list().InitAndEnableFeature(net::features::kFirstPartySets);
+  // Create SameParty & non-SameParty cookies for each valid SameSite choice.
+  // Unspecified:
+  ASSERT_TRUE(SetCanonicalCookie(
+      *net::CanonicalCookie::CreateUnsafeCookieForTesting(
+          "nonSameParty-Unspecified", "A", kCookieDomain, "/", base::Time(),
+          base::Time(), base::Time(),
+          /*secure=*/true, /*httponly=*/false, net::CookieSameSite::UNSPECIFIED,
+          net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/false),
+      "https", true));
+  ASSERT_TRUE(SetCanonicalCookie(
+      *net::CanonicalCookie::CreateUnsafeCookieForTesting(
+          "SameParty-Unspecified", "B", kCookieDomain, "/", base::Time(),
+          base::Time(), base::Time(), /*secure=*/true,
+          /*httponly=*/false, net::CookieSameSite::UNSPECIFIED,
+          net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/true),
+      "https", true));
+  // None:
+  ASSERT_TRUE(
+      SetCanonicalCookie(*net::CanonicalCookie::CreateUnsafeCookieForTesting(
+                             "nonSameParty-None", "C", kCookieDomain, "/",
+                             base::Time(), base::Time(), base::Time(),
+                             /*secure=*/true, /*httponly=*/false,
+                             net::CookieSameSite::NO_RESTRICTION,
+                             net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/false),
+                         "https", true));
+  ASSERT_TRUE(SetCanonicalCookie(
+      *net::CanonicalCookie::CreateUnsafeCookieForTesting(
+          "SameParty-None", "D", kCookieDomain, "/", base::Time(), base::Time(),
+          base::Time(), /*secure=*/true,
+          /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
+          net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/true),
+      "https", true));
+  // Lax:
+  ASSERT_TRUE(SetCanonicalCookie(
+      *net::CanonicalCookie::CreateUnsafeCookieForTesting(
+          "nonSameParty-Lax", "E", kCookieDomain, "/", base::Time(),
+          base::Time(), base::Time(), /*secure=*/true,
+          /*httponly=*/false, net::CookieSameSite::LAX_MODE,
+          net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/false),
+      "https", true));
+  ASSERT_TRUE(SetCanonicalCookie(
+      *net::CanonicalCookie::CreateUnsafeCookieForTesting(
+          "SameParty-Lax", "F", kCookieDomain, "/", base::Time(), base::Time(),
+          base::Time(), /*secure=*/true,
+          /*httponly=*/false, net::CookieSameSite::LAX_MODE,
+          net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/true),
+      "https", true));
+
+  const GURL cookie_url("https://foo_host.com/with/path");
+
+  // Verify that sites in a First-Party Set get SameParty semantics.
+  {
+    net::CookieOptions options;
+    options.set_return_excluded_cookies();
+    options.set_is_in_nontrivial_first_party_set(true);
+    ASSERT_EQ(net::CookieOptions::SamePartyCookieContextType::kCrossParty,
+              options.same_party_cookie_context_type());
+    ASSERT_EQ(
+        net::CookieOptions::SameSiteCookieContext(
+            net::CookieOptions::SameSiteCookieContext::ContextType::CROSS_SITE),
+        options.same_site_cookie_context());
+
+    // Retrieve only unrestricted cookies. SameParty cookies are excluded, and
+    // non-SameSite=None cookies are excluded.
+    EXPECT_THAT(service_wrapper()->GetCookieList(cookie_url, options),
+                UnorderedElementsAre(CookieWithName("nonSameParty-None")));
+
+    EXPECT_THAT(
+        service_wrapper()->GetExcludedCookieList(cookie_url, options),
+        UnorderedElementsAre(CookieAccessWithName("SameParty-Unspecified"),
+                             CookieAccessWithName("SameParty-None"),
+                             CookieAccessWithName("SameParty-Lax"),
+                             CookieAccessWithName("nonSameParty-Unspecified"),
+                             CookieAccessWithName("nonSameParty-Lax")));
+
+    // In a same-party, cross-site context, SameParty cookies should be
+    // included, and non-SameParty cookies should be excluded based on SameSite
+    // value.
+    options.set_same_party_cookie_context_type(
+        net::CookieOptions::SamePartyCookieContextType::kSameParty);
+    EXPECT_THAT(service_wrapper()->GetCookieList(cookie_url, options),
+                UnorderedElementsAre(CookieWithName("SameParty-Unspecified"),
+                                     CookieWithName("SameParty-None"),
+                                     CookieWithName("SameParty-Lax"),
+                                     CookieWithName("nonSameParty-None")));
+    EXPECT_THAT(
+        service_wrapper()->GetExcludedCookieList(cookie_url, options),
+        UnorderedElementsAre(CookieAccessWithName("nonSameParty-Unspecified"),
+                             CookieAccessWithName("nonSameParty-Lax")));
+
+    // In a same-party, same-site context, all cookies should be included.
+    options.set_same_site_cookie_context(
+        net::CookieOptions::SameSiteCookieContext::MakeInclusive());
+    EXPECT_THAT(service_wrapper()->GetCookieList(cookie_url, options),
+                UnorderedElementsAre(CookieWithName("SameParty-Unspecified"),
+                                     CookieWithName("SameParty-None"),
+                                     CookieWithName("SameParty-Lax"),
+                                     CookieWithName("nonSameParty-Unspecified"),
+                                     CookieWithName("nonSameParty-None"),
+                                     CookieWithName("nonSameParty-Lax")));
+    EXPECT_THAT(service_wrapper()->GetExcludedCookieList(cookie_url, options),
+                IsEmpty());
+  }
+
+  // Now verify that sites not in a First-Party Set ignore SameParty and fall
+  // back to SameSite semantics instead.
+  {
+    net::CookieOptions options;
+    options.set_return_excluded_cookies();
+    // Default, but set for explicitness.
+    options.set_is_in_nontrivial_first_party_set(false);
+    ASSERT_EQ(net::CookieOptions::SamePartyCookieContextType::kCrossParty,
+              options.same_party_cookie_context_type());
+    ASSERT_EQ(
+        net::CookieOptions::SameSiteCookieContext(
+            net::CookieOptions::SameSiteCookieContext::ContextType::CROSS_SITE),
+        options.same_site_cookie_context());
+
+    // Cross-party, cross-site.
+    EXPECT_THAT(service_wrapper()->GetCookieList(cookie_url, options),
+                UnorderedElementsAre(CookieWithName("SameParty-None"),
+                                     CookieWithName("nonSameParty-None")));
+
+    EXPECT_THAT(
+        service_wrapper()->GetExcludedCookieList(cookie_url, options),
+        UnorderedElementsAre(CookieAccessWithName("SameParty-Unspecified"),
+                             CookieAccessWithName("SameParty-Lax"),
+                             CookieAccessWithName("nonSameParty-Unspecified"),
+                             CookieAccessWithName("nonSameParty-Lax")));
+
+    // Same-party, cross-site.
+    options.set_same_party_cookie_context_type(
+        net::CookieOptions::SamePartyCookieContextType::kSameParty);
+    EXPECT_THAT(service_wrapper()->GetCookieList(cookie_url, options),
+                UnorderedElementsAre(CookieWithName("SameParty-None"),
+                                     CookieWithName("nonSameParty-None")));
+    EXPECT_THAT(
+        service_wrapper()->GetExcludedCookieList(cookie_url, options),
+        UnorderedElementsAre(CookieAccessWithName("SameParty-Unspecified"),
+                             CookieAccessWithName("SameParty-Lax"),
+                             CookieAccessWithName("nonSameParty-Unspecified"),
+                             CookieAccessWithName("nonSameParty-Lax")));
+
+    // Same-party, same-site.
+    options.set_same_site_cookie_context(
+        net::CookieOptions::SameSiteCookieContext::MakeInclusive());
+    EXPECT_THAT(service_wrapper()->GetCookieList(cookie_url, options),
+                UnorderedElementsAre(CookieWithName("SameParty-Unspecified"),
+                                     CookieWithName("SameParty-None"),
+                                     CookieWithName("SameParty-Lax"),
+                                     CookieWithName("nonSameParty-Unspecified"),
+                                     CookieWithName("nonSameParty-None"),
+                                     CookieWithName("nonSameParty-Lax")));
+    EXPECT_THAT(service_wrapper()->GetExcludedCookieList(cookie_url, options),
+                IsEmpty());
+  }
 }
 
 TEST_F(CookieManagerTest, GetCookieListAccessTime) {

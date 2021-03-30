@@ -73,9 +73,8 @@ BrowserContextKeyedAPIFactory<AudioAPI>* AudioAPI::GetFactoryInstance() {
 AudioAPI::AudioAPI(content::BrowserContext* context)
     : browser_context_(context),
       stable_id_calculator_(CreateIdCalculator(context)),
-      service_(AudioService::CreateInstance(stable_id_calculator_.get())),
-      audio_service_observer_(this) {
-  audio_service_observer_.Add(service_.get());
+      service_(AudioService::CreateInstance(stable_id_calculator_.get())) {
+  audio_service_observation_.Observe(service_.get());
 }
 
 AudioAPI::~AudioAPI() {}

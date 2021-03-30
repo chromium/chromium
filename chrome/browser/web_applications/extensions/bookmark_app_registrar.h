@@ -38,6 +38,7 @@ class BookmarkAppRegistrar : public web_app::AppRegistrar,
   bool IsInstalled(const web_app::AppId& app_id) const override;
   bool IsLocallyInstalled(const web_app::AppId& app_id) const override;
   bool WasInstalledByUser(const web_app::AppId& app_id) const override;
+  bool WasInstalledByOem(const web_app::AppId& app_id) const override;
   int CountUserInstalledApps() const override;
   std::string GetAppShortName(const web_app::AppId& app_id) const override;
   std::string GetAppDescription(const web_app::AppId& app_id) const override;
@@ -50,6 +51,10 @@ class BookmarkAppRegistrar : public web_app::AppRegistrar,
       const web_app::AppId& app_id) const override;
   const apps::ShareTarget* GetAppShareTarget(
       const web_app::AppId& app_id) const override;
+  blink::mojom::CaptureLinks GetAppCaptureLinks(
+      const web_app::AppId& app_id) const override;
+  const apps::FileHandlers* GetAppFileHandlers(
+      const web_app::AppId& app_id) const override;
   base::Optional<GURL> GetAppScopeInternal(
       const web_app::AppId& app_id) const override;
   web_app::DisplayMode GetAppDisplayMode(
@@ -58,6 +63,10 @@ class BookmarkAppRegistrar : public web_app::AppRegistrar,
       const web_app::AppId& app_id) const override;
   std::vector<web_app::DisplayMode> GetAppDisplayModeOverride(
       const web_app::AppId& app_id) const override;
+  apps::UrlHandlers GetAppUrlHandlers(
+      const web_app::AppId& app_id) const override;
+  GURL GetAppManifestUrl(const web_app::AppId& app_id) const override;
+  base::Time GetAppLastBadgingTime(const web_app::AppId& app_id) const override;
   base::Time GetAppLastLaunchTime(const web_app::AppId& app_id) const override;
   base::Time GetAppInstallTime(const web_app::AppId& app_id) const override;
   std::vector<WebApplicationIconInfo> GetAppIconInfos(
@@ -99,7 +108,7 @@ class BookmarkAppRegistrar : public web_app::AppRegistrar,
   // Finds the extension object in ExtensionRegistry and in the being
   // uninstalled slot.
   //
-  // When AppRegistrarObserver::OnWebAppUninstalled(app_id) happens for
+  // When AppRegistrarObserver::OnWebAppWillBeUninstalled(app_id) happens for
   // bookmark apps, the bookmark app backing that app_id is already removed
   // from ExtensionRegistry. If some abstract observer needs the extension
   // pointer for |app_id| being uninstalled, that observer should use this

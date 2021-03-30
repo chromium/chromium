@@ -21,7 +21,7 @@
             android:layout_height="@dimen/toolbar_height_no_shadow"
             android:background="@android:color/transparent"
             android:orientation="vertical"
-            app:layout_scrollFlags="scroll|enterAlways|snap">
+            app:layout_scrollFlags="scroll|snap">
         </LinearLayout>
         <LinearLayout
             android:id="@+id/scroll_component_container"
@@ -71,7 +71,6 @@
                 android:layout_weight="1.0"
                 android:layout_gravity="center_vertical"
                 android:gravity="center_vertical|start"
-                android:paddingStart="6dp"
                 android:singleLine="true"
                 android:textAlignment="viewStart"
                 android:text="@string/tab_switcher_carousel_title" />

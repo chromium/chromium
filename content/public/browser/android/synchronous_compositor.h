@@ -135,6 +135,10 @@ class CONTENT_EXPORT SynchronousCompositor {
   // clients. Used with viz for webview only.
   virtual void DidInvalidate() = 0;
 
+  // Called when embedder has evicted the previous compositor frame. So renderer
+  // needs to submit next frame with new LocalSurfaceId.
+  virtual void WasEvicted() = 0;
+
  protected:
   virtual ~SynchronousCompositor() {}
 };

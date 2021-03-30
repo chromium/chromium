@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<head>
+<title>Test webkitRelativePath IDL attribute</title>
+</head>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<input type="file" webkitdirectory>
+<script type="module">
+import {mockFileChooserFactory} from '../resources/mock-file-chooser.js';
+
+// This is an automated-version of external/wpt/entries-api/file-webkitRelativePath-manual.html
+
+promise_test(async () => {
+  const file = document.querySelector('input');
+  const simulatedDirectorySelectionChange = new Promise(
+      resolve => file.addEventListener('change', resolve, {once: true}));
+
+  mockFileChooserFactory.setPathsToBeChosen(
+      ['/Users/tkent/1.txt', '/Users/tkent/tmp/2.txt'], '/');
+
+  test_driver.click(file);
+  await simulatedDirectorySelectionChange;
+
+  const files = Array.from(file.files).sort(
+      (a, b) => a.name < b.name ? -1 : b.name < a.name ? 1 : 0);
+  assert_equals(files.length, 2);
+  assert_equals(files[0].webkitRelativePath, '/Users/tkent/1.txt');
+  assert_equals(files[1].webkitRelativePath, '/Users/tkent/tmp/2.txt');
+}, 'webkitRelativePath is relative to the selected root directory');
+
+</script>
+</body>

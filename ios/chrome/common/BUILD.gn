@@ -63,6 +63,8 @@ source_set("unit_tests") {
     ":common",
     ":noarc_unit_tests",
     "//base",
+    "//base/test:test_support",
+    "//ios/chrome/common/ui/colors",
     "//testing/gtest",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]

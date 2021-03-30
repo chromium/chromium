@@ -43,13 +43,13 @@ class FakePersistentHostScanCache : public FakeHostScanCache,
 // MockTimer which invokes a callback in its destructor.
 class ExtendedMockTimer : public base::MockOneShotTimer {
  public:
-  explicit ExtendedMockTimer(const base::Closure& destructor_callback)
-      : destructor_callback_(destructor_callback) {}
+  explicit ExtendedMockTimer(base::OnceClosure destructor_callback)
+      : destructor_callback_(std::move(destructor_callback)) {}
 
-  ~ExtendedMockTimer() override { destructor_callback_.Run(); }
+  ~ExtendedMockTimer() override { std::move(destructor_callback_).Run(); }
 
  private:
-  base::Closure destructor_callback_;
+  base::OnceClosure destructor_callback_;
 };
 
 class TestTimerFactory : public TimerFactory {
@@ -80,8 +80,8 @@ class TestTimerFactory : public TimerFactory {
         tether_network_guids_for_upcoming_timers_.begin());
 
     ExtendedMockTimer* mock_timer = new ExtendedMockTimer(
-        base::Bind(&TestTimerFactory::OnActiveTimerDestructor,
-                   base::Unretained(this), guid_for_timer));
+        base::BindOnce(&TestTimerFactory::OnActiveTimerDestructor,
+                       base::Unretained(this), guid_for_timer));
     tether_network_guid_to_timer_map_[guid_for_timer] = mock_timer;
 
     return base::WrapUnique(mock_timer);

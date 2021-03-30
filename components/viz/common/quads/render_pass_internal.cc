@@ -35,24 +35,25 @@ SharedQuadState* RenderPassInternal::CreateAndAppendSharedQuadState() {
   return shared_quad_state_list.AllocateAndConstruct<SharedQuadState>();
 }
 
-void RenderPassInternal::ReplaceExistingQuadWithOpaqueTransparentSolidColor(
-    QuadList::Iterator at) {
-  // In order to fill the backbuffer with transparent black, the replacement
-  // solid color quad needs to set |needs_blending| to false, and
-  // ShouldDrawWithBlending() returns false so it is drawn without blending.
-  const gfx::Rect rect = at->rect;
-  bool needs_blending = false;
+void RenderPassInternal::ReplaceExistingQuadWithSolidColor(
+    QuadList::Iterator at,
+    SkColor color,
+    SkBlendMode blend_mode) {
   const SharedQuadState* shared_quad_state = at->shared_quad_state;
-  if (shared_quad_state->are_contents_opaque) {
+  if (shared_quad_state->are_contents_opaque ||
+      shared_quad_state->blend_mode != blend_mode) {
     auto* new_shared_quad_state =
         shared_quad_state_list.AllocateAndCopyFrom(shared_quad_state);
     new_shared_quad_state->are_contents_opaque = false;
+    new_shared_quad_state->blend_mode = blend_mode;
     shared_quad_state = new_shared_quad_state;
   }
 
-  auto* replacement = quad_list.ReplaceExistingElement<SolidColorDrawQuad>(at);
-  replacement->SetAll(shared_quad_state, rect, rect /* visible_rect */,
-                      needs_blending, SK_ColorTRANSPARENT, true);
+  const gfx::Rect rect = at->rect;
+  quad_list.ReplaceExistingElement<SolidColorDrawQuad>(at)->SetAll(
+      shared_quad_state, rect, /*visible_rect=*/rect,
+      /*needs_blending=*/false, color,
+      /*force_anti_aliasing_off=*/true);
 }
 
 }  // namespace viz

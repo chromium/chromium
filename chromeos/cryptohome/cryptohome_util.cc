@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
+#include "chromeos/cryptohome/userdataauth_util.h"
 #include "chromeos/dbus/constants/cryptohome_key_delegate_constants.h"
 #include "chromeos/dbus/cryptohome/key.pb.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
@@ -116,6 +117,11 @@ std::vector<KeyDefinition> GetKeyDataReplyToKeyDefinitions(
     const base::Optional<BaseReply>& reply) {
   const RepeatedPtrField<KeyData>& key_data =
       reply->GetExtension(GetKeyDataReply::reply).key_data();
+  return RepeatedKeyDataToKeyDefinitions(key_data);
+}
+
+std::vector<KeyDefinition> RepeatedKeyDataToKeyDefinitions(
+    const RepeatedPtrField<KeyData>& key_data) {
   std::vector<KeyDefinition> key_definitions;
   for (RepeatedPtrField<KeyData>::const_iterator it = key_data.begin();
        it != key_data.end(); ++it) {

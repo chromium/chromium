@@ -22,8 +22,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="GPU.AcceleratedSurfaceRefreshRate" units="hz"
-    expires_after="M85">
+    expires_after="M97">
   <owner>vmiura@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     Refresh rate of the display in Hz. This is recorded every time we present a
     frame.
@@ -41,56 +42,65 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.ANGLE.D3D11CreateDeviceError" enum="Hresult"
-    expires_after="M90">
-  <owner>jmadill@chromium.org</owner>
+    expires_after="2021-06-30">
+  <owner>jonahr@google.com</owner>
+  <owner>angle-team@google.com</owner>
   <summary>
-    An extended Windows error code returned from D3D11CreateDevice on error. Can
-    be almost any valid HRESULT or DXGI error code, which are listed at
+    An extended Windows error code returned from D3D11CreateDevice on error when
+    ANGLE's D3D backend is in use. Can be almost any valid HRESULT or DXGI error
+    code, which are listed at
     https://msdn.microsoft.com/en-us/library/windows/desktop/bb509553.aspx.
   </summary>
 </histogram>
 
 <histogram name="GPU.ANGLE.D3D11FeatureLevel" enum="D3DFeatureLevel"
-    expires_after="M90">
-  <owner>jmadill@chromium.org</owner>
+    expires_after="2021-08-29">
+  <owner>jonahr@google.com</owner>
+  <owner>angle-team@google.com</owner>
   <summary>
     The maxmium supported (or currently requested) Direct3D feature level in
     D3D11 ANGLE. We support as low as 9.3, and as high as 11.1, though Chrome
     should only use 10.0+ for D3D11. Gives an indication of how new a user's
     video card is, what features it supports, and it's general speed tier.
+    Recorded on D3D device initialization, loss, or reset when ANGLE's D3D
+    backend is in use.
   </summary>
 </histogram>
 
 <histogram name="GPU.ANGLE.D3D11InitializeResult" enum="D3D11InitializeResult"
-    expires_after="2020-11-30">
+    expires_after="2021-08-29">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
     The result from initializing a D3D11 device in ANGLE. Can be success, or one
     of several error codes which indicate different reasons for failing.
+    Recorded on D3D11 device initialization when ANGLE's D3D backend is in use.
   </summary>
 </histogram>
 
 <histogram name="GPU.ANGLE.D3D9InitializeResult" enum="D3D9InitializeResult"
-    expires_after="M90">
-  <owner>jmadill@chromium.org</owner>
+    expires_after="2021-08-29">
+  <owner>jonahr@google.com</owner>
+  <owner>angle-team@google.com</owner>
   <summary>
     The result from initializing a D3D9 device in ANGLE. Can be success, or one
     of several error codes which indicate different reasons for failing.
+    Recorded on D3D9 device initialization when ANGLE's D3D backend is in use.
   </summary>
 </histogram>
 
-<histogram name="GPU.ANGLE.D3DCompileMS" units="ms" expires_after="2021-02-28">
+<histogram name="GPU.ANGLE.D3DCompileMS" units="ms" expires_after="2021-06-30">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
     The time ANGLE spends calling the D3D shader compiler. Tracks total time we
-    spend compiling shaders on startup and during Chrome's lifetime.
+    spend compiling shaders on startup and during Chrome's lifetime. Recorded on
+    D3D shader compilation when ANGLE's D3D backend is in use.
   </summary>
 </histogram>
 
 <histogram name="GPU.ANGLE.DisplayInitializeMS" units="ms"
-    expires_after="2021-04-04">
+    expires_after="2021-06-30">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -137,31 +147,35 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.ANGLE.ProgramCache.LoadBinarySuccess"
-    enum="BooleanSuccess" expires_after="2021-06-06">
+    enum="BooleanSuccess" expires_after="2021-08-29">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
-    Records if the call to load a cached binary was successful. This can
-    legitimately fail if the driver wants chrome to re-link and re-cache the gpu
-    program.
+    Records if the call to load a cached binary was successful. Calls are made
+    on shader creation and linking. This can legitimately fail if the driver
+    wants chrome to re-link and re-cache the gpu program.
   </summary>
 </histogram>
 
 <histogram name="GPU.ANGLE.ProgramCache.ProgramBinarySizeBytes" units="bytes"
-    expires_after="M90">
-  <owner>jmadill@chromium.org</owner>
+    expires_after="2021-06-30">
+  <owner>jonahr@google.com</owner>
+  <owner>angle-team@google.com</owner>
   <summary>
-    The size of program binaries loaded into the gpu program cache.
+    Records the size of program binaries loaded into the gpu program cache.
+    Programs are loaded into the cache upon use in draw and dispatch calls.
   </summary>
 </histogram>
 
 <histogram name="GPU.ANGLE.SupportsDXGI1_2" enum="BooleanSupported"
-    expires_after="M90">
-  <owner>jmadill@chromium.org</owner>
+    expires_after="2021-06-30">
+  <owner>jonahr@google.com</owner>
+  <owner>angle-team@google.com</owner>
   <summary>
     Windows computers running Windows 8+, or running Windows 7 with a platform
     update, support the newer version of DXGI. This update also indicates the
     computer is capable of running Direct3D 11.1 if the hardware supports it.
+    Recorded on D3D11 device initialization when ANGLE's D3D backend is in use.
   </summary>
 </histogram>
 
@@ -248,7 +262,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.BlocklistFeatureTestResults"
-    enum="GPUBlocklistFeatureTestResults" expires_after="2021-03-21">
+    enum="GPUBlocklistFeatureTestResults" expires_after="2021-12-01">
   <owner>vmiura@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -258,7 +272,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.BlocklistTestResultsPerEntry"
-    enum="GPUBlocklistTestResultPerEntry" expires_after="2021-03-21">
+    enum="GPUBlocklistTestResultPerEntry" expires_after="2021-12-01">
   <owner>vmiura@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -294,7 +308,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.ContextLost" enum="ContextLostReason"
-    expires_after="2021-05-30">
+    expires_after="2021-08-01">
   <owner>sievers@chromium.org</owner>
   <summary>
     The reason a GPU command buffer context of a given type was lost.
@@ -324,7 +338,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.D3D11FeatureLevel" enum="D3D11FeatureLevel"
-    expires_after="2021-05-02">
+    expires_after="2021-12-01">
   <owner>sadrul@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -344,8 +358,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.D3DShaderModel" enum="ShaderModel"
-    expires_after="2021-09-01">
-  <owner>jmadill@chromium.org</owner>
+    expires_after="2021-08-29">
+  <owner>jonahr@google.com</owner>
+  <owner>angle-team@google.com</owner>
   <summary>
     ANGLE's currently active D3D shader model version. Logged once every startup
     of the GPU process, on Windows only. Note that Shader Models 2 and 3 map to
@@ -365,7 +380,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.DirectComposition.CompositionMode"
-    enum="DxgiFramePresentationMode" expires_after="2021-05-02">
+    enum="DxgiFramePresentationMode" expires_after="2021-07-27">
   <owner>sunnyps@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -385,7 +400,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.DirectComposition.CreateSwapChainForComposition"
-    enum="Hresult" expires_after="2021-05-02">
+    enum="Hresult" expires_after="2021-07-27">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -394,7 +409,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.DirectComposition.CreateVideoProcessorEnumerator"
-    enum="Hresult" expires_after="2021-05-02">
+    enum="Hresult" expires_after="2021-08-01">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -404,7 +419,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.DirectComposition.DCLayer.YUVOverlayCount"
-    units="overlays" expires_after="2021-05-23">
+    units="overlays" expires_after="2021-07-27">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -415,7 +430,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.DirectComposition.DCLayerResult.Texture"
-    enum="DCLayerResult" expires_after="2021-05-02">
+    enum="DCLayerResult" expires_after="2021-08-01">
   <owner>sunnyps@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -425,7 +440,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="GPU.DirectComposition.DCLayerResult.Video"
-    enum="DCLayerResult" expires_after="2021-05-02">
+    enum="DCLayerResult" expires_after="2021-08-01">
 <!-- Name completed by histogram_suffixes name="GPU.ProtectedVideoType" -->
 
   <owner>magchen@chromium.org</owner>
@@ -437,7 +452,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.DirectComposition.DcompDeviceCreateSurface" enum="Hresult"
-    expires_after="2021-05-02">
+    expires_after="2021-07-27">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -485,7 +500,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.DirectComposition.IsUnderlay" enum="BooleanUnderlay"
-    expires_after="2021-05-02">
+    expires_after="2021-09-26">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -505,7 +520,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.DirectComposition.OverlayFormatUsed3" enum="DXGI_FORMAT"
-    expires_after="2021-05-02">
+    expires_after="2021-08-01">
   <owner>sunnyps@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -515,7 +530,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.DirectComposition.OverlaysSupported"
-    enum="BooleanOverlaySupported" expires_after="2021-05-31">
+    enum="BooleanOverlaySupported" expires_after="2021-08-01">
   <owner>sunnyps@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>True if Chrome will try to use DirectComposition overlays.</summary>
@@ -541,7 +556,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="GPU.DirectComposition.SwapChainCreationResult3"
-    enum="Hresult" expires_after="2021-05-02">
+    enum="Hresult" expires_after="2021-07-27">
 <!-- Name completed by histogram_suffixes name="GPU.ProtectedVideoType" -->
 
   <owner>magchen@chromium.org</owner>
@@ -562,7 +577,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.DirectComposition.UploadVideoImages.CreateCopyTexture"
-    enum="Hresult" expires_after="2021-05-02">
+    enum="Hresult" expires_after="2021-08-01">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -572,7 +587,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.DirectComposition.UploadVideoImages.CreateStagingTexture"
-    enum="Hresult" expires_after="2021-05-02">
+    enum="Hresult" expires_after="2021-08-01">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -582,7 +597,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.DirectComposition.VideoDeviceCreateVideoProcessor"
-    enum="Hresult" expires_after="2021-05-02">
+    enum="Hresult" expires_after="2021-08-01">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -592,7 +607,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.DirectComposition.VideoPresentationMode"
-    enum="DirectCompositionVideoPresentationMode" expires_after="2021-06-27">
+    enum="DirectCompositionVideoPresentationMode" expires_after="2021-08-29">
   <owner>sunnyps@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -600,7 +615,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="GPU.DoLinkProgramTime" units="ms" expires_after="2020-11-30">
+<histogram name="GPU.DoLinkProgramTime" units="ms" expires_after="2021-06-30">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -625,9 +640,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.EGLDisplayType" enum="EGLDisplayType"
-    expires_after="2021-05-09">
-  <owner>jbauman@chromium.org</owner>
+    expires_after="2021-12-01">
+  <owner>zmo@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>The display type used to ask for an EGLDisplay.</summary>
+</histogram>
+
+<histogram name="GPU.EnsureWorkVisibleDuration" units="microseconds"
+    expires_after="2022-04-01">
+  <owner>alemate@chromium.org</owner>
+  <owner>magchen@chromium.org</owner>
+  <owner>oshima@chromium.org</owner>
+  <summary>
+    Records the duration of EnsureWorkVisible GPU call. Since it's blocking UI
+    thread we want to measure it, and this histogram must be active as long as
+    this call is still blocking.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution.
+  </summary>
 </histogram>
 
 <histogram name="GPU.Error" enum="GLError" expires_after="2020-06-28">
@@ -645,7 +677,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.GLImplementation" enum="GLImplementation"
-    expires_after="2021-05-30">
+    expires_after="2021-08-01">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -696,6 +728,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="GPU.GpuCount" units="gpus" expires_after="2021-12-01">
+  <owner>zmo@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    The number of GPUs a device has, excluding software renderers. Recorded when
+    GPU process launches and sends GPUInfo to browser process.
+  </summary>
+</histogram>
+
 <histogram name="GPU.GPUInitializationTime.V2" units="ms"
     expires_after="2020-12-15">
   <obsolete>
@@ -730,8 +771,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.GPUProcessExitCode" enum="GPUProcessExitCode"
-    expires_after="2021-05-16">
-  <owner>jbauman@chromium.org</owner>
+    expires_after="2021-12-01">
+  <owner>zmo@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     Counts for the exit codes returned by the GPU process when it terminated.
   </summary>
@@ -747,7 +789,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.GPUProcessLaunchTime" units="ms"
-    expires_after="2021-05-09">
+    expires_after="2021-09-12">
   <owner>vmiura@chromium.org</owner>
   <summary>
     Startup time of the GPU process as measured by the GPU process host.
@@ -768,15 +810,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.GPUProcessTerminationStatus2" enum="GpuTerminationStatus"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>vmiura@chromium.org</owner>
   <summary>
     Counts for each time the GPU Process Host detects the process dies.
   </summary>
 </histogram>
 
+<histogram name="GPU.HardwareAccelerationModeEnabled" enum="BooleanEnabled"
+    expires_after="2021-12-01">
+  <owner>zmo@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Records if GPU hardware acceleration is explicitly disabled by the user.
+    Recorded when the browser process launches.
+  </summary>
+</histogram>
+
 <histogram name="GPU.HasDiscreteGpu" enum="HasDiscreteGpu"
-    expires_after="2021-02-21">
+    expires_after="2021-12-01">
   <owner>sadrul@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -786,7 +838,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.InitializeOneOffMediumTime" units="ms"
-    expires_after="2021-05-02">
+    expires_after="2021-08-29">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -796,7 +848,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.IntelGpuGeneration" enum="IntelGpuGeneration"
-    expires_after="2021-05-02">
+    expires_after="2021-08-09">
   <owner>sadrul@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -806,7 +858,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.IntelGpuSeriesType" enum="IntelGpuSeriesType"
-    expires_after="2021-05-02">
+    expires_after="2021-08-01">
   <owner>sunnyps@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -825,7 +877,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.IOSurface.CreateTime" units="ms"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>ccameron@chromium.org</owner>
   <summary>
     The time that it took for a call to IOSurfaceCreate to complete.
@@ -841,7 +893,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.IOSurface.TexImageTime" units="ms"
-    expires_after="2021-05-02">
+    expires_after="2021-08-01">
   <owner>ccameron@chromium.org</owner>
   <summary>
     The time that it took for a call to CGLTexImageIOSurface2D to complete.
@@ -857,8 +909,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="GPU.MultiGpu.AMD" enum="AMDDeviceId"
+    expires_after="2021-12-01">
+  <owner>zmo@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    AMD device IDs from multi-gpu devices. Recorded when GPU process launches
+    and sends GPUInfo to browser process.
+  </summary>
+</histogram>
+
+<histogram name="GPU.MultiGpu.Nvidia" enum="NvidiaDeviceId"
+    expires_after="2021-12-01">
+  <owner>zmo@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Nvidia device IDs from multi-gpu devices. Recorded when GPU process launches
+    and sends GPUInfo to browser process.
+  </summary>
+</histogram>
+
 <histogram name="GPU.OopRaster.GlyphCacheMiss"
-    enum="OopRasterGlyphCacheMissType" expires_after="2021-06-13">
+    enum="OopRasterGlyphCacheMissType" expires_after="2021-08-15">
   <owner>khushalsagar@chromium.org</owner>
   <summary>
     During OutOfProcess(Oop) raster, the renderer generates and sends the
@@ -883,7 +955,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="GPU.Output.HDR" enum="Boolean" expires_after="2021-05-02">
+<histogram name="GPU.Output.HDR" enum="Boolean" expires_after="2021-07-27">
   <owner>hubbe@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -894,12 +966,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.PassthroughDoLinkProgramTime" units="ms"
-    expires_after="2020-11-30">
+    expires_after="2021-06-30">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
     The time we spend in GLES2DecoderPassthroughImpl::DoLinkProgram. Related to
     how much time we spend compiling shaders during startup.
+  </summary>
+</histogram>
+
+<histogram name="GPU.PreferredGLImplementation" enum="GLImplementation"
+    expires_after="2021-08-01">
+  <owner>jonahr@google.com</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Records the platform-preferred OpenGL implementation mode. Recorded during
+    GPU process initilization in gl::GetRequestedGLImplementation.
   </summary>
 </histogram>
 
@@ -915,7 +997,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.ProcessLifetimeEvents.HardwareAccelerated"
-    enum="GPUProcessLifetimeEvent" expires_after="2021-05-16">
+    enum="GPUProcessLifetimeEvent" expires_after="2021-09-19">
   <owner>vmiura@chromium.org</owner>
   <summary>
     Recorded once for every GPU process launch and crash when GPU process is
@@ -926,7 +1008,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.ProcessLifetimeEvents.SwiftShader"
-    enum="GPUProcessLifetimeEvent" expires_after="2021-05-02">
+    enum="GPUProcessLifetimeEvent" expires_after="2021-09-05">
   <owner>vmiura@chromium.org</owner>
   <summary>
     Recorded once for every GPU process launch and crash when GPU process is
@@ -965,7 +1047,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.ProgramCache.CacheHit" enum="BooleanSuccess"
-    expires_after="2020-11-30">
+    expires_after="2021-06-30">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -1022,6 +1104,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="GPU.RequestedGLImplementation" enum="GLImplementation"
+    expires_after="2021-08-01">
+  <owner>jonahr@google.com</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Records the user-requested OpenGL implementation mode. Recorded during GPU
+    process initilization in gl::GetRequestedGLImplementation.
+  </summary>
+</histogram>
+
 <histogram name="GPU.Sandbox.InitializedSuccessfully" enum="BooleanSuccess"
     expires_after="2020-08-30">
   <owner>vmiura@chromium.org</owner>
@@ -1033,7 +1125,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.Scheduler.RunTaskTime" units="microseconds"
-    expires_after="2021-05-16">
+    expires_after="2021-08-09">
   <owner>kylechar@chromium.org</owner>
   <owner>chrome-gpu-metrics@google.com</owner>
   <summary>
@@ -1041,6 +1133,43 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     delta starts when the GPU scheduler pops the task off the task queue and
     finishes when the task has completed. Only recorded for clients with high
     resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="GPU.Scheduler.TaskDependencyTime" units="microseconds"
+    expires_after="2022-03-31">
+  <owner>berlu@chromium.org</owner>
+  <owner>chrome-gpu-metrics@google.com</owner>
+  <summary>
+    Records the wall time taken spent by each GPU scheduler task waiting on it's
+    dependencies to resolve. The time delta starts when the waiting fence is
+    added and finishes when the last fence is removed. Only recorded for clients
+    with high resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="GPU.Scheduler.TaskSchedulingDelayTime" units="microseconds"
+    expires_after="2022-03-31">
+  <owner>berlu@chromium.org</owner>
+  <owner>chrome-gpu-metrics@google.com</owner>
+  <summary>
+    Records the wall time taken spent by each GPU scheduler task waiting on to
+    be scheduled once all its dependencies have been resolved. The time delta
+    starts when the last waiting fence is passed and stops when the tasks starts
+    running. If the schedulers is working properly, for a high priority task,
+    this metric should be minimal. Only recorded for clients with high
+    resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="GPU.Scheduler.ThreadSuspendedTime" units="microseconds"
+    expires_after="2022-03-31">
+  <owner>berlu@chromium.org</owner>
+  <owner>chrome-gpu-metrics@google.com</owner>
+  <summary>
+    Records the wall time taken between calls to schedule the task run and the
+    actual run of the task. Ideally this should always be as close to 0 as
+    possible. Only recorded for clients with high resolution clocks.
   </summary>
 </histogram>
 
@@ -1063,7 +1192,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.SharedImage.ContentConsumed" enum="BooleanMatched"
-    expires_after="2021-05-23">
+    expires_after="2021-08-09">
   <owner>penghuang@chromium.org</owner>
   <owner>backer@chromium.org</owner>
   <summary>
@@ -1084,7 +1213,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.SoftwareRendering" enum="BooleanSoftwareRendering"
-    expires_after="2021-05-02">
+    expires_after="2021-07-27">
   <owner>sadrul@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -1125,7 +1254,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.SwapTimeUs" units="microseconds"
-    expires_after="2021-05-23">
+    expires_after="2021-08-09">
   <owner>vasilyt@chromium.org</owner>
   <owner>backer@chromium.org</owner>
   <summary>
@@ -1145,7 +1274,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.Vulkan.CreateExternalVkSemaphore" units="microseconds"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>backer@chromium.org</owner>
   <owner>penghuang@chromium.org</owner>
   <owner>vasilyt@chromium.org</owner>
@@ -1167,7 +1296,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.Vulkan.ImportSemaphoreGLPerSwapBuffers" units="units"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>backer@chromium.org</owner>
   <owner>penghuang@chromium.org</owner>
   <owner>vasilyt@chromium.org</owner>
@@ -1175,7 +1304,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.Vulkan.ImportVkSemaphoreHandle" units="microseconds"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>backer@chromium.org</owner>
   <owner>penghuang@chromium.org</owner>
   <owner>vasilyt@chromium.org</owner>
@@ -1186,7 +1315,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.Vulkan.ImportVkSemaphoreIntoGL" units="microseconds"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>backer@chromium.org</owner>
   <owner>penghuang@chromium.org</owner>
   <owner>vasilyt@chromium.org</owner>
@@ -1196,8 +1325,67 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="GPU.Vulkan.PipelineCache.LoadCacheHit" enum="BooleanCacheHit"
+    expires_after="2021-08-29">
+  <owner>backer@chromium.org</owner>
+  <owner>penghuang@chromium.org</owner>
+  <owner>vasilyt@chromium.org</owner>
+  <summary>
+    Shows if we had a vkPipelineCache entry in cache when skia requested it.
+    Recorded each time skia loads vkPipelineCache entry from the GrShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="GPU.Vulkan.PipelineCache.PopulatedCacheUsage"
+    enum="VkPipelinePopulatedCacheEntryUsage" expires_after="2021-08-29">
+  <owner>backer@chromium.org</owner>
+  <owner>penghuang@chromium.org</owner>
+  <owner>vasilyt@chromium.org</owner>
+  <summary>
+    Shows if the populated from disk cache entry was used by skia or discarded
+    and why. Recorded when cache entry that was read from disk is either loaded
+    by skia, overwriten by skia or discarded by GrShaderCache.
+  </summary>
+</histogram>
+
+<histogram name="GPU.Vulkan.PipelineCache.Size" units="KB"
+    expires_after="2021-08-29">
+  <owner>backer@chromium.org</owner>
+  <owner>penghuang@chromium.org</owner>
+  <owner>vasilyt@chromium.org</owner>
+  <summary>
+    Size of stored VkPipelineCache in kb. Recorded every time we store a
+    pipeline cache item. Currently happens when gpu goes idle after we stored or
+    loaded new shader.
+  </summary>
+</histogram>
+
+<histogram name="GPU.Vulkan.PipelineCache.StoreDuration" units="microseconds"
+    expires_after="2021-08-29">
+  <owner>backer@chromium.org</owner>
+  <owner>penghuang@chromium.org</owner>
+  <owner>vasilyt@chromium.org</owner>
+  <summary>
+    Duration of storeVkPipelineCacheData in Skia, this includes chromium side
+    GrShaderCache::store. Recorded even if data didn't fit into the cache. Only
+    reported for platforms supporting high resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="GPU.Vulkan.PipelineCache.vkCreateGraphicsPipelines"
+    units="microseconds" expires_after="2021-08-29">
+  <owner>backer@chromium.org</owner>
+  <owner>penghuang@chromium.org</owner>
+  <owner>vasilyt@chromium.org</owner>
+  <summary>
+    Duration of vkCreateGraphicsPipelines call. Recorded every time Skia creates
+    graphics pipeline. Only reported for platforms supporting high resolution
+    clocks.
+  </summary>
+</histogram>
+
 <histogram name="GPU.Vulkan.QueueSubmitPerSwapBuffers" units="units"
-    expires_after="2021-04-04">
+    expires_after="2021-08-09">
   <owner>backer@chromium.org</owner>
   <owner>penghuang@chromium.org</owner>
   <owner>vasilyt@chromium.org</owner>
@@ -1218,7 +1406,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.WatchdogThread.Event" enum="GpuWatchdogThreadEvent"
-    expires_after="2021-07-01">
+    expires_after="2021-09-05">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -1228,7 +1416,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.WatchdogThread.ExtraThreadTime" units="# timeouts"
-    expires_after="2021-05-23">
+    expires_after="2021-07-27">
 <!-- Name completed by histogram_suffixes name="GPU.WatchdogStage" -->
 
   <owner>magchen@chromium.org</owner>
@@ -1240,7 +1428,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.WatchdogThread.ExtraThreadTime.NumOfUsers"
-    units="# timeouts" expires_after="2021-05-23">
+    units="# timeouts" expires_after="2021-07-27">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -1252,7 +1440,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.WatchdogThread.Timeout" enum="GpuWatchdogTimeoutEvent"
-    expires_after="2021-05-16">
+    expires_after="2021-09-19">
 <!-- Name completed by histogram_suffixes name="GPU.WatchdogStage" -->
 
   <owner>magchen@chromium.org</owner>

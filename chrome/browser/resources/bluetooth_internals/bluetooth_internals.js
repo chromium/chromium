@@ -7,316 +7,311 @@
  *     chrome://bluetooth-internals/.
  */
 
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import './uuid.mojom-lite.js';
+import './device.mojom-lite.js';
+import './adapter.mojom-lite.js';
+import './bluetooth_internals.mojom-lite.js';
+
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
+
+import {AdapterBroker, AdapterProperty, getAdapterBroker} from './adapter_broker.js';
+import {AdapterPage} from './adapter_page.js';
+import {DebugLogPage} from './debug_log_page.js';
+import {DeviceCollection} from './device_collection.js';
+import {DeviceDetailsPage} from './device_details_page.js';
+import {DevicesPage, ScanStatus} from './devices_page.js';
+import {PageManager, PageManagerObserver} from './page_manager.js';
+import {Sidebar} from './sidebar.js';
+import {Snackbar, SnackbarType} from './snackbar.js';
+
+
 // Expose for testing.
-/** @type {adapter_broker.AdapterBroker} */
-let adapterBroker = null;
-/** @type {device_collection.DeviceCollection} */
-let devices = null;
-/** @type {sidebar.Sidebar} */
-let sidebarObj = null;
+/** @type {AdapterBroker} */
+export let adapterBroker = null;
 
-cr.define('bluetooth_internals', function() {
-  const AdapterPage = adapter_page.AdapterPage;
-  const DeviceDetailsPage = device_details_page.DeviceDetailsPage;
-  const DevicesPage = devices_page.DevicesPage;
-  const DebugLogPage = debug_log_page.DebugLogPage;
-  const PageManager = cr.ui.pageManager.PageManager;
-  const Snackbar = snackbar.Snackbar;
-  const SnackbarType = snackbar.SnackbarType;
+/** @type {DeviceCollection} */
+export let devices = null;
 
-  devices = new device_collection.DeviceCollection([]);
+/** @type {Sidebar} */
+export let sidebarObj = null;
 
-  /** @type {adapter_page.AdapterPage} */
-  let adapterPage = null;
-  /** @type {devices_page.DevicesPage} */
-  let devicesPage = null;
-  /** @type {debug_log_page.DebugLogPage} */
-  let debugLogPage = null;
+/** @type {PageManager} */
+export const pageManager = PageManager.getInstance();
 
-  /** @type {bluetooth.mojom.DiscoverySessionRemote} */
-  let discoverySession = null;
+devices = new DeviceCollection([]);
 
-  /** @type {boolean} */
-  let userRequestedScanStop = false;
+/** @type {AdapterPage} */
+let adapterPage = null;
+/** @type {DevicesPage} */
+let devicesPage = null;
+/** @type {DebugLogPage} */
+let debugLogPage = null;
 
-  /** @type {!mojom.BluetoothInternalsHandlerRemote} */
-  const bluetoothInternalsHandler = mojom.BluetoothInternalsHandler.getRemote();
+/** @type {bluetooth.mojom.DiscoverySessionRemote} */
+let discoverySession = null;
 
-  /**
-   * Observer for page changes. Used to update page title header.
-   * @constructor
-   * @extends {cr.ui.pageManager.PageManager.Observer}
-   */
-  const PageObserver = function() {};
+/** @type {boolean} */
+let userRequestedScanStop = false;
 
-  PageObserver.prototype = {
-    __proto__: PageManager.Observer.prototype,
+/** @type {!mojom.BluetoothInternalsHandlerRemote} */
+const bluetoothInternalsHandler = mojom.BluetoothInternalsHandler.getRemote();
 
-    updateHistory(path) {
-      window.location.hash = '#' + path;
-    },
-
-    /**
-     * Sets the page title. Called by PageManager.
-     * @override
-     * @param {string} title
-     */
-    updateTitle(title) {
-      document.querySelector('.page-title').textContent = title;
-    },
-  };
-
-  /**
-   * Removes DeviceDetailsPage with matching device |address|. The associated
-   * sidebar item is also removed.
-   * @param {string} address
-   */
-  function removeDeviceDetailsPage(address) {
-    const id = 'devices/' + address.toLowerCase();
-    sidebarObj.removeItem(id);
-
-    const deviceDetailsPage = PageManager.registeredPages[id];
-    assert(deviceDetailsPage, 'Device Details page must exist');
-
-    deviceDetailsPage.disconnect();
-    deviceDetailsPage.pageDiv.parentNode.removeChild(deviceDetailsPage.pageDiv);
-
-    // Inform the devices page that the user is inspecting this device.
-    // This will update the links in the device table.
-    devicesPage.setInspecting(
-        deviceDetailsPage.deviceInfo, false /* isInspecting */);
-
-    PageManager.unregister(deviceDetailsPage);
+/**
+ * Observer for page changes. Used to update page title header.
+ */
+const PageObserver = class extends PageManagerObserver {
+  updateHistory(path) {
+    window.location.hash = '#' + path;
   }
 
   /**
-   * Creates a DeviceDetailsPage with the given |deviceInfo|, appends it to
-   * '#page-container', and adds a sidebar item to show the new page. If a
-   * page exists that matches |deviceInfo.address|, nothing is created and the
-   * existing page is returned.
-   * @param {!bluetooth.mojom.DeviceInfo} deviceInfo
-   * @return {!device_details_page.DeviceDetailsPage}
+   * Sets the page title. Called by PageManager.
+   * @override
+   * @param {string} title
    */
-  function makeDeviceDetailsPage(deviceInfo) {
-    const deviceDetailsPageId = 'devices/' + deviceInfo.address.toLowerCase();
-    let deviceDetailsPage = PageManager.registeredPages[deviceDetailsPageId];
-    if (deviceDetailsPage) {
-      return deviceDetailsPage;
-    }
+  updateTitle(title) {
+    document.querySelector('.page-title').textContent = title;
+  }
+};
 
-    const pageSection = document.createElement('section');
-    pageSection.hidden = true;
-    pageSection.id = deviceDetailsPageId;
-    $('page-container').appendChild(pageSection);
+/**
+ * Removes DeviceDetailsPage with matching device |address|. The associated
+ * sidebar item is also removed.
+ * @param {string} address
+ */
+function removeDeviceDetailsPage(address) {
+  const id = 'devices/' + address.toLowerCase();
+  sidebarObj.removeItem(id);
 
-    deviceDetailsPage = new DeviceDetailsPage(deviceDetailsPageId, deviceInfo);
+  const deviceDetailsPage =
+      /** @type {!DeviceDetailsPage} */ (pageManager.registeredPages.get(id));
+  assert(deviceDetailsPage, 'Device Details page must exist');
 
-    deviceDetailsPage.pageDiv.addEventListener('infochanged', function(event) {
-      devices.addOrUpdate(event.detail.info);
-    });
+  deviceDetailsPage.disconnect();
+  deviceDetailsPage.pageDiv.parentNode.removeChild(deviceDetailsPage.pageDiv);
 
-    deviceDetailsPage.pageDiv.addEventListener(
-        'forgetpressed', function(event) {
-          PageManager.showPageByName(devicesPage.name);
-          removeDeviceDetailsPage(event.detail.address);
-        });
+  // Inform the devices page that the user is inspecting this device.
+  // This will update the links in the device table.
+  devicesPage.setInspecting(
+      deviceDetailsPage.deviceInfo, false /* isInspecting */);
 
-    // Inform the devices page that the user is inspecting this device.
-    // This will update the links in the device table.
-    devicesPage.setInspecting(deviceInfo, true /* isInspecting */);
-    PageManager.register(deviceDetailsPage);
+  pageManager.unregister(deviceDetailsPage);
+}
 
-    sidebarObj.addItem({
-      pageName: deviceDetailsPageId,
-      text: deviceInfo.nameForDisplay,
-    });
-
-    deviceDetailsPage.connect();
+/**
+ * Creates a DeviceDetailsPage with the given |deviceInfo|, appends it to
+ * '#page-container', and adds a sidebar item to show the new page. If a
+ * page exists that matches |deviceInfo.address|, nothing is created and the
+ * existing page is returned.
+ * @param {!bluetooth.mojom.DeviceInfo} deviceInfo
+ * @return {!DeviceDetailsPage}
+ */
+function makeDeviceDetailsPage(deviceInfo) {
+  const deviceDetailsPageId = 'devices/' + deviceInfo.address.toLowerCase();
+  let deviceDetailsPage =
+      /** @type {?DeviceDetailsPage} */ (
+          pageManager.registeredPages.get(deviceDetailsPageId));
+  if (deviceDetailsPage) {
     return deviceDetailsPage;
   }
 
-  /**
-   * Updates the DeviceDetailsPage with the matching device |address| and
-   * redraws it.
-   * @param {string} address
-   */
-  function updateDeviceDetailsPage(address) {
-    const detailPageId = 'devices/' + address.toLowerCase();
-    const page = PageManager.registeredPages[detailPageId];
-    if (page) {
-      page.redraw();
+  const pageSection = document.createElement('section');
+  pageSection.hidden = true;
+  pageSection.id = deviceDetailsPageId;
+  $('page-container').appendChild(pageSection);
+
+  deviceDetailsPage = new DeviceDetailsPage(deviceDetailsPageId, deviceInfo);
+
+  deviceDetailsPage.pageDiv.addEventListener('infochanged', function(event) {
+    devices.addOrUpdate(event.detail.info);
+  });
+
+  deviceDetailsPage.pageDiv.addEventListener('forgetpressed', function(event) {
+    pageManager.showPageByName(devicesPage.name);
+    removeDeviceDetailsPage(event.detail.address);
+  });
+
+  // Inform the devices page that the user is inspecting this device.
+  // This will update the links in the device table.
+  devicesPage.setInspecting(deviceInfo, true /* isInspecting */);
+  pageManager.register(deviceDetailsPage);
+
+  sidebarObj.addItem({
+    pageName: deviceDetailsPageId,
+    text: deviceInfo.nameForDisplay,
+  });
+
+  deviceDetailsPage.connect();
+  return deviceDetailsPage;
+}
+
+/**
+ * Updates the DeviceDetailsPage with the matching device |address| and
+ * redraws it.
+ * @param {string} address
+ */
+function updateDeviceDetailsPage(address) {
+  const detailPageId = 'devices/' + address.toLowerCase();
+  const page = pageManager.registeredPages.get(detailPageId);
+  if (page) {
+    /** @type {!DeviceDetailsPage} */ (page).redraw();
+  }
+}
+
+function updateStoppedDiscoverySession() {
+  devicesPage.setScanStatus(ScanStatus.OFF);
+  discoverySession = null;
+}
+
+function setupAdapterSystem(response) {
+  adapterBroker.addEventListener('adapterchanged', function(event) {
+    adapterPage.adapterFieldSet.value[event.detail.property] =
+        event.detail.value;
+    adapterPage.redraw();
+
+    if (event.detail.property == AdapterProperty.DISCOVERING &&
+        !event.detail.value && !userRequestedScanStop && discoverySession) {
+      updateStoppedDiscoverySession();
+      Snackbar.show(
+          'Discovery session ended unexpectedly', SnackbarType.WARNING);
     }
-  }
+  });
 
-  function updateStoppedDiscoverySession() {
-    devicesPage.setScanStatus(devices_page.ScanStatus.OFF);
-    discoverySession = null;
-  }
+  adapterPage.setAdapterInfo(response.info);
 
-  function setupAdapterSystem(response) {
-    adapterBroker.addEventListener('adapterchanged', function(event) {
-      adapterPage.adapterFieldSet.value[event.detail.property] =
-          event.detail.value;
-      adapterPage.redraw();
-
-      if (event.detail.property == adapter_broker.AdapterProperty.DISCOVERING &&
-          !event.detail.value && !userRequestedScanStop && discoverySession) {
-        updateStoppedDiscoverySession();
-        Snackbar.show(
-            'Discovery session ended unexpectedly', SnackbarType.WARNING);
+  adapterPage.pageDiv.addEventListener('refreshpressed', function() {
+    adapterBroker.getInfo().then(function(response) {
+      if (response && response.info) {
+        adapterPage.setAdapterInfo(response.info);
+      } else {
+        console.error('Failed to fetch adapter info.');
       }
     });
+  });
+}
 
-    adapterPage.setAdapterInfo(response.info);
+function setupDeviceSystem(response) {
+  // Hook up device collection events.
+  adapterBroker.addEventListener('deviceadded', function(event) {
+    devices.addOrUpdate(event.detail.deviceInfo);
+    updateDeviceDetailsPage(event.detail.deviceInfo.address);
+  });
+  adapterBroker.addEventListener('devicechanged', function(event) {
+    devices.addOrUpdate(event.detail.deviceInfo);
+    updateDeviceDetailsPage(event.detail.deviceInfo.address);
+  });
+  adapterBroker.addEventListener('deviceremoved', function(event) {
+    devices.remove(event.detail.deviceInfo);
+    updateDeviceDetailsPage(event.detail.deviceInfo.address);
+  });
 
-    adapterPage.pageDiv.addEventListener('refreshpressed', function() {
-      adapterBroker.getInfo().then(function(response) {
-        if (response && response.info) {
-          adapterPage.setAdapterInfo(response.info);
-        } else {
-          console.error('Failed to fetch adapter info.');
-        }
-      });
-    });
-  }
+  response.devices.forEach(devices.addOrUpdate, devices /* this */);
 
-  function setupDeviceSystem(response) {
-    // Hook up device collection events.
-    adapterBroker.addEventListener('deviceadded', function(event) {
-      devices.addOrUpdate(event.detail.deviceInfo);
-      updateDeviceDetailsPage(event.detail.deviceInfo.address);
-    });
-    adapterBroker.addEventListener('devicechanged', function(event) {
-      devices.addOrUpdate(event.detail.deviceInfo);
-      updateDeviceDetailsPage(event.detail.deviceInfo.address);
-    });
-    adapterBroker.addEventListener('deviceremoved', function(event) {
-      devices.remove(event.detail.deviceInfo);
-      updateDeviceDetailsPage(event.detail.deviceInfo.address);
-    });
+  devicesPage.setDevices(devices);
 
-    response.devices.forEach(devices.addOrUpdate, devices /* this */);
+  devicesPage.pageDiv.addEventListener('inspectpressed', function(event) {
+    const detailsPage =
+        makeDeviceDetailsPage(devices.getByAddress(event.detail.address));
+    pageManager.showPageByName(detailsPage.name);
+  });
 
-    devicesPage.setDevices(devices);
+  devicesPage.pageDiv.addEventListener('forgetpressed', function(event) {
+    pageManager.showPageByName(devicesPage.name);
+    removeDeviceDetailsPage(event.detail.address);
+  });
 
-    devicesPage.pageDiv.addEventListener('inspectpressed', function(event) {
-      const detailsPage =
-          makeDeviceDetailsPage(devices.getByAddress(event.detail.address));
-      PageManager.showPageByName(detailsPage.name);
-    });
+  devicesPage.pageDiv.addEventListener('scanpressed', function(event) {
+    if (discoverySession) {
+      userRequestedScanStop = true;
+      devicesPage.setScanStatus(ScanStatus.STOPPING);
 
-    devicesPage.pageDiv.addEventListener('forgetpressed', function(event) {
-      PageManager.showPageByName(devicesPage.name);
-      removeDeviceDetailsPage(event.detail.address);
-    });
-
-    devicesPage.pageDiv.addEventListener('scanpressed', function(event) {
-      if (discoverySession) {
-        userRequestedScanStop = true;
-        devicesPage.setScanStatus(devices_page.ScanStatus.STOPPING);
-
-        discoverySession.stop().then(function(response) {
-          if (response.success) {
-            updateStoppedDiscoverySession();
-            userRequestedScanStop = false;
-            return;
-          }
-
-          devicesPage.setScanStatus(devices_page.ScanStatus.ON);
-          Snackbar.show('Failed to stop discovery session', SnackbarType.ERROR);
+      discoverySession.stop().then(function(response) {
+        if (response.success) {
+          updateStoppedDiscoverySession();
           userRequestedScanStop = false;
-        });
+          return;
+        }
 
-        return;
-      }
+        devicesPage.setScanStatus(ScanStatus.ON);
+        Snackbar.show('Failed to stop discovery session', SnackbarType.ERROR);
+        userRequestedScanStop = false;
+      });
 
-      devicesPage.setScanStatus(devices_page.ScanStatus.STARTING);
-      adapterBroker.startDiscoverySession()
-          .then(function(session) {
-            discoverySession = assert(session);
-
-            discoverySession.onConnectionError.addListener(() => {
-              updateStoppedDiscoverySession();
-              Snackbar.show('Discovery session ended', SnackbarType.WARNING);
-            });
-
-            devicesPage.setScanStatus(devices_page.ScanStatus.ON);
-          })
-          .catch(function(error) {
-            devicesPage.setScanStatus(devices_page.ScanStatus.OFF);
-            Snackbar.show(
-                'Failed to start discovery session', SnackbarType.ERROR);
-            console.error(error);
-          });
-    });
-  }
-
-  function setupPages() {
-    sidebarObj = new window.sidebar.Sidebar($('sidebar'));
-    $('menu-btn').addEventListener('click', function() {
-      sidebarObj.open();
-    });
-    PageManager.addObserver(sidebarObj);
-    PageManager.addObserver(new PageObserver());
-
-    devicesPage = new DevicesPage();
-    PageManager.register(devicesPage);
-    adapterPage = new AdapterPage();
-    PageManager.register(adapterPage);
-    debugLogPage = new DebugLogPage(bluetoothInternalsHandler);
-    PageManager.register(debugLogPage);
-
-    // Set up hash-based navigation.
-    window.addEventListener('hashchange', function() {
-      // If a user navigates and the page doesn't exist, do nothing.
-      const pageName = window.location.hash.substr(1);
-      if ($(pageName)) {
-        PageManager.showPageByName(pageName);
-      }
-    });
-
-    if (!window.location.hash) {
-      PageManager.showPageByName(adapterPage.name);
       return;
     }
 
-    // Only the root pages are available on page load.
-    PageManager.showPageByName(window.location.hash.split('/')[0].substr(1));
-  }
+    devicesPage.setScanStatus(ScanStatus.STARTING);
+    adapterBroker.startDiscoverySession()
+        .then(function(session) {
+          discoverySession = assert(session);
 
-  function initializeViews() {
-    // window.setupFn() provides a hook for the test suite to perform setup
-    // actions after the page is loaded but before any script is run.
-    window.setupFn()
-        .then(function() {
-          setupPages();
-          return adapter_broker.getAdapterBroker();
+          discoverySession.onConnectionError.addListener(() => {
+            updateStoppedDiscoverySession();
+            Snackbar.show('Discovery session ended', SnackbarType.WARNING);
+          });
+
+          devicesPage.setScanStatus(ScanStatus.ON);
         })
-        .then(function(broker) {
-          adapterBroker = broker;
-        })
-        .then(function() {
-          return adapterBroker.getInfo();
-        })
-        .then(setupAdapterSystem)
-        .then(function() {
-          return adapterBroker.getDevices();
-        })
-        .then(setupDeviceSystem)
         .catch(function(error) {
-          Snackbar.show(error.message, SnackbarType.ERROR);
+          devicesPage.setScanStatus(ScanStatus.OFF);
+          Snackbar.show(
+              'Failed to start discovery session', SnackbarType.ERROR);
           console.error(error);
         });
+  });
+}
+
+function setupPages() {
+  sidebarObj = new Sidebar(/** @type {!HTMLElement} */ ($('sidebar')));
+  $('menu-btn').addEventListener('click', function() {
+    sidebarObj.open();
+  });
+  pageManager.addObserver(sidebarObj);
+  pageManager.addObserver(new PageObserver());
+
+  devicesPage = new DevicesPage();
+  pageManager.register(devicesPage);
+  adapterPage = new AdapterPage();
+  pageManager.register(adapterPage);
+  debugLogPage = new DebugLogPage(bluetoothInternalsHandler);
+  pageManager.register(debugLogPage);
+
+  // Set up hash-based navigation.
+  window.addEventListener('hashchange', function() {
+    // If a user navigates and the page doesn't exist, do nothing.
+    const pageName = window.location.hash.substr(1);
+    if ($(pageName)) {
+      pageManager.showPageByName(pageName);
+    }
+  });
+
+  if (!window.location.hash) {
+    pageManager.showPageByName(adapterPage.name);
+    return;
   }
 
-  return {
-    initializeViews: initializeViews,
-  };
-});
+  // Only the root pages are available on page load.
+  pageManager.showPageByName(window.location.hash.split('/')[0].substr(1));
+}
 
-window.setupFn = window.setupFn || function() {
-  return Promise.resolve();
-};
-
-document.addEventListener(
-    'DOMContentLoaded', bluetooth_internals.initializeViews);
+export function initializeViews() {
+  setupPages();
+  return getAdapterBroker()
+      .then(function(broker) {
+        adapterBroker = broker;
+      })
+      .then(function() {
+        return adapterBroker.getInfo();
+      })
+      .then(setupAdapterSystem)
+      .then(function() {
+        return adapterBroker.getDevices();
+      })
+      .then(setupDeviceSystem)
+      .catch(function(error) {
+        Snackbar.show(error.message, SnackbarType.ERROR);
+        console.error(error);
+      });
+}

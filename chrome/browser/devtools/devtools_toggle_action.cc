@@ -4,11 +4,10 @@
 
 #include "chrome/browser/devtools/devtools_toggle_action.h"
 
-DevToolsToggleAction::RevealParams::RevealParams(const base::string16& url,
+DevToolsToggleAction::RevealParams::RevealParams(const std::u16string& url,
                                                  size_t line_number,
                                                  size_t column_number)
-    : url(url), line_number(line_number), column_number(column_number) {
-}
+    : url(url), line_number(line_number), column_number(column_number) {}
 
 DevToolsToggleAction::RevealParams::~RevealParams() {
 }
@@ -65,10 +64,9 @@ DevToolsToggleAction DevToolsToggleAction::Toggle() {
 }
 
 // static
-DevToolsToggleAction DevToolsToggleAction::Reveal(
-    const base::string16& url,
-    size_t line_number,
-    size_t column_number) {
+DevToolsToggleAction DevToolsToggleAction::Reveal(const std::u16string& url,
+                                                  size_t line_number,
+                                                  size_t column_number) {
   return DevToolsToggleAction(
       new RevealParams(url, line_number, column_number));
 }

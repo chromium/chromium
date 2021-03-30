@@ -30,7 +30,7 @@ void TrustedTypesCheckForHTMLThrows(const String& string) {
   EXPECT_FALSE(exception_state.HadException());
 
   window->GetContentSecurityPolicy()->DidReceiveHeader(
-      "require-trusted-types-for 'script'",
+      "require-trusted-types-for 'script'", *(window->GetSecurityOrigin()),
       network::mojom::ContentSecurityPolicyType::kEnforce,
       network::mojom::ContentSecurityPolicySource::kMeta);
   ASSERT_FALSE(exception_state.HadException());
@@ -50,7 +50,7 @@ void TrustedTypesCheckForScriptThrows(const String& string) {
   EXPECT_FALSE(exception_state.HadException());
 
   window->GetContentSecurityPolicy()->DidReceiveHeader(
-      "require-trusted-types-for 'script'",
+      "require-trusted-types-for 'script'", *(window->GetSecurityOrigin()),
       network::mojom::ContentSecurityPolicyType::kEnforce,
       network::mojom::ContentSecurityPolicySource::kMeta);
   ASSERT_FALSE(exception_state.HadException());
@@ -70,7 +70,7 @@ void TrustedTypesCheckForScriptURLThrows(const String& string) {
   EXPECT_FALSE(exception_state.HadException());
 
   window->GetContentSecurityPolicy()->DidReceiveHeader(
-      "require-trusted-types-for 'script'",
+      "require-trusted-types-for 'script'", *(window->GetSecurityOrigin()),
       network::mojom::ContentSecurityPolicyType::kEnforce,
       network::mojom::ContentSecurityPolicySource::kMeta);
   ASSERT_FALSE(exception_state.HadException());

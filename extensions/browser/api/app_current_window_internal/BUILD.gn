@@ -15,6 +15,7 @@ source_set("app_current_window_internal") {
 
   deps = [
     "//content/public/browser",
+    "//extensions/common",
     "//extensions/common/api",
   ]
 

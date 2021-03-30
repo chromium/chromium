@@ -133,6 +133,8 @@ bool AutomationAXTreeWrapper::OnAccessibilityEvents(
     ui::AXEvent generated_event;
     generated_event.id = targeted_event.node->id();
     generated_event.event_from = targeted_event.event_params.event_from;
+    generated_event.event_from_action =
+        targeted_event.event_params.event_from_action;
     generated_event.event_intents = targeted_event.event_params.event_intents;
     owner_->SendAutomationEvent(event_bundle.tree_id,
                                 event_bundle.mouse_location, generated_event,
@@ -220,7 +222,7 @@ void AutomationAXTreeWrapper::SetAccessibilityFocus(int32_t node_id) {
 }
 
 ui::AXNode* AutomationAXTreeWrapper::GetAccessibilityFocusedNode() {
-  return accessibility_focused_id_ == ui::AXNode::kInvalidAXID
+  return accessibility_focused_id_ == ui::kInvalidAXNodeID
              ? nullptr
              : tree_.GetFromId(accessibility_focused_id_);
 }
@@ -314,14 +316,14 @@ void AutomationAXTreeWrapper::OnAtomicUpdateFinished(
 
 ui::AXNode* AutomationAXTreeWrapper::GetNodeFromTree(
     const ui::AXTreeID tree_id,
-    const ui::AXNode::AXID node_id) const {
+    const ui::AXNodeID node_id) const {
   AutomationAXTreeWrapper* tree_wrapper =
       owner_->GetAutomationAXTreeWrapperFromTreeID(tree_id);
   return tree_wrapper ? tree_wrapper->GetNodeFromTree(node_id) : nullptr;
 }
 
 ui::AXNode* AutomationAXTreeWrapper::GetNodeFromTree(
-    const ui::AXNode::AXID node_id) const {
+    const ui::AXNodeID node_id) const {
   return tree_.GetFromId(node_id);
 }
 

@@ -236,9 +236,9 @@ TEST_P(PaintPreviewBaseServiceTest, CaptureMainFrame) {
               case RecordingPersistence::kFileSystem: {
 #if defined(OS_WIN)
                 base::FilePath path = base::FilePath(
-                    base::UTF8ToUTF16(result->proto.root_frame().file_path()));
-                base::FilePath name(base::UTF8ToUTF16(
-                    base::StrCat({token.ToString(), ".skp"})));
+                    base::UTF8ToWide(result->proto.root_frame().file_path()));
+                base::FilePath name(
+                    base::UTF8ToWide(base::StrCat({token.ToString(), ".skp"})));
 #else
                 base::FilePath path =
                     base::FilePath(result->proto.root_frame().file_path());

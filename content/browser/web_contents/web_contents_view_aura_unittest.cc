@@ -236,7 +236,7 @@ TEST_F(WebContentsViewAuraTest, DragDropFiles) {
   WebContentsViewAura* view = GetView();
   auto data = std::make_unique<ui::OSExchangeData>();
 
-  const base::string16 string_data = base::ASCIIToUTF16("Some string data");
+  const std::u16string string_data = u"Some string data";
   data->SetString(string_data);
 
 #if defined(OS_WIN)
@@ -324,7 +324,7 @@ TEST_F(WebContentsViewAuraTest, DragDropFilesOriginateFromRenderer) {
   WebContentsViewAura* view = GetView();
   auto data = std::make_unique<ui::OSExchangeData>();
 
-  const base::string16 string_data = base::ASCIIToUTF16("Some string data");
+  const std::u16string string_data = u"Some string data";
   data->SetString(string_data);
 
 #if defined(OS_WIN)
@@ -406,7 +406,7 @@ TEST_F(WebContentsViewAuraTest, DragDropVirtualFiles) {
   WebContentsViewAura* view = GetView();
   auto data = std::make_unique<ui::OSExchangeData>();
 
-  const base::string16 string_data = base::ASCIIToUTF16("Some string data");
+  const std::u16string string_data = u"Some string data";
   data->SetString(string_data);
 
   const std::vector<std::pair<base::FilePath, std::string>>
@@ -485,7 +485,7 @@ TEST_F(WebContentsViewAuraTest, DragDropVirtualFilesOriginateFromRenderer) {
   WebContentsViewAura* view = GetView();
   auto data = std::make_unique<ui::OSExchangeData>();
 
-  const base::string16 string_data = base::ASCIIToUTF16("Some string data");
+  const std::u16string string_data = u"Some string data";
   data->SetString(string_data);
 
   const std::vector<std::pair<base::FilePath, std::string>>
@@ -542,14 +542,14 @@ TEST_F(WebContentsViewAuraTest, DragDropUrlData) {
 
   const std::string url_spec = "https://www.wikipedia.org/";
   const GURL url(url_spec);
-  const base::string16 url_title = base::ASCIIToUTF16("Wikipedia");
+  const std::u16string url_title = u"Wikipedia";
   data->SetURL(url, url_title);
 
   // SetUrl should also add a virtual .url (internet shortcut) file.
   std::vector<ui::FileInfo> file_infos;
   EXPECT_TRUE(data->GetVirtualFilenames(&file_infos));
   ASSERT_EQ(1ULL, file_infos.size());
-  EXPECT_EQ(base::FilePath(url_title + base::ASCIIToUTF16(".url")),
+  EXPECT_EQ(base::FilePath(base::UTF16ToWide(url_title) + L".url"),
             file_infos[0].display_name);
 
   ui::DropTargetEvent event(*data.get(), kClientPt, kScreenPt,
@@ -605,7 +605,7 @@ TEST_F(WebContentsViewAuraTest, StartDragging) {
   view->drag_in_progress_ = true;
 
   DropData drop_data;
-  drop_data.text.emplace(base::UTF8ToUTF16("Hello World!"));
+  drop_data.text.emplace(u"Hello World!");
   view->StartDragging(drop_data, blink::DragOperationsMask::kDragOperationNone,
                       gfx::ImageSkia(), gfx::Vector2d(),
                       blink::mojom::DragEventSourceInfo(),

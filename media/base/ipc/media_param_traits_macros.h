@@ -17,11 +17,13 @@
 #include "media/base/container_names.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/decode_status.h"
+#include "media/base/decoder.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/decryptor.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/eme_constants.h"
 #include "media/base/encryption_scheme.h"
+#include "media/base/media_content_type.h"
 #include "media/base/media_log_record.h"
 #include "media/base/media_status.h"
 #include "media/base/output_device_info.h"
@@ -30,6 +32,7 @@
 #include "media/base/sample_format.h"
 #include "media/base/status_codes.h"
 #include "media/base/subsample_entry.h"
+#include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
 #include "media/base/video_transformation.h"
@@ -37,7 +40,7 @@
 #include "media/base/waiting.h"
 #include "media/base/watch_time_keys.h"
 #include "media/media_buildflags.h"
-#include "media/video/supported_video_decoder_config.h"
+#include "third_party/blink/public/platform/web_fullscreen_video_status.h"
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/ipc/color/gfx_param_traits_macros.h"
 
@@ -46,6 +49,9 @@
 #endif  // BUILDFLAG(ENABLE_MEDIA_DRM_STORAGE)
 
 // Enum traits.
+
+IPC_ENUM_TRAITS_MAX_VALUE(blink::WebFullscreenVideoStatus,
+                          blink::WebFullscreenVideoStatus::kMaxValue)
 
 IPC_ENUM_TRAITS_MAX_VALUE(media::AudioCodec, media::AudioCodec::kAudioCodecMax)
 IPC_ENUM_TRAITS_MAX_VALUE(media::AudioCodecProfile,
@@ -95,6 +101,8 @@ IPC_ENUM_TRAITS_MAX_VALUE(media::EncryptionScheme,
 IPC_ENUM_TRAITS_MAX_VALUE(media::HdcpVersion,
                           media::HdcpVersion::kHdcpVersionMax)
 
+IPC_ENUM_TRAITS_MAX_VALUE(media::MediaContentType, media::MediaContentType::Max)
+
 IPC_ENUM_TRAITS_MAX_VALUE(media::MediaLogRecord::Type,
                           media::MediaLogRecord::Type::kMaxValue)
 
@@ -122,6 +130,12 @@ IPC_ENUM_TRAITS_MIN_MAX_VALUE(media::VideoCodecProfile,
 
 IPC_ENUM_TRAITS_MAX_VALUE(media::VideoDecoderImplementation,
                           media::VideoDecoderImplementation::kMaxValue)
+
+IPC_ENUM_TRAITS_MAX_VALUE(media::VideoDecoderType,
+                          media::VideoDecoderType::kMaxValue)
+
+IPC_ENUM_TRAITS_MAX_VALUE(media::AudioDecoderType,
+                          media::AudioDecoderType::kMaxValue)
 
 IPC_ENUM_TRAITS_MAX_VALUE(media::VideoPixelFormat, media::PIXEL_FORMAT_MAX)
 

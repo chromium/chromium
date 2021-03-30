@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
@@ -28,7 +29,7 @@ namespace content {
 namespace {
 
 const char kTestPath[] = "/loader/cors_preflight.html";
-const base::string16 kTestDone = base::string16(base::ASCIIToUTF16("DONE"));
+const std::u16string kTestDone = std::u16string(u"DONE");
 
 // Tests end to end behaviors on CORS preflight and its cache.
 class CorsPreflightCacheBrowserTest : public ContentBrowserTest {

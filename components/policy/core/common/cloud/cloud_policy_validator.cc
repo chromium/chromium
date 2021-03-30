@@ -27,24 +27,6 @@ namespace policy {
 
 namespace {
 
-const char kMetricPolicyKeyVerification[] = "Enterprise.PolicyKeyVerification";
-
-enum MetricPolicyKeyVerification {
-  // Obsolete. Kept to avoid reuse, as this is used in histograms.
-  // UMA metric recorded when the client has no verification key.
-  METRIC_POLICY_KEY_VERIFICATION_KEY_MISSING_DEPRECATED,
-  // Recorded when the policy being verified has no key signature (e.g. policy
-  // fetched before the server supported the verification key).
-  METRIC_POLICY_KEY_VERIFICATION_SIGNATURE_MISSING,
-  // Recorded when the key signature did not match the expected value (in
-  // theory, this should only happen after key rotation or if the policy cached
-  // on disk has been modified).
-  METRIC_POLICY_KEY_VERIFICATION_FAILED,
-  // Recorded when key verification succeeded.
-  METRIC_POLICY_KEY_VERIFICATION_SUCCEEDED,
-  METRIC_POLICY_KEY_VERIFICATION_SIZE  // Must be the last.
-};
-
 const char kMetricPolicyUserVerification[] =
     "Enterprise.PolicyUserVerification";
 
@@ -392,9 +374,6 @@ bool CloudPolicyValidatorBase::CheckNewPublicKeyVerificationSignature() {
   if (!policy_->has_new_public_key_verification_signature_deprecated()) {
     // Policy does not contain a verification signature, so log an error.
     LOG(ERROR) << "Policy is missing public_key_verification_signature";
-    UMA_HISTOGRAM_ENUMERATION(kMetricPolicyKeyVerification,
-                              METRIC_POLICY_KEY_VERIFICATION_SIGNATURE_MISSING,
-                              METRIC_POLICY_KEY_VERIFICATION_SIZE);
     return false;
   }
 
@@ -402,16 +381,10 @@ bool CloudPolicyValidatorBase::CheckNewPublicKeyVerificationSignature() {
           policy_->new_public_key(), verification_key_,
           policy_->new_public_key_verification_signature_deprecated())) {
     LOG(ERROR) << "Signature verification failed";
-    UMA_HISTOGRAM_ENUMERATION(kMetricPolicyKeyVerification,
-                              METRIC_POLICY_KEY_VERIFICATION_FAILED,
-                              METRIC_POLICY_KEY_VERIFICATION_SIZE);
     return false;
   }
   // Signature verification succeeded - return success to the caller.
   DVLOG(1) << "Signature verification succeeded";
-  UMA_HISTOGRAM_ENUMERATION(kMetricPolicyKeyVerification,
-                            METRIC_POLICY_KEY_VERIFICATION_SUCCEEDED,
-                            METRIC_POLICY_KEY_VERIFICATION_SIZE);
   return true;
 }
 

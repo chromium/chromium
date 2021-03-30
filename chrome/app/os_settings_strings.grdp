@@ -171,6 +171,9 @@
   <message name="IDS_SETTINGS_UPGRADE_UP_TO_DATE" desc="Status label: Already up to date (ChromiumOS/ChromeOS)">
     Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is up to date
   </message>
+  <message name="IDS_SETTINGS_ABOUT_PAGE_MANAGED_END_OF_LIFE_SUBTITLE" desc="Subtitle used for End of Life section on the Additional details subpage of the ABout page for managed users.">
+    Updates are managed by your administrator.
+  </message>
   <message name="IDS_SETTINGS_ABOUT_PAGE_END_OF_LIFE_MESSAGE_FUTURE" desc="Message used when end of life has not yet past current date in End of Life section on the About Page.">
     This device will get automatic software and security updates until <ph name="MONTH_AND_YEAR">$1<ex>September 2020</ex></ph>. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$2<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
@@ -179,6 +182,9 @@
   </message>
   <message name="IDS_SETTINGS_ABOUT_PAGE_LAST_UPDATE_MESSAGE" desc="Message shown on the top level about page to inform the user that this device will no longer receive latest software updates.">
     This is the last automatic software and security update for this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. To get future updates, upgrade to a newer model. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$2<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_SETTINGS_ABOUT_PAGE_DIAGNOSTICS" desc="Text of the button which allows the user to diagnose their device.">
+    Diagnostics
   </message>
 
   <!-- People (OS settings) -->
@@ -199,7 +205,7 @@
   </message>
   <message name="IDS_OS_SETTINGS_PROFILE_LABEL_V2" desc="Label underneath the profile's real name, listing the number of accounts">
     {COUNT, plural,
-     =1 {1 Google Account}
+     =1 {1 Google Account added}
      other {<ph name="EXTRA_ACCOUNTS">$2<ex>2</ex></ph> Google Accounts}}
   </message>
   <message name="IDS_OS_SETTINGS_SYNC_PAGE_TITLE" desc="Settings sub-page title for sync.">
@@ -743,6 +749,9 @@
   <message name="IDS_SETTINGS_DOWNLOADS_SHARE_ADDED_MOUNT_INVALID_SSO_URL_MESSAGE" desc="The message shown when mounting a new SMB share fails because the URL is an invalid format when SSO authentication is used.">
     Invalid URL format. Server must be specified as a host name when SSO authentication is used.
   </message>
+  <message name="IDS_SETTINGS_DOWNLOADS_SHARE_ADDED_MOUNT_INVALID_USERNAME_MESSAGE" desc="The message shown when mounting a new SMB share fails because the username is invalid.">
+    Invalid username
+  </message>
   <message name="IDS_SETTINGS_DOWNLOADS_SHARE_ADDED_SUCCESS_MESSAGE" desc="The message shown when a new SMB share is successfully mounted.">
     Share mounted successfully.
   </message>
@@ -813,11 +822,27 @@
   <message name="IDS_SETTINGS_SCREEN_MAGNIFIER_LABEL" desc="Label for checkbox which enables the fullscreen magnifier">
       Enable fullscreen magnifier
   </message>
+  <message name="IDS_SETTINGS_SCREEN_MAGNIFIER_HINT_LABEL" desc="Label for keyboard shortcut hint which tells how to enable and disable the fullscreen magnifier.">
+    Use Ctrl+<ph name="SEARCH_KEY_NAME">$1<ex>Search</ex></ph>+M to toggle the fullscreen magnifier. Use Ctrl+Alt+Arrow keys to move around the screen when zoomed in.
+  </message>
+  <message name="IDS_SETTINGS_SCREEN_MANIFIER_MOUSE_FOLLOWING_MODE_CONTINUOUS" desc="Label for the radio button that allows the user to choose the 'continuous' mouse following mode for the full screen magnifier, which moves the zoomed-in screen continuously (underneath the cursor in the opposite direction) as the mouse moves towards the edges of the screen. This feature allows the user of full screen magnifier to choose how the zoomed-in screen moves as their mouse moves within the screen. The options are 'Move screen continuously as mouse moves', 'Move screen keeping mouse at center of screen', and 'Move screen when mouse touches edges of screen'.">
+    Move screen continuously as mouse moves
+  </message>
+  <message name="IDS_SETTINGS_SCREEN_MANIFIER_MOUSE_FOLLOWING_MODE_CENTERED" desc="Label for the radio button that allows the user to choose the 'centered' mouse following mode for the full screen magnifier, which moves the zoomed-in screen while keeping the mouse at center of the screen. This feature allows the user of full screen magnifier to choose how the zoomed-in screen moves as their mouse moves within the screen. The options are 'Move screen continuously as mouse moves', 'Move screen keeping mouse at center of screen', and 'Move screen when mouse touches edges of screen'.">
+    Move screen keeping mouse at center of screen
+  </message>
+  <message name="IDS_SETTINGS_SCREEN_MANIFIER_MOUSE_FOLLOWING_MODE_EDGE" desc="Label for the radio button that allows the user to choose the 'edge' mouse following mode for the full screen magnifier, which moves the zoomed-in screen when the mouse touches the edges of the screen. This feature allows the user of full screen magnifier to choose how the zoomed-in screen moves as their mouse moves within the screen. The options are 'Move screen continuously as mouse moves', 'Move screen keeping mouse at center of screen', and 'Move screen when mouse touches edges of screen'.">
+    Move screen when mouse touches edges of screen
+  </message>
   <message name="IDS_SETTINGS_SCREEN_MAGNIFIER_FOCUS_FOLLOWING_LABEL" desc="Label for toggle which enables keyboard focus following in the fullscreen magnifier">
       Zoomed in screen follows keyboard focus
   </message>
   <message name="IDS_SETTINGS_SCREEN_MAGNIFIER_ZOOM_LABEL" desc="Label for dropdown menu which contains zoom levels for the fullscreen magnifier">
-    Fullscreen zoom level:
+    Fullscreen zoom level
+  </message>
+  <message name="IDS_SETTINGS_SCREEN_MAGNIFIER_ZOOM_HINT_LABEL" desc="Label for keyboard shortcut for adjusting the zoom levels for the fullscreen magnifier">
+    Use Ctrl+Alt+Brightness Up to zoom in.
+Use Ctrl+Alt+Brightness Down to zoom out.
   </message>
   <message name="IDS_SETTINGS_DOCKED_MAGNIFIER_LABEL" desc="Label for checkbox which enables the docked magnifier">
     Enable docked magnifier
@@ -937,10 +962,10 @@
     Enable select-to-speak
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_DISABLED_DESCRIPTION" desc="In the settings tab, the description of a feature that will read on-screen text out loud. This text is shown when that feature is disabled.">
-    Hear text read aloud
+    Hear selected text
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_DESCRIPTION" desc="For devices with a hardware keyboard. In the settings tab, the description of an option to hold a key and click or drag a box with the mouse to speak any on-screen text out loud.">
-    Highlight what you want to hear, then press Search + S. You can also press and hold the Search key, or tap the Select-to-Speak icon near your profile image to make a selection.
+    Highlight what you want to hear, then press Search + S. You can also press and hold the Search key, or tap the Select-to-Speak icon near the status tray to make a selection.
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_DESCRIPTION_WITHOUT_KEYBOARD" desc="For devices that do not have a hardware keyboard. In the settings tab, the description of an option to highlight text to be read out loud.">
     Tap the Select-to-Speak icon near your profile image, then select what you want to hear.
@@ -956,6 +981,9 @@
   </message>
   <message name="IDS_SETTINGS_MANAGE_SWITCH_ACCESS_SETTINGS" desc="Title of the page to manage Switch Access settings.">
     Switch Access settings
+  </message>
+  <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_GUIDE_LABEL" desc="Label for the button that opens the setup guide dialog for Switch Access.">
+    Open setup guide
   </message>
   <message name="IDS_SETTINGS_SWITCH_ASSIGNMENT_HEADING" desc="Heading for the settings section for Switch Access to assign switches to actions">
     Switch action assignment
@@ -981,6 +1009,18 @@
   <message name="IDS_SETTINGS_ASSIGN_PREVIOUS_SWITCH_LABEL" desc="Label for the setting to assign a switch to the action 'Previous', which moves focus to the previous element.">
     Previous
   </message>
+  <message name="IDS_SETTINGS_SWITCH_ACCESS_INTERNAL_DEVICE_TYPE_LABEL" desc="Label to apply to a switch key from the built-in keyboard. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+    Built-in Keyboard
+  </message>
+  <message name="IDS_SETTINGS_SWITCH_ACCESS_USB_DEVICE_TYPE_LABEL" desc="Label to apply to a switch key from a USB device. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+    USB
+  </message>
+  <message name="IDS_SETTINGS_SWITCH_ACCESS_BLUETOOTH_DEVICE_TYPE_LABEL" desc="Label to apply to a switch key from a Bluetooth device. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+    Bluetooth
+  </message>
+  <message name="IDS_SETTINGS_SWITCH_ACCESS_UNKNOWN_DEVICE_TYPE_LABEL" desc="Label to apply to a switch key from an unknown device. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+    Unknown
+  </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_AUTO_SCAN_HEADING" desc="Heading for the settings section containing preferences around Switch Access automatically scanning between elements.">
     Auto-scan
   </message>
@@ -992,6 +1032,9 @@
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_AUTO_SCAN_KEYBOARD_SPEED_LABEL" desc="Label for slider which sets the time interval for Switch Access to automatically scan to the next element while navigating in the keyboard. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
     Keyboard scanning speed
+  </message>
+  <message name="IDS_SETTINGS_SWITCH_ACCESS_POINT_SCAN_SPEED_LABEL" desc="Label for slider which sets the speed of point scanning cursors for Switch Access, which move across the screen, allowing the user to choose a precise point to click. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+    Point scanning speed
   </message>
   <message name="IDS_SETTINGS_DURATION_IN_SECONDS" desc="A duration in seconds. Should be short.">
     <ph name="DURATION">$1<ex>1.5</ex></ph>s
@@ -1017,6 +1060,9 @@ Press an assigned switch to remove assignment.
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_WARN_CANNOT_REMOVE_LAST_SELECT_SWITCH" desc="A message warning the user that they cannot remove the last switch for the Select action. The text for the 'Select' action should be the same as the text from IDS_SETTINGS_ASSIGN_SELECT_SWITCH_LABEL. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
     Can’t remove the only switch assigned to Select. Press any key to exit.
+  </message>
+  <message name="IDS_SETTINGS_SWITCH_AND_DEVICE_TYPE" desc="Label describing a switch key and the type of device where the switch key exists. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+    <ph name="SWITCH">$1<ex>backspace</ex></ph> (<ph name="DEVICE_TYPE">$2<ex>USB</ex></ph>)
   </message>
   <message name="IDS_SETTINGS_ASSIGN_SWITCH_SUB_LABEL_0_SWITCHES" desc="A sub-label for the link that brings up a dialog to assign a switch key to an action. Mentions zero switches assigned. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
     0 switches assigned
@@ -1045,8 +1091,23 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_NO_SWITCHES_ASSIGNED" desc="A label indicating no switches are assigned to an action. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
     No switch has been assigned yet
   </message>
-  <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_EXIT" desc="The label of the button to exit the switch access action assignment dialog without making any changes. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+  <message name="IDS_SETTINGS_SWITCH_ACCESS_DIALOG_EXIT" desc="The label of the button to exit one of the switch access dialogs without making any changes. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
     Exit
+  </message>
+  <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_INTRO_TITLE" desc="The title for the first page of the Switch Access setup guide. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+    Switch Access setup guide
+  </message>
+  <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_INTRO_BODY" desc="The message displayed on the first page of the Switch Access setup guide, instructing the user to confirm that their external switch is appropriately connected to the chromebook. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+    To get started, please make sure your USB or Bluetooth switch is connected to your Chromebook. You can also use keyboard keys.
+  </message>
+  <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_PAIR_BLUETOOTH" desc="A button in the Switch Access setup guide that takes the user to a page where they can pair a bluetooth switch device. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
+    Pair Bluetooth switch
+  </message>
+  <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_NEXT" desc="A button in the Switch Access setup guide that takes the user to the next step in configuring the feature.">
+    Next
+  </message>
+  <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_PREVIOUS" desc="A button in the Switch Access setup guide that takes the user to the previous step in the setup process.">
+    Previous
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_ACTION_ASSIGNMENT_DIALOG_ASSIGNED_ICON_LABEL" desc="A label for an icon indicating a switch is assigned to an action. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
     Assigned
@@ -1179,32 +1240,29 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_DESCRIPTION" desc="Description of the Account Manager Settings page for child users. Shown just below the title of the page.">
     Manage your accounts here. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
+  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_DESCRIPTION_V2" desc="Description of the Account Manager Settings page for child users. Shown just below the title of the page.">
+    This page allows you to manage your signed-in Google accounts. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_FIRST_MESSAGE" desc="Description of the Account Manager Settings page for child users. Shown just below the link to learn more about account management.">
      Bookmarks, passwords, and other browser data are synced with the primary account.
   </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_SECOND_MESSAGE" desc="Description of the Account Manager Settings page for child users. Shown just below the link to learn more about account management.">
     Adding a school account enables easy sign-in to websites, extensions, and apps as a student while still operating under parental controls.
   </message>
-  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_PRIMARY_ACCOUNT_DESCRIPTION" desc="Description of the Account Manager Settings page for primary account. Shown above primary account picture.">
-    Your apps and OS settings will sync across Chromebooks where you're signed in with this account. <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>Sync Settings<ph name="LINK_END">&lt;/a&gt;</ph>
-  </message>
-  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_SECONDARY_ACCOUNTS_DESCRIPTION" desc="Description of secondary accounts usage, shown on Account Manager Settings page.">
-    When you add a secondary account here, you may browse the web, download apps, check your Gmail and other Google services using that account.
-  </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_LIST_HEADER" desc="List header for Account List in Account Manager Settings page.">
     Accounts
   </message>
-  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_LIST_HEADER_V2" desc="List header for secondary account List in Account Manager Settings page.">
-    Secondary accounts
+  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_LIST_HEADER_V2" desc="List header for additional account List in Account Manager Settings page.">
+    Additional accounts
   </message>
-  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_LIST_HEADER_CHILD" desc="List header for secondary account List in Account Manager Settings page for Child user.">
+  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_LIST_HEADER_CHILD" desc="List header for additional account List in Account Manager Settings page for Child user.">
     School accounts
   </message>
-  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_LIST_TOOLTIP" desc="List tooltip for secondary account List in Account Manager Settings page.">
-    Apps and OS settings are not synced to secondary accounts.
+  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_LIST_DESCRIPTION" desc="List description for additional account List in Account Manager Settings page.">
+    You can add your additional accounts to access websites and apps.
   </message>
-  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_LIST_TOOLTIP_NO_SECONDARY_ACCOUNTS" desc="List tooltip for secondary account List in Account Manager Settings page when user doesn't have secondary accounts.">
-    When you add a secondary account here, you may browse the web, download apps, check your Gmail and other Google services using that account.
+  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_LIST_CHILD_DESCRIPTION" desc="List description for additional account List in Account Manager Settings page for Child users.">
+    <ph name="USER_EMAIL">$1<ex>user@example.com</ex></ph> is supervised by Family Link. You can add school accounts to access school resources with parental supervision.
   </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_PRIMARY_ACCOUNT_TOOLTIP" desc="Tooltip for the primary account in accounts list in Settings describing how to sign out.">
     To sign out of the primary account on this device, click the time on your screen. In the menu that appears, click "Sign out".
@@ -1232,6 +1290,9 @@ Press an assigned switch to remove assignment.
   </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_SECONDARY_ACCOUNTS_DISABLED_TEXT" desc="Text for 'secondary accounts disabled' message in Settings page.">
     Your administrator has disabled the addition of more Google Accounts
+  </message>
+  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_SECONDARY_ACCOUNTS_DISABLED_TEXT_V2" desc="Tooltip text for 'secondary accounts disabled' message in Settings page.">
+   Your administrator doesn’t allow additional Google Accounts.
   </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_SECONDARY_ACCOUNTS_DISABLED_CHILD_TEXT" desc="Text for 'secondary accounts disabled' message for child accounts in Settings page.">
     Addition of more Google Accounts is disabled
@@ -1264,7 +1325,7 @@ Press an assigned switch to remove assignment.
     This account is managed by <ph name="BEGIN_LINK">&lt;a target="_blank"&gt;</ph><ph name="DOMAIN">$1<ex>google.com</ex></ph><ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_MANAGEMENT_STATUS_CHILD" desc="Management status label for child accounts.">
-    This user is managed by Family Link
+    Managed by Family Link
   </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_MANAGEMENT_PRIMARY_ACCOUNT" desc="Indicates this account is the primary account, when the primary account is a child account.">
     Primary Account
@@ -1276,18 +1337,50 @@ Press an assigned switch to remove assignment.
     Primary account
   </message>
 
+  <!-- Used by both Crostini and Plugin VM -->
+  <message name="IDS_SETTINGS_GUEST_OS_SHARED_PATHS" desc="Label for managing shared folders for Parallels.">
+    Manage shared folders
+  </message>
+  <message name="IDS_SETTINGS_GUEST_OS_SHARED_PATHS_LIST_HEADING" desc="Label for list of shared folders.">
+    Shared folders
+  </message>
+  <message name="IDS_SETTINGS_GUEST_OS_SHARED_PATHS_INSTRUCTIONS_REMOVE" desc="Instructions for removing shared folders in Parallels.">
+    Removing folders will stop sharing but will not delete files.
+  </message>
+  <message name="IDS_SETTINGS_GUEST_OS_SHARED_PATHS_STOP_SHARING" desc="Tooltip to show when hovering on the remove icon for a Parallels shared folder.">
+    Stop sharing
+  </message>
+  <message name="IDS_SETTINGS_GUEST_OS_SHARED_PATHS_REMOVE_FAILURE_DIALOG_TITLE" desc="Title of the error dialog shown to a user when unsharing a Parallels shared folder fails.">
+    Unshare failed
+  </message>
+  <message name="IDS_SETTINGS_GUEST_OS_SHARED_PATHS_REMOVE_FAILURE_TRY_AGAIN" desc="Button text in the dialog shown when unsharing a Parallels shared folder fails.  Pressing this button will attempt to unshare the folder again.">
+    Try again
+  </message>
+  <message name="IDS_SETTINGS_GUEST_OS_SHARED_PATHS_LIST_EMPTY_MESSAGE" desc="Message shown when the user has not yet shared any folders in Parallels.">
+    Shared folders will appear here
+  </message>
+  <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_LABEL" desc="Label for managing shared USB devices.">
+    Manage USB devices
+  </message>
+  <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_EXTRA_DESCRIPTION" desc="Extra description for managing shared USB devices.">
+    Only supported devices are shown.
+  </message>
+  <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_LIST_EMPTY_MESSAGE" desc="Message shown when there are no avaiable USB devices.">
+    Available USB devices will appear here.
+  </message>
+  <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_IN_USE" desc="Dialog title describing that a USB device is currently in use.">
+    Device in use
+  </message>
+  <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_REASSIGN" desc="Confirmation explaining to users that reassigning a USB device from being attached from one VM to another could cause errors.">
+     "<ph name="USB_DEVICE_NAME">$1<ex>Nexus 5</ex></ph>" is in use. Reassigning the device while it's in use could cause errors. Are you sure you want to continue?
+  </message>
+
   <!-- Crostini -->
   <message name="IDS_SETTINGS_CROSTINI_TITLE" desc="The title of Crostini section. It is meant to be used by software developers.">
     Developers
   </message>
   <message name="IDS_SETTINGS_CROSTINI_LABEL" desc="The text associated with the primary section setting. This contains settings for a Linux container running in a virtual machine for use by software developers.">
-    Linux development environment
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_SHARED_PATHS" desc="Label for managing shared folders in Crostini.">
-    Manage shared folders
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_SHARED_PATHS_LIST_HEADING" desc="Label for list of shared folders.">
-    Shared folders
+    Linux development environment (Beta)
   </message>
   <message name="IDS_SETTINGS_CROSTINI_SHARED_PATHS_INSTRUCTIONS_LOCATE" desc="Instructions for how to locate shared folders in Crostini.">
     Shared folders are available in Linux at <ph name="BASE_DIR">$1<ex>/mnt/chromeos</ex></ph>.
@@ -1295,23 +1388,8 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_CROSTINI_SHARED_PATHS_INSTRUCTIONS_ADD" desc="Instructions for how to add shared folders in Crostini.">
     To share, right-click on a folder in Files app, then select "Share with Linux".
   </message>
-  <message name="IDS_SETTINGS_CROSTINI_SHARED_PATHS_INSTRUCTIONS_REMOVE" desc="Instructions for removing shared folders in Crostini.">
-    Removing folders from here will stop sharing but will not delete files.
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_SHARED_PATHS_REMOVE_SHARING" desc="Tooltip to show when hovering on the remove icon for a crostini shared folder.">
-    Remove sharing
-  </message>
   <message name="IDS_SETTINGS_CROSTINI_SHARED_PATHS_REMOVE_FAILURE_DIALOG_MESSAGE" desc="Message to show user when unsharing a crostini shared folder fails.">
     Couldn't unshare because an application is using this folder. The folder will be unshared when Linux is next shut down.
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_SHARED_PATHS_REMOVE_FAILURE_DIALOG_TITLE" desc="Title of the error dialog shown to a user when unsharing a crostini shared folder fails.">
-    Unshare failed
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_SHARED_PATHS_REMOVE_FAILURE_TRY_AGAIN" desc="Button text in the dialog shown when unsharing a crostini shared folder fails.  Pressing this button will attempt to unshare the folder again.">
-    Try again
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_SHARED_PATHS_LIST_EMPTY_MESSAGE" desc="Message shown when the user has not yet shared any folders in Crostini.">
-    Shared folders will appear here
   </message>
   <message name="IDS_SETTINGS_CROSTINI_EXPORT_IMPORT_TITLE" desc="Title for crostini container export and imoprt (backup and restore) section">
     Backup &amp; restore
@@ -1337,23 +1415,8 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_CROSTINI_REMOVE_BUTTON" desc="Label for the button to open a dialog confirming removal of Crostini.">
     Remove
   </message>
-  <message name="IDS_SETTINGS_CROSTINI_SHARED_USB_DEVICES_LABEL" desc="Label for managing shared USB devices.">
-    Manage USB devices
-  </message>
   <message name="IDS_SETTINGS_CROSTINI_SHARED_USB_DEVICES_DESCRIPTION" desc="Description for managing shared USB devices.">
     Give Linux apps permission to access USB devices. Linux won't remember a USB device after it's removed.
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_SHARED_USB_DEVICES_EXTRA_DESCRIPTION" desc="Extra description for managing shared USB devices.">
-    Only supported devices are shown.
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_SHARED_USB_DEVICES_LIST_EMPTY_MESSAGE" desc="Message shown when there are no avaiable USB devices.">
-    Available USB devices will appear here.
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_SHARED_USB_DEVICES_IN_USE" desc="Dialog title describing that a USB device is currently in use.">
-    Device in use
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_SHARED_USB_DEVICES_REASSIGN" desc="Confirmation explaining to users that reassigning a USB device from being attached from one VM to another could cause errors.">
-     "<ph name="USB_DEVICE_NAME">$1<ex>Nexus 5</ex></ph>" is in use. Reassigning the device while it's in use could cause errors. Are you sure you want to continue?
   </message>
   <message name="IDS_SETTINGS_CROSTINI_ARC_ADB_TITLE" desc="Title of ARC ADB sideloading section.">
     Develop Android apps
@@ -1804,6 +1867,9 @@ Press an assigned switch to remove assignment.
   </message>
 
   <!-- Printing Page (OS Settings)-->
+  <message name="IDS_SETTINGS_PRINT_AND_SCAN" desc="Title of the printing and scanning page and navigation item to get there.">
+    Print and scan
+  </message>
   <message name="IDS_SETTINGS_PRINTING_CUPS_PRINT_SERVER" desc="Label for button that allows the user to access the add print server dialog.">
     Print server
   </message>
@@ -1925,10 +1991,10 @@ Press an assigned switch to remove assignment.
     Internet Printing Protocol (IPPS)
   </message>
   <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTER_PROTOCOL_HTTP" desc="The dropdown menu of the printer HTTP protocol on the manually add printer dialog.">
-    Internet Printing Protocol (HTTP)
+    Hypertext Transport Protocol (HTTP)
   </message>
   <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTER_PROTOCOL_HTTPS" desc="The dropdown menu of the printer HTTPS protocol on the manually add printer dialog.">
-    Internet Printing Protocol (HTTPS)
+    Hypertext Transport Protocol (HTTPS)
   </message>
   <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTER_PROTOCOL_APP_SOCKET" desc="The dropdown menu of the printer TCP/IP protocol on the manually add printer dialog.">
     AppSocket (TCP/IP)
@@ -2205,6 +2271,18 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_NETWORK_MENU_RENAME" desc="Settings > Internet > Network details > Dot menu: Label for the button to rename an eSIM cellular network">
     Rename
   </message>
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_INSTALL_ERROR_DIALOG_TITLE" desc="Settings > Network > Mobile data > Download > Install error dialog: Title for the dialog prompting the user to enter the confirmation code required to activate the eSIM profile they are attempting to install">
+    Set up new network
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_INSTALL_ERROR_DIALOG_CONFIRMATION_CODE_MESSAGE" desc="Settings > Network > Mobile data > Download > Install error dialog: Message for the dialog prompting the user to enter the confirmation code required to activate the eSIM profile they are attempting to install">
+    Please enter your confirmation code.
+  </message>
+  <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_INSTALL_ERROR_DIALOG_CONFIRMATION_CODE_ERROR" desc="Settings > Network > Mobile data > Download > Install error dialog: Error indicating that installing the eSIM profile was unsuccessful.">
+    Unable to connect to this profile. For technical support, please contact your carrier.
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_INSTALL_ERROR_DIALOG_GENERIC_ERROR_MESSAGE" desc="Settings > Network > Mobile data > Download > Install error dialog: Message for the dialog informing the user that there was an error installing their eSIM profile.">
+    Profile could not be downloaded. Please try again later or contact carrier for help.
+  </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_RENAME_DIALOG_RENAME_PROFILE" desc="Settings > Internet > Network details > Rename profile dialog: Label for the dialog informing the user to rename an eSIM cellular network">
     Rename Profile
   </message>
@@ -2228,6 +2306,24 @@ Press an assigned switch to remove assignment.
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_REMOVE_PROFILE_DIALOG_OKAY" desc="Settings > Internet > Network details > Remove eSIM cellular profile dialog: The Label for the dialog okay button">
     Okay
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_ESIM_DIALOG_CONNECTION_WARNING" desc="Settings > Internet > Network details >Rename profile dialog | Remove profile dialog: The Label for the dialog warning message informing the user they may disconnect from their current cellular network connection if they proceed.">
+    This may cause a brief cellular network disconnection.
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_INSTALLING_PROFILE" desc="Settings > Internet > Network details > Cellular banner: Message indicating current cellular network profile is being installed">
+    Installing profile. This may take up to 30 seconds.
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_REMOVING_PROFILE" desc="Settings > Internet > Network details > Cellular banner: Message indicating current cellular network profile is being removed">
+    Removing profile. This may take up to 30 seconds.
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_RENAMING_PROFILE" desc="Settings > Internet > Network details > Cellular banner: Message indicating current cellular network profile is being renamed">
+    Renaming profile. This may take up to 30 seconds.
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_CONNECTING_TO_PROFILE" desc="Settings > Internet > Network details > Cellular banner: Message indicating chromeOS device is connecting to selected cellular network profile">
+    Connecting to profile. This may take up to 30 seconds.
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_REFRESHING_PROFILE_LIST" desc="Settings > Internet > Network details > Cellular banner: Message indicating current cellular network profile list is being refreshed.">
+    Refreshing profile list. This may take up to 30 seconds.
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_REMOVE_PROFILE_DIALOG_ERROR_MESSAGE" desc="Settings > Internet > Network details > Remove eSIM cellular profile dialog: Error message shown when remove fails">
     Profile could not be removed. Please try again or contact your carrier for technical support.
@@ -2310,12 +2406,6 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_WIFI_NETWORK_OUT_OF_RANGE" desc="Text shown when viewing the Wi-Fi network detail page when the currently-viewed Wi-Fi network has been lost (e.g., has gone out of range).">
     Network out of range
   </message>
-  <message name="IDS_SETTINGS_INTERNET_CELLULAR_CONTACT_SPECIFIC_CARRIER" desc="Text shown when the Chromebook cannot connect to a cellular network, which alerts the user to contact a specific carrier.">
-    Trouble connecting. Please contact <ph name="CARRIER_NAME">$1<ex>Google Fi</ex></ph> for assistance.
-  </message>
-  <message name="IDS_SETTINGS_INTERNET_CELLULAR_CONTACT_DEFAULT_CARRIER" desc="Text shown when the Chromebook cannot connect to a cellular network, which alerts the user to contact their carrier.">
-    Trouble connecting. Please contact your carrier for assistance.
-  </message>
   <message name="IDS_SETTINGS_INTERNET_CELLULAR_SETUP_DIALOG_TITLE" desc="The title text of the cellular setup dialog that allows users set up a new cellular network by activating a physical SIM card or setting up the device's built in eSIM.">
     Set up new network
   </message>
@@ -2392,25 +2482,19 @@ Press an assigned switch to remove assignment.
     Instant Tethering
   </message>
   <message name="IDS_SETTINGS_INTERNET_ESIM_NOT_SETUP_WITH_SETUP_LINK" desc="Text shown when viewing the Mobile data page and no eSIM profile is available">
-    No available eSIM profiles. Download a new profile <ph name="BEGIN_LINK">&lt;a href="#" id="cellularEsimLink"&gt;</ph>here<ph name="END_LINK">&lt;/a&gt;</ph>
+    No available eSIM profiles. Download a new profile <ph name="BEGIN_LINK">&lt;a href="#" id="cellularEsimLink"&gt;</ph>here.<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_INTERNET_PSIM_NOT_SETUP_WITH_SETUP_LINK" desc="Text shown when viewing the Mobile data page and no physical SIM profile is available">
-    No available SIM profiles. Setup a new profile <ph name="BEGIN_LINK">&lt;a href="#" id="cellularPsimLink"&gt;</ph>here.<ph name="END_LINK">&lt;/a&gt;</ph>
+    No available SIM profiles. Set up a new profile <ph name="BEGIN_LINK">&lt;a href="#" id="cellularPsimLink"&gt;</ph>here.<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_INTERNET_TETHER_NOT_SETUP_WITH_LEARN_MORE_LINK" desc="Text shown when viewing the Mobile data page and no instant tether network is available">
     No device detected <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
-  <message name="IDS_SETTINGS_INTERNET_EID_POPUP_TITLE" desc="Label shown when vewing EID and QR code popup describing device EID">
-    Your device EID
-  </message>
-  <message name="IDS_SETTINGS_INTERNET_EID_POPUP_DESCRIPTION" desc="Label shown when veiwing EID and QR code popup describing what an EID number is used for">
-    A customer service rep can use the EID number to help you activate service.
-  </message>
-  <message name="IDS_SETTINGS_INTERNET_CLOSE_EID_POPUP_BUTTON_LABEL" desc="A11y and tooltip label for EID and QR code popup close button when viewing EID and QR code popup">
-    Close EID and QR code popup
-  </message>
   <message name="IDS_SETTINGS_INTERNET_SHOW_EID_POPUP_BUTTON_LABEL" desc="A11y and tooltop label for EID and QR code popup show button when viewing cellular network list">
     Show device EID and QR code popup
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_ESIM_NO_CONNECTION_ERROR_TOAST" desc="Message in toast displayed when user tries to perform an eSIM operation when not connected to a non-cellular network.">
+    Establish an internet connection first
   </message>
 
   <!-- Users Page (OS Settings) -->
@@ -2492,7 +2576,7 @@ Press an assigned switch to remove assignment.
     Recent Chrome tabs
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_SUMMARY" desc="Description of for the 'Phone Hub' setting. This feature lets the user stay productive on Chrome OS by ensuring that their phones' apps, content, and connectivity are available on their Chrome OS device.">
-    Extend the best of your Android phone to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+    Access your phone's capabilities from your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_NOTIFICATIONS_SUMMARY" desc="Description of for the 'Phone Hub Notifications' setting. This feature mirrors notifications from a connected Android phone to Chrome OS devices.">
     View notifications from your chat apps on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
@@ -2507,21 +2591,21 @@ Press an assigned switch to remove assignment.
     Turn on Chrome Sync to view recent Chrome tabs from your phone
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_ACK_TITLE" desc="The title of the dialog containing the Phone Hub notification opt-in flow shown when the Phone Hub 'Notifications' toggle is switched on.">
-    Turn on notifications on your phone
+    View notifications from your phone on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_ACK_SUMMARY" desc="The summary of the dialog containing the Phone Hub notification opt-in flow shown when the Phone Hub 'Notifications' toggle is switched on.">
-    Receive notifications from your phone on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_ACK_SUMMARY" desc="The summary of the dialog containing the Phone Hub notification opt-in flow shown when the Phone Hub 'Notifications' toggle is switched on. Explains to the user that they need to grant permission to use notifications by enabling access to the Google Play Services app on their phone.">
+    To receive notifications from your phone on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>, follow the instructions on your phone to grant notifications access to Google Play Services.
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_AWAITING_RESPONSE_TITLE" desc="The title of the dialog containing the Phone Hub notification opt-in flow shown when the user needs to follow the setup flow instructions on their phone in order to start mirroring notifications from their phone to their Chromebook.">
     Complete setup on your phone
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_AWAITING_RESPONSE_SUMMARY" desc="The body text of the dialog containing the Phone Hub notification opt-in flow shown when the user needs to follow the setup flow instructions on their phone in order to start mirroring notifications from their phone to their Chromebook.">
-    Make sure your phone is nearby, unlocked, and has Bluetooth and Wi-Fi turned on. Follow steps on your phone to complete setup.
+  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_AWAITING_RESPONSE_SUMMARY" desc="The summary of the dialog containing the Phone Hub notification opt-in flow shown after the user has started the flow. Explains to the user that they need to grant permission to use notifications by enabling access to the Google Play Services app on their phone.">
+    To receive notifications from your phone on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>, follow the instructions on your phone to grant notifications access to Google Play Services.
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_CONNECTING_TITLE" desc="The title of the dialog containing the Phone Hub notification opt-in flow shown when the user has confirmed to enable the feature that will mirror phone notifications to their Chromebook.">
     Connecting to your phone
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_INSTRUCTIONS" desc="The body text of the dialog containing the Phone Hub notification opt-in flow when the Phone Hub 'Notifications' toggle is switched on, and when the user has confirmed to turn on the feature.">
+  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_INSTRUCTIONS" desc="The second paragraph of text shown in the dialog containing the Phone Hub notification opt-in flow. Alerts the user that to enable notifications, they need to have their phone unlocked, nearby, and with Bluetooth/Wi-Fi on to complete setup.">
     Make sure your phone is nearby, unlocked, and has Bluetooth and Wi-Fi turned on.
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_COMPLETED_TITLE" desc="The title of the dialog containing the Phone Hub notification opt-in flow when the feature is successfully turned on and notifications on their phone will now be mirrored to their Chromebook.">
@@ -2629,7 +2713,9 @@ Press an assigned switch to remove assignment.
     Change PIN
   </message>
   <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_NUM_FINGERPRINTS" desc="Text on the lock screen which tells users how many fingerprints they have enrolled.">
-    <ph name="NUM_FINGERPRINTS">$1<ex>1</ex></ph> fingerprints set up
+    {COUNT, plural,
+      =1 {1 fingerprint set up}
+      other {{COUNT} fingerprints set up}}
   </message>
   <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_NONE" desc="Text on the people page which notifies the user that the device will not show lock screen or prompt for auth after waking from sleep.">
     Sign in automatically
@@ -2678,6 +2764,9 @@ Press an assigned switch to remove assignment.
   </message>
   <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_TITLE_LOGIN_LOCK" desc="Text on the people page which opens up the security and sign-in section.">
     Security and sign-in
+  </message>
+  <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_TITLE_LOGIN_LOCK_V2" desc="Text on the people page which opens up the security and sign-in section.">
+    Lock screen and sign-in
   </message>
   <message name="IDS_SETTINGS_PEOPLE_SCREEN_LOCK_TITLE" desc="Text on the people page which opens up the screen lock and sign-in section.">
     Screen lock and sign-in
@@ -2766,6 +2855,9 @@ Press an assigned switch to remove assignment.
   </message>
   <message name="IDS_SETTINGS_KERBEROS_CONFIG_ERROR_KRB5_FAILED_TO_PARSE" desc="Error message displayed in the Kerberos configuration dialog when the user tries to save a configuration that cannot be parsed by the underlying Kerberos library for unknown reasons. See https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.">
     Failed to parse configuration
+  </message>
+  <message name="IDS_SETTINGS_KERBEROS_CONFIG_ERROR_TOO_MANY_NESTED_GROUPS" desc="Error message displayed in the Kerberos configuration dialog when the user tries to save a configuration that contains too many nested groups. See https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.">
+    Too many nested groups: <ph name="ERROR_LINE">$1<ex>[appdefaults]</ex></ph>
   </message>
   <message name="IDS_SETTINGS_ADD_KERBEROS_ACCOUNT_REFRESH_BUTTON_LABEL" desc="Label of the action button on the 'Refresh a Kerberos tickets' dialog.">
     Refresh
@@ -3156,6 +3248,9 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_FINGERPRINT_LESS_SECURE" desc="Text telling users that fingerprints might be less secure than strong PINs or passwords.">
     Note: Your fingerprint may be less secure than a strong password or PIN.
   </message>
+  <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_FINGERPRINT_NOTICE" desc="Tooltip text telling users that fingerprint data never leaves their device.">
+    Your fingerprint data is stored securely and never leaves your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
 
   <!-- Setup Pin dialog (OS settings) -->
   <message name="IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_CHOOSE_PIN_TITLE" desc="Message shown below the title that tells the user to enter the initial PIN.">
@@ -3359,53 +3454,17 @@ Press an assigned switch to remove assignment.
   </message>
 
   <!-- Apps > Manage your apps > Parallels > Shared folders -->
-  <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS" desc="Label for managing shared folders for Parallels.">
-    Manage shared folders
-  </message>
-  <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_LIST_HEADING" desc="Label for list of shared folders.">
-    Shared folders
-  </message>
   <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_INSTRUCTIONS_LOCATE" desc="Instructions for how to locate shared folders in Parallels.">
       Shared folders are available in Windows at <ph name="BASE_DIR">$1<ex>Network › ChromeOS</ex></ph>.
   </message>
   <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_INSTRUCTIONS_ADD" desc="Instructions for how to add shared folders in Parallels.">
     To share, right-click on a folder in Files app, then select "Share with Parallels Desktop".
   </message>
-  <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_INSTRUCTIONS_REMOVE" desc="Instructions for removing shared folders in Parallels.">
-    Removing folders will stop sharing but will not delete files.
-  </message>
-  <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_REMOVE_SHARING" desc="Tooltip to show when hovering on the remove icon for a Parallels shared folder.">
-    Stop sharing
-  </message>
   <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_REMOVE_FAILURE_DIALOG_MESSAGE" desc="Message to show user when unsharing a Parallels shared folder fails. Do not translate 'Parallels Desktop'">
     Couldn't unshare because an application is using this folder. The folder will be unshared when Parallels Desktop is next shut down.
   </message>
-  <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_REMOVE_FAILURE_DIALOG_TITLE" desc="Title of the error dialog shown to a user when unsharing a Parallels shared folder fails.">
-    Unshare failed
-  </message>
-  <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_REMOVE_FAILURE_TRY_AGAIN" desc="Button text in the dialog shown when unsharing a Parallels shared folder fails.  Pressing this button will attempt to unshare the folder again.">
-    Try again
-  </message>
-  <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_LIST_EMPTY_MESSAGE" desc="Message shown when the user has not yet shared any folders in Parallels.">
-    Shared folders will appear here
-  </message>
-  <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_USB_DEVICES_LABEL" desc="Label for managing shared USB devices.">
-    Manage USB devices
-  </message>
   <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_USB_DEVICES_DESCRIPTION" desc="Description for managing shared USB devices. Do not translate 'Parallels Desktop'.">
     Give Parallels Desktop permission to access USB devices. Parallels Desktop won't remember a USB device after it's removed.
-  </message>
-  <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_USB_DEVICES_EXTRA_DESCRIPTION" desc="Extra description for managing shared USB devices.">
-    Only supported devices are shown.
-  </message>
-  <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_USB_DEVICES_LIST_EMPTY_MESSAGE" desc="Message shown when there are no avaiable USB devices.">
-    Available USB devices will appear here.
-  </message>
-  <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_USB_DEVICES_IN_USE" desc="Dialog title describing that a USB device is currently in use.">
-    Device in use
-  </message>
-  <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_USB_DEVICES_REASSIGN" desc="Confirmation explaining to users that reassigning a USB device from being attached from one VM to another could cause errors.">
-     "<ph name="USB_DEVICE_NAME">$1<ex>Nexus 5</ex></ph>" is in use. Reassigning the device while it's in use could cause errors. Are you sure you want to continue?
   </message>
 
   <!-- Storage -->
@@ -3491,6 +3550,27 @@ Press an assigned switch to remove assignment.
   </message>
   <message name="IDS_SETTINGS_ENABLE_CONTENT_PROTECTION_ATTESTATION" desc="description label for verified access about premium contents">
     Enable Verified Access
+  </message>
+  <message name="IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_TOGGLE_TITLE" desc="The title of the toggle to enable/disable peripheral data access protection. Peripheral data access protection refers to the system (ChromeOS) preventing external peripherals (e.g. Thunderbolt docks) from accessing the device's memory.">
+    Data access protection for peripherals
+  </message>
+  <message name="IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_TOGGLE_DESCRIPTION" desc="The description of the toggle to enable/disable peripheral data access protection. Peripheral data access protection refers to the system (ChromeOS) preventing external peripherals (e.g. Thunderbolt docks) from accessing the device's memory.">
+    Some devices require you to disable data access protection to work properly or at full performance.
+  </message>
+  <message name="IDS_OS_SETTINGS_DISABLE_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_TITLE" desc="The title of the dialog that asks users for confirmation that they indeed do want to disable Data Access Protection.">
+    Disable data access protection for peripherals
+  </message>
+  <message name="IDS_OS_SETTINGS_DISABLE_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_DESCRIPTION" desc="The description of the dialog that asks users for confirmation that they indeed do want to disable Data Access Protection.">
+    Disabling can make your peripherals perform better, but may expose your personal data through unauthorized usage.
+  </message>
+  <message name="IDS_OS_SETTINGS_DISABLE_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_SUB_DESCRIPTION" desc="The description of the dialog that states that disabling peripheral data acces protection may reset the user's peripherals and may take a few seconds.">
+    Your displays and peripherals may reset briefly. This may take a few seconds to take effect.
+  </message>
+  <message name="IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_CANCEL_BUTTON_LABEL" desc="The label of the cancel button for the data access protection confirmation dialog">
+    Cancel
+  </message>
+  <message name="IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_DISABLE_BUTTON_LABEL" desc="The label of the confirmation button to disable data access protection">
+    Disable
   </message>
 
   <!-- On Startup (OS settings) -->

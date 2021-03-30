@@ -67,6 +67,9 @@ class FakeURLRegistry : public URLRegistry {
 class PublicURLManagerTest : public testing::Test {
  public:
   PublicURLManagerTest() : url_store_receiver_(&url_store_) {}
+  ~PublicURLManagerTest() override {
+    execution_context_->NotifyContextDestroyed();
+  }
 
   void SetUp() override {
     execution_context_ = MakeGarbageCollected<NullExecutionContext>();

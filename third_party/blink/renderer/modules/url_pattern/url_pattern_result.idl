@@ -4,7 +4,8 @@
 
 // https://wicg.github.io/urlpattern/
 dictionary URLPatternResult {
-  URLPatternInput input;
+  sequence<URLPatternInput> inputs;
+
   URLPatternComponentResult protocol;
   URLPatternComponentResult username;
   URLPatternComponentResult password;

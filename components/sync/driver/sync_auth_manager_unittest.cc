@@ -65,7 +65,6 @@ TEST_F(SyncAuthManagerTest, ProvidesNothingInLocalSyncMode) {
   auto auth_manager = CreateAuthManagerForLocalSync();
   EXPECT_TRUE(auth_manager->GetActiveAccountInfo().account_info.IsEmpty());
   syncer::SyncCredentials credentials = auth_manager->GetCredentials();
-  EXPECT_TRUE(credentials.account_id.empty());
   EXPECT_TRUE(credentials.email.empty());
   EXPECT_TRUE(credentials.access_token.empty());
   EXPECT_TRUE(auth_manager->access_token().empty());
@@ -822,6 +821,29 @@ TEST_F(SyncAuthManagerTest,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID) &&
         // !defined(OS_IOS)
+
+TEST_F(SyncAuthManagerTest, DetectsInvalidRefreshTokenAtStartup) {
+  // There is a primary account, but it has an invalid refresh token (with a
+  // persistent auth error).
+  CoreAccountId account_id =
+      identity_env()->MakePrimaryAccountAvailable("test@email.com").account_id;
+  identity_env()->SetInvalidRefreshTokenForPrimaryAccount();
+
+  // On initialization, SyncAuthManager should pick up the auth error. This
+  // should not result in a notification.
+  base::MockCallback<AccountStateChangedCallback> account_state_changed;
+  base::MockCallback<CredentialsChangedCallback> credentials_changed;
+  EXPECT_CALL(account_state_changed, Run()).Times(0);
+  EXPECT_CALL(credentials_changed, Run()).Times(0);
+
+  auto auth_manager =
+      CreateAuthManager(account_state_changed.Get(), credentials_changed.Get());
+  auth_manager->RegisterForAuthNotifications();
+  ASSERT_EQ(auth_manager->GetActiveAccountInfo().account_info.account_id,
+            account_id);
+
+  EXPECT_TRUE(auth_manager->GetLastAuthError().IsPersistentError());
+}
 
 }  // namespace
 

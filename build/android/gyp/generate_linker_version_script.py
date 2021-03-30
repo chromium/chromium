@@ -74,7 +74,7 @@ def main():
 
   script = ''.join(script_content)
 
-  with build_utils.AtomicOutput(options.output) as f:
+  with build_utils.AtomicOutput(options.output, mode='w') as f:
     f.write(script)
 
 

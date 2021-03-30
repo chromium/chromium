@@ -27,11 +27,13 @@ class WebState;
 class AuthenticationService;
 class Browser;
 @protocol BrowserCommands;
+@protocol ContentSuggestionsCollectionControlling;
 @class ContentSuggestionsHeaderSynchronizer;
 @class ContentSuggestionsMediator;
 @class ContentSuggestionsMetricsRecorder;
 @class ContentSuggestionsViewController;
 @protocol LogoVendor;
+@class NewTabPageViewController;
 @protocol NTPHomeConsumer;
 @class NTPHomeMetrics;
 @class DiscoverFeedMetricsRecorder;
@@ -48,46 +50,62 @@ class VoiceSearchAvailability;
                ContentSuggestionsGestureCommands,
                ContentSuggestionsHeaderViewControllerDelegate>
 
-- (nullable instancetype)
-           initWithWebState:(nonnull web::WebState*)webState
-         templateURLService:(nonnull TemplateURLService*)templateURLService
-                  URLLoader:(nonnull UrlLoadingBrowserAgent*)URLLoader
-                authService:(nonnull AuthenticationService*)authService
-            identityManager:(nonnull signin::IdentityManager*)identityManager
-                 logoVendor:(nonnull id<LogoVendor>)logoVendor
-    voiceSearchAvailability:
-        (nonnull VoiceSearchAvailability*)voiceSearchAvailability
+- (instancetype)initWithWebState:(web::WebState*)webState
+              templateURLService:(TemplateURLService*)templateURLService
+                       URLLoader:(UrlLoadingBrowserAgent*)URLLoader
+                     authService:(AuthenticationService*)authService
+                 identityManager:(signin::IdentityManager*)identityManager
+                      logoVendor:(id<LogoVendor>)logoVendor
+         voiceSearchAvailability:
+             (VoiceSearchAvailability*)voiceSearchAvailability
     NS_DESIGNATED_INITIALIZER;
 
-- (nullable instancetype)init NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
 
 // Dispatcher.
-@property(nonatomic, weak, nullable)
+@property(nonatomic, weak)
     id<ApplicationCommands, BrowserCommands, OmniboxCommands, SnackbarCommands>
         dispatcher;
 // Suggestions service used to get the suggestions.
-@property(nonatomic, assign, nonnull)
+@property(nonatomic, assign)
     ntp_snippets::ContentSuggestionsService* suggestionsService;
 // Recorder for the metrics related to ContentSuggestions.
-@property(nonatomic, strong, nullable)
-    ContentSuggestionsMetricsRecorder* metricsRecorder;
+@property(nonatomic, strong) ContentSuggestionsMetricsRecorder* metricsRecorder;
 // Recorder for the metrics related to the NTP.
-@property(nonatomic, strong, nullable) NTPHomeMetrics* NTPMetrics;
+@property(nonatomic, strong) NTPHomeMetrics* NTPMetrics;
 // Recorder for the metrics related to the Discover feed.
-@property(nonatomic, strong, nullable)
-    DiscoverFeedMetricsRecorder* discoverFeedMetrics;
-// View Controller displaying the suggestions.
-@property(nonatomic, weak, nullable)
+@property(nonatomic, strong) DiscoverFeedMetricsRecorder* discoverFeedMetrics;
+// Primary collection view controller that receives scroll events.
+// In the refactored NTP, the Discover feed collection view behaves as the
+// primary NTP scroll view. Otherwise, the content suggestions collection view
+// becomes the main NTP scroll view.
+// TODO(crbug.com/1114792): Change this comment to remove the mention of the
+// refactored NTP.
+@property(nonatomic, weak) id<ContentSuggestionsCollectionControlling>
+    primaryViewController;
+// View Controller for the NTP if using the non refactored NTP or the Feed is
+// not visible.
+// TODO(crbug.com/1114792): Create a protocol to avoid duplication and update
+// comment.
+@property(nonatomic, weak)
     ContentSuggestionsViewController* suggestionsViewController;
-@property(nonatomic, weak, nullable)
+// View Controller forthe NTP if using the refactored NTP and the Feed is
+// visible.
+// TODO(crbug.com/1114792): Create a protocol to avoid duplication and update
+// comment.
+@property(nonatomic, weak) NewTabPageViewController* ntpViewController;
+// TODO(crbug.com/1114792): Update this comment to remove "refactored" when the
+// NTP refactors launches.
+@property(nonatomic, assign, getter=isRefactoredFeedVisible)
+    BOOL refactoredFeedVisible;
+@property(nonatomic, weak)
     ContentSuggestionsHeaderSynchronizer* headerCollectionInteractionHandler;
 // Mediator for the ContentSuggestions.
-@property(nonatomic, strong, nonnull)
-    ContentSuggestionsMediator* suggestionsMediator;
+@property(nonatomic, strong) ContentSuggestionsMediator* suggestionsMediator;
 // Consumer for this mediator.
-@property(nonatomic, weak, nullable) id<NTPHomeConsumer> consumer;
+@property(nonatomic, weak) id<NTPHomeConsumer> consumer;
 // The browser.
-@property(nonatomic, assign, nullable) Browser* browser;
+@property(nonatomic, assign) Browser* browser;
 
 // Inits the mediator.
 - (void)setUp;

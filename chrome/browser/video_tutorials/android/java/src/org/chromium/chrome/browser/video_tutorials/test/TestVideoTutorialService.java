@@ -59,6 +59,11 @@ public class TestVideoTutorialService implements VideoTutorialService {
     }
 
     @Override
+    public List<String> getAvailableLanguagesForTutorial(int feature) {
+        return mLanguages;
+    }
+
+    @Override
     public String getPreferredLocale() {
         return mPreferredLocale;
     }
@@ -78,7 +83,7 @@ public class TestVideoTutorialService implements VideoTutorialService {
 
     private void initializeTutorialList() {
         mTutorials.add(new Tutorial(FeatureType.CHROME_INTRO, "Introduction to chrome",
-                "https://www.gstatic.com/chrome/video-tutorials/images/1_Search_english.mp4",
+                "https://www.gstatic.com/chrome/video-tutorials/webm/1_Search_english.mp4",
                 "https://www.gstatic.com/chrome/video-tutorials/images/1_Search_english.png",
                 "https://www.gstatic.com/chrome/video-tutorials/gif/sample_anim.gif",
                 "https://www.gstatic.com/chrome/video-tutorials/images/1_Search_english.png",
@@ -86,7 +91,7 @@ public class TestVideoTutorialService implements VideoTutorialService {
 
         mTutorials.add(new Tutorial(FeatureType.DOWNLOAD,
                 "How to use Google Chrome's download functionality",
-                "https://www.gstatic.com/chrome/video-tutorials/images/1_Search_english.mp4",
+                "https://www.gstatic.com/chrome/video-tutorials/webm/1_Search_english.mp4",
                 "https://www.gstatic.com/chrome/video-tutorials/images/1_Search_english.png",
                 "https://www.gstatic.com/chrome/video-tutorials/gif/sample_anim.gif",
                 "https://www.gstatic.com/chrome/video-tutorials/images/1_Search_english.png",
@@ -94,7 +99,7 @@ public class TestVideoTutorialService implements VideoTutorialService {
 
         mTutorials.add(new Tutorial(FeatureType.SEARCH,
                 "How to efficiently search with Google Chrome",
-                "https://www.gstatic.com/chrome/video-tutorials/images/1_Search_english.mp4",
+                "https://www.gstatic.com/chrome/video-tutorials/webm/1_Search_english.mp4",
                 "https://www.gstatic.com/chrome/video-tutorials/images/1_Search_english.png",
                 "https://www.gstatic.com/chrome/video-tutorials/gif/sample_anim.gif",
                 "https://www.gstatic.com/chrome/video-tutorials/images/1_Search_english.png",

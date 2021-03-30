@@ -8,6 +8,7 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -16,6 +17,8 @@
 #include "base/stl_util.h"
 #include "ui/display/manager/display_util.h"
 #include "ui/display/types/display_configuration_params.h"
+#include "ui/display/types/display_constants.h"
+#include "ui/display/types/display_mode.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/types/native_display_delegate.h"
 
@@ -34,6 +37,12 @@ constexpr int kMaxDisplaysCount = 5;
 // nullptr.
 const DisplayMode* FindNextMode(const DisplaySnapshot& display_state,
                                 const DisplayMode* display_mode) {
+  // Internal displays are restricted to their native mode. We do not attempt to
+  // downgrade their modes upon failure.
+  if (display_state.type() == DISPLAY_CONNECTION_TYPE_INTERNAL) {
+    return nullptr;
+  }
+
   if (!display_mode)
     return nullptr;
 
@@ -49,6 +58,28 @@ const DisplayMode* FindNextMode(const DisplaySnapshot& display_state,
   }
 
   return best_mode;
+}
+
+void LogIfInvalidRequestForInternalDisplay(
+    const DisplayConfigureRequest& request) {
+  if (request.display->type() != DISPLAY_CONNECTION_TYPE_INTERNAL)
+    return;
+
+  if (request.mode == nullptr)
+    return;
+
+  if (request.mode == request.display->native_mode())
+    return;
+
+  LOG(ERROR) << "A mode other than the preferred mode was requested for the "
+                "internal display: preferred="
+             << request.display->native_mode()->ToString()
+             << " vs. requested=" << request.mode->ToString()
+             << ". Current mode="
+             << (request.display->current_mode()
+                     ? request.display->current_mode()->ToString()
+                     : "nullptr (disabled)")
+             << ".";
 }
 
 // Samples used to define buckets used by DisplayResolution enum.
@@ -84,15 +115,6 @@ int ComputeDisplayResolutionEnum(const DisplayMode* mode) {
   return width_idx * base::size(kDisplayResolutionSamples) + height_idx + 1;
 }
 
-std::__wrap_iter<const DisplayConfigureRequest*> GetRequestForDisplayId(
-    int64_t display_id,
-    const std::vector<DisplayConfigureRequest>& requests) {
-  return find_if(requests.begin(), requests.end(),
-                 [display_id](const DisplayConfigureRequest& request) {
-                   return request.display->display_id() == display_id;
-                 });
-}
-
 void UpdateResolutionAndRefreshRateUma(const DisplayConfigureRequest& request) {
   const bool internal =
       request.display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL;
@@ -112,19 +134,31 @@ void UpdateResolutionAndRefreshRateUma(const DisplayConfigureRequest& request) {
   histogram->Add(request.mode ? std::round(request.mode->refresh_rate()) : 0);
 }
 
-void UpdateAttemptSucceededUma(DisplaySnapshot* display, bool display_success) {
-  const bool internal = display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL;
-  base::UmaHistogramBoolean(
-      internal ? "ConfigureDisplays.Internal.Modeset.AttemptSucceeded"
-               : "ConfigureDisplays.External.Modeset.AttemptSucceeded",
-      display_success);
+void UpdateAttemptSucceededUma(
+    const std::vector<DisplayConfigureRequest>& requests,
+    bool display_success) {
+  for (const auto& request : requests) {
+    const bool internal =
+        request.display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL;
+    base::UmaHistogramBoolean(
+        internal ? "ConfigureDisplays.Internal.Modeset.AttemptSucceeded"
+                 : "ConfigureDisplays.External.Modeset.AttemptSucceeded",
+        display_success);
+
+    VLOG(2) << "Configured status=" << display_success
+            << " display=" << request.display->display_id()
+            << " origin=" << request.origin.ToString()
+            << " mode=" << (request.mode ? request.mode->ToString() : "null");
+  }
 }
 
-void UpdateFinalStatusUma(const std::vector<DisplayConfigureRequest>& requests,
-                          bool config_success) {
+void UpdateFinalStatusUma(
+    const std::vector<RequestAndStatusList>& requests_and_statuses) {
   int mst_external_displays = 0;
-  size_t total_external_displays = requests.size();
-  for (auto& request : requests) {
+  size_t total_external_displays = requests_and_statuses.size();
+  for (auto& request_and_status : requests_and_statuses) {
+    const DisplayConfigureRequest& request = request_and_status.first;
+
     // Is this display SST (single-stream vs. MST multi-stream).
     bool sst_display = request.display->base_connector_id() &&
                        request.display->path_topology().empty();
@@ -138,7 +172,7 @@ void UpdateFinalStatusUma(const std::vector<DisplayConfigureRequest>& requests,
     base::UmaHistogramBoolean(
         internal ? "ConfigureDisplays.Internal.Modeset.FinalStatus"
                  : "ConfigureDisplays.External.Modeset.FinalStatus",
-        config_success);
+        request_and_status.second);
   }
 
   base::UmaHistogramExactLinear(
@@ -185,15 +219,22 @@ void ConfigureDisplaysTask::Run() {
 
   std::vector<display::DisplayConfigurationParams> config_requests;
   for (const auto& request : requests_) {
+    LogIfInvalidRequestForInternalDisplay(request);
+
     config_requests.emplace_back(request.display->display_id(), request.origin,
                                  request.mode);
 
     UpdateResolutionAndRefreshRateUma(request);
   }
 
-  delegate_->Configure(config_requests,
-                       base::BindOnce(&ConfigureDisplaysTask::OnConfigured,
-                                      weak_ptr_factory_.GetWeakPtr()));
+  const auto& on_configured =
+      pending_display_group_requests_.empty()
+          ? &ConfigureDisplaysTask::OnFirstAttemptConfigured
+          : &ConfigureDisplaysTask::OnRetryConfigured;
+
+  delegate_->Configure(
+      config_requests,
+      base::BindOnce(on_configured, weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ConfigureDisplaysTask::OnConfigurationChanged() {}
@@ -205,63 +246,128 @@ void ConfigureDisplaysTask::OnDisplaySnapshotsInvalidated() {
   std::move(callback_).Run(task_status_);
 }
 
-void ConfigureDisplaysTask::OnConfigured(
-    const base::flat_map<int64_t, bool>& statuses) {
-  bool config_success = true;
-  // Check if all displays are successfully configured.
-  for (const auto& status : statuses) {
-    int64_t display_id = status.first;
-    bool display_success = status.second;
-    config_success &= display_success;
+void ConfigureDisplaysTask::OnFirstAttemptConfigured(bool config_success) {
+  UpdateAttemptSucceededUma(requests_, config_success);
 
-    auto request = GetRequestForDisplayId(display_id, requests_);
-    DCHECK(request != requests_.end());
-
-    VLOG(2) << "Configured status=" << display_success
-            << " display=" << request->display->display_id()
-            << " origin=" << request->origin.ToString()
-            << " mode=" << (request->mode ? request->mode->ToString() : "null");
-
-    UpdateAttemptSucceededUma(request->display, display_success);
+  if (!config_success) {
+    // Partition |requests_| into smaller groups, update the task's state, and
+    // initiate the retry logic. The next time |delegate_|->Configure()
+    // terminates OnRetryConfigured() will be executed instead.
+    PartitionRequests();
+    DCHECK(!pending_display_group_requests_.empty());
+    requests_ = pending_display_group_requests_.front();
+    task_status_ = PARTIAL_SUCCESS;
+    Run();
+    return;
   }
 
-  // Update displays upon success or prep |requests_| for reconfiguration.
-  if (config_success) {
-    for (auto& request : requests_) {
+  // This code execute only when the first modeset attempt fully succeeds.
+  // Update the displays' status and report success.
+  for (const auto& request : requests_) {
+    request.display->set_current_mode(request.mode);
+    request.display->set_origin(request.origin);
+    final_requests_status_.emplace_back(std::make_pair(request, true));
+  }
+
+  UpdateFinalStatusUma(final_requests_status_);
+  std::move(callback_).Run(task_status_);
+}
+
+void ConfigureDisplaysTask::OnRetryConfigured(bool config_success) {
+  UpdateAttemptSucceededUma(requests_, config_success);
+
+  if (!config_success) {
+    // If one of the largest display request can be downgraded, try again.
+    // Otherwise this configuration task is a failure.
+    if (DowngradeLargestRequestWithAlternativeModes()) {
+      Run();
+      return;
+    } else {
+      task_status_ = ERROR;
+    }
+  }
+
+  // This code executes only when this display group request fully succeeds or
+  // fails to modeset. Update the final status of this group.
+  for (const auto& request : requests_) {
+    final_requests_status_.emplace_back(
+        std::make_pair(request, config_success));
+    if (config_success) {
       request.display->set_current_mode(request.mode);
       request.display->set_origin(request.origin);
     }
-  } else {
-    bool should_reconfigure = false;
-    // For the failing config, check if there is another mode to be requested.
-    // If there is one, attempt to reconfigure everything again.
-    for (const auto& status : statuses) {
-      int64_t display_id = status.first;
-      bool display_success = status.second;
-      if (!display_success) {
-        const DisplayConfigureRequest* request =
-            GetRequestForDisplayId(display_id, requests_).base();
-        const DisplayMode* next_mode =
-            FindNextMode(*request->display, request->mode);
-        if (next_mode) {
-          const_cast<DisplayConfigureRequest*>(request)->mode = next_mode;
-          should_reconfigure = true;
-        }
-      }
+  }
+
+  // Subsequent modeset attempts will be done on the next pending display group,
+  // if one exists.
+  pending_display_group_requests_.pop();
+  requests_.clear();
+  if (!pending_display_group_requests_.empty()) {
+    requests_ = pending_display_group_requests_.front();
+    Run();
+    return;
+  }
+
+  // No more display groups to retry.
+  UpdateFinalStatusUma(final_requests_status_);
+  std::move(callback_).Run(task_status_);
+}
+
+void ConfigureDisplaysTask::PartitionRequests() {
+  pending_display_group_requests_ = PartitionedRequestsQueue();
+  base::flat_set<uint64_t> handled_connectors;
+
+  for (size_t i = 0; i < requests_.size(); ++i) {
+    uint64_t connector_id = requests_[i].display->base_connector_id();
+    if (handled_connectors.find(connector_id) != handled_connectors.end())
+      continue;
+
+    std::vector<DisplayConfigureRequest> request_group;
+    for (size_t j = i; j < requests_.size(); ++j) {
+      if (connector_id == requests_[j].display->base_connector_id())
+        request_group.push_back(requests_[j]);
     }
-    if (should_reconfigure) {
-      task_status_ = PARTIAL_SUCCESS;
-      Run();
-      return;
+
+    pending_display_group_requests_.push(request_group);
+    handled_connectors.insert(connector_id);
+  }
+}
+
+bool ConfigureDisplaysTask::DowngradeLargestRequestWithAlternativeModes() {
+  auto cmp = [](DisplayConfigureRequest* lhs, DisplayConfigureRequest* rhs) {
+    return *lhs->mode < *rhs->mode;
+  };
+  std::priority_queue<DisplayConfigureRequest*,
+                      std::vector<DisplayConfigureRequest*>, decltype(cmp)>
+      sorted_requests(cmp);
+
+  for (auto& request : requests_) {
+    if (request.display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL)
+      continue;
+
+    if (!request.mode)
+      continue;
+
+    sorted_requests.push(&request);
+  }
+
+  // Fail if there are no viable candidates to downgrade
+  if (sorted_requests.empty())
+    return false;
+
+  while (!sorted_requests.empty()) {
+    DisplayConfigureRequest* next_request = sorted_requests.top();
+    sorted_requests.pop();
+
+    const DisplayMode* next_mode =
+        FindNextMode(*next_request->display, next_request->mode);
+    if (next_mode) {
+      next_request->mode = next_mode;
+      return true;
     }
   }
 
-  // Update the final state.
-  UpdateFinalStatusUma(requests_, config_success);
-
-  if (!config_success)
-    task_status_ = ERROR;
-  std::move(callback_).Run(task_status_);
+  return false;
 }
 
 }  // namespace display

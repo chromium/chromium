@@ -198,7 +198,7 @@ public class IncognitoNotificationServiceTest {
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(
                     mActivityTestRule.getActivity().getTabModelSelector().getModel(true).getCount(),
-                    Matchers.is(1));
+                    Matchers.greaterThanOrEqualTo(1));
         });
 
         Context context = ContextUtils.getApplicationContext();

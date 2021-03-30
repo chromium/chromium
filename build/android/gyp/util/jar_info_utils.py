@@ -50,9 +50,10 @@ def WriteJarInfoFile(output_obj, info_data, source_file_map=None):
       path of Java source files that where extracted from an .srcjar into a
       temporary location.
   """
-  for fully_qualified_name, path in sorted(info_data.iteritems()):
+  for fully_qualified_name, path in sorted(info_data.items()):
     if source_file_map and path in source_file_map:
       path = source_file_map[path]
       assert not path.startswith('/tmp'), (
           'Java file path should not be in temp dir: {}'.format(path))
-    output_obj.write('{},{}\n'.format(fully_qualified_name, path))
+    output_obj.write(('{},{}\n'.format(fully_qualified_name,
+                                       path)).encode('utf8'))

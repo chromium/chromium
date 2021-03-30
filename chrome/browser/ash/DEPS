@@ -1,0 +1,57 @@
+include_rules = [
+  # //chrome/browser/ash is conceptually part of "ash". See the "Lacros:
+  # ChromeOS source code directory migration" design doc at
+  # https://docs.google.com/document/d/1g-98HpzA8XcoGBWUv1gQNr4rbnD5yfvbtYZyPDDbkaE
+  "+ash",
+
+  "+chrome/browser/image_decoder",
+  # TODO(ananta): Remove this when we move files which display UI in
+  # chrome/browser/chromeos to chrome/browser/ui/views/chromeos
+  # crbug.com/728877
+  "+chrome/browser/ui/views/chrome_layout_provider.h",
+
+  "+chrome/services/keymaster/public",
+  "+chrome/services/wilco_dtc_supportd/public",
+  "+components/account_manager_core",
+  "+components/full_restore",
+  "+components/guest_os",
+  "+components/services/app_service/public",
+  "+cros",
+  "+dbus",
+  "+device/bluetooth",
+  "+media/audio/sounds",  # For system sounds
+  "+media/base/media_switches.h",  # For media command line switches.
+  "+media/mojo/mojom",  # For platform verification mojom interface.
+  "+remoting/host/it2me",  # For CRD host in remote command
+  "+services/device/public",
+  "+services/metrics/public",
+  "+services/network",
+  "+services/tracing/public",
+  "+services/viz/public/mojom",
+]
+
+specific_include_rules = {
+  # Dependencies specific for fuzz targets and other fuzzing-related code.
+  ".*fuzz.*": [
+    "+third_party/libFuzzer/src/utils",  # This contains FuzzedDataProvider.
+  ],
+  "assistant_util_unittest\.cc": [
+    "+ui/events/devices/device_data_manager.h",
+  ],
+  "child_status_collector_browsertest.cc": [
+    "+mojo/core/embedder/embedder.h",
+  ],
+  "device_status_collector_browsertest.cc": [
+    "+mojo/core/embedder/embedder.h",
+  ],
+  "event_rewriter_unittest\.cc": [
+    "+ui/events/devices/device_data_manager.h",
+  ],
+  "external_protocol_dialog\.cc": [
+    "+chrome/browser/ui/views/external_protocol_dialog.h",
+  ],
+  "file_manager_browsertest_base.cc": [
+    "+chrome/browser/ui/views/extensions/extension_dialog.h",
+    "+chrome/browser/ui/views/select_file_dialog_extension.h",
+  ],
+}

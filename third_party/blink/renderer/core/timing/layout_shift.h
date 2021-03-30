@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/timing/layout_shift_attribution.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -45,7 +46,7 @@ class CORE_EXPORT LayoutShift final : public PerformanceEntry {
   bool hadRecentInput() const { return had_recent_input_; }
   double lastInputTime() const { return most_recent_input_timestamp_; }
 
-  AttributionList sources() const { return sources_; }
+  const AttributionList& sources() const { return sources_; }
 
   void Trace(Visitor*) const override;
 
@@ -56,6 +57,13 @@ class CORE_EXPORT LayoutShift final : public PerformanceEntry {
   bool had_recent_input_;
   DOMHighResTimeStamp most_recent_input_timestamp_;
   AttributionList sources_;
+};
+
+template <>
+struct DowncastTraits<LayoutShift> {
+  static bool AllowFrom(const PerformanceEntry& entry) {
+    return entry.EntryTypeEnum() == PerformanceEntry::EntryType::kLayoutShift;
+  }
 };
 
 }  // namespace blink

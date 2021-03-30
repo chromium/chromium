@@ -25,7 +25,6 @@
 #import "chrome/updater/mac/xpc_service_names.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/update_service_internal.h"
-#include "chrome/updater/updater_version.h"
 
 @interface CRUUpdateServiceXPCImpl : NSObject <CRUUpdateServicing>
 
@@ -78,6 +77,21 @@
   _callbackRunner->PostTask(
       FROM_HERE, base::BindOnce(&updater::UpdateService::GetVersion, _service,
                                 std::move(cb)));
+}
+
+- (void)runPeriodicTasksWithReply:(void (^)(void))reply {
+  auto cb = base::BindOnce(base::RetainBlock(^(void) {
+    VLOG(0) << "RunPeriodicTasks complete.";
+    if (reply)
+      reply();
+
+    _appServer->TaskCompleted();
+  }));
+
+  _appServer->TaskStarted();
+  _callbackRunner->PostTask(
+      FROM_HERE, base::BindOnce(&updater::UpdateService::RunPeriodicTasks,
+                                _service, std::move(cb)));
 }
 
 - (void)checkForUpdatesWithUpdateState:(id<CRUUpdateStateObserving>)updateState

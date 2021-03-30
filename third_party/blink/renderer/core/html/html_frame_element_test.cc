@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/html/html_frame_element.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -27,11 +27,11 @@ TEST_F(HTMLFrameElementTest, DefaultContainerPolicy) {
   frame_element->setAttribute(html_names::kSrcAttr, "http://example.net/");
   frame_element->UpdateContainerPolicyForTests();
 
-  const ParsedFeaturePolicy& container_policy =
+  const ParsedPermissionsPolicy& container_policy =
       frame_element->GetFramePolicy().container_policy;
   EXPECT_EQ(1UL, container_policy.size());
   // Fullscreen should be disabled in this frame
-  EXPECT_EQ(mojom::blink::FeaturePolicyFeature::kFullscreen,
+  EXPECT_EQ(mojom::blink::PermissionsPolicyFeature::kFullscreen,
             container_policy[0].feature);
   EXPECT_TRUE(container_policy[0].allowed_origins.empty());
   EXPECT_GE(false, container_policy[0].matches_all_origins);

@@ -59,6 +59,13 @@ class BaseState : public WindowState::State {
       aura::Window* window,
       const chromeos::WindowStateType state_type);
 
+  // Prepares for the window snap event. Check if the window can be snapped in
+  // split screen and if so, SplitViewController will start observe this window.
+  // This needs to be done before the window's state and bounds change to its
+  // snapped window state and bounds to make sure split screen can be properly
+  // set up.
+  void HandleWindowSnapping(WindowState* window_state, WMEventType event_type);
+
   // The current type of the window.
   chromeos::WindowStateType state_type_;
 

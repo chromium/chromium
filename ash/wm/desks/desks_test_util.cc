@@ -30,6 +30,8 @@ void DeskSwitchAnimationWaiter::OnDeskAdded(const Desk* desk) {}
 
 void DeskSwitchAnimationWaiter::OnDeskRemoved(const Desk* desk) {}
 
+void DeskSwitchAnimationWaiter::OnDeskReordered(int old_index, int new_index) {}
+
 void DeskSwitchAnimationWaiter::OnDeskActivationChanged(
     const Desk* activated,
     const Desk* deactivated) {}

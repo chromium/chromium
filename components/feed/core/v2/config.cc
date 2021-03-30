@@ -34,6 +34,11 @@ void OverrideWithFinch(Config* config) {
           kInterestFeedV2, "max_feed_query_requests_per_day",
           config->max_feed_query_requests_per_day);
 
+  config->max_next_page_requests_per_day =
+      base::GetFieldTrialParamByFeatureAsInt(
+          kInterestFeedV2, "max_next_page_requests_per_day",
+          config->max_next_page_requests_per_day);
+
   config->max_action_upload_requests_per_day =
       base::GetFieldTrialParamByFeatureAsInt(
           kInterestFeedV2, "max_action_upload_requests_per_day",
@@ -44,10 +49,20 @@ void OverrideWithFinch(Config* config) {
           kInterestFeedV2, "stale_content_threshold_seconds",
           config->stale_content_threshold.InSecondsF()));
 
+  config->content_expiration_threshold =
+      base::TimeDelta::FromSecondsD(base::GetFieldTrialParamByFeatureAsDouble(
+          kInterestFeedV2, "content_expiration_threshold_seconds",
+          config->content_expiration_threshold.InSecondsF()));
+
+  config->background_refresh_window_length =
+      base::TimeDelta::FromSecondsD(base::GetFieldTrialParamByFeatureAsDouble(
+          kInterestFeedV2, "background_refresh_window_length_seconds",
+          config->background_refresh_window_length.InSecondsF()));
+
   config->default_background_refresh_interval =
       base::TimeDelta::FromSecondsD(base::GetFieldTrialParamByFeatureAsDouble(
           kInterestFeedV2, "default_background_refresh_interval_seconds",
-          config->stale_content_threshold.InSecondsF()));
+          config->default_background_refresh_interval.InSecondsF()));
 
   config->max_action_upload_attempts = base::GetFieldTrialParamByFeatureAsInt(
       kInterestFeedV2, "max_action_upload_attempts",

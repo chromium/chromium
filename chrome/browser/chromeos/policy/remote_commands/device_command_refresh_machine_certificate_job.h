@@ -9,18 +9,18 @@
 #include "base/memory/weak_ptr.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 class MachineCertificateUploader;
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash
 
 namespace policy {
 
 class DeviceCommandRefreshMachineCertificateJob : public RemoteCommandJob {
  public:
   explicit DeviceCommandRefreshMachineCertificateJob(
-      chromeos::attestation::MachineCertificateUploader*
+      ash::attestation::MachineCertificateUploader*
           machine_certificate_uploader);
   ~DeviceCommandRefreshMachineCertificateJob() override;
 
@@ -28,8 +28,7 @@ class DeviceCommandRefreshMachineCertificateJob : public RemoteCommandJob {
   enterprise_management::RemoteCommand_Type GetType() const override;
 
  private:
-  chromeos::attestation::MachineCertificateUploader*
-      machine_certificate_uploader_;
+  ash::attestation::MachineCertificateUploader* machine_certificate_uploader_;
 
   // RemoteCommandJob:
   void RunImpl(CallbackWithResult succeeded_callback,

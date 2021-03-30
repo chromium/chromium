@@ -94,9 +94,9 @@ void RegisterAppTask::CreateAppRootFolder(SyncStatusCallback callback) {
   folder_creator_ =
       std::make_unique<FolderCreator>(drive_service(), metadata_database(),
                                       sync_root_tracker.file_id(), app_id_);
-  folder_creator_->Run(base::Bind(&RegisterAppTask::DidCreateAppRootFolder,
-                                  weak_ptr_factory_.GetWeakPtr(),
-                                  base::Passed(&callback)));
+  folder_creator_->Run(base::BindOnce(&RegisterAppTask::DidCreateAppRootFolder,
+                                      weak_ptr_factory_.GetWeakPtr(),
+                                      std::move(callback)));
 }
 
 void RegisterAppTask::DidCreateAppRootFolder(SyncStatusCallback callback,

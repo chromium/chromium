@@ -22,13 +22,14 @@
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
-#include "third_party/blink/public/common/widget/screen_info.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/surface/transport_dib.h"
 
 namespace blink {
+struct ScreenInfo;
 class WebMouseEvent;
 class WebMouseWheelEvent;
 }
@@ -128,8 +129,7 @@ class CONTENT_EXPORT RenderWidgetHost {
   // Returns nullptr if the IDs do not correspond to a live RenderWidgetHost.
   static RenderWidgetHost* FromID(int32_t process_id, int32_t routing_id);
 
-  // Returns an iterator to iterate over the global list of active render widget
-  // hosts.
+  // Returns an iterator over the global list of active RenderWidgetHosts.
   static std::unique_ptr<RenderWidgetHostIterator> GetRenderWidgetHosts();
 
   virtual ~RenderWidgetHost() {}
@@ -219,7 +219,7 @@ class CONTENT_EXPORT RenderWidgetHost {
   virtual bool IsCurrentlyUnresponsive() = 0;
 
   // Called to propagate updated visual properties to the renderer. Returns
-  // whether the renderer has been informed of updated properties.
+  // true if visual properties have changed since last call.
   virtual bool SynchronizeVisualProperties() = 0;
 
   // Access to the implementation's IPC::Listener::OnMessageReceived. Intended
@@ -254,11 +254,11 @@ class CONTENT_EXPORT RenderWidgetHost {
     // InputEvents are only triggered when user typed in through number bar on
     // Android keyboard. This function is triggered when text is committed in
     // input form.
-    virtual void OnImeTextCommittedEvent(const base::string16& text_str) {}
+    virtual void OnImeTextCommittedEvent(const std::u16string& text_str) {}
     // This function is triggered when composing text is updated. Note that
     // text_str contains all text that is currently under composition rather
     // than updated text only.
-    virtual void OnImeSetComposingTextEvent(const base::string16& text_str) {}
+    virtual void OnImeSetComposingTextEvent(const std::u16string& text_str) {}
     // This function is triggered when composing text is filled into the input
     // form.
     virtual void OnImeFinishComposingTextEvent() {}
@@ -281,14 +281,17 @@ class CONTENT_EXPORT RenderWidgetHost {
   virtual void AddObserver(RenderWidgetHostObserver* observer) = 0;
   virtual void RemoveObserver(RenderWidgetHostObserver* observer) = 0;
 
-  // Get the screen info corresponding to this render widget.
+  // Get info regarding the screen showing this RenderWidgetHost.
   virtual void GetScreenInfo(blink::ScreenInfo* screen_info) = 0;
 
   // This must always return the same device scale factor as GetScreenInfo.
   virtual float GetDeviceScaleFactor() = 0;
 
-  // Get the allowed touch action corresponding to this render widget.
+  // Get the allowed touch action corresponding to this RenderWidgetHost.
   virtual base::Optional<cc::TouchAction> GetAllowedTouchAction() = 0;
+
+  // Write a representation of this object into a trace.
+  virtual void WriteIntoTracedValue(perfetto::TracedValue context) = 0;
 
   // Drag-and-drop drop target messages that get sent to Blink.
   virtual void DragTargetDragEnter(const DropData& drop_data,

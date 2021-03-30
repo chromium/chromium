@@ -11,17 +11,16 @@
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "components/user_manager/user_manager.h"
@@ -47,16 +46,17 @@ namespace chromeos {
 
 LowDiskNotification::LowDiskNotification()
     : notification_interval_(kNotificationInterval) {
-  DCHECK(CryptohomeClient::Get());
-  CryptohomeClient::Get()->AddObserver(this);
+  DCHECK(UserDataAuthClient::Get());
+  UserDataAuthClient::Get()->AddObserver(this);
 }
 
 LowDiskNotification::~LowDiskNotification() {
-  DCHECK(CryptohomeClient::Get());
-  CryptohomeClient::Get()->RemoveObserver(this);
+  DCHECK(UserDataAuthClient::Get());
+  UserDataAuthClient::Get()->RemoveObserver(this);
 }
 
-void LowDiskNotification::LowDiskSpace(uint64_t free_disk_bytes) {
+void LowDiskNotification::LowDiskSpace(
+    const ::user_data_auth::LowDiskSpace& status) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   bool show_low_disk_space_notification = true;
@@ -75,7 +75,7 @@ void LowDiskNotification::LowDiskSpace(uint64_t free_disk_bytes) {
                  << "suppressed on a managed device.";
     return;
   }
-  Severity severity = GetSeverity(free_disk_bytes);
+  Severity severity = GetSeverity(status.disk_free_bytes());
   base::Time now = base::Time::Now();
   if (severity != last_notification_severity_ ||
       (severity == HIGH &&
@@ -89,8 +89,8 @@ void LowDiskNotification::LowDiskSpace(uint64_t free_disk_bytes) {
 
 std::unique_ptr<message_center::Notification>
 LowDiskNotification::CreateNotification(Severity severity) {
-  base::string16 title;
-  base::string16 message;
+  std::u16string title;
+  std::u16string message;
   message_center::SystemNotificationWarningLevel warning_level;
   if (severity == Severity::HIGH) {
     title =
@@ -124,7 +124,7 @@ LowDiskNotification::CreateNotification(Severity severity) {
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, kLowDiskId, title, message,
-          base::string16(), GURL(), notifier_id, optional_fields,
+          std::u16string(), GURL(), notifier_id, optional_fields,
           new message_center::HandleNotificationClickDelegate(on_click),
           kNotificationStorageFullIcon, warning_level);
 

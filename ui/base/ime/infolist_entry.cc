@@ -6,8 +6,8 @@
 
 namespace ui {
 
-InfolistEntry::InfolistEntry(const base::string16& title,
-                             const base::string16& body)
+InfolistEntry::InfolistEntry(const std::u16string& title,
+                             const std::u16string& body)
     : title(title), body(body), highlighted(false) {}
 
 bool InfolistEntry::operator==(const InfolistEntry& other) const {

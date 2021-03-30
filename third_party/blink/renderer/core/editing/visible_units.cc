@@ -77,7 +77,32 @@ static PositionType CanonicalizeCandidate(const PositionType& candidate) {
 }
 
 template <typename PositionType>
-static PositionType SnapFallbackTemplate(const PositionType& position) {
+static PositionType CanonicalPosition(const PositionType& position) {
+  // Sometimes updating selection positions can be extremely expensive and
+  // occur frequently.  Often calling preventDefault on mousedown events can
+  // avoid doing unnecessary text selection work.  http://crbug.com/472258.
+  TRACE_EVENT0("input", "VisibleUnits::canonicalPosition");
+
+  // FIXME (9535):  Canonicalizing to the leftmost candidate means that if
+  // we're at a line wrap, we will ask layoutObjects to paint downstream
+  // carets for other layoutObjects. To fix this, we need to either a) add
+  // code to all paintCarets to pass the responsibility off to the appropriate
+  // layoutObject for VisiblePosition's like these, or b) canonicalize to the
+  // rightmost candidate unless the affinity is upstream.
+  if (position.IsNull())
+    return PositionType();
+
+  DCHECK(position.GetDocument());
+  DCHECK(!position.GetDocument()->NeedsLayoutTreeUpdate());
+
+  const PositionType& backward_candidate = MostBackwardCaretPosition(position);
+  if (IsVisuallyEquivalentCandidate(backward_candidate))
+    return backward_candidate;
+
+  const PositionType& forward_candidate = MostForwardCaretPosition(position);
+  if (IsVisuallyEquivalentCandidate(forward_candidate))
+    return forward_candidate;
+
   // When neither upstream or downstream gets us to a candidate
   // (upstream/downstream won't leave blocks or enter new ones), we search
   // forward and backward until we find one.
@@ -130,93 +155,12 @@ static PositionType SnapFallbackTemplate(const PositionType& position) {
   return next;
 }
 
-template <typename Strategy>
-static PositionWithAffinityTemplate<Strategy> SnapBackwardTemplate(
-    const PositionTemplate<Strategy>& position) {
-  // Sometimes updating selection positions can be extremely expensive and
-  // occur frequently.  Often calling preventDefault on mousedown events can
-  // avoid doing unnecessary text selection work.  http://crbug.com/472258.
-  TRACE_EVENT0("input", "VisibleUnits::SnapBackward");
-
-  if (position.IsNull())
-    return PositionWithAffinityTemplate<Strategy>();
-
-  DCHECK(position.GetDocument());
-  DCHECK(!position.GetDocument()->NeedsLayoutTreeUpdate());
-
-  const PositionTemplate<Strategy>& candidate1 =
-      MostBackwardCaretPosition(position);
-  if (IsVisuallyEquivalentCandidate(candidate1)) {
-    return PositionWithAffinityTemplate<Strategy>(candidate1,
-                                                  TextAffinity::kUpstream);
-  }
-
-  const PositionTemplate<Strategy>& candidate2 =
-      MostForwardCaretPosition(position);
-  if (IsVisuallyEquivalentCandidate(candidate2)) {
-    return PositionWithAffinityTemplate<Strategy>(candidate2,
-                                                  TextAffinity::kDownstream);
-  }
-
-  return PositionWithAffinityTemplate<Strategy>(SnapFallbackTemplate(position),
-                                                TextAffinity::kDownstream);
-}
-
-PositionWithAffinity SnapBackward(const Position& position) {
-  return SnapBackwardTemplate(position);
-}
-
-PositionInFlatTreeWithAffinity SnapBackward(
-    const PositionInFlatTree& position) {
-  return SnapBackwardTemplate(position);
-}
-
-template <typename Strategy>
-static PositionWithAffinityTemplate<Strategy> SnapForwardTemplate(
-    const PositionTemplate<Strategy>& position) {
-  // Sometimes updating selection positions can be extremely expensive and
-  // occur frequently.  Often calling preventDefault on mousedown events can
-  // avoid doing unnecessary text selection work.  http://crbug.com/472258.
-  TRACE_EVENT0("input", "VisibleUnits::SnapForward");
-
-  if (position.IsNull())
-    return PositionWithAffinityTemplate<Strategy>();
-
-  DCHECK(position.GetDocument());
-  DCHECK(!position.GetDocument()->NeedsLayoutTreeUpdate());
-
-  const PositionTemplate<Strategy>& candidate1 =
-      MostForwardCaretPosition(position);
-  if (IsVisuallyEquivalentCandidate(candidate1)) {
-    return PositionWithAffinityTemplate<Strategy>(candidate1,
-                                                  TextAffinity::kDownstream);
-  }
-
-  const PositionTemplate<Strategy>& candidate2 =
-      MostBackwardCaretPosition(position);
-  if (IsVisuallyEquivalentCandidate(candidate2)) {
-    return PositionWithAffinityTemplate<Strategy>(candidate2,
-                                                  TextAffinity::kDownstream);
-  }
-
-  return PositionWithAffinityTemplate<Strategy>(SnapFallbackTemplate(position),
-                                                TextAffinity::kDownstream);
-}
-
-PositionWithAffinity SnapForward(const Position& position) {
-  return SnapForwardTemplate(position);
-}
-
-PositionInFlatTreeWithAffinity SnapForward(const PositionInFlatTree& position) {
-  return SnapForwardTemplate(position);
-}
-
 Position CanonicalPositionOf(const Position& position) {
-  return SnapBackward(position).GetPosition();
+  return CanonicalPosition(position);
 }
 
 PositionInFlatTree CanonicalPositionOf(const PositionInFlatTree& position) {
-  return SnapBackward(position).GetPosition();
+  return CanonicalPosition(position);
 }
 
 template <typename Strategy>
@@ -448,11 +392,6 @@ bool IsEndOfEditableOrNonEditableContent(
   return IsTextControl(next_position.DeepEquivalent().AnchorNode());
 }
 
-static LayoutUnit BoundingBoxLogicalHeight(LayoutObject* o,
-                                           const LayoutRect& rect) {
-  return o->Style()->IsHorizontalWritingMode() ? rect.Height() : rect.Width();
-}
-
 // TODO(editing-dev): The semantics seems wrong when we're in a one-letter block
 // with first-letter style, e.g., <div>F</div>, where the letter is laid-out in
 // an anonymous first-letter LayoutTextFragment instead of the LayoutObject of
@@ -485,9 +424,7 @@ bool HasRenderedNonAnonymousDescendantsWithHeight(
           (o->IsLayoutInline() && IsEmptyInline(LineLayoutItem(o)) &&
            // TODO(crbug.com/771398): Find alternative ways to check whether an
            // empty LayoutInline is rendered, without checking InlineBox.
-           BoundingBoxLogicalHeight(
-               o,
-               To<LayoutInline>(o)->PhysicalLinesBoundingBox().ToLayoutRect())))
+           !To<LayoutInline>(o)->PhysicalLinesBoundingBox().IsEmpty()))
         return true;
     }
   }
@@ -630,7 +567,7 @@ static Position MostBackwardOrForwardCaretPosition(
       AlgorithmInFlatTree(ToPositionInFlatTree(position), rule));
   Node* candidate_anchor = candidate.AnchorNode();
   if (!candidate_anchor)
-    return candidate;
+    return position;
 
   // Fast path for common cases when there is no shadow involved.
   if (!position_anchor->IsInShadowTree() && !IsShadowHost(position_anchor) &&
@@ -648,6 +585,12 @@ static Position MostBackwardOrForwardCaretPosition(
   const SelectionInDOMTree& shadow_adjusted_selection =
       SelectionAdjuster::AdjustSelectionToAvoidCrossingShadowBoundaries(
           selection);
+  const Position& adjusted_candidate = shadow_adjusted_selection.Extent();
+
+  // The adjusted candidate should be between the candidate and the original
+  // position. Otherwise, return the original position.
+  if (position.CompareTo(candidate) == candidate.CompareTo(adjusted_candidate))
+    return position;
 
   // If we have to adjust the position, the editability may change, so avoid
   // crossing editing boundaries if it's not allowed.
@@ -658,7 +601,7 @@ static Position MostBackwardOrForwardCaretPosition(
             shadow_adjusted_selection);
     return editing_adjusted_selection.Extent();
   }
-  return shadow_adjusted_selection.Extent();
+  return adjusted_candidate;
 }
 
 template <typename Strategy>
@@ -1030,7 +973,7 @@ static bool IsVisuallyEquivalentCandidateAlgorithm(
 
   if (layout_object->IsLayoutBlockFlow() ||
       layout_object->IsFlexibleBoxIncludingNG() ||
-      layout_object->IsLayoutGrid()) {
+      layout_object->IsLayoutGridIncludingNG()) {
     if (To<LayoutBlock>(layout_object)->LogicalHeight() ||
         anchor_node->GetDocument().body() == anchor_node) {
       if (!HasRenderedNonAnonymousDescendantsWithHeight(layout_object))

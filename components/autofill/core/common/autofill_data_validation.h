@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 
 class GURL;
 
@@ -34,12 +33,12 @@ extern const size_t kMaxListSize;
 // checks, including being capped to the maximums defined by the constants
 // above.
 bool IsValidString(const std::string& str);
-bool IsValidString16(const base::string16& str);
+bool IsValidString16(const std::u16string& str);
 bool IsValidGURL(const GURL& url);
 bool IsValidFormFieldData(const FormFieldData& field);
 bool IsValidFormData(const FormData& form);
 bool IsValidPasswordFormFillData(const PasswordFormFillData& form);
-bool IsValidString16Vector(const std::vector<base::string16>& v);
+bool IsValidString16Vector(const std::vector<std::u16string>& v);
 bool IsValidFormDataVector(const std::vector<FormData>& v);
 
 }  // namespace autofill

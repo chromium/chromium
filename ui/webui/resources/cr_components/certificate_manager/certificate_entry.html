@@ -11,8 +11,8 @@
       <div class="flex">[[model.id]]</div>
       <cr-policy-indicator indicator-type="[[getPolicyIndicatorType_(model)]]">
       </cr-policy-indicator>
-      <cr-expand-button expanded="{{expanded_}}"
-          alt="[[i18n('certificateManagerExpandA11yLabel')]]">
+      <cr-expand-button no-hover expanded="{{expanded_}}"
+          aria-label="[[i18n('certificateManagerExpandA11yLabel')]]">
       </cr-expand-button>
     </div>
     <template is="dom-if" if="[[expanded_]]">

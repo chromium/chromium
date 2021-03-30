@@ -33,13 +33,12 @@ class DeviceCapabilitiesImpl : public DeviceCapabilities {
   bool BluetoothSupported() const override;
   bool DisplaySupported() const override;
   bool HiResAudioSupported() const override;
-  std::unique_ptr<base::Value> GetCapability(
-      const std::string& path) const override;
+  base::Value GetCapability(const std::string& path) const override;
   scoped_refptr<Data> GetAllData() const override;
   scoped_refptr<Data> GetPublicData() const override;
   void SetCapability(const std::string& path,
-                     std::unique_ptr<base::Value> proposed_value) override;
-  void MergeDictionary(const base::DictionaryValue& dict_value) override;
+                     base::Value proposed_value) override;
+  void MergeDictionary(const base::Value& dict_value) override;
   void AddCapabilitiesObserver(Observer* observer) override;
   void RemoveCapabilitiesObserver(Observer* observer) override;
 
@@ -55,8 +54,7 @@ class DeviceCapabilitiesImpl : public DeviceCapabilities {
       return task_runner_;
     }
 
-    void Validate(const std::string& path,
-                  std::unique_ptr<base::Value> proposed_value) const;
+    void Validate(const std::string& path, base::Value proposed_value) const;
 
    private:
     Validator* const validator_;
@@ -78,17 +76,15 @@ class DeviceCapabilitiesImpl : public DeviceCapabilities {
   DeviceCapabilitiesImpl();
 
   void SetPublicValidatedValue(const std::string& path,
-                               std::unique_ptr<base::Value> new_value) override;
-  void SetPrivateValidatedValue(
-      const std::string& path,
-      std::unique_ptr<base::Value> new_value) override;
+                               base::Value new_value) override;
+  void SetPrivateValidatedValue(const std::string& path,
+                                base::Value new_value) override;
   void SetValidatedValueInternal(const std::string& path,
-                                 std::unique_ptr<base::Value> new_value);
+                                 base::Value new_value);
 
-  scoped_refptr<Data> GenerateDataWithNewValue(
-      const base::DictionaryValue& dict,
-      const std::string& path,
-      std::unique_ptr<base::Value> new_value);
+  scoped_refptr<Data> GenerateDataWithNewValue(const base::Value& dict,
+                                               const std::string& path,
+                                               base::Value new_value);
 
   // Lock for reading/writing all_data_ or public_data_ pointers
   mutable base::Lock data_lock_;

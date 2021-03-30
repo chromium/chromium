@@ -1,88 +1,62 @@
-<link rel="import" href="../../html/polymer.html">
+<style include="cr-actionable-row-style cr-shared-style cr-hidden-style">
+  :host {
+    box-sizing: border-box;
+    flex: 1;
+    font-family: inherit;
+    font-size: 100%;  /* Specifically for Mac OSX, harmless elsewhere. */
+    line-height: 154%;  /* 20px. */
+    min-height: var(--cr-section-min-height);
+    padding: 0;
+  }
 
-<link rel="import" href="../cr_icon_button/cr_icon_button.html">
-<link rel="import" href="../hidden_style_css.html">
-<link rel="import" href="../icons.html">
-<link rel="import" href="../shared_style_css.html">
-<link rel="import" href="../shared_vars_css.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+  :host(:not([embedded])) {
+    padding: 0 var(--cr-section-padding);
+  }
 
-<dom-module id="cr-link-row">
-  <template strip-whitespace="">
-    <style include="cr-shared-style cr-hidden-style">
-      :host {
-        align-items: center;
-        align-self: stretch;
-        box-sizing: border-box;
-        cursor: pointer;
-        display: flex;
-        flex: 1;
-        font-family: inherit;
-        font-size: 100%;  /* Specifically for Mac OSX, harmless elsewhere. */
-        line-height: 154%;  /* 20px. */
-        margin: 0;
-        min-height: var(--cr-section-min-height);
-        outline: none;
-        padding: 0;
-      }
+  #startIcon {
+    --iron-icon-fill-color: var(--cr-link-row-start-icon-color,
+        var(--google-grey-refresh-700));
+    display: flex;
+    flex-shrink: 0;
+    padding-inline-end: var(--cr-icon-button-margin-start);
+    width: var(--cr-link-row-icon-width, var(--cr-icon-size));
+  }
 
-      :host(:not([embedded])) {
-        padding: 0 var(--cr-section-padding);
-      }
+  @media (prefers-color-scheme: dark) {
+    #startIcon {
+      --iron-icon-fill-color: var(--cr-link-row-start-icon-color,
+          var(--google-grey-refresh-500));
+    }
+  }
 
-      :host([disabled]) {
-        color: var(--paper-grey-500);
-        cursor: auto;
-        pointer-events: none;
-      }
+  #labelWrapper {
+    flex: 1;
+    flex-basis: 0.000000001px;
+    padding-bottom: var(--cr-section-vertical-padding);
+    padding-top: var(--cr-section-vertical-padding);
+    text-align: start;
+  }
 
-      #startIcon {
-        --iron-icon-fill-color: var(--cr-link-row-start-icon-color,
-            var(--google-grey-refresh-700));
-        display: flex;
-        flex-shrink: 0;
-        padding-inline-end: var(--cr-icon-button-margin-start);
-        width: var(--cr-link-row-icon-width, var(--cr-icon-size));
-      }
-
-      @media (prefers-color-scheme: dark) {
-        #startIcon {
-          --iron-icon-fill-color: var(--cr-link-row-start-icon-color,
-              var(--google-grey-refresh-500));
-        }
-      }
-
-      #labelWrapper {
-        flex: 1;
-        flex-basis: 0.000000001px;
-        padding-bottom: var(--cr-section-vertical-padding);
-        padding-top: var(--cr-section-vertical-padding);
-        text-align: start;
-      }
-
-      #label,
-      #subLabel {
-        display: flex;
-      }
-    </style>
-    <iron-icon id="startIcon" icon="[[startIcon]]" hidden="[[!startIcon]]"
-        aria-hidden="true">
-    </iron-icon>
-    <div id="labelWrapper" hidden="[[hideLabelWrapper_]]">
-      <div id="label" aria-hidden="true">
-        [[label]]
-        <slot name="label"></slot>
-      </div>
-      <div id="subLabel" class="cr-secondary-text" aria-hidden="true">
-        [[subLabel]]
-        <slot name="sub-label"></slot>
-      </div>
-    </div>
-    <slot></slot>
-    <cr-icon-button id="icon" iron-icon="[[getIcon_(external)]]" role="link"
-        aria-roledescription$="[[roleDescription]]"
-        aria-labelledby="label subLabel" disabled="[[disabled]]">
-    </cr-icon-button>
-  </template>
-  <script src="cr_link_row.js"></script>
-</dom-module>
+  #label,
+  #subLabel {
+    display: flex;
+  }
+</style>
+<iron-icon id="startIcon" icon="[[startIcon]]" hidden="[[!startIcon]]"
+    aria-hidden="true">
+</iron-icon>
+<div id="labelWrapper" hidden="[[hideLabelWrapper_]]">
+  <div id="label" aria-hidden="true">
+    [[label]]
+    <slot name="label"></slot>
+  </div>
+  <div id="subLabel" class="cr-secondary-text" aria-hidden="true">
+    [[subLabel]]
+    <slot name="sub-label"></slot>
+  </div>
+</div>
+<slot></slot>
+<cr-icon-button id="icon" iron-icon="[[getIcon_(external)]]" role="link"
+    aria-roledescription$="[[roleDescription]]"
+    aria-labelledby="label subLabel" disabled="[[disabled]]">
+</cr-icon-button>

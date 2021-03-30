@@ -70,6 +70,9 @@ class BrowserHandler : public DevToolsDomainHandler, public Browser::Backend {
                                  BrowserContext* browser_context,
                                  Maybe<std::string> download_path);
 
+  Response CancelDownload(const std::string& guid,
+                          Maybe<std::string> browser_context_id) override;
+
   Response Crash() override;
   Response CrashGpuProcess() override;
 

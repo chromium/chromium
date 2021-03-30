@@ -15,7 +15,7 @@
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkColorPriv.h"
 #include "third_party/skia/include/core/SkUnPreMultiply.h"
-#include "third_party/skia/include/effects/SkBlurImageFilter.h"
+#include "third_party/skia/include/effects/SkImageFilters.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
@@ -694,7 +694,7 @@ SkBitmap SkBitmapOperations::CreateColorMask(const SkBitmap& bitmap,
 
   SkPaint paint;
   paint.setColorFilter(SkColorFilters::Blend(c, SkBlendMode::kSrcIn));
-  canvas.drawBitmap(bitmap, SkIntToScalar(0), SkIntToScalar(0), &paint);
+  canvas.drawImage(bitmap.asImage(), 0, 0, SkSamplingOptions(), &paint);
   return color_mask;
 }
 
@@ -727,16 +727,15 @@ SkBitmap SkBitmapOperations::CreateDropShadow(
     // The blur is halved to produce a shadow that correctly fits within the
     // |shadow_margin|.
     SkScalar sigma = SkDoubleToScalar(shadow.blur() / 2);
-    paint.setImageFilter(SkBlurImageFilter::Make(sigma, sigma, nullptr));
+    paint.setImageFilter(SkImageFilters::Blur(sigma, sigma, nullptr));
 
     canvas.saveLayer(0, &paint);
-    canvas.drawBitmap(shadow_image,
-                      SkIntToScalar(shadow.x()),
-                      SkIntToScalar(shadow.y()));
+    canvas.drawImage(shadow_image.asImage(), SkIntToScalar(shadow.x()),
+                     SkIntToScalar(shadow.y()));
     canvas.restore();
   }
 
-  canvas.drawBitmap(bitmap, SkIntToScalar(0), SkIntToScalar(0));
+  canvas.drawImage(bitmap.asImage(), 0, 0);
   return image_with_shadow;
 }
 
@@ -775,7 +774,7 @@ SkBitmap SkBitmapOperations::Rotate(const SkBitmap& source,
   canvas.rotate(angle);
   canvas.translate(-SkFloatToScalar(source.width() * 0.5f),
                    -SkFloatToScalar(source.height() * 0.5f));
-  canvas.drawBitmap(source, 0, 0);
+  canvas.drawImage(source.asImage(), 0, 0);
   canvas.flush();
 
   return result;

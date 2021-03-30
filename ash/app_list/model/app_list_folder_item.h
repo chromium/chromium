@@ -15,12 +15,12 @@
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_item_list_observer.h"
 #include "ash/app_list/model/app_list_item_observer.h"
-#include "ash/app_list/model/app_list_model_export.h"
 #include "ash/app_list/model/folder_image.h"
+#include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 
 namespace gfx {
 class Rect;
@@ -32,10 +32,9 @@ class AppListConfig;
 class AppListItemList;
 
 // AppListFolderItem implements the model/controller for folders.
-class APP_LIST_MODEL_EXPORT AppListFolderItem
-    : public AppListItem,
-      public FolderImageObserver,
-      public AppListConfigProvider::Observer {
+class ASH_EXPORT AppListFolderItem : public AppListItem,
+                                     public FolderImageObserver,
+                                     public AppListConfigProvider::Observer {
  public:
   // The folder type affects folder behavior.
   enum FolderType {
@@ -115,8 +114,9 @@ class APP_LIST_MODEL_EXPORT AppListFolderItem
   // Set when a folder item is being dragged.
   AppListItem* dragged_item_ = nullptr;
 
-  ScopedObserver<AppListConfigProvider, AppListConfigProvider::Observer>
-      config_provider_observer_{this};
+  base::ScopedObservation<AppListConfigProvider,
+                          AppListConfigProvider::Observer>
+      config_provider_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AppListFolderItem);
 };

@@ -30,7 +30,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </variants>
 
 <histogram name="WebCore.DistillabilityUs" units="microseconds"
-    expires_after="2021-06-06">
+    expires_after="2021-08-08">
   <owner>wychen@chromium.org</owner>
   <owner>gilmanmh@google.com</owner>
   <summary>
@@ -105,7 +105,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.FindInPage.TaskDuration" units="ms"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>rakina@chromium.org</owner>
   <owner>altimin@chromium.org</owner>
   <summary>
@@ -800,35 +800,35 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.Scripts.Async.NotStreamingReason"
-    enum="NotStreamingReason" expires_after="2021-06-06">
+    enum="NotStreamingReason" expires_after="2021-08-09">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>Reason for not streaming an async script.</summary>
 </histogram>
 
 <histogram name="WebCore.Scripts.Async.StartedStreaming" enum="BooleanStreamed"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>Whether an async script was streamed or not.</summary>
 </histogram>
 
 <histogram name="WebCore.Scripts.Deferred.NotStreamingReason"
-    enum="NotStreamingReason" expires_after="2021-06-06">
+    enum="NotStreamingReason" expires_after="2021-08-09">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>Reason for not streaming a deferred script.</summary>
 </histogram>
 
 <histogram name="WebCore.Scripts.Deferred.StartedStreaming"
-    enum="BooleanStreamed" expires_after="2021-06-06">
+    enum="BooleanStreamed" expires_after="2021-08-09">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>Whether a deferred script was streamed or not.</summary>
 </histogram>
 
 <histogram name="WebCore.Scripts.Other.NotStreamingReason"
-    enum="NotStreamingReason" expires_after="2021-06-06">
+    enum="NotStreamingReason" expires_after="2021-08-09">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -848,21 +848,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebCore.Scripts.ParsingBlocking.NotStreamingReason"
-    enum="NotStreamingReason" expires_after="2021-06-06">
+    enum="NotStreamingReason" expires_after="2021-08-09">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>Reason for not streaming a parsing blocking script.</summary>
 </histogram>
 
 <histogram name="WebCore.Scripts.ParsingBlocking.StartedStreaming"
-    enum="BooleanStreamed" expires_after="2021-06-06">
+    enum="BooleanStreamed" expires_after="2021-08-09">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>Whether a parsing blocking script was streamed or not.</summary>
 </histogram>
 
 <histogram name="WebCore.WebSocket.SendType" enum="WebSocketSendType"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>yhirano@chromium.org</owner>
   <owner>ricea@chromium.org</owner>
   <summary>

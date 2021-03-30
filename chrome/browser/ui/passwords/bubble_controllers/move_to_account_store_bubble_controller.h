@@ -47,7 +47,7 @@ class MoveToAccountStoreBubbleController : public PasswordBubbleControllerBase {
       const favicon_base::FaviconImageResult& result);
 
   // PasswordBubbleControllerBase:
-  base::string16 GetTitle() const override;
+  std::u16string GetTitle() const override;
   void ReportInteractions() override;
 
   // Used to track a requested favicon.

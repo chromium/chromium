@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/accessibility/accessibility_event_recorder.h"
+#include "content/browser/accessibility/accessibility_event_recorder_auralinux.h"
 
 #include <atk/atk.h>
 #include <atk/atkutil.h>
@@ -10,11 +10,10 @@
 
 #include "base/process/process_handle.h"
 #include "base/stl_util.h"
-#include "base/strings/pattern.h"
 #include "base/strings/stringprintf.h"
-#include "content/browser/accessibility/accessibility_tree_formatter_utils_auralinux.h"
 #include "content/browser/accessibility/browser_accessibility_auralinux.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "ui/accessibility/platform/inspect/ax_inspect_utils_auralinux.h"
 
 #if defined(ATK_CHECK_VERSION) && ATK_CHECK_VERSION(2, 16, 0)
 #define ATK_216
@@ -22,51 +21,10 @@
 
 namespace content {
 
-// This class has two distinct event recording code paths. When we are
-// recording events in-process (typically this is used for
-// DumpAccessibilityEvents tests), we use ATK's global event handlers. Since
-// ATK doesn't support intercepting events from other processes, if we have a
-// non-zero PID or an accessibility application name pattern, we use AT-SPI2
-// directly to intercept events. Since AT-SPI2 should be capable of
-// intercepting events in-process as well, eventually it would be nice to
-// remove the ATK code path entirely.
-class AccessibilityEventRecorderAuraLinux : public AccessibilityEventRecorder {
- public:
-  explicit AccessibilityEventRecorderAuraLinux(
-      BrowserAccessibilityManager* manager,
-      base::ProcessId pid,
-      const AXTreeSelector& selector);
-  ~AccessibilityEventRecorderAuraLinux() override;
-
-  void ProcessATKEvent(const char* event,
-                       unsigned int n_params,
-                       const GValue* params);
-  void ProcessATSPIEvent(const AtspiEvent* event);
-
-  static gboolean OnATKEventReceived(GSignalInvocationHint* hint,
-                                     unsigned int n_params,
-                                     const GValue* params,
-                                     gpointer data);
-
- private:
-  bool ShouldUseATSPI();
-
-  std::string AtkObjectToString(AtkObject* obj, bool include_name);
-  void AddATKEventListener(const char* event_name);
-  void AddATKEventListeners();
-  void RemoveATKEventListeners();
-  bool IncludeState(AtkStateType state_type);
-
-  void AddATSPIEventListeners();
-  void RemoveATSPIEventListeners();
-
-  AtspiEventListener* atspi_event_listener_ = nullptr;
-  base::ProcessId pid_;
-  base::StringPiece application_name_match_pattern_;
-  static AccessibilityEventRecorderAuraLinux* instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityEventRecorderAuraLinux);
-};
+using ui::AtkRoleToString;
+using ui::ATSPIRoleToString;
+using ui::ATSPIStateToString;
+using ui::FindAccessible;
 
 // static
 AccessibilityEventRecorderAuraLinux*
@@ -100,36 +58,15 @@ gboolean AccessibilityEventRecorderAuraLinux::OnATKEventReceived(
   return true;
 }
 
-// static
-std::unique_ptr<AccessibilityEventRecorder> AccessibilityEventRecorder::Create(
-    BrowserAccessibilityManager* manager,
-    base::ProcessId pid,
-    const AXTreeSelector& selector) {
-  return std::make_unique<AccessibilityEventRecorderAuraLinux>(manager, pid,
-                                                               selector);
-}
-
-std::vector<AccessibilityEventRecorder::TestPass>
-AccessibilityEventRecorder::GetTestPasses() {
-  // Both the Blink pass and native pass use the same recorder
-  return {
-      {"blink", &AccessibilityEventRecorder::Create},
-      {"linux", &AccessibilityEventRecorder::Create},
-  };
-}
-
 bool AccessibilityEventRecorderAuraLinux::ShouldUseATSPI() {
-  return pid_ != base::GetCurrentProcId() ||
-         !application_name_match_pattern_.empty();
+  return pid_ != base::GetCurrentProcId() || !selector_.empty();
 }
 
 AccessibilityEventRecorderAuraLinux::AccessibilityEventRecorderAuraLinux(
     BrowserAccessibilityManager* manager,
     base::ProcessId pid,
     const AXTreeSelector& selector)
-    : AccessibilityEventRecorder(manager),
-      pid_(pid),
-      application_name_match_pattern_(selector.pattern) {
+    : AccessibilityEventRecorder(manager), pid_(pid), selector_(selector) {
   CHECK(!instance_) << "There can be only one instance of"
                     << " AccessibilityEventRecorder at a time.";
 
@@ -411,24 +348,16 @@ void AccessibilityEventRecorderAuraLinux::ProcessATSPIEvent(
     const AtspiEvent* event) {
   GError* error = nullptr;
 
-  if (!application_name_match_pattern_.empty()) {
+  // Ignore irrelevant events, i.e. fired for other applications.
+  if (!selector_.empty()) {
     AtspiAccessible* application =
         atspi_accessible_get_application(event->source, &error);
-    if (error || !application)
-      return;
-
-    char* application_name = atspi_accessible_get_name(application, &error);
-    g_object_unref(application);
-    if (error || !application_name) {
+    if (error) {
       g_clear_error(&error);
       return;
     }
-
-    if (!base::MatchPattern(application_name,
-                            application_name_match_pattern_)) {
+    if (!application || application != FindAccessible(selector_))
       return;
-    }
-    free(application_name);
   }
 
   if (pid_) {

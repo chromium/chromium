@@ -35,7 +35,7 @@ class ASH_PUBLIC_EXPORT ArcNotificationManagerBase {
     // Invoked when the ArcNotificationManagerBase object (the thing that this
     // observer observes) will be destroyed. In response, the observer, |this|,
     // should call "RemoveObserver(this)", whether directly or indirectly (e.g.
-    // via ScopedObserver::Remove).
+    // via ScopedObservation::Reset).
     virtual void OnArcNotificationManagerDestroyed(
         ArcNotificationManagerBase* arc_notification_manager) = 0;
   };

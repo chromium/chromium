@@ -73,8 +73,8 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   void SaveForceOnlineSignin(const AccountId& account_id,
                              bool force_online_signin) override;
   void SaveUserDisplayName(const AccountId& account_id,
-                           const base::string16& display_name) override;
-  base::string16 GetUserDisplayName(const AccountId& account_id) const override;
+                           const std::u16string& display_name) override;
+  std::u16string GetUserDisplayName(const AccountId& account_id) const override;
   void SaveUserDisplayEmail(const AccountId& account_id,
                             const std::string& display_email) override;
   void SaveUserType(const User* user) override;

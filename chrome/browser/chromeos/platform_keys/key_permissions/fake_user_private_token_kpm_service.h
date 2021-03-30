@@ -48,4 +48,13 @@ BuildFakeUserPrivateTokenKeyPermissionsManagerService(
 }  // namespace platform_keys
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when
+// //chromeos/browser/chromeos/platform_keys moved to ash
+namespace ash {
+namespace platform_keys {
+using ::chromeos::platform_keys::
+    BuildFakeUserPrivateTokenKeyPermissionsManagerService;
+}  // namespace platform_keys
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_KEY_PERMISSIONS_FAKE_USER_PRIVATE_TOKEN_KPM_SERVICE_H_

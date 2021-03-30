@@ -96,6 +96,10 @@ FirstPartySetsComponentInstallerPolicy::FirstPartySetsComponentInstallerPolicy(
 FirstPartySetsComponentInstallerPolicy::
     ~FirstPartySetsComponentInstallerPolicy() = default;
 
+const char
+    FirstPartySetsComponentInstallerPolicy::kDogfoodInstallerAttributeName[] =
+        "_internal_experimental_sets";
+
 bool FirstPartySetsComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
   // False since this is a data, non-binary component.
@@ -164,12 +168,12 @@ std::string FirstPartySetsComponentInstallerPolicy::GetName() const {
 
 update_client::InstallerAttributes
 FirstPartySetsComponentInstallerPolicy::GetInstallerAttributes() const {
-  return update_client::InstallerAttributes();
-}
-
-std::vector<std::string> FirstPartySetsComponentInstallerPolicy::GetMimeTypes()
-    const {
-  return {};
+  return {
+      {
+          kDogfoodInstallerAttributeName,
+          net::features::kFirstPartySetsIsDogfooder.Get() ? "true" : "false",
+      },
+  };
 }
 
 void RegisterFirstPartySetsComponent(ComponentUpdateService* cus) {

@@ -93,9 +93,14 @@ class StartupBrowserCreator {
                      chrome::startup::IsFirstRun is_first_run,
                      std::unique_ptr<LaunchModeRecorder> launch_mode_recorder);
 
-  // When called the first time, reads the value of the preference kWasRestarted
-  // and resets it to false. Subsequent calls return the value which was read
-  // the first time.
+  // If Incognito or Guest mode are requested by policy or command line returns
+  // the appropriate private browsing profile. Otherwise returns |profile|.
+  Profile* GetPrivateProfileIfRequested(const base::CommandLine& command_line,
+                                        Profile* profile);
+
+  // When called the first time, reads the value of the preference
+  // kWasRestarted and resets it to false. Subsequent calls return the value
+  // which was read the first time.
   static bool WasRestarted();
 
   static SessionStartupPref GetSessionStartupPref(
@@ -210,8 +215,15 @@ bool HasPendingUncleanExit(Profile* profile);
 
 // Returns the path that contains the profile that should be loaded on process
 // startup.
+// When the profile picker is shown on startup, this returns the Guest profile
+// path. On Mac, the startup profile path is also used to open URLs at startup,
+// bypassing the profile picker, because the profile picker does not support it.
+// TODO(https://crbug.com/1155158): Remove this parameter once the picker
+// supports opening URLs.
 base::FilePath GetStartupProfilePath(const base::FilePath& user_data_dir,
-                                     const base::CommandLine& command_line);
+                                     const base::FilePath& cur_dir,
+                                     const base::CommandLine& command_line,
+                                     bool ignore_profile_picker);
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
 // Returns the profile that should be loaded on process startup. This is either

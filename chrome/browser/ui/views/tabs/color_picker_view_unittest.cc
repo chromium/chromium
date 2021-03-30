@@ -6,9 +6,9 @@
 
 #include <array>
 #include <memory>
+#include <string>
 #include <utility>
 
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
@@ -30,9 +30,9 @@
 namespace {
 
 static const TabGroupEditorBubbleView::Colors kTestColors({
-    {tab_groups::TabGroupColorId::kRed, base::ASCIIToUTF16("Red")},
-    {tab_groups::TabGroupColorId::kGreen, base::ASCIIToUTF16("Green")},
-    {tab_groups::TabGroupColorId::kBlue, base::ASCIIToUTF16("Blue")},
+    {tab_groups::TabGroupColorId::kRed, u"Red"},
+    {tab_groups::TabGroupColorId::kGreen, u"Green"},
+    {tab_groups::TabGroupColorId::kBlue, u"Blue"},
 });
 
 }  // namespace

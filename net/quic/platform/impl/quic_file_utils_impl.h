@@ -10,7 +10,6 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/strings/abseil_string_conversions.h"
-#include "net/third_party/quiche/src/common/platform/api/quiche_string_piece.h"
 
 using base::FilePath;
 

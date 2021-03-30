@@ -4,6 +4,8 @@
 
 package org.chromium.weblayer_private.interfaces;
 
+import org.chromium.weblayer_private.interfaces.IClientPage;
+
 /**
  * Provides information about a navigation.
  */
@@ -30,7 +32,6 @@ interface INavigation {
 
   boolean wasStopCalled() = 10;
 
-  // @since 86
   boolean isPageInitiated() = 11;
   boolean isReload() = 12;
 
@@ -38,4 +39,13 @@ interface INavigation {
   boolean wasIntentLaunched() = 13;
   boolean isUserDecidingIntentLaunch() = 14;
   boolean isKnownProtocol() = 15;
+  boolean isServedFromBackForwardCache() = 16;
+  boolean isFormSubmission() = 19;
+  String getReferrer() = 20;
+
+  // @since 88
+  void disableNetworkErrorAutoReload() = 17;
+
+  // @since 90
+  IClientPage getPage() = 18;
 }

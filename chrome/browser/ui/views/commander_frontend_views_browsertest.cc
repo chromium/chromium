@@ -20,7 +20,7 @@ class CommanderFrontendViewsTest : public InProcessBrowserTest {
   // modifications. If we need it one more time, extract to a common file.
   class TestBackend : public commander::CommanderBackend {
    public:
-    void OnTextChanged(const base::string16& text, Browser* browser) override {
+    void OnTextChanged(const std::u16string& text, Browser* browser) override {
       text_changed_invocations_.push_back(text);
     }
     void OnCommandSelected(size_t command_index, int result_set_id) override {
@@ -42,7 +42,7 @@ class CommanderFrontendViewsTest : public InProcessBrowserTest {
 
     void CallCallback(commander::CommanderViewModel vm) { callback_.Run(vm); }
 
-    const std::vector<base::string16> text_changed_invocations() {
+    const std::vector<std::u16string> text_changed_invocations() {
       return text_changed_invocations_;
     }
     const std::vector<size_t> command_selected_invocations() {
@@ -56,7 +56,7 @@ class CommanderFrontendViewsTest : public InProcessBrowserTest {
 
    private:
     commander::CommanderBackend::ViewModelUpdateCallback callback_;
-    std::vector<base::string16> text_changed_invocations_;
+    std::vector<std::u16string> text_changed_invocations_;
     std::vector<size_t> command_selected_invocations_;
     int composite_command_cancelled_invocation_count_ = 0;
     int reset_invocation_count_ = 0;
@@ -264,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(CommanderFrontendViewsTest, PassesOnTextChanged) {
   frontend->Show(browser());
   ignore_result(WaitForCommanderWidgetAttachedTo(browser()));
 
-  const base::string16 input = base::ASCIIToUTF16("orange");
+  const std::u16string input = u"orange";
   frontend->OnTextChanged(input);
   ASSERT_EQ(backend_->text_changed_invocations().size(), 1u);
   EXPECT_EQ(backend_->text_changed_invocations().back(), input);

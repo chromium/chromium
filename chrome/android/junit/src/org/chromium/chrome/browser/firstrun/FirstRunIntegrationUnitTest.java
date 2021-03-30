@@ -57,7 +57,7 @@ public final class FirstRunIntegrationUnitTest {
         public void __constructor__() {}
 
         @Implementation
-        public void handlePreNativeStartup(final BrowserParts parts) {}
+        public void handlePreNativeStartupAndLoadLibraries(final BrowserParts parts) {}
     }
 
     @Rule

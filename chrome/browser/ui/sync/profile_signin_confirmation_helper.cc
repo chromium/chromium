@@ -38,7 +38,7 @@ bool HasBookmarks(Profile* profile) {
       BookmarkModelFactory::GetForBrowserContext(profile);
   bool has_bookmarks = bookmarks && bookmarks->HasBookmarks();
   if (has_bookmarks)
-    DVLOG(1) << "SigninConfirmationHelper: profile contains bookmarks";
+    VLOG(1) << "SigninConfirmationHelper: profile contains bookmarks";
   return has_bookmarks;
 }
 
@@ -56,7 +56,7 @@ SkColor GetSigninConfirmationPromptBarColor(ui::NativeTheme* theme,
 bool HasBeenShutdown(Profile* profile) {
   bool has_been_shutdown = !profile->IsNewProfile();
   if (has_been_shutdown)
-    DVLOG(1) << "ProfileSigninConfirmationHelper: profile is not new";
+    VLOG(1) << "ProfileSigninConfirmationHelper: profile is not new";
   return has_been_shutdown;
 }
 
@@ -73,8 +73,8 @@ bool HasSyncedExtensions(Profile* profile) {
       if (extensions::sync_helper::IsSyncable(extension.get()) &&
           !extensions::sync_helper::IsSyncableComponentExtension(
               extension.get())) {
-        DVLOG(1) << "ProfileSigninConfirmationHelper: "
-                 << "profile contains a synced extension: " << extension->id();
+        VLOG(1) << "ProfileSigninConfirmationHelper: "
+                << "profile contains a synced extension: " << extension->id();
         return true;
       }
     }

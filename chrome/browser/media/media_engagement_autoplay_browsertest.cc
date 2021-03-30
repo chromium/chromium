@@ -47,9 +47,9 @@ const base::FilePath kTestDataPath = base::FilePath(
 
 const char kMediaEngagementTestDataPath[] = "chrome/test/data/media/engagement";
 
-const base::string16 kAllowedTitle = base::ASCIIToUTF16("Allowed");
+const std::u16string kAllowedTitle = u"Allowed";
 
-const base::string16 kDeniedTitle = base::ASCIIToUTF16("Denied");
+const std::u16string kDeniedTitle = u"Denied";
 
 const base::FilePath kEmptyDataPath = kTestDataPath.AppendASCII("empty.pb");
 
@@ -192,7 +192,7 @@ class MediaEngagementAutoplayBrowserTest
   }
 
  private:
-  base::string16 WaitAndGetTitle() {
+  std::u16string WaitAndGetTitle() {
     content::TitleWatcher title_watcher(GetWebContents(), kAllowedTitle);
     title_watcher.AlsoWaitForTitle(kDeniedTitle);
     return title_watcher.WaitAndGetTitle();

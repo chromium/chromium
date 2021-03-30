@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
+#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_features.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_from_string_url_loader.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_origin_prober.h"
@@ -18,10 +18,9 @@
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_service.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_service_factory.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_subresource_manager.h"
-#include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_url_loader.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetched_mainframe_response_container.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -68,7 +67,7 @@ void ReportProbeResult(int frame_tree_node_id,
 
 void RecordCookieWaitTime(base::TimeDelta wait_time) {
   UMA_HISTOGRAM_CUSTOM_TIMES(
-      "IsolatedPrerender.AfterClick.Mainframe.CookieWaitTime", wait_time,
+      "PrefetchProxy.AfterClick.Mainframe.CookieWaitTime", wait_time,
       base::TimeDelta(), base::TimeDelta::FromSeconds(5), 50);
 }
 
@@ -106,12 +105,12 @@ bool PrefetchProxyURLLoaderInterceptor::MaybeInterceptNoStatePrefetchNavigation(
   content::WebContents* web_contents =
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id_);
 
-  prerender::PrerenderManager* prerender_manager =
-      prerender::PrerenderManagerFactory::GetForBrowserContext(profile);
-  if (!prerender_manager)
+  prerender::NoStatePrefetchManager* no_state_prefetch_manager =
+      prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(profile);
+  if (!no_state_prefetch_manager)
     return false;
 
-  if (!prerender_manager->IsWebContentsPrerendering(web_contents))
+  if (!no_state_prefetch_manager->IsWebContentsPrerendering(web_contents))
     return false;
 
   PrefetchProxyService* service =
@@ -182,6 +181,10 @@ void PrefetchProxyURLLoaderInterceptor::MaybeCreateLoader(
                        std::move(on_success_callback)));
     return;
   }
+  // Inform the metrics collector that the main frame HTML was used and probing
+  // was disabled.
+  ReportProbeResult(frame_tree_node_id_, url_,
+                    PrefetchProxyProbeResult::kNoProbing);
 
   EnsureCookiesCopiedAndInterceptPrefetchedNavigation(
       tentative_resource_request, std::move(prefetch));

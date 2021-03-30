@@ -7,11 +7,11 @@
 #include <algorithm>
 #include <utility>
 
+#include "ash/constants/ash_switches.h"
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/single_thread_task_runner.h"
 #include "base/system/sys_info.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
 
@@ -183,7 +183,7 @@ void FakeUserManager::SwitchActiveUser(const AccountId& account_id) {
 }
 
 void FakeUserManager::SaveUserDisplayName(const AccountId& account_id,
-                                          const base::string16& display_name) {
+                                          const std::u16string& display_name) {
   for (UserList::iterator it = users_.begin(); it != users_.end(); ++it) {
     if ((*it)->GetAccountId() == account_id) {
       (*it)->set_display_name(display_name);
@@ -229,9 +229,9 @@ const User* FakeUserManager::GetPrimaryUser() const {
   return primary_user_;
 }
 
-base::string16 FakeUserManager::GetUserDisplayName(
+std::u16string FakeUserManager::GetUserDisplayName(
     const AccountId& account_id) const {
-  return base::string16();
+  return std::u16string();
 }
 
 bool FakeUserManager::IsCurrentUserOwner() const {
@@ -380,7 +380,8 @@ bool FakeUserManager::IsStubAccountId(const AccountId& account_id) const {
   return account_id == StubAccountId();
 }
 
-bool FakeUserManager::IsSupervisedAccountId(const AccountId& account_id) const {
+bool FakeUserManager::IsDeprecatedSupervisedAccountId(
+    const AccountId& account_id) const {
   return false;
 }
 
@@ -395,8 +396,8 @@ const gfx::ImageSkia& FakeUserManager::GetResourceImagekiaNamed(int id) const {
   return empty_image_;
 }
 
-base::string16 FakeUserManager::GetResourceStringUTF16(int string_id) const {
-  return base::string16();
+std::u16string FakeUserManager::GetResourceStringUTF16(int string_id) const {
+  return std::u16string();
 }
 
 void FakeUserManager::ScheduleResolveLocale(

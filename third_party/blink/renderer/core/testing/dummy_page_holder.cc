@@ -33,7 +33,10 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom-blink.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
+#include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/renderer/core/core_initializer.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -44,6 +47,8 @@
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/loader/testing/web_url_loader_factory_with_mock.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
@@ -69,13 +74,15 @@ DummyPageHolder::DummyPageHolder(
     LocalFrameClient* local_frame_client,
     base::OnceCallback<void(Settings&)> setting_overrider,
     const base::TickClock* clock)
-    : enable_mock_scrollbars_(true) {
+    : enable_mock_scrollbars_(true),
+      agent_group_scheduler_(
+          Thread::MainThread()->Scheduler()->CreateAgentGroupScheduler()) {
   Page::PageClients page_clients;
   if (!page_clients_argument)
     FillWithEmptyClients(page_clients);
   else
     page_clients.chrome_client = page_clients_argument->chrome_client;
-  page_ = Page::CreateNonOrdinary(page_clients);
+  page_ = Page::CreateNonOrdinary(page_clients, *agent_group_scheduler_);
   Settings& settings = page_->GetSettings();
   if (setting_overrider)
     std::move(setting_overrider).Run(settings);
@@ -84,29 +91,21 @@ DummyPageHolder::DummyPageHolder(
   if (!local_frame_client_)
     local_frame_client_ = MakeGarbageCollected<DummyLocalFrameClient>();
 
-  mojo::PendingAssociatedRemote<mojom::blink::PolicyContainerHost>
-      stub_policy_container_remote;
-  ignore_result(
-      stub_policy_container_remote.InitWithNewEndpointAndPassReceiver());
-
   // Create new WindowAgentFactory as this page will be isolated from others.
   frame_ = MakeGarbageCollected<LocalFrame>(
       local_frame_client_.Get(), *page_,
       /* FrameOwner* */ nullptr, /* Frame* parent */ nullptr,
       /* Frame* previous_sibling */ nullptr,
-      FrameInsertType::kInsertInConstructor, base::UnguessableToken::Create(),
+      FrameInsertType::kInsertInConstructor, LocalFrameToken(),
       /* WindowAgentFactory* */ nullptr,
-      /* InterfaceRegistry* */ nullptr,
-      std::make_unique<PolicyContainer>(
-          std::move(stub_policy_container_remote),
-          mojom::blink::PolicyContainerDocumentPolicies::New()),
-      clock);
+      /* InterfaceRegistry* */ nullptr, clock);
   frame_->SetView(
       MakeGarbageCollected<LocalFrameView>(*frame_, initial_view_size));
   frame_->View()->GetPage()->GetVisualViewport().SetSize(initial_view_size);
-  frame_->Init(nullptr);
+  frame_->Init(/*opener=*/nullptr, /*policy_container=*/nullptr);
 
-  CoreInitializer::GetInstance().ProvideModulesToPage(GetPage(), nullptr);
+  CoreInitializer::GetInstance().ProvideModulesToPage(GetPage(),
+                                                      base::EmptyString());
 }
 
 DummyPageHolder::~DummyPageHolder() {

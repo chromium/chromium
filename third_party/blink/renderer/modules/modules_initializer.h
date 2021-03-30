@@ -39,7 +39,8 @@ class MODULES_EXPORT ModulesInitializer : public CoreInitializer {
   WebRemotePlaybackClient* CreateWebRemotePlaybackClient(
       HTMLMediaElement&) const override;
 
-  void ProvideModulesToPage(Page&, WebViewClient*) const override;
+  void ProvideModulesToPage(Page&,
+                            const SessionStorageNamespaceId&) const override;
   void ForceNextWebGLContextCreationToFail() const override;
 
   void CollectAllGarbageForAnimationAndPaintWorkletForTesting() const override;
@@ -50,6 +51,7 @@ class MODULES_EXPORT ModulesInitializer : public CoreInitializer {
 
   void DidChangeManifest(LocalFrame&) override;
   void NotifyOrientationChanged(LocalFrame&) override;
+  void NotifyScreensChanged(LocalFrame&) override;
 };
 
 }  // namespace blink

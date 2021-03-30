@@ -612,8 +612,8 @@ void UnlockManagerImpl::OnGetConnectionMetadata(
   proximity_auth_client_->GetChallengeForUserAndDevice(
       remote_device.user_email(), remote_device.public_key(),
       connection_metadata_ptr->channel_binding_data,
-      base::Bind(&UnlockManagerImpl::OnGotSignInChallenge,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&UnlockManagerImpl::OnGotSignInChallenge,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void UnlockManagerImpl::OnGotSignInChallenge(const std::string& challenge) {

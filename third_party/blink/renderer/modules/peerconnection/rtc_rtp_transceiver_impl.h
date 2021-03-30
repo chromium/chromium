@@ -66,7 +66,9 @@ class MODULES_EXPORT RtpTransceiverState {
       bool stopped,
       webrtc::RtpTransceiverDirection direction,
       base::Optional<webrtc::RtpTransceiverDirection> current_direction,
-      base::Optional<webrtc::RtpTransceiverDirection> fired_direction);
+      base::Optional<webrtc::RtpTransceiverDirection> fired_direction,
+      Vector<webrtc::RtpHeaderExtensionCapability>
+          header_extensions_negotiated);
   RtpTransceiverState(RtpTransceiverState&&);
   RtpTransceiverState(const RtpTransceiverState&) = delete;
   ~RtpTransceiverState();
@@ -94,6 +96,8 @@ class MODULES_EXPORT RtpTransceiverState {
   void set_direction(webrtc::RtpTransceiverDirection);
   base::Optional<webrtc::RtpTransceiverDirection> current_direction() const;
   base::Optional<webrtc::RtpTransceiverDirection> fired_direction() const;
+  const Vector<webrtc::RtpHeaderExtensionCapability>&
+  header_extensions_negotiated() const;
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
@@ -107,6 +111,7 @@ class MODULES_EXPORT RtpTransceiverState {
   webrtc::RtpTransceiverDirection direction_;
   base::Optional<webrtc::RtpTransceiverDirection> current_direction_;
   base::Optional<webrtc::RtpTransceiverDirection> fired_direction_;
+  Vector<webrtc::RtpHeaderExtensionCapability> header_extensions_negotiated_;
 };
 
 // RTCRtpTransceiverImpl::set_state() performs differently depending on the
@@ -185,6 +190,12 @@ class MODULES_EXPORT RTCRtpTransceiverImpl : public RTCRtpTransceiverPlatform {
   webrtc::RTCError Stop() override;
   webrtc::RTCError SetCodecPreferences(
       Vector<webrtc::RtpCodecCapability>) override;
+  webrtc::RTCError SetOfferedRtpHeaderExtensions(
+      Vector<webrtc::RtpHeaderExtensionCapability> header_extensions) override;
+  Vector<webrtc::RtpHeaderExtensionCapability> HeaderExtensionsNegotiated()
+      const override;
+  Vector<webrtc::RtpHeaderExtensionCapability> HeaderExtensionsToOffer()
+      const override;
 
  private:
   class RTCRtpTransceiverInternal;

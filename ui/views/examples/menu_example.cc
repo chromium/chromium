@@ -62,7 +62,7 @@ class ExampleMenuModel : public ui::SimpleMenuModel,
 
 class ExampleMenuButton : public MenuButton {
  public:
-  explicit ExampleMenuButton(const base::string16& test);
+  explicit ExampleMenuButton(const std::u16string& test);
   ~ExampleMenuButton() override;
 
  private:
@@ -170,7 +170,7 @@ void ExampleMenuModel::ExecuteCommand(int command_id, int event_flags) {
 
 // ExampleMenuButton -----------------------------------------------------------
 
-ExampleMenuButton::ExampleMenuButton(const base::string16& test)
+ExampleMenuButton::ExampleMenuButton(const std::u16string& test)
     : MenuButton(base::BindRepeating(&ExampleMenuButton::ButtonPressed,
                                      base::Unretained(this)),
                  test) {}

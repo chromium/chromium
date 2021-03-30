@@ -11,8 +11,10 @@
 #include "cc/animation/animation_delegate.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/keyframe_model.h"
+#include "cc/paint/filter_operations.h"
 #include "cc/trees/mutator_host_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/animation/keyframe/target_property.h"
 #include "ui/gfx/geometry/scroll_offset.h"
 #include "ui/gfx/transform.h"
 
@@ -83,6 +85,11 @@ class TestLayer {
     return mutated_properties_[property];
   }
 
+  float maximum_animation_scale() const { return maximum_animation_scale_; }
+  void set_maximum_animation_scale(float scale) {
+    maximum_animation_scale_ = scale;
+  }
+
  private:
   TestLayer();
 
@@ -92,9 +99,10 @@ class TestLayer {
   FilterOperations backdrop_filters_;
   gfx::ScrollOffset scroll_offset_;
 
-  TargetProperties has_potential_animation_;
-  TargetProperties is_currently_animating_;
-  TargetProperties mutated_properties_;
+  gfx::TargetProperties has_potential_animation_;
+  gfx::TargetProperties is_currently_animating_;
+  gfx::TargetProperties mutated_properties_;
+  float maximum_animation_scale_ = kInvalidScale;
 };
 
 class TestHostClient : public MutatorHostClient {
@@ -136,10 +144,9 @@ class TestHostClient : public MutatorHostClient {
                                  ElementListType list_type,
                                  const PropertyAnimationState& mask,
                                  const PropertyAnimationState& state) override;
-  void AnimationScalesChanged(ElementId element_id,
-                              ElementListType list_type,
-                              float maximum_scale,
-                              float starting_scale) override;
+  void MaximumScaleChanged(ElementId element_id,
+                           ElementListType list_type,
+                           float maximum_scale) override;
 
   void ScrollOffsetAnimationFinished() override {}
 
@@ -237,10 +244,11 @@ class TestAnimationDelegate : public AnimationDelegate {
   void NotifyAnimationAborted(base::TimeTicks monotonic_time,
                               int target_property,
                               int group) override;
-  void NotifyAnimationTakeover(base::TimeTicks monotonic_time,
-                               int target_property,
-                               base::TimeTicks animation_start_time,
-                               std::unique_ptr<AnimationCurve> curve) override;
+  void NotifyAnimationTakeover(
+      base::TimeTicks monotonic_time,
+      int target_property,
+      base::TimeTicks animation_start_time,
+      std::unique_ptr<gfx::AnimationCurve> curve) override;
   void NotifyLocalTimeUpdated(
       base::Optional<base::TimeDelta> local_time) override;
 

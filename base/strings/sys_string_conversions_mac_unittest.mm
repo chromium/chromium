@@ -4,7 +4,8 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,7 +17,7 @@ TEST(SysStrings, ConversionsFromNSString) {
 
   // Conversions should be able to handle a NULL value without crashing.
   EXPECT_STREQ("", SysNSStringToUTF8(nil).c_str());
-  EXPECT_EQ(string16(), SysNSStringToUTF16(nil));
+  EXPECT_EQ(std::u16string(), SysNSStringToUTF16(nil));
 }
 
 std::vector<std::string> GetRoundTripStrings() {
@@ -44,9 +45,9 @@ TEST(SysStrings, RoundTripsFromUTF8) {
 
 TEST(SysStrings, RoundTripsFromUTF16) {
   for (const auto& string8 : GetRoundTripStrings()) {
-    base::string16 string16 = base::UTF8ToUTF16(string8);
+    std::u16string string16 = base::UTF8ToUTF16(string8);
     NSString* nsstring16 = SysUTF16ToNSString(string16);
-    base::string16 back16 = SysNSStringToUTF16(nsstring16);
+    std::u16string back16 = SysNSStringToUTF16(nsstring16);
     EXPECT_EQ(string16, back16);
   }
 }

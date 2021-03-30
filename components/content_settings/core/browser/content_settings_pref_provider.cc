@@ -34,6 +34,8 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "services/preferences/public/cpp/dictionary_value_update.h"
 #include "services/preferences/public/cpp/scoped_pref_update.h"
+#include "services/tracing/public/cpp/perfetto/macros.h"
+#include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_content_settings_event_info.pbzero.h"
 
 namespace content_settings {
 
@@ -55,15 +57,6 @@ const char kObsoletePluginsDataExceptionsPref[] =
     "profile.content_settings.exceptions.flash_data";
 #endif  // !defined(OS_ANDROID)
 #endif  // !defined(OS_IOS)
-
-// These settings were renamed, and should be migrated on profile startup.
-// Deprecated 8/2020
-#if !defined(OS_ANDROID)
-const char kDeprecatedNativeFileSystemReadGuardPref[] =
-    "profile.content_settings.exceptions.native_file_system_read_guard";
-const char kDeprecatedNativeFileSystemWriteGuardPref[] =
-    "profile.content_settings.exceptions.native_file_system_write_guard";
-#endif  // !defined(OS_ANDROID)
 
 }  // namespace
 
@@ -102,11 +95,6 @@ void PrefProvider::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(kObsoletePluginsExceptionsPref);
 #endif  // !defined(OS_ANDROID)
 #endif  // !defined(OS_IOS)
-
-#if !defined(OS_ANDROID)
-  registry->RegisterDictionaryPref(kDeprecatedNativeFileSystemReadGuardPref);
-  registry->RegisterDictionaryPref(kDeprecatedNativeFileSystemWriteGuardPref);
-#endif  // !defined(OS_ANDROID)
 }
 
 PrefProvider::PrefProvider(PrefService* prefs,
@@ -117,7 +105,7 @@ PrefProvider::PrefProvider(PrefService* prefs,
       off_the_record_(off_the_record),
       store_last_modified_(store_last_modified),
       clock_(base::DefaultClock::GetInstance()) {
-  TRACE_EVENT_BEGIN0("startup", "PrefProvider::PrefProvider");
+  TRACE_EVENT_BEGIN("startup", "PrefProvider::PrefProvider");
   DCHECK(prefs_);
   // Verify preferences version.
   if (!prefs_->HasPrefPath(prefs::kContentSettingsVersion)) {
@@ -126,7 +114,7 @@ PrefProvider::PrefProvider(PrefService* prefs,
   }
   if (prefs_->GetInteger(prefs::kContentSettingsVersion) >
       ContentSettingsPattern::kContentSettingsPatternVersion) {
-    TRACE_EVENT_END0("startup", "PrefProvider::PrefProvider");
+    TRACE_EVENT_END("startup");  // PrefProvider::PrefProvider.
     return;
   }
 
@@ -163,8 +151,12 @@ PrefProvider::PrefProvider(PrefService* prefs,
                             num_exceptions);
   }
 
-  TRACE_EVENT_END1("startup", "PrefProvider::PrefProvider",
-                   "NumberOfExceptions", num_exceptions);
+  TRACE_EVENT_END("startup", [num_exceptions](perfetto::EventContext ctx) {
+    perfetto::protos::pbzero::ChromeContentSettingsEventInfo* event_args =
+        ctx.event()->set_chrome_content_settings_event_info();
+    event_args->set_number_of_exceptions(
+        num_exceptions);  // PrefProvider::PrefProvider.
+  });
 }
 
 PrefProvider::~PrefProvider() {
@@ -286,32 +278,6 @@ void PrefProvider::DiscardOrMigrateObsoletePreferences() {
   prefs_->ClearPref(kObsoletePluginsDataExceptionsPref);
 #endif  // !defined(OS_ANDROID)
 #endif  // !defined(OS_IOS)
-
-#if !defined(OS_ANDROID)
-  // TODO(https://crbug.com/1111559): Remove this migration logic in M90.
-  WebsiteSettingsRegistry* website_settings =
-      WebsiteSettingsRegistry::GetInstance();
-
-  const PrefService::Preference* deprecated_nfs_read_guard_pref =
-      prefs_->FindPreference(kDeprecatedNativeFileSystemReadGuardPref);
-  if (!deprecated_nfs_read_guard_pref->IsDefaultValue()) {
-    prefs_->Set(
-        website_settings->Get(ContentSettingsType::FILE_SYSTEM_READ_GUARD)
-            ->pref_name(),
-        *deprecated_nfs_read_guard_pref->GetValue());
-  }
-  prefs_->ClearPref(kDeprecatedNativeFileSystemReadGuardPref);
-
-  const PrefService::Preference* deprecated_nfs_write_guard_pref =
-      prefs_->FindPreference(kDeprecatedNativeFileSystemWriteGuardPref);
-  if (!deprecated_nfs_write_guard_pref->IsDefaultValue()) {
-    prefs_->Set(
-        website_settings->Get(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD)
-            ->pref_name(),
-        *deprecated_nfs_write_guard_pref->GetValue());
-  }
-  prefs_->ClearPref(kDeprecatedNativeFileSystemWriteGuardPref);
-#endif  // !defined(OS_ANDROID)
 }
 
 void PrefProvider::SetClockForTesting(base::Clock* clock) {

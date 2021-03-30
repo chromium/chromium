@@ -43,6 +43,7 @@ class ProviderInterface;
 class PrefProvider;
 class TestUtils;
 class RuleIterator;
+class WebsiteSettingsInfo;
 }
 
 namespace user_prefs {
@@ -411,6 +412,8 @@ class HostContentSettingsMap : public content_settings::Observer,
   // It also ensures that we move away from (http://x.com, http://x.com)
   // patterns by replacing these patterns with (http://x.com, *).
   void MigrateSettingsPrecedingPermissionDelegationActivation();
+  void MigrateSingleSettingPrecedingPermissionDelegationActivation(
+      const content_settings::WebsiteSettingsInfo* info);
 
   // Verifies that this secondary pattern is allowed.
   bool IsSecondaryPatternAllowed(

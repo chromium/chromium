@@ -6,9 +6,9 @@
 
 #include <primary-selection-unstable-v1-client-protocol.h>
 
-#include "ui/ozone/platform/wayland/host/zwp_primary_selection_offer.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
+#include "ui/ozone/platform/wayland/host/zwp_primary_selection_offer.h"
 
 namespace ui {
 
@@ -18,7 +18,8 @@ ZwpPrimarySelectionDevice::ZwpPrimarySelectionDevice(
     zwp_primary_selection_device_v1* data_device)
     : WaylandDataDeviceBase(connection), data_device_(data_device) {
   static const struct zwp_primary_selection_device_v1_listener kListener = {
-      ZwpPrimarySelectionDevice::OnDataOffer, ZwpPrimarySelectionDevice::OnSelection};
+      ZwpPrimarySelectionDevice::OnDataOffer,
+      ZwpPrimarySelectionDevice::OnSelection};
   zwp_primary_selection_device_v1_add_listener(data_device_.get(), &kListener,
                                                this);
 }
@@ -40,10 +41,6 @@ void ZwpPrimarySelectionDevice::OnDataOffer(
     zwp_primary_selection_offer_v1* offer) {
   auto* self = static_cast<ZwpPrimarySelectionDevice*>(data);
   DCHECK(self);
-
-  self->connection()->clipboard()->UpdateSequenceNumber(
-      ClipboardBuffer::kSelection);
-
   self->set_data_offer(std::make_unique<ZwpPrimarySelectionOffer>(offer));
 }
 
@@ -56,17 +53,16 @@ void ZwpPrimarySelectionDevice::OnSelection(
   DCHECK(self);
 
   // 'offer' will be null to indicate that the selection is no longer valid,
-  // i.e. there is no longer clipboard data available to paste.
+  // i.e. there is no longer selection data available to be fetched.
   if (!offer) {
     self->ResetDataOffer();
-
-    // Clear Clipboard cache.
-    self->connection()->clipboard()->SetData({}, {});
-    return;
+  } else {
+    DCHECK(self->data_offer());
+    self->data_offer()->EnsureTextMimeTypeIfNeeded();
   }
 
-  DCHECK(self->data_offer());
-  self->data_offer()->EnsureTextMimeTypeIfNeeded();
+  if (self->selection_delegate())
+    self->selection_delegate()->OnSelectionOffer(self->data_offer());
 }
 
 }  // namespace ui

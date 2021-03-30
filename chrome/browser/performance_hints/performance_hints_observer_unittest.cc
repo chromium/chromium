@@ -17,8 +17,8 @@
 #include "chrome/browser/performance_hints/performance_hints_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/optimization_guide/optimization_guide_features.h"
-#include "components/optimization_guide/optimization_guide_switches.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/web_contents_tester.h"
@@ -63,7 +63,9 @@ class PerformanceHintsObserverTest : public ChromeRenderViewHostTestHarness {
          // Need to enable kOptimizationHints or GetForProfile will return
          // nullptr.
          optimization_guide::features::kOptimizationHints},
-        {});
+
+        {// Need to disable model downloading for these tests.
+         optimization_guide::features::kOptimizationGuideModelDownloading});
   }
   ~PerformanceHintsObserverTest() override = default;
 

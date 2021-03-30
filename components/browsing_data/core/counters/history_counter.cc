@@ -112,7 +112,7 @@ void HistoryCounter::Count() {
           }
         })");
   web_history_request_ = web_history->QueryHistory(
-      base::string16(), options,
+      std::u16string(), options,
       base::BindOnce(&HistoryCounter::OnGetWebHistoryCount,
                      weak_ptr_factory_.GetWeakPtr()),
       partial_traffic_annotation);

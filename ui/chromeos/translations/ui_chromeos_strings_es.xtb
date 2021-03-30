@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">No se puede utilizar el archivo o el directorio.</translation>
 <translation id="1363028406613469049">Pista</translation>
 <translation id="1378727793141957596">Te damos la bienvenida a Google Drive</translation>
+<translation id="1379911846207762492">Puedes hacer que tus archivos estén disponibles sin conexión para acceder a ellos cuando no tengas Internet.</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1395262318152388157">Control deslizante</translation>
 <translation id="1404323374378969387">Noruego</translation>
@@ -76,6 +77,7 @@
 <translation id="1807938677607439181">Todos los archivos</translation>
 <translation id="1810764548349082891">No hay vistas previas disponibles</translation>
 <translation id="1812302367230252929">Amárico (transliteración)</translation>
+<translation id="1813278315230285598">Servicios</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Precaución:<ph name="END_BOLD" /> estos archivos son temporales y es posible que se eliminen automáticamente para liberar espacio en el disco. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingüino</translation>
 <translation id="183183971458492120">Cargando información...</translation>
@@ -85,15 +87,16 @@
 <translation id="1853795129690976061">Esta carpeta se comparte con Linux</translation>
 <translation id="1864756863218646478">No se ha podido encontrar el archivo.</translation>
 <translation id="1920670151694390848">Malayalam (transliteración)</translation>
+<translation id="1920798810075583923">Sandía</translation>
 <translation id="1924372192547904021">Se ha formateado <ph name="DRIVE_NAME" /></translation>
 <translation id="1931134289871235022">Eslovaco</translation>
 <translation id="1933345018156373194">No se ha podido mover el archivo porque se ha producido un error inesperado: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Finlandés</translation>
 <translation id="1942765061641586207">Resolución de imagen</translation>
-<translation id="1943097386230153518">Instalar más servicios</translation>
 <translation id="1972984168337863910">Ampliar paneles de comentarios de archivos</translation>
+<translation id="1984456723671657197">Este tipo de archivo no es compatible. <ph name="BEGIN_LINK_HELP" />Más información<ph name="END_LINK_HELP" /> sobre cómo abrir archivos en Chrome OS.</translation>
 <translation id="1995337122023280937">Ir a la ubicación del archivo</translation>
-<translation id="2001796770603320721">Administrar en Drive</translation>
+<translation id="2001796770603320721">Gestionar en Drive</translation>
 <translation id="2009067268969781306">Al formatear una unidad, se eliminarán todos los datos almacenados. Esta acción no se puede deshacer.</translation>
 <translation id="2025955442973426285">Tigriña</translation>
 <translation id="2028997212275086731">Archivo RAR</translation>
@@ -118,6 +121,7 @@
 <translation id="2288278176040912387">Tocadiscos</translation>
 <translation id="2291538123825441971">Se están abriendo <ph name="NUMBER_OF_FILES" /> archivos.</translation>
 <translation id="2303301624314357662">Abriendo el archivo <ph name="FILE_NAME" />.</translation>
+<translation id="2304820083631266885">Planeta</translation>
 <translation id="2305020378527873881">Se ha expulsado <ph name="VOLUME_NAME" />.</translation>
 <translation id="2325650632570794183">No se admite este tipo de archivo. Accede a Chrome Web Store para buscar una aplicación que pueda abrir este tipo de archivo.</translation>
 <translation id="2326539130272988168">Búlgaro</translation>
@@ -142,7 +146,6 @@
 <translation id="255937426064304553">Estados Unidos (internacional)</translation>
 <translation id="2562685439590298522">Docs</translation>
 <translation id="2563185590376525700">Rana</translation>
-<translation id="2572501073504669105">Puedes hacer que tus archivos estén disponibles sin conexión para acceder a ellos cuando no tengas Internet.</translation>
 <translation id="2578394532502990878">Tamil (fonético)</translation>
 <translation id="2579959351793446050">Oriya</translation>
 <translation id="2614589611416690597">Vídeo <ph name="VIDEO_TYPE" /></translation>
@@ -186,6 +189,7 @@
 <translation id="299638574917407533">Francés (Canadá)</translation>
 <translation id="3003633581067744647">Cambiar a vista de miniaturas</translation>
 <translation id="3007214526293698309">Corregir proporción</translation>
+<translation id="3029114385395636667">Habilita Documentos de Google sin conexión para que Documentos, Hojas de cálculo y Presentaciones de Google estén disponibles sin conexión.</translation>
 <translation id="303198083543495566">Geografía</translation>
 <translation id="3047197340186497470">Chino (Dayi)</translation>
 <translation id="3057861065630527966">Realiza copias de seguridad de tus fotos y vídeos</translation>
@@ -216,14 +220,17 @@
 <translation id="3335337277364016868">Año de grabación</translation>
 <translation id="3353984535370177728">Seleccionar una carpeta para subirla</translation>
 <translation id="3356580349448036450">Completo</translation>
+<translation id="3358452157379365236">Guitarra</translation>
 <translation id="3382143449143186018">Nepalí con teclado InScript</translation>
 <translation id="3408236822532681288">Alemán (Alemania) con teclado Neo 2</translation>
 <translation id="3414856743105198592">Si formateas las unidades extraíbles, se borrarán todos los datos. ¿Quieres continuar?</translation>
 <translation id="3437801641691368414">Hora de creación</translation>
+<translation id="343907260260897561">Cámara instantánea</translation>
 <translation id="3455931012307786678">Estonio</translation>
 <translation id="3466147780910026086">Escaneando dispositivo multimedia...</translation>
 <translation id="3468522857997926824">Se ha realizado la copia de seguridad de <ph name="FILE_COUNT" /> fotos en <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="3475447146579922140">Hoja de cálculo de Google</translation>
+<translation id="3479552764303398839">Ahora no</translation>
 <translation id="3486821258960016770">Mongol</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> errores.</translation>
 <translation id="3522708245912499433">Portugués</translation>
@@ -233,6 +240,7 @@
 <translation id="3553048479571901246">Para abrir archivos con <ph name="APP_NAME" />, primero debes copiarlos a la carpeta de archivos de Windows.</translation>
 <translation id="3556731189587832921">Inglés (EE. UU.) con teclado internacional (PC)</translation>
 <translation id="357479282490346887">Lituano</translation>
+<translation id="3592251141500063301">No se ha podido habilitar el acceso sin conexión a <ph name="FILE_NAME" /></translation>
 <translation id="3603385196401704894">Francés canadiense</translation>
 <translation id="3606220979431771195">Turco-F</translation>
 <translation id="3616113530831147358">Audio</translation>
@@ -279,6 +287,7 @@
 <translation id="4124935795427217608">Unicornio</translation>
 <translation id="4158739975813877944">Abrir lista de reproducción</translation>
 <translation id="4159731583141908892">Se ha movido <ph name="FILE_NAME" />.</translation>
+<translation id="4186579485882418952">Habilitar el modo sin conexión</translation>
 <translation id="4193154014135846272">Documento de Google</translation>
 <translation id="4197674956721858839">Comprimir archivos seleccionados</translation>
 <translation id="4202378258276439759">Español (Latinoamérica)</translation>
@@ -292,6 +301,7 @@
 <translation id="4309915981827077375">Información general</translation>
 <translation id="432252891123397018">Rumano con teclado estándar</translation>
 <translation id="4325128273762811722">Esloveno</translation>
+<translation id="4326142238881453352">Botánico</translation>
 <translation id="4326192123064055915">Café</translation>
 <translation id="4336032328163998280">No se ha podido copiar (<ph name="ERROR_MESSAGE" />).</translation>
 <translation id="4348495354623233847">Kurdo sorani con teclado basado en el árabe</translation>
@@ -327,7 +337,6 @@
 <translation id="4706042980341760088">Tamil con teclado de máquina de escribir</translation>
 <translation id="4711094779914110278">Turco</translation>
 <translation id="4712283082407695269">Abriendo <ph name="PATH" /></translation>
-<translation id="4713544552769165154">Este archivo está diseñado para un ordenador que utilice software de Macintosh. No es compatible con tu dispositivo, que utiliza Chrome OS. Puedes buscar una aplicación equivalente adecuada en <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.<ph name="BEGIN_LINK_HELP" />Más información<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">Se ha realizado una copia de seguridad de <ph name="FILE_COUNT" /> fotos</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4732760563705710320">El dispositivo de transmisión no admite este vídeo.</translation>
@@ -408,6 +417,7 @@
     <ph name="MARKUP_7" />Comparte y crea archivos<ph name="MARKUP_8" />
     y colabora en archivos con otros usuarios desde un único lugar.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Archivos recuperados de Google Drive</translation>
+<translation id="5288441970121584418">Hamburguesa</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5318819489018851358">Compartir con Linux</translation>
@@ -461,8 +471,6 @@
 <translation id="5833610766403489739">Este archivo se ha perdido. Comprueba la opción de ubicación de descargas e inténtalo de nuevo.</translation>
 <translation id="5838451609423551646">Se ha cancelado la selección de todos los elementos.</translation>
 <translation id="5838825566232597749">Internacional estilo Workman (EE. UU.)</translation>
-<translation id="5850516540536751549">No se admite este tipo de archivo. Accede a <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> para buscar una aplicación que pueda abrir este tipo de archivo.
-    <ph name="BEGIN_LINK_HELP" />Más información<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">No hay contenido...</translation>
 <translation id="5911887972742538906">No se ha podido instalar la aplicación de Linux.</translation>
 <translation id="5912396950572065471">Formato</translation>
@@ -500,10 +508,12 @@
 <translation id="6248400709929739064">Habilitar subtítulos</translation>
 <translation id="6269630227984243955">Malayo</translation>
 <translation id="6287852322318138013">Seleccionar una aplicación para abrir este archivo</translation>
+<translation id="6321303798550928047">Saludar con la mano</translation>
 <translation id="6339145975392024142">EE. UU. (PC)</translation>
 <translation id="6346310558342052870">Acceso restringido</translation>
 <translation id="6356685157277930264">Ventana de comentarios de archivos</translation>
 <translation id="6358884629796491903">Dragón</translation>
+<translation id="6367976544441405720">Furgoneta</translation>
 <translation id="637062427944097960">Este archivo se ha abierto en un escritorio diferente. Ve a <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) para verlo.</translation>
 <translation id="6394388407447716302">Solo lectura</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> elementos</translation>
@@ -523,10 +533,11 @@
 <translation id="6607272825297743757">Información del archivo</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> carpetas compartidas con Parallels Desktop</translation>
 <translation id="6629841649550503054">Se ha realizado la copia de seguridad de todos los archivos en <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
-<translation id="6643016212128521049">Eliminar</translation>
+<translation id="6643016212128521049">Borrar</translation>
 <translation id="6650726141019353908">Mariposa rosa</translation>
 <translation id="6657585470893396449">Contraseña</translation>
 <translation id="6673674183150363784">Francés (Francia) con teclado Bépo</translation>
+<translation id="6710022688720561421">Robot</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6751256176799620176">1 carpeta seleccionada</translation>
 <translation id="6790428901817661496">Reproducir</translation>
@@ -560,6 +571,7 @@
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6970230597523682626">Búlgaro</translation>
 <translation id="6973630695168034713">Carpetas</translation>
+<translation id="6976795442547527108">León</translation>
 <translation id="6978611942794658017">Este archivo está diseñado para un PC que utilice software de Windows, por lo que no es compatible con tu dispositivo, que utiliza Chrome OS. Puedes buscar una aplicación equivalente adecuada en Chrome Web Store.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Sueco</translation>
@@ -606,6 +618,7 @@
 <translation id="7532029025027028521">Persa (transliteración)</translation>
 <translation id="7544830582642184299">Permite que las aplicaciones de Linux accedan a tus archivos de Google Drive. Los cambios se sincronizarán con tus otros dispositivos.</translation>
 <translation id="7544853251252956727">Reproducir aleatoriamente</translation>
+<translation id="7547009467130558110">Zapatilla</translation>
 <translation id="7547780573915868306">Lituano</translation>
 <translation id="7547811415869834682">neerlandés</translation>
 <translation id="7551643184018910560">Fijar en la estantería</translation>
@@ -620,6 +633,7 @@
 <translation id="7628656427739290098"><ph name="PERCENT" /> % completado.</translation>
 <translation id="7649070708921625228">Ayuda</translation>
 <translation id="7654209398114106148">Se están moviendo <ph name="NUMBER_OF_ITEMS" /> elementos...</translation>
+<translation id="7655441028674523381">Accede fácilmente a Google Fotos</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7663224033570512922">Hindi</translation>
 <translation id="7693909743393669729">Al formatear una unidad, se borrarán todos los datos almacenados en ella y se quitarán todas las particiones que contenga, incluidas las no visibles. Esta acción no se puede deshacer.</translation>
@@ -651,7 +665,6 @@
 <translation id="7839804798877833423">Para recuperar estos archivos se utilizarán aproximadamente <ph name="FILE_SIZE" /> de datos móviles.</translation>
 <translation id="7846076177841592234">Cancelar selección</translation>
 <translation id="7853966320808728790">BÉPO francés</translation>
-<translation id="7864662577698025113">Añadir servicio</translation>
 <translation id="7868774406711971383">Polaco</translation>
 <translation id="7873831373602885875">No se puede guardar en <ph name="FOLDER_NAME" />. Todos los cambios se guardarán en <ph name="DOWNLOADS_FOLDER" />, en la carpeta Descargas.</translation>
 <translation id="7874321682039004450">Filipino</translation>
@@ -666,13 +679,13 @@
 <translation id="7972920761225148017">Francés (Suiza)</translation>
 <translation id="7980421588063892270">Inglés (EE. UU.) con teclado Colemak</translation>
 <translation id="7982283708762922719">Altura</translation>
+<translation id="79907182588096956">Este archivo se ha diseñado para ordenadores Windows. No es compatible con tu dispositivo, que tiene Chrome OS. <ph name="BEGIN_LINK_HELP" />Más información<ph name="END_LINK_HELP" /> sobre cómo abrir archivos en Chrome OS.</translation>
 <translation id="8008366997883261463">Terrier Jack Russell</translation>
 <translation id="8028993641010258682">Tamaño</translation>
 <translation id="803771048473350947">Archivo</translation>
 <translation id="8038111231936746805">(acción predeterminada)</translation>
 <translation id="8042602468072383151">Audio <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">Rumano</translation>
-<translation id="8052887694493382350">Este archivo se ha diseñado para ordenadores que utilicen Windows. No es compatible con tu dispositivo, que utiliza Chrome OS. <ph name="BEGIN_LINK_HELP" />Más información<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Todos los cambios se guardarán en <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Repetir</translation>
 <translation id="8106045200081704138">Compartido conmigo</translation>
@@ -712,6 +725,7 @@
 <translation id="8466234950814670489">Archivo tar</translation>
 <translation id="8475647382427415476">Google Drive no ha podido sincronizar <ph name="FILENAME" /> en este momento. Este servicio volverá a intentarlo más tarde.</translation>
 <translation id="8477649328507734757">Girar</translation>
+<translation id="8484284835977497781">Elige entre tus fotos recientes.</translation>
 <translation id="8487700953926739672">Disponible sin conexión</translation>
 <translation id="8521441079177373948">Reino Unido</translation>
 <translation id="8525306231823319788">Pantalla completa</translation>
@@ -744,8 +758,10 @@
 <translation id="8860454412039442620">Hoja de cálculo de Excel</translation>
 <translation id="8866284467018526531">Árabe (transliteración)</translation>
 <translation id="8900820606136623064">Húngaro</translation>
+<translation id="8903931173357132290">Graduado</translation>
 <translation id="8919081441417203123">Danés</translation>
 <translation id="8965697826696209160">No hay suficiente espacio.</translation>
+<translation id="8970501467542182729">Este archivo se ha diseñado para ordenadores Macintosh. No es compatible con tu dispositivo, que tiene Chrome OS. <ph name="BEGIN_LINK_HELP" />Más información<ph name="END_LINK_HELP" /> sobre cómo abrir archivos en Chrome OS.</translation>
 <translation id="8997962250644902079">Chino tradicional (pinyin)</translation>
 <translation id="9017798300203431059">Ruso fonético</translation>
 <translation id="9034924485347205037">Archivos de Linux</translation>

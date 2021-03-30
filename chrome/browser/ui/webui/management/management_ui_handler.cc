@@ -24,6 +24,7 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/managed_ui.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -31,7 +32,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
-#include "google_apis/gaia/gaia_auth_util.h"
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/referrer_policy.h"
@@ -39,9 +39,11 @@
 #include "ui/base/webui/web_ui_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/chromeos/crostini/crostini_features.h"
 #include "chrome/browser/chromeos/crostini/crostini_pref_names.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/policy/device_cloud_policy_manager_chromeos.h"
 #include "chrome/browser/chromeos/policy/minimum_version_policy_handler.h"
@@ -52,8 +54,6 @@
 #include "chrome/browser/chromeos/policy/status_uploader.h"
 #include "chrome/browser/chromeos/policy/system_log_uploader.h"
 #include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler_chromeos.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/grit/chromium_strings.h"
@@ -88,13 +88,11 @@ const char kOnPremReportingExtensionStableId[] =
     "emahakmocgideepebncgnmlmliepgpgb";
 const char kOnPremReportingExtensionBetaId[] =
     "kigjhoekjcpdfjpimbdjegmgecmlicaf";
-const char kCloudReportingExtensionId[] = "oempjldejiginopiohodkdoklcjklbaa";
 const char kPolicyKeyReportMachineIdData[] = "report_machine_id_data";
 const char kPolicyKeyReportUserIdData[] = "report_user_id_data";
 const char kPolicyKeyReportVersionData[] = "report_version_data";
 const char kPolicyKeyReportPolicyData[] = "report_policy_data";
 const char kPolicyKeyReportExtensionsData[] = "report_extensions_data";
-const char kPolicyKeyReportSafeBrowsingData[] = "report_safe_browsing_data";
 const char kPolicyKeyReportSystemTelemetryData[] =
     "report_system_telemetry_data";
 const char kPolicyKeyReportUserBrowsingData[] = "report_user_browsing_data";
@@ -109,8 +107,6 @@ const char kManagementExtensionReportVersion[] =
     "managementExtensionReportVersion";
 const char kManagementExtensionReportExtensionsPlugin[] =
     "managementExtensionReportExtensionsPlugin";
-const char kManagementExtensionReportSafeBrowsingWarnings[] =
-    "managementExtensionReportSafeBrowsingWarnings";
 const char kManagementExtensionReportPerfCrash[] =
     "managementExtensionReportPerfCrash";
 const char kManagementExtensionReportUserBrowsingData[] =
@@ -171,6 +167,7 @@ const char kManagementReportAppInfoAndActivity[] =
 const char kManagementReportExtensions[] = "managementReportExtensions";
 const char kManagementReportAndroidApplications[] =
     "managementReportAndroidApplications";
+const char kManagementReportPrintJobs[] = "managementReportPrintJobs";
 const char kManagementPrinting[] = "managementPrinting";
 const char kManagementCrostini[] = "managementCrostini";
 const char kManagementCrostiniContainerConfiguration[] =
@@ -214,6 +211,7 @@ enum class DeviceReportingType {
   kAppInfoAndActivity,
   kLogs,
   kPrint,
+  kPrintJobs,
   kCrostini,
   kUsername,
   kExtensions,
@@ -239,6 +237,8 @@ std::string ToJSDeviceReportingType(const DeviceReportingType& type) {
       return "logs";
     case DeviceReportingType::kPrint:
       return "print";
+    case DeviceReportingType::kPrintJobs:
+      return "print jobs";
     case DeviceReportingType::kCrostini:
       return "crostini";
     case DeviceReportingType::kUsername:
@@ -326,50 +326,15 @@ const char* GetReportingTypeValue(ReportingType reportingType) {
 
 }  // namespace
 
-std::string GetAccountDomain(Profile* profile) {
-  if (!IsProfileManaged(profile))
-    return std::string();
-  auto username = profile->GetProfileUserName();
-  size_t email_separator_pos = username.find('@');
-  bool is_email = email_separator_pos != std::string::npos &&
-                  email_separator_pos < username.length() - 1;
-
-  if (!is_email)
-    return std::string();
-
-  const std::string domain = gaia::ExtractDomainName(std::move(username));
-
-  return (domain == "gmail.com" || domain == "googlemail.com") ? std::string()
-                                                               : domain;
-}
-
 std::string ManagementUIHandler::GetAccountManager(Profile* profile) {
-  if (!IsProfileManaged(profile))
-    return std::string();
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  const policy::UserCloudPolicyManagerChromeOS* user_cloud_policy_manager =
-      profile->GetUserCloudPolicyManagerChromeOS();
-#else
-  const policy::UserCloudPolicyManager* user_cloud_policy_manager =
-      profile->GetUserCloudPolicyManager();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  if (user_cloud_policy_manager) {
-    const enterprise_management::PolicyData* policy =
-        user_cloud_policy_manager->core()->store()->policy();
-    if (policy && policy->has_managed_by()) {
-      return policy->managed_by();
-    }
-  }
-
-  return GetAccountDomain(profile);
+  base::Optional<std::string> account_manager =
+      chrome::GetAccountManagerIdentity(profile);
+  return account_manager ? *account_manager : std::string();
 }
 
 ManagementUIHandler::ManagementUIHandler() {
   reporting_extension_ids_ = {kOnPremReportingExtensionStableId,
-                              kOnPremReportingExtensionBetaId,
-                              kCloudReportingExtensionId};
+                              kOnPremReportingExtensionBetaId};
 }
 
 ManagementUIHandler::~ManagementUIHandler() {
@@ -439,9 +404,6 @@ void ManagementUIHandler::OnJavascriptDisallowed() {
 }
 
 void ManagementUIHandler::AddReportingInfo(base::Value* report_sources) {
-  const extensions::Extension* cloud_reporting_extension =
-      GetEnabledExtension(kCloudReportingExtensionId);
-
   const policy::PolicyService* policy_service = GetPolicyService();
 
   const policy::PolicyNamespace
@@ -464,8 +426,6 @@ void ManagementUIHandler::AddReportingInfo(base::Value* report_sources) {
       &on_prem_reporting_extension_stable_policy_map,
       &on_prem_reporting_extension_beta_policy_map};
 
-  const bool cloud_reporting_extension_installed =
-      cloud_reporting_extension != nullptr;
   const auto* cloud_reporting_policy_value =
       GetPolicyService()
           ->GetPolicies(policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME,
@@ -482,25 +442,19 @@ void ManagementUIHandler::AddReportingInfo(base::Value* report_sources) {
     const bool enabled_by_default;
   } report_definitions[] = {
       {kPolicyKeyReportMachineIdData, kManagementExtensionReportMachineName,
-       ReportingType::kDevice,
-       cloud_reporting_extension_installed || cloud_reporting_policy_enabled},
+       ReportingType::kDevice, cloud_reporting_policy_enabled},
       {kPolicyKeyReportMachineIdData,
        kManagementExtensionReportMachineNameAddress, ReportingType::kDevice,
        false},
       {kPolicyKeyReportVersionData, kManagementExtensionReportVersion,
-       ReportingType::kDevice,
-       cloud_reporting_extension_installed || cloud_reporting_policy_enabled},
+       ReportingType::kDevice, cloud_reporting_policy_enabled},
       {kPolicyKeyReportSystemTelemetryData, kManagementExtensionReportPerfCrash,
        ReportingType::kDevice, false},
       {kPolicyKeyReportUserIdData, kManagementExtensionReportUsername,
-       ReportingType::kUser,
-       cloud_reporting_extension_installed || cloud_reporting_policy_enabled},
-      {kPolicyKeyReportSafeBrowsingData,
-       kManagementExtensionReportSafeBrowsingWarnings, ReportingType::kSecurity,
-       cloud_reporting_extension_installed},
+       ReportingType::kUser, cloud_reporting_policy_enabled},
       {kPolicyKeyReportExtensionsData,
        kManagementExtensionReportExtensionsPlugin, ReportingType::kExtensions,
-       cloud_reporting_extension_installed || cloud_reporting_policy_enabled},
+       cloud_reporting_policy_enabled},
       {kPolicyKeyReportUserBrowsingData,
        kManagementExtensionReportUserBrowsingData, ReportingType::kUserActivity,
        false},
@@ -599,8 +553,17 @@ void ManagementUIHandler::AddDeviceReportingInfo(
                               DeviceReportingType::kLogs);
   }
 
-  if (profile->GetPrefs()->GetBoolean(
-          prefs::kPrintingSendUsernameAndFilenameEnabled)) {
+  bool report_print_jobs = false;
+  chromeos::CrosSettings::Get()->GetBoolean(chromeos::kReportDevicePrintJobs,
+                                            &report_print_jobs);
+  if (report_print_jobs) {
+    AddDeviceReportingElement(report_sources, kManagementReportPrintJobs,
+                              DeviceReportingType::kPrintJobs);
+  }
+
+  bool report_print_username = profile->GetPrefs()->GetBoolean(
+      prefs::kPrintingSendUsernameAndFilenameEnabled);
+  if (report_print_username && !report_print_jobs) {
     AddDeviceReportingElement(report_sources, kManagementPrinting,
                               DeviceReportingType::kPrint);
   }
@@ -654,8 +617,8 @@ void ManagementUIHandler::AddUpdateRequiredEolInfo(
                                  base::UTF8ToUTF16(GetDeviceManager()),
                                  ui::GetChromeOSDeviceName()));
   std::string eol_admin_message;
-  chromeos::CrosSettings::Get()->GetString(
-      chromeos::kDeviceMinimumVersionAueMessage, &eol_admin_message);
+  ash::CrosSettings::Get()->GetString(chromeos::kDeviceMinimumVersionAueMessage,
+                                      &eol_admin_message);
   response->SetStringPath("eolAdminMessage", eol_admin_message);
 }
 
@@ -847,13 +810,6 @@ policy::PolicyService* ManagementUIHandler::GetPolicyService() const {
   return Profile::FromWebUI(web_ui())
       ->GetProfilePolicyConnector()
       ->policy_service();
-}
-
-const extensions::Extension* ManagementUIHandler::GetEnabledExtension(
-    const std::string& extensionId) const {
-  return extensions::ExtensionRegistry::Get(Profile::FromWebUI(web_ui()))
-      ->GetExtensionById(kCloudReportingExtensionId,
-                         extensions::ExtensionRegistry::ENABLED);
 }
 
 void ManagementUIHandler::AsyncUpdateLogo() {

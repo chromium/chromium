@@ -117,8 +117,8 @@ public class OfflineIndicatorController implements ConnectivityDetector.Observer
     @Override
     public void onAction(Object actionData) {
         mIsShowingOfflineIndicator = false;
-        DownloadUtils.showDownloadManager(
-                null, null, DownloadOpenSource.OFFLINE_INDICATOR, true /*showPrefetchedContent*/);
+        DownloadUtils.showDownloadManager(null, null, null, DownloadOpenSource.OFFLINE_INDICATOR,
+                true /*showPrefetchedContent*/);
         RecordHistogram.recordEnumeratedHistogram(
                 "OfflineIndicator.CTR", OFFLINE_INDICATOR_CTR_CLICKED, OFFLINE_INDICATOR_CTR_COUNT);
     }

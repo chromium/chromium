@@ -23,8 +23,7 @@ bool LayerTreeDebugState::RecordRenderingStats() const {
 }
 
 bool LayerTreeDebugState::ShouldCreateHudLayer() const {
-  return show_fps_counter || ShowDebugRects() || show_web_vital_metrics ||
-         show_smoothness_metrics;
+  return ShowDebugRects() || ShouldDrawHudInfo();
 }
 
 bool LayerTreeDebugState::ShowDebugRects() const {
@@ -42,6 +41,14 @@ bool LayerTreeDebugState::ShowMemoryStats() const {
 
 bool LayerTreeDebugState::ShouldDrawHudInfo() const {
   return show_fps_counter || show_web_vital_metrics || show_smoothness_metrics;
+}
+
+void LayerTreeDebugState::TurnOffHudInfoDisplay() {
+  // Turn off all types of HUD info display. ShouldDrawHudInfo() would return
+  // false after this function.
+  show_fps_counter = false;
+  show_web_vital_metrics = false;
+  show_smoothness_metrics = false;
 }
 
 bool LayerTreeDebugState::Equal(const LayerTreeDebugState& a,
@@ -68,40 +75,6 @@ bool LayerTreeDebugState::Equal(const LayerTreeDebugState& a,
       a.show_hit_test_borders == b.show_hit_test_borders &&
       a.show_web_vital_metrics == b.show_web_vital_metrics &&
       a.record_rendering_stats_ == b.record_rendering_stats_);
-}
-
-LayerTreeDebugState LayerTreeDebugState::Unite(const LayerTreeDebugState& a,
-                                               const LayerTreeDebugState& b) {
-  LayerTreeDebugState r(a);
-
-  r.show_fps_counter |= b.show_fps_counter;
-  r.show_debug_borders |= b.show_debug_borders;
-
-  r.show_layout_shift_regions |= b.show_layout_shift_regions;
-  r.show_paint_rects |= b.show_paint_rects;
-  r.show_property_changed_rects |= b.show_property_changed_rects;
-  r.show_surface_damage_rects |= b.show_surface_damage_rects;
-  r.show_screen_space_rects |= b.show_screen_space_rects;
-  r.show_touch_event_handler_rects |= b.show_touch_event_handler_rects;
-  r.show_wheel_event_handler_rects |= b.show_wheel_event_handler_rects;
-  r.show_scroll_event_handler_rects |= b.show_scroll_event_handler_rects;
-  r.show_non_fast_scrollable_rects |= b.show_non_fast_scrollable_rects;
-  r.show_main_thread_scrolling_reason_rects |=
-      b.show_main_thread_scrolling_reason_rects;
-  r.show_layer_animation_bounds_rects |= b.show_layer_animation_bounds_rects;
-
-  if (b.slow_down_raster_scale_factor)
-    r.slow_down_raster_scale_factor = b.slow_down_raster_scale_factor;
-  r.rasterize_only_visible_content |= b.rasterize_only_visible_content;
-  r.highlight_non_lcd_text_layers |= b.highlight_non_lcd_text_layers;
-
-  r.show_hit_test_borders |= b.show_hit_test_borders;
-
-  r.show_web_vital_metrics |= b.show_web_vital_metrics;
-
-  r.record_rendering_stats_ |= b.record_rendering_stats_;
-
-  return r;
 }
 
 }  // namespace cc

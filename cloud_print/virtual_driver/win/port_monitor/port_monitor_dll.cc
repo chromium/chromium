@@ -12,11 +12,12 @@
 #include <userenv.h>
 #include <winspool.h>
 
+#include <string>
+
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/process/process_info.h"
-#include "base/strings/string16.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "chrome/common/chrome_switches.h"

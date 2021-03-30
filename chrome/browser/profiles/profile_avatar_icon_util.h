@@ -154,7 +154,7 @@ bool IsDefaultAvatarIconUrl(const std::string& icon_url, size_t *icon_index);
 // WebUI component 'cr-profile-avatar-selector'.
 std::unique_ptr<base::DictionaryValue> GetAvatarIconAndLabelDict(
     const std::string& url,
-    const base::string16& label,
+    const std::u16string& label,
     size_t index,
     bool selected,
     bool is_gaia_avatar);

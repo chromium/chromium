@@ -343,16 +343,15 @@ void BluetoothRemoteGattCharacteristic::ExecuteStopNotifySession(
     return;
   }
 
-  auto repeating_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   UnsubscribeFromNotifications(
       ccc_descriptor[0],
       base::BindOnce(
           &BluetoothRemoteGattCharacteristic::OnStopNotifySessionSuccess,
-          GetWeakPtr(), session, repeating_callback),
+          GetWeakPtr(), session, std::move(split_callback.first)),
       base::BindOnce(
           &BluetoothRemoteGattCharacteristic::OnStopNotifySessionError,
-          GetWeakPtr(), session, repeating_callback));
+          GetWeakPtr(), session, std::move(split_callback.second)));
 }
 
 void BluetoothRemoteGattCharacteristic::CancelStopNotifySession(

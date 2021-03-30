@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_STRETCHY_OPERATOR_SHAPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_STRETCHY_OPERATOR_SHAPER_H_
 
-#include <base/memory/scoped_refptr.h>
 #include <unicode/uchar.h>
+
+#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/fonts/glyph.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_math_support.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"

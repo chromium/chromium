@@ -133,15 +133,15 @@ bool CanonicalizeFileURL(const char* spec,
       output, new_parsed);
 }
 
-bool CanonicalizeFileURL(const base::char16* spec,
+bool CanonicalizeFileURL(const char16_t* spec,
                          int spec_len,
                          const Parsed& parsed,
                          CharsetConverter* query_converter,
                          CanonOutput* output,
                          Parsed* new_parsed) {
-  return DoCanonicalizeFileURL<base::char16, base::char16>(
-      URLComponentSource<base::char16>(spec), parsed, query_converter,
-      output, new_parsed);
+  return DoCanonicalizeFileURL<char16_t, char16_t>(
+      URLComponentSource<char16_t>(spec), parsed, query_converter, output,
+      new_parsed);
 }
 
 bool FileCanonicalizePath(const char* spec,
@@ -152,12 +152,12 @@ bool FileCanonicalizePath(const char* spec,
                                                      output, out_path);
 }
 
-bool FileCanonicalizePath(const base::char16* spec,
+bool FileCanonicalizePath(const char16_t* spec,
                           const Component& path,
                           CanonOutput* output,
                           Component* out_path) {
-  return DoFileCanonicalizePath<base::char16, base::char16>(spec, path,
-                                                            output, out_path);
+  return DoFileCanonicalizePath<char16_t, char16_t>(spec, path, output,
+                                                    out_path);
 }
 
 bool ReplaceFileURL(const char* base,
@@ -175,7 +175,7 @@ bool ReplaceFileURL(const char* base,
 
 bool ReplaceFileURL(const char* base,
                     const Parsed& base_parsed,
-                    const Replacements<base::char16>& replacements,
+                    const Replacements<char16_t>& replacements,
                     CharsetConverter* query_converter,
                     CanonOutput* output,
                     Parsed* new_parsed) {

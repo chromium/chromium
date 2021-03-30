@@ -16,7 +16,7 @@ of [Borg], or to [Kubernetes].
 An *isolate* is an archive containing all the files needed to do a specific task
 on the swarming infrastructure. It contains binaries as well as any libraries
 they link against or support data. An isolate can be thought of like a tarball,
-but held by the "isolate server" and identified by a hash of its contents. The
+but held by the CAS server and identified by a digest of its contents. The
 isolate also includes the command(s) to run, which is why the command is
 specified when building the isolate, not when executing it.
 
@@ -50,7 +50,7 @@ want to do is:
 or perhaps:
 
 ```
-  isolate = upload_to_isolate_server(target_you_built_locally)
+  isolate = upload_to_cas(target_you_built_locally)
   use_swarming_to_run(type, isolate)
 ```
 
@@ -167,19 +167,21 @@ Use your google.com account for this.
 
 ## Uploading an isolate
 
-You can then upload the resulting isolate to the isolate server:
+You can then upload the resulting isolate to the CAS server:
 
 ```
 $ tools/luci-go/isolate archive \
-      -I https://isolateserver.appspot.com \
+      -cas-instance chroimum-swarm \
       -i $outdir/$target.isolate \
-      -s $outdir/$target.isolated
+      -dump-json $outdir/$target.archive.json
 ```
 
-The `isolate` tool will emit something like this:
+The archive json looks like this:
 
 ```
-e625130b712096e3908266252c8cd779d7f442f1  unit_tests
+{
+  "unit_tests": "5bee0815d2ddd2b876b49d4cce8aaa23de8a6f9e2dbf134ec409fbdc224e8c64/398"
+}
 ```
 
 Do not ctrl-c it after it does this, even if it seems to be hanging for a
@@ -187,16 +189,15 @@ minute - just let it finish.
 
 ## Running an isolate
 
-Now that the isolate is on the isolate server with hash `$hash` from the
+Now that the isolate is on the CAS server with digest `$digest` from the
 previous step, you can run on bots of your choice:
 
 ```
 $ tools/luci-go/swarming trigger \
     -server https://chromium-swarm.appspot.com \
-    -isolate-server https://isolateserver.appspot.com \
     -dimension pool=$pool \
     $criteria \
-    -isolated $hash
+    -digest $digest
 ```
 
 There are two more things you need to fill in here. The first is the pool name;

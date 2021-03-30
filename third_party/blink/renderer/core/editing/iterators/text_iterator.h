@@ -190,8 +190,6 @@ class TextIteratorAlgorithm {
     return behavior_.SkipsUnselectableContent();
   }
 
-  bool ForInnerText() const { return behavior_.ForInnerText(); }
-
   bool IsBetweenSurrogatePair(unsigned position) const;
 
   // Ensure container node of current text run for computing position.

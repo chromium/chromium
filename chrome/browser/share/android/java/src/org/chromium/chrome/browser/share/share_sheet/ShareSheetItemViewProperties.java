@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View.OnClickListener;
 
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /**
@@ -22,5 +23,8 @@ final class ShareSheetItemViewProperties {
     public static final WritableObjectPropertyKey<OnClickListener> CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_KEYS = {ICON, LABEL, CLICK_LISTENER};
+    public static final WritableBooleanPropertyKey SHOW_NEW_BADGE =
+            new WritableBooleanPropertyKey();
+
+    public static final PropertyKey[] ALL_KEYS = {ICON, LABEL, CLICK_LISTENER, SHOW_NEW_BADGE};
 }

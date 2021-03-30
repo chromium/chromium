@@ -84,6 +84,9 @@ enum class SigninInterceptionHeuristicOutcome {
   kMaxValue = kAbortInterceptionDisabled,
 };
 
+// User selection in the interception bubble.
+enum class SigninInterceptionUserChoice { kAccept, kDecline, kGuest };
+
 // User action resulting from the interception bubble.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -95,7 +98,10 @@ enum class SigninInterceptionResult {
   // Used when the bubble was not shown because it's not implemented.
   kNotDisplayed = 3,
 
-  kMaxValue = kNotDisplayed,
+  // Accepted to be opened in Guest profile.
+  kAcceptedWithGuest = 4,
+
+  kMaxValue = kAcceptedWithGuest,
 };
 
 // The ScopedDiceWebSigninInterceptionBubbleHandle closes the signin intercept
@@ -144,6 +150,7 @@ class DiceWebSigninInterceptor : public KeyedService,
       AccountInfo intercepted_account;
       AccountInfo primary_account;
       SkColor profile_highlight_color;
+      bool show_guest_option;
     };
 
     virtual ~Delegate() = default;
@@ -199,14 +206,12 @@ class DiceWebSigninInterceptor : public KeyedService,
   // `intercepted_contents` may be null if the tab was already closed.
   // The intercepted web contents belong to the source profile (which is not the
   // profile attached to this service).
-  // `show_customization_bubble` indicates whether the customization bubble
-  // should be shown after the browser is opened.
   void CreateBrowserAfterSigninInterception(
       CoreAccountId account_id,
       content::WebContents* intercepted_contents,
       std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle>
           bubble_handle,
-      bool show_customization_bubble);
+      bool is_new_profile);
 
   // Returns the outcome of the interception heuristic.
   // If the outcome is kInterceptProfileSwitch, the target profile is returned
@@ -266,7 +271,8 @@ class DiceWebSigninInterceptor : public KeyedService,
                                SigninInterceptionResult create);
   // Called after the user chose whether the session should continue in a new
   // profile.
-  void OnProfileSwitchChoice(const base::FilePath& profile_path,
+  void OnProfileSwitchChoice(const std::string& email,
+                             const base::FilePath& profile_path,
                              SigninInterceptionResult switch_profile);
 
   // Called when the new profile is created or loaded from disk.
@@ -277,21 +283,27 @@ class DiceWebSigninInterceptor : public KeyedService,
 
   // Called when the new browser is created after interception. Passed as
   // callback to `session_startup_helper_`.
-  void OnNewBrowserCreated(bool show_customization_bubble);
+  void OnNewBrowserCreated(bool is_new_profile);
 
   // Returns a 8-bit hash of the email that can be persisted.
   static std::string GetPersistentEmailHash(const std::string& email);
 
-  // Should be called when the user declines profile creation, in order to
-  // remember their decision. This information is stored in prefs. Only a hash
-  // of the email is saved, as Chrome does not need to store the actual email,
-  // but only need to compare emails. The hash has low entropy to ensure it
-  // cannot be reversed.
+  // Should be called when the user declines profile creation or profile switch,
+  // in order to remember their decision. This information is stored in prefs.
+  // Only a hash of the email is saved, as Chrome does not need to store the
+  // actual email, but only need to compare emails. The hash has low entropy to
+  // ensure it cannot be reversed.
   void RecordProfileCreationDeclined(const std::string& email);
+  void RecordProfileSwitchDeclined(const std::string& email);
 
-  // Checks if the user previously declined 3 times creating a new profile for
+  // Checks if the user previously declined 2 times creating a new profile for
   // this account.
   bool HasUserDeclinedProfileCreation(const std::string& email) const;
+
+  // Checks if the user previously declined more than a threshold number of
+  // times switching to a new profile for this account. The limit is set up
+  // via an experiment parameter.
+  bool HasUserDeclinedProfileSwitch(const std::string& email) const;
 
   Profile* const profile_;
   signin::IdentityManager* const identity_manager_;

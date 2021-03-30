@@ -29,7 +29,6 @@
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
-#include "third_party/skia/include/effects/SkMatrixConvolutionImageFilter.h"
 
 namespace blink {
 
@@ -94,17 +93,16 @@ bool FEConvolveMatrix::SetPreserveAlpha(bool preserve_alpha) {
   return true;
 }
 
-SkMatrixConvolutionImageFilter::TileMode ToSkiaTileMode(
-    EdgeModeType edge_mode) {
+static SkTileMode ToSkiaTileMode(EdgeModeType edge_mode) {
   switch (edge_mode) {
     case EDGEMODE_DUPLICATE:
-      return SkMatrixConvolutionImageFilter::kClamp_TileMode;
+      return SkTileMode::kClamp;
     case EDGEMODE_WRAP:
-      return SkMatrixConvolutionImageFilter::kRepeat_TileMode;
+      return SkTileMode::kRepeat;
     case EDGEMODE_NONE:
-      return SkMatrixConvolutionImageFilter::kClampToBlack_TileMode;
+      return SkTileMode::kDecal;
     default:
-      return SkMatrixConvolutionImageFilter::kClamp_TileMode;
+      return SkTileMode::kClamp;
   }
 }
 
@@ -138,15 +136,15 @@ sk_sp<PaintFilter> FEConvolveMatrix::CreateImageFilter() {
   SkScalar gain = SkFloatToScalar(1.0f / divisor_);
   SkScalar bias = SkFloatToScalar(bias_ * 255);
   SkIPoint target = SkIPoint::Make(target_offset_.X(), target_offset_.Y());
-  MatrixConvolutionPaintFilter::TileMode tile_mode = ToSkiaTileMode(edge_mode_);
+  SkTileMode tile_mode = ToSkiaTileMode(edge_mode_);
   bool convolve_alpha = !preserve_alpha_;
   auto kernel = std::make_unique<SkScalar[]>(num_elements);
   for (int i = 0; i < num_elements; ++i)
     kernel[i] = SkFloatToScalar(kernel_matrix_[num_elements - 1 - i]);
-  PaintFilter::CropRect crop_rect = GetCropRect();
+  base::Optional<PaintFilter::CropRect> crop_rect = GetCropRect();
   return sk_make_sp<MatrixConvolutionPaintFilter>(
       kernel_size, kernel.get(), gain, bias, target, tile_mode, convolve_alpha,
-      std::move(input), &crop_rect);
+      std::move(input), base::OptionalOrNullptr(crop_rect));
 }
 
 static WTF::TextStream& operator<<(WTF::TextStream& ts,

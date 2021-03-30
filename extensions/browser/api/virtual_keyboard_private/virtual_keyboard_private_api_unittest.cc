@@ -24,7 +24,7 @@ class MockVirtualKeyboardDelegate : public VirtualKeyboardDelegate {
       OnKeyboardSettingsCallback on_settings_callback) override {}
   void OnKeyboardConfigChanged() override {}
   bool HideKeyboard() override { return false; }
-  bool InsertText(const base::string16& text) override { return false; }
+  bool InsertText(const std::u16string& text) override { return false; }
   bool OnKeyboardLoaded() override { return false; }
   void SetHotrodKeyboard(bool enable) override {}
   bool LockKeyboard(bool state) override { return false; }
@@ -74,6 +74,16 @@ class MockVirtualKeyboardDelegate : public VirtualKeyboardDelegate {
     return true;
   }
   const gfx::Rect& GetWindowBounds() { return window_bounds_; }
+
+  void GetClipboardHistory(
+      const std::set<std::string>& item_ids_filter,
+      OnGetClipboardHistoryCallback get_history_callback) override {}
+  bool PasteClipboardItem(const std::string& clipboard_item_id) override {
+    return false;
+  }
+  bool DeleteClipboardItem(const std::string& clipboard_item_id) override {
+    return false;
+  }
 
   api::virtual_keyboard::FeatureRestrictions RestrictFeatures(
       const api::virtual_keyboard::RestrictFeatures::Params& params) override {

@@ -16,7 +16,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -29,11 +29,11 @@
 #include "extensions/browser/extension_file_task_runner.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "chromeos/constants/chromeos_pref_names.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_observer.h"
@@ -119,10 +119,7 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
     : public sync_preferences::PrefServiceSyncableObserver,
       public syncer::SyncServiceObserver {
  public:
-  explicit PrioritySyncReadyWaiter(Profile* profile)
-      : profile_(profile),
-        syncable_pref_observer_(this),
-        sync_service_observer_(this) {
+  explicit PrioritySyncReadyWaiter(Profile* profile) : profile_(profile) {
     DCHECK(profile_);
   }
 
@@ -199,6 +196,11 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
       Finish();
   }
 
+  void OnSyncShutdown(syncer::SyncService* sync) override {
+    DCHECK(sync_service_observation_.IsObservingSource(sync));
+    sync_service_observation_.Reset();
+  }
+
   bool IsPrioritySyncing() {
     sync_preferences::PrefServiceSyncable* prefs =
         PrefServiceSyncableFromProfile(profile_);
@@ -214,11 +216,11 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
     sync_preferences::PrefServiceSyncable* prefs =
         PrefServiceSyncableFromProfile(profile_);
     DCHECK(prefs);
-    syncable_pref_observer_.Add(prefs);
+    syncable_pref_observation_.Observe(prefs);
 
     syncer::SyncService* service =
         ProfileSyncServiceFactory::GetForProfile(profile_);
-    sync_service_observer_.Add(service);
+    sync_service_observation_.Observe(service);
   }
 
   void Finish() { std::move(done_closure_).Run(); }
@@ -231,11 +233,11 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   // Used for registering observer for sync_preferences::PrefServiceSyncable.
-  ScopedObserver<sync_preferences::PrefServiceSyncable,
-                 sync_preferences::PrefServiceSyncableObserver>
-      syncable_pref_observer_;
-  ScopedObserver<syncer::SyncService, syncer::SyncServiceObserver>
-      sync_service_observer_;
+  base::ScopedObservation<sync_preferences::PrefServiceSyncable,
+                          sync_preferences::PrefServiceSyncableObserver>
+      syncable_pref_observation_{this};
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      sync_service_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PrioritySyncReadyWaiter);
 };
@@ -414,7 +416,7 @@ void ExternalPrefLoader::ReadStandaloneExtensionPrefFiles(
 
     const std::string id =
 #if defined(OS_WIN)
-        base::UTF16ToASCII(
+        base::WideToASCII(
             extension_candidate_path.RemoveExtension().BaseName().value());
 #elif defined(OS_POSIX)
         extension_candidate_path.RemoveExtension().BaseName().value();

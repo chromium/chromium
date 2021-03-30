@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that DOMNode properly tracks own and descendants' user properties.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <!DOCTYPE html>

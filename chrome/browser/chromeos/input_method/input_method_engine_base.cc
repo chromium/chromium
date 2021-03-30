@@ -50,9 +50,7 @@ InputMethodEngineBase::InputMethodEngineBase()
       next_context_id_(1),
       profile_(nullptr),
       composition_changed_(false),
-      text_(""),
       commit_text_changed_(false),
-      handling_key_event_(false),
       pref_change_registrar_(nullptr) {}
 
 InputMethodEngineBase::~InputMethodEngineBase() = default;
@@ -111,32 +109,6 @@ void InputMethodEngineBase::OnProfileWillBeDestroyed(Profile* profile) {
   }
 }
 
-void InputMethodEngineBase::FocusIn(
-    const ui::IMEEngineHandlerInterface::InputContext& input_context) {
-  current_input_type_ = input_context.type;
-
-  if (!IsActive() || current_input_type_ == ui::TEXT_INPUT_TYPE_NONE)
-    return;
-
-  context_id_ = next_context_id_;
-  ++next_context_id_;
-
-  observer_->OnFocus(ui::IMEEngineHandlerInterface::InputContext(
-      context_id_, input_context.type, input_context.mode, input_context.flags,
-      input_context.focus_reason, input_context.should_do_learning));
-}
-
-void InputMethodEngineBase::FocusOut() {
-  if (!IsActive() || current_input_type_ == ui::TEXT_INPUT_TYPE_NONE)
-    return;
-
-  current_input_type_ = ui::TEXT_INPUT_TYPE_NONE;
-
-  int context_id = context_id_;
-  context_id_ = -1;
-  observer_->OnBlur(context_id);
-}
-
 void InputMethodEngineBase::Enable(const std::string& component_id) {
   active_component_id_ = component_id;
   observer_->OnActivate(component_id);
@@ -162,10 +134,6 @@ void InputMethodEngineBase::Reset() {
 
 void InputMethodEngineBase::ProcessKeyEvent(const ui::KeyEvent& key_event,
                                             KeyEventDoneCallback callback) {
-  // Make true that we don't handle IME API calling of setComposition and
-  // commitText while the extension is handling key event.
-  handling_key_event_ = true;
-
   if (key_event.IsCommandDown()) {
     std::move(callback).Run(false);
     return;
@@ -192,7 +160,7 @@ void InputMethodEngineBase::ProcessKeyEvent(const ui::KeyEvent& key_event,
   }
 }
 
-void InputMethodEngineBase::SetSurroundingText(const base::string16& text,
+void InputMethodEngineBase::SetSurroundingText(const std::u16string& text,
                                                uint32_t cursor_pos,
                                                uint32_t anchor_pos,
                                                uint32_t offset_pos) {
@@ -234,7 +202,7 @@ bool InputMethodEngineBase::ClearComposition(int context_id,
 }
 
 bool InputMethodEngineBase::CommitText(int context_id,
-                                       const char* text,
+                                       const std::u16string& text,
                                        std::string* error) {
   if (!IsActive()) {
     // TODO: Commit the text anyways.
@@ -248,7 +216,7 @@ bool InputMethodEngineBase::CommitText(int context_id,
     return false;
   }
 
-  CommitTextToInputContext(context_id, std::string(text));
+  CommitTextToInputContext(context_id, text);
   return true;
 }
 
@@ -551,12 +519,11 @@ bool InputMethodEngineBase::SetSelectionRange(int context_id,
 void InputMethodEngineBase::KeyEventHandled(const std::string& extension_id,
                                             const std::string& request_id,
                                             bool handled) {
-  handling_key_event_ = false;
   // When finish handling key event, take care of the unprocessed commitText
   // and setComposition calls.
   if (commit_text_changed_) {
     CommitTextToInputContext(context_id_, text_);
-    text_ = "";
+    text_.clear();
     commit_text_changed_ = false;
   }
 

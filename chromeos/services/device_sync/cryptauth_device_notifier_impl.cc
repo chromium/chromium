@@ -213,8 +213,10 @@ void CryptAuthDeviceNotifierImpl::OnBatchNotifyGroupDevicesFailure(
 
 void CryptAuthDeviceNotifierImpl::FinishAttempt(
     base::Optional<NetworkRequestError> error) {
-  DCHECK(!pending_requests_.empty());
+  cryptauth_client_.reset();
+  SetState(State::kIdle);
 
+  DCHECK(!pending_requests_.empty());
   Request current_request = std::move(pending_requests_.front());
   pending_requests_.pop();
 
@@ -225,7 +227,6 @@ void CryptAuthDeviceNotifierImpl::FinishAttempt(
     std::move(current_request.success_callback).Run();
   }
 
-  SetState(State::kIdle);
   ProcessRequestQueue();
 }
 

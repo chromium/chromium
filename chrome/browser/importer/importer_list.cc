@@ -20,8 +20,6 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if defined(OS_MAC)
-#include <CoreFoundation/CoreFoundation.h>
-
 #include "base/mac/foundation_util.h"
 #include "chrome/common/importer/safari_importer_utils.h"
 #endif
@@ -105,9 +103,9 @@ void DetectFirefoxProfiles(const std::string locale,
   if (details.empty())
     return;
 
-  for (auto detail = details.begin(); detail != details.end(); ++detail) {
+  for (const auto& detail : details) {
     base::FilePath app_path;
-    if (detail->path.empty())
+    if (detail.path.empty())
       continue;
 
     int version = 0;
@@ -116,27 +114,38 @@ void DetectFirefoxProfiles(const std::string locale,
 #endif
 
     if (version < 2) {
-      GetFirefoxVersionAndPathFromProfile(detail->path, &version, &app_path);
+      GetFirefoxVersionAndPathFromProfile(detail.path, &version, &app_path);
       // Note that |version| is re-assigned above.
-      if (version < 2) {
-        // Ignores old versions of firefox.
+      if (version < 48) {
+        // While this cutoff (and the removal of outdated code) should depend on
+        // the usage percent of different versions of Firefox (see
+        // https://en.wikipedia.org/wiki/Firefox_version_history), the reality
+        // is that the current cutoff of at least Firefox 48 is mostly due to
+        // the fact that there's a Firefox 48 profile for testing in
+        // firefox_importer_unittest.cc. TODO(https://crbug.com/1179967): Add
+        // more modern Firefox test profiles, and roll the cutoff version.
         continue;
       }
     }
 
     importer::SourceProfile firefox;
     firefox.importer_name = GetFirefoxImporterName(app_path);
-    firefox.profile = detail->name;
+    firefox.profile = detail.name;
     firefox.importer_type = importer::TYPE_FIREFOX;
-    firefox.source_path = detail->path;
+    firefox.source_path = detail.path;
 #if defined(OS_WIN)
     firefox.app_path = GetFirefoxInstallPathFromRegistry();
 #endif
     if (firefox.app_path.empty())
       firefox.app_path = app_path;
-    firefox.services_supported = importer::HISTORY | importer::FAVORITES |
-                                 importer::PASSWORDS |
-                                 importer::AUTOFILL_FORM_DATA;
+    firefox.services_supported =
+        importer::HISTORY | importer::FAVORITES | importer::AUTOFILL_FORM_DATA;
+#if !defined(OS_MAC)
+    // Passwords are imported by loading the NSS DLLs into the Chromium process.
+    // Restrictive code signing prevents that from ever working again in modern
+    // macOSes, so don't promise an import service that can't be delivered.
+    firefox.services_supported |= importer::PASSWORDS;
+#endif
     firefox.locale = locale;
     profiles->push_back(firefox);
   }
@@ -185,7 +194,7 @@ std::vector<importer::SourceProfile> DetectSourceProfilesWorker(
 
 }  // namespace
 
-ImporterList::ImporterList() {}
+ImporterList::ImporterList() = default;
 
 ImporterList::~ImporterList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

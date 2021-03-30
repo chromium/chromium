@@ -157,7 +157,7 @@ bool ExtensionSet::ExtensionBindingsAllowed(const GURL& url) const {
     return true;
 
   for (auto it = extensions_.cbegin(); it != extensions_.cend(); ++it) {
-    if (it->second->location() == Manifest::COMPONENT &&
+    if (it->second->location() == mojom::ManifestLocation::kComponent &&
         it->second->web_extent().MatchesURL(url))
       return true;
   }

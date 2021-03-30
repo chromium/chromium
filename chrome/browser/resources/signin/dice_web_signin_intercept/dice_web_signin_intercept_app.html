@@ -107,6 +107,29 @@
   cr-button {
     font-size: 12px;
   }
+
+  #interceptDialog [slot=footer] {
+        background: var(--paper-grey-50);
+        border-top: none;
+        padding: 0;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        #interceptDialog [slot=footer] {
+          background: rgb(50, 54, 57);  /* Custom color from Namrata. */
+        }
+      }
+
+      .divider {
+        border-top: var(--cr-separator-line);
+      }
+
+      #footer-description {
+        color: var(--cr-secondary-text-color);
+        padding: 16px;
+        text-align: center;
+      }
+
 </style>
 
 <div role="dialog" id="interceptDialog" aria-labelledby="title"
@@ -141,4 +164,13 @@
       </cr-button>
     </div>
   </div>
+  <!-- TODO(https://crbug.com/1157764): Change to make only link clickable. -->
+  <template is="dom-if" if="[[interceptionParameters_.showGuestOption]]"
+      restamp>
+    <div slot="footer">
+      <div class="divider"></div>
+      <div id="footer-description" on-click="onGuest_"
+          inner-h-t-m-l="[[guestLink_]]"></div>
+    </div>
+  </template>
 </div>

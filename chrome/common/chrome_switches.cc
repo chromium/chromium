@@ -13,9 +13,9 @@ namespace switches {
 
 // -----------------------------------------------------------------------------
 // Can't find the switch you are looking for? Try looking in:
+// ash/constants/ash_switches.cc
 // ash/public/cpp/ash_switches.cc
 // base/base_switches.cc
-// chromeos/constants/chromeos_switches.cc
 // etc.
 //
 // When commenting your switch, please use the same voice as surrounding
@@ -65,6 +65,10 @@ const char kAppModeAuthCode[]               = "app-mode-auth-code";
 // Value of OAuth2 refresh token for --force-app-mode.
 const char kAppModeOAuth2Token[]            = "app-mode-oauth-token";
 
+// This is used along with kAppId to indicate an app was launched during
+// OS login, and which mode the app was launched in.
+const char kAppRunOnOsLoginMode[] = "app-run-on-os-login-mode";
+
 // The URL that the webstore APIs download extensions from.
 // Note: the URL must contain one '%s' for the extension ID.
 const char kAppsGalleryDownloadURL[]        = "apps-gallery-download-url";
@@ -91,12 +95,6 @@ const char kAutoOpenDevToolsForTabs[]       = "auto-open-devtools-for-tabs";
 // would match "Built-in display" and "External display", whichever comes first.
 const char kAutoSelectDesktopCaptureSource[] =
     "auto-select-desktop-capture-source";
-
-// This flag causes the user engagement checks for showing app banners to be
-// bypassed. It is intended to be used by developers who wish to test that their
-// sites otherwise meet the criteria needed to show app banners.
-const char kBypassAppBannerEngagementChecks[] =
-    "bypass-app-banner-engagement-checks";
 
 // How often (in seconds) to check for updates. Should only be used for testing
 // purposes.
@@ -164,11 +162,11 @@ const char kDebugEnableFrameToggle[]        = "debug-enable-frame-toggle";
 // apps.
 const char kDebugPackedApps[]               = "debug-packed-apps";
 
-// Enables attention badging for PWA icons in the shelf and launcher.
-const char kDesktopPWAsAttentionBadgingCrOS[] =
-    "desktop-pwas-attention-badging-cros";
+// Values for the enable-desktop-pwas-attention-badging-cros flag.
 const char kDesktopPWAsAttentionBadgingCrOSApiAndNotifications[] =
     "api-and-notifications";
+const char kDesktopPWAsAttentionBadgingCrOSApiOverridesNotifications[] =
+    "api-overrides-notifications";
 const char kDesktopPWAsAttentionBadgingCrOSApiOnly[] = "api-only";
 const char kDesktopPWAsAttentionBadgingCrOSNotificationsOnly[] =
     "notifications-only";
@@ -232,6 +230,11 @@ const char kDisablePrintPreview[]           = "disable-print-preview";
 // a post we prompt to make sure they want to. This switch may be used to
 // disable that check. This switch is used during automated testing.
 const char kDisablePromptOnRepost[]         = "disable-prompt-on-repost";
+
+// Disable stack profiling. Stack profiling may change performance. Disabling
+// stack profiling is beneficial when comparing performance metrics with a
+// build that has it disabled by default.
+const char kDisableStackProfiler[] = "disable-stack-profiler";
 
 // Some tests seem to require the application to close when the last
 // browser window is closed. Thus, we need a switch to force this behavior
@@ -510,15 +513,8 @@ const char kSimulateUpgrade[]               = "simulate-upgrade";
 // Specifies the maximum SSL/TLS version ("tls1.2" or "tls1.3").
 const char kSSLVersionMax[] = "ssl-version-max";
 
-// Specifies the minimum SSL/TLS version ("tls1", "tls1.1", "tls1.2", or
-// "tls1.3").
+// Specifies the minimum SSL/TLS version ("tls1.2" or "tls1.3").
 const char kSSLVersionMin[] = "ssl-version-min";
-
-// TLS 1.0 mode for the |kSSLVersionMin| switch.
-const char kSSLVersionTLSv1[] = "tls1";
-
-// TLS 1.1 mode for the |kSSLVersionMin| switch.
-const char kSSLVersionTLSv11[] = "tls1.1";
 
 // TLS 1.2 mode for |kSSLVersionMax| and |kSSLVersionMin| switches.
 const char kSSLVersionTLSv12[] = "tls1.2";
@@ -551,6 +547,11 @@ const char kSupervisedUserId[]              = "managed-user-id";
 // testing purposes.
 const char kSystemLogUploadFrequency[] = "system-log-upload-frequency";
 
+// This flag makes Chrome auto-accept/reject requests to capture the current
+// tab. It should only be used for tests.
+const char kThisTabCaptureAutoAccept[] = "auto-accept-this-tab-capture";
+const char kThisTabCaptureAutoReject[] = "auto-reject-this-tab-capture";
+
 // Passes the name of the current running automated test to Chrome.
 const char kTestName[]                      = "test-name";
 
@@ -565,9 +566,6 @@ const char kTryChromeAgain[]                = "try-chrome-again";
 // Overrides per-origin quota settings to unlimited storage for any
 // apps/origins.  This should be used only for testing purpose.
 const char kUnlimitedStorage[]              = "unlimited-storage";
-
-// A string used to override the default user agent with a custom one.
-const char kUserAgent[]                     = "user-agent";
 
 // Specifies the user data directory, which is where the browser will look for
 // all of its state.
@@ -741,6 +739,12 @@ const char kDisableWindows10CustomTitlebar[] =
 // Force-enables the profile shortcut manager. This is needed for tests since
 // they use a custom-user-data-dir which disables this.
 const char kEnableProfileShortcutManager[]  = "enable-profile-shortcut-manager";
+
+// Indicates that this launch of the browser originated from the installer
+// (i.e., following a successful new install or over-install). This triggers
+// browser behaviors for this specific launch, such as a welcome announcement
+// for accessibility software (see https://crbug.com/1072735).
+extern const char kFromInstaller[] = "from-installer";
 
 // Makes Windows happy by allowing it to show "Enable access to this program"
 // checkbox in Add/Remove Programs->Set Program Access and Defaults. This only

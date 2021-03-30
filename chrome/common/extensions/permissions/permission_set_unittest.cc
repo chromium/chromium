@@ -36,6 +36,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 using extension_test_util::LoadManifest;
+using extensions::mojom::APIPermissionID;
 
 namespace extensions {
 
@@ -47,7 +48,7 @@ static void AddPattern(URLPatternSet* extent, const std::string& pattern) {
 }
 
 size_t IndexOf(const PermissionMessages& warnings, const std::string& warning) {
-  base::string16 warning16 = base::ASCIIToUTF16(warning);
+  std::u16string warning16 = base::ASCIIToUTF16(warning);
   size_t i = 0;
   for (const PermissionMessage& msg : warnings) {
     if (msg.message() == warning16)
@@ -58,18 +59,17 @@ size_t IndexOf(const PermissionMessages& warnings, const std::string& warning) {
   return warnings.size();
 }
 
-PermissionIDSet MakePermissionIDSet(APIPermission::ID id1,
-                                    APIPermission::ID id2) {
+PermissionIDSet MakePermissionIDSet(APIPermissionID id1, APIPermissionID id2) {
   PermissionIDSet set;
-  set.insert(id1);
-  set.insert(id2);
+  set.insert(static_cast<APIPermissionID>(id1));
+  set.insert(static_cast<APIPermissionID>(id2));
   return set;
 }
 
 PermissionIDSet MakePermissionIDSet(const APIPermissionSet& permissions) {
   PermissionIDSet set;
   for (const APIPermission* permission : permissions)
-    set.insert(permission->id());
+    set.insert(static_cast<APIPermissionID>(permission->id()));
   return set;
 }
 
@@ -156,9 +156,9 @@ TEST(PermissionsTest, GetAllByName) {
   names.insert("sdlkfjasdlkfj");
 
   APIPermissionSet expected;
-  expected.insert(APIPermission::kBackground);
-  expected.insert(APIPermission::kManagement);
-  expected.insert(APIPermission::kTab);
+  expected.insert(APIPermissionID::kBackground);
+  expected.insert(APIPermissionID::kManagement);
+  expected.insert(APIPermissionID::kTab);
 
   EXPECT_EQ(expected,
             PermissionsInfo::GetInstance()->GetAllByName(names));
@@ -169,14 +169,14 @@ TEST(PermissionsTest, Aliases) {
   PermissionsInfo* info = PermissionsInfo::GetInstance();
   // tabs: tabs, windows
   std::string tabs_name = "tabs";
-  EXPECT_EQ(tabs_name, info->GetByID(APIPermission::kTab)->name());
+  EXPECT_EQ(tabs_name, info->GetByID(APIPermissionID::kTab)->name());
   EXPECT_EQ(APIPermission::kTab, info->GetByName("tabs")->id());
   EXPECT_EQ(APIPermission::kTab, info->GetByName("windows")->id());
 
   // unlimitedStorage: unlimitedStorage, unlimited_storage
   std::string storage_name = "unlimitedStorage";
-  EXPECT_EQ(storage_name, info->GetByID(
-      APIPermission::kUnlimitedStorage)->name());
+  EXPECT_EQ(storage_name,
+            info->GetByID(APIPermissionID::kUnlimitedStorage)->name());
   EXPECT_EQ(APIPermission::kUnlimitedStorage,
             info->GetByName("unlimitedStorage")->id());
   EXPECT_EQ(APIPermission::kUnlimitedStorage,
@@ -190,9 +190,7 @@ TEST(PermissionsTest, EffectiveHostPermissions) {
     const PermissionSet& permissions =
         extension->permissions_data()->active_permissions();
     EXPECT_EQ(0u, extension->permissions_data()
-                      ->GetEffectiveHostPermissions(
-                          PermissionsData::EffectiveHostPermissionsMode::
-                              kIncludeTabSpecific)
+                      ->GetEffectiveHostPermissions()
                       .patterns()
                       .size());
     EXPECT_FALSE(
@@ -340,7 +338,7 @@ TEST(PermissionsTest, CreateUnion) {
   std::unique_ptr<const PermissionSet> union_set;
 
   const APIPermissionInfo* permission_info =
-    PermissionsInfo::GetInstance()->GetByID(APIPermission::kSocket);
+      PermissionsInfo::GetInstance()->GetByID(APIPermissionID::kSocket);
   std::unique_ptr<APIPermission> permission =
       permission_info->CreateAPIPermission();
   {
@@ -352,11 +350,11 @@ TEST(PermissionsTest, CreateUnion) {
   }
 
   // Union with an empty set.
-  apis1.insert(APIPermission::kTab);
-  apis1.insert(APIPermission::kBackground);
+  apis1.insert(APIPermissionID::kTab);
+  apis1.insert(APIPermissionID::kBackground);
   apis1.insert(permission->Clone());
-  expected_apis.insert(APIPermission::kTab);
-  expected_apis.insert(APIPermission::kBackground);
+  expected_apis.insert(APIPermissionID::kTab);
+  expected_apis.insert(APIPermissionID::kBackground);
   expected_apis.insert(std::move(permission));
 
   AddPattern(&explicit_hosts1, "http://*.google.com/*");
@@ -383,9 +381,9 @@ TEST(PermissionsTest, CreateUnion) {
   EXPECT_EQ(expected_explicit_hosts, union_set->effective_hosts());
 
   // Now use a real second set.
-  apis2.insert(APIPermission::kTab);
-  apis2.insert(APIPermission::kProxy);
-  apis2.insert(APIPermission::kClipboardWrite);
+  apis2.insert(APIPermissionID::kTab);
+  apis2.insert(APIPermissionID::kProxy);
+  apis2.insert(APIPermissionID::kClipboardWrite);
 
   permission = permission_info->CreateAPIPermission();
   {
@@ -396,9 +394,9 @@ TEST(PermissionsTest, CreateUnion) {
   }
   apis2.insert(std::move(permission));
 
-  expected_apis.insert(APIPermission::kTab);
-  expected_apis.insert(APIPermission::kProxy);
-  expected_apis.insert(APIPermission::kClipboardWrite);
+  expected_apis.insert(APIPermissionID::kTab);
+  expected_apis.insert(APIPermissionID::kProxy);
+  expected_apis.insert(APIPermissionID::kClipboardWrite);
 
   permission = permission_info->CreateAPIPermission();
   {
@@ -460,11 +458,11 @@ TEST(PermissionsTest, CreateIntersection) {
   std::unique_ptr<const PermissionSet> new_set;
 
   const APIPermissionInfo* permission_info =
-    PermissionsInfo::GetInstance()->GetByID(APIPermission::kSocket);
+      PermissionsInfo::GetInstance()->GetByID(APIPermissionID::kSocket);
 
   // Intersection with an empty set.
-  apis1.insert(APIPermission::kTab);
-  apis1.insert(APIPermission::kBackground);
+  apis1.insert(APIPermissionID::kTab);
+  apis1.insert(APIPermissionID::kBackground);
   std::unique_ptr<APIPermission> permission =
       permission_info->CreateAPIPermission();
   {
@@ -500,9 +498,9 @@ TEST(PermissionsTest, CreateIntersection) {
   EXPECT_EQ(expected_explicit_hosts, new_set->effective_hosts());
 
   // Now use a real second set.
-  apis2.insert(APIPermission::kTab);
-  apis2.insert(APIPermission::kProxy);
-  apis2.insert(APIPermission::kClipboardWrite);
+  apis2.insert(APIPermissionID::kTab);
+  apis2.insert(APIPermissionID::kProxy);
+  apis2.insert(APIPermissionID::kClipboardWrite);
   permission = permission_info->CreateAPIPermission();
   {
     std::unique_ptr<base::ListValue> value(new base::ListValue());
@@ -513,7 +511,7 @@ TEST(PermissionsTest, CreateIntersection) {
   }
   apis2.insert(std::move(permission));
 
-  expected_apis.insert(APIPermission::kTab);
+  expected_apis.insert(APIPermissionID::kTab);
   permission = permission_info->CreateAPIPermission();
   {
     std::unique_ptr<base::ListValue> value(new base::ListValue());
@@ -571,11 +569,11 @@ TEST(PermissionsTest, CreateDifference) {
   std::unique_ptr<const PermissionSet> new_set;
 
   const APIPermissionInfo* permission_info =
-    PermissionsInfo::GetInstance()->GetByID(APIPermission::kSocket);
+      PermissionsInfo::GetInstance()->GetByID(APIPermissionID::kSocket);
 
   // Difference with an empty set.
-  apis1.insert(APIPermission::kTab);
-  apis1.insert(APIPermission::kBackground);
+  apis1.insert(APIPermissionID::kTab);
+  apis1.insert(APIPermissionID::kBackground);
   std::unique_ptr<APIPermission> permission =
       permission_info->CreateAPIPermission();
   {
@@ -600,9 +598,9 @@ TEST(PermissionsTest, CreateDifference) {
   EXPECT_EQ(*set1, *new_set);
 
   // Now use a real second set.
-  apis2.insert(APIPermission::kTab);
-  apis2.insert(APIPermission::kProxy);
-  apis2.insert(APIPermission::kClipboardWrite);
+  apis2.insert(APIPermissionID::kTab);
+  apis2.insert(APIPermissionID::kProxy);
+  apis2.insert(APIPermissionID::kClipboardWrite);
   permission = permission_info->CreateAPIPermission();
   {
     std::unique_ptr<base::ListValue> value(new base::ListValue());
@@ -612,7 +610,7 @@ TEST(PermissionsTest, CreateDifference) {
   }
   apis2.insert(std::move(permission));
 
-  expected_apis.insert(APIPermission::kBackground);
+  expected_apis.insert(APIPermissionID::kBackground);
   permission = permission_info->CreateAPIPermission();
   {
     std::unique_ptr<base::ListValue> value(new base::ListValue());
@@ -722,12 +720,12 @@ TEST(PermissionsTest, IsPrivilegeIncrease) {
 TEST(PermissionsTest,
      IsNotPrivilegeIncreaseWhenSwitchingForLowerPrivilegePermission) {
   APIPermissionSet apis1;
-  apis1.insert(APIPermission::kHistory);
+  apis1.insert(APIPermissionID::kHistory);
   PermissionSet permissions1(apis1.Clone(), ManifestPermissionSet(),
                              URLPatternSet(), URLPatternSet());
 
   APIPermissionSet apis2;
-  apis2.insert(APIPermission::kTopSites);
+  apis2.insert(APIPermissionID::kTopSites);
   PermissionSet permissions2(apis2.Clone(), ManifestPermissionSet(),
                              URLPatternSet(), URLPatternSet());
 
@@ -742,148 +740,146 @@ TEST(PermissionsTest, PermissionMessages) {
 
   // These are considered "nuisance" or "trivial" permissions that don't need
   // a prompt.
-  skip.insert(APIPermission::kActiveTab);
-  skip.insert(APIPermission::kAlarms);
-  skip.insert(APIPermission::kAlphaEnabled);
-  skip.insert(APIPermission::kAlwaysOnTopWindows);
-  skip.insert(APIPermission::kAppView);
-  skip.insert(APIPermission::kAudio);
-  skip.insert(APIPermission::kBrowsingData);
-  skip.insert(APIPermission::kCommandsAccessibility);
-  skip.insert(APIPermission::kContextMenus);
-  skip.insert(APIPermission::kCryptotokenPrivate);
-  skip.insert(APIPermission::kDesktopCapturePrivate);
-  skip.insert(APIPermission::kDiagnostics);
-  skip.insert(APIPermission::kDns);
-  skip.insert(APIPermission::kDownloadsShelf);
-  skip.insert(APIPermission::kFontSettings);
-  skip.insert(APIPermission::kFullscreen);
-  skip.insert(APIPermission::kGcm);
-  skip.insert(APIPermission::kIdle);
-  skip.insert(APIPermission::kImeWindowEnabled);
-  skip.insert(APIPermission::kIdltest);
-  skip.insert(APIPermission::kLoginState);
-  skip.insert(APIPermission::kOverrideEscFullscreen);
-  skip.insert(APIPermission::kPointerLock);
-  skip.insert(APIPermission::kPower);
-  skip.insert(APIPermission::kPrinterProvider);
-  skip.insert(APIPermission::kSearch);
-  skip.insert(APIPermission::kSessions);
-  skip.insert(APIPermission::kStorage);
-  skip.insert(APIPermission::kSystemCpu);
-  skip.insert(APIPermission::kSystemDisplay);
-  skip.insert(APIPermission::kSystemMemory);
-  skip.insert(APIPermission::kSystemNetwork);
-  skip.insert(APIPermission::kTts);
-  skip.insert(APIPermission::kUnlimitedStorage);
-  skip.insert(APIPermission::kWebcamPrivate);
-  skip.insert(APIPermission::kWebView);
-  skip.insert(APIPermission::kWindowShape);
+  skip.insert(APIPermissionID::kActiveTab);
+  skip.insert(APIPermissionID::kAlarms);
+  skip.insert(APIPermissionID::kAlphaEnabled);
+  skip.insert(APIPermissionID::kAlwaysOnTopWindows);
+  skip.insert(APIPermissionID::kAppView);
+  skip.insert(APIPermissionID::kAudio);
+  skip.insert(APIPermissionID::kBrowsingData);
+  skip.insert(APIPermissionID::kCommandsAccessibility);
+  skip.insert(APIPermissionID::kContextMenus);
+  skip.insert(APIPermissionID::kCryptotokenPrivate);
+  skip.insert(APIPermissionID::kDesktopCapturePrivate);
+  skip.insert(APIPermissionID::kDiagnostics);
+  skip.insert(APIPermissionID::kDns);
+  skip.insert(APIPermissionID::kDownloadsShelf);
+  skip.insert(APIPermissionID::kFontSettings);
+  skip.insert(APIPermissionID::kFullscreen);
+  skip.insert(APIPermissionID::kGcm);
+  skip.insert(APIPermissionID::kIdle);
+  skip.insert(APIPermissionID::kImeWindowEnabled);
+  skip.insert(APIPermissionID::kIdltest);
+  skip.insert(APIPermissionID::kLoginState);
+  skip.insert(APIPermissionID::kOverrideEscFullscreen);
+  skip.insert(APIPermissionID::kPointerLock);
+  skip.insert(APIPermissionID::kPower);
+  skip.insert(APIPermissionID::kPrinterProvider);
+  skip.insert(APIPermissionID::kSearch);
+  skip.insert(APIPermissionID::kSessions);
+  skip.insert(APIPermissionID::kStorage);
+  skip.insert(APIPermissionID::kSystemCpu);
+  skip.insert(APIPermissionID::kSystemDisplay);
+  skip.insert(APIPermissionID::kSystemMemory);
+  skip.insert(APIPermissionID::kSystemNetwork);
+  skip.insert(APIPermissionID::kTts);
+  skip.insert(APIPermissionID::kUnlimitedStorage);
+  skip.insert(APIPermissionID::kWebcamPrivate);
+  skip.insert(APIPermissionID::kWebView);
+  skip.insert(APIPermissionID::kWindowShape);
 
   // TODO(erikkay) add a string for this permission.
-  skip.insert(APIPermission::kBackground);
+  skip.insert(APIPermissionID::kBackground);
 
-  skip.insert(APIPermission::kClipboard);
+  skip.insert(APIPermissionID::kClipboard);
 
   // The cookie permission does nothing unless you have associated host
   // permissions.
-  skip.insert(APIPermission::kCookie);
+  skip.insert(APIPermissionID::kCookie);
 
   // These are warned as part of host permission checks.
-  skip.insert(APIPermission::kDataReductionProxy);
-  skip.insert(APIPermission::kDeclarativeContent);
-  skip.insert(APIPermission::kPageCapture);
-  skip.insert(APIPermission::kProxy);
-  skip.insert(APIPermission::kScripting);
-  skip.insert(APIPermission::kTabCapture);
-  skip.insert(APIPermission::kWebRequest);
-  skip.insert(APIPermission::kWebRequestBlocking);
+  skip.insert(APIPermissionID::kDeclarativeContent);
+  skip.insert(APIPermissionID::kPageCapture);
+  skip.insert(APIPermissionID::kProxy);
+  skip.insert(APIPermissionID::kScripting);
+  skip.insert(APIPermissionID::kTabCapture);
+  skip.insert(APIPermissionID::kWebRequest);
+  skip.insert(APIPermissionID::kWebRequestBlocking);
 
   // This permission requires explicit user action (context menu handler)
   // so we won't prompt for it for now.
-  skip.insert(APIPermission::kFileBrowserHandler);
+  skip.insert(APIPermissionID::kFileBrowserHandler);
 
   // These permissions require explicit user action (configuration dialog)
   // so we don't prompt for them at install time.
-  skip.insert(APIPermission::kMediaGalleries);
+  skip.insert(APIPermissionID::kMediaGalleries);
 
   // If you've turned on the experimental command-line flag, we don't need
   // to warn you further.
-  skip.insert(APIPermission::kExperimental);
+  skip.insert(APIPermissionID::kExperimental);
 
   // The Identity API has its own server-driven permission prompts.
-  skip.insert(APIPermission::kIdentity);
+  skip.insert(APIPermissionID::kIdentity);
 
   // These are private.
-  skip.insert(APIPermission::kAccessibilityPrivate);
-  skip.insert(APIPermission::kArcAppsPrivate);
-  skip.insert(APIPermission::kAutoTestPrivate);
-  skip.insert(APIPermission::kAutofillAssistantPrivate);
-  skip.insert(APIPermission::kBookmarkManagerPrivate);
-  skip.insert(APIPermission::kBrailleDisplayPrivate);
-  skip.insert(APIPermission::kCast);
-  skip.insert(APIPermission::kCecPrivate);
-  skip.insert(APIPermission::kChromeosInfoPrivate);
-  skip.insert(APIPermission::kCloudPrintPrivate);
-  skip.insert(APIPermission::kCommandLinePrivate);
-  skip.insert(APIPermission::kCrashReportPrivate);
-  skip.insert(APIPermission::kDeveloperPrivate);
-  skip.insert(APIPermission::kDownloadsInternal);
-  skip.insert(APIPermission::kEchoPrivate);
-  skip.insert(APIPermission::kEnterprisePlatformKeysPrivate);
-  skip.insert(APIPermission::kEnterpriseReportingPrivate);
-  skip.insert(APIPermission::kFeedbackPrivate);
-  skip.insert(APIPermission::kFileBrowserHandlerInternal);
-  skip.insert(APIPermission::kFileManagerPrivate);
-  skip.insert(APIPermission::kFirstRunPrivate);
-  skip.insert(APIPermission::kIdentityPrivate);
-  skip.insert(APIPermission::kInputMethodPrivate);
-  skip.insert(APIPermission::kLanguageSettingsPrivate);
-  skip.insert(APIPermission::kLockWindowFullscreenPrivate);
-  skip.insert(APIPermission::kMediaPlayerPrivate);
-  skip.insert(APIPermission::kMediaPerceptionPrivate);
-  skip.insert(APIPermission::kMediaRouterPrivate);
-  skip.insert(APIPermission::kMetricsPrivate);
-  skip.insert(APIPermission::kNetworkingCastPrivate);
-  skip.insert(APIPermission::kImageWriterPrivate);
-  skip.insert(APIPermission::kResourcesPrivate);
-  skip.insert(APIPermission::kRtcPrivate);
-  skip.insert(APIPermission::kSafeBrowsingPrivate);
-  skip.insert(APIPermission::kSystemPrivate);
-  skip.insert(APIPermission::kTabCaptureForTab);
-  skip.insert(APIPermission::kTerminalPrivate);
-  skip.insert(APIPermission::kVirtualKeyboardPrivate);
-  skip.insert(APIPermission::kWallpaperPrivate);
-  skip.insert(APIPermission::kWebrtcAudioPrivate);
-  skip.insert(APIPermission::kWebrtcDesktopCapturePrivate);
-  skip.insert(APIPermission::kWebrtcLoggingPrivate);
-  skip.insert(APIPermission::kWebrtcLoggingPrivateAudioDebug);
-  skip.insert(APIPermission::kWebstorePrivate);
-  skip.insert(APIPermission::kWebstoreWidgetPrivate);
+  skip.insert(APIPermissionID::kAccessibilityPrivate);
+  skip.insert(APIPermissionID::kArcAppsPrivate);
+  skip.insert(APIPermissionID::kAutoTestPrivate);
+  skip.insert(APIPermissionID::kAutofillAssistantPrivate);
+  skip.insert(APIPermissionID::kBookmarkManagerPrivate);
+  skip.insert(APIPermissionID::kBrailleDisplayPrivate);
+  skip.insert(APIPermissionID::kCast);
+  skip.insert(APIPermissionID::kCecPrivate);
+  skip.insert(APIPermissionID::kChromeosInfoPrivate);
+  skip.insert(APIPermissionID::kCommandLinePrivate);
+  skip.insert(APIPermissionID::kCrashReportPrivate);
+  skip.insert(APIPermissionID::kDeveloperPrivate);
+  skip.insert(APIPermissionID::kDownloadsInternal);
+  skip.insert(APIPermissionID::kEchoPrivate);
+  skip.insert(APIPermissionID::kEnterprisePlatformKeysPrivate);
+  skip.insert(APIPermissionID::kEnterpriseReportingPrivate);
+  skip.insert(APIPermissionID::kFeedbackPrivate);
+  skip.insert(APIPermissionID::kFileBrowserHandlerInternal);
+  skip.insert(APIPermissionID::kFileManagerPrivate);
+  skip.insert(APIPermissionID::kFirstRunPrivate);
+  skip.insert(APIPermissionID::kIdentityPrivate);
+  skip.insert(APIPermissionID::kInputMethodPrivate);
+  skip.insert(APIPermissionID::kLanguageSettingsPrivate);
+  skip.insert(APIPermissionID::kLockWindowFullscreenPrivate);
+  skip.insert(APIPermissionID::kMediaPlayerPrivate);
+  skip.insert(APIPermissionID::kMediaPerceptionPrivate);
+  skip.insert(APIPermissionID::kMediaRouterPrivate);
+  skip.insert(APIPermissionID::kMetricsPrivate);
+  skip.insert(APIPermissionID::kNetworkingCastPrivate);
+  skip.insert(APIPermissionID::kImageWriterPrivate);
+  skip.insert(APIPermissionID::kResourcesPrivate);
+  skip.insert(APIPermissionID::kRtcPrivate);
+  skip.insert(APIPermissionID::kSafeBrowsingPrivate);
+  skip.insert(APIPermissionID::kSystemPrivate);
+  skip.insert(APIPermissionID::kTabCaptureForTab);
+  skip.insert(APIPermissionID::kTerminalPrivate);
+  skip.insert(APIPermissionID::kVirtualKeyboardPrivate);
+  skip.insert(APIPermissionID::kWallpaperPrivate);
+  skip.insert(APIPermissionID::kWebrtcAudioPrivate);
+  skip.insert(APIPermissionID::kWebrtcDesktopCapturePrivate);
+  skip.insert(APIPermissionID::kWebrtcLoggingPrivate);
+  skip.insert(APIPermissionID::kWebrtcLoggingPrivateAudioDebug);
+  skip.insert(APIPermissionID::kWebstorePrivate);
+  skip.insert(APIPermissionID::kWebstoreWidgetPrivate);
 
   // Warned as part of host permissions.
-  skip.insert(APIPermission::kDevtools);
+  skip.insert(APIPermissionID::kDevtools);
 
   // Platform apps.
-  skip.insert(APIPermission::kBrowser);
-  skip.insert(APIPermission::kHid);
-  skip.insert(APIPermission::kFileSystem);
-  skip.insert(APIPermission::kFileSystemProvider);
-  skip.insert(APIPermission::kFileSystemRequestDownloads);
-  skip.insert(APIPermission::kFileSystemRequestFileSystem);
-  skip.insert(APIPermission::kFileSystemRetainEntries);
-  skip.insert(APIPermission::kFileSystemWrite);
-  skip.insert(APIPermission::kSocket);
-  skip.insert(APIPermission::kUsb);
-  skip.insert(APIPermission::kVirtualKeyboard);
-  skip.insert(APIPermission::kLauncherSearchProvider);
+  skip.insert(APIPermissionID::kBrowser);
+  skip.insert(APIPermissionID::kHid);
+  skip.insert(APIPermissionID::kFileSystem);
+  skip.insert(APIPermissionID::kFileSystemProvider);
+  skip.insert(APIPermissionID::kFileSystemRequestDownloads);
+  skip.insert(APIPermissionID::kFileSystemRequestFileSystem);
+  skip.insert(APIPermissionID::kFileSystemRetainEntries);
+  skip.insert(APIPermissionID::kFileSystemWrite);
+  skip.insert(APIPermissionID::kSocket);
+  skip.insert(APIPermissionID::kUsb);
+  skip.insert(APIPermissionID::kVirtualKeyboard);
+  skip.insert(APIPermissionID::kLauncherSearchProvider);
 
   // The lock screen apps are set by user through settings, no need to warn at
   // installation time.
-  skip.insert(APIPermission::kLockScreen);
+  skip.insert(APIPermissionID::kLockScreen);
 
   // We already have a generic message for declaring externally_connectable.
-  skip.insert(APIPermission::kExternallyConnectableAllUrls);
+  skip.insert(APIPermissionID::kExternallyConnectableAllUrls);
 
   const PermissionMessageProvider* provider = PermissionMessageProvider::Get();
   PermissionsInfo* info = PermissionsInfo::GetInstance();
@@ -893,7 +889,7 @@ TEST(PermissionsTest, PermissionMessages) {
     EXPECT_TRUE(permission_info);
 
     PermissionIDSet id;
-    id.insert(permission_info->id());
+    id.insert(static_cast<APIPermissionID>(permission_info->id()));
     bool has_message = !provider->GetPermissionMessages(id).empty();
     bool should_have_message = !skip.count(permission->id());
     EXPECT_EQ(should_have_message, has_message) << permission_info->name();
@@ -902,8 +898,8 @@ TEST(PermissionsTest, PermissionMessages) {
 
 TEST(PermissionsTest, FileSystemPermissionMessages) {
   APIPermissionSet api_permissions;
-  api_permissions.insert(APIPermission::kFileSystemWrite);
-  api_permissions.insert(APIPermission::kFileSystemDirectory);
+  api_permissions.insert(APIPermissionID::kFileSystemWrite);
+  api_permissions.insert(APIPermissionID::kFileSystemDirectory);
   PermissionSet permissions(api_permissions.Clone(), ManifestPermissionSet(),
                             URLPatternSet(), URLPatternSet());
   EXPECT_TRUE(
@@ -913,8 +909,8 @@ TEST(PermissionsTest, FileSystemPermissionMessages) {
 
 TEST(PermissionsTest, HiddenFileSystemPermissionMessages) {
   APIPermissionSet api_permissions;
-  api_permissions.insert(APIPermission::kFileSystemWrite);
-  api_permissions.insert(APIPermission::kFileSystemDirectory);
+  api_permissions.insert(APIPermissionID::kFileSystemWrite);
+  api_permissions.insert(APIPermissionID::kFileSystemDirectory);
   PermissionSet permissions(api_permissions.Clone(), ManifestPermissionSet(),
                             URLPatternSet(), URLPatternSet());
   EXPECT_TRUE(
@@ -926,7 +922,7 @@ TEST(PermissionsTest, SuppressedPermissionMessages) {
   {
     // Tabs warning suppresses favicon warning.
     APIPermissionSet api_permissions;
-    api_permissions.insert(APIPermission::kTab);
+    api_permissions.insert(APIPermissionID::kTab);
     URLPatternSet hosts;
     hosts.AddPattern(URLPattern(URLPattern::SCHEME_CHROMEUI,
                                 "chrome://favicon/"));
@@ -935,12 +931,12 @@ TEST(PermissionsTest, SuppressedPermissionMessages) {
                               URLPatternSet());
     EXPECT_TRUE(PermissionSetProducesMessage(
         permissions, Manifest::TYPE_EXTENSION,
-        MakePermissionIDSet(APIPermission::kTab, APIPermission::kFavicon)));
+        MakePermissionIDSet(APIPermissionID::kTab, APIPermissionID::kFavicon)));
   }
   {
     // History warning suppresses favicon warning.
     APIPermissionSet api_permissions;
-    api_permissions.insert(APIPermission::kHistory);
+    api_permissions.insert(APIPermissionID::kHistory);
     URLPatternSet hosts;
     hosts.AddPattern(URLPattern(URLPattern::SCHEME_CHROMEUI,
                                 "chrome://favicon/"));
@@ -948,12 +944,13 @@ TEST(PermissionsTest, SuppressedPermissionMessages) {
                               std::move(hosts), URLPatternSet());
     EXPECT_TRUE(PermissionSetProducesMessage(
         permissions, Manifest::TYPE_EXTENSION,
-        MakePermissionIDSet(APIPermission::kHistory, APIPermission::kFavicon)));
+        MakePermissionIDSet(APIPermissionID::kHistory,
+                            APIPermissionID::kFavicon)));
   }
   {
     // All sites warning suppresses tabs warning.
     APIPermissionSet api_permissions;
-    api_permissions.insert(APIPermission::kTab);
+    api_permissions.insert(APIPermissionID::kTab);
     URLPatternSet hosts;
     hosts.AddPattern(URLPattern(URLPattern::SCHEME_HTTP, "*://*/*"));
     PermissionSet permissions(std::move(api_permissions),
@@ -961,12 +958,13 @@ TEST(PermissionsTest, SuppressedPermissionMessages) {
                               URLPatternSet());
     EXPECT_TRUE(PermissionSetProducesMessage(
         permissions, Manifest::TYPE_EXTENSION,
-        MakePermissionIDSet(APIPermission::kHostsAll, APIPermission::kTab)));
+        MakePermissionIDSet(APIPermissionID::kHostsAll,
+                            APIPermissionID::kTab)));
   }
   {
     // All sites warning suppresses topSites warning.
     APIPermissionSet api_permissions;
-    api_permissions.insert(APIPermission::kTopSites);
+    api_permissions.insert(APIPermissionID::kTopSites);
     URLPatternSet hosts;
     hosts.AddPattern(URLPattern(URLPattern::SCHEME_HTTP, "*://*/*"));
     PermissionSet permissions(std::move(api_permissions),
@@ -974,13 +972,13 @@ TEST(PermissionsTest, SuppressedPermissionMessages) {
                               URLPatternSet());
     EXPECT_TRUE(PermissionSetProducesMessage(
         permissions, Manifest::TYPE_EXTENSION,
-        MakePermissionIDSet(APIPermission::kHostsAll,
-                            APIPermission::kTopSites)));
+        MakePermissionIDSet(APIPermissionID::kHostsAll,
+                            APIPermissionID::kTopSites)));
   }
   {
     // All sites warning suppresses declarativeWebRequest warning.
     APIPermissionSet api_permissions;
-    api_permissions.insert(APIPermission::kDeclarativeWebRequest);
+    api_permissions.insert(APIPermissionID::kDeclarativeWebRequest);
     URLPatternSet hosts;
     hosts.AddPattern(URLPattern(URLPattern::SCHEME_HTTP, "*://*/*"));
     PermissionSet permissions(std::move(api_permissions),
@@ -988,17 +986,17 @@ TEST(PermissionsTest, SuppressedPermissionMessages) {
                               URLPatternSet());
     EXPECT_TRUE(PermissionSetProducesMessage(
         permissions, Manifest::TYPE_EXTENSION,
-        MakePermissionIDSet(APIPermission::kHostsAll,
-                            APIPermission::kDeclarativeWebRequest)));
+        MakePermissionIDSet(APIPermissionID::kHostsAll,
+                            APIPermissionID::kDeclarativeWebRequest)));
   }
   {
     // BrowsingHistory warning suppresses all history read/write warnings.
     APIPermissionSet api_permissions;
-    api_permissions.insert(APIPermission::kHistory);
-    api_permissions.insert(APIPermission::kTab);
-    api_permissions.insert(APIPermission::kTopSites);
-    api_permissions.insert(APIPermission::kProcesses);
-    api_permissions.insert(APIPermission::kWebNavigation);
+    api_permissions.insert(APIPermissionID::kHistory);
+    api_permissions.insert(APIPermissionID::kTab);
+    api_permissions.insert(APIPermissionID::kTopSites);
+    api_permissions.insert(APIPermissionID::kProcesses);
+    api_permissions.insert(APIPermissionID::kWebNavigation);
     PermissionSet permissions(api_permissions.Clone(), ManifestPermissionSet(),
                               URLPatternSet(), URLPatternSet());
     EXPECT_TRUE(
@@ -1008,10 +1006,10 @@ TEST(PermissionsTest, SuppressedPermissionMessages) {
   {
     // Tabs warning suppresses all read-only history warnings.
     APIPermissionSet api_permissions;
-    api_permissions.insert(APIPermission::kTab);
-    api_permissions.insert(APIPermission::kTopSites);
-    api_permissions.insert(APIPermission::kProcesses);
-    api_permissions.insert(APIPermission::kWebNavigation);
+    api_permissions.insert(APIPermissionID::kTab);
+    api_permissions.insert(APIPermissionID::kTopSites);
+    api_permissions.insert(APIPermissionID::kProcesses);
+    api_permissions.insert(APIPermissionID::kWebNavigation);
     PermissionSet permissions(api_permissions.Clone(), ManifestPermissionSet(),
                               URLPatternSet(), URLPatternSet());
     EXPECT_TRUE(
@@ -1023,7 +1021,7 @@ TEST(PermissionsTest, SuppressedPermissionMessages) {
 TEST(PermissionsTest, AccessToDevicesMessages) {
   {
     APIPermissionSet api_permissions;
-    api_permissions.insert(APIPermission::kSerial);
+    api_permissions.insert(APIPermissionID::kSerial);
     PermissionSet permissions(std::move(api_permissions),
                               ManifestPermissionSet(), URLPatternSet(),
                               URLPatternSet());
@@ -1034,8 +1032,8 @@ TEST(PermissionsTest, AccessToDevicesMessages) {
   {
     // Testing that multiple permissions will show the one message.
     APIPermissionSet api_permissions;
-    api_permissions.insert(APIPermission::kSerial);
-    api_permissions.insert(APIPermission::kSerial);
+    api_permissions.insert(APIPermissionID::kSerial);
+    api_permissions.insert(APIPermissionID::kSerial);
     PermissionSet permissions(std::move(api_permissions),
                               ManifestPermissionSet(), URLPatternSet(),
                               URLPatternSet());
@@ -1053,7 +1051,7 @@ TEST(PermissionsTest, AccessToDevicesMessages) {
         l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WARNING_BLUETOOTH));
 
     // Test Bluetooth and Serial
-    set.apis_.insert(APIPermission::kSerial);
+    set.apis_.insert(APIPermissionID::kSerial);
     VerifyOnePermissionMessage(
         set, extension->GetType(),
         l10n_util::GetStringUTF16(
@@ -1063,20 +1061,20 @@ TEST(PermissionsTest, AccessToDevicesMessages) {
 
 TEST(PermissionsTest, MergedFileSystemPermissionComparison) {
   APIPermissionSet write_api_permissions;
-  write_api_permissions.insert(APIPermission::kFileSystemWrite);
+  write_api_permissions.insert(APIPermissionID::kFileSystemWrite);
   PermissionSet write_permissions(write_api_permissions.Clone(),
                                   ManifestPermissionSet(), URLPatternSet(),
                                   URLPatternSet());
 
   APIPermissionSet directory_api_permissions;
-  directory_api_permissions.insert(APIPermission::kFileSystemDirectory);
+  directory_api_permissions.insert(APIPermissionID::kFileSystemDirectory);
   PermissionSet directory_permissions(directory_api_permissions.Clone(),
                                       ManifestPermissionSet(), URLPatternSet(),
                                       URLPatternSet());
 
   APIPermissionSet write_directory_api_permissions;
-  write_directory_api_permissions.insert(APIPermission::kFileSystemWrite);
-  write_directory_api_permissions.insert(APIPermission::kFileSystemDirectory);
+  write_directory_api_permissions.insert(APIPermissionID::kFileSystemWrite);
+  write_directory_api_permissions.insert(APIPermissionID::kFileSystemDirectory);
   PermissionSet write_directory_permissions(
       write_directory_api_permissions.Clone(), ManifestPermissionSet(),
       URLPatternSet(), URLPatternSet());
@@ -1144,7 +1142,7 @@ TEST(PermissionsTest, GetWarningMessages_AudioVideo) {
 
   // Just video present.
   set.apis_.erase(APIPermission::kAudioCapture);
-  set.apis_.insert(APIPermission::kVideoCapture);
+  set.apis_.insert(APIPermissionID::kVideoCapture);
   EXPECT_FALSE(VerifyHasPermissionMessage(set, extension->GetType(), kAudio));
   EXPECT_TRUE(VerifyHasPermissionMessage(set, extension->GetType(), kVideo));
   EXPECT_FALSE(VerifyHasPermissionMessage(set, extension->GetType(), kBoth));
@@ -1157,11 +1155,11 @@ TEST(PermissionsTest, GetWarningMessages_AudioVideo) {
 TEST(PermissionsTest, GetWarningMessages_CombinedSessions) {
   {
     APIPermissionSet api_permissions;
-    api_permissions.insert(APIPermission::kTab);
-    api_permissions.insert(APIPermission::kTopSites);
-    api_permissions.insert(APIPermission::kProcesses);
-    api_permissions.insert(APIPermission::kWebNavigation);
-    api_permissions.insert(APIPermission::kSessions);
+    api_permissions.insert(APIPermissionID::kTab);
+    api_permissions.insert(APIPermissionID::kTopSites);
+    api_permissions.insert(APIPermissionID::kProcesses);
+    api_permissions.insert(APIPermissionID::kWebNavigation);
+    api_permissions.insert(APIPermissionID::kSessions);
     PermissionSet permissions(std::move(api_permissions),
                               ManifestPermissionSet(), URLPatternSet(),
                               URLPatternSet());
@@ -1172,12 +1170,12 @@ TEST(PermissionsTest, GetWarningMessages_CombinedSessions) {
   }
   {
     APIPermissionSet api_permissions;
-    api_permissions.insert(APIPermission::kHistory);
-    api_permissions.insert(APIPermission::kTab);
-    api_permissions.insert(APIPermission::kTopSites);
-    api_permissions.insert(APIPermission::kProcesses);
-    api_permissions.insert(APIPermission::kWebNavigation);
-    api_permissions.insert(APIPermission::kSessions);
+    api_permissions.insert(APIPermissionID::kHistory);
+    api_permissions.insert(APIPermissionID::kTab);
+    api_permissions.insert(APIPermissionID::kTopSites);
+    api_permissions.insert(APIPermissionID::kProcesses);
+    api_permissions.insert(APIPermissionID::kWebNavigation);
+    api_permissions.insert(APIPermissionID::kSessions);
     PermissionSet permissions(std::move(api_permissions),
                               ManifestPermissionSet(), URLPatternSet(),
                               URLPatternSet());
@@ -1707,10 +1705,10 @@ TEST(PermissionsTest, IsHostPrivilegeIncrease) {
 TEST(PermissionsTest, GetAPIsAsStrings) {
   APIPermissionSet apis;
 
-  apis.insert(APIPermission::kProxy);
-  apis.insert(APIPermission::kBackground);
-  apis.insert(APIPermission::kNotifications);
-  apis.insert(APIPermission::kTab);
+  apis.insert(APIPermissionID::kProxy);
+  apis.insert(APIPermissionID::kBackground);
+  apis.insert(APIPermissionID::kNotifications);
+  apis.insert(APIPermissionID::kTab);
 
   PermissionSet perm_set(apis.Clone(), ManifestPermissionSet(), URLPatternSet(),
                          URLPatternSet());
@@ -1733,7 +1731,7 @@ TEST(PermissionsTest, IsEmpty) {
   EXPECT_TRUE(perm_set->IsEmpty());
 
   APIPermissionSet non_empty_apis;
-  non_empty_apis.insert(APIPermission::kBackground);
+  non_empty_apis.insert(APIPermissionID::kBackground);
   perm_set.reset(new PermissionSet(std::move(non_empty_apis),
                                    ManifestPermissionSet(), URLPatternSet(),
                                    URLPatternSet()));
@@ -1754,7 +1752,7 @@ TEST(PermissionsTest, IsEmpty) {
 
 TEST(PermissionsTest, ImpliedPermissions) {
   APIPermissionSet apis;
-  apis.insert(APIPermission::kFileBrowserHandler);
+  apis.insert(APIPermissionID::kFileBrowserHandler);
   EXPECT_EQ(1U, apis.size());
 
   PermissionSet perm_set(std::move(apis), ManifestPermissionSet(),
@@ -1766,7 +1764,7 @@ TEST(PermissionsTest, SyncFileSystemPermission) {
   scoped_refptr<Extension> extension = LoadManifest(
       "permissions", "sync_file_system.json");
   APIPermissionSet apis;
-  apis.insert(APIPermission::kSyncFileSystem);
+  apis.insert(APIPermissionID::kSyncFileSystem);
   EXPECT_TRUE(extension->is_platform_app());
   EXPECT_TRUE(extension->permissions_data()->HasAPIPermission(
       APIPermission::kSyncFileSystem));

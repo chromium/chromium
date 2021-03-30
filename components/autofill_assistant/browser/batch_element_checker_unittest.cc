@@ -132,9 +132,9 @@ TEST_F(BatchElementCheckerTest, OneElementNotFound) {
 TEST_F(BatchElementCheckerTest, OneFieldValueFound) {
   Selector expected_selector({"field"});
   EXPECT_CALL(mock_web_controller_,
-              OnGetFieldValue(EqualsElement(test_util::MockFindElement(
-                                  mock_web_controller_, expected_selector)),
-                              _))
+              GetFieldValue(EqualsElement(test_util::MockFindElement(
+                                mock_web_controller_, expected_selector)),
+                            _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), "some value"));
   checks_.AddFieldValueCheck(expected_selector, FieldValueCallback("field"));
   Run("was_run");
@@ -148,7 +148,7 @@ TEST_F(BatchElementCheckerTest, OneFieldValueNotFound) {
   EXPECT_CALL(mock_web_controller_, OnFindElement(expected_selector, _))
       .WillOnce(
           RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
-  EXPECT_CALL(mock_web_controller_, OnGetFieldValue(_, _)).Times(0);
+  EXPECT_CALL(mock_web_controller_, GetFieldValue(_, _)).Times(0);
   checks_.AddFieldValueCheck(expected_selector, FieldValueCallback("field"));
   Run("was_run");
 
@@ -159,9 +159,9 @@ TEST_F(BatchElementCheckerTest, OneFieldValueNotFound) {
 TEST_F(BatchElementCheckerTest, OneFieldValueEmpty) {
   Selector expected_selector({"field"});
   EXPECT_CALL(mock_web_controller_,
-              OnGetFieldValue(EqualsElement(test_util::MockFindElement(
-                                  mock_web_controller_, expected_selector)),
-                              _))
+              GetFieldValue(EqualsElement(test_util::MockFindElement(
+                                mock_web_controller_, expected_selector)),
+                            _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), std::string()));
   checks_.AddFieldValueCheck(expected_selector, FieldValueCallback("field"));
   Run("was_run");
@@ -181,15 +181,15 @@ TEST_F(BatchElementCheckerTest, MultipleElements) {
           RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
   Selector expected_selector_4({"4"});
   EXPECT_CALL(mock_web_controller_,
-              OnGetFieldValue(EqualsElement(test_util::MockFindElement(
-                                  mock_web_controller_, expected_selector_4)),
-                              _))
+              GetFieldValue(EqualsElement(test_util::MockFindElement(
+                                mock_web_controller_, expected_selector_4)),
+                            _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), "value"));
   Selector expected_selector_5({"5"});
   EXPECT_CALL(mock_web_controller_,
-              OnGetFieldValue(EqualsElement(test_util::MockFindElement(
-                                  mock_web_controller_, expected_selector_5)),
-                              _))
+              GetFieldValue(EqualsElement(test_util::MockFindElement(
+                                mock_web_controller_, expected_selector_5)),
+                            _))
       .WillOnce(RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED),
                                    std::string()));
 

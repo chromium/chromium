@@ -93,11 +93,13 @@ class MinidumpUploaderTest : public testing::Test {
 
   std::unique_ptr<DumpInfo> GenerateDumpWithFiles(
       const base::FilePath& minidump_path,
-      const base::FilePath& logfile_path) {
+      const base::FilePath& logfile_path,
+      const std::vector<std::string>* attachments = nullptr) {
     // Must pass in non-empty MinidumpParams to circumvent the internal checks.
     std::unique_ptr<DumpInfo> dump(new DumpInfo(
         minidump_path.value(), logfile_path.value(), base::Time::Now(),
-        MinidumpParams(0, "_", "_", "_", "_", "_", "_", "_", "_")));
+        MinidumpParams(0, "_", "_", "_", "_", "_", "_", "_", "_"),
+        attachments));
 
     CHECK(AppendLockFile(lockfile_.value(), metadata_.value(), *dump));
     base::File minidump(
@@ -106,6 +108,15 @@ class MinidumpUploaderTest : public testing::Test {
                        base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
     CHECK(minidump.IsValid());
     CHECK(logfile.IsValid());
+
+    if (attachments) {
+      for (const auto& attachment : *attachments) {
+        base::File attachment_file(
+            base::FilePath(attachment),
+            base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+        CHECK(attachment_file.IsValid());
+      }
+    }
 
     return dump;
   }
@@ -307,6 +318,40 @@ TEST_F(MinidumpUploaderTest, UploadsWithoutMissingLogFile) {
   // Ensure dump files were deleted, lockfile was emptied.
   ASSERT_FALSE(base::PathExists(minidump_path));
   ASSERT_FALSE(base::PathExists(logfile_path));
+
+  int64_t size = -1;
+  ASSERT_TRUE(base::GetFileSize(lockfile_, &size));
+  ASSERT_EQ(size, 0);
+}
+
+TEST_F(MinidumpUploaderTest, UploadsWithMultipleAttachments) {
+  const base::FilePath& minidump_path = minidump_dir_.Append("ayy");
+  const base::FilePath& logfile_path = minidump_dir_.Append("lmao");
+  std::vector<std::string> attachments = {
+      minidump_dir_.Append("attachment-01").value(), "/tmp/attachment-02"};
+
+  // Write one entry with appropriate files.
+  GenerateDumpWithFiles(minidump_path, logfile_path, &attachments);
+  MinidumpUploader uploader(&sys_info_dummy(), "", &mock_crash_uploader(),
+                            base::BindRepeating(&CreateFakePrefService, true));
+
+  // Allow a successful upload.
+  ASSERT_TRUE(base::DeleteFile(logfile_path));
+  EXPECT_CALL(mock_crash_uploader(),
+              AddAttachment("attachment_0", attachments[0]))
+      .WillOnce(Return(true));
+  EXPECT_CALL(mock_crash_uploader(),
+              AddAttachment("attachment_1", attachments[1]))
+      .WillOnce(Return(true));
+  EXPECT_CALL(mock_crash_uploader(), SetParameter(_, _)).Times(AtLeast(0));
+  EXPECT_CALL(mock_crash_uploader(), Upload(_)).WillOnce(Return(true));
+  ASSERT_TRUE(uploader.UploadAllMinidumps());
+
+  // Ensure dump files were deleted, lockfile was emptied.
+  ASSERT_FALSE(base::PathExists(minidump_path));
+  ASSERT_FALSE(base::PathExists(logfile_path));
+  ASSERT_FALSE(base::PathExists(base::FilePath(attachments[0])));
+  ASSERT_TRUE(base::PathExists(base::FilePath(attachments[1])));
 
   int64_t size = -1;
   ASSERT_TRUE(base::GetFileSize(lockfile_, &size));

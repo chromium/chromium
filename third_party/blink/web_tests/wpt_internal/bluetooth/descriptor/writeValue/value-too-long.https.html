@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+const test_desc = 'Trying to write more than 512 bytes should return an error.';
+const expected = new DOMException(
+    'Failed to execute \'writeValue\' on \'BluetoothRemoteGATTDescriptor\': ' +
+    'Value can\'t exceed 512 bytes.', 'InvalidModificationError');
+
+bluetooth_test(() => getUserDescriptionDescriptor()
+    .then(({descriptor}) => assert_promise_rejects_with_message(
+        descriptor.writeValue(new Uint8Array(513 /* length */)),
+        expected,
+        'Value passed was too long.')),
+    test_desc);
+</script>

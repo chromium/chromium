@@ -8,10 +8,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/chromeos/chromebox_for_meetings/logger/cfm_logger_service.h"
-#include "chrome/browser/chromeos/settings/device_settings_service.h"
-#include "chrome/browser/policy/messaging_layer/public/report_client.h"
-#include "chrome/browser/policy/messaging_layer/public/report_queue.h"
+#include "components/reporting/client/report_queue.h"
+#include "components/reporting/client/report_queue_provider.h"
 
 namespace chromeos {
 namespace cfm {
@@ -19,7 +19,7 @@ namespace cfm {
 // Implementation of the CfmLoggerService::Delegate usign the chrome encrypted
 // reporting pipeline.
 class ReportingPipeline : public CfmLoggerService::Delegate,
-                          public chromeos::DeviceSettingsService::Observer {
+                          public ash::DeviceSettingsService::Observer {
  public:
   // Args: mojom::MeetDevicesLogger: The current enabled state of the service.
   using UpdateStatusCallback =
@@ -38,19 +38,19 @@ class ReportingPipeline : public CfmLoggerService::Delegate,
                CfmLoggerService::EnqueueCallback callback) override;
 
  protected:
-  // ::chromeos::DeviceSettingsService::Observer impl
+  // ::ash::DeviceSettingsService::Observer impl
   void DeviceSettingsUpdated() override;
   void OnDeviceSettingsServiceShutdown() override;
 
  private:
   void UpdateToken(std::string request_token);
   void OnReportQueueUpdated(
-      reporting::StatusOr<std::unique_ptr<reporting::ReportQueue>>
+      reporting::ReportQueueProvider::CreateReportQueueResponse
           report_queue_result);
 
   UpdateStatusCallback update_status_callback_;
   std::unique_ptr<reporting::ReportQueue> report_queue_;
-  std::unique_ptr<policy::DMToken> dm_token_;
+  std::string dm_token_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);

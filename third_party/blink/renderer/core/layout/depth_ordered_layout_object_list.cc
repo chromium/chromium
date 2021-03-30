@@ -13,7 +13,7 @@ namespace blink {
 struct DepthOrderedLayoutObjectListData {
   // LayoutObjects sorted by depth (deepest first). This structure is only
   // populated at the beginning of enumerations. See ordered().
-  Vector<DepthOrderedLayoutObjectList::LayoutObjectWithDepth> ordered_objects_;
+  Vector<LayoutObjectWithDepth> ordered_objects_;
 
   // Outside of layout, LayoutObjects can be added and removed as needed such
   // as when style was changed or destroyed. They're kept in this hashset to
@@ -56,8 +56,7 @@ void DepthOrderedLayoutObjectList::Clear() {
   data_->ordered_objects_.clear();
 }
 
-unsigned DepthOrderedLayoutObjectList::LayoutObjectWithDepth::DetermineDepth(
-    LayoutObject* object) {
+unsigned LayoutObjectWithDepth::DetermineDepth(LayoutObject* object) {
   unsigned depth = 1;
   for (LayoutObject* parent = object->Parent(); parent;
        parent = parent->Parent())
@@ -69,8 +68,7 @@ const HashSet<LayoutObject*>& DepthOrderedLayoutObjectList::Unordered() const {
   return data_->objects_;
 }
 
-const Vector<DepthOrderedLayoutObjectList::LayoutObjectWithDepth>&
-DepthOrderedLayoutObjectList::Ordered() {
+const Vector<LayoutObjectWithDepth>& DepthOrderedLayoutObjectList::Ordered() {
   if (data_->objects_.IsEmpty() || !data_->ordered_objects_.IsEmpty())
     return data_->ordered_objects_;
 

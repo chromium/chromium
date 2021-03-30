@@ -22,8 +22,3 @@ callback ForEachIteratorCallback = void (any value, any key, any obj);
 // Blink-specific constructor type used in many places.
 
 callback NoArgumentConstructor = any ();
-
-
-// typedefs used in multiple files.
-
-typedef object JSON;

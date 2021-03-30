@@ -26,6 +26,10 @@ class POLICY_EXPORT URLBlocklistPolicyHandler
   explicit URLBlocklistPolicyHandler(const char* policy_name);
   ~URLBlocklistPolicyHandler() override;
 
+  // Validates that policy follows official pattern
+  // https://www.chromium.org/administrators/url-blocklist-filter-format
+  bool ValidatePolicy(const std::string& policy);
+
   // ConfigurationPolicyHandler methods:
   bool CheckPolicySettings(const PolicyMap& policies,
                            PolicyErrorMap* errors) override;

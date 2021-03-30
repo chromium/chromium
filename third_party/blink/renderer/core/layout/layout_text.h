@@ -86,6 +86,11 @@ class CORE_EXPORT LayoutText : public LayoutObject {
                                           scoped_refptr<const ComputedStyle>,
                                           LegacyLayout);
 
+  static LayoutText* CreateAnonymous(Document&,
+                                     scoped_refptr<const ComputedStyle>,
+                                     scoped_refptr<StringImpl>,
+                                     LegacyLayout legacy);
+
   const char* GetName() const override {
     NOT_DESTROYED();
     return "LayoutText";
@@ -412,6 +417,9 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   // Returns the size of area occupied by this LayoutText.
   LayoutUnit PhysicalAreaSize() const;
 
+  // Returns the rightmost offset occupied by this LayoutText.
+  LayoutUnit PhysicalRightOffset() const;
+
   // For LayoutShiftTracker. Saves the value of LogicalStartingPoint() value
   // during the previous paint invalidation.
   LogicalOffset PreviousLogicalStartingPoint() const {
@@ -598,7 +606,6 @@ inline InlineTextBoxList& LayoutText::MutableTextBoxes() {
 inline wtf_size_t LayoutText::FirstInlineFragmentItemIndex() const {
   if (!IsInLayoutNGInlineFormattingContext())
     return 0u;
-  DCHECK(RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled());
   return first_fragment_item_index_;
 }
 

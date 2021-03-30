@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests if page keeps recording after refresh with Screenshot enabled. Bug 569557\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
   await TestRunner.loadHTML(`
       <p id="test"></p>

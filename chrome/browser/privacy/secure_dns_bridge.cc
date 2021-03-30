@@ -4,10 +4,11 @@
 
 #include <jni.h>
 
+#include <string>
+
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/dns_probe_runner.h"
@@ -94,11 +95,11 @@ static jboolean JNI_SecureDnsBridge_IsModeManaged(JNIEnv* env) {
 static ScopedJavaLocalRef<jobjectArray> JNI_SecureDnsBridge_GetProviders(
     JNIEnv* env) {
   net::DohProviderEntry::List providers = GetFilteredProviders();
-  std::vector<std::vector<base::string16>> ret;
+  std::vector<std::vector<std::u16string>> ret;
   ret.reserve(providers.size());
   std::transform(providers.begin(), providers.end(), std::back_inserter(ret),
                  [](const auto* entry) {
-                   return std::vector<base::string16>{
+                   return std::vector<std::u16string>{
                        {base::UTF8ToUTF16(entry->ui_name),
                         base::UTF8ToUTF16(entry->dns_over_https_template),
                         base::UTF8ToUTF16(entry->privacy_policy)}};

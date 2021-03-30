@@ -22,6 +22,8 @@
 #include "chrome/browser/ui/app_list/page_break_constants.h"
 #include "chrome/browser/ui/app_list/test/fake_app_list_model_updater.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/browser/web_applications/components/web_app_id_constants.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -38,6 +40,8 @@ using testing::ElementsAre;
 
 namespace {
 
+const char kOsSettingsUrl[] = "chrome://os-settings/";
+
 scoped_refptr<extensions::Extension> MakeApp(
     const std::string& name,
     const std::string& id,
@@ -48,7 +52,8 @@ scoped_refptr<extensions::Extension> MakeApp(
   value.SetString("version", "0.0");
   value.SetString("app.launch.web_url", "http://google.com");
   scoped_refptr<extensions::Extension> app = extensions::Extension::Create(
-      base::FilePath(), extensions::Manifest::INTERNAL, value, flags, id, &err);
+      base::FilePath(), extensions::mojom::ManifestLocation::kInternal, value,
+      flags, id, &err);
   EXPECT_EQ(err, "");
   return app;
 }
@@ -395,6 +400,102 @@ TEST_F(AppListSyncableServiceTest, OEMItemIgnoreSyncParent) {
   EXPECT_EQ(ash::kOemFolderId, oem_app_item->folder_id());
 }
 
+// Verifies that an OEM apps parent ID in sync data is not overridden to the OEM
+// folder.
+TEST_F(AppListSyncableServiceTest, OEMAppParentNotOverridenInSync) {
+  const std::string oem_app_id = CreateNextAppId(extensions::kWebStoreAppId);
+  scoped_refptr<extensions::Extension> oem_app = MakeApp(
+      kOemAppName, oem_app_id, extensions::Extension::WAS_INSTALLED_BY_OEM);
+  const std::string oem_app_parent_in_sync = "nonoemfolder";
+
+  // Send sync where the OEM app is parented by another folder.
+  syncer::SyncDataList sync_list;
+  sync_list.push_back(CreateAppRemoteData(
+      oem_app_parent_in_sync, "Non OEM folder", std::string() /* parent_id */,
+      syncer::StringOrdinal("nonoemfolderposition").ToInternalValue(),
+      std::string() /* item_pin_ordinal*/,
+      sync_pb::AppListSpecifics_AppListItemType_TYPE_FOLDER));
+  sync_list.push_back(CreateAppRemoteData(
+      oem_app_id, kOemAppName, oem_app_parent_in_sync,
+      syncer::StringOrdinal("appposition").ToInternalValue(),
+      std::string() /* item_pin_ordinal */));
+  // Add an extra app to the folder to avoid invalid single item folder.
+  sync_list.push_back(CreateAppRemoteData(
+      "non-oem-app", "Non OEM app", oem_app_parent_in_sync,
+      syncer::StringOrdinal("nonoemappposition").ToInternalValue(),
+      std::string() /* item_pin_ordinal */));
+  sync_list.push_back(CreateAppRemoteData(
+      ash::kOemFolderId, "OEM", std::string() /*parent_id*/,
+      syncer::StringOrdinal("oemposition").ToInternalValue(),
+      std::string() /* item_pin_ordinal*/,
+      sync_pb::AppListSpecifics_AppListItemType_TYPE_FOLDER));
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, sync_list,
+      std::make_unique<syncer::FakeSyncChangeProcessor>(),
+      std::make_unique<syncer::SyncErrorFactoryMock>());
+  content::RunAllTasksUntilIdle();
+
+  InstallExtension(oem_app.get());
+
+  // The OEM app should be parented by the OEM folder locally.
+  ChromeAppListItem* oem_app_item = model_updater()->FindItem(oem_app_id);
+  ASSERT_TRUE(oem_app_item);
+  EXPECT_EQ(ash::kOemFolderId, oem_app_item->folder_id());
+
+  ChromeAppListItem* oem_folder_item =
+      model_updater()->FindItem(ash::kOemFolderId);
+  ASSERT_TRUE(oem_folder_item);
+  EXPECT_EQ(oem_folder_item->position(), syncer::StringOrdinal("oemposition"));
+
+  // Verify that the OEM parent has no changed in sync.
+  const app_list::AppListSyncableService::SyncItem* app_sync_item =
+      GetSyncItem(oem_app_id);
+  ASSERT_TRUE(app_sync_item);
+  EXPECT_EQ(oem_app_parent_in_sync, app_sync_item->parent_id);
+
+  // Verify that the non OEM folder is not removed from sync, even though it's
+  // not been created locally.
+  EXPECT_FALSE(model_updater()->FindItem(oem_app_parent_in_sync));
+  EXPECT_TRUE(GetSyncItem(oem_app_parent_in_sync));
+}
+
+// Verifies that OEM folder position respects the OEM folder position in sync.
+TEST_F(AppListSyncableServiceTest, OEMFolderPositionSync) {
+  const std::string oem_app_id = CreateNextAppId(extensions::kWebStoreAppId);
+  scoped_refptr<extensions::Extension> oem_app = MakeApp(
+      kOemAppName, oem_app_id, extensions::Extension::WAS_INSTALLED_BY_OEM);
+
+  // Send sync with an OEM folder item.
+  syncer::SyncDataList sync_list;
+  sync_list.push_back(CreateAppRemoteData(
+      oem_app_id, kOemAppName, std::string() /* parent_id */,
+      syncer::StringOrdinal("appposition").ToInternalValue(),
+      std::string() /* item_pin_ordinal */));
+  sync_list.push_back(CreateAppRemoteData(
+      ash::kOemFolderId, "OEM", std::string() /*parent_id*/,
+      syncer::StringOrdinal("oemposition").ToInternalValue(),
+      std::string() /* item_pin_ordinal*/,
+      sync_pb::AppListSpecifics_AppListItemType_TYPE_FOLDER));
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, sync_list,
+      std::make_unique<syncer::FakeSyncChangeProcessor>(),
+      std::make_unique<syncer::SyncErrorFactoryMock>());
+  content::RunAllTasksUntilIdle();
+
+  InstallExtension(oem_app.get());
+
+  // OEM app should locally be parented by the OEM folder.
+  ChromeAppListItem* oem_app_item = model_updater()->FindItem(oem_app_id);
+  ASSERT_TRUE(oem_app_item);
+  EXPECT_EQ(ash::kOemFolderId, oem_app_item->folder_id());
+
+  ChromeAppListItem* oem_folder_item =
+      model_updater()->FindItem(ash::kOemFolderId);
+  ASSERT_TRUE(oem_folder_item);
+  // The OEM folder folder should be set to the value set by sync.
+  EXPECT_EQ(oem_folder_item->position(), syncer::StringOrdinal("oemposition"));
+}
+
 // Verifies that non-OEM item is not moved to OEM folder by sync.
 TEST_F(AppListSyncableServiceTest, NonOEMItemIgnoreSyncToOEMFolder) {
   const std::string app_id = CreateNextAppId(extensions::kWebStoreAppId);
@@ -466,10 +567,14 @@ class AppListInternalAppSyncableServiceTest
   AppListInternalAppSyncableServiceTest() {
     chrome::SettingsWindowManager::ForceDeprecatedSettingsWindowForTesting();
   }
-  ~AppListInternalAppSyncableServiceTest() override = default;
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  void SetUp() override {
+    AppListSyncableServiceTest::SetUp();
+    web_app::InstallDummyWebApp(testing_profile(), kOsSettingsUrl,
+                                GURL(kOsSettingsUrl));
+  }
+
+  ~AppListInternalAppSyncableServiceTest() override = default;
 };
 
 TEST_F(AppListInternalAppSyncableServiceTest, ExistingDefaultPageBreak) {
@@ -515,7 +620,7 @@ TEST_F(AppListInternalAppSyncableServiceTest, DefaultPageBreakFirstTimeUser) {
 
   // Since internal apps are added by default, we'll use the settings apps to
   // test the ordering.
-  auto* settings_app_sync_item = GetSyncItem(ash::kInternalAppIdSettings);
+  auto* settings_app_sync_item = GetSyncItem(web_app::kOsSettingsAppId);
   auto* hosted_app_sync_item = GetSyncItem(kHostedAppId);
   ASSERT_TRUE(settings_app_sync_item);
   ASSERT_TRUE(hosted_app_sync_item);
@@ -1084,9 +1189,8 @@ TEST_F(AppListSyncableServiceTest, PageBreakWithOverflowItem) {
   auto ordered_items = GetIdsOfSortedItemsFromModelUpdater();
   EXPECT_THAT(
       ordered_items,
-      ElementsAre(kItemIdA1, kItemIdA2, kPageBreakItemId1,
-                  kItemIdB1, kItemIdB2, kItemIdB3, kPageBreakItemId2,
-                  kItemIdC1, kPageBreakItemId3));
+      ElementsAre(kItemIdA1, kItemIdA2, kPageBreakItemId1, kItemIdB1, kItemIdB2,
+                  kItemIdB3, kPageBreakItemId2, kItemIdC1, kPageBreakItemId3));
 
   // On device 1, move A1 from page 1 to page 2 and insert it between B1 and B2.
   // Device 2 should get the following 3 sync changes from device 1:
@@ -1141,9 +1245,9 @@ TEST_F(AppListSyncableServiceTest, PageBreakWithOverflowItem) {
   // B3 C1 [pagebreak 3]
   auto ordered_items_after_sync = GetIdsOfSortedItemsFromModelUpdater();
   EXPECT_THAT(ordered_items_after_sync,
-              ElementsAre(kItemIdA2, kPageBreakItemId1,
-                          kItemIdB1, kItemIdA1, kItemIdB2, kNewPageBreakItemId,
-                          kItemIdB3, kItemIdC1, kPageBreakItemId3));
+              ElementsAre(kItemIdA2, kPageBreakItemId1, kItemIdB1, kItemIdA1,
+                          kItemIdB2, kNewPageBreakItemId, kItemIdB3, kItemIdC1,
+                          kPageBreakItemId3));
 }
 
 TEST_F(AppListSyncableServiceTest, FirstAvailablePosition) {
@@ -1151,7 +1255,7 @@ TEST_F(AppListSyncableServiceTest, FirstAvailablePosition) {
 
   // Populate the first page with items and leave 1 empty slot at the end.
   const int max_items_in_first_page =
-      ash::AppListConfig::instance().GetMaxNumOfItemsPerPage(0);
+      ash::SharedAppListConfig::instance().GetMaxNumOfItemsPerPage();
   syncer::StringOrdinal last_app_position =
       syncer::StringOrdinal::CreateInitialOrdinal();
   for (int i = 0; i < max_items_in_first_page - 1; ++i) {
@@ -1199,7 +1303,7 @@ TEST_F(AppListSyncableServiceTest, FirstAvailablePositionNotExist) {
 
   // Populate the first page with items and leave 1 empty slot at the end.
   const int max_items_in_first_page =
-      ash::AppListConfig::instance().GetMaxNumOfItemsPerPage(0);
+      ash::SharedAppListConfig::instance().GetMaxNumOfItemsPerPage();
   syncer::StringOrdinal last_app_position =
       syncer::StringOrdinal::CreateInitialOrdinal();
   for (int i = 0; i < max_items_in_first_page - 1; ++i) {

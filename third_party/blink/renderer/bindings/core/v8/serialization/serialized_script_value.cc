@@ -436,6 +436,9 @@ void SerializedScriptValue::TransferWritableStream(
   writable_stream->Serialize(script_state, local_port, exception_state);
   if (exception_state.HadException())
     return;
+  // The last element is added by the above `AddStreamChannel()` call.
+  streams_.back().writable_optimizer =
+      writable_stream->TakeTransferringOptimizer();
 }
 
 void SerializedScriptValue::TransferTransformStreams(
@@ -793,7 +796,7 @@ static_assert(kSerializedScriptValueVersion ==
               "Update WebSerializedScriptValueVersion.h.");
 
 bool SerializedScriptValue::IsOriginCheckRequired() const {
-  return native_file_system_tokens_.size() > 0;
+  return file_system_access_tokens_.size() > 0;
 }
 
 }  // namespace blink

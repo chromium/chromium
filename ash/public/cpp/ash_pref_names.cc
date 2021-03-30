@@ -32,6 +32,10 @@ const char kAccessibilityScreenMagnifierEnabled[] =
 // is enabled.
 const char kAccessibilityScreenMagnifierFocusFollowingEnabled[] =
     "settings.a11y.screen_magnifier_focus_following";
+// An integer pref which indicates the mouse following mode for screen
+// magnifier. This maps to AccessibilityController::MagnifierMouseFollowingMode.
+const char kAccessibilityScreenMagnifierMouseFollowingMode[] =
+    "settings.a11y.screen_magnifier_mouse_following_mode";
 // A boolean pref which determines whether screen magnifier should center
 // the text input focus.
 const char kAccessibilityScreenMagnifierCenterFocus[] =
@@ -61,7 +65,7 @@ const char kAccessibilityShortcutsEnabled[] = "settings.a11y.shortcuts_enabled";
 const char kAccessibilityAutoclickDelayMs[] =
     "settings.a11y.autoclick_delay_ms";
 // An integer pref which determines the event type for an autoclick event. This
-// maps to mojom::AccessibilityController::AutoclickEventType.
+// maps to AccessibilityController::AutoclickEventType.
 const char kAccessibilityAutoclickEventType[] =
     "settings.a11y.autoclick_event_type";
 // Whether Autoclick should immediately return to left click after performing
@@ -105,15 +109,18 @@ const char kAccessibilitySelectToSpeakEnabled[] =
 // A boolean pref which determines whether Switch Access is enabled.
 const char kAccessibilitySwitchAccessEnabled[] =
     "settings.a11y.switch_access.enabled";
-// A pref that stores the key code for the "select" action.
-const char kAccessibilitySwitchAccessSelectKeyCodes[] =
-    "settings.a11y.switch_access.select.key_codes";
-// A pref that stores the key code for the "next" action.
-const char kAccessibilitySwitchAccessNextKeyCodes[] =
-    "settings.a11y.switch_access.next.key_codes";
-// A pref that stores the key code for the "previous" action.
-const char kAccessibilitySwitchAccessPreviousKeyCodes[] =
-    "settings.a11y.switch_access.previous.key_codes";
+// A dictionary pref keyed on a key code mapped to a list value of device types
+// for the "select" action.
+const char kAccessibilitySwitchAccessSelectDeviceKeyCodes[] =
+    "settings.a11y.switch_access.select.device_key_codes";
+// A dictionary pref keyed on a key code mapped to a list value of device types
+// for the "next" action.
+const char kAccessibilitySwitchAccessNextDeviceKeyCodes[] =
+    "settings.a11y.switch_access.next.device_key_codes";
+// A dictionary pref keyed on a key code mapped to a list value of device types
+// for the "previous" action.
+const char kAccessibilitySwitchAccessPreviousDeviceKeyCodes[] =
+    "settings.a11y.switch_access.previous.device_key_codes";
 // A boolean pref which determines whether auto-scanning is enabled within
 // Switch Access.
 const char kAccessibilitySwitchAccessAutoScanEnabled[] =
@@ -127,6 +134,10 @@ const char kAccessibilitySwitchAccessAutoScanSpeedMs[] =
 // enabled).
 const char kAccessibilitySwitchAccessAutoScanKeyboardSpeedMs[] =
     "settings.a11y.switch_access.auto_scan.keyboard.speed_ms";
+// An integer pref which determines speed in dips per second that the gliding
+// point scan cursor in switch access moves across the screen.
+const char kAccessibilitySwitchAccessPointScanSpeedDipsPerSecond[] =
+    "settings.a11y.switch_access.point_scan.speed_dips_per_second";
 // A boolean pref which, if set, indicates that shelf navigation buttons (home,
 // back and overview button) should be shown in tablet mode. Note that shelf
 // buttons might be shown even if the pref value is false - for example, if
@@ -142,6 +153,10 @@ const char kLiveCaptionEnabled[] =
 // regardless of the state of a11y features.
 const char kShouldAlwaysShowAccessibilityMenu[] = "settings.a11y.enable_menu";
 
+// A boolean pref which determines whether alt-tab should show only windows in
+// the current desk or all windows.
+const char kAltTabPerDesk[] = "ash.alttab.per_desk";
+
 // A dictionary storing the number of times and most recent time all contextual
 // tooltips have been shown.
 const char kContextualTooltips[] = "settings.contextual_tooltip.shown_info";
@@ -154,6 +169,10 @@ const char kContextualTooltips[] = "settings.contextual_tooltip.shown_info";
 // name will appear in this list as an empty string. The desk names are stored
 // as UTF8 strings.
 const char kDesksNamesList[] = "ash.desks.desks_names_list";
+// This list stores the metrics of virtual desks. Like |kDesksNamesList|, this
+// list stores entries in the same order of the desks in the overview desks bar.
+// Values are stored as dictionaries.
+const char kDesksMetricsList[] = "ash.desks.desks_metrics_list";
 // An integer index of a user's active desk.
 const char kDesksActiveDesk[] = "ash.desks.active_desk";
 
@@ -210,6 +229,10 @@ const char kExternalDisplayMirrorInfo[] =
 // Its key is the ID of the display and its value is a dictionary for the
 // layout/offset information.
 const char kSecondaryDisplays[] = "settings.display.secondary_displays";
+// A boolean pref which determines whether the display configuration set by
+// managed guest session should be stored in local state.
+const char kAllowMGSToStoreDisplayProperties[] =
+    "settings.display.allow_mgs_to_store";
 
 // A boolean pref that enable fullscreen alert bubble.
 // TODO(zxdan): Change to an allowlist in M89.
@@ -231,6 +254,13 @@ const char kEnableStylusTools[] = "settings.enable_stylus_tools";
 // eject input event has been received.
 const char kLaunchPaletteOnEjectEvent[] =
     "settings.launch_palette_on_eject_event";
+
+// A boolean pref that specifies if the cellular setup notification can be
+// shown or not. This notification should be shown post-OOBE if the user has a
+// cellular-capable device but no available cellular networks. It should only be
+// shown at most once per user.
+const char kCanCellularSetupNotificationBeShown[] =
+    "ash.cellular_setup.can_setup_notification_be_shown";
 
 // Boolean pref indicating whether the privacy warning of the managed-guest
 // session on both; the login screen and inside the auto-launched session,
@@ -580,6 +610,11 @@ const char kAppNotificationBadgingEnabled[] =
 // shelf or it's unset and need to be determined by screen size during runtime.
 const char kGlobalMediaControlsPinned[] =
     "ash.system.global_media_controls_pinned";
+
+// An integer pref that tracks how many times the user is able to click on
+// PciePeripheral-related notifications before hiding new notifications.
+const char kPciePeripheralDisplayNotificationRemaining[] =
+    "ash.pcie_peripheral_display_notification_remaining";
 
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.

@@ -195,7 +195,8 @@ class BrowserSwitcherService : public KeyedService {
   base::CallbackListSubscription prefs_subscription_;
 
   // CallbackList for OnAllRulesetsParsed() listeners.
-  base::CallbackList<AllRulesetsParsedCallbackSignature> callback_list_;
+  base::RepeatingCallbackList<AllRulesetsParsedCallbackSignature>
+      callback_list_;
 
   base::OnceCallback<void()> all_rulesets_loaded_callback_for_testing_;
 

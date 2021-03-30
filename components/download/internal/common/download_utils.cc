@@ -270,20 +270,26 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
   request->request_initiator = params->initiator();
   request->trusted_params = network::ResourceRequest::TrustedParams();
 
-  // Treat downloads like top-level frame navigations to be consistent with
-  // cookie behavior. Also, since web-initiated downloads bypass the disk cache,
-  // sites can't use download timing information to tell if a cross-site URL has
-  // been visited before.
-  url::Origin origin = url::Origin::Create(params->url());
-  request->trusted_params->isolation_info = net::IsolationInfo::Create(
-      net::IsolationInfo::RequestType::kMainFrame, origin, origin,
-      net::SiteForCookies::FromOrigin(origin));
+  if (params->isolation_info().has_value()) {
+    request->trusted_params->isolation_info = params->isolation_info().value();
+    request->site_for_cookies = params->isolation_info()->site_for_cookies();
+  } else {
+    // Treat downloads like top-level frame navigations to be consistent with
+    // cookie behavior. Also, since web-initiated downloads bypass the disk
+    // cache, sites can't use download timing information to tell if a
+    // cross-site URL has been visited before.
+    url::Origin origin = url::Origin::Create(params->url());
+    request->trusted_params->isolation_info = net::IsolationInfo::Create(
+        net::IsolationInfo::RequestType::kMainFrame, origin, origin,
+        net::SiteForCookies::FromOrigin(origin));
+    request->site_for_cookies = net::SiteForCookies::FromUrl(params->url());
+  }
 
   request->do_not_prompt_for_login = params->do_not_prompt_for_login();
-  request->site_for_cookies = net::SiteForCookies::FromUrl(params->url());
   request->referrer = params->referrer();
   request->referrer_policy = params->referrer_policy();
   request->is_main_frame = true;
+  request->update_first_party_url_on_redirect = true;
 
   // Downloads should be treated as navigations from Fetch spec perspective.
   // See also:

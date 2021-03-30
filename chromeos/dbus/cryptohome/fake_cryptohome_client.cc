@@ -17,6 +17,7 @@
 #include "base/optional.h"
 #include "base/path_service.h"
 #include "base/single_thread_task_runner.h"
+#include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/dbus/attestation/attestation.pb.h"
@@ -41,6 +42,8 @@ constexpr size_t kInstallAttributesFileMaxSize = 16384;
 
 // Used to track the fake instance, mirrors the instance in the base class.
 FakeCryptohomeClient* g_instance = nullptr;
+
+constexpr char kAuthSessionIdTemplate[] = "AuthSession-%d";
 
 }  // namespace
 
@@ -156,6 +159,45 @@ void FakeCryptohomeClient::MountGuestEx(
     const cryptohome::MountGuestRequest& request,
     DBusMethodCallback<cryptohome::BaseReply> callback) {
   ReturnProtobufMethodCallback(cryptohome::BaseReply(), std::move(callback));
+}
+
+void FakeCryptohomeClient::StartAuthSession(
+    const cryptohome::AccountIdentifier& account,
+    const cryptohome::StartAuthSessionRequest& request,
+    DBusMethodCallback<cryptohome::BaseReply> callback) {
+  std::string auth_session_id =
+      base::StringPrintf(kAuthSessionIdTemplate, next_auth_session_id++);
+
+  DCHECK_EQ(auth_sessions_.count(auth_session_id), 0u);
+  AuthSessionData& session = auth_sessions_[auth_session_id];
+  session.id = auth_session_id;
+  session.account = account;
+
+  cryptohome::BaseReply reply;
+  cryptohome::StartAuthSessionReply* auth_session_reply =
+      reply.MutableExtension(cryptohome::StartAuthSessionReply::reply);
+  auth_session_reply->set_auth_session_id(auth_session_id);
+
+  ReturnProtobufMethodCallback(reply, std::move(callback));
+}
+
+void FakeCryptohomeClient::AuthenticateAuthSessionRequest(
+    const cryptohome::AuthenticateAuthSessionRequest& request,
+    DBusMethodCallback<cryptohome::BaseReply> callback) {
+  cryptohome::BaseReply reply;
+  cryptohome::AuthenticateAuthSessionReply* auth_session_reply =
+      reply.MutableExtension(cryptohome::AuthenticateAuthSessionReply::reply);
+
+  const std::string auth_session_id = request.auth_session_id();
+
+  const auto it = auth_sessions_.find(auth_session_id);
+  if (it == auth_sessions_.end()) {
+    reply.set_error(cryptohome::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN);
+  } else {
+    it->second.authenticated = true;
+    auth_session_reply->set_authenticated(true);
+  }
+  ReturnProtobufMethodCallback(reply, std::move(callback));
 }
 
 void FakeCryptohomeClient::GetRsuDeviceId(
@@ -326,6 +368,23 @@ void FakeCryptohomeClient::CheckKeyEx(
   ReturnProtobufMethodCallback(reply, std::move(callback));
 }
 
+void FakeCryptohomeClient::ListKeysEx(
+    const cryptohome::AccountIdentifier& cryptohome_id,
+    const cryptohome::AuthorizationRequest& auth,
+    const cryptohome::ListKeysRequest& request,
+    DBusMethodCallback<cryptohome::BaseReply> callback) {
+  cryptohome::CryptohomeErrorCode error = cryptohome_error_;
+
+  cryptohome::BaseReply reply;
+  cryptohome::ListKeysReply* list_keys =
+      reply.MutableExtension(cryptohome::ListKeysReply::reply);
+  // See kCryptohomeGaiaKeyLabel
+  list_keys->add_labels("gaia");
+  list_keys->add_labels("pin");
+  reply.set_error(error);
+  ReturnProtobufMethodCallback(reply, std::move(callback));
+}
+
 void FakeCryptohomeClient::MountEx(
     const cryptohome::AccountIdentifier& cryptohome_id,
     const cryptohome::AuthorizationRequest& auth,
@@ -403,28 +462,6 @@ void FakeCryptohomeClient::MassRemoveKeys(
     const cryptohome::AccountIdentifier& cryptohome_id,
     const cryptohome::AuthorizationRequest& auth,
     const cryptohome::MassRemoveKeysRequest& request,
-    DBusMethodCallback<cryptohome::BaseReply> callback) {
-  ReturnProtobufMethodCallback(cryptohome::BaseReply(), std::move(callback));
-}
-
-void FakeCryptohomeClient::GetBootAttribute(
-    const cryptohome::GetBootAttributeRequest& request,
-    DBusMethodCallback<cryptohome::BaseReply> callback) {
-  cryptohome::BaseReply reply;
-  cryptohome::GetBootAttributeReply* attr_reply =
-      reply.MutableExtension(cryptohome::GetBootAttributeReply::reply);
-  attr_reply->set_value("");
-  ReturnProtobufMethodCallback(reply, std::move(callback));
-}
-
-void FakeCryptohomeClient::SetBootAttribute(
-    const cryptohome::SetBootAttributeRequest& request,
-    DBusMethodCallback<cryptohome::BaseReply> callback) {
-  ReturnProtobufMethodCallback(cryptohome::BaseReply(), std::move(callback));
-}
-
-void FakeCryptohomeClient::FlushAndSignBootAttributes(
-    const cryptohome::FlushAndSignBootAttributesRequest& request,
     DBusMethodCallback<cryptohome::BaseReply> callback) {
   ReturnProtobufMethodCallback(cryptohome::BaseReply(), std::move(callback));
 }
@@ -574,45 +611,6 @@ void FakeCryptohomeClient::ReturnProtobufMethodCallback(
       FROM_HERE, base::BindOnce(std::move(callback), reply));
 }
 
-void FakeCryptohomeClient::ReturnAsyncMethodResult(
-    AsyncMethodCallback callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&FakeCryptohomeClient::ReturnAsyncMethodResultInternal,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void FakeCryptohomeClient::ReturnAsyncMethodData(AsyncMethodCallback callback,
-                                                 const std::string& data) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&FakeCryptohomeClient::ReturnAsyncMethodDataInternal,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     data));
-}
-
-void FakeCryptohomeClient::ReturnAsyncMethodResultInternal(
-    AsyncMethodCallback callback) {
-  std::move(callback).Run(async_call_id_);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&FakeCryptohomeClient::NotifyAsyncCallStatus,
-                                weak_ptr_factory_.GetWeakPtr(), async_call_id_,
-                                true, cryptohome::MOUNT_ERROR_NONE));
-  ++async_call_id_;
-}
-
-void FakeCryptohomeClient::ReturnAsyncMethodDataInternal(
-    AsyncMethodCallback callback,
-    const std::string& data) {
-  std::move(callback).Run(async_call_id_);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&FakeCryptohomeClient::NotifyAsyncCallStatusWithData,
-                     weak_ptr_factory_.GetWeakPtr(), async_call_id_, true,
-                     data));
-  ++async_call_id_;
-}
-
 void FakeCryptohomeClient::OnDircryptoMigrationProgressUpdated() {
   dircrypto_migration_progress_++;
 
@@ -627,21 +625,6 @@ void FakeCryptohomeClient::OnDircryptoMigrationProgressUpdated() {
   NotifyDircryptoMigrationProgress(cryptohome::DIRCRYPTO_MIGRATION_IN_PROGRESS,
                                    dircrypto_migration_progress_,
                                    kDircryptoMigrationMaxProgress);
-}
-
-void FakeCryptohomeClient::NotifyAsyncCallStatus(int async_id,
-                                                 bool return_status,
-                                                 int return_code) {
-  for (auto& observer : observer_list_)
-    observer.AsyncCallStatus(async_id, return_status, return_code);
-}
-
-void FakeCryptohomeClient::NotifyAsyncCallStatusWithData(
-    int async_id,
-    bool return_status,
-    const std::string& data) {
-  for (auto& observer : observer_list_)
-    observer.AsyncCallStatusWithData(async_id, return_status, data);
 }
 
 void FakeCryptohomeClient::NotifyDircryptoMigrationProgress(

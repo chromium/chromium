@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -37,7 +38,6 @@ class StreamPipeOptions;
 class StreamPromiseResolver;
 class StreamStartAlgorithm;
 class UnderlyingSourceBase;
-class Visitor;
 class WritableStream;
 
 // C++ implementation of ReadableStream.

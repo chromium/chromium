@@ -23,11 +23,13 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /> <ph name="SEPARATOR1" /> <ph name="MODIFIER2" /> <ph name="SEPARATOR2" /> <ph name="KEY" /></translation>
 <translation id="1733525068429116555">Dodajanje www. in .com vnosu v naslovni vrstici, nato pa odpiranje strani</translation>
+<translation id="1768987374400973299">Ustvarjanje posnetka zaslona/videoposnetka</translation>
 <translation id="1872219238824176091">Odstranitev trenutnega namizja</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /> <ph name="SEPARATOR1" /> <ph name="ALT" /> <ph name="SEPARATOR2" /> <ph name="L" />, nato <ph name="SHIFT2" /> <ph name="SEPARATOR3" /> <ph name="TAB" /> ali <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">Premik na naslednji zavihek</translation>
 <translation id="2010818616644390445">Premik na zadnji zavihek v oknu</translation>
 <translation id="2040706009561734834">Odpiranje/zapiranje zaganjalnika</translation>
+<translation id="2086334242442703436">Odpiranje izbirnika emodžijev</translation>
 <translation id="2088054208777350526">Iskanje bližnjičnih tipk</translation>
 <translation id="2125211348069077981"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="E" /> ali <ph name="F" /></translation>
 <translation id="2145908266289632567">Urejanje besedila</translation>
@@ -46,6 +48,7 @@
 <translation id="2480851840841871861">Odpiranje Pomočnika Google</translation>
 <translation id="2488661730534396940">Aktiviranje namizja na levi</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516999188535378855">Odpiranje aplikacije za diagnostiko.</translation>
 <translation id="2530339807289914946">Pomikanje navzdol po spletni strani</translation>
 <translation id="2530896289327917474">Vklop ali izklop brskanja s kazalko</translation>
 <translation id="2574014812750545982">Ponastavitev povečave/pomanjšave na strani</translation>
@@ -110,6 +113,7 @@
 <translation id="4801989101741319327">Premik na konec naslednje besede</translation>
 <translation id="4866066940972151697">Aktiviranje namizja na desni</translation>
 <translation id="4916163929714267752">Odpiranje povezave v novem oknu</translation>
+<translation id="492453977506755176">Tipka za način zajema</translation>
 <translation id="5030659775136592441">Prikaz upravitelja zaznamkov</translation>
 <translation id="5034421018520995080">Premik na vrh strani</translation>
 <translation id="5042305953558921026">Tipka za način pregleda</translation>
@@ -132,6 +136,7 @@
 <translation id="5899919361772749550">Prikaz ali skrivanje konzole orodij za razvijalce</translation>
 <translation id="5919628958418675842">Vklop ali izklop filtra zaslona</translation>
 <translation id="5921745308587794300">Zavrti okno</translation>
+<translation id="5926306472221400972">Snemanje celozaslonskega posnetka zaslona</translation>
 <translation id="6022924867608035986">Izbris besedila v iskalnem polju</translation>
 <translation id="6045998054441862242">Vklop visokokontrastnega načina</translation>
 <translation id="6052614013050385269">Klik povezave z desno tipko miške</translation>
@@ -149,6 +154,7 @@
 <translation id="6445033640292336367">Premik zavihka na prvotno mesto</translation>
 <translation id="6474744297082284761">Pomanjšava (kadar je omogočena zasidrana ALI celozaslonska lupa)</translation>
 <translation id="649811797655257835">Izberite datoteko, nato pritisnite <ph name="SPACE" /></translation>
+<translation id="6551886416582667425">Ustvarite delni posnetek zaslona/videoposnetek.</translation>
 <translation id="6556040137485212400">Odpiranje okna, ki najdlje ni bilo uporabljeno</translation>
 <translation id="666343722268997814">Odpiranje priročnega menija za označen element</translation>
 <translation id="6671538777808758331">Premik na naslednje ujemanje za poizvedbo</translation>
@@ -175,6 +181,7 @@
 <translation id="7611271430932669992">Preklop na pojavna okna in pogovorna okna</translation>
 <translation id="7635348532214572995">Premik ikone aplikacije po mreži z aplikacijami</translation>
 <translation id="766326951329901120">Lepljenje vsebine iz odložišča kot navadno besedilo</translation>
+<translation id="7673453620027697230">Ustvarite posnetek zaslona/videoposnetek okna.</translation>
 <translation id="7703010453515335249">oklepaj</translation>
 <translation id="7724603315864178912">Izreži</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /> <ph name="SEPARATOR1" /> <ph name="ALT" /> <ph name="SEPARATOR2" /> <ph name="L" />, nato <ph name="SPACE" /> ali <ph name="ENTER" /></translation>

@@ -30,12 +30,18 @@ class ImageRecord : public base::SupportsWeakPtr<ImageRecord> {
  public:
   ImageRecord(DOMNodeId new_node_id,
               const ImageResourceContent* new_cached_image,
-              uint64_t new_first_size)
+              uint64_t new_first_size,
+              const IntRect& frame_visual_rect,
+              const FloatRect& root_visual_rect)
       : node_id(new_node_id),
         cached_image(new_cached_image),
         first_size(new_first_size) {
     static unsigned next_insertion_index_ = 1;
     insertion_index = next_insertion_index_++;
+    if (PaintTimingVisualizer::IsTracingEnabled()) {
+      lcp_rect_info_ = std::make_unique<LCPRectInfo>(
+          frame_visual_rect, RoundedIntRect(root_visual_rect));
+    }
   }
 
   ImageRecord() {}
@@ -51,6 +57,8 @@ class ImageRecord : public base::SupportsWeakPtr<ImageRecord> {
   base::TimeTicks paint_time = base::TimeTicks();
   base::TimeTicks load_time = base::TimeTicks();
   bool loaded = false;
+  // LCP rect information, only populated when tracing is enabled.
+  std::unique_ptr<LCPRectInfo> lcp_rect_info_;
 };
 
 typedef std::pair<const LayoutObject*, const ImageResourceContent*> RecordId;
@@ -108,7 +116,10 @@ class CORE_EXPORT ImageRecordsManager {
   inline void RecordInvisible(const RecordId& record_id) {
     invisible_images_.insert(record_id);
   }
-  void RecordVisible(const RecordId& record_id, const uint64_t& visual_size);
+  void RecordVisible(const RecordId& record_id,
+                     const uint64_t& visual_size,
+                     const IntRect& frame_visual_rect,
+                     const FloatRect& root_visual_rect);
   bool IsRecordedVisibleImage(const RecordId& record_id) const {
     return visible_images_.Contains(record_id);
   }
@@ -140,7 +151,9 @@ class CORE_EXPORT ImageRecordsManager {
   // opacity. May update |largest_ignored_image_| if the new candidate has a
   // larger size.
   void MaybeUpdateLargestIgnoredImage(const RecordId&,
-                                      const uint64_t& visual_size);
+                                      const uint64_t& visual_size,
+                                      const IntRect& frame_visual_rect,
+                                      const FloatRect& root_visual_rect);
   void ReportLargestIgnoredImage(unsigned current_frame_index);
 
   // Compare the last frame index in queue with the last frame index that has
@@ -182,7 +195,9 @@ class CORE_EXPORT ImageRecordsManager {
   std::unique_ptr<ImageRecord> CreateImageRecord(
       const LayoutObject& object,
       const ImageResourceContent* cached_image,
-      const uint64_t& visual_size);
+      const uint64_t& visual_size,
+      const IntRect& frame_visual_rect,
+      const FloatRect& root_visual_rect);
   inline void QueueToMeasurePaintTime(base::WeakPtr<ImageRecord>& record,
                                       unsigned current_frame_index) {
     images_queued_for_paint_time_.push_back(record);
@@ -296,7 +311,8 @@ class CORE_EXPORT ImagePaintTimingDetector final
   // downsizing the size of images with low intrinsic size. Images that occupy
   // the full viewport are special-cased and this method returns 0 for them so
   // that they are not considered valid candidates.
-  uint64_t ComputeImageRectSize(const IntRect&,
+  uint64_t ComputeImageRectSize(const IntRect& image_border,
+                                const FloatRect& mapped_visual_rect,
                                 const IntSize&,
                                 const PropertyTreeStateOrAlias&,
                                 const LayoutObject&,

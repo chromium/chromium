@@ -16,11 +16,13 @@ void FrameTokenMessageQueue::Init(Client* client) {
   client_ = client;
 }
 
-void FrameTokenMessageQueue::DidProcessFrame(uint32_t frame_token) {
+void FrameTokenMessageQueue::DidProcessFrame(uint32_t frame_token,
+                                             base::TimeTicks activation_time) {
   // The queue will be cleared if the Renderer has been Reset. Do not enforce
   // token order, as ACKs for old frames may still be in flight from Viz.
   if (callback_map_.empty()) {
     last_received_frame_token_ = frame_token;
+    last_received_activation_time_ = activation_time;
     return;
   }
 
@@ -38,6 +40,7 @@ void FrameTokenMessageQueue::DidProcessFrame(uint32_t frame_token) {
   }
 
   last_received_frame_token_ = frame_token;
+  last_received_activation_time_ = activation_time;
 
   // Gets the first callback associated with a token after |frame_token| or
   // callback_map_.end().
@@ -46,7 +49,7 @@ void FrameTokenMessageQueue::DidProcessFrame(uint32_t frame_token) {
   // std::multimap already sorts on keys, so this will process all enqueued
   // messages up to the current frame token.
   for (auto it = callback_map_.begin(); it != upper_bound; ++it)
-    std::move(it->second).Run();
+    std::move(it->second).Run(activation_time);
 
   // Clear all callbacks up to the current frame token.
   callback_map_.erase(callback_map_.begin(), upper_bound);
@@ -54,9 +57,9 @@ void FrameTokenMessageQueue::DidProcessFrame(uint32_t frame_token) {
 
 void FrameTokenMessageQueue::EnqueueOrRunFrameTokenCallback(
     uint32_t frame_token,
-    base::OnceClosure callback) {
+    base::OnceCallback<void(base::TimeTicks)> callback) {
   if (frame_token <= last_received_frame_token_) {
-    std::move(callback).Run();
+    std::move(callback).Run(last_received_activation_time_);
     return;
   }
   callback_map_.insert(std::make_pair(frame_token, std::move(callback)));

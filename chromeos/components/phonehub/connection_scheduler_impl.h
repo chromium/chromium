@@ -13,16 +13,19 @@
 #include "net/base/backoff_entry.h"
 
 namespace chromeos {
-namespace phonehub {
 
+namespace secure_channel {
 class ConnectionManager;
+}  // namespace secure_channel
+
+namespace phonehub {
 
 // ConnectionScheduler implementation that schedules calls to ConnectionManager
 // in order to establish a connection to the user's phone.
 class ConnectionSchedulerImpl : public ConnectionScheduler,
                                 public FeatureStatusProvider::Observer {
  public:
-  ConnectionSchedulerImpl(ConnectionManager* connection_manager,
+  ConnectionSchedulerImpl(secure_channel::ConnectionManager* connection_manager,
                           FeatureStatusProvider* feature_status_provider);
   ~ConnectionSchedulerImpl() override;
 
@@ -44,7 +47,7 @@ class ConnectionSchedulerImpl : public ConnectionScheduler,
   base::TimeDelta GetCurrentBackoffDelayTimeForTesting();
   int GetBackoffFailureCountForTesting();
 
-  ConnectionManager* connection_manager_;
+  secure_channel::ConnectionManager* connection_manager_;
   FeatureStatusProvider* feature_status_provider_;
   // Provides us the backoff timers for RequestConnection().
   net::BackoffEntry retry_backoff_;

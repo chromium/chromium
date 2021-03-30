@@ -13,7 +13,6 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/observer_list_types.h"
-#include "base/strings/string16.h"
 
 namespace ash {
 
@@ -44,28 +43,28 @@ class ASH_PUBLIC_EXPORT AppListNotifier {
     // impression timer.
     virtual void OnImpression(Location location,
                               const std::vector<Result>& results,
-                              const base::string16& query) {}
+                              const std::u16string& query) {}
 
     // Called when an impression occurred for |results|, and the user then moved
     // to a different UI view. For example, by closing the launcher or
     // changing the search query.
     virtual void OnAbandon(Location location,
                            const std::vector<Result>& results,
-                           const base::string16& query) {}
+                           const std::u16string& query) {}
 
     // Called when the |location| UI view displayed |results|, but the user
     // launched a result in a different UI view. This can only happen when
     // |location| is kList or kTile.
     virtual void OnIgnore(Location location,
                           const std::vector<Result>& results,
-                          const base::string16& query) {}
+                          const std::u16string& query) {}
 
     // Called when the |launched| result is launched, and provides all |shown|
     // results at |location| (including |launched|).
     virtual void OnLaunch(Location location,
                           const Result& launched,
                           const std::vector<Result>& shown,
-                          const base::string16& query) {}
+                          const std::u16string& query) {}
   };
 
   virtual ~AppListNotifier() = default;
@@ -83,7 +82,7 @@ class ASH_PUBLIC_EXPORT AppListNotifier {
                                     const std::vector<Result>& results) = 0;
 
   // Called to indicate the user has updated the search query to |query|.
-  virtual void NotifySearchQueryChanged(const base::string16& query) = 0;
+  virtual void NotifySearchQueryChanged(const std::u16string& query) = 0;
 
   // Called to indicate the UI state is now |view|.
   virtual void NotifyUIStateChanged(AppListViewState view) = 0;

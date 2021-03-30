@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -22,6 +23,10 @@
 #if defined(OS_ANDROID)
 #include "chrome/browser/android/partner_browser_customizations.h"
 #endif  // defined(OS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // static
 // Sadly, this is required until c++17.
@@ -66,10 +71,14 @@ bool IncognitoModePrefs::ShouldLaunchIncognito(
   // to launch in incognito mode or if it was forced via prefs. This way,
   // the parental controls check (which can be quite slow) can be avoided
   // most of the time.
-  const bool should_use_incognito =
+  bool should_use_incognito =
       command_line.HasSwitch(switches::kIncognito) ||
       GetAvailabilityInternal(prefs, DONT_CHECK_PARENTAL_CONTROLS) ==
           IncognitoModePrefs::FORCED;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  should_use_incognito |=
+      chromeos::LacrosChromeServiceImpl::Get()->init_params()->is_incognito;
+#endif
   return should_use_incognito &&
          GetAvailabilityInternal(prefs, CHECK_PARENTAL_CONTROLS) !=
              IncognitoModePrefs::DISABLED;

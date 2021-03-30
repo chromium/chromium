@@ -59,7 +59,7 @@ TEST_TARGETS.push(
 
   // Set cookieA by a successful CORS.
   [OTHER_BASE_URL + 'mode=cors&credentials=include&ACAOrigin=' + BASE_ORIGIN +
-    '&ACACredentials=true&SetCookie=cookieA&SameSiteNone',
+    '&ACACredentials=true&SetCookie=cookieA',
     [fetchResolved, hasBody, typeCors], [cookieCheck2]],
   // Check that cookie is set.
   [OTHER_CHECK_URL + 'otherCheck1', [fetchResolved], [cookieCheckA]],
@@ -69,32 +69,32 @@ TEST_TARGETS.push(
   //   Cookie is set in Step 13 of HTTP network or cache fetch
   //   (called from Step 3.5 of HTTP fetch),
   //   which is before CORS check in Step 3.6 of HTTP fetch.
-  [OTHER_BASE_URL + 'mode=cors&credentials=include&ACAOrigin=*&SetCookie=cookieB&SameSiteNone',
+  [OTHER_BASE_URL + 'mode=cors&credentials=include&ACAOrigin=*&SetCookie=cookieB',
     [fetchRejected]],
   [OTHER_CHECK_URL + 'otherCheck2', [fetchResolved], [cookieCheckB]],
 
   // Set cookieC by a rejected CORS. Fetch is rejected, but cookie is set.
   [OTHER_BASE_URL + 'mode=cors&credentials=include&ACAOrigin=' + BASE_ORIGIN +
-    '&SetCookie=cookieC&SameSiteNone',
+    '&SetCookie=cookieC',
     [fetchRejected]],
   [OTHER_CHECK_URL + 'otherCheck3', [fetchResolved], [cookieCheckC]],
 
   // Set cookieA by a rejected CORS. Fetch is rejected, but cookie is set.
-  [OTHER_BASE_URL + 'mode=cors&credentials=include&ACAOrigin=*&ACACredentials=true&SetCookie=cookieA&SameSiteNone',
+  [OTHER_BASE_URL + 'mode=cors&credentials=include&ACAOrigin=*&ACACredentials=true&SetCookie=cookieA',
     [fetchRejected]],
   [OTHER_CHECK_URL + 'otherCheck4', [fetchResolved], [cookieCheckA]],
 
   // Try to set cookieB, but
   // cookie is not sent/updated because credentials flag is not set.
   [OTHER_BASE_URL + 'mode=cors&credentials=omit&ACAOrigin=' + BASE_ORIGIN +
-    '&ACACredentials=true&SetCookie=cookieB&SameSiteNone',
+    '&ACACredentials=true&SetCookie=cookieB',
     [fetchResolved, hasBody, typeCors], [cookieCheckNone]],
   [OTHER_CHECK_URL + 'otherCheck5', [fetchResolved], [cookieCheckA]],
 
   // Try to set cookieB, but
   // cookie is not sent/updated because credentials flag is not set.
   [OTHER_BASE_URL + 'mode=cors&credentials=same-origin&ACAOrigin=' +
-    BASE_ORIGIN + '&ACACredentials=true&SetCookie=cookieB&SameSiteNone',
+    BASE_ORIGIN + '&ACACredentials=true&SetCookie=cookieB',
     [fetchResolved, hasBody, typeCors], [cookieCheckNone]],
   [OTHER_CHECK_URL + 'otherCheck6', [fetchResolved], [cookieCheckA]],
 
@@ -103,13 +103,13 @@ TEST_TARGETS.push(
   // Set cookieB by a successful CORS with CORS preflight.
   [OTHER_BASE_URL + 'mode=cors&credentials=include&ACAOrigin=' + BASE_ORIGIN +
     '&PACAOrigin=' + BASE_ORIGIN +
-    '&ACACredentials=true&PACACredentials=true&method=PUT&PACAMethods=PUT&SetCookie=cookieB&PreflightTest=200&SameSiteNone',
+    '&ACACredentials=true&PACACredentials=true&method=PUT&PACAMethods=PUT&SetCookie=cookieB&PreflightTest=200',
     [fetchResolved, hasBody, typeCors], [cookieCheckA]],
   [OTHER_CHECK_URL + 'otherCheck7', [fetchResolved], [cookieCheckB]],
   // Set-Cookie2 should be ignored for CORS.
   [OTHER_BASE_URL + 'mode=cors&credentials=include&ACAOrigin=' + BASE_ORIGIN +
     '&PACAOrigin=' + BASE_ORIGIN +
-    '&ACACredentials=true&PACACredentials=true&method=PUT&PACAMethods=PUT&SetCookie2=cookieC&PreflightTest=200&SameSiteNone',
+    '&ACACredentials=true&PACACredentials=true&method=PUT&PACAMethods=PUT&SetCookie2=cookieC&PreflightTest=200',
     [fetchResolved, hasBody, typeCors], [cookieCheckB]],
   [OTHER_CHECK_URL + 'otherCheck8', [fetchResolved], [cookieCheckB]],
 
@@ -119,14 +119,14 @@ TEST_TARGETS.push(
   // Set-Cookie=cookieC is sent in CORS preflight, but this should be ignored.
   [OTHER_BASE_URL + 'mode=cors&credentials=include&ACAOrigin=' + BASE_ORIGIN +
     '&PACAOrigin=' + BASE_ORIGIN +
-    '&ACACredentials=true&PACACredentials=true&method=PUT&PACAMethods=PUT&PSetCookie=cookieC&PreflightTest=200&SameSiteNone',
+    '&ACACredentials=true&PACACredentials=true&method=PUT&PACAMethods=PUT&PSetCookie=cookieC&PreflightTest=200',
     [fetchResolved, hasBody, typeCors], [cookieCheckB]],
   [OTHER_CHECK_URL + 'otherCheck9', [fetchResolved], [cookieCheckB]],
 
   // Set-Cookie2=cookieC is sent in CORS preflight, but this should be ignored.
   [OTHER_BASE_URL + 'mode=cors&credentials=include&ACAOrigin=' + BASE_ORIGIN +
     '&PACAOrigin=' + BASE_ORIGIN +
-    '&ACACredentials=true&PACACredentials=true&method=PUT&PACAMethods=PUT&PSetCookie2=cookieC&PreflightTest=200&SameSiteNone',
+    '&ACACredentials=true&PACACredentials=true&method=PUT&PACAMethods=PUT&PSetCookie2=cookieC&PreflightTest=200',
     [fetchResolved, hasBody, typeCors], [cookieCheckB]],
   [OTHER_CHECK_URL + 'otherCheck10', [fetchResolved], [cookieCheckB]],
 
@@ -135,18 +135,18 @@ TEST_TARGETS.push(
   // so no cookies are set.
 
   // Try to set cookieC.
-  [OTHER_BASE_URL + 'mode=same-origin&credentials=omit&SetCookie=cookieC&SameSiteNone',
+  [OTHER_BASE_URL + 'mode=same-origin&credentials=omit&SetCookie=cookieC',
     [fetchRejected]],
   [OTHER_CHECK_URL + 'otherCheck11', [fetchResolved], [cookieCheckB]],
 
   // Try to set cookieC.
-  [OTHER_BASE_URL + 'mode=same-origin&credentials=include&SetCookie=cookieC&SameSiteNone',
+  [OTHER_BASE_URL + 'mode=same-origin&credentials=include&SetCookie=cookieC',
     [fetchRejected]],
   [OTHER_CHECK_URL + 'otherCheck12', [fetchResolved], [cookieCheckB]],
 
   // Try to set cookieC.
   [OTHER_BASE_URL +
-    'mode=same-origin&credentials=same-origin&SetCookie=cookieC&SameSiteNone',
+    'mode=same-origin&credentials=same-origin&SetCookie=cookieC',
     [fetchRejected]],
   [OTHER_CHECK_URL + 'otherCheck13', [fetchResolved], [cookieCheckB]]
 );

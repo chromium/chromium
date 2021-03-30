@@ -49,6 +49,7 @@ class FlatTreeNodeData final : public GarbageCollected<FlatTreeNodeData> {
   friend class FlatTreeTraversal;
   friend class HTMLSlotElement;
   friend HTMLSlotElement* Node::AssignedSlot() const;
+  friend HTMLSlotElement* Node::AssignedSlotWithoutRecalc() const;
   friend void Node::ClearFlatTreeNodeDataIfHostChanged(const ContainerNode&);
   friend Element* Node::FlatTreeParentForChildDirty() const;
 

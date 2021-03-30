@@ -20,9 +20,9 @@ class CounterStyleTest : public PageTestBase,
   const CounterStyle& GetCounterStyle(const AtomicString& name) {
     if (const CounterStyleMap* document_map =
             CounterStyleMap::GetAuthorCounterStyleMap(GetDocument()))
-      return document_map->FindCounterStyleAcrossScopes(name);
-    return CounterStyleMap::GetUACounterStyleMap()
-        ->FindCounterStyleAcrossScopes(name);
+      return *document_map->FindCounterStyleAcrossScopes(name);
+    return *CounterStyleMap::GetUACounterStyleMap()
+                ->FindCounterStyleAcrossScopes(name);
   }
 
   const CounterStyle AddCounterStyle(const AtomicString& name,
@@ -125,7 +125,6 @@ TEST_F(CounterStyleTest, FixedAlgorithm) {
   // Fallback to decimal
   EXPECT_EQ("-1", eb.GenerateRepresentation(-1));
   EXPECT_EQ("0", eb.GenerateRepresentation(0));
-  EXPECT_EQ("13", eb.GenerateRepresentation(13));
 }
 
 TEST_F(CounterStyleTest, SymbolicAlgorithm) {
@@ -236,16 +235,16 @@ TEST_F(CounterStyleTest, CustomPad) {
   // Getting custom 'pad' directly from descriptor value.
   const CounterStyle& financial_decimal_pad =
       GetCounterStyle("financial-decimal-pad");
-  EXPECT_EQ("(99)", financial_decimal_pad.GenerateRepresentation(-99));
-  EXPECT_EQ("(01)", financial_decimal_pad.GenerateRepresentation(-1));
+  EXPECT_EQ("(0099)", financial_decimal_pad.GenerateRepresentation(-99));
+  EXPECT_EQ("(0001)", financial_decimal_pad.GenerateRepresentation(-1));
   EXPECT_EQ("0000", financial_decimal_pad.GenerateRepresentation(0));
   EXPECT_EQ("0001", financial_decimal_pad.GenerateRepresentation(1));
   EXPECT_EQ("0099", financial_decimal_pad.GenerateRepresentation(99));
 
   // Getting custom 'pad' indirectly by extending a counter style.
   const CounterStyle& extended = GetCounterStyle("extended");
-  EXPECT_EQ("(99)", extended.GenerateRepresentation(-99));
-  EXPECT_EQ("(01)", extended.GenerateRepresentation(-1));
+  EXPECT_EQ("(0099)", extended.GenerateRepresentation(-99));
+  EXPECT_EQ("(0001)", extended.GenerateRepresentation(-1));
   EXPECT_EQ("0000", extended.GenerateRepresentation(0));
   EXPECT_EQ("0001", extended.GenerateRepresentation(1));
   EXPECT_EQ("0099", extended.GenerateRepresentation(99));
@@ -439,6 +438,190 @@ TEST_F(CounterStyleTest, ExtremeValuesFixed) {
   EXPECT_EQ("-2147483648",
             fixed.GenerateRepresentation(std::numeric_limits<int>::min()));
   EXPECT_EQ("B", fixed.GenerateRepresentation(std::numeric_limits<int>::max()));
+}
+
+TEST_F(CounterStyleTest, PrefixAndSuffix) {
+  const CounterStyle& base = AddCounterStyle(
+      "base", "system: symbolic; symbols: A; prefix: X; suffix: Y;");
+  EXPECT_EQ("X", base.GetPrefix());
+  EXPECT_EQ("Y", base.GetSuffix());
+
+  const CounterStyle& extended =
+      AddCounterStyle("extended", "system: extends base");
+  EXPECT_EQ("X", extended.GetPrefix());
+  EXPECT_EQ("Y", extended.GetSuffix());
+}
+
+TEST_F(CounterStyleTest, Hebrew) {
+  // Verifies that our 'hebrew' implementation matches the spec in the
+  // officially specified range 1-10999.
+  // https://drafts.csswg.org/css-counter-styles-3/#hebrew
+  const CounterStyle& hebrew_as_specced =
+      AddCounterStyle("hebrew-as-specced", R"CSS(
+    system: additive;
+    range: 1 10999;
+    additive-symbols: 10000 \5D9\5F3, 9000 \5D8\5F3, 8000 \5D7\5F3, 7000 \5D6\5F3, 6000 \5D5\5F3, 5000 \5D4\5F3, 4000 \5D3\5F3, 3000 \5D2\5F3, 2000 \5D1\5F3, 1000 \5D0\5F3, 400 \5EA, 300 \5E9, 200 \5E8, 100 \5E7, 90 \5E6, 80 \5E4, 70 \5E2, 60 \5E1, 50 \5E0, 40 \5DE, 30 \5DC, 20 \5DB, 19 \5D9\5D8, 18 \5D9\5D7, 17 \5D9\5D6, 16 \5D8\5D6, 15 \5D8\5D5, 10 \5D9, 9 \5D8, 8 \5D7, 7 \5D6, 6 \5D5, 5 \5D4, 4 \5D3, 3 \5D2, 2 \5D1, 1 \5D0;
+  )CSS");
+  const CounterStyle& hebrew_as_implemented = GetCounterStyle("hebrew");
+  for (int value = 1; value <= 10999; ++value) {
+    String expected = hebrew_as_specced.GenerateRepresentation(value);
+    String actual = hebrew_as_implemented.GenerateRepresentation(value);
+    EXPECT_EQ(expected, actual);
+  }
+}
+
+TEST_F(CounterStyleTest, LowerArmenian) {
+  // Verifies that our 'lower-armenian' implementation matches the spec in the
+  // officially specified range 1-9999.
+  // https://drafts.csswg.org/css-counter-styles-3/#valdef-counter-style-name-lower-armenian
+  const CounterStyle& lower_armenian_as_specced =
+      AddCounterStyle("lower-armenian-as-specced", R"CSS(
+    system: additive;
+    range: 1 9999;
+    additive-symbols: 9000 "\584", 8000 "\583", 7000 "\582", 6000 "\581", 5000 "\580", 4000 "\57F", 3000 "\57E", 2000 "\57D", 1000 "\57C", 900 "\57B", 800 "\57A", 700 "\579", 600 "\578", 500 "\577", 400 "\576", 300 "\575", 200 "\574", 100 "\573", 90 "\572", 80 "\571", 70 "\570", 60 "\56F", 50 "\56E", 40 "\56D", 30 "\56C", 20 "\56B", 10 "\56A", 9 "\569", 8 "\568", 7 "\567", 6 "\566", 5 "\565", 4 "\564", 3 "\563", 2 "\562", 1 "\561";
+  )CSS");
+  const CounterStyle& lower_armenian_as_implemented =
+      GetCounterStyle("lower-armenian");
+  for (int value = 1; value <= 9999; ++value) {
+    String expected = lower_armenian_as_specced.GenerateRepresentation(value);
+    String actual = lower_armenian_as_implemented.GenerateRepresentation(value);
+    EXPECT_EQ(expected, actual);
+  }
+}
+
+TEST_F(CounterStyleTest, UpperArmenian) {
+  // Verifies that our 'upper-armenian' implementation matches the spec in the
+  // officially specified range 1-9999.
+  // https://drafts.csswg.org/css-counter-styles-3/#valdef-counter-style-name-upper-armenian
+  const CounterStyle& upper_armenian_as_specced =
+      AddCounterStyle("upper-armenian-as-specced", R"CSS(
+    system: additive;
+    range: 1 9999;
+    additive-symbols: 9000 \554, 8000 \553, 7000 \552, 6000 \551, 5000 \550, 4000 \54F, 3000 \54E, 2000 \54D, 1000 \54C, 900 \54B, 800 \54A, 700 \549, 600 \548, 500 \547, 400 \546, 300 \545, 200 \544, 100 \543, 90 \542, 80 \541, 70 \540, 60 \53F, 50 \53E, 40 \53D, 30 \53C, 20 \53B, 10 \53A, 9 \539, 8 \538, 7 \537, 6 \536, 5 \535, 4 \534, 3 \533, 2 \532, 1 \531;
+  )CSS");
+  const CounterStyle& upper_armenian_as_implemented =
+      GetCounterStyle("upper-armenian");
+  for (int value = 1; value <= 9999; ++value) {
+    String expected = upper_armenian_as_specced.GenerateRepresentation(value);
+    String actual = upper_armenian_as_implemented.GenerateRepresentation(value);
+    EXPECT_EQ(expected, actual);
+  }
+}
+
+TEST_F(CounterStyleTest, KoreanHangulFormal) {
+  // Verifies that our 'korean-hangul-formal' implementation matches the spec in
+  // the officially specified range 1-9999.
+  // https://drafts.csswg.org/css-counter-styles-3/#korean-hangul-formal
+  const CounterStyle& korean_hangul_formal_as_specced =
+      AddCounterStyle("korean-hangul-formal-as-specced", R"CSS(
+    system: additive;
+    range: -9999 9999;
+    additive-symbols: 9000 \AD6C\CC9C, 8000 \D314\CC9C, 7000 \CE60\CC9C, 6000 \C721\CC9C, 5000 \C624\CC9C, 4000 \C0AC\CC9C, 3000 \C0BC\CC9C, 2000 \C774\CC9C, 1000 \C77C\CC9C, 900 \AD6C\BC31, 800 \D314\BC31, 700 \CE60\BC31, 600 \C721\BC31, 500 \C624\BC31, 400 \C0AC\BC31, 300 \C0BC\BC31, 200 \C774\BC31, 100 \C77C\BC31, 90 \AD6C\C2ED, 80 \D314\C2ED, 70 \CE60\C2ED, 60 \C721\C2ED, 50 \C624\C2ED, 40 \C0AC\C2ED, 30 \C0BC\C2ED, 20 \C774\C2ED, 10 \C77C\C2ED, 9 \AD6C, 8 \D314, 7 \CE60, 6 \C721, 5 \C624, 4 \C0AC, 3 \C0BC, 2 \C774, 1 \C77C, 0 \C601;
+    negative: "\B9C8\C774\B108\C2A4  ";
+  )CSS");
+  const CounterStyle& korean_hangul_formal_as_implemented =
+      GetCounterStyle("korean-hangul-formal");
+  for (int value = -9999; value <= 9999; ++value) {
+    String expected =
+        korean_hangul_formal_as_specced.GenerateRepresentation(value);
+    String actual =
+        korean_hangul_formal_as_implemented.GenerateRepresentation(value);
+    EXPECT_EQ(expected, actual);
+  }
+}
+
+TEST_F(CounterStyleTest, KoreanHanjaFormal) {
+  // Verifies that our 'korean-hanja-formal' implementation matches the spec in
+  // the officially specified range 1-9999.
+  // https://drafts.csswg.org/css-counter-styles-3/#korean-hanja-formal
+  const CounterStyle& korean_hanja_formal_as_specced =
+      AddCounterStyle("korean-hanja-formal-as-specced", R"CSS(
+    system: additive;
+    range: -9999 9999;
+    additive-symbols: 9000 \4E5D\4EDF, 8000 \516B\4EDF, 7000 \4E03\4EDF, 6000 \516D\4EDF, 5000 \4E94\4EDF, 4000 \56DB\4EDF, 3000 \53C3\4EDF, 2000 \8CB3\4EDF, 1000 \58F9\4EDF, 900 \4E5D\767E, 800 \516B\767E, 700 \4E03\767E, 600 \516D\767E, 500 \4E94\767E, 400 \56DB\767E, 300 \53C3\767E, 200 \8CB3\767E, 100 \58F9\767E, 90 \4E5D\62FE, 80 \516B\62FE, 70 \4E03\62FE, 60 \516D\62FE, 50 \4E94\62FE, 40 \56DB\62FE, 30 \53C3\62FE, 20 \8CB3\62FE, 10 \58F9\62FE, 9 \4E5D, 8 \516B, 7 \4E03, 6 \516D, 5 \4E94, 4 \56DB, 3 \53C3, 2 \8CB3, 1 \58F9, 0 \96F6;
+    negative: "\B9C8\C774\B108\C2A4  ";
+  )CSS");
+  const CounterStyle& korean_hanja_formal_as_implemented =
+      GetCounterStyle("korean-hanja-formal");
+  for (int value = -9999; value <= 9999; ++value) {
+    String expected =
+        korean_hanja_formal_as_specced.GenerateRepresentation(value);
+    String actual =
+        korean_hanja_formal_as_implemented.GenerateRepresentation(value);
+    EXPECT_EQ(expected, actual);
+  }
+}
+
+TEST_F(CounterStyleTest, KoreanHanjaInformal) {
+  // Verifies that our 'korean-hanja-informal' implementation matches the spec
+  // in the officially specified range 1-9999.
+  // https://drafts.csswg.org/css-counter-styles-3/#korean-hanja-informal
+  const CounterStyle& korean_hanja_informal_as_specced =
+      AddCounterStyle("korean-hanja-informal-as-specced", R"CSS(
+    system: additive;
+    range: -9999 9999;
+    additive-symbols: 9000 \4E5D\5343, 8000 \516B\5343, 7000 \4E03\5343, 6000 \516D\5343, 5000 \4E94\5343, 4000 \56DB\5343, 3000 \4E09\5343, 2000 \4E8C\5343, 1000 \5343, 900 \4E5D\767E, 800 \516B\767E, 700 \4E03\767E, 600 \516D\767E, 500 \4E94\767E, 400 \56DB\767E, 300 \4E09\767E, 200 \4E8C\767E, 100 \767E, 90 \4E5D\5341, 80 \516B\5341, 70 \4E03\5341, 60 \516D\5341, 50 \4E94\5341, 40 \56DB\5341, 30 \4E09\5341, 20 \4E8C\5341, 10 \5341, 9 \4E5D, 8 \516B, 7 \4E03, 6 \516D, 5 \4E94, 4 \56DB, 3 \4E09, 2 \4E8C, 1 \4E00, 0 \96F6;
+    negative: "\B9C8\C774\B108\C2A4  ";
+  )CSS");
+  const CounterStyle& korean_hanja_informal_as_implemented =
+      GetCounterStyle("korean-hanja-informal");
+  for (int value = -9999; value <= 9999; ++value) {
+    String expected =
+        korean_hanja_informal_as_specced.GenerateRepresentation(value);
+    String actual =
+        korean_hanja_informal_as_implemented.GenerateRepresentation(value);
+    EXPECT_EQ(expected, actual);
+  }
+}
+
+TEST_F(CounterStyleTest, EthiopicNumeric) {
+  const CounterStyle& style = GetCounterStyle("ethiopic-numeric");
+  EXPECT_EQ(String(u"\u1369"), style.GenerateRepresentation(1));
+  EXPECT_EQ(String(u"\u136A"), style.GenerateRepresentation(2));
+  EXPECT_EQ(String(u"\u136B"), style.GenerateRepresentation(3));
+  EXPECT_EQ(String(u"\u136C"), style.GenerateRepresentation(4));
+  EXPECT_EQ(String(u"\u136D"), style.GenerateRepresentation(5));
+  EXPECT_EQ(String(u"\u136E"), style.GenerateRepresentation(6));
+  EXPECT_EQ(String(u"\u136F"), style.GenerateRepresentation(7));
+  EXPECT_EQ(String(u"\u1370"), style.GenerateRepresentation(8));
+  EXPECT_EQ(String(u"\u1371"), style.GenerateRepresentation(9));
+  EXPECT_EQ(String(u"\u1372"), style.GenerateRepresentation(10));
+  EXPECT_EQ(String(u"\u1372\u1369"), style.GenerateRepresentation(11));
+  EXPECT_EQ(String(u"\u1372\u136A"), style.GenerateRepresentation(12));
+  EXPECT_EQ(String(u"\u1375\u136B"), style.GenerateRepresentation(43));
+  EXPECT_EQ(String(u"\u1378\u136F"), style.GenerateRepresentation(77));
+  EXPECT_EQ(String(u"\u1379"), style.GenerateRepresentation(80));
+  EXPECT_EQ(String(u"\u137A\u1371"), style.GenerateRepresentation(99));
+  EXPECT_EQ(String(u"\u137B"), style.GenerateRepresentation(100));
+  EXPECT_EQ(String(u"\u137B\u1369"), style.GenerateRepresentation(101));
+  EXPECT_EQ(String(u"\u136A\u137B\u1373\u136A"),
+            style.GenerateRepresentation(222));
+  EXPECT_EQ(String(u"\u136D\u137B\u1375"), style.GenerateRepresentation(540));
+  EXPECT_EQ(String(u"\u1371\u137B\u137A\u1371"),
+            style.GenerateRepresentation(999));
+  EXPECT_EQ(String(u"\u1372\u137B"), style.GenerateRepresentation(1000));
+  EXPECT_EQ(String(u"\u1372\u137B\u136D"), style.GenerateRepresentation(1005));
+  EXPECT_EQ(String(u"\u1372\u137B\u1377"), style.GenerateRepresentation(1060));
+  EXPECT_EQ(String(u"\u1372\u137B\u1377\u136D"),
+            style.GenerateRepresentation(1065));
+  EXPECT_EQ(String(u"\u1372\u1370\u137B"), style.GenerateRepresentation(1800));
+  EXPECT_EQ(String(u"\u1372\u1370\u137B\u1377"),
+            style.GenerateRepresentation(1860));
+  EXPECT_EQ(String(u"\u1372\u1370\u137B\u1377\u136D"),
+            style.GenerateRepresentation(1865));
+  EXPECT_EQ(String(u"\u1376\u1370\u137B\u1377\u136D"),
+            style.GenerateRepresentation(5865));
+  EXPECT_EQ(String(u"\u1378\u137B\u136D"), style.GenerateRepresentation(7005));
+  EXPECT_EQ(String(u"\u1378\u1370\u137B"), style.GenerateRepresentation(7800));
+  EXPECT_EQ(String(u"\u1378\u1370\u137B\u1377\u136C"),
+            style.GenerateRepresentation(7864));
+  EXPECT_EQ(String(u"\u137A\u1371\u137B\u137A\u1371"),
+            style.GenerateRepresentation(9999));
+  EXPECT_EQ(String(u"\u137C"), style.GenerateRepresentation(10000));
+  EXPECT_EQ(String(u"\u1378\u1370\u137B\u1369\u137C\u137A\u136A"),
+            style.GenerateRepresentation(78010092));
+  EXPECT_EQ(String(u"\u137B\u137C\u1369"),
+            style.GenerateRepresentation(1000001));
 }
 
 }  // namespace blink

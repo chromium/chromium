@@ -209,6 +209,9 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
              type == PopupMenuTypeNavigationForward) {
     tableViewController.tableView.accessibilityIdentifier =
         kPopupMenuNavigationTableViewId;
+  } else if (type == PopupMenuTypeTabGrid) {
+    tableViewController.tableView.accessibilityIdentifier =
+        kPopupMenuTabGridMenuTableViewId;
   }
 
   self.viewController = tableViewController;
@@ -259,7 +262,7 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
       static_cast<id<ApplicationCommands, BrowserCommands, FindInPageCommands,
                      LoadQueryCommands, TextZoomCommands>>(
           self.browser->GetCommandDispatcher());
-  self.actionHandler.commandHandler = self.mediator;
+  self.actionHandler.delegate = self.mediator;
   self.actionHandler.navigationAgent =
       WebNavigationBrowserAgent::FromBrowser(self.browser);
   tableViewController.delegate = self.actionHandler;

@@ -25,7 +25,6 @@ class RenderFrameHost;
 class RenderProcessHost;
 class RenderViewHostDelegate;
 class RenderWidgetHost;
-class SiteInstance;
 
 // A RenderViewHost is responsible for creating and talking to a RenderView
 // object in a child process. It exposes a high level API to users, for things
@@ -86,10 +85,11 @@ class CONTENT_EXPORT RenderViewHost {
 
   virtual RenderViewHostDelegate* GetDelegate() = 0;
 
-  virtual SiteInstance* GetSiteInstance() = 0;
-
   // Returns true if the RenderView is active and has not crashed.
   virtual bool IsRenderViewLive() = 0;
+
+  // Write a representation of this object into a trace.
+  virtual void WriteIntoTracedValue(perfetto::TracedValue context) = 0;
 
  private:
   // This interface should only be implemented inside content.

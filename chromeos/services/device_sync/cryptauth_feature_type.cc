@@ -4,11 +4,11 @@
 
 #include "chromeos/services/device_sync/cryptauth_feature_type.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/base64url.h"
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
 #include "base/stl_util.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "crypto/sha2.h"
 
 namespace chromeos {
@@ -32,6 +32,8 @@ const char kPhoneHubHostSupportedString[] = "PHONE_HUB_HOST_SUPPORTED";
 const char kPhoneHubClientSupportedString[] = "PHONE_HUB_CLIENT_SUPPORTED";
 const char kWifiSyncHostSupportedString[] = "WIFI_SYNC_HOST_SUPPORTED";
 const char kWifiSyncClientSupportedString[] = "WIFI_SYNC_CLIENT_SUPPORTED";
+const char kEcheHostSupportedString[] = "EXO_HOST_SUPPORTED";
+const char kEcheClientSupportedString[] = "EXO_CLIENT_SUPPORTED";
 
 const char kBetterTogetherHostEnabledString[] = "BETTER_TOGETHER_HOST";
 const char kBetterTogetherClientEnabledString[] = "BETTER_TOGETHER_CLIENT";
@@ -45,6 +47,8 @@ const char kPhoneHubHostEnabledString[] = "PHONE_HUB_HOST";
 const char kPhoneHubClientEnabledString[] = "PHONE_HUB_CLIENT";
 const char kWifiSyncHostEnabledString[] = "WIFI_SYNC_HOST";
 const char kWifiSyncClientEnabledString[] = "WIFI_SYNC_CLIENT";
+const char kEcheHostEnabledString[] = "EXO_HOST";
+const char kEcheClientEnabledString[] = "EXO_CLIENT";
 
 }  // namespace
 
@@ -80,6 +84,12 @@ const base::flat_set<CryptAuthFeatureType>& GetAllCryptAuthFeatureTypes() {
           feature_set.insert(CryptAuthFeatureType::kWifiSyncHostSupported);
           feature_set.insert(CryptAuthFeatureType::kWifiSyncHostEnabled);
         }
+        if (features::IsEcheSWAEnabled()) {
+          feature_set.insert(CryptAuthFeatureType::kEcheClientSupported);
+          feature_set.insert(CryptAuthFeatureType::kEcheClientEnabled);
+          feature_set.insert(CryptAuthFeatureType::kEcheHostSupported);
+          feature_set.insert(CryptAuthFeatureType::kEcheHostEnabled);
+        }
         return feature_set;
       }());
 
@@ -107,6 +117,10 @@ GetSupportedCryptAuthFeatureTypes() {
           supported_set.insert(CryptAuthFeatureType::kWifiSyncHostSupported);
           supported_set.insert(CryptAuthFeatureType::kWifiSyncClientSupported);
         }
+        if (features::IsEcheSWAEnabled()) {
+          supported_set.insert(CryptAuthFeatureType::kEcheHostSupported);
+          supported_set.insert(CryptAuthFeatureType::kEcheClientSupported);
+        }
         return supported_set;
       }());
 
@@ -132,6 +146,10 @@ const base::flat_set<CryptAuthFeatureType>& GetEnabledCryptAuthFeatureTypes() {
         if (features::IsWifiSyncAndroidEnabled()) {
           enabled_set.insert(CryptAuthFeatureType::kWifiSyncHostEnabled);
           enabled_set.insert(CryptAuthFeatureType::kWifiSyncClientEnabled);
+        }
+        if (features::IsEcheSWAEnabled()) {
+          enabled_set.insert(CryptAuthFeatureType::kEcheHostEnabled);
+          enabled_set.insert(CryptAuthFeatureType::kEcheClientEnabled);
         }
         return enabled_set;
       }());
@@ -201,6 +219,14 @@ const char* CryptAuthFeatureTypeToString(CryptAuthFeatureType feature_type) {
       return kWifiSyncClientSupportedString;
     case CryptAuthFeatureType::kWifiSyncClientEnabled:
       return kWifiSyncClientEnabledString;
+    case CryptAuthFeatureType::kEcheHostSupported:
+      return kEcheHostSupportedString;
+    case CryptAuthFeatureType::kEcheHostEnabled:
+      return kEcheHostEnabledString;
+    case CryptAuthFeatureType::kEcheClientSupported:
+      return kEcheClientSupportedString;
+    case CryptAuthFeatureType::kEcheClientEnabled:
+      return kEcheClientEnabledString;
   }
 }
 
@@ -254,6 +280,14 @@ base::Optional<CryptAuthFeatureType> CryptAuthFeatureTypeFromString(
     return CryptAuthFeatureType::kWifiSyncClientSupported;
   if (feature_type_string == kWifiSyncClientEnabledString)
     return CryptAuthFeatureType::kWifiSyncClientEnabled;
+  if (feature_type_string == kEcheHostSupportedString)
+    return CryptAuthFeatureType::kEcheHostSupported;
+  if (feature_type_string == kEcheHostEnabledString)
+    return CryptAuthFeatureType::kEcheHostEnabled;
+  if (feature_type_string == kEcheClientSupportedString)
+    return CryptAuthFeatureType::kEcheClientSupported;
+  if (feature_type_string == kEcheClientEnabledString)
+    return CryptAuthFeatureType::kEcheClientEnabled;
 
   return base::nullopt;
 }
@@ -359,6 +393,16 @@ multidevice::SoftwareFeature CryptAuthFeatureTypeToSoftwareFeature(
       FALLTHROUGH;
     case CryptAuthFeatureType::kWifiSyncClientEnabled:
       return multidevice::SoftwareFeature::kWifiSyncClient;
+
+    case CryptAuthFeatureType::kEcheHostSupported:
+      FALLTHROUGH;
+    case CryptAuthFeatureType::kEcheHostEnabled:
+      return multidevice::SoftwareFeature::kEcheHost;
+
+    case CryptAuthFeatureType::kEcheClientSupported:
+      FALLTHROUGH;
+    case CryptAuthFeatureType::kEcheClientEnabled:
+      return multidevice::SoftwareFeature::kEcheClient;
   }
 }
 
@@ -389,6 +433,10 @@ CryptAuthFeatureType CryptAuthFeatureTypeFromSoftwareFeature(
       return CryptAuthFeatureType::kWifiSyncHostEnabled;
     case multidevice::SoftwareFeature::kWifiSyncClient:
       return CryptAuthFeatureType::kWifiSyncClientEnabled;
+    case multidevice::SoftwareFeature::kEcheHost:
+      return CryptAuthFeatureType::kEcheHostEnabled;
+    case multidevice::SoftwareFeature::kEcheClient:
+      return CryptAuthFeatureType::kEcheClientEnabled;
   }
 }
 

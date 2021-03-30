@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/canvas.h"
@@ -145,6 +146,13 @@ bool SearchResultSuggestionChipView::OnKeyPressed(const ui::KeyEvent& event) {
   return Button::OnKeyPressed(event);
 }
 
+void SearchResultSuggestionChipView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  text_view_->SetEnabledColor(
+      AppListColorProvider::Get()->GetSuggestionChipTextColor());
+  SchedulePaint();
+}
+
 std::unique_ptr<views::InkDrop>
 SearchResultSuggestionChipView::CreateInkDrop() {
   std::unique_ptr<views::InkDropImpl> ink_drop =
@@ -161,10 +169,13 @@ SearchResultSuggestionChipView::CreateInkDropRipple() const {
   const int ripple_radius = width() / 2;
   gfx::Rect bounds(center.x() - ripple_radius, center.y() - ripple_radius,
                    2 * ripple_radius, 2 * ripple_radius);
+  const AppListColorProvider* color_provider = AppListColorProvider::Get();
+  const SkColor bg_color = color_provider->GetSearchBoxBackgroundColor();
   return std::make_unique<views::FloodFillInkDropRipple>(
       size(), GetLocalBounds().InsetsFrom(bounds),
       GetInkDropCenterBasedOnLastEvent(),
-      AppListColorProvider::Get()->GetSuggestionChipInkDropColor(), 1.0f);
+      color_provider->GetRippleAttributesBaseColor(bg_color),
+      color_provider->GetRippleAttributesInkDropOpacity(bg_color));
 }
 
 std::unique_ptr<ui::Layer> SearchResultSuggestionChipView::RecreateLayer() {
@@ -179,29 +190,29 @@ void SearchResultSuggestionChipView::SetIcon(const gfx::ImageSkia& icon) {
   icon_view_->SetVisible(true);
 }
 
-void SearchResultSuggestionChipView::SetText(const base::string16& text) {
+void SearchResultSuggestionChipView::SetText(const std::u16string& text) {
   text_view_->SetText(text);
   gfx::Size size = text_view_->CalculatePreferredSize();
   size.set_width(std::min(kMaxTextWidth, size.width()));
   text_view_->SetPreferredSize(size);
 }
 
-const base::string16& SearchResultSuggestionChipView::GetText() const {
+const std::u16string& SearchResultSuggestionChipView::GetText() const {
   return text_view_->GetText();
 }
 
 void SearchResultSuggestionChipView::UpdateSuggestionChipView() {
   if (!result()) {
     SetIcon(gfx::ImageSkia());
-    SetText(base::string16());
-    SetAccessibleName(base::string16());
+    SetText(std::u16string());
+    SetAccessibleName(std::u16string());
     return;
   }
 
   SetIcon(result()->chip_icon());
   SetText(result()->title());
 
-  base::string16 accessible_name = result()->title();
+  std::u16string accessible_name = result()->title();
   if (result()->id() == kInternalAppIdContinueReading) {
     accessible_name = l10n_util::GetStringFUTF16(
         IDS_APP_LIST_CONTINUE_READING_ACCESSIBILE_NAME, accessible_name);
@@ -219,7 +230,7 @@ void SearchResultSuggestionChipView::InitLayout() {
 
   // Icon.
   const int icon_size =
-      AppListConfig::instance().suggestion_chip_icon_dimension();
+      SharedAppListConfig::instance().suggestion_chip_icon_dimension();
   icon_view_ = AddChildView(std::make_unique<views::ImageView>());
   icon_view_->SetImageSize(gfx::Size(icon_size, icon_size));
   icon_view_->SetPreferredSize(gfx::Size(icon_size, icon_size));
@@ -230,8 +241,9 @@ void SearchResultSuggestionChipView::InitLayout() {
   text_view_ = AddChildView(std::make_unique<views::Label>());
   text_view_->SetAutoColorReadabilityEnabled(false);
   text_view_->SetSubpixelRenderingEnabled(false);
-  text_view_->SetFontList(AppListConfig::instance().app_title_font());
-  SetText(base::string16());
+  text_view_->SetFontList(SharedAppListConfig::instance()
+                              .search_result_recommendation_title_font());
+  SetText(std::u16string());
   text_view_->SetEnabledColor(
       AppListColorProvider::Get()->GetSuggestionChipTextColor());
 }

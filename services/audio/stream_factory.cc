@@ -29,7 +29,8 @@ StreamFactory::~StreamFactory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
 }
 
-void StreamFactory::Bind(mojo::PendingReceiver<mojom::StreamFactory> receiver) {
+void StreamFactory::Bind(
+    mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   receivers_.Add(this, std::move(receiver));
 }
@@ -112,7 +113,7 @@ void StreamFactory::CreateOutputStream(
 }
 
 void StreamFactory::BindMuter(
-    mojo::PendingAssociatedReceiver<mojom::LocalMuter> receiver,
+    mojo::PendingAssociatedReceiver<media::mojom::LocalMuter> receiver,
     const base::UnguessableToken& group_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   TRACE_EVENT_NESTABLE_ASYNC_INSTANT1("audio", "BindMuter", this, "group id",

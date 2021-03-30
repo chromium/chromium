@@ -127,7 +127,7 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
     const std::string& method,
     const net::HttpRequestHeaders& headers,
     int32_t load_flags,
-    blink::mojom::ResourceType resource_type,
+    network::mojom::RequestDestination request_destination,
     bool has_user_gesture,
     bool originated_from_service_worker,
     CreateCheckerAndCheckCallback callback) {
@@ -152,8 +152,8 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
   // support non-main frames, we will need to provide the user preferences,
   // url_lookup_service regarding real time lookup here.
   auto checker_impl = std::make_unique<SafeBrowsingUrlCheckerImpl>(
-      headers, static_cast<int>(load_flags), resource_type, has_user_gesture,
-      delegate_,
+      headers, static_cast<int>(load_flags), request_destination,
+      has_user_gesture, delegate_,
       base::BindRepeating(&GetWebContentsFromID, render_process_id_,
                           static_cast<int>(render_frame_id)),
       /*real_time_lookup_enabled=*/false,

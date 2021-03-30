@@ -160,7 +160,7 @@ bool StateStore::HasBeenReported(IncidentType type,
 
 void StateStore::CleanLegacyValues(Transaction* transaction) {
   static const IncidentType kLegacyTypes[] = {
-      IncidentType::OBSOLETE_BLACKLIST_LOAD,
+      IncidentType::OBSOLETE_BLOCKLIST_LOAD,
       IncidentType::OBSOLETE_SUSPICIOUS_MODULE};
 
   for (IncidentType type : kLegacyTypes)

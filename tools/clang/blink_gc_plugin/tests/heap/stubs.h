@@ -181,34 +181,130 @@ class variant {};
 
 }  // namespace absl
 
+#if defined(USE_V8_OILPAN)
+
+namespace cppgc {
+
+class Visitor {
+ public:
+  template <typename T, void (T::*method)(Visitor*)>
+  void RegisterWeakMembers(const T* obj);
+
+  template <typename T>
+  void Trace(const T&);
+};
+
+namespace internal {
+class GarbageCollectedBase {};
+}  // namespace internal
+
+template <typename T>
+class GarbageCollected : public internal::GarbageCollectedBase {};
+
+class GarbageCollectedMixin : public internal::GarbageCollectedBase {
+ public:
+  virtual void AdjustAndMark(Visitor*) const = 0;
+  virtual bool IsHeapObjectAlive(Visitor*) const = 0;
+  virtual void Trace(Visitor*) const {}
+};
+
+template <typename T>
+class Member {
+ public:
+  operator T*() const { return 0; }
+  T* operator->() const { return 0; }
+  bool operator!() const { return false; }
+};
+
+template <typename T>
+class WeakMember {
+ public:
+  operator T*() const { return 0; }
+  T* operator->() const { return 0; }
+  bool operator!() const { return false; }
+};
+
+template <typename T>
+class Persistent {
+ public:
+  operator T*() const { return 0; }
+  T* operator->() const { return 0; }
+  bool operator!() const { return false; }
+};
+
+template <typename T>
+class WeakPersistent {
+ public:
+  operator T*() const { return 0; }
+  T* operator->() const { return 0; }
+  bool operator!() const { return false; }
+};
+
+namespace subtle {
+
+template <typename T>
+class CrossThreadPersistent {
+ public:
+  operator T*() const { return 0; }
+  T* operator->() const { return 0; }
+  bool operator!() const { return false; }
+};
+
+template <typename T>
+class CrossThreadWeakPersistent {
+ public:
+  operator T*() const { return 0; }
+  T* operator->() const { return 0; }
+  bool operator!() const { return false; }
+};
+
+}  // namespace subtle
+
+}  // namespace cppgc
+
 namespace blink {
 
-using namespace WTF;
+using Visitor = cppgc::Visitor;
 
-#define DISALLOW_NEW()                   \
-    private:                                    \
-    void* operator new(size_t) = delete;        \
-    void* operator new(size_t, void*) = delete;
+template <typename T>
+using GarbageCollected = cppgc::GarbageCollected<T>;
 
-#define STACK_ALLOCATED()                                   \
-    private:                                                \
-    __attribute__((annotate("blink_stack_allocated")))      \
-    void* operator new(size_t) = delete;                    \
-    void* operator new(size_t, void*) = delete;
+using GarbageCollectedMixin = cppgc::GarbageCollectedMixin;
 
-#define DISALLOW_NEW_EXCEPT_PLACEMENT_NEW() \
-    public:                                 \
-    void* operator new(size_t, void*);      \
-    private:                                \
-    void* operator new(size_t) = delete;
+template <typename T>
+using Member = cppgc::Member<T>;
+template <typename T>
+using WeakMember = cppgc::WeakMember<T>;
+template <typename T>
+using Persistent = cppgc::Persistent<T>;
+template <typename T>
+using WeakPersistent = cppgc::WeakPersistent<T>;
+template <typename T>
+using CrossThreadPersistent = cppgc::subtle::CrossThreadPersistent<T>;
+template <typename T>
+using CrossThreadWeakPersistent = cppgc::subtle::CrossThreadWeakPersistent<T>;
 
-#define GC_PLUGIN_IGNORE(bug)                           \
-    __attribute__((annotate("blink_gc_plugin_ignore")))
+#else  // !defined(USE_V8_OILPAN)
+
+namespace blink {
+
+class Visitor {
+ public:
+  template <typename T, void (T::*method)(Visitor*)>
+  void RegisterWeakMembers(const T* obj);
+
+  template <typename T>
+  void Trace(const T&);
+};
 
 template<typename T> class GarbageCollected { };
 
-template <typename T>
-class RefCountedGarbageCollected : public GarbageCollected<T> {};
+class GarbageCollectedMixin {
+ public:
+  virtual void AdjustAndMark(Visitor*) const = 0;
+  virtual bool IsHeapObjectAlive(Visitor*) const = 0;
+  virtual void Trace(Visitor*) const {}
+};
 
 template<typename T> class Member {
 public:
@@ -252,6 +348,34 @@ public:
     bool operator!() const { return false; }
 };
 
+#endif  // !defined(USE_V8_OILPAN)
+
+using namespace WTF;
+
+#define DISALLOW_NEW()                 \
+ private:                              \
+  void* operator new(size_t) = delete; \
+  void* operator new(size_t, void*) = delete;
+
+#define STACK_ALLOCATED()                            \
+ private:                                            \
+  __attribute__((annotate("blink_stack_allocated"))) \
+  void* operator new(size_t) = delete;               \
+  void* operator new(size_t, void*) = delete;
+
+#define DISALLOW_NEW_EXCEPT_PLACEMENT_NEW() \
+ public:                                    \
+  void* operator new(size_t, void*);        \
+                                            \
+ private:                                   \
+  void* operator new(size_t) = delete;
+
+#define GC_PLUGIN_IGNORE(bug) \
+  __attribute__((annotate("blink_gc_plugin_ignore")))
+
+template <typename T>
+class RefCountedGarbageCollected : public GarbageCollected<T> {};
+
 template <typename T>
 class TraceWrapperV8Reference {
  public:
@@ -288,27 +412,11 @@ class HeapHashCountedSet : public HashCountedSet<T, void, void, HeapAllocator> {
 template<typename K, typename V>
 class HeapHashMap : public HashMap<K, V, void, void, void, HeapAllocator> { };
 
-class Visitor {
- public:
-  template <typename T, void (T::*method)(Visitor*)>
-  void RegisterWeakMembers(const T* obj);
-
-  template <typename T>
-  void Trace(const T&);
-};
-
-class GarbageCollectedMixin {
-public:
-    virtual void AdjustAndMark(Visitor*) const = 0;
-    virtual bool IsHeapObjectAlive(Visitor*) const = 0;
-    virtual void Trace(Visitor*) const {}
-};
-
 template<typename T>
 struct TraceIfNeeded {
   static void Trace(Visitor*, const T&);
 };
 
-}
+}  // namespace blink
 
 #endif

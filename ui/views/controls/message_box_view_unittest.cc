@@ -6,9 +6,9 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 
 #include "base/callback_helpers.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/insets.h"
@@ -25,8 +25,8 @@ namespace views {
 namespace {
 // The default mesage width same as defined in message_box_view.cc.
 constexpr int kDefaultMessageWidth = 400;
-const base::string16 kDefaultMessage =
-    base::ASCIIToUTF16("This is a test message for MessageBoxView.");
+const std::u16string kDefaultMessage =
+    u"This is a test message for MessageBoxView.";
 }  // namespace
 
 class MessageBoxViewTest : public ViewsTestBase {
@@ -58,7 +58,7 @@ TEST_F(MessageBoxViewTest, CheckMessageOnlySize) {
 }
 
 TEST_F(MessageBoxViewTest, CheckWithOptionalViewsSize) {
-  message_box_->SetPromptField(base::string16());
+  message_box_->SetPromptField(std::u16string());
   message_box_->SizeToPreferredSize();
 
   gfx::Insets box_border =
@@ -72,9 +72,8 @@ TEST_F(MessageBoxViewTest, CheckWithOptionalViewsSize) {
   EXPECT_EQ(content_size, message_box_->size());
 
   // Add a checkbox and a link.
-  message_box_->SetCheckBoxLabel(base::ASCIIToUTF16("A checkbox"));
-  message_box_->SetLink(base::ASCIIToUTF16("Link to display"),
-                        base::DoNothing());
+  message_box_->SetCheckBoxLabel(u"A checkbox");
+  message_box_->SetLink(u"Link to display", base::DoNothing());
   message_box_->SizeToPreferredSize();
 
   box_border =
@@ -102,7 +101,7 @@ TEST_F(MessageBoxViewTest, CheckMessageWidthChange) {
 }
 
 TEST_F(MessageBoxViewTest, CheckInterRowHeightChange) {
-  message_box_->SetPromptField(base::string16());
+  message_box_->SetPromptField(std::u16string());
   message_box_->SizeToPreferredSize();
 
   int scroll_height = message_box_->scroll_view_->height();
@@ -128,7 +127,7 @@ TEST_F(MessageBoxViewTest, CheckHasVisibleCheckBox) {
   EXPECT_FALSE(message_box_->HasVisibleCheckBox());
 
   // Set and show a checkbox.
-  message_box_->SetCheckBoxLabel(base::ASCIIToUTF16("test checkbox"));
+  message_box_->SetCheckBoxLabel(u"test checkbox");
   EXPECT_TRUE(message_box_->HasVisibleCheckBox());
 }
 
@@ -136,7 +135,7 @@ TEST_F(MessageBoxViewTest, CheckGetVisiblePromptField) {
   EXPECT_FALSE(message_box_->GetVisiblePromptField());
 
   // Set the prompt field.
-  message_box_->SetPromptField(base::string16());
+  message_box_->SetPromptField(std::u16string());
   EXPECT_TRUE(message_box_->GetVisiblePromptField());
 }
 
@@ -145,10 +144,10 @@ TEST_F(MessageBoxViewTest, CheckGetInputText) {
 
   // Set the prompt field with an empty string. The returned text is still
   // empty.
-  message_box_->SetPromptField(base::string16());
+  message_box_->SetPromptField(std::u16string());
   EXPECT_TRUE(message_box_->GetInputText().empty());
 
-  const base::string16 prompt = base::ASCIIToUTF16("prompt");
+  const std::u16string prompt = u"prompt";
   message_box_->SetPromptField(prompt);
   EXPECT_FALSE(message_box_->GetInputText().empty());
   EXPECT_EQ(prompt, message_box_->GetInputText());
@@ -156,7 +155,7 @@ TEST_F(MessageBoxViewTest, CheckGetInputText) {
   // After user types some text, the returned input text should change to the
   // user input.
   views::Textfield* text_field = message_box_->GetVisiblePromptField();
-  const base::string16 input = base::ASCIIToUTF16("new input");
+  const std::u16string input = u"new input";
   text_field->SetText(input);
   EXPECT_FALSE(message_box_->GetInputText().empty());
   EXPECT_EQ(input, message_box_->GetInputText());
@@ -166,7 +165,7 @@ TEST_F(MessageBoxViewTest, CheckIsCheckBoxSelected) {
   EXPECT_FALSE(message_box_->IsCheckBoxSelected());
 
   // Set and show a checkbox.
-  message_box_->SetCheckBoxLabel(base::ASCIIToUTF16("test checkbox"));
+  message_box_->SetCheckBoxLabel(u"test checkbox");
   EXPECT_FALSE(message_box_->IsCheckBoxSelected());
 
   // Select the checkbox.

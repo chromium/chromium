@@ -22,12 +22,12 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
-import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.sharing.SharingAdapter;
 import org.chromium.chrome.browser.sharing.SharingServiceProxy;
 import org.chromium.chrome.browser.sharing.SharingServiceProxy.DeviceInfo;
 import org.chromium.chrome.browser.sync.AndroidSyncSettings;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.sync.protocol.SharingSpecificFields;
 import org.chromium.ui.widget.ButtonCompat;
 
@@ -131,8 +131,7 @@ public class SharedClipboardShareActivity
         SharedClipboardMetrics.recordDeviceClick(position);
         SharedClipboardMetrics.recordTextSize(text != null ? text.length() : 0);
 
-        SharedClipboardMessageHandler.showSendingNotification(
-                device.guid, device.clientName, text, /*retries=*/0);
+        SharedClipboardMessageHandler.showSendingNotification(device.guid, device.clientName, text);
         finish();
     }
 }

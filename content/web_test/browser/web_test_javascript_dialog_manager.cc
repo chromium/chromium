@@ -19,23 +19,14 @@ namespace content {
 
 namespace {
 bool DumpJavascriptDialog() {
-  base::Optional<bool> result =
-      WebTestControlHost::Get()
-          ->accumulated_web_test_runtime_flags_changes()
-          .FindBoolPath("dump_javascript_dialogs");
-  if (!result.has_value())
-    return true;
-  return result.value();
+  WebTestControlHost* control_host = WebTestControlHost::Get();
+  return control_host->web_test_runtime_flags().dump_javascript_dialogs();
 }
 
 bool ShouldStayOnPageAfterHandlingBeforeUnload() {
-  base::Optional<bool> result =
-      WebTestControlHost::Get()
-          ->accumulated_web_test_runtime_flags_changes()
-          .FindBoolPath("stay_on_page_after_handling_before_unload");
-  if (!result.has_value())
-    return false;
-  return result.value();
+  WebTestControlHost* control_host = WebTestControlHost::Get();
+  return control_host->web_test_runtime_flags()
+      .stay_on_page_after_handling_before_unload();
 }
 
 }  // namespace
@@ -48,8 +39,8 @@ void WebTestJavaScriptDialogManager::RunJavaScriptDialog(
     WebContents* web_contents,
     RenderFrameHost* render_frame_host,
     JavaScriptDialogType dialog_type,
-    const base::string16& message_text,
-    const base::string16& default_prompt_text,
+    const std::u16string& message_text,
+    const std::u16string& default_prompt_text,
     DialogClosedCallback callback,
     bool* did_suppress_message) {
   if (DumpJavascriptDialog()) {
@@ -71,7 +62,7 @@ void WebTestJavaScriptDialogManager::RunJavaScriptDialog(
     }
     WebTestControlHost::Get()->printer()->AddMessageRaw(message);
   }
-  std::move(callback).Run(true, base::string16());
+  std::move(callback).Run(true, std::u16string());
 }
 
 void WebTestJavaScriptDialogManager::RunBeforeUnloadDialog(
@@ -82,7 +73,7 @@ void WebTestJavaScriptDialogManager::RunBeforeUnloadDialog(
   if (DumpJavascriptDialog())
     WebTestControlHost::Get()->printer()->AddMessageRaw("CONFIRM NAVIGATION\n");
   std::move(callback).Run(!ShouldStayOnPageAfterHandlingBeforeUnload(),
-                          base::string16());
+                          std::u16string());
 }
 
 }  // namespace content

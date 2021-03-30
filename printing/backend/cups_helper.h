@@ -6,7 +6,6 @@
 #define PRINTING_BACKEND_CUPS_HELPER_H_
 
 #include <cups/cups.h>
-#include <cups/ppd.h>
 
 #include "base/strings/string_piece.h"
 #include "printing/printing_export.h"

@@ -88,9 +88,10 @@ def AddCommandLineFlags(parser):
                      help='Verify the expectation and exit.')
 
 
-def CheckExpectations(actual_data, options):
-  with build_utils.AtomicOutput(options.actual_file) as f:
-    f.write(actual_data)
+def CheckExpectations(actual_data, options, custom_msg=''):
+  if options.actual_file:
+    with build_utils.AtomicOutput(options.actual_file) as f:
+      f.write(actual_data.encode('utf8'))
   if options.expected_file_base:
     actual_data = _GenerateDiffWithOnlyAdditons(options.expected_file_base,
                                                 actual_data)
@@ -106,13 +107,15 @@ https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/android/expectation
 LogDog tip: Use "Raw log" or "Switch to lite mode" before copying:
 https://bugs.chromium.org/p/chromium/issues/detail?id=984616
 
+{}
+
 To update expectations, run:
 ########### START ###########
  patch -p1 <<'END_DIFF'
 {}
 END_DIFF
 ############ END ############
-""".format(diff_text)
+""".format(custom_msg, diff_text)
 
     sys.stderr.write(fail_msg)
 

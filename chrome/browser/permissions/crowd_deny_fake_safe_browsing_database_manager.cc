@@ -15,7 +15,7 @@ void CrowdDenyFakeSafeBrowsingDatabaseManager::SetSimulatedMetadataForUrl(
   url_to_simulated_threat_metadata_[url] = metadata;
 }
 
-void CrowdDenyFakeSafeBrowsingDatabaseManager::RemoveAllBlacklistedUrls() {
+void CrowdDenyFakeSafeBrowsingDatabaseManager::RemoveAllBlocklistedUrls() {
   url_to_simulated_threat_metadata_.clear();
 }
 
@@ -24,7 +24,7 @@ CrowdDenyFakeSafeBrowsingDatabaseManager::
   EXPECT_THAT(pending_clients_, testing::IsEmpty());
 }
 
-bool CrowdDenyFakeSafeBrowsingDatabaseManager::CheckApiBlacklistUrl(
+bool CrowdDenyFakeSafeBrowsingDatabaseManager::CheckApiBlocklistUrl(
     const GURL& url,
     Client* client) {
   if (simulate_synchronous_result_)
@@ -35,7 +35,7 @@ bool CrowdDenyFakeSafeBrowsingDatabaseManager::CheckApiBlacklistUrl(
     pending_clients_.insert(client);
   } else {
     auto result = GetSimulatedMetadataOrSafe(url);
-    client->OnCheckApiBlacklistUrlResult(url, std::move(result));
+    client->OnCheckApiBlocklistUrlResult(url, std::move(result));
   }
   return false;
 }

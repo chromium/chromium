@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/base/page_transition_types.h"
 
 class GURL;
@@ -109,7 +108,7 @@ class DownloadTask {
   virtual std::string GetMimeType() const = 0;
 
   // Suggested name for the downloaded file.
-  virtual base::string16 GetSuggestedFilename() const = 0;
+  virtual std::u16string GetSuggestedFilename() const = 0;
 
   // Returns true if the last download operation was fully or partially
   // performed while the application was not active.

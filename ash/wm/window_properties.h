@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ui/base/class_property.h"
-#include "ui/base/ui_base_types.h"
 
 namespace aura {
 template <typename T>
@@ -30,10 +29,6 @@ ASH_EXPORT extern const aura::WindowProperty<bool>* const
 // If this is set to true, the window stays in the same root window even if the
 // bounds outside of its root window is set.
 ASH_EXPORT extern const aura::WindowProperty<bool>* const kLockedToRootKey;
-
-// Set to true if the window server tells us the window is janky (see
-// WindowManagerDelegate::OnWmClientJankinessChanged()).
-ASH_EXPORT extern const aura::WindowProperty<bool>* const kWindowIsJanky;
 
 // A property key to store WindowState in the window. The window state
 // is owned by the window.

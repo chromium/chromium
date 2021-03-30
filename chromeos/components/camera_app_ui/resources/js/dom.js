@@ -12,7 +12,7 @@ import {assertInstanceof} from './chrome_util.js';
  * type.
  * @param {!Node} target
  * @param {string} selector
- * @param {function(new: T, ...)} type The expected element type.
+ * @param {function(new: T, ...?)} type The expected element type.
  * @return {T}
  * @template T
  */
@@ -25,8 +25,8 @@ export function getFrom(target, selector, type) {
  * their type to be specific type.
  * @param {!Node} target
  * @param {string} selector
- * @param {function(new: T, ...)} type The expected element type.
- * @return {!NodeList<T>}
+ * @param {function(new: T, ...?)} type The expected element type.
+ * @return {!NodeListOf<T>}
  * @template T
  */
 export function getAllFrom(target, selector, type) {
@@ -40,7 +40,7 @@ export function getAllFrom(target, selector, type) {
 /**
  * Gets an element in document matching css selector and checks its type.
  * @param {string} selector
- * @param {function(new: T, ...)} type The expected element type.
+ * @param {function(new: T, ...?)} type The expected element type.
  * @return {T}
  * @template T
  */
@@ -52,8 +52,8 @@ export function get(selector, type) {
  * Gets all elements in document matching css selector and asserts their type to
  * be specific type.
  * @param {string} selector
- * @param {function(new: T, ...)} type The expected element type.
- * @return {!NodeList<T>}
+ * @param {function(new: T, ...?)} type The expected element type.
+ * @return {!NodeListOf<T>}
  * @template T
  */
 export function getAll(selector, type) {
@@ -63,7 +63,7 @@ export function getAll(selector, type) {
 /**
  * Creates a typed element.
  * @param {string} tag The HTML tag of the element to be created.
- * @param {function(new: T, ...)} type The expected element type.
+ * @param {function(new: T, ...?)} type The expected element type.
  * @return {!T}
  * @template T
  */

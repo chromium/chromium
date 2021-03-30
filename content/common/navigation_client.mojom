@@ -6,17 +6,17 @@ module content.mojom;
 
 import "content/common/frame_messages.mojom";
 import "content/common/navigation_params.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/host_resolver.mojom";
 import "services/network/public/mojom/url_loader.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
-import "services/network/public/mojom/web_sandbox_flags.mojom";
 import "third_party/blink/public/mojom/commit_result/commit_result.mojom";
-import "third_party/blink/public/mojom/feature_policy/document_policy_feature.mojom";
-import "third_party/blink/public/mojom/feature_policy/feature_policy.mojom";
-import "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom";
-import "third_party/blink/public/mojom/feature_policy/policy_value.mojom";
+import "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom";
+import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
+import "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom";
+import "third_party/blink/public/mojom/permissions_policy/policy_value.mojom";
 import "third_party/blink/public/mojom/frame/policy_container.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
 import "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom";
@@ -71,12 +71,6 @@ struct DidCommitProvisionalLoadParams {
   // [Native] enums are by default initialized to 0 (i.e. PAGE_TRANSITION_LINK)
   PageTransition transition;
 
-  // Lists the redirects that occurred on the way to the current page. This
-  // vector has the same format as reported by the WebDataSource in the glue,
-  // with the current page being the last one in the list (so even when
-  // there's no redirect, there will be one entry in the list.
-  array<url.mojom.Url> redirects;
-
   // Set to false if we want to update the session history but not update
   // the browser history.  E.g., on unreachable urls.
   bool should_update_history = false;
@@ -115,9 +109,6 @@ struct DidCommitProvisionalLoadParams {
   // Serialized history item state to store in the navigation entry.
   PageState page_state;
 
-  // Original request's URL.
-  url.mojom.Url original_request_url;
-
   // User agent override used to navigate.
   bool is_overriding_user_agent;
 
@@ -129,13 +120,12 @@ struct DidCommitProvisionalLoadParams {
   // RenderFrameProxies.
   url.mojom.Origin origin;
 
-  // TODO(https://crbug.com/1041376): Remove this, once we trust the value
-  // computed by the browser process.
-  network.mojom.WebSandboxFlags sandbox_flags;
-
-  // The 'Feature-Policy' headers applied to the document.
-  // https://w3c.github.io/webappsec-permissions-policy/#feature-policy-http-header-field
-  array<blink.mojom.ParsedFeaturePolicyDeclaration> feature_policy_header;
+  // The 'Permissions-Policy' headers applied to the document.
+  // https://w3c.github.io/webappsec-permissions-policy/#permissions-policy-http-header-field
+  // Note: For backward compatibility, this field also contains
+  // 'Feature-Policy' headers applied to the document.
+  array<blink.mojom.ParsedPermissionsPolicyDeclaration>
+    permissions_policy_header;
 
   // The 'Document-Policy' headers applied to the document.
   // https://w3c.github.io/webappsec-permissions-policy/document-policy.html
@@ -164,6 +154,16 @@ struct DidCommitProvisionalLoadParams {
   // its parent. This is populated for cross-document navigations including
   // sub-documents and the main document.
   mojo_base.mojom.UnguessableToken? embedding_token;
+
+  // Start and end timestamps for running the unload event on the old document
+  // before this navigation replaced it. This is only valid for same-process
+  // navigations, where the unload handler on the old document runs
+  // synchronously before the new document is allowed to commit.
+  mojo_base.mojom.TimeTicks? unload_start;
+  mojo_base.mojom.TimeTicks? unload_end;
+
+  // Timestamp of when this frame committed its navigation.
+  mojo_base.mojom.TimeTicks? commit_navigation_end;
 };
 
 // Similar to DidCommitProvisionalLoadParams, but only used for
@@ -177,6 +177,10 @@ struct DidCommitSameDocumentNavigationParams {
   // TODO(crbug.com/1131832): Port SameDocumentNavigationSource enum to mojo
   // and use that instead of bool here.
   bool is_history_api_navigation = false;
+
+  // Whether the navigation is a result of a client redirect (e.g. a
+  // script-initiated navigation) or not (e.g. a link click).
+  bool is_client_redirect = false;
 };
 
 interface NavigationClient {
@@ -245,9 +249,11 @@ interface NavigationClient {
       CommitNavigationParams request_params,
       bool has_stale_copy_in_cache,
       int32 error_code,
+      int32 extended_error_code,
       network.mojom.ResolveErrorInfo resolve_error_info,
       string? error_page_content,
-      blink.mojom.URLLoaderFactoryBundle? subresource_loader_factories)
+      blink.mojom.URLLoaderFactoryBundle? subresource_loader_factories,
+      blink.mojom.PolicyContainer policy_container)
       => (DidCommitProvisionalLoadParams params,
           DidCommitProvisionalLoadInterfaceParams? interface_params);
 };

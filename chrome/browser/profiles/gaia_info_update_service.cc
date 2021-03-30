@@ -31,27 +31,25 @@
 #include "ui/gfx/image/image.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/constants/chromeos_features.h"
+#include "ash/constants/ash_features.h"
 #endif
 
 GAIAInfoUpdateService::GAIAInfoUpdateService(
     signin::IdentityManager* identity_manager,
     ProfileAttributesStorage* profile_attributes_storage,
-    const base::FilePath& profile_path,
-    PrefService* profile_prefs)
+    const base::FilePath& profile_path)
     : identity_manager_(identity_manager),
       profile_attributes_storage_(profile_attributes_storage),
-      profile_path_(profile_path),
-      profile_prefs_(profile_prefs) {
+      profile_path_(profile_path) {
   identity_manager_->AddObserver(this);
 
   if (!ShouldUpdatePrimaryAccount()) {
     ClearProfileEntry();
     return;
   }
-  ProfileAttributesEntry* entry;
-  if (!profile_attributes_storage_->GetProfileAttributesWithPath(profile_path_,
-                                                                 &entry)) {
+  ProfileAttributesEntry* entry =
+      profile_attributes_storage_->GetProfileAttributesWithPath(profile_path_);
+  if (!entry) {
     return;
   }
 
@@ -65,8 +63,7 @@ void GAIAInfoUpdateService::UpdatePrimaryAccount() {
     return;
 
   auto unconsented_primary_account_info =
-      identity_manager_->GetPrimaryAccountInfo(
-          signin::ConsentLevel::kNotRequired);
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
 
   if (!gaia_id_of_profile_attribute_entry_.empty() &&
       unconsented_primary_account_info.gaia !=
@@ -86,19 +83,15 @@ void GAIAInfoUpdateService::UpdatePrimaryAccount(const AccountInfo& info) {
   if (!info.IsValid())
     return;
 
-  ProfileAttributesEntry* entry;
-  if (!profile_attributes_storage_->GetProfileAttributesWithPath(profile_path_,
-                                                                 &entry)) {
+  ProfileAttributesEntry* entry =
+      profile_attributes_storage_->GetProfileAttributesWithPath(profile_path_);
+  if (!entry) {
     return;
   }
   gaia_id_of_profile_attribute_entry_ = info.gaia;
   entry->SetGAIAGivenName(base::UTF8ToUTF16(info.given_name));
   entry->SetGAIAName(base::UTF8ToUTF16(info.full_name));
-
   entry->SetHostedDomain(info.hosted_domain);
-  const base::string16 hosted_domain = base::UTF8ToUTF16(info.hosted_domain);
-  profile_prefs_->SetString(prefs::kGoogleServicesHostedDomain,
-                            base::UTF16ToUTF8(hosted_domain));
 
   if (info.picture_url == kNoPictureURLFound) {
     entry->SetGAIAPicture(std::string(), gfx::Image());
@@ -122,9 +115,9 @@ void GAIAInfoUpdateService::UpdateAnyAccount(const AccountInfo& info) {
   if (!info.IsValid())
     return;
 
-  ProfileAttributesEntry* entry;
-  if (!profile_attributes_storage_->GetProfileAttributesWithPath(profile_path_,
-                                                                 &entry)) {
+  ProfileAttributesEntry* entry =
+      profile_attributes_storage_->GetProfileAttributesWithPath(profile_path_);
+  if (!entry) {
     return;
   }
 
@@ -137,30 +130,33 @@ void GAIAInfoUpdateService::UpdateAnyAccount(const AccountInfo& info) {
 }
 
 void GAIAInfoUpdateService::ClearProfileEntry() {
-  ProfileAttributesEntry* entry;
-  if (!profile_attributes_storage_->GetProfileAttributesWithPath(profile_path_,
-                                                                 &entry)) {
+  ProfileAttributesEntry* entry =
+      profile_attributes_storage_->GetProfileAttributesWithPath(profile_path_);
+  if (!entry) {
     return;
   }
   gaia_id_of_profile_attribute_entry_ = "";
-  entry->SetGAIAName(base::string16());
-  entry->SetGAIAGivenName(base::string16());
+  entry->SetGAIAName(std::u16string());
+  entry->SetGAIAGivenName(std::u16string());
   entry->SetGAIAPicture(std::string(), gfx::Image());
   entry->SetHostedDomain(std::string());
-  // Unset the cached URL.
-  profile_prefs_->ClearPref(prefs::kGoogleServicesHostedDomain);
 }
 
 void GAIAInfoUpdateService::Shutdown() {
   identity_manager_->RemoveObserver(this);
 }
 
-void GAIAInfoUpdateService::OnUnconsentedPrimaryAccountChanged(
-    const CoreAccountInfo& unconsented_primary_account_info) {
-  if (unconsented_primary_account_info.gaia.empty()) {
-    ClearProfileEntry();
-  } else {
-    UpdatePrimaryAccount();
+void GAIAInfoUpdateService::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+      UpdatePrimaryAccount();
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      ClearProfileEntry();
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      break;
   }
 }
 
@@ -171,8 +167,8 @@ void GAIAInfoUpdateService::OnExtendedAccountInfoUpdated(
   if (!ShouldUpdatePrimaryAccount())
     return;
 
-  CoreAccountInfo account_info = identity_manager_->GetPrimaryAccountInfo(
-      signin::ConsentLevel::kNotRequired);
+  CoreAccountInfo account_info =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
 
   if (info.account_id != account_info.account_id)
     return;
@@ -183,9 +179,9 @@ void GAIAInfoUpdateService::OnExtendedAccountInfoUpdated(
 void GAIAInfoUpdateService::OnAccountsInCookieUpdated(
     const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
     const GoogleServiceAuthError& error) {
-  ProfileAttributesEntry* entry;
-  if (!profile_attributes_storage_->GetProfileAttributesWithPath(profile_path_,
-                                                                 &entry)) {
+  ProfileAttributesEntry* entry =
+      profile_attributes_storage_->GetProfileAttributesWithPath(profile_path_);
+  if (!entry) {
     return;
   }
 
@@ -212,6 +208,5 @@ void GAIAInfoUpdateService::OnAccountsInCookieUpdated(
 }
 
 bool GAIAInfoUpdateService::ShouldUpdatePrimaryAccount() {
-  return identity_manager_->HasPrimaryAccount(
-      signin::ConsentLevel::kNotRequired);
+  return identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 }

@@ -4,7 +4,7 @@
 
 #include "ash/wm/overview/overview_grid_event_handler.h"
 
-#include "ash/home_screen/home_screen_controller.h"
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
@@ -23,6 +23,9 @@
 namespace ash {
 
 namespace {
+
+// The amount the grid's fling curve's offsets are scaled down.
+constexpr float kFlingScaleDown = 3.f;
 
 // Do not bother moving the grid until a series of scrolls has reached this
 // threshold.
@@ -144,6 +147,7 @@ void OverviewGridEventHandler::OnAnimationStep(base::TimeTicks timestamp) {
   gfx::Vector2dF offset;
   bool continue_fling =
       fling_curve_->ComputeScrollOffset(timestamp, &offset, &fling_velocity_);
+  offset.Scale(1 / kFlingScaleDown);
   continue_fling = grid_->UpdateScrollOffset(
                        fling_last_offset_ ? offset.x() - fling_last_offset_->x()
                                           : offset.x()) &&
@@ -174,7 +178,7 @@ void OverviewGridEventHandler::HandleClickOrTap(ui::Event* event) {
     if (!SplitViewController::Get(window)->InSplitViewMode()) {
       int64_t display_id =
           display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
-      Shell::Get()->home_screen_controller()->GoHome(display_id);
+      Shell::Get()->app_list_controller()->GoHome(display_id);
     }
   } else {
     Shell::Get()->overview_controller()->EndOverview();

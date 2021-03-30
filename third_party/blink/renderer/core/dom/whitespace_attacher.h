@@ -12,6 +12,7 @@ namespace blink {
 
 class Element;
 class LayoutObject;
+class Node;
 class Text;
 
 // The WhitespaceAttacher is used during the layout tree rebuild to lazily re-

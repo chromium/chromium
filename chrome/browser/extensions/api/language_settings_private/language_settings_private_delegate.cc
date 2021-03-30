@@ -275,7 +275,7 @@ void LanguageSettingsPrivateDelegate::
     // Observe the dictionaries preference.
     pref_change_registrar_.Add(
         spellcheck::prefs::kSpellCheckDictionaries,
-        base::Bind(
+        base::BindRepeating(
             &LanguageSettingsPrivateDelegate::OnSpellcheckDictionariesChanged,
             base::Unretained(this)));
     // Observe the dictionary of custom words.

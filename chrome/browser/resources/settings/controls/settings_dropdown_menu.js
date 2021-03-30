@@ -3,6 +3,29 @@
 // found in the LICENSE file.
 
 /**
+ * 'settings-dropdown-menu' is a control for displaying options
+ * in the settings.
+ *
+ * Example:
+ *
+ *   <settings-dropdown-menu pref="{{prefs.foo}}">
+ *   </settings-dropdown-menu>
+ */
+import '//resources/cr_elements/md_select_css.m.js';
+import '//resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
+import '../settings_shared_css.js';
+import '../settings_vars_css.js';
+
+import {CrPolicyPrefBehavior} from '//resources/cr_elements/policy/cr_policy_pref_behavior.m.js';
+import {assert} from '//resources/js/assert.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../i18n_setup.js';
+import {prefToString, stringToPrefValue} from '../prefs/pref_util.js';
+
+import {PrefControlBehavior} from './pref_control_behavior.js';
+
+/**
  * The |name| is shown in the gui.  The |value| us use to set or compare with
  * the preference value.
  * @typedef {{
@@ -15,19 +38,12 @@ let DropdownMenuOption;
 /**
  * @typedef {!Array<!DropdownMenuOption>}
  */
-/* #export */ let DropdownMenuOptionList;
+export let DropdownMenuOptionList;
 
-/**
- * 'settings-dropdown-menu' is a control for displaying options
- * in the settings.
- *
- * Example:
- *
- *   <settings-dropdown-menu pref="{{prefs.foo}}">
- *   </settings-dropdown-menu>
- */
 Polymer({
   is: 'settings-dropdown-menu',
+
+  _template: html`{__html_template__}`,
 
   behaviors: [CrPolicyPrefBehavior, PrefControlBehavior],
 
@@ -92,8 +108,7 @@ Polymer({
       assert(this.pref);
       this.set(`pref.value.${this.prefKey}`, selected);
     } else {
-      const prefValue =
-          Settings.PrefUtil.stringToPrefValue(selected, assert(this.pref));
+      const prefValue = stringToPrefValue(selected, assert(this.pref));
       if (prefValue !== undefined) {
         this.set('pref.value', prefValue);
       }
@@ -141,7 +156,7 @@ Polymer({
       // Dictionary pref, values are always strings.
       return this.pref.value[this.prefKey];
     } else {
-      return Settings.PrefUtil.prefToString(assert(this.pref));
+      return prefToString(assert(this.pref));
     }
   },
 

@@ -21,8 +21,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/favicon/core/favicon_service.h"
-#include "components/sync/engine/engine_util.h"
-#include "components/sync/model/entity_data.h"
+#include "components/sync/engine/entity_data.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync_bookmarks/switches.h"
 #include "ui/gfx/favicon_size.h"
@@ -35,6 +34,9 @@ namespace {
 // Maximum number of bytes to allow in a legacy canonicalized title (must match
 // sync's internal limits; see write_node.cc).
 const int kLegacyCanonicalizedTitleLimitBytes = 255;
+
+// The list of bookmark titles which are reserved for use by the server.
+const char* const kForbiddenTitles[] = {"", ".", ".."};
 
 // Used in metrics: "Sync.InvalidBookmarkSpecifics". These values are
 // persisted to logs. Entries should not be renumbered and numeric values
@@ -166,23 +168,35 @@ std::string InferGuidForLegacyBookmark(
   return guid;
 }
 
-base::string16 NodeTitleFromSpecifics(
+bool IsForbiddenTitleWithMaybeTrailingSpaces(const std::string& title) {
+  return base::Contains(
+      kForbiddenTitles,
+      base::TrimWhitespaceASCII(title, base::TrimPositions::TRIM_TRAILING));
+}
+
+std::u16string NodeTitleFromSpecifics(
     const sync_pb::BookmarkSpecifics& specifics) {
   if (specifics.has_full_title()) {
     return base::UTF8ToUTF16(specifics.full_title());
   }
-  std::string node_title;
-  syncer::ServerNameToSyncAPIName(specifics.legacy_canonicalized_title(),
-                                  &node_title);
+
+  std::string node_title = specifics.legacy_canonicalized_title();
+  if (base::EndsWith(node_title, " ") &&
+      IsForbiddenTitleWithMaybeTrailingSpaces(node_title)) {
+    // Legacy clients added an extra space to the real title, so remove it here.
+    // See also FullTitleToLegacyCanonicalizedTitle().
+    node_title.pop_back();
+  }
   return base::UTF8ToUTF16(node_title);
 }
 
 }  // namespace
 
 std::string FullTitleToLegacyCanonicalizedTitle(const std::string& node_title) {
-  // Adjust the title for backward compatibility with legacy clients.
-  std::string specifics_title;
-  syncer::SyncAPINameToServerName(node_title, &specifics_title);
+  // Add an extra space for backward compatibility with legacy clients.
+  std::string specifics_title =
+      IsForbiddenTitleWithMaybeTrailingSpaces(node_title) ? node_title + " "
+                                                          : node_title;
   base::TruncateUTF8ToByteSize(
       specifics_title, kLegacyCanonicalizedTitleLimitBytes, &specifics_title);
   return specifics_title;
@@ -207,8 +221,7 @@ bool IsBookmarkEntityReuploadNeeded(
 sync_pb::EntitySpecifics CreateSpecificsFromBookmarkNode(
     const bookmarks::BookmarkNode* node,
     bookmarks::BookmarkModel* model,
-    bool force_favicon_load,
-    bool include_guid) {
+    bool force_favicon_load) {
   sync_pb::EntitySpecifics specifics;
   sync_pb::BookmarkSpecifics* bm_specifics = specifics.mutable_bookmark();
   if (!node->is_folder()) {
@@ -216,10 +229,7 @@ sync_pb::EntitySpecifics CreateSpecificsFromBookmarkNode(
   }
 
   DCHECK(node->guid().is_valid()) << "Actual: " << node->guid();
-
-  if (include_guid) {
-    bm_specifics->set_guid(node->guid().AsLowercaseString());
-  }
+  bm_specifics->set_guid(node->guid().AsLowercaseString());
 
   const std::string node_title = base::UTF16ToUTF8(node->GetTitle());
   bm_specifics->set_legacy_canonicalized_title(
@@ -393,28 +403,35 @@ bool IsValidBookmarkSpecifics(const sync_pb::BookmarkSpecifics& specifics,
   return is_valid;
 }
 
+base::GUID InferGuidFromLegacyOriginatorId(
+    const std::string& originator_cache_guid,
+    const std::string& originator_client_item_id) {
+  // Bookmarks created around 2016, between [M44..M52) use an uppercase GUID
+  // as originator client item ID, so it requires case-insensitive parsing.
+  base::GUID guid = base::GUID::ParseCaseInsensitive(originator_client_item_id);
+  if (guid.is_valid()) {
+    return guid;
+  }
+
+  return base::GUID::ParseLowercase(InferGuidForLegacyBookmark(
+      originator_cache_guid, originator_client_item_id));
+}
+
 bool HasExpectedBookmarkGuid(const sync_pb::BookmarkSpecifics& specifics,
+                             const syncer::ClientTagHash& client_tag_hash,
                              const std::string& originator_cache_guid,
                              const std::string& originator_client_item_id) {
   DCHECK(base::GUID::ParseLowercase(specifics.guid()).is_valid());
 
-  if (originator_client_item_id.empty()) {
-    // This could be a future bookmark with a client tag instead of an
-    // originator client item ID.
-    NOTIMPLEMENTED();
+  // If the client tag hash matches, that should already be good enough.
+  if (syncer::ClientTagHash::FromUnhashed(
+          syncer::BOOKMARKS, specifics.guid()) == client_tag_hash) {
     return true;
   }
 
-  if (base::GUID::ParseCaseInsensitive(originator_client_item_id).is_valid()) {
-    // Bookmarks created around 2016, between [M44..M52) use an uppercase GUID
-    // as originator client item ID, so it needs to be lowercased to adhere to
-    // the invariant that GUIDs in specifics are canonicalized.
-    return specifics.guid() == base::ToLowerASCII(originator_client_item_id);
-  }
-
-  return specifics.guid() ==
-         InferGuidForLegacyBookmark(originator_cache_guid,
-                                    originator_client_item_id);
+  return base::GUID::ParseLowercase(specifics.guid()) ==
+         InferGuidFromLegacyOriginatorId(originator_cache_guid,
+                                         originator_client_item_id);
 }
 
 }  // namespace sync_bookmarks

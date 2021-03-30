@@ -560,6 +560,64 @@ TEST_F(DriveFsHostTest, OnError_IgnoreUnknownErrorTypes) {
   delegate_.FlushForTesting();
 }
 
+TEST_F(DriveFsHostTest, DisplayConfirmDialog_ForwardToHandler) {
+  ASSERT_NO_FATAL_FAILURE(DoMount());
+  auto reason = mojom::DialogReason::New(
+      mojom::DialogReason::Type::kEnableDocsOffline, base::FilePath());
+  mojom::DialogReasonPtr observed_reason;
+  host_->set_dialog_handler(base::BindLambdaForTesting(
+      [&](const mojom::DialogReason& reason,
+          base::OnceCallback<void(mojom::DialogResult)> callback) {
+        observed_reason = reason.Clone();
+        std::move(callback).Run(mojom::DialogResult::kAccept);
+      }));
+  bool called = false;
+  delegate_->DisplayConfirmDialog(
+      reason.Clone(),
+      base::BindLambdaForTesting([&](mojom::DialogResult result) {
+        EXPECT_EQ(mojom::DialogResult::kAccept, result);
+        called = true;
+      }));
+  delegate_.FlushForTesting();
+  EXPECT_EQ(reason, observed_reason);
+  EXPECT_TRUE(called);
+}
+
+TEST_F(DriveFsHostTest, DisplayConfirmDialogImpl_IgnoreIfNoHandler) {
+  ASSERT_NO_FATAL_FAILURE(DoMount());
+  bool called = false;
+  delegate_->DisplayConfirmDialog(
+      mojom::DialogReason::New(mojom::DialogReason::Type::kEnableDocsOffline,
+                               base::FilePath()),
+      base::BindLambdaForTesting([&](mojom::DialogResult result) {
+        EXPECT_EQ(mojom::DialogResult::kNotDisplayed, result);
+        called = true;
+      }));
+  delegate_.FlushForTesting();
+  EXPECT_TRUE(called);
+}
+
+TEST_F(DriveFsHostTest, DisplayConfirmDialogImpl_IgnoreUnknownReasonTypes) {
+  ASSERT_NO_FATAL_FAILURE(DoMount());
+  host_->set_dialog_handler(base::BindRepeating(
+      [](const mojom::DialogReason&,
+         base::OnceCallback<void(mojom::DialogResult)>) { NOTREACHED(); }));
+  bool called = false;
+  delegate_->DisplayConfirmDialog(
+      mojom::DialogReason::New(
+          static_cast<mojom::DialogReason::Type>(
+              static_cast<std::underlying_type_t<mojom::DialogReason::Type>>(
+                  mojom::DialogReason::Type::kMaxValue) +
+              1),
+          base::FilePath()),
+      base::BindLambdaForTesting([&](mojom::DialogResult result) {
+        EXPECT_EQ(mojom::DialogResult::kNotDisplayed, result);
+        called = true;
+      }));
+  delegate_.FlushForTesting();
+  EXPECT_TRUE(called);
+}
+
 TEST_F(DriveFsHostTest, TeamDriveTracking) {
   ASSERT_NO_FATAL_FAILURE(DoMount());
 
@@ -643,15 +701,15 @@ TEST_F(DriveFsHostTest, RemoveDriveNotificationObserver) {
 
   delegate_->OnTeamDrivesListReady({"a", "b"});
   delegate_.FlushForTesting();
-  EXPECT_TRUE(host_delegate_->GetDriveNotificationManager()
-                  .observers_for_test()
-                  .might_have_observers());
+  EXPECT_TRUE(!host_delegate_->GetDriveNotificationManager()
+                   .observers_for_test()
+                   .empty());
 
   host_.reset();
 
-  EXPECT_FALSE(host_delegate_->GetDriveNotificationManager()
-                   .observers_for_test()
-                   .might_have_observers());
+  EXPECT_FALSE(!host_delegate_->GetDriveNotificationManager()
+                    .observers_for_test()
+                    .empty());
 }
 
 TEST_F(DriveFsHostTest, Remount_CachedOnceOnly) {

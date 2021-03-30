@@ -192,11 +192,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   // Add Done button.
   UIBarButtonItem* doneItem = [[UIBarButtonItem alloc]
-      initWithTitle:l10n_util::GetNSString(
-                        IDS_IOS_BOOKMARK_EDIT_MODE_EXIT_MOBILE)
-              style:UIBarButtonItemStylePlain
-             target:self
-             action:@selector(saveFolder)];
+      initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                           target:self
+                           action:@selector(saveFolder)];
   doneItem.accessibilityIdentifier =
       kBookmarkFolderEditNavigationBarDoneButtonIdentifier;
   self.navigationItem.rightBarButtonItem = doneItem;
@@ -212,16 +210,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
     self.navigationItem.leftBarButtonItem = cancelItem;
 
     [self addToolbar];
-  } else {
-    // Add Back button.
-    UIBarButtonItem* backItem =
-        [ChromeIcon templateBarButtonItemWithImage:[ChromeIcon backIcon]
-                                            target:self
-                                            action:@selector(dismiss)];
-    backItem.accessibilityLabel =
-        l10n_util::GetNSString(IDS_IOS_BOOKMARK_NEW_BACK_LABEL);
-    backItem.accessibilityIdentifier = @"Back";
-    self.navigationItem.leftBarButtonItem = backItem;
   }
   [self updateEditingState];
   [self setupCollectionViewModel];
@@ -274,7 +262,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   NSString* folderString = self.titleItem.text;
   DCHECK(folderString.length > 0);
-  base::string16 folderTitle = base::SysNSStringToUTF16(folderString);
+  std::u16string folderTitle = base::SysNSStringToUTF16(folderString);
 
   if (self.editingExistingFolder) {
     DCHECK(self.folder);
@@ -564,8 +552,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
                            target:nil
                            action:nil];
   deleteButton.tintColor = [UIColor colorNamed:kRedColor];
-  [self.navigationController.toolbar setShadowImage:[UIImage new]
-                                 forToolbarPosition:UIBarPositionAny];
+
+  if (!base::FeatureList::IsEnabled(kSettingsRefresh)) {
+    [self.navigationController.toolbar setShadowImage:[UIImage new]
+                                   forToolbarPosition:UIBarPositionAny];
+  }
+
   [self setToolbarItems:@[ spaceButton, deleteButton, spaceButton ]
                animated:NO];
 }

@@ -186,8 +186,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   item.text = l10n_util::GetNSString(
       IDS_IOS_BANDWIDTH_MANAGEMENT_DESCRIPTION_LEARN_MORE);
-  item.linkURL =
-      GURL(l10n_util::GetStringUTF8(IDS_IOS_BANDWIDTH_MANAGEMENT_LEARN_URL));
+  item.urls = std::vector<GURL>{
+      GURL(l10n_util::GetStringUTF8(IDS_IOS_BANDWIDTH_MANAGEMENT_LEARN_URL))};
   item.accessibilityTraits |= UIAccessibilityTraitButton;
   return item;
 }

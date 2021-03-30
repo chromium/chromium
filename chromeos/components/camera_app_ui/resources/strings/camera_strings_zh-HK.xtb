@@ -15,6 +15,7 @@
 <translation id="2036868001356139588">計時器時間</translation>
 <translation id="2050339315714019657">直向</translation>
 <translation id="2064538373111010176">開咗「<ph name="CAMERA" />」</translation>
+<translation id="2144806332417375165">自訂影片參數</translation>
 <translation id="229579744168541441">匯出至磁碟</translation>
 <translation id="2501278716633472235">返回</translation>
 <translation id="2501853267655415902">停咗錄影</translation>
@@ -33,7 +34,6 @@
 <translation id="3259149966178251584">相機解像度</translation>
 <translation id="3517926952904427380">無法拍攝肖像相片</translation>
 <translation id="3569311554794739032">您確定要移除「<ph name="FILE" />」嗎？</translation>
-<translation id="3750315947605636967">有其他應用程式正在使用相機</translation>
 <translation id="3810838688059735925">影片</translation>
 <translation id="3838931309141338733">掃描條碼</translation>
 <translation id="3892148308691398805">複製文字</translation>
@@ -76,10 +76,12 @@
 <translation id="7337660886763914220">檔案系統錯誤。</translation>
 <translation id="7450541714075000668">已複製文字</translation>
 <translation id="7557677699350329807">切換至下一部相機</translation>
+<translation id="7607002721634913082">已暫停</translation>
 <translation id="7608223098072244877">4 乘 4</translation>
 <translation id="7649070708921625228">說明</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7670511624014457267">每秒畫格數：60</translation>
+<translation id="7974782136796202581">顯示平移傾斜縮放選項</translation>
 <translation id="7983668134180549431">已偵測到文字。</translation>
 <translation id="8067883171444229417">播放影片</translation>
 <translation id="8131740175452115882">確定</translation>

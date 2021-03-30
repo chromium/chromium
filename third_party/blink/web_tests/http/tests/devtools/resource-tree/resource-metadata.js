@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verify that dynamically added resource has metadata.\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('resources');
   var url = TestRunner.url('resources/script-with-constant-last-modified.php');
   await TestRunner.evaluateInPageAsync(`

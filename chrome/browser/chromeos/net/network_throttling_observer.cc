@@ -23,7 +23,7 @@ NetworkThrottlingObserver::NetworkThrottlingObserver(PrefService* local_state)
     : local_state_(local_state) {
   pref_change_registrar_.Init(local_state_);
 
-  base::Callback<void(const std::string&)> throttle_callback = base::Bind(
+  auto throttle_callback = base::BindRepeating(
       &NetworkThrottlingObserver::OnPreferenceChanged, base::Unretained(this));
 
   pref_change_registrar_.Add(prefs::kNetworkThrottlingEnabled,

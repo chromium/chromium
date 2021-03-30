@@ -10,6 +10,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/chromeos/hats/hats_config.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
@@ -65,7 +66,7 @@ TEST_F(HatsFinchHelperTest, InitFinchSeed_ValidValues) {
       "1.0", "7", "1475613895337", "false", "false", kValidTriggerId);
   SetFeatureParams(params);
 
-  HatsFinchHelper hats_finch_helper(&profile_);
+  HatsFinchHelper hats_finch_helper(&profile_, kHatsGeneralSurvey);
 
   EXPECT_EQ(hats_finch_helper.probability_of_pick_, 1.0);
   EXPECT_EQ(hats_finch_helper.survey_cycle_length_, 7);
@@ -82,7 +83,7 @@ TEST_F(HatsFinchHelperTest, InitFinchSeed_Invalidalues) {
   SetFeatureParams(params);
 
   base::Time current_time = base::Time::Now();
-  HatsFinchHelper hats_finch_helper(&profile_);
+  HatsFinchHelper hats_finch_helper(&profile_, kHatsGeneralSurvey);
 
   EXPECT_EQ(hats_finch_helper.probability_of_pick_, 0.0);
   EXPECT_EQ(hats_finch_helper.survey_cycle_length_, INT_MAX);
@@ -100,7 +101,7 @@ TEST_F(HatsFinchHelperTest, TestComputeNextDate) {
 
   base::Time current_time = base::Time::Now();
 
-  HatsFinchHelper hats_finch_helper(&profile_);
+  HatsFinchHelper hats_finch_helper(&profile_, kHatsGeneralSurvey);
 
   // Case 1
   base::Time start_date = current_time - base::TimeDelta::FromDays(10);
@@ -132,7 +133,7 @@ TEST_F(HatsFinchHelperTest, ResetSurveyCycle) {
                          initial_timestamp);
 
   base::Time current_time = base::Time::Now();
-  HatsFinchHelper hats_finch_helper(&profile_);
+  HatsFinchHelper hats_finch_helper(&profile_, kHatsGeneralSurvey);
 
   EXPECT_EQ(hats_finch_helper.probability_of_pick_, 0);
   EXPECT_EQ(hats_finch_helper.survey_cycle_length_, INT_MAX);
@@ -158,7 +159,7 @@ TEST_F(HatsFinchHelperTest, ResetHats) {
                          initial_timestamp);
 
   base::Time current_time = base::Time::Now();
-  HatsFinchHelper hats_finch_helper(&profile_);
+  HatsFinchHelper hats_finch_helper(&profile_, kHatsGeneralSurvey);
 
   EXPECT_EQ(hats_finch_helper.probability_of_pick_, 0);
   EXPECT_EQ(hats_finch_helper.survey_cycle_length_, INT_MAX);

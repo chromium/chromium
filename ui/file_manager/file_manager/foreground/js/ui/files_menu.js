@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
+// #import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
+// #import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.m.js';
+
 cr.define('cr.ui', () => {
   /**
    * Menu item with ripple animation.
    */
-  class FilesMenuItem extends cr.ui.MenuItem {
+  /* #export */ class FilesMenuItem extends cr.ui.MenuItem {
     constructor() {
       super();
 
@@ -204,6 +208,7 @@ cr.define('cr.ui', () => {
     }
   }
 
+  // #cr_define_end
   return {
     FilesMenuItem: FilesMenuItem,
   };

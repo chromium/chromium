@@ -47,7 +47,7 @@ class CORE_EXPORT SelectionController final
       public ExecutionContextLifecycleObserver {
  public:
   explicit SelectionController(LocalFrame&);
-  virtual ~SelectionController();
+  ~SelectionController() override;
   void Trace(Visitor*) const override;
 
   bool HandleMousePressEvent(const MouseEventWithHitTestResults&);

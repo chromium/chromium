@@ -10,6 +10,7 @@
 // #import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js';
 // #import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.m.js';
 // #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+// #import {CellularSetupPageName} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.m.js';
 // #import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
@@ -309,6 +310,115 @@ suite('InternetPage', function() {
       removeDialog = internetPage.$$('#esimRemoveProfileDialog');
       assertTrue(!!removeDialog);
     });
+  });
+
+  test(
+      'Show pSIM flow cellular setup dialog if route params' +
+          'contain showCellularSetup and showPsimFlow',
+      async function() {
+        loadTimeData.overrideValues({
+          updatedCellularActivationUi: true,
+        });
+        eSimManagerRemote.addEuiccForTest(1);
+
+        const mojom = chromeos.networkConfig.mojom;
+        mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kCellular, true);
+        const cellularNetwork = OncMojo.getDefaultManagedProperties(
+            mojom.NetworkType.kCellular, 'cellular_guid');
+        cellularNetwork.connectable = false;
+        mojoApi_.setManagedPropertiesForTest(cellularNetwork);
+
+        await flushAsync();
+
+        let cellularSetupDialog = internetPage.$$('#cellularSetupDialog');
+        assertFalse(!!cellularSetupDialog);
+
+        const params = new URLSearchParams;
+        params.append('guid', 'cellular_guid');
+        params.append('type', 'Cellular');
+        params.append('name', 'cellular');
+        params.append('showCellularSetup', 'true');
+        params.append('showPsimFlow', 'true');
+        settings.Router.getInstance().navigateTo(
+            settings.routes.INTERNET_NETWORKS, params);
+
+        await flushAsync();
+        cellularSetupDialog = internetPage.$$('#cellularSetupDialog');
+        assertTrue(!!cellularSetupDialog);
+        const psimFlow =
+            cellularSetupDialog.shadowRoot.querySelector('cellular-setup')
+                .shadowRoot.querySelector('#psim-flow-ui');
+        assertTrue(!!psimFlow);
+      });
+
+  test('Show sim lock dialog through URL parameters', async () => {
+    loadTimeData.overrideValues({
+      updatedCellularActivationUi: true,
+    });
+    const mojom = chromeos.networkConfig.mojom;
+    mojoApi_.setDeviceStateForTest({
+      type: mojom.NetworkType.kCellular,
+      deviceState: mojom.DeviceStateType.kEnabled,
+      inhibitReason: mojom.InhibitReason.kNotInhibited
+    });
+
+    const params = new URLSearchParams;
+    params.append(
+        'type', OncMojo.getNetworkTypeString(mojom.NetworkType.kCellular));
+    params.append('showSimLockDialog', true);
+    settings.Router.getInstance().navigateTo(
+        settings.routes.INTERNET_NETWORKS, params);
+
+    await flushAsync();
+
+    const simLockDialogs = internetPage.$$('sim-lock-dialogs');
+    assertTrue(!!simLockDialogs);
+    assertTrue(simLockDialogs.isDialogOpen);
+  });
+
+  test(
+      'Show no connection toast if receive show-cellular-setup' +
+          'event and not connected to non-cellular network',
+      async function() {
+        assertFalse(internetPage.$.errorToast.open);
+
+        // Send event, toast should show, dialog hidden.
+        const event = new CustomEvent('show-cellular-setup', {
+          detail: {pageName: cellularSetup.CellularSetupPageName.ESIM_FLOW_UI}
+        });
+        internetPage.dispatchEvent(event);
+        await flushAsync();
+        assertTrue(internetPage.$.errorToast.open);
+        assertFalse(!!internetPage.$$('#cellularSetupDialog'));
+
+        // Hide the toast
+        internetPage.$.errorToast.hide();
+        assertFalse(internetPage.$.errorToast.open);
+
+        // Connect to non-cellular network.
+        const mojom = chromeos.networkConfig.mojom;
+        const wifiNetwork =
+            OncMojo.getDefaultNetworkState(mojom.NetworkType.kWiFi, 'wifi');
+        wifiNetwork.connectionState = mojom.ConnectionStateType.kOnline;
+        mojoApi_.addNetworksForTest([wifiNetwork]);
+        await flushAsync();
+
+        // Send event, toast should be hidden, dialog open.
+        internetPage.dispatchEvent(event);
+        await flushAsync();
+        assertFalse(internetPage.$.errorToast.open);
+        assertTrue(!!internetPage.$$('#cellularSetupDialog'));
+      });
+
+  test('Show toast on show-error-toast event', async function() {
+    assertFalse(internetPage.$.errorToast.open);
+
+    const message = 'Toast message';
+    const event = new CustomEvent('show-error-toast', {detail: message});
+    internetPage.dispatchEvent(event);
+    await flushAsync();
+    assertTrue(internetPage.$.errorToast.open);
+    assertEquals(internetPage.$.errorToastMessage.innerHTML, message);
   });
 
   // TODO(stevenjb): Figure out a way to reliably test navigation. Currently

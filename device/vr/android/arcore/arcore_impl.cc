@@ -352,7 +352,8 @@ base::Optional<ArCore::InitializeResult> ArCoreImpl::Initialize(
         required_features,
     const std::unordered_set<device::mojom::XRSessionFeature>&
         optional_features,
-    const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images) {
+    const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images,
+    base::Optional<ArCore::DepthSensingConfiguration> depth_sensing_config) {
   DCHECK(IsOnGlThread());
   DCHECK(!arcore_session_.is_valid());
 
@@ -383,8 +384,9 @@ base::Optional<ArCore::InitializeResult> ArCoreImpl::Initialize(
   DVLOG(1) << __func__ << ": ARCore incognito mode enabled";
 
   base::Optional<std::unordered_set<device::mojom::XRSessionFeature>>
-      maybe_enabled_features = ConfigureFeatures(
-          session.get(), required_features, optional_features, tracked_images);
+      maybe_enabled_features =
+          ConfigureFeatures(session.get(), required_features, optional_features,
+                            tracked_images, depth_sensing_config);
 
   if (!maybe_enabled_features) {
     DLOG(ERROR) << "Failed to configure session features";
@@ -422,7 +424,9 @@ base::Optional<ArCore::InitializeResult> ArCoreImpl::Initialize(
       base::PassKey<ArCoreImpl>(), arcore_session_.get());
   plane_manager_ = std::make_unique<ArCorePlaneManager>(
       base::PassKey<ArCoreImpl>(), arcore_session_.get());
-  return ArCore::InitializeResult(*maybe_enabled_features);
+
+  return ArCore::InitializeResult(*maybe_enabled_features,
+                                  depth_configuration_);
 }
 
 base::Optional<std::unordered_set<device::mojom::XRSessionFeature>>
@@ -432,7 +436,9 @@ ArCoreImpl::ConfigureFeatures(
         required_features,
     const std::unordered_set<device::mojom::XRSessionFeature>&
         optional_features,
-    const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images) {
+    const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images,
+    const base::Optional<ArCore::DepthSensingConfiguration>&
+        depth_sensing_config) {
   // Let's assume we will be able to configure a session with all features -
   // this will be adjusted if it turns out we can only create a session w/o some
   // optional features. Currently, only depth sensing is not supported across
@@ -500,20 +506,30 @@ ArCoreImpl::ConfigureFeatures(
 
   const bool depth_api_optional =
       base::Contains(optional_features, device::mojom::XRSessionFeature::DEPTH);
-  const bool depth_api_requested =
-      base::Contains(required_features,
-                     device::mojom::XRSessionFeature::DEPTH) ||
-      depth_api_optional;
+  const bool depth_api_required =
+      base::Contains(required_features, device::mojom::XRSessionFeature::DEPTH);
+  const bool depth_api_requested = depth_api_required || depth_api_optional;
 
-  if (depth_api_requested) {
+  const bool depth_api_configuration_successful =
+      depth_api_requested && ConfigureDepthSensing(depth_sensing_config);
+
+  if (depth_api_configuration_successful) {
+    // Don't try to set the depth mode if we know we won't be able to support
+    // the desired usage and data format.
     ArConfig_setDepthMode(ar_session, arcore_config.get(),
                           AR_DEPTH_MODE_AUTOMATIC);
   }
 
   ArStatus status = ArSession_configure(ar_session, arcore_config.get());
-  if (status != AR_SUCCESS && depth_api_optional) {
-    // Depth API is not available on some ARCore-capable devices - if it was
-    // requested optionally, let's try to request the session w/o it.
+  if (status != AR_SUCCESS && depth_api_requested &&
+      depth_api_configuration_successful && !depth_api_required) {
+    // Configuring an ARCore session failed for some reason, and we know depth
+    // API was requested but is not required to be enabled.
+    // Depth API may not be available on some ARCore-capable devices - since it
+    // was requested optionally, let's try to request the session w/o it.
+    // Currently, Depth API is the only feature that is not supported across the
+    // board, so we speculatively assume that it is the reason why the session
+    // creation failed.
 
     DLOG(WARNING) << __func__
                   << ": Depth API was optionally requested and the session "
@@ -533,6 +549,30 @@ ArCoreImpl::ConfigureFeatures(
   }
 
   return enabled_features;
+}
+
+bool ArCoreImpl::ConfigureDepthSensing(
+    const base::Optional<ArCore::DepthSensingConfiguration>&
+        depth_sensing_config) {
+  if (!depth_sensing_config) {
+    return false;
+  }
+
+  if (!base::Contains(depth_sensing_config->depth_usage_preference,
+                      device::mojom::XRDepthUsage::kCPUOptimized)) {
+    return false;
+  }
+
+  if (!base::Contains(depth_sensing_config->depth_data_format_preference,
+                      device::mojom::XRDepthDataFormat::kLuminanceAlpha)) {
+    return false;
+  }
+
+  depth_configuration_ = device::mojom::XRDepthConfig(
+      device::mojom::XRDepthUsage::kCPUOptimized,
+      device::mojom::XRDepthDataFormat::kLuminanceAlpha);
+
+  return true;
 }
 
 bool ArCoreImpl::ConfigureCamera(ArSession* ar_session) {
@@ -767,9 +807,8 @@ void ArCoreImpl::BuildImageDatabase(
                           kOpaque_SkAlphaType),
         SkBitmap::kZeroPixels_AllocFlag);
     SkCanvas gray_canvas(canvas_bitmap);
-    SkPaint paint;
     sk_sp<SkImage> src_image = SkImage::MakeFromBitmap(src_bitmap);
-    gray_canvas.drawImage(src_image, 0, 0, &paint);
+    gray_canvas.drawImage(src_image, 0, 0);
     SkPixmap gray_pixmap;
     if (!gray_canvas.peekPixels(&gray_pixmap)) {
       DLOG(WARNING) << __func__ << ": failed to access grayscale bitmap";
@@ -1343,6 +1382,8 @@ bool ArCoreImpl::NativeOriginExists(
 
       return anchor_manager_->AnchorExists(
           AnchorId(native_origin_information.get_anchor_id()));
+    case mojom::XRNativeOriginInformation::Tag::HAND_JOINT_SPACE_INFO:
+      return false;
   }
 }
 
@@ -1373,6 +1414,8 @@ base::Optional<gfx::Transform> ArCoreImpl::GetMojoFromNativeOrigin(
     case mojom::XRNativeOriginInformation::Tag::ANCHOR_ID:
       return anchor_manager_->GetMojoFromAnchor(
           AnchorId(native_origin_information.get_anchor_id()));
+    case mojom::XRNativeOriginInformation::Tag::HAND_JOINT_SPACE_INFO:
+      return base::nullopt;
   }
 }
 
@@ -1817,8 +1860,10 @@ mojom::XRDepthDataPtr ArCoreImpl::GetDepthData() {
 
     result->pixel_data = std::move(pixels);
     // Transform needed to consume the data:
-    result->norm_texture_from_norm_view = GetCameraUvFromScreenUvTransform();
+    result->norm_texture_from_norm_view = GetDepthUvFromScreenUvTransform();
     result->size = gfx::Size(width, height);
+    result->raw_value_to_meters =
+        1.0 / 1000.0;  // DepthInMillimeters * 1/1000 = DepthInMeters
 
     DVLOG(3) << __func__ << ": norm_texture_from_norm_view=\n"
              << result->norm_texture_from_norm_view.ToString();

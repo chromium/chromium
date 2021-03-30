@@ -30,6 +30,7 @@ class PerformanceLongTaskTiming final : public PerformanceEntry {
                             const AtomicString& culprit_src,
                             const AtomicString& culprit_id,
                             const AtomicString& culprit_name);
+  ~PerformanceLongTaskTiming() override;
 
   AtomicString entryType() const override;
   PerformanceEntryType EntryTypeEnum() const override;
@@ -39,8 +40,6 @@ class PerformanceLongTaskTiming final : public PerformanceEntry {
   void Trace(Visitor*) const override;
 
  private:
-  ~PerformanceLongTaskTiming() override;
-
   void BuildJSONValue(V8ObjectBuilder&) const override;
 
   TaskAttributionVector attribution_;

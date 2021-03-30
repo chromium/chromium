@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/accessibility/browser_accessibility_cocoa.h"
+
 #include "base/check.h"
 #include "base/strings/sys_string_conversions.h"
 #include "content/browser/accessibility/browser_accessibility.h"
-#include "content/browser/accessibility/browser_accessibility_cocoa.h"
 #include "content/browser/accessibility/browser_accessibility_mac.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/browser_accessibility_manager_mac.h"
@@ -20,11 +21,10 @@
 #include "net/base/data_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
+#include "ui/accessibility/platform/ax_private_webkit_constants_mac.h"
 #include "url/gurl.h"
 
 namespace content {
-
-namespace {
 
 class BrowserAccessibilityCocoaBrowserTest : public ContentBrowserTest {
  public:
@@ -50,15 +50,16 @@ class BrowserAccessibilityCocoaBrowserTest : public ContentBrowserTest {
   // origin.
   gfx::Point TriggerContextMenuAndGetMenuLocation(
       NSAccessibilityElement* element,
-      ContextMenuFilter* filter) {
+      ContextMenuInterceptor* interceptor) {
     // accessibilityPerformAction is deprecated, but it's still used internally
     // by AppKit.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [element accessibilityPerformAction:NSAccessibilityShowMenuAction];
-    filter->Wait();
+    interceptor->Wait();
 
-    UntrustworthyContextMenuParams context_menu_params = filter->get_params();
+    blink::UntrustworthyContextMenuParams context_menu_params =
+        interceptor->get_params();
     return gfx::Point(context_menu_params.x, context_menu_params.y);
 #pragma clang diagnostic pop
   }
@@ -71,6 +72,11 @@ class BrowserAccessibilityCocoaBrowserTest : public ContentBrowserTest {
                       forAttribute:NSAccessibilityFocusedAttribute];
 #pragma clang diagnostic pop
     WaitForAccessibilityFocusChange();
+  }
+
+  NSDictionary* GetUserInfoForSelectedTextChangedNotification() {
+    auto* manager = static_cast<BrowserAccessibilityManagerMac*>(GetManager());
+    return manager->GetUserInfoForSelectedTextChangedNotification();
   }
 
  private:
@@ -89,8 +95,6 @@ class BrowserAccessibilityCocoaBrowserTest : public ContentBrowserTest {
   }
 };
 
-}  // namespace
-
 IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
                        AXTextMarkerForTextEdit) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
@@ -106,12 +110,11 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
 
   BrowserAccessibility* text_field = FindNode(ax::mojom::Role::kTextField);
   ASSERT_NE(nullptr, text_field);
-  EXPECT_TRUE(content::ExecuteScript(
-      shell()->web_contents(), "document.querySelector('input').focus()"));
+  EXPECT_TRUE(ExecuteScript(shell()->web_contents(),
+                            "document.querySelector('input').focus()"));
 
-  content::SimulateKeyPress(shell()->web_contents(),
-                            ui::DomKey::FromCharacter('B'), ui::DomCode::US_B,
-                            ui::VKEY_B, false, false, false, false);
+  SimulateKeyPress(shell()->web_contents(), ui::DomKey::FromCharacter('B'),
+                   ui::DomCode::US_B, ui::VKEY_B, false, false, false, false);
 
   base::scoped_nsobject<BrowserAccessibilityCocoa> cocoa_text_field(
       [ToBrowserAccessibilityCocoa(text_field) retain]);
@@ -122,10 +125,9 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   AXTextEdit text_edit = [cocoa_text_field computeTextEdit];
   EXPECT_NE(text_edit.edit_text_marker, nil);
 
-  EXPECT_EQ(
-      content::AXTextMarkerToPosition(text_edit.edit_text_marker)->ToString(),
-      "TextPosition anchor_id=4 text_offset=1 affinity=downstream "
-      "annotated_text=B<>");
+  EXPECT_EQ(AXTextMarkerToAXPosition(text_edit.edit_text_marker)->ToString(),
+            "TextPosition anchor_id=4 text_offset=1 affinity=downstream "
+            "annotated_text=B<>");
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
@@ -604,31 +606,28 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   ASSERT_NSEQ(@"AXRow", [tree_children[0] role]);
   ASSERT_NSEQ(@"AXRow", [tree_children[1] role]);
 
-  content::RenderProcessHost* render_process_host =
-      shell()->web_contents()->GetMainFrame()->GetProcess();
-  auto menu_filter = base::MakeRefCounted<ContextMenuFilter>(
-      ContextMenuFilter::ShowBehavior::kPreventShow);
-  render_process_host->AddFilter(menu_filter.get());
+  auto menu_interceptor = std::make_unique<ContextMenuInterceptor>(
+      ContextMenuInterceptor::ShowBehavior::kPreventShow);
+  menu_interceptor->Init(shell()->web_contents()->GetMainFrame());
 
   gfx::Point tree_point =
-      TriggerContextMenuAndGetMenuLocation(cocoa_tree, menu_filter.get());
+      TriggerContextMenuAndGetMenuLocation(cocoa_tree, menu_interceptor.get());
 
-  menu_filter->Reset();
-  gfx::Point item_2_point =
-      TriggerContextMenuAndGetMenuLocation(tree_children[1], menu_filter.get());
+  menu_interceptor->Reset();
+  gfx::Point item_2_point = TriggerContextMenuAndGetMenuLocation(
+      tree_children[1], menu_interceptor.get());
   EXPECT_NE(tree_point, item_2_point);
 
   // Now focus the second child and trigger a context menu on the tree.
-  ASSERT_TRUE(
-      content::ExecuteScript(shell()->web_contents(),
-                             "document.body.children[0].children[1].focus();"));
+  ASSERT_TRUE(ExecuteScript(shell()->web_contents(),
+                            "document.body.children[0].children[1].focus();"));
   WaitForAccessibilityFocusChange();
 
   // Triggering a context menu on the tree should now trigger the menu
   // on the focused child.
-  menu_filter->Reset();
+  menu_interceptor->Reset();
   gfx::Point new_point =
-      TriggerContextMenuAndGetMenuLocation(cocoa_tree, menu_filter.get());
+      TriggerContextMenuAndGetMenuLocation(cocoa_tree, menu_interceptor.get());
   EXPECT_EQ(new_point, item_2_point);
 }
 
@@ -739,6 +738,65 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
     FocusAccessibilityElementAndWaitForFocusChange(first_child);
     EXPECT_EQ(test.second, [second_child owner] == [parent actionTarget]);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
+                       TestNSAccessibilityTextChangeElement) {
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                         ui::kAXModeComplete,
+                                         ax::mojom::Event::kLoadComplete);
+
+  GURL url(R"HTML(data:text/html,
+                  <div id="editable" contenteditable="true" dir="auto">
+                    <p>One</p>
+                    <p>Two</p>
+                    <p><br></p>
+                    <p>Three</p>
+                    <p>Four</p>
+                  </div>)HTML");
+
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  waiter.WaitForNotification();
+
+  base::scoped_nsobject<BrowserAccessibilityCocoa> content_editable(
+      [ToBrowserAccessibilityCocoa(GetManager()->GetRoot()->PlatformGetChild(0))
+          retain]);
+  EXPECT_EQ([[content_editable children] count], 5ul);
+
+  WebContents* web_contents = shell()->web_contents();
+  auto run_script_and_wait_for_selection_change =
+      [web_contents](const char* script) {
+        AccessibilityNotificationWaiter waiter(
+            web_contents, ui::kAXModeComplete,
+            ax::mojom::Event::kTextSelectionChanged);
+        ASSERT_TRUE(ExecuteScript(web_contents, script));
+        waiter.WaitForNotification();
+      };
+
+  FocusAccessibilityElementAndWaitForFocusChange(content_editable);
+
+  run_script_and_wait_for_selection_change(R"script(
+      let editable = document.getElementById('editable');
+      const selection = window.getSelection();
+      selection.collapse(editable.children[0].childNodes[0], 1);)script");
+
+  // The focused node in the user info should be the keyboard focusable
+  // ancestor.
+  NSDictionary* info = GetUserInfoForSelectedTextChangedNotification();
+  EXPECT_EQ(id{content_editable},
+            [info objectForKey:ui::NSAccessibilityTextChangeElement]);
+
+  AccessibilityNotificationWaiter waiter2(
+      web_contents, ui::kAXModeComplete,
+      ax::mojom::Event::kTextSelectionChanged);
+  run_script_and_wait_for_selection_change(
+      "selection.collapse(editable.children[2].childNodes[0], 0);");
+
+  // Even when the cursor is in the empty paragraph text node, the focused
+  // object should be the keyboard focusable ancestor.
+  info = GetUserInfoForSelectedTextChangedNotification();
+  EXPECT_EQ(id{content_editable},
+            [info objectForKey:ui::NSAccessibilityTextChangeElement]);
 }
 
 }  // namespace content

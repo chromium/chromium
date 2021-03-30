@@ -107,7 +107,8 @@ public class TranslateCompactInfoBar extends InfoBar
         mInitialStep = initialStep;
         mDefaultTextColor = tabTextColor;
         mOptions = TranslateOptions.create(sourceLanguageCode, targetLanguageCode, languages,
-                languageCodes, alwaysTranslate, triggeredFromMenu, hashCodes);
+                languageCodes, alwaysTranslate, triggeredFromMenu, hashCodes,
+                /*contentLanguagesCodes*/ null);
     }
 
     @Override
@@ -200,18 +201,17 @@ public class TranslateCompactInfoBar extends InfoBar
     private void initMenuHelper(int menuType) {
         boolean isIncognito = TranslateCompactInfoBarJni.get().isIncognito(
                 mNativeTranslateInfoBarPtr, TranslateCompactInfoBar.this);
+        boolean isSourceLangUnknown = mOptions.sourceLanguageCode().equals("und");
         switch (menuType) {
             case TranslateMenu.MENU_OVERFLOW:
-                if (mOverflowMenuHelper == null) {
-                    mOverflowMenuHelper = new TranslateMenuHelper(
-                            getContext(), mMenuButton, mOptions, this, isIncognito);
-                }
+                mOverflowMenuHelper = new TranslateMenuHelper(getContext(), mMenuButton, mOptions,
+                        this, isIncognito, isSourceLangUnknown);
                 return;
             case TranslateMenu.MENU_TARGET_LANGUAGE:
             case TranslateMenu.MENU_SOURCE_LANGUAGE:
                 if (mLanguageMenuHelper == null) {
-                    mLanguageMenuHelper = new TranslateMenuHelper(
-                            getContext(), mMenuButton, mOptions, this, isIncognito);
+                    mLanguageMenuHelper = new TranslateMenuHelper(getContext(), mMenuButton,
+                            mOptions, this, isIncognito, isSourceLangUnknown);
                 }
                 return;
             default:

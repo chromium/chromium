@@ -31,7 +31,7 @@ using testing::NiceMock;
 using testing::Not;
 using testing::SizeIs;
 
-namespace syncer {
+namespace invalidation {
 
 namespace {
 
@@ -143,10 +143,8 @@ class PerUserTopicSubscriptionManagerTest : public testing::Test {
     AccountInfo account =
         identity_test_env_.MakePrimaryAccountAvailable("example@gmail.com");
     identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
-    identity_provider_ =
-        std::make_unique<invalidation::ProfileIdentityProvider>(
-            identity_test_env_.identity_manager());
-    identity_provider_->SetActiveAccountId(account.account_id);
+    identity_provider_ = std::make_unique<ProfileIdentityProvider>(
+        identity_test_env_.identity_manager());
   }
 
   std::unique_ptr<PerUserTopicSubscriptionManager> BuildRegistrationManager(
@@ -213,7 +211,7 @@ class PerUserTopicSubscriptionManagerTest : public testing::Test {
   TestingPrefServiceSimple pref_service_;
 
   signin::IdentityTestEnvironment identity_test_env_;
-  std::unique_ptr<invalidation::ProfileIdentityProvider> identity_provider_;
+  std::unique_ptr<ProfileIdentityProvider> identity_provider_;
 
   RegistrationManagerStateObserver state_observer_;
 };
@@ -863,4 +861,4 @@ TEST_F(PerUserTopicSubscriptionManagerTest, ShouldRecordTokenStateHistogram) {
       per_user_topic_subscription_manager->HaveAllRequestsFinishedForTest());
 }
 
-}  // namespace syncer
+}  // namespace invalidation

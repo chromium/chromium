@@ -16,7 +16,6 @@
 #include "base/task/post_task.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache.h"
 #import "ios/chrome/browser/snapshots/snapshot_generator_delegate.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
@@ -215,24 +214,20 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
                         -frameInBaseView.origin.y);
   BOOL snapshotSuccess = YES;
 
-  // TODO(crbug.com/636188): |-drawViewHierarchyInRect:afterScreenUpdates:| is
-  // buggy on iOS 8/9/10 (and state is unknown for iOS 11) causing GPU glitches,
-  // screen redraws during animations, broken pinch to dismiss on tablet, etc.
-  // Ensure iOS 11 is not affected by these issues before turning on
-  // |kSnapshotDrawView| experiment. On the other hand, |-renderInContext:| is
-  // buggy for WKWebView, which is used for some Chromium pages such as "No
-  // internet" or "Site can't be reached".
-  BOOL useDrawViewHierarchy = ViewHierarchyContainsWKWebView(baseView) ||
-                              base::FeatureList::IsEnabled(kSnapshotDrawView);
   // |drawViewHierarchyInRect:| has undefined behavior when the view is not
   // in the visible view hierarchy. In practice, when this method is called
   // on a view that is part of view controller containment and not in the view
   // hierarchy, an UIViewControllerHierarchyInconsistency exception will be
   // thrown.
-  if (useDrawViewHierarchy && baseView.window) {
+  if (baseView.window && ViewHierarchyContainsWKWebView(baseView)) {
+    // TODO(crbug.com/636188): |-drawViewHierarchyInRect:afterScreenUpdates:| is
+    // buggy causing GPU glitches, screen redraws during animations, broken
+    // pinch to dismiss on tablet, etc.
     snapshotSuccess = [baseView drawViewHierarchyInRect:baseView.bounds
                                      afterScreenUpdates:YES];
   } else {
+    // |-renderInContext:| is buggy for WKWebView, which is used for some
+    // Chromium pages such as "No internet" or "Site can't be reached".
     [[baseView layer] renderInContext:context];
   }
   UIImage* image = nil;
@@ -293,16 +288,7 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
     // This shifts the context so that drawing starts at the overlay's offset.
     CGContextTranslateCTM(context, frameInWindow.origin.x,
                           frameInWindow.origin.y);
-    // |drawViewHierarchyInRect:| has undefined behavior when the view is not
-    // in the visible view hierarchy. In practice, when this method is called
-    // on a view that is part of view controller containment, an
-    // UIViewControllerHierarchyInconsistency exception will be thrown.
-    if (base::FeatureList::IsEnabled(kSnapshotDrawView) && overlay.window) {
-      // The rect's origin is ignored. Only size is used.
-      [overlay drawViewHierarchyInRect:overlay.bounds afterScreenUpdates:YES];
-    } else {
-      [[overlay layer] renderInContext:context];
-    }
+    [[overlay layer] renderInContext:context];
     CGContextRestoreGState(context);
   }
 }

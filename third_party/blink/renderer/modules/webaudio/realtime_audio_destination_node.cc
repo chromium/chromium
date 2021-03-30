@@ -274,8 +274,9 @@ int RealtimeAudioDestinationHandler::GetFramesPerBuffer() const {
 }
 
 void RealtimeAudioDestinationHandler::CreatePlatformDestination() {
-  platform_destination_ = AudioDestination::Create(*this, ChannelCount(),
-                                                   latency_hint_, sample_rate_);
+  platform_destination_ = AudioDestination::Create(
+      *this, ChannelCount(), latency_hint_, sample_rate_,
+      Context()->GetDeferredTaskHandler().RenderQuantumFrames());
 }
 
 void RealtimeAudioDestinationHandler::StartPlatformDestination() {

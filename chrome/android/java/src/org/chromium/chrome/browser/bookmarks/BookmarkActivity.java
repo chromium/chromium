@@ -30,10 +30,12 @@ public class BookmarkActivity extends SnackbarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        boolean isIncognito = IntentUtils.safeGetBooleanExtra(
+                getIntent(), IntentHandler.EXTRA_INCOGNITO_MODE, false);
         mBookmarkManager = new BookmarkManager(this,
                 IntentUtils.safeGetParcelableExtra(
                         getIntent(), IntentHandler.EXTRA_PARENT_COMPONENT),
-                true, getSnackbarManager());
+                true, isIncognito, getSnackbarManager());
         String url = getIntent().getDataString();
         if (TextUtils.isEmpty(url)) url = UrlConstants.BOOKMARKS_URL;
         mBookmarkManager.updateForUrl(url);

@@ -59,6 +59,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_node_data.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
+#include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer_registration.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -100,6 +101,7 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
+#include "third_party/blink/renderer/core/html/html_popup_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
@@ -1234,11 +1236,8 @@ bool Node::ShouldSkipMarkingStyleDirty() const {
 
   // If we don't have a computed style, and our parent element does not have a
   // computed style it's not necessary to mark this node for style recalc.
-  if (auto* parent = GetStyleRecalcParent()) {
-    while (parent && !parent->CanParticipateInFlatTree())
-      parent = parent->GetStyleRecalcParent();
+  if (Element* parent = GetStyleRecalcParent())
     return !parent || !parent->GetComputedStyle();
-  }
   // If this is the root element, and it does not have a computed style, we
   // still need to mark it for style recalc since it may change from
   // display:none. Otherwise, the node is not in the flat tree, and we can
@@ -1248,9 +1247,9 @@ bool Node::ShouldSkipMarkingStyleDirty() const {
 }
 
 void Node::MarkAncestorsWithChildNeedsStyleRecalc() {
-  ContainerNode* style_parent = GetStyleRecalcParent();
+  Element* style_parent = GetStyleRecalcParent();
   bool parent_dirty = style_parent && style_parent->IsDirtyForStyleRecalc();
-  ContainerNode* ancestor = style_parent;
+  Element* ancestor = style_parent;
   for (; ancestor && !ancestor->ChildNeedsStyleRecalc();
        ancestor = ancestor->GetStyleRecalcParent()) {
     if (!ancestor->isConnected())
@@ -1261,11 +1260,8 @@ void Node::MarkAncestorsWithChildNeedsStyleRecalc() {
     // If we reach a locked ancestor, we should abort since the ancestor marking
     // will be done when the lock is committed.
     if (RuntimeEnabledFeatures::CSSContentVisibilityEnabled()) {
-      auto* ancestor_element = DynamicTo<Element>(ancestor);
-      if (ancestor_element &&
-          ancestor_element->ChildStyleRecalcBlockedByDisplayLock()) {
+      if (ancestor->ChildStyleRecalcBlockedByDisplayLock())
         break;
-      }
     }
   }
   if (!isConnected())
@@ -1279,14 +1275,10 @@ void Node::MarkAncestorsWithChildNeedsStyleRecalc() {
   if (const ComputedStyle* current_style = GetComputedStyle()) {
     if (current_style->IsEnsuredOutsideFlatTree())
       return;
-  } else {
-    while (style_parent && !style_parent->CanParticipateInFlatTree())
-      style_parent = style_parent->GetStyleRecalcParent();
-    if (style_parent) {
-      if (const auto* parent_style = style_parent->GetComputedStyle()) {
-        if (parent_style->IsEnsuredOutsideFlatTree())
-          return;
-      }
+  } else if (style_parent) {
+    if (const auto* parent_style = style_parent->GetComputedStyle()) {
+      if (parent_style->IsEnsuredOutsideFlatTree())
+        return;
     }
   }
   // If we're in a locked subtree, then we should not update the style recalc
@@ -1296,13 +1288,10 @@ void Node::MarkAncestorsWithChildNeedsStyleRecalc() {
   if (RuntimeEnabledFeatures::CSSContentVisibilityEnabled() &&
       GetDocument().GetDisplayLockDocumentState().LockedDisplayLockCount() >
           0) {
-    for (auto* ancestor_copy = ancestor; ancestor_copy;
+    for (Element* ancestor_copy = ancestor; ancestor_copy;
          ancestor_copy = ancestor_copy->GetStyleRecalcParent()) {
-      auto* ancestor_copy_element = DynamicTo<Element>(ancestor_copy);
-      if (ancestor_copy_element &&
-          ancestor_copy_element->ChildStyleRecalcBlockedByDisplayLock()) {
+      if (ancestor_copy->ChildStyleRecalcBlockedByDisplayLock())
         return;
-      }
     }
   }
 
@@ -1357,11 +1346,11 @@ void Node::SetNeedsStyleRecalc(StyleChangeType change_type,
   if (ShouldSkipMarkingStyleDirty())
     return;
 
-  TRACE_EVENT_INSTANT1(
+  DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT_WITH_CATEGORIES(
       TRACE_DISABLED_BY_DEFAULT("devtools.timeline.invalidationTracking"),
-      "StyleRecalcInvalidationTracking", TRACE_EVENT_SCOPE_THREAD, "data",
-      inspector_style_recalc_invalidation_tracking_event::Data(
-          this, change_type, reason));
+      "StyleRecalcInvalidationTracking",
+      inspector_style_recalc_invalidation_tracking_event::Data, this,
+      change_type, reason);
 
   StyleChangeType existing_change_type = GetStyleChangeType();
   if (change_type > existing_change_type)
@@ -1598,7 +1587,8 @@ void Node::AttachLayoutTree(AttachContext& context) {
 }
 
 void Node::DetachLayoutTree(bool performing_reattach) {
-  DCHECK(GetDocument().Lifecycle().StateAllowsDetach());
+  DCHECK(GetDocument().Lifecycle().StateAllowsDetach() ||
+         GetDocument().GetStyleEngine().InContainerQueryStyleRecalc());
   DCHECK(!performing_reattach ||
          GetDocument().GetStyleEngine().InRebuildLayoutTree());
   DocumentLifecycle::DetachScope will_detach(GetDocument().Lifecycle());
@@ -2242,10 +2232,8 @@ void Node::RemovedFrom(ContainerNode& insertion_point) {
   }
   if (IsInShadowTree() && !ContainingTreeScope().RootNode().IsShadowRoot())
     ClearFlag(kIsInShadowTreeFlag);
-  if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
+  if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache())
     cache->Remove(this);
-    cache->ChildrenChanged(&insertion_point);
-  }
 }
 
 String Node::DebugName() const {
@@ -2566,6 +2554,17 @@ ExecutionContext* Node::GetExecutionContext() const {
 
 void Node::WillMoveToNewDocument(Document& old_document,
                                  Document& new_document) {
+  // In rare situations, this node may be the focused element of the old
+  // document. In this case, we need to clear the focused element of the old
+  // document, and since we are currently in an event forbidden scope, we can't
+  // fire the blur event.
+  if (old_document.FocusedElement() == this) {
+    FocusParams params(SelectionBehaviorOnFocus::kNone,
+                       mojom::blink::FocusType::kNone, nullptr);
+    params.omit_blur_events = true;
+    old_document.SetFocusedElement(nullptr, params);
+  }
+
   if (!old_document.GetPage() ||
       old_document.GetPage() == new_document.GetPage())
     return;
@@ -2840,6 +2839,17 @@ void Node::NotifyMutationObserversNodeWillDetach() {
 }
 
 void Node::HandleLocalEvents(Event& event) {
+  if (UNLIKELY(IsDocumentNode())) {
+    if (GetDocument().PopupShowing() &&
+        (event.eventPhase() == Event::kCapturingPhase ||
+         event.eventPhase() == Event::kAtTarget)) {
+      DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled());
+      // There is a popup visible - check if this event should "light dismiss"
+      // one or more popups.
+      HTMLPopupElement::HandleLightDismiss(event);
+    }
+  }
+
   if (!HasEventTargetData())
     return;
 
@@ -2905,14 +2915,12 @@ DispatchEventResult Node::DispatchDOMActivateEvent(int detail,
 }
 
 void Node::DispatchSimulatedClick(const Event* underlying_event,
-                                  SimulatedClickMouseEventOptions event_options,
                                   SimulatedClickCreationScope scope) {
   if (auto* element = IsElementNode() ? To<Element>(this) : parentElement()) {
     element->ActivateDisplayLockIfNeeded(
         DisplayLockActivationReason::kSimulatedClick);
   }
-  EventDispatcher::DispatchSimulatedClick(*this, underlying_event,
-                                          event_options, scope);
+  EventDispatcher::DispatchSimulatedClick(*this, underlying_event, scope);
 }
 
 void Node::DefaultEventHandler(Event& event) {
@@ -3030,13 +3038,15 @@ void Node::DecrementConnectedSubframeCount() {
   RareData()->DecrementConnectedSubframeCount();
 }
 
-HTMLSlotElement* Node::AssignedSlot() const {
+ShadowRoot* Node::GetSlotAssignmentRoot() const {
   DCHECK(!IsPseudoElement());
   ShadowRoot* root = ShadowRootOfParent();
-  if (!root)
-    return nullptr;
+  return (root && root->HasSlotAssignment()) ? root : nullptr;
+}
 
-  if (!root->HasSlotAssignment())
+HTMLSlotElement* Node::AssignedSlot() const {
+  ShadowRoot* root = GetSlotAssignmentRoot();
+  if (!root)
     return nullptr;
 
   // TODO(hayato): Node::AssignedSlot() shouldn't be called while
@@ -3064,6 +3074,18 @@ HTMLSlotElement* Node::AssignedSlot() const {
     DCHECK_EQ(root->AssignedSlotFor(*this), data->AssignedSlot());
     return data->AssignedSlot();
   }
+  return nullptr;
+}
+
+// Used when assignment recalc is forbidden, i.e., DetachLayoutTree().
+// Returned assignedSlot is not guaranteed up to date.
+HTMLSlotElement* Node::AssignedSlotWithoutRecalc() const {
+  if (!GetSlotAssignmentRoot())
+    return nullptr;
+
+  if (FlatTreeNodeData* data = GetFlatTreeNodeData())
+    return data->AssignedSlot();
+
   return nullptr;
 }
 
@@ -3269,6 +3291,16 @@ void Node::FlatTreeParentChanged() {
   // We also need to force a layout tree re-attach since the layout tree parent
   // box may have changed.
   SetForceReattachLayoutTree();
+
+  AddCandidateDirectionalityForSlot();
+}
+
+void Node::AddCandidateDirectionalityForSlot() {
+  ShadowRoot* root = ShadowRootOfParent();
+  if (!root || !root->HasSlotAssignment())
+    return;
+
+  root->GetSlotAssignment().GetCandidateDirectionality().insert(this);
 }
 
 void Node::RemovedFromFlatTree() {

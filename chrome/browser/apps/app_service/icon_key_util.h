@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
 namespace apps_util {
@@ -28,13 +27,14 @@ namespace apps_util {
 class IncrementingIconKeyFactory {
  public:
   IncrementingIconKeyFactory();
+  IncrementingIconKeyFactory(const IncrementingIconKeyFactory&) = delete;
+  IncrementingIconKeyFactory& operator=(const IncrementingIconKeyFactory&) =
+      delete;
 
   apps::mojom::IconKeyPtr MakeIconKey(uint32_t icon_effects);
 
  private:
   uint64_t last_timeline_;
-
-  DISALLOW_COPY_AND_ASSIGN(IncrementingIconKeyFactory);
 };
 
 }  // namespace apps_util

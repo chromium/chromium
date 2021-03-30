@@ -227,7 +227,6 @@
   constraint.active = YES;
   button.configuration = self.toolbarConfiguration;
   button.exclusiveTouch = YES;
-#if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
       button.pointerInteractionEnabled = YES;
       button.pointerStyleProvider =
@@ -240,7 +239,6 @@
         return [UIPointerStyle styleWithEffect:proposedEffect shape:shape];
       };
   }
-#endif  // defined(__IPHONE_13_4)
 }
 
 @end

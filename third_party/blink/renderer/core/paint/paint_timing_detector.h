@@ -325,6 +325,27 @@ inline void PaintTimingDetector::NotifyTextPaint(
   ScopedPaintTimingDetectorBlockPaintHook::AggregateTextPaint(text_visual_rect);
 }
 
+class LCPRectInfo {
+ public:
+  LCPRectInfo(IntRect frame_rect_info, IntRect root_rect_info)
+      : frame_rect_info_(frame_rect_info), root_rect_info_(root_rect_info) {}
+
+  void OutputToTraceValue(TracedValue& value) {
+    value.SetInteger("frame_x", frame_rect_info_.X());
+    value.SetInteger("frame_y", frame_rect_info_.Y());
+    value.SetInteger("frame_width", frame_rect_info_.Width());
+    value.SetInteger("frame_height", frame_rect_info_.Height());
+    value.SetInteger("root_x", root_rect_info_.X());
+    value.SetInteger("root_y", root_rect_info_.Y());
+    value.SetInteger("root_width", root_rect_info_.Width());
+    value.SetInteger("root_height", root_rect_info_.Height());
+  }
+
+ private:
+  IntRect frame_rect_info_;
+  IntRect root_rect_info_;
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_TIMING_DETECTOR_H_

@@ -55,6 +55,7 @@ const void* kResultDebugDataKey = &kResultDebugDataKey;
 
 typedef OSStatus (*SecTrustCopyExtendedResultFuncPtr)(SecTrustRef,
                                                       CFDictionaryRef*);
+using CertEvidenceInfo = CertVerifyProcMac::ResultDebugData::CertEvidenceInfo;
 
 int NetErrorFromOSStatus(OSStatus status) {
   switch (status) {
@@ -333,15 +334,15 @@ void CopyCertChainToVerifyResult(CFArrayRef cert_chain,
                                  CertVerifyResult* verify_result) {
   DCHECK_LT(0, CFArrayGetCount(cert_chain));
 
-  SecCertificateRef verified_cert = NULL;
-  std::vector<SecCertificateRef> verified_chain;
+  base::ScopedCFTypeRef<SecCertificateRef> verified_cert;
+  std::vector<base::ScopedCFTypeRef<SecCertificateRef>> verified_chain;
   for (CFIndex i = 0, count = CFArrayGetCount(cert_chain); i < count; ++i) {
     SecCertificateRef chain_cert = reinterpret_cast<SecCertificateRef>(
         const_cast<void*>(CFArrayGetValueAtIndex(cert_chain, i)));
     if (i == 0) {
-      verified_cert = chain_cert;
+      verified_cert.reset(chain_cert, base::scoped_policy::RETAIN);
     } else {
-      verified_chain.push_back(chain_cert);
+      verified_chain.emplace_back(chain_cert, base::scoped_policy::RETAIN);
     }
   }
   if (!verified_cert) {
@@ -396,8 +397,10 @@ bool CertUsesWeakHash(SecCertificateRef cert_handle) {
 // weak hashing algorithm, but the target does not use a weak hash.
 bool IsWeakChainBasedOnHashingAlgorithms(
     CFArrayRef cert_chain,
-    CSSM_TP_APPLE_EVIDENCE_INFO* chain_info) {
+    const std::vector<CertEvidenceInfo>& chain_info) {
   DCHECK_LT(0, CFArrayGetCount(cert_chain));
+  DCHECK_EQ(chain_info.size(),
+            static_cast<size_t>(CFArrayGetCount(cert_chain)));
 
   bool intermediates_contain_weak_hash = false;
   bool leaf_uses_weak_hash = false;
@@ -406,8 +409,8 @@ bool IsWeakChainBasedOnHashingAlgorithms(
     SecCertificateRef chain_cert = reinterpret_cast<SecCertificateRef>(
         const_cast<void*>(CFArrayGetValueAtIndex(cert_chain, i)));
 
-    if ((chain_info[i].StatusBits & CSSM_CERT_STATUS_IS_IN_ANCHORS) ||
-        (chain_info[i].StatusBits & CSSM_CERT_STATUS_IS_ROOT)) {
+    if ((chain_info[i].status_bits & CSSM_CERT_STATUS_IS_IN_ANCHORS) ||
+        (chain_info[i].status_bits & CSSM_CERT_STATUS_IS_ROOT)) {
       // The current certificate is either in the user's trusted store or is
       // a root (self-signed) certificate. Ignore the signature algorithm for
       // these certificates, as it is meaningless for security. We allow
@@ -532,27 +535,6 @@ void AppendPublicKeyHashesAndUpdateKnownRoot(CFArrayRef chain,
   std::reverse(hashes->begin(), hashes->end());
 }
 
-void UpdateDebugData(SecTrustResultType trust_result,
-                     OSStatus cssm_result,
-                     CFIndex chain_length,
-                     const CSSM_TP_APPLE_EVIDENCE_INFO* chain_info,
-                     base::SupportsUserData* debug_data) {
-  std::vector<CertVerifyProcMac::ResultDebugData::CertEvidenceInfo>
-      status_chain;
-  for (CFIndex i = 0; i < chain_length; ++i) {
-    CertVerifyProcMac::ResultDebugData::CertEvidenceInfo info;
-    info.status_bits = chain_info[i].StatusBits;
-    for (uint32_t status_code_index = 0;
-         status_code_index < chain_info[i].NumStatusCodes;
-         ++status_code_index) {
-      info.status_codes.push_back(chain_info[i].StatusCodes[status_code_index]);
-    }
-    status_chain.push_back(std::move(info));
-  }
-  CertVerifyProcMac::ResultDebugData::Create(
-      trust_result, cssm_result, std::move(status_chain), debug_data);
-}
-
 enum CRLSetResult {
   kCRLSetOk,
   kCRLSetRevoked,
@@ -662,10 +644,6 @@ CRLSetResult CheckRevocationWithCRLSet(CFArrayRef chain, CRLSet* crl_set) {
 // |verified_chain|, and |chain_info| with the verification results. On
 // failure, no output parameters are modified.
 //
-// WARNING: Beginning with macOS 10.13, if |trust_result| is equal to
-// kSecTrustResultInvalid, any further accesses via SecTrust APIs to |trust_ref|
-// may invalidate |chain_info|.
-//
 // Note: An OK return does not mean that |cert_array| is trusted, merely that
 // verification was performed successfully.
 //
@@ -680,7 +658,7 @@ int BuildAndEvaluateSecTrustRef(CFArrayRef cert_array,
                                 ScopedCFTypeRef<SecTrustRef>* trust_ref,
                                 SecTrustResultType* trust_result,
                                 ScopedCFTypeRef<CFArrayRef>* verified_chain,
-                                CSSM_TP_APPLE_EVIDENCE_INFO** chain_info) {
+                                std::vector<CertEvidenceInfo>* chain_info) {
   SecTrustRef tmp_trust = NULL;
   OSStatus status = SecTrustCreateWithCertificates(cert_array, trust_policies,
                                                    &tmp_trust);
@@ -767,17 +745,27 @@ int BuildAndEvaluateSecTrustRef(CFArrayRef cert_array,
     return NetErrorFromOSStatus(status);
   CFArrayRef tmp_verified_chain = NULL;
   CSSM_TP_APPLE_EVIDENCE_INFO* tmp_chain_info;
-  // WARNING: Beginning with OS X 10.13, |tmp_chain_info| may be freed by any
-  // other accesses via SecTrust APIs to |tmp_trust|.
   status = SecTrustGetResult(tmp_trust, &tmp_trust_result, &tmp_verified_chain,
                              &tmp_chain_info);
   if (status)
     return NetErrorFromOSStatus(status);
 
+  // WARNING: Beginning with OS X 10.13, |tmp_chain_info| may be freed by any
+  // other accesses via SecTrust APIs to |tmp_trust|, so copy the data.
+  chain_info->clear();
+  for (CFIndex i = 0, chain_length = CFArrayGetCount(tmp_verified_chain);
+       i < chain_length; ++i) {
+    CertEvidenceInfo info;
+    info.status_bits = tmp_chain_info[i].StatusBits;
+    info.status_codes.assign(
+        tmp_chain_info[i].StatusCodes,
+        tmp_chain_info[i].StatusCodes + tmp_chain_info[i].NumStatusCodes);
+    chain_info->push_back(std::move(info));
+  }
+
   trust_ref->swap(scoped_tmp_trust);
   *trust_result = tmp_trust_result;
   verified_chain->reset(tmp_verified_chain);
-  *chain_info = tmp_chain_info;
 
   return OK;
 }
@@ -840,7 +828,7 @@ int VerifyWithGivenFlags(X509Certificate* cert,
   ScopedCFTypeRef<SecTrustRef> trust_ref;
   SecTrustResultType trust_result = kSecTrustResultDeny;
   ScopedCFTypeRef<CFArrayRef> completed_chain;
-  CSSM_TP_APPLE_EVIDENCE_INFO* chain_info = NULL;
+  std::vector<CertEvidenceInfo> chain_info;
   bool candidate_untrusted = true;
   bool candidate_weak = false;
 
@@ -966,7 +954,7 @@ int VerifyWithGivenFlags(X509Certificate* cert,
       ScopedCFTypeRef<SecTrustRef> temp_ref;
       SecTrustResultType temp_trust_result = kSecTrustResultDeny;
       ScopedCFTypeRef<CFArrayRef> temp_chain;
-      CSSM_TP_APPLE_EVIDENCE_INFO* temp_chain_info = NULL;
+      std::vector<CertEvidenceInfo> temp_chain_info;
 
       int rv = BuildAndEvaluateSecTrustRef(
           cert_array, trust_policies, ocsp_response_ref.get(),
@@ -1027,7 +1015,7 @@ int VerifyWithGivenFlags(X509Certificate* cert,
         trust_result = temp_trust_result;
         completed_chain = temp_chain;
         *completed_chain_crl_result = crl_result;
-        chain_info = temp_chain_info;
+        chain_info = std::move(temp_chain_info);
 
         candidate_untrusted = untrusted;
         candidate_weak = weak_chain;
@@ -1074,10 +1062,9 @@ int VerifyWithGivenFlags(X509Certificate* cert,
 
   // As of macOS 10.13, if |trust_result| (from SecTrustGetResult) returns
   // kSecTrustResultInvalid, subsequent invocations of SecTrust APIs may
-  // result in revalidating the SecTrust, invalidating the pointers such
-  // as |chain_info|. In releases earlier than 10.13, this call would have
-  // additional information, except that information is unused and
-  // irrelevant if the result was invalid, so the placeholder
+  // result in revalidating the SecTrust. In releases earlier than 10.13, this
+  // call would have additional information, except that information is unused
+  // and irrelevant if the result was invalid, so the placeholder
   // errSecInternalError is fine.
   OSStatus cssm_result = errSecInternalError;
   if (trust_result != kSecTrustResultInvalid) {
@@ -1121,18 +1108,16 @@ int VerifyWithGivenFlags(X509Certificate* cert,
       // structure which can catch multiple errors from each certificate.
       for (CFIndex index = 0, chain_count = CFArrayGetCount(completed_chain);
            index < chain_count; ++index) {
-        if (chain_info[index].StatusBits & CSSM_CERT_STATUS_EXPIRED ||
-            chain_info[index].StatusBits & CSSM_CERT_STATUS_NOT_VALID_YET)
+        if (chain_info[index].status_bits & CSSM_CERT_STATUS_EXPIRED ||
+            chain_info[index].status_bits & CSSM_CERT_STATUS_NOT_VALID_YET)
           verify_result->cert_status |= CERT_STATUS_DATE_INVALID;
         if (!IsCertStatusError(verify_result->cert_status) &&
-            chain_info[index].NumStatusCodes == 0) {
-          LOG(WARNING) << "chain_info[" << index << "].NumStatusCodes is 0"
-                          ", chain_info[" << index << "].StatusBits is "
-                       << chain_info[index].StatusBits;
+            chain_info[index].status_codes.empty()) {
+          LOG(WARNING) << "chain_info[" << index
+                       << "].status_codes is empty, chain_info[" << index
+                       << "].status_bits is " << chain_info[index].status_bits;
         }
-        for (uint32_t status_code_index = 0;
-             status_code_index < chain_info[index].NumStatusCodes;
-             ++status_code_index) {
+        for (int32_t status_code : chain_info[index].status_codes) {
           // As of OS X 10.9, attempting to verify a certificate chain that
           // contains a weak signature algorithm (MD2, MD5) in an intermediate
           // or leaf cert will be treated as a (recoverable) policy validation
@@ -1143,16 +1128,13 @@ int VerifyWithGivenFlags(X509Certificate* cert,
           // CSSMERR_TP_INVALID_CERTIFICATE, rather than
           // CSSMERR_TP_VERIFY_ACTION_FAILED.
           CertStatus mapped_status = 0;
-          if (policy_failed &&
-              chain_info[index].StatusCodes[status_code_index] ==
-                  CSSMERR_TP_INVALID_CERTIFICATE) {
+          if (policy_failed && status_code == CSSMERR_TP_INVALID_CERTIFICATE) {
             mapped_status = CERT_STATUS_WEAK_SIGNATURE_ALGORITHM;
             weak_key_or_signature_algorithm = true;
             policy_fail_already_mapped = true;
           } else if (base::mac::IsOS10_12() && policy_failed &&
                      (flags & CertVerifyProc::VERIFY_REV_CHECKING_ENABLED) &&
-                     chain_info[index].StatusCodes[status_code_index] ==
-                         CSSMERR_TP_VERIFY_ACTION_FAILED) {
+                     status_code == CSSMERR_TP_VERIFY_ACTION_FAILED) {
             // On early versions of 10.12, using
             // kSecRevocationRequirePositiveResponse flag causes a
             // CSSMERR_TP_VERIFY_ACTION_FAILED status if revocation couldn't be
@@ -1162,8 +1144,7 @@ int VerifyWithGivenFlags(X509Certificate* cert,
             mapped_status = CERT_STATUS_UNABLE_TO_CHECK_REVOCATION;
             policy_fail_already_mapped = true;
           } else {
-            mapped_status = CertStatusFromOSStatus(
-                chain_info[index].StatusCodes[status_code_index]);
+            mapped_status = CertStatusFromOSStatus(status_code);
             if (mapped_status == CERT_STATUS_WEAK_KEY) {
               weak_key_or_signature_algorithm = true;
               policy_fail_already_mapped = true;
@@ -1207,8 +1188,8 @@ int VerifyWithGivenFlags(X509Certificate* cert,
       completed_chain, &verify_result->public_key_hashes,
       &verify_result->is_issued_by_known_root);
 
-  UpdateDebugData(trust_result, cssm_result, CFArrayGetCount(completed_chain),
-                  chain_info, verify_result);
+  CertVerifyProcMac::ResultDebugData::Create(
+      trust_result, cssm_result, std::move(chain_info), verify_result);
 
   if (IsCertStatusError(verify_result->cert_status))
     return MapCertStatusToNetError(verify_result->cert_status);

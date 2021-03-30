@@ -23,7 +23,6 @@
 #include "content/browser/webui/url_data_source_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/non_network_url_loader_factory_base.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -32,6 +31,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/parsed_headers.h"
+#include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "ui/base/template_expressions.h"
 
@@ -89,7 +89,7 @@ void ReadData(
   mojo::ScopedDataPipeProducerHandle pipe_producer_handle;
   mojo::ScopedDataPipeConsumerHandle pipe_consumer_handle;
   MojoResult create_result = mojo::CreateDataPipe(
-      &options, &pipe_producer_handle, &pipe_consumer_handle);
+      &options, pipe_producer_handle, pipe_consumer_handle);
   CHECK_EQ(create_result, MOJO_RESULT_OK);
 
   void* buffer = nullptr;
@@ -176,8 +176,8 @@ void StartURLLoader(
   resource_response->headers = headers;
   // Headers from WebUI are trusted, so parsing can happen from a non-sandboxed
   // process.
-  resource_response->parsed_headers =
-      network::PopulateParsedHeaders(resource_response->headers, request.url);
+  resource_response->parsed_headers = network::PopulateParsedHeaders(
+      resource_response->headers.get(), request.url);
   resource_response->mime_type = source->source()->GetMimeType(path);
   // TODO: fill all the time related field i.e. request_time response_time
   // request_start response_start
@@ -190,7 +190,8 @@ void StartURLLoader(
       source->source()->GetMimeType(path) == "application/javascript";
 
   const ui::TemplateReplacements* replacements = nullptr;
-  if (source->source()->GetMimeType(path) == "text/html" || replace_in_js)
+  const std::string mime_type = source->source()->GetMimeType(path);
+  if (mime_type == "text/html" || mime_type == "text/css" || replace_in_js)
     replacements = source->source()->GetReplacements();
 
   // To keep the same behavior as the old WebUI code, we call the source to get
@@ -204,7 +205,7 @@ void StartURLLoader(
                                      std::move(data_available_callback));
 }
 
-class WebUIURLLoaderFactory : public NonNetworkURLLoaderFactoryBase {
+class WebUIURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
  public:
   // Returns mojo::PendingRemote to a newly constructed WebUIURLLoaderFactory.
   // The factory is self-owned - it will delete itself once there are no more
@@ -220,7 +221,8 @@ class WebUIURLLoaderFactory : public NonNetworkURLLoaderFactoryBase {
     mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
 
     // The WebUIURLLoaderFactory will delete itself when there are no more
-    // receivers - see the NonNetworkURLLoaderFactoryBase::OnDisconnect method.
+    // receivers - see the
+    // network::SelfDeletingURLLoaderFactory::OnDisconnect method.
     new WebUIURLLoaderFactory(ftn, scheme, std::move(allowed_hosts),
                               pending_remote.InitWithNewPipeAndPassReceiver());
 
@@ -233,7 +235,6 @@ class WebUIURLLoaderFactory : public NonNetworkURLLoaderFactoryBase {
   // network::mojom::URLLoaderFactory implementation:
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& request,
@@ -307,7 +308,7 @@ class WebUIURLLoaderFactory : public NonNetworkURLLoaderFactoryBase {
       const std::string& scheme,
       base::flat_set<std::string> allowed_hosts,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver)
-      : NonNetworkURLLoaderFactoryBase(std::move(factory_receiver)),
+      : network::SelfDeletingURLLoaderFactory(std::move(factory_receiver)),
         frame_tree_node_id_(ftn->frame_tree_node_id()),
         scheme_(scheme),
         allowed_hosts_(std::move(allowed_hosts)) {}

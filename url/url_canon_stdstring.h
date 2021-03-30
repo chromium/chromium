@@ -59,11 +59,11 @@ class COMPONENT_EXPORT(URL) StdStringCanonOutput : public CanonOutput {
 // references to std::strings.
 // Note: Extra const char* overloads are necessary to break ambiguities that
 // would otherwise exist for char literals.
-template <typename STR>
-class StringPieceReplacements : public Replacements<typename STR::value_type> {
+template <typename CharT>
+class StringPieceReplacements : public Replacements<CharT> {
  private:
-  using CharT = typename STR::value_type;
-  using StringPieceT = base::BasicStringPiece<STR>;
+  using StringT = std::basic_string<CharT>;
+  using StringPieceT = base::BasicStringPiece<CharT>;
   using ParentT = Replacements<CharT>;
   using SetterFun = void (ParentT::*)(const CharT*, const Component&);
 
@@ -74,35 +74,35 @@ class StringPieceReplacements : public Replacements<typename STR::value_type> {
  public:
   void SetSchemeStr(const CharT* str) { SetImpl(&ParentT::SetScheme, str); }
   void SetSchemeStr(StringPieceT str) { SetImpl(&ParentT::SetScheme, str); }
-  void SetSchemeStr(const STR&&) = delete;
+  void SetSchemeStr(const StringT&&) = delete;
 
   void SetUsernameStr(const CharT* str) { SetImpl(&ParentT::SetUsername, str); }
   void SetUsernameStr(StringPieceT str) { SetImpl(&ParentT::SetUsername, str); }
-  void SetUsernameStr(const STR&&) = delete;
+  void SetUsernameStr(const StringT&&) = delete;
 
   void SetPasswordStr(const CharT* str) { SetImpl(&ParentT::SetPassword, str); }
   void SetPasswordStr(StringPieceT str) { SetImpl(&ParentT::SetPassword, str); }
-  void SetPasswordStr(const STR&&) = delete;
+  void SetPasswordStr(const StringT&&) = delete;
 
   void SetHostStr(const CharT* str) { SetImpl(&ParentT::SetHost, str); }
   void SetHostStr(StringPieceT str) { SetImpl(&ParentT::SetHost, str); }
-  void SetHostStr(const STR&&) = delete;
+  void SetHostStr(const StringT&&) = delete;
 
   void SetPortStr(const CharT* str) { SetImpl(&ParentT::SetPort, str); }
   void SetPortStr(StringPieceT str) { SetImpl(&ParentT::SetPort, str); }
-  void SetPortStr(const STR&&) = delete;
+  void SetPortStr(const StringT&&) = delete;
 
   void SetPathStr(const CharT* str) { SetImpl(&ParentT::SetPath, str); }
   void SetPathStr(StringPieceT str) { SetImpl(&ParentT::SetPath, str); }
-  void SetPathStr(const STR&&) = delete;
+  void SetPathStr(const StringT&&) = delete;
 
   void SetQueryStr(const CharT* str) { SetImpl(&ParentT::SetQuery, str); }
   void SetQueryStr(StringPieceT str) { SetImpl(&ParentT::SetQuery, str); }
-  void SetQueryStr(const STR&&) = delete;
+  void SetQueryStr(const StringT&&) = delete;
 
   void SetRefStr(const CharT* str) { SetImpl(&ParentT::SetRef, str); }
   void SetRefStr(StringPieceT str) { SetImpl(&ParentT::SetRef, str); }
-  void SetRefStr(const STR&&) = delete;
+  void SetRefStr(const StringT&&) = delete;
 };
 
 }  // namespace url

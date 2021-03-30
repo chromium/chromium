@@ -12,7 +12,7 @@ you might want to build:
 * [Android](android_build_instructions.md)
 * [Android Cast](android_cast_build_instructions.md)
 * [Chrome OS](chromeos_build_instructions.md)
-* [Fuchsia](fuchsia_build_instructions.md)
+* [Fuchsia](fuchsia/build_instructions.md)
 * [iOS](ios/build_instructions.md)
 * [Linux](linux/build_instructions.md)
 * [Linux Cast](linux/cast_build_instructions.md)

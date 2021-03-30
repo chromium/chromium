@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/auto_reset.h"
 #include "build/build_config.h"
 
 class PrefRegistrySimple;
@@ -116,6 +117,10 @@ void SetTryingToQuit(bool quitting);
 
 // General accessor.
 bool IsTryingToQuit();
+
+// Allows setting a fake shutdown type for testing purposes.
+base::AutoReset<ShutdownType> SetShutdownTypeForTesting(
+    ShutdownType shutdown_type);
 
 }  // namespace browser_shutdown
 

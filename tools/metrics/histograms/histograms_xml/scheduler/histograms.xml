@@ -201,6 +201,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Scheduling.PrepareTilesDuration2" units="microseconds"
     expires_after="M85">
+  <obsolete>
+    Removed M90.
+  </obsolete>
   <owner>vmiura@chromium.org</owner>
   <owner>sadrul@chromium.org</owner>
   <summary>
@@ -258,7 +261,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Scheduling.Renderer.DrawIntervalWithCustomPropertyAnimations2"
-    units="microseconds" expires_after="2020-10-01">
+    units="microseconds" expires_after="2022-02-01">
   <owner>xidachen@chromium.org</owner>
   <owner>animations-dev@chromium.org</owner>
   <summary>
@@ -299,6 +302,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Scheduling.SwapToAckLatency2" units="microseconds"
     expires_after="M85">
+  <obsolete>
+    Removed M90.
+  </obsolete>
   <owner>vmiura@chromium.org</owner>
   <owner>sadrul@chromium.org</owner>
   <summary>

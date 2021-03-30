@@ -12,6 +12,7 @@
 
 #include "base/files/file_path.h"
 #include "base/strings/stringprintf.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "third_party/khronos/EGL/egl.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -20,6 +21,7 @@
 #include "ui/gfx/linux/gbm_defines.h"
 #include "ui/gfx/linux/scoped_gbm_device.h"
 #include "ui/gfx/native_pixmap.h"
+#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/ozone/common/egl_util.h"
 #include "ui/ozone/common/gl_ozone_egl.h"
@@ -160,7 +162,7 @@ class GLOzoneEGLGbm : public GLOzoneEGL {
     return native_display_;
   }
 
-  bool LoadGLES2Bindings(gl::GLImplementation impl) override {
+  bool LoadGLES2Bindings(const gl::GLImplementationParts& impl) override {
     return LoadDefaultEGLGLES2Bindings(impl);
   }
 
@@ -262,8 +264,9 @@ GbmSurfaceFactory::GetAllowedGLImplementations() {
                                            gl::kGLImplementationSwiftShaderGL};
 }
 
-GLOzone* GbmSurfaceFactory::GetGLOzone(gl::GLImplementation implementation) {
-  switch (implementation) {
+GLOzone* GbmSurfaceFactory::GetGLOzone(
+    const gl::GLImplementationParts& implementation) {
+  switch (implementation.gl) {
     case gl::kGLImplementationEGLGLES2:
     case gl::kGLImplementationSwiftShaderGL:
     case gl::kGLImplementationEGLANGLE:
@@ -275,8 +278,11 @@ GLOzone* GbmSurfaceFactory::GetGLOzone(gl::GLImplementation implementation) {
 
 #if BUILDFLAG(ENABLE_VULKAN)
 std::unique_ptr<gpu::VulkanImplementation>
-GbmSurfaceFactory::CreateVulkanImplementation(bool allow_protected_memory,
+GbmSurfaceFactory::CreateVulkanImplementation(bool use_swiftshader,
+                                              bool allow_protected_memory,
                                               bool enforce_protected_memory) {
+  DCHECK(!use_swiftshader)
+      << "Vulkan Swiftshader is not supported on this platform.";
   return std::make_unique<ui::VulkanImplementationGbm>();
 }
 

@@ -5,19 +5,20 @@
 #ifndef CHROME_BROWSER_CHROMEOS_BOOT_TIMES_RECORDER_H_
 #define CHROME_BROWSER_CHROMEOS_BOOT_TIMES_RECORDER_H_
 
-#include <set>
 #include <string>
 
 #include "base/atomic_sequence_num.h"
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "chromeos/login/auth/login_event_recorder.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/render_widget_host_observer.h"
 
 class PrefService;
 
@@ -25,6 +26,7 @@ namespace chromeos {
 
 // BootTimesRecorder is used to record times of boot, login, and logout.
 class BootTimesRecorder : public content::NotificationObserver,
+                          public content::RenderWidgetHostObserver,
                           public LoginEventRecorder::Delegate {
  public:
   BootTimesRecorder();
@@ -84,6 +86,12 @@ class BootTimesRecorder : public content::NotificationObserver,
   // This saves logout-started metric to Local State.
   void OnLogoutStarted(PrefService* state);
 
+  // content::RenderWidgetHostObserver:
+  void RenderWidgetHostDidUpdateVisualProperties(
+      content::RenderWidgetHost* widget_host) override;
+  void RenderWidgetHostDestroyed(
+      content::RenderWidgetHost* widget_host) override;
+
  private:
   class TimeMarker {
    public:
@@ -127,7 +135,7 @@ class BootTimesRecorder : public content::NotificationObserver,
 
     void RecordStats(const std::string& name) const;
     void RecordStatsWithCallback(const std::string& name,
-                                 const base::Closure& callback) const;
+                                 base::OnceClosure callback) const;
 
    private:
     // Runs asynchronously when RecordStats(WithCallback) is called.
@@ -157,7 +165,10 @@ class BootTimesRecorder : public content::NotificationObserver,
 
   std::vector<TimeMarker> login_time_markers_;
   std::vector<TimeMarker> logout_time_markers_;
-  std::set<content::RenderWidgetHost*> render_widget_hosts_loading_;
+
+  base::ScopedMultiSourceObservation<content::RenderWidgetHost,
+                                     content::RenderWidgetHostObserver>
+      render_widget_host_observations_{this};
 
   bool login_done_;
 

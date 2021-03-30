@@ -7,6 +7,8 @@
 
 // Util functions relating to managed browsers.
 
+#include <string>
+
 class Profile;
 
 namespace chrome {
@@ -15,6 +17,10 @@ namespace enterprise_util {
 // Determines whether policies have been applied to this browser at the profile
 // or machine level.
 bool HasBrowserPoliciesApplied(Profile* profile);
+
+// Extracts the domain from provided |email| if it's an email address and
+// returns an empty string, otherwise.
+std::string GetDomainFromEmail(const std::string& email);
 
 }  // namespace enterprise_util
 }  // namespace chrome

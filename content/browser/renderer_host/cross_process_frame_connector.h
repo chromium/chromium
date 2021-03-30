@@ -109,9 +109,11 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   // its corresponding remote frame in the parent frame's renderer.
   void SendIntrinsicSizingInfoToParent(blink::mojom::IntrinsicSizingInfoPtr);
 
-  // Sends new resize parameters to the subframe's renderer.
+  // Record and apply new visual properties for the subframe. If 'propagate' is
+  // true, the new properties will be sent to the subframe's renderer process.
   void SynchronizeVisualProperties(
-      const blink::FrameVisualProperties& visual_properties);
+      const blink::FrameVisualProperties& visual_properties,
+      bool propagate = true);
 
   // Return the size of the CompositorFrame to use in the child renderer.
   const gfx::Size& local_frame_size_in_pixels() const {
@@ -283,7 +285,8 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
                                     bool subtree_throttled,
                                     bool display_locked);
   void UpdateViewportIntersection(
-      const blink::mojom::ViewportIntersectionState& intersection_state);
+      const blink::mojom::ViewportIntersectionState& intersection_state,
+      const base::Optional<blink::FrameVisualProperties>& visual_properties);
 
   // These enums back crashed frame histograms - see MaybeLogCrash() and
   // MaybeLogShownCrash() below.  Please do not modify or remove existing enum
@@ -333,6 +336,7 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
 
  protected:
   friend class MockCrossProcessFrameConnector;
+  friend class SitePerProcessBrowserTestBase;
 
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewChildFrameZoomForDSFTest,
                            CompositorViewportPixelSize);
@@ -349,6 +353,9 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   // Check if a crashed child frame has become visible, and if so, log the
   // Stability.ChildFrameCrash.Visibility.ShownAfterCrashing* metrics.
   void MaybeLogShownCrash(ShownAfterCrashingReason reason);
+
+  void UpdateViewportIntersectionInternal(
+      const blink::mojom::ViewportIntersectionState& intersection_state);
 
   // The RenderWidgetHostView for the frame. Initially nullptr.
   RenderWidgetHostViewChildFrame* view_ = nullptr;

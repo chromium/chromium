@@ -8,18 +8,9 @@
 
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_nsobject.h"
-
-#include "chrome/browser/ui/cocoa/notifications/notification_constants_mac.h"
+#include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
 
 @implementation NotificationBuilder
-
-- (void)setIcon:(NSImage*)icon {
-  if (!icon)
-    return;
-
-  [_notificationData setObject:icon
-                        forKey:notification_constants::kNotificationIcon];
-}
 
 - (NSUserNotification*)buildUserNotification {
   base::scoped_nsobject<NSUserNotification> toast(
@@ -127,12 +118,10 @@
     }
   }
 
-  // Tag
-  if ([toast respondsToSelector:@selector(setIdentifier:)] &&
-      [_notificationData
-          objectForKey:notification_constants::kNotificationTag]) {
-    [toast setValue:[_notificationData
-                        objectForKey:notification_constants::kNotificationTag]
+  // Identifier
+  if ([toast respondsToSelector:@selector(setIdentifier:)]) {
+    [toast setValue:[_notificationData objectForKey:notification_constants::
+                                                        kNotificationIdentifier]
              forKey:@"identifier"];
   }
 

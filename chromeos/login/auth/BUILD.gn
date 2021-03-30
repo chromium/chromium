@@ -11,9 +11,9 @@ component("auth") {
   defines = [ "IS_CHROMEOS_LOGIN_AUTH_IMPL" ]
   public_deps = [ ":challenge_response_key" ]
   deps = [
+    "//ash/constants",
     "//base",
     "//base:i18n",
-    "//chromeos/constants",
     "//chromeos/cryptohome",
     "//chromeos/dbus/authpolicy",
     "//chromeos/dbus/authpolicy:authpolicy_proto",
@@ -66,12 +66,15 @@ component("auth") {
     "login_performer.h",
     "password_visibility_utils.cc",
     "password_visibility_utils.h",
+    "safe_mode_delegate.h",
     "saml_password_attributes.cc",
     "saml_password_attributes.h",
     "stub_authenticator.cc",
     "stub_authenticator.h",
     "stub_authenticator_builder.cc",
     "stub_authenticator_builder.h",
+    "sync_trusted_vault_keys.cc",
+    "sync_trusted_vault_keys.h",
     "test_attempt_state.cc",
     "test_attempt_state.h",
     "user_context.cc",
@@ -134,5 +137,6 @@ source_set("unit_tests") {
     "challenge_response/cert_utils_unittest.cc",
     "key_unittest.cc",
     "saml_password_attributes_unittest.cc",
+    "sync_trusted_vault_keys_unittest.cc",
   ]
 }

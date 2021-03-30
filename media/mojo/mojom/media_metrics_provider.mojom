@@ -37,7 +37,11 @@ interface MediaMetricsProvider {
   // Assigns a playback ID and sets up this provider instance with information
   // needed to make UKM reports. No other methods may be called until after
   // Initialize() has been called. |url_scheme| is only used if |!is_mse|.
-  Initialize(bool is_mse, MediaURLScheme url_scheme);
+  // If |stream_type| is one of the MediaStream types (i.e., not kNone),
+  // UMA metrics are not recorded.
+  Initialize(bool is_mse,
+             MediaURLScheme url_scheme,
+             MediaStreamType stream_type);
 
   // Called when a playback ends in error. The status is reported to UKM when
   // the provider is destructed.
@@ -76,6 +80,6 @@ interface MediaMetricsProvider {
   // Can be called multiple times to set properties about a playback.
   SetHasAudio(AudioCodec codec);
   SetHasVideo(VideoCodec codec);
-  SetVideoPipelineInfo(PipelineDecoderInfo info);
-  SetAudioPipelineInfo(PipelineDecoderInfo info);
+  SetVideoPipelineInfo(VideoDecoderInfo info);
+  SetAudioPipelineInfo(AudioDecoderInfo info);
 };

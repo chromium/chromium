@@ -83,7 +83,7 @@ class UtilityProcessSandboxBrowserTest
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
     UtilityProcessHost* host = new UtilityProcessHost();
     host->SetSandboxType(GetParam());
-    host->SetName(base::ASCIIToUTF16("SandboxTestProcess"));
+    host->SetName(u"SandboxTestProcess");
     host->SetMetricsName(kTestProcessName);
     EXPECT_TRUE(host->Start());
 
@@ -126,6 +126,7 @@ class UtilityProcessSandboxBrowserTest
       case SandboxType::kTts:
 #endif
       case SandboxType::kNetwork:
+      case SandboxType::kPrintBackend:
       case SandboxType::kSpeechRecognition: {
         constexpr int kExpectedPartialSandboxFlags =
             SandboxLinux::kSeccompBPF | SandboxLinux::kYama |
@@ -168,5 +169,10 @@ INSTANTIATE_TEST_SUITE_P(
       name[0] = base::ToUpperASCII(name[0]);
       return name;
     });
+
+// In some configurations (e.g. Linux ASAN) GetSandboxTypesToTest() returns an
+// empty list. Suppress runtime warnings about unparameterized tests. See
+// https://crbug.com/1192206
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(UtilityProcessSandboxBrowserTest);
 
 }  // namespace content

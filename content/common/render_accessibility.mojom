@@ -11,6 +11,7 @@ import "ui/accessibility/mojom/ax_relative_bounds.mojom";
 import "ui/accessibility/mojom/ax_tree_update.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
 struct LocationChanges {
   // ID of the object whose location is changing.
@@ -24,7 +25,7 @@ struct HitTestResponse {
   // The frame token of the frame that got hit. If this is not equal to the
   // frame that the original hit test was called on, the client should do
   // another hit test on this frame.
-  mojo_base.mojom.UnguessableToken hit_frame_token;
+  blink.mojom.FrameToken hit_frame_token;
 
   // The coordinates that should be used for the hit test on the child frame
   // indicated by |hit_frame_token|, accounting for the viewport. This is only

@@ -70,6 +70,7 @@ class WebRuntimeFeatures {
 
   BLINK_PLATFORM_EXPORT static void EnableAOMAriaRelationshipProperties(bool);
   BLINK_PLATFORM_EXPORT static void EnableAccelerated2dCanvas(bool);
+  BLINK_PLATFORM_EXPORT static void EnableAccessibilityAriaVirtualContent(bool);
   BLINK_PLATFORM_EXPORT static void EnableAccessibilityExposeDisplayNone(bool);
   BLINK_PLATFORM_EXPORT static void EnableAccessibilityExposeHTMLElement(bool);
   BLINK_PLATFORM_EXPORT static void EnableAccessibilityExposeIgnoredNodes(bool);
@@ -88,8 +89,13 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void EnableBlockingFocusWithoutUserActivation(
       bool);
   BLINK_PLATFORM_EXPORT static void EnableCacheInlineScriptCode(bool);
+  BLINK_PLATFORM_EXPORT static void EnableCapabilityDelegationPaymentRequest(
+      bool enable);
   BLINK_PLATFORM_EXPORT static void EnableClickPointerEvent(bool enable);
-  BLINK_PLATFORM_EXPORT static void EnableCookieDeprecationMessages(bool);
+  BLINK_PLATFORM_EXPORT static void EnableCompositeBGColorAnimation(
+      bool enable);
+  BLINK_PLATFORM_EXPORT static void EnableCompositeRelativeKeyframes(
+      bool enable);
   BLINK_PLATFORM_EXPORT static void EnableCookiesWithoutSameSiteMustBeSecure(
       bool);
   BLINK_PLATFORM_EXPORT static void EnableCanvas2dImageChromium(bool);
@@ -97,10 +103,13 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void EnableCSSHexAlphaColor(bool);
   BLINK_PLATFORM_EXPORT static void EnableSameSiteByDefaultCookies(bool);
   BLINK_PLATFORM_EXPORT static void EnableScrollTopLeftInterop(bool);
+  BLINK_PLATFORM_EXPORT static void EnableKeyboardAccessibleTooltip(bool);
   BLINK_PLATFORM_EXPORT static void EnableKeyboardFocusableScrollers(bool);
   BLINK_PLATFORM_EXPORT static void EnableDatabase(bool);
   BLINK_PLATFORM_EXPORT static void EnableDecodeJpeg420ImagesToYUV(bool);
   BLINK_PLATFORM_EXPORT static void EnableDecodeLossyWebPImagesToYUV(bool);
+  BLINK_PLATFORM_EXPORT static void EnableRemoveMobileViewportDoubleTap(
+      bool enable);
   BLINK_PLATFORM_EXPORT static void EnableDisallowDocumentAccess(bool);
   BLINK_PLATFORM_EXPORT static void EnableDisplayCutoutAPI(bool);
   BLINK_PLATFORM_EXPORT static void EnableDocumentPolicy(bool);
@@ -114,6 +123,7 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void EnableLazyImageVisibleLoadTimeMetrics(bool);
   BLINK_PLATFORM_EXPORT static void EnableMediaFeeds(bool);
   BLINK_PLATFORM_EXPORT static void EnableMediaSession(bool);
+  BLINK_PLATFORM_EXPORT static void EnableMediaSessionWebRTC(bool);
   BLINK_PLATFORM_EXPORT static void EnableNetInfoDownlinkMax(bool);
   BLINK_PLATFORM_EXPORT static void EnableNeverSlowMode(bool);
   BLINK_PLATFORM_EXPORT static void EnableNotificationContentImage(bool);
@@ -133,6 +143,7 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void EnablePortals(bool);
   BLINK_PLATFORM_EXPORT static bool IsPortalsEnabled();
   BLINK_PLATFORM_EXPORT static void EnablePreciseMemoryInfo(bool);
+  BLINK_PLATFORM_EXPORT static void EnablePrerender2(bool);
   BLINK_PLATFORM_EXPORT static void EnablePresentationAPI(bool);
   BLINK_PLATFORM_EXPORT static void EnablePushMessaging(bool);
   BLINK_PLATFORM_EXPORT static void EnablePushSubscriptionChangeEvent(bool);
@@ -149,14 +160,13 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void EnableSharedArrayBuffer(bool);
   BLINK_PLATFORM_EXPORT static void EnableSharedWorker(bool);
   BLINK_PLATFORM_EXPORT static void EnableTextFragmentAnchor(bool);
+  BLINK_PLATFORM_EXPORT static void EnableTextFragmentColorChange(bool);
   BLINK_PLATFORM_EXPORT static void EnableTouchEventFeatureDetection(bool);
   BLINK_PLATFORM_EXPORT static void EnableScrollUnification(bool);
   BLINK_PLATFORM_EXPORT static void EnableUserActivationSameOriginVisibility(
       bool);
   BLINK_PLATFORM_EXPORT static void EnableV8IdleTasks(bool);
   BLINK_PLATFORM_EXPORT static void EnableWebAuth(bool);
-  BLINK_PLATFORM_EXPORT static void
-  EnableWebAuthenticationGetAssertionFeaturePolicy(bool);
   BLINK_PLATFORM_EXPORT static void EnableWebBluetooth(bool);
   BLINK_PLATFORM_EXPORT static void
   EnableWebBluetoothRemoteCharacteristicNewWriteValue(bool);
@@ -173,6 +183,7 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void EnableWebXRARModule(bool);
   BLINK_PLATFORM_EXPORT static void EnableWebXRCameraAccess(bool);
   BLINK_PLATFORM_EXPORT static void EnableWebXRDepth(bool);
+  BLINK_PLATFORM_EXPORT static void EnableWebXRHandInput(bool);
   BLINK_PLATFORM_EXPORT static void EnableWebXRHitTest(bool);
   BLINK_PLATFORM_EXPORT static void EnableWebXRImageTracking(bool);
   BLINK_PLATFORM_EXPORT static void EnableWebXRLightEstimation(bool);
@@ -194,14 +205,11 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void EnableMediaEngagementBypassAutoplayPolicies(
       bool);
   BLINK_PLATFORM_EXPORT static void EnableAutomationControlled(bool);
-  BLINK_PLATFORM_EXPORT static void EnableExperimentalProductivityFeatures(
-      bool);
   BLINK_PLATFORM_EXPORT static void EnableAutoplayIgnoresWebAudio(bool);
   BLINK_PLATFORM_EXPORT static void EnableMediaControlsExpandGesture(bool);
   BLINK_PLATFORM_EXPORT static void EnableGetDisplayMedia(bool);
   BLINK_PLATFORM_EXPORT static void EnableGetCurrentBrowsingContextMedia(bool);
   BLINK_PLATFORM_EXPORT static void EnableAllowSyncXHRInPageDismissal(bool);
-  BLINK_PLATFORM_EXPORT static void EnableHTMLImports(bool);
   BLINK_PLATFORM_EXPORT static void
   EnableSignedExchangePrefetchCacheForNavigations(bool);
   BLINK_PLATFORM_EXPORT static void EnableSignedExchangeSubresourcePrefetch(
@@ -226,12 +234,12 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void EnableConversionMeasurementInfraSupport(
       bool);
 
-  BLINK_PLATFORM_EXPORT static void EnableCompositingOptimizations(bool);
   BLINK_PLATFORM_EXPORT static void EnableTargetBlankImpliesNoOpener(bool);
 
   BLINK_PLATFORM_EXPORT static void EnableParseUrlProtocolHandler(bool);
 
   BLINK_PLATFORM_EXPORT static void EnableCSSColorSchemeUARendering(bool);
+  BLINK_PLATFORM_EXPORT static void EnableDocumentTransition(bool);
 
  private:
   WebRuntimeFeatures();

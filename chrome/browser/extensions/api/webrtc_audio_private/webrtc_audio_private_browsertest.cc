@@ -75,14 +75,14 @@ void GetAudioDeviceDescriptions(bool for_input,
   std::unique_ptr<media::AudioSystem> audio_system =
       content::CreateAudioSystemForAudioService();
   audio_system->GetDeviceDescriptions(
-      for_input,
-      base::BindOnce(
-          [](base::Closure finished_callback, AudioDeviceDescriptions* result,
-             AudioDeviceDescriptions received) {
-            *result = std::move(received);
-            finished_callback.Run();
-          },
-          run_loop.QuitClosure(), device_descriptions));
+      for_input, base::BindOnce(
+                     [](base::OnceClosure finished_callback,
+                        AudioDeviceDescriptions* result,
+                        AudioDeviceDescriptions received) {
+                       *result = std::move(received);
+                       std::move(finished_callback).Run();
+                     },
+                     run_loop.QuitClosure(), device_descriptions));
   run_loop.Run();
 }
 
@@ -307,10 +307,10 @@ IN_PROC_BROWSER_TEST_F(HangoutServicesBrowserTest,
 
   ASSERT_TRUE(content::ExecuteScript(tab, "browsertestRunAllTests();"));
 
-  content::TitleWatcher title_watcher(tab, base::ASCIIToUTF16("success"));
-  title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16("failure"));
-  base::string16 result = title_watcher.WaitAndGetTitle();
-  EXPECT_EQ(base::ASCIIToUTF16("success"), result);
+  content::TitleWatcher title_watcher(tab, u"success");
+  title_watcher.AlsoWaitForTitle(u"failure");
+  std::u16string result = title_watcher.WaitAndGetTitle();
+  EXPECT_EQ(u"success", result);
 }
 #endif  // BUILDFLAG(ENABLE_HANGOUT_SERVICES_EXTENSION)
 

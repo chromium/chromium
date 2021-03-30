@@ -9,7 +9,6 @@
 #include "base/check.h"
 #import "ios/web/js_messaging/crw_js_window_id_manager.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
-#import "ios/web/public/deprecated/crw_js_injection_manager.h"
 #import "ios/web/public/deprecated/crw_js_injection_receiver.h"
 #import "ios/web/public/web_client.h"
 
@@ -22,10 +21,6 @@
 
   // Script manager for setting the windowID.
   CRWJSWindowIDManager* _windowIDJSManager;
-
-  // A set of script managers whose scripts have been injected into the current
-  // page.
-  NSMutableSet* _injectedScriptManagers;
 }
 
 @end
@@ -39,14 +34,8 @@
 
     _JSInjectionReceiver =
         [[CRWJSInjectionReceiver alloc] initWithEvaluator:self];
-
-    _injectedScriptManagers = [[NSMutableSet alloc] init];
   }
   return self;
-}
-
-- (void)resetInjectedScriptSet {
-  [_injectedScriptManagers removeAllObjects];
 }
 
 - (void)setWebView:(WKWebView*)webView {
@@ -90,21 +79,6 @@
 
   [_delegate willExecuteUserScriptForJSInjector:self];
   [self executeJavaScript:script completionHandler:completionHandler];
-}
-
-- (BOOL)scriptHasBeenInjectedForClass:(Class)injectionManagerClass {
-  return [_injectedScriptManagers containsObject:injectionManagerClass];
-}
-
-- (void)injectScript:(NSString*)script forClass:(Class)JSInjectionManagerClass {
-  DCHECK(script.length);
-  // Script execution is an asynchronous operation which may pass sensitive
-  // data to the page. executeJavaScript:completionHandler makes sure that
-  // receiver page did not change by checking its window id.
-  // |[self.webView executeJavaScript:completionHandler:]| is not used here
-  // because it does not check that page is the same.
-  [self executeJavaScript:script completionHandler:nil];
-  [_injectedScriptManagers addObject:JSInjectionManagerClass];
 }
 
 #pragma mark - JavaScript Helpers (Private)

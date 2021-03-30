@@ -12,8 +12,8 @@
 </kiosk-enable-element>
 <assistant-optin-element id="assistant-optin-flow" class="step hidden" hidden>
 </assistant-optin-element>
-<include src="../../../../../../ui/login/account_picker/chromeos_screen_account_picker.html">
-<include src="../screen_error_message.html">
+<error-message-element id="error-message" class="step hidden" hidden>
+</error-message-element>
 <arc-tos-element id="arc-tos" class="step right hidden arc-tos-loading" hidden>
 </arc-tos-element>
 <gaia-signin-element id="gaia-signin" class="step hidden" hidden>
@@ -43,7 +43,8 @@
 </recommend-apps-element>
 <app-downloading-element id="app-downloading" class="step hidden" hidden>
 </app-downloading-element>
-<include src="../screen_discover.html">
+<pin-setup-element id="pin-setup" class="step hidden" hidden>
+</pin-setup-element>
 <multidevice-setup-element id="multidevice-setup-screen" class="step hidden"
     hidden>
 </multidevice-setup-element>

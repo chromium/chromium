@@ -4,6 +4,7 @@
 
 #include "components/previous_session_info/previous_session_info.h"
 
+#include "base/callback_helpers.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "components/previous_session_info/previous_session_info_private.h"

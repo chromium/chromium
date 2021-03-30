@@ -10,11 +10,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string>
+
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
-#include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 
@@ -98,7 +99,7 @@ bool GetMacAddress(unsigned char* buffer, size_t size) {
 
 }  // namespace
 
-bool GetRawMachineId(base::string16* data, int* more_data) {
+bool GetRawMachineId(std::u16string* data, int* more_data) {
   uint8_t mac_address[kIOEthernetAddressSize];
 
   data->clear();
@@ -115,8 +116,8 @@ bool GetRawMachineId(base::string16* data, int* more_data) {
   std::string serial = base::mac::GetPlatformSerialNumber();
   if (!serial.empty()) {
     if (!data->empty())
-      *data += base::UTF8ToUTF16(" ");
-    *data += base::UTF8ToUTF16("serial:") + base::UTF8ToUTF16(serial);
+      *data += u" ";
+    *data += u"serial:" + base::UTF8ToUTF16(serial);
   }
 
   // On windows, this is set to the volume id. Since it's not scrambled before

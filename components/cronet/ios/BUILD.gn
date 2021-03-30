@@ -3,9 +3,9 @@
 # found in the LICENSE file.
 
 import("//build/apple/tweak_info_plist.gni")
+import("//build/config/apple/symbols.gni")
 import("//build/config/c++/c++.gni")
 import("//build/config/ios/rules.gni")
-import("//build/config/mac/symbols.gni")
 import("//build/util/lastchange.gni")
 import("//components/cronet/native/include/headers.gni")
 import("//components/grpc_support/include/headers.gni")

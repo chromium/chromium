@@ -128,7 +128,7 @@ void InspectorAgentState::Serialize(const WTF::String& v,
 bool InspectorAgentState::Deserialize(span<uint8_t> in, WTF::String* v) {
   CBORTokenizer tokenizer(in);
   if (tokenizer.TokenTag() == CBORTokenTag::STRING8) {
-    *v = WTF::String(
+    *v = WTF::String::FromUTF8(
         reinterpret_cast<const char*>(tokenizer.GetString8().data()),
         static_cast<size_t>(tokenizer.GetString8().size()));
     return true;

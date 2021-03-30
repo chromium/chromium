@@ -27,7 +27,7 @@ ResizeObserverController* ResizeObserverController::FromIfExists(
   return Supplement<LocalDOMWindow>::From<ResizeObserverController>(window);
 }
 
-ResizeObserverController::ResizeObserverController() = default;
+ResizeObserverController::ResizeObserverController() : Supplement(nullptr) {}
 
 void ResizeObserverController::AddObserver(ResizeObserver& observer) {
   observers_.insert(&observer);

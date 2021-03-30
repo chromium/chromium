@@ -17,13 +17,12 @@
 #include "ash/system/model/system_tray_model.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/message_center/message_center.h"
-#include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
 namespace ash {
@@ -35,8 +34,12 @@ const char kNotifierMultiDevice[] = "ash.multi_device_setup";
 }  // namespace
 
 // static
-const char MultiDeviceNotificationPresenter::kNotificationId[] =
+const char MultiDeviceNotificationPresenter::kSetupNotificationId[] =
     "cros_multi_device_setup_notification_id";
+
+// static
+const char MultiDeviceNotificationPresenter::kWifiSyncNotificationId[] =
+    "cros_wifi_sync_announcement_notification_id";
 
 // static
 std::string
@@ -61,14 +64,14 @@ MultiDeviceNotificationPresenter::GetMetricValueForNotification(
     Status notification_status) {
   switch (notification_status) {
     case Status::kNewUserNotificationVisible:
-      return kNotificationTypeNewUserPotentialHostExists;
+      return NotificationType::kNewUserPotentialHostExists;
     case Status::kExistingUserHostSwitchedNotificationVisible:
-      return kNotificationTypeExistingUserHostSwitched;
+      return NotificationType::kExistingUserHostSwitched;
     case Status::kExistingUserNewChromebookNotificationVisible:
-      return kNotificationTypeExistingUserNewChromebookAdded;
+      return NotificationType::kExistingUserNewChromebookAdded;
     case Status::kNoNotificationVisible:
       NOTREACHED();
-      return kNotificationTypeMax;
+      return NotificationType::kErrorUnknown;
   }
 }
 
@@ -91,12 +94,12 @@ MultiDeviceNotificationPresenter::~MultiDeviceNotificationPresenter() {
 }
 
 void MultiDeviceNotificationPresenter::OnPotentialHostExistsForNewUser() {
-  base::string16 title = l10n_util::GetStringUTF16(
+  std::u16string title = l10n_util::GetStringUTF16(
       IDS_ASH_MULTI_DEVICE_SETUP_NEW_USER_POTENTIAL_HOST_EXISTS_TITLE);
-  base::string16 message = l10n_util::GetStringFUTF16(
+  std::u16string message = l10n_util::GetStringFUTF16(
       IDS_ASH_MULTI_DEVICE_SETUP_NEW_USER_POTENTIAL_HOST_EXISTS_MESSAGE,
       ui::GetChromeOSDeviceName());
-  ShowNotification(Status::kNewUserNotificationVisible, title, message);
+  ShowSetupNotification(Status::kNewUserNotificationVisible, title, message);
 }
 
 void MultiDeviceNotificationPresenter::OnNoLongerNewUser() {
@@ -107,31 +110,50 @@ void MultiDeviceNotificationPresenter::OnNoLongerNewUser() {
 
 void MultiDeviceNotificationPresenter::OnConnectedHostSwitchedForExistingUser(
     const std::string& new_host_device_name) {
-  base::string16 title = l10n_util::GetStringFUTF16(
+  std::u16string title = l10n_util::GetStringFUTF16(
       IDS_ASH_MULTI_DEVICE_SETUP_EXISTING_USER_HOST_SWITCHED_TITLE,
       base::ASCIIToUTF16(new_host_device_name));
-  base::string16 message = l10n_util::GetStringFUTF16(
+  std::u16string message = l10n_util::GetStringFUTF16(
       IDS_ASH_MULTI_DEVICE_SETUP_EXISTING_USER_HOST_SWITCHED_MESSAGE,
       ui::GetChromeOSDeviceName());
-  ShowNotification(Status::kExistingUserHostSwitchedNotificationVisible, title,
-                   message);
+  ShowSetupNotification(Status::kExistingUserHostSwitchedNotificationVisible,
+                        title, message);
 }
 
 void MultiDeviceNotificationPresenter::OnNewChromebookAddedForExistingUser(
     const std::string& new_host_device_name) {
-  base::string16 title = l10n_util::GetStringFUTF16(
+  std::u16string title = l10n_util::GetStringFUTF16(
       IDS_ASH_MULTI_DEVICE_SETUP_EXISTING_USER_NEW_CHROME_DEVICE_ADDED_TITLE,
       base::ASCIIToUTF16(new_host_device_name));
-  base::string16 message = l10n_util::GetStringFUTF16(
+  std::u16string message = l10n_util::GetStringFUTF16(
       IDS_ASH_MULTI_DEVICE_SETUP_EXISTING_USER_NEW_CHROME_DEVICE_ADDED_MESSAGE,
       ui::GetChromeOSDeviceName());
-  ShowNotification(Status::kExistingUserNewChromebookNotificationVisible, title,
-                   message);
+  ShowSetupNotification(Status::kExistingUserNewChromebookNotificationVisible,
+                        title, message);
+}
+
+void MultiDeviceNotificationPresenter::OnBecameEligibleForWifiSync() {
+  std::u16string title =
+      l10n_util::GetStringUTF16(IDS_ASH_MULTI_DEVICE_WIFI_SYNC_AVAILABLE_TITLE);
+  std::u16string message = l10n_util::GetStringFUTF16(
+      IDS_ASH_MULTI_DEVICE_WIFI_SYNC_AVAILABLE_MESSAGE,
+      ui::GetChromeOSDeviceName());
+  message_center::RichNotificationData optional_fields;
+  optional_fields.buttons.push_back(
+      message_center::ButtonInfo(l10n_util::GetStringUTF16(
+          IDS_ASH_MULTI_DEVICE_WIFI_SYNC_AVAILABLE_TURN_ON_BUTTON)));
+  optional_fields.buttons.push_back(
+      message_center::ButtonInfo(l10n_util::GetStringUTF16(
+          IDS_ASH_MULTI_DEVICE_WIFI_SYNC_AVAILABLE_CANCEL_BUTTON)));
+
+  ShowNotification(kWifiSyncNotificationId, title, message, optional_fields);
+  base::UmaHistogramEnumeration("MultiDeviceSetup_NotificationShown",
+                                NotificationType::kWifiSyncAnnouncement);
 }
 
 void MultiDeviceNotificationPresenter::RemoveMultiDeviceSetupNotification() {
   notification_status_ = Status::kNoNotificationVisible;
-  message_center_->RemoveNotification(kNotificationId,
+  message_center_->RemoveNotification(kSetupNotificationId,
                                       /* by_user */ false);
 }
 
@@ -148,28 +170,63 @@ void MultiDeviceNotificationPresenter::OnSessionStateChanged(
 void MultiDeviceNotificationPresenter::OnNotificationRemoved(
     const std::string& notification_id,
     bool by_user) {
-  if (by_user && notification_id == kNotificationId) {
-    UMA_HISTOGRAM_ENUMERATION(
+  if (!by_user) {
+    return;
+  }
+  if (notification_id == kSetupNotificationId) {
+    base::UmaHistogramEnumeration(
         "MultiDeviceSetup_NotificationDismissed",
-        GetMetricValueForNotification(notification_status_),
-        kNotificationTypeMax);
+        GetMetricValueForNotification(notification_status_));
+    return;
+  }
+  if (notification_id == kWifiSyncNotificationId) {
+    base::UmaHistogramEnumeration("MultiDeviceSetup_NotificationDismissed",
+                                  NotificationType::kWifiSyncAnnouncement);
+    return;
   }
 }
 
 void MultiDeviceNotificationPresenter::OnNotificationClicked(
     const std::string& notification_id,
     const base::Optional<int>& button_index,
-    const base::Optional<base::string16>& reply) {
-  if (notification_id != kNotificationId)
+    const base::Optional<std::u16string>& reply) {
+  if (notification_id == kWifiSyncNotificationId) {
+    message_center_->RemoveNotification(kWifiSyncNotificationId,
+                                        /* by_user */ false);
+
+    if (button_index) {
+      switch (*button_index) {
+        case 0:  // "Turn on" button
+          PA_LOG(INFO) << "Enabling Wi-Fi Sync.";
+          multidevice_setup_remote_->SetFeatureEnabledState(
+              chromeos::multidevice_setup::mojom::Feature::kWifiSync,
+              /*enabled=*/true, /*auth_token=*/base::nullopt,
+              /*callback=*/base::DoNothing());
+          break;
+        case 1:  // "Cancel" button
+          base::UmaHistogramEnumeration(
+              "MultiDeviceSetup_NotificationDismissed",
+              NotificationType::kWifiSyncAnnouncement);
+          return;
+      }
+    }
+
+    Shell::Get()->system_tray_model()->client()->ShowWifiSyncSettings();
+    base::UmaHistogramEnumeration("MultiDeviceSetup_NotificationClicked",
+                                  NotificationType::kWifiSyncAnnouncement);
+    return;
+  }
+
+  if (notification_id != kSetupNotificationId)
     return;
 
   DCHECK(notification_status_ != Status::kNoNotificationVisible);
   PA_LOG(VERBOSE) << "User clicked "
                   << GetNotificationDescriptionForLogging(notification_status_)
                   << ".";
-  UMA_HISTOGRAM_ENUMERATION("MultiDeviceSetup_NotificationClicked",
-                            GetMetricValueForNotification(notification_status_),
-                            kNotificationTypeMax);
+  base::UmaHistogramEnumeration(
+      "MultiDeviceSetup_NotificationClicked",
+      GetMetricValueForNotification(notification_status_));
   switch (notification_status_) {
     case Status::kNewUserNotificationVisible:
       Shell::Get()->system_tray_model()->client()->ShowMultiDeviceSetup();
@@ -219,38 +276,45 @@ void MultiDeviceNotificationPresenter::ObserveMultiDeviceSetupIfPossible() {
   message_center_->AddObserver(this);
 }
 
-void MultiDeviceNotificationPresenter::ShowNotification(
+void MultiDeviceNotificationPresenter::ShowSetupNotification(
     const Status notification_status,
-    const base::string16& title,
-    const base::string16& message) {
+    const std::u16string& title,
+    const std::u16string& message) {
   PA_LOG(VERBOSE) << "Showing "
                   << GetNotificationDescriptionForLogging(notification_status)
                   << ".";
-  UMA_HISTOGRAM_ENUMERATION("MultiDeviceSetup_NotificationShown",
-                            GetMetricValueForNotification(notification_status),
-                            kNotificationTypeMax);
-  if (message_center_->FindVisibleNotificationById(kNotificationId)) {
-    message_center_->UpdateNotification(kNotificationId,
-                                        CreateNotification(title, message));
-  } else {
-    message_center_->AddNotification(CreateNotification(title, message));
-  }
+  base::UmaHistogramEnumeration(
+      "MultiDeviceSetup_NotificationShown",
+      GetMetricValueForNotification(notification_status));
+
+  ShowNotification(kSetupNotificationId, title, message,
+                   message_center::RichNotificationData());
   notification_status_ = notification_status;
 }
 
-std::unique_ptr<message_center::Notification>
-MultiDeviceNotificationPresenter::CreateNotification(
-    const base::string16& title,
-    const base::string16& message) {
-  return CreateSystemNotification(
-      message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE,
-      kNotificationId, title, message, base::string16() /* display_source */,
-      GURL() /* origin_url */,
-      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kNotifierMultiDevice),
-      message_center::RichNotificationData(), nullptr /* delegate */,
-      kNotificationMultiDeviceSetupIcon,
-      message_center::SystemNotificationWarningLevel::NORMAL);
+void MultiDeviceNotificationPresenter::ShowNotification(
+    const std::string& id,
+    const std::u16string& title,
+    const std::u16string& message,
+    message_center::RichNotificationData optional_fields) {
+  std::unique_ptr<message_center::Notification> notification =
+      CreateSystemNotification(
+          message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE, id, title,
+          message, std::u16string() /* display_source */,
+          GURL() /* origin_url */,
+          message_center::NotifierId(
+              message_center::NotifierType::SYSTEM_COMPONENT,
+              kNotifierMultiDevice),
+          optional_fields, nullptr /* delegate */,
+          kNotificationMultiDeviceSetupIcon,
+          message_center::SystemNotificationWarningLevel::NORMAL);
+
+  if (message_center_->FindVisibleNotificationById(kSetupNotificationId)) {
+    message_center_->UpdateNotification(id, std::move(notification));
+    return;
+  }
+
+  message_center_->AddNotification(std::move(notification));
 }
 
 void MultiDeviceNotificationPresenter::FlushForTesting() {

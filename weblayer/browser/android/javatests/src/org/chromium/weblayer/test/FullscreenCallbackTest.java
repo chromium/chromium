@@ -114,6 +114,7 @@ public class FullscreenCallbackTest {
 
     @Test
     @SmallTest
+    @MinWebLayerVersion(88)
     @DisableIf.
     Build(sdk_is_less_than = Build.VERSION_CODES.M, message = "https://crbug.com/1159781")
     public void testTopViewRemainsHiddenOnFullscreenRotation() throws Exception {
@@ -129,7 +130,7 @@ public class FullscreenCallbackTest {
         InstrumentationActivity.registerOnCreatedCallback(
                 new InstrumentationActivity.OnCreatedCallback() {
                     @Override
-                    public void onCreated(Browser browser) {
+                    public void onCreated(Browser browser, InstrumentationActivity activity) {
                         browser.registerBrowserControlsOffsetCallback(
                                 new BrowserControlsOffsetCallbackImpl(callbackHelper));
                     }

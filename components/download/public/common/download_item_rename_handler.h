@@ -21,6 +21,8 @@ class DownloadItem;
 // DownloadItemImpl attempts to retrieve the object from its delegate, and
 // if valid will call the Start() method instead of using
 // DownloadFile::RenameAndAnnotate().
+//
+// Instances of DownloadItemRenameHandler are owned by DownloadItem.
 class COMPONENTS_DOWNLOAD_EXPORT DownloadItemRenameHandler {
  public:
   using Callback = base::OnceCallback<void(DownloadInterruptReason reason,
@@ -28,6 +30,8 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemRenameHandler {
 
   explicit DownloadItemRenameHandler(DownloadItem* download_item);
   virtual ~DownloadItemRenameHandler();
+
+  DownloadItem* download_item() { return download_item_; }
 
   // Starts the process of renaming the file and invokes |callback| when
   // done.
@@ -38,6 +42,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemRenameHandler {
 
   // Shows the download in the context of its container.
   virtual void ShowDownloadInContext();
+
+ private:
+  DownloadItem* download_item_;
 };
 
 }  // namespace download

@@ -5,11 +5,14 @@
 #include "chromeos/components/diagnostics_ui/backend/system_data_provider.h"
 
 #include <cstdint>
+#include <string>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -17,6 +20,7 @@
 #include "base/timer/mock_timer.h"
 #include "chromeos/components/diagnostics_ui/backend/cpu_usage_data.h"
 #include "chromeos/components/diagnostics_ui/backend/power_manager_client_conversions.h"
+#include "chromeos/components/diagnostics_ui/backend/telemetry_log.h"
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
 #include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
@@ -63,12 +67,14 @@ void SetCrosHealthdSystemInfoResponse(const std::string& board_name,
                                       uint16_t cpu_threads_count,
                                       uint32_t cpu_max_clock_speed_khz,
                                       bool has_battery,
-                                      const std::string& milestone_version) {
+                                      const std::string& milestone_version,
+                                      const std::string& build_number,
+                                      const std::string& patch_number) {
   // System info
   auto system_info = cros_healthd::mojom::SystemInfo::New();
   system_info->product_name = base::Optional<std::string>(board_name);
-  auto os_version_info = cros_healthd::mojom::OsVersion::New();
-  os_version_info->release_milestone = milestone_version;
+  auto os_version_info = cros_healthd::mojom::OsVersion::New(
+      milestone_version, build_number, patch_number, "unittest-channel");
   system_info->os_version = std::move(os_version_info);
   system_info->marketing_name = marketing_name;
 
@@ -359,7 +365,7 @@ void VerifyChargeStatusResult(
   EXPECT_EQ(expected_battery_state, update->battery_state);
 
   if (expected_battery_state == mojom::BatteryState::kFull) {
-    EXPECT_EQ(base::string16(), update->power_time);
+    EXPECT_EQ(std::u16string(), update->power_time);
     return;
   }
 
@@ -369,7 +375,7 @@ void VerifyChargeStatusResult(
       ConstructPowerSupplyProperties(power_source, battery_state,
                                      is_calculating_battery_time, time_to_full,
                                      time_to_empty);
-  base::string16 expected_power_time =
+  std::u16string expected_power_time =
       ConstructPowerTime(expected_battery_state, props);
 
   EXPECT_EQ(expected_power_time, update->power_time);
@@ -510,12 +516,14 @@ TEST_F(SystemDataProviderTest, GetSystemInfo) {
   const uint32_t expected_cpu_max_clock_speed_khz = 91011;
   const bool expected_has_battery = true;
   const std::string expected_milestone_version = "M99";
+  const std::string expected_build_number = "1234";
+  const std::string expected_patch_number = "5.6";
 
   SetCrosHealthdSystemInfoResponse(
       expected_board_name, expected_marketing_name, expected_cpu_model,
       expected_total_memory_kib, expected_cpu_threads_count,
       expected_cpu_max_clock_speed_khz, expected_has_battery,
-      expected_milestone_version);
+      expected_milestone_version, expected_build_number, expected_patch_number);
 
   base::RunLoop run_loop;
   system_data_provider_->GetSystemInfo(
@@ -546,12 +554,14 @@ TEST_F(SystemDataProviderTest, NoBattery) {
   const uint32_t expected_cpu_max_clock_speed_khz = 91011;
   const bool expected_has_battery = false;
   const std::string expected_milestone_version = "M99";
+  const std::string expected_build_number = "1234";
+  const std::string expected_patch_number = "5.6";
 
   SetCrosHealthdSystemInfoResponse(
       expected_board_name, expected_marketing_name, expected_cpu_model,
       expected_total_memory_kib, expected_cpu_threads_count,
       expected_cpu_max_clock_speed_khz, expected_has_battery,
-      expected_milestone_version);
+      expected_milestone_version, expected_build_number, expected_patch_number);
 
   base::RunLoop run_loop;
   system_data_provider_->GetSystemInfo(
@@ -936,6 +946,75 @@ TEST_F(SystemDataProviderTest, CpuUsageScaledClock) {
   // Integer division so `expected_scaled_speed` should still be 2000.
   VerifyCpuScalingResult(cpu_usage_observer.updates[2],
                          /*expected_scaled_speed=*/2000);
+}
+
+TEST_F(SystemDataProviderTest, GetSystemInfoLogs) {
+  TelemetryLog log;
+  system_data_provider_ = std::make_unique<SystemDataProvider>(&log);
+
+  const std::string expected_board_name = "board_name";
+  const std::string expected_marketing_name = "marketing_name";
+  const std::string expected_cpu_model = "cpu_model";
+  const uint32_t expected_total_memory_kib = 1234;
+  const uint16_t expected_cpu_threads_count = 5678;
+  const uint32_t expected_cpu_max_clock_speed_khz = 91011;
+  const bool expected_has_battery = true;
+  const std::string expected_milestone_version = "M99";
+  const std::string expected_build_number = "1234";
+  const std::string expected_patch_number = "5.6";
+
+  const std::string expected_full_version = expected_milestone_version + '.' +
+                                            expected_build_number + '.' +
+                                            expected_patch_number;
+
+  SetCrosHealthdSystemInfoResponse(
+      expected_board_name, expected_marketing_name, expected_cpu_model,
+      expected_total_memory_kib, expected_cpu_threads_count,
+      expected_cpu_max_clock_speed_khz, expected_has_battery,
+      expected_milestone_version, expected_build_number, expected_patch_number);
+
+  base::RunLoop run_loop;
+  system_data_provider_->GetSystemInfo(
+      base::BindLambdaForTesting([&](mojom::SystemInfoPtr ptr) {
+        ASSERT_TRUE(ptr);
+        EXPECT_EQ(expected_board_name, ptr->board_name);
+        EXPECT_EQ(expected_marketing_name, ptr->marketing_name);
+        EXPECT_EQ(expected_cpu_model, ptr->cpu_model_name);
+        EXPECT_EQ(expected_total_memory_kib, ptr->total_memory_kib);
+        EXPECT_EQ(expected_cpu_threads_count, ptr->cpu_threads_count);
+        EXPECT_EQ(expected_cpu_max_clock_speed_khz,
+                  ptr->cpu_max_clock_speed_khz);
+        EXPECT_EQ(expected_milestone_version,
+                  ptr->version_info->milestone_version);
+        EXPECT_EQ(expected_has_battery, ptr->device_capabilities->has_battery);
+
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
+  // Check the contents of the telemetry log
+  const std::vector<std::string> log_contents = base::SplitString(
+      log.GetContents(), "\n", base::WhitespaceHandling::TRIM_WHITESPACE,
+      base::SplitResult::SPLIT_WANT_NONEMPTY);
+  // Expect one title line and 9 content lines.
+  EXPECT_EQ(10u, log_contents.size());
+  const std::string expected_snapshot_time_prefix = "Snapshot Time: ";
+  EXPECT_GT(log_contents[1].size(), expected_snapshot_time_prefix.size());
+  EXPECT_TRUE(base::StartsWith(log_contents[1], expected_snapshot_time_prefix));
+  EXPECT_EQ("Board Name: " + expected_board_name, log_contents[2]);
+  EXPECT_EQ("Marketing Name: " + expected_marketing_name, log_contents[3]);
+  EXPECT_EQ("CpuModel Name: " + expected_cpu_model, log_contents[4]);
+  EXPECT_EQ(
+      "Total Memory (kib): " + base::NumberToString(expected_total_memory_kib),
+      log_contents[5]);
+  EXPECT_EQ(
+      "Thread Count:  " + base::NumberToString(expected_cpu_threads_count),
+      log_contents[6]);
+  EXPECT_EQ("Cpu Max Clock Speed (kHz):  " +
+                base::NumberToString(expected_cpu_max_clock_speed_khz),
+            log_contents[7]);
+  EXPECT_EQ("Version: " + expected_full_version, log_contents[8]);
+  EXPECT_EQ("Has Battery: true", log_contents[9]);
 }
 
 }  // namespace diagnostics

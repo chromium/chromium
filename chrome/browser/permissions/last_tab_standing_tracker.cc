@@ -5,12 +5,16 @@
 #include "chrome/browser/permissions/last_tab_standing_tracker.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "url/gurl.h"
 
 LastTabStandingTracker::LastTabStandingTracker() = default;
 
 LastTabStandingTracker::~LastTabStandingTracker() = default;
 
 void LastTabStandingTracker::Shutdown() {
+  for (auto& observer : observer_list_) {
+    observer.OnShutdown();
+  }
   observer_list_.Clear();
 }
 

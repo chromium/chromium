@@ -5,6 +5,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -16,12 +17,11 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/login/helper.h"
 #include "chrome/browser/extensions/api/networking_cast_private/chrome_networking_cast_private_delegate.h"
 #include "chrome/browser/extensions/api/networking_private/networking_private_ui_delegate_chromeos.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -194,8 +194,9 @@ class NetworkingPrivateChromeOSApiTest : public extensions::ExtensionApiTest {
   bool RunNetworkingSubtest(const std::string& test) {
     const std::string arg =
         base::StringPrintf("{\"test\": \"%s\"}", test.c_str());
-    return RunPlatformAppTestWithArg("networking_private/chromeos",
-                                     arg.c_str());
+    return RunExtensionTest({.name = "networking_private/chromeos",
+                             .custom_arg = arg.c_str(),
+                             .launch_as_platform_app = true});
   }
 
   void SetUpInProcessBrowserTestFixture() override {

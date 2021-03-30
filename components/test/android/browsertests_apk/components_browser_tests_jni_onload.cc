@@ -10,8 +10,8 @@
 #include "base/message_loop/message_pump.h"
 #include "content/public/app/content_jni_onload.h"
 #include "content/public/app/content_main.h"
+#include "content/public/test/content_browser_test_shell_main_delegate.h"
 #include "content/public/test/nested_message_pump_android.h"
-#include "content/shell/app/shell_main_delegate.h"
 #include "testing/android/native_test/native_test_launcher.h"
 
 // This is called by the VM when the shared library is first loaded.
@@ -28,6 +28,6 @@ JNI_EXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
       });
 
   content::SetContentMainDelegate(
-      new content::ShellMainDelegate(/*is_browsertest=*/true));
+      new content::ContentBrowserTestShellMainDelegate());
   return JNI_VERSION_1_4;
 }

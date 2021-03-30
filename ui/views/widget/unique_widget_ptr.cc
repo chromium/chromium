@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -32,7 +32,7 @@ class UniqueWidgetPtr::UniqueWidgetPtrImpl : public WidgetObserver {
   // deliberately implicit.
   UniqueWidgetPtrImpl(std::unique_ptr<Widget> widget)  // NOLINT
       : widget_closer_(widget.release()) {
-    widget_observer_.Add(widget_closer_.get());
+    widget_observation_.Observe(widget_closer_.get());
   }
 
   UniqueWidgetPtrImpl(const UniqueWidgetPtrImpl&) = delete;
@@ -46,19 +46,19 @@ class UniqueWidgetPtr::UniqueWidgetPtrImpl : public WidgetObserver {
   void Reset() {
     if (!widget_closer_)
       return;
-    widget_observer_.RemoveAll();
+    widget_observation_.Reset();
     widget_closer_.reset();
   }
 
   // WidgetObserver overrides.
   void OnWidgetDestroying(Widget* widget) override {
     DCHECK_EQ(widget, widget_closer_.get());
-    widget_observer_.RemoveAll();
+    widget_observation_.Reset();
     widget_closer_.release();
   }
 
  private:
-  ScopedObserver<Widget, WidgetObserver> widget_observer_{this};
+  base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
   WidgetAutoClosePtr widget_closer_;
 };
 

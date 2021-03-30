@@ -9,7 +9,7 @@
 
 // clang-format off
 // #import {importer} from '../../common/js/importer_common.m.js';
-// #import {taskQueueInterfaces} from '../../../externs/background/task_queue.m.js';
+// #import {taskQueueInterfaces} from '../../externs/background/task_queue.m.js';
 // clang-format on
 
 // Namespace

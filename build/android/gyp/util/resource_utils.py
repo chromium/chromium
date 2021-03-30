@@ -305,7 +305,7 @@ class ResourceInfoFile(object):
     """
     entries = self._ApplyRenames()
     lines = []
-    for archive_path, source_path in entries.iteritems():
+    for archive_path, source_path in entries.items():
       lines.append('{}\t{}\n'.format(archive_path, source_path))
     with open(info_file_path, 'w') as info_file:
       info_file.writelines(sorted(lines))
@@ -505,7 +505,8 @@ def CreateRJavaFiles(srcjar_dir,
                      srcjar_out,
                      custom_root_package_name=None,
                      grandparent_custom_package_name=None,
-                     extra_main_r_text_files=None):
+                     extra_main_r_text_files=None,
+                     ignore_mismatched_values=False):
   """Create all R.java files for a set of packages and R.txt files.
 
   Args:
@@ -526,6 +527,9 @@ def CreateRJavaFiles(srcjar_dir,
       is identical to custom_root_package_name.
       (eg. for vr grandparent_custom_package_name would be "base")
     extra_main_r_text_files: R.txt files to be added to the root R.java file.
+    ignore_mismatched_values: If True, ignores if a resource appears multiple
+      times with different entry values (useful when all the values are
+      dummy anyways).
   Raises:
     Exception if a package name appears several times in |extra_res_packages|
   """
@@ -550,10 +554,11 @@ def CreateRJavaFiles(srcjar_dir,
     for entry in _ParseTextSymbolsFile(r_txt_file, fix_package_ids=True):
       entry_key = (entry.resource_type, entry.name)
       if entry_key in all_resources:
-        assert entry == all_resources[entry_key], (
-            'Input R.txt %s provided a duplicate resource with a different '
-            'entry value. Got %s, expected %s.' % (r_txt_file, entry,
-                                                   all_resources[entry_key]))
+        if not ignore_mismatched_values:
+          assert entry == all_resources[entry_key], (
+              'Input R.txt %s provided a duplicate resource with a different '
+              'entry value. Got %s, expected %s.' %
+              (r_txt_file, entry, all_resources[entry_key]))
       else:
         all_resources[entry_key] = entry
         all_resources_by_type[entry.resource_type].append(entry)
@@ -648,7 +653,7 @@ def _RenderRootRJavaSource(package, all_resources_by_type, rjava_build_options,
   """Render an R.java source file. See _CreateRJaveSourceFile for args info."""
   final_resources_by_type = collections.defaultdict(list)
   non_final_resources_by_type = collections.defaultdict(list)
-  for res_type, resources in all_resources_by_type.iteritems():
+  for res_type, resources in all_resources_by_type.items():
     for entry in resources:
       # Entries in stylable that are not int[] are not actually resource ids
       # but constants.
@@ -748,7 +753,7 @@ def ExtractBinaryManifestValues(aapt2_path, apk_path):
   """Returns (version_code, version_name, package_name) for the given apk."""
   output = subprocess.check_output([
       aapt2_path, 'dump', 'xmltree', apk_path, '--file', 'AndroidManifest.xml'
-  ])
+  ]).decode('utf-8')
   version_code = re.search(r'versionCode.*?=(\d*)', output).group(1)
   version_name = re.search(r'versionName.*?="(.*?)"', output).group(1)
   package_name = re.search(r'package.*?="(.*?)"', output).group(1)
@@ -761,6 +766,7 @@ def ExtractArscPackage(aapt2_path, apk_path):
                           stdout=subprocess.PIPE,
                           stderr=subprocess.PIPE)
   for line in proc.stdout:
+    line = line.decode('utf-8')
     # Package name=org.chromium.webview_shell id=7f
     if line.startswith('Package'):
       proc.kill()
@@ -847,11 +853,10 @@ class _ResourceBuildContext(object):
     # The top-level temporary directory.
     if temp_dir:
       self.temp_dir = temp_dir
-      self.remove_on_exit = not keep_files
       os.makedirs(temp_dir)
     else:
       self.temp_dir = tempfile.mkdtemp()
-      self.remove_on_exit = True
+    self.remove_on_exit = not keep_files
 
     # A location to store resources extracted form dependency zip files.
     self.deps_dir = os.path.join(self.temp_dir, 'deps')
@@ -1021,13 +1026,13 @@ def GenerateAndroidResourceStringsXml(names_to_utf8_text, namespaces=None):
   result = '<?xml version="1.0" encoding="utf-8"?>\n'
   result += '<resources'
   if namespaces:
-    for prefix, url in sorted(namespaces.iteritems()):
+    for prefix, url in sorted(namespaces.items()):
       result += ' xmlns:%s="%s"' % (prefix, url)
   result += '>\n'
   if not names_to_utf8_text:
     result += '<!-- this file intentionally empty -->\n'
   else:
-    for name, utf8_text in sorted(names_to_utf8_text.iteritems()):
+    for name, utf8_text in sorted(names_to_utf8_text.items()):
       result += '<string name="%s">"%s"</string>\n' % (name, utf8_text)
   result += '</resources>\n'
   return result

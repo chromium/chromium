@@ -7,7 +7,7 @@
 
 /**
  * @typedef {{resolver: !PromiseResolver,
- *            callCount: number,
+ *            args: !Array<*>,
  *            resultMapper: (!Function|undefined)}}
  */
 let MethodData;
@@ -62,8 +62,8 @@ let MethodData;
   static fromClass(clazz) {
     const methodNames = Object.getOwnPropertyNames(clazz.prototype)
                             .filter(methodName => methodName !== 'constructor');
-    const proxy = new TestBrowserProxy();
-    proxy.mockMethods(methodNames);
+    const proxy = new TestBrowserProxy(methodNames);
+    proxy.mockMethods_(methodNames);
     return proxy;
   }
 
@@ -73,24 +73,12 @@ let MethodData;
    * |setResultFor(methodName)|, or set a result mapper function that will be
    * invoked when a method is called using |setResultMapperFor(methodName)|.
    * @param {!Array<string>} methodNames
-   * @protected
+   * @private
    * @suppress {checkTypes}
    */
-  mockMethods(methodNames) {
+  mockMethods_(methodNames) {
     methodNames.forEach(methodName => {
-      if (!this.resolverMap_.has(methodName)) {
-        this.createMethodData_(methodName);
-      }
-      this[methodName] = function() {
-        const args = Array.from(arguments);
-        const argObject = {};
-        if (args.length > 1) {
-          argObject.args = args;
-        } else {
-          argObject.arg = args[0];
-        }
-        return this.methodCalledWithResult_(methodName, argObject);
-      }.bind(this);
+      this[methodName] = (...args) => this.methodCalled(methodName, ...args);
     });
   }
 
@@ -98,39 +86,19 @@ let MethodData;
    * Called by subclasses when a tracked method is called from the code that
    * is being tested.
    * @param {string} methodName
-   * @param {*=} opt_arg Optional argument to be forwarded to the testing
-   *     code, useful for checking whether the proxy method was called with
-   *     the expected arguments.
-   * @protected
+   * @param {...} args Arguments to be forwarded to the testing code, useful for
+   *     checking whether the proxy method was called with the expected
+   *     arguments.
+   * @return {*} If set the result registered via |setResult[Mapper]For|.
    */
-  methodCalled(methodName, opt_arg) {
+  methodCalled(methodName, ...args) {
     const methodData = this.resolverMap_.get(methodName);
-    methodData.callCount += 1;
+    const storedArgs = args.length === 1 ? args[0] : args;
+    methodData.args.push(storedArgs);
     this.resolverMap_.set(methodName, methodData);
-    methodData.resolver.resolve(opt_arg);
-  }
-
-  /**
-   * Called by subclasses when a tracked method is called from the code that
-   * is being tested.
-   * @param {string} methodName
-   * @param {!{arg: *, args: (!Array|undefined)}} argObject Optional argument to
-   *     be forwarded to the testing code, useful for checking whether the proxy
-   *     method was called with the expected arguments. Only |arg| or |args|
-   *     should be set.
-   * @return {*}
-   * @private
-   */
-  methodCalledWithResult_(methodName, {arg, args}) {
-    assert(arg === undefined || args === undefined);
-    this.methodCalled(methodName, args === undefined ? arg : args);
-    const {resultMapper} = this.resolverMap_.get(methodName);
-    if (resultMapper) {
-      assert(typeof resultMapper === 'function');
-      if (args !== undefined) {
-        return resultMapper(...args);
-      }
-      return resultMapper(arg);
+    methodData.resolver.resolve(storedArgs);
+    if (methodData.resultMapper) {
+      return methodData.resultMapper(...args);
     }
   }
 
@@ -167,7 +135,16 @@ let MethodData;
    * @return {number}
    */
   getCallCount(methodName) {
-    return this.getMethodData_(methodName).callCount;
+    return this.getMethodData_(methodName).args.length;
+  }
+
+  /**
+   * Returns the arguments of calls made to |method|.
+   * @param {string} methodName
+   * @return {!Array<*>}
+   */
+  getArgs(methodName) {
+    return this.getMethodData_(methodName).args;
   }
 
   /**
@@ -212,6 +189,6 @@ let MethodData;
    */
   createMethodData_(methodName) {
     this.resolverMap_.set(
-        methodName, {resolver: new PromiseResolver(), callCount: 0});
+        methodName, {resolver: new PromiseResolver(), args: []});
   }
 }

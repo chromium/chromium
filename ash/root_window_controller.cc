@@ -9,11 +9,13 @@
 #include <queue>
 #include <vector>
 
-#include "ash/accessibility/accessibility_panel_layout_manager.h"
-#include "ash/accessibility/touch_exploration_controller.h"
-#include "ash/accessibility/touch_exploration_manager.h"
+#include "ash/accessibility/chromevox/touch_exploration_controller.h"
+#include "ash/accessibility/chromevox/touch_exploration_manager.h"
+#include "ash/accessibility/ui/accessibility_panel_layout_manager.h"
 #include "ash/ambient/ambient_controller.h"
 #include "ash/app_menu/app_menu_model_adapter.h"
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/focus_cycler.h"
 #include "ash/high_contrast/high_contrast_controller.h"
 #include "ash/host/ash_window_tree_host.h"
@@ -47,7 +49,6 @@
 #include "ash/touch/touch_hud_projection.h"
 #include "ash/touch/touch_observer_hud.h"
 #include "ash/wallpaper/wallpaper_widget_controller.h"
-#include "ash/window_factory.h"
 #include "ash/wm/always_on_top_controller.h"
 #include "ash/wm/container_finder.h"
 #include "ash/wm/desks/desks_controller.h"
@@ -79,8 +80,6 @@
 #include "base/numerics/ranges.h"
 #include "base/stl_util.h"
 #include "base/time/time.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/screen_position_client.h"
@@ -695,6 +694,7 @@ void RootWindowController::CloseChildWindows() {
   shelf_->ShutdownShelfWidget();
 
   ClearWorkspaceControllers(root);
+  always_on_top_controller_->ClearLayoutManagers();
 
   // Explicitly destroy top level windows. We do this because such windows may
   // query the RootWindow for state.
@@ -883,15 +883,8 @@ RootWindowController::RootWindowController(AshWindowTreeHost* ash_host)
 
 void RootWindowController::Init(RootWindowType root_window_type) {
   aura::Window* root_window = GetRootWindow();
-  // If the |ash::features::kMultiDisplayOverviewAndSplitView| feature flag is
-  // enabled, create |split_view_controller_| for every display. Otherwise,
-  // create |split_view_controller_| for the primary display only.
-  display::Screen* screen = display::Screen::GetScreen();
-  if (AreMultiDisplayOverviewAndSplitViewEnabled() ||
-      screen->GetDisplayNearestWindow(root_window).id() ==
-          screen->GetPrimaryDisplay().id()) {
-    split_view_controller_ = std::make_unique<SplitViewController>(root_window);
-  }
+  // Create |split_view_controller_| for every display.
+  split_view_controller_ = std::make_unique<SplitViewController>(root_window);
   Shell* shell = Shell::Get();
   shell->InitRootWindow(root_window);
   auto old_targeter =
@@ -1239,8 +1232,7 @@ aura::Window* RootWindowController::CreateContainer(int window_id,
                                                     const char* name,
                                                     aura::Window* parent) {
   aura::Window* window =
-      window_factory::NewWindow(nullptr, aura::client::WINDOW_TYPE_UNKNOWN)
-          .release();
+      new aura::Window(nullptr, aura::client::WINDOW_TYPE_UNKNOWN);
   window->Init(ui::LAYER_NOT_DRAWN);
   window->set_id(window_id);
   window->SetName(name);

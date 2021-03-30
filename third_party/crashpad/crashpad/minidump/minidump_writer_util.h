@@ -22,7 +22,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 
 namespace crashpad {
 namespace internal {
@@ -57,7 +56,7 @@ class MinidumpWriterUtil final {
   //! \return The \a utf8 string, converted to UTF-16 encoding. If the
   //!     conversion is lossy, U+FFFD “replacement characters” will be
   //!     introduced.
-  static base::string16 ConvertUTF8ToUTF16(const std::string& utf8);
+  static std::u16string ConvertUTF8ToUTF16(const std::string& utf8);
 
   //! \brief Converts a UTF-8 string to UTF-16 and places it into a buffer of
   //!     fixed size, taking care to `NUL`-terminate the buffer and not to
@@ -66,17 +65,17 @@ class MinidumpWriterUtil final {
   //!
   //! Any unused portion of the \a destination buffer that is not written to by
   //! the converted string will be overwritten with `NUL` UTF-16 code units,
-  //! thus, this function always writes \a destination_size `char16` units.
+  //! thus, this function always writes \a destination_size `char16_t` units.
   //!
   //! If the conversion is lossy, U+FFFD “replacement characters” will be
   //! introduced.
   //!
   //! \param[out] destination A pointer to the destination buffer, where the
   //!     UTF-16-encoded string will be written.
-  //! \param[in] destination_size The size of \a destination in `char16` units,
-  //!     including space used by a `NUL` terminator.
+  //! \param[in] destination_size The size of \a destination in `char16_t`
+  //!     units, including space used by a `NUL` terminator.
   //! \param[in] source The UTF-8-encoded input string.
-  static void AssignUTF8ToUTF16(base::char16* destination,
+  static void AssignUTF8ToUTF16(char16_t* destination,
                                 size_t destination_size,
                                 const std::string& source);
 

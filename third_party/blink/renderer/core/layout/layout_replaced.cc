@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -134,11 +135,10 @@ bool LayoutReplaced::HasReplacedLogicalHeight() const {
   if (StyleRef().LogicalHeight().IsAuto())
     return StretchBlockSizeIfAuto();
 
-  if (RuntimeEnabledFeatures::TableCellNewPercentsEnabled() &&
-      StyleRef().LogicalHeight().IsFixed())
+  if (StyleRef().LogicalHeight().IsFixed())
     return true;
 
-  if (StyleRef().LogicalHeight().IsSpecified()) {
+  if (StyleRef().LogicalHeight().IsPercentOrCalc()) {
     if (HasAutoHeightOrContainingBlockWithAutoHeight())
       return false;
     return true;
@@ -712,6 +712,8 @@ void LayoutReplaced::ComputeIntrinsicSizingInfo(
         aspect_ratio.GetRatio().Width());
     intrinsic_sizing_info.aspect_ratio.SetHeight(
         aspect_ratio.GetRatio().Height());
+    if (!IsHorizontalWritingMode())
+      intrinsic_sizing_info.Transpose();
   }
   if (aspect_ratio.GetType() == EAspectRatioType::kRatio)
     return;
@@ -723,18 +725,6 @@ void LayoutReplaced::ComputeIntrinsicSizingInfo(
 
   if (!intrinsic_sizing_info.size.IsEmpty())
     intrinsic_sizing_info.aspect_ratio = intrinsic_sizing_info.size;
-}
-
-static inline LayoutUnit ResolveWidthForRatio(LayoutUnit height,
-                                              const FloatSize& aspect_ratio) {
-  return LayoutUnit(height.ToDouble() * aspect_ratio.Width() /
-                    aspect_ratio.Height());
-}
-
-static inline LayoutUnit ResolveHeightForRatio(LayoutUnit width,
-                                               const FloatSize& aspect_ratio) {
-  return LayoutUnit(width.ToDouble() * aspect_ratio.Height() /
-                    aspect_ratio.Width());
 }
 
 LayoutUnit LayoutReplaced::ComputeConstrainedLogicalWidth(
@@ -807,9 +797,22 @@ LayoutUnit LayoutReplaced::ComputeReplacedLogicalWidth(
                 : ComputeConstrainedLogicalWidth(should_compute_preferred);
         LayoutUnit logical_height =
             ComputeReplacedLogicalHeight(estimated_used_width);
+        NGBoxStrut border_padding(BorderStart() + ComputedCSSPaddingStart(),
+                                  BorderEnd() + ComputedCSSPaddingEnd(),
+                                  BorderBefore() + ComputedCSSPaddingBefore(),
+                                  BorderAfter() + ComputedCSSPaddingAfter());
+        // Because ComputeReplacedLogicalHeight returns a content size, we need
+        // to add border + padding for InlineSizeFromAspectRatio.
+        EBoxSizing box_sizing = EBoxSizing::kContentBox;
+        logical_height += border_padding.BlockSum();
+        if (StyleRef().AspectRatio().GetType() == EAspectRatioType::kRatio)
+          box_sizing = StyleRef().BoxSizing();
+        double aspect_ratio = intrinsic_sizing_info.aspect_ratio.Width() /
+                              intrinsic_sizing_info.aspect_ratio.Height();
         return ComputeReplacedLogicalWidthRespectingMinMaxWidth(
-            ResolveWidthForRatio(logical_height,
-                                 intrinsic_sizing_info.aspect_ratio),
+            InlineSizeFromAspectRatio(border_padding, aspect_ratio, box_sizing,
+                                      logical_height) -
+                border_padding.InlineSum(),
             should_compute_preferred);
       }
 
@@ -883,8 +886,22 @@ LayoutUnit LayoutReplaced::ComputeReplacedLogicalHeight(
   if (!intrinsic_sizing_info.aspect_ratio.IsEmpty()) {
     LayoutUnit used_width =
         estimated_used_width ? estimated_used_width : AvailableLogicalWidth();
+    NGBoxStrut border_padding(BorderStart() + ComputedCSSPaddingStart(),
+                              BorderEnd() + ComputedCSSPaddingEnd(),
+                              BorderBefore() + ComputedCSSPaddingBefore(),
+                              BorderAfter() + ComputedCSSPaddingAfter());
+    // Because used_size contains a content size, we need
+    // to add border + padding for BlockSizeFromAspectRatio.
+    EBoxSizing box_sizing = EBoxSizing::kContentBox;
+    used_width += border_padding.InlineSum();
+    if (StyleRef().AspectRatio().GetType() == EAspectRatioType::kRatio)
+      box_sizing = StyleRef().BoxSizing();
+    double aspect_ratio = intrinsic_sizing_info.aspect_ratio.Height() /
+                          intrinsic_sizing_info.aspect_ratio.Width();
     return ComputeReplacedLogicalHeightRespectingMinMaxHeight(
-        ResolveHeightForRatio(used_width, intrinsic_sizing_info.aspect_ratio));
+        BlockSizeFromAspectRatio(border_padding, aspect_ratio, box_sizing,
+                                 used_width) -
+        border_padding.BlockSum());
   }
 
   // Otherwise, if 'height' has a computed value of 'auto', and the element has

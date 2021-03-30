@@ -53,6 +53,10 @@ class ContentRulesRegistry : public RulesRegistry {
       content::WebContents* tab,
       content::NavigationHandle* navigation_handle) = 0;
 
+  // Notifies the registry that the given |contents| is being
+  // destroyed.
+  virtual void WebContentsDestroyed(content::WebContents* contents) = 0;
+
  protected:
   ~ContentRulesRegistry() override {}
 

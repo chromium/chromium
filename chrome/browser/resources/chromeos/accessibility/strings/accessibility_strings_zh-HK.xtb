@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">清單項目</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">以兩隻手指向右滑動</translation>
-<translation id="1016393160682012902">按一下 Qwerty 鍵、可重新整理的點字或觸控手勢即可學習相關功能。按一下 Ctrl + W 或 Escape 鍵即可退出。</translation>
 <translation id="1022586497894531524">首次使用 ChromeVox 朗讀功能嗎？此教學課程提供簡要的基本操作說明，協助您開始使用 ChromeVox。</translation>
 <translation id="1025074108959230262">相黏模式已停用</translation>
 <translation id="1031961866430398710">然後</translation>
@@ -150,6 +149,7 @@
 <translation id="2045055672832940894">冇上一個控制項</translation>
 <translation id="2045606329038304310">表格欄位控制項</translation>
 <translation id="2063539687800151747">題詞</translation>
+<translation id="2074531330963286860">可執行多項操作，按搜尋鍵 + . (句號) 即可查看</translation>
 <translation id="2086961585857038472">下一個字詞</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">zh-HK</translation>
@@ -975,6 +975,7 @@
 <translation id="827266600368092403">開始或結束選取</translation>
 <translation id="827422111966801947">靛藍色</translation>
 <translation id="8276439074553447000">前往上一個可選擇的項目</translation>
+<translation id="8279039817939141096">按一下 Qwerty 鍵、可重新整理的點字或觸控手勢即可學習相關功能。按下 Ctrl + W 鍵、空格鍵 + Z 鍵、Esc 鍵，或用兩隻手指向左滑動即可退出。</translation>
 <translation id="8283603667300770666">下一個表格欄位</translation>
 <translation id="8310185481635255431">冇下一個連結</translation>
 <translation id="831207808878314375">定義</translation>

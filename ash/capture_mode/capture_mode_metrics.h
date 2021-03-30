@@ -25,7 +25,8 @@ enum class EndRecordingReason {
   kFileIoError,
   kDlpInterruption,
   kLowDiskSpace,
-  kMaxValue = kLowDiskSpace,
+  kHdcpInterruption,
+  kMaxValue = kHdcpInterruption,
 };
 
 // Enumeration of capture bar buttons that can be pressed while in capture mode.
@@ -63,7 +64,9 @@ enum class CaptureModeEntryType {
   kQuickSettings,
   kStylusPalette,
   kPowerMenu,
-  kMaxValue = kPowerMenu,
+  kSnipKey,
+  kCaptureAllDisplays,
+  kMaxValue = kCaptureAllDisplays,
 };
 
 // Enumeration of quick actions on screenshot notification. Note that these

@@ -14,6 +14,7 @@
 
 #if BUILDFLAG(ENABLE_FEED_V2)
 #include "chrome/browser/android/feed/v2/background_refresh_task.h"
+#include "components/feed/core/v2/public/types.h"
 #endif
 
 // static
@@ -30,7 +31,11 @@ ChromeBackgroundTaskFactory::GetNativeBackgroundTaskFromTaskId(int task_id) {
       return std::make_unique<query_tiles::TileBackgroundTask>();
 #if BUILDFLAG(ENABLE_FEED_V2)
     case static_cast<int>(background_task::TaskIds::FEEDV2_REFRESH_JOB_ID):
-      return std::make_unique<feed::BackgroundRefreshTask>();
+      return std::make_unique<feed::BackgroundRefreshTask>(
+          feed::RefreshTaskId::kRefreshForYouFeed);
+    case static_cast<int>(background_task::TaskIds::WEBFEEDS_REFRESH_JOB_ID):
+      return std::make_unique<feed::BackgroundRefreshTask>(
+          feed::RefreshTaskId::kRefreshWebFeed);
 #endif
     default:
       break;

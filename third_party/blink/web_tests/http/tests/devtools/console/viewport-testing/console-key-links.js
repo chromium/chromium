@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that console links are keyboard navigable.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   ConsoleTestRunner.fixConsoleViewportDimensions(600, 200);
   await ConsoleTestRunner.waitUntilConsoleEditorLoaded();

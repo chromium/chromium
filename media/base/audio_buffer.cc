@@ -14,6 +14,29 @@
 
 namespace media {
 
+namespace {
+
+// TODO(https://crbug.com/619628): Use vector instructions to speed this up.
+template <class SourceSampleTypeTraits>
+void CopyConvertFromInterleaved(
+    const typename SourceSampleTypeTraits::ValueType* source_buffer,
+    int num_frames_to_write,
+    const std::vector<float*> dest) {
+  const int channels = dest.size();
+  for (int ch = 0; ch < channels; ++ch) {
+    float* dest_data = dest[ch];
+    for (int target_frame_index = 0, read_pos_in_source = ch;
+         target_frame_index < num_frames_to_write;
+         ++target_frame_index, read_pos_in_source += channels) {
+      auto source_value = source_buffer[read_pos_in_source];
+      dest_data[target_frame_index] =
+          SourceSampleTypeTraits::ToFloat(source_value);
+    }
+  }
+}
+
+}  // namespace
+
 static base::TimeDelta CalculateDuration(int frames, double sample_rate) {
   DCHECK_GT(sample_rate, 0);
   return base::TimeDelta::FromMicroseconds(
@@ -327,6 +350,72 @@ void AudioBuffer::ReadFrames(int frames_to_copy,
     dest->FromInterleavedPartial<SignedInt32SampleTypeTraits>(
         reinterpret_cast<const int32_t*>(source_data), dest_frame_offset,
         frames_to_copy);
+  } else {
+    NOTREACHED() << "Unsupported audio sample type: " << sample_format_;
+  }
+}
+
+void AudioBuffer::ReadAllFrames(const std::vector<float*>& dest) const {
+  // Deinterleave each channel (if necessary) and convert to 32bit
+  // floating-point with nominal range -1.0 -> +1.0 (if necessary).
+
+  // |dest| must have the same number of channels, and the number of frames
+  // specified must be in range.
+  DCHECK(!end_of_stream());
+  CHECK_EQ(dest.size(), static_cast<size_t>(channel_count_));
+  DCHECK(!IsBitstreamFormat());
+
+  if (!data_) {
+    // Special case for an empty buffer.
+    for (int i = 0; i < channel_count_; ++i)
+      memset(dest[i], 0, adjusted_frame_count_ * sizeof(float));
+    return;
+  }
+
+  // Note: The conversion steps below will clip values to [1.0, -1.0f].
+
+  if (sample_format_ == kSampleFormatPlanarF32) {
+    for (int ch = 0; ch < channel_count_; ++ch) {
+      float* dest_data = dest[ch];
+      const float* source_data =
+          reinterpret_cast<const float*>(channel_data_[ch]);
+      for (int i = 0; i < adjusted_frame_count_; ++i)
+        dest_data[i] = Float32SampleTypeTraits::FromFloat(source_data[i]);
+    }
+    return;
+  }
+
+  if (sample_format_ == kSampleFormatPlanarS16) {
+    // Format is planar signed16. Convert each value into float and insert into
+    // output channel data.
+    for (int ch = 0; ch < channel_count_; ++ch) {
+      const int16_t* source_data =
+          reinterpret_cast<const int16_t*>(channel_data_[ch]);
+      float* dest_data = dest[ch];
+      for (int i = 0; i < adjusted_frame_count_; ++i)
+        dest_data[i] = SignedInt16SampleTypeTraits::ToFloat(source_data[i]);
+    }
+    return;
+  }
+
+  const uint8_t* source_data = data_.get();
+
+  if (sample_format_ == kSampleFormatF32) {
+    CopyConvertFromInterleaved<Float32SampleTypeTraits>(
+        reinterpret_cast<const float*>(source_data), adjusted_frame_count_,
+        dest);
+  } else if (sample_format_ == kSampleFormatU8) {
+    CopyConvertFromInterleaved<UnsignedInt8SampleTypeTraits>(
+        source_data, adjusted_frame_count_, dest);
+  } else if (sample_format_ == kSampleFormatS16) {
+    CopyConvertFromInterleaved<SignedInt16SampleTypeTraits>(
+        reinterpret_cast<const int16_t*>(source_data), adjusted_frame_count_,
+        dest);
+  } else if (sample_format_ == kSampleFormatS24 ||
+             sample_format_ == kSampleFormatS32) {
+    CopyConvertFromInterleaved<SignedInt32SampleTypeTraits>(
+        reinterpret_cast<const int32_t*>(source_data), adjusted_frame_count_,
+        dest);
   } else {
     NOTREACHED() << "Unsupported audio sample type: " << sample_format_;
   }

@@ -106,6 +106,10 @@ class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     pixel_value = image_util.GetPixelColor(screenshot, x, y)
     # Allow for off-by-one errors due to color conversion.
     tolerance = 1
+    # Pixel 4 devices require a slightly higher tolerance. See
+    # crbug.com/1166379.
+    if self.tab.browser.platform.GetDeviceTypeName() == 'Pixel 4':
+      tolerance = 7
     if not expectedRGB.IsEqual(pixel_value, tolerance):
       error_message = ('Color mismatch at (%d, %d): expected (%d, %d, %d), ' +
                        'got (%d, %d, %d)') % (

@@ -38,6 +38,7 @@ message PromptUserRequest {
 
   // List of IDs of extensions that will be removed by the Chrome Cleanup tool.
   // These are 32-character extension ID's.
+  // TODO(crbug.com/981388): Deprecate and remove this field.
   repeated string extension_ids = 3;
 
   // After deserializing, Chrome must check if
@@ -66,12 +67,14 @@ message PromptUserResponse {
 }
 
 // Tells Chrome to remove the given extensions.
+// TODO(crbug.com/981388): Deprecate and remove this request.
 message RemoveExtensionsRequest {
   repeated string extension_ids = 1;
 }
 
 // Tells the Chrome Cleanup tool whether Chrome successfully removed all
 // extensions.
+// TODO(crbug.com/981388): Deprecate and remove this response.
 message RemoveExtensionsResponse {
   // Missing |success| will cause Chrome Cleanup to exit with an error.
   optional bool success = 1;

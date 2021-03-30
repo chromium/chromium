@@ -23,6 +23,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/tracing_controller.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
+#include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 
 namespace base {
 class RepeatingTimer;
@@ -71,6 +72,7 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
              Maybe<std::string> transfer_compression,
              Maybe<Tracing::TraceConfig> config,
              Maybe<Binary> perfetto_config,
+             Maybe<std::string> tracing_backend,
              std::unique_ptr<StartCallback> callback) override;
   Response End() override;
   void GetCategories(std::unique_ptr<GetCategoriesCallback> callback) override;
@@ -87,8 +89,6 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
  private:
   friend class TracingHandlerTest;
 
-  class TracingSession;
-  class LegacyTracingSession;
   class PerfettoTracingSession;
 
   struct TraceDataBufferState {
@@ -101,8 +101,11 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
     size_t offset = 0;
   };
 
-  void OnRecordingEnabled(std::unique_ptr<StartCallback> callback);
-  void OnBufferUsage(float percent_full, size_t approximate_event_count);
+  void OnRecordingEnabled(std::unique_ptr<StartCallback> callback,
+                          const std::string& error_msg);
+  void OnBufferUsage(bool success,
+                     float percent_full,
+                     size_t approximate_event_count);
   void OnCategoriesReceived(std::unique_ptr<GetCategoriesCallback> callback,
                             const std::set<std::string>& category_set);
   void OnMemoryDumpFinished(std::unique_ptr<RequestMemoryDumpCallback> callback,
@@ -118,8 +121,7 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
   void SetupTimer(double usage_reporting_interval);
   void UpdateBufferUsage();
   void StopTracing(
-      const scoped_refptr<TracingController::TraceDataEndpoint>& endpoint,
-      const std::string& agent_label);
+      const scoped_refptr<TracingController::TraceDataEndpoint>& endpoint);
   bool IsTracing() const;
   void EmitFrameTree();
   static bool IsStartupTracingActive();
@@ -127,13 +129,20 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
       GetTraceConfigFromDevToolsConfig(
           const base::DictionaryValue& devtools_config);
   perfetto::TraceConfig CreatePerfettoConfiguration(
-      const base::trace_event::TraceConfig& browser_config);
+      const base::trace_event::TraceConfig& browser_config,
+      bool return_as_stream,
+      bool proto_format);
   void SetupProcessFilter(base::ProcessId gpu_pid, RenderFrameHost*);
   void StartTracingWithGpuPid(std::unique_ptr<StartCallback>,
+                              perfetto::BackendType tracing_backend,
                               base::ProcessId gpu_pid);
   void AppendProcessId(RenderFrameHost*,
                        std::unordered_set<base::ProcessId>* process_set);
   void OnProcessReady(RenderProcessHost*);
+  void AttemptAdoptStartupSession(bool return_as_stream,
+                                  bool gzip_compression,
+                                  bool proto_format,
+                                  perfetto::BackendType tracing_backend);
 
   std::unique_ptr<base::RepeatingTimer> buffer_usage_poll_timer_;
 
@@ -149,7 +158,7 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
   std::unique_ptr<DevToolsVideoConsumer> video_consumer_;
   int number_of_screenshots_from_video_consumer_ = 0;
   perfetto::TraceConfig trace_config_;
-  std::unique_ptr<TracingSession> session_;
+  std::unique_ptr<PerfettoTracingSession> session_;
   base::WeakPtrFactory<TracingHandler> weak_factory_{this};
 
   FRIEND_TEST_ALL_PREFIXES(TracingHandlerTest,

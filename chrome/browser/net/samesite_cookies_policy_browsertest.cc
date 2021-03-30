@@ -5,17 +5,24 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/net/storage_test_utils.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "components/network_session_configurator/common/network_switches.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
+#include "content/public/common/content_paths.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "net/base/features.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -51,6 +58,69 @@ class SameSiteCookiesPolicyTest : public PolicyTest,
 
  private:
   base::test::ScopedFeatureList feature_list_;
+};
+
+class SchemefulSameSiteCookiesPolicyIntegrationTest
+    : public policy::PolicyTest {
+ protected:
+  SchemefulSameSiteCookiesPolicyIntegrationTest()
+      : http_server_(net::EmbeddedTestServer::TYPE_HTTP),
+        https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    https_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    http_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    ASSERT_TRUE(https_server_.Start());
+    ASSERT_TRUE(http_server_.Start());
+  }
+
+  GURL GetURL(const std::string& host, const std::string& path, bool secure) {
+    if (secure)
+      return https_server_.GetURL(host, path);
+
+    return http_server_.GetURL(host, path);
+  }
+
+  GURL GetURL(const std::string& host, bool secure) {
+    return GetURL(host, "/", secure);
+  }
+
+  content::RenderFrameHost* GetChildFrame() {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    return ChildFrameAt(web_contents->GetMainFrame(), 0);
+  }
+
+  content::RenderFrameHost* GetMainFrame() {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    return web_contents->GetMainFrame();
+  }
+
+  void NavigateToHttpPageWithFrame(const std::string& host) {
+    GURL main_url(http_server_.GetURL(host, "/iframe.html"));
+    ui_test_utils::NavigateToURL(browser(), main_url);
+  }
+
+  void NavigateFrameToHttps(const std::string& host, const std::string& path) {
+    GURL page = https_server_.GetURL(host, path);
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    EXPECT_TRUE(NavigateIframeToURL(web_contents, "test", page));
+  }
+
+  void ExpectFrameContent(content::RenderFrameHost* frame,
+                          const std::string& expected) {
+    storage::test::ExpectFrameContent(frame, expected);
+  }
+
+  net::test_server::EmbeddedTestServer http_server_;
+  net::test_server::EmbeddedTestServer https_server_;
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(SchemefulSameSiteCookiesPolicyIntegrationTest);
 };
 
 IN_PROC_BROWSER_TEST_P(SameSiteCookiesPolicyTest,
@@ -343,5 +413,107 @@ IN_PROC_BROWSER_TEST_P(SameSiteCookiesPolicyTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          SameSiteCookiesPolicyTest,
                          ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_F(SchemefulSameSiteCookiesPolicyIntegrationTest,
+                       AllowCrossSchemeFrameLegacyCookies) {
+  PolicyMap policies;
+  // Set a policy to force legacy access for all cookies.
+  PolicyTest::SetPolicy(&policies,
+                        policy::key::kLegacySameSiteCookieBehaviorEnabled,
+                        base::Value(1));
+  PolicyTest::UpdateProviderPolicy(policies);
+
+  // Set a cookie that will only be sent with legacy behavior.
+  content::SetCookie(browser()->profile(), GetURL("a.test", false),
+                     "strictcookie=1;SameSite=Strict");
+
+  // Construct a cross-scheme same domain iframe (Main frame http://a.test,
+  // iframe https://a.test).
+  //
+  // Start by navigating to an insecure page with an iframe.
+  NavigateToHttpPageWithFrame("a.test");
+  storage::test::ExpectCookiesOnHost(browser()->profile(),
+                                     GetURL("a.test", false /* secure */),
+                                     "strictcookie=1");
+
+  // Then navigate the frame to a secure page and check to see if the cookie is
+  // sent.
+  NavigateFrameToHttps("a.test", "/echoheader?cookie");
+  // The legacy cookie should have been sent.
+  ExpectFrameContent(GetChildFrame(), "strictcookie=1");
+}
+
+IN_PROC_BROWSER_TEST_F(SchemefulSameSiteCookiesPolicyIntegrationTest,
+                       DisallowCrossSchemeFrameNonLegacyCookies) {
+  PolicyMap policies;
+  // Set a policy to force non-legacy access for all cookies.
+  PolicyTest::SetPolicy(&policies,
+                        policy::key::kLegacySameSiteCookieBehaviorEnabled,
+                        base::Value(2));
+  PolicyTest::UpdateProviderPolicy(policies);
+
+  // Set a cookie that will only be sent with legacy behavior.
+  content::SetCookie(browser()->profile(), GetURL("a.test", false),
+                     "strictcookie=1;SameSite=Strict");
+
+  // Construct a cross-scheme same domain iframe (Main frame http://a.test,
+  // iframe https://a.test).
+  //
+  // Start by navigating to an insecure page with an iframe.
+  NavigateToHttpPageWithFrame("a.test");
+  storage::test::ExpectCookiesOnHost(browser()->profile(),
+                                     GetURL("a.test", false /* secure */),
+                                     "strictcookie=1");
+
+  // Then navigate the frame to a secure page and check to see if the cookie is
+  // sent.
+  NavigateFrameToHttps("a.test", "/echoheader?cookie");
+  // The non-legacy cookie should not have been sent.
+  ExpectFrameContent(GetChildFrame(), "None");
+}
+
+IN_PROC_BROWSER_TEST_F(SchemefulSameSiteCookiesPolicyIntegrationTest,
+                       AllowStrictOnCrossSchemeNavigation) {
+  PolicyMap policies;
+  // Set a policy to force legacy access for all cookies.
+  PolicyTest::SetPolicy(&policies,
+                        policy::key::kLegacySameSiteCookieBehaviorEnabled,
+                        base::Value(1));
+  PolicyTest::UpdateProviderPolicy(policies);
+
+  // Set a cookie that will only be sent with legacy behavior.
+  content::SetCookie(browser()->profile(), GetURL("a.test", true),
+                     "strictcookie=1;SameSite=Strict");
+
+  // Just go somewhere on http://a.test. Doesn't matter where.
+  NavigateToHttpPageWithFrame("a.test");
+
+  GURL secure_echo_url = GetURL("a.test", "/echoheader?cookie", true);
+  ASSERT_TRUE(NavigateToURLFromRenderer(GetMainFrame(), secure_echo_url));
+
+  ExpectFrameContent(GetMainFrame(), "strictcookie=1");
+}
+
+IN_PROC_BROWSER_TEST_F(SchemefulSameSiteCookiesPolicyIntegrationTest,
+                       DisallowStrictOnCrossSchemeNavigation) {
+  PolicyMap policies;
+  // Set a policy to force non-legacy access for all cookies.
+  PolicyTest::SetPolicy(&policies,
+                        policy::key::kLegacySameSiteCookieBehaviorEnabled,
+                        base::Value(2));
+  PolicyTest::UpdateProviderPolicy(policies);
+
+  // Set a cookie that will only be sent with legacy behavior.
+  content::SetCookie(browser()->profile(), GetURL("a.test", false),
+                     "strictcookie=1;SameSite=Strict");
+
+  // Just go somewhere on http://a.test. Doesn't matter where.
+  NavigateToHttpPageWithFrame("a.test");
+
+  GURL secure_echo_url = GetURL("a.test", "/echoheader?cookie", true);
+  ASSERT_TRUE(NavigateToURLFromRenderer(GetMainFrame(), secure_echo_url));
+
+  ExpectFrameContent(GetMainFrame(), "None");
+}
 
 }  // namespace policy

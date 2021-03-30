@@ -25,6 +25,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 using base::ASCIIToUTF16;
+using extensions::mojom::APIPermissionID;
 
 namespace extensions {
 
@@ -53,7 +54,7 @@ const BackgroundInfo& GetBackgroundInfo(const Extension* extension) {
 // automatically, but it only adds a warning (rather than an error). Depending
 // on how many keys we want to error on, it may make sense to change that.
 bool CheckManifestV2RestrictedFeatures(const Extension* extension,
-                                       base::string16* error) {
+                                       std::u16string* error) {
   if (extension->manifest_version() < 3) {
     // No special restrictions for manifest v2 extensions (or v1, if the legacy
     // commandline flag is being used).
@@ -142,7 +143,7 @@ bool BackgroundInfo::IsServiceWorkerBased(const Extension* extension) {
       .background_service_worker_script_.has_value();
 }
 
-bool BackgroundInfo::Parse(const Extension* extension, base::string16* error) {
+bool BackgroundInfo::Parse(const Extension* extension, std::u16string* error) {
   const std::string& bg_scripts_key = extension->is_platform_app() ?
       keys::kPlatformAppBackgroundScripts : keys::kBackgroundScripts;
   if (!CheckManifestV2RestrictedFeatures(extension, error) ||
@@ -168,7 +169,7 @@ bool BackgroundInfo::Parse(const Extension* extension, base::string16* error) {
 
 bool BackgroundInfo::LoadBackgroundScripts(const Extension* extension,
                                            const std::string& key,
-                                           base::string16* error) {
+                                           std::u16string* error) {
   const base::Value* background_scripts_value = nullptr;
   if (!extension->manifest()->Get(key, &background_scripts_value))
     return true;
@@ -195,7 +196,7 @@ bool BackgroundInfo::LoadBackgroundScripts(const Extension* extension,
 
 bool BackgroundInfo::LoadBackgroundPage(const Extension* extension,
                                         const std::string& key,
-                                        base::string16* error) {
+                                        std::u16string* error) {
   const base::Value* background_page_value = nullptr;
   if (!extension->manifest()->Get(key, &background_page_value))
     return true;
@@ -210,7 +211,7 @@ bool BackgroundInfo::LoadBackgroundPage(const Extension* extension,
     background_url_ = GURL(background_str);
 
     if (!PermissionsParser::HasAPIPermission(extension,
-                                             APIPermission::kBackground)) {
+                                             APIPermissionID::kBackground)) {
       *error = ASCIIToUTF16(errors::kBackgroundPermissionNeeded);
       return false;
     }
@@ -236,7 +237,7 @@ bool BackgroundInfo::LoadBackgroundPage(const Extension* extension,
 
 bool BackgroundInfo::LoadBackgroundServiceWorkerScript(
     const Extension* extension,
-    base::string16* error) {
+    std::u16string* error) {
   const base::Value* scripts_value = nullptr;
   if (!extension->manifest()->Get(keys::kBackgroundServiceWorkerScript,
                                   &scripts_value)) {
@@ -255,7 +256,7 @@ bool BackgroundInfo::LoadBackgroundServiceWorkerScript(
 }
 
 bool BackgroundInfo::LoadBackgroundPage(const Extension* extension,
-                                        base::string16* error) {
+                                        std::u16string* error) {
   const char* key = extension->is_platform_app()
                         ? keys::kPlatformAppBackgroundPage
                         : keys::kBackgroundPage;
@@ -263,7 +264,7 @@ bool BackgroundInfo::LoadBackgroundPage(const Extension* extension,
 }
 
 bool BackgroundInfo::LoadBackgroundPersistent(const Extension* extension,
-                                              base::string16* error) {
+                                              std::u16string* error) {
   if (extension->is_platform_app()) {
     is_persistent_ = false;
     return true;
@@ -289,7 +290,7 @@ bool BackgroundInfo::LoadBackgroundPersistent(const Extension* extension,
 }
 
 bool BackgroundInfo::LoadAllowJSAccess(const Extension* extension,
-                                       base::string16* error) {
+                                       std::u16string* error) {
   const base::Value* allow_js_access = NULL;
   if (!extension->manifest()->Get(keys::kBackgroundAllowJsAccess,
                                   &allow_js_access))
@@ -311,7 +312,7 @@ BackgroundManifestHandler::~BackgroundManifestHandler() {
 }
 
 bool BackgroundManifestHandler::Parse(Extension* extension,
-                                      base::string16* error) {
+                                      std::u16string* error) {
   std::unique_ptr<BackgroundInfo> info(new BackgroundInfo);
   if (!info->Parse(extension, error))
     return false;
@@ -324,14 +325,14 @@ bool BackgroundManifestHandler::Parse(Extension* extension,
   // Lazy background pages are incompatible with the webRequest API.
   if (info->has_lazy_background_page() &&
       PermissionsParser::HasAPIPermission(extension,
-                                          APIPermission::kWebRequest)) {
+                                          APIPermissionID::kWebRequest)) {
     *error = ASCIIToUTF16(errors::kWebRequestConflictsWithLazyBackground);
     return false;
   }
 
   if (!info->has_lazy_background_page() &&
       PermissionsParser::HasAPIPermission(
-          extension, APIPermission::kTransientBackground)) {
+          extension, APIPermissionID::kTransientBackground)) {
     *error = ASCIIToUTF16(
         errors::kTransientBackgroundConflictsWithPersistentBackground);
     return false;
@@ -397,14 +398,6 @@ bool BackgroundManifestHandler::Validate(
         is_persistent) {
       warnings->push_back(
           InstallWarning(errors::kInvalidBackgroundPersistentInPlatformApp));
-    }
-    // Validate that packaged apps do not use the key 'background.persistent'.
-    // Use the dictionary directly to prevent an access check as
-    // 'background.persistent' is not available for packaged apps.
-    if (extension->manifest()->value()->Get(keys::kBackgroundPersistent,
-                                            NULL)) {
-      warnings->push_back(
-          InstallWarning(errors::kBackgroundPersistentInvalidForPlatformApps));
     }
   }
 

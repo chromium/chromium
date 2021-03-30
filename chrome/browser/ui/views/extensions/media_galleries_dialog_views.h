@@ -42,7 +42,6 @@ class MediaGalleriesDialogViews : public MediaGalleriesDialog,
   const views::Widget* GetWidget() const override;
   views::View* GetContentsView() override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
-  ui::ModalType GetModalType() const override;
 
   // views::ContextMenuController:
   void ShowContextMenuForViewImpl(views::View* source,

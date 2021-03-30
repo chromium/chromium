@@ -20,6 +20,8 @@ ASH_PUBLIC_EXPORT extern const char kAccessibilityScreenMagnifierCenterFocus[];
 ASH_PUBLIC_EXPORT extern const char kAccessibilityScreenMagnifierEnabled[];
 ASH_PUBLIC_EXPORT extern const char
     kAccessibilityScreenMagnifierFocusFollowingEnabled[];
+ASH_PUBLIC_EXPORT extern const char
+    kAccessibilityScreenMagnifierMouseFollowingMode[];
 ASH_PUBLIC_EXPORT extern const char kAccessibilityScreenMagnifierScale[];
 ASH_PUBLIC_EXPORT extern const char kAccessibilityVirtualKeyboardEnabled[];
 ASH_PUBLIC_EXPORT extern const char kAccessibilityVirtualKeyboardFeatures[];
@@ -41,23 +43,30 @@ ASH_PUBLIC_EXPORT extern const char kAccessibilityFloatingMenuPosition[];
 ASH_PUBLIC_EXPORT extern const char kAccessibilityFocusHighlightEnabled[];
 ASH_PUBLIC_EXPORT extern const char kAccessibilitySelectToSpeakEnabled[];
 ASH_PUBLIC_EXPORT extern const char kAccessibilitySwitchAccessEnabled[];
-ASH_PUBLIC_EXPORT extern const char kAccessibilitySwitchAccessSelectKeyCodes[];
-ASH_PUBLIC_EXPORT extern const char kAccessibilitySwitchAccessNextKeyCodes[];
 ASH_PUBLIC_EXPORT extern const char
-    kAccessibilitySwitchAccessPreviousKeyCodes[];
+    kAccessibilitySwitchAccessSelectDeviceKeyCodes[];
+ASH_PUBLIC_EXPORT extern const char
+    kAccessibilitySwitchAccessNextDeviceKeyCodes[];
+ASH_PUBLIC_EXPORT extern const char
+    kAccessibilitySwitchAccessPreviousDeviceKeyCodes[];
 ASH_PUBLIC_EXPORT extern const char kAccessibilitySwitchAccessAutoScanEnabled[];
 ASH_PUBLIC_EXPORT extern const char kAccessibilitySwitchAccessAutoScanSpeedMs[];
 ASH_PUBLIC_EXPORT extern const char
     kAccessibilitySwitchAccessAutoScanKeyboardSpeedMs[];
+ASH_PUBLIC_EXPORT extern const char
+    kAccessibilitySwitchAccessPointScanSpeedDipsPerSecond[];
 ASH_PUBLIC_EXPORT extern const char
     kAccessibilityTabletModeShelfNavigationButtonsEnabled[];
 ASH_PUBLIC_EXPORT extern const char kAccessibilityDictationEnabled[];
 ASH_PUBLIC_EXPORT extern const char kLiveCaptionEnabled[];
 ASH_PUBLIC_EXPORT extern const char kShouldAlwaysShowAccessibilityMenu[];
 
+ASH_PUBLIC_EXPORT extern const char kAltTabPerDesk[];
+
 ASH_PUBLIC_EXPORT extern const char kContextualTooltips[];
 
 ASH_PUBLIC_EXPORT extern const char kDesksNamesList[];
+ASH_PUBLIC_EXPORT extern const char kDesksMetricsList[];
 ASH_PUBLIC_EXPORT extern const char kDesksActiveDesk[];
 
 ASH_PUBLIC_EXPORT extern const char kDockedMagnifierEnabled[];
@@ -84,6 +93,7 @@ ASH_PUBLIC_EXPORT extern const char kDisplayTouchAssociations[];
 ASH_PUBLIC_EXPORT extern const char kDisplayTouchPortAssociations[];
 ASH_PUBLIC_EXPORT extern const char kExternalDisplayMirrorInfo[];
 ASH_PUBLIC_EXPORT extern const char kSecondaryDisplays[];
+ASH_PUBLIC_EXPORT extern const char kAllowMGSToStoreDisplayProperties[];
 
 ASH_PUBLIC_EXPORT extern const char kFullscreenAlertEnabled[];
 
@@ -93,6 +103,8 @@ ASH_PUBLIC_EXPORT extern const char kHasSeenStylus[];
 ASH_PUBLIC_EXPORT extern const char kShownPaletteWelcomeBubble[];
 ASH_PUBLIC_EXPORT extern const char kEnableStylusTools[];
 ASH_PUBLIC_EXPORT extern const char kLaunchPaletteOnEjectEvent[];
+
+ASH_PUBLIC_EXPORT extern const char kCanCellularSetupNotificationBeShown[];
 
 // Managed-guest session privacy warning.
 ASH_PUBLIC_EXPORT extern const char
@@ -213,6 +225,9 @@ ASH_PUBLIC_EXPORT extern const char kColorModeThemed[];
 ASH_PUBLIC_EXPORT extern const char kAppNotificationBadgingEnabled[];
 
 ASH_PUBLIC_EXPORT extern const char kGlobalMediaControlsPinned[];
+
+ASH_PUBLIC_EXPORT extern const char
+    kPciePeripheralDisplayNotificationRemaining[];
 
 }  // namespace prefs
 

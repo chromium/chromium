@@ -59,14 +59,14 @@ class WindowEnumerator {
   static bool IsTopmostWindow(HWND hwnd);
 
   // Returns the class name of |hwnd| or an empty string in case of error.
-  static base::string16 GetWindowClass(HWND hwnd);
+  static std::wstring GetWindowClass(HWND hwnd);
 
   // Returns true if |class_name| is the name of a system dialog.
-  static bool IsSystemDialogClass(const base::string16& class_name);
+  static bool IsSystemDialogClass(const std::wstring& class_name);
 
   // Returns true if |class_name| is the name of a window owned by the Windows
   // shell.
-  static bool IsShellWindowClass(const base::string16& class_name);
+  static bool IsShellWindowClass(const std::wstring& class_name);
 
   // Main processing function run for each window.
   BOOL OnWindow(HWND hwnd);
@@ -118,22 +118,22 @@ bool WindowEnumerator::IsTopmostWindow(HWND hwnd) {
 }
 
 // static
-base::string16 WindowEnumerator::GetWindowClass(HWND hwnd) {
+std::wstring WindowEnumerator::GetWindowClass(HWND hwnd) {
   wchar_t buffer[257];  // Max is 256.
   buffer[base::size(buffer) - 1] = L'\0';
   int name_len = ::GetClassName(hwnd, &buffer[0], base::size(buffer));
   if (name_len <= 0 || static_cast<size_t>(name_len) >= base::size(buffer))
-    return base::string16();
-  return base::string16(&buffer[0], name_len);
+    return std::wstring();
+  return std::wstring(&buffer[0], name_len);
 }
 
 // static
-bool WindowEnumerator::IsSystemDialogClass(const base::string16& class_name) {
+bool WindowEnumerator::IsSystemDialogClass(const std::wstring& class_name) {
   return class_name == L"#32770";
 }
 
 // static
-bool WindowEnumerator::IsShellWindowClass(const base::string16& class_name) {
+bool WindowEnumerator::IsShellWindowClass(const std::wstring& class_name) {
   // 'Button' is the start button, 'Shell_TrayWnd' the taskbar, and
   // 'Shell_SecondaryTrayWnd' is the taskbar on non-primary displays.
   return class_name == L"Button" || class_name == L"Shell_TrayWnd" ||
@@ -146,7 +146,7 @@ BOOL WindowEnumerator::OnWindow(HWND hwnd) {
   if (!::IsWindowVisible(hwnd) || ::IsIconic(hwnd) || !IsTopmostWindow(hwnd))
     return kContinueIterating;
 
-  base::string16 class_name = GetWindowClass(hwnd);
+  std::wstring class_name = GetWindowClass(hwnd);
   if (class_name.empty())
     return kContinueIterating;
 
@@ -159,7 +159,7 @@ BOOL WindowEnumerator::OnWindow(HWND hwnd) {
   // Prepare details of the command line of the test that timed out (if
   // provided), the process owning the window, and the location of a snapshot
   // taken of the screen.
-  base::string16 details;
+  std::wstring details;
   if (LOG_IS_ON(ERROR)) {
     std::wostringstream sstream;
 

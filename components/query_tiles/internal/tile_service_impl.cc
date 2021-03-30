@@ -80,7 +80,8 @@ void TileServiceImpl::PurgeDb() {
 void TileServiceImpl::SetServerUrl(const std::string& base_url) {
   if (base_url.empty())
     return;
-  tile_fetcher_->SetServerUrl(TileConfig::GetQueryTilesServerUrl(base_url));
+  tile_fetcher_->SetServerUrl(
+      TileConfig::GetQueryTilesServerUrl(base_url, true));
 }
 
 void TileServiceImpl::OnFetchFinished(
@@ -147,7 +148,7 @@ void TileServiceImpl::OnTileClicked(const std::string& tile_id) {
 
 void TileServiceImpl::OnQuerySelected(
     const base::Optional<std::string>& parent_tile_id,
-    const base::string16& query_text) {
+    const std::u16string& query_text) {
   tile_manager_->OnQuerySelected(std::move(parent_tile_id), query_text);
 }
 

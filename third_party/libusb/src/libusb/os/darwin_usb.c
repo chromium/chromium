@@ -1326,49 +1326,12 @@ static int darwin_clear_halt(struct libusb_device_handle *dev_handle, unsigned c
 
 static int darwin_reset_device(struct libusb_device_handle *dev_handle) {
   struct darwin_cached_device *dpriv = DARWIN_CACHED_DEVICE(dev_handle->dev);
-  IOUSBDeviceDescriptor descriptor;
-  IOUSBConfigurationDescriptorPtr cached_configuration;
-  IOUSBConfigurationDescriptor configuration;
-  bool reenumerate = false;
   IOReturn kresult;
-  int i;
 
-  kresult = (*(dpriv->device))->ResetDevice (dpriv->device);
+  kresult = (*(dpriv->device))->USBDeviceReEnumerate (dpriv->device, 0);
   if (kresult) {
-    usbi_err (HANDLE_CTX (dev_handle), "ResetDevice: %s", darwin_error_str (kresult));
+    usbi_err (HANDLE_CTX (dev_handle), "USBDeviceReEnumerate: %s", darwin_error_str (kresult));
     return darwin_to_libusb (kresult);
-  }
-
-  do {
-    usbi_dbg ("darwin/reset_device: checking if device descriptor changed");
-
-    /* ignore return code. if we can't get a descriptor it might be worthwhile re-enumerating anway */
-    (void) darwin_request_descriptor (dpriv->device, kUSBDeviceDesc, 0, &descriptor, sizeof (descriptor));
-
-    /* check if the device descriptor has changed */
-    if (0 != memcmp (&dpriv->dev_descriptor, &descriptor, sizeof (descriptor))) {
-      reenumerate = true;
-      break;
-    }
-
-    /* check if any configuration descriptor has changed */
-    for (i = 0 ; i < descriptor.bNumConfigurations ; ++i) {
-      usbi_dbg ("darwin/reset_device: checking if configuration descriptor %d changed", i);
-
-      (void) darwin_request_descriptor (dpriv->device, kUSBConfDesc, i, &configuration, sizeof (configuration));
-      (*(dpriv->device))->GetConfigurationDescriptorPtr (dpriv->device, i, &cached_configuration);
-
-      if (!cached_configuration || 0 != memcmp (cached_configuration, &configuration, sizeof (configuration))) {
-        reenumerate = true;
-        break;
-      }
-    }
-  } while (0);
-
-  if (reenumerate) {
-    usbi_dbg ("darwin/reset_device: device requires reenumeration");
-    (void) (*(dpriv->device))->USBDeviceReEnumerate (dpriv->device, 0);
-    return LIBUSB_ERROR_NOT_FOUND;
   }
 
   usbi_dbg ("darwin/reset_device: device reset complete");

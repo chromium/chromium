@@ -5,7 +5,6 @@
 #include "ui/views/corewm/tooltip_controller_test_helper.h"
 
 #include "ui/aura/window.h"
-#include "ui/views/corewm/tooltip_controller.h"
 
 namespace views {
 namespace corewm {
@@ -14,46 +13,59 @@ namespace test {
 TooltipControllerTestHelper::TooltipControllerTestHelper(
     TooltipController* controller)
     : controller_(controller) {
-  controller_->DisableTooltipShowDelay();
+  controller_->state_manager_->SetTooltipShowDelayedForTesting(false);
 }
 
 TooltipControllerTestHelper::~TooltipControllerTestHelper() = default;
 
-base::string16 TooltipControllerTestHelper::GetTooltipText() {
-  return controller_->tooltip_text_;
+const std::u16string& TooltipControllerTestHelper::GetTooltipText() {
+  return controller_->state_manager_->tooltip_text();
 }
 
-aura::Window* TooltipControllerTestHelper::GetTooltipWindow() {
-  return controller_->tooltip_window_;
+const aura::Window* TooltipControllerTestHelper::GetTooltipParentWindow() {
+  return controller_->state_manager_->tooltip_parent_window();
 }
 
-void TooltipControllerTestHelper::UpdateIfRequired() {
-  controller_->UpdateIfRequired();
+const aura::Window* TooltipControllerTestHelper::GetObservedWindow() {
+  return controller_->observed_window_;
 }
 
-void TooltipControllerTestHelper::FireTooltipShownTimer() {
-  controller_->tooltip_shown_timer_.Stop();
-  controller_->TooltipShownTimerFired();
+const gfx::Point& TooltipControllerTestHelper::GetTooltipPosition() {
+  return controller_->state_manager_->position_;
 }
 
-bool TooltipControllerTestHelper::IsTooltipShownTimerRunning() {
-  return controller_->tooltip_shown_timer_.IsRunning();
+void TooltipControllerTestHelper::HideAndReset() {
+  controller_->HideAndReset();
+}
+
+void TooltipControllerTestHelper::UpdateIfRequired(TooltipTrigger trigger) {
+  controller_->UpdateIfRequired(trigger);
+}
+
+void TooltipControllerTestHelper::FireHideTooltipTimer() {
+  controller_->state_manager_->StopWillHideTooltipTimer();
+  controller_->state_manager_->HideAndReset();
+}
+
+bool TooltipControllerTestHelper::IsHideTooltipTimerRunning() {
+  return controller_->state_manager_->IsWillHideTooltipTimerRunningForTesting();
 }
 
 bool TooltipControllerTestHelper::IsTooltipVisible() {
-  return controller_->IsTooltipVisible();
+  return controller_->state_manager_->IsVisible();
 }
 
 void TooltipControllerTestHelper::SetTooltipShowDelayEnable(
     bool tooltip_show_delay) {
-  controller_->tooltip_show_delayed_ = tooltip_show_delay;
+  controller_->state_manager_->SetTooltipShowDelayedForTesting(
+      tooltip_show_delay);
 }
 
 TooltipTestView::TooltipTestView() = default;
 
 TooltipTestView::~TooltipTestView() = default;
 
-base::string16 TooltipTestView::GetTooltipText(const gfx::Point& p) const {
+std::u16string TooltipTestView::GetTooltipText(const gfx::Point& p) const {
   return tooltip_text_;
 }
 

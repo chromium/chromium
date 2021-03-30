@@ -47,16 +47,6 @@ class ClientPaintCache;
 class ImageProvider;
 class ServicePaintCache;
 
-// TODO(aaronhk) I think this can be removed when the SkMatrix functions are
-// removed (crbug.com/1155544)
-class CC_PAINT_EXPORT ThreadsafeMatrix : public SkMatrix {
- public:
-  explicit ThreadsafeMatrix(const SkMatrix& matrix) : SkMatrix(matrix) {
-    (void)getType();
-  }
-  ThreadsafeMatrix() { (void)getType(); }
-};
-
 class CC_PAINT_EXPORT ThreadsafePath : public SkPath {
  public:
   explicit ThreadsafePath(const SkPath& path) : SkPath(path) {
@@ -88,7 +78,6 @@ enum class PaintOpType : uint8_t {
   ClipRect,
   ClipRRect,
   Concat,
-  Concat44,
   CustomData,
   DrawColor,
   DrawDRRect,
@@ -111,7 +100,6 @@ enum class PaintOpType : uint8_t {
   SaveLayerAlpha,
   Scale,
   SetMatrix,
-  SetMatrix44,
   SetNodeId,
   Translate,
   LastPaintOpType = Translate,
@@ -463,25 +451,8 @@ class CC_PAINT_EXPORT ClipRRectOp final : public PaintOp {
 class CC_PAINT_EXPORT ConcatOp final : public PaintOp {
  public:
   static constexpr PaintOpType kType = PaintOpType::Concat;
-  explicit ConcatOp(const SkMatrix& matrix) : PaintOp(kType), matrix(matrix) {}
+  explicit ConcatOp(const SkM44& matrix) : PaintOp(kType), matrix(matrix) {}
   static void Raster(const ConcatOp* op,
-                     SkCanvas* canvas,
-                     const PlaybackParams& params);
-  bool IsValid() const { return true; }
-  static bool AreEqual(const PaintOp* left, const PaintOp* right);
-  HAS_SERIALIZATION_FUNCTIONS();
-
-  ThreadsafeMatrix matrix;
-
- private:
-  ConcatOp() : PaintOp(kType) {}
-};
-
-class CC_PAINT_EXPORT Concat44Op final : public PaintOp {
- public:
-  static constexpr PaintOpType kType = PaintOpType::Concat44;
-  explicit Concat44Op(const SkM44& matrix) : PaintOp(kType), matrix(matrix) {}
-  static void Raster(const Concat44Op* op,
                      SkCanvas* canvas,
                      const PlaybackParams& params);
   bool IsValid() const { return true; }
@@ -491,7 +462,7 @@ class CC_PAINT_EXPORT Concat44Op final : public PaintOp {
   SkM44 matrix;
 
  private:
-  Concat44Op() : PaintOp(kType) {}
+  ConcatOp() : PaintOp(kType) {}
 };
 
 class CC_PAINT_EXPORT CustomDataOp final : public PaintOp {
@@ -561,9 +532,11 @@ class CC_PAINT_EXPORT DrawImageOp final : public PaintOpWithFlags {
  public:
   static constexpr PaintOpType kType = PaintOpType::DrawImage;
   static constexpr bool kIsDrawOp = true;
+  DrawImageOp(const PaintImage& image, SkScalar left, SkScalar top);
   DrawImageOp(const PaintImage& image,
               SkScalar left,
               SkScalar top,
+              const SkSamplingOptions&,
               const PaintFlags* flags);
   ~DrawImageOp();
   static void RasterWithFlags(const DrawImageOp* op,
@@ -582,6 +555,7 @@ class CC_PAINT_EXPORT DrawImageOp final : public PaintOpWithFlags {
   PaintImage image;
   SkScalar left;
   SkScalar top;
+  SkSamplingOptions sampling;
 
  private:
   DrawImageOp();
@@ -598,6 +572,11 @@ class CC_PAINT_EXPORT DrawImageRectOp final : public PaintOpWithFlags {
   DrawImageRectOp(const PaintImage& image,
                   const SkRect& src,
                   const SkRect& dst,
+                  SkCanvas::SrcRectConstraint constraint);
+  DrawImageRectOp(const PaintImage& image,
+                  const SkRect& src,
+                  const SkRect& dst,
+                  const SkSamplingOptions&,
                   const PaintFlags* flags,
                   SkCanvas::SrcRectConstraint constraint);
   ~DrawImageRectOp();
@@ -617,6 +596,7 @@ class CC_PAINT_EXPORT DrawImageRectOp final : public PaintOpWithFlags {
   PaintImage image;
   SkRect src;
   SkRect dst;
+  SkSamplingOptions sampling;
   SkCanvas::SrcRectConstraint constraint;
 
  private:
@@ -705,7 +685,9 @@ class CC_PAINT_EXPORT DrawPathOp final : public PaintOpWithFlags {
   static constexpr PaintOpType kType = PaintOpType::DrawPath;
   static constexpr bool kIsDrawOp = true;
   DrawPathOp(const SkPath& path, const PaintFlags& flags)
-      : PaintOpWithFlags(kType, flags), path(path) {}
+      : PaintOpWithFlags(kType, flags),
+        path(path),
+        sk_path_fill_type(static_cast<uint8_t>(path.getFillType())) {}
   static void RasterWithFlags(const DrawPathOp* op,
                               const PaintFlags* flags,
                               SkCanvas* canvas,
@@ -716,6 +698,12 @@ class CC_PAINT_EXPORT DrawPathOp final : public PaintOpWithFlags {
   HAS_SERIALIZATION_FUNCTIONS();
 
   ThreadsafePath path;
+
+  // Changing the fill type on an SkPath does not change the
+  // generation id. This can lead to caching issues so we explicitly
+  // serialize/deserialize this value and set it on the SkPath before handing it
+  // to Skia.
+  uint8_t sk_path_fill_type;
 
  private:
   DrawPathOp() : PaintOpWithFlags(kType) {}
@@ -960,8 +948,7 @@ class CC_PAINT_EXPORT ScaleOp final : public PaintOp {
 class CC_PAINT_EXPORT SetMatrixOp final : public PaintOp {
  public:
   static constexpr PaintOpType kType = PaintOpType::SetMatrix;
-  explicit SetMatrixOp(const SkMatrix& matrix)
-      : PaintOp(kType), matrix(matrix) {}
+  explicit SetMatrixOp(const SkM44& matrix) : PaintOp(kType), matrix(matrix) {}
   // This is the only op that needs the original ctm of the SkCanvas
   // used for raster (since SetMatrix is relative to the recording origin and
   // shouldn't clobber the SkCanvas raster origin).
@@ -975,28 +962,10 @@ class CC_PAINT_EXPORT SetMatrixOp final : public PaintOp {
   static bool AreEqual(const PaintOp* left, const PaintOp* right);
   HAS_SERIALIZATION_FUNCTIONS();
 
-  ThreadsafeMatrix matrix;
-
- private:
-  SetMatrixOp() : PaintOp(kType) {}
-};
-
-class CC_PAINT_EXPORT SetMatrix44Op final : public PaintOp {
- public:
-  static constexpr PaintOpType kType = PaintOpType::SetMatrix44;
-  explicit SetMatrix44Op(const SkM44& matrix)
-      : PaintOp(kType), matrix(matrix) {}
-  static void Raster(const SetMatrix44Op* op,
-                     SkCanvas* canvas,
-                     const PlaybackParams& params);
-  bool IsValid() const { return true; }
-  static bool AreEqual(const PaintOp* left, const PaintOp* right);
-  HAS_SERIALIZATION_FUNCTIONS();
-
   SkM44 matrix;
 
  private:
-  SetMatrix44Op() : PaintOp(kType) {}
+  SetMatrixOp() : PaintOp(kType) {}
 };
 
 class CC_PAINT_EXPORT SetNodeIdOp final : public PaintOp {

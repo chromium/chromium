@@ -142,8 +142,9 @@ void DecodeProtoFields(
     map->Set(access->policy_key, level, scope, source,
              DecodeIntegerProto(proto, &error), nullptr);
     if (!error.empty())
-      map->AddError(access->policy_key, IDS_POLICY_PROTO_PARSING_ERROR,
-                    {base::UTF8ToUTF16(error)});
+      map->AddMessage(access->policy_key, PolicyMap::MessageType::kError,
+                      IDS_POLICY_PROTO_PARSING_ERROR,
+                      {base::UTF8ToUTF16(error)});
   }
 
   for (const StringPolicyAccess* access = &kStringPolicyAccess[0];
@@ -169,8 +170,9 @@ void DecodeProtoFields(
     map->Set(access->policy_key, level, scope, source, std::move(value),
              std::move(external_data_fetcher));
     if (!error.empty())
-      map->AddError(access->policy_key, IDS_POLICY_PROTO_PARSING_ERROR,
-                    {base::UTF8ToUTF16(error)});
+      map->AddMessage(access->policy_key, PolicyMap::MessageType::kError,
+                      IDS_POLICY_PROTO_PARSING_ERROR,
+                      {base::UTF8ToUTF16(error)});
   }
 
   for (const StringListPolicyAccess* access = &kStringListPolicyAccess[0];

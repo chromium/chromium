@@ -48,6 +48,7 @@ content::WebContents* NavigateApplicationWindow(
     WindowOpenDisposition disposition);
 
 // Open the application in a way specified by |params| in a new window.
+// Returns nullptr if a browser window cannot be opened.
 content::WebContents* OpenApplicationWindow(Profile* profile,
                                             const apps::AppLaunchParams& params,
                                             const GURL& url);

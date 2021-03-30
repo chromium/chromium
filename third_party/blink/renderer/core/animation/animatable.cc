@@ -18,7 +18,7 @@
 #include "third_party/blink/renderer/core/animation/timing_input.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/feature_policy/layout_animations_policy.h"
+#include "third_party/blink/renderer/core/permissions_policy/layout_animations_policy.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -28,8 +28,8 @@ namespace {
 
 // A helper method which is used to trigger a violation report for cases where
 // the |element.animate| API is used to animate a CSS property which is blocked
-// by the feature policy 'layout-animations'.
-void ReportFeaturePolicyViolationsIfNecessary(
+// by the permissions policy 'layout-animations'.
+void ReportPermissionsPolicyViolationsIfNecessary(
     const ExecutionContext& context,
     const KeyframeEffectModelBase& effect) {
   for (const auto& property_handle : effect.Properties()) {
@@ -73,8 +73,13 @@ Animation* Animatable::animate(
   if (exception_state.HadException())
     return nullptr;
 
-  ReportFeaturePolicyViolationsIfNecessary(*element->GetExecutionContext(),
-                                           *effect->Model());
+  // Creation of the keyframe effect parses JavaScript, which could result
+  // in destruction of the execution context. Recheck that it is still valid.
+  if (!element->GetExecutionContext())
+    return nullptr;
+
+  ReportPermissionsPolicyViolationsIfNecessary(*element->GetExecutionContext(),
+                                               *effect->Model());
   if (!options.IsKeyframeAnimationOptions())
     return element->GetDocument().Timeline().Play(effect);
 
@@ -89,6 +94,9 @@ Animation* Animatable::animate(
     animation = Animation::Create(element->GetExecutionContext(), effect,
                                   nullptr, exception_state);
   }
+
+  if (!animation)
+    return nullptr;
 
   animation->setId(options_dict->id());
   return animation;
@@ -107,8 +115,13 @@ Animation* Animatable::animate(ScriptState* script_state,
   if (exception_state.HadException())
     return nullptr;
 
-  ReportFeaturePolicyViolationsIfNecessary(*element->GetExecutionContext(),
-                                           *effect->Model());
+  // Creation of the keyframe effect parses JavaScript, which could result
+  // in destruction of the execution context. Recheck that it is still valid.
+  if (!element->GetExecutionContext())
+    return nullptr;
+
+  ReportPermissionsPolicyViolationsIfNecessary(*element->GetExecutionContext(),
+                                               *effect->Model());
   return element->GetDocument().Timeline().Play(effect);
 }
 

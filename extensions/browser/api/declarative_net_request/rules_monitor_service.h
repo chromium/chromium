@@ -11,12 +11,12 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/one_shot_event.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "extensions/browser/api/declarative_net_request/action_tracker.h"
 #include "extensions/browser/api/declarative_net_request/global_rules_tracker.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_manager.h"
@@ -44,6 +44,7 @@ namespace declarative_net_request {
 class RulesetMatcher;
 enum class DynamicRuleUpdateAction;
 struct LoadRequestData;
+struct RulesCountPair;
 
 // Observes loading and unloading of extensions to load and unload their
 // rulesets for the Declarative Net Request API. Lives on the UI thread. Note: A
@@ -52,6 +53,9 @@ struct LoadRequestData;
 class RulesMonitorService : public BrowserContextKeyedAPI,
                             public ExtensionRegistryObserver {
  public:
+  using ApiCallback =
+      base::OnceCallback<void(base::Optional<std::string> error)>;
+
   // An observer used in tests.
   class TestObserver {
    public:
@@ -79,22 +83,18 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
 
   // Updates the dynamic rules for the |extension| and then invokes
   // |callback| with an optional error.
-  using DynamicRuleUpdateUICallback =
-      base::OnceCallback<void(base::Optional<std::string> error)>;
   void UpdateDynamicRules(
       const Extension& extension,
       std::vector<int> rule_ids_to_remove,
       std::vector<api::declarative_net_request::Rule> rules_to_add,
-      DynamicRuleUpdateUICallback callback);
+      ApiCallback callback);
 
   // Updates the set of enabled static rulesets for the |extension| and then
   // invokes |callback| with an optional error.
-  using UpdateEnabledRulesetsUICallback =
-      base::OnceCallback<void(base::Optional<std::string> error)>;
   void UpdateEnabledStaticRulesets(const Extension& extension,
                                    std::set<RulesetID> ids_to_disable,
                                    std::set<RulesetID> ids_to_enable,
-                                   UpdateEnabledRulesetsUICallback callback);
+                                   ApiCallback callback);
 
   // Returns the list of session scoped rules for |extension_id| as a
   // base::ListValue.
@@ -111,7 +111,11 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
       const Extension& extension,
       std::vector<int> rule_ids_to_remove,
       std::vector<api::declarative_net_request::Rule> rules_to_add,
-      base::OnceCallback<void(base::Optional<std::string> error)> callback);
+      ApiCallback callback);
+
+  // Returns the RulesCountPair for the |extension_id| and |ruleset_id| pair.
+  RulesCountPair GetRulesCountPair(const ExtensionId& extension_id,
+                                   RulesetID ruleset_id) const;
 
   RulesetManager* ruleset_manager() { return &ruleset_manager_; }
 
@@ -127,6 +131,7 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
 
  private:
   class FileSequenceBridge;
+  class ApiCallQueue;
 
   friend class BrowserContextKeyedAPIFactory<RulesMonitorService>;
 
@@ -158,21 +163,20 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
       const ExtensionId& extension_id,
       std::vector<int> rule_ids_to_remove,
       std::vector<api::declarative_net_request::Rule> rules_to_add,
-      DynamicRuleUpdateUICallback callback);
+      ApiCallback callback);
 
   // Internal helper for UpdateEnabledStaticRulesets.
-  void UpdateEnabledStaticRulesetsInternal(
-      const ExtensionId& extension_id,
-      std::set<RulesetID> ids_to_disable,
-      std::set<RulesetID> ids_to_enable,
-      UpdateEnabledRulesetsUICallback callback);
+  void UpdateEnabledStaticRulesetsInternal(const ExtensionId& extension_id,
+                                           std::set<RulesetID> ids_to_disable,
+                                           std::set<RulesetID> ids_to_enable,
+                                           ApiCallback callback);
 
   // Internal helper for UpdateSessionRules.
   void UpdateSessionRulesInternal(
       const ExtensionId& extension_id,
       std::vector<int> rule_ids_to_remove,
       std::vector<api::declarative_net_request::Rule> rules_to_add,
-      base::OnceCallback<void(base::Optional<std::string> error)> callback);
+      ApiCallback callback);
 
   // Invoked when we have loaded the rulesets in |load_data| on
   // |file_task_runner_| in response to OnExtensionLoaded.
@@ -180,21 +184,14 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
 
   // Invoked when rulesets are loaded in response to
   // UpdateEnabledStaticRulesets.
-  void OnNewStaticRulesetsLoaded(UpdateEnabledRulesetsUICallback callback,
+  void OnNewStaticRulesetsLoaded(ApiCallback callback,
                                  std::set<RulesetID> ids_to_disable,
                                  std::set<RulesetID> ids_to_enable,
                                  LoadRequestData load_data);
 
-  // Helper to execute a |task| only once the initial ruleset load for the
-  // |extension| is complete. Should be called in response to API function calls
-  // which modify rulesets on disk in order to prevent a race with the initial
-  // ruleset load.
-  void ExecuteOrQueueAPICall(const Extension& extension,
-                             base::OnceClosure task);
-
   // Invoked when the dynamic rules for the extension have been updated in
   // response to UpdateDynamicRules.
-  void OnDynamicRulesUpdated(DynamicRuleUpdateUICallback callback,
+  void OnDynamicRulesUpdated(ApiCallback callback,
                              LoadRequestData load_data,
                              base::Optional<std::string> error);
 
@@ -221,8 +218,8 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
   // checksum in preferences from |load_data|.
   void LogMetricsAndUpdateChecksumsIfNeeded(const LoadRequestData& load_data);
 
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      registry_observation_{this};
 
   // Helper to bridge tasks to a sequence which allows file IO.
   std::unique_ptr<const FileSequenceBridge> file_sequence_bridge_;
@@ -243,18 +240,18 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
   // Non-owned pointer.
   TestObserver* test_observer_ = nullptr;
 
-  // Stores the tasks to be performed once ruleset loading is done for an
-  // extension. This is only maintained for extensions which are undergoing a
-  // ruleset load in response to OnExtensionLoaded.
-  std::map<ExtensionId, std::unique_ptr<base::OneShotEvent>>
-      tasks_pending_on_load_;
+  // Api call queues to ensure only one api call of the given type proceeds at a
+  // time. Only maintained for enabled extensions.
+  std::map<ExtensionId, ApiCallQueue> update_enabled_rulesets_queue_map_;
+  std::map<ExtensionId, ApiCallQueue>
+      update_dynamic_or_session_rules_queue_map_;
 
   // Session scoped rules value corresponding to extensions.
   // TODO(crbug.com/1152430): Currently we are storing session scoped rules in
   // two forms: one as a base::ListValue and second in the indexed format as
   // part of RulesetMatcher, leading to double memory usage. We should be able
   // to do away with the base::ListValue representation.
-  std::map<ExtensionId, base::ListValue> session_rules_;
+  base::flat_map<ExtensionId, base::ListValue> session_rules_;
 
   // Must be the last member variable. See WeakPtrFactory documentation for
   // details.

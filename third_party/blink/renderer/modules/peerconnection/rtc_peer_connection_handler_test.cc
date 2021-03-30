@@ -32,6 +32,7 @@
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_heap.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/mediastream/processed_local_audio_source.h"
@@ -149,7 +150,9 @@ class MockPeerConnectionTracker : public PeerConnectionTracker {
  public:
   MockPeerConnectionTracker()
       : PeerConnectionTracker(
-            blink::scheduler::GetSingleThreadTaskRunnerForTesting()) {}
+            mojo::Remote<mojom::blink::PeerConnectionTrackerHost>(),
+            blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
+            base::PassKey<MockPeerConnectionTracker>()) {}
 
   MOCK_METHOD1(UnregisterPeerConnection,
                void(RTCPeerConnectionHandler* pc_handler));
@@ -287,29 +290,29 @@ class RTCPeerConnectionHandlerTest : public ::testing::Test {
   RTCPeerConnectionHandlerTest() : mock_peer_connection_(nullptr) {}
 
   void SetUp() override {
-    mock_client_.reset(new NiceMock<MockRTCPeerConnectionHandlerClient>());
-    mock_dependency_factory_.reset(
-        new blink::MockPeerConnectionDependencyFactory());
+    mock_client_ =
+        std::make_unique<NiceMock<MockRTCPeerConnectionHandlerClient>>();
+    mock_dependency_factory_ =
+        std::make_unique<blink::MockPeerConnectionDependencyFactory>();
 
     pc_handler_ = CreateRTCPeerConnectionHandlerUnderTest();
-    mock_tracker_.reset(new NiceMock<MockPeerConnectionTracker>());
+    mock_tracker_ = MakeGarbageCollected<NiceMock<MockPeerConnectionTracker>>();
     webrtc::PeerConnectionInterface::RTCConfiguration config;
     config.sdp_semantics = webrtc::SdpSemantics::kPlanB;
     MediaConstraints constraints;
     DummyExceptionStateForTesting exception_state;
-    EXPECT_TRUE(pc_handler_->InitializeForTest(config, constraints,
-                                               mock_tracker_.get()->AsWeakPtr(),
-                                               exception_state));
+    EXPECT_TRUE(pc_handler_->InitializeForTest(
+        config, constraints, mock_tracker_.Get(), exception_state));
     mock_peer_connection_ = pc_handler_->native_peer_connection();
     ASSERT_TRUE(mock_peer_connection_);
     EXPECT_CALL(*mock_peer_connection_, Close());
   }
 
   void TearDown() override {
-    pc_handler_.reset();
-    mock_tracker_.reset();
-    mock_dependency_factory_.reset();
-    mock_client_.reset();
+    pc_handler_ = nullptr;
+    mock_tracker_ = nullptr;
+    mock_dependency_factory_ = nullptr;
+    mock_client_ = nullptr;
     blink::WebHeap::CollectAllGarbageForTesting();
   }
 
@@ -583,7 +586,7 @@ class RTCPeerConnectionHandlerTest : public ::testing::Test {
   std::unique_ptr<MockRTCPeerConnectionHandlerClient> mock_client_;
   std::unique_ptr<blink::MockPeerConnectionDependencyFactory>
       mock_dependency_factory_;
-  std::unique_ptr<NiceMock<MockPeerConnectionTracker>> mock_tracker_;
+  Persistent<NiceMock<MockPeerConnectionTracker>> mock_tracker_;
   std::unique_ptr<RTCPeerConnectionHandlerUnderTest> pc_handler_;
 
   // Weak reference to the mocked native peer connection implementation.
@@ -596,7 +599,7 @@ class RTCPeerConnectionHandlerTest : public ::testing::Test {
 };
 
 TEST_F(RTCPeerConnectionHandlerTest, Destruct) {
-  EXPECT_CALL(*mock_tracker_.get(), UnregisterPeerConnection(pc_handler_.get()))
+  EXPECT_CALL(*mock_tracker_.Get(), UnregisterPeerConnection(pc_handler_.get()))
       .Times(1);
   pc_handler_.reset(nullptr);
 }
@@ -641,7 +644,7 @@ TEST_F(RTCPeerConnectionHandlerTest, NoCallbacksToClientAfterStop) {
 
 TEST_F(RTCPeerConnectionHandlerTest, CreateOffer) {
   MediaConstraints options;
-  EXPECT_CALL(*mock_tracker_.get(), TrackCreateOffer(pc_handler_.get(), _));
+  EXPECT_CALL(*mock_tracker_.Get(), TrackCreateOffer(pc_handler_.get(), _));
 
   // TODO(perkj): Can blink::RTCSessionDescriptionRequest be changed so
   // the |request| requestSucceeded can be tested? Currently the |request|
@@ -653,7 +656,7 @@ TEST_F(RTCPeerConnectionHandlerTest, CreateOffer) {
 
 TEST_F(RTCPeerConnectionHandlerTest, CreateAnswer) {
   MediaConstraints options;
-  EXPECT_CALL(*mock_tracker_.get(), TrackCreateAnswer(pc_handler_.get(), _));
+  EXPECT_CALL(*mock_tracker_.Get(), TrackCreateAnswer(pc_handler_.get(), _));
   // TODO(perkj): Can blink::RTCSessionDescriptionRequest be changed so
   // the |request| requestSucceeded can be tested? Currently the |request|
   // object can not be initialized from a unit test.
@@ -666,7 +669,7 @@ TEST_F(RTCPeerConnectionHandlerTest, setLocalDescription) {
   // PeerConnectionTracker::TrackSetSessionDescription is expected to be called
   // before |mock_peer_connection| is called.
   testing::InSequence sequence;
-  EXPECT_CALL(*mock_tracker_.get(),
+  EXPECT_CALL(*mock_tracker_.Get(),
               TrackSetSessionDescription(pc_handler_.get(), String(kDummySdp),
                                          String(kDummySdpType),
                                          PeerConnectionTracker::SOURCE_LOCAL));
@@ -695,11 +698,11 @@ TEST_F(RTCPeerConnectionHandlerTest, setLocalDescriptionParseError) {
   testing::InSequence sequence;
   // Expect two "Track" calls, one for the start of the attempt and one for the
   // failure.
-  EXPECT_CALL(*mock_tracker_.get(),
+  EXPECT_CALL(*mock_tracker_.Get(),
               TrackSetSessionDescription(pc_handler_.get(), String(kDummySdp),
                                          String(kDummySdpType),
                                          PeerConnectionTracker::SOURCE_LOCAL));
-  EXPECT_CALL(*mock_tracker_.get(),
+  EXPECT_CALL(*mock_tracker_.Get(),
               TrackSessionDescriptionCallback(
                   pc_handler_.get(),
                   PeerConnectionTracker::ACTION_SET_LOCAL_DESCRIPTION,
@@ -716,7 +719,7 @@ TEST_F(RTCPeerConnectionHandlerTest, setRemoteDescription) {
   // PeerConnectionTracker::TrackSetSessionDescription is expected to be called
   // before |mock_peer_connection| is called.
   testing::InSequence sequence;
-  EXPECT_CALL(*mock_tracker_.get(),
+  EXPECT_CALL(*mock_tracker_.Get(),
               TrackSetSessionDescription(pc_handler_.get(), String(kDummySdp),
                                          String(kDummySdpType),
                                          PeerConnectionTracker::SOURCE_REMOTE));
@@ -745,11 +748,11 @@ TEST_F(RTCPeerConnectionHandlerTest, setRemoteDescriptionParseError) {
   testing::InSequence sequence;
   // Expect two "Track" calls, one for the start of the attempt and one for the
   // failure.
-  EXPECT_CALL(*mock_tracker_.get(),
+  EXPECT_CALL(*mock_tracker_.Get(),
               TrackSetSessionDescription(pc_handler_.get(), String(kDummySdp),
                                          String(kDummySdpType),
                                          PeerConnectionTracker::SOURCE_REMOTE));
-  EXPECT_CALL(*mock_tracker_.get(),
+  EXPECT_CALL(*mock_tracker_.Get(),
               TrackSessionDescriptionCallback(
                   pc_handler_.get(),
                   PeerConnectionTracker::ACTION_SET_REMOTE_DESCRIPTION,
@@ -766,7 +769,7 @@ TEST_F(RTCPeerConnectionHandlerTest, setConfiguration) {
   webrtc::PeerConnectionInterface::RTCConfiguration config;
   config.sdp_semantics = webrtc::SdpSemantics::kPlanB;
 
-  EXPECT_CALL(*mock_tracker_.get(),
+  EXPECT_CALL(*mock_tracker_.Get(),
               TrackSetConfiguration(pc_handler_.get(), _));
   EXPECT_EQ(webrtc::RTCErrorType::NONE, pc_handler_->SetConfiguration(config));
 }
@@ -779,7 +782,7 @@ TEST_F(RTCPeerConnectionHandlerTest, setConfigurationError) {
 
   mock_peer_connection_->set_setconfiguration_error_type(
       webrtc::RTCErrorType::INVALID_MODIFICATION);
-  EXPECT_CALL(*mock_tracker_.get(),
+  EXPECT_CALL(*mock_tracker_.Get(),
               TrackSetConfiguration(pc_handler_.get(), _));
   EXPECT_EQ(webrtc::RTCErrorType::INVALID_MODIFICATION,
             pc_handler_->SetConfiguration(config));
@@ -789,7 +792,7 @@ TEST_F(RTCPeerConnectionHandlerTest, addICECandidate) {
   auto* candidate =
       MakeGarbageCollected<RTCIceCandidatePlatform>(kDummySdp, "sdpMid", 1);
 
-  EXPECT_CALL(*mock_tracker_.get(),
+  EXPECT_CALL(*mock_tracker_.Get(),
               TrackAddIceCandidate(pc_handler_.get(), candidate,
                                    PeerConnectionTracker::SOURCE_REMOTE, true));
   auto* request = MakeGarbageCollected<DummyRTCVoidRequest>();
@@ -806,13 +809,13 @@ TEST_F(RTCPeerConnectionHandlerTest, addAndRemoveStream) {
   MediaStreamDescriptor* local_stream = CreateLocalMediaStream(stream_label);
 
   EXPECT_CALL(
-      *mock_tracker_.get(),
+      *mock_tracker_.Get(),
       TrackAddTransceiver(
           pc_handler_.get(),
           PeerConnectionTracker::TransceiverUpdatedReason::kAddTrack, _, _))
       .Times(2);
   EXPECT_CALL(
-      *mock_tracker_.get(),
+      *mock_tracker_.Get(),
       TrackRemoveTransceiver(
           pc_handler_.get(),
           PeerConnectionTracker::TransceiverUpdatedReason::kRemoveTrack, _, _))
@@ -1079,7 +1082,7 @@ TEST_F(RTCPeerConnectionHandlerTest, OnConnectionChange) {
 
   webrtc::PeerConnectionInterface::PeerConnectionState new_state =
       webrtc::PeerConnectionInterface::PeerConnectionState::kNew;
-  EXPECT_CALL(*mock_tracker_.get(),
+  EXPECT_CALL(*mock_tracker_.Get(),
               TrackConnectionStateChange(
                   pc_handler_.get(),
                   webrtc::PeerConnectionInterface::PeerConnectionState::kNew));
@@ -1090,7 +1093,7 @@ TEST_F(RTCPeerConnectionHandlerTest, OnConnectionChange) {
 
   new_state = webrtc::PeerConnectionInterface::PeerConnectionState::kConnecting;
   EXPECT_CALL(
-      *mock_tracker_.get(),
+      *mock_tracker_.Get(),
       TrackConnectionStateChange(
           pc_handler_.get(),
           webrtc::PeerConnectionInterface::PeerConnectionState::kConnecting));
@@ -1102,7 +1105,7 @@ TEST_F(RTCPeerConnectionHandlerTest, OnConnectionChange) {
 
   new_state = webrtc::PeerConnectionInterface::PeerConnectionState::kConnected;
   EXPECT_CALL(
-      *mock_tracker_.get(),
+      *mock_tracker_.Get(),
       TrackConnectionStateChange(
           pc_handler_.get(),
           webrtc::PeerConnectionInterface::PeerConnectionState::kConnected));
@@ -1115,7 +1118,7 @@ TEST_F(RTCPeerConnectionHandlerTest, OnConnectionChange) {
   new_state =
       webrtc::PeerConnectionInterface::PeerConnectionState::kDisconnected;
   EXPECT_CALL(
-      *mock_tracker_.get(),
+      *mock_tracker_.Get(),
       TrackConnectionStateChange(
           pc_handler_.get(),
           webrtc::PeerConnectionInterface::PeerConnectionState::kDisconnected));
@@ -1127,7 +1130,7 @@ TEST_F(RTCPeerConnectionHandlerTest, OnConnectionChange) {
 
   new_state = webrtc::PeerConnectionInterface::PeerConnectionState::kFailed;
   EXPECT_CALL(
-      *mock_tracker_.get(),
+      *mock_tracker_.Get(),
       TrackConnectionStateChange(
           pc_handler_.get(),
           webrtc::PeerConnectionInterface::PeerConnectionState::kFailed));
@@ -1139,7 +1142,7 @@ TEST_F(RTCPeerConnectionHandlerTest, OnConnectionChange) {
 
   new_state = webrtc::PeerConnectionInterface::PeerConnectionState::kClosed;
   EXPECT_CALL(
-      *mock_tracker_.get(),
+      *mock_tracker_.Get(),
       TrackConnectionStateChange(
           pc_handler_.get(),
           webrtc::PeerConnectionInterface::PeerConnectionState::kClosed));
@@ -1152,21 +1155,21 @@ TEST_F(RTCPeerConnectionHandlerTest, OnConnectionChange) {
 
 TEST_F(RTCPeerConnectionHandlerTest, OnIceGatheringChange) {
   testing::InSequence sequence;
-  EXPECT_CALL(*mock_tracker_.get(),
+  EXPECT_CALL(*mock_tracker_.Get(),
               TrackIceGatheringStateChange(
                   pc_handler_.get(),
                   webrtc::PeerConnectionInterface::kIceGatheringNew));
   EXPECT_CALL(*mock_client_.get(),
               DidChangeIceGatheringState(
                   webrtc::PeerConnectionInterface::kIceGatheringNew));
-  EXPECT_CALL(*mock_tracker_.get(),
+  EXPECT_CALL(*mock_tracker_.Get(),
               TrackIceGatheringStateChange(
                   pc_handler_.get(),
                   webrtc::PeerConnectionInterface::kIceGatheringGathering));
   EXPECT_CALL(*mock_client_.get(),
               DidChangeIceGatheringState(
                   webrtc::PeerConnectionInterface::kIceGatheringGathering));
-  EXPECT_CALL(*mock_tracker_.get(),
+  EXPECT_CALL(*mock_tracker_.Get(),
               TrackIceGatheringStateChange(
                   pc_handler_.get(),
                   webrtc::PeerConnectionInterface::kIceGatheringComplete));
@@ -1215,13 +1218,13 @@ TEST_F(RTCPeerConnectionHandlerTest, DISABLED_OnAddAndOnRemoveStream) {
             }
           }));
   EXPECT_CALL(
-      *mock_tracker_.get(),
+      *mock_tracker_.Get(),
       TrackAddTransceiver(
           pc_handler_.get(),
           PeerConnectionTracker::TransceiverUpdatedReason::kAddTrack, _, _))
       .Times(2);
   EXPECT_CALL(
-      *mock_tracker_.get(),
+      *mock_tracker_.Get(),
       TrackRemoveTransceiver(
           pc_handler_.get(),
           PeerConnectionTracker::TransceiverUpdatedReason::kRemoveTrack, _, _))
@@ -1241,7 +1244,7 @@ TEST_F(RTCPeerConnectionHandlerTest, DISABLED_OnAddAndOnRemoveStream) {
 
 TEST_F(RTCPeerConnectionHandlerTest, OnIceCandidate) {
   testing::InSequence sequence;
-  EXPECT_CALL(*mock_tracker_.get(),
+  EXPECT_CALL(*mock_tracker_.Get(),
               TrackAddIceCandidate(pc_handler_.get(), _,
                                    PeerConnectionTracker::SOURCE_LOCAL, true));
   EXPECT_CALL(*mock_client_.get(), DidGenerateICECandidate(_));
@@ -1257,7 +1260,7 @@ TEST_F(RTCPeerConnectionHandlerTest, OnIceCandidate) {
 
 TEST_F(RTCPeerConnectionHandlerTest, OnRenegotiationNeeded) {
   testing::InSequence sequence;
-  EXPECT_CALL(*mock_tracker_.get(),
+  EXPECT_CALL(*mock_tracker_.Get(),
               TrackOnRenegotiationNeeded(pc_handler_.get()));
   EXPECT_CALL(*mock_client_.get(), NegotiationNeeded());
   pc_handler_->observer()->OnNegotiationNeededEvent(42);
@@ -1265,7 +1268,7 @@ TEST_F(RTCPeerConnectionHandlerTest, OnRenegotiationNeeded) {
 
 TEST_F(RTCPeerConnectionHandlerTest, CreateDataChannel) {
   blink::WebString label = "d1";
-  EXPECT_CALL(*mock_tracker_.get(),
+  EXPECT_CALL(*mock_tracker_.Get(),
               TrackCreateDataChannel(pc_handler_.get(), testing::NotNull(),
                                      PeerConnectionTracker::SOURCE_LOCAL));
   scoped_refptr<webrtc::DataChannelInterface> channel =

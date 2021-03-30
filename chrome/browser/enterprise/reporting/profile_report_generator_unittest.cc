@@ -4,8 +4,9 @@
 
 #include "components/enterprise/browser/reporting/profile_report_generator.h"
 
+#include <string>
+
 #include "base/json/json_reader.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/util/values/values_util.h"
@@ -153,7 +154,7 @@ TEST_F(ProfileReportGeneratorTest, ProfileNotActivated) {
       profile_manager()->profiles_dir().AppendASCII(kIdleProfile);
   profile_manager()->profile_attributes_storage()->AddProfile(
       profile_path, base::ASCIIToUTF16(kIdleProfile), std::string(),
-      base::string16(), false, 0, std::string(), EmptyAccountId());
+      std::u16string(), false, 0, std::string(), EmptyAccountId());
   std::unique_ptr<em::ChromeUserProfileInfo> response =
       generator_.MaybeGenerate(profile_path, kIdleProfile, ReportType::kFull);
   ASSERT_FALSE(response.get());
@@ -173,7 +174,7 @@ TEST_F(ProfileReportGeneratorTest, SignedInProfile) {
   EXPECT_TRUE(report->has_chrome_signed_in_user());
   EXPECT_EQ(expected_info.email, report->chrome_signed_in_user().email());
   EXPECT_EQ(expected_info.gaia,
-            report->chrome_signed_in_user().obfudscated_gaia_id());
+            report->chrome_signed_in_user().obfuscated_gaia_id());
 }
 
 TEST_F(ProfileReportGeneratorTest, PoliciesDisabled) {

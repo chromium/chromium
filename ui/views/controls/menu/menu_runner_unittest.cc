@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "build/build_config.h"
 #include "ui/base/ui_base_types.h"
@@ -47,8 +48,8 @@ class MenuRunnerTest : public ViewsTestBase {
   void InitMenuViews() {
     menu_delegate_ = std::make_unique<TestMenuDelegate>();
     menu_item_view_ = new views::TestMenuItemView(menu_delegate_.get());
-    menu_item_view_->AppendMenuItem(1, base::ASCIIToUTF16("One"));
-    menu_item_view_->AppendMenuItem(2, base::WideToUTF16(L"\x062f\x0648"));
+    menu_item_view_->AppendMenuItem(1, u"One");
+    menu_item_view_->AppendMenuItem(2, u"\x062f\x0648");
 
     owner_ = std::make_unique<Widget>();
     Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
@@ -220,7 +221,7 @@ TEST_F(MenuRunnerTest, PrefixSelect) {
 
   views::test::DisableMenuClosureAnimations();
   InitMenuRunner(0);
-  menu_item_view()->AppendMenuItem(3, base::ASCIIToUTF16("One Two"));
+  menu_item_view()->AppendMenuItem(3, u"One Two");
 
   MenuRunner* runner = menu_runner();
   runner->RunMenuAt(owner(), nullptr, gfx::Rect(), MenuAnchorPosition::kTopLeft,
@@ -470,7 +471,7 @@ TEST_F(MenuRunnerImplTest, NestedMenuRunnersDestroyedOutOfOrder) {
 
   std::unique_ptr<TestMenuDelegate> menu_delegate2(new TestMenuDelegate);
   MenuItemView* menu_item_view2 = new MenuItemView(menu_delegate2.get());
-  menu_item_view2->AppendMenuItem(1, base::ASCIIToUTF16("One"));
+  menu_item_view2->AppendMenuItem(1, u"One");
 
   internal::MenuRunnerImpl* menu_runner2 =
       new internal::MenuRunnerImpl(menu_item_view2);
@@ -507,7 +508,7 @@ TEST_F(MenuRunnerImplTest, MenuRunnerDestroyedWithNoActiveController) {
 
   std::unique_ptr<TestMenuDelegate> menu_delegate2(new TestMenuDelegate);
   MenuItemView* menu_item_view2 = new MenuItemView(menu_delegate2.get());
-  menu_item_view2->AppendMenuItem(1, base::ASCIIToUTF16("One"));
+  menu_item_view2->AppendMenuItem(1, u"One");
 
   internal::MenuRunnerImpl* menu_runner2 =
       new internal::MenuRunnerImpl(menu_item_view2);
@@ -576,9 +577,12 @@ TEST_F(MenuRunnerDestructionTest, MenuRunnerDestroyedDuringReleaseRef) {
   menu_runner->RunMenuAt(owner(), nullptr, gfx::Rect(),
                          MenuAnchorPosition::kTopLeft, 0);
 
-  test_views_delegate()->set_release_ref_callback(base::BindRepeating(
-      [](internal::MenuRunnerImpl* menu_runner) { menu_runner->Release(); },
-      base::Unretained(menu_runner)));
+  base::RunLoop run_loop;
+  test_views_delegate()->set_release_ref_callback(
+      base::BindLambdaForTesting([&]() {
+        run_loop.Quit();
+        menu_runner->Release();
+      }));
 
   base::WeakPtr<internal::MenuRunnerImpl> ref(MenuRunnerAsWeakPtr(menu_runner));
   MenuControllerTestApi menu_controller;
@@ -586,8 +590,9 @@ TEST_F(MenuRunnerDestructionTest, MenuRunnerDestroyedDuringReleaseRef) {
   // |menu_runner| simulating device shutdown.
   menu_controller.controller()->Cancel(MenuController::ExitType::kAll);
   // Both the |menu_runner| and |menu_controller| should have been deleted.
-  EXPECT_EQ(nullptr, ref);
   EXPECT_EQ(nullptr, menu_controller.controller());
+  run_loop.Run();
+  EXPECT_EQ(nullptr, ref);
 }
 
 TEST_F(MenuRunnerImplTest, FocusOnMenuClose) {
@@ -642,7 +647,7 @@ TEST_F(MenuRunnerImplTest, FocusOnMenuClose) {
 TEST_F(MenuRunnerImplTest, FocusOnMenuCloseDeleteAfterRun) {
   // Create test button that has focus.
   LabelButton* button = new LabelButton(
-      Button::PressedCallback(), base::string16(), style::CONTEXT_BUTTON);
+      Button::PressedCallback(), std::u16string(), style::CONTEXT_BUTTON);
   button->SetID(1);
   button->SetSize(gfx::Size(20, 20));
   owner()->GetRootView()->AddChildView(button);
@@ -663,7 +668,7 @@ TEST_F(MenuRunnerImplTest, FocusOnMenuCloseDeleteAfterRun) {
 
   std::unique_ptr<TestMenuDelegate> menu_delegate2(new TestMenuDelegate);
   MenuItemView* menu_item_view2 = new MenuItemView(menu_delegate2.get());
-  menu_item_view2->AppendMenuItem(1, base::ASCIIToUTF16("One"));
+  menu_item_view2->AppendMenuItem(1, u"One");
 
   internal::MenuRunnerImpl* menu_runner2 =
       new internal::MenuRunnerImpl(menu_item_view2);

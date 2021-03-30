@@ -5,6 +5,7 @@
 #include "ash/system/status_area_widget.h"
 
 #include "ash/capture_mode/stop_recording_button_tray.h"
+#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_switches.h"
@@ -34,7 +35,6 @@
 #include "base/containers/adapters.h"
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_macros.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "media/base/media_switches.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -48,6 +48,11 @@ namespace ash {
 StatusAreaWidget::ScopedTrayBubbleCounter::ScopedTrayBubbleCounter(
     StatusAreaWidget* status_area_widget)
     : status_area_widget_(status_area_widget->weak_ptr_factory_.GetWeakPtr()) {
+  if (status_area_widget_->tray_bubble_count_ == 0) {
+    status_area_widget_->shelf()
+        ->shelf_layout_manager()
+        ->OnShelfTrayBubbleVisibilityChanged(/*bubble_shown=*/true);
+  }
   ++status_area_widget_->tray_bubble_count_;
 }
 
@@ -57,6 +62,12 @@ StatusAreaWidget::ScopedTrayBubbleCounter::~ScopedTrayBubbleCounter() {
     return;
 
   --status_area_widget_->tray_bubble_count_;
+  if (status_area_widget_->tray_bubble_count_ == 0) {
+    status_area_widget_->shelf()
+        ->shelf_layout_manager()
+        ->OnShelfTrayBubbleVisibilityChanged(/*bubble_shown=*/false);
+  }
+
   DCHECK_GE(status_area_widget_->tray_bubble_count_, 0);
 }
 
@@ -136,6 +147,14 @@ void StatusAreaWidget::Initialize() {
   // Initialize after all trays have been created.
   for (TrayBackgroundView* tray_button : tray_buttons_)
     tray_button->Initialize();
+
+  // Move the |stop_recording_button_tray_| to the front so that it's more
+  // visible. This ensure the |stop_recording_button_tray_| always sticks to
+  // the left most side.
+  if (features::IsCaptureModeEnabled()) {
+    status_area_widget_delegate_->ReorderChildView(
+        stop_recording_button_tray_.get(), 1);
+  }
 
   UpdateAfterLoginStatusChange(
       Shell::Get()->session_controller()->login_status());
@@ -308,12 +327,21 @@ void StatusAreaWidget::CalculateButtonVisibilityForCollapsedState() {
   bool force_collapsible = base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kAshForceStatusAreaCollapsible);
 
+  // If |stop_recording_button_tray_| is visible, make some space in tray for
+  // it.
+  const int stop_recording_button_width =
+      stop_recording_button_tray_->visible_preferred()
+          ? stop_recording_button_tray_->GetPreferredSize().width()
+          : 0;
+
   // We update visibility of each tray button based on the available width.
   const int shelf_width =
       shelf_->shelf_widget()->GetClientAreaBoundsInScreen().width();
   const int available_width =
-      force_collapsible ? kStatusAreaForceCollapseAvailableWidth
-                        : shelf_width / 2 - kStatusAreaLeftPaddingForOverflow;
+      (force_collapsible
+           ? kStatusAreaForceCollapseAvailableWidth
+           : shelf_width / 2 - kStatusAreaLeftPaddingForOverflow) -
+      stop_recording_button_width;
 
   // First, reset all tray button to be hidden.
   overflow_button_tray_->ResetStateToCollapsed();
@@ -328,6 +356,9 @@ void StatusAreaWidget::CalculateButtonVisibilityForCollapsedState() {
   for (TrayBackgroundView* tray : base::Reversed(tray_buttons_)) {
     // Skip non-enabled tray buttons.
     if (!tray->visible_preferred())
+      continue;
+    // Skip |stop_recording_button_tray_| since it's always visible.
+    if (tray == stop_recording_button_tray_.get())
       continue;
 
     // Show overflow button once available width is exceeded.
@@ -347,6 +378,10 @@ void StatusAreaWidget::CalculateButtonVisibilityForCollapsedState() {
     previous_tray = tray;
     used_width += tray_width;
   }
+
+  // Skip |stop_recording_button_tray_| so it's always visible.
+  if (stop_recording_button_tray_->visible_preferred())
+    stop_recording_button_tray_->set_show_when_collapsed(true);
 
   overflow_button_tray_->SetVisiblePreferred(show_overflow_button);
   overflow_button_tray_->UpdateAfterStatusAreaCollapseChange();

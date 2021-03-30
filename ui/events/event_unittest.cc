@@ -7,10 +7,15 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <limits>
 #include <memory>
+#include <string>
 
 #include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/simple_test_tick_clock.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
@@ -654,6 +659,12 @@ TEST(EventTest, EventLatencyOSMouseWheelHistogram) {
   MSG event = {nullptr, WM_MOUSEWHEEL, 0, 0};
   MouseWheelEvent mouseWheelEvent(event);
   histogram_tester.ExpectTotalCount("Event.Latency.OS.MOUSE_WHEEL", 1);
+  histogram_tester.ExpectTotalCount("Event.Latency.OS_WIN.HIGH_RES.MOUSE_WHEEL",
+                                    0);
+  histogram_tester.ExpectTotalCount("Event.Latency.OS_WIN.LOW_RES.MOUSE_WHEEL",
+                                    0);
+  histogram_tester.ExpectTotalCount("Event.Latency.OS_WIN_IS_VALID.MOUSE_WHEEL",
+                                    0);
 #endif
 }
 
@@ -829,6 +840,226 @@ INSTANTIATE_TEST_SUITE_P(
     AltGraphEventTest,
     ::testing::Combine(::testing::Values(WM_CHAR),
                        ::testing::ValuesIn(kAltGraphEventTestCases)));
+
+// Tests for ComputeEventLatencyOSWin
+
+constexpr struct EventLatencyTickCountTestCase {
+  EventType event_type;
+  const char* histogram_suffix;
+} kEventLatencyTickCountTestCases[] = {
+    {
+        ET_KEY_PRESSED,
+        "KEY_PRESSED",
+    },
+    {
+        ET_MOUSE_PRESSED,
+        "MOUSE_PRESSED",
+    },
+    {
+        ET_TOUCH_PRESSED,
+        "TOUCH_PRESSED",
+    },
+};
+
+class EventLatencyTestBase : public ::testing::Test {
+ protected:
+  static constexpr char kHighResHistogram[] = "Event.Latency.OS_WIN.HIGH_RES";
+  static constexpr char kLowResHistogram[] = "Event.Latency.OS_WIN.LOW_RES";
+  static constexpr char kIsValidHistogram[] = "Event.Latency.OS_WIN_IS_VALID";
+
+  std::string HighResEventHistogram(base::StringPiece suffix) const {
+    return base::StrCat({kHighResHistogram, ".", suffix});
+  }
+
+  std::string LowResEventHistogram(base::StringPiece suffix) const {
+    return base::StrCat({kLowResHistogram, ".", suffix});
+  }
+
+  std::string IsValidEventHistogram(base::StringPiece suffix) const {
+    return base::StrCat({kIsValidHistogram, ".", suffix});
+  }
+
+  // Tests for all expected histograms for an event that has a valid timestamp.
+  void ExpectValidHistograms(const base::HistogramTester& histogram_tester,
+                             base::TimeDelta delta,
+                             base::StringPiece suffix) {
+    // Expect both general and per-event histograms to be set.
+    histogram_tester.ExpectUniqueSample(kIsValidHistogram, true, 1);
+    histogram_tester.ExpectUniqueSample(IsValidEventHistogram(suffix), true, 1);
+    if (base::TimeTicks::IsHighResolution()) {
+      histogram_tester.ExpectUniqueTimeSample(kHighResHistogram, delta, 1);
+      histogram_tester.ExpectUniqueTimeSample(HighResEventHistogram(suffix),
+                                              delta, 1);
+      histogram_tester.ExpectTotalCount(kLowResHistogram, 0);
+      histogram_tester.ExpectTotalCount(LowResEventHistogram(suffix), 0);
+    } else {
+      histogram_tester.ExpectUniqueTimeSample(kLowResHistogram, delta, 1);
+      histogram_tester.ExpectUniqueTimeSample(LowResEventHistogram(suffix),
+                                              delta, 1);
+      histogram_tester.ExpectTotalCount(kHighResHistogram, 0);
+      histogram_tester.ExpectTotalCount(HighResEventHistogram(suffix), 0);
+    }
+  }
+
+  // Tests for all expected histograms for an event that has an invalid
+  // timestamp.
+  void ExpectInvalidHistograms(const base::HistogramTester& histogram_tester,
+                               base::StringPiece suffix) {
+    histogram_tester.ExpectUniqueSample(kIsValidHistogram, false, 1);
+    histogram_tester.ExpectUniqueSample(IsValidEventHistogram(suffix), false,
+                                        1);
+    histogram_tester.ExpectTotalCount(kHighResHistogram, 0);
+    histogram_tester.ExpectTotalCount(HighResEventHistogram(suffix), 0);
+    histogram_tester.ExpectTotalCount(kLowResHistogram, 0);
+    histogram_tester.ExpectTotalCount(LowResEventHistogram(suffix), 0);
+  }
+
+  // Tests that no histograms were recorded for the given event. (For example
+  // if it has a type that should be excluded from the metric.)
+  void ExpectNoHistograms(const base::HistogramTester& histogram_tester,
+                          base::StringPiece suffix) {
+    histogram_tester.ExpectTotalCount(kIsValidHistogram, 0);
+    histogram_tester.ExpectTotalCount(IsValidEventHistogram(suffix), 0);
+    histogram_tester.ExpectTotalCount(kHighResHistogram, 0);
+    histogram_tester.ExpectTotalCount(HighResEventHistogram(suffix), 0);
+    histogram_tester.ExpectTotalCount(kLowResHistogram, 0);
+    histogram_tester.ExpectTotalCount(LowResEventHistogram(suffix), 0);
+  }
+
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+};
+
+class EventLatencyTickCountTest
+    : public EventLatencyTestBase,
+      public ::testing::WithParamInterface<EventLatencyTickCountTestCase> {
+ public:
+  EventLatencyTickCountTest() {
+    SetEventLatencyTickClockForTesting(&tick_clock_);
+  }
+
+  ~EventLatencyTickCountTest() { SetEventLatencyTickClockForTesting(nullptr); }
+
+ protected:
+  void UpdateTickClock(DWORD timestamp) {
+    tick_clock_.SetNowTicks(base::TimeTicks() +
+                            base::TimeDelta::FromMilliseconds(timestamp));
+  }
+
+  // The inherited |task_environment_| mocks the base::TimeTicks clock while
+  // |tick_clock_| mocks ::GetTickCount.
+  base::SimpleTestTickClock tick_clock_;
+};
+
+TEST_P(EventLatencyTickCountTest, ComputeEventLatencyOSWinFromTickCount) {
+  // Create an event whose timestamp is very close to the max range of
+  // ::GetTickCount.
+  constexpr DWORD timestamp_msec = std::numeric_limits<DWORD>::max() - 10;
+
+  const std::string suffix = GetParam().histogram_suffix;
+
+  // This test will create several events with the same timestamp, and change
+  // the mocked result of ::GetTickCount for each measurement. This makes it
+  // easier to test the edge case when the 32-bit ::GetTickCount overflows.
+
+  // Measure the latency of an event that's processed not long after the OS
+  // timestamp.
+  UpdateTickClock(timestamp_msec + 5);
+  {
+    base::HistogramTester histogram_tester;
+    ComputeEventLatencyOSWinFromTickCount(GetParam().event_type, timestamp_msec,
+                                          base::TimeTicks::Now());
+    ExpectValidHistograms(histogram_tester,
+                          base::TimeDelta::FromMilliseconds(5), suffix);
+  }
+
+  // Simulate ::GetTickCount advancing 15 msec, which wraps around past 0.
+  constexpr DWORD wrapped_timestamp_msec = timestamp_msec + 15;
+  static_assert(wrapped_timestamp_msec == 4,
+                "timestamp should have wrapped around");
+  UpdateTickClock(wrapped_timestamp_msec);
+  {
+    base::HistogramTester histogram_tester;
+    ComputeEventLatencyOSWinFromTickCount(GetParam().event_type, timestamp_msec,
+                                          base::TimeTicks::Now());
+    ExpectValidHistograms(histogram_tester,
+                          base::TimeDelta::FromMilliseconds(15), suffix);
+  }
+
+  // Simulate an event with a bogus timestamp.
+  UpdateTickClock(timestamp_msec - 1000);
+  {
+    base::HistogramTester histogram_tester;
+    ComputeEventLatencyOSWinFromTickCount(GetParam().event_type, timestamp_msec,
+                                          base::TimeTicks::Now());
+    ExpectInvalidHistograms(histogram_tester, suffix);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         EventLatencyTickCountTest,
+                         ::testing::ValuesIn(kEventLatencyTickCountTestCases));
+
+using EventLatencyPerformanceCounterTest = EventLatencyTestBase;
+
+TEST_F(EventLatencyPerformanceCounterTest,
+       ComputeEventLatencyOSWinFromPerformanceCounter) {
+  // Make sure there's enough time before Now() to create an event that's
+  // several minutes old.
+  task_environment_.AdvanceClock(base::TimeDelta::FromMinutes(5));
+
+  // Convert the current time to units directly compatible with the Performance
+  // Counter.
+  LARGE_INTEGER ticks_per_sec = {};
+  if (!::QueryPerformanceFrequency(&ticks_per_sec) ||
+      ticks_per_sec.QuadPart <= 0 || !base::TimeTicks::IsHighResolution()) {
+    // Skip this test when the performance counter is unavailable or
+    // unreliable. (It's unlikely, but possible, that IsHighResolution is false
+    // even if the performance counter works - see InitializeNowFunctionPointer
+    // in time_win.cc - so also skip the test in this case.)
+    return;
+  }
+  const auto ticks_per_second = ticks_per_sec.QuadPart;
+  UINT64 current_timestamp =
+      base::TimeTicks::Now().since_origin().InSecondsF() * ticks_per_second;
+
+  // Event created shortly before now.
+  {
+    base::HistogramTester histogram_tester;
+    ComputeEventLatencyOSWinFromPerformanceCounter(
+        ET_TOUCH_PRESSED, current_timestamp - ticks_per_second,
+        base::TimeTicks::Now());
+    ExpectValidHistograms(histogram_tester, base::TimeDelta::FromSeconds(1),
+                          "TOUCH_PRESSED");
+  }
+
+  // Event created several minutes before now (IsValidTimebase should return
+  // false).
+  {
+    base::HistogramTester histogram_tester;
+    ComputeEventLatencyOSWinFromPerformanceCounter(
+        ET_TOUCH_PRESSED, current_timestamp - 5 * 60 * ticks_per_second,
+        base::TimeTicks::Now());
+    ExpectInvalidHistograms(histogram_tester, "TOUCH_PRESSED");
+  }
+
+  // Event created in the future (IsValidTimebase should return false).
+  {
+    base::HistogramTester histogram_tester;
+    ComputeEventLatencyOSWinFromPerformanceCounter(
+        ET_TOUCH_PRESSED, current_timestamp + ticks_per_second,
+        base::TimeTicks::Now());
+    ExpectInvalidHistograms(histogram_tester, "TOUCH_PRESSED");
+  }
+
+  // Event that should not be recorded.
+  {
+    base::HistogramTester histogram_tester;
+    ComputeEventLatencyOSWinFromPerformanceCounter(
+        ET_TOUCH_MOVED, current_timestamp - 10, base::TimeTicks::Now());
+    ExpectNoHistograms(histogram_tester, "TOUCH_MOVED");
+  }
+}
 
 #endif  // defined(OS_WIN)
 

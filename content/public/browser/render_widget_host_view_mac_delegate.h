@@ -56,6 +56,11 @@ struct DidOverscrollParams;
 // normal processing should take place.
 - (BOOL)handleEvent:(NSEvent*)event;
 
+// Returns whether the specified NSEvent should never be handled as a key
+// equivalent by the webcontents, because it corresponds to a system hotkey that
+// webcontent should not be able to override.
+- (BOOL)webContentShouldHandleKeyEquivalent:(NSEvent*)theEvent;
+
 // Provides validation of user interface items. If the return value is NO, then
 // the delegate is unaware of that item and |valid| is undefined.  Otherwise,
 // |valid| contains the validity of the specified item.

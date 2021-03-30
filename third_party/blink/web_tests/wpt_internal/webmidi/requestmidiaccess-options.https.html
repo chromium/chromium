@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script type="module">
+import {MockMIDIService} from './resources/mock-midiservice.js';
+import {setMidiPermission} from './resources/permissions-helper.js';
+
+const mock = new MockMIDIService();
+const options = [
+    {},
+    { sysex: false },
+    { sysex: true }
+];
+
+const permissions = [
+    { midi: 'denied', sysex: 'denied' },
+    { midi: 'granted', sysex: 'denied' },
+    { midi: 'granted', sysex: 'granted' }
+];
+
+promise_test(async _ => {
+  for (const permission of permissions) {
+    for (const option of options) {
+      await setMidiPermission({}, permission.midi);
+      await setMidiPermission({sysex: true}, permission.sysex);
+
+      try {
+        const access = await navigator.requestMIDIAccess(option);
+        assert_equals(permission.midi, 'granted');
+        if (option.sysex) {
+          assert_equals(permission.sysex, 'granted');
+        }
+      } catch (e) {
+        if (option.sysex) {
+          assert_equals(permission.sysex, 'denied');
+        } else {
+          assert_equals(permission.midi, 'denied');
+        }
+      }
+    }
+  }
+}, 'requestMIDIAccess with various options');
+
+</script>
+</body>
+</html>

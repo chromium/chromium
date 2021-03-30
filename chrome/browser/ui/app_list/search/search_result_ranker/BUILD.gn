@@ -12,10 +12,6 @@ proto_library("app_launch_predictor_proto") {
   sources = [ "app_launch_predictor.proto" ]
 }
 
-proto_library("app_list_launch_recorder_proto") {
-  sources = [ "app_list_launch_recorder_state.proto" ]
-}
-
 proto_library("recurrence_ranker_proto") {
   sources = [
     "frecency_store.proto",
@@ -23,8 +19,4 @@ proto_library("recurrence_ranker_proto") {
     "recurrence_ranker.proto",
     "recurrence_ranker_config.proto",
   ]
-}
-
-proto_library("search_ranking_event_proto") {
-  sources = [ "search_ranking_event.proto" ]
 }

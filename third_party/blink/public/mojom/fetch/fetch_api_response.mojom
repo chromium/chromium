@@ -7,6 +7,7 @@ module blink.mojom;
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
 import "services/network/public/mojom/parsed_headers.mojom";
+import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/network_types.mojom";
 import "third_party/blink/public/mojom/blob/serialized_blob.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_error_type.mojom";
@@ -35,6 +36,10 @@ struct FetchAPIResponse {
   // https://fetch.spec.whatwg.org/#concept-response-type
   network.mojom.FetchResponseType response_type =
     network.mojom.FetchResponseType.kDefault;
+
+  // Pre-computed padding for this response.  This should only be non-zero
+  // for when |response_type| is kOpaque.
+  int64 padding = 0;
 
   // The source of this response, e.g. network, CacheStorage.
   network.mojom.FetchResponseSource response_source =
@@ -89,23 +94,14 @@ struct FetchAPIResponse {
   // ALPN negotiated protocol of the socket which fetched this resource.
   string alpn_negotiated_protocol = "unknown";
 
-  // True if the response was loaded with a Request where the credentials mode
-  // would potentially send cookies to the server:
-  //
-  //  https://fetch.spec.whatwg.org/#requestcredentials
-  //
-  // For example, if RequestCredentials is 'include' this field will be true.
-  // If RequestCredentials is 'same-origin', but the Response was loaded
-  // cross-origin then this field will be false.
-  //
-  // This field may be true even if there were no cookies actually available
-  // to send.
-  bool loaded_with_credentials = false;
-
   // True if the response was originally loaded via a request fetched over a
   // SPDY channel.
   bool was_fetched_via_spdy = false;
 
   // https://fetch.spec.whatwg.org/#concept-response-range-requested-flag
   bool has_range_requested = false;
+
+  // Information related to an authentication challenge from the response, if
+  // there was one.
+  network.mojom.AuthChallengeInfo? auth_challenge_info;
 };

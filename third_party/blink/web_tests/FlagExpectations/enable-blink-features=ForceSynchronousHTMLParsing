@@ -73,3 +73,17 @@ crbug.com/901056 paint/invalidation/overflow/resize-child-within-overflow.html [
 crbug.com/901056 virtual/conditional-appcache-delay/http/tests/loading/appcache-delay/appcache-loads-subresource.html [ Failure ]
 crbug.com/901056 virtual/conditional-appcache-delay/http/tests/loading/appcache-delay/preload-does-not-jump-the-queue.html [ Failure ]
 
+
+### These are ok, and just need to be rebaselined once the flag is enabled. The path
+### names here are > 200 characters, so they can't be landed.
+external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-candidate-insert-before-expected.txt [ Pass Failure ]
+external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-in-sync-event-expected.txt [ Pass Failure ]
+external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-insert-source-networkState-expected.txt [ Pass Failure ]
+external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-load-expected.txt [ Pass Failure ]
+external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-pause-expected.txt [ Pass Failure ]
+external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-play-expected.txt [ Pass Failure ]
+external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-remove-src-expected.txt [ Pass Failure ]
+external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-remove-source-expected.txt [ Pass Failure ]
+external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-remove-src-expected.txt [ Pass Failure ]
+external/wpt/html/webappapis/scripting/processing-model-2/unhandled-promise-rejections/promise-rejection-event-during-parse-expected.txt [ Pass Failure ]
+virtual/v8-off-thread-finalization/external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/029-expected.txt [ Pass Failure ]

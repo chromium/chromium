@@ -140,8 +140,8 @@ class SSLConnectJobTest : public WithTaskEnvironment, public testing::Test {
   }
 
   void AddAuthToCache() {
-    const base::string16 kFoo(base::ASCIIToUTF16("foo"));
-    const base::string16 kBar(base::ASCIIToUTF16("bar"));
+    const std::u16string kFoo(u"foo");
+    const std::u16string kBar(u"bar");
     session_->http_auth_cache()->Add(
         GURL("http://proxy:443/"), HttpAuth::AUTH_PROXY, "MyRealm1",
         HttpAuth::AUTH_SCHEME_BASIC, NetworkIsolationKey(),
@@ -964,8 +964,7 @@ TEST_F(SSLConnectJobTest, HttpProxyAuthChallenge) {
   EXPECT_FALSE(test_delegate.has_result());
 
   // Respond to challenge.
-  test_delegate.auth_controller()->ResetAuth(
-      AuthCredentials(base::ASCIIToUTF16("foo"), base::ASCIIToUTF16("bar")));
+  test_delegate.auth_controller()->ResetAuth(AuthCredentials(u"foo", u"bar"));
   test_delegate.RunAuthCallback();
 
   EXPECT_THAT(test_delegate.WaitForResult(), test::IsOk());
@@ -1094,8 +1093,7 @@ TEST_F(SSLConnectJobTest, HttpProxyAuthHasEstablishedConnection) {
   EXPECT_TRUE(ssl_connect_job->HasEstablishedConnection());
 
   // Respond to challenge.
-  test_delegate.auth_controller()->ResetAuth(
-      AuthCredentials(base::ASCIIToUTF16("foo"), base::ASCIIToUTF16("bar")));
+  test_delegate.auth_controller()->ResetAuth(AuthCredentials(u"foo", u"bar"));
   test_delegate.RunAuthCallback();
   EXPECT_FALSE(test_delegate.has_result());
   EXPECT_EQ(LOAD_STATE_ESTABLISHING_PROXY_TUNNEL,
@@ -1187,8 +1185,7 @@ TEST_F(SSLConnectJobTest,
   EXPECT_TRUE(ssl_connect_job->HasEstablishedConnection());
 
   // Respond to challenge.
-  test_delegate.auth_controller()->ResetAuth(
-      AuthCredentials(base::ASCIIToUTF16("foo"), base::ASCIIToUTF16("bar")));
+  test_delegate.auth_controller()->ResetAuth(AuthCredentials(u"foo", u"bar"));
   test_delegate.RunAuthCallback();
   EXPECT_FALSE(test_delegate.has_result());
   EXPECT_EQ(LOAD_STATE_ESTABLISHING_PROXY_TUNNEL,

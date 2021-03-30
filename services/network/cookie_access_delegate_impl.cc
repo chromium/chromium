@@ -66,4 +66,11 @@ bool CookieAccessDelegateImpl::IsInNontrivialFirstPartySet(
          first_party_sets_->IsInNontrivialFirstPartySet(site);
 }
 
+base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>
+CookieAccessDelegateImpl::RetrieveFirstPartySets() const {
+  if (!first_party_sets_)
+    return {};
+  return first_party_sets_->Sets();
+}
+
 }  // namespace network

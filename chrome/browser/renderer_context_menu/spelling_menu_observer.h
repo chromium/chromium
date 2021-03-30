@@ -9,15 +9,19 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
+#include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "components/prefs/pref_member.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "components/spellcheck/browser/spelling_service_client.h"
+#include "components/spellcheck/common/spellcheck_common.h"
+#include "components/spellcheck/spellcheck_buildflags.h"
 
 class RenderViewContextMenuProxy;
 struct SpellCheckResult;
@@ -48,23 +52,61 @@ class SpellingMenuObserver : public RenderViewContextMenuObserver {
 
   // RenderViewContextMenuObserver implementation.
   void InitMenu(const content::ContextMenuParams& params) override;
+#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+  void OnContextMenuShown(const content::ContextMenuParams& params,
+                          const gfx::Rect& bounds_in_screen) override;
+#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   bool IsCommandIdSupported(int command_id) override;
   bool IsCommandIdChecked(int command_id) override;
   bool IsCommandIdEnabled(int command_id) override;
   void ExecuteCommand(int command_id) override;
 
+#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+  // A callback function called when the platform spellchecker finishes getting
+  // suggestions for a misspelled word.
+  void OnGetPlatformSuggestionsComplete(
+      const spellcheck::PerLanguageSuggestions&
+          platform_per_language_suggestions);
+
+  // A callback for the BarrierClosure, fired when the platform (and possibly
+  // remote) retrieval of suggestions completes.
+  void OnGetSuggestionsComplete();
+
+  // Registers a callback for testing when local (and possibly remote) retrieval
+  // of suggestions has completed. This allows tests to wait in a run loop
+  // before confirming the presence of expected menu items.
+  void RegisterSuggestionsCompleteCallbackForTesting(
+      base::OnceClosure callback);
+#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+
   // A callback function called when the Spelling service finishes checking a
   // misspelled word.
-  void OnTextCheckComplete(
+  void OnGetRemoteSuggestionsComplete(
       SpellingServiceClient::ServiceType type,
       bool success,
-      const base::string16& text,
+      const std::u16string& text,
       const std::vector<SpellCheckResult>& results);
 
  private:
+  // Method that starts the asynchronous retrieval of suggestions from the
+  // remote enhanced spellcheck service.
+  void GetRemoteSuggestions();
+
+  // Updates the presented suggestion from the Spelling service.
+  void UpdateRemoteSuggestion(SpellingServiceClient::ServiceType type,
+                              bool success,
+                              const std::vector<SpellCheckResult>& results);
+
+#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+  // Fires a callback for testing when local (and possibly remote) retrieval of
+  // suggestions has completed. This allows tests to wait in a run loop before
+  // confirming the presence of expected menu items.
+  void FireSuggestionsCompleteCallbackIfNeededForTesting();
+#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+
   // The callback function for base::RepeatingTimer. This function updates the
-  // "loading..." animation in the context-menu item.
-  void OnAnimationTimerExpired();
+  // "loading..." animation in the context-menu item for the given command_id.
+  void OnAnimationTimerExpired(int command_id);
 
   // The interface to add a context-menu item and update it. This class uses
   // this interface to avoid accesing context-menu items directly.
@@ -73,12 +115,12 @@ class SpellingMenuObserver : public RenderViewContextMenuObserver {
   // Suggested words from the local spellchecker. If the spelling service
   // returns a word in this list, we hide the context-menu item to prevent
   // showing the same word twice.
-  std::vector<base::string16> suggestions_;
+  std::vector<std::u16string> suggestions_;
 
   // The string used for animation until we receive a response from the Spelling
   // service. The current animation just adds periods at the end of this string:
   //   'Loading' -> 'Loading.' -> 'Loading..' -> 'Loading...' (-> 'Loading')
-  base::string16 loading_message_;
+  std::u16string loading_message_;
   size_t loading_frame_;
 
   // A flag represending whether a JSON-RPC call to the Spelling service
@@ -89,7 +131,7 @@ class SpellingMenuObserver : public RenderViewContextMenuObserver {
 
   // The misspelled word. When we choose the "Add to dictionary" item, we add
   // this word to the custom-word dictionary.
-  base::string16 misspelled_word_;
+  std::u16string misspelled_word_;
 
   // The string representing the result of this call. This string is a
   // suggestion when this call finished successfully. Otherwise it is error
@@ -97,7 +139,7 @@ class SpellingMenuObserver : public RenderViewContextMenuObserver {
   // stores the input string. (Since the Spelling service sends only misspelled
   // words, we replace these misspelled words in the input text with the
   // suggested words to create suggestion text.
-  base::string16 result_;
+  std::u16string result_;
 
   // The URLFetcher object used for sending a JSON-RPC request.
   std::unique_ptr<SpellingServiceClient> client_;
@@ -112,6 +154,30 @@ class SpellingMenuObserver : public RenderViewContextMenuObserver {
 
   // Flag indicating whether automatic spelling correction is enabled.
   BooleanPrefMember autocorrect_spelling_;
+
+  // Flag indicating that suggestions from the remote spelling service may be
+  // available.
+  bool use_remote_suggestions_ = false;
+
+#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+  // Flag indicating that suggestions should be retrieved asynchronously from
+  // the platform spellchecker (effectively just Windows versions > Win7).
+  bool use_platform_suggestions_ = false;
+
+  // Barrier closure for completion of both remote and local check.
+  base::RepeatingClosure completion_barrier_;
+
+  // Used for caching remote results in case async platform suggestion retrieval
+  // has not completed.
+  SpellingServiceClient::ServiceType remote_service_type_ =
+      SpellingServiceClient::SUGGEST;
+  std::vector<SpellCheckResult> remote_results_;
+
+  // Callback registered using RegisterSuggestionsCompleteCallbackForTesting.
+  base::OnceClosure suggestions_complete_callback_for_testing_;
+#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+
+  base::WeakPtrFactory<SpellingMenuObserver> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SpellingMenuObserver);
 };

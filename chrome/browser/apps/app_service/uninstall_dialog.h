@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_UNINSTALL_DIALOG_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_UNINSTALL_DIALOG_H_
 
+#include <memory>
+#include <string>
+
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -49,6 +51,8 @@ class UninstallDialog {
     explicit UiBase(UninstallDialog* uninstall_dialog)
         : uninstall_dialog_(uninstall_dialog) {}
 
+    UiBase(const UiBase&) = delete;
+    UiBase& operator=(const UiBase&) = delete;
     virtual ~UiBase() = default;
 
     static void Create(Profile* profile,
@@ -63,8 +67,6 @@ class UninstallDialog {
 
    private:
     UninstallDialog* uninstall_dialog_;
-
-    DISALLOW_COPY_AND_ASSIGN(UiBase);
   };
 
   // Called when the dialog closes after the user has made a decision about
@@ -86,6 +88,8 @@ class UninstallDialog {
                   IconLoader* icon_loader,
                   gfx::NativeWindow parent_window,
                   UninstallCallback uninstall_callback);
+  UninstallDialog(const UninstallDialog&) = delete;
+  UninstallDialog& operator=(const UninstallDialog&) = delete;
   ~UninstallDialog();
 
   // Called when the uninstall dialog is closing to process uninstall or cancel
@@ -111,8 +115,6 @@ class UninstallDialog {
   std::unique_ptr<NativeWindowTracker> parent_window_tracker_;
 
   base::WeakPtrFactory<UninstallDialog> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UninstallDialog);
 };
 
 }  // namespace apps

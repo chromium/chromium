@@ -4,15 +4,19 @@
 
 #include "extensions/browser/extension_util.h"
 
+#include "base/barrier_closure.h"
+#include "base/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/cors_origin_pattern_setter.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/ui_util.h"
+#include "extensions/common/cors_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/behavior_feature.h"
 #include "extensions/common/features/feature.h"
@@ -21,6 +25,7 @@
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "mojo/public/cpp/bindings/clone_traits.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/system/sys_info.h"
@@ -40,12 +45,39 @@ bool IsSigninProfileTestExtensionOnTestImage(const Extension* extension) {
 }
 #endif
 
+void SetCorsOriginAccessListForExtensionHelper(
+    const std::vector<content::BrowserContext*>& browser_contexts,
+    const Extension& extension,
+    std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
+    std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
+    base::OnceClosure closure) {
+  auto barrier_closure =
+      BarrierClosure(browser_contexts.size(), std::move(closure));
+  for (content::BrowserContext* browser_context : browser_contexts) {
+    // SetCorsOriginAccessListForExtensionHelper should only affect an incognito
+    // profile if the extension is actually allowed to run in an incognito
+    // profile (not just by the extension manifest, but also by user
+    // preferences).
+    if (browser_context->IsOffTheRecord()) {
+      // TODO(lukasza): Change to util::IsIncognitoEnabled if possible.  This
+      // fails today in All/IncognitoCommandsApiTest.IncognitoMode/0 apparently
+      // because ExtensionPrefs::IsIncognitoEnabled return `false` and
+      // ExtensionPrefs::SetIsIncognitoEnabled(..., true) is never called.
+      DCHECK(IncognitoInfo::IsIncognitoAllowed(&extension));
+    }
+
+    content::CorsOriginPatternSetter::Set(
+        browser_context, extension.origin(), mojo::Clone(allow_patterns),
+        mojo::Clone(block_patterns), barrier_closure);
+  }
+}
+
 }  // namespace
 
 bool CanBeIncognitoEnabled(const Extension* extension) {
   return IncognitoInfo::IsIncognitoAllowed(extension) &&
          (!extension->is_platform_app() ||
-          extension->location() == Manifest::COMPONENT);
+          extension->location() == mojom::ManifestLocation::kComponent);
 }
 
 bool IsIncognitoEnabled(const std::string& extension_id,
@@ -94,10 +126,11 @@ content::StoragePartitionConfig GetStoragePartitionConfigForExtensionId(
     // the |partition_domain|. The |in_memory| and |partition_name| are only
     // used in guest schemes so they are cleared here.
     return content::StoragePartitionConfig::Create(
-        extension_id, std::string() /* partition_name */, false /*in_memory */);
+        browser_context, extension_id, std::string() /* partition_name */,
+        false /*in_memory */);
   }
 
-  return content::StoragePartitionConfig::CreateDefault();
+  return content::StoragePartitionConfig::CreateDefault(browser_context);
 }
 
 content::StoragePartition* GetStoragePartitionForExtensionId(
@@ -178,7 +211,7 @@ bool CanWithholdPermissionsFromExtension(const Extension& extension) {
 
 bool CanWithholdPermissionsFromExtension(const ExtensionId& extension_id,
                                          Manifest::Type type,
-                                         Manifest::Location location) {
+                                         mojom::ManifestLocation location) {
   // Some extensions must retain privilege to all requested host permissions.
   // Specifically, extensions that don't show up in chrome:extensions (where
   // withheld permissions couldn't be granted), extensions that are part of
@@ -207,6 +240,22 @@ int GetBrowserContextId(content::BrowserContext* context) {
         context_map->insert(std::make_pair(original_context, next_id++)).first;
   }
   return iter->second;
+}
+
+void SetCorsOriginAccessListForExtension(
+    const std::vector<content::BrowserContext*>& browser_contexts,
+    const Extension& extension,
+    base::OnceClosure closure) {
+  SetCorsOriginAccessListForExtensionHelper(
+      browser_contexts, extension, CreateCorsOriginAccessAllowList(extension),
+      CreateCorsOriginAccessBlockList(extension), std::move(closure));
+}
+
+void ResetCorsOriginAccessListForExtension(
+    content::BrowserContext* browser_context,
+    const Extension& extension) {
+  SetCorsOriginAccessListForExtensionHelper({browser_context}, extension, {},
+                                            {}, base::DoNothing::Once());
 }
 
 }  // namespace util

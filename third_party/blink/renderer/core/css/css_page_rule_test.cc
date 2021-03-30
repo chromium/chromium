@@ -53,6 +53,8 @@ TEST(CSSPageRule, selectorText) {
   // set page type selector.
   page_rule->setSelectorText(context, "namedpage");
   EXPECT_EQ("namedpage", page_rule->selectorText());
+
+  context->NotifyContextDestroyed();
 }
 
 }  // namespace blink

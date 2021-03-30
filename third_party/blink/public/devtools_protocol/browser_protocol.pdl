@@ -645,6 +645,7 @@ experimental domain Audits
 
   type SourceCodeLocation extends object
     properties
+      optional Runtime.ScriptId scriptId
       string url
       integer lineNumber
       integer columnNumber
@@ -661,13 +662,58 @@ experimental domain Audits
       optional SourceCodeLocation sourceCodeLocation
       optional DOM.BackendNodeId violatingNodeId
 
-  # Details for a request that has been blocked with the BLOCKED_BY_RESPONSE
-  # code. Currently only used for COEP/COOP, but may be extended to include
-  # some CSP errors in the future.
-  type SharedArrayBufferTransferIssueDetails extends object
+  type SharedArrayBufferIssueType extends string
+    enum
+      TransferIssue
+      CreationIssue
+
+  # Details for a issue arising from an SAB being instantiated in, or
+  # transfered to a context that is not cross-origin isolated.
+  type SharedArrayBufferIssueDetails extends object
     properties
       SourceCodeLocation sourceCodeLocation
       boolean isWarning
+      SharedArrayBufferIssueType type
+
+  type TwaQualityEnforcementViolationType extends string
+    enum
+      kHttpError
+      kUnavailableOffline
+      kDigitalAssetLinks
+
+  type TrustedWebActivityIssueDetails extends object
+    properties
+      # The url that triggers the violation.
+      string url
+      TwaQualityEnforcementViolationType violationType
+      optional integer httpStatusCode
+      # The package name of the Trusted Web Activity client app. This field is
+      # only used when violation type is kDigitalAssetLinks.
+      optional string packageName
+      # The signature of the Trusted Web Activity client app. This field is only
+      # used when violation type is kDigitalAssetLinks.
+      optional string signature
+
+  type LowTextContrastIssueDetails extends object
+    properties
+      DOM.BackendNodeId violatingNodeId
+      string violatingNodeSelector
+      number contrastRatio
+      number thresholdAA
+      number thresholdAAA
+      string fontSize
+      string fontWeight
+
+  # Details for a CORS related issue, e.g. a warning or error related to
+  # CORS RFC1918 enforcement.
+  type CorsIssueDetails extends object
+    properties
+      Network.CorsErrorStatus corsErrorStatus
+      boolean isWarning
+      AffectedRequest request
+      optional string initiatorOrigin
+      optional Network.IPAddressSpace resourceIPAddressSpace
+      optional Network.ClientSecurityState clientSecurityState
 
   # A unique identifier for the type of issue. Each type may use one of the
   # optional fields in InspectorIssueDetails to convey more specific
@@ -679,7 +725,10 @@ experimental domain Audits
       BlockedByResponseIssue
       HeavyAdIssue
       ContentSecurityPolicyIssue
-      SharedArrayBufferTransferIssue
+      SharedArrayBufferIssue
+      TrustedWebActivityIssue
+      LowTextContrastIssue
+      CorsIssue
 
   # This struct holds a list of optional fields with additional information
   # specific to the kind of issue. When adding a new issue code, please also
@@ -691,7 +740,10 @@ experimental domain Audits
       optional BlockedByResponseIssueDetails blockedByResponseIssueDetails
       optional HeavyAdIssueDetails heavyAdIssueDetails
       optional ContentSecurityPolicyIssueDetails contentSecurityPolicyIssueDetails
-      optional SharedArrayBufferTransferIssueDetails sharedArrayBufferTransferIssueDetails
+      optional SharedArrayBufferIssueDetails sharedArrayBufferIssueDetails
+      optional TrustedWebActivityIssueDetails twaQualityEnforcementDetails
+      optional LowTextContrastIssueDetails lowTextContrastIssueDetails
+      optional CorsIssueDetails corsIssueDetails
 
   # An inspector issue reported from the back-end.
   type InspectorIssue extends object
@@ -728,6 +780,13 @@ experimental domain Audits
   # Enables issues domain, sends the issues collected so far to the client by means of the
   # `issueAdded` event.
   command enable
+
+  # Runs the contrast check for the target page. Found issues are reported
+  # using Audits.issueAdded event.
+  command checkContrast
+    parameters
+      # Whether to report WCAG AAA level issues. Default is false.
+      optional boolean reportAAA
 
   event issueAdded
     parameters
@@ -928,6 +987,14 @@ domain Browser
       # The default path to save downloaded files to. This is requred if behavior is set to 'allow'
       # or 'allowAndName'.
       optional string downloadPath
+
+  # Cancel a download if in progress
+  experimental command cancelDownload
+    parameters
+      # Global unique identifier of the download.
+      string guid
+      # BrowserContext to perform the action in. When omitted, default browser context is used.
+      optional BrowserContextID browserContextId
 
   # Close browser gracefully.
   command close
@@ -1815,6 +1882,8 @@ domain DOM
       backdrop
       selection
       target-text
+      spelling-error
+      grammar-error
       first-line-inherited
       scrollbar
       scrollbar-thumb
@@ -3133,10 +3202,11 @@ domain Emulation
       string version
 
   # Used to specify User Agent Cient Hints to emulate. See https://wicg.github.io/ua-client-hints
+  # Missing optional values will be filled in by the target with what it would normally use.
   experimental type UserAgentMetadata extends object
     properties
-      array of UserAgentBrandVersion brands
-      string fullVersion
+      optional array of UserAgentBrandVersion brands
+      optional string fullVersion
       string platform
       string platformVersion
       string architecture
@@ -4368,6 +4438,15 @@ domain Network
       Medium
       High
 
+  # Represents the source scheme of the origin that originally set the cookie.
+  # A value of "Unset" allows protocol clients to emulate legacy cookie scope for the scheme.
+  # This is a temporary ability and it will be removed in the future.
+  experimental type CookieSourceScheme extends string
+    enum
+      Unset
+      NonSecure
+      Secure
+
   # Timing information for the request.
   type ResourceTiming extends object
     properties
@@ -4527,7 +4606,6 @@ domain Network
       inspector
       subresource-filter
       content-type
-      collapsed-by-client
       coep-frame-resource-needs-coep-header
       coop-sandboxed-iframe-cannot-navigate-to-coop-page
       corp-not-same-origin
@@ -4747,6 +4825,14 @@ domain Network
       optional CookieSameSite sameSite
       # Cookie Priority
       experimental CookiePriority priority
+      # True if cookie is SameParty.
+      experimental boolean sameParty
+      # Cookie source scheme type.
+      experimental CookieSourceScheme sourceScheme
+      # Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port.
+      # An unspecified port value allows protocol clients to emulate legacy cookie scope for the port.
+      # This is a temporary ability and it will be removed in the future.
+      experimental integer sourcePort
 
   # Types of reasons why a cookie may not be stored from a response.
   experimental type SetCookieBlockedReason extends string
@@ -4795,6 +4881,12 @@ domain Network
       # value.
       # This is the "Schemeful Same-Site" version of the blocked reason.
       SchemefulSameSiteUnspecifiedTreatedAsLax
+      # The cookie had the "SameParty" attribute but came from a cross-party response.
+      SamePartyFromCrossPartyContext
+      # The cookie had the "SameParty" attribute but did not specify the "Secure" attribute
+      # (which is required in order to use "SameParty"); or specified the "SameSite=Strict"
+      # attribute (which is forbidden when using "SameParty").
+      SamePartyConflictsWithOtherAttributes
 
   # Types of reasons why a cookie may not be sent with a request.
   experimental type CookieBlockedReason extends string
@@ -4837,6 +4929,8 @@ domain Network
       # value.
       # This is the "Schemeful Same-Site" version of the blocked reason.
       SchemefulSameSiteUnspecifiedTreatedAsLax
+      # The cookie had the "SameParty" attribute and the request was made from a cross-party context.
+      SamePartyFromCrossPartyContext
 
   # A cookie which was not stored from a response with the corresponding reason.
   experimental type BlockedSetCookieWithReason extends object
@@ -4867,7 +4961,7 @@ domain Network
       # Cookie value.
       string value
       # The request-URI to associate with the setting of the cookie. This value can affect the
-      # default domain and path values of the created cookie.
+      # default domain, path, source port, and source scheme values of the created cookie.
       optional string url
       # Cookie domain.
       optional string domain
@@ -4883,6 +4977,14 @@ domain Network
       optional TimeSinceEpoch expires
       # Cookie Priority.
       experimental optional CookiePriority priority
+      # True if cookie is SameParty.
+      experimental optional boolean sameParty
+      # Cookie source scheme type.
+      experimental optional CookieSourceScheme sourceScheme
+      # Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port.
+      # An unspecified port value allows protocol clients to emulate legacy cookie scope for the port.
+      # This is a temporary ability and it will be removed in the future.
+      experimental optional integer sourcePort
 
   # Authorization challenge for HTTP status code 401 or 407.
   experimental type AuthChallenge extends object
@@ -5002,6 +5104,22 @@ domain Network
       optional SecurityDetails securityDetails
       # Errors occurred while handling the signed exchagne.
       optional array of SignedExchangeError errors
+
+  # List of content encodings supported by the backend.
+  experimental type ContentEncoding extends string
+    enum
+      deflate
+      gzip
+      br
+
+  # Sets a list of content encodings that will be accepted. Empty list means no encoding is accepted.
+  experimental command setAcceptedEncodings
+    parameters
+      # List of accepted content encodings.
+      array of ContentEncoding encodings
+
+  # Clears accepted encodings set by setAcceptedEncodings
+  experimental command clearAcceptedEncodingsOverride
 
   # Tells whether clearing browser cache is supported.
   deprecated command canClearBrowserCache
@@ -5213,7 +5331,7 @@ domain Network
       # Cookie value.
       string value
       # The request-URI to associate with the setting of the cookie. This value can affect the
-      # default domain and path values of the created cookie.
+      # default domain, path, source port, and source scheme values of the created cookie.
       optional string url
       # Cookie domain.
       optional string domain
@@ -5229,6 +5347,14 @@ domain Network
       optional TimeSinceEpoch expires
       # Cookie Priority type.
       experimental optional CookiePriority priority
+      # True if cookie is SameParty.
+      experimental optional boolean sameParty
+      # Cookie source scheme type.
+      experimental optional CookieSourceScheme sourceScheme
+      # Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port.
+      # An unspecified port value allows protocol clients to emulate legacy cookie scope for the port.
+      # This is a temporary ability and it will be removed in the future.
+      experimental optional integer sourcePort
     returns
       # Always set to true. If an error occurs, the response indicates protocol error.
       deprecated boolean success
@@ -5523,6 +5649,15 @@ domain Network
       # Request initiator.
       optional Initiator initiator
 
+  # Fired when WebTransport handshake is finished.
+  event webTransportConnectionEstablished
+    parameters
+      # WebTransport identifier.
+      RequestId transportId
+      # Timestamp.
+      MonotonicTime timestamp
+
+  # Fired when WebTransport is disposed.
   event webTransportClosed
     parameters
       # WebTransport identifier.
@@ -5534,6 +5669,7 @@ domain Network
     enum
       Allow
       BlockFromInsecureToMorePrivate
+      WarnFromInsecureToMorePrivate
 
   experimental type IPAddressSpace extends string
     enum
@@ -5577,6 +5713,9 @@ domain Network
       array of BlockedSetCookieWithReason blockedCookies
       # Raw response headers as they were received over the wire.
       Headers headers
+      # The IP address space of the resource. The address space can only be determined once the transport
+      # established the connection, so we can't send it in `requestWillBeSentExtraInfo`.
+      IPAddressSpace resourceIPAddressSpace
       # Raw response header text as it was received over the wire. The raw text may not always be
       # available, such as in the case of HTTP/2 or QUIC.
       optional string headersText
@@ -5628,6 +5767,7 @@ domain Network
   experimental type CrossOriginEmbedderPolicyValue extends string
     enum
       None
+      CorsOrCredentialless
       RequireCorp
 
   experimental type CrossOriginEmbedderPolicyStatus extends object
@@ -5760,6 +5900,16 @@ experimental domain Overlay
       # Style of the self-alignment line (align-items).
       optional LineStyle crossAlignment
 
+  # Configuration data for the highlighting of Flex item elements.
+  type FlexItemHighlightConfig extends object
+    properties
+      # Style of the box representing the item's base size
+      optional BoxStyle baseSizeBox
+      # Style of the border around the box representing the item's base size
+      optional LineStyle baseSizeBorder
+      # Style of the arrow representing if the item grew or shrank
+      optional LineStyle flexibilityArrow
+
   # Style information for drawing a line.
   type LineStyle extends object
     properties
@@ -5819,6 +5969,8 @@ experimental domain Overlay
       optional GridHighlightConfig gridHighlightConfig
       # The flex container highlight configuration (default: all transparent).
       optional FlexContainerHighlightConfig flexContainerHighlightConfig
+      # The flex item highlight configuration (default: all transparent).
+      optional FlexItemHighlightConfig flexItemHighlightConfig
       # The contrast algorithm to use for the contrast ratio (default: aa).
       optional ContrastAlgorithm contrastAlgorithm
 
@@ -6037,6 +6189,11 @@ experimental domain Overlay
       # True for showing hit-test borders
       boolean show
 
+  # Request that backend shows an overlay with web vital metrics.
+  command setShowWebVitals
+    parameters
+      boolean show
+
   # Paints viewport size upon main frame resize.
   command setShowViewportSizeOnResize
     parameters
@@ -6118,6 +6275,83 @@ domain Page
       SharedArrayBuffersTransferAllowed
       PerformanceMeasureMemory
       PerformanceProfile
+
+  # All Permissions Policy features. This enum should match the one defined
+  # in renderer/core/feature_policy/feature_policy_features.json5.
+  experimental type PermissionsPolicyFeature extends string
+    enum
+      accelerometer
+      ambient-light-sensor
+      autoplay
+      camera
+      ch-dpr
+      ch-device-memory
+      ch-downlink
+      ch-ect
+      ch-lang
+      ch-rtt
+      ch-ua
+      ch-ua-arch
+      ch-ua-platform
+      ch-ua-model
+      ch-ua-mobile
+      ch-ua-full-version
+      ch-ua-platform-version
+      ch-viewport-width
+      ch-width
+      clipboard-read
+      clipboard-write
+      conversion-measurement
+      cross-origin-isolated
+      display-capture
+      document-domain
+      encrypted-media
+      execution-while-out-of-viewport
+      execution-while-not-rendered
+      focus-without-user-activation
+      fullscreen
+      frobulate
+      gamepad
+      geolocation
+      gyroscope
+      hid
+      idle-detection
+      interest-cohort
+      magnetometer
+      microphone
+      midi
+      otp-credentials
+      payment
+      picture-in-picture
+      publickey-credentials-get
+      screen-wake-lock
+      serial
+      storage-access-api
+      sync-xhr
+      trust-token-redemption
+      usb
+      vertical-scroll
+      web-share
+      xr-spatial-tracking
+
+  # Reason for a permissions policy feature to be disabled.
+  experimental type PermissionsPolicyBlockReason extends string
+    enum
+      # Declaration in HTTP header.
+      Header
+      # Declaration in iframe attribute.
+      IframeAttribute
+
+  experimental type PermissionsPolicyBlockLocator extends object
+    properties
+      FrameId frameId
+      PermissionsPolicyBlockReason blockReason
+
+  experimental type PermissionsPolicyFeatureState extends object
+    properties
+      PermissionsPolicyFeature feature
+      boolean allowed
+      optional PermissionsPolicyBlockLocator locator
 
   # Information about the Frame on the page.
   type Frame extends object
@@ -6385,6 +6619,15 @@ domain Page
       strictOriginWhenCrossOrigin
       unsafeUrl
 
+  # Per-script compilation cache parameters for `Page.produceCompilationCache`
+  experimental type CompilationCacheParams extends object
+    properties
+      # The URL of the script to produce a compilation cache entry for.
+      string url
+      # A hint to the backend whether eager compilation is recommended.
+      # (the actual compilation mode used is upon backend discretion).
+      optional boolean eager
+
   # Deprecated, please use addScriptToEvaluateOnNewDocument instead.
   experimental deprecated command addScriptToEvaluateOnLoad
     parameters
@@ -6519,12 +6762,18 @@ domain Page
   # Returns metrics relating to the layouting of the page, such as viewport bounds/scale.
   command getLayoutMetrics
     returns
-      # Metrics relating to the layout viewport.
-      LayoutViewport layoutViewport
-      # Metrics relating to the visual viewport.
-      VisualViewport visualViewport
-      # Size of scrollable area.
-      DOM.Rect contentSize
+      # Deprecated metrics relating to the layout viewport. Can be in DP or in CSS pixels depending on the `enable-use-zoom-for-dsf` flag. Use `cssLayoutViewport` instead.
+      deprecated LayoutViewport layoutViewport
+      # Deprecated metrics relating to the visual viewport. Can be in DP or in CSS pixels depending on the `enable-use-zoom-for-dsf` flag. Use `cssVisualViewport` instead.
+      deprecated VisualViewport visualViewport
+      # Deprecated size of scrollable area. Can be in DP or in CSS pixels depending on the `enable-use-zoom-for-dsf` flag. Use `cssContentSize` instead.
+      deprecated DOM.Rect contentSize
+      # Metrics relating to the layout viewport in CSS pixels.
+      LayoutViewport cssLayoutViewport
+      # Metrics relating to the visual viewport in CSS pixels.
+      VisualViewport cssVisualViewport
+      # Size of scrollable area in CSS pixels.
+      DOM.Rect cssContentSize
 
   # Returns navigation history for the current page.
   command getNavigationHistory
@@ -6700,6 +6949,13 @@ domain Page
       # Whether to bypass page CSP.
       boolean enabled
 
+  # Get Permissions Policy state on given frame.
+  experimental command getPermissionsPolicyState
+    parameters
+      FrameId frameId
+    returns
+      array of PermissionsPolicyFeatureState states
+
   # Overrides the values of device screen dimensions (window.screen.width, window.screen.height,
   # window.innerWidth, window.innerHeight, and "device-width"/"device-height"-related CSS media
   # query results).
@@ -6847,9 +7103,23 @@ domain Page
   experimental command stopScreencast
 
   # Forces compilation cache to be generated for every subresource script.
+  # See also: `Page.produceCompilationCache`.
   experimental command setProduceCompilationCache
     parameters
       boolean enabled
+
+  # Requests backend to produce compilation cache for the specified scripts.
+  # Unlike setProduceCompilationCache, this allows client to only produce cache
+  # for specific scripts. `scripts` are appeneded to the list of scripts
+  # for which the cache for would produced. Disabling compilation cache with
+  # `setProduceCompilationCache` would reset all pending cache requests.
+  # The list may also be reset during page navigation.
+  # When script with a matching URL is encountered, the cache is optionally
+  # produced upon backend discretion, based on internal heuristics.
+  # See also: `Page.compilationCacheProduced`.
+  experimental command produceCompilationCache
+    parameters
+      array of CompilationCacheParams scripts
 
   # Seeds compilation cache for given url. Compilation cache does not survive
   # cross-process navigation.
@@ -7142,6 +7412,72 @@ domain Performance
       array of Metric metrics
       # Timestamp title.
       string title
+
+# Reporting of performance timeline events, as specified in
+# https://w3c.github.io/performance-timeline/#dom-performanceobserver.
+experimental domain PerformanceTimeline
+  depends on DOM
+  depends on Network
+
+  # See https://github.com/WICG/LargestContentfulPaint and largest_contentful_paint.idl
+  type LargestContentfulPaint extends object
+    properties
+      Network.TimeSinceEpoch renderTime
+      Network.TimeSinceEpoch loadTime
+      # The number of pixels being painted.
+      number size
+      # The id attribute of the element, if available.
+      optional string elementId
+      # The URL of the image (may be trimmed).
+      optional string url
+      optional DOM.BackendNodeId nodeId
+
+  type LayoutShiftAttribution extends object
+    properties
+      DOM.Rect previousRect
+      DOM.Rect currentRect
+      optional DOM.BackendNodeId nodeId
+
+  # See https://wicg.github.io/layout-instability/#sec-layout-shift and layout_shift.idl
+  type LayoutShift extends object
+    properties
+      # Score increment produced by this event.
+      number value
+      boolean hadRecentInput
+      Network.TimeSinceEpoch lastInputTime
+      array of LayoutShiftAttribution sources
+
+  type TimelineEvent extends object
+    properties
+      # Identifies the frame that this event is related to. Empty for non-frame targets.
+      Page.FrameId frameId
+      # The event type, as specified in https://w3c.github.io/performance-timeline/#dom-performanceentry-entrytype
+      # This determines which of the optional "details" fiedls is present.
+      string type
+      # Name may be empty depending on the type.
+      string name
+      # Time in seconds since Epoch, monotonically increasing within document lifetime.
+      Network.TimeSinceEpoch time
+      # Event duration, if applicable.
+      optional number duration
+      optional LargestContentfulPaint lcpDetails
+      optional LayoutShift layoutShiftDetails
+
+  # Previously buffered events would be reported before method returns.
+  # See also: timelineEventAdded
+  command enable
+    parameters
+      # The types of event to report, as specified in
+      # https://w3c.github.io/performance-timeline/#dom-performanceentry-entrytype
+      # The specified filter overrides any previous filters, passing empty
+      # filter disables recording.
+      # Note that not all types exposed to the web platform are currently supported.
+      array of string eventTypes
+
+  # Sent when a performance timeline event is added. See reportPerformanceTimeline method.
+  event timelineEventAdded
+    parameters
+      TimelineEvent event
 
 # Security
 domain Security
@@ -7481,6 +7817,13 @@ experimental domain Storage
       # Storage usage (bytes).
       number usage
 
+  # Pair of issuer origin and number of available (signed, but not used) Trust
+  # Tokens from that issuer.
+  experimental type TrustTokens extends object
+    properties
+      string issuerOrigin
+      number count
+
   # Clears storage for origin.
   command clearDataForOrigin
     parameters
@@ -7564,6 +7907,21 @@ experimental domain Storage
     parameters
       # Security origin.
       string origin
+
+  # Returns the number of stored Trust Tokens per issuer for the
+  # current browsing context.
+  experimental command getTrustTokens
+    returns
+      array of TrustTokens tokens
+
+  # Removes all Trust Tokens issued by the provided issuerOrigin.
+  # Leaves other stored data, including the issuer's Redemption Records, intact.
+  experimental command clearTrustTokens
+    parameters
+      string issuerOrigin
+    returns
+      # True if any tokens were deleted, false otherwise.
+      boolean didDeleteTokens
 
   # A cache's contents have been modified.
   event cacheStorageContentUpdated
@@ -7826,7 +8184,7 @@ domain Target
   # Creates a new page.
   command createTarget
     parameters
-      # The initial URL the page will be navigated to.
+      # The initial URL the page will be navigated to. An empty string indicates about:blank.
       string url
       # Frame width in DIP (headless chrome only).
       optional integer width
@@ -8039,6 +8397,17 @@ experimental domain Tracing
       light
       detailed
 
+  # Backend type to use for tracing. `chrome` uses the Chrome-integrated
+  # tracing service and is supported on all platforms. `system` is only
+  # supported on Chrome OS and uses the Perfetto system tracing service.
+  # `auto` chooses `system` when the perfettoConfig provided to Tracing.start
+  # specifies at least one non-Chrome data source; otherwise uses `chrome`.
+  type TracingBackend extends string
+    enum
+      auto
+      chrome
+      system
+
   # Stop trace events collection.
   command end
 
@@ -8092,6 +8461,8 @@ experimental domain Tracing
       # When specified, the parameters `categories`, `options`, `traceConfig`
       # are ignored.
       optional binary perfettoConfig
+      # Backend type (defaults to `auto`)
+      optional TracingBackend tracingBackend
 
   event bufferUsage
     parameters

@@ -10,7 +10,9 @@ import {BadgeType} from 'chrome://diagnostics/text_badge.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.m.js';
+import {flushTasks, isVisible} from '../../test_util.m.js';
+
+import * as dx_utils from './diagnostics_test_utils.js';
 
 export function routineResultEntryTestSuite() {
   /** @type {?RoutineResultEntryElement} */
@@ -61,25 +63,13 @@ export function routineResultEntryTestSuite() {
   }
 
   /**
-   * Creates a result status item without a final result.
-   * @param {!RoutineType} routine
-   * @param {!ExecutionProgress} progress
-   * @return {!ResultStatusItem}
-   */
-  function createIncompleteStatus(routine, progress) {
-    let status = new ResultStatusItem(routine);
-    status.progress = progress;
-    return status;
-  }
-
-  /**
    * Creates a completed result status item with a result.
    * @param {!RoutineType} routine
    * @param {!RoutineResult} result
    * @return {!ResultStatusItem}
    */
   function createCompletedStatus(routine, result) {
-    let status = createIncompleteStatus(routine, ExecutionProgress.kCompleted);
+    let status = new ResultStatusItem(routine, ExecutionProgress.kCompleted);
     status.result = result;
     return status;
   }
@@ -114,9 +104,8 @@ export function routineResultEntryTestSuite() {
   });
 
   test('NotStartedTest', () => {
-    const item = createIncompleteStatus(
-        chromeos.diagnostics.mojom.RoutineType.kCpuStress,
-        ExecutionProgress.kNotStarted);
+    const item =
+        new ResultStatusItem(chromeos.diagnostics.mojom.RoutineType.kCpuStress);
     return initializeEntryWithItem(item).then(() => {
       assertEquals(
           getNameText(),
@@ -124,14 +113,17 @@ export function routineResultEntryTestSuite() {
               'routineEntryText',
               loadTimeData.getString('cpuStressRoutineText')));
 
-      // Status should be empty if the test is not started.
-      // TODO(joonbug): Utilize isVisible util function.
-      assertTrue(getStatusBadge().hidden);
+      // Status should be queued if the test is not started.
+      assertTrue(isVisible(getStatusBadge()));
+      assertEquals(getStatusBadge().badgeType, BadgeType.QUEUED);
+      dx_utils.assertTextContains(
+          getStatusBadge().value,
+          loadTimeData.getString('testQueuedBadgeText'));
     });
   });
 
   test('RunningTest', () => {
-    const item = createIncompleteStatus(
+    const item = new ResultStatusItem(
         chromeos.diagnostics.mojom.RoutineType.kCpuStress,
         ExecutionProgress.kRunning);
     return initializeEntryWithItem(item).then(() => {
@@ -142,8 +134,10 @@ export function routineResultEntryTestSuite() {
               loadTimeData.getString('cpuStressRoutineText')));
 
       // Status should be running.
-      assertEquals(getStatusBadge().value, 'RUNNING');
-      assertEquals(getStatusBadge().badgeType, BadgeType.DEFAULT);
+      dx_utils.assertTextContains(
+          getStatusBadge().value,
+          loadTimeData.getString('testRunningBadgeText'));
+      assertEquals(getStatusBadge().badgeType, BadgeType.RUNNING);
     });
   });
 
@@ -184,6 +178,25 @@ export function routineResultEntryTestSuite() {
       // Status should show the passed result.
       assertEquals(getStatusBadge().value, 'FAILED');
       assertEquals(getStatusBadge().badgeType, BadgeType.ERROR);
+    });
+  });
+
+  test('StoppedTest', () => {
+    const item = new ResultStatusItem(
+        chromeos.diagnostics.mojom.RoutineType.kCpuStress,
+        ExecutionProgress.kCancelled);
+    return initializeEntryWithItem(item).then(() => {
+      assertEquals(
+          getNameText(),
+          loadTimeData.getStringF(
+              'routineEntryText',
+              loadTimeData.getString('cpuStressRoutineText')));
+
+      // Status should show that the test was stopped.
+      assertEquals(
+          getStatusBadge().value,
+          loadTimeData.getString('testStoppedBadgeText'));
+      assertEquals(getStatusBadge().badgeType, BadgeType.STOPPED);
     });
   });
 

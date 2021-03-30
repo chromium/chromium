@@ -25,23 +25,19 @@ class LegacyLinker extends Linker {
 
     @Override
     void setApkFilePath(String path) {
-        synchronized (sLock) {
+        synchronized (mLock) {
             ensureInitializedLocked();
             nativeAddZipArchivePath(path);
         }
     }
 
     @Override
-    @GuardedBy("sLock")
-    void loadLibraryImplLocked(String library, boolean isFixedAddressPermitted) {
-        ensureInitializedLocked();
+    @GuardedBy("mLock")
+    protected void loadLibraryImplLocked(
+            String library, long loadAddress, @RelroSharingMode int relroMode) {
         assert mState == State.INITIALIZED; // Only one successful call.
 
-        boolean provideRelro = mInBrowserProcess;
-        long loadAddress = isFixedAddressPermitted ? mBaseLoadAddress : 0;
-
         String libFilePath = System.mapLibraryName(library);
-        final String sharedRelRoName = libFilePath;
         LibInfo libInfo = new LibInfo();
         if (!nativeLoadLibrary(libFilePath, loadAddress, libInfo)) {
             String errorMessage = "Unable to load library: " + libFilePath;
@@ -50,39 +46,37 @@ class LegacyLinker extends Linker {
         }
         libInfo.mLibFilePath = libFilePath;
 
-        if (provideRelro) {
-            if (!nativeCreateSharedRelro(sharedRelRoName, mBaseLoadAddress, libInfo)) {
-                Log.w(TAG, "Could not create shared RELRO for %s at %x", libFilePath,
-                        mBaseLoadAddress);
+        if (relroMode == RelroSharingMode.PRODUCE || relroMode == RelroSharingMode.NO_SHARING) {
+            if (!nativeCreateSharedRelro(libFilePath, loadAddress, libInfo)) {
+                Log.w(TAG, "Could not create shared RELRO for %s at %x", libFilePath, loadAddress);
                 // Next state is still to provide relro (even though we don't have any), as child
                 // processes would wait for them.
                 libInfo.mRelroFd = -1;
             } else {
                 if (DEBUG) {
-                    Log.i(TAG, "Created shared RELRO for %s at %x: %s", sharedRelRoName,
-                            mBaseLoadAddress, libInfo.toString());
+                    Log.i(TAG, "Created shared RELRO for %s at %x: %s", libFilePath, loadAddress,
+                            libInfo.toString());
                 }
             }
-            mLibInfo = libInfo;
-            useSharedRelrosLocked(mLibInfo);
+            mLocalLibInfo = libInfo;
+            useSharedRelrosLocked(mLocalLibInfo);
             mState = State.DONE_PROVIDE_RELRO;
         } else {
+            assert relroMode == RelroSharingMode.CONSUME;
             waitForSharedRelrosLocked();
-            assert libFilePath.equals(mLibInfo.mLibFilePath);
-            useSharedRelrosLocked(mLibInfo);
-            mLibInfo.close();
-            mLibInfo = null;
+            assert libFilePath.equals(mRemoteLibInfo.mLibFilePath);
+            useSharedRelrosLocked(mRemoteLibInfo);
+            mRemoteLibInfo.close();
+            mRemoteLibInfo = null;
             mState = State.DONE;
         }
     }
 
     /**
-     * Use the shared RELRO section from a Bundle received form another process. Call this after
-     * calling setBaseLoadAddress() then loading the library with loadLibrary().
+     * Use the shared RELRO section from a Bundle received form another process.
      *
-     * @param info Object containing the relro file descriptor.
+     * @param info Object containing the RELRO FD.
      */
-    @GuardedBy("sLock")
     private static void useSharedRelrosLocked(LibInfo info) {
         String libFilePath = info.mLibFilePath;
         if (!nativeUseSharedRelro(libFilePath, info)) {

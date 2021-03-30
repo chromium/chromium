@@ -380,15 +380,12 @@ TEST_F(WorkerThreadTest, Terminate_WhileDebuggerTaskIsRunningOnInitialization) {
   EXPECT_CALL(*reporting_proxy_, WillDestroyWorkerGlobalScope()).Times(1);
   EXPECT_CALL(*reporting_proxy_, DidTerminateWorkerThread()).Times(1);
 
-  Vector<CSPHeaderAndType> headers{
-      {"contentSecurityPolicy",
-       network::mojom::ContentSecurityPolicyType::kReport}};
-
   auto global_scope_creation_params =
       std::make_unique<GlobalScopeCreationParams>(
           KURL("http://fake.url/"), mojom::blink::ScriptType::kClassic,
           "fake global scope name", "fake user agent", UserAgentMetadata(),
-          nullptr /* web_worker_fetch_context */, headers,
+          nullptr /* web_worker_fetch_context */,
+          Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
           network::mojom::ReferrerPolicy::kDefault, security_origin_.get(),
           false /* starter_secure_context */,
           CalculateHttpsState(security_origin_.get()),

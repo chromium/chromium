@@ -190,7 +190,10 @@ enum class VideoCaptureError {
   kFuchsiaUnsupportedPixelFormat = 121,
   kFuchsiaFailedToMapSysmemBuffer = 122,
   kCrosHalV3DeviceContextDuplicatedClient = 123,
-  kMaxValue = 123
+  kDesktopCaptureDeviceMacFailedStreamCreate = 124,
+  kDesktopCaptureDeviceMacFailedStreamStart = 125,
+  kCrosHalV3BufferManagerFailedToReserveBuffers = 126,
+  kMaxValue = 126
 };
 
 // WARNING: Do not change the values assigned to the entries. They are used for
@@ -253,10 +256,6 @@ struct CAPTURE_EXPORT VideoCaptureFormat {
   // preferred pixel format in comparison with |rhs|. Returns false otherwise.
   static bool ComparePixelFormatPreference(const VideoPixelFormat& lhs,
                                            const VideoPixelFormat& rhs);
-
-  // Returns the required buffer size to hold an image of a given
-  // VideoCaptureFormat with no padding and tightly packed.
-  size_t ImageAllocationSize() const;
 
   // Checks that all values are in the expected range. All limits are specified
   // in media::Limits.

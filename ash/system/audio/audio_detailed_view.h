@@ -7,9 +7,9 @@
 
 #include <map>
 
+#include "ash/components/audio/audio_device.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "base/macros.h"
-#include "chromeos/audio/audio_device.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -44,11 +44,11 @@ class AudioDetailedView : public TrayDetailedView {
   // TrayDetailedView:
   void HandleViewClicked(views::View* view) override;
 
-  typedef std::map<views::View*, chromeos::AudioDevice> AudioDeviceMap;
+  typedef std::map<views::View*, AudioDevice> AudioDeviceMap;
 
   std::unique_ptr<MicGainSliderController> mic_gain_controller_;
-  chromeos::AudioDeviceList output_devices_;
-  chromeos::AudioDeviceList input_devices_;
+  AudioDeviceList output_devices_;
+  AudioDeviceList input_devices_;
   AudioDeviceMap device_map_;
 
   DISALLOW_COPY_AND_ASSIGN(AudioDetailedView);

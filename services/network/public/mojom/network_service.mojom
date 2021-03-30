@@ -19,6 +19,7 @@ import "services/network/public/mojom/mutable_network_traffic_annotation_tag.moj
 import "services/network/public/mojom/net_log.mojom";
 import "services/network/public/mojom/network_change_manager.mojom";
 import "services/network/public/mojom/network_context.mojom";
+import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/network_interface.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/network_quality_estimator_manager.mojom";
@@ -26,6 +27,8 @@ import "services/network/public/mojom/network_service_test.mojom";
 import "services/network/public/mojom/trust_tokens.mojom";
 import "services/network/public/mojom/url_loader.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
+import "services/network/public/mojom/url_loader_network_service_observer.mojom";
+import "services/network/public/mojom/url_request.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "services/network/public/mojom/client_security_state.mojom";
 import "url/mojom/origin.mojom";
@@ -33,90 +36,6 @@ import "url/mojom/url.mojom";
 
 [EnableIf=is_android]
 import "mojo/public/mojom/base/application_state.mojom";
-
-struct LoadInfo {
-  int32 process_id;
-  int32 routing_id;
-  string host;
-  uint32 load_state;  // net::LoadState enum
-  mojo_base.mojom.String16 state_param;
-  uint64 upload_position;
-  uint64 upload_size;
-};
-
-// Implemented by the browser process. The network service sends messages to
-// the browser process over this interface.
-interface NetworkServiceClient {
-  // Called periodically to update the client about progress of the current
-  // loads. To avoid flooding the client, it has to ack the update before it can
-  // receive the next update.
-  OnLoadingStateUpdate(array<LoadInfo> infos) => ();
-
-  // Called on every request completion to update the network traffic annotation
-  // ID, and the total bytes received and sent.
-  // |network_traffic_annotation_id_hash| represents the hash of unique tag that
-  // identifies the annotation of the request.
-  OnDataUseUpdate(int32 network_traffic_annotation_id_hash, int64 recv_bytes,
-                  int64 sent_bytes);
-
-  // Called to send raw header information and information about excluded
-  // cookies. Only called when |devtool_request_id| is available to the
-  // URLLoader.
-  OnRawRequest(
-    int32 process_id,
-    int32 routing_id,
-    string devtool_request_id,
-    array<CookieWithAccessResult> cookies_with_access_result,
-    array<HttpRawHeaderPair> headers,
-    ClientSecurityState? client_security_state);
-
-  // Called to send information about the cookies blocked from storage from a
-  // received response. Only called when |devtool_request_id| is available to
-  // the URLLoader.
-  OnRawResponse(
-    int32 process_id,
-    int32 routing_id,
-    string devtool_request_id,
-    array<CookieAndLineWithAccessResult> cookies_with_access_result,
-    array<HttpRawHeaderPair> headers,
-    string? raw_response_headers);
-
-  // Called to send the CORS preflight request information. Only called when
-  // |devtool_request_id| is available on the original request.
-  OnCorsPreflightRequest(
-    int32 process_id,
-    int32 render_frame_id,
-    mojo_base.mojom.UnguessableToken devtool_request_id,
-    URLRequest request,
-    url.mojom.Url initiator_url,
-    string initiator_devtool_request_id);
-
-  // Called to send the CORS preflight response information. Only called when
-  // |devtool_request_id| is available on the original request.
-  OnCorsPreflightResponse(
-    int32 process_id,
-    int32 render_frame_id,
-    mojo_base.mojom.UnguessableToken devtool_request_id,
-    url.mojom.Url url,
-    URLResponseHead head);
-
-  // Called to send the CORS preflight completion status. Only called when
-  // |devtool_request_id| is available on the original request.
-  OnCorsPreflightRequestCompleted(
-    int32 process_id,
-    int32 render_frame_id,
-    mojo_base.mojom.UnguessableToken devtool_request_id,
-    URLLoaderCompletionStatus status);
-
-  // Called to send the result of a successful or failed Trust Token
-  // operation. Only called when |devtools_request_id| is available on the
-  // original request.
-  OnTrustTokenOperationDone(
-    int32 process_id,
-    int32 routing_id,
-    string devtool_request_id,
-    TrustTokenOperationResult result);
-};
 
 // Values for configuring HTTP authentication that can only be set once.
 struct HttpAuthStaticParams {
@@ -200,6 +119,10 @@ struct NetworkServiceParams {
   // A set of environment variables that should be set in the network
   // service when starting up.
   array<EnvironmentVariable> environment;
+
+  // An URLLoaderFactory can provide its own URLLoaderNetworkServiceObserver
+  // but if it does not, this default will be used.
+  pending_remote<URLLoaderNetworkServiceObserver> default_observer;
 };
 
 // Information about how logging should be configured.
@@ -216,11 +139,8 @@ struct LoggingSettings {
 // This is a trusted interface that only the browser process should have access
 // to. It must not be sent to any untrusted process like a renderer process.
 interface NetworkService {
-  // Sets client used by all |NetworkContext|s creating by |NetworkService|.
-  // Pending requests may hang if the |client| pipe is closed before they
-  // complete.
-  SetClient(pending_remote<NetworkServiceClient> client,
-            NetworkServiceParams params);
+  // Sets the parameters and initializes the service.
+  SetParams(NetworkServiceParams params);
 
   // Reinitializes the Network Service's logging with the given settings. This
   // is needed on Chrome OS, which switches to a log file in the user's home
@@ -324,9 +244,6 @@ interface NetworkService {
   GetDnsConfigChangeManager(
       pending_receiver<DnsConfigChangeManager> receiver);
 
-  // Gets the accumulated network usage since the start/restart of the service.
-  GetTotalNetworkUsages() => (array<NetworkUsage> total_network_usages);
-
   // Gets list of network interfaces.
   // The |policy| parameter is a flag that specifies whether to include/exclude
   // network interfaces. Corresponds to enum net::HostAddressSelectionPolicy.
@@ -338,11 +255,6 @@ interface NetworkService {
   // Contexts created by the Network Service, including those created after
   // this call, will use the same CRLSet.
   UpdateCRLSet(mojo_base.mojom.ReadOnlyBuffer crl_set) => ();
-
-  // Updates the configuration used for determining if a site should have legacy
-  // TLS warnings suppressed. Configs that cannot be parsed as a
-  // LegacyTLSExperimentConfig (protobuf) will be ignored.
-  UpdateLegacyTLSConfig(mojo_base.mojom.ReadOnlyBuffer config) => ();
 
   // Notification that the certificate database has been modified.
   OnCertDBChanged();

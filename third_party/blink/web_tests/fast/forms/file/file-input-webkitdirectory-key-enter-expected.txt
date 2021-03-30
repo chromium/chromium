@@ -1,2 +1,0 @@
-CONSOLE MESSAGE: line 5: FileChooser: opened; mode=kUploadFolder
-Ensure pressing Enter key with focus on an INPUT element with TYPE=FILE and WEBKITDIRECTORY launches a file chooser. Automated test passes if 'FileChooser: opened' was logged.

@@ -40,8 +40,8 @@ def DeleteNodes(item, delete_key=None, matcher=None):
 
 def Load(filename):
   try:
-    with open(filename, 'r') as handle:
-      schemas = json_parse.Parse(handle.read())
+    with open(filename, 'rb') as handle:
+      schemas = json_parse.Parse(handle.read().decode('utf8'))
     return schemas
   except:
     print('FAILED: Exception encountered while loading "%s"' % filename)

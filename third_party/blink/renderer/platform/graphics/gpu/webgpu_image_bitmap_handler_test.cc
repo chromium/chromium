@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_image_bitmap_handler.h"
-
 #include "base/memory/scoped_refptr.h"
 #include "base/test/null_task_runner.h"
 #include "base/test/task_environment.h"
@@ -16,6 +15,7 @@
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer_test_helpers.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 
@@ -58,12 +58,21 @@ bool GPUUploadingPathSupported() {
 
 class MockWebGPUInterface : public gpu::webgpu::WebGPUInterfaceStub {
  public:
+  MockWebGPUInterface() {
+    procs_ = {};
+
+    // WebGPU functions the tests will call. No-op them since we don't have a
+    // real WebGPU device.
+    procs_.deviceReference = [](WGPUDevice) {};
+    procs_.deviceRelease = [](WGPUDevice) {};
+  }
+
   MOCK_METHOD(gpu::webgpu::ReservedTexture,
               ReserveTexture,
-              (uint64_t device_client_id));
+              (WGPUDevice device));
   MOCK_METHOD(void,
               AssociateMailbox,
-              (GLuint64 device_client_id,
+              (GLuint device_id,
                GLuint device_generation,
                GLuint id,
                GLuint generation,
@@ -71,9 +80,12 @@ class MockWebGPUInterface : public gpu::webgpu::WebGPUInterfaceStub {
                const GLbyte* mailbox));
   MOCK_METHOD(void,
               DissociateMailbox,
-              (GLuint64 device_client_id,
-               GLuint texture_id,
-               GLuint texture_generation));
+              (GLuint texture_id, GLuint texture_generation));
+
+  const DawnProcTable& GetProcs() const override { return procs_; }
+
+ private:
+  DawnProcTable procs_;
 };
 
 // The six reference pixels are: red, green, blue, white, black.
@@ -348,7 +360,7 @@ TEST_F(WebGPUImageBitmapHandlerTest, VerifyCopyBytesWithPremultiplyAlpha) {
                                       WGPUTextureFormat_RGBA8Unorm);
 }
 
-class DawnTextureFromImageBitmapTest : public testing::Test {
+class WebGPUMailboxTextureTest : public testing::Test {
  protected:
   void SetUp() override {
     auto webgpu = std::make_unique<MockWebGPUInterface>();
@@ -359,9 +371,6 @@ class DawnTextureFromImageBitmapTest : public testing::Test {
     dawn_control_client_ =
         base::MakeRefCounted<DawnControlClientHolder>(std::move(provider));
 
-    dawn_texture_provider_ = base::MakeRefCounted<DawnTextureFromImageBitmap>(
-        dawn_control_client_, 1 /* device_client_id */);
-
     test_context_provider_ = viz::TestContextProvider::Create();
     InitializeSharedGpuContext(test_context_provider_.get());
   }
@@ -369,12 +378,12 @@ class DawnTextureFromImageBitmapTest : public testing::Test {
   void TearDown() override { SharedGpuContext::ResetForTesting(); }
   MockWebGPUInterface* webgpu_;
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
-  scoped_refptr<DawnTextureFromImageBitmap> dawn_texture_provider_;
   scoped_refptr<viz::TestContextProvider> test_context_provider_;
   base::test::TaskEnvironment task_environment_;
+  WGPUDevice fake_device_ = reinterpret_cast<WGPUDevice>(this);
 };
 
-TEST_F(DawnTextureFromImageBitmapTest, VerifyAccessTexture) {
+TEST_F(WebGPUMailboxTextureTest, VerifyAccessTexture) {
   if (!GPUUploadingPathSupported()) {
     LOG(ERROR) << "Test skipped because GPU uploading path not supported.";
     return;
@@ -383,38 +392,36 @@ TEST_F(DawnTextureFromImageBitmapTest, VerifyAccessTexture) {
 
   viz::TransferableResource resource;
   gpu::webgpu::ReservedTexture reservation = {
-      reinterpret_cast<WGPUTexture>(&resource), 1, 1};
+      reinterpret_cast<WGPUTexture>(&resource), 1, 1, /* deviceId */ 2,
+      /* deviceGeneration */ 3};
 
-  // Test that ProduceDawnTextureFromImageBitmap calls ReserveTexture and
+  // Test creating a WebGPUMailboxTexture calls ReserveTexture and
   // AssociateMailbox correctly.
-  const GLbyte* mailbox_bytes = nullptr;
+  gpu::Mailbox mailbox;
+  EXPECT_CALL(*webgpu_, ReserveTexture(fake_device_))
+      .WillOnce(Return(reservation));
+  EXPECT_CALL(*webgpu_,
+              AssociateMailbox(2, 3, reservation.id, reservation.generation,
+                               WGPUTextureUsage_CopySrc, _))
+      .WillOnce(
+          testing::Invoke(testing::WithArg<5>([&](const GLbyte* mailbox_bytes) {
+            mailbox = gpu::Mailbox::FromVolatile(
+                *reinterpret_cast<const volatile gpu::Mailbox*>(mailbox_bytes));
+          })));
 
-  EXPECT_CALL(*webgpu_, ReserveTexture(_)).WillOnce(Return(reservation));
-  EXPECT_CALL(*webgpu_, AssociateMailbox(
-                            dawn_texture_provider_->GetDeviceClientIdForTest(),
-                            _, reservation.id, reservation.generation,
-                            WGPUTextureUsage_CopySrc, _))
-      .WillOnce(testing::SaveArg<5>(&mailbox_bytes));
-
-  WGPUTexture texture =
-      dawn_texture_provider_->ProduceDawnTextureFromImageBitmap(bitmap);
-
-  gpu::Mailbox mailbox = gpu::Mailbox::FromVolatile(
-      *reinterpret_cast<const volatile gpu::Mailbox*>(mailbox_bytes));
+  scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
+      WebGPUMailboxTexture::FromStaticBitmapImage(
+          dawn_control_client_, fake_device_, WGPUTextureUsage_CopySrc, bitmap);
 
   EXPECT_TRUE(mailbox == bitmap->GetMailboxHolder().mailbox);
-  EXPECT_NE(texture, nullptr);
-  EXPECT_EQ(dawn_texture_provider_->GetTextureIdForTest(), 1u);
-  EXPECT_EQ(dawn_texture_provider_->GetTextureGenerationForTest(), 1u);
+  EXPECT_NE(mailbox_texture->GetTexture(), nullptr);
+  EXPECT_EQ(mailbox_texture->GetTextureIdForTest(), 1u);
+  EXPECT_EQ(mailbox_texture->GetTextureGenerationForTest(), 1u);
 
-  // Test that FinishDawnTextureFromImageBitmapAccess calls DissociateMailbox
+  // Test that ~WebGPUMailboxTexture calls DissociateMailbox
   // correctly.
   EXPECT_CALL(*webgpu_, DissociateMailbox(
-                            dawn_texture_provider_->GetDeviceClientIdForTest(),
                             reservation.id, reservation.generation));
-
-  dawn_texture_provider_->FinishDawnTextureFromImageBitmapAccess();
-
-  EXPECT_EQ(dawn_texture_provider_->GetTextureIdForTest(), 0u);
+  mailbox_texture.reset();
 }
 }  // namespace blink

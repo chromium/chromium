@@ -23,6 +23,10 @@ enum class InstallResultCode;
 // Synchronous version of InstallManager::InstallWebAppFromInfo.
 AppId InstallWebApp(Profile* profile, std::unique_ptr<WebApplicationInfo>);
 
+// Navigates to |app_url| and installs app without any installability checks.
+// Always selects to open app in its own window.
+AppId InstallWebAppFromPage(Browser* browser, const GURL& app_url);
+
 // Navigates to |app_url|, verifies WebApp installability, and installs app.
 AppId InstallWebAppFromManifest(Browser* browser, const GURL& app_url);
 
@@ -65,10 +69,17 @@ AppMenuCommandState GetAppMenuCommandState(int command_id, Browser* browser);
 
 void CloseAndWait(Browser* browser);
 
+void WaitForBrowserToBeClosed(Browser* browser);
+
 bool IsBrowserOpen(const Browser* test_browser);
 
 // Launches the app for |app| in |profile|.
 void UninstallWebApp(Profile* profile, const AppId& app_id);
+
+using UninstallWebAppCallback = base::OnceCallback<void(bool uninstalled)>;
+void UninstallWebAppWithCallback(Profile* profile,
+                                 const AppId& app_id,
+                                 UninstallWebAppCallback callback);
 
 // Synchronous read of an app icon pixel.
 SkColor ReadAppIconPixel(Profile* profile,

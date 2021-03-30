@@ -69,6 +69,10 @@ enum class SandboxType {
   kNaClLoader,
 #endif  // defined(OS_MAC)
 
+  // The print backend service process which interfaces with operating system
+  // print drivers.
+  kPrintBackend,
+
   // The print compositor service process.
   kPrintCompositor,
 

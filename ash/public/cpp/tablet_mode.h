@@ -52,7 +52,8 @@ class ASH_PUBLIC_EXPORT TabletMode {
   //   false: UI in the clamshell mode
   //   nullopt: reset the forcing, UI in the default behavior (i.e. checking the
   //   physical state).
-  virtual void ForceUiTabletModeState(base::Optional<bool> enabled) = 0;
+  // Returns true if it actually initiates the change of the tablet mode state.
+  virtual bool ForceUiTabletModeState(base::Optional<bool> enabled) = 0;
 
   // Enable/disable the tablet mode. Used only by test cases.
   virtual void SetEnabledForTest(bool enabled) = 0;

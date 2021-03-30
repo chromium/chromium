@@ -23,7 +23,7 @@
 #include "google_apis/google_api_keys.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/account_manager/account_manager_util.h"
+#include "chrome/browser/ash/account_manager/account_manager_util.h"
 #endif
 
 using signin::AccountConsistencyMethod;
@@ -90,8 +90,7 @@ AccountConsistencyModeManager::AccountConsistencyModeManager(Profile* profile)
   PrefService* prefs = profile->GetPrefs();
   // Propagate settings changes from the previous launch to the signin-allowed
   // pref.
-  bool signin_allowed = CanEnableDiceForBuild() &&
-                        IsBrowserSigninAllowedByCommandLine() &&
+  bool signin_allowed = IsDiceSignInAllowed() &&
                         prefs->GetBoolean(prefs::kSigninAllowedOnNextStartup);
   prefs->SetBoolean(prefs::kSigninAllowed, signin_allowed);
 
@@ -147,6 +146,11 @@ void AccountConsistencyModeManager::SetDiceMigrationCompleted() {
 bool AccountConsistencyModeManager::IsDiceMigrationCompleted(Profile* profile) {
   return profile->GetPrefs()->GetBoolean(kDiceMigrationCompletePref);
 }
+
+// static
+bool AccountConsistencyModeManager::IsDiceSignInAllowed() {
+  return CanEnableDiceForBuild() && IsBrowserSigninAllowedByCommandLine();
+}
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // static
@@ -198,18 +202,12 @@ AccountConsistencyModeManager::ComputeAccountConsistencyMethod(
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return chromeos::IsAccountManagerAvailable(profile)
+  return ash::IsAccountManagerAvailable(profile)
              ? AccountConsistencyMethod::kMirror
              : AccountConsistencyMethod::kDisabled;
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Legacy supervised users cannot get Dice.
-  // TODO(droger): remove this once legacy supervised users are no longer
-  // supported.
-  if (profile->IsLegacySupervised())
-    return AccountConsistencyMethod::kDisabled;
-
   if (!profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed)) {
     VLOG(1) << "Desktop Identity Consistency disabled as sign-in to Chrome"
                "is not allowed";

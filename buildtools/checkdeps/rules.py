@@ -79,8 +79,8 @@ def ParseRuleString(rule_string, source):
   # Ban them.
   if rule_string[-1] == '/':
     raise Exception(
-      'The rule string "%s" ends with a "/" which is not allowed' %
-      rule_string)
+      'The rule string "%s" ends with a "/" which is not allowed.'
+      ' Please remove the trailing "/".' % rule_string)
 
   return rule_string[0], rule_string[1:]
 

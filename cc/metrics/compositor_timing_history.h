@@ -52,9 +52,6 @@ class CC_EXPORT CompositorTimingHistory {
 
   CompositorTimingHistory& operator=(const CompositorTimingHistory&) = delete;
 
-  void AsProtozeroInto(
-      perfetto::protos::pbzero::CompositorTimingHistory* state) const;
-
   // The main thread responsiveness depends heavily on whether or not the
   // on_critical_path flag is set, so we record response times separately.
   virtual base::TimeDelta BeginMainFrameQueueDurationCriticalEstimate() const;
@@ -68,9 +65,13 @@ class CC_EXPORT CompositorTimingHistory {
   virtual base::TimeDelta ActivateDurationEstimate() const;
   virtual base::TimeDelta DrawDurationEstimate() const;
 
+  base::TimeDelta BeginMainFrameStartToReadyToCommitCriticalEstimate() const;
+  base::TimeDelta BeginMainFrameStartToReadyToCommitNotCriticalEstimate() const;
+  base::TimeDelta BeginMainFrameQueueToActivateCriticalEstimate() const;
+  base::TimeDelta BeginMainFrameQueueToActivateNotCriticalEstimate() const;
+
   // State that affects when events should be expected/recorded/reported.
   void SetRecordingEnabled(bool enabled);
-  void DidCreateAndInitializeLayerTreeFrameSink();
 
   // Events to be timed.
   void WillBeginImplFrame(const viz::BeginFrameArgs& args,
@@ -96,10 +97,10 @@ class CC_EXPORT CompositorTimingHistory {
       uint32_t frame_token,
       const viz::BeginFrameId& current_frame_id,
       const viz::BeginFrameId& last_activated_frame_id,
-      EventMetricsSet events_metrics);
+      EventMetricsSet events_metrics,
+      bool has_missing_content);
   void DidNotProduceFrame(const viz::BeginFrameId& id,
                           FrameSkippedReason skip_reason);
-  void DidReceiveCompositorFrameAck();
   void DidPresentCompositorFrame(uint32_t frame_token,
                                  const viz::FrameTimingDetails& details);
   void WillInvalidateOnImplSide();
@@ -157,7 +158,6 @@ class CC_EXPORT CompositorTimingHistory {
   base::TimeTicks prepare_tiles_start_time_;
   base::TimeTicks activate_start_time_;
   base::TimeTicks draw_start_time_;
-  base::TimeTicks submit_start_time_;
 
   bool pending_tree_is_impl_side_;
 

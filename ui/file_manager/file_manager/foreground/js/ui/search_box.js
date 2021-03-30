@@ -2,10 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {FileType} from '../../../common/js/file_type.m.js';
+// #import {strf, util} from '../../../common/js/util.m.js';
+// #import {ListItem} from 'chrome://resources/js/cr/ui/list_item.m.js';
+// #import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
+// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+// #import {metrics} from '../../../common/js/metrics.m.js';
+// #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+// #import {AutocompleteList} from './autocomplete_list.m.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import '../../elements/files_toggle_ripple.m.js';
+// clang-format on
+
 /**
  * Search box.
  */
-class SearchBox extends cr.EventTarget {
+/* #export */ class SearchBox extends cr.EventTarget {
   /**
    * @param {!Element} element Root element of the search box.
    * @param {!Element} searchWrapper Wrapper element around the buttons and box.
@@ -79,8 +92,9 @@ class SearchBox extends cr.EventTarget {
         'click', this.onSearchButtonClick_.bind(this));
     this.clearButton_.addEventListener(
         'click', this.onClearButtonClick_.bind(this));
-    const dispatchItemSelect =
-        cr.dispatchSimpleEvent.bind(cr, this, SearchBox.EventType.ITEM_SELECT);
+    const dispatchItemSelect = () => {
+      cr.dispatchSimpleEvent(this, SearchBox.EventType.ITEM_SELECT);
+    };
     this.autocompleteList.handleEnterKeydown = dispatchItemSelect;
     this.autocompleteList.addEventListener('mousedown', dispatchItemSelect);
 
@@ -314,8 +328,7 @@ SearchBox.EventType = {
 /**
  * Autocomplete list for search box.
  */
-SearchBox.AutocompleteList =
-    class AutocompleteList extends cr.ui.AutocompleteList {
+SearchBox.AutocompleteList = class extends cr.ui.AutocompleteList {
   /**
    * @param {Document} document Document.
    */

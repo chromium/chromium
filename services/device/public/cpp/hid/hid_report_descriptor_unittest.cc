@@ -257,14 +257,14 @@ class HidReportDescriptorTest : public testing::Test {
 
   // Set the logical and physical minimums and maximums. Subsequent report items
   // will inherit these values.
-  void SetLogicalAndPhysicalBounds(uint32_t logical_minimum,
-                                   uint32_t logical_maximum,
-                                   uint32_t physical_minimum,
-                                   uint32_t physical_maximum) {
-    globals_.logical_minimum = int32_t{logical_minimum};
-    globals_.logical_maximum = int32_t{logical_maximum};
-    globals_.physical_minimum = int32_t{physical_minimum};
-    globals_.physical_maximum = int32_t{physical_maximum};
+  void SetLogicalAndPhysicalBounds(int32_t logical_minimum,
+                                   int32_t logical_maximum,
+                                   int32_t physical_minimum,
+                                   int32_t physical_maximum) {
+    globals_.logical_minimum = logical_minimum;
+    globals_.logical_maximum = logical_maximum;
+    globals_.physical_minimum = physical_minimum;
+    globals_.physical_maximum = physical_maximum;
   }
 
   // Set the |report_size| in bits, and the |report_count|. Subsequent report
@@ -315,15 +315,12 @@ class HidReportDescriptorTest : public testing::Test {
       const_cast<HidCollection*>(c)->AddReportItem(tag, report_info, state);
   }
 
-  void ValidateDetails(
-      const bool expected_has_report_id,
-      const size_t expected_max_input_report_size,
-      const size_t expected_max_output_report_size,
-      const size_t expected_max_feature_report_size,
-      const uint8_t* bytes,
-      size_t size) {
-    descriptor_ = std::make_unique<HidReportDescriptor>(
-        std::vector<uint8_t>(bytes, bytes + size));
+  void ValidateDetails(const bool expected_has_report_id,
+                       const size_t expected_max_input_report_size,
+                       const size_t expected_max_output_report_size,
+                       const size_t expected_max_feature_report_size,
+                       base::span<const uint8_t> report_descriptor_data) {
+    descriptor_ = std::make_unique<HidReportDescriptor>(report_descriptor_data);
     std::vector<HidCollectionInfoPtr> actual_collection_infos;
     bool actual_has_report_id;
     size_t actual_max_input_report_size;
@@ -431,9 +428,8 @@ class HidReportDescriptorTest : public testing::Test {
     ASSERT_EQ(expected_children.size(), actual_children.size());
   }
 
-  void ValidateCollections(const uint8_t* bytes, size_t size) {
-    descriptor_ = std::make_unique<HidReportDescriptor>(
-        std::vector<uint8_t>(bytes, bytes + size));
+  void ValidateCollections(base::span<const uint8_t> report_descriptor_data) {
+    descriptor_ = std::make_unique<HidReportDescriptor>(report_descriptor_data);
     const auto& actual_collections = descriptor_->collections();
     auto actual_collection_iter = actual_collections.begin();
     auto expected_collection_iter = expected_collections_.begin();
@@ -461,7 +457,7 @@ TEST_F(HidReportDescriptorTest, ValidateDetails_Digitizer) {
   ASSERT_FALSE(IsAlwaysProtected(*digitizer->usage));
   digitizer->report_ids = {0x01, 0x02, 0x03};
   AddTopCollectionInfo(std::move(digitizer));
-  ValidateDetails(true, 6, 0, 0, kDigitizer, kDigitizerSize);
+  ValidateDetails(true, 6, 0, 0, TestReportDescriptors::Digitizer());
 }
 
 TEST_F(HidReportDescriptorTest, ValidateCollections_Digitizer) {
@@ -520,7 +516,7 @@ TEST_F(HidReportDescriptorTest, ValidateCollections_Digitizer) {
   SetReportSizeAndCount(8, 1);
   AddReportItem(stylus_down, kInput, kNonLinearVariable,
                 {kUsageDigitizerTipPressure});
-  ValidateCollections(kDigitizer, kDigitizerSize);
+  ValidateCollections(TestReportDescriptors::Digitizer());
 }
 
 TEST_F(HidReportDescriptorTest, ValidateDetails_Keyboard) {
@@ -529,7 +525,7 @@ TEST_F(HidReportDescriptorTest, ValidateDetails_Keyboard) {
                                          mojom::kPageGenericDesktop);
   ASSERT_TRUE(IsAlwaysProtected(*keyboard->usage));
   AddTopCollectionInfo(std::move(keyboard));
-  ValidateDetails(false, 8, 1, 0, kKeyboard, kKeyboardSize);
+  ValidateDetails(false, 8, 1, 0, TestReportDescriptors::Keyboard());
 }
 
 TEST_F(HidReportDescriptorTest, ValidateCollections_Keyboard) {
@@ -550,7 +546,7 @@ TEST_F(HidReportDescriptorTest, ValidateCollections_Keyboard) {
   SetReportSizeAndCount(8, 6);
   AddReportItemRange(top, kInput, kNonNullableArray, kUsageKeyboard,
                      kUsageKeyboardApplication);
-  ValidateCollections(kKeyboard, kKeyboardSize);
+  ValidateCollections(TestReportDescriptors::Keyboard());
 }
 
 TEST_F(HidReportDescriptorTest, ValidateDetails_Monitor) {
@@ -559,7 +555,7 @@ TEST_F(HidReportDescriptorTest, ValidateDetails_Monitor) {
   ASSERT_FALSE(IsAlwaysProtected(*monitor->usage));
   monitor->report_ids = {0x01, 0x02, 0x03, 0x04, 0x05};
   AddTopCollectionInfo(std::move(monitor));
-  ValidateDetails(true, 0, 0, 243, kMonitor, kMonitorSize);
+  ValidateDetails(true, 0, 0, 243, TestReportDescriptors::Monitor());
 }
 
 TEST_F(HidReportDescriptorTest, ValidateCollections_Monitor) {
@@ -593,7 +589,7 @@ TEST_F(HidReportDescriptorTest, ValidateCollections_Monitor) {
                 {kUsageMonitorHorizontalPosition, kUsageMonitorHorizontalSize,
                  kUsageMonitorVerticalPosition, kUsageMonitorVerticalSize,
                  kUsageMonitorTrapezoidalDistortion, kUsageMonitorTilt});
-  ValidateCollections(kMonitor, kMonitorSize);
+  ValidateCollections(TestReportDescriptors::Monitor());
 }
 
 TEST_F(HidReportDescriptorTest, ValidateDetails_Mouse) {
@@ -602,7 +598,7 @@ TEST_F(HidReportDescriptorTest, ValidateDetails_Mouse) {
                                       mojom::kPageGenericDesktop);
   ASSERT_TRUE(IsAlwaysProtected(*mouse->usage));
   AddTopCollectionInfo(std::move(mouse));
-  ValidateDetails(false, 3, 0, 0, kMouse, kMouseSize);
+  ValidateDetails(false, 3, 0, 0, TestReportDescriptors::Mouse());
 }
 
 TEST_F(HidReportDescriptorTest, ValidateCollections_Mouse) {
@@ -616,11 +612,11 @@ TEST_F(HidReportDescriptorTest, ValidateCollections_Mouse) {
                      kUsageButton + 3);
   SetReportSizeAndCount(5, 1);
   AddReportConstant(physical, kInput, kConstant);
-  SetLogicalAndPhysicalBounds(0x81, 0x7f, 0, 0);
+  SetLogicalAndPhysicalBounds(-127, 127, 0, 0);
   SetReportSizeAndCount(8, 2);
   AddReportItem(physical, kInput, kRelativeVariable,
                 {kUsageGenericDesktopX, kUsageGenericDesktopY});
-  ValidateCollections(kMouse, kMouseSize);
+  ValidateCollections(TestReportDescriptors::Mouse());
 }
 
 TEST_F(HidReportDescriptorTest, ValidateDetails_LogitechUnifyingReceiver) {
@@ -639,8 +635,8 @@ TEST_F(HidReportDescriptorTest, ValidateDetails_LogitechUnifyingReceiver) {
   AddTopCollectionInfo(std::move(hidpp_short));
   AddTopCollectionInfo(std::move(hidpp_long));
   AddTopCollectionInfo(std::move(hidpp_dj));
-  ValidateDetails(true, 31, 31, 0, kLogitechUnifyingReceiver,
-                  kLogitechUnifyingReceiverSize);
+  ValidateDetails(true, 31, 31, 0,
+                  TestReportDescriptors::LogitechUnifyingReceiver());
 }
 
 TEST_F(HidReportDescriptorTest, ValidateCollections_LogitechUnifyingReceiver) {
@@ -675,7 +671,7 @@ TEST_F(HidReportDescriptorTest, ValidateCollections_LogitechUnifyingReceiver) {
                 {kUsageVendor + 0x42});
   AddReportItem(dj_collection, kOutput, kNonNullableArray,
                 {kUsageVendor + 0x42});
-  ValidateCollections(kLogitechUnifyingReceiver, kLogitechUnifyingReceiverSize);
+  ValidateCollections(TestReportDescriptors::LogitechUnifyingReceiver());
 }
 
 TEST_F(HidReportDescriptorTest, ValidateDetails_SonyDualshock3) {
@@ -685,7 +681,7 @@ TEST_F(HidReportDescriptorTest, ValidateDetails_SonyDualshock3) {
   ASSERT_FALSE(IsAlwaysProtected(*top_info->usage));
   top_info->report_ids = {0x01, 0x02, 0xee, 0xef};
   AddTopCollectionInfo(std::move(top_info));
-  ValidateDetails(true, 48, 48, 48, kSonyDualshock3, kSonyDualshock3Size);
+  ValidateDetails(true, 48, 48, 48, TestReportDescriptors::SonyDualshock3Usb());
 }
 
 TEST_F(HidReportDescriptorTest, ValidateCollections_SonyDualshock3) {
@@ -732,7 +728,7 @@ TEST_F(HidReportDescriptorTest, ValidateCollections_SonyDualshock3) {
   SetReportId(0xef);
   AddReportItem(report_ef_collection, kFeature, kAbsoluteVariable,
                 {kUsageGenericDesktopPointer});
-  ValidateCollections(kSonyDualshock3, kSonyDualshock3Size);
+  ValidateCollections(TestReportDescriptors::SonyDualshock3Usb());
 }
 
 TEST_F(HidReportDescriptorTest, ValidateDetails_SonyDualshock4) {
@@ -746,7 +742,7 @@ TEST_F(HidReportDescriptorTest, ValidateDetails_SonyDualshock4) {
                           0xa2, 0xa3, 0xa4, 0xa5, 0xa6, 0xf0, 0xf1, 0xf2, 0xa7,
                           0xa8, 0xa9, 0xaa, 0xab, 0xac, 0xad, 0xae, 0xaf, 0xb0};
   AddTopCollectionInfo(std::move(top_info));
-  ValidateDetails(true, 63, 31, 63, kSonyDualshock4, kSonyDualshock4Size);
+  ValidateDetails(true, 63, 31, 63, TestReportDescriptors::SonyDualshock4Usb());
 }
 
 TEST_F(HidReportDescriptorTest, ValidateCollections_SonyDualshock4) {
@@ -900,7 +896,7 @@ TEST_F(HidReportDescriptorTest, ValidateCollections_SonyDualshock4) {
   SetReportId(0xb0);
   SetReportSizeAndCount(8, 63);
   AddReportItem(top, kFeature, kAbsoluteVariable, {kUsageVendor80 + 0x54});
-  ValidateCollections(kSonyDualshock4, kSonyDualshock4Size);
+  ValidateCollections(TestReportDescriptors::SonyDualshock4Usb());
 }
 
 TEST_F(HidReportDescriptorTest, ValidateDetails_XboxWirelessController) {
@@ -910,8 +906,9 @@ TEST_F(HidReportDescriptorTest, ValidateDetails_XboxWirelessController) {
   ASSERT_FALSE(IsAlwaysProtected(*top_info->usage));
   top_info->report_ids = {0x01, 0x02, 0x03, 0x04};
   AddTopCollectionInfo(std::move(top_info));
-  ValidateDetails(true, 15, 8, 0, kMicrosoftXboxWirelessController,
-                  kMicrosoftXboxWirelessControllerSize);
+  ValidateDetails(
+      true, 15, 8, 0,
+      TestReportDescriptors::MicrosoftXboxWirelessControllerBluetooth());
 }
 
 TEST_F(HidReportDescriptorTest, ValidateCollections_XboxWirelessController) {
@@ -992,8 +989,8 @@ TEST_F(HidReportDescriptorTest, ValidateCollections_XboxWirelessController) {
   SetReportId(0x04);
   AddReportItem(top, kInput, kAbsoluteVariable,
                 {kUsageGenericDeviceBatteryStrength});
-  ValidateCollections(kMicrosoftXboxWirelessController,
-                      kMicrosoftXboxWirelessControllerSize);
+  ValidateCollections(
+      TestReportDescriptors::MicrosoftXboxWirelessControllerBluetooth());
 }
 
 TEST_F(HidReportDescriptorTest, ValidateDetails_NintendoSwitchProController) {
@@ -1003,8 +1000,8 @@ TEST_F(HidReportDescriptorTest, ValidateDetails_NintendoSwitchProController) {
   ASSERT_FALSE(IsAlwaysProtected(*top_info->usage));
   top_info->report_ids = {0x30, 0x21, 0x81, 0x01, 0x10, 0x80, 0x82};
   AddTopCollectionInfo(std::move(top_info));
-  ValidateDetails(true, 63, 63, 0, kNintendoSwitchProController,
-                  kNintendoSwitchProControllerSize);
+  ValidateDetails(true, 63, 63, 0,
+                  TestReportDescriptors::NintendoSwitchProControllerUsb());
 }
 
 TEST_F(HidReportDescriptorTest,
@@ -1053,8 +1050,7 @@ TEST_F(HidReportDescriptorTest,
   AddReportItem(top, kOutput, kVolatileConstant, {kUsageVendor + 0x05});
   SetReportId(0x82);
   AddReportItem(top, kOutput, kVolatileConstant, {kUsageVendor + 0x06});
-  ValidateCollections(kNintendoSwitchProController,
-                      kNintendoSwitchProControllerSize);
+  ValidateCollections(TestReportDescriptors::NintendoSwitchProControllerUsb());
 }
 
 TEST_F(HidReportDescriptorTest, ValidateDetails_XboxAdaptiveController) {
@@ -1071,8 +1067,9 @@ TEST_F(HidReportDescriptorTest, ValidateDetails_XboxAdaptiveController) {
   keyboard_info->report_ids = {0x05};
   AddTopCollectionInfo(std::move(gamepad_info));
   AddTopCollectionInfo(std::move(keyboard_info));
-  ValidateDetails(true, 54, 8, 64, kMicrosoftXboxAdaptiveController,
-                  kMicrosoftXboxAdaptiveControllerSize);
+  ValidateDetails(
+      true, 54, 8, 64,
+      TestReportDescriptors::MicrosoftXboxAdaptiveControllerBluetooth());
 }
 
 TEST_F(HidReportDescriptorTest, ValidateCollections_XboxAdaptiveController) {
@@ -1348,8 +1345,8 @@ TEST_F(HidReportDescriptorTest, ValidateCollections_XboxAdaptiveController) {
   SetReportSizeAndCount(8, 6);
   AddReportItemRange(keyboard, kInput, kNonNullableArray, kUsageKeyboard,
                      kUsageKeyboardApplication);
-  ValidateCollections(kMicrosoftXboxAdaptiveController,
-                      kMicrosoftXboxAdaptiveControllerSize);
+  ValidateCollections(
+      TestReportDescriptors::MicrosoftXboxAdaptiveControllerBluetooth());
 }
 
 TEST_F(HidReportDescriptorTest, ValidateDetails_NexusPlayerController) {
@@ -1365,8 +1362,8 @@ TEST_F(HidReportDescriptorTest, ValidateDetails_NexusPlayerController) {
   status_info->report_ids = {0x03};
   AddTopCollectionInfo(std::move(gamepad_info));
   AddTopCollectionInfo(std::move(status_info));
-  ValidateDetails(true, 8, 1, 0, kNexusPlayerController,
-                  kNexusPlayerControllerSize);
+  ValidateDetails(true, 8, 1, 0,
+                  TestReportDescriptors::NexusPlayerController());
 }
 
 TEST_F(HidReportDescriptorTest, ValidateCollections_NexusPlayerController) {
@@ -1413,7 +1410,7 @@ TEST_F(HidReportDescriptorTest, ValidateCollections_NexusPlayerController) {
                 {kUsageGenericDeviceBatteryStrength});
   SetReportSizeAndCount(8, 6);
   AddReportItem(status, kInput, kAbsoluteVariable, {0xffbcbdad});
-  ValidateCollections(kNexusPlayerController, kNexusPlayerControllerSize);
+  ValidateCollections(TestReportDescriptors::NexusPlayerController());
 }
 
 TEST_F(HidReportDescriptorTest, ValidateDetails_SteamControllerKeyboard) {
@@ -1422,8 +1419,8 @@ TEST_F(HidReportDescriptorTest, ValidateDetails_SteamControllerKeyboard) {
                                      mojom::kPageGenericDesktop);
   ASSERT_TRUE(IsAlwaysProtected(*info->usage));
   AddTopCollectionInfo(std::move(info));
-  ValidateDetails(false, 8, 1, 0, kSteamControllerKeyboard,
-                  kSteamControllerKeyboardSize);
+  ValidateDetails(false, 8, 1, 0,
+                  TestReportDescriptors::SteamControllerKeyboard());
 }
 
 TEST_F(HidReportDescriptorTest, ValidateCollections_SteamControllerKeyboard) {
@@ -1444,7 +1441,7 @@ TEST_F(HidReportDescriptorTest, ValidateCollections_SteamControllerKeyboard) {
   SetLogicalAndPhysicalBounds(0, 101, 0, 0);
   AddReportItemRange(top, kInput, kNonNullableArray, kUsageKeyboard,
                      kUsageKeyboardApplication);
-  ValidateCollections(kSteamControllerKeyboard, kSteamControllerKeyboardSize);
+  ValidateCollections(TestReportDescriptors::SteamControllerKeyboard());
 }
 
 TEST_F(HidReportDescriptorTest, ValidateDetails_SteamControllerMouse) {
@@ -1453,8 +1450,8 @@ TEST_F(HidReportDescriptorTest, ValidateDetails_SteamControllerMouse) {
                                      mojom::kPageGenericDesktop);
   ASSERT_TRUE(IsAlwaysProtected(*info->usage));
   AddTopCollectionInfo(std::move(info));
-  ValidateDetails(false, 4, 0, 0, kSteamControllerMouse,
-                  kSteamControllerMouseSize);
+  ValidateDetails(false, 4, 0, 0,
+                  TestReportDescriptors::SteamControllerMouse());
 }
 
 TEST_F(HidReportDescriptorTest, ValidateCollections_SteamControllerMouse) {
@@ -1468,12 +1465,12 @@ TEST_F(HidReportDescriptorTest, ValidateCollections_SteamControllerMouse) {
                      kUsageButton + 5);
   SetReportSizeAndCount(3, 1);
   AddReportConstant(pointer, kInput, kConstantArray);
-  SetLogicalAndPhysicalBounds(0x81, 0x7f, 0, 0);
+  SetLogicalAndPhysicalBounds(-127, 127, 0, 0);
   SetReportSizeAndCount(8, 3);
   AddReportItem(pointer, kInput, kRelativeVariable,
                 {kUsageGenericDesktopX, kUsageGenericDesktopY,
                  kUsageGenericDesktopWheel});
-  ValidateCollections(kSteamControllerMouse, kSteamControllerMouseSize);
+  ValidateCollections(TestReportDescriptors::SteamControllerMouse());
 }
 
 TEST_F(HidReportDescriptorTest, ValidateDetails_SteamControllerVendor) {
@@ -1481,8 +1478,8 @@ TEST_F(HidReportDescriptorTest, ValidateDetails_SteamControllerVendor) {
   info->usage = HidUsageAndPage::New(0x01, mojom::kPageVendor);
   ASSERT_FALSE(IsAlwaysProtected(*info->usage));
   AddTopCollectionInfo(std::move(info));
-  ValidateDetails(false, 64, 64, 64, kSteamControllerVendor,
-                  kSteamControllerVendorSize);
+  ValidateDetails(false, 64, 64, 64,
+                  TestReportDescriptors::SteamControllerVendor());
 }
 
 TEST_F(HidReportDescriptorTest, ValidateCollections_SteamControllerVendor) {
@@ -1492,7 +1489,7 @@ TEST_F(HidReportDescriptorTest, ValidateCollections_SteamControllerVendor) {
   AddReportItem(top, kInput, kAbsoluteVariable, {kUsageVendor + 0x01});
   AddReportItem(top, kOutput, kAbsoluteVariable, {kUsageVendor + 0x01});
   AddReportItem(top, kFeature, kAbsoluteVariable, {kUsageVendor + 0x01});
-  ValidateCollections(kSteamControllerVendor, kSteamControllerVendorSize);
+  ValidateCollections(TestReportDescriptors::SteamControllerVendor());
 }
 
 TEST_F(HidReportDescriptorTest, ValidateDetails_XSkillsUsbAdapter) {
@@ -1501,7 +1498,7 @@ TEST_F(HidReportDescriptorTest, ValidateDetails_XSkillsUsbAdapter) {
                                      mojom::kPageGenericDesktop);
   ASSERT_FALSE(IsAlwaysProtected(*info->usage));
   AddTopCollectionInfo(std::move(info));
-  ValidateDetails(false, 7, 4, 0, kXSkillsUsbAdapter, kXSkillsUsbAdapterSize);
+  ValidateDetails(false, 7, 4, 0, TestReportDescriptors::XSkillsUsbAdapter());
 }
 
 TEST_F(HidReportDescriptorTest, ValidateCollections_XSkillsUsbAdapter) {
@@ -1525,7 +1522,7 @@ TEST_F(HidReportDescriptorTest, ValidateCollections_XSkillsUsbAdapter) {
   SetReportSizeAndCount(8, 4);
   AddReportItemRange(top, kOutput, kAbsoluteVariable, kUsageVendor + 0x01,
                      kUsageVendor + 0x04);
-  ValidateCollections(kXSkillsUsbAdapter, kXSkillsUsbAdapterSize);
+  ValidateCollections(TestReportDescriptors::XSkillsUsbAdapter());
 }
 
 TEST_F(HidReportDescriptorTest, ValidateDetails_BelkinNostromoKeyboard) {
@@ -1534,8 +1531,8 @@ TEST_F(HidReportDescriptorTest, ValidateDetails_BelkinNostromoKeyboard) {
                                      mojom::kPageGenericDesktop);
   ASSERT_TRUE(IsAlwaysProtected(*info->usage));
   AddTopCollectionInfo(std::move(info));
-  ValidateDetails(false, 8, 0, 0, kBelkinNostromoKeyboard,
-                  kBelkinNostromoKeyboardSize);
+  ValidateDetails(false, 8, 0, 0,
+                  TestReportDescriptors::BelkinNostromoKeyboard());
 }
 
 TEST_F(HidReportDescriptorTest, ValidateCollections_BelkinNostromoKeyboard) {
@@ -1551,7 +1548,7 @@ TEST_F(HidReportDescriptorTest, ValidateCollections_BelkinNostromoKeyboard) {
   SetReportSizeAndCount(8, 6);
   AddReportItemRange(top, kInput, kNonNullableArray, kUsageKeyboard,
                      kUsageKeyboardApplication);
-  ValidateCollections(kBelkinNostromoKeyboard, kBelkinNostromoKeyboardSize);
+  ValidateCollections(TestReportDescriptors::BelkinNostromoKeyboard());
 }
 
 TEST_F(HidReportDescriptorTest, ValidateDetails_BelkinNostromoMouseAndExtra) {
@@ -1560,8 +1557,8 @@ TEST_F(HidReportDescriptorTest, ValidateDetails_BelkinNostromoMouseAndExtra) {
                                      mojom::kPageGenericDesktop);
   ASSERT_TRUE(IsAlwaysProtected(*info->usage));
   AddTopCollectionInfo(std::move(info));
-  ValidateDetails(false, 4, 1, 0, kBelkinNostromoMouseAndExtra,
-                  kBelkinNostromoMouseAndExtraSize);
+  ValidateDetails(false, 4, 1, 0,
+                  TestReportDescriptors::BelkinNostromoMouseAndExtra());
 }
 
 TEST_F(HidReportDescriptorTest,
@@ -1576,7 +1573,7 @@ TEST_F(HidReportDescriptorTest,
                      kUsageButton + 3);
   SetReportSizeAndCount(5, 1);
   AddReportConstant(pointer, kInput, kConstantArray);
-  SetLogicalAndPhysicalBounds(0x81, 0x7f, 0, 0);
+  SetLogicalAndPhysicalBounds(-127, 127, 0, 0);
   SetReportSizeAndCount(8, 3);
   AddReportItem(pointer, kInput, kRelativeVariable,
                 {kUsageGenericDesktopX, kUsageGenericDesktopY,
@@ -1587,8 +1584,7 @@ TEST_F(HidReportDescriptorTest,
                      kUsageLedScrollLock);
   SetReportSizeAndCount(5, 1);
   AddReportConstant(pointer, kOutput, kConstantArray);
-  ValidateCollections(kBelkinNostromoMouseAndExtra,
-                      kBelkinNostromoMouseAndExtraSize);
+  ValidateCollections(TestReportDescriptors::BelkinNostromoMouseAndExtra());
 }
 
 TEST_F(HidReportDescriptorTest, InvalidReportSizeIgnored) {
@@ -1601,22 +1597,19 @@ TEST_F(HidReportDescriptorTest, InvalidReportSizeIgnored) {
       0x75, 0x40,  //   Report Size (64)
       0x90         //   Output
   };
-  static const size_t kInvalidReportSizeDescriptorSize =
-      base::size(kInvalidReportSizeDescriptor);
+  auto report_descriptor_data = base::make_span(kInvalidReportSizeDescriptor);
   auto info = HidCollectionInfo::New();
   info->usage = HidUsageAndPage::New(0, 0);
   AddTopCollectionInfo(std::move(info));
   // Maximum report sizes should not be affected by the invalid report item.
-  ValidateDetails(false, 0, 0, 0, kInvalidReportSizeDescriptor,
-                  kInvalidReportSizeDescriptorSize);
+  ValidateDetails(false, 0, 0, 0, report_descriptor_data);
 
   // The report item with invalid size should still be included in the
   // collection info.
   auto* top = AddTopCollection(0, kCollectionTypePhysical);
   SetReportSizeAndCount(64, 1);
   AddReportConstant(top, kOutput, kNonNullableArray);
-  ValidateCollections(kInvalidReportSizeDescriptor,
-                      kInvalidReportSizeDescriptorSize);
+  ValidateCollections(report_descriptor_data);
 }
 
 TEST_F(HidReportDescriptorTest, ReasonablyHugeReportNotIgnored) {
@@ -1629,20 +1622,18 @@ TEST_F(HidReportDescriptorTest, ReasonablyHugeReportNotIgnored) {
       0x75, 0x08,        //   Report Size (8)
       0x90               //   Output
   };
-  static const size_t kReasonablyHugeReportDescriptorSize =
-      base::size(kReasonablyHugeReportDescriptor);
+  auto report_descriptor_data =
+      base::make_span(kReasonablyHugeReportDescriptor);
   auto info = HidCollectionInfo::New();
   info->usage = HidUsageAndPage::New(0, 0);
   AddTopCollectionInfo(std::move(info));
   // Maximum report sizes should include the huge report.
-  ValidateDetails(false, 0, 65535, 0, kReasonablyHugeReportDescriptor,
-                  kReasonablyHugeReportDescriptorSize);
+  ValidateDetails(false, 0, 65535, 0, report_descriptor_data);
 
   auto* top = AddTopCollection(0, kCollectionTypePhysical);
   SetReportSizeAndCount(8, 65535);
   AddReportConstant(top, kOutput, kNonNullableArray);
-  ValidateCollections(kReasonablyHugeReportDescriptor,
-                      kReasonablyHugeReportDescriptorSize);
+  ValidateCollections(report_descriptor_data);
 }
 
 TEST_F(HidReportDescriptorTest, UnreasonablyHugeReportIgnored) {
@@ -1655,22 +1646,20 @@ TEST_F(HidReportDescriptorTest, UnreasonablyHugeReportIgnored) {
       0x75, 0x08,                    //   Report Size (8)
       0x90                           //   Output
   };
-  static const size_t kUnreasonablyHugeReportDescriptorSize =
-      base::size(kUnreasonablyHugeReportDescriptor);
+  auto report_descriptor_data =
+      base::make_span(kUnreasonablyHugeReportDescriptor);
   auto info = HidCollectionInfo::New();
   info->usage = HidUsageAndPage::New(0, 0);
   AddTopCollectionInfo(std::move(info));
   // Maximum report sizes should not be affected by the huge report.
-  ValidateDetails(false, 0, 0, 0, kUnreasonablyHugeReportDescriptor,
-                  kUnreasonablyHugeReportDescriptorSize);
+  ValidateDetails(false, 0, 0, 0, report_descriptor_data);
 
   // The unreasonably huge report item should still be included in the
   // collection info.
   auto* top = AddTopCollection(0, kCollectionTypePhysical);
   SetReportSizeAndCount(8, 65536);
   AddReportConstant(top, kOutput, kNonNullableArray);
-  ValidateCollections(kUnreasonablyHugeReportDescriptor,
-                      kUnreasonablyHugeReportDescriptorSize);
+  ValidateCollections(report_descriptor_data);
 }
 
 TEST_F(HidReportDescriptorTest, HighlyNestedReportLimitsDepth) {
@@ -1688,15 +1677,13 @@ TEST_F(HidReportDescriptorTest, HighlyNestedReportLimitsDepth) {
       0x75, 0x08,  // Report Size (8)
       0x90         // Output
   };
-  static const size_t kHighlyNestedReportDescriptorSize =
-      base::size(kHighlyNestedReportDescriptor);
+  auto report_descriptor_data = base::make_span(kHighlyNestedReportDescriptor);
   auto info = HidCollectionInfo::New();
   info->usage = HidUsageAndPage::New(0, 0);
   AddTopCollectionInfo(std::move(info));
   // The item in the innermost collection should still be reflected in the
   // maximum report size.
-  ValidateDetails(false, 0, 1, 0, kHighlyNestedReportDescriptor,
-                  kHighlyNestedReportDescriptorSize);
+  ValidateDetails(false, 0, 1, 0, report_descriptor_data);
 
   // Construct nested collections up to the depth limit. The item from the
   // innermost collection should be propagated to all its parents even though
@@ -1706,8 +1693,7 @@ TEST_F(HidReportDescriptorTest, HighlyNestedReportLimitsDepth) {
     parent = AddChild(parent, 0, kCollectionTypePhysical);
   SetReportSizeAndCount(8, 1);
   AddReportConstant(parent, kOutput, kNonNullableArray);
-  ValidateCollections(kHighlyNestedReportDescriptor,
-                      kHighlyNestedReportDescriptorSize);
+  ValidateCollections(report_descriptor_data);
 }
 
 TEST_F(HidReportDescriptorTest, ExtraEndCollectionIgnored) {
@@ -1723,8 +1709,6 @@ TEST_F(HidReportDescriptorTest, ExtraEndCollectionIgnored) {
       0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0,
       0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0,
       0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0, 0xA0};
-  static const size_t kExtraEndCollectionDescriptorSize =
-      base::size(kExtraEndCollectionDescriptor);
 
   // Construct nested collections up to the depth limit. If the extra End
   // Collection item was ignored, the depth limit should have prevented the
@@ -1732,8 +1716,107 @@ TEST_F(HidReportDescriptorTest, ExtraEndCollectionIgnored) {
   auto* parent = AddTopCollection(0, kCollectionTypePhysical);
   for (size_t i = 1; i < 50; ++i)
     parent = AddChild(parent, 0, kCollectionTypePhysical);
-  ValidateCollections(kExtraEndCollectionDescriptor,
-                      kExtraEndCollectionDescriptorSize);
+  ValidateCollections(base::make_span(kExtraEndCollectionDescriptor));
+}
+
+TEST_F(HidReportDescriptorTest, ZeroByteLogicalMinMax) {
+  static const uint8_t kZeroByteLogicalMinMaxDescriptor[] = {
+      0x05, 0x01,  // Usage Page (Generic Desktop Ctrls)
+      0x09, 0x04,  // Usage (Joystick)
+      0xA1, 0x01,  // Collection (Application)
+      0x75, 0x08,  //   Report Size (8)
+      0x95, 0x01,  //   Report Count (1)
+      0x09, 0x30,  //   Usage (X)
+      0x14,        //   Logical Minimum (0)
+      0x24,        //   Logical Maximum (0)
+      0x34,        //   Physical Minimum (0)
+      0x44,        //   Physical Maximum (0)
+      0x81, 0x02,  //   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No
+                   //   Null Position)
+      0xC0,        // End Collection
+  };
+
+  auto* top = AddTopCollection(kUsageGenericDesktopJoystick,
+                               kCollectionTypeApplication);
+  SetReportSizeAndCount(8, 1);
+  SetLogicalAndPhysicalBounds(0, 0, 0, 0);
+  AddReportItem(top, kInput, kAbsoluteVariable, {kUsageGenericDesktopX});
+  ValidateCollections(base::make_span(kZeroByteLogicalMinMaxDescriptor));
+}
+
+TEST_F(HidReportDescriptorTest, OneByteLogicalMinMax) {
+  static const uint8_t kOneByteLogicalMinMaxDescriptor[] = {
+      0x05, 0x01,  // Usage Page (Generic Desktop Ctrls)
+      0x09, 0x04,  // Usage (Joystick)
+      0xA1, 0x01,  // Collection (Application)
+      0x75, 0x08,  //   Report Size (8)
+      0x95, 0x01,  //   Report Count (1)
+      0x09, 0x30,  //   Usage (X)
+      0x15, 0x81,  //   Logical Minimum (-127)
+      0x25, 0x7F,  //   Logical Maximum (127)
+      0x35, 0x81,  //   Physical Minimum (-127)
+      0x45, 0x7F,  //   Physical Maximum (127)
+      0x81, 0x02,  //   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No
+                   //   Null Position)
+      0xC0,        // End Collection
+  };
+
+  auto* top = AddTopCollection(kUsageGenericDesktopJoystick,
+                               kCollectionTypeApplication);
+  SetReportSizeAndCount(8, 1);
+  SetLogicalAndPhysicalBounds(-127, 127, -127, 127);
+  AddReportItem(top, kInput, kAbsoluteVariable, {kUsageGenericDesktopX});
+  ValidateCollections(base::make_span(kOneByteLogicalMinMaxDescriptor));
+}
+
+TEST_F(HidReportDescriptorTest, TwoByteLogicalMinMax) {
+  static const uint8_t kTwoByteLogicalMinMaxDescriptor[] = {
+      0x05, 0x01,        // Usage Page (Generic Desktop Ctrls)
+      0x09, 0x04,        // Usage (Joystick)
+      0xA1, 0x01,        // Collection (Application)
+      0x75, 0x10,        //   Report Size (16)
+      0x95, 0x01,        //   Report Count (1)
+      0x09, 0x30,        //   Usage (X)
+      0x16, 0x01, 0x80,  //   Logical Minimum (-32767)
+      0x26, 0xFF, 0x7F,  //   Logical Maximum (32767)
+      0x36, 0x01, 0x80,  //   Physical Minimum (-32767)
+      0x46, 0xFF, 0x7F,  //   Physical Maximum (32767)
+      0x81, 0x02,        //   Input (Data,Var,Abs,No Wrap,Linear,Preferred
+                         //   State,No Null Position)
+      0xC0,              // End Collection
+  };
+
+  auto* top = AddTopCollection(kUsageGenericDesktopJoystick,
+                               kCollectionTypeApplication);
+  SetReportSizeAndCount(16, 1);
+  SetLogicalAndPhysicalBounds(-32767, 32767, -32767, 32767);
+  AddReportItem(top, kInput, kAbsoluteVariable, {kUsageGenericDesktopX});
+  ValidateCollections(base::make_span(kTwoByteLogicalMinMaxDescriptor));
+}
+
+TEST_F(HidReportDescriptorTest, FourByteLogicalMinMax) {
+  static const uint8_t kFourByteLogicalMinMaxDescriptor[] = {
+      0x05, 0x01,                    // Usage Page (Generic Desktop Ctrls)
+      0x09, 0x04,                    // Usage (Joystick)
+      0xA1, 0x01,                    // Collection (Application)
+      0x75, 0x20,                    //   Report Size (32)
+      0x95, 0x01,                    //   Report Count (1)
+      0x09, 0x30,                    //   Usage (X)
+      0x17, 0x01, 0x00, 0x00, 0x80,  //   Logical Minimum (-2147483647)
+      0x27, 0xFF, 0xFF, 0xFF, 0x7F,  //   Logical Maximum (2147483647)
+      0x37, 0x01, 0x00, 0x00, 0x80,  //   Physical Minimum (-2147483647)
+      0x47, 0xFF, 0xFF, 0xFF, 0x7F,  //   Physical Maximum (2147483647)
+      0x81, 0x02,                    //   Input (Data,Var,Abs,No Wrap,Linear,
+                                     //   Preferred State,No Null Position)
+      0xC0,                          // End Collection
+  };
+
+  auto* top = AddTopCollection(kUsageGenericDesktopJoystick,
+                               kCollectionTypeApplication);
+  SetReportSizeAndCount(32, 1);
+  SetLogicalAndPhysicalBounds(-2147483647, 2147483647, -2147483647, 2147483647);
+  AddReportItem(top, kInput, kAbsoluteVariable, {kUsageGenericDesktopX});
+  ValidateCollections(base::make_span(kFourByteLogicalMinMaxDescriptor));
 }
 
 }  // namespace device

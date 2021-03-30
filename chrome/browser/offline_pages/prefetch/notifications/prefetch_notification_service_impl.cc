@@ -23,8 +23,8 @@ constexpr base::TimeDelta kFirstStageIgnoreTimeoutDuration =
 constexpr base::TimeDelta kSecondStageIgnoreTimeoutDuration =
     base::TimeDelta::FromDays(7);
 
-void BuildNotificationData(const base::string16& title,
-                           const base::string16& body,
+void BuildNotificationData(const std::u16string& title,
+                           const std::u16string& body,
                            notifications::NotificationData* out) {
   DCHECK(out);
   out->title = title;
@@ -65,8 +65,8 @@ PrefetchNotificationServiceImpl::PrefetchNotificationServiceImpl(
 
 PrefetchNotificationServiceImpl::~PrefetchNotificationServiceImpl() = default;
 
-void PrefetchNotificationServiceImpl::Schedule(const base::string16& title,
-                                               const base::string16& body) {
+void PrefetchNotificationServiceImpl::Schedule(const std::u16string& title,
+                                               const std::u16string& body) {
   schedule_service_->GetClientOverview(
       notifications::SchedulerClientType::kPrefetch,
       base::BindOnce(&PrefetchNotificationServiceImpl::ScheduleInternal,
@@ -74,8 +74,8 @@ void PrefetchNotificationServiceImpl::Schedule(const base::string16& title,
 }
 
 void PrefetchNotificationServiceImpl::ScheduleInternal(
-    const base::string16& title,
-    const base::string16& body,
+    const std::u16string& title,
+    const std::u16string& body,
     notifications::ClientOverview overview) {
   // Do nothing if under throttle.
   if (overview.impression_detail.current_max_daily_show == 0)

@@ -29,6 +29,19 @@ enum class SupervisedAction {
   kReauth,
 };
 
+// The result of parent access code validation.
+enum class ParentCodeValidationResult {
+  // Parent code is valid.
+  kValid,
+  // Parent code is invalid. Can also happen if the configuration on the device
+  // is outdated.
+  kInvalid,
+  // No matching parent access code configuration available on the device.
+  kNoConfig,
+  // Internal error of the system processing parent access code.
+  kInternalError,
+};
+
 // ParentAccessController serves as a single point of access for PIN requests
 // regarding parent access. It takes care of showing and hiding the PIN UI, as
 // well as logging usage metrics.

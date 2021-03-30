@@ -159,7 +159,11 @@ void CryptAuthDeviceActivityGetterImpl::OnGetDevicesActivityStatusSuccess(
     device_activity_statuses.emplace_back(mojom::DeviceActivityStatus::New(
         device_activity_status.device_id(),
         base::Time::FromTimeT(device_activity_status.last_activity_time_sec()),
-        std::move(device_activity_status.connectivity_status())));
+        std::move(device_activity_status.connectivity_status()),
+        base::Time::FromTimeT(
+            device_activity_status.last_update_time().seconds()) +
+            base::TimeDelta::FromNanoseconds(
+                device_activity_status.last_update_time().nanos())));
   }
 
   cryptauth_client_.reset();

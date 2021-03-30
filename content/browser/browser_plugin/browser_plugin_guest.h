@@ -33,6 +33,7 @@
 
 namespace content {
 class RenderWidgetHostViewBase;
+class WebContentsImpl;
 
 // A browser plugin guest provides functionality for WebContents to operate in
 // the guest role and implements guest-specific overrides for ViewHostMsg_*
@@ -95,7 +96,7 @@ class CONTENT_EXPORT BrowserPluginGuest : public GuestHost,
 #if defined(OS_MAC)
   // On MacOS X popups are painted by the browser process. We handle them here
   // so that they are positioned correctly.
-  bool ShowPopupMenu(
+  void ShowPopupMenu(
       RenderFrameHost* render_frame_host,
       mojo::PendingRemote<blink::mojom::PopupMenuClient>* popup_client,
       const gfx::Rect& bounds,
@@ -104,7 +105,7 @@ class CONTENT_EXPORT BrowserPluginGuest : public GuestHost,
       int32_t selected_item,
       std::vector<blink::mojom::MenuItemPtr>* menu_items,
       bool right_aligned,
-      bool allow_multiple_selection) override;
+      bool allow_multiple_selection);
 #endif
 
   // GuestHost implementation.

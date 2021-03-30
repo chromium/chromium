@@ -27,6 +27,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/events/event_utils.h"
+#include "ui/events/test/event_generator.h"
 
 namespace content {
 namespace {
@@ -70,7 +71,8 @@ class FakeWebContentsDelegate : public WebContentsDelegate {
 class RenderWidgetHostViewAuraBrowserTest : public ContentBrowserTest {
  public:
   RenderViewHost* GetRenderViewHost() const {
-    RenderViewHost* const rvh = shell()->web_contents()->GetRenderViewHost();
+    RenderViewHost* const rvh =
+        shell()->web_contents()->GetMainFrame()->GetRenderViewHost();
     CHECK(rvh);
     return rvh;
   }
@@ -82,6 +84,10 @@ class RenderWidgetHostViewAuraBrowserTest : public ContentBrowserTest {
 
   DelegatedFrameHost* GetDelegatedFrameHost() const {
     return GetRenderWidgetHostView()->delegated_frame_host_.get();
+  }
+
+  bool HasChildPopup() const {
+    return GetRenderWidgetHostView()->popup_child_host_view_;
   }
 };
 
@@ -201,6 +207,60 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
       GetDelegatedFrameHost()->stale_content_layer_->has_external_content());
 }
 #endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
+
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
+                       SetKeyboardFocusOnTapAfterDismissingPopup) {
+  GURL page(
+      "data:text/html;charset=utf-8,"
+      "<!DOCTYPE html>"
+      "<html>"
+      "<body>"
+      "<select id=\"ddlChoose\">"
+      " <option value=\"\">Choose</option>"
+      " <option value=\"A\">A</option>"
+      " <option value=\"B\">B</option>"
+      " <option value=\"C\">C</option>"
+      "</select>"
+      "<script type=\"text/javascript\">"
+      "  function focusSelectMenu() {"
+      "    document.getElementById('ddlChoose').focus();"
+      "  }"
+      "</script>"
+      "</body>"
+      "</html>");
+  EXPECT_TRUE(NavigateToURL(shell(), page));
+
+  auto* wc = shell()->web_contents();
+  ASSERT_TRUE(ExecuteScript(wc, "focusSelectMenu();"));
+  SimulateKeyPress(wc, ui::DomKey::FromCharacter(' '), ui::DomCode::SPACE,
+                   ui::VKEY_SPACE, false, false, false, false);
+
+  // Wait until popup is opened.
+  while (!HasChildPopup()) {
+    base::RunLoop().RunUntilIdle();
+    base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
+  }
+
+  // Page is focused to begin with.
+  ASSERT_TRUE(IsRenderWidgetHostFocused(GetRenderViewHost()->GetWidget()));
+
+  // Tap outside the page to dismiss the pop-up.
+  const gfx::Point kOutsidePointInRoot(1000, 300);
+  ASSERT_FALSE(GetRenderWidgetHostView()->GetNativeView()->bounds().Contains(
+      kOutsidePointInRoot));
+  ui::test::EventGenerator generator(
+      GetRenderWidgetHostView()->GetNativeView()->GetRootWindow());
+  generator.GestureTapAt(kOutsidePointInRoot);
+  RunUntilInputProcessed(GetRenderViewHost()->GetWidget());
+
+  // Tap on the page.
+  generator.GestureTapAt(
+      GetRenderWidgetHostView()->GetNativeView()->bounds().CenterPoint());
+  RunUntilInputProcessed(GetRenderViewHost()->GetWidget());
+
+  // Page should stay focused after the tap.
+  EXPECT_TRUE(IsRenderWidgetHostFocused(GetRenderViewHost()->GetWidget()));
+}
 
 class RenderWidgetHostViewAuraDevtoolsBrowserTest
     : public content::DevToolsProtocolTest {

@@ -139,26 +139,6 @@ TEST(StreamModelTest, AddRootAsChild) {
   EXPECT_EQ(std::vector<std::string>({}), GetContentFrames(model));
 }
 
-// Changing the STREAM root to CLUSTER means it is no longer eligible to be
-// the root.
-TEST(StreamModelTest, ChangeStreamToCluster) {
-  StreamModel model;
-  TestObserver observer(&model);
-  feedstore::StreamStructure stream_as_cluster = MakeStream();
-  stream_as_cluster.set_type(feedstore::StreamStructure::CLUSTER);
-
-  std::vector<feedstore::DataOperation> operations{
-      MakeOperation(MakeStream()),
-      MakeOperation(MakeContentNode(0, MakeRootId())),
-      MakeOperation(MakeContent(0)),
-      MakeOperation(stream_as_cluster),
-  };
-
-  model.ExecuteOperations(operations);
-
-  EXPECT_EQ(std::vector<std::string>({}), GetContentFrames(model));
-}
-
 TEST(StreamModelTest, RemoveCluster) {
   StreamModel model;
   TestObserver observer(&model);
@@ -212,29 +192,42 @@ TEST(StreamModelTest, RemoveAndAddRoot) {
   EXPECT_EQ(std::vector<std::string>({"f:0", "f:1"}), GetContentFrames(model));
 }
 
-TEST(StreamModelTest, SwitchStreams) {
+TEST(StreamModelTest, SecondRootStreamIsIgnored) {
   StreamModel model;
   TestObserver observer(&model);
 
+  // Add a second stream root, but it is ignored.
   std::vector<feedstore::DataOperation> operations =
       MakeTypicalStreamOperations();
-  operations.push_back(MakeOperation(MakeStream(2)));
+  feedstore::StreamStructure root2 = MakeStream(2);
+  root2.set_is_root(false);
+  operations.push_back(MakeOperation(root2));
   operations.push_back(MakeOperation(MakeContentNode(9, MakeRootId(2))));
   operations.push_back(MakeOperation(MakeContent(9)));
-
   model.ExecuteOperations(operations);
-
-  // The last stream added becomes the root, so only children of 'root2' are
-  // included.
-  EXPECT_EQ(std::vector<std::string>({"f:9"}), GetContentFrames(model));
-
-  // Adding the original stream back will re-activate it.
-  model.ExecuteOperations({MakeOperation(MakeStream())});
 
   EXPECT_EQ(std::vector<std::string>({"f:0", "f:1"}), GetContentFrames(model));
 
-  // Removing 'root' will now make 'root2' active again.
+  // Remove the first stream root, now the second root is used.
   model.ExecuteOperations({MakeOperation(MakeRemove(MakeRootId()))});
+
+  EXPECT_EQ(std::vector<std::string>({"f:9"}), GetContentFrames(model));
+}
+
+TEST(StreamModelTest, SecondRootWithIsRootIsSelected) {
+  StreamModel model;
+  TestObserver observer(&model);
+
+  // Set up operations which add two roots. The second root is chosen because it
+  // has is_root=true set.
+  std::vector<feedstore::DataOperation> operations =
+      MakeTypicalStreamOperations();
+  operations[0].mutable_structure()->set_is_root(false);
+  operations.push_back(MakeOperation(MakeStream(2)));
+  operations.push_back(MakeOperation(MakeContentNode(9, MakeRootId(2))));
+  operations.push_back(MakeOperation(MakeContent(9)));
+  model.ExecuteOperations(operations);
+
   EXPECT_EQ(std::vector<std::string>({"f:9"}), GetContentFrames(model));
 }
 

@@ -1,41 +1,7 @@
 // META: global=window,dedicatedworker
+// META: script=/wpt_internal/webcodecs/encoder_utils.js
 
-async function getImageAsBitmap(width, height) {
-  const src = "pattern.png";
-
-  var size = {
-    resizeWidth: width,
-    resizeHeight: height
-  };
-
-  return fetch(src)
-      .then(response => response.blob())
-      .then(blob => createImageBitmap(blob, size));
-}
-
-async function generateBitmap(width, height, text) {
-  let img = await getImageAsBitmap(width, height);
-  let cnv = new OffscreenCanvas(width, height);
-  var ctx = cnv.getContext('2d');
-  ctx.drawImage(img, 0, 0, width, height);
-  img.close();
-  ctx.font = '30px fantasy';
-  ctx.fillText(text, 5, 40);
-  return createImageBitmap(cnv);
-}
-
-async function createFrame(width, height, ts) {
-  let imageBitmap = await generateBitmap(width, height, ts.toString());
-  return new VideoFrame(imageBitmap, { timestamp: ts });
-}
-
-function delay(time_ms) {
-  return new Promise((resolve, reject) => {
-    setTimeout(resolve, time_ms);
-  });
-};
-
-async function encode_decode_test(codec, acc) {
+async function encode_decode_test(codec, acc, avc_format) {
   const w = 640;
   const h = 360;
   let next_ts = 0
@@ -50,7 +16,7 @@ async function encode_decode_test(codec, acc) {
       assert_equals(frame.cropHeight, h, "cropHeight");
       assert_equals(frame.timestamp, next_ts++, "timestamp");
       frames_decoded++;
-      frame.destroy();
+      frame.close();
     },
     error(e) {
       errors++;
@@ -59,9 +25,9 @@ async function encode_decode_test(codec, acc) {
   });
 
   const encoder_init = {
-    output(chunk, config) {
-      var data = new Uint8Array(chunk.data);
-      if (decoder.state != "configured" || config.description) {
+    output(chunk, metadata) {
+      let config = metadata.decoderConfig;
+      if (config) {
         decoder.configure(config);
       }
       decoder.decode(chunk);
@@ -73,13 +39,17 @@ async function encode_decode_test(codec, acc) {
     }
   };
 
-  const encoder_config = {
+  let encoder_config = {
     codec: codec,
-    acceleration: acc,
+    hardwareAcceleration: acc,
     width: w,
     height: h,
     bitrate: 5000000,
   };
+
+  if (avc_format != null) {
+    encoder_config.avc = {format: avc_format};
+  }
 
   let encoder = new VideoEncoder(encoder_init);
   encoder.configure(encoder_config);
@@ -88,6 +58,10 @@ async function encode_decode_test(codec, acc) {
     let frame = await createFrame(w, h, i);
     let keyframe = (i % 5 == 0);
     encoder.encode(frame, { keyFrame: keyframe });
+
+    // Wait to prevent queueing all frames before encoder.configure() completes.
+    // Queuing them all at once should still work, but would not be as
+    // repesentative of a real world scenario.
     await delay(1);
   }
   await encoder.flush();
@@ -107,8 +81,9 @@ async function encode_test(codec, acc) {
   let frames_processed = 0;
   let errors = 0;
 
-  let process_video_chunk = function (chunk, config) {
+  let process_video_chunk = function (chunk, metadata) {
     assert_greater_than_equal(chunk.timestamp, next_ts++);
+    let config = metadata.decoderConfig;
     let data = new Uint8Array(chunk.data);
     let type = (chunk.timestamp % 5 == 0) ? "key" : "delta";
     assert_equals(chunk.type, type);
@@ -131,7 +106,7 @@ async function encode_test(codec, acc) {
   };
   const params = {
     codec: codec,
-    acceleration: acc,
+    hardwareAcceleration: acc,
     width: w,
     height: h,
     bitrate: 5000000,
@@ -158,17 +133,22 @@ promise_test(encode_test.bind(null, "vp09.00.10.08", "allow"),
 promise_test(encode_test.bind(null, "vp09.02.10.10", "allow"),
   "encoding vp9 profile2");
 
-promise_test(encode_decode_test.bind(null, "vp09.02.10.10", "allow"),
+promise_test(encode_decode_test.bind(null, "vp09.02.10.10", "allow", null),
   "encoding and decoding vp9 profile2");
 
 promise_test(encode_test.bind(null, "vp8", "allow"),
   "encoding vp8");
 
-promise_test(encode_decode_test.bind(null, "vp8", "allow"),
+promise_test(encode_decode_test.bind(null, "vp8", "allow", null),
   "encoding and decoding vp8");
 
-promise_test(encode_decode_test.bind(null, "avc1.42001E", "allow"),
-  "encoding and decoding avc1.42001E");
+promise_test(
+  encode_decode_test.bind(null, "avc1.42001E", "allow", "annexb"),
+  "encoding and decoding avc1.42001E (annexb)");
+
+promise_test(
+  encode_decode_test.bind(null, "avc1.42001E", "allow", "avc"),
+  "encoding and decoding avc1.42001E (avc)");
 
 /* Uncomment this for manual testing, before we have GPU tests for that */
 // promise_test(encode_test.bind(null, "avc1.42001E", "require"),

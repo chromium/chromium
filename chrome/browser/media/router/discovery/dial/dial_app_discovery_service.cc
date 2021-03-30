@@ -34,8 +34,13 @@ void RecordDialFetchAppInfo(DialAppInfoResultCode result_code) {
 
 DialAppInfoResult::DialAppInfoResult(
     std::unique_ptr<ParsedDialAppInfo> app_info,
-    DialAppInfoResultCode result_code)
-    : app_info(std::move(app_info)), result_code(result_code) {}
+    DialAppInfoResultCode result_code,
+    const std::string& error_message,
+    base::Optional<int> http_error_code)
+    : app_info(std::move(app_info)),
+      result_code(result_code),
+      error_message(error_message),
+      http_error_code(http_error_code) {}
 
 DialAppInfoResult::DialAppInfoResult(DialAppInfoResult&& other) = default;
 
@@ -112,22 +117,22 @@ void DialAppDiscoveryService::PendingRequest::OnDialAppInfoFetchComplete(
 }
 
 void DialAppDiscoveryService::PendingRequest::OnDialAppInfoFetchError(
-    int response_code,
-    const std::string& error_message) {
+    const std::string& error_message,
+    base::Optional<int> http_response_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (response_code == net::HTTP_NOT_FOUND ||
-      response_code >= net::HTTP_INTERNAL_SERVER_ERROR ||
-      response_code == net::HTTP_OK) {
-    RecordDialFetchAppInfo(DialAppInfoResultCode::kNotFound);
-    std::move(app_info_cb_)
-        .Run(sink_id_, app_name_,
-             DialAppInfoResult(nullptr, DialAppInfoResultCode::kNotFound));
-  } else {
-    RecordDialFetchAppInfo(DialAppInfoResultCode::kNetworkError);
-    std::move(app_info_cb_)
-        .Run(sink_id_, app_name_,
-             DialAppInfoResult(nullptr, DialAppInfoResultCode::kNetworkError));
+  auto result_code = DialAppInfoResultCode::kNetworkError;
+  if (http_response_code) {
+    if (*http_response_code >= 200 && *http_response_code < 300) {
+      result_code = DialAppInfoResultCode::kParsingError;
+    } else {
+      result_code = DialAppInfoResultCode::kHttpError;
+    }
   }
+  RecordDialFetchAppInfo(result_code);
+  std::move(app_info_cb_)
+      .Run(sink_id_, app_name_,
+           DialAppInfoResult(nullptr, result_code, error_message,
+                             http_response_code));
   service_->RemovePendingRequest(this);
 }
 

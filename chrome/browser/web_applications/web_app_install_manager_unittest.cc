@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/run_loop.h"
@@ -89,7 +90,7 @@ std::unique_ptr<blink::Manifest> ConvertWebAppToManifest(const WebApp& app) {
   auto manifest = std::make_unique<blink::Manifest>();
   manifest->start_url = app.start_url();
   manifest->scope = app.start_url();
-  manifest->short_name = base::ASCIIToUTF16("Short Name to be overriden.");
+  manifest->short_name = u"Short Name to be overriden.";
   manifest->name = base::UTF8ToUTF16(app.name());
   manifest->theme_color = app.theme_color();
   manifest->display = app.display_mode();
@@ -350,7 +351,7 @@ class WebAppInstallManagerTest : public WebAppTest {
     auto server_web_application_info = std::make_unique<WebApplicationInfo>();
     server_web_application_info->start_url = url;
     server_web_application_info->open_as_window = server_open_as_window;
-    server_web_application_info->title = base::ASCIIToUTF16("Server Name");
+    server_web_application_info->title = u"Server Name";
     InstallResult result = InstallBookmarkAppFromSync(
         bookmark_app_id, std::move(server_web_application_info));
 
@@ -830,7 +831,7 @@ TEST_F(WebAppInstallManagerTest, UninstallWebAppsAfterSync) {
   file_utils().SetNextDeleteFileRecursivelyResult(true);
 
   enum Event {
-    kObserver_OnWebAppUninstalled,
+    kObserver_OnWebAppWillBeUninstalled,
     kUninstallWebAppsAfterSync_Callback
   };
   std::vector<Event> event_order;
@@ -839,7 +840,7 @@ TEST_F(WebAppInstallManagerTest, UninstallWebAppsAfterSync) {
   observer.SetWebAppUninstalledDelegate(
       base::BindLambdaForTesting([&](const AppId& uninstalled_app_id) {
         EXPECT_EQ(uninstalled_app_id, app_id);
-        event_order.push_back(Event::kObserver_OnWebAppUninstalled);
+        event_order.push_back(Event::kObserver_OnWebAppWillBeUninstalled);
       }));
 
   base::RunLoop run_loop;
@@ -863,7 +864,7 @@ TEST_F(WebAppInstallManagerTest, UninstallWebAppsAfterSync) {
   run_loop.Run();
 
   const std::vector<Event> expected_event_order{
-      Event::kObserver_OnWebAppUninstalled,
+      Event::kObserver_OnWebAppWillBeUninstalled,
       Event::kUninstallWebAppsAfterSync_Callback};
   EXPECT_EQ(expected_event_order, event_order);
 }
@@ -1051,7 +1052,7 @@ TEST_F(WebAppInstallManagerTest, InstallBookmarkAppFromSync_TwoIcons_Success) {
 
   auto server_web_app_info = std::make_unique<WebApplicationInfo>();
   server_web_app_info->start_url = url;
-  server_web_app_info->title = base::ASCIIToUTF16("Server Name");
+  server_web_app_info->title = u"Server Name";
   {
     WebApplicationIconInfo server_icon1_info;
     server_icon1_info.url = icon1_url;
@@ -1138,7 +1139,7 @@ TEST_F(WebAppInstallManagerTest, InstallBookmarkAppFromSync_TwoIcons_Fallback) {
 
   auto server_web_app_info = std::make_unique<WebApplicationInfo>();
   server_web_app_info->start_url = url;
-  server_web_app_info->title = base::ASCIIToUTF16("Server Name");
+  server_web_app_info->title = u"Server Name";
   server_web_app_info->generated_icon_color = SK_ColorBLUE;
   {
     WebApplicationIconInfo server_icon1_info;
@@ -1197,7 +1198,7 @@ TEST_F(WebAppInstallManagerTest, InstallBookmarkAppFromSync_NoIcons) {
 
   auto web_app_info = std::make_unique<WebApplicationInfo>();
   web_app_info->start_url = url;
-  web_app_info->title = base::ASCIIToUTF16("Server Name");
+  web_app_info->title = u"Server Name";
   // All icons will get the E letter drawn into a rounded yellow background.
   web_app_info->generated_icon_color = SK_ColorYELLOW;
 
@@ -1236,7 +1237,7 @@ TEST_F(WebAppInstallManagerTest, InstallBookmarkAppFromSync_ExpectAppIdFailed) {
 
   auto server_web_app_info = std::make_unique<WebApplicationInfo>();
   server_web_app_info->start_url = old_url;
-  server_web_app_info->title = base::ASCIIToUTF16("Server Name");
+  server_web_app_info->title = u"Server Name";
 
   // WebAppInstallTask finishes with kExpectedAppIdCheckFailed but
   // WebAppInstallManager falls back to web application info, received from the
@@ -1266,7 +1267,7 @@ TEST_F(WebAppInstallManagerTest, InstallWebAppFromInfo) {
   auto server_web_app_info = std::make_unique<WebApplicationInfo>();
   server_web_app_info->start_url = url;
   server_web_app_info->scope = url;
-  server_web_app_info->title = base::UTF8ToUTF16("Test web app");
+  server_web_app_info->title = u"Test web app";
 
   InstallResult result = InstallWebAppFromInfo(std::move(server_web_app_info));
   EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
@@ -1299,7 +1300,7 @@ TEST_F(WebAppInstallManagerTest, InstallBookmarkAppFromSync_QueueNewInstall) {
 
   auto server_web_application_info = std::make_unique<WebApplicationInfo>();
   server_web_application_info->start_url = url;
-  server_web_application_info->title = base::ASCIIToUTF16("Server Name");
+  server_web_application_info->title = u"Server Name";
 
   // Call InstallBookmarkAppFromSync while WebAppInstallManager is not yet
   // started.
@@ -1451,7 +1452,7 @@ TEST_F(WebAppInstallManagerTest, SyncRace_InstallBookmarkAppFull_ThenWebApp) {
 
   auto server_bookmark_app_info = std::make_unique<WebApplicationInfo>();
   server_bookmark_app_info->start_url = url;
-  server_bookmark_app_info->title = base::ASCIIToUTF16("Server Name");
+  server_bookmark_app_info->title = u"Server Name";
 
   bool bookmark_app_installed = false;
   bool web_app_install_returns_early = false;
@@ -1516,7 +1517,7 @@ TEST_F(WebAppInstallManagerTest,
 
   auto server_bookmark_app_info = std::make_unique<WebApplicationInfo>();
   server_bookmark_app_info->start_url = url;
-  server_bookmark_app_info->title = base::ASCIIToUTF16("Server Name");
+  server_bookmark_app_info->title = u"Server Name";
 
   bool bookmark_app_installed = false;
   bool web_app_install_returns_early = false;

@@ -177,7 +177,7 @@ UIColor* DimColorIncognito() {
   } else {
     // The text should be search term (|_match.contents|) for searches,
     // otherwise page title (|_match.description|).
-    base::string16 textString =
+    std::u16string textString =
         !self.isURL ? _match.contents : _match.description;
     NSString* text = base::SysUTF16ToNSString(textString);
 
@@ -314,7 +314,7 @@ UIColor* DimColorIncognito() {
 - (NSAttributedString*)
     attributedStringForTextfield:(const SuggestionAnswer::TextField*)field
           useDeemphasizedStyling:(BOOL)useDeemphasizedStyling {
-  const base::string16& string = field->text();
+  const std::u16string& string = field->text();
 
   NSString* unescapedString =
       base::SysUTF16ToNSString(net::UnescapeForHTML(string));

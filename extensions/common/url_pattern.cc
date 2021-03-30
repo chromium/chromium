@@ -34,6 +34,7 @@ const char* const kValidSchemes[] = {
     content::kChromeUIScheme, extensions::kExtensionScheme,
     url::kFileSystemScheme,   url::kWsScheme,
     url::kWssScheme,          url::kDataScheme,
+    url::kUrnScheme,
 };
 
 const int kValidSchemeMasks[] = {
@@ -42,6 +43,7 @@ const int kValidSchemeMasks[] = {
     URLPattern::SCHEME_CHROMEUI,   URLPattern::SCHEME_EXTENSION,
     URLPattern::SCHEME_FILESYSTEM, URLPattern::SCHEME_WS,
     URLPattern::SCHEME_WSS,        URLPattern::SCHEME_DATA,
+    URLPattern::SCHEME_URN,
 };
 
 static_assert(base::size(kValidSchemes) == base::size(kValidSchemeMasks),

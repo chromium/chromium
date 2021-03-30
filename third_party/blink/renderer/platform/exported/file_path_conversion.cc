@@ -27,7 +27,7 @@ base::FilePath StringToFilePath(const String& str) {
 #else
   const LChar* data8 = str.Characters8();
   return base::FilePath::FromUTF16Unsafe(
-      base::string16(data8, data8 + str.length()));
+      std::u16string(data8, data8 + str.length()));
 #endif
 }
 

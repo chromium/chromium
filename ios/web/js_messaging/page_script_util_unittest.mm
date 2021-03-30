@@ -24,6 +24,23 @@
 using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForPageLoadTimeout;
 
+namespace {
+
+NSString* GetSharedScripts() {
+  // Scripts must be all injected at once because as soon as __gCrWeb exists,
+  // injection is assumed to be done and __gCrWeb.message is used.
+  return [NSString stringWithFormat:@"%@; %@; %@",
+                                    web::test::GetPageScript(@"base_js"),
+                                    web::test::GetPageScript(@"common_js"),
+                                    web::test::GetPageScript(@"message_js")];
+}
+
+void AddSharedScriptsToWebView(WKWebView* web_view) {
+  web::test::ExecuteJavaScript(web_view, GetSharedScripts());
+}
+
+}  // namespace
+
 namespace web {
 namespace {
 
@@ -37,19 +54,51 @@ class PageScriptUtilTest : public WebTest {
   }
 };
 
+// Tests that |MakeScriptInjectableOnce| prevents a script from being injected
+// twice.
+TEST_F(PageScriptUtilTest, MakeScriptInjectableOnce) {
+  WKWebView* web_view = BuildWKWebView(CGRectZero, GetBrowserState());
+  NSString* identifier = @"script_id";
+
+  test::ExecuteJavaScript(
+      web_view, MakeScriptInjectableOnce(identifier, @"var value = 1;"));
+  EXPECT_NSEQ(@(1), test::ExecuteJavaScript(web_view, @"value"));
+
+  test::ExecuteJavaScript(web_view,
+                          MakeScriptInjectableOnce(identifier, @"value = 2;"));
+  EXPECT_NSEQ(@(1), test::ExecuteJavaScript(web_view, @"value"));
+}
+
 // Tests that WKWebView early page script is a valid script that injects global
 // __gCrWeb object.
 TEST_F(PageScriptUtilTest, WKWebViewEarlyPageScript) {
   WKWebView* web_view = BuildWKWebView(CGRectZero, GetBrowserState());
+  AddSharedScriptsToWebView(web_view);
   test::ExecuteJavaScript(
       web_view, GetDocumentStartScriptForAllFrames(GetBrowserState()));
   EXPECT_NSEQ(@"object", test::ExecuteJavaScript(web_view, @"typeof __gCrWeb"));
+}
+
+// Tests that WKWebView shared scripts are valid scripts that injects global
+// __gCrWeb object in an isolated world.
+TEST_F(PageScriptUtilTest, WKWebViewEarlyPageScriptIsolatedWorld) {
+  if (@available(iOS 14, *)) {
+    WKWebView* web_view = BuildWKWebView(CGRectZero, GetBrowserState());
+    WKContentWorld* content_world = WKContentWorld.defaultClientWorld;
+    web::test::ExecuteJavaScript(web_view, content_world, GetSharedScripts());
+    test::ExecuteJavaScript(
+        web_view, content_world,
+        GetDocumentStartScriptForAllFrames(GetBrowserState()));
+    EXPECT_NSEQ(@"object", test::ExecuteJavaScript(web_view, content_world,
+                                                   @"typeof __gCrWeb"));
+  }
 }
 
 // Tests that embedder's WKWebView script is included into early script.
 TEST_F(PageScriptUtilTest, WKEmbedderScript) {
   GetWebClient()->SetEarlyPageScript(@"__gCrEmbedder = {};");
   WKWebView* web_view = BuildWKWebView(CGRectZero, GetBrowserState());
+  AddSharedScriptsToWebView(web_view);
   test::ExecuteJavaScript(
       web_view, GetDocumentStartScriptForAllFrames(GetBrowserState()));
   test::ExecuteJavaScript(

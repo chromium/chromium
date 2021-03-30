@@ -9,6 +9,7 @@
 
 namespace views {
 class Button;
+class Label;
 }
 
 namespace ash {
@@ -23,12 +24,15 @@ class NotificationHiddenView : public views::View {
 
   // views::View:
   const char* GetClassName() const override;
+  void OnThemeChanged() override;
 
   views::Button* change_button_for_testing() { return change_button_; }
 
  private:
   void ChangeButtonPressed();
 
+  views::View* const container_;
+  views::Label* const label_;
   views::Button* change_button_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(NotificationHiddenView);

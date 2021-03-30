@@ -8,6 +8,7 @@
 
 namespace {
 const char kDefaultId[] = "123456789A";
+const char kDefaultDeviceName[] = "Barack's Chromebook";
 }  // namespace
 
 FakeNearbyShareLocalDeviceDataManager::Factory::Factory() = default;
@@ -18,12 +19,13 @@ std::unique_ptr<NearbyShareLocalDeviceDataManager>
 FakeNearbyShareLocalDeviceDataManager::Factory::CreateInstance(
     PrefService* pref_service,
     NearbyShareClientFactory* http_client_factory,
-    const std::string& default_device_name) {
+    NearbyShareProfileInfoProvider* profile_info_provider) {
   latest_pref_service_ = pref_service;
   latest_http_client_factory_ = http_client_factory;
+  latest_profile_info_provider_ = profile_info_provider;
 
   auto instance = std::make_unique<FakeNearbyShareLocalDeviceDataManager>(
-      default_device_name);
+      kDefaultDeviceName);
   instances_.push_back(instance.get());
 
   return instance;

@@ -12,13 +12,15 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
+#include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
 #include "media/base/win/mf_helpers.h"
+#include "media/capture/video/win/d3d_capture_test_utils.h"
 #include "media/capture/video/win/sink_filter_win.h"
 #include "media/capture/video/win/video_capture_device_factory_win.h"
 #include "media/capture/video/win/video_capture_device_mf_win.h"
-#include "media/capture/video/win/video_capture_dxgi_device_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -67,9 +69,8 @@ class MockClient : public VideoCaptureDevice::Client {
                                    int frame_feedback_id = 0) override {}
 
   void OnIncomingCapturedExternalBuffer(
-      gfx::GpuMemoryBufferHandle handle,
-      const VideoCaptureFormat& format,
-      const gfx::ColorSpace& color_space,
+      CapturedExternalVideoBuffer buffer,
+      std::vector<CapturedExternalVideoBuffer> scaled_buffers,
       base::TimeTicks reference_time,
       base::TimeDelta timestamp) override {}
 
@@ -81,14 +82,14 @@ class MockClient : public VideoCaptureDevice::Client {
                                 base::TimeTicks reference_,
                                 base::TimeDelta timestamp) override {}
 
-  void OnIncomingCapturedBufferExt(
-      Buffer buffer,
-      const VideoCaptureFormat& format,
-      const gfx::ColorSpace& color_space,
-      base::TimeTicks reference_time,
-      base::TimeDelta timestamp,
-      gfx::Rect visible_rect,
-      const VideoFrameMetadata& additional_metadata) override {}
+  MOCK_METHOD7(OnIncomingCapturedBufferExt,
+               void(Buffer,
+                    const VideoCaptureFormat&,
+                    const gfx::ColorSpace&,
+                    base::TimeTicks,
+                    base::TimeDelta,
+                    gfx::Rect,
+                    const VideoFrameMetadata&));
 
   MOCK_METHOD3(OnError,
                void(VideoCaptureError,
@@ -970,6 +971,40 @@ struct DepthDeviceParams {
   // Depth device sometimes provides multiple video streams.
   bool additional_i420_video_stream;
 };
+
+class MockCaptureHandleProvider
+    : public VideoCaptureDevice::Client::Buffer::HandleProvider {
+ public:
+  // Duplicate as an writable (unsafe) shared memory region.
+  base::UnsafeSharedMemoryRegion DuplicateAsUnsafeRegion() override {
+    return base::UnsafeSharedMemoryRegion();
+  }
+
+  // Duplicate as a writable (unsafe) mojo buffer.
+  mojo::ScopedSharedBufferHandle DuplicateAsMojoBuffer() override {
+    return mojo::ScopedSharedBufferHandle();
+  }
+
+  // Access a |VideoCaptureBufferHandle| for local, writable memory.
+  std::unique_ptr<VideoCaptureBufferHandle> GetHandleForInProcessAccess()
+      override {
+    return nullptr;
+  }
+
+  // Clone a |GpuMemoryBufferHandle| for IPC.
+  gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle() override {
+    // Create a fake DXGI buffer handle
+    // (ensure that the fake is still a valid NT handle by using an event
+    // handle)
+    base::win::ScopedHandle fake_dxgi_handle(
+        CreateEvent(nullptr, FALSE, FALSE, nullptr));
+    gfx::GpuMemoryBufferHandle handle;
+    handle.type = gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE;
+    handle.dxgi_handle = std::move(fake_dxgi_handle);
+    return handle;
+  }
+};
+
 }  // namespace
 
 const int kArbitraryValidVideoWidth = 1920;
@@ -1222,7 +1257,7 @@ class VideoCaptureDeviceMFWinTest : public ::testing::Test {
   scoped_refptr<MockMFCaptureSource> capture_source_;
   scoped_refptr<MockCapturePreviewSink> capture_preview_sink_;
   base::test::TaskEnvironment task_environment_;
-  scoped_refptr<VideoCaptureDXGIDeviceManager> dxgi_device_manager_;
+  scoped_refptr<DXGIDeviceManager> dxgi_device_manager_;
 
  private:
   const bool media_foundation_supported_;
@@ -1731,7 +1766,7 @@ class VideoCaptureDeviceMFWinTestWithDXGI : public VideoCaptureDeviceMFWinTest {
     if (ShouldSkipD3D11Test())
       GTEST_SKIP();
 
-    dxgi_device_manager_ = VideoCaptureDXGIDeviceManager::Create();
+    dxgi_device_manager_ = DXGIDeviceManager::Create();
     VideoCaptureDeviceMFWinTest::SetUp();
   }
 };
@@ -1782,6 +1817,97 @@ TEST_F(VideoCaptureDeviceMFWinTestWithDXGI, EnsureNV12SinkSubtype) {
   video_capture_params.requested_format = format;
   device_->AllocateAndStart(video_capture_params, std::move(client_));
   capture_preview_sink_->sample_callback->OnSample(nullptr);
+}
+
+TEST_F(VideoCaptureDeviceMFWinTestWithDXGI, DeliverGMBCaptureBuffers) {
+  if (ShouldSkipTest())
+    return;
+
+  const GUID expected_subtype = MFVideoFormat_NV12;
+  PrepareMFDeviceWithOneVideoStream(expected_subtype);
+
+  const gfx::Size expected_size(640, 480);
+
+  // Verify that an output capture buffer is reserved from the client
+  EXPECT_CALL(*client_, ReserveOutputBuffer)
+      .WillOnce(Invoke(
+          [expected_size](const gfx::Size& size, VideoPixelFormat format,
+                          int feedback_id,
+                          VideoCaptureDevice::Client::Buffer* capture_buffer) {
+            EXPECT_EQ(size.width(), expected_size.width());
+            EXPECT_EQ(size.height(), expected_size.height());
+            EXPECT_EQ(format, PIXEL_FORMAT_NV12);
+            capture_buffer->handle_provider =
+                std::make_unique<MockCaptureHandleProvider>();
+            return VideoCaptureDevice::Client::ReserveResult::kSucceeded;
+          }));
+
+  Microsoft::WRL::ComPtr<MockD3D11Device> mock_device(new MockD3D11Device());
+
+  // Create mock source texture (to be provided to capture device from MF
+  // capture API)
+  D3D11_TEXTURE2D_DESC mock_desc = {};
+  mock_desc.Format = DXGI_FORMAT_NV12;
+  mock_desc.Width = expected_size.width();
+  mock_desc.Height = expected_size.height();
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> mock_source_texture_2d;
+  Microsoft::WRL::ComPtr<MockD3D11Texture2D> mock_source_texture(
+      new MockD3D11Texture2D(mock_desc, mock_device.Get()));
+  EXPECT_TRUE(SUCCEEDED(
+      mock_source_texture.CopyTo(IID_PPV_ARGS(&mock_source_texture_2d))));
+
+  // Create mock target texture with matching dimensions/format
+  // (to be provided from the capture device to the capture client)
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> mock_target_texture_2d;
+  Microsoft::WRL::ComPtr<MockD3D11Texture2D> mock_target_texture(
+      new MockD3D11Texture2D(mock_desc, mock_device.Get()));
+  EXPECT_TRUE(SUCCEEDED(
+      mock_target_texture.CopyTo(IID_PPV_ARGS(&mock_target_texture_2d))));
+  // Mock OpenSharedResource call on mock D3D device to return target texture
+  EXPECT_CALL(*mock_device.Get(), DoOpenSharedResource1)
+      .WillOnce(Invoke([&mock_target_texture_2d](HANDLE resource,
+                                                 REFIID returned_interface,
+                                                 void** resource_out) {
+        return mock_target_texture_2d.CopyTo(returned_interface, resource_out);
+      }));
+  // Expect call to copy source texture to target on immediate context
+  ID3D11Resource* expected_source =
+      static_cast<ID3D11Resource*>(mock_source_texture_2d.Get());
+  ID3D11Resource* expected_target =
+      static_cast<ID3D11Resource*>(mock_target_texture_2d.Get());
+  EXPECT_CALL(*mock_device->mock_immediate_context_.Get(),
+              OnCopySubresourceRegion(expected_target, _, _, _, _,
+                                      expected_source, _, _))
+      .Times(1);
+  // Expect the client to receive a buffer containing a GMB containing the
+  // expected fake DXGI handle
+  EXPECT_CALL(*client_, OnIncomingCapturedBufferExt)
+      .WillOnce(Invoke([](VideoCaptureDevice::Client::Buffer buffer,
+                          const VideoCaptureFormat&, const gfx::ColorSpace&,
+                          base::TimeTicks, base::TimeDelta, gfx::Rect,
+                          const VideoFrameMetadata&) {
+        gfx::GpuMemoryBufferHandle gmb_handle =
+            buffer.handle_provider->GetGpuMemoryBufferHandle();
+        EXPECT_EQ(gmb_handle.type,
+                  gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE);
+      }));
+
+  // Init capture
+  VideoCaptureFormat format(expected_size, 30, media::PIXEL_FORMAT_NV12);
+  VideoCaptureParams video_capture_params;
+  video_capture_params.requested_format = format;
+  device_->AllocateAndStart(video_capture_params, std::move(client_));
+
+  // Create MF sample and provide to sample callback on capture device
+  Microsoft::WRL::ComPtr<IMFSample> sample;
+  EXPECT_TRUE(SUCCEEDED(MFCreateSample(&sample)));
+  Microsoft::WRL::ComPtr<IMFMediaBuffer> dxgi_buffer;
+  EXPECT_TRUE(SUCCEEDED(MFCreateDXGISurfaceBuffer(__uuidof(ID3D11Texture2D),
+                                                  mock_source_texture_2d.Get(),
+                                                  0, FALSE, &dxgi_buffer)));
+  EXPECT_TRUE(SUCCEEDED(sample->AddBuffer(dxgi_buffer.Get())));
+
+  capture_preview_sink_->sample_callback->OnSample(sample.Get());
 }
 
 }  // namespace media

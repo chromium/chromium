@@ -54,6 +54,15 @@ bool EvaluateTriggerCondition(
       return static_trigger_conditions.is_in_experiment(proto.experiment_id());
     case TriggerScriptConditionProto::kKeyboardHidden:
       return !dynamic_trigger_conditions.GetKeyboardVisible();
+    case TriggerScriptConditionProto::kScriptParameterMatch:
+      return static_trigger_conditions.script_parameter_matches(
+          proto.script_parameter_match());
+    case TriggerScriptConditionProto::kPathPattern:
+      return dynamic_trigger_conditions.GetPathPatternMatches(
+          proto.path_pattern());
+    case TriggerScriptConditionProto::kDomainWithScheme:
+      return dynamic_trigger_conditions.GetDomainAndSchemeMatches(
+          GURL(proto.domain_with_scheme()));
     case TriggerScriptConditionProto::TYPE_NOT_SET:
       return true;
   }

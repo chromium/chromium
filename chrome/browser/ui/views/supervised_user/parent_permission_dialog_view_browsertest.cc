@@ -7,21 +7,20 @@
 #include <memory>
 #include <vector>
 
+#include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/chromeos/login/test/fake_gaia_mixin.h"
+#include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
+#include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/supervised_user/logged_in_user_mixin.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
-#include "chrome/browser/supervised_user/supervised_user_features.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
@@ -60,12 +59,7 @@ class ParentPermissionDialogViewTest
   };
 
   ParentPermissionDialogViewTest()
-      : TestParentPermissionDialogViewObserver(this) {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{supervised_users::
-                                  kSupervisedUserInitiatedExtensionInstall},
-        /*disabled_features=*/{});
-  }
+      : TestParentPermissionDialogViewObserver(this) {}
 
   ParentPermissionDialogViewTest(const ParentPermissionDialogViewTest&) =
       delete;
@@ -98,8 +92,8 @@ class ParentPermissionDialogViewTest
       parent_permission_dialog_ =
           ParentPermissionDialog::CreateParentPermissionDialog(
               browser()->profile(), contents->GetTopLevelNativeWindow(),
-              gfx::ImageSkia::CreateFrom1xBitmap(icon),
-              base::UTF8ToUTF16("Test prompt message"), base::DoNothing());
+              gfx::ImageSkia::CreateFrom1xBitmap(icon), u"Test prompt message",
+              base::DoNothing());
     } else if (name == "extension") {
       parent_permission_dialog_ =
           ParentPermissionDialog::CreateParentPermissionDialogForExtension(
@@ -192,8 +186,8 @@ class ParentPermissionDialogViewTest
     parent_permission_dialog_ =
         ParentPermissionDialog::CreateParentPermissionDialog(
             browser()->profile(), contents->GetTopLevelNativeWindow(),
-            gfx::ImageSkia::CreateFrom1xBitmap(icon),
-            base::UTF8ToUTF16("Test prompt message"), std::move(callback));
+            gfx::ImageSkia::CreateFrom1xBitmap(icon), u"Test prompt message",
+            std::move(callback));
     parent_permission_dialog_->ShowDialog();
     run_loop.Run();
   }
@@ -228,7 +222,7 @@ class ParentPermissionDialogViewTest
   }
 
   void CheckInvalidCredentialWasReceived() {
-    EXPECT_TRUE(view_->invalid_credential_received());
+    EXPECT_TRUE(view_->GetInvalidCredentialReceived());
   }
 
  protected:
@@ -278,8 +272,6 @@ class ParentPermissionDialogViewTest
 
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
   base::Optional<NextDialogAction> next_dialog_action_;
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that a plain dialog widget is shown using the TestBrowserUi

@@ -28,6 +28,7 @@ InstalledServiceWorkerModuleScriptFetcher::
 
 void InstalledServiceWorkerModuleScriptFetcher::Fetch(
     FetchParameters& fetch_params,
+    ModuleType expected_module_type,
     ResourceFetcher*,
     ModuleGraphLevel level,
     ModuleScriptFetcher::Client* client) {
@@ -36,6 +37,7 @@ void InstalledServiceWorkerModuleScriptFetcher::Fetch(
   auto* installed_scripts_manager = global_scope_->GetInstalledScriptsManager();
   DCHECK(installed_scripts_manager);
   DCHECK(installed_scripts_manager->IsScriptInstalled(fetch_params.Url()));
+  expected_module_type_ = expected_module_type;
 
   std::unique_ptr<InstalledScriptsManager::ScriptData> script_data =
       installed_scripts_manager->GetScriptData(fetch_params.Url());
@@ -64,33 +66,20 @@ void InstalledServiceWorkerModuleScriptFetcher::Fetch(
           kDoNotSupportReferrerPolicyLegacyKeywords, &response_referrer_policy);
     }
 
-    // Construct a ContentSecurityPolicy object to convert
-    // ContentSecurityPolicyResponseHeaders to CSPHeaderAndType.
-    // TODO(nhiroki): Find an efficient way to do this.
-    auto* response_content_security_policy =
-        MakeGarbageCollected<ContentSecurityPolicy>();
-    response_content_security_policy->DidReceiveHeaders(
-        script_data->GetContentSecurityPolicyResponseHeaders());
-
-    global_scope_->Initialize(response_url, response_referrer_policy,
-                              script_data->GetResponseAddressSpace(),
-                              response_content_security_policy->Headers(),
-                              script_data->CreateOriginTrialTokens().get(),
-                              mojom::blink::kAppCacheNoCacheId);
+    global_scope_->Initialize(
+        response_url, response_referrer_policy,
+        script_data->GetResponseAddressSpace(),
+        ContentSecurityPolicy::ParseHeaders(
+            script_data->GetContentSecurityPolicyResponseHeaders()),
+        script_data->CreateOriginTrialTokens().get(),
+        mojom::blink::kAppCacheNoCacheId);
   }
-
-  ModuleType module_type;
 
   // TODO(sasebree) De-duplicate similar logic that lives in
   // ModuleScriptFetcher::WasModuleLoadSuccessful
-  if (MIMETypeRegistry::IsSupportedJavaScriptMIMEType(
+  if (expected_module_type_ != ModuleType::kJavaScript ||
+      !MIMETypeRegistry::IsSupportedJavaScriptMIMEType(
           script_data->GetHttpContentType())) {
-    module_type = ModuleType::kJavaScript;
-  } else if (base::FeatureList::IsEnabled(blink::features::kJSONModules) &&
-             MIMETypeRegistry::IsJSONMimeType(
-                 script_data->GetHttpContentType())) {
-    module_type = ModuleType::kJSON;
-  } else {
     // This should never happen.
     // If we reach here, we know we received an incompatible mime type from the
     // network
@@ -108,10 +97,9 @@ void InstalledServiceWorkerModuleScriptFetcher::Fetch(
   // https://html.spec.whatwg.org/multipage/webappapis.html#concept-script-base-url
   client->NotifyFetchFinishedSuccess(ModuleScriptCreationParams(
       /*source_url=*/fetch_params.Url(), /*base_url=*/fetch_params.Url(),
-      ScriptSourceLocationType::kExternalFile, module_type,
+      ScriptSourceLocationType::kExternalFile, expected_module_type_,
       ParkableString(script_data->TakeSourceText().Impl()),
-      /*cache_handler=*/nullptr,
-      fetch_params.GetResourceRequest().GetCredentialsMode()));
+      /*cache_handler=*/nullptr));
 }
 
 void InstalledServiceWorkerModuleScriptFetcher::Trace(Visitor* visitor) const {

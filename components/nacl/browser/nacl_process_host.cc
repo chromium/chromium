@@ -183,6 +183,13 @@ class NaClSandboxedProcessLauncherDelegate
       DLOG(WARNING) << "Failed to reserve address space for Native Client";
     }
   }
+
+  bool CetCompatible() override {
+    // Disable CET for NaCl loader processes as x86 NaCl sandboxes are not CET
+    // compatible. NaCl untrusted code is allowed to switch stacks within the
+    // sandbox.
+    return false;
+  }
 #endif  // OS_WIN
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
@@ -912,14 +919,14 @@ bool NaClProcessHost::StartPPAPIProxy(
   args.permissions = permissions_;
   base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
   DCHECK(cmdline);
-  std::string flag_whitelist[] = {
-    switches::kV,
-    switches::kVModule,
+  std::string flag_allowlist[] = {
+      switches::kV,
+      switches::kVModule,
   };
-  for (size_t i = 0; i < base::size(flag_whitelist); ++i) {
-    std::string value = cmdline->GetSwitchValueASCII(flag_whitelist[i]);
+  for (size_t i = 0; i < base::size(flag_allowlist); ++i) {
+    std::string value = cmdline->GetSwitchValueASCII(flag_allowlist[i]);
     if (!value.empty()) {
-      args.switch_names.push_back(flag_whitelist[i]);
+      args.switch_names.push_back(flag_allowlist[i]);
       args.switch_values.push_back(value);
     }
   }

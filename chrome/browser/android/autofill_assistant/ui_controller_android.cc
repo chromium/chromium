@@ -27,10 +27,12 @@
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantInfoBox_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantModel_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantOverlayModel_jni.h"
+#include "chrome/android/features/autofill_assistant/jni_headers/AssistantPlaceholdersConfiguration_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AutofillAssistantUiController_jni.h"
 #include "chrome/browser/android/autofill_assistant/client_android.h"
 #include "chrome/browser/android/autofill_assistant/generic_ui_root_controller_android.h"
 #include "chrome/browser/android/autofill_assistant/ui_controller_android_utils.h"
+#include "chrome/browser/android/feedback/screenshot_mode.h"
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -64,6 +66,7 @@ using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
+using chrome::android::ScreenshotMode;
 
 namespace autofill_assistant {
 
@@ -332,8 +335,7 @@ void UiControllerAndroid::Attach(content::WebContents* web_contents,
   Java_AssistantCollectUserDataModel_setWebContents(
       env, GetCollectUserDataModel(), java_web_contents);
   OnClientSettingsChanged(ui_delegate_->GetClientSettings());
-  Java_AssistantModel_setPeekModeDisabled(env, GetModel(),
-                                          ui_delegate->IsRunningLiteScript());
+  Java_AssistantModel_setPeekModeDisabled(env, GetModel(), false);
 
   if (ui_delegate->GetState() != AutofillAssistantState::INACTIVE &&
       ui_delegate->IsTabSelected()) {
@@ -530,11 +532,15 @@ void UiControllerAndroid::SetSpinPoodle(bool enabled) {
   header_model_->SetSpinPoodle(enabled);
 }
 
-void UiControllerAndroid::OnFeedbackButtonClicked() {
+void UiControllerAndroid::OnHeaderFeedbackButtonClicked() {
   JNIEnv* env = AttachCurrentThread();
+  // If the feedback is sent by interacting with the header, it's more likely
+  // that there is a problem with the bottomsheet, so in this case we don't send
+  // the website's screenshot (COMPOSITOR).
   Java_AutofillAssistantUiController_showFeedback(
       env, java_object_,
-      ConvertUTF8ToJavaString(env, ui_delegate_->GetDebugContext()));
+      ConvertUTF8ToJavaString(env, ui_delegate_->GetDebugContext()),
+      ScreenshotMode::DEFAULT);
 }
 
 void UiControllerAndroid::OnViewEvent(const EventHandler::EventKey& key) {
@@ -684,13 +690,6 @@ void UiControllerAndroid::OnTabSwitched(
     return;
   }
 
-  // TODO(b/167947210) Allow lite scripts to transition from CCT to regular
-  // scripts.
-  if (activity_changed && ui_delegate_->IsRunningLiteScript()) {
-    Shutdown(Metrics::DropOutReason::CUSTOM_TAB_CLOSED);
-    return;
-  }
-
   ui_delegate_->SetBottomSheetState(
       ui_controller_android_utils::ToNativeBottomSheetState(state));
   ui_delegate_->SetTabSelected(false);
@@ -743,6 +742,18 @@ void UiControllerAndroid::UpdateActions(
 
       case NORMAL_ACTION:
         jchip = Java_AutofillAssistantUiController_createActionButton(
+            env, java_object_, chip.icon,
+            ConvertUTF8ToJavaString(env, chip.text), i, !action.enabled(),
+            chip.sticky, chip.visible,
+            chip.is_content_description_set
+                ? ConvertUTF8ToJavaString(env, chip.content_description)
+                : nullptr);
+        break;
+
+      case FEEDBACK_ACTION:
+        // A "Send feedback" button which will show the feedback form before
+        // executing the action.
+        jchip = Java_AutofillAssistantUiController_createFeedbackButton(
             env, java_object_, chip.icon,
             ConvertUTF8ToJavaString(env, chip.text), i, !action.enabled(),
             chip.sticky, chip.visible,
@@ -846,7 +857,7 @@ void UiControllerAndroid::OnCancelButtonClicked(
     return;
   }
 
-  CloseOrCancel(index, TriggerContext::CreateEmpty(),
+  CloseOrCancel(index, std::make_unique<TriggerContext>(),
                 Metrics::DropOutReason::SHEET_CLOSED);
 }
 
@@ -854,6 +865,23 @@ void UiControllerAndroid::OnCloseButtonClicked(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {
   DestroySelf();
+}
+
+void UiControllerAndroid::OnFeedbackButtonClicked(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller,
+    jint index) {
+  // Show the feedback form then directly run the associated action.
+  // Unfortunately there is no way to associate a callback to run after the user
+  // actually sent (or close) the form, so we have to continue directly after
+  // showing it. It should be good enough, given that in most use cases we will
+  // directly stop.
+  Java_AutofillAssistantUiController_showFeedback(
+      env, java_object_,
+      ConvertUTF8ToJavaString(env, ui_delegate_->GetDebugContext()),
+      ScreenshotMode::COMPOSITOR);
+
+  OnUserActionSelected(env, jcaller, index);
 }
 
 void UiControllerAndroid::OnKeyboardVisibilityChanged(
@@ -881,17 +909,10 @@ bool UiControllerAndroid::OnBackButtonClicked() {
   }
 
   if (ui_delegate_ == nullptr ||
-      ui_delegate_->GetState() == AutofillAssistantState::STOPPED ||
-      ui_delegate_->IsRunningLiteScript()) {
+      ui_delegate_->GetState() == AutofillAssistantState::STOPPED) {
     if (client_->GetWebContents() != nullptr &&
         client_->GetWebContents()->GetController().CanGoBack()) {
       client_->GetWebContents()->GetController().GoBack();
-    }
-
-    // Lite scripts should not shut down here. The navigation will be handled
-    // by the lite script coordinator.
-    if (!ui_delegate_ || !ui_delegate_->IsRunningLiteScript()) {
-      Shutdown(Metrics::DropOutReason::BACK_BUTTON_CLICKED);
     }
 
     return true;
@@ -904,16 +925,14 @@ bool UiControllerAndroid::OnBackButtonClicked() {
     ui_delegate_->OnStop(back_button_settings->message(),
                          back_button_settings->undo_label());
   } else {
-    CloseOrCancel(-1, TriggerContext::CreateEmpty(),
+    CloseOrCancel(-1, std::make_unique<TriggerContext>(),
                   Metrics::DropOutReason::BACK_BUTTON_CLICKED);
   }
   return true;
 }
 
 void UiControllerAndroid::OnBottomSheetClosedWithSwipe() {
-  if (ui_delegate_->IsTabSelected() && ui_delegate_->IsRunningLiteScript()) {
-    Shutdown(Metrics::DropOutReason::SHEET_CLOSED);
-  }
+  // Nothing to do
 }
 
 void UiControllerAndroid::CloseOrCancel(
@@ -943,6 +962,34 @@ void UiControllerAndroid::CloseOrCancel(
                base::BindOnce(&UiControllerAndroid::OnCancel,
                               weak_ptr_factory_.GetWeakPtr(), action_index,
                               std::move(trigger_context), dropout_reason));
+}
+
+base::Optional<std::pair<int, int>> UiControllerAndroid::GetWindowSize() const {
+  JNIEnv* env = AttachCurrentThread();
+  auto java_size_array =
+      Java_AutofillAssistantUiController_getWindowSize(env, java_object_);
+  if (!java_size_array) {
+    return base::nullopt;
+  }
+
+  std::vector<int> size_array;
+  base::android::JavaIntArrayToIntVector(env, java_size_array, &size_array);
+  DCHECK_EQ(size_array.size(), 2u);
+  return std::make_pair(size_array[0], size_array[1]);
+}
+
+ClientContextProto::ScreenOrientation
+UiControllerAndroid::GetScreenOrientation() const {
+  int orientation = Java_AutofillAssistantUiController_getScreenOrientation(
+      AttachCurrentThread(), java_object_);
+  switch (orientation) {
+    case 1:
+      return ClientContextProto::PORTRAIT;
+    case 2:
+      return ClientContextProto::LANDSCAPE;
+    default:
+      return ClientContextProto::UNDEFINED_ORIENTATION;
+  }
 }
 
 void UiControllerAndroid::OnCancel(
@@ -1737,40 +1784,59 @@ UiControllerAndroid::GetDetailsModel() {
   return Java_AssistantModel_getDetailsModel(AttachCurrentThread(), GetModel());
 }
 
-void UiControllerAndroid::OnDetailsChanged(const Details* details) {
+void UiControllerAndroid::OnDetailsChanged(
+    const std::vector<Details>& details_list) {
   JNIEnv* env = AttachCurrentThread();
+
+  auto jdetails_list = Java_AssistantDetailsModel_createDetailsList(env);
+  for (const auto& details : details_list) {
+    auto opt_image_accessibility_hint = details.imageAccessibilityHint();
+    base::android::ScopedJavaLocalRef<jstring> jimage_accessibility_hint =
+        nullptr;
+    if (opt_image_accessibility_hint.has_value()) {
+      jimage_accessibility_hint =
+          ConvertUTF8ToJavaString(env, opt_image_accessibility_hint.value());
+    }
+
+    // Create the placeholders configuration. We check here that the associated
+    // texts/urls are empty, so that on the Java side we can just check the
+    // placeholders configuration to know whether a placeholder should be shown
+    // or not.
+    auto placeholders = details.placeholders();
+    auto jplaceholders = Java_AssistantPlaceholdersConfiguration_Constructor(
+        env,
+        placeholders.show_image_placeholder() && details.imageUrl().empty(),
+        placeholders.show_title_placeholder() && details.title().empty(),
+        placeholders.show_description_line_1_placeholder() &&
+            details.descriptionLine1().empty(),
+        placeholders.show_description_line_2_placeholder() &&
+            details.descriptionLine2().empty(),
+        placeholders.show_description_line_3_placeholder() &&
+            details.descriptionLine3().empty());
+
+    auto jdetails = Java_AssistantDetails_create(
+        env, ConvertUTF8ToJavaString(env, details.title()),
+        ConvertUTF8ToJavaString(env, details.imageUrl()),
+        jimage_accessibility_hint, details.imageAllowClickthrough(),
+        ConvertUTF8ToJavaString(env, details.imageDescription()),
+        ConvertUTF8ToJavaString(env, details.imagePositiveText()),
+        ConvertUTF8ToJavaString(env, details.imageNegativeText()),
+        ConvertUTF8ToJavaString(env, details.imageClickthroughUrl()),
+        ConvertUTF8ToJavaString(env, details.totalPriceLabel()),
+        ConvertUTF8ToJavaString(env, details.totalPrice()),
+        ConvertUTF8ToJavaString(env, details.descriptionLine1()),
+        ConvertUTF8ToJavaString(env, details.descriptionLine2()),
+        ConvertUTF8ToJavaString(env, details.descriptionLine3()),
+        ConvertUTF8ToJavaString(env, details.priceAttribution()),
+        details.userApprovalRequired(), details.highlightTitle(),
+        details.highlightLine1(), details.highlightLine2(),
+        details.highlightLine3(), jplaceholders);
+
+    Java_AssistantDetailsModel_addDetails(env, jdetails_list, jdetails);
+  }
+
   auto jmodel = GetDetailsModel();
-  if (!details) {
-    Java_AssistantDetailsModel_clearDetails(env, jmodel);
-    return;
-  }
-  auto opt_image_accessibility_hint = details->imageAccessibilityHint();
-  base::android::ScopedJavaLocalRef<jstring> jimage_accessibility_hint =
-      nullptr;
-  if (opt_image_accessibility_hint.has_value()) {
-    jimage_accessibility_hint =
-        ConvertUTF8ToJavaString(env, opt_image_accessibility_hint.value());
-  }
-  auto jdetails = Java_AssistantDetails_create(
-      env, ConvertUTF8ToJavaString(env, details->title()),
-      details->titleMaxLines(),
-      ConvertUTF8ToJavaString(env, details->imageUrl()),
-      jimage_accessibility_hint, details->imageAllowClickthrough(),
-      ConvertUTF8ToJavaString(env, details->imageDescription()),
-      ConvertUTF8ToJavaString(env, details->imagePositiveText()),
-      ConvertUTF8ToJavaString(env, details->imageNegativeText()),
-      ConvertUTF8ToJavaString(env, details->imageClickthroughUrl()),
-      details->showImagePlaceholder(),
-      ConvertUTF8ToJavaString(env, details->totalPriceLabel()),
-      ConvertUTF8ToJavaString(env, details->totalPrice()),
-      ConvertUTF8ToJavaString(env, details->descriptionLine1()),
-      ConvertUTF8ToJavaString(env, details->descriptionLine2()),
-      ConvertUTF8ToJavaString(env, details->descriptionLine3()),
-      ConvertUTF8ToJavaString(env, details->priceAttribution()),
-      details->userApprovalRequired(), details->highlightTitle(),
-      details->highlightLine1(), details->highlightLine2(),
-      details->highlightLine3(), details->animatePlaceholders());
-  Java_AssistantDetailsModel_setDetails(env, jmodel, jdetails);
+  Java_AssistantDetailsModel_setDetailsList(env, jmodel, jdetails_list);
 }
 
 // InfoBox related method.
@@ -1810,6 +1876,7 @@ void UiControllerAndroid::OnFatalError(
     return;
   ui_delegate_->OnFatalError(
       base::android::ConvertJavaStringToUTF8(env, jmessage),
+      /*show_feedback_chip=*/false,
       static_cast<Metrics::DropOutReason>(jreason));
 }
 

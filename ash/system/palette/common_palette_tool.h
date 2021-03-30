@@ -5,9 +5,10 @@
 #ifndef ASH_SYSTEM_PALETTE_COMMON_PALETTE_TOOL_H_
 #define ASH_SYSTEM_PALETTE_COMMON_PALETTE_TOOL_H_
 
+#include <string>
+
 #include "ash/system/palette/palette_tool.h"
 #include "ash/system/tray/view_click_listener.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 
 namespace gfx {
@@ -37,7 +38,7 @@ class CommonPaletteTool : public PaletteTool, public ViewClickListener {
   virtual const gfx::VectorIcon& GetPaletteIcon() const = 0;
 
   // Creates a default view implementation to be returned by CreateView.
-  views::View* CreateDefaultView(const base::string16& name);
+  views::View* CreateDefaultView(const std::u16string& name);
 
   HoverHighlightView* highlight_view_ = nullptr;
 

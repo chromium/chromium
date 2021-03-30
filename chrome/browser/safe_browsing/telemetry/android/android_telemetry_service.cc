@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/download/simple_download_manager_coordinator_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -36,6 +37,8 @@ using content::BrowserContext;
 namespace safe_browsing {
 
 namespace {
+// File suffix for APKs.
+const base::FilePath::CharType kApkSuffix[] = FILE_PATH_LITERAL(".apk");
 // MIME-type for APKs.
 const char kApkMimeType[] = "application/vnd.android.package-archive";
 
@@ -99,18 +102,23 @@ void AndroidTelemetryService::OnDownloadCreated(
   if (!coordinator->has_all_history_downloads())
     return;
 
-  if (!CanSendPing(item)) {
-    return;
-  }
-
   item->AddObserver(this);
 }
 
 void AndroidTelemetryService::OnDownloadUpdated(download::DownloadItem* item) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_EQ(kApkMimeType, item->GetMimeType());
+
+  if (!CanSendPing(item)) {
+    // No longer interested in this |DownloadItem| since the download is
+    // not APK.
+    item->RemoveObserver(this);
+    return;
+  }
 
   if (item->GetState() == download::DownloadItem::COMPLETE) {
+    base::UmaHistogramBoolean(
+        "SafeBrowsing.AndroidTelemetry.ApkDownload.IsMimeTypeApk",
+        (item->GetMimeType() == kApkMimeType));
     // Download completed. Send report.
     std::unique_ptr<ClientSafeBrowsingReportRequest> report = GetReport(item);
     MaybeSendApkDownloadReport(
@@ -128,7 +136,8 @@ void AndroidTelemetryService::OnDownloadUpdated(download::DownloadItem* item) {
 }
 
 bool AndroidTelemetryService::CanSendPing(download::DownloadItem* item) {
-  if (item->GetMimeType() != kApkMimeType) {
+  if (!item->GetFileNameToReportUser().MatchesExtension(kApkSuffix) &&
+      (item->GetMimeType() != kApkMimeType)) {
     // This case is not recorded since we are not interested here in finding out
     // how often people download non-APK files.
     return false;

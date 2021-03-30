@@ -31,7 +31,6 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   // specified as part of the geometry is relative to the shell surface.
   ShellSurface(Surface* surface,
                const gfx::Point& origin,
-               bool activatable,
                bool can_minimize,
                int container);
   explicit ShellSurface(Surface* surface);
@@ -88,11 +87,6 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   // Start an interactive move of surface.
   void StartMove();
 
-  // Before widget initialization, this method will be called. Depending on the
-  // implementation, it may return true to force the surface to launch in a
-  // maximized state.
-  virtual bool ShouldAutoMaximize();
-
   // Return the initial show state for this surface.
   ui::WindowShowState initial_show_state() { return initial_show_state_; }
 
@@ -124,9 +118,6 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   // Overridden from ShellSurfaceBase:
   void SetWidgetBounds(const gfx::Rect& bounds) override;
   bool OnPreWidgetCommit() override;
-
-  // Set xdg-shell decoration mode.
-  void SetDecorationMode(SurfaceFrameType type);
 
  private:
   struct Config;

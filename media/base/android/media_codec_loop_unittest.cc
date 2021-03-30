@@ -4,6 +4,8 @@
 
 #include "media/base/android/media_codec_loop.h"
 
+#include <memory>
+
 #include "base/android/build_info.h"
 #include "base/macros.h"
 #include "base/single_thread_task_runner.h"
@@ -46,7 +48,7 @@ class MediaCodecLoopTest : public testing::Test {
  public:
   MediaCodecLoopTest()
       : task_runner_handle_(mock_task_runner_),
-        client_(new StrictMock<MockMediaCodecLoopClient>()) {}
+        client_(std::make_unique<MockMediaCodecLoopClient>()) {}
 
   ~MediaCodecLoopTest() override {}
 

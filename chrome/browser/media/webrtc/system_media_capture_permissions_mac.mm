@@ -52,14 +52,15 @@ class MediaAuthorizationWrapperImpl : public MediaAuthorizationWrapper {
   }
 
   void RequestAccessForMediaType(AVMediaType media_type,
-                                 base::RepeatingClosure callback,
+                                 base::OnceClosure callback,
                                  const base::TaskTraits& traits) final {
     if (@available(macOS 10.14, *)) {
-      [AVCaptureDevice
-          requestAccessForMediaType:media_type
-                  completionHandler:^(BOOL granted) {
-                    base::PostTask(FROM_HERE, traits, std::move(callback));
-                  }];
+      __block base::OnceClosure block_callback = std::move(callback);
+      [AVCaptureDevice requestAccessForMediaType:media_type
+                               completionHandler:^(BOOL granted) {
+                                 base::PostTask(FROM_HERE, traits,
+                                                std::move(block_callback));
+                               }];
     } else {
       NOTREACHED();
       base::PostTask(FROM_HERE, traits, std::move(callback));
@@ -114,10 +115,8 @@ SystemPermission CheckSystemMediaCapturePermission(AVMediaType media_type) {
   return SystemPermission::kAllowed;
 }
 
-// Use RepeatingCallback since it must be copyable for use in the block. It's
-// only called once though.
 void RequestSystemMediaCapturePermission(AVMediaType media_type,
-                                         base::RepeatingClosure callback,
+                                         base::OnceClosure callback,
                                          const base::TaskTraits& traits) {
   if (UsingFakeMediaDevices()) {
     base::PostTask(FROM_HERE, traits, std::move(callback));
@@ -168,16 +167,14 @@ SystemPermission CheckSystemScreenCapturePermission() {
 
 void RequestSystemAudioCapturePermisson(base::OnceClosure callback,
                                         const base::TaskTraits& traits) {
-  RequestSystemMediaCapturePermission(
-      AVMediaTypeAudio, base::AdaptCallbackForRepeating(std::move(callback)),
-      traits);
+  RequestSystemMediaCapturePermission(AVMediaTypeAudio, std::move(callback),
+                                      traits);
 }
 
 void RequestSystemVideoCapturePermisson(base::OnceClosure callback,
                                         const base::TaskTraits& traits) {
-  RequestSystemMediaCapturePermission(
-      AVMediaTypeVideo, base::AdaptCallbackForRepeating(std::move(callback)),
-      traits);
+  RequestSystemMediaCapturePermission(AVMediaTypeVideo, std::move(callback),
+                                      traits);
 }
 
 void SetMediaAuthorizationWrapperForTesting(

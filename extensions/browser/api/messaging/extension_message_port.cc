@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
@@ -44,12 +44,11 @@ const char kReceivingEndDoesntExistError[] =
 class ExtensionMessagePort::FrameTracker : public content::WebContentsObserver,
                                            public ProcessManagerObserver {
  public:
-  explicit FrameTracker(ExtensionMessagePort* port)
-      : pm_observer_(this), port_(port) {}
+  explicit FrameTracker(ExtensionMessagePort* port) : port_(port) {}
   ~FrameTracker() override {}
 
   void TrackExtensionProcessFrames() {
-    pm_observer_.Add(ProcessManager::Get(port_->browser_context_));
+    pm_observation_.Observe(ProcessManager::Get(port_->browser_context_));
   }
 
   void TrackTabFrames(content::WebContents* tab) {
@@ -83,7 +82,8 @@ class ExtensionMessagePort::FrameTracker : public content::WebContentsObserver,
     port_->UnregisterWorker(worker_id);
   }
 
-  ScopedObserver<ProcessManager, ProcessManagerObserver> pm_observer_;
+  base::ScopedObservation<ProcessManager, ProcessManagerObserver>
+      pm_observation_{this};
   ExtensionMessagePort* port_;  // Owns this FrameTracker.
 
   DISALLOW_COPY_AND_ASSIGN(FrameTracker);
@@ -151,9 +151,11 @@ ExtensionMessagePort::ExtensionMessagePort(
 ExtensionMessagePort::ExtensionMessagePort(
     base::WeakPtr<ChannelDelegate> channel_delegate,
     const PortId& port_id,
+    const ExtensionId& extension_id,
     content::BrowserContext* browser_context)
     : weak_channel_delegate_(channel_delegate),
       port_id_(port_id),
+      extension_id_(extension_id),
       browser_context_(browser_context) {}
 
 // static
@@ -172,7 +174,9 @@ std::unique_ptr<ExtensionMessagePort> ExtensionMessagePort::CreateForEndpoint(
   // NOTE: We don't want all the workers within the extension, so we cannot
   // reuse other constructor from above.
   std::unique_ptr<ExtensionMessagePort> port(new ExtensionMessagePort(
-      channel_delegate, port_id, endpoint.browser_context()));
+      channel_delegate, port_id, extension_id, endpoint.browser_context()));
+  port->frame_tracker_ = std::make_unique<FrameTracker>(port.get());
+  port->frame_tracker_->TrackExtensionProcessFrames();
   port->RegisterWorker(endpoint.GetWorkerId());
   return port;
 }

@@ -30,6 +30,15 @@ Polymer({
       notify: true,
     },
 
+    /**
+     * When true, all inputs that allow state to be changed (e.g., toggles,
+     * inputs) are disabled.
+     */
+    disabled: {
+      type: Boolean,
+      value: false,
+    },
+
     /** @private Indicates if wi-fi sync is enabled for the active user.  */
     isWifiSyncEnabled_: Boolean,
 
@@ -793,7 +802,7 @@ Polymer({
     }
 
     if (!properties) {
-      console.error('Details page: GUID no longer exists: ' + this.guid);
+      // Close the page if the network was removed and no longer exists.
       this.close();
       return;
     }
@@ -854,6 +863,8 @@ Polymer({
       case chromeos.networkConfig.mojom.NetworkType.kCellular:
         managedProperties.typeProperties.cellular.signalStrength =
             networkState.typeState.cellular.signalStrength;
+        managedProperties.typeProperties.cellular.simLocked =
+            networkState.typeState.cellular.simLocked;
         break;
       case chromeos.networkConfig.mojom.NetworkType.kTether:
         managedProperties.typeProperties.tether.signalStrength =
@@ -929,18 +940,6 @@ Polymer({
           this.i18n('networkOutOfRange');
     }
 
-    if (managedProperties.type ===
-            chromeos.networkConfig.mojom.NetworkType.kCellular &&
-        !managedProperties.connectable) {
-      if (managedProperties.typeProperties.cellular.homeProvider &&
-          managedProperties.typeProperties.cellular.homeProvider.name) {
-        return this.i18n(
-            'cellularContactSpecificCarrier',
-            managedProperties.typeProperties.cellular.homeProvider.name);
-      }
-      return this.i18n('cellularContactDefaultCarrier');
-    }
-
     return this.i18n(
         OncMojo.getConnectionStateString(managedProperties.connectionState));
   },
@@ -984,32 +983,6 @@ Polymer({
   isConnectedState_(managedProperties) {
     return !!managedProperties &&
         OncMojo.connectionStateIsConnected(managedProperties.connectionState);
-  },
-
-  /**
-   * @param {!chromeos.networkConfig.mojom.ManagedProperties|undefined}
-   *     managedProperties
-   * @param {boolean} outOfRange
-   * @param {?OncMojo.DeviceStateProperties} deviceState
-   * @return {boolean} True if the network shown cannot initiate a connection.
-   * @private
-   */
-  isConnectionErrorState_(managedProperties, outOfRange, deviceState) {
-    if (this.isOutOfRangeOrNotEnabled_(outOfRange, deviceState)) {
-      return true;
-    }
-
-    if (!managedProperties) {
-      return false;
-    }
-
-    // It's still possible to initiate a connection to a network if it is not
-    // connectable as long as the network has an associated configuration flow.
-    // Cellular networks do not have a configuration flow, so a Cellular network
-    // that is not connectable represents an error state.
-    return managedProperties.type ===
-        chromeos.networkConfig.mojom.NetworkType.kCellular &&
-        !managedProperties.connectable;
   },
 
   /**
@@ -1115,17 +1088,12 @@ Polymer({
       return false;
     }
 
-    // Cellular is not configurable, so we always show the connect button, and
-    // disable it if 'connectable' is false.
-    if (managedProperties.type ===
-        chromeos.networkConfig.mojom.NetworkType.kCellular) {
-      return true;
-    }
-
-    // If 'connectable' is false we show the configure button.
-    return managedProperties.connectable &&
-        managedProperties.type !==
+    const isEthernet = managedProperties.type ===
         chromeos.networkConfig.mojom.NetworkType.kEthernet;
+
+    // Note: Ethernet networks do not have an explicit "Connect" button in the
+    // UI.
+    return OncMojo.isNetworkConnectable(managedProperties) && !isEthernet;
   },
 
   /**
@@ -1229,7 +1197,7 @@ Polymer({
    * @private
    */
   disableForget_(managedProperties, vpnConfigAllowed) {
-    if (!managedProperties) {
+    if (this.disabled || !managedProperties) {
       return true;
     }
     return managedProperties.type ===
@@ -1244,7 +1212,7 @@ Polymer({
    * @private
    */
   disableConfigure_(managedProperties, vpnConfigAllowed) {
-    if (!managedProperties) {
+    if (this.disabled || !managedProperties) {
       return true;
     }
     if (managedProperties.type ===
@@ -1341,21 +1309,25 @@ Polymer({
             deviceState)) {
       return false;
     }
+
     if (!propertiesReceived || outOfRange) {
       return false;
     }
-    // Cellular networks are not configurable, so we show a disabled 'Connect'
-    // button when not connectable.
-    if (managedProperties.type ===
-            chromeos.networkConfig.mojom.NetworkType.kCellular &&
-        !managedProperties.connectable) {
-      return false;
-    }
+
     if (managedProperties.type ===
             chromeos.networkConfig.mojom.NetworkType.kVPN &&
         !defaultNetwork) {
       return false;
     }
+
+    // Cannot connect to a network which is SIM locked; the user must first
+    // unlock the SIM before attempting a connection.
+    if (managedProperties.type ===
+            chromeos.networkConfig.mojom.NetworkType.kCellular &&
+        managedProperties.typeProperties.cellular.simLocked) {
+      return false;
+    }
+
     return true;
   },
 
@@ -1481,11 +1453,19 @@ Polymer({
    * @private
    */
   shouldConnectDisconnectButtonBeDisabled_() {
-    return !this.enableConnect_(
-               this.managedProperties_, this.defaultNetwork,
-               this.propertiesReceived_, this.outOfRange_, this.globalPolicy,
-               this.managedNetworkAvailable, this.deviceState_) &&
-        !this.showDisconnect_(this.managedProperties_);
+    if (this.disabled) {
+      return true;
+    }
+    if (this.enableConnect_(
+            this.managedProperties_, this.defaultNetwork,
+            this.propertiesReceived_, this.outOfRange_, this.globalPolicy,
+            this.managedNetworkAvailable, this.deviceState_)) {
+      return false;
+    }
+    if (this.showDisconnect_(this.managedProperties_)) {
+      return false;
+    }
+    return true;
   },
 
   /**
@@ -1841,6 +1821,15 @@ Polymer({
   },
 
   /**
+   * @return {boolean}
+   * @private
+   */
+  shouldPreferNetworkToggleBeDisabled_() {
+    return this.disabled ||
+        this.isNetworkPolicyEnforced(this.managedProperties_.priority);
+  },
+
+  /**
    * @param {Event} event
    * @private
    */
@@ -1895,8 +1884,10 @@ Polymer({
     /** @type {!Array<string>} */ const fields = [];
     switch (this.managedProperties_.type) {
       case chromeos.networkConfig.mojom.NetworkType.kCellular:
-        fields.push(
-            'cellular.activationState', 'cellular.servingOperator.name');
+        if (!this.isUpdatedCellularUiEnabled_) {
+          fields.push('cellular.activationState');
+        }
+        fields.push('cellular.servingOperator.name');
         break;
       case chromeos.networkConfig.mojom.NetworkType.kTether:
         fields.push(
@@ -1972,9 +1963,10 @@ Polymer({
     const type = this.managedProperties_.type;
     switch (type) {
       case chromeos.networkConfig.mojom.NetworkType.kCellular:
-        fields.push(
-            'cellular.family', 'cellular.networkTechnology',
-            'cellular.servingOperator.code');
+        if (this.isUpdatedCellularUiEnabled_) {
+          fields.push('cellular.activationState');
+        }
+        fields.push('cellular.networkTechnology');
         break;
       case chromeos.networkConfig.mojom.NetworkType.kWiFi:
         fields.push(
@@ -2000,10 +1992,8 @@ Polymer({
 
     return [
       'cellular.homeProvider.name', 'cellular.homeProvider.country',
-      'cellular.homeProvider.code', 'cellular.manufacturer', 'cellular.modelId',
       'cellular.firmwareRevision', 'cellular.hardwareRevision', 'cellular.esn',
-      'cellular.iccid', 'cellular.imei', 'cellular.imsi', 'cellular.mdn',
-      'cellular.meid', 'cellular.min'
+      'cellular.iccid', 'cellular.imei', 'cellular.meid', 'cellular.min'
     ];
   },
 

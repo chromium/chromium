@@ -15,7 +15,7 @@ OmniboxView::State TestOmniboxView::CreateState(std::string text,
                                                 size_t all_sel_length) {
   OmniboxView::State state;
   state.text = base::UTF8ToUTF16(text);
-  state.keyword = base::string16();
+  state.keyword = std::u16string();
   state.is_keyword_selected = false;
   state.sel_start = sel_start;
   state.sel_end = sel_end;
@@ -27,11 +27,11 @@ void TestOmniboxView::SetModel(std::unique_ptr<OmniboxEditModel> model) {
   model_ = std::move(model);
 }
 
-base::string16 TestOmniboxView::GetText() const {
+std::u16string TestOmniboxView::GetText() const {
   return text_;
 }
 
-void TestOmniboxView::SetWindowTextAndCaretPos(const base::string16& text,
+void TestOmniboxView::SetWindowTextAndCaretPos(const std::u16string& text,
                                                size_t caret_pos,
                                                bool update_popup,
                                                bool notify_text_changed) {
@@ -60,7 +60,7 @@ void TestOmniboxView::SelectAll(bool reversed) {
 }
 
 void TestOmniboxView::OnTemporaryTextMaybeChanged(
-    const base::string16& display_text,
+    const std::u16string& display_text,
     const AutocompleteMatch& match,
     bool save_original_selection,
     bool notify_text_changed) {
@@ -71,7 +71,7 @@ void TestOmniboxView::OnTemporaryTextMaybeChanged(
 }
 
 void TestOmniboxView::OnInlineAutocompleteTextMaybeChanged(
-    const base::string16& display_text,
+    const std::u16string& display_text,
     std::vector<gfx::Range> selections,
     size_t user_text_length) {
   const bool text_changed = text_ != display_text;
@@ -88,7 +88,7 @@ void TestOmniboxView::OnInlineAutocompleteTextCleared() {
   inline_autocompletion_.clear();
 }
 
-void TestOmniboxView::OnRevertTemporaryText(const base::string16& display_text,
+void TestOmniboxView::OnRevertTemporaryText(const std::u16string& display_text,
                                             const AutocompleteMatch& match) {
   selection_ = saved_temporary_selection_;
 }

@@ -6,18 +6,9 @@
 
 #include <algorithm>
 
-#include "base/feature_list.h"
-#include "base/metrics/histogram_macros.h"
-#include "services/network/public/cpp/features.h"
-
 namespace network {
 
-KeepaliveStatisticsRecorder::KeepaliveStatisticsRecorder() {
-  if (!base::FeatureList::IsEnabled(features::kDisableKeepaliveFetch)) {
-    UMA_HISTOGRAM_COUNTS_1000(
-        "Net.KeepaliveStatisticsRecorder.PeakInflightRequests2", 0);
-  }
-}
+KeepaliveStatisticsRecorder::KeepaliveStatisticsRecorder() = default;
 KeepaliveStatisticsRecorder::~KeepaliveStatisticsRecorder() = default;
 
 void KeepaliveStatisticsRecorder::Register(
@@ -26,12 +17,6 @@ void KeepaliveStatisticsRecorder::Register(
   if (it == per_top_level_frame_records_.end()) {
     per_top_level_frame_records_.insert(
         std::make_pair(top_level_frame_id, PerTopLevelFrameStats()));
-    if (!base::FeatureList::IsEnabled(features::kDisableKeepaliveFetch)) {
-      UMA_HISTOGRAM_COUNTS_100(
-          "Net.KeepaliveStatisticsRecorder."
-          "PeakInflightRequestsPerTopLevelFrame",
-          0);
-    }
     return;
   }
 
@@ -59,22 +44,11 @@ void KeepaliveStatisticsRecorder::OnLoadStarted(
     it->second.total_request_size += request_size;
     if (it->second.peak_inflight_requests < it->second.num_inflight_requests) {
       it->second.peak_inflight_requests = it->second.num_inflight_requests;
-      if (!base::FeatureList::IsEnabled(features::kDisableKeepaliveFetch)) {
-        UMA_HISTOGRAM_COUNTS_100(
-            "Net.KeepaliveStatisticsRecorder."
-            "PeakInflightRequestsPerTopLevelFrame",
-            it->second.peak_inflight_requests);
-      }
     }
   }
   ++num_inflight_requests_;
   if (peak_inflight_requests_ < num_inflight_requests_) {
     peak_inflight_requests_ = num_inflight_requests_;
-    if (!base::FeatureList::IsEnabled(features::kDisableKeepaliveFetch)) {
-      UMA_HISTOGRAM_COUNTS_1000(
-          "Net.KeepaliveStatisticsRecorder.PeakInflightRequests2",
-          peak_inflight_requests_);
-    }
   }
 }
 

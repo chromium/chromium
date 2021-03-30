@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_AUTOFILL_PARSING_UTILS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_AUTOFILL_PARSING_UTILS_H_
 
-#include <base/optional.h>
 #include <string>
 
+#include "base/optional.h"
 #include "components/autofill/core/common/language_code.h"
 
 namespace autofill {

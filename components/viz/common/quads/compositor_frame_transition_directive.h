@@ -5,7 +5,9 @@
 #ifndef COMPONENTS_VIZ_COMMON_QUADS_COMPOSITOR_FRAME_TRANSITION_DIRECTIVE_H_
 #define COMPONENTS_VIZ_COMMON_QUADS_COMPOSITOR_FRAME_TRANSITION_DIRECTIVE_H_
 
-#include "base/time/time.h"
+#include <vector>
+
+#include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/viz_common_export.h"
 
 namespace viz {
@@ -41,17 +43,22 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
     kRevealUp
   };
 
-  // This is the maximum allowable transition duration.
-  static constexpr base::TimeDelta kMaxDuration =
-      base::TimeDelta::FromMilliseconds(500);
+  CompositorFrameTransitionDirective();
 
-  // Constructs a new directive. Note that if type is `kSave`, the effect and
-  // duration should be specified for a desired effect. These are ignored for
-  // the `kAnimate` type.
-  CompositorFrameTransitionDirective(uint32_t sequence_id,
-                                     Type type,
-                                     Effect effect = Effect::kNone,
-                                     base::TimeDelta duration = {});
+  // Constructs a new directive. Note that if type is `kSave`, the effect should
+  // be specified for a desired effect. These are ignored for the `kAnimate`
+  // type.
+  CompositorFrameTransitionDirective(
+      uint32_t sequence_id,
+      Type type,
+      Effect effect = Effect::kNone,
+      std::vector<CompositorRenderPassId> shared_render_pass_ids = {});
+
+  CompositorFrameTransitionDirective(const CompositorFrameTransitionDirective&);
+  ~CompositorFrameTransitionDirective();
+
+  CompositorFrameTransitionDirective& operator=(
+      const CompositorFrameTransitionDirective&);
 
   // A monotonically increasing sequence_id for a given communication channel
   // (i.e. surface). This is used to distinguish new directives from directives
@@ -61,20 +68,22 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
   // The type of this directive.
   Type type() const { return type_; }
 
-  // The duration of the animation. Note that this is at most kMaxDuration.
-  base::TimeDelta duration() const { return duration_; }
-
   // The effect for the transition.
   Effect effect() const { return effect_; }
 
+  // Shared element render passes.
+  const std::vector<CompositorRenderPassId> shared_render_pass_ids() const {
+    return shared_render_pass_ids_;
+  }
+
  private:
-  uint32_t sequence_id_;
+  uint32_t sequence_id_ = 0;
 
-  Type type_;
+  Type type_ = Type::kSave;
 
-  Effect effect_;
+  Effect effect_ = Effect::kNone;
 
-  base::TimeDelta duration_;
+  std::vector<CompositorRenderPassId> shared_render_pass_ids_;
 };
 
 }  // namespace viz

@@ -9,6 +9,9 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/ui/browser_window_state.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -147,14 +150,30 @@ void ChromeViewsDelegate::AddRef() {
                             KeepAliveRestartOption::DISABLED));
   }
 
+  // There's no easy way to know which Profile caused this menu to open, so
+  // prevent all currently-loaded Profiles from deleting until the menu
+  // closes.
+  //
+  // Do this unconditionally, not just when the ref-count becomes non-zero. That
+  // way, we pick up any new profiles that have become loaded since the last
+  // call to AddRef().
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  DCHECK(profile_manager);
+  for (Profile* profile : profile_manager->GetLoadedProfiles()) {
+    profile_keep_alives_[profile] = std::make_unique<ScopedProfileKeepAlive>(
+        profile, ProfileKeepAliveOrigin::kChromeViewsDelegate);
+  }
+
   ++ref_count_;
 }
 
 void ChromeViewsDelegate::ReleaseRef() {
   DCHECK_NE(0u, ref_count_);
 
-  if (--ref_count_ == 0u)
+  if (--ref_count_ == 0u) {
     keep_alive_.reset();
+    profile_keep_alives_.clear();
+  }
 }
 
 void ChromeViewsDelegate::OnBeforeWidgetInit(

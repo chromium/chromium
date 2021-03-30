@@ -57,15 +57,15 @@ class MostVisitedSitesWaiter : public MostVisitedSites::Observer {
   void OnURLsAvailable(
       const std::map<SectionType, NTPTilesVector>& sections) override {
     tiles_ = sections.at(SectionType::PERSONALIZED);
-    if (!quit_closure_.is_null()) {
-      quit_closure_.Run();
+    if (quit_closure_) {
+      std::move(quit_closure_).Run();
     }
   }
 
   void OnIconMadeAvailable(const GURL& site_url) override {}
 
  private:
-  base::Closure quit_closure_;
+  base::OnceClosure quit_closure_;
   NTPTilesVector tiles_;
 };
 

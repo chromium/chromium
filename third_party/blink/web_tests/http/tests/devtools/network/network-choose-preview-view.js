@@ -5,7 +5,8 @@
 (async function() {
   'use strict';
   TestRunner.addResult(`Tests to make sure the proper view is used for the data that is received in network panel.\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
+  await TestRunner.loadLegacyModule('source_frame');
   await TestRunner.showPanel('network');
 
   function createNetworkRequest(mimeType, content, statusCode, resourceType) {

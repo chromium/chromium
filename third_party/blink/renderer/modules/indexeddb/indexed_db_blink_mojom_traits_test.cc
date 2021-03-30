@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/indexeddb/indexed_db_blink_mojom_traits.h"
 
 #include <random>
+#include <utility>
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"

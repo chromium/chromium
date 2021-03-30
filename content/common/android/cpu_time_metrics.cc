@@ -15,9 +15,10 @@
 #include "base/containers/flat_map.h"
 #include "base/cpu.h"
 #include "base/lazy_instance.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/persistent_histogram_allocator.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/process/process_metrics.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
@@ -26,15 +27,23 @@
 #include "base/task/current_thread.h"
 #include "base/task/post_task.h"
 #include "base/task/task_observer.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_id_name_manager.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/power_scheduler/power_mode.h"
+#include "components/power_scheduler/power_mode_arbiter.h"
+#include "content/common/process_visibility_tracker.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/process_type.h"
 
 namespace content {
 namespace {
 
+bool g_ignore_histogram_allocator_for_testing = false;
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 // Histogram macros expect an enum class with kMaxValue. Because
 // content::ProcessType cannot be migrated to this style at the moment, we
 // specify a separate version here. Keep in sync with content::ProcessType.
@@ -88,6 +97,55 @@ const char* GetPerThreadHistogramNameForProcessType(ProcessTypeForUma type) {
       return "Power.CpuTimeSecondsPerThreadType.GPU";
     default:
       return "Power.CpuTimeSecondsPerThreadType.Other";
+  }
+}
+
+const char* GetPerPowerModeHistogramNameForProcessType(ProcessTypeForUma type) {
+  switch (type) {
+    case ProcessTypeForUma::kBrowser:
+      return "Power.CpuTimeSecondsPerPowerMode.Browser";
+    case ProcessTypeForUma::kRenderer:
+      return "Power.CpuTimeSecondsPerPowerMode.Renderer";
+    case ProcessTypeForUma::kGpu:
+      return "Power.CpuTimeSecondsPerPowerMode.GPU";
+    default:
+      return "Power.CpuTimeSecondsPerPowerMode.Other";
+  }
+}
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Keep in sync with power_scheduler::PowerMode.
+enum class PowerModeForUma {
+  kIdle = 0,
+  kAudible = 1,
+  kLoading = 2,
+  kAnimation = 3,
+  kResponse = 4,
+  kNonWebActivity = 5,
+  kBackground = 6,
+  kCharging = 7,
+  kMaxValue = kCharging,
+};
+
+PowerModeForUma GetPowerModeForUma(power_scheduler::PowerMode power_mode) {
+  switch (power_mode) {
+    case power_scheduler::PowerMode::kIdle:
+      return PowerModeForUma::kIdle;
+    case power_scheduler::PowerMode::kAudible:
+      return PowerModeForUma::kAudible;
+    case power_scheduler::PowerMode::kLoading:
+      return PowerModeForUma::kLoading;
+    case power_scheduler::PowerMode::kAnimation:
+      return PowerModeForUma::kAnimation;
+    case power_scheduler::PowerMode::kResponse:
+      return PowerModeForUma::kResponse;
+    case power_scheduler::PowerMode::kNonWebActivity:
+      return PowerModeForUma::kNonWebActivity;
+    case power_scheduler::PowerMode::kBackground:
+      return PowerModeForUma::kBackground;
+    case power_scheduler::PowerMode::kCharging:
+      return PowerModeForUma::kCharging;
   }
 }
 
@@ -282,16 +340,19 @@ class TimeInStateReporter {
 // for CPU activity within this process. We sample more frequently when the
 // process is more active, thus ensuring we lose little CPU time attribution
 // when the process is terminated, even after it was very active.
-class ProcessCpuTimeTaskObserver : public base::TaskObserver {
+class ProcessCpuTimeMetricsReporter
+    : public base::TaskObserver,
+      public ProcessVisibilityTracker::ProcessVisibilityObserver,
+      public power_scheduler::PowerModeArbiter::Observer {
  public:
-  static ProcessCpuTimeTaskObserver* GetInstance() {
-    static base::NoDestructor<ProcessCpuTimeTaskObserver> instance;
+  static ProcessCpuTimeMetricsReporter* GetInstance() {
+    static base::NoDestructor<ProcessCpuTimeMetricsReporter> instance;
     return instance.get();
   }
 
-  ProcessCpuTimeTaskObserver()
-      : task_runner_(base::CreateSequencedTaskRunner(
-            {base::ThreadPool(), base::TaskPriority::BEST_EFFORT,
+  ProcessCpuTimeMetricsReporter()
+      : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+            {base::TaskPriority::BEST_EFFORT,
              // TODO(eseckler): Consider hooking into process shutdown on
              // desktop to reduce metric data loss.
              base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
@@ -299,6 +360,11 @@ class ProcessCpuTimeTaskObserver : public base::TaskObserver {
         process_type_(CurrentProcessType()),
         // The observer is created on the main thread of the process.
         main_thread_id_(base::PlatformThread::CurrentId()) {
+    DETACH_FROM_SEQUENCE(thread_pool_);
+
+    ProcessVisibilityTracker::GetInstance()->AddObserver(this);
+    power_scheduler::PowerModeArbiter::GetInstance()->AddObserver(this);
+
     // Browser and GPU processes have a longer lifetime (don't disappear between
     // navigations), and typically execute a large number of small main-thread
     // tasks. For these processes, choose a higher reporting interval.
@@ -308,10 +374,18 @@ class ProcessCpuTimeTaskObserver : public base::TaskObserver {
     } else {
       reporting_interval_ = kReportAfterEveryNTasksOtherProcess;
     }
-    DETACH_FROM_SEQUENCE(thread_pool_);
+
     // Post a first collection to capture initial values for calculation of
-    // delta values in subsequent passes.
-    PostCollectionTask();
+    // delta values in subsequent passes, if it hasn't already been posted
+    // when setting up the observers above.
+    if (task_counter_ == 0)
+      PostCollectionTask(is_visible_, power_mode_);
+  }
+
+  ~ProcessCpuTimeMetricsReporter() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_);
+    ProcessVisibilityTracker::GetInstance()->RemoveObserver(this);
+    power_scheduler::PowerModeArbiter::GetInstance()->RemoveObserver(this);
   }
 
   // base::TaskObserver implementation:
@@ -328,27 +402,73 @@ class ProcessCpuTimeTaskObserver : public base::TaskObserver {
       return;
     task_counter_++;
     if (task_counter_ == reporting_interval_) {
-      PostCollectionTask();
+      PostCollectionTask(is_visible_, power_mode_);
       task_counter_ = 0;
     }
   }
 
-  void PostCollectionTask() {
+  // ProcessVisibilityTracker::ProcessVisibilityObserver implementation:
+  void OnVisibilityChanged(bool visible) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_);
+    base::Optional<bool> was_visible = is_visible_;
+    is_visible_ = visible;
+
+    if (collection_in_progress_.load(std::memory_order_relaxed))
+      return;
+
+    PostCollectionTask(std::move(was_visible), power_mode_);
+    task_counter_ = 0;
+  }
+
+  // power_scheduler::PowerModeArbiter::Observer implementation:
+  void OnPowerModeChanged(power_scheduler::PowerMode old_mode,
+                          power_scheduler::PowerMode new_mode) override {
+    base::Optional<power_scheduler::PowerMode> old_power_mode =
+        power_mode_.has_value() ? power_mode_ : old_mode;
+    power_mode_ = new_mode;
+    if (collection_in_progress_.load(std::memory_order_relaxed))
+      return;
+
+    PostCollectionTask(is_visible_, std::move(old_power_mode));
+    task_counter_ = 0;
+  }
+
+  void PostCollectionTask(
+      base::Optional<bool> was_visible,
+      base::Optional<power_scheduler::PowerMode> power_mode) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_);
     // PostTask() applies a barrier, so this will be applied before the thread
     // pool task executes and sets |collection_in_progress_| back to false.
     collection_in_progress_.store(true, std::memory_order_relaxed);
     task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
-            &ProcessCpuTimeTaskObserver::CollectAndReportCpuTimeOnThreadPool,
-            base::Unretained(this)));
+            &ProcessCpuTimeMetricsReporter::CollectAndReportCpuTimeOnThreadPool,
+            base::Unretained(this), std::move(was_visible),
+            std::move(power_mode)));
   }
 
-  void CollectAndReportCpuTimeOnThreadPool() {
+  void CollectAndReportCpuTimeOnThreadPool(
+      base::Optional<bool> was_visible,
+      base::Optional<power_scheduler::PowerMode> power_mode) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(thread_pool_);
 
     // This might overflow. We only care that it is different for each cycle.
     current_cycle_++;
+
+    // Skip reporting any values into histograms until histogram persistence is
+    // set up. Otherwise, we would create the histograms without persistence and
+    // lose data at process termination (particularly in child processes).
+    if (!base::GlobalHistogramAllocator::Get() &&
+        !g_ignore_histogram_allocator_for_testing) {
+      // If this is the first iteration, still initialize baseline values
+      // (e.g. idle time) for the approximate per-cpu breakdown, but don't
+      // record any values into histograms.
+      if (last_time_in_state_walltime_.is_null())
+        CollectAndReportApproxTimeInState(base::TimeDelta());
+      collection_in_progress_.store(false, std::memory_order_relaxed);
+      return;
+    }
 
     // GetCumulativeCPUUsage() may return a negative value if sampling failed.
     base::TimeDelta cumulative_cpu_time =
@@ -360,6 +480,35 @@ class ProcessCpuTimeTaskObserver : public base::TaskObserver {
                                        process_type_,
                                        process_cpu_time_delta.InMicroseconds(),
                                        base::Time::kMicrosecondsPerSecond);
+      if (was_visible.has_value()) {
+        if (*was_visible) {
+          UMA_HISTOGRAM_SCALED_ENUMERATION(
+              "Power.CpuTimeSecondsPerProcessType.Foreground", process_type_,
+              process_cpu_time_delta.InMicroseconds(),
+              base::Time::kMicrosecondsPerSecond);
+        } else {
+          UMA_HISTOGRAM_SCALED_ENUMERATION(
+              "Power.CpuTimeSecondsPerProcessType.Background", process_type_,
+              process_cpu_time_delta.InMicroseconds(),
+              base::Time::kMicrosecondsPerSecond);
+        }
+      } else {
+        UMA_HISTOGRAM_SCALED_ENUMERATION(
+            "Power.CpuTimeSecondsPerProcessType.Unattributed", process_type_,
+            process_cpu_time_delta.InMicroseconds(),
+            base::Time::kMicrosecondsPerSecond);
+      }
+      if (power_mode.has_value()) {
+        // Histogram name cannot change after being used once. That's ok since
+        // this only depends on the process type, which also doesn't change.
+        static const char* histogram_name =
+            GetPerPowerModeHistogramNameForProcessType(process_type_);
+        UMA_HISTOGRAM_SCALED_ENUMERATION(
+            histogram_name, GetPowerModeForUma(*power_mode),
+            process_cpu_time_delta.InMicroseconds(),
+            base::Time::kMicrosecondsPerSecond);
+      }
+
       reported_cpu_time_ = cumulative_cpu_time;
     }
 
@@ -680,6 +829,8 @@ class ProcessCpuTimeTaskObserver : public base::TaskObserver {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   int task_counter_ = 0;
   int reporting_interval_ = 0;  // set in constructor.
+  base::Optional<bool> is_visible_;
+  base::Optional<power_scheduler::PowerMode> power_mode_;
 
   // Accessed on |task_runner_|.
   SEQUENCE_CHECKER(thread_pool_);
@@ -717,17 +868,17 @@ void SetupCpuTimeMetrics() {
   if (did_setup)
     return;
   base::CurrentThread::Get()->AddTaskObserver(
-      ProcessCpuTimeTaskObserver::GetInstance());
+      ProcessCpuTimeMetricsReporter::GetInstance());
   did_setup = true;
 }
 
-void SampleCpuTimeMetricsForTesting() {
-  auto* instance = ProcessCpuTimeTaskObserver::GetInstance();
-  // Make sure no collection is currently in progress (this may happen if
-  // GetInstance() above initializes the task observer).
+void WaitForCpuTimeMetricsForTesting() {
+  auto* instance = ProcessCpuTimeMetricsReporter::GetInstance();
   instance->WaitForCollectionForTesting();  // IN-TEST
-  instance->PostCollectionTask();
-  instance->WaitForCollectionForTesting();  // IN-TEST
+}
+
+void SetIgnoreHistogramAllocatorForTesting(bool ignore) {
+  g_ignore_histogram_allocator_for_testing = ignore;
 }
 
 }  // namespace content

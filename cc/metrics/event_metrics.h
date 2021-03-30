@@ -51,7 +51,10 @@ class CC_EXPORT EventMetrics {
     kGestureTwoFingerTap,
     kFirstGestureScrollUpdate,
     kMouseDragged,
-    kMaxValue = kMouseDragged,
+    kGesturePinchBegin,
+    kGesturePinchEnd,
+    kGesturePinchUpdate,
+    kMaxValue = kGesturePinchUpdate,
   };
 
   // Type of scroll events. This list should be in the same order as values of
@@ -134,6 +137,10 @@ class CC_EXPORT EventMetrics {
   // Resets the metrics object to dispatch stage `stage` by setting timestamps
   // of dispatch stages after `stage` to null timestamp,
   void ResetToDispatchStage(DispatchStage stage);
+
+  // Determines whether TotalLatencyToSwapBegin metric should be reported for
+  // this event or not. This metric is only desired for gesture-scroll events.
+  bool ShouldReportScrollingTotalLatency() const;
 
   std::unique_ptr<EventMetrics> Clone() const;
 

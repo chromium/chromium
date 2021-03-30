@@ -30,10 +30,10 @@ using FetchedCategoriesVector = std::vector<FetchedCategory>;
 // Provides the CategoryInfo data for article suggestions. If |title| is
 // nullopt, then the default, hard-coded title will be used.
 CategoryInfo BuildArticleCategoryInfo(
-    const base::Optional<base::string16>& title);
+    const base::Optional<std::u16string>& title);
 
 // Provides the CategoryInfo data for other remote suggestions.
-CategoryInfo BuildRemoteCategoryInfo(const base::string16& title,
+CategoryInfo BuildRemoteCategoryInfo(const std::u16string& title,
                                      bool allow_fetching_more_results);
 
 bool JsonToCategories(const base::Value& parsed,

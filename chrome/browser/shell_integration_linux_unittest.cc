@@ -429,7 +429,7 @@ TEST(ShellIntegrationTest, GetDesktopFileContents) {
        "Type=Application\n"
        "Name=Paint\n"
        "MimeType=image/png;image/jpg\n"
-       "Exec=/opt/google/chrome/google-chrome --app=https://paint.app/ %F\n"
+       "Exec=/opt/google/chrome/google-chrome --app=https://paint.app/ %U\n"
        "Icon=chrome-https__paint.app\n"
        "Categories=Image\n"
        "StartupWMClass=paint.app\n"},
@@ -459,7 +459,7 @@ TEST(ShellIntegrationTest, GetDesktopFileContents) {
             GURL(test_cases[i].url), std::string(),
             base::ASCIIToUTF16(test_cases[i].title), test_cases[i].icon_name,
             base::FilePath(), test_cases[i].categories, test_cases[i].mime_type,
-            test_cases[i].nodisplay));
+            test_cases[i].nodisplay, ""));
   }
 }
 

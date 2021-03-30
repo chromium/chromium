@@ -22,6 +22,7 @@ import org.junit.runners.model.Statement;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
@@ -53,6 +54,7 @@ import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.url.GURL;
 
 import java.util.Calendar;
 import java.util.List;
@@ -93,6 +95,9 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
                 mDefaultUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
                 Thread.setDefaultUncaughtExceptionHandler(new ChromeUncaughtExceptionHandler());
                 ChromeApplicationTestUtils.setUp(InstrumentationRegistry.getTargetContext());
+                // Instrumentation infrastructure and tests often access variables from the
+                // instrumentation thread for asserts. See crbug.com/1173814 for more details.
+                ObservableSupplierImpl.setIgnoreThreadChecksForTesting(true);
 
                 // Preload Calendar so that it does not trigger ReadFromDisk Strict mode violations
                 // if called on the UI Thread. See https://crbug.com/705477 and
@@ -114,6 +119,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
                     base.evaluate();
                 } finally {
                     Thread.setDefaultUncaughtExceptionHandler(mDefaultUncaughtExceptionHandler);
+                    ObservableSupplierImpl.setIgnoreThreadChecksForTesting(false);
                 }
             }
         };
@@ -198,7 +204,6 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
      * Similar to #launchActivity(Intent), but waits for the Activity tab to be initialized.
      */
     public void startActivityCompletely(Intent intent) {
-        DeferredStartupHandler.setExpectingActivityStartupForTesting();
         launchActivity(intent);
         waitForActivityNativeInitializationComplete();
 
@@ -213,13 +218,18 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
             NewTabPageTestUtils.waitForNtpLoaded(tab);
         }
 
-        Assert.assertTrue("Deferred startup never completed. Did you try to start an Activity "
-                        + "that was already started?",
-                DeferredStartupHandler.waitForDeferredStartupCompleteForTesting(
-                        ScalableTimeout.scaleTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL)));
+        Assert.assertTrue(waitForDeferredStartup());
 
         Assert.assertNotNull(tab);
         Assert.assertNotNull(tab.getView());
+    }
+
+    public boolean waitForDeferredStartup() {
+        CriteriaHelper.pollUiThread(() -> {
+            getActivity().deferredStartupPostedForTesting();
+        }, 20000L, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        return DeferredStartupHandler.waitForDeferredStartupCompleteForTesting(
+                ScalableTimeout.scaleTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL));
     }
 
     @Override
@@ -267,6 +277,11 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
     public int loadUrl(String url) throws IllegalArgumentException {
         return loadUrlInTab(url, PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
                 getActivity().getActivityTab());
+    }
+
+    /** {@link #loadUrl(String) */
+    public int loadUrl(GURL url) throws IllegalArgumentException {
+        return loadUrl(url.getSpec());
     }
 
     /**

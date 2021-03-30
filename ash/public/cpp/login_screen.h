@@ -93,7 +93,7 @@ class ASH_PUBLIC_EXPORT LoginScreen {
   // is already set, this method will replace it (and the previous handler's
   // exit_callback will be run).
   virtual bool SetLoginShelfGestureHandler(
-      const base::string16& message,
+      const std::u16string& message,
       const base::RepeatingClosure& fling_callback,
       base::OnceClosure exit_callback) = 0;
 

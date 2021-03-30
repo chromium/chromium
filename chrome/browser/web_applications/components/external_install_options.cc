@@ -10,7 +10,9 @@
 #include <vector>
 
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 
 namespace web_app {
 
@@ -42,6 +44,7 @@ bool ExternalInstallOptions::operator==(
         options.install_url,
         options.user_display_mode,
         options.install_source,
+        options.fallback_app_name,
         options.add_to_applications_menu,
         options.add_to_desktop,
         options.add_to_quick_launch_bar,
@@ -60,6 +63,7 @@ bool ExternalInstallOptions::operator==(
         options.bypass_service_worker_check,
         options.require_manifest,
         options.force_reinstall,
+        options.force_reinstall_for_milestone,
         options.wait_for_windows_closed,
         options.install_placeholder,
         options.reinstall_placeholder,
@@ -69,7 +73,8 @@ bool ExternalInstallOptions::operator==(
         options.uninstall_and_replace,
         options.additional_search_terms,
         options.only_use_app_info_factory,
-        options.app_info_factory
+        options.app_info_factory,
+        options.oem_installed
         // clang-format on
     );
   };
@@ -108,6 +113,8 @@ std::ostream& operator<<(std::ostream& out,
          << "\n user_display_mode: " << install_options.user_display_mode
          << "\n install_source: "
          << static_cast<int32_t>(install_options.install_source)
+         << "\n fallback_app_name: "
+         << install_options.fallback_app_name.value_or("")
          << "\n add_to_applications_menu: "
          << install_options.add_to_applications_menu
          << "\n add_to_desktop: " << install_options.add_to_desktop
@@ -132,6 +139,8 @@ std::ostream& operator<<(std::ostream& out,
          << install_options.bypass_service_worker_check
          << "\n require_manifest: " << install_options.require_manifest
          << "\n force_reinstall: " << install_options.force_reinstall
+         << "\n force_reinstall_for_milestone: "
+         << install_options.force_reinstall_for_milestone
          << "\n wait_for_windows_closed: "
          << install_options.wait_for_windows_closed
          << "\n install_placeholder: " << install_options.install_placeholder
@@ -148,7 +157,12 @@ std::ostream& operator<<(std::ostream& out,
          << base::JoinString(install_options.additional_search_terms, "\n   ")
          << "\n only_use_app_info_factory: "
          << install_options.only_use_app_info_factory << "\n app_info_factory: "
-         << !install_options.app_info_factory.is_null();
+         << !install_options.app_info_factory.is_null()
+         << "\n system_app_type: "
+         << (install_options.system_app_type.has_value()
+                 ? static_cast<int32_t>(install_options.system_app_type.value())
+                 : -1)
+         << "\n oem_installed: " << install_options.oem_installed;
 }
 
 InstallManager::InstallParams ConvertExternalInstallOptionsToParams(
@@ -156,6 +170,11 @@ InstallManager::InstallParams ConvertExternalInstallOptionsToParams(
   InstallManager::InstallParams params;
 
   params.user_display_mode = install_options.user_display_mode;
+
+  if (install_options.fallback_app_name.has_value()) {
+    params.fallback_app_name =
+        base::UTF8ToUTF16(install_options.fallback_app_name.value());
+  }
 
   params.fallback_start_url = install_options.install_url;
 
@@ -174,6 +193,10 @@ InstallManager::InstallParams ConvertExternalInstallOptionsToParams(
   params.additional_search_terms = install_options.additional_search_terms;
 
   params.launch_query_params = install_options.launch_query_params;
+
+  params.system_app_type = install_options.system_app_type;
+
+  params.oem_installed = install_options.oem_installed;
 
   return params;
 }

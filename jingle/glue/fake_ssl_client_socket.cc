@@ -16,7 +16,6 @@
 #include "base/stl_util.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
-#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 
 namespace jingle_glue {
 
@@ -65,6 +64,13 @@ static const uint8_t kSslServerHello[] = {
     0x00, 0x04,                                      // RSA/RC4-128/MD5
     0x00                                             // null compression
 };
+
+// TODO(crbug/1183244): This annotation is not test specific but is for test. We
+// should fix it.
+constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation(
+        "test",
+        "Traffic annotation for FakeSSLClientSocket in jingle");
 
 scoped_refptr<net::DrainableIOBuffer> NewDrainableIOBufferWithSize(int size) {
   return base::MakeRefCounted<net::DrainableIOBuffer>(
@@ -227,7 +233,7 @@ int FakeSSLClientSocket::DoSendClientHello() {
       write_buf_.get(), write_buf_->BytesRemaining(),
       base::BindOnce(&FakeSSLClientSocket::OnSendClientHelloDone,
                      base::Unretained(this)),
-      TRAFFIC_ANNOTATION_FOR_TESTS);
+      kTrafficAnnotation);
   if (status < net::OK) {
     return status;
   }

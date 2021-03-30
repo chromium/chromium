@@ -114,15 +114,15 @@ class SyncEngine
   void UninstallOrigin(const GURL& origin,
                        UninstallFlag flag,
                        SyncStatusCallback callback) override;
-  void ProcessRemoteChange(const SyncFileCallback& callback) override;
+  void ProcessRemoteChange(SyncFileCallback callback) override;
   void SetRemoteChangeProcessor(RemoteChangeProcessor* processor) override;
   LocalChangeProcessor* GetLocalChangeProcessor() override;
   RemoteServiceState GetCurrentState() const override;
-  void GetOriginStatusMap(const StatusMapCallback& callback) override;
-  void DumpFiles(const GURL& origin, const ListCallback& callback) override;
-  void DumpDatabase(const ListCallback& callback) override;
+  void GetOriginStatusMap(StatusMapCallback callback) override;
+  void DumpFiles(const GURL& origin, ListCallback callback) override;
+  void DumpDatabase(ListCallback callback) override;
   void SetSyncEnabled(bool enabled) override;
-  void PromoteDemotedChanges(const base::Closure& callback) override;
+  void PromoteDemotedChanges(base::OnceClosure callback) override;
 
   // LocalChangeProcessor overrides.
   void ApplyLocalChange(const FileChange& local_change,
@@ -145,10 +145,8 @@ class SyncEngine
   void OnConnectionChanged(network::mojom::ConnectionType type) override;
 
   // IdentityManager::Observer overrides.
-  void OnPrimaryAccountSet(
-      const CoreAccountInfo& primary_account_info) override;
-  void OnPrimaryAccountCleared(
-      const CoreAccountInfo& previous_primary_account_info) override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
 
  private:
   class WorkerObserver;

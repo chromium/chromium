@@ -317,6 +317,14 @@ class ServiceWorkerOfflineCapabilityCheckBrowserTest
           200,
       };
 
+  const FetchEventTestHelper::ExpectedResult kRedirect =
+      FetchEventTestHelper::ExpectedResult{
+          blink::ServiceWorkerStatusCode::kOk,
+          ServiceWorkerFetchDispatcher::FetchEventResult::kGotResponse,
+          network::mojom::FetchResponseSource::kUnspecified,
+          301,
+      };
+
   const FetchEventTestHelper::ExpectedResult kFailed =
       FetchEventTestHelper::ExpectedResult{
           blink::ServiceWorkerStatusCode::kOk,
@@ -468,6 +476,22 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerOfflineCapabilityCheckBrowserTest,
           is_offline_capability_check,
       },
       kFailed,
+  }});
+
+  RunFetchEventDispatchTest({{
+      {
+          "/service_worker/empty.html?redirect",
+          normal,
+      },
+      kRedirect,
+  }});
+
+  RunFetchEventDispatchTest({{
+      {
+          "/service_worker/empty.html?redirect",
+          is_offline_capability_check,
+      },
+      kRedirect,
   }});
 }
 
@@ -697,6 +721,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerOfflineCapabilityCheckBrowserTest,
   EXPECT_EQ(OfflineCapability::kSupported,
             CheckOfflineCapability(
                 "/service_worker/empty.html?sleep_then_fetch&sleep=20000"));
+
+  EXPECT_EQ(OfflineCapability::kSupported,
+            CheckOfflineCapability("/service_worker/empty.html?redirect"));
 }
 
 // Sites with a service worker which is not activated yet are identified as

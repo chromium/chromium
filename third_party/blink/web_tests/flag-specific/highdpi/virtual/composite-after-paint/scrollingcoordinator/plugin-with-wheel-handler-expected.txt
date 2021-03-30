@@ -1,0 +1,11 @@
+This test ensures that a plugin which wants to receive wheel events is included in the non-fast scrollable region.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS nonFastScrollableRects.length is 1
+FAIL rectToString(nonFastScrollableRects[0]) should be [8, 8, 300, 150]. Was [12, 12, 450, 225].
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+

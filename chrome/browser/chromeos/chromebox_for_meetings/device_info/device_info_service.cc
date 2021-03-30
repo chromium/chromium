@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/chromebox_for_meetings/device_info/device_info_service.h"
+
 #include <cstdint>
 
 #include "base/bind.h"
@@ -11,8 +12,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/settings/device_settings_service.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
+#include "chrome/common/channel_info.h"
 #include "chromeos/dbus/chromebox_for_meetings/cfm_hotline_client.h"
+#include "components/version_info/version_info.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace chromeos {
@@ -78,8 +81,8 @@ void DeviceInfoService::OnAdaptorConnect(bool success) {
   }
 
   VLOG(3) << "mojom::DeviceInfo Service Adaptor is connected.";
-  CHECK(chromeos::DeviceSettingsService::IsInitialized());
-  chromeos::DeviceSettingsService::Get()->AddObserver(this);
+  CHECK(ash::DeviceSettingsService::IsInitialized());
+  ash::DeviceSettingsService::Get()->AddObserver(this);
 }
 
 void DeviceInfoService::OnAdaptorDisconnect() {
@@ -112,7 +115,7 @@ void DeviceInfoService::AddDeviceSettingsObserver(
 }
 
 void DeviceInfoService::UpdatePolicyInfo() {
-  auto* device_settings = chromeos::DeviceSettingsService::Get();
+  auto* device_settings = ash::DeviceSettingsService::Get();
   if (!device_settings || !device_settings->policy_data()) {
     return;
   }
@@ -161,21 +164,7 @@ void DeviceInfoService::GetSysInfo(GetSysInfoCallback callback) {
   auto stateful = base::FilePath(kStatefulPartition);
 
   auto sys_info = mojom::SysInfo::New();
-  sys_info->uptime_ms = base::SysInfo::Uptime().InMilliseconds();
-  sys_info->model_name = base::SysInfo::HardwareModelName();
-  sys_info->num_proc = base::SysInfo::NumberOfProcessors();
-  sys_info->total_memory_bytes = base::SysInfo::AmountOfPhysicalMemory();
-  sys_info->available_memory_bytes =
-      base::SysInfo::AmountOfAvailablePhysicalMemory();
   sys_info->kernel_version = base::SysInfo::KernelVersion();
-  sys_info->root_total_disk_space_bytes =
-      base::SysInfo::AmountOfTotalDiskSpace(root);
-  sys_info->root_free_disk_space_bytes =
-      base::SysInfo::AmountOfFreeDiskSpace(root);
-  sys_info->user_total_disk_space_bytes =
-      base::SysInfo::AmountOfTotalDiskSpace(stateful);
-  sys_info->user_free_disk_space_bytes =
-      base::SysInfo::AmountOfFreeDiskSpace(stateful);
 
   std::string value;
   if (base::SysInfo::GetLsbReleaseValue(kReleaseVersion, &value)) {
@@ -191,6 +180,9 @@ void DeviceInfoService::GetSysInfo(GetSysInfoCallback callback) {
     sys_info->release_milestone = std::move(value);
   }
 
+  sys_info->browser_version = version_info::GetVersionNumber();
+  sys_info->channel_name = version_info::GetChannelString(chrome::GetChannel());
+
   std::move(callback).Run(std::move(sys_info));
 }
 
@@ -201,6 +193,8 @@ DeviceInfoService::DeviceInfoService()
       task_runner_(base::SequencedTaskRunnerHandle::Get()) {
   CfmHotlineClient::Get()->AddObserver(this);
   current_policy_info_.reset();
+  // Device settings update may not be triggered in some cases
+  DeviceSettingsUpdated();
 }
 
 DeviceInfoService::~DeviceInfoService() {
@@ -211,7 +205,7 @@ DeviceInfoService::~DeviceInfoService() {
 void DeviceInfoService::Reset() {
   receivers_.Clear();
   policy_remotes_.Clear();
-  chromeos::DeviceSettingsService::Get()->RemoveObserver(this);
+  ash::DeviceSettingsService::Get()->RemoveObserver(this);
 }
 
 }  // namespace cfm

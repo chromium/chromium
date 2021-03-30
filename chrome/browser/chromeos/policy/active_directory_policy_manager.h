@@ -18,11 +18,9 @@
 #include "components/policy/core/common/configuration_policy_provider.h"
 #include "components/policy/core/common/policy_scheduler.h"
 
-namespace chromeos {
-
+namespace ash {
 class AuthPolicyHelper;
-
-}  // namespace chromeos
+}  // namespace ash
 
 namespace policy {
 
@@ -102,7 +100,7 @@ class ActiveDirectoryPolicyManager
   // during lifetime of the object (after Chrome was started).
   bool fetch_ever_completed_ = false;
 
-  chromeos::AuthPolicyHelper* authpolicy_helper() const {
+  ash::AuthPolicyHelper* authpolicy_helper() const {
     return authpolicy_helper_.get();
   }
 
@@ -132,7 +130,7 @@ class ActiveDirectoryPolicyManager
 
   std::unique_ptr<PolicyScheduler> scheduler_;
 
-  std::unique_ptr<chromeos::AuthPolicyHelper> authpolicy_helper_;
+  std::unique_ptr<ash::AuthPolicyHelper> authpolicy_helper_;
 
   // Must be last member.
   base::WeakPtrFactory<ActiveDirectoryPolicyManager> weak_ptr_factory_{this};

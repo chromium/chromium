@@ -51,11 +51,22 @@ class WebrtcVideoEncoder {
   };
 
   struct EncodedFrame {
+    EncodedFrame();
+    ~EncodedFrame();
+    EncodedFrame(const EncodedFrame&);
+    EncodedFrame& operator=(const EncodedFrame&);
+
     webrtc::DesktopSize size;
     std::string data;
     bool key_frame;
     int quantizer;
     webrtc::VideoCodecType codec;
+
+    // Information provided to WebRTC when sending the frame via the
+    // webrtc::EncodedImageCallback.
+    base::TimeTicks capture_time;
+    base::TimeTicks encode_start;
+    base::TimeTicks encode_finish;
   };
 
   enum class EncodeResult {

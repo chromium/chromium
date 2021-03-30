@@ -13,7 +13,7 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_components/customize_themes/customize_themes.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/shadow.js';
-import '../settings_shared_css.m.js';
+import '../settings_shared_css.js';
 
 import {AvatarIcon} from 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
@@ -21,10 +21,10 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
-import {RouteObserverBehavior, Router} from '../router.m.js';
+import {RouteObserverBehavior, Router} from '../router.js';
 
 import {ManageProfileBrowserProxy, ManageProfileBrowserProxyImpl, ProfileShortcutStatus} from './manage_profile_browser_proxy.js';
-import {SyncStatus} from './sync_browser_proxy.m.js';
+import {SyncStatus} from './sync_browser_proxy.js';
 
 Polymer({
   is: 'settings-manage-profile',
@@ -76,15 +76,6 @@ Polymer({
      * True if the profile shortcuts feature is enabled.
      */
     isProfileShortcutSettingVisible_: Boolean,
-
-    /**
-     * True if the 'kNewProfilePicker' feature is enabled.
-     * @private
-     */
-    isNewProfilePicker_: {
-      type: Boolean,
-      value: () => loadTimeData.getBoolean('newProfilePicker')
-    },
 
     /**
      * TODO(dpapad): Move this back to the HTML file when the Polymer2 version

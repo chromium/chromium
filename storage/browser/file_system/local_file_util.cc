@@ -23,7 +23,7 @@
 namespace storage {
 
 AsyncFileUtil* AsyncFileUtil::CreateForLocalFileSystem() {
-  return new AsyncFileUtilAdapter(new LocalFileUtil());
+  return new AsyncFileUtilAdapter(std::make_unique<LocalFileUtil>());
 }
 
 class LocalFileUtil::LocalFileEnumerator
@@ -136,7 +136,7 @@ LocalFileUtil::CreateFileEnumerator(FileSystemOperationContext* context,
                                     bool recursive) {
   base::FilePath file_path;
   if (GetLocalFilePath(context, root_url, &file_path) != base::File::FILE_OK) {
-    return base::WrapUnique(new EmptyFileEnumerator);
+    return std::make_unique<EmptyFileEnumerator>();
   }
   return std::make_unique<LocalFileEnumerator>(
       this, file_path, root_url.path(), recursive,

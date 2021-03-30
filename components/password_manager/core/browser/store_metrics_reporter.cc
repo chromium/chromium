@@ -170,9 +170,9 @@ class StoreMetricsReporter::MultiStoreMetricsReporter {
   std::unique_ptr<Consumer> account_store_consumer_;
 
   // Maps from (signon_realm, username) to password.
-  std::map<std::pair<std::string, base::string16>, base::string16>
+  std::map<std::pair<std::string, std::u16string>, std::u16string>
       profile_store_results_;
-  std::map<std::pair<std::string, base::string16>, base::string16>
+  std::map<std::pair<std::string, std::u16string>, std::u16string>
       account_store_results_;
 };
 
@@ -190,7 +190,7 @@ StoreMetricsReporter::StoreMetricsReporter(
           password_manager::sync_util::GetSyncUsernameIfSyncingPasswords(
               sync_service, identity_manager),
           client->GetPasswordSyncState() ==
-              password_manager::SYNCING_WITH_CUSTOM_PASSPHRASE,
+              password_manager::SyncState::kSyncingWithCustomPassphrase,
           client->IsUnderAdvancedProtection());
     }
   }

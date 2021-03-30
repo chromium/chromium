@@ -41,7 +41,8 @@ void WebOmniboxEditControllerImpl::OnAutocompleteAccept(
     WindowOpenDisposition disposition,
     ui::PageTransition transition,
     AutocompleteMatchType::Type match_type,
-    base::TimeTicks match_selection_timestamp) {
+    base::TimeTicks match_selection_timestamp,
+    bool destination_url_entered_without_scheme) {
   if (destination_url.is_valid()) {
     transition = ui::PageTransitionFromInt(
         transition | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
@@ -50,12 +51,6 @@ void WebOmniboxEditControllerImpl::OnAutocompleteAccept(
                              transition:transition
                             disposition:disposition];
   }
-}
-
-void WebOmniboxEditControllerImpl::OnInputInProgress(bool in_progress) {
-  // TODO(crbug.com/818649): see if this is really used.
-  if (in_progress)
-    [delegate_ locationBarBeganEdit];
 }
 
 void WebOmniboxEditControllerImpl::OnChanged() {

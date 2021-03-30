@@ -33,6 +33,7 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -97,10 +98,6 @@ const views::Widget* SigninViewControllerDelegateViews::GetWidget() const {
 void SigninViewControllerDelegateViews::DeleteDelegate() {
   NotifyModalSigninClosed();
   delete this;
-}
-
-ui::ModalType SigninViewControllerDelegateViews::GetModalType() const {
-  return dialog_modal_type_;
 }
 
 bool SigninViewControllerDelegateViews::ShouldShowCloseButton() const {
@@ -188,7 +185,6 @@ SigninViewControllerDelegateViews::SigninViewControllerDelegateViews(
       browser_(browser),
       content_view_(content_view.release()),
       modal_signin_widget_(nullptr),
-      dialog_modal_type_(dialog_modal_type),
       should_show_close_button_(should_show_close_button) {
   DCHECK(web_contents_);
   DCHECK(browser_);
@@ -202,6 +198,7 @@ SigninViewControllerDelegateViews::SigninViewControllerDelegateViews(
   DCHECK(dialog_modal_type == ui::MODAL_TYPE_CHILD ||
          dialog_modal_type == ui::MODAL_TYPE_WINDOW)
       << "Unsupported dialog modal type " << dialog_modal_type;
+  SetModalType(dialog_modal_type);
 
   if (!wait_for_size)
     DisplayModal();
@@ -250,7 +247,7 @@ void SigninViewControllerDelegateViews::DisplayModal() {
     return;
 
   gfx::NativeWindow window = host_web_contents->GetTopLevelNativeWindow();
-  switch (dialog_modal_type_) {
+  switch (GetModalType()) {
     case ui::MODAL_TYPE_WINDOW:
       modal_signin_widget_ =
           constrained_window::CreateBrowserModalDialogViews(this, window);
@@ -262,18 +259,21 @@ void SigninViewControllerDelegateViews::DisplayModal() {
       if (should_show_close_button_) {
         GetBubbleFrameView()->SetBubbleBorder(
             std::make_unique<views::BubbleBorder>(
-                views::BubbleBorder::NONE, views::BubbleBorder::BIG_SHADOW,
+                views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW,
                 SK_ColorWHITE));
       }
       constrained_window::ShowModalDialog(
           modal_signin_widget_->GetNativeWindow(), host_web_contents);
       break;
     default:
-      NOTREACHED() << "Unsupported dialog modal type " << dialog_modal_type_;
+      NOTREACHED() << "Unsupported dialog modal type " << GetModalType();
   }
 
   content_view_->RequestFocus();
 }
+
+BEGIN_METADATA(SigninViewControllerDelegateViews, views::DialogDelegateView)
+END_METADATA
 
 // --------------------------------------------------------------------
 // SigninViewControllerDelegate static methods

@@ -17,6 +17,7 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 class Browser;
 class Profile;
@@ -38,6 +39,8 @@ class CastDialogView : public views::BubbleDialogDelegateView,
                        public CastDialogController::Observer,
                        public ui::SimpleMenuModel::Delegate {
  public:
+  METADATA_HEADER(CastDialogView);
+
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnDialogModelUpdated(CastDialogView* dialog_view) = 0;
@@ -45,6 +48,9 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   };
 
   enum SourceType { kTab, kDesktop, kLocalFile };
+
+  CastDialogView(const CastDialogView&) = delete;
+  CastDialogView& operator=(const CastDialogView&) = delete;
 
   // Shows the singleton dialog anchored to the Cast toolbar icon. Requires that
   // BrowserActionsContainer exists for |browser|.
@@ -82,7 +88,7 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   static views::Widget* GetCurrentDialogWidget();
 
   // views::WidgetDelegate:
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
 
   // CastDialogController::Observer:
   void OnModelUpdated(const CastDialogModel& model) override;
@@ -191,7 +197,7 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   static CastDialogView* instance_;
 
   // Title shown at the top of the dialog.
-  base::string16 dialog_title_;
+  std::u16string dialog_title_;
 
   // The source selected in the sources menu. This defaults to "tab"
   // (presentation or tab mirroring). "Tab" is represented by a single item in
@@ -229,7 +235,7 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   base::Optional<size_t> selected_sink_index_;
 
   // This value is set if the user has chosen a local file to cast.
-  base::Optional<base::string16> local_file_name_;
+  base::Optional<std::u16string> local_file_name_;
 
   base::ObserverList<Observer> observers_;
 
@@ -237,8 +243,6 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   bool keep_shown_for_testing_ = false;
 
   base::WeakPtrFactory<CastDialogView> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CastDialogView);
 };
 
 }  // namespace media_router

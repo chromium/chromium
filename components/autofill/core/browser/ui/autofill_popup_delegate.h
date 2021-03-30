@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_AUTOFILL_POPUP_DELEGATE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_AUTOFILL_POPUP_DELEGATE_H_
 
+#include <string>
+
 #include "base/callback_forward.h"
-#include "base/strings/string16.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 
 namespace autofill {
@@ -27,24 +28,24 @@ class AutofillPopupDelegate {
 
   // Called when the autofill suggestion indicated by |identifier| has been
   // temporarily selected (e.g., hovered).
-  virtual void DidSelectSuggestion(const base::string16& value,
+  virtual void DidSelectSuggestion(const std::u16string& value,
                                    int identifier) = 0;
 
   // Inform the delegate that a row in the popup has been chosen.
-  virtual void DidAcceptSuggestion(const base::string16& value,
+  virtual void DidAcceptSuggestion(const std::u16string& value,
                                    int identifier,
                                    int position) = 0;
 
   // Returns whether the given value can be deleted, and if true,
   // fills out |title| and |body|.
-  virtual bool GetDeletionConfirmationText(const base::string16& value,
+  virtual bool GetDeletionConfirmationText(const std::u16string& value,
                                            int identifier,
-                                           base::string16* title,
-                                           base::string16* body) = 0;
+                                           std::u16string* title,
+                                           std::u16string* body) = 0;
 
   // Delete the described suggestion. Returns true if something was deleted,
   // or false if deletion is not allowed.
-  virtual bool RemoveSuggestion(const base::string16& value,
+  virtual bool RemoveSuggestion(const std::u16string& value,
                                 int identifier) = 0;
 
   // Informs the delegate that the Autofill previewed form should be cleared.

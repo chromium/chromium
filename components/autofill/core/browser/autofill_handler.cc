@@ -4,8 +4,11 @@
 
 #include "components/autofill/core/browser/autofill_handler.h"
 
+#include "base/bind.h"
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/autofill_data_validation.h"
@@ -15,6 +18,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
+#include "components/translate/core/common/language_detection_details.h"
 #include "google_apis/google_api_keys.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -31,7 +35,7 @@ const size_t kAutofillHandlerMaxFormCacheSize = 100;
 AutofillField* FindAutofillFillField(const FormStructure& form,
                                      const FormFieldData& field) {
   for (const auto& f : form) {
-    if (field.unique_renderer_id == f->unique_renderer_id)
+    if (field.global_id() == f->global_id())
       return f.get();
   }
   for (const auto& cur_field : form) {
@@ -102,21 +106,83 @@ bool AutofillHandler::IsRichQueryEnabled(version_info::Channel channel) {
          channel != version_info::Channel::BETA;
 }
 
+// static
+bool AutofillHandler::IsRawMetadataUploadingEnabled(
+    version_info::Channel channel) {
+  return channel == version_info::Channel::CANARY ||
+         channel == version_info::Channel::DEV;
+}
+
 AutofillHandler::AutofillHandler(
     AutofillDriver* driver,
-    LogManager* log_manager,
+    AutofillClient* client,
+    AutofillDownloadManagerState enable_download_manager)
+    : AutofillHandler(driver,
+                      client,
+                      enable_download_manager,
+                      client->GetChannel()) {
+  DCHECK(driver);
+  DCHECK(client);
+}
+
+AutofillHandler::AutofillHandler(
+    AutofillDriver* driver,
+    AutofillClient* client,
     AutofillDownloadManagerState enable_download_manager,
     version_info::Channel channel)
     : driver_(driver),
-      log_manager_(log_manager),
+      client_(client),
+      log_manager_(client ? client->GetLogManager() : nullptr),
+      form_interactions_ukm_logger_(CreateFormInteractionsUkmLogger()),
       is_rich_query_enabled_(IsRichQueryEnabled(channel)) {
   if (enable_download_manager == ENABLE_AUTOFILL_DOWNLOAD_MANAGER) {
     download_manager_ = std::make_unique<AutofillDownloadManager>(
-        driver, this, GetAPIKeyForUrl(channel), log_manager);
+        driver, this, GetAPIKeyForUrl(channel),
+        AutofillDownloadManager::IsRawMetadataUploadingEnabled(
+            IsRawMetadataUploadingEnabled(channel)),
+        log_manager_);
+  }
+  if (client) {
+    translate::TranslateDriver* translate_driver = client->GetTranslateDriver();
+    if (translate_driver) {
+      translate_observation_.Observe(translate_driver);
+    }
   }
 }
 
-AutofillHandler::~AutofillHandler() = default;
+AutofillHandler::~AutofillHandler() {
+  translate_observation_.Reset();
+  if (!query_result_delay_task_.IsCancelled())
+    query_result_delay_task_.Cancel();
+}
+
+void AutofillHandler::OnLanguageDetermined(
+    const translate::LanguageDetectionDetails& details) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillParsingPatternsLanguageDetection)) {
+    return;
+  }
+  for (auto& p : form_structures_) {
+    std::unique_ptr<FormStructure>& form_structure = p.second;
+    form_structure->set_current_page_language(
+        LanguageCode(details.adopted_language));
+    form_structure->DetermineHeuristicTypes(form_interactions_ukm_logger(),
+                                            log_manager_);
+  }
+}
+
+void AutofillHandler::OnTranslateDriverDestroyed(
+    translate::TranslateDriver* translate_driver) {
+  translate_observation_.Reset();
+}
+
+LanguageCode AutofillHandler::GetCurrentPageLanguage() const {
+  DCHECK(client_);
+  const translate::LanguageState* language_state = client_->GetLanguageState();
+  if (!language_state)
+    return LanguageCode();
+  return LanguageCode(language_state->current_language());
+}
 
 void AutofillHandler::OnFormSubmitted(const FormData& form,
                                       bool known_success,
@@ -141,27 +207,16 @@ void AutofillHandler::OnFormsSeen(const std::vector<FormData>& forms) {
   for (const FormData& form : forms) {
     const auto parse_form_start_time = AutofillTickClock::NowTicks();
     FormStructure* cached_form_structure =
-        FindCachedFormByRendererId(form.unique_renderer_id);
-    // Autofill used to ignore cache hits for non-credit-card forms. The
-    // motivation behind this is probably to have credit-card forms preserve
-    // their original signature, whereas non-credit-card forms would use the
-    // most recent form signature. Ignoring cache hits however appears to be
-    // part of breaking profile imports and voting for dynamic forms. See
-    // crbug/1091401#c15 for details.
-    //
-    // Therefore, if the kAutofillKeepInitialFormValuesInCache experiment is
-    // enabled, we do not ignore cache hits, but in those cases where the old
-    // code would have ignored the cache hit we update the FormStructure's
-    // FormSignature.
-    // Otherwise, if the experiment disabled, we just ignore the cache hit.
+        FindCachedFormByRendererId(form.global_id());
+
+    // Not updating signatures of credit card forms is legacy behaviour. We
+    // believe that the signatures are kept stable for voting purposes.
     bool update_form_signature = false;
     if (cached_form_structure) {
-      for (const FormType& form_type : cached_form_structure->GetFormTypes()) {
-        if (form_type != CREDIT_CARD_FORM) {
-          update_form_signature = true;
-          break;
-        }
-      }
+      const DenseSet<FormType>& form_types =
+          cached_form_structure->GetFormTypes();
+      update_form_signature =
+          form_types.size() > form_types.count(FormType::kCreditCardForm);
     }
 
     FormStructure* form_structure = ParseForm(form, cached_form_structure);
@@ -190,17 +245,16 @@ void AutofillHandler::OnFormsParsed(const std::vector<const FormData*>& forms) {
 
   std::vector<FormStructure*> non_queryable_forms;
   std::vector<FormStructure*> queryable_forms;
-  std::set<FormType> form_types;
+  DenseSet<FormType> form_types;
   for (const FormData* form : forms) {
     FormStructure* form_structure =
-        FindCachedFormByRendererId(form->unique_renderer_id);
+        FindCachedFormByRendererId(form->global_id());
     if (!form_structure) {
       NOTREACHED();
       continue;
     }
 
-    std::set<FormType> current_form_types = form_structure->GetFormTypes();
-    form_types.insert(current_form_types.begin(), current_form_types.end());
+    form_types.insert_all(form_structure->GetFormTypes());
 
     // Configure the query encoding for this form and add it to the appropriate
     // collection of forms: queryable vs non-queryable.
@@ -309,8 +363,7 @@ bool AutofillHandler::GetCachedFormAndField(const FormData& form,
                                             FormStructure** form_structure,
                                             AutofillField** autofill_field) {
   // Maybe find an existing FormStructure that corresponds to |form|.
-  FormStructure* cached_form =
-      FindCachedFormByRendererId(form.unique_renderer_id);
+  FormStructure* cached_form = FindCachedFormByRendererId(form.global_id());
   if (cached_form) {
     DCHECK(cached_form);
     if (!CachedFormNeedsUpdate(form, *cached_form)) {
@@ -343,12 +396,13 @@ bool AutofillHandler::GetCachedFormAndField(const FormData& form,
   return *autofill_field != nullptr;
 }
 
-void AutofillHandler::InitFormInteractionsUkmLogger(
-    FormInteractionsUkmLoggerFactoryCallback callback) {
-  DCHECK(callback);
-  form_interactions_ukm_logger_factory_callback_ = std::move(callback);
-  form_interactions_ukm_logger_ =
-      form_interactions_ukm_logger_factory_callback_.Run();
+std::unique_ptr<AutofillMetrics::FormInteractionsUkmLogger>
+AutofillHandler::CreateFormInteractionsUkmLogger() {
+  if (!client())
+    return nullptr;
+
+  return std::make_unique<AutofillMetrics::FormInteractionsUkmLogger>(
+      client()->GetUkmRecorder(), client()->GetUkmSourceId());
 }
 
 size_t AutofillHandler::FindCachedFormsBySignature(
@@ -366,8 +420,8 @@ size_t AutofillHandler::FindCachedFormsBySignature(
 }
 
 FormStructure* AutofillHandler::FindCachedFormByRendererId(
-    FormRendererId form_renderer_id) const {
-  auto it = form_structures_.find(form_renderer_id);
+    FormGlobalId form_id) const {
+  auto it = form_structures_.find(form_id);
   return it != form_structures_.end() ? it->second.get() : nullptr;
 }
 
@@ -399,9 +453,10 @@ FormStructure* AutofillHandler::ParseForm(const FormData& form,
       value_from_dynamic_change_form_ = true;
   }
 
-  form_structure->set_current_page_language(GetPageLanguage());
+  form_structure->set_current_page_language(GetCurrentPageLanguage());
 
-  form_structure->DetermineHeuristicTypes(log_manager_);
+  form_structure->DetermineHeuristicTypes(form_interactions_ukm_logger(),
+                                          log_manager_);
 
   // Hold the parsed_form_structure we intend to return. We can use this to
   // reference the form_signature when transferring ownership below.
@@ -412,22 +467,15 @@ FormStructure* AutofillHandler::ParseForm(const FormData& form,
   //
   // Note that this insert/update takes ownership of the new form structure
   // and also destroys the previously cached form structure.
-  form_structures_[parsed_form_structure->unique_renderer_id()] =
+  form_structures_[parsed_form_structure->global_id()] =
       std::move(form_structure);
 
   return parsed_form_structure;
 }
 
-LanguageCode AutofillHandler::GetPageLanguage() const {
-  return LanguageCode();
-}
-
 void AutofillHandler::Reset() {
   form_structures_.clear();
-  if (form_interactions_ukm_logger_factory_callback_) {
-    form_interactions_ukm_logger_ =
-        form_interactions_ukm_logger_factory_callback_.Run();
-  }
+  form_interactions_ukm_logger_ = CreateFormInteractionsUkmLogger();
 }
 
 void AutofillHandler::OnLoadedServerPredictions(
@@ -475,6 +523,32 @@ void AutofillHandler::OnLoadedServerPredictions(
 
   LogAutofillTypePredictionsAvailable(log_manager_, queried_forms);
 
+  // TODO(crbug.com/1176816): Remove the test code after initial integration.
+  int delay = 0;
+  if (auto* cmd = base::CommandLine::ForCurrentProcess()) {
+    // This command line helps to simulate query result arriving after autofill
+    // is triggered and shall be used for manual test only.
+    std::string value = cmd->GetSwitchValueASCII(
+        "autofill-server-query-result-delay-in-seconds");
+    if (!base::StringToInt(value, &delay))
+      delay = 0;
+  }
+
+  if (delay > 0) {
+    query_result_delay_task_.Reset(
+        base::BindOnce(&AutofillHandler::PropagateAutofillPredictionsToDriver,
+                       base::Unretained(this)));
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(query_result_delay_task_.callback(), queried_forms),
+        base::TimeDelta::FromSeconds(delay));
+  } else {
+    PropagateAutofillPredictionsToDriver(queried_forms);
+  }
+}
+
+void AutofillHandler::PropagateAutofillPredictionsToDriver(
+    const std::vector<FormStructure*>& queried_forms) {
   // Forward form structures to the password generation manager to detect
   // account creation forms.
   driver()->PropagateAutofillPredictions(queried_forms);

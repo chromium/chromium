@@ -13,6 +13,41 @@ MockLanguageModel::GetLanguages() {
   return {MockLanguageModel::LanguageDetails("en", 1.0)};
 }
 
+void MockTranslateInfoBarDelegate::SetTranslateLanguagesForTest(
+    std::vector<std::pair<std::string, std::u16string>> languages) {
+  for (auto pair : languages) {
+    languages_.push_back(pair);
+  }
+}
+
+void MockTranslateInfoBarDelegate::GetLanguagesNames(
+    std::vector<std::u16string>* names) const {
+  for (auto& entry : languages_) {
+    names->push_back(entry.second);
+  }
+}
+
+void MockTranslateInfoBarDelegate::GetLanguagesCodes(
+    std::vector<std::string>* codes) const {
+  for (auto& entry : languages_) {
+    codes->push_back(entry.first);
+  }
+}
+
+void MockTranslateInfoBarDelegate::SetContentLanguagesCodesForTest(
+    std::vector<std::string> languages) {
+  for (auto& entry : languages) {
+    content_languages_.push_back(entry);
+  }
+}
+
+void MockTranslateInfoBarDelegate::GetContentLanguagesCodes(
+    std::vector<std::string>* codes) const {
+  for (auto& entry : content_languages_) {
+    codes->push_back(entry);
+  }
+}
+
 MockTranslateInfoBarDelegate::MockTranslateInfoBarDelegate(
     const base::WeakPtr<translate::TranslateManager>& translate_manager,
     bool is_off_the_record,

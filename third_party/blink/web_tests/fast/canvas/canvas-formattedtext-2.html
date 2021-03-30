@@ -1,0 +1,26 @@
+<style> 
+    body { font: arial;}
+    .container {
+      position:absolute;
+      top:0;
+      left:0;
+    }
+    b {
+        display:block;
+    }
+    canvas {
+        display:block;
+    }
+</style>
+<body>
+<DIV id="canvas-rendered" class="container">
+</DIV>
+<DIV id="div-rendered" class="container">
+</DIV>
+</body>
+<script type = "text/javascript" src = "resources\canvas-formattedtext-cases-2.js" charset="UTF-8"></script>
+<script type = "text/javascript" src = "resources\canvas-formattedtext.js" charset="UTF-8"></script>
+<script>
+    RenderWithCanvas(document.getElementById("canvas-rendered"));
+    //RenderWithDiv(document.getElementById("div-rendered"));
+</script>

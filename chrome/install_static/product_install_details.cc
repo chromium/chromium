@@ -151,6 +151,9 @@ std::unique_ptr<PrimaryInstallDetails> MakeProductDetails(
                                   &update_ap, &update_cohort_name);
   details->set_channel(channel.channel_name);
   details->set_channel_origin(channel.origin);
+  if (channel.origin == ChannelOrigin::kPolicy)
+    details->set_channel_override(channel_from_registry);
+  details->set_is_extended_stable_channel(channel.is_extended_stable);
   details->set_update_ap(update_ap);
   details->set_update_cohort_name(update_cohort_name);
 

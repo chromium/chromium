@@ -18,7 +18,7 @@ ADDRESS_HOME_LINE1 | shippingAddressFieldGroup3-shippingAddressLine1 | *House Nu
 ADDRESS_HOME_LINE2 | shippingAddressFieldGroup3-shippingAddressLine2 | Address line 2 |  | shippingAddressFieldGroup3-shippingFirstName_3-default
 ADDRESS_HOME_CITY | shippingAddressFieldGroup3-shippingCity | *Town/City |  | shippingAddressFieldGroup3-shippingFirstName_3-default
 ADDRESS_HOME_STATE | shippingAddressFieldGroup3-shippingState | *State |  | shippingAddressFieldGroup3-shippingFirstName_3-default
-ADDRESS_HOME_STATE | shippingAddressFieldGroup3-shippingCounty | *County |  | shippingAddressFieldGroup3-shippingFirstName_3-default
+ADDRESS_HOME_COUNTRY | shippingAddressFieldGroup3-shippingCounty | *County |  | shippingAddressFieldGroup3-shippingFirstName_3-default
 ADDRESS_HOME_ZIP | shippingAddressFieldGroup3-shippingPostalCode | *Zip code |  | shippingAddressFieldGroup3-shippingFirstName_3-default
 NAME_FIRST | shippingAddressFieldGroup4-shippingFirstName | *First name |  | shippingAddressFieldGroup4-shippingFirstName_4-default
 NAME_LAST | shippingAddressFieldGroup4-shippingLastName | *Last Name |  | shippingAddressFieldGroup4-shippingFirstName_4-default

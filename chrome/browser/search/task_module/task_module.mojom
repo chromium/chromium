@@ -22,6 +22,8 @@ struct TaskItem {
   string? price;
   // Human-readable info.
   string info;
+  // Website name.
+  string? site_name;
   // URL of the target page.
   url.mojom.Url target_url;
 };

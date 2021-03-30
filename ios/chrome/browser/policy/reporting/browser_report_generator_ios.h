@@ -33,6 +33,7 @@ class BrowserReportGeneratorIOS : public BrowserReportGenerator::Delegate {
   // BrowserReportGenerator::Delegate implementation.
   std::string GetExecutablePath() override;
   version_info::Channel GetChannel() override;
+  bool IsExtendedStableChannel() override;
   void GenerateBuildStateInfo(em::BrowserReport* report) override;
   void GenerateProfileInfo(ReportType report_type,
                            em::BrowserReport* report) override;

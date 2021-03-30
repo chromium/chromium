@@ -13,6 +13,8 @@ import android.os.Bundle;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.widget.RemoteViews;
 
+import androidx.core.app.NotificationCompat;
+
 /**
  * Abstraction over Notification.Builder and NotificationCompat.Builder interfaces.
  */
@@ -68,6 +70,15 @@ public interface NotificationWrapperBuilder {
     NotificationWrapperBuilder addAction(Notification.Action action, int flags, int actionType);
 
     @Deprecated
+    NotificationWrapperBuilder addAction(NotificationCompat.Action action);
+
+    /**
+     * @param actionType is for UMA. In Chrome, this is {@link NotificationUmaTracker.ActionType}.
+     */
+    NotificationWrapperBuilder addAction(
+            NotificationCompat.Action action, int flags, int actionType);
+
+    @Deprecated
     NotificationWrapperBuilder setDeleteIntent(PendingIntent intent);
 
     NotificationWrapperBuilder setDeleteIntent(PendingIntentProvider intent);
@@ -92,6 +103,8 @@ public interface NotificationWrapperBuilder {
 
     NotificationWrapperBuilder setSound(Uri sound);
 
+    NotificationWrapperBuilder setSilent(boolean silent);
+
     NotificationWrapperBuilder setDefaults(int defaults);
 
     NotificationWrapperBuilder setOnlyAlertOnce(boolean onlyAlertOnce);
@@ -100,9 +113,9 @@ public interface NotificationWrapperBuilder {
 
     NotificationWrapperBuilder setContent(RemoteViews views);
 
-    NotificationWrapperBuilder setStyle(Notification.BigPictureStyle style);
+    NotificationWrapperBuilder setBigPictureStyle(Bitmap bigPicture, CharSequence summaryText);
 
-    NotificationWrapperBuilder setStyle(Notification.BigTextStyle bigTextStyle);
+    NotificationWrapperBuilder setBigTextStyle(CharSequence bigText);
 
     NotificationWrapperBuilder setMediaStyle(MediaSessionCompat session, int[] actions);
 

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources>
+    <dimen name="toolbar_tab_count_text_size_1_digit">12dp</dimen>
+    <dimen name="toolbar_tab_count_text_size_2_digit">10dp</dimen>
+
+    <!-- Tab Strip Dimensions -->
+    <dimen name="tab_strip_height">0dp</dimen>
+
+    <!-- Bottom controls dimensions -->
+    <dimen name="bottom_controls_height">@dimen/min_touch_target_size</dimen>
+
+    <!-- Custom Menu dimensions -->
+    <dimen name="tab_switcher_menu_width">222dp</dimen>
+    <dimen name="tab_switcher_menu_vertical_padding">8dp</dimen>
+
+    <!-- Custom Tabs dimensions -->
+    <dimen name="toolbar_icon_height">24dp</dimen>
+</resources>

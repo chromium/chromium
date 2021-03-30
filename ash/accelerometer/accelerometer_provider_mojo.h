@@ -15,16 +15,29 @@
 #include "ash/accelerometer/accelerometer_reader.h"
 #include "ash/accelerometer/accelerometer_samples_observer.h"
 #include "ash/ash_export.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
-#include "base/memory/ref_counted.h"
-#include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "chromeos/components/sensors/mojom/cros_sensor_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
+
+// As devices may be late-present, the state and available devices cannot be
+// determined within any given time or requests. This MojoState helps
+// AccelerometerProviderMojo determine the current available devices and
+// provides a clear finite state machine. States that should provide samples:
+// LID, LID_BASE, ANGL_LID.
+enum class MojoState {
+  INITIALIZING,  // No devices available yet.
+  LID,           // Only lid-accelerometer is available.
+  BASE,          // Only base-accelerometer is available.
+  LID_BASE,      // Both accelerometers are available.
+  ANGL,          // Only lid-angle driver is available.
+  ANGL_LID,      // Both lid-angle driver and lid-accelerometer are available.
+};
+
+class AccelerometerProviderMojoTest;
 
 // Work that runs on the UI thread. As a sensor client, it communicates with IIO
 // Service, determines the accelerometers' configuration, and waits for the
@@ -32,8 +45,8 @@ namespace ash {
 // observers.
 class ASH_EXPORT AccelerometerProviderMojo
     : public AccelerometerProviderInterface,
-      public TabletModeObserver,
-      public chromeos::sensors::mojom::SensorHalClient {
+      public chromeos::sensors::mojom::SensorHalClient,
+      public chromeos::sensors::mojom::SensorServiceNewDevicesObserver {
  public:
   AccelerometerProviderMojo();
   AccelerometerProviderMojo(const AccelerometerProviderMojo&) = delete;
@@ -42,28 +55,27 @@ class ASH_EXPORT AccelerometerProviderMojo
 
   // AccelerometerProviderInterface:
   void PrepareAndInitialize() override;
-  void AddObserver(AccelerometerReader::Observer* observer) override;
-  void RemoveObserver(AccelerometerReader::Observer* observer) override;
-  void StartListenToTabletModeController() override;
-  void StopListenToTabletModeController() override;
-  void SetEmitEvents(bool emit_events) override;
-
-  // TabletModeObserver:
-  void OnTabletPhysicalStateChanged() override;
+  void TriggerRead() override;
+  void CancelRead() override;
 
   // chromeos::sensors::mojom::SensorHalClient:
   void SetUpChannel(mojo::PendingRemote<chromeos::sensors::mojom::SensorService>
                         pending_remote) override;
 
-  // With ChromeOS EC lid angle driver present, it's triggered when the device
-  // is physically used as a tablet (even thought its UI might be in clamshell
-  // mode), cancelled otherwise.
-  void TriggerRead();
-  void CancelRead();
+  // chromeos::sensors::mojom::SensorServiceNewDevicesObserver
+  void OnNewDeviceAdded(
+      int32_t iio_device_id,
+      const std::vector<chromeos::sensors::mojom::DeviceType>& types) override;
 
-  State GetInitializationStateForTesting() const;
+  MojoState GetInitializationStateForTesting() const;
+
+ protected:
+  // AccelerometerProviderInterface:
+  bool ShouldDelayOnTabletPhysicalStateChanged() override;
 
  private:
+  friend AccelerometerProviderMojoTest;
+
   struct AccelerometerData {
     AccelerometerData();
     ~AccelerometerData();
@@ -88,6 +100,43 @@ class ASH_EXPORT AccelerometerProviderMojo
   void OnSensorServiceDisconnect();
   void ResetSensorService();
 
+  void SetECLidAngleDriverSupported();
+
+  // Update |initialization_state_| upon new devices' arrival.
+
+  // MojoState (|initialization_state_|) transition:
+  //   INITIALIZING -> ANGL
+  //   LID          -> ANGL_LID
+  //   BASE         -> ANGL
+  //   ANGL            Shouldn't happen
+  //   ANGL_LID        Shouldn't happen
+  void UpdateStateWithECLidAngleDriverSupported();
+
+  // MojoState (|initialization_state_|) transition:
+  //   INITIALIZING -> LID
+  //   LID             Shouldn't happen
+  //   BASE         -> LID_BASE
+  //   ANGL         -> ANGL_LID
+  //   ANGL_LID        Shouldn't happen
+  void UpdateStateWithLidAccelerometer();
+
+  // MojoState (|initialization_state_|) transition:
+  //   INITIALIZING -> BASE
+  //   LID          -> LID_BASE
+  //   BASE            Shouldn't happen
+  //   ANGL         -> ANGL
+  //   ANGL_LID     -> ANGL_LID
+  void UpdateStateWithBaseAccelerometer();
+
+  void SetNewDevicesObserver();
+  void OnNewDevicesObserverDisconnect();
+  // Timeout of new devices. If lid-angle driver is still not present, assumes
+  // it not supported and notifies observers.
+  // This class still listens to new devices after the timeout to catch the
+  // really late-present devices and avoid those issues, as the current use
+  // cases/observers allow that.
+  void OnNewDevicesTimeout();
+
   // Callback of GetDeviceIds(ANGL), containing the lid-angle device's id if it
   // exists.
   void GetLidAngleIdsCallback(const std::vector<int32_t>& lid_angle_ids);
@@ -108,8 +157,6 @@ class ASH_EXPORT AccelerometerProviderMojo
 
   // Ignores the accelerometer as the attributes are not expected.
   void IgnoreAccelerometer(int32_t id);
-  // Checks and sets |initialization_state_| if all information is retrieved.
-  void CheckInitialization();
 
   // Creates the AccelerometerSamplesObserver for the accelerometer with |id|.
   void CreateAccelerometerSamplesObserver(int32_t id);
@@ -118,14 +165,13 @@ class ASH_EXPORT AccelerometerProviderMojo
   void EnableAccelerometerReading();
   void DisableAccelerometerReading();
 
-  // Called by |observers_|, containing a sample of the accelerometer.
+  // Called by |AccelerometerData::samples_observer| stored in the
+  // |accelerometers_| map, containing a sample of the accelerometer.
   void OnSampleUpdatedCallback(int iio_device_id, std::vector<float> sample);
 
-  // Sets FAILED to |initialization_state_| due to an error.
-  void FailedToInitialize();
-
-  // The task runner to use for blocking tasks.
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  // The state that contains the information of devices we have now. Used for
+  // late-present devices.
+  MojoState initialization_state_ = MojoState::INITIALIZING;
 
   // The Mojo channel connecting to Sensor Hal Dispatcher.
   mojo::Receiver<chromeos::sensors::mojom::SensorHalClient> sensor_hal_client_{
@@ -134,8 +180,9 @@ class ASH_EXPORT AccelerometerProviderMojo
   // The Mojo channel to query and request for devices.
   mojo::Remote<chromeos::sensors::mojom::SensorService> sensor_service_remote_;
 
-  // The existence of the accelerometer on the base.
-  bool has_accelerometer_base_ = false;
+  // The Mojo channel to get notified when new devices are added to IIO Service.
+  mojo::Receiver<chromeos::sensors::mojom::SensorServiceNewDevicesObserver>
+      new_devices_observer_{this};
 
   // First is the accelerometer's iio device id, second is it's data, mojo
   // remote and samples observer.
@@ -149,22 +196,11 @@ class ASH_EXPORT AccelerometerProviderMojo
   // |ec_lid_angle_driver_status_| is set.
   bool pending_on_tablet_physical_state_changed_ = false;
 
-  // One time read upon |AddObserver|.
-  // Some observers need to know ECLidAngleDriverStatus, and it's guaranteed to
-  // be set before reading samples. When adding an observer, trigger at least
-  // one sample to notify observers that ECLidAngleDriverStatus has been set.
-  bool one_time_read_ = false;
-
   // True if periodical accelerometer read is on.
   bool accelerometer_read_on_ = false;
 
-  bool emit_events_ = true;
-
-  // The observers to notify of accelerometer updates.
-  base::ObserverList<AccelerometerReader::Observer>::Unchecked observers_;
-
   // The last seen accelerometer data.
-  scoped_refptr<AccelerometerUpdate> update_;
+  AccelerometerUpdate update_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

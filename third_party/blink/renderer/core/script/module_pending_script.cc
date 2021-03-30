@@ -40,7 +40,7 @@ void ModulePendingScriptTreeClient::Trace(Visitor* visitor) const {
 ModulePendingScript::ModulePendingScript(ScriptElementBase* element,
                                          ModulePendingScriptTreeClient* client,
                                          bool is_external)
-    : PendingScript(element, TextPosition()),
+    : PendingScript(element, TextPosition::MinimumPosition()),
       module_tree_client_(client),
       is_external_(is_external) {
   CHECK(GetElement());

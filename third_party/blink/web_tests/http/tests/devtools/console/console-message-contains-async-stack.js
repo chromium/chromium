@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests exception message with empty stack in console contains async stack trace.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.DebuggerAgent.setAsyncCallStackDepth(200);

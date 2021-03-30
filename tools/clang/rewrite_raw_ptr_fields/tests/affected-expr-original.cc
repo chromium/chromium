@@ -276,11 +276,11 @@ void foo() {
 namespace implicit_constructors {
 
 // Based on //base/strings/string_piece_forward.h:
-template <typename STRING_TYPE>
+template <typename CharT>
 class BasicStringPiece;
-typedef BasicStringPiece<std::string> StringPiece;
+typedef BasicStringPiece<char> StringPiece;
 // Based on //base/strings/string_piece.h:
-template <typename STRING_TYPE>
+template <typename CharT>
 class BasicStringPiece {
  public:
   constexpr BasicStringPiece(const char* str) {}
@@ -303,8 +303,7 @@ void foo() {
   // error: no matching function for call to 'FunctionTakingBasicStringPiece'
   // note: candidate function not viable: no known conversion from
   // 'base::CheckedPtr<const char>' to 'templated_functions::StringPiece' (aka
-  // 'BasicStringPiece<basic_string<char, char_traits<char>, allocator<char>>>')
-  // for 1st argument
+  // 'BasicStringPiece<char>') for 1st argument
   FunctionTakingBasicStringPiece(my_struct.const_char_ptr);
   FunctionTakingBasicStringPieceRef(my_struct.const_char_ptr);
 

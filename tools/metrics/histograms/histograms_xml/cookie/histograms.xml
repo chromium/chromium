@@ -23,6 +23,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Cookie.AbbreviatedExpirationYear" units="year"
     expires_after="2021-06-30">
+  <obsolete>
+    Removed Jan 2021: no longer needed since crbug.com/907610 is now fixed.
+  </obsolete>
   <owner>chlily@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
@@ -42,7 +45,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.CommitProblem" enum="CookieCommitProblem"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>morlovich@chromium.org</owner>
   <summary>
     Recorded when a problem occurs trying to commit changes to the cookie store
@@ -51,7 +54,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.CookiePrefix" enum="CookiePrefix"
-    expires_after="2021-06-20">
+    expires_after="2021-08-22">
   <owner>estark@chromium.org</owner>
   <summary>
     Number of times a cookie was set with a name prefixed by
@@ -75,7 +78,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.CookieSchemeRequestScheme" enum="CookieRequestScheme"
-    expires_after="2021-06-20">
+    expires_after="2021-08-22">
   <owner>bingler@chromium.org</owner>
   <owner>chlily@chromium.org</owner>
   <summary>
@@ -86,7 +89,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.CookieSourceScheme" enum="CookieSourceScheme"
-    expires_after="2021-06-20">
+    expires_after="2021-08-22">
   <owner>estark@chromium.org</owner>
   <summary>
     For each cookie added to the store, record whether its source URL has a
@@ -114,11 +117,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Cookie.Count" units="units" expires_after="2021-05-23">
-  <owner>battre@chromium.org</owner>
+<histogram name="Cookie.Count" units="units" expires_after="2021-07-27">
+  <obsolete>
+    Removed Feb 2021 in favor of Cookie.Count2, which has a wider range.
+  </obsolete>
+  <owner>chlily@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
   <summary>
     Number of cookies in the store (recorded every 10 minutes of active browsing
     time)
+  </summary>
+</histogram>
+
+<histogram name="Cookie.Count2" units="units" expires_after="2021-07-27">
+  <owner>chlily@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    Number of cookies in the store (recorded every 10 minutes of active browsing
+    time), with a wider range than Cookie.Count.
   </summary>
 </histogram>
 
@@ -143,14 +159,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.ExpirationDurationMinutesNonSecure" units="minutes"
-    expires_after="2021-06-30">
+    expires_after="2021-08-29">
   <owner>kaustubhag@chromium.org</owner>
   <owner>chlily@chromium.org</owner>
   <summary>Number of minutes until non-Secure cookie expires when set.</summary>
 </histogram>
 
 <histogram name="Cookie.ExpirationDurationMinutesSecure" units="minutes"
-    expires_after="2021-06-30">
+    expires_after="2021-08-29">
   <owner>kaustubhag@chromium.org</owner>
   <owner>chlily@chromium.org</owner>
   <summary>Number of minutes until Secure cookie expires when set.</summary>
@@ -164,7 +180,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.IncludedRequestEffectiveSameSite"
-    enum="CookieEffectiveSameSite" expires_after="2021-06-20">
+    enum="CookieEffectiveSameSite" expires_after="2021-08-22">
   <owner>bingler@chromium.org</owner>
   <owner>chlily@chromium.org</owner>
   <summary>
@@ -174,7 +190,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.IncludedResponseEffectiveSameSite"
-    enum="CookieEffectiveSameSite" expires_after="2021-06-20">
+    enum="CookieEffectiveSameSite" expires_after="2021-08-22">
   <owner>bingler@chromium.org</owner>
   <owner>chlily@chromium.org</owner>
   <summary>
@@ -206,7 +222,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.LoadProblem" enum="CookieLoadProblem"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>morlovich@chromium.org</owner>
   <summary>
     Recorded when a problem is recorded when loading the persistent cookie
@@ -214,8 +230,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Cookie.MigratedEncryptionKeySuccess" enum="BooleanSuccess"
+    expires_after="M92">
+  <owner>wfh@chromium.org</owner>
+  <owner>pwnall@chromium.org</owner>
+  <summary>
+    Whether the migration of encryption key for the sqlite persistent cookie
+    store on Windows was successful or not. This happened when moving from
+    cookie database v13 to cookie database v14. This is recorded once during
+    migration, in first startup of a browser version with v14 database code. See
+    also Cookie.TimeDatabaseMigrationToV14.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.NumDomainPurgedKeys" units="keys"
-    expires_after="2021-05-29">
+    expires_after="2021-08-01">
   <owner>chlily@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
   <summary>
@@ -228,13 +257,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Cookie.NumKeys" units="keys" expires_after="2021-05-29">
+<histogram name="Cookie.NumKeys" units="keys" expires_after="2021-08-01">
   <owner>chlily@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
   <summary>
     Records the number of distinct keys (eTLD+1's) that have any stored cookies
     (which may or may not be expired). Recorded every 10 minutes of active
     browsing time.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.PerFirstPartySetCount" units="cookies"
+    expires_after="2022-01-05">
+  <owner>cfredric@chromium.org</owner>
+  <owner>chlily@chromium.org</owner>
+  <summary>
+    This histogram records, for each (nontrivial) First-Party Set, the number of
+    cookies in the cookie store that belong to a member or owner of that set.
+    Recorded every 10 minutes of active browsing time.
   </summary>
 </histogram>
 
@@ -377,13 +417,33 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.RequestSameSiteContext" enum="SameSiteCookieContext"
-    expires_after="2021-06-20">
+    expires_after="2021-08-22">
   <owner>chlily@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
     The same-site context of a request, i.e. the relationship between the
     request and the navigational environment. Logged on every request to access
     a cookie.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.SameParty.ReadExclusionDecidedBySameParty"
+    enum="Boolean" expires_after="2022-01-06">
+  <owner>cfredric@chromium.org</owner>
+  <owner>chlily@chromium.org</owner>
+  <summary>
+    This histogram records whether enforcement of the SameParty attribute was
+    the only reason for a cookie's exclusion (from a read).
+  </summary>
+</histogram>
+
+<histogram name="Cookie.SameParty.SetExclusionDecidedBySameParty"
+    enum="Boolean" expires_after="2022-01-06">
+  <owner>cfredric@chromium.org</owner>
+  <owner>chlily@chromium.org</owner>
+  <summary>
+    This histogram records whether enforcement of the SameParty attribute was
+    the only reason for a cookie's exclusion (from a write).
   </summary>
 </histogram>
 
@@ -398,6 +458,72 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Cookie.SamePartyReadIncluded.InclusionUnderSameSite"
+    enum="BooleanIncluded" expires_after="2022-01-05">
+  <owner>cfredric@chromium.org</owner>
+  <owner>chlily@chromium.org</owner>
+  <summary>
+    This histogram records, for each cookie with the SameParty attribute that is
+    read, whether the access would have been allowed by the cookie's SameSite
+    attribute (if SameParty had not been specified).
+  </summary>
+</histogram>
+
+<histogram name="Cookie.SamePartyReadIncluded.IsHTTP" enum="BooleanHTTPVsJS"
+    expires_after="2022-01-05">
+  <owner>cfredric@chromium.org</owner>
+  <owner>chlily@chromium.org</owner>
+  <summary>
+    This histogram records, for each cookie with the SameParty attribute that is
+    read, whether the access was over HTTP/HTTPS (as opposed to JS).
+  </summary>
+</histogram>
+
+<histogram name="Cookie.SamePartyReadIncluded.PartyContextSize"
+    units="registrable domains" expires_after="2022-01-05">
+  <owner>cfredric@chromium.org</owner>
+  <owner>chlily@chromium.org</owner>
+  <summary>
+    This histogram records, for each cookie with the SameParty attribute that is
+    read, how large the party-context was. I.e., how many distinct registrable
+    domains needed to be treated as a single party in order for the cookie to
+    &quot;work&quot;.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.SamePartySetIncluded.InclusionUnderSameSite"
+    enum="BooleanIncluded" expires_after="2022-01-05">
+  <owner>cfredric@chromium.org</owner>
+  <owner>chlily@chromium.org</owner>
+  <summary>
+    This histogram records, for each cookie with the SameParty attribute that is
+    set, whether the access would have been allowed by the cookie's SameSite
+    attribute (if SameParty had not been specified).
+  </summary>
+</histogram>
+
+<histogram name="Cookie.SamePartySetIncluded.IsHTTP" enum="BooleanHTTPVsJS"
+    expires_after="2022-01-05">
+  <owner>cfredric@chromium.org</owner>
+  <owner>chlily@chromium.org</owner>
+  <summary>
+    This histogram records, for each cookie that is set with the SameParty
+    attribute, whether the access was over HTTP/HTTPS (as opposed to JS).
+  </summary>
+</histogram>
+
+<histogram name="Cookie.SamePartySetIncluded.PartyContextSize"
+    units="registrable domains" expires_after="2022-01-05">
+  <owner>cfredric@chromium.org</owner>
+  <owner>chlily@chromium.org</owner>
+  <summary>
+    This histogram records, for each cookie that is set with the SameParty
+    attribute, how large the party-context was. I.e., how many distinct
+    registrable domains needed to be treated as a single party in order for the
+    cookie to &quot;work&quot;.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.SameSiteAttributeValue" enum="CookieSameSiteString"
     expires_after="2021-11-01">
   <owner>chlily@chromium.org</owner>
@@ -408,9 +534,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Cookie.SameSiteContextAffectedByBugfix1166211"
+    enum="BooleanAffected" expires_after="2021-08-18">
+  <owner>chlily@chromium.org</owner>
+  <owner>miketaylr@chromium.org</owner>
+  <summary>
+    Whether the SameSite context was affected by the fix for crbug.com/1166211,
+    i.e. whether it would have been laxly same-site before the fix but is
+    considered cross-site after the fix. Logged for each HTTP(S)
+    request/response that potentially accesses cookies, whose site-for-cookies
+    is same-site with the request URL, but whose initiator is cross-site to the
+    request URL. This is logged regardless of whether the change in SameSite
+    context actually changed the outcome of any cookie inclusion calculation.
+    Logged regardless of whether the bugfix's base::Feature is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.SameSiteContextDowngradeRequest"
     enum="SameSiteCookieContextBreakingDowngradeWithSecureness"
-    expires_after="2021-05-04">
+    expires_after="2021-09-05">
   <owner>bingler@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
   <summary>
@@ -427,7 +569,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Cookie.SameSiteContextDowngradeResponse"
     enum="SameSiteCookieContextBreakingDowngradeWithSecureness"
-    expires_after="2021-05-04">
+    expires_after="2021-09-05">
   <owner>bingler@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
   <summary>
@@ -442,8 +584,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Cookie.SameSiteCookieInclusionChangedByBugfix1166211"
+    enum="BooleanChanged" expires_after="2021-08-18">
+  <owner>chlily@chromium.org</owner>
+  <owner>miketaylr@chromium.org</owner>
+  <summary>
+    Whether a cookie was excluded solely due to the fix for crbug.com/1166211,
+    i.e. whether it would have been included before the fix but is excluded
+    after the fix. Logged for each cookie accessed by an HTTP(S)
+    request/response whose SameSite context was affected by the bugfix, i.e.
+    requests that are not main frame navigations, whose site-for-cookies is
+    same-site with the request URL, but whose initiator is cross-site to the
+    request URL. This is logged regardless of whether the bugfix's base::Feature
+    is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.SameSiteNoneIsSecure" enum="Boolean"
-    expires_after="2021-06-20">
+    expires_after="2021-08-22">
   <owner>chlily@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
@@ -454,6 +612,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Cookie.SameSiteUnspecifiedEffective"
     enum="CookieEffectiveSameSite" expires_after="M90">
+  <obsolete>
+    Removed Jan 2021 for cleanup: crbug.com/1165039
+  </obsolete>
   <owner>chlily@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
@@ -485,7 +646,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.TimeBlockedOnLoad" units="ms"
-    expires_after="2021-04-25">
+    expires_after="2021-08-09">
   <owner>nharper@chromium.org</owner>
   <summary>
     The amount of time (ms) between the cookie store load starting and
@@ -543,14 +704,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Cookie.TimeDatabaseMigrationToV14" units="ms"
+    expires_after="2021-09-05">
+  <owner>wfh@chromium.org</owner>
+  <owner>chlily@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
+  <summary>
+    The amount of time (ms) to migrate a v13 cookie database to v14. Migration
+    occurs upon first startup of a browser version with v14 database code.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.TimeDatabaseMigrationToV9" units="ms"
     expires_after="2018-08-30">
   <owner>erikchen@chromium.org</owner>
   <summary>The amount of time (ms) to migrate a v8 database to v9.</summary>
 </histogram>
 
-<histogram name="Cookie.TimeInitializeDB" units="ms" expires_after="2021-01-03">
-  <owner>nyquist@chromium.org</owner>
+<histogram name="Cookie.TimeInitializeDB" units="ms" expires_after="2021-08-22">
+  <owner>chlily@chromium.org</owner>
+  <owner>src/net/cookies/OWNERS</owner>
   <summary>The amount of time (ms) to initialize the cookies database.</summary>
 </histogram>
 
@@ -589,7 +762,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Cookie.Type" enum="CookieType" expires_after="2021-06-13">
+<histogram name="Cookie.Type" enum="CookieType" expires_after="2021-08-15">
   <owner>mkwst@chromium.org</owner>
   <summary>For each cookie added to the store, record it's type(s).</summary>
 </histogram>

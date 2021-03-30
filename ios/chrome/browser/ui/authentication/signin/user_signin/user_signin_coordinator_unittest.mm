@@ -119,6 +119,8 @@ class UserSigninCoordinatorTest : public PlatformTest {
           id returnValue = nil;
           [invocation setReturnValue:&returnValue];
         });
+    OCMStub([user_signin_view_controller_mock_ presentingViewController])
+        .andReturn(user_signin_view_controller_mock_);
     OCMExpect(
         [user_signin_view_controller_mock_ supportedInterfaceOrientations])
         .andReturn(UIInterfaceOrientationMaskAll);

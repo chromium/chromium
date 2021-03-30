@@ -37,9 +37,9 @@ class StorageSchemaManifestHandlerTest : public testing::Test {
 
   scoped_refptr<Extension> CreateExtension(const std::string& schema) {
     std::string error;
-    scoped_refptr<Extension> extension =
-        Extension::Create(temp_dir_.GetPath(), Manifest::UNPACKED, manifest_,
-                          Extension::NO_FLAGS, "", &error);
+    scoped_refptr<Extension> extension = Extension::Create(
+        temp_dir_.GetPath(), mojom::ManifestLocation::kUnpacked, manifest_,
+        Extension::NO_FLAGS, "", &error);
     if (!extension.get())
       return nullptr;
     base::FilePath schema_path = temp_dir_.GetPath().AppendASCII("schema.json");

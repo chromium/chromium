@@ -49,6 +49,13 @@ source_set("deprecated_experimental_mojo") {
     "socket.h",
   ]
 
+  if (is_chromeos || is_linux) {
+    sources += [
+      "bluez/metrics_recorder.cc",
+      "bluez/metrics_recorder.h",
+    ]
+  }
+
   deps = [
     ":bluetooth",
     "//device/bluetooth/public/mojom:deprecated_experimental_interfaces",
@@ -189,7 +196,7 @@ component("bluetooth") {
   }
 
   if (is_chromeos_ash) {
-    deps += [ "//chromeos/constants" ]
+    deps += [ "//ash/constants" ]
   }
 
   if (is_mac) {
@@ -540,7 +547,6 @@ if (is_android) {
     sources = java_sources_needing_jni
     deps = [
       "//base:base_java",
-      "//base:jni_java",
       "//components/location/android:location_java",
     ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

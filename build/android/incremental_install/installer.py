@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env vpython
 #
 # Copyright 2015 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -228,7 +228,7 @@ def Install(device, install_json, apk=None, enable_device_cache=False,
 
   def check_device_configured():
     target_sdk_version = int(apk.GetTargetSdkVersion())
-    # Beta Q builds apply whitelist to targetSdk=28 as well.
+    # Beta Q builds apply allowlist to targetSdk=28 as well.
     if target_sdk_version >= 28 and device.build_version_sdk >= 28:
       # In P, there are two settings:
       #  * hidden_api_policy_p_apps

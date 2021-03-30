@@ -51,6 +51,7 @@ cast_source_set("unittests") {
   testonly = true
   sources = [
     "backend/audio_video_pipeline_device_unittest.cc",
+    "backend/multizone_backend_unittest.cc",
     "base/balanced_media_task_runner_unittest.cc",
     "base/buffering_controller_unittest.cc",
     "base/buffering_frame_provider_unittest.cc",
@@ -80,7 +81,10 @@ cast_source_set("unittests") {
   # Android because both protobuf_full and protobuf_lite get included.
   if (!is_android) {
     sources += [
+      "backend/proxy/audio_decoder_pipeline_node_unittest.cc",
+      "backend/proxy/buffer_id_manager_unittest.cc",
       "backend/proxy/cma_backend_proxy_unittest.cc",
+      "backend/proxy/media_pipeline_buffer_extension_unittest.cc",
       "backend/proxy/proxy_call_translator_unittest.cc",
       "backend/proxy/push_buffer_queue_unittest.cc",
     ]
@@ -98,9 +102,4 @@ cast_source_set("unittests") {
   }
 
   data = [ "//media/test/data/" ]
-
-  # MultizoneBackendTest verifies rendering delay reported by the backend.
-  if (supports_multizone) {
-    sources += [ "backend/multizone_backend_unittest.cc" ]
-  }
 }

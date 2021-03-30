@@ -37,3 +37,15 @@ rootWebArea
 ++++++++++genericContainer
 ++++++++++++staticText name='1234'
 ++++++++++++++inlineTextBox name='1234'
+++++++textField value='a' invalidState=true
+++++++++genericContainer
+++++++++++staticText name='a'
+++++++++++++inlineTextBox name='a'
+++++++textField value='a' invalidState=false
+++++++++genericContainer
+++++++++++staticText name='a'
+++++++++++++inlineTextBox name='a'
+++++++textField value='a' invalidState=true
+++++++++genericContainer
+++++++++++staticText name='a'
+++++++++++++inlineTextBox name='a'

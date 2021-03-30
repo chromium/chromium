@@ -121,8 +121,11 @@ class ScrollBehaviorBrowserTest : public ContentBrowserTest,
   ~ScrollBehaviorBrowserTest() override = default;
 
   RenderWidgetHostImpl* GetWidgetHost() {
-    return RenderWidgetHostImpl::From(
-        shell()->web_contents()->GetRenderViewHost()->GetWidget());
+    return RenderWidgetHostImpl::From(shell()
+                                          ->web_contents()
+                                          ->GetMainFrame()
+                                          ->GetRenderViewHost()
+                                          ->GetWidget());
   }
 
   void OnSyntheticGestureCompleted(SyntheticGesture::Result result) {
@@ -149,7 +152,7 @@ class ScrollBehaviorBrowserTest : public ContentBrowserTest,
     RenderWidgetHostImpl* host = GetWidgetHost();
     host->GetView()->SetSize(gfx::Size(400, 400));
 
-    base::string16 ready_title(base::ASCIIToUTF16("ready"));
+    std::u16string ready_title(u"ready");
     TitleWatcher watcher(shell()->web_contents(), ready_title);
     ignore_result(watcher.WaitAndGetTitle());
 
@@ -172,10 +175,9 @@ class ScrollBehaviorBrowserTest : public ContentBrowserTest,
   // The scroll delta values are in the viewport direction. Positive
   // scroll_delta_y means scroll down, positive scroll_delta_x means scroll
   // right.
-  void SimulateScroll(
-      SyntheticGestureParams::GestureSourceType gesture_source_type,
-      int scroll_delta_x,
-      int scroll_delta_y) {
+  void SimulateScroll(content::mojom::GestureSourceType gesture_source_type,
+                      int scroll_delta_x,
+                      int scroll_delta_y) {
     auto scroll_update_watcher = std::make_unique<InputMsgWatcher>(
         GetWidgetHost(), blink::WebInputEvent::Type::kGestureScrollEnd);
 
@@ -326,7 +328,7 @@ IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
   ASSERT_LT(scroll_top, kIntermediateScrollOffset);
 
   // When interrupted by a touch scroll, the in-progress smooth scrolls stop.
-  SimulateScroll(SyntheticGestureParams::TOUCH_INPUT, 0, -100);
+  SimulateScroll(content::mojom::GestureSourceType::kTouchInput, 0, -100);
 
   // The touch scroll should cause scroll to 0 and cancel the animation, so
   // make sure the value stays at 0.
@@ -335,8 +337,10 @@ IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
 
 // This tests that a in-progress smooth scroll on an overflow:scroll element
 // stops when interrupted by a mouse wheel scroll.
+// Flaky, mainly on Mac, but also on other slower builders/testers:
+// https://crbug.com/1175392
 IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
-                       OverflowScrollInterruptedByWheelScroll) {
+                       DISABLED_OverflowScrollInterruptedByWheelScroll) {
   // TODO(crbug.com/1116647): compositing scroll should be able to cancel a
   // running programmatic scroll.
   if (!disable_threaded_scrolling_)
@@ -356,7 +360,7 @@ IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
   ASSERT_LT(scroll_top, kIntermediateScrollOffset);
 
   // When interrupted by a wheel scroll, the in-progress smooth scrolls stop.
-  SimulateScroll(SyntheticGestureParams::MOUSE_INPUT, 0, -30);
+  SimulateScroll(content::mojom::GestureSourceType::kMouseInput, 0, -30);
 
   // Smooth scrolling is disabled for wheel scroll on Mac.
   // https://crbug.com/574283.

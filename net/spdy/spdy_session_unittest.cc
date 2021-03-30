@@ -14,6 +14,7 @@
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -42,6 +43,7 @@
 #include "net/socket/socket_tag.h"
 #include "net/socket/socket_test_util.h"
 #include "net/socket/transport_connect_job.h"
+#include "net/spdy/alps_decoder.h"
 #include "net/spdy/spdy_http_utils.h"
 #include "net/spdy/spdy_session_pool.h"
 #include "net/spdy/spdy_session_test_util.h"
@@ -90,6 +92,13 @@ base::TimeTicks SlowReads() {
 
 base::TimeTicks InstantaneousReads() {
   return g_time_now;
+}
+
+std::string HexDecode(base::StringPiece hex) {
+  std::string output;
+  bool success = base::HexStringToString(hex, &output);
+  DCHECK(success);
+  return output;
 }
 
 class MockRequireCTDelegate : public TransportSecurityState::RequireCTDelegate {
@@ -6887,11 +6896,6 @@ class TestSSLConfigService : public SSLConfigService {
     return false;
   }
 
-  bool ShouldSuppressLegacyTLSWarning(
-      const std::string& hostname) const override {
-    return false;
-  }
-
   void SetDomainsForPooling(const std::vector<std::string>& domains) {
     domains_for_pooling_ = domains;
   }
@@ -7245,6 +7249,287 @@ TEST_F(SpdySessionTest, UpdateHeaderTableSize) {
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(data.AllWriteDataConsumed());
   EXPECT_TRUE(data.AllReadDataConsumed());
+}
+
+TEST_F(SpdySessionTest, PriorityUpdateDisabled) {
+  session_deps_.enable_priority_update = false;
+
+  spdy::SettingsMap settings;
+  settings[spdy::SETTINGS_DEPRECATE_HTTP2_PRIORITIES] = 1;
+  auto settings_frame = spdy_util_.ConstructSpdySettings(settings);
+  auto settings_ack = spdy_util_.ConstructSpdySettingsAck();
+
+  MockRead reads[] = {CreateMockRead(settings_frame, 0),
+                      MockRead(ASYNC, ERR_IO_PENDING, 2),
+                      MockRead(ASYNC, 0, 3)};
+  MockWrite writes[] = {CreateMockWrite(settings_ack, 1)};
+  SequencedSocketData data(reads, writes);
+
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+  AddSSLSocketData();
+
+  CreateNetworkSession();
+  CreateSpdySession();
+
+  // HTTP/2 priorities enabled by default.
+  // PRIORITY_UPDATE is disabled by |enable_priority_update| = false.
+  EXPECT_TRUE(session_->ShouldSendHttp2Priority());
+  EXPECT_FALSE(session_->ShouldSendPriorityUpdate());
+
+  // Receive SETTINGS frame.
+  base::RunLoop().RunUntilIdle();
+
+  // Since |enable_priority_update| = false,
+  // SETTINGS_DEPRECATE_HTTP2_PRIORITIES has no effect.
+  EXPECT_TRUE(session_->ShouldSendHttp2Priority());
+  EXPECT_FALSE(session_->ShouldSendPriorityUpdate());
+
+  data.Resume();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(data.AllWriteDataConsumed());
+  EXPECT_TRUE(data.AllReadDataConsumed());
+}
+
+TEST_F(SpdySessionTest, PriorityUpdateEnabledHttp2PrioritiesDeprecated) {
+  session_deps_.enable_priority_update = true;
+
+  spdy::SettingsMap settings;
+  settings[spdy::SETTINGS_DEPRECATE_HTTP2_PRIORITIES] = 1;
+  auto settings_frame = spdy_util_.ConstructSpdySettings(settings);
+  auto settings_ack = spdy_util_.ConstructSpdySettingsAck();
+
+  MockRead reads[] = {CreateMockRead(settings_frame, 0),
+                      MockRead(ASYNC, ERR_IO_PENDING, 2),
+                      MockRead(ASYNC, 0, 3)};
+  MockWrite writes[] = {CreateMockWrite(settings_ack, 1)};
+  SequencedSocketData data(reads, writes);
+
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+  AddSSLSocketData();
+
+  CreateNetworkSession();
+  CreateSpdySession();
+
+  // Both priority schemes are enabled until SETTINGS frame is received.
+  EXPECT_TRUE(session_->ShouldSendHttp2Priority());
+  EXPECT_TRUE(session_->ShouldSendPriorityUpdate());
+
+  // Receive SETTINGS frame.
+  base::RunLoop().RunUntilIdle();
+
+  // SETTINGS_DEPRECATE_HTTP2_PRIORITIES = 1 disables HTTP/2 priorities.
+  EXPECT_FALSE(session_->ShouldSendHttp2Priority());
+  EXPECT_TRUE(session_->ShouldSendPriorityUpdate());
+
+  data.Resume();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(data.AllWriteDataConsumed());
+  EXPECT_TRUE(data.AllReadDataConsumed());
+}
+
+TEST_F(SpdySessionTest, PriorityUpdateEnabledHttp2PrioritiesNotDeprecated) {
+  session_deps_.enable_priority_update = true;
+
+  spdy::SettingsMap settings;
+  settings[spdy::SETTINGS_DEPRECATE_HTTP2_PRIORITIES] = 0;
+  auto settings_frame = spdy_util_.ConstructSpdySettings(settings);
+  auto settings_ack = spdy_util_.ConstructSpdySettingsAck();
+
+  MockRead reads[] = {CreateMockRead(settings_frame, 0),
+                      MockRead(ASYNC, ERR_IO_PENDING, 2),
+                      MockRead(ASYNC, 0, 3)};
+  MockWrite writes[] = {CreateMockWrite(settings_ack, 1)};
+  SequencedSocketData data(reads, writes);
+
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+  AddSSLSocketData();
+
+  CreateNetworkSession();
+  CreateSpdySession();
+
+  // Both priority schemes are enabled until SETTINGS frame is received.
+  EXPECT_TRUE(session_->ShouldSendHttp2Priority());
+  EXPECT_TRUE(session_->ShouldSendPriorityUpdate());
+
+  // Receive SETTINGS frame.
+  base::RunLoop().RunUntilIdle();
+
+  // SETTINGS_DEPRECATE_HTTP2_PRIORITIES = 0 disables PRIORITY_UPDATE.
+  EXPECT_TRUE(session_->ShouldSendHttp2Priority());
+  EXPECT_FALSE(session_->ShouldSendPriorityUpdate());
+
+  data.Resume();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(data.AllWriteDataConsumed());
+  EXPECT_TRUE(data.AllReadDataConsumed());
+}
+
+TEST_F(SpdySessionTest, SettingsDeprecateHttp2PrioritiesValueMustNotChange) {
+  spdy::SettingsMap settings0;
+  settings0[spdy::SETTINGS_DEPRECATE_HTTP2_PRIORITIES] = 0;
+  auto settings_frame0 = spdy_util_.ConstructSpdySettings(settings0);
+  spdy::SettingsMap settings1;
+  settings1[spdy::SETTINGS_DEPRECATE_HTTP2_PRIORITIES] = 1;
+  auto settings_frame1 = spdy_util_.ConstructSpdySettings(settings1);
+  MockRead reads[] = {
+      CreateMockRead(settings_frame1, 0), MockRead(ASYNC, ERR_IO_PENDING, 2),
+      CreateMockRead(settings_frame1, 3), MockRead(ASYNC, ERR_IO_PENDING, 5),
+      CreateMockRead(settings_frame0, 6)};
+
+  auto settings_ack = spdy_util_.ConstructSpdySettingsAck();
+  auto goaway = spdy_util_.ConstructSpdyGoAway(
+      0, spdy::ERROR_CODE_PROTOCOL_ERROR,
+      "spdy::SETTINGS_DEPRECATE_HTTP2_PRIORITIES value changed after first "
+      "SETTINGS frame.");
+  MockWrite writes[] = {
+      CreateMockWrite(settings_ack, 1), CreateMockWrite(settings_ack, 4),
+      CreateMockWrite(settings_ack, 7), CreateMockWrite(goaway, 8)};
+
+  SequencedSocketData data(reads, writes);
+
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+  AddSSLSocketData();
+
+  CreateNetworkSession();
+  CreateSpdySession();
+
+  base::RunLoop().RunUntilIdle();
+  data.Resume();
+  base::RunLoop().RunUntilIdle();
+  data.Resume();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(data.AllWriteDataConsumed());
+  EXPECT_TRUE(data.AllReadDataConsumed());
+}
+
+TEST_F(SpdySessionTest, AlpsEmpty) {
+  base::HistogramTester histogram_tester;
+
+  ssl_.peer_application_settings = "";
+
+  SequencedSocketData data;
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+  AddSSLSocketData();
+
+  CreateNetworkSession();
+  CreateSpdySession();
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.SpdySession.AlpsDecoderStatus",
+      static_cast<int>(AlpsDecoder::Error::kNoError), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SpdySession.AlpsSettingParameterCount", 0, 1);
+  const int kNoEntries = 0;
+  histogram_tester.ExpectUniqueSample("Net.SpdySession.AlpsAcceptChEntries",
+                                      kNoEntries, 1);
+
+  histogram_tester.ExpectTotalCount("Net.SpdySession.AcceptChForOrigin", 0);
+  EXPECT_EQ("", session_->GetAcceptChViaAlpsForOrigin(
+                    url::Origin::Create(GURL("https://www.example.org"))));
+  histogram_tester.ExpectUniqueSample("Net.SpdySession.AcceptChForOrigin",
+                                      false, 1);
+}
+
+TEST_F(SpdySessionTest, AlpsSettings) {
+  base::HistogramTester histogram_tester;
+
+  spdy::SettingsMap settings;
+  settings[spdy::SETTINGS_HEADER_TABLE_SIZE] = 12345;
+  spdy::SpdySerializedFrame settings_frame(
+      spdy_util_.ConstructSpdySettings(settings));
+  ssl_.peer_application_settings =
+      std::string(settings_frame.data(), settings_frame.size());
+
+  SequencedSocketData data;
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+  AddSSLSocketData();
+
+  CreateNetworkSession();
+  CreateSpdySession();
+
+  EXPECT_EQ(12345u, header_encoder_table_size());
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.SpdySession.AlpsDecoderStatus",
+      static_cast<int>(AlpsDecoder::Error::kNoError), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SpdySession.AlpsSettingParameterCount", 1, 1);
+}
+
+TEST_F(SpdySessionTest, AlpsAcceptCh) {
+  base::HistogramTester histogram_tester;
+
+  ssl_.peer_application_settings = HexDecode(
+      "00001e"                    // length
+      "89"                        // type ACCEPT_CH
+      "00"                        // flags
+      "00000000"                  // stream ID
+      "0017"                      // origin length
+      "68747470733a2f2f7777772e"  //
+      "6578616d706c652e636f6d"    // origin "https://www.example.com"
+      "0003"                      // value length
+      "666f6f");                  // value "foo"
+
+  SequencedSocketData data;
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+  AddSSLSocketData();
+
+  CreateNetworkSession();
+  CreateSpdySession();
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.SpdySession.AlpsDecoderStatus",
+      static_cast<int>(AlpsDecoder::Error::kNoError), 1);
+  const int kOnlyValidEntries = 1;
+  histogram_tester.ExpectUniqueSample("Net.SpdySession.AlpsAcceptChEntries",
+                                      kOnlyValidEntries, 1);
+
+  histogram_tester.ExpectTotalCount("Net.SpdySession.AcceptChForOrigin", 0);
+
+  EXPECT_EQ("foo", session_->GetAcceptChViaAlpsForOrigin(
+                       url::Origin::Create(GURL("https://www.example.com"))));
+  histogram_tester.ExpectUniqueSample("Net.SpdySession.AcceptChForOrigin", true,
+                                      1);
+
+  EXPECT_EQ("", session_->GetAcceptChViaAlpsForOrigin(
+                    url::Origin::Create(GURL("https://www.example.org"))));
+  histogram_tester.ExpectTotalCount("Net.SpdySession.AcceptChForOrigin", 2);
+  histogram_tester.ExpectBucketCount("Net.SpdySession.AcceptChForOrigin", true,
+                                     1);
+  histogram_tester.ExpectBucketCount("Net.SpdySession.AcceptChForOrigin", false,
+                                     1);
+}
+
+TEST_F(SpdySessionTest, AlpsAcceptChInvalidOrigin) {
+  base::HistogramTester histogram_tester;
+
+  // "www.example.com" is not a valid origin, because it does not have a scheme.
+  ssl_.peer_application_settings = HexDecode(
+      "000017"                            // length
+      "89"                                // type ACCEPT_CH
+      "00"                                // flags
+      "00000000"                          // stream ID
+      "0010"                              // origin length
+      "2f7777772e6578616d706c652e636f6d"  // origin "www.example.com"
+      "0003"                              // value length
+      "666f6f");                          // value "foo"
+
+  SequencedSocketData data;
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+  AddSSLSocketData();
+
+  CreateNetworkSession();
+  CreateSpdySession();
+
+  // Invalid origin error is not considered fatal for the connection.
+  EXPECT_TRUE(session_->IsAvailable());
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.SpdySession.AlpsDecoderStatus",
+      static_cast<int>(AlpsDecoder::Error::kNoError), 1);
+  const int kOnlyInvalidEntries = 2;
+  histogram_tester.ExpectUniqueSample("Net.SpdySession.AlpsAcceptChEntries",
+                                      kOnlyInvalidEntries, 1);
 }
 
 }  // namespace net

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {PostMessageAPIServer} from './post_message_api.js';
+
 /**
  * The methods to expose to the client.
  */
@@ -16,7 +18,7 @@ const METHOD_LIST = [
  * the remote website that calls the API  is the client.  This is the opposite
  * of the normal browser/web-server client/server relationship.
  */
-class AddSupervisionAPIServer extends PostMessageAPIServer {
+export class AddSupervisionAPIServer extends PostMessageAPIServer {
   /*
    * @constructor
    * @param {!Element} webviewElement  The <webview> element to listen to as a

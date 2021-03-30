@@ -103,6 +103,15 @@ class MockCameraDevice : public cros::mojom::Camera3DeviceOps {
   void Close(CloseCallback callback) override { DoClose(callback); }
   MOCK_METHOD1(DoClose, void(CloseCallback& callback));
 
+  void ConfigureStreamsAndGetAllocatedBuffers(
+      cros::mojom::Camera3StreamConfigurationPtr config,
+      ConfigureStreamsAndGetAllocatedBuffersCallback callback) override {
+    DoConfigureStreamsAndGetAllocatedBuffers(config, callback);
+  }
+  MOCK_METHOD2(DoConfigureStreamsAndGetAllocatedBuffers,
+               void(cros::mojom::Camera3StreamConfigurationPtr& config,
+                    ConfigureStreamsAndGetAllocatedBuffersCallback& callback));
+
  private:
   DISALLOW_COPY_AND_ASSIGN(MockCameraDevice);
 };
@@ -111,11 +120,13 @@ constexpr int32_t kJpegMaxBufferSize = 1024;
 constexpr size_t kDefaultWidth = 1280, kDefaultHeight = 720;
 constexpr int32_t kDefaultMinFrameRate = 1, kDefaultMaxFrameRate = 30;
 
-VideoCaptureParams GetDefaultCaptureParams() {
+base::flat_map<ClientType, VideoCaptureParams> GetDefaultCaptureParams() {
   VideoCaptureParams params;
+  base::flat_map<ClientType, VideoCaptureParams> capture_params;
   params.requested_format = {gfx::Size(kDefaultWidth, kDefaultHeight),
                              float{kDefaultMaxFrameRate}, PIXEL_FORMAT_I420};
-  return params;
+  capture_params[ClientType::kPreviewClient] = params;
+  return capture_params;
 }
 
 }  // namespace
@@ -162,7 +173,7 @@ class CameraDeviceDelegateTest : public ::testing::Test {
 
     camera_device_delegate_ = std::make_unique<CameraDeviceDelegate>(
         devices_info[0].descriptor, camera_hal_delegate_,
-        device_delegate_thread_.task_runner(), nullptr, client_type_);
+        device_delegate_thread_.task_runner());
   }
 
   void GetNumberOfFakeCameras(
@@ -354,7 +365,7 @@ class CameraDeviceDelegateTest : public ::testing::Test {
         .Times(1)
         .WillOnce(
             Invoke(this, &CameraDeviceDelegateTest::GetNumberOfFakeCameras));
-    EXPECT_CALL(mock_camera_module_, DoSetCallbacks(_, _)).Times(1);
+    EXPECT_CALL(mock_camera_module_, DoSetCallbacksAssociated(_, _)).Times(1);
     EXPECT_CALL(mock_camera_module_, DoGetVendorTagOps(_, _))
         .Times(1)
         .WillOnce(Invoke(this, &CameraDeviceDelegateTest::GetFakeVendorTagOps));
@@ -381,12 +392,11 @@ class CameraDeviceDelegateTest : public ::testing::Test {
         .Times(1)
         .WillOnce(
             Invoke(this, &CameraDeviceDelegateTest::ConfigureFakeStreams));
-    EXPECT_CALL(
-        mock_gpu_memory_buffer_manager_,
-        CreateGpuMemoryBuffer(
-            _, gfx::BufferFormat::YUV_420_BIPLANAR,
-            gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE,
-            gpu::kNullSurfaceHandle))
+    EXPECT_CALL(mock_gpu_memory_buffer_manager_,
+                CreateGpuMemoryBuffer(
+                    _, gfx::BufferFormat::YUV_420_BIPLANAR,
+                    gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
+                    gpu::kNullSurfaceHandle))
         .Times(1)
         .WillOnce(Invoke(&unittest_internal::MockGpuMemoryBufferManager::
                              CreateFakeGpuMemoryBuffer));
@@ -398,13 +408,12 @@ class CameraDeviceDelegateTest : public ::testing::Test {
         .Times(AtMost(1))
         .WillOnce(Invoke(&unittest_internal::MockGpuMemoryBufferManager::
                              CreateFakeGpuMemoryBuffer));
-    EXPECT_CALL(
-        mock_gpu_memory_buffer_manager_,
-        CreateGpuMemoryBuffer(
-            gfx::Size(kDefaultWidth, kDefaultHeight),
-            gfx::BufferFormat::YUV_420_BIPLANAR,
-            gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE,
-            gpu::kNullSurfaceHandle))
+    EXPECT_CALL(mock_gpu_memory_buffer_manager_,
+                CreateGpuMemoryBuffer(
+                    gfx::Size(kDefaultWidth, kDefaultHeight),
+                    gfx::BufferFormat::YUV_420_BIPLANAR,
+                    gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
+                    gpu::kNullSurfaceHandle))
         .Times(1)
         .WillOnce(Invoke(&unittest_internal::MockGpuMemoryBufferManager::
                              CreateFakeGpuMemoryBuffer));

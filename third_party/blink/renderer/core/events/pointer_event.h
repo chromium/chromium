@@ -7,21 +7,20 @@
 
 #include "third_party/blink/public/common/input/pointer_id.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
 class PointerEventInit;
 
-class CORE_EXPORT PointerEvent final : public MouseEvent {
+class CORE_EXPORT PointerEvent : public MouseEvent {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   static PointerEvent* Create(
       const AtomicString& type,
       const PointerEventInit* initializer,
-      base::TimeTicks platform_time_stamp,
+      base::TimeTicks platform_time_stamp = base::TimeTicks::Now(),
       MouseEvent::SyntheticEventType synthetic_event_type =
           kRealOrIndistinguishable,
       WebMenuSourceType menu_source_type = kMenuSourceNone) {
@@ -29,23 +28,15 @@ class CORE_EXPORT PointerEvent final : public MouseEvent {
         type, initializer, platform_time_stamp, synthetic_event_type,
         menu_source_type);
   }
-  static PointerEvent* Create(const AtomicString& type,
-                              const PointerEventInit* initializer) {
-    return PointerEvent::Create(type, initializer, base::TimeTicks::Now());
-  }
-
-  static PointerEvent* Create(const AtomicString& event_type,
-                              AbstractView*,
-                              const Event* underlying_event,
-                              SimulatedClickCreationScope);
 
   PointerEvent(const AtomicString&,
                const PointerEventInit*,
                base::TimeTicks platform_time_stamp,
                MouseEvent::SyntheticEventType synthetic_event_type,
-               WebMenuSourceType menu_source_type);
+               WebMenuSourceType menu_source_type = kMenuSourceNone);
 
   PointerId pointerId() const { return pointer_id_; }
+  PointerId pointerIdForBindings() const;
   double width() const { return width_; }
   double height() const { return height_; }
   float pressure() const { return pressure_; }

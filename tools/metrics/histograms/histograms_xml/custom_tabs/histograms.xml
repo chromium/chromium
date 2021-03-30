@@ -35,7 +35,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CustomTabs.ClientAppId" enum="ClientAppId"
-    expires_after="2021-05-09">
+    expires_after="2021-09-12">
   <owner>yusufo@chromium.org</owner>
   <summary>
     Android: AppId declared by the launching application in EXTRA_APPLICATION_ID
@@ -64,7 +64,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CustomTabs.ConnectionStatusOnReturn.GSA"
-    enum="CustomTabsConnection" expires_after="M92">
+    enum="CustomTabsConnection" expires_after="2021-08-09">
   <owner>peconn@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -77,7 +77,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CustomTabs.ConnectionStatusOnReturn.NonGSA"
-    enum="CustomTabsConnection" expires_after="M92">
+    enum="CustomTabsConnection" expires_after="2021-08-09">
   <owner>peconn@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -90,7 +90,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="CustomTabs.DetachedResourceRequest.Duration"
-    units="ms" expires_after="M92">
+    units="ms" expires_after="2021-08-15">
   <owner>lizeb@chromium.org</owner>
   <owner>cct-team@google.com</owner>
   <summary>
@@ -101,7 +101,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CustomTabs.DetachedResourceRequest.FinalStatus"
-    enum="NetErrorCodes" expires_after="M92">
+    enum="NetErrorCodes" expires_after="2021-08-08">
   <owner>lizeb@chromium.org</owner>
   <owner>cct-team@google.com</owner>
   <summary>
@@ -120,6 +120,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Number of redirects followed by a detached resource request until success or
     failure. Android only. Starting with M84 this is is also recorded for
     webapps/WebAPKs. Filter the platform for just CCT/TWA data.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.IncognitoCCTCallerId" enum="IncognitoCCTCallerId"
+    expires_after="2022-03-03">
+  <owner>roagarwal@chromium.org</owner>
+  <owner>chrome-incognito@google.com</owner>
+  <owner>cct-team@google.com</owner>
+  <summary>
+    This metrics records the caller of Incognito CCTs. For Chrome features, the
+    feature name is recorded, for external calls, either Google App or
+    Non-Google App categories are recorded. The metric is recorded when an
+    Incognito CCT opening intent is received.
   </summary>
 </histogram>
 
@@ -165,7 +178,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CustomTabs.ParallelRequestStatusOnStart"
-    enum="CustomTabsParallelRequestStatusOnStart" expires_after="M92">
+    enum="CustomTabsParallelRequestStatusOnStart" expires_after="2021-08-09">
   <owner>lizeb@chromium.org</owner>
   <owner>cct-team@google.com</owner>
   <summary>
@@ -214,7 +227,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CustomTabs.ShareOptionLocation" enum="ShareOptionLocation"
-    expires_after="M91">
+    expires_after="M94">
   <owner>sophey@chromium.org</owner>
   <owner>src/components/send_tab_to_self/OWNERS</owner>
   <summary>Records the location of the share option in the Custom Tab.</summary>
@@ -290,7 +303,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CustomTabs.WarmupStateOnLaunch" enum="WarmupStateOnLaunch"
-    expires_after="2021-05-02">
+    expires_after="2021-09-05">
   <owner>lizeb@chromium.org</owner>
   <summary>
     Recorded only on Android. Reports whether warmup() has been called when a

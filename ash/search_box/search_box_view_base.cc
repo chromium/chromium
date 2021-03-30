@@ -344,9 +344,9 @@ void SearchBoxViewBase::SetSearchBoxActive(bool active,
              : gfx::Canvas::TEXT_ALIGN_CENTER);
   search_box_->set_placeholder_text_color(
       active ? AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-                   kDefaultSearchboxPlaceholderTextColor)
+                   kZeroQuerySearchboxColor)
              : ash::AppListColorProvider::Get()->GetSearchBoxTextColor(
-                   kZeroQuerySearchboxColor));
+                   kDefaultSearchboxPlaceholderTextColor));
   search_box_->SetCursorEnabled(active);
 
   if (active) {
@@ -419,7 +419,7 @@ void SearchBoxViewBase::OnSearchBoxFocusedChanged() {
 }
 
 bool SearchBoxViewBase::IsSearchBoxTrimmedQueryEmpty() const {
-  base::string16 trimmed_query;
+  std::u16string trimmed_query;
   base::TrimWhitespace(search_box_->GetText(), base::TrimPositions::TRIM_ALL,
                        &trimmed_query);
   return trimmed_query.empty();
@@ -427,10 +427,10 @@ bool SearchBoxViewBase::IsSearchBoxTrimmedQueryEmpty() const {
 
 void SearchBoxViewBase::ClearSearch() {
   // Avoid setting |search_box_| text to empty if it is already empty.
-  if (search_box_->GetText() == base::string16())
+  if (search_box_->GetText() == std::u16string())
     return;
 
-  search_box_->SetText(base::string16());
+  search_box_->SetText(std::u16string());
   UpdateButtonsVisisbility();
   // Updates model and fires query changed manually because SetText() above
   // does not generate ContentsChanged() notification.
@@ -476,7 +476,7 @@ void SearchBoxViewBase::UpdateButtonsVisisbility() {
 }
 
 void SearchBoxViewBase::ContentsChanged(views::Textfield* sender,
-                                        const base::string16& new_contents) {
+                                        const std::u16string& new_contents) {
   // Set search box focused when query changes.
   search_box_->RequestFocus();
   UpdateModel(true);
@@ -531,7 +531,6 @@ void SearchBoxViewBase::HandleSearchBoxEvent(ui::LocatedEvent* located_event) {
     // should reopen it.
     UpdateKeyboardVisibility();
   }
-  located_event->SetHandled();
 }
 
 // TODO(crbug.com/755219): Unify this with SetBackgroundColor.

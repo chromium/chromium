@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
+#include "base/optional.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/paint/paint_canvas.h"
@@ -146,14 +147,6 @@ class NATIVE_THEME_EXPORT NativeTheme {
                             // Win)
   };
 
-  // This enum represents the available unique security chip color states.
-  enum class SecurityChipColorId {
-    DEFAULT,
-    SECURE,
-    SECURE_WITH_CERT,
-    DANGEROUS,
-  };
-
   // Each structure below holds extra information needed when painting a given
   // part.
 
@@ -172,7 +165,6 @@ class NATIVE_THEME_EXPORT NativeTheme {
     // Distinguishes between active (foreground) and inactive
     // (background) window frame styles.
     bool is_active;
-    bool incognito;
     // True when Chromium renders the titlebar.  False when the window
     // manager renders the titlebar.
     bool use_custom_frame;
@@ -220,6 +212,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
     SkColor arrow_color;
     SkColor background_color;
     int classic_state;  // Used on Windows when uxtheme is not available.
+    float zoom;
   };
 
   struct MenuBackgroundExtraParams {
@@ -233,6 +226,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
     int value_rect_y;
     int value_rect_width;
     int value_rect_height;
+    float zoom;
   };
 
   struct ScrollbarArrowExtraParams {
@@ -299,6 +293,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
     int classic_state;  // Used on Windows when uxtheme is not available.
     bool has_border;
     bool auto_complete_active;
+    float zoom;
   };
 
   struct TrackbarExtraParams {
@@ -338,17 +333,16 @@ class NATIVE_THEME_EXPORT NativeTheme {
 
   virtual float GetBorderRadiusForPart(Part part,
                                        float width,
-                                       float height,
-                                       float zoom) const;
+                                       float height) const;
 
   // Paint the part to the canvas.
-  virtual void Paint(
-      cc::PaintCanvas* canvas,
-      Part part,
-      State state,
-      const gfx::Rect& rect,
-      const ExtraParams& extra,
-      ColorScheme color_scheme = ColorScheme::kDefault) const = 0;
+  virtual void Paint(cc::PaintCanvas* canvas,
+                     Part part,
+                     State state,
+                     const gfx::Rect& rect,
+                     const ExtraParams& extra,
+                     ColorScheme color_scheme = ColorScheme::kDefault,
+                     const base::Optional<SkColor>& accent_color = 0) const = 0;
 
   // Paint part during state transition, used for overlay scrollbar state
   // transition animation.
@@ -398,10 +392,15 @@ class NATIVE_THEME_EXPORT NativeTheme {
     kMaxValue = kWindowText,
   };
 
-  // Return a color from the system theme.
-  virtual SkColor GetSystemColor(
+  // Returns a color from the system theme.
+  SkColor GetSystemColor(
       ColorId color_id,
       ColorScheme color_scheme = ColorScheme::kDefault) const;
+
+  // Returns an un-tinted or unprocessed color from the system theme before
+  // processing.
+  SkColor GetUnprocessedSystemColor(ColorId color_id,
+                                    ColorScheme color_scheme) const;
 
   // Returns a shared instance of the native theme that should be used for web
   // rendering. Do not use it in a normal application context (i.e. browser).
@@ -425,11 +424,16 @@ class NATIVE_THEME_EXPORT NativeTheme {
   void RemoveObserver(NativeThemeObserver* observer);
 
   // Notify observers of native theme changes.
-  void NotifyObservers();
+  virtual void NotifyObservers();
 
-  // Returns whether this NativeTheme uses higher-contrast colors, controlled by
-  // system accessibility settings and the system theme.
-  virtual bool UsesHighContrastColors() const;
+  // Returns whether the user has an explicit contrast preference, i.e. whether
+  // we are in forced colors mode or PreferredContrast is set.
+  virtual bool UserHasContrastPreference() const;
+
+  // Returns whether we are in forced colors mode, controlled by system
+  // accessibility settings. Currently, Windows high contrast is the only system
+  // setting that triggers forced colors mode.
+  virtual bool InForcedColorsMode() const;
 
   // Returns the PlatformHighContrastColorScheme used by the OS. Returns a value
   // other than kNone only if the default system color scheme is
@@ -465,9 +469,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
   void set_use_dark_colors(bool should_use_dark_colors) {
     should_use_dark_colors_ = should_use_dark_colors;
   }
-  void set_high_contrast(bool is_high_contrast) {
-    is_high_contrast_ = is_high_contrast;
-  }
+  void set_forced_colors(bool forced_colors) { forced_colors_ = forced_colors; }
   void set_preferred_color_scheme(PreferredColorScheme preferred_color_scheme) {
     preferred_color_scheme_ = preferred_color_scheme;
   }
@@ -476,12 +478,12 @@ class NATIVE_THEME_EXPORT NativeTheme {
   }
   void set_system_colors(const std::map<SystemThemeColor, SkColor>& colors);
 
-  // Updates the state of dark mode, high contrast, and the map of system
+  // Updates the state of dark mode, forced colors mode, and the map of system
   // colors. Returns true if NativeTheme was updated as a result, or false if
   // the state of NativeTheme was untouched.
   bool UpdateSystemColorInfo(
       bool is_dark_mode,
-      bool is_high_contrast,
+      bool forced_colors,
       const base::flat_map<SystemThemeColor, uint32_t>& colors);
 
   // On certain platforms, currently only Mac, there is a unique visual for
@@ -494,6 +496,10 @@ class NATIVE_THEME_EXPORT NativeTheme {
  protected:
   explicit NativeTheme(bool should_only_use_dark_colors);
   virtual ~NativeTheme();
+
+  // Gets the color from the color provider if using a color provider is enable.
+  base::Optional<SkColor> GetColorProviderColor(ColorId color_id,
+                                                ColorScheme color_scheme) const;
 
   // Whether high contrast is forced via command-line flag.
   bool IsForcedHighContrast() const;
@@ -520,10 +526,18 @@ class NATIVE_THEME_EXPORT NativeTheme {
   // platform behaviors.
   virtual void ConfigureWebInstance() {}
 
+  // TODO(http://crbug.com/1057754): Remove this.
+  virtual bool AllowColorPipelineRedirection(ColorScheme color_scheme) const;
+
+  // Returns a color from the system theme, pre-Color Pipeline.
+  virtual SkColor GetSystemColorDeprecated(ColorId color_id,
+                                           ColorScheme color_scheme,
+                                           bool apply_processing) const;
+
   // Allows one native theme to observe changes in another. For example, the
   // web native theme for Windows observes the corresponding ui native theme in
-  // order to receive changes regarding the state of dark mode, high contrast,
-  // preferred color scheme and preferred contrast.
+  // order to receive changes regarding the state of dark mode, forced colors
+  // mode, preferred color scheme and preferred contrast.
   class NATIVE_THEME_EXPORT ColorSchemeNativeThemeObserver
       : public NativeThemeObserver {
    public:
@@ -543,11 +557,15 @@ class NATIVE_THEME_EXPORT NativeTheme {
   mutable std::map<SystemThemeColor, SkColor> system_colors_;
 
  private:
+  SkColor GetSystemColorCommon(ColorId color_id,
+                               ColorScheme color_scheme,
+                               bool apply_processing) const;
+
   // Observers to notify when the native theme changes.
   base::ObserverList<NativeThemeObserver>::Unchecked native_theme_observers_;
 
   bool should_use_dark_colors_ = false;
-  bool is_high_contrast_ = false;
+  bool forced_colors_ = false;
   PreferredColorScheme preferred_color_scheme_ = PreferredColorScheme::kLight;
   PreferredContrast preferred_contrast_ = PreferredContrast::kNoPreference;
 

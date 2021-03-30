@@ -42,7 +42,7 @@ void ConvertJavaStringToUTF8(JNIEnv* env, jstring str, std::string* result) {
   // function that yields plain (non Java-modified) UTF8.
   const jchar* chars = env->GetStringChars(str, NULL);
   DCHECK(chars);
-  UTF16ToUTF8(reinterpret_cast<const char16*>(chars), length, result);
+  UTF16ToUTF8(reinterpret_cast<const char16_t*>(chars), length, result);
   env->ReleaseStringChars(str, chars);
   CheckException(env);
 }
@@ -74,7 +74,9 @@ ScopedJavaLocalRef<jstring> ConvertUTF8ToJavaString(JNIEnv* env,
       env, UTF8ToUTF16(str)));
 }
 
-void ConvertJavaStringToUTF16(JNIEnv* env, jstring str, string16* result) {
+void ConvertJavaStringToUTF16(JNIEnv* env,
+                              jstring str,
+                              std::u16string* result) {
   DCHECK(str);
   if (!str) {
     LOG(WARNING) << "ConvertJavaStringToUTF16 called with null string.";
@@ -91,22 +93,23 @@ void ConvertJavaStringToUTF16(JNIEnv* env, jstring str, string16* result) {
   DCHECK(chars);
   // GetStringChars isn't required to NULL-terminate the strings
   // it returns, so the length must be explicitly checked.
-  result->assign(reinterpret_cast<const char16*>(chars), length);
+  result->assign(reinterpret_cast<const char16_t*>(chars), length);
   env->ReleaseStringChars(str, chars);
   CheckException(env);
 }
 
-string16 ConvertJavaStringToUTF16(JNIEnv* env, jstring str) {
-  string16 result;
+std::u16string ConvertJavaStringToUTF16(JNIEnv* env, jstring str) {
+  std::u16string result;
   ConvertJavaStringToUTF16(env, str, &result);
   return result;
 }
 
-string16 ConvertJavaStringToUTF16(const JavaRef<jstring>& str) {
+std::u16string ConvertJavaStringToUTF16(const JavaRef<jstring>& str) {
   return ConvertJavaStringToUTF16(AttachCurrentThread(), str.obj());
 }
 
-string16 ConvertJavaStringToUTF16(JNIEnv* env, const JavaRef<jstring>& str) {
+std::u16string ConvertJavaStringToUTF16(JNIEnv* env,
+                                        const JavaRef<jstring>& str) {
   return ConvertJavaStringToUTF16(env, str.obj());
 }
 

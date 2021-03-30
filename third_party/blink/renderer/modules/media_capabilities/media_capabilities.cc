@@ -16,6 +16,7 @@
 #include "media/base/media_util.h"
 #include "media/base/mime_util.h"
 #include "media/base/supported_types.h"
+#include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_decoder_config.h"
 #include "media/filters/stream_parser_factory.h"
 #include "media/learning/common/media_learning_tasks.h"
@@ -24,9 +25,8 @@
 #include "media/mojo/mojom/media_metrics_provider.mojom-blink.h"
 #include "media/mojo/mojom/media_types.mojom-blink.h"
 #include "media/video/gpu_video_accelerator_factories.h"
-#include "media/video/supported_video_decoder_config.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -954,14 +954,14 @@ ScriptPromise MediaCapabilities::GetEmeSupport(
   // See context here:
   // https://sites.google.com/a/chromium.org/dev/Home/chromium-security/deprecating-permissions-in-cross-origin-iframes
   if (!execution_context->IsFeatureEnabled(
-          mojom::blink::FeaturePolicyFeature::kEncryptedMedia,
+          mojom::blink::PermissionsPolicyFeature::kEncryptedMedia,
           ReportOptions::kReportOnFailure)) {
     UseCounter::Count(execution_context,
                       WebFeature::kEncryptedMediaDisabledByFeaturePolicy);
     execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kJavaScript,
         mojom::ConsoleMessageLevel::kWarning,
-        kEncryptedMediaFeaturePolicyConsoleWarning));
+        kEncryptedMediaPermissionsPolicyConsoleWarning));
     exception_state.ThrowSecurityError(
         "decodingInfo(): Creating MediaKeySystemAccess is disabled by feature "
         "policy.");
@@ -1240,25 +1240,9 @@ void MediaCapabilities::GetGpuFactoriesSupport(
       gfx::Rect(natural_size) /* visible_rect */, natural_size,
       media::EmptyExtraData(), encryption_scheme);
 
-  static_assert(media::VideoDecoderImplementation::kAlternate ==
-                    media::VideoDecoderImplementation::kMaxValue,
-                "Keep the array below in sync.");
-  media::VideoDecoderImplementation decoder_impls[] = {
-      media::VideoDecoderImplementation::kDefault,
-      media::VideoDecoderImplementation::kAlternate};
-  media::GpuVideoAcceleratorFactories::Supported supported =
-      media::GpuVideoAcceleratorFactories::Supported::kUnknown;
-  for (const auto& impl : decoder_impls) {
-    supported = gpu_factories->IsDecoderConfigSupported(impl, config);
-    DCHECK_NE(supported,
-              media::GpuVideoAcceleratorFactories::Supported::kUnknown);
-    if (supported == media::GpuVideoAcceleratorFactories::Supported::kTrue)
-      break;
-  }
-
   OnGpuFactoriesSupport(
-      callback_id,
-      supported == media::GpuVideoAcceleratorFactories::Supported::kTrue);
+      callback_id, gpu_factories->IsDecoderConfigSupported(config) ==
+                       media::GpuVideoAcceleratorFactories::Supported::kTrue);
 }
 
 void MediaCapabilities::ResolveCallbackIfReady(int callback_id) {

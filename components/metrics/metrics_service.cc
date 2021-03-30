@@ -76,16 +76,13 @@
 // states, based on the State enum specified in the state_ member.  Those states
 // are:
 //
-//  INITIALIZED,          // Constructor was called.
+//  CONSTRUCTED,          // Constructor was called.
+//  INITIALIZED,          // InitializeMetricsRecordingState() was called.
 //  INIT_TASK_SCHEDULED,  // Waiting for deferred init tasks to finish.
 //  INIT_TASK_DONE,       // Waiting for timer to send initial log.
 //  SENDING_LOGS,         // Sending logs and creating new ones when we run out.
 //
 // In more detail, we have:
-//
-//    INITIALIZED,            // Constructor was called.
-// The MS has been constructed, but has taken no actions to compose the
-// initial log.
 //
 //    INIT_TASK_SCHEDULED,    // Waiting for deferred init tasks to finish.
 // Typically about 30 seconds after startup, a task is sent to a second thread
@@ -214,7 +211,7 @@ MetricsService::MetricsService(MetricsStateManager* state_manager,
       local_state_(local_state),
       recording_state_(UNSET),
       test_mode_active_(false),
-      state_(INITIALIZED),
+      state_(CONSTRUCTED),
       idle_since_last_transmission_(false),
       session_id_(-1),
       synthetic_trial_registry_(
@@ -235,6 +232,9 @@ MetricsService::~MetricsService() {
 }
 
 void MetricsService::InitializeMetricsRecordingState() {
+  // TODO(crbug.com/1176977): Downgrade to a DCHECK once bug is fixed.
+  CHECK_EQ(CONSTRUCTED, state_);
+
   // The FieldTrialsProvider should be registered last. This ensures that
   // studies whose features are checked when providers add their information to
   // the log appear in the active field trials.
@@ -257,6 +257,8 @@ void MetricsService::InitializeMetricsRecordingState() {
 
   // Init() has to be called after LogCrash() in order for LogCrash() to work.
   delegating_provider_.Init();
+
+  state_ = INITIALIZED;
 }
 
 void MetricsService::Start() {
@@ -440,14 +442,6 @@ void MetricsService::LogNeedForCleanShutdown() {
 }
 #endif  // defined(OS_ANDROID) || defined(OS_IOS)
 
-void MetricsService::RecordBreakpadRegistration(bool success) {
-  StabilityMetricsProvider(local_state_).RecordBreakpadRegistration(success);
-}
-
-void MetricsService::RecordBreakpadHasDebugger(bool has_debugger) {
-  StabilityMetricsProvider(local_state_)
-      .RecordBreakpadHasDebugger(has_debugger);
-}
 
 void MetricsService::ClearSavedStabilityMetrics() {
   delegating_provider_.ClearSavedStabilityMetrics();
@@ -474,6 +468,8 @@ bool MetricsService::StageCurrentLogForTest() {
 // Initialization methods
 
 void MetricsService::InitializeMetricsState() {
+  SCOPED_UMA_HISTOGRAM_SHORT_TIMER("UMA.MetricsService.Initialize.Time");
+
   const int64_t buildtime = MetricsLog::GetBuildTime();
   const std::string version = client_->GetVersionString();
 
@@ -533,6 +529,10 @@ void MetricsService::InitializeMetricsState() {
   // Update session ID.
   ++session_id_;
   local_state_->SetInteger(prefs::kMetricsSessionID, session_id_);
+  // Log the session id to diagnose crbug.com/1176977.
+  // Mod the value with 1000 to limit the number of unique values reported.
+  base::UmaHistogramSparse("Stability.Experimental.SessionId",
+                           session_id_ % 1000);
 
   // Notify stability metrics providers about the launch.
   UMA_HISTOGRAM_BOOLEAN("UMA.MetricsService.Initialize", true);
@@ -560,7 +560,11 @@ void MetricsService::FinishedInitTask() {
   // Create the initial log.
   if (!initial_metrics_log_) {
     initial_metrics_log_ = CreateLog(MetricsLog::ONGOING_LOG);
-    delegating_provider_.OnDidCreateMetricsLog();
+    // Note: We explicitly do not call OnDidCreateMetricsLog() here, as this
+    // function would have already been called in Start() and this log will
+    // already contain any histograms logged there. OnDidCreateMetricsLog()
+    // will be called again after the initial log is closed, for the next log.
+    // TODO(crbug.com/1171830): Consider getting rid of |initial_metrics_log_|.
   }
 
   rotation_scheduler_->InitTaskComplete();
@@ -589,6 +593,9 @@ void MetricsService::OpenNewLog() {
 
   log_manager_.BeginLoggingWithLog(CreateLog(MetricsLog::ONGOING_LOG));
   delegating_provider_.OnDidCreateMetricsLog();
+
+  // TODO(crbug.com/1176977): Downgrade to a DCHECK once bug is fixed.
+  CHECK_NE(CONSTRUCTED, state_);
   if (state_ == INITIALIZED) {
     // We only need to schedule that run once.
     state_ = INIT_TASK_SCHEDULED;
@@ -727,7 +734,7 @@ void MetricsService::OnFinalLogInfoCollectionDone() {
 
 bool MetricsService::PrepareInitialStabilityLog(
     const std::string& prefs_previous_version) {
-  DCHECK_EQ(INITIALIZED, state_);
+  DCHECK_EQ(CONSTRUCTED, state_);
 
   std::unique_ptr<MetricsLog> initial_stability_log(
       CreateLog(MetricsLog::INITIAL_STABILITY_LOG));
@@ -782,6 +789,13 @@ void MetricsService::PrepareInitialMetricsLog() {
   log_manager_.FinishCurrentLog(log_store());
   log_manager_.ResumePausedLog();
 
+  // We call OnDidCreateMetricsLog() here for the next log. Normally, this is
+  // called when the log is created, but in this special case, the log we paused
+  // was created much earlier - by Start(). The histograms that were recorded
+  // via OnDidCreateMetricsLog() are now in the initial metrics log we just
+  // processed, so we need to record new ones for the next log.
+  delegating_provider_.OnDidCreateMetricsLog();
+
   // Store unsent logs, including the initial log that was just saved, so
   // that they're not lost in case of a crash before upload time.
   log_store()->TrimAndPersistUnsentLogs();
@@ -802,7 +816,7 @@ bool MetricsService::UmaMetricsProperlyShutdown() {
 
 void MetricsService::RegisterMetricsProvider(
     std::unique_ptr<MetricsProvider> provider) {
-  DCHECK_EQ(INITIALIZED, state_);
+  DCHECK_EQ(CONSTRUCTED, state_);
   delegating_provider_.RegisterMetricsProvider(std::move(provider));
 }
 

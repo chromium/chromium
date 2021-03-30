@@ -16,7 +16,7 @@ namespace content {
 PictureInPictureSession::PictureInPictureSession(
     PictureInPictureServiceImpl* service,
     const MediaPlayerId& player_id,
-    mojo::PendingRemote<media::mojom::MediaPlayer> player_remote,
+    mojo::PendingAssociatedRemote<media::mojom::MediaPlayer> player_remote,
     mojo::PendingReceiver<blink::mojom::PictureInPictureSession> receiver,
     mojo::PendingRemote<blink::mojom::PictureInPictureSessionObserver> observer)
     : service_(service),
@@ -41,7 +41,8 @@ void PictureInPictureSession::Update(
     const base::Optional<viz::SurfaceId>& surface_id,
     const gfx::Size& natural_size,
     bool show_play_pause_button) {
-  player_id_ = MediaPlayerId(service_->render_frame_host(), player_id);
+  player_id_ = MediaPlayerId(
+      service_->render_frame_host()->GetGlobalFrameRoutingId(), player_id);
 
   GetController().EmbedSurface(surface_id.value(), natural_size);
   GetController().SetShowPlayPauseButton(show_play_pause_button);
@@ -51,7 +52,7 @@ void PictureInPictureSession::NotifyWindowResized(const gfx::Size& size) {
   observer_->OnWindowSizeChanged(size);
 }
 
-mojo::Remote<media::mojom::MediaPlayer>&
+mojo::AssociatedRemote<media::mojom::MediaPlayer>&
 PictureInPictureSession::GetMediaPlayerRemote() {
   DCHECK(media_player_remote_.is_bound());
   return media_player_remote_;

@@ -66,7 +66,7 @@ TEST(XCursorLoaderTest, Basic) {
   };
   auto images = ParseFile(&file, 1);
   ASSERT_EQ(images.size(), 1ul);
-  EXPECT_EQ(images[0].frame_delay_ms, 123);
+  EXPECT_EQ(images[0].frame_delay.InMilliseconds(), 123);
   EXPECT_EQ(images[0].bitmap.width(), 1);
   EXPECT_EQ(images[0].bitmap.height(), 1);
   EXPECT_EQ(images[0].hotspot.x(), 1234);
@@ -255,8 +255,8 @@ TEST(XCursorLoaderTest, Animated) {
   };
   auto images = ParseFile(&file, 1);
   ASSERT_EQ(images.size(), 2ul);
-  EXPECT_EQ(images[0].frame_delay_ms, 500);
-  EXPECT_EQ(images[1].frame_delay_ms, 500);
+  EXPECT_EQ(images[0].frame_delay.InMilliseconds(), 500);
+  EXPECT_EQ(images[1].frame_delay.InMilliseconds(), 500);
 }
 
 }  // namespace ui

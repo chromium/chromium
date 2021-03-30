@@ -16,7 +16,7 @@
 namespace ash {
 
 ShelfApplicationMenuModel::ShelfApplicationMenuModel(
-    const base::string16& title,
+    const std::u16string& title,
     Items items,
     ShelfItemDelegate* delegate)
     : ui::SimpleMenuModel(this), delegate_(delegate) {

@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">รายการ</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">เลื่อน 2 นิ้วไปทางขวา</translation>
-<translation id="1016393160682012902">กดแป้น QWERTY กดแป้นอักษรเบรลล์แบบรีเฟรชได้ หรือใช้ท่าทางสัมผัสด้วยการแตะเพื่อดูข้อมูลเกี่ยวกับฟังก์ชันของแป้นหรือท่าทางสัมผัสนั้น กดปุ่ม Control พร้อมกับแป้น W หรือปุ่ม Escape เพื่อออก</translation>
 <translation id="1022586497894531524">หากคุณใช้การอธิบายและอ่านออกเสียงของ ChromeVox เป็นครั้งแรก บทแนะนำฉบับย่อนี้ที่จะอธิบายสิ่งที่ควรทราบในการเริ่มต้นใช้งาน ChromeVox</translation>
 <translation id="1025074108959230262">ปิดโหมดติดหนึบแล้ว</translation>
 <translation id="1031961866430398710">จากนั้น</translation>
@@ -150,6 +149,7 @@
 <translation id="2045055672832940894">ไม่มีการควบคุมก่อนหน้า</translation>
 <translation id="2045606329038304310">การควบคุมช่องในฟอร์ม</translation>
 <translation id="2063539687800151747">คำจารึก</translation>
+<translation id="2074531330963286860">มีการทำงานที่ใช้ได้ กดแป้นค้นหา+จุดเพื่อดู</translation>
 <translation id="2086961585857038472">คำถัดไป</translation>
 <translation id="2087981446621639008">รายละเอียดรายการคำอธิบาย</translation>
 <translation id="2089387485033699258">th</translation>
@@ -975,6 +975,7 @@
 <translation id="827266600368092403">เริ่มต้นหรือสิ้นสุดการเลือก</translation>
 <translation id="827422111966801947">สีคราม</translation>
 <translation id="8276439074553447000">ข้ามไปยังรายการที่สามารถโฟกัสก่อนหน้า</translation>
+<translation id="8279039817939141096">กดแป้น QWERTY กดแป้นอักษรเบรลล์แบบรีเฟรชได้ หรือใช้ท่าทางสัมผัสด้วยการแตะเพื่อดูข้อมูลเกี่ยวกับฟังก์ชันของแป้นหรือท่าทางสัมผัสนั้น กดปุ่ม Control พร้อมกับแป้น W, กดปุ่ม Space พร้อมกับแป้น Z, ใช้ 2 นิ้วปัดไปทางซ้าย หรือกดปุ่ม Escape เพื่อออก</translation>
 <translation id="8283603667300770666">ช่องฟอร์มถัดไป</translation>
 <translation id="8310185481635255431">ไม่มีลิงก์ถัดไป</translation>
 <translation id="831207808878314375">คำจำกัดความ</translation>
@@ -1055,7 +1056,7 @@
 <translation id="8970172509886453271">ไม่มีส่วนก่อนหน้า</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8978496506222343566">tltip</translation>
-<translation id="8986362086234534611">ไม่จำ</translation>
+<translation id="8986362086234534611">เลิกจำ</translation>
 <translation id="8989104346085848538">หากต้องการหยุดเสียงพูดของ ChromeVox ให้กดแป้น Control</translation>
 <translation id="8993737615451556423">ให้ตัวควบคุมเพื่อปรับเสียงที่อ่านให้เร็วขึ้น ช้าลง และหยุดชั่วคราว</translation>
 <translation id="9014206344398081366">บทแนะนำ ChromeVox</translation>

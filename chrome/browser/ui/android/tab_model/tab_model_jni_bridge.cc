@@ -24,18 +24,20 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/resource_request_body_android.h"
 #include "ui/base/window_open_disposition.h"
+#include "url/android/gurl_android.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
+using chrome::android::ActivityType;
 using content::WebContents;
 
 TabModelJniBridge::TabModelJniBridge(JNIEnv* env,
                                      jobject jobj,
                                      Profile* profile,
-                                     bool is_tabbed_activity)
-    : TabModel(profile, is_tabbed_activity),
+                                     ActivityType activity_type)
+    : TabModel(profile, activity_type),
       java_object_(env, env->NewWeakGlobalRef(jobj)) {
   TabModelList::AddTabModel(this);
 }
@@ -110,7 +112,7 @@ void TabModelJniBridge::HandlePopupNavigation(TabAndroid* parent,
   const GURL& url = params->url;
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
-  ScopedJavaLocalRef<jstring> jurl(ConvertUTF8ToJavaString(env, url.spec()));
+  ScopedJavaLocalRef<jobject> jurl = url::GURLAndroid::FromNativeGURL(env, url);
   ScopedJavaLocalRef<jstring> jheaders(
       ConvertUTF8ToJavaString(env, params->extra_headers));
   ScopedJavaLocalRef<jobject> jinitiator_origin =
@@ -137,6 +139,11 @@ TabAndroid* TabModelJniBridge::GetTabAt(int index) const {
   return jtab.is_null() ? NULL : TabAndroid::GetNativeTab(env, jtab);
 }
 
+ScopedJavaLocalRef<jobject> TabModelJniBridge::GetJavaObject() const {
+  JNIEnv* env = AttachCurrentThread();
+  return java_object_.get(env);
+}
+
 void TabModelJniBridge::SetActiveIndex(int index) {
   JNIEnv* env = AttachCurrentThread();
   Java_TabModelJniBridge_setIndex(env, java_object_.get(env), index);
@@ -152,10 +159,10 @@ WebContents* TabModelJniBridge::CreateNewTabForDevTools(
   // TODO(dfalcantara): Change the Java side so that it creates and returns the
   //                    WebContents, which we can load the URL on and return.
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> jurl = ConvertUTF8ToJavaString(env, url.spec());
   ScopedJavaLocalRef<jobject> obj =
-      Java_TabModelJniBridge_createNewTabForDevTools(env, java_object_.get(env),
-                                                     jurl);
+      Java_TabModelJniBridge_createNewTabForDevTools(
+          env, java_object_.get(env),
+          url::GURLAndroid::FromNativeGURL(env, url));
   if (obj.is_null()) {
     VLOG(0) << "Failed to create java tab";
     return NULL;
@@ -179,6 +186,15 @@ bool TabModelJniBridge::IsActiveModel() const {
   return Java_TabModelJniBridge_isActiveModel(env, java_object_.get(env));
 }
 
+// static
+bool TabModelJniBridge::HasOtherRelatedTabs(TabAndroid* tab) {
+  // Terminate early if tab is in the process of being destroyed.
+  if (!tab || !tab->web_contents() || !tab->web_contents()->GetDelegate())
+    return false;
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_TabModelJniBridge_hasOtherRelatedTabs(env, tab->GetJavaObject());
+}
+
 void TabModelJniBridge::AddObserver(TabModelObserver* observer) {
   // If a first observer is being added then instantiate an observer bridge.
   if (!observer_bridge_) {
@@ -193,7 +209,7 @@ void TabModelJniBridge::RemoveObserver(TabModelObserver* observer) {
   observer_bridge_->RemoveObserver(observer);
 
   // Tear down the bridge if there are no observers left.
-  if (!observer_bridge_->might_have_observers())
+  if (!observer_bridge_->has_observers())
     observer_bridge_.reset();
 }
 
@@ -203,6 +219,11 @@ void TabModelJniBridge::BroadcastSessionRestoreComplete(
   TabModel::BroadcastSessionRestoreComplete();
 }
 
+// static
+jclass TabModelJniBridge::GetClazz(JNIEnv* env) {
+  return org_chromium_chrome_browser_tabmodel_TabModelJniBridge_clazz(env);
+}
+
 TabModelJniBridge::~TabModelJniBridge() {
   TabModelList::RemoveTabModel(this);
 }
@@ -210,9 +231,9 @@ TabModelJniBridge::~TabModelJniBridge() {
 static jlong JNI_TabModelJniBridge_Init(JNIEnv* env,
                                         const JavaParamRef<jobject>& obj,
                                         const JavaParamRef<jobject>& j_profile,
-                                        jboolean is_tabbed_activity) {
+                                        jint j_activity_type) {
   TabModel* tab_model = new TabModelJniBridge(
       env, obj, ProfileAndroid::FromProfileAndroid(j_profile),
-      is_tabbed_activity);
+      static_cast<ActivityType>(j_activity_type));
   return reinterpret_cast<intptr_t>(tab_model);
 }

@@ -11,6 +11,7 @@
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "content/public/browser/background_sync_controller.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/background_sync/background_sync.mojom-forward.h"
 #include "url/origin.h"
@@ -26,6 +27,14 @@ namespace background_sync {
 class BackgroundSyncDelegate {
  public:
   virtual ~BackgroundSyncDelegate() = default;
+
+#if !defined(OS_ANDROID)
+  // Keeps the browser and profile alive to allow a one-shot Background Sync
+  // registration to finish firing one sync event.
+  virtual std::unique_ptr<
+      content::BackgroundSyncController::BackgroundSyncEventKeepAlive>
+  CreateBackgroundSyncEventKeepAlive() = 0;
+#endif
 
   // Gets the source_ID to log the UKM event for, and calls |callback| with that
   // source_id, or with base::nullopt if UKM recording is not allowed.

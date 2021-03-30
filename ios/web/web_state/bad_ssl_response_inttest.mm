@@ -69,7 +69,6 @@ class BadSslResponseTest : public WebTestWithWebState {
 // Tests that an error page is shown for SSL cert errors when committed
 // interstitials are enabled.
 TEST_F(BadSslResponseTest, ShowSSLErrorPageCommittedInterstitial) {
-  web_client()->SetAllowCertificateErrors(false);
   const GURL url = https_server_.GetURL("/");
   test::LoadUrl(web_state(), url);
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{

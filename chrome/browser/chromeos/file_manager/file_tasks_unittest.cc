@@ -12,16 +12,16 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/values.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
+#include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/chromeos/crostini/crostini_mime_types_service.h"
 #include "chrome/browser/chromeos/crostini/crostini_mime_types_service_factory.h"
 #include "chrome/browser/chromeos/crostini/crostini_pref_names.h"
 #include "chrome/browser/chromeos/crostini/crostini_test_helper.h"
 #include "chrome/browser/chromeos/crostini/fake_crostini_features.h"
-#include "chrome/browser/chromeos/drive/file_system_util.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
-#include "chrome/browser/chromeos/login/users/scoped_test_user_manager.h"
-#include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/common/chrome_features.h"
@@ -621,8 +621,8 @@ class FileManagerFileTasksComplexTest : public testing::Test {
   };
 
   content::BrowserTaskEnvironment task_environment_;
-  chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  chromeos::ScopedTestUserManager test_user_manager_;
+  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+  ash::ScopedTestUserManager test_user_manager_;
   TestingProfile test_profile_;
   base::CommandLine command_line_;
   extensions::ExtensionService* extension_service_;  // Owned by test_profile_;
@@ -1400,7 +1400,7 @@ class FileManagerFileTasksCrostiniTest
   void SetUp() override {
     storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
         util::GetDownloadsMountPointName(&test_profile_),
-        storage::kFileSystemTypeNativeLocal, storage::FileSystemMountOption(),
+        storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
         util::GetMyFilesFolderForProfile(&test_profile_));
   }
 

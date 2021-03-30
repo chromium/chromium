@@ -42,16 +42,15 @@ public interface PlayerCompositorDelegate {
          * @param rootFrameGuid The GUID for the root frame.
          * @param frameGuids Contains all frame GUIDs that are in this hierarchy.
          * @param frameContentSize Contains the content size for each frame. In native, this is
-         *         called
-         * scroll extent. The order corresponds to {@code frameGuids}. The content width and height
-         * for the ith frame in {@code frameGuids} are respectively in the {@code 2*i} and {@code
-         * 2*i+1} indices of {@code frameContentSize}.
+         * called scroll extent. The order corresponds to {@code frameGuids}. The content width and
+         * height for the ith frame in {@code frameGuids} are respectively in the {@code 2*i} and
+         * {@code 2*i+1} indices of {@code frameContentSize}.
          * @param scrollOffsets Contains the initial scroll offsets for each frame. The order
          * corresponds to {@code frameGuids}. The offset in x and y for the ith frame in
          * {@code frameGuids} are respectively in the {@code 2*i} and {@code 2*i+1} indices of
          * {@code scrollOffsets}.
          * @param subFramesCount Contains the number of sub-frames for each frame. The order
-         *         corresponds
+         * corresponds
          * to {@code frameGuids}. The number of sub-frames for the {@code i}th frame in {@code
          * frameGuids} is {@code subFramesCount[i]}.
          * @param subFrameGuids Contains the GUIDs of all sub-frames. The GUID for the {@code j}th
@@ -59,15 +58,17 @@ public interface PlayerCompositorDelegate {
          * is: <pre> int k = j; for (int s = 0; s < i; s++) k += subFramesCount[s];
          * </pre>
          * @param subFrameClipRects Contains clip rect values for each sub-frame. Each clip rect
-         *         value
-         * comes in a series of four consecutive integers that represent x, y, width, and height.
-         * The clip rect values for the {@code j}th sub-frame of {@code frameGuids[i]} will be at
-         * {@code subFrameGuids[4*k]}, {@code subFrameGuids[4*k+1]} , {@code subFrameGuids[4*k+2]},
-         * and {@code subFrameGuids[4*k+3]}, where {@code k} has the same value as above.
+         * value comes in a series of four consecutive integers that represent x, y, width, and
+         * height. The clip rect values for the {@code j}th sub-frame of {@code frameGuids[i]} will
+         * be at {@code subFrameGuids[4*k]}, {@code subFrameGuids[4*k+1]} ,
+         * {@code subFrameGuids[4*k+2]}, and {@code subFrameGuids[4*k+3]}, where {@code k} has the
+         * same value as above.
+         * @param nativeAxTree Native pointer to the accessibility tree snapshot. The implementer
+         * of this method will be the owner of this object and should delete it once it's used.
          */
         void onCompositorReady(UnguessableToken rootFrameGuid, UnguessableToken[] frameGuids,
                 int[] frameContentSize, int[] scrollOffsets, int[] subFramesCount,
-                UnguessableToken[] subFrameGuids, int[] subFrameClipRects);
+                UnguessableToken[] subFrameGuids, int[] subFrameClipRects, long nativeAxTree);
     }
 
     /**
@@ -79,7 +80,8 @@ public interface PlayerCompositorDelegate {
     /**
      * Requests a new bitmap for a frame from the Paint Preview compositor.
      * @param frameGuid The GUID of the frame.
-     * @param clipRect The {@link Rect} for which the bitmap is requested.
+     * @param clipRect The {@link Rect} for which the bitmap is requested. Note: this is relative
+     * to the captured content.
      * @param scaleFactor The scale factor at which the bitmap should be rastered.
      * @param bitmapCallback The callback that receives the bitmap once it's ready. Won't get called
      * if there are any errors.
@@ -93,7 +95,8 @@ public interface PlayerCompositorDelegate {
     /**
      * Requests a new bitmap for a frame from the Paint Preview compositor if {@link mainFrameMode}
      * was passed as true as a parameter in the {@link Factory}
-     * @param clipRect The {@link Rect} for which the bitmap is requested.
+     * @param clipRect The {@link Rect} for which the bitmap is requested. Note: this is relative
+     * to the captured content.
      * @param scaleFactor The scale factor at which the bitmap should be rastered.
      * @param bitmapCallback The callback that receives the bitmap once it's ready. Won't get called
      * if there are any errors.

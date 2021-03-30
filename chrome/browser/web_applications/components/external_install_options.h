@@ -9,10 +9,12 @@
 #include <string>
 #include <vector>
 
+#include "base/optional.h"
 #include "chrome/browser/web_applications/components/install_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -36,6 +38,10 @@ struct ExternalInstallOptions {
   GURL install_url;
   DisplayMode user_display_mode;
   ExternalInstallSource install_source;
+
+  // App name to use for placeholder apps or web apps that have no name in
+  // their manifest.
+  base::Optional<std::string> fallback_app_name;
 
   // If true, a shortcut is added to the Applications folder on macOS, and Start
   // Menu on Linux and Windows and launcher on Chrome OS. If false, we skip
@@ -107,6 +113,12 @@ struct ExternalInstallOptions {
   // Whether the app should be reinstalled even if it is already installed.
   bool force_reinstall = false;
 
+  // Whether we should update the app if the browser's binary milestone number
+  // goes from less the milestone specified to greater or equal than the
+  // milestone specified. For example, if this value is 89 then we update the
+  // app on all browser upgrades from <89 to >=89. The update happens only once.
+  base::Optional<int> force_reinstall_for_milestone;
+
   // Whether we should wait for all app windows being closed before reinstalling
   // the placeholder.
   bool wait_for_windows_closed = false;
@@ -115,7 +127,7 @@ struct ExternalInstallOptions {
   // metadata for the app. A placeholder app uses:
   //  - The default Chrome App icon for the icon
   //  - |url| as the start_url
-  //  - |url| as the app name
+  //  - |url| as the app name (unless fallback_app_name has been specified)
   bool install_placeholder = false;
 
   // Whether we should try to reinstall the app if there is a placeholder for
@@ -152,6 +164,13 @@ struct ExternalInstallOptions {
   // A factory callback that returns a unique_ptr<WebApplicationInfo> to be used
   // as the app's installation metadata.
   WebApplicationInfoFactory app_info_factory;
+
+  // The type of SystemWebApp, if this app is a System Web App.
+  base::Optional<SystemAppType> system_app_type = base::nullopt;
+
+  // Whether the app was installed by an OEM and should be placed in a special
+  // OEM folder in the app launcher. Only used on Chrome OS.
+  bool oem_installed = false;
 };
 
 std::ostream& operator<<(std::ostream& out,

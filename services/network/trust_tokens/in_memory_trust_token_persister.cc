@@ -80,4 +80,13 @@ bool InMemoryTrustTokenPersister::DeleteForOrigins(
   return deleted_any_data;
 }
 
+base::flat_map<SuitableTrustTokenOrigin, int>
+InMemoryTrustTokenPersister::GetStoredTrustTokenCounts() {
+  base::flat_map<SuitableTrustTokenOrigin, int> result;
+  for (const auto& kv : issuer_configs_) {
+    result.emplace(kv.first, kv.second->tokens_size());
+  }
+  return result;
+}
+
 }  // namespace network

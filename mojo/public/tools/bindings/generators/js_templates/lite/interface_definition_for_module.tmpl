@@ -21,10 +21,18 @@
  * @implements {mojo.internal.interfaceSupport.PendingReceiver}
  */
 export const {{interface.name}}PendingReceiver = class {
-  /** @param {!MojoHandle} handle */
+  /**
+   * @param {!MojoHandle|!mojo.internal.interfaceSupport.Endpoint} handle
+   */
   constructor(handle) {
-    /** @public {!MojoHandle} */
-    this.handle = handle;
+    /** @public {!mojo.internal.interfaceSupport.Endpoint} */
+    this.handle = mojo.internal.interfaceSupport.getEndpointForReceiver(handle);
+  }
+
+  /** @param {string=} scope */
+  bindInBrowser(scope = 'context') {
+    mojo.internal.interfaceSupport.bind(
+        this.handle, '{{mojom_namespace}}.{{interface.name}}', scope);
   }
 };
 
@@ -44,15 +52,15 @@ export const {{interface.name}}Interface = class {
  * @implements { {{interface.name}}Interface }
  */
 export const {{interface.name}}Remote = class {
-  /** @param {MojoHandle=} opt_handle */
-  constructor(opt_handle) {
+  /** @param {MojoHandle|mojo.internal.interfaceSupport.Endpoint=} handle */
+  constructor(handle = undefined) {
     /**
      * @private {!mojo.internal.interfaceSupport.InterfaceRemoteBase<!{{interface.name}}PendingReceiver>}
      */
     this.proxy =
         new mojo.internal.interfaceSupport.InterfaceRemoteBase(
           {{interface.name}}PendingReceiver,
-          opt_handle);
+          handle);
 
     /**
      * @public {!mojo.internal.interfaceSupport.InterfaceRemoteBaseWrapper<!{{interface.name}}PendingReceiver>}
@@ -147,8 +155,7 @@ export const {{interface.name}} = class {
    */
   static getRemote() {
     let remote = new {{interface.name}}Remote;
-    Mojo.bindInterface("{{mojom_namespace}}.{{interface.name}}",
-                       remote.$.bindNewPipeAndPassReceiver().handle);
+    remote.$.bindNewPipeAndPassReceiver().bindInBrowser();
     return remote;
   }
 };

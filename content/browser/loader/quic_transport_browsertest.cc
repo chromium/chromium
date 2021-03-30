@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -117,19 +116,19 @@ class QuicTransportBrowserTest : public ContentBrowserTest {
         "I+ryIVl5ksb8KijTneC3y7z1wBFn5x35O5is9g5n/KM=");
   }
 
-  bool WaitForTitle(const base::string16& expected_title,
-                    const std::vector<base::string16> additional_titles) {
+  bool WaitForTitle(const std::u16string& expected_title,
+                    const std::vector<std::u16string> additional_titles) {
     TitleWatcher title_watcher(shell()->web_contents(), expected_title);
 
     for (const auto& title : additional_titles) {
       title_watcher.AlsoWaitForTitle(title);
     }
-    base::string16 actual_title = title_watcher.WaitAndGetTitle();
+    std::u16string actual_title = title_watcher.WaitAndGetTitle();
     EXPECT_EQ(expected_title, actual_title);
     return expected_title == actual_title;
   }
 
-  bool WaitForTitle(const base::string16& title) {
+  bool WaitForTitle(const std::u16string& title) {
     return WaitForTitle(title, {});
   }
 
@@ -143,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, Echo) {
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
 
-  ASSERT_TRUE(WaitForTitle(ASCIIToUTF16("Title Of Awesomeness")));
+  ASSERT_TRUE(WaitForTitle(u"Title Of Awesomeness"));
 
   ASSERT_TRUE(ExecuteScript(
       shell(), base::StringPrintf(R"JS(
@@ -174,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, Echo) {
 )JS",
                                   server_.server_address().port())));
 
-  ASSERT_TRUE(WaitForTitle(ASCIIToUTF16("PASS"), {ASCIIToUTF16("FAIL")}));
+  ASSERT_TRUE(WaitForTitle(u"PASS", {u"FAIL"}));
 }
 
 IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, EchoViaWebTransport) {
@@ -182,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, EchoViaWebTransport) {
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
 
-  ASSERT_TRUE(WaitForTitle(ASCIIToUTF16("Title Of Awesomeness")));
+  ASSERT_TRUE(WaitForTitle(u"Title Of Awesomeness"));
 
   ASSERT_TRUE(ExecuteScript(
       shell(), base::StringPrintf(R"JS(
@@ -213,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, EchoViaWebTransport) {
 )JS",
                                   server_.server_address().port())));
 
-  ASSERT_TRUE(WaitForTitle(ASCIIToUTF16("PASS"), {ASCIIToUTF16("FAIL")}));
+  ASSERT_TRUE(WaitForTitle(u"PASS", {u"FAIL"}));
 }
 
 IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, ClientIndicationFailure) {
@@ -221,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, ClientIndicationFailure) {
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
 
-  ASSERT_TRUE(WaitForTitle(ASCIIToUTF16("Title Of Awesomeness")));
+  ASSERT_TRUE(WaitForTitle(u"Title Of Awesomeness"));
 
   ASSERT_TRUE(ExecuteScript(
       shell(), base::StringPrintf(R"JS(
@@ -246,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, ClientIndicationFailure) {
 )JS",
                                   server_.server_address().port())));
 
-  ASSERT_TRUE(WaitForTitle(ASCIIToUTF16("PASS"), {ASCIIToUTF16("FAIL")}));
+  ASSERT_TRUE(WaitForTitle(u"PASS", {u"FAIL"}));
 }
 
 IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, CreateSendStream) {
@@ -254,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, CreateSendStream) {
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
 
-  ASSERT_TRUE(WaitForTitle(ASCIIToUTF16("Title Of Awesomeness")));
+  ASSERT_TRUE(WaitForTitle(u"Title Of Awesomeness"));
 
   ASSERT_TRUE(ExecuteScript(
       shell(), base::StringPrintf(R"JS(
@@ -274,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, CreateSendStream) {
 )JS",
                                   server_.server_address().port())));
 
-  ASSERT_TRUE(WaitForTitle(ASCIIToUTF16("PASS"), {ASCIIToUTF16("FAIL")}));
+  ASSERT_TRUE(WaitForTitle(u"PASS", {u"FAIL"}));
 }
 
 // ReceiveStream is flaky: crbug.com/1140193
@@ -284,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, MAYBE_ReceiveStream) {
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
 
-  ASSERT_TRUE(WaitForTitle(ASCIIToUTF16("Title Of Awesomeness")));
+  ASSERT_TRUE(WaitForTitle(u"Title Of Awesomeness"));
 
   ASSERT_TRUE(ExecuteScript(
       shell(), base::StringPrintf(R"JS(
@@ -326,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, MAYBE_ReceiveStream) {
 )JS",
                                   server_.server_address().port())));
 
-  ASSERT_TRUE(WaitForTitle(ASCIIToUTF16("PASS"), {ASCIIToUTF16("FAIL")}));
+  ASSERT_TRUE(WaitForTitle(u"PASS", {u"FAIL"}));
 }
 
 IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, BidirectionalStream) {
@@ -334,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, BidirectionalStream) {
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
 
-  ASSERT_TRUE(WaitForTitle(ASCIIToUTF16("Title Of Awesomeness")));
+  ASSERT_TRUE(WaitForTitle(u"Title Of Awesomeness"));
 
   ASSERT_TRUE(ExecuteScript(
       shell(), base::StringPrintf(R"JS(
@@ -373,7 +372,7 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, BidirectionalStream) {
 )JS",
                                   server_.server_address().port())));
 
-  ASSERT_TRUE(WaitForTitle(ASCIIToUTF16("PASS"), {ASCIIToUTF16("FAIL")}));
+  ASSERT_TRUE(WaitForTitle(u"PASS", {u"FAIL"}));
 }
 
 IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, CertificateFingerprint) {
@@ -381,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, CertificateFingerprint) {
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
 
-  ASSERT_TRUE(WaitForTitle(ASCIIToUTF16("Title Of Awesomeness")));
+  ASSERT_TRUE(WaitForTitle(u"Title Of Awesomeness"));
 
   ASSERT_TRUE(ExecuteScript(
       shell(), base::StringPrintf(R"JS(
@@ -421,7 +420,7 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, CertificateFingerprint) {
 )JS",
                                   server_.server_address().port())));
 
-  ASSERT_TRUE(WaitForTitle(ASCIIToUTF16("PASS"), {ASCIIToUTF16("FAIL")}));
+  ASSERT_TRUE(WaitForTitle(u"PASS", {u"FAIL"}));
 }
 
 IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, ReceiveBidirectionalStream) {
@@ -429,7 +428,7 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, ReceiveBidirectionalStream) {
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
 
-  ASSERT_TRUE(WaitForTitle(ASCIIToUTF16("Title Of Awesomeness")));
+  ASSERT_TRUE(WaitForTitle(u"Title Of Awesomeness"));
 
   ASSERT_TRUE(ExecuteScript(
       shell(), base::StringPrintf(R"JS(
@@ -492,7 +491,7 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, ReceiveBidirectionalStream) {
 )JS",
                                   server_.server_address().port())));
 
-  ASSERT_TRUE(WaitForTitle(ASCIIToUTF16("PASS"), {ASCIIToUTF16("FAIL")}));
+  ASSERT_TRUE(WaitForTitle(u"PASS", {u"FAIL"}));
 }
 
 }  // namespace

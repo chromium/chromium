@@ -39,6 +39,10 @@ public interface InterceptNavigationDelegateClient {
     /* Returns whether whether the tab associated with this client is currently hidden. */
     boolean isHidden();
 
+    /* Returns whether intent launching from hidden tabs is allowed for the navigation specified
+     * by |params|. */
+    boolean areIntentLaunchesAllowedInHiddenTabsForNavigation(NavigationParams params);
+
     /* Returns the Activity associated with this client. */
     Activity getActivity();
 

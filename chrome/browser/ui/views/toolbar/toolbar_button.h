@@ -14,6 +14,7 @@
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/metadata/metadata_header_macros.h"
@@ -64,7 +65,7 @@ class ToolbarButton : public views::LabelButton,
   // using an animation. If some highlight is already set, it shows the new
   // highlight directly without any animation. To clear the previous highlight
   // (also using an animation), call this function with both parameters empty.
-  void SetHighlight(const base::string16& highlight_text,
+  void SetHighlight(const std::u16string& highlight_text,
                     base::Optional<SkColor> highlight_color);
 
   // Sets the leading margin when the browser is maximized and updates layout to
@@ -79,13 +80,23 @@ class ToolbarButton : public views::LabelButton,
   void ClearPendingMenu();
   bool IsMenuShowing() const;
 
+  // Sets the button's vector icon. This icon uses the default colors and are
+  // automatically updated on theme changes.
+  void SetVectorIcon(const gfx::VectorIcon& icon);
+
+  // Sets an icon and touch-mode icon for this button.
+  // TODO(pbos): Investigate if touch-mode icons are just different-size ones
+  // that can be folded into the same .icon file as different CANVAS_DIMENSIONS.
+  void SetVectorIcons(const gfx::VectorIcon& icon,
+                      const gfx::VectorIcon& touch_icon);
+
   // Updates the images using the given icon and the default colors returned by
   // GetForegroundColor().
   void UpdateIconsWithStandardColors(const gfx::VectorIcon& icon);
 
   // Updates the icon images and colors as necessary. Should be called any time
   // icon state changes, e.g. in response to theme or touch mode changes.
-  virtual void UpdateIcon() {}
+  virtual void UpdateIcon();
 
   // Gets/Sets |layout_insets_|, see comment there.
   base::Optional<gfx::Insets> GetLayoutInsets() const;
@@ -103,7 +114,7 @@ class ToolbarButton : public views::LabelButton,
   void OnMouseExited(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  base::string16 GetTooltipText(const gfx::Point& p) const override;
+  std::u16string GetTooltipText(const gfx::Point& p) const override;
   std::unique_ptr<views::InkDrop> CreateInkDrop() override;
   std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
       const override;
@@ -220,6 +231,13 @@ class ToolbarButton : public views::LabelButton,
     gfx::SlideAnimation highlight_color_animation_;
   };
 
+  struct VectorIcons {
+    const gfx::VectorIcon& icon;
+    const gfx::VectorIcon& touch_icon;
+  };
+
+  void TouchUiChanged();
+
   // Clears the current highlight, i.e. it sets the label to an empty string and
   // clears the highlight color. If there was a non-empty highlight, previously,
   // it hides the current highlight using an animation. Otherwise, it is a
@@ -236,7 +254,7 @@ class ToolbarButton : public views::LabelButton,
   // views::LabelButton:
   // This is private to avoid a foot-shooter. Callers should use SetHighlight()
   // instead which sets an optional color as well.
-  void SetText(const base::string16& text) override;
+  void SetText(const std::u16string& text) override;
 
   // Sets the in product help promo. Called after the kHasInProductHelpPromoKey
   // property changes. When this button has an in product help promo, the button
@@ -267,6 +285,10 @@ class ToolbarButton : public views::LabelButton,
   // Menu runner to display drop down menu.
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
+  // Vector icons for the ToolbarButton. The icon is chosen based on touch-ui.
+  // Reacts to theme changes using default colors.
+  base::Optional<VectorIcons> vector_icons_;
+
   // Layout insets to use. This is used when the ToolbarButton is not actually
   // hosted inside the toolbar. If not supplied,
   // |GetLayoutInsets(TOOLBAR_BUTTON)| is used instead which is not appropriate
@@ -295,7 +317,7 @@ class ToolbarButton : public views::LabelButton,
 
   base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(
-          base::BindRepeating(&ToolbarButton::UpdateIcon,
+          base::BindRepeating(&ToolbarButton::TouchUiChanged,
                               base::Unretained(this)));
 
   // A factory for tasks that show the dropdown context menu for the button.

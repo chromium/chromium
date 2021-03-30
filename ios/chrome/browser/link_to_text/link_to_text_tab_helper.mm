@@ -5,9 +5,11 @@
 #import "ios/chrome/browser/link_to_text/link_to_text_tab_helper.h"
 
 #import "base/bind.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/optional.h"
 #import "base/timer/elapsed_timer.h"
 #import "base/values.h"
+#import "components/shared_highlighting/core/common/disabled_sites.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_constants.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -21,6 +23,24 @@
 
 namespace {
 const char kGetLinkToTextJavaScript[] = "linkToText.getLinkToText";
+const char kCheckPreconditionsJavaScript[] = "linkToText.checkPreconditions";
+
+// Corresponds to LinkToTextShouldOfferResult in enums.xml; used to log
+// fine-grained behavior of ShouldOffer.
+enum class ShouldOfferResult {
+  kSuccess = 0,
+  kRejectedInJavaScript = 1,
+  kBlockListed = 2,
+  kUnableToInvokeJavaScript = 3,
+  kWebLayerTaskTimeout = 4,
+  kDispatchedTimeout = 5,
+  kMaxValue = kDispatchedTimeout
+};
+
+void LogShouldOfferResult(ShouldOfferResult result) {
+  base::UmaHistogramEnumeration("IOS.LinkToText.ShouldOfferResult", result);
+}
+
 }  // namespace
 
 LinkToTextTabHelper::LinkToTextTabHelper(web::WebState* web_state)
@@ -40,16 +60,80 @@ void LinkToTextTabHelper::CreateForWebState(web::WebState* web_state) {
 }
 
 bool LinkToTextTabHelper::ShouldOffer() {
-  // TODO(crbug.com/1134708): add more checks, like text only.
+  if (!shared_highlighting::ShouldOfferLinkToText(
+          web_state_->GetLastCommittedURL())) {
+    LogShouldOfferResult(ShouldOfferResult::kBlockListed);
+    return false;
+  }
+
   web::WebFrame* main_frame =
       web_state_->GetWebFramesManager()->GetMainWebFrame();
-  return web_state_->ContentIsHTML() && main_frame &&
-         main_frame->CanCallJavaScriptFunction();
+  if (!web_state_->ContentIsHTML() || !main_frame ||
+      !main_frame->CanCallJavaScriptFunction()) {
+    LogShouldOfferResult(ShouldOfferResult::kUnableToInvokeJavaScript);
+    return false;
+  }
+
+  // We use a CFRunLoop because this method is invoked in response to a
+  // selection event fired by iOS. This happens on the main thread and so we
+  // can't block; instead we loop until completion.
+  __block BOOL isRunLoopNested = NO;
+  __block BOOL javascriptEvaluationComplete = NO;
+  __block BOOL isRunLoopComplete = NO;
+  __block BOOL response = NO;
+
+  web_state_->GetWebFramesManager()->GetMainWebFrame()->CallJavaScriptFunction(
+      kCheckPreconditionsJavaScript, {},
+      base::BindOnce(^(const base::Value* responseAsValue) {
+        DCHECK([NSThread isMainThread]);
+        javascriptEvaluationComplete = YES;
+        if (responseAsValue && responseAsValue->is_bool()) {
+          response = responseAsValue->GetBool();
+          LogShouldOfferResult(response
+                                   ? ShouldOfferResult::kSuccess
+                                   : ShouldOfferResult::kRejectedInJavaScript);
+        } else {
+          response = NO;
+          LogShouldOfferResult(ShouldOfferResult::kWebLayerTaskTimeout);
+        }
+        if (isRunLoopNested) {
+          CFRunLoopStop(CFRunLoopGetCurrent());
+        }
+      }),
+      // The Web State requires a timeout, but we generally don't want this to
+      // fire since we have our own below which more tightly covers the time the
+      // main thread is waiting. Thus, we use a separate, much longer, value.
+      base::TimeDelta::FromSeconds(
+          link_to_text::kPreconditionsWebStateTimeoutInSeconds));
+
+  // Make sure to timeout in case the JavaScript doesn't return in a timely
+  // manner, or else modifying the selection (and maybe other things) will
+  // break.
+  dispatch_after(
+      dispatch_time(DISPATCH_TIME_NOW,
+                    (int64_t)(link_to_text::kPreconditionsTimeoutInSeconds *
+                              NSEC_PER_SEC)),
+      dispatch_get_main_queue(), ^{
+        if (!isRunLoopComplete) {
+          LogShouldOfferResult(ShouldOfferResult::kDispatchedTimeout);
+          CFRunLoopStop(CFRunLoopGetCurrent());
+          response = NO;
+        }
+      });
+
+  // Only run loop if the JS hasn't already finished executing.
+  if (!javascriptEvaluationComplete) {
+    isRunLoopNested = YES;
+    CFRunLoopRun();
+    isRunLoopNested = NO;
+  }
+
+  isRunLoopComplete = YES;
+
+  return response;
 }
 
 void LinkToTextTabHelper::GetLinkToText(LinkToTextCallback callback) {
-  DCHECK(ShouldOffer());
-
   link_generation_timer_ = std::make_unique<base::ElapsedTimer>();
 
   base::WeakPtr<LinkToTextTabHelper> weak_ptr = weak_ptr_factory_.GetWeakPtr();

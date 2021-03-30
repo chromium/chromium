@@ -42,7 +42,8 @@ OsSettingsSections::OsSettingsSections(
     ArcAppListPrefs* arc_app_list_prefs,
     signin::IdentityManager* identity_manager,
     android_sms::AndroidSmsService* android_sms_service,
-    CupsPrintersManager* printers_manager) {
+    CupsPrintersManager* printers_manager,
+    apps::AppServiceProxy* app_service_proxy) {
   // Special case: Main section does not have an associated enum value.
   sections_.push_back(
       std::make_unique<MainSection>(profile, search_tag_registry));
@@ -86,7 +87,8 @@ OsSettingsSections::OsSettingsSections(
   sections_.push_back(std::move(search_section));
 
   auto apps_section = std::make_unique<AppsSection>(
-      profile, search_tag_registry, profile->GetPrefs(), arc_app_list_prefs);
+      profile, search_tag_registry, profile->GetPrefs(), arc_app_list_prefs,
+      app_service_proxy);
   sections_map_[mojom::Section::kApps] = apps_section.get();
   sections_.push_back(std::move(apps_section));
 

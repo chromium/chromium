@@ -104,7 +104,7 @@ gfx::Size SystemWebDialogDelegate::ComputeDialogSizeForInternalScreen(
 }
 
 SystemWebDialogDelegate::SystemWebDialogDelegate(const GURL& gurl,
-                                                 const base::string16& title)
+                                                 const std::u16string& title)
     : gurl_(gurl), title_(title), modal_type_(ui::MODAL_TYPE_NONE) {
   set_can_resize(false);
   switch (session_manager::SessionManager::Get()->session_state()) {
@@ -151,7 +151,7 @@ ui::ModalType SystemWebDialogDelegate::GetDialogModalType() const {
   return modal_type_;
 }
 
-base::string16 SystemWebDialogDelegate::GetDialogTitle() const {
+std::u16string SystemWebDialogDelegate::GetDialogTitle() const {
   return title_;
 }
 

@@ -8,6 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -53,7 +54,7 @@ BackForwardCacheThrottle::WillStartRequest() {
       navigation_request->frame_tree_node()
           ->navigator()
           .controller()
-          ->GetBackForwardCache()
+          .GetBackForwardCache()
           .GetEntry(navigation_request->nav_entry_id());
 
   if (!bfcache_entry) {

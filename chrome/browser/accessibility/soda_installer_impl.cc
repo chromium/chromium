@@ -10,15 +10,19 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
+#include "base/files/file_util.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/numerics/ranges.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/soda_component_installer.h"
-#include "chrome/browser/component_updater/soda_en_us_component_installer.h"
-#include "chrome/browser/component_updater/soda_ja_jp_component_installer.h"
+#include "chrome/browser/component_updater/soda_language_pack_component_installer.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/soda/constants.h"
 #include "components/update_client/crx_update_item.h"
 #include "media/base/media_switches.h"
 
@@ -51,23 +55,36 @@ int GetDownloadProgress(
 namespace speech {
 
 // static
-SODAInstaller* SODAInstaller::GetInstance() {
-  static base::NoDestructor<SODAInstallerImpl> instance;
+SodaInstaller* SodaInstaller::GetInstance() {
+  static base::NoDestructor<SodaInstallerImpl> instance;
   return instance.get();
 }
 
-SODAInstallerImpl::SODAInstallerImpl() = default;
+SodaInstallerImpl::SodaInstallerImpl() = default;
 
-SODAInstallerImpl::~SODAInstallerImpl() {
+SodaInstallerImpl::~SodaInstallerImpl() {
   component_updater_observer_.RemoveAll();
 }
 
-void SODAInstallerImpl::InstallSODA(PrefService* prefs) {
+base::FilePath SodaInstallerImpl::GetSodaBinaryPath() const {
+  DLOG(FATAL) << "GetSodaBinaryPath not supported on this platform";
+  return base::FilePath();
+}
+
+base::FilePath SodaInstallerImpl::GetLanguagePath() const {
+  DLOG(FATAL) << "GetLanguagePath not supported on this platform";
+  return base::FilePath();
+}
+
+void SodaInstallerImpl::InstallSoda(PrefService* prefs) {
+  soda_binary_installed_ = false;
   component_updater::RegisterSodaComponent(
       g_browser_process->component_updater(), prefs,
       g_browser_process->local_state(),
-      base::BindOnce(&component_updater::SODAComponentInstallerPolicy::
-                         UpdateSODAComponentOnDemand));
+      base::BindOnce(&SodaInstallerImpl::OnSodaBinaryInstalled,
+                     weak_factory_.GetWeakPtr()),
+      base::BindOnce(&component_updater::SodaComponentInstallerPolicy::
+                         UpdateSodaComponentOnDemand));
 
   if (!component_updater_observer_.IsObserving(
           g_browser_process->component_updater())) {
@@ -75,10 +92,13 @@ void SODAInstallerImpl::InstallSODA(PrefService* prefs) {
   }
 }
 
-void SODAInstallerImpl::InstallLanguage(PrefService* prefs) {
+void SodaInstallerImpl::InstallLanguage(PrefService* prefs) {
+  language_installed_ = false;
   component_updater::RegisterSodaLanguageComponent(
       g_browser_process->component_updater(), prefs,
-      g_browser_process->local_state());
+      g_browser_process->local_state(),
+      base::BindOnce(&SodaInstallerImpl::OnSodaLanguagePackInstalled,
+                     weak_factory_.GetWeakPtr()));
 
   if (!component_updater_observer_.IsObserving(
           g_browser_process->component_updater())) {
@@ -86,33 +106,24 @@ void SODAInstallerImpl::InstallLanguage(PrefService* prefs) {
   }
 }
 
-bool SODAInstallerImpl::IsSODARegistered() {
-  if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption))
-    return true;
-  std::vector<std::string> component_ids =
-      g_browser_process->component_updater()->GetComponentIDs();
-  bool has_soda = false;
-  bool has_language_pack = false;
-  for (std::string id : component_ids) {
-    if (id == component_updater::SODAComponentInstallerPolicy::GetExtensionId())
-      has_soda = true;
-    if (id == component_updater::SodaEnUsComponentInstallerPolicy::
-                  GetExtensionId() ||
-        id == component_updater::SodaJaJpComponentInstallerPolicy::
-                  GetExtensionId()) {
-      has_language_pack = true;
-    }
-  }
-  return has_soda && has_language_pack;
+bool SodaInstallerImpl::IsSodaInstalled() const {
+  DCHECK(base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption));
+  return soda_binary_installed_ && language_installed_;
 }
 
-void SODAInstallerImpl::OnEvent(Events event, const std::string& id) {
-  if (id != component_updater::SODAComponentInstallerPolicy::GetExtensionId() &&
-      id != component_updater::SodaEnUsComponentInstallerPolicy::
-                GetExtensionId() &&
-      id !=
-          component_updater::SodaJaJpComponentInstallerPolicy::GetExtensionId())
+void SodaInstallerImpl::UninstallSoda(PrefService* global_prefs) {
+  base::DeletePathRecursively(speech::GetSodaDirectory());
+  base::DeletePathRecursively(speech::GetSodaLanguagePacksDirectory());
+  global_prefs->SetTime(prefs::kSodaScheduledDeletionTime, base::Time());
+}
+
+void SodaInstallerImpl::OnEvent(Events event, const std::string& id) {
+  if (!component_updater::SodaLanguagePackComponentInstallerPolicy::
+           GetExtensionIds()
+               .contains(id) &&
+      id != component_updater::SodaComponentInstallerPolicy::GetExtensionId()) {
     return;
+  }
 
   switch (event) {
     case Events::COMPONENT_UPDATE_FOUND:
@@ -127,19 +138,33 @@ void SODAInstallerImpl::OnEvent(Events event, const std::string& id) {
       // When GetDownloadProgress returns -1, do nothing. It returns -1 when the
       // downloaded or total bytes is unknown.
       if (progress != -1) {
-        NotifyOnSODAProgress(progress);
+        NotifyOnSodaProgress(progress);
       }
     } break;
-    case Events::COMPONENT_UPDATED:
-      NotifyOnSODAInstalled();
-      break;
     case Events::COMPONENT_UPDATE_ERROR:
-      NotifyOnSODAError();
+      NotifyOnSodaError();
       break;
     case Events::COMPONENT_CHECKING_FOR_UPDATES:
+    case Events::COMPONENT_UPDATED:
     case Events::COMPONENT_NOT_UPDATED:
       // Do nothing.
       break;
+  }
+}
+
+void SodaInstallerImpl::OnSodaBinaryInstalled() {
+  soda_binary_installed_ = true;
+  if (language_installed_) {
+    component_updater_observer_.RemoveAll();
+    NotifyOnSodaInstalled();
+  }
+}
+
+void SodaInstallerImpl::OnSodaLanguagePackInstalled() {
+  language_installed_ = true;
+  if (soda_binary_installed_) {
+    component_updater_observer_.RemoveAll();
+    NotifyOnSodaInstalled();
   }
 }
 

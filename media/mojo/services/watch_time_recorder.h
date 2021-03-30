@@ -58,6 +58,7 @@ class MEDIA_MOJO_EXPORT WatchTimeRecorder : public mojom::WatchTimeRecorder {
   // with a complete finalize (destruction or empty FinalizeWatchTime call).
   // Clears |aggregate_watch_time_info_| upon completion.
   void RecordUkmPlaybackData();
+  bool ShouldRecordUma() const;
 
   const mojom::PlaybackPropertiesPtr properties_;
 

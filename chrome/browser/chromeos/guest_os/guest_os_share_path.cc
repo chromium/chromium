@@ -9,16 +9,16 @@
 #include "base/files/file_util.h"
 #include "base/optional.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
-#include "chrome/browser/chromeos/drive/drive_integration_service.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/chromeos/file_manager/volume_manager.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_share_path_factory.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_manager.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_manager_factory.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/chromeos/smb_client/smb_service.h"
 #include "chrome/browser/chromeos/smb_client/smb_service_factory.h"
 #include "chrome/browser/chromeos/smb_client/smbfs_share.h"
@@ -137,14 +137,14 @@ void RemovePersistedPathFromPrefs(base::DictionaryValue* shared_paths,
   // If |path| exists, remove |vm_name| from list of VMs.
   base::Value* found = shared_paths->FindKey(path.value());
   if (!found) {
-    LOG(WARNING) << "Path not in prefs to ushare path " << path.value()
+    LOG(WARNING) << "Path not in prefs to unshare path " << path.value()
                  << " for VM " << vm_name;
     return;
   }
   auto it = std::find(found->GetList().begin(), found->GetList().end(),
                       base::Value(vm_name));
   if (!found->EraseListIter(it)) {
-    LOG(WARNING) << "VM not in prefs to ushare path " << path.value()
+    LOG(WARNING) << "VM not in prefs to unshare path " << path.value()
                  << " for VM " << vm_name;
     return;
   }

@@ -61,8 +61,8 @@ class StreamCreator {
     options.capacity_num_bytes = capacity;
 
     mojo::ScopedDataPipeProducerHandle data_pipe_producer;
-    MojoResult result = mojo::CreateDataPipe(&options, &data_pipe_producer,
-                                             &data_pipe_consumer_);
+    MojoResult result =
+        mojo::CreateDataPipe(&options, data_pipe_producer, data_pipe_consumer_);
     if (result != MOJO_RESULT_OK) {
       ADD_FAILURE() << "CreateDataPipe() returned " << result;
     }

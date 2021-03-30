@@ -114,15 +114,6 @@ TEST_F(UserTypeFilterTest, ManagedUser) {
       profile, CreateJsonWithFilter({kUserTypeUnmanaged, kUserTypeManaged})));
 }
 
-TEST_F(UserTypeFilterTest, SupervisedUser) {
-  const auto profile = CreateProfile();
-  profile->SetSupervisedUserId("asdf");
-  EXPECT_FALSE(Match(profile, CreateJsonWithFilter({kUserTypeUnmanaged})));
-  EXPECT_TRUE(Match(profile, CreateJsonWithFilter({kUserTypeSupervised})));
-  EXPECT_TRUE(Match(profile, CreateJsonWithFilter(
-                                 {kUserTypeUnmanaged, kUserTypeSupervised})));
-}
-
 TEST_F(UserTypeFilterTest, UnmanagedUser) {
   EXPECT_TRUE(
       Match(CreateProfile(), CreateJsonWithFilter({kUserTypeUnmanaged})));
@@ -145,11 +136,6 @@ TEST_P(GuestUserTypeFilterTest, DefaultFilter) {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   // Child user.
   profile->SetSupervisedUserId(supervised_users::kChildAccountSUID);
-  EXPECT_FALSE(MatchDefault(profile, default_filter));
-  // Supervised user.
-  // TODO(crbug.com/971311): Remove the next assert test once legacy supervised
-  // user code has been fully removed.
-  profile->SetSupervisedUserId("asdf");
   EXPECT_FALSE(MatchDefault(profile, default_filter));
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
   // Managed user.

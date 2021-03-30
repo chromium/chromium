@@ -28,15 +28,15 @@ TEST_F(ComponentMetricsProviderTest, ProvideComponentMetrics) {
       ComponentInfo(
           "hfnkpimlhhgieaddgfemjhofmfblmnib",
           "1.0846414bf2025bbc067b6fa5b61b16eda2269d8712b8fec0973b4c71fdc65ca0",
-          base::ASCIIToUTF16("name1"), base::Version("1.2.3.4")),
+          u"name1", base::Version("1.2.3.4")),
       ComponentInfo(
           "oimompecagnajdejgnnjijobebaeigek",
           "1.adc9207a4a88ee98bf9ddf0330f35818386f1adc006bc8eee94dc59d43c0f5d6",
-          base::ASCIIToUTF16("name2"), base::Version("5.6.7.8")),
+          u"name2", base::Version("5.6.7.8")),
       ComponentInfo(
           "thiscomponentfilteredfromresults",
           "1.b5268dc93e08d68d0be26bd8fbbb15c7b7f805cc06b4abd9d49381bc178e78cf",
-          base::ASCIIToUTF16("name3"), base::Version("9.9.9.9"))};
+          u"name3", base::Version("9.9.9.9"))};
   component_updater::MockComponentUpdateService service;
   EXPECT_CALL(service, GetComponents()).WillOnce(testing::Return(components));
   ComponentMetricsProvider component_provider(&service);

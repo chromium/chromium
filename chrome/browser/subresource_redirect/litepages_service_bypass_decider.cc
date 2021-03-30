@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/subresource_redirect/subresource_redirect_util.h"
+#include "components/subresource_redirect/common/subresource_redirect_features.h"
 #include "net/http/http_status_code.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -15,7 +16,8 @@ LitePagesServiceBypassDecider::~LitePagesServiceBypassDecider() = default;
 
 bool LitePagesServiceBypassDecider::ShouldAllowNow() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kSubresourceRedirect));
+  DCHECK(subresource_redirect::ShouldEnablePublicImageHintsBasedCompression() ||
+         subresource_redirect::ShouldEnableRobotsRulesFetching());
   bool should_allow =
       !bypassed_until_time_ || base::TimeTicks::Now() > bypassed_until_time_;
   base::UmaHistogramBoolean("SubresourceRedirect.LitePagesService.BypassResult",
@@ -27,7 +29,8 @@ void LitePagesServiceBypassDecider::NotifyFetchFailureWithResponseCode(
     int response_code,
     base::TimeDelta retry_after) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kSubresourceRedirect));
+  DCHECK(subresource_redirect::ShouldEnablePublicImageHintsBasedCompression() ||
+         subresource_redirect::ShouldEnableRobotsRulesFetching());
   if (response_code == net::HTTP_SERVICE_UNAVAILABLE ||
       response_code == net::HTTP_FORBIDDEN) {
     NotifyFetchFailure(retry_after);
@@ -37,7 +40,8 @@ void LitePagesServiceBypassDecider::NotifyFetchFailureWithResponseCode(
 void LitePagesServiceBypassDecider::NotifyFetchFailure(
     base::TimeDelta retry_after) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kSubresourceRedirect));
+  DCHECK(subresource_redirect::ShouldEnablePublicImageHintsBasedCompression() ||
+         subresource_redirect::ShouldEnableRobotsRulesFetching());
   if (!retry_after.is_zero()) {
     // Choose the time mentioned in retry_after, but cap it to a max value.
     retry_after = std::min(

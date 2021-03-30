@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/page/event_with_hit_test_results.h"
+#include "third_party/blink/renderer/core/page/scrolling/scroll_state.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
@@ -33,6 +34,10 @@ class Page;
 class Scrollbar;
 class ScrollState;
 class WebGestureEvent;
+
+// Scroll directions used to check whether propagation is possible in a given
+// direction. Used in CanPropagate.
+enum class ScrollPropagationDirection { kHorizontal, kVertical, kBoth, kNone };
 
 // This class takes care of scrolling and resizing and the related states. The
 // user action that causes scrolling or resizing is determined in other *Manager
@@ -108,6 +113,13 @@ class CORE_EXPORT ScrollManager : public GarbageCollected<ScrollManager>,
 
   void AnimateSnapFling(base::TimeTicks monotonic_time);
 
+  // Determines whether the scroll-chain should be propagated upwards given a
+  // scroll direction.
+  static bool CanPropagate(const LayoutBox* layout_box,
+                           ScrollPropagationDirection direction);
+  static ScrollPropagationDirection ComputePropagationDirection(
+      const ScrollState&);
+
  private:
   Node* NodeTargetForScrollableAreaElementId(
       CompositorElementId scrollable_area_element_id) const;
@@ -133,19 +145,23 @@ class CORE_EXPORT ScrollManager : public GarbageCollected<ScrollManager>,
 
   void RecomputeScrollChain(const Node& start_node,
                             const ScrollState&,
-                            Deque<DOMNodeId>& scroll_chain);
-  bool CanScroll(const ScrollState&, const Node& current_node);
+                            Deque<DOMNodeId>& scroll_chain,
+                            bool is_autoscroll);
+  bool CanScroll(const ScrollState&,
+                 const Node& current_node,
+                 bool for_autoscroll);
 
-  // scroller_size is set only when scrolling non root scroller.
-  void ComputeScrollRelatedMetrics(
-      uint32_t* non_composited_main_thread_scrolling_reasons);
-  void RecordScrollRelatedMetrics(const WebGestureDevice);
+  uint32_t GetNonCompositedMainThreadScrollingReasons() const;
+  void RecordScrollRelatedMetrics(WebGestureDevice) const;
 
   WebGestureEvent SynthesizeGestureScrollBegin(
       const WebGestureEvent& update_event);
 
   bool SnapAtGestureScrollEnd(const WebGestureEvent& end_event,
                               base::ScopedClosureRunner callback);
+
+  void AdjustForSnapAtScrollUpdate(const WebGestureEvent& gesture_event,
+                                   ScrollStateData* scroll_state_data);
 
   void NotifyScrollPhaseBeginForCustomizedScroll(const ScrollState&);
   void NotifyScrollPhaseEndForCustomizedScroll();

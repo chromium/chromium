@@ -10,6 +10,16 @@
 
 namespace soda {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class LoadSodaResultValue {
+  kUnknown = 0,
+  kSuccess = 1,
+  kBinaryInvalid = 2,
+  kFunctionPointerInvalid = 3,
+  kMaxValue = kFunctionPointerInvalid,
+};
+
 // The client that wraps the plain C-style interface between Chrome and the
 // Speech On-Device API (SODA). Changes to the interface must be backwards
 // compatible and reflected in the Google3-side definition.
@@ -27,15 +37,21 @@ class SodaClient {
   bool DidAudioPropertyChange(int sample_rate, int channel_count);
 
   // Resets the SODA instance, initializing it with the provided config.
-  void Reset(const SodaConfig config);
+  void Reset(const SerializedSodaConfig config,
+             int sample_rate,
+             int channel_count);
 
   // Returns a flag indicating whether the client has been initialized.
   bool IsInitialized() { return is_initialized_; }
 
+  bool BinaryLoadedSuccessfully() {
+    return load_soda_result_ == LoadSodaResultValue::kSuccess;
+  }
+
  private:
   base::ScopedNativeLibrary lib_;
 
-  typedef void* (*CreateSodaFunction)(SodaConfig);
+  typedef void* (*CreateSodaFunction)(SerializedSodaConfig);
   CreateSodaFunction create_soda_func_;
 
   typedef void (*DeleteSodaFunction)(void*);
@@ -44,9 +60,13 @@ class SodaClient {
   typedef void (*AddAudioFunction)(void*, const char*, int);
   AddAudioFunction add_audio_func_;
 
+  typedef void (*SodaStartFunction)(void*);
+  SodaStartFunction soda_start_func_;
+
   // An opaque handle to the SODA async instance.
   void* soda_async_handle_;
 
+  LoadSodaResultValue load_soda_result_ = LoadSodaResultValue::kUnknown;
   bool is_initialized_;
   int sample_rate_;
   int channel_count_;

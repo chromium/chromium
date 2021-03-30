@@ -38,13 +38,8 @@ class WebNavigationTabObserver
   // Returns the object for the given |web_contents|.
   static WebNavigationTabObserver* Get(content::WebContents* web_contents);
 
-  const FrameNavigationState& frame_navigation_state() const {
-    return navigation_state_;
-  }
-
   // content::WebContentsObserver implementation.
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
-  void FrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameHostChanged(content::RenderFrameHost* old_host,
                               content::RenderFrameHost* new_host) override;
   void DidStartNavigation(
@@ -65,7 +60,6 @@ class WebNavigationTabObserver
                            ui::PageTransition transition,
                            bool started_from_context_menu,
                            bool renderer_initiated) override;
-  void WebContentsDestroyed() override;
 
   // This method dispatches the already created onBeforeNavigate event.
   void DispatchCachedOnBeforeNavigate();
@@ -85,9 +79,6 @@ class WebNavigationTabObserver
   // Called when a RenderFrameHost goes into pending deletion. Stop tracking it
   // and its children.
   void RenderFrameHostPendingDeletion(content::RenderFrameHost*);
-
-  // Tracks the state of the frames we are sending events for.
-  FrameNavigationState navigation_state_;
 
   // The latest onBeforeNavigate event this frame has generated. It is stored
   // as it might not be sent immediately, but delayed until the tab is added to

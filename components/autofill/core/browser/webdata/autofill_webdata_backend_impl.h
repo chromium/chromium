@@ -91,8 +91,8 @@ class AutofillWebDataBackendImpl
   // Returns a vector of values which have been entered in form input fields
   // named |name|.
   std::unique_ptr<WDTypedResult> GetFormValuesForElementName(
-      const base::string16& name,
-      const base::string16& prefix,
+      const std::u16string& name,
+      const std::u16string& prefix,
       int limit,
       WebDatabase* db);
 
@@ -110,8 +110,8 @@ class AutofillWebDataBackendImpl
 
   // Removes the Form-value |value| which has been entered in form input fields
   // named |name| from the database.
-  WebDatabase::State RemoveFormValueForElementName(const base::string16& name,
-                                                   const base::string16& value,
+  WebDatabase::State RemoveFormValueForElementName(const std::u16string& name,
+                                                   const std::u16string& value,
                                                    WebDatabase* db);
 
   // Adds an Autofill profile to the web database. Valid only for local
@@ -177,7 +177,7 @@ class AutofillWebDataBackendImpl
   // Server credit cards can be masked (only last 4 digits stored) or unmasked
   // (all data stored). These toggle between the two states.
   WebDatabase::State UnmaskServerCreditCard(const CreditCard& card,
-                                            const base::string16& full_number,
+                                            const std::u16string& full_number,
                                             WebDatabase* db);
   WebDatabase::State MaskServerCreditCard(const std::string& id,
                                           WebDatabase* db);

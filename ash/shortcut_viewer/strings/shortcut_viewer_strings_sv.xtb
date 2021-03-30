@@ -23,11 +23,13 @@
 <translation id="169515659049020177">Skift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Lägg till www. och .com före och efter det du skriver i adressfältet och öppna sedan sidan</translation>
+<translation id="1768987374400973299">Ta skärmbild/starta skärminspelning</translation>
 <translation id="1872219238824176091">Ta bort det aktuella skrivbordet</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, sedan <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> eller <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">Öppna nästa flik</translation>
 <translation id="2010818616644390445">Öppna den sista fliken i fönstret</translation>
 <translation id="2040706009561734834">Öppna eller stäng översikten</translation>
+<translation id="2086334242442703436">Öppna emojiväljaren</translation>
 <translation id="2088054208777350526">Sök efter kortkommandon</translation>
 <translation id="2125211348069077981"><ph name="ALT" /> <ph name="SEPARATOR" /> <ph name="E" /> eller <ph name="F" /></translation>
 <translation id="2145908266289632567">Textredigering</translation>
@@ -46,10 +48,11 @@
 <translation id="2480851840841871861">Öppna Google Assistent</translation>
 <translation id="2488661730534396940">Aktivera skrivbordet till vänster</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516999188535378855">Öppna appen Diagnostik.</translation>
 <translation id="2530339807289914946">Rulla nedåt på webbsidan</translation>
 <translation id="2530896289327917474">Aktivera eller inaktivera textmarkörläge</translation>
 <translation id="2574014812750545982">Återställ zoomnivån på sidan</translation>
-<translation id="2596078834055697711">Ta en skärmdump av fönstret</translation>
+<translation id="2596078834055697711">Ta en skärmbild av fönstret</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, sedan <ph name="TAB" /> eller <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">Läs in den aktuella sidan igen</translation>
 <translation id="2764005613199379871">Flytta fokus till sökadressfältet</translation>
@@ -64,7 +67,7 @@
 <translation id="3020183492814296499">Genvägar</translation>
 <translation id="3084301071537457911">Markera nästa objekt på hyllan</translation>
 <translation id="309173601632226815">Markera översiktsknappen på hyllan</translation>
-<translation id="3105917916468784889">Ta en skärmdump</translation>
+<translation id="3105917916468784889">Ta en skärmbild</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Fokusera på adressfältet</translation>
 <translation id="3256109297135787951">Ta bort markeringen från ett objekt på hyllan</translation>
@@ -105,11 +108,12 @@
 <translation id="4556221320735744018">Visa hjälpen för kortkommandon</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> eller <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
 <translation id="4628718545549558538">Klicka i statusfältet där kontobilden visas</translation>
-<translation id="4642092649622328492">Ta en skärmdump av en del av skärmen</translation>
+<translation id="4642092649622328492">Ta en skärmbild av en del av skärmen</translation>
 <translation id="4698850295812410683">Visa verktyg för e-penna</translation>
 <translation id="4801989101741319327">Placera markören efter nästa ord</translation>
 <translation id="4866066940972151697">Aktivera skrivbordet till höger</translation>
 <translation id="4916163929714267752">Öppna länken i ett nytt fönster</translation>
+<translation id="492453977506755176">Tangent för skärmbild/skärminspelning</translation>
 <translation id="5030659775136592441">Visa bokmärkeshanteraren</translation>
 <translation id="5034421018520995080">Till högst upp på sidan</translation>
 <translation id="5042305953558921026">Tangent för översiktsläge</translation>
@@ -132,6 +136,7 @@
 <translation id="5899919361772749550">Visa eller dölj konsolen Verktyg för programmerare</translation>
 <translation id="5919628958418675842">Aktivera eller inaktivera sekretesskärmen</translation>
 <translation id="5921745308587794300">Rotera fönstret</translation>
+<translation id="5926306472221400972">Ta en skärmbild av hela skärmen</translation>
 <translation id="6022924867608035986">Rensa sökrutan</translation>
 <translation id="6045998054441862242">Aktivera högkontrastläge</translation>
 <translation id="6052614013050385269">Högerklicka på en länk</translation>
@@ -149,6 +154,7 @@
 <translation id="6445033640292336367">Återställ flikens ursprungliga position</translation>
 <translation id="6474744297082284761">Zooma ut (när dockad skärmförstoring ELLER helskärmsförstoring har aktiverats)</translation>
 <translation id="649811797655257835">Välj en fil och tryck på <ph name="SPACE" /></translation>
+<translation id="6551886416582667425">Ta en skärmbild av eller spela in en del av sidan</translation>
 <translation id="6556040137485212400">Öppna det fönster som inte har använts på längst tid</translation>
 <translation id="666343722268997814">Öppna högerklicksmenyn för markerat objekt</translation>
 <translation id="6671538777808758331">Hitta nästa träff för sökningen</translation>
@@ -175,6 +181,7 @@
 <translation id="7611271430932669992">Flytta fokus till popupfönster och dialogrutor</translation>
 <translation id="7635348532214572995">Flytta appikoner i rutnätet för appar</translation>
 <translation id="766326951329901120">Klistra in innehållet i Urklipp som oformaterad text</translation>
+<translation id="7673453620027697230">Ta en skärmbild av/spela in fönstret</translation>
 <translation id="7703010453515335249">vänster parentes</translation>
 <translation id="7724603315864178912">Klipp ut</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, sedan <ph name="SPACE" /> eller <ph name="ENTER" /></translation>

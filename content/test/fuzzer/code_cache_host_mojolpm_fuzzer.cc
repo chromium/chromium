@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/i18n/icu_util.h"
-#include "base/task/post_task.h"
 #include "base/test/test_switches.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
@@ -19,6 +18,7 @@
 #include "content/browser/renderer_host/code_cache_host_impl.h"  // [nogncheck]
 #include "content/browser/storage_partition_impl_map.h"          // [nogncheck]
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_content_client_initializer.h"
@@ -168,7 +168,8 @@ class CodeCacheHostTestcase {
 
   // Prerequisite state.
   std::unique_ptr<content::TestBrowserContext> browser_context_;
-  scoped_refptr<content::CacheStorageContextImpl> cache_storage_context_;
+  std::unique_ptr<content::CacheStorageControlWrapper>
+      cache_storage_control_wrapper_;
   scoped_refptr<content::GeneratedCodeCacheContext>
       generated_code_cache_context_;
 
@@ -194,21 +195,23 @@ CodeCacheHostTestcase::CodeCacheHostTestcase(
 void CodeCacheHostTestcase::SetUp() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  base::PostTaskAndReply(FROM_HERE, {content::BrowserThread::UI},
-                         base::BindOnce(&CodeCacheHostTestcase::SetUpOnUIThread,
-                                        base::Unretained(this)),
-                         run_loop.QuitClosure());
+  content::GetUIThreadTaskRunner({})->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&CodeCacheHostTestcase::SetUpOnUIThread,
+                     base::Unretained(this)),
+      run_loop.QuitClosure());
   run_loop.Run();
 }
 
 void CodeCacheHostTestcase::SetUpOnUIThread() {
   browser_context_ = std::make_unique<content::TestBrowserContext>();
 
-  cache_storage_context_ =
-      base::MakeRefCounted<content::CacheStorageContextImpl>();
-  cache_storage_context_->Init(browser_context_->GetPath(),
-                               browser_context_->GetSpecialStoragePolicy(),
-                               nullptr);
+  cache_storage_control_wrapper_ =
+      std::make_unique<content::CacheStorageControlWrapper>(
+          content::GetIOThreadTaskRunner({}), browser_context_->GetPath(),
+          browser_context_->GetSpecialStoragePolicy(),
+          /*quota_manager_proxy=*/nullptr,
+          /*blob_storage_context=*/mojo::NullRemote());
 
   generated_code_cache_context_ =
       base::MakeRefCounted<content::GeneratedCodeCacheContext>();
@@ -218,8 +221,8 @@ void CodeCacheHostTestcase::SetUpOnUIThread() {
 void CodeCacheHostTestcase::TearDown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  base::PostTaskAndReply(
-      FROM_HERE, {content::BrowserThread::UI},
+  content::GetUIThreadTaskRunner({})->PostTaskAndReply(
+      FROM_HERE,
       base::BindOnce(&CodeCacheHostTestcase::TearDownOnUIThread,
                      base::Unretained(this)),
       run_loop.QuitClosure());
@@ -229,7 +232,7 @@ void CodeCacheHostTestcase::TearDown() {
 void CodeCacheHostTestcase::TearDownOnUIThread() {
   code_cache_hosts_.clear();
   generated_code_cache_context_.reset();
-  cache_storage_context_.reset();
+  cache_storage_control_wrapper_.reset();
   browser_context_.reset();
 }
 
@@ -263,13 +266,13 @@ void CodeCacheHostTestcase::NextAction() {
         case Action::kRunThread: {
           if (action.run_thread().id()) {
             base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-            base::PostTask(FROM_HERE, {content::BrowserThread::UI},
-                           run_loop.QuitClosure());
+            content::GetUIThreadTaskRunner({})->PostTask(
+                FROM_HERE, run_loop.QuitClosure());
             run_loop.Run();
           } else {
             base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-            base::PostTask(FROM_HERE, {content::BrowserThread::IO},
-                           run_loop.QuitClosure());
+            content::GetIOThreadTaskRunner({})->PostTask(
+                FROM_HERE, run_loop.QuitClosure());
             run_loop.Run();
           }
         } break;
@@ -290,9 +293,12 @@ void CodeCacheHostTestcase::AddCodeCacheHostImpl(
     int renderer_id,
     const Origin& origin,
     mojo::PendingReceiver<::blink::mojom::CodeCacheHost>&& receiver) {
-  code_cache_hosts_[renderer_id] = std::make_unique<content::CodeCacheHostImpl>(
-      renderer_id, cache_storage_context_, generated_code_cache_context_,
-      std::move(receiver));
+  auto code_cache_host = std::make_unique<content::CodeCacheHostImpl>(
+      renderer_id, /*render_process_host_impl=*/nullptr,
+      generated_code_cache_context_, std::move(receiver));
+  code_cache_host->SetCacheStorageControlForTesting(
+      cache_storage_control_wrapper_.get());
+  code_cache_hosts_[renderer_id] = std::move(code_cache_host);
 }
 
 void CodeCacheHostTestcase::AddCodeCacheHost(
@@ -314,8 +320,8 @@ void CodeCacheHostTestcase::AddCodeCacheHost(
   }
 
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  base::PostTaskAndReply(
-      FROM_HERE, {content::BrowserThread::UI},
+  content::GetUIThreadTaskRunner({})->PostTaskAndReply(
+      FROM_HERE,
       base::BindOnce(&CodeCacheHostTestcase::AddCodeCacheHostImpl,
                      base::Unretained(this), id, renderer_id, *origin,
                      std::move(receiver)),

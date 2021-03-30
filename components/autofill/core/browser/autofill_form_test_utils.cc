@@ -29,56 +29,56 @@ FormFieldData CreateFieldByRole(ServerFieldType role) {
 
   switch (role) {
     case ServerFieldType::USERNAME:
-      field.label = ASCIIToUTF16("Username");
-      field.name = ASCIIToUTF16("username");
+      field.label = u"Username";
+      field.name = u"username";
       break;
     case ServerFieldType::NAME_FULL:
-      field.label = ASCIIToUTF16("Full name");
-      field.name = ASCIIToUTF16("fullname");
+      field.label = u"Full name";
+      field.name = u"fullname";
       break;
     case ServerFieldType::NAME_FIRST:
-      field.label = ASCIIToUTF16("First Name");
-      field.name = ASCIIToUTF16("firstName");
+      field.label = u"First Name";
+      field.name = u"firstName";
       break;
     case ServerFieldType::NAME_LAST:
-      field.label = ASCIIToUTF16("Last Name");
-      field.name = ASCIIToUTF16("lastName");
+      field.label = u"Last Name";
+      field.name = u"lastName";
       break;
     case ServerFieldType::EMAIL_ADDRESS:
-      field.label = ASCIIToUTF16("E-mail address");
-      field.name = ASCIIToUTF16("email");
+      field.label = u"E-mail address";
+      field.name = u"email";
       break;
     case ServerFieldType::ADDRESS_HOME_LINE1:
-      field.label = ASCIIToUTF16("Address");
-      field.name = ASCIIToUTF16("home_line_one");
+      field.label = u"Address";
+      field.name = u"home_line_one";
       break;
     case ServerFieldType::ADDRESS_HOME_CITY:
-      field.label = ASCIIToUTF16("City");
-      field.name = ASCIIToUTF16("city");
+      field.label = u"City";
+      field.name = u"city";
       break;
     case ServerFieldType::ADDRESS_HOME_STATE:
-      field.label = ASCIIToUTF16("State");
-      field.name = ASCIIToUTF16("state");
+      field.label = u"State";
+      field.name = u"state";
       break;
     case ServerFieldType::ADDRESS_HOME_COUNTRY:
-      field.label = ASCIIToUTF16("Country");
-      field.name = ASCIIToUTF16("country");
+      field.label = u"Country";
+      field.name = u"country";
       break;
     case ServerFieldType::ADDRESS_HOME_ZIP:
-      field.label = ASCIIToUTF16("Zip Code");
-      field.name = ASCIIToUTF16("zipCode");
+      field.label = u"Zip Code";
+      field.name = u"zipCode";
       break;
     case ServerFieldType::PHONE_HOME_NUMBER:
-      field.label = ASCIIToUTF16("Phone");
-      field.name = ASCIIToUTF16("phone");
+      field.label = u"Phone";
+      field.name = u"phone";
       break;
     case ServerFieldType::COMPANY_NAME:
-      field.label = ASCIIToUTF16("Company");
-      field.name = ASCIIToUTF16("company");
+      field.label = u"Company";
+      field.name = u"company";
       break;
     case ServerFieldType::CREDIT_CARD_NUMBER:
-      field.label = ASCIIToUTF16("Card Number");
-      field.name = ASCIIToUTF16("cardNumber");
+      field.label = u"Card Number";
+      field.name = u"cardNumber";
       break;
     case ServerFieldType::EMPTY_TYPE:
     default:
@@ -118,7 +118,6 @@ FormData GetFormData(const TestFormAttributes& test_form_attributes) {
     field.should_autocomplete = field_description.should_autocomplete;
     form_data.fields.push_back(field);
   }
-  form_data.is_formless_checkout = test_form_attributes.is_formless_checkout;
   form_data.is_form_tag = test_form_attributes.is_form_tag;
 
   return form_data;
@@ -135,7 +134,7 @@ void FormStructureTest::CheckFormStructureTestData(
     auto form_structure = std::make_unique<FormStructure>(form);
 
     if (test_case.form_flags.determine_heuristic_type)
-      form_structure->DetermineHeuristicTypes();
+      form_structure->DetermineHeuristicTypes(nullptr, nullptr);
 
     if (test_case.form_flags.is_autofillable)
       EXPECT_TRUE(form_structure->IsAutofillable());

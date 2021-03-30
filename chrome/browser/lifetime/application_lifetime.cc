@@ -44,8 +44,8 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/chromeos/boot_times_recorder.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -53,7 +53,7 @@
 #endif
 
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/user_manager.h"
+#include "chrome/browser/ui/profile_picker.h"
 #endif
 
 #if defined(OS_WIN)
@@ -92,7 +92,7 @@ bool AreAllBrowsersCloseable() {
 // policy or the owner's locale.  Returns true if any pref has been modified.
 bool SetLocaleForNextStart(PrefService* local_state) {
   // If a policy mandates the login screen locale, use it.
-  chromeos::CrosSettings* cros_settings = chromeos::CrosSettings::Get();
+  ash::CrosSettings* cros_settings = ash::CrosSettings::Get();
   const base::ListValue* login_screen_locales = nullptr;
   std::string login_screen_locale;
   if (cros_settings->GetList(chromeos::kDeviceLoginScreenLocales,
@@ -247,7 +247,7 @@ void AttemptUserExit() {
   // Reset the restart bit that might have been set in cancelled restart
   // request.
 #if !defined(OS_ANDROID)
-  UserManager::Hide();
+  ProfilePicker::Hide();
 #endif
   PrefService* pref_service = g_browser_process->local_state();
   pref_service->SetBoolean(prefs::kRestartLastSessionOnShutdown, false);
@@ -344,10 +344,12 @@ void SessionEnding() {
 
   // EndSession is invoked once per frame. Only do something the first time.
   static bool already_ended = false;
-  // We may get called in the middle of shutdown, e.g. http://crbug.com/70852
-  // In this case, do nothing.
-  if (already_ended || !content::NotificationService::current())
+  // We may get called in the middle of shutdown, e.g. https://crbug.com/70852
+  // and https://crbug.com/1187418.  In this case, do nothing.
+  if (already_ended || !content::NotificationService::current() ||
+      !g_browser_process) {
     return;
+  }
   already_ended = true;
 
   // ~ShutdownWatcherHelper uses IO (it joins a thread). We'll only trigger that

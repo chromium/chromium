@@ -19,6 +19,7 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
 import("//build/toolchain/cc_wrapper.gni")
 import("//build/toolchain/goma.gni")
+import("//build/toolchain/rbe.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build_overrides/build.gni")
 
@@ -33,7 +34,7 @@ if (current_cpu == "x64") {
   import("//build/config/x64.gni")
 }
 if (is_mac) {
-  import("//build/config/mac/symbols.gni")
+  import("//build/config/apple/symbols.gni")
 }
 if (is_ios) {
   import("//build/config/ios/ios_sdk.gni")
@@ -119,7 +120,7 @@ declare_args() {
   # the space overhead is too great. We should use some mixture of profiles and
   # optimization settings to better tune the size increase.
   thin_lto_enable_optimizations =
-      (is_chromeos_ash || is_android || is_win) && is_official_build
+      (is_chromeos_ash || is_android || is_win || is_linux) && is_official_build
 
   # Initialize all local variables with a pattern. This flag will fill
   # uninitialized floating-point types (and 32-bit pointers) with 0xFF and the
@@ -159,6 +160,18 @@ declare_args() {
 
   # Enable DWARF v5.
   use_dwarf5 = false
+
+  # Override this to put full paths to PDBs in Windows PE files. This helps
+  # windbg and Windows Performance Analyzer with finding the PDBs in some local-
+  # build scenarios. This is never needed for bots or official builds. Because
+  # this puts the output directory in the DLLs/EXEs it breaks build determinism.
+  # Bugs have been reported to the windbg/WPA teams and this workaround will be
+  # removed when they are fixed.
+  use_full_pdb_paths = false
+
+  # Enable -H, which prints the include tree during compilation.
+  # For use by tools/clang/scripts/analyze_includes.py
+  show_includes = false
 }
 
 declare_args() {
@@ -202,6 +215,8 @@ if (is_android || (is_chromeos_ash && is_chromeos_device)) {
 
 assert(!(llvm_force_head_revision && use_goma),
        "can't use goma with trunk clang")
+assert(!(llvm_force_head_revision && use_rbe),
+       "can't use rbe with trunk clang")
 
 # default_include_dirs ---------------------------------------------------------
 #
@@ -277,6 +292,13 @@ config("compiler") {
     cflags += [ "-fno-delete-null-pointer-checks" ]
   }
 
+  # Don't emit the GCC version ident directives, they just end up in the
+  # .comment section or debug info taking up binary size, and makes comparing
+  # .o files built with different compiler versions harder.
+  if (!is_win || is_clang) {
+    cflags += [ "-fno-ident" ]
+  }
+
   # In general, Windows is totally different, but all the other builds share
   # some common compiler and linker configuration.
   if (!is_win) {
@@ -308,11 +330,7 @@ config("compiler") {
     }
 
     if (use_lld) {
-      if (is_apple) {
-        ldflags += [ "-fuse-ld=lld.darwinnew" ]
-      } else {
-        ldflags += [ "-fuse-ld=lld" ]
-      }
+      ldflags += [ "-fuse-ld=lld" ]
     }
 
     # Linker warnings.
@@ -610,26 +628,21 @@ config("compiler") {
       "-fsplit-lto-unit",
     ]
 
-    if (thin_lto_enable_optimizations) {
-      lto_opt_level = 2
-    } else {
-      lto_opt_level = 0
-    }
+    # Limit the size of the ThinLTO cache to the lesser of 10% of
+    # available disk space, 40GB and 100000 files.
+    cache_policy = "cache_size=10%:cache_size_bytes=40g:cache_size_files=100000"
+
+    # TODO(gbiv): We ideally shouldn't need to specify this; ThinLTO
+    # should be able to better manage binary size increases on its own.
+    import_instr_limit = 5
 
     if (is_win) {
-      # This is a straight translation of the non-Windows flags below,
-      # except we do not use the ThinLTO cache, which leaks temporary
-      # files on Windows (https://crbug.com/871962).
       ldflags += [
-        "/opt:lldlto=" + lto_opt_level,
         "/opt:lldltojobs=all",
-
-        # Experimentally determined to yield a reasonable trade-off between
-        # build time, run-time performance, and binary size.
-        "-mllvm:-import-instr-limit=10",
-
-        # TODO(https://crbug.com/1127713): Investigate, remove.
-        "-mllvm:-enable-dse-memoryssa=false",
+        "-mllvm:-import-instr-limit=$import_instr_limit",
+        "/lldltocache:" +
+            rebase_path("$root_out_dir/thinlto-cache", root_build_dir),
+        "/lldltocachepolicy:$cache_policy",
       ]
     } else {
       ldflags += [ "-flto=thin" ]
@@ -644,42 +657,25 @@ config("compiler") {
       # of "all" which means number of hardware threads) is faster.
       ldflags += [ "-Wl,--thinlto-jobs=all" ]
 
-      # Limit the size of the ThinLTO cache to the lesser of 10% of
-      # available disk space, 10GB and 100000 files.
-      cache_policy =
-          "cache_size=10%:cache_size_bytes=10g:cache_size_files=100000"
       ldflags += [
         "-Wl,--thinlto-cache-dir=" +
             rebase_path("$root_out_dir/thinlto-cache", root_build_dir),
         "-Wl,--thinlto-cache-policy,$cache_policy",
       ]
 
-      # TODO(https://crbug.com/1127713): Investigate, remove.
-      ldflags += [ "-Wl,-mllvm,-enable-dse-memoryssa=false" ]
-
-      ldflags += [ "-Wl,--lto-O" + lto_opt_level ]
-      if (thin_lto_enable_optimizations) {
-        # TODO(gbiv): We ideally shouldn't need to specify this; ThinLTO
-        # should be able to better manage binary size increases on its own.
-        import_instr_limit = -1
-        if (is_android) {
-          import_instr_limit = 5
-        } else if (is_chromeos_ash) {
-          # Not much performance difference was noted between the default (100)
-          # and these. ARM was originally set lower than x86 to keep the size
-          # bloat of ThinLTO to <10%, but that's potentially no longer true.
-          # FIXME(inglorion): maybe tune these?
-          if (target_cpu == "arm" || target_cpu == "arm64") {
-            import_instr_limit = 20
-          } else {
-            import_instr_limit = 30
-          }
-        }
-
-        if (import_instr_limit != -1) {
-          ldflags += [ "-Wl,-mllvm,-import-instr-limit=$import_instr_limit" ]
+      if (is_chromeos_ash) {
+        # Not much performance difference was noted between the default (100)
+        # and these. ARM was originally set lower than x86 to keep the size
+        # bloat of ThinLTO to <10%, but that's potentially no longer true.
+        # FIXME(inglorion): maybe tune these?
+        if (target_cpu == "arm" || target_cpu == "arm64") {
+          import_instr_limit = 20
+        } else {
+          import_instr_limit = 30
         }
       }
+
+      ldflags += [ "-Wl,-mllvm,-import-instr-limit=$import_instr_limit" ]
     }
 
     # Whole-program devirtualization increases android libchrome.so size
@@ -734,12 +730,24 @@ config("compiler") {
     }
   }
 
+  if (is_clang && !is_nacl && show_includes) {
+    assert(!is_win, "show_includes is not supported on Windows")
+    cflags += [ "-H" ]
+  }
+
   # This flag enforces that member pointer base types are complete. It helps
   # prevent us from running into problems in the Microsoft C++ ABI (see
   # https://crbug.com/847724).
+  # TODO(crbug/1052397): Remove is_chromeos_lacros once lacros-chrome switches
+  # to target_os="chromeos".
   if (is_clang && !is_nacl && target_os != "chromeos" && !use_xcode_clang &&
-      (is_win || use_custom_libcxx)) {
+      !is_chromeos_lacros && (is_win || use_custom_libcxx)) {
     cflags += [ "-fcomplete-member-pointers" ]
+  }
+
+  # TODO(crbug/1185183): Remove after next clang roll
+  if (is_clang && !is_nacl && is_linux && is_msan) {
+    cflags += [ "-flegacy-pass-manager" ]
   }
 
   # Pass the same C/C++ flags to the objective C/C++ compiler.
@@ -752,6 +760,44 @@ config("compiler") {
   if (is_posix || is_fuchsia) {
     asmflags += cflags
     asmflags += cflags_c
+  }
+}
+
+# The BUILDCONFIG file sets this config on targets by default, which means when
+# building with ThinLTO, no optimization is performed in the link step.
+config("thinlto_optimize_default") {
+  if (!is_debug && use_thin_lto && is_a_target_toolchain) {
+    lto_opt_level = 0
+
+    if (is_win) {
+      ldflags = [ "/opt:lldlto=" + lto_opt_level ]
+    } else {
+      ldflags = [ "-Wl,--lto-O" + lto_opt_level ]
+    }
+  }
+}
+
+# Use this to enable optimization in the ThinLTO link step for select targets
+# when thin_lto_enable_optimizations is set by doing:
+#
+#   configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
+#   configs += [ "//build/config/compiler:thinlto_optimize_max" ]
+#
+# Since it makes linking significantly slower and more resource intensive, only
+# use it on important targets such as the main browser executable or dll.
+config("thinlto_optimize_max") {
+  if (!is_debug && use_thin_lto && is_a_target_toolchain) {
+    if (thin_lto_enable_optimizations) {
+      lto_opt_level = 2
+    } else {
+      lto_opt_level = 0
+    }
+
+    if (is_win) {
+      ldflags = [ "/opt:lldlto=" + lto_opt_level ]
+    } else {
+      ldflags = [ "-Wl,--lto-O" + lto_opt_level ]
+    }
   }
 }
 
@@ -1973,10 +2019,6 @@ if (is_win) {
     # Aix does not support these.
 
     common_optimize_on_cflags += [
-      # Don't emit the GCC version ident directives, they just end up in the
-      # .comment section taking up binary size.
-      "-fno-ident",
-
       # Put data and code in their own sections, so that unused symbols
       # can be removed at link time with --gc-sections.
       "-fdata-sections",
@@ -2262,8 +2304,12 @@ config("win_pdbaltpath") {
   # path to it in the executable file it generates.  This flag turns that
   # absolute path into just the basename of the pdb file, which helps with
   # build reproducibility. Debuggers look for pdb files next to executables,
-  # so there's no downside to always using this.
-  ldflags = [ "/pdbaltpath:%_PDB%" ]
+  # so there's minimal downside to always using this. However, post-mortem
+  # debugging of Chromium crash dumps and ETW tracing can be complicated by this
+  # switch so an option to omit it is important.
+  if (!use_full_pdb_paths) {
+    ldflags = [ "/pdbaltpath:%_PDB%" ]
+  }
 }
 
 # Full symbols.
@@ -2342,8 +2388,9 @@ config("symbols") {
     asmflags = cflags
     ldflags = []
 
-    # TODO(agrieve): Not sure why this is Android-specific.
-    if (use_debug_fission && use_thin_lto && is_android) {
+    # Split debug info with all thinlto builds except nacl and apple.
+    # thinlto requires -gsplit-dwarf in ldflags.
+    if (use_debug_fission && use_thin_lto && !is_nacl && !is_apple) {
       ldflags += [ "-gsplit-dwarf" ]
     }
 
@@ -2418,7 +2465,9 @@ config("minimal_symbols") {
       cflags += [ "-fdebug-info-for-profiling" ]
     }
 
-    # Note: -gsplit-dwarf implicitly turns on -g2 with clang, so don't pass it.
+    # Note: debug_fission is no-op with symbol_level=1 since all -g1 debug_info
+    # will stay in the executable.
+
     asmflags = cflags
   }
 }

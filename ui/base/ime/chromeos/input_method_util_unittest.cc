@@ -87,7 +87,7 @@ class InputMethodUtilTest : public testing::Test {
                                  GURL());  // input view page url
   }
 
-  static base::string16 GetDisplayLanguageName(
+  static std::u16string GetDisplayLanguageName(
       const std::string& language_code) {
     return l10n_util::GetDisplayNameForLocale(language_code, "en", true);
   }
@@ -97,60 +97,6 @@ class InputMethodUtilTest : public testing::Test {
   InputMethodDescriptors xkb_input_method_descriptors_;
   InputMethodDescriptors non_xkb_input_method_descriptors_;
 };
-
-TEST_F(InputMethodUtilTest, GetInputMethodShortNameTest) {
-  // Test invalid cases. Two-letter language code should be returned.
-  {
-    InputMethodDescriptor desc =
-        GetDesc("invalid-id", "", "us", {"xx"}, "", true);
-    // Upper-case string of the unknown language code, "xx", should be returned.
-    EXPECT_EQ(ASCIIToUTF16("XX"), util_.GetInputMethodShortName(desc));
-  }
-
-  // Test special cases.
-  {
-    InputMethodDescriptor desc =
-        GetDesc("xkb:us:dvorak:eng", "", "us", {"en-US"}, "DV", true);
-    EXPECT_EQ(ASCIIToUTF16("DV"), util_.GetInputMethodShortName(desc));
-  }
-  {
-    InputMethodDescriptor desc =
-        GetDesc("xkb:us:colemak:eng", "", "us", {"en-US"}, "CO", true);
-    EXPECT_EQ(ASCIIToUTF16("CO"), util_.GetInputMethodShortName(desc));
-  }
-  {
-    InputMethodDescriptor desc =
-        GetDesc("xkb:us:altgr-intl:eng", "", "us", {"en-US"}, "EXTD", true);
-    EXPECT_EQ(ASCIIToUTF16("EXTD"), util_.GetInputMethodShortName(desc));
-  }
-  {
-    InputMethodDescriptor desc =
-        GetDesc("xkb:us:intl:eng", "", "us", {"en-US"}, "INTL", true);
-    EXPECT_EQ(ASCIIToUTF16("INTL"), util_.GetInputMethodShortName(desc));
-  }
-  {
-    InputMethodDescriptor desc =
-        GetDesc("xkb:de:neo:ger", "", "de(neo)", {"de"}, "NEO", true);
-    EXPECT_EQ(ASCIIToUTF16("NEO"), util_.GetInputMethodShortName(desc));
-  }
-  {
-    InputMethodDescriptor desc =
-        GetDesc("xkb:es:cat:cat", "", "es(cat)", {"ca"}, "CAT", true);
-    EXPECT_EQ(ASCIIToUTF16("CAT"), util_.GetInputMethodShortName(desc));
-  }
-  {
-    InputMethodDescriptor desc =
-        GetDesc(pinyin_ime_id, "", "us", {"zh-CN"}, "\xe6\x8b\xbc", true);
-    EXPECT_EQ(base::UTF8ToUTF16("\xe6\x8b\xbc"),
-              util_.GetInputMethodShortName(desc));
-  }
-  {
-    InputMethodDescriptor desc =
-        GetDesc(zhuyin_ime_id, "", "us", {"zh-TW"}, "\xE6\xB3\xA8", true);
-    EXPECT_EQ(base::UTF8ToUTF16("\xE6\xB3\xA8"),
-              util_.GetInputMethodShortName(desc));
-  }
-}
 
 TEST_F(InputMethodUtilTest, GetInputMethodMediumNameTest) {
   {
@@ -162,9 +108,8 @@ TEST_F(InputMethodUtilTest, GetInputMethodMediumNameTest) {
     };
     for (const char* id : input_method_ids) {
       InputMethodDescriptor desc = GetDesc(id, "", "", {""}, "", true);
-      base::string16 medium_name = util_.GetInputMethodMediumName(desc);
-      base::string16 short_name = util_.GetInputMethodShortName(desc);
-      EXPECT_EQ(medium_name, short_name);
+      std::u16string medium_name = util_.GetInputMethodMediumName(desc);
+      EXPECT_EQ(medium_name, desc.GetIndicator());
     }
   }
   {
@@ -175,9 +120,8 @@ TEST_F(InputMethodUtilTest, GetInputMethodMediumNameTest) {
     };
     for (const char* id : input_method_ids) {
       InputMethodDescriptor desc = GetDesc(id, "", "", {""}, "", true);
-      base::string16 medium_name = util_.GetInputMethodMediumName(desc);
-      base::string16 short_name = util_.GetInputMethodShortName(desc);
-      EXPECT_NE(medium_name, short_name);
+      std::u16string medium_name = util_.GetInputMethodMediumName(desc);
+      EXPECT_NE(medium_name, desc.GetIndicator());
     }
   }
 }
@@ -187,24 +131,24 @@ TEST_F(InputMethodUtilTest, GetInputMethodLongNameTest) {
   {
     InputMethodDescriptor desc =
         GetDesc("xkb:jp::jpn", "", "jp", {"ja"}, "", true);
-    EXPECT_EQ(ASCIIToUTF16("Japanese"), util_.GetInputMethodLongName(desc));
+    EXPECT_EQ(u"Japanese", util_.GetInputMethodLongName(desc));
   }
   {
     InputMethodDescriptor desc =
         GetDesc("xkb:us:dvorak:eng", "", "us(dvorak)", {"en-US"}, "", true);
-    EXPECT_EQ(ASCIIToUTF16("US Dvorak"), util_.GetInputMethodLongName(desc));
+    EXPECT_EQ(u"US Dvorak", util_.GetInputMethodLongName(desc));
   }
   {
     InputMethodDescriptor desc =
         GetDesc("xkb:gb:dvorak:eng", "", "gb(dvorak)", {"en-US"}, "", true);
-    EXPECT_EQ(ASCIIToUTF16("UK Dvorak"), util_.GetInputMethodLongName(desc));
+    EXPECT_EQ(u"UK Dvorak", util_.GetInputMethodLongName(desc));
   }
   {
     InputMethodDescriptor desc =
         GetDesc("invalid-id", "", "us", {"xx"}, "", true);
     // You can safely ignore the "Resouce ID is not found for: invalid-id"
     // error.
-    EXPECT_EQ(ASCIIToUTF16("invalid-id"), util_.GetInputMethodLongName(desc));
+    EXPECT_EQ(u"invalid-id", util_.GetInputMethodLongName(desc));
   }
 }
 

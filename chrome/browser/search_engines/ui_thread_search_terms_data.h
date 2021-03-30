@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/search_engines/search_terms_data.h"
 
 // Implementation of SearchTermsData that is only usable on the UI thread.
@@ -19,7 +18,7 @@ class UIThreadSearchTermsData : public SearchTermsData {
 
   std::string GoogleBaseURLValue() const override;
   std::string GetApplicationLocale() const override;
-  base::string16 GetRlzParameterValue(bool from_app_list) const override;
+  std::u16string GetRlzParameterValue(bool from_app_list) const override;
   std::string GetSearchClient() const override;
   std::string GetSuggestClient(bool from_ntp) const override;
   std::string GetSuggestRequestIdentifier() const override;

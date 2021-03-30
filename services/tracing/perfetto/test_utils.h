@@ -9,11 +9,13 @@
 #include <string>
 #include <vector>
 
+#include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/tracing/perfetto/perfetto_service.h"
 #include "services/tracing/perfetto/producer_host.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/perfetto/producer_client.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/consumer.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/trace_config.h"
 #include "third_party/perfetto/protos/perfetto/common/observable_events.pb.h"
@@ -249,6 +251,25 @@ class RebindableTaskRunner : public base::SequencedTaskRunner {
   ~RebindableTaskRunner() override;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+};
+
+// Base class for various tracing unit tests, ensuring cleanup of
+// PerfettoTracedProcess. Tracing tasks are run on the test thread.
+class TracingUnitTest : public testing::Test {
+ public:
+  TracingUnitTest();
+  ~TracingUnitTest() override;
+
+  void SetUp() override;
+  void TearDown() override;
+
+ protected:
+  void RunUntilIdle() { task_environment_->RunUntilIdle(); }
+
+ private:
+  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
+  bool setup_called_ = false;
+  bool teardown_called_ = false;
 };
 
 }  // namespace tracing

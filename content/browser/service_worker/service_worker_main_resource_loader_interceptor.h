@@ -13,6 +13,7 @@
 #include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/browser/loader/single_request_url_loader_factory.h"
 #include "content/browser/navigation_subresource_loader_params.h"
+#include "content/browser/service_worker/service_worker_controllee_request_handler.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_worker_client_info.h"
@@ -72,12 +73,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
   base::Optional<SubresourceLoaderParams> MaybeCreateSubresourceLoaderParams()
       override;
 
-  void LoaderCallbackWrapper(
-      LoaderCallback loader_callback,
-      SingleRequestURLLoaderFactory::RequestHandler handler);
-
-  base::WeakPtr<ServiceWorkerMainResourceLoaderInterceptor> GetWeakPtr();
-
  private:
   friend class ServiceWorkerMainResourceLoaderInterceptorTest;
 
@@ -132,10 +127,8 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
   const int process_id_;
   const base::Optional<DedicatedOrSharedWorkerToken> worker_token_;
 
-  base::Optional<SubresourceLoaderParams> subresource_loader_params_;
-
-  base::WeakPtrFactory<ServiceWorkerMainResourceLoaderInterceptor>
-      weak_factory_{this};
+  // Handles a single request. Set to a new instance on redirects.
+  std::unique_ptr<ServiceWorkerControlleeRequestHandler> request_handler_;
 
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerMainResourceLoaderInterceptor);
 };

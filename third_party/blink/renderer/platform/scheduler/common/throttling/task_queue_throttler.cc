@@ -76,7 +76,7 @@ void TaskQueueThrottler::IncreaseThrottleRefCount(TaskQueue* task_queue) {
 
   // Task queue is newly throttled.
   TRACE_EVENT1("renderer.scheduler", "TaskQueueThrottler_TaskQueueThrottled",
-               "task_queue", task_queue);
+               "task_queue", static_cast<void*>(task_queue));
 
   if (!allow_throttling_)
     return;
@@ -105,7 +105,7 @@ void TaskQueueThrottler::DecreaseThrottleRefCount(TaskQueue* task_queue) {
     return;
 
   TRACE_EVENT1("renderer.scheduler", "TaskQueueThrottler_TaskQueueUnthrottled",
-               "task_queue", task_queue);
+               "task_queue", static_cast<void*>(task_queue));
 
   MaybeDeleteQueueMetadata(iter);
 
@@ -411,32 +411,31 @@ base::Optional<QueueBlockType> TaskQueueThrottler::GetQueueBlockType(
   return base::nullopt;
 }
 
-void TaskQueueThrottler::AsValueInto(base::trace_event::TracedValue* state,
-                                     base::TimeTicks now) const {
+void TaskQueueThrottler::WriteIntoTracedValue(perfetto::TracedValue context,
+                                              base::TimeTicks now) const {
+  auto dict = std::move(context).WriteDictionary();
   if (pending_pump_throttled_tasks_runtime_) {
-    state->SetDouble(
+    dict.Add(
         "next_throttled_tasks_pump_in_seconds",
         (pending_pump_throttled_tasks_runtime_.value() - now).InSecondsF());
   }
 
-  state->SetBoolean("allow_throttling", allow_throttling_);
+  dict.Add("allow_throttling", allow_throttling_);
 
   {
-    auto dictionary_scope = state->BeginDictionaryScoped("time_budget_pools");
-    for (const auto& map_entry : budget_pools_) {
-      BudgetPool* pool = map_entry.key;
-      pool->AsValueInto(state, now);
+    auto time_budget_pools = dict.AddArray("time_budget_pools");
+    for (const auto& budget_pool : budget_pools_) {
+      budget_pool.key->WriteIntoTracedValue(time_budget_pools.AppendItem(),
+                                            now);
     }
   }
 
   {
-    auto dictionary_scope = state->BeginDictionaryScoped("queue_details");
-    for (const auto& map_entry : queue_details_) {
-      auto inner_scope = state->BeginDictionaryScopedWithCopiedName(
-          PointerToString(map_entry.key));
-      state->SetInteger(
-          "throttling_ref_count",
-          static_cast<int>(map_entry.value->throttling_ref_count()));
+    auto queue_details_array = dict.AddArray("queue_details");
+    for (const auto& queue_details : queue_details_) {
+      auto details_dict = queue_details_array.AppendDictionary();
+      details_dict.Add("queue_name", queue_details.key->GetName());
+      details_dict.Add("metadata", queue_details.value);
     }
   }
 }
@@ -607,6 +606,13 @@ bool TaskQueueThrottler::Metadata::DecrementRefCount() {
 void TaskQueueThrottler::Metadata::OnQueueNextWakeUpChanged(
     base::TimeTicks wake_up) {
   throttler_->OnQueueNextWakeUpChanged(queue_, wake_up);
+}
+
+void TaskQueueThrottler::Metadata::WriteIntoTracedValue(
+    perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("throttling_ref_count", throttling_ref_count_);
+  dict.Add("next_granted_run_time", next_granted_run_time_);
 }
 
 }  // namespace scheduler

@@ -14,7 +14,6 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/common/scoped_worker_based_extensions_channel.h"
 
 namespace extensions {
 
@@ -138,24 +137,11 @@ class ExtensionMetricsApiTest
     : public ExtensionApiTest,
       public testing::WithParamInterface<ContextType> {
  public:
-  ExtensionMetricsApiTest() {
-    // Service Workers are currently only available on certain channels, so set
-    // the channel for those tests.
-    if (GetParam() == ContextType::kServiceWorker)
-      current_channel_ = std::make_unique<ScopedWorkerBasedExtensionsChannel>();
+  bool RunComponentTest(const char* extension_name) {
+    return RunExtensionTest(
+        {.name = extension_name, .load_as_component = true},
+        {.load_as_service_worker = GetParam() == ContextType::kServiceWorker});
   }
-
-  bool RunComponentTestWithParamFlag(const std::string& extension_name) {
-    int flags = kFlagEnableFileAccess;
-    if (GetParam() == ContextType::kServiceWorker)
-      flags |= ExtensionBrowserTest::kFlagRunAsServiceWorkerBasedExtension;
-
-    return RunExtensionTestWithFlags(extension_name, flags,
-                                     kFlagLoadAsComponent);
-  }
-
- private:
-  std::unique_ptr<ScopedWorkerBasedExtensionsChannel> current_channel_;
 };
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
@@ -174,7 +160,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionMetricsApiTest, Metrics) {
   ASSERT_TRUE(variations::AssociateVariationParams(
       "apitestfieldtrial2", "group1", {{"a", "aa"}, {"b", "bb"}}));
 
-  ASSERT_TRUE(RunComponentTestWithParamFlag("metrics")) << message_;
+  ASSERT_TRUE(RunComponentTest("metrics")) << message_;
 
   ValidateUserActions(user_action_tester, g_user_actions,
                       base::size(g_user_actions));

@@ -4,10 +4,10 @@
 
 // clang-format off
 // #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {AppWindowWrapper} from '../../file_manager/background/js/app_window_wrapper.m.js';
-// #import {util} from '../../file_manager/common/js/util.m.js';
-// #import {BackgroundBaseImpl} from '../../file_manager/background/js/background_base.m.js';
-// #import {BackgroundBase} from '../../externs/background/background_base.m.js';
+// #import {AppWindowWrapper} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/app_window_wrapper.m.js';
+// #import {util} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/util.m.js';
+// #import {BackgroundBaseImpl} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/background_base.m.js';
+// #import {BackgroundBase} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/externs/background/background_base.m.js';
 // clang-format on
 
 /**

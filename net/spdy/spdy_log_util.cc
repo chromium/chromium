@@ -9,6 +9,7 @@
 #include "base/strings/abseil_string_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "net/http/http_log_util.h"
 #include "net/log/net_log_values.h"
@@ -33,8 +34,8 @@ base::ListValue ElideHttp2HeaderBlockForNetLog(
     base::StringPiece value = base::StringViewToStringPiece(header.second);
     headers_list.Append(NetLogStringValue(
         base::StrCat({key, ": ",
-                      ElideHeaderValueForNetLog(capture_mode, key.as_string(),
-                                                value.as_string())})));
+                      ElideHeaderValueForNetLog(capture_mode, std::string(key),
+                                                std::string(value))})));
   }
   return headers_list;
 }

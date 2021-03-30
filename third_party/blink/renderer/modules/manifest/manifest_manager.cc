@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/frame/frame_console.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_link_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -175,7 +176,12 @@ void ManifestManager::OnManifestFetchComplete(const KURL& document_url,
   }
 
   ManifestUmaUtil::FetchSucceeded();
-  ManifestParser parser(data, response.CurrentRequestUrl(), document_url);
+  // We are using the document as our FeatureContext for checking origin trials.
+  // Note that any origin trials delivered in the manifest HTTP headers will be
+  // ignored, only ones associated with the page will be used.
+  const FeatureContext* feature_context = GetExecutionContext();
+  ManifestParser parser(data, response.CurrentRequestUrl(), document_url,
+                        feature_context);
   parser.Parse();
 
   manifest_debug_info_ = mojom::blink::ManifestDebugInfo::New();
@@ -202,7 +208,20 @@ void ManifestManager::OnManifestFetchComplete(const KURL& document_url,
 
   manifest_url_ = response.CurrentRequestUrl();
   manifest_ = parser.manifest().Clone();
+  RecordMetrics(*manifest_);
   ResolveCallbacks(ResolveStateSuccess);
+}
+
+void ManifestManager::RecordMetrics(const mojom::blink::Manifest& manifest) {
+  if (manifest.capture_links != mojom::blink::CaptureLinks::kUndefined) {
+    UseCounter::Count(GetSupplementable(),
+                      WebFeature::kWebAppManifestCaptureLinks);
+  }
+
+  if (!manifest.url_handlers.IsEmpty()) {
+    UseCounter::Count(GetSupplementable(),
+                      WebFeature::kWebAppManifestUrlHandlers);
+  }
 }
 
 void ManifestManager::ResolveCallbacks(ResolveState state) {

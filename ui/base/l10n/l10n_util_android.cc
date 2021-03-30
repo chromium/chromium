@@ -12,9 +12,7 @@
 #include "base/check.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/string_util.h"
-#include "base/time/time.h"
 #include "third_party/icu/source/common/unicode/uloc.h"
-#include "ui/base/l10n/time_format.h"
 #include "ui/base/ui_base_jni_headers/LocalizationUtils_jni.h"
 
 using base::android::JavaParamRef;
@@ -82,7 +80,7 @@ ScopedJavaLocalRef<jobject> JNI_LocalizationUtils_NewJavaLocale(
 
 }  // namespace
 
-base::string16 GetDisplayNameForLocale(const std::string& locale,
+std::u16string GetDisplayNameForLocale(const std::string& locale,
                                        const std::string& display_locale) {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> java_locale =
@@ -96,16 +94,12 @@ base::string16 GetDisplayNameForLocale(const std::string& locale,
   return ConvertJavaStringToUTF16(java_result);
 }
 
-ScopedJavaLocalRef<jstring> JNI_LocalizationUtils_GetDurationString(
-    JNIEnv* env,
-    jlong timeInMillis) {
-  ScopedJavaLocalRef<jstring> jtime_remaining =
-      base::android::ConvertUTF16ToJavaString(
-          env,
-          ui::TimeFormat::Simple(
-              ui::TimeFormat::FORMAT_REMAINING, ui::TimeFormat::LENGTH_SHORT,
-              base::TimeDelta::FromMilliseconds(timeInMillis)));
-  return jtime_remaining;
+ScopedJavaLocalRef<jstring> JNI_LocalizationUtils_GetNativeUiLocale(
+    JNIEnv* env) {
+  ScopedJavaLocalRef<jstring> native_ui_locale_string =
+      base::android::ConvertUTF8ToJavaString(env,
+                                             base::i18n::GetConfiguredLocale());
+  return native_ui_locale_string;
 }
 
 }  // namespace l10n_util

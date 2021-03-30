@@ -9,7 +9,7 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.m.js';
+import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
@@ -17,21 +17,34 @@ import './history_deletion_dialog.js';
 import './passwords_deletion_dialog.js';
 import './installed_app_checkbox.js';
 import '../controls/settings_checkbox.js';
-import '../icons.m.js';
-import '../settings_shared_css.m.js';
+import '../icons.js';
+import '../settings_shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.m.js';
+import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import {loadTimeData} from '../i18n_setup.js';
-import {StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '../people_page/sync_browser_proxy.m.js';
+import {StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '../people_page/sync_browser_proxy.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverBehavior, Router} from '../router.m.js';
+import {Route, RouteObserverBehavior, Router} from '../router.js';
 
 import {ClearBrowsingDataBrowserProxy, ClearBrowsingDataBrowserProxyImpl, InstalledApp} from './clear_browsing_data_browser_proxy.js';
+
+/**
+ * InstalledAppsDialogActions enum.
+ * These values are persisted to logs and should not be renumbered or
+ * re-used.
+ * See tools/metrics/histograms/enums.xml.
+ * @enum {number}
+ */
+const InstalledAppsDialogActions = {
+  CLOSE: 0,
+  CANCEL_BUTTON: 1,
+  CLEAR_BUTTON: 2,
+};
 
 /**
  * @param {!CrDialogElement} dialog the dialog to close
@@ -456,7 +469,6 @@ Polymer({
     this.shadowRoot.querySelectorAll('settings-checkbox[no-set-pref]')
         .forEach(checkbox => checkbox.sendPrefChange());
 
-    this.recordInstalledAppsInteractions_();
     const {showHistoryNotice, showPasswordsNotice} =
         await this.browserProxy_.clearBrowsingData(
             dataTypes, timePeriod, this.installedApps_);
@@ -615,6 +627,21 @@ Polymer({
 
   /** @private */
   hideInstalledApps_() {
+    chrome.metricsPrivate.recordEnumerationValue(
+        'History.ClearBrowsingData.InstalledAppsDialogAction',
+        InstalledAppsDialogActions.CLOSE,
+        Object.keys(InstalledAppsDialogActions).length);
+    replaceDialog(
+        /** @type {!CrDialogElement} */ (this.$.installedAppsDialog),
+        /** @type {!CrDialogElement} */ (this.$.clearBrowsingDataDialog));
+  },
+
+  /** @private */
+  onCancelInstalledApps_() {
+    chrome.metricsPrivate.recordEnumerationValue(
+        'History.ClearBrowsingData.InstalledAppsDialogAction',
+        InstalledAppsDialogActions.CANCEL_BUTTON,
+        Object.keys(InstalledAppsDialogActions).length);
     replaceDialog(
         /** @type {!CrDialogElement} */ (this.$.installedAppsDialog),
         /** @type {!CrDialogElement} */ (this.$.clearBrowsingDataDialog));
@@ -625,6 +652,11 @@ Polymer({
    * @private
    */
   onInstalledAppsConfirmClick_: async function() {
+    chrome.metricsPrivate.recordEnumerationValue(
+        'History.ClearBrowsingData.InstalledAppsDialogAction',
+        InstalledAppsDialogActions.CLEAR_BUTTON,
+        Object.keys(InstalledAppsDialogActions).length);
+    this.recordInstalledAppsInteractions_();
     await this.clearBrowsingData_();
   }
 });

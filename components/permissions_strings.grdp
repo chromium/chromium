@@ -31,13 +31,16 @@
       • Use your camera
     </message>
     <message name="IDS_IDLE_DETECTION_INFOBAR_TEXT" desc="Text requesting permission for a site to know when the user is idle.">
-      <ph name="URL">$1<ex>google.com</ex></ph> wants to know when you're present
+      <ph name="URL">$1<ex>google.com</ex></ph> wants to know when you're actively using this device
     </message>
     <message name="IDS_NOTIFICATION_QUIET_PERMISSION_PROMPT_TITLE" desc="Text used as notification title when requesting permission for Web Notifications via a notification.">
       Notifications for <ph name="ORIGIN">$1<ex>example.com</ex></ph> are blocked
     </message>
     <message name="IDS_NOTIFICATION_QUIET_PERMISSION_PROMPT_MESSAGE" desc="Text used as notification message when requesting permission for Web Notifications via a notification.">
       Notifications are automatically blocked for all sites except ones you allow
+    </message>
+    <message name="IDS_NOTIFICATION_QUIET_PERMISSION_INFOBAR_PREDICTION_SERVICE_MESSAGE" desc="Text used as notification message when requesting permission for Web Notifications via a notification. Used when the prediction service has decided that the user will be very unlikely to grant this permission.">
+      Notifications were automatically blocked because you usually don't allow them
     </message>
     <message name="IDS_MEDIA_CAPTURE_AUDIO_ONLY_INFOBAR_TEXT" desc="Text requesting permission for a site to access the computer's microphone.">
       <ph name="HOST">$1<ex>html5rocks.com</ex></ph> wants to use your microphone
@@ -120,7 +123,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     Use the fonts on your computer so you can create high-fidelity content
   </message>
   <message name="IDS_IDLE_DETECTION_PERMISSION_FRAGMENT" desc="Permission request shown if the user is visiting a site that wants to monitor when the user is interacting with their device. Follows a prompt: 'This site would like to:'">
-    Know when you're present
+    Know when you're actively using this device
   </message>
   <message name="IDS_PERMISSION_ALLOW" desc="Label on button to allow a permissions request.">
     Allow
@@ -167,7 +170,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
       Allow AR?
     </message>
     <message name="IDS_IDLE_DETECTION_PERMISSION_CHIP" desc="Button text representing a request for using using idle detection from a website. When clicked, shows a permission prompt bubble with more information.">
-      Share your presence?
+      Know your device use?
     </message>
   </if>
 

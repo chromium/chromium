@@ -305,7 +305,8 @@ AppCurrentWindowInternalSetSizeConstraintsFunction::Run() {
 ExtensionFunction::ResponseAction
 AppCurrentWindowInternalSetIconFunction::Run() {
   if (AppWindowClient::Get()->IsCurrentChannelOlderThanDev() &&
-      extension()->location() != extensions::Manifest::COMPONENT) {
+      extension()->location() !=
+          extensions::mojom::ManifestLocation::kComponent) {
     // TODO(devlin): Can't this be done in the feature files?
     return RespondNow(Error(kDevChannelOnly));
   }

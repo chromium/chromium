@@ -40,7 +40,6 @@ class AXObjectCacheImpl;
 class Element;
 class HTMLAreaElement;
 class IntPoint;
-class LocalFrameView;
 class Node;
 
 class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
@@ -58,31 +57,20 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
   Node* GetNodeOrContainingBlockNode() const;
 
   // DOM and layout tree access.
-  Node* GetNode() const override;
   Document* GetDocument() const override;
-  LocalFrameView* DocumentFrameView() const override;
   Element* AnchorElement() const override;
 
  protected:
   LayoutObject* layout_object_;
 
-  LayoutBoxModelObject* GetLayoutBoxModelObject() const override;
-
-  LayoutObject* LayoutObjectForRelativeBounds() const override {
-    return layout_object_;
-  }
-
   //
   // Overridden from AXObject.
   //
 
-  void Init() override;
   void Detach() override;
-  bool IsDetached() const override;
   bool IsAXLayoutObject() const final;
 
   // Check object role or purpose.
-  bool IsAutofillAvailable() const override;
   bool IsEditable() const override;
   bool IsRichlyEditable() const override;
   bool IsLineBreakingObject() const override;
@@ -91,36 +79,18 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
   bool IsVisited() const override;
 
   // Check object state.
-  bool IsFocused() const override;
-  // aria-grabbed is deprecated in WAI-ARIA 1.1.
-  AccessibilityGrabbedState IsGrabbed() const override;
-  AccessibilitySelectedState IsSelected() const override;
-  bool IsSelectedFromFocus() const override;
   bool IsNotUserSelectable() const override;
 
   // Whether objects are ignored, i.e. not included in the tree.
   AXObjectInclusion DefaultObjectInclusion(
       IgnoredReasons* = nullptr) const override;
   bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
-  bool CanIgnoreTextAsEmpty() const override;
 
   // Properties of static elements.
   ax::mojom::blink::ListStyle GetListStyle() const final;
-  String GetText() const override;
-  ax::mojom::blink::WritingDirection GetTextDirection() const final;
-  ax::mojom::blink::TextPosition GetTextPosition() const final;
-  void GetTextStyleAndTextDecorationStyle(
-      int32_t* text_style,
-      ax::mojom::blink::TextDecorationStyle* text_overline_style,
-      ax::mojom::blink::TextDecorationStyle* text_strikethrough_style,
-      ax::mojom::blink::TextDecorationStyle* text_underline_style) const final;
-
   // Inline text boxes.
   AXObject* NextOnLine() const override;
   AXObject* PreviousOnLine() const override;
-
-  // Properties of interactive elements.
-  String StringValue() const override;
 
   // AX name calc.
   String TextAlternative(bool recursive,
@@ -130,22 +100,11 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
                          AXRelatedObjectVector*,
                          NameSources*) const override;
 
-  // Modify or take an action on an object.
-  bool OnNativeSetValueAction(const String&) override;
-
   // Hit testing.
   AXObject* AccessibilityHitTest(const IntPoint&) const override;
 
-  // High-level accessibility tree access. Other modules should only use these
-  // functions.
-  AXObject* ComputeParent() const override;
-  AXObject* ComputeParentIfExists() const override;
-
   bool CanHaveChildren() const override;
 
-  // Notifications that this object may have changed.
-  void HandleActiveDescendantChanged() override;
-  void HandleAriaExpandedChanged() override;
   // Called when autofill/autocomplete state changes on a form control.
   void HandleAutofillStateChanged(WebAXAutofillState state) override;
 
@@ -179,20 +138,12 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
       ax::mojom::blink::Role dom_role) const override;
 
  private:
-  bool IsTabItemSelected() const;
   AXObject* AccessibilityImageMapHitTest(HTMLAreaElement*,
                                          const IntPoint&) const;
   bool FindAllTableCellsWithRole(ax::mojom::blink::Role, AXObjectVector&) const;
 
   LayoutRect ComputeElementRect() const;
-  bool CanIgnoreSpaceNextTo(LayoutObject*, bool is_after) const;
-  bool HasAriaCellRole(Element*) const;
   bool IsPlaceholder() const;
-  bool SelectionShouldFollowFocus() const;
-
-  static ax::mojom::blink::TextDecorationStyle
-  TextDecorationStyleToAXTextDecorationStyle(
-      const ETextDecorationStyle text_decoration_style);
 
   DISALLOW_COPY_AND_ASSIGN(AXLayoutObject);
 };

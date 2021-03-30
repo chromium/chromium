@@ -249,7 +249,7 @@ namespace {
       this->arena_->mu.Lock();
     }
     ~ArenaLock() { RAW_CHECK(this->left_, "haven't left Arena region"); }
-    void Leave() /*UNLOCK_FUNCTION()*/ {
+    void Leave() UNLOCK_FUNCTION() {
       this->arena_->mu.Unlock();
 #if 0
       if (this->mask_valid_) {

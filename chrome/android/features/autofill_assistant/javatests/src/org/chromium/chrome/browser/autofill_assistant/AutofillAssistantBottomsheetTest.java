@@ -37,6 +37,7 @@ import static org.chromium.chrome.browser.autofill_assistant.proto.ConfigureBott
 import static org.chromium.chrome.browser.autofill_assistant.proto.ConfigureBottomSheetProto.ViewportResizing.RESIZE_VISUAL_VIEWPORT;
 
 import android.graphics.Rect;
+import android.os.Build.VERSION_CODES;
 
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.ViewAction;
@@ -55,6 +56,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
@@ -153,7 +155,10 @@ public class AutofillAssistantBottomsheetTest {
                              .setShowDetails(ShowDetailsProto.newBuilder().setDetails(
                                      DetailsProto.newBuilder()
                                              .setTitle("Details title")
-                                             .setShowImagePlaceholder(true)))
+                                             .setPlaceholders(DetailsProto.PlaceholdersConfiguration
+                                                                      .newBuilder()
+                                                                      .setShowImagePlaceholder(true)
+                                                                      .build())))
                              .build());
         }
         // Add "Done" button.
@@ -236,7 +241,10 @@ public class AutofillAssistantBottomsheetTest {
 
     @Test
     @MediumTest
-    public void testHandleHeader() {
+    @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1166168",
+            sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q)
+    public void
+    testHandleHeader() {
         AutofillAssistantTestService testService = new AutofillAssistantTestService(
                 Collections.singletonList(makeScript(RESIZE_LAYOUT_VIEWPORT, HANDLE_HEADER, true)));
         startAutofillAssistant(mTestRule.getActivity(), testService);
@@ -258,7 +266,10 @@ public class AutofillAssistantBottomsheetTest {
 
     @Test
     @MediumTest
-    public void testHandleHeaderCarousels() {
+    @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1166168",
+            sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q)
+    public void
+    testHandleHeaderCarousels() {
         AutofillAssistantTestService testService =
                 new AutofillAssistantTestService(Collections.singletonList(
                         makeScript(RESIZE_LAYOUT_VIEWPORT, HANDLE_HEADER_CAROUSELS, true)));

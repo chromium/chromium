@@ -168,11 +168,8 @@ ChildProcessLauncher::Client* ChildProcessLauncher::ReplaceClientForTest(
 }
 
 bool ChildProcessLauncherPriority::is_background() const {
-  if (boost_for_pending_views || has_foreground_service_worker ||
-      has_media_stream) {
-    return false;
-  }
-  return has_only_low_priority_frames || !visible;
+  return !visible && !has_media_stream && !boost_for_pending_views &&
+         !has_foreground_service_worker;
 }
 
 bool ChildProcessLauncherPriority::operator==(
@@ -180,7 +177,6 @@ bool ChildProcessLauncherPriority::operator==(
   return visible == other.visible &&
          has_media_stream == other.has_media_stream &&
          has_foreground_service_worker == other.has_foreground_service_worker &&
-         has_only_low_priority_frames == other.has_only_low_priority_frames &&
          frame_depth == other.frame_depth &&
          intersects_viewport == other.intersects_viewport &&
          boost_for_pending_views == other.boost_for_pending_views

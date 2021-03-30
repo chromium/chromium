@@ -169,6 +169,8 @@ let kRTCRemoteInboundRtpStreamStats =
   localId: 'string',
   roundTripTime: 'number',
   fractionLost: 'number',
+  totalRoundTripTime: 'number',
+  roundTripTimeMeasurements: 'number',
 });
 // TODO(https://crbug.com/967382): Update the browser_tests to wait for the
 // existence of remote-inbound-rtp as well (these are created later than
@@ -239,6 +241,7 @@ addRTCStatsToWhitelist(
 let kRTCRemoteOutboundRtpStreamStats = new RTCStats(kRTCSentRtpStreamStats, {
   localId: 'string',
   remoteTimestamp: 'number',
+  reportsSent: 'number',
 });
 // TODO(hbos): When remote-outbound-rtp is implemented, make presence MANDATORY.
 addRTCStatsToWhitelist(
@@ -533,6 +536,7 @@ let kRTCIceCandidateStats = new RTCStats(null, {
   isRemote: 'boolean',
   networkType: 'string',
   ip: 'string',
+  address: 'string',
   port: 'number',
   protocol: 'string',
   relayProtocol: 'string',

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests how request headers are decoded in network item view.\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
 

@@ -5,7 +5,8 @@
 #ifndef CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_PUBLIC_MOJOM_TYPES_MOJOM_TRAITS_H_
 #define CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_PUBLIC_MOJOM_TYPES_MOJOM_TRAITS_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "chromeos/components/local_search_service/public/mojom/local_search_service.mojom-shared.h"
 #include "chromeos/components/local_search_service/public/mojom/types.mojom-shared.h"
 #include "chromeos/components/local_search_service/shared_structs.h"
@@ -38,7 +39,7 @@ struct StructTraits<chromeos::local_search_service::mojom::ContentDataView,
   static std::string id(const chromeos::local_search_service::Content& c) {
     return c.id;
   }
-  static base::string16 content(
+  static std::u16string content(
       const chromeos::local_search_service::Content& c) {
     return c.content;
   }

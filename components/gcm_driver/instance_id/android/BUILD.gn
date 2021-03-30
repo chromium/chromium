@@ -17,9 +17,8 @@ android_library("instance_id_driver_java") {
   deps = [
     "$google_play_services_package:google_play_services_iid_java",
     "//base:base_java",
-    "//base:jni_java",
     "//components/gcm_driver/android:gcm_driver_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 

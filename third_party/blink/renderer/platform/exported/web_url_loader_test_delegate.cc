@@ -33,8 +33,8 @@ void WebURLLoaderTestDelegate::DidFail(WebURLLoaderClient* original_client,
                                        int64_t total_encoded_data_length,
                                        int64_t total_encoded_body_length,
                                        int64_t total_decoded_body_length) {
-  original_client->DidFail(error, total_encoded_data_length,
-                           total_encoded_body_length,
+  original_client->DidFail(error, base::TimeTicks::Now(),
+                           total_encoded_data_length, total_encoded_body_length,
                            total_decoded_body_length);
 }
 

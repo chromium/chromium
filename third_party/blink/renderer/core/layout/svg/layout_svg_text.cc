@@ -27,11 +27,13 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
 
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_item.h"
 #include "third_party/blink/renderer/core/layout/hit_test_request.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_analyzer.h"
 #include "third_party/blink/renderer/core/layout/layout_state.h"
+#include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_text.h"
 #include "third_party/blink/renderer/core/layout/pointer_events_hit_rules.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
@@ -46,27 +48,32 @@
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/core/svg/svg_text_element.h"
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
 namespace {
 
-const LayoutSVGText* FindTextRoot(const LayoutObject* start) {
+const LayoutSVGBlock* FindTextRoot(const LayoutObject* start) {
   DCHECK(start);
   for (; start; start = start->Parent()) {
-    if (start->IsSVGText())
-      return To<LayoutSVGText>(start);
+    if (const auto* text = DynamicTo<LayoutSVGText>(start))
+      return text;
+    if (const auto* ng_text = DynamicTo<LayoutNGSVGText>(start))
+      return ng_text;
   }
   return nullptr;
 }
 
 }  // namespace
 
-LayoutSVGText::LayoutSVGText(SVGTextElement* node)
-    : LayoutSVGBlock(node),
+LayoutSVGText::LayoutSVGText(Element* node)
+    : LayoutSVGBlock(To<SVGElement>(node)),
       needs_reordering_(false),
       needs_positioning_values_update_(false),
-      needs_text_metrics_update_(false) {}
+      needs_text_metrics_update_(false) {
+  DCHECK(IsA<SVGTextElement>(node));
+}
 
 LayoutSVGText::~LayoutSVGText() {
   DCHECK(descendant_text_nodes_.IsEmpty());
@@ -93,11 +100,12 @@ bool LayoutSVGText::IsChildAllowed(LayoutObject* child,
          (child->IsText() && SVGLayoutSupport::IsLayoutableTextNode(child));
 }
 
-LayoutSVGText* LayoutSVGText::LocateLayoutSVGTextAncestor(LayoutObject* start) {
-  return const_cast<LayoutSVGText*>(FindTextRoot(start));
+LayoutSVGBlock* LayoutSVGText::LocateLayoutSVGTextAncestor(
+    LayoutObject* start) {
+  return const_cast<LayoutSVGBlock*>(FindTextRoot(start));
 }
 
-const LayoutSVGText* LayoutSVGText::LocateLayoutSVGTextAncestor(
+const LayoutSVGBlock* LayoutSVGText::LocateLayoutSVGTextAncestor(
     const LayoutObject* start) {
   return FindTextRoot(start);
 }
@@ -130,13 +138,20 @@ void LayoutSVGText::SubtreeStructureChanged(
   SetNeedsTextMetricsUpdate();
   // TODO(fs): Restore the passing of |reason| here.
   LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(*this);
+
+  if (StyleRef().UserModify() != EUserModify::kReadOnly)
+    UseCounter::Count(GetDocument(), WebFeature::kSVGTextEdited);
 }
 
 void LayoutSVGText::NotifySubtreeStructureChanged(
     LayoutObject* object,
     LayoutInvalidationReasonForTracing reason) {
-  if (LayoutSVGText* layout_text = LocateLayoutSVGTextAncestor(object))
-    layout_text->SubtreeStructureChanged(reason);
+  if (LayoutSVGBlock* text_or_ng_text = LocateLayoutSVGTextAncestor(object)) {
+    if (auto* layout_text = DynamicTo<LayoutSVGText>(text_or_ng_text))
+      layout_text->SubtreeStructureChanged(reason);
+    else
+      To<LayoutNGSVGText>(text_or_ng_text)->SubtreeStructureChanged(reason);
+  }
 }
 
 static inline void UpdateFontAndMetrics(LayoutSVGText& text_root) {
@@ -162,7 +177,7 @@ static inline void CheckDescendantTextNodeConsistency(
 }
 
 void LayoutSVGText::UpdateTransformAffectsVectorEffect() {
-  if (StyleRef().SvgStyle().VectorEffect() == VE_NON_SCALING_STROKE) {
+  if (StyleRef().VectorEffect() == EVectorEffect::kNonScalingStroke) {
     SetTransformAffectsVectorEffect(true);
     return;
   }
@@ -170,9 +185,8 @@ void LayoutSVGText::UpdateTransformAffectsVectorEffect() {
   SetTransformAffectsVectorEffect(false);
   for (LayoutObject* descendant = FirstChild(); descendant;
        descendant = descendant->NextInPreOrder(this)) {
-    if (descendant->IsSVGInline() &&
-        descendant->StyleRef().SvgStyle().VectorEffect() ==
-            VE_NON_SCALING_STROKE) {
+    if (descendant->IsSVGInline() && descendant->StyleRef().VectorEffect() ==
+                                         EVectorEffect::kNonScalingStroke) {
       SetTransformAffectsVectorEffect(true);
       break;
     }

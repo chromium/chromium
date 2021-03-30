@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_RENDERER_HOST_DELEGATED_FRAME_HOST_CLIENT_AURA_H_
 
 #include "base/macros.h"
+#include "base/time/time.h"
 #include "content/browser/renderer_host/delegated_frame_host.h"
 #include "content/common/content_export.h"
 
@@ -30,7 +31,8 @@ class CONTENT_EXPORT DelegatedFrameHostClientAura
   ui::Layer* DelegatedFrameHostGetLayer() const override;
   bool DelegatedFrameHostIsVisible() const override;
   SkColor DelegatedFrameHostGetGutterColor() const override;
-  void OnFrameTokenChanged(uint32_t frame_token) override;
+  void OnFrameTokenChanged(uint32_t frame_token,
+                           base::TimeTicks activation_time) override;
   float GetDeviceScaleFactor() const override;
   void InvalidateLocalSurfaceIdOnEviction() override;
   std::vector<viz::SurfaceId> CollectSurfaceIdsForEviction() override;

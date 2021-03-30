@@ -57,7 +57,7 @@ std::vector<blink::NotificationResources> ParseResources(
 }
 
 PlatformNotificationContext* GetContext(Profile* profile, const GURL& origin) {
-  auto* partition = BrowserContext::GetStoragePartitionForSite(profile, origin);
+  auto* partition = BrowserContext::GetStoragePartitionForUrl(profile, origin);
   auto* context = partition->GetPlatformNotificationContext();
   DCHECK(context);
   return context;

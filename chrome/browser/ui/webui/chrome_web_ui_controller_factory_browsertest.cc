@@ -29,8 +29,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebUIControllerFactoryBrowserTest,
       GURL(base::StrCat({"chrome-untrusted://", chrome::kChromeUIVersionHost,
                          "/title2.html"}))));
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_EQ(base::ASCIIToUTF16("Title Of Awesomeness"),
-            web_contents->GetTitle());
+  EXPECT_EQ(u"Title Of Awesomeness", web_contents->GetTitle());
   EXPECT_FALSE(web_contents->GetWebUI());
 
   // Check that we can navigate to chrome://version and that it serves the right
@@ -38,6 +37,6 @@ IN_PROC_BROWSER_TEST_F(ChromeWebUIControllerFactoryBrowserTest,
   EXPECT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL(base::StrCat({"chrome://", chrome::kChromeUIVersionHost,
                                     "/title2.html"}))));
-  EXPECT_EQ(base::ASCIIToUTF16("About Version"), web_contents->GetTitle());
+  EXPECT_EQ(u"About Version", web_contents->GetTitle());
   EXPECT_TRUE(web_contents->GetWebUI());
 }

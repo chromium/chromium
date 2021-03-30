@@ -17,7 +17,8 @@ class GLOzoneGLX : public GLOzone {
   ~GLOzoneGLX() override {}
 
   bool InitializeGLOneOffPlatform() override;
-  bool InitializeStaticGLBindings(gl::GLImplementation implementation) override;
+  bool InitializeStaticGLBindings(
+      const gl::GLImplementationParts& implementation) override;
   void SetDisabledExtensionsPlatform(
       const std::string& disabled_extensions) override;
   bool InitializeExtensionSettingsOneOffPlatform() override;

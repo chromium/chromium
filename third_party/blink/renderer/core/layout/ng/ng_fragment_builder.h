@@ -46,8 +46,14 @@ class CORE_EXPORT NGFragmentBuilder {
   TextDirection Direction() const { return writing_direction_.Direction(); }
 
   LayoutUnit InlineSize() const { return size_.inline_size; }
-  LayoutUnit BlockSize() const { return size_.block_size; }
-  const LogicalSize& Size() const { return size_; }
+  LayoutUnit BlockSize() const {
+    DCHECK(size_.block_size != kIndefiniteSize);
+    return size_.block_size;
+  }
+  const LogicalSize& Size() const {
+    DCHECK(size_.block_size != kIndefiniteSize);
+    return size_;
+  }
   void SetBlockSize(LayoutUnit block_size) { size_.block_size = block_size; }
 
   void SetIsHiddenForPaint(bool value) { is_hidden_for_paint_ = value; }

@@ -27,7 +27,8 @@ class RemoteAppsModel {
     AppInfo(const std::string& id,
             const std::string& name,
             const GURL& icon_url,
-            std::string folder_id);
+            std::string folder_id,
+            bool add_to_front);
     AppInfo(const AppInfo& other);
     ~AppInfo();
 
@@ -36,15 +37,19 @@ class RemoteAppsModel {
     const GURL icon_url;
     std::string folder_id;
     gfx::ImageSkia icon;
+    const bool add_to_front;
   };
 
   struct FolderInfo {
-    FolderInfo(const std::string& id, const std::string& name);
+    FolderInfo(const std::string& id,
+               const std::string& name,
+               bool add_to_front);
     FolderInfo(const FolderInfo& other);
     ~FolderInfo();
 
     const std::string id;
     const std::string name;
+    const bool add_to_front;
     std::set<std::string> items;
   };
 
@@ -58,7 +63,8 @@ class RemoteAppsModel {
   // corresponding folder.
   RemoteAppsModel::AppInfo& AddApp(const std::string& name,
                                    const GURL& icon_url,
-                                   const std::string& folder_id);
+                                   const std::string& folder_id,
+                                   bool add_to_front);
 
   // Returns true if an app with ID |id| exists in the model.
   bool HasApp(const std::string& id) const;
@@ -71,7 +77,8 @@ class RemoteAppsModel {
   const std::map<std::string, AppInfo>& GetAllAppInfo() const;
 
   // Adds a folder.
-  RemoteAppsModel::FolderInfo& AddFolder(const std::string& folder_name);
+  RemoteAppsModel::FolderInfo& AddFolder(const std::string& folder_name,
+                                         bool add_to_front);
 
   // Returns true if a folder with ID |folder_id| exists.
   bool HasFolder(const std::string& folder_id) const;

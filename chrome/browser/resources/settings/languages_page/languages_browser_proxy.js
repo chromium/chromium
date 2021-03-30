@@ -8,72 +8,64 @@
  */
 
 // clang-format off
-// #import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 
-cr.define('settings', function() {
   /** @interface */
-  /* #export */ class LanguagesBrowserProxy {
-    // <if expr="chromeos or is_win">
-    /**
-     * Sets the prospective UI language to the chosen language. This won't
-     * affect the actual UI language until a restart.
-     * @param {string} languageCode
-     */
-    setProspectiveUILanguage(languageCode) {}
-
-    /** @return {!Promise<string>} */
-    getProspectiveUILanguage() {}
-
-    // </if>
-
-    /** @return {!LanguageSettingsPrivate} */
-    getLanguageSettingsPrivate() {}
-
-    // <if expr="chromeos">
-    /** @return {!InputMethodPrivate} */
-    getInputMethodPrivate() {}
-    // </if>
-  }
-
+export class LanguagesBrowserProxy {
+  // <if expr="chromeos or is_win">
   /**
-   * @implements {settings.LanguagesBrowserProxy}
+   * Sets the prospective UI language to the chosen language. This won't
+   * affect the actual UI language until a restart.
+   * @param {string} languageCode
    */
-  /* #export */ class LanguagesBrowserProxyImpl {
-    // <if expr="chromeos or is_win">
-    /** @override */
-    setProspectiveUILanguage(languageCode) {
-      chrome.send('setProspectiveUILanguage', [languageCode]);
-    }
+  setProspectiveUILanguage(languageCode) {}
 
-    /** @override */
-    getProspectiveUILanguage() {
-      return cr.sendWithPromise('getProspectiveUILanguage');
-    }
+  /** @return {!Promise<string>} */
+  getProspectiveUILanguage() {}
 
-    // </if>
+  // </if>
 
-    /** @override */
-    getLanguageSettingsPrivate() {
-      return /** @type {!LanguageSettingsPrivate} */ (
-          chrome.languageSettingsPrivate);
-    }
+  /** @return {!LanguageSettingsPrivate} */
+  getLanguageSettingsPrivate() {}
 
-    // <if expr="chromeos">
-    /** @override */
-    getInputMethodPrivate() {
-      return /** @type {!InputMethodPrivate} */ (chrome.inputMethodPrivate);
-    }
-    // </if>
+  // <if expr="chromeos">
+  /** @return {!InputMethodPrivate} */
+  getInputMethodPrivate() {}
+  // </if>
+}
+
+/**
+ * @implements {LanguagesBrowserProxy}
+ */
+export class LanguagesBrowserProxyImpl {
+  // <if expr="chromeos or is_win">
+  /** @override */
+  setProspectiveUILanguage(languageCode) {
+    chrome.send('setProspectiveUILanguage', [languageCode]);
   }
+
+  /** @override */
+  getProspectiveUILanguage() {
+    return sendWithPromise('getProspectiveUILanguage');
+  }
+
+  // </if>
+
+  /** @override */
+  getLanguageSettingsPrivate() {
+    return /** @type {!LanguageSettingsPrivate} */ (
+        chrome.languageSettingsPrivate);
+  }
+
+  // <if expr="chromeos">
+  /** @override */
+  getInputMethodPrivate() {
+    return /** @type {!InputMethodPrivate} */ (chrome.inputMethodPrivate);
+  }
+  // </if>
+}
 
   // The singleton instance_ is replaced with a test version of this wrapper
   // during testing.
-  cr.addSingletonGetter(LanguagesBrowserProxyImpl);
-
-  // #cr_define_end
-  return {
-    LanguagesBrowserProxy: LanguagesBrowserProxy,
-    LanguagesBrowserProxyImpl: LanguagesBrowserProxyImpl,
-  };
-});
+addSingletonGetter(LanguagesBrowserProxyImpl);

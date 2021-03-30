@@ -11,16 +11,24 @@
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_generator_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_signal.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track_processor.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
+#include "third_party/blink/renderer/modules/mediastream/mock_media_stream_audio_sink.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_sink.h"
+#include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/mediastream/pushable_media_stream_video_source.h"
+#include "third_party/blink/renderer/modules/mediastream/stream_test_utils.h"
+#include "third_party/blink/renderer/modules/webcodecs/audio_frame.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 
 using testing::_;
@@ -36,6 +44,18 @@ ScriptValue CreateVideoFrameChunk(ScriptState* script_state) {
       std::move(media_frame), ExecutionContext::From(script_state));
   return ScriptValue(script_state->GetIsolate(),
                      ToV8(video_frame, script_state->GetContext()->Global(),
+                          script_state->GetIsolate()));
+}
+
+ScriptValue CreateAudioFrameChunk(ScriptState* script_state) {
+  AudioFrame* audio_frame =
+      MakeGarbageCollected<AudioFrame>(media::AudioBuffer::CreateEmptyBuffer(
+          media::ChannelLayout::CHANNEL_LAYOUT_STEREO,
+          /*channel_count=*/2,
+          /*sample_rate=*/44100,
+          /*frame_count=*/500, base::TimeDelta()));
+  return ScriptValue(script_state->GetIsolate(),
+                     ToV8(audio_frame, script_state->GetContext()->Global(),
                           script_state->GetIsolate()));
 }
 
@@ -90,6 +110,73 @@ TEST_F(MediaStreamTrackGeneratorTest, VideoFramesAreWritten) {
   close_tester.WaitUntilSettled();
   EXPECT_FALSE(exception_state.HadException());
   EXPECT_TRUE(generator->Ended());
+}
+
+TEST_F(MediaStreamTrackGeneratorTest, AudioFramesAreWritten) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  MediaStreamTrackGenerator* generator = MediaStreamTrackGenerator::Create(
+      script_state, "audio", v8_scope.GetExceptionState());
+
+  MockMediaStreamAudioSink media_stream_audio_sink;
+  WebMediaStreamAudioSink::AddToAudioTrack(
+      &media_stream_audio_sink, WebMediaStreamTrack(generator->Component()));
+
+  base::RunLoop sink_loop;
+  EXPECT_CALL(media_stream_audio_sink, OnData(_, _))
+      .WillOnce(testing::WithArg<0>([&](const media::AudioBus& data) {
+        EXPECT_NE(data.frames(), 0);
+        sink_loop.Quit();
+      }));
+  ExceptionState& exception_state = v8_scope.GetExceptionState();
+  auto* writer = generator->writable(script_state)
+                     ->getWriter(script_state, exception_state);
+  ScriptPromiseTester write_tester(
+      script_state,
+      writer->write(script_state, CreateAudioFrameChunk(script_state),
+                    exception_state));
+  EXPECT_FALSE(write_tester.IsFulfilled());
+  write_tester.WaitUntilSettled();
+  sink_loop.Run();
+  EXPECT_TRUE(write_tester.IsFulfilled());
+  EXPECT_FALSE(exception_state.HadException());
+
+  // Closing the writable stream should stop the track.
+  writer->releaseLock(script_state);
+  EXPECT_FALSE(generator->Ended());
+  ScriptPromiseTester close_tester(
+      script_state,
+      generator->writable(script_state)->close(script_state, exception_state));
+  close_tester.WaitUntilSettled();
+  EXPECT_FALSE(exception_state.HadException());
+  EXPECT_TRUE(generator->Ended());
+
+  WebMediaStreamAudioSink::RemoveFromAudioTrack(
+      &media_stream_audio_sink, WebMediaStreamTrack(generator->Component()));
+}
+
+TEST_F(MediaStreamTrackGeneratorTest, SignalsAreRead) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  MediaStreamTrackGenerator* generator = MediaStreamTrackGenerator::Create(
+      script_state, "video", ASSERT_NO_EXCEPTION);
+
+  auto* video_source = generator->PushableVideoSource();
+  auto* video_track = MediaStreamVideoTrack::From(generator->Component());
+
+  auto* reader =
+      generator->readableControl(script_state)
+          ->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  video_source->RequestRefreshFrame();
+  auto* signal = ReadObjectFromStream<MediaStreamTrackSignal>(v8_scope, reader);
+  EXPECT_EQ(signal->signalType(), "request-frame");
+
+  const double min_frame_rate = 3.5;
+  video_track->SetMinimumFrameRate(min_frame_rate);
+  signal = ReadObjectFromStream<MediaStreamTrackSignal>(v8_scope, reader);
+  EXPECT_EQ(signal->signalType(), "set-min-frame-rate");
+  EXPECT_TRUE(signal->hasFrameRate());
+  EXPECT_EQ(signal->frameRate(), min_frame_rate);
 }
 
 TEST_F(MediaStreamTrackGeneratorTest, FramesDoNotFlowOnStoppedGenerator) {
@@ -216,16 +303,53 @@ TEST_F(MediaStreamTrackGeneratorTest, CloneStopSource) {
   EXPECT_TRUE(clone->Ended());
 }
 
-// TODO(crbug.com/1142955): Add support for audio.
-TEST_F(MediaStreamTrackGeneratorTest, Audio) {
+TEST_F(MediaStreamTrackGeneratorTest, SignalsFlowFromGeneratorToProcessor) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
-  MediaStreamTrackGenerator* generator = MediaStreamTrackGenerator::Create(
-      script_state, "audio", v8_scope.GetExceptionState());
-  EXPECT_EQ(generator, nullptr);
-  EXPECT_TRUE(v8_scope.GetExceptionState().HadException());
-  EXPECT_EQ(static_cast<DOMExceptionCode>(v8_scope.GetExceptionState().Code()),
-            DOMExceptionCode::kNotSupportedError);
+  auto* generator = MediaStreamTrackGenerator::Create(script_state, "video",
+                                                      ASSERT_NO_EXCEPTION);
+
+  // Create a processor connected to a mock source.
+  auto* mock_video_source = CreateMockVideoSource();
+  auto* processor = MediaStreamTrackProcessor::Create(
+      script_state,
+      CreateVideoMediaStreamTrack(v8_scope.GetExecutionContext(),
+                                  mock_video_source),
+      ASSERT_NO_EXCEPTION);
+  mock_video_source->StartMockedSource();
+
+  // Connect the generator to the processor.
+  generator->readableControl(script_state)
+      ->pipeTo(script_state, processor->writableControl(script_state),
+               ASSERT_NO_EXCEPTION);
+
+  // Push a signal to the generator and verify that it makes it to the mock
+  // source backing the processor at the end of the chain.
+  base::RunLoop loop;
+  EXPECT_CALL(*mock_video_source, OnRequestRefreshFrame())
+      .WillOnce(base::test::RunOnceClosure(loop.QuitClosure()));
+  generator->PushableVideoSource()->RequestRefreshFrame();
+  loop.Run();
+}
+
+TEST_F(MediaStreamTrackGeneratorTest, ImplicitSignalsAreForwarded) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+
+  MockMediaStreamVideoSource* mock_source = CreateMockVideoSource();
+  MediaStreamTrack* signal_target =
+      CreateVideoMediaStreamTrack(v8_scope.GetExecutionContext(), mock_source);
+  mock_source->StartMockedSource();
+
+  auto* init = MediaStreamTrackGeneratorInit::Create();
+  init->setKind("video");
+  init->setSignalTarget(signal_target);
+  auto* generator = MediaStreamTrackGenerator::Create(script_state, init,
+                                                      ASSERT_NO_EXCEPTION);
+  // Send a signal to the generator. It should be forwarded to the source of the
+  // |signal_target| track.
+  EXPECT_CALL(*mock_source, OnRequestRefreshFrame());
+  generator->PushableVideoSource()->RequestRefreshFrame();
 }
 
 }  // namespace blink

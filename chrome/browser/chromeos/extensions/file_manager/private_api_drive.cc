@@ -9,6 +9,7 @@
 #include <set>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -22,12 +23,14 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root.h"
+#include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drivefs_native_message_host.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_root.h"
-#include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_root_map.h"
-#include "chrome/browser/chromeos/drive/drive_integration_service.h"
-#include "chrome/browser/chromeos/drive/drivefs_native_message_host.h"
-#include "chrome/browser/chromeos/drive/file_system_util.h"
+#include "chrome/browser/chromeos/extensions/file_manager/event_router.h"
+#include "chrome/browser/chromeos/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_util.h"
 #include "chrome/browser/chromeos/file_manager/file_tasks.h"
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
@@ -36,7 +39,6 @@
 #include "chrome/browser/chromeos/file_system_provider/provided_file_system_interface.h"
 #include "chrome/browser/chromeos/fileapi/external_file_url_util.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -45,8 +47,6 @@
 #include "chrome/common/extensions/api/file_manager_private_internal.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/components/drivefs/drivefs_util.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state_handler.h"
 #include "components/drive/chromeos/search_metadata.h"
@@ -268,6 +268,9 @@ class SingleEntryPropertiesGetterForDocumentsProvider {
 
     auto* root_map =
         arc::ArcDocumentsProviderRootMap::GetForBrowserContext(profile_);
+    if (!root_map) {
+      CompleteGetEntryProperties(base::File::FILE_ERROR_NOT_FOUND);
+    }
     base::FilePath path;
     auto* root = root_map->ParseAndLookup(file_system_url_, &path);
     if (!root) {
@@ -719,7 +722,7 @@ void FileManagerPrivateSearchDriveMetadataFunction::OnSearchDriveFs(
     return;
   }
 
-  std::vector<base::string16> keywords =
+  std::vector<std::u16string> keywords =
       base::SplitString(base::UTF8ToUTF16(query_text),
                         base::StringPiece16(base::kWhitespaceUTF16),
                         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
@@ -858,7 +861,7 @@ void FileManagerPrivateInternalGetDownloadUrlFunction::OnGotDownloadUrl(
       IdentityManagerFactory::GetForProfile(chrome_details.GetProfile());
   // This class doesn't care about browser sync consent.
   const CoreAccountId& account_id =
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kNotRequired);
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   std::vector<std::string> scopes;
   scopes.emplace_back("https://www.googleapis.com/auth/drive.readonly");
 
@@ -917,6 +920,40 @@ void FileManagerPrivateInternalGetDownloadUrlFunction::OnGotMetadata(
     drive::FileError error,
     drivefs::mojom::FileMetadataPtr metadata) {
   OnGotDownloadUrl(metadata ? GURL(metadata->download_url) : GURL());
+}
+
+ExtensionFunction::ResponseAction
+FileManagerPrivateNotifyDriveDialogResultFunction::Run() {
+  using api::file_manager_private::NotifyDriveDialogResult::Params;
+  const std::unique_ptr<Params> params(Params::Create(*args_));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  const ChromeExtensionFunctionDetails chrome_details(this);
+  file_manager::EventRouter* const event_router =
+      file_manager::EventRouterFactory::GetForProfile(
+          chrome_details.GetProfile());
+  if (event_router) {
+    drivefs::mojom::DialogResult result;
+    switch (params->result) {
+      case api::file_manager_private::DRIVE_DIALOG_RESULT_NONE:
+      case api::file_manager_private::DRIVE_DIALOG_RESULT_NOT_DISPLAYED:
+        result = drivefs::mojom::DialogResult::kNotDisplayed;
+        break;
+      case api::file_manager_private::DRIVE_DIALOG_RESULT_ACCEPT:
+        result = drivefs::mojom::DialogResult::kAccept;
+        break;
+      case api::file_manager_private::DRIVE_DIALOG_RESULT_REJECT:
+        result = drivefs::mojom::DialogResult::kReject;
+        break;
+      case api::file_manager_private::DRIVE_DIALOG_RESULT_DISMISS:
+        result = drivefs::mojom::DialogResult::kDismiss;
+        break;
+    }
+    event_router->OnDriveDialogResult(result);
+  } else {
+    return RespondNow(Error("Could not find event router"));
+  }
+  return RespondNow(NoArguments());
 }
 
 }  // namespace extensions

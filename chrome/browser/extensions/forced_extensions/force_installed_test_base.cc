@@ -8,7 +8,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
-#include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/policy/core/common/policy_service_impl.h"
@@ -16,7 +15,6 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pref_names.h"
-#include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -50,9 +48,8 @@ void ForceInstalledTestBase::SetUp() {
       TestingBrowserProcess::GetGlobal());
   ASSERT_TRUE(profile_manager_->SetUp());
   profile_ = profile_manager_->CreateTestingProfile(
-      "p1", nullptr, base::UTF8ToUTF16("p1"), 0, "",
-      TestingProfile::TestingFactories(), base::nullopt,
-      std::move(policy_service));
+      "p1", nullptr, u"p1", 0, "", TestingProfile::TestingFactories(),
+      base::nullopt, std::move(policy_service));
 
   prefs_ = profile_->GetTestingPrefService();
   registry_ = ExtensionRegistry::Get(profile_);
@@ -105,6 +102,25 @@ void ForceInstalledTestBase::SetupEmptyForceList() {
   policy::PolicyMap map;
   policy_provider_.UpdateChromePolicy(std::move(map));
   base::RunLoop().RunUntilIdle();
+}
+
+scoped_refptr<const Extension> ForceInstalledTestBase::CreateNewExtension(
+    const std::string& extension_name,
+    const std::string& extension_id,
+    const ForceInstalledTracker::ExtensionStatus& status) {
+  auto ext = ExtensionBuilder(extension_name).SetID(extension_id).Build();
+  switch (status) {
+    case ForceInstalledTracker::ExtensionStatus::kPending:
+    case ForceInstalledTracker::ExtensionStatus::kFailed:
+      break;
+    case ForceInstalledTracker::ExtensionStatus::kLoaded:
+      force_installed_tracker()->OnExtensionLoaded(profile(), ext.get());
+      break;
+    case ForceInstalledTracker::ExtensionStatus::kReady:
+      force_installed_tracker()->OnExtensionLoaded(profile(), ext.get());
+      force_installed_tracker()->OnExtensionReady(profile(), ext.get());
+  }
+  return ext;
 }
 
 }  // namespace extensions

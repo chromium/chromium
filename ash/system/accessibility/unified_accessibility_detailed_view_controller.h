@@ -31,7 +31,7 @@ class UnifiedAccessibilityDetailedViewController
 
   // DetailedViewControllerBase:
   views::View* CreateView() override;
-  base::string16 GetAccessibleName() const override;
+  std::u16string GetAccessibleName() const override;
 
   // AccessibilityObserver:
   void OnAccessibilityStatusChanged() override;

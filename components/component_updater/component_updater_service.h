@@ -28,7 +28,7 @@ class ComponentUpdaterPolicyTest;
 }
 
 namespace speech {
-class SODAInstallerImpl;
+class SodaInstallerImpl;
 }
 
 namespace update_client {
@@ -53,7 +53,7 @@ using CrxUpdateItem = update_client::CrxUpdateItem;
 struct ComponentInfo {
   ComponentInfo(const std::string& id,
                 const std::string& fingerprint,
-                const base::string16& name,
+                const std::u16string& name,
                 const base::Version& version);
   ComponentInfo(const ComponentInfo& other);
   ComponentInfo(ComponentInfo&& other);
@@ -61,7 +61,7 @@ struct ComponentInfo {
 
   const std::string id;
   const std::string fingerprint;
-  const base::string16 name;
+  const std::u16string name;
   const base::Version version;
 };
 
@@ -110,13 +110,6 @@ class ComponentUpdateService {
   // Returns a list of registered components.
   virtual std::vector<std::string> GetComponentIDs() const = 0;
 
-  // Returns a ComponentInfo describing a registered component that implements a
-  // handler for the specified |mime_type|. If multiple such components exist,
-  // returns information for the one that was most recently registered. If no
-  // such components exist, returns nullptr.
-  virtual std::unique_ptr<ComponentInfo> GetComponentForMimeType(
-      const std::string& mime_type) const = 0;
-
   // Returns a list of ComponentInfo objects describing all registered
   // components.
   virtual std::vector<ComponentInfo> GetComponents() const = 0;
@@ -148,7 +141,7 @@ class ComponentUpdateService {
   virtual bool GetComponentDetails(const std::string& id,
                                    CrxUpdateItem* item) const = 0;
 
-  friend class speech::SODAInstallerImpl;
+  friend class speech::SodaInstallerImpl;
   friend class ::ComponentsHandler;
   FRIEND_TEST_ALL_PREFIXES(ComponentInstallerTest, RegisterComponent);
 };
@@ -171,9 +164,8 @@ class OnDemandUpdater {
   friend class ::ComponentsHandler;
   friend class ::PluginObserver;
   friend class SwReporterOnDemandFetcher;
-  friend class SODAComponentInstallerPolicy;
-  friend class SodaEnUsComponentInstallerPolicy;
-  friend class SodaJaJpComponentInstallerPolicy;
+  friend class SodaComponentInstallerPolicy;
+  friend class SodaLanguagePackComponentInstallerPolicy;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   friend class CrOSComponentInstaller;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

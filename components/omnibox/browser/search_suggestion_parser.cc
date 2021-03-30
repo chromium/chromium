@@ -129,19 +129,19 @@ SearchSuggestionParser::Result::~Result() {}
 // SearchSuggestionParser::SuggestResult ---------------------------------------
 
 SearchSuggestionParser::SuggestResult::SuggestResult(
-    const base::string16& suggestion,
+    const std::u16string& suggestion,
     AutocompleteMatchType::Type type,
     std::vector<int> subtypes,
     bool from_keyword,
     int relevance,
     bool relevance_from_server,
-    const base::string16& input_text)
+    const std::u16string& input_text)
     : SuggestResult(suggestion,
                     type,
                     std::move(subtypes),
                     suggestion,
-                    /*match_contents_prefix=*/base::string16(),
-                    /*annotation=*/base::string16(),
+                    /*match_contents_prefix=*/std::u16string(),
+                    /*annotation=*/std::u16string(),
                     /*suggest_query_params=*/"",
                     /*deletion_url=*/"",
                     /*image_dominant_color=*/"",
@@ -153,12 +153,12 @@ SearchSuggestionParser::SuggestResult::SuggestResult(
                     input_text) {}
 
 SearchSuggestionParser::SuggestResult::SuggestResult(
-    const base::string16& suggestion,
+    const std::u16string& suggestion,
     AutocompleteMatchType::Type type,
     std::vector<int> subtypes,
-    const base::string16& match_contents,
-    const base::string16& match_contents_prefix,
-    const base::string16& annotation,
+    const std::u16string& match_contents,
+    const std::u16string& match_contents_prefix,
+    const std::u16string& annotation,
     const std::string& additional_query_params,
     const std::string& deletion_url,
     const std::string& image_dominant_color,
@@ -167,7 +167,7 @@ SearchSuggestionParser::SuggestResult::SuggestResult(
     int relevance,
     bool relevance_from_server,
     bool should_prefetch,
-    const base::string16& input_text)
+    const std::u16string& input_text)
     : Result(from_keyword,
              relevance,
              relevance_from_server,
@@ -196,7 +196,7 @@ operator=(const SuggestResult& rhs) = default;
 
 void SearchSuggestionParser::SuggestResult::ClassifyMatchContents(
     const bool allow_bolding_all,
-    const base::string16& input_text) {
+    const std::u16string& input_text) {
   DCHECK(!match_contents_.empty());
 
   // In case of zero-suggest results, do not highlight matches.
@@ -206,7 +206,7 @@ void SearchSuggestionParser::SuggestResult::ClassifyMatchContents(
     return;
   }
 
-  base::string16 lookup_text = input_text;
+  std::u16string lookup_text = input_text;
   if (type_ == AutocompleteMatchType::SEARCH_SUGGEST_TAIL) {
     const size_t contents_index =
         suggestion_.length() - match_contents_.length();
@@ -221,7 +221,7 @@ void SearchSuggestionParser::SuggestResult::ClassifyMatchContents(
     }
   }
   // Do a case-insensitive search for |lookup_text|.
-  base::string16::const_iterator lookup_position = std::search(
+  std::u16string::const_iterator lookup_position = std::search(
       match_contents_.begin(), match_contents_.end(), lookup_text.begin(),
       lookup_text.end(), SimpleCaseInsensitiveCompareUCS2());
   if (!allow_bolding_all && (lookup_position == match_contents_.end())) {
@@ -256,12 +256,12 @@ SearchSuggestionParser::NavigationResult::NavigationResult(
     const GURL& url,
     AutocompleteMatchType::Type match_type,
     std::vector<int> subtypes,
-    const base::string16& description,
+    const std::u16string& description,
     const std::string& deletion_url,
     bool from_keyword,
     int relevance,
     bool relevance_from_server,
-    const base::string16& input_text)
+    const std::u16string& input_text)
     : Result(from_keyword,
              relevance,
              relevance_from_server,
@@ -291,10 +291,9 @@ SearchSuggestionParser::NavigationResult::NavigationResult(
 
 SearchSuggestionParser::NavigationResult::~NavigationResult() {}
 
-void
-SearchSuggestionParser::NavigationResult::CalculateAndClassifyMatchContents(
-    const bool allow_bolding_nothing,
-    const base::string16& input_text) {
+void SearchSuggestionParser::NavigationResult::
+    CalculateAndClassifyMatchContents(const bool allow_bolding_nothing,
+                                      const std::u16string& input_text) {
   // Start with the trivial nothing-bolded classification.
   DCHECK(url_.is_valid());
 
@@ -325,7 +324,7 @@ SearchSuggestionParser::NavigationResult::CalculateAndClassifyMatchContents(
       GURL(input_text).has_scheme(), match_in_subdomain);
 
   // Find matches in the potentially new match_contents
-  base::string16 match_contents = url_formatter::FormatUrl(
+  std::u16string match_contents = url_formatter::FormatUrl(
       url_, format_types, net::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
   TermMatches term_matches = FindTermMatches(input_text, match_contents);
 
@@ -346,7 +345,7 @@ int SearchSuggestionParser::NavigationResult::CalculateRelevance(
 }
 
 void SearchSuggestionParser::NavigationResult::ClassifyDescription(
-    const base::string16& input_text) {
+    const std::u16string& input_text) {
   TermMatches term_matches = FindTermMatches(input_text, description_);
   description_class_ = ClassifyTermMatches(term_matches, description_.size(),
                                            ACMatchClassification::MATCH,
@@ -408,7 +407,7 @@ std::string SearchSuggestionParser::ExtractJsonData(
   if (response_headers) {
     std::string charset;
     if (response_headers->GetCharset(&charset)) {
-      base::string16 data_16;
+      std::u16string data_16;
       // TODO(jungshik): Switch to CodePageToUTF8 after it's added.
       if (base::CodepageToUTF16(json_data, charset.c_str(),
                                 base::OnStringConversionError::FAIL, &data_16))
@@ -447,7 +446,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
     int default_result_relevance,
     bool is_keyword_result,
     Results* results) {
-  base::string16 query;
+  std::u16string query;
   const base::ListValue* root_list = nullptr;
   const base::ListValue* results_list = nullptr;
 
@@ -555,10 +554,10 @@ bool SearchSuggestionParser::ParseSuggestResults(
   results->suggest_results.clear();
   results->navigation_results.clear();
 
-  base::string16 suggestion;
+  std::u16string suggestion;
   std::string type;
   int relevance = default_result_relevance;
-  const base::string16& trimmed_input =
+  const std::u16string& trimmed_input =
       base::CollapseWhitespace(input.text(), false);
   for (size_t index = 0; results_list->GetString(index, &suggestion); ++index) {
     // Google search may return empty suggestions for weird input characters,
@@ -600,7 +599,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
       GURL url(url_formatter::FixupURL(base::UTF16ToUTF8(suggestion),
                                        std::string()));
       if (url.is_valid()) {
-        base::string16 title;
+        std::u16string title;
         if (descriptions != nullptr)
           descriptions->GetString(index, &title);
         results->navigation_results.push_back(NavigationResult(
@@ -609,11 +608,10 @@ bool SearchSuggestionParser::ParseSuggestResults(
             input.text()));
       }
     } else {
-      base::string16 annotation;
-      base::string16 match_contents = suggestion;
+      std::u16string annotation;
+      std::u16string match_contents = suggestion;
       if (match_type == AutocompleteMatchType::CALCULATOR) {
-        const bool has_equals_prefix =
-            !suggestion.compare(0, 2, base::UTF8ToUTF16("= "));
+        const bool has_equals_prefix = !suggestion.compare(0, 2, u"= ");
         if (has_equals_prefix) {
           // Calculator results include a "= " prefix but we don't want to
           // include this in the search terms.
@@ -628,7 +626,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
         }
       }
 
-      base::string16 match_contents_prefix;
+      std::u16string match_contents_prefix;
       SuggestionAnswer answer;
       bool answer_parsed_successfully = false;
       std::string image_dominant_color;
@@ -654,7 +652,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
 
           // Extract the Answer, if provided.
           const base::DictionaryValue* answer_json = nullptr;
-          base::string16 answer_type;
+          std::u16string answer_type;
           if (suggestion_detail->GetDictionary("ansa", &answer_json) &&
               suggestion_detail->GetString("ansb", &answer_type)) {
             if (SuggestionAnswer::ParseAnswer(*answer_json, answer_type,

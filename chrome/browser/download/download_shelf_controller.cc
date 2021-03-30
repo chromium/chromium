@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "chrome/browser/content_index/content_index_provider_impl.h"
 #include "chrome/browser/download/download_shelf.h"
 #include "chrome/browser/download/offline_item_model_manager.h"
 #include "chrome/browser/download/offline_item_model_manager_factory.h"
@@ -25,12 +26,10 @@ DownloadShelfController::DownloadShelfController(Profile* profile)
     : profile_(profile) {
   aggregator_ =
       OfflineContentAggregatorFactory::GetForKey(profile_->GetProfileKey());
-  aggregator_->AddObserver(this);
+  observation_.Observe(aggregator_);
 }
 
-DownloadShelfController::~DownloadShelfController() {
-  aggregator_->RemoveObserver(this);
-}
+DownloadShelfController::~DownloadShelfController() = default;
 
 void DownloadShelfController::OnItemsAdded(
     const OfflineContentProvider::OfflineItemList& items) {
@@ -58,6 +57,9 @@ void DownloadShelfController::OnItemUpdated(
   if (item.state == OfflineItemState::CANCELLED)
     return;
 
+  if (item.id.name_space == ContentIndexProviderImpl::kProviderNamespace)
+    return;
+
   OfflineItemModelManager* manager =
       OfflineItemModelManagerFactory::GetForBrowserContext(profile_);
 
@@ -68,6 +70,10 @@ void DownloadShelfController::OnItemUpdated(
     model->SetWasUINotified(true);
     OnNewOfflineItemReady(std::move(model));
   }
+}
+
+void DownloadShelfController::OnContentProviderGoingDown() {
+  observation_.Reset();
 }
 
 void DownloadShelfController::OnNewOfflineItemReady(

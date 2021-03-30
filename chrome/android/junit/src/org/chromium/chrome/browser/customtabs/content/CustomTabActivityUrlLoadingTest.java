@@ -57,9 +57,6 @@ public class CustomTabActivityUrlLoadingTest {
     public Features.JUnitProcessor processor = new Features.JUnitProcessor();
 
     @Mock
-    public ProfileProvider mProfileProvider;
-
-    @Mock
     private Profile mProfile;
 
     private CustomTabActivityTabController mTabController;
@@ -76,8 +73,8 @@ public class CustomTabActivityUrlLoadingTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
-        when(mProfileProvider.getLastUsedRegularProfile()).thenReturn(mProfile);
-        mTabController = env.createTabController(mProfileProvider);
+        Profile.setLastUsedProfileForTesting(mProfile);
+        mTabController = env.createTabController();
         mNavigationController = env.createNavigationController(mTabController);
         mIntentHandler = env.createIntentHandler(mNavigationController);
     }

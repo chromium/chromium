@@ -30,7 +30,8 @@ std::unique_ptr<ProfileSyncServiceHarness> InitializeProfileForSync(
   // In browser tests, the profile may already by authenticated with stub
   // account |user_manager::kStubUserEmail|.
   CoreAccountInfo info =
-      IdentityManagerFactory::GetForProfile(profile)->GetPrimaryAccountInfo();
+      IdentityManagerFactory::GetForProfile(profile)->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSync);
   username = info.email;
 #endif
   if (username.empty()) {

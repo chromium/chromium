@@ -47,7 +47,8 @@ void ShellDevToolsFrontend::Close() {
   frontend_shell_->Close();
 }
 
-void ShellDevToolsFrontend::DocumentAvailableInMainFrame() {
+void ShellDevToolsFrontend::DocumentAvailableInMainFrame(
+    RenderFrameHost* render_frame_host) {
   devtools_bindings_->Attach();
 }
 

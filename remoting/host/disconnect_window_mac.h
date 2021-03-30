@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 
 // Controller for the disconnect window which allows the host user to
@@ -18,7 +17,7 @@
 @interface DisconnectWindowController : NSWindowController {
  @private
   base::OnceClosure _disconnect_callback;
-  base::string16 _username;
+  std::u16string _username;
 }
 
 - (id)initWithCallback:(base::OnceClosure)disconnect_callback

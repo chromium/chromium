@@ -71,6 +71,41 @@ v8::Local<v8::Object> V8DOMWrapper::CreateWrapper(
   return wrapper;
 }
 
+v8::MaybeLocal<v8::Object> V8DOMWrapper::CreateWrapperV2(
+    ScriptState* script_state,
+    const WrapperTypeInfo* type) {
+  RUNTIME_CALL_TIMER_SCOPE(script_state->GetIsolate(),
+                           RuntimeCallStats::CounterId::kCreateWrapper);
+
+  V8WrapperInstantiationScope scope(script_state, type);
+  if (scope.AccessCheckFailed()) {
+    // V8WrapperInstantiationScope's ctor throws an exception
+    // if AccessCheckFailed.
+    return v8::MaybeLocal<v8::Object>();
+  }
+
+  V8PerContextData* per_context_data =
+      V8PerContextData::From(scope.GetContext());
+  v8::Local<v8::Object> wrapper;
+  if (per_context_data) {
+    wrapper = per_context_data->CreateWrapperFromCache(type);
+    CHECK(!wrapper.IsEmpty());
+  } else {
+    // The context is detached, but still accessible.
+    // TODO(yukishiino): This code does not create a wrapper with
+    // the correct settings.  Should follow the same way as
+    // V8PerContextData::createWrapperFromCache, though there is no need to
+    // cache resulting objects or their constructors.
+    const DOMWrapperWorld& world = DOMWrapperWorld::World(scope.GetContext());
+    wrapper = type->GetV8ClassTemplate(script_state->GetIsolate(), world)
+                  .As<v8::FunctionTemplate>()
+                  ->InstanceTemplate()
+                  ->NewInstance(scope.GetContext())
+                  .ToLocalChecked();
+  }
+  return wrapper;
+}
+
 bool V8DOMWrapper::IsWrapper(v8::Isolate* isolate, v8::Local<v8::Value> value) {
   if (value.IsEmpty() || !value->IsObject())
     return false;

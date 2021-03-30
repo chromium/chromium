@@ -18,8 +18,8 @@
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/trusted_vault_client.h"
-#include "components/sync/engine/mock_sync_engine.h"
-#include "components/sync/nigori/nigori.h"
+#include "components/sync/engine/nigori/nigori.h"
+#include "components/sync/test/engine/mock_sync_engine.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -53,25 +53,6 @@ CoreAccountInfo MakeAccountInfoWithGaia(const std::string& gaia) {
   result.gaia = gaia;
   return result;
 }
-
-class MockCryptoSyncPrefs : public CryptoSyncPrefs {
- public:
-  MockCryptoSyncPrefs() = default;
-  ~MockCryptoSyncPrefs() override = default;
-  MOCK_METHOD(std::string, GetEncryptionBootstrapToken, (), (const override));
-  MOCK_METHOD(void,
-              SetEncryptionBootstrapToken,
-              (const std::string&),
-              (override));
-  MOCK_METHOD(std::string,
-              GetKeystoreEncryptionBootstrapToken,
-              (),
-              (const override));
-  MOCK_METHOD(void,
-              SetKeystoreEncryptionBootstrapToken,
-              (const std::string&),
-              (override));
-};
 
 // Object representing a server that contains the authoritative trusted vault
 // keys, and TestTrustedVaultClient reads from.
@@ -296,7 +277,6 @@ class SyncServiceCryptoTest : public testing::Test {
         crypto_(notify_observers_cb_.Get(),
                 /*notify_required_user_action_changed=*/base::DoNothing(),
                 reconfigure_cb_.Get(),
-                &prefs_,
                 &trusted_vault_client_) {
     trusted_vault_server_.StoreKeysOnServer(kSyncingAccount.gaia,
                                             kInitialTrustedVaultKeys);
@@ -321,7 +301,6 @@ class SyncServiceCryptoTest : public testing::Test {
   testing::NiceMock<
       base::MockCallback<base::RepeatingCallback<void(ConfigureReason)>>>
       reconfigure_cb_;
-  testing::NiceMock<MockCryptoSyncPrefs> prefs_;
   TestTrustedVaultServer trusted_vault_server_;
   TestTrustedVaultClient trusted_vault_client_;
   testing::NiceMock<MockSyncEngine> engine_;

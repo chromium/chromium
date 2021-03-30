@@ -161,7 +161,7 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   static CodecPicture* GetPictureFromJobForTesting(VaapiEncodeJob* job);
 
   // The unchanged values are filled upon the construction. The varied values
-  // (e.g. ScalingSettings) are filled properly during encoding.
+  // are filled properly during encoding.
   VideoEncoderInfo encoder_info_;
 
   // VaapiWrapper is the owner of all HW resources (surfaces and buffers)

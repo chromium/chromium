@@ -45,7 +45,7 @@ class LayoutThemeMac final : public LayoutThemeDefault {
       mojom::blink::ColorScheme color_scheme) const override;
   Color PlatformSpellingMarkerUnderlineColor() const override;
   Color PlatformGrammarMarkerUnderlineColor() const override;
-  Color FocusRingColor() const override;
+  Color FocusRingColor(mojom::blink::ColorScheme color_scheme) const override;
   String DisplayNameForFile(const File& file) const override;
   bool PopsMenuByArrowKeys() const override { return true; }
   bool PopsMenuByReturnKey() const override { return false; }
@@ -55,6 +55,7 @@ class LayoutThemeMac final : public LayoutThemeDefault {
   // Controls color values returned from FocusRingColor().
   bool UsesTestModeFocusRingColor() const;
   bool IsAccentColorCustomized(mojom::blink::ColorScheme color_scheme) const;
+  Color GetCustomFocusRingColor(mojom::blink::ColorScheme color_scheme) const;
 };
 
 }  // namespace blink

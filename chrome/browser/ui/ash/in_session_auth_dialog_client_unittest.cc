@@ -10,15 +10,14 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chromeos/login/auth/fake_extended_authenticator.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using chromeos::FakeChromeUserManager;
 using chromeos::FakeExtendedAuthenticator;
 using chromeos::Key;
 using chromeos::UserContext;
@@ -89,7 +88,8 @@ class InSessionAuthDialogClientTest : public testing::Test {
   // thread.
   const content::BrowserTaskEnvironment task_environment_;
 
-  FakeChromeUserManager* fake_user_manager_{new FakeChromeUserManager()};
+  ash::FakeChromeUserManager* fake_user_manager_{
+      new ash::FakeChromeUserManager()};
   user_manager::ScopedUserManager scoped_user_manager_{
       base::WrapUnique(fake_user_manager_)};
   std::unique_ptr<FakeInSessionAuthDialogController> fake_controller_{

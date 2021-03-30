@@ -272,6 +272,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
   // Allocate a backing for the resource if needed, either for gpu or software
   // compositing.
   ResourcePool::InUsePoolResource pool_resource;
+  bool needs_clear = false;
   if (draw_mode == DRAW_MODE_HARDWARE) {
     DCHECK(raster_context_provider || context_provider);
     const auto& caps = raster_context_provider
@@ -317,6 +318,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
         gl->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
       }
       pool_resource.set_gpu_backing(std::move(backing));
+      needs_clear = true;
     } else if (pool_resource.gpu_backing()->returned_sync_token.HasData()) {
       if (raster_context_provider) {
         auto* ri = raster_context_provider->RasterInterface();
@@ -373,7 +375,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
       constexpr GLuint background_color = SkColorSetARGB(0, 0, 0, 0);
       constexpr GLuint msaa_sample_count = -1;
       constexpr bool can_use_lcd_text = true;
-      ri->BeginRasterCHROMIUM(background_color, msaa_sample_count,
+      ri->BeginRasterCHROMIUM(background_color, needs_clear, msaa_sample_count,
                               can_use_lcd_text, gfx::ColorSpace::CreateSRGB(),
                               backing->mailbox.name);
       gfx::Vector2dF post_translate(0.f, 0.f);
@@ -553,6 +555,10 @@ void HeadsUpDisplayLayerImpl::SetLayoutShiftRects(
   layout_shift_rects_ = rects;
 }
 
+void HeadsUpDisplayLayerImpl::ClearLayoutShiftRects() {
+  layout_shift_rects_.clear();
+}
+
 void HeadsUpDisplayLayerImpl::SetWebVitalMetrics(
     std::unique_ptr<WebVitalMetrics> web_vital_metrics) {
   web_vital_metrics_ = std::move(web_vital_metrics);
@@ -582,6 +588,9 @@ void HeadsUpDisplayLayerImpl::UpdateHudContents() {
     if (debug_state.show_fps_counter) {
       throughput_value_ =
           layer_tree_impl()->dropped_frame_counter()->GetAverageThroughput();
+      const auto& args = layer_tree_impl()->CurrentBeginFrameArgs();
+      if (args.IsValid())
+        frame_interval_ = args.interval;
     }
 
     if (debug_state.ShowMemoryStats()) {
@@ -742,14 +751,15 @@ SkRect HeadsUpDisplayLayerImpl::DrawFrameThroughputDisplay(
                        kGraphWidth, kGraphHeight);
 
   // Draw the frame rendering stats.
-  const std::string title("Frames");
-  const std::string value_text = base::StringPrintf("%d%%", throughput_value_);
-  const std::string dropped_frames_text =
-      base::StringPrintf("%zu (%zu m) dropped of %zu",
-                         dropped_frame_counter->total_compositor_dropped(),
-                         dropped_frame_counter->total_main_dropped(),
-                         dropped_frame_counter->total_frames());
-
+  const std::string title("Frame Rate");
+  std::string value_text = "n/a";
+  if (frame_interval_.has_value()) {
+    // This assumes a constant frame rate. If the frame rate changed throughout
+    // the sequence, then maybe we should average over the sequence.
+    double frame_rate = static_cast<double>(throughput_value_) /
+                        (100 * frame_interval_.value().InSecondsF());
+    value_text = base::StringPrintf("%5.1f fps", frame_rate);
+  }
   VLOG(1) << value_text;
 
   flags.setColor(DebugColors::HUDTitleColor());
@@ -757,9 +767,7 @@ SkRect HeadsUpDisplayLayerImpl::DrawFrameThroughputDisplay(
            title_bounds.left(), title_bounds.bottom());
 
   flags.setColor(DebugColors::FPSDisplayTextAndGraphColor());
-  DrawText(canvas, flags, value_text, TextAlign::kLeft, kFontHeight,
-           text_bounds.left(), text_bounds.bottom());
-  DrawText(canvas, flags, dropped_frames_text, TextAlign::kRight, kFontHeight,
+  DrawText(canvas, flags, value_text, TextAlign::kRight, kFontHeight,
            text_bounds.right(), text_bounds.bottom());
 
   DrawGraphLines(canvas, &flags, graph_bounds);
@@ -1073,7 +1081,6 @@ void HeadsUpDisplayLayerImpl::DrawDebugRects(
                     DebugColors::PaintRectBorderWidth(), "");
     }
   }
-
   if (new_layout_shift_rects.size()) {
     layout_shift_debug_rects_.swap(new_layout_shift_rects);
     layout_shift_rects_fade_step_ = DebugColors::kFadeSteps;
@@ -1097,10 +1104,11 @@ int HeadsUpDisplayLayerImpl::DrawSingleMetric(
     int top,
     std::string name,
     const WebVitalMetrics::MetricsInfo& info,
+    bool has_value,
     double value) const {
   std::string value_str = "-";
   SkColor metrics_color = DebugColors::HUDTitleColor();
-  if (value >= 0.f) {
+  if (has_value) {
     value_str = ToStringTwoDecimalPrecision(value) + info.UnitToString();
     if (value < info.green_threshold)
       metrics_color = SK_ColorGREEN;
@@ -1132,25 +1140,27 @@ SkRect HeadsUpDisplayLayerImpl::DrawWebVitalMetrics(PaintCanvas* canvas,
   DrawGraphBackground(canvas, &flags, area);
 
   int current_top = top + metrics_sizes.kTopPadding + metrics_sizes.kFontHeight;
-  double lcp_value = -1;
-  if (web_vital_metrics_ &&
-      web_vital_metrics_->largest_contentful_paint.has_value())
-    lcp_value = web_vital_metrics_->largest_contentful_paint->InSecondsF();
-  current_top = DrawSingleMetric(canvas, left, left + width, current_top,
-                                 "Largest Contentful Paint",
-                                 WebVitalMetrics::lcp_info, lcp_value);
+  double metric_value = 0.f;
+  bool has_lcp = web_vital_metrics_ && web_vital_metrics_->has_lcp;
+  if (has_lcp)
+    metric_value = web_vital_metrics_->largest_contentful_paint.InSecondsF();
+  current_top = DrawSingleMetric(
+      canvas, left, left + width, current_top, "Largest Contentful Paint",
+      WebVitalMetrics::lcp_info, has_lcp, metric_value);
 
-  double fid_value = -1;
-  if (web_vital_metrics_ && web_vital_metrics_->first_input_delay.has_value())
-    fid_value = web_vital_metrics_->first_input_delay->InMillisecondsF();
+  bool has_fid = web_vital_metrics_ && web_vital_metrics_->has_fid;
+  if (has_fid)
+    metric_value = web_vital_metrics_->first_input_delay.InMillisecondsF();
   current_top = DrawSingleMetric(canvas, left, left + width, current_top,
                                  "First Input Delay", WebVitalMetrics::fid_info,
-                                 fid_value);
+                                 has_fid, metric_value);
 
+  bool has_layout_shift = web_vital_metrics_ && web_vital_metrics_->has_cls;
+  if (has_layout_shift)
+    metric_value = web_vital_metrics_->layout_shift;
   current_top = DrawSingleMetric(
       canvas, left, left + width, current_top, "Cumulative Layout Shift",
-      WebVitalMetrics::cls_info,
-      web_vital_metrics_ ? web_vital_metrics_->layout_shift : -1);
+      WebVitalMetrics::cls_info, has_layout_shift, metric_value);
 
   return area;
 }

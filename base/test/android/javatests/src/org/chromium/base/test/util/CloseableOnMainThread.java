@@ -61,7 +61,7 @@ public final class CloseableOnMainThread implements Closeable {
     }
 
     /**
-     * Enables try-with-resources compatible StrictMode violation whitelisting on android's main
+     * Enables try-with-resources compatible StrictMode violation allowlisting on android's main
      * thread.
      *
      * Prefer "ignored" as the variable name to appease Android Studio's "Unused symbol" inspection.

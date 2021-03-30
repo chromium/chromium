@@ -1,9 +1,0 @@
-# NOTE: if adding an exclusion for an existing failure (e.g. additional test for
-# feature X that is already not working), please add it beside the existing
-# failures. Otherwise please reach out to network-service-dev@.
-
-# These tests currently fail when run with --enable-features=NetworkService,NetworkServiceInProcess
-
-# Note: webview aims to support running network service in-process, so the
-# tests are also running with NS IP. Multiprocess webview currently does not
-# support running NS OOP, https://crbug.com/882650

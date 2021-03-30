@@ -43,13 +43,13 @@ class KeyboardShortcutItemView : public views::View {
   static void ClearKeycodeToString16Cache();
 
  private:
-  // A cache to avoid repeatly looking up base::string16 from ui::KeyboardCode.
+  // A cache to avoid repeatly looking up std::u16string from ui::KeyboardCode.
   // Currently the Keyboard Shortcut Viewer (KSV) will not refresh its contents
   // when keyboard layout changes. The users must restart KSV again to get new
   // keys for the new layout. Also since GetStringForKeyboardCode is only called
   // for KSV to create the strings in the initialization process, clearing the
   // cache is not necessary when keyboard layout changes.
-  static std::map<ui::KeyboardCode, base::string16>*
+  static std::map<ui::KeyboardCode, std::u16string>*
   GetKeycodeToString16Cache();
 
   // Calculates how to layout child views for the given |width|.
@@ -73,7 +73,7 @@ class KeyboardShortcutItemView : public views::View {
   mutable gfx::Size calculated_size_;
 
   // Accessibility data.
-  base::string16 accessible_name_;
+  std::u16string accessible_name_;
 
   DISALLOW_COPY_AND_ASSIGN(KeyboardShortcutItemView);
 };

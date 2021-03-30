@@ -60,6 +60,20 @@ class PrerenderPageLoadMetricsObserverTest
         static_cast<base::Histogram::Sample>(
             blink::mojom::WebFeature::kLocalStorageFirstUsedAfterFcp));
   }
+
+  int GetSessionStorageBeforeFcpCount() {
+    return tester()->histogram_tester().GetBucketCount(
+        kFeaturesHistogramName,
+        static_cast<base::Histogram::Sample>(
+            blink::mojom::WebFeature::kSessionStorageFirstUsedBeforeFcp));
+  }
+
+  int GetSessionStorageAfterFcpCount() {
+    return tester()->histogram_tester().GetBucketCount(
+        kFeaturesHistogramName,
+        static_cast<base::Histogram::Sample>(
+            blink::mojom::WebFeature::kSessionStorageFirstUsedAfterFcp));
+  }
 };
 
 TEST_F(PrerenderPageLoadMetricsObserverTest, NoLocalStorage) {
@@ -115,10 +129,92 @@ TEST_F(PrerenderPageLoadMetricsObserverTest, ThirdPartyLocalStorage) {
       GURL(kOtherOriginUrl), GURL(kDefaultTestUrl), false,
       page_load_metrics::StorageType::kLocalStorage);
 
-  // Cross-origin local storage is not logged.
+  // Cross-origin storage is not logged.
   EXPECT_EQ(GetPageVisits(), 1);
   EXPECT_EQ(GetLocalStorageBeforeFcpCount(), 0);
   EXPECT_EQ(GetLocalStorageAfterFcpCount(), 0);
+}
+
+TEST_F(PrerenderPageLoadMetricsObserverTest, NoSessionStorage) {
+  NavigateAndCommit(GURL(kDefaultTestUrl));
+
+  EXPECT_EQ(GetPageVisits(), 1);
+  EXPECT_EQ(GetSessionStorageBeforeFcpCount(), 0);
+  EXPECT_EQ(GetSessionStorageAfterFcpCount(), 0);
+}
+
+TEST_F(PrerenderPageLoadMetricsObserverTest, SessionStorageBeforeFcp) {
+  NavigateAndCommit(GURL(kDefaultTestUrl));
+
+  // Access session storage.
+  tester()->SimulateStorageAccess(
+      GURL(kDefaultTestUrl), GURL(kDefaultTestUrl), false,
+      page_load_metrics::StorageType::kSessionStorage);
+
+  // Reach FCP.
+  SimulateFirstContentfulPaint();
+
+  // Access session storage again.
+  tester()->SimulateStorageAccess(
+      GURL(kDefaultTestUrl), GURL(kDefaultTestUrl), false,
+      page_load_metrics::StorageType::kSessionStorage);
+
+  EXPECT_EQ(GetPageVisits(), 1);
+  EXPECT_EQ(GetSessionStorageBeforeFcpCount(), 1);
+  // The UMA counts the first use, so AfterFcp is 0.
+  EXPECT_EQ(GetSessionStorageAfterFcpCount(), 0);
+}
+
+TEST_F(PrerenderPageLoadMetricsObserverTest, SessionStorageAfterFcp) {
+  NavigateAndCommit(GURL(kDefaultTestUrl));
+
+  // Reach FCP.
+  SimulateFirstContentfulPaint();
+
+  // Access session storage.
+  tester()->SimulateStorageAccess(
+      GURL(kDefaultTestUrl), GURL(kDefaultTestUrl), false,
+      page_load_metrics::StorageType::kSessionStorage);
+
+  EXPECT_EQ(GetPageVisits(), 1);
+  EXPECT_EQ(GetSessionStorageBeforeFcpCount(), 0);
+  EXPECT_EQ(GetSessionStorageAfterFcpCount(), 1);
+}
+
+TEST_F(PrerenderPageLoadMetricsObserverTest, ThirdPartySessionStorage) {
+  NavigateAndCommit(GURL(kDefaultTestUrl));
+
+  tester()->SimulateStorageAccess(
+      GURL(kOtherOriginUrl), GURL(kDefaultTestUrl), false,
+      page_load_metrics::StorageType::kSessionStorage);
+
+  // Cross-origin storage is not logged.
+  EXPECT_EQ(GetPageVisits(), 1);
+  EXPECT_EQ(GetSessionStorageBeforeFcpCount(), 0);
+  EXPECT_EQ(GetSessionStorageAfterFcpCount(), 0);
+}
+
+TEST_F(PrerenderPageLoadMetricsObserverTest, MultipleStorage) {
+  NavigateAndCommit(GURL(kDefaultTestUrl));
+
+  // Access local storage.
+  tester()->SimulateStorageAccess(
+      GURL(kDefaultTestUrl), GURL(kDefaultTestUrl), false,
+      page_load_metrics::StorageType::kLocalStorage);
+
+  // Reach FCP.
+  SimulateFirstContentfulPaint();
+
+  // Access session storage.
+  tester()->SimulateStorageAccess(
+      GURL(kDefaultTestUrl), GURL(kDefaultTestUrl), false,
+      page_load_metrics::StorageType::kSessionStorage);
+
+  EXPECT_EQ(GetPageVisits(), 1);
+  EXPECT_EQ(GetLocalStorageBeforeFcpCount(), 1);
+  EXPECT_EQ(GetLocalStorageAfterFcpCount(), 0);
+  EXPECT_EQ(GetSessionStorageBeforeFcpCount(), 0);
+  EXPECT_EQ(GetSessionStorageAfterFcpCount(), 1);
 }
 
 }  // namespace

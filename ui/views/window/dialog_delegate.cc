@@ -132,7 +132,7 @@ int DialogDelegate::GetDefaultDialogButton() const {
   return ui::DIALOG_BUTTON_NONE;
 }
 
-base::string16 DialogDelegate::GetDialogButtonLabel(
+std::u16string DialogDelegate::GetDialogButtonLabel(
     ui::DialogButton button) const {
   if (!GetParams().button_labels[button].empty())
     return GetParams().button_labels[button];
@@ -145,7 +145,7 @@ base::string16 DialogDelegate::GetDialogButtonLabel(
     return l10n_util::GetStringUTF16(IDS_APP_CLOSE);
   }
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 bool DialogDelegate::IsDialogButtonEnabled(ui::DialogButton button) const {
@@ -350,7 +350,7 @@ void DialogDelegate::SetButtonEnabled(ui::DialogButton button, bool enabled) {
 }
 
 void DialogDelegate::SetButtonLabel(ui::DialogButton button,
-    base::string16 label) {
+                                    std::u16string label) {
   if (params_.button_labels[button] == label)
     return;
   params_.button_labels[button] = label;
@@ -418,11 +418,14 @@ ax::mojom::Role DialogDelegate::GetAccessibleWindowRole() {
 }
 
 int DialogDelegate::GetCornerRadius() const {
-  return base::FeatureList::IsEnabled(
-             features::kEnableMDRoundedCornersOnDialogs)
-             ? LayoutProvider::Get()->GetCornerRadiusMetric(
-                   views::EMPHASIS_MEDIUM)
-             : 2;
+#if defined(OS_MAC)
+  // TODO(crbug.com/1116680): On Mac MODAL_TYPE_WINDOW is implemented using
+  // sheets which causes visual artifacts when corner radius is increased for
+  // modal types. Remove this after this issue has been addressed.
+  if (GetModalType() == ui::MODAL_TYPE_WINDOW)
+    return 2;
+#endif
+  return LayoutProvider::Get()->GetCornerRadiusMetric(views::EMPHASIS_MEDIUM);
 }
 
 std::unique_ptr<View> DialogDelegate::DisownFootnoteView() {

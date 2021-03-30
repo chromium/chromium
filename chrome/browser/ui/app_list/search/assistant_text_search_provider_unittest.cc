@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ui/app_list/search/assistant_text_search_provider.h"
 
+#include <string>
+
 #include "ash/public/cpp/assistant/test_support/mock_assistant_controller.h"
 #include "ash/public/cpp/assistant/test_support/mock_assistant_state.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/app_list/app_list_test_util.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"

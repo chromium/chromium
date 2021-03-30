@@ -26,10 +26,10 @@ component("util") {
 
   deps = [
     "//ash/assistant/model",
+    "//ash/constants",
     "//ash/public/cpp",
     "//base",
     "//base:i18n",
-    "//chromeos/constants",
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/assistant/public/mojom",
     "//chromeos/ui/vector_icons",

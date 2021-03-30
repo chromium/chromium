@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace base {
 namespace sequence_manager {
@@ -95,7 +96,7 @@ class PLATFORM_EXPORT FrameTaskQueueController {
   bool RemoveResourceLoadingTaskQueue(
       const scoped_refptr<MainThreadTaskQueue>&);
 
-  void AsValueInto(base::trace_event::TracedValue* state) const;
+  void WriteIntoTracedValue(perfetto::TracedValue context) const;
 
  private:
   friend class FrameTaskQueueControllerTest;

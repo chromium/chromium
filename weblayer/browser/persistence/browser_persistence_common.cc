@@ -50,8 +50,9 @@ void ProcessRestoreCommands(
 
     GURL restore_url =
         session_tab.navigations[selected_navigation_index].virtual_url();
-    content::SessionStorageNamespaceMap session_storage_namespace_map;
-    session_storage_namespace_map[std::string()] = session_storage_namespace;
+    content::SessionStorageNamespaceMap session_storage_namespace_map =
+        content::CreateMapWithDefaultSessionStorageNamespace(
+            browser_context, session_storage_namespace);
     content::BrowserURLHandler::GetInstance()->RewriteURLIfNecessary(
         &restore_url, browser_context);
     content::WebContents::CreateParams create_params(

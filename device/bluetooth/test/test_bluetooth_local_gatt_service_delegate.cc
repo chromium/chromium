@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <device/bluetooth/test/test_bluetooth_local_gatt_service_delegate.h>
+#include "device/bluetooth/test/test_bluetooth_local_gatt_service_delegate.h"
+
 #include "base/callback.h"
 #include "device/bluetooth/test/bluetooth_gatt_server_test.h"
 
@@ -112,6 +113,7 @@ void TestBluetoothLocalGattServiceDelegate::OnNotificationsStart(
     const BluetoothDevice* device,
     device::BluetoothGattCharacteristic::NotificationType notification_type,
     const BluetoothLocalGattCharacteristic* characteristic) {
+  DCHECK(device);
   EXPECT_EQ(expected_characteristic_->GetIdentifier(),
             characteristic->GetIdentifier());
   notifications_started_for_characteristic_[characteristic->GetIdentifier()] =
@@ -121,6 +123,7 @@ void TestBluetoothLocalGattServiceDelegate::OnNotificationsStart(
 void TestBluetoothLocalGattServiceDelegate::OnNotificationsStop(
     const BluetoothDevice* device,
     const BluetoothLocalGattCharacteristic* characteristic) {
+  DCHECK(device);
   EXPECT_EQ(expected_characteristic_->GetIdentifier(),
             characteristic->GetIdentifier());
   notifications_started_for_characteristic_[characteristic->GetIdentifier()] =

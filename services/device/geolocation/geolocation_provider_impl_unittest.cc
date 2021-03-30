@@ -5,6 +5,7 @@
 #include "services/device/geolocation/geolocation_provider_impl.h"
 
 #include <memory>
+#include <string>
 
 #include "base/at_exit.h"
 #include "base/bind.h"
@@ -15,7 +16,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
-#include "base/strings/string16.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"

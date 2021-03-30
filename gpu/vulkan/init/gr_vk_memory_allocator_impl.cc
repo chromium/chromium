@@ -5,19 +5,18 @@
 #include "gpu/vulkan/init/gr_vk_memory_allocator_impl.h"
 
 #include <vk_mem_alloc.h>
+#include <vulkan/vulkan_core.h>
 
 #include "base/feature_list.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/vulkan/vma_wrapper.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
+#include "gpu/vulkan/vulkan_util.h"
 
 namespace gpu {
 
 namespace {
-
-const base::Feature kCpuWritesGpuReadsCached{"CpuWritesGpuReadsCached",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
 class GrVkMemoryAllocatorImpl : public GrVkMemoryAllocator {
  public:
@@ -81,22 +80,19 @@ class GrVkMemoryAllocatorImpl : public GrVkMemoryAllocator {
         info.requiredFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
         info.preferredFlags = 0;
         break;
-      case BufferUsage::kCpuOnly:
+      case BufferUsage::kCpuWritesGpuReads:
         info.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
                              VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-        info.preferredFlags = VK_MEMORY_PROPERTY_HOST_CACHED_BIT;
-        break;
-      case BufferUsage::kCpuWritesGpuReads:
-        info.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
-        if (base::FeatureList::IsEnabled(kCpuWritesGpuReadsCached))
-          info.requiredFlags |= VK_MEMORY_PROPERTY_HOST_CACHED_BIT;
-
         info.preferredFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
         break;
-      case BufferUsage::kGpuWritesCpuReads:
+      case BufferUsage::kTransfersFromCpuToGpu:
+        info.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                             VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+        info.preferredFlags = 0;
+        break;
+      case BufferUsage::kTransfersFromGpuToCpu:
         info.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
-        info.preferredFlags = VK_MEMORY_PROPERTY_HOST_COHERENT_BIT |
-                              VK_MEMORY_PROPERTY_HOST_CACHED_BIT;
+        info.preferredFlags = VK_MEMORY_PROPERTY_HOST_CACHED_BIT;
         break;
     }
 
@@ -117,15 +113,6 @@ class GrVkMemoryAllocatorImpl : public GrVkMemoryAllocator {
     VmaAllocation allocation;
     VkResult result = vma::AllocateMemoryForBuffer(allocator_, buffer, &info,
                                                    &allocation, nullptr);
-    if (VK_SUCCESS != result) {
-      if (usage == BufferUsage::kCpuWritesGpuReads) {
-        // We try again but this time drop the requirement for cached
-        info.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
-        result = vma::AllocateMemoryForBuffer(allocator_, buffer, &info,
-                                              &allocation, nullptr);
-      }
-    }
-
     if (VK_SUCCESS == result)
       *backend_memory = reinterpret_cast<GrVkBackendMemory>(allocation);
 

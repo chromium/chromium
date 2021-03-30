@@ -136,6 +136,16 @@ void TestRulesetCreator::CreateUnindexedRulesetToDisallowURLsWithPathSuffix(
       CreateUnindexedRulesetWithRules({suffix_rule}, test_unindexed_ruleset));
 }
 
+void TestRulesetCreator::CreateRulesetToDisallowURLWithSubstrings(
+    std::vector<base::StringPiece> substrings,
+    TestRulesetPair* test_ruleset_pair) {
+  DCHECK(test_ruleset_pair);
+  std::vector<proto::UrlRule> url_rules;
+  for (const auto& substring : substrings)
+    url_rules.push_back(CreateSubstringRule(substring));
+  CreateRulesetWithRules(url_rules, test_ruleset_pair);
+}
+
 void TestRulesetCreator::CreateRulesetToDisallowURLsWithManySuffixes(
     base::StringPiece suffix,
     int num_of_suffixes,

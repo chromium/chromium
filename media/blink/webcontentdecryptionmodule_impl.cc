@@ -28,6 +28,7 @@ namespace media {
 
 namespace {
 
+const char kCreateSessionSessionTypeUMAName[] = "CreateSession.SessionType";
 const char kSetServerCertificateUMAName[] = "SetServerCertificate";
 const char kGetStatusForPolicyUMAName[] = "GetStatusForPolicy";
 
@@ -70,7 +71,7 @@ bool ConvertHdcpVersion(const blink::WebString& hdcp_version_string,
 
 void WebContentDecryptionModuleImpl::Create(
     media::CdmFactory* cdm_factory,
-    const base::string16& key_system,
+    const std::u16string& key_system,
     const blink::WebSecurityOrigin& security_origin,
     const CdmConfig& cdm_config,
     WebCdmCreatedCB web_cdm_created_cb) {
@@ -121,6 +122,9 @@ WebContentDecryptionModuleImpl::~WebContentDecryptionModuleImpl() = default;
 std::unique_ptr<blink::WebContentDecryptionModuleSession>
 WebContentDecryptionModuleImpl::CreateSession(
     blink::WebEncryptedMediaSessionType session_type) {
+  base::UmaHistogramEnumeration(
+      adapter_->GetKeySystemUMAPrefix() + kCreateSessionSessionTypeUMAName,
+      session_type);
   return adapter_->CreateSession(session_type);
 }
 

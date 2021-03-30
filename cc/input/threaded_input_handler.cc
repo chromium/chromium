@@ -366,6 +366,15 @@ InputHandlerScrollResult ThreadedInputHandler::ScrollUpdate(
 
   last_scroll_update_state_ = *scroll_state;
 
+  // Snap on update if interacting with the scrollbar track or arrow buttons.
+  // Interactions with the scrollbar thumb have kScrollByPrecisePixel
+  // granularity.
+  if (scroll_state->is_scrollbar_interaction() &&
+      scroll_state->delta_granularity() !=
+          ui::ScrollGranularity::kScrollByPrecisePixel) {
+    AdjustScrollDeltaForScrollbarSnap(scroll_state);
+  }
+
   gfx::Vector2dF resolvedScrollDelta = ResolveScrollGranularityToPixels(
       *CurrentlyScrollingNode(),
       gfx::Vector2dF(scroll_state->delta_x(), scroll_state->delta_y()),
@@ -464,6 +473,36 @@ InputHandlerScrollResult ThreadedInputHandler::ScrollUpdate(
       GetScrollTree());
 
   return scroll_result;
+}
+
+void ThreadedInputHandler::AdjustScrollDeltaForScrollbarSnap(
+    ScrollState* scroll_state) {
+  ScrollNode* scroll_node = CurrentlyScrollingNode();
+  if (!scroll_node || !scroll_node->snap_container_data)
+    return;
+
+  // Ideally, scrollbar track and arrow interactions would have
+  // kScrollByPage and kScrollByLine, respectively. Currently, both have
+  // kScrollByPixel granularity.
+  // TODO(crbug.com/959441): Update snap strategy once the granularity is
+  // properly set. Currently, track and arrow scrolls both use a direction
+  // strategy; however, the track should be using an "end and direction"
+  // strategy.
+  gfx::ScrollOffset current_position = GetVisualScrollOffset(*scroll_node);
+  const SnapContainerData& data = scroll_node->snap_container_data.value();
+  std::unique_ptr<SnapSelectionStrategy> strategy =
+      SnapSelectionStrategy::CreateForDirection(
+          gfx::ScrollOffset(current_position.x(), current_position.y()),
+          gfx::ScrollOffset(scroll_state->delta_x(), scroll_state->delta_y()),
+          true);
+
+  gfx::ScrollOffset snap_position;
+  TargetSnapAreaElementIds snap_target_ids;
+  if (!data.FindSnapPosition(*strategy, &snap_position, &snap_target_ids))
+    return;
+
+  scroll_state->data()->delta_x = snap_position.x() - current_position.x();
+  scroll_state->data()->delta_y = snap_position.y() - current_position.y();
 }
 
 void ThreadedInputHandler::ScrollEnd(bool should_snap) {
@@ -1842,6 +1881,7 @@ ScrollNode* ThreadedInputHandler::FindNodeToLatch(ScrollState* scroll_state,
                                                   ui::ScrollInputType type) {
   ScrollTree& scroll_tree = GetScrollTree();
   ScrollNode* scroll_node = nullptr;
+  ScrollNode* first_scrollable_node = nullptr;
   for (ScrollNode* cur_node = starting_node; cur_node;
        cur_node = scroll_tree.parent(cur_node)) {
     if (GetViewport().ShouldScroll(*cur_node)) {
@@ -1855,10 +1895,11 @@ ScrollNode* ThreadedInputHandler::FindNodeToLatch(ScrollState* scroll_state,
     if (!cur_node->scrollable)
       continue;
 
-    // For UX reasons, autoscrolling should always latch to the top-most
-    // scroller, even if it can't scroll in the initial direction.
-    if (type == ui::ScrollInputType::kAutoscroll ||
-        CanConsumeDelta(*scroll_state, *cur_node)) {
+    if (!first_scrollable_node) {
+      first_scrollable_node = cur_node;
+    }
+
+    if (CanConsumeDelta(*scroll_state, *cur_node)) {
       scroll_node = cur_node;
       break;
     }
@@ -1878,6 +1919,14 @@ ScrollNode* ThreadedInputHandler::FindNodeToLatch(ScrollState* scroll_state,
       scroll_state->set_is_scroll_chain_cut(true);
       break;
     }
+  }
+
+  // If the root scroller can not consume delta in an autoscroll, latch on
+  // to the top most autoscrollable scroller. See https://crbug.com/969150
+  if ((type == ui::ScrollInputType::kAutoscroll) && first_scrollable_node) {
+    // If scroll_node is nullptr or delta can not be consumed
+    if (!(scroll_node && CanConsumeDelta(*scroll_state, *scroll_node)))
+      scroll_node = first_scrollable_node;
   }
 
   return scroll_node;
@@ -1957,18 +2006,7 @@ bool ThreadedInputHandler::ShouldAnimateScroll(
   bool has_precise_scroll_deltas = scroll_state.delta_granularity() ==
                                    ui::ScrollGranularity::kScrollByPrecisePixel;
 
-#if defined(OS_MAC)
-  if (has_precise_scroll_deltas)
-    return false;
-
-  // Mac does not smooth scroll wheel events (crbug.com/574283). We allow tests
-  // to force it on.
-  return latched_scroll_type_ == ui::ScrollInputType::kScrollbar
-             ? true
-             : force_smooth_wheel_scrolling_for_testing_;
-#else
   return !has_precise_scroll_deltas;
-#endif
 }
 
 bool ThreadedInputHandler::SnapAtScrollEnd() {

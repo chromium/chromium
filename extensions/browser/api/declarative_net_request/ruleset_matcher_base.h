@@ -18,6 +18,7 @@
 class GURL;
 
 namespace content {
+class NavigationHandle;
 class RenderFrameHost;
 }  // namespace content
 
@@ -61,7 +62,7 @@ class RulesetMatcherBase {
 
   void OnRenderFrameCreated(content::RenderFrameHost* host);
   void OnRenderFrameDeleted(content::RenderFrameHost* host);
-  void OnDidFinishNavigation(content::RenderFrameHost* host);
+  void OnDidFinishNavigation(content::NavigationHandle* navigation_handle);
 
   // Returns the tracked highest priority matching allowsAllRequests action, if
   // any, for |host|.

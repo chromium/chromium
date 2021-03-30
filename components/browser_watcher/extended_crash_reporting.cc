@@ -115,10 +115,10 @@ ExtendedCrashReporting* ExtendedCrashReporting::GetInstance() {
 }
 
 void ExtendedCrashReporting::SetProductStrings(
-    const base::string16& product_name,
-    const base::string16& product_version,
-    const base::string16& channel_name,
-    const base::string16& special_build) {
+    const std::u16string& product_name,
+    const std::u16string& product_version,
+    const std::u16string& channel_name,
+    const std::u16string& special_build) {
   base::debug::ActivityUserData& proc_data = tracker_->process_data();
   proc_data.SetString(kActivityProduct, product_name);
   proc_data.SetString(kActivityVersion, product_version);

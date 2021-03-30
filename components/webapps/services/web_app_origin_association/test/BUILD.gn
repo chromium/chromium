@@ -1,0 +1,19 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("test_support") {
+  sources = [
+    "test_web_app_origin_association_fetcher.cc",
+    "test_web_app_origin_association_fetcher.h",
+  ]
+
+  deps = [
+    "//components/services/app_service/public/cpp:app_url_handling",
+    "//services/network/public/cpp",
+    "//url",
+  ]
+
+  public_deps =
+      [ "//components/webapps/services/web_app_origin_association:lib" ]
+}

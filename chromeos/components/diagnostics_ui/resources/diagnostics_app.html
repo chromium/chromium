@@ -1,4 +1,27 @@
 <style include="cr-shared-style diagnostics-shared diagnostics-fonts">
+  #banner {
+    align-items: center;
+    background-color: var(--google-blue-50);
+    display: flex;
+    height: 56px;
+    position: sticky;
+    top: 0;
+    width: 100vw;
+    z-index: 1;
+  }
+
+  #bannerIcon {
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+    fill: var(--google-blue-600);
+    padding-inline-end: 16px;
+    padding-inline-start: 40px;
+  }
+
+  #bannerMsg {
+    @apply --diagnostics-caution-banner-font;
+  }
+
   .card-width {
     width: 100%;
   }
@@ -20,10 +43,22 @@
     position: relative;
   }
 
+  #download-icon {
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+    color: var(--google-blue-600);
+    right: 4px;
+  }
+
+  .elevation-2 {
+    box-shadow: var(--diagnostics-box-shadow-elevation-2);
+  }
+
   #header {
     @apply --diagnostics-header-font;
     align-self: flex-start;
     margin-bottom: 10px;
+    margin-left: 22px;
   }
 
   .overview-container {
@@ -34,17 +69,18 @@
     justify-content: center;
     margin: 20px 0;
   }
-  .session-log-button {
-    background-color: rgba(var(--google-blue-600), .06);
-    border-radius: 20px;
-    width: 144px;
-    height: 40px;
-    font-size: 14px;
-    padding: 5px;
+
+  #toast {
+    bottom: 0;
+    left: 0;
   }
 </style>
-<div id="diagnosticsContainer">
+<div id="diagnosticsContainer" hidden="[[!systemInfoReceived_]]">
   <div id="header">[[i18n('diagnosticsTitle')]]</div>
+  <div id="banner" hidden="[[!bannerMessage]]" class$="[[scrollingClass_]]">
+    <iron-icon icon="diagnostics:info" id="bannerIcon"></iron-icon>
+    <span id="bannerMsg">[[bannerMessage]]</span>
+  </div>
   <div class="overview-container">
     <overview-card id="overviewCard"></overview-card>
   </div>
@@ -66,10 +102,20 @@
         is-test-running="{{isTestRunning}}">
       </memory-card>
     </div>
+    <div class="card-width" hidden="[[!isNetworkingEnabled_()]]">
+      <connectivity-card id="connectivityCard"
+        is-test-running="{{isTestRunning}}">
+      </connectivity-card>
+    </div>
   </div>
   <div class="session-log-container">
-    <cr-button class="session-log-button">
-      [[i18n('sessionLog')]]
+    <cr-button on-click="onSessionLogClick_" class="session-log-button"
+        hidden="[[!isLoggedIn_]]">
+      <iron-icon icon="diagnostics:download" id="download-icon"></iron-icon>
+      <span>[[i18n('sessionLog')]]</span>
     </cr-button>
   </div>
+  <cr-toast id="toast" duration="2500">
+    <span>[[toastText_]]</span>
+  </cr-toast>
 </div>

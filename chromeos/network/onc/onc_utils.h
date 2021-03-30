@@ -86,6 +86,17 @@ void FillInHexSSIDFieldsInOncObject(const OncValueSignature& signature,
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 void FillInHexSSIDField(base::Value* wifi_fields);
 
+// Sets missing HiddenSSID fields to default value that is specified in the ONC
+// specification. The object of |onc_object| is modified in place.
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+void SetHiddenSSIDFieldInOncObject(const OncValueSignature& signature,
+                                   base::Value* onc_object);
+
+// If the HiddenSSID field is not set, sets it to default value(false). If the
+// HiddenSSID field is set already, does nothing.
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+void SetHiddenSSIDField(base::Value* wifi_fields);
+
 // Creates a copy of |onc_object| with all values of sensitive fields replaced
 // by |mask|. To find sensitive fields, signature and field name are checked
 // with the function FieldIsCredential().

@@ -12,9 +12,12 @@
 #include <vector>
 
 #include "ash/public/cpp/shelf_types.h"
-#include "chrome/browser/chromeos/arc/session/arc_session_manager_observer.h"
+#include "base/scoped_observer.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "components/arc/arc_util.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
 
 namespace arc {
 class ArcAppShelfId;
@@ -44,7 +47,8 @@ class Profile;
 // AppServiceAppWindowArcTracker observes the ArcAppListPrefs to handle ARC app
 // window special cases, e.g. task id, closing ARC app windows, etc.
 class AppServiceAppWindowArcTracker : public ArcAppListPrefs::Observer,
-                                      public arc::ArcSessionManagerObserver {
+                                      public arc::ArcSessionManagerObserver,
+                                      public aura::WindowObserver {
  public:
   explicit AppServiceAppWindowArcTracker(
       AppServiceAppWindowLauncherController* app_service_controller);
@@ -57,25 +61,31 @@ class AppServiceAppWindowArcTracker : public ArcAppListPrefs::Observer,
   void ActiveUserChanged(const std::string& user_email);
 
   // Invoked by controller to notify |window| visibility is changed.
-  void OnWindowVisibilityChanged(aura::Window* window);
+  void HandleWindowVisibilityChanged(aura::Window* window);
 
   // Invoked by controller to notify |window| is destroying.
-  void OnWindowDestroying(aura::Window* window);
+  void HandleWindowDestroying(aura::Window* window);
 
   // ArcAppListPrefs::Observer:
   void OnAppStatesChanged(const std::string& app_id,
                           const ArcAppListPrefs::AppInfo& app_info) override;
   void OnAppRemoved(const std::string& app_id) override;
-  void OnTaskCreated(int task_id,
+  void OnTaskCreated(int32_t task_id,
                      const std::string& package_name,
                      const std::string& activity,
-                     const std::string& intent) override;
+                     const std::string& intent,
+                     int32_t session_id) override;
   void OnTaskDescriptionChanged(
       int32_t task_id,
       const std::string& label,
       const arc::mojom::RawIconPngData& icon) override;
-  void OnTaskDestroyed(int task_id) override;
+  void OnTaskDestroyed(int32_t task_id) override;
   void OnTaskSetActive(int32_t task_id) override;
+
+  // aura::WindowObserver:
+  void OnWindowPropertyChanged(aura::Window* window,
+                               const void* key,
+                               intptr_t old) override;
 
   // Attaches controller and sets window's property when |window| is an ARC
   // window and has the related task id.
@@ -155,6 +165,8 @@ class AppServiceAppWindowArcTracker : public ArcAppListPrefs::Observer,
   // starts for the first time. OptIn management check is preceding step before
   // ARC container is actually started.
   base::Time opt_in_management_check_start_time_;
+
+  ScopedObserver<aura::Window, aura::WindowObserver> observed_windows_{this};
 
   base::WeakPtrFactory<AppServiceAppWindowArcTracker> weak_ptr_factory_{this};
 };

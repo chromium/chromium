@@ -19,6 +19,7 @@
 #include "ash/app_list/views/search_result_page_view.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
+#include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "ash/search_box/search_box_constants.h"
 #include "ash/search_box/search_box_view_delegate.h"
 #include "base/macros.h"
@@ -121,15 +122,15 @@ class SearchBoxViewTest : public views::test::WidgetTest,
     view()->search_box()->OnKeyEvent(&event);
     // Emulates the input method.
     if (::isalnum(static_cast<int>(key_code))) {
-      base::char16 character = ::tolower(static_cast<int>(key_code));
+      char16_t character = ::tolower(static_cast<int>(key_code));
       view()->search_box()->InsertText(
-          base::string16(1, character),
+          std::u16string(1, character),
           ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
     }
   }
 
   std::string GetLastQueryAndReset() {
-    base::string16 query = last_query_;
+    std::u16string query = last_query_;
     last_query_.clear();
     return base::UTF16ToUTF8(query);
   }
@@ -143,8 +144,8 @@ class SearchBoxViewTest : public views::test::WidgetTest,
   // Creates a SearchResult with the given parameters.
   void CreateSearchResult(ash::SearchResultDisplayType display_type,
                           double display_score,
-                          const base::string16& title,
-                          const base::string16& details) {
+                          const std::u16string& title,
+                          const std::u16string& details) {
     CreateSearchResultAt(results()->item_count(), display_type, display_score,
                          title, details);
   }
@@ -154,8 +155,8 @@ class SearchBoxViewTest : public views::test::WidgetTest,
   void CreateSearchResultAt(size_t index,
                             ash::SearchResultDisplayType display_type,
                             double display_score,
-                            const base::string16& title,
-                            const base::string16& details) {
+                            const std::u16string& title,
+                            const std::u16string& details) {
     auto search_result = std::make_unique<TestSearchResult>();
     search_result->set_result_id(base::NumberToString(++last_result_id_));
     search_result->set_display_type(display_type);
@@ -181,12 +182,13 @@ class SearchBoxViewTest : public views::test::WidgetTest,
   void ActiveChanged(SearchBoxViewBase* sender) override {}
   void SearchBoxFocusChanged(SearchBoxViewBase* sender) override {}
 
+  TestAppListColorProvider color_provider_;  // Needed by AppListView.
   AppListTestViewDelegate view_delegate_;
   views::Widget* widget_;
   AppListView* app_list_view_ = nullptr;
   std::unique_ptr<SearchBoxView> view_;
   KeyPressCounterView* counter_view_;
-  base::string16 last_query_;
+  std::u16string last_query_;
   int query_changed_count_ = 0;
   int last_result_id_ = 0;
 
@@ -310,11 +312,11 @@ TEST_F(SearchBoxViewTest, SearchBoxActiveSearchEngineNotGoogle) {
 // updated.
 TEST_F(SearchBoxViewTest, ChangeSelectionWhileResultsAreChanging) {
   SetSearchBoxActive(true, ui::ET_UNKNOWN);
-  view()->search_box()->SetText(base::ASCIIToUTF16("test"));
-  CreateSearchResult(ash::SearchResultDisplayType::kList, 0.7,
-                     base::ASCIIToUTF16("tester"), base::string16());
-  CreateSearchResult(ash::SearchResultDisplayType::kList, 0.5,
-                     base::ASCIIToUTF16("testing"), base::string16());
+  view()->search_box()->SetText(u"test");
+  CreateSearchResult(ash::SearchResultDisplayType::kList, 0.7, u"tester",
+                     std::u16string());
+  CreateSearchResult(ash::SearchResultDisplayType::kList, 0.5, u"testing",
+                     std::u16string());
   base::RunLoop().RunUntilIdle();
 
   SearchResultPageView* const result_page_view =
@@ -325,22 +327,22 @@ TEST_F(SearchBoxViewTest, ChangeSelectionWhileResultsAreChanging) {
 
   EXPECT_EQ(result_page_view->first_result_view(), selection);
   ASSERT_TRUE(selection->result());
-  EXPECT_EQ(base::ASCIIToUTF16("tester"), selection->result()->title());
+  EXPECT_EQ(u"tester", selection->result()->title());
 
   // Add a new result - the selection controller is updated asynchronously, so
   // the result is expected to remain the same until the loop is run.
-  CreateSearchResultAt(0, ash::SearchResultDisplayType::kList, 1.,
-                       base::ASCIIToUTF16("test"), base::string16());
+  CreateSearchResultAt(0, ash::SearchResultDisplayType::kList, 1., u"test",
+                       std::u16string());
   EXPECT_EQ(selection,
             result_page_view->result_selection_controller()->selected_result());
-  EXPECT_EQ(base::ASCIIToUTF16("tester"), selection->result()->title());
+  EXPECT_EQ(u"tester", selection->result()->title());
 
   // Try navigating the results - this should fail while result update is in
   // progress.
   KeyPress(ui::VKEY_DOWN);
   EXPECT_EQ(selection,
             result_page_view->result_selection_controller()->selected_result());
-  EXPECT_EQ(base::ASCIIToUTF16("tester"), selection->result()->title());
+  EXPECT_EQ(u"tester", selection->result()->title());
 
   // Finish results update - this should reset the selection.
   base::RunLoop().RunUntilIdle();
@@ -348,7 +350,7 @@ TEST_F(SearchBoxViewTest, ChangeSelectionWhileResultsAreChanging) {
   selection =
       result_page_view->result_selection_controller()->selected_result();
   ASSERT_TRUE(selection->result());
-  EXPECT_EQ(base::ASCIIToUTF16("test"), selection->result()->title());
+  EXPECT_EQ(u"test", selection->result()->title());
 
   // Moving down again should change the selected result.
   KeyPress(ui::VKEY_DOWN);
@@ -356,18 +358,18 @@ TEST_F(SearchBoxViewTest, ChangeSelectionWhileResultsAreChanging) {
   selection =
       result_page_view->result_selection_controller()->selected_result();
   ASSERT_TRUE(selection->result());
-  EXPECT_EQ(base::ASCIIToUTF16("tester"), selection->result()->title());
+  EXPECT_EQ(u"tester", selection->result()->title());
 }
 
 // Tests that traversing search results is disabled while the result that would
 // be selected next is being removed from results.
 TEST_F(SearchBoxViewTest, ChangeSelectionWhileResultsAreBeingRemoved) {
   SetSearchBoxActive(true, ui::ET_UNKNOWN);
-  view()->search_box()->SetText(base::ASCIIToUTF16("test"));
-  CreateSearchResult(ash::SearchResultDisplayType::kList, 0.7,
-                     base::ASCIIToUTF16("tester"), base::string16());
-  CreateSearchResult(ash::SearchResultDisplayType::kList, 0.5,
-                     base::ASCIIToUTF16("testing"), base::string16());
+  view()->search_box()->SetText(u"test");
+  CreateSearchResult(ash::SearchResultDisplayType::kList, 0.7, u"tester",
+                     std::u16string());
+  CreateSearchResult(ash::SearchResultDisplayType::kList, 0.5, u"testing",
+                     std::u16string());
   base::RunLoop().RunUntilIdle();
 
   SearchResultPageView* const result_page_view =
@@ -378,14 +380,14 @@ TEST_F(SearchBoxViewTest, ChangeSelectionWhileResultsAreBeingRemoved) {
 
   EXPECT_EQ(result_page_view->first_result_view(), selection);
   ASSERT_TRUE(selection->result());
-  EXPECT_EQ(base::ASCIIToUTF16("tester"), selection->result()->title());
+  EXPECT_EQ(u"tester", selection->result()->title());
 
   // Remove current results and add a new one - the selection controller is
   // updated asynchronously, so the result is expected to remain the same until
   // the loop is run.
   results()->RemoveAll();
-  CreateSearchResult(ash::SearchResultDisplayType::kList, 1.,
-                     base::ASCIIToUTF16("test"), base::string16());
+  CreateSearchResult(ash::SearchResultDisplayType::kList, 1., u"test",
+                     std::u16string());
   EXPECT_EQ(selection,
             result_page_view->result_selection_controller()->selected_result());
   EXPECT_FALSE(selection->result());
@@ -402,7 +404,7 @@ TEST_F(SearchBoxViewTest, ChangeSelectionWhileResultsAreBeingRemoved) {
   selection =
       result_page_view->result_selection_controller()->selected_result();
   ASSERT_TRUE(selection->result());
-  EXPECT_EQ(base::ASCIIToUTF16("test"), selection->result()->title());
+  EXPECT_EQ(u"test", selection->result()->title());
 
   // Moving down should clear the selection (as focus is moved to close button).
   KeyPress(ui::VKEY_DOWN);
@@ -412,11 +414,11 @@ TEST_F(SearchBoxViewTest, ChangeSelectionWhileResultsAreBeingRemoved) {
 
 TEST_F(SearchBoxViewTest, UserSelectionNotOverridenByNewResults) {
   SetSearchBoxActive(true, ui::ET_UNKNOWN);
-  view()->search_box()->SetText(base::ASCIIToUTF16("test"));
-  CreateSearchResult(ash::SearchResultDisplayType::kList, 0.7,
-                     base::ASCIIToUTF16("tester"), base::string16());
-  CreateSearchResult(ash::SearchResultDisplayType::kList, 0.5,
-                     base::ASCIIToUTF16("testing"), base::string16());
+  view()->search_box()->SetText(u"test");
+  CreateSearchResult(ash::SearchResultDisplayType::kList, 0.7, u"tester",
+                     std::u16string());
+  CreateSearchResult(ash::SearchResultDisplayType::kList, 0.5, u"testing",
+                     std::u16string());
   base::RunLoop().RunUntilIdle();
 
   SearchResultPageView* const result_page_view =
@@ -427,40 +429,40 @@ TEST_F(SearchBoxViewTest, UserSelectionNotOverridenByNewResults) {
 
   EXPECT_EQ(result_page_view->first_result_view(), selection);
   ASSERT_TRUE(selection->result());
-  EXPECT_EQ(base::ASCIIToUTF16("tester"), selection->result()->title());
+  EXPECT_EQ(u"tester", selection->result()->title());
 
   // Navigate down to select non-default result.
   KeyPress(ui::VKEY_DOWN);
 
   selection =
       result_page_view->result_selection_controller()->selected_result();
-  EXPECT_EQ(base::ASCIIToUTF16("testing"), selection->result()->title());
+  EXPECT_EQ(u"testing", selection->result()->title());
 
   // Add a new result - verify the selected result remains the same.
-  CreateSearchResultAt(0, ash::SearchResultDisplayType::kList, 0.9,
-                       base::ASCIIToUTF16("test1"), base::string16());
+  CreateSearchResultAt(0, ash::SearchResultDisplayType::kList, 0.9, u"test1",
+                       std::u16string());
   // Finish results update.
   base::RunLoop().RunUntilIdle();
 
   selection =
       result_page_view->result_selection_controller()->selected_result();
-  EXPECT_EQ(base::ASCIIToUTF16("testing"), selection->result()->title());
+  EXPECT_EQ(u"testing", selection->result()->title());
 
   // Add a new result at the end, and verify the selection stays the same.
   CreateSearchResult(ash::SearchResultDisplayType::kList, 0.2,
-                     base::ASCIIToUTF16("testing almost"), base::string16());
+                     u"testing almost", std::u16string());
   base::RunLoop().RunUntilIdle();
 
   selection =
       result_page_view->result_selection_controller()->selected_result();
-  EXPECT_EQ(base::ASCIIToUTF16("testing"), selection->result()->title());
+  EXPECT_EQ(u"testing", selection->result()->title());
 
   // Go up.
   KeyPress(ui::VKEY_UP);
 
   selection =
       result_page_view->result_selection_controller()->selected_result();
-  EXPECT_EQ(base::ASCIIToUTF16("tester"), selection->result()->title());
+  EXPECT_EQ(u"tester", selection->result()->title());
 
   // Remove the last result, and verify the selection remains the same.
   results()->RemoveAt(3);
@@ -468,7 +470,7 @@ TEST_F(SearchBoxViewTest, UserSelectionNotOverridenByNewResults) {
 
   selection =
       result_page_view->result_selection_controller()->selected_result();
-  EXPECT_EQ(base::ASCIIToUTF16("tester"), selection->result()->title());
+  EXPECT_EQ(u"tester", selection->result()->title());
 
   // Result should be reset if the selected result is removed.
   results()->RemoveAt(1);
@@ -476,26 +478,26 @@ TEST_F(SearchBoxViewTest, UserSelectionNotOverridenByNewResults) {
 
   selection =
       result_page_view->result_selection_controller()->selected_result();
-  EXPECT_EQ(base::ASCIIToUTF16("test1"), selection->result()->title());
+  EXPECT_EQ(u"test1", selection->result()->title());
 
   // New result can override the default selection.
-  CreateSearchResultAt(0, ash::SearchResultDisplayType::kList, 1.0,
-                       base::ASCIIToUTF16("test"), base::string16());
+  CreateSearchResultAt(0, ash::SearchResultDisplayType::kList, 1.0, u"test",
+                       std::u16string());
   base::RunLoop().RunUntilIdle();
 
   selection =
       result_page_view->result_selection_controller()->selected_result();
-  EXPECT_EQ(base::ASCIIToUTF16("test"), selection->result()->title());
+  EXPECT_EQ(u"test", selection->result()->title());
 }
 
 TEST_F(SearchBoxViewTest,
        UserSelectionInNonDefaultContainerNotOverridenByNewResults) {
   SetSearchBoxActive(true, ui::ET_UNKNOWN);
-  view()->search_box()->SetText(base::ASCIIToUTF16("test"));
-  CreateSearchResult(ash::SearchResultDisplayType::kList, 0.7,
-                     base::ASCIIToUTF16("tester"), base::string16());
-  CreateSearchResult(ash::SearchResultDisplayType::kList, 0.5,
-                     base::ASCIIToUTF16("testing"), base::string16());
+  view()->search_box()->SetText(u"test");
+  CreateSearchResult(ash::SearchResultDisplayType::kList, 0.7, u"tester",
+                     std::u16string());
+  CreateSearchResult(ash::SearchResultDisplayType::kList, 0.5, u"testing",
+                     std::u16string());
   base::RunLoop().RunUntilIdle();
 
   SearchResultPageView* const result_page_view =
@@ -506,34 +508,34 @@ TEST_F(SearchBoxViewTest,
 
   EXPECT_EQ(result_page_view->first_result_view(), selection);
   ASSERT_TRUE(selection->result());
-  EXPECT_EQ(base::ASCIIToUTF16("tester"), selection->result()->title());
+  EXPECT_EQ(u"tester", selection->result()->title());
 
   // Navigate down to select non-default result.
   KeyPress(ui::VKEY_DOWN);
 
   selection =
       result_page_view->result_selection_controller()->selected_result();
-  EXPECT_EQ(base::ASCIIToUTF16("testing"), selection->result()->title());
+  EXPECT_EQ(u"testing", selection->result()->title());
 
   // Add a new result in a tile container - verify the selected result remains
   // the same.
   CreateSearchResultAt(0, ash::SearchResultDisplayType::kTile, 0.9,
-                       base::ASCIIToUTF16("test tile"), base::string16());
+                       u"test tile", std::u16string());
   // Finish results update.
   base::RunLoop().RunUntilIdle();
 
   selection =
       result_page_view->result_selection_controller()->selected_result();
-  EXPECT_EQ(base::ASCIIToUTF16("testing"), selection->result()->title());
+  EXPECT_EQ(u"testing", selection->result()->title());
 
   // Add a new result at the end, and verify the selection stays the same.
   CreateSearchResult(ash::SearchResultDisplayType::kList, 0.2,
-                     base::ASCIIToUTF16("testing almost"), base::string16());
+                     u"testing almost", std::u16string());
   base::RunLoop().RunUntilIdle();
 
   selection =
       result_page_view->result_selection_controller()->selected_result();
-  EXPECT_EQ(base::ASCIIToUTF16("testing"), selection->result()->title());
+  EXPECT_EQ(u"testing", selection->result()->title());
 
   // Remove the result before the selected one, and verify the selection remains
   // the same.
@@ -542,7 +544,7 @@ TEST_F(SearchBoxViewTest,
 
   selection =
       result_page_view->result_selection_controller()->selected_result();
-  EXPECT_EQ(base::ASCIIToUTF16("testing"), selection->result()->title());
+  EXPECT_EQ(u"testing", selection->result()->title());
 
   // Result should be reset if the selected result is removed.
   results()->RemoveAt(1);
@@ -550,26 +552,26 @@ TEST_F(SearchBoxViewTest,
 
   selection =
       result_page_view->result_selection_controller()->selected_result();
-  EXPECT_EQ(base::ASCIIToUTF16("test tile"), selection->result()->title());
+  EXPECT_EQ(u"test tile", selection->result()->title());
 
   // New result can override the default selection.
-  CreateSearchResultAt(0, ash::SearchResultDisplayType::kTile, 1.0,
-                       base::ASCIIToUTF16("test"), base::string16());
+  CreateSearchResultAt(0, ash::SearchResultDisplayType::kTile, 1.0, u"test",
+                       std::u16string());
   base::RunLoop().RunUntilIdle();
 
   selection =
       result_page_view->result_selection_controller()->selected_result();
-  EXPECT_EQ(base::ASCIIToUTF16("test"), selection->result()->title());
+  EXPECT_EQ(u"test", selection->result()->title());
 }
 
 // Tests that the default selection is reset after resetting and reactivating
 // the search box.
 TEST_F(SearchBoxViewTest, ResetSelectionAfterResettingSearchBox) {
   SetSearchBoxActive(true, ui::ET_UNKNOWN);
-  CreateSearchResult(ash::SearchResultDisplayType::kList, 0.7,
-                     base::ASCIIToUTF16("test1"), base::string16());
-  CreateSearchResult(ash::SearchResultDisplayType::kList, 0.5,
-                     base::ASCIIToUTF16("test2"), base::string16());
+  CreateSearchResult(ash::SearchResultDisplayType::kList, 0.7, u"test1",
+                     std::u16string());
+  CreateSearchResult(ash::SearchResultDisplayType::kList, 0.5, u"test2",
+                     std::u16string());
   base::RunLoop().RunUntilIdle();
 
   SearchResultPageView* const result_page_view =
@@ -580,7 +582,7 @@ TEST_F(SearchBoxViewTest, ResetSelectionAfterResettingSearchBox) {
       result_page_view->result_selection_controller()->selected_result();
   EXPECT_EQ(result_page_view->first_result_view(), selection);
   ASSERT_TRUE(selection->result());
-  EXPECT_EQ(base::ASCIIToUTF16("test1"), selection->result()->title());
+  EXPECT_EQ(u"test1", selection->result()->title());
   EXPECT_TRUE(selection->is_default_result());
 
   // Navigate down then up. The first result should no longer be default.
@@ -590,7 +592,7 @@ TEST_F(SearchBoxViewTest, ResetSelectionAfterResettingSearchBox) {
   selection =
       result_page_view->result_selection_controller()->selected_result();
   ASSERT_TRUE(selection->result());
-  EXPECT_EQ(base::ASCIIToUTF16("test1"), selection->result()->title());
+  EXPECT_EQ(u"test1", selection->result()->title());
   EXPECT_FALSE(selection->is_default_result());
 
   // Navigate down to the second result.
@@ -599,7 +601,7 @@ TEST_F(SearchBoxViewTest, ResetSelectionAfterResettingSearchBox) {
   selection =
       result_page_view->result_selection_controller()->selected_result();
   ASSERT_TRUE(selection->result());
-  EXPECT_EQ(base::ASCIIToUTF16("test2"), selection->result()->title());
+  EXPECT_EQ(u"test2", selection->result()->title());
 
   // Reset the search box.
   view()->ClearSearchAndDeactivateSearchBox();
@@ -611,7 +613,7 @@ TEST_F(SearchBoxViewTest, ResetSelectionAfterResettingSearchBox) {
       result_page_view->result_selection_controller()->selected_result();
   EXPECT_EQ(result_page_view->first_result_view(), selection);
   ASSERT_TRUE(selection->result());
-  EXPECT_EQ(base::ASCIIToUTF16("test1"), selection->result()->title());
+  EXPECT_EQ(u"test1", selection->result()->title());
   EXPECT_TRUE(selection->is_default_result());
 }
 
@@ -641,13 +643,14 @@ TEST_F(SearchBoxViewTest, NavigateSuggestedContentInfo) {
   view()->set_contents_view(contents_view);
 
   PrivacyContainerView* const privacy_container_view =
-      contents_view->privacy_container_view();
+      contents_view->search_results_page_view()
+          ->GetPrivacyContainerViewForTest();
   ASSERT_TRUE(privacy_container_view);
 
   // Set up the search box.
   SetSearchBoxActive(true, ui::ET_UNKNOWN);
-  CreateSearchResult(ash::SearchResultDisplayType::kList, 1.0,
-                     base::ASCIIToUTF16("test"), base::string16());
+  CreateSearchResult(ash::SearchResultDisplayType::kList, 1.0, u"test",
+                     std::u16string());
   base::RunLoop().RunUntilIdle();
 
   SearchResultPageView* const result_page_view =
@@ -670,7 +673,7 @@ TEST_F(SearchBoxViewTest, NavigateSuggestedContentInfo) {
   KeyPress(ui::VKEY_TAB);
   selection = selection_controller->selected_result();
   ASSERT_TRUE(selection->result());
-  EXPECT_EQ(selection->result()->title(), base::ASCIIToUTF16("test"));
+  EXPECT_EQ(selection->result()->title(), u"test");
 
   // The privacy notice should also have two actions when navigating backwards.
   KeyPress(ui::VKEY_TAB, /*is_shift_down=*/true);
@@ -695,13 +698,14 @@ TEST_F(SearchBoxViewTest, KeyboardEventClosesSuggestedContentInfo) {
   view()->set_contents_view(contents_view);
 
   PrivacyContainerView* const privacy_container_view =
-      contents_view->privacy_container_view();
+      contents_view->search_results_page_view()
+          ->GetPrivacyContainerViewForTest();
   ASSERT_TRUE(privacy_container_view);
 
   // Set up the search box.
   SetSearchBoxActive(true, ui::ET_UNKNOWN);
-  CreateSearchResult(ash::SearchResultDisplayType::kList, 1.0,
-                     base::ASCIIToUTF16("test"), base::string16());
+  CreateSearchResult(ash::SearchResultDisplayType::kList, 1.0, u"test",
+                     std::u16string());
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(contents_view->search_results_page_view()
@@ -725,13 +729,14 @@ TEST_F(SearchBoxViewTest, SuggestedContentActionNotOverriddenByNewResults) {
   view()->set_contents_view(contents_view);
 
   PrivacyContainerView* const privacy_container_view =
-      contents_view->privacy_container_view();
+      contents_view->search_results_page_view()
+          ->GetPrivacyContainerViewForTest();
   ASSERT_TRUE(privacy_container_view);
 
   // Set up the search box.
   SetSearchBoxActive(true, ui::ET_UNKNOWN);
-  CreateSearchResult(ash::SearchResultDisplayType::kList, 1.0,
-                     base::ASCIIToUTF16("test"), base::string16());
+  CreateSearchResult(ash::SearchResultDisplayType::kList, 1.0, u"test",
+                     std::u16string());
   base::RunLoop().RunUntilIdle();
 
   ResultSelectionController* const selection_controller =
@@ -748,14 +753,14 @@ TEST_F(SearchBoxViewTest, SuggestedContentActionNotOverriddenByNewResults) {
 
   // Create a new search result. The privacy view should have no actions
   // remaining.
-  CreateSearchResult(ash::SearchResultDisplayType::kList, 0.5,
-                     base::ASCIIToUTF16("testing"), base::string16());
+  CreateSearchResult(ash::SearchResultDisplayType::kList, 0.5, u"testing",
+                     std::u16string());
   base::RunLoop().RunUntilIdle();
 
   KeyPress(ui::VKEY_TAB);
   selection = selection_controller->selected_result();
   ASSERT_TRUE(selection);
-  EXPECT_EQ(selection->result()->title(), base::ASCIIToUTF16("test"));
+  EXPECT_EQ(selection->result()->title(), u"test");
 }
 
 TEST_F(SearchBoxViewTest, SuggestedContentSelectionDoesNotChangeSearchBoxText) {
@@ -767,13 +772,14 @@ TEST_F(SearchBoxViewTest, SuggestedContentSelectionDoesNotChangeSearchBoxText) {
   view()->set_contents_view(contents_view);
 
   PrivacyContainerView* const privacy_container_view =
-      contents_view->privacy_container_view();
+      contents_view->search_results_page_view()
+          ->GetPrivacyContainerViewForTest();
   ASSERT_TRUE(privacy_container_view);
 
   // Set up the search box.
   SetSearchBoxActive(true, ui::ET_UNKNOWN);
-  CreateSearchResult(ash::SearchResultDisplayType::kList, 1.0,
-                     base::ASCIIToUTF16("test"), base::string16());
+  CreateSearchResult(ash::SearchResultDisplayType::kList, 1.0, u"test",
+                     std::u16string());
   base::RunLoop().RunUntilIdle();
 
   ResultSelectionController* const selection_controller =
@@ -788,13 +794,13 @@ TEST_F(SearchBoxViewTest, SuggestedContentSelectionDoesNotChangeSearchBoxText) {
   const SearchResultBaseView* selection =
       selection_controller->selected_result();
   ASSERT_TRUE(selection->result());
-  EXPECT_EQ(selection->result()->title(), base::ASCIIToUTF16("test"));
-  EXPECT_EQ(base::ASCIIToUTF16("test"), view()->search_box()->GetText());
+  EXPECT_EQ(selection->result()->title(), u"test");
+  EXPECT_EQ(u"test", view()->search_box()->GetText());
 
   KeyPress(ui::VKEY_UP);
   EXPECT_EQ(selection_controller->selected_result(),
             privacy_container_view->GetResultViewAt(0));
-  EXPECT_EQ(base::ASCIIToUTF16("test"), view()->search_box()->GetText());
+  EXPECT_EQ(u"test", view()->search_box()->GetText());
 }
 
 class SearchBoxViewAssistantButtonTest : public SearchBoxViewTest {
@@ -830,9 +836,7 @@ TEST_F(SearchBoxViewAssistantButtonTest,
   EXPECT_FALSE(view()->assistant_button()->GetVisible());
 }
 
-class SearchBoxViewAutocompleteTest
-    : public SearchBoxViewTest,
-      public ::testing::WithParamInterface<ui::KeyboardCode> {
+class SearchBoxViewAutocompleteTest : public SearchBoxViewTest {
  public:
   SearchBoxViewAutocompleteTest() = default;
   ~SearchBoxViewAutocompleteTest() override = default;
@@ -850,20 +854,18 @@ class SearchBoxViewAutocompleteTest
     if (should_autocomplete) {
       // Search box autocomplete suggestion is accepted, but it should not
       // trigger another query, thus it is not reflected in Search Model.
-      EXPECT_EQ(base::ASCIIToUTF16("hello world!"),
-                view()->search_box()->GetText());
-      EXPECT_EQ(base::ASCIIToUTF16("he"),
-                view_delegate()->GetSearchModel()->search_box()->text());
+      EXPECT_EQ(u"hello world!", view()->search_box()->GetText());
+      EXPECT_EQ(u"he", view_delegate()->GetSearchModel()->search_box()->text());
     } else {
       // Search box autocomplete suggestion is removed and is reflected in
       // SearchModel.
       EXPECT_EQ(view()->search_box()->GetText(),
                 view_delegate()->GetSearchModel()->search_box()->text());
-      EXPECT_EQ(base::ASCIIToUTF16("he"), view()->search_box()->GetText());
+      EXPECT_EQ(u"he", view()->search_box()->GetText());
       // ProcessAutocomplete should be a no-op.
       view()->ProcessAutocomplete();
       // The autocomplete suggestion should still not be present.
-      EXPECT_EQ(base::ASCIIToUTF16("he"), view()->search_box()->GetText());
+      EXPECT_EQ(u"he", view()->search_box()->GetText());
     }
   }
 
@@ -872,7 +874,7 @@ class SearchBoxViewAutocompleteTest
   void SetupAutocompleteBehaviorTest() {
     // Add a search result with a non-empty title field.
     CreateSearchResult(ash::SearchResultDisplayType::kList, 1.0,
-                       base::ASCIIToUTF16("hello world!"), base::string16());
+                       u"hello world!", std::u16string());
     base::RunLoop().RunUntilIdle();
 
     // Send H, E to the SearchBoxView textfield, then trigger an autocomplete.
@@ -884,7 +886,7 @@ class SearchBoxViewAutocompleteTest
   // Clears all existing text from search_box() and all existing SearchResults
   // from results().
   void ResetAutocompleteBehaviorTest() {
-    view()->search_box()->SetText(base::string16());
+    view()->search_box()->SetText(std::u16string());
     results()->RemoveAll();
   }
 
@@ -949,21 +951,11 @@ class SearchBoxViewAutocompleteTest
     ResetAutocompleteBehaviorTest();
   }
 
-  ui::KeyboardCode key_code() const { return GetParam(); }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(SearchBoxViewAutocompleteTest);
 };
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         SearchBoxViewAutocompleteTest,
-                         ::testing::Values(ui::VKEY_LEFT,
-                                           ui::VKEY_RIGHT,
-                                           ui::VKEY_UP,
-                                           ui::VKEY_DOWN,
-                                           ui::VKEY_BACK));
 
 // Tests that autocomplete suggestions are consistent with top SearchResult list
 // titles.
@@ -971,10 +963,10 @@ TEST_F(SearchBoxViewAutocompleteTest,
        SearchBoxAutocompletesTopListResultTitle) {
   // Add two SearchResults, one tile and one list result. Initialize their title
   // field to a non-empty string.
-  CreateSearchResult(ash::SearchResultDisplayType::kList, 1.0,
-                     base::ASCIIToUTF16("hello list"), base::string16());
-  CreateSearchResult(ash::SearchResultDisplayType::kTile, 0.5,
-                     base::ASCIIToUTF16("hello tile"), base::string16());
+  CreateSearchResult(ash::SearchResultDisplayType::kList, 1.0, u"hello list",
+                     std::u16string());
+  CreateSearchResult(ash::SearchResultDisplayType::kTile, 0.5, u"hello tile",
+                     std::u16string());
   base::RunLoop().RunUntilIdle();
 
   // Send H, E to the SearchBoxView textfield, then trigger an autocomplete.
@@ -982,9 +974,8 @@ TEST_F(SearchBoxViewAutocompleteTest,
   KeyPress(ui::VKEY_E);
   view()->ProcessAutocomplete();
 
-  EXPECT_EQ(view()->search_box()->GetText(), base::ASCIIToUTF16("hello tile"));
-  EXPECT_EQ(view()->search_box()->GetSelectedText(),
-            base::ASCIIToUTF16("llo tile"));
+  EXPECT_EQ(view()->search_box()->GetText(), u"hello tile");
+  EXPECT_EQ(view()->search_box()->GetSelectedText(), u"llo tile");
 }
 
 // Tests that autocomplete suggestions are consistent with top SearchResult tile
@@ -993,19 +984,18 @@ TEST_F(SearchBoxViewAutocompleteTest,
        SearchBoxAutocompletesTopTileResultTitle) {
   // Add two SearchResults, one tile and one list result. Initialize their title
   // field to a non-empty string.
-  CreateSearchResult(ash::SearchResultDisplayType::kTile, 1.0,
-                     base::ASCIIToUTF16("hello tile"), base::string16());
-  CreateSearchResult(ash::SearchResultDisplayType::kList, 0.5,
-                     base::ASCIIToUTF16("hello list"), base::string16());
+  CreateSearchResult(ash::SearchResultDisplayType::kTile, 1.0, u"hello tile",
+                     std::u16string());
+  CreateSearchResult(ash::SearchResultDisplayType::kList, 0.5, u"hello list",
+                     std::u16string());
   base::RunLoop().RunUntilIdle();
 
   // Send H, E to the SearchBoxView textfield, then trigger an autocomplete.
   KeyPress(ui::VKEY_H);
   KeyPress(ui::VKEY_E);
   view()->ProcessAutocomplete();
-  EXPECT_EQ(view()->search_box()->GetText(), base::ASCIIToUTF16("hello tile"));
-  EXPECT_EQ(view()->search_box()->GetSelectedText(),
-            base::ASCIIToUTF16("llo tile"));
+  EXPECT_EQ(view()->search_box()->GetText(), u"hello tile");
+  EXPECT_EQ(view()->search_box()->GetSelectedText(), u"llo tile");
 }
 
 // Tests that autocomplete suggestions are consistent with top SearchResult list
@@ -1015,19 +1005,18 @@ TEST_F(SearchBoxViewAutocompleteTest,
   // Add two SearchResults, one tile and one list result. The tile should
   // display first, despite having a lower score. Initialize their details field
   // to a non-empty string.
-  CreateSearchResult(ash::SearchResultDisplayType::kList, 1.0, base::string16(),
-                     base::ASCIIToUTF16("hello list"));
-  CreateSearchResult(ash::SearchResultDisplayType::kTile, 0.5, base::string16(),
-                     base::ASCIIToUTF16("hello tile"));
+  CreateSearchResult(ash::SearchResultDisplayType::kList, 1.0, std::u16string(),
+                     u"hello list");
+  CreateSearchResult(ash::SearchResultDisplayType::kTile, 0.5, std::u16string(),
+                     u"hello tile");
   base::RunLoop().RunUntilIdle();
 
   // Send H, E to the SearchBoxView textfield, then trigger an autocomplete.
   KeyPress(ui::VKEY_H);
   KeyPress(ui::VKEY_E);
   view()->ProcessAutocomplete();
-  EXPECT_EQ(view()->search_box()->GetText(), base::ASCIIToUTF16("hello tile"));
-  EXPECT_EQ(view()->search_box()->GetSelectedText(),
-            base::ASCIIToUTF16("llo tile"));
+  EXPECT_EQ(view()->search_box()->GetText(), u"hello tile");
+  EXPECT_EQ(view()->search_box()->GetSelectedText(), u"llo tile");
 }
 
 // Tests that autocomplete suggestions are consistent with top SearchResult tile
@@ -1036,19 +1025,18 @@ TEST_F(SearchBoxViewAutocompleteTest,
        SearchBoxAutocompletesTopTileResultDetails) {
   // Add two SearchResults, one tile and one list result. Initialize their
   // details field to a non-empty string.
-  CreateSearchResult(ash::SearchResultDisplayType::kTile, 1.0, base::string16(),
-                     base::ASCIIToUTF16("hello tile"));
-  CreateSearchResult(ash::SearchResultDisplayType::kList, 0.5, base::string16(),
-                     base::ASCIIToUTF16("hello list"));
+  CreateSearchResult(ash::SearchResultDisplayType::kTile, 1.0, std::u16string(),
+                     u"hello tile");
+  CreateSearchResult(ash::SearchResultDisplayType::kList, 0.5, std::u16string(),
+                     u"hello list");
   base::RunLoop().RunUntilIdle();
 
   // Send H, E to the SearchBoxView textfield, then trigger an autocomplete.
   KeyPress(ui::VKEY_H);
   KeyPress(ui::VKEY_E);
   view()->ProcessAutocomplete();
-  EXPECT_EQ(view()->search_box()->GetText(), base::ASCIIToUTF16("hello tile"));
-  EXPECT_EQ(view()->search_box()->GetSelectedText(),
-            base::ASCIIToUTF16("llo tile"));
+  EXPECT_EQ(view()->search_box()->GetText(), u"hello tile");
+  EXPECT_EQ(view()->search_box()->GetSelectedText(), u"llo tile");
 }
 
 // Tests that SearchBoxView's textfield text does not autocomplete if the top
@@ -1056,24 +1044,23 @@ TEST_F(SearchBoxViewAutocompleteTest,
 TEST_F(SearchBoxViewAutocompleteTest,
        SearchBoxDoesNotAutocompleteWrongCharacter) {
   // Add a search result with non-empty details and title fields.
-  CreateSearchResult(ash::SearchResultDisplayType::kList, 1.0,
-                     base::ASCIIToUTF16("title"),
-                     base::ASCIIToUTF16("details"));
+  CreateSearchResult(ash::SearchResultDisplayType::kList, 1.0, u"title",
+                     u"details");
   base::RunLoop().RunUntilIdle();
 
   // Send Z to the SearchBoxView textfield, then trigger an autocomplete.
   KeyPress(ui::VKEY_Z);
   view()->ProcessAutocomplete();
   // The text should not be autocompleted.
-  EXPECT_EQ(view()->search_box()->GetText(), base::ASCIIToUTF16("z"));
+  EXPECT_EQ(view()->search_box()->GetText(), u"z");
 }
 
 // Tests that autocomplete suggestion will remain if next key in the suggestion
 // is typed.
 TEST_F(SearchBoxViewAutocompleteTest, SearchBoxAutocompletesAcceptsNextChar) {
   // Add a search result with a non-empty title field.
-  CreateSearchResult(ash::SearchResultDisplayType::kList, 1.0,
-                     base::ASCIIToUTF16("hello world!"), base::string16());
+  CreateSearchResult(ash::SearchResultDisplayType::kList, 1.0, u"hello world!",
+                     std::u16string());
   base::RunLoop().RunUntilIdle();
 
   // Send H, E to the SearchBoxView textfield, then trigger an autocomplete.
@@ -1083,16 +1070,15 @@ TEST_F(SearchBoxViewAutocompleteTest, SearchBoxAutocompletesAcceptsNextChar) {
 
   // After typing L, the highlighted text will be replaced by L.
   KeyPress(ui::VKEY_L);
-  base::string16 selected_text = view()->search_box()->GetSelectedText();
-  EXPECT_EQ(view()->search_box()->GetText(), base::ASCIIToUTF16("hel"));
-  EXPECT_EQ(base::ASCIIToUTF16(""), selected_text);
+  std::u16string selected_text = view()->search_box()->GetSelectedText();
+  EXPECT_EQ(view()->search_box()->GetText(), u"hel");
+  EXPECT_EQ(u"", selected_text);
 
   // After handling autocomplete, the highlighted text will show again.
   view()->ProcessAutocomplete();
   selected_text = view()->search_box()->GetSelectedText();
-  EXPECT_EQ(view()->search_box()->GetText(),
-            base::ASCIIToUTF16("hello world!"));
-  EXPECT_EQ(base::ASCIIToUTF16("lo world!"), selected_text);
+  EXPECT_EQ(view()->search_box()->GetText(), u"hello world!");
+  EXPECT_EQ(u"lo world!", selected_text);
 }
 
 // Tests that autocomplete suggestion is accepted and displayed in SearchModel
@@ -1110,8 +1096,8 @@ TEST_F(SearchBoxViewAutocompleteTest, SearchBoxAcceptsAutocompleteForClickTap) {
 // Tests that autocomplete is not handled if IME is using composition text.
 TEST_F(SearchBoxViewAutocompleteTest, SearchBoxAutocompletesNotHandledForIME) {
   // Add a search result with a non-empty title field.
-  CreateSearchResult(ash::SearchResultDisplayType::kList, 1.0,
-                     base::ASCIIToUTF16("hello world!"), base::string16());
+  CreateSearchResult(ash::SearchResultDisplayType::kList, 1.0, u"hello world!",
+                     std::u16string());
   base::RunLoop().RunUntilIdle();
 
   // Simulate uncomposited text. The autocomplete should be handled.
@@ -1120,22 +1106,21 @@ TEST_F(SearchBoxViewAutocompleteTest, SearchBoxAutocompletesNotHandledForIME) {
   view()->set_highlight_range_for_test(gfx::Range(2, 2));
   view()->ProcessAutocomplete();
 
-  base::string16 selected_text = view()->search_box()->GetSelectedText();
-  EXPECT_EQ(view()->search_box()->GetText(),
-            base::ASCIIToUTF16("hello world!"));
-  EXPECT_EQ(base::ASCIIToUTF16("llo world!"), selected_text);
-  view()->search_box()->SetText(base::string16());
+  std::u16string selected_text = view()->search_box()->GetSelectedText();
+  EXPECT_EQ(view()->search_box()->GetText(), u"hello world!");
+  EXPECT_EQ(u"llo world!", selected_text);
+  view()->search_box()->SetText(std::u16string());
 
   // Simulate IME composition text. The autocomplete should not be handled.
   ui::CompositionText composition_text;
-  composition_text.text = base::ASCIIToUTF16("he");
+  composition_text.text = u"he";
   view()->search_box()->SetCompositionText(composition_text);
   view()->set_highlight_range_for_test(gfx::Range(2, 2));
   view()->ProcessAutocomplete();
 
   selected_text = view()->search_box()->GetSelectedText();
-  EXPECT_EQ(view()->search_box()->GetText(), base::ASCIIToUTF16("he"));
-  EXPECT_EQ(base::ASCIIToUTF16(""), selected_text);
+  EXPECT_EQ(view()->search_box()->GetText(), u"he");
+  EXPECT_EQ(u"", selected_text);
 }
 
 }  // namespace test

@@ -36,7 +36,7 @@ class MockPendingScript : public PendingScript {
 
   MockPendingScript(ScriptElementBase* element,
                     ScriptSchedulingType scheduling_type)
-      : PendingScript(element, TextPosition()) {
+      : PendingScript(element, TextPosition::MinimumPosition()) {
     SetSchedulingType(scheduling_type);
   }
   ~MockPendingScript() override {}
@@ -370,58 +370,6 @@ TEST_F(ScriptRunnerTest, ResumeAndSuspend_Async) {
 
   // Make sure elements are correct.
   EXPECT_THAT(order_, WhenSorted(ElementsAre(1, 2, 3)));
-}
-
-TEST_F(ScriptRunnerTest, SetForceDeferredWithAddedAsyncScript) {
-  auto* pending_script1 = MockPendingScript::CreateAsync(document_);
-
-  QueueScriptForExecution(pending_script1);
-  NotifyScriptReady(pending_script1);
-  EXPECT_CALL(*pending_script1, ExecuteScriptBlock(_))
-      .WillOnce(InvokeWithoutArgs([this] { order_.push_back(1); }));
-  script_runner_->SetForceDeferredExecution(true);
-
-  // Adding new async script while deferred will cause another task to be
-  // posted for it when execution is unblocked.
-  auto* pending_script2 = MockPendingScript::CreateAsync(document_);
-  QueueScriptForExecution(pending_script2);
-  NotifyScriptReady(pending_script2);
-  EXPECT_CALL(*pending_script2, ExecuteScriptBlock(_))
-      .WillOnce(InvokeWithoutArgs([this] { order_.push_back(2); }));
-  // Unblock async scripts before the tasks posted in NotifyScriptReady() is
-  // executed, i.e. no RunUntilIdle() etc. in between.
-  script_runner_->SetForceDeferredExecution(false);
-  platform_->RunUntilIdle();
-  ASSERT_EQ(2u, order_.size());
-}
-
-TEST_F(ScriptRunnerTest, SetForceDeferredAndResumeAndSuspend) {
-  auto* pending_script1 = MockPendingScript::CreateAsync(document_);
-
-  QueueScriptForExecution(pending_script1);
-  NotifyScriptReady(pending_script1);
-
-  EXPECT_CALL(*pending_script1, ExecuteScriptBlock(_))
-      .WillOnce(InvokeWithoutArgs([this] { order_.push_back(1); }));
-
-  script_runner_->SetForceDeferredExecution(true);
-  platform_->RunSingleTask();
-  ASSERT_EQ(0u, order_.size());
-
-  script_runner_->ContextLifecycleStateChanged(
-      mojom::FrameLifecycleState::kPaused);
-  platform_->RunSingleTask();
-  ASSERT_EQ(0u, order_.size());
-
-  // Resuming will not execute script while still in ForceDeferred state.
-  script_runner_->ContextLifecycleStateChanged(
-      mojom::FrameLifecycleState::kRunning);
-  platform_->RunUntilIdle();
-  ASSERT_EQ(0u, order_.size());
-
-  script_runner_->SetForceDeferredExecution(false);
-  platform_->RunUntilIdle();
-  ASSERT_EQ(1u, order_.size());
 }
 
 TEST_F(ScriptRunnerTest, LateNotifications) {

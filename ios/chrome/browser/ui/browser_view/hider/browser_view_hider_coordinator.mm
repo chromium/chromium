@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/browser_view/hider/browser_view_hider_coordinator.h"
 
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #import "ios/chrome/browser/ui/browser_view/hider/browser_view_hider_view_controller.h"
@@ -29,6 +30,8 @@
 
 - (void)start {
   self.viewController = [[BrowserViewHiderViewController alloc] init];
+  self.viewController.incognito =
+      self.browser->GetBrowserState()->IsOffTheRecord();
 
   [self.baseViewController addChildViewController:self.viewController];
   [self.baseViewController.view addSubview:self.viewController.view];
@@ -51,6 +54,18 @@
   self.mediator.webContentAreaOverlayPresenter = OverlayPresenter::FromBrowser(
       self.browser, OverlayModality::kWebContentArea);
   self.mediator.consumer = self.viewController;
+}
+
+- (void)stop {
+  self.mediator.consumer = nil;
+  [self.mediator disconnect];
+
+  self.mediator = nil;
+
+  [self.viewController removeFromParentViewController];
+  [self.viewController.view removeFromSuperview];
+
+  self.viewController = nil;
 }
 
 - (id<ViewRevealingAnimatee>)animatee {

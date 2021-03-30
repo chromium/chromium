@@ -18,7 +18,8 @@ class DisplayModeMatchesManifestTest : public ChromeManifestTest {};
 TEST_F(DisplayModeMatchesManifestTest, DisplayMode) {
   Testcase testcases[] = {
       Testcase("display_mode.json", std::string(),
-               extensions::Manifest::INTERNAL, Extension::FROM_BOOKMARK),
+               extensions::mojom::ManifestLocation::kInternal,
+               Extension::FROM_BOOKMARK),
   };
   RunTestcases(testcases, base::size(testcases), EXPECT_TYPE_SUCCESS);
 

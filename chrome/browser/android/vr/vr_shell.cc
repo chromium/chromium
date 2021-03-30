@@ -576,7 +576,7 @@ void VrShell::SetDialogFloating(JNIEnv* env,
 void VrShell::ShowToast(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& obj,
                         jstring jtext) {
-  base::string16 text;
+  std::u16string text;
   base::android::ConvertJavaStringToUTF16(env, jtext, &text);
   gl_thread_->ShowPlatformToast(text);
 }
@@ -993,7 +993,7 @@ bool VrShell::ShouldDisplayURL() const {
   return ChromeLocationBarModelDelegate::ShouldDisplayURL();
 }
 
-void VrShell::OnVoiceResults(const base::string16& result) {
+void VrShell::OnVoiceResults(const std::u16string& result) {
   JNIEnv* env = base::android::AttachCurrentThread();
   GURL url;
   bool input_was_url;

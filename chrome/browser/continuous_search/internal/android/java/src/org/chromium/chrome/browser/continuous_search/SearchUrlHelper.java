@@ -16,16 +16,57 @@ public class SearchUrlHelper {
     private SearchUrlHelper() {}
 
     /**
-     * Gets the query of the provided url if it is a SRP URL.
+     * Checks whether the provided url is valid, the host is "www.google.<TLD>" with a valid TLD and
+     * has an HTTP or HTTPS scheme. Returns false if the url doesn't use the standard port for its
+     * scheme (80 for HTTP, 443 for HTTPS).
+     * @param url the url to check the criteria against.
+     * @return true if url satisfies all the requirements above.
+     */
+    public static boolean isGoogleDomainUrl(GURL url) {
+        return SearchUrlHelperJni.get().isGoogleDomainUrl(url);
+    }
+
+    /**
+     * Gets the query of the provided url if it is a SRP URL and shows the "All" or "News" tab
+     * results.
      * @param url The url to try to extract the query from.
      * @return the query of the url if the url is for a SRP or null otherwise.
      */
-    public static String getQueryIfSrpUrl(GURL url) {
-        return SearchUrlHelperJni.get().getQueryIfSrpUrl(url);
+    public static String getQueryIfValidSrpUrl(GURL url) {
+        return SearchUrlHelperJni.get().getQueryIfValidSrpUrl(url);
+    }
+
+    /**
+     * Gets the result category from the given URL
+     * @param url the url to get the category from
+     * @return the appropriate category
+     */
+    public static @SearchResultCategory int getResultCategoryFromUrl(GURL url) {
+        return SearchUrlHelperJni.get().getResultCategoryFromUrl(url);
+    }
+
+    /**
+     * Returns the appropriate histogram suffix (".Organic", ".News") based on the given result
+     * category.
+     * @param category the result category to determine the histogram suffix with
+     * @return the suffix string
+     */
+    public static String getHistogramSuffixForResultCategory(@SearchResultCategory int category) {
+        switch (category) {
+            case SearchResultCategory.ORGANIC:
+                return ".Organic";
+            case SearchResultCategory.NEWS:
+                return ".News";
+            default:
+                assert false : "No histogram suffix for type " + category;
+                return null;
+        }
     }
 
     @NativeMethods
     interface Natives {
-        String getQueryIfSrpUrl(GURL url);
+        boolean isGoogleDomainUrl(GURL url);
+        String getQueryIfValidSrpUrl(GURL url);
+        int getResultCategoryFromUrl(GURL url);
     }
 }

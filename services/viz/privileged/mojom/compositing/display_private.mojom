@@ -14,7 +14,7 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/latency/mojom/latency_info.mojom";
 import "services/viz/privileged/mojom/compositing/layered_window_updater.mojom";
 import "services/viz/privileged/mojom/compositing/vsync_parameter_observer.mojom";
-import "services/viz/public/mojom/compositing/delegated_ink_point.mojom";
+import "services/viz/public/mojom/compositing/delegated_ink_point_renderer.mojom";
 
 // The DisplayPrivate is used by privileged clients to talk to Display.
 interface DisplayPrivate {
@@ -62,6 +62,11 @@ interface DisplayPrivate {
   // Updates the list of refresh rates supported by the associated Display.
   [EnableIf=is_android]
   SetSupportedRefreshRates(array<float> refresh_rates);
+
+  // Notifies associated Display to not detach child surface controls during
+  // destruction.
+  [EnableIf=is_android]
+  PreserveChildSurfaceControls();
 
   // Adds an observer that gets notified about vsync parameter changes. See
   // VSyncParameterObserver for details.

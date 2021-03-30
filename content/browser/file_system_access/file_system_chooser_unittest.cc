@@ -4,6 +4,7 @@
 
 #include "content/browser/file_system_access/file_system_chooser.h"
 
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -31,11 +32,12 @@ class FileSystemChooserTest : public testing::Test {
     std::vector<FileSystemChooser::ResultEntry> result;
     FileSystemChooser::CreateAndShow(
         /*web_contents=*/nullptr,
-        FileSystemChooser::Options(
-            blink::mojom::ChooseFileSystemEntryType::kOpenFile,
-            std::move(accepts), include_accepts_all, base::FilePath()),
+        FileSystemChooser::Options(ui::SelectFileDialog::SELECT_OPEN_FILE,
+                                   blink::mojom::AcceptsTypesInfo::New(
+                                       std::move(accepts), include_accepts_all),
+                                   base::FilePath(), base::FilePath()),
         base::BindLambdaForTesting(
-            [&](blink::mojom::NativeFileSystemErrorPtr,
+            [&](blink::mojom::FileSystemAccessErrorPtr,
                 std::vector<FileSystemChooser::ResultEntry> entries) {
               result = std::move(entries);
               loop.Quit();
@@ -84,10 +86,10 @@ TEST_F(FileSystemChooserTest, AcceptsMimeTypes) {
       new CancellingSelectFileDialogFactory(&dialog_params));
   std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts;
   accepts.emplace_back(blink::mojom::ChooseFileSystemEntryAcceptsOption::New(
-      base::ASCIIToUTF16(""), std::vector<std::string>({"tExt/Plain"}),
+      u"", std::vector<std::string>({"tExt/Plain"}),
       std::vector<std::string>({})));
   accepts.emplace_back(blink::mojom::ChooseFileSystemEntryAcceptsOption::New(
-      base::ASCIIToUTF16("Images"), std::vector<std::string>({"image/*"}),
+      u"Images", std::vector<std::string>({"image/*"}),
       std::vector<std::string>({})));
   SyncShowDialog(std::move(accepts), /*include_accepts_all=*/true);
 
@@ -114,9 +116,8 @@ TEST_F(FileSystemChooserTest, AcceptsMimeTypes) {
 
   ASSERT_EQ(2u,
             dialog_params.file_types->extension_description_overrides.size());
-  EXPECT_EQ(base::ASCIIToUTF16(""),
-            dialog_params.file_types->extension_description_overrides[0]);
-  EXPECT_EQ(base::ASCIIToUTF16("Images"),
+  EXPECT_EQ(u"", dialog_params.file_types->extension_description_overrides[0]);
+  EXPECT_EQ(u"Images",
             dialog_params.file_types->extension_description_overrides[1]);
 }
 
@@ -126,7 +127,7 @@ TEST_F(FileSystemChooserTest, AcceptsExtensions) {
       new CancellingSelectFileDialogFactory(&dialog_params));
   std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts;
   accepts.emplace_back(blink::mojom::ChooseFileSystemEntryAcceptsOption::New(
-      base::ASCIIToUTF16(""), std::vector<std::string>({}),
+      u"", std::vector<std::string>({}),
       std::vector<std::string>({"text", "js", "text"})));
   SyncShowDialog(std::move(accepts), /*include_accepts_all=*/true);
 
@@ -143,8 +144,7 @@ TEST_F(FileSystemChooserTest, AcceptsExtensions) {
 
   ASSERT_EQ(1u,
             dialog_params.file_types->extension_description_overrides.size());
-  EXPECT_EQ(base::ASCIIToUTF16(""),
-            dialog_params.file_types->extension_description_overrides[0]);
+  EXPECT_EQ(u"", dialog_params.file_types->extension_description_overrides[0]);
 }
 
 TEST_F(FileSystemChooserTest, AcceptsExtensionsAndMimeTypes) {
@@ -153,7 +153,7 @@ TEST_F(FileSystemChooserTest, AcceptsExtensionsAndMimeTypes) {
       new CancellingSelectFileDialogFactory(&dialog_params));
   std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts;
   accepts.emplace_back(blink::mojom::ChooseFileSystemEntryAcceptsOption::New(
-      base::ASCIIToUTF16(""), std::vector<std::string>({"image/*"}),
+      u"", std::vector<std::string>({"image/*"}),
       std::vector<std::string>({"text", "jpg"})));
   SyncShowDialog(std::move(accepts), /*include_accepts_all=*/false);
 
@@ -176,8 +176,7 @@ TEST_F(FileSystemChooserTest, AcceptsExtensionsAndMimeTypes) {
 
   ASSERT_EQ(1u,
             dialog_params.file_types->extension_description_overrides.size());
-  EXPECT_EQ(base::ASCIIToUTF16(""),
-            dialog_params.file_types->extension_description_overrides[0]);
+  EXPECT_EQ(u"", dialog_params.file_types->extension_description_overrides[0]);
 }
 
 TEST_F(FileSystemChooserTest, IgnoreShellIntegratedExtensions) {
@@ -186,7 +185,7 @@ TEST_F(FileSystemChooserTest, IgnoreShellIntegratedExtensions) {
       new CancellingSelectFileDialogFactory(&dialog_params));
   std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts;
   accepts.emplace_back(blink::mojom::ChooseFileSystemEntryAcceptsOption::New(
-      base::ASCIIToUTF16(""), std::vector<std::string>({}),
+      u"", std::vector<std::string>({}),
       std::vector<std::string>(
           {"lnk", "foo.lnk", "foo.bar.local", "text", "local"})));
   SyncShowDialog(std::move(accepts), /*include_accepts_all=*/false);
@@ -202,8 +201,7 @@ TEST_F(FileSystemChooserTest, IgnoreShellIntegratedExtensions) {
 
   ASSERT_EQ(1u,
             dialog_params.file_types->extension_description_overrides.size());
-  EXPECT_EQ(base::ASCIIToUTF16(""),
-            dialog_params.file_types->extension_description_overrides[0]);
+  EXPECT_EQ(u"", dialog_params.file_types->extension_description_overrides[0]);
 }
 
 TEST_F(FileSystemChooserTest, LocalPath) {
@@ -258,7 +256,7 @@ TEST_F(FileSystemChooserTest, DescriptionSanitization) {
   ASSERT_TRUE(dialog_params.file_types);
   ASSERT_EQ(4u,
             dialog_params.file_types->extension_description_overrides.size());
-  EXPECT_EQ(base::UTF8ToUTF16("Description with a lot of spaces"),
+  EXPECT_EQ(u"Description with a lot of spaces",
             dialog_params.file_types->extension_description_overrides[0]);
   EXPECT_EQ(
       base::UTF8ToUTF16(

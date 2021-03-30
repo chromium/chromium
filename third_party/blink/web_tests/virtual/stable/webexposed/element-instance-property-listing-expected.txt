@@ -113,6 +113,7 @@ namespace http://www.w3.org/1999/xhtml
     property getElementsByClassName
     property getElementsByTagName
     property getElementsByTagNameNS
+    property getInnerHTML
     property getRootNode
     property hasAttribute
     property hasAttributeNS
@@ -927,11 +928,13 @@ html element slot
     property name
 html element small
 html element source
+    property height
     property media
     property sizes
     property src
     property srcset
     property type
+    property width
 html element span
 html element strike
 html element strong
@@ -1269,6 +1272,7 @@ namespace http://www.w3.org/2000/svg
     property getElementsByClassName
     property getElementsByTagName
     property getElementsByTagNameNS
+    property getInnerHTML
     property getRootNode
     property hasAttribute
     property hasAttributeNS

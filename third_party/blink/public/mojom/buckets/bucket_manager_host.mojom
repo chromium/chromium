@@ -1,0 +1,79 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+
+// Implementation of the proposed "Storage Buckets API".
+//
+// Proposal: https://github.com/WICG/storage-buckets
+
+const int64 kNoQuotaPolicyValue = -1;
+
+// The durability policy to apply to a single StorageBucket.
+enum BucketDurability {
+  kRelaxed,
+  kStrict,
+};
+
+// The policies applied to a StorageBucket upon its creation.
+struct BucketPolicies {
+  bool persisted;
+  BucketDurability durability;
+  int64 quota;
+  mojo_base.mojom.Time? expires;
+};
+
+// The mojo interface representing a single StorageBucket object.
+//
+// The interface is scoped to a single bucket, which belongs to an origin,
+// and is consumed by Blink in the renderer process. The interface is
+// currently implemented in the browser process, and will eventually move
+// to the Storage Service.
+interface BucketHost {
+  // Requests persisted storage for the StorageBucket. The implementation is
+  // free to decline the request. The |persisted| value is only valid when
+  // |success| is true.
+  Persist() => (bool persisted, bool success);
+  // Retrieves StorageBucket persistence policy. The |persisted| value is only
+  // valid when |success| is true.
+  Persisted() => (bool persisted, bool success);
+
+  // Retrieves estimated quota usage data for the StorageBucket. The values for
+  // |current_usage| and |current_quota| are only valid when |success| is true.
+  // TODO(ayui): Return quota UsageBreakdown.
+  Estimate() => (int64 current_usage, int64 current_quota, bool success);
+
+  // Retrieves the durability policy for the StorageBucket. The |durability|
+  // value is only valid when |success| is true.
+  Durability() => (BucketDurability durability, bool success);
+
+  // Sets expiry policy for the StorageBucket. The StorageBucket will be
+  // inaccessible after |expires| date.
+  SetExpires(mojo_base.mojom.Time expires) => (bool success);
+  // Retrieves the expiry policy for the StorageBucket. |expires| will return
+  // null when there is not expiry policy set for the Storage Bucket. The
+  // |expires| value is only valid when |success| is true.
+  Expires() => (mojo_base.mojom.Time? expires, bool success);
+};
+
+// Origin-scoped entry point to the Storage Buckets API.
+//
+// The interface is origin-scoped, and is consumed by Blink in the renderer
+// process. The interface is currently implemented in the browser process,
+// and will eventually move to the Storage Service.
+interface BucketManagerHost {
+  // Open or create or bucket with the specified name and policies.
+  // On success, it will return a mojo data pipe to the BucketHost in the
+  // browser process.
+  OpenBucket(string name, BucketPolicies policy)
+      => (pending_remote<BucketHost> remote);
+
+  // Returns a list of stored bucket names in alphabetical order.
+  Keys() => (array<string> buckets, bool success);
+
+  // Deletes the bucket.
+  DeleteBucket(string name) => (bool success);
+};

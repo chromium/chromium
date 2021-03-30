@@ -39,25 +39,25 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大|    笑抬的     abc def</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr" style="white-space:pre">\u4EBA\u4E00\u6C27\u559D\u5927    \u7B11|\u62AC\u7684     abc def</div>',
+  '<div contenteditable dir="ltr" style="white-space:pre">\u4EBA\u4E00\u6C27\u559D\u5927    |\u7B11\u62AC\u7684     abc def</div>',
   '43-5 right word');
 
 selection_test(
   '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大 |   笑抬的     abc def</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr" style="white-space:pre">\u4EBA\u4E00\u6C27\u559D\u5927    \u7B11|\u62AC\u7684     abc def</div>',
+  '<div contenteditable dir="ltr" style="white-space:pre">\u4EBA\u4E00\u6C27\u559D\u5927    |\u7B11\u62AC\u7684     abc def</div>',
   '43-6 right word');
 
 selection_test(
   '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大  |  笑抬的     abc def</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr" style="white-space:pre">\u4EBA\u4E00\u6C27\u559D\u5927    \u7B11|\u62AC\u7684     abc def</div>',
+  '<div contenteditable dir="ltr" style="white-space:pre">\u4EBA\u4E00\u6C27\u559D\u5927    |\u7B11\u62AC\u7684     abc def</div>',
   '43-7 right word');
 
 selection_test(
   '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大   | 笑抬的     abc def</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr" style="white-space:pre">\u4EBA\u4E00\u6C27\u559D\u5927    \u7B11|\u62AC\u7684     abc def</div>',
+  '<div contenteditable dir="ltr" style="white-space:pre">\u4EBA\u4E00\u6C27\u559D\u5927    |\u7B11\u62AC\u7684     abc def</div>',
   '43-8 right word');
 
 selection_test(
@@ -81,31 +81,31 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    笑抬的|     abc def</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr" style="white-space:pre">\u4EBA\u4E00\u6C27\u559D\u5927    \u7B11\u62AC\u7684     abc |def</div>',
+  '<div contenteditable dir="ltr" style="white-space:pre">\u4EBA\u4E00\u6C27\u559D\u5927    \u7B11\u62AC\u7684     |abc def</div>',
   '43-12 right word');
 
 selection_test(
   '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    笑抬的 |    abc def</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr" style="white-space:pre">\u4EBA\u4E00\u6C27\u559D\u5927    \u7B11\u62AC\u7684     abc |def</div>',
+  '<div contenteditable dir="ltr" style="white-space:pre">\u4EBA\u4E00\u6C27\u559D\u5927    \u7B11\u62AC\u7684     |abc def</div>',
   '43-13 right word');
 
 selection_test(
   '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    笑抬的  |   abc def</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr" style="white-space:pre">\u4EBA\u4E00\u6C27\u559D\u5927    \u7B11\u62AC\u7684     abc |def</div>',
+  '<div contenteditable dir="ltr" style="white-space:pre">\u4EBA\u4E00\u6C27\u559D\u5927    \u7B11\u62AC\u7684     |abc def</div>',
   '43-14 right word');
 
 selection_test(
   '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    笑抬的   |  abc def</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr" style="white-space:pre">\u4EBA\u4E00\u6C27\u559D\u5927    \u7B11\u62AC\u7684     abc |def</div>',
+  '<div contenteditable dir="ltr" style="white-space:pre">\u4EBA\u4E00\u6C27\u559D\u5927    \u7B11\u62AC\u7684     |abc def</div>',
   '43-15 right word');
 
 selection_test(
   '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    笑抬的    | abc def</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr" style="white-space:pre">\u4EBA\u4E00\u6C27\u559D\u5927    \u7B11\u62AC\u7684     abc |def</div>',
+  '<div contenteditable dir="ltr" style="white-space:pre">\u4EBA\u4E00\u6C27\u559D\u5927    \u7B11\u62AC\u7684     |abc def</div>',
   '43-16 right word');
 
 selection_test(
@@ -129,7 +129,7 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    笑抬的     abc| def</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr" style="white-space:pre">\u4EBA\u4E00\u6C27\u559D\u5927    \u7B11\u62AC\u7684     abc def|</div>',
+  '<div contenteditable dir="ltr" style="white-space:pre">\u4EBA\u4E00\u6C27\u559D\u5927    \u7B11\u62AC\u7684     abc |def</div>',
   '43-20 right word');
 
 selection_test(

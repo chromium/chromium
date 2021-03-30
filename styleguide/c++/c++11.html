@@ -20,8 +20,9 @@ table tbody tr td:first-child {
 <div id="content">
 <h1>Modern C++ use in Chromium</h1>
 
-<p><i>This document lives at src/styleguide/c++/c++11.html in a Chromium
-checkout and is part of the more general
+<p><i>This document lives at
+<a href="https://source.chromium.org/chromium/chromium/src/+/master:styleguide/c++/c++11.html">
+src/styleguide/c++/c++11.html</a> in a Chromium checkout and is part of the more general
 <a href="https://chromium.googlesource.com/chromium/src/+/master/styleguide/c++/c++.md">
 Chromium C++ style guide</a>. It summarizes the supported state of new and
 updated language and library features in recent C++ standards and the
@@ -54,6 +55,7 @@ The current status of existing standards and Abseil features is:
 <li><b>Abseil:</b> Initially supported July 31, 2020; see allowed/banned/TBD features below
 <ul>
 <li>absl::StatusOr: Initially supported September 3, 2020</li>
+<li>absl::Cleanup: Initially supported February 4, 2021</li>
 </ul></li>
 </ul></p>
 
@@ -184,7 +186,7 @@ The current status of existing standards and Abseil features is:
 <td><code>std::function</code></td>
 <td>Wraps a standard polymorphic function</td>
 <td><a href="http://en.cppreference.com/w/cpp/utility/functional/function">std::function</a></td>
-<td>Use <code>base::Callback</code> instead. Compared to <code>std::function</code>, <code>base::Callback</code> directly supports Chromium's refcounting classes and weak pointers and deals with additional thread safety concerns. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/cxx/SoEj7oIDNuA">Discussion thread</a></td>
+<td>Use <code>base::&lcub;Once,Repeating&rcub;Callback</code> instead. Compared to <code>std::function</code>, <code>base::&lcub;Once,Repeating&rcub;Callback</code> directly supports Chromium's refcounting classes and weak pointers and deals with additional thread safety concerns. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/cxx/SoEj7oIDNuA">Discussion thread</a></td>
 </tr>
 
 <tr>
@@ -399,6 +401,14 @@ the allowed or banned sections.</p>
 <td><a href="https://source.chromium.org/chromium/chromium/src/+/master:third_party/abseil-cpp/absl/functional/bind_front.h">bind_front.h</a>
 <br><a href="https://abseil.io/tips/108">Avoid std::bind</a></td>
 <td>Overlaps with <code>base::Bind</code>.</td>
+</tr>
+
+<tr>
+<td>Cleanup</td>
+<td><code>FILE* sink_file = fopen(sink_path, "w");<br>auto sink_closer = absl::MakeCleanup([sink_file] { fclose(sink_file); });</code></td>
+<td>Implements the scope guard idiom, invoking the contained callback's `operator()() &&` on scope exit.</td>
+<td><a href="https://source.chromium.org/chromium/chromium/src/+/master:third_party/abseil-cpp/absl/cleanup/cleanup.h">cleanup.h</a></td>
+<td>Similar to `defer` in Golang.</td>
 </tr>
 
 <tr>

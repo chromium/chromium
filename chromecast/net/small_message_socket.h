@@ -24,9 +24,8 @@ class Socket;
 namespace chromecast {
 class IOBufferPool;
 
-// Sends small messages (< 64 KB) over a Socket. All methods must be called on
-// the same sequence. Any of the virtual methods can destroy this object if
-// desired.
+// Sends messages over a Socket. All methods must be called on the same
+// sequence. Any of the delegate methods can destroy this object if desired.
 class SmallMessageSocket {
  public:
   class Delegate {
@@ -49,9 +48,12 @@ class SmallMessageSocket {
     virtual bool OnMessage(char* data, size_t size) = 0;
 
     // Called when a message has been received. The |buffer| contains |size|
-    // bytes of data, which includes the first 2 bytes which are the size in
-    // network byte order. Note that these 2 bytes are not included in
+    // bytes of data, which includes the first 2 (or 6) bytes which are the size
+    // in network byte order. Note that these 2/6 bytes are not included in
     // OnMessage()! Return |true| to continue receiving messages.
+    // Note: if the first 2 bytes are 0xffff, then the following 4 bytes are the
+    // size in network byte order (in which case, the offset to the message data
+    // is 6 bytes).
     virtual bool OnMessageBuffer(scoped_refptr<net::IOBuffer> buffer,
                                  size_t size);
 
@@ -86,13 +88,30 @@ class SmallMessageSocket {
   void* PrepareSend(size_t message_size);
   void Send();
 
-  // Sends an already-prepared buffer of data, if possible. The first 2 bytes of
-  // the buffer must contain the size of the rest of the data, encoded as a
-  // 16-bit integer in big-endian byte order. Returns true if the buffer will be
-  // sent; returns false if sending is not allowed right now (ie, another send
-  // is currently in progress). If false is returned, then OnSendUnblocked()
-  // will be called once sending is possible again.
+  // Sends an already-prepared buffer of data, if possible. The first part of
+  // the buffer should contain the message size information as written by
+  // WriteSizeData(). Returns true if the buffer will be sent; returns false if
+  // sending is not allowed right now (ie, another send is currently in
+  // progress). If false is returned, then OnSendUnblocked() will be called once
+  // sending is possible again.
   bool SendBuffer(scoped_refptr<net::IOBuffer> data, size_t size);
+
+  // Returns the number of bytes used for size information for the given message
+  // size.
+  static size_t SizeDataBytes(size_t message_size);
+
+  // Writes the necessary |message_size| information into ptr. This can be used
+  // to prepare a buffer for SendBuffer(). Note that if |message_size| is
+  // greater than or equal to 0xffff, the message size data will take up 6
+  // bytes. Returns the number of bytes written (= SizeDataBytes(message_size)).
+  static size_t WriteSizeData(char* ptr, size_t message_size);
+
+  // Reads the message size from a |ptr| which contains |bytes_read| of data.
+  // Returns |false| if there was not enough data to read a valid size.
+  static bool ReadSize(char* ptr,
+                       size_t bytes_read,
+                       size_t& data_offset,
+                       size_t& message_size);
 
   // Enables receiving messages from the stream. Messages will be received and
   // passed to OnMessage() until either an error occurs, the end of stream is

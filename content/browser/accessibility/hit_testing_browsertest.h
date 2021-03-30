@@ -35,6 +35,7 @@ class AccessibilityHitTestingBrowserTest
   gfx::Rect GetViewBoundsInScreenCoordinates();
   gfx::Point CSSToFramePoint(gfx::Point css_point);
   gfx::Point CSSToPhysicalPixelPoint(gfx::Point css_point);
+  gfx::Point FrameToCSSPoint(gfx::Point css_point);
 
   // Test the hit test action that fires an event.
   BrowserAccessibility* HitTestAndWaitForResultWithEvent(

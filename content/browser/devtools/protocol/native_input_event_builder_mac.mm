@@ -19,13 +19,13 @@ gfx::NativeEvent NativeInputEventBuilder::CreateEvent(
   if (event.GetType() == blink::WebInputEvent::Type::kRawKeyDown ||
       event.GetType() == blink::WebInputEvent::Type::kKeyDown)
     type = NSKeyDown;
-  const base::char16* textStartAddr = &event.text[0];
+  const char16_t* textStartAddr = &event.text[0];
   const int textLength =
       std::find(textStartAddr,
                 textStartAddr + NativeWebKeyboardEvent::kTextLengthCap, '\0') -
       textStartAddr;
   NSString* character =
-      base::SysUTF16ToNSString(base::string16(textStartAddr, textLength));
+      base::SysUTF16ToNSString(std::u16string(textStartAddr, textLength));
   int modifiers = event.GetModifiers();
   NSUInteger flags =
       (modifiers & blink::WebInputEvent::kShiftKey ? NSShiftKeyMask : 0) |

@@ -7,7 +7,9 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 
+#include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
@@ -15,7 +17,6 @@
 #include "base/macros.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -123,7 +124,7 @@ class MockCastWebContentsObserver : public CastWebContents::Observer {
            service_manager::InterfaceProvider* frame_interfaces,
            blink::AssociatedInterfaceProvider* frame_associated_interfaces));
   MOCK_METHOD1(ResourceLoadFailed, void(CastWebContents* cast_web_contents));
-  MOCK_METHOD1(UpdateTitle, void(const base::string16& title));
+  MOCK_METHOD1(UpdateTitle, void(const std::u16string& title));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockCastWebContentsObserver);
@@ -156,7 +157,7 @@ class TitleChangeObserver : public CastWebContents::Observer {
   }
 
   // CastWebContents::Observer implementation:
-  void UpdateTitle(const base::string16& title) override {
+  void UpdateTitle(const std::u16string& title) override {
     // Resumes execution of RunUntilTitleEquals() if |title| matches
     // expectations.
     std::string title_utf8 = base::UTF16ToUTF8(title);
@@ -953,8 +954,7 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest, ExecuteJavaScript) {
   // Execute a script snippet to return the variable's value.
   base::RunLoop run_loop2;
   cast_web_contents_->ExecuteJavaScript(
-      base::UTF8ToUTF16("the_var;"),
-      base::BindLambdaForTesting([&](base::Value result_value) {
+      u"the_var;", base::BindLambdaForTesting([&](base::Value result_value) {
         std::string result_json;
         ASSERT_TRUE(base::JSONWriter::Write(result_value, &result_json));
         EXPECT_EQ(result_json, kSoyMilkJsonStringLiteral);

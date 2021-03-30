@@ -9,12 +9,12 @@
 #include <wrl.h>
 
 #include <map>
+#include <string>
 #include <vector>
 
 #include "base/callback.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -92,7 +92,7 @@ class DWriteFontCollectionProxy
   // Gets the family at the specified index with the expected name. This can be
   // used to avoid an IPC call when both the index and family name are known.
   bool GetFontFamily(UINT32 family_index,
-                     const base::string16& family_name,
+                     const std::u16string& family_name,
                      IDWriteFontFamily** font_family);
 
   bool LoadFamilyNames(UINT32 family_index, IDWriteLocalizedStrings** strings);
@@ -104,7 +104,7 @@ class DWriteFontCollectionProxy
  private:
   Microsoft::WRL::ComPtr<IDWriteFactory> factory_;
   std::vector<Microsoft::WRL::ComPtr<DWriteFontFamilyProxy>> families_;
-  std::map<base::string16, UINT32> family_names_;
+  std::map<std::wstring, UINT32> family_names_;
   UINT32 family_count_ = UINT_MAX;
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   // Per-sequence mojo::Remote<DWriteFontProxy>. This is preferred to a
@@ -151,9 +151,9 @@ class DWriteFontFamilyProxy
 
   bool GetFontFromFontFace(IDWriteFontFace* font_face, IDWriteFont** font);
 
-  void SetName(const base::string16& family_name);
+  void SetName(const std::wstring& family_name);
 
-  const base::string16& GetName();
+  const std::wstring& GetName();
 
   bool IsLoaded();
 
@@ -162,7 +162,7 @@ class DWriteFontFamilyProxy
 
  private:
   UINT32 family_index_;
-  base::string16 family_name_;
+  std::wstring family_name_;
   Microsoft::WRL::ComPtr<DWriteFontCollectionProxy> proxy_collection_;
   Microsoft::WRL::ComPtr<IDWriteFontFamily> family_;
   Microsoft::WRL::ComPtr<IDWriteLocalizedStrings> family_names_;

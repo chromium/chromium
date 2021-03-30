@@ -15,8 +15,7 @@ StreamParser::StreamParser(
 StreamParser::~StreamParser() = default;
 
 void StreamParser::Append(base::StringPiece data) {
-  size_t size = data.as_string().size();
-  data_.append(data.as_string().data(), size);
+  data_.append(data.data(), data.size());
 
   base::Optional<chrome_browser_nearby_sharing_instantmessaging::StreamBody>
       stream_body = GetNextMessage();
@@ -79,7 +78,6 @@ void StreamParser::DelegateMessage(
     switch (response.body_case()) {
       case chrome_browser_nearby_sharing_instantmessaging::
           ReceiveMessagesResponse::kFastPathReady:
-        NS_LOG(INFO) << __func__ << ": received kFastPathReady";
         if (fastpath_ready_callback_) {
           std::move(fastpath_ready_callback_).Run();
         }

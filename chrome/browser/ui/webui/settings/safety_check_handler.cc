@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/settings/safety_check_handler.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/i18n/number_formatting.h"
@@ -11,7 +13,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -400,11 +401,11 @@ void SafetyCheckHandler::CheckPasswords() {
   // registered. This takes care of an edge case when safety check starts twice
   // on the same page. Normally this should not happen, but if it does, the
   // browser should not crash.
-  observed_leak_check_.RemoveAll();
-  observed_leak_check_.Add(leak_service_);
+  observed_leak_check_.Reset();
+  observed_leak_check_.Observe(leak_service_);
   // Start observing the InsecureCredentialsManager.
-  observed_insecure_credentials_manager_.RemoveAll();
-  observed_insecure_credentials_manager_.Add(insecure_credentials_manager_);
+  observed_insecure_credentials_manager_.Reset();
+  observed_insecure_credentials_manager_.Observe(insecure_credentials_manager_);
   passwords_delegate_->StartPasswordCheck(base::BindOnce(
       &SafetyCheckHandler::OnStateChanged, weak_ptr_factory_.GetWeakPtr()));
 }
@@ -552,7 +553,7 @@ void SafetyCheckHandler::OnChromeCleanerCheckResult(
 }
 #endif
 
-base::string16 SafetyCheckHandler::GetStringForParent(ParentStatus status) {
+std::u16string SafetyCheckHandler::GetStringForParent(ParentStatus status) {
   switch (status) {
     case ParentStatus::kBefore:
       return l10n_util::GetStringUTF16(
@@ -565,10 +566,10 @@ base::string16 SafetyCheckHandler::GetStringForParent(ParentStatus status) {
   }
 }
 
-base::string16 SafetyCheckHandler::GetStringForUpdates(UpdateStatus status) {
+std::u16string SafetyCheckHandler::GetStringForUpdates(UpdateStatus status) {
   switch (status) {
     case UpdateStatus::kChecking:
-      return base::UTF8ToUTF16("");
+      return u"";
     case UpdateStatus::kUpdated:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       return ui::SubstituteChromeOSDeviceType(IDS_SETTINGS_UPGRADE_UP_TO_DATE);
@@ -598,20 +599,21 @@ base::string16 SafetyCheckHandler::GetStringForUpdates(UpdateStatus status) {
           l10n_util::GetStringUTF16(version_info::IsOfficialBuild()
                                         ? IDS_VERSION_UI_OFFICIAL
                                         : IDS_VERSION_UI_UNOFFICIAL),
-          base::UTF8ToUTF16(chrome::GetChannelName()),
+          base::UTF8ToUTF16(
+              chrome::GetChannelName(chrome::WithExtendedStable(true))),
           l10n_util::GetStringUTF16(VersionUI::VersionProcessorVariation()));
     // This state is only used on Android for recording metrics. This codepath
     // is unreachable.
     case UpdateStatus::kOutdated:
-      return base::UTF8ToUTF16("");
+      return u"";
   }
 }
 
-base::string16 SafetyCheckHandler::GetStringForSafeBrowsing(
+std::u16string SafetyCheckHandler::GetStringForSafeBrowsing(
     SafeBrowsingStatus status) {
   switch (status) {
     case SafeBrowsingStatus::kChecking:
-      return base::UTF8ToUTF16("");
+      return u"";
     case SafeBrowsingStatus::kEnabled:
     case SafeBrowsingStatus::kEnabledStandard:
       return l10n_util::GetStringUTF16(
@@ -635,7 +637,7 @@ base::string16 SafetyCheckHandler::GetStringForSafeBrowsing(
   }
 }
 
-base::string16 SafetyCheckHandler::GetStringForPasswords(
+std::u16string SafetyCheckHandler::GetStringForPasswords(
     PasswordsStatus status,
     Compromised compromised,
     Weak weak,
@@ -645,7 +647,7 @@ base::string16 SafetyCheckHandler::GetStringForPasswords(
     case PasswordsStatus::kChecking: {
       // Unable to get progress for some reason.
       if (total.value() == 0) {
-        return base::UTF8ToUTF16("");
+        return u"";
       }
       return l10n_util::GetStringFUTF16(IDS_SETTINGS_CHECK_PASSWORDS_PROGRESS,
                                         base::FormatNumber(done.value()),
@@ -700,14 +702,14 @@ base::string16 SafetyCheckHandler::GetStringForPasswords(
   }
 }
 
-base::string16 SafetyCheckHandler::GetStringForExtensions(
+std::u16string SafetyCheckHandler::GetStringForExtensions(
     ExtensionsStatus status,
     Blocklisted blocklisted,
     ReenabledUser reenabled_user,
     ReenabledAdmin reenabled_admin) {
   switch (status) {
     case ExtensionsStatus::kChecking:
-      return base::UTF8ToUTF16("");
+      return u"";
     case ExtensionsStatus::kError:
       return l10n_util::GetStringUTF16(
           IDS_SETTINGS_SAFETY_CHECK_EXTENSIONS_ERROR);
@@ -739,14 +741,14 @@ base::string16 SafetyCheckHandler::GetStringForExtensions(
 }
 
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-base::string16 SafetyCheckHandler::GetStringForChromeCleaner(
+std::u16string SafetyCheckHandler::GetStringForChromeCleaner(
     ChromeCleanerStatus status,
     base::Time cct_completion_time,
     base::Time system_time) {
   switch (status) {
     case ChromeCleanerStatus::kHidden:
     case ChromeCleanerStatus::kChecking:
-      return base::UTF8ToUTF16("");
+      return u"";
     case ChromeCleanerStatus::kInfected:
       return l10n_util::GetStringUTF16(
           IDS_SETTINGS_SAFETY_CHECK_CHROME_CLEANER_INFECTED);
@@ -776,7 +778,7 @@ base::string16 SafetyCheckHandler::GetStringForChromeCleaner(
 }
 #endif
 
-base::string16 SafetyCheckHandler::GetStringForTimePassed(
+std::u16string SafetyCheckHandler::GetStringForTimePassed(
     base::Time completion_timestamp,
     base::Time system_time,
     int less_than_one_minute_ago_message_id,
@@ -827,7 +829,7 @@ base::string16 SafetyCheckHandler::GetStringForTimePassed(
   }
 }
 
-base::string16 SafetyCheckHandler::GetStringForParentRan(
+std::u16string SafetyCheckHandler::GetStringForParentRan(
     base::Time safety_check_completion_time,
     base::Time system_time) {
   return SafetyCheckHandler::GetStringForTimePassed(
@@ -839,14 +841,14 @@ base::string16 SafetyCheckHandler::GetStringForParentRan(
       IDS_SETTINGS_SAFETY_CHECK_PARENT_PRIMARY_LABEL_AFTER_DAYS);
 }
 
-base::string16 SafetyCheckHandler::GetStringForParentRan(
+std::u16string SafetyCheckHandler::GetStringForParentRan(
     base::Time safety_check_completion_time) {
   return SafetyCheckHandler::GetStringForParentRan(safety_check_completion_time,
                                                    base::Time::Now());
 }
 
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-base::string16 SafetyCheckHandler::GetStringForChromeCleanerRan(
+std::u16string SafetyCheckHandler::GetStringForChromeCleanerRan(
     base::Time cct_completion_time,
     base::Time system_time) {
   if (cct_completion_time.is_null()) {
@@ -888,7 +890,7 @@ void SafetyCheckHandler::UpdatePasswordsResultOnCheckIdle() {
     // need to wait for InsecureCredentialsManager callbacks any longer, since
     // there should be none for the current password check.
     if (!compromised_passwords_exist_) {
-      observed_insecure_credentials_manager_.RemoveAll();
+      observed_insecure_credentials_manager_.Reset();
     }
     passwords_delegate_->GetSavedPasswordsList(
         base::BindOnce(&SafetyCheckHandler::DetermineIfNoPasswordsOrSafe,
@@ -912,7 +914,7 @@ void SafetyCheckHandler::OnVersionUpdaterResult(VersionUpdater::Status status,
                                                 bool powerwash,
                                                 const std::string& version,
                                                 int64_t update_size,
-                                                const base::string16& message) {
+                                                const std::u16string& message) {
   if (status == VersionUpdater::FAILED) {
     update_helper_->CheckConnectivity(
         base::BindOnce(&SafetyCheckHandler::DetermineIfOfflineOrError,
@@ -942,7 +944,7 @@ void SafetyCheckHandler::OnStateChanged(
     case BulkLeakCheckService::State::kIdle:
     case BulkLeakCheckService::State::kCanceled: {
       UpdatePasswordsResultOnCheckIdle();
-      observed_leak_check_.RemoveAll();
+      observed_leak_check_.Reset();
       return;
     }
     case BulkLeakCheckService::State::kRunning:
@@ -975,8 +977,8 @@ void SafetyCheckHandler::OnStateChanged(
 
   // Stop observing the leak service and credentials manager in all non-idle
   // states.
-  observed_leak_check_.RemoveAll();
-  observed_insecure_credentials_manager_.RemoveAll();
+  observed_leak_check_.Reset();
+  observed_insecure_credentials_manager_.Reset();
 }
 
 void SafetyCheckHandler::OnCredentialDone(
@@ -1000,7 +1002,7 @@ void SafetyCheckHandler::OnCredentialDone(
   }
 }
 
-void SafetyCheckHandler::OnCompromisedCredentialsChanged(
+void SafetyCheckHandler::OnInsecureCredentialsChanged(
     password_manager::InsecureCredentialsManager::CredentialsView credentials) {
   extensions::api::passwords_private::PasswordCheckStatus status =
       passwords_delegate_->GetPasswordCheckStatus();
@@ -1011,7 +1013,7 @@ void SafetyCheckHandler::OnCompromisedCredentialsChanged(
   }
   UpdatePasswordsResultOnCheckIdle();
   // Stop observing the manager to avoid dynamically updating the result.
-  observed_insecure_credentials_manager_.RemoveAll();
+  observed_insecure_credentials_manager_.Reset();
 }
 
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -1060,7 +1062,7 @@ void SafetyCheckHandler::OnJavascriptDisallowed() {
   // case when the page is reloaded while the password check is in progress and
   // another safety check is started. Otherwise |observed_leak_check_|
   // automatically calls RemoveAll() on destruction.
-  observed_leak_check_.RemoveAll();
+  observed_leak_check_.Reset();
   // Destroy the version updater to prevent getting a callback and firing a
   // WebUI event, which would cause a crash.
   version_updater_.reset();
@@ -1111,7 +1113,7 @@ void SafetyCheckHandler::CompleteParentIfChildrenCompleted() {
 void SafetyCheckHandler::FireBasicSafetyCheckWebUiListener(
     const std::string& event_name,
     int new_state,
-    const base::string16& display_string) {
+    const std::u16string& display_string) {
   base::DictionaryValue event;
   event.SetIntKey(kNewState, new_state);
   event.SetStringKey(kDisplayString, display_string);

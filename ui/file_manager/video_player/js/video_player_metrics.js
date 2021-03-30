@@ -9,7 +9,9 @@
  * @suppress {uselessCode} Temporary suppress because of the line exporting.
  */
 
-// #import {metricsBase} from '../../file_manager/common/js/metrics_base.m.js';
+// clang-format off
+// #import {metricsBase} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/metrics_base.m.js';
+// clang-format on
 
 /**
  * @extends {metricsBase}

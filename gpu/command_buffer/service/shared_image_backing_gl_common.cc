@@ -182,19 +182,19 @@ SharedImageBackingGLCommon::ProduceDawnCommon(SharedImageFactory* factory,
   GLenum target = dst_image->GetTextureBase()->target();
 
   // Ensure skia's internal cache of GL context state is reset before using it.
-  // TODO(crbug.com/1036142: Figure out cases that need this invocation).
+  // TODO(crbug.com/1036142): Figure out cases that need this invocation.
   shared_context_state->PessimisticallyResetGrContext();
 
   if (use_passthrough) {
     gl::GLApi* gl = shared_context_state->context_state()->api();
 
-    gl->glCopyTextureCHROMIUMFn(source_texture, 0, target, dest_texture, 0,
-                                viz::GLDataFormat(backing->format()),
-                                viz::GLDataType(backing->format()), false,
-                                false, false);
+    gl->glCopySubTextureCHROMIUMFn(source_texture, 0, target, dest_texture, 0,
+                                   0, 0, 0, 0, dst_image->size().width(),
+                                   dst_image->size().height(), false, false,
+                                   false);
   } else {
-    // TODO(crbug.com/1036142: Implement copyTextureCHROMIUM for validating
-    // path).
+    // TODO(crbug.com/1036142): Implement copyTextureCHROMIUM for validating
+    // path.
     NOTREACHED();
     return nullptr;
   }

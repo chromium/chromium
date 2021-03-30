@@ -9,5 +9,6 @@ frame "i" - didFinishDocumentLoadForFrame
 frame "i" - didHandleOnloadEventsForFrame
 frame "i" - didFinishLoadForFrame
 main frame - didFinishDocumentLoadForFrame
+main frame - didCommitLoadForFrame
 main frame - didHandleOnloadEventsForFrame
 main frame - didFinishLoadForFrame

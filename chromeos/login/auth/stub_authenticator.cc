@@ -25,17 +25,13 @@ StubAuthenticator::StubAuthenticator(AuthStatusConsumer* consumer,
       task_runner_(base::ThreadTaskRunnerHandle::Get()) {
 }
 
-void StubAuthenticator::CompleteLogin(content::BrowserContext* context,
-                                      const UserContext& user_context) {
-  authentication_context_ = context;
+void StubAuthenticator::CompleteLogin(const UserContext& user_context) {
   if (expected_user_context_ != user_context)
     NOTREACHED();
   OnAuthSuccess();
 }
 
-void StubAuthenticator::AuthenticateToLogin(content::BrowserContext* context,
-                                            const UserContext& user_context) {
-  authentication_context_ = context;
+void StubAuthenticator::AuthenticateToLogin(const UserContext& user_context) {
   // Don't compare the entire |expected_user_context_| to |user_context| because
   // during non-online re-auth |user_context| does not have a gaia id.
   if (expected_user_context_.GetAccountId() == user_context.GetAccountId() &&
@@ -78,13 +74,6 @@ void StubAuthenticator::AuthenticateToLogin(content::BrowserContext* context,
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&StubAuthenticator::OnAuthFailure, this,
                                 AuthFailure::FromNetworkAuthFailure(error)));
-}
-
-void StubAuthenticator::LoginAsSupervisedUser(const UserContext& user_context) {
-  UserContext new_user_context = user_context;
-  new_user_context.SetUserIDHash(user_context.GetAccountId().GetUserEmail() +
-                                 kUserIdHashSuffix);
-  consumer_->OnAuthSuccess(new_user_context);
 }
 
 void StubAuthenticator::LoginOffTheRecord() {

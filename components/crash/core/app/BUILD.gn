@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 # TODO(crbug.com/753619): Enable crash reporting on Fuchsia.
-assert(!is_ios && !is_fuchsia)
+assert(!is_fuchsia)
 
 import("//components/gwp_asan/buildflags/buildflags.gni")
 
@@ -48,12 +48,9 @@ static_library("app") {
     "crash_export_thunks.h",
     "crash_switches.cc",
     "crash_switches.h",
+    "crashpad.cc",
     "crashpad.h",
   ]
-
-  if (is_mac || is_win || is_android || is_linux || is_chromeos) {
-    sources += [ "crashpad.cc" ]
-  }
 
   if (is_linux || is_chromeos) {
     sources += [
@@ -72,13 +69,12 @@ static_library("app") {
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
     "//content/public/common:content_descriptors",
+    "//third_party/crashpad/crashpad/client",
+    "//third_party/crashpad/crashpad/util",
   ]
 
-  if (is_mac || is_win || is_android || is_linux || is_chromeos) {
-    deps += [
-      "//third_party/crashpad/crashpad/client",
-      "//third_party/crashpad/crashpad/util",
-    ]
+  if (is_ios) {
+    deps -= [ "//content/public/common:content_descriptors" ]
   }
 
   if (is_android) {
@@ -127,6 +123,10 @@ static_library("app") {
       "//third_party/crashpad/crashpad/minidump",
       "//third_party/crashpad/crashpad/snapshot",
     ]
+  }
+
+  if (is_ios) {
+    sources += [ "crashpad_ios.mm" ]
   }
 
   if (is_linux || is_chromeos) {

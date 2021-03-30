@@ -1,0 +1,101 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+static_library("report_queue_configuration") {
+  sources = [
+    "report_queue_configuration.cc",
+    "report_queue_configuration.h",
+  ]
+  deps = [
+    "//base",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/util:status",
+    "//components/reporting/util:status_macros",
+  ]
+}
+
+static_library("report_queue") {
+  sources = [
+    "report_queue.cc",
+    "report_queue.h",
+  ]
+  deps = [
+    ":report_queue_configuration",
+    "//base",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/util:status",
+    "//components/reporting/util:status_macros",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+}
+
+static_library("report_queue_provider") {
+  sources = [
+    "report_queue_provider.cc",
+    "report_queue_provider.h",
+  ]
+  deps = [
+    ":report_queue",
+    ":report_queue_configuration",
+    "//base",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/storage:storage_module",
+    "//components/reporting/util:shared_queue",
+    "//components/reporting/util:status",
+    "//components/reporting/util:status_macros",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "mock_report_queue.cc",
+    "mock_report_queue.h",
+  ]
+  deps = [
+    ":report_queue",
+    "//base",
+    "//base/test:test_support",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/util:status",
+    "//components/reporting/util:status_macros",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+# All unit tests are built as part of the //components:components_unittests
+# target and must be one targets named "unit_tests".
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "report_queue_configuration_unittest.cc",
+    "report_queue_provider_unttest.cc",
+    "report_queue_unittest.cc",
+  ]
+  deps = [
+    ":report_queue",
+    ":report_queue_configuration",
+    ":report_queue_provider",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/storage:test_support",
+    "//components/reporting/util:status",
+    "//components/reporting/util:status_macros",
+    "//components/reporting/util:test_callbacks_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

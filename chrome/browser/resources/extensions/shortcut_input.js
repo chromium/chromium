@@ -256,7 +256,8 @@ Polymer({
    */
   computePlaceholder_() {
     if (this.readonly_) {
-      return this.i18n('shortcutNotSet');
+      return this.shortcut ? this.i18n('shortcutSet', this.computeText_()) :
+                             this.i18n('shortcutNotSet');
     }
     return this.i18n('shortcutTypeAShortcut');
   },

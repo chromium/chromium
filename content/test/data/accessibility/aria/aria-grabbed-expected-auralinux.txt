@@ -2,16 +2,16 @@
 ++[list]
 ++++[list item] grabbed:true
 ++++++[panel]
-++++++++[static] name='• '
+++++++++[static] name='%E2%80%A2 '
 ++++++[static] name='grabbed-true '
 ++++++[image] name='blue'
 ++++[list item] grabbed:false
 ++++++[panel]
-++++++++[static] name='• '
+++++++++[static] name='%E2%80%A2 '
 ++++++[static] name='grabbed-false '
 ++++++[image] name='blue'
 ++++[list item]
 ++++++[panel]
-++++++++[static] name='• '
+++++++++[static] name='%E2%80%A2 '
 ++++++[static] name='grabbed-undefined '
 ++++++[image] name='blue'

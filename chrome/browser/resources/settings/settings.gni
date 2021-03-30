@@ -4,63 +4,8 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 
-# Common namespace rewrites for all polymer_modulizer() or js_modulizer()
-# targets in Settings.
-settings_namespace_rewrites = [
-  "cr.search_highlight_utils.createEmptySearchBubble|createEmptySearchBubble",
-  "cr.search_highlight_utils.findAndRemoveHighlights|findAndRemoveHighlights",
-  "cr.search_highlight_utils.highlight|highlight",
-  "cr.search_highlight_utils.removeHighlights|removeHighlights",
-  "cr.search_highlight_utils.stripDiacritics|stripDiacritics",
-  "Polymer.DomIf|DomIf",
-  "Polymer.IronResizableBehavior|IronResizableBehavior",
-  "settings.AboutPageBrowserProxy|AboutPageBrowserProxy",
-  "settings.Account|Account",
-  "settings.AccountManagerBrowserProxy|AccountManagerBrowserProxy",
-  "settings.ExtensionControlBrowserProxy|ExtensionControlBrowserProxy",
-  "settings.FontsBrowserProxy|FontsBrowserProxy",
-  "settings.LanguagesBrowserProxy|LanguagesBrowserProxy",
-  "settings.LifetimeBrowserProxy|LifetimeBrowserProxy",
-  "settings.MetricsReporting|MetricsReporting",
-  "settings.MinimumRoutes|MinimumRoutes",
-  "settings.PageStatus|PageStatus",
-  "Settings.PrefUtil.prefToString|prefToString",
-  "Settings.PrefUtil.stringToPrefValue|stringToPrefValue",
-  "settings.PrivacyPageBrowserProxy|PrivacyPageBrowserProxy",
-  "settings.ProfileInfo|ProfileInfo",
-  "settings.ResolverOption|ResolverOption",
-  "settings.Route|Route",
-  "settings.SearchEnginesBrowserProxy|SearchEnginesBrowserProxy",
-  "settings.SearchRequest|SearchRequest",
-  "settings.SecureDnsMode|SecureDnsMode",
-  "settings.SecureDnsSetting|SecureDnsSetting",
-  "settings.SecureDnsUiManagementMode|SecureDnsUiManagementMode",
-  "settings.StatusAction|StatusAction",
-  "settings.StoredAccount|StoredAccount",
-  "settings.SyncBrowserProxy|SyncBrowserProxy",
-  "settings.SyncPrefs|SyncPrefs",
-  "settings.SyncStatus|SyncStatus",
-]
-
-settings_auto_imports = [
-  "chrome/browser/resources/settings/controls/pref_control_behavior.html|PrefControlBehavior",
-  "chrome/browser/resources/settings/controls/settings_boolean_control_behavior.html|SettingsBooleanControlBehavior",
-  "chrome/browser/resources/settings/extension_control_browser_proxy.html|ExtensionControlBrowserProxyImpl,ExtensionControlBrowserProxy",
-  "chrome/browser/resources/settings/i18n_setup.html|loadTimeData",
-  "chrome/browser/resources/settings/prefs/prefs_behavior.html|PrefsBehavior",
-  "chrome/browser/resources/settings/prefs/prefs_types.html|CrSettingsPrefs",
-  "chrome/browser/resources/settings/router.html|Router,Route,RouteObserverBehavior",
-]
-
 settings_closure_flags =
     default_closure_args + [
       "js_module_root=../../chrome/browser/resources/settings/",
       "js_module_root=./gen/chrome/browser/resources/settings/",
     ]
-
-settings_migrated_imports = [
-  "chrome/browser/resources/settings/i18n_setup.html",
-  "chrome/browser/resources/settings/ensure_lazy_loaded.html",
-  "chrome/browser/resources/settings/settings_main/settings_main.html",
-  "chrome/browser/resources/settings/settings_menu/settings_menu.html",
-]

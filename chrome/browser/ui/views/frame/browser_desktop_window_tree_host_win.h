@@ -81,7 +81,7 @@ class BrowserDesktopWindowTreeHostWin
   void OnProfileAvatarChanged(const base::FilePath& profile_path) override;
   void OnProfileAdded(const base::FilePath& profile_path) override;
   void OnProfileWasRemoved(const base::FilePath& profile_path,
-                           const base::string16& profile_name) override;
+                           const std::u16string& profile_name) override;
 
   // Kicks off an asynchronous update of |workspace_|, and notifies
   // WindowTreeHost of its value.

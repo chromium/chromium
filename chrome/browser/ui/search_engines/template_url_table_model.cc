@@ -67,11 +67,11 @@ int TemplateURLTableModel::RowCount() {
   return static_cast<int>(entries_.size());
 }
 
-base::string16 TemplateURLTableModel::GetText(int row, int col_id) {
+std::u16string TemplateURLTableModel::GetText(int row, int col_id) {
   DCHECK(row >= 0 && row < RowCount());
   const TemplateURL* url = entries_[row];
   if (col_id == IDS_SEARCH_ENGINES_EDITOR_DESCRIPTION_COLUMN) {
-    base::string16 url_short_name = url->short_name();
+    std::u16string url_short_name = url->short_name();
     // TODO(xji): Consider adding a special case if the short name is a URL,
     // since those should always be displayed LTR. Please refer to
     // http://crbug.com/6726 for more information.
@@ -96,8 +96,8 @@ void TemplateURLTableModel::Remove(int index) {
 }
 
 void TemplateURLTableModel::Add(int index,
-                                const base::string16& short_name,
-                                const base::string16& keyword,
+                                const std::u16string& short_name,
+                                const std::u16string& keyword,
                                 const std::string& url) {
   DCHECK(index >= 0 && index <= RowCount());
   DCHECK(!url.empty());
@@ -109,8 +109,8 @@ void TemplateURLTableModel::Add(int index,
 }
 
 void TemplateURLTableModel::ModifyTemplateURL(int index,
-                                              const base::string16& title,
-                                              const base::string16& keyword,
+                                              const std::u16string& title,
+                                              const std::u16string& keyword,
                                               const std::string& url) {
   DCHECK(index >= 0 && index <= RowCount());
   DCHECK(!url.empty());

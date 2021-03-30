@@ -11,7 +11,6 @@
 #include "base/strings/string_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
-#include "components/infobars/core/infobar_feature.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "ios/web/public/webui/web_ui_ios_controller_factory.h"
 #include "ios/web_view/internal/app/application_context.h"
@@ -63,7 +62,6 @@ void WebViewWebMainParts::PreCreateThreads() {
       {
           // ios/web_view does not support editing card info in the save dialog.
           autofill::features::kAutofillSaveCardInfobarEditSupport.name,
-          kIOSInfobarUIReboot.name,
       },
       ",");
   feature_list->InitializeFromCommandLine(

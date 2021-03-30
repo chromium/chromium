@@ -183,8 +183,8 @@ class TestEnvironment {
   base::test::TaskEnvironment tasks_;
   media::MockAudioManager audio_manager_;
   StreamFactory stream_factory_;
-  mojo::Remote<mojom::StreamFactory> remote_stream_factory_;
-  mojo::Receiver<mojom::StreamFactory> stream_factory_receiver_;
+  mojo::Remote<media::mojom::AudioStreamFactory> remote_stream_factory_;
+  mojo::Receiver<media::mojom::AudioStreamFactory> stream_factory_receiver_;
   StrictMock<MockObserver> observer_;
   NiceMock<MockLog> log_;
   StrictMock<MockCreatedCallback> created_callback_;

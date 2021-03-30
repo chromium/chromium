@@ -83,6 +83,10 @@ bool IsSyncInitialized();
 // calling this.
 std::string GetSyncCacheGuid();
 
+// Returns true if the DeviceInfo specifics on the fake server contains sync
+// invalidation fields.
+bool VerifySyncInvalidationFieldsPopulated();
+
 // Returns true if there is an autofilll profile with the corresponding |guid|
 // and |full_name|.
 bool IsAutofillProfilePresent(std::string guid, std::string full_name);

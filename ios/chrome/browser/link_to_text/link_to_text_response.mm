@@ -129,12 +129,21 @@ using shared_highlighting::TextFragment;
                                                        latency:latency];
   }
 
+  GURL baseURL = webState->GetLastCommittedURL();
+  base::Optional<GURL> canonicalURL =
+      link_to_text::ParseURL(value->FindStringKey("canonicalUrl"));
+
+  // Use the canonical URL as base when it exists, and only on HTTPS pages.
+  if (baseURL.SchemeIsCryptographic() && canonicalURL) {
+    baseURL = canonicalURL.value();
+  }
+
   // Create the deep-link.
-  GURL deep_link = shared_highlighting::AppendFragmentDirectives(
-      webState->GetLastCommittedURL(), {fragment.value()});
+  GURL deepLink = shared_highlighting::AppendFragmentDirectives(
+      baseURL, {fragment.value()});
 
   LinkToTextPayload* payload = [[LinkToTextPayload alloc]
-       initWithURL:deep_link
+       initWithURL:deepLink
              title:title
       selectedText:base::SysUTF8ToNSString(*selectedText)
         sourceView:webState->GetView()

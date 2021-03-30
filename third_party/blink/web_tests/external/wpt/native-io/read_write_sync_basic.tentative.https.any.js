@@ -1,13 +1,17 @@
 // META: title=Synchronous NativeIO API: Written bytes are read back.
 // META: global=dedicatedworker
+// META: script=resources/support.js
 
 'use strict';
 
+
 test(testCase => {
-  const file = nativeIO.openSync('test_file');
+  reserveAndCleanupCapacitySync(testCase);
+
+  const file = storageFoundation.openSync('test_file');
   testCase.add_cleanup(() => {
     file.close();
-    nativeIO.deleteSync('test_file');
+    storageFoundation.deleteSync('test_file');
   });
 
   const writtenBytes = Uint8Array.from([64, 65, 66, 67]);

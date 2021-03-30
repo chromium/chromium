@@ -8,16 +8,66 @@
         margin-inline-start: 20px;
         margin-top: 15px;
       }
+      #radioGroup {
+        padding: 0 var(--cr-section-padding);
+      }
+
+      #radioGroupSubHeading {
+        padding-bottom: 10px;
+      }
+
+      settings-collapse-radio-button {
+        --settings-collapse-toggle-min-height: var(--settings-row-min-height);
+      }
+
+      settings-collapse-radio-button:not(:first-of-type) {
+        --settings-collapse-separator-line: var(--cr-separator-line);
+      }
     </style>
-    <div class="cr-row first two-line">
-      <div id="categoryLabel" class="flex" on-click="categoryLabelClicked_"
-          actionable>
-        [[computeHandlersDescription_(categoryEnabled)]]
+    <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
+      <div id="radioGroup">
+        <div class="secondary">
+          $i18n{siteSettingsProtocolHandlersDescription}
+        </div>
+        <h2>$i18n{siteSettingsDefaultBehavior}</h2>
+        <div id="radioSubHeading" class="secondary">
+          $i18n{siteSettingsDefaultBehaviorDescription}
+        </div>
+        <settings-radio-group
+          id="protcolHandlersRadio"
+          pref="[[handlersEnabledPref_]]"
+          on-change="onToggleChange_"
+          selectable-elements="settings-collapse-radio-button">
+          <settings-collapse-radio-button no-collapse
+              id="protcolHandlersRadioAllow"
+              pref="[[handlersEnabledPref_]]"
+              label="$i18n{siteSettingsProtocolHandlersAllowed}"
+              name="true"
+              disabled$="[[isGuest_]]"
+              icon="settings:protocol-handler">
+          </settings-collapse-radio-button>
+          <settings-collapse-radio-button no-collapse
+              id="protcolHandlersRadioBlock"
+              pref="[[handlersEnabledPref_]]"
+              label="$i18n{siteSettingsProtocolHandlersBlocked}"
+              name="false"
+              disabled$="[[isGuest_]]"
+              icon="settings:protocol-handler-off">
+          </settings-collapse-radio-button>
+        </settings-radio-group>
       </div>
-      <cr-toggle id="toggle" checked="{{categoryEnabled}}"
-          on-change="onToggleChange_" aria-labelledby="categoryLabel">
-      </cr-toggle>
-    </div>
+    </template>
+    <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
+      <div class="cr-row first two-line">
+        <div id="categoryLabel" class="flex" on-click="categoryLabelClicked_"
+            actionable>
+          [[computeHandlersDescription_(categoryEnabled)]]
+        </div>
+        <cr-toggle id="toggle" checked="{{categoryEnabled}}"
+            on-change="onToggleChange_" aria-labelledby="categoryLabel">
+        </cr-toggle>
+      </div>
+    </template>
 
     <template is="dom-repeat" items="[[protocols]]" as="protocol">
       <div class="column-header">[[protocol.protocol_display_name]]</div>
@@ -56,7 +106,14 @@
     </cr-action-menu>
 
     <template is="dom-if" if="[[ignoredProtocols.length]]">
-      <div class="column-header">$i18n{siteSettingsBlocked}</div>
+      <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
+        <div class="column-header">
+          $i18n{siteSettingsProtocolHandlersBlockedExceptions}
+        </div>
+      </template>
+      <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
+        <div class="column-header">$i18n{siteSettingsBlocked}</div>
+      </template>
       <div class="list-frame menu-content vertical-list">
         <template is="dom-repeat" items="[[ignoredProtocols]]">
           <div class="list-item">
@@ -75,10 +132,3 @@
         </template>
       </div>
     </template>
-
-<if expr="chromeos">
-  <template is="dom-if" if="[[settingsAppAvailable_]]">
-    <cr-link-row on-click="onManageAndroidAppsClick_"
-        label="$i18n{androidAppsManageAppLinks}" external></cr-link-row>
-  </template>
-</if>

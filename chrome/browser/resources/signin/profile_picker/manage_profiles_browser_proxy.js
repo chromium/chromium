@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {AvatarIcon} from 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.m.js';
 import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 /**
@@ -113,15 +114,19 @@ export class ManageProfilesBrowserProxy {
   loadSignInProfileCreationFlow(profileColor) {}
 
   /**
+   * Retrieves custom avatar list for the select avatar dialog.
+   * * @return {!Promise<!Array<!AvatarIcon>>}
+   */
+  getAvailableIcons() {}
+
+  /**
    * Creates local profile
    * @param {string} profileName
    * @param {number} profileColor
-   * @param {string} avatarUrl
-   * @param {boolean} isGeneric
+   * @param {number} avatarIndex
    * @param {boolean} createShortcut
    */
-  createProfile(
-      profileName, profileColor, avatarUrl, isGeneric, createShortcut) {}
+  createProfile(profileName, profileColor, avatarIndex, createShortcut) {}
 
   /**
    * Sets the local profile name.
@@ -129,6 +134,27 @@ export class ManageProfilesBrowserProxy {
    * @param {string} profileName
    */
   setProfileName(profilePath, profileName) {}
+
+  /** Records impression of a sign-in promo to metrics. */
+  recordSignInPromoImpression() {}
+
+  /**
+   * Gets a profile for which the profile switch screen is shown.
+   * @return {!Promise<!ProfileState>}
+   */
+  getSwitchProfile() {}
+
+  /**
+   * Switches to an already existing profile at `profile_path`.
+   * @param {string} profilePath
+   */
+  confirmProfileSwitch(profilePath) {}
+
+  /**
+   * Cancels the profile switch which aborts the sign-in profile creation
+   * flow.
+   */
+  cancelProfileSwitch() {}
 }
 
 /** @implements {ManageProfilesBrowserProxy} */
@@ -184,16 +210,40 @@ export class ManageProfilesBrowserProxyImpl {
   }
 
   /** @override */
-  createProfile(
-      profileName, profileColor, avatarUrl, isGeneric, createShortcut) {
+  getAvailableIcons() {
+    return sendWithPromise('getAvailableIcons');
+  }
+
+  /** @override */
+  createProfile(profileName, profileColor, avatarIndex, createShortcut) {
     chrome.send(
         'createProfile',
-        [profileName, profileColor, avatarUrl, isGeneric, createShortcut]);
+        [profileName, profileColor, avatarIndex, createShortcut]);
   }
 
   /** @override */
   setProfileName(profilePath, profileName) {
     chrome.send('setProfileName', [profilePath, profileName]);
+  }
+
+  /** @override */
+  recordSignInPromoImpression() {
+    chrome.send('recordSignInPromoImpression');
+  }
+
+  /** @override */
+  getSwitchProfile() {
+    return sendWithPromise('getSwitchProfile');
+  }
+
+  /** @override */
+  confirmProfileSwitch(profilePath) {
+    chrome.send('confirmProfileSwitch', [profilePath]);
+  }
+
+  /** @override */
+  cancelProfileSwitch() {
+    chrome.send('cancelProfileSwitch');
   }
 }
 

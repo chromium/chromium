@@ -21,8 +21,6 @@
 
 class GURL;
 struct ScreenshotArea;
-FORWARD_DECLARE_TEST(WebRtcGetDisplayMediaBrowserTestWithPicker,
-                     GetDisplayMediaVideoWithDlp);
 
 namespace aura {
 class Window;
@@ -85,6 +83,7 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
   void OnScreenCaptureStarted(
       const std::string& label,
       std::vector<content::DesktopMediaID> screen_capture_ids,
+      const std::u16string& application_title,
       content::MediaStreamUI::StateChangeCallback state_change_callback);
 
   // Called when screen capture is stopped.
@@ -93,26 +92,14 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
 
   // The caller (test) should manage |dlp_content_manager| lifetime.
   // Reset doesn't delete the object.
+  // Please use ScopedDlpContentManagerForTesting instead of these methods,
+  // if possible.
   static void SetDlpContentManagerForTesting(
       DlpContentManager* dlp_content_manager);
   static void ResetDlpContentManagerForTesting();
 
  private:
-  // TODO(crbug.com/1145954): Refactor to avoid adding tests as friends.
-  FRIEND_TEST_ALL_PREFIXES(DlpContentManagerBrowserTest, ScreenshotsRestricted);
-  FRIEND_TEST_ALL_PREFIXES(DlpContentManagerBrowserTest,
-                           VideoCaptureStoppedWhenConfidentialWindowResized);
-  FRIEND_TEST_ALL_PREFIXES(DlpContentManagerBrowserTest,
-                           VideoCaptureStoppedWhenNonConfidentialWindowResized);
-  FRIEND_TEST_ALL_PREFIXES(DlpContentManagerBrowserTest,
-                           VideoCaptureNotStoppedWhenConfidentialWindowHidden);
-  FRIEND_TEST_ALL_PREFIXES(DlpContentManagerPolicyBrowserTest,
-                           GetRestrictionSetForURL);
-  FRIEND_TEST_ALL_PREFIXES(DlpContentManagerBrowserTest,
-                           ScreenCaptureNotification);
-  FRIEND_TEST_ALL_PREFIXES(::WebRtcGetDisplayMediaBrowserTestWithPicker,
-                           GetDisplayMediaVideoWithDlp);
-  friend class DlpContentManagerTest;
+  friend class DlpContentManagerTestHelper;
   friend class DlpContentTabHelper;
   friend class MockDlpContentManager;
 
@@ -122,6 +109,7 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
     ScreenCaptureInfo(
         const std::string& label,
         const content::DesktopMediaID& media_id,
+        const std::u16string& application_title,
         content::MediaStreamUI::StateChangeCallback state_change_callback);
     ScreenCaptureInfo(const ScreenCaptureInfo& other);
     ScreenCaptureInfo& operator=(const ScreenCaptureInfo& other);
@@ -132,8 +120,11 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
 
     std::string label;
     content::DesktopMediaID media_id;
+    std::u16string application_title;
     content::MediaStreamUI::StateChangeCallback state_change_callback;
     bool is_running = true;
+    bool showing_paused_notification = false;
+    bool showing_resumed_notification = false;
   };
 
   DlpContentManager();
@@ -206,11 +197,17 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
 
   // List of the currently running screen captures.
   std::vector<ScreenCaptureInfo> running_screen_captures_;
+};
 
-  // Indicates whether screen capture paused/resumed notification is currently
-  // shown.
-  bool showing_paused_notification_ = false;
-  bool showing_resumed_notification_ = false;
+// Helper class to call SetDlpContentManagerForTesting and
+// ResetDlpContentManagerForTesting automically.
+// The caller (test) should manage `test_dlp_content_manager` lifetime.
+// This class does not own it.
+class ScopedDlpContentManagerForTesting {
+ public:
+  explicit ScopedDlpContentManagerForTesting(
+      DlpContentManager* test_dlp_content_manager);
+  ~ScopedDlpContentManagerForTesting();
 };
 
 }  // namespace policy

@@ -96,13 +96,6 @@ SkColor GetLightModeColor(int id) {
       return gfx::kGoogleGrey100;
 
     // Properties not stored in theme pack.
-    case ThemeProperties::COLOR_TAB_ALERT_AUDIO:
-      return gfx::kChromeIconGrey;
-    case ThemeProperties::COLOR_TAB_ALERT_RECORDING:
-      return gfx::kGoogleRed600;
-    case ThemeProperties::COLOR_TAB_ALERT_CAPTURING:
-    case ThemeProperties::COLOR_TAB_PIP_PLAYING:
-      return gfx::kGoogleBlue600;
     case ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR:
       return gfx::kGoogleGrey300;
     case ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR:
@@ -178,10 +171,6 @@ base::Optional<SkColor> GetIncognitoColor(int id) {
       return gfx::kGoogleGrey200;
     case ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE:
     case ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_INACTIVE:
-    case ThemeProperties::COLOR_TAB_ALERT_AUDIO:
-    case ThemeProperties::COLOR_TAB_ALERT_CAPTURING:
-    case ThemeProperties::COLOR_TAB_PIP_PLAYING:
-    case ThemeProperties::COLOR_TAB_ALERT_RECORDING:
       return gfx::kGoogleGrey400;
     case ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR:
       return SkColorSetRGB(0x28, 0x28, 0x28);

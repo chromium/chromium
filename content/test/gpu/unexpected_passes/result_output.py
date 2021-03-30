@@ -151,14 +151,11 @@ def OutputResults(stale_dict,
   """Outputs script results to |file_handle|.
 
   Args:
-    stale_dict: A map in the format returned by
-        expectations.CreateTestExpectationMap() containing all the stale
+    stale_dict: A data_types.TestExpectationMap containing all the stale
         expectations.
-    semi_stale_dict: A map in the format returned by
-        expectations.CreateTestExpectationMap() containing all the semi-stale
-        expectations.
-    active_dict: A map in the format returned by
-        expectations.CreateTestExpectationMap() containing all the active
+    semi_stale_dict: A data_types.TestExpectationMap containing all the
+        semi-stale expectations.
+    active_dict: A data_types.TestExpectationmap containing all the active
         expectations.
     ummatched_results: Any unmatched results found while filling
         |test_expectation_map|, as returned by
@@ -170,6 +167,9 @@ def OutputResults(stale_dict,
     file_handle: An optional open file-like object to output to. If not
         specified, a suitable default will be used.
   """
+  assert isinstance(stale_dict, data_types.TestExpectationMap)
+  assert isinstance(semi_stale_dict, data_types.TestExpectationMap)
+  assert isinstance(active_dict, data_types.TestExpectationMap)
   logging.info('Outputting results in format %s', output_format)
   stale_str_dict = _ConvertTestExpectationMapToStringDict(stale_dict)
   semi_stale_str_dict = _ConvertTestExpectationMapToStringDict(semi_stale_dict)
@@ -308,8 +308,7 @@ def _ConvertTestExpectationMapToStringDict(test_expectation_map):
   """Converts |test_expectation_map| to a dict of strings for reporting.
 
   Args:
-    test_expectation_map: A dict in the format output by
-        expectations.CreateTestExpectationMap()
+    test_expectation_map: A data_types.TestExpectationMap.
 
   Returns:
     A string dictionary representation of |test_expectation_map| in the
@@ -334,7 +333,13 @@ def _ConvertTestExpectationMapToStringDict(test_expectation_map):
       }
     }
   """
+  assert isinstance(test_expectation_map, data_types.TestExpectationMap)
   output_dict = {}
+  # This initially looks like a good target for using
+  # data_types.TestExpectationMap's iterators since there are many nested loops.
+  # However, we need to reset state in different loops, and the alternative of
+  # keeping all the state outside the loop and resetting under certain
+  # conditions ends up being less readable than just using nested loops.
   for test_name, expectation_map in test_expectation_map.iteritems():
     output_dict[test_name] = {}
 
@@ -349,10 +354,10 @@ def _ConvertTestExpectationMapToStringDict(test_expectation_map):
         never_passed = []
 
         for step_name, stats in step_map.iteritems():
-          if stats.passed_builds == stats.total_builds:
-            fully_passed.append(_AddStatsToStr(step_name, stats))
-          elif stats.failed_builds == stats.total_builds:
-            never_passed.append(_AddStatsToStr(step_name, stats))
+          if stats.did_fully_pass:
+            fully_passed.append(AddStatsToStr(step_name, stats))
+          elif stats.did_never_pass:
+            never_passed.append(AddStatsToStr(step_name, stats))
           else:
             assert step_name not in partially_passed
             partially_passed[step_name] = stats
@@ -364,7 +369,7 @@ def _ConvertTestExpectationMapToStringDict(test_expectation_map):
         if partially_passed:
           output_builder_map[PARTIAL_PASS] = {}
           for step_name, stats in partially_passed.iteritems():
-            s = _AddStatsToStr(step_name, stats)
+            s = AddStatsToStr(step_name, stats)
             output_builder_map[PARTIAL_PASS][s] = list(stats.failure_links)
         if never_passed:
           output_builder_map[NEVER_PASS] = never_passed
@@ -432,12 +437,12 @@ def _FormatExpectation(expectation):
       expectation.expected_results), ' '.join(expectation.tags))
 
 
-def _AddStatsToStr(s, stats):
+def AddStatsToStr(s, stats):
   return '%s (%d/%d)' % (s, stats.passed_builds, stats.total_builds)
 
 
-def OutputRemovedUrls(removed_urls):
-  """Outputs URLs of removed expectations for easier consumption by the user.
+def OutputAffectedUrls(removed_urls):
+  """Outputs URLs of affected expectations for easier consumption by the user.
 
   Outputs both a string suitable for passing to Chrome via the command line to
   open all bugs in the browser and a string suitable for copying into the CL
@@ -511,4 +516,4 @@ def _OutputUrlsForClDescription(urls, file_handle=None):
     bugs_on_line += 1
 
   output_str += current_line + '\n'
-  file_handle.write('Affected bugs:\n%s' % output_str)
+  file_handle.write('Affected bugs for CL description:\n%s' % output_str)

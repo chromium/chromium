@@ -24,15 +24,20 @@ class AutocompleteProviderClient;
 // providers (search in particular).
 class OmniboxPedalProvider {
  public:
-  explicit OmniboxPedalProvider(AutocompleteProviderClient& client);
+  // |with_branding| specifies whether to include Google Chrome branded Pedals.
+  OmniboxPedalProvider(AutocompleteProviderClient& client, bool with_branding);
   ~OmniboxPedalProvider();
   OmniboxPedalProvider(const OmniboxPedalProvider&) = delete;
   OmniboxPedalProvider& operator=(const OmniboxPedalProvider&) = delete;
 
+  // Returns the Pedal found to match given |match_text| or else nullptr if
+  // none match. Triggering readiness is irrelevant.
+  OmniboxPedal* FindPedalMatch(const std::u16string& match_text);
+
   // Returns the Pedal triggered by given |match_text| or nullptr if none
   // trigger. The |input| is used to determine suitability for current context.
-  OmniboxPedal* FindPedalMatch(const AutocompleteInput& input,
-                               const base::string16& match_text);
+  OmniboxPedal* FindReadyPedalMatch(const AutocompleteInput& input,
+                                    const std::u16string& match_text);
 
   // "Fake" implementation of AutocompleteProvider AddProviderInfo, though this
   // class is not a true subclass of AutocompleteProvider. This is used
@@ -59,7 +64,7 @@ class OmniboxPedalProvider {
   // Generate a token sequence for text using internal dictionary & delimiters.
   // Returns empty sequence if any delimited part of text is not in dictionary.
   // Note, the ignore_group is applied to eliminate stop words from output.
-  OmniboxPedal::Tokens Tokenize(const base::string16& text) const;
+  OmniboxPedal::Tokens Tokenize(const std::u16string& text) const;
 
   void LoadPedalConcepts();
   OmniboxPedal::SynonymGroup LoadSynonymGroup(
@@ -82,11 +87,11 @@ class OmniboxPedalProvider {
   OmniboxPedal::SynonymGroup ignore_group_;
 
   // Map from string token to unique int token identifier.
-  std::unordered_map<base::string16, int> dictionary_;
+  std::unordered_map<std::u16string, int> dictionary_;
 
   // This contains all token delimiter characters.  It may be empty, in which
   // case no delimiting takes place (input is treated as raw token sequence).
-  base::string16 tokenize_characters_;
+  std::u16string tokenize_characters_;
 
   // This serves as an upper bound on the number of tokens we will accept from
   // text before giving up and treating it as non-match for all Pedals.

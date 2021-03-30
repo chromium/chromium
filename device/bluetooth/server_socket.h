@@ -33,6 +33,7 @@ class ServerSocket : public mojom::ServerSocket {
 
   // mojom::ServerSocket:
   void Accept(AcceptCallback callback) override;
+  void Disconnect(DisconnectCallback callback) override;
 
  private:
   void OnAccept(AcceptCallback callback,

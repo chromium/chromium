@@ -8,14 +8,17 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 
 namespace chromeos {
 namespace local_search_service {
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class IndexId { kCrosSettings = 0, kHelpApp = 1, kMaxValue = kHelpApp };
+// This should be kept in sync with histogram_suffixes_list.xml.
+enum class IndexId {
+  kCrosSettings = 0,
+  kHelpApp = 1,
+  kHelpAppLauncher = 2,
+  kMaxValue = kHelpAppLauncher
+};
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -28,7 +31,7 @@ enum class Backend {
 struct Content {
   // An identifier for the content in Data.
   std::string id;
-  base::string16 content;
+  std::u16string content;
   // |weight| represents how important this Content is and is used in
   // calculating overall matching score of its enclosing Data item. When a query
   // matches a Data item it is matching some Content of the Data. If the
@@ -38,7 +41,7 @@ struct Content {
   // extending to kLinearMap.
   double weight = 1.0;
   Content(const std::string& id,
-          const base::string16& content,
+          const std::u16string& content,
           double weight = 1.0);
   Content();
   Content(const Content& content);
@@ -155,9 +158,9 @@ struct WeightedPosition {
 struct Token {
   Token();
   Token(const Token& token);
-  Token(const base::string16& text, const std::vector<WeightedPosition>& pos);
+  Token(const std::u16string& text, const std::vector<WeightedPosition>& pos);
   ~Token();
-  base::string16 content;
+  std::u16string content;
   std::vector<WeightedPosition> positions;
 };
 

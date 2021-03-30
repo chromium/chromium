@@ -1212,7 +1212,7 @@ TEST_F(VideoRendererAlgorithmTest, RemoveExpiredFramesWithoutRendering) {
   // as effective since we know the duration of it. It is not removed since we
   // only have one frame in the queue though.
   auto frame = CreateFrame(tg.interval(0));
-  frame->metadata()->frame_duration = tg.interval(1);
+  frame->metadata().frame_duration = tg.interval(1);
   algorithm_.EnqueueFrame(frame);
   ASSERT_EQ(0u, algorithm_.RemoveExpiredFrames(tg.current() + tg.interval(3)));
   EXPECT_EQ(0u, EffectiveFramesQueued());
@@ -1332,6 +1332,45 @@ TEST_F(VideoRendererAlgorithmTest, RemoveExpiredFramesCadence) {
   // Advancing expiry once more should mark the frame as ineffective.
   tg.step(3);
   ASSERT_EQ(0u, algorithm_.RemoveExpiredFrames(tg.current()));
+  EXPECT_EQ(1u, frames_queued());
+  EXPECT_EQ(0u, EffectiveFramesQueued());
+}
+
+TEST_F(VideoRendererAlgorithmTest, RemoveExpiredFramesFractionalCadence) {
+  TickGenerator frame_tg(base::TimeTicks(), 60);
+  TickGenerator display_tg(tick_clock_->NowTicks(), 30);
+  disable_cadence_hysteresis();
+
+  constexpr size_t kFrameCount = 5;
+  for (size_t i = 0; i < kFrameCount; ++i)
+    algorithm_.EnqueueFrame(CreateFrame(frame_tg.interval(i)));
+
+  ASSERT_EQ(0u, algorithm_.RemoveExpiredFrames(display_tg.current()));
+  EXPECT_EQ(kFrameCount, EffectiveFramesQueued());
+
+  time_source_.StartTicking();
+
+  size_t frames_dropped = 0;
+  scoped_refptr<VideoFrame> frame = RenderAndStep(&display_tg, &frames_dropped);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(frame_tg.interval(0), frame->timestamp());
+  EXPECT_EQ(0u, frames_dropped);
+  ASSERT_TRUE(is_using_cadence());
+  EXPECT_EQ((kFrameCount - 1) / 2, EffectiveFramesQueued());
+  EXPECT_EQ(kFrameCount, frames_queued());
+
+  // Advance expiry enough that some frames are removed, but one remains and is
+  // still counted as effective.  1 undisplayed and 1 displayed frame will be
+  // expired.
+  ASSERT_EQ(1u, algorithm_.RemoveExpiredFrames(display_tg.current() +
+                                               display_tg.interval(1) +
+                                               max_acceptable_drift() * 1.25));
+  EXPECT_EQ(1u, frames_queued());
+  EXPECT_EQ(1u, EffectiveFramesQueued());
+
+  // Advancing expiry once more should mark the frame as ineffective.
+  display_tg.step(3);
+  ASSERT_EQ(0u, algorithm_.RemoveExpiredFrames(display_tg.current()));
   EXPECT_EQ(1u, frames_queued());
   EXPECT_EQ(0u, EffectiveFramesQueued());
 }
@@ -1584,7 +1623,7 @@ TEST_F(VideoRendererAlgorithmTest, InfiniteDurationMetadata) {
   TickGenerator tg(tick_clock_->NowTicks(), 50);
 
   auto frame = CreateFrame(kInfiniteDuration);
-  frame->metadata()->frame_duration = tg.interval(1);
+  frame->metadata().frame_duration = tg.interval(1);
   algorithm_.EnqueueFrame(frame);
 
   // This should not crash or fail.
@@ -1597,7 +1636,7 @@ TEST_F(VideoRendererAlgorithmTest, UsesFrameDuration) {
   TickGenerator tg(tick_clock_->NowTicks(), 50);
 
   auto frame = CreateFrame(tg.interval(0));
-  frame->metadata()->frame_duration = tg.interval(1);
+  frame->metadata().frame_duration = tg.interval(1);
   algorithm_.EnqueueFrame(frame);
 
   // This should not crash or fail.
@@ -1609,7 +1648,7 @@ TEST_F(VideoRendererAlgorithmTest, UsesFrameDuration) {
   constexpr base::TimeDelta kLongDuration = base::TimeDelta::FromSeconds(3);
   for (int i = 1; i < 4; ++i) {
     frame = CreateFrame(tg.interval(i));
-    frame->metadata()->frame_duration = i == 3 ? kLongDuration : tg.interval(1);
+    frame->metadata().frame_duration = i == 3 ? kLongDuration : tg.interval(1);
     algorithm_.EnqueueFrame(frame);
   }
 
@@ -1631,7 +1670,7 @@ TEST_F(VideoRendererAlgorithmTest, WallClockDurationMetadataSet) {
 
   for (int i = 0; i < frame_count; i++) {
     auto frame = CreateFrame(tg.interval(i));
-    frame->metadata()->frame_duration = tg.interval(1);
+    frame->metadata().frame_duration = tg.interval(1);
     algorithm_.EnqueueFrame(frame);
   }
 
@@ -1641,7 +1680,7 @@ TEST_F(VideoRendererAlgorithmTest, WallClockDurationMetadataSet) {
 
     SCOPED_TRACE(base::StringPrintf("Frame #%d", i));
 
-    EXPECT_EQ(*frame->metadata()->wallclock_frame_duration, intended_duration);
+    EXPECT_EQ(*frame->metadata().wallclock_frame_duration, intended_duration);
     EXPECT_EQ(algorithm_.average_frame_duration(), intended_duration);
   }
 }

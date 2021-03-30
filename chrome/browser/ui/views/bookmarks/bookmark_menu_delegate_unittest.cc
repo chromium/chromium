@@ -68,8 +68,11 @@ class BookmarkMenuDelegateTest : public BrowserWithTestWindowTest {
   void NewDelegate() {
     DestroyDelegate();
 
-    bookmark_menu_delegate_.reset(
-        new BookmarkMenuDelegate(browser(), nullptr, nullptr));
+    bookmark_menu_delegate_.reset(new BookmarkMenuDelegate(
+        browser(), base::BindRepeating([]() {
+          return static_cast<content::PageNavigator*>(nullptr);
+        }),
+        nullptr));
   }
 
   void NewAndInitDelegateForPermanent() {
@@ -125,19 +128,18 @@ class BookmarkMenuDelegateTest : public BrowserWithTestWindowTest {
   void AddTestData() {
     const BookmarkNode* bb_node = model_->bookmark_bar_node();
     std::string test_base = base_path();
-    model_->AddURL(bb_node, 0, ASCIIToUTF16("a"), GURL(test_base + "a"));
-    const BookmarkNode* f1 = model_->AddFolder(bb_node, 1, ASCIIToUTF16("F1"));
-    model_->AddURL(f1, 0, ASCIIToUTF16("f1a"), GURL(test_base + "f1a"));
-    const BookmarkNode* f11 = model_->AddFolder(f1, 1, ASCIIToUTF16("F11"));
-    model_->AddURL(f11, 0, ASCIIToUTF16("f11a"), GURL(test_base + "f11a"));
-    model_->AddFolder(bb_node, 2, ASCIIToUTF16("F2"));
+    model_->AddURL(bb_node, 0, u"a", GURL(test_base + "a"));
+    const BookmarkNode* f1 = model_->AddFolder(bb_node, 1, u"F1");
+    model_->AddURL(f1, 0, u"f1a", GURL(test_base + "f1a"));
+    const BookmarkNode* f11 = model_->AddFolder(f1, 1, u"F11");
+    model_->AddURL(f11, 0, u"f11a", GURL(test_base + "f11a"));
+    model_->AddFolder(bb_node, 2, u"F2");
 
     // Children of the other node.
-    model_->AddURL(model_->other_node(), 0, ASCIIToUTF16("oa"),
-                   GURL(test_base + "oa"));
+    model_->AddURL(model_->other_node(), 0, u"oa", GURL(test_base + "oa"));
     const BookmarkNode* of1 =
-        model_->AddFolder(model_->other_node(), 1, ASCIIToUTF16("OF1"));
-    model_->AddURL(of1, 0, ASCIIToUTF16("of1a"), GURL(test_base + "of1a"));
+        model_->AddFolder(model_->other_node(), 1, u"OF1");
+    model_->AddURL(of1, 0, u"of1a", GURL(test_base + "of1a"));
   }
 
   views::MenuDelegate test_delegate_;

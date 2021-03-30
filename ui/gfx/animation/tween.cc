@@ -80,6 +80,15 @@ double Tween::CalculateValue(Tween::Type type, double state) {
 
     case ZERO:
       return 0;
+
+    case ACCEL_LIN_DECEL_60:
+      return gfx::CubicBezier(0, 0, 0.4, 1).Solve(state);
+
+    case ACCEL_LIN_DECEL_100:
+      return gfx::CubicBezier(0, 0, 0, 1).Solve(state);
+
+    case ACCEL_20_DECEL_60:
+      return gfx::CubicBezier(0.2, 0, 0.4, 1).Solve(state);
   }
 
   NOTREACHED();
@@ -213,6 +222,14 @@ gfx::Transform Tween::TransformValueBetween(double value,
   gfx::Transform to_return = target;
   to_return.Blend(start, value);
   return to_return;
+}
+
+// static
+gfx::TransformOperations Tween::TransformOperationsValueBetween(
+    double value,
+    const gfx::TransformOperations& start,
+    const gfx::TransformOperations& target) {
+  return target.Blend(start, value);
 }
 
 gfx::Size Tween::SizeValueBetween(double value,

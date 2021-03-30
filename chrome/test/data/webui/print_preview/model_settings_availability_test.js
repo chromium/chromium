@@ -5,15 +5,21 @@
 import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, DuplexType, Margins, MarginsType, Size} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isChromeOS, isMac, isWindows} from 'chrome://resources/js/cr.m.js';
-import {getCddTemplate, getGoogleDriveDestination, getSaveAsPdfDestination} from 'chrome://test/print_preview/print_preview_test_utils.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+
+import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+
+import {getCddTemplate, getGoogleDriveDestination, getSaveAsPdfDestination} from './print_preview_test_utils.js';
 
 suite('ModelSettingsAvailabilityTest', function() {
-  let model = null;
+  /** @type {!PrintPreviewModelElement} */
+  let model;
 
   /** @override */
   setup(function() {
-    PolymerTest.clearBody();
-    model = document.createElement('print-preview-model');
+    document.body.innerHTML = '';
+    model = /** @type {!PrintPreviewModelElement} */ (
+        document.createElement('print-preview-model'));
     document.body.appendChild(model);
 
     model.documentSettings = {
@@ -180,7 +186,7 @@ suite('ModelSettingsAvailabilityTest', function() {
       assertFalse(model.settings.color.available);
       assertEquals(
           capabilityAndValue.expectedValue,
-          model.settings.color.unavailableValue);
+          /** @type {boolean} */ (model.settings.color.unavailableValue));
     });
 
     // Each of these settings should make the setting available, with the
@@ -227,7 +233,7 @@ suite('ModelSettingsAvailabilityTest', function() {
     delete capabilities.printer.color;
     model.set('destination.capabilities', capabilities);
     assertFalse(model.settings.color.available);
-    assertTrue(model.settings.color.unavailableValue);
+    assertTrue(/** @type {boolean} */ (model.settings.color.unavailableValue));
     assertFalse(model.settings.color.setFromUi);
   });
 

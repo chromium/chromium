@@ -347,7 +347,7 @@ EntityPtr MediaFeedsConverterTest::WithImage(EntityPtr entity) {
 mojom::MediaFeedItemPtr MediaFeedsConverterTest::ExpectedFeedItem() {
   mojom::MediaFeedItemPtr expected_item = mojom::MediaFeedItem::New();
   expected_item->type = mojom::MediaFeedItemType::kMovie;
-  expected_item->name = base::ASCIIToUTF16("test media feed item");
+  expected_item->name = u"test media feed item";
 
   mojom::MediaImagePtr expected_image = mojom::MediaImage::New();
   expected_image->src = GURL("https://www.example.com/image.jpg");

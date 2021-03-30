@@ -4,7 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Tests that php highlighter loads successfully.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('source_frame');
   await TestRunner.showPanel('sources');
 
   var mimeType = 'text/x-php';

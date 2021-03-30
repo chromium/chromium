@@ -9,20 +9,23 @@ namespace chromeos {
 RemoteAppsModel::AppInfo::AppInfo(const std::string& id,
                                   const std::string& name,
                                   const GURL& icon_url,
-                                  std::string folder_id)
+                                  std::string folder_id,
+                                  bool add_to_front)
     : id(id),
       name(name),
       icon_url(icon_url),
       folder_id(folder_id),
-      icon(gfx::ImageSkia()) {}
+      icon(gfx::ImageSkia()),
+      add_to_front(add_to_front) {}
 
 RemoteAppsModel::AppInfo::AppInfo(const AppInfo& other) = default;
 
 RemoteAppsModel::AppInfo::~AppInfo() = default;
 
 RemoteAppsModel::FolderInfo::FolderInfo(const std::string& id,
-                                        const std::string& name)
-    : id(id), name(name) {}
+                                        const std::string& name,
+                                        bool add_to_front)
+    : id(id), name(name), add_to_front(add_to_front) {}
 
 RemoteAppsModel::FolderInfo::FolderInfo(const FolderInfo& other) = default;
 
@@ -33,12 +36,12 @@ RemoteAppsModel::RemoteAppsModel()
 
 RemoteAppsModel::~RemoteAppsModel() = default;
 
-RemoteAppsModel::AppInfo& RemoteAppsModel::AddApp(
-    const std::string& name,
-    const GURL& icon_url,
-    const std::string& folder_id) {
+RemoteAppsModel::AppInfo& RemoteAppsModel::AddApp(const std::string& name,
+                                                  const GURL& icon_url,
+                                                  const std::string& folder_id,
+                                                  bool add_to_front) {
   std::string id = id_generator_->GenerateId();
-  app_map_.insert({id, AppInfo(id, name, icon_url, folder_id)});
+  app_map_.insert({id, AppInfo(id, name, icon_url, folder_id, add_to_front)});
 
   if (!folder_id.empty()) {
     DCHECK(folder_map_.find(folder_id) != folder_map_.end());
@@ -64,10 +67,12 @@ RemoteAppsModel::GetAllAppInfo() const {
 }
 
 RemoteAppsModel::FolderInfo& RemoteAppsModel::AddFolder(
-    const std::string& folder_name) {
+    const std::string& folder_name,
+    bool add_to_front) {
   std::string folder_id = id_generator_->GenerateId();
-  auto it = folder_map_.insert(folder_map_.begin(),
-                               {folder_id, FolderInfo(folder_id, folder_name)});
+  auto it = folder_map_.insert(
+      folder_map_.begin(),
+      {folder_id, FolderInfo(folder_id, folder_name, add_to_front)});
   return it->second;
 }
 

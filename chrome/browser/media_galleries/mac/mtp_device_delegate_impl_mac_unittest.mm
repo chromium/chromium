@@ -230,13 +230,11 @@ class MTPDeviceDelegateImplMacTest : public testing::Test {
     base::WaitableEvent wait(base::WaitableEvent::ResetPolicy::MANUAL,
                              base::WaitableEvent::InitialState::NOT_SIGNALED);
     delegate_->GetFileInfo(
-      path,
-      base::Bind(&MTPDeviceDelegateImplMacTest::OnFileInfo,
-                 base::Unretained(this),
-                 &wait),
-      base::Bind(&MTPDeviceDelegateImplMacTest::OnError,
-                 base::Unretained(this),
-                 &wait));
+        path,
+        base::BindOnce(&MTPDeviceDelegateImplMacTest::OnFileInfo,
+                       base::Unretained(this), &wait),
+        base::BindOnce(&MTPDeviceDelegateImplMacTest::OnError,
+                       base::Unretained(this), &wait));
     task_environment_.RunUntilIdle();
     EXPECT_TRUE(wait.IsSignaled());
     *info = info_;
@@ -250,8 +248,8 @@ class MTPDeviceDelegateImplMacTest : public testing::Test {
         path,
         base::BindRepeating(&MTPDeviceDelegateImplMacTest::OnReadDir,
                             base::Unretained(this), &wait),
-        base::Bind(&MTPDeviceDelegateImplMacTest::OnError,
-                   base::Unretained(this), &wait));
+        base::BindOnce(&MTPDeviceDelegateImplMacTest::OnError,
+                       base::Unretained(this), &wait));
     task_environment_.RunUntilIdle();
     wait.Wait();
     return error_;
@@ -264,12 +262,10 @@ class MTPDeviceDelegateImplMacTest : public testing::Test {
                              base::WaitableEvent::InitialState::NOT_SIGNALED);
     delegate_->CreateSnapshotFile(
         path, local_path,
-        base::Bind(&MTPDeviceDelegateImplMacTest::OnDownload,
-                   base::Unretained(this),
-                   &wait),
-        base::Bind(&MTPDeviceDelegateImplMacTest::OnError,
-                   base::Unretained(this),
-                   &wait));
+        base::BindOnce(&MTPDeviceDelegateImplMacTest::OnDownload,
+                       base::Unretained(this), &wait),
+        base::BindOnce(&MTPDeviceDelegateImplMacTest::OnError,
+                       base::Unretained(this), &wait));
     task_environment_.RunUntilIdle();
     wait.Wait();
     return error_;
@@ -331,15 +327,15 @@ TEST_F(MTPDeviceDelegateImplMacTest, TestOverlappedReadDir) {
       base::FilePath(kDevicePath),
       base::BindRepeating(&MTPDeviceDelegateImplMacTest::OnReadDir,
                           base::Unretained(this), &wait),
-      base::Bind(&MTPDeviceDelegateImplMacTest::OnError, base::Unretained(this),
-                 &wait));
+      base::BindOnce(&MTPDeviceDelegateImplMacTest::OnError,
+                     base::Unretained(this), &wait));
 
   delegate_->ReadDirectory(
       base::FilePath(kDevicePath),
       base::BindRepeating(&MTPDeviceDelegateImplMacTest::OverlappedOnReadDir,
                           base::Unretained(this), &wait),
-      base::Bind(&MTPDeviceDelegateImplMacTest::OverlappedOnError,
-                 base::Unretained(this), &wait));
+      base::BindOnce(&MTPDeviceDelegateImplMacTest::OverlappedOnError,
+                     base::Unretained(this), &wait));
 
   // Signal the delegate that no files are coming.
   delegate_->NoMoreItems();

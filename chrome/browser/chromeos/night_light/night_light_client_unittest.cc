@@ -27,7 +27,7 @@ std::unique_ptr<icu::TimeZone> CreateTimezone(const char* timezone_id) {
       icu::UnicodeString(timezone_id, -1, US_INV)));
 }
 
-base::string16 GetTimezoneId(const icu::TimeZone& timezone) {
+std::u16string GetTimezoneId(const icu::TimeZone& timezone) {
   return chromeos::system::TimezoneSettings::GetTimezoneID(timezone);
 }
 
@@ -224,8 +224,7 @@ TEST_F(NightLightClientTest, TestRepeatedScheduleTypeChanges) {
 // schedule type is sunset to sunrise or custom.
 TEST_P(NightLightClientTest, TestTimezoneChanges) {
   EXPECT_EQ(0, controller_.position_pushes_num());
-  client_.SetCurrentTimezoneIdForTesting(
-      base::ASCIIToUTF16("America/Los_Angeles"));
+  client_.SetCurrentTimezoneIdForTesting(u"America/Los_Angeles");
 
   // When schedule type is none, timezone changes do not result
   // in geoposition requests.

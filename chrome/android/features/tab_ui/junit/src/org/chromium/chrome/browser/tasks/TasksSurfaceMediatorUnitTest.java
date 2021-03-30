@@ -41,9 +41,9 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.ntp.IncognitoCookieControlsManager;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
+import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -56,7 +56,7 @@ public class TasksSurfaceMediatorUnitTest {
     @Mock
     private PropertyModel mPropertyModel;
     @Mock
-    private FakeboxDelegate mFakeboxDelegate;
+    private OmniboxStub mOmniboxStub;
     @Mock
     private VoiceRecognitionHandler mVoiceRecognitionHandler;
     @Mock
@@ -80,7 +80,7 @@ public class TasksSurfaceMediatorUnitTest {
 
         mMediator = new TasksSurfaceMediator(
                 mPropertyModel, mLearnMoreOnClickListener, mCookieControlsManager, true, null);
-        mMediator.initWithNative(mFakeboxDelegate);
+        mMediator.initWithNative(mOmniboxStub);
     }
 
     @After
@@ -117,7 +117,7 @@ public class TasksSurfaceMediatorUnitTest {
                 .set(eq(FAKE_SEARCH_BOX_CLICK_LISTENER), mFakeboxClickListenerCaptor.capture());
 
         mFakeboxClickListenerCaptor.getValue().onClick(null);
-        verify(mFakeboxDelegate, times(1))
+        verify(mOmniboxStub, times(1))
                 .setUrlBarFocus(
                         eq(true), eq(null), eq(OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_TAP));
     }
@@ -130,7 +130,7 @@ public class TasksSurfaceMediatorUnitTest {
         String inputText = "test";
         Editable editable = Editable.Factory.getInstance().newEditable(inputText);
         mFakeboxTextWatcherCaptor.getValue().afterTextChanged(editable);
-        verify(mFakeboxDelegate, times(1))
+        verify(mOmniboxStub, times(1))
                 .setUrlBarFocus(eq(true), eq(inputText),
                         eq(OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_LONG_PRESS));
         assertThat(editable.length(), equalTo(0));
@@ -144,7 +144,7 @@ public class TasksSurfaceMediatorUnitTest {
         // Shouldn't call setUrlBarFocus if the input text is empty.
         Editable editable = Editable.Factory.getInstance().newEditable("");
         mFakeboxTextWatcherCaptor.getValue().afterTextChanged(editable);
-        verify(mFakeboxDelegate, never())
+        verify(mOmniboxStub, never())
                 .setUrlBarFocus(
                         eq(true), eq(""), eq(OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_LONG_PRESS));
     }
@@ -154,7 +154,7 @@ public class TasksSurfaceMediatorUnitTest {
         verify(mPropertyModel)
                 .set(eq(VOICE_SEARCH_BUTTON_CLICK_LISTENER),
                         mVoiceSearchButtonClickListenerCaptor.capture());
-        doReturn(mVoiceRecognitionHandler).when(mFakeboxDelegate).getVoiceRecognitionHandler();
+        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
 
         mVoiceSearchButtonClickListenerCaptor.getValue().onClick(null);
         verify(mVoiceRecognitionHandler, times(1))

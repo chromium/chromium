@@ -78,6 +78,10 @@ public class LocalizationUtils {
         return LocalizationUtilsJni.get().getFirstStrongCharacterDirection(string);
     }
 
+    public static String getNativeUiLocale() {
+        return LocalizationUtilsJni.get().getNativeUiLocale();
+    }
+
     public static String substituteLocalePlaceholder(String str) {
         return str.replace("$LOCALE", LocaleUtils.getDefaultLocaleString().replace('-', '_'));
     }
@@ -125,5 +129,6 @@ public class LocalizationUtils {
     @NativeMethods
     interface Natives {
         int getFirstStrongCharacterDirection(String string);
+        String getNativeUiLocale();
     }
 }

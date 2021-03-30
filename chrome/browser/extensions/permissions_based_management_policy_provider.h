@@ -28,7 +28,7 @@ class PermissionsBasedManagementPolicyProvider
   // ManagementPolicy::Provider implementation.
   std::string GetDebugPolicyProviderName() const override;
   bool UserMayLoad(const Extension* extension,
-                           base::string16* error) const override;
+                   std::u16string* error) const override;
 
  private:
   ExtensionManagement* settings_;

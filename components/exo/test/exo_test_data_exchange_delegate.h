@@ -7,6 +7,8 @@
 
 #include "components/exo/data_exchange_delegate.h"
 
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+
 class GURL;
 
 namespace exo {
@@ -20,25 +22,33 @@ class TestDataExchangeDelegate : public DataExchangeDelegate {
 
   // DataExchangeDelegate:
   ui::EndpointType GetDataTransferEndpointType(
-      aura::Window* target) const override;
-  void SetSourceOnOSExchangeData(
-      aura::Window* target,
-      ui::OSExchangeData* os_exchange_data) const override;
+      aura::Window* window) const override;
   std::vector<ui::FileInfo> GetFilenames(
-      aura::Window* source,
+      ui::EndpointType source,
       const std::vector<uint8_t>& data) const override;
-  std::string GetMimeTypeForUriList(aura::Window* target) const override;
-  void SendFileInfo(aura::Window* target,
+  std::string GetMimeTypeForUriList(ui::EndpointType target) const override;
+  void SendFileInfo(ui::EndpointType target,
                     const std::vector<ui::FileInfo>& files,
                     SendDataCallback callback) const override;
   bool HasUrlsInPickle(const base::Pickle& pickle) const override;
-  void SendPickle(aura::Window* target,
+  void SendPickle(ui::EndpointType target,
                   const base::Pickle& pickle,
                   SendDataCallback callback) override;
+  base::Pickle CreateClipboardFilenamesPickle(
+      ui::EndpointType source,
+      const std::vector<uint8_t>& data) const override;
+  std::vector<ui::FileInfo> ParseClipboardFilenamesPickle(
+      const ui::EndpointType target,
+      const ui::Clipboard& data) const override;
 
   void RunSendPickleCallback(std::vector<GURL> urls);
 
+  void set_endpoint_type(ui::EndpointType endpoint_type) {
+    endpoint_type_ = endpoint_type;
+  }
+
  private:
+  ui::EndpointType endpoint_type_ = ui::EndpointType::kUnknownVm;
   SendDataCallback send_pickle_callback_;
 };
 

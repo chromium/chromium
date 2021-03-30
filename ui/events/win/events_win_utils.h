@@ -9,8 +9,8 @@
 #include <windows.h>
 
 #include <memory>
+#include <string>
 
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "ui/display/display.h"
 #include "ui/events/event.h"
@@ -100,8 +100,6 @@ bool GetFlingData(const MSG& native_event,
 // Returns whether this is a scroll event and optionally gets the amount to be
 // scrolled.
 bool GetScrollOffsetsFromMSG(const MSG& native_event);
-
-void ComputeEventLatencyOSFromMSG(const MSG& native_event);
 
 }  // namespace ui
 

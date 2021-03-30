@@ -18,12 +18,12 @@
 #include "components/open_from_clipboard/clipboard_recent_content.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/system_flags.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_mediator.h"
 #include "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_view_suggestions_delegate.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/whats_new/default_browser_utils.h"
 #include "ios/chrome/grit/ios_theme_resources.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "net/url_request/url_request_context_getter.h"
@@ -140,20 +140,21 @@ void OmniboxPopupViewIOS::OnMatchSelected(
   }
 
   if (match.type == AutocompleteMatchType::CLIPBOARD_URL) {
+    LogLikelyInterestedDefaultBrowserUserActivity();
     base::RecordAction(UserMetricsAction("MobileOmniboxClipboardToURL"));
     UMA_HISTOGRAM_LONG_TIMES_100(
         "MobileOmnibox.PressedClipboardSuggestionAge",
         ClipboardRecentContent::GetInstance()->GetClipboardContentAge());
   }
   delegate_->OnSelectedMatchForOpening(match, disposition, GURL(),
-                                       base::string16(), row);
+                                       std::u16string(), row);
 }
 
 void OmniboxPopupViewIOS::OnMatchSelectedForAppending(
     const AutocompleteMatch& match) {
   // Make a defensive copy of |match.fill_into_edit|, as CopyToOmnibox() will
   // trigger a new round of autocomplete and modify |match|.
-  base::string16 fill_into_edit(match.fill_into_edit);
+  std::u16string fill_into_edit(match.fill_into_edit);
 
   // If the match is not a URL, append a whitespace to the end of it.
   if (AutocompleteMatch::IsSearchType(match.type)) {

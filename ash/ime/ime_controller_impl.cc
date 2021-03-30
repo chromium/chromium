@@ -190,7 +190,7 @@ void ImeControllerImpl::SetExtraInputOptionsEnabledState(
 
 void ImeControllerImpl::ShowModeIndicator(
     const gfx::Rect& anchor_bounds,
-    const base::string16& ime_short_name) {
+    const std::u16string& ime_short_name) {
   ImeModeIndicatorView* mi_view =
       new ImeModeIndicatorView(anchor_bounds, ime_short_name);
   views::BubbleDialogDelegateView::CreateBubble(mi_view);

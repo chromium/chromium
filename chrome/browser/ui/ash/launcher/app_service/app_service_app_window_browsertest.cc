@@ -5,6 +5,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -15,11 +16,11 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
-#include "chrome/browser/chromeos/arc/arc_util.h"
-#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
-#include "chrome/browser/chromeos/borealis/borealis_service.h"
-#include "chrome/browser/chromeos/borealis/borealis_window_manager.h"
-#include "chrome/browser/chromeos/borealis/borealis_window_manager_mock.h"
+#include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_window_manager.h"
+#include "chrome/browser/ash/borealis/borealis_window_manager_mock.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -29,7 +30,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/session/arc_bridge_service.h"
@@ -675,7 +675,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowArcAppBrowserTest, ArcAppsWindow) {
   // Simulate task creation so the app is marked as running/open.
   std::unique_ptr<ArcAppListPrefs::AppInfo> info = app_prefs()->GetApp(app_id1);
   app_host()->OnTaskCreated(1, info->package_name, info->activity, info->name,
-                            info->intent_uri);
+                            info->intent_uri, /*session_id=*/0);
   EXPECT_TRUE(controller_->GetItem(ash::ShelfID(app_id1)));
 
   // Check the window state in instance for app1
@@ -698,7 +698,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowArcAppBrowserTest, ArcAppsWindow) {
   const std::string app_id2 = GetTestApp2Id(kTestAppPackage);
   info = app_prefs()->GetApp(app_id2);
   app_host()->OnTaskCreated(2, info->package_name, info->activity, info->name,
-                            info->intent_uri);
+                            info->intent_uri, /*session_id=*/0);
   views::Widget* arc_window2 = CreateExoWindow("org.chromium.arc.2");
   EXPECT_TRUE(controller_->GetItem(ash::ShelfID(app_id2)));
 
@@ -766,10 +766,12 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowArcAppBrowserTest, LogicalWindowId) {
   std::unique_ptr<ArcAppListPrefs::AppInfo> info = app_prefs()->GetApp(app_id);
   app_host()->OnTaskCreated(1, info->package_name, info->activity, info->name,
                             CreateIntentUriWithShelfGroupAndLogicalWindow(
-                                "shelf_group_1", "logical_window_1"));
+                                "shelf_group_1", "logical_window_1"),
+                            /*session_id=*/0);
   app_host()->OnTaskCreated(2, info->package_name, info->activity, info->name,
                             CreateIntentUriWithShelfGroupAndLogicalWindow(
-                                "shelf_group_1", "logical_window_1"));
+                                "shelf_group_1", "logical_window_1"),
+                            /*session_id=*/0);
 
   // Both windows should show up in the instance registry.
   auto windows = app_service_proxy_->InstanceRegistry().GetWindows(app_id);

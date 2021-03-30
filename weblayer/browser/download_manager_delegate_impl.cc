@@ -18,8 +18,8 @@
 #include "net/base/filename_util.h"
 #include "weblayer/browser/browser_context_impl.h"
 #include "weblayer/browser/browser_process.h"
-#include "weblayer/browser/download_impl.h"
 #include "weblayer/browser/download_manager_delegate_impl.h"
+#include "weblayer/browser/persistent_download.h"
 #include "weblayer/browser/profile_impl.h"
 #include "weblayer/browser/tab_impl.h"
 #include "weblayer/public/download_delegate.h"
@@ -123,6 +123,10 @@ bool DownloadManagerDelegateImpl::InterceptDownloadIfApplicable(
     int64_t content_length,
     bool is_transient,
     content::WebContents* web_contents) {
+  // Don't intercept transient downloads (such as Background Fetches).
+  if (is_transient)
+    return false;
+
   // If there's no DownloadDelegate, the download is simply dropped.
   auto* delegate = GetDelegate(web_contents);
   if (!delegate)
@@ -167,10 +171,6 @@ void DownloadManagerDelegateImpl::CheckDownloadAllowed(
 void DownloadManagerDelegateImpl::OnDownloadCreated(
     content::DownloadManager* manager,
     download::DownloadItem* item) {
-  item->AddObserver(this);
-  // Create a DownloadImpl which will be owned by |item|.
-  DownloadImpl::Create(item);
-
   auto* local_state = BrowserProcess::GetInstance()->GetLocalState();
   int next_id = local_state->GetInteger(kDownloadNextIDPref);
   if (item->GetId() >= static_cast<uint32_t>(next_id)) {
@@ -182,16 +182,26 @@ void DownloadManagerDelegateImpl::OnDownloadCreated(
     local_state->SetInteger(kDownloadNextIDPref, next_id);
   }
 
+  if (item->IsTransient())
+    return;
+
+  // As per the documentation in DownloadItem, transient items should not
+  // be shown in the UI. (Note that they may be surface by other means,
+  // such as through the BackgroundFetch system.)
+  item->AddObserver(this);
+  // Create a PersistentDownload which will be owned by |item|.
+  PersistentDownload::Create(item);
+
   if (item->GetLastReason() == download::DOWNLOAD_INTERRUPT_REASON_CRASH &&
       item->CanResume() &&
       // Don't automatically resume downloads which were previously paused.
       !item->IsPaused()) {
-    DownloadImpl::Get(item)->Resume();
+    PersistentDownload::Get(item)->Resume();
   }
 
   auto* delegate = GetDelegate(item);
   if (delegate)
-    delegate->DownloadStarted(DownloadImpl::Get(item));
+    delegate->DownloadStarted(PersistentDownload::Get(item));
 }
 
 void DownloadManagerDelegateImpl::OnDownloadDropped(
@@ -227,9 +237,9 @@ void DownloadManagerDelegateImpl::OnDownloadUpdated(
     item->RemoveObserver(this);
 
     if (item->GetState() == download::DownloadItem::COMPLETE)
-      delegate->DownloadCompleted(DownloadImpl::Get(item));
+      delegate->DownloadCompleted(PersistentDownload::Get(item));
     else
-      delegate->DownloadFailed(DownloadImpl::Get(item));
+      delegate->DownloadFailed(PersistentDownload::Get(item));
 
     // Needs to happen asynchronously to avoid nested observer calls.
     base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -240,7 +250,7 @@ void DownloadManagerDelegateImpl::OnDownloadUpdated(
   }
 
   if (delegate)
-    delegate->DownloadProgressChanged(DownloadImpl::Get(item));
+    delegate->DownloadProgressChanged(PersistentDownload::Get(item));
 }
 
 void DownloadManagerDelegateImpl::OnDownloadPathGenerated(

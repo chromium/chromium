@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/client/dawn_client_memory_transfer_service.h"
 
+#include "gpu/command_buffer/client/cmd_buffer_helper.h"
 #include "gpu/command_buffer/client/mapped_memory.h"
 #include "gpu/command_buffer/common/dawn_memory_transfer_handle.h"
 
@@ -158,10 +159,13 @@ void DawnClientMemoryTransferService::MarkHandleFree(void* ptr) {
   free_blocks_.push_back(ptr);
 }
 
-void DawnClientMemoryTransferService::FreeHandlesPendingToken(int32_t token) {
+void DawnClientMemoryTransferService::FreeHandles(CommandBufferHelper* helper) {
   std::vector<void*> to_free = std::move(free_blocks_);
-  for (void* ptr : to_free) {
-    mapped_memory_->FreePendingToken(ptr, token);
+  if (to_free.size() > 0) {
+    int32_t token = helper->InsertToken();
+    for (void* ptr : to_free) {
+      mapped_memory_->FreePendingToken(ptr, token);
+    }
   }
 }
 

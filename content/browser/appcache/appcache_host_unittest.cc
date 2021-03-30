@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/test/task_environment.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "content/browser/appcache/appcache.h"
 #include "content/browser/appcache/appcache_backend_impl.h"
 #include "content/browser/appcache/appcache_group.h"
@@ -112,27 +113,37 @@ class AppCacheHostTest : public testing::Test {
 
   class MockQuotaManagerProxy : public storage::QuotaManagerProxy {
    public:
-    MockQuotaManagerProxy() : QuotaManagerProxy(nullptr, nullptr) {}
+    MockQuotaManagerProxy()
+        : QuotaManagerProxy(nullptr, base::SequencedTaskRunnerHandle::Get()) {}
 
     // Not needed for our tests.
     void RegisterClient(
-        scoped_refptr<storage::QuotaClient> client,
+        mojo::PendingRemote<storage::mojom::QuotaClient> client,
         storage::QuotaClientType client_type,
         const std::vector<blink::mojom::StorageType>& storage_types) override {}
     void NotifyStorageAccessed(const url::Origin& origin,
-                               blink::mojom::StorageType type) override {}
-    void NotifyStorageModified(storage::QuotaClientType client_id,
-                               const url::Origin& origin,
                                blink::mojom::StorageType type,
-                               int64_t delta) override {}
+                               base::Time access_time) override {}
+    void NotifyStorageModified(
+        storage::QuotaClientType client_id,
+        const url::Origin& origin,
+        blink::mojom::StorageType type,
+        int64_t delta,
+        base::Time modification_time,
+        scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+        base::OnceClosure callback) override {
+      if (callback)
+        callback_task_runner->PostTask(FROM_HERE, std::move(callback));
+    }
     void SetUsageCacheEnabled(storage::QuotaClientType client_id,
                               const url::Origin& origin,
                               blink::mojom::StorageType type,
                               bool enabled) override {}
-    void GetUsageAndQuota(base::SequencedTaskRunner* original_task_runner,
-                          const url::Origin& origin,
-                          blink::mojom::StorageType type,
-                          UsageAndQuotaCallback callback) override {}
+    void GetUsageAndQuota(
+        const url::Origin& origin,
+        blink::mojom::StorageType type,
+        scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+        UsageAndQuotaCallback callback) override {}
 
     void NotifyOriginInUse(const url::Origin& origin) override {
       inuse_[origin] += 1;
@@ -781,8 +792,8 @@ TEST_F(AppCacheHostTest, SelectCacheAfterProcessCleanup) {
   mojo::Remote<blink::mojom::AppCacheHost> host_remote;
   host.BindReceiver(host_remote.BindNewPipeAndPassReceiver());
 
-  EXPECT_TRUE(
-      security_policy->CanAccessDataForOrigin(kProcessIdForTest, kDocumentURL));
+  EXPECT_TRUE(security_policy->CanAccessDataForOrigin(
+      kProcessIdForTest, url::Origin::Create(kDocumentURL)));
 
   // Destroy the WebContents so the process gets cleaned up.
   web_contents_.reset();
@@ -791,8 +802,8 @@ TEST_F(AppCacheHostTest, SelectCacheAfterProcessCleanup) {
   // Since |host| for kProcessIdForTest is still alive, the corresponding
   // SecurityState in ChildProcessSecurityPolicy should also be kept alive,
   // allowing access for kDocumentURL.
-  EXPECT_TRUE(
-      security_policy->CanAccessDataForOrigin(kProcessIdForTest, kDocumentURL));
+  EXPECT_TRUE(security_policy->CanAccessDataForOrigin(
+      kProcessIdForTest, url::Origin::Create(kDocumentURL)));
 
   // Verify that the document and manifest URLs do not trigger a bad message.
   {
@@ -833,8 +844,8 @@ TEST_F(AppCacheHostTest, ForeignEntryAfterProcessCleanup) {
   mojo::Remote<blink::mojom::AppCacheHost> host_remote;
   host.BindReceiver(host_remote.BindNewPipeAndPassReceiver());
 
-  EXPECT_TRUE(
-      security_policy->CanAccessDataForOrigin(kProcessIdForTest, kDocumentURL));
+  EXPECT_TRUE(security_policy->CanAccessDataForOrigin(
+      kProcessIdForTest, url::Origin::Create(kDocumentURL)));
 
   // Destroy the WebContents so the process gets cleaned up.
   web_contents_.reset();
@@ -843,8 +854,8 @@ TEST_F(AppCacheHostTest, ForeignEntryAfterProcessCleanup) {
   // Since |host| for kProcessIdForTest is still alive, the corresponding
   // SecurityState in ChildProcessSecurityPolicy should also be kept alive,
   // allowing access for kDocumentURL.
-  EXPECT_TRUE(
-      security_policy->CanAccessDataForOrigin(kProcessIdForTest, kDocumentURL));
+  EXPECT_TRUE(security_policy->CanAccessDataForOrigin(
+      kProcessIdForTest, url::Origin::Create(kDocumentURL)));
 
   // Verify that a document URL does not trigger a bad message.
   {

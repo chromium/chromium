@@ -26,10 +26,10 @@ void YUVVideoDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
                               const gfx::RectF& uv_tex_coord_rect,
                               const gfx::Size& ya_tex_size,
                               const gfx::Size& uv_tex_size,
-                              unsigned y_plane_resource_id,
-                              unsigned u_plane_resource_id,
-                              unsigned v_plane_resource_id,
-                              unsigned a_plane_resource_id,
+                              ResourceId y_plane_resource_id,
+                              ResourceId u_plane_resource_id,
+                              ResourceId v_plane_resource_id,
+                              ResourceId a_plane_resource_id,
                               const gfx::ColorSpace& video_color_space,
                               float offset,
                               float multiplier,
@@ -59,10 +59,10 @@ void YUVVideoDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
                               const gfx::RectF& uv_tex_coord_rect,
                               const gfx::Size& ya_tex_size,
                               const gfx::Size& uv_tex_size,
-                              unsigned y_plane_resource_id,
-                              unsigned u_plane_resource_id,
-                              unsigned v_plane_resource_id,
-                              unsigned a_plane_resource_id,
+                              ResourceId y_plane_resource_id,
+                              ResourceId u_plane_resource_id,
+                              ResourceId v_plane_resource_id,
+                              ResourceId a_plane_resource_id,
                               const gfx::ColorSpace& video_color_space,
                               float offset,
                               float multiplier,
@@ -100,13 +100,13 @@ void YUVVideoDrawQuad::ExtendValue(
   cc::MathUtil::AddToTracedValue("ya_tex_size", ya_tex_size, value);
   cc::MathUtil::AddToTracedValue("uv_tex_size", uv_tex_size, value);
   value->SetInteger("y_plane_resource_id",
-                    resources.ids[kYPlaneResourceIdIndex]);
+                    resources.ids[kYPlaneResourceIdIndex].GetUnsafeValue());
   value->SetInteger("u_plane_resource_id",
-                    resources.ids[kUPlaneResourceIdIndex]);
+                    resources.ids[kUPlaneResourceIdIndex].GetUnsafeValue());
   value->SetInteger("v_plane_resource_id",
-                    resources.ids[kVPlaneResourceIdIndex]);
+                    resources.ids[kVPlaneResourceIdIndex].GetUnsafeValue());
   value->SetInteger("a_plane_resource_id",
-                    resources.ids[kAPlaneResourceIdIndex]);
+                    resources.ids[kAPlaneResourceIdIndex].GetUnsafeValue());
   value->SetInteger("protected_video_type",
                     static_cast<int>(protected_video_type));
 }

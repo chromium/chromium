@@ -23,8 +23,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chromeos/services/assistant/public/cpp/assistant_notification.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_timer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -36,6 +37,8 @@ namespace {
 using chromeos::assistant::AssistantNotification;
 using chromeos::assistant::AssistantNotificationButton;
 using chromeos::assistant::AssistantNotificationPriority;
+using chromeos::assistant::AssistantTimer;
+using chromeos::assistant::AssistantTimerState;
 
 // Constants.
 constexpr char kClientId[] = "assistant/timer<timer-id>";
@@ -72,43 +75,42 @@ typedef struct {
 class TimerEvent {
  public:
   TimerEvent& WithLabel(const std::string& label) {
-    timer_->label = label;
+    timer_.label = label;
     return *this;
   }
 
   TimerEvent& WithCreationTime(base::Optional<base::Time> creation_time) {
-    timer_->creation_time = creation_time;
+    timer_.creation_time = creation_time;
     return *this;
   }
 
   TimerEvent& WithOriginalDuration(base::TimeDelta original_duration) {
-    timer_->original_duration = original_duration;
+    timer_.original_duration = original_duration;
     return *this;
   }
 
   TimerEvent& WithRemainingTime(base::TimeDelta remaining_time) {
-    timer_->fire_time = base::Time::Now() + remaining_time;
-    timer_->remaining_time = remaining_time;
+    timer_.fire_time = base::Time::Now() + remaining_time;
+    timer_.remaining_time = remaining_time;
     return *this;
   }
 
  protected:
-  TimerEvent(const std::string& id, AssistantTimerState state)
-      : timer_(std::make_unique<AssistantTimer>()) {
-    timer_->id = id;
-    timer_->state = state;
-    timer_->fire_time = base::Time::Now();
+  TimerEvent(const std::string& id, AssistantTimerState state) {
+    timer_.id = id;
+    timer_.state = state;
+    timer_.fire_time = base::Time::Now();
   }
 
   ~TimerEvent() {
-    std::vector<AssistantTimerPtr> timers;
-    timers.push_back(std::move(timer_));
+    std::vector<AssistantTimer> timers;
+    timers.push_back(timer_);
     AssistantAlarmTimerController::Get()->OnTimerStateChanged(
         std::move(timers));
   }
 
  private:
-  AssistantTimerPtr timer_;
+  AssistantTimer timer_;
 };
 
 class FireTimer : public TimerEvent {
@@ -334,8 +336,6 @@ class AssistantAlarmTimerControllerTest : public AssistantAshTestBase {
   // AshTestBase:
   void SetUp() override {
     AssistantAshTestBase::SetUp();
-    feature_list_.InitAndDisableFeature(
-        chromeos::assistant::features::kAssistantTimersV2);
   }
 
   void TearDown() override {
@@ -369,8 +369,6 @@ class AssistantAlarmTimerControllerTest : public AssistantAshTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
-
   DISALLOW_COPY_AND_ASSIGN(AssistantAlarmTimerControllerTest);
 };
 
@@ -408,73 +406,9 @@ TEST_F(AssistantAlarmTimerControllerTest, AddedTimersShouldHaveCreationTime) {
   controller()->GetModel()->RemoveObserver(&mock);
 }
 
-// Tests that creation time is properly respected/carried forward when updating
-// a timer.
-TEST_F(AssistantAlarmTimerControllerTest, UpdatedTimersShouldHaveCreationTime) {
-  MockAssistantAlarmTimerModelObserver mock;
-  controller()->GetModel()->AddObserver(&mock);
-
-  base::Time creation_time = base::Time::Now();
-
-  // Schedule a timer w/ specified |creation_time|.
-  ScheduleTimer(kTimerId).WithCreationTime(creation_time);
-
-  // Advance clock.
-  AdvanceClockAndWaitForTimerUpdate(base::TimeDelta::FromMinutes(1));
-
-  // If unspecified, |creation_time| should carry forward on update.
-  EXPECT_CALL(mock, OnTimerUpdated)
-      .WillOnce(testing::Invoke([&](const AssistantTimer& timer) {
-        EXPECT_NE(creation_time, base::Time::Now());
-        EXPECT_EQ(creation_time, timer.creation_time.value());
-      }));
-
-  // Update timer w/o specifying |creation_time|.
-  ScheduleTimer{kTimerId};
-
-  // Reset for the next test case.
-  testing::Mock::VerifyAndClearExpectations(&mock);
-
-  // If specified, |creation_time| should be respected.
-  creation_time += base::TimeDelta::FromHours(1);
-  EXPECT_CALL(mock, OnTimerUpdated)
-      .WillOnce(testing::Invoke([&](const AssistantTimer& timer) {
-        EXPECT_EQ(creation_time, timer.creation_time.value());
-      }));
-
-  // Update timer w/ specified |creation_time|.
-  ScheduleTimer(kTimerId).WithCreationTime(creation_time);
-
-  controller()->GetModel()->RemoveObserver(&mock);
-}
-
-// Tests that a notification is added for a timer and has the expected title.
-// NOTE: This test is only applicable to timers v1.
-TEST_F(AssistantAlarmTimerControllerTest, TimerNotificationHasExpectedTitle) {
-  ASSERT_FALSE(chromeos::assistant::features::IsTimersV2Enabled());
-
-  // Observe notifications.
-  ScopedNotificationModelObserver observer;
-
-  // Fire a timer.
-  FireTimer{kTimerId};
-
-  // We expect that a notification exists w/ an internationalized title.
-  EXPECT_EQ(ExpectedNotification().WithClientId(kClientId).WithTitleId(
-                IDS_ASSISTANT_TIMER_NOTIFICATION_TITLE),
-            observer.last_notification());
-}
-
 // Tests that a notification is added for a timer and has the expected title at
 // various states in its lifecycle.
-// NOTE: This test is only applicable to timers v2.
-TEST_F(AssistantAlarmTimerControllerTest, TimerNotificationHasExpectedTitleV2) {
-  // Enable timers v2.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      chromeos::assistant::features::kAssistantTimersV2);
-  ASSERT_TRUE(chromeos::assistant::features::IsTimersV2Enabled());
-
+TEST_F(AssistantAlarmTimerControllerTest, TimerNotificationHasExpectedTitle) {
   // We're going to run our test over a few locales to ensure i18n compliance.
   std::vector<I18nTestCase> i18n_test_cases;
 
@@ -533,73 +467,9 @@ TEST_F(AssistantAlarmTimerControllerTest, TimerNotificationHasExpectedTitleV2) {
   }
 }
 
-// Tests that a notification is added for a timer and has the expected message
-// at various states in its lifecycle.
-// NOTE: This test is only applicable to timers v1.
-TEST_F(AssistantAlarmTimerControllerTest, TimerNotificationHasExpectedMessage) {
-  ASSERT_FALSE(chromeos::assistant::features::IsTimersV2Enabled());
-
-  // We're going to run our test over a few locales to ensure i18n compliance.
-  std::vector<I18nTestCase> i18n_test_cases;
-
-  // We'll test in English (United States).
-  i18n_test_cases.push_back({
-      /*locale=*/"en_US",
-      /*ticks=*/
-      {
-          {base::TimeDelta(), "0:00"},
-          {base::TimeDelta::FromSeconds(1), "-0:01"},
-          {base::TimeDelta::FromMinutes(1), "-1:01"},
-          {base::TimeDelta::FromHours(1), "-1:01:01"},
-      },
-  });
-
-  // We'll also test in Slovenian (Slovenia).
-  i18n_test_cases.push_back({
-      /*locale=*/"sl_SI",
-      /*ticks=*/
-      {
-          {base::TimeDelta(), "0.00"},
-          {base::TimeDelta::FromSeconds(1), "-0.01"},
-          {base::TimeDelta::FromMinutes(1), "-1.01"},
-          {base::TimeDelta::FromHours(1), "-1.01.01"},
-      },
-  });
-
-  // Run all of our internationalized test cases.
-  for (auto& i18n_test_case : i18n_test_cases) {
-    base::test::ScopedRestoreICUDefaultLocale locale(i18n_test_case.locale);
-
-    // Observe notifications.
-    ScopedNotificationModelObserver observer;
-
-    // Fire a timer.
-    FireTimer{kTimerId};
-
-    // Run each tick of the clock in the test.
-    for (auto& tick : i18n_test_case.ticks) {
-      // Advance clock to next tick.
-      AdvanceClockAndWaitForTimerUpdate(tick.advance_clock);
-
-      // Make assertions about the notification.
-      EXPECT_EQ(ExpectedNotification().WithClientId(kClientId).WithMessage(
-                    tick.expected_string),
-                observer.last_notification());
-    }
-  }
-}
-
 // TODO(dmblack): Add another locale after string translation.
 // Tests that a notification is added for a timer and has the expected message.
-// NOTE: This test is only applicable to timers v2.
-TEST_F(AssistantAlarmTimerControllerTest,
-       TimerNotificationHasExpectedMessageV2) {
-  // Enable timers v2.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      chromeos::assistant::features::kAssistantTimersV2);
-  ASSERT_TRUE(chromeos::assistant::features::IsTimersV2Enabled());
-
+TEST_F(AssistantAlarmTimerControllerTest, TimerNotificationHasExpectedMessage) {
   constexpr char kEmptyLabel[] = "";
   constexpr base::TimeDelta kOneSec = base::TimeDelta::FromSeconds(1);
   constexpr base::TimeDelta kOneMin = base::TimeDelta::FromMinutes(1);
@@ -670,35 +540,7 @@ TEST_F(AssistantAlarmTimerControllerTest,
 }
 
 // Tests that a notification is added for a timer and has the expected action.
-// NOTE: This test is only applicable to timers v1.
 TEST_F(AssistantAlarmTimerControllerTest, TimerNotificationHasExpectedAction) {
-  ASSERT_FALSE(chromeos::assistant::features::IsTimersV2Enabled());
-
-  // Observe notifications.
-  ScopedNotificationModelObserver observer;
-
-  // Fire a timer.
-  FireTimer{kTimerId};
-
-  // We expect that the notification action will cause removal of the timer.
-  EXPECT_EQ(
-      ExpectedNotification().WithClientId(kClientId).WithActionUrl(
-          assistant::util::CreateAlarmTimerDeepLink(
-              assistant::util::AlarmTimerAction::kRemoveAlarmOrTimer, kTimerId)
-              .value()),
-      observer.last_notification());
-}
-
-// Tests that a notification is added for a timer and has the expected action.
-// NOTE: This test is only applicable to timers v2.
-TEST_F(AssistantAlarmTimerControllerTest,
-       TimerNotificationHasExpectedActionV2) {
-  // Enable timers v2.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      chromeos::assistant::features::kAssistantTimersV2);
-  ASSERT_TRUE(chromeos::assistant::features::IsTimersV2Enabled());
-
   // Observe notifications.
   ScopedNotificationModelObserver observer;
 
@@ -711,55 +553,9 @@ TEST_F(AssistantAlarmTimerControllerTest,
       observer.last_notification());
 }
 
-// Tests that a notification is added when a timer is fired and has the expected
-// buttons.
-// NOTE: This test is only applicable to timers v1.
-TEST_F(AssistantAlarmTimerControllerTest, TimerNotificationHasExpectedButtons) {
-  ASSERT_FALSE(chromeos::assistant::features::IsTimersV2Enabled());
-
-  // Observe notifications.
-  ScopedNotificationModelObserver observer;
-
-  // Fire a timer.
-  FireTimer{kTimerId};
-
-  // We expect the timer notification to have two buttons.
-  ASSERT_EQ(2u, observer.last_notification().buttons.size());
-
-  // We expect a "STOP" button which will remove the timer.
-  EXPECT_EQ(ExpectedButton()
-                .WithLabel(IDS_ASSISTANT_TIMER_NOTIFICATION_STOP_BUTTON)
-                .WithActionUrl(
-                    assistant::util::CreateAlarmTimerDeepLink(
-                        assistant::util::AlarmTimerAction::kRemoveAlarmOrTimer,
-                        kTimerId)
-                        .value())
-                .WithRemoveNotificationOnClick(true),
-            observer.last_notification().buttons.at(0));
-
-  // We expect an "ADD 1 MIN" button which will add time to the timer.
-  EXPECT_EQ(
-      ExpectedButton()
-          .WithLabel(IDS_ASSISTANT_TIMER_NOTIFICATION_ADD_1_MIN_BUTTON)
-          .WithActionUrl(assistant::util::CreateAlarmTimerDeepLink(
-                             assistant::util::AlarmTimerAction::kAddTimeToTimer,
-                             kTimerId, base::TimeDelta::FromMinutes(1))
-                             .value())
-          .WithRemoveNotificationOnClick(true),
-      observer.last_notification().buttons.at(1));
-}
-
 // Tests that a notification is added for a timer and has the expected buttons
 // at each state in its lifecycle.
-// NOTE: This test is only applicable to timers v2.
-TEST_F(AssistantAlarmTimerControllerTest,
-       TimerNotificationHasExpectedButtonsV2) {
-  // Enable timers v2.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      chromeos::assistant::features::kAssistantTimersV2);
-  ASSERT_TRUE(chromeos::assistant::features::IsTimersV2Enabled());
-
+TEST_F(AssistantAlarmTimerControllerTest, TimerNotificationHasExpectedButtons) {
   // Observe notifications.
   ScopedNotificationModelObserver observer;
 
@@ -851,35 +647,9 @@ TEST_F(AssistantAlarmTimerControllerTest,
 }
 
 // Tests that a notification is added for a timer and has the expected value to
-// cause removal on click.
-// NOTE: This test is only applicable to timers v1.
+// *not* cause removal on click.
 TEST_F(AssistantAlarmTimerControllerTest,
        TimerNotificationHasExpectedRemoveOnClick) {
-  ASSERT_FALSE(chromeos::assistant::features::IsTimersV2Enabled());
-
-  // Observe notifications.
-  ScopedNotificationModelObserver observer;
-
-  // Fire a timer.
-  FireTimer{kTimerId};
-
-  // Make assertions about the notification.
-  EXPECT_EQ(
-      ExpectedNotification().WithClientId(kClientId).WithRemoveOnClick(true),
-      observer.last_notification());
-}
-
-// Tests that a notification is added for a timer and has the expected value to
-// *not* cause removal on click.
-// Note: This test is only applicable to timers v2.
-TEST_F(AssistantAlarmTimerControllerTest,
-       TimerNotificationHasExpectedRemoveOnClickV2) {
-  // Enable timers v2.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      chromeos::assistant::features::kAssistantTimersV2);
-  ASSERT_TRUE(chromeos::assistant::features::IsTimersV2Enabled());
-
   // Observe notifications.
   ScopedNotificationModelObserver observer;
 
@@ -893,34 +663,9 @@ TEST_F(AssistantAlarmTimerControllerTest,
 }
 
 // Tests that a notification is added for a timer and has the expected value to
-// *not* cause renotification.
-// NOTE: This test is only applicable to timers v1.
+// cause renotification.
 TEST_F(AssistantAlarmTimerControllerTest,
        TimerNotificationHasExpectedRenotify) {
-  ASSERT_FALSE(chromeos::assistant::features::IsTimersV2Enabled());
-
-  // Observe notifications.
-  ScopedNotificationModelObserver observer;
-
-  // Fire a timer.
-  FireTimer{kTimerId};
-
-  // Make assertions about the notification.
-  EXPECT_EQ(ExpectedNotification().WithClientId(kClientId).WithRenotify(false),
-            observer.last_notification());
-}
-
-// Tests that a notification is added for a timer and has the expected value to
-// cause renotification.
-// Note: This test is only applicable to timers v2.
-TEST_F(AssistantAlarmTimerControllerTest,
-       TimerNotificationHasExpectedRenotifyV2) {
-  // Enable timers v2.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      chromeos::assistant::features::kAssistantTimersV2);
-  ASSERT_TRUE(chromeos::assistant::features::IsTimersV2Enabled());
-
   // Observe notifications.
   ScopedNotificationModelObserver observer;
 
@@ -939,35 +684,10 @@ TEST_F(AssistantAlarmTimerControllerTest,
             observer.last_notification());
 }
 
-// Tests that a notification is added for a timer and has the expected priority.
-// NOTE: This test is only applicable to timers v1.
-TEST_F(AssistantAlarmTimerControllerTest,
-       TimerNotificationHasExpectedPriority) {
-  ASSERT_FALSE(chromeos::assistant::features::IsTimersV2Enabled());
-
-  // Observe notifications.
-  ScopedNotificationModelObserver notification_model_observer;
-
-  // Fire a timer.
-  FireTimer{kTimerId};
-
-  // Make assertions about the notification.
-  EXPECT_EQ(ExpectedNotification().WithClientId(kClientId).WithPriority(
-                AssistantNotificationPriority::kHigh),
-            notification_model_observer.last_notification());
-}
-
 // Tests that a notification is added for a timer and has the expected priority
 // at various stages of its lifecycle.
-// NOTE: This test is only applicable to timers v2.
 TEST_F(AssistantAlarmTimerControllerTest,
-       TimerNotificationHasExpectedPriorityV2) {
-  // Enable timers v2.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      chromeos::assistant::features::kAssistantTimersV2);
-  ASSERT_TRUE(chromeos::assistant::features::IsTimersV2Enabled());
-
+       TimerNotificationHasExpectedPriority) {
   // Observe notifications.
   ScopedNotificationModelObserver notification_model_observer;
 
@@ -997,31 +717,8 @@ TEST_F(AssistantAlarmTimerControllerTest,
             notification_model_observer.last_notification());
 }
 
-// Tests that a notification is added for a timer and is not pinned.
-// NOTE: This test is only applicable to timers v1.
-TEST_F(AssistantAlarmTimerControllerTest, TimerNotificationIsNotPinned) {
-  ASSERT_FALSE(chromeos::assistant::features::IsTimersV2Enabled());
-
-  // Observe notifications.
-  ScopedNotificationModelObserver observer;
-
-  // Fire a timer.
-  FireTimer{kTimerId};
-
-  // Make assertions about the notification.
-  EXPECT_EQ(ExpectedNotification().WithClientId(kClientId).WithIsPinned(false),
-            observer.last_notification());
-}
-
 // Tests that a notification is added for a timer and is pinned.
-// NOTE: This test is only applicable to timers v2.
 TEST_F(AssistantAlarmTimerControllerTest, TimerNotificationIsPinned) {
-  // Enable timers v2.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      chromeos::assistant::features::kAssistantTimersV2);
-  ASSERT_TRUE(chromeos::assistant::features::IsTimersV2Enabled());
-
   // Observe notifications.
   ScopedNotificationModelObserver observer;
 

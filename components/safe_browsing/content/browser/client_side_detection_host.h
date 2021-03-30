@@ -50,6 +50,8 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
     GetSafeBrowsingDBManager() = 0;
     virtual scoped_refptr<BaseUIManager> GetSafeBrowsingUIManager() = 0;
     virtual ClientSideDetectionService* GetClientSideDetectionService() = 0;
+    virtual void AddReferrerChain(ClientPhishingRequest* verdict,
+                                  GURL current_url) = 0;
   };
 
   // The caller keeps ownership of the tab object and is responsible for

@@ -29,23 +29,22 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_html_iframe_element.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/feature_policy/document_policy_parser.h"
-#include "third_party/blink/renderer/core/feature_policy/feature_policy_parser.h"
-#include "third_party/blink/renderer/core/feature_policy/iframe_policy.h"
 #include "third_party/blink/renderer/core/fetch/trust_token_issuance_authorization.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
-#include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/trust_token_attribute_parsing.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_iframe.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
+#include "third_party/blink/renderer/core/permissions_policy/document_policy_parser.h"
+#include "third_party/blink/renderer/core/permissions_policy/iframe_policy.h"
+#include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
@@ -98,7 +97,7 @@ DOMFeaturePolicy* HTMLIFrameElement::featurePolicy() {
   if (!policy_ && GetExecutionContext()) {
     policy_ = MakeGarbageCollected<IFramePolicy>(
         GetExecutionContext(), GetFramePolicy().container_policy,
-        GetOriginForFeaturePolicy());
+        GetOriginForPermissionsPolicy());
   }
   return policy_.Get();
 }
@@ -208,7 +207,8 @@ void HTMLIFrameElement::ParseAttribute(
       UpdateContainerPolicy();
     }
   } else if (name == html_names::kCspAttr) {
-    if (value.Contains('\n') || value.Contains('\r') || value.Contains(',')) {
+    if (value && (value.Contains('\n') || value.Contains('\r') ||
+                  !MatchesTheSerializedCSPGrammar(value.GetString()))) {
       required_csp_ = g_null_atom;
       GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kOther,
@@ -229,11 +229,6 @@ void HTMLIFrameElement::ParseAttribute(
         UseCounter::Count(GetDocument(),
                           WebFeature::kFeaturePolicyAllowAttribute);
       }
-      if (value.Contains(',')) {
-        Deprecation::CountDeprecation(
-            GetDocument().GetExecutionContext(),
-            WebFeature::kCommaSeparatorInAllowAttribute);
-      }
     }
   } else if (name == html_names::kDisallowdocumentaccessAttr &&
              RuntimeEnabledFeatures::DisallowDocumentAccessEnabled()) {
@@ -247,6 +242,7 @@ void HTMLIFrameElement::ParseAttribute(
       UpdateRequiredPolicy();
     }
   } else if (name == html_names::kTrusttokenAttr) {
+    UseCounter::Count(GetDocument(), WebFeature::kTrustTokenIframe);
     trust_token_ = value;
   } else {
     // Websites picked up a Chromium article that used this non-specified
@@ -256,7 +252,7 @@ void HTMLIFrameElement::ParseAttribute(
     // To avoid polluting the console, this is being recorded only once per
     // page.
     if (name == "gesture" && value == "media" && GetDocument().Loader() &&
-        !GetDocument().Loader()->GetUseCounterHelper().HasRecordedMeasurement(
+        !GetDocument().Loader()->GetUseCounter().HasRecordedMeasurement(
             WebFeature::kHTMLIFrameElementGestureMedia)) {
       UseCounter::Count(GetDocument(),
                         WebFeature::kHTMLIFrameElementGestureMedia);
@@ -313,19 +309,21 @@ DocumentPolicyFeatureState HTMLIFrameElement::ConstructRequiredPolicy() const {
   return new_required_policy.feature_state;
 }
 
-ParsedFeaturePolicy HTMLIFrameElement::ConstructContainerPolicy() const {
+ParsedPermissionsPolicy HTMLIFrameElement::ConstructContainerPolicy() const {
   if (!GetExecutionContext())
-    return ParsedFeaturePolicy();
+    return ParsedPermissionsPolicy();
 
-  scoped_refptr<const SecurityOrigin> src_origin = GetOriginForFeaturePolicy();
+  scoped_refptr<const SecurityOrigin> src_origin =
+      GetOriginForPermissionsPolicy();
   scoped_refptr<const SecurityOrigin> self_origin =
       GetExecutionContext()->GetSecurityOrigin();
 
   PolicyParserMessageBuffer logger;
 
   // Start with the allow attribute
-  ParsedFeaturePolicy container_policy = FeaturePolicyParser::ParseAttribute(
-      allow_, self_origin, src_origin, logger, GetExecutionContext());
+  ParsedPermissionsPolicy container_policy =
+      PermissionsPolicyParser::ParseAttribute(allow_, self_origin, src_origin,
+                                              logger, GetExecutionContext());
 
   // Process the allow* attributes. These only take effect if the corresponding
   // feature is not present in the allow attribute's value.
@@ -334,7 +332,7 @@ ParsedFeaturePolicy HTMLIFrameElement::ConstructContainerPolicy() const {
   // enable the feature for all origins.
   if (AllowFullscreen()) {
     bool policy_changed = AllowFeatureEverywhereIfNotPresent(
-        mojom::blink::FeaturePolicyFeature::kFullscreen, container_policy);
+        mojom::blink::PermissionsPolicyFeature::kFullscreen, container_policy);
     if (!policy_changed) {
       logger.Warn(
           "Allow attribute will take precedence over 'allowfullscreen'.");
@@ -344,7 +342,7 @@ ParsedFeaturePolicy HTMLIFrameElement::ConstructContainerPolicy() const {
   // set, enable the feature for all origins.
   if (AllowPaymentRequest()) {
     bool policy_changed = AllowFeatureEverywhereIfNotPresent(
-        mojom::blink::FeaturePolicyFeature::kPayment, container_policy);
+        mojom::blink::PermissionsPolicyFeature::kPayment, container_policy);
     if (!policy_changed) {
       logger.Warn(
           "Allow attribute will take precedence over 'allowpaymentrequest'.");
@@ -434,22 +432,22 @@ HTMLIFrameElement::ConstructTrustTokenParams() const {
   }
 
   // Trust token redemption and signing (but not issuance) require that the
-  // trust-token-redemption feature policy be present.
-  bool operation_requires_feature_policy =
+  // trust-token-redemption permissions policy be present.
+  bool operation_requires_permissions_policy =
       parsed_params->type ==
           network::mojom::blink::TrustTokenOperationType::kRedemption ||
       parsed_params->type ==
           network::mojom::blink::TrustTokenOperationType::kSigning;
 
-  if (operation_requires_feature_policy &&
+  if (operation_requires_permissions_policy &&
       (!GetExecutionContext()->IsFeatureEnabled(
-          mojom::blink::FeaturePolicyFeature::kTrustTokenRedemption))) {
+          mojom::blink::PermissionsPolicyFeature::kTrustTokenRedemption))) {
     GetExecutionContext()->AddConsoleMessage(
         MakeGarbageCollected<ConsoleMessage>(
             mojom::blink::ConsoleMessageSource::kOther,
             mojom::blink::ConsoleMessageLevel::kError,
             "Trust Tokens: Attempted redemption or signing without the "
-            "trust-token-redemption Feature Policy feature present."));
+            "trust-token-redemption Permissions Policy feature present."));
     return nullptr;
   }
 

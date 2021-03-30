@@ -16,6 +16,7 @@
 #include "components/url_pattern_index/flat/url_pattern_index_generated.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -1162,7 +1163,9 @@ TEST_F(AllowAllRequestsTest, AllowlistedFrameTracking) {
     EXPECT_TRUE(new_host);
 
     // Note |host| might have been freed by now.
-    matcher->OnDidFinishNavigation(new_host);
+    content::MockNavigationHandle navigation_handle(url, new_host);
+    navigation_handle.set_has_committed(true);
+    matcher->OnDidFinishNavigation(&navigation_handle);
     return new_host;
   };
   auto simulate_frame_destroyed = [&matcher](content::RenderFrameHost* host) {
@@ -1262,7 +1265,11 @@ TEST_F(AllowAllRequestsTest, GetBeforeRequestAction) {
   GURL google_url("http://google.com");
   content::WebContentsTester::For(web_contents.get())
       ->NavigateAndCommit(google_url);
-  matcher->OnDidFinishNavigation(web_contents->GetMainFrame());
+
+  content::MockNavigationHandle navigation_handle(google_url,
+                                                  web_contents->GetMainFrame());
+  navigation_handle.set_has_committed(true);
+  matcher->OnDidFinishNavigation(&navigation_handle);
 
   struct {
     std::string url;

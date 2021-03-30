@@ -10,8 +10,6 @@ import androidx.annotation.Nullable;
 
 /**
  * Informed of changes to the favicon of the current navigation.
- *
- * @since 86
  */
 public abstract class FaviconCallback {
     /**

@@ -25,7 +25,6 @@ class PLATFORM_EXPORT MainThread : public Thread {
 
   // Thread implementation.
   ThreadScheduler* Scheduler() override;
-  PlatformThreadId ThreadId() const override;
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() const override;
 
   void AddTaskTimeObserver(base::sequence_manager::TaskTimeObserver*) override;
@@ -35,7 +34,6 @@ class PLATFORM_EXPORT MainThread : public Thread {
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   MainThreadSchedulerImpl* scheduler_;  // Not owned.
-  PlatformThreadId thread_id_;
 };
 
 }  // namespace scheduler

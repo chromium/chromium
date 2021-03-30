@@ -8,35 +8,57 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/media_buildflags.h"
+#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/color_space_gamut.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 
 namespace blink {
 
-void BitmapImageMetrics::CountDecodedImageType(const String& type) {
-  DecodedImageType decoded_image_type =
-      type == "jpg"
-          ? DecodedImageType::kJPEG
-          : type == "png"
-                ? DecodedImageType::kPNG
-                : type == "gif"
-                      ? DecodedImageType::kGIF
-                      : type == "webp"
-                            ? DecodedImageType::kWebP
-                            : type == "ico"
-                                  ? DecodedImageType::kICO
-                                  : type == "bmp"
-                                        ? DecodedImageType::kBMP
-#if BUILDFLAG(ENABLE_AV1_DECODER)
-                                        : type == "avif"
-                                              ? DecodedImageType::kAVIF
-#endif
-                                              : DecodedImageType::kUnknown;
+namespace {
 
-  UMA_HISTOGRAM_ENUMERATION("Blink.DecodedImageType", decoded_image_type);
+BitmapImageMetrics::DecodedImageType StringToDecodedImageType(
+    const String& type) {
+  if (type == "jpg")
+    return BitmapImageMetrics::DecodedImageType::kJPEG;
+  if (type == "png")
+    return BitmapImageMetrics::DecodedImageType::kPNG;
+  if (type == "gif")
+    return BitmapImageMetrics::DecodedImageType::kGIF;
+  if (type == "webp")
+    return BitmapImageMetrics::DecodedImageType::kWebP;
+  if (type == "ico")
+    return BitmapImageMetrics::DecodedImageType::kICO;
+  if (type == "bmp")
+    return BitmapImageMetrics::DecodedImageType::kBMP;
+#if BUILDFLAG(ENABLE_AV1_DECODER)
+  if (type == "avif")
+    return BitmapImageMetrics::DecodedImageType::kAVIF;
+#endif
+  return BitmapImageMetrics::DecodedImageType::kUnknown;
+}
+
+}  // namespace
+
+void BitmapImageMetrics::CountDecodedImageType(const String& type) {
+  UMA_HISTOGRAM_ENUMERATION("Blink.DecodedImageType",
+                            StringToDecodedImageType(type));
+}
+
+void BitmapImageMetrics::CountDecodedImageType(const String& type,
+                                               UseCounter* use_counter) {
+  if (use_counter) {
+    if (type == "webp") {
+      use_counter->CountUse(WebFeature::kWebPImage);
+#if BUILDFLAG(ENABLE_AV1_DECODER)
+    } else if (type == "avif") {
+      use_counter->CountUse(WebFeature::kAVIFImage);
+#endif
+    }
+  }
 }
 
 void BitmapImageMetrics::CountImageJpegDensity(int image_min_side,

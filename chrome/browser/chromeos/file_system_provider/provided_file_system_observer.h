@@ -44,7 +44,7 @@ class ProvidedFileSystemObserver {
                                 const Watcher& watcher,
                                 storage::WatcherManager::ChangeType change_type,
                                 const Changes& changes,
-                                const base::Closure& callback) = 0;
+                                base::OnceClosure callback) = 0;
 
   // Called after the tag value is updated for the watcher.
   virtual void OnWatcherTagUpdated(

@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
@@ -97,7 +98,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
       sk_sp<SkColorSpace> image_color_space,
       SkYUVAInfo::PlaneConfig plane_config,
       SkYUVAInfo::Subsampling subsampling) override;
-  void SwapBuffersSkipped() override;
+  void SwapBuffersSkipped(const gfx::Rect root_pass_damage_rect) override;
   void ScheduleOutputSurfaceAsOverlay(
       OverlayProcessorInterface::OutputSurfaceOverlayPlane output_surface_plane)
       override;
@@ -128,6 +129,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
                   std::unique_ptr<CopyOutputRequest> request) override;
   void AddContextLostObserver(ContextLostObserver* observer) override;
   void RemoveContextLostObserver(ContextLostObserver* observer) override;
+  void PreserveChildSurfaceControls() override;
   gpu::SyncToken Flush() override;
 
 #if defined(OS_APPLE)
@@ -181,6 +183,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
                       std::vector<gpu::SyncToken> sync_tokens,
                       bool make_current,
                       bool need_framebuffer);
+
   void FlushGpuTasks(bool wait_for_finish);
   GrBackendFormat GetGrBackendFormatForTexture(
       ResourceFormat resource_format,
@@ -281,7 +284,10 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   // increments or flips.
   gfx::OverlayTransform display_transform_ = gfx::OVERLAY_TRANSFORM_NONE;
 
-  // |impl_on_gpu| is created and destroyed on the GPU thread.
+  // |impl_on_gpu| is created and destroyed on the GPU thread by a posted task
+  // from SkiaOutputSurfaceImpl::Initialize and SkiaOutputSurfaceImpl::dtor. So
+  // it's safe to use base::Unretained for posting tasks during life time of
+  // SkiaOutputSurfaceImpl.
   std::unique_ptr<SkiaOutputSurfaceImplOnGpu> impl_on_gpu_;
 
   sk_sp<GrContextThreadSafeProxy> gr_context_thread_safe_;
@@ -290,6 +296,9 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   base::Optional<gfx::Rect> draw_rectangle_;
 
   bool should_measure_next_post_task_ = false;
+
+  // whether thee is a measured post task enqueued.
+  bool has_enqueued_measured_post_task_ = false;
 
   // GPU tasks pending for flush.
   std::vector<GpuTask> gpu_tasks_;
@@ -305,8 +314,9 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   base::Optional<gfx::Rect> damage_of_current_buffer_;
   // Current buffer index.
   size_t current_buffer_ = 0;
-  // Damage area of the buffer. Differ to the last submit buffer.
-  std::vector<gfx::Rect> damage_of_buffers_;
+  // Accumulates framebuffer damage since last drawing to a particular buffer.
+  // There is one gfx::Rect per framebuffer.
+  std::vector<gfx::Rect> accumulated_buffer_damage_;
   // Track if the current buffer content is changed.
   bool current_buffer_modified_ = false;
 

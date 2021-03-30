@@ -20,12 +20,12 @@ void FindBarState::ConfigureWebContents(content::WebContents* web_contents) {
           web_contents->GetBrowserContext()));
 }
 
-void FindBarState::SetLastSearchText(const base::string16& text) {
+void FindBarState::SetLastSearchText(const std::u16string& text) {
   last_prepopulate_text_ = text;
 }
 
-base::string16 FindBarState::GetSearchPrepopulateText() {
-  base::string16 text = last_prepopulate_text_;
+std::u16string FindBarState::GetSearchPrepopulateText() {
+  std::u16string text = last_prepopulate_text_;
 
   // In incognito, if there is no previous search text, fall back to the
   // original profile's search text.

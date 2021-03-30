@@ -1649,6 +1649,10 @@ xmlStringGetNodeList(const xmlDoc *doc, const xmlChar *value) {
 
     if (!xmlBufIsEmpty(buf)) {
 	node = xmlNewDocText(doc, NULL);
+        if (node == NULL) {
+            xmlBufFree(buf);
+            return(NULL);
+        }
 	node->content = xmlBufDetach(buf);
 
 	if (last == NULL) {

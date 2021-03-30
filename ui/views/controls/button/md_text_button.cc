@@ -31,7 +31,7 @@
 namespace views {
 
 MdTextButton::MdTextButton(PressedCallback callback,
-                           const base::string16& text,
+                           const std::u16string& text,
                            int button_context)
     : LabelButton(std::move(callback), text, button_context) {
   SetInkDropMode(InkDropMode::ON);
@@ -121,43 +121,6 @@ void MdTextButton::OnBlur() {
   UpdateColors();
 }
 
-std::unique_ptr<views::InkDropHighlight> MdTextButton::CreateInkDropHighlight()
-    const {
-  const ui::NativeTheme* theme = GetNativeTheme();
-  // The prominent button hover effect is a shadow.
-  constexpr int kYOffset = 1;
-  constexpr int kSkiaBlurRadius = 2;
-  ui::NativeTheme::ColorId fill_color_id;
-  ui::NativeTheme::ColorId shadow_color_id =
-      is_prominent_
-          ? ui::NativeTheme::kColorId_ProminentButtonInkDropShadowColor
-          : ui::NativeTheme::kColorId_ButtonInkDropShadowColor;
-  if (GetState() == STATE_HOVERED) {
-    fill_color_id = is_prominent_
-                        ? ui::NativeTheme::kColorId_ProminentButtonHoverColor
-                        : ui::NativeTheme::kColorId_ButtonHoverColor;
-  } else {
-    fill_color_id =
-        is_prominent_
-            ? ui::NativeTheme::kColorId_ProminentButtonInkDropFillColor
-            : ui::NativeTheme::kColorId_ButtonInkDropFillColor;
-  }
-  std::vector<gfx::ShadowValue> shadows;
-  // The notion of blur that gfx::ShadowValue uses is twice the Skia/CSS value.
-  // Skia counts the number of pixels outside the mask area whereas
-  // gfx::ShadowValue counts together the number of pixels inside and outside
-  // the mask bounds.
-  shadows.emplace_back(gfx::Vector2d(0, kYOffset), 2 * kSkiaBlurRadius,
-                       theme->GetSystemColor(shadow_color_id));
-  auto highlight = std::make_unique<InkDropHighlight>(
-      gfx::RectF(GetLocalBounds()).CenterPoint(),
-      std::make_unique<BorderShadowLayerDelegate>(
-          shadows, GetLocalBounds(), theme->GetSystemColor(fill_color_id),
-          corner_radius_));
-  highlight->set_visible_opacity(1.0f);
-  return highlight;
-}
-
 void MdTextButton::SetEnabledTextColors(base::Optional<SkColor> color) {
   LabelButton::SetEnabledTextColors(std::move(color));
   UpdateColors();
@@ -173,7 +136,7 @@ base::Optional<gfx::Insets> MdTextButton::GetCustomPadding() const {
   return custom_padding_.value_or(CalculateDefaultPadding());
 }
 
-void MdTextButton::SetText(const base::string16& text) {
+void MdTextButton::SetText(const std::u16string& text) {
   LabelButton::SetText(text);
   UpdatePadding();
 }

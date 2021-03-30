@@ -4,6 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
+import("//build/config/python.gni")
 import(
     "//chrome/browser/resources/chromeos/accessibility/common/run_jsbundler.gni")
 import("//chrome/common/features.gni")
@@ -11,29 +12,26 @@ import("//chrome/test/base/js2gtest.gni")
 import("//testing/test.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 
-declare_args() {
-  # Whether to compress the main Chromevox javascript files or load the
-  # modules individually from source files.
-  chromevox_compress_js = true
-}
-
 closure_library_dir =
     "//third_party/chromevox/third_party/closure-library/closure/goog"
 
 # List of all modules that are included in one or more of the production
 # chromevox scripts.
+#
+# These files all use older Closure provide/require support for dependency management and will be transitioned to ES6 modules (see below).
 chromevox_modules = [
   "../common/automation_predicate.js",
   "../common/automation_util.js",
   "../common/constants.js",
+  "../common/cursors/cursor.js",
+  "../common/cursors/range.js",
+  "../common/cursors/recovery_strategy.js",
   "../common/event_generator.js",
   "../common/key_code.js",
   "../common/instance_checker.js",
+  "../common/string_util.js",
   "../common/tree_walker.js",
-  "background/annotation/node_identifier.js",
-  "background/annotation/user_annotation_handler.js",
   "background/automation_object_constructor_installer.js",
-  "background/background.js",
   "background/base_automation_handler.js",
   "background/braille_background.js",
   "background/braille_captions_background.js",
@@ -43,7 +41,6 @@ chromevox_modules = [
   "background/classic_background.js",
   "background/color.js",
   "background/command_handler.js",
-  "background/cursors.js",
   "background/custom_automation_event.js",
   "background/desktop_automation_handler.js",
   "background/download_handler.js",
@@ -52,14 +49,12 @@ chromevox_modules = [
   "background/editing/editing.js",
   "background/editing/intent_handler.js",
   "background/event_source.js",
-  "background/find_handler.js",
   "background/focus_automation_handler.js",
   "background/gesture_command_data.js",
   "background/gesture_command_handler.js",
   "background/injected_script_loader.js",
   "background/keyboard_handler.js",
   "background/keymaps/key_map.js",
-  "background/live_regions.js",
   "background/locale_output_helper.js",
   "background/logging/event_stream_logger.js",
   "background/logging/log.js",
@@ -68,16 +63,11 @@ chromevox_modules = [
   "background/logging/output_logger.js",
   "background/logging/tree_dumper.js",
   "background/math_handler.js",
-  "background/media_automation_handler.js",
   "background/pointer_handler.js",
-  "background/next_earcons.js",
-  "background/notifications.js",
   "background/output.js",
   "background/panel_command.js",
   "background/phonetic_data.js",
   "background/prefs.js",
-  "background/range_automation_handler.js",
-  "background/recovery_strategy.js",
   "background/smart_sticky_mode.js",
   "background/tabs_api_handler.js",
   "background/user_action_monitor.js",
@@ -109,7 +99,6 @@ chromevox_modules = [
   "common/msgs.js",
   "common/nav_description.js",
   "common/spannable.js",
-  "common/string_util.js",
   "common/tts_background.js",
   "common/tts_base.js",
   "common/tts_interface.js",
@@ -118,7 +107,6 @@ chromevox_modules = [
   "injected/script_installer.js",
   "learn_mode/kbexplorer.js",
   "options/options.js",
-  "panel/annotations_ui.js",
   "panel/i_search.js",
   "panel/panel.js",
   "panel/panel_menu.js",
@@ -126,7 +114,18 @@ chromevox_modules = [
   "third_party/tamachiyomi/ja_phonetic_data.js",
 ]
 
-# Closure library modules neede by chromevox.
+# ES6 modules.
+chromevox_es6_modules = [
+  "background/background.js",
+  "background/live_regions.js",
+  "background/es6_loader.js",
+  "background/find_handler.js",
+  "background/media_automation_handler.js",
+  "background/earcons.js",
+  "background/range_automation_handler.js",
+]
+
+# Closure library modules needed by chromevox.
 relative_closure_library_modules = [
   "i18n/pluralrules.js",
   "i18n/ordinalrules.js",
@@ -149,26 +148,18 @@ chromevox_out_dir = "$root_out_dir/resources/chromeos/accessibility/chromevox"
 
 group("build") {
   deps = [
+    ":chromevox_background_script",
     ":chromevox_copied_files",
+    ":chromevox_learn_mode_script",
+    ":chromevox_log_script",
+    ":chromevox_min_content_script",
+    ":chromevox_options_script",
+    ":chromevox_panel_script",
     ":chromevox_phonetic_dictionaries_js",
-    ":lesson_component",
-    ":tutorial_component",
     "//chrome/browser/resources/chromeos/accessibility/braille_ime:braille_ime_manifest",
     "//third_party/chromevox:chromevox_third_party_resources",
     "//third_party/liblouis",
   ]
-  if (chromevox_compress_js) {
-    deps += [
-      ":chromevox_background_script",
-      ":chromevox_learn_mode_script",
-      ":chromevox_log_script",
-      ":chromevox_min_content_script",
-      ":chromevox_options_script",
-      ":chromevox_panel_script",
-    ]
-  } else {
-    deps += [ ":chromevox_deps_js" ]
-  }
 }
 
 chromevox_background_script_loader_file = "background/loader.js"
@@ -191,12 +182,8 @@ run_jsbundler("chromevox_copied_files") {
     "background/earcons/skim.wav",
     "background/earcons/small_room_2.wav",
     "background/earcons/static.wav",
-    "background/keymaps/default_keymap.json",
     "background/logging/log.css",
     "background/logging/log.html",
-    "i_tutorial/components/tutorial_common.js",
-    "i_tutorial/practice_areas/jump_commands.html",
-    "i_tutorial/practice_areas/selects.html",
     "images/chromevox-128.png",
     "images/chromevox-16.png",
     "images/chromevox-19.png",
@@ -215,22 +202,10 @@ run_jsbundler("chromevox_copied_files") {
     "options/unchecked.png",
     "panel/panel.css",
     "panel/panel.html",
+    "tutorial/practice_areas/jump_commands.html",
+    "tutorial/practice_areas/selects.html",
   ]
-  if (!chromevox_compress_js) {
-    sources += chromevox_modules
-    sources += [
-      "closure/closure_preinit.js",
-      chromevox_background_script_loader_file,
-      chromevox_learn_mode_loader_file,
-      chromevox_log_loader_file,
-      chromevox_min_content_script_loader_file,
-      chromevox_options_script_loader_file,
-      chromevox_panel_script_loader_file,
-    ]
-  }
-  if (!chromevox_compress_js) {
-    sources += closure_library_modules
-  }
+  sources += chromevox_es6_modules
   rewrite_rules = [
     rebase_path(".", root_build_dir) + ":",
     rebase_path(closure_library_dir, root_build_dir) + ":closure",
@@ -268,7 +243,8 @@ template("generate_deps_js") {
   }
 }
 
-action("chromevox_phonetic_dictionaries_js") {
+# TODO(crbug.com/1112471): Get this to run under Python3.
+python2_action("chromevox_phonetic_dictionaries_js") {
   script = "tools/phonetic_dictionaries.py"
   src_dir = [ "$root_out_dir/resources/chromeos/accessibility/_locales" ]
   output_file = "$chromevox_out_dir/phonetic_dictionaries.js"
@@ -282,55 +258,44 @@ action("chromevox_phonetic_dictionaries_js") {
          ] + rebase_path(src_dir, root_build_dir)
 }
 
-if (chromevox_compress_js) {
-  template("compress_js") {
-    run_jsbundler(target_name) {
-      assert(defined(invoker.output_file))
-      mode = "compressed_bundle"
-      modules = chromevox_modules + closure_library_modules
-      sources = invoker.sources
-      output_file = invoker.output_file
-    }
+template("compress_js") {
+  run_jsbundler(target_name) {
+    assert(defined(invoker.output_file))
+    mode = "compressed_bundle"
+    modules = chromevox_modules + closure_library_modules
+    sources = invoker.sources
+    output_file = invoker.output_file
   }
+}
 
-  compress_js("chromevox_learn_mode_script") {
-    sources = [ chromevox_learn_mode_loader_file ]
-    output_file = "$chromevox_out_dir/chromeVoxKbExplorerScript.js"
-  }
+compress_js("chromevox_learn_mode_script") {
+  sources = [ chromevox_learn_mode_loader_file ]
+  output_file = "$chromevox_out_dir/chromeVoxKbExplorerScript.js"
+}
 
-  compress_js("chromevox_log_script") {
-    sources = [ chromevox_log_loader_file ]
-    output_file = "$chromevox_out_dir/chromeVoxLogScript.js"
-  }
+compress_js("chromevox_log_script") {
+  sources = [ chromevox_log_loader_file ]
+  output_file = "$chromevox_out_dir/chromeVoxLogScript.js"
+}
 
-  compress_js("chromevox_options_script") {
-    sources = [ chromevox_options_script_loader_file ]
-    output_file = "$chromevox_out_dir/chromeVoxChromeOptionsScript.js"
-  }
+compress_js("chromevox_options_script") {
+  sources = [ chromevox_options_script_loader_file ]
+  output_file = "$chromevox_out_dir/chromeVoxChromeOptionsScript.js"
+}
 
-  compress_js("chromevox_background_script") {
-    sources = [ chromevox_background_script_loader_file ]
-    output_file = "$chromevox_out_dir/chromeVoxChromeBackgroundScript.js"
-  }
+compress_js("chromevox_background_script") {
+  sources = [ chromevox_background_script_loader_file ]
+  output_file = "$chromevox_out_dir/chromeVoxChromeBackgroundScript.js"
+}
 
-  compress_js("chromevox_min_content_script") {
-    sources = [ chromevox_min_content_script_loader_file ]
-    output_file = "$chromevox_out_dir/chromeVoxChromePageScript.js"
-  }
+compress_js("chromevox_min_content_script") {
+  sources = [ chromevox_min_content_script_loader_file ]
+  output_file = "$chromevox_out_dir/chromeVoxChromePageScript.js"
+}
 
-  compress_js("chromevox_panel_script") {
-    sources = [ chromevox_panel_script_loader_file ]
-    output_file = "$chromevox_out_dir/chromeVoxPanelScript.js"
-  }
-} else {
-  generate_deps_js("chromevox_deps_js") {
-    sources = chromevox_modules + closure_library_modules
-    output_file = "$chromevox_out_dir/deps.js"
-    rewrite_rules = [
-      rebase_path(".", root_build_dir) + ":..",
-      rebase_path(closure_library_dir, root_build_dir) + ":../closure",
-    ]
-  }
+compress_js("chromevox_panel_script") {
+  sources = [ chromevox_panel_script_loader_file ]
+  output_file = "$chromevox_out_dir/chromeVoxPanelScript.js"
 }
 
 if (is_chromeos_ash) {
@@ -360,7 +325,8 @@ if (is_chromeos_ash) {
     data += js2gtest_js_libraries
   }
 
-  action("chromevox_test_messages_js") {
+  # TODO(crbug.com/1112471): Get this to run under Python3.
+  python2_action("chromevox_test_messages_js") {
     script = "tools/generate_test_messages.py"
     sources = [ "$root_out_dir/resources/chromeos/accessibility/_locales/en/messages.json.gz" ]
     output_file = "$root_out_dir/test_data/chrome/browser/resources/chromeos/accessibility/chromevox/host/testing/test_messages.js"
@@ -445,21 +411,19 @@ if (is_chromeos_ash) {
   js2gtest("chromevox_extension_js_tests") {
     test_type = "extension"
     sources = [
-      "background/annotation/node_identifier_test.js",
-      "background/annotation/user_annotation_handler_test.js",
       "background/background_test.js",
       "background/braille_command_data_test.js",
       "background/color_test.js",
-      "background/cursors_test.js",
+      "background/desktop_automation_handler_test.js",
       "background/download_handler_test.js",
       "background/editing/editing_test.js",
+      "background/editing/intent_handler_test.js",
       "background/keyboard_handler_test.js",
       "background/live_regions_test.js",
       "background/locale_output_helper_test.js",
       "background/logging/log_store_test.js",
       "background/output_test.js",
       "background/portals_test.js",
-      "background/recovery_strategy_test.js",
       "background/settings_test.js",
       "background/smart_sticky_mode_test.js",
       "background/user_action_monitor_test.js",
@@ -494,21 +458,36 @@ if (is_chromeos_ash) {
   }
 }
 
-copy("lesson_component") {
-  sources = [ "$chromevox_gen_dir/i_tutorial/components/tutorial_lesson.js" ]
-  outputs = [ "$chromevox_out_dir/i_tutorial/components/tutorial_lesson.js" ]
+# Closure type check compilation and associated js libraries.
+js_type_check("closure_compile") {
   deps = [
-    "i_tutorial/components:closure_compile",
-    "i_tutorial/components:components",
+    ":chromevox_es6_library",
+    ":chromevox_library",
   ]
 }
 
-copy("tutorial_component") {
-  sources = [ "$chromevox_gen_dir/i_tutorial/components/i_tutorial.js" ]
-  outputs = [ "$chromevox_out_dir/i_tutorial/components/i_tutorial.js" ]
-
-  deps = [
-    "i_tutorial/components:closure_compile",
-    "i_tutorial/components:components",
+js_library("chromevox_library") {
+  sources = chromevox_modules
+  deps = [ "//third_party/chromevox/third_party/closure-library:library" ]
+  externs_list = [
+    "background/externs.js",
+    "$externs_path/accessibility_private.js",
+    "$externs_path/audio.js",
+    "$externs_path/automation.js",
+    "$externs_path/braille_display_private.js",
+    "$externs_path/chromeos_info_private.js",
+    "$externs_path/chrome.js",
+    "$externs_path/chrome_extensions.js",
+    "$externs_path/clipboard.js",
+    "$externs_path/command_line_private.js",
+    "$externs_path/login_state.js",
+    "$externs_path/metrics_private.js",
+    "$externs_path/settings_private.js",
+    "$externs_path/tts.js",
+    "$externs_path/virtual_keyboard_private.js",
   ]
+}
+
+js_library("chromevox_es6_library") {
+  sources = chromevox_es6_modules
 }

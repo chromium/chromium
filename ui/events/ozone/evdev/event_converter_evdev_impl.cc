@@ -25,7 +25,7 @@ const int kKeyReleaseValue = 0;
 const int kKeyRepeatValue = 2;
 
 // Values for the EV_SW code.
-const int kSwitchStylusInserted = 15;
+const int kSwitchStylusInserted = SW_PEN_INSERTED;
 
 }  // namespace
 

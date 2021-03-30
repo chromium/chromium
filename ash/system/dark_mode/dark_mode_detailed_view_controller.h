@@ -5,7 +5,7 @@
 #ifndef ASH_SYSTEM_DARK_MODE_DARK_MODE_DETAILED_VIEW_CONTROLLER_H_
 #define ASH_SYSTEM_DARK_MODE_DARK_MODE_DETAILED_VIEW_CONTROLLER_H_
 
-#include "ash/system/dark_mode/color_mode_observer.h"
+#include "ash/public/cpp/style/color_mode_observer.h"
 #include "ash/system/unified/detailed_view_controller.h"
 
 namespace ash {
@@ -27,7 +27,7 @@ class DarkModeDetailedViewController : public DetailedViewController,
 
   // DetailedViewControllerBase:
   views::View* CreateView() override;
-  base::string16 GetAccessibleName() const override;
+  std::u16string GetAccessibleName() const override;
 
   // ColorModeObserver:
   void OnColorModeChanged(bool dark_mode_enabled) override;

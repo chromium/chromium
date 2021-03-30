@@ -4,7 +4,6 @@
 
 #include "media/capture/mojom/video_capture_types_mojom_traits.h"
 
-#include "media/base/ipc/media_param_traits_macros.h"
 #include "ui/gfx/geometry/mojom/geometry.mojom.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 
@@ -147,6 +146,8 @@ EnumTraits<media::mojom::VideoCapturePixelFormat,
       return media::mojom::VideoCapturePixelFormat::XR30;
     case media::VideoPixelFormat::PIXEL_FORMAT_XB30:
       return media::mojom::VideoCapturePixelFormat::XB30;
+    case media::VideoPixelFormat::PIXEL_FORMAT_RGBAF16:
+      return media::mojom::VideoCapturePixelFormat::RGBAF16;
   }
   NOTREACHED();
   return media::mojom::VideoCapturePixelFormat::I420;
@@ -247,6 +248,9 @@ bool EnumTraits<media::mojom::VideoCapturePixelFormat,
       return true;
     case media::mojom::VideoCapturePixelFormat::BGRA:
       *output = media::PIXEL_FORMAT_BGRA;
+      return true;
+    case media::mojom::VideoCapturePixelFormat::RGBAF16:
+      *output = media::PIXEL_FORMAT_RGBAF16;
       return true;
   }
   NOTREACHED();
@@ -704,6 +708,16 @@ EnumTraits<media::mojom::VideoCaptureError, media::VideoCaptureError>::ToMojom(
     case media::VideoCaptureError::kCrosHalV3DeviceContextDuplicatedClient:
       return media::mojom::VideoCaptureError::
           kCrosHalV3DeviceContextDuplicatedClient;
+    case media::VideoCaptureError::kDesktopCaptureDeviceMacFailedStreamCreate:
+      return media::mojom::VideoCaptureError::
+          kDesktopCaptureDeviceMacFailedStreamCreate;
+    case media::VideoCaptureError::kDesktopCaptureDeviceMacFailedStreamStart:
+      return media::mojom::VideoCaptureError::
+          kDesktopCaptureDeviceMacFailedStreamStart;
+    case media::VideoCaptureError::
+        kCrosHalV3BufferManagerFailedToReserveBuffers:
+      return media::mojom::VideoCaptureError::
+          kCrosHalV3BufferManagerFailedToReserveBuffers;
   }
   NOTREACHED();
   return media::mojom::VideoCaptureError::kNone;
@@ -1251,6 +1265,21 @@ bool EnumTraits<media::mojom::VideoCaptureError, media::VideoCaptureError>::
       *output =
           media::VideoCaptureError::kCrosHalV3DeviceContextDuplicatedClient;
       return true;
+    case media::mojom::VideoCaptureError::
+        kDesktopCaptureDeviceMacFailedStreamCreate:
+      *output =
+          media::VideoCaptureError::kDesktopCaptureDeviceMacFailedStreamCreate;
+      return true;
+    case media::mojom::VideoCaptureError::
+        kDesktopCaptureDeviceMacFailedStreamStart:
+      *output =
+          media::VideoCaptureError::kDesktopCaptureDeviceMacFailedStreamStart;
+      return true;
+    case media::mojom::VideoCaptureError::
+        kCrosHalV3BufferManagerFailedToReserveBuffers:
+      *output = media::VideoCaptureError::
+          kCrosHalV3BufferManagerFailedToReserveBuffers;
+      return true;
   }
   NOTREACHED();
   return false;
@@ -1733,6 +1762,9 @@ bool StructTraits<media::mojom::VideoFrameFeedbackDataView,
   output->max_framerate_fps = data.max_framerate_fps();
   output->max_pixels = data.max_pixels();
   output->resource_utilization = data.resource_utilization();
+  output->require_mapped_frame = data.require_mapped_frame();
+  if (!data.ReadMappedSizes(&(output->mapped_sizes)))
+    return false;
   return true;
 }
 

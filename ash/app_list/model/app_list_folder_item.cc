@@ -21,7 +21,7 @@ AppListFolderItem::AppListFolderItem(const std::string& id)
       {AppListConfigType::kLarge, AppListConfigType::kMedium,
        AppListConfigType::kSmall},
       false /*request_icon_update*/);
-  config_provider_observer_.Add(&AppListConfigProvider::Get());
+  config_provider_observation_.Observe(&AppListConfigProvider::Get());
   set_is_folder(true);
 }
 

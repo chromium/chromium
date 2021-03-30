@@ -120,6 +120,11 @@ Polymer({
    */
   onSetupStateChanged_(setupState) {
     this.setupState_ = setupState;
+    if (this.setupState_ ===
+        NotificationAccessSetupOperationStatus.COMPLETED_SUCCESSFULLY) {
+      this.browserProxy_.setFeatureEnabledState(
+          settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS, true);
+    }
   },
 
   /**
@@ -183,6 +188,9 @@ Polymer({
     return this.setupState_ === null ||
         this.setupState_ ===
         NotificationAccessSetupOperationStatus.CONNECTION_REQUESTED ||
+        this.setupState_ ===
+        NotificationAccessSetupOperationStatus
+            .SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE ||
         this.setupState_ === NotificationAccessSetupOperationStatus.CONNECTING;
   },
 

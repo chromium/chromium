@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/x11/x11_screen_ozone.h"
 
+#include "ui/base/linux/linux_desktop.h"
 #include "ui/base/x/x11_idle_query.h"
 #include "ui/base/x/x11_screensaver_window_finder.h"
 #include "ui/base/x/x11_util.h"
@@ -20,20 +21,6 @@
 #include "ui/platform_window/x11/x11_window_manager.h"
 
 namespace ui {
-
-namespace {
-
-float GetDeviceScaleFactor() {
-  float device_scale_factor = 1.0f;
-  // TODO(crbug.com/891175): Implement PlatformScreen for X11
-  // Get device scale factor using scale factor and resolution like
-  // 'GtkUi::GetRawDeviceScaleFactor'.
-  if (display::Display::HasForceDeviceScaleFactor())
-    device_scale_factor = display::Display::GetForcedDeviceScaleFactor();
-  return device_scale_factor;
-}
-
-}  // namespace
 
 X11ScreenOzone::X11ScreenOzone()
     : window_manager_(X11WindowManager::GetInstance()),
@@ -83,7 +70,7 @@ gfx::Point X11ScreenOzone::GetCursorScreenPoint() const {
   }
   // TODO(danakj): Should this be rounded? Or kept as a floating point?
   return gfx::ToFlooredPoint(
-      gfx::ConvertPointToDips(*point_in_pixels, GetDeviceScaleFactor()));
+      gfx::ConvertPointToDips(*point_in_pixels, GetXDisplayScaleFactor()));
 }
 
 gfx::AcceleratedWidget X11ScreenOzone::GetAcceleratedWidgetAtScreenPoint(
@@ -111,7 +98,7 @@ display::Display X11ScreenOzone::GetDisplayNearestPoint(
 display::Display X11ScreenOzone::GetDisplayMatching(
     const gfx::Rect& match_rect_in_pixels) const {
   gfx::Rect match_rect = gfx::ToEnclosingRect(
-      gfx::ConvertRectToDips(match_rect_in_pixels, GetDeviceScaleFactor()));
+      gfx::ConvertRectToDips(match_rect_in_pixels, GetXDisplayScaleFactor()));
   const display::Display* matching_display =
       display::FindDisplayWithBiggestIntersection(
           x11_display_manager_->displays(), match_rect);
@@ -146,8 +133,19 @@ std::string X11ScreenOzone::GetCurrentWorkspace() {
 
 base::Value X11ScreenOzone::GetGpuExtraInfoAsListValue(
     const gfx::GpuExtraInfo& gpu_extra_info) {
-  return ui::GpuExtraInfoAsListValue(gpu_extra_info.system_visual,
-                                     gpu_extra_info.rgba_visual);
+  auto result = GetDesktopEnvironmentInfoAsListValue();
+  StoreGpuExtraInfoIntoListValue(gpu_extra_info.system_visual,
+                                 gpu_extra_info.rgba_visual, result);
+  StorePlatformNameIntoListValue(result, "x11");
+  return result;
+}
+
+void X11ScreenOzone::SetDeviceScaleFactor(float scale) {
+  if (device_scale_factor_ == scale)
+    return;
+
+  device_scale_factor_ = scale;
+  x11_display_manager_->DispatchDelayedDisplayListUpdate();
 }
 
 void X11ScreenOzone::OnEvent(const x11::Event& xev) {
@@ -165,7 +163,9 @@ void X11ScreenOzone::OnXDisplayListUpdated() {
 }
 
 float X11ScreenOzone::GetXDisplayScaleFactor() const {
-  return GetDeviceScaleFactor();
+  return display::Display::HasForceDeviceScaleFactor()
+             ? display::Display::GetForcedDeviceScaleFactor()
+             : device_scale_factor_;
 }
 
 }  // namespace ui

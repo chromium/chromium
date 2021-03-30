@@ -101,7 +101,7 @@ mojo::ScopedDataPipeConsumerHandle consumer = std::move(pipe.consumer_handle);
 // Or alternatively:
 mojo::ScopedDataPipeProducerHandle producer;
 mojo::ScopedDataPipeConsumerHandle consumer;
-mojo::CreateDataPipe(null, &producer, &consumer);
+mojo::CreateDataPipe(nullptr, producer, consumer);
 ```
 
 C++ helpers which correspond directly to the

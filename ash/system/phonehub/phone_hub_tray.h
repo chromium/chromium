@@ -11,7 +11,7 @@
 #include "ash/system/phonehub/phone_hub_ui_controller.h"
 #include "ash/system/phonehub/phone_status_view.h"
 #include "ash/system/tray/tray_background_view.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 
 namespace chromeos {
 namespace phonehub {
@@ -46,15 +46,15 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
 
   // TrayBackgroundView:
   void ClickedOutsideBubble() override;
-  base::string16 GetAccessibleNameForTray() override;
+  std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void AnchorUpdated() override;
   void Initialize() override;
-  bool PerformAction(const ui::Event& event) override;
   void CloseBubble() override;
-  void ShowBubble(bool show_by_click) override;
+  void ShowBubble() override;
   TrayBubbleView* GetBubbleView() override;
+  views::Widget* GetBubbleWidget() const override;
   const char* GetClassName() const override;
 
   // PhoneStatusView::Delegate:
@@ -72,7 +72,7 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
 
  private:
   // TrayBubbleView::Delegate:
-  base::string16 GetAccessibleNameForBubble() override;
+  std::u16string GetAccessibleNameForBubble() override;
   bool ShouldEnableExtraKeyboardAccessibility() override;
   void HideBubble(const TrayBubbleView* bubble_view) override;
 
@@ -100,7 +100,7 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   // Unowned.
   PhoneHubContentView* content_view_ = nullptr;
 
-  ScopedObserver<PhoneHubUiController, PhoneHubUiController::Observer>
+  base::ScopedObservation<PhoneHubUiController, PhoneHubUiController::Observer>
       observed_phone_hub_ui_controller_{this};
 };
 

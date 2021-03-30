@@ -39,6 +39,8 @@ GLenum SkColorTypeToGLDataFormat(SkColorType color_type) {
       return GL_RGBA;
     case kBGRA_8888_SkColorType:
       return GL_BGRA_EXT;
+    case kR8G8_unorm_SkColorType:
+      return GL_RG_EXT;
     case kGray_8_SkColorType:
       return GL_LUMINANCE;
     default:
@@ -52,6 +54,7 @@ GLenum SkColorTypeToGLDataType(SkColorType color_type) {
   switch (color_type) {
     case kRGBA_8888_SkColorType:
     case kBGRA_8888_SkColorType:
+    case kR8G8_unorm_SkColorType:
     case kGray_8_SkColorType:
       return GL_UNSIGNED_BYTE;
     default:
@@ -178,6 +181,9 @@ void RasterImplementationGLES::WritePixels(const gpu::Mailbox& dest_mailbox,
   BeginSharedImageAccessDirectCHROMIUM(
       texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
 
+  GLint old_align = 0;
+  gl_->GetIntegerv(GL_UNPACK_ALIGNMENT, &old_align);
+  gl_->PixelStorei(GL_UNPACK_ALIGNMENT, 1);
   gl_->PixelStorei(GL_UNPACK_ROW_LENGTH, row_bytes / src_info.bytesPerPixel());
   gl_->BindTexture(texture_target, texture_id);
   gl_->TexSubImage2D(texture_target, 0, dst_x_offset, dst_y_offset,
@@ -186,6 +192,7 @@ void RasterImplementationGLES::WritePixels(const gpu::Mailbox& dest_mailbox,
                      SkColorTypeToGLDataType(src_info.colorType()), src_pixels);
   gl_->BindTexture(texture_target, 0);
   gl_->PixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+  gl_->PixelStorei(GL_UNPACK_ALIGNMENT, old_align);
 
   EndSharedImageAccessDirectCHROMIUM(texture_id);
   DeleteGpuRasterTexture(texture_id);
@@ -202,6 +209,7 @@ void RasterImplementationGLES::ConvertYUVAMailboxesToRGB(
 
 void RasterImplementationGLES::BeginRasterCHROMIUM(
     GLuint sk_color,
+    GLboolean needs_clear,
     GLuint msaa_sample_count,
     GLboolean can_use_lcd_text,
     const gfx::ColorSpace& color_space,

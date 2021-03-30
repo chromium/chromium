@@ -8,6 +8,7 @@ _jni_sources = [
   "java/src/org/chromium/components/crash/CrashKeys.java",
   "java/src/org/chromium/components/crash/browser/ChildProcessCrashObserver.java",
   "java/src/org/chromium/components/crash/browser/PackagePaths.java",
+  "java/src/org/chromium/components/crash/browser/ProcessExitReasonFromSystem.java",
 ]
 
 generate_jni("jni_headers") {
@@ -21,8 +22,7 @@ java_cpp_enum("java_enums_srcjar") {
 android_library("java") {
   deps = [
     "//base:base_java",
-    "//base:jni_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   srcjar_deps = [ ":java_enums_srcjar" ]
@@ -59,10 +59,7 @@ generate_jni("java_handler_jni_headers") {
 }
 
 android_library("handler_java") {
-  deps = [
-    "//base:base_java",
-    "//base:jni_java",
-  ]
+  deps = [ "//base:base_java" ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   sources = _java_handler_jni_sources
 }

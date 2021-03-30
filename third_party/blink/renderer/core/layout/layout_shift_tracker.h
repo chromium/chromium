@@ -46,11 +46,19 @@ class CORE_EXPORT LayoutShiftTracker final
   // |old_rect| and |old_paint_offset| so that we can calculate the correct old
   // visual representation and old starting point in the initial containing
   // block and the viewport with the new property tree state in most cases.
+  // The adjustment should include the deltas of 2d translations and scrolls,
+  // and LayoutShiftTracker can determine stability by including (by default)
+  // or excluding |translation_delta| and/or |scroll_delta|.
+  //
+  // See renderer/core/layout/layout-shift-tracker-old-paint-offset.md for
+  // more details about |old_paint_offset|.
   void NotifyBoxPrePaint(const LayoutBox& box,
                          const PropertyTreeStateOrAlias& property_tree_state,
                          const PhysicalRect& old_rect,
                          const PhysicalRect& new_rect,
                          const PhysicalOffset& old_paint_offset,
+                         const FloatSize& translation_delta,
+                         const FloatSize& scroll_delta,
                          const PhysicalOffset& new_paint_offset);
 
   void NotifyTextPrePaint(const LayoutText& text,
@@ -58,6 +66,8 @@ class CORE_EXPORT LayoutShiftTracker final
                           const LogicalOffset& old_starting_point,
                           const LogicalOffset& new_starting_point,
                           const PhysicalOffset& old_paint_offset,
+                          const FloatSize& translation_delta,
+                          const FloatSize& scroll_delta,
                           const PhysicalOffset& new_paint_offset,
                           const LayoutUnit logical_height);
 
@@ -66,6 +76,7 @@ class CORE_EXPORT LayoutShiftTracker final
   void NotifyScroll(mojom::blink::ScrollType, ScrollOffset delta);
   void NotifyViewportSizeChanged();
   void NotifyFindInPageInput();
+  void NotifyChangeEvent();
   bool IsActive() const { return is_active_; }
   double Score() const { return score_; }
   double WeightedScore() const { return weighted_score_; }
@@ -99,6 +110,7 @@ class CORE_EXPORT LayoutShiftTracker final
       PhysicalOffset paint_offset;
       LayoutSize size;
       PhysicalRect visual_overflow_rect;
+      bool has_paint_offset_translation;
     };
     HeapHashMap<Member<const Node>, Geometry> geometries_before_detach_;
   };
@@ -145,21 +157,33 @@ class CORE_EXPORT LayoutShiftTracker final
                      const PhysicalRect& old_rect,
                      const PhysicalRect& new_rect,
                      const FloatPoint& old_starting_point,
+                     const FloatSize& translation_delta,
+                     const FloatSize& scroll_offset_delta,
                      const FloatPoint& new_starting_point);
 
   void ReportShift(double score_delta, double weighted_score_delta);
   void TimerFired(TimerBase*) {}
   std::unique_ptr<TracedValue> PerFrameTraceData(double score_delta,
+                                                 double weighted_score_delta,
                                                  bool input_detected) const;
   void AttributionsToTracedValue(TracedValue&) const;
   double SubframeWeightingFactor() const;
-  void SetLayoutShiftRects(const Vector<IntRect>& int_rects);
+
+  // Sends layout shift rects to the heads-up display (HUD) layer, if
+  // visualization is enabled (by --show-layout-shift-regions or devtools
+  // "Layout Shift Regions" option).
+  void SendLayoutShiftRectsToHud(const Vector<IntRect>& int_rects);
+
   void UpdateInputTimestamp(base::TimeTicks timestamp);
   LayoutShift::AttributionList CreateAttributionList() const;
   void SubmitPerformanceEntry(double score_delta, bool input_detected) const;
+  void NotifyPrePaintFinishedInternal();
+  double LastInputTimestamp() const;
+  void UpdateTimerAndInputTimestamp();
 
   Member<LocalFrameView> frame_view_;
   bool is_active_;
+  bool enable_m90_improvements_;
 
   // The document cumulative layout shift (DCLS) score for this LocalFrame,
   // unweighted, with move distance applied.
@@ -193,7 +217,7 @@ class CORE_EXPORT LayoutShiftTracker final
   // Tracks the short period after an input event during which we ignore shifts
   // for the purpose of cumulative scoring, and report them to the web perf API
   // with hadRecentInput == true.
-  TaskRunnerTimer<LayoutShiftTracker> timer_;
+  HeapTaskRunnerTimer<LayoutShiftTracker> timer_;
 
   // The maximum distance any layout object has moved in the current animation
   // frame.
@@ -204,6 +228,7 @@ class CORE_EXPORT LayoutShiftTracker final
   float overall_max_distance_;
 
   // Sum of all scroll deltas that occurred in the current animation frame.
+  // TODO(wangxianzhu): Remove when enabling CLSM90Improvements permanently.
   ScrollOffset frame_scroll_delta_;
 
   // Whether either a user input or document scroll have been observed during

@@ -110,6 +110,21 @@ class ExecutiveTest(unittest.TestCase):
         executive.popen(command_line('echo', 1), stdout=executive.PIPE).wait()
         self.assertEqual('echo 1', executive.command_for_printing(['echo', 1]))
 
+    def test_print_command_unicode(self):
+        executive = Executive()
+        # The expected result is different on Windows because the unicode arg
+        # first gets encoded using 'mbcs'. This encoding makes it unnecessary to
+        # escape any unicode characters in the arg.
+        # Elsewhere, the 'mbcs' encoding is skipped, but then we must escape any
+        # non-ascii unicode characters by encoding with 'unicode_escape'. This
+        # results in an extra \ on non-Win platforms.
+        if sys.platform == 'win32':
+            expected_result = u'echo 1 a\xac'
+        else:
+            expected_result = u'echo 1 a\\xac'
+        self.assertEqual(expected_result,
+                         executive.command_for_printing(['echo', 1, u'a\xac']))
+
     def test_popen_args(self):
         executive = Executive()
         # Explicitly naming the 'args' argument should not throw an exception.

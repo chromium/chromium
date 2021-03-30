@@ -5,6 +5,7 @@
 #include "ios/chrome/browser/ui/history/history_table_view_controller.h"
 
 #include "base/i18n/time_formatting.h"
+#import "base/ios/ios_util.h"
 #include "base/mac/foundation_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -18,6 +19,7 @@
 #import "ios/chrome/browser/drag_and_drop/table_view_url_drag_drop_handler.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
+#import "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
@@ -33,6 +35,8 @@
 #include "ios/chrome/browser/ui/history/history_util.h"
 #import "ios/chrome/browser/ui/history/public/history_presentation_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_link_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_url_item.h"
@@ -41,7 +45,6 @@
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/menu_util.h"
-#import "ios/chrome/browser/ui/util/multi_window_support.h"
 #import "ios/chrome/browser/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
@@ -88,6 +91,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 
 @interface HistoryTableViewController () <HistoryEntriesStatusItemDelegate,
                                           HistoryEntryInserterDelegate,
+                                          TableViewLinkHeaderFooterItemDelegate,
                                           TableViewTextLinkCellDelegate,
                                           TableViewURLDragDataSource,
                                           UISearchControllerDelegate,
@@ -458,6 +462,14 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 
 - (void)tableViewTextLinkCell:(TableViewTextLinkCell*)cell
             didRequestOpenURL:(const GURL&)URL {
+  DCHECK(!base::FeatureList::IsEnabled(kSettingsRefresh));
+  [self openURLInNewTab:URL];
+}
+
+#pragma mark TableViewLinkHeaderFooterItemDelegate
+
+- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(GURL)URL {
+  DCHECK(base::FeatureList::IsEnabled(kSettingsRefresh));
   [self openURLInNewTab:URL];
 }
 
@@ -563,8 +575,11 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 - (CGFloat)tableView:(UITableView*)tableView
     heightForHeaderInSection:(NSInteger)section {
   if (section ==
-      [self.tableViewModel
-          sectionForSectionIdentifier:kEntriesStatusSectionIdentifier])
+          [self.tableViewModel
+              sectionForSectionIdentifier:kEntriesStatusSectionIdentifier] &&
+      (!base::FeatureList::IsEnabled(kSettingsRefresh) ||
+       ![self.tableViewModel
+           headerForSectionWithIdentifier:kEntriesStatusSectionIdentifier]))
     return 0;
   return UITableViewAutomaticDimension;
 }
@@ -632,6 +647,12 @@ const CGFloat kButtonHorizontalPadding = 30.0;
     return nil;
   }
 
+  if (indexPath.section ==
+      [self.tableViewModel
+          sectionForSectionIdentifier:kEntriesStatusSectionIdentifier]) {
+    return nil;
+  }
+
   HistoryEntryItem* entry = base::mac::ObjCCastStrict<HistoryEntryItem>(
       [self.tableViewModel itemAtIndexPath:indexPath]);
   UIView* cell = [self.tableView cellForRowAtIndexPath:indexPath];
@@ -640,6 +661,24 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 }
 
 #pragma mark - UITableViewDataSource
+
+- (UIView*)tableView:(UITableView*)tableView
+    viewForHeaderInSection:(NSInteger)section {
+  UIView* view = [super tableView:tableView viewForHeaderInSection:section];
+  NSInteger sectionIdentifier =
+      [self.tableViewModel sectionIdentifierForSection:section];
+  switch (sectionIdentifier) {
+    case kEntriesStatusSectionIdentifier: {
+      // Might be a different type of header.
+      TableViewLinkHeaderFooterView* linkView =
+          base::mac::ObjCCast<TableViewLinkHeaderFooterView>(view);
+      linkView.delegate = self;
+    } break;
+    default:
+      break;
+  }
+  return view;
+}
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
@@ -664,6 +703,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
            }];
   }
   if (item.type == ItemTypeEntriesStatusWithLink) {
+    DCHECK(!base::FeatureList::IsEnabled(kSettingsRefresh));
     TableViewTextLinkCell* tableViewTextLinkCell =
         base::mac::ObjCCastStrict<TableViewTextLinkCell>(cellToReturn);
     [tableViewTextLinkCell setDelegate:self];
@@ -744,8 +784,8 @@ const CGFloat kButtonHorizontalPadding = 30.0;
     _query_history_continuation.Reset();
 
     BOOL fetchAllHistory = !query || [query isEqualToString:@""];
-    base::string16 queryString =
-        fetchAllHistory ? base::string16() : base::SysNSStringToUTF16(query);
+    std::u16string queryString =
+        fetchAllHistory ? std::u16string() : base::SysNSStringToUTF16(query);
     history::QueryOptions options;
     options.duplicate_policy =
         fetchAllHistory ? history::QueryOptions::REMOVE_DUPLICATES_PER_DAY
@@ -826,32 +866,61 @@ const CGFloat kButtonHorizontalPadding = 30.0;
     }
   } else {
     // Since there's a new status message, create the new status item.
-    TableViewItem* updatedMessageItem =
-        [self statusItemWithMessage:newStatusMessage
-             messageWillContainLink:messageWillContainLink];
-
-    // If there was a previous status item delete it, insert the new status item
-    // and reload. If not simply insert the new status item.
-    tableUpdates = ^{
-      if (previousStatusItem) {
-        [self.tableViewModel
-                   removeItemWithType:previousStatusItem.type
-            fromSectionWithIdentifier:kEntriesStatusSectionIdentifier];
-        [self.tableViewModel addItem:updatedMessageItem
-             toSectionWithIdentifier:kEntriesStatusSectionIdentifier];
-        [self.tableView
-            reloadRowsAtIndexPaths:@[ [self.tableViewModel
-                                       indexPathForItem:updatedMessageItem] ]
-                  withRowAnimation:UITableViewRowAnimationAutomatic];
+    if (base::FeatureList::IsEnabled(kSettingsRefresh)) {
+      TableViewHeaderFooterItem* item = nil;
+      if (messageWillContainLink) {
+        TableViewLinkHeaderFooterItem* header =
+            [[TableViewLinkHeaderFooterItem alloc]
+                initWithType:ItemTypeEntriesStatusWithLink];
+        header.text = newStatusMessage;
+        header.urls = std::vector<GURL>{GURL(kHistoryMyActivityURL)};
+        item = header;
       } else {
-        [self.tableViewModel addItem:updatedMessageItem
-             toSectionWithIdentifier:kEntriesStatusSectionIdentifier];
-        [self.tableView
-            insertRowsAtIndexPaths:@[ [self.tableViewModel
-                                       indexPathForItem:updatedMessageItem] ]
-                  withRowAnimation:UITableViewRowAnimationAutomatic];
+        TableViewTextHeaderFooterItem* header =
+            [[TableViewTextHeaderFooterItem alloc]
+                initWithType:ItemTypeEntriesStatus];
+        header.text = newStatusMessage;
+        item = header;
       }
-    };
+      // Change the header then reload the section to have it taken into
+      // account.
+      tableUpdates = ^{
+        NSInteger sectionIndex = [self.tableViewModel
+            sectionForSectionIdentifier:kEntriesStatusSectionIdentifier];
+        [self.tableViewModel setHeader:item
+              forSectionWithIdentifier:kEntriesStatusSectionIdentifier];
+        [self.tableView
+              reloadSections:[NSIndexSet indexSetWithIndex:sectionIndex]
+            withRowAnimation:UITableViewRowAnimationAutomatic];
+      };
+    } else {
+      TableViewItem* updatedMessageItem =
+          [self statusItemWithMessage:newStatusMessage
+               messageWillContainLink:messageWillContainLink];
+
+      // If there was a previous status item delete it, insert the new status
+      // item and reload. If not simply insert the new status item.
+      tableUpdates = ^{
+        if (previousStatusItem) {
+          [self.tableViewModel
+                     removeItemWithType:previousStatusItem.type
+              fromSectionWithIdentifier:kEntriesStatusSectionIdentifier];
+          [self.tableViewModel addItem:updatedMessageItem
+               toSectionWithIdentifier:kEntriesStatusSectionIdentifier];
+          [self.tableView
+              reloadRowsAtIndexPaths:@[ [self.tableViewModel
+                                         indexPathForItem:updatedMessageItem] ]
+                    withRowAnimation:UITableViewRowAnimationAutomatic];
+        } else {
+          [self.tableViewModel addItem:updatedMessageItem
+               toSectionWithIdentifier:kEntriesStatusSectionIdentifier];
+          [self.tableView
+              insertRowsAtIndexPaths:@[ [self.tableViewModel
+                                         indexPathForItem:updatedMessageItem] ]
+                    withRowAnimation:UITableViewRowAnimationAutomatic];
+        }
+      };
+    }
   }
 
   // If there's any tableUpdates, run them.
@@ -1089,7 +1158,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
                                          action:openInNewTabAction
                                           style:UIAlertActionStyleDefault];
 
-  if (IsMultipleScenesSupported()) {
+  if (base::ios::IsMultipleScenesSupported()) {
     // Add "Open In New Window" option.
     NSString* openInNewWindowTitle =
         l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENINNEWWINDOW);
@@ -1107,9 +1176,12 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   ProceduralBlock openInNewIncognitoTabAction = ^{
     [weakSelf openURLInNewIncognitoTab:entry.URL];
   };
+  BOOL incognitoEnabled =
+      !IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs());
   [self.contextMenuCoordinator addItemWithTitle:openInNewIncognitoTabTitle
                                          action:openInNewIncognitoTabAction
-                                          style:UIAlertActionStyleDefault];
+                                          style:UIAlertActionStyleDefault
+                                        enabled:incognitoEnabled];
 
   // Add "Copy URL" option.
   NSString* copyURLTitle =

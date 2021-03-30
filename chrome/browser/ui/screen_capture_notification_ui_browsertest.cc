@@ -5,11 +5,11 @@
 #include "chrome/browser/ui/screen_capture_notification_ui.h"
 
 #include <memory>
+#include <string>
 
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "content/public/test/browser_test.h"
@@ -22,9 +22,8 @@ class ScreenCaptureNotificationUiBrowserTest : public DialogBrowserTest {
 
   // TestBrowserUi:
   void ShowUi(const std::string& name) override {
-    screen_capture_notification_ui_ =
-        ScreenCaptureNotificationUI::Create(base::string16(
-            base::ASCIIToUTF16("ScreenCaptureNotificationUI Browser Test")));
+    screen_capture_notification_ui_ = ScreenCaptureNotificationUI::Create(
+        std::u16string(u"ScreenCaptureNotificationUI Browser Test"));
     on_started_result_ = screen_capture_notification_ui_->OnStarted(
         base::BindOnce(
             [](ScreenCaptureNotificationUiBrowserTest* test) {

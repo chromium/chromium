@@ -41,7 +41,7 @@ DesktopNotificationHandler::~DesktopNotificationHandler() = default;
 void DesktopNotificationHandler::DisplayNewEntries(
     const std::vector<const SendTabToSelfEntry*>& new_entries) {
   for (const SendTabToSelfEntry* entry : new_entries) {
-    const base::string16 device_info = l10n_util::GetStringFUTF16(
+    const std::u16string device_info = l10n_util::GetStringFUTF16(
         IDS_MESSAGE_NOTIFICATION_SEND_TAB_TO_SELF_DEVICE_INFO,
         base::UTF8ToUTF16(entry->GetDeviceName()));
     const GURL& url = entry->GetURL();
@@ -86,7 +86,7 @@ void DesktopNotificationHandler::OnClick(
     const GURL& origin,
     const std::string& notification_id,
     const base::Optional<int>& action_index,
-    const base::Optional<base::string16>& reply,
+    const base::Optional<std::u16string>& reply,
     base::OnceClosure completed_closure) {
   if (notification_id.find(kDesktopNotificationSharedPrefix)) {
     // Launch a new tab for the notification's |origin|,
@@ -108,7 +108,7 @@ void DesktopNotificationHandler::OnClick(
 void DesktopNotificationHandler::DisplaySendingConfirmation(
     const SendTabToSelfEntry& entry,
     const std::string& target_device_name) {
-  const base::string16 confirm_str = l10n_util::GetStringFUTF16(
+  const std::u16string confirm_str = l10n_util::GetStringFUTF16(
       IDS_MESSAGE_NOTIFICATION_SEND_TAB_TO_SELF_CONFIRMATION_SUCCESS,
       base::UTF8ToUTF16(target_device_name));
   const GURL& url = entry.GetURL();

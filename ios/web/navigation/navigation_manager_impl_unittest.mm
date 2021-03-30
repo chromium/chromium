@@ -85,8 +85,6 @@ class MockNavigationManagerDelegate : public NavigationManagerDelegate {
   MOCK_METHOD0(ClearTransientContent, void());
   MOCK_METHOD0(ClearDialogs, void());
   MOCK_METHOD0(RecordPageStateInNavigationItem, void());
-  MOCK_METHOD2(OnGoToIndexSameDocumentNavigation,
-               void(NavigationInitiationType type, bool has_user_gesture));
   MOCK_METHOD1(LoadCurrentItem, void(NavigationInitiationType type));
   MOCK_METHOD0(LoadIfNecessary, void());
   MOCK_METHOD0(Reload, void());
@@ -2407,7 +2405,7 @@ TEST_F(NavigationManagerTest, RestoreSessionWithHistory) {
   auto item0 = std::make_unique<NavigationItemImpl>();
   GURL url(url::SchemeHostPort(kSchemeToRewrite, "test", 0).Serialize());
   item0->SetURL(url);
-  item0->SetTitle(base::ASCIIToUTF16("Test Website 0"));
+  item0->SetTitle(u"Test Website 0");
   auto item1 = std::make_unique<NavigationItemImpl>();
   item1->SetURL(GURL("http://www.1.com"));
 

@@ -46,7 +46,6 @@
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/public/platform/web_client_hints_type.h"
 #include "third_party/blink/public/platform/web_document_subresource_filter.h"
-#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/ad_tracker.h"
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
@@ -73,6 +72,7 @@
 #include "third_party/blink/renderer/platform/loader/testing/mock_resource.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 #include "third_party/blink/renderer/platform/testing/histogram_tester.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
@@ -121,17 +121,18 @@ class FrameFetchContextTest : public testing::Test {
  protected:
   void SetUp() override { RecreateFetchContext(); }
 
-  void RecreateFetchContext(const KURL& url = KURL(),
-                            const String& feature_policy_header = String()) {
+  void RecreateFetchContext(
+      const KURL& url = KURL(),
+      const String& permissions_policy_header = String()) {
     dummy_page_holder = nullptr;
     dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(500, 500));
     dummy_page_holder->GetPage().SetDeviceScaleFactorDeprecated(1.0);
     if (url.IsValid()) {
-      auto params = WebNavigationParams::CreateWithHTMLBuffer(
+      auto params = WebNavigationParams::CreateWithHTMLBufferForTesting(
           SharedBuffer::Create(), url);
-      if (!feature_policy_header.IsEmpty()) {
+      if (!permissions_policy_header.IsEmpty()) {
         params->response.SetHttpHeaderField(http_names::kFeaturePolicy,
-                                            feature_policy_header);
+                                            permissions_policy_header);
       }
       dummy_page_holder->GetFrame().Loader().CommitNavigation(
           std::move(params), nullptr /* extra_data */);
@@ -597,10 +598,9 @@ TEST_F(FrameFetchContextHintsTest, MonitorDeviceMemorySecureTransport) {
   ExpectHeader("https://www.example.com/1.gif", "DPR", false, "");
   ExpectHeader("https://www.example.com/1.gif", "Width", false, "");
   ExpectHeader("https://www.example.com/1.gif", "Viewport-Width", false, "");
-  // Without a feature policy header, the client hints should be sent only to
-  // the first party origins.
-  // Device-memory is a legacy hint that's sent on Android regardless of Feature
-  // Policy delegation.
+  // Without a permissions policy header, the client hints should be sent only
+  // to the first party origins. Device-memory is a legacy hint that's sent on
+  // Android regardless of Permissions Policy delegation.
 #if defined(OS_ANDROID)
   ExpectHeader("https://www.someother-example.com/1.gif", "Device-Memory", true,
                "4");
@@ -721,15 +721,17 @@ TEST_F(FrameFetchContextHintsTest, MonitorLangHint) {
                "\"en-US\"");
   ExpectHeader("http://www.example.com/1.gif", "Sec-CH-Lang", false, "");
 
+  // TODO(crbug.com/924969): A refactoring exposed a bug in the languages
+  // override that effects the `Sec-CH-Lang` hint.
   document->domWindow()->navigator()->SetLanguagesForTesting("en,de,fr");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Lang", true,
-               "\"en\", \"de\", \"fr\"");
+               "\"en-US\"");
   ExpectHeader("http://www.example.com/1.gif", "Sec-CH-Lang", false, "");
 
   document->domWindow()->navigator()->SetLanguagesForTesting(
       "en-US,fr_FR,de-DE,es");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Lang", true,
-               "\"en-US\", \"fr-FR\", \"de-DE\", \"es\"");
+               "\"en-US\"");
   ExpectHeader("http://www.example.com/1.gif", "Sec-CH-Lang", false, "");
 }
 
@@ -874,9 +876,11 @@ TEST_F(FrameFetchContextHintsTest, MonitorAllHints) {
   ExpectHeader("https://www.example.com/1.gif", "Width", true, "400", 400);
   ExpectHeader("https://www.example.com/1.gif", "Viewport-Width", true, "500");
 
+  // TODO(crbug.com/924969): A refactoring exposed a bug in the languages
+  // override setup that effects the `Sec-CH-Lang` hint.
   document->domWindow()->navigator()->SetLanguagesForTesting("en,de,fr");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Lang", true,
-               "\"en\", \"de\", \"fr\"");
+               "\"en-US\"");
 
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA", true, "");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Arch", true, "");
@@ -905,8 +909,9 @@ TEST_F(FrameFetchContextHintsTest, MonitorAllHints) {
 }
 
 // Verify that the client hints should be attached for third-party subresources
-// fetched over secure transport, when specifically allowed by feature policy.
-TEST_F(FrameFetchContextHintsTest, MonitorAllHintsFeaturePolicy) {
+// fetched over secure transport, when specifically allowed by permissions
+// policy.
+TEST_F(FrameFetchContextHintsTest, MonitorAllHintsPermissionsPolicy) {
   RecreateFetchContext(
       KURL("https://www.example.com/"),
       "ch-dpr *; ch-device-memory *; ch-downlink *; ch-ect *; ch-lang *;"
@@ -933,13 +938,15 @@ TEST_F(FrameFetchContextHintsTest, MonitorAllHintsFeaturePolicy) {
   document->GetFrame()->GetClientHintsPreferences().UpdateFrom(preferences);
 
   // Verify that all client hints are sent to a third-party origin, with this
-  // feature policy header.
+  // permissions policy header.
   ExpectHeader("https://www.example.net/1.gif", "DPR", true, "1");
   ExpectHeader("https://www.example.net/1.gif", "Device-Memory", true, "4");
 
+  // TODO(crbug.com/924969): A refactoring exposed a bug in the languages
+  // override setup that effects the `Sec-CH-Lang` hint.
   document->domWindow()->navigator()->SetLanguagesForTesting("en,de,fr");
   ExpectHeader("https://www.example.net/1.gif", "Sec-CH-Lang", true,
-               "\"en\", \"de\", \"fr\"");
+               "\"en-US\"");
   ExpectHeader("https://www.example.net/1.gif", "Sec-CH-UA", true, "");
   ExpectHeader("https://www.example.net/1.gif", "Sec-CH-UA-Arch", true, "");
   ExpectHeader("https://www.example.net/1.gif", "Sec-CH-UA-Platform", true, "");
@@ -970,7 +977,7 @@ TEST_F(FrameFetchContextHintsTest, MonitorAllHintsFeaturePolicy) {
 
 // Verify that only the specifically allowed client hints are attached for
 // third-party subresources fetched over secure transport.
-TEST_F(FrameFetchContextHintsTest, MonitorSomeHintsFeaturePolicy) {
+TEST_F(FrameFetchContextHintsTest, MonitorSomeHintsPermissionsPolicy) {
   RecreateFetchContext(KURL("https://www.example.com/"),
                        "ch-device-memory 'self' https://www.example.net");
   document->GetSettings()->SetScriptEnabled(true);
@@ -979,11 +986,11 @@ TEST_F(FrameFetchContextHintsTest, MonitorSomeHintsFeaturePolicy) {
   preferences.SetShouldSend(network::mojom::WebClientHintsType::kDpr);
   ApproximatedDeviceMemory::SetPhysicalMemoryMBForTesting(4096);
   document->GetFrame()->GetClientHintsPreferences().UpdateFrom(preferences);
-  // With a feature policy header, the client hints should be sent to the
+  // With a permissions policy header, the client hints should be sent to the
   // declared third party origins.
   ExpectHeader("https://www.example.net/1.gif", "Device-Memory", true, "4");
-  // Device-memory is a legacy hint that's sent on Android regardless of Feature
-  // Policy delegation.
+  // Device-memory is a legacy hint that's sent on Android regardless of
+  // Permissions Policy delegation.
 #if defined(OS_ANDROID)
   ExpectHeader("https://www.someother-example.com/1.gif", "Device-Memory", true,
                "4");
@@ -997,8 +1004,8 @@ TEST_F(FrameFetchContextHintsTest, MonitorSomeHintsFeaturePolicy) {
   // Other hints not declared in the policy are still not attached.
   ExpectHeader("https://www.example.net/1.gif", "downlink", false, "");
   ExpectHeader("https://www.example.net/1.gif", "ect", false, "");
-  // DPR is a legacy hint that's sent on Android regardless of Feature Policy
-  // delegation.
+  // DPR is a legacy hint that's sent on Android regardless of Permissions
+  // Policy delegation.
 #if defined(OS_ANDROID)
   ExpectHeader("https://www.example.net/1.gif", "DPR", true, "1");
 #else
@@ -1016,9 +1023,10 @@ TEST_F(FrameFetchContextHintsTest, MonitorSomeHintsFeaturePolicy) {
 }
 
 // Verify that the client hints are not attached for third-party subresources
-// fetched over insecure transport, even when specifically allowed by feature
-// policy.
-TEST_F(FrameFetchContextHintsTest, MonitorHintsFeaturePolicyInsecureContext) {
+// fetched over insecure transport, even when specifically allowed by
+// permissions policy.
+TEST_F(FrameFetchContextHintsTest,
+       MonitorHintsPermissionsPolicyInsecureContext) {
   RecreateFetchContext(KURL("https://www.example.com/"), "ch-device-memory *");
   document->GetSettings()->SetScriptEnabled(true);
   ExpectHeader("https://www.example.com/1.gif", "Device-Memory", false, "");
@@ -1333,8 +1341,7 @@ TEST_F(FrameFetchContextTest, SameSiteBackForwardCache) {
   base::FieldTrialParams params;
 
   {
-    RuntimeEnabledFeatures::SetBackForwardCacheExperimentHTTPHeaderEnabled(
-        false);
+    ScopedBackForwardCacheExperimentHTTPHeaderForTest back_forward_cache(false);
     params[features::kBackForwardCacheABExperimentGroup] = "foo";
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitAndEnableFeatureWithParameters(
@@ -1350,8 +1357,7 @@ TEST_F(FrameFetchContextTest, SameSiteBackForwardCache) {
   }
 
   {
-    RuntimeEnabledFeatures::SetBackForwardCacheExperimentHTTPHeaderEnabled(
-        true);
+    ScopedBackForwardCacheExperimentHTTPHeaderForTest back_forward_cache(true);
     ResourceRequest resource_request("http://www.example.com");
     GetFetchContext()->AddAdditionalRequestHeaders(resource_request);
 

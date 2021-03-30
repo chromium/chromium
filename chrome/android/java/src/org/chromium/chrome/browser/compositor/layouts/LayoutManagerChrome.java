@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.TitleCache;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.chrome.browser.compositor.layouts.phone.StackLayout;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -41,7 +40,6 @@ import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurface;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -74,9 +72,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     private boolean mEnableAnimations = true;
     private boolean mCreatingNtp;
     private final ObserverList<OverviewModeObserver> mOverviewModeObservers;
-
-    /** Whether to create an overview Layout when LayoutManagerChrome is created. */
-    private boolean mCreateOverviewLayout;
 
     protected ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
     private final OneshotSupplierImpl<OverviewModeBehavior> mOverviewModeBehaviorSupplier;
@@ -124,19 +119,15 @@ public class LayoutManagerChrome extends LayoutManagerImpl
 
         if (createOverviewLayout) {
             if (startSurface != null) {
-                assert TabUiFeatureUtilities.isGridTabSwitcherEnabled()
-                        || StartSurfaceConfiguration.isStartSurfaceStackTabSwitcherEnabled();
+                assert TabUiFeatureUtilities.isGridTabSwitcherEnabled();
                 TabManagementDelegate tabManagementDelegate =
                         TabManagementModuleProvider.getDelegate();
                 assert tabManagementDelegate != null;
 
                 final ObservableSupplier<? extends BrowserControlsStateProvider>
                         browserControlsSupplier = mHost.getBrowserControlsManagerSupplier();
-                mOverviewLayout = tabManagementDelegate.createStartSurfaceLayout(context, this,
-                        renderHost, startSurface,
-                        (ObservableSupplier<BrowserControlsStateProvider>) browserControlsSupplier);
-            } else {
-                mCreateOverviewLayout = true;
+                mOverviewLayout = tabManagementDelegate.createStartSurfaceLayout(
+                        context, this, renderHost, startSurface);
             }
         }
 
@@ -182,13 +173,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
                 new OverviewListLayout(context, this, renderHost, browserControlsStateProvider);
         mToolbarSwipeLayout = new ToolbarSwipeLayout(context, this, renderHost);
 
-        if (mCreateOverviewLayout) {
-            final ObservableSupplier<? extends BrowserControlsStateProvider>
-                    browserControlsSupplier = mHost.getBrowserControlsManagerSupplier();
-            mOverviewLayout = new StackLayout(context, this, renderHost,
-                    (ObservableSupplier<BrowserControlsStateProvider>) browserControlsSupplier);
-        }
-
         super.init(selector, creator, controlContainer, dynamicResourceLoader);
 
         // TODO: TitleCache should be a part of the ResourceManager.
@@ -230,34 +214,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
         }
         if (mToolbarSwipeLayout != null) {
             mToolbarSwipeLayout.destroy();
-        }
-    }
-
-    /**
-     * Simulates a click on the view at the specified pixel offset
-     * from the top left of the view.
-     * This is used by UI tests.
-     * @param x Coordinate of the click in dp.
-     * @param y Coordinate of the click in dp.
-     */
-    @VisibleForTesting
-    public void simulateClick(float x, float y) {
-        if (getActiveLayout() instanceof StackLayout) {
-            ((StackLayout) getActiveLayout()).simulateClick(x, y);
-        }
-    }
-
-    /**
-     * Simulates a drag and issues Up-event to commit the drag.
-     * @param x  Coordinate to start the Drag from in dp.
-     * @param y  Coordinate to start the Drag from in dp.
-     * @param dX Amount of drag in X direction in dp.
-     * @param dY Amount of drag in Y direction in dp.
-     */
-    @VisibleForTesting
-    public void simulateDrag(float x, float y, float dX, float dY) {
-        if (getActiveLayout() instanceof StackLayout) {
-            ((StackLayout) getActiveLayout()).simulateDrag(x, y, dX, dY);
         }
     }
 
@@ -329,7 +285,8 @@ public class LayoutManagerChrome extends LayoutManagerImpl
 
     @Override
     protected boolean shouldDelayHideAnimation(Layout layoutBeingHidden) {
-        return mEnableAnimations && layoutBeingHidden == mOverviewLayout && mCreatingNtp;
+        return mEnableAnimations && layoutBeingHidden == mOverviewLayout && mCreatingNtp
+                && !TabUiFeatureUtilities.isGridTabSwitcherEnabled();
     }
 
     @Override
@@ -432,13 +389,10 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     @Override
     public void hideOverview(boolean animate) {
         Layout activeLayout = getActiveLayout();
+        if (!isOverviewLayout(activeLayout)) return;
+
         if (activeLayout != null && !activeLayout.isStartingToHide()) {
-            if (animate) {
-                activeLayout.onTabSelecting(time(), Tab.INVALID_TAB_ID);
-            } else {
-                startHiding(Tab.INVALID_TAB_ID, false);
-                doneHiding();
-            }
+            activeLayout.startHiding(Tab.INVALID_TAB_ID, animate);
         }
     }
 

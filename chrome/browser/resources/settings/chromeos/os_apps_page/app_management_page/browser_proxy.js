@@ -2,8 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+
+// #import 'chrome://resources/mojo/skia/public/mojom/image_info.mojom-lite.js';
+// #import 'chrome://resources/mojo/skia/public/mojom/bitmap.mojom-lite.js';
+// #import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
+// #import '/app-management/file_path.mojom-lite.js';
+// #import '/app-management/image.mojom-lite.js';
+// #import '/app-management/types.mojom-lite.js';
+// #import '/app-management/app_management.mojom-lite.js';
+
+// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+// #import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+// #import {FakePageHandler}  from './fake_page_handler.m.js';
+// #import {PwaPermissionType, TriState, AppType, InstallSource} from './constants.m.js';
+// clang-format on
+
 cr.define('app_management', function() {
-  class BrowserProxy {
+  /* #export */ class BrowserProxy {
     constructor() {
       /** @type {appManagement.mojom.PageCallbackRouter} */
       this.callbackRouter = new appManagement.mojom.PageCallbackRouter();

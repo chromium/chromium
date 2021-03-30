@@ -4,6 +4,8 @@
 
 source_set("common") {
   sources = [
+    "audio_data_s16_converter.cc",
+    "audio_data_s16_converter.h",
     "media_type_converters.cc",
     "media_type_converters.h",
     "mojo_data_pipe_read_write.cc",

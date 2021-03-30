@@ -160,7 +160,8 @@ PaintInvalidationReason BoxPaintInvalidator::ComputePaintInvalidationReason() {
     return PaintInvalidationReason::kGeometry;
 
   if (style.HasVisualOverflowingEffect() || style.HasEffectiveAppearance() ||
-      style.HasFilterInducingProperty() || style.HasMask() || style.ClipPath())
+      style.HasFilterInducingProperty() || style.HasMask() ||
+      style.HasClipPath())
     return PaintInvalidationReason::kGeometry;
 
   if (style.HasBorderRadius() || style.CanRenderBorderImage())

@@ -4,6 +4,8 @@
 <link rel="shortcut icon" type="image/x-icon" href="http://test.com/oldfavicon.ico"/>
 <link rel="shortcut icon" type="image/x-icon" href="http://test.com/foofavicon.ico"/>
 <link rel="shortcut icon" type="image/x-icon" href="http://test.com/barfavicon.ico"/>
+<link rel="shortcut icon" type="image/x-icon" href="http://test.com/darkfavicon.ico" media="(prefers-color-scheme: dark)"/>
+<link rel="shortcut icon" type="image/x-icon" href="http://test.com/lightfavicon.ico" media="(prefers-color-scheme: light)"/>
 <script src="../../resources/js-test.js"></script>
 <script>
 
@@ -45,11 +47,12 @@ function runTests() {
     debug('New iconURL is: ' + iconURL);
 
     // check that the URL list in the document is as we expect
-    var expectedURL0 = "http://test.com/barfavicon.ico";
-    var expectedURL1 = "http://test.com/foofavicon.ico";
-    var expectedURL2 = "http://test.com/newfavicon.ico";
+    var expectedURL0 = "http://test.com/lightfavicon.ico";
+    var expectedURL1 = "http://test.com/barfavicon.ico";
+    var expectedURL2 = "http://test.com/foofavicon.ico";
+    var expectedURL3 = "http://test.com/newfavicon.ico";
     var iconURLs = internals.shortcutIconURLs(document);
-    if (expectedURL0 == iconURLs[0] && expectedURL1 == iconURLs[1] && expectedURL2 == iconURLs[2]) 
+    if (expectedURL0 == iconURLs[0] && expectedURL1 == iconURLs[1] && expectedURL2 == iconURLs[2] && expectedURL3 == iconURLs[3])
         testPassed('URL list matches expected');
     else
         testFailed('URL list does not match expected');

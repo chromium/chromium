@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "camera_config_chromeos.h"
+#include "media/capture/video/linux/camera_config_chromeos.h"
 
-#include <base/files/file_util.h>
-#include <base/logging.h>
-#include <base/strings/stringprintf.h>
-#include <base/strings/string_number_conversions.h>
-#include <base/strings/string_piece.h>
-#include <base/strings/string_split.h>
-#include <base/strings/string_util.h>
+#include "base/files/file_util.h"
+#include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 
 namespace media {
 

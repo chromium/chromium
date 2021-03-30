@@ -18,9 +18,6 @@
 #include "components/safe_browsing/core/common/thread_utils.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/realtime/policy_engine.h"
-#include "components/signin/public/identity_manager/consent_level.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/driver/sync_service.h"
 #include "net/base/ip_address.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
@@ -34,36 +31,27 @@ namespace safe_browsing {
 RealTimeUrlLookupService::RealTimeUrlLookupService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     VerdictCacheManager* cache_manager,
-    signin::IdentityManager* identity_manager,
-    syncer::SyncService* sync_service,
+    base::RepeatingCallback<ChromeUserPopulation()>
+        get_user_population_callback,
     PrefService* pref_service,
-    const ChromeUserPopulation::ProfileManagementStatus&
-        profile_management_status,
-    bool is_under_advanced_protection,
+    std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
+    const ClientConfiguredForTokenFetchesCallback& client_token_config_callback,
     bool is_off_the_record,
     variations::VariationsService* variations_service)
     : RealTimeUrlLookupServiceBase(url_loader_factory,
                                    cache_manager,
-                                   sync_service,
-                                   pref_service,
-                                   profile_management_status,
-                                   is_under_advanced_protection,
-                                   is_off_the_record),
-      identity_manager_(identity_manager),
-      sync_service_(sync_service),
+                                   get_user_population_callback),
       pref_service_(pref_service),
+      token_fetcher_(std::move(token_fetcher)),
+      client_token_config_callback_(client_token_config_callback),
       is_off_the_record_(is_off_the_record),
-      variations_(variations_service) {
-  token_fetcher_ =
-      std::make_unique<SafeBrowsingTokenFetcher>(identity_manager_);
-}
+      variations_(variations_service) {}
 
 void RealTimeUrlLookupService::GetAccessToken(
     const GURL& url,
     RTLookupRequestCallback request_callback,
     RTLookupResponseCallback response_callback) {
   token_fetcher_->Start(
-      signin::ConsentLevel::kNotRequired,
       base::BindOnce(&RealTimeUrlLookupService::OnGetAccessToken,
                      weak_factory_.GetWeakPtr(), url,
                      std::move(request_callback), std::move(response_callback),
@@ -75,14 +63,12 @@ void RealTimeUrlLookupService::OnGetAccessToken(
     RTLookupRequestCallback request_callback,
     RTLookupResponseCallback response_callback,
     base::TimeTicks get_token_start_time,
-    base::Optional<signin::AccessTokenInfo> access_token_info) {
+    const std::string& access_token) {
   base::UmaHistogramTimes("SafeBrowsing.RT.GetToken.Time",
                           base::TimeTicks::Now() - get_token_start_time);
   base::UmaHistogramBoolean("SafeBrowsing.RT.HasTokenFromFetcher",
-                            access_token_info.has_value());
-  std::string access_token_string =
-      access_token_info.value_or(signin::AccessTokenInfo()).token;
-  SendRequest(url, access_token_string, std::move(request_callback),
+                            !access_token.empty());
+  SendRequest(url, access_token, std::move(request_callback),
               std::move(response_callback));
 }
 
@@ -95,7 +81,7 @@ bool RealTimeUrlLookupService::CanPerformFullURLLookup() const {
 
 bool RealTimeUrlLookupService::CanPerformFullURLLookupWithToken() const {
   return RealTimePolicyEngine::CanPerformFullURLLookupWithToken(
-      pref_service_, is_off_the_record_, sync_service_, identity_manager_,
+      pref_service_, is_off_the_record_, client_token_config_callback_,
       variations_);
 }
 
@@ -107,6 +93,11 @@ bool RealTimeUrlLookupService::CanCheckSafeBrowsingDb() const {
   // Always return true, because consumer real time URL check only works when
   // safe browsing is enabled.
   return true;
+}
+
+GURL RealTimeUrlLookupService::GetRealTimeLookupUrl() const {
+  return GURL(
+      "https://safebrowsing.google.com/safebrowsing/clientreport/realtime");
 }
 
 net::NetworkTrafficAnnotationTag

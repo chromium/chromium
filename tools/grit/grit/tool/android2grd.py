@@ -202,7 +202,7 @@ OPTIONS may be any of the following:
              current_release="1" source_lang_id="en">
            <outputs />
            <translations />
-           <release allow_pseudo="false" seq="1">
+           <release seq="1">
              <messages fallback_to_english="true" />
            </release>
          </grit>'''), dir='.')

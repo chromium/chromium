@@ -13,22 +13,31 @@
  * [android-pixel2-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel2-perf): Android OPM1.171019.021.
  * [android-pixel2_weblayer-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel2_weblayer-perf): Android OPM1.171019.021.
  * [android-pixel2_webview-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel2_webview-perf): Android OPM1.171019.021.
+ * [android-pixel4-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4-perf): Android R.
+ * [android-pixel4_weblayer-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4_weblayer-perf): Android R.
+ * [android-pixel4_webview-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4_webview-perf): Android R.
  * [android-pixel4a_power-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4a_power-perf): Android QD4A.200102.001.A1.
+
+## Chromeos
+
+ * [lacros-eve-perf](https://ci.chromium.org/p/chrome/builders/ci/lacros-eve-perf): .
 
 ## Linux
 
- * [linux-perf](https://ci.chromium.org/p/chrome/builders/ci/linux-perf): Ubuntu-14.04, 8 core, NVIDIA Quadro P400.
+ * [linux-perf](https://ci.chromium.org/p/chrome/builders/ci/linux-perf): Ubuntu-18.04, 8 core, NVIDIA Quadro P400.
+ * [linux-perf-calibration](https://ci.chromium.org/p/chrome/builders/ci/linux-perf-calibration): Ubuntu-18.04, 8 core, NVIDIA Quadro P400.
+ * [linux-perf-rel](https://ci.chromium.org/p/chrome/builders/ci/linux-perf-rel): Ubuntu-18.04, 8 core, NVIDIA Quadro P400.
 
 ## Mac
 
  * [mac-10_12_laptop_low_end-perf](https://ci.chromium.org/p/chrome/builders/ci/mac-10_12_laptop_low_end-perf): MacBook Air, Core i5 1.8 GHz, 8GB RAM, 128GB SSD, HD Graphics.
  * [mac-10_13_laptop_high_end-perf](https://ci.chromium.org/p/chrome/builders/ci/mac-10_13_laptop_high_end-perf): MacBook Pro, Core i7 2.8 GHz, 16GB RAM, 256GB SSD, Radeon 55.
- * [mac-arm_dtk_arm-perf](https://ci.chromium.org/p/chrome/builders/ci/mac-arm_dtk_arm-perf): Mac ARM DTK (ARM Chrome).
  * [mac-m1_mini_2020-perf](https://ci.chromium.org/p/chrome/builders/ci/mac-m1_mini_2020-perf): Mac M1 Mini 2020.
 
 ## Win
 
  * [win-10-perf](https://ci.chromium.org/p/chrome/builders/ci/win-10-perf): Windows Intel HD 630 towers, Core i7-7700 3.6 GHz, 16GB RAM, Intel Kaby Lake HD Graphics 630.
+ * [win-10_amd-perf](https://ci.chromium.org/p/chrome/builders/ci/win-10_amd-perf): Windows AMD chipset.
  * [win-10_laptop_low_end-perf](https://ci.chromium.org/p/chrome/builders/ci/win-10_laptop_low_end-perf): Low end windows 10 HP laptops. HD Graphics 5500, x86-64-i3-5005U, SSD, 4GB RAM..
  * [Win 7 Nvidia GPU Perf](https://ci.chromium.org/p/chrome/builders/ci/Win%207%20Nvidia%20GPU%20Perf): N/A.
  * [Win 7 Perf](https://ci.chromium.org/p/chrome/builders/ci/Win%207%20Perf): N/A.

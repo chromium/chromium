@@ -7,6 +7,7 @@ import("//third_party/closure_compiler/js_unit_tests.gni")
 import("//ui/file_manager/base/gn/js_test_gen_html.gni")
 
 js_type_check("closure_compile_module") {
+  uses_legacy_modules = true
   deps = [
     ":background",
     ":dimmable_ui_controller",
@@ -39,8 +40,12 @@ js_library("dimmable_ui_controller") {
     "//ui/webui/resources/js:assert",
   ]
   externs_list = [
+    # We need both chrome_extensions.js and accessibility_features.js to support
+    # chrome.accessibilityFeatures, since accessibility_features.js uses the
+    # ChromeSetting type (only defined in chrome_extensions.js).
+    "$externs_path/accessibility_features.js",
     "$externs_path/chrome.js",
-    "$externs_path/chrome_extensions.js",  # For chrome.accessibilityFeatures.
+    "$externs_path/chrome_extensions.js",
   ]
 }
 
@@ -53,7 +58,7 @@ js_unittest("dimmable_ui_controller_unittest") {
 
 js_library("entry_list_watcher") {
   deps = [
-    "//ui/file_manager/externs:file_manager_private",
+    "//ui/file_manager/file_manager/externs:file_manager_private",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js/cr/ui:array_data_model",
   ]
@@ -62,8 +67,8 @@ js_library("entry_list_watcher") {
 js_unittest("entry_list_watcher_unittest") {
   deps = [
     ":entry_list_watcher",
-    "//ui/file_manager/base/js:test_error_reporting",
     "//ui/file_manager/file_manager/common/js:mock_entry",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
   ]
 }
 
@@ -76,8 +81,8 @@ js_library("gallery") {
     ":gallery_constants",
     ":gallery_item",
     ":thumbnail_mode",
-    "//ui/file_manager/base/js:app_util",
-    "//ui/file_manager/base/js:filtered_volume_manager",
+    "//ui/file_manager/file_manager/common/js:app_util",
+    "//ui/file_manager/file_manager/common/js:filtered_volume_manager",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/foreground/js/ui:files_confirm_dialog",
     "//ui/file_manager/gallery/js:slide_mode",
@@ -103,7 +108,7 @@ js_unittest("gallery_data_model_unittest") {
   deps = [
     ":gallery_data_model",
     ":mock_gallery_item",
-    "//ui/file_manager/base/js:test_error_reporting",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
   ]
 }
 
@@ -117,14 +122,14 @@ js_library("gallery_item") {
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
     "//ui/file_manager/file_manager/foreground/js/metadata:thumbnail_model",
   ]
-  externs_list = [ "//ui/file_manager/externs/entry_location.js" ]
+  externs_list = [ "//ui/file_manager/file_manager/externs/entry_location.js" ]
 }
 
 js_unittest("gallery_item_unittest") {
   deps = [
     ":gallery_item",
     ":mock_gallery_item",
-    "//ui/file_manager/base/js:test_error_reporting",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
   ]
 }
 
@@ -134,18 +139,18 @@ js_library("gallery_metrics") {
 
 js_library("gallery_util") {
   deps = [
-    "//ui/file_manager/base/js:volume_manager_types",
-    "//ui/file_manager/externs:volume_manager",
     "//ui/file_manager/file_manager/common/js:file_type",
     "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:volume_manager",
   ]
 }
 
 js_unittest("gallery_util_unittest") {
   deps = [
     ":gallery_util",
-    "//ui/file_manager/base/js:test_error_reporting",
     "//ui/file_manager/file_manager/common/js:mock_entry",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
   ]
 }
 
@@ -198,13 +203,14 @@ js_library("slide_mode") {
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple",
   ]
-  externs_list = [ "//ui/file_manager/externs/gallery_foreground.js" ]
+  externs_list =
+      [ "//ui/file_manager/file_manager/externs/gallery_foreground.js" ]
 }
 
 js_unittest("slide_mode_unittest") {
   deps = [
     ":slide_mode",
-    "//ui/file_manager/base/js:test_error_reporting",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
   ]
 }
 

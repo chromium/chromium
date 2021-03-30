@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script type="module">
+import {MockMIDIService} from './resources/mock-midiservice.js';
+
+const mock = new MockMIDIService();
+promise_test(async _ => {
+  const iframe = document.createElement('iframe');
+  document.body.appendChild(iframe);
+  const detachedNavigator = iframe.contentWindow.navigator;
+  const detachedExceptionCtor = iframe.contentWindow.DOMException;
+  document.body.removeChild(iframe);
+
+  try {
+    await detachedNavigator.requestMIDIAccess();
+    return Promise.reject('requestMIDIAccess should have failed.');
+  } catch (e) {
+    assert_equals(e.constructor, detachedExceptionCtor);
+    assert_equals(e.code, DOMException.ABORT_ERR);
+  }
+}, 'requestMIDIAccess fails in a detached frame');
+</script>
+</body>
+</html>

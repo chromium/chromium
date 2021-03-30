@@ -243,14 +243,18 @@ bool StaticSocketDataHelper::VerifyWriteData(const std::string& data,
   std::string expected_data(next_write.data, next_write.data_len);
   std::string actual_data(data.substr(0, next_write.data_len));
   EXPECT_GE(data.length(), expected_data.length());
-  EXPECT_TRUE(actual_data == expected_data)
-      << "Actual write data:\n" << HexDump(data)
-      << "Expected write data:\n" << HexDump(expected_data);
   if (printer) {
     EXPECT_TRUE(actual_data == expected_data)
+        << "Actual formatted write data:\n"
+        << printer->PrintWrite(data) << "Expected formatted write data:\n"
+        << printer->PrintWrite(expected_data) << "Actual raw write data:\n"
+        << HexDump(data) << "Expected raw write data:\n"
+        << HexDump(expected_data);
+  } else {
+    EXPECT_TRUE(actual_data == expected_data)
         << "Actual write data:\n"
-        << printer->PrintWrite(data) << "Expected write data:\n"
-        << printer->PrintWrite(expected_data);
+        << HexDump(data) << "Expected write data:\n"
+        << HexDump(expected_data);
   }
   return expected_data == actual_data;
 }
@@ -1601,6 +1605,11 @@ NextProto MockSSLClientSocket::GetNegotiatedProtocol() const {
   return data_->next_proto;
 }
 
+base::Optional<base::StringPiece>
+MockSSLClientSocket::GetPeerApplicationSettings() const {
+  return data_->peer_application_settings;
+}
+
 bool MockSSLClientSocket::GetSSLInfo(SSLInfo* requested_ssl_info) {
   requested_ssl_info->Reset();
   *requested_ssl_info = data_->ssl_info;
@@ -1694,6 +1703,7 @@ MockUDPClientSocket::MockUDPClientSocket(SocketDataProvider* data,
       read_offset_(0),
       read_data_(SYNCHRONOUS, ERR_UNEXPECTED),
       need_read_data_(true),
+      source_host_(IPAddress(192, 0, 2, 33)),
       source_port_(123),
       network_(NetworkChangeNotifier::kInvalidNetworkHandle),
       pending_read_buf_(nullptr),
@@ -1872,7 +1882,7 @@ int MockUDPClientSocket::GetPeerAddress(IPEndPoint* address) const {
 }
 
 int MockUDPClientSocket::GetLocalAddress(IPEndPoint* address) const {
-  *address = IPEndPoint(IPAddress(192, 0, 2, 33), source_port_);
+  *address = IPEndPoint(source_host_, source_port_);
   return OK;
 }
 

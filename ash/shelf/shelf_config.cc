@@ -16,7 +16,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -77,7 +77,7 @@ class ShelfConfig::ShelfAccessibilityObserver : public AccessibilityObserver {
       const base::RepeatingClosure& accessibility_state_changed_callback)
       : accessibility_state_changed_callback_(
             accessibility_state_changed_callback) {
-    observer_.Add(Shell::Get()->accessibility_controller());
+    observation_.Observe(Shell::Get()->accessibility_controller());
   }
 
   ShelfAccessibilityObserver(const ShelfAccessibilityObserver& other) = delete;
@@ -90,13 +90,13 @@ class ShelfConfig::ShelfAccessibilityObserver : public AccessibilityObserver {
   void OnAccessibilityStatusChanged() override {
     accessibility_state_changed_callback_.Run();
   }
-  void OnAccessibilityControllerShutdown() override { observer_.RemoveAll(); }
+  void OnAccessibilityControllerShutdown() override { observation_.Reset(); }
 
  private:
   base::RepeatingClosure accessibility_state_changed_callback_;
 
-  ScopedObserver<AccessibilityControllerImpl, AccessibilityObserver> observer_{
-      this};
+  base::ScopedObservation<AccessibilityControllerImpl, AccessibilityObserver>
+      observation_{this};
 };
 
 ShelfConfig::ShelfConfig()
@@ -141,7 +141,7 @@ ShelfConfig::~ShelfConfig() = default;
 
 // static
 ShelfConfig* ShelfConfig::Get() {
-  return Shell::Get()->shelf_config();
+  return Shell::HasInstance() ? Shell::Get()->shelf_config() : nullptr;
 }
 
 void ShelfConfig::AddObserver(Observer* observer) {

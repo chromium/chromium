@@ -85,7 +85,7 @@ TEST(CloudPrintHelpersTest, GetHashOfPrinterTags) {
 
   std::string expected_list_string = base::StringPrintf(
       "chrome_version%ssystem_name%ssystem_version%stag1value1tag2value2",
-      chrome::GetVersionString().c_str(),
+      chrome::GetVersionString(chrome::WithExtendedStable(false)).c_str(),
       base::SysInfo::OperatingSystemName().c_str(),
       base::SysInfo::OperatingSystemVersion().c_str());
   EXPECT_EQ(base::MD5String(expected_list_string),
@@ -110,7 +110,7 @@ TEST(CloudPrintHelpersTest, GetPostDataForPrinterTags) {
       "\r\n\r\n__test__tag2=value2\r\n"
       "--test_mime_boundary\r\nContent-Disposition: form-data; name=\"tag\""
       "\r\n\r\n__test__tagshash=%s\r\n",
-      chrome::GetVersionString().c_str(),
+      chrome::GetVersionString(chrome::WithExtendedStable(false)).c_str(),
       base::SysInfo::OperatingSystemName().c_str(),
       base::SysInfo::OperatingSystemVersion().c_str(),
       GetHashOfPrinterTags(printer_tags).c_str());

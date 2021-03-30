@@ -74,6 +74,14 @@ CompositeMatcher::CompositeMatcher(MatcherList matchers)
 
 CompositeMatcher::~CompositeMatcher() = default;
 
+const RulesetMatcher* CompositeMatcher::GetMatcherWithID(RulesetID id) const {
+  auto it = std::find_if(matchers_.begin(), matchers_.end(),
+                         [&id](const std::unique_ptr<RulesetMatcher>& matcher) {
+                           return matcher->id() == id;
+                         });
+  return it == matchers_.end() ? nullptr : it->get();
+}
+
 void CompositeMatcher::AddOrUpdateRuleset(
     std::unique_ptr<RulesetMatcher> matcher) {
   MatcherList matchers;
@@ -205,9 +213,10 @@ void CompositeMatcher::OnRenderFrameDeleted(content::RenderFrameHost* host) {
     matcher->OnRenderFrameDeleted(host);
 }
 
-void CompositeMatcher::OnDidFinishNavigation(content::RenderFrameHost* host) {
+void CompositeMatcher::OnDidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
   for (auto& matcher : matchers_)
-    matcher->OnDidFinishNavigation(host);
+    matcher->OnDidFinishNavigation(navigation_handle);
 }
 
 void CompositeMatcher::OnMatchersModified() {

@@ -6,6 +6,8 @@
 -AdsPageLoadMetricsObserverBrowserTest.PageAdDensityMultipleFrames
 -AdsPageLoadMetricsObserverBrowserTest.PageAdDensityRecordsPageMax
 -All/DownloadReferrerPolicyTest.SaveLinkAsReferrerPolicy*
+# TODO(https://crbug.com/1125474): Emphemeral guest profile support.
+-All/GuestProfileMenuClickTest.ProfileMenuClickTest_*
 -All/HostedAppProcessModelTest.BackgroundPageWithAppCoveringDifferentSites/0
 -All/HostedOrWebAppTest.CtrlClickLink/HostedApp
 -All/HostedOrWebAppTest.CtrlClickLink/WebApp
@@ -16,6 +18,8 @@
 -All/PopupBrowserTest.MoveClampedToCurrentDisplay*
 -All/SystemWebAppLinkCaptureBrowserTest.IncognitoBrowserOmniboxLinkCapture*
 -All/SystemWebAppLinkCaptureBrowserTest.WindowOpenFromOtherSWA*
+-All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideo*
+-All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideoAndAudio*
 -AppViewTest.KillGuestCommunicatingWithWrongAppView
 -AppViewTest.KillGuestWithInvalidInstanceID
 -AudioFocusWebContentsObserverBrowserTest.PlatformAppHasDifferentAudioFocus
@@ -101,6 +105,7 @@
 -InlineLoginHelperBrowserTest.ForceSigninWithUserManager
 -KeepAliveDevToolsTest.KeepsAliveUntilBrowserClose
 -LiteVideoBrowserTest.SimplePlayback
+-LoadImageBrowserTest.LoadImage
 -LoadImageBrowserTest.LoadImageWithMap
 -LocalCardMigrationBrowserTestForNickname.CardIdentifierString/1
 -MediaRouterUIBrowserTest.EphemeralToolbarIconForDialog
@@ -113,7 +118,6 @@
 -NtpExtensionBubbleViewBrowserTest.TestControlledNewTabPageMessageBubbleLearnMore
 -OmniboxPopupContentsViewTest.ClickOmnibox
 -OmniboxPopupContentsViewTest.PopupMatchesLocationBarBackground
--OutOfProcessPPAPITest.FlashClipboard
 -OutOfProcessPPAPITest.NetAddress
 -OutOfProcessPPAPITest.Printing
 -OutOfProcessPPAPITest.URLRequest_CreateAndIsURLRequestInfo
@@ -128,12 +132,10 @@
 -PDFExtensionTestWithTestGuestViewManager*
 -PermissionRequestManagerWithBackForwardCacheBrowserTest.RequestsForPagesInCacheNotGrouped
 -PermissionsApiTest.AlwaysAllowed
--PictureInPicturePixelComparisonBrowserTest.PlayAndPauseControls
+-PictureInPicturePixelComparisonBrowserTest.*
 -PictureInPictureWindowControllerBrowserTest.*
 -PopupTrackerBrowserTest.PopupInWindow_IsWindowTrue
 -PopupTrackerBrowserTest.ShiftClick_HasTracker
--PPAPINaClNewlibTest.TrueTypeFont
--PPAPINaClPNaClNonSfiTest.TrueTypeFont
 -PresentationReceiverWindowControllerBrowserTest.CreatesWindow
 -PreservedWindowPlacement.Test
 -PrintPreviewDestinationSelectTest.ChangeIconDeprecationWarnings
@@ -147,6 +149,8 @@
 -ProfileListDesktopBrowserTest.SwitchToProfile
 -ProfileManagerBrowserTest.EphemeralProfile
 -ProfileManagerBrowserTest.SwitchToProfile
+# TODO(https://crbug.com/1170605): Investigate profile-related failures.
+-ProfileMenuClickTest_*
 -RemoteCopyBrowserTest.ImageUrl
 -RemoteCopyBrowserTest.Text
 -RemoteCopyBrowserTest.TextThenImageUrl
@@ -179,6 +183,7 @@
 -SettingsA11ySignoutV3.Signout_*
 -SSLUITest.DisplayedContentWithCertErrorsClearedOnNavigation
 -SSLUITest.InAppTestHTTPSExpiredCertAndPreviouslyProceeded
+-SSLUITest.TestCloseTabWithUnsafePopup
 -StartupBrowserCreatorExtensionsCheckupExperimentTest.ExtensionsCheckup
 -StartupBrowserCreatorTest.RestoreWithNoStartupWindow
 -SubresourceRedirectBrowserTest.TestBypassOn503LoadShedFailure
@@ -200,17 +205,14 @@
 -WebAppEngagementBrowserTest.CommandLineWindow
 -WebAppLinkCapturingBrowserTest.AboutBlankNavigationReparented
 -WebRtcDesktopCaptureBrowserTest.RunsScreenshareFromOneTabToAnother
--WebRtcGetDisplayMediaBrowserTestWithPicker.GetDisplayMediaVideo
--WebRtcGetDisplayMediaBrowserTestWithPicker.GetDisplayMediaVideoAndAudio
 -WebViewTest.SelectShowHide
 -WebViewTest.Shim_TestDisplayNoneWebviewRemoveChild
 -WelcomeA11y.WelcomeFlow_listitem
 -WorkerTaskProviderBrowserTest.CreateTasksForMultiProfiles
-
 # crbug.com/1121486
 # Following tests were flaky. We disable them first until we have time to investigate.
 -DevToolsExtensionTest.HttpIframeInDevToolsExtensionDevtools
--DevToolsSanityTest.*
+-DevToolsTest.*
 -FindInPageControllerTest.SingleOccurrence
 -MediaRouterUIBrowserTest.PinAndUnpinToolbarIcon
 -MultiActionAPITest.PopupCreation/*

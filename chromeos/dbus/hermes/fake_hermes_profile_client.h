@@ -41,6 +41,7 @@ class COMPONENT_EXPORT(HERMES_CLIENT) FakeHermesProfileClient
 
   // HermesProfileClient::TestInterface:
   void ClearProfile(const dbus::ObjectPath& carrier_profile_path) override;
+  void SetConnectedAfterEnable(bool connected_after_enable) override;
 
   // HermesProfileClient:
   void EnableCarrierProfile(const dbus::ObjectPath& object_path,
@@ -53,11 +54,13 @@ class COMPONENT_EXPORT(HERMES_CLIENT) FakeHermesProfileClient
 
  private:
   void UpdateCellularDevice(HermesProfileClient::Properties* properties);
-  void SetCellularServicesState(const std::string& state);
+  void UpdateCellularServices(const std::string& iccid, bool connectable);
   void CallNotifyPropertyChanged(const dbus::ObjectPath& object_path,
                                  const std::string& property_name);
   void NotifyPropertyChanged(const dbus::ObjectPath& object_path,
                              const std::string& property_name);
+
+  bool connected_after_enable_ = false;
 
   // Maps fake profile properties to their object paths.
   using PropertiesMap =

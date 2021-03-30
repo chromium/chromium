@@ -36,14 +36,17 @@ namespace internal {
 namespace {
 
 constexpr size_t kSmallSize = 12;
-constexpr size_t kMaxCountForSmallBucket = 128;
+constexpr size_t kDefaultCountForSmallBucket =
+    ThreadCache::kSmallBucketBaseCount * ThreadCache::kDefaultMultiplier;
 constexpr size_t kFillCountForSmallBucket =
-    kMaxCountForSmallBucket / ThreadCache::kBatchFillRatio;
+    kDefaultCountForSmallBucket / ThreadCache::kBatchFillRatio;
 
 constexpr size_t kMediumSize = 200;
-constexpr size_t kMaxCountForMediumBucket = 64;
+constexpr size_t kDefaultCountForMediumBucket = kDefaultCountForSmallBucket / 2;
 constexpr size_t kFillCountForMediumBucket =
-    kMaxCountForMediumBucket / ThreadCache::kBatchFillRatio;
+    kDefaultCountForMediumBucket / ThreadCache::kBatchFillRatio;
+
+static_assert(kMediumSize <= ThreadCache::kDefaultSizeThreshold, "");
 
 class LambdaThreadDelegate : public PlatformThread::Delegate {
  public:
@@ -72,8 +75,11 @@ class DeltaCounter {
 //
 // Forbid extras, since they make finding out which bucket is used harder.
 NoDestructor<ThreadSafePartitionRoot> g_root{
-    PartitionOptions{PartitionOptions::Alignment::kAlignedAlloc,
-                     PartitionOptions::ThreadCache::kEnabled}};
+    PartitionOptions{PartitionOptions::AlignedAlloc::kAllowed,
+                     PartitionOptions::ThreadCache::kEnabled,
+                     PartitionOptions::Quarantine::kAllowed,
+                     PartitionOptions::Cookies::kDisallowed,
+                     PartitionOptions::RefCount::kDisallowed}};
 
 size_t FillThreadCacheAndReturnIndex(size_t size, size_t count = 1) {
   uint16_t bucket_index = PartitionRoot<ThreadSafe>::SizeToBucketIndex(size);
@@ -94,6 +100,9 @@ size_t FillThreadCacheAndReturnIndex(size_t size, size_t count = 1) {
 class ThreadCacheTest : public ::testing::Test {
  protected:
   void SetUp() override {
+    ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
+        ThreadCache::kDefaultMultiplier);
+    ThreadCache::SetLargestCachedSize(ThreadCache::kDefaultSizeThreshold);
     // Make sure that enough slot spans have been touched, otherwise cache fill
     // becomes unpredictable (because it doesn't take slow paths in the
     // allocator), which is an issue for tests.
@@ -104,16 +113,13 @@ class ThreadCacheTest : public ::testing::Test {
     auto* tcache = g_root->thread_cache_for_testing();
     ASSERT_TRUE(tcache);
 
-    task_env_.FastForwardBy(2 * ThreadCacheRegistry::kPurgeInterval);
-    EXPECT_FALSE(ThreadCacheRegistry::Instance().has_pending_purge_task());
-
+    // Make sure that periodic purge will not interfere with tests.
+    auto interval =
+        ThreadCacheRegistry::Instance().purge_interval_for_testing();
     ThreadCacheRegistry::Instance().ResetForTesting();
     tcache->ResetForTesting();
-  }
-
-  void TearDown() override {
-    task_env_.FastForwardBy(2 * ThreadCacheRegistry::kPurgeInterval);
-    ASSERT_FALSE(ThreadCacheRegistry::Instance().has_pending_purge_task());
+    task_env_.FastForwardBy(interval);
+    ASSERT_EQ(0u, task_env_.GetPendingMainThreadTaskCount());
   }
 
   base::test::TaskEnvironment task_env_{
@@ -199,8 +205,11 @@ TEST_F(ThreadCacheTest, Purge) {
 }
 
 TEST_F(ThreadCacheTest, NoCrossPartitionCache) {
-  ThreadSafePartitionRoot root{{PartitionOptions::Alignment::kAlignedAlloc,
-                                PartitionOptions::ThreadCache::kDisabled}};
+  ThreadSafePartitionRoot root{{PartitionOptions::AlignedAlloc::kAllowed,
+                                PartitionOptions::ThreadCache::kDisabled,
+                                PartitionOptions::Quarantine::kAllowed,
+                                PartitionOptions::Cookies::kDisallowed,
+                                PartitionOptions::RefCount::kDisallowed}};
 
   size_t bucket_index = FillThreadCacheAndReturnIndex(kSmallSize);
   void* ptr = root.Alloc(kSmallSize, "");
@@ -265,7 +274,7 @@ TEST_F(ThreadCacheTest, ThreadCacheReclaimedWhenThreadExits) {
   //
   // Allocate enough objects to force a cache fill at the next allocation.
   std::vector<void*> tmp;
-  for (size_t i = 0; i < kMaxCountForMediumBucket / 4; i++) {
+  for (size_t i = 0; i < kDefaultCountForMediumBucket / 4; i++) {
     tmp.push_back(g_root->Alloc(kMediumSize, ""));
   }
 
@@ -346,16 +355,19 @@ TEST_F(ThreadCacheTest, RecordStats) {
   // Buckets are never full, fill always succeeds.
   size_t allocations = 10;
   size_t bucket_index = FillThreadCacheAndReturnIndex(
-      kMediumSize, kMaxCountForMediumBucket + allocations);
-  EXPECT_EQ(kMaxCountForMediumBucket + allocations, cache_fill_counter.Delta());
+      kMediumSize, kDefaultCountForMediumBucket + allocations);
+  EXPECT_EQ(kDefaultCountForMediumBucket + allocations,
+            cache_fill_counter.Delta());
   EXPECT_EQ(0u, cache_fill_misses_counter.Delta());
 
   // Memory footprint.
   ThreadCacheStats stats;
   ThreadCacheRegistry::Instance().DumpStats(true, &stats);
-  // Bucket was cleared (count halved, then refilled).
+  // Bucket was cleared (set to kDefaultCountForMediumBucket / 2) after going
+  // above the limit (-1), then refilled by batches (1 + floor(allocations /
+  // kFillCountForSmallBucket) times).
   size_t expected_count =
-      kMaxCountForMediumBucket / 2 +
+      kDefaultCountForMediumBucket / 2 - 1 +
       (1 + allocations / kFillCountForMediumBucket) * kFillCountForMediumBucket;
   EXPECT_EQ(g_root->buckets[bucket_index].slot_size * expected_count,
             stats.bucket_total_memory);
@@ -443,37 +455,155 @@ TEST_F(ThreadCacheTest, PurgeAll) NO_THREAD_SAFETY_ANALYSIS {
 }
 
 TEST_F(ThreadCacheTest, PeriodicPurge) {
-  ThreadCacheRegistry::Instance().StartPeriodicPurge();
-  EXPECT_TRUE(ThreadCacheRegistry::Instance().has_pending_purge_task());
+  auto& registry = ThreadCacheRegistry::Instance();
+  registry.StartPeriodicPurge();
+  EXPECT_EQ(1u, task_env_.GetPendingMainThreadTaskCount());
+  EXPECT_EQ(ThreadCacheRegistry::kDefaultPurgeInterval,
+            registry.purge_interval_for_testing());
 
+  // No allocations, the period gets longer.
+  task_env_.FastForwardBy(registry.purge_interval_for_testing());
+  EXPECT_EQ(2 * ThreadCacheRegistry::kDefaultPurgeInterval,
+            registry.purge_interval_for_testing());
+  task_env_.FastForwardBy(registry.purge_interval_for_testing());
+  EXPECT_EQ(4 * ThreadCacheRegistry::kDefaultPurgeInterval,
+            registry.purge_interval_for_testing());
+
+  // Check that the purge interval is clamped at the maximum value.
+  while (registry.purge_interval_for_testing() <
+         ThreadCacheRegistry::kMaxPurgeInterval) {
+    task_env_.FastForwardBy(registry.purge_interval_for_testing());
+  }
+  task_env_.FastForwardBy(registry.purge_interval_for_testing());
+  // There is still a task, even though there are no allocations.
+  EXPECT_EQ(1u, task_env_.GetPendingMainThreadTaskCount());
+
+  // Not enough allocations to decrease the interval.
+  FillThreadCacheAndReturnIndex(kSmallSize, 1);
+  task_env_.FastForwardBy(registry.purge_interval_for_testing());
+  EXPECT_EQ(ThreadCacheRegistry::kMaxPurgeInterval,
+            registry.purge_interval_for_testing());
+
+  FillThreadCacheAndReturnIndex(
+      kSmallSize,
+      2 * ThreadCacheRegistry::kMinMainThreadAllocationsForPurging + 1);
+  task_env_.FastForwardBy(registry.purge_interval_for_testing());
+  EXPECT_EQ(ThreadCacheRegistry::kMaxPurgeInterval / 2,
+            registry.purge_interval_for_testing());
+
+  // Enough allocations, interval doesn't change.
+  FillThreadCacheAndReturnIndex(
+      kSmallSize, ThreadCacheRegistry::kMinMainThreadAllocationsForPurging);
+  task_env_.FastForwardBy(registry.purge_interval_for_testing());
+  EXPECT_EQ(ThreadCacheRegistry::kMaxPurgeInterval / 2,
+            registry.purge_interval_for_testing());
+
+  // No allocations anymore, increase the interval.
+  task_env_.FastForwardBy(registry.purge_interval_for_testing());
+  EXPECT_EQ(ThreadCacheRegistry::kMaxPurgeInterval,
+            registry.purge_interval_for_testing());
+
+  // Many allocations, directly go to the default interval.
+  FillThreadCacheAndReturnIndex(
+      kSmallSize,
+      10 * ThreadCacheRegistry::kMinMainThreadAllocationsForPurging + 1);
+  task_env_.FastForwardBy(registry.purge_interval_for_testing());
+  EXPECT_EQ(ThreadCacheRegistry::kDefaultPurgeInterval,
+            registry.purge_interval_for_testing());
+}
+
+TEST_F(ThreadCacheTest, DynamicCountPerBucket) {
+  auto* tcache = g_root->thread_cache_for_testing();
+  size_t bucket_index =
+      FillThreadCacheAndReturnIndex(kMediumSize, kDefaultCountForMediumBucket);
+  EXPECT_EQ(kDefaultCountForMediumBucket, tcache->buckets_[bucket_index].count);
+
+  ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
+      ThreadCache::kDefaultMultiplier / 2);
+  // No immediate batch deallocation.
+  EXPECT_EQ(kDefaultCountForMediumBucket, tcache->buckets_[bucket_index].count);
+  void* data = g_root->Alloc(kMediumSize, "");
+  // Not triggered by allocations.
+  EXPECT_EQ(kDefaultCountForMediumBucket - 1,
+            tcache->buckets_[bucket_index].count);
+
+  // Free() triggers the purge within limits.
+  g_root->Free(data);
+  EXPECT_LE(tcache->buckets_[bucket_index].count,
+            kDefaultCountForMediumBucket / 2);
+
+  // Won't go above anymore.
+  FillThreadCacheAndReturnIndex(kMediumSize, 1000);
+  EXPECT_LE(tcache->buckets_[bucket_index].count,
+            kDefaultCountForMediumBucket / 2);
+
+  // Limit can be raised.
+  ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
+      ThreadCache::kDefaultMultiplier * 2);
+  FillThreadCacheAndReturnIndex(kMediumSize, 1000);
+  EXPECT_GT(tcache->buckets_[bucket_index].count,
+            kDefaultCountForMediumBucket / 2);
+}
+
+TEST_F(ThreadCacheTest, DynamicCountPerBucketClamping) {
+  auto* tcache = g_root->thread_cache_for_testing();
+
+  ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
+      ThreadCache::kDefaultMultiplier / 1000.);
+  for (size_t i = 0; i < ThreadCache::kBucketCount; i++) {
+    // Invalid bucket.
+    if (!tcache->buckets_[i].limit.load(std::memory_order_relaxed)) {
+      EXPECT_EQ(g_root->buckets[i].active_slot_spans_head, nullptr);
+      continue;
+    }
+    EXPECT_GE(tcache->buckets_[i].limit.load(std::memory_order_relaxed),
+              2 * ThreadCache::kBatchFillRatio);
+  }
+
+  ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
+      ThreadCache::kDefaultMultiplier * 1000.);
+  for (size_t i = 0; i < ThreadCache::kBucketCount; i++) {
+    // Invalid bucket.
+    if (!tcache->buckets_[i].limit.load(std::memory_order_relaxed)) {
+      EXPECT_EQ(g_root->buckets[i].active_slot_spans_head, nullptr);
+      continue;
+    }
+    EXPECT_LT(tcache->buckets_[i].limit.load(std::memory_order_relaxed), 0xff);
+  }
+}
+
+TEST_F(ThreadCacheTest, DynamicCountPerBucketMultipleThreads) {
   std::atomic<bool> other_thread_started{false};
-  std::atomic<bool> purge_called{false};
+  std::atomic<bool> threshold_changed{false};
 
-  size_t bucket_index = FillThreadCacheAndReturnIndex(kMediumSize);
-  ThreadCache* this_thread_tcache = g_root->thread_cache_for_testing();
-  ThreadCache* other_thread_tcache = nullptr;
+  auto* tcache = g_root->thread_cache_for_testing();
+  size_t bucket_index =
+      FillThreadCacheAndReturnIndex(kSmallSize, kDefaultCountForSmallBucket);
+  EXPECT_EQ(kDefaultCountForSmallBucket, tcache->buckets_[bucket_index].count);
 
-  LambdaThreadDelegate delegate{
-      BindLambdaForTesting([&]() NO_THREAD_SAFETY_ANALYSIS {
-        FillThreadCacheAndReturnIndex(kMediumSize);
-        other_thread_tcache = g_root->thread_cache_for_testing();
+  // Change the ratio before starting the threads, checking that it will applied
+  // to newly-created threads.
+  ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
+      ThreadCache::kDefaultMultiplier + 1);
 
-        other_thread_started.store(true, std::memory_order_release);
-        while (!purge_called.load(std::memory_order_acquire)) {
-        }
+  LambdaThreadDelegate delegate{BindLambdaForTesting([&]() {
+    FillThreadCacheAndReturnIndex(kSmallSize, kDefaultCountForSmallBucket + 10);
+    auto* this_thread_tcache = g_root->thread_cache_for_testing();
+    // More than the default since the multiplier has changed.
+    EXPECT_GT(this_thread_tcache->buckets_[bucket_index].count,
+              kDefaultCountForSmallBucket + 10);
 
-        // Purge() was not triggered from the other thread.
-        EXPECT_EQ(kFillCountForMediumBucket,
-                  other_thread_tcache->bucket_count_for_testing(bucket_index));
-        // Allocations do not trigger Purge().
-        void* data = g_root->Alloc(1, "");
-        EXPECT_EQ(kFillCountForMediumBucket,
-                  other_thread_tcache->bucket_count_for_testing(bucket_index));
-        // But deallocations do.
-        g_root->Free(data);
-        EXPECT_EQ(0u,
-                  other_thread_tcache->bucket_count_for_testing(bucket_index));
-      })};
+    other_thread_started.store(true, std::memory_order_release);
+    while (!threshold_changed.load(std::memory_order_acquire)) {
+    }
+
+    void* data = g_root->Alloc(kSmallSize, "");
+    // Deallocations trigger limit enforcement.
+    g_root->Free(data);
+    // Since the bucket is too full, it gets halved by batched deallocation.
+    EXPECT_EQ(static_cast<uint8_t>(ThreadCache::kSmallBucketBaseCount / 2),
+              this_thread_tcache->bucket_count_for_testing(bucket_index));
+  })};
 
   PlatformThreadHandle thread_handle;
   PlatformThread::Create(0, &delegate, &thread_handle);
@@ -481,62 +611,97 @@ TEST_F(ThreadCacheTest, PeriodicPurge) {
   while (!other_thread_started.load(std::memory_order_acquire)) {
   }
 
-  EXPECT_EQ(kFillCountForMediumBucket,
-            this_thread_tcache->bucket_count_for_testing(bucket_index));
-  EXPECT_EQ(kFillCountForMediumBucket,
-            other_thread_tcache->bucket_count_for_testing(bucket_index));
+  ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(1.);
+  threshold_changed.store(true, std::memory_order_release);
 
-  EXPECT_TRUE(ThreadCacheRegistry::Instance().has_pending_purge_task());
-  task_env_.FastForwardBy(ThreadCacheRegistry::kPurgeInterval);
-  // Not enough allocations since last purge, don't reschedule it.
-  EXPECT_FALSE(ThreadCacheRegistry::Instance().has_pending_purge_task());
-
-  // This thread is synchronously purged.
-  EXPECT_EQ(0u, this_thread_tcache->bucket_count_for_testing(bucket_index));
-  // Not the other one.
-  EXPECT_EQ(kFillCountForMediumBucket,
-            other_thread_tcache->bucket_count_for_testing(bucket_index));
-
-  purge_called.store(true, std::memory_order_release);
   PlatformThread::Join(thread_handle);
 }
 
-TEST_F(ThreadCacheTest, PeriodicPurgeStopsAndRestarts) {
-  ThreadCacheRegistry::Instance().StartPeriodicPurge();
-  EXPECT_TRUE(ThreadCacheRegistry::Instance().has_pending_purge_task());
+TEST_F(ThreadCacheTest, DynamicSizeThreshold) {
+  auto* tcache = g_root->thread_cache_for_testing();
+  DeltaCounter alloc_miss_counter{tcache->stats_.alloc_misses};
+  DeltaCounter alloc_miss_too_large_counter{
+      tcache->stats_.alloc_miss_too_large};
+  DeltaCounter cache_fill_counter{tcache->stats_.cache_fill_count};
+  DeltaCounter cache_fill_misses_counter{tcache->stats_.cache_fill_misses};
 
-  size_t bucket_index = FillThreadCacheAndReturnIndex(kSmallSize);
-  auto* tcache = ThreadCache::Get();
-  EXPECT_GT(tcache->bucket_count_for_testing(bucket_index), 0u);
+  // Default threshold at first.
+  FillThreadCacheAndReturnIndex(ThreadCache::kDefaultSizeThreshold);
+  EXPECT_EQ(0u, alloc_miss_too_large_counter.Delta());
+  EXPECT_EQ(1u, cache_fill_counter.Delta());
 
-  task_env_.FastForwardBy(ThreadCacheRegistry::kPurgeInterval);
-  // Not enough allocations since last purge, don't reschedule it.
-  EXPECT_FALSE(ThreadCacheRegistry::Instance().has_pending_purge_task());
+  // Too large to be cached.
+  FillThreadCacheAndReturnIndex(ThreadCache::kDefaultSizeThreshold + 1);
+  EXPECT_EQ(1u, alloc_miss_too_large_counter.Delta());
 
-  // This thread is synchronously purged.
-  EXPECT_EQ(0u, tcache->bucket_count_for_testing(bucket_index));
+  // Increase.
+  ThreadCache::SetLargestCachedSize(ThreadCache::kLargeSizeThreshold);
+  FillThreadCacheAndReturnIndex(ThreadCache::kDefaultSizeThreshold + 1);
+  // No new miss.
+  EXPECT_EQ(1u, alloc_miss_too_large_counter.Delta());
 
-  // 1 allocation is not enough to restart it.
-  FillThreadCacheAndReturnIndex(kSmallSize);
-  EXPECT_FALSE(ThreadCacheRegistry::Instance().has_pending_purge_task());
+  // Lower.
+  ThreadCache::SetLargestCachedSize(ThreadCache::kDefaultSizeThreshold);
+  FillThreadCacheAndReturnIndex(ThreadCache::kDefaultSizeThreshold + 1);
+  EXPECT_EQ(2u, alloc_miss_too_large_counter.Delta());
 
-  for (int i = 0; i < ThreadCacheRegistry::kMinMainThreadAllocationsForPurging;
-       i++) {
-    FillThreadCacheAndReturnIndex(kSmallSize);
+  // Value is clamped.
+  size_t too_large = 1024 * 1024;
+  ThreadCache::SetLargestCachedSize(too_large);
+  FillThreadCacheAndReturnIndex(too_large);
+  EXPECT_EQ(3u, alloc_miss_too_large_counter.Delta());
+}
+
+TEST_F(ThreadCacheTest, DynamicSizeThresholdPurge) {
+  auto* tcache = g_root->thread_cache_for_testing();
+  DeltaCounter alloc_miss_counter{tcache->stats_.alloc_misses};
+  DeltaCounter alloc_miss_too_large_counter{
+      tcache->stats_.alloc_miss_too_large};
+  DeltaCounter cache_fill_counter{tcache->stats_.cache_fill_count};
+  DeltaCounter cache_fill_misses_counter{tcache->stats_.cache_fill_misses};
+
+  // Cache large allocations.
+  size_t large_allocation_size = ThreadCache::kLargeSizeThreshold;
+  ThreadCache::SetLargestCachedSize(ThreadCache::kLargeSizeThreshold);
+  size_t index = FillThreadCacheAndReturnIndex(large_allocation_size);
+  EXPECT_EQ(0u, alloc_miss_too_large_counter.Delta());
+
+  // Lower.
+  ThreadCache::SetLargestCachedSize(ThreadCache::kDefaultSizeThreshold);
+  FillThreadCacheAndReturnIndex(large_allocation_size);
+  EXPECT_EQ(1u, alloc_miss_too_large_counter.Delta());
+
+  // There is memory trapped in the cache bucket.
+  EXPECT_GT(tcache->buckets_[index].count, 0u);
+
+  // Which is reclaimed by Purge().
+  tcache->Purge();
+  EXPECT_EQ(0u, tcache->buckets_[index].count);
+}
+
+TEST_F(ThreadCacheTest, ClearFromTail) {
+  auto count_items = [](ThreadCache* tcache, size_t index) {
+    uint8_t count = 0;
+    auto* head = tcache->buckets_[index].freelist_head;
+    while (head) {
+      head = head->GetNext();
+      count++;
+    }
+    return count;
+  };
+
+  auto* tcache = g_root->thread_cache_for_testing();
+  size_t index = FillThreadCacheAndReturnIndex(kSmallSize, 10);
+  ASSERT_GE(count_items(tcache, index), 10);
+  void* head = tcache->buckets_[index].freelist_head;
+
+  for (size_t limit : {8, 3, 1}) {
+    tcache->ClearBucket(tcache->buckets_[index], limit);
+    EXPECT_EQ(head, static_cast<void*>(tcache->buckets_[index].freelist_head));
+    EXPECT_EQ(count_items(tcache, index), limit);
   }
-  EXPECT_TRUE(ThreadCacheRegistry::Instance().has_pending_purge_task());
-  EXPECT_GT(tcache->bucket_count_for_testing(bucket_index), 0u);
-
-  task_env_.FastForwardBy(ThreadCacheRegistry::kPurgeInterval);
-  EXPECT_EQ(0u, tcache->bucket_count_for_testing(bucket_index));
-  // Since there were enough allocations, another task is posted.
-  EXPECT_TRUE(ThreadCacheRegistry::Instance().has_pending_purge_task());
-
-  FillThreadCacheAndReturnIndex(kSmallSize);
-  task_env_.FastForwardBy(ThreadCacheRegistry::kPurgeInterval);
-  EXPECT_EQ(0u, tcache->bucket_count_for_testing(bucket_index));
-  // Not enough this time.
-  EXPECT_FALSE(ThreadCacheRegistry::Instance().has_pending_purge_task());
+  tcache->ClearBucket(tcache->buckets_[index], 0);
+  EXPECT_EQ(nullptr, static_cast<void*>(tcache->buckets_[index].freelist_head));
 }
 
 }  // namespace internal

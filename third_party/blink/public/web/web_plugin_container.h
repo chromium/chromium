@@ -34,6 +34,7 @@
 
 #include "third_party/blink/public/platform/web_common.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 #include "v8/include/v8.h"
 
 namespace cc {
@@ -48,7 +49,6 @@ class WebPlugin;
 class WebString;
 class WebURLRequest;
 class WebDOMMessageEvent;
-struct WebRect;
 
 class WebPluginContainer {
  public:
@@ -77,7 +77,7 @@ class WebPluginContainer {
   virtual void EnqueueMessageEvent(const WebDOMMessageEvent&) = 0;
 
   virtual void Invalidate() = 0;
-  virtual void InvalidateRect(const WebRect&) = 0;
+  virtual void InvalidateRect(const gfx::Rect&) = 0;
 
   // Schedules an animation of the WebView that contains the plugin, as well as
   // the plugin.
@@ -102,7 +102,7 @@ class WebPluginContainer {
 
   // Determines whether the given rectangle in this plugin is above all other
   // content. The rectangle is in the plugin's coordinate system.
-  virtual bool IsRectTopmost(const WebRect&) = 0;
+  virtual bool IsRectTopmost(const gfx::Rect&) = 0;
 
   // Notifies when the plugin changes the kind of touch-events it accepts.
   virtual void RequestTouchEventType(TouchEventRequestType) = 0;

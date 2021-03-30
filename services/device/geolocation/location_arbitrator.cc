@@ -26,10 +26,15 @@ const base::TimeDelta LocationArbitrator::kFixStaleTimeoutTimeDelta =
 
 LocationArbitrator::LocationArbitrator(
     const CustomLocationProviderCallback& custom_location_provider_getter,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    GeolocationSystemPermissionManager* geolocation_system_permission_manager,
+    const scoped_refptr<base::SingleThreadTaskRunner>& main_task_runner,
+    const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
     const std::string& api_key,
     std::unique_ptr<PositionCache> position_cache)
     : custom_location_provider_getter_(custom_location_provider_getter),
+      geolocation_system_permission_manager_(
+          geolocation_system_permission_manager),
+      main_task_runner_(main_task_runner),
       url_loader_factory_(url_loader_factory),
       api_key_(api_key),
       position_provider_(nullptr),
@@ -150,7 +155,8 @@ LocationArbitrator::NewNetworkLocationProvider(
   return nullptr;
 #else
   return std::make_unique<NetworkLocationProvider>(
-      std::move(url_loader_factory), api_key, position_cache_.get());
+      std::move(url_loader_factory), geolocation_system_permission_manager_,
+      main_task_runner_, api_key, position_cache_.get());
 #endif
 }
 

@@ -28,7 +28,7 @@ FakeRemoteChangeProcessor::~FakeRemoteChangeProcessor() {
 
 void FakeRemoteChangeProcessor::PrepareForProcessRemoteChange(
     const storage::FileSystemURL& url,
-    const PrepareChangeCallback& callback) {
+    PrepareChangeCallback callback) {
   SyncFileMetadata local_metadata;
 
   if (storage::VirtualPath::IsRootPath(url.path())) {
@@ -60,8 +60,8 @@ void FakeRemoteChangeProcessor::PrepareForProcessRemoteChange(
     change_list = found_list->second;
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(callback, SYNC_STATUS_OK, local_metadata, change_list));
+      FROM_HERE, base::BindOnce(std::move(callback), SYNC_STATUS_OK,
+                                local_metadata, change_list));
 }
 
 void FakeRemoteChangeProcessor::ApplyRemoteChange(
@@ -103,8 +103,9 @@ void FakeRemoteChangeProcessor::ApplyRemoteChange(
 void FakeRemoteChangeProcessor::FinalizeRemoteSync(
     const storage::FileSystemURL& url,
     bool clear_local_changes,
-    const base::Closure& completion_callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, completion_callback);
+    base::OnceClosure completion_callback) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                std::move(completion_callback));
 }
 
 void FakeRemoteChangeProcessor::RecordFakeLocalChange(

@@ -72,14 +72,14 @@ class SubresourceFilterIndexedRulesetTest : public ::testing::Test {
 
   bool AddSimpleAllowlistRule(base::StringPiece url_pattern) {
     auto rule = MakeUrlRule(UrlPattern(url_pattern, testing::kSubstring));
-    rule.set_semantics(proto::RULE_SEMANTICS_WHITELIST);
+    rule.set_semantics(proto::RULE_SEMANTICS_ALLOWLIST);
     return AddUrlRule(rule);
   }
 
   bool AddSimpleAllowlistRule(base::StringPiece url_pattern,
                               int32_t activation_types) {
     auto rule = MakeUrlRule(UrlPattern(url_pattern, testing::kSubstring));
-    rule.set_semantics(proto::RULE_SEMANTICS_WHITELIST);
+    rule.set_semantics(proto::RULE_SEMANTICS_ALLOWLIST);
     rule.clear_element_types();
     rule.set_activation_types(activation_types);
     return AddUrlRule(rule);

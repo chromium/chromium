@@ -8,12 +8,12 @@
 
 #include "chromeos/services/device_sync/public/cpp/device_sync_client_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/base64url.h"
 #include "base/bind.h"
 #include "chromeos/components/multidevice/expiring_remote_device_cache.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/remote_device.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/device_sync/public/mojom/device_sync.mojom.h"
 
 namespace chromeos {

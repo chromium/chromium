@@ -11,7 +11,6 @@
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "content/browser/cache_storage/cache_storage_context_impl.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/storage.h"
 
@@ -72,6 +71,12 @@ class StorageHandler : public DevToolsDomainHandler,
   Response TrackIndexedDBForOrigin(const std::string& origin) override;
   Response UntrackIndexedDBForOrigin(const std::string& origin) override;
 
+  void GetTrustTokens(
+      std::unique_ptr<GetTrustTokensCallback> callback) override;
+  void ClearTrustTokens(
+      const std::string& issuerOrigin,
+      std::unique_ptr<ClearTrustTokensCallback> callback) override;
+
  private:
   // See definition for lifetime information.
   class CacheStorageObserver;
@@ -86,8 +91,8 @@ class StorageHandler : public DevToolsDomainHandler,
                                         const std::string& name);
   void NotifyIndexedDBListChanged(const std::string& origin);
   void NotifyIndexedDBContentChanged(const std::string& origin,
-                                     const base::string16& database_name,
-                                     const base::string16& object_store_name);
+                                     const std::u16string& database_name,
+                                     const std::u16string& object_store_name);
 
   Response FindStoragePartition(const Maybe<std::string>& browser_context_id,
                                 StoragePartition** storage_partition);

@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/devtools_agent_host.h"
 
 namespace {
@@ -108,9 +109,14 @@ protocol::Response TargetHandler::CreateTarget(
         "no browser is open");
   }
 
+  GURL gurl(url);
+  if (gurl.is_empty()) {
+    gurl = GURL(url::kAboutBlankURL);
+  }
+
   create_new_window = !target_browser;
   NavigateParams params = CreateNavigateParams(
-      profile, GURL(url), ui::PAGE_TRANSITION_AUTO_TOPLEVEL, create_new_window,
+      profile, gurl, ui::PAGE_TRANSITION_AUTO_TOPLEVEL, create_new_window,
       create_in_background, target_browser);
   Navigate(&params);
   if (!params.navigated_or_inserted_contents)

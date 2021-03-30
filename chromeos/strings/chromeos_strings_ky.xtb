@@ -2,21 +2,30 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ky">
 <translation id="1018656279737460067">Жокко чыгарылды</translation>
+<translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> топтом, <ph name="CPU_MAX_CLOCK_SPEED" />ГГц)</translation>
 <translation id="1059913517121127803">Скандалып башталган жок</translation>
+<translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Тармактык коргоо аныкталды</translation>
 <translation id="1075811647922107217">Барактын өлчөмү</translation>
 <translation id="1124772482545689468">Колдонуучу</translation>
+<translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> түзмөгүн <ph name="MANAGER" /> башкарат.</translation>
 <translation id="1195447618553298278">Белгисиз ката.</translation>
 <translation id="1204296502688602597">DNS күтүү убакыты</translation>
 <translation id="123124571410524056">Портал бар окшойт</translation>
 <translation id="1238612778414822719">HTTPS күтүү убакыты</translation>
+<translation id="1270369111467284986">Кирүү бети бар окшойт</translation>
 <translation id="1290331692326790741">Начар сигнал</translation>
+<translation id="1314565355471455267">Android VPN</translation>
+<translation id="131461803491198646">Үй тармагы, роуминг жок</translation>
+<translation id="1327977588028644528">Шлюз</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Скандоо аймагы боюнча</translation>
+<translation id="1387854245479784695">Бул бардык зымдардын бириктирилген жери болуп эсептелет</translation>
 <translation id="1397738625398125236">Шлюздун байланышын текшерүүгө болот</translation>
 <translation id="1398634363027580500">HTTPS күтүү убакыты өтө жогору</translation>
 <translation id="1413240736185167732">Басылып чыгарылган жок - Чыпка иштебей калды</translation>
+<translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1468664791493211953">Сунуштар</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> бул түзмөктү башкарат жана аракеттериңизди да көзөмөлдөшү мүмкүн.</translation>
 <translation id="1478594628797167447">Сканер</translation>
@@ -24,30 +33,38 @@
 <translation id="150962533380566081">Жараксыз PUK.</translation>
 <translation id="1510238584712386396">Жүргүзгүч</translation>
 <translation id="1621067168122174824">Кубатталышын сыноо</translation>
-<translation id="1633910004424187862"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> топтом)</translation>
 <translation id="1641857168437328880">Документтерди берүүчү түзмөк (бир тараптуу)</translation>
 <translation id="1644574205037202324">Таржымал</translation>
 <translation id="1662989795263954667">Токтоду – Сыя түгөнүп калды</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS которгучун текшерүү</translation>
-<translation id="1743558184855585519">Чекке жеткенде батарея сарпталды деп эсептелет</translation>
+<translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> менен <ph name="SECOND_MANAGER" /> башкарат</translation>
+<translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1792647875738159689">Скандоо токтотулууда</translation>
+<translation id="1851218745569890714">Видео конференция</translation>
+<translation id="1887850431809612466">Жабдыкты оңдоо</translation>
 <translation id="1905710495812624430">Аракеттер уруксат берилген чегинен ашты.</translation>
+<translation id="1908234395526491708">Ишке ашпай калган UDP сурамдары</translation>
 <translation id="1930797645656624981">Chrome OS киргизүү ыкмасынын кызматы</translation>
 <translation id="1947737735496445907">Басып чыгарылды</translation>
 <translation id="1979103255016296513">Сырсөздү өзгөртүү мөөнөтү бүттү</translation>
-<translation id="1980044825731880088">CPU ылдамдыгы</translation>
 <translation id="1999615961760456652">Кирүү бети</translation>
 <translation id="2008685064673031089">Баштапкы издөө</translation>
 <translation id="2080070583977670716">Дагы жөндөөлөр</translation>
+<translation id="2119172414412204879"><ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" /> версиясы</translation>
+<translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> Гб ичинен <ph name="AVAILABLE_MEMORY" /> Гб жеткиликтүү</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="2157959690810728433">КЕЗЕККЕ КОЮЛДУ</translation>
 <translation id="2161394479394250669">Басып чыгарууну токтотуу</translation>
+<translation id="2217935453350629363">Учурдагы ылдамдык</translation>
 <translation id="2224337661447660594">Интернет жок</translation>
+<translation id="2230051135190148440">CHAP</translation>
+<translation id="225692081236532131">Жандыруу абалы</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Жакын жердеги түзмөктөрдү табуу үчүн Bluetooth'ду күйгүзүңүз</translation>
 <translation id="2364498172489649528">Текшерүүдөн өттү</translation>
-<translation id="2375079107209812402"><ph name="ATTEMPTS_LEFT" /> аракет калды</translation>
 <translation id="2391082728065870591">Жооп пикир баяндамасын жөнөтүү</translation>
+<translation id="2418150275289244458">Жөндөөлөрдө ачуу</translation>
 <translation id="2446553403094072641">Калкыма чекиттин тактыгы</translation>
 <translation id="2448312741937722512">Түрү</translation>
 <translation id="2461822463642141190">Учурда</translation>
@@ -57,7 +74,10 @@
 <translation id="2585245331261708204">Chrome OS жаңылыктары</translation>
 <translation id="2620436844016719705">Тутум</translation>
 <translation id="2740531572673183784">Ok</translation>
+<translation id="2751739896257479635">EAP 2-фазадагы аныктыгын текшерүү</translation>
+<translation id="2789486458103222910">Жарайт</translation>
 <translation id="2805756323405976993">Колдонмолор</translation>
+<translation id="2862104018715411648">Документиңизди сканерге коюп, Скандоо баскычын басыңыз</translation>
 <translation id="2872961005593481000">Жабуу</translation>
 <translation id="2878387241690264070">Батареянын кубаты <ph name="NUM_SECONDS" /> секундда <ph name="RATE" /> түгөндү.</translation>
 <translation id="3008341117444806826">ЖАҢЫРТУУ</translation>
@@ -69,20 +89,29 @@
 <translation id="3102119246920354026">Кэш</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="315116470104423982">Мобилдик Интернет</translation>
+<translation id="315738237743207937">Кирүү бети аныкталды</translation>
 <translation id="3188257591659621405">Менин файлдарым</translation>
 <translation id="3199982728237701504">Документтерди берүүчү түзмөк (эки тараптуу)</translation>
+<translation id="3226405216343213872">Сканерлер изделүүдө</translation>
 <translation id="3246869037381808805">1 күндөн мурунку басып чыгаруу тапшырмалары өчүрүлөт</translation>
 <translation id="3268178239013324452">Басылып чыгарылган жок - Принтердин эшиги ачык</translation>
+<translation id="3286515922899063534"><ph name="CURRENT" /> ГГц</translation>
 <translation id="3310640316857623290">DNS күтүү убакыты уруксат берилген босогодон бир кыйла жогору</translation>
 <translation id="3328783797891415197">Сыноо аткарылууда</translation>
 <translation id="3368922792935385530">Туташты</translation>
 <translation id="3369013195428705271">Басып чыгаруу тарыхын өчүрөсүзбү? Учурда басылып жаткан документтериңиз өчүрүлбөйт.</translation>
+<translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="3435738964857648380">Коопсуздук</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> ичинен <ph name="PRINTED_PAGES" /> барак басылып чыгарылды.</translation>
+<translation id="345898999683440380"><ph name="PAGE_NUM" />-бет скандалууда. <ph name="PERCENTAGE_VALUE" />% бүттү.</translation>
 <translation id="3459509316159669723">Басып чыгаруу</translation>
-<translation id="3515615323037921860">Басып чыгаруу тапшырмалары</translation>
+<translation id="3488065109653206955">Жарым-жартылай жандырылган</translation>
 <translation id="3527036260304016759">Басылып чыгарылган жок - Белгисиз ката</translation>
+<translation id="3532980081107202182">Болжол менен <ph name="MIN_REMAINING" /> мүнөт калды</translation>
 <translation id="357889014807611375">чектелген Wi-Fi</translation>
+<translation id="3595596368722241419">Батарея толук</translation>
 <translation id="360565022852130722">WiFi тармагынын WEP 802.1x протоколунун коопсуздугу начар</translation>
+<translation id="3689839747745352263"><ph name="TEST_NAME" /> сыноосу</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> сын-пикир)</translation>
 <translation id="3748026146096797577">Интернет жок</translation>
 <translation id="3749289110408117711">Файлдын аталышы</translation>
@@ -90,13 +119,17 @@
 <translation id="3820172043799983114">PIN код жараксыз.</translation>
 <translation id="3838338534323494292">Жаңы сырсөз</translation>
 <translation id="3865414814144988605">Чечилиш</translation>
+<translation id="387301095347517405">Батарея толук кубатталган циклдердин саны</translation>
 <translation id="3941014780699102620">Башкы түйүн чечилген жок</translation>
 <translation id="3942420633017001071">Мүчүлүштүктөрдү аныктоо</translation>
+<translation id="3967822245660637423">Жүктөп алуу аяктады</translation>
+<translation id="397105322502079400">Эсептелүүдө…</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> күндөн мурунку басып чыгаруу тапшырмалары өчүрүлөт</translation>
 <translation id="4003384961948020559">Басылып чыгарылган жок - Барактар тактасы толук</translation>
 <translation id="4034824040120875894">Принтер</translation>
 <translation id="4131410914670010031">Ак-кара</translation>
 <translation id="4145784616224233563">HTTP тармактык коргоосу</translation>
+<translation id="4155551848414053977">Сканер күйгүзүлгөнүн жана тармак аркылуу жеткиликтүү же түздөн-түз туташууга даяр экенин текшериңиз</translation>
 <translation id="4170700058716978431">АТКАРЫЛГАН ЖОК</translation>
 <translation id="4176463684765177261">Өчүк</translation>
 <translation id="4227825898293920515">Сырсөздүн мөөнөтү <ph name="TIME" /> кийин бүтөт</translation>
@@ -106,68 +139,97 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Менин Drive'ым</translation>
 <translation id="4429881212383817840">Kerberos билетинин мөөнөтү өтүп баратат</translation>
+<translation id="4431821876790500265">Отчётту көрүү</translation>
 <translation id="445059817448385655">Эски сырсөз</translation>
+<translation id="4453205916657964690">Көмөкчү тармактын маскасы</translation>
 <translation id="4454245904991689773">Төмөнкүгө скандоо:</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Демейкиден башка тармактын шлюзуна ping сурамы жөнөтүлгөн жок</translation>
 <translation id="4511264077854731334">Портал</translation>
 <translation id="4548483925627140043">Сигнал жок</translation>
 <translation id="455835558791489930">Батареянын кубатынын көлөмү – <ph name="CHARGE_VALUE" />мА/с.</translation>
+<translation id="4562494484721939086">Тейленбейт</translation>
 <translation id="458794348635939462">Бардык башкы түйүндөр чечилген жок</translation>
 <translation id="4593212453765072419">Проксиде аныктыгын текшерүү талап кылынат</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> ичинен <ph name="PRINTED_PAGE_NUMBER" /> Басып чыгарууну токтотуу үчүн "Enter" баскычын басыңыз.</translation>
 <translation id="4646949265910132906">Коопсуз WiFi туташуусу</translation>
+<translation id="4652335678334611408">Сеанстын таржымалын сактоо</translation>
+<translation id="4665014895760275686">Өндүрүүчү</translation>
 <translation id="467510802200863975">Сырсөздөр дал келген жок</translation>
 <translation id="467715984478005772">Тармактык коргоо бар окшойт</translation>
 <translation id="4691278870498629773">Токтоду – Түпкүч жок</translation>
 <translation id="469379815867856270">Сигналдын күчү</translation>
+<translation id="4707579418881001319">L2TP/IPsec + колдонуучунун тастыктамасы</translation>
 <translation id="4731797938093519117">Ата-эненин кирүү уруксаты</translation>
 <translation id="4773299976671772492">Токтотулду</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> документин басып чыгаруу токтотулду</translation>
+<translation id="4813345808229079766">Туташуу</translation>
 <translation id="4832079907277790330">Files колдонмосунда папка тандоо...</translation>
 <translation id="4835901797422965222">Жигердүү тармак жок</translation>
 <translation id="4848429997038228357">АТКАРЫЛУУДА</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} аракет калды}other{<ph name="ERROR_MESSAGE" /> {0} аракет калды}}</translation>
+<translation id="4880328057631981605">Жетки чекитинин аты</translation>
+<translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Дароо жаңы сырсөз тандаңыз</translation>
 <translation id="4891842000192098784">Стресс</translation>
+<translation id="4917385247580444890">Күчтүү</translation>
 <translation id="4917889632206600977">Токтоду – Кагаз түгөнүп калды</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> секундда <ph name="RATE" /> кубатталды.</translation>
 <translation id="4932733599132424254">Күнү</translation>
 <translation id="498186245079027698">Сканерди текшерип, кайра аракет кылыңыз. Скандалган файлдарды сактоо үчүн орун жетиштүү экенин текшериңиз.</translation>
 <translation id="4985509611418653372">Иштетүү</translation>
+<translation id="4987769320337599931">Тармактык коргоо</translation>
+<translation id="4999333166442584738">Отчётту жашыруу</translation>
 <translation id="500920857929044050">Сынакты токтотуу</translation>
+<translation id="5017508259293544172">LEAP</translation>
+<translation id="5050042263972837708">Топтун аталышы:</translation>
+<translation id="5088172560898466307">Сервер түйүнүнүн аталышы</translation>
 <translation id="5089810972385038852">Штат</translation>
+<translation id="5142961317498132443">Аныктыгын текшерүү</translation>
 <translation id="5154917547274118687">Эстутум</translation>
 <translation id="5168185087976003268">Батареянын иштөө мөөнөтү</translation>
-<translation id="520299634122159966">Жеткиликтүү сканерлер жок</translation>
 <translation id="5212543919916444558">Экраныңызда эч нерсе көрүнгөн жок.
 Мага суроо берүү үчүн микрофонду таптап коюңуз.</translation>
 <translation id="5222676887888702881">Чыгуу</translation>
+<translation id="5252456968953390977">Роуминг</translation>
 <translation id="5264277876637023664">CPU'ну сыноо</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Программаларды кайра иштетүү</translation>
+<translation id="5286252187236914003">L2TP/IPsec</translation>
+<translation id="5294769550414936029"><ph name="MILESTONE_VERSION" /> версиясы</translation>
+<translation id="5315873049536339193">Идентификация</translation>
 <translation id="5317780077021120954">Сактоо</translation>
+<translation id="5318334351163689047">Ишке ашпай калган TCP сурамдары</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Жаңысын азыр тандаңыз</translation>
 <translation id="5333530671332546086">Порталдын абалы белгисиз</translation>
 <translation id="5372659122375744710">WiFi тармагы кооптуу</translation>
 <translation id="5401938042319910061">Бардык Программаларды иштетүү</translation>
+<translation id="5423849171846380976">Жандырылды</translation>
 <translation id="5430931332414098647">Ыкчам байланыш түйүнү</translation>
 <translation id="5431318178759467895">Түс</translation>
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">Конок катары серептөө</translation>
 <translation id="54609108002486618">Башкарылуучу</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} аракет калды}other{{0} аракет калды}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
-<translation id="5551702563755460533">Жардам борборунан көбүрөөк маалымат алуу</translation>
-<translation id="5635169860413004179">Отчётту көрүү</translation>
-<translation id="5719918614880940190">Бул процессордун колдонулушун ченеп, бардык зымдардын бириктирилген жери болуп эсептелет</translation>
-<translation id="5781694279199921985">Сеанстын таржымалын сактоо</translation>
+<translation id="554517032089923082">GTC</translation>
+<translation id="5669267381087807207">Жандырылууда</translation>
+<translation id="5670702108860320605">BSSID</translation>
+<translation id="5691511426247308406">Үй-бүлөлүк</translation>
+<translation id="5760715441271661976">Порталдын абалы</translation>
 <translation id="5797428682393400134">ИЙГИЛИК</translation>
 <translation id="5832805196449965646">Адам кошуу</translation>
+<translation id="583281660410589416">Белгисиз</translation>
+<translation id="5849570051105887917">Баштапкы жабдуучунун коду</translation>
+<translation id="5866840822086176774">Абдан күчтүү</translation>
 <translation id="5895138241574237353">Өчүрүп күйгүзүү</translation>
 <translation id="5916084858004523819">Тыюу салынат</translation>
+<translation id="5921506667911082617">{COUNT,plural, =1{Файл ийгиликтүү скандалып, <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> папкасына сакталды.}other{Файлдар ийгиликтүү скандалып, <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> папкасына сакталды.}}</translation>
 <translation id="5931523347251946569">Файл табылган жок</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" />-версия)</translation>
 <translation id="6040143037577758943">Жабуу</translation>
+<translation id="6040852767465482106">Аноним</translation>
+<translation id="604124094241169006">Автоматтык</translation>
 <translation id="6048107060512778456">Басылып чыгарылган жок - Кагаз чайналып калды</translation>
 <translation id="6050189528197190982">Боз шкала</translation>
 <translation id="6058625436358447366">Бүтүрүү үчүн эски жана жаңы сырсөздөрүңүздү киргизиңиз</translation>
@@ -175,75 +237,111 @@
 <translation id="6104112872696127344">Скандоо токтотулду</translation>
 <translation id="6106186594183574873">Бүтүрүү үчүн эски сырсөзүңүздү киргизиңиз</translation>
 <translation id="6108689792487843350">Шлюз жеткиликсиз</translation>
-<translation id="6114428539405324828"><ph name="CURRENT" />ГГц / <ph name="MAX" />ГГц</translation>
 <translation id="6122191549521593678">Онлайн</translation>
+<translation id="6137767437444130246">Колдонуучунун тастыктамасы</translation>
 <translation id="6146993107019042706">Бүтүрүү үчүн жаңы сырсөздү киргизиңиз</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Кошумча маалымат</translation>
+<translation id="6189418609903030344">Батарея колдонулган сайын анын сыйымдуулугу төмөндөйт</translation>
 <translation id="6191293864534840972">Бурмаланган ысым серверлери</translation>
+<translation id="6223752125779001553">Жеткиликтүү сканерлер жок</translation>
 <translation id="6232017090690406397">Батарея</translation>
+<translation id="6302401976930124515"><ph name="TEST_NAME" /> сыноосу жокко чыгарылды</translation>
 <translation id="6325525973963619867">Аткарылган жок</translation>
 <translation id="636850387210749493">Корпоративдик каттоо</translation>
-<translation id="6426373337268369892">{COUNT,plural, =1{Скандалган файл сакталды}other{Скандалган файлдар сакталды}}</translation>
+<translation id="641081527798843608">Темасы дал келди</translation>
+<translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6456394469623773452">Жакшы</translation>
+<translation id="6472207088655375767">OTP</translation>
+<translation id="6480327114083866287"><ph name="MANAGER" /> башкарат</translation>
 <translation id="649050271426829538">Токтоду – Кагаз чайналып калды</translation>
+<translation id="6516990319416533844">Батареянын кубаттануу ылдамдыгын текшерүү үчүн анын кубатын кыска убакыттын ичинде сарптаңыз</translation>
 <translation id="6517239166834772319">Изилдөө</translation>
 <translation id="6527081081771465939">Белгисиз WiFi коопсуздук протоколу</translation>
-<translation id="6532051501443766164">Отчётту жашыруу</translation>
 <translation id="65587193855025101">Планшет</translation>
 <translation id="6564646048574748301">Басылып чыгарылган жок - Принтер жеткиликсиз</translation>
 <translation id="6618744767048954150">Иштеп жатат</translation>
 <translation id="6620487321149975369">Басып чыгаруу тапшырмаларын кол менен өчүрмөйүнчө, алар таржымалда сакталат</translation>
 <translation id="6643016212128521049">Тазалоо</translation>
+<translation id="6657585470893396449">Сырсөз</translation>
 <translation id="6704062477274546131">DNS дааналыгы</translation>
 <translation id="6747215703636344499">Токтоду – Түпкүч толуп калды</translation>
 <translation id="6756731097889387912">Скандоо токтотулбай калды</translation>
 <translation id="6766275201586212568">DNS резолюциялары орундалган жок</translation>
 <translation id="6768237774506518020">DNS резолюциясынын бузулуу деңгээли жогору</translation>
-<translation id="6839141349259399400">Сканерлерге туташуу мүмкүн болбой жатабы?</translation>
 <translation id="6853312040151791195">Батареянын кубатынын түгөнүү көрсөткүчү</translation>
 <translation id="6898743098396957679">Скандоо аягына чыккан жок</translation>
+<translation id="6911383237894364323">Медиа серверлерине туташпай жатат</translation>
 <translation id="6957231940976260713">Кызматтын аталышы</translation>
+<translation id="6977381486153291903">Орнотулган программаны оңдоо</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> бул түзмөктү башкарып, андагы колдонуучунун бардык аракеттерине, анын ичинде баш баккан веб-барактарга, сырсөздөргө жана электрондук каттарга кирүү мүмкүнчүлүгү бар.</translation>
+<translation id="7040230719604914234">Оператор</translation>
+<translation id="7059230779847288458">Кубатталууда, толгонго чейин <ph name="TIME_VALUE" /> калды</translation>
+<translation id="708426984172631313">ТОКТОТУЛДУ</translation>
 <translation id="7143207342074048698">Туташууда</translation>
+<translation id="7144878232160441200">Дагы аракет кылып көрүү</translation>
 <translation id="714876143603641390">LAN байланышы</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> түзмөгүн <ph name="MANAGER" /> башкарат. Администраторлор түзмөктү алыстан конфигурациялай алышат.</translation>
+<translation id="7216409898977639127">Интернет провайдери</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7343649194310845056">Тармак түзмөктөрү</translation>
 <translation id="7359657277149375382">Файлдын түрү</translation>
+<translation id="7375053625150546623">EAP</translation>
+<translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Скандалып бүттү. 1 бет скандалды}other{Скандалып бүттү. {NUMBER_OF_PAGES} бет скандалды}}</translation>
-<translation id="7441459999606975924">Батарея колдонулган сайын анын сыйымдуулугу төмөндөйт</translation>
 <translation id="7469648432129124067">Портал аныкталды</translation>
+<translation id="7487067081878637334">Технология</translation>
 <translation id="7490813197707563893">MAC дареги</translation>
+<translation id="7497215489070763236">Сервердин CA тастыктамасы</translation>
+<translation id="7502658306369382406">IPv6 дареги</translation>
+<translation id="7550715992156305117">Мүчүлүштүктөрдү аныктоо программалары</translation>
 <translation id="7561454561030345039">Бул аракетти администраторуңуз башкарат</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331"><ph name="TIME_VALUE" /> калды</translation>
+<translation id="7620771111601174153">Жардам борборуна өтүп, кененирээк маалымат алыңыз</translation>
 <translation id="7648838807254605802">HTTPS күтүү убакыты жогору</translation>
 <translation id="7658239707568436148">Жокко чыгаруу</translation>
 <translation id="7690294790491645610">Жаңы сырсөздү ырастаңыз</translation>
+<translation id="7701040980221191251">Эч бир</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Циклдердин саны</translation>
-<translation id="7732651821766520760"><ph name="TEST_NAME" /> сыноосу</translation>
+<translation id="7769672763586021400">Үлгү ID'си</translation>
 <translation id="7805768142964895445">Статусу</translation>
-<translation id="7928373994957558460">Файл сакталган жерди көрсөтүү</translation>
+<translation id="7819857487979277519">PSK (WPA же RSN)</translation>
+<translation id="7881066108824108340">DNS</translation>
+<translation id="7882358943899516840">Жабдуучунун түрү</translation>
 <translation id="7936303884198020182">Ысым серверлери табылган жок</translation>
 <translation id="7960831585769876809">Температура</translation>
+<translation id="7994702968232966508">EAP ыкмасы</translation>
+<translation id="802154636333426148">Жүктөлүп алынбай калды</translation>
 <translation id="8041089156583427627">Пикириңизди билдириңиз</translation>
 <translation id="8075838845814659848">Батареянын кубаты</translation>
 <translation id="808894953321890993">Сызсөздү өзгөртүү</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
-<translation id="8160445423316272678">Документиңизди сканерге коюп, <ph name="SPAN_BEGIN" />Скандоо<ph name="SPAN_END" /> баскычын басыңыз</translation>
 <translation id="8206859287963243715">Уюктук</translation>
 <translation id="8208861521865154048">Бонустар</translation>
 <translation id="8230672074305416752">Демейки тармактын шлюзуна ping сурамы жөнөтүлгөн жок</translation>
+<translation id="8246209727385807362">Белгисиз байланыш оператору</translation>
+<translation id="8291967909914612644">Баштапкы жабдуучу өлкө</translation>
 <translation id="8294431847097064396">Булак</translation>
+<translation id="8297006494302853456">Начар</translation>
 <translation id="8302368968391049045">HTTPS тармактык коргоосу</translation>
 <translation id="8347227221149377169">Басып чыгаруу тапшырмалары</translation>
 <translation id="8352772353338965963">Бир нече профиль менен кирүү үчүн каттоо эсебин кошуңуз. Катталган бардык аккаунттарына кирүүдө сырсөз талап кылынбагандыктан, бул мүмкүнчүлүктү ишенимдүү каттоо эсептери гана колдонушу керек.</translation>
 <translation id="8364946094152050673">Ысым серверлери бош</translation>
+<translation id="8372477600026034341">Кошумча башкы түйүндөр</translation>
 <translation id="8395584934117017006">Бул <ph name="DEVICE_TYPE" /> түзмөгүн ишкана башкарат</translation>
 <translation id="8398927464629426868">Түзмөк кубатталган же кубатталышы токтотулган деңгээл</translation>
+<translation id="8461329675984532579">Баштапкы жабдуучунун аты</translation>
 <translation id="8475690821716466388">WiFi тармагынын WEP PSK протоколунун коопсуздугу начар</translation>
 <translation id="8477551185774834963">DNS күтүү убакыты уруксат берилген босогодон бир аз жогору</translation>
+<translation id="8483248364096924578">IP дареги</translation>
+<translation id="8503813439785031346">Колдонуучунун ысымы</translation>
+<translation id="8503836310948963452">Дагы бир нече мүнөт калды...</translation>
 <translation id="8576249514688522074">Аныкталбаган</translation>
+<translation id="8620617069779373398">Роуминг статусу</translation>
+<translation id="8675354002693747642">Алдын ала бөлүшүлгөн ачкыч</translation>
 <translation id="871560550817059752">Басылып чыгарылган жок - Сыя түгөнүп калды</translation>
 <translation id="8723108084122415655">Демейкиден башка тармак күтүү убакытынын босогосунан жогору</translation>
 <translation id="8726019395068607495">Токтоду – Эшик ачык</translation>
@@ -251,7 +349,9 @@
 <translation id="8747900814994928677">Өзгөртүүнү ырастоо</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Демейки</translation>
+<translation id="8798441408945964110">Жабдуучунун аталышы</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="8818152010000655963">Тушкагаз</translation>
 <translation id="8845001906332463065">Жардам алуу</translation>
 <translation id="8881098542468797602">Ийгиликтүү сыналды</translation>
 <translation id="8898840733695078011">Сигналдын күчү</translation>
@@ -259,14 +359,22 @@
 <translation id="8919837981463578619">Басылып чыгарылган жок - Такта ордунда эмес</translation>
 <translation id="8928727111548978589">Басылып чыгарылган жок - Кагаз түгөнүп калды</translation>
 <translation id="8930622219860340959">Зымсыз</translation>
-<translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> <ph name="ATTEMPTS_LEFT" /> аракет калды</translation>
 <translation id="8968751544471797276">Батареянын кубатталышы көрсөткүчү</translation>
 <translation id="8970109610781093811">Кайра сыноо</translation>
+<translation id="9003704114456258138">Жыштык</translation>
+<translation id="9039663905644212491">PEAP</translation>
+<translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Учурдагы колдонулушу</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> үчүн билетти жаңыртыңыз</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-бет скандалууда</translation>
 <translation id="9111102763498581341">Кулпуну ачуу</translation>
+<translation id="9137526406337347448">Google кызматтары</translation>
 <translation id="9149391708638971077">Эстутумду сыноо</translation>
+<translation id="9173638680043580060">Бир мүнөткө жетпеген убакыт калды</translation>
+<translation id="9190063653747922532">L2TP/IPsec + алдын-ала бөлүшүлгөн ачкыч</translation>
+<translation id="939519157834106403">SSID</translation>
+<translation id="952992212772159698">Жандырылган эмес</translation>
+<translation id="960719561871045870">Оператордун коду</translation>
 <translation id="982713511914535780">Батареянын сарпталышын сыноо</translation>
 </translationbundle>

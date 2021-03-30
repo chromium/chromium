@@ -1,0 +1,32 @@
+<html>
+<head><style>
+  div {
+    width: 100px;
+  }
+  code::before {
+    content: "[";
+  }
+  code::after {
+    content: "]";
+  }
+  b::before, i::after {
+    width: 5px;
+    height: 5px;
+    content: "";
+    display: block;
+    background: black;
+  }
+</style></head>
+<body>
+  <div>start</div>
+  <div>
+    text with <code>:before</code>
+    and <code>:after</code> content,
+    then a <b>bold</b> element with a
+    <code>block</code> before content
+    then a <i>italic</i> element with
+    a <code>block</code> after content
+  </div>
+  <div>end</div>
+</body>
+</html>

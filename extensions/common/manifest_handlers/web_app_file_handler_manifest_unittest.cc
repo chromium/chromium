@@ -10,8 +10,11 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/web_app_file_handler.h"
 #include "extensions/common/manifest_test.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using extensions::mojom::ManifestLocation;
 
 namespace extensions {
 
@@ -46,19 +49,17 @@ class WebAppFileHandlersManifestTest : public ManifestTest {
 // Non-list type for "web_app_file_handlers" throws an error.
 TEST_F(WebAppFileHandlersManifestTest, InvalidFileHandlers) {
   const char kFileHandlers[] = R"({})";
-  LoadAndExpectError(CreateManifest(kFileHandlers),
-                     errors::kInvalidWebAppFileHandlers,
-                     extensions::Manifest::Location::INTERNAL,
-                     extensions::Extension::FROM_BOOKMARK);
+  LoadAndExpectError(
+      CreateManifest(kFileHandlers), errors::kInvalidWebAppFileHandlers,
+      ManifestLocation::kInternal, extensions::Extension::FROM_BOOKMARK);
 }
 
 // Non-dictionary type for "web_app_file_handlers[*]" throws an error.
 TEST_F(WebAppFileHandlersManifestTest, InvalidFileHandler) {
   const char kFileHandlers[] = R"(["foo"])";
-  LoadAndExpectError(CreateManifest(kFileHandlers),
-                     errors::kInvalidWebAppFileHandler,
-                     extensions::Manifest::Location::INTERNAL,
-                     extensions::Extension::FROM_BOOKMARK);
+  LoadAndExpectError(
+      CreateManifest(kFileHandlers), errors::kInvalidWebAppFileHandler,
+      ManifestLocation::kInternal, extensions::Extension::FROM_BOOKMARK);
 }
 
 // Non-string type for "web_app_file_handlers[*].action" throws an error.
@@ -81,10 +82,9 @@ TEST_F(WebAppFileHandlersManifestTest, InvalidFileHandlerActionNonString) {
       }
     }
   ])";
-  LoadAndExpectError(CreateManifest(kFileHandlers),
-                     errors::kInvalidWebAppFileHandlerAction,
-                     extensions::Manifest::Location::INTERNAL,
-                     extensions::Extension::FROM_BOOKMARK);
+  LoadAndExpectError(
+      CreateManifest(kFileHandlers), errors::kInvalidWebAppFileHandlerAction,
+      ManifestLocation::kInternal, extensions::Extension::FROM_BOOKMARK);
 }
 
 // Invalid GURL in "web_app_file_handlers[*].action" throws an error.
@@ -107,10 +107,9 @@ TEST_F(WebAppFileHandlersManifestTest, InvalidFileHandlerActionInvalidGURL) {
       }
     }
   ])";
-  LoadAndExpectError(CreateManifest(kFileHandlers),
-                     errors::kInvalidWebAppFileHandlerAction,
-                     extensions::Manifest::Location::INTERNAL,
-                     extensions::Extension::FROM_BOOKMARK);
+  LoadAndExpectError(
+      CreateManifest(kFileHandlers), errors::kInvalidWebAppFileHandlerAction,
+      ManifestLocation::kInternal, extensions::Extension::FROM_BOOKMARK);
 }
 
 // Non-dictionary type for "web_app_file_handlers[*].accept" throws an error.
@@ -131,10 +130,9 @@ TEST_F(WebAppFileHandlersManifestTest, InvalidFileHandlerAccept) {
       ]
     }
   ])";
-  LoadAndExpectError(CreateManifest(kFileHandlers),
-                     errors::kInvalidWebAppFileHandlerAccept,
-                     extensions::Manifest::Location::INTERNAL,
-                     extensions::Extension::FROM_BOOKMARK);
+  LoadAndExpectError(
+      CreateManifest(kFileHandlers), errors::kInvalidWebAppFileHandlerAccept,
+      ManifestLocation::kInternal, extensions::Extension::FROM_BOOKMARK);
 }
 
 // Empty dictionary in "web_app_file_handlers[*].accept" throws an error.
@@ -154,7 +152,7 @@ TEST_F(WebAppFileHandlersManifestTest, InvalidFileHandlerEmptyAccept) {
   ])";
   LoadAndExpectError(CreateManifest(kFileHandlers),
                      errors::kInvalidWebAppFileHandlerEmptyAccept,
-                     extensions::Manifest::Location::INTERNAL,
+                     ManifestLocation::kInternal,
                      extensions::Extension::FROM_BOOKMARK);
 }
 
@@ -177,7 +175,7 @@ TEST_F(WebAppFileHandlersManifestTest, InvalidFileHandlerFileExtensions) {
   ])";
   LoadAndExpectError(CreateManifest(kFileHandlers),
                      errors::kInvalidWebAppFileHandlerFileExtensions,
-                     extensions::Manifest::Location::INTERNAL,
+                     ManifestLocation::kInternal,
                      extensions::Extension::FROM_BOOKMARK);
 }
 
@@ -205,7 +203,7 @@ TEST_F(WebAppFileHandlersManifestTest,
   ])";
   LoadAndExpectError(CreateManifest(kFileHandlers),
                      errors::kInvalidWebAppFileHandlerFileExtension,
-                     extensions::Manifest::Location::INTERNAL,
+                     ManifestLocation::kInternal,
                      extensions::Extension::FROM_BOOKMARK);
 }
 
@@ -232,7 +230,7 @@ TEST_F(WebAppFileHandlersManifestTest, InvalidFileHandlerFileExtensionEmpty) {
   ])";
   LoadAndExpectError(CreateManifest(kFileHandlers),
                      errors::kInvalidWebAppFileHandlerFileExtension,
-                     extensions::Manifest::Location::INTERNAL,
+                     ManifestLocation::kInternal,
                      extensions::Extension::FROM_BOOKMARK);
 }
 
@@ -259,7 +257,7 @@ TEST_F(WebAppFileHandlersManifestTest, InvalidFileHandlerFileExtensionNoDot) {
   ])";
   LoadAndExpectError(CreateManifest(kFileHandlers),
                      errors::kInvalidWebAppFileHandlerFileExtension,
-                     extensions::Manifest::Location::INTERNAL,
+                     ManifestLocation::kInternal,
                      extensions::Extension::FROM_BOOKMARK);
 }
 
@@ -284,7 +282,7 @@ TEST_F(WebAppFileHandlersManifestTest, ValidFileHandlers) {
     }
   ])";
   scoped_refptr<const Extension> extension = LoadAndExpectSuccess(
-      CreateManifest(kFileHandlers), extensions::Manifest::Location::INTERNAL,
+      CreateManifest(kFileHandlers), ManifestLocation::kInternal,
       extensions::Extension::FROM_BOOKMARK);
 
   ASSERT_TRUE(extension.get());

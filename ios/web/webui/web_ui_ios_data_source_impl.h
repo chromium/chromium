@@ -24,7 +24,7 @@ class WebUIIOSDataSourceImpl : public URLDataSourceIOSImpl,
                                public WebUIIOSDataSource {
  public:
   // WebUIIOSDataSource implementation:
-  void AddString(const std::string& name, const base::string16& value) override;
+  void AddString(const std::string& name, const std::u16string& value) override;
   void AddString(const std::string& name, const std::string& value) override;
   void AddLocalizedString(const std::string& name, int ids) override;
   void AddLocalizedStrings(

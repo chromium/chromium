@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.payments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
 
@@ -13,13 +14,15 @@ import androidx.collection.ArrayMap;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.payments.ui.PaymentUiService;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.payments.AbortReason;
 import org.chromium.components.payments.AndroidPaymentApp;
 import org.chromium.components.payments.BrowserPaymentRequest;
 import org.chromium.components.payments.ErrorStrings;
-import org.chromium.components.payments.Event;
 import org.chromium.components.payments.JourneyLogger;
 import org.chromium.components.payments.MethodStrings;
 import org.chromium.components.payments.PackageManagerDelegate;
@@ -123,15 +126,15 @@ public class ChromePaymentRequestService
         }
 
         /**
-         * Looks up the Chrome activity of the given web contents. This can be null. Should never be
-         * cached, because web contents can change activities, e.g., when user selects "Open in
+         * Looks up the Android Activity of the given web contents. This can be null. Should never
+         * be cached, because web contents can change activities, e.g., when user selects "Open in
          * Chrome" menu item.
          *
-         * @param webContents The web contents for which to lookup the Chrome activity.
-         * @return Possibly null Chrome activity that should never be cached.
+         * @param webContents The web contents for which to lookup the Android activity.
+         * @return Possibly null Android activity that should never be cached.
          */
         @Nullable
-        default ChromeActivity getChromeActivity(WebContents webContents) {
+        default Activity getActivity(WebContents webContents) {
             return ChromeActivity.fromWebContents(webContents);
         }
 
@@ -188,6 +191,38 @@ public class ChromePaymentRequestService
         default PaymentHandlerHost createPaymentHandlerHost(
                 WebContents webContents, PaymentRequestUpdateEventListener listener) {
             return new PaymentHandlerHost(webContents, listener);
+        }
+
+        /**
+         * @param webContents Any WebContents.
+         * @return The TabModelSelector of the given WebContents.
+         */
+        @Nullable
+        default TabModelSelector getTabModelSelector(WebContents webContents) {
+            ChromeActivity activity = ChromeActivity.fromWebContents(webContents);
+            return activity == null ? null : activity.getTabModelSelector();
+        }
+
+        /**
+         * @param webContents Any WebContents.
+         * @return The TabModel of the given WebContents.
+         */
+        @Nullable
+        default TabModel getTabModel(WebContents webContents) {
+            ChromeActivity activity = ChromeActivity.fromWebContents(webContents);
+            return activity == null ? null : activity.getCurrentTabModel();
+        }
+
+        /**
+         * @param webContents Any WebContents.
+         * @return The ActivityLifecycleDispatcher of the ChromeActivity that contains the given
+         *         WebContents.
+         */
+        @Nullable
+        default ActivityLifecycleDispatcher getActivityLifecycleDispatcher(
+                WebContents webContents) {
+            ChromeActivity activity = ChromeActivity.fromWebContents(webContents);
+            return activity == null ? null : activity.getLifecycleDispatcher();
         }
     }
 
@@ -317,11 +352,15 @@ public class ChromePaymentRequestService
     @Override
     public String showOrSkipAppSelector(boolean isShowWaitingForUpdatedDetails, PaymentItem total,
             boolean shouldSkipAppSelector) {
-        ChromeActivity chromeActivity = mDelegate.getChromeActivity(mWebContents);
-        if (chromeActivity == null) return ErrorStrings.ACTIVITY_NOT_FOUND;
-        String error = mPaymentUiService.buildPaymentRequestUI(chromeActivity,
-                /*isWebContentsActive=*/mDelegate.isWebContentsActive(mRenderFrameHost),
-                /*isShowWaitingForUpdatedDetails=*/isShowWaitingForUpdatedDetails);
+        Activity activity = mDelegate.getActivity(mWebContents);
+        if (activity == null) return ErrorStrings.ACTIVITY_NOT_FOUND;
+        TabModelSelector tabModelSelector = mDelegate.getTabModelSelector(mWebContents);
+        if (tabModelSelector == null) return ErrorStrings.TAB_NOT_FOUND;
+        TabModel tabModel = mDelegate.getTabModel(mWebContents);
+        if (tabModel == null) return ErrorStrings.TAB_NOT_FOUND;
+        String error = mPaymentUiService.buildPaymentRequestUI(
+                /*isWebContentsActive=*/mDelegate.isWebContentsActive(mRenderFrameHost), activity,
+                tabModelSelector, tabModel);
         if (error != null) return error;
         // Calculate skip ui and build ui only after all payment apps are ready and
         // request.show() is called.
@@ -340,6 +379,7 @@ public class ChromePaymentRequestService
             mHasSkippedAppSelector = true;
         } else {
             mPaymentUiService.showAppSelector(isShowWaitingForUpdatedDetails);
+            mJourneyLogger.setShown();
         }
         return null;
     }
@@ -375,7 +415,7 @@ public class ChromePaymentRequestService
                             ()
                                     -> onUiAborted(AbortReason.ABORTED_BY_USER,
                                             ErrorStrings.USER_CANCELLED))) {
-                    mJourneyLogger.setEventOccurred(Event.SHOWN);
+                    mJourneyLogger.setShown();
                     return null;
                 } else {
                     return ErrorStrings.MINIMAL_UI_SUPPRESSED;
@@ -385,7 +425,7 @@ public class ChromePaymentRequestService
             assert !mPaymentUiService.getPaymentApps().isEmpty();
             PaymentApp selectedApp = mPaymentUiService.getSelectedPaymentApp();
             dimBackgroundIfNotPaymentHandler(selectedApp);
-            mJourneyLogger.setEventOccurred(Event.SKIPPED_SHOW);
+            mJourneyLogger.setSkippedShow();
             invokePaymentApp(null /* selectedShippingAddress */, null /* selectedShippingOption */,
                     selectedApp);
         } else {
@@ -531,7 +571,7 @@ public class ChromePaymentRequestService
                         mPaymentUiService.getSelectedContact(), selectedPaymentApp,
                         mSpec.getPaymentOptions(), mSkipToGPayHelper != null);
         mPaymentRequestService.invokePaymentApp(selectedPaymentApp, paymentResponseHelper);
-        return !selectedPaymentApp.isAutofillInstrument();
+        return selectedPaymentApp.getPaymentAppType() != PaymentAppType.AUTOFILL;
     }
 
     private PaymentHandlerHost getPaymentHandlerHost() {
@@ -652,7 +692,7 @@ public class ChromePaymentRequestService
             }
         } else {
             PaymentApp firstApp = mPaymentUiService.getPaymentApps().get(0);
-            if (firstApp.isAutofillInstrument()) {
+            if (firstApp.getPaymentAppType() == PaymentAppType.AUTOFILL) {
                 missingFields = ((AutofillPaymentInstrument) (firstApp)).getMissingFields();
             }
         }
@@ -770,5 +810,12 @@ public class ChromePaymentRequestService
     @Nullable
     public Context getContext() {
         return mDelegate.getContext(mRenderFrameHost);
+    }
+
+    // Implement PaymentUiService.Delegate:
+    @Override
+    @Nullable
+    public ActivityLifecycleDispatcher getActivityLifecycleDispatcher() {
+        return mDelegate.getActivityLifecycleDispatcher(mWebContents);
     }
 }

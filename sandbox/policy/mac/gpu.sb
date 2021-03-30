@@ -1,91 +1,145 @@
-;;
-;; Copyright (c) 2011 The Chromium Authors. All rights reserved.
-;; Use of this source code is governed by a BSD-style license that can be
-;; found in the LICENSE file.
-;;
+; Copyright 2017 The Chromium Authors. All rights reserved.
+; Use of this source code is governed by a BSD-style license that can be
+; found in the LICENSE file.
 
-; *** The contents of the V1 sandbox common.sb are below. ***
+; --- The contents of common.sb implicitly included here. ---
 
-(version 1)
+(deny default (with partial-symbolication))
+(debug deny)
 
-; Helper function to check if a param is set to true.
-(define (param-true? str) (string=? (param str) "TRUE"))
+; Allow cf prefs to work.
+(allow user-preference-read)
 
-; Helper function to determine if a parameter is defined or not.
-(define (param-defined? str) (string? (param str)))
-
-; Define constants for all of the parameter strings passed in.
-(define bundle-version-path "BUNDLE_VERSION_PATH")
-(define disable-sandbox-denial-logging "DISABLE_SANDBOX_DENIAL_LOGGING")
-(define enable-logging "ENABLE_LOGGING")
-(define homedir-as-literal "USER_HOMEDIR_AS_LITERAL")
-(define macos-1013 "MACOS_1013")
-(define field-trial-server-name "FIELD_TRIAL_SERVER_NAME")
-
-; Backwards compatibility for 10.11
-(if (not (defined? 'iokit-registry-entry-class))
-  (define iokit-registry-entry-class iokit-user-client-class))
-
-; Consumes a subpath and appends it to the user's homedir path.
-(define (user-homedir-path subpath)
-  (string-append (param homedir-as-literal) subpath))
-
-; DISABLE_SANDBOX_DENIAL_LOGGING turns off log messages in the system log.
-(if (param-true? disable-sandbox-denial-logging)
-    (deny default (with no-log))
-    (deny default))
-
-; Support for programmatically enabling verbose debugging.
-(if (param-true? enable-logging) (debug deny))
-
-(allow mach-lookup (global-name (param field-trial-server-name)))
-
-; Allow sending signals to self - https://crbug.com/20370
-(allow signal (target self))
-
-; Needed for full-page-zoomed controls - https://crbug.com/11325
-(allow sysctl-read)
-
-; Loading System Libraries.
-(allow file-read*
-    (subpath "/System/Library/Frameworks")
-    (subpath "/System/Library/PrivateFrameworks")
-    (subpath "/System/Library/CoreServices"))
+(allow-cvms-blobs)
 
 (allow ipc-posix-shm)
 
-; Allow direct access to /dev/urandom, similar to Linux/POSIX, to allow
-; third party code (eg: bits of Adobe Flash and NSS) to function properly.
-(allow file-read-data file-read-metadata (literal "/dev/urandom"))
-
-; *** The contents of the V1 sandbox gpu.sb are below. ***
+(define disable-metal-shader-cache "DISABLE_METAL_SHADER_CACHE")
 
 ; Allow communication between the GPU process and the UI server.
-(allow mach-lookup (global-name "com.apple.tsm.uiserver"))
+(allow mach-lookup
+  (global-name "com.apple.bsd.dirhelper")
+  (global-name "com.apple.CARenderServer")
+  (global-name "com.apple.cfprefsd.agent")
+  (global-name "com.apple.cfprefsd.daemon")
+  (global-name "com.apple.CoreServices.coreservicesd")
+  (global-name "com.apple.coreservices.launchservicesd")
+  (global-name "com.apple.cvmsServ")
+  (global-name "com.apple.gpumemd.source")
+  (global-name "com.apple.lsd.mapdb")
+  (global-name "com.apple.lsd.modifydb")
+  (global-name "com.apple.powerlog.plxpclogger.xpc")
+  (global-name "com.apple.PowerManagement.control")
+  (global-name "com.apple.SecurityServer")
+  (global-name "com.apple.system.notification_center")
+  (global-name "com.apple.system.opendirectoryd.membership") ; https://crbug.com/1126350#c5
+  (global-name "com.apple.tsm.uiserver")
+  (global-name "com.apple.windowserver.active")
+)
 
-(allow file-read-metadata (literal "/"))
+; Needed for metal decoding - https://crbug.com/957217
+(if (>= os-version 1014)
+  (allow mach-lookup (xpc-service-name "com.apple.MTLCompilerService"))
+)
 
-; Needed for WebGL - crbug.com/75343
+; Needed for VideoToolbox H.264 SW and VP9 decoding - https://crbug.com/1113936
+(if (>= os-version 1016)
+  (begin
+    (allow mach-lookup (global-name "com.apple.trustd.agent"))
+    (allow file-read* (path "/Library/Preferences/com.apple.security.plist"))
+  )
+)
+
+; Needed for WebGL - https://crbug.com/75343
 (allow iokit-open
   (iokit-connection "IOAccelerator")
+  (iokit-user-client-class "AGPMClient")
+  (iokit-user-client-class "AppleGraphicsControlClient")
+  (iokit-user-client-class "AppleGraphicsPolicyClient")
+  (iokit-user-client-class "AppleIntelMEUserClient")
+  (iokit-user-client-class "AppleMGPUPowerControlClient")
+  (iokit-user-client-class "AppleSNBFBUserClient")
   (iokit-user-client-class "IOAccelerationUserClient")
   (iokit-user-client-class "IOFramebufferSharedUserClient")
-  (iokit-user-client-class "AppleGraphicsControlClient")
-  (iokit-user-client-class "AGPMClient")
   (iokit-user-client-class "IOHIDParamUserClient")
-  (iokit-user-client-class "RootDomainUserClient")
   (iokit-user-client-class "IOSurfaceRootUserClient")
-  (iokit-user-client-class "IOSurfaceSendRight"))
+  (iokit-user-client-class "IOSurfaceSendRight")
+  (iokit-user-client-class "RootDomainUserClient")
+)
 
-; https://crbug.com/515280
-(allow file-read* (subpath "/System/Library/Extensions"))
+(allow iokit-set-properties
+  (require-all (iokit-connection "IODisplay")
+    (require-any (iokit-property "brightness")
+      (iokit-property "linear-brightness")
+      (iokit-property "commit")
+      (iokit-property "rgcs")
+      (iokit-property "ggcs")
+      (iokit-property "bgcs")
+)))
+
+(allow ipc-posix-shm-read-data
+  (ipc-posix-name "apple.shm.notification_center"))
+
 
 ; Needed for VideoToolbox usage - https://crbug.com/767037
-(allow mach-lookup (global-name "com.apple.coremedia.videodecoder"))
+(if (>= os-version 1013)
+  (allow mach-lookup
+    (xpc-service-name "com.apple.coremedia.videodecoder")
+    (xpc-service-name "com.apple.coremedia.videoencoder")
+    (xpc-service-name-regex #"\.apple-extension-service$")
+))
 
-; Needed for 10.14.5+ - https://crbug.com/957217
-(if (defined? 'xpc-service-name)
-  (allow mach-lookup (xpc-service-name "com.apple.MTLCompilerService")))
+(allow sysctl-read
+  (sysctl-name "hw.busfrequency_max")
+  (sysctl-name "hw.cachelinesize")
+  (sysctl-name "hw.logicalcpu_max")
+  (sysctl-name "hw.memsize")
+  (sysctl-name "hw.model")
+  (sysctl-name "kern.osvariant_status")
+)
 
-; Needed for GPU process to fallback to SwiftShader - https://crbug.com/897914
-(allow file-read-data file-read-metadata (subpath (param bundle-version-path)))
+(allow file-read-data
+  (path "/Library/MessageTracer/SubmitDiagInfo.default.domains.searchtree")
+  (path "/System/Library/MessageTracer/SubmitDiagInfo.default.domains.searchtree")
+  (regex (user-homedir-path #"/Library/Preferences/(.*/)?com\.apple\.driver\..*\.plist"))
+  (regex (user-homedir-path #"/Library/Preferences/ByHost/com.apple.AppleGVA.*"))
+)
+
+(allow file-read*
+  (path (user-homedir-path "/Library/Preferences")) ; List contents of preference directories https://crbug.com/1126350#c14.
+  (path (user-homedir-path "/Library/Preferences/ByHost"))
+  (subpath "/Library/GPUBundles")
+  (subpath "/Library/Video/Plug-Ins")
+  (subpath "/System/Library/ColorSync/Profiles")
+  (subpath "/System/Library/CoreServices/RawCamera.bundle")
+  (subpath "/System/Library/Extensions")  ; https://crbug.com/515280
+  (subpath "/System/Library/Video/Plug-Ins")
+)
+
+; crbug.com/980134
+(allow file-read* file-write*
+  (subpath (param darwin-user-cache-dir))
+  (subpath (param darwin-user-dir))
+  (subpath (param darwin-user-temp-dir))
+)
+
+(if (param-true? filter-syscalls-debug)
+  (when (defined? 'syscall-unix)
+    (deny syscall-unix (with send-signal SIGSYS))
+    (allow syscall-unix
+      (syscall-number SYS_csrctl)
+      (syscall-number SYS_getentropy)
+      (syscall-number SYS_getxattr)
+      (syscall-number SYS_kdebug_typefilter)
+      (syscall-number SYS_sigaltstack)
+      (syscall-number SYS_write)
+      (syscall-number SYS_write_nocancel)
+)))
+
+; crbug.com/1159113
+(if (param-true? disable-metal-shader-cache)
+  (let ((metal-cache-dir (subpath (string-append (param darwin-user-cache-dir)
+                                                 "/com.apple.metal"))))
+    (deny file-read* metal-cache-dir)
+    (deny file-write* metal-cache-dir))
+)

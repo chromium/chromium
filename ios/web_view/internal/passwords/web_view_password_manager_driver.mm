@@ -4,7 +4,8 @@
 
 #import "ios/web_view/internal/passwords/web_view_password_manager_driver.h"
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager.h"
@@ -49,19 +50,19 @@ void WebViewPasswordManagerDriver::FormEligibleForGenerationFound(
 }
 
 void WebViewPasswordManagerDriver::GeneratedPasswordAccepted(
-    const base::string16& password) {
+    const std::u16string& password) {
   NOTIMPLEMENTED();
 }
 
 void WebViewPasswordManagerDriver::FillSuggestion(
-    const base::string16& username,
-    const base::string16& password) {
+    const std::u16string& username,
+    const std::u16string& password) {
   NOTIMPLEMENTED();
 }
 
 void WebViewPasswordManagerDriver::PreviewSuggestion(
-    const base::string16& username,
-    const base::string16& password) {
+    const std::u16string& username,
+    const std::u16string& password) {
   NOTIMPLEMENTED();
 }
 

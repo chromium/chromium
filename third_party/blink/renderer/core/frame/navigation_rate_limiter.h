@@ -6,9 +6,9 @@
 
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
-class Visitor;
 class Frame;
 
 // TODO(https://crbug.com/394296, https://crbug.com/882238)

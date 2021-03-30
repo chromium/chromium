@@ -6,6 +6,7 @@
 
 #import <Carbon/Carbon.h>
 
+#include "base/mac/scoped_nsobject.h"
 #include "base/optional.h"
 #include "base/strings/sys_string_conversions.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
@@ -395,7 +396,8 @@ void PopulateDropDataFromPasteboard(content::DropData* data,
                                     NSPasteboard* pboard) {
   DCHECK(data);
   DCHECK(pboard);
-  NSArray* types = [pboard types];
+  // https://crbug.com/1016740#c21
+  base::scoped_nsobject<NSArray> types([[pboard types] retain]);
 
   data->did_originate_from_renderer =
       [types containsObject:ui::kChromeDragDummyPboardType];

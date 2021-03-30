@@ -7,6 +7,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler.h"
 #include "components/safe_browsing/content/base_blocking_page.h"
+#include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
@@ -17,12 +18,15 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_utils.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "weblayer/browser/browser_context_impl.h"
 #include "weblayer/browser/browser_impl.h"
 #include "weblayer/browser/profile_impl.h"
+#include "weblayer/browser/safe_browsing/real_time_url_lookup_service_factory.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_blocking_page.h"
 #include "weblayer/browser/tab_impl.h"
+#include "weblayer/public/google_account_access_token_fetch_delegate.h"
 #include "weblayer/public/navigation.h"
 #include "weblayer/public/navigation_controller.h"
 #include "weblayer/public/navigation_observer.h"
@@ -36,6 +40,43 @@
 namespace weblayer {
 
 namespace {
+
+// Implementation of GoogleAccountAccessTokenFetchDelegate used to exercise safe
+// browsing access token fetches.
+class TestAccessTokenFetchDelegate
+    : public GoogleAccountAccessTokenFetchDelegate {
+ public:
+  TestAccessTokenFetchDelegate() = default;
+  ~TestAccessTokenFetchDelegate() override = default;
+
+  // GoogleAccountAccessTokenFetchDelegate:
+  void FetchAccessToken(const std::set<std::string>& scopes,
+                        OnTokenFetchedCallback callback) override {
+    has_received_request_ = true;
+    scopes_from_most_recent_request_ = scopes;
+
+    if (should_respond_to_request_) {
+      std::move(callback).Run("token");
+    } else {
+      outstanding_request_ = std::move(callback);
+    }
+  }
+
+  void set_should_respond_to_request(bool should_respond) {
+    should_respond_to_request_ = should_respond;
+  }
+
+  bool has_received_request() { return has_received_request_; }
+  const std::set<std::string>& scopes_from_most_recent_request() {
+    return scopes_from_most_recent_request_;
+  }
+
+ private:
+  bool should_respond_to_request_ = false;
+  bool has_received_request_ = false;
+  std::set<std::string> scopes_from_most_recent_request_;
+  OnTokenFetchedCallback outstanding_request_;
+};
 
 // Observer customized for safe browsing navigation failures.
 class SafeBrowsingErrorNavigationObserver : public NavigationObserver {
@@ -125,11 +166,24 @@ class SafeBrowsingBrowserTest : public WebLayerBrowserTest {
     InitializeOnMainThread();
     // Safe Browsing is enabled by default
     ASSERT_TRUE(GetSafeBrowsingEnabled());
+
+    profile()->SetGoogleAccountAccessTokenFetchDelegate(
+        &access_token_fetch_delegate_);
+  }
+
+  void TearDown() override {
+    profile()->SetGoogleAccountAccessTokenFetchDelegate(nullptr);
   }
 
   void InitializeOnMainThread() {
     NavigateAndWaitForCompletion(GURL("about:blank"), shell());
     safe_browsing::SafeBrowsingApiHandler::SetInstance(fake_handler_.get());
+
+    // Some tests need to be able to navigate to URLs on domains that are not
+    // explicitly localhost (e.g., so that realtime URL lookups occur on these
+    // navigations).
+    host_resolver()->AddRule("*", "127.0.0.1");
+
     ASSERT_TRUE(embedded_test_server()->Start());
     url_ = embedded_test_server()->GetURL("/simple_page.html");
   }
@@ -137,6 +191,16 @@ class SafeBrowsingBrowserTest : public WebLayerBrowserTest {
   void SetSafeBrowsingEnabled(bool value) {
     GetProfile()->SetBooleanSetting(SettingType::BASIC_SAFE_BROWSING_ENABLED,
                                     value);
+  }
+
+  void SetRealTimeURLLookupsEnabled(bool value) {
+    GetProfile()->SetBooleanSetting(
+        SettingType::REAL_TIME_SAFE_BROWSING_ENABLED, value);
+  }
+
+  void EnableSafeBrowsingAccessTokenFetches() {
+    RealTimeUrlLookupServiceFactory::GetInstance()
+        ->set_access_token_fetches_enabled_for_testing();
   }
 
   bool GetSafeBrowsingEnabled() {
@@ -209,7 +273,18 @@ class SafeBrowsingBrowserTest : public WebLayerBrowserTest {
   std::unique_ptr<FakeSafeBrowsingApiHandler> fake_handler_;
   GURL url_;
 
+  ProfileImpl* profile() {
+    auto* tab_impl = static_cast<TabImpl*>(shell()->tab());
+    return tab_impl->profile();
+  }
+
+  TestAccessTokenFetchDelegate* access_token_fetch_delegate() {
+    return &access_token_fetch_delegate_;
+  }
+
  private:
+  TestAccessTokenFetchDelegate access_token_fetch_delegate_;
+
   DISALLOW_COPY_AND_ASSIGN(SafeBrowsingBrowserTest);
 };
 
@@ -338,6 +413,64 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingDisabledBrowserTest,
                        DoesNotShowInterstitial_Malware_Subresource) {
   NavigateWithSubResourceAndThreatType(
       safe_browsing::SB_THREAT_TYPE_URL_MALWARE, false);
+}
+
+IN_PROC_BROWSER_TEST_F(SafeBrowsingBrowserTest,
+                       NoAccessTokenFetchWhenSafeBrowsingNotEnabled) {
+  GURL a_url(embedded_test_server()->GetURL("a.com", "/simple_page.html"));
+  NavigateAndWaitForCompletion(a_url, shell()->tab());
+
+  EXPECT_FALSE(access_token_fetch_delegate()->has_received_request());
+}
+
+IN_PROC_BROWSER_TEST_F(SafeBrowsingBrowserTest,
+                       NoAccessTokenFetchInBasicSafeBrowsing) {
+  SetSafeBrowsingEnabled(true);
+
+  GURL a_url(embedded_test_server()->GetURL("a.com", "/simple_page.html"));
+  NavigateAndWaitForCompletion(a_url, shell()->tab());
+
+  EXPECT_FALSE(access_token_fetch_delegate()->has_received_request());
+}
+
+IN_PROC_BROWSER_TEST_F(SafeBrowsingBrowserTest,
+                       NoAccessTokenFetchInRealTimeUrlLookupsUnlessEnabled) {
+  SetRealTimeURLLookupsEnabled(true);
+
+  GURL a_url(embedded_test_server()->GetURL("a.com", "/simple_page.html"));
+  NavigateAndWaitForCompletion(a_url, shell()->tab());
+
+  EXPECT_FALSE(access_token_fetch_delegate()->has_received_request());
+
+  EnableSafeBrowsingAccessTokenFetches();
+  access_token_fetch_delegate()->set_should_respond_to_request(true);
+
+  GURL b_url(embedded_test_server()->GetURL("a.com", "/simple_page.html"));
+  NavigateAndWaitForCompletion(a_url, shell()->tab());
+
+  std::set<std::string> safe_browsing_scopes = {safe_browsing::kAPIScope};
+  EXPECT_TRUE(access_token_fetch_delegate()->has_received_request());
+  EXPECT_EQ(safe_browsing_scopes,
+            access_token_fetch_delegate()->scopes_from_most_recent_request());
+}
+
+// Tests that even if the embedder does not respond to an access token fetch
+// that is made by safe browsing as part of a navigation, the navigation
+// completes due to Safe Browsing's timing out the access token fetch.
+IN_PROC_BROWSER_TEST_F(
+    SafeBrowsingBrowserTest,
+    UnfulfilledAccessTokenFetchTimesOutAndNavigationCompletes) {
+  SetRealTimeURLLookupsEnabled(true);
+  EnableSafeBrowsingAccessTokenFetches();
+  access_token_fetch_delegate()->set_should_respond_to_request(false);
+
+  GURL a_url(embedded_test_server()->GetURL("a.com", "/simple_page.html"));
+  NavigateAndWaitForCompletion(a_url, shell()->tab());
+
+  std::set<std::string> safe_browsing_scopes = {safe_browsing::kAPIScope};
+  EXPECT_TRUE(access_token_fetch_delegate()->has_received_request());
+  EXPECT_EQ(safe_browsing_scopes,
+            access_token_fetch_delegate()->scopes_from_most_recent_request());
 }
 
 }  // namespace weblayer

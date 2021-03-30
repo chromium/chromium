@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
@@ -37,6 +38,11 @@ constexpr base::TimeDelta kRetryDelay = base::TimeDelta::FromMilliseconds(300);
 // Values for the attestation server switch.
 constexpr char kAttestationServerDefault[] = "default";
 constexpr char kAttestationServerTest[] = "test";
+
+constexpr char kGetCertificateStatusName[] =
+    "ChromeOS.Attestation.GetCertificateStatus";
+constexpr int kGetCertificateStatusMaxValue =
+    ::attestation::AttestationStatus_MAX + 1;
 
 ::attestation::ACAType GetConfiguredACAType() {
   std::string value =
@@ -182,7 +188,9 @@ void AttestationFlowIntegrated::StartCertificateRequest(
 
   request.set_certificate_profile(*profile_attestation_enum);
   request.set_request_origin(request_origin);
-  request.set_username(cryptohome::Identification(account_id).id());
+  if (GetKeyTypeForProfile(certificate_profile) == KEY_USER) {
+    request.set_username(cryptohome::Identification(account_id).id());
+  }
   request.set_key_label(key_name);
   request.set_shall_trigger_enrollment(true);
   request.set_forced(generate_new_key);
@@ -195,6 +203,8 @@ void AttestationFlowIntegrated::StartCertificateRequest(
 void AttestationFlowIntegrated::OnCertRequestFinished(
     CertificateCallback callback,
     const ::attestation::GetCertificateReply& reply) {
+  base::UmaHistogramExactLinear(kGetCertificateStatusName, reply.status(),
+                                kGetCertificateStatusMaxValue);
   if (reply.status() == ::attestation::STATUS_SUCCESS) {
     std::move(callback).Run(ATTESTATION_SUCCESS, reply.certificate());
   } else {

@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
+#include "ui/base/resource/resource_bundle.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -103,6 +104,12 @@ const NSTimeInterval kWindowNotifcationDelay = 0.5;  // seconds
     return;
   }
 
+  if (!ui::ResourceBundle::HasSharedInstance()) {
+    // The resources have not yet been initialized. Delay the notification.
+    [self scheduleWindowCountWithDelay:kWindowNotifcationDelay];
+    return;
+  }
+
   self.lastUpdateTime = nil;
 
   NSUInteger previousWindowCount = self.visibleWindowCount;
@@ -115,10 +122,10 @@ const NSTimeInterval kWindowNotifcationDelay = 0.5;  // seconds
   // are showing.
   if (previousWindowCount != self.visibleWindowCount &&
       self.visibleWindowCount > 0) {
-    base::string16 pattern =
+    std::u16string pattern =
         l10n_util::GetStringUTF16(IDS_IOS_WINDOW_COUNT_CHANGE);
     int numberOfWindows = static_cast<int>(self.visibleWindowCount);
-    base::string16 formattedMessage =
+    std::u16string formattedMessage =
         base::i18n::MessageFormatter::FormatWithNamedArgs(pattern, "count",
                                                           numberOfWindows);
 

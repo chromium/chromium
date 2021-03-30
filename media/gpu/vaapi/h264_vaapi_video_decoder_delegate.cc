@@ -65,7 +65,15 @@ scoped_refptr<H264Picture> H264VaapiVideoDecoderDelegate::CreateH264Picture() {
   if (!va_surface)
     return nullptr;
 
-  return new VaapiH264Picture(std::move(va_surface));
+  scoped_refptr<H264Picture> pic = new VaapiH264Picture(std::move(va_surface));
+  if (!vaapi_dec_->IsScalingDecode())
+    return pic;
+
+  // Setup the scaling buffer.
+  scoped_refptr<VASurface> scaled_surface = vaapi_dec_->CreateDecodeSurface();
+  CHECK(scaled_surface);
+  pic->AsVaapiH264Picture()->SetDecodeSurface(std::move(scaled_surface));
+  return pic;
 }
 
 // Fill |va_pic| with default/neutral values.
@@ -88,6 +96,10 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitFrameMetadata(
                "H264VaapiVideoDecoderDelegate::SubmitFrameMetadata");
   VAPictureParameterBufferH264 pic_param;
   memset(&pic_param, 0, sizeof(pic_param));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  memset(&crypto_params_, 0, sizeof(crypto_params_));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  full_sample_ = false;
 
 #define FROM_SPS_TO_PP(a) pic_param.a = sps->a
 #define FROM_SPS_TO_PP2(a, b) pic_param.b = sps->a
@@ -191,15 +203,14 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitFrameMetadata(
 }
 
 DecodeStatus H264VaapiVideoDecoderDelegate::ParseEncryptedSliceHeader(
-    const uint8_t* data,
-    size_t size,
+    const std::vector<base::span<const uint8_t>>& data,
     const std::vector<SubsampleEntry>& subsamples,
     const std::vector<uint8_t>& sps_nalu_data,
     const std::vector<uint8_t>& pps_nalu_data,
     H264SliceHeader* slice_header_out) {
   DCHECK(slice_header_out);
   DCHECK(!subsamples.empty());
-  DCHECK_EQ(subsamples[0].clear_bytes, 1u);
+  DCHECK(!data.empty());
 
   // This is done by sending in the encryption parameters and the encrypted
   // slice header. Then the vaEndPicture call is blocking while it decrypts and
@@ -207,12 +218,14 @@ DecodeStatus H264VaapiVideoDecoderDelegate::ParseEncryptedSliceHeader(
   // extract the slice header parameters of interest and return them to the
   // caller.
 
-  VAEncryptionParameters crypto_params;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  VAEncryptionParameters crypto_params = {};
   // Don't use the VAEncryptionSegmentInfo vector in the class since we do not
   // need to hold this data across calls.
   std::vector<VAEncryptionSegmentInfo> segment_info;
-  ProtectedSessionState state = SetupDecryptDecode(
-      true /* full sample */, size, &crypto_params, &segment_info, subsamples);
+  ProtectedSessionState state =
+      SetupDecryptDecode(true /* full sample */, data[0].size(), &crypto_params,
+                         &segment_info, subsamples);
   if (state == ProtectedSessionState::kFailed) {
     LOG(ERROR) << "ParseEncryptedSliceHeader fails because we couldn't setup "
                   "the protected session";
@@ -228,10 +241,19 @@ DecodeStatus H264VaapiVideoDecoderDelegate::ParseEncryptedSliceHeader(
 
   // Adjust the first segment length and init length to compensate for inserting
   // the SPS, PPS and 3 start codes.
-  segment_info.back().segment_length +=
+  size_t size_adjustment =
       sps_nalu_data.size() + pps_nalu_data.size() + kExtraDataBytes;
-  segment_info.back().init_byte_length +=
-      sps_nalu_data.size() + pps_nalu_data.size() + kExtraDataBytes;
+  size_t total_size = 0;
+  size_t offset_adjustment = 0;
+  for (auto& segment : segment_info) {
+    segment.segment_length += size_adjustment;
+    segment.init_byte_length += size_adjustment;
+    segment.segment_start_offset += offset_adjustment;
+    offset_adjustment += size_adjustment;
+    // Any additional segments are only adjusted by the start code size;
+    size_adjustment = kStartCodeSize;
+    total_size += segment.segment_length;
+  }
 
   crypto_params.status_report_index = GetSliceHeaderCounter();
 
@@ -261,25 +283,26 @@ DecodeStatus H264VaapiVideoDecoderDelegate::ParseEncryptedSliceHeader(
   auto surface = vaapi_wrapper_->CreateVASurfaceForUserPtr(
       gfx::Size(kCencStatusSurfaceDimension, kCencStatusSurfaceDimension),
       buffer_ptr,
-      2 * kCencStatusSurfaceDimension * kCencStatusSurfaceDimension);
+      3 * kCencStatusSurfaceDimension * kCencStatusSurfaceDimension);
   if (!surface) {
     DVLOG(1) << "Failed allocating surface for decrypt status";
     return DecodeStatus::kFail;
   }
 
-  // Assembles the 'slice data' which is the SPS, PPS and slice data, each of
-  // which is also prefixed by the 0x000001 start code.
+  // Assembles the 'slice data' which is the SPS, PPS, encrypted SEIS and
+  // encrypted slice data, each of which is also prefixed by the 0x000001 start
+  // code.
   std::vector<uint8_t> full_data;
   const std::vector<uint8_t> start_code = {0u, 0u, 1u};
-  full_data.reserve(size + sps_nalu_data.size() + pps_nalu_data.size() +
-                    kExtraDataBytes);
+  full_data.reserve(total_size);
   full_data.insert(full_data.end(), start_code.begin(), start_code.end());
   full_data.insert(full_data.end(), sps_nalu_data.begin(), sps_nalu_data.end());
   full_data.insert(full_data.end(), start_code.begin(), start_code.end());
   full_data.insert(full_data.end(), pps_nalu_data.begin(), pps_nalu_data.end());
-  full_data.insert(full_data.end(), start_code.begin(), start_code.end());
-  full_data.insert(full_data.end(), data, data + size);
-
+  for (auto& nalu : data) {
+    full_data.insert(full_data.end(), start_code.begin(), start_code.end());
+    full_data.insert(full_data.end(), nalu.begin(), nalu.end());
+  }
   if (!vaapi_wrapper_->SubmitBuffers({{VAEncryptionParameterBufferType,
                                        sizeof(crypto_params), &crypto_params},
                                       {VAProtectedSliceDataBufferType,
@@ -300,8 +323,9 @@ DecodeStatus H264VaapiVideoDecoderDelegate::ParseEncryptedSliceHeader(
   // Read the parsed slice header data back and populate the structure with it.
   slice_header_out->idr_pic_flag = !!slice_param_buf->idr_pic_flag;
   slice_header_out->nal_ref_idc = slice_param_buf->nal_ref_idc;
-  slice_header_out->nalu_data = data;
-  slice_header_out->nalu_size = size;
+  // The last span in |data| will be the slice header NALU.
+  slice_header_out->nalu_data = data.back().data();
+  slice_header_out->nalu_size = data.back().size();
   slice_header_out->slice_type = slice_param_buf->slice_type;
   slice_header_out->frame_num = slice_param_buf->frame_number;
   slice_header_out->idr_pic_id = slice_param_buf->idr_pic_id;
@@ -340,6 +364,9 @@ DecodeStatus H264VaapiVideoDecoderDelegate::ParseEncryptedSliceHeader(
   slice_header_out->full_sample_index =
       status_buf->status_report_index_feedback;
   return DecodeStatus::kOk;
+#else  // BUILDFLAG(IS_CHROMEOS_ASH)
+  return DecodeStatus::kFail;
+#endif
 }
 
 DecodeStatus H264VaapiVideoDecoderDelegate::SubmitSlice(
@@ -357,6 +384,7 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitSlice(
     // We do not need to submit all the slice data, instead we just submit the
     // index for what was already sent for parsing. The HW decoder already has
     // the full slice data from when we decrypted the header.
+    full_sample_ = true;
     VACencStatusParameters cenc_status = {};
     cenc_status.status_report_index_feedback = slice_hdr->full_sample_index;
     return vaapi_wrapper_->SubmitBuffer(VACencStatusParameterBufferType,
@@ -366,16 +394,10 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitSlice(
                : DecodeStatus::kFail;
   }
 
-  bool uses_crypto = false;
-  VAEncryptionParameters crypto_params = {};
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (IsEncryptedSession()) {
-    // Always indicate full sample since H264 can support that and we don't know
-    // yet which it is.
-    // TODO(jkardatzke): Fix full sample encryption, specifying true for it here
-    // always will cause H264 subsample to fail and we don't know which it is
-    // yet.
     const ProtectedSessionState state = SetupDecryptDecode(
-        /*full_sample=*/false, size, &crypto_params, &encryption_segment_info_,
+        /*full_sample=*/false, size, &crypto_params_, &encryption_segment_info_,
         subsamples);
     if (state == ProtectedSessionState::kFailed) {
       LOG(ERROR) << "SubmitSlice fails because we couldn't setup the protected "
@@ -384,8 +406,8 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitSlice(
     } else if (state != ProtectedSessionState::kCreated) {
       return DecodeStatus::kTryAgain;
     }
-    uses_crypto = true;
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   VASliceParameterBufferH264 slice_param;
   memset(&slice_param, 0, sizeof(slice_param));
 
@@ -474,11 +496,6 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitSlice(
       FillVAPicture(&slice_param.RefPicList1[i], ref_pic_list1[i]);
   }
 
-  if (uses_crypto &&
-      !vaapi_wrapper_->SubmitBuffer(VAEncryptionParameterBufferType,
-                                    sizeof(crypto_params), &crypto_params)) {
-    return DecodeStatus::kFail;
-  }
   return vaapi_wrapper_->SubmitBuffers(
              {{VASliceParameterBufferType, sizeof(slice_param), &slice_param},
               {VASliceDataBufferType, size, data}})
@@ -491,9 +508,36 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitDecode(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("media,gpu", "H264VaapiVideoDecoderDelegate::SubmitDecode");
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (IsEncryptedSession() && !full_sample_ &&
+      !vaapi_wrapper_->SubmitBuffer(VAEncryptionParameterBufferType,
+                                    sizeof(crypto_params_), &crypto_params_)) {
+    return DecodeStatus::kFail;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  const VaapiH264Picture* vaapi_pic = pic->AsVaapiH264Picture();
+  CHECK(gfx::Rect(vaapi_pic->GetDecodeSize()).Contains(pic->visible_rect()));
+  VAProcPipelineParameterBuffer proc_buffer;
+  if (FillDecodeScalingIfNeeded(pic->visible_rect(),
+                                vaapi_pic->GetVADecodeSurfaceID(),
+                                vaapi_pic->va_surface(), &proc_buffer)) {
+    if (!vaapi_wrapper_->SubmitBuffer(VAProcPipelineParameterBufferType,
+                                      sizeof(proc_buffer), &proc_buffer)) {
+      DLOG(ERROR) << "Failed submitting proc buffer";
+      return DecodeStatus::kFail;
+    }
+  }
+
   const bool success = vaapi_wrapper_->ExecuteAndDestroyPendingBuffers(
-      pic->AsVaapiH264Picture()->va_surface()->id());
+      vaapi_pic->GetVADecodeSurfaceID());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   encryption_segment_info_.clear();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!success && NeedsProtectedSessionRecovery())
+    return DecodeStatus::kTryAgain;
+
+  if (success && IsEncryptedSession())
+    ProtectedDecodedSucceeded();
   return success ? DecodeStatus::kOk : DecodeStatus::kFail;
 }
 
@@ -502,15 +546,19 @@ bool H264VaapiVideoDecoderDelegate::OutputPicture(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const VaapiH264Picture* vaapi_pic = pic->AsVaapiH264Picture();
-  vaapi_dec_->SurfaceReady(vaapi_pic->va_surface(), vaapi_pic->bitstream_id(),
-                           vaapi_pic->visible_rect(),
-                           vaapi_pic->get_colorspace());
+  vaapi_dec_->SurfaceReady(
+      vaapi_pic->va_surface(), vaapi_pic->bitstream_id(),
+      vaapi_dec_->GetOutputVisibleRect(vaapi_pic->visible_rect(),
+                                       vaapi_pic->va_surface()->size()),
+      vaapi_pic->get_colorspace());
   return true;
 }
 
 void H264VaapiVideoDecoderDelegate::Reset() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   encryption_segment_info_.clear();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   vaapi_wrapper_->DestroyPendingBuffers();
 }
 
@@ -531,7 +579,7 @@ void H264VaapiVideoDecoderDelegate::FillVAPicture(
   VASurfaceID va_surface_id = VA_INVALID_SURFACE;
 
   if (!pic->nonexisting)
-    va_surface_id = pic->AsVaapiH264Picture()->va_surface()->id();
+    va_surface_id = pic->AsVaapiH264Picture()->GetVADecodeSurfaceID();
 
   va_pic->picture_id = va_surface_id;
   va_pic->frame_idx = pic->frame_num;

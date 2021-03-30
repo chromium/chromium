@@ -19,13 +19,15 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/chromeos/arc/policy/arc_policy_bridge.h"
-#include "chrome/browser/chromeos/arc/session/arc_session_manager_observer.h"
+#include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_icon_descriptor.h"
 #include "components/arc/mojom/app.mojom.h"
+#include "components/arc/mojom/compatibility_mode.mojom.h"
 #include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ui/base/layout.h"
@@ -77,6 +79,7 @@ class ArcAppListPrefs : public KeyedService,
             const base::Time& install_time,
             bool sticky,
             bool notifications_enabled,
+            arc::mojom::ArcResizeLockState resize_lock_state,
             bool ready,
             bool suspended,
             bool show_in_launcher,
@@ -96,6 +99,8 @@ class ArcAppListPrefs : public KeyedService,
     bool sticky;
     // Whether notifications are enabled for the app.
     bool notifications_enabled;
+    // The resize lock state of the app.
+    arc::mojom::ArcResizeLockState resize_lock_state;
     // Whether app is ready. Disabled and removed apps are not ready.
     bool ready;
     // Whether app was suspended by policy. It may have or may not have ready
@@ -138,7 +143,7 @@ class ArcAppListPrefs : public KeyedService,
         permissions;
   };
 
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Notifies an observer that new app is registered.
     virtual void OnAppRegistered(const std::string& app_id,
@@ -177,7 +182,8 @@ class ArcAppListPrefs : public KeyedService,
     virtual void OnTaskCreated(int32_t task_id,
                                const std::string& package_name,
                                const std::string& activity,
-                               const std::string& intent) {}
+                               const std::string& intent,
+                               int32_t session_id) {}
     // Notifies that task description has been updated.
     virtual void OnTaskDescriptionChanged(
         int32_t task_id,
@@ -220,7 +226,7 @@ class ArcAppListPrefs : public KeyedService,
     virtual void OnArcAppListPrefsDestroyed() {}
 
    protected:
-    virtual ~Observer() {}
+    ~Observer() override;
   };
 
   static ArcAppListPrefs* Create(Profile* profile);
@@ -317,6 +323,14 @@ class ArcAppListPrefs : public KeyedService,
   // available. Once new value is set notifies an observer
   // OnNotificationsEnabledChanged.
   void SetNotificationsEnabled(const std::string& app_id, bool enabled);
+
+  // Returns the resize lock state.
+  arc::mojom::ArcResizeLockState GetResizeLockState(
+      const std::string& app_id) const;
+  // Sets the resize lock state. This is called either by the Chrome OS
+  // settings or Ash.
+  void SetResizeLockState(const std::string& app_id,
+                          arc::mojom::ArcResizeLockState state);
 
   // Returns true if app is registered.
   bool IsRegistered(const std::string& app_id) const;
@@ -416,7 +430,8 @@ class ArcAppListPrefs : public KeyedService,
                      const std::string& package_name,
                      const std::string& activity,
                      const base::Optional<std::string>& name,
-                     const base::Optional<std::string>& intent) override;
+                     const base::Optional<std::string>& intent,
+                     int32_t session_id) override;
   // This interface is deprecated and will soon be replaced by
   // OnTaskDescriptionChanged().
   void OnTaskDescriptionUpdated(
@@ -564,7 +579,7 @@ class ArcAppListPrefs : public KeyedService,
       app_connection_holder_for_testing_;
 
   // List of observers.
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer> observer_list_;
   // Keeps root folder where ARC app icons for different scale factor are
   // stored.
   base::FilePath base_path_;

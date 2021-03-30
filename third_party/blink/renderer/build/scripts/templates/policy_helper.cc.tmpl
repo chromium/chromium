@@ -3,20 +3,21 @@
 
 {{source_files_for_generated_file(template_file, input_files)}}
 
-#include "third_party/blink/renderer/core/feature_policy/policy_helper.h"
+#include "third_party/blink/renderer/core/permissions_policy/policy_helper.h"
 
-#include "third_party/blink/public/mojom/feature_policy/document_policy_feature.mojom-blink.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trials.h"
+#include "third_party/blink/renderer/core/inspector/protocol/Page.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
-  
 namespace {
 
-{% for feature in feature_policy_features %}
-const char k{{feature.name}}PolicyName[] = "{{feature.feature_policy_name}}";
+{% for feature in permissions_policy_features %}
+const char k{{feature.name}}PolicyName[] = "{{feature.permissions_policy_name}}";
 {% endfor %}
 
 }  // namespace
@@ -26,23 +27,24 @@ const char k{{feature.name}}PolicyName[] = "{{feature.feature_policy_name}}";
 // add their feature names to this map unconditionally, as the trial token could
 // be added after the HTTP header needs to be parsed. This also means that
 // top-level documents which simply want to embed another page which uses an
-// origin trial feature, without using the feature themselves, can use feature
-// policy to allow use of the feature in subframes (The framed document will
-// still require a valid origin trial token to use the feature in this scenario).
+// origin trial feature, without using the feature themselves, can use
+// permissions policy to allow use of the feature in subframes (The framed
+// document will still require a valid origin trial token to use the feature in
+// this scenario).
 const FeatureNameMap& GetDefaultFeatureNameMap() {
   DEFINE_STATIC_LOCAL(FeatureNameMap, default_feature_name_map, ());
   if (default_feature_name_map.IsEmpty()) {
-    {% for feature in feature_policy_features %}
-    {% if not feature.depends_on or feature.name in fp_origin_trial_dependency_map %}
+    {% for feature in permissions_policy_features %}
+    {% if not feature.depends_on or feature.name in pp_origin_trial_dependency_map %}
     default_feature_name_map.Set(k{{feature.name}}PolicyName,
-                                 mojom::FeaturePolicyFeature::k{{feature.name}});
+                                 mojom::PermissionsPolicyFeature::k{{feature.name}});
     {% endif %}
     {% endfor %}
-    {% for runtime_feature_name, dependent_features in runtime_to_feature_policy_map.items() | sort %}
+    {% for runtime_feature_name, dependent_features in runtime_to_permissions_policy_map.items() | sort %}
     if (RuntimeEnabledFeatures::{{runtime_feature_name}}Enabled()) {
       {% for feature in dependent_features %}
       default_feature_name_map.Set(k{{feature}}PolicyName,
-                                   mojom::FeaturePolicyFeature::k{{feature}});
+                                   mojom::PermissionsPolicyFeature::k{{feature}});
       {% endfor %}
     }
     {% endfor %}
@@ -50,8 +52,20 @@ const FeatureNameMap& GetDefaultFeatureNameMap() {
   return default_feature_name_map;
 }
 
-const DocumentPolicyFeatureSet& GetAvailableDocumentPolicyFeatures() {
+
+DocumentPolicyFeatureSet& GetAvailableDocumentPolicyFeaturesInternal() {
   DEFINE_STATIC_LOCAL(DocumentPolicyFeatureSet, features, ());
+  return features;
+}
+
+
+void ResetAvailableDocumentPolicyFeaturesForTest() {
+  GetAvailableDocumentPolicyFeaturesInternal().clear();
+}
+
+
+const DocumentPolicyFeatureSet& GetAvailableDocumentPolicyFeatures() {
+  DocumentPolicyFeatureSet& features = GetAvailableDocumentPolicyFeaturesInternal();
   if (features.IsEmpty()) {
     {% for feature in document_policy_features %}
     {% if not feature.depends_on or feature.name in dp_origin_trial_dependency_map %}
@@ -73,7 +87,7 @@ const DocumentPolicyFeatureSet& GetAvailableDocumentPolicyFeatures() {
 // i.e. the feature is considered enabled by origin trial.
 bool DisabledByOriginTrial(const String& feature_name,
                            FeatureContext* feature_context) {
-  {% for feature_name, dependencies in fp_origin_trial_dependency_map.items() | sort %}
+  {% for feature_name, dependencies in pp_origin_trial_dependency_map.items() | sort %}
   if (feature_name == k{{feature_name}}PolicyName) {
     return
     {%- for dependency in dependencies %}
@@ -97,6 +111,18 @@ bool DisabledByOriginTrial(mojom::blink::DocumentPolicyFeature feature,
   }
   {% endfor %}
   return false;
+}
+
+String PermissionsPolicyFeatureToProtocol(mojom::blink::PermissionsPolicyFeature feature) {
+  switch (feature) {
+    {% for feature in permissions_policy_features %}
+    case mojom::blink::PermissionsPolicyFeature::k{{feature.name}}:
+      return protocol::Page::PermissionsPolicyFeatureEnum::{{feature.devtools_enum_name}};
+    {% endfor %}
+    case mojom::blink::PermissionsPolicyFeature::kNotFound:
+      NOTREACHED();
+      return "";
+  }
 }
 
 }  // namespace blink

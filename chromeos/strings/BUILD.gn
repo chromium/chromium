@@ -2,68 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/locales.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
 
 grit("strings") {
   source = "../chromeos_strings.grd"
-  outputs = [
-    "grit/chromeos_strings.h",
-    "chromeos_strings_am.pak",
-    "chromeos_strings_ar.pak",
-    "chromeos_strings_bg.pak",
-    "chromeos_strings_bn.pak",
-    "chromeos_strings_ca.pak",
-    "chromeos_strings_cs.pak",
-    "chromeos_strings_da.pak",
-    "chromeos_strings_de.pak",
-    "chromeos_strings_el.pak",
-    "chromeos_strings_en-GB.pak",
-    "chromeos_strings_en-US.pak",
-    "chromeos_strings_es-419.pak",
-    "chromeos_strings_es.pak",
-    "chromeos_strings_et.pak",
-    "chromeos_strings_fake-bidi.pak",
-    "chromeos_strings_fa.pak",
-    "chromeos_strings_fil.pak",
-    "chromeos_strings_fi.pak",
-    "chromeos_strings_fr.pak",
-    "chromeos_strings_gu.pak",
-    "chromeos_strings_he.pak",
-    "chromeos_strings_hi.pak",
-    "chromeos_strings_hr.pak",
-    "chromeos_strings_hu.pak",
-    "chromeos_strings_id.pak",
-    "chromeos_strings_it.pak",
-    "chromeos_strings_ja.pak",
-    "chromeos_strings_kn.pak",
-    "chromeos_strings_ko.pak",
-    "chromeos_strings_lt.pak",
-    "chromeos_strings_lv.pak",
-    "chromeos_strings_ml.pak",
-    "chromeos_strings_mr.pak",
-    "chromeos_strings_ms.pak",
-    "chromeos_strings_nb.pak",
-    "chromeos_strings_nl.pak",
-    "chromeos_strings_pl.pak",
-    "chromeos_strings_pt-BR.pak",
-    "chromeos_strings_pt-PT.pak",
-    "chromeos_strings_ro.pak",
-    "chromeos_strings_ru.pak",
-    "chromeos_strings_sk.pak",
-    "chromeos_strings_sl.pak",
-    "chromeos_strings_sr.pak",
-    "chromeos_strings_sv.pak",
-    "chromeos_strings_sw.pak",
-    "chromeos_strings_ta.pak",
-    "chromeos_strings_te.pak",
-    "chromeos_strings_th.pak",
-    "chromeos_strings_tr.pak",
-    "chromeos_strings_uk.pak",
-    "chromeos_strings_vi.pak",
-    "chromeos_strings_zh-CN.pak",
-    "chromeos_strings_zh-TW.pak",
-  ]
+  outputs =
+      [ "grit/chromeos_strings.h" ] +
+      process_file_template(locales_with_pseudolocales,
+                            [ "chromeos_strings_{{source_name_part}}.pak" ])
 }
 
 repack("chromeos_test_strings") {

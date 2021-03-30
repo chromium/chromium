@@ -21,8 +21,8 @@
 #include "services/network/cors/cors_url_loader_factory.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
-#include "services/network/network_usage_accumulator.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "services/network/public/cpp/load_info_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
@@ -36,6 +36,10 @@
 namespace network {
 
 namespace {
+
+// The interval to send load updates.
+constexpr auto kUpdateLoadStatesInterval =
+    base::TimeDelta::FromMilliseconds(250);
 
 // An enum class representing whether / how keepalive requests are blocked. This
 // is used for UMA so do NOT re-assign values.
@@ -78,7 +82,10 @@ URLLoaderFactory::URLLoaderFactory(
       header_client_(std::move(params_->header_client)),
       coep_reporter_(std::move(params_->coep_reporter)),
       cors_url_loader_factory_(cors_url_loader_factory),
-      cookie_observer_(std::move(params_->cookie_observer)) {
+      cookie_observer_(std::move(params_->cookie_observer)),
+      url_loader_network_service_observer_(
+          std::move(params_->url_loader_network_observer)),
+      devtools_observer_(std::move(params_->devtools_observer)) {
   DCHECK(context);
   DCHECK_NE(mojom::kInvalidProcessId, params_->process_id);
   DCHECK(!params_->factory_override);
@@ -107,7 +114,6 @@ URLLoaderFactory::~URLLoaderFactory() {
 
 void URLLoaderFactory::CreateLoaderAndStart(
     mojo::PendingReceiver<mojom::URLLoader> receiver,
-    int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const ResourceRequest& url_request,
@@ -133,41 +139,26 @@ void URLLoaderFactory::CreateLoaderAndStart(
   if (url_request.web_bundle_token_params.has_value() &&
       url_request.destination !=
           network::mojom::RequestDestination::kWebBundle) {
-    // Load a subresource from a WebBundle.
-    base::WeakPtr<WebBundleURLLoaderFactory> web_bundle_url_loader_factory =
-        context_->GetWebBundleManager().GetWebBundleURLLoaderFactory(
-            url_request.web_bundle_token_params->token);
-    if (web_bundle_url_loader_factory) {
-      web_bundle_url_loader_factory->CreateLoaderAndStart(
-          std::move(receiver), routing_id, request_id, options, url_request,
-          std::move(client), traffic_annotation);
-      return;
+    mojo::Remote<mojom::TrustedHeaderClient> trusted_header_client;
+    if (header_client_ && (options & mojom::kURLLoadOptionUseHeaderClient)) {
+      // CORS preflight request must not come here.
+      DCHECK(!(options & mojom::kURLLoadOptionAsCorsPreflight));
+      header_client_->OnLoaderCreated(
+          request_id, trusted_header_client.BindNewPipeAndPassReceiver());
     }
-    // Fails if the token is missing in the WebBundleManager. This can happen
-    // when the network process crashes. In normal cases, our assumption is this
-    // shouldn't happen as long as requests from a renderer are ordered.
-    //
-    // TODO(crbug.com/1082020): Re-visit this case to be more robust.
-    URLLoaderCompletionStatus status;
-    status.error_code = net::ERR_INVALID_WEB_BUNDLE;  // Tentative.
-    status.completion_time = base::TimeTicks::Now();
-    mojo::Remote<mojom::URLLoaderClient>(std::move(client))->OnComplete(status);
+
+    // Load a subresource from a WebBundle.
+    context_->GetWebBundleManager().StartSubresourceRequest(
+        std::move(receiver), url_request, std::move(client),
+        params_->process_id, std::move(trusted_header_client));
     return;
   }
 
-  mojom::NetworkServiceClient* network_service_client = nullptr;
   base::WeakPtr<KeepaliveStatisticsRecorder> keepalive_statistics_recorder;
-  base::WeakPtr<NetworkUsageAccumulator> network_usage_accumulator;
-  base::Optional<DataPipeUseTracker> data_pipe_use_tracker;
   if (context_->network_service()) {
-    network_service_client = context_->network_service()->client();
     keepalive_statistics_recorder = context_->network_service()
                                         ->keepalive_statistics_recorder()
                                         ->AsWeakPtr();
-    network_usage_accumulator =
-        context_->network_service()->network_usage_accumulator()->AsWeakPtr();
-    data_pipe_use_tracker.emplace(context_->network_service(),
-                                  DataPipeUser::kUrlLoader);
   }
 
   bool exhausted = false;
@@ -186,12 +177,6 @@ void URLLoaderFactory::CreateLoaderAndStart(
     for (const auto& pair : merged_headers.GetHeaderVector()) {
       headers_size += (pair.key.size() + pair.value.size());
     }
-
-    UMA_HISTOGRAM_COUNTS_10000("Net.KeepaliveRequest.UrlSize", url_size);
-    UMA_HISTOGRAM_COUNTS_10000("Net.KeepaliveRequest.HeadersSize",
-                               headers_size);
-    UMA_HISTOGRAM_COUNTS_10000("Net.KeepaliveRequest.UrlPlusHeadersSize",
-                               url_size + headers_size);
 
     keepalive_request_size = url_size + headers_size;
 
@@ -230,7 +215,6 @@ void URLLoaderFactory::CreateLoaderAndStart(
     } else {
       block_status = KeepaliveBlockStatus::kNotBlocked;
     }
-    UMA_HISTOGRAM_ENUMERATION("Net.KeepaliveRequest.BlockStatus", block_status);
   }
 
   if (exhausted) {
@@ -269,35 +253,39 @@ void URLLoaderFactory::CreateLoaderAndStart(
     cookie_observer =
         std::move(const_cast<mojo::PendingRemote<mojom::CookieAccessObserver>&>(
             url_request.trusted_params->cookie_observer));
-  } else if (cookie_observer_) {
-    cookie_observer_->Clone(cookie_observer.InitWithNewPipeAndPassReceiver());
+  }
+  mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
+      url_loader_network_observer;
+  if (url_request.trusted_params &&
+      url_request.trusted_params->url_loader_network_observer) {
+    url_loader_network_observer =
+        std::move(const_cast<
+                  mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>&>(
+            url_request.trusted_params->url_loader_network_observer));
   }
 
-  if (url_request.destination ==
-      network::mojom::RequestDestination::kWebBundle) {
-    DCHECK(url_request.web_bundle_token_params.has_value());
-    base::WeakPtr<WebBundleURLLoaderFactory> web_bundle_url_loader_factory =
-        context_->GetWebBundleManager().CreateWebBundleURLLoaderFactory(
-            url_request.url, *url_request.web_bundle_token_params);
-    client =
-        web_bundle_url_loader_factory->WrapURLLoaderClient(std::move(client));
+  mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer;
+  if (url_request.trusted_params &&
+      url_request.trusted_params->devtools_observer) {
+    devtools_observer =
+        std::move(const_cast<mojo::PendingRemote<mojom::DevToolsObserver>&>(
+            url_request.trusted_params->devtools_observer));
   }
 
   auto loader = std::make_unique<URLLoader>(
-      context_->url_request_context(), network_service_client,
-      context_->client(),
+      context_->url_request_context(), this, context_->client(),
       base::BindOnce(&cors::CorsURLLoaderFactory::DestroyURLLoader,
                      base::Unretained(cors_url_loader_factory_)),
       std::move(receiver), options, url_request, std::move(client),
-      std::move(data_pipe_use_tracker),
       static_cast<net::NetworkTrafficAnnotationTag>(traffic_annotation),
       params_.get(), coep_reporter_ ? coep_reporter_.get() : nullptr,
-      request_id, keepalive_request_size, resource_scheduler_client_,
+      request_id, keepalive_request_size,
+      context_->require_network_isolation_key(), resource_scheduler_client_,
       std::move(keepalive_statistics_recorder),
-      std::move(network_usage_accumulator),
       header_client_.is_bound() ? header_client_.get() : nullptr,
       context_->origin_policy_manager(), std::move(trust_token_factory),
-      context_->cors_origin_access_list(), std::move(cookie_observer));
+      context_->cors_origin_access_list(), std::move(cookie_observer),
+      std::move(url_loader_network_observer), std::move(devtools_observer));
 
   cors_url_loader_factory_->OnLoaderCreated(std::move(loader));
 }
@@ -305,6 +293,76 @@ void URLLoaderFactory::CreateLoaderAndStart(
 void URLLoaderFactory::Clone(
     mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) {
   NOTREACHED();
+}
+
+mojom::DevToolsObserver* URLLoaderFactory::GetDevToolsObserver() const {
+  if (devtools_observer_)
+    return devtools_observer_.get();
+  return nullptr;
+}
+
+mojom::CookieAccessObserver* URLLoaderFactory::GetCookieAccessObserver() const {
+  if (cookie_observer_)
+    return cookie_observer_.get();
+  return nullptr;
+}
+
+mojom::URLLoaderNetworkServiceObserver*
+URLLoaderFactory::GetURLLoaderNetworkServiceObserver() const {
+  if (url_loader_network_service_observer_)
+    return url_loader_network_service_observer_.get();
+  if (!context_->network_service())
+    return nullptr;
+  return context_->network_service()
+      ->GetDefaultURLLoaderNetworkServiceObserver();
+}
+
+void URLLoaderFactory::AckUpdateLoadInfo() {
+  DCHECK(waiting_on_load_state_ack_);
+  waiting_on_load_state_ack_ = false;
+  MaybeStartUpdateLoadInfoTimer();
+}
+
+void URLLoaderFactory::MaybeStartUpdateLoadInfoTimer() {
+  if (!params_->provide_loading_state_updates ||
+      !GetURLLoaderNetworkServiceObserver() || waiting_on_load_state_ack_ ||
+      update_load_info_timer_.IsRunning()) {
+    return;
+  }
+  update_load_info_timer_.Start(FROM_HERE, kUpdateLoadStatesInterval, this,
+                                &URLLoaderFactory::UpdateLoadInfo);
+}
+
+void URLLoaderFactory::UpdateLoadInfo() {
+  DCHECK(!waiting_on_load_state_ack_);
+
+  mojom::LoadInfoPtr most_interesting;
+  URLLoader* most_interesting_url_loader = nullptr;
+
+  for (auto* request : *context_->url_request_context()->url_requests()) {
+    auto* loader = URLLoader::ForRequest(*request);
+    if (!loader || loader->url_loader_factory() != this)
+      continue;
+    mojom::LoadInfoPtr load_info = loader->CreateLoadInfo();
+    if (!most_interesting ||
+        LoadInfoIsMoreInteresting(*load_info, *most_interesting)) {
+      most_interesting = std::move(load_info);
+      most_interesting_url_loader = loader;
+    }
+  }
+
+  if (most_interesting_url_loader) {
+    most_interesting_url_loader->GetURLLoaderNetworkServiceObserver()
+        ->OnLoadingStateUpdate(
+            std::move(most_interesting),
+            base::BindOnce(&URLLoaderFactory::AckUpdateLoadInfo,
+                           base::Unretained(this)));
+    waiting_on_load_state_ack_ = true;
+  }
+}
+
+void URLLoaderFactory::OnBeforeURLRequest() {
+  MaybeStartUpdateLoadInfoTimer();
 }
 
 }  // namespace network

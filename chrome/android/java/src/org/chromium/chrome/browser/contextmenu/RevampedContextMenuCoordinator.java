@@ -19,9 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 
-import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
-import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver.PerformanceClass;
@@ -58,7 +56,6 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
         int CONTEXT_MENU_ITEM_WITH_ICON_BUTTON = 3;
     }
 
-    private static final String TAG = "CMenuCoordinator";
     private static final int INVALID_ITEM_ID = -1;
 
     private WebContents mWebContents;
@@ -71,7 +68,6 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
     private ContextMenuDialog mDialog;
     private Runnable mOnMenuClosed;
     private ContextMenuNativeDelegate mNativeDelegate;
-    private boolean mIsDismissed;
 
     /**
      * Constructor that also sets the content offset.
@@ -100,11 +96,6 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
         dismissDialog();
     }
 
-    @Override
-    public boolean isDismissed() {
-        return mIsDismissed;
-    }
-
     // Shows the menu with chip.
     void displayMenuWithChip(final WindowAndroid window, WebContents webContents,
             ContextMenuParams params, List<Pair<Integer, ModelList>> items,
@@ -127,7 +118,7 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
             View chipAnchorView = layout.findViewById(R.id.context_menu_chip_anchor_point);
             mChipController = new RevampedContextMenuChipController(activity, chipAnchorView);
             chipDelegate.getChipRenderParams((chipRenderParams) -> {
-                if (chipDelegate.isValidChipRenderParams(chipRenderParams)) {
+                if (chipDelegate.isValidChipRenderParams(chipRenderParams) && mDialog.isShowing()) {
                     mChipController.showChip(chipRenderParams);
                 }
             });
@@ -229,10 +220,6 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
         // See https://crbug.com/990987
         if (activity.isFinishing() || activity.isDestroyed()) return;
 
-        Log.i(TAG,
-                "#clickItem called for menu " + this + ", activity: " + activity
-                        + ", activity state: " + ApplicationStatus.getStateForActivity(activity));
-
         onItemClicked.onResult((int) id);
         dismissDialog();
     }
@@ -291,7 +278,6 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
     }
 
     private void dismissDialog() {
-        mIsDismissed = true;
         if (mWebContentsObserver != null) {
             mWebContentsObserver.destroy();
         }
@@ -299,6 +285,15 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
             mChipController.dismissLensChipIfShowing();
         }
         mDialog.dismiss();
+    }
+
+    @VisibleForTesting
+    Callback<ChipRenderParams> getChipRenderParamsCallbackForTesting(ChipDelegate chipDelegate) {
+        return (chipRenderParams) -> {
+            if (chipDelegate.isValidChipRenderParams(chipRenderParams) && mDialog.isShowing()) {
+                mChipController.showChip(chipRenderParams);
+            }
+        };
     }
 
     @VisibleForTesting
@@ -318,6 +313,27 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
                 R.string.contextmenu_shop_image_with_google_lens;
         chipRenderParamsForTesting.onClickCallback = () -> {};
         mChipController.showChip(chipRenderParamsForTesting);
+    }
+
+    @VisibleForTesting
+    void simulateTranslateImageClassificationForTesting() {
+        // Don't need to initialize controller because that should be triggered by
+        // forcing feature flags.
+        mChipController.setFakeLensQueryResultForTesting(); // IN-TEST
+        ChipRenderParams chipRenderParamsForTesting = new ChipRenderParams();
+        chipRenderParamsForTesting.titleResourceId =
+                R.string.contextmenu_translate_image_with_google_lens;
+        chipRenderParamsForTesting.onClickCallback = () -> {};
+        mChipController.showChip(chipRenderParamsForTesting);
+    }
+
+    @VisibleForTesting
+    ChipRenderParams simulateImageClassificationForTesting() {
+        // Don't need to initialize controller because that should be triggered by
+        // forcing feature flags.
+        mChipController.setFakeLensQueryResultForTesting(); // IN-TEST
+        ChipRenderParams chipRenderParamsForTesting = new ChipRenderParams();
+        return chipRenderParamsForTesting;
     }
 
     // Public only to allow references from RevampedContextMenuUtils.java

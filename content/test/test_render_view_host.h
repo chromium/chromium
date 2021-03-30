@@ -12,6 +12,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/host/host_frame_sink_client.h"
@@ -29,6 +30,10 @@
 #include "ui/aura/window.h"
 #endif
 
+#if defined(OS_MAC)
+#include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
+#endif
+
 // This file provides a testing framework for mocking out the RenderProcessHost
 // layer. It allows you to test RenderViewHost, WebContentsImpl,
 // NavigationController, and other layers above that without running an actual
@@ -42,6 +47,7 @@ class Rect;
 
 namespace content {
 
+class FrameTree;
 class SiteInstance;
 class TestRenderFrameHost;
 class TestWebContents;
@@ -75,6 +81,12 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
   void ShowDefinitionForSelection() override {}
   void SpeakSelection() override;
   void SetWindowFrameInScreen(const gfx::Rect& rect) override;
+  void ShowSharePicker(
+      const std::string& title,
+      const std::string& text,
+      const std::string& url,
+      const std::vector<std::string>& file_paths,
+      blink::mojom::ShareService::ShareCallback callback) override;
 #endif  // defined(OS_MAC)
 
   // Advances the fallback surface to the first surface after navigation. This
@@ -94,7 +106,7 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
   void UpdateCursor(const WebCursor& cursor) override;
   void RenderProcessGone() override;
   void Destroy() override;
-  void SetTooltipText(const base::string16& tooltip_text) override {}
+  void SetTooltipText(const std::u16string& tooltip_text) override {}
   gfx::Rect GetBoundsInRootWindow() override;
   blink::mojom::PointerLockResult LockMouse(bool) override;
   blink::mojom::PointerLockResult ChangeMouseLock(bool) override;
@@ -110,7 +122,8 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
 
   // viz::HostFrameSinkClient implementation.
   void OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override;
-  void OnFrameTokenChanged(uint32_t frame_token) override;
+  void OnFrameTokenChanged(uint32_t frame_token,
+                           base::TimeTicks activation_time) override;
 
   const WebCursor& last_cursor() const { return last_cursor_; }
 
@@ -180,7 +193,8 @@ class TestRenderViewHost
     : public RenderViewHostImpl,
       public RenderViewHostTester {
  public:
-  TestRenderViewHost(SiteInstance* instance,
+  TestRenderViewHost(FrameTree* frame_tree,
+                     SiteInstance* instance,
                      std::unique_ptr<RenderWidgetHostImpl> widget,
                      RenderViewHostDelegate* delegate,
                      int32_t routing_id,
@@ -189,7 +203,7 @@ class TestRenderViewHost
   // RenderViewHostImpl overrides.
   MockRenderProcessHost* GetProcess() override;
   bool CreateRenderView(
-      const base::Optional<base::UnguessableToken>& opener_frame_token,
+      const base::Optional<blink::FrameToken>& opener_frame_token,
       int proxy_route_id,
       bool window_was_created_with_opener) override;
   bool IsTestRenderViewHost() const override;
@@ -198,10 +212,7 @@ class TestRenderViewHost
   void SimulateWasHidden() override;
   void SimulateWasShown() override;
   blink::web_pref::WebPreferences TestComputeWebPreferences() override;
-  bool CreateTestRenderView(
-      const base::Optional<base::UnguessableToken>& opener_frame_token,
-      int proxy_route_id,
-      bool window_was_created_with_opener) override;
+  bool CreateTestRenderView() override;
 
   void TestOnUpdateStateWithFile(const base::FilePath& file_path);
 
@@ -213,7 +224,7 @@ class TestRenderViewHost
   }
 
   // The opener frame route id passed to CreateRenderView().
-  const base::Optional<base::UnguessableToken>& opener_frame_token() const {
+  const base::Optional<blink::FrameToken>& opener_frame_token() const {
     return opener_frame_token_;
   }
 
@@ -239,8 +250,8 @@ class TestRenderViewHost
   // See set_delete_counter() above. May be NULL.
   int* delete_counter_;
 
-  // See opener_frame_route_id() above.
-  base::Optional<base::UnguessableToken> opener_frame_token_;
+  // See opener_frame_token() above.
+  base::Optional<blink::FrameToken> opener_frame_token_;
 
   DISALLOW_COPY_AND_ASSIGN(TestRenderViewHost);
 };

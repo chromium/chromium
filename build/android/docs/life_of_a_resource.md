@@ -122,7 +122,7 @@ linked by the aapt2 link command which does the following:
 This step obfuscates / strips resources names from the resources.arsc so that
 they can be looked up only by their numeric ids (assigned in the compile
 resources step). Access to resources via `Resources.getIdentifier()` no longer
-work unless resources are [whitelisted](#adding-resources-to-the-whitelist).
+work unless resources are [allowlisted](#adding-resources-to-the-allowlist).
 
 ## App Bundles and Modules:
 
@@ -159,9 +159,9 @@ For local builds, `R.txt` files are output in the `out/*/apks` directory.
 For official builds, Googlers can get archived `R.txt` files next to archived
 apks.
 
-### Adding resources to the whitelist
+### Adding resources to the allowlist
 
-If a resource is accessed via `getIdentifier()` it needs to be whitelisted in an
+If a resource is accessed via `getIdentifier()` it needs to be allowed by an
 aapt2 resources config file. The config file looks like this:
 
 ```
@@ -174,7 +174,7 @@ id/toolbar#no_obfuscate
 ```
 
 The aapt2 config file is passed to the ninja target through the
-`resources_config_paths` variable. To add a resource to the whitelist, check
+`resources_config_paths` variable. To add a resource to the allowlist, check
 where the config is for your target and add a new line for your resource. If
 none exist, create a new config file and pass its path in your target.
 

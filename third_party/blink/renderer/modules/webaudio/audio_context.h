@@ -193,9 +193,7 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext {
   double base_latency_ = 0;
 
   // AudioContextManager for reporting audibility.
-  HeapMojoRemote<mojom::blink::AudioContextManager,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      audio_context_manager_;
+  HeapMojoRemote<mojom::blink::AudioContextManager> audio_context_manager_;
 
   // Keeps track if the output of this destination was audible, before the
   // current rendering quantum.  Used for recording "playback" time.

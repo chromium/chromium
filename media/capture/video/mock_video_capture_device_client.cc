@@ -4,6 +4,8 @@
 
 #include "media/capture/video/mock_video_capture_device_client.h"
 
+#include "media/base/video_frame.h"
+
 using testing::_;
 using testing::Invoke;
 
@@ -115,7 +117,9 @@ MockVideoCaptureDeviceClient::CreateMockClientWithBufferAllocator(
                     VideoCaptureDevice::Client::Buffer* buffer) {
             EXPECT_GT(dimensions.GetArea(), 0);
             const VideoCaptureFormat frame_format(dimensions, 0.0, format);
-            *buffer = CreateStubBuffer(0, frame_format.ImageAllocationSize());
+            *buffer = CreateStubBuffer(
+                0, VideoFrame::AllocationSize(frame_format.pixel_format,
+                                              frame_format.frame_size));
             return VideoCaptureDevice::Client::ReserveResult::kSucceeded;
           }));
   ON_CALL(*result, OnIncomingCapturedData(_, _, _, _, _, _, _, _, _))

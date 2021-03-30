@@ -80,6 +80,11 @@ public class WebApkInitializationTest {
         public boolean isNativeInitializationFinished() {
             return true;
         }
+
+        @Override
+        public boolean isActivityFinishingOrDestroyed() {
+            return mRealActivityLifecycleDispatcher.isActivityFinishingOrDestroyed();
+        }
     }
 
     private final TrackingActivityLifecycleDispatcher mTrackingActivityLifecycleDispatcher =
@@ -94,7 +99,10 @@ public class WebApkInitializationTest {
                     activityWindowAndroid, compositorViewHolderSupplier, tabCreatorManager,
                     tabCreatorSupplier, isPromotableToTabSupplier, statusBarColorController,
                     screenOrientationProvider, notificationManagerProxySupplier,
-                    tabContentManagerSupplier, compositorViewHolderInitializer) -> {
+                    tabContentManagerSupplier, activityTabStartupMetricsTrackerSupplier,
+                    compositorViewHolderInitializer, chromeActivityNativeDelegate,
+                    modalDialogManagerSupplier, browserControlsStateProvider,
+                    savedInstanceStateSupplier) -> {
                 mTrackingActivityLifecycleDispatcher.init(lifecycleDispatcher);
                 return new ChromeActivityCommonsModule(activity, bottomSheetControllerSupplier,
                         tabModelSelectorSupplier, browserControlsManager,
@@ -104,7 +112,10 @@ public class WebApkInitializationTest {
                         activityWindowAndroid, compositorViewHolderSupplier, tabCreatorManager,
                         tabCreatorSupplier, isPromotableToTabSupplier, statusBarColorController,
                         screenOrientationProvider, notificationManagerProxySupplier,
-                        tabContentManagerSupplier, compositorViewHolderInitializer);
+                        tabContentManagerSupplier, activityTabStartupMetricsTrackerSupplier,
+                        compositorViewHolderInitializer, chromeActivityNativeDelegate,
+                        modalDialogManagerSupplier, browserControlsStateProvider,
+                        savedInstanceStateSupplier);
             });
 
     private final WebApkActivityTestRule mActivityRule = new WebApkActivityTestRule();

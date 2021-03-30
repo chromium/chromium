@@ -45,7 +45,7 @@ AppPauseDialogView::AppPauseDialogView(
   closed_callback_ = std::move(closed_callback);
 
   const int cutoff = pause_data.minutes == 0 || pause_data.hours == 0 ? 0 : -1;
-  base::string16 heading_text = l10n_util::GetStringFUTF16(
+  std::u16string heading_text = l10n_util::GetStringFUTF16(
       (app_type == apps::mojom::AppType::kWeb)
           ? IDS_APP_PAUSE_HEADING_FOR_WEB_APPS
           : IDS_APP_PAUSE_HEADING,

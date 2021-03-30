@@ -45,7 +45,7 @@ class ArcClipboardBridgeFactory
 mojom::ClipRepresentationPtr CreateHTML(const ui::Clipboard* clipboard) {
   DCHECK(clipboard);
 
-  base::string16 markup16;
+  std::u16string markup16;
   // Unused. URL is sent from CreatePlainText() by reading it from the Bookmark.
   std::string url;
   uint32_t fragment_start, fragment_end;
@@ -68,7 +68,7 @@ mojom::ClipRepresentationPtr CreatePlainText(const ui::Clipboard* clipboard) {
   DCHECK(clipboard);
 
   // Unused. Title is not used at Instance.
-  base::string16 title;
+  std::u16string title;
   std::string text;
   std::string mime_type(ui::kMimeTypeText);
   const ui::DataTransferEndpoint data_dst(ui::EndpointType::kArc);
@@ -86,7 +86,7 @@ mojom::ClipRepresentationPtr CreatePlainText(const ui::Clipboard* clipboard) {
 mojom::ClipDataPtr GetClipData(const ui::Clipboard* clipboard) {
   DCHECK(clipboard);
 
-  std::vector<base::string16> mime_types;
+  std::vector<std::u16string> mime_types;
   const ui::DataTransferEndpoint data_dst(ui::EndpointType::kArc);
   clipboard->ReadAvailableTypes(ui::ClipboardBuffer::kCopyPaste, &data_dst,
                                 &mime_types);

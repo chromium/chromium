@@ -42,6 +42,7 @@ CONSOLE WARNING: line 406: Oscillator.detune.value -307201 outside nominal range
 CONSOLE WARNING: line 406: Oscillator.detune.setValueAtTime value -307201 outside nominal range [-153600, 153600]; value will be clamped.
 CONSOLE WARNING: line 418: Oscillator.detune.value 307201 outside nominal range [-153600, 153600]; value will be clamped.
 CONSOLE WARNING: line 418: Oscillator.detune.setValueAtTime value 307201 outside nominal range [-153600, 153600]; value will be clamped.
+CONSOLE WARNING: line 230: The ScriptProcessorNode is deprecated. Use AudioWorkletNode instead. (https://bit.ly/audio-worklet)
 CONSOLE WARNING: line 334: Delay.delayTime.setValueAtTime value -1 outside nominal range [0, 1]; value will be clamped.
 CONSOLE WARNING: line 335: Delay.delayTime.linearRampToValueAtTime value 2 outside nominal range [0, 1]; value will be clamped.
 CONSOLE WARNING: line 336: Delay.delayTime.exponentialRampToValue value 3 outside nominal range [0, 1]; value will be clamped.

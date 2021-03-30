@@ -30,13 +30,15 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.browserservices.BrowserServicesMetrics;
 import org.chromium.chrome.browser.browserservices.PostMessageHandler;
 import org.chromium.chrome.browser.browserservices.verification.OriginVerifier;
 import org.chromium.chrome.browser.browserservices.verification.OriginVerifier.OriginVerificationListener;
-import org.chromium.chrome.browser.installedapp.InstalledAppProviderImpl;
-import org.chromium.chrome.browser.installedapp.PackageManagerDelegate;
+import org.chromium.chrome.browser.browserservices.verification.OriginVerifierFactory;
+import org.chromium.chrome.browser.browserservices.verification.OriginVerifierFactoryImpl;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.installedapp.InstalledAppProviderImpl;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.Referrer;
@@ -272,6 +274,9 @@ class ClientManager {
         }
     }
 
+    // TODO(crbug.com/1164866): Inject the Factory/Supplier.
+    private final OriginVerifierFactory mOriginVerifierFactory = new OriginVerifierFactoryImpl();
+
     private final Map<CustomTabsSessionToken, SessionParams> mSessionParams = new HashMap<>();
 
     private final SparseBooleanArray mUidHasCalledWarmup = new SparseBooleanArray();
@@ -477,14 +482,15 @@ class ClientManager {
             }
         };
 
-        params.originVerifier = new OriginVerifier(params.getPackageName(), relation,
-                /* webContents= */ null, /* externalAuthUtils= */ null);
+        params.originVerifier = mOriginVerifierFactory.create(params.getPackageName(), relation,
+                /* webContents= */ null, /* externalAuthUtils= */ null,
+                new BrowserServicesMetrics.OriginVerifierMetricsListener());
+
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
                 () -> { params.originVerifier.start(listener, origin); });
         if (relation == CustomTabsService.RELATION_HANDLE_ALL_URLS
                 && InstalledAppProviderImpl.isAppInstalledAndAssociatedWithOrigin(
-                        params.getPackageName(), URI.create(origin.toString()),
-                        new PackageManagerDelegate())) {
+                        params.getPackageName(), URI.create(origin.toString()))) {
             params.mLinkedOrigins.add(origin);
         }
         return true;

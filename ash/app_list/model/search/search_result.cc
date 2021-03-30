@@ -7,6 +7,7 @@
 #include <map>
 
 #include "ash/app_list/model/search/search_result_observer.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
 
 namespace ash {
@@ -37,13 +38,13 @@ void SearchResult::SetChipIcon(const gfx::ImageSkia& chip_icon) {
     observer.OnMetadataChanged();
 }
 
-void SearchResult::set_title(const base::string16& title) {
+void SearchResult::set_title(const std::u16string& title) {
   metadata_->title = title;
   for (auto& observer : observers_)
     observer.OnMetadataChanged();
 }
 
-void SearchResult::SetBadgeIcon(const gfx::ImageSkia& badge_icon) {
+void SearchResult::SetBadgeIcon(const ui::ImageModel& badge_icon) {
   metadata_->badge_icon = badge_icon;
   for (auto& observer : observers_)
     observer.OnMetadataChanged();
@@ -55,7 +56,7 @@ void SearchResult::SetRating(float rating) {
     observer.OnMetadataChanged();
 }
 
-void SearchResult::SetFormattedPrice(const base::string16& formatted_price) {
+void SearchResult::SetFormattedPrice(const std::u16string& formatted_price) {
   metadata_->formatted_price = formatted_price;
   for (auto& observer : observers_)
     observer.OnMetadataChanged();

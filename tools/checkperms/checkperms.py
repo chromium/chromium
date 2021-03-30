@@ -178,7 +178,7 @@ IGNORED_PATHS = (
   'native_client_sdk/src/build_tools/sdk_tools/third_party/fancy_urllib/'
       '__init__.py',
   'out/',
-  'third_party/blink/web_tests/external/wpt/tools/third_party/',
+  'third_party/wpt_tools/wpt/tools/third_party/',
   # TODO(maruel): Fix these.
   'third_party/devscripts/licensecheck.pl.vanilla',
   'third_party/libxml/linux/xml2-config',

@@ -60,6 +60,7 @@ static_library("browser") {
     "//net",
     "//services/network/public/mojom",
     "//services/preferences/public/cpp",
+    "//services/tracing/public/cpp",
     "//url",
   ]
 

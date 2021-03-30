@@ -12,8 +12,6 @@
 #error "This file requires ARC support."
 #endif
 
-#if defined(__IPHONE_13_4)
-
 namespace {
 // Returns a pointer style with a hover effect with a slight tint and no pointer
 // shape (i.e., the pointer stays the same).
@@ -159,5 +157,3 @@ API_AVAILABLE(ios(13.4))
 }
 
 @end
-
-#endif  // defined(__IPHONE_13_4)

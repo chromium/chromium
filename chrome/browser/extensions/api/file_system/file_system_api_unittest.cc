@@ -154,7 +154,7 @@ TEST(FileSystemApiUnitTest, FileSystemChooseEntryFunctionFileTypeInfoTest) {
   FileSystemChooseEntryFunction::BuildFileTypeInfo(&file_type_info,
       base::FilePath::StringType(), &options, &acceptsAllTypes);
   EXPECT_EQ(file_type_info.extension_description_overrides[0],
-      base::UTF8ToUTF16("File Types 101"));
+            u"File Types 101");
 }
 
 TEST(FileSystemApiUnitTest, FileSystemChooseEntryFunctionSuggestionTest) {

@@ -80,13 +80,8 @@ class Serial final : public EventTargetWithInlineData,
                   Vector<mojom::blink::SerialPortInfoPtr>);
   void OnRequestPort(ScriptPromiseResolver*, mojom::blink::SerialPortInfoPtr);
 
-  HeapMojoRemote<mojom::blink::SerialService,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      service_;
-  HeapMojoReceiver<mojom::blink::SerialServiceClient,
-                   Serial,
-                   HeapMojoWrapperMode::kWithoutContextObserver>
-      receiver_;
+  HeapMojoRemote<mojom::blink::SerialService> service_;
+  HeapMojoReceiver<mojom::blink::SerialServiceClient, Serial> receiver_;
   HeapHashSet<Member<ScriptPromiseResolver>> get_ports_promises_;
   HeapHashSet<Member<ScriptPromiseResolver>> request_port_promises_;
   HeapHashMap<String, WeakMember<SerialPort>> port_cache_;

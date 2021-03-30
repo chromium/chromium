@@ -1,0 +1,12 @@
+<style include="diagnostics-shared diagnostics-fonts">
+</style>
+
+<diagnostics-card hide-data-points="true">
+    <!-- TODO(michaelcheco): Add localized strings. -->
+  <div id="cardTitle" slot="title">Connectivity</div>
+  <routine-section slot="routines" routines="[[routines_]]"
+  is-test-running="{{isTestRunning}}"
+  run-tests-button-text="Run Network test"
+  routine-runtime="{{getEstimateRuntimeInMinutes_(routines_)}}">
+</routine-section>
+</diagnostics-card>

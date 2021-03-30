@@ -15,7 +15,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/metrics/field_trial.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "components/variations/proto/study.pb.h"
@@ -34,7 +33,7 @@ struct ClientFilterableState;
 class VariationsSeedProcessor {
  public:
   using UIStringOverrideCallback =
-      base::RepeatingCallback<void(uint32_t, const base::string16&)>;
+      base::RepeatingCallback<void(uint32_t, const std::u16string&)>;
 
   VariationsSeedProcessor();
   virtual ~VariationsSeedProcessor();
@@ -47,7 +46,7 @@ class VariationsSeedProcessor {
       const VariationsSeed& seed,
       const ClientFilterableState& client_state,
       const UIStringOverrideCallback& override_callback,
-      const base::FieldTrial::EntropyProvider& low_entropy_provider,
+      const base::FieldTrial::EntropyProvider* low_entropy_provider,
       base::FeatureList* feature_list);
 
   // If the given |study| should alwoys use low entropy. This is true for any
@@ -85,7 +84,7 @@ class VariationsSeedProcessor {
   void CreateTrialFromStudy(
       const ProcessedStudy& processed_study,
       const UIStringOverrideCallback& override_callback,
-      const base::FieldTrial::EntropyProvider& low_entropy_provider,
+      const base::FieldTrial::EntropyProvider* low_entropy_provider,
       base::FeatureList* feature_list);
 
   DISALLOW_COPY_AND_ASSIGN(VariationsSeedProcessor);

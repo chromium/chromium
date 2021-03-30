@@ -23,7 +23,6 @@ import org.chromium.components.autofill.AutofillPopup;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.DropdownItem;
-import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -114,14 +113,12 @@ public class AutofillPopupBridge implements AutofillDelegate, DialogInterface.On
 
     @CalledByNative
     private void confirmDeletion(String title, String body) {
-        mDeletionDialog =
-                new UiUtils
-                        .CompatibleAlertDialogBuilder(mContext, R.style.Theme_Chromium_AlertDialog)
-                        .setTitle(title)
-                        .setMessage(body)
-                        .setNegativeButton(R.string.cancel, null)
-                        .setPositiveButton(R.string.ok, this)
-                        .create();
+        mDeletionDialog = new AlertDialog.Builder(mContext, R.style.Theme_Chromium_AlertDialog)
+                                  .setTitle(title)
+                                  .setMessage(body)
+                                  .setNegativeButton(R.string.cancel, null)
+                                  .setPositiveButton(R.string.ok, this)
+                                  .create();
         mDeletionDialog.show();
     }
 
@@ -160,6 +157,7 @@ public class AutofillPopupBridge implements AutofillDelegate, DialogInterface.On
      * @param index Index in the array where to place a new suggestion.
      * @param label First line of the suggestion.
      * @param sublabel Second line of the suggestion.
+     * @param itemTag The offer label of the suggestion.
      * @param iconId The resource ID for the icon associated with the suggestion, or 0 for no icon.
      * @param isIconAtStart {@code true} if {@param iconId} is displayed before {@param label}.
      * @param suggestionId Identifier for the suggestion type.

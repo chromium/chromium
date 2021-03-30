@@ -39,33 +39,3 @@ Polymer({
     }
   },
 });
-
-Polymer({
-  is: 'gaia-icon-button',
-
-  properties: {
-    disabled: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
-    },
-
-    icon: String,
-
-    ariaLabel: String,
-  },
-
-  focus() {
-    this.$.iconButton.focus();
-  },
-
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onClick_(e) {
-    if (this.disabled) {
-      e.stopPropagation();
-    }
-  },
-});

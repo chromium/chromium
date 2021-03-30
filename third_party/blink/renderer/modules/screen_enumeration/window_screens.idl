@@ -1,0 +1,13 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Permission-gated access to multi-screen information.
+// https://github.com/webscreens/window-placement
+[
+    SecureContext,
+    ImplementedAs=WindowScreens,
+    RuntimeEnabled=WindowPlacement
+] partial interface Window {
+  [CallWith=ScriptState, Measure, RaisesException] Promise<Screens> getScreens();
+};

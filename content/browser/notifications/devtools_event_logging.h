@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 
 class GURL;
@@ -39,7 +38,7 @@ void LogNotificationClickedEventToDevTools(
     BrowserContext* browser_context,
     const NotificationDatabaseData& data,
     const base::Optional<int>& action_index,
-    const base::Optional<base::string16>& reply);
+    const base::Optional<std::u16string>& reply);
 
 }  // namespace notifications
 }  // namespace content

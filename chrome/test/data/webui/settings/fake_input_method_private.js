@@ -6,34 +6,29 @@
  * @fileoverview Fake implementation of chrome.inputMethodPrivate
  * for testing.
  */
-cr.define('settings', function() {
   /**
    * Fake of the chrome.inputMethodsPrivate API. Only methods that are called
    * during testing have been implemented.
    *
    * @constructor
    */
-  /* #export */ function FakeInputMethodPrivate() {}
+export function FakeInputMethodPrivate() {}
 
-  FakeInputMethodPrivate.prototype = {
-    getCurrentInputMethod: function(callback) {
-      callback(null);
-    },
+FakeInputMethodPrivate.prototype = {
+  getCurrentInputMethod: function(callback) {
+    callback(null);
+  },
 
-    setCurrentInputMethod: () => {},
+  setCurrentInputMethod: () => {},
 
-    get onChanged() {
-      return {
-        addListener: function() {
-          // Nothing to do here.
-        },
-        removeListener: function() {
-          // Nothing to do here.
-        },
-      };
-    },
-  };
-
-  // #cr_define_end
-  return {FakeInputMethodPrivate: FakeInputMethodPrivate};
-});
+  get onChanged() {
+    return {
+      addListener: function() {
+        // Nothing to do here.
+      },
+      removeListener: function() {
+        // Nothing to do here.
+      },
+    };
+  },
+};

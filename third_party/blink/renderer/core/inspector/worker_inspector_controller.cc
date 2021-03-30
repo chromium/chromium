@@ -74,7 +74,13 @@ WorkerInspectorController::WorkerInspectorController(
     : debugger_(debugger),
       thread_(thread),
       inspected_frames_(nullptr),
-      probe_sink_(MakeGarbageCollected<CoreProbeSink>()) {
+      probe_sink_(MakeGarbageCollected<CoreProbeSink>()),
+      worker_thread_id_(base::PlatformThread::CurrentId()) {
+  // The constructor must run on the backing thread of |thread|. Otherwise, it
+  // would be incorrect to initialize |worker_thread_id_| with the current
+  // thread id.
+  DCHECK(thread->IsCurrentThread());
+
   probe_sink_->AddInspectorIssueReporter(
       MakeGarbageCollected<InspectorIssueReporter>(
           thread->GetInspectorIssueStorage()));
@@ -83,7 +89,6 @@ WorkerInspectorController::WorkerInspectorController(
   worker_devtools_token_ = devtools_params->devtools_worker_token;
   parent_devtools_token_ = thread->GlobalScope()->GetParentDevToolsToken();
   url_ = url;
-  worker_thread_id_ = thread->GetPlatformThreadId();
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner =
       Platform::Current()->GetIOTaskRunner();
   if (!parent_devtools_token_.is_empty() && io_task_runner) {
@@ -120,7 +125,7 @@ void WorkerInspectorController::AttachSession(DevToolsSession* session,
     session->Append(network_agent);
     session->Append(MakeGarbageCollected<InspectorEmulationAgent>(nullptr));
     session->Append(MakeGarbageCollected<InspectorAuditsAgent>(
-        network_agent, thread_->GetInspectorIssueStorage()));
+        network_agent, thread_->GetInspectorIssueStorage(), nullptr));
   }
   ++session_count_;
 }
@@ -179,12 +184,11 @@ void WorkerInspectorController::OnTraceLogDisabled() {}
 void WorkerInspectorController::EmitTraceEvent() {
   if (worker_devtools_token_.is_empty())
     return;
-  TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
-                       "TracingSessionIdForWorker", TRACE_EVENT_SCOPE_THREAD,
-                       "data",
-                       inspector_tracing_session_id_for_worker_event::Data(
-                           worker_devtools_token_, parent_devtools_token_, url_,
-                           worker_thread_id_));
+  DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT_WITH_CATEGORIES(
+      TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+      "TracingSessionIdForWorker",
+      inspector_tracing_session_id_for_worker_event::Data,
+      worker_devtools_token_, parent_devtools_token_, url_, worker_thread_id_);
 }
 
 void WorkerInspectorController::Trace(Visitor* visitor) const {

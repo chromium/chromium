@@ -12,7 +12,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_browser_field_trials.h"
-#include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/installer/util/initial_preferences.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"

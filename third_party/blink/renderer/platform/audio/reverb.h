@@ -47,10 +47,9 @@ class PLATFORM_EXPORT Reverb {
   USING_FAST_MALLOC(Reverb);
 
  public:
-  enum { kMaxFrameSize = 256 };
-
-  // renderSliceSize is a rendering hint, so the FFTs can be optimized to not
-  // all occur at the same time (very bad when rendering on a real-time thread).
+  // |render_slice_size| is a rendering hint, so the FFTs can be optimized to
+  // not all occur at the same time (very bad when rendering on a real-time
+  // thread).
   Reverb(AudioBus* impulse_response_buffer,
          size_t render_slice_size,
          size_t max_fft_size,

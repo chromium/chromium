@@ -15,6 +15,8 @@
 
 namespace views {
 
+constexpr int Separator::kThickness;
+
 Separator::Separator() = default;
 
 Separator::~Separator() = default;
@@ -95,7 +97,7 @@ void Separator::OnPaint(gfx::Canvas* canvas) {
 }
 
 BEGIN_METADATA(Separator, View)
-ADD_PROPERTY_METADATA(SkColor, Color)
+ADD_PROPERTY_METADATA(SkColor, Color, metadata::SkColorConverter)
 ADD_PROPERTY_METADATA(int, PreferredHeight)
 END_METADATA
 

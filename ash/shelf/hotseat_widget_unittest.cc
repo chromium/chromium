@@ -11,7 +11,6 @@
 #include "ash/assistant/assistant_controller_impl.h"
 #include "ash/focus_cycler.h"
 #include "ash/home_screen/drag_window_from_shelf_controller_test_api.h"
-#include "ash/home_screen/home_screen_controller.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/presentation_time_recorder.h"
@@ -34,6 +33,7 @@
 #include "ash/shelf/test/widget_animation_smoothness_inspector.h"
 #include "ash/shelf/test/widget_animation_waiter.h"
 #include "ash/shell.h"
+#include "ash/system/ime_menu/ime_menu_tray.h"
 #include "ash/system/overview/overview_button_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -155,7 +155,7 @@ class HotseatWidgetTest
     // otherwise, simulate tap on the home button,
     if (!navigation_buttons_shown_in_tablet_mode_ &&
         Shell::Get()->tablet_mode_controller()->InTabletMode()) {
-      Shell::Get()->home_screen_controller()->GoHome(GetPrimaryDisplay().id());
+      Shell::Get()->app_list_controller()->GoHome(GetPrimaryDisplay().id());
       return;
     }
 
@@ -1497,6 +1497,36 @@ TEST_P(HotseatWidgetTest, DismissHotseatWhenSystemTrayShows) {
 
   EXPECT_EQ(ShelfAutoHideState::SHELF_AUTO_HIDE_HIDDEN,
             GetShelfLayoutManager()->auto_hide_state());
+}
+
+// Tests that the hotseat hides when it is in kExtendedMode and a status area
+// tray bubble is shown.
+TEST_P(HotseatWidgetTest, DismissHotseatWhenStatusAreaTrayShows) {
+  TabletModeControllerTestApi().EnterTabletMode();
+  std::unique_ptr<aura::Window> window =
+      AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400));
+  wm::ActivateWindow(window.get());
+  StatusAreaWidget* status_area_widget = GetShelfWidget()->status_area_widget();
+  status_area_widget->ime_menu_tray()->SetVisiblePreferred(true);
+
+  // Show the hotseat.
+  SwipeUpOnShelf();
+  ASSERT_EQ(HotseatState::kExtended, GetShelfLayoutManager()->hotseat_state());
+  EXPECT_FALSE(status_area_widget->ime_menu_tray()->GetBubbleView());
+
+  // Show the ime menu tray bubble, and wait for the hotseat to be hidden.
+  GetEventGenerator()->GestureTapAt(
+      status_area_widget->ime_menu_tray()->GetBoundsInScreen().CenterPoint());
+  base::RunLoop().RunUntilIdle();
+
+  // The hotseat should be hidden and the tray bubble should be shown.
+  EXPECT_EQ(HotseatState::kHidden, GetShelfLayoutManager()->hotseat_state());
+  EXPECT_TRUE(status_area_widget->ime_menu_tray()->GetBubbleView());
+
+  // Swiping up on the shelf should hide the tray bubble and extend the hotseat.
+  SwipeUpOnShelf();
+  EXPECT_FALSE(status_area_widget->ime_menu_tray()->GetBubbleView());
+  EXPECT_EQ(HotseatState::kExtended, GetShelfLayoutManager()->hotseat_state());
 }
 
 // Tests that the work area updates once each when going to/from tablet mode

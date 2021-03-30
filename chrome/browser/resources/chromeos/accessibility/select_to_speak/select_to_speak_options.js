@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {PrefsManager} from './prefs_manager.js';
+
 class SelectToSpeakOptionsPage {
   constructor() {
     this.init_();
@@ -110,16 +112,16 @@ class SelectToSpeakOptionsPage {
         voice.voiceName = voice.voiceName || '';
       });
       voices.sort(function(a, b) {
-        return a.voiceName.localeCompare(b.voiceName);
+        return a.voiceName.localeCompare(b.voiceName || '');
       });
       voices.forEach(function(voice) {
         if (!voice.voiceName) {
           return;
         }
-        if (!voice.eventTypes.includes('start') ||
-            !voice.eventTypes.includes('end') ||
-            !voice.eventTypes.includes('word') ||
-            !voice.eventTypes.includes('cancelled')) {
+        if (!voice.eventTypes.includes(chrome.tts.EventType.START) ||
+            !voice.eventTypes.includes(chrome.tts.EventType.END) ||
+            !voice.eventTypes.includes(chrome.tts.EventType.WORD) ||
+            !voice.eventTypes.includes(chrome.tts.EventType.CANCELLED)) {
           // Required event types for Select-to-Speak.
           return;
         }

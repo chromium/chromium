@@ -44,25 +44,20 @@ bool WebClient::IsAppSpecificURL(const GURL& url) const {
   return false;
 }
 
-bool WebClient::ShouldBlockUrlDuringRestore(const GURL& url,
-                                            WebState* web_state) const {
-  return false;
-}
-
 void WebClient::AddSerializableData(
     web::SerializableUserDataManager* user_data_manager,
     web::WebState* web_state) {}
 
-base::string16 WebClient::GetPluginNotSupportedText() const {
-  return base::string16();
+std::u16string WebClient::GetPluginNotSupportedText() const {
+  return std::u16string();
 }
 
 std::string WebClient::GetUserAgent(UserAgentType type) const {
   return std::string();
 }
 
-base::string16 WebClient::GetLocalizedString(int message_id) const {
-  return base::string16();
+std::u16string WebClient::GetLocalizedString(int message_id) const {
+  return std::u16string();
 }
 
 base::StringPiece WebClient::GetDataResource(
@@ -75,6 +70,11 @@ base::RefCountedMemory* WebClient::GetDataResourceBytes(int resource_id) const {
   return nullptr;
 }
 
+std::vector<JavaScriptFeature*> WebClient::GetJavaScriptFeatures(
+    BrowserState* browser_state) const {
+  return std::vector<JavaScriptFeature*>();
+}
+
 NSString* WebClient::GetDocumentStartScriptForAllFrames(
     BrowserState* browser_state) const {
   return @"";
@@ -83,16 +83,6 @@ NSString* WebClient::GetDocumentStartScriptForAllFrames(
 NSString* WebClient::GetDocumentStartScriptForMainFrame(
     BrowserState* browser_state) const {
   return @"";
-}
-
-void WebClient::AllowCertificateError(WebState* web_state,
-                                      int cert_error,
-                                      const net::SSLInfo& ssl_info,
-                                      const GURL& request_url,
-                                      bool overridable,
-                                      int64_t navigation_id,
-                                      base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(false);
 }
 
 bool WebClient::IsLegacyTLSAllowedForHost(WebState* web_state,
@@ -120,6 +110,10 @@ bool WebClient::EnableLongPressAndForceTouchHandling() const {
   return true;
 }
 
+bool WebClient::EnableLongPressUIContextMenu() const {
+  return false;
+}
+
 bool WebClient::ForceMobileVersionByDefault(const GURL&) {
   return false;
 }
@@ -127,10 +121,6 @@ bool WebClient::ForceMobileVersionByDefault(const GURL&) {
 UserAgentType WebClient::GetDefaultUserAgent(id<UITraitEnvironment> web_view,
                                              const GURL& url) {
   return UserAgentType::MOBILE;
-}
-
-bool WebClient::IsEmbedderBlockRestoreUrlEnabled() {
-  return false;
 }
 
 }  // namespace web

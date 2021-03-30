@@ -41,26 +41,24 @@ def _Spawn(args):
   """Triggers a swarming job. The arguments passed are:
   - The index of the job;
   - The command line arguments object;
-  - The hash of the isolate job used to trigger.
+  - The digest of test files.
 
   The return value is passed to a collect-style map() and consists of:
   - The index of the job;
   - The json file created by triggering and used to collect results;
   - The command line arguments object.
   """
-  index, args, isolated_hash, swarming_command = args
+  index, args, cas_digest, swarming_command = args
   json_file = os.path.join(args.results, '%d.json' % index)
   trigger_args = [
       'tools/luci-go/swarming',
       'trigger',
       '-S',
       'https://chromium-swarm.appspot.com',
-      '-I',
-      'https://isolateserver.appspot.com',
       '-d',
       'pool=' + args.pool,
-      '-s',
-      isolated_hash,
+      '-digest',
+      cas_digest,
       '-dump-json',
       json_file,
       '-d',
@@ -104,6 +102,11 @@ def _Spawn(args):
     runner_args.append('--gtest_filter=' + args.gtest_filter)
   if args.gtest_repeat:
     runner_args.append('--gtest_repeat=' + args.gtest_repeat)
+  if args.test_launcher_shard_index and args.test_launcher_total_shards:
+    runner_args.append('--test-launcher-shard-index=' +
+                       args.test_launcher_shard_index)
+    runner_args.append('--test-launcher-total-shards=' +
+                       args.test_launcher_total_shards)
   elif args.target_os == 'fuchsia':
     filter_file = \
         'testing/buildbot/filters/fuchsia.' + args.target_name + '.filter'
@@ -186,6 +189,12 @@ def main():
   parser.add_argument(
       '--gtest_repeat',
       help='Number of times to repeat the specified set of tests.')
+  parser.add_argument(
+      '--test-launcher-shard-index',
+      help='Shard index to run. Use with --test-launcher-total-shards.')
+  parser.add_argument('--test-launcher-total-shards',
+                      help='Number of shards to split the test into. Use with'
+                      ' --test-launcher-shard-index.')
   parser.add_argument('--no-test-flags', action='store_true',
                       help='Do not add --test-launcher-summary-output and '
                            '--system-log-file flags to the comment.')
@@ -244,14 +253,14 @@ def main():
   )
 
   print('Uploading to isolate server, this can take a while...')
-  isolated = os.path.join(args.out_dir, args.target_name + '.isolated')
+  isolate = os.path.join(args.out_dir, args.target_name + '.isolate')
+  archive_json = os.path.join(args.out_dir, args.target_name + '.archive.json')
   subprocess.check_output([
-      'tools/luci-go/isolate', 'archive', '-I',
-      'https://isolateserver.appspot.com', '-i',
-      os.path.join(args.out_dir, args.target_name + '.isolate'), '-s', isolated
+      'tools/luci-go/isolate', 'archive', '-cas-instance', 'chromium-swarm',
+      '-isolate', isolate, '-dump-json', archive_json
   ])
-  with open(isolated) as f:
-    isolated_hash = hashlib.sha1(f.read()).hexdigest()
+  with open(archive_json) as f:
+    cas_digest = json.load(f).get(args.target_name)
 
   mb_cmd = [
       sys.executable, 'tools/mb/mb.py', 'get-swarming-command', '--as-list'
@@ -272,7 +281,7 @@ def main():
     # Use dummy since threadpools give better exception messages
     # than process pools do, and threads work fine for what we're doing.
     pool = multiprocessing.dummy.Pool()
-    spawn_args = map(lambda i: (i, args, isolated_hash, swarming_cmd),
+    spawn_args = map(lambda i: (i, args, cas_digest, swarming_cmd),
                      range(args.copies))
     spawn_results = pool.imap_unordered(_Spawn, spawn_args)
 

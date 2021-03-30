@@ -20,6 +20,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/stl_util.h"
+#include "base/strings/strcat.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -258,7 +259,7 @@ class ObserverList {
       live_iterators_.head()->value()->Invalidate();
     if (check_empty) {
       Compact();
-      DCHECK(observers_.empty());
+      DCHECK(observers_.empty()) << GetObserversCreationStackString();
     }
   }
 
@@ -319,11 +320,7 @@ class ObserverList {
     observers_count_ = 0;
   }
 
-  bool has_observers() const { return observers_count_ > 0; }
-
-  // Deprecated: use |has_observers()|.
-  // TODO(1155308): migrate all callers and make this test only.
-  bool might_have_observers() const { return !observers_.empty(); }
+  bool empty() const { return !observers_count_; }
 
  private:
   friend class internal::WeakLinkNode<ObserverList>;
@@ -335,6 +332,15 @@ class ObserverList {
     DETACH_FROM_SEQUENCE(iteration_sequence_checker_);
 
     EraseIf(observers_, [](const auto& o) { return o.IsMarkedForRemoval(); });
+  }
+
+  std::string GetObserversCreationStackString() const {
+    std::string result;
+#if DCHECK_IS_ON()
+    for (const auto& observer : observers_)
+      StrAppend(&result, {observer.GetCreationStackString(), "\n"});
+#endif
+    return result;
   }
 
   std::vector<ObserverStorageType> observers_;

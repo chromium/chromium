@@ -21,15 +21,15 @@ class CanvasFileManagerJsTest : public FileManagerJsTest {
 };
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ActionsModelTest) {
-  RunTestURL("foreground/js/actions_model_unittest_gen.html");
+  RunTestURL("foreground/js/actions_model_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ActionsSubmenuTest) {
-  RunTestURL("foreground/js/ui/actions_submenu_unittest_gen.html");
+  RunTestURL("foreground/js/ui/actions_submenu_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, Breadcrumb) {
-  RunTestURL("foreground/js/ui/breadcrumb_unittest_gen.html");
+  RunTestURL("foreground/js/ui/breadcrumb_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ContentMetadataProvider) {
@@ -42,15 +42,15 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, Crostini) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DeviceHandlerTest) {
-  RunTestURL("background/js/device_handler_unittest_gen.html");
+  RunTestURL("background/js/device_handler_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DirectoryContentsTest) {
-  RunTestURL("foreground/js/directory_contents_unittest_gen.html");
+  RunTestURL("foreground/js/directory_contents_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DirectoryTreeTest) {
-  RunTestURL("foreground/js/ui/directory_tree_unittest_gen.html");
+  RunTestURL("foreground/js/ui/directory_tree_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DriveSyncHandlerTest) {
@@ -71,27 +71,27 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ExternalMetadataProvider) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileListModel) {
-  RunTestURL("foreground/js/file_list_model_unittest_gen.html");
+  RunTestURL("foreground/js/file_list_model_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileListSelectionModelTest) {
-  RunTestURL("foreground/js/ui/file_list_selection_model_unittest_gen.html");
+  RunTestURL("foreground/js/ui/file_list_selection_model_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileManagerCommandsTest) {
-  RunTestURL("foreground/js/file_manager_commands_unittest_gen.html");
+  RunTestURL("foreground/js/file_manager_commands_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileManagerDialogBaseTest) {
-  RunTestURL("foreground/js/ui/file_manager_dialog_base_unittest_gen.html");
+  RunTestURL("foreground/js/ui/file_manager_dialog_base_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileOperationHandlerTest) {
-  RunTestURL("background/js/file_operation_handler_unittest_gen.html");
+  RunTestURL("background/js/file_operation_handler_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileOperationManagerTest) {
-  RunTestURL("background/js/file_operation_manager_unittest_gen.html");
+  RunTestURL("background/js/file_operation_manager_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FilesAppEntryTypes) {
@@ -125,27 +125,27 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileSystemMetadataProvider) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileTableList) {
-  RunTestURL("foreground/js/ui/file_table_list_unittest_gen.html");
+  RunTestURL("foreground/js/ui/file_table_list_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileTableTest) {
-  RunTestURL("foreground/js/ui/file_table_unittest_gen.html");
+  RunTestURL("foreground/js/ui/file_table_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileTapHandler) {
-  RunTestURL("foreground/js/ui/file_tap_handler_unittest_gen.html");
+  RunTestURL("foreground/js/ui/file_tap_handler_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileTasks) {
-  RunTestURL("foreground/js/file_tasks_unittest_gen.html");
+  RunTestURL("foreground/js/file_tasks_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileTransferController) {
-  RunTestURL("foreground/js/file_transfer_controller_unittest_gen.html");
+  RunTestURL("foreground/js/file_transfer_controller_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileTypeFiltersController) {
-  RunTestURL("foreground/js/file_type_filters_controller_unittest_gen.html");
+  RunTestURL("foreground/js/file_type_filters_controller_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileType) {
@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(CanvasFileManagerJsTest, ImageOrientation) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ImportControllerTest) {
-  RunTestURL("foreground/js/import_controller_unittest_gen.html");
+  RunTestURL("foreground/js/import_controller_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ImporterCommonTest) {
@@ -169,11 +169,12 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ImportHistoryTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, InstallLinuxPackageDialogTest) {
-  RunTestURL("foreground/js/ui/install_linux_package_dialog_unittest_gen.html");
+  RunTestURL(
+      "foreground/js/ui/install_linux_package_dialog_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ListThumbnailLoader) {
-  RunTestURL("foreground/js/list_thumbnail_loader_unittest_gen.html");
+  RunTestURL("foreground/js/list_thumbnail_loader_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, LRUCacheTest) {
@@ -209,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, MountMetricsTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, MultiMenu) {
-  RunTestURL("foreground/js/ui/multi_menu_unittest_gen.html");
+  RunTestURL("foreground/js/ui/multi_menu_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, MultiMetadataProvider) {
@@ -218,19 +219,19 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, MultiMetadataProvider) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, NavigationListModelTest) {
-  RunTestURL("foreground/js/navigation_list_model_unittest_gen.html");
+  RunTestURL("foreground/js/navigation_list_model_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ProvidersModel) {
-  RunTestURL("foreground/js/providers_model_unittest_gen.html");
+  RunTestURL("foreground/js/providers_model_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, SpinnerController) {
-  RunTestURL("foreground/js/spinner_controller_unittest_gen.html");
+  RunTestURL("foreground/js/spinner_controller_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, TaskController) {
-  RunTestURL("foreground/js/task_controller_unittest_gen.html");
+  RunTestURL("foreground/js/task_controller_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, TaskQueueTest) {
@@ -246,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ThumbnailModel) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, Trash) {
-  RunTestURL("background/js/trash_unittest_gen.html");
+  RunTestURL("background/js/trash_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, UtilTest) {
@@ -254,5 +255,9 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, UtilTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, VolumeManagerTest) {
-  RunTestURL("background/js/volume_manager_unittest_gen.html");
+  RunTestURL("background/js/volume_manager_unittest.m_gen.html");
+}
+
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, VolumeManagerTypesTest) {
+  RunTestURL("common/js/volume_manager_types_unittest.m_gen.html");
 }

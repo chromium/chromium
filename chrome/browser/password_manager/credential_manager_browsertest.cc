@@ -199,8 +199,8 @@ class CredentialManagerBrowserTest : public PasswordManagerBrowserTestBase {
     ASSERT_EQ(1u, test_password_store->stored_passwords().size());
     password_manager::PasswordForm signin_form =
         test_password_store->stored_passwords().begin()->second[0];
-    EXPECT_EQ(base::ASCIIToUTF16("user"), signin_form.username_value);
-    EXPECT_EQ(base::ASCIIToUTF16("hunter2"), signin_form.password_value);
+    EXPECT_EQ(u"user", signin_form.username_value);
+    EXPECT_EQ(u"hunter2", signin_form.password_value);
     EXPECT_EQ(a_url1.GetOrigin().spec(), signin_form.signon_realm);
     EXPECT_EQ(a_url1.GetOrigin(), signin_form.url);
   }
@@ -274,8 +274,8 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
               .get());
   password_manager::PasswordForm signin_form;
   signin_form.signon_realm = embedded_test_server()->base_url().spec();
-  signin_form.password_value = base::ASCIIToUTF16("password");
-  signin_form.username_value = base::ASCIIToUTF16("user");
+  signin_form.password_value = u"password";
+  signin_form.username_value = u"user";
   signin_form.url = embedded_test_server()->base_url();
   signin_form.skip_zero_click = true;
   password_store->AddLogin(signin_form);
@@ -312,8 +312,8 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
       passwords_map.begin()->second;
   ASSERT_EQ(1u, passwords_vector.size());
   const password_manager::PasswordForm& form = passwords_vector[0];
-  EXPECT_EQ(base::ASCIIToUTF16("user"), form.username_value);
-  EXPECT_EQ(base::ASCIIToUTF16("password"), form.password_value);
+  EXPECT_EQ(u"user", form.username_value);
+  EXPECT_EQ(u"password", form.password_value);
   EXPECT_FALSE(form.skip_zero_click);
 }
 
@@ -330,14 +330,14 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
   password_manager::PasswordForm form_1;
   form_1.signon_realm = url.spec();
   form_1.url = url;
-  form_1.username_value = base::ASCIIToUTF16("user1");
-  form_1.password_value = base::ASCIIToUTF16("abcdef");
+  form_1.username_value = u"user1";
+  form_1.password_value = u"abcdef";
 
   password_manager::PasswordForm form_2;
   form_2.signon_realm = url.spec();
   form_2.url = url;
-  form_2.username_value = base::ASCIIToUTF16("user2");
-  form_2.password_value = base::ASCIIToUTF16("123456");
+  form_2.username_value = u"user2";
+  form_2.password_value = u"123456";
 
   password_store->AddLogin(form_1);
   password_store->AddLogin(form_2);
@@ -351,10 +351,10 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
         found->second;
 
     ASSERT_EQ(2U, passwords.size());
-    EXPECT_EQ(base::ASCIIToUTF16("user1"), passwords[0].username_value);
-    EXPECT_EQ(base::ASCIIToUTF16("abcdef"), passwords[0].password_value);
-    EXPECT_EQ(base::ASCIIToUTF16("user2"), passwords[1].username_value);
-    EXPECT_EQ(base::ASCIIToUTF16("123456"), passwords[1].password_value);
+    EXPECT_EQ(u"user1", passwords[0].username_value);
+    EXPECT_EQ(u"abcdef", passwords[0].password_value);
+    EXPECT_EQ(u"user2", passwords[1].username_value);
+    EXPECT_EQ(u"123456", passwords[1].password_value);
   }
 
   {
@@ -397,10 +397,10 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
         found->second;
 
     ASSERT_EQ(2U, passwords.size());
-    EXPECT_EQ(base::ASCIIToUTF16("user1"), passwords[0].username_value);
-    EXPECT_EQ(base::ASCIIToUTF16("abcdef"), passwords[0].password_value);
-    EXPECT_EQ(base::ASCIIToUTF16("user2"), passwords[1].username_value);
-    EXPECT_EQ(base::ASCIIToUTF16("123456"), passwords[1].password_value);
+    EXPECT_EQ(u"user1", passwords[0].username_value);
+    EXPECT_EQ(u"abcdef", passwords[0].password_value);
+    EXPECT_EQ(u"user2", passwords[1].username_value);
+    EXPECT_EQ(u"123456", passwords[1].password_value);
   }
 }
 
@@ -417,14 +417,14 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
   password_manager::PasswordForm form_1;
   form_1.signon_realm = url.spec();
   form_1.url = url;
-  form_1.username_value = base::ASCIIToUTF16("user1");
-  form_1.password_value = base::ASCIIToUTF16("abcdef");
+  form_1.username_value = u"user1";
+  form_1.password_value = u"abcdef";
 
   password_manager::PasswordForm form_2;
   form_2.signon_realm = url.spec();
   form_2.url = url;
-  form_2.username_value = base::ASCIIToUTF16("user2");
-  form_2.password_value = base::ASCIIToUTF16("123456");
+  form_2.username_value = u"user2";
+  form_2.password_value = u"123456";
 
   password_store->AddLogin(form_1);
   password_store->AddLogin(form_2);
@@ -438,10 +438,10 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
         found->second;
 
     ASSERT_EQ(2U, passwords.size());
-    EXPECT_EQ(base::ASCIIToUTF16("user1"), passwords[0].username_value);
-    EXPECT_EQ(base::ASCIIToUTF16("abcdef"), passwords[0].password_value);
-    EXPECT_EQ(base::ASCIIToUTF16("user2"), passwords[1].username_value);
-    EXPECT_EQ(base::ASCIIToUTF16("123456"), passwords[1].password_value);
+    EXPECT_EQ(u"user1", passwords[0].username_value);
+    EXPECT_EQ(u"abcdef", passwords[0].password_value);
+    EXPECT_EQ(u"user2", passwords[1].username_value);
+    EXPECT_EQ(u"123456", passwords[1].password_value);
   }
 
   {
@@ -485,10 +485,10 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
         found->second;
 
     ASSERT_EQ(2U, passwords.size());
-    EXPECT_EQ(base::ASCIIToUTF16("user1"), passwords[0].username_value);
-    EXPECT_EQ(base::ASCIIToUTF16("ABCDEF"), passwords[0].password_value);
-    EXPECT_EQ(base::ASCIIToUTF16("user2"), passwords[1].username_value);
-    EXPECT_EQ(base::ASCIIToUTF16("UVWXYZ"), passwords[1].password_value);
+    EXPECT_EQ(u"user1", passwords[0].username_value);
+    EXPECT_EQ(u"ABCDEF", passwords[0].password_value);
+    EXPECT_EQ(u"user2", passwords[1].username_value);
+    EXPECT_EQ(u"UVWXYZ", passwords[1].password_value);
   }
 }
 
@@ -506,18 +506,18 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
 
   password_manager::PasswordForm form_1;
   form_1.signon_realm = url.spec();
-  form_1.username_value = base::ASCIIToUTF16("user1");
-  form_1.password_value = base::ASCIIToUTF16("abcdef");
-  form_1.username_element = base::ASCIIToUTF16("user");
-  form_1.password_element = base::ASCIIToUTF16("pass");
+  form_1.username_value = u"user1";
+  form_1.password_value = u"abcdef";
+  form_1.username_element = u"user";
+  form_1.password_element = u"pass";
   form_1.url = GURL(url.spec() + "/my/custom/path/");
 
   password_manager::PasswordForm form_2;
   form_2.signon_realm = url.spec();
-  form_2.username_value = base::ASCIIToUTF16("user2");
-  form_2.password_value = base::ASCIIToUTF16("123456");
-  form_2.username_element = base::ASCIIToUTF16("username");
-  form_2.password_element = base::ASCIIToUTF16("password");
+  form_2.username_value = u"user2";
+  form_2.password_value = u"123456";
+  form_2.username_element = u"username";
+  form_2.password_element = u"password";
   form_2.url = GURL(url.spec() + "/my/other/path/");
 
   password_store->AddLogin(form_1);
@@ -532,14 +532,14 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
         found->second;
 
     ASSERT_EQ(2U, passwords.size());
-    EXPECT_EQ(base::ASCIIToUTF16("user1"), passwords[0].username_value);
-    EXPECT_EQ(base::ASCIIToUTF16("abcdef"), passwords[0].password_value);
-    EXPECT_EQ(base::ASCIIToUTF16("user"), passwords[0].username_element);
-    EXPECT_EQ(base::ASCIIToUTF16("pass"), passwords[0].password_element);
-    EXPECT_EQ(base::ASCIIToUTF16("user2"), passwords[1].username_value);
-    EXPECT_EQ(base::ASCIIToUTF16("123456"), passwords[1].password_value);
-    EXPECT_EQ(base::ASCIIToUTF16("username"), passwords[1].username_element);
-    EXPECT_EQ(base::ASCIIToUTF16("password"), passwords[1].password_element);
+    EXPECT_EQ(u"user1", passwords[0].username_value);
+    EXPECT_EQ(u"abcdef", passwords[0].password_value);
+    EXPECT_EQ(u"user", passwords[0].username_element);
+    EXPECT_EQ(u"pass", passwords[0].password_element);
+    EXPECT_EQ(u"user2", passwords[1].username_value);
+    EXPECT_EQ(u"123456", passwords[1].password_value);
+    EXPECT_EQ(u"username", passwords[1].username_element);
+    EXPECT_EQ(u"password", passwords[1].password_element);
   }
 
   {
@@ -585,10 +585,10 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
         found->second;
 
     ASSERT_EQ(2U, passwords.size());
-    EXPECT_EQ(base::ASCIIToUTF16("user1"), passwords[0].username_value);
-    EXPECT_EQ(base::ASCIIToUTF16("ABCDEF"), passwords[0].password_value);
-    EXPECT_EQ(base::ASCIIToUTF16("user2"), passwords[1].username_value);
-    EXPECT_EQ(base::ASCIIToUTF16("UVWXYZ"), passwords[1].password_value);
+    EXPECT_EQ(u"user1", passwords[0].username_value);
+    EXPECT_EQ(u"ABCDEF", passwords[0].password_value);
+    EXPECT_EQ(u"user2", passwords[1].username_value);
+    EXPECT_EQ(u"UVWXYZ", passwords[1].password_value);
   }
 }
 
@@ -605,8 +605,8 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
 
   password_manager::PasswordForm signin_form;
   signin_form.signon_realm = psl_url.spec();
-  signin_form.password_value = base::ASCIIToUTF16("password");
-  signin_form.username_value = base::ASCIIToUTF16("user");
+  signin_form.password_value = u"password";
+  signin_form.username_value = u"user";
   signin_form.url = psl_url;
   password_store->AddLogin(signin_form);
 
@@ -662,8 +662,8 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
 
   password_manager::PasswordForm signin_form;
   signin_form.signon_realm = psl_url.spec();
-  signin_form.password_value = base::ASCIIToUTF16("password");
-  signin_form.username_value = base::ASCIIToUTF16("user");
+  signin_form.password_value = u"password";
+  signin_form.username_value = u"user";
   signin_form.url = psl_url;
   password_store->AddLogin(signin_form);
 
@@ -694,14 +694,10 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
   EXPECT_EQ(2U, passwords.size());
   EXPECT_TRUE(base::Contains(passwords, psl_url.spec()));
   EXPECT_TRUE(base::Contains(passwords, www_url.spec()));
-  EXPECT_EQ(base::ASCIIToUTF16("user"),
-            passwords[psl_url.spec()].front().username_value);
-  EXPECT_EQ(base::ASCIIToUTF16("password"),
-            passwords[psl_url.spec()].front().password_value);
-  EXPECT_EQ(base::ASCIIToUTF16("user"),
-            passwords[www_url.spec()].front().username_value);
-  EXPECT_EQ(base::ASCIIToUTF16("P4SSW0RD"),
-            passwords[www_url.spec()].front().password_value);
+  EXPECT_EQ(u"user", passwords[psl_url.spec()].front().username_value);
+  EXPECT_EQ(u"password", passwords[psl_url.spec()].front().password_value);
+  EXPECT_EQ(u"user", passwords[www_url.spec()].front().username_value);
+  EXPECT_EQ(u"P4SSW0RD", passwords[www_url.spec()].front().password_value);
 }
 
 IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
@@ -715,8 +711,8 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
   password_manager::PasswordForm http_form;
   http_form.signon_realm = http_origin.spec();
   http_form.url = http_origin;
-  http_form.username_value = base::ASCIIToUTF16("user");
-  http_form.password_value = base::ASCIIToUTF16("12345");
+  http_form.username_value = u"user";
+  http_form.password_value = u"12345";
   scoped_refptr<password_manager::TestPasswordStore> password_store =
       static_cast<password_manager::TestPasswordStore*>(
           PasswordStoreFactory::GetForProfile(
@@ -756,8 +752,8 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
               .get());
   password_manager::PasswordForm signin_form;
   signin_form.signon_realm = embedded_test_server()->base_url().spec();
-  signin_form.password_value = base::ASCIIToUTF16("password");
-  signin_form.username_value = base::ASCIIToUTF16("user");
+  signin_form.password_value = u"password";
+  signin_form.username_value = u"user";
   signin_form.url = embedded_test_server()->base_url();
   signin_form.skip_zero_click = false;
   password_store->AddLogin(signin_form);
@@ -898,17 +894,14 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest, SaveViaAPIAndAutofill) {
       "});"));
   // Fill the password and click the button to submit the page. The API should
   // suppress the autofill password manager.
-  NavigationObserver form_submit_observer(WebContents());
   ASSERT_TRUE(content::ExecuteScript(
       WebContents(),
       "document.getElementById('username_field').value = 'user';"
       "document.getElementById('password_field').value = 'autofill';"
       "document.getElementById('input_submit_button').click();"));
-  form_submit_observer.Wait();
 
-  WaitForPasswordStore();
   BubbleObserver prompt_observer(WebContents());
-  ASSERT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
+  prompt_observer.WaitForAutomaticSavePrompt();
   prompt_observer.AcceptSavePrompt();
 
   WaitForPasswordStore();
@@ -920,8 +913,8 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest, SaveViaAPIAndAutofill) {
           ->stored_passwords();
   ASSERT_EQ(1u, stored.size());
   password_manager::PasswordForm signin_form = stored.begin()->second[0];
-  EXPECT_EQ(base::ASCIIToUTF16("user"), signin_form.username_value);
-  EXPECT_EQ(base::ASCIIToUTF16("API"), signin_form.password_value);
+  EXPECT_EQ(u"user", signin_form.username_value);
+  EXPECT_EQ(u"API", signin_form.password_value);
   EXPECT_EQ(embedded_test_server()->base_url().spec(),
             signin_form.signon_realm);
   EXPECT_EQ(current_url.GetOrigin(), signin_form.url);
@@ -936,8 +929,8 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest, UpdateViaAPIAndAutofill) {
               .get());
   password_manager::PasswordForm signin_form;
   signin_form.signon_realm = embedded_test_server()->base_url().spec();
-  signin_form.password_value = base::ASCIIToUTF16("old_pass");
-  signin_form.username_value = base::ASCIIToUTF16("user");
+  signin_form.password_value = u"old_pass";
+  signin_form.username_value = u"user";
   signin_form.url = embedded_test_server()->base_url();
   signin_form.skip_zero_click = true;
   // Set an old value for the |date_last_used| to make sure it gets updated.
@@ -972,7 +965,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest, UpdateViaAPIAndAutofill) {
   EXPECT_FALSE(prompt_observer.IsUpdatePromptShownAutomatically());
   signin_form.skip_zero_click = false;
   signin_form.times_used = 1;
-  signin_form.password_value = base::ASCIIToUTF16("API");
+  signin_form.password_value = u"API";
   password_manager::TestPasswordStore::PasswordMap stored =
       password_store->stored_passwords();
   ASSERT_EQ(1u, stored.size());

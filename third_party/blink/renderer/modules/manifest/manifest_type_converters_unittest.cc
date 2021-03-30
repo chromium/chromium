@@ -20,7 +20,7 @@ class ManifestTypeConvertersTest : public testing::Test {
 
   mojom::blink::ManifestPtr Load(const String& json) {
     KURL url("http://example.com");
-    ManifestParser parser(json, url, url);
+    ManifestParser parser(json, url, url, /*feature_context=*/nullptr);
     parser.Parse();
 
     Vector<mojom::blink::ManifestErrorPtr> errors;
@@ -66,7 +66,7 @@ TEST_F(ManifestTypeConvertersTest, BasicFileHandlerIsCorrectlyConverted) {
   EXPECT_TRUE(base::EqualsASCII(manifest.file_handlers[0].name, "name"));
   ASSERT_EQ(manifest.file_handlers[0].accept.size(), 1u);
 
-  base::string16 mime = base::UTF8ToUTF16("image/png");
+  std::u16string mime = u"image/png";
   ASSERT_EQ(manifest.file_handlers[0].accept.count(mime), 1u);
   EXPECT_EQ(manifest.file_handlers[0].accept[mime].size(), 1u);
   EXPECT_TRUE(
@@ -103,7 +103,7 @@ TEST_F(ManifestTypeConvertersTest, BasicShortcutIsCorrectlyConverted) {
 
   ASSERT_EQ(manifest.shortcuts.size(), 1u);
   EXPECT_TRUE(base::EqualsASCII(manifest.shortcuts[0].name, "name"));
-  EXPECT_EQ(manifest.shortcuts[0].short_name, base::ASCIIToUTF16("short_name"));
+  EXPECT_EQ(manifest.shortcuts[0].short_name, u"short_name");
   EXPECT_EQ(manifest.shortcuts[0].url.spec(), "http://example.com/url");
 
   ASSERT_EQ(manifest.shortcuts[0].icons.size(), 1u);

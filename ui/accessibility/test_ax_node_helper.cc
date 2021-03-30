@@ -21,13 +21,13 @@ namespace ui {
 namespace {
 
 // A global map from AXNodes to TestAXNodeHelpers.
-std::map<AXNode::AXID, TestAXNodeHelper*> g_node_id_to_helper_map;
+std::map<AXNodeID, TestAXNodeHelper*> g_node_id_to_helper_map;
 
 // A simple implementation of AXTreeObserver to catch when AXNodes are
 // deleted so we can delete their helpers.
 class TestAXTreeObserver : public AXTreeObserver {
  private:
-  void OnNodeDeleted(AXTree* tree, int32_t node_id) override {
+  void OnNodeDeleted(AXTree* tree, AXNodeID node_id) override {
     const auto iter = g_node_id_to_helper_map.find(node_id);
     if (iter != g_node_id_to_helper_map.end()) {
       TestAXNodeHelper* helper = iter->second;

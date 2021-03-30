@@ -38,12 +38,14 @@ bool AbortOnEndInterceptor(URLLoaderInterceptor::RequestParams* params) {
 
   std::string body = "some data\r\n";
   uint32_t bytes_written = body.size();
-  mojo::DataPipe data_pipe(body.size());
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  CHECK_EQ(mojo::CreateDataPipe(body.size(), producer_handle, consumer_handle),
+           MOJO_RESULT_OK);
   CHECK_EQ(MOJO_RESULT_OK,
-           data_pipe.producer_handle->WriteData(
-               body.data(), &bytes_written, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
-  params->client->OnStartLoadingResponseBody(
-      std::move(data_pipe.consumer_handle));
+           producer_handle->WriteData(body.data(), &bytes_written,
+                                      MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
+  params->client->OnStartLoadingResponseBody(std::move(consumer_handle));
 
   params->client->OnComplete(
       network::URLLoaderCompletionStatus(net::ERR_CONNECTION_ABORTED));

@@ -15,6 +15,7 @@
 #include "base/values.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -64,38 +65,35 @@ class ManifestTest : public testing::Test {
   scoped_refptr<extensions::Extension> LoadExtension(
       const ManifestData& manifest,
       std::string* error,
-      extensions::Manifest::Location location =
-          extensions::Manifest::INTERNAL,
+      mojom::ManifestLocation location = mojom::ManifestLocation::kInternal,
       int flags = extensions::Extension::NO_FLAGS);
 
   scoped_refptr<extensions::Extension> LoadAndExpectSuccess(
       const ManifestData& manifest,
-      extensions::Manifest::Location location =
-          extensions::Manifest::INTERNAL,
+      mojom::ManifestLocation location = mojom::ManifestLocation::kInternal,
       int flags = extensions::Extension::NO_FLAGS);
 
   scoped_refptr<extensions::Extension> LoadAndExpectSuccess(
       char const* manifest_name,
-      extensions::Manifest::Location location =
-          extensions::Manifest::INTERNAL,
+      mojom::ManifestLocation location = mojom::ManifestLocation::kInternal,
       int flags = extensions::Extension::NO_FLAGS);
 
   scoped_refptr<extensions::Extension> LoadAndExpectWarning(
       const ManifestData& manifest,
       const std::string& expected_warning,
-      extensions::Manifest::Location location = extensions::Manifest::INTERNAL,
+      mojom::ManifestLocation location = mojom::ManifestLocation::kInternal,
       int flags = extensions::Extension::NO_FLAGS);
 
   scoped_refptr<extensions::Extension> LoadAndExpectWarning(
       char const* manifest_name,
       const std::string& expected_warning,
-      extensions::Manifest::Location location = extensions::Manifest::INTERNAL,
+      mojom::ManifestLocation location = mojom::ManifestLocation::kInternal,
       int flags = extensions::Extension::NO_FLAGS);
 
   scoped_refptr<extensions::Extension> LoadAndExpectWarnings(
       char const* manifest_name,
       const std::vector<std::string>& expected_warnings,
-      extensions::Manifest::Location location = extensions::Manifest::INTERNAL,
+      mojom::ManifestLocation location = mojom::ManifestLocation::kInternal,
       int flags = extensions::Extension::NO_FLAGS);
 
   void VerifyExpectedError(extensions::Extension* extension,
@@ -103,17 +101,17 @@ class ManifestTest : public testing::Test {
                            const std::string& error,
                            const std::string& expected_error);
 
-  void LoadAndExpectError(char const* manifest_name,
-                          const std::string& expected_error,
-                          extensions::Manifest::Location location =
-                              extensions::Manifest::INTERNAL,
-                          int flags = extensions::Extension::NO_FLAGS);
+  void LoadAndExpectError(
+      char const* manifest_name,
+      const std::string& expected_error,
+      mojom::ManifestLocation location = mojom::ManifestLocation::kInternal,
+      int flags = extensions::Extension::NO_FLAGS);
 
-  void LoadAndExpectError(const ManifestData& manifest,
-                          const std::string& expected_error,
-                          extensions::Manifest::Location location =
-                              extensions::Manifest::INTERNAL,
-                          int flags = extensions::Extension::NO_FLAGS);
+  void LoadAndExpectError(
+      const ManifestData& manifest,
+      const std::string& expected_error,
+      mojom::ManifestLocation location = mojom::ManifestLocation::kInternal,
+      int flags = extensions::Extension::NO_FLAGS);
 
   void AddPattern(extensions::URLPatternSet* extent,
                   const std::string& pattern);
@@ -129,12 +127,12 @@ class ManifestTest : public testing::Test {
   struct Testcase {
     const std::string manifest_filename_;
     std::string expected_error_;  // only used for ExpectedError tests
-    extensions::Manifest::Location location_;
+    mojom::ManifestLocation location_;
     int flags_;
 
     Testcase(const std::string& manifest_filename,
              const std::string& expected_error,
-             extensions::Manifest::Location location,
+             mojom::ManifestLocation location,
              int flags);
 
     Testcase(const std::string& manifest_filename,
@@ -143,7 +141,7 @@ class ManifestTest : public testing::Test {
     explicit Testcase(const std::string& manifest_filename);
 
     Testcase(const std::string& manifest_filename,
-             extensions::Manifest::Location location,
+             mojom::ManifestLocation location,
              int flags);
   };
 

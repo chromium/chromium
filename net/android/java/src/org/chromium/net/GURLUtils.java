@@ -26,20 +26,9 @@ public final class GURLUtils {
         return GURLUtilsJni.get().getOrigin(url);
     }
 
-    /**
-     * Get the scheme of the url (e.g. http, https, file). The returned string
-     * contains everything before the "://".
-     *
-     * @return The scheme of the url.
-     */
-    public static String getScheme(String url) {
-        return GURLUtilsJni.get().getScheme(url);
-    }
-
     @VisibleForTesting
     @NativeMethods
     public interface Natives {
         String getOrigin(String url);
-        String getScheme(String url);
     }
 }

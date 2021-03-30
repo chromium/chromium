@@ -54,13 +54,11 @@ bool StructTraits<media::mojom::VideoFrameMetadataDataView,
   DESERIALIZE_INTO_OPT(frame_rate);
   DESERIALIZE_INTO_OPT(rtp_timestamp);
 
-  if (input.has_rotation()) {
-    media::VideoRotation rotation;
-    if (!input.ReadRotation(&rotation))
-      return false;
+  // unsigned int.
+  output->hw_protected_validation_id = input.hw_protected_validation_id();
 
-    output->rotation = rotation;
-  }
+  READ_AND_ASSIGN_OPT(media::VideoTransformation, transformation,
+                      Transformation);
 
   if (input.has_copy_mode()) {
     media::VideoFrameMetadata::CopyMode copy_mode;

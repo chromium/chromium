@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">Није могуће користити датотеку или директоријум.</translation>
 <translation id="1363028406613469049">Песма</translation>
 <translation id="1378727793141957596">Добро дошли у Google диск!</translation>
+<translation id="1379911846207762492">Можете да омогућите да фајлови буду доступни офлајн када немате интернет везу.</translation>
 <translation id="1383876407941801731">Претражи</translation>
 <translation id="1395262318152388157">Клизач за тражење</translation>
 <translation id="1404323374378969387">норвешки</translation>
@@ -76,6 +77,7 @@
 <translation id="1807938677607439181">Све датотеке</translation>
 <translation id="1810764548349082891">Преглед није доступан</translation>
 <translation id="1812302367230252929">транслитерација амхарског</translation>
+<translation id="1813278315230285598">Услуге</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Опрез:<ph name="END_BOLD" /> Ове датотеке су привремене и могу да се аутоматски избришу да би се ослободио простор на диску. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Пингвин</translation>
 <translation id="183183971458492120">Информације се учитавају...</translation>
@@ -85,13 +87,14 @@
 <translation id="1853795129690976061">Овај директоријум се дели са Linux-ом</translation>
 <translation id="1864756863218646478">Није могуће пронаћи датотеку.</translation>
 <translation id="1920670151694390848">транслитерација малајалама</translation>
+<translation id="1920798810075583923">Лубеница</translation>
 <translation id="1924372192547904021">Форматирање меморијског уређаја <ph name="DRIVE_NAME" /> је успело</translation>
 <translation id="1931134289871235022">словачки</translation>
 <translation id="1933345018156373194">Премештање није успело, неочекивана грешка: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">фински</translation>
 <translation id="1942765061641586207">Резолуција слике</translation>
-<translation id="1943097386230153518">Инсталирајте нову услугу</translation>
 <translation id="1972984168337863910">Прошири окна за повратне информације о датотекама</translation>
+<translation id="1984456723671657197">Овај тип фајла није подржан. <ph name="BEGIN_LINK_HELP" />Сазнајте више<ph name="END_LINK_HELP" /> о отварању фајлова у Chrome ОС-у.</translation>
 <translation id="1995337122023280937">Иди на локацију датотеке</translation>
 <translation id="2001796770603320721">Управљајте на Диску</translation>
 <translation id="2009067268969781306">Форматирањем диска избрисаће се сви подаци сачувани на њему. Ова радња не може да се опозове.</translation>
@@ -118,6 +121,7 @@
 <translation id="2288278176040912387">Грамофон</translation>
 <translation id="2291538123825441971">Отварају се датотеке (<ph name="NUMBER_OF_FILES" />).</translation>
 <translation id="2303301624314357662">Отвара се датотека <ph name="FILE_NAME" />.</translation>
+<translation id="2304820083631266885">Планета</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> је избачен.</translation>
 <translation id="2325650632570794183">Овај тип датотеке није подржан. Посетите Chrome веб-продавницу и пронађите апликацију која може да отвара овај тип датотеке.</translation>
 <translation id="2326539130272988168">бугарски</translation>
@@ -142,7 +146,6 @@
 <translation id="255937426064304553">међународна америчка</translation>
 <translation id="2562685439590298522">Документи</translation>
 <translation id="2563185590376525700">Жаба</translation>
-<translation id="2572501073504669105">Можете да омогућите да фајлови буду доступни офлајн када немате интернет везу.</translation>
 <translation id="2578394532502990878">фонетски тамилски</translation>
 <translation id="2579959351793446050">орија</translation>
 <translation id="2614589611416690597">Видео <ph name="VIDEO_TYPE" /></translation>
@@ -186,6 +189,7 @@
 <translation id="299638574917407533">француски (Канада)</translation>
 <translation id="3003633581067744647">Пређи на приказ сличица</translation>
 <translation id="3007214526293698309">Поправи сразмеру</translation>
+<translation id="3029114385395636667">Омогућите Google документе офлајн да бисте учинили документе, табеле и презентације доступним офлајн.</translation>
 <translation id="303198083543495566">Географија</translation>
 <translation id="3047197340186497470">кинески даји</translation>
 <translation id="3057861065630527966">Направите резервне копије слика и видео снимака</translation>
@@ -216,23 +220,27 @@
 <translation id="3335337277364016868">Година снимања</translation>
 <translation id="3353984535370177728">Избор директоријума за отпремање</translation>
 <translation id="3356580349448036450">Завршено</translation>
+<translation id="3358452157379365236">Гитара</translation>
 <translation id="3382143449143186018">непалски са индијском тастатуром</translation>
 <translation id="3408236822532681288">немачки (Немачка) са Neo 2 тастатуром</translation>
 <translation id="3414856743105198592">Форматирањем уклоњивих медија бришете све податке. Да ли желите да наставите?</translation>
 <translation id="3437801641691368414">Време прављења</translation>
+<translation id="343907260260897561">Једнократни фото-апарат</translation>
 <translation id="3455931012307786678">естонски</translation>
 <translation id="3466147780910026086">Медијски уређај се скенира...</translation>
 <translation id="3468522857997926824">Резервна копија слика (<ph name="FILE_COUNT" />) је направљена на <ph name="BEGIN_LINK" />Google диску<ph name="END_LINK" /></translation>
 <translation id="3475447146579922140">Google табела</translation>
+<translation id="3479552764303398839">Не сада</translation>
 <translation id="3486821258960016770">монголски</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> грешака.</translation>
 <translation id="3522708245912499433">португалски</translation>
 <translation id="3524311639100184459">Опрез: Ове датотеке су привремене и могу да се избришу аутоматски како би се ослободио простор на диску.  <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
-<translation id="3527085408025491307">Директоријум</translation>
+<translation id="3527085408025491307">Фолдер</translation>
 <translation id="3549797760399244642">Иди на drive.google.com...</translation>
 <translation id="3553048479571901246">Да бисте отварали датотеке помоћу апликације <ph name="APP_NAME" />, прво их копирајте у директоријум са Windows датотекама.</translation>
 <translation id="3556731189587832921">енглески (САД) са интернационалном тастатуром за рачунар</translation>
 <translation id="357479282490346887">литвански</translation>
+<translation id="3592251141500063301">Нисмо успели да учинимо фајл <ph name="FILE_NAME" /> доступним офлајн</translation>
 <translation id="3603385196401704894">канадска француска</translation>
 <translation id="3606220979431771195">турска F</translation>
 <translation id="3616113530831147358">Аудио</translation>
@@ -279,12 +287,13 @@
 <translation id="4124935795427217608">Једнорог</translation>
 <translation id="4158739975813877944">Отвори плејлисту</translation>
 <translation id="4159731583141908892">Премештених ставки: <ph name="FILE_NAME" />.</translation>
+<translation id="4186579485882418952">Омогући офлајн</translation>
 <translation id="4193154014135846272">Google документ</translation>
 <translation id="4197674956721858839">Избор за додавање у zip датотеку</translation>
 <translation id="4202378258276439759">шпански (Латинска Америка)</translation>
 <translation id="4202977638116331303">грузијски</translation>
 <translation id="421017592316736757">Морате да будете на мрежи да бисте приступили овој датотеци.</translation>
-<translation id="4212740939091998969">Директоријум „<ph name="FOLDER_NAME" />“ већ постоји. Одаберите други назив.</translation>
+<translation id="4212740939091998969">Фолдер „<ph name="FOLDER_NAME" />“ већ постоји. Одаберите други назив.</translation>
 <translation id="4215448920900139318">Праве се резервне копије (<ph name="FILE_COUNT" />)</translation>
 <translation id="4261901459838235729">Google презентација</translation>
 <translation id="4290535918735525311">1 директоријум се дели са Linux-ом</translation>
@@ -292,6 +301,7 @@
 <translation id="4309915981827077375">Опште информације</translation>
 <translation id="432252891123397018">румунски са стандардном тастатуром</translation>
 <translation id="4325128273762811722">словеначки</translation>
+<translation id="4326142238881453352">Ботаничар</translation>
 <translation id="4326192123064055915">Кафа</translation>
 <translation id="4336032328163998280">Операција копирања није успела. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">сорани курдски са тастатуром заснованом на арапском</translation>
@@ -327,7 +337,6 @@
 <translation id="4706042980341760088">тамилски са тастатуром писаће машине</translation>
 <translation id="4711094779914110278">турски</translation>
 <translation id="4712283082407695269">Отвара се „<ph name="PATH" />“</translation>
-<translation id="4713544552769165154">Ова датотека је дизајнирана за рачунар који користи Macintosh софтвер. Она није компатибилна са вашим уређајем који користи Chrome ОС. Претражите <ph name="BEGIN_LINK" />Chrome веб-продавницу<ph name="END_LINK" /> да бисте пронашли одговарајућу апликацију за замену.<ph name="BEGIN_LINK_HELP" />Сазнајте више<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">Направљена је резервна копија слика (<ph name="FILE_COUNT" />)</translation>
 <translation id="4725511304875193254">Корги</translation>
 <translation id="4732760563705710320">Жао нам је, уређај за пребацивање не подржава овај видео.</translation>
@@ -408,6 +417,7 @@
     <ph name="MARKUP_7" />Делите и правите датотеке и сарађујте<ph name="MARKUP_8" />
     на њима са другима, и све то на једном месту.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Враћене датотеке са Google диска</translation>
+<translation id="5288441970121584418">Пљескавица</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Сачувај</translation>
 <translation id="5318819489018851358">Дели са Linux-ом</translation>
@@ -461,8 +471,6 @@
 <translation id="5833610766403489739">Датотека се негде изгубила. Проверите подешавање локације за преузимања и покушајте поново.</translation>
 <translation id="5838451609423551646">Уклонили сте све ставке из избора.</translation>
 <translation id="5838825566232597749">Америчка Workman интернационална</translation>
-<translation id="5850516540536751549">Овај тип датотеке није подржан. Посетите <ph name="BEGIN_LINK" />Chrome веб-продавницу<ph name="END_LINK" /> да бисте пронашли апликацију која може да отвара овај тип датотеке.
-        <ph name="BEGIN_LINK_HELP" />Сазнајте више<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Овде нема ничега...</translation>
 <translation id="5911887972742538906">Дошло је до грешке током инсталирања Linux апликације.</translation>
 <translation id="5912396950572065471">Формат</translation>
@@ -500,10 +508,12 @@
 <translation id="6248400709929739064">Омогући титлове</translation>
 <translation id="6269630227984243955">малајски</translation>
 <translation id="6287852322318138013">Изаберите апликацију за отварање ове датотеке</translation>
+<translation id="6321303798550928047">Махање</translation>
 <translation id="6339145975392024142">Америчка интернационална тастатура (PC)</translation>
 <translation id="6346310558342052870">Приступ је ограничен</translation>
 <translation id="6356685157277930264">Прозор за повратне информације датотека</translation>
 <translation id="6358884629796491903">Змај</translation>
+<translation id="6367976544441405720">Комби</translation>
 <translation id="637062427944097960">Ова датотека је отворена на другом профилу. Пређите на <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) да бисте је погледали.</translation>
 <translation id="6394388407447716302">Само за читање</translation>
 <translation id="6395575651121294044">Ставки: <ph name="NUMBER_OF_FILES" /></translation>
@@ -527,6 +537,7 @@
 <translation id="6650726141019353908">Ружичасти лептир</translation>
 <translation id="6657585470893396449">Лозинка</translation>
 <translation id="6673674183150363784">француски (Француска) са Bépo тастатуром</translation>
+<translation id="6710022688720561421">Робот</translation>
 <translation id="6710213216561001401">Претходно</translation>
 <translation id="6751256176799620176">Изабран је 1 директоријум</translation>
 <translation id="6790428901817661496">Пусти</translation>
@@ -560,6 +571,7 @@
 <translation id="6965382102122355670">Потврди</translation>
 <translation id="6970230597523682626">бугарски</translation>
 <translation id="6973630695168034713">Директоријуми</translation>
+<translation id="6976795442547527108">Лав</translation>
 <translation id="6978611942794658017">Датотека је осмишљена за рачунар који користи Windows софтвер. Није компатибилна са уређајем, који користи Chrome ОС. Претражите Chrome веб-продавницу да бисте нашли одговарајућу замену за апликацију.</translation>
 <translation id="6979158407327259162">Google диск</translation>
 <translation id="6989942356279143254">шведски</translation>
@@ -606,6 +618,7 @@
 <translation id="7532029025027028521">персијски, транслитерација</translation>
 <translation id="7544830582642184299">Дозволите да Linux апликације приступају фајловима на Google диску. Промене ће се синхронизовати са другим уређајима.</translation>
 <translation id="7544853251252956727">Пусти насумично</translation>
+<translation id="7547009467130558110">Патика</translation>
 <translation id="7547780573915868306">литвански</translation>
 <translation id="7547811415869834682">холандски</translation>
 <translation id="7551643184018910560">Закачи на полицу</translation>
@@ -620,6 +633,7 @@
 <translation id="7628656427739290098"><ph name="PERCENT" />% је довршено.</translation>
 <translation id="7649070708921625228">Помоћ</translation>
 <translation id="7654209398114106148">Премештају се ставке (<ph name="NUMBER_OF_ITEMS" />)...</translation>
+<translation id="7655441028674523381">Лако приступајте Google сликама</translation>
 <translation id="7658239707568436148">Откажи</translation>
 <translation id="7663224033570512922">хинди</translation>
 <translation id="7693909743393669729">Ако форматирате диск, избрисаћете све податке који се на њему чувају и уклонити све постојеће партиције, укључујући и оне које можда нису видљиве. Ова радња не може да се опозове.</translation>
@@ -651,7 +665,6 @@
 <translation id="7839804798877833423">Преузимање ових датотека ће искористити око <ph name="FILE_SIZE" /> података за мобилне уређаје.</translation>
 <translation id="7846076177841592234">Откажи избор</translation>
 <translation id="7853966320808728790">Француска BÉPO</translation>
-<translation id="7864662577698025113">Додајте нову услугу</translation>
 <translation id="7868774406711971383">пољски</translation>
 <translation id="7873831373602885875">Чување у директоријуму <ph name="FOLDER_NAME" /> није успело. Све измене биће сачуване у директоријуму <ph name="DOWNLOADS_FOLDER" /> у директоријуму Подешавања.</translation>
 <translation id="7874321682039004450">филипински</translation>
@@ -666,13 +679,13 @@
 <translation id="7972920761225148017">француски (Швајцарска)</translation>
 <translation id="7980421588063892270">енглески (САД) са тастатуром Colemak</translation>
 <translation id="7982283708762922719">Висина</translation>
+<translation id="79907182588096956">Овај фајл је осмишљен за рачунар који користи Windows софтвер. Није компатибилан са вашим уређајем, који користи Chrome ОС. <ph name="BEGIN_LINK_HELP" />Сазнајте више<ph name="END_LINK_HELP" /> о отварању фајлова у Chrome ОС-у.</translation>
 <translation id="8008366997883261463">Пас</translation>
 <translation id="8028993641010258682">Величина</translation>
 <translation id="803771048473350947">Датотека</translation>
 <translation id="8038111231936746805">(подразумевано)</translation>
 <translation id="8042602468072383151">Аудио датотека <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">румунски</translation>
-<translation id="8052887694493382350">Датотека је осмишљена за рачунар који користи Windows софтвер. Није компатибилна са уређајем, који користи Chrome ОС. <ph name="BEGIN_LINK_HELP" />Сазнајте више<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Све измене биће сачуване у: <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Пусти поново</translation>
 <translation id="8106045200081704138">Дељено са мном</translation>
@@ -712,6 +725,7 @@
 <translation id="8466234950814670489">Tar архива</translation>
 <translation id="8475647382427415476">Google диск тренутно није успео да синхронизује „<ph name="FILENAME" />“. Google диск ће покушати поново касније.</translation>
 <translation id="8477649328507734757">Окретање</translation>
+<translation id="8484284835977497781">Одаберите неку од недавних слика.</translation>
 <translation id="8487700953926739672">Доступно ван мреже</translation>
 <translation id="8521441079177373948">УК</translation>
 <translation id="8525306231823319788">Цео екран</translation>
@@ -744,8 +758,10 @@
 <translation id="8860454412039442620">Excel табела</translation>
 <translation id="8866284467018526531">транслитерација арапског</translation>
 <translation id="8900820606136623064">мађарски</translation>
+<translation id="8903931173357132290">Дипломац</translation>
 <translation id="8919081441417203123">дански</translation>
 <translation id="8965697826696209160">Нема довољно простора.</translation>
+<translation id="8970501467542182729">Овај фајл је осмишљен за рачунар који користи Macintosh софтвер. Није компатибилан са вашим уређајем, који користи Chrome ОС. <ph name="BEGIN_LINK_HELP" />Сазнајте више<ph name="END_LINK_HELP" /> о отварању фајлова у Chrome ОС-у.</translation>
 <translation id="8997962250644902079">кинески (традиционални) пинјин</translation>
 <translation id="9017798300203431059">руска фонетска</translation>
 <translation id="9034924485347205037">Linux датотеке</translation>

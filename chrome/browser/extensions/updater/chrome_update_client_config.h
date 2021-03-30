@@ -47,7 +47,7 @@ class ChromeUpdateClientConfig : public update_client::Configurator {
   ChromeUpdateClientConfig(content::BrowserContext* context,
                            base::Optional<GURL> url_override);
 
-  int InitialDelay() const override;
+  double InitialDelay() const override;
   int NextCheckDelay() const override;
   int OnDemandDelay() const override;
   int UpdateDelay() const override;

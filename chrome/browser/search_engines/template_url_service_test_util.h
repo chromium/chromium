@@ -11,7 +11,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
@@ -34,7 +33,7 @@ void RemoveManagedDefaultSearchPreferences(TestingProfile* profile);
 // Creates a TemplateURL with some test values. The caller owns the returned
 // TemplateURL*.
 std::unique_ptr<TemplateURL> CreateTestTemplateURL(
-    const base::string16& keyword,
+    const std::u16string& keyword,
     const std::string& url,
     const std::string& guid = std::string(),
     base::Time last_modified = base::Time::FromTimeT(100),
@@ -77,7 +76,7 @@ class TemplateURLServiceTestUtil : public TemplateURLServiceObserver {
 
   // Returns the search term from the last invocation of
   // TemplateURLService::SetKeywordSearchTermsForURL and clears the search term.
-  base::string16 GetAndClearSearchTerm();
+  std::u16string GetAndClearSearchTerm();
 
   // Adds extension controlled TemplateURL to the model and overrides default
   // search pref in an extension controlled preferences, if extension wants to
@@ -98,7 +97,7 @@ class TemplateURLServiceTestUtil : public TemplateURLServiceObserver {
   std::unique_ptr<TestingProfile> profile_;
   base::ScopedTempDir temp_dir_;
   int changed_count_ = 0;
-  base::string16 search_term_;
+  std::u16string search_term_;
   int dsp_set_to_google_callback_count_ = 0;
   scoped_refptr<KeywordWebDataService> web_data_service_;
   std::unique_ptr<TemplateURLService> model_;

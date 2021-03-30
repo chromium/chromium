@@ -381,7 +381,7 @@ void NetworkConfigurationHandler::CreateShillConfiguration(
       dbus::ObjectPath(profile_path), *properties_to_set,
       base::BindOnce(&NetworkConfigurationHandler::ConfigurationCompleted,
                      weak_ptr_factory_.GetWeakPtr(), profile_path, guid,
-                     base::Passed(&properties_copy), std::move(callback)),
+                     std::move(properties_copy), std::move(callback)),
       base::BindOnce(&NetworkConfigurationHandler::ConfigurationFailed,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(error_callback)));

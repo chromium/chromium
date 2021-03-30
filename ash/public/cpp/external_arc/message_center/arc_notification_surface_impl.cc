@@ -4,9 +4,9 @@
 
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/exo/notification_surface.h"
 #include "components/exo/surface.h"
 #include "ui/aura/client/aura_constants.h"

@@ -88,9 +88,6 @@ public class FeedStreamSurfaceTest {
         }
 
         @Override
-        public void onAddStarting() {}
-
-        @Override
         public void onAddFinished() {}
     }
 
@@ -143,6 +140,7 @@ public class FeedStreamSurfaceTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+        FeedStreamSurface.sRequestContentWithoutRendererForTesting = true;
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mParent = new LinearLayout(mActivity);
         mocker.mock(FeedStreamSurfaceJni.TEST_HOOKS, mFeedStreamSurfaceJniMock);
@@ -158,7 +156,7 @@ public class FeedStreamSurfaceTest {
         Profile.setLastUsedProfileForTesting(mProfileMock);
         mFeedStreamSurface = Mockito.spy(new FeedStreamSurface(mActivity, false, mSnackbarManager,
                 mPageNavigationDelegate, mBottomSheetController, mHelpAndFeedbackLauncherImpl,
-                /* isPlaceholderShown= */ false, mShareHelper));
+                /* isPlaceholderShown= */ false, mShareHelper, null));
         mContentManager = mFeedStreamSurface.getFeedListContentManagerForTesting();
         mFeedStreamSurface.mRootView = Mockito.spy(mFeedStreamSurface.mRootView);
         mRecyclerView = mFeedStreamSurface.mRootView;
@@ -527,7 +525,7 @@ public class FeedStreamSurfaceTest {
         // Assert.
         verify(mHelpAndFeedbackLauncherImpl)
                 .showFeedback(any(), any(), eq(testUrl), eq(FeedStreamSurface.FEEDBACK_REPORT_TYPE),
-                        mMapCaptor.capture(), eq(FeedStreamSurface.FEEDBACK_CONTEXT));
+                        mMapCaptor.capture());
 
         // Check that the map contents are as expected.
         assertThat(mMapCaptor.getValue()).containsEntry(cardUrl, testUrl);

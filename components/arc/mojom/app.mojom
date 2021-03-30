@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 47
+// Next MinVersion: 49
 
 module arc.mojom;
 
 import "components/arc/mojom/app_permissions.mojom";
+import "components/arc/mojom/compatibility_mode.mojom";
 import "components/arc/mojom/gfx.mojom";
 import "components/arc/mojom/scale_factor.mojom";
 import "ui/accessibility/mojom/ax_assistant_structure.mojom";
@@ -25,6 +26,7 @@ struct AppInfo {
   [MinVersion=2] bool sticky;  // true if the app cannot be uninstalled
   [MinVersion=7] bool notifications_enabled;
   [MinVersion=35] bool suspended;
+  [MinVersion=47] ArcResizeLockState resize_lock_state;
 };
 
 // Describes the data required to install a web app.
@@ -98,6 +100,17 @@ struct RawIconPngData {
   array<uint8>? foreground_icon_png_data;
   // The background image for the adaptive icon.
   array<uint8>? background_icon_png_data;
+};
+
+// The window information to launch an app.
+// This should be kept in sync with WindowInfo in
+// components/services/app_service/public/mojom/types.mojom, and
+// MakeArcWindowInfo in chrome/browser/apps/app_service/launch_utils.cc
+struct WindowInfo {
+  int32 window_id = -1;
+  int32 state = -1;
+  int64 display_id = -1;
+  Rect? bounds;
 };
 
 // Describes a Play Store app discovery result.
@@ -339,12 +352,14 @@ interface AppHost {
 
   // Sends information about newly created task |package_name| and |activity|
   // specifies launch activity and |intent| is initial intent used to start
-  // new task.
+  // new task. |session_id| is the window_id of |window_info| from app launch
+  // parameters. |session_id| is -1 if the window_id is not set.
   [MinVersion=4] OnTaskCreated@4(int32 task_id@0,
                                  string package_name@1,
                                  string activity@2,
                                  [MinVersion=13] string? name@3,
-                                 [MinVersion=15] string? intent@4);
+                                 [MinVersion=15] string? intent@4,
+                                 [MinVersion=48] int32 session_id@5);
 
   // Sends task label and icon. This is deprecated and will soon be replaced by
   // OnTaskDescriptionChanged().
@@ -386,7 +401,7 @@ interface AppHost {
 };
 
 // TODO(lhchavez): Migrate all request/response messages to Mojo.
-// Next method ID: 38
+// Next method ID: 40
 // Deprecated method IDs: 2, 3, 13
 interface AppInstance {
   // DEPRECATED: Please use Init@21 instead.
@@ -414,8 +429,15 @@ interface AppInstance {
 
   // Sends a request to ARC to launch an ARC app defined by |package_name| and
   // |activity|, which cannot be empty.
-  [MinVersion=23] LaunchApp@18(string package_name, string activity,
+  [MinVersion=23] LaunchApp@18(string package_name,
+                               string activity,
                                int64 display_id);
+
+  // Sends a request to ARC to launch an ARC app with specific launch window
+  // info.
+  [MinVersion=47] LaunchAppWithWindowInfo@38(string package_name,
+                                            string activity,
+                                            WindowInfo window_info);
 
   // Sends a request to ARC for the Android launcher to launch the specified app
   // shortcut.
@@ -427,7 +449,13 @@ interface AppInstance {
 
   // Sends a request to ARC to launch an intent. The intent is encoded as a URI
   // string. See Intent.toUri().
-  [MinVersion=23] LaunchIntent@19(string intent_uri, int64 display_id);
+  [MinVersion=23] LaunchIntent@19(string intent_uri,
+                                  int64 display_id);
+
+  // Sends a request to ARC to launch an ARC app with specific launch window
+  // info.
+  [MinVersion=47] LaunchIntentWithWindowInfo@39(string intent_uri,
+                                                WindowInfo window_info);
 
   // Sends a request for the ARC icon of a given resource id and
   // |pixel_size|. This is deprecated and will soon be replaced by GetAppIcon().

@@ -117,13 +117,13 @@ void ImportBookmarksFile(
   std::vector<std::string> lines = base::SplitString(
       content, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
-  base::string16 last_folder;
+  std::u16string last_folder;
   bool last_folder_on_toolbar = false;
   bool last_folder_is_empty = true;
   bool has_subfolder = false;
   bool has_last_folder = false;
   base::Time last_folder_add_date;
-  std::vector<base::string16> path;
+  std::vector<std::u16string> path;
   size_t toolbar_folder_index = 0;
   std::string charset = "UTF-8";  // If no charset is specified, assume utf-8.
   for (size_t i = 0;
@@ -159,11 +159,11 @@ void ImportBookmarksFile(
     }
 
     // Get the bookmark entry.
-    base::string16 title;
-    base::string16 shortcut;
+    std::u16string title;
+    std::u16string shortcut;
     GURL url, favicon;
     base::Time add_date;
-    base::string16 post_data;
+    std::u16string post_data;
     bool is_bookmark;
     // TODO(jcampan): http://b/issue?id=1196285 we do not support POST based
     //                keywords yet.
@@ -244,7 +244,7 @@ void ImportBookmarksFile(
       if (path.empty())
         break;  // Mismatch <DL>.
 
-      base::string16 folder_title = path.back();
+      std::u16string folder_title = path.back();
       path.pop_back();
 
       if (last_folder_is_empty) {
@@ -324,7 +324,7 @@ bool ParseCharsetFromLine(const std::string& line, std::string* charset) {
 
 bool ParseFolderNameFromLine(const std::string& lineDt,
                              const std::string& charset,
-                             base::string16* folder_name,
+                             std::u16string* folder_name,
                              bool* is_toolbar_folder,
                              base::Time* add_date) {
   const char kFolderOpen[] = "<H3";
@@ -371,12 +371,12 @@ bool ParseFolderNameFromLine(const std::string& lineDt,
 
 bool ParseBookmarkFromLine(const std::string& lineDt,
                            const std::string& charset,
-                           base::string16* title,
+                           std::u16string* title,
                            GURL* url,
                            GURL* favicon,
-                           base::string16* shortcut,
+                           std::u16string* shortcut,
                            base::Time* add_date,
-                           base::string16* post_data) {
+                           std::u16string* post_data) {
   const char kItemOpen[] = "<A";
   const char kItemClose[] = "</A>";
   const char kFeedURLAttribute[] = "FEEDURL";
@@ -419,7 +419,7 @@ bool ParseBookmarkFromLine(const std::string& lineDt,
 
   // URL
   if (GetAttribute(attribute_list, kHrefAttribute, &value)) {
-    base::string16 url16;
+    std::u16string url16;
     base::CodepageToUTF16(value, charset.c_str(),
                           base::OnStringConversionError::SKIP, &url16);
     url16 = net::UnescapeForHTML(url16);
@@ -459,7 +459,7 @@ bool ParseBookmarkFromLine(const std::string& lineDt,
 
 bool ParseMinimumBookmarkFromLine(const std::string& lineDt,
                                   const std::string& charset,
-                                  base::string16* title,
+                                  std::u16string* title,
                                   GURL* url) {
   const char kItemOpen[] = "<A";
   const char kItemClose[] = "</";
@@ -493,7 +493,7 @@ bool ParseMinimumBookmarkFromLine(const std::string& lineDt,
   if (GetAttribute(attribute_list, kHrefAttributeUpper, &value) ||
       GetAttribute(attribute_list, kHrefAttributeLower, &value)) {
     if (charset.length() != 0) {
-      base::string16 url16;
+      std::u16string url16;
       base::CodepageToUTF16(value, charset.c_str(),
                             base::OnStringConversionError::SKIP, &url16);
       url16 = net::UnescapeForHTML(url16);

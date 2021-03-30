@@ -105,6 +105,7 @@ class CONTENT_EXPORT CompositorImpl
   ui::ResourceManager& GetResourceManager() override;
   void CacheBackBufferForCurrentSurface() override;
   void EvictCachedBackBuffer() override;
+  void PreserveChildSurfaceControls() override;
   void RequestPresentationTimeForNextFrame(
       PresentationTimeCallback callback) override;
 
@@ -167,7 +168,8 @@ class CONTENT_EXPORT CompositorImpl
 
   // viz::HostFrameSinkClient implementation.
   void OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override;
-  void OnFrameTokenChanged(uint32_t frame_token) override {}
+  void OnFrameTokenChanged(uint32_t frame_token,
+                           base::TimeTicks activation_time) override {}
 
   // display::DisplayObserver implementation.
   void OnDisplayMetricsChanged(const display::Display& display,

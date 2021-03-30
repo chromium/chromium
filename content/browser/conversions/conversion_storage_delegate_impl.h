@@ -34,6 +34,7 @@ class CONTENT_EXPORT ConversionStorageDelegateImpl
   int GetMaxConversionsPerImpression() const override;
   int GetMaxImpressionsPerOrigin() const override;
   int GetMaxConversionsPerOrigin() const override;
+  RateLimitConfig GetRateLimits() const override;
 
  private:
   // Get the time a conversion report should be sent, by batching reports into

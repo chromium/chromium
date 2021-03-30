@@ -50,7 +50,7 @@ specification](https://dev.w3.org/2009/dap/file-system/file-dir-sys.html).
 There are two flavors of this, "temporary" and "persistent".
 
 This same file system (or at least the "temporary" version) is also exposed via
-the new Native File System API.
+the new File System Access API.
 
 ### Isolated File Systems
 
@@ -58,7 +58,7 @@ Isolated file systems generally are used to expose files from other file system
 types to the web for the [Files and Directory Entries API](https://wicg.github.io/entries-api/),
 either via Drag&Drop or `<input type=file>`. They are also used for the (deprecated)
 [Chrome Apps chrome.fileSystem API](https://developer.chrome.com/apps/fileSystem),
-and the new [Native File System API](http://wicg.github.io/native-file-system/).
+and the new [File System Access API](http://wicg.github.io/file-system-access/).
 
 # Interesting Classes
 
@@ -143,6 +143,6 @@ Today reference counts are increased/decreased implicitly by granting access to
 certain file systems to certain renderer processes (i.e.
 `content::ChildProcessSecurityPolicyImpl` calls `AddReference` when
 permission is granted, and call `RemoveReference` when the process is destroyed
-on all the file systems that renderer has access to). The Native File System API
+on all the file systems that renderer has access to). The File System Access API
 will introduce its own way of adding and removing references to these file
 systems.

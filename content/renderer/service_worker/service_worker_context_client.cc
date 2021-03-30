@@ -29,7 +29,6 @@
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/renderer/document_state.h"
 #include "content/public/renderer/worker_thread.h"
-#include "content/renderer/loader/web_url_loader_impl.h"
 #include "content/renderer/renderer_blink_platform_impl.h"
 #include "content/renderer/service_worker/embedded_worker_instance_client_impl.h"
 #include "content/renderer/service_worker/navigation_preload_request.h"
@@ -380,13 +379,12 @@ ServiceWorkerContextClient::CreateWorkerFetchContextOnInitiatorThread() {
       renderer_preferences_, script_url_, loader_factories_->PassInterface(),
       std::move(pending_script_loader_factory), script_url_to_skip_throttling_,
       GetContentClient()->renderer()->CreateURLLoaderThrottleProvider(
-          URLLoaderThrottleProviderType::kWorker),
+          blink::URLLoaderThrottleProviderType::kWorker),
       GetContentClient()
           ->renderer()
           ->CreateWebSocketHandshakeThrottleProvider(),
       std::move(preference_watcher_receiver_),
-      std::move(pending_subresource_loader_updater_), service_worker_route_id_,
-      cors_exempt_header_list_);
+      std::move(pending_subresource_loader_updater_), cors_exempt_header_list_);
 }
 
 void ServiceWorkerContextClient::OnNavigationPreloadResponse(

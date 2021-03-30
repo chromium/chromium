@@ -13,22 +13,21 @@
 <translation id="1125124144982679672">ആരൊക്കെയാണ് Chrome ഉപയോഗിക്കുന്നത്?</translation>
 <translation id="1142745911746664600">Chrome അപ്‌ഡേറ്റ് ചെയ്യാനാവില്ല</translation>
 <translation id="1154147086299354128">&amp;Chrome-ൽ തുറക്കുക</translation>
-<translation id="123620459398936149">Chrome OS-ന് നിങ്ങളുടെ ഡാറ്റ സമന്വയിപ്പിക്കാനായില്ല. സമന്വയ പാസ്‌ഫ്രെയ്സ് അപ്‌ഡേറ്റ് ചെയ്യുക.</translation>
 <translation id="1293325835983155583">ഈ ഉപകരണം ഉപയോഗിക്കുന്നതിന് മുമ്പ് ഇനിപ്പറയുന്ന സേവന നിബന്ധനകൾ നിങ്ങൾ വായിച്ച് അംഗീകരിക്കണമെന്ന് <ph name="MANAGER" /> ആവശ്യപ്പെടുന്നു. ഈ നിബന്ധനകൾ Google Chrome OS നിബന്ധനകൾ വിപുലീകരിക്കുകയോ പരിഷ്‌കരിക്കുകയോ പരിമിതപ്പെടുത്തുകയോ ചെയ്യുന്നില്ല.</translation>
 <translation id="1302523850133262269">ഏറ്റവും പുതിയ സിസ്‌റ്റം അപ്‌ഡേറ്റുകൾ Chrome ഇൻസ്റ്റാളുചെയ്യുന്നതുവരെ കാത്തിരിക്കുക.</translation>
-<translation id="1355000804395496115">ഔദ്യോഗിക ബ്രൗസിംഗും വ്യക്തിപര ബ്രൗസിംഗും വേർതിരിക്കാനോ ഈ ഉപകരണം ഉപയോഗിക്കുന്ന വ്യത്യസ്‌ത ആളുകൾക്ക് വേണ്ടിയോ, Chrome-ൽ വ്യത്യസ്‌ത പ്രൊഫൈലുകൾ ഉപയോഗിക്കുക</translation>
 <translation id="137466361146087520">Google Chrome ബീറ്റ</translation>
 <translation id="1399397803214730675">ഈ കമ്പ്യൂട്ടറിൽ ഇപ്പോൾ തന്നെ Google Chrome-ന്റെ ഏറ്റവും പുതിയ പതിപ്പുണ്ട്. സോഫ്റ്റ്‍‍വെയർ പ്രവര്‍ത്തിക്കുന്നില്ലെങ്കില്‍, ദയവായി Google Chrome അണ്‍‌ഇന്‍സ്റ്റാള്‍ ചെയ്ത് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="1434626383986940139">Chrome കാനറി അപ്ലിക്കേഷനുകൾ</translation>
-<translation id="1513277449617685876">വ്യക്തിപര അക്കൗണ്ടിലെയും <ph name="NEW_USER" /> എന്ന അക്കൗണ്ടിലെയും ബ്രൗസിംഗ് വേർതിരിക്കാൻ, Chrome-ൽ പുതിയൊരു പ്രൊഫൈൽ സൃഷ്‌ടിക്കുക</translation>
+<translation id="147727933880789532">നിലവിൽ, മെച്ചപ്പെടുത്തിയ സുരക്ഷിത ബ്രൗസിംഗ് നിലവാരം പുലർത്താത്തതിനാൽ ഈ വിപുലീകരണം പ്രവർത്തനരഹിതമാക്കാൻ Chrome നിർദ്ദേശിക്കുന്നു.</translation>
+<translation id="1516530951338665275">ജോടിയാക്കൽ തുടരാൻ Google Chrome-ന് Bluetooth ആക്സസ് 
+ ആവശ്യമാണ്. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Chrome അപ്‌ഡേറ്റുചെയ്യുക</translation>
+<translation id="1583073672411044740"><ph name="EXISTING_USER" /> ഇതിനകം ഈ Chrome പ്രൊഫൈലിൽ സൈൻ ഇൻ ചെയ്തിരിക്കുന്നു. ഇത് <ph name="USER_EMAIL_ADDRESS" /> എന്ന അക്കൗണ്ടിനായി പുതിയൊരു Chrome പ്രൊഫൈൽ സൃഷ്ടിക്കും</translation>
 <translation id="1587223624401073077">Google Chrome നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കുന്നു.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> അപകടകരമായതിനാൽ, Chrome ഇതിനെ ബ്ലോക്കുചെയ്‌തു.</translation>
 <translation id="1597911401261118146">ഡാറ്റാ ലംഘനങ്ങളിൽ നിന്നും മറ്റ് സുരക്ഷാ പ്രശ്‌നങ്ങളിൽ നിന്നും നിങ്ങളുടെ പാസ്‌വേഡുകൾ സുരക്ഷിതമാണോ എന്ന് പരിശോധിക്കാൻ, <ph name="BEGIN_LINK" />Chrome-ൽ സൈൻ ഇൻ ചെയ്യുക<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Chrome സുരക്ഷിതമാക്കാൻ, <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> എന്നതിൽ ലിസ്റ്റ് ചെയ്യാത്ത ചില വിപുലീകരണങ്ങൾ ഞങ്ങൾ പ്രവർത്തനരഹിതമാക്കി, അവ നിങ്ങളുടെ അറിവില്ലാതെ ചേർത്തിരിക്കാനിടയുണ്ട്.</translation>
-<translation id="162629503687514352">Chrome OS-ന് നിങ്ങളുടെ പാസ്‌വേഡുകൾ സമന്വയിപ്പിക്കാനായില്ല.</translation>
 <translation id="1628000112320670027">Chrome ഉപയോഗിക്കുന്നതിനുള്ള സഹായം തേടുക</translation>
-<translation id="1662639173275167396"><ph name="BEGIN_LINK_LINUX_OSS" />Linux (ബീറ്റ)<ph name="END_LINK_LINUX_OSS" /> പോലെ അധിക <ph name="BEGIN_LINK_CROS_OSS" />ഓപ്പൺ സോഴ്‌സ് സോഫ്‌റ്റ്‌വെയർ<ph name="END_LINK_CROS_OSS" /> ഉപയോഗിച്ചാണ് Chrome OS സാധ്യമാക്കിയിട്ടുള്ളത്.</translation>
 <translation id="1666409074978194368">എകദേശം അപ് റ്റു ഡേറ്റാണ്! അപ്‌ഡേറ്റ് ചെയ്യൽ പൂർത്തിയാക്കാൻ Google Chrome വീണ്ടും ആരംഭിക്കുക. അദൃശ്യ വിൻഡോകൾ വീണ്ടും തുറക്കില്ല.</translation>
 <translation id="1674870198290878346">Chrome അദൃശ്യ വിൻഡോയിൽ ലിങ്ക് തുറക്കുക</translation>
 <translation id="1682634494516646069">Google Chrome-ന് ഇതിന്റെ ഡാറ്റാ ഡയറക്റ്ററി വായിക്കാനോ അതിൽ എഴുതാനോ കഴിയില്ല:
@@ -40,12 +39,14 @@
 <translation id="174539241580958092">സൈൻ ഇൻ ചെയ്യുന്നതിലെ ഒരു പിശകിനാൽ Google Chrome-ന് നിങ്ങളുടെ ഡാറ്റ സമന്വയിപ്പിക്കാനായില്ല.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">നിങ്ങൾ <ph name="TARGET_DEVICE_NAME" /> ഉപകരണത്തിൽ Chrome-ലാണ് സൈൻ ഇൻ ചെയ്‌തിരിക്കുന്നതെന്ന് ഉറപ്പാക്കുക, തുടർന്ന് വീണ്ടും അയയ്‌ക്കാൻ ശ്രമിക്കുക.</translation>
+<translation id="1807517590912578995">Chrome പ്രൊഫൈൽ വേർതിരിക്കണോ?</translation>
 <translation id="1812689907177901597">ഇത് ഓഫാക്കുന്നതിലൂടെ, Chrome-ലേക്ക് സൈൻ ഇൻ ചെയ്യാതെ തന്നെ Gmail പോലുള്ള Google സൈറ്റുകളിൽ നിങ്ങൾക്ക് സൈൻ ഇൻ ചെയ്യാനാവും</translation>
 <translation id="1860536484129686729">ഈ സൈറ്റിനായി, Chrome-ന് നിങ്ങളുടെ ക്യാമറ ആക്‌സസ് ചെയ്യാനുള്ള അനുമതി ആവശ്യമാണ്</translation>
 <translation id="1873233029667955273">Google Chrome നിങ്ങളുടെ ഡിഫോൾട്ട് ബ്രൗസറല്ല</translation>
 <translation id="1874309113135274312">Google Chrome ബീറ്റ (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome കാലഹരണപ്പെട്ടതാണ്</translation>
 <translation id="1919130412786645364">Chrome-ലേക്ക് സൈൻ ഇൻ ചെയ്യാൻ അനുവദിക്കുക</translation>
+<translation id="2018528049276128029">ഓരോ പ്രൊഫൈലും ബുക്ക്‌മാർക്കുകൾ, ചരിത്രം, പാസ്‌വേഡുകൾ എന്നിവയും മറ്റും പോലുള്ള അതിന്റെ സ്വന്തം Chrome വിവരങ്ങൾ സൂക്ഷിക്കുന്നു</translation>
 <translation id="2063848847527508675">അപ്‌ഡേറ്റ് ബാധകമാക്കാൻ Chrome റീസ്റ്റാർട്ട് ചെയ്യേണ്ടതുണ്ട്.</translation>
 <translation id="2094919256425865063">എന്തായാലും Chrome-ൽ നിന്ന് പുറത്തുകടക്കണോ?</translation>
 <translation id="2120620239521071941">ഇത് ഈ ഉപകരണത്തിൽ നിന്ന് <ph name="ITEMS_COUNT" /> ഇനങ്ങൾ ഇല്ലാതാക്കും. പിന്നീട് നിങ്ങളുടെ വിവരങ്ങൾ വീണ്ടെടുക്കാൻ, <ph name="USER_EMAIL" /> എന്നയാളായി Chrome‌-ൽ സൈൻ ഇൻ ചെയ്യുക.</translation>
@@ -59,11 +60,14 @@
 <translation id="234869673307233423">Chrome-ന് നിങ്ങളുടെ പാസ്‌വേഡുകൾ പരിശോധിക്കാനാവുന്നില്ല. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="235650106824528204">ഈ പ്രൊഫൈലിന്റെ ഉപയോഗത്തിനിടയിൽ ഉണ്ടായ ഏത് Chrome ഡാറ്റയും (ബുക്ക്‌മാർക്കുകൾ, ചരിത്രം, പാസ്‌വേഡുകൾ, മറ്റ് ക്രമീകരണം എന്നിവ സൃഷ്ടിക്കൽ പോലുള്ളവ) ഔദ്യോഗിക പ്രൊഫൈൽ അഡ്മിന് നീക്കം ചെയ്യാനാകും. <ph name="LEARN_MORE" /></translation>
 <translation id="2429317896000329049">നിങ്ങളുടെ ഡൊമെയ്‌‌നിനായി സമന്വയം ലഭ്യമല്ലാത്തതിനാൽ Google Chrome-ന് നിങ്ങളുടെ ഡാറ്റ സമന്വയിപ്പിക്കാനായില്ല.</translation>
+<translation id="245659736593643560">Chrome OS സാധ്യമാക്കിയത് <ph name="BEGIN_LINK_LINUX_OSS" />Linux വികസന പരിതസ്ഥിതി (ബീറ്റ)<ph name="END_LINK_LINUX_OSS" /> പോലുള്ള അധിക <ph name="BEGIN_LINK_CROS_OSS" />ഓപ്പൺ സോഴ്‌സ് സോഫ്‌റ്റ്‌വെയർ<ph name="END_LINK_CROS_OSS" /> ഉപയോഗിച്ചാണ്.</translation>
 <translation id="2467438592969358367">നിങ്ങളുടെ പാസ്‌വേഡുകൾ എക്‌സ്‌പോർട്ട് ചെയ്യാൻ Google Chrome ആഗ്രഹിക്കുന്നു. ഇത് അനുവദിക്കാൻ നിങ്ങളുടെ Windows പാസ്‌വേഡ് നൽകുക.</translation>
 <translation id="2485422356828889247">അണ്‍‌ഇന്‍‌സ്റ്റാള്‍‌ ചെയ്യുക</translation>
 <translation id="2534507159460261402">Google Pay (Chrome-ലേക്ക് പകർത്തി)</translation>
+<translation id="2574930892358684005"><ph name="EXISTING_USER" /> ഇതിനകം ഈ Chrome പ്രൊഫൈലിലേക്ക് സൈൻ ഇൻ ചെയ്തിരിക്കുന്നു. നിങ്ങൾക്ക് ഒറ്റയ്ക്ക് ബ്രൗസ് ചെയ്യാൻ, Chrome-ന് നിങ്ങളുടെ സ്വന്തം പ്രൊഫൈൽ സൃഷ്‌ടിക്കാനാകും.</translation>
 <translation id="2580411288591421699">നിലവില്‍‌ പ്രവർത്തിക്കുന്ന Google Chrome പതിപ്പിന് സമാനമായത് ഇന്‍‌സ്റ്റാള്‍‌ ചെയ്യാന്‍‌ കഴിയില്ല. ദയവായി Google Chrome അടച്ചശേഷം വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="2586406160782125153">ഇത് ഈ ഉപകരണത്തിൽ നിന്ന് നിങ്ങളുടെ ബ്രൗസിംഗ് വിവരങ്ങൾ ഇല്ലാതാക്കും. പിന്നീട് വിവരങ്ങൾ വീണ്ടെടുക്കാൻ, <ph name="USER_EMAIL" /> എന്നയാളായി Chrome‌-ൽ സൈൻ ഇൻ ചെയ്യുക.</translation>
+<translation id="2588634262982826227">റീബൂട്ട് ചെയ്‌തതിന് ശേഷം, ഓരോ തവണയും ചോദിക്കാതെ തന്നെ നിങ്ങളുടെ ആപ്പുകളും പേജുകളും പുനഃസ്ഥാപിക്കാൻ Chrome OS-ന് കഴിയും.</translation>
 <translation id="2622559029861875898">Chrome-ന് അപ്‌ഡേറ്റുകൾക്കായി പരിശോധിക്കാനാവില്ല. നിങ്ങളുടെ ഇന്റർനെറ്റ് കണക്ഷൻ പരിശോധിക്കുക.</translation>
 <translation id="2644798301485385923">Chrome OS സിസ്‌റ്റം</translation>
 <translation id="2652691236519827073">പുതിയ Chrome &amp;ടാബിൽ ലിങ്ക് തുറക്കുക</translation>
@@ -75,26 +79,26 @@
 <translation id="2799223571221894425">വീണ്ടും സമാരംഭിക്കുക</translation>
 <translation id="2847461019998147611">ഈ ഭാഷയില്‍‌ Google Chrome പ്രദര്‍‌ശിപ്പിക്കുക</translation>
 <translation id="2857540653560290388">Chrome സമാരംഭിക്കുന്നു...</translation>
+<translation id="2857972467023607093">ഈ അക്കൗണ്ടുള്ള ഒരു Chrome പ്രൊഫൈൽ നിലവിലുണ്ട്</translation>
 <translation id="2871893339301912279">നിങ്ങൾ Chrome-ൽ സൈൻ ഇൻ ചെയ്‌തു!</translation>
 <translation id="2885378588091291677">ടാസ്‌ക് മാനേജര്‍</translation>
 <translation id="2888126860611144412">Chrome-നെ കുറിച്ച്</translation>
 <translation id="2926676257163822632">ദുർബലമായ പാസ്‌വേഡുകൾ ഊഹിക്കാൻ എളുപ്പമാണ്. <ph name="BEGIN_LINK" />നിങ്ങൾക്കായി ശക്തമായ പാസ്‌വേഡുകൾ സൃഷ്ടിക്കാനും ഓർമ്മിക്കാനും<ph name="END_LINK" /> Chrome-നെ അനുവദിക്കുക.</translation>
 <translation id="2929907241665500097">Chrome അപ്‌ഡേറ്റ് ചെയ്തില്ല, എന്തോ കുഴപ്പമുണ്ടായി. <ph name="BEGIN_LINK" />Chrome അപ്‌ഡേറ്റ് സംബന്ധിച്ച പ്രശ്നങ്ങളും പരാജയപ്പെട്ട അപ്ഡേറ്റുകളും പരിഹരിക്കുക.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - നെറ്റ്‌വർക്ക് സൈൻ ഇൻ - Chrome</translation>
-<translation id="298099161970687941">Chrome തുറക്കുമ്പോൾ ചോദിക്കുക</translation>
 <translation id="3037838751736561277">Google Chrome ഒരു പശ്ചാത്തല മോഡിലാണ്.</translation>
 <translation id="3059710691562604940">സുരക്ഷിത ബ്രൗസിംഗ് ഓഫാണ്. ഇത് ഓണാക്കാൻ Chrome നിർദ്ദേശിക്കുന്നു.</translation>
 <translation id="3065168410429928842">Chrome ടാബ്</translation>
 <translation id="3080151273017101988">Google Chrome അടച്ചാലും പശ്ചാത്തല ആപ്ലിക്കേഷനുകള്‍ പ്രവര്‍ത്തിപ്പിക്കുന്നത് തുടരുക</translation>
 <translation id="3089968997497233615">Google Chrome-ന്റെ പുതിയതും സുരക്ഷിതവുമായ പതിപ്പ് ലഭ്യമാണ്.</translation>
+<translation id="3100998948628680988">നിങ്ങളുടെ Chrome പ്രൊഫൈലിന് പേര് നൽകുക</translation>
 <translation id="3114643501466072395">ഡാറ്റാ ലംഘനങ്ങളിൽ നിന്നും മറ്റ് സുരക്ഷാ പ്രശ്‌നങ്ങളിൽ നിന്നും നിങ്ങളുടെ മറ്റ് പാസ്‌വേഡുകൾ സുരക്ഷിതമാണോ എന്ന് പരിശോധിക്കാൻ, <ph name="BEGIN_LINK" />Chrome-ൽ സൈൻ ഇൻ ചെയ്യുക<ph name="END_LINK" />.</translation>
-<translation id="3127818369811890733">Chrome OS-ന് നിങ്ങളുടെ ഡാറ്റ സമന്വയിപ്പിക്കാനായില്ല.</translation>
+<translation id="3140883423282498090">നിങ്ങളുടെ മാറ്റങ്ങൾ അടുത്ത തവണ Google Chrome വീണ്ടും ആരംഭിക്കുമ്പോൾ പ്രാബല്യത്തിൽ വരും.</translation>
 <translation id="3149510190863420837">Chrome അപ്ലിക്കേഷനുകൾ</translation>
 <translation id="3360895254066713204">Chrome സഹായി‌</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome ഇപ്പോൾ വീണ്ടും സമാരംഭിക്കും}=1{ഒരു സെക്കൻഡിൽ Chrome വീണ്ടും സമാരംഭിക്കും}other{# സെക്കൻഡിൽ Chrome വീണ്ടും സമാരംഭിക്കും}}</translation>
 <translation id="3395323229510056640">Chrome OS ഉപയോഗിക്കാനുള്ള സഹായം തേടുക</translation>
 <translation id="3396977131400919238">ഇന്‍സ്റ്റാള്‍ ചെയ്യുന്ന സമയത്ത് ഒരു ഓപ്പറേറ്റിംഗ് സിസ്റ്റം പിശക് സംഭവിച്ചു. ദയവായി Google Chrome വീണ്ടും ഡൗൺലോഡ് ചെയ്യുക.</translation>
-<translation id="3398288718845740432">Chrome മെനുവിൽ മറയ്‌ക്കുക</translation>
 <translation id="3434246496373299699">നിങ്ങളുടെ Google അക്കൗണ്ട് ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യുമ്പോൾ, Chrome-ന് നിങ്ങളുടെ പാസ്‌വേഡുകൾ പരിശോധിക്കാനാവും</translation>
 <translation id="3451115285585441894">Chrome-ലേക്ക് ചേർക്കുന്നു...</translation>
 <translation id="345171907106878721">Chrome-ലേക്ക് സ്വയം ചേരുക</translation>
@@ -110,6 +114,7 @@
 <translation id="3735758079232443276">നിങ്ങൾ Chrome ആരംഭിക്കുമ്പോൾ ദൃശ്യമാകുന്ന പേജിനെ "<ph name="EXTENSION_NAME" />" വിപുലീകരണം മാറ്റി.</translation>
 <translation id="3779473566290487688">ഭാവിയിലെ Google Chrome അപ്‌ഡേറ്റുകൾ ലഭിക്കാൻ, നിങ്ങൾക്ക് OS X 10.11 അല്ലെങ്കിൽ അതിനുശേഷമുള്ള പതിപ്പ് ആവശ്യമാണ്. ഈ കമ്പ്യൂട്ടർ OS X 10.10 ഉപയോഗിക്കുന്നു.</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
+<translation id="3835168907083856002">ഇത് <ph name="USER_EMAIL_ADDRESS" /> എന്ന അക്കൗണ്ടിനായി പുതിയൊരു Chrome പ്രൊഫൈൽ സൃഷ്ടിക്കും</translation>
 <translation id="386202838227397562">ദയവായി എല്ലാ Google Chrome വിന്‍‌ഡോകളും അടച്ച് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="3865754807470779944">Chrome പതിപ്പ് <ph name="PRODUCT_VERSION" /> ഇൻസ്റ്റാൾ ചെയ്തിരിക്കുന്നു</translation>
 <translation id="3873044882194371212">Chrome അദൃശ്യ വിൻഡോയിൽ ലിങ്ക് തുറക്കുക</translation>
@@ -117,7 +122,6 @@
 <translation id="4050175100176540509">ഏറ്റവും പുതിയ പതിപ്പിൽ പ്രധാനപ്പെട്ട സുരക്ഷാ മെച്ചപ്പെടുത്തലുകളും പുതിയ ഫീച്ചറുകളും ലഭ്യമാണ്.</translation>
 <translation id="4053720452172726777">Google Chrome ഇഷ്‌ടാനുസൃതമാക്കുക, നിയന്ത്രിക്കുക</translation>
 <translation id="4110895483821904099">നിങ്ങളുടെ പുതിയ Chrome പ്രൊഫൈൽ സജ്ജീകരിക്കുക</translation>
-<translation id="4143243756087420366">Chrome പേരും ചിത്രവും</translation>
 <translation id="4147555960264124640">നിങ്ങൾ ഒരു നിയന്ത്രിത അക്കൗണ്ട് ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്‌ത് അതിന്റെ അഡ്‌മിനിസ്‌ട്രേറ്റർക്ക് നിങ്ങളുടെ Google Chrome പ്രൊഫൈലിന്റെ നിയന്ത്രണം നൽകുന്നു. നിങ്ങളുടെ ആപ്പുകൾ, ബുക്ക്‌മാർക്കുകൾ, ചരിത്രം, പാസ്‌വേഡുകൾ, മറ്റ് ക്രമീകരണങ്ങൾ എന്നിവ പോലെയുള്ള Chrome ഡാറ്റ <ph name="USER_NAME" /> എന്നതുമായി ശാശ്വതമായി ബന്ധിപ്പിച്ചതായിത്തീരും. Google അക്കൗണ്ട്സ് ഡാഷ്‌ബോർഡ് വഴി നിങ്ങൾക്ക് ഈ ഡാറ്റ ഇല്ലാതാക്കാൻ കഴിയുമെങ്കിലും ഈ ഡാറ്റ മറ്റൊരു അക്കൗണ്ടുമായി ബന്ധപ്പെടുത്താനാകില്ല. <ph name="LEARN_MORE" /></translation>
 <translation id="4149882025268051530">ആര്‍ക്കൈവ് അണ്‍‌കം‌പ്രസ് ചെയ്യാന്‍ ഇന്‍സ്റ്റാളറിന് കഴിഞ്ഞില്ല. ദയവായി Google Chrome വീണ്ടും ഡൗൺലോഡ് ചെയ്യുക.</translation>
 <translation id="4191857738314598978">{0,plural, =1{ഒരു ദിവസത്തിനുള്ളിൽ Chrome വീണ്ടും സമാരംഭിക്കുക}other{# ദിവസത്തിനുള്ളിൽ Chrome വീണ്ടും സമാരംഭിക്കുക}}</translation>
@@ -142,10 +146,9 @@
 <translation id="4571503333518166079">Chrome അറിയിപ്പ് ക്രമീകരണത്തിലേക്ക് പോവുക</translation>
 <translation id="459622048091363950">Chrome-ന് ആക്‌സസ് ലഭിച്ചുകഴിഞ്ഞാൽ, വെബ്‌സൈറ്റുകൾക്ക് നിങ്ങളോട് ആക്‌സസ് ചോദിക്കാനാകും.</translation>
 <translation id="4600710005438004015">ഏറ്റവും പുതിയ പതിപ്പിലേക്ക് Chrome അപ്‌ഡേറ്റ് ചെയ്യാനായില്ല, അതിനാൽ പുതിയ ഫീച്ചറുകളും സുരക്ഷാ പരിഹാരങ്ങളും നിങ്ങൾക്ക് ലഭിക്കുന്നില്ല.</translation>
-<translation id="4631713731678262610">Chrome മെനുവിൽ മറയ്‌ക്കുക</translation>
 <translation id="4633000520311261472">Chrome സുരക്ഷിതമാക്കുന്നതിന്, <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> എന്നതിൽ ലിസ്റ്റുചെയ്യാത്ത ചില വിപുലീകരണങ്ങൾ ഞങ്ങൾ പ്രവർത്തനരഹിതമാക്കി, അവ നിങ്ങളുടെ അറിവില്ലാതെ ചേർത്തിരിക്കാനിടയുണ്ട്.</translation>
+<translation id="4666328473657283332">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും Chrome ഫയൽ ആക്സസ് ചെയ്യാൻ, സമന്വയിപ്പിക്കൽ ഓണാക്കുന്നതിന് സൈൻ ഇൻ ചെയ്യുക.</translation>
 <translation id="4728575227883772061">വ്യക്തമല്ലാത്ത പിശക് കാരണം ഇൻസ്റ്റലേഷൻ പരാജയപ്പെട്ടു. Google Chrome നിലവില്‍ പ്രവര്‍ത്തിക്കുകയാണെങ്കില്‍, ദയവായി അത് അടച്ചിട്ട് വീണ്ടും ശ്രമിക്കുക.</translation>
-<translation id="4750550185319565338"><ph name="PLUGIN_NAME" /> പ്രവർത്തനക്ഷമമാക്കാൻ Chrome റീസ്റ്റാർട്ട് ചെയ്യുക</translation>
 <translation id="4754614261631455953">Google Chrome കാനറി (mDNS-In)</translation>
 <translation id="4771048833395599659">ഈ ഫയൽ അപകടകരമാകാൻ ഇടയുള്ളതിനാൽ Chrome ഇതിനെ ബ്ലോക്കുചെയ്‌തു.</translation>
 <translation id="479167709087336770">Google തിരയലിൽ ഉപയോഗിക്കുന്ന അതേ സ്പെൽ ചെക്കർ ഇത് ഉപയോഗിക്കുന്നു. ബ്രൗസറിൽ നിങ്ങൾ ടൈപ്പ് ചെയ്യുന്ന ടെക്‌സ്‌റ്റ് Google-ന് അയയ്ക്കുന്നു. ക്രമീകരണത്തിൽ എപ്പോഴും ഈ രീതി മാറ്റാനാകും.</translation>
@@ -153,13 +156,17 @@
 <translation id="4895437082222824641">പുതിയ Chrome &amp;ടാബിൽ ലിങ്ക് തുറക്കുക</translation>
 <translation id="4953650215774548573">Google Chrome-നെ നിങ്ങളുടെ ഡിഫോൾട്ട് ബ്രൗസറായി സജ്ജീകരിക്കുക</translation>
 <translation id="495931528404527476">Chrome-ൽ</translation>
+<translation id="4970761609246024540">Chrome പ്രൊഫൈലുകളിലേക്ക് സ്വാഗതം</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5062123544085870375">Chrome OS പുനഃരാരംഭിക്കുക</translation>
 <translation id="5132929315877954718">Google Chrome-നായി മികച്ച അപ്ലിക്കേഷനുകളും വിപുലീകരണങ്ങളും തീമുകളും കണ്ടെത്തുക.</translation>
+<translation id="5139423532931106058">നിങ്ങളുടെ Chrome പ്രൊഫൈൽ ഇഷ്‌ടാനുസൃതമാക്കുക</translation>
+<translation id="5163087008893166964">Chrome-ലേക്ക് സ്വാഗതം; പുതിയ ബ്രൗസർ വിൻഡോ തുറന്നു</translation>
 <translation id="5170938038195470297">നിങ്ങളുടെ പ്രൊഫൈൽ Google Chrome-ന്റെ ഒരു പുതിയ പതിപ്പിൽ നിന്നായതിനാൽ ഉപയോഗിക്കാൻ കഴിയില്ല.
 
 ചില സവിശേഷതകൾ ലഭ്യമല്ലാതായിരിക്കാം. ദയവായി ഒരു വ്യത്യസ്തമായ പ്രൊഫൈൽ ഡയറക്ടറി വ്യക്തമാക്കുക അല്ലെങ്കിൽ Chrome-ന്റെ ഒരു പുതിയ പതിപ്പ് ഉപയോഗിക്കുക.</translation>
 <translation id="5193136243808726294">Google Chrome OS-ന് ഈ പേജ് തുറക്കാനാവില്ല.</translation>
+<translation id="521447420733633466">നിങ്ങളൊരു ഉപകരണം പങ്കിടുകയാണെങ്കിൽ, സുഹൃത്തുക്കൾക്കും കുടുബാംഗങ്ങൾക്കും വെവ്വേറെ ബ്രൗസ് ചെയ്യാനും അവർക്ക് താൽപ്പര്യമുള്ള തരത്തിൽ Chrome സജ്ജമാക്കാനുമാകും</translation>
 <translation id="5251420635869119124">അതിഥികൾക്ക് ഒന്നും ശേഷിപ്പിക്കാതെ തന്നെ Chrome ഉപയോഗിക്കാനാവും.</translation>
 <translation id="532046782124376502">മുന്നറിയിപ്പ്: നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രം റെക്കോർഡ് ചെയ്യുന്നതിൽ നിന്ന് വിപുലീകരണങ്ങളെ തടയാൻ Google Chrome-ന് കഴിയില്ല. അദൃശ്യ മോഡിൽ ഈ വിപുലീകരണം പ്രവർത്തനരഹിതമാക്കാൻ, ഈ ഓപ്‌ഷൻ തിരഞ്ഞെടുത്തത് മാറ്റുക.</translation>
 <translation id="5386244825306882791">നിങ്ങൾ Chrome ആരംഭിയ്ക്കുമ്പോഴോ ഓമ്‌നിബോക്‌സിൽ നിന്ന് തിരയുമ്പോഴോ ദൃശ്യമാകുന്ന പേജും അത് നിയന്ത്രിയ്ക്കുന്നു.</translation>
@@ -167,10 +174,9 @@
 <translation id="5430073640787465221">നിങ്ങളുടെ മുൻഗണനാ ഫയൽ കേടായതാണ് അല്ലെങ്കിൽ അസാധുവാണ്.
 
 നിങ്ങളുടെ ക്രമീകരണം വീണ്ടെടുക്കാൻ Google Chrome-ന് കഴിയില്ല.</translation>
+<translation id="5434383153637353914">നിങ്ങളുടെ സൈൻ ഇൻ ചെയ്‌ത Google അക്കൗണ്ടുകൾ മാനേജ് ചെയ്യാൻ ഈ പേജ് നിങ്ങളെ അനുവദിക്കുന്നു. ഈ അക്കൗണ്ടുകൾ Chrome ബ്രൗസറിലും Play സ്റ്റോർ ആപ്പുകളിലും Gmail, Drive, YouTube പോലുള്ള സേവനങ്ങളിലും ലഭ്യമാകും. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="556024056938947818">Google Chrome പാസ്‌വേഡുകൾ ദൃശ്യമാക്കാൻ ശ്രമിക്കുന്നു.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
-<translation id="5655746611259367388"><ph name="USER_NAME" /> എന്നയാൾക്കായി ചേർത്ത ഇതും മറ്റ് Google അക്കൗണ്ടുകളും നിങ്ങൾക്ക് <ph name="LINK_BEGIN" />ക്രമീകരണത്തിൽ<ph name="LINK_END" /> ഒരിടത്ത് നിന്ന് മാനേജ് ചെയ്യാം.
-          Chrome ബ്രൗസറിലെ വെബ്‌സൈറ്റുകൾക്കും Google Play-യിൽ നിന്നുള്ള ആപ്പുകൾക്കും നിങ്ങൾ നൽകിയ അനുമതികൾ എല്ലാ അക്കൗണ്ടുകൾക്കും ബാധകമായേക്കാം.</translation>
 <translation id="5657226924540934362">ഈ പേജിൽ ക്രമീകരണം കാണിക്കുന്നില്ലെങ്കിൽ, <ph name="LINK_BEGIN" />
       Chrome OS ക്രമീകരണത്തിൽ<ph name="LINK_END" /> പരിശോധിക്കുക</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> അപകടകരമാകാൻ ഇടയുള്ളതിനാൽ, Chrome ഇതിനെ ബ്ലോക്കുചെയ്‌തു.</translation>
@@ -179,6 +185,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome ഒരു സെക്കൻഡിൽ പുനഃരാരംഭിക്കും}other{Google Chrome # സെക്കൻഡിൽ പുനഃരാരംഭിക്കും}}</translation>
 <translation id="573759479754913123">Chrome OS-നെക്കുറിച്ച്</translation>
+<translation id="5756509061973259733">ഈ അക്കൗണ്ടുള്ള Chrome പ്രൊഫൈൽ ഈ ഉപകരണത്തിൽ നിലവിലുണ്ട്</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome ലോഞ്ച് ചെയ്യാനായില്ല. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="5867197326698922595">പാസ്‌വേഡുകൾ Google Chrome എഡിറ്റ് ചെയ്യാൻ ശ്രമിക്കുന്നു.</translation>
@@ -197,12 +204,14 @@
 <translation id="6291549208091401781">നിങ്ങളുടെ കമ്പ്യൂട്ടറിലെ എല്ലാ ഉപയോക്താക്കൾക്കുമായി Google Chrome നിലവിൽ ഇൻസ്റ്റാൾ ചെയ്‌തിരിക്കുന്നു.</translation>
 <translation id="6338556085225130112">Google Chrome അപ്‌ഡേറ്റുചെയ്യുന്നു</translation>
 <translation id="6368958679917195344">അനുബന്ധ <ph name="BEGIN_LINK_CROS_OSS" />ഓപ്പണ്‍ ഉറവിട സോഫ്റ്റ്‍‌വെയർ<ph name="END_LINK_CROS_OSS" /> ഉപയോഗിച്ചാണ് Chrome OS നിര്‍മ്മിച്ചിരിക്കുന്നത്.</translation>
+<translation id="6418662306461808273">നിലവിലുള്ള Chrome പ്രൊഫൈലിലേക്ക് മാറണോ?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6566149418543181476">Google Chrome അപ്‌ഡേറ്റുചെയ്യുന്നു, (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome OS സിസ്‌റ്റം</translation>
 <translation id="6650333065969705433">പരിരക്ഷിത മീഡിയ പ്ലേ ചെയ്യുന്നതിന് Rosetta ഉപയോഗിക്കാൻ Chrome റീസ്‌റ്റാർട്ട് ചെയ്‌തിരിക്കണം.</translation>
 <translation id="6676384891291319759">ഇന്റര്‍‌നെറ്റ് ആക്‌സസ് ചെയ്യുക</translation>
 <translation id="6679975945624592337">പശ്ചാത്തലത്തില്‍ Google Chrome പ്രവര്‍ത്തിക്കാന്‍ അനുവദിക്കുക</translation>
+<translation id="6739177684496155661">പുതിയ Chrome പ്രൊഫൈലിൽ തുടരണോ?</translation>
 <translation id="6750954913813541382">അക്ഷരത്തെറ്റുകൾ പരിഹരിക്കാൻ നിങ്ങൾ ബ്രൗസറിൽ ടൈപ്പ് ചെയ്യുന്ന ടെക്‌സ്‌റ്റ് Chrome Google ലേക്ക് അയയ്ക്കുന്നു</translation>
 <translation id="6755885556185485672">Chrome OS ശരിയായി ഷട്ട്‌ഡൗൺ ചെയ്‌തിട്ടില്ല.</translation>
 <translation id="677276454032249905">എന്തായാലും Chrome-ൽ നിന്ന് പുറത്തുകടക്കണോ?</translation>
@@ -211,7 +220,6 @@
 <translation id="6943584222992551122">ഈ ഉപകരണത്തിൽ നിന്ന് ഈ വ്യക്തിയുടെ ബ്രൗസിംഗ് ഡാറ്റ ഇല്ലാതാകും. ഡാറ്റ വീണ്ടെടുക്കാൻ, Chromium-ത്തിലേക്ക് <ph name="USER_EMAIL" /> ആയി സൈൻ ഇൻ ചെയ്യുക.</translation>
 <translation id="6967962315388095737">mDNS ട്രാഫിക് അനുവദിക്കുന്നതിന് Google Chrome ബീറ്റയ്ക്ക് വേണ്ടിയുള്ള ഇൻബൗണ്ട് റൂൾ.</translation>
 <translation id="6989339256997917931">Google Chrome അപ്ഡേറ്റുചെയ്തു, പക്ഷേ 30 ദിവസം പോലും നിങ്ങള്‍ ഇത് ഉപയോഗിച്ചിട്ടില്ല.</translation>
-<translation id="7054640471403081847">ഈ കമ്പ്യൂട്ടറിന്റെ ഹാർഡ്‌വെയർ ഇപ്പോൾ പിന്തുണയ്‌ക്കാത്തതിനാൽ, അത് Google Chrome അപ്‌ഡേറ്റുകൾ സ്വീകരിക്കുന്നത് അവസാനിപ്പിക്കും.</translation>
 <translation id="7062128746136194023">നിങ്ങളുടെ രക്ഷിതാവ് Chrome-നുള്ള "സൈറ്റുകൾക്കും ആപ്പുകൾക്കും വിപുലീകരണങ്ങൾക്കുമുള്ള അനുമതികൾ" ഓഫാക്കി. ഈ <ph name="EXTENSION_TYPE_PARAMETER" /> ചേർക്കുന്നത് അനുവദനീയമല്ല.</translation>
 <translation id="7098166902387133879">Google Chrome നിങ്ങളുടെ മൈക്രോഫോൺ ഉപയോഗിക്കുന്നു.</translation>
 <translation id="7106741999175697885">ടാസ്ക് മാനേജര്‍ - Google Chrome</translation>
@@ -220,12 +228,12 @@
 <translation id="7242029209006116544">നിങ്ങൾ ഒരു നിയന്ത്രിത അക്കൗണ്ട് ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്‌ത് അതിന്റെ അഡ്‌മിന് നിങ്ങളുടെ Google Chrome പ്രൊഫൈലിന്റെ നിയന്ത്രണം നൽകുന്നു. നിങ്ങളുടെ ആപ്പുകൾ, ബുക്ക്‌മാർക്കുകൾ, ചരിത്രം, പാസ്‌വേഡുകൾ, മറ്റ് ക്രമീകരണങ്ങൾ എന്നിവ പോലെയുള്ള Chrome ഡാറ്റ <ph name="USER_NAME" /> എന്നതുമായി ശാശ്വതമായി ബന്ധിപ്പിച്ചതായിത്തീരും. Google അക്കൗണ്ട്സ് ഡാഷ്‌ബോർഡ് വഴി നിങ്ങൾക്ക് ഈ ഡാറ്റ ഇല്ലാതാക്കാൻ കഴിയുമെങ്കിലും ഈ ഡാറ്റ മറ്റൊരു അക്കൗണ്ടുമായി ബന്ധപ്പെടുത്താനാകില്ല. നിങ്ങളുടെ നിലവിലെ Chrome ഡാറ്റ പ്രത്യേകമായി സൂക്ഷിക്കുന്നതിന് നിങ്ങൾക്ക് ഒരു പുതിയ പ്രൊഫൈൽ ഓപ്‌ഷണലായി സൃഷ്‌ടിക്കാനാകും. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Google Chrome UI പ്രദര്‍ശിപ്പിക്കാൻ ഈ ഭാഷ ഉപയോഗിക്കുന്നു</translation>
 <translation id="7296210096911315575">പ്രധാനപ്പെട്ട ഉപയോഗ, സുരക്ഷാ വിവരങ്ങൾ</translation>
+<translation id="7303916856901595720">പുതിയ Chrome പ്രൊഫൈലിലേക്ക് അക്കൗണ്ട് നീക്കണോ?</translation>
 <translation id="7308322188646931570">ഫയലുകൾ ഡൗൺലോഡ് ചെയ്യാൻ Chrome-ന് സ്റ്റോറേജ് ആക്‌സസ് ആവശ്യമാണ്</translation>
 <translation id="7339898014177206373">പുതിയ വിന്‍ഡോ</translation>
 <translation id="7398801000654795464">നിങ്ങൾ Chrome-ൽ <ph name="USER_EMAIL_ADDRESS" /> എന്നായി സൈൻ ഇൻ ചെയ്‌തു. വീണ്ടും സൈൻ ഇൻ ചെയ്യുന്നതിന് സമാന അക്കൗണ്ട് ഉപയോഗിക്കുക.</translation>
 <translation id="7408085963519505752">Chrome OS നിബന്ധനകൾ</translation>
 <translation id="7419046106786626209">നിങ്ങളുടെ ഡൊമെയ്‌‌നിനായി സമന്വയം ലഭ്യമല്ലാത്തതിനാൽ Chrome OS-ന് നിങ്ങളുടെ ഡാറ്റ സമന്വയിപ്പിക്കാനായില്ല.</translation>
-<translation id="7423733001651488593">ഇത് ഈ ഉപകരണത്തിൽ നിന്ന് നിങ്ങളുടെ ബ്രൗസിംഗ് ഡാറ്റ ശാശ്വതമായി ഇല്ലാതാക്കും. ഡാറ്റ വീണ്ടെടുക്കാൻ, ഇനിപ്പറയുന്ന ഇമെയിൽ ഐഡി ഉപയോഗിച്ച് Chrome-ൽ സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="7486227612705979895">വിലാസ ബാറിൽ നിർദ്ദേശങ്ങൾ സൃഷ്‌ടിക്കാൻ, Chrome നിങ്ങളുടെ ഡ്രൈവ് ആക്‌സ‌സ് ചെയ്യും</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">നിങ്ങളുടെ ഉപകരണം അപ് ടു ഡേറ്റ് ആണോയെന്ന് കാണാൻ <ph name="LINK_BEGIN" />Chrome OS ക്രമീകരണത്തിലേക്ക്<ph name="LINK_END" /> പോവുക</translation>
@@ -271,9 +279,9 @@
 <translation id="8641606876632989680">അപഹരിക്കപ്പെട്ട പാസ്‌വേഡ് ഉപയോഗിച്ച് നിങ്ങൾ സൈൻ ഇൻ ചെയ്യുമ്പോൾ Chrome നിങ്ങളെ അറിയിക്കും</translation>
 <translation id="8669527147644353129">Google Chrome സഹായി</translation>
 <translation id="8679801911857917785">നിങ്ങൾ Chrome ആരംഭിയ്ക്കുമ്പോൾ ഏത് പേജാണ് കാണിക്കേണ്ടതെന്നും അത് നിയന്ത്രിയ്ക്കുന്നു.</translation>
+<translation id="8686817260976772516">Chrome പ്രൊഫൈലുകൾ ഉപയോഗിച്ച് നിങ്ങളുടെ എല്ലാ Chrome ഉള്ളടക്കവും വേർതിരിക്കാം. സുഹൃത്തുക്കൾക്കും കുടുംബത്തിനും വ്യത്യസ്‌ത പ്രൊഫൈലുകൾ സൃഷ്‌ടിക്കൂ അല്ലെങ്കിൽ ജോലികാര്യങ്ങളും വിനോദവും പ്രത്യേകമായി തരംതിരിക്കൂ.</translation>
 <translation id="870251953148363156">&amp;Google Chrome അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="873133009373065397">Google Chrome-ന് ഡിഫോൾട്ട് ബ്രൗസർ നിർണ്ണയിക്കാനോ സജ്ജമാക്കാനോ കഴിയില്ല</translation>
-<translation id="8748242232968346981">Chrome-ൽ നിങ്ങളുടെ സ്വന്തം പ്രൊഫൈൽ സൃഷ്‌ടിക്കണോ?</translation>
 <translation id="8823341990149967727">Chrome കാലഹരണപ്പെട്ടതാണ്</translation>
 <translation id="8834965163890861871">പാസ്‌വേഡുകൾ എഡിറ്റ് ചെയ്യാൻ Google Chrome ശ്രമിക്കുന്നു. ഇത് അനുവദിക്കാൻ നിങ്ങളുടെ Windows പാസ്‌വേഡ് ടൈപ്പ് ചെയ്യുക.</translation>
 <translation id="884296878221830158">നിങ്ങൾ Chrome ആരംഭിക്കുമ്പോഴോ ഹോം ബട്ടൺ ക്ലിക്ക് ചെയ്യുമ്പോഴോ ഏത് പേജാണ് കാണിക്കേണ്ടതെന്നും അത് നിയന്ത്രിയ്ക്കുന്നു.</translation>
@@ -288,5 +296,6 @@
 <translation id="911206726377975832">നിങ്ങളുടെ ബ്രൗസിംഗ് ഡാറ്റയും ഇതോടൊപ്പം ഇല്ലാതാക്കണോ?</translation>
 <translation id="9138603949443464873">നിങ്ങളുടെ മാറ്റങ്ങൾ ബാധകമാക്കാൻ Chrome വീണ്ടും സമാരംഭിക്കുക</translation>
 <translation id="919706545465235479">സമന്വയിപ്പിക്കാൻ തുടങ്ങുന്നതിന് Chrome അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
+<translation id="940313311831216333">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും Chrome ഫയൽ ആക്സസ് ചെയ്യാൻ, സൈൻ ഇൻ ചെയ്ത ശേഷം സമന്വയിപ്പിക്കൽ ഓണാക്കുക.</translation>
 <translation id="989369509083708165">Google Chrome നിങ്ങളുടെ ഡിഫോൾട്ട് ബ്രൗസറാണ്</translation>
 </translationbundle>

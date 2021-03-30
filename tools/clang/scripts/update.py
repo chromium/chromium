@@ -38,12 +38,11 @@ import zipfile
 # https://chromium.googlesource.com/chromium/src/+/master/docs/updating_clang.md
 # Reverting problematic clang rolls is safe, though.
 # This is the output of `git describe` and is usable as a commit-ish.
-CLANG_REVISION = 'llvmorg-12-init-12923-g6ee22ca6'
+CLANG_REVISION = 'llvmorg-13-init-4720-g7bafe336'
 CLANG_SUB_REVISION = 1
 
 PACKAGE_VERSION = '%s-%s' % (CLANG_REVISION, CLANG_SUB_REVISION)
-RELEASE_VERSION = '12.0.0'
-
+RELEASE_VERSION = '13.0.0'
 
 CDS_URL = os.environ.get('CDS_CLANG_BUCKET_OVERRIDE',
     'https://commondatastorage.googleapis.com/chromium-browser-clang')
@@ -303,8 +302,6 @@ def main():
       help='Which host OS to download for (default: %s)' % default_host_os,
       default=default_host_os,
       choices=('linux', 'mac', 'win'))
-  parser.add_argument('--force-local-build', action='store_true',
-                      help='(no longer used)')
   parser.add_argument('--print-revision', action='store_true',
                       help='Print current clang revision and exit.')
   parser.add_argument('--llvm-force-head-revision', action='store_true',
@@ -315,11 +312,6 @@ def main():
   parser.add_argument('--verify-version',
                       help='Verify that clang has the passed-in version.')
   args = parser.parse_args()
-
-  if args.force_local_build:
-    print(('update.py --force-local-build is no longer used to build clang; '
-           'use build.py instead.'))
-    return 1
 
   if args.verify_version and args.verify_version != RELEASE_VERSION:
     print('RELEASE_VERSION is %s but --verify-version argument was %s.' % (

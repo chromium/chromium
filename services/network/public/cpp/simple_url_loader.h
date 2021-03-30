@@ -376,6 +376,9 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoader {
   // occurred.
   virtual int64_t GetContentSize() const = 0;
 
+  // Returns the number of times retry has been attempted.
+  virtual int GetNumRetries() const = 0;
+
  protected:
   SimpleURLLoader();
 

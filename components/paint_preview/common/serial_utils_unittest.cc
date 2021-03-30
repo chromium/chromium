@@ -146,9 +146,9 @@ TEST(PaintPreviewSerialUtils, TestImageContextLimitBudget) {
   canvas1.drawRect(SkRect::MakeWH(1, 4), paint);
   SkPictureRecorder recorder;
   SkCanvas* canvas = recorder.beginRecording(SkRect::MakeWH(40, 40));
-  canvas->drawBitmap(bitmap1, 0, 0);
-  canvas->drawBitmap(bitmap1, 0, 0);
-  canvas->drawBitmap(bitmap1, 0, 0);
+  canvas->drawImage(bitmap1.asImage(), 0, 0);
+  canvas->drawImage(bitmap1.asImage(), 0, 0);
+  canvas->drawImage(bitmap1.asImage(), 0, 0);
   auto pic = recorder.finishRecordingAsPicture();
 
   PictureSerializationContext picture_ctx;
@@ -194,8 +194,8 @@ TEST(PaintPreviewSerialUtils, TestImageContextLimitSize) {
   canvas2.drawRect(SkRect::MakeWH(20, 5), paint);
   SkPictureRecorder recorder;
   SkCanvas* canvas = recorder.beginRecording(SkRect::MakeWH(40, 40));
-  canvas->drawBitmap(bitmap1, 0, 0);
-  canvas->drawBitmap(bitmap2, 0, 0);
+  canvas->drawImage(bitmap1.asImage(), 0, 0);
+  canvas->drawImage(bitmap2.asImage(), 0, 0);
   auto pic = recorder.finishRecordingAsPicture();
 
   PictureSerializationContext picture_ctx;

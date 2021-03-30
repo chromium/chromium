@@ -70,6 +70,7 @@ class VR_EXPORT VRBrowserRendererThreadWin {
   };
 
   void OnPose(int request_id, device::mojom::XRRenderInfoPtr data);
+  bool PreRender();
   void SubmitResult(bool success);
   void SubmitFrame(int16_t frame_id);
   void StartOverlay();

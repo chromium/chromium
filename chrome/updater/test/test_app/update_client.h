@@ -11,7 +11,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string16.h"
 #include "chrome/updater/test/test_app/constants.h"
 #include "chrome/updater/update_service.h"
 
@@ -29,7 +28,7 @@ class UpdateClient : public base::RefCountedThreadSafe<UpdateClient> {
                                    bool rollback,
                                    const std::string& version,
                                    int64_t update_size,
-                                   const base::string16& message)>;
+                                   const std::u16string& message)>;
 
   static scoped_refptr<UpdateClient> Create();
 

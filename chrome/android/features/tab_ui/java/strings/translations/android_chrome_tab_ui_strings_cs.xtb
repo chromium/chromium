@@ -4,10 +4,13 @@
 <translation id="1075622780330595106">Tento počet vašich karet v poslední době nebyl použit: <ph name="NUMBER_OF_TABS" />. Chcete je zavřít?</translation>
 <translation id="1181037720776840403">Odebrat</translation>
 <translation id="125153950246128346">Další kartu zobrazíte klepnutím</translation>
+<translation id="1302104331113804646">Nastavení sledování cen</translation>
+<translation id="1378979118429748177">Dostávejte upozornění na pokles ceny</translation>
 <translation id="1657719826150349398">Přesunout kartu dolů</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> karta}few{<ph name="TABS_COUNT_MANY" /> karty}many{<ph name="TABS_COUNT_MANY" /> karty}other{<ph name="TABS_COUNT_MANY" /> karet}}</translation>
 <translation id="2277224997687551299">Upravit název skupiny</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Odstranit ze skupiny <ph name="TABS_COUNT_ONE" /> vybranou kartu.}few{Odstranit ze skupiny <ph name="TABS_COUNT_MANY" /> vybrané karty.}many{Odstranit ze skupiny <ph name="TABS_COUNT_MANY" /> vybrané karty.}other{Odstranit ze skupiny <ph name="TABS_COUNT_MANY" /> vybraných karet.}}</translation>
+<translation id="2479148705183875116">Přejít do Nastavení</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Sbalit <ph name="TABS_COUNT_ONE" /> kartu.}few{Sbalit skupinu karet se <ph name="TABS_COUNT_MANY" /> kartami.}many{Sbalit skupinu karet s <ph name="TABS_COUNT_MANY" /> karty.}other{Sbalit skupinu karet s <ph name="TABS_COUNT_MANY" /> kartami.}}</translation>
 <translation id="2569352796411618312">Tento počet vašich karet v poslední době nebyl použit: <ph name="NUMBER_OF_TABS" />. Chcete je zavřít?</translation>
 <translation id="257674075312929031">Skupina</translation>
@@ -15,13 +18,16 @@
 <translation id="2671423594960767771">Sdílet skupinu</translation>
 <translation id="2759453070259087442">Rozbalit skupinu karet <ph name="TITLE_OF_GROUP" /> s <ph name="NUMBER_OF_TABS" /> kartami.</translation>
 <translation id="2977480621796371840">Odebrat ze skupiny</translation>
+<translation id="3291470810748040983">Když bude na otevřené kartě nižší cena, dostanete upozornění</translation>
 <translation id="3328308545011660196">Návrh: Některé karty (<ph name="NUMBER_OF_TABS" />) spolu pravděpodobně souvisejí. Chcete je seskupit?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Sbalit <ph name="TABS_COUNT_ONE" /> kartu.}few{Sbalit skupinu karet <ph name="TITLE_OF_GROUP" /> se <ph name="TABS_COUNT_MANY" /> kartami.}many{Sbalit skupinu karet <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> karty.}other{Sbalit skupinu karet <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> kartami.}}</translation>
+<translation id="3882834874697329510">Pokud chcete dostat upozornění, když bude na otevřené kartě nižší cena, v Nastavení zapněte oznámení.</translation>
+<translation id="3940195383040445971">Sledovat ceny na kartách</translation>
+<translation id="3996880007329611795">Zasílat oznámení</translation>
 <translation id="4133493477912226187">Některé karty (<ph name="NUMBER_OF_TABS" />) spolu pravděpodobně souvisejí. Chcete je seskupit?</translation>
 <translation id="4212246570487010370">Pokračovat v prohlížení</translation>
 <translation id="4450893287417543264">Tuto zprávu již nezobrazovat</translation>
 <translation id="4648718555153979859">Zde jsou seskupeny vaše karty</translation>
-<translation id="4922064041913095674">Podívejte se, která položka na otevřených kartách má lepší cenu</translation>
 <translation id="492284538114688557">Byla zjištěna nižší cena</translation>
 <translation id="5007392906805964215">Zkontrolovat</translation>
 <translation id="5073204694187207510">Skrýt celoobrazovkovou mřížku</translation>
@@ -30,6 +36,7 @@
 <translation id="5533021382642990449">Zobrazit později</translation>
 <translation id="5558362125926932819">Zavřít skupinu karet s <ph name="NUMBER_OF_TABS" /> kartami</translation>
 <translation id="5580090775658607195">Seskupené karty: <ph name="TAB_COUNT" /></translation>
+<translation id="575494663145460764">Chcete dostávat upozornění na pokles ceny?</translation>
 <translation id="58326064309361797">Přetažením můžete karty uspořádat do skupin</translation>
 <translation id="5846292395804797011">Zavřít skupinu <ph name="TITLE_OF_GROUP" /> s tímto počtem karet: <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="6040143037577758943">Zavřít</translation>
@@ -41,6 +48,7 @@
 <translation id="6856809498882026482">Skrýt režim výběru několika položek</translation>
 <translation id="7151209024774799310">Odstranit karty ze skupiny</translation>
 <translation id="7204204600596740190">Režim vícenásobného výběru</translation>
+<translation id="7352298686197644113">Podívejte se, která položka na otevřených kartách má nižší cenu</translation>
 <translation id="753732157349120914">Přepínač karet</translation>
 <translation id="7559245342362162951">Zobrazit karty skupiny v mřížce na celou obrazovku</translation>
 <translation id="7792771145871471484">Zkontrolovat návrhy.</translation>
@@ -52,7 +60,10 @@
 <translation id="8304833501377495048">Tuto lištu karet už nezobrazovat?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Zavřít <ph name="TABS_COUNT_ONE" /> vybranou kartu}few{Zavřít <ph name="TABS_COUNT_MANY" /> vybrané karty}many{Zavřít <ph name="TABS_COUNT_MANY" /> vybrané karty}other{Zavřít <ph name="TABS_COUNT_MANY" /> vybraných karet}}</translation>
 <translation id="8557923272772633250">Rozbalit skupinu karet s <ph name="NUMBER_OF_TABS" /> kartami.</translation>
+<translation id="860282621117673749">Upozornění na pokles ceny</translation>
+<translation id="8714939927607906138">Nižší cena</translation>
 <translation id="8749939518995770034">Lišta karet byla zavřena</translation>
+<translation id="8820741577754260431">Zobrazit pokles ceny na kartách</translation>
 <translation id="9150694013019234766">Ve skupině karet v dolní části obrazovky můžete přepínat mezi kartami</translation>
 <translation id="9169594135889675189">Přidat do skupiny novou kartu</translation>
 <translation id="959682366969460160">Uspořádejte si položky</translation>

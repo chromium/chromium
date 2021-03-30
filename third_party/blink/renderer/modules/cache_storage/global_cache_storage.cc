@@ -35,8 +35,8 @@ class GlobalCacheStorageImpl final
     return *supplement;
   }
 
-  GlobalCacheStorageImpl() = default;
-  ~GlobalCacheStorageImpl() {}
+  GlobalCacheStorageImpl() : Supplement<T>(nullptr) {}
+  ~GlobalCacheStorageImpl() = default;
 
   CacheStorage* Caches(T& fetching_scope, ExceptionState& exception_state) {
     ExecutionContext* context = fetching_scope.GetExecutionContext();

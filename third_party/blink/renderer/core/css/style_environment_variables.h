@@ -49,6 +49,16 @@ enum class UADefinedVariable {
   kFoldLeft,
   kFoldWidth,
   kFoldHeight,
+
+  // The title bar area variables are four environment variables that define a
+  // rectangle by its x and y position as well as its width and height. They are
+  // intended for desktop PWAs that use the window controls overlay.
+  // Explainer:
+  // https://github.com/WICG/window-controls-overlay/blob/main/explainer.md
+  kTitlebarAreaX,
+  kTitlebarAreaY,
+  kTitlebarAreaWidth,
+  kTitlebarAreaHeight
 };
 
 // StyleEnvironmentVariables stores user agent and user defined CSS environment

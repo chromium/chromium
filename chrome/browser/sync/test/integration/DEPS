@@ -1,0 +1,9 @@
+include_rules = [
+  "+ash/components/account_manager",
+]
+
+specific_include_rules = {
+  "two_client_web_apps_integration_sync_test.cc": [
+    "+chrome/browser/ui/views",
+  ]
+}

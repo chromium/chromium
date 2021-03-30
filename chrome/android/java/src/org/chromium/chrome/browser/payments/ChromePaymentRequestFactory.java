@@ -19,12 +19,10 @@ import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.PaymentRequestServiceUtil;
 import org.chromium.components.payments.SslValidityChecker;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.FeaturePolicyFeature;
+import org.chromium.content_public.browser.PermissionsPolicyFeature;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsStatics;
-import org.chromium.mojo.system.MojoException;
-import org.chromium.mojo.system.MojoResult;
 import org.chromium.payments.mojom.PaymentRequest;
 import org.chromium.services.service_manager.InterfaceFactory;
 
@@ -144,9 +142,8 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequ
     @Override
     public PaymentRequest createImpl() {
         if (mRenderFrameHost == null) return new InvalidPaymentRequest();
-        if (!mRenderFrameHost.isFeatureEnabled(FeaturePolicyFeature.PAYMENT)) {
-            mRenderFrameHost.getRemoteInterfaces().onConnectionError(
-                    new MojoException(MojoResult.PERMISSION_DENIED));
+        if (!mRenderFrameHost.isFeatureEnabled(PermissionsPolicyFeature.PAYMENT)) {
+            mRenderFrameHost.terminateRendererDueToBadMessage(241 /*PAYMENTS_WITHOUT_PERMISSION*/);
             return null;
         }
 

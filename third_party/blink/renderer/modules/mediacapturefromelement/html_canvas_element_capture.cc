@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/modules/mediacapturefromelement/canvas_capture_media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace {
 const double kDefaultFrameRate = 60.0;
@@ -56,7 +57,7 @@ MediaStream* HTMLCanvasElementCapture::captureStream(
 
   LocalFrame* frame = ToLocalFrameIfNotDetached(script_state->GetContext());
   MediaStreamComponent* component = nullptr;
-  const WebSize size(element.width(), element.height());
+  const gfx::Size size(element.width(), element.height());
   std::unique_ptr<CanvasCaptureHandler> handler;
   if (given_frame_rate) {
     handler = CanvasCaptureHandler::CreateCanvasCaptureHandler(

@@ -244,6 +244,13 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceBlueZ
                       const std::string& error_name,
                       const std::string& error_message);
 
+// Once DisconnectLE is supported on Linux, this buildflag will not be necessary
+// (this bluez code is only run on Chrome OS and Linux).
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void OnDisconnectLEError(const std::string& error_name,
+                           const std::string& error_message);
+#endif
+
   // Called by dbus:: on completion of the D-Bus method call to pair the device,
   // made inside |Connect()|.
   void OnPairDuringConnect(base::OnceClosure callback,

@@ -60,11 +60,9 @@ class CupsProxyServiceDelegateImpl
 
  private:
   // Conducts SetupPrinter call on UI thread.
-  void SetupPrinterOnThread(const Printer& printer,
-                            scoped_refptr<base::SequencedTaskRunner> cb_runner,
-                            cups_proxy::SetupPrinterCallback cb);
-  void OnSetupPrinter(scoped_refptr<base::SequencedTaskRunner> cb_runner,
-                      cups_proxy::SetupPrinterCallback cb,
+  void SetupPrinterOnUIThread(const Printer& printer,
+                              cups_proxy::SetupPrinterCallback cb);
+  void OnSetupPrinter(cups_proxy::SetupPrinterCallback cb,
                       PrinterSetupResult result);
 
   // Current/active Profile. Not owned.

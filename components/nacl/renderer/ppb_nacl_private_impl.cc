@@ -48,6 +48,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/pepper_plugin_instance.h"
+#include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/render_view.h"
 #include "content/public/renderer/renderer_ppapi_host.h"
@@ -190,6 +191,19 @@ int GetRoutingID(PP_Instance instance) {
   if (!host)
     return 0;
   return host->GetRoutingIDForWidget(instance);
+}
+
+int GetFrameRoutingID(PP_Instance instance) {
+  // Check that we are on the main renderer thread.
+  DCHECK(content::RenderThread::Get());
+  content::RendererPpapiHost* host =
+      content::RendererPpapiHost::GetForPPInstance(instance);
+  if (!host)
+    return 0;
+  auto* render_frame = host->GetRenderFrameForInstance(instance);
+  if (!render_frame)
+    return 0;
+  return render_frame->GetRoutingID();
 }
 
 // Returns whether the channel_handle is valid or not.
@@ -462,18 +476,12 @@ void PPBNaClPrivate::LaunchSelLdr(
   std::string error_message_string;
   NaClLaunchResult launch_result;
   if (!sender->Send(new NaClHostMsg_LaunchNaCl(
-          NaClLaunchParams(
-              instance_info.url.spec(),
-              nexe_for_transit,
-              nexe_file_info->token_lo,
-              nexe_file_info->token_hi,
-              resource_prefetch_request_list,
-              routing_id,
-              perm_bits,
-              PP_ToBool(uses_nonsfi_mode),
-              process_type),
-          &launch_result,
-          &error_message_string))) {
+          NaClLaunchParams(instance_info.url.spec(), nexe_for_transit,
+                           nexe_file_info->token_lo, nexe_file_info->token_hi,
+                           resource_prefetch_request_list, routing_id,
+                           GetFrameRoutingID(instance), perm_bits,
+                           PP_ToBool(uses_nonsfi_mode), process_type),
+          &launch_result, &error_message_string))) {
     ppapi::PpapiGlobals::Get()->GetMainThreadMessageLoop()->PostTask(
         FROM_HERE, base::BindOnce(callback.func, callback.user_data,
                                   static_cast<int32_t>(PP_ERROR_FAILED)));
@@ -612,13 +620,13 @@ std::string PnaclComponentURLToFilename(const std::string& url) {
                           base::CompareCase::SENSITIVE));
   std::string r = url.substr(std::string(kPNaClTranslatorBaseUrl).length());
 
-  // Use white-listed-chars.
+  // Replace characters that are not allowed with '_'.
   size_t replace_pos;
-  static const char kWhiteList[] = "abcdefghijklmnopqrstuvwxyz0123456789_";
-  replace_pos = r.find_first_not_of(kWhiteList);
+  static const char kAllowList[] = "abcdefghijklmnopqrstuvwxyz0123456789_";
+  replace_pos = r.find_first_not_of(kAllowList);
   while (replace_pos != std::string::npos) {
     r = r.replace(replace_pos, 1, "_");
-    replace_pos = r.find_first_not_of(kWhiteList);
+    replace_pos = r.find_first_not_of(kAllowList);
   }
   return r;
 }
@@ -806,13 +814,9 @@ PP_FileHandle OpenNaClExecutable(PP_Instance instance,
   *nonce_lo = 0;
   *nonce_hi = 0;
   base::FilePath file_path;
-  if (!sender->Send(
-      new NaClHostMsg_OpenNaClExecutable(GetRoutingID(instance),
-                                         GURL(file_url),
-                                         !load_manager->nonsfi(),
-                                         &out_fd,
-                                         nonce_lo,
-                                         nonce_hi))) {
+  if (!sender->Send(new NaClHostMsg_OpenNaClExecutable(
+          GetFrameRoutingID(instance), GURL(file_url), !load_manager->nonsfi(),
+          &out_fd, nonce_lo, nonce_hi))) {
     return PP_kInvalidFileHandle;
   }
 
@@ -1113,7 +1117,7 @@ bool ShouldUseSubzero(const PP_PNaClOptions* pnacl_options) {
   // Only use Subzero for optlevel=0.
   if (pnacl_options->opt_level != 0)
     return false;
-  // Check a whitelist of architectures.
+  // Check a list of allowed architectures.
   const char* arch = GetSandboxArch();
   if (strcmp(arch, "x86-32") == 0)
     return true;

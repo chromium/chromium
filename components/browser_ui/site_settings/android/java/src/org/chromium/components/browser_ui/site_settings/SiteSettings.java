@@ -51,7 +51,7 @@ public class SiteSettings
         // Remove unsupported settings categories.
         for (@SiteSettingsCategory.Type int type = 0; type < SiteSettingsCategory.Type.NUM_ENTRIES;
                 type++) {
-            if (!getSiteSettingsClient().isCategoryVisible(type)) {
+            if (!getSiteSettingsDelegate().isCategoryVisible(type)) {
                 getPreferenceScreen().removePreference(findPreference(type));
             }
         }
@@ -61,7 +61,7 @@ public class SiteSettings
         // Initialize the summary and icon for all preferences that have an
         // associated content settings entry.
         BrowserContextHandle browserContextHandle =
-                getSiteSettingsClient().getBrowserContextHandle();
+                getSiteSettingsDelegate().getBrowserContextHandle();
         for (@Type int prefCategory = 0; prefCategory < Type.NUM_ENTRIES; prefCategory++) {
             Preference p = findPreference(prefCategory);
             int contentType = SiteSettingsCategory.contentSettingsType(prefCategory);
@@ -94,7 +94,7 @@ public class SiteSettings
                         || Type.NOTIFICATIONS == prefCategory
                         || Type.AUGMENTED_REALITY == prefCategory)
                     && SiteSettingsCategory
-                               .createFromType(getSiteSettingsClient().getBrowserContextHandle(),
+                               .createFromType(getSiteSettingsDelegate().getBrowserContextHandle(),
                                        prefCategory)
                                .showPermissionBlockedMessage(getContext())) {
                 // Show 'disabled' message when permission is not granted in Android.
@@ -118,12 +118,8 @@ public class SiteSettings
                 p.setSummary(ContentSettingsResources.getCategorySummary(contentType, checked));
             }
 
-            if (p.isEnabled()) {
-                p.setIcon(SettingsUtils.getTintedIcon(
-                        getContext(), ContentSettingsResources.getIcon(contentType)));
-            } else {
-                p.setIcon(ContentSettingsResources.getDisabledIcon(contentType, getResources()));
-            }
+            p.setIcon(SettingsUtils.getTintedIcon(
+                    getContext(), ContentSettingsResources.getIcon(contentType)));
         }
 
         Preference p = findPreference(Type.ALL_SITES);

@@ -17,7 +17,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/storage_monitor/removable_storage_observer.h"
@@ -76,7 +75,7 @@ struct MediaGalleryPrefInfo {
   MediaGalleryPrefId pref_id;
 
   // The user-visible name of this gallery.
-  base::string16 display_name;
+  std::u16string display_name;
 
   // A string which uniquely and persistently identifies the device that the
   // gallery lives on.
@@ -90,15 +89,15 @@ struct MediaGalleryPrefInfo {
 
   // The volume label of the volume/device on which the gallery
   // resides. Empty if there is no such label or it is unknown.
-  base::string16 volume_label;
+  std::u16string volume_label;
 
   // Vendor name for the volume/device on which the gallery is located.
   // Will be empty if unknown.
-  base::string16 vendor_name;
+  std::u16string vendor_name;
 
   // Model name for the volume/device on which the gallery is located.
   // Will be empty if unknown.
-  base::string16 model_name;
+  std::u16string model_name;
 
   // The capacity in bytes of the volume/device on which the gallery is
   // located. Will be zero if unknown.
@@ -133,9 +132,9 @@ struct MediaGalleryPrefInfo {
   int prefs_version;
 
   // Called by views to provide details for the gallery permission entries.
-  base::string16 GetGalleryDisplayName() const;
-  base::string16 GetGalleryTooltip() const;
-  base::string16 GetGalleryAdditionalDetails() const;
+  std::u16string GetGalleryDisplayName() const;
+  std::u16string GetGalleryTooltip() const;
+  std::u16string GetGalleryAdditionalDetails() const;
 
   // Returns true if the gallery is currently a removable device gallery which
   // is now attached, or a fixed storage gallery.
@@ -225,9 +224,9 @@ class MediaGalleriesPreferences
   MediaGalleryPrefId AddGallery(const std::string& device_id,
                                 const base::FilePath& relative_path,
                                 MediaGalleryPrefInfo::Type type,
-                                const base::string16& volume_label,
-                                const base::string16& vendor_name,
-                                const base::string16& model_name,
+                                const std::u16string& volume_label,
+                                const std::u16string& vendor_name,
+                                const std::u16string& model_name,
                                 uint64_t total_size_in_bytes,
                                 base::Time last_attach_time,
                                 int audio_count,
@@ -296,12 +295,12 @@ class MediaGalleriesPreferences
   // TODO(orenb): Simplify this and reduce the number of parameters.
   MediaGalleryPrefId AddOrUpdateGalleryInternal(
       const std::string& device_id,
-      const base::string16& display_name,
+      const std::u16string& display_name,
       const base::FilePath& relative_path,
       MediaGalleryPrefInfo::Type type,
-      const base::string16& volume_label,
-      const base::string16& vendor_name,
-      const base::string16& model_name,
+      const std::u16string& volume_label,
+      const std::u16string& vendor_name,
+      const std::u16string& model_name,
       uint64_t total_size_in_bytes,
       base::Time last_attach_time,
       bool volume_metadata_valid,

@@ -13,17 +13,9 @@ Polymer({
 
   properties: {
     /**
-     * THe title to be displayed
+     * THe username to be displayed
      */
-    title_: {
-      type: String,
-      value: '',
-    },
-
-    /**
-     * The subtitle to be displayed.
-     */
-    subtitle_: {
+    username_: {
       type: String,
       value: '',
     },
@@ -34,12 +26,8 @@ Polymer({
    * @param {Object} data Screen init payload
    */
   onBeforeShow(data) {
-    if ('title' in data) {
-      this.title_ = data.title;
-    }
-
-    if ('subtitle' in data) {
-      this.subtitle_ = data.subtitle;
+    if ('username' in data) {
+      this.username_ = data.username;
     }
   },
 

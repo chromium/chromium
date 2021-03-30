@@ -1,0 +1,10 @@
+{
+"amazon.com": "https://www.amazon.com/gp/cart/view.html",
+"ebay.com": "https://cart.payments.ebay.com/",
+"walmart.com": "https://www.walmart.com/cart",
+"hm.com": "https://www2.hm.com/en_us/cart",
+"etsy.com": "https://www.etsy.com/cart",
+"bestbuy.com": "https://www.bestbuy.com/cart",
+"homedepot.com": "https://www.homedepot.com/mycart/home",
+"guitarcenter.com":"https://www.guitarcenter.com/cart"
+}

@@ -32,7 +32,10 @@ enum class ScreenshotResult {
   CHECK_DIR_FAILED,
   CREATE_FILE_FAILED,
   WRITE_FILE_FAILED,
-  DISABLED
+  // Disabled by an enterprise policy or special modes.
+  DISABLED,
+  // Disabled by Data Leak Prevention feature.
+  DISABLED_BY_DLP
 };
 
 class SNAPSHOT_EXPORT ScreenshotGrabber {

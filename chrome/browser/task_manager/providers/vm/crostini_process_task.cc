@@ -17,7 +17,7 @@ gfx::ImageSkia* CrostiniProcessTask::s_icon_ = nullptr;
 CrostiniProcessTask::CrostiniProcessTask(base::ProcessId pid,
                                          const std::string& owner_id,
                                          const std::string& vm_name)
-    : VmProcessTask(FetchIcon(IDR_LOGO_CROSTINI_DEFAULT_32, &s_icon_),
+    : VmProcessTask(FetchIcon(IDR_LOGO_CROSTINI_DEFAULT, &s_icon_),
                     IDS_TASK_MANAGER_LINUX_VM_PREFIX,
                     pid,
                     owner_id,

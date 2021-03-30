@@ -8,11 +8,12 @@
  */
 
 // clang-format off
-// #import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.m.js';
-// #import {VolumeInfo} from '../../../externs/volume_info.m.js';
-// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
+// #import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.m.js';
+// #import {VolumeInfo} from '../../externs/volume_info.m.js';
+// #import {VolumeManager} from '../../externs/volume_manager.m.js';
 // #import {FileType} from './file_type.m.js';
-// #import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+// #import {VolumeManagerCommon} from './volume_manager_types.m.js';
+// #import {xfm} from './xfm.m.js';
 // clang-format on
 
 // Namespace
@@ -925,7 +926,7 @@ importer.rotateLogs = (nextLogId, fileFactory) => {
 };
 
 /**
- * Friendly wrapper around chrome.storage.local.
+ * Friendly wrapper around xfm.storage.local.
  *
  * NOTE: If you want to use this in a test, install MockChromeStorageAPI.
  */
@@ -939,7 +940,7 @@ importer.ChromeLocalStorage = class {
     return new Promise((resolve, reject) => {
       const values = {};
       values[key] = value;
-      chrome.storage.local.set(values, () => {
+      xfm.storage.local.set(values, () => {
         if (chrome.runtime.lastError) {
           reject(chrome.runtime.lastError);
         } else {
@@ -958,7 +959,7 @@ importer.ChromeLocalStorage = class {
    */
   get(key, opt_default) {
     return new Promise((resolve, reject) => {
-      chrome.storage.local.get(
+      xfm.storage.local.get(
           key,
           /** @param {Object<?>} values */
           values => {

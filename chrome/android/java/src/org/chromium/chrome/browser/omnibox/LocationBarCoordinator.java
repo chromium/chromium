@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.content.res.Configuration;
 import android.view.ActionMode;
 import android.view.View;
@@ -17,30 +19,34 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.WindowDelegate;
+import org.chromium.chrome.browser.AppHooks;
+import org.chromium.chrome.browser.lens.LensController;
+import org.chromium.chrome.browser.lens.LensFeature;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.locale.LocaleManager;
-import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
+import org.chromium.chrome.browser.omnibox.status.StatusCoordinator.PageInfoAction;
 import org.chromium.chrome.browser.omnibox.status.StatusView;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder;
-import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.base.WindowDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+
+import java.util.List;
 
 /**
  * The public API of the location bar component. Location bar responsibilities are:
@@ -67,9 +73,13 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
     private AutocompleteCoordinator mAutocompleteCoordinator;
     private StatusCoordinator mStatusCoordinator;
     private WindowDelegate mWindowDelegate;
+    private WindowAndroid mWindowAndroid;
     private View mAutocompleteAnchorView;
     private LocationBarMediator mLocationBarMediator;
     private View mUrlBar;
+    private View mDeleteButton;
+    private View mMicButton;
+    private View mLensButton;
     private final OneshotSupplierImpl<TemplateUrlService> mTemplateUrlServiceSupplier =
             new OneshotSupplierImpl<>();
     private CallbackController mCallbackController = new CallbackController();
@@ -92,56 +102,78 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
      * @param actionModeCallback The default callback for text editing action bar to use.
      * @param windowDelegate {@link WindowDelegate} that will provide {@link Window} related info.
      * @param windowAndroid {@link WindowAndroid} that is used by the owning {@link Activity}.
-     * @param activityTabProvider An {@link ActivityTabProvider} to access the activity's current
-     *         tab.
+     * @param activityTabSupplier A Supplier to access the activity's current tab.
      * @param modalDialogManagerSupplier A supplier for {@link ModalDialogManager} object.
      * @param shareDelegateSupplier A supplier for {@link ShareDelegate} object.
      * @param incognitoStateProvider An {@link IncognitoStateProvider} to access the current
      *         incognito state.
      * @param activityLifecycleDispatcher Allows observation of the activity state.
+     * @param overrideUrlLoadingDelegate Delegate that allows customization of url loading behavior.
+     * @param backKeyBehavior Delegate that allows customization of back key behavior.
+     * @param searchEngineLogoUtils Utils to query the state of the search engine logos feature.
+     * @param launchAssistanceSettingsAction Runnable launching settings for voice assistance.
+     * @param pageInfoAction Displays page info popup.
      */
     public LocationBarCoordinator(View locationBarLayout, View autocompleteAnchorView,
             ObservableSupplier<Profile> profileObservableSupplier,
             LocationBarDataProvider locationBarDataProvider, ActionMode.Callback actionModeCallback,
             WindowDelegate windowDelegate, WindowAndroid windowAndroid,
-            ActivityTabProvider activityTabProvider,
+            @NonNull Supplier<Tab> activityTabSupplier,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Supplier<ShareDelegate> shareDelegateSupplier,
             IncognitoStateProvider incognitoStateProvider,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            OverrideUrlLoadingDelegate overrideUrlLoadingDelegate) {
+            OverrideUrlLoadingDelegate overrideUrlLoadingDelegate,
+            BackKeyBehaviorDelegate backKeyBehavior, SearchEngineLogoUtils searchEngineLogoUtils,
+            @NonNull Runnable launchAssistanceSettingsAction,
+            @NonNull PageInfoAction pageInfoAction) {
         mLocationBarLayout = (LocationBarLayout) locationBarLayout;
         mWindowDelegate = windowDelegate;
+        mWindowAndroid = windowAndroid;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
         mAutocompleteAnchorView = autocompleteAnchorView;
 
         mUrlBar = mLocationBarLayout.findViewById(R.id.url_bar);
-        OneshotSupplierImpl<AssistantVoiceSearchService> assistantVoiceSearchSupplier =
-                new OneshotSupplierImpl();
         // TODO(crbug.com/1151513): Inject LocaleManager instance to LocationBarCoordinator instead
         // of using the singleton.
-        mLocationBarMediator = new LocationBarMediator(mLocationBarLayout, locationBarDataProvider,
-                assistantVoiceSearchSupplier, profileObservableSupplier,
+        mLocationBarMediator = new LocationBarMediator(mLocationBarLayout.getContext(),
+                mLocationBarLayout, locationBarDataProvider, profileObservableSupplier,
                 PrivacyPreferencesManagerImpl.getInstance(), overrideUrlLoadingDelegate,
-                LocaleManager.getInstance(), mTemplateUrlServiceSupplier);
-
+                LocaleManager.getInstance(), mTemplateUrlServiceSupplier, backKeyBehavior,
+                windowAndroid, isTablet() && isTabletLayout(), searchEngineLogoUtils,
+                AppHooks.get().getLensController(), launchAssistanceSettingsAction);
         mUrlCoordinator =
                 new UrlBarCoordinator((UrlBar) mUrlBar, windowDelegate, actionModeCallback,
                         mCallbackController.makeCancelable(mLocationBarMediator::onUrlFocusChange),
                         mLocationBarMediator, windowAndroid.getKeyboardDelegate());
         mAutocompleteCoordinator = new AutocompleteCoordinator(mLocationBarLayout, this, this,
                 mUrlCoordinator, activityLifecycleDispatcher, modalDialogManagerSupplier,
-                activityTabProvider, shareDelegateSupplier, locationBarDataProvider);
+                activityTabSupplier, shareDelegateSupplier, locationBarDataProvider);
         StatusView statusView = mLocationBarLayout.findViewById(R.id.location_bar_status);
         mStatusCoordinator = new StatusCoordinator(isTablet(), statusView, mUrlCoordinator,
-                incognitoStateProvider, modalDialogManagerSupplier, locationBarDataProvider);
+                incognitoStateProvider, modalDialogManagerSupplier, locationBarDataProvider,
+                mTemplateUrlServiceSupplier, searchEngineLogoUtils, profileObservableSupplier,
+                windowAndroid, pageInfoAction);
         mLocationBarMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
+
+        mLocationBarMediator.addUrlFocusChangeListener(mAutocompleteCoordinator);
+        mLocationBarMediator.addUrlFocusChangeListener(mUrlCoordinator);
+
+        mDeleteButton = mLocationBarLayout.findViewById(R.id.delete_button);
+        mDeleteButton.setOnClickListener(mLocationBarMediator::deleteButtonClicked);
+
+        mMicButton = mLocationBarLayout.findViewById(R.id.mic_button);
+        mMicButton.setOnClickListener(mLocationBarMediator::micButtonClicked);
+
+        mLensButton = LensFeature.SEARCH_BOX_START_VARIANT_LENS_CAMERA_ASSISTED_SEARCH.getValue()
+                ? mLocationBarLayout.findViewById(R.id.lens_camera_button_start)
+                : mLocationBarLayout.findViewById(R.id.lens_camera_button_end);
+        mLensButton.setOnClickListener(mLocationBarMediator::lensButtonClicked);
+
         mUrlBar.setOnKeyListener(mLocationBarMediator);
-
         mUrlCoordinator.addUrlTextChangeListener(mAutocompleteCoordinator);
-
         // The LocationBar's direction is tied to the UrlBar's text direction. Icons inside the
         // location bar, e.g. lock, refresh, X, should be reversed if UrlBar's text is RTL.
         mUrlCoordinator.setUrlDirectionListener(
@@ -151,43 +183,61 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
                 }));
 
         mLocationBarLayout.getContext().registerComponentCallbacks(mLocationBarMediator);
-        mLocationBarLayout.addUrlFocusChangeListener(mAutocompleteCoordinator);
-        mLocationBarLayout.addUrlFocusChangeListener(mUrlCoordinator);
         mLocationBarLayout.initialize(mAutocompleteCoordinator, mUrlCoordinator, mStatusCoordinator,
-                locationBarDataProvider, windowDelegate, windowAndroid,
-                mLocationBarMediator.getVoiceRecognitionHandler(), assistantVoiceSearchSupplier);
+                locationBarDataProvider, searchEngineLogoUtils);
 
-        if (locationBarLayout instanceof LocationBarPhone) {
+        if (isPhoneLayout()) {
             mSubCoordinator = new LocationBarCoordinatorPhone(
                     (LocationBarPhone) locationBarLayout, mStatusCoordinator);
-        } else if (locationBarLayout instanceof LocationBarTablet) {
+        } else if (isTabletLayout()) {
             mSubCoordinator =
                     new LocationBarCoordinatorTablet((LocationBarTablet) locationBarLayout);
         }
+        // There is a third possibility: SearchActivityLocationBarLayout extends LocationBarLayout
+        // and can be instantiated on phones *or* tablets.
     }
 
     @Override
     public void destroy() {
         mActivityLifecycleDispatcher.unregister(this);
         mActivityLifecycleDispatcher = null;
+
         if (mSubCoordinator != null) {
             mSubCoordinator.destroy();
             mSubCoordinator = null;
         }
+
         mUrlBar.setOnKeyListener(null);
         mUrlBar = null;
+
+        mDeleteButton.setOnClickListener(null);
+        mDeleteButton = null;
+
+        mMicButton.setOnClickListener(null);
+        mMicButton = null;
+
+        mLensButton.setOnClickListener(null);
+        mLensButton = null;
+
+        mLocationBarMediator.removeUrlFocusChangeListener(mUrlCoordinator);
         mUrlCoordinator.destroy();
         mUrlCoordinator = null;
+
         mLocationBarLayout.getContext().unregisterComponentCallbacks(mLocationBarMediator);
-        mLocationBarLayout.removeUrlFocusChangeListener(mAutocompleteCoordinator);
+
+        mLocationBarMediator.removeUrlFocusChangeListener(mAutocompleteCoordinator);
         mAutocompleteCoordinator.destroy();
         mAutocompleteCoordinator = null;
+
         mStatusCoordinator.destroy();
         mStatusCoordinator = null;
+
         mLocationBarLayout.destroy();
         mLocationBarLayout = null;
+
         mCallbackController.destroy();
         mCallbackController = null;
+
         mLocationBarMediator.destroy();
         mLocationBarMediator = null;
     }
@@ -241,7 +291,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
 
     @Override
     public View getContainerView() {
-        return mLocationBarLayout.getContainerView();
+        return mLocationBarLayout;
     }
 
     @Override
@@ -256,15 +306,16 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
         return mLocationBarMediator.getVoiceRecognitionHandler();
     }
 
+    @Nullable
     @Override
-    public FakeboxDelegate getFakeboxDelegate() {
+    public OmniboxStub getOmniboxStub() {
         return mLocationBarMediator;
     }
 
     // OmniboxSuggestionsDropdownEmbedder implementation
     @Override
     public boolean isTablet() {
-        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(mLocationBarLayout.getContext());
+        return DeviceFormFactor.isWindowOnTablet(mWindowAndroid);
     }
 
     @Override
@@ -343,7 +394,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
     public void setOmniboxEditingText(String text) {
         mUrlCoordinator.setUrlBarData(UrlBarData.forNonUrlText(text), UrlBar.ScrollType.NO_SCROLL,
                 UrlBarCoordinator.SelectionState.SELECT_END);
-        mLocationBarMediator.updateButtonVisibility();
+        updateButtonVisibility();
     }
 
     /**
@@ -413,12 +464,144 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
         mUrlCoordinator.setAllowFocus(focusable);
     }
 
+    /**
+     * Triggers a url focus change to begin or end, depending on the value of inProgress.
+     * @param inProgress Whether a focus change is in progress.
+     */
+    public void setUrlFocusChangeInProgress(boolean inProgress) {
+        mLocationBarMediator.setUrlFocusChangeInProgress(inProgress);
+    }
+
+    /**
+     * Handles any actions to be performed after all other actions triggered by the URL focus
+     * change. This will be called after any animations are performed to transition from one
+     * focus state to the other.
+     *
+     * @param showExpandedState Whether the url bar is expanded.
+     * @param shouldShowKeyboard Whether the keyboard should be shown. This value is determined by
+     *         whether url bar has got focus. Most of the time this is the same as
+     *         showExpandedState, but in some cases, e.g. url bar is scrolled to the top of the
+     *         screen on homepage but not focused, we set it differently.
+     * @param shouldShowInOverviewMode Whether the location bar should be shown when in overview
+     *         mode.
+     */
+    public void finishUrlFocusChange(boolean showExpandedState, boolean shouldShowKeyboard,
+            boolean shouldShowInOverviewMode) {
+        mLocationBarMediator.finishUrlFocusChange(showExpandedState, shouldShowKeyboard);
+        if (shouldShowInOverviewMode) {
+            mStatusCoordinator.onSecurityStateChanged();
+        }
+    }
+
+    /**
+     * Toggles the mic button being shown when the location bar is not focused. By default the mic
+     * button is not shown.
+     */
+    public void setShouldShowMicButtonWhenUnfocused(boolean shouldShowMicButtonWhenUnfocused) {
+        mLocationBarMediator.setShouldShowMicButtonWhenUnfocusedForPhone(
+                shouldShowMicButtonWhenUnfocused);
+    }
+
+    /** Updates the visibility of the buttons inside the location bar. */
+    public void updateButtonVisibility() {
+        mLocationBarMediator.updateButtonVisibility();
+    }
+
+    /** Returns whether the layout is RTL. */
+    public boolean isLayoutRtl() {
+        return mLocationBarLayout.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+    }
+
+    // Tablet-specific methods.
+
+    /**
+     * Returns an animator to run for the given view when hiding buttons in the unfocused location
+     * bar. This should also be used to create animators for hiding toolbar buttons.
+     *
+     * @param button The {@link View} of the button to hide.
+     */
+    public ObjectAnimator createHideButtonAnimatorForTablet(View button) {
+        assert isTablet();
+        return mLocationBarMediator.createHideButtonAnimatorForTablet(button);
+    }
+
+    /**
+     * Returns an animator to run for the given view when showing buttons in the unfocused location
+     * bar. This should also be used to create animators for showing toolbar buttons.
+     *
+     * @param button The {@link View} of the button to show.
+     */
+    public ObjectAnimator createShowButtonAnimatorForTablet(View button) {
+        assert isTablet();
+        return mLocationBarMediator.createShowButtonAnimatorForTablet(button);
+    }
+
+    /**
+     * Creates animators for hiding buttons in the unfocused location bar. The buttons fade out
+     * while width of the location bar gets larger. There are toolbar buttons that also hide at
+     * the same time, causing the width of the location bar to change.
+     *
+     * @param toolbarStartPaddingDifference The difference in the toolbar's start padding
+     *         between the beginning and end of the animation.
+     * @return A list of animators to run.
+     */
+    public List<Animator> getHideButtonsWhenUnfocusedAnimatorsForTablet(
+            int toolbarStartPaddingDifference) {
+        assert isTablet();
+        return mLocationBarMediator.getHideButtonsWhenUnfocusedAnimatorsForTablet(
+                toolbarStartPaddingDifference);
+    }
+
+    /**
+     * Creates animators for showing buttons in the unfocused location bar. The buttons fade in
+     * while width of the location bar gets smaller. There are toolbar buttons that also show at
+     * the same time, causing the width of the location bar to change.
+     *
+     * @param toolbarStartPaddingDifference The difference in the toolbar's start padding
+     *         between the beginning and end of the animation.
+     * @return A list of animators to run.
+     */
+    public List<Animator> getShowButtonsWhenUnfocusedAnimatorsForTablet(
+            int toolbarStartPaddingDifference) {
+        assert isTablet();
+        return mLocationBarMediator.getShowButtonsWhenUnfocusedAnimatorsForTablet(
+                toolbarStartPaddingDifference);
+    }
+
+    /** Toggles whether buttons should be displayed in the URL bar when it's not focused. */
+    public void setShouldShowButtonsWhenUnfocusedForTablet(boolean shouldShowButtons) {
+        assert isTablet();
+        mLocationBarMediator.setShouldShowButtonsWhenUnfocusedForTablet(shouldShowButtons);
+    }
+
+    // End tablet-specific methods.
+
     public void setVoiceRecognitionHandlerForTesting(
             VoiceRecognitionHandler voiceRecognitionHandler) {
         mLocationBarMediator.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);
     }
 
+    public void onUrlChangedForTesting() {
+        mLocationBarMediator.onUrlChanged();
+    }
+
+    public void setLensControllerForTesting(LensController lensController) {
+        mLocationBarMediator.setLensControllerForTesting(lensController);
+    }
+
+    private boolean isPhoneLayout() {
+        return mLocationBarLayout instanceof LocationBarPhone;
+    }
+
+    private boolean isTabletLayout() {
+        return mLocationBarLayout instanceof LocationBarTablet;
+    }
+
     /* package */ LocationBarMediator getMediatorForTesting() {
         return mLocationBarMediator;
+    }
+
+    /* package */ StatusCoordinator getStatusCoordinatorForTesting() {
+        return mStatusCoordinator;
     }
 }

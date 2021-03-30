@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 279 tests; 263 PASS, 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 274 tests; 257 PASS, 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS BeforeUnloadEvent should be an alias for BeforeUnloadEvent.
 PASS createEvent('BeforeUnloadEvent') should be initialized correctly.
 PASS beforeunloadevent should be an alias for BeforeUnloadEvent.
@@ -122,13 +122,6 @@ PASS createEvent('textevent') should be initialized correctly.
 FAIL TEXTEVENT should be an alias for CompositionEvent. assert_equals: expected object "[object CompositionEvent]" but got object "[object TextEvent]"
 PASS createEvent('TEXTEVENT') should be initialized correctly.
 PASS Should throw NOT_SUPPORTED_ERR for pluralized legacy event interface "TextEvents"
-PASS TouchEvent should be an alias for TouchEvent.
-PASS createEvent('TouchEvent') should be initialized correctly.
-PASS touchevent should be an alias for TouchEvent.
-PASS createEvent('touchevent') should be initialized correctly.
-PASS TOUCHEVENT should be an alias for TouchEvent.
-PASS createEvent('TOUCHEVENT') should be initialized correctly.
-PASS Should throw NOT_SUPPORTED_ERR for pluralized legacy event interface "TouchEvents"
 PASS UIEvent should be an alias for UIEvent.
 PASS createEvent('UIEvent') should be initialized correctly.
 PASS uievent should be an alias for UIEvent.
@@ -283,6 +276,10 @@ PASS Should throw NOT_SUPPORTED_ERR for non-legacy event interface "SyncEvent"
 PASS Should throw NOT_SUPPORTED_ERR for pluralized non-legacy event interface "SyncEvents"
 PASS Should throw NOT_SUPPORTED_ERR for non-legacy event interface "TimeEvent"
 PASS Should throw NOT_SUPPORTED_ERR for pluralized non-legacy event interface "TimeEvents"
+FAIL Should throw NOT_SUPPORTED_ERR for non-legacy event interface "TouchEvent" assert_throws_dom: function "function () {
+      var evt = document.createEvent(eventInterface);
+    }" did not throw
+PASS Should throw NOT_SUPPORTED_ERR for pluralized non-legacy event interface "TouchEvents"
 FAIL Should throw NOT_SUPPORTED_ERR for non-legacy event interface "TrackEvent" assert_throws_dom: function "function () {
       var evt = document.createEvent(eventInterface);
     }" did not throw

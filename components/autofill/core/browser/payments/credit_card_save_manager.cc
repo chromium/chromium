@@ -11,6 +11,7 @@
 #include <limits>
 #include <map>
 #include <set>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -43,7 +43,6 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_util.h"
-#include "components/infobars/core/infobar_feature.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "url/gurl.h"
@@ -61,16 +60,16 @@ namespace {
 // src/components/autofill/core/browser/data_model/contact_info.cc. However, for
 // now we want the logic of which variations of names are considered to be the
 // same to exactly match the logic applied on the Payments server.
-base::string16 RemoveMiddleInitial(const base::string16& name) {
+std::u16string RemoveMiddleInitial(const std::u16string& name) {
   std::vector<base::StringPiece16> parts =
       base::SplitStringPiece(name, base::kWhitespaceUTF16,
                              base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  if (parts.size() == 3 && (parts[1].length() == 1 ||
-                            (parts[1].length() == 2 &&
-                             base::EndsWith(parts[1], base::ASCIIToUTF16("."),
-                                            base::CompareCase::SENSITIVE)))) {
+  if (parts.size() == 3 &&
+      (parts[1].length() == 1 ||
+       (parts[1].length() == 2 &&
+        base::EndsWith(parts[1], u".", base::CompareCase::SENSITIVE)))) {
     parts.erase(parts.begin() + 1);
-    return base::JoinString(parts, base::ASCIIToUTF16(" "));
+    return base::JoinString(parts, u" ");
   }
   return name;
 }
@@ -216,9 +215,8 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
     // iOS should always provide a valid expiration date when attempting to
     // upload a Saved Card. Calling LogSaveCardRequestExpirationDateReasonMetric
     // would trigger a DCHECK.
-    if (!(base::FeatureList::IsEnabled(
-              features::kAutofillSaveCardInfobarEditSupport) &&
-          base::FeatureList::IsEnabled(kIOSInfobarUIReboot))) {
+    if (!base::FeatureList::IsEnabled(
+            features::kAutofillSaveCardInfobarEditSupport)) {
       // Remove once both flags are deleted.
       LogSaveCardRequestExpirationDateReasonMetric();
     }
@@ -229,9 +227,8 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
   }
 
 #if defined(OS_IOS)
-  if ((base::FeatureList::IsEnabled(
-           features::kAutofillSaveCardInfobarEditSupport) &&
-       base::FeatureList::IsEnabled(kIOSInfobarUIReboot))) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillSaveCardInfobarEditSupport)) {
     // iOS's new credit card save dialog requires the user to enter both
     // cardholder name and expiration date before saving.  Regardless of what
     // Chrome thought it needed to do before, disable both of the previous
@@ -368,7 +365,7 @@ CreditCardSaveManager::GetLocalCardMigrationStrikeDatabase() {
 
 void CreditCardSaveManager::OnDidGetUploadDetails(
     AutofillClient::PaymentsRpcResult result,
-    const base::string16& context_token,
+    const std::u16string& context_token,
     std::unique_ptr<base::Value> legal_message,
     std::vector<std::pair<int, int>> supported_card_bin_ranges) {
   if (observer_for_testing_)
@@ -600,16 +597,16 @@ void CreditCardSaveManager::SetProfilesForCreditCardUpload(
   // candidate set is invalid. This matches the rules for name matching applied
   // server-side by Google Payments and ensures that we don't send upload
   // requests that are guaranteed to fail.
-  const base::string16 card_name =
+  const std::u16string card_name =
       card.GetInfo(AutofillType(CREDIT_CARD_NAME_FULL), app_locale_);
-  base::string16 verified_name;
+  std::u16string verified_name;
   if (candidate_profiles.empty()) {
     verified_name = card_name;
   } else {
     bool found_conflicting_names = false;
     verified_name = RemoveMiddleInitial(card_name);
     for (const AutofillProfile& profile : candidate_profiles) {
-      const base::string16 address_name =
+      const std::u16string address_name =
           RemoveMiddleInitial(profile.GetInfo(NAME_FULL, app_locale_));
       if (address_name.empty())
         continue;
@@ -635,10 +632,10 @@ void CreditCardSaveManager::SetProfilesForCreditCardUpload(
 
   // If any of the candidate addresses have a non-empty zip that doesn't match
   // any other non-empty zip, then the candidate set is invalid.
-  base::string16 verified_zip;
+  std::u16string verified_zip;
   const AutofillType kZipCode(ADDRESS_HOME_ZIP);
   for (const AutofillProfile& profile : candidate_profiles) {
-    const base::string16 zip = profile.GetRawInfo(ADDRESS_HOME_ZIP);
+    const std::u16string zip = profile.GetRawInfo(ADDRESS_HOME_ZIP);
     if (!zip.empty()) {
       if (verified_zip.empty()) {
         verified_zip = zip;
@@ -776,9 +773,8 @@ int CreditCardSaveManager::GetDetectedValues() const {
 // card unless the user provides both a valid cardholder name and expiration
 // date.
 #if defined(OS_IOS)
-  if ((base::FeatureList::IsEnabled(
-           features::kAutofillSaveCardInfobarEditSupport) &&
-       base::FeatureList::IsEnabled(kIOSInfobarUIReboot))) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillSaveCardInfobarEditSupport)) {
     detected_values |= DetectedValue::USER_PROVIDED_NAME;
     detected_values |= DetectedValue::USER_PROVIDED_EXPIRATION_DATE;
   }
@@ -824,19 +820,19 @@ void CreditCardSaveManager::OnUserDidDecideOnUploadSave(
 
 #if defined(OS_ANDROID) || defined(OS_IOS)
 void CreditCardSaveManager::OnUserDidAcceptAccountNameFixFlow(
-    const base::string16& cardholder_name) {
+    const std::u16string& cardholder_name) {
   DCHECK(should_request_name_from_user_);
 
   OnUserDidAcceptUploadHelper({cardholder_name,
-                               /*expiration_date_month=*/base::string16(),
-                               /*expiration_date_year=*/base::string16()});
+                               /*expiration_date_month=*/std::u16string(),
+                               /*expiration_date_year=*/std::u16string()});
 }
 
 void CreditCardSaveManager::OnUserDidAcceptExpirationDateFixFlow(
-    const base::string16& month,
-    const base::string16& year) {
+    const std::u16string& month,
+    const std::u16string& year) {
   OnUserDidAcceptUploadHelper(
-      {/*cardholder_name=*/base::string16(), month, year});
+      {/*cardholder_name=*/std::u16string(), month, year});
 }
 #endif  // defined(OS_ANDROID) || defined(OS_IOS)
 
@@ -852,9 +848,8 @@ void CreditCardSaveManager::OnUserDidAcceptUploadHelper(
     // the user, but not through the fix flow triggered via
     // |should_request_name_from_user_|.
     DCHECK(should_request_name_from_user_ ||
-           (base::FeatureList::IsEnabled(
-                autofill::features::kAutofillSaveCardInfobarEditSupport) &&
-            base::FeatureList::IsEnabled(kIOSInfobarUIReboot)));
+           base::FeatureList::IsEnabled(
+               autofill::features::kAutofillSaveCardInfobarEditSupport));
 #else
     DCHECK(should_request_name_from_user_);
 #endif
@@ -873,9 +868,8 @@ void CreditCardSaveManager::OnUserDidAcceptUploadHelper(
     // the user, but not through the fix flow triggered via
     // |should_request_expiration_date_from_user_|.
     DCHECK(should_request_expiration_date_from_user_ ||
-           (base::FeatureList::IsEnabled(
-                autofill::features::kAutofillSaveCardInfobarEditSupport) &&
-            base::FeatureList::IsEnabled(kIOSInfobarUIReboot)));
+           base::FeatureList::IsEnabled(
+               autofill::features::kAutofillSaveCardInfobarEditSupport));
 #else
     DCHECK(should_request_expiration_date_from_user_);
 #endif
@@ -920,7 +914,7 @@ void CreditCardSaveManager::SendUploadCardRequest() {
 }
 
 void CreditCardSaveManager::OnUserDidIgnoreOrDeclineSave(
-    const base::string16& card_last_four_digits) {
+    const std::u16string& card_last_four_digits) {
   if (show_save_prompt_.has_value() && show_save_prompt_.value()) {
     // If the user rejected or ignored save and the offer-to-save bubble or
     // infobar was actually shown (NOT just the icon if on desktop), count

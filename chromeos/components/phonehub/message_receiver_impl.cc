@@ -41,7 +41,8 @@ std::string GetMessageTypeName(proto::MessageType message_type) {
 
 }  // namespace
 
-MessageReceiverImpl::MessageReceiverImpl(ConnectionManager* connection_manager)
+MessageReceiverImpl::MessageReceiverImpl(
+    secure_channel::ConnectionManager* connection_manager)
     : connection_manager_(connection_manager) {
   DCHECK(connection_manager_);
 

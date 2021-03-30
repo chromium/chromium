@@ -43,11 +43,12 @@ TEST(PaintOpHelper, ClipRRectToString) {
 }
 
 TEST(PaintOpHelper, ConcatToString) {
-  ConcatOp op(SkMatrix::MakeAll(1, 2, 3, 4, 5, 6, 7, 8, 9));
+  ConcatOp op(SkM44(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16));
   std::string str = PaintOpHelper::ToString(&op);
   EXPECT_EQ(str,
-            "ConcatOp(matrix=[  1.0000   2.0000   3.0000][  4.0000   5.0000   "
-            "6.0000][  7.0000   8.0000   9.0000])");
+            "ConcatOp(matrix=[  1.0000   2.0000   3.0000   4.0000][  5.0000   "
+            "6.0000   7.0000   8.0000][  9.0000  10.0000  11.0000  12.0000][ "
+            "13.0000  14.0000  15.0000  16.0000]])");
 }
 
 TEST(PaintOpHelper, DrawColorToString) {
@@ -76,7 +77,7 @@ TEST(PaintOpHelper, DrawDRRectToString) {
 }
 
 TEST(PaintOpHelper, DrawImageToString) {
-  DrawImageOp op(PaintImage(), 10.5f, 20.3f, nullptr);
+  DrawImageOp op(PaintImage(), 10.5f, 20.3f);
   std::string str = PaintOpHelper::ToString(&op);
   EXPECT_EQ(
       str,
@@ -92,7 +93,7 @@ TEST(PaintOpHelper, DrawImageToString) {
 
 TEST(PaintOpHelper, DrawImageRectToString) {
   DrawImageRectOp op(PaintImage(), SkRect::MakeXYWH(1, 2, 3, 4),
-                     SkRect::MakeXYWH(5, 6, 7, 8), nullptr,
+                     SkRect::MakeXYWH(5, 6, 7, 8),
                      SkCanvas::kStrict_SrcRectConstraint);
   std::string str = PaintOpHelper::ToString(&op);
   EXPECT_EQ(
@@ -278,11 +279,12 @@ TEST(PaintOpHelper, ScaleToString) {
 }
 
 TEST(PaintOpHelper, SetMatrixToString) {
-  SetMatrixOp op(SkMatrix::MakeAll(-1, 2, -3, 4, -5, 6, -7, 8, -9));
+  SetMatrixOp op(SkM44(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16));
   std::string str = PaintOpHelper::ToString(&op);
   EXPECT_EQ(str,
-            "SetMatrixOp(matrix=[ -1.0000   2.0000  -3.0000][  4.0000  -5.0000 "
-            "  6.0000][ -7.0000   8.0000  -9.0000])");
+            "SetMatrixOp(matrix=[  1.0000   2.0000   3.0000   4.0000][  5.0000 "
+            "  6.0000   7.0000   8.0000][  9.0000  10.0000  11.0000  12.0000][ "
+            "13.0000  14.0000  15.0000  16.0000]])");
 }
 
 TEST(PaintOpHelper, TranslateToString) {

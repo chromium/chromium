@@ -119,7 +119,8 @@ void HardwareRendererSingleThread::DrawAndSwap(
   CopyOutputRequestQueue requests;
   requests.swap(child_frame_->copy_requests);
   for (auto& copy_request : requests) {
-    support_->RequestCopyOfOutput(child_id_, std::move(copy_request));
+    support_->RequestCopyOfOutput(
+        {child_id_, viz::SubtreeCaptureId(), std::move(copy_request)});
   }
 
   gfx::Rect clip(params.clip_left, params.clip_top,

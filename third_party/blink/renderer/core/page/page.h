@@ -114,7 +114,9 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   };
 
   // Any pages not owned by a web view should be created using this method.
-  static Page* CreateNonOrdinary(PageClients& pages_clients);
+  static Page* CreateNonOrdinary(
+      PageClients& pages_clients,
+      scheduler::WebAgentGroupScheduler& agent_group_scheduler);
 
   // An "ordinary" page is a fully-featured page owned by a web view.
   static Page* CreateOrdinary(
@@ -122,7 +124,9 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
       Page* opener,
       scheduler::WebAgentGroupScheduler& agent_group_scheduler);
 
-  explicit Page(PageClients&);
+  Page(PageClients&,
+       scheduler::WebAgentGroupScheduler& agent_group_scheduler,
+       bool is_ordinary);
   ~Page() override;
 
   void CloseSoon();
@@ -316,6 +320,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   ScrollbarTheme& GetScrollbarTheme() const;
 
+  scheduler::WebAgentGroupScheduler& GetAgentGroupScheduler() const;
   PageScheduler* GetPageScheduler() const;
 
   // PageScheduler::Delegate implementation.
@@ -392,11 +397,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // Notify |plugins_changed_observers_| that plugins have changed.
   void NotifyPluginsChanged() const;
 
-  void SetAgentGroupSchedulerForNonOrdinary(
-      std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
-          agent_group_scheduler);
-  void SetPageScheduler(std::unique_ptr<PageScheduler>);
-
   void InvalidateColorScheme();
   void InvalidatePaint();
   // Typically, the main frame and Page should both be owned by the embedder,
@@ -413,6 +413,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // longer needed.
   Member<Frame> main_frame_;
 
+  scheduler::WebAgentGroupScheduler& agent_group_scheduler_;
   Member<PageAnimator> animator_;
   const Member<AutoscrollController> autoscroll_controller_;
   Member<ChromeClient> chrome_client_;
@@ -483,12 +484,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // A handle to notify the scheduler whether this page has other related
   // pages or not.
   FrameScheduler::SchedulingAffectingFeatureHandle has_related_pages_;
-
-  // A non-ordinary Page has its own AgentGroupScheduler. This field
-  // needs to be declared before |page_scheduler_| to make sure it
-  // outlives it.
-  std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
-      agent_group_scheduler_for_non_ordinary_;
 
   std::unique_ptr<PageScheduler> page_scheduler_;
 

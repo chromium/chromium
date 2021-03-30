@@ -120,49 +120,47 @@ class MODULES_EXPORT Geolocation final
  private:
   // Customized HeapHashSet class that checks notifiers' timers. Notifier's
   // timer may be active only when the notifier is owned by the Geolocation.
-  class GeoNotifierSet : private HeapHashSet<Member<GeoNotifier>> {
-    using BaseClass = HeapHashSet<Member<GeoNotifier>>;
-
+  class GeoNotifierSet final : public GarbageCollected<GeoNotifierSet> {
    public:
-    using BaseClass::Trace;
+    void Trace(Visitor* visitor) const { visitor->Trace(set_); }
 
-    using BaseClass::const_iterator;
-    using BaseClass::iterator;
-
-    using BaseClass::begin;
-    using BaseClass::end;
-    using BaseClass::size;
+    auto begin() const { return set_.begin(); }
+    auto end() const { return set_.end(); }
+    auto size() const { return set_.size(); }
 
     auto insert(GeoNotifier* value) {
       DCHECK(!value->IsTimerActive());
-      return BaseClass::insert(value);
+      return set_.insert(value);
     }
 
     void erase(GeoNotifier* value) {
       DCHECK(!value->IsTimerActive());
-      return BaseClass::erase(value);
+      return set_.erase(value);
     }
 
     void clear() {
 #if DCHECK_IS_ON()
-      for (const auto& notifier : *this) {
+      for (const auto& notifier : set_) {
         DCHECK(!notifier->IsTimerActive());
       }
 #endif
-      BaseClass::clear();
+      set_.clear();
     }
 
-    using BaseClass::Contains;
-    using BaseClass::IsEmpty;
+    auto Contains(GeoNotifier* value) const { return set_.Contains(value); }
+    auto IsEmpty() const { return set_.IsEmpty(); }
 
     auto InsertWithoutTimerCheck(GeoNotifier* value) {
-      return BaseClass::insert(value);
+      return set_.insert(value);
     }
-    void ClearWithoutTimerCheck() { BaseClass::clear(); }
+    void ClearWithoutTimerCheck() { set_.clear(); }
+
+   private:
+    HeapHashSet<Member<GeoNotifier>> set_;
   };
 
   bool HasListeners() const {
-    return !one_shots_.IsEmpty() || !watchers_->IsEmpty();
+    return !one_shots_->IsEmpty() || !watchers_->IsEmpty();
   }
 
   void StopTimers();
@@ -204,7 +202,7 @@ class MODULES_EXPORT Geolocation final
   void OnGeolocationPermissionStatusUpdated(GeoNotifier*,
                                             mojom::PermissionStatus);
 
-  GeoNotifierSet one_shots_;
+  Member<GeoNotifierSet> one_shots_;
   Member<GeolocationWatchers> watchers_;
   // GeoNotifiers that are in the middle of invocation.
   //
@@ -217,7 +215,7 @@ class MODULES_EXPORT Geolocation final
   // wrapper-tracing.
   // TODO(https://crbug.com/796145): Remove this hack once on-stack objects
   // get supported by either of wrapper-tracing or unified GC.
-  GeoNotifierSet one_shots_being_invoked_;
+  Member<GeoNotifierSet> one_shots_being_invoked_;
   HeapVector<Member<GeoNotifier>> watchers_being_invoked_;
   Member<Geoposition> last_position_;
 

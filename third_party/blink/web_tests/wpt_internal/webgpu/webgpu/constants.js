@@ -19,7 +19,7 @@
     COPY_DST: 0x02,
     SAMPLED: 0x04,
     STORAGE: 0x08,
-    OUTPUT_ATTACHMENT: 0x10,
+    RENDER_ATTACHMENT: 0x10,
   },
 
   ColorWrite: {
@@ -44,6 +44,10 @@
 
 // Type ensures every field is specified.
 export const DefaultLimits = {
+  maxTextureDimension1D: 8192,
+  maxTextureDimension2D: 8192,
+  maxTextureDimension3D: 2048,
+  maxTextureArrayLayers: 2048,
   maxBindGroups: 4,
   maxDynamicUniformBuffersPerPipelineLayout: 8,
   maxDynamicStorageBuffersPerPipelineLayout: 4,

@@ -15,7 +15,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -39,8 +38,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/login/users/scoped_test_user_manager.h"
-#include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -105,7 +104,7 @@ const base::FilePath::CharType kExtensionFilePath[] =
 static scoped_refptr<extensions::Extension> CreateExtension(
     const std::string& name,
     const std::string& id,
-    extensions::Manifest::Location location) {
+    extensions::mojom::ManifestLocation location) {
   base::DictionaryValue manifest;
   manifest.SetString(extensions::manifest_keys::kVersion, "1.0.0.0");
   manifest.SetInteger(extensions::manifest_keys::kManifestVersion, 2);
@@ -181,8 +180,8 @@ class ProfileSigninConfirmationHelperTest : public testing::Test {
   BookmarkModel* model_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  chromeos::ScopedTestUserManager test_user_manager_;
+  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+  ash::ScopedTestUserManager test_user_manager_;
 #endif
 };
 
@@ -199,8 +198,7 @@ TEST_F(ProfileSigninConfirmationHelperTest, PromptForNewProfile_Bookmarks) {
 
   // Profile is new but has bookmarks.
   profile_->SetIsNewProfile(true);
-  model_->AddURL(model_->bookmark_bar_node(), 0,
-                 base::string16(base::ASCIIToUTF16("foo")),
+  model_->AddURL(model_->bookmark_bar_node(), 0, std::u16string(u"foo"),
                  GURL("http://foo.com"));
   EXPECT_TRUE(GetCallbackResult(
       base::BindOnce(&ui::CheckShouldPromptForNewProfile, profile_.get())));
@@ -215,17 +213,16 @@ TEST_F(ProfileSigninConfirmationHelperTest, PromptForNewProfile_Extensions) {
   // Profile is new but has synced extensions (The web store doesn't count).
   profile_->SetIsNewProfile(true);
   scoped_refptr<extensions::Extension> webstore =
-      CreateExtension("web store",
-                      extensions::kWebStoreAppId,
-                      extensions::Manifest::COMPONENT);
+      CreateExtension("web store", extensions::kWebStoreAppId,
+                      extensions::mojom::ManifestLocation::kComponent);
   extensions::ExtensionPrefs::Get(profile_.get())
       ->AddGrantedPermissions(webstore->id(), extensions::PermissionSet());
   extensions->AddExtension(webstore.get());
   EXPECT_FALSE(GetCallbackResult(
       base::BindOnce(&ui::CheckShouldPromptForNewProfile, profile_.get())));
 
-  scoped_refptr<extensions::Extension> extension =
-      CreateExtension("foo", std::string(), extensions::Manifest::INTERNAL);
+  scoped_refptr<extensions::Extension> extension = CreateExtension(
+      "foo", std::string(), extensions::mojom::ManifestLocation::kInternal);
   extensions::ExtensionPrefs::Get(profile_.get())
       ->AddGrantedPermissions(extension->id(), extensions::PermissionSet());
   extensions->AddExtension(extension.get());
@@ -247,8 +244,8 @@ TEST_F(ProfileSigninConfirmationHelperTest,
   char buf[18];
   for (int i = 0; i < 10; i++) {
     base::snprintf(buf, base::size(buf), "http://foo.com/%d", i);
-    history->AddPage(GURL(std::string(buf)), base::Time::Now(), NULL, 1, GURL(),
-                     history::RedirectList(), ui::PAGE_TRANSITION_LINK,
+    history->AddPage(GURL(std::string(buf)), base::Time::Now(), nullptr, 1,
+                     GURL(), history::RedirectList(), ui::PAGE_TRANSITION_LINK,
                      history::SOURCE_BROWSED, false, false);
   }
   EXPECT_TRUE(GetCallbackResult(
@@ -264,7 +261,7 @@ TEST_F(ProfileSigninConfirmationHelperTest,
 
   // Profile is new but has a typed URL.
   profile_->SetIsNewProfile(true);
-  history->AddPage(GURL("http://example.com"), base::Time::Now(), NULL, 1,
+  history->AddPage(GURL("http://example.com"), base::Time::Now(), nullptr, 1,
                    GURL(), history::RedirectList(), ui::PAGE_TRANSITION_TYPED,
                    history::SOURCE_BROWSED, false, false);
   EXPECT_TRUE(GetCallbackResult(

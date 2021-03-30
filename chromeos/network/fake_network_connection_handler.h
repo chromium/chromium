@@ -63,10 +63,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) FakeNetworkConnectionHandler
     base::Optional<ConnectCallbackMode> connect_callback_mode_;
   };
 
-  const std::vector<ConnectionParams>& connect_calls() const {
-    return connect_calls_;
-  }
-  const std::vector<ConnectionParams>& disconnect_calls() const {
+  std::vector<ConnectionParams>& connect_calls() { return connect_calls_; }
+  std::vector<ConnectionParams>& disconnect_calls() {
     return disconnect_calls_;
   }
 
@@ -81,10 +79,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) FakeNetworkConnectionHandler
       const std::string& service_path,
       base::OnceClosure success_callback,
       network_handler::ErrorCallback error_callback) override;
-  void Init(NetworkStateHandler* network_state_handler,
-            NetworkConfigurationHandler* network_configuration_handler,
-            ManagedNetworkConfigurationHandler*
-                managed_network_configuration_handler) override;
+  void Init(
+      NetworkStateHandler* network_state_handler,
+      NetworkConfigurationHandler* network_configuration_handler,
+      ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
+      CellularESimConnectionHandler* cellular_esim_connection_handler) override;
 
   std::vector<ConnectionParams> connect_calls_;
   std::vector<ConnectionParams> disconnect_calls_;

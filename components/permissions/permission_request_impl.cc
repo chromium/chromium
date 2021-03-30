@@ -8,17 +8,13 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/permissions/permission_util.h"
-#include "components/permissions/permissions_client.h"
+#include "components/permissions/request_type.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if defined(OS_ANDROID)
-#include "components/resources/android/theme_resources.h"
 #include "media/base/android/media_drm_bridge.h"
-#else
-#include "components/vector_icons/vector_icons.h"
-#include "ui/gfx/vector_icon_types.h"
 #endif
 
 namespace permissions {
@@ -39,81 +35,12 @@ PermissionRequestImpl::~PermissionRequestImpl() {
   DCHECK(delete_callback_.is_null());
 }
 
-PermissionRequest::IconId PermissionRequestImpl::GetIconId() const {
-  PermissionRequest::IconId icon_id =
-      PermissionsClient::Get()->GetOverrideIconId(content_settings_type_);
-#if defined(OS_ANDROID)
-  if (icon_id)
-    return icon_id;
-  switch (content_settings_type_) {
-    case ContentSettingsType::GEOLOCATION:
-      return IDR_ANDROID_INFOBAR_GEOLOCATION;
-    case ContentSettingsType::NOTIFICATIONS:
-      return IDR_ANDROID_INFOBAR_NOTIFICATIONS;
-    case ContentSettingsType::MIDI_SYSEX:
-      return IDR_ANDROID_INFOBAR_MIDI;
-    case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
-      return IDR_ANDROID_INFOBAR_PROTECTED_MEDIA_IDENTIFIER;
-    case ContentSettingsType::MEDIASTREAM_MIC:
-      return IDR_ANDROID_INFOBAR_MEDIA_STREAM_MIC;
-    case ContentSettingsType::MEDIASTREAM_CAMERA:
-      return IDR_ANDROID_INFOBAR_MEDIA_STREAM_CAMERA;
-    case ContentSettingsType::ACCESSIBILITY_EVENTS:
-      return IDR_ANDROID_INFOBAR_ACCESSIBILITY_EVENTS;
-    case ContentSettingsType::CLIPBOARD_READ_WRITE:
-      return IDR_ANDROID_INFOBAR_CLIPBOARD;
-    case ContentSettingsType::NFC:
-      return IDR_ANDROID_INFOBAR_NFC;
-    case ContentSettingsType::VR:
-    case ContentSettingsType::AR:
-      return IDR_ANDROID_INFOBAR_VR_HEADSET;
-    case ContentSettingsType::STORAGE_ACCESS:
-      return IDR_ANDROID_INFOBAR_PERMISSION_COOKIE;
-    case ContentSettingsType::IDLE_DETECTION:
-      return IDR_ANDROID_INFOBAR_IDLE_DETECTION;
-    default:
-      NOTREACHED();
-      return IDR_ANDROID_INFOBAR_WARNING;
-  }
-#else
-  if (!icon_id.is_empty())
-    return icon_id;
-  switch (content_settings_type_) {
-    case ContentSettingsType::GEOLOCATION:
-      return vector_icons::kLocationOnIcon;
-    case ContentSettingsType::NOTIFICATIONS:
-      return vector_icons::kNotificationsIcon;
-    case ContentSettingsType::MIDI_SYSEX:
-      return vector_icons::kMidiIcon;
-    case ContentSettingsType::MEDIASTREAM_MIC:
-      return vector_icons::kMicIcon;
-    case ContentSettingsType::MEDIASTREAM_CAMERA:
-    case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
-      return vector_icons::kVideocamIcon;
-    case ContentSettingsType::ACCESSIBILITY_EVENTS:
-      return vector_icons::kAccessibilityIcon;
-    case ContentSettingsType::CLIPBOARD_READ_WRITE:
-      return vector_icons::kContentPasteIcon;
-    case ContentSettingsType::VR:
-    case ContentSettingsType::AR:
-      return vector_icons::kVrHeadsetIcon;
-    case ContentSettingsType::STORAGE_ACCESS:
-      return vector_icons::kCookieIcon;
-    case ContentSettingsType::WINDOW_PLACEMENT:
-      return vector_icons::kWindowPlacementIcon;
-    case ContentSettingsType::FONT_ACCESS:
-      return vector_icons::kFontDownloadIcon;
-    case ContentSettingsType::IDLE_DETECTION:
-      return vector_icons::kPersonIcon;
-    default:
-      NOTREACHED();
-      return vector_icons::kExtensionIcon;
-  }
-#endif
+RequestType PermissionRequestImpl::GetRequestType() const {
+  return ContentSettingsTypeToRequestType(content_settings_type_);
 }
 
 #if defined(OS_ANDROID)
-base::string16 PermissionRequestImpl::GetMessageText() const {
+std::u16string PermissionRequestImpl::GetMessageText() const {
   int message_id;
   switch (content_settings_type_) {
     case ContentSettingsType::GEOLOCATION:
@@ -157,7 +84,7 @@ base::string16 PermissionRequestImpl::GetMessageText() const {
       break;
     default:
       NOTREACHED();
-      return base::string16();
+      return std::u16string();
   }
   return l10n_util::GetStringFUTF16(
       message_id,
@@ -165,7 +92,7 @@ base::string16 PermissionRequestImpl::GetMessageText() const {
           GetOrigin(), url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
 }
 
-base::string16 PermissionRequestImpl::GetQuietTitleText() const {
+std::u16string PermissionRequestImpl::GetQuietTitleText() const {
   if (content_settings_type_ == ContentSettingsType::NOTIFICATIONS) {
     return l10n_util::GetStringFUTF16(
         IDS_NOTIFICATION_QUIET_PERMISSION_PROMPT_TITLE,
@@ -174,10 +101,10 @@ base::string16 PermissionRequestImpl::GetQuietTitleText() const {
   }
 
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16 PermissionRequestImpl::GetQuietMessageText() const {
+std::u16string PermissionRequestImpl::GetQuietMessageText() const {
   if (content_settings_type_ == ContentSettingsType::NOTIFICATIONS) {
     return l10n_util::GetStringUTF16(
         IDS_NOTIFICATION_QUIET_PERMISSION_PROMPT_MESSAGE);
@@ -188,7 +115,7 @@ base::string16 PermissionRequestImpl::GetQuietMessageText() const {
 }
 #endif
 
-base::string16 PermissionRequestImpl::GetMessageTextFragment() const {
+std::u16string PermissionRequestImpl::GetMessageTextFragment() const {
   int message_id;
   switch (content_settings_type_) {
     case ContentSettingsType::GEOLOCATION:
@@ -243,13 +170,13 @@ base::string16 PermissionRequestImpl::GetMessageTextFragment() const {
       break;
     default:
       NOTREACHED();
-      return base::string16();
+      return std::u16string();
   }
   return l10n_util::GetStringUTF16(message_id);
 }
 
 #if !defined(OS_ANDROID)
-base::Optional<base::string16> PermissionRequestImpl::GetChipText() const {
+base::Optional<std::u16string> PermissionRequestImpl::GetChipText() const {
   int message_id;
   switch (content_settings_type_) {
     case ContentSettingsType::GEOLOCATION:
@@ -310,10 +237,6 @@ void PermissionRequestImpl::Cancelled() {
 
 void PermissionRequestImpl::RequestFinished() {
   std::move(delete_callback_).Run();
-}
-
-PermissionRequestType PermissionRequestImpl::GetPermissionRequestType() const {
-  return PermissionUtil::GetRequestType(content_settings_type_);
 }
 
 PermissionRequestGestureType PermissionRequestImpl::GetGestureType() const {

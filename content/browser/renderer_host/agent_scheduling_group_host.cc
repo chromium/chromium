@@ -12,10 +12,12 @@
 #include "base/supports_user_data.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host_factory.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/renderer.mojom.h"
 #include "content/common/state_transitions.h"
+#include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/render_process_host.h"
 #include "ipc/ipc_channel_mojo.h"
 #include "ipc/ipc_message.h"
@@ -224,6 +226,19 @@ void AgentSchedulingGroupHost::OnAssociatedInterfaceRequest(
       &process_, bad_message::ASGH_ASSOCIATED_INTERFACE_REQUEST);
 }
 
+void AgentSchedulingGroupHost::AddFilter(BrowserMessageFilter* filter) {
+  DCHECK(filter);
+  // When MBI mode is disabled, we forward these kinds of requests straight to
+  // the underlying `RenderProcessHost`.
+  if (GetMBIMode() == features::MBIMode::kLegacy) {
+    process_.AddFilter(filter);
+    return;
+  }
+
+  filter->RegisterAssociatedInterfaces(channel_.get());
+  channel_->AddFilter(filter->GetFilter());
+}
+
 RenderProcessHost* AgentSchedulingGroupHost::GetProcess() {
   // TODO(crbug.com/1111231): Make the condition below hold.
   // Currently the DCHECK doesn't hold, since RenderViewHostImpl outlives
@@ -322,17 +337,23 @@ void AgentSchedulingGroupHost::DestroyView(
 }
 
 void AgentSchedulingGroupHost::CreateFrameProxy(
+    const blink::RemoteFrameToken& token,
     int32_t routing_id,
-    int32_t render_view_routing_id,
-    const base::Optional<base::UnguessableToken>& opener_frame_token,
+    const base::Optional<blink::FrameToken>& opener_frame_token,
+    int32_t view_routing_id,
     int32_t parent_routing_id,
-    const FrameReplicationState& replicated_state,
-    const base::UnguessableToken& frame_token,
+    blink::mojom::FrameReplicationStatePtr replicated_state,
     const base::UnguessableToken& devtools_frame_token) {
   DCHECK_EQ(state_, LifecycleState::kBound);
   mojo_remote_.get()->CreateFrameProxy(
-      routing_id, render_view_routing_id, opener_frame_token, parent_routing_id,
-      replicated_state, frame_token, devtools_frame_token);
+      token, routing_id, opener_frame_token, view_routing_id, parent_routing_id,
+      std::move(replicated_state), devtools_frame_token);
+}
+
+void AgentSchedulingGroupHost::ReportNoBinderForInterface(
+    const std::string& error) {
+  broker_receiver_.ReportBadMessage(error +
+                                    " for the agent scheduling group scope");
 }
 
 // static
@@ -347,6 +368,16 @@ AgentSchedulingGroupHostFactory* AgentSchedulingGroupHost::
     get_agent_scheduling_group_host_factory_for_testing() {
   DCHECK(g_agent_scheduling_group_host_factory_);
   return g_agent_scheduling_group_host_factory_;
+}
+
+void AgentSchedulingGroupHost::DidUnloadRenderFrame(
+    const blink::LocalFrameToken& frame_token) {
+  // |frame_host| could be null if we decided to remove the RenderFrameHostImpl
+  // because the Unload request took too long.
+  if (auto* frame_host =
+          RenderFrameHostImpl::FromFrameToken(process_.GetID(), frame_token)) {
+    frame_host->OnUnloadACK();
+  }
 }
 
 void AgentSchedulingGroupHost::GetRoute(
@@ -378,6 +409,7 @@ void AgentSchedulingGroupHost::ResetIPC() {
   remote_route_provider_.reset();
   route_provider_receiver_.reset();
   associated_interface_provider_receivers_.Clear();
+  broker_receiver_.reset();
   channel_ = nullptr;
 }
 
@@ -398,9 +430,10 @@ void AgentSchedulingGroupHost::SetUpIPC() {
   DCHECK(!receiver_.is_bound());
   DCHECK(!remote_route_provider_.is_bound());
   DCHECK(!route_provider_receiver_.is_bound());
+  DCHECK(!broker_receiver_.is_bound());
 
-  // After this function returns, all of `this`'s associated mojo interfaces
-  // need to be bound, and associated "properly" - in
+  // After this function returns, all of `this`'s mojo interfaces need to be
+  // bound, and associated interfaces need to be associated "properly" - in
   // `features::MBIMode::kEnabledPerRenderProcessHost` and
   // `features::MBIMode::kEnabledPerSiteInstance` mode that means they are
   // associated with the ASG's legacy IPC channel, and in
@@ -418,7 +451,8 @@ void AgentSchedulingGroupHost::SetUpIPC() {
   //    IPC channel/pipe.
   if (GetMBIMode() == features::MBIMode::kLegacy) {
     process_.GetRendererInterface()->CreateAssociatedAgentSchedulingGroup(
-        mojo_remote_.BindNewEndpointAndPassReceiver());
+        mojo_remote_.BindNewEndpointAndPassReceiver(),
+        broker_receiver_.BindNewPipeAndPassRemote());
   } else {
     auto io_task_runner = GetIOThreadTaskRunner({});
 
@@ -426,7 +460,8 @@ void AgentSchedulingGroupHost::SetUpIPC() {
     PendingRemote<IPC::mojom::ChannelBootstrap> bootstrap;
 
     process_.GetRendererInterface()->CreateAgentSchedulingGroup(
-        bootstrap.InitWithNewPipeAndPassReceiver());
+        bootstrap.InitWithNewPipeAndPassReceiver(),
+        broker_receiver_.BindNewPipeAndPassRemote());
 
     auto channel_factory = ChannelMojo::CreateServerFactory(
         bootstrap.PassPipe(), /*ipc_task_runner=*/io_task_runner,

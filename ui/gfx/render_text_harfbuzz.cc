@@ -240,7 +240,7 @@ bool AreGraphemePropertiesCompatible(const GraphemeProperties& first,
 // (see: UNICODE TEXT SEGMENTATION (http://unicode.org/reports/tr29/).
 // Breaks between |run_start| and |run_end| and force break after the grapheme
 // starting at |run_break|.
-size_t FindRunBreakingCharacter(const base::string16& text,
+size_t FindRunBreakingCharacter(const std::u16string& text,
                                 UScriptCode script,
                                 size_t run_start,
                                 size_t run_break,
@@ -300,7 +300,7 @@ size_t FindRunBreakingCharacter(const base::string16& text,
 // Consider 3 characters with the script values {Kana}, {Hira, Kana}, {Kana}.
 // Without script extensions only the first script in each set would be taken
 // into account, resulting in 3 runs where 1 would be enough.
-size_t ScriptInterval(const base::string16& text,
+size_t ScriptInterval(const std::u16string& text,
                       size_t start,
                       size_t length,
                       UScriptCode* script) {
@@ -342,7 +342,7 @@ void MarkFontAsTried(sk_sp<SkTypeface> typeface,
 }
 
 // Whether |segment| corresponds to the newline character.
-bool IsNewlineSegment(const base::string16& text,
+bool IsNewlineSegment(const std::u16string& text,
                       const internal::LineSegment& segment) {
   const size_t offset = segment.char_range.start();
   const size_t length = segment.char_range.length();
@@ -355,7 +355,7 @@ bool IsNewlineSegment(const base::string16& text,
 // incremented if the caret is right after the newline character, i.e, the
 // cursor affinity is |CURSOR_BACKWARD| while containing the newline character.
 size_t LineIndexForNewline(const size_t line_index,
-                           const base::string16& text,
+                           const std::u16string& text,
                            const internal::LineSegment& segment,
                            const SelectionModel& caret) {
   bool at_newline = IsNewlineSegment(text, segment) &&
@@ -411,7 +411,7 @@ class HarfBuzzLineBreaker {
                       float min_height,
                       float glyph_height_for_test,
                       WordWrapBehavior word_wrap_behavior,
-                      const base::string16& text,
+                      const std::u16string& text,
                       const BreakList<size_t>* words,
                       const internal::TextRunList& run_list)
       : max_width_((max_width == 0) ? SK_ScalarMax : SkIntToScalar(max_width)),
@@ -740,7 +740,7 @@ class HarfBuzzLineBreaker {
   const float min_height_;
   const float glyph_height_for_test_;
   const WordWrapBehavior word_wrap_behavior_;
-  const base::string16& text_;
+  const std::u16string& text_;
   const BreakList<size_t>* const words_;
   const internal::TextRunList& run_list_;
 
@@ -1184,7 +1184,7 @@ namespace {
 
 // Input for the stateless implementation of ShapeRunWithFont.
 struct ShapeRunWithFontInput {
-  ShapeRunWithFontInput(const base::string16& full_text,
+  ShapeRunWithFontInput(const std::u16string& full_text,
                         const TextRunHarfBuzz::FontParams& font_params,
                         Range full_range,
                         bool obscured,
@@ -1253,7 +1253,7 @@ struct ShapeRunWithFontInput {
   bool subpixel_rendering_suppressed;
 
   // The parts of the input text that may be read by hb_buffer_add_utf16.
-  base::string16 text;
+  std::u16string text;
   // The conversion of the input range to a range within |text|.
   Range range;
   // The hash is cached to avoid repeated calls.
@@ -1381,7 +1381,7 @@ RenderTextHarfBuzz::RenderTextHarfBuzz()
 
 RenderTextHarfBuzz::~RenderTextHarfBuzz() {}
 
-const base::string16& RenderTextHarfBuzz::GetDisplayText() {
+const std::u16string& RenderTextHarfBuzz::GetDisplayText() {
   // TODO(krb): Consider other elision modes for multiline.
   if ((multiline() && (max_lines() == 0 || elide_behavior() != ELIDE_TAIL)) ||
       elide_behavior() == NO_ELIDE || elide_behavior() == FADE_TAIL) {
@@ -1674,7 +1674,7 @@ void RenderTextHarfBuzz::EnsureLayout() {
 
   if (update_display_run_list_) {
     DCHECK(text_elided());
-    const base::string16& display_text = GetDisplayText();
+    const std::u16string& display_text = GetDisplayText();
     display_run_list_ = std::make_unique<internal::TextRunList>();
 
     if (!display_text.empty())
@@ -1737,7 +1737,7 @@ void RenderTextHarfBuzz::DrawVisualText(internal::SkiaTextRenderer* renderer,
   }
 
   internal::TextRunList* run_list = GetRunList();
-  const base::string16& display_text = GetDisplayText();
+  const std::u16string& display_text = GetDisplayText();
   for (size_t i = 0; i < shaped_text->lines().size(); ++i) {
     const internal::Line& line = shaped_text->lines()[i];
     const Vector2d origin = GetLineOffset(i) + Vector2d(0, line.baseline);
@@ -1831,7 +1831,7 @@ SelectionModel RenderTextHarfBuzz::LastSelectionModelInsideRun(
   return SelectionModel(position, CURSOR_FORWARD);
 }
 
-void RenderTextHarfBuzz::ItemizeAndShapeText(const base::string16& text,
+void RenderTextHarfBuzz::ItemizeAndShapeText(const std::u16string& text,
                                              internal::TextRunList* run_list) {
   CommonizedRunsMap commonized_run_map;
   ItemizeTextToRuns(text, run_list, &commonized_run_map);
@@ -1848,7 +1848,7 @@ void RenderTextHarfBuzz::ItemizeAndShapeText(const base::string16& text,
 }
 
 void RenderTextHarfBuzz::ItemizeTextToRuns(
-    const base::string16& text,
+    const std::u16string& text,
     internal::TextRunList* out_run_list,
     CommonizedRunsMap* out_commonized_run_map) {
   TRACE_EVENT1("ui", "RenderTextHarfBuzz::ItemizeTextToRuns", "text_length",
@@ -1969,7 +1969,7 @@ void RenderTextHarfBuzz::ItemizeTextToRuns(
 }
 
 void RenderTextHarfBuzz::ShapeRuns(
-    const base::string16& text,
+    const std::u16string& text,
     const internal::TextRunHarfBuzz::FontParams& font_params,
     std::vector<internal::TextRunHarfBuzz*> runs) {
   TRACE_EVENT1("ui", "RenderTextHarfBuzz::ShapeRuns", "run_count", runs.size());
@@ -2154,7 +2154,7 @@ void RenderTextHarfBuzz::ShapeRuns(
 }
 
 void RenderTextHarfBuzz::ShapeRunsWithFont(
-    const base::string16& text,
+    const std::u16string& text,
     const internal::TextRunHarfBuzz::FontParams& font_params,
     std::vector<internal::TextRunHarfBuzz*>* in_out_runs) {
   // ShapeRunWithFont can be extremely slow, so use cached results if possible.
@@ -2209,7 +2209,7 @@ void RenderTextHarfBuzz::EnsureLayoutRunList() {
     device_scale_factor_ = device_scale_factor;
     layout_run_list_.Reset();
 
-    const base::string16& text = GetLayoutText();
+    const std::u16string& text = GetLayoutText();
     if (!text.empty())
       ItemizeAndShapeText(text, &layout_run_list_);
 

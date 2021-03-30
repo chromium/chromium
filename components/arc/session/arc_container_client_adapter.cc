@@ -116,6 +116,21 @@ class ArcContainerClientAdapter
     request.set_arc_custom_tabs_experiment(params.arc_custom_tabs_experiment);
     request.set_disable_system_default_app(
         params.arc_disable_system_default_app);
+    request.set_disable_media_store_maintenance(
+        params.disable_media_store_maintenance);
+    request.set_disable_download_provider(params.disable_download_provider);
+    request.set_arc_generate_pai(params.arc_generate_play_auto_install);
+
+    switch (params.usap_profile) {
+      case StartParams::UsapProfile::DEFAULT:
+        break;
+      case StartParams::UsapProfile::M4G:
+      case StartParams::UsapProfile::M8G:
+      case StartParams::UsapProfile::M16G:
+        VLOG(1) << "USAP profile is not supported for container.";
+        break;
+    }
+
     chromeos::SessionManagerClient::Get()->StartArcMiniContainer(
         request, std::move(callback));
   }
@@ -159,6 +174,10 @@ class ArcContainerClientAdapter
       LOG(WARNING) << "cryptohome_id is empty";
     cryptohome_id_ = cryptohome_id;
   }
+
+  // ArcContainerClientAdapter gets the demo session apps path from
+  // UpgradeParams, so it does not use the DemoModeDelegate.
+  void SetDemoModeDelegate(DemoModeDelegate* delegate) override {}
 
   // chromeos::SessionManagerClient::Observer overrides:
   void ArcInstanceStopped() override {

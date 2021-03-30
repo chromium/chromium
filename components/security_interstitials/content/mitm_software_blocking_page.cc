@@ -39,6 +39,7 @@ MITMSoftwareBlockingPage::MITMSoftwareBlockingPage(
     int cert_error,
     const GURL& request_url,
     std::unique_ptr<SSLCertReporter> ssl_cert_reporter,
+    bool can_show_enhanced_protection_message,
     const net::SSLInfo& ssl_info,
     const std::string& mitm_software_name,
     bool is_enterprise_managed,
@@ -52,6 +53,7 @@ MITMSoftwareBlockingPage::MITMSoftwareBlockingPage(
                           std::move(ssl_cert_reporter),
                           false /* overridable */,
                           base::Time::Now(),
+                          can_show_enhanced_protection_message,
                           std::move(controller_client)),
 
       ssl_info_(ssl_info),

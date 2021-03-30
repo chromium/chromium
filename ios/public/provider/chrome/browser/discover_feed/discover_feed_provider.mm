@@ -10,7 +10,8 @@
 
 void DiscoverFeedProvider::StartFeed(
     DiscoverFeedConfiguration* discover_config) {}
-void DiscoverFeedProvider::StartFeed(AuthenticationService* auth_service) {}
+
+void DiscoverFeedProvider::StopFeed() {}
 
 bool DiscoverFeedProvider::IsDiscoverFeedEnabled() {
   return false;

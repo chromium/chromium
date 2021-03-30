@@ -1,0 +1,175 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/viz/service/display/display_resource_provider_software.h"
+
+#include <stddef.h>
+#include <stdint.h>
+
+#include <memory>
+#include <set>
+#include <unordered_map>
+#include <utility>
+#include <vector>
+
+#include "base/bind.h"
+#include "base/callback_helpers.h"
+#include "base/check.h"
+#include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/shared_memory_mapping.h"
+#include "build/build_config.h"
+#include "components/viz/client/client_resource_provider.h"
+#include "components/viz/common/resources/bitmap_allocation.h"
+#include "components/viz/common/resources/resource_format_utils.h"
+#include "components/viz/common/resources/returned_resource.h"
+#include "components/viz/common/resources/shared_bitmap.h"
+#include "components/viz/common/resources/single_release_callback.h"
+#include "components/viz/service/display/shared_bitmap_manager.h"
+#include "components/viz/test/test_shared_bitmap_manager.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect.h"
+
+using testing::_;
+using testing::ByMove;
+using testing::DoAll;
+using testing::Return;
+using testing::SaveArg;
+
+namespace viz {
+namespace {
+
+class MockReleaseCallback {
+ public:
+  MOCK_METHOD2(Released, void(const gpu::SyncToken& token, bool lost));
+};
+
+static void CollectResources(std::vector<ReturnedResource>* array,
+                             const std::vector<ReturnedResource>& returned) {
+  array->insert(array->end(), returned.begin(), returned.end());
+}
+
+static SharedBitmapId CreateAndFillSharedBitmap(SharedBitmapManager* manager,
+                                                const gfx::Size& size,
+                                                ResourceFormat format,
+                                                uint32_t value) {
+  SharedBitmapId shared_bitmap_id = SharedBitmap::GenerateId();
+
+  base::MappedReadOnlyRegion shm =
+      bitmap_allocation::AllocateSharedBitmap(size, RGBA_8888);
+  manager->ChildAllocatedSharedBitmap(shm.region.Map(), shared_bitmap_id);
+  base::span<uint32_t> span =
+      shm.mapping.GetMemoryAsSpan<uint32_t>(size.GetArea());
+  std::fill(span.begin(), span.end(), value);
+  return shared_bitmap_id;
+}
+
+class DisplayResourceProviderSoftwareTest : public testing::Test {
+ public:
+  DisplayResourceProviderSoftwareTest() {
+    shared_bitmap_manager_ = std::make_unique<TestSharedBitmapManager>();
+
+    resource_provider_ = std::make_unique<DisplayResourceProviderSoftware>(
+        shared_bitmap_manager_.get());
+
+    child_resource_provider_ = std::make_unique<ClientResourceProvider>();
+  }
+
+  ~DisplayResourceProviderSoftwareTest() override {
+    child_resource_provider_->ShutdownAndReleaseAllResources();
+  }
+
+  TransferableResource CreateResource(ResourceFormat format) {
+    constexpr gfx::Size size(64, 64);
+    SharedBitmapId shared_bitmap_id = CreateAndFillSharedBitmap(
+        shared_bitmap_manager_.get(), size, format, 0);
+
+    return TransferableResource::MakeSoftware(shared_bitmap_id, size, format);
+  }
+
+ protected:
+  std::unique_ptr<DisplayResourceProviderSoftware> resource_provider_;
+  std::unique_ptr<ClientResourceProvider> child_resource_provider_;
+  std::unique_ptr<TestSharedBitmapManager> shared_bitmap_manager_;
+};
+
+TEST_F(DisplayResourceProviderSoftwareTest, LostMailboxInParent) {
+  gpu::SyncToken sync_token(gpu::CommandBufferNamespace::GPU_IO,
+                            gpu::CommandBufferId::FromUnsafeValue(0x12), 0x34);
+  auto tran = CreateResource(RGBA_8888);
+  tran.id = ResourceId(11u);
+
+  std::vector<ReturnedResource> returned_to_child;
+  int child_id = resource_provider_->CreateChild(
+      base::BindRepeating(&CollectResources, &returned_to_child));
+
+  // Receive a resource then lose the gpu context.
+  resource_provider_->ReceiveFromChild(child_id, {tran});
+  resource_provider_->DidLoseContextProvider();
+
+  // Transfer resources back from the parent to the child.
+  resource_provider_->DeclareUsedResourcesFromChild(child_id, {});
+  ASSERT_EQ(1u, returned_to_child.size());
+
+  // Losing an output surface only loses hardware resources.
+  EXPECT_EQ(returned_to_child[0].lost, false);
+}
+
+TEST_F(DisplayResourceProviderSoftwareTest, ReadSoftwareResources) {
+  gfx::Size size(64, 64);
+  ResourceFormat format = RGBA_8888;
+  const uint32_t kBadBeef = 0xbadbeef;
+  SharedBitmapId shared_bitmap_id = CreateAndFillSharedBitmap(
+      shared_bitmap_manager_.get(), size, format, kBadBeef);
+
+  auto resource =
+      TransferableResource::MakeSoftware(shared_bitmap_id, size, format);
+
+  MockReleaseCallback release;
+  ResourceId resource_id = child_resource_provider_->ImportResource(
+      resource,
+      SingleReleaseCallback::Create(base::BindOnce(
+          &MockReleaseCallback::Released, base::Unretained(&release))));
+  EXPECT_NE(kInvalidResourceId, resource_id);
+
+  // Transfer resources to the parent.
+  std::vector<TransferableResource> send_to_parent;
+  std::vector<ReturnedResource> returned_to_child;
+  int child_id = resource_provider_->CreateChild(
+      base::BindRepeating(&CollectResources, &returned_to_child));
+  child_resource_provider_->PrepareSendToParent(
+      {resource_id}, &send_to_parent,
+      static_cast<RasterContextProvider*>(nullptr));
+  resource_provider_->ReceiveFromChild(child_id, send_to_parent);
+
+  // In DisplayResourceProvider's namespace, use the mapped resource id.
+  std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
+      resource_provider_->GetChildToParentMap(child_id);
+  ResourceId mapped_resource_id = resource_map[resource_id];
+
+  {
+    DisplayResourceProviderSoftware::ScopedReadLockSkImage lock(
+        resource_provider_.get(), mapped_resource_id);
+    const SkImage* sk_image = lock.sk_image();
+    SkBitmap sk_bitmap;
+    sk_image->asLegacyBitmap(&sk_bitmap);
+    EXPECT_EQ(sk_image->width(), size.width());
+    EXPECT_EQ(sk_image->height(), size.height());
+    EXPECT_EQ(*sk_bitmap.getAddr32(16, 16), kBadBeef);
+  }
+
+  EXPECT_EQ(0u, returned_to_child.size());
+  // Transfer resources back from the parent to the child. Set no resources as
+  // being in use.
+  resource_provider_->DeclareUsedResourcesFromChild(child_id, ResourceIdSet());
+  EXPECT_EQ(1u, returned_to_child.size());
+  child_resource_provider_->ReceiveReturnsFromParent(returned_to_child);
+
+  EXPECT_CALL(release, Released(_, false));
+  child_resource_provider_->RemoveImportedResource(resource_id);
+}
+
+}  // namespace
+}  // namespace viz

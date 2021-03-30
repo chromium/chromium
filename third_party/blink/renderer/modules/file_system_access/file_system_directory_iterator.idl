@@ -1,0 +1,14 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Async iterator returned by FileSystemDirectoryHandle.getEntries().
+// https://wicg.github.io/file-system-access/#api-filesystemdirectoryhandle-asynciterable
+// https://www.ecma-international.org/ecma-262/9.0/index.html#sec-asynciterator-interface
+[
+    LegacyNoInterfaceObject,
+    ActiveScriptWrappable,
+    RuntimeEnabled=FileSystemAccess
+] interface FileSystemDirectoryIterator {
+  [CallWith=ScriptState] Promise<any> next();
+};

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_OFFLINE_LOGIN_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_OFFLINE_LOGIN_SCREEN_HANDLER_H_
 
-#include "chrome/browser/chromeos/login/screens/offline_login_screen.h"
+#include "chrome/browser/ash/login/screens/offline_login_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
 namespace chromeos {
@@ -38,6 +38,12 @@ class OfflineLoginView {
   // TODO(dkuzmin): merge this function with Show() in future and use
   // ShowScreenWithData in handler.
   virtual void LoadParams(base::DictionaryValue& params) = 0;
+
+  // Proceeds to the password input dialog.
+  virtual void ShowPasswordPage() = 0;
+
+  // Shows error pop-up when the user cannot login offline.
+  virtual void ShowOnlineRequiredDialog() = 0;
 };
 
 class OfflineLoginScreenHandler : public BaseScreenHandler,
@@ -54,6 +60,7 @@ class OfflineLoginScreenHandler : public BaseScreenHandler,
  private:
   void HandleCompleteAuth(const std::string& username,
                           const std::string& password);
+  void HandleEmailSubmitted(const std::string& username);
 
   // OfflineLoginView:
   void Show() override;
@@ -62,6 +69,8 @@ class OfflineLoginScreenHandler : public BaseScreenHandler,
   void Unbind() override;
   void Reset() override;
   void LoadParams(base::DictionaryValue& params) override;
+  void ShowPasswordPage() override;
+  void ShowOnlineRequiredDialog() override;
 
   // BaseScreenHandler:
   void RegisterMessages() override;

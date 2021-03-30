@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
@@ -191,7 +192,21 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewBrowserTest,
   views::test::AXEventCounter counter(views::AXEventManager::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
   ShowUi("geolocation");
+
+// AnnounceText is called when permission requests are announced. But on Mac,
+// AnnounceText doesn't go through the path that uses Event::kAlert. Therefore
+// we can't test it.
+#if !defined(OS_MAC)
+  PermissionChip* permission_chip = GetPermissionChipView();
+  // If chip UI is used, two notifications will be announced: one that
+  // permission was requested and second when bubble is opened.
+  if (permission_chip->GetVisible())
+    EXPECT_EQ(2, counter.GetCount(ax::mojom::Event::kAlert));
+  else
+    EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
+#else
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
+#endif
 }
 
 // Test bubbles showing when tabs move between windows. Simulates a situation
@@ -334,4 +349,26 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewBrowserTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PermissionPromptBubbleViewBrowserTest,
+                         ::testing::Values(false, true));
+
+class OneTimePermissionPromptBubbleViewBrowserTest
+    : public PermissionPromptBubbleViewBrowserTest {
+ public:
+  OneTimePermissionPromptBubbleViewBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        permissions::features::kOneTimeGeolocationPermission,
+        {{"OkButtonBehavesAsAllowAlways", GetParam() ? "true" : "false"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(OneTimePermissionPromptBubbleViewBrowserTest,
+                       InvokeUi_geolocation) {
+  ShowAndVerifyUi();
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         OneTimePermissionPromptBubbleViewBrowserTest,
                          ::testing::Values(false, true));

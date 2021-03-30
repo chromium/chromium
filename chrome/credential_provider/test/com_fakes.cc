@@ -233,7 +233,7 @@ HRESULT FakeCredentialProviderCredentialEvents::SetFieldString(
     DWORD dwFieldID,
     LPCWSTR psz) {
   if (psz != nullptr) {
-    base::string16 copy_wchart(psz);
+    std::wstring copy_wchart(psz);
     field_string_[pcpc][dwFieldID] = copy_wchart;
   }
   return S_OK;

@@ -23,10 +23,11 @@
 #include "components/sync/engine/sync_string_conversions.h"
 #include "components/sync/model/time.h"
 #include "components/sync/protocol/proto_enum_conversions.h"
+#include "components/version_info/version_info.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/constants/chromeos_features.h"
+#include "ash/constants/ash_features.h"
 #endif
 
 namespace syncer {
@@ -51,9 +52,7 @@ const char kTrafficLogJS[] = "traffic_log.js";
 const char kInvalidationsJS[] = "invalidations.js";
 
 // Message handlers.
-const char kDispatchEvent[] = "chrome.sync.dispatchEvent";
 const char kGetAllNodes[] = "getAllNodes";
-const char kGetAllNodesCallback[] = "chrome.sync.getAllNodesCallback";
 const char kRequestDataAndRegisterForUpdates[] =
     "requestDataAndRegisterForUpdates";
 const char kRequestIncludeSpecificsInitialState[] =
@@ -62,11 +61,8 @@ const char kRequestListOfTypes[] = "requestListOfTypes";
 const char kRequestStart[] = "requestStart";
 const char kRequestStopKeepData[] = "requestStopKeepData";
 const char kRequestStopClearData[] = "requestStopClearData";
-const char kRequestUserEventsVisibility[] = "requestUserEventsVisibility";
 const char kSetIncludeSpecifics[] = "setIncludeSpecifics";
 const char kTriggerRefresh[] = "triggerRefresh";
-const char kUserEventsVisibilityCallback[] =
-    "chrome.sync.userEventsVisibilityCallback";
 const char kWriteUserEvent[] = "writeUserEvent";
 
 // Other strings.
@@ -244,15 +240,15 @@ std::string GetTransportStateString(syncer::SyncService::TransportState state) {
 // If version information is unavailable, returns "invalid."
 // TODO(zea): this approximately matches syncer::MakeUserAgentForSync in
 // sync_util.h. Unify the two if possible.
-std::string GetVersionString(version_info::Channel channel) {
+std::string GetVersionString(const std::string& channel) {
   // Build a version string that matches syncer::MakeUserAgentForSync with the
   // addition of channel info and proper OS names.
-  // chrome::GetChannelName() returns empty string for stable channel or
-  // unofficial builds, the channel string otherwise. We want to have "-devel"
-  // for unofficial builds only.
-  std::string version_modifier = version_info::GetChannelString(channel);
+  // |channel| will be an empty string for stable channel or unofficial builds,
+  // the channel string otherwise. We want to have "-devel" for unofficial
+  // builds only.
+  std::string version_modifier = channel;
   if (version_modifier.empty()) {
-    if (channel != version_info::Channel::STABLE) {
+    if (!version_info::IsOfficialBuild()) {
       version_modifier = "-devel";
     }
   } else {
@@ -272,8 +268,8 @@ std::string GetTimeStr(base::Time time, const std::string& default_msg) {
 // Analogous to GetTimeDebugString from components/sync/base/time.h. Consider
 // moving it there if more places need this.
 std::string GetTimeDeltaDebugString(base::TimeDelta t) {
-  base::string16 result;
-  if (!base::TimeDurationFormat(t, base::DURATION_WIDTH_WIDE, &result)) {
+  std::u16string result;
+  if (!base::TimeDurationFormat(t, base::DURATION_WIDTH_NUMERIC, &result)) {
     return "Invalid TimeDelta?!";
   }
   return base::UTF16ToUTF8(result);
@@ -321,7 +317,7 @@ std::string GetConnectionStatus(const SyncTokenStatus& status) {
 std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
     IncludeSensitiveData include_sensitive_data,
     SyncService* service,
-    version_info::Channel channel) {
+    const std::string& channel) {
   auto about_info = std::make_unique<base::DictionaryValue>();
 
   SectionList section_list;

@@ -16,13 +16,14 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
+    "//chrome/browser/feature_engagement:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/util:java",
     "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/feature_engagement/public:public_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//third_party/android_deps:androidx_core_core_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//ui/android:ui_full_java",
   ]
   resources_package = "org.chromium.chrome.browser.user_education"
@@ -30,5 +31,4 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [ "java/res/values/dimens.xml" ]
-  create_srcjar = false
 }

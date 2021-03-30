@@ -27,7 +27,7 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr">aaa| <span>bbb אאא </span>ווש</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr">aaa <span>bbb |\u05D0\u05D0\u05D0 </span>\u05D5\u05D5\u05E9</div>',
+  '<div contenteditable dir="ltr">aaa |<span>bbb \u05D0\u05D0\u05D0 </span>\u05D5\u05D5\u05E9</div>',
   '19-3 right word');
 
 selection_test(
@@ -57,7 +57,7 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr">aaa <span>bbb| אאא </span>ווש</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr">aaa <span>bbb \u05D0\u05D0\u05D0 |</span>\u05D5\u05D5\u05E9</div>',
+  '<div contenteditable dir="ltr">aaa <span>bbb |\u05D0\u05D0\u05D0 </span>\u05D5\u05D5\u05E9</div>',
   '19-8 right word');
 
 selection_test(
@@ -81,7 +81,7 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr">aaa <span>bbb אאא| </span>ווש</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr">aaa <span>bbb אאא </span>ווש|</div>',
+  '<div contenteditable dir="ltr">aaa <span>bbb אאא |</span>ווש</div>',
   '19-12 right word');
 
 selection_test(

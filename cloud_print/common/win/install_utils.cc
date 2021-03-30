@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
+#include "base/strings/string_util.h"
 #include "base/win/current_module.h"
 #include "base/win/registry.h"
 #include "cloud_print/common/win/cloud_print_utils.h"
@@ -50,8 +51,8 @@ const wchar_t kNoRepair[] = L"NoRepair";
 
 }  // namespace
 
-void SetGoogleUpdateKeys(const base::string16& product_id,
-                         const base::string16& product_name) {
+void SetGoogleUpdateKeys(const std::wstring& product_id,
+                         const std::wstring& product_name) {
   base::win::RegKey key;
   if (key.Create(HKEY_LOCAL_MACHINE,
                  (cloud_print::kClientsKey + product_id).c_str(),
@@ -60,11 +61,11 @@ void SetGoogleUpdateKeys(const base::string16& product_id,
   }
 
   // Get the version from the resource file.
-  base::string16 version_string;
+  std::wstring version_string;
   std::unique_ptr<FileVersionInfo> version_info =
       FileVersionInfo::CreateFileVersionInfoForModule(CURRENT_MODULE());
   if (version_info) {
-    version_string = version_info->product_version();
+    version_string = base::AsWString(version_info->product_version());
   } else {
     LOG(ERROR) << "Unable to get version string";
     // Use a random version string so that Google Update has something to go by.
@@ -77,8 +78,8 @@ void SetGoogleUpdateKeys(const base::string16& product_id,
   }
 }
 
-void SetGoogleUpdateError(const base::string16& product_id,
-                          const base::string16& message) {
+void SetGoogleUpdateError(const std::wstring& product_id,
+                          const std::wstring& message) {
   LOG(ERROR) << message;
   base::win::RegKey key;
   if (key.Create(HKEY_LOCAL_MACHINE,
@@ -95,7 +96,7 @@ void SetGoogleUpdateError(const base::string16& product_id,
   }
 }
 
-void SetGoogleUpdateError(const base::string16& product_id, HRESULT hr) {
+void SetGoogleUpdateError(const std::wstring& product_id, HRESULT hr) {
   LOG(ERROR) << cloud_print::GetErrorMessage(hr);
   base::win::RegKey key;
   if (key.Create(HKEY_LOCAL_MACHINE,
@@ -111,7 +112,7 @@ void SetGoogleUpdateError(const base::string16& product_id, HRESULT hr) {
   }
 }
 
-void DeleteGoogleUpdateKeys(const base::string16& product_id) {
+void DeleteGoogleUpdateKeys(const std::wstring& product_id) {
   base::win::RegKey key;
   if (key.Open(HKEY_LOCAL_MACHINE,
                (cloud_print::kClientsKey + product_id).c_str(),
@@ -124,8 +125,8 @@ void DeleteGoogleUpdateKeys(const base::string16& product_id) {
   }
 }
 
-void CreateUninstallKey(const base::string16& uninstall_id,
-                        const base::string16& product_name,
+void CreateUninstallKey(const std::wstring& uninstall_id,
+                        const std::wstring& product_name,
                         const std::string& uninstall_switch) {
   // Now write the Windows Uninstall entries
   // Minimal error checking here since the install can continue
@@ -152,8 +153,9 @@ void CreateUninstallKey(const base::string16& uninstall_id,
       FileVersionInfo::CreateFileVersionInfoForModule(CURRENT_MODULE());
 
   if (version_info) {
-    key.WriteValue(kDisplayVersion, version_info->file_version().c_str());
-    key.WriteValue(kPublisher, version_info->company_name().c_str());
+    key.WriteValue(kDisplayVersion,
+                   base::as_wcstr(version_info->file_version()));
+    key.WriteValue(kPublisher, base::as_wcstr(version_info->company_name()));
   } else {
     LOG(ERROR) << "Unable to get version string";
   }
@@ -163,12 +165,12 @@ void CreateUninstallKey(const base::string16& uninstall_id,
   key.WriteValue(kNoRepair, 1);
 }
 
-void DeleteUninstallKey(const base::string16& uninstall_id) {
+void DeleteUninstallKey(const std::wstring& uninstall_id) {
   ::RegDeleteKey(HKEY_LOCAL_MACHINE,
                  (cloud_print::kUninstallKey + uninstall_id).c_str());
 }
 
-base::FilePath GetInstallLocation(const base::string16& uninstall_id) {
+base::FilePath GetInstallLocation(const std::wstring& uninstall_id) {
   base::win::RegKey key;
   if (key.Open(HKEY_LOCAL_MACHINE,
                (cloud_print::kUninstallKey + uninstall_id).c_str(),
@@ -176,7 +178,7 @@ base::FilePath GetInstallLocation(const base::string16& uninstall_id) {
     // Not installed.
     return base::FilePath();
   }
-  base::string16 install_path_value;
+  std::wstring install_path_value;
   key.ReadValue(kInstallLocation, &install_path_value);
   return base::FilePath(install_path_value);
 }

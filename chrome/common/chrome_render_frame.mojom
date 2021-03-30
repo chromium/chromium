@@ -4,7 +4,6 @@
 
 module chrome.mojom;
 
-import "chrome/common/web_page_metadata.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "third_party/blink/public/mojom/window_features/window_features.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -45,9 +44,6 @@ interface ChromeRenderFrame {
   // time which is late enough to not be thrown out, and early enough to be
   // before onload events are fired.
   ExecuteWebUIJavaScript(mojo_base.mojom.String16 javascript);
-
-  // Requests the web page metadata from the renderer.
-  GetWebPageMetadata() => (WebPageMetadata web_page_metadata);
 
   // Sets a header identifying the CCT session.
   [EnableIf=is_android]

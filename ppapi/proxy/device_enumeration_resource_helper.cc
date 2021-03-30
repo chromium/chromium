@@ -49,7 +49,7 @@ int32_t DeviceEnumerationResourceHelper::EnumerateDevices(
   PpapiHostMsg_DeviceEnumeration_EnumerateDevices msg;
   owner_->Call<PpapiPluginMsg_DeviceEnumeration_EnumerateDevicesReply>(
       PluginResource::RENDERER, msg,
-      base::Bind(
+      base::BindOnce(
           &DeviceEnumerationResourceHelper::OnPluginMsgEnumerateDevicesReply,
           AsWeakPtr(), output, callback));
   return PP_OK_COMPLETIONPENDING;

@@ -99,7 +99,7 @@ class MultilingualSpellCheckTest : public testing::Test {
   }
 
   void ExpectSpellCheckParagraphResults(
-      const base::string16& input,
+      const std::u16string& input,
       const std::vector<SpellCheckResult>& expected) {
     blink::WebVector<blink::WebTextCheckingResult> results;
     spellcheck_->SpellCheckParagraph(input, &results);
@@ -191,7 +191,7 @@ TEST_F(MultilingualSpellCheckTest, MultilingualSpellCheckParagraphBlank) {
 
   ExpectSpellCheckParagraphResults(
       // English, German, Spanish, and a misspelled word.
-      base::UTF8ToUTF16("rocket Schwarzkommando destruyan pcnyhon"),
+      u"rocket Schwarzkommando destruyan pcnyhon",
       std::vector<SpellCheckResult>());
 }
 
@@ -202,8 +202,7 @@ TEST_F(MultilingualSpellCheckTest, MultilingualSpellCheckParagraphCorrect) {
 
   ExpectSpellCheckParagraphResults(
       // English, German, and Spanish words, all spelled correctly.
-      base::UTF8ToUTF16("rocket Schwarzkommando destruyan"),
-      std::vector<SpellCheckResult>());
+      u"rocket Schwarzkommando destruyan", std::vector<SpellCheckResult>());
 }
 
 // Make sure that all the misspellings in the text are found.
@@ -215,7 +214,7 @@ TEST_F(MultilingualSpellCheckTest, MultilingualSpellCheckParagraph) {
 
   ExpectSpellCheckParagraphResults(
       // English, German, Spanish, and a misspelled word.
-      base::UTF8ToUTF16("rocket Schwarzkommando destruyan pcnyhon"), expected);
+      u"rocket Schwarzkommando destruyan pcnyhon", expected);
 }
 
 // Ensure that suggestions are handled properly for multiple languages.
@@ -254,9 +253,9 @@ TEST_F(MultilingualSpellCheckTest, MultilingualSpellCheckSuggestions) {
       continue;
     }
 
-    std::vector<base::string16> expected_suggestions = base::SplitString(
+    std::vector<std::u16string> expected_suggestions = base::SplitString(
         base::WideToUTF16(kTestCases[i].expected_suggestions),
-        base::string16(1, ','), base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+        std::u16string(1, ','), base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
     EXPECT_EQ(expected_suggestions.size(), suggestions.size());
     for (size_t j = 0;

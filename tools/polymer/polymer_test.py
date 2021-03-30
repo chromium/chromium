@@ -117,6 +117,7 @@ class PolymerModulizerTest(unittest.TestCase):
     self._additional_flags = [
       '--migrated_imports',
       'tools/polymer/tests/foo.html',
+      'ui/webui/resources/html/ignore_me.html',
     ]
     self._run_test('dom-module', 'dom_module.html', 'dom_module.js',
                    'dom_module.m.js',

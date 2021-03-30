@@ -7,13 +7,13 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -40,10 +40,14 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
                               public LocationBarBubbleDelegateView,
                               public views::TextfieldController {
  public:
+  METADATA_HEADER(QRCodeGeneratorBubble);
   QRCodeGeneratorBubble(views::View* anchor_view,
                         content::WebContents* web_contents,
                         QRCodeGeneratorBubbleController* controller,
                         const GURL& url);
+  QRCodeGeneratorBubble(const QRCodeGeneratorBubble&) = delete;
+  QRCodeGeneratorBubble& operator=(const QRCodeGeneratorBubble&) = delete;
+
   void Show();
 
   // QRCodeGeneratorBubbleView:
@@ -51,7 +55,7 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
 
   // Returns a suggested download filename for a given URL.
   // e.g.: www.foo.com may suggest qrcode_foo.png.
-  static const base::string16 GetQRCodeFilenameForURL(const GURL& url);
+  static const std::u16string GetQRCodeFilenameForURL(const GURL& url);
 
  private:
   ~QRCodeGeneratorBubble() override;
@@ -75,14 +79,13 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
   View* GetInitiallyFocusedView() override;
   bool ShouldShowCloseButton() const override;
   void WindowClosing() override;
-  const char* GetClassName() const override;
 
   // views::BubbleDialogDelegateView:
   void Init() override;
 
   // TextfieldController:
   void ContentsChanged(views::Textfield* sender,
-                       const base::string16& new_contents) override;
+                       const std::u16string& new_contents) override;
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override;
   bool HandleMouseEvent(views::Textfield* sender,
@@ -110,8 +113,6 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
 
   QRCodeGeneratorBubbleController* controller_;  // weak.
   content::WebContents* web_contents_;           // weak.
-
-  DISALLOW_COPY_AND_ASSIGN(QRCodeGeneratorBubble);
 };
 
 }  // namespace qrcode_generator

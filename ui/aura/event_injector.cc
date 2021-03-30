@@ -31,7 +31,7 @@ ui::EventDispatchDetails EventInjector::Inject(WindowTreeHost* host,
         host->GetRootTransformForLocalEventCoordinates());
   }
 
-  return host->event_sink()->OnEventFromSource(event);
+  return host->GetEventSink()->OnEventFromSource(event);
 }
 
 }  // namespace aura

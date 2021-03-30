@@ -23,106 +23,38 @@ const PERCENT_THRESHOLDS = [
 
 /**
  * Enum for the UI states corresponding to sub steps inside update screen.
- * These values must be kept in sync with UpdateView::UIState in C++ code.
- * @enum {number}
+ * These values must be kept in sync with string constants in
+ * update_screen_handler.cc.
+ * @enum {string}
  */
-var UpdateUIState = {
-  CHECKING_FOR_UPDATE: 0,
-  UPDATE_IN_PROGRESS: 1,
-  RESTART_IN_PROGRESS: 2,
-  MANUAL_REBOOT: 3,
+const UIState = {
+  CHECKING: 'checking',
+  UPDATE: 'update',
+  RESTART: 'restart',
+  REBOOT: 'reboot',
+  CELLULAR: 'cellular',
 };
 
 
 Polymer({
   is: 'oobe-update-element',
 
-  behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
+  behaviors: [
+    OobeI18nBehavior,
+    MultiStepBehavior,
+    LoginScreenBehavior
+  ],
 
   EXTERNAL_API: [
-    'setEstimatedTimeLeft',
-    'showEstimatedTimeLeft',
-    'setUpdateCompleted',
-    'showUpdateCurtain',
-    'setProgressMessage',
-    'setUpdateProgress',
-    'setRequiresPermissionForCellular',
     'setCancelUpdateShortcutEnabled',
+    'setRequiresPermissionForCellular',
     'showLowBatteryWarningMessage',
-    'setUIState',
+    'setUpdateState',
     'setUpdateStatus',
     'setAutoTransition',
   ],
 
   properties: {
-    /**
-     * Shows better update screen instead of the old one. True when
-     * kBetterUpdateScreen feature flag is enabled.
-     */
-    betterUpdateScreenFeatureEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('betterUpdateScreenFeatureEnabled');
-      },
-      readOnly: true,
-    },
-
-    /**
-     * Shows "Checking for update ..." section and hides "Updating..." section.
-     */
-    checkingForUpdate: {
-      type: Boolean,
-      value: true,
-    },
-
-    /**
-     * Shows a warning to the user the update is about to proceed over a
-     * cellular network, and asks the user to confirm.
-     */
-    requiresPermissionForCellular: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * Progress bar percent.
-     */
-    progressValue: {
-      type: Number,
-      value: 0,
-    },
-
-    /**
-     * Estimated time left in seconds.
-     */
-    estimatedTimeLeft: {
-      type: Number,
-      value: 0,
-    },
-
-    /**
-     * Shows estimatedTimeLeft.
-     */
-    estimatedTimeLeftShown: {
-      type: Boolean,
-    },
-
-    /**
-     * Message "33 percent done".
-     */
-    progressMessage: {
-      type: String,
-    },
-
-    /**
-     * True if update is fully completed and, probably manual action is
-     * required.
-     */
-    updateCompleted: {
-      type: Boolean,
-      value: false,
-    },
-
     /**
      * True if update is fully completed and manual action is required.
      */
@@ -154,11 +86,6 @@ Polymer({
       type: Boolean,
       value: false,
     },
-
-    /**
-     * Current UI state which corresponds to a sub step in update process.
-     */
-    uiState: {type: Number, value: 0},
 
     /**
      * Message like "3% complete".
@@ -199,6 +126,12 @@ Polymer({
     }
   },
 
+  defaultUIStep() {
+    return UIState.CHECKING;
+  },
+
+  UI_STEPS: UIState,
+
   ready() {
     this.initializeLoginScreen('UpdateScreen', {
       resetAllowed: true,
@@ -209,15 +142,7 @@ Polymer({
    * Cancels the screen.
    */
   cancel() {
-    this.cancelHint = 'cancelledUpdateMessage';
     this.userActed(USER_ACTION_CANCEL_UPDATE_SHORTCUT);
-  },
-
-  onBeforeShow() {
-    if (!this.betterUpdateScreenFeatureEnabled_) {
-      cr.ui.login.invokePolymerMethod(
-          this.$['checking-downloading-update'], 'onBeforeShow');
-    }
   },
 
   onBackClicked_() {
@@ -234,63 +159,12 @@ Polymer({
   },
 
   /**
-   * Sets update's progress bar value.
-   * @param {number} progress Percentage of the progress bar.
-   */
-  setUpdateProgress(progress) {
-    this.progressValue = progress;
-  },
-
-  /**
    * Shows or hides the warning that asks the user for permission to update
    * over celluar.
    * @param {boolean} requiresPermission Are the warning visible?
    */
   setRequiresPermissionForCellular(requiresPermission) {
     this.requiresPermissionForCellular = requiresPermission;
-  },
-
-  /**
-   * Shows or hides downloading ETA message.
-   * @param {boolean} visible Are ETA message visible?
-   */
-  showEstimatedTimeLeft(visible) {
-    this.estimatedTimeLeftShown = visible;
-  },
-
-  /**
-   * Sets estimated time left until download will complete.
-   * @param {number} seconds Time left in seconds.
-   */
-  setEstimatedTimeLeft(seconds) {
-    this.estimatedTimeLeft = seconds;
-  },
-
-  /**
-   * Sets message below progress bar. Hide the message by setting an empty
-   * string.
-   * @param {string} message Message that should be shown.
-   */
-  setProgressMessage(message) {
-    let visible = !!message;
-    this.progressMessage = message;
-    this.estimatedTimeLeftShown = !visible;
-  },
-
-  /**
-   * Marks update completed. Shows "update completed" message.
-   * @param {boolean} is_completed True if update process is completed.
-   */
-  setUpdateCompleted(is_completed) {
-    this.updateCompleted = is_completed;
-  },
-
-  /**
-   * Shows or hides update curtain.
-   * @param {boolean} visible Are curtains visible?
-   */
-  showUpdateCurtain(visible) {
-    this.checkingForUpdate = visible;
   },
 
   /**
@@ -303,10 +177,10 @@ Polymer({
 
   /**
    * Sets which dialog should be shown.
-   * @param {UpdateUIState} value Current UI state.
+   * @param {UIState} value Current update state.
    */
-  setUIState(value) {
-    this.uiState = value;
+  setUpdateState(value) {
+    this.setUIStep(value);
   },
 
   /**
@@ -344,51 +218,11 @@ Polymer({
   /**
    * Gets whether carousel should auto transit slides.
    * @private
-   * @param {UpdateUIState} state Which UIState now.
+   * @param {UIState} step Which UIState is shown now.
    * @param {boolean} autoTransition Is auto transition allowed.
    */
-  getAutoTransition_(state, autoTransition) {
-    return state == UpdateUIState.UPDATE_IN_PROGRESS && autoTransition;
-  },
-
-  /**
-   * Sets whether checking for update dialog is shown.
-   * @private
-   * @param {UpdateUIState} state Which UIState now.
-   * @param {boolean} requiresPermission Is permission update dialog shown?
-   */
-  isCheckingForUpdate_(state, requiresPermission) {
-    return state == UpdateUIState.CHECKING_FOR_UPDATE && !requiresPermission;
-  },
-
-  /**
-   * Sets whether update in progress dialog is shown.
-   * @private
-   * @param {UpdateUIState} state Which UIState now.
-   * @param {boolean} requiresPermission Is permission update dialog shown?
-   */
-  isUpdateInProgress_(state, requiresPermission) {
-    return state == UpdateUIState.UPDATE_IN_PROGRESS && !requiresPermission;
-  },
-
-  /**
-   * Sets whether restart in progress dialog is shown.
-   * @private
-   * @param {UpdateUIState} state Which UIState now.
-   * @param {boolean} requiresPermission Is permission update dialog shown?
-   */
-  isRestartInProgress_(state, requiresPermission) {
-    return state == UpdateUIState.RESTART_IN_PROGRESS && !requiresPermission;
-  },
-
-  /**
-   * Sets whether manual reboot dialog is shown.
-   * @private
-   * @param {UpdateUIState} state Which UIState now.
-   * @param {boolean} requiresPermission Is permission update dialog shown?
-   */
-  isManualReboot_(state, requiresPermission) {
-    return state == UpdateUIState.MANUAL_REBOOT && !requiresPermission;
+  getAutoTransition_(step, autoTransition) {
+    return step == UIState.UPDATE && autoTransition;
   },
 
 });

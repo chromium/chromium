@@ -80,12 +80,17 @@ to the branch in question and is not flaky on trunk, you will need to create a
 new CL to disable it only on the branch and go through the usual merge request
 process.
 
+Note: there is little value in merging changes to the stable release
+branch when the next milestone's stable release is less than a week away
+(since there are usually no planned stable respins at that point).
+You can find release dates on [chromiumdash][chromiumdash-schedule].
+
 ### Landing changes
 
-When you need to land a change to a branch, you'll need to go through the same
-merge approval process as other cherry-picks (see exception for flaky tests
-above). You should feel free to ping the relevant release TPM as listed on
-[chromiumdash][chromiumdash-schedule].
+When you need to land a change to a branch, you'll need to go through [the same
+merge approval process](./process/merge_request.md) as other cherry-picks (see
+exception for flaky tests above). You should feel free to ping the relevant
+release TPM as listed on [chromiumdash][chromiumdash-schedule].
 
 ## Tools
 
@@ -124,6 +129,8 @@ particular milestone or channel, along with a host of other useful information:
 The current branch sheriff is listed [here][rotation-home]. The configuration
 and source of truth for the schedule lives [here][rotation-config]. To swap,
 simply send a CL changing schedule at the bottom of the file.
+You can also use [Oncall Swapper](https://oncallswapper.corp.google.com/)
+to find the swap and submit the CL for you.
 
 [chromiumdash]: https://chromiumdash.appspot.com
 [chromiumdash-branches]: https://chromiumdash.appspot.com/branches

@@ -19,3 +19,4 @@ source-map.debug.js
 powered-test/es6-destructuring-assignments.js
 *.map
 typescript/lib/*
+typescript/loc/*

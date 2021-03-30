@@ -11,21 +11,22 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
-#include "chrome/browser/chromeos/arc/fileapi/arc_content_file_system_url_util.h"
-#include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_root.h"
-#include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_root_map.h"
-#include "chrome/browser/chromeos/arc/fileapi/chrome_content_provider_url_util.h"
+#include "chrome/browser/ash/arc/fileapi/arc_content_file_system_url_util.h"
+#include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root.h"
+#include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map.h"
+#include "chrome/browser/ash/arc/fileapi/chrome_content_provider_url_util.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
-#include "chrome/browser/chromeos/drive/drive_integration_service.h"
-#include "chrome/browser/chromeos/drive/file_system_util.h"
+#include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/chromeos/fileapi/external_file_url_util.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
-#include "chrome/browser/chromeos/guest_os/guest_os_share_path.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/smb_client/smb_service.h"
 #include "chrome/browser/chromeos/smb_client/smb_service_factory.h"
 #include "chrome/browser/chromeos/smb_client/smbfs_share.h"
@@ -33,7 +34,6 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/disks/disk.h"
 #include "chromeos/disks/disk_mount_manager.h"
 #include "components/arc/arc_util.h"
@@ -41,6 +41,7 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/common/extension.h"
 #include "net/base/escape.h"
 #include "net/base/filename_util.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -94,9 +95,11 @@ void OnSingleContentUrlResolved(const base::RepeatingClosure& barrier_closure,
 }
 
 // Helper function for |ConvertToContentUrls|.
-void OnAllContentUrlsResolved(ConvertToContentUrlsCallback callback,
-                              std::unique_ptr<std::vector<GURL>> urls) {
-  std::move(callback).Run(*urls);
+void OnAllContentUrlsResolved(
+    ConvertToContentUrlsCallback callback,
+    std::unique_ptr<std::vector<GURL>> urls,
+    std::unique_ptr<std::vector<base::FilePath>> paths_to_share) {
+  std::move(callback).Run(*urls, *paths_to_share);
 }
 
 // On non-ChromeOS system (test+development), the primary profile uses
@@ -205,6 +208,14 @@ const base::FilePath::CharType kSystemFontsPath[] =
 
 const base::FilePath::CharType kArchiveMountPath[] =
     FILE_PATH_LITERAL("/media/archive");
+
+const url::Origin& GetFilesAppOrigin() {
+  static const base::NoDestructor<url::Origin> origin([] {
+    return url::Origin::Create(extensions::Extension::GetBaseURLFromExtensionId(
+        file_manager::kFileManagerAppId));
+  }());
+  return *origin;
+}
 
 base::FilePath GetDownloadsFolderForProfile(Profile* profile) {
   // Check if FilesApp has a registered path already.  This happens for tests.
@@ -478,7 +489,8 @@ bool ConvertPathInsideVMToFileSystemURL(
     if (container_info &&
         AppendRelativePath(container_info->homedir, inside, &relative_path)) {
       *file_system_url = mount_points->CreateExternalFileSystemURL(
-          url::Origin(), GetCrostiniMountPointName(profile), relative_path);
+          GetFilesAppOrigin(), GetCrostiniMountPointName(profile),
+          relative_path);
       return file_system_url->is_valid();
     }
   }
@@ -544,12 +556,17 @@ bool ConvertPathInsideVMToFileSystemURL(
   }
 
   *file_system_url = mount_points->CreateExternalFileSystemURL(
-      url::Origin(), mount_name, path);
+      url::Origin::Create(extensions::Extension::GetBaseURLFromExtensionId(
+          file_manager::kFileManagerAppId)),
+      mount_name, path);
   return file_system_url->is_valid();
 }
 
-bool ConvertPathToArcUrl(const base::FilePath& path, GURL* arc_url_out) {
+bool ConvertPathToArcUrl(const base::FilePath& path,
+                         GURL* arc_url_out,
+                         bool* requires_sharing_out) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  *requires_sharing_out = false;
 
   // Obtain the primary profile. This information is required because currently
   // only the file systems for the primary profile is exposed to ARC.
@@ -618,9 +635,7 @@ bool ConvertPathToArcUrl(const base::FilePath& path, GURL* arc_url_out) {
       integration_service->GetMountPointPath().AppendRelativePath(
           path, &relative_path)) {
     if (arc::IsArcVmEnabled()) {
-      guest_os::GuestOsSharePath::GetForProfile(primary_profile)
-          ->SharePath(arc::kArcVmName, path, /*persist=*/false,
-                      base::DoNothing());
+      *requires_sharing_out = true;
       *arc_url_out =
           GURL(kArcDriveContentUrlPrefix)
               .Resolve(net::EscapePath(relative_path.AsUTF8Unsafe()));
@@ -675,7 +690,7 @@ void ConvertToContentUrls(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (file_system_urls.empty()) {
-    std::move(callback).Run(std::vector<GURL>());
+    std::move(callback).Run(std::vector<GURL>(), std::vector<base::FilePath>());
     return;
   }
 
@@ -687,10 +702,12 @@ void ConvertToContentUrls(
   // specify index when updating it like (*out_urls)[index] = url.
   auto out_urls = std::make_unique<std::vector<GURL>>(file_system_urls.size());
   auto* out_urls_ptr = out_urls.get();
+  auto paths_to_share = std::make_unique<std::vector<base::FilePath>>();
+  auto* paths_to_share_ptr = paths_to_share.get();
   auto barrier = base::BarrierClosure(
       file_system_urls.size(),
       base::BindOnce(&OnAllContentUrlsResolved, std::move(callback),
-                     std::move(out_urls)));
+                     std::move(out_urls), std::move(paths_to_share)));
   auto single_content_url_callback =
       base::BindRepeating(&OnSingleContentUrlResolved, barrier, out_urls_ptr);
 
@@ -713,21 +730,19 @@ void ConvertToContentUrls(
     }
 
     GURL arc_url;
+    bool requires_sharing = false;
     if (file_system_url.mount_type() == storage::kFileSystemTypeExternal &&
-        ConvertPathToArcUrl(file_system_url.path(), &arc_url)) {
+        ConvertPathToArcUrl(file_system_url.path(), &arc_url,
+                            &requires_sharing)) {
+      if (requires_sharing) {
+        paths_to_share_ptr->push_back(file_system_url.path());
+      }
       single_content_url_callback.Run(index, arc_url);
       continue;
     }
 
     single_content_url_callback.Run(index, GURL());
   }
-}
-
-void ConvertToContentUrls(
-    const std::vector<storage::FileSystemURL>& file_system_urls,
-    ConvertToContentUrlsCallback callback) {
-  ConvertToContentUrls(ProfileManager::GetPrimaryUserProfile(),
-                       file_system_urls, std::move(callback));
 }
 
 bool ReplacePrefix(std::string* s,
@@ -859,17 +874,6 @@ bool ExtractMountNameFileSystemNameFullPath(const base::FilePath& absolute_path,
     *full_path = value.substr(slash_pos);
   }
   return true;
-}
-
-base::FilePath ReplacePathPrefix(const base::FilePath& input,
-                                 const base::FilePath& old_prefix,
-                                 const base::FilePath& new_prefix) {
-  if (old_prefix.IsParent(input)) {
-    base::FilePath output = new_prefix;
-    old_prefix.AppendRelativePath(input, &output);
-    return output;
-  }
-  return input;
 }
 
 }  // namespace util

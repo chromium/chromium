@@ -51,7 +51,7 @@ class StringPieceHasSubstrMatcher {
 
   bool MatchAndExplain(base::StringPiece s,
                        ::testing::MatchResultListener* listener) const {
-    return s.as_string().find(substring_) != std::string::npos;
+    return s.find(substring_) != std::string::npos;
   }
 
   // Describe what this matcher matches.

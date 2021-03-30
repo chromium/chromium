@@ -6,7 +6,10 @@
 #define EXTENSIONS_BROWSER_EXTENSION_UTIL_H_
 
 #include <string>
+#include <vector>
 
+#include "base/callback.h"
+#include "base/optional.h"
 #include "extensions/common/manifest.h"
 #include "url/gurl.h"
 
@@ -72,12 +75,26 @@ bool MapUrlToLocalFilePath(const ExtensionSet* extensions,
 // Returns true if the browser can potentially withhold permissions from the
 // extension.
 bool CanWithholdPermissionsFromExtension(const Extension& extension);
-bool CanWithholdPermissionsFromExtension(const std::string& extension_id,
-                                         const Manifest::Type type,
-                                         const Manifest::Location location);
+bool CanWithholdPermissionsFromExtension(
+    const std::string& extension_id,
+    const Manifest::Type type,
+    const mojom::ManifestLocation location);
 
 // Returns a unique int id for each context.
 int GetBrowserContextId(content::BrowserContext* context);
+
+// Calculates the allowlist and blocklist for |extension| and forwards the
+// request to |browser_contexts|.
+void SetCorsOriginAccessListForExtension(
+    const std::vector<content::BrowserContext*>& browser_contexts,
+    const Extension& extension,
+    base::OnceClosure closure);
+
+// Resets the allowlist and blocklist for |extension| to empty lists for
+// |browser_context| and for all related regular+incognito contexts.
+void ResetCorsOriginAccessListForExtension(
+    content::BrowserContext* browser_context,
+    const Extension& extension);
 
 }  // namespace util
 }  // namespace extensions

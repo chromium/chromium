@@ -25,6 +25,21 @@ source_set("android") {
   ]
 }
 
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "sms_infobar_delegate_unittest.cc" ]
+  deps = [
+    ":android",
+    "//base/test:test_support",
+    "//components/content_settings/browser",
+    "//components/content_settings/browser:test_support",
+    "//components/content_settings/core/browser",
+    "//components/infobars/content",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/components/browser_ui/sms/WebOTPServiceInfoBar.java",
@@ -42,7 +57,7 @@ android_library("java") {
     "//base:base_java",
     "//components/browser_ui/styles/android:java_resources",
     "//components/infobars/android:java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_java",
     "//url:gurl_java",
   ]

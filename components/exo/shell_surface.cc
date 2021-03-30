@@ -92,21 +92,19 @@ ShellSurface::ScopedConfigure::~ScopedConfigure() {
 
 ShellSurface::ShellSurface(Surface* surface,
                            const gfx::Point& origin,
-                           bool activatable,
                            bool can_minimize,
                            int container)
-    : ShellSurfaceBase(surface, origin, activatable, can_minimize, container) {}
+    : ShellSurfaceBase(surface, origin, can_minimize, container) {}
 
 ShellSurface::ShellSurface(Surface* surface)
     : ShellSurfaceBase(surface,
                        gfx::Point(),
-                       true,
-                       true,
+                       /*can_minimize=*/true,
                        ash::desks_util::GetActiveDeskContainerId()) {}
 
 ShellSurface::~ShellSurface() {
   DCHECK(!scoped_configure_);
-  // Client is gone by now, so don't call callbask.
+  // Client is gone by now, so don't call callback.
   configure_callback_.Reset();
   if (widget_)
     ash::WindowState::Get(widget_->GetNativeWindow())->RemoveObserver(this);
@@ -235,11 +233,6 @@ void ShellSurface::StartResize(int component) {
     return;
 
   AttemptToStartDrag(component);
-}
-
-bool ShellSurface::ShouldAutoMaximize() {
-  // Unless a child class overrides the behaviour, we will never auto-maximize.
-  return false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -425,7 +418,11 @@ void ShellSurface::OnPostWindowStateTypeChange(
     ash::WindowState* window_state,
     chromeos::WindowStateType old_type) {
   chromeos::WindowStateType new_type = window_state->GetStateType();
-  if (chromeos::IsMaximizedOrFullscreenOrPinnedWindowStateType(new_type)) {
+  // For exo-client using client-side decoration, window-state information is
+  // needed to toggle the maximize and restore buttons. When the window is
+  // restored, we show a maximized button; otherwise we show a restore button.
+  if (chromeos::IsMaximizedOrFullscreenOrPinnedWindowStateType(old_type) ||
+      chromeos::IsMaximizedOrFullscreenOrPinnedWindowStateType(new_type)) {
     Configure();
   }
 
@@ -482,10 +479,6 @@ bool ShellSurface::OnPreWidgetCommit() {
       return false;
     }
 
-    // Allow the window to maximize itself on launch.
-    if (ShouldAutoMaximize())
-      initial_show_state_ = ui::SHOW_STATE_MAXIMIZED;
-
     CreateShellSurfaceWidget(initial_show_state_);
   }
 
@@ -498,10 +491,6 @@ bool ShellSurface::OnPreWidgetCommit() {
   resize_component_ = pending_resize_component_;
 
   return true;
-}
-
-void ShellSurface::SetDecorationMode(SurfaceFrameType type) {
-  OnSetFrame(type);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

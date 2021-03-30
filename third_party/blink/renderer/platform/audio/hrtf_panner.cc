@@ -41,7 +41,9 @@ const double kMaxDelayTimeSeconds = 0.002;
 
 const int kUninitializedAzimuth = -1;
 
-HRTFPanner::HRTFPanner(float sample_rate, HRTFDatabaseLoader* database_loader)
+HRTFPanner::HRTFPanner(float sample_rate,
+                       unsigned render_quantum_frames,
+                       HRTFDatabaseLoader* database_loader)
     : database_loader_(database_loader),
       sample_rate_(sample_rate),
       crossfade_selection_(kCrossfadeSelection1),
@@ -55,12 +57,13 @@ HRTFPanner::HRTFPanner(float sample_rate, HRTFDatabaseLoader* database_loader)
       convolver_r1_(FftSizeForSampleRate(sample_rate)),
       convolver_l2_(FftSizeForSampleRate(sample_rate)),
       convolver_r2_(FftSizeForSampleRate(sample_rate)),
-      delay_line_l_(kMaxDelayTimeSeconds, sample_rate),
-      delay_line_r_(kMaxDelayTimeSeconds, sample_rate),
-      temp_l1_(audio_utilities::kRenderQuantumFrames),
-      temp_r1_(audio_utilities::kRenderQuantumFrames),
-      temp_l2_(audio_utilities::kRenderQuantumFrames),
-      temp_r2_(audio_utilities::kRenderQuantumFrames) {
+      delay_line_l_(kMaxDelayTimeSeconds, sample_rate, render_quantum_frames),
+      delay_line_r_(kMaxDelayTimeSeconds, sample_rate, render_quantum_frames),
+      temp_l1_(render_quantum_frames),
+      temp_r1_(render_quantum_frames),
+      temp_l2_(render_quantum_frames),
+      temp_r2_(render_quantum_frames),
+      render_quantum_frames_(render_quantum_frames) {
   DCHECK(database_loader);
 }
 
@@ -215,12 +218,12 @@ void HRTFPanner::Pan(double desired_azimuth,
   }
 
   // This algorithm currently requires that we process in power-of-two size
-  // chunks at least audio_utilities::kRenderQuantumFrames.
+  // chunks of at least |RenderQuantumFrames()|.
   DCHECK_EQ(1UL << static_cast<int>(log2(frames_to_process)),
             frames_to_process);
-  DCHECK_GE(frames_to_process, audio_utilities::kRenderQuantumFrames);
+  DCHECK_GE(frames_to_process, RenderQuantumFrames());
 
-  const unsigned kFramesPerSegment = audio_utilities::kRenderQuantumFrames;
+  const unsigned kFramesPerSegment = RenderQuantumFrames();
   const unsigned number_of_segments = frames_to_process / kFramesPerSegment;
 
   for (unsigned segment = 0; segment < number_of_segments; ++segment) {

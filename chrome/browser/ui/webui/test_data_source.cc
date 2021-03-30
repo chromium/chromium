@@ -44,6 +44,7 @@ TestDataSource::TestDataSource(std::string root) {
       {"/mocha.js", "third_party/mocha/mocha.js"},
       {"/test_loader.html", "ui/webui/resources/html/test_loader.html"},
       {"/test_loader.js", "ui/webui/resources/js/test_loader.js"},
+      {"/test_loader_util.js", "ui/webui/resources/js/test_loader_util.js"},
   };
 }
 

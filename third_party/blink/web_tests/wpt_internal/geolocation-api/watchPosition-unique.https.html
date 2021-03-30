@@ -1,0 +1,30 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/testharness-adapter.js"></script>
+</head>
+<body>
+<script type="module">
+import {GeolocationMock} from './resources/geolocation-mock.js';
+
+description("Tests that navigator.geolocation.watchPosition returns unique results within its script execution context.");
+
+const mock = new GeolocationMock();
+mock.setGeolocationPosition(51.478, -0.166, 100.0);
+
+const watchID1 = navigator.geolocation.watchPosition(function() { });
+const watchID2 = navigator.geolocation.watchPosition(function() { });
+const watchID3 = navigator.geolocation.watchPosition(function() { });
+
+assert_greater_than(watchID1, 0);
+assert_greater_than(watchID2, 0);
+assert_greater_than(watchID3, 0);
+assert_not_equals(watchID1, watchID2);
+assert_not_equals(watchID1, watchID3);
+assert_not_equals(watchID2, watchID3);
+finishJSTest();
+</script>
+</body>
+</html>

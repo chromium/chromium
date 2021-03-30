@@ -1,5 +1,5 @@
 {
-  "name": "file_access_yes",
+  "name": "file_access_no",
   "version": "1",
   "manifest_version": 2,
   "optional_permissions": ["file:///*"],

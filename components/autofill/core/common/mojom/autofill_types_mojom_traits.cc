@@ -14,6 +14,18 @@
 namespace mojo {
 
 // static
+bool StructTraits<autofill::mojom::LocalFrameTokenDataView,
+                  autofill::LocalFrameToken>::
+    Read(autofill::mojom::LocalFrameTokenDataView data,
+         autofill::LocalFrameToken* out) {
+  base::UnguessableToken token;
+  if (!data.ReadToken(&token))
+    return false;
+  *out = autofill::LocalFrameToken(token);
+  return true;
+}
+
+// static
 bool StructTraits<autofill::mojom::FormRendererIdDataView,
                   autofill::FormRendererId>::
     Read(autofill::mojom::FormRendererIdDataView data,
@@ -69,6 +81,9 @@ bool StructTraits<
 
   out->properties_mask = data.properties_mask();
 
+  if (!data.ReadHostFrame(&out->host_frame))
+    return false;
+
   if (!data.ReadUniqueRendererId(&out->unique_renderer_id))
     return false;
 
@@ -90,7 +105,7 @@ bool StructTraits<
 
   out->is_enabled = data.is_enabled();
   out->is_readonly = data.is_readonly();
-  if (!data.ReadTypedValue(&out->typed_value))
+  if (!data.ReadUserInput(&out->user_input))
     return false;
 
   if (!data.ReadOptionValues(&out->option_values))
@@ -143,7 +158,9 @@ bool StructTraits<autofill::mojom::FormDataDataView, autofill::FormData>::Read(
     return false;
 
   out->is_form_tag = data.is_form_tag();
-  out->is_formless_checkout = data.is_formless_checkout();
+
+  if (!data.ReadHostFrame(&out->host_frame))
+    return false;
 
   if (!data.ReadUniqueRendererId(&out->unique_renderer_id))
     return false;

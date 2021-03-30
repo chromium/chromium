@@ -1,0 +1,251 @@
+Tests DOMSnapshot.getSnapshot method on a mobile page.
+Emulating device: 600x600x1
+{
+    computedStyles : [
+    ]
+    domNodes : [
+        [0] : {
+            backendNodeId : <number>
+            baseURL : <string>
+            childNodeIndexes : [
+                [0] : 1
+                [1] : 2
+                [2] : 3
+            ]
+            documentEncoding : windows-1252
+            documentURL : <string>
+            frameId : <string>
+            layoutNodeIndex : 0
+            nodeName : #document
+            nodeType : 9
+            nodeValue : 
+            scrollOffsetX : 0
+            scrollOffsetY : 0
+        }
+        [1] : {
+            backendNodeId : <number>
+            nodeName : html
+            nodeType : 10
+            nodeValue : 
+            publicId : 
+            systemId : 
+        }
+        [2] : {
+            backendNodeId : <number>
+            nodeName : #comment
+            nodeType : 8
+            nodeValue :  domSnapshot test for a document with a viewport.  
+        }
+        [3] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 4
+                [1] : 15
+            ]
+            frameId : <string>
+            layoutNodeIndex : 1
+            nodeName : HTML
+            nodeType : 1
+            nodeValue : 
+        }
+        [4] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 5
+                [1] : 6
+                [2] : 7
+                [3] : 9
+                [4] : 10
+                [5] : 12
+                [6] : 13
+                [7] : 14
+            ]
+            nodeName : HEAD
+            nodeType : 1
+            nodeValue : 
+        }
+        [5] : {
+            attributes : [
+                [0] : {
+                    name : name
+                    value : viewport
+                }
+                [1] : {
+                    name : content
+                    value : width=300
+                }
+            ]
+            backendNodeId : <number>
+            nodeName : META
+            nodeType : 1
+            nodeValue : 
+        }
+        [6] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :  
+        }
+        [7] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 8
+            ]
+            nodeName : STYLE
+            nodeType : 1
+            nodeValue : 
+        }
+        [8] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :  @font-face {   font-family: 'ahem';   src: url(../../resources/Ahem.ttf); } 
+        }
+        [9] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :  
+        }
+        [10] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 11
+            ]
+            nodeName : STYLE
+            nodeType : 1
+            nodeValue : 
+        }
+        [11] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :  * {   margin: 0;   padding: 0; } div {   position: absolute;   top: 100px;   left: 100px;   width: 100px;   height: 100px;   background-color: green; } 
+        }
+        [12] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :  
+        }
+        [13] : {
+            backendNodeId : <number>
+            nodeName : #comment
+            nodeType : 8
+            nodeValue :  The div's box should have size and position of 100x100 to match the      computed style, even though it's visually scaled by the viewport. The      text's box should also be inside the div's box, not outside it. 
+        }
+        [14] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :  
+        }
+        [15] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 16
+                [1] : 18
+            ]
+            layoutNodeIndex : 2
+            nodeName : BODY
+            nodeType : 1
+            nodeValue : 
+        }
+        [16] : {
+            attributes : [
+                [0] : {
+                    name : style
+                    value : font-family: ahem;
+                }
+                [1] : {
+                    name : id
+                    value : 100x100
+                }
+            ]
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 17
+            ]
+            layoutNodeIndex : 3
+            nodeName : DIV
+            nodeType : 1
+            nodeValue : 
+        }
+        [17] : {
+            backendNodeId : <number>
+            layoutNodeIndex : 4
+            nodeName : #text
+            nodeType : 3
+            nodeValue : Boxes!
+        }
+        [18] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :   
+        }
+    ]
+    layoutTreeNodes : [
+        [0] : {
+            boundingBox : {
+                height : 450
+                width : 450
+                x : 0
+                y : 0
+            }
+            domNodeIndex : 0
+            isStackingContext : true
+        }
+        [1] : {
+            boundingBox : {
+                height : 0
+                width : 450
+                x : 0
+                y : 0
+            }
+            domNodeIndex : 3
+            isStackingContext : true
+        }
+        [2] : {
+            boundingBox : {
+                height : 0
+                width : 450
+                x : 0
+                y : 0
+            }
+            domNodeIndex : 15
+        }
+        [3] : {
+            boundingBox : {
+                height : 150
+                width : 150
+                x : 150
+                y : 150
+            }
+            domNodeIndex : 16
+        }
+        [4] : {
+            boundingBox : {
+                height : 24
+                width : 144
+                x : 150
+                y : 150
+            }
+            domNodeIndex : 17
+            inlineTextNodes : [
+                [0] : {
+                    boundingBox : {
+                        height : 24
+                        width : 144
+                        x : 150
+                        y : 150
+                    }
+                    numCharacters : 6
+                    startCharacterIndex : 0
+                }
+            ]
+            layoutText : Boxes!
+        }
+    ]
+}
+

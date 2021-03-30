@@ -76,10 +76,9 @@ MediaGalleriesPermissionController::MediaGalleriesPermissionController(
       base::Unretained(this)));
 
   // Unretained is safe because |this| owns |context_menu_|.
-  context_menu_.reset(
-      new MediaGalleryContextMenu(
-          base::Bind(&MediaGalleriesPermissionController::DidForgetEntry,
-                     base::Unretained(this))));
+  context_menu_ = std::make_unique<MediaGalleryContextMenu>(
+      base::BindRepeating(&MediaGalleriesPermissionController::DidForgetEntry,
+                          base::Unretained(this)));
 }
 
 void MediaGalleriesPermissionController::OnPreferencesInitialized() {
@@ -120,12 +119,12 @@ MediaGalleriesPermissionController::~MediaGalleriesPermissionController() {
     select_folder_dialog_->ListenerDestroyed();
 }
 
-base::string16 MediaGalleriesPermissionController::GetHeader() const {
+std::u16string MediaGalleriesPermissionController::GetHeader() const {
   return l10n_util::GetStringFUTF16(IDS_MEDIA_GALLERIES_DIALOG_HEADER,
                                     base::UTF8ToUTF16(extension_->name()));
 }
 
-base::string16 MediaGalleriesPermissionController::GetSubtext() const {
+std::u16string MediaGalleriesPermissionController::GetSubtext() const {
   chrome_apps::MediaGalleriesPermission::CheckParam copy_to_param(
       chrome_apps::MediaGalleriesPermission::kCopyToPermission);
   chrome_apps::MediaGalleriesPermission::CheckParam delete_param(
@@ -133,9 +132,9 @@ base::string16 MediaGalleriesPermissionController::GetSubtext() const {
   const extensions::PermissionsData* permission_data =
       extension_->permissions_data();
   bool has_copy_to_permission = permission_data->CheckAPIPermissionWithParam(
-      APIPermission::kMediaGalleries, &copy_to_param);
+      extensions::mojom::APIPermissionID::kMediaGalleries, &copy_to_param);
   bool has_delete_permission = permission_data->CheckAPIPermissionWithParam(
-      APIPermission::kMediaGalleries, &delete_param);
+      extensions::mojom::APIPermissionID::kMediaGalleries, &delete_param);
 
   int id;
   if (has_copy_to_permission)
@@ -161,10 +160,10 @@ bool MediaGalleriesPermissionController::IsAcceptAllowed() const {
   return false;
 }
 
-std::vector<base::string16>
+std::vector<std::u16string>
 MediaGalleriesPermissionController::GetSectionHeaders() const {
-  std::vector<base::string16> result;
-  result.push_back(base::string16());  // First section has no header.
+  std::vector<std::u16string> result;
+  result.push_back(std::u16string());  // First section has no header.
   result.push_back(
       l10n_util::GetStringUTF16(IDS_MEDIA_GALLERIES_PERMISSION_SUGGESTIONS));
   return result;
@@ -196,8 +195,8 @@ MediaGalleriesPermissionController::GetSectionEntries(size_t index) const {
   return result;
 }
 
-base::string16
-MediaGalleriesPermissionController::GetAuxiliaryButtonText() const {
+std::u16string MediaGalleriesPermissionController::GetAuxiliaryButtonText()
+    const {
   return l10n_util::GetStringUTF16(IDS_MEDIA_GALLERIES_DIALOG_ADD_GALLERY);
 }
 
@@ -253,7 +252,7 @@ void MediaGalleriesPermissionController::DidForgetEntry(
   dialog_->UpdateGalleries();
 }
 
-base::string16 MediaGalleriesPermissionController::GetAcceptButtonText() const {
+std::u16string MediaGalleriesPermissionController::GetAcceptButtonText() const {
   return l10n_util::GetStringUTF16(IDS_MEDIA_GALLERIES_DIALOG_CONFIRM);
 }
 

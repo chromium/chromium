@@ -11,7 +11,7 @@
 #include "components/invalidation/public/topic_invalidation_map.h"
 #include "components/prefs/pref_service.h"
 
-namespace syncer {
+namespace invalidation {
 
 FCMInvalidationListener::FCMInvalidationListener(
     std::unique_ptr<FCMSyncNetworkChannel> network_channel)
@@ -128,7 +128,7 @@ void FCMInvalidationListener::TokenReceived(
 }
 
 void FCMInvalidationListener::Acknowledge(const Topic& topic,
-                                          const syncer::AckHandle& handle) {
+                                          const AckHandle& handle) {
   auto lookup = unacked_invalidations_map_.find(topic);
   if (lookup == unacked_invalidations_map_.end()) {
     DLOG(WARNING) << "Received acknowledgement for untracked topic";
@@ -138,7 +138,7 @@ void FCMInvalidationListener::Acknowledge(const Topic& topic,
 }
 
 void FCMInvalidationListener::Drop(const Topic& topic,
-                                   const syncer::AckHandle& handle) {
+                                   const AckHandle& handle) {
   auto lookup = unacked_invalidations_map_.find(topic);
   if (lookup == unacked_invalidations_map_.end()) {
     DLOG(WARNING) << "Received drop for untracked topic";
@@ -257,4 +257,4 @@ base::DictionaryValue FCMInvalidationListener::CollectDebugData() const {
   return status;
 }
 
-}  // namespace syncer
+}  // namespace invalidation

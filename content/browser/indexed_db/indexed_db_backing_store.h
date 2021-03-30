@@ -28,7 +28,7 @@
 #include "components/services/storage/indexed_db/scopes/scope_lock.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom-forward.h"
-#include "components/services/storage/public/mojom/native_file_system_context.mojom-forward.h"
+#include "components/services/storage/public/mojom/file_system_access_context.mojom-forward.h"
 #include "content/browser/indexed_db/indexed_db.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
 #include "content/browser/indexed_db/indexed_db_external_object_storage.h"
@@ -390,7 +390,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
       const base::FilePath& blob_path,
       std::unique_ptr<TransactionalLevelDBDatabase> db,
       storage::mojom::BlobStorageContext* blob_storage_context,
-      storage::mojom::NativeFileSystemContext* native_file_system_context,
+      storage::mojom::FileSystemAccessContext* file_system_access_context,
       std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
       BlobFilesCleanedCallback blob_files_cleaned,
       ReportOutstandingBlobsCallback report_outstanding_blobs,
@@ -417,7 +417,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   // Compact is public for testing.
   virtual void Compact();
   virtual leveldb::Status DeleteDatabase(
-      const base::string16& name,
+      const std::u16string& name,
       TransactionalLevelDBTransaction* transaction);
 
   static bool RecordCorruptionInfo(const base::FilePath& path_base,
@@ -664,13 +664,13 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   const url::Origin origin_;
   const base::FilePath blob_path_;
 
-  // IndexedDB can store blobs and native file system handles. These mojo
+  // IndexedDB can store blobs and File System Access handles. These mojo
   // interfaces are used to make this possible by communicating with the
   // relevant subsystems.
   // Raw pointers are safe because the bindings are owned by
   // IndexedDBContextImpl.
   storage::mojom::BlobStorageContext* const blob_storage_context_;
-  storage::mojom::NativeFileSystemContext* const native_file_system_context_;
+  storage::mojom::FileSystemAccessContext* const file_system_access_context_;
 
   // Filesystem proxy to use for file operations.  nullptr if in memory.
   const std::unique_ptr<storage::FilesystemProxy> filesystem_proxy_;

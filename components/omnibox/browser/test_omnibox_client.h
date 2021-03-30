@@ -33,7 +33,7 @@ class TestOmniboxClient : public OmniboxClient {
   std::unique_ptr<AutocompleteProviderClient> CreateAutocompleteProviderClient()
       override;
   std::unique_ptr<OmniboxNavigationObserver> CreateOmniboxNavigationObserver(
-      const base::string16& text,
+      const std::u16string& text,
       const AutocompleteMatch& match,
       const AutocompleteMatch& alternate_nav_match) override;
   bool IsPasteAndGoEnabled() const override;
@@ -43,6 +43,8 @@ class TestOmniboxClient : public OmniboxClient {
   TemplateURLService* GetTemplateURLService() override;
   const AutocompleteSchemeClassifier& GetSchemeClassifier() const override;
   AutocompleteClassifier* GetAutocompleteClassifier() override;
+  bool ShouldDefaultTypedNavigationsToHttps() const override;
+  int GetHttpsPortForTesting() const override;
   gfx::Image GetSizedIcon(const gfx::VectorIcon& vector_icon_type,
                           SkColor vector_icon_color) const override;
   gfx::Image GetFaviconForPageUrl(

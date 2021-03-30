@@ -5,8 +5,9 @@
 #ifndef CONTENT_PUBLIC_BROWSER_SPEECH_RECOGNITION_MANAGER_H_
 #define CONTENT_PUBLIC_BROWSER_SPEECH_RECOGNITION_MANAGER_H_
 
+#include <string>
+
 #include "base/callback.h"
-#include "base/strings/string16.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/speech/speech_recognition_result.mojom.h"
 

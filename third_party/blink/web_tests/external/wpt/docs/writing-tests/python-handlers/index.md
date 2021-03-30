@@ -67,35 +67,6 @@ import importlib
 myhelper = importlib.import_module('common.security-features.myhelper')
 ```
 
-**Note on __init__ files**: Until WPT moves to Python 3 only (~Q1 2021),
-importing helper scripts like this requires a 'path' of empty `__init__.py`
-files in every directory down to the helper. For example, if your helper is
-`css/css-align/resources/myhelper.py`, you need to have:
-
-```
-css/__init__.py
-css/css-align/__init__.py
-css/css-align/resources/__init__.py
-```
-
-This requirement will be removed once we move to Python 3, due to
-[PEP 420](https://www.python.org/dev/peps/pep-0420/).
-
-### Python3 compatibility
-
-Even though Python3 is not fully supported at this point, some work is being
-done to add compatibility for it. This is why you can see in multiple places
-the use of the `six` python module which is meant to provide a set of simple
-utilities that work for both generation of python (see
-[docs](https://six.readthedocs.io/)). The module is vendored in
-tools/third_party/six/six.py.
-
-When an handler is added, it should be at least syntax-compatible with Python3.
-You can check that by running:
-```
-python3 -m py_compile <path/to/handler.py>
-```
-
 ## Example: Dynamic HTTP headers
 
 The following code defines a Python handler that allows the requester to

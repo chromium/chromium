@@ -7,7 +7,9 @@
 #include <string>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/bind.h"
+#include "base/rand_util.h"
 #include "components/dom_distiller/core/distilled_page_prefs.h"
 #include "components/dom_distiller/core/distiller.h"
 #include "components/dom_distiller/core/dom_distiller_request_view_base.h"
@@ -29,11 +31,11 @@ DistillerViewer::DistillerViewer(
       callback_(std::move(callback)) {
   DCHECK(distillerService);
   DCHECK(url.is_valid());
+  base::Base64Encode(base::RandBytesAsString(16), &csp_nonce_);
   std::unique_ptr<dom_distiller::DistillerPage> page =
       distillerService->CreateDefaultDistillerPage(gfx::Size());
   std::unique_ptr<ViewerHandle> viewer_handle =
       distillerService->ViewUrl(this, std::move(page), url);
-
   TakeViewerHandle(std::move(viewer_handle));
 }
 
@@ -47,6 +49,7 @@ DistillerViewer::DistillerViewer(
       url_(url),
       callback_(std::move(callback)) {
   DCHECK(url.is_valid());
+  base::Base64Encode(base::RandBytesAsString(16), &csp_nonce_);
   SendCommonJavaScript();
   distiller_ = distiller_factory->CreateDistillerForUrl(url);
   distiller_->DistillPage(
@@ -81,13 +84,15 @@ void DistillerViewer::OnArticleReady(
         images.push_back(ImageInfo{GURL(image.url()), image.data()});
       }
     }
-    const std::string html =
-        viewer::GetArticleTemplateHtml(distilled_page_prefs_->GetTheme(),
-                                       distilled_page_prefs_->GetFontFamily());
+
+    const std::string html = viewer::GetArticleTemplateHtml(
+        distilled_page_prefs_->GetTheme(),
+        distilled_page_prefs_->GetFontFamily(), csp_nonce_);
 
     std::string html_and_script(html);
-    html_and_script +=
-        "<script> distillerOnIos = true; " + js_buffer_ + "</script>";
+    html_and_script += "<script nonce=\"" + csp_nonce_ + "\">" +
+                       "distillerOnIos = true; " + js_buffer_ + "</script>";
+
     std::move(callback_).Run(url_, html_and_script, images,
                              article_proto->title());
   } else {
@@ -97,6 +102,10 @@ void DistillerViewer::OnArticleReady(
 
 void DistillerViewer::SendJavaScript(const std::string& buffer) {
   js_buffer_ += buffer;
+}
+
+std::string DistillerViewer::GetCspNonce() {
+  return csp_nonce_;
 }
 
 }  // namespace dom_distiller

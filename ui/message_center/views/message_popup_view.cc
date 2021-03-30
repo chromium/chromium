@@ -15,6 +15,7 @@
 #include "ui/message_center/views/message_view.h"
 #include "ui/message_center/views/message_view_factory.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 #if defined(OS_WIN)
@@ -125,7 +126,7 @@ void MessagePopupView::Show() {
   views::Widget* widget = new views::Widget();
   popup_collection_->ConfigureWidgetInitParamsForContainer(widget, &params);
   widget->set_focus_on_creation(false);
-  observer_.Add(widget);
+  observation_.Observe(widget);
 
 #if defined(OS_WIN)
   // We want to ensure that this toast always goes to the native desktop,
@@ -182,10 +183,6 @@ void MessagePopupView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kAlertDialog;
 }
 
-const char* MessagePopupView::GetClassName() const {
-  return "MessagePopupView";
-}
-
 void MessagePopupView::OnDisplayChanged() {
   OnWorkAreaChanged();
 }
@@ -217,11 +214,15 @@ void MessagePopupView::OnWidgetActivationChanged(views::Widget* widget,
 }
 
 void MessagePopupView::OnWidgetDestroyed(views::Widget* widget) {
-  observer_.Remove(widget);
+  DCHECK(observation_.IsObservingSource(widget));
+  observation_.Reset();
 }
 
 bool MessagePopupView::IsWidgetValid() const {
   return GetWidget() && !GetWidget()->IsClosed();
 }
+
+BEGIN_METADATA(MessagePopupView, views::WidgetDelegateView)
+END_METADATA
 
 }  // namespace message_center

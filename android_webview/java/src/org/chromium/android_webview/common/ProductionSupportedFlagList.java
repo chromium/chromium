@@ -72,12 +72,17 @@ public final class ProductionSupportedFlagList {
                     "Enables modern SameSite cookie behavior: 1) SameSite=Lax by default "
                             + "(cookies without a SameSite attribute are treated as SameSite=Lax); "
                             + "2) Schemeful Same-Site (site boundaries include the URL scheme)."),
-            Flag.baseFeature(GpuFeatures.ENABLE_SHARED_IMAGE_FOR_WEBVIEW,
-                    "Enables shared images for WebView."),
             Flag.baseFeature(GpuFeatures.WEBVIEW_VULKAN,
                     "Use Vulkan for composite. Requires VizForWebView and Android device and "
                             + "OS support. May crash if enabled on unsupported device."),
+            Flag.baseFeature(GpuFeatures.WEBVIEW_SURFACE_CONTROL,
+                    "Use SurfaceControl. Requires VizForWebView, WebViewZeroCopyVideo and Android "
+                            + "device and OS support."),
+            Flag.baseFeature(GpuFeatures.WEBVIEW_ZERO_COPY_VIDEO,
+                    "Avoid extra copy for video frames when possible"),
             Flag.baseFeature(VizFeatures.VIZ_FOR_WEBVIEW, "Enables Viz for WebView."),
+            Flag.baseFeature(
+                    VizFeatures.WEBVIEW_VULKAN_INTERMEDIATE_BUFFER, "For debugging vulkan"),
             Flag.baseFeature(
                     GpuFeatures.USE_GLES2_FOR_OOP_R, "Force Skia context to use es2 only."),
             Flag.baseFeature(AwFeatures.WEBVIEW_CONNECTIONLESS_SAFE_BROWSING,
@@ -107,5 +112,9 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(UiFeatures.SWIPE_TO_MOVE_CURSOR,
                     "Enables swipe to move cursor feature."
                             + "This flag will only take effect on Android 11 and above."),
+            Flag.baseFeature(AwFeatures.WEBVIEW_JAVA_JS_BRIDGE_MOJO,
+                    "Enables the new Java/JS Bridge code path with mojo implementation."),
+            Flag.baseFeature(UiFeatures.FORM_CONTROLS_REFRESH,
+                    "Enables the Form Controls visual improvements and dark mode."),
     };
 }

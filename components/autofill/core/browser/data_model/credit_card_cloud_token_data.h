@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 
 namespace autofill {
 
@@ -21,11 +20,11 @@ struct CreditCardCloudTokenData {
   bool operator==(const CreditCardCloudTokenData&) const;
   bool operator!=(const CreditCardCloudTokenData&) const;
 
-  base::string16 ExpirationMonthAsString() const;
-  base::string16 Expiration2DigitYearAsString() const;
-  base::string16 Expiration4DigitYearAsString() const;
-  void SetExpirationMonthFromString(const base::string16& month);
-  void SetExpirationYearFromString(const base::string16& year);
+  std::u16string ExpirationMonthAsString() const;
+  std::u16string Expiration2DigitYearAsString() const;
+  std::u16string Expiration4DigitYearAsString() const;
+  void SetExpirationMonthFromString(const std::u16string& month);
+  void SetExpirationYearFromString(const std::u16string& year);
 
   // Used by Autofill Wallet sync bridge to compute the difference between two
   // CreditCardCloudTokenData.
@@ -35,7 +34,7 @@ struct CreditCardCloudTokenData {
   std::string masked_card_id;
 
   // The last 4-5 digits of the Cloud Primary Account Number (CPAN).
-  base::string16 suffix;
+  std::u16string suffix;
 
   // The expiration month of the CPAN.
   int exp_month = 0;

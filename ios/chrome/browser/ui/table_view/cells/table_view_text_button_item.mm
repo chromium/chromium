@@ -150,7 +150,6 @@ const NSTextAlignment kDefaultTextAlignment = NSTextAlignmentCenter;
         kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset,
         kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset);
 
-#if defined(__IPHONE_13_4)
     if (@available(iOS 13.4, *)) {
         self.button.pointerInteractionEnabled = YES;
         // This button's background color is configured whenever the cell is
@@ -159,7 +158,6 @@ const NSTextAlignment kDefaultTextAlignment = NSTextAlignmentCenter;
         self.button.pointerStyleProvider =
             CreateOpaqueOrTransparentButtonPointerStyleProvider();
     }
-#endif  // defined(__IPHONE_13_4)
 
     // Vertical stackView to hold label and button.
     self.verticalStackView = [[UIStackView alloc]

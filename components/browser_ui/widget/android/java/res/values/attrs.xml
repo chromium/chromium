@@ -27,7 +27,6 @@
         <attr name="menuMaxWidth" format="reference|dimension" />
         <attr name="menuVerticalOverlapAnchor" format="boolean" />
         <attr name="menuHorizontalOverlapAnchor" format="boolean" />
-        <attr name="menuBackground" format="reference" />
     </declare-styleable>
 
     <declare-styleable name="AsyncImageView">

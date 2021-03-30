@@ -10,6 +10,7 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
 #include "ash/app_list/test/app_list_test_helper.h"
+#include "ash/components/audio/sounds.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/keyboard/ui/keyboard_ui.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
@@ -33,12 +34,13 @@
 #include "ash/shell_observer.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_window_builder.h"
 #include "ash/wallpaper/wallpaper_controller_test_api.h"
-#include "ash/window_factory.h"
 #include "ash/wm/always_on_top_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/fullscreen_window_finder.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/rounded_label_widget.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_properties.h"
@@ -49,8 +51,8 @@
 #include "ash/wm/workspace/workspace_window_resizer.h"
 #include "ash/wm/workspace_controller_test_api.h"
 #include "base/callback_helpers.h"
+#include "base/optional.h"
 #include "base/run_loop.h"
-#include "chromeos/audio/chromeos_sounds.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/client/window_parenting_client.h"
@@ -382,7 +384,7 @@ class DontClobberRestoreBoundsWindowObserver : public aura::WindowObserver {
 TEST_F(WorkspaceLayoutManagerTest, DontClobberRestoreBounds) {
   DontClobberRestoreBoundsWindowObserver window_observer;
   std::unique_ptr<aura::Window> window =
-      window_factory::NewWindow(nullptr, aura::client::WINDOW_TYPE_NORMAL);
+      std::make_unique<aura::Window>(nullptr, aura::client::WINDOW_TYPE_NORMAL);
   window->Init(ui::LAYER_TEXTURED);
   window->SetBounds(gfx::Rect(10, 20, 30, 40));
   // NOTE: for this test to exercise the failure the observer needs to be added
@@ -412,8 +414,8 @@ TEST_F(WorkspaceLayoutManagerTest, ChildBoundsResetOnMaximize) {
   window->Show();
   WindowState* window_state = WindowState::Get(window.get());
   window_state->Activate();
-  std::unique_ptr<aura::Window> child_window(
-      CreateChildWindow(window.get(), gfx::Rect(5, 6, 7, 8)));
+  std::unique_ptr<aura::Window> child_window =
+      ChildTestWindowBuilder(window.get(), gfx::Rect(5, 6, 7, 8)).Build();
   window_state->Maximize();
   EXPECT_EQ("5,6 7x8", child_window->bounds().ToString());
 }
@@ -422,7 +424,7 @@ TEST_F(WorkspaceLayoutManagerTest, ChildBoundsResetOnMaximize) {
 // bounds.
 TEST_F(WorkspaceLayoutManagerTest, MaximizeWithEmptySize) {
   std::unique_ptr<aura::Window> window =
-      window_factory::NewWindow(nullptr, aura::client::WINDOW_TYPE_NORMAL);
+      std::make_unique<aura::Window>(nullptr, aura::client::WINDOW_TYPE_NORMAL);
   window->Init(ui::LAYER_TEXTURED);
   window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MAXIMIZED);
   aura::Window* active_desk_container =
@@ -644,7 +646,7 @@ TEST_F(WorkspaceLayoutManagerTest,
        DoNotAdjustTransientWindowBoundsToEnsureMinimumVisibility) {
   UpdateDisplay("300x400");
   std::unique_ptr<aura::Window> window =
-      window_factory::NewWindow(nullptr, aura::client::WINDOW_TYPE_NORMAL);
+      std::make_unique<aura::Window>(nullptr, aura::client::WINDOW_TYPE_NORMAL);
   window->Init(ui::LAYER_TEXTURED);
   window->SetBounds(gfx::Rect(10, 0, 100, 200));
   ParentWindowInPrimaryRootWindow(window.get());
@@ -663,7 +665,7 @@ TEST_F(WorkspaceLayoutManagerTest,
 
 TEST_F(WorkspaceLayoutManagerTest, EnsureWindowStateInOverlay) {
   std::unique_ptr<aura::Window> window =
-      window_factory::NewWindow(nullptr, aura::client::WINDOW_TYPE_NORMAL);
+      std::make_unique<aura::Window>(nullptr, aura::client::WINDOW_TYPE_NORMAL);
   window->Init(ui::LAYER_TEXTURED);
   auto* overlay_container =
       Shell::GetPrimaryRootWindowController()->GetContainer(
@@ -1133,7 +1135,7 @@ class WorkspaceLayoutManagerBackdropTest : public AshTestBase {
   }
 
   aura::Window* CreateTestWindowInParent(aura::Window* root_window) {
-    aura::Window* window = window_factory::NewWindow().release();
+    aura::Window* window = new aura::Window(nullptr);
     window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
     window->SetType(aura::client::WINDOW_TYPE_NORMAL);
     window->Init(ui::LAYER_TEXTURED);
@@ -1182,7 +1184,7 @@ class WorkspaceLayoutManagerBackdropTest : public AshTestBase {
   DISALLOW_COPY_AND_ASSIGN(WorkspaceLayoutManagerBackdropTest);
 };
 
-constexpr int kNoSoundKey = -1;
+constexpr base::Optional<Sound> kNoSoundKey = base::nullopt;
 
 }  // namespace
 
@@ -1544,7 +1546,7 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, SpokenFeedbackFullscreenBackground) {
 
   generator->MoveMouseTo(300, 300);
   generator->ClickLeftButton();
-  EXPECT_EQ(chromeos::SOUND_VOLUME_ADJUST, client.GetPlayedEarconAndReset());
+  EXPECT_EQ(Sound::kVolumeAdjust, client.GetPlayedEarconAndReset());
 
   generator->MoveMouseRelativeTo(window.get(), 10, 10);
   generator->ClickLeftButton();
@@ -1600,7 +1602,7 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, SpokenFeedbackForArc) {
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(300, 300);
   generator->ClickLeftButton();
-  EXPECT_EQ(chromeos::SOUND_VOLUME_ADJUST, client.GetPlayedEarconAndReset());
+  EXPECT_EQ(Sound::kVolumeAdjust, client.GetPlayedEarconAndReset());
 
   generator->MoveMouseTo(70, 70);
   generator->ClickLeftButton();
@@ -1825,11 +1827,28 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitScreenTest) {
   // and is the second child in the container. Its bounds should be the same
   // as the snapped window's bounds.
   split_view_controller()->SnapWindow(window1.get(), SplitViewController::LEFT);
-  EXPECT_EQ(2U, default_container()->children().size());
-  for (auto* child : default_container()->children())
-    EXPECT_TRUE(child->IsVisible());
-  EXPECT_EQ(window1.get(), default_container()->children()[1]);
-  EXPECT_EQ(window1->bounds(), default_container()->children()[0]->bounds());
+  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  // One of the windows in the default container is the overview
+  // no_windows_widget window. Exclude it.
+  aura::Window::Windows children = default_container()->children();
+  children.erase(std::remove_if(children.begin(), children.end(),
+                                [](aura::Window* window) {
+                                  return window ==
+                                         Shell::Get()
+                                             ->overview_controller()
+                                             ->overview_session()
+                                             ->no_windows_widget_for_testing()
+                                             ->GetNativeWindow();
+                                }),
+                 children.end());
+  EXPECT_EQ(2U, children.size());
+
+  // Backdrop is hidden in overview mode. So test the window and backdrop
+  // separately.
+  EXPECT_FALSE(children[0]->IsVisible());
+  EXPECT_TRUE(children[1]->IsVisible());
+  EXPECT_EQ(window1.get(), children[1]);
+  EXPECT_EQ(window1->bounds(), children[0]->bounds());
 
   // Now snap another window to right. Test that the backdrop window is still
   // visible but is now the third window in the container. Its bounds should
@@ -1930,7 +1949,7 @@ TEST_F(WorkspaceLayoutManagerSystemUiAreaTest,
   EXPECT_FALSE(unified_system_tray->IsBubbleShown());
   EXPECT_EQ(0, test_state()->num_system_ui_area_changes());
 
-  unified_system_tray->ShowBubble(/*show_by_click=*/false);
+  unified_system_tray->ShowBubble();
   EXPECT_GE(test_state()->num_system_ui_area_changes(), 1);
   test_state()->reset_num_system_ui_area_changes();
 
@@ -1996,7 +2015,6 @@ TEST_F(WorkspaceLayoutManagerSystemUiAreaTest,
   EXPECT_GE(test_state()->num_system_ui_area_changes(), 1);
 }
 
-
 TEST_F(WorkspaceLayoutManagerBackdropTest,
        BackdropWindowIsNotReparentedFromAlwaysOnTopContainer) {
   WorkspaceController* wc = ShellTestApi().workspace_controller();
@@ -2014,7 +2032,7 @@ TEST_F(WorkspaceLayoutManagerBackdropTest,
       ->SetBackdropMode(WindowBackdrop::BackdropMode::kEnabled);
 
   aura::Window* always_on_top_container =
-  always_on_top_controller->GetContainer(always_on_top_window.get());
+      always_on_top_controller->GetContainer(always_on_top_window.get());
   // AlwaysOnTopContainer has |always_on_top_window| and a backdrop window
   // at this moment.
   ASSERT_EQ(always_on_top_container->children().size(), 2U);

@@ -4,12 +4,13 @@
 
 #include "chrome/installer/util/google_update_util.h"
 
+#include <string>
+
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/process/launch.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "base/win/win_util.h"
 #include "chrome/installer/util/google_update_settings.h"
@@ -27,7 +28,7 @@ const int kGoogleUpdateTimeoutMs = 20 * 1000;
 // |timeout| to be base::TimeDelta::FromMilliseconds(INFINITE).
 // Returns true if this executes successfully.
 // Returns false if command execution fails to execute, or times out.
-bool LaunchProcessAndWaitWithTimeout(const base::string16& cmd_string,
+bool LaunchProcessAndWaitWithTimeout(const std::wstring& cmd_string,
                                      base::TimeDelta timeout) {
   bool success = false;
   int exit_code = 0;
@@ -53,7 +54,7 @@ bool LaunchProcessAndWaitWithTimeout(const base::string16& cmd_string,
 
 bool UninstallGoogleUpdate(bool system_install) {
   bool success = false;
-  base::string16 cmd_string(
+  std::wstring cmd_string(
       GoogleUpdateSettings::GetUninstallCommandLine(system_install));
   if (cmd_string.empty()) {
     success = true;  // Nothing to; vacuous success.

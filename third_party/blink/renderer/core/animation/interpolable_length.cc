@@ -204,8 +204,11 @@ static UnitType IndexToUnitType(wtf_size_t index) {
 Length InterpolableLength::CreateLength(
     const CSSToLengthConversionData& conversion_data,
     ValueRange range) const {
+  // Passing true for ToCalcValue is a dirty hack to ensure that we don't create
+  // a degenerate value when animating 'background-position', while we know it
+  // may cause some minor animation glitches for the other properties.
   if (IsExpression())
-    return Length(expression_->ToCalcValue(conversion_data, range));
+    return Length(expression_->ToCalcValue(conversion_data, range, true));
 
   bool has_percentage = HasPercentage();
   double pixels = 0;

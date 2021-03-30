@@ -10,13 +10,16 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 
+namespace gfx {
+class Size;
+}  // namespace gfx
+
 namespace blink {
 
 class Element;
 class HTMLElement;
 class HTMLMediaElement;
 class MediaControlsImpl;
-struct WebSize;
 
 // MediaControlElementBase is the base class for all the media control elements.
 // It is sub-classed by MediaControlInputElement and MediaControlDivElement
@@ -48,8 +51,8 @@ class MODULES_EXPORT MediaControlElementBase : public GarbageCollectedMixin {
   virtual bool HasOverflowButton() const;
 
   // Get the size of the element in pixels or the default if we cannot get the
-  // size because the element has not been layed out yet.
-  virtual WebSize GetSizeOrDefault() const = 0;
+  // size because the element has not been laid out yet.
+  virtual gfx::Size GetSizeOrDefault() const = 0;
 
   // Whether the element has been disabled via the HTML disabled attribute.
   virtual bool IsDisabled() const = 0;

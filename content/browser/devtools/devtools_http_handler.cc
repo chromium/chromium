@@ -402,7 +402,7 @@ static std::string GetMimeType(const std::string& filename) {
     return "text/css";
   } else if (base::EndsWith(filename, ".js",
                             base::CompareCase::INSENSITIVE_ASCII)) {
-    return "application/javascript";
+    return "text/javascript";
   } else if (base::EndsWith(filename, ".png",
                             base::CompareCase::INSENSITIVE_ASCII)) {
     return "image/png";
@@ -415,6 +415,9 @@ static std::string GetMimeType(const std::string& filename) {
   } else if (base::EndsWith(filename, ".svg",
                             base::CompareCase::INSENSITIVE_ASCII)) {
     return "image/svg+xml";
+  } else if (base::EndsWith(filename, ".avif",
+                            base::CompareCase::INSENSITIVE_ASCII)) {
+    return "image/avif";
   }
   LOG(ERROR) << "GetMimeType doesn't know mime type for: "
              << filename

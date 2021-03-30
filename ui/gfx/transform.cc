@@ -637,4 +637,13 @@ std::string Transform::ToString() const {
       matrix_.get(3, 3));
 }
 
+SkM44 Transform::GetMatrixAsSkM44() const {
+  return SkM44(matrix_.get(0, 0), matrix_.get(0, 1), matrix_.get(0, 2),
+               matrix_.get(0, 3), matrix_.get(1, 0), matrix_.get(1, 1),
+               matrix_.get(1, 2), matrix_.get(1, 3), matrix_.get(2, 0),
+               matrix_.get(2, 1), matrix_.get(2, 2), matrix_.get(2, 3),
+               matrix_.get(3, 0), matrix_.get(3, 1), matrix_.get(3, 2),
+               matrix_.get(3, 3));
+}
+
 }  // namespace gfx

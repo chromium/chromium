@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/scoped_observation.h"
-#include "base/scoped_observer.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/process_manager.h"
@@ -59,8 +58,8 @@ class KeepAliveImpl : public KeepAlive,
 
   content::BrowserContext* context_;
   const Extension* extension_;
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
   base::ScopedObservation<ProcessManager, ProcessManagerObserver>
       process_manager_observation_{this};
   mojo::Receiver<KeepAlive> receiver_;

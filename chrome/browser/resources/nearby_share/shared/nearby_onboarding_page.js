@@ -27,14 +27,54 @@ Polymer({
 
   listeners: {
     'next': 'onNext_',
+    'close': 'onClose_',
+    'keydown': 'onKeydown_',
     'view-enter-start': 'onViewEnterStart_',
   },
 
 
+  /** @private */
+  onNext_() {
+    this.submitDeviceNameInput_();
+  },
+
+  /** @private */
+  onClose_() {
+    processOnboardingCancelledMetrics(
+        NearbyShareOnboardingFinalState.DEVICE_NAME_PAGE);
+    this.fire('onboarding-cancelled');
+  },
+
   /**
+   * @param {!KeyboardEvent} e Event containing the key
    * @private
    */
-  onNext_() {
+  onKeydown_(e) {
+    e.stopPropagation();
+    if (e.key === 'Enter') {
+      this.submitDeviceNameInput_();
+      e.preventDefault();
+    }
+  },
+
+  /** @private */
+  onViewEnterStart_() {
+    this.$$('#deviceName').focus();
+    processOnboardingInitiatedMetrics(new URL(document.URL));
+  },
+
+
+  /** @private */
+  onDeviceNameInput_() {
+    nearby_share.getNearbyShareSettings()
+        .validateDeviceName(this.$.deviceName.value)
+        .then((result) => {
+          this.updateErrorMessage_(result.result);
+        });
+  },
+
+  /** @private */
+  submitDeviceNameInput_() {
     nearby_share.getNearbyShareSettings()
         .setDeviceName(this.$.deviceName.value)
         .then((result) => {
@@ -43,20 +83,6 @@ Polymer({
               nearbyShare.mojom.DeviceNameValidationResult.kValid) {
             this.fire('change-page', {page: 'visibility'});
           }
-        });
-  },
-
-  /** @private */
-  onViewEnterStart_() {
-    this.$$('#deviceName').focus();
-  },
-
-  /** @private */
-  onDeviceNameInput_() {
-    nearby_share.getNearbyShareSettings()
-        .validateDeviceName(this.$.deviceName.value)
-        .then((result) => {
-          this.updateErrorMessage_(result.result);
         });
   },
 

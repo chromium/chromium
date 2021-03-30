@@ -220,8 +220,6 @@ class ASH_EXPORT OverviewWindowDragController {
   // True if the Virtual Desks bar is created and dragging to desks is enabled.
   const bool virtual_desks_bar_enabled_;
 
-  const bool are_multi_display_overview_and_splitview_enabled_;
-
   // The opacity of |item_| changes if we are in drag to close mode. Store the
   // original opacity of |item_| and restore it to the item when we leave drag
   // to close mode.

@@ -23,8 +23,8 @@
 
 #include "third_party/blink/renderer/core/html/html_frame_element.h"
 
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
-#include "third_party/blink/public/mojom/feature_policy/policy_value.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/html/html_frame_set_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -75,14 +75,14 @@ void HTMLFrameElement::ParseAttribute(
   }
 }
 
-ParsedFeaturePolicy HTMLFrameElement::ConstructContainerPolicy() const {
+ParsedPermissionsPolicy HTMLFrameElement::ConstructContainerPolicy() const {
   // Frame elements are not allowed to enable the fullscreen feature. Add an
   // empty allowlist for the fullscreen feature so that the framed content is
   // unable to use the API, regardless of origin.
   // https://fullscreen.spec.whatwg.org/#model
-  ParsedFeaturePolicy container_policy;
-  ParsedFeaturePolicyDeclaration allowlist(
-      mojom::blink::FeaturePolicyFeature::kFullscreen);
+  ParsedPermissionsPolicy container_policy;
+  ParsedPermissionsPolicyDeclaration allowlist(
+      mojom::blink::PermissionsPolicyFeature::kFullscreen);
   container_policy.push_back(allowlist);
   return container_policy;
 }

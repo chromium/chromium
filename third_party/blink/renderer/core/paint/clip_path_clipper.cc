@@ -4,11 +4,9 @@
 
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 
-#include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_clipper.h"
-#include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -36,6 +34,10 @@ LayoutSVGResourceClipper* ResolveElementReference(
     const LayoutObject& object,
     const ReferenceClipPathOperation& reference_clip_path_operation) {
   SVGResourceClient* client = GetResourceClient(object);
+  // We may not have a resource client for some non-rendered elements (like
+  // filter primitives) that we visit during paint property tree construction.
+  if (!client)
+    return nullptr;
   LayoutSVGResourceClipper* resource_clipper =
       GetSVGResourceAsType(*client, reference_clip_path_operation);
   if (resource_clipper) {
@@ -65,7 +67,7 @@ FloatRect ClipPathClipper::LocalReferenceBox(const LayoutObject& object) {
 
 base::Optional<FloatRect> ClipPathClipper::LocalClipPathBoundingBox(
     const LayoutObject& object) {
-  if (object.IsText() || !object.StyleRef().ClipPath())
+  if (object.IsText() || !object.StyleRef().HasClipPath())
     return base::nullopt;
 
   FloatRect reference_box = LocalReferenceBox(object);
@@ -191,7 +193,7 @@ void ClipPathClipper::PaintClipPathAsMaskImage(
     else
       context.BeginLayer(1.f, SkBlendMode::kDstIn);
 
-    if (resource_clipper->StyleRef().ClipPath()) {
+    if (resource_clipper->StyleRef().HasClipPath()) {
       // Try to apply nested clip-path as path-based clip.
       if (const base::Optional<Path>& path = PathBasedClipInternal(
               *resource_clipper, uses_zoomed_reference_box, reference_box)) {
@@ -215,7 +217,7 @@ void ClipPathClipper::PaintClipPathAsMaskImage(
 }
 
 bool ClipPathClipper::ShouldUseMaskBasedClip(const LayoutObject& object) {
-  if (object.IsText())
+  if (object.IsText() || !object.StyleRef().HasClipPath())
     return false;
   const auto* reference_clip =
       DynamicTo<ReferenceClipPathOperation>(object.StyleRef().ClipPath());

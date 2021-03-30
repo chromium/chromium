@@ -7,6 +7,8 @@ package org.chromium.content_public.browser;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 
+import org.chromium.url.GURL;
+
 import java.util.List;
 
 /**
@@ -24,6 +26,6 @@ public interface ImageDownloadCallback {
      *                 WebContente.DownloadImage}.
      * @param originalImageSizes The original sizes of {@link bitmaps} prior to the resizing.
      */
-    void onFinishDownloadImage(int id, int httpStatusCode, String imageUrl, List<Bitmap> bitmaps,
+    void onFinishDownloadImage(int id, int httpStatusCode, GURL imageUrl, List<Bitmap> bitmaps,
             List<Rect> originalImageSizes);
 }

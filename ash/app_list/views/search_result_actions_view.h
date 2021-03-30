@@ -7,8 +7,8 @@
 
 #include <list>
 
-#include "ash/app_list/app_list_export.h"
 #include "ash/app_list/model/search/search_result.h"
+#include "ash/ash_export.h"
 #include "base/macros.h"
 #include "ui/views/view.h"
 
@@ -19,7 +19,7 @@ class SearchResultView;
 
 // SearchResultActionsView displays a SearchResult::Actions in a button
 // strip. Each action is presented as a button and horizontally laid out.
-class APP_LIST_EXPORT SearchResultActionsView : public views::View {
+class ASH_EXPORT SearchResultActionsView : public views::View {
  public:
   explicit SearchResultActionsView(SearchResultActionsViewDelegate* delegate);
   ~SearchResultActionsView() override;

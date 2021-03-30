@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <string>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -17,7 +18,6 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/notreached.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -27,11 +27,11 @@
 #include "content/renderer/render_frame_impl.h"
 #include "content/web_test/renderer/test_runner.h"
 #include "content/web_test/renderer/web_test_spell_checker.h"
-#include "content/web_test/renderer/web_view_test_proxy.h"
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
 #include "net/base/filename_util.h"
+#include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
@@ -39,12 +39,12 @@
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/blink.h"
-#include "third_party/blink/public/web/web_context_menu_data.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_page_popup.h"
@@ -56,15 +56,15 @@
 #include "ui/gfx/geometry/point_conversions.h"
 #include "v8/include/v8.h"
 
+using blink::ContextMenuData;
 using blink::DragOperationsMask;
-using blink::WebContextMenuData;
+using blink::MenuItemInfo;
 using blink::WebDragData;
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
 using blink::WebInputEventResult;
 using blink::WebKeyboardEvent;
 using blink::WebLocalFrame;
-using blink::WebMenuItemInfo;
 using blink::WebMouseEvent;
 using blink::WebMouseWheelEvent;
 using blink::WebPagePopup;
@@ -87,11 +87,6 @@ const char* const kPointerTypeStringMouse = "mouse";
 const char* const kPointerTypeStringTouch = "touch";
 const char* const kPointerTypeStringPen = "pen";
 const char* const kPointerTypeStringEraser = "eraser";
-
-WebViewTestProxy* GetWebViewTestProxy(blink::WebFrameWidget* widget) {
-  return static_cast<WebViewTestProxy*>(
-      RenderView::FromWebView(widget->LocalRoot()->View()));
-}
 
 // Assigns |pointerType| from the provided |args|. Returns false if there was
 // any error.
@@ -415,7 +410,7 @@ bool OutsideRadius(const gfx::PointF& a, const gfx::PointF& b, float radius) {
           (a.y() - b.y()) * (a.y() - b.y())) > radius * radius;
 }
 
-void PopulateCustomItems(const WebVector<WebMenuItemInfo>& customItems,
+void PopulateCustomItems(const WebVector<MenuItemInfo>& customItems,
                          const std::string& prefix,
                          std::vector<std::string>* strings) {
   for (size_t i = 0; i < customItems.size(); ++i) {
@@ -424,15 +419,15 @@ void PopulateCustomItems(const WebVector<WebMenuItemInfo>& customItems,
       prefixCopy = kDisabledIdentifier + prefix;
     if (customItems[i].checked)
       prefixCopy = kCheckedIdentifier + prefix;
-    if (customItems[i].type == blink::WebMenuItemInfo::kSeparator) {
+    if (customItems[i].type == blink::MenuItemInfo::kSeparator) {
       strings->push_back(prefixCopy + kSeparatorIdentifier);
-    } else if (customItems[i].type == blink::WebMenuItemInfo::kSubMenu) {
-      strings->push_back(prefixCopy + customItems[i].label.Utf8() +
+    } else if (customItems[i].type == blink::MenuItemInfo::kSubMenu) {
+      strings->push_back(prefixCopy + base::UTF16ToUTF8(customItems[i].label) +
                          kSubMenuIdentifier);
       PopulateCustomItems(customItems[i].sub_menu_items,
                           prefixCopy + kSubMenuDepthIdentifier, strings);
     } else {
-      strings->push_back(prefixCopy + customItems[i].label.Utf8());
+      strings->push_back(prefixCopy + base::UTF16ToUTF8(customItems[i].label));
     }
   }
 }
@@ -446,8 +441,7 @@ void PopulateCustomItems(const WebVector<WebMenuItemInfo>& customItems,
 // flags.
 // - Some test even checks actual string content. So providing it would be also
 // helpful.
-std::vector<std::string> MakeMenuItemStringsFor(
-    WebContextMenuData* context_menu) {
+std::vector<std::string> MakeMenuItemStringsFor(ContextMenuData* context_menu) {
   // These constants are based on Safari's context menu because tests are made
   // for it.
   static const char* kNonEditableMenuStrings[] = {
@@ -480,8 +474,8 @@ std::vector<std::string> MakeMenuItemStringsFor(
       strings.push_back(*item);
     }
     WebVector<WebString> suggestions;
-    WebTestSpellChecker::FillSuggestionList(context_menu->misspelled_word,
-                                            &suggestions);
+    WebTestSpellChecker::FillSuggestionList(
+        WebString::FromUTF16(context_menu->misspelled_word), &suggestions);
     for (const WebString& suggestion : suggestions)
       strings.push_back(suggestion.Utf8());
   } else {
@@ -1252,7 +1246,6 @@ EventSender::SavedEvent::SavedEvent()
 EventSender::EventSender(blink::WebFrameWidget* web_frame_widget,
                          content::TestRunner* test_runner)
     : web_frame_widget_(web_frame_widget),
-      web_view_test_proxy_(GetWebViewTestProxy(web_frame_widget)),
       test_runner_(test_runner) {
   Reset();
 }
@@ -1299,8 +1292,8 @@ void EventSender::Install(WebLocalFrame* frame) {
   EventSenderBindings::Install(weak_factory_.GetWeakPtr(), frame);
 }
 
-void EventSender::SetContextMenuData(const WebContextMenuData& data) {
-  last_context_menu_data_.reset(new WebContextMenuData(data));
+void EventSender::SetContextMenuData(const ContextMenuData& data) {
+  last_context_menu_data_.reset(new ContextMenuData(data));
 }
 
 int EventSender::ModifiersForPointer(int pointer_id) {
@@ -1579,7 +1572,7 @@ void EventSender::KeyDown(const std::string& code_str,
       }
     }
     if (!code) {
-      base::string16 code_str16 = base::UTF8ToUTF16(code_str);
+      std::u16string code_str16 = base::UTF8ToUTF16(code_str);
       if (code_str16.size() != 1u) {
         v8::Isolate* isolate = blink::MainThreadIsolate();
         isolate->ThrowException(v8::Exception::TypeError(
@@ -1593,8 +1586,7 @@ void EventSender::KeyDown(const std::string& code_str,
       if (base::IsAsciiAlpha(code)) {
         domKeyString.assign(code_str);
         domCodeString.assign("Key");
-        domCodeString.push_back(
-            base::ToUpperASCII(static_cast<base::char16>(code)));
+        domCodeString.push_back(base::ToUpperASCII(char16_t{code}));
       } else if (base::IsAsciiDigit(code)) {
         domKeyString.assign(code_str);
         domCodeString.assign("Digit");
@@ -1836,7 +1828,8 @@ void EventSender::DumpFilenameBeingDragged() {
                                 std::string(),   // mime_type
                                 std::string());  // default_name
 #if defined(OS_WIN)
-      filename = filename.ReplaceExtension(filename_extension.Utf16());
+      filename = filename.ReplaceExtension(
+          base::UTF8ToWide(filename_extension.Utf8()));
 #else
       filename = filename.ReplaceExtension(filename_extension.Utf8());
 #endif
@@ -1939,7 +1932,7 @@ void EventSender::BeginDragWithFiles(const std::vector<std::string>& files) {
     WebDragData::Item item;
     item.storage_type = WebDragData::Item::kStorageTypeFilename;
     item.filename_data =
-        web_view_proxy()->GetAbsoluteWebStringFromUTF8Path(file_path);
+        test_runner_->GetAbsoluteWebStringFromUTF8Path(file_path);
     items.emplace_back(item);
   }
 
@@ -2796,10 +2789,6 @@ void EventSender::SendGesturesForMouseWheelEvent(
   HandleInputEventOnViewOrPopup(end_event);
 }
 
-WebViewTestProxy* EventSender::web_view_proxy() {
-  return web_view_test_proxy_;
-}
-
 const blink::WebView* EventSender::view() const {
   return web_frame_widget_->LocalRoot()->View();
 }
@@ -2832,7 +2821,7 @@ void EventSender::UpdateLifecycleToPrePaint() {
 }
 
 float EventSender::DeviceScaleFactorForEvents() {
-  if (!web_view_test_proxy_->compositor_deps()->IsUseZoomForDSFEnabled())
+  if (!blink::Platform::Current()->IsUseZoomForDSFEnabled())
     return 1;
   return web_frame_widget_->GetOriginalScreenInfo().device_scale_factor;
 }

@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-namespace syncer {
+namespace invalidation {
 
 using ::testing::MakeMatcher;
 using ::testing::Matcher;
@@ -46,14 +46,14 @@ struct InvalidationEqPredicate {
 bool TopicInvalidationMapEqMatcher::MatchAndExplain(
     const TopicInvalidationMap& actual,
     MatchResultListener* listener) const {
-  std::vector<syncer::Invalidation> expected_invalidations;
-  std::vector<syncer::Invalidation> actual_invalidations;
+  std::vector<Invalidation> expected_invalidations;
+  std::vector<Invalidation> actual_invalidations;
 
   expected_.GetAllInvalidations(&expected_invalidations);
   actual.GetAllInvalidations(&actual_invalidations);
 
-  std::vector<syncer::Invalidation> expected_only;
-  std::vector<syncer::Invalidation> actual_only;
+  std::vector<Invalidation> expected_only;
+  std::vector<Invalidation> actual_only;
 
   for (const auto& expected_invalidation : expected_invalidations) {
     if (std::find_if(actual_invalidations.begin(), actual_invalidations.end(),
@@ -110,4 +110,4 @@ Matcher<const TopicInvalidationMap&> Eq(const TopicInvalidationMap& expected) {
   return MakeMatcher(new TopicInvalidationMapEqMatcher(expected));
 }
 
-}  // namespace syncer
+}  // namespace invalidation

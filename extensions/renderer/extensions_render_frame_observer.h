@@ -35,9 +35,9 @@ class ExtensionsRenderFrameObserver : public content::RenderFrameObserver,
   void SetVisuallyDeemphasized(bool deemphasized) override;
 
   // RenderFrameObserver implementation.
-  void DetailedConsoleMessageAdded(const base::string16& message,
-                                   const base::string16& source,
-                                   const base::string16& stack_trace,
+  void DetailedConsoleMessageAdded(const std::u16string& message,
+                                   const std::u16string& source,
+                                   const std::u16string& stack_trace,
                                    uint32_t line_number,
                                    int32_t severity_level) override;
   void OnDestruct() override;

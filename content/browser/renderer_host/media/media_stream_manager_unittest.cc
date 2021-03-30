@@ -199,9 +199,9 @@ class MediaStreamManagerTest : public ::testing::Test {
     SetBrowserClientForTesting(browser_content_client_.get());
     base::RunLoop().RunUntilIdle();
 
-    ON_CALL(*video_capture_provider_, DoGetDeviceInfosAsync(_))
+    ON_CALL(*video_capture_provider_, GetDeviceInfosAsync(_))
         .WillByDefault(Invoke(
-            [](VideoCaptureProvider::GetDeviceInfosCallback& result_callback) {
+            [](VideoCaptureProvider::GetDeviceInfosCallback result_callback) {
               std::vector<media::VideoCaptureDeviceInfo> stub_results;
               std::move(result_callback).Run(stub_results);
             }));

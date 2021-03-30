@@ -61,6 +61,8 @@ class GbmSurfacelessWayland : public gl::SurfacelessEGL,
   EGLConfig GetConfig() override;
   void SetRelyOnImplicitSync() override;
   bool SupportsPlaneGpuFences() const override;
+  bool SupportsOverridePlatformSize() const override;
+  bool SupportsViewporter() const override;
   gfx::SurfaceOrigin GetOrigin() const override;
 
  private:
@@ -117,6 +119,12 @@ class GbmSurfacelessWayland : public gl::SurfacelessEGL,
   void SetNoGLFlushForTests();
 
   WaylandBufferManagerGpu* const buffer_manager_;
+
+  // |background_buffer_id| is sent to WaylandBufferManagerHost once per
+  // background_buffer allocation. However WaylandBufferManagerHost may commit
+  // this buffer more often b/c buffers needs to be re-attached when wl_surface
+  // is reshown.
+  BufferId background_buffer_id_;
 
   // The native surface. Deleting this is allowed to free the EGLNativeWindow.
   gfx::AcceleratedWidget widget_;

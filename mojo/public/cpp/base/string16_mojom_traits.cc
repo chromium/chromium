@@ -9,35 +9,35 @@
 namespace mojo {
 
 // static
-bool StructTraits<mojo_base::mojom::String16DataView, base::string16>::Read(
+bool StructTraits<mojo_base::mojom::String16DataView, std::u16string>::Read(
     mojo_base::mojom::String16DataView data,
-    base::string16* out) {
+    std::u16string* out) {
   ArrayDataView<uint16_t> view;
   data.GetDataDataView(&view);
-  out->assign(reinterpret_cast<const base::char16*>(view.data()), view.size());
+  out->assign(reinterpret_cast<const char16_t*>(view.data()), view.size());
   return true;
 }
 
 // static
 mojo_base::BigBuffer
-StructTraits<mojo_base::mojom::BigString16DataView, base::string16>::data(
-    const base::string16& str) {
+StructTraits<mojo_base::mojom::BigString16DataView, std::u16string>::data(
+    const std::u16string& str) {
   const auto* bytes = reinterpret_cast<const uint8_t*>(str.data());
   return mojo_base::BigBuffer(
-      base::make_span(bytes, str.size() * sizeof(base::char16)));
+      base::make_span(bytes, str.size() * sizeof(char16_t)));
 }
 
 // static
-bool StructTraits<mojo_base::mojom::BigString16DataView, base::string16>::Read(
+bool StructTraits<mojo_base::mojom::BigString16DataView, std::u16string>::Read(
     mojo_base::mojom::BigString16DataView data,
-    base::string16* out) {
+    std::u16string* out) {
   mojo_base::BigBuffer buffer;
   if (!data.ReadData(&buffer))
     return false;
-  if (buffer.size() % sizeof(base::char16))
+  if (buffer.size() % sizeof(char16_t))
     return false;
-  *out = base::string16(reinterpret_cast<const base::char16*>(buffer.data()),
-                        buffer.size() / sizeof(base::char16));
+  *out = std::u16string(reinterpret_cast<const char16_t*>(buffer.data()),
+                        buffer.size() / sizeof(char16_t));
   return true;
 }
 

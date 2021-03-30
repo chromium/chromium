@@ -138,4 +138,8 @@ bool IsSwipeTrackingFromScrollEventsEnabled() {
       && [NSEvent performSelector:selector];
 }
 
+NSWindow* GetActiveWindow() {
+  return [NSApp keyWindow];
+}
+
 }  // namespace platform_util

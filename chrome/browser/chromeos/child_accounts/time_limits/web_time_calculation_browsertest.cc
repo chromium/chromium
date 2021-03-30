@@ -12,6 +12,8 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
+#include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/chromeos/child_accounts/child_user_service.h"
 #include "chrome/browser/chromeos/child_accounts/child_user_service_factory.h"
 #include "chrome/browser/chromeos/child_accounts/time_limits/app_activity_registry.h"
@@ -20,10 +22,8 @@
 #include "chrome/browser/chromeos/child_accounts/time_limits/app_time_limits_allowlist_policy_test_utils.h"
 #include "chrome/browser/chromeos/child_accounts/time_limits/web_time_limit_enforcer.h"
 #include "chrome/browser/chromeos/child_accounts/time_limits/web_time_navigation_observer.h"
-#include "chrome/browser/chromeos/login/test/scoped_policy_update.h"
 #include "chrome/browser/chromeos/policy/user_policy_test_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/supervised_user/logged_in_user_mixin.h"
 #include "chrome/browser/supervised_user/navigation_finished_waiter.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -40,7 +40,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
-#include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
@@ -88,8 +87,7 @@ class WebTimeCalculationBrowserTest : public MixinBasedInProcessBrowserTest {
 
 void WebTimeCalculationBrowserTest::SetUp() {
   scoped_feature_list_.InitWithFeatures(
-      /* enabled_features */ {features::kPerAppTimeLimits,
-                              features::kWebTimeLimits},
+      /* enabled_features */ {features::kWebTimeLimits},
       /* disabled_features */ {});
 
   builder_.SetUp();
@@ -101,12 +99,7 @@ void WebTimeCalculationBrowserTest::SetUpOnMainThread() {
 
   ASSERT_TRUE(embedded_test_server()->Started());
 
-  // Resolve everything to localhost.
-  host_resolver()->AddIPLiteralRule("*", "127.0.0.1", "localhost");
-
-  logged_in_user_mixin_.LogInUser(false /*issue_any_scope_token*/,
-                                  true /*wait_for_active_session*/,
-                                  true /*request_policy_update*/);
+  logged_in_user_mixin_.LogInUser();
   profile_ = browser()->profile();
 
   // During tests, AppService doesn't notify AppActivityRegistry that chrome app

@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/query_tiles/logger.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
@@ -46,8 +46,8 @@ class QueryTilesInternalsUIMessageHandler
 
   query_tiles::TileService* tile_service_;
 
-  ScopedObserver<query_tiles::Logger, query_tiles::Logger::Observer>
-      logger_observer_{this};
+  base::ScopedObservation<query_tiles::Logger, query_tiles::Logger::Observer>
+      logger_observation_{this};
 
   base::WeakPtrFactory<QueryTilesInternalsUIMessageHandler> weak_ptr_factory_{
       this};

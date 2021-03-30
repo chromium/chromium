@@ -878,6 +878,8 @@ UniChar TranslatedUnicodeCharFromKeyCode(TISInputSourceRef input_source,
 
   CFDataRef layout_data = static_cast<CFDataRef>(TISGetInputSourceProperty(
       input_source, kTISPropertyUnicodeKeyLayoutData));
+  if (!layout_data)
+    return 0xFFFD;  // REPLACEMENT CHARACTER
 
   const UCKeyboardLayout* keyboard_layout =
       reinterpret_cast<const UCKeyboardLayout*>(CFDataGetBytePtr(layout_data));

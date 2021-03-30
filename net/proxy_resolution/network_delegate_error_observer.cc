@@ -21,7 +21,7 @@ class NetworkDelegateErrorObserver::Core
   Core(NetworkDelegate* network_delegate,
        base::SingleThreadTaskRunner* origin_runner);
 
-  void NotifyPACScriptError(int line_number, const base::string16& error);
+  void NotifyPACScriptError(int line_number, const std::u16string& error);
 
   void Shutdown();
 
@@ -47,7 +47,7 @@ NetworkDelegateErrorObserver::Core::~Core() = default;
 
 void NetworkDelegateErrorObserver::Core::NotifyPACScriptError(
     int line_number,
-    const base::string16& error) {
+    const std::u16string& error) {
   if (!origin_runner_->BelongsToCurrentThread()) {
     origin_runner_->PostTask(
         FROM_HERE,
@@ -86,7 +86,7 @@ NetworkDelegateErrorObserver::Create(
 
 void NetworkDelegateErrorObserver::OnPACScriptError(
     int line_number,
-    const base::string16& error) {
+    const std::u16string& error) {
   core_->NotifyPACScriptError(line_number, error);
 }
 

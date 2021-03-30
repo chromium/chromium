@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS Setup
+PASS same_origin iframe can access the localStorage
+FAIL cross_origin iframe can't access the localStorage assert_equals: expected "" but got "cross_origin"
+Harness: the test ran to completion.
+

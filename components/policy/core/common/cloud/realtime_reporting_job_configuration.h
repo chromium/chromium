@@ -46,6 +46,7 @@ class POLICY_EXPORT RealtimeReportingJobConfiguration
   // parameters will be used.
   RealtimeReportingJobConfiguration(CloudPolicyClient* client,
                                     const std::string& server_url,
+                                    bool include_device_info,
                                     bool add_connector_url_params,
                                     UploadCompleteCallback callback);
 

@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+FAIL initial empty document assert_equals: expected "document-domain-is-disallowed" but got "document-domain-is-allowed"
+PASS about:blank
+PASS data-url
+PASS srcdoc
+PASS blob URL
+PASS same-origin
+PASS cross-origin
+Harness: the test ran to completion.
+

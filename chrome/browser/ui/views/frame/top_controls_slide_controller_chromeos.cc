@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "ash/public/cpp/tablet_mode.h"
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "cc/input/browser_controls_state.h"
@@ -16,6 +15,7 @@
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/common/url_constants.h"
+#include "chromeos/ui/base/tablet_state.h"
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/navigation_controller.h"
@@ -35,14 +35,21 @@
 namespace {
 
 bool IsTabletModeEnabled() {
-  return ash::TabletMode::Get() && ash::TabletMode::Get()->InTabletMode();
+  return chromeos::TabletState::Get() &&
+         chromeos::TabletState::Get()->InTabletMode();
 }
 
 bool IsSpokenFeedbackEnabled() {
-  chromeos::AccessibilityManager* accessibility_manager =
-      chromeos::AccessibilityManager::Get();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  auto* accessibility_manager = ash::AccessibilityManager::Get();
   return accessibility_manager &&
          accessibility_manager->IsSpokenFeedbackEnabled();
+#else
+  // TODO(https://crbug.com/1165746): Enable accessibility (a11y) support for
+  // Lacros.
+  NOTIMPLEMENTED() << "Enable accessibility support for Lacros.";
+  return false;
+#endif
 }
 
 // Based on the current status of |contents|, returns the browser top controls
@@ -216,7 +223,7 @@ class TopControlsSlideTabObserver
     UpdateBrowserControlsStateShown(/*animate=*/true);
   }
 
-  void OnBubbleRemoved() override {
+  void OnRequestsFinalized() override {
     // This will update the shown constraints.
     UpdateBrowserControlsStateShown(/*animate=*/false);
   }
@@ -269,7 +276,7 @@ TopControlsSlideControllerChromeOS::TopControlsSlideControllerChromeOS(
   DCHECK(browser_view);
   DCHECK(browser_view->frame());
   DCHECK(browser_view->browser());
-  DCHECK(browser_view->IsBrowserTypeNormal());
+  DCHECK(browser_view->GetIsNormalType());
   DCHECK(browser_view->browser()->tab_strip_model());
   DCHECK(browser_view->GetLocationBarView());
   DCHECK(browser_view->GetLocationBarView()->omnibox_view());
@@ -277,20 +284,18 @@ TopControlsSlideControllerChromeOS::TopControlsSlideControllerChromeOS(
   observed_omni_box_ = browser_view->GetLocationBarView()->omnibox_view();
   observed_omni_box_->AddObserver(this);
 
-  if (ash::TabletMode::Get())
-    ash::TabletMode::Get()->AddObserver(this);
-
   browser_view_->browser()->tab_strip_model()->AddObserver(this);
   display::Screen::GetScreen()->AddObserver(this);
 
-  chromeos::AccessibilityManager* accessibility_manager =
-      chromeos::AccessibilityManager::Get();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  auto* accessibility_manager = ash::AccessibilityManager::Get();
   if (accessibility_manager) {
     accessibility_status_subscription_ =
         accessibility_manager->RegisterCallback(base::BindRepeating(
             &TopControlsSlideControllerChromeOS::OnAccessibilityStatusChanged,
             base::Unretained(this)));
   }
+#endif
 
   OnEnabledStateChanged(CanEnable(base::nullopt));
 }
@@ -300,9 +305,6 @@ TopControlsSlideControllerChromeOS::~TopControlsSlideControllerChromeOS() {
 
   display::Screen::GetScreen()->RemoveObserver(this);
   browser_view_->browser()->tab_strip_model()->RemoveObserver(this);
-
-  if (ash::TabletMode::Get())
-    ash::TabletMode::Get()->RemoveObserver(this);
 
   if (observed_omni_box_)
     observed_omni_box_->RemoveObserver(this);
@@ -385,13 +387,8 @@ bool TopControlsSlideControllerChromeOS::DoBrowserControlsShrinkRendererSize(
   if (!IsEnabled())
     return false;
 
-  auto iter = observed_tabs_.find(contents);
-  if (iter == observed_tabs_.end()) {
-    // this may be called for a new tab that hasn't attached yet to the tabstrip
-    return false;
-  }
-
-  return iter->second->shrink_renderer_size();
+  auto* tab_observer = GetTabSlideObserverForWebContents(contents);
+  return tab_observer && tab_observer->shrink_renderer_size();
 }
 
 void TopControlsSlideControllerChromeOS::SetTopControlsGestureScrollInProgress(
@@ -452,12 +449,17 @@ bool TopControlsSlideControllerChromeOS::IsTopControlsSlidingInProgress()
   return is_sliding_in_progress_;
 }
 
-void TopControlsSlideControllerChromeOS::OnTabletModeStarted() {
-  OnEnabledStateChanged(CanEnable(base::nullopt));
-}
-
-void TopControlsSlideControllerChromeOS::OnTabletModeEnded() {
-  OnEnabledStateChanged(CanEnable(base::nullopt));
+void TopControlsSlideControllerChromeOS::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  switch (state) {
+    case display::TabletState::kInTabletMode:
+    case display::TabletState::kInClamshellMode:
+      OnEnabledStateChanged(CanEnable(base::nullopt));
+      return;
+    case display::TabletState::kEnteringTabletMode:
+    case display::TabletState::kExitingTabletMode:
+      break;
+  }
 }
 
 void TopControlsSlideControllerChromeOS::OnTabStripModelChanged(
@@ -599,15 +601,17 @@ bool TopControlsSlideControllerChromeOS::CanEnable(
          !(fullscreen_state.value_or(browser_view_->IsFullscreen()));
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void TopControlsSlideControllerChromeOS::OnAccessibilityStatusChanged(
-    const chromeos::AccessibilityStatusEventDetails& event_details) {
+    const ash::AccessibilityStatusEventDetails& event_details) {
   if (event_details.notification_type !=
-      chromeos::ACCESSIBILITY_TOGGLE_SPOKEN_FEEDBACK) {
+      ash::AccessibilityNotificationType::kToggleSpokenFeedback) {
     return;
   }
 
   UpdateBrowserControlsStateShown(/*web_contents=*/nullptr, /*animate=*/true);
 }
+#endif
 
 void TopControlsSlideControllerChromeOS::OnEnabledStateChanged(bool new_state) {
   if (new_state == is_enabled_)
@@ -841,7 +845,19 @@ void TopControlsSlideControllerChromeOS::
   if (!active_contents)
     return;
 
-  DCHECK(observed_tabs_.count(active_contents));
+  auto* tab_observer = GetTabSlideObserverForWebContents(active_contents);
+  if (tab_observer)
+    tab_observer->UpdateDoBrowserControlsShrinkRendererSize();
+}
 
-  observed_tabs_[active_contents]->UpdateDoBrowserControlsShrinkRendererSize();
+TopControlsSlideTabObserver*
+TopControlsSlideControllerChromeOS::GetTabSlideObserverForWebContents(
+    const content::WebContents* contents) const {
+  auto iter = observed_tabs_.find(contents);
+  if (iter == observed_tabs_.end()) {
+    // this may be called for a new tab that hasn't attached yet to the
+    // tabstrip.
+    return nullptr;
+  }
+  return iter->second.get();
 }

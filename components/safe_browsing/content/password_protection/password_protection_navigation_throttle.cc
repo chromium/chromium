@@ -4,13 +4,13 @@
 
 #include "components/safe_browsing/content/password_protection/password_protection_navigation_throttle.h"
 
-#include "components/safe_browsing/content/password_protection/password_protection_request.h"
+#include "components/safe_browsing/content/password_protection/password_protection_request_content.h"
 #include "content/public/browser/navigation_handle.h"
 
 namespace safe_browsing {
 PasswordProtectionNavigationThrottle::PasswordProtectionNavigationThrottle(
     content::NavigationHandle* navigation_handle,
-    scoped_refptr<PasswordProtectionRequest> request,
+    scoped_refptr<PasswordProtectionRequestContent> request,
     bool is_warning_showing)
     : content::NavigationThrottle(navigation_handle),
       request_(request),
@@ -31,7 +31,7 @@ content::NavigationThrottle::ThrottleCheckResult
 PasswordProtectionNavigationThrottle::WillStartRequest() {
   // If a modal warning is being shown right now, we don't
   // want to continue navigation. Otherwise, we assume that
-  // the PasswordProtectionRequest is still waiting for a
+  // the PasswordProtectionRequestContent is still waiting for a
   // verdict and so we defer the navigation.
   if (is_warning_showing_)
     return content::NavigationThrottle::CANCEL;
@@ -42,7 +42,7 @@ content::NavigationThrottle::ThrottleCheckResult
 PasswordProtectionNavigationThrottle::WillRedirectRequest() {
   // If a modal warning is being shown right now, we don't
   // want to redirect navigation. Otherwise, if the
-  // PasswordProtectionRequest still exists, we assume that the
+  // PasswordProtectionRequestContent still exists, we assume that the
   // request is still waiting for a verdict and so we defer the
   // navigation, otherwise we proceed navigation.
   if (is_warning_showing_)
@@ -58,7 +58,7 @@ const char* PasswordProtectionNavigationThrottle::GetNameForLogging() {
 void PasswordProtectionNavigationThrottle::ResumeNavigation() {
   Resume();
   // When navigation is resumed, we do not need to keep track of the
-  // PasswordProtectionRequest because this method is only called
+  // PasswordProtectionRequestContent because this method is only called
   // after the request received a verdict and has finished.
   request_.reset();
 }
@@ -66,7 +66,7 @@ void PasswordProtectionNavigationThrottle::ResumeNavigation() {
 void PasswordProtectionNavigationThrottle::CancelNavigation(
     content::NavigationThrottle::ThrottleCheckResult result) {
   // When navigation is resumed, we do not need to keep track of the
-  // PasswordProtectionRequest because this method is only called
+  // PasswordProtectionRequestContent because this method is only called
   // after the request received a verdict, showing a modal warning and has
   // finished.
   CancelDeferredNavigation(result);

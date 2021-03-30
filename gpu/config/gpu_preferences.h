@@ -279,7 +279,7 @@ struct GPU_EXPORT GpuPreferences {
   // ===================================
   // Settings from //media/base/media_switches.h
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   // Enable the hardware-accelerated direct video decoder on ChromeOS.
   bool enable_chromeos_direct_video_decoder = false;
 #endif

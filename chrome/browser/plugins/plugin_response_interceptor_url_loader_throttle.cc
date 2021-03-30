@@ -23,14 +23,54 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
 
+namespace {
+
+void ClearAllButFrameAncestors(
+    std::vector<network::mojom::ContentSecurityPolicyPtr>& csp) {
+  std::vector<network::mojom::ContentSecurityPolicyPtr> cleared;
+
+  for (auto& policy : csp) {
+    auto frame_ancestors = policy->directives.find(
+        network::mojom::CSPDirectiveName::FrameAncestors);
+    if (frame_ancestors == policy->directives.end())
+      continue;
+
+    auto cleared_policy = network::mojom::ContentSecurityPolicy::New();
+    cleared_policy->self_origin = std::move(policy->self_origin);
+    cleared_policy->header = std::move(policy->header);
+    cleared_policy->header->header_value = "";
+    cleared_policy
+        ->directives[network::mojom::CSPDirectiveName::FrameAncestors] =
+        std::move(frame_ancestors->second);
+
+    auto raw_frame_ancestors = policy->raw_directives.find(
+        network::mojom::CSPDirectiveName::FrameAncestors);
+    if (raw_frame_ancestors == policy->raw_directives.end()) {
+      DCHECK(false);
+    } else {
+      cleared_policy
+          ->raw_directives[network::mojom::CSPDirectiveName::FrameAncestors] =
+          std::move(raw_frame_ancestors->second);
+    }
+
+    cleared.push_back(std::move(cleared_policy));
+  }
+
+  csp.swap(cleared);
+}
+
+}  // namespace
+
 PluginResponseInterceptorURLLoaderThrottle::
-    PluginResponseInterceptorURLLoaderThrottle(int resource_type,
-                                               int frame_tree_node_id)
-    : resource_type_(resource_type), frame_tree_node_id_(frame_tree_node_id) {}
+    PluginResponseInterceptorURLLoaderThrottle(
+        network::mojom::RequestDestination request_destination,
+        int frame_tree_node_id)
+    : request_destination_(request_destination),
+      frame_tree_node_id_(frame_tree_node_id) {}
 
 PluginResponseInterceptorURLLoaderThrottle::
     ~PluginResponseInterceptorURLLoaderThrottle() = default;
@@ -63,6 +103,13 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
   if (extension_id == extension_misc::kPdfExtensionId &&
       response_head->headers) {
     response_head->headers->RemoveHeader("Content-Security-Policy");
+
+    if (response_head->parsed_headers) {
+      // We still want to honor the frame-ancestors directive in the
+      // AncestorThrottle.
+      ClearAllButFrameAncestors(
+          response_head->parsed_headers->content_security_policy);
+    }
   }
 
   MimeTypesHandler::ReportUsedHandler(extension_id);
@@ -88,13 +135,18 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
               &PluginResponseInterceptorURLLoaderThrottle::ResumeLoad,
               weak_factory_.GetWeakPtr()));
 
-  mojo::DataPipe data_pipe(data_pipe_size);
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  CHECK_EQ(
+      mojo::CreateDataPipe(data_pipe_size, producer_handle, consumer_handle),
+      MOJO_RESULT_OK);
+
   uint32_t len = static_cast<uint32_t>(payload.size());
   CHECK_EQ(MOJO_RESULT_OK,
-           data_pipe.producer_handle->WriteData(
-               payload.c_str(), &len, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
+           producer_handle->WriteData(payload.c_str(), &len,
+                                      MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
 
-  new_client->OnStartLoadingResponseBody(std::move(data_pipe.consumer_handle));
+  new_client->OnStartLoadingResponseBody(std::move(consumer_handle));
 
   network::URLLoaderCompletionStatus status(net::OK);
   status.decoded_body_length = len;
@@ -123,8 +175,8 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
   transferrable_loader->head = std::move(deep_copied_response);
   transferrable_loader->head->intercepted_by_plugin = true;
 
-  bool embedded = resource_type_ !=
-                  static_cast<int>(blink::mojom::ResourceType::kMainFrame);
+  bool embedded =
+      request_destination_ != network::mojom::RequestDestination::kDocument;
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(

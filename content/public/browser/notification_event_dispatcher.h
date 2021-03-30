@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "content/common/content_export.h"
 
 class GURL;
@@ -41,7 +40,7 @@ class CONTENT_EXPORT NotificationEventDispatcher {
       const std::string& notification_id,
       const GURL& origin,
       const base::Optional<int>& action_index,
-      const base::Optional<base::string16>& reply,
+      const base::Optional<std::u16string>& reply,
       NotificationDispatchCompleteCallback dispatch_complete_callback) = 0;
 
   // Dispatches the "notificationclose" event on the Service Worker associated

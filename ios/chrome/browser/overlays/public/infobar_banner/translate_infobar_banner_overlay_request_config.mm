@@ -30,7 +30,7 @@ TranslateBannerRequestConfig::TranslateBannerRequestConfig(
   DCHECK(infobar_);
   translate::TranslateInfoBarDelegate* delegate =
       static_cast<translate::TranslateInfoBarDelegate*>(infobar_->delegate());
-  source_language_ = delegate->original_language_name();
+  source_language_ = delegate->source_language_name();
   target_language_ = delegate->target_language_name();
   translate_step_ = delegate->translate_step();
   icon_image_name_ = kIconImageName;

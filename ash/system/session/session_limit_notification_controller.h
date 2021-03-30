@@ -24,7 +24,7 @@ class ASH_EXPORT SessionLimitNotificationController
 
   void UpdateNotification();
 
-  base::string16 ComposeNotificationTitle() const;
+  std::u16string ComposeNotificationTitle() const;
 
   static const char kNotificationId[];
 

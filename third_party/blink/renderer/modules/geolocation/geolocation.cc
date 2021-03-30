@@ -29,7 +29,7 @@
 
 #include "services/device/public/mojom/geoposition.mojom-blink.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
@@ -122,7 +122,9 @@ Geolocation::Geolocation(Navigator& navigator)
     : Supplement<Navigator>(navigator),
       ExecutionContextLifecycleObserver(navigator.DomWindow()),
       PageVisibilityObserver(navigator.DomWindow()->GetFrame()->GetPage()),
+      one_shots_(MakeGarbageCollected<GeoNotifierSet>()),
       watchers_(MakeGarbageCollected<GeolocationWatchers>()),
+      one_shots_being_invoked_(MakeGarbageCollected<GeoNotifierSet>()),
       geolocation_(navigator.DomWindow()),
       geolocation_service_(navigator.DomWindow()) {}
 
@@ -148,7 +150,7 @@ LocalFrame* Geolocation::GetFrame() const {
 
 void Geolocation::ContextDestroyed() {
   StopTimers();
-  one_shots_.clear();
+  one_shots_->clear();
   watchers_->Clear();
 
   StopUpdating();
@@ -198,7 +200,7 @@ void Geolocation::getCurrentPosition(V8PositionCallback* success_callback,
   auto* notifier = MakeGarbageCollected<GeoNotifier>(this, success_callback,
                                                      error_callback, options);
 
-  one_shots_.insert(notifier);
+  one_shots_->insert(notifier);
 
   StartRequest(notifier);
 }
@@ -237,7 +239,7 @@ void Geolocation::StartRequest(GeoNotifier* notifier) {
   }
 
   if (!GetExecutionContext()->IsFeatureEnabled(
-          mojom::blink::FeaturePolicyFeature::kGeolocation,
+          mojom::blink::PermissionsPolicyFeature::kGeolocation,
           ReportOptions::kReportOnFailure, kFeaturePolicyConsoleWarning)) {
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kGeolocationDisabledByFeaturePolicy);
@@ -260,7 +262,7 @@ void Geolocation::FatalErrorOccurred(GeoNotifier* notifier) {
   DCHECK(!notifier->IsTimerActive());
 
   // This request has failed fatally. Remove it from our lists.
-  one_shots_.erase(notifier);
+  one_shots_->erase(notifier);
   watchers_->Remove(notifier);
 
   if (!HasListeners())
@@ -274,8 +276,8 @@ void Geolocation::RequestUsesCachedPosition(GeoNotifier* notifier) {
 
   // If this is a one-shot request, stop it. Otherwise, if the watch still
   // exists, start the service to get updates.
-  if (one_shots_.Contains(notifier)) {
-    one_shots_.erase(notifier);
+  if (one_shots_->Contains(notifier)) {
+    one_shots_->erase(notifier);
   } else if (watchers_->Contains(notifier)) {
     StartUpdating(notifier);
   }
@@ -288,15 +290,15 @@ void Geolocation::RequestTimedOut(GeoNotifier* notifier) {
   DCHECK(!notifier->IsTimerActive());
 
   // If this is a one-shot request, stop it.
-  one_shots_.erase(notifier);
+  one_shots_->erase(notifier);
 
   if (!HasListeners())
     StopUpdating();
 }
 
 bool Geolocation::DoesOwnNotifier(GeoNotifier* notifier) const {
-  return one_shots_.Contains(notifier) ||
-         one_shots_being_invoked_.Contains(notifier) ||
+  return one_shots_->Contains(notifier) ||
+         one_shots_being_invoked_->Contains(notifier) ||
          watchers_->Contains(notifier) ||
          watchers_being_invoked_.Contains(notifier);
 }
@@ -328,7 +330,7 @@ void Geolocation::clearWatch(int watch_id) {
 }
 
 void Geolocation::StopTimers() {
-  for (const auto& notifier : one_shots_) {
+  for (const auto& notifier : *one_shots_) {
     notifier->StopTimer();
   }
 
@@ -340,7 +342,7 @@ void Geolocation::StopTimers() {
 void Geolocation::HandleError(GeolocationPositionError* error) {
   DCHECK(error);
 
-  DCHECK(one_shots_being_invoked_.IsEmpty());
+  DCHECK(one_shots_being_invoked_->IsEmpty());
   DCHECK(watchers_being_invoked_.IsEmpty());
 
   if (error->IsFatal()) {
@@ -370,7 +372,7 @@ void Geolocation::HandleError(GeolocationPositionError* error) {
   // already scheduled must be immediately cancelled according to the spec. But
   // the current implementation doesn't support such case.
   // TODO(mattreynolds): Support watcher cancellation inside notifier callbacks.
-  for (auto& notifier : one_shots_being_invoked_) {
+  for (auto& notifier : *one_shots_being_invoked_) {
     if (error->IsFatal() || !notifier->UseCachedPosition())
       notifier->RunErrorCallback(error);
   }
@@ -387,23 +389,23 @@ void Geolocation::HandleError(GeolocationPositionError* error) {
 
   if (!error->IsFatal()) {
     // Keep the notifiers that are okay with a cached position in |one_shots_|.
-    for (const auto& notifier : one_shots_being_invoked_) {
+    for (const auto& notifier : *one_shots_being_invoked_) {
       if (notifier->UseCachedPosition())
-        one_shots_.InsertWithoutTimerCheck(notifier.Get());
+        one_shots_->InsertWithoutTimerCheck(notifier.Get());
       else
         notifier->StopTimer();
     }
-    one_shots_being_invoked_.ClearWithoutTimerCheck();
+    one_shots_being_invoked_->ClearWithoutTimerCheck();
   }
 
-  one_shots_being_invoked_.clear();
+  one_shots_being_invoked_->clear();
   watchers_being_invoked_.clear();
 }
 
 void Geolocation::MakeSuccessCallbacks() {
   DCHECK(last_position_);
 
-  DCHECK(one_shots_being_invoked_.IsEmpty());
+  DCHECK(one_shots_being_invoked_->IsEmpty());
   DCHECK(watchers_being_invoked_.IsEmpty());
 
   // Set |one_shots_being_invoked_| and |watchers_being_invoked_| to the
@@ -420,7 +422,7 @@ void Geolocation::MakeSuccessCallbacks() {
   // already scheduled must be immediately cancelled according to the spec. But
   // the current implementation doesn't support such case.
   // TODO(mattreynolds): Support watcher cancellation inside notifier callbacks.
-  for (auto& notifier : one_shots_being_invoked_)
+  for (auto& notifier : *one_shots_being_invoked_)
     notifier->RunSuccessCallback(last_position_);
   for (auto& notifier : watchers_being_invoked_)
     notifier->RunSuccessCallback(last_position_);
@@ -428,7 +430,7 @@ void Geolocation::MakeSuccessCallbacks() {
   if (!HasListeners())
     StopUpdating();
 
-  one_shots_being_invoked_.clear();
+  one_shots_being_invoked_->clear();
   watchers_being_invoked_.clear();
 }
 
@@ -499,8 +501,12 @@ void Geolocation::OnPositionUpdated(
     last_position_ = CreateGeoposition(*position);
     PositionChanged();
   } else {
-    HandleError(
-        CreatePositionError(position->error_code, position->error_message));
+    GeolocationPositionError* position_error =
+        CreatePositionError(position->error_code, position->error_message);
+    if (position_error->code() == GeolocationPositionError::kPermissionDenied) {
+      position_error->SetIsFatal(true);
+    }
+    HandleError(position_error);
   }
   if (!disconnected_geolocation_)
     QueryNextPosition();
@@ -511,7 +517,7 @@ void Geolocation::PageVisibilityChanged() {
 }
 
 bool Geolocation::HasPendingActivity() const {
-  return !one_shots_.IsEmpty() || !one_shots_being_invoked_.IsEmpty() ||
+  return !one_shots_->IsEmpty() || !one_shots_being_invoked_->IsEmpty() ||
          !watchers_->IsEmpty() || !watchers_being_invoked_.IsEmpty();
 }
 

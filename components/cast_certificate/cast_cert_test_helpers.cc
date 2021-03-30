@@ -6,6 +6,7 @@
 
 #include "base/base_paths.h"
 #include "base/files/file_util.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/cast_certificate/cast_cert_reader.h"
@@ -18,40 +19,50 @@ namespace testing {
 
 namespace {
 
-// Test cast certificate directory, relative to source root.
-constexpr base::FilePath::CharType kCastCertsRelativePath[] =
-    FILE_PATH_LITERAL("components/test/data/cast_certificate");
-
-}  // namespace
-
-base::FilePath GetCastTestCertsDirectory() {
+base::FilePath GetCastCertificateDirectoryFromPathService() {
   base::FilePath src_root;
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
     base::PathService::Get(base::DIR_SOURCE_ROOT, &src_root);
   }
+  CHECK(!src_root.empty());
 
-  return src_root.Append(kCastCertsRelativePath);
+  // NOTE: components are appended separately to allow for OS-specific
+  // separators to be appended by base::FilePath.
+  return src_root.AppendASCII("components")
+      .AppendASCII("test")
+      .AppendASCII("data")
+      .AppendASCII("cast_certificate");
 }
 
-base::FilePath GetCastTestCertsCertsDirectory() {
-  return GetCastTestCertsDirectory().AppendASCII("certificates");
+base::FilePath GetCastCertificatesSubDirectoryFromPathService() {
+  return GetCastCertificateDirectory().AppendASCII("certificates");
+}
+
+}  // namespace
+
+const base::FilePath& GetCastCertificateDirectory() {
+  static const base::NoDestructor<base::FilePath> kPath(
+      GetCastCertificateDirectoryFromPathService());
+  return *kPath;
+}
+
+const base::FilePath& GetCastCertificatesSubDirectory() {
+  static const base::NoDestructor<base::FilePath> kPath(
+      GetCastCertificatesSubDirectoryFromPathService());
+  return *kPath;
 }
 
 SignatureTestData ReadSignatureTestData(const base::StringPiece& file_name) {
   SignatureTestData result;
 
   std::string file_data;
-  base::ReadFileToString(GetCastTestCertsDirectory().AppendASCII(file_name),
+  base::ReadFileToString(GetCastCertificateDirectory().AppendASCII(file_name),
                          &file_data);
   CHECK(!file_data.empty());
 
-  std::vector<std::string> pem_headers;
-  pem_headers.push_back("MESSAGE");
-  pem_headers.push_back("SIGNATURE SHA1");
-  pem_headers.push_back("SIGNATURE SHA256");
-
-  net::PEMTokenizer pem_tokenizer(file_data, pem_headers);
+  net::PEMTokenizer pem_tokenizer(
+      file_data, {"MESSAGE", "SIGNATURE SHA1", "SIGNATURE SHA256"});
   while (pem_tokenizer.GetNext()) {
     const std::string& type = pem_tokenizer.block_type();
     const std::string& value = pem_tokenizer.data();
@@ -81,7 +92,7 @@ std::unique_ptr<net::TrustStoreInMemory> LoadTestCert(
   auto store = std::make_unique<net::TrustStoreInMemory>();
   CHECK(PopulateStoreWithCertsFromPath(
       store.get(),
-      testing::GetCastTestCertsCertsDirectory().AppendASCII(cert_file_name)));
+      testing::GetCastCertificatesSubDirectory().AppendASCII(cert_file_name)));
   CHECK(store);
   return store;
 }

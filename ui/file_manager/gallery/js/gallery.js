@@ -2,11 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * Overrided metadata worker's path.
- * @type {string}
- */
-ContentMetadataProvider.WORKER_SCRIPT = '/js/metadata_worker.js';
+// Override metadata worker's path.
+ContentMetadataProvider.configure('/js/metadata_worker.js');
 
 /**
  * Gallery for viewing and editing image files.

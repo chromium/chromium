@@ -23,6 +23,7 @@
 #include "media/base/android/media_url_interceptor.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/auth.h"
+#include "net/base/isolation_info.h"
 #include "net/base/network_isolation_key.h"
 #include "net/http/http_auth.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -46,15 +47,26 @@ GetRestrictedCookieManagerForContext(
     RenderFrameHostImpl* render_frame_host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  url::Origin origin = url::Origin::Create(url);
+  url::Origin request_origin = url::Origin::Create(url);
   StoragePartition* storage_partition =
       BrowserContext::GetDefaultStoragePartition(browser_context);
+
+  // `request_origin` cannot be used to create `isolation_info` since it
+  // represents the media resource, not the frame origin. Here we use the
+  // `top_frame_origin` as the frame origin to ensure the consistency check
+  // passes when creating `isolation_info`. This is ok because
+  // `isolation_info.frame_origin` is unused in RestrictedCookieManager.
+  DCHECK(site_for_cookies.IsNull() ||
+         site_for_cookies.IsFirstParty(top_frame_origin.GetURL()));
+  net::IsolationInfo isolation_info = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kOther, top_frame_origin,
+      top_frame_origin, site_for_cookies, base::nullopt);
 
   mojo::PendingRemote<network::mojom::RestrictedCookieManager> pipe;
   static_cast<StoragePartitionImpl*>(storage_partition)
       ->CreateRestrictedCookieManager(
-          network::mojom::RestrictedCookieManagerRole::NETWORK, origin,
-          site_for_cookies, top_frame_origin,
+          network::mojom::RestrictedCookieManagerRole::NETWORK, request_origin,
+          std::move(isolation_info),
           /* is_service_worker = */ false,
           render_frame_host ? render_frame_host->GetProcess()->GetID() : -1,
           render_frame_host ? render_frame_host->GetRoutingID()
@@ -159,7 +171,8 @@ void MediaResourceGetterImpl::GetCookies(const GURL& url,
 
   ChildProcessSecurityPolicyImpl* policy =
       ChildProcessSecurityPolicyImpl::GetInstance();
-  if (!policy->CanAccessDataForOrigin(render_process_id_, url)) {
+  if (!policy->CanAccessDataForOrigin(render_process_id_,
+                                      url::Origin::Create(url))) {
     // Running the callback asynchronously on the caller thread to avoid
     // reentrancy issues.
     ReturnResultOnUIThread(std::move(callback), std::string());
@@ -185,7 +198,7 @@ void MediaResourceGetterImpl::GetAuthCredentialsCallback(
   if (credentials)
     std::move(callback).Run(credentials->username(), credentials->password());
   else
-    std::move(callback).Run(base::string16(), base::string16());
+    std::move(callback).Run(std::u16string(), std::u16string());
 }
 
 void MediaResourceGetterImpl::GetPlatformPathFromURL(

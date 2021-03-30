@@ -3,145 +3,45 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
+import("../os_settings.gni")
 
-js_type_check("closure_compile") {
+js_type_check("closure_compile_module") {
+  closure_flags = os_settings_closure_flags
+  is_polymer3 = true
   deps = [
-    ":crostini_arc_adb",
-    ":crostini_browser_proxy",
-    ":crostini_disk_resize_dialog",
-    ":crostini_export_import",
-    ":crostini_page",
-    ":crostini_port_forwarding",
-    ":crostini_port_forwarding_add_port_dialog",
-    ":crostini_shared_paths",
-    ":crostini_shared_usb_devices",
-    ":crostini_subpage",
+    ":crostini_arc_adb.m",
+    ":crostini_arc_adb_confirmation_dialog.m",
+    ":crostini_browser_proxy.m",
+    ":crostini_disk_resize_confirmation_dialog.m",
+    ":crostini_disk_resize_dialog.m",
+    ":crostini_export_import.m",
+    ":crostini_import_confirmation_dialog.m",
+    ":crostini_mic_sharing_dialog.m",
+    ":crostini_page.m",
+    ":crostini_port_forwarding.m",
+    ":crostini_port_forwarding_add_port_dialog.m",
+    ":crostini_subpage.m",
   ]
 }
-
-js_library("crostini_arc_adb") {
-  deps = [
-    ":crostini_browser_proxy",
-    "..:deep_linking_behavior",
-    "..:metrics_recorder",
-    "..:os_route",
-    "../localized_link:localized_link",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("crostini_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr" ]
-}
-
-js_library("crostini_export_import") {
-  deps = [
-    ":crostini_browser_proxy",
-    "..:deep_linking_behavior",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("crostini_disk_resize_dialog") {
-  deps = [
-    ":crostini_browser_proxy",
-    "//ui/webui/resources/cr_elements/cr_slider:cr_slider",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("crostini_page") {
-  deps = [
-    ":crostini_browser_proxy",
-    "..:deep_linking_behavior",
-    "..:os_route",
-    "../..:router",
-    "../../prefs:prefs_behavior",
-    "../localized_link:localized_link",
-    "//ui/webui/resources/js:i18n_behavior",
-  ]
-  externs_list = [ "$externs_path/settings_private.js" ]
-}
-
-js_library("crostini_shared_paths") {
-  deps = [
-    ":crostini_browser_proxy",
-    "..:metrics_recorder",
-    "..:os_route",
-    "../../prefs:prefs_behavior",
-  ]
-}
-
-js_library("crostini_shared_usb_devices") {
-  deps = [
-    ":crostini_browser_proxy",
-    "..:metrics_recorder",
-    "..:os_route",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("crostini_port_forwarding") {
-  deps = [
-    ":crostini_browser_proxy",
-    "..:metrics_recorder",
-    "..:os_route",
-    "../../prefs:prefs_behavior",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
-    "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("crostini_port_forwarding_add_port_dialog") {
-  deps = [
-    ":crostini_browser_proxy",
-    "..:metrics_recorder",
-    "//ui/webui/resources/js:cr",
-  ]
-}
-
-js_library("crostini_subpage") {
-  deps = [
-    ":crostini_browser_proxy",
-    "..:deep_linking_behavior",
-    "..:metrics_recorder",
-    "..:os_route",
-    "..:route_origin_behavior",
-    "../..:router",
-    "../../controls:settings_toggle_button",
-    "../../prefs:prefs_behavior",
-  ]
-}
-
-# TODO: Uncomment as the Polymer3 migration makes progress.
-#js_type_check("closure_compile_module") {
-#  is_polymer3 = true
-#  deps = [
-#    ":crostini_arc_adb.m",
-#    ":crostini_arc_adb_confirmation_dialog.m",
-#    ":crostini_browser_proxy.m",
-#    ":crostini_disk_resize_dialog.m",
-#    ":crostini_disk_resize_confirmation_dialog.m",
-#    ":crostini_export_import.m",
-#    ":crostini_import_confirmation_dialog.m",
-#    ":crostini_mic_sharing_dialog.m",
-#    ":crostini_page.m",
-#    ":crostini_port_forwarding.m",
-#    ":crostini_port_forwarding_add_port_dialog.m",
-#    ":crostini_shared_paths.m",
-#    ":crostini_shared_usb_devices.m",
-#    ":crostini_subpage.m"
-#  ]
-#}
 
 js_library("crostini_arc_adb.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/crostini_page/crostini_arc_adb.m.js" ]
   deps = [
-    # TODO: Fill those in.
+    ":crostini_browser_proxy.m",
+    "..:deep_linking_behavior.m",
+    "..:metrics_recorder.m",
+    "..:os_route.m",
+    "../..:router",
+    "../localized_link:localized_link.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator.m",
+    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator.m",
+    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator_behavior.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
   extra_deps = [ ":crostini_arc_adb_module" ]
 }
@@ -149,7 +49,11 @@ js_library("crostini_arc_adb.m") {
 js_library("crostini_arc_adb_confirmation_dialog.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/crostini_page/crostini_arc_adb_confirmation_dialog.m.js" ]
   deps = [
-    # TODO: Fill those in.
+    ":crostini_browser_proxy.m",
+    "..:metrics_recorder.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
   ]
   extra_deps = [ ":crostini_arc_adb_confirmation_dialog_module" ]
 }
@@ -157,7 +61,9 @@ js_library("crostini_arc_adb_confirmation_dialog.m") {
 js_library("crostini_browser_proxy.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/crostini_page/crostini_browser_proxy.m.js" ]
   deps = [
-    # TODO: Fill those in.
+    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
   extra_deps = [ ":modulize" ]
 }
@@ -165,7 +71,13 @@ js_library("crostini_browser_proxy.m") {
 js_library("crostini_disk_resize_dialog.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/crostini_page/crostini_disk_resize_dialog.m.js" ]
   deps = [
-    # TODO: Fill those in.
+    ":crostini_browser_proxy.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/cr_elements/cr_slider:cr_slider.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
   extra_deps = [ ":crostini_disk_resize_dialog_module" ]
 }
@@ -173,7 +85,12 @@ js_library("crostini_disk_resize_dialog.m") {
 js_library("crostini_disk_resize_confirmation_dialog.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/crostini_page/crostini_disk_resize_confirmation_dialog.m.js" ]
   deps = [
-    # TODO: Fill those in.
+    ":crostini_browser_proxy.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/cr_elements/cr_slider:cr_slider.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
   extra_deps = [ ":crostini_disk_resize_confirmation_dialog_module" ]
 }
@@ -181,7 +98,14 @@ js_library("crostini_disk_resize_confirmation_dialog.m") {
 js_library("crostini_export_import.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/crostini_page/crostini_export_import.m.js" ]
   deps = [
-    # TODO: Fill those in.
+    ":crostini_browser_proxy.m",
+    ":crostini_import_confirmation_dialog.m",
+    "..:deep_linking_behavior.m",
+    "..:os_route.m",
+    "../..:router",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
   extra_deps = [ ":crostini_export_import_module" ]
 }
@@ -189,7 +113,11 @@ js_library("crostini_export_import.m") {
 js_library("crostini_import_confirmation_dialog.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/crostini_page/crostini_import_confirmation_dialog.m.js" ]
   deps = [
-    # TODO: Fill those in.
+    ":crostini_browser_proxy.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/cr_elements/cr_slider:cr_slider.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
   ]
   extra_deps = [ ":crostini_import_confirmation_dialog_module" ]
 }
@@ -197,7 +125,11 @@ js_library("crostini_import_confirmation_dialog.m") {
 js_library("crostini_mic_sharing_dialog.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/crostini_page/crostini_mic_sharing_dialog.m.js" ]
   deps = [
-    # TODO: Fill those in.
+    ":crostini_browser_proxy.m",
+    "../../prefs:prefs_behavior",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
   ]
   extra_deps = [ ":crostini_mic_sharing_dialog_module" ]
 }
@@ -205,7 +137,25 @@ js_library("crostini_mic_sharing_dialog.m") {
 js_library("crostini_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/crostini_page/crostini_page.m.js" ]
   deps = [
-    # TODO: Fill those in.
+    ":crostini_arc_adb.m",
+    ":crostini_browser_proxy.m",
+    ":crostini_export_import.m",
+    ":crostini_port_forwarding.m",
+    ":crostini_subpage.m",
+    "..:deep_linking_behavior.m",
+    "..:os_route.m",
+    "../..:router",
+    "../../prefs:prefs_behavior",
+    "../guest_os:guest_os_shared_paths.m",
+    "../guest_os:guest_os_shared_usb_devices.m",
+    "../localized_link:localized_link.m",
+    "//chrome/browser/resources/settings/settings_page:settings_animated_pages",
+    "//chrome/browser/resources/settings/settings_page:settings_subpage",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
+    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
   extra_deps = [ ":crostini_page_module" ]
 }
@@ -213,7 +163,19 @@ js_library("crostini_page.m") {
 js_library("crostini_port_forwarding.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/crostini_page/crostini_port_forwarding.m.js" ]
   deps = [
-    # TODO: Fill those in.
+    ":crostini_browser_proxy.m",
+    ":crostini_port_forwarding_add_port_dialog.m",
+    "..:metrics_recorder.m",
+    "../../controls:settings_toggle_button",
+    "../../prefs:prefs_behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
+    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
+    "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render.m",
+    "//ui/webui/resources/cr_elements/cr_toast:cr_toast.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
   extra_deps = [ ":crostini_port_forwarding_module" ]
 }
@@ -221,41 +183,47 @@ js_library("crostini_port_forwarding.m") {
 js_library("crostini_port_forwarding_add_port_dialog.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/crostini_page/crostini_port_forwarding_add_port_dialog.m.js" ]
   deps = [
-    # TODO: Fill those in.
+    ":crostini_browser_proxy.m",
+    "..:metrics_recorder.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
   extra_deps = [ ":crostini_port_forwarding_add_port_dialog_module" ]
-}
-
-js_library("crostini_shared_paths.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/crostini_page/crostini_shared_paths.m.js" ]
-  deps = [
-    # TODO: Fill those in.
-  ]
-  extra_deps = [ ":crostini_shared_paths_module" ]
-}
-
-js_library("crostini_shared_usb_devices.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/crostini_page/crostini_shared_usb_devices.m.js" ]
-  deps = [
-    # TODO: Fill those in.
-  ]
-  extra_deps = [ ":crostini_shared_usb_devices_module" ]
 }
 
 js_library("crostini_subpage.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/crostini_page/crostini_subpage.m.js" ]
   deps = [
-    # TODO: Fill those in.
+    ":crostini_browser_proxy.m",
+    ":crostini_disk_resize_confirmation_dialog.m",
+    ":crostini_disk_resize_dialog.m",
+    ":crostini_mic_sharing_dialog.m",
+    ":crostini_port_forwarding.m",
+    "..:deep_linking_behavior.m",
+    "..:metrics_recorder.m",
+    "..:os_route.m",
+    "..:route_origin_behavior.m",
+    "../..:router",
+    "../../controls:settings_toggle_button",
+    "../../prefs:prefs_behavior",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_link_row:cr_link_row",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
   extra_deps = [ ":crostini_subpage_module" ]
 }
-
-import("//tools/polymer/polymer.gni")
 
 group("polymer3_elements") {
   public_deps = [
     ":crostini_arc_adb_confirmation_dialog_module",
     ":crostini_arc_adb_module",
+    ":crostini_disk_resize_confirmation_dialog_module",
     ":crostini_disk_resize_dialog_module",
     ":crostini_export_import_module",
     ":crostini_import_confirmation_dialog_module",
@@ -263,8 +231,6 @@ group("polymer3_elements") {
     ":crostini_page_module",
     ":crostini_port_forwarding_add_port_dialog_module",
     ":crostini_port_forwarding_module",
-    ":crostini_shared_paths_module",
-    ":crostini_shared_usb_devices_module",
     ":crostini_subpage_module",
     ":modulize",
   ]
@@ -274,82 +240,102 @@ polymer_modulizer("crostini_arc_adb") {
   js_file = "crostini_arc_adb.js"
   html_file = "crostini_arc_adb.html"
   html_type = "dom-module"
+  auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
 }
 
 polymer_modulizer("crostini_arc_adb_confirmation_dialog") {
   js_file = "crostini_arc_adb_confirmation_dialog.js"
   html_file = "crostini_arc_adb_confirmation_dialog.html"
   html_type = "dom-module"
+  auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
 }
 
 polymer_modulizer("crostini_disk_resize_dialog") {
   js_file = "crostini_disk_resize_dialog.js"
   html_file = "crostini_disk_resize_dialog.html"
   html_type = "dom-module"
+  auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
 }
 
 polymer_modulizer("crostini_disk_resize_confirmation_dialog") {
   js_file = "crostini_disk_resize_confirmation_dialog.js"
   html_file = "crostini_disk_resize_confirmation_dialog.html"
   html_type = "dom-module"
+  auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
 }
 
 polymer_modulizer("crostini_export_import") {
   js_file = "crostini_export_import.js"
   html_file = "crostini_export_import.html"
   html_type = "dom-module"
+  auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
 }
 
 polymer_modulizer("crostini_import_confirmation_dialog") {
   js_file = "crostini_import_confirmation_dialog.js"
   html_file = "crostini_import_confirmation_dialog.html"
   html_type = "dom-module"
+  auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
 }
 
 polymer_modulizer("crostini_mic_sharing_dialog") {
   js_file = "crostini_mic_sharing_dialog.js"
   html_file = "crostini_mic_sharing_dialog.html"
   html_type = "dom-module"
+  auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
 }
 
 polymer_modulizer("crostini_page") {
   js_file = "crostini_page.js"
   html_file = "crostini_page.html"
   html_type = "dom-module"
+  auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
 }
 
 polymer_modulizer("crostini_port_forwarding") {
   js_file = "crostini_port_forwarding.js"
   html_file = "crostini_port_forwarding.html"
   html_type = "dom-module"
+  auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
 }
 
 polymer_modulizer("crostini_port_forwarding_add_port_dialog") {
   js_file = "crostini_port_forwarding_add_port_dialog.js"
   html_file = "crostini_port_forwarding_add_port_dialog.html"
   html_type = "dom-module"
-}
-
-polymer_modulizer("crostini_shared_paths") {
-  js_file = "crostini_shared_paths.js"
-  html_file = "crostini_shared_paths.html"
-  html_type = "dom-module"
-}
-
-polymer_modulizer("crostini_shared_usb_devices") {
-  js_file = "crostini_shared_usb_devices.js"
-  html_file = "crostini_shared_usb_devices.html"
-  html_type = "dom-module"
+  auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
 }
 
 polymer_modulizer("crostini_subpage") {
   js_file = "crostini_subpage.js"
   html_file = "crostini_subpage.html"
   html_type = "dom-module"
+  auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
 }
-
-import("//ui/webui/resources/tools/js_modulizer.gni")
 
 js_modulizer("modulize") {
   input_files = [ "crostini_browser_proxy.js" ]
+  namespace_rewrites = os_settings_namespace_rewrites
 }

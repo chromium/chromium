@@ -7,9 +7,9 @@
 
 #include <map>
 #include <memory>
-#include <set>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -20,6 +20,8 @@
 #include "components/subresource_filter/content/browser/subresource_filter_observer.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
 #include "components/subresource_filter/content/browser/verified_ruleset_dealer.h"
+#include "components/subresource_filter/content/common/ad_evidence.h"
+#include "components/subresource_filter/content/common/subresource_filter_utils.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -80,8 +82,7 @@ class ContentSubresourceFilterThrottleManager
     : public base::SupportsUserData::Data,
       public content::WebContentsObserver,
       public mojom::SubresourceFilterHost,
-      public SubresourceFilterObserver,
-      public SubframeNavigationFilteringThrottle::Delegate {
+      public SubresourceFilterObserver {
  public:
   static const char
       kContentSubresourceFilterThrottleManagerWebContentsUserDataKey[];
@@ -127,10 +128,6 @@ class ContentSubresourceFilterThrottleManager
     return ruleset_handle_.get();
   }
 
-  // SubframeNavigationFilteringThrottle::Delegate:
-  bool CalculateIsAdSubframe(content::RenderFrameHost* frame_host,
-                             LoadPolicy load_policy) override;
-
   // Returns whether |frame_host| is considered to be an ad.
   bool IsFrameTaggedAsAd(content::RenderFrameHost* frame_host) const;
 
@@ -146,7 +143,21 @@ class ContentSubresourceFilterThrottleManager
   // blocked ads (e.g., via an infobar).
   void OnReloadRequested();
 
+  // Invoked when an ads violation is detected in |rfh|.
+  void OnAdsViolationTriggered(content::RenderFrameHost* rfh,
+                               mojom::AdsViolation triggered_violation);
+
   static void LogAction(SubresourceFilterAction action);
+
+  void SetIsAdSubframeForTesting(content::RenderFrameHost* render_frame_host,
+                                 bool is_ad_subframe);
+
+  // Returns the matching FrameAdEvidence for the frame indicated by
+  // `render_frame_host` or `base::nullopt` if there is none (i.e. the frame is
+  // a main frame, or no navigation or commit has yet occurred and no evidence
+  // has been reported by the renderer).
+  base::Optional<FrameAdEvidence> GetAdEvidenceForFrame(
+      content::RenderFrameHost* render_frame_host);
 
  protected:
   // content::WebContentsObserver:
@@ -166,8 +177,7 @@ class ContentSubresourceFilterThrottleManager
       const mojom::ActivationState& activation_state) override;
   void OnSubframeNavigationEvaluated(
       content::NavigationHandle* navigation_handle,
-      LoadPolicy load_policy,
-      bool is_ad_subframe) override;
+      LoadPolicy load_policy) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ContentSubresourceFilterThrottleManagerTest,
@@ -207,13 +217,22 @@ class ContentSubresourceFilterThrottleManager
   VerifiedRuleset::Handle* EnsureRulesetHandle();
   void DestroyRulesetHandleIfNoLongerUsed();
 
-  // Registers |render_frame_host| as an ad frame. If the frame later moves to
+  FrameAdEvidence& EnsureFrameAdEvidence(
+      content::RenderFrameHost* render_frame_host);
+
+  // Registers `render_frame_host` as an ad frame. If the frame later moves to
   // a new process its RenderHost will be told that it's an ad.
   void OnFrameIsAdSubframe(content::RenderFrameHost* render_frame_host);
+
+  // Registers `frame_host` as a frame that was created by ad script.
+  // TODO(crbug.com/1145634): Propagate this bit for a frame that navigates
+  // cross-origin.
+  void OnSubframeWasCreatedByAdScript(content::RenderFrameHost* frame_host);
 
   // mojom::SubresourceFilterHost:
   void DidDisallowFirstSubresource() override;
   void FrameIsAdSubframe() override;
+  void SubframeWasCreatedByAdScript() override;
   void SetDocumentLoadStatistics(
       mojom::DocumentLoadStatisticsPtr statistics) override;
   void OnAdsViolationTriggered(mojom::AdsViolation violation) override;
@@ -235,6 +254,11 @@ class ContentSubresourceFilterThrottleManager
       const mojom::ActivationLevel& activation_level,
       bool did_inherit_opener_activation);
 
+  // Sets whether the frame is considered an ad subframe. If the value has
+  // changed, we also update the replication state and inform observers.
+  void SetIsAdSubframe(content::RenderFrameHost* render_frame_host,
+                       bool is_ad_subframe);
+
   // For each RenderFrameHost where the last committed load (or the initial load
   // if no committed load has occurred) has subresource filtering activated,
   // owns the corresponding AsyncDocumentSubresourceFilter.
@@ -253,13 +277,15 @@ class ContentSubresourceFilterThrottleManager
   std::map<int64_t, ActivationStateComputingNavigationThrottle*>
       ongoing_activation_throttles_;
 
-  // Set of frames that have been identified as ads, keyed by FrameTreeNode ID.
-  // A frame is an ad subframe if any of the following conditions are met:
-  // 1. Its navigation URL is in the filter list
-  // 2. Its parent is a known ad subframe
-  // 3. The RenderFrame declares the frame is an ad (see AdTracker in Blink)
-  // Note that frame tagging persists RenderFrameHost switches.
-  std::set<int> ad_frames_;
+  // Set of frames that have been identified as ads, identified by FrameTreeNode
+  // ID. A RenderFrameHost is an ad subframe iff the FrameAdEvidence
+  // corresponding to the frame indicates that it is.
+  base::flat_set<int> ad_frames_;
+
+  // Map of subframes, keyed by FrameTreeNode ID, with value being the evidence
+  // for or against the frames being ads. This evidence is updated whenever a
+  // navigation's LoadPolicy is calculated.
+  std::map<int, FrameAdEvidence> tracked_ad_evidence_;
 
   // Map of frames whose navigations have been identified as ads, keyed by
   // FrameTreeNode ID. Contains information on the most current completed

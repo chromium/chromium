@@ -35,20 +35,24 @@ GURL ServerUrlFetcher::GetDefaultServerUrl() {
   return GURL(server_url);
 }
 
-GURL ServerUrlFetcher::GetSupportsScriptEndpoint() {
-  url::StringPieceReplacements<std::string> script_replacements;
+bool ServerUrlFetcher::IsProdEndpoint() const {
+  return server_url_ == GURL(kDefaultAutofillAssistantServerUrl);
+}
+
+GURL ServerUrlFetcher::GetSupportsScriptEndpoint() const {
+  GURL::Replacements script_replacements;
   script_replacements.SetPathStr(kScriptEndpoint);
   return server_url_.ReplaceComponents(script_replacements);
 }
 
-GURL ServerUrlFetcher::GetNextActionsEndpoint() {
-  url::StringPieceReplacements<std::string> action_replacements;
+GURL ServerUrlFetcher::GetNextActionsEndpoint() const {
+  GURL::Replacements action_replacements;
   action_replacements.SetPathStr(kActionEndpoint);
   return server_url_.ReplaceComponents(action_replacements);
 }
 
-GURL ServerUrlFetcher::GetTriggerScriptsEndpoint() {
-  url::StringPieceReplacements<std::string> trigger_replacements;
+GURL ServerUrlFetcher::GetTriggerScriptsEndpoint() const {
+  GURL::Replacements trigger_replacements;
   trigger_replacements.SetPathStr(kTriggersEndpoint);
   return server_url_.ReplaceComponents(trigger_replacements);
 }

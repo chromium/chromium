@@ -9,6 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_prompt.h"
 #include "content/public/browser/web_contents.h"
 
@@ -41,7 +42,7 @@ std::unique_ptr<PermissionPrompt> MockPermissionPromptFactory::Create(
   show_count_++;
   requests_count_ = delegate->Requests().size();
   for (const PermissionRequest* request : delegate->Requests()) {
-    request_types_seen_.push_back(request->GetPermissionRequestType());
+    request_types_seen_.push_back(request->GetRequestType());
     request_origins_seen_.push_back(request->GetOrigin());
   }
 
@@ -59,8 +60,9 @@ void MockPermissionPromptFactory::ResetCounts() {
   request_origins_seen_.clear();
 }
 
-void MockPermissionPromptFactory::DocumentOnLoadCompletedInMainFrame() {
-  manager_->DocumentOnLoadCompletedInMainFrame();
+void MockPermissionPromptFactory::DocumentOnLoadCompletedInMainFrame(
+    content::RenderFrameHost* render_frame_host) {
+  manager_->DocumentOnLoadCompletedInMainFrame(render_frame_host);
 }
 
 bool MockPermissionPromptFactory::is_visible() {
@@ -71,7 +73,7 @@ int MockPermissionPromptFactory::TotalRequestCount() {
   return request_types_seen_.size();
 }
 
-bool MockPermissionPromptFactory::RequestTypeSeen(PermissionRequestType type) {
+bool MockPermissionPromptFactory::RequestTypeSeen(RequestType type) {
   return base::Contains(request_types_seen_, type);
 }
 

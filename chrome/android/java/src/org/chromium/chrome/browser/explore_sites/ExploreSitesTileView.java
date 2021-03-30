@@ -16,8 +16,8 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.suggestions.tile.TileView;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
+import org.chromium.components.browser_ui.widget.tile.TileView;
 
 /**
  * View for a category name and site tiles.
@@ -59,7 +59,7 @@ public class ExploreSitesTileView extends TileView {
         // expects the radius to be scaled to the image being passed in, not the final view. This is
         // why we cannot use ViewUtils.createRoundedBitmapDrawable.
         float scaledIconCornerRadius;
-        float iconSize = View.MeasureSpec.getSize(mIconView.getLayoutParams().width);
+        float iconSize = View.MeasureSpec.getSize(getIconView().getLayoutParams().width);
         if (iconSize == 0) {
             scaledIconCornerRadius = mIconCornerRadius;
         } else {

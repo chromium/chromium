@@ -64,7 +64,7 @@ class SharingMessageSender {
   SharingMessageSender& operator=(const SharingMessageSender&) = delete;
   virtual ~SharingMessageSender();
 
-  virtual void SendMessageToDevice(
+  virtual base::OnceClosure SendMessageToDevice(
       const syncer::DeviceInfo& device,
       base::TimeDelta response_timeout,
       chrome_browser_sharing::SharingMessage message,
@@ -89,7 +89,6 @@ class SharingMessageSender {
                         base::TimeTicks timestamp,
                         chrome_browser_sharing::MessageType type,
                         SharingDevicePlatform receiver_device_platform,
-                        base::TimeDelta last_updated_age,
                         int trace_id,
                         SharingChannelType channel_type,
                         base::TimeDelta receiver_pulse_interval);
@@ -101,7 +100,6 @@ class SharingMessageSender {
     base::TimeTicks timestamp;
     chrome_browser_sharing::MessageType type;
     SharingDevicePlatform receiver_device_platform;
-    base::TimeDelta last_updated_age;
     int trace_id;
     SharingChannelType channel_type;
     base::TimeDelta receiver_pulse_interval;

@@ -12,12 +12,12 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
-#include "chrome/browser/engagement/site_engagement_score.h"
-#include "chrome/browser/engagement/site_engagement_service.h"
 #include "chrome/browser/push_messaging/budget.pb.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
+#include "components/site_engagement/content/site_engagement_score.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,9 +43,9 @@ class BudgetDatabaseTest : public ::testing::Test {
         db_(&profile_),
         origin_(url::Origin::Create(GURL(kTestOrigin))) {}
 
-  void WriteBudgetComplete(base::Closure run_loop_closure, bool success) {
+  void WriteBudgetComplete(base::OnceClosure run_loop_closure, bool success) {
     success_ = success;
-    run_loop_closure.Run();
+    std::move(run_loop_closure).Run();
   }
 
   // Spend budget for the origin.
@@ -60,11 +60,11 @@ class BudgetDatabaseTest : public ::testing::Test {
     return success_;
   }
 
-  void GetBudgetDetailsComplete(base::Closure run_loop_closure,
+  void GetBudgetDetailsComplete(base::OnceClosure run_loop_closure,
                                 std::vector<BudgetState> predictions) {
     success_ = !predictions.empty();
     prediction_.swap(predictions);
-    run_loop_closure.Run();
+    std::move(run_loop_closure).Run();
   }
 
   // Get the full set of budget predictions for the origin.

@@ -94,7 +94,7 @@ gfx::Rect GetFirstRectForRangeHelper(const ui::TextInputClient* client,
 // Returns the string corresponding to |requested_range| for the given |client|.
 // If a gfx::Range::InvalidRange() is passed, the full string stored by |client|
 // is returned. Sets |actual_range| corresponding to the returned string.
-base::string16 AttributedSubstringForRangeHelper(
+std::u16string AttributedSubstringForRangeHelper(
     const ui::TextInputClient* client,
     const gfx::Range& requested_range,
     gfx::Range* actual_range) {
@@ -102,7 +102,7 @@ base::string16 AttributedSubstringForRangeHelper(
   DCHECK(!requested_range.is_reversed());
   DCHECK(actual_range);
 
-  base::string16 substring;
+  std::u16string substring;
   gfx::Range text_range;
   *actual_range = gfx::Range::InvalidRange();
   if (!client || !client->GetTextRange(&text_range))
@@ -240,7 +240,7 @@ bool TextInputHost::GetSelectionRange(gfx::Range* out_range) {
 }
 
 bool TextInputHost::GetSelectionText(bool* out_result,
-                                     base::string16* out_text) {
+                                     std::u16string* out_text) {
   *out_result = false;
   if (!text_input_client_)
     return true;
@@ -251,7 +251,7 @@ bool TextInputHost::GetSelectionText(bool* out_result,
   return true;
 }
 
-void TextInputHost::InsertText(const base::string16& text, bool as_character) {
+void TextInputHost::InsertText(const std::u16string& text, bool as_character) {
   if (!text_input_client_)
     return;
   if (as_character) {
@@ -277,7 +277,7 @@ void TextInputHost::DeleteRange(const gfx::Range& range) {
   text_input_client_->DeleteRange(range);
 }
 
-void TextInputHost::SetCompositionText(const base::string16& text,
+void TextInputHost::SetCompositionText(const std::u16string& text,
                                        const gfx::Range& selected_range,
                                        const gfx::Range& replacement_range) {
   if (!text_input_client_)
@@ -329,7 +329,7 @@ bool TextInputHost::GetCompositionTextRange(gfx::Range* out_composition_range) {
 
 bool TextInputHost::GetAttributedSubstringForRange(
     const gfx::Range& requested_range,
-    base::string16* out_text,
+    std::u16string* out_text,
     gfx::Range* out_actual_range) {
   *out_text = AttributedSubstringForRangeHelper(
       text_input_client_, requested_range, out_actual_range);
@@ -373,7 +373,7 @@ void TextInputHost::GetSelectionRange(GetSelectionRangeCallback callback) {
 
 void TextInputHost::GetSelectionText(GetSelectionTextCallback callback) {
   bool result = false;
-  base::string16 text;
+  std::u16string text;
   GetSelectionText(&result, &text);
   std::move(callback).Run(result, text);
 }
@@ -394,7 +394,7 @@ void TextInputHost::GetCompositionTextRange(
 void TextInputHost::GetAttributedSubstringForRange(
     const gfx::Range& requested_range,
     GetAttributedSubstringForRangeCallback callback) {
-  base::string16 text;
+  std::u16string text;
   gfx::Range actual_range = gfx::Range::InvalidRange();
   GetAttributedSubstringForRange(requested_range, &text, &actual_range);
   std::move(callback).Run(text, actual_range);

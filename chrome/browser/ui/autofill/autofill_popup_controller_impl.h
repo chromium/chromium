@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <string>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -14,7 +15,6 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
@@ -59,8 +59,8 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
                     PopupType popup_type);
 
   // Updates the data list values currently shown with the popup.
-  virtual void UpdateDataListValues(const std::vector<base::string16>& values,
-                                    const std::vector<base::string16>& labels);
+  virtual void UpdateDataListValues(const std::vector<std::u16string>& values,
+                                    const std::vector<std::u16string>& labels);
 
   // Informs the controller that the popup may not be hidden by stale data or
   // interactions with native Chrome UI. This state remains active until the
@@ -105,11 +105,11 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   void AcceptSuggestion(int index) override;
   int GetLineCount() const override;
   const Suggestion& GetSuggestionAt(int row) const override;
-  const base::string16& GetSuggestionValueAt(int row) const override;
-  const base::string16& GetSuggestionLabelAt(int row) const override;
+  const std::u16string& GetSuggestionValueAt(int row) const override;
+  const std::u16string& GetSuggestionLabelAt(int row) const override;
   bool GetRemovalConfirmationText(int list_index,
-                                  base::string16* title,
-                                  base::string16* body) override;
+                                  std::u16string* title,
+                                  std::u16string* body) override;
   bool RemoveSuggestion(int list_index) override;
   void SetSelectedLine(base::Optional<int> selected_line) override;
   base::Optional<int> selected_line() const override;

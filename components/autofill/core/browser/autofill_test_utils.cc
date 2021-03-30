@@ -28,7 +28,7 @@
 #include "components/autofill/core/common/form_data_predictions.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/form_field_data_predictions.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -71,6 +71,12 @@ std::string GetRandomCardNumber() {
   return value;
 }
 
+}  // namespace
+
+LocalFrameToken GetLocalFrameToken() {
+  return LocalFrameToken(base::UnguessableToken::Deserialize(98765, 43210));
+}
+
 FormRendererId MakeFormRendererId() {
   static uint32_t counter = 10;
   return FormRendererId(counter++);
@@ -81,7 +87,46 @@ FieldRendererId MakeFieldRendererId() {
   return FieldRendererId(counter++);
 }
 
-}  // namespace
+// Creates new, pairwise distinct FormGlobalIds.
+FormGlobalId MakeFormGlobalId() {
+  return {GetLocalFrameToken(), MakeFormRendererId()};
+}
+
+// Creates new, pairwise distinct FieldGlobalIds.
+FieldGlobalId MakeFieldGlobalId() {
+  return {GetLocalFrameToken(), MakeFieldRendererId()};
+}
+
+void SetFormGroupValues(FormGroup& form_group,
+                        const std::vector<FormGroupValue>& values) {
+  for (const auto& value : values) {
+    form_group.SetRawInfoWithVerificationStatus(
+        value.type, base::UTF8ToUTF16(value.value), value.verification_status);
+  }
+}
+
+void VerifyFormGroupValues(const FormGroup& form_group,
+                           const std::vector<FormGroupValue>& values,
+                           bool ignore_status) {
+  for (const auto& value : values) {
+    SCOPED_TRACE(testing::Message()
+                 << "Expected for type "
+                 << AutofillType::ServerFieldTypeToString(value.type) << "\n\t"
+                 << value.value << " with status "
+                 << (ignore_status ? "(ignored)" : "")
+                 << value.verification_status << "\nFound:"
+                 << "\n\t" << form_group.GetRawInfo(value.type)
+                 << " with status "
+                 << form_group.GetVerificationStatus(value.type));
+
+    EXPECT_EQ(form_group.GetRawInfo(value.type),
+              base::UTF8ToUTF16(value.value));
+    if (!ignore_status) {
+      EXPECT_EQ(form_group.GetVerificationStatus(value.type),
+                value.verification_status);
+    }
+  }
+}
 
 std::unique_ptr<PrefService> PrefServiceForTesting() {
   scoped_refptr<user_prefs::PrefRegistrySyncable> registry(
@@ -106,6 +151,7 @@ void CreateTestFormField(const char* label,
                          const char* value,
                          const char* type,
                          FormFieldData* field) {
+  field->host_frame = GetLocalFrameToken();
   field->unique_renderer_id = MakeFieldRendererId();
   field->label = ASCIIToUTF16(label);
   field->name = ASCIIToUTF16(name);
@@ -124,11 +170,11 @@ void CreateTestSelectField(const char* label,
   // Fill the base attributes.
   CreateTestFormField(label, name, value, "select-one", field);
 
-  std::vector<base::string16> values16(select_size);
+  std::vector<std::u16string> values16(select_size);
   for (size_t i = 0; i < select_size; ++i)
     values16[i] = base::UTF8ToUTF16(values[i]);
 
-  std::vector<base::string16> contents16(select_size);
+  std::vector<std::u16string> contents16(select_size);
   for (size_t i = 0; i < select_size; ++i)
     contents16[i] = base::UTF8ToUTF16(contents[i]);
 
@@ -150,11 +196,11 @@ void CreateTestDatalistField(const char* label,
   // Fill the base attributes.
   CreateTestFormField(label, name, value, "text", field);
 
-  std::vector<base::string16> values16(values.size());
+  std::vector<std::u16string> values16(values.size());
   for (size_t i = 0; i < values.size(); ++i)
     values16[i] = base::UTF8ToUTF16(values[i]);
 
-  std::vector<base::string16> label16(labels.size());
+  std::vector<std::u16string> label16(labels.size());
   for (size_t i = 0; i < labels.size(); ++i)
     label16[i] = base::UTF8ToUTF16(labels[i]);
 
@@ -170,12 +216,11 @@ void CreateTestAddressFormData(FormData* form, const char* unique_id) {
 void CreateTestAddressFormData(FormData* form,
                                std::vector<ServerFieldTypeSet>* types,
                                const char* unique_id) {
+  form->host_frame = GetLocalFrameToken();
   form->unique_renderer_id = MakeFormRendererId();
-  form->name =
-      ASCIIToUTF16("MyForm") + ASCIIToUTF16(unique_id ? unique_id : "");
-  form->button_titles = {
-      std::make_pair(ASCIIToUTF16("Submit"),
-                     mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
+  form->name = u"MyForm" + ASCIIToUTF16(unique_id ? unique_id : "");
+  form->button_titles = {std::make_pair(
+      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
   form->url = GURL("https://myform.com/form.html");
   form->full_url = GURL("https://myform.com/form.html?foo=bar");
   form->action = GURL("https://myform.com/submit.html");
@@ -216,6 +261,10 @@ void CreateTestAddressFormData(FormData* form,
   form->fields.push_back(field);
   type_set.clear();
   type_set.insert(ADDRESS_HOME_LINE2);
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForMoreStructureInAddresses)) {
+    type_set.insert(ADDRESS_HOME_SUBPREMISE);
+  }
   types->push_back(type_set);
   test::CreateTestFormField("City", "city", "", "text", &field);
   form->fields.push_back(field);
@@ -252,8 +301,7 @@ void CreateTestAddressFormData(FormData* form,
 void CreateTestPersonalInformationFormData(FormData* form,
                                            const char* unique_id) {
   form->unique_renderer_id = MakeFormRendererId();
-  form->name =
-      ASCIIToUTF16("MyForm") + ASCIIToUTF16(unique_id ? unique_id : "");
+  form->name = u"MyForm" + ASCIIToUTF16(unique_id ? unique_id : "");
   form->url = GURL("https://myform.com/form.html");
   form->full_url = GURL("https://myform.com/form.html?foo=bar");
   form->action = GURL("https://myform.com/submit.html");
@@ -277,8 +325,7 @@ void CreateTestCreditCardFormData(FormData* form,
                                   bool split_names,
                                   const char* unique_id) {
   form->unique_renderer_id = MakeFormRendererId();
-  form->name =
-      ASCIIToUTF16("MyForm") + ASCIIToUTF16(unique_id ? unique_id : "");
+  form->name = u"MyForm" + ASCIIToUTF16(unique_id ? unique_id : "");
   if (is_https) {
     form->url = GURL("https://myform.com/form.html");
     form->full_url = GURL("https://myform.com/form.html?foo=bar");
@@ -324,13 +371,15 @@ void CreateTestCreditCardFormData(FormData* form,
   form->fields.push_back(field);
 }
 
-inline void check_and_set(FormGroup* profile,
-                          ServerFieldType type,
-                          const char* value) {
+inline void check_and_set(
+    FormGroup* profile,
+    ServerFieldType type,
+    const char* value,
+    structured_address::VerificationStatus status =
+        structured_address::VerificationStatus::kObserved) {
   if (value) {
-    profile->SetRawInfoWithVerificationStatus(
-        type, base::UTF8ToUTF16(value),
-        structured_address::VerificationStatus::kObserved);
+    profile->SetRawInfoWithVerificationStatus(type, base::UTF8ToUTF16(value),
+                                              status);
   }
 }
 
@@ -402,10 +451,9 @@ AutofillProfile GetServerProfile() {
                  "Apt. 42", "Mountain View", "California", "94043", "US",
                  "1.800.555.1234");
 
-  profile.SetInfo(NAME_FULL, ASCIIToUTF16("John K. Doe"), "en");
-  profile.SetRawInfo(ADDRESS_HOME_SORTING_CODE, ASCIIToUTF16("CEDEX"));
-  profile.SetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY,
-                     ASCIIToUTF16("Santa Clara"));
+  profile.SetInfo(NAME_FULL, u"John K. Doe", "en");
+  profile.SetRawInfo(ADDRESS_HOME_SORTING_CODE, u"CEDEX");
+  profile.SetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY, u"Santa Clara");
 
   profile.set_language_code("en");
   profile.SetClientValidityFromBitfieldValue(kValidityStateBitfield);
@@ -425,10 +473,9 @@ AutofillProfile GetServerProfile2() {
                  "Apt. 1032", "Sunnyvale", "California", "10011", "US",
                  "+1 514-123-1234");
 
-  profile.SetInfo(NAME_FULL, ASCIIToUTF16("Jim S. Bristow"), "en");
-  profile.SetRawInfo(ADDRESS_HOME_SORTING_CODE, ASCIIToUTF16("XEDEC"));
-  profile.SetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY,
-                     ASCIIToUTF16("Santa Monica"));
+  profile.SetInfo(NAME_FULL, u"Jim S. Bristow", "en");
+  profile.SetRawInfo(ADDRESS_HOME_SORTING_CODE, u"XEDEC");
+  profile.SetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY, u"Santa Monica");
 
   profile.set_language_code("en");
   profile.SetClientValidityFromBitfieldValue(kValidityStateBitfield);
@@ -504,7 +551,7 @@ CreditCard GetMaskedServerCardWithNickname() {
   test::SetCreditCardInfo(&credit_card, "Test user", "1111" /* Visa */,
                           NextMonth().c_str(), NextYear().c_str(), "1");
   credit_card.SetNetworkForMaskedCard(kVisaCard);
-  credit_card.SetNickname(ASCIIToUTF16("Test nickname"));
+  credit_card.SetNickname(u"Test nickname");
   return credit_card;
 }
 
@@ -513,7 +560,7 @@ CreditCard GetMaskedServerCardWithInvalidNickname() {
   test::SetCreditCardInfo(&credit_card, "Test user", "1111" /* Visa */,
                           NextMonth().c_str(), NextYear().c_str(), "1");
   credit_card.SetNetworkForMaskedCard(kVisaCard);
-  credit_card.SetNickname(ASCIIToUTF16("Invalid nickname which is too long"));
+  credit_card.SetNickname(u"Invalid nickname which is too long");
   return credit_card;
 }
 
@@ -561,7 +608,7 @@ CreditCard GetRandomCreditCard(CreditCard::RecordType record_type) {
 CreditCardCloudTokenData GetCreditCardCloudTokenData1() {
   CreditCardCloudTokenData data;
   data.masked_card_id = "data1_id";
-  data.suffix = ASCIIToUTF16("1111");
+  data.suffix = u"1111";
   data.exp_month = 1;
   base::StringToInt(NextYear(), &data.exp_year);
   data.card_art_url = "fake url 1";
@@ -572,7 +619,7 @@ CreditCardCloudTokenData GetCreditCardCloudTokenData1() {
 CreditCardCloudTokenData GetCreditCardCloudTokenData2() {
   CreditCardCloudTokenData data;
   data.masked_card_id = "data2_id";
-  data.suffix = ASCIIToUTF16("2222");
+  data.suffix = u"2222";
   data.exp_month = 2;
   base::StringToInt(NextYear(), &data.exp_year);
   data.exp_year += 1;
@@ -619,20 +666,22 @@ void SetProfileInfo(AutofillProfile* profile,
                     const char* zipcode,
                     const char* country,
                     const char* phone,
-                    bool finalize) {
-  check_and_set(profile, NAME_FIRST, first_name);
-  check_and_set(profile, NAME_MIDDLE, middle_name);
-  check_and_set(profile, NAME_LAST, last_name);
-  check_and_set(profile, EMAIL_ADDRESS, email);
-  check_and_set(profile, COMPANY_NAME, company);
-  check_and_set(profile, ADDRESS_HOME_LINE1, address1);
-  check_and_set(profile, ADDRESS_HOME_LINE2, address2);
-  check_and_set(profile, ADDRESS_HOME_DEPENDENT_LOCALITY, dependent_locality);
-  check_and_set(profile, ADDRESS_HOME_CITY, city);
-  check_and_set(profile, ADDRESS_HOME_STATE, state);
-  check_and_set(profile, ADDRESS_HOME_ZIP, zipcode);
-  check_and_set(profile, ADDRESS_HOME_COUNTRY, country);
-  check_and_set(profile, PHONE_HOME_WHOLE_NUMBER, phone);
+                    bool finalize,
+                    structured_address::VerificationStatus status) {
+  check_and_set(profile, NAME_FIRST, first_name, status);
+  check_and_set(profile, NAME_MIDDLE, middle_name, status);
+  check_and_set(profile, NAME_LAST, last_name, status);
+  check_and_set(profile, EMAIL_ADDRESS, email, status);
+  check_and_set(profile, COMPANY_NAME, company, status);
+  check_and_set(profile, ADDRESS_HOME_LINE1, address1, status);
+  check_and_set(profile, ADDRESS_HOME_LINE2, address2, status);
+  check_and_set(profile, ADDRESS_HOME_DEPENDENT_LOCALITY, dependent_locality,
+                status);
+  check_and_set(profile, ADDRESS_HOME_CITY, city, status);
+  check_and_set(profile, ADDRESS_HOME_STATE, state, status);
+  check_and_set(profile, ADDRESS_HOME_ZIP, zipcode, status);
+  check_and_set(profile, ADDRESS_HOME_COUNTRY, country, status);
+  check_and_set(profile, PHONE_HOME_WHOLE_NUMBER, phone, status);
   if (finalize)
     profile->FinalizeAfterImport();
 }
@@ -650,19 +699,20 @@ void SetProfileInfo(AutofillProfile* profile,
                     const char* zipcode,
                     const char* country,
                     const char* phone,
-                    bool finalize) {
-  check_and_set(profile, NAME_FIRST, first_name);
-  check_and_set(profile, NAME_MIDDLE, middle_name);
-  check_and_set(profile, NAME_LAST, last_name);
-  check_and_set(profile, EMAIL_ADDRESS, email);
-  check_and_set(profile, COMPANY_NAME, company);
-  check_and_set(profile, ADDRESS_HOME_LINE1, address1);
-  check_and_set(profile, ADDRESS_HOME_LINE2, address2);
-  check_and_set(profile, ADDRESS_HOME_CITY, city);
-  check_and_set(profile, ADDRESS_HOME_STATE, state);
-  check_and_set(profile, ADDRESS_HOME_ZIP, zipcode);
-  check_and_set(profile, ADDRESS_HOME_COUNTRY, country);
-  check_and_set(profile, PHONE_HOME_WHOLE_NUMBER, phone);
+                    bool finalize,
+                    structured_address::VerificationStatus status) {
+  check_and_set(profile, NAME_FIRST, first_name, status);
+  check_and_set(profile, NAME_MIDDLE, middle_name, status);
+  check_and_set(profile, NAME_LAST, last_name, status);
+  check_and_set(profile, EMAIL_ADDRESS, email, status);
+  check_and_set(profile, COMPANY_NAME, company, status);
+  check_and_set(profile, ADDRESS_HOME_LINE1, address1, status);
+  check_and_set(profile, ADDRESS_HOME_LINE2, address2, status);
+  check_and_set(profile, ADDRESS_HOME_CITY, city, status);
+  check_and_set(profile, ADDRESS_HOME_STATE, state, status);
+  check_and_set(profile, ADDRESS_HOME_ZIP, zipcode, status);
+  check_and_set(profile, ADDRESS_HOME_COUNTRY, country, status);
+  check_and_set(profile, PHONE_HOME_WHOLE_NUMBER, phone, status);
   if (finalize)
     profile->FinalizeAfterImport();
 }
@@ -681,12 +731,13 @@ void SetProfileInfoWithGuid(AutofillProfile* profile,
                             const char* zipcode,
                             const char* country,
                             const char* phone,
-                            bool finalize) {
+                            bool finalize,
+                            structured_address::VerificationStatus status) {
   if (guid)
     profile->set_guid(guid);
   SetProfileInfo(profile, first_name, middle_name, last_name, email, company,
                  address1, address2, city, state, zipcode, country, phone,
-                 finalize);
+                 finalize, status);
 }
 
 void SetCreditCardInfo(CreditCard* credit_card,
@@ -830,28 +881,6 @@ void FillUploadField(AutofillUploadContents::Field* field,
     type_validities->add_validity(validity_states[i]);
 }
 
-void FillQueryField(AutofillQueryContents::Form::Field* field,
-                    unsigned signature,
-                    const char* name,
-                    const char* control_type) {
-  field->set_signature(signature);
-  if (name)
-    field->set_name(name);
-  if (control_type)
-    field->set_type(control_type);
-}
-
-void FillQueryField(AutofillPageQueryRequest_Form_Field* field,
-                    unsigned signature,
-                    const char* name,
-                    const char* control_type) {
-  field->set_signature(signature);
-  if (name)
-    field->set_name(name);
-  if (control_type)
-    field->set_control_type(control_type);
-}
-
 void GenerateTestAutofillPopup(
     AutofillExternalDelegate* autofill_external_delegate) {
   int query_id = 1;
@@ -863,7 +892,7 @@ void GenerateTestAutofillPopup(
   autofill_external_delegate->OnQuery(query_id, form, field, bounds);
 
   std::vector<Suggestion> suggestions;
-  suggestions.push_back(Suggestion(base::ASCIIToUTF16("Test suggestion")));
+  suggestions.push_back(Suggestion(u"Test suggestion"));
   autofill_external_delegate->OnSuggestionsReturned(
       query_id, suggestions, /*autoselect_first_suggestion=*/false);
 }
@@ -875,26 +904,22 @@ std::string ObfuscatedCardDigitsAsUTF8(const std::string& str) {
 
 std::string NextMonth() {
   base::Time::Exploded now;
-  // Using AutofillClock here might cause test flakiness. See crbug/1108232.
-  base::Time::Now().LocalExplode(&now);
+  AutofillClock::Now().LocalExplode(&now);
   return base::StringPrintf("%02d", now.month % 12 + 1);
 }
 std::string LastYear() {
   base::Time::Exploded now;
-  // Using AutofillClock here might cause test flakiness. See crbug/1108232.
-  base::Time::Now().LocalExplode(&now);
+  AutofillClock::Now().LocalExplode(&now);
   return base::NumberToString(now.year - 1);
 }
 std::string NextYear() {
   base::Time::Exploded now;
-  // Using AutofillClock here might cause test flakiness. See crbug/1108232.
-  base::Time::Now().LocalExplode(&now);
+  AutofillClock::Now().LocalExplode(&now);
   return base::NumberToString(now.year + 1);
 }
 std::string TenYearsFromNow() {
   base::Time::Exploded now;
-  // Using AutofillClock here might cause test flakiness. See crbug/1108232.
-  base::Time::Now().LocalExplode(&now);
+  AutofillClock::Now().LocalExplode(&now);
   return base::NumberToString(now.year + 10);
 }
 
@@ -913,13 +938,40 @@ std::vector<FormSignature> GetEncodedSignatures(
 }
 
 void AddFieldSuggestionToForm(
-    autofill::FormFieldData field_data,
+    const autofill::FormFieldData& field_data,
     ServerFieldType field_type,
     ::autofill::AutofillQueryResponse_FormSuggestion* form_suggestion) {
   auto* field_suggestion = form_suggestion->add_field_suggestions();
   field_suggestion->set_field_signature(
       CalculateFieldSignatureForField(field_data).value());
   field_suggestion->set_primary_type_prediction(field_type);
+}
+
+void AddFieldPredictionsToForm(
+    const autofill::FormFieldData& field_data,
+    const std::vector<int>& field_types,
+    ::autofill::AutofillQueryResponse_FormSuggestion* form_suggestion) {
+  std::vector<ServerFieldType> types;
+  for (auto type : field_types) {
+    types.emplace_back(static_cast<ServerFieldType>(type));
+  }
+  AddFieldPredictionsToForm(field_data, types, form_suggestion);
+}
+
+void AddFieldPredictionsToForm(
+    const autofill::FormFieldData& field_data,
+    const std::vector<ServerFieldType>& field_types,
+    ::autofill::AutofillQueryResponse_FormSuggestion* form_suggestion) {
+  // According to api_v1.proto, the first element is always set to primary type.
+  auto* field_suggestion = form_suggestion->add_field_suggestions();
+  field_suggestion->set_field_signature(
+      CalculateFieldSignatureForField(field_data).value());
+  field_suggestion->set_primary_type_prediction(*field_types.begin());
+  for (auto field_type : field_types) {
+    AutofillQueryResponse_FormSuggestion_FieldSuggestion_FieldPrediction*
+        prediction = field_suggestion->add_predictions();
+    prediction->set_type(field_type);
+  }
 }
 
 }  // namespace test

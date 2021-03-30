@@ -4,8 +4,9 @@
 
 #include "third_party/blink/renderer/core/loader/link_loader.h"
 
-#include <base/macros.h>
 #include <memory>
+
+#include "base/macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -377,9 +378,11 @@ TEST_P(LinkLoaderPreloadNonceTest, Preload) {
   dummy_page_holder_->GetFrame()
       .DomWindow()
       ->GetContentSecurityPolicy()
-      ->DidReceiveHeader(test_case.content_security_policy,
-                         network::mojom::ContentSecurityPolicyType::kEnforce,
-                         network::mojom::ContentSecurityPolicySource::kHTTP);
+      ->DidReceiveHeader(
+          test_case.content_security_policy,
+          *(dummy_page_holder_->GetFrame().DomWindow()->GetSecurityOrigin()),
+          network::mojom::ContentSecurityPolicyType::kEnforce,
+          network::mojom::ContentSecurityPolicySource::kHTTP);
   LinkLoadParameters params(
       LinkRelAttribute("preload"), kCrossOriginAttributeNotSet, String(),
       "script", String(), test_case.nonce, String(), String(),

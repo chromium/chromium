@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<title>MediaMetadata / MediaSession link Mojo Test</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script type="module">
+import {MediaSessionServiceMock} from './resources/mediasessionservice-mock.js';
+import {assert_metadata_equals} from './resources/utils.js';
+
+async_test(t => {
+  // The following are expected results.
+  var results = [
+    new MediaMetadata({}),
+    new MediaMetadata({
+      title: 'new title',
+    }),
+    new MediaMetadata({
+      title: 'other',
+    }),
+    new MediaMetadata({
+      title: 'the right change',
+    }),
+  ];
+  var resultId = 0;
+
+  const m = new MediaSessionServiceMock();
+  m.setMetadataCallback(t.step_func(receivedMetadata => {
+    assert_metadata_equals(receivedMetadata, results[resultId]);
+    ++resultId;
+
+    if (results.length == resultId)
+      t.done();
+  }));
+
+  // Setting the metadata property will update the mojo service.
+  var currentMetadata = new MediaMetadata({});
+  window.navigator.mediaSession.metadata = currentMetadata;
+
+  // `currentMetadata` is still associated to MediaSession.
+  currentMetadata.title = 'new title';
+
+  // De-associate them.
+  setTimeout(_ => {
+    // This change will trigger an asynchronous request for an update. It is
+    // Followed by another change that will prevent the former to work.
+    currentMetadata.title = 'should not be received';
+
+    var otherMetadata = new MediaMetadata({ title: 'other' });
+    window.navigator.mediaSession.metadata = otherMetadata;
+
+    // `currentMetadata` is no longer linked with the session so changes
+    // should have no effect.
+    currentMetadata.title = 'another attempt';
+
+    // This one will be received.
+    otherMetadata.title = 'the right change';
+  });
+}, "test that MediaMetadata is correctly propagated twice");
+
+</script>

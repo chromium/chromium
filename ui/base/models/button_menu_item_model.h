@@ -5,12 +5,12 @@
 #ifndef UI_BASE_MODELS_BUTTON_MENU_ITEM_MODEL_H_
 #define UI_BASE_MODELS_BUTTON_MENU_ITEM_MODEL_H_
 
+#include <string>
 #include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/base/accelerators/accelerator.h"
 
 namespace ui {
@@ -30,7 +30,7 @@ class COMPONENT_EXPORT(UI_BASE) ButtonMenuItemModel {
    public:
     // Some command ids have labels that change over time.
     virtual bool IsItemForCommandIdDynamic(int command_id) const;
-    virtual base::string16 GetLabelForCommandId(int command_id) const;
+    virtual std::u16string GetLabelForCommandId(int command_id) const;
 
     // Performs the action associated with the specified command id.
     virtual void ExecuteCommand(int command_id, int event_flags) = 0;
@@ -85,7 +85,7 @@ class COMPONENT_EXPORT(UI_BASE) ButtonMenuItemModel {
   bool GetAcceleratorAt(int index, ui::Accelerator* accelerator) const;
 
   // Returns the current label value for the button at |index|.
-  base::string16 GetLabelAt(int index) const;
+  std::u16string GetLabelAt(int index) const;
 
   // If the button at |index| should have its size equalized along with all
   // other items that have their PartOfGroup bit set.
@@ -106,11 +106,11 @@ class COMPONENT_EXPORT(UI_BASE) ButtonMenuItemModel {
   // Returns whether clicking on |command_id| dismisses the menu.
   bool DoesCommandIdDismissMenu(int command_id) const;
 
-  const base::string16& label() const { return item_label_; }
+  const std::u16string& label() const { return item_label_; }
 
  private:
   // The non-clickable label to the left of the buttons.
-  base::string16 item_label_;
+  std::u16string item_label_;
 
   struct Item;
   std::vector<Item> items_;

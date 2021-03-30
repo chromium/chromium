@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_IMPORTER_PROFILE_WRITER_H_
 #define CHROME_BROWSER_IMPORTER_PROFILE_WRITER_H_
 
+#include <string>
 #include <vector>
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/favicon_base/favicon_usage_data.h"
@@ -66,9 +66,8 @@ class ProfileWriter : public base::RefCountedThreadSafe<ProfileWriter> {
   // For example, if |first_folder_name| is 'Imported from IE' and a folder with
   // the name 'Imported from IE' already exists in the bookmarks toolbar, then
   // we will instead create a subfolder named 'Imported from IE (1)'.
-  virtual void AddBookmarks(
-      const std::vector<ImportedBookmarkEntry>& bookmarks,
-      const base::string16& top_level_folder_name);
+  virtual void AddBookmarks(const std::vector<ImportedBookmarkEntry>& bookmarks,
+                            const std::u16string& top_level_folder_name);
 
   virtual void AddFavicons(const favicon_base::FaviconUsageDataList& favicons);
 

@@ -22,8 +22,9 @@ class TestNativeTheme : public ui::NativeThemeBase {
   void Set(ColorId id, SkColor color) { colors_[id] = color; }
 
   // NativeThemeBase:
-  SkColor GetSystemColor(ColorId color_id,
-                         ColorScheme color_scheme) const override {
+  SkColor GetSystemColorDeprecated(ColorId color_id,
+                                   ColorScheme color_scheme,
+                                   bool apply_processing) const override {
     return colors_.count(color_id) ? colors_.find(color_id)->second
                                    : SK_ColorMAGENTA;
   }
@@ -39,7 +40,7 @@ class TestNativeTheme : public ui::NativeThemeBase {
 class TestLabel : public internal::LabelButtonLabel {
  public:
   explicit TestLabel(SkColor* last_color)
-      : LabelButtonLabel(base::string16(), views::style::CONTEXT_BUTTON),
+      : LabelButtonLabel(std::u16string(), views::style::CONTEXT_BUTTON),
         last_color_(last_color) {}
 
   // LabelButtonLabel:

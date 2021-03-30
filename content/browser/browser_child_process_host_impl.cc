@@ -31,7 +31,7 @@
 #include "components/tracing/common/trace_startup_config.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "content/browser/browser_main_loop.h"
-#include "content/browser/histogram_controller.h"
+#include "content/browser/metrics/histogram_controller.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
 #include "content/common/child_process_host_impl.h"
 #include "content/public/browser/browser_child_process_host_delegate.h"
@@ -56,6 +56,10 @@
 #include "content/browser/child_process_task_port_provider_mac.h"
 #include "content/browser/sandbox_support_mac_impl.h"
 #include "content/common/sandbox_support_mac.mojom.h"
+#endif
+
+#if defined(OS_POSIX) && !defined(OS_ANDROID)
+#include "services/tracing/public/cpp/system_tracing_service.h"
 #endif
 
 #if defined(OS_WIN)
@@ -290,7 +294,7 @@ BrowserChildProcessHostImpl::TakeMetricsAllocator() {
   return std::move(metrics_allocator_);
 }
 
-void BrowserChildProcessHostImpl::SetName(const base::string16& name) {
+void BrowserChildProcessHostImpl::SetName(const std::u16string& name) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   data_.name = name;
 }
@@ -656,6 +660,12 @@ void BrowserChildProcessHostImpl::OnProcessLaunched() {
   BackgroundTracingManagerImpl::ActivateForProcess(
       GetData().id,
       static_cast<ChildProcessHostImpl*>(GetHost())->child_process());
+
+#if defined(OS_POSIX) && !defined(OS_ANDROID)
+  system_tracing_service_ = std::make_unique<tracing::SystemTracingService>();
+  child_process()->EnableSystemTracingService(
+      system_tracing_service_->BindAndPassPendingRemote());
+#endif
 }
 
 void BrowserChildProcessHostImpl::RegisterCoordinatorClient(
@@ -680,10 +690,9 @@ void BrowserChildProcessHostImpl::RegisterCoordinatorClient(
                  memory_instrumentation::mojom::ProcessType process_type,
                  base::ProcessId process_id,
                  base::Optional<std::string> service_name) {
-                GetMemoryInstrumentationCoordinatorController()
-                    ->RegisterClientProcess(
-                        std::move(receiver), std::move(client_process),
-                        process_type, process_id, std::move(service_name));
+                GetMemoryInstrumentationRegistry()->RegisterClientProcess(
+                    std::move(receiver), std::move(client_process),
+                    process_type, process_id, std::move(service_name));
               },
               std::move(receiver), std::move(client_process),
               GetCoordinatorClientProcessType(

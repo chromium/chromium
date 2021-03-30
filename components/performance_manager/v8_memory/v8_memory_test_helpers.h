@@ -6,6 +6,7 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_V8_MEMORY_V8_MEMORY_TEST_HELPERS_H_
 
 #include "components/performance_manager/public/v8_memory/v8_detailed_memory.h"
+#include "components/performance_manager/v8_memory/v8_detailed_memory_decorator.h"
 
 #include <string>
 #include <vector>
@@ -225,10 +226,7 @@ class WebMemoryTestHarness : public GraphTestHarness {
   using Super = GraphTestHarness;
 
   // Wrapper for memory usage bytes to improve test readability.
-  struct Bytes {
-    uint64_t bytes;
-    bool operator==(const Bytes& other) const { return bytes == other.bytes; }
-  };
+  using Bytes = base::Optional<uint64_t>;
 
   WebMemoryTestHarness();
   ~WebMemoryTestHarness() override;
@@ -243,15 +241,18 @@ class WebMemoryTestHarness : public GraphTestHarness {
       base::Optional<std::string> id_attribute = base::nullopt,
       base::Optional<std::string> src_attribute = base::nullopt) {
     return AddFrameNodeImpl(url, kDefaultBrowsingInstanceId, bytes, parent,
-                            /*opener=*/nullptr, id_attribute, src_attribute);
+                            /*opener=*/nullptr, process_.get(), id_attribute,
+                            src_attribute);
   }
 
   // Creates a frame node as if from window.open and adds it to the graph.
-  FrameNodeImpl* AddFrameNodeFromOpener(std::string url,
+  FrameNodeImpl* AddFrameNodeFromOpener(base::Optional<std::string> url,
                                         Bytes bytes,
                                         FrameNodeImpl* opener) {
     return AddFrameNodeImpl(url, kDefaultBrowsingInstanceId, bytes,
-                            /*parent=*/nullptr, opener);
+                            /*parent=*/nullptr, opener, process_.get(),
+                            /*id_attribute=*/base::nullopt,
+                            /*src_attribute=*/base::nullopt);
   }
 
   // Creates a frame node in a different browsing instance and adds it to the
@@ -263,7 +264,8 @@ class WebMemoryTestHarness : public GraphTestHarness {
       base::Optional<std::string> id_attribute = base::nullopt,
       base::Optional<std::string> src_attribute = base::nullopt) {
     return AddFrameNodeImpl(url, kDefaultBrowsingInstanceId + 1, bytes, parent,
-                            /*opener=*/nullptr, id_attribute, src_attribute);
+                            /*opener=*/nullptr, process_.get(), id_attribute,
+                            src_attribute);
   }
 
   // Creates a frame node in a different browsing instance as if from
@@ -273,8 +275,37 @@ class WebMemoryTestHarness : public GraphTestHarness {
       Bytes bytes,
       FrameNodeImpl* opener) {
     return AddFrameNodeImpl(url, kDefaultBrowsingInstanceId + 1, bytes,
-                            /*parent=*/nullptr, opener);
+                            /*parent=*/nullptr, opener, process_.get(),
+                            /*id_attribute=*/base::nullopt,
+                            /*src_attribute=*/base::nullopt);
   }
+
+  // Creates a frame node in a different process and adds it to the graph.
+  FrameNodeImpl* AddCrossProcessFrameNode(
+      std::string url,
+      Bytes bytes,
+      FrameNodeImpl* parent,
+      base::Optional<std::string> id_attribute = base::nullopt,
+      base::Optional<std::string> src_attribute = base::nullopt) {
+    return AddFrameNodeImpl(url, kDefaultBrowsingInstanceId, bytes, parent,
+                            /*opener=*/nullptr, other_process_.get(),
+                            id_attribute, src_attribute);
+  }
+
+  WorkerNodeImpl* AddWorkerNode(WorkerNode::WorkerType worker_type,
+                                std::string url,
+                                Bytes bytes,
+                                FrameNodeImpl* parent);
+
+  WorkerNodeImpl* AddWorkerNodeWithoutData(WorkerNode::WorkerType worker_type,
+                                           FrameNodeImpl* parent);
+
+  WorkerNodeImpl* AddWorkerNode(WorkerNode::WorkerType worker_type,
+                                std::string url,
+                                Bytes bytes,
+                                WorkerNodeImpl* parent);
+
+  void SetBlinkMemory(Bytes bytes);
 
   ProcessNode* process_node() const { return process_.get(); }
 
@@ -282,18 +313,23 @@ class WebMemoryTestHarness : public GraphTestHarness {
   static constexpr int kDefaultBrowsingInstanceId = 0;
 
   // Creates and adds a new frame node to the graph.
-  FrameNodeImpl* AddFrameNodeImpl(
-      std::string url,
-      int browsing_instance_id,
-      Bytes bytes,
-      FrameNodeImpl* parent = nullptr,
-      FrameNodeImpl* opener = nullptr,
-      base::Optional<std::string> id_attribute = base::nullopt,
-      base::Optional<std::string> src_attribute = base::nullopt);
+  FrameNodeImpl* AddFrameNodeImpl(base::Optional<std::string> url,
+                                  int browsing_instance_id,
+                                  Bytes bytes,
+                                  FrameNodeImpl* parent,
+                                  FrameNodeImpl* opener,
+                                  ProcessNodeImpl* process,
+                                  base::Optional<std::string> id_attribute,
+                                  base::Optional<std::string> src_attribute);
+  WorkerNodeImpl* AddWorkerNodeImpl(WorkerNode::WorkerType worker_type,
+                                    std::string url,
+                                    Bytes bytes);
   int GetNextUniqueId();
   TestNodeWrapper<ProcessNodeImpl> process_;
+  TestNodeWrapper<ProcessNodeImpl> other_process_;
   std::vector<TestNodeWrapper<PageNodeImpl>> pages_;
   std::vector<TestNodeWrapper<FrameNodeImpl>> frames_;
+  std::vector<TestNodeWrapper<WorkerNodeImpl>> workers_;
   int next_unique_id_ = 0;
 };
 
@@ -302,9 +338,9 @@ class WebMemoryTestHarness : public GraphTestHarness {
 blink::mojom::PerProcessV8MemoryUsagePtr NewPerProcessV8MemoryUsage(
     size_t number_of_isolates);
 
-// Finds the PerContextV8MemoryUsage in |isolate| whose token is |frame_token|,
+// Finds the PerContextV8MemoryUsage in |isolate| whose token is |token|,
 // or creates it if it does not exist, and sets its bytes_used to |bytes_used|.
-void AddIsolateMemoryUsage(const blink::LocalFrameToken& frame_token,
+void AddIsolateMemoryUsage(blink::ExecutionContextToken token,
                            uint64_t bytes_used,
                            blink::mojom::PerIsolateV8MemoryUsage* isolate);
 

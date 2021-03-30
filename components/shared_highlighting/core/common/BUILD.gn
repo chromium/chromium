@@ -4,6 +4,10 @@
 
 static_library("common") {
   sources = [
+    "disabled_sites.cc",
+    "disabled_sites.h",
+    "shared_highlighting_features.cc",
+    "shared_highlighting_features.h",
     "shared_highlighting_metrics.cc",
     "shared_highlighting_metrics.h",
     "text_fragment.cc",
@@ -19,12 +23,14 @@ static_library("common") {
     "//components/search_engines:search_engine_utils",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
+    "//third_party/re2",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "disabled_sites_unittest.cc",
     "shared_highlighting_metrics_unittest.cc",
     "text_fragment_unittest.cc",
     "text_fragments_utils_unittest.cc",

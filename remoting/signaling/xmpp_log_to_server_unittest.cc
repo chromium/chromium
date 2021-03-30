@@ -16,6 +16,7 @@ using jingle_xmpp::QName;
 using jingle_xmpp::XmlElement;
 using testing::_;
 using testing::DeleteArg;
+using testing::DoAll;
 using testing::InSequence;
 using testing::Return;
 

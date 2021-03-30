@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
@@ -65,7 +66,7 @@ void OnImageLoaded(std::unique_ptr<ShortcutInfo> shortcut_info,
 }
 
 void UpdateAllShortcutsForShortcutInfo(
-    const base::string16& old_app_title,
+    const std::u16string& old_app_title,
     base::OnceClosure callback,
     std::unique_ptr<ShortcutInfo> shortcut_info) {
   base::FilePath shortcut_data_dir =
@@ -111,7 +112,14 @@ void CreateShortcutsWithInfo(ShortcutCreationReason reason,
         extensions::ExtensionRegistry::Get(profile);
     const extensions::Extension* extension = registry->GetExtensionById(
         shortcut_info->extension_id, extensions::ExtensionRegistry::EVERYTHING);
-    if (!extension) {
+    bool is_app_installed = false;
+    auto* app_provider = WebAppProviderBase::GetProviderBase(profile);
+    if (app_provider &&
+        app_provider->registrar().IsInstalled(shortcut_info->extension_id)) {
+      is_app_installed = true;
+    }
+
+    if (!extension && !is_app_installed) {
       std::move(callback).Run(false /* created_shortcut */);
       return;
     }
@@ -207,7 +215,8 @@ bool ShouldCreateShortcutFor(ShortcutCreationReason reason,
                              const extensions::Extension* extension) {
   // Shortcuts should never be created for component apps, or for apps that
   // cannot be shown in the launcher.
-  if (extension->location() == extensions::Manifest::COMPONENT ||
+  if (extension->location() ==
+          extensions::mojom::ManifestLocation::kComponent ||
       !extensions::ui_util::CanDisplayInAppLauncher(extension, profile)) {
     return false;
   }
@@ -271,7 +280,7 @@ void DeleteAllShortcuts(Profile* profile, const extensions::Extension* app) {
       shortcut_data_dir, std::move(shortcut_info), base::DoNothing());
 }
 
-void UpdateAllShortcuts(const base::string16& old_app_title,
+void UpdateAllShortcuts(const std::u16string& old_app_title,
                         Profile* profile,
                         const extensions::Extension* app,
                         base::OnceClosure callback) {

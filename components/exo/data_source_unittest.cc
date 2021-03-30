@@ -58,7 +58,7 @@ void CheckMimeType(const std::string& expected,
 void CheckTextMimeType(const std::string& expected,
                        base::OnceClosure counter,
                        const std::string& mime_type,
-                       base::string16 data) {
+                       std::u16string data) {
   EXPECT_FALSE(expected.empty());
   EXPECT_EQ(mime_type, expected);
   std::move(counter).Run();

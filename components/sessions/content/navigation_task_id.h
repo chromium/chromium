@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <vector>
-
 #include "base/supports_user_data.h"
 #include "components/sessions/core/sessions_export.h"
 
@@ -34,17 +32,11 @@ class SESSIONS_EXPORT NavigationTaskId : public base::SupportsUserData::Data {
 
   int64_t root_id() const { return root_id_; }
 
-  const std::vector<int64_t>& children_ids() const { return children_ids_; }
-
   void set_id(int64_t id) { id_ = id; }
 
   void set_parent_id(int64_t parent_id) { parent_id_ = parent_id; }
 
   void set_root_id(int64_t root_id) { root_id_ = root_id; }
-
-  void set_children_ids(const std::vector<int64_t>& children_ids) {
-    children_ids_ = children_ids;
-  }
 
   // base::SupportsUserData::Data:
   std::unique_ptr<base::SupportsUserData::Data> Clone() override;
@@ -59,10 +51,6 @@ class SESSIONS_EXPORT NavigationTaskId : public base::SupportsUserData::Data {
   // A Parent Task ID is the identifier for the previous task in a series of
   // navigations.
   //
-  // A Child Task ID is a subsequent Task ID in a series of navigations. This is
-  // not recursive. There can be multiple Child Task IDs in the event that
-  // multiple tabs are opened from a page.
-  //
   // A Root Task ID is the first Task ID in a collection of navigations. Root
   // Task IDs are tracked for task clustering in the event that an intermediate
   // Tab is closed. It is not possible to group the tasks via a tree traversal
@@ -70,7 +58,6 @@ class SESSIONS_EXPORT NavigationTaskId : public base::SupportsUserData::Data {
   int64_t id_ = -1;
   int64_t parent_id_ = -1;
   int64_t root_id_ = -1;
-  std::vector<int64_t> children_ids_;
 };
 
 }  // namespace sessions

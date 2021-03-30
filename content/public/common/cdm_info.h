@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/token.h"
 #include "base/version.h"
-#include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/encryption_scheme.h"
@@ -35,12 +34,6 @@ struct CONTENT_EXPORT CdmCapability {
   // supported.
   // TODO(crbug.com/796725) Find a way to include profiles and levels.
   std::vector<media::VideoCodec> video_codecs;
-
-  // When VP9 is supported in |video_codecs|, whether profile 2 is supported.
-  // This is needed because there are older CDMs that only supports profile 0.
-  // TODO(xhwang): Remove this after older CDMs that only supports VP9 profile 0
-  // are obsolete.
-  bool supports_vp9_profile2 = false;
 
   // List of encryption schemes supported by the CDM (e.g. cenc).
   base::flat_set<media::EncryptionScheme> encryption_schemes;
@@ -91,12 +84,6 @@ struct CONTENT_EXPORT CdmInfo {
   // For example, com.example.somekeysystem.a and com.example.somekeysystem.b
   // are both sub key systems of com.example.somekeysystem.
   bool supports_sub_key_systems;
-
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
-  // If true, the child process will be launched as x86_64 code under Rosetta
-  // translation.
-  bool launch_x86_64 = false;
-#endif  // OS_MAC && ARCH_CPU_ARM64
 };
 
 }  // namespace content

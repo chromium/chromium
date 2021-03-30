@@ -5,6 +5,7 @@
 #include "chrome/browser/download/download_permission_request.h"
 
 #include "chrome/grit/generated_resources.h"
+#include "components/permissions/request_type.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if defined(OS_ANDROID)
@@ -22,17 +23,12 @@ DownloadPermissionRequest::DownloadPermissionRequest(
 
 DownloadPermissionRequest::~DownloadPermissionRequest() {}
 
-permissions::PermissionRequest::IconId DownloadPermissionRequest::GetIconId()
-    const {
-#if defined(OS_ANDROID)
-  return IDR_ANDROID_INFOBAR_MULTIPLE_DOWNLOADS;
-#else
-  return vector_icons::kFileDownloadIcon;
-#endif
+permissions::RequestType DownloadPermissionRequest::GetRequestType() const {
+  return permissions::RequestType::kMultipleDownloads;
 }
 
 #if defined(OS_ANDROID)
-base::string16 DownloadPermissionRequest::GetMessageText() const {
+std::u16string DownloadPermissionRequest::GetMessageText() const {
   return l10n_util::GetStringFUTF16(
       IDS_MULTI_DOWNLOAD_WARNING, url_formatter::FormatOriginForSecurityDisplay(
                                       request_origin_,
@@ -41,7 +37,7 @@ base::string16 DownloadPermissionRequest::GetMessageText() const {
 }
 #endif
 
-base::string16 DownloadPermissionRequest::GetMessageTextFragment() const {
+std::u16string DownloadPermissionRequest::GetMessageTextFragment() const {
   return l10n_util::GetStringUTF16(IDS_MULTI_DOWNLOAD_PERMISSION_FRAGMENT);
 }
 
@@ -73,9 +69,4 @@ void DownloadPermissionRequest::Cancelled() {
 
 void DownloadPermissionRequest::RequestFinished() {
   delete this;
-}
-
-permissions::PermissionRequestType
-DownloadPermissionRequest::GetPermissionRequestType() const {
-  return permissions::PermissionRequestType::DOWNLOAD;
 }

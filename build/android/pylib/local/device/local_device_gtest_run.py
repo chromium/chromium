@@ -6,6 +6,7 @@ import contextlib
 import collections
 import itertools
 import logging
+import math
 import os
 import posixpath
 import subprocess
@@ -53,9 +54,6 @@ _EXTRA_TEST_LIST = (
 
 _SECONDS_TO_NANOS = int(1e9)
 
-# The amount of time a test executable may run before it gets killed.
-_TEST_TIMEOUT_SECONDS = 30*60
-
 # Tests that use SpawnedTestServer must run the LocalTestServerSpawner on the
 # host machine.
 # TODO(jbudorick): Move this up to the test instance if the net test server is
@@ -64,6 +62,15 @@ _SUITE_REQUIRES_TEST_SERVER_SPAWNER = [
   'components_browsertests', 'content_unittests', 'content_browsertests',
   'net_unittests', 'services_unittests', 'unit_tests'
 ]
+
+# These are use for code coverage.
+_LLVM_PROFDATA_PATH = os.path.join(constants.DIR_SOURCE_ROOT, 'third_party',
+                                   'llvm-build', 'Release+Asserts', 'bin',
+                                   'llvm-profdata')
+# Name of the file extension for profraw data files.
+_PROFRAW_FILE_EXTENSION = 'profraw'
+# Name of the file where profraw data files are merged.
+_MERGE_PROFDATA_FILE_NAME = 'coverage_merged.' + _PROFRAW_FILE_EXTENSION
 
 # No-op context manager. If we used Python 3, we could change this to
 # contextlib.ExitStack()
@@ -105,6 +112,69 @@ def _ExtractTestsFromFilter(gtest_filter):
   if '*' in gtest_filter:
     return None
   return patterns
+
+
+def _GetDeviceTimeoutMultiplier():
+  # Emulated devices typically run 20-150x slower than real-time.
+  # Give a way to control this through the DEVICE_TIMEOUT_MULTIPLIER
+  # environment variable.
+  multiplier = os.getenv("DEVICE_TIMEOUT_MULTIPLIER")
+  if multiplier:
+    return int(multiplier)
+  return 1
+
+
+def _MergeCoverageFiles(coverage_dir, profdata_dir):
+  """Merge coverage data files.
+
+  Each instrumentation activity generates a separate profraw data file. This
+  merges all profraw files in profdata_dir into a single file in
+  coverage_dir. This happens after each test, rather than waiting until after
+  all tests are ran to reduce the memory footprint used by all the profraw
+  files.
+
+  Args:
+    coverage_dir: The path to the coverage directory.
+    profdata_dir: The directory where the profraw data file(s) are located.
+
+  Return:
+    None
+  """
+  # profdata_dir may not exist if pulling coverage files failed.
+  if not os.path.exists(profdata_dir):
+    logging.debug('Profraw directory does not exist.')
+    return
+
+  merge_file = os.path.join(coverage_dir, _MERGE_PROFDATA_FILE_NAME)
+  profraw_files = [
+      os.path.join(profdata_dir, f) for f in os.listdir(profdata_dir)
+      if f.endswith(_PROFRAW_FILE_EXTENSION)
+  ]
+
+  try:
+    logging.debug('Merging target profraw files into merged profraw file.')
+    subprocess_cmd = [
+        _LLVM_PROFDATA_PATH,
+        'merge',
+        '-o',
+        merge_file,
+        '-sparse=true',
+    ]
+    # Grow the merge file by merging it with itself and the new files.
+    if os.path.exists(merge_file):
+      subprocess_cmd.append(merge_file)
+    subprocess_cmd.extend(profraw_files)
+    output = subprocess.check_output(subprocess_cmd)
+    logging.debug('Merge output: %s', output)
+  except subprocess.CalledProcessError:
+    # Don't raise error as that will kill the test run. When code coverage
+    # generates a report, that will raise the error in the report generation.
+    logging.error(
+        'Failed to merge target profdata files to create merged profraw file.')
+
+  # Free up memory space on bot as all data is in the merge file.
+  for f in profraw_files:
+    os.remove(f)
 
 
 def _PullCoverageFiles(device, device_coverage_dir, output_dir):
@@ -235,8 +305,11 @@ class _ApkDelegate(object):
         extras[_EXTRA_TEST] = test[0]
     # pylint: enable=redefined-variable-type
 
+    # We need to use GetAppWritablePath here instead of GetExternalStoragePath
+    # since we will not have yet applied legacy storage permission workarounds
+    # on R+.
     stdout_file = device_temp_file.DeviceTempFile(
-        device.adb, dir=device.GetExternalStoragePath(), suffix='.gtest_out')
+        device.adb, dir=device.GetAppWritablePath(), suffix='.gtest_out')
     extras[_EXTRA_STDOUT_FILE] = stdout_file.name
 
     if self._wait_for_java_debugger:
@@ -262,6 +335,10 @@ class _ApkDelegate(object):
         raise
       finally:
         if self._coverage_dir and device_api >= version_codes.LOLLIPOP:
+          if not os.path.isdir(self._coverage_dir):
+            os.makedirs(self._coverage_dir)
+        # TODO(crbug.com/1179004) Use _MergeCoverageFiles when llvm-profdata
+        # not found is fixed.
           _PullCoverageFiles(
               device, device_coverage_dir,
               os.path.join(self._coverage_dir, str(self._coverage_index)))
@@ -366,7 +443,10 @@ class _ExeDelegate(object):
     pass
 
   def Clear(self, device):
-    device.KillAll(self._exe_file_name, blocking=True, timeout=30, quiet=True)
+    device.KillAll(self._exe_file_name,
+                   blocking=True,
+                   timeout=30 * _GetDeviceTimeoutMultiplier(),
+                   quiet=True)
 
 
 class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
@@ -375,6 +455,11 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
     assert isinstance(env, local_device_environment.LocalDeviceEnvironment)
     assert isinstance(test_instance, gtest_test_instance.GtestTestInstance)
     super(LocalDeviceGtestRun, self).__init__(env, test_instance)
+
+    if self._test_instance.apk_helper:
+      self._installed_packages = [
+          self._test_instance.apk_helper.GetPackageName()
+      ]
 
     # pylint: disable=redefined-variable-type
     if self._test_instance.apk:
@@ -417,7 +502,7 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
             # Some gtest suites, e.g. unit_tests, have data dependencies that
             # can take longer than the default timeout to push. See
             # crbug.com/791632 for context.
-            timeout=600)
+            timeout=600 * math.ceil(_GetDeviceTimeoutMultiplier() / 10))
         if not host_device_tuples:
           dev.RemovePath(device_root, force=True, recursive=True, rename=True)
           dev.RunShellCommand(['mkdir', '-p', device_root], check_return=True)
@@ -495,14 +580,9 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
     # Delete suspect testcase from tests.
     tests = [test for test in tests if not test in self._crashes]
 
-    batch_size = self._test_instance.test_launcher_batch_limit
+    max_shard_size = self._test_instance.test_launcher_batch_limit
 
-    for i in xrange(0, device_count):
-      unbounded_shard = tests[i::device_count]
-      shards += [
-          unbounded_shard[j:j + batch_size]
-          for j in xrange(0, len(unbounded_shard), batch_size)
-      ]
+    shards.extend(self._PartitionTests(tests, device_count, max_shard_size))
     return shards
 
   #override
@@ -521,7 +601,7 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
     @local_device_environment.handle_shard_failures_with(
         on_failure=self._env.DenylistDevice)
     def list_tests(dev):
-      timeout = 30
+      timeout = 30 * _GetDeviceTimeoutMultiplier()
       retries = 1
       if self._test_instance.wait_for_java_debugger:
         timeout = None
@@ -640,8 +720,9 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
   #override
   def _RunTest(self, device, test):
     # Run the test.
-    timeout = (self._test_instance.shard_timeout
-               * self.GetTool(device).GetTimeoutScale())
+    timeout = (self._test_instance.shard_timeout *
+               self.GetTool(device).GetTimeoutScale() *
+               _GetDeviceTimeoutMultiplier())
     if self._test_instance.wait_for_java_debugger:
       timeout = None
     if self._test_instance.store_tombstones:

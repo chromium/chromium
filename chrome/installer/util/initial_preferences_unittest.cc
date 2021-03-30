@@ -79,6 +79,7 @@ TEST_F(InitialPreferencesTest, ParseDistroParams) {
       "     \"do_not_launch_chrome\": true,\n"
       "     \"make_chrome_default\": true,\n"
       "     \"make_chrome_default_for_user\": true,\n"
+      "     \"program_files_dir\": \"c:\\\\bar\",\n"
       "     \"system_level\": true,\n"
       "     \"verbose_logging\": true,\n"
       "     \"require_eula\": true\n"
@@ -117,6 +118,11 @@ TEST_F(InitialPreferencesTest, ParseDistroParams) {
       installer::initial_preferences::kDistroImportBookmarksFromFilePref,
       &str_value));
   EXPECT_STREQ("c:\\foo", str_value.c_str());
+
+  base::FilePath path;
+  EXPECT_TRUE(
+      prefs.GetPath(installer::initial_preferences::kProgramFilesDir, &path));
+  EXPECT_EQ(base::FilePath(FILE_PATH_LITERAL("c:\\bar")), path);
 }
 
 TEST_F(InitialPreferencesTest, ParseMissingDistroParams) {

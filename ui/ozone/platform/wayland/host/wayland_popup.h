@@ -14,7 +14,9 @@ class ShellPopupWrapper;
 
 class WaylandPopup : public WaylandWindow {
  public:
-  WaylandPopup(PlatformWindowDelegate* delegate, WaylandConnection* connection);
+  WaylandPopup(PlatformWindowDelegate* delegate,
+               WaylandConnection* connection,
+               WaylandWindow* parent);
   ~WaylandPopup() override;
 
   ShellPopupWrapper* shell_popup() const { return shell_popup_.get(); }
@@ -27,11 +29,16 @@ class WaylandPopup : public WaylandWindow {
  private:
   // WaylandWindow overrides:
   void HandlePopupConfigure(const gfx::Rect& bounds) override;
+  void HandleSurfaceConfigure(uint32_t serial) override;
   void OnCloseRequest() override;
   bool OnInitialize(PlatformWindowInitProperties properties) override;
 
   // Creates a popup window, which is visible as a menu window.
   bool CreateShellPopup();
+
+  // Initializes the aura-shell surface, in the case aura-shell EXO extension
+  // is available.
+  void InitializeAuraShellSurface();
 
   // Returns bounds with origin relative to parent window's origin.
   gfx::Rect AdjustPopupWindowPosition();
@@ -39,6 +46,10 @@ class WaylandPopup : public WaylandWindow {
   // Wrappers around xdg v5 and xdg v6 objects. WaylandPopup doesn't
   // know anything about the version.
   std::unique_ptr<ShellPopupWrapper> shell_popup_;
+
+  wl::Object<zaura_surface> aura_surface_;
+
+  PlatformWindowShadowType shadow_type_ = PlatformWindowShadowType::kNone;
 
   DISALLOW_COPY_AND_ASSIGN(WaylandPopup);
 };

@@ -285,6 +285,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
 
   void InvalidateDisplayItemClients(PaintInvalidationReason) const override;
 
+  void LocalQuadsForSelf(Vector<FloatQuad>& quads) const override;
   void AbsoluteQuadsForSelf(Vector<FloatQuad>& quads,
                             MapCoordinatesFlags mode = 0) const override;
 
@@ -293,6 +294,11 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
       bool ignore_scroll_offset) const final;
 
  private:
+  bool AbsoluteTransformDependsOnPoint(const LayoutObject& object) const;
+  void QuadsForSelfInternal(Vector<FloatQuad>& quads,
+                            MapCoordinatesFlags mode,
+                            bool map_to_absolute) const;
+
   LayoutObjectChildList* VirtualChildren() final {
     NOT_DESTROYED();
     return Children();
@@ -466,7 +472,6 @@ inline LineBoxList* LayoutInline::MutableLineBoxes() {
 inline wtf_size_t LayoutInline::FirstInlineFragmentItemIndex() const {
   if (!IsInLayoutNGInlineFormattingContext())
     return 0u;
-  DCHECK(RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled());
   return first_fragment_item_index_;
 }
 

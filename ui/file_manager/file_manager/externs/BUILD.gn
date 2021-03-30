@@ -1,0 +1,193 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
+
+js_library("file_manager_private") {
+  sources = []
+
+  # The file_manager_private extern depends on file_system_provider and
+  # extension APIs. Ensure they're pulled in together.
+  externs_list = [
+    "$externs_path/chrome.js",
+    "$externs_path/chrome_extensions.js",
+    "$externs_path/file_manager_private.js",
+    "$externs_path/file_system_provider.js",
+  ]
+}
+
+js_library("background_window.m") {
+  sources = [
+    "$root_gen_dir/ui/file_manager/file_manager/externs/background_window.m.js",
+  ]
+
+  deps =
+      [ "//ui/file_manager/file_manager/externs/background:background_base.m" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("command_handler_deps.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/externs/command_handler_deps.m.js" ]
+  deps = [
+    ":files_app_entry_interfaces.m",
+    ":volume_manager.m",
+    "background:crostini.m",
+    "background:file_operation_manager.m",
+    "background:progress_center.m",
+    "//ui/file_manager/file_manager/foreground/js:actions_controller.m",
+    "//ui/file_manager/file_manager/foreground/js:dialog_type.m",
+    "//ui/file_manager/file_manager/foreground/js:directory_contents.m",
+    "//ui/file_manager/file_manager/foreground/js:directory_model.m",
+    "//ui/file_manager/file_manager/foreground/js:directory_tree_naming_controller.m",
+    "//ui/file_manager/file_manager/foreground/js:file_selection.m",
+    "//ui/file_manager/file_manager/foreground/js:file_transfer_controller.m",
+    "//ui/file_manager/file_manager/foreground/js:naming_controller.m",
+    "//ui/file_manager/file_manager/foreground/js:providers_model.m",
+    "//ui/file_manager/file_manager/foreground/js:spinner_controller.m",
+    "//ui/file_manager/file_manager/foreground/js:task_controller.m",
+    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model.m",
+    "//ui/file_manager/file_manager/foreground/js/ui:directory_tree.m",
+    "//ui/file_manager/file_manager/foreground/js/ui:file_manager_ui.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("directory_change_event.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/externs/directory_change_event.m.js" ]
+  deps = [ ":files_app_entry_interfaces.m" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("drive_dialog_controller.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/externs/drive_dialog_controller.m.js" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("entries_changed_event.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/externs/entries_changed_event.m.js" ]
+
+  deps = [ "//ui/file_manager/file_manager/common/js:util.m" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("entry_location.m") {
+  sources = [
+    "$root_gen_dir/ui/file_manager/file_manager/externs/entry_location.m.js",
+  ]
+
+  deps = [
+    ":volume_info.m",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("exif_entry.m") {
+  sources =
+      [ "$root_gen_dir/ui/file_manager/file_manager/externs/exif_entry.m.js" ]
+
+  deps = [
+    "//ui/file_manager/file_manager/foreground/js/metadata:exif_constants.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("files_app_entry_interfaces.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/externs/files_app_entry_interfaces.m.js" ]
+
+  deps = [ "//ui/file_manager/file_manager/common/js:volume_manager_types.m" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("metadata_worker_window.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/externs/metadata_worker_window.m.js" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("progress_center_panel.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/externs/progress_center_panel.m.js" ]
+
+  deps = [ "//ui/file_manager/file_manager/common/js:progress_center_common.m" ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("volume_manager") {
+  sources = []
+
+  # Encapsulate volume_manager.js and its dependencies. Note this should really
+  # depend on volume_manager_types.js as well, but that's not an extern.
+  externs_list = [
+    "entry_location.js",
+    "files_app_entry_interfaces.js",
+    "volume_info.js",
+    "volume_info_list.js",
+    "volume_manager.js",
+  ]
+}
+
+js_library("volume_manager.m") {
+  sources = [
+    "$root_gen_dir/ui/file_manager/file_manager/externs/volume_manager.m.js",
+  ]
+
+  deps = [
+    ":entry_location.m",
+    ":files_app_entry_interfaces.m",
+    ":volume_info.m",
+    ":volume_info_list.m",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("volume_info.m") {
+  sources =
+      [ "$root_gen_dir/ui/file_manager/file_manager/externs/volume_info.m.js" ]
+
+  deps = [
+    ":files_app_entry_interfaces.m",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("volume_info_list.m") {
+  sources = [
+    "$root_gen_dir/ui/file_manager/file_manager/externs/volume_info_list.m.js",
+  ]
+
+  deps = [ ":volume_info.m" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_modulizer("modulize") {
+  input_files = [
+    "background_window.js",
+    "command_handler_deps.js",
+    "directory_change_event.js",
+    "drive_dialog_controller.js",
+    "entries_changed_event.js",
+    "entry_location.js",
+    "exif_entry.js",
+    "files_app_entry_interfaces.js",
+    "metadata_worker_window.js",
+    "progress_center_panel.js",
+    "volume_info.js",
+    "volume_info_list.js",
+    "volume_manager.js",
+  ]
+}

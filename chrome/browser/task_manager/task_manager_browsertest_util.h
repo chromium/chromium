@@ -13,7 +13,8 @@
 
 #include <stddef.h>
 
-#include "base/strings/string16.h"
+#include <string>
+
 
 namespace task_manager {
 namespace browsertest_util {
@@ -42,7 +43,7 @@ enum class ColumnSpecifier {
 // meaningful errors, tests should wrap invocations of this function with
 // ASSERT_NO_FATAL_FAILURE().
 void WaitForTaskManagerRows(int resource_count,
-                            const base::string16& title_pattern);
+                            const std::u16string& title_pattern);
 
 // Make the indicated TaskManager column be visible.
 void ShowColumn(ColumnSpecifier column_specifier);
@@ -54,29 +55,29 @@ void ShowColumn(ColumnSpecifier column_specifier);
 //
 // To get meaningful errors, tests should wrap invocations of this function with
 // ASSERT_NO_FATAL_FAILURE().
-void WaitForTaskManagerStatToExceed(const base::string16& title_pattern,
+void WaitForTaskManagerStatToExceed(const std::u16string& title_pattern,
                                     ColumnSpecifier column_specifier,
                                     size_t min_column_value);
 
 // ASCII matcher convenience functions for use with WaitForTaskManagerRows()
-base::string16 MatchTab(const char* title);         // "Tab: " + title
-base::string16 MatchAnyTab();                       // "Tab: *"
-base::string16 MatchAboutBlankTab();                // "Tab: about:blank"
-base::string16 MatchExtension(const char* title);   // "Extension: " + title
-base::string16 MatchAnyExtension();                 // "Extension: *"
-base::string16 MatchApp(const char* title);         // "App: " + title
-base::string16 MatchAnyApp();                       // "App: *"
-base::string16 MatchWebView(const char* title);     // "WebView: " + title
-base::string16 MatchAnyWebView();                   // "WebView: *"
-base::string16 MatchBackground(const char* title);  // "Background: " + title
-base::string16 MatchAnyBackground();                // "Background: *"
-base::string16 MatchPrint(const char* title);       // "Print: " + title
-base::string16 MatchAnyPrint();                     // "Print: *"
-base::string16 MatchSubframe(const char* title);    // "Subframe: " + title
-base::string16 MatchAnySubframe();                  // "Subframe: *"
+std::u16string MatchTab(const char* title);         // "Tab: " + title
+std::u16string MatchAnyTab();                       // "Tab: *"
+std::u16string MatchAboutBlankTab();                // "Tab: about:blank"
+std::u16string MatchExtension(const char* title);   // "Extension: " + title
+std::u16string MatchAnyExtension();                 // "Extension: *"
+std::u16string MatchApp(const char* title);         // "App: " + title
+std::u16string MatchAnyApp();                       // "App: *"
+std::u16string MatchWebView(const char* title);     // "WebView: " + title
+std::u16string MatchAnyWebView();                   // "WebView: *"
+std::u16string MatchBackground(const char* title);  // "Background: " + title
+std::u16string MatchAnyBackground();                // "Background: *"
+std::u16string MatchPrint(const char* title);       // "Print: " + title
+std::u16string MatchAnyPrint();                     // "Print: *"
+std::u16string MatchSubframe(const char* title);    // "Subframe: " + title
+std::u16string MatchAnySubframe();                  // "Subframe: *"
 // "Utility: " + title
-base::string16 MatchUtility(const base::string16& title);
-base::string16 MatchAnyUtility();                   // "Utility: *"
+std::u16string MatchUtility(const std::u16string& title);
+std::u16string MatchAnyUtility();  // "Utility: *"
 
 }  // namespace browsertest_util
 }  // namespace task_manager

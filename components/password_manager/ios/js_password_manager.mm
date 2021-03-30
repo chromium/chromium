@@ -20,17 +20,16 @@ using autofill::CreateBoolCallback;
 using autofill::CreateStringCallback;
 using autofill::FormRendererId;
 using autofill::FieldRendererId;
-using autofill::kNotSetRendererID;
 using base::SysNSStringToUTF8;
 
 // Converts FormRendererId to int value that can be used in Javascript methods.
 int FormRendererIdToJsParameter(FormRendererId formID) {
-  return formID ? formID.value() : kNotSetRendererID;
+  return formID.value();
 }
 
 // Converts FieldRendererId to int value that can be used in Javascript methods.
 int FieldRendererIdToJsParameter(FieldRendererId fieldID) {
-  return fieldID ? fieldID.value() : kNotSetRendererID;
+  return fieldID.value();
 }
 
 namespace password_manager {
@@ -39,9 +38,9 @@ std::unique_ptr<base::Value> SerializeFillData(
     const GURL& origin,
     FormRendererId form_renderer_id,
     FieldRendererId username_element,
-    const base::string16& username_value,
+    const std::u16string& username_value,
     FieldRendererId password_element,
-    const base::string16& password_value) {
+    const std::u16string& password_value) {
   auto rootDict = std::make_unique<base::DictionaryValue>();
   rootDict->SetString("origin", origin.spec());
   rootDict->SetInteger("unique_renderer_id",
@@ -102,7 +101,7 @@ std::unique_ptr<base::Value> SerializeFillData(
     completionHandler:(void (^)(NSString*))completionHandler {
   DCHECK(completionHandler);
   std::vector<base::Value> parameters;
-  parameters.emplace_back(static_cast<int>(formIdentifier.value()));
+  parameters.emplace_back(FormRendererIdToJsParameter(formIdentifier));
   autofill::ExecuteJavaScriptFunction("passwords.getPasswordFormDataAsString",
                                       parameters, frame,
                                       CreateStringCallback(completionHandler));

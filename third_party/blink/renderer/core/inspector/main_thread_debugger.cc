@@ -261,7 +261,7 @@ void MainThreadDebugger::muteMetrics(int context_group_id) {
   if (!frame)
     return;
   if (frame->GetDocument() && frame->GetDocument()->Loader())
-    frame->GetDocument()->Loader()->GetUseCounterHelper().MuteForInspector();
+    frame->GetDocument()->Loader()->GetUseCounter().MuteForInspector();
   if (frame->GetPage())
     frame->GetPage()->GetDeprecation().MuteForInspector();
 }
@@ -271,7 +271,7 @@ void MainThreadDebugger::unmuteMetrics(int context_group_id) {
   if (!frame)
     return;
   if (frame->GetDocument() && frame->GetDocument()->Loader())
-    frame->GetDocument()->Loader()->GetUseCounterHelper().UnmuteForInspector();
+    frame->GetDocument()->Loader()->GetUseCounter().UnmuteForInspector();
   if (frame->GetPage())
     frame->GetPage()->GetDeprecation().UnmuteForInspector();
 }
@@ -288,7 +288,13 @@ v8::Local<v8::Context> MainThreadDebugger::ensureDefaultContextInGroup(
   // to a context creation on it, which is not allowed. Remove this extra check
   // when provisional frames concept gets eliminated. See crbug.com/897816
   // The DCHECK is kept to catch additional regressions earlier.
+  // TODO(crbug.com/1182538): DCHECKs are disabled during automated testing on
+  // CrOS and this check failed when tested on an experimental builder. Revert
+  // https://crrev.com/c/2727867 to enable it.
+  // See go/chrome-dcheck-on-cros or http://crbug.com/1113456 for more details.
+#if !defined(OS_CHROMEOS)
   DCHECK(!frame->IsProvisional());
+#endif
   if (frame->IsProvisional())
     return v8::Local<v8::Context>();
 

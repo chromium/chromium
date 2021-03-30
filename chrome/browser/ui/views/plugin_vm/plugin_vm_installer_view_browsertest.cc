@@ -8,15 +8,14 @@
 #include "base/files/file_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_installer_factory.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_pref_names.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_test_helper.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
-#include "chrome/browser/chromeos/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/chromeos/settings/stub_cros_settings_provider.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_installer_factory.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_test_helper.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -143,7 +142,7 @@ class PluginVmInstallerViewBrowserTest : public DialogBrowserTest {
                                      IDS_PLUGIN_VM_INSTALLER_FINISHED_TITLE));
   }
 
-  chromeos::ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   chromeos::ScopedStubInstallAttributes scoped_stub_install_attributes_;
 
   std::unique_ptr<network::TestNetworkConnectionTracker>
@@ -173,7 +172,7 @@ class PluginVmInstallerViewBrowserTest : public DialogBrowserTest {
   void SetUserWithAffiliation() {
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
         browser()->profile()->GetProfileUserName(), "id"));
-    auto user_manager = std::make_unique<chromeos::FakeChromeUserManager>();
+    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
     user_manager->AddUserWithAffiliation(account_id, true);
     user_manager->LoginUser(account_id);
     chromeos::ProfileHelper::Get()->SetProfileToUserMappingForTesting(
@@ -289,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(
 
   view_->AcceptDialog();
 
-  base::string16 app_name = l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME);
+  std::u16string app_name = l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME);
   EXPECT_FALSE(HasAcceptButton());
   EXPECT_TRUE(HasCancelButton());
   EXPECT_EQ(view_->GetTitle(),

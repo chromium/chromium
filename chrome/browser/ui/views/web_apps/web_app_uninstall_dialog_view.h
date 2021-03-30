@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
-#include "base/strings/string16.h"
 #include "base/threading/thread_checker.h"
 #include "chrome/browser/ui/web_applications/web_app_uninstall_dialog.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
@@ -21,6 +20,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"
 
@@ -35,6 +35,7 @@ class Checkbox;
 // The dialog's view, owned by the views framework.
 class WebAppUninstallDialogDelegateView : public views::DialogDelegateView {
  public:
+  METADATA_HEADER(WebAppUninstallDialogDelegateView);
   // Constructor for view component of dialog.
   WebAppUninstallDialogDelegateView(
       Profile* profile,
@@ -105,7 +106,7 @@ class WebAppUninstallDialogViews : public web_app::WebAppUninstallDialog,
 
  private:
   // web_app::AppRegistrarObserver:
-  void OnWebAppUninstalled(const web_app::AppId& app_id) override;
+  void OnWebAppWillBeUninstalled(const web_app::AppId& app_id) override;
   void OnAppRegistrarDestroyed() override;
 
   void OnIconsRead(std::map<SquareSizePx, SkBitmap> icon_bitmaps);

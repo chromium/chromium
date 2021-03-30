@@ -11,14 +11,13 @@
 #include <string>
 #include <vector>
 
-#include "ash/app_list/app_list_export.h"
 #include "ash/app_list/views/app_list_menu_model_adapter.h"
 #include "ash/app_list/views/search_result_actions_view_delegate.h"
 #include "ash/app_list/views/search_result_base_view.h"
+#include "ash/ash_export.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "ui/views/context_menu_controller.h"
 
 namespace gfx {
@@ -39,10 +38,9 @@ class SearchResult;
 class SearchResultListView;
 
 // SearchResultView displays a SearchResult.
-class APP_LIST_EXPORT SearchResultView
-    : public SearchResultBaseView,
-      public views::ContextMenuController,
-      public SearchResultActionsViewDelegate {
+class ASH_EXPORT SearchResultView : public SearchResultBaseView,
+                                    public views::ContextMenuController,
+                                    public SearchResultActionsViewDelegate {
  public:
   // Internal class name.
   static const char kViewClassName[];
@@ -53,8 +51,6 @@ class APP_LIST_EXPORT SearchResultView
 
   // Sets/gets SearchResult displayed by this view.
   void OnResultChanged() override;
-
-  void SetDisplayIcon(const gfx::ImageSkia& source);
 
  private:
   friend class test::SearchResultListViewTest;
@@ -101,7 +97,7 @@ class APP_LIST_EXPORT SearchResultView
 
   void SetIconImage(const gfx::ImageSkia& source,
                     views::ImageView* const icon,
-                    const int icon_dimension);
+                    const gfx::Size& size);
 
   // SearchResultActionsViewDelegate overrides:
   void OnSearchResultActionActivated(size_t index) override;
@@ -110,15 +106,19 @@ class APP_LIST_EXPORT SearchResultView
   // Invoked when the context menu closes.
   void OnMenuClosed();
 
+  // Whether this result is one of the rich entity types.
+  bool IsAnswer() const;
+  bool IsRichImage() const;
+
   // Parent list view. Owned by views hierarchy.
   SearchResultListView* list_view_;
 
   AppListViewDelegate* view_delegate_;
 
   views::ImageView* icon_;  // Owned by views hierarchy.
-  // If a |display_icon_| is set, we will show |display_icon_|, not |icon_|.
-  views::ImageView* display_icon_;  // Owned by views hierarchy.
-  views::ImageView* badge_icon_;    // Owned by views hierarchy.
+  // Rich image results will show |image_icon_| instead of |icon_|.
+  views::ImageView* image_icon_;  // Owned by views hierarchy.
+  views::ImageView* badge_icon_;  // Owned by views hierarchy.
   std::unique_ptr<gfx::RenderText> title_text_;
   std::unique_ptr<gfx::RenderText> details_text_;
 

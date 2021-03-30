@@ -49,12 +49,16 @@ class GL_IN_PROCESS_CONTEXT_EXPORT GpuTaskSchedulerHelper {
   // buffer, thus no need to be called when using SkiaRenderer.
   void Initialize(CommandBufferHelper* command_buffer_helper);
 
+  using ReportingCallback =
+      base::OnceCallback<void(base::TimeTicks task_ready)>;
+
   // This is called outside of CommandBuffer and would need to flush the command
   // buffer if the CommandBufferHelper is present. CommandBuffer is a friend of
   // this class and gets a direct pointer to the internal
   // |gpu::SingleTaskSequence|.
   void ScheduleGpuTask(base::OnceClosure task,
-                       std::vector<SyncToken> sync_tokens);
+                       std::vector<SyncToken> sync_tokens,
+                       ReportingCallback report_callback = ReportingCallback());
 
   // This is only called with SkiaOutputSurface, no need to flush command buffer
   // here.

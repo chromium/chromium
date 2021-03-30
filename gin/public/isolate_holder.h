@@ -5,7 +5,6 @@
 #ifndef GIN_PUBLIC_ISOLATE_HOLDER_H_
 #define GIN_PUBLIC_ISOLATE_HOLDER_H_
 
-#include <array>
 #include <memory>
 
 #include "base/macros.h"
@@ -120,13 +119,6 @@ class GIN_EXPORT IsolateHolder {
   std::unique_ptr<V8IsolateMemoryDumpProvider> isolate_memory_dump_provider_;
   AccessMode access_mode_;
   IsolateType isolate_type_;
-
-  // Equivalent to the list returned by HostGetSupportedImportAssertions:
-  // https://tc39.es/proposal-import-assertions/#sec-hostgetsupportedimportassertions
-  // This will be used to indicate to V8 that Blink wants to receive
-  // module "type" import assertions.
-  static constexpr std::array<const char*, 1> kSupportedImportAssertions = {
-      "type"};
 
   DISALLOW_COPY_AND_ASSIGN(IsolateHolder);
 };

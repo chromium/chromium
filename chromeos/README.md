@@ -43,9 +43,7 @@ There are two exceptions:
   instant tethering.
 
 - //chromeos/components contains C++ components that were not considered
-  sufficiently general to live in top-level //components. For example,
-  //chromeos/components/account_manager manages the user's GAIA accounts, but
-  is used as the backend for UI that only exists on Chrome OS devices.
+  sufficiently general to live in top-level //components.
 
 Note, //chromeos does not contain any user-facing UI code, and hence it has
 "-ui" in its DEPS. The contents of //chromeos should also not depend on

@@ -11,8 +11,7 @@
 #include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/chromeos/arc/icon_decode_request.h"
+#include "chrome/browser/ash/arc/icon_decode_request.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/ui/app_list/app_list_test_util.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
@@ -20,8 +19,6 @@
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "chromeos/constants/chromeos_pref_names.h"
 #include "components/arc/app/arc_playstore_search_request_state.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/value_builder.h"
@@ -38,10 +35,6 @@ class ArcPlayStoreSearchProviderTest : public AppListTestBase {
     AppListTestBase::SetUp();
     arc_test_.SetUp(profile());
     controller_ = std::make_unique<test::TestAppListControllerDelegate>();
-    profile_->GetPrefs()->SetBoolean(chromeos::prefs::kSuggestedContentEnabled,
-                                     true);
-    scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kSuggestedContentToggle}, {});
   }
 
   void TearDown() override {
@@ -51,7 +44,6 @@ class ArcPlayStoreSearchProviderTest : public AppListTestBase {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ArcPlayStoreSearchProvider> CreateSearch(int max_results) {
     return std::make_unique<ArcPlayStoreSearchProvider>(
         max_results, profile_.get(), controller_.get());
@@ -108,28 +100,10 @@ TEST_F(ArcPlayStoreSearchProviderTest, Basic) {
   }
 }
 
-TEST_F(ArcPlayStoreSearchProviderTest, PrefsDisabled) {
-  profile_->GetPrefs()->SetBoolean(chromeos::prefs::kSuggestedContentEnabled,
-                                   false);
-  constexpr size_t kMaxResults = 12;
-  constexpr char kQuery[] = "Play App";
-
-  std::unique_ptr<ArcPlayStoreSearchProvider> provider =
-      CreateSearch(kMaxResults);
-  EXPECT_TRUE(provider->results().empty());
-  arc::IconDecodeRequest::DisableSafeDecodingForTesting();
-
-  AddExtension(CreateExtension(extension_misc::kGmailAppId).get());
-
-  // Suggested content pref is disabled.
-  provider->Start(base::UTF8ToUTF16(kQuery));
-  EXPECT_TRUE(provider->results().empty());
-}
-
 TEST_F(ArcPlayStoreSearchProviderTest, FailedQuery) {
   constexpr size_t kMaxResults = 12;
   constexpr char kQuery[] = "Play App";
-  const base::string16 kQueryString16 = base::UTF8ToUTF16(kQuery);
+  const std::u16string kQueryString16 = base::UTF8ToUTF16(kQuery);
 
   std::unique_ptr<ArcPlayStoreSearchProvider> provider =
       CreateSearch(kMaxResults);
@@ -142,7 +116,7 @@ TEST_F(ArcPlayStoreSearchProviderTest, FailedQuery) {
   EXPECT_GT(provider->results().size(), 0u);
 
   // Create an empty query and it should clear the result list.
-  provider->Start(base::string16());
+  provider->Start(std::u16string());
   EXPECT_EQ(0u, provider->results().size());
 
   // Test for queries with a failure state code.

@@ -179,12 +179,6 @@ TEST_F('OobeWebUITest', 'DISABLED_OobeUserImage', function() {
   Oobe.getInstance().showScreen({'id':'user-image'});
 });
 
-// TODO: figure out what state to mock in order for this
-// screen to show up.
-TEST_F('OobeWebUITest', 'DISABLED_OobeAccountPicker', function() {
-  Oobe.getInstance().showScreen({'id':'account-picker'});
-});
-
 // Fails on chromeos, http://crbug.com/665315
 TEST_F('OobeWebUITest', 'DISABLED_HIDDetectionScreenTest', function() {
   function getPincodeSymbol(i) {

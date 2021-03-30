@@ -16,6 +16,7 @@
 #include "ash/app_list/views/page_switcher.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/test/apps_grid_view_test_api.h"
+#include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/views_test_base.h"
@@ -45,9 +46,9 @@ class AppListMainViewTest : public views::ViewsTestBase {
     delegate_ = std::make_unique<AppListTestViewDelegate>();
     app_list_view_ = new AppListView(delegate_.get());
     app_list_view_->InitView(GetContext());
-    app_list_view_->Show(/*is_side_shelf=*/false);
+    app_list_view_->Show(AppListViewState::kFullscreenAllApps,
+                         /*is_side_shelf=*/false);
     EXPECT_TRUE(app_list_view_->GetWidget()->IsVisible());
-    app_list_view_->SetState(ash::AppListViewState::kFullscreenAllApps);
   }
 
   void TearDown() override {
@@ -211,6 +212,7 @@ class AppListMainViewTest : public views::ViewsTestBase {
   }
 
  protected:
+  TestAppListColorProvider color_provider_;  // Needed by AppListView.
   AppListView* app_list_view_ = nullptr;  // Owned by native widget.
   std::unique_ptr<AppListTestViewDelegate> delegate_;
 };

@@ -11,17 +11,15 @@
 #include <utility>
 #include <vector>
 
-#include "base//scoped_observer.h"
 #include "base/macros.h"
+#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/session_restore_delegate.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_observer.h"
 
 namespace content {
-class NavigationController;
+class WebContents;
 }
 
 // SessionRestoreStatsCollector observes SessionRestore events ands records UMA
@@ -30,8 +28,7 @@ class NavigationController;
 // TODO(chrisha): Many of these metrics don't make sense to collect in the
 // presence of an unavailable network, or when tabs are closed during loading.
 // Rethink the collection in these cases.
-class SessionRestoreStatsCollector : public content::NotificationObserver,
-                                     public content::RenderWidgetHostObserver {
+class SessionRestoreStatsCollector : public content::RenderWidgetHostObserver {
  public:
   // Recorded in SessionRestore.ForegroundTabFirstPaint4.FinishReason metric.
   // Values other than PAINT_FINISHED_UMA_DONE indicate why FirstPaint time
@@ -94,27 +91,6 @@ class SessionRestoreStatsCollector : public content::NotificationObserver,
  private:
   friend class SessionRestoreStatsCollectorTest;
 
-  // State that is tracked for a tab while it is being observed.
-  struct TabState {
-    explicit TabState(content::NavigationController* controller);
-
-    // The NavigationController associated with the tab. This is the primary
-    // index for it and is never null.
-    content::NavigationController* controller;
-
-    // True if the tab was ever hidden or occluded during the restore process.
-    bool was_hidden_or_occluded;
-
-    // RenderWidgetHost* SessionRestoreStatsCollector is observing for this tab,
-    // if any.
-    content::RenderWidgetHost* observed_host;
-  };
-
-  // Maps a NavigationController to its state. This is the primary map and
-  // physically houses the state.
-  using NavigationControllerMap =
-      std::map<content::NavigationController*, TabState>;
-
   // Constructs a SessionRestoreStatsCollector.
   SessionRestoreStatsCollector(
       const base::TimeTicks& restore_started,
@@ -122,31 +98,17 @@ class SessionRestoreStatsCollector : public content::NotificationObserver,
 
   ~SessionRestoreStatsCollector() override;
 
-  // NotificationObserver method. This is the workhorse of the class and drives
-  // all state transitions.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
-  // RenderWidgetHostObserver:
+  // content::RenderWidgetHostObserver:
   void RenderWidgetHostVisibilityChanged(content::RenderWidgetHost* widget_host,
                                          bool became_visible) override;
-
+  void RenderWidgetHostDidUpdateVisualProperties(
+      content::RenderWidgetHost* widget_host) override;
   void RenderWidgetHostDestroyed(
       content::RenderWidgetHost* widget_host) override;
 
-  // Called when a tab is no longer tracked. This is called by the 'Observe'
-  // notification callback. Takes care of unregistering all observers and
-  // removing the tab from all internal data structures.
-  void RemoveTab(content::NavigationController* tab);
-
-  // Registers for relevant notifications for a tab and inserts the tab into
-  // to |tabs_tracked_| map. Return a pointer to the newly created TabState.
-  TabState* RegisterForNotifications(content::NavigationController* tab);
-
-  // Returns the tab state, nullptr if not found.
-  TabState* GetTabState(content::NavigationController* tab);
-  TabState* GetTabState(content::RenderWidgetHost* tab);
+  // Registers observers for a tab and inserts the tab into
+  // |tracked_tabs_occluded_maps| map.
+  void RegisterObserverForTab(content::WebContents* tab);
 
   // Report stats and self-deletes.
   void ReportStatsAndSelfDestroy();
@@ -161,11 +123,9 @@ class SessionRestoreStatsCollector : public content::NotificationObserver,
   // The time the restore process started.
   const base::TimeTicks restore_started_;
 
-  // List of tracked tabs, mapped to their TabState.
-  NavigationControllerMap tabs_tracked_;
-
-  // Notification registrar.
-  content::NotificationRegistrar registrar_;
+  // Tabs we are tracking paints in, keyed by their RenderWidgetHost and mapped
+  // to a bool indicating whether the tab was ever hidden or occluded.
+  std::map<content::RenderWidgetHost*, bool> tracked_tabs_occluded_map_;
 
   // Statistics gathered regarding the TabLoader.
   TabLoaderStats tab_loader_stats_;
@@ -173,8 +133,9 @@ class SessionRestoreStatsCollector : public content::NotificationObserver,
   // The reporting delegate used to report gathered statistics.
   std::unique_ptr<StatsReportingDelegate> reporting_delegate_;
 
-  ScopedObserver<content::RenderWidgetHost, content::RenderWidgetHostObserver>
-      observer_{this};
+  base::ScopedMultiSourceObservation<content::RenderWidgetHost,
+                                     content::RenderWidgetHostObserver>
+      render_widget_host_observations_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SessionRestoreStatsCollector);
 };

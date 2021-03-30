@@ -11,10 +11,12 @@ assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
 component("network") {
   defines = [ "IS_CHROMEOS_NETWORK_IMPL" ]
   deps = [
+    "//ash/constants",
     "//base",
     "//base:i18n",
-    "//chromeos/constants",
     "//chromeos/dbus:common",
+    "//chromeos/dbus/hermes",
+    "//chromeos/dbus/hermes",
     "//chromeos/dbus/permission_broker",
     "//chromeos/dbus/shill",
     "//chromeos/login/login_state",
@@ -38,8 +40,22 @@ component("network") {
   sources = [
     "auto_connect_handler.cc",
     "auto_connect_handler.h",
+    "cellular_esim_connection_handler.cc",
+    "cellular_esim_connection_handler.h",
+    "cellular_esim_profile.cc",
+    "cellular_esim_profile.h",
+    "cellular_esim_profile_handler.cc",
+    "cellular_esim_profile_handler.h",
+    "cellular_esim_profile_handler_impl.cc",
+    "cellular_esim_profile_handler_impl.h",
+    "cellular_esim_uninstall_handler.cc",
+    "cellular_esim_uninstall_handler.h",
+    "cellular_inhibitor.cc",
+    "cellular_inhibitor.h",
     "cellular_metrics_logger.cc",
     "cellular_metrics_logger.h",
+    "cellular_utils.cc",
+    "cellular_utils.h",
     "certificate_helper.cc",
     "certificate_helper.h",
     "client_cert_resolver.cc",
@@ -167,6 +183,8 @@ component("network") {
     "shill_property_handler.h",
     "shill_property_util.cc",
     "shill_property_util.h",
+    "system_token_cert_db_storage.cc",
+    "system_token_cert_db_storage.h",
     "tether_constants.cc",
     "tether_constants.h",
   ]
@@ -174,11 +192,16 @@ component("network") {
 
 source_set("test_support") {
   testonly = true
-  public_deps = [ ":network" ]
+  public_deps = [
+    ":network",
+    "//chromeos/dbus/hermes:hermes_fakes",
+    "//dbus",
+  ]
   deps = [
     "//base",
     "//chromeos:test_utils",
     "//chromeos/dbus:test_support",
+    "//chromeos/dbus/hermes:hermes_clients",
     "//chromeos/services/network_config/public/cpp",
     "//chromeos/services/network_config/public/mojom",
     "//components/sync_preferences:test_support",
@@ -206,6 +229,10 @@ source_set("test_support") {
     "onc/onc_test_utils.h",
     "portal_detector/mock_network_portal_detector.cc",
     "portal_detector/mock_network_portal_detector.h",
+    "system_token_cert_db_storage_test_util.cc",
+    "system_token_cert_db_storage_test_util.h",
+    "test_cellular_esim_profile_handler.cc",
+    "test_cellular_esim_profile_handler.h",
   ]
 }
 
@@ -214,12 +241,14 @@ source_set("unit_tests") {
   deps = [
     ":network",
     ":test_support",
+    "//ash/constants",
     "//base",
     "//base:i18n",
     "//base/test:test_support",
     "//chromeos:test_utils",
-    "//chromeos/constants",
     "//chromeos/dbus:test_support",
+    "//chromeos/dbus/hermes:hermes_clients",
+    "//chromeos/dbus/hermes:hermes_fakes",
     "//chromeos/dbus/permission_broker",
     "//chromeos/login/login_state",
     "//components/onc",
@@ -238,6 +267,11 @@ source_set("unit_tests") {
   ]
   sources = [
     "auto_connect_handler_unittest.cc",
+    "cellular_esim_connection_handler_unittest.cc",
+    "cellular_esim_profile_handler_impl_unittest.cc",
+    "cellular_esim_profile_unittest.cc",
+    "cellular_esim_uninstall_handler_unittest.cc",
+    "cellular_inhibitor_unittest.cc",
     "cellular_metrics_logger_unittest.cc",
     "certificate_helper_unittest.cc",
     "client_cert_resolver_unittest.cc",
@@ -272,6 +306,7 @@ source_set("unit_tests") {
     "proxy/proxy_config_service_impl_unittest.cc",
     "proxy/ui_proxy_config_service_unittest.cc",
     "shill_property_handler_unittest.cc",
+    "system_token_cert_db_storage_unittest.cc",
   ]
 }
 

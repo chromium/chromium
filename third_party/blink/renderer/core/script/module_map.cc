@@ -120,7 +120,8 @@ void ModuleMap::FetchSingleModuleScript(
   // <spec step="2">If moduleMap[url] is "fetching", wait in parallel until that
   // entry's value changes, then queue a task on the networking task source to
   // proceed with running the following steps.</spec>
-  MapImpl::AddResult result = map_.insert(request.Url(), nullptr);
+  MapImpl::AddResult result = map_.insert(
+      std::make_pair(request.Url(), request.GetExpectedModuleType()), nullptr);
   Member<Entry>& entry = result.stored_value->value;
   if (result.is_new_entry) {
     entry = MakeGarbageCollected<Entry>(this);
@@ -142,8 +143,9 @@ void ModuleMap::FetchSingleModuleScript(
     entry->AddClient(client);
 }
 
-ModuleScript* ModuleMap::GetFetchedModuleScript(const KURL& url) const {
-  MapImpl::const_iterator it = map_.find(url);
+ModuleScript* ModuleMap::GetFetchedModuleScript(const KURL& url,
+                                                ModuleType module_type) const {
+  MapImpl::const_iterator it = map_.find(std::make_pair(url, module_type));
   if (it == map_.end())
     return nullptr;
   return it->value->GetModuleScript();

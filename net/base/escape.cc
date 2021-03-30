@@ -84,9 +84,10 @@ void AppendEscapedCharForHTMLImpl(typename str::value_type c, str* output) {
 }
 
 // Convert |input| string to a form that will not be interpreted as HTML.
-template <class str>
-str EscapeForHTMLImpl(base::BasicStringPiece<str> input) {
-  str result;
+template <class CharT>
+std::basic_string<CharT> EscapeForHTMLImpl(
+    base::BasicStringPiece<CharT> input) {
+  std::basic_string<CharT> result;
   result.reserve(input.size());  // Optimize for no escaping.
 
   for (auto c : input) {
@@ -190,7 +191,7 @@ std::string EscapeForHTML(base::StringPiece input) {
   return EscapeForHTMLImpl(input);
 }
 
-base::string16 EscapeForHTML(base::StringPiece16 input) {
+std::u16string EscapeForHTML(base::StringPiece16 input) {
   return EscapeForHTMLImpl(input);
 }
 
@@ -201,7 +202,7 @@ std::string UnescapeURLComponent(base::StringPiece escaped_text,
   return base::UnescapeURLComponent(escaped_text, rules);
 }
 
-base::string16 UnescapeAndDecodeUTF8URLComponentWithAdjustments(
+std::u16string UnescapeAndDecodeUTF8URLComponentWithAdjustments(
     base::StringPiece text,
     UnescapeRule::Type rules,
     base::OffsetAdjuster::Adjustments* adjustments) {
@@ -221,7 +222,7 @@ bool UnescapeBinaryURLComponentSafe(base::StringPiece escaped_text,
       escaped_text, fail_on_path_separators, unescaped_text);
 }
 
-base::string16 UnescapeForHTML(base::StringPiece16 input) {
+std::u16string UnescapeForHTML(base::StringPiece16 input) {
   static const struct {
     const char* ampersand_code;
     const char replacement;
@@ -231,13 +232,13 @@ base::string16 UnescapeForHTML(base::StringPiece16 input) {
   };
   constexpr size_t kEscapeToCharsCount = base::size(kEscapeToChars);
 
-  if (input.find(base::ASCIIToUTF16("&")) == std::string::npos)
-    return base::string16(input);
+  if (input.find(u"&") == std::string::npos)
+    return std::u16string(input);
 
-  base::string16 ampersand_chars[kEscapeToCharsCount];
-  base::string16 text(input);
-  for (base::string16::iterator iter = text.begin();
-       iter != text.end(); ++iter) {
+  std::u16string ampersand_chars[kEscapeToCharsCount];
+  std::u16string text(input);
+  for (std::u16string::iterator iter = text.begin(); iter != text.end();
+       ++iter) {
     if (*iter == '&') {
       // Potential ampersand encode char.
       size_t index = iter - text.begin();

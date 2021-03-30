@@ -7,20 +7,24 @@
 
 #include "base/check.h"
 #include "base/macros.h"
+#include "base/scoped_observation.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
+#import "ios/chrome/browser/ui/fullscreen/fullscreen_controller_observer.h"
 
 // A helper object that increments FullscrenController's disabled counter for
 // its entire lifetime.
-class ScopedFullscreenDisabler {
+class ScopedFullscreenDisabler : public FullscreenControllerObserver {
  public:
-  explicit ScopedFullscreenDisabler(FullscreenController* controller)
-      : controller_(controller) {
-    DCHECK(controller_);
-    controller_->IncrementDisabledCounter();
-  }
-  ~ScopedFullscreenDisabler() { controller_->DecrementDisabledCounter(); }
+  explicit ScopedFullscreenDisabler(FullscreenController* controller);
+  ~ScopedFullscreenDisabler() override;
 
  private:
+  void FullscreenControllerWillShutDown(
+      FullscreenController* controller) override;
+
+  // Scoped observer that facilitates observing an FullscreenController.
+  base::ScopedObservation<FullscreenController, FullscreenControllerObserver>
+      scoped_observer_{this};
   // The FullscreenController being disabled by this object.
   FullscreenController* controller_;
 

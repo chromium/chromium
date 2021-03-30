@@ -7,7 +7,7 @@ include_rules = [
   "+third_party/wayland",
   "+ui/base/clipboard/clipboard_constants.h",
   "+ui/base/dragdrop/drag_drop_types.h",
-  "+ui/base/dragdrop/file_info/file_info.h",
+  "+ui/base/clipboard/file_info.h",
   "+ui/base/dragdrop/os_exchange_data.h",
   "+ui/base/dragdrop/os_exchange_data_provider_non_backed.h",
 ]

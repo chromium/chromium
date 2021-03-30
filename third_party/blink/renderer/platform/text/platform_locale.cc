@@ -36,6 +36,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/platform/text/date_time_format.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -495,17 +496,21 @@ bool Locale::IsSignPrefix(UChar ch) {
 }
 
 bool Locale::HasTwoSignChars(const String& str) {
-  auto pos =
-      str.Find(WTF::BindRepeating(&Locale::IsSignPrefix, WTF::Passed(this)));
+  // Unretained is safe because callback executes synchronously in Find().
+  auto pos = str.Find(
+      WTF::BindRepeating(&Locale::IsSignPrefix, WTF::Unretained(this)));
   if (pos == kNotFound)
     return false;
-  return str.Find(WTF::BindRepeating(&Locale::IsSignPrefix, WTF::Passed(this)),
-                  pos + 1) != kNotFound;
+  // Unretained is safe because callback executes synchronously in Find().
+  return str.Find(
+             WTF::BindRepeating(&Locale::IsSignPrefix, WTF::Unretained(this)),
+             pos + 1) != kNotFound;
 }
 
 bool Locale::HasSignNotAfterE(const String& str) {
-  auto pos =
-      str.Find(WTF::BindRepeating(&Locale::IsSignPrefix, WTF::Passed(this)));
+  // Unretained is safe because callback executes synchronously in Find().
+  auto pos = str.Find(
+      WTF::BindRepeating(&Locale::IsSignPrefix, WTF::Unretained(this)));
   if (pos == kNotFound)
     return false;
   return pos == 0 || !IsE(str[pos - 1]);
@@ -533,8 +538,9 @@ bool Locale::IsDecimalSeparator(UChar ch) {
 
 // Is there a decimal separator in a string?
 bool Locale::HasDecimalSeparator(const String& str) {
+  // Unretained is safe because callback executes synchronously in Find().
   return str.Find(WTF::BindRepeating(&Locale::IsDecimalSeparator,
-                                     WTF::Passed(this))) != kNotFound;
+                                     WTF::Unretained(this))) != kNotFound;
 }
 
 String Locale::FormatDateTime(const DateComponents& date,

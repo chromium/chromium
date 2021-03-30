@@ -456,30 +456,33 @@ TEST_F(AnimationTest, ToString) {
                          animation_->id(), element_id_.ToString().c_str()),
       animation_->ToString());
 
-  animation_->AddKeyframeModel(
-      KeyframeModel::Create(std::make_unique<FakeFloatAnimationCurve>(15), 42,
-                            73, TargetProperty::OPACITY));
+  animation_->AddKeyframeModel(KeyframeModel::Create(
+      std::make_unique<FakeFloatAnimationCurve>(15), 42, 73,
+      KeyframeModel::TargetPropertyId(TargetProperty::OPACITY)));
   EXPECT_EQ(
       base::StringPrintf("Animation{id=%d, element_id=%s, "
                          "keyframe_models=[KeyframeModel{id=42, "
-                         "group=73, target_property_id=1, "
-                         "run_state=WAITING_FOR_TARGET_AVAILABILITY}]}",
+                         "group=73, target_property_type=1, "
+                         "custom_property_name=, native_property_type=1, "
+                         "run_state=WAITING_FOR_TARGET_AVAILABILITY, "
+                         "element_id=(0)}]}",
                          animation_->id(), element_id_.ToString().c_str()),
       animation_->ToString());
 
-  animation_->AddKeyframeModel(
-      KeyframeModel::Create(std::make_unique<FakeFloatAnimationCurve>(18), 45,
-                            76, TargetProperty::BOUNDS));
-  EXPECT_EQ(
-      base::StringPrintf(
-          "Animation{id=%d, element_id=%s, "
-          "keyframe_models=[KeyframeModel{id=42, "
-          "group=73, target_property_id=1, "
-          "run_state=WAITING_FOR_TARGET_AVAILABILITY}, KeyframeModel{id=45, "
-          "group=76, "
-          "target_property_id=5, run_state=WAITING_FOR_TARGET_AVAILABILITY}]}",
-          animation_->id(), element_id_.ToString().c_str()),
-      animation_->ToString());
+  animation_->AddKeyframeModel(KeyframeModel::Create(
+      std::make_unique<FakeFloatAnimationCurve>(18), 45, 76,
+      KeyframeModel::TargetPropertyId(TargetProperty::BOUNDS)));
+  EXPECT_EQ(base::StringPrintf(
+                "Animation{id=%d, element_id=%s, "
+                "keyframe_models=[KeyframeModel{id=42, "
+                "group=73, target_property_type=1, custom_property_name=, "
+                "native_property_type=1, "
+                "run_state=WAITING_FOR_TARGET_AVAILABILITY, element_id=(0)}, "
+                "KeyframeModel{id=45, group=76, target_property_type=5, "
+                "custom_property_name=, native_property_type=1, "
+                "run_state=WAITING_FOR_TARGET_AVAILABILITY, element_id=(0)}]}",
+                animation_->id(), element_id_.ToString().c_str()),
+            animation_->ToString());
 }
 
 }  // namespace

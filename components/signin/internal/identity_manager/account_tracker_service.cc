@@ -19,7 +19,6 @@
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -33,7 +32,7 @@
 
 #if defined(OS_ANDROID)
 #include "base/android/jni_array.h"
-#include "components/signin/core/browser/android/jni_headers/AccountTrackerService_jni.h"
+#include "components/signin/public/android/jni_headers/AccountTrackerService_jni.h"
 #endif
 
 namespace {
@@ -105,13 +104,16 @@ AccountTrackerService::AccountTrackerService() {
 #if defined(OS_ANDROID)
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> java_ref =
-      Java_AccountTrackerService_create(env, reinterpret_cast<intptr_t>(this));
+      signin::Java_AccountTrackerService_Constructor(
+          env, reinterpret_cast<intptr_t>(this));
   java_ref_.Reset(env, java_ref.obj());
 #endif
 }
 
 AccountTrackerService::~AccountTrackerService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  pref_service_ = nullptr;
+  accounts_.clear();
 }
 
 // static
@@ -136,11 +138,6 @@ void AccountTrackerService::Initialize(PrefService* pref_service,
          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
     LoadAccountImagesFromDisk();
   }
-}
-
-void AccountTrackerService::Shutdown() {
-  pref_service_ = nullptr;
-  accounts_.clear();
 }
 
 std::vector<AccountInfo> AccountTrackerService::GetAccounts() const {
@@ -313,6 +310,13 @@ void AccountTrackerService::CommitPendingAccountChanges() {
   pref_service_->CommitPendingWrite();
 }
 
+void AccountTrackerService::ResetForTesting() {
+  PrefService* prefs = pref_service_;
+  pref_service_ = nullptr;
+  accounts_.clear();
+  Initialize(prefs, base::FilePath());
+}
+
 void AccountTrackerService::MigrateToGaiaId() {
   DCHECK_EQ(GetMigrationState(), MIGRATION_IN_PROGRESS);
 
@@ -438,9 +442,8 @@ void AccountTrackerService::LoadAccountImagesFromDisk() {
     return;
   for (const auto& pair : accounts_) {
     const CoreAccountId& account_id = pair.second.account_id;
-    PostTaskAndReplyWithResult(
-        image_storage_task_runner_.get(), FROM_HERE,
-        base::BindOnce(&ReadImage, GetImagePathFor(account_id)),
+    image_storage_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE, base::BindOnce(&ReadImage, GetImagePathFor(account_id)),
         base::BindOnce(&AccountTrackerService::OnAccountImageLoaded,
                        weak_factory_.GetWeakPtr(), account_id));
   }
@@ -453,8 +456,8 @@ void AccountTrackerService::SaveAccountImageToDisk(
   if (!image_storage_task_runner_)
     return;
 
-  PostTaskAndReplyWithResult(
-      image_storage_task_runner_.get(), FROM_HERE,
+  image_storage_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&SaveImage, image.As1xPNGBytes(),
                      GetImagePathFor(account_id)),
       base::BindOnce(&AccountTrackerService::OnAccountImageUpdated,
@@ -718,30 +721,19 @@ void AccountTrackerService::SeedAccountsInfo(
 
   DVLOG(1) << "AccountTrackerService.SeedAccountsInfo: "
            << " number of accounts " << gaia_ids.size();
+
+  std::vector<CoreAccountId> curr_ids;
+  for (const auto& gaia_id : gaia_ids) {
+    curr_ids.push_back(CoreAccountId::FromGaiaId(gaia_id));
+  }
+  // Remove the accounts deleted from device
+  for (const AccountInfo& info : GetAccounts()) {
+    if (!base::Contains(curr_ids, info.account_id)) {
+      RemoveAccount(info.account_id);
+    }
+  }
   for (size_t i = 0; i < gaia_ids.size(); ++i) {
     SeedAccountInfo(gaia_ids[i], account_names[i]);
   }
-}
-
-jboolean AccountTrackerService::AreAccountsSeeded(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobjectArray>& accountNames) const {
-  std::vector<std::string> account_names;
-  base::android::AppendJavaStringArrayToStringVector(env, accountNames,
-                                                     &account_names);
-
-  const bool migrated =
-      GetMigrationState() == AccountIdMigrationState::MIGRATION_DONE;
-
-  for (const auto& account_name : account_names) {
-    AccountInfo info = FindAccountInfoByEmail(account_name);
-    if (info.account_id.empty()) {
-      return false;
-    }
-    if (migrated && info.gaia.empty()) {
-      return false;
-    }
-  }
-  return true;
 }
 #endif

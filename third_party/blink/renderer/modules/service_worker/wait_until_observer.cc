@@ -336,6 +336,7 @@ void WaitUntilObserver::ConsumeWindowInteraction(TimerBase*) {
 }
 
 void WaitUntilObserver::Trace(Visitor* visitor) const {
+  visitor->Trace(consume_window_interaction_timer_);
   ExecutionContextClient::Trace(visitor);
 }
 

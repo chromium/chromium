@@ -4,10 +4,10 @@
 
 #include "chrome/browser/android/vr/vr_gl_thread.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/strings/string16.h"
 #include "base/version.h"
 #include "chrome/browser/android/vr/metrics_util_android.h"
 #include "chrome/browser/android/vr/ui_factory.h"
@@ -402,7 +402,7 @@ void VrGLThread::SetSpeechRecognitionEnabled(bool enabled) {
                      weak_browser_ui_, enabled));
 }
 
-void VrGLThread::SetRecognitionResult(const base::string16& result) {
+void VrGLThread::SetRecognitionResult(const std::u16string& result) {
   DCHECK(OnMainThread());
   task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&BrowserUiInterface::SetRecognitionResult,
@@ -506,7 +506,7 @@ void VrGLThread::SetDialogFloating(bool floating) {
                                          weak_browser_ui_, floating));
 }
 
-void VrGLThread::ShowPlatformToast(const base::string16& text) {
+void VrGLThread::ShowPlatformToast(const std::u16string& text) {
   task_runner()->PostTask(FROM_HERE,
                           base::BindOnce(&BrowserUiInterface::ShowPlatformToast,
                                          weak_browser_ui_, text));

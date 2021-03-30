@@ -219,8 +219,8 @@ class DeviceSyncImpl : public DeviceSyncBase,
   void Shutdown() override;
 
   // signin::IdentityManager::Observer:
-  void OnUnconsentedPrimaryAccountChanged(
-      const CoreAccountInfo& primary_account_info) override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
 
   // Initialization functions.
   void RunNextInitializationStep();

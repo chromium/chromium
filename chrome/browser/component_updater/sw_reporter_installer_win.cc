@@ -16,6 +16,7 @@
 #include "base/base64.h"
 #include "base/base_paths.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -86,11 +87,11 @@ base::OnceClosure& GetRegistrationCBForTesting() {
   return *registration_cb_for_testing;
 }
 
-void ReportUploadsWithUma(const base::string16& upload_results) {
-  base::String16Tokenizer tokenizer(upload_results, STRING16_LITERAL(";"));
+void ReportUploadsWithUma(const std::u16string& upload_results) {
+  base::String16Tokenizer tokenizer(upload_results, u";");
   bool last_result = false;
   while (tokenizer.GetNext()) {
-    last_result = (tokenizer.token_piece() != STRING16_LITERAL("0"));
+    last_result = (tokenizer.token_piece() != u"0");
   }
 
   UMA_HISTOGRAM_BOOLEAN("SoftwareReporter.LastUploadResult", last_result);
@@ -208,15 +209,15 @@ bool ExtractInvocationSequenceFromManifest(
       return false;
     }
 
-    std::vector<base::string16> argv = {exe_path.value()};
+    std::vector<std::wstring> argv = {exe_path.value()};
     for (const auto& value : *arguments) {
-      base::string16 argument;
+      std::u16string argument;
       if (!value.GetAsString(&argument)) {
         ReportConfigurationError(kBadParams);
         return false;
       }
       if (!argument.empty())
-        argv.push_back(argument);
+        argv.push_back(base::UTF16ToWide(argument));
     }
 
     base::CommandLine command_line(argv);
@@ -337,10 +338,6 @@ SwReporterInstallerPolicy::GetInstallerAttributes() const {
   return attributes;
 }
 
-std::vector<std::string> SwReporterInstallerPolicy::GetMimeTypes() const {
-  return std::vector<std::string>();
-}
-
 SwReporterOnDemandFetcher::SwReporterOnDemandFetcher(
     ComponentUpdateService* cus,
     base::OnceClosure on_error_callback)
@@ -420,7 +417,7 @@ void RegisterProfilePrefsForSwReporter(
 }
 
 void ReportUMAForLastCleanerRun() {
-  base::string16 cleaner_key_name =
+  std::wstring cleaner_key_name =
       chrome_cleaner::kSoftwareRemovalToolRegistryKey;
   cleaner_key_name.append(1, L'\\').append(chrome_cleaner::kCleanerSubKey);
   base::win::RegKey cleaner_key(HKEY_CURRENT_USER, cleaner_key_name.c_str(),
@@ -471,10 +468,10 @@ void ReportUMAForLastCleanerRun() {
       }
 
       if (cleaner_key.HasValue(chrome_cleaner::kUploadResultsValueName)) {
-        base::string16 upload_results;
+        std::wstring upload_results;
         cleaner_key.ReadValue(chrome_cleaner::kUploadResultsValueName,
                               &upload_results);
-        ReportUploadsWithUma(upload_results);
+        ReportUploadsWithUma(base::WideToUTF16(upload_results));
       }
     } else {
       if (cleaner_key.HasValue(chrome_cleaner::kEndTimeValueName)) {

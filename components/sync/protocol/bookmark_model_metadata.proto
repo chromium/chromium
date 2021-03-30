@@ -46,4 +46,12 @@ message BookmarkModelMetadata {
   // is required to populate the client tag (and be considered invalid
   // otherwise).
   optional int64 last_sync_time = 4;
+
+  // Represents whether bookmark commits sent to the server (most importantly
+  // creations) populate client tags. This is a layer on top of the usual
+  // FeatureList to avoid risky transitions during startup, to guard against
+  // in-flight commits.
+  // TODO(crbug.com/1032052): remove this code when the logic is enabled by
+  // default and enforced to true upon startup.
+  optional bool bookmark_client_tags_in_protocol_enabled = 5;
 }

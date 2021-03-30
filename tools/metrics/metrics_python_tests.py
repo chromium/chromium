@@ -23,12 +23,10 @@ def resolve(*paths):
 sys.exit(
     typ.main(tests=resolve(
         'actions/extract_actions_test.py',
-        # TODO(crbug/1126653): Turn back on once tests can pass again.
-        # 'histograms/expand_owners_unittest.py',
+        'histograms/expand_owners_unittest.py',
         'histograms/extract_histograms_test.py',
         'histograms/generate_expired_histograms_array_unittest.py',
         'histograms/pretty_print_test.py',
-        'rappor/rappor_model_test.py',
         'ukm/codegen_test.py',
         'ukm/gen_builders_test.py',
         'ukm/ukm_model_test.py',

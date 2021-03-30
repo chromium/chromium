@@ -25,7 +25,7 @@ void ShowSingletonTabRespectRef(Browser* browser, const GURL& url);
 
 // As ShowSingletonTab, but if the current tab is the new tab page or
 // about:blank, then overwrite it with the passed contents.
-void ShowSingletonTabOverwritingNTP(Browser* browser, NavigateParams params);
+void ShowSingletonTabOverwritingNTP(Browser* browser, NavigateParams* params);
 
 // Creates a NavigateParams struct for a singleton tab navigation.
 NavigateParams GetSingletonTabNavigateParams(Browser* browser, const GURL& url);

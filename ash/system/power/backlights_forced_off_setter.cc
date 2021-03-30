@@ -16,11 +16,10 @@
 
 namespace ash {
 
-BacklightsForcedOffSetter::BacklightsForcedOffSetter()
-    : power_manager_observer_(this) {
+BacklightsForcedOffSetter::BacklightsForcedOffSetter() {
   InitDisableTouchscreenWhileScreenOff();
 
-  power_manager_observer_.Add(chromeos::PowerManagerClient::Get());
+  power_manager_observation_.Observe(chromeos::PowerManagerClient::Get());
   GetInitialBacklightsForcedOff();
 }
 

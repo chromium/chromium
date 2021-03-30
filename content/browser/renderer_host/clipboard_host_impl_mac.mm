@@ -25,7 +25,7 @@ static constexpr size_t kMaxFindPboardStringLength = 4096;
 
 }  // namespace
 
-void ClipboardHostImpl::WriteStringToFindPboard(const base::string16& text) {
+void ClipboardHostImpl::WriteStringToFindPboard(const std::u16string& text) {
   if (text.length() <= kMaxFindPboardStringLength) {
     NSString* nsText = base::SysUTF16ToNSString(text);
     if (nsText) {

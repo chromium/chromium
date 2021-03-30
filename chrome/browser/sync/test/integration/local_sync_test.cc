@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "build/branding_buildflags.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/browser_sync/browser_sync_switches.h"
+#include "components/reading_list/features/reading_list_switches.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/profile_sync_service.h"
 #include "components/sync/driver/sync_driver_switches.h"
@@ -110,6 +112,10 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
 #if defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   expected_active_data_types.Put(syncer::DICTIONARY);
 #endif
+
+  if (base::FeatureList::IsEnabled(reading_list::switches::kReadLater)) {
+    expected_active_data_types.Put(syncer::READING_LIST);
+  }
 
   EXPECT_EQ(service->GetActiveDataTypes(), expected_active_data_types);
 

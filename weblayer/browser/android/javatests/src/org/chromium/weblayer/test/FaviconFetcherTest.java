@@ -30,7 +30,6 @@ public class FaviconFetcherTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(86)
     public void testFaviconFetcher() throws Exception {
         mActivity = mActivityTestRule.launchShellWithUrl("about:blank");
 

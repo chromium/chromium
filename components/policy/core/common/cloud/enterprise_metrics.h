@@ -258,13 +258,14 @@ POLICY_EXPORT extern const char
     kMetricCBCMUnsignedRemoteCommandExecutedTemplate[];
 
 // Private set membership UMA histogram names.
-POLICY_EXPORT extern const char kUMAPrivateSetMembershipHashDanceComparison[];
-POLICY_EXPORT extern const char kUMAPrivateSetMembershipSuccessTime[];
-POLICY_EXPORT extern const char kUMAPrivateSetMembershipRequestStatus[];
+POLICY_EXPORT extern const char kUMAPsmHashDanceComparison[];
+POLICY_EXPORT extern const char kUMAPsmHashDanceDifferentResultsComparison[];
+POLICY_EXPORT extern const char kUMAPsmSuccessTime[];
+POLICY_EXPORT extern const char kUMAPsmRequestStatus[];
 
 // DeviceAutoEnrollmentRequest i.e. hash dance request UMA histogram names.
 POLICY_EXPORT extern const char kUMAHashDanceSuccessTime[];
-// The following histogram names where added before private set membership
+// The following histogram names where added before PSM (private set membership)
 // existed. They are only recorded for hash dance.
 POLICY_EXPORT extern const char kUMAHashDanceProtocolTime[];
 POLICY_EXPORT extern const char kUMAHashDanceBucketDownloadTime[];

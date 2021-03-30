@@ -152,12 +152,14 @@ void Device::ReadValueForCharacteristic(
     return;
   }
 
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   characteristic->ReadRemoteCharacteristic(
       base::BindOnce(&Device::OnReadRemoteCharacteristic,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback),
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.first)),
       base::BindOnce(&Device::OnReadRemoteCharacteristicError,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.second)));
 }
 
 void Device::WriteValueForCharacteristic(
@@ -182,13 +184,15 @@ void Device::WriteValueForCharacteristic(
     return;
   }
 
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   characteristic->DeprecatedWriteRemoteCharacteristic(
       value,
       base::BindOnce(&Device::OnWriteRemoteCharacteristic,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback),
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.first)),
       base::BindOnce(&Device::OnWriteRemoteCharacteristicError,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.second)));
 }
 
 void Device::GetDescriptors(const std::string& service_id,
@@ -260,12 +264,14 @@ void Device::ReadValueForDescriptor(const std::string& service_id,
     return;
   }
 
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   descriptor->ReadRemoteDescriptor(
       base::BindOnce(&Device::OnReadRemoteDescriptor,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback),
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.first)),
       base::BindOnce(&Device::OnReadRemoteDescriptorError,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.second)));
 }
 
 void Device::WriteValueForDescriptor(const std::string& service_id,
@@ -297,13 +303,15 @@ void Device::WriteValueForDescriptor(const std::string& service_id,
     return;
   }
 
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   descriptor->WriteRemoteDescriptor(
       value,
       base::BindOnce(&Device::OnWriteRemoteDescriptor,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback),
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.first)),
       base::BindOnce(&Device::OnWriteRemoteDescriptorError,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.second)));
 }
 
 Device::Device(scoped_refptr<device::BluetoothAdapter> adapter,

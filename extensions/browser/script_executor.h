@@ -13,14 +13,13 @@
 #include "base/callback.h"
 #include "base/optional.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/mojom/action_type.mojom-shared.h"
+#include "extensions/common/mojom/css_origin.mojom-shared.h"
+#include "extensions/common/mojom/host_id.mojom-forward.h"
+#include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
 
 class GURL;
-struct ExtensionMsg_ExecuteCode_Params;
-
-namespace base {
-class ListValue;
-}  // namespace base
 
 namespace content {
 class WebContents;
@@ -40,8 +39,8 @@ using ScriptsExecutedNotification = base::RepeatingCallback<
     void(content::WebContents*, const ExecutingScriptsMap&, const GURL&)>;
 
 // Interface for executing extension content scripts (e.g. executeScript) as
-// described by the ExtensionMsg_ExecuteCode_Params IPC, and notifying the
-// caller when responded with ExtensionHostMsg_ExecuteCodeFinished.
+// described by the mojom::ExecuteCodeParams IPC, and notifying the
+// caller when responded with ExecuteCodeCallback.
 class ScriptExecutor {
  public:
   explicit ScriptExecutor(content::WebContents* web_contents);
@@ -72,13 +71,33 @@ class ScriptExecutor {
     JSON_SERIALIZED_RESULT,
   };
 
-  // Callback from ExecuteScript. The arguments are (error, on_url, result).
-  // Success is implied by an empty error.
-  using ScriptFinishedCallback = base::OnceCallback<
-      void(const std::string&, const GURL&, const base::ListValue&)>;
+  struct FrameResult {
+    FrameResult();
+    FrameResult(FrameResult&&);
+    FrameResult& operator=(FrameResult&&);
 
-  // Executes a script. The arguments match ExtensionMsg_ExecuteCode_Params in
-  // extension_messages.h (request_id is populated automatically).
+    // The ID of the frame of the injection.
+    int frame_id = -1;
+    // The error associated with the injection, if any. Empty if the injection
+    // succeeded.
+    std::string error;
+    // The URL of the frame from the injection. Only set if the frame exists.
+    GURL url;
+    // The result value from the injection, or null if the injection failed (or
+    // had no result).
+    base::Value value;
+    // Whether the frame responded to the attempted injection (which can fail if
+    // the frame was removed or never existed). Note this doesn't necessarily
+    // mean the injection succeeded, since it could fail due to other reasons
+    // (like permissions).
+    bool frame_responded = false;
+  };
+
+  using ScriptFinishedCallback =
+      base::OnceCallback<void(std::vector<FrameResult> frame_results)>;
+
+  // Executes a script. The arguments match mojom::ExecuteCodeParams in
+  // frame.mojom (request_id is populated automatically).
   //
   // The script will be executed in the frames identified by |frame_ids| (which
   // are extension API frame IDs). If |frame_scope| is INCLUDE_SUB_FRAMES,
@@ -88,18 +107,18 @@ class ScriptExecutor {
   // |callback| will always be called even if the IPC'd renderer is destroyed
   // before a response is received (in this case the callback will be with a
   // failure and appropriate error message).
-  void ExecuteScript(const HostID& host_id,
-                     UserScript::ActionType action_type,
+  void ExecuteScript(const mojom::HostID& host_id,
+                     mojom::ActionType action_type,
                      const std::string& code,
                      FrameScope frame_scope,
-                     const std::vector<int>& frame_ids,
+                     const std::set<int>& frame_ids,
                      MatchAboutBlank match_about_blank,
-                     UserScript::RunLocation run_at,
+                     mojom::RunLocation run_at,
                      ProcessType process_type,
                      const GURL& webview_src,
                      const GURL& script_url,
                      bool user_gesture,
-                     base::Optional<CSSOrigin> css_origin,
+                     mojom::CSSOrigin css_origin,
                      ResultType result_type,
                      ScriptFinishedCallback callback);
 
@@ -109,9 +128,6 @@ class ScriptExecutor {
   }
 
  private:
-  // The next value to use for request_id in ExtensionMsg_ExecuteCode_Params.
-  int next_request_id_ = 0;
-
   content::WebContents* web_contents_;
 
   ScriptsExecutedNotification observer_;

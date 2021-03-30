@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests ViewportDataGrid.\n`);
-  await TestRunner.loadModule('data_grid_test_runner');
+  await TestRunner.loadModule('data_grid'); await TestRunner.loadTestModule('data_grid_test_runner');
 
   function attach(parent, child, index) {
     var parentName = parent === root ? 'root' : parent.data.id;
@@ -165,7 +165,7 @@
   var children = root.children.slice();
   root.removeChildren();
   // Assure wheelTarget is anything but null, otherwise it happily bypasses crashing code.
-  dataGrid._wheelTarget = children.peekLast().element;
+  dataGrid._wheelTarget = children[children.length - 1].element;
   for (var i = 0; i < 40; ++i) {
     children[i].refresh();
     root.appendChild(children[i]);

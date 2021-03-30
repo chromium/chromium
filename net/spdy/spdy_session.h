@@ -52,6 +52,7 @@
 #include "net/third_party/quiche/src/spdy/core/spdy_protocol.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 #include "url/scheme_host_port.h"
 
 namespace net {
@@ -353,6 +354,7 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
               const base::Optional<SpdySessionPool::GreasedHttp2Frame>&
                   greased_http2_frame,
               bool http2_end_stream_with_data_frame,
+              bool enable_priority_update,
               TimeFunc time_func,
               ServerPushDelegate* push_delegate,
               NetworkQualityEstimator* network_quality_estimator,
@@ -407,6 +409,11 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
                             const LoadTimingInfo::ConnectTiming& connect_timing,
                             SpdySessionPool* pool);
 
+  // Parse ALPS application_data from TLS handshake.
+  // Returns OK on success.  Return a net error code on failure, and closes the
+  // connection with the same error code.
+  int ParseAlps();
+
   // Check to see if this SPDY session can support an additional domain.
   // If the session is un-authenticated, then this call always returns true.
   // For SSL-based sessions, verifies that the server certificate in use by
@@ -441,6 +448,21 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
 
   // Send greased frame, that is, a frame of reserved type.
   void EnqueueGreasedFrame(const base::WeakPtr<SpdyStream>& stream);
+
+  // Returns whether HTTP/2 style priority information (stream dependency and
+  // weight fields in HEADERS frames, and PRIORITY frames) should be sent.  True
+  // unless |enable_priority_update_| is true and
+  // SETTINGS_DEPRECATE_HTTP2_PRIORITIES with value 1 has been received from
+  // server.  In particular, if it returns false, it will always return false
+  // afterwards.
+  bool ShouldSendHttp2Priority() const;
+
+  // Returns whether PRIORITY_UPDATE frames should be sent.  False if
+  // |enable_priority_update_| is false.  Otherwise, true before SETTINGS frame
+  // is received from server, and true after SETTINGS frame is received if it
+  // contained SETTINGS_DEPRECATE_HTTP2_PRIORITIES with value 1.  In particular,
+  // if it returns false, it will always return false afterwards.
+  bool ShouldSendPriorityUpdate() const;
 
   // Runs the handshake to completion to confirm the handshake with the server.
   // If ERR_IO_PENDING is returned, then when the handshake is confirmed,
@@ -498,6 +520,8 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
   // MultiplexedSession methods:
   bool GetRemoteEndpoint(IPEndPoint* endpoint) override;
   bool GetSSLInfo(SSLInfo* ssl_info) const override;
+  base::StringPiece GetAcceptChViaAlpsForOrigin(
+      const url::Origin& origin) const override;
 
   // Returns true if ALPN was negotiated for the underlying socket.
   bool WasAlpnNegotiated() const;
@@ -904,7 +928,7 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
   void OnSettings() override;
   void OnSettingsAck() override;
   void OnSetting(spdy::SpdySettingsId id, uint32_t value) override;
-  void OnSettingsEnd() override {}
+  void OnSettingsEnd() override;
   void OnWindowUpdate(spdy::SpdyStreamId stream_id,
                       int delta_window_size) override;
   void OnPushPromise(spdy::SpdyStreamId stream_id,
@@ -1130,7 +1154,21 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
   // If unset, the HEADERS frame will have the END_STREAM flag set on.
   // This is useful in conjuction with |greased_http2_frame_| so that a frame
   // of reserved type can be sent out even on requests without a body.
-  bool http2_end_stream_with_data_frame_;
+  const bool http2_end_stream_with_data_frame_;
+
+  // If true, enable sending PRIORITY_UPDATE frames until SETTINGS frame
+  // arrives.  After SETTINGS frame arrives, do not send PRIORITY_UPDATE frames
+  // any longer if SETTINGS_DEPRECATE_HTTP2_PRIORITIES is missing or has zero 0,
+  // but continue and also stop sending HTTP/2-style priority information in
+  // HEADERS frames and PRIORITY frames if it has value 1.
+  const bool enable_priority_update_;
+
+  // The value of the last received SETTINGS_DEPRECATE_HTTP2_PRIORITIES, with 0
+  // mapping to false and 1 to true.  Initial value is false.
+  bool deprecate_http2_priorities_;
+
+  // True if at least one SETTINGS frame has been received.
+  bool settings_frame_received_;
 
   // The callbacks to notify a request that the handshake has been confirmed.
   std::vector<CompletionOnceCallback> waiting_for_confirmation_callbacks_;
@@ -1262,6 +1300,9 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
   TimeFunc time_func_;
 
   Http2PriorityDependencies priority_dependency_state_;
+
+  // Map of origin to Accept-CH header field values received via ALPS.
+  base::flat_map<url::Origin, std::string> accept_ch_entries_received_via_alps_;
 
   // Network quality estimator to which the ping RTTs should be reported. May be
   // nullptr.

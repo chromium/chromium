@@ -12,7 +12,6 @@
 
 #include "base/at_exit.h"
 #include "base/bind.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -35,6 +34,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/infobars/core/infobar.h"
+#include "components/page_info/features.h"
 #include "components/page_info/page_info_ui.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
@@ -47,6 +47,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/web_contents_tester.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/base/features.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_connection_status_flags.h"
@@ -201,8 +202,8 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
     mock_ui_ = std::make_unique<MockPageInfoUI>();
     // Use this rather than gmock's ON_CALL.WillByDefault(Invoke(... because
     // gmock doesn't handle move-only types well.
-    mock_ui_->set_permission_info_callback_ =
-        base::Bind(&PageInfoTest::SetPermissionInfo, base::Unretained(this));
+    mock_ui_->set_permission_info_callback_ = base::BindRepeating(
+        &PageInfoTest::SetPermissionInfo, base::Unretained(this));
   }
 
 
@@ -259,8 +260,8 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
               incognito_web_contents_.get()));
 
       incognito_mock_ui_ = std::make_unique<MockPageInfoUI>();
-      incognito_mock_ui_->set_permission_info_callback_ =
-          base::Bind(&PageInfoTest::SetPermissionInfo, base::Unretained(this));
+      incognito_mock_ui_->set_permission_info_callback_ = base::BindRepeating(
+          &PageInfoTest::SetPermissionInfo, base::Unretained(this));
 
       auto delegate = std::make_unique<ChromePageInfoDelegate>(
           incognito_web_contents_.get());
@@ -516,7 +517,7 @@ TEST_F(PageInfoTest, OnChosenObjectDeleted) {
 
   auto device_info = usb_device_manager.CreateAndAddDevice(
       0, 0, "Google", "Gizmo", "1234567890");
-  store->GrantDevicePermission(origin(), origin(), *device_info);
+  store->GrantDevicePermission(origin(), *device_info);
 
   EXPECT_CALL(*mock_ui(), SetIdentityInfo(_));
   EXPECT_CALL(*mock_ui(), SetCookieInfo(_));
@@ -532,7 +533,7 @@ TEST_F(PageInfoTest, OnChosenObjectDeleted) {
   page_info()->OnSiteChosenObjectDeleted(info->ui_info,
                                          info->chooser_object->value);
 
-  EXPECT_FALSE(store->HasDevicePermission(origin(), origin(), *device_info));
+  EXPECT_FALSE(store->HasDevicePermission(origin(), *device_info));
   EXPECT_EQ(0u, last_chosen_object_info().size());
 }
 
@@ -645,6 +646,10 @@ TEST_F(PageInfoTest, HTTPSConnection) {
 #endif
 
 TEST_F(PageInfoTest, InsecureContent) {
+#if defined(OS_ANDROID)
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(page_info::kPageInfoV2);
+#endif
   struct TestCase {
     security_state::SecurityLevel security_level;
     net::CertStatus cert_status;
@@ -938,30 +943,25 @@ TEST_F(PageInfoTest, HTTPSSHA1) {
   EXPECT_EQ(PageInfo::SITE_IDENTITY_STATUS_DEPRECATED_SIGNATURE_ALGORITHM,
             page_info()->site_identity_status());
 #if defined(OS_ANDROID)
-  EXPECT_EQ(IDR_PAGEINFO_WARNING_MINOR,
+  EXPECT_EQ(IDR_PAGEINFO_BAD_V2,
             PageInfoUI::GetIdentityIconID(page_info()->site_identity_status()));
 #endif
 }
 
-#if !defined(OS_ANDROID)
-// Tests that the site connection status is correctly set for Legacy TLS sites
-// when the kLegacyTLSWarnings feature is enabled.
+// Tests that the site connection status is correctly set for Legacy TLS sites.
 TEST_F(PageInfoTest, LegacyTLS) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      security_state::features::kLegacyTLSWarnings);
+  scoped_feature_list.InitAndEnableFeature(net::features::kLegacyTLSEnforced);
 
   security_level_ = security_state::WARNING;
   visible_security_state_.url = GURL("https://scheme-is-cryptographic.test");
   visible_security_state_.certificate = cert();
-  visible_security_state_.cert_status = 0;
+  visible_security_state_.cert_status = net::CERT_STATUS_LEGACY_TLS;
   int status = 0;
   status = SetSSLVersion(status, net::SSL_CONNECTION_VERSION_TLS1);
   status = SetSSLVersion(status, CR_TLS_RSA_WITH_AES_256_CBC_SHA256);
   visible_security_state_.connection_status = status;
   visible_security_state_.connection_info_initialized = true;
-  visible_security_state_.connection_used_legacy_tls = true;
-  visible_security_state_.should_suppress_legacy_tls_warning = false;
 
   SetDefaultUIExpectations(mock_ui());
 
@@ -970,35 +970,6 @@ TEST_F(PageInfoTest, LegacyTLS) {
   EXPECT_EQ(PageInfo::SITE_IDENTITY_STATUS_CERT,
             page_info()->site_identity_status());
 }
-
-// Tests that the site connection status is not set to LEGACY_TLS when a site
-// using legacy TLS is marked as a control site in the visible security state,
-// when the kLegacyTLSWarnings feature is enabled.
-TEST_F(PageInfoTest, LegacyTLSControlSite) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      security_state::features::kLegacyTLSWarnings);
-
-  security_level_ = security_state::SECURE;
-  visible_security_state_.url = GURL("https://scheme-is-cryptographic.test");
-  visible_security_state_.certificate = cert();
-  visible_security_state_.cert_status = 0;
-  int status = 0;
-  status = SetSSLVersion(status, net::SSL_CONNECTION_VERSION_TLS1);
-  status = SetSSLVersion(status, CR_TLS_RSA_WITH_AES_256_CBC_SHA256);
-  visible_security_state_.connection_status = status;
-  visible_security_state_.connection_info_initialized = true;
-  visible_security_state_.connection_used_legacy_tls = true;
-  visible_security_state_.should_suppress_legacy_tls_warning = true;
-
-  SetDefaultUIExpectations(mock_ui());
-
-  EXPECT_EQ(PageInfo::SITE_CONNECTION_STATUS_ENCRYPTED,
-            page_info()->site_connection_status());
-  EXPECT_EQ(PageInfo::SITE_IDENTITY_STATUS_CERT,
-            page_info()->site_identity_status());
-}
-#endif
 
 #if !defined(OS_ANDROID)
 TEST_F(PageInfoTest, NoInfoBar) {
@@ -1373,121 +1344,6 @@ TEST_F(PageInfoTest, SafetyTipTimeOpenMetrics) {
   page_info();
 }
 
-// Tests that metrics are recorded on a PageInfo for pages with
-// various Legacy TLS statuses.
-TEST_F(PageInfoTest, LegacyTLSMetrics) {
-  const struct TestCase {
-    const bool connection_used_legacy_tls;
-    const bool should_suppress_legacy_tls_warning;
-    const std::string histogram_suffix;
-  } kTestCases[] = {
-      {true, false, "LegacyTLS_Triggered"},
-      {true, true, "LegacyTLS_NotTriggered"},
-      {false, false, "LegacyTLS_NotTriggered"},
-  };
-
-  const std::string kHistogramPrefix("Security.LegacyTLS.PageInfo.Action");
-  const char kGenericHistogram[] = "WebsiteSettings.Action";
-
-  InitializeEmptyLegacyTLSConfig();
-
-  for (const auto& test : kTestCases) {
-    base::HistogramTester histograms;
-    SetURL("https://example.test");
-    visible_security_state_.connection_used_legacy_tls =
-        test.connection_used_legacy_tls;
-    visible_security_state_.should_suppress_legacy_tls_warning =
-        test.should_suppress_legacy_tls_warning;
-    ResetMockUI();
-    ClearPageInfo();
-    SetDefaultUIExpectations(mock_ui());
-
-    histograms.ExpectTotalCount(kGenericHistogram, 0);
-    histograms.ExpectTotalCount(kHistogramPrefix + "." + test.histogram_suffix,
-                                0);
-
-    page_info()->RecordPageInfoAction(PageInfo::PAGE_INFO_OPENED);
-
-    // RecordPageInfoAction() is called during PageInfo creation in addition to
-    // the explicit RecordPageInfoAction() call, so it is called twice in total.
-    histograms.ExpectTotalCount(kGenericHistogram, 2);
-    histograms.ExpectBucketCount(kGenericHistogram, PageInfo::PAGE_INFO_OPENED,
-                                 2);
-
-    histograms.ExpectTotalCount(kHistogramPrefix + "." + test.histogram_suffix,
-                                2);
-    histograms.ExpectBucketCount(kHistogramPrefix + "." + test.histogram_suffix,
-                                 PageInfo::PAGE_INFO_OPENED, 2);
-  }
-}
-
-// Tests that the duration of time the PageInfo is open is recorded for pages
-// with various Legacy TLS statuses.
-TEST_F(PageInfoTest, LegacyTLSTimeOpenMetrics) {
-  const struct TestCase {
-    const bool connection_used_legacy_tls;
-    const bool should_suppress_legacy_tls_warning;
-    const std::string legacy_tls_status_name;
-    const PageInfo::PageInfoAction action;
-  } kTestCases[] = {
-      // PAGE_INFO_COUNT used as shorthand for "take no action".
-      {true, false, "LegacyTLS_Triggered", PageInfo::PAGE_INFO_COUNT},
-      {true, true, "LegacyTLS_NotTriggered", PageInfo::PAGE_INFO_COUNT},
-      {false, false, "LegacyTLS_NotTriggered", PageInfo::PAGE_INFO_COUNT},
-      {true, false, "LegacyTLS_Triggered",
-       PageInfo::PAGE_INFO_SITE_SETTINGS_OPENED},
-      {true, true, "LegacyTLS_NotTriggered",
-       PageInfo::PAGE_INFO_SITE_SETTINGS_OPENED},
-      {false, false, "LegacyTLS_NotTriggered",
-       PageInfo::PAGE_INFO_SITE_SETTINGS_OPENED},
-  };
-
-  const std::string kHistogramPrefix("Security.PageInfo.TimeOpen.");
-
-  InitializeEmptyLegacyTLSConfig();
-
-  for (const auto& test : kTestCases) {
-    base::HistogramTester histograms;
-    SetURL("https://example.test");
-    visible_security_state_.connection_used_legacy_tls =
-        test.connection_used_legacy_tls;
-    visible_security_state_.should_suppress_legacy_tls_warning =
-        test.should_suppress_legacy_tls_warning;
-    ResetMockUI();
-    ClearPageInfo();
-    SetDefaultUIExpectations(mock_ui());
-
-    histograms.ExpectTotalCount(kHistogramPrefix + test.legacy_tls_status_name,
-                                0);
-    histograms.ExpectTotalCount(
-        kHistogramPrefix + "Action." + test.legacy_tls_status_name, 0);
-    histograms.ExpectTotalCount(
-        kHistogramPrefix + "NoAction." + test.legacy_tls_status_name, 0);
-
-    PageInfo* test_page_info = page_info();
-    if (test.action != PageInfo::PAGE_INFO_COUNT) {
-      test_page_info->RecordPageInfoAction(test.action);
-    }
-    ClearPageInfo();
-
-    histograms.ExpectTotalCount(kHistogramPrefix + test.legacy_tls_status_name,
-                                1);
-
-    if (test.action != PageInfo::PAGE_INFO_COUNT) {
-      histograms.ExpectTotalCount(
-          kHistogramPrefix + "Action." + test.legacy_tls_status_name, 1);
-    } else {
-      histograms.ExpectTotalCount(
-          kHistogramPrefix + "NoAction." + test.legacy_tls_status_name, 1);
-    }
-  }
-
-  // PageInfoTest expects a valid PageInfo instance to exist at end of test.
-  ResetMockUI();
-  SetDefaultUIExpectations(mock_ui());
-  page_info();
-}
-
 // Tests that the SubresourceFilter setting is omitted correctly.
 TEST_F(PageInfoTest, SubresourceFilterSetting_MatchesActivation) {
   auto showing_setting = [](const PermissionInfoList& permissions) {
@@ -1546,16 +1402,18 @@ class UnifiedAutoplaySoundSettingsPageInfoTest
     default_setting_ = default_setting;
   }
 
-  base::string16 GetDefaultSoundSettingString() {
-    auto delegate = ChromePageInfoUiDelegate(profile());
+  std::u16string GetDefaultSoundSettingString() {
+    auto delegate =
+        ChromePageInfoUiDelegate(profile(), GURL("http://www.example.com"));
     return PageInfoUI::PermissionActionToUIString(
         &delegate, ContentSettingsType::SOUND, CONTENT_SETTING_DEFAULT,
         default_setting_, content_settings::SettingSource::SETTING_SOURCE_USER,
         /*is_one_time=*/false);
   }
 
-  base::string16 GetSoundSettingString(ContentSetting setting) {
-    auto delegate = ChromePageInfoUiDelegate(profile());
+  std::u16string GetSoundSettingString(ContentSetting setting) {
+    auto delegate =
+        ChromePageInfoUiDelegate(profile(), GURL("http://www.example.com"));
     return PageInfoUI::PermissionActionToUIString(
         &delegate, ContentSettingsType::SOUND, setting, default_setting_,
         content_settings::SettingSource::SETTING_SOURCE_USER,
@@ -1646,7 +1504,8 @@ TEST_F(UnifiedAutoplaySoundSettingsPageInfoTest, DefaultBlock_PrefOff) {
 // This test checks that the string for a permission dropdown that is not the
 // sound setting is unaffected.
 TEST_F(UnifiedAutoplaySoundSettingsPageInfoTest, NotSoundSetting_Noop) {
-  auto delegate = ChromePageInfoUiDelegate(profile());
+  auto delegate =
+      ChromePageInfoUiDelegate(profile(), GURL("http://www.example.com"));
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_BUTTON_TEXT_ALLOWED_BY_DEFAULT),
       PageInfoUI::PermissionActionToUIString(

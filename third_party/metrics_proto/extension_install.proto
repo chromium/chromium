@@ -149,6 +149,9 @@ message ExtensionInstallProto {
     DISABLE_REMOTELY_FOR_MALWARE = 15;
     // The extension is being reinstalled.
     REINSTALL = 16;
+    // The extension has been disabled because it's not allowlisted and the Safe
+    // Browsing allowlist is enforced in the user profile.
+    NOT_ALLOWLISTED = 17;
   }
   // Any DisableReasons in effect for the extension. An empty list means the
   // extension is not disabled. Note that an extension that is not disabled may

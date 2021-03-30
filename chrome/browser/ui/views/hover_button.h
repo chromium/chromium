@@ -5,12 +5,14 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_HOVER_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_HOVER_BUTTON_H_
 
+#include <string>
+
 #include "base/gtest_prod_util.h"
 #include "base/optional.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string16.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/menu_button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace gfx {
 class ImageSkia;
@@ -33,15 +35,17 @@ class PageInfoBubbleViewBrowserTest;
 // when hovered over.
 class HoverButton : public views::LabelButton {
  public:
+  METADATA_HEADER(HoverButton);
+
   enum Style { STYLE_PROMINENT, STYLE_ERROR };
 
   // Creates a single line hover button with no icon.
-  HoverButton(PressedCallback callback, const base::string16& text);
+  HoverButton(PressedCallback callback, const std::u16string& text);
 
   // Creates a single line hover button with an icon.
   HoverButton(PressedCallback callback,
               const gfx::ImageSkia& icon,
-              const base::string16& text);
+              const std::u16string& text);
 
   // Creates a HoverButton with custom subviews. |icon_view| replaces the
   // LabelButton icon, and titles appear on separate rows. An empty |subtitle|
@@ -52,12 +56,14 @@ class HoverButton : public views::LabelButton {
   // insets appropriately up to a value of 0.
   HoverButton(PressedCallback callback,
               std::unique_ptr<views::View> icon_view,
-              const base::string16& title,
-              const base::string16& subtitle = base::string16(),
+              const std::u16string& title,
+              const std::u16string& subtitle = std::u16string(),
               std::unique_ptr<views::View> secondary_view = nullptr,
               bool resize_row_for_secondary_view = true,
               bool secondary_view_can_process_events = false);
 
+  HoverButton(const HoverButton&) = delete;
+  HoverButton& operator=(const HoverButton&) = delete;
   ~HoverButton() override;
 
   static SkColor GetInkDropColor(const views::View* view);
@@ -109,8 +115,6 @@ class HoverButton : public views::LabelButton {
 
   base::ScopedObservation<views::View, views::ViewObserver> label_observation_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(HoverButton);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_HOVER_BUTTON_H_

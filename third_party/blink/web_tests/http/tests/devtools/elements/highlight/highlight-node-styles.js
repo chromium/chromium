@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`This test verifies the style info overlaid on an inspected node.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>

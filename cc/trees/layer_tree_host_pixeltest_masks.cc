@@ -333,8 +333,7 @@ TEST_P(LayerTreeHostMaskPixelTestWithLayerList, ImageMaskWithEffect) {
 
   FakeContentLayerClient layer_client;
   layer_client.set_bounds(mask_bounds_);
-  layer_client.add_draw_image(surface->makeImageSnapshot(), gfx::Point(),
-                              PaintFlags());
+  layer_client.add_draw_image(surface->makeImageSnapshot(), gfx::Point());
   mask_layer_ = FakePictureLayer::Create(&layer_client);
 
   pixel_comparator_ =
@@ -361,8 +360,7 @@ TEST_P(LayerTreeHostMasksPixelTest, ImageMaskOfLayer) {
 
   FakeContentLayerClient mask_client;
   mask_client.set_bounds(mask_bounds);
-  mask_client.add_draw_image(surface->makeImageSnapshot(), gfx::Point(),
-                             PaintFlags());
+  mask_client.add_draw_image(surface->makeImageSnapshot(), gfx::Point());
   scoped_refptr<FakePictureLayer> mask = FakePictureLayer::Create(&mask_client);
   mask->SetIsDrawable(true);
   mask->SetBounds(mask_bounds);

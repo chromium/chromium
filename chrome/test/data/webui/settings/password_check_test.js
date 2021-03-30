@@ -14,10 +14,10 @@ import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.j
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {OpenWindowProxyImpl, PasswordManagerImpl, PasswordManagerProxy, Router, routes, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {makeCompromisedCredential, makeInsecureCredential, makePasswordCheckStatus} from 'chrome://test/settings/passwords_and_autofill_fake_data.js';
-import {getSyncAllPrefs,simulateSyncStatus} from 'chrome://test/settings/sync_test_util.m.js';
+import {getSyncAllPrefs,simulateSyncStatus} from 'chrome://test/settings/sync_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://test/settings/test_open_window_proxy.js';
 import {TestPasswordManagerProxy} from 'chrome://test/settings/test_password_manager_proxy.js';
-import {TestSyncBrowserProxy} from 'chrome://test/settings/test_sync_browser_proxy.m.js';
+import {TestSyncBrowserProxy} from 'chrome://test/settings/test_sync_browser_proxy.js';
 import {eventToPromise} from 'chrome://test/test_util.m.js';
 
 // clang-format on
@@ -318,38 +318,8 @@ suite('PasswordsCheckSection', function() {
         interaction);
   });
 
-  // Test verifies that 'Try again' is hidden when users encounter a
-  // not-signed-in error.
-  test('hideRetryAfterSignOutErrorUntilSignedInAgain', async function() {
-    loadTimeData.overrideValues({passwordsWeaknessCheck: false});
-    passwordManager.data.checkStatus = makePasswordCheckStatus(
-        /*state=*/ PasswordCheckState.SIGNED_OUT);
-    const section = createCheckPasswordSection();
-    webUIListenerCallback('stored-accounts-updated', []);
-    await passwordManager.whenCalled('getPasswordCheckStatus');
-    flush();
-    expectFalse(isElementVisible(section.$.controlPasswordCheckButton));
-    webUIListenerCallback('stored-accounts-updated', [{email: 'foo@bar.com'}]);
-    if (isChromeOS) {
-      simulateSyncStatus({signedIn: true, hasError: false});
-    }
-    assertTrue(isElementVisible(section.$.controlPasswordCheckButton));
-    expectEquals(
-        section.i18n('checkPasswordsAgainAfterError'),
-        section.$.controlPasswordCheckButton.innerText);
-    section.$.controlPasswordCheckButton.click();
-    await passwordManager.whenCalled('startBulkPasswordCheck');
-    const interaction =
-        await passwordManager.whenCalled('recordPasswordCheckInteraction');
-    assertEquals(
-        PasswordManagerProxy.PasswordCheckInteraction.START_CHECK_MANUALLY,
-        interaction);
-  });
-
-  // Test verifies that 'Check again' is shown when users is signed out and
-  // |passwordsWeaknessCheck| flag is disabled.
+  // Test verifies that 'Check again' is shown when users is signed out.
   test('showCheckAgainWhenSignedOut', async function() {
-    loadTimeData.overrideValues({passwordsWeaknessCheck: true});
     passwordManager.data.checkStatus = makePasswordCheckStatus(
         /*state=*/ PasswordCheckState.SIGNED_OUT);
     const section = createCheckPasswordSection();
@@ -400,37 +370,8 @@ suite('PasswordsCheckSection', function() {
   });
 
   // Test verifies that if no compromised credentials found than list of
-  // compromised credentials is not shown, if user is sign in and the
-  // |passwordsWeaknessCheck| is disabled.
-  test('noCompromisedCredentials', async function() {
-    loadTimeData.overrideValues({passwordsWeaknessCheck: false});
-    const data = passwordManager.data;
-    data.checkStatus = makePasswordCheckStatus(
-        /*state=*/ PasswordCheckState.IDLE,
-        /*checked=*/ 4,
-        /*remaining=*/ 0,
-        /*lastCheck=*/ 'Just now');
-    data.leakedCredentials = [];
-
-    const section = createCheckPasswordSection();
-    assertFalse(isElementVisible(section.$.noCompromisedCredentials));
-    webUIListenerCallback('sync-prefs-changed', getSyncAllPrefs());
-
-    // Initialize with dummy data breach detection settings
-    section.prefs = {profile: {password_manager_leak_detection: {value: true}}};
-
-    await passwordManager.whenCalled('getPasswordCheckStatus');
-    simulateSyncStatus({signedIn: true});
-    flush();
-    assertFalse(isElementVisible(section.$.compromisedCredentialsBody));
-    assertTrue(isElementVisible(section.$.noCompromisedCredentials));
-  });
-
-  // Test verifies that if no compromised credentials found than list of
-  // compromised credentials is not shown, if user is sign in and the
-  // |passwordsWeaknessCheck| is enabled.
+  // compromised credentials is not shown, if user is sign in.
   test('noCompromisedCredentialsDisableWeakCheck', async function() {
-    loadTimeData.overrideValues({passwordsWeaknessCheck: true});
     const data = passwordManager.data;
     data.checkStatus = makePasswordCheckStatus(
         /*state=*/ PasswordCheckState.IDLE,
@@ -618,22 +559,6 @@ suite('PasswordsCheckSection', function() {
     expectTrue(icon.classList.contains('no-security-issues'));
   });
 
-  // Tests that there is neither spinner nor icon if the check hasn't run yet.
-  test('iconWhenFirstRunIsPending', async function() {
-    loadTimeData.overrideValues({passwordsWeaknessCheck: false});
-    const data = passwordManager.data;
-    assertEquals(0, data.leakedCredentials.length);
-    data.checkStatus = makePasswordCheckStatus(PasswordCheckState.IDLE);
-
-    const checkPasswordSection = createCheckPasswordSection();
-    await passwordManager.whenCalled('getPasswordCheckStatus');
-    flush();
-    const icon = checkPasswordSection.$$('iron-icon');
-    const spinner = checkPasswordSection.$$('paper-spinner-lite');
-    expectFalse(isElementVisible(spinner));
-    expectFalse(isElementVisible(icon));
-  });
-
   // Tests that the spinner is replaced with a triangle if leaks were found.
   test('showsTriangleIconWhenFinishedWithLeaks', async function() {
     const data = passwordManager.data;
@@ -656,7 +581,6 @@ suite('PasswordsCheckSection', function() {
   // Tests that the spinner is replaced with an info icon if only weak passwords
   // were found.
   test('showsInfoIconWhenFinishedWithWeakPasswords', async function() {
-    loadTimeData.overrideValues({passwordsWeaknessCheck: true});
     const data = passwordManager.data;
     assertEquals(PasswordCheckState.IDLE, data.checkStatus.state);
     data.weakCredentials = [
@@ -672,6 +596,26 @@ suite('PasswordsCheckSection', function() {
     assertTrue(isElementVisible(icon));
     expectFalse(icon.classList.contains('has-security-issues'));
     expectFalse(icon.classList.contains('no-security-issues'));
+  });
+
+  // Test that leaked password items have a strong CTA.
+  test('showStrongCtaOnLeaks', function() {
+    const password = makeCompromisedCredential('one.com', 'test6', 'LEAKED');
+    const passwordCheckListItem = createLeakedPasswordItem(password);
+    const button = passwordCheckListItem.$$('#changePasswordButton');
+    assertTrue(button.classList.contains('action-button'));
+    const icon = passwordCheckListItem.$$('iron-icon');
+    assertFalse(icon.classList.contains('icon-weak-cta'));
+  });
+
+  // Tests that weak password items have a weak CTA.
+  test('showWeakCtaOnWeaksPasswords', function() {
+    const password = makeInsecureCredential('one.com', 'test7');
+    const passwordCheckListItem = createLeakedPasswordItem(password);
+    const button = passwordCheckListItem.$$('#changePasswordButton');
+    assertFalse(button.classList.contains('action-button'));
+    const icon = passwordCheckListItem.$$('iron-icon');
+    assertTrue(icon.classList.contains('icon-weak-cta'));
   });
 
   // Tests that the spinner is replaced with a warning on errors.
@@ -762,10 +706,8 @@ suite('PasswordsCheckSection', function() {
     expectEquals(section.i18n('checkPasswordsProgress', 2, 5), title.innerText);
   });
 
-  // If passwords weakness check is enabled, shows count of insecure
-  // credentials, if compromised credentials exist.
+  // Shows count of insecure credentials, if compromised credentials exist.
   test('showInsecurePasswordsCount', async function() {
-    loadTimeData.overrideValues({passwordsWeaknessCheck: true});
     const data = passwordManager.data;
     data.leakedCredentials = [
       makeCompromisedCredential('one.com', 'test4', 'LEAKED'),
@@ -780,15 +722,15 @@ suite('PasswordsCheckSection', function() {
     const subtitle = section.$.subtitle;
     assertTrue(isElementVisible(subtitle));
 
-    const count = await PluralStringProxyImpl.getInstance().getPluralString(
-        'insecurePasswords', 2);
+    const count =
+        await PluralStringProxyImpl.getInstance().getPluralStringTupleWithComma(
+            'safetyCheckPasswordsCompromised', 1, 'safetyCheckPasswordsWeak',
+            1);
     expectEquals(count, subtitle.textContent.trim());
   });
 
-  // If passwords weakness check is enabled, shows count of weak
-  // credentials, if no compromised credentials exist.
+  // Shows count of weak credentials, if no compromised credentials exist.
   test('showWeakPasswordsCountSignedIn', async function() {
-    loadTimeData.overrideValues({passwordsWeaknessCheck: true});
     passwordManager.data.weakCredentials = [
       makeInsecureCredential('one.com', 'test4'),
       makeInsecureCredential('two.com', 'test5'),
@@ -803,14 +745,13 @@ suite('PasswordsCheckSection', function() {
     assertTrue(isElementVisible(subtitle));
 
     const count = await PluralStringProxyImpl.getInstance().getPluralString(
-        'insecurePasswords', 2);
+        'safetyCheckPasswordsWeak', 2);
     expectEquals(count, subtitle.textContent.trim());
   });
 
-  // If passwords weakness check is enabled, shows count of weak credentials, if
-  // no compromised credentials exist and the user is signed out.
+  // Shows count of weak credentials, if no compromised credentials exist and
+  // the user is signed out.
   test('showWeakPasswordsCountSignedOut', async function() {
-    loadTimeData.overrideValues({passwordsWeaknessCheck: true});
     passwordManager.data.weakCredentials = [
       makeInsecureCredential('one.com', 'test4'),
       makeInsecureCredential('two.com', 'test5'),
@@ -827,33 +768,8 @@ suite('PasswordsCheckSection', function() {
     expectEquals(count, subtitle.textContent.trim());
   });
 
-  // If passwords weakness check is disabled, shows count of compromised
-  // credentials.
-  test('showCompromisedPasswordsCount', async function() {
-    loadTimeData.overrideValues({passwordsWeaknessCheck: false});
-    const data = passwordManager.data;
-    data.leakedCredentials = [
-      makeCompromisedCredential('one.com', 'test4', 'LEAKED'),
-    ];
-
-    const section = createCheckPasswordSection();
-    await passwordManager.whenCalled('getPasswordCheckStatus');
-    flush();
-
-    const subtitle = section.$.subtitle;
-    assertTrue(isElementVisible(subtitle));
-
-    return PluralStringProxyImpl.getInstance()
-        .getPluralString('compromisedPasswords', 1)
-        .then(count => {
-          expectEquals(count, subtitle.textContent.trim());
-        });
-  });
-
-  // Verify that weak passwords section is shown, if |passwordsWeaknessCheck|
-  // flag is enabled.
+  // Verify that weak passwords section is shown.
   test('showWeakPasswordsSyncing', async function() {
-    loadTimeData.overrideValues({passwordsWeaknessCheck: true});
     const weakCredentials = [
       makeInsecureCredential('one.com', 'test1'),
       makeInsecureCredential('two.com', 'test2'),
@@ -874,7 +790,6 @@ suite('PasswordsCheckSection', function() {
   });
 
   test('showWeakPasswordsSignedOut', async function() {
-    loadTimeData.overrideValues({passwordsWeaknessCheck: true});
     const weakCredentials = [
       makeInsecureCredential('one.com', 'test1'),
       makeInsecureCredential('two.com', 'test2'),
@@ -896,20 +811,6 @@ suite('PasswordsCheckSection', function() {
   // Verify that weak passwords section is hidden, if no weak credentials were
   // found.
   test('noWeakPasswords', async function() {
-    loadTimeData.overrideValues({passwordsWeaknessCheck: true});
-    const section = createCheckPasswordSection();
-    await passwordManager.whenCalled('getPasswordCheckStatus');
-    flush();
-
-    assertFalse(isElementVisible(section.$.weakCredentialsBody));
-  });
-
-  // Verify that weak passwords section is hidden, if |passwordsWeaknessCheck|
-  // flag is disabled.
-  test('hideWeakPasswords', async function() {
-    loadTimeData.overrideValues({passwordsWeaknessCheck: false});
-    passwordManager.data.weakCredentials =
-        [makeInsecureCredential('one.com', 'test1')];
     const section = createCheckPasswordSection();
     await passwordManager.whenCalled('getPasswordCheckStatus');
     flush();
@@ -988,25 +889,9 @@ suite('PasswordsCheckSection', function() {
     expectFalse(isElementVisible(section.$.subtitle));
   });
 
-  // When signed out, only show an error.
-  test('showOnlyErrorWhenSignedOut', async function() {
-    loadTimeData.overrideValues({passwordsWeaknessCheck: false});
-    passwordManager.data.checkStatus =
-        makePasswordCheckStatus(PasswordCheckState.SIGNED_OUT);
-
-    const section = createCheckPasswordSection();
-    await passwordManager.whenCalled('getPasswordCheckStatus');
-    flush();
-    const title = section.$.title;
-    assertTrue(isElementVisible(title));
-    expectEquals(section.i18n('checkPasswordsErrorSignedOut'), title.innerText);
-    expectFalse(isElementVisible(section.$.subtitle));
-  });
-
   // When the user is signed out but has run a weak check a timestamp should be
   // shown.
   test('showWeakCheckTimestampWhenSignedOut', async function() {
-    loadTimeData.overrideValues({passwordsWeaknessCheck: true});
     passwordManager.data.checkStatus = makePasswordCheckStatus(
         /*state=*/ PasswordCheckState.SIGNED_OUT,
         /*checked=*/ 0,
@@ -1024,11 +909,10 @@ suite('PasswordsCheckSection', function() {
         section.i18n('checkedPasswords') + ' • Just now', titleRow.innerText);
   });
 
-  // If |passwordsWeaknessCheck| is true, user is signed out and has
-  // compromised credentials that were found in the past, shows "Checked
-  // passwords" and correct label in the top of comromised passwords section.
+  // If user is signed out and has compromised credentials that were found in
+  // the past, shows "Checked passwords" and correct label in the top of
+  // comromised passwords section.
   test('signedOutHasCompromisedHasWeak', async function() {
-    loadTimeData.overrideValues({passwordsWeaknessCheck: true});
     passwordManager.data.checkStatus =
         makePasswordCheckStatus(PasswordCheckState.SIGNED_OUT);
     passwordManager.data.weakCredentials =
@@ -1044,8 +928,10 @@ suite('PasswordsCheckSection', function() {
     assertTrue(isElementVisible(title));
     expectEquals(section.i18n('checkedPasswords'), title.innerText);
     assertTrue(isElementVisible(subtitle));
-    const count = await PluralStringProxyImpl.getInstance().getPluralString(
-        'insecurePasswords', 2);
+    const count =
+        await PluralStringProxyImpl.getInstance().getPluralStringTupleWithComma(
+            'safetyCheckPasswordsCompromised', 1, 'safetyCheckPasswordsWeak',
+            1);
     expectEquals(count, subtitle.textContent.trim());
 
     expectTrue(
@@ -1065,14 +951,15 @@ suite('PasswordsCheckSection', function() {
     expectTrue(isElementVisible(section.$.weakCredentialsBody));
   });
 
-  // If |passwordsWeaknessCheck| is true, user is signed out and doesn't have
-  // compromised credentials in the past and doesn't have weak credentials,
-  // shows "Checked passwords" and correct label in the top of comromised
-  // passwords section.
+  // If user is signed out and doesn't have compromised credentials in the past
+  // and doesn't have weak credentials, shows "Checked passwords" and correct
+  // label in the top of comromised passwords section.
   test('signedOutNoCompromisedNoWeak', async function() {
-    loadTimeData.overrideValues({passwordsWeaknessCheck: true});
-    passwordManager.data.checkStatus =
-        makePasswordCheckStatus(PasswordCheckState.SIGNED_OUT);
+    passwordManager.data.checkStatus = makePasswordCheckStatus(
+        /*state=*/ PasswordCheckState.SIGNED_OUT,
+        /*checked=*/ 0,
+        /*remaining=*/ 0,
+        /*lastCheck=*/ 'Just now');
     const section = createCheckPasswordSection();
     await passwordManager.whenCalled('getPasswordCheckStatus');
     flush();

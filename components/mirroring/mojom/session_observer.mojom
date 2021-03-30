@@ -24,8 +24,9 @@ enum SessionError {
   CAST_TRANSPORT_ERROR,           // Error occurred in cast transport.
 };
 
-// Observer interface for receiving notifications about significant lifecycle
-// events.
+// Observer interface for the browser process to receive notifications about
+// significant lifecycle events of a mirroring session. The notifications are
+// sent from the mirroring service running in a sandboxed utility process.
 interface SessionObserver {
   // Called when error occurred. The session will be stopped.
   OnError(SessionError error);
@@ -35,6 +36,10 @@ interface SessionObserver {
 
   // Called when the session stops.
   DidStop();
+
+  // Called when a message needs to be logged at INFO level by the MR logger.
+  LogInfoMessage(string message);
+
+  // Called when a message needs to be logged at ERROR level by the MR logger.
+  LogErrorMessage(string message);
 };
-
-

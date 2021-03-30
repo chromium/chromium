@@ -11,6 +11,7 @@
 #include "base/memory/aligned_memory.h"
 #include "base/sys_byteorder.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "components/viz/common/gpu/context_provider.h"
@@ -26,6 +27,7 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
+#include "media/renderers/shared_image_video_frame_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libyuv/include/libyuv/convert.h"
 #include "third_party/libyuv/include/libyuv/scale.h"
@@ -68,252 +70,6 @@ scoped_refptr<VideoFrame> CreateTestY16Frame(const gfx::Size& coded_size,
   return media::VideoFrame::WrapExternalData(
       media::PIXEL_FORMAT_Y16, coded_size, visible_rect, visible_rect.size(),
       static_cast<uint8_t*>(external_memory), byte_size, timestamp);
-}
-
-// Destroys a list of shared images after a sync token is passed. Also runs
-// |callback|.
-static void DestroySharedImages(
-    scoped_refptr<viz::ContextProvider> context_provider,
-    std::vector<gpu::Mailbox> mailboxes,
-    base::OnceClosure callback,
-    const gpu::SyncToken& sync_token) {
-  auto* sii = context_provider->SharedImageInterface();
-  for (const auto& mailbox : mailboxes)
-    sii->DestroySharedImage(sync_token, mailbox);
-  std::move(callback).Run();
-}
-
-// Creates a video frame from a set of shared images with a common texture
-// target and sync token.
-static scoped_refptr<VideoFrame> CreateSharedImageFrame(
-    scoped_refptr<viz::ContextProvider> context_provider,
-    VideoPixelFormat format,
-    std::vector<gpu::Mailbox> mailboxes,
-    const gpu::SyncToken& sync_token,
-    GLenum texture_target,
-    const gfx::Size& coded_size,
-    const gfx::Rect& visible_rect,
-    const gfx::Size& natural_size,
-    base::TimeDelta timestamp,
-    base::OnceClosure destroyed_callback) {
-  gpu::MailboxHolder mailboxes_for_frame[VideoFrame::kMaxPlanes] = {};
-  size_t i = 0;
-  for (const auto& mailbox : mailboxes) {
-    mailboxes_for_frame[i++] =
-        gpu::MailboxHolder(mailbox, sync_token, texture_target);
-  }
-  auto callback =
-      base::BindOnce(&DestroySharedImages, std::move(context_provider),
-                     std::move(mailboxes), std::move(destroyed_callback));
-  return VideoFrame::WrapNativeTextures(format, mailboxes_for_frame,
-                                        std::move(callback), coded_size,
-                                        visible_rect, natural_size, timestamp);
-}
-
-// Upload pixels to a shared image using GL.
-static void UploadPixels(gpu::gles2::GLES2Interface* gl,
-                         const gpu::Mailbox& mailbox,
-                         const gfx::Size& size,
-                         GLenum format,
-                         GLenum type,
-                         const uint8_t* data) {
-  GLuint texture = gl->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox.name);
-  gl->BeginSharedImageAccessDirectCHROMIUM(
-      texture, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
-  gl->BindTexture(GL_TEXTURE_2D, texture);
-  gl->TexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, size.width(), size.height(), format,
-                    type, data);
-  gl->EndSharedImageAccessDirectCHROMIUM(texture);
-  gl->DeleteTextures(1, &texture);
-}
-
-// Creates a shared image backed frame in RGBA format, with colors on the shared
-// image mapped as follow.
-// Bk | R | G | Y
-// ---+---+---+---
-// Bl | M | C | W
-static scoped_refptr<VideoFrame> CreateSharedImageRGBAFrame(
-    scoped_refptr<viz::ContextProvider> context_provider,
-    const gfx::Size& coded_size,
-    const gfx::Rect& visible_rect,
-    base::OnceClosure destroyed_callback) {
-  DCHECK_EQ(coded_size.width() % 4, 0);
-  DCHECK_EQ(coded_size.height() % 2, 0);
-  size_t pixels_size = coded_size.GetArea() * 4;
-  auto pixels = std::make_unique<uint8_t[]>(pixels_size);
-  size_t i = 0;
-  for (size_t block_y = 0; block_y < 2u; ++block_y) {
-    for (int y = 0; y < coded_size.height() / 2; ++y) {
-      for (size_t block_x = 0; block_x < 4u; ++block_x) {
-        for (int x = 0; x < coded_size.width() / 4; ++x) {
-          pixels[i++] = 0xffu * (block_x % 2);  // R
-          pixels[i++] = 0xffu * (block_x / 2);  // G
-          pixels[i++] = 0xffu * block_y;        // B
-          pixels[i++] = 0xffu;                  // A
-        }
-      }
-    }
-  }
-  DCHECK_EQ(i, pixels_size);
-
-  auto* sii = context_provider->SharedImageInterface();
-  gpu::Mailbox mailbox = sii->CreateSharedImage(
-      viz::ResourceFormat::RGBA_8888, coded_size, gfx::ColorSpace(),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_GLES2, gpu::kNullSurfaceHandle);
-  auto* gl = context_provider->ContextGL();
-  gl->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
-  UploadPixels(gl, mailbox, coded_size, GL_RGBA, GL_UNSIGNED_BYTE,
-               pixels.get());
-  gpu::SyncToken sync_token;
-  gl->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-
-  return CreateSharedImageFrame(
-      std::move(context_provider), VideoPixelFormat::PIXEL_FORMAT_ABGR,
-      {mailbox}, sync_token, GL_TEXTURE_2D, coded_size, visible_rect,
-      visible_rect.size(), base::TimeDelta::FromSeconds(1),
-      std::move(destroyed_callback));
-}
-
-static constexpr const uint8_t kYuvColors[8][3] = {
-    {0x00, 0x80, 0x80},  // Black
-    {0x4c, 0x54, 0xff},  // Red
-    {0x95, 0x2b, 0x15},  // Green
-    {0xe1, 0x00, 0x94},  // Yellow
-    {0x1d, 0xff, 0x6b},  // Blue
-    {0x69, 0xd3, 0xec},  // Magenta
-    {0xb3, 0xaa, 0x00},  // Cyan
-    {0xff, 0x80, 0x80},  // White
-};
-
-// Creates a shared image backed frame in I420 format, with colors mapped
-// exactly like CreateSharedImageRGBAFrame above, noting that subsamples may get
-// interpolated leading to inconsistent colors around the "seams".
-static scoped_refptr<VideoFrame> CreateSharedImageI420Frame(
-    scoped_refptr<viz::ContextProvider> context_provider,
-    const gfx::Size& coded_size,
-    const gfx::Rect& visible_rect,
-    base::OnceClosure destroyed_callback) {
-  DCHECK_EQ(coded_size.width() % 8, 0);
-  DCHECK_EQ(coded_size.height() % 4, 0);
-  gfx::Size uv_size(coded_size.width() / 2, coded_size.height() / 2);
-  size_t y_pixels_size = coded_size.GetArea();
-  size_t uv_pixels_size = uv_size.GetArea();
-  auto y_pixels = std::make_unique<uint8_t[]>(y_pixels_size);
-  auto u_pixels = std::make_unique<uint8_t[]>(uv_pixels_size);
-  auto v_pixels = std::make_unique<uint8_t[]>(uv_pixels_size);
-  size_t y_i = 0;
-  size_t uv_i = 0;
-  for (size_t block_y = 0; block_y < 2u; ++block_y) {
-    for (int y = 0; y < coded_size.height() / 2; ++y) {
-      for (size_t block_x = 0; block_x < 4u; ++block_x) {
-        size_t color_index = block_x + block_y * 4;
-        const uint8_t* yuv = kYuvColors[color_index];
-        for (int x = 0; x < coded_size.width() / 4; ++x) {
-          y_pixels[y_i++] = yuv[0];
-          if ((x % 2) && (y % 2)) {
-            u_pixels[uv_i] = yuv[1];
-            v_pixels[uv_i++] = yuv[2];
-          }
-        }
-      }
-    }
-  }
-  DCHECK_EQ(y_i, y_pixels_size);
-  DCHECK_EQ(uv_i, uv_pixels_size);
-
-  auto* sii = context_provider->SharedImageInterface();
-  gpu::Mailbox y_mailbox = sii->CreateSharedImage(
-      viz::ResourceFormat::LUMINANCE_8, coded_size, gfx::ColorSpace(),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_GLES2, gpu::kNullSurfaceHandle);
-  gpu::Mailbox u_mailbox = sii->CreateSharedImage(
-      viz::ResourceFormat::LUMINANCE_8, uv_size, gfx::ColorSpace(),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_GLES2, gpu::kNullSurfaceHandle);
-  gpu::Mailbox v_mailbox = sii->CreateSharedImage(
-      viz::ResourceFormat::LUMINANCE_8, uv_size, gfx::ColorSpace(),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_GLES2, gpu::kNullSurfaceHandle);
-  auto* gl = context_provider->ContextGL();
-  gl->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
-  UploadPixels(gl, y_mailbox, coded_size, GL_LUMINANCE, GL_UNSIGNED_BYTE,
-               y_pixels.get());
-  UploadPixels(gl, u_mailbox, uv_size, GL_LUMINANCE, GL_UNSIGNED_BYTE,
-               u_pixels.get());
-  UploadPixels(gl, v_mailbox, uv_size, GL_LUMINANCE, GL_UNSIGNED_BYTE,
-               v_pixels.get());
-  gpu::SyncToken sync_token;
-  gl->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-
-  return CreateSharedImageFrame(
-      std::move(context_provider), VideoPixelFormat::PIXEL_FORMAT_I420,
-      {y_mailbox, u_mailbox, v_mailbox}, sync_token, GL_TEXTURE_2D, coded_size,
-      visible_rect, visible_rect.size(), base::TimeDelta::FromSeconds(1),
-      std::move(destroyed_callback));
-}
-
-// Creates a shared image backed frame in NV12 format, with colors mapped
-// exactly like CreateSharedImageRGBAFrame above.
-// This will return nullptr if the necessary extension is not available for NV12
-// support.
-static scoped_refptr<VideoFrame> CreateSharedImageNV12Frame(
-    scoped_refptr<viz::ContextProvider> context_provider,
-    const gfx::Size& coded_size,
-    const gfx::Rect& visible_rect,
-    base::OnceClosure destroyed_callback) {
-  DCHECK_EQ(coded_size.width() % 8, 0);
-  DCHECK_EQ(coded_size.height() % 4, 0);
-  if (!context_provider->ContextCapabilities().texture_rg)
-    return {};
-  gfx::Size uv_size(coded_size.width() / 2, coded_size.height() / 2);
-  size_t y_pixels_size = coded_size.GetArea();
-  size_t uv_pixels_size = uv_size.GetArea() * 2;
-  auto y_pixels = std::make_unique<uint8_t[]>(y_pixels_size);
-  auto uv_pixels = std::make_unique<uint8_t[]>(uv_pixels_size);
-  size_t y_i = 0;
-  size_t uv_i = 0;
-  for (size_t block_y = 0; block_y < 2u; ++block_y) {
-    for (int y = 0; y < coded_size.height() / 2; ++y) {
-      for (size_t block_x = 0; block_x < 4u; ++block_x) {
-        size_t color_index = block_x + block_y * 4;
-        const uint8_t* yuv = kYuvColors[color_index];
-        for (int x = 0; x < coded_size.width() / 4; ++x) {
-          y_pixels[y_i++] = yuv[0];
-          if ((x % 2) && (y % 2)) {
-            uv_pixels[uv_i++] = yuv[1];
-            uv_pixels[uv_i++] = yuv[2];
-          }
-        }
-      }
-    }
-  }
-  DCHECK_EQ(y_i, y_pixels_size);
-  DCHECK_EQ(uv_i, uv_pixels_size);
-
-  auto* sii = context_provider->SharedImageInterface();
-  gpu::Mailbox y_mailbox = sii->CreateSharedImage(
-      viz::ResourceFormat::LUMINANCE_8, coded_size, gfx::ColorSpace(),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_GLES2, gpu::kNullSurfaceHandle);
-  gpu::Mailbox uv_mailbox = sii->CreateSharedImage(
-      viz::ResourceFormat::RG_88, uv_size, gfx::ColorSpace(),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_GLES2, gpu::kNullSurfaceHandle);
-  auto* gl = context_provider->ContextGL();
-  gl->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
-  UploadPixels(gl, y_mailbox, coded_size, GL_LUMINANCE, GL_UNSIGNED_BYTE,
-               y_pixels.get());
-  UploadPixels(gl, uv_mailbox, uv_size, GL_RG, GL_UNSIGNED_BYTE,
-               uv_pixels.get());
-  gpu::SyncToken sync_token;
-  gl->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-
-  return CreateSharedImageFrame(
-      std::move(context_provider), VideoPixelFormat::PIXEL_FORMAT_NV12,
-      {y_mailbox, uv_mailbox}, sync_token, GL_TEXTURE_2D, coded_size,
-      visible_rect, visible_rect.size(), base::TimeDelta::FromSeconds(1),
-      std::move(destroyed_callback));
 }
 
 // Readback the contents of a RGBA texture into an array of RGBA values.
@@ -405,29 +161,15 @@ static SkBitmap AllocBitmap(int width, int height) {
   return bitmap;
 }
 
-PaintCanvasVideoRendererTest::PaintCanvasVideoRendererTest()
-    : natural_frame_(VideoFrame::CreateBlackFrame(gfx::Size(kWidth, kHeight))),
-      larger_frame_(
-          VideoFrame::CreateBlackFrame(gfx::Size(kWidth * 2, kHeight * 2))),
-      smaller_frame_(
-          VideoFrame::CreateBlackFrame(gfx::Size(kWidth / 2, kHeight / 2))),
-      cropped_frame_(
-          VideoFrame::CreateFrame(PIXEL_FORMAT_I420,
-                                  gfx::Size(16, 16),
-                                  gfx::Rect(6, 6, 8, 6),
-                                  gfx::Size(8, 6),
-                                  base::TimeDelta::FromMilliseconds(4))),
-      bitmap_(AllocBitmap(kWidth, kHeight)),
-      target_canvas_(bitmap_) {
-  // Give each frame a unique timestamp.
-  natural_frame_->set_timestamp(base::TimeDelta::FromMilliseconds(1));
-  larger_frame_->set_timestamp(base::TimeDelta::FromMilliseconds(2));
-  smaller_frame_->set_timestamp(base::TimeDelta::FromMilliseconds(3));
-
+static scoped_refptr<VideoFrame> CreateCroppedFrame() {
+  scoped_refptr<VideoFrame> cropped_frame;
+  cropped_frame = VideoFrame::CreateFrame(
+      PIXEL_FORMAT_I420, gfx::Size(16, 16), gfx::Rect(6, 6, 8, 6),
+      gfx::Size(8, 6), base::TimeDelta::FromMilliseconds(4));
   // Make sure the cropped video frame's aspect ratio matches the output device.
   // Update cropped_frame_'s crop dimensions if this is not the case.
-  EXPECT_EQ(cropped_frame()->visible_rect().width() * kHeight,
-            cropped_frame()->visible_rect().height() * kWidth);
+  EXPECT_EQ(cropped_frame->visible_rect().width() * kHeight,
+            cropped_frame->visible_rect().height() * kWidth);
 
   // Fill in the cropped frame's entire data with colors:
   //
@@ -495,12 +237,29 @@ PaintCanvasVideoRendererTest::PaintCanvasVideoRendererTest()
   };
 
   libyuv::I420Copy(cropped_y_plane, 16, cropped_u_plane, 8, cropped_v_plane, 8,
-                   cropped_frame()->data(VideoFrame::kYPlane),
-                   cropped_frame()->stride(VideoFrame::kYPlane),
-                   cropped_frame()->data(VideoFrame::kUPlane),
-                   cropped_frame()->stride(VideoFrame::kUPlane),
-                   cropped_frame()->data(VideoFrame::kVPlane),
-                   cropped_frame()->stride(VideoFrame::kVPlane), 16, 16);
+                   cropped_frame->data(VideoFrame::kYPlane),
+                   cropped_frame->stride(VideoFrame::kYPlane),
+                   cropped_frame->data(VideoFrame::kUPlane),
+                   cropped_frame->stride(VideoFrame::kUPlane),
+                   cropped_frame->data(VideoFrame::kVPlane),
+                   cropped_frame->stride(VideoFrame::kVPlane), 16, 16);
+
+  return cropped_frame;
+}
+
+PaintCanvasVideoRendererTest::PaintCanvasVideoRendererTest()
+    : natural_frame_(VideoFrame::CreateBlackFrame(gfx::Size(kWidth, kHeight))),
+      larger_frame_(
+          VideoFrame::CreateBlackFrame(gfx::Size(kWidth * 2, kHeight * 2))),
+      smaller_frame_(
+          VideoFrame::CreateBlackFrame(gfx::Size(kWidth / 2, kHeight / 2))),
+      cropped_frame_(CreateCroppedFrame()),
+      bitmap_(AllocBitmap(kWidth, kHeight)),
+      target_canvas_(bitmap_) {
+  // Give each frame a unique timestamp.
+  natural_frame_->set_timestamp(base::TimeDelta::FromMilliseconds(1));
+  larger_frame_->set_timestamp(base::TimeDelta::FromMilliseconds(2));
+  smaller_frame_->set_timestamp(base::TimeDelta::FromMilliseconds(3));
 }
 
 PaintCanvasVideoRendererTest::~PaintCanvasVideoRendererTest() = default;
@@ -1127,8 +886,9 @@ TEST_F(PaintCanvasVideoRendererTest, TexSubImage2D_Y16_R32F) {
       2 /*xoffset*/, 1 /*yoffset*/, false /*flip_y*/, true);
 }
 
-// Fixture for tests that require a GL context.
-class PaintCanvasVideoRendererWithGLTest : public PaintCanvasVideoRendererTest {
+// Fixture for tests that require a GL context. The input parameter indicates
+// whether OOPR mode is enabled.
+class PaintCanvasVideoRendererWithGLTest : public testing::TestWithParam<bool> {
  public:
   using GetColorCallback = base::RepeatingCallback<SkColor(int, int)>;
 
@@ -1137,8 +897,14 @@ class PaintCanvasVideoRendererWithGLTest : public PaintCanvasVideoRendererTest {
     enable_pixels_.emplace();
     media_context_ = base::MakeRefCounted<viz::TestInProcessContextProvider>(
         /*enable_gpu_rasterization=*/false,
-        /*enable_oop_rasterization=*/false, /*support_locking=*/false);
+        /*enable_oop_rasterization=*/GetParam(), /*support_locking=*/false);
     gpu::ContextResult result = media_context_->BindToCurrentThread();
+    ASSERT_EQ(result, gpu::ContextResult::kSuccess);
+
+    gles2_context_ = base::MakeRefCounted<viz::TestInProcessContextProvider>(
+        /*enable_gpu_rasterization=*/false,
+        /*enable_oop_rasterization=*/false, /*support_locking=*/false);
+    result = gles2_context_->BindToCurrentThread();
     ASSERT_EQ(result, gpu::ContextResult::kSuccess);
 
     destination_context_ =
@@ -1147,11 +913,13 @@ class PaintCanvasVideoRendererWithGLTest : public PaintCanvasVideoRendererTest {
             /*enable_oop_rasterization=*/false, /*support_locking=*/false);
     result = destination_context_->BindToCurrentThread();
     ASSERT_EQ(result, gpu::ContextResult::kSuccess);
+    cropped_frame_ = CreateCroppedFrame();
   }
 
   void TearDown() override {
     renderer_.ResetCache();
     destination_context_.reset();
+    gles2_context_.reset();
     media_context_.reset();
     enable_pixels_.reset();
     viz::TestGpuServiceHolder::ResetInstance();
@@ -1211,7 +979,7 @@ class PaintCanvasVideoRendererWithGLTest : public PaintCanvasVideoRendererTest {
   // Creates a cropped RGBA VideoFrame. |closure| is run once the shared images
   // backing the VideoFrame have been destroyed.
   scoped_refptr<VideoFrame> CreateTestRGBAFrame(base::OnceClosure closure) {
-    return CreateSharedImageRGBAFrame(media_context_, gfx::Size(16, 8),
+    return CreateSharedImageRGBAFrame(gles2_context_, gfx::Size(16, 8),
                                       gfx::Rect(3, 3, 12, 4),
                                       std::move(closure));
   }
@@ -1243,7 +1011,7 @@ class PaintCanvasVideoRendererWithGLTest : public PaintCanvasVideoRendererTest {
   // Creates a cropped I420 VideoFrame. |closure| is run once the shared images
   // backing the VideoFrame have been destroyed.
   scoped_refptr<VideoFrame> CreateTestI420Frame(base::OnceClosure closure) {
-    return CreateSharedImageI420Frame(media_context_, gfx::Size(16, 8),
+    return CreateSharedImageI420Frame(gles2_context_, gfx::Size(16, 8),
                                       gfx::Rect(2, 2, 12, 4),
                                       std::move(closure));
   }
@@ -1251,7 +1019,7 @@ class PaintCanvasVideoRendererWithGLTest : public PaintCanvasVideoRendererTest {
   // backing the VideoFrame have been destroyed.
   scoped_refptr<VideoFrame> CreateTestI420FrameNotSubset(
       base::OnceClosure closure) {
-    return CreateSharedImageI420Frame(media_context_, gfx::Size(16, 8),
+    return CreateSharedImageI420Frame(gles2_context_, gfx::Size(16, 8),
                                       gfx::Rect(0, 0, 16, 8),
                                       std::move(closure));
   }
@@ -1294,7 +1062,7 @@ class PaintCanvasVideoRendererWithGLTest : public PaintCanvasVideoRendererTest {
   // not available. |closure| is run once the shared images backing the
   // VideoFrame have been destroyed.
   scoped_refptr<VideoFrame> CreateTestNV12Frame(base::OnceClosure closure) {
-    return CreateSharedImageNV12Frame(media_context_, gfx::Size(16, 8),
+    return CreateSharedImageNV12Frame(gles2_context_, gfx::Size(16, 8),
                                       gfx::Rect(2, 2, 12, 4),
                                       std::move(closure));
   }
@@ -1307,13 +1075,24 @@ class PaintCanvasVideoRendererWithGLTest : public PaintCanvasVideoRendererTest {
     CheckI420FramePixels(std::move(get_color));
   }
 
+  scoped_refptr<VideoFrame> cropped_frame() { return cropped_frame_; }
+
  protected:
   base::Optional<gl::DisableNullDrawGLBindings> enable_pixels_;
   scoped_refptr<viz::TestInProcessContextProvider> media_context_;
+  scoped_refptr<viz::TestInProcessContextProvider> gles2_context_;
   scoped_refptr<viz::TestInProcessContextProvider> destination_context_;
+
+  PaintCanvasVideoRenderer renderer_;
+  scoped_refptr<VideoFrame> cropped_frame_;
+  base::test::TaskEnvironment task_environment_;
 };
 
-TEST_F(PaintCanvasVideoRendererWithGLTest, CopyVideoFrameYUVDataToGLTexture) {
+INSTANTIATE_TEST_SUITE_P(OopRasterMode,
+                         PaintCanvasVideoRendererWithGLTest,
+                         testing::Bool());
+
+TEST_P(PaintCanvasVideoRendererWithGLTest, CopyVideoFrameYUVDataToGLTexture) {
   auto* destination_gl = destination_context_->ContextGL();
   DCHECK(destination_gl);
   GLenum target = GL_TEXTURE_2D;
@@ -1322,7 +1101,7 @@ TEST_F(PaintCanvasVideoRendererWithGLTest, CopyVideoFrameYUVDataToGLTexture) {
   destination_gl->BindTexture(target, texture);
 
   renderer_.CopyVideoFrameYUVDataToGLTexture(
-      media_context_.get(), destination_gl, *cropped_frame(), target, texture,
+      media_context_.get(), destination_gl, cropped_frame(), target, texture,
       GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, 0, false /* premultiply_alpha */,
       false /* flip_y */);
 
@@ -1344,7 +1123,7 @@ TEST_F(PaintCanvasVideoRendererWithGLTest, CopyVideoFrameYUVDataToGLTexture) {
   destination_gl->DeleteTextures(1, &texture);
 }
 
-TEST_F(PaintCanvasVideoRendererWithGLTest,
+TEST_P(PaintCanvasVideoRendererWithGLTest,
        CopyVideoFrameYUVDataToGLTexture_FlipY) {
   auto* destination_gl = destination_context_->ContextGL();
   DCHECK(destination_gl);
@@ -1354,7 +1133,7 @@ TEST_F(PaintCanvasVideoRendererWithGLTest,
   destination_gl->BindTexture(target, texture);
 
   renderer_.CopyVideoFrameYUVDataToGLTexture(
-      media_context_.get(), destination_gl, *cropped_frame(), target, texture,
+      media_context_.get(), destination_gl, cropped_frame(), target, texture,
       GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, 0, false /* premultiply_alpha */,
       true /* flip_y */);
 
@@ -1378,7 +1157,7 @@ TEST_F(PaintCanvasVideoRendererWithGLTest,
 
 // Checks that we correctly copy a RGBA shared image VideoFrame when using
 // CopyVideoFrameYUVDataToGLTexture, including correct cropping.
-TEST_F(PaintCanvasVideoRendererWithGLTest,
+TEST_P(PaintCanvasVideoRendererWithGLTest,
        CopyVideoFrameTexturesToGLTextureRGBA) {
   base::RunLoop run_loop;
   scoped_refptr<VideoFrame> frame = CreateTestRGBAFrame(run_loop.QuitClosure());
@@ -1392,11 +1171,11 @@ TEST_F(PaintCanvasVideoRendererWithGLTest,
 // Checks that we correctly copy a RGBA shared image VideoFrame that needs read
 // lock fences, when using CopyVideoFrameYUVDataToGLTexture, including correct
 // cropping.
-TEST_F(PaintCanvasVideoRendererWithGLTest,
+TEST_P(PaintCanvasVideoRendererWithGLTest,
        CopyVideoFrameTexturesToGLTextureRGBA_ReadLockFence) {
   base::RunLoop run_loop;
   scoped_refptr<VideoFrame> frame = CreateTestRGBAFrame(run_loop.QuitClosure());
-  frame->metadata()->read_lock_fences_enabled = true;
+  frame->metadata().read_lock_fences_enabled = true;
 
   CopyVideoFrameTexturesAndCheckPixels(frame, &CheckRGBAFramePixels);
 
@@ -1406,7 +1185,7 @@ TEST_F(PaintCanvasVideoRendererWithGLTest,
 
 // Checks that we correctly paint a RGBA shared image VideoFrame, including
 // correct cropping.
-TEST_F(PaintCanvasVideoRendererWithGLTest, PaintRGBA) {
+TEST_P(PaintCanvasVideoRendererWithGLTest, PaintRGBA) {
   base::RunLoop run_loop;
   scoped_refptr<VideoFrame> frame = CreateTestRGBAFrame(run_loop.QuitClosure());
 
@@ -1418,7 +1197,7 @@ TEST_F(PaintCanvasVideoRendererWithGLTest, PaintRGBA) {
 
 // Checks that we correctly copy an I420 shared image VideoFrame when using
 // CopyVideoFrameYUVDataToGLTexture, including correct cropping.
-TEST_F(PaintCanvasVideoRendererWithGLTest,
+TEST_P(PaintCanvasVideoRendererWithGLTest,
        CopyVideoFrameTexturesToGLTextureI420) {
   base::RunLoop run_loop;
   scoped_refptr<VideoFrame> frame = CreateTestI420Frame(run_loop.QuitClosure());
@@ -1431,7 +1210,7 @@ TEST_F(PaintCanvasVideoRendererWithGLTest,
 
 // Checks that we correctly paint a I420 shared image VideoFrame, including
 // correct cropping.
-TEST_F(PaintCanvasVideoRendererWithGLTest, PaintI420) {
+TEST_P(PaintCanvasVideoRendererWithGLTest, PaintI420) {
   base::RunLoop run_loop;
   scoped_refptr<VideoFrame> frame = CreateTestI420Frame(run_loop.QuitClosure());
 
@@ -1443,7 +1222,7 @@ TEST_F(PaintCanvasVideoRendererWithGLTest, PaintI420) {
 
 // Checks that we correctly paint a I420 shared image VideoFrame, including
 // correct cropping.
-TEST_F(PaintCanvasVideoRendererWithGLTest, PaintI420NotSubset) {
+TEST_P(PaintCanvasVideoRendererWithGLTest, PaintI420NotSubset) {
   base::RunLoop run_loop;
   scoped_refptr<VideoFrame> frame =
       CreateTestI420FrameNotSubset(run_loop.QuitClosure());
@@ -1456,7 +1235,7 @@ TEST_F(PaintCanvasVideoRendererWithGLTest, PaintI420NotSubset) {
 
 // Checks that we correctly copy a NV12 shared image VideoFrame when using
 // CopyVideoFrameYUVDataToGLTexture, including correct cropping.
-TEST_F(PaintCanvasVideoRendererWithGLTest,
+TEST_P(PaintCanvasVideoRendererWithGLTest,
        CopyVideoFrameTexturesToGLTextureNV12) {
   base::RunLoop run_loop;
   scoped_refptr<VideoFrame> frame = CreateTestNV12Frame(run_loop.QuitClosure());
@@ -1473,7 +1252,7 @@ TEST_F(PaintCanvasVideoRendererWithGLTest,
 
 // Checks that we correctly paint a NV12 shared image VideoFrame, including
 // correct cropping.
-TEST_F(PaintCanvasVideoRendererWithGLTest, PaintNV12) {
+TEST_P(PaintCanvasVideoRendererWithGLTest, PaintNV12) {
   base::RunLoop run_loop;
   scoped_refptr<VideoFrame> frame = CreateTestNV12Frame(run_loop.QuitClosure());
   if (!frame) {

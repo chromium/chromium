@@ -13,7 +13,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "components/exo/surface_observer.h"
 #include "components/exo/surface_tree_host.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -58,7 +57,6 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   // specified as part of the geometry is relative to the shell surface.
   ShellSurfaceBase(Surface* surface,
                    const gfx::Point& origin,
-                   bool activatable,
                    bool can_minimize,
                    int container);
   ~ShellSurfaceBase() override;
@@ -86,7 +84,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   void Activate();
 
   // Set title for the surface.
-  void SetTitle(const base::string16& title);
+  void SetTitle(const std::u16string& title);
 
   // Set icon for the surface.
   void SetIcon(const gfx::ImageSkia& icon);
@@ -134,8 +132,32 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   // Prevents shell surface from being moved.
   void DisableMovement();
 
+  // Update the resizability for the surface.
+  virtual void UpdateCanResize();
+
   // Returns a trace value representing the state of the surface.
   std::unique_ptr<base::trace_event::TracedValue> AsTracedValue() const;
+
+  // An overlay creation parameters. The view is owned by the
+  // overlay.
+  struct OverlayParams {
+    OverlayParams(std::unique_ptr<views::View> overlay);
+    ~OverlayParams();
+
+    bool translucent = false;
+    bool focusable = true;
+    std::unique_ptr<views::View> contents_view;
+  };
+
+  // Add a new overlay. Currently only one overlay is supported.
+  // It is caller's responsibility to make sure there is no overlay
+  // before calling this.
+  void AddOverlay(OverlayParams&& params);
+
+  // Remove the current overlay. This is no-op if there is no overlay.
+  void RemoveOverlay();
+
+  bool HasOverlay() const { return !!overlay_widget_; }
 
   // SurfaceDelegate:
   void OnSurfaceCommit() override;
@@ -145,11 +167,19 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   void OnSetStartupId(const char* startup_id) override;
   void OnSetApplicationId(const char* application_id) override;
   void SetUseImmersiveForFullscreen(bool value) override;
+  void ShowSnapPreviewToLeft() override;
+  void ShowSnapPreviewToRight() override;
+  void HideSnapPreview() override;
+  void SetSnappedToLeft() override;
+  void SetSnappedToRight() override;
+  void UnsetSnap() override;
   void OnActivationRequested() override;
+  void OnSetServerStartResize() override;
 
   // SurfaceObserver:
   void OnSurfaceDestroying(Surface* surface) override;
   void OnContentSizeChanged(Surface*) override {}
+  void OnFrameLockingChanged(Surface*, bool) override {}
 
   // CaptureClientObserver:
   void OnCaptureChanged(aura::Window* lost_capture,
@@ -174,6 +204,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  views::FocusTraversable* GetFocusTraversable() override;
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
@@ -200,10 +231,16 @@ class ShellSurfaceBase : public SurfaceTreeHost,
     return shadow_bounds_changed_;
   }
 
+  bool server_side_resize() const { return server_side_resize_; }
+
  protected:
   // Creates the |widget_| for |surface_|. |show_state| is the initial state
   // of the widget (e.g. maximized).
   void CreateShellSurfaceWidget(ui::WindowShowState show_state);
+
+  // Lets subclasses modify Widget parameters immediately before widget
+  // creation.
+  virtual void OverrideInitParams(views::Widget::InitParams* params) {}
 
   // Returns true if surface is currently being resized.
   bool IsResizing() const;
@@ -246,8 +283,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
 
   // Creates a NonClientFrameView for shell surface.
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameViewInternal(
-      views::Widget* widget,
-      bool client_controlled);
+      views::Widget* widget);
 
   virtual void OnPostWidgetCommit();
 
@@ -269,6 +305,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   SurfaceFrameType frame_type_ = SurfaceFrameType::NONE;
   bool is_popup_ = false;
   bool has_grab_ = false;
+  bool server_side_resize_ = false;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ShellSurfaceTest,
@@ -291,6 +328,8 @@ class ShellSurfaceBase : public SurfaceTreeHost,
 
   void CommitWidget();
 
+  bool IsFrameDecorationSupported(SurfaceFrameType frame_type);
+
   aura::Window* parent_ = nullptr;
   bool activatable_ = true;
   bool can_minimize_ = true;
@@ -311,7 +350,9 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   gfx::Size maximum_size_;
   gfx::Size pending_maximum_size_;
   gfx::SizeF pending_aspect_ratio_;
-  ui::AXTreeID child_ax_tree_id_ = ui::AXTreeIDUnknown();
+
+  bool skip_ime_processing_ = false;
+  std::unique_ptr<views::Widget> overlay_widget_;
 
   DISALLOW_COPY_AND_ASSIGN(ShellSurfaceBase);
 };

@@ -15,7 +15,6 @@
 #include "chrome/browser/chromeos/crostini/crostini_export_import_status_tracker.h"
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"
 #include "chrome/browser/chromeos/crostini/crostini_manager_factory.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -136,7 +135,7 @@ void CrostiniUpgrader::StatusTracker::SetStatusCancelledUI() {
 
 void CrostiniUpgrader::StatusTracker::SetStatusFailedWithMessageUI(
     Status status,
-    const base::string16& message) {
+    const std::u16string& message) {
   CrostiniResult result = CrostiniResult::CONTAINER_EXPORT_IMPORT_FAILED;
   if (status == Status::FAILED_INSUFFICIENT_SPACE) {
     result = CrostiniResult::CONTAINER_EXPORT_IMPORT_FAILED_SPACE;

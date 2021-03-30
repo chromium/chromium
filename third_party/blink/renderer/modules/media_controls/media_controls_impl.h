@@ -387,7 +387,7 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
       rotate_to_fullscreen_delegate_;
   Member<MediaControlsDisplayCutoutDelegate> display_cutout_delegate_;
 
-  TaskRunnerTimer<MediaControlsImpl> hide_media_controls_timer_;
+  HeapTaskRunnerTimer<MediaControlsImpl> hide_media_controls_timer_;
   unsigned hide_timer_behavior_flags_;
   bool is_mouse_over_controls_ : 1;
   bool is_paused_for_scrubbing_ : 1;
@@ -401,7 +401,7 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
   // as necessary.
   Member<MediaElementMutationCallback> element_mutation_callback_;
 
-  TaskRunnerTimer<MediaControlsImpl> element_size_changed_timer_;
+  HeapTaskRunnerTimer<MediaControlsImpl> element_size_changed_timer_;
   IntSize size_;
 
   bool keep_showing_until_timer_fires_ : 1;
@@ -415,12 +415,12 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
   bool is_touch_interaction_ = false;
 
   // Timer for distinguishing double-taps.
-  TaskRunnerTimer<MediaControlsImpl> tap_timer_;
+  HeapTaskRunnerTimer<MediaControlsImpl> tap_timer_;
   bool is_paused_for_double_tap_ = false;
 
   // Timer to delay showing the volume slider to avoid accidental triggering
   // of the slider
-  TaskRunnerTimer<MediaControlsImpl> volume_slider_wanted_timer_;
+  HeapTaskRunnerTimer<MediaControlsImpl> volume_slider_wanted_timer_;
 
   Member<MediaControlsTextTrackManager> text_track_manager_;
 

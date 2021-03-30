@@ -5,8 +5,8 @@
 #include "extensions/common/manifest_handlers/offline_enabled_info.h"
 
 #include <memory>
+#include <string>
 
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -38,7 +38,7 @@ OfflineEnabledHandler::OfflineEnabledHandler() {
 OfflineEnabledHandler::~OfflineEnabledHandler() {
 }
 
-bool OfflineEnabledHandler::Parse(Extension* extension, base::string16* error) {
+bool OfflineEnabledHandler::Parse(Extension* extension, std::u16string* error) {
   if (!extension->manifest()->HasKey(keys::kOfflineEnabled)) {
     // Only platform apps are provided with a default offline enabled value.
     // A platform app is offline enabled unless it requests the webview
@@ -46,8 +46,8 @@ bool OfflineEnabledHandler::Parse(Extension* extension, base::string16* error) {
     // permission requested and false when webview permission is present.
     DCHECK(extension->is_platform_app());
 
-    const bool has_webview_permission =
-        PermissionsParser::HasAPIPermission(extension, APIPermission::kWebView);
+    const bool has_webview_permission = PermissionsParser::HasAPIPermission(
+        extension, mojom::APIPermissionID::kWebView);
     extension->SetManifestData(
         keys::kOfflineEnabled,
         std::make_unique<OfflineEnabledInfo>(!has_webview_permission));

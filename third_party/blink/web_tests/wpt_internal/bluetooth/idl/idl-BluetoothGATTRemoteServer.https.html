@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+test(() => {
+  assert_throws_js(ReferenceError, () => new BluetoothGATTRemoteServer(),
+                   'the constructor should not be callable with "new"');
+  assert_throws_js(ReferenceError, () => BluetoothGATTRemoteServer(),
+                   'the constructor should not be callable');
+}, 'BluetoothGATTRemoteServer IDL test');
+</script>

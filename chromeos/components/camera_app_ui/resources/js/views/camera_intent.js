@@ -14,13 +14,14 @@ import {DeviceInfoUpdater} from '../device/device_info_updater.js';
 import {Intent} from '../intent.js';
 import * as metrics from '../metrics.js';
 // eslint-disable-next-line no-unused-vars
-import {AbstractFileEntry} from '../models/file_system_entry.js';
+import {FileAccessEntry} from '../models/file_system_access_entry.js';
 // eslint-disable-next-line no-unused-vars
 import {ResultSaver} from '../models/result_saver.js';
 import {VideoSaver} from '../models/video_saver.js';
 // eslint-disable-next-line no-unused-vars
 import {PerfLogger} from '../perf.js';
 import * as state from '../state.js';
+import {scaleImage} from '../thumbnailer.js';
 import * as toast from '../toast.js';
 import * as util from '../util.js';
 
@@ -55,15 +56,15 @@ export class CameraIntent extends Camera {
           const image = await util.blobToImage(blob);
           const ratio = Math.sqrt(
               DOWNSCALE_INTENT_MAX_PIXEL_NUM / (image.width * image.height));
-          blob = await util.scalePicture(
-              blob, false, Math.floor(image.width * ratio),
+          blob = await scaleImage(
+              blob, Math.floor(image.width * ratio),
               Math.floor(image.height * ratio));
         }
         const buf = await blob.arrayBuffer();
         await this.intent_.appendData(new Uint8Array(buf));
       },
-      startSaveVideo: async () => {
-        return await VideoSaver.createForIntent(intent);
+      startSaveVideo: async (outputVideoRotation) => {
+        return VideoSaver.createForIntent(intent, outputVideoRotation);
       },
       finishSaveVideo: async (video) => {
         this.videoResultFile_ = await video.endWrite();
@@ -92,7 +93,7 @@ export class CameraIntent extends Camera {
     this.videoResult_ = null;
 
     /**
-     * @type {?AbstractFileEntry}
+     * @type {?FileAccessEntry}
      * @private
      */
     this.videoResultFile_ = null;

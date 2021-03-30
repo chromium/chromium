@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "net/dns/dns_util.h"
 
@@ -155,7 +156,7 @@ void ParseHostsWithCommaMode(const std::string& contents,
         }
       }
     } else {
-      DnsHostsKey key(parser.token().as_string(), family);
+      DnsHostsKey key(std::string(parser.token()), family);
       if (!IsValidDNSDomain(key.first))
         continue;
       key.first = base::ToLowerASCII(key.first);

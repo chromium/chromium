@@ -14,7 +14,6 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/chrome_jni_headers/MostVisitedSitesBridge_jni.h"
 #include "chrome/android/chrome_jni_headers/MostVisitedSites_jni.h"
@@ -151,7 +150,7 @@ MostVisitedSitesBridge::JavaObserver::JavaObserver(
 void MostVisitedSitesBridge::JavaObserver::OnURLsAvailable(
     const std::map<SectionType, NTPTilesVector>& sections) {
   JNIEnv* env = AttachCurrentThread();
-  std::vector<base::string16> titles;
+  std::vector<std::u16string> titles;
   std::vector<base::android::ScopedJavaLocalRef<jobject>> urls;
   std::vector<std::string> allowlist_icons;
   std::vector<int> title_sources;

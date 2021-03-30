@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">Mục danh sách</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">Vuốt sang phải bằng hai ngón tay</translation>
-<translation id="1016393160682012902">Bạn có thể nhấn một phím trên bàn phím qwerty, phím chữ nổi có thể làm mới hoặc dùng cử chỉ chạm để tìm hiểu chức năng của chế độ này. Bạn cũng có thể nhấn tổ hợp phím Control và w hoặc phím Escape để thoát.</translation>
 <translation id="1022586497894531524">Đây là lần đầu tiên bạn sử dụng tính năng phản hồi bằng giọng nói của ChromeVox? Hướng dẫn nhanh này sẽ giải thích các thông tin cơ bản để bắt đầu với ChromeVox.</translation>
 <translation id="1025074108959230262">Đã tắt chế độ phím dính</translation>
 <translation id="1031961866430398710">sau đó</translation>
@@ -150,6 +149,7 @@
 <translation id="2045055672832940894">Không có tùy chọn kiểm soát nào trước đó</translation>
 <translation id="2045606329038304310">Tùy chọn kiểm soát trường biểu mẫu</translation>
 <translation id="2063539687800151747">Lời đề từ</translation>
+<translation id="2074531330963286860">Các thao tác bạn có thể thực hiện. Nhấn tổ hợp phím Tìm kiếm + Dấu chấm để xem</translation>
 <translation id="2086961585857038472">Từ tiếp theo</translation>
 <translation id="2087981446621639008">ttct dsmt</translation>
 <translation id="2089387485033699258">vi</translation>
@@ -976,6 +976,7 @@
 <translation id="827266600368092403">Lựa chọn bắt đầu hoặc kết thúc</translation>
 <translation id="827422111966801947">Màu chàm</translation>
 <translation id="8276439074553447000">Nhảy tới mục có thể đặt tiêu điểm trước</translation>
+<translation id="8279039817939141096">Bạn có thể nhấn một phím trên bàn phím qwerty, phím chữ nổi có thể làm mới hoặc dùng cử chỉ chạm để tìm hiểu chức năng của chế độ này. Nhấn tổ hợp phím Control và w, phím cách và Z, vuốt sang trái bằng 2 ngón tay hoặc nhấn phím Escape để thoát.</translation>
 <translation id="8283603667300770666">Trường biểu mẫu tiếp theo</translation>
 <translation id="8310185481635255431">Không có đường liên kết nào tiếp theo</translation>
 <translation id="831207808878314375">Định nghĩa</translation>

@@ -55,7 +55,7 @@ component("gvr_shim") {
   if (enable_chrome_android_internal && !is_official_build) {
     deps = [ "//clank/third_party/gvr_shim" ]
   } else {
-    if (is_component_build) {
+    if (libcxx_is_shared) {
       cxx_abi_version = "Cr"
     } else {
       cxx_abi_version = "1"
@@ -63,7 +63,7 @@ component("gvr_shim") {
     library = "//third_party/gvr-android-sdk/libgvr_shim_static_${current_cpu}_${cxx_abi_version}.a"
     libs += [ library ]
 
-    if (is_component_build) {
+    if (libcxx_is_shared) {
       ldflags = [
         "-Wl,--whole-archive",
         rebase_path(library, root_build_dir),

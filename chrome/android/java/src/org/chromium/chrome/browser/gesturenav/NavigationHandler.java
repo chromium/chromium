@@ -14,6 +14,7 @@ import static org.chromium.chrome.browser.gesturenav.GestureNavigationProperties
 
 import android.content.Context;
 import android.gesture.GesturePoint;
+import android.os.Handler;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -22,9 +23,10 @@ import android.view.ViewGroup;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder.TouchEventObserver;
+import org.chromium.chrome.browser.gesturenav.BackActionDelegate.ActionType;
 import org.chromium.chrome.browser.gesturenav.NavigationBubble.CloseTarget;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
@@ -69,9 +71,7 @@ class NavigationHandler implements TouchEventObserver {
 
     private final ViewGroup mParentView;
     private final Context mContext;
-
-    private HistoryNavigationDelegate mDelegate;
-    private ActionDelegate mActionDelegate;
+    private final Handler mHandler = new Handler();
 
     // Frame layout where the main logic turning the gesture into corresponding UI resides.
     private SideSlideLayout mSideSlideLayout;
@@ -85,8 +85,8 @@ class NavigationHandler implements TouchEventObserver {
     private Runnable mDetachLayoutRunnable;
     private GestureDetector mDetector;
     private View.OnAttachStateChangeListener mAttachStateListener;
-    private final Supplier<Boolean> mIsNativePage;
-    private final Supplier<Boolean> mIsSheetExpanded;
+    private final BackActionDelegate mBackActionDelegate;
+    private Tab mTab;
 
     private @GestureState int mState;
 
@@ -94,33 +94,6 @@ class NavigationHandler implements TouchEventObserver {
 
     // Total horizontal pull offset for a swipe gesture.
     private float mPullOffset;
-
-    /**
-     * Interface to perform actions for navigating.
-     */
-    public interface ActionDelegate {
-        /**
-         * @param forward Direction to navigate. {@code true} if forward.
-         * @return {@code true} if navigation toward the given direction is possible.
-         */
-        boolean canNavigate(boolean forward);
-
-        /**
-         * Execute navigation toward the given direction.
-         * @param forward Direction to navigate. {@code true} if forward.
-         */
-        void navigate(boolean forward);
-
-        /**
-         * @return {@code true} if back action will close the current tab.
-         */
-        boolean willBackCloseTab();
-
-        /**
-         * @return {@code true} if back action will cause the app to exit.
-         */
-        boolean willBackExitApp();
-    }
 
     private class SideNavGestureListener extends GestureDetector.SimpleOnGestureListener {
         @Override
@@ -137,13 +110,13 @@ class NavigationHandler implements TouchEventObserver {
         }
     }
 
-    public NavigationHandler(PropertyModel model, ViewGroup parentView,
-            Supplier<Boolean> isNativePage, Supplier<Boolean> isSheetExpanded) {
+    public NavigationHandler(
+            PropertyModel model, ViewGroup parentView, BackActionDelegate backActionDelegate) {
         mModel = model;
         mParentView = parentView;
         mContext = parentView.getContext();
-        mIsNativePage = isNativePage;
-        mIsSheetExpanded = isSheetExpanded;
+        mBackActionDelegate = backActionDelegate;
+
         mState = GestureState.NONE;
 
         mEdgeWidthPx = EDGE_WIDTH_DP * parentView.getResources().getDisplayMetrics().density;
@@ -160,29 +133,27 @@ class NavigationHandler implements TouchEventObserver {
         parentView.addOnAttachStateChangeListener(mAttachStateListener);
     }
 
-    /**
-     * Sets {@link HistoryNavigationDelegate} object.
-     * Also creates new delegates, for horizontal gesture and bottom sheet processing.
-     * @param {@link HistoryNavigationDelegate} object.
-     */
-    void setDelegate(HistoryNavigationDelegate delegate) {
-        mDelegate = delegate;
-        mActionDelegate = delegate.createActionDelegate();
+    void setTab(Tab tab) {
+        mTab = tab;
     }
 
     @Override
     public boolean shouldInterceptTouchEvent(MotionEvent e) {
         // Forward gesture events only for native pages. Rendered pages receive events
         // from SwipeRefreshHandler.
-        if (!mIsNativePage.get()) return false;
+        if (!isNativePage()) return false;
         return isActive();
     }
 
     @Override
     public void handleTouchEvent(MotionEvent e) {
-        if (!mIsNativePage.get()) return;
+        if (!isNativePage()) return;
         mDetector.onTouchEvent(e);
         if (e.getAction() == MotionEvent.ACTION_UP) release(true);
+    }
+
+    private boolean isNativePage() {
+        return mTab != null && mTab.isNativePage();
     }
 
     /**
@@ -204,7 +175,7 @@ class NavigationHandler implements TouchEventObserver {
     @VisibleForTesting
     boolean onScroll(float startX, float distanceX, float distanceY, float endX, float endY) {
         // onScroll needs handling only after the state moves away from |NONE|.
-        if (mState == GestureState.NONE || mActionDelegate == null) return true;
+        if (mState == GestureState.NONE || mTab == null) return true;
 
         if (mState == GestureState.STARTED) {
             if (shouldTriggerUi(startX, distanceX, distanceY)) {
@@ -225,11 +196,11 @@ class NavigationHandler implements TouchEventObserver {
      * @see {@link HistoryNavigationCoordinator#triggerUi(boolean, float, float)}
      */
     boolean triggerUi(boolean forward, float x, float y) {
-        // Triggering requests may come after the action delegate is nulled out
+        // Triggering requests may come after the tab is nulled out
         // when the activity is being destroyed. Ignore it.
-        if (mActionDelegate == null) return false;
+        if (mTab == null || mTab.isDestroyed()) return false;
         mModel.set(DIRECTION, forward);
-        boolean navigable = mActionDelegate.canNavigate(forward);
+        boolean navigable = canNavigate(forward);
         if (navigable) {
             if (mState != GestureState.STARTED) mModel.set(ACTION, GestureAction.RESET_BUBBLE);
             mModel.set(CLOSE_INDICATOR, getCloseIndicator(forward));
@@ -244,12 +215,26 @@ class NavigationHandler implements TouchEventObserver {
         return navigable;
     }
 
+    private boolean canNavigate(boolean forward) {
+        // Navigating back is considered always possible (actual navigation, closing
+        // tab, or exiting app).
+        return forward ? mTab.canGoForward() : true;
+    }
+
     /**
      * Perform navigation back or forward.
      * @param forward {@code true} for forward navigation, or {@code false} for back.
      */
     void navigate(boolean forward) {
-        mActionDelegate.navigate(forward);
+        if (mTab == null || mTab.isDestroyed()) return;
+        if (forward) {
+            mTab.goForward();
+        } else {
+            // Perform back action at the next UI thread execution. The back action can
+            // potentially close the tab we're running on, which causes use-after-destroy
+            // exception if the closing operation is performed synchronously.
+            mHandler.post(mBackActionDelegate::onBackGesture);
+        }
     }
 
     /**
@@ -258,11 +243,13 @@ class NavigationHandler implements TouchEventObserver {
      * @param forward {@code true} for forward navigation, or {@code false} for back.
      */
     private @CloseTarget int getCloseIndicator(boolean forward) {
-        // Some tabs, upon back at the beginning of the history stack, should be just closed
-        // than closing the entire app.
-        if (!forward && mActionDelegate.willBackCloseTab()) {
+        if (forward) return CloseTarget.NONE;
+
+        @ActionType
+        int type = mBackActionDelegate.getBackActionType(mTab);
+        if (type == ActionType.CLOSE_TAB) {
             return CloseTarget.TAB;
-        } else if (!forward && mActionDelegate.willBackExitApp()) {
+        } else if (type == ActionType.EXIT_APP) {
             return CloseTarget.APP;
         } else {
             return CloseTarget.NONE;
@@ -305,9 +292,6 @@ class NavigationHandler implements TouchEventObserver {
         } else if (mState == GestureState.GLOW) {
             mModel.set(GLOW_OFFSET, mPullOffset);
         }
-
-        // Reset the state if navigation sheet gets expanded.
-        if (mState == GestureState.DRAGGED && mIsSheetExpanded.get()) mState = GestureState.NONE;
     }
 
     /**

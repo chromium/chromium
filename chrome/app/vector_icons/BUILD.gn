@@ -19,6 +19,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "account_child_circle.icon",
     "add.icon",
     "apps.icon",
+    "autofill/gpay_offer.icon",
     "autofill/webauthn_dialog_header.icon",
     "autofill/webauthn_dialog_header_dark.icon",
     "back_arrow_touch.icon",
@@ -33,6 +34,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "cast_for_education.icon",
     "chevron_right.icon",
     "chrome_labs.icon",
+    "chrome_labs_touch.icon",
     "click_to_call_illustration.icon",
     "click_to_call_illustration_dark.icon",
     "close_all.icon",
@@ -127,12 +129,12 @@ aggregate_vector_icons("chrome_vector_icons") {
     "translate.icon",
     "trash_can.icon",
     "tv.icon",
-    "usb_security_key.icon",
+    "usb_cable.icon",
     "user_account_avatar.icon",
     "user_menu_guest.icon",
     "user_menu_right_arrow.icon",
-    "warning_badge.icon",
     "web.icon",
+    "webauthn/webauthn_aoa.icon",
     "webauthn/webauthn_error.icon",
     "webauthn/webauthn_error_bluetooth.icon",
     "webauthn/webauthn_error_bluetooth_dark.icon",
@@ -168,8 +170,15 @@ aggregate_vector_icons("chrome_vector_icons") {
       "navigate_stop_windows.icon",
       "navigate_stop_windows_touch.icon",
       "open_in_phone.icon",
+      "payments/secure_payment_confirmation_face.icon",
+      "payments/secure_payment_confirmation_face_dark.icon",
       "reload_windows.icon",
       "reload_windows_touch.icon",
+    ]
+  } else {
+    sources += [
+      "payments/secure_payment_confirmation_fingerprint.icon",
+      "payments/secure_payment_confirmation_fingerprint_dark.icon",
     ]
   }
 

@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_initializer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+#include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -46,8 +47,10 @@
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/module_script.h"
+#include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
@@ -132,8 +135,11 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
 
   // Allow inspector to use its own compilation cache store.
   v8::ScriptCompiler::CachedData* inspector_data = nullptr;
-  probe::ConsumeCompilationCache(execution_context, source_code,
-                                 &inspector_data);
+  // The probe below allows inspector to either inject the cached code
+  // or override compile_options to force eager compilation of code
+  // when producing the cache.
+  probe::ApplyCompilationModeOverride(execution_context, source_code,
+                                      &inspector_data, &compile_options);
   if (inspector_data) {
     v8::ScriptCompiler::Source source(code, origin, inspector_data);
     v8::MaybeLocal<v8::Script> script =
@@ -221,7 +227,8 @@ v8::MaybeLocal<v8::Script> V8ScriptRunner::CompileScript(
   // NOTE: For compatibility with WebCore, ScriptSourceCode's line starts at
   // 1, whereas v8 starts at 0.
   v8::ScriptOrigin origin(
-      V8String(isolate, file_name), script_start_position.line_.ZeroBasedInt(),
+      isolate, V8String(isolate, file_name),
+      script_start_position.line_.ZeroBasedInt(),
       script_start_position.column_.ZeroBasedInt(),
       sanitize_script_errors == SanitizeScriptErrors::kDoNotSanitize, -1,
       V8String(isolate, source.SourceMapUrl()),
@@ -240,9 +247,12 @@ v8::MaybeLocal<v8::Script> V8ScriptRunner::CompileScript(
       CompileScriptInternal(isolate, execution_context, source, origin,
                             compile_options, no_cache_reason, &cache_result);
   TRACE_EVENT_END1(kTraceEventCategoryGroup, "v8.compile", "data",
-                   inspector_compile_script_event::Data(
-                       file_name, script_start_position, cache_result,
-                       source.Streamer(), source.NotStreamingReason()));
+                   [&](perfetto::TracedValue context) {
+                     inspector_compile_script_event::Data(
+                         std::move(context), file_name, script_start_position,
+                         cache_result, source.Streamer(),
+                         source.NotStreamingReason());
+                   });
   return script;
 }
 
@@ -260,15 +270,15 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
 
   // |resource_is_shared_cross_origin| is always true and |resource_is_opaque|
   // is always false because CORS is enforced to module scripts.
-  v8::ScriptOrigin origin(V8String(isolate, file_name),
+  v8::ScriptOrigin origin(isolate, V8String(isolate, file_name),
                           start_position.line_.ZeroBasedInt(),
                           start_position.column_.ZeroBasedInt(),
                           true,  // resource_is_shared_cross_origin
                           -1,    // script id
                           v8::String::Empty(isolate),  // source_map_url
-                          false,                   // resource_is_opaque
-                          false,                   // is_wasm
-                          true,                    // is_module
+                          false,                       // resource_is_opaque
+                          false,                       // is_wasm
+                          true,                        // is_module
                           referrer_info.ToV8HostDefinedOptions(isolate));
 
   v8::Local<v8::String> code = V8String(isolate, params.GetSourceText());
@@ -321,9 +331,11 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
   }
 
   TRACE_EVENT_END1(kTraceEventCategoryGroup, "v8.compileModule", "data",
-                   inspector_compile_script_event::Data(
-                       file_name, start_position, cache_result, streamer,
-                       params.NotStreamingReason()));
+                   [&](perfetto::TracedValue context) {
+                     inspector_compile_script_event::Data(
+                         std::move(context), file_name, start_position,
+                         cache_result, streamer, params.NotStreamingReason());
+                   });
   return script;
 }
 
@@ -376,34 +388,52 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::RunCompiledScript(
 }
 
 ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
-    v8::Isolate* isolate,
     ScriptState* script_state,
-    ExecutionContext* execution_context,
-    const ScriptSourceCode& source,
-    const KURL& base_url,
-    SanitizeScriptErrors sanitize_script_errors,
-    const ScriptFetchOptions& fetch_options,
+    ClassicScript* classic_script,
     ExecuteScriptPolicy policy,
     RethrowErrorsOption rethrow_errors) {
-  DCHECK_EQ(isolate, script_state->GetIsolate());
+  if (!script_state)
+    return ScriptEvaluationResult::FromClassicNotRun();
+
+  // |script_state->GetContext()| must be initialized here already, typically
+  // due to a WindowProxy() call inside ToScriptState*() that is used to get the
+  // ScriptState.
+
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  DCHECK(execution_context->IsContextThread());
 
   if (policy == ExecuteScriptPolicy::kDoNotExecuteScriptWhenScriptsDisabled &&
       !execution_context->CanExecuteScripts(kAboutToExecuteScript)) {
     return ScriptEvaluationResult::FromClassicNotRun();
   }
 
+  v8::Isolate* isolate = script_state->GetIsolate();
+  const ScriptSourceCode& source = classic_script->GetScriptSourceCode();
+  const SanitizeScriptErrors sanitize_script_errors =
+      classic_script->GetSanitizeScriptErrors();
+
   LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(execution_context);
+  WorkerOrWorkletGlobalScope* worker_or_worklet_global_scope =
+      DynamicTo<WorkerOrWorkletGlobalScope>(execution_context);
   LocalFrame* frame = window ? window->GetFrame() : nullptr;
 
   if (window && window->document()->IsInitialEmptyDocument()) {
     window->GetFrame()->Loader().DidAccessInitialDocument();
+  } else if (worker_or_worklet_global_scope) {
+    DCHECK_EQ(
+        script_state,
+        worker_or_worklet_global_scope->ScriptController()->GetScriptState());
+    DCHECK(worker_or_worklet_global_scope->ScriptController()
+               ->IsContextInitialized());
+    DCHECK(worker_or_worklet_global_scope->ScriptController()
+               ->IsReadyToEvaluate());
   }
 
   v8::Context::Scope scope(script_state->GetContext());
 
-  TRACE_EVENT1("devtools.timeline", "EvaluateScript", "data",
-               inspector_evaluate_script_event::Data(
-                   frame, source.Url().GetString(), source.StartPosition()));
+  DEVTOOLS_TIMELINE_TRACE_EVENT(
+      "EvaluateScript", inspector_evaluate_script_event::Data, frame,
+      source.Url().GetString(), source.StartPosition());
 
   // Scope for |v8::TryCatch|.
   {
@@ -421,6 +451,7 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
     // Omit storing base URL if it is same as source URL.
     // Note: This improves chance of getting into a fast path in
     //       ReferrerScriptInfo::ToV8HostDefinedOptions.
+    const KURL base_url = classic_script->BaseURL();
     KURL stored_base_url = (base_url == source.Url()) ? KURL() : base_url;
 
     // TODO(hiroshige): Remove this code and related use counters once the
@@ -441,8 +472,8 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
           break;
       }
     }
-    const ReferrerScriptInfo referrer_info(stored_base_url, fetch_options,
-                                           base_url_source);
+    const ReferrerScriptInfo referrer_info(
+        stored_base_url, classic_script->FetchOptions(), base_url_source);
 
     v8::Local<v8::Script> script;
 
@@ -460,14 +491,16 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
             .ToLocal(&script)) {
       maybe_result =
           V8ScriptRunner::RunCompiledScript(isolate, script, execution_context);
-      probe::ProduceCompilationCache(probe::ToCoreProbeSink(execution_context),
-                                     source, script);
+      probe::DidProduceCompilationCache(
+          probe::ToCoreProbeSink(execution_context), source, script);
       V8CodeCache::ProduceCache(isolate, script, source, produce_cache_options);
     }
 
     // TODO(crbug/1114601): Investigate whether to check CanContinue() in other
     // script evaluation code paths.
     if (!try_catch.CanContinue()) {
+      if (worker_or_worklet_global_scope)
+        worker_or_worklet_global_scope->ScriptController()->ForbidExecution();
       return ScriptEvaluationResult::FromClassicAborted();
     }
 
@@ -596,7 +629,10 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CallAsConstructor(
 
   if (!depth) {
     TRACE_EVENT_BEGIN1("devtools.timeline", "FunctionCall", "data",
-                       inspector_function_call_event::Data(context, function));
+                       [&](perfetto::TracedValue ctx) {
+                         inspector_function_call_event::Data(std::move(ctx),
+                                                             context, function);
+                       });
   }
 
   v8::MaybeLocal<v8::Value> result =
@@ -643,7 +679,10 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CallFunction(
                                        v8::MicrotasksScope::kRunMicrotasks);
   if (!depth) {
     TRACE_EVENT_BEGIN1("devtools.timeline", "FunctionCall", "data",
-                       inspector_function_call_event::Data(context, function));
+                       [&](perfetto::TracedValue trace_context) {
+                         inspector_function_call_event::Data(
+                             std::move(trace_context), context, function);
+                       });
   }
 
   probe::CallFunction probe(context, function, depth);

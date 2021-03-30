@@ -15,6 +15,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
 #include "net/http/http_util.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
@@ -424,24 +425,35 @@ Response EmulationHandler::SetUserAgentOverride(
   std::unique_ptr<Emulation::UserAgentMetadata> ua_metadata =
       ua_metadata_override.takeJust();
   blink::UserAgentMetadata new_ua_metadata;
-  DCHECK(ua_metadata->GetBrands());
+  blink::UserAgentMetadata default_ua_metadata =
+      GetContentClient()->browser()->GetUserAgentMetadata();
 
-  for (const auto& bv : *ua_metadata->GetBrands()) {
-    blink::UserAgentBrandVersion out_bv;
-    if (!ValidateClientHintString(bv->GetBrand()))
-      return Response::InvalidParams("Invalid brand string");
-    out_bv.brand = bv->GetBrand();
+  if (ua_metadata->HasBrands()) {
+    for (const auto& bv : *ua_metadata->GetBrands(nullptr)) {
+      blink::UserAgentBrandVersion out_bv;
+      if (!ValidateClientHintString(bv->GetBrand()))
+        return Response::InvalidParams("Invalid brand string");
+      out_bv.brand = bv->GetBrand();
 
-    if (!ValidateClientHintString(bv->GetVersion()))
-      return Response::InvalidParams("Invalid brand version string");
-    out_bv.major_version = bv->GetVersion();
+      if (!ValidateClientHintString(bv->GetVersion()))
+        return Response::InvalidParams("Invalid brand version string");
+      out_bv.major_version = bv->GetVersion();
 
-    new_ua_metadata.brand_version_list.push_back(std::move(out_bv));
+      new_ua_metadata.brand_version_list.push_back(std::move(out_bv));
+    }
+  } else {
+    new_ua_metadata.brand_version_list =
+        std::move(default_ua_metadata.brand_version_list);
   }
 
-  if (!ValidateClientHintString(ua_metadata->GetFullVersion()))
-    return Response::InvalidParams("Invalid full version string");
-  new_ua_metadata.full_version = ua_metadata->GetFullVersion();
+  if (ua_metadata->HasFullVersion()) {
+    String full_version = ua_metadata->GetFullVersion("");
+    if (!ValidateClientHintString(full_version))
+      return Response::InvalidParams("Invalid full version string");
+    new_ua_metadata.full_version = full_version;
+  } else {
+    new_ua_metadata.full_version = std::move(default_ua_metadata.full_version);
+  }
 
   if (!ValidateClientHintString(ua_metadata->GetPlatform()))
     return Response::InvalidParams("Invalid platform string");

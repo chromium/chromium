@@ -5,6 +5,8 @@
 #include "chrome/browser/android/shortcut_helper.h"
 
 #include <jni.h>
+#include <limits>
+#include <string>
 #include <utility>
 
 #include "base/android/jni_android.h"
@@ -12,9 +14,8 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/guid.h"
-#include "base/strings/string16.h"
 #include "chrome/android/chrome_jni_headers/ShortcutHelper_jni.h"
-#include "components/webapps/android/shortcut_info.h"
+#include "components/webapps/browser/android/shortcut_info.h"
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/color_helpers.h"
@@ -65,6 +66,7 @@ void AddWebappWithSkBitmap(content::WebContents* web_contents,
   content::ManifestIconDownloader::Download(
       web_contents, info.splash_image_url, info.ideal_splash_image_size_in_px,
       info.minimum_splash_image_size_in_px,
+      /* maximum_icon_size_in_px= */ std::numeric_limits<int>::max(),
       base::BindOnce(&ShortcutHelper::StoreWebappSplashImage, webapp_id));
 }
 

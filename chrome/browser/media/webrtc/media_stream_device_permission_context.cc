@@ -11,17 +11,17 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
 namespace {
 
-blink::mojom::FeaturePolicyFeature GetFeaturePolicyFeature(
+blink::mojom::PermissionsPolicyFeature GetPermissionsPolicyFeature(
     ContentSettingsType type) {
   if (type == ContentSettingsType::MEDIASTREAM_MIC)
-    return blink::mojom::FeaturePolicyFeature::kMicrophone;
+    return blink::mojom::PermissionsPolicyFeature::kMicrophone;
 
   DCHECK_EQ(ContentSettingsType::MEDIASTREAM_CAMERA, type);
-  return blink::mojom::FeaturePolicyFeature::kCamera;
+  return blink::mojom::PermissionsPolicyFeature::kCamera;
 }
 
 }  // namespace
@@ -31,7 +31,7 @@ MediaStreamDevicePermissionContext::MediaStreamDevicePermissionContext(
     const ContentSettingsType content_settings_type)
     : PermissionContextBase(browser_context,
                             content_settings_type,
-                            GetFeaturePolicyFeature(content_settings_type)),
+                            GetPermissionsPolicyFeature(content_settings_type)),
       content_settings_type_(content_settings_type) {
   DCHECK(content_settings_type_ == ContentSettingsType::MEDIASTREAM_MIC ||
          content_settings_type_ == ContentSettingsType::MEDIASTREAM_CAMERA);

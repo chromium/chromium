@@ -22,7 +22,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scope.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
 #include "components/services/storage/indexed_db/scopes/scope_lock.h"
@@ -92,7 +91,7 @@ IndexedDBDatabaseError CreateError(blink::mojom::IDBException code,
 }
 
 IndexedDBDatabaseError CreateError(blink::mojom::IDBException code,
-                                   const base::string16& message,
+                                   const std::u16string& message,
                                    IndexedDBTransaction* transaction) {
   transaction->IncrementNumErrorsSent();
   return IndexedDBDatabaseError(code, message);
@@ -153,7 +152,7 @@ IndexedDBDatabase::OpenCursorOperationParams::~OpenCursorOperationParams() =
     default;
 
 IndexedDBDatabase::IndexedDBDatabase(
-    const base::string16& name,
+    const std::u16string& name,
     IndexedDBBackingStore* backing_store,
     IndexedDBFactory* factory,
     IndexedDBClassFactory* class_factory,
@@ -358,60 +357,6 @@ void IndexedDBDatabase::TransactionFinished(
   }
 }
 
-void IndexedDBDatabase::AddPendingObserver(
-    IndexedDBTransaction* transaction,
-    int32_t observer_id,
-    const IndexedDBObserver::Options& options) {
-  DCHECK(transaction);
-  transaction->AddPendingObserver(observer_id, options);
-}
-
-void IndexedDBDatabase::FilterObservation(IndexedDBTransaction* transaction,
-                                          int64_t object_store_id,
-                                          blink::mojom::IDBOperationType type,
-                                          const IndexedDBKeyRange& key_range,
-                                          const IndexedDBValue* value) {
-  for (auto* connection : connections()) {
-    bool recorded = false;
-    for (const auto& observer : connection->active_observers()) {
-      if (!observer->IsRecordingType(type) ||
-          !observer->IsRecordingObjectStore(object_store_id))
-        continue;
-      if (!recorded) {
-        auto observation = blink::mojom::IDBObservation::New();
-        observation->object_store_id = object_store_id;
-        observation->type = type;
-        if (type != blink::mojom::IDBOperationType::Clear)
-          observation->key_range = key_range;
-        transaction->AddObservation(connection->id(), std::move(observation));
-        recorded = true;
-      }
-      blink::mojom::IDBObserverChangesPtr& changes =
-          *transaction->GetPendingChangesForConnection(connection->id());
-
-      changes->observation_index_map[observer->id()].push_back(
-          changes->observations.size() - 1);
-      if (value && observer->values() && !changes->observations.back()->value) {
-        // TODO(dmurph): Avoid any and all IndexedDBValue copies. Perhaps defer
-        // this until the end of the transaction, where we can safely erase the
-        // indexeddb value. crbug.com/682363
-        IndexedDBValue copy = *value;
-        changes->observations.back()->value =
-            IndexedDBValue::ConvertAndEraseValue(&copy);
-      }
-    }
-  }
-}
-
-void IndexedDBDatabase::SendObservations(
-    std::map<int32_t, blink::mojom::IDBObserverChangesPtr> changes_map) {
-  for (auto* conn : connections()) {
-    auto it = changes_map.find(conn->id());
-    if (it != changes_map.end())
-      conn->callbacks()->OnDatabaseChange(std::move(it->second));
-  }
-}
-
 void IndexedDBDatabase::ScheduleOpenConnection(
     IndexedDBOriginStateHandle origin_state_handle,
     std::unique_ptr<IndexedDBPendingConnection> connection) {
@@ -482,7 +427,7 @@ IndexedDBIndexMetadata IndexedDBDatabase::RemoveIndexFromMetadata(
 
 leveldb::Status IndexedDBDatabase::CreateObjectStoreOperation(
     int64_t object_store_id,
-    const base::string16& name,
+    const std::u16string& name,
     const IndexedDBKeyPath& key_path,
     bool auto_increment,
     IndexedDBTransaction* transaction) {
@@ -568,7 +513,7 @@ void IndexedDBDatabase::DeleteObjectStoreAbortOperation(
 
 leveldb::Status IndexedDBDatabase::RenameObjectStoreOperation(
     int64_t object_store_id,
-    const base::string16& new_name,
+    const std::u16string& new_name,
     IndexedDBTransaction* transaction) {
   DCHECK(transaction);
   IDB_TRACE1("IndexedDBDatabase::RenameObjectStore", "txn.id",
@@ -585,7 +530,7 @@ leveldb::Status IndexedDBDatabase::RenameObjectStoreOperation(
   IndexedDBObjectStoreMetadata& object_store_metadata =
       metadata_.object_stores[object_store_id];
 
-  base::string16 old_name;
+  std::u16string old_name;
 
   Status s = metadata_coding_->RenameObjectStore(
       transaction->BackingStoreTransaction()->transaction(),
@@ -604,7 +549,7 @@ leveldb::Status IndexedDBDatabase::RenameObjectStoreOperation(
 
 void IndexedDBDatabase::RenameObjectStoreAbortOperation(
     int64_t object_store_id,
-    base::string16 old_name) {
+    std::u16string old_name) {
   IDB_TRACE("IndexedDBDatabase::RenameObjectStoreAbortOperation");
 
   DCHECK(metadata_.object_stores.find(object_store_id) !=
@@ -644,7 +589,7 @@ void IndexedDBDatabase::VersionChangeAbortOperation(int64_t previous_version) {
 leveldb::Status IndexedDBDatabase::CreateIndexOperation(
     int64_t object_store_id,
     int64_t index_id,
-    const base::string16& name,
+    const std::u16string& name,
     const IndexedDBKeyPath& key_path,
     bool unique,
     bool multi_entry,
@@ -733,7 +678,7 @@ void IndexedDBDatabase::DeleteIndexAbortOperation(
 leveldb::Status IndexedDBDatabase::RenameIndexOperation(
     int64_t object_store_id,
     int64_t index_id,
-    const base::string16& new_name,
+    const std::u16string& new_name,
     IndexedDBTransaction* transaction) {
   DCHECK(transaction);
   IDB_TRACE1("IndexedDBDatabase::RenameIndex", "txn.id", transaction->id());
@@ -748,7 +693,7 @@ leveldb::Status IndexedDBDatabase::RenameIndexOperation(
   IndexedDBIndexMetadata& index_metadata =
       metadata_.object_stores[object_store_id].indexes[index_id];
 
-  base::string16 old_name;
+  std::u16string old_name;
   Status s = metadata_coding_->RenameIndex(
       transaction->BackingStoreTransaction()->transaction(),
       transaction->database()->id(), object_store_id, new_name, &old_name,
@@ -765,7 +710,7 @@ leveldb::Status IndexedDBDatabase::RenameIndexOperation(
 
 void IndexedDBDatabase::RenameIndexAbortOperation(int64_t object_store_id,
                                                   int64_t index_id,
-                                                  base::string16 old_name) {
+                                                  std::u16string old_name) {
   IDB_TRACE("IndexedDBDatabase::RenameIndexAbortOperation");
 
   DCHECK(metadata_.object_stores.find(object_store_id) !=
@@ -1200,7 +1145,7 @@ Status IndexedDBDatabase::PutOperation(
   }
 
   std::vector<std::unique_ptr<IndexWriter>> index_writers;
-  base::string16 error_message;
+  std::u16string error_message;
   bool obeys_constraints = false;
   bool backing_store_success = MakeIndexWriters(
       transaction, backing_store_, id(), object_store, *key, key_was_generated,
@@ -1259,11 +1204,6 @@ Status IndexedDBDatabase::PutOperation(
     std::move(params->callback)
         .Run(blink::mojom::IDBTransactionPutResult::NewKey(*key));
   }
-  FilterObservation(transaction, params->object_store_id,
-                    params->put_mode == blink::mojom::IDBPutMode::AddOnly
-                        ? blink::mojom::IDBOperationType::Add
-                        : blink::mojom::IDBOperationType::Put,
-                    IndexedDBKeyRange(*key), &params->value);
   factory_->NotifyIndexedDBContentChanged(
       origin(), metadata_.name,
       metadata_.object_stores[params->object_store_id].name);
@@ -1325,7 +1265,7 @@ Status IndexedDBDatabase::PutAllOperation(
   std::vector<blink::IndexedDBKey> keys;
   for (auto& put_param : params) {
     std::vector<std::unique_ptr<IndexWriter>> index_writers;
-    base::string16 error_message;
+    std::u16string error_message;
     IndexedDBBackingStore::RecordIdentifier record_identifier;
     bool obeys_constraints = false;
     bool backing_store_success = MakeIndexWriters(
@@ -1382,11 +1322,6 @@ Status IndexedDBDatabase::PutAllOperation(
     std::move(callback).Run(
         blink::mojom::IDBTransactionPutAllResult::NewKeys(std::move(keys)));
   }
-  for (auto& put_param : params) {
-    FilterObservation(transaction, object_store_id,
-                      blink::mojom::IDBOperationType::Put,
-                      IndexedDBKeyRange(*(put_param->key)), &put_param->value);
-  }
   factory_->NotifyIndexedDBContentChanged(
       origin(), metadata_.name, metadata_.object_stores[object_store_id].name);
   return s;
@@ -1417,7 +1352,7 @@ Status IndexedDBDatabase::SetIndexKeysOperation(
   }
 
   std::vector<std::unique_ptr<IndexWriter>> index_writers;
-  base::string16 error_message;
+  std::u16string error_message;
   bool obeys_constraints = false;
   DCHECK(metadata_.object_stores.find(object_store_id) !=
          metadata_.object_stores.end());
@@ -1612,9 +1547,6 @@ Status IndexedDBDatabase::DeleteRangeOperation(
   if (!s.ok())
     return s;
   callbacks->OnSuccess();
-  FilterObservation(transaction, object_store_id,
-                    blink::mojom::IDBOperationType::Delete, *key_range,
-                    nullptr);
   factory_->NotifyIndexedDBContentChanged(
       origin(), metadata_.name, metadata_.object_stores[object_store_id].name);
   return s;
@@ -1659,9 +1591,6 @@ Status IndexedDBDatabase::ClearOperation(
     return s;
   callbacks->OnSuccess();
 
-  FilterObservation(transaction, object_store_id,
-                    blink::mojom::IDBOperationType::Clear, IndexedDBKeyRange(),
-                    nullptr);
   factory_->NotifyIndexedDBContentChanged(
       origin(), metadata_.name, metadata_.object_stores[object_store_id].name);
   return s;

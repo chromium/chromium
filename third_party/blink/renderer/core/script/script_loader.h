@@ -64,7 +64,13 @@ class CORE_EXPORT ScriptLoader final : public GarbageCollected<ScriptLoader>,
   // Script type at the time of #prepare-a-script. Import maps are included here
   // but not in `mojom::blink::ScriptType` because import maps are handled
   // differently from ordinal scripts after PrepareScript().
-  enum class ScriptTypeAtPrepare { kClassic, kModule, kImportMap, kInvalid };
+  enum class ScriptTypeAtPrepare {
+    kClassic,
+    kModule,
+    kImportMap,
+    kSpeculationRules,
+    kInvalid
+  };
 
   static ScriptTypeAtPrepare GetScriptTypeAtPrepare(
       const String& type_attribute_value,
@@ -91,7 +97,6 @@ class CORE_EXPORT ScriptLoader final : public GarbageCollected<ScriptLoader>,
   bool WillExecuteWhenDocumentFinishedParsing() const {
     return will_execute_when_document_finished_parsing_;
   }
-  bool IsForceDeferred() const { return force_deferred_; }
   bool IsParserInserted() const { return parser_inserted_; }
   bool AlreadyStarted() const { return already_started_; }
   bool IsNonBlocking() const { return non_blocking_; }
@@ -186,9 +191,6 @@ class CORE_EXPORT ScriptLoader final : public GarbageCollected<ScriptLoader>,
   bool will_be_parser_executed_;
 
   bool will_execute_when_document_finished_parsing_;
-
-  // The script will be force deferred (https://crbug.com/976061).
-  bool force_deferred_;
 
   // A PendingScript is first created in PrepareScript() and stored in
   // |prepared_pending_script_|.

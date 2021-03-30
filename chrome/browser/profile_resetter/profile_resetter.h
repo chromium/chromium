@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/profile_resetter/brandcoded_default_settings.h"
 #include "chrome/browser/search/instant_service.h"
 #include "components/search_engines/template_url_service.h"
@@ -127,7 +127,7 @@ class ProfileResetter : public content::BrowsingDataRemover::Observer {
 };
 
 // Path to shortcut and command line arguments.
-typedef std::pair<base::FilePath, base::string16> ShortcutCommand;
+typedef std::pair<base::FilePath, std::wstring> ShortcutCommand;
 
 typedef base::RefCountedData<base::AtomicFlag> SharedCancellationFlag;
 

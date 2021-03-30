@@ -8,29 +8,6 @@ import("//ui/webui/resources/tools/js_modulizer.gni")
 
 assert(is_chromeos, "Bluetooth dialog is Chrome OS only.")
 
-js_type_check("closure_compile") {
-  deps = [ ":bluetooth_dialog" ]
-}
-
-js_library("bluetooth_dialog") {
-  deps = [
-    "//third_party/polymer/v1_0/components-chromium/iron-resizable-behavior:iron-resizable-behavior-extracted",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:i18n_behavior",
-  ]
-  externs_list = chrome_extension_public_externs + [
-                   "$externs_path/bluetooth.js",
-                   "$externs_path/bluetooth_private.js",
-                 ]
-  extra_sources = [
-    "$interfaces_path/bluetooth_interface.js",
-    "$interfaces_path/bluetooth_private_interface.js",
-  ]
-}
-
 js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [ ":bluetooth_dialog.m" ]

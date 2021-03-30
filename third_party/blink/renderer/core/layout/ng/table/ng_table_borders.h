@@ -66,6 +66,7 @@ class NGTableBorders : public RefCounted<NGTableBorders> {
 #if DCHECK_IS_ON()
   String DumpEdges();
   void ShowEdges();
+  bool operator==(const NGTableBorders& other) const;
 #endif
 
 
@@ -344,5 +345,7 @@ class NGTableBorders : public RefCounted<NGTableBorders> {
 }  // namespace blink
 
 WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::NGTableBorders::Edge)
+WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(
+    blink::NGTableBorders::Section)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_TABLE_NG_TABLE_BORDERS_H_

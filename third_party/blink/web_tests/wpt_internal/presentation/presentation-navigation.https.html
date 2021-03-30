@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<iframe></iframe>
+<script>
+
+var iframe = document.querySelector('iframe');
+
+async_test(t => {
+  iframe.onload = t.step_func(() => {
+    var presentation = iframe.contentWindow.navigator.presentation;
+    if (iframe.src.endsWith('#after-reload')) {
+      assert_equals(presentation.defaultRequest, null);
+      t.done();
+    } else {
+      presentation.defaultRequest = new PresentationRequest("https://example.org");
+      assert_not_equals(presentation.defaultRequest, null);
+
+      iframe.src += '#after-reload';
+      iframe.contentWindow.location.reload(true);
+    }
+  });
+
+  // Navigate the iframe
+  iframe.src = 'resources/blank.html';
+}, "Test that navigator.defaultRequest isn't kept alive after reload.");
+
+</script>
+</body>
+</html>

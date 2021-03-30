@@ -10,7 +10,7 @@ TestSystemTrayClient::TestSystemTrayClient() = default;
 
 TestSystemTrayClient::~TestSystemTrayClient() = default;
 
-void TestSystemTrayClient::ShowSettings() {}
+void TestSystemTrayClient::ShowSettings(int64_t display_id) {}
 
 void TestSystemTrayClient::ShowBluetoothSettings() {
   show_bluetooth_settings_count_++;
@@ -18,7 +18,7 @@ void TestSystemTrayClient::ShowBluetoothSettings() {
 
 void TestSystemTrayClient::ShowBluetoothPairingDialog(
     const std::string& address,
-    const base::string16& name_for_display,
+    const std::u16string& name_for_display,
     bool paired,
     bool connected) {}
 
@@ -40,6 +40,10 @@ void TestSystemTrayClient::ShowConnectedDevicesSettings() {
 
 void TestSystemTrayClient::ShowTetherNetworkSettings() {}
 
+void TestSystemTrayClient::ShowWifiSyncSettings() {
+  show_wifi_sync_settings_count_++;
+}
+
 void TestSystemTrayClient::ShowAboutChromeOS() {}
 
 void TestSystemTrayClient::ShowHelp() {}
@@ -54,6 +58,10 @@ void TestSystemTrayClient::ShowPaletteHelp() {}
 
 void TestSystemTrayClient::ShowPaletteSettings() {}
 
+void TestSystemTrayClient::ShowPrivacyAndSecuritySettings() {
+  show_os_settings_privacy_and_security_count_++;
+}
+
 void TestSystemTrayClient::ShowPublicAccountInfo() {}
 
 void TestSystemTrayClient::ShowEnterpriseInfo() {}
@@ -62,6 +70,8 @@ void TestSystemTrayClient::ShowNetworkConfigure(const std::string& network_id) {
 }
 
 void TestSystemTrayClient::ShowNetworkCreate(const std::string& type) {}
+
+void TestSystemTrayClient::ShowSettingsCellularSetup(bool show_psim_flow) {}
 
 void TestSystemTrayClient::ShowThirdPartyVpnCreate(
     const std::string& extension_id) {}

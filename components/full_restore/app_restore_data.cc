@@ -9,24 +9,28 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/full_restore/app_launch_info.h"
+#include "components/full_restore/window_info.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 
 namespace full_restore {
 
 namespace {
 
-const char kEventFlagKey[] = "event_flag";
-const char kContainerKey[] = "container";
-const char kDispositionKey[] = "disposition";
-const char kDisplayIdKey[] = "display_id";
-const char kUrlKey[] = "url";
-const char kIntentKey[] = "intent";
-const char kFilePathsKey[] = "file_paths";
-const char kActivationIndexKey[] = "index";
-const char kDeskIdKey[] = "desk_id";
-const char kRestoredBoundsKey[] = "restored_bounds";
-const char kcurrentBoundsKey[] = "current_bounds";
-const char kWindowStateTypeKey[] = "window_state_type";
+constexpr char kEventFlagKey[] = "event_flag";
+constexpr char kContainerKey[] = "container";
+constexpr char kDispositionKey[] = "disposition";
+constexpr char kDisplayIdKey[] = "display_id";
+constexpr char kUrlKey[] = "url";
+constexpr char kIntentKey[] = "intent";
+constexpr char kFilePathsKey[] = "file_paths";
+constexpr char kActivationIndexKey[] = "index";
+constexpr char kDeskIdKey[] = "desk_id";
+constexpr char kVisibleOnAllWorkspacesKey[] = "all_desk";
+// TODO(sammiequon): This may not be needed as restore bounds are saved in
+// current_bounds if needed. See WindowInfo for more details.
+constexpr char kRestoreBoundsKey[] = "restore_bounds";
+constexpr char kCurrentBoundsKey[] = "current_bounds";
+constexpr char kWindowStateTypeKey[] = "window_state_type";
 
 // Converts |rect| to base::Value, e.g. { 0, 100, 200, 300 }.
 base::Value ConvertRectToValue(const gfx::Rect& rect) {
@@ -36,6 +40,13 @@ base::Value ConvertRectToValue(const gfx::Rect& rect) {
   rect_list.Append(base::Value(rect.width()));
   rect_list.Append(base::Value(rect.height()));
   return rect_list;
+}
+
+// Gets bool value from base::DictionaryValue, e.g. { "key": true } returns
+// true.
+base::Optional<bool> GetBoolValueFromDict(const base::DictionaryValue& dict,
+                                          const std::string& key_name) {
+  return dict.HasKey(key_name) ? dict.FindBoolKey(key_name) : base::nullopt;
 }
 
 // Gets int value from base::DictionaryValue, e.g. { "key": 100 } returns 100.
@@ -106,6 +117,16 @@ base::Optional<gfx::Rect> GetBoundsRectFromDict(
   return gfx::Rect(rect[0], rect[1], rect[2], rect[3]);
 }
 
+// Gets WindowStateType from base::DictionaryValue, e.g. { "window_state_type":
+// 2 } returns WindowStateType::kMinimized.
+base::Optional<chromeos::WindowStateType> GetWindowStateTypeFromDict(
+    const base::DictionaryValue& dict) {
+  return dict.HasKey(kWindowStateTypeKey)
+             ? base::make_optional(static_cast<chromeos::WindowStateType>(
+                   dict.FindIntKey(kWindowStateTypeKey).value()))
+             : base::nullopt;
+}
+
 }  // namespace
 
 AppRestoreData::AppRestoreData() = default;
@@ -126,14 +147,29 @@ AppRestoreData::AppRestoreData(base::Value&& value) {
   file_paths = GetFilePathsFromDict(*data_dict);
   activation_index = GetIntValueFromDict(*data_dict, kActivationIndexKey);
   desk_id = GetIntValueFromDict(*data_dict, kDeskIdKey);
-  restored_bounds = GetBoundsRectFromDict(*data_dict, kRestoredBoundsKey);
-  current_bounds = GetBoundsRectFromDict(*data_dict, kcurrentBoundsKey);
-  window_state_type = GetIntValueFromDict(*data_dict, kWindowStateTypeKey);
+  visible_on_all_workspaces =
+      GetBoolValueFromDict(*data_dict, kVisibleOnAllWorkspacesKey);
+  restore_bounds = GetBoundsRectFromDict(*data_dict, kRestoreBoundsKey);
+  current_bounds = GetBoundsRectFromDict(*data_dict, kCurrentBoundsKey);
+  window_state_type = GetWindowStateTypeFromDict(*data_dict);
 
   if (data_dict->HasKey(kIntentKey)) {
     intent = apps_util::ConvertValueToIntent(
         std::move(*data_dict->FindDictKey(kIntentKey)));
   }
+}
+
+AppRestoreData::AppRestoreData(std::unique_ptr<AppLaunchInfo> app_launch_info) {
+  if (!app_launch_info)
+    return;
+
+  event_flag = std::move(app_launch_info->event_flag);
+  container = std::move(app_launch_info->container);
+  disposition = std::move(app_launch_info->disposition);
+  display_id = std::move(app_launch_info->display_id);
+  url = std::move(app_launch_info->url);
+  file_paths = std::move(app_launch_info->file_paths);
+  intent = std::move(app_launch_info->intent);
 }
 
 AppRestoreData::~AppRestoreData() = default;
@@ -168,8 +204,11 @@ std::unique_ptr<AppRestoreData> AppRestoreData::Clone() const {
   if (desk_id.has_value())
     data->desk_id = desk_id.value();
 
-  if (restored_bounds.has_value())
-    data->restored_bounds = restored_bounds.value();
+  if (visible_on_all_workspaces.has_value())
+    data->visible_on_all_workspaces = visible_on_all_workspaces.value();
+
+  if (restore_bounds.has_value())
+    data->restore_bounds = restore_bounds.value();
 
   if (current_bounds.has_value())
     data->current_bounds = current_bounds.value();
@@ -218,46 +257,105 @@ base::Value AppRestoreData::ConvertToValue() const {
   if (desk_id.has_value())
     launch_info_dict.SetIntKey(kDeskIdKey, desk_id.value());
 
-  if (restored_bounds.has_value()) {
-    launch_info_dict.SetKey(kRestoredBoundsKey,
-                            ConvertRectToValue(restored_bounds.value()));
+  if (visible_on_all_workspaces.has_value()) {
+    launch_info_dict.SetBoolKey(kVisibleOnAllWorkspacesKey,
+                                visible_on_all_workspaces.value());
+  }
+
+  if (restore_bounds.has_value()) {
+    launch_info_dict.SetKey(kRestoreBoundsKey,
+                            ConvertRectToValue(restore_bounds.value()));
   }
 
   if (current_bounds.has_value()) {
-    launch_info_dict.SetKey(kcurrentBoundsKey,
+    launch_info_dict.SetKey(kCurrentBoundsKey,
                             ConvertRectToValue(current_bounds.value()));
   }
 
-  if (window_state_type.has_value())
-    launch_info_dict.SetIntKey(kWindowStateTypeKey, window_state_type.value());
+  if (window_state_type.has_value()) {
+    launch_info_dict.SetIntKey(kWindowStateTypeKey,
+                               static_cast<int>(window_state_type.value()));
+  }
 
   return launch_info_dict;
 }
 
-AppRestoreData::AppRestoreData(std::unique_ptr<AppLaunchInfo> app_launch_info) {
-  if (!app_launch_info)
-    return;
+void AppRestoreData::ModifyWindowInfo(const WindowInfo& window_info) {
+  if (window_info.activation_index.has_value())
+    activation_index = window_info.activation_index.value();
 
-  if (app_launch_info->event_flag.has_value())
-    event_flag = app_launch_info->event_flag.value();
+  if (window_info.desk_id.has_value())
+    desk_id = window_info.desk_id.value();
 
-  if (app_launch_info->container.has_value())
-    container = app_launch_info->container.value();
+  if (window_info.visible_on_all_workspaces.has_value())
+    visible_on_all_workspaces = window_info.visible_on_all_workspaces.value();
 
-  if (app_launch_info->disposition.has_value())
-    disposition = app_launch_info->disposition.value();
+  if (window_info.restore_bounds.has_value())
+    restore_bounds = std::move(window_info.restore_bounds.value());
 
-  if (app_launch_info->display_id.has_value())
-    display_id = app_launch_info->display_id.value();
+  if (window_info.current_bounds.has_value())
+    current_bounds = window_info.current_bounds.value();
 
-  if (app_launch_info->url.has_value())
-    url = std::move(app_launch_info->url.value());
+  if (window_info.window_state_type.has_value())
+    window_state_type = window_info.window_state_type.value();
 
-  if (app_launch_info->file_paths.has_value())
-    file_paths = std::move(app_launch_info->file_paths.value());
+  if (window_info.display_id.has_value())
+    display_id = window_info.display_id.value();
+}
 
-  if (app_launch_info->intent.has_value())
-    intent = std::move(app_launch_info->intent.value());
+void AppRestoreData::ClearWindowInfo() {
+  activation_index.reset();
+  desk_id.reset();
+  visible_on_all_workspaces.reset();
+  restore_bounds.reset();
+  current_bounds.reset();
+  window_state_type.reset();
+}
+
+std::unique_ptr<WindowInfo> AppRestoreData::GetWindowInfo() const {
+  auto window_info = std::make_unique<WindowInfo>();
+
+  if (activation_index.has_value())
+    window_info->activation_index = activation_index;
+
+  if (desk_id.has_value())
+    window_info->desk_id = desk_id.value();
+
+  if (visible_on_all_workspaces.has_value())
+    window_info->visible_on_all_workspaces = visible_on_all_workspaces.value();
+
+  if (restore_bounds.has_value())
+    window_info->restore_bounds = restore_bounds.value();
+
+  if (current_bounds.has_value())
+    window_info->current_bounds = current_bounds.value();
+
+  if (window_state_type.has_value())
+    window_info->window_state_type = window_state_type.value();
+
+  // Display id is set as the app launch parameter, so we don't need to return
+  // the display id to restore the display id.
+  return window_info;
+}
+
+apps::mojom::WindowInfoPtr AppRestoreData::GetAppWindowInfo() const {
+  apps::mojom::WindowInfoPtr window_info = apps::mojom::WindowInfo::New();
+
+  if (display_id.has_value())
+    window_info->display_id = display_id.value();
+
+  if (current_bounds.has_value()) {
+    window_info->bounds = apps::mojom::Rect::New();
+    window_info->bounds->x = current_bounds.value().x();
+    window_info->bounds->y = current_bounds.value().y();
+    window_info->bounds->width = current_bounds.value().width();
+    window_info->bounds->height = current_bounds.value().height();
+  }
+
+  if (window_state_type.has_value())
+    window_info->state = static_cast<int32_t>(window_state_type.value());
+
+  return window_info;
 }
 
 }  // namespace full_restore

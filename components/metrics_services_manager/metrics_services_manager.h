@@ -20,10 +20,6 @@ class MetricsService;
 class MetricsServiceClient;
 }
 
-namespace rappor {
-class RapporServiceImpl;
-}
-
 namespace ukm {
 class UkmService;
 }
@@ -38,7 +34,7 @@ class MetricsServicesManagerClient;
 
 // MetricsServicesManager is a helper class for embedders that use the various
 // metrics-related services in a Chrome-like fashion: MetricsService (via its
-// client), RapporServiceImpl and VariationsService.
+// client) and VariationsService.
 class MetricsServicesManager {
  public:
   // Creates the MetricsServicesManager with the given client.
@@ -59,9 +55,6 @@ class MetricsServicesManager {
   // Returns the MetricsService, creating it if it hasn't been created yet (and
   // additionally creating the MetricsServiceClient in that case).
   metrics::MetricsService* GetMetricsService();
-
-  // Returns the RapporServiceImpl, creating it if it hasn't been created yet.
-  rappor::RapporServiceImpl* GetRapporServiceImpl();
 
   // Returns the UkmService, creating it if it hasn't been created yet.
   ukm::UkmService* GetUkmService();
@@ -86,10 +79,6 @@ class MetricsServicesManager {
   bool IsMetricsConsentGiven() const;
 
  private:
-  // Update the managed services when permissions for recording/uploading
-  // metrics change.
-  void UpdateRapporServiceImpl();
-
   // Returns the MetricsServiceClient, creating it if it hasn't been
   // created yet (and additionally creating the MetricsService in that case).
   metrics::MetricsServiceClient* GetMetricsServiceClient();
@@ -123,9 +112,6 @@ class MetricsServicesManager {
 
   // The MetricsServiceClient. Owns the MetricsService.
   std::unique_ptr<metrics::MetricsServiceClient> metrics_service_client_;
-
-  // The RapporServiceImpl, for RAPPOR metric uploads.
-  std::unique_ptr<rappor::RapporServiceImpl> rappor_service_;
 
   // The VariationsService, for server-side experiments infrastructure.
   std::unique_ptr<variations::VariationsService> variations_service_;

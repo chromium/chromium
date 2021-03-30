@@ -245,16 +245,8 @@ TEST_F(ConditionVariableTest, DISABLED_TimeoutAcrossSetTimeOfDay) {
 }
 #endif
 
-// Suddenly got flaky on Win, see http://crbug.com/10607 (starting at
-// comment #15).
-// This is also flaky on Fuchsia, see http://crbug.com/738275.
-#if defined(OS_WIN) || defined(OS_FUCHSIA)
-#define MAYBE_MultiThreadConsumerTest DISABLED_MultiThreadConsumerTest
-#else
-#define MAYBE_MultiThreadConsumerTest MultiThreadConsumerTest
-#endif
 // Test serial task servicing, as well as two parallel task servicing methods.
-TEST_F(ConditionVariableTest, MAYBE_MultiThreadConsumerTest) {
+TEST_F(ConditionVariableTest, MultiThreadConsumerTest) {
   const int kThreadCount = 10;
   WorkQueue queue(kThreadCount);  // Start the threads.
 
@@ -398,13 +390,7 @@ TEST_F(ConditionVariableTest, MAYBE_MultiThreadConsumerTest) {
                                    queue.ThreadSafeCheckShutdown(kThreadCount));
 }
 
-#if defined(OS_FUCHSIA)
-// TODO(crbug.com/751894): This flakily times out on Fuchsia.
-#define MAYBE_LargeFastTaskTest DISABLED_LargeFastTaskTest
-#else
-#define MAYBE_LargeFastTaskTest LargeFastTaskTest
-#endif
-TEST_F(ConditionVariableTest, MAYBE_LargeFastTaskTest) {
+TEST_F(ConditionVariableTest, LargeFastTaskTest) {
   const int kThreadCount = 200;
   WorkQueue queue(kThreadCount);  // Start the threads.
 

@@ -6,6 +6,7 @@
 
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
+#include "base/strings/string_util_win.h"
 #include "base/win/windowsx_shim.h"
 #include "ui/base/l10n/l10n_util_win.h"
 #include "ui/display/display.h"
@@ -76,7 +77,7 @@ bool TooltipWin::EnsureTooltipWindow() {
 
 void TooltipWin::PositionTooltip() {
   gfx::Point screen_point =
-      display::win::ScreenWin::DIPToScreenPoint(location_);
+      display::win::ScreenWin::DIPToScreenPoint(position_.anchor_point);
   const int cursoroffset = GetCurrentCursorVisibleHeight();
   screen_point.Offset(0, cursoroffset);
 
@@ -85,9 +86,14 @@ void TooltipWin::PositionTooltip() {
   const gfx::Size size(LOWORD(tooltip_size), HIWORD(tooltip_size));
 
   const display::Display display(
-      display::Screen::GetScreen()->GetDisplayNearestPoint(location_));
+      display::Screen::GetScreen()->GetDisplayNearestPoint(
+          position_.anchor_point));
 
   gfx::Rect tooltip_bounds(screen_point, size);
+  // Align the center of the tooltip with the position when the tooltip is not
+  // following the cursor.
+  if (position_.behavior == TooltipPositionBehavior::kCentered)
+    tooltip_bounds.Offset(-size.width() / 2, 0);
   tooltip_bounds.AdjustToFit(display::win::ScreenWin::DIPToScreenRect(
       parent_hwnd_, display.work_area()));
   SetWindowPos(tooltip_hwnd_, nullptr, tooltip_bounds.x(), tooltip_bounds.y(),
@@ -130,22 +136,22 @@ int TooltipWin::GetMaxWidth(const gfx::Point& location) const {
   return (monitor_bounds.width() + 1) / 2;
 }
 
-void TooltipWin::SetText(aura::Window* window,
-                         const base::string16& tooltip_text,
-                         const gfx::Point& location) {
+void TooltipWin::Update(aura::Window* window,
+                        const std::u16string& tooltip_text,
+                        const TooltipPosition& position) {
   if (!EnsureTooltipWindow())
     return;
 
-  // See comment in header for details on why |location_| is needed.
-  location_ = location;
+  // See comment in header for details on why |position_| is needed.
+  position_ = position;
 
-  base::string16 adjusted_text(tooltip_text);
+  std::u16string adjusted_text(tooltip_text);
   base::i18n::AdjustStringForLocaleDirection(&adjusted_text);
-  toolinfo_.lpszText = const_cast<WCHAR*>(adjusted_text.c_str());
+  toolinfo_.lpszText = base::as_writable_wcstr(adjusted_text);
   SendMessage(tooltip_hwnd_, TTM_SETTOOLINFO, 0,
               reinterpret_cast<LPARAM>(&toolinfo_));
 
-  int max_width = GetMaxWidth(location_);
+  int max_width = GetMaxWidth(position_.anchor_point);
   SendMessage(tooltip_hwnd_, TTM_SETMAXTIPWIDTH, 0, max_width);
 }
 

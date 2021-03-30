@@ -13,7 +13,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/widget/screen_orientation.mojom-blink.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/frame_view.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -39,8 +38,6 @@
 #include "ui/gfx/geometry/rect.h"
 
 using testing::_;
-using testing::AtLeast;
-using testing::Return;
 
 namespace blink {
 
@@ -57,9 +54,16 @@ class DummyScreenOrientationCallback final : public WebLockOrientationCallback {
 class MockWebMediaPlayerForOrientationLockDelegate final
     : public EmptyWebMediaPlayer {
  public:
-  bool HasVideo() const override { return true; }
+  ~MockWebMediaPlayerForOrientationLockDelegate() override = default;
 
-  MOCK_CONST_METHOD0(NaturalSize, gfx::Size());
+  // EmptyWebMediaPlayer overrides:
+  bool HasVideo() const override { return true; }
+  gfx::Size NaturalSize() const override { return mock_natural_size_; }
+
+  gfx::Size& MockNaturalSize() { return mock_natural_size_; }
+
+ private:
+  gfx::Size mock_natural_size_ = {};
 };
 
 class MockScreenOrientation final
@@ -74,6 +78,7 @@ class MockScreenOrientation final
                                 SCREEN_ORIENTATION_LOCK_RESULT_SUCCESS);
     LockOrientation(type);
   }
+  MOCK_METHOD(void, UnlockOrientation, (), (override));
 
   void BindPendingReceiver(
       mojo::PendingAssociatedReceiver<device::mojom::blink::ScreenOrientation>
@@ -83,9 +88,9 @@ class MockScreenOrientation final
 
   void Close() { receiver_.reset(); }
 
-  MOCK_METHOD0(UnlockOrientation, void());
-
-  MOCK_METHOD1(LockOrientation, void(device::mojom::ScreenOrientationLockType));
+  MOCK_METHOD(void,
+              LockOrientation,
+              (device::mojom::ScreenOrientationLockType));
 
  private:
   mojo::AssociatedReceiver<device::mojom::blink::ScreenOrientation> receiver_{
@@ -133,7 +138,11 @@ class MockChromeClientForOrientationLockDelegate final
         WTF::Bind(DidExitFullscreen, WrapPersistent(frame.GetDocument())));
   }
 
-  MOCK_CONST_METHOD1(GetScreenInfo, ScreenInfo(LocalFrame&));
+  const ScreenInfo& GetScreenInfo(LocalFrame&) const override {
+    return mock_screen_info_;
+  }
+
+  ScreenInfo& MockScreenInfo() { return mock_screen_info_; }
 
   MockScreenOrientation& ScreenOrientationClient() {
     return mock_screen_orientation_;
@@ -141,6 +150,7 @@ class MockChromeClientForOrientationLockDelegate final
 
  private:
   MockScreenOrientation mock_screen_orientation_;
+  ScreenInfo mock_screen_info_ = {};
 };
 
 class StubLocalFrameClientForOrientationLockDelegate final
@@ -165,7 +175,8 @@ class MediaControlsOrientationLockDelegateTest
       : ScopedVideoFullscreenOrientationLockForTest(true),
         ScopedVideoRotateToFullscreenForTest(false) {}
 
-  MediaControlsOrientationLockDelegateTest(bool video_rotate_to_fullscreen)
+  explicit MediaControlsOrientationLockDelegateTest(
+      bool video_rotate_to_fullscreen)
       : ScopedVideoFullscreenOrientationLockForTest(true),
         ScopedVideoRotateToFullscreenForTest(video_rotate_to_fullscreen) {}
 
@@ -280,12 +291,14 @@ class MediaControlsOrientationLockDelegateTest
         Video().GetWebMediaPlayer());
   }
 
+ protected:
+  Persistent<MockChromeClientForOrientationLockDelegate> chrome_client_;
+
  private:
   friend class MediaControlsOrientationLockAndRotateToFullscreenDelegateTest;
 
   bool previous_orientation_event_value_;
   Persistent<HTMLVideoElement> video_;
-  Persistent<MockChromeClientForOrientationLockDelegate> chrome_client_;
 };
 
 class MediaControlsOrientationLockAndRotateToFullscreenDelegateTest
@@ -366,18 +379,14 @@ class MediaControlsOrientationLockAndRotateToFullscreenDelegateTest
   // Calls must be wrapped in ASSERT_NO_FATAL_FAILURE.
   void RotateScreenTo(mojom::blink::ScreenOrientation screen_orientation_type,
                       uint16_t screen_orientation_angle) {
-    ScreenInfo screen_info;
-    screen_info.orientation_type = screen_orientation_type;
-    screen_info.orientation_angle = screen_orientation_angle;
-    screen_info.rect = ScreenRectFromAngle(screen_orientation_angle);
-    ASSERT_TRUE(screen_info.orientation_type ==
+    ScreenInfo new_screen_info;
+    new_screen_info.orientation_type = screen_orientation_type;
+    new_screen_info.orientation_angle = screen_orientation_angle;
+    new_screen_info.rect = ScreenRectFromAngle(screen_orientation_angle);
+    ASSERT_TRUE(new_screen_info.orientation_type ==
                 ScreenOrientationController::ComputeOrientation(
-                    screen_info.rect, screen_info.orientation_angle));
-
-    testing::Mock::VerifyAndClearExpectations(&ChromeClient());
-    EXPECT_CALL(ChromeClient(), GetScreenInfo(_))
-        .Times(AtLeast(1))
-        .WillRepeatedly(Return(screen_info));
+                    new_screen_info.rect, new_screen_info.orientation_angle));
+    ChromeClient().MockScreenInfo() = new_screen_info;
 
     // Screen Orientation API
     ScreenOrientationController::From(*GetDocument().domWindow())
@@ -397,8 +406,8 @@ class MediaControlsOrientationLockAndRotateToFullscreenDelegateTest
     SimulateVideoReadyState(HTMLMediaElement::kHaveMetadata);
 
     // Set video size.
-    EXPECT_CALL(MockWebMediaPlayer(), NaturalSize())
-        .WillRepeatedly(Return(gfx::Size(video_width, video_height)));
+    MockWebMediaPlayer().MockNaturalSize() =
+        gfx::Size(video_width, video_height);
 
     // Dispatch an arbitrary Device Orientation event to satisfy
     // MediaControlsRotateToFullscreenDelegate's requirement that the device
@@ -572,60 +581,40 @@ TEST_F(MediaControlsOrientationLockDelegateTest, ComputeOrientationLock) {
   SimulateVideoNetworkState(HTMLMediaElement::kNetworkIdle);
   SimulateVideoReadyState(HTMLMediaElement::kHaveMetadata);
 
-  EXPECT_CALL(MockWebMediaPlayer(), NaturalSize())
-      .Times(14)  // Each `computeOrientationLock` calls the method twice.
-      .WillOnce(Return(gfx::Size(100, 50)))
-      .WillOnce(Return(gfx::Size(100, 50)))
-      .WillOnce(Return(gfx::Size(50, 100)))
-      .WillOnce(Return(gfx::Size(50, 100)))
-      .WillRepeatedly(Return(gfx::Size(100, 100)));
-
   // 100x50
+  MockWebMediaPlayer().MockNaturalSize() = gfx::Size(100, 50);
   EXPECT_EQ(device::mojom::ScreenOrientationLockType::LANDSCAPE,
             ComputeOrientationLock());
 
   // 50x100
+  MockWebMediaPlayer().MockNaturalSize() = gfx::Size(50, 100);
   EXPECT_EQ(device::mojom::ScreenOrientationLockType::PORTRAIT,
             ComputeOrientationLock());
 
   // 100x100 has more subtilities, it depends on the current screen orientation.
-  ScreenInfo screen_info;
-  screen_info.orientation_type = mojom::blink::ScreenOrientation::kUndefined;
-  EXPECT_CALL(ChromeClient(), GetScreenInfo(_))
-      .Times(1)
-      .WillOnce(Return(screen_info));
+  MockWebMediaPlayer().MockNaturalSize() = gfx::Size(100, 100);
+  ChromeClient().MockScreenInfo().orientation_type =
+      mojom::blink::ScreenOrientation::kUndefined;
   EXPECT_EQ(device::mojom::ScreenOrientationLockType::LANDSCAPE,
             ComputeOrientationLock());
 
-  screen_info.orientation_type =
+  ChromeClient().MockScreenInfo().orientation_type =
       mojom::blink::ScreenOrientation::kPortraitPrimary;
-  EXPECT_CALL(ChromeClient(), GetScreenInfo(_))
-      .Times(1)
-      .WillOnce(Return(screen_info));
   EXPECT_EQ(device::mojom::ScreenOrientationLockType::PORTRAIT,
             ComputeOrientationLock());
 
-  screen_info.orientation_type =
+  ChromeClient().MockScreenInfo().orientation_type =
       mojom::blink::ScreenOrientation::kPortraitPrimary;
-  EXPECT_CALL(ChromeClient(), GetScreenInfo(_))
-      .Times(1)
-      .WillOnce(Return(screen_info));
   EXPECT_EQ(device::mojom::ScreenOrientationLockType::PORTRAIT,
             ComputeOrientationLock());
 
-  screen_info.orientation_type =
+  ChromeClient().MockScreenInfo().orientation_type =
       mojom::blink::ScreenOrientation::kLandscapePrimary;
-  EXPECT_CALL(ChromeClient(), GetScreenInfo(_))
-      .Times(1)
-      .WillOnce(Return(screen_info));
   EXPECT_EQ(device::mojom::ScreenOrientationLockType::LANDSCAPE,
             ComputeOrientationLock());
 
-  screen_info.orientation_type =
+  ChromeClient().MockScreenInfo().orientation_type =
       mojom::blink::ScreenOrientation::kLandscapeSecondary;
-  EXPECT_CALL(ChromeClient(), GetScreenInfo(_))
-      .Times(1)
-      .WillOnce(Return(screen_info));
   EXPECT_EQ(device::mojom::ScreenOrientationLockType::LANDSCAPE,
             ComputeOrientationLock());
 }
@@ -1489,47 +1478,6 @@ TEST_F(MediaControlsOrientationLockAndRotateToFullscreenDelegateTest,
   EXPECT_EQ(device::mojom::ScreenOrientationLockType::ANY,
             DelegateOrientationLock());
   EXPECT_TRUE(DelegateWillUnlockFullscreen());
-}
-
-TEST_F(MediaControlsOrientationLockAndRotateToFullscreenDelegateTest,
-       DetachBeforeChangeLockToAnyOrientation) {
-  // Naturally portrait device, initially portrait, with landscape video.
-  natural_orientation_is_portrait_ = true;
-  ASSERT_NO_FATAL_FAILURE(
-      RotateScreenTo(mojom::blink::ScreenOrientation::kPortraitPrimary, 0));
-  InitVideo(640, 480);
-  SetIsAutoRotateEnabledByUser(true);
-
-  // Initially inline, unlocked orientation.
-  ASSERT_FALSE(Video().IsFullscreen());
-  CheckStatePendingFullscreen();
-  ASSERT_FALSE(DelegateWillUnlockFullscreen());
-
-  // Simulate user clicking on media controls fullscreen button.
-  SimulateEnterFullscreen();
-  EXPECT_TRUE(Video().IsFullscreen());
-
-  // MediaControlsOrientationLockDelegate should lock to landscape.
-  CheckStateMaybeLockedFullscreen();
-  EXPECT_EQ(device::mojom::ScreenOrientationLockType::LANDSCAPE,
-            DelegateOrientationLock());
-
-  // This will trigger a screen orientation change to landscape.
-  ASSERT_NO_FATAL_FAILURE(
-      RotateScreenTo(mojom::blink::ScreenOrientation::kLandscapePrimary, 90));
-
-  // Rotate the device to match.
-  RotateDeviceTo(90 /* landscape primary */);
-
-  // And immediately detach the document by synchronously navigating.
-  // One easy way to do this is to replace the document with a JavaScript URL.
-  GetFrame().GetSettings()->SetScriptEnabled(true);
-  FrameLoadRequest request(GetFrame().DomWindow(),
-                           ResourceRequest("javascript:'Hello, world!'"));
-  GetFrame().Navigate(request, WebFrameLoadType::kStandard);
-
-  // We should not crash after the unlock delay.
-  test::RunDelayedTasks(GetUnlockDelay());
 }
 
 }  // namespace blink

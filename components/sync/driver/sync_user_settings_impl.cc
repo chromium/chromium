@@ -6,13 +6,15 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/version.h"
 #include "build/chromeos_buildflags.h"
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_service_crypto.h"
+#include "components/version_info/version_info.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/constants/chromeos_features.h"
+#include "ash/constants/ash_features.h"
 #endif
 
 namespace syncer {
@@ -37,19 +39,22 @@ ModelTypeSet ResolvePreferredOsTypes(UserSelectableOsTypeSet selected_types) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+int GetCurrentMajorProductVersion() {
+  DCHECK(version_info::GetVersion().IsValid());
+  return version_info::GetVersion().components()[0];
+}
+
 }  // namespace
 
 SyncUserSettingsImpl::SyncUserSettingsImpl(
     SyncServiceCrypto* crypto,
     SyncPrefs* prefs,
     const SyncTypePreferenceProvider* preference_provider,
-    ModelTypeSet registered_model_types,
-    const base::RepeatingCallback<void(bool)>& sync_allowed_by_platform_changed)
+    ModelTypeSet registered_model_types)
     : crypto_(crypto),
       prefs_(prefs),
       preference_provider_(preference_provider),
-      registered_model_types_(registered_model_types),
-      sync_allowed_by_platform_changed_cb_(sync_allowed_by_platform_changed) {
+      registered_model_types_(registered_model_types) {
   DCHECK(crypto_);
   DCHECK(prefs_);
 }
@@ -62,20 +67,6 @@ bool SyncUserSettingsImpl::IsSyncRequested() const {
 
 void SyncUserSettingsImpl::SetSyncRequested(bool requested) {
   prefs_->SetSyncRequested(requested);
-}
-
-bool SyncUserSettingsImpl::IsSyncAllowedByPlatform() const {
-  return sync_allowed_by_platform_;
-}
-
-void SyncUserSettingsImpl::SetSyncAllowedByPlatform(bool allowed) {
-  if (sync_allowed_by_platform_ == allowed) {
-    return;
-  }
-
-  sync_allowed_by_platform_ = allowed;
-
-  sync_allowed_by_platform_changed_cb_.Run(sync_allowed_by_platform_);
 }
 
 bool SyncUserSettingsImpl::IsFirstSetupComplete() const {
@@ -186,6 +177,17 @@ bool SyncUserSettingsImpl::IsPassphraseRequiredForPreferredDataTypes() const {
   return IsEncryptedDatatypeEnabled() && IsPassphraseRequired();
 }
 
+bool SyncUserSettingsImpl::IsPassphrasePromptMutedForCurrentProductVersion()
+    const {
+  return prefs_->GetPassphrasePromptMutedProductVersion() ==
+         GetCurrentMajorProductVersion();
+}
+
+void SyncUserSettingsImpl::MarkPassphrasePromptMutedForCurrentProductVersion() {
+  prefs_->SetPassphrasePromptMutedProductVersion(
+      GetCurrentMajorProductVersion());
+}
+
 bool SyncUserSettingsImpl::IsTrustedVaultKeyRequired() const {
   return crypto_->IsTrustedVaultKeyRequired();
 }
@@ -243,7 +245,7 @@ ModelTypeSet SyncUserSettingsImpl::GetPreferredDataTypes() const {
 #endif
   types.RetainAll(registered_model_types_);
 
-  static_assert(41 == ModelType::NUM_ENTRIES,
+  static_assert(38 == GetNumModelTypes(),
                 "If adding a new sync data type, update the list below below if"
                 " you want to disable the new data type for local sync.");
   types.PutAll(ControlTypes());

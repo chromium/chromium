@@ -27,17 +27,6 @@
 #include "ui/views/metrics.h"
 #include "ui/views/widget/widget.h"
 
-namespace {
-
-const gfx::VectorIcon& GetIconForMode(bool is_reload) {
-  if (ui::TouchUiController::Get()->touch_ui())
-    return is_reload ? kReloadTouchIcon : kNavigateStopTouchIcon;
-
-  return is_reload ? vector_icons::kReloadIcon : kNavigateStopIcon;
-}
-
-}  // namespace
-
 // ReloadButton ---------------------------------------------------------------
 
 ReloadButton::ReloadButton(CommandUpdater* command_updater)
@@ -49,6 +38,7 @@ ReloadButton::ReloadButton(CommandUpdater* command_updater)
       double_click_timer_delay_(
           base::TimeDelta::FromMilliseconds(views::GetDoubleClickInterval())),
       mode_switch_timer_delay_(base::TimeDelta::FromMilliseconds(1350)) {
+  SetVisibleMode(Mode::kReload);
   SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                            ui::EF_MIDDLE_MOUSE_BUTTON);
   SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_RELOAD));
@@ -68,8 +58,7 @@ void ReloadButton::ChangeMode(Mode mode, bool force) {
                              : (visible_mode_ != Mode::kStop))) {
     double_click_timer_.Stop();
     mode_switch_timer_.Stop();
-    visible_mode_ = mode;
-    UpdateIcon();
+    SetVisibleMode(mode);
     SetEnabled(true);
 
     // We want to disable the button if we're preventing a change from stop to
@@ -97,27 +86,13 @@ void ReloadButton::SetMenuEnabled(bool enable) {
   menu_enabled_ = enable;
 }
 
-void ReloadButton::OnThemeChanged() {
-  ToolbarButton::OnThemeChanged();
-  UpdateIcon();
-}
-
-void ReloadButton::UpdateIcon() {
-  // There's no reason to make graphical changes when we're not yet in a
-  // Widget.  This function will be called again after widget addition.
-  if (!GetWidget())
-    return;
-
-  UpdateIconsWithStandardColors(GetIconForMode(visible_mode_ == Mode::kReload));
-}
-
 void ReloadButton::OnMouseExited(const ui::MouseEvent& event) {
   ToolbarButton::OnMouseExited(event);
   if (!IsMenuShowing())
     ChangeMode(intended_mode_, true);
 }
 
-base::string16 ReloadButton::GetTooltipText(const gfx::Point& p) const {
+std::u16string ReloadButton::GetTooltipText(const gfx::Point& p) const {
   int reload_tooltip = menu_enabled_ ?
       IDS_TOOLTIP_RELOAD_WITH_MENU : IDS_TOOLTIP_RELOAD;
   return l10n_util::GetStringUTF16(
@@ -171,6 +146,18 @@ std::unique_ptr<ui::SimpleMenuModel> ReloadButton::CreateMenuModel() {
   menu_model->AddItemWithStringId(IDC_RELOAD_CLEARING_CACHE,
                                   IDS_RELOAD_MENU_EMPTY_AND_HARD_RELOAD_ITEM);
   return menu_model;
+}
+
+void ReloadButton::SetVisibleMode(Mode mode) {
+  visible_mode_ = mode;
+  switch (mode) {
+    case Mode::kReload:
+      SetVectorIcons(vector_icons::kReloadIcon, kReloadTouchIcon);
+      break;
+    case Mode::kStop:
+      SetVectorIcons(kNavigateStopIcon, kNavigateStopTouchIcon);
+      break;
+  }
 }
 
 void ReloadButton::ButtonPressed(const ui::Event& event) {

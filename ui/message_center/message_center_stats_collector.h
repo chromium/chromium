@@ -73,7 +73,7 @@ class MessageCenterStatsCollector : public MessageCenterObserver {
   void OnNotificationClicked(
       const std::string& notification_id,
       const base::Optional<int>& button_index,
-      const base::Optional<base::string16>& reply) override;
+      const base::Optional<std::u16string>& reply) override;
   void OnNotificationSettingsClicked(bool handled) override;
   void OnNotificationDisplayed(const std::string& notification_id,
                                const DisplaySource source) override;

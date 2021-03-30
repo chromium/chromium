@@ -20,8 +20,4 @@ void Navigate(NavigateParams* params);
 bool IsURLAllowedInIncognito(const GURL& url,
                              content::BrowserContext* browser_context);
 
-// Allows browsertests to open OS settings in a tab. Real users can only open
-// settings in a system app.
-void SetAllowOsSettingsInTabForTesting(bool is_allowed);
-
 #endif  // CHROME_BROWSER_UI_BROWSER_NAVIGATOR_H_

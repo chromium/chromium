@@ -12,7 +12,6 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 
 class ChromeSearchResult;
 
@@ -29,7 +28,7 @@ class SearchProvider {
   virtual ~SearchProvider();
 
   // Invoked to start a query.
-  virtual void Start(const base::string16& query) = 0;
+  virtual void Start(const std::u16string& query) = 0;
   // Invoked when the UI view closes. In response, the |SearchProvider| may
   // clear its caches.
   virtual void ViewClosing() {}

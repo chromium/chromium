@@ -221,17 +221,24 @@ def RunTestPackage(output_dir, target, package_paths, package_name,
         log_output_thread.join(timeout=_JOIN_TIMEOUT_SECS)
 
       logging.info('Running application.')
-      if args.use_run_test_component:
+
+      # TODO(crbug.com/1156768): Deprecate runtests.
+      if args.code_coverage:
+        # runtests requires specifying an output directory and a double dash
+        # before the argument list.
+        command = ['runtests', '-o', '/tmp', _GetComponentUri(package_name)]
+        if args.test_realm_label:
+          command += ['--realm-label', args.test_realm_label]
+        command += ['--']
+      elif args.use_run_test_component:
         command = ['run-test-component']
         if args.test_realm_label:
           command += ['--realm-label=%s' % args.test_realm_label]
-      # TODO(crbug.com/1156768): Deprecate runtests.
-      elif args.code_coverage:
-        # runtests requires specifying an output directory.
-        command = ['runtests', '-o', '/tmp']
+        command.append(_GetComponentUri(package_name))
       else:
-        command = ['run']
-      command += [_GetComponentUri(package_name)] + package_args
+        command = ['run', _GetComponentUri(package_name)]
+
+      command.extend(package_args)
 
       process = target.RunCommandPiped(command,
                                        stdin=open(os.devnull, 'r'),

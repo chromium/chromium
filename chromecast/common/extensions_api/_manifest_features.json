@@ -10,7 +10,7 @@
   }, {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"],
-    "whitelist": [ "2FCBCE08B34CCA1728A85F1EFBD9A34DD2558B2E" ]
+    "allowlist": [ "2FCBCE08B34CCA1728A85F1EFBD9A34DD2558B2E" ]
   }],
   "cast_redirect": {
     "channel": "stable",
@@ -26,8 +26,7 @@
   },
   "commands": {
     "channel": "stable",
-    "extension_types": ["extension", "platform_app"],
-    "min_manifest_version": 2
+    "extension_types": ["extension", "platform_app"]
   },
   "options_page": {
     "channel": "stable",

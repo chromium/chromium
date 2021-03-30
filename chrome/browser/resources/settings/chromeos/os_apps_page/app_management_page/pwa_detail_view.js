@@ -5,7 +5,7 @@ Polymer({
   is: 'app-management-pwa-detail-view',
 
   behaviors: [
-    app_management.StoreClient,
+    app_management.AppManagementStoreClient,
   ],
 
   properties: {

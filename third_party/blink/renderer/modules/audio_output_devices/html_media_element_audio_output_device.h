@@ -7,10 +7,10 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/html/media/audio_output_device_controller.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -19,19 +19,22 @@ class ScriptState;
 
 class MODULES_EXPORT HTMLMediaElementAudioOutputDevice final
     : public GarbageCollected<HTMLMediaElementAudioOutputDevice>,
-      public Supplement<HTMLMediaElement> {
+      public AudioOutputDeviceController {
  public:
-  static const char kSupplementName[];
+  HTMLMediaElementAudioOutputDevice(HTMLMediaElement&);
 
-  HTMLMediaElementAudioOutputDevice();
+  static HTMLMediaElementAudioOutputDevice& From(HTMLMediaElement&);
 
-  void Trace(Visitor*) const override;
   static String sinkId(HTMLMediaElement&);
   static ScriptPromise setSinkId(ScriptState*,
                                  HTMLMediaElement&,
                                  const String& sink_id);
-  static HTMLMediaElementAudioOutputDevice& From(HTMLMediaElement&);
   void setSinkId(const String&);
+
+  // AudioOutputDeviceController implementation.
+  void SetSinkId(const String&) override;
+
+  void Trace(Visitor*) const override;
 
  private:
   String sink_id_;

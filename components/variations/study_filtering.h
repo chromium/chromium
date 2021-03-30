@@ -47,10 +47,6 @@ bool CheckStudyPlatform(const Study::Filter& filter, Study::Platform platform);
 bool CheckStudyLowEndDevice(const Study::Filter& filter,
                             bool is_low_end_device);
 
-// Checks whether a study is applicable given |is_enterprise| per |filter|.
-bool CheckStudyEnterprise(const Study::Filter& filter,
-                          const ClientFilterableState& client_state);
-
 // Checks whether a study is applicable given the ChromeVariations policy value.
 bool CheckStudyPolicyRestriction(const Study::Filter& filter,
                                  RestrictionPolicy policy_restriction);
@@ -73,6 +69,10 @@ bool CheckStudyOSVersion(const Study::Filter& filter,
 
 // Checks whether a study is applicable for the given |country| per |filter|.
 bool CheckStudyCountry(const Study::Filter& filter, const std::string& country);
+
+// Checks whether a study is applicable given |is_enterprise| per |filter|.
+bool CheckStudyEnterprise(const Study::Filter& filter,
+                          const ClientFilterableState& client_state);
 
 // Returns the country that should be used for filtering this study, depending
 // on whether the study has session or permanent consistency.

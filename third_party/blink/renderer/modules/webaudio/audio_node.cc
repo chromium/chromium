@@ -336,8 +336,8 @@ void AudioHandler::ProcessIfNecessary(uint32_t frames_to_process) {
     return;
 
   TRACE_EVENT2(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
-               "AudioHandler::ProcessIfNecessary", "this", this, "node type",
-               NodeTypeName().Ascii());
+               "AudioHandler::ProcessIfNecessary", "this",
+               static_cast<void*>(this), "node type", NodeTypeName().Ascii());
 
   // Ensure that we only process once per rendering quantum.
   // This handles the "fanout" problem where an output is connected to multiple

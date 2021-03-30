@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/webdatabase/web_database.mojom-blink.h"
 
 namespace blink {
@@ -19,7 +20,7 @@ class WebDatabaseImpl : public mojom::blink::WebDatabase {
   WebDatabaseImpl();
   ~WebDatabaseImpl() override;
 
-  static void Create(mojo::PendingReceiver<mojom::blink::WebDatabase>);
+  static void Bind(mojo::PendingReceiver<mojom::blink::WebDatabase>);
 
  private:
   // blink::mojom::blink::Database
@@ -28,6 +29,7 @@ class WebDatabaseImpl : public mojom::blink::WebDatabase {
                   int64_t size) override;
   void CloseImmediately(const scoped_refptr<const SecurityOrigin>&,
                         const String& name) override;
+  mojo::Receiver<mojom::blink::WebDatabase> receiver_{this};
 };
 
 }  // namespace blink

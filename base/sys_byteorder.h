@@ -23,7 +23,7 @@ namespace base {
 
 // Returns a value with all bytes in |x| swapped, i.e. reverses the endianness.
 inline uint16_t ByteSwap(uint16_t x) {
-#if defined(COMPILER_MSVC)
+#if defined(COMPILER_MSVC) && !defined(__clang__)
   return _byteswap_ushort(x);
 #else
   return __builtin_bswap16(x);
@@ -31,7 +31,7 @@ inline uint16_t ByteSwap(uint16_t x) {
 }
 
 inline uint32_t ByteSwap(uint32_t x) {
-#if defined(COMPILER_MSVC)
+#if defined(COMPILER_MSVC) && !defined(__clang__)
   return _byteswap_ulong(x);
 #else
   return __builtin_bswap32(x);
@@ -39,7 +39,14 @@ inline uint32_t ByteSwap(uint32_t x) {
 }
 
 inline uint64_t ByteSwap(uint64_t x) {
-#if defined(COMPILER_MSVC)
+  // Per build/build_config.h, clang masquerades as MSVC on Windows. If we are
+  // actually using clang, we can rely on the builtin.
+  //
+  // This matters in practice, because on x86(_64), this is a single "bswap"
+  // instruction. MSVC correctly replaces the call with an inlined bswap at /O2
+  // as of 2021, but clang as we use it in Chromium doesn't, keeping a function
+  // call for a single instruction.
+#if defined(COMPILER_MSVC) && !defined(__clang__)
   return _byteswap_uint64(x);
 #else
   return __builtin_bswap64(x);

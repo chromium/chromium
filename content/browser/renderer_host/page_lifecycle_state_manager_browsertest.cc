@@ -58,7 +58,8 @@ class PageLifecycleStateManagerBrowserTest : public ContentBrowserTest {
   }
 
   void StartPerformanceObserver(RenderFrameHostImpl* rfh, int numEntries) {
-    EXPECT_TRUE(ExecJs(rfh, R"(
+    EXPECT_TRUE(ExecJs(rfh,
+                       R"(
       window.performanceObserverEntries = [];
       window.performanceObserverPromise = new Promise(resolve => {
         new PerformanceObserver(entries => {
@@ -67,11 +68,12 @@ class PageLifecycleStateManagerBrowserTest : public ContentBrowserTest {
             window.performanceObserverEntries.push(e.name);
           });
           if (window.performanceObserverEntries.length === )" +
-                                base::NumberToString(numEntries) + R"()
+                           base::NumberToString(numEntries) + R"()
             resolve(true);
         }).observe({type: 'visibility-state', buffered: true});
       });
-    )"));
+    )",
+                       EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
   }
 
   void MatchEventList(RenderFrameHostImpl* rfh,

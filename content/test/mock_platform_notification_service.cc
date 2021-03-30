@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/guid.h"
-#include "base/strings/nullable_string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -121,7 +120,7 @@ void MockPlatformNotificationService::RecordNotificationUkmEvent(
 void MockPlatformNotificationService::SimulateClick(
     const std::string& title,
     const base::Optional<int>& action_index,
-    const base::Optional<base::string16>& reply) {
+    const base::Optional<std::u16string>& reply) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const auto notification_id_iter = notification_id_map_.find(title);
   if (notification_id_iter == notification_id_map_.end())

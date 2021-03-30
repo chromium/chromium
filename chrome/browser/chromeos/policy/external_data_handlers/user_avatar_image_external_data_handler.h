@@ -10,9 +10,9 @@
 
 #include "chrome/browser/chromeos/policy/external_data_handlers/cloud_external_data_policy_handler.h"
 
-namespace chromeos {
+namespace ash {
 class CrosSettings;
-}  // namespace chromeos
+}  // namespace ash
 
 namespace policy {
 
@@ -22,7 +22,7 @@ class UserAvatarImageExternalDataHandler
     : public CloudExternalDataPolicyHandler {
  public:
   UserAvatarImageExternalDataHandler(
-      chromeos::CrosSettings* cros_settings,
+      ash::CrosSettings* cros_settings,
       DeviceLocalAccountPolicyService* policy_service);
   ~UserAvatarImageExternalDataHandler() override;
 

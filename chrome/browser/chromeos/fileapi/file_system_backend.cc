@@ -16,14 +16,14 @@
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_util.h"
+#include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/fileapi/file_access_permissions.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend_delegate.h"
 #include "chrome/browser/chromeos/fileapi/observable_file_system_operation_impl.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/media_galleries/fileapi/media_file_system_backend.h"
 #include "chrome/common/url_constants.h"
-#include "chromeos/constants/chromeos_switches.h"
+#include "chromeos/components/file_manager/url_constants.h"
 #include "chromeos/dbus/cros_disks_client.h"
 #include "net/base/escape.h"
 #include "storage/browser/file_system/async_file_util.h"
@@ -63,8 +63,8 @@ AccountId GetAccountId(Profile* profile) {
 bool FileSystemBackend::CanHandleURL(const storage::FileSystemURL& url) {
   if (!url.is_valid())
     return false;
-  return url.type() == storage::kFileSystemTypeNativeLocal ||
-         url.type() == storage::kFileSystemTypeRestrictedNativeLocal ||
+  return url.type() == storage::kFileSystemTypeLocal ||
+         url.type() == storage::kFileSystemTypeRestrictedLocal ||
          url.type() == storage::kFileSystemTypeProvided ||
          url.type() == storage::kFileSystemTypeDeviceMediaAsFileStorage ||
          url.type() == storage::kFileSystemTypeArcContent ||
@@ -96,23 +96,22 @@ FileSystemBackend::FileSystemBackend(
       mount_points_(mount_points),
       system_mount_points_(system_mount_points) {}
 
-FileSystemBackend::~FileSystemBackend() {
-}
+FileSystemBackend::~FileSystemBackend() {}
 
 void FileSystemBackend::AddSystemMountPoints() {
   // RegisterFileSystem() is no-op if the mount point with the same name
   // already exists, hence it's safe to call without checking if a mount
   // point already exists or not.
   system_mount_points_->RegisterFileSystem(
-      kSystemMountNameArchive, storage::kFileSystemTypeNativeLocal,
+      kSystemMountNameArchive, storage::kFileSystemTypeLocal,
       storage::FileSystemMountOption(),
       chromeos::CrosDisksClient::GetArchiveMountPoint());
   system_mount_points_->RegisterFileSystem(
-      kSystemMountNameRemovable, storage::kFileSystemTypeNativeLocal,
+      kSystemMountNameRemovable, storage::kFileSystemTypeLocal,
       storage::FileSystemMountOption(storage::FlushPolicy::FLUSH_ON_COMPLETION),
       chromeos::CrosDisksClient::GetRemovableDiskMountPoint());
   system_mount_points_->RegisterFileSystem(
-      kSystemMountNameOem, storage::kFileSystemTypeRestrictedNativeLocal,
+      kSystemMountNameOem, storage::kFileSystemTypeRestrictedLocal,
       storage::FileSystemMountOption(),
       base::FilePath(FILE_PATH_LITERAL("/usr/share/oem")));
 }
@@ -120,9 +119,9 @@ void FileSystemBackend::AddSystemMountPoints() {
 bool FileSystemBackend::CanHandleType(storage::FileSystemType type) const {
   switch (type) {
     case storage::kFileSystemTypeExternal:
-    case storage::kFileSystemTypeRestrictedNativeLocal:
-    case storage::kFileSystemTypeNativeLocal:
-    case storage::kFileSystemTypeNativeForPlatformApp:
+    case storage::kFileSystemTypeRestrictedLocal:
+    case storage::kFileSystemTypeLocal:
+    case storage::kFileSystemTypeLocalForPlatformApp:
     case storage::kFileSystemTypeDeviceMediaAsFileStorage:
     case storage::kFileSystemTypeProvided:
     case storage::kFileSystemTypeArcContent:
@@ -135,8 +134,7 @@ bool FileSystemBackend::CanHandleType(storage::FileSystemType type) const {
   }
 }
 
-void FileSystemBackend::Initialize(storage::FileSystemContext* context) {
-}
+void FileSystemBackend::Initialize(storage::FileSystemContext* context) {}
 
 void FileSystemBackend::ResolveURL(const storage::FileSystemURL& url,
                                    storage::OpenFileSystemMode mode,
@@ -146,10 +144,10 @@ void FileSystemBackend::ResolveURL(const storage::FileSystemURL& url,
   std::string cracked_id;
   base::FilePath path;
   storage::FileSystemMountOption option;
-  if (!mount_points_->CrackVirtualPath(
-           url.virtual_path(), &id, &type, &cracked_id, &path, &option) &&
-      !system_mount_points_->CrackVirtualPath(
-           url.virtual_path(), &id, &type, &cracked_id, &path, &option)) {
+  if (!mount_points_->CrackVirtualPath(url.virtual_path(), &id, &type,
+                                       &cracked_id, &path, &option) &&
+      !system_mount_points_->CrackVirtualPath(url.virtual_path(), &id, &type,
+                                              &cracked_id, &path, &option)) {
     // Not under a mount point, so return an error, since the root is not
     // accessible.
     GURL root_url = GURL(storage::GetExternalFileSystemRootURIString(
@@ -244,8 +242,16 @@ bool FileSystemBackend::IsAccessAllowed(
   if (url.origin().opaque())
     return true;
 
+#if !defined(OFFICIAL_BUILD)
+  // The chrome://file-manager can access its filesystem origin.
+  if (url.origin().GetURL() ==
+      chromeos::file_manager::kChromeUIFileManagerURL) {
+    return true;
+  }
+#endif
+
   const std::string& extension_id = url.origin().host();
-  if (url.type() == storage::kFileSystemTypeRestrictedNativeLocal) {
+  if (url.type() == storage::kFileSystemTypeRestrictedLocal) {
     for (size_t i = 0; i < base::size(kOemAccessibleExtensions); ++i) {
       if (extension_id == kOemAccessibleExtensions[i])
         return true;
@@ -257,7 +263,8 @@ bool FileSystemBackend::IsAccessAllowed(
 }
 
 void FileSystemBackend::GrantFileAccessToExtension(
-    const std::string& extension_id, const base::FilePath& virtual_path) {
+    const std::string& extension_id,
+    const base::FilePath& virtual_path) {
   std::string id;
   storage::FileSystemType type;
   std::string cracked_id;
@@ -274,7 +281,7 @@ void FileSystemBackend::GrantFileAccessToExtension(
 }
 
 void FileSystemBackend::RevokeAccessForExtension(
-      const std::string& extension_id) {
+    const std::string& extension_id) {
   file_access_permissions_->RevokePermissions(extension_id);
 }
 
@@ -294,8 +301,8 @@ storage::AsyncFileUtil* FileSystemBackend::GetAsyncFileUtil(
   switch (type) {
     case storage::kFileSystemTypeProvided:
       return file_system_provider_delegate_->GetAsyncFileUtil(type);
-    case storage::kFileSystemTypeNativeLocal:
-    case storage::kFileSystemTypeRestrictedNativeLocal:
+    case storage::kFileSystemTypeLocal:
+    case storage::kFileSystemTypeRestrictedLocal:
       return local_file_util_.get();
     case storage::kFileSystemTypeDeviceMediaAsFileStorage:
       return mtp_delegate_->GetAsyncFileUtil(type);
@@ -356,8 +363,8 @@ storage::FileSystemOperation* FileSystemBackend::CreateFileSystemOperation(
         std::make_unique<storage::FileSystemOperationContext>(
             context, MediaFileSystemBackend::MediaTaskRunner().get()));
   }
-  if (url.type() == storage::kFileSystemTypeNativeLocal ||
-      url.type() == storage::kFileSystemTypeRestrictedNativeLocal ||
+  if (url.type() == storage::kFileSystemTypeLocal ||
+      url.type() == storage::kFileSystemTypeRestrictedLocal ||
       url.type() == storage::kFileSystemTypeDriveFs ||
       url.type() == storage::kFileSystemTypeSmbFs) {
     return new ObservableFileSystemOperationImpl(
@@ -394,8 +401,8 @@ bool FileSystemBackend::HasInplaceCopyImplementation(
     // TODO(fukino): Support in-place copy for DocumentsProvider.
     // crbug.com/953603.
     case storage::kFileSystemTypeArcDocumentsProvider:
-    case storage::kFileSystemTypeNativeLocal:
-    case storage::kFileSystemTypeRestrictedNativeLocal:
+    case storage::kFileSystemTypeLocal:
+    case storage::kFileSystemTypeRestrictedLocal:
     case storage::kFileSystemTypeArcContent:
     // TODO(crbug.com/939235): Implement in-place copy in SmbFs.
     case storage::kFileSystemTypeSmbFs:
@@ -422,8 +429,8 @@ FileSystemBackend::CreateFileStreamReader(
     case storage::kFileSystemTypeProvided:
       return file_system_provider_delegate_->CreateFileStreamReader(
           url, offset, max_bytes_to_read, expected_modification_time, context);
-    case storage::kFileSystemTypeNativeLocal:
-    case storage::kFileSystemTypeRestrictedNativeLocal:
+    case storage::kFileSystemTypeLocal:
+    case storage::kFileSystemTypeRestrictedLocal:
     case storage::kFileSystemTypeDriveFs:
     case storage::kFileSystemTypeSmbFs:
       return std::unique_ptr<storage::FileStreamReader>(
@@ -459,9 +466,9 @@ FileSystemBackend::CreateFileStreamWriter(
 
   switch (url.type()) {
     case storage::kFileSystemTypeProvided:
-      return file_system_provider_delegate_->CreateFileStreamWriter(
-          url, offset, context);
-    case storage::kFileSystemTypeNativeLocal:
+      return file_system_provider_delegate_->CreateFileStreamWriter(url, offset,
+                                                                    context);
+    case storage::kFileSystemTypeLocal:
     case storage::kFileSystemTypeDriveFs:
     case storage::kFileSystemTypeSmbFs:
       return storage::FileStreamWriter::CreateForLocalFile(
@@ -475,7 +482,7 @@ FileSystemBackend::CreateFileStreamWriter(
       return arc_documents_provider_delegate_->CreateFileStreamWriter(
           url, offset, context);
     // Read only file systems.
-    case storage::kFileSystemTypeRestrictedNativeLocal:
+    case storage::kFileSystemTypeRestrictedLocal:
     case storage::kFileSystemTypeArcContent:
       return std::unique_ptr<storage::FileStreamWriter>();
     default:
@@ -508,8 +515,8 @@ void FileSystemBackend::GetRedirectURLForContents(
     case storage::kFileSystemTypeDeviceMediaAsFileStorage:
       mtp_delegate_->GetRedirectURLForContents(url, std::move(callback));
       return;
-    case storage::kFileSystemTypeNativeLocal:
-    case storage::kFileSystemTypeRestrictedNativeLocal:
+    case storage::kFileSystemTypeLocal:
+    case storage::kFileSystemTypeRestrictedLocal:
     case storage::kFileSystemTypeArcContent:
     case storage::kFileSystemTypeArcDocumentsProvider:
     case storage::kFileSystemTypeDriveFs:

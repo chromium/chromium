@@ -6,11 +6,18 @@
  * @fileoverview This implements a common button control, bound to command.
  */
 
+// clang-format off
+// #import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
+// #import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+// #import {getPropertyDescriptor, PropertyKind} from 'chrome://resources/js/cr.m.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// clang-format on
+
 /**
  * Creates a new button element.
  * @extends {HTMLButtonElement}
  */
-class CommandButton {
+/* #export */ class CommandButton {
   constructor() {
     /**
      * Associated command.
@@ -160,16 +167,16 @@ class CommandButton {
   }
 }
 
-CommandButton.prototype.__proto__ = HTMLButtonElement.prototype;
-
 /**
  * Whether the button is disabled or not.
  * @type {boolean}
  */
-cr.defineProperty(CommandButton, 'disabled', cr.PropertyKind.BOOL_ATTR);
+CommandButton.prototype.disabled;
 
 /**
  * Whether the button is hidden or not.
  * @type {boolean}
  */
-cr.defineProperty(CommandButton, 'hidden', cr.PropertyKind.BOOL_ATTR);
+CommandButton.prototype.hidden;
+
+CommandButton.prototype.__proto__ = HTMLButtonElement.prototype;

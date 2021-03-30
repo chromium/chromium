@@ -40,8 +40,8 @@ class WebViewCardExpirationFixFlowView
 
 - (instancetype)initWithCreditCard:(const autofill::CreditCard&)creditCard
                           callback:
-                              (base::OnceCallback<void(const base::string16&,
-                                                       const base::string16&)>)
+                              (base::OnceCallback<void(const std::u16string&,
+                                                       const std::u16string&)>)
                                   callback {
   self = [super init];
   if (self) {

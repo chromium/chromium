@@ -5,7 +5,10 @@
 #include "ui/color/color_mixers.h"
 
 #import <Cocoa/Cocoa.h>
+
+#include "base/containers/fixed_flat_set.h"
 #import "skia/ext/skia_utils_mac.h"
+#include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_recipe.h"
@@ -13,41 +16,55 @@
 #include "ui/color/mac/scoped_current_nsappearance.h"
 #include "ui/gfx/color_palette.h"
 
+namespace {
+// All the native OS colors which are retrieved from the system directly.
+// clang-format off
+constexpr auto kNativeOSColorIds = base::MakeFixedFlatSet<ui::ColorId>({
+    ui::kColorFocusableBorderFocused,
+    ui::kColorLabelSelectionBackground,
+    ui::kColorMenuBorder,
+    ui::kColorMenuItemForegroundDisabled,
+    ui::kColorMenuItemForeground,
+    ui::kColorMenuSeparator,
+    ui::kColorTableBackgroundAlternate,
+    ui::kColorTableGroupingIndicator,
+    ui::kColorTextfieldSelectionBackground});
+// clang-format on
+}
+
 namespace ui {
 
-void AddNativeCoreColorMixer(ColorProvider* provider, bool dark_window) {
-  ScopedCurrentNSAppearance scoped_nsappearance(dark_window);
+void AddNativeCoreColorMixer(ColorProvider* provider,
+                             bool dark_window,
+                             bool high_contrast) {
+  ScopedCurrentNSAppearance scoped_nsappearance(dark_window, high_contrast);
   ColorMixer& mixer = provider->AddMixer();
   mixer.AddSet({kColorSetNative,
                 {
+                    {kColorItemHighlight,
+                     SkColorSetA(skia::NSSystemColorToSkColor(
+                                     [NSColor keyboardFocusIndicatorColor]),
+                                 0x66)},
                     {kColorTextSelectionBackground,
                      skia::NSSystemColorToSkColor(
                          [NSColor selectedTextBackgroundColor])},
                 }});
 }
 
-void AddNativeUiColorMixer(ColorProvider* provider, bool dark_window) {
-  ScopedCurrentNSAppearance scoped_nsappearance(dark_window);
+void AddNativeUiColorMixer(ColorProvider* provider,
+                           bool dark_window,
+                           bool high_contrast) {
+  ScopedCurrentNSAppearance scoped_nsappearance(dark_window, high_contrast);
   ColorMixer& mixer = provider->AddMixer();
   mixer.AddSet(
       {kColorSetNative,
        {
-           {kColorFocusableBorderFocused,
-            SkColorSetA(skia::NSSystemColorToSkColor(
-                            [NSColor keyboardFocusIndicatorColor]),
-                        0x66)},
            {kColorMenuBorder, SkColorSetA(SK_ColorBLACK, 0x60)},
            {kColorMenuItemForegroundDisabled,
             skia::NSSystemColorToSkColor([NSColor disabledControlTextColor])},
            {kColorMenuItemForeground,
             skia::NSSystemColorToSkColor([NSColor controlTextColor])},
-           {kColorTextSelectionBackground,
-            skia::NSSystemColorToSkColor(
-                [NSColor selectedTextBackgroundColor])},
        }});
-
-  mixer[kColorMenuItemForegroundHighlighted] = {kColorPrimaryForeground};
-  mixer[kColorMenuItemForegroundSelected] = {kColorPrimaryForeground};
 
   if (@available(macOS 10.14, *)) {
     mixer[kColorTableBackgroundAlternate] = {skia::NSSystemColorToSkColor(
@@ -61,6 +78,27 @@ void AddNativeUiColorMixer(ColorProvider* provider, bool dark_window) {
                                      ? SkColorSetA(gfx::kGoogleGrey800, 0xCC)
                                      : SkColorSetA(SK_ColorBLACK, 0x26);
   mixer[kColorMenuSeparator] = {menu_separator_color};
+
+  if (!high_contrast)
+    return;
+
+  if (dark_window) {
+    mixer[kColorMenuItemForegroundSelected] = {SK_ColorBLACK};
+    mixer[kColorMenuItemBackgroundSelected] = {SK_ColorLTGRAY};
+  } else {
+    mixer[kColorMenuItemForegroundSelected] = {SK_ColorWHITE};
+    mixer[kColorMenuItemBackgroundSelected] = {SK_ColorDKGRAY};
+  }
+}
+
+void AddNativePostprocessingMixer(ColorProvider* provider) {
+  ColorMixer& mixer = provider->AddPostprocessingMixer();
+
+  for (ColorId id = kUiColorsStart; id < kUiColorsEnd; ++id) {
+    // Apply system tint to non-OS colors.
+    if (!kNativeOSColorIds.contains(id))
+      mixer[id] += ApplySystemControlTintIfNeeded();
+  }
 }
 
 }  // namespace ui

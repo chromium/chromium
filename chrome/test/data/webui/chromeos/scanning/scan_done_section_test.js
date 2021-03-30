@@ -7,7 +7,7 @@ import 'chrome://scanning/scan_done_section.js';
 import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.m.js';
+import {flushTasks, isVisible} from '../../test_util.m.js';
 
 import {TestScanningBrowserProxy} from './test_scanning_browser_proxy.js';
 
@@ -36,24 +36,43 @@ export function scanDoneSectionTest() {
   });
 
   test('initializeScanDoneSection', () => {
-    assertTrue(!!scanDoneSection.$.title);
     assertTrue(!!scanDoneSection.$$('#doneButtonContainer'));
   });
 
-  test('pageNumberUpdatesTitleText', () => {
-    scanDoneSection.pageNumber = 1;
+  test('numFilesSavedUpdatesFileSavedText', () => {
+    scanDoneSection.selectedFolder = 'My files';
+    scanDoneSection.numFilesSaved = 1;
     return flushTasks()
         .then(() => {
           assertEquals(
-              'Scanned file saved!',
-              scanDoneSection.$.title.textContent.trim());
-          scanDoneSection.pageNumber = 2;
+              'Your file has been successfully scanned and saved to My files.',
+              scanDoneSection.$$('#fileSavedText').textContent.trim());
+          scanDoneSection.numFilesSaved = 2;
           return flushTasks();
         })
         .then(() => {
           assertEquals(
-              'Scanned files saved!',
-              scanDoneSection.$.title.textContent.trim());
+              'Your files have been successfully scanned and saved to My ' +
+                  'files.',
+              scanDoneSection.$$('#fileSavedText').textContent.trim());
+        });
+  });
+
+  test('selectedFolderUpdatesFileSavedText', () => {
+    scanDoneSection.selectedFolder = 'Downloads';
+    scanDoneSection.numFilesSaved = 1;
+    return flushTasks()
+        .then(() => {
+          assertEquals(
+              'Your file has been successfully scanned and saved to Downloads.',
+              scanDoneSection.$$('#fileSavedText').textContent.trim());
+          scanDoneSection.selectedFolder = 'My Drive';
+          return flushTasks();
+        })
+        .then(() => {
+          assertEquals(
+              'Your file has been successfully scanned and saved to My Drive.',
+              scanDoneSection.$$('#fileSavedText').textContent.trim());
         });
   });
 
@@ -63,13 +82,18 @@ export function scanDoneSectionTest() {
       fileNotFoundEventFired = true;
     });
 
-    const lastScannedFilePath = {'path': '/test/path/scan.jpg'};
-    scanningBrowserProxy.setPathToFile(lastScannedFilePath.path);
-    scanDoneSection.lastScannedFilePath = lastScannedFilePath;
-    scanDoneSection.$$('#showFileButton').click();
+    const scannedFilePaths =
+        [{'path': '/test/path/scan1.jpg'}, {'path': '/test/path/scan2.jpg'}];
+    scanningBrowserProxy.setPathToFile(scannedFilePaths[1].path);
+    scanDoneSection.scannedFilePaths = scannedFilePaths;
+    scanDoneSection.numFilesSaved = 1;
     return flushTasks().then(() => {
-      assertEquals(1, scanningBrowserProxy.getCallCount('showFileInLocation'));
-      assertFalse(fileNotFoundEventFired);
+      scanDoneSection.$$('#folderLink').click();
+      return flushTasks().then(() => {
+        assertEquals(
+            1, scanningBrowserProxy.getCallCount('showFileInLocation'));
+        assertFalse(fileNotFoundEventFired);
+      });
     });
   });
 
@@ -80,11 +104,52 @@ export function scanDoneSectionTest() {
     });
 
     scanningBrowserProxy.setPathToFile('/wrong/path/file/so/not/found.jpg');
-    scanDoneSection.lastScannedFilePath = {'path': '/test/path/scan.jpg'};
-    scanDoneSection.$$('#showFileButton').click();
+    scanDoneSection.scannedFilePaths = [{'path': '/test/path/scan.jpg'}];
+    scanDoneSection.numFilesSaved = 1;
     return flushTasks().then(() => {
-      assertEquals(1, scanningBrowserProxy.getCallCount('showFileInLocation'));
-      assertTrue(fileNotFoundEventFired);
+      scanDoneSection.$$('#folderLink').click();
+      return flushTasks().then(() => {
+        assertEquals(
+            1, scanningBrowserProxy.getCallCount('showFileInLocation'));
+        assertTrue(fileNotFoundEventFired);
+      });
     });
+  });
+
+  test('doneClick', () => {
+    let doneEventFired = false;
+    scanDoneSection.addEventListener('done-click', function() {
+      doneEventFired = true;
+    });
+
+    scanDoneSection.$$('#doneButton').click();
+    assertTrue(doneEventFired);
+  });
+
+  test('editButtonClick', () => {
+    const scannedFilePaths =
+        [{'path': '/test/path/scan1.jpg'}, {'path': '/test/path/scan2.jpg'}];
+    scanDoneSection.scannedFilePaths = scannedFilePaths;
+    scanningBrowserProxy.setFilePaths(
+        scannedFilePaths.map(filePath => filePath.path));
+    scanDoneSection.selectedFileType =
+        chromeos.scanning.mojom.FileType.kJpg.toString();
+
+    // After click, TestScanningBrowserProxy asserts that the array of file
+    // paths sent from |scanDoneSection| matches the expected array of file
+    // paths.
+    scanDoneSection.$$('#editButton').click();
+  });
+
+  test('editButtonHiddenForFileTypePdf', () => {
+    const editButton =
+        /** @type {!HTMLElement} */ (scanDoneSection.$$('#editButton'));
+    scanDoneSection.selectedFileType =
+        chromeos.scanning.mojom.FileType.kPng.toString();
+    assertTrue(isVisible(editButton));
+
+    scanDoneSection.selectedFileType =
+        chromeos.scanning.mojom.FileType.kPdf.toString();
+    assertFalse(isVisible(editButton));
   });
 }

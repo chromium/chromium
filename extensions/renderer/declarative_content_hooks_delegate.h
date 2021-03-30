@@ -23,7 +23,7 @@ class DeclarativeContentHooksDelegate : public APIBindingHooksDelegate {
  public:
   // The callback type for handling an API call.
   using HandlerCallback =
-      base::Callback<void(const v8::FunctionCallbackInfo<v8::Value>&)>;
+      base::RepeatingCallback<void(const v8::FunctionCallbackInfo<v8::Value>&)>;
 
   DeclarativeContentHooksDelegate();
   ~DeclarativeContentHooksDelegate() override;

@@ -20,9 +20,11 @@ AvatarMenu::ImageLoadStatus AvatarMenu::GetImageForMenuButton(
     int preferred_size) {
   if (!g_browser_process->profile_manager())
     return ImageLoadStatus::BROWSER_SHUTTING_DOWN;
-  ProfileAttributesEntry* entry;
-  if (!g_browser_process->profile_manager()->GetProfileAttributesStorage().
-          GetProfileAttributesWithPath(profile_path, &entry)) {
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_path);
+  if (!entry) {
     // This can happen if the user deletes the current profile.
     return ImageLoadStatus::PROFILE_DELETED;
   }

@@ -34,8 +34,8 @@ TEST_F(PDFResourceTest, SearchString) {
       Connection(&sink(), &sink(), 0), pp_instance());
   pdf_resource->SetLocaleForTest("en-US@collation=search");
 
-  base::string16 input;
-  base::string16 term;
+  std::u16string input;
+  std::u16string term;
   base::UTF8ToUTF16("abcdefabcdef", 12, &input);
   base::UTF8ToUTF16("bc", 2, &term);
 

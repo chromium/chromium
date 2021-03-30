@@ -5,7 +5,7 @@
 /** @fileoverview Runs tests for the settings menu. */
 
 // clang-format off
-import {isChromeOS} from 'chrome://resources/js/cr.m.js';
+import {isChromeOS, isLacros} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {pageVisibility, Router, routes} from 'chrome://settings/settings.js';
 // clang-format on
@@ -139,7 +139,7 @@ suite('SettingsMenuReset', function() {
       assertEquals(expectedHidden, settingsMenu.$$('#reset').hidden);
       assertEquals(expectedHidden, settingsMenu.$$('#safetyCheck').hidden);
 
-      if (!isChromeOS) {
+      if (!isChromeOS && !isLacros) {
         assertEquals(expectedHidden, settingsMenu.$$('#defaultBrowser').hidden);
       }
     }

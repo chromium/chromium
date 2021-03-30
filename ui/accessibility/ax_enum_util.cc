@@ -340,8 +340,6 @@ const char* ToString(ax::mojom::Role role) {
       return "iframePresentational";
     case ax::mojom::Role::kIgnored:
       return "ignored";
-    case ax::mojom::Role::kImageMap:
-      return "imageMap";
     case ax::mojom::Role::kImage:
       return "image";
     case ax::mojom::Role::kImeCandidate:
@@ -804,6 +802,8 @@ const char* ToString(ax::mojom::StringAttribute string_attribute) {
       return "url";
     case ax::mojom::StringAttribute::kValue:
       return "value";
+    case ax::mojom::StringAttribute::kVirtualContent:
+      return "virtualContent";
   }
 
   return "";
@@ -1003,6 +1003,8 @@ const char* ToString(ax::mojom::BoolAttribute bool_attribute) {
       return "isPageBreakingObject";
     case ax::mojom::BoolAttribute::kHasAriaAttribute:
       return "hasAriaAttribute";
+    case ax::mojom::BoolAttribute::kTouchPassthrough:
+      return "touchPassthrough";
   }
 
   return "";

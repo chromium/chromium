@@ -151,7 +151,10 @@ Polymer({
 
   onLearnMoreClicked_() {
     this.$.learnMoreDialog.showDialog();
-  }
+  },
 
+  focusLearnMoreLink_() {
+    this.$.learnMoreLink.focus();
+  },
 });
 })();

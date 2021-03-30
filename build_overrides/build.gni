@@ -50,27 +50,38 @@ declare_args() {
   # due to 4GiB file size limit, see https://crbug.com/648948.
   # Set this flag to true to skip the assertion.
   ignore_elf32_limitations = false
-
-  # Use the system install of Xcode for tools like ibtool, libtool, etc.
-  # This does not affect the compiler. When this variable is false, targets will
-  # instead use a hermetic install of Xcode. [The hermetic install can be
-  # obtained with gclient sync after setting the environment variable
-  # FORCE_MAC_TOOLCHAIN for target_os mac only].
-  use_system_xcode = ""
 }
 
-if (is_apple && use_system_xcode == "") {
-  _result = exec_script("//build/mac/should_use_hermetic_xcode.py",
-                        [ target_os ],
-                        "value")
+if (host_os == "mac" || is_apple) {
+  # Needed for is_apple when targeting macOS or iOS, independent of host.
+  # Needed for host_os=="mac" for running host tool such as gperf in blink
+  # even when targeting e.g. Windows.
+  # TODO(thakis): See TODO in scripts.gni -- this should really only be needed
+  # if is_apple, independent of host_os.
+  declare_args() {
+    # Use the system install of Xcode for tools like ibtool, libtool, etc.
+    # This does not affect the compiler. When this variable is false, targets
+    # will instead use a hermetic install of Xcode. [The hermetic install can
+    # be obtained with gclient sync after setting the environment variable
+    # FORCE_MAC_TOOLCHAIN for target_os mac only].
+    use_system_xcode = ""
+  }
 
-  assert(_result != 2,
-         "Do not allow building targets with the default" +
-             "hermetic toolchain if the minimum OS version is not met.")
-  assert(_result != 3,
-         "iOS does not support building with a hermetic toolchain. " +
-             "Please install Xcode.")
+  if (use_system_xcode == "") {
+    _result = exec_script("//build/mac/should_use_hermetic_xcode.py",
+                          [ current_os ],
+                          "value")
 
-  use_system_xcode = _result != 1
+    assert(_result != 2,
+           "Do not allow building targets with the default" +
+               "hermetic toolchain if the minimum OS version is not met.")
+    assert(_result != 3,
+           "iOS does not support building with a hermetic toolchain. " +
+               "Please install Xcode.")
+
+    use_system_xcode = _result != 1
+  }
+
+  assert(current_os != "ios" || use_system_xcode)
   assert(host_os == "mac" || !use_system_xcode)
 }

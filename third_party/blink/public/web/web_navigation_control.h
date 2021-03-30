@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/unguessable_token.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -51,6 +51,7 @@ class WebNavigationControl : public WebLocalFrame {
       WebFrameLoadType,
       const WebHistoryItem&,
       bool is_client_redirect,
+      bool has_transient_user_activation,
       std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) = 0;
 
   // Loads a JavaScript URL in the frame.
@@ -89,7 +90,7 @@ class WebNavigationControl : public WebLocalFrame {
 
  protected:
   explicit WebNavigationControl(mojom::TreeScopeType scope,
-                                const base::UnguessableToken& frame_token)
+                                const LocalFrameToken& frame_token)
       : WebLocalFrame(scope, frame_token) {}
 };
 

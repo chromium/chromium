@@ -49,6 +49,8 @@ class ChromeTracingDelegate : public content::TracingDelegate,
 
   bool IsProfileLoaded() override;
 
+  bool IsSystemWideTracingEnabled() override;
+
   std::unique_ptr<base::DictionaryValue> GenerateMetadataDict() override;
 
  private:

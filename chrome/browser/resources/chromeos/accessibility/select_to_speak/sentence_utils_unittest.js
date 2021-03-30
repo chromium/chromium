@@ -2,25 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+GEN_INCLUDE(['select_to_speak_e2e_test_base.js']);
+
 /**
  * Test fixture for sentence_utils.js.
  */
-SelectToSpeakSentenceUtilsUnitTest = class extends testing.Test {};
+SelectToSpeakSentenceUtilsUnitTest = class extends SelectToSpeakE2ETest {
+  /** @override */
+  setUp() {
+    var runTest = this.deferRunTest(WhenTestDone.EXPECT);
+    (async function() {
+      await importModule('SentenceUtils', '/select_to_speak/sentence_utils.js');
+      runTest();
+    })();
+  }
+};
 
-/** @override */
-SelectToSpeakSentenceUtilsUnitTest.prototype.extraLibraries = [
-  'test_support.js',
-  'sentence_utils.js',
-  'paragraph_utils.js',
-  '../common/closure_shim.js',
-  '../common/constants.js',
-];
-
-TEST_F(
+SYNC_TEST_F(
     'SelectToSpeakSentenceUtilsUnitTest', 'getNextSentenceStart', function() {
       // The text of the test node group is "Hello. New. World."
       const nodeGroup = getTestNodeGroupWithOneNode();
-
       assertEquals(
           7,
           SentenceUtils.getSentenceStart(
@@ -48,7 +49,7 @@ TEST_F(
               constants.Dir.FORWARD /* direction */));
     });
 
-TEST_F(
+SYNC_TEST_F(
     'SelectToSpeakSentenceUtilsUnitTest', 'getPrevSentenceStart', function() {
       // The text of the test node group is "Hello. New. World."
       const nodeGroup = getTestNodeGroupWithOneNode();
@@ -80,7 +81,7 @@ TEST_F(
               constants.Dir.BACKWARD /* direction */));
     });
 
-TEST_F(
+SYNC_TEST_F(
     'SelectToSpeakSentenceUtilsUnitTest', 'getNextSentenceStartMultiNodes',
     function() {
       // The text of the test node group is "Hello. New. Beautiful. World." The
@@ -114,7 +115,7 @@ TEST_F(
               constants.Dir.FORWARD /* direction */));
     });
 
-TEST_F(
+SYNC_TEST_F(
     'SelectToSpeakSentenceUtilsUnitTest', 'getPrevSentenceStartMultiNodes',
     function() {
       // The text of the test node group is "Hello. New. Beautiful. World." The
@@ -148,7 +149,7 @@ TEST_F(
               constants.Dir.BACKWARD /* direction */));
     });
 
-TEST_F(
+SYNC_TEST_F(
     'SelectToSpeakSentenceUtilsUnitTest',
     'getNextSentenceStartSentenceSpanningAcrossMultiNodes', function() {
       // The text of the test node group is "Hello world. New world." The
@@ -177,7 +178,7 @@ TEST_F(
               constants.Dir.FORWARD /* direction */));
     });
 
-TEST_F(
+SYNC_TEST_F(
     'SelectToSpeakSentenceUtilsUnitTest',
     'getPrevSentenceStartSentenceSpanningAcrossMultiNodes', function() {
       // The text of the test node group is "Hello world. New world." The
@@ -211,34 +212,34 @@ TEST_F(
               constants.Dir.BACKWARD /* direction */));
     });
 
+SYNC_TEST_F(
+    'SelectToSpeakSentenceUtilsUnitTest', 'isSentenceStart', function() {
+      // The text of the test node group is "Hello. New. World."
+      const nodeGroup = getTestNodeGroupWithOneNode();
 
-TEST_F('SelectToSpeakSentenceUtilsUnitTest', 'isSentenceStart', function() {
-  // The text of the test node group is "Hello. New. World."
-  const nodeGroup = getTestNodeGroupWithOneNode();
+      assertEquals(
+          true,
+          SentenceUtils.isSentenceStart(
+              nodeGroup /* nodeGroup */, 0 /* startCharIndex */));
+      assertEquals(
+          false,
+          SentenceUtils.isSentenceStart(
+              nodeGroup /* nodeGroup */, 3 /* startCharIndex */));
+      assertEquals(
+          true,
+          SentenceUtils.isSentenceStart(
+              nodeGroup /* nodeGroup */, 7 /* startCharIndex */));
+      assertEquals(
+          false,
+          SentenceUtils.isSentenceStart(
+              nodeGroup /* nodeGroup */, 11 /* startCharIndex */));
+      assertEquals(
+          true,
+          SentenceUtils.isSentenceStart(
+              nodeGroup /* nodeGroup */, 12 /* startCharIndex */));
+    });
 
-  assertEquals(
-      true,
-      SentenceUtils.isSentenceStart(
-          nodeGroup /* nodeGroup */, 0 /* startCharIndex */));
-  assertEquals(
-      false,
-      SentenceUtils.isSentenceStart(
-          nodeGroup /* nodeGroup */, 3 /* startCharIndex */));
-  assertEquals(
-      true,
-      SentenceUtils.isSentenceStart(
-          nodeGroup /* nodeGroup */, 7 /* startCharIndex */));
-  assertEquals(
-      false,
-      SentenceUtils.isSentenceStart(
-          nodeGroup /* nodeGroup */, 11 /* startCharIndex */));
-  assertEquals(
-      true,
-      SentenceUtils.isSentenceStart(
-          nodeGroup /* nodeGroup */, 12 /* startCharIndex */));
-});
-
-TEST_F(
+SYNC_TEST_F(
     'SelectToSpeakSentenceUtilsUnitTest', 'isSentenceStartMultiNodes',
     function() {
       // The text of the test node group is "Hello. New. Beautiful. World." The
@@ -275,7 +276,11 @@ TEST_F(
               nodeGroup /* nodeGroup */, 23 /* startCharIndex */));
     });
 function getTestNodeGroupWithOneNode() {
-  const staticText = {sentenceStarts: [0, 7, 12], name: 'Hello. New. World.'};
+  const staticText = {
+    sentenceStarts: [0, 7, 12],
+    name: 'Hello. New. World.',
+    role: 'staticText'
+  };
   const node = {node: staticText, startChar: 0};
   return {nodes: [node], text: 'Hello. New. World.'};
 }

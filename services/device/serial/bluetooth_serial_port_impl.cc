@@ -4,6 +4,7 @@
 
 #include "services/device/serial/bluetooth_serial_port_impl.h"
 
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "net/base/io_buffer.h"
 #include "services/device/public/cpp/bluetooth/bluetooth_utils.h"
@@ -53,7 +54,7 @@ BluetoothSerialPortImpl::BluetoothSerialPortImpl(
 
 BluetoothSerialPortImpl::~BluetoothSerialPortImpl() {
   if (bluetooth_socket_)
-    bluetooth_socket_->Close();
+    bluetooth_socket_->Disconnect(base::DoNothing());
 }
 
 void BluetoothSerialPortImpl::OpenSocket(OpenCallback callback) {
@@ -345,6 +346,12 @@ void BluetoothSerialPortImpl::OnBluetoothSocketSendError(
   in_stream_.reset();
 }
 
+void BluetoothSerialPortImpl::OnSocketDisconnected(CloseCallback callback) {
+  std::move(callback).Run();
+  bluetooth_socket_.reset();  // Avoid calling Disconnect() twice.
+  delete this;
+}
+
 void BluetoothSerialPortImpl::Flush(mojom::SerialPortFlushMode mode,
                                     FlushCallback callback) {
   NOTIMPLEMENTED();
@@ -387,8 +394,9 @@ void BluetoothSerialPortImpl::GetPortInfo(GetPortInfoCallback callback) {
 }
 
 void BluetoothSerialPortImpl::Close(CloseCallback callback) {
-  std::move(callback).Run();
-  delete this;
+  bluetooth_socket_->Disconnect(
+      base::BindOnce(&BluetoothSerialPortImpl::OnSocketDisconnected,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 }  // namespace device

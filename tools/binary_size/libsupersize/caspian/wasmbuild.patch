@@ -1,9 +1,9 @@
 diff --git a/build/config/BUILDCONFIG.gn b/build/config/BUILDCONFIG.gn
-index bb656fa19ff3..7fbf650f7b0e 100644
+index 407ca1a239c1..4a0e5b97307b 100644
 --- a/build/config/BUILDCONFIG.gn
 +++ b/build/config/BUILDCONFIG.gn
-@@ -291,10 +291,11 @@ is_ios = current_os == "ios"
- is_linux = current_os == "chromeos" || current_os == "linux"
+@@ -299,10 +299,11 @@ is_ios = current_os == "ios"
+ is_linux = current_os == "linux"
  is_mac = current_os == "mac"
  is_nacl = current_os == "nacl"
 +is_wasm = current_os == "wasm"
@@ -14,12 +14,12 @@ index bb656fa19ff3..7fbf650f7b0e 100644
 +is_posix = !is_win && !is_fuchsia && !is_wasm
  
  # =============================================================================
- # SOURCES FILTERS
+ # TARGET DEFAULTS
 diff --git a/build/config/compiler/BUILD.gn b/build/config/compiler/BUILD.gn
-index c9ef45a1495e..85ea1ddd0d00 100644
+index ccf1dd59f9a4..a8ef5afa086a 100644
 --- a/build/config/compiler/BUILD.gn
 +++ b/build/config/compiler/BUILD.gn
-@@ -603,6 +603,20 @@ config("compiler") {
+@@ -594,6 +594,20 @@ config("compiler") {
      ldflags += [ "-stdlib=libc++" ]
    }
  
@@ -40,16 +40,18 @@ index c9ef45a1495e..85ea1ddd0d00 100644
    # Add flags for link-time optimization. These flags enable
    # optimizations/transformations that require whole-program visibility at link
    # time, so they need to be applied to all translation units, and we may end up
-@@ -726,7 +740,7 @@ config("compiler") {
+@@ -714,9 +728,7 @@ config("compiler") {
    if (use_lld && !enable_call_graph_profile_sort) {
      if (is_win) {
        ldflags += [ "/call-graph-profile-sort:no" ]
--    } else {
+-    } else if (!is_apple) {
+-      # TODO(thakis): Once LLD's Mach-O port basically works, implement call
+-      # graph profile sorting for it, add an opt-out flag, and pass it here.
 +    } else if (!is_wasm) {
        ldflags += [ "-Wl,--no-call-graph-profile-sort" ]
      }
    }
-@@ -1532,7 +1546,8 @@ config("default_warnings") {
+@@ -1559,7 +1571,8 @@ config("default_warnings") {
          cflags += [ "-Wno-nonportable-include-path" ]
        }
  
@@ -59,7 +61,7 @@ index c9ef45a1495e..85ea1ddd0d00 100644
          # Flags NaCl (Clang 3.7) and Xcode 9.2 (Clang clang-900.0.39.2) do not
          # recognize.
          cflags += [
-@@ -2294,6 +2309,9 @@ config("symbols") {
+@@ -2321,6 +2334,9 @@ config("symbols") {
          "-debug-info-kind=constructor",
        ]
      }

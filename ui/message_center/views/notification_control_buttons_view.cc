@@ -20,11 +20,9 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace message_center {
-
-const char NotificationControlButtonsView::kViewClassName[] =
-    "NotificationControlButtonsView";
 
 NotificationControlButtonsView::NotificationControlButtonsView(
     MessageView* message_view)
@@ -146,10 +144,6 @@ void NotificationControlButtonsView::SetBackgroundColor(SkColor color) {
   UpdateButtonIconColors();
 }
 
-const char* NotificationControlButtonsView::GetClassName() const {
-  return kViewClassName;
-}
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void NotificationControlButtonsView::OnThemeChanged() {
   View::OnThemeChanged();
@@ -183,5 +177,8 @@ SkColor NotificationControlButtonsView::DetermineButtonIconColor() const {
 
   return color_utils::BlendForMinContrast(icon_color_, background_color_).color;
 }
+
+BEGIN_METADATA(NotificationControlButtonsView, views::View)
+END_METADATA
 
 }  // namespace message_center

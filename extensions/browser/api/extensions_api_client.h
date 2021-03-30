@@ -14,7 +14,7 @@
 #include "build/chromeos_buildflags.h"
 #include "extensions/browser/api/clipboard/clipboard_api.h"
 #include "extensions/browser/api/declarative_content/content_rules_registry.h"
-#include "extensions/browser/api/storage/settings_namespace.h"
+#include "extensions/browser/value_store/settings_namespace.h"
 #include "extensions/common/api/clipboard.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
@@ -161,6 +161,11 @@ class ExtensionsAPIClient {
   // Creates a DevicePermissionsPrompt appropriate for the embedder.
   virtual std::unique_ptr<DevicePermissionsPrompt>
   CreateDevicePermissionsPrompt(content::WebContents* web_contents) const;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Returns true if device policy allows detaching a given USB device.
+  virtual bool ShouldAllowDetachingUsb(int vid, int pid) const;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Returns a delegate for some of VirtualKeyboardAPI's behavior.
   virtual std::unique_ptr<VirtualKeyboardDelegate>

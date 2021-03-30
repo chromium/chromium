@@ -1,0 +1,14 @@
+This tests verifies the hit test regions given to the compositor when non-composited iframes are involved. It can only be run in DumpRenderTree. The outputted rects should cover the hit test regions of all the listed elements. Enable visualize mode to quickly validate graphically.
+
+iframe: layer(578x147) has hit test rect (20,50 435x33)
+
+iframe-nested: layer(503x147) has hit test rect (20,50 435x33)
+
+iframe-transform: layer(578x147) has hit test rect (20,50 435x33)
+
+iframe-fixed: layer(498x33) has hit test rect (0,0 498x33)
+
+iframe-doc: layer(600x38) has hit test rect (0,0 578x38)
+iframe-doc: layer(578x87) has hit test rect (0,0 578x87)
+
+

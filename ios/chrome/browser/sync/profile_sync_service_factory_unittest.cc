@@ -48,7 +48,7 @@ class ProfileSyncServiceFactoryTest : public PlatformTest {
  protected:
   // Returns the collection of default datatypes.
   std::vector<syncer::ModelType> DefaultDatatypes() {
-    static_assert(41 == syncer::ModelType::NUM_ENTRIES,
+    static_assert(38 == syncer::GetNumModelTypes(),
                   "When adding a new type, you probably want to add it here as "
                   "well (assuming it is already enabled).");
 
@@ -60,6 +60,7 @@ class ProfileSyncServiceFactoryTest : public PlatformTest {
     datatypes.push_back(syncer::AUTOFILL_PROFILE);
     datatypes.push_back(syncer::AUTOFILL_WALLET_DATA);
     datatypes.push_back(syncer::AUTOFILL_WALLET_METADATA);
+    datatypes.push_back(syncer::AUTOFILL_WALLET_OFFER);
     datatypes.push_back(syncer::BOOKMARKS);
     datatypes.push_back(syncer::DEVICE_INFO);
     datatypes.push_back(syncer::HISTORY_DELETE_DIRECTIVES);

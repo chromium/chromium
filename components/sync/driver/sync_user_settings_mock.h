@@ -20,8 +20,6 @@ class SyncUserSettingsMock : public SyncUserSettings {
   ~SyncUserSettingsMock() override;
   MOCK_METHOD(bool, IsSyncRequested, (), (const override));
   MOCK_METHOD(void, SetSyncRequested, (bool), (override));
-  MOCK_METHOD(bool, IsSyncAllowedByPlatform, (), (const override));
-  MOCK_METHOD(void, SetSyncAllowedByPlatform, (bool), (override));
   MOCK_METHOD(bool, IsFirstSetupComplete, (), (const override));
   MOCK_METHOD(void,
               SetFirstSetupComplete,
@@ -63,6 +61,14 @@ class SyncUserSettingsMock : public SyncUserSettings {
               IsPassphraseRequiredForPreferredDataTypes,
               (),
               (const override));
+  MOCK_METHOD(bool,
+              IsPassphrasePromptMutedForCurrentProductVersion,
+              (),
+              (const override));
+  MOCK_METHOD(void,
+              MarkPassphrasePromptMutedForCurrentProductVersion,
+              (),
+              (override));
   MOCK_METHOD(bool, IsTrustedVaultKeyRequired, (), (const override));
   MOCK_METHOD(bool,
               IsTrustedVaultKeyRequiredForPreferredDataTypes,

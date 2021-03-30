@@ -39,9 +39,6 @@ class CrashReportDatabase;
 namespace crash_reporter {
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
-// TODO(jperaza): Remove kEnableCrashpad and IsCrashpadEnabled() when Crashpad
-// is fully enabled on Linux.
-extern const char kEnableCrashpad[];
 bool IsCrashpadEnabled();
 #endif
 
@@ -120,9 +117,6 @@ crashpad::CrashpadClient& GetCrashpadClient();
 // running.
 void SetUploadConsent(bool consent);
 
-// Determines whether uploads are enabled or disabled. This information is only
-// available in the browser process.
-bool GetUploadsEnabled();
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 enum class ReportUploadState {
@@ -152,6 +146,10 @@ void RequestSingleCrashUpload(const std::string& local_id);
 
 void DumpWithoutCrashing();
 
+#if defined(OS_IOS)
+void DumpWithoutCrashAndDeferProcessing();
+#endif
+
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 // Logs message and immediately crashes the current process without triggering a
 // crash dump.
@@ -176,10 +174,22 @@ base::FilePath::StringType::const_pointer GetCrashpadDatabasePathImpl();
 // The implementation function for ClearReportsBetween.
 void ClearReportsBetweenImpl(time_t begin, time_t end);
 
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
 // Captures a minidump for the process named by its |task_port| and stores it
 // in the current crash report database.
 void DumpProcessWithoutCrashing(task_t task_port);
+#endif
+
+#if defined(OS_IOS)
+// Convert intermediate dumps into minidumps and trigger an upload. Optional
+// |annotations| will be merged with any process annotations. These are useful
+// for adding annotations detected on the next run after a crash but before
+// upload.
+void ProcessIntermediateDumps(
+    const std::map<std::string, std::string>& annotations = {});
+
+// Requests that the handler begin in-process uploading of any pending reports.
+void StartProcesingPendingReports();
 #endif
 
 #if defined(OS_ANDROID)

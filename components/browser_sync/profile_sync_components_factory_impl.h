@@ -81,9 +81,8 @@ class ProfileSyncComponentsFactoryImpl
   std::unique_ptr<syncer::SyncEngine> CreateSyncEngine(
       const std::string& name,
       invalidation::InvalidationService* invalidator,
-      syncer::SyncInvalidationsService* sync_invalidation_service,
-      const base::WeakPtr<syncer::SyncPrefs>& sync_prefs) override;
-  void DeleteLegacyDirectoryFilesAndNigoriStorage() override;
+      syncer::SyncInvalidationsService* sync_invalidation_service) override;
+  void ClearAllTransportDataExceptEncryptionBootstrapToken() override;
 
  private:
   // Factory function for ModelTypeController instances for models living on

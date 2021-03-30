@@ -363,6 +363,8 @@ message PolicyFetchRequest {
   //   google/chromeos/user => ChromeSettingsProto
   //   google/chromeos/publicaccount => ChromeSettingsProto
   //   google/chrome/machine-level-user => ChromeSettingsProto
+  //   google/chrome/machine-level-user-android => ChromeSettingsProto
+  //   google/chrome/machine-level-user-ios => ChromeSettingsProto
   //   google/chrome/extension => ExternalPolicyData
   //   google/chrome/machine-level-extension => ExternalPolicyData
   //   google/chromeos/signinextension => ExternalPolicyData
@@ -640,7 +642,9 @@ message PolicyData {
   // Should be fetched with user policy.
   optional string gaia_id = 29;
 
-  // Indicate this device's market segment.
+  // Indicate this device's market segment. The MarketSegment enum in
+  // cloud_policy_constants.h (http://shortn/_3iFWcdjy0P) must be kept in sync
+  // with this enum.
   enum MarketSegment {
     MARKET_SEGMENT_UNSPECIFIED = 0;
     ENROLLED_EDUCATION = 1;
@@ -673,7 +677,10 @@ message PolicyData {
   // Only set for device policy.
   optional string obfuscated_customer_id = 34;
 
-  // The different types of user segments for metrics logging.
+  // The different types of user segments for metrics logging. If any values are
+  // added to this enum, the corresponding enum in
+  // UserTypeByDeviceTypeMetricsProvider::UserSegment
+  // (http://shortn/_uK3ZM4pC0a) should be updated.
   enum MetricsLogSegment {
     UNSPECIFIED = 0;
     K12 = 1;
@@ -691,6 +698,11 @@ message PolicyData {
   // customer, and primary admin email for domainless customer. The client side
   // will use this field to display who manages this device/browser/user.
   optional string managed_by = 36;
+
+  // An identifier (e.g. "inboundSamlSsoProfiles/0abcdefg1234567") for the
+  // device's managing OU's SSO profile. Currently, this points to the OU's
+  // SAML settings. May support OIDC in the future.
+  optional string sso_profile = 37;
 }
 
 message ClientActionRequired {
@@ -1620,7 +1632,7 @@ message ChromeSignedInUser {
   // The email of the signed in user.
   optional string email = 1;
   // The obfuscated GaiaID of the signed in user.
-  optional string obfudscated_gaia_id = 2;
+  optional string obfuscated_gaia_id = 2;
 }
 
 // Extension request information.
@@ -1868,6 +1880,9 @@ message BrowserReport {
   // or lower version) has been installed and will be the active version
   // following a browser restart.
   optional string installed_browser_version = 8;
+
+  // True for an extended stable channel installation.
+  optional bool is_extended_stable_channel = 9 [default = false];
 }
 
 // Report Operating system related information.
@@ -1926,6 +1941,8 @@ message ChromeDesktopReportRequest {
   optional string machine_attestation_key = 11;
   // A string that represents the device model.
   optional string device_model = 12;
+  // A string that represents the brand/manufacturer of a device.
+  optional string brand_name = 13;
 }
 
 // Report user level status on Chrome OS platform. Chrome OS equivalent of
@@ -2721,6 +2738,8 @@ message RegisterBrowserRequest {
   optional BrowserDeviceIdentifier browser_device_identifier = 4;
   // The device model, e.g., iPad6,11
   optional string device_model = 5;
+  // A string that represents the brand/manufacturer of a device.
+  optional string brand_name = 6;
 }
 
 // Gets an enrollment token to a managed Google Play account for using it with
@@ -2941,6 +2960,7 @@ message ExtensionInstallReportLogEvent {
     CRX_FETCH_URL_EMPTY = 25;
     CRX_FETCH_URL_INVALID = 26;
     OVERRIDDEN_BY_SETTINGS = 27;
+    REPLACED_BY_SYSTEM_APP = 28;
   }
 
   //  Stage of extension installing process. See InstallStageTracker::Stage for
@@ -2964,7 +2984,7 @@ message ExtensionInstallReportLogEvent {
     USER_TYPE_REGULAR = 1;
     USER_TYPE_GUEST = 2;
     USER_TYPE_PUBLIC_ACCOUNT = 3;
-    USER_TYPE_SUPERVISED = 4;
+    USER_TYPE_SUPERVISED_DEPRECATED = 4;
     USER_TYPE_KIOSK_APP = 5;
     USER_TYPE_CHILD = 6;
     USER_TYPE_ARC_KIOSK_APP = 7;
@@ -3067,6 +3087,10 @@ message ExtensionInstallReportLogEvent {
     DEPRECATED_ERROR_PARSING_DNR_RULESET = 40;
     ERROR_INDEXING_DNR_RULESET = 41;
     CRX_REQUIRED_PROOF_MISSING = 42;
+    CRX_HEADER_VERIFIED_CONTENTS_UNCOMPRESSING_FAILURE = 43;
+    MALFORMED_VERIFIED_CONTENTS = 44;
+    COULD_NOT_CREATE_METADATA_DIRECTORY = 45;
+    COULD_NOT_WRITE_VERIFIED_CONTENTS_INTO_FILE = 46;
   }
 
   // Reason why extension failed due to failure reason MANIFEST_INVALID. See
@@ -3347,6 +3371,89 @@ message RsuLookupKeyUploadRequest {
 message RsuLookupKeyUploadResponse {
   // Whether RSU lookup key was received.
   optional bool rsu_lookup_key_updated = 1;
+}
+
+// An event used for reporting when a new print job has completed.
+message PrintJobEvent {
+  message PrintJobConfiguration {
+    // The ID of the job. This and the device ID uniquely identify a print job
+    // in enterprise reporting.
+    optional string id = 1;
+
+    // The name of the document.
+    optional string title = 2;
+
+    // The final status of the job.
+    optional int32 status = 3;
+
+    // The time the print job was created.
+    optional int64 creation_time = 4;
+
+    // The time the print job was completed.
+    optional int64 completion_time = 5;
+
+    // The number of pages in the document.
+    optional int32 number_of_pages = 6;
+
+    // The settings of the print job.
+    optional PrintSettings settings = 7;
+  }
+
+  enum UserType {
+    UNKNOWN = 0;
+    REGULAR = 1;
+    GUEST = 2;
+    KIOSK = 3;
+  }
+
+  message Printer {
+    // Displayed name of the printer in the client.
+    optional string name = 1;
+
+    // URI of the printer, which serves as a unique identifier.
+    optional string uri = 2;
+  }
+
+  // The finishing settings of the print job.
+  message PrintSettings {
+    enum ColorMode {
+      UNKNOWN_COLOR_MODE = 0;
+      BLACK_AND_WHITE = 1;
+      COLOR = 2;
+    }
+
+    enum DuplexMode {
+      UNKNOWN_DUPLEX_MODE = 0;
+      ONE_SIDED = 1;
+      TWO_SIDED_LONG_EDGE = 2;
+      TWO_SIDED_SHORT_EDGE = 3;
+    }
+
+    message MediaSize {
+      // Width (in micrometers)
+      optional int32 width = 1;
+
+      // Height (in micrometers)
+      optional int32 height = 2;
+
+      // Platform specific id to map it back to the particular media.
+      optional string vendor_id = 3;
+    }
+
+    optional ColorMode color = 1;
+
+    optional DuplexMode duplex = 2;
+
+    optional MediaSize media_size = 3;
+
+    optional int32 copies = 4;
+  }
+
+  optional PrintJobConfiguration job_configuration = 1;
+
+  optional UserType user_type = 2;
+
+  optional Printer printer = 3;
 }
 
 // Provides information about an installed app.

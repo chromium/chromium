@@ -109,10 +109,16 @@ void ChromeImpl::UpdateWebViews(const WebViewsInfo& views_info,
           client->AddListener(listener.get());
         // OnConnected will fire when DevToolsClient connects later.
         CHECK(!page_load_strategy_.empty());
-        web_views_.push_back(std::make_unique<WebViewImpl>(
-            view.id, w3c_compliant, nullptr,
-            devtools_http_client_->browser_info(), std::move(client),
-            devtools_http_client_->device_metrics(), page_load_strategy_));
+        if (view.type == WebViewInfo::kServiceWorker) {
+          web_views_.push_back(std::make_unique<WebViewImpl>(
+              view.id, w3c_compliant, nullptr,
+              devtools_http_client_->browser_info(), std::move(client)));
+        } else {
+          web_views_.push_back(std::make_unique<WebViewImpl>(
+              view.id, w3c_compliant, nullptr,
+              devtools_http_client_->browser_info(), std::move(client),
+              devtools_http_client_->device_metrics(), page_load_strategy_));
+        }
       }
     }
   }
@@ -451,6 +457,10 @@ Status ChromeImpl::CloseWebView(const std::string& id) {
 }
 
 Status ChromeImpl::ActivateWebView(const std::string& id) {
+  WebView* webview = nullptr;
+  GetWebViewById(id, &webview);
+  if (webview && webview->IsServiceWorker())
+    return Status(kOk);
   return devtools_http_client_->ActivateWebView(id);
 }
 

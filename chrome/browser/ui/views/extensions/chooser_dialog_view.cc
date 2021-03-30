@@ -23,6 +23,7 @@
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 ChooserDialogView::ChooserDialogView(
     std::unique_ptr<ChooserController> chooser_controller) {
@@ -54,6 +55,7 @@ ChooserDialogView::ChooserDialogView(
           views::CONTROL, views::CONTROL)));
 
   SetExtraView(device_chooser_content_view_->CreateExtraView());
+  SetModalType(ui::MODAL_TYPE_CHILD);
   SetShowCloseButton(false);
   SetTitle(device_chooser_content_view_->GetWindowTitle());
 
@@ -71,10 +73,6 @@ ChooserDialogView::ChooserDialogView(
 }
 
 ChooserDialogView::~ChooserDialogView() = default;
-
-ui::ModalType ChooserDialogView::GetModalType() const {
-  return ui::MODAL_TYPE_CHILD;
-}
 
 bool ChooserDialogView::IsDialogButtonEnabled(ui::DialogButton button) const {
   return device_chooser_content_view_->IsDialogButtonEnabled(button);
@@ -99,6 +97,9 @@ const views::Widget* ChooserDialogView::GetWidget() const {
 void ChooserDialogView::OnSelectionChanged() {
   DialogModelChanged();
 }
+
+BEGIN_METADATA(ChooserDialogView, views::DialogDelegateView)
+END_METADATA
 
 void ChromeExtensionChooserDialog::ShowDialogImpl(
     std::unique_ptr<ChooserController> chooser_controller) const {

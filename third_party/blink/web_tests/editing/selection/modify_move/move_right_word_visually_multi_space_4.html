@@ -51,7 +51,7 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr">    abc|    def    אבצ    דדפ    hij    opq    </div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr">    abc    def |   \u05D0\u05D1\u05E6    \u05D3\u05D3\u05E4    hij    opq    </div>',
+  '<div contenteditable dir="ltr">    abc |   def    \u05D0\u05D1\u05E6    \u05D3\u05D3\u05E4    hij    opq    </div>',
   '4-7 right word');
 
 selection_test(
@@ -93,7 +93,7 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr">    abc    def|    אבצ    דדפ    hij    opq    </div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr">    abc    def    \u05D0\u05D1\u05E6 |   \u05D3\u05D3\u05E4    hij    opq    </div>',
+  '<div contenteditable dir="ltr">    abc    def |   \u05D0\u05D1\u05E6    \u05D3\u05D3\u05E4    hij    opq    </div>',
   '4-14 right word');
 
 selection_test(
@@ -135,7 +135,7 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr">    abc    def    אבצ|    דדפ    hij    opq    </div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr">    abc    def    אבצ    דדפ |   hij    opq    </div>',
+  '<div contenteditable dir="ltr">    abc    def    \u05D0\u05D1\u05E6 |   \u05D3\u05D3\u05E4    hij    opq    </div>',
   '4-21 right word');
 
 selection_test(
@@ -177,7 +177,7 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr">    abc    def    אבצ    דדפ|    hij    opq    </div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr">    abc    def    \u05D0\u05D1\u05E6    \u05D3\u05D3\u05E4    hij |   opq    </div>',
+  '<div contenteditable dir="ltr">    abc    def    \u05D0\u05D1\u05E6    \u05D3\u05D3\u05E4 |   hij    opq    </div>',
   '4-28 right word');
 
 selection_test(
@@ -219,7 +219,7 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr">    abc    def    אבצ    דדפ    hij|    opq    </div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr">    abc    def    \u05D0\u05D1\u05E6    \u05D3\u05D3\u05E4    hij    opq|    </div>',
+  '<div contenteditable dir="ltr">    abc    def    \u05D0\u05D1\u05E6    \u05D3\u05D3\u05E4    hij |   opq    </div>',
   '4-35 right word');
 
 selection_test(

@@ -4,10 +4,10 @@
 
 #include "chrome/browser/chromeos/policy/external_data_handlers/crostini_ansible_playbook_external_data_handler.h"
 
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/chromeos/crostini/crostini_pref_names.h"
 #include "chrome/browser/chromeos/policy/device_local_account_policy_service.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
@@ -16,7 +16,7 @@ namespace policy {
 
 CrostiniAnsiblePlaybookExternalDataHandler::
     CrostiniAnsiblePlaybookExternalDataHandler(
-        chromeos::CrosSettings* cros_settings,
+        ash::CrosSettings* cros_settings,
         DeviceLocalAccountPolicyService* policy_service)
     : crostini_ansible_observer_(cros_settings,
                                  policy_service,

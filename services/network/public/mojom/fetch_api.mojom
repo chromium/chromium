@@ -27,26 +27,29 @@ enum RequestMode {
 //
 // Note: if destination is kDocument it should be a main
 // resource request for main frames, except for Portals cases.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum RequestDestination {
-  kEmpty,
-  kAudio,
-  kAudioWorklet,
-  kDocument,
-  kEmbed,
-  kFont,
-  kFrame,
-  kIframe,
-  kImage,
-  kManifest,
-  kObject,
-  kPaintWorklet,
-  kReport,
-  kScript,
-  kServiceWorker,
-  kSharedWorker,
-  kStyle,
-  kTrack,
-  kVideo,
+  kEmpty = 0,
+  kAudio = 1,
+  kAudioWorklet = 2,
+  kDocument = 3,
+  kEmbed = 4,
+  kFont = 5,
+  kFrame = 6,
+  kIframe = 7,
+  kImage = 8,
+  kManifest = 9,
+  kObject = 10,
+  kPaintWorklet = 11,
+  kReport = 12,
+  kScript = 13,
+  kServiceWorker = 14,
+  kSharedWorker = 15,
+  kStyle = 16,
+  kTrack = 17,
+  kVideo = 18,
   // kWebBundle represents a request for a WebBundle. A <link> element whose
   // rel is "webbundle" uses this destination.
   //
@@ -54,9 +57,9 @@ enum RequestDestination {
   //
   // Fetch specifiction does not define this destination yet.
   // Tracking issue: https://github.com/whatwg/fetch/issues/1120
-  kWebBundle,
-  kWorker,
-  kXslt,
+  kWebBundle = 19,
+  kWorker = 20,
+  kXslt = 21,
 };
 
 // Corresponds to Fetch request's "redirect mode":

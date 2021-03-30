@@ -151,8 +151,8 @@ DiceResponseHandler::DiceTokenFetcher::DiceTokenFetcher(
       delegate_(std::move(delegate)),
       dice_response_handler_(dice_response_handler),
       timeout_closure_(
-          base::Bind(&DiceResponseHandler::DiceTokenFetcher::OnTimeout,
-                     base::Unretained(this))),
+          base::BindOnce(&DiceResponseHandler::DiceTokenFetcher::OnTimeout,
+                         base::Unretained(this))),
       should_enable_sync_(false) {
   DCHECK(dice_response_handler_);
   account_reconcilor_lock_ =
@@ -338,7 +338,8 @@ void DiceResponseHandler::ProcessDiceSignoutHeader(
     const std::vector<signin::DiceResponseParams::AccountInfo>& account_infos) {
   VLOG(1) << "Start processing Dice signout response";
 
-  CoreAccountId primary_account = identity_manager_->GetPrimaryAccountId();
+  CoreAccountId primary_account =
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync);
   bool primary_account_signed_out = false;
   auto* accounts_mutator = identity_manager_->GetAccountsMutator();
   for (const auto& account_info : account_infos) {

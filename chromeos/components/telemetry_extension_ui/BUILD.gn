@@ -34,10 +34,10 @@ source_set("telemetry_extension_ui") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chrome/browser/chromeos/wilco_dtc_supportd:mojo_utils",
     "//chromeos/components/telemetry_extension_ui/mojom",
-    "//chromeos/constants",
     "//chromeos/resources:telemetry_extension_resources",
     "//chromeos/services/cros_healthd/public/cpp",
     "//chromeos/services/cros_healthd/public/mojom",

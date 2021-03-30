@@ -35,12 +35,12 @@ ContextualNudge::ContextualNudge(views::View* anchor,
                                  aura::Window* parent_window,
                                  Position position,
                                  const gfx::Insets& margins,
-                                 const base::string16& text,
+                                 const std::u16string& text,
                                  SkColor text_color,
                                  const base::RepeatingClosure& tap_callback)
     : views::BubbleDialogDelegateView(anchor,
                                       GetArrowForPosition(position),
-                                      views::BubbleBorder::NO_ASSETS),
+                                      views::BubbleBorder::NO_SHADOW),
       tap_callback_(tap_callback) {
   // Bubbles that use transparent colors should not paint their ClientViews to a
   // layer as doing so could result in visual artifacts.
@@ -50,7 +50,7 @@ ContextualNudge::ContextualNudge(views::View* anchor,
   set_margins(gfx::Insets());
   set_accept_events(!tap_callback.is_null());
   SetCanActivate(false);
-  set_shadow(views::BubbleBorder::NO_ASSETS);
+  set_shadow(views::BubbleBorder::NO_SHADOW);
   SetButtons(ui::DIALOG_BUTTON_NONE);
 
   if (parent_window) {

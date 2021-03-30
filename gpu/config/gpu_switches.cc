@@ -110,4 +110,8 @@ const char kVulkanHeapMemoryLimitMb[] = "vulkan-heap-memory-limit-mb";
 // TODO(crbug/1158000): Remove this switch.
 const char kVulkanSyncCpuMemoryLimitMb[] = "vulkan-sync-cpu-memory-limit-mb";
 
+// Crash Chrome if GPU process crashes. This is to force a test to fail when
+// GPU process crashes unexpectedly.
+const char kForceBrowserCrashOnGpuCrash[] = "force-browser-crash-on-gpu-crash";
+
 }  // namespace switches

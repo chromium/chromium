@@ -4,7 +4,8 @@
 
 #import "ios/chrome/browser/ui/autofill/save_card_infobar_controller.h"
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
@@ -39,10 +40,10 @@ UIImage* InfoBarCloseImage() {
 }
 
 // Returns the title for the given infobar button.
-base::string16 GetTitleForButton(ConfirmInfoBarDelegate* delegate,
+std::u16string GetTitleForButton(ConfirmInfoBarDelegate* delegate,
                                  ConfirmInfoBarDelegate::InfoBarButton button) {
   return (delegate->GetButtons() & button) ? delegate->GetButtonLabel(button)
-                                           : base::string16();
+                                           : std::u16string();
 }
 
 }  // namespace
@@ -92,10 +93,10 @@ base::string16 GetTitleForButton(ConfirmInfoBarDelegate* delegate,
   }
 
   // Message, if any.
-  base::string16 messageText = self.infoBarDelegate->GetMessageText();
+  std::u16string messageText = self.infoBarDelegate->GetMessageText();
   if (!messageText.empty()) {
     SaveCardMessageWithLinks* message = [[SaveCardMessageWithLinks alloc] init];
-    const base::string16 linkText = self.infoBarDelegate->GetLinkText();
+    const std::u16string linkText = self.infoBarDelegate->GetLinkText();
     GURL linkURL = self.infoBarDelegate->GetLinkURL();
 
     if (!linkText.empty() && !linkURL.is_empty()) {
@@ -108,14 +109,14 @@ base::string16 GetTitleForButton(ConfirmInfoBarDelegate* delegate,
                                                       linkText.length())],
                           nil];
       // Append the link text to the message.
-      messageText += base::UTF8ToUTF16(" ") + linkText;
+      messageText += u" " + linkText;
     }
     message.messageText = base::SysUTF16ToNSString(messageText);
     [self.infoBarView setMessage:message];
   }
 
   // Description, if any.
-  const base::string16 description = self.infoBarDelegate->GetDescriptionText();
+  const std::u16string description = self.infoBarDelegate->GetDescriptionText();
   if (!description.empty()) {
     [self.infoBarView setDescription:base::SysUTF16ToNSString(description)];
   }
@@ -150,13 +151,13 @@ base::string16 GetTitleForButton(ConfirmInfoBarDelegate* delegate,
   }
 
   // Cancel button.
-  const base::string16 cancelButtonTitle = GetTitleForButton(
+  const std::u16string cancelButtonTitle = GetTitleForButton(
       self.infoBarDelegate, ConfirmInfoBarDelegate::BUTTON_CANCEL);
   [self.infoBarView
       setCancelButtonTitle:base::SysUTF16ToNSString(cancelButtonTitle)];
 
   // Confirm button.
-  const base::string16 confirmButtonTitle = GetTitleForButton(
+  const std::u16string confirmButtonTitle = GetTitleForButton(
       self.infoBarDelegate, ConfirmInfoBarDelegate::BUTTON_OK);
   [self.infoBarView
       setConfirmButtonTitle:base::SysUTF16ToNSString(confirmButtonTitle)];

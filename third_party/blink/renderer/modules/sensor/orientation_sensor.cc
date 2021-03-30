@@ -102,9 +102,9 @@ void OrientationSensor::populateMatrix(
     Float32ArrayOrFloat64ArrayOrDOMMatrix& matrix,
     ExceptionState& exception_state) {
   if (matrix.IsFloat32Array())
-    PopulateMatrixInternal(matrix.GetAsFloat32Array().View(), exception_state);
+    PopulateMatrixInternal(matrix.GetAsFloat32Array().Get(), exception_state);
   else if (matrix.IsFloat64Array())
-    PopulateMatrixInternal(matrix.GetAsFloat64Array().View(), exception_state);
+    PopulateMatrixInternal(matrix.GetAsFloat64Array().Get(), exception_state);
   else if (matrix.IsDOMMatrix())
     PopulateMatrixInternal(matrix.GetAsDOMMatrix(), exception_state);
   else
@@ -120,7 +120,7 @@ OrientationSensor::OrientationSensor(
     const SpatialSensorOptions* options,
     ExceptionState& exception_state,
     device::mojom::blink::SensorType type,
-    const Vector<mojom::blink::FeaturePolicyFeature>& features)
+    const Vector<mojom::blink::PermissionsPolicyFeature>& features)
     : Sensor(execution_context, options, exception_state, type, features),
       reading_dirty_(true) {}
 

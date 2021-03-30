@@ -323,7 +323,7 @@ void VideoDecoderClient::DecodeNextFragmentTask() {
 
   num_outstanding_decode_requests_++;
 
-  // Throw event when we encounter a config info in a H.264 stream.
+  // Throw event when we encounter a config info in a H.264/HEVC stream.
   if (has_config_info)
     FireEvent(VideoPlayerEvent::kConfigInfo);
 }
@@ -388,7 +388,7 @@ void VideoDecoderClient::DecodeDoneTask(media::Status status) {
 
 void VideoDecoderClient::FrameReadyTask(scoped_refptr<VideoFrame> video_frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_client_sequence_checker_);
-  DCHECK(video_frame->metadata()->power_efficient);
+  DCHECK(video_frame->metadata().power_efficient);
 
   frame_renderer_->RenderFrame(video_frame);
 

@@ -31,7 +31,7 @@ TEST(WeakCheckUtilityTest, IsWeak) {
 }
 
 TEST(WeakCheckUtilityTest, WeakPasswordsNotFound) {
-  base::flat_set<base::string16> passwords = {
+  base::flat_set<std::u16string> passwords = {
       base::ASCIIToUTF16(kStrongShortPassword),
       base::ASCIIToUTF16(kStrongLongPassword)};
 
@@ -39,13 +39,13 @@ TEST(WeakCheckUtilityTest, WeakPasswordsNotFound) {
 }
 
 TEST(WeakCheckUtilityTest, DetectedShortAndLongWeakPasswords) {
-  base::flat_set<base::string16> passwords = {
+  base::flat_set<std::u16string> passwords = {
       base::ASCIIToUTF16(kStrongLongPassword),
       base::ASCIIToUTF16(kWeakShortPassword),
       base::ASCIIToUTF16(kStrongShortPassword),
       base::ASCIIToUTF16(kWeakLongPassword)};
 
-  base::flat_set<base::string16> weak_passwords = BulkWeakCheck(passwords);
+  base::flat_set<std::u16string> weak_passwords = BulkWeakCheck(passwords);
 
   EXPECT_THAT(weak_passwords,
               ElementsAre(base::ASCIIToUTF16(kWeakShortPassword),

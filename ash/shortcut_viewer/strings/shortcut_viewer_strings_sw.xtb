@@ -23,11 +23,13 @@
 <translation id="169515659049020177">Hama</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Ongeza www. na .com kwenye maandishi uliyoandika katika sehemu ya anwani, kisha ufungue ukurasa</translation>
+<translation id="1768987374400973299">Rekodi au upige picha ya skrini</translation>
 <translation id="1872219238824176091">Ondoa eneokazi la sasa</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, kisha <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> au <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">Nenda kwenye kichupo kinachofuata</translation>
 <translation id="2010818616644390445">Nenda kwenye kichupo cha mwisho katika dirisha</translation>
 <translation id="2040706009561734834">Fungua au ufunge kifungua programu</translation>
+<translation id="2086334242442703436">Fungua Kiteua Emoji</translation>
 <translation id="2088054208777350526">Tafuta njia za mikato ya kibodi</translation>
 <translation id="2125211348069077981"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="E" /> au <ph name="F" /></translation>
 <translation id="2145908266289632567">Kubadilisha Maandishi</translation>
@@ -46,6 +48,7 @@
 <translation id="2480851840841871861">Fungua programu ya Mratibu wa Google</translation>
 <translation id="2488661730534396940">Washa eneokazi katika upande wa kushoto</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516999188535378855">Fungua Programu ya Uchunguzi</translation>
 <translation id="2530339807289914946">Sogeza chini ukurasa wa wavuti</translation>
 <translation id="2530896289327917474">Washa au uzime mipangilio ya kuvinjari kwa kibodi</translation>
 <translation id="2574014812750545982">Badilisha kiwango cha kukuza ukurasa</translation>
@@ -110,6 +113,7 @@
 <translation id="4801989101741319327">Sogeza hadi mwisho wa neno linalofuata</translation>
 <translation id="4866066940972151697">Washa eneokazi katika upande wa kulia</translation>
 <translation id="4916163929714267752">Fungua kiungo katika dirisha jipya</translation>
+<translation id="492453977506755176">Kitufe cha hali ya kupiga picha</translation>
 <translation id="5030659775136592441">Onyesha kidhibiti cha alamisho</translation>
 <translation id="5034421018520995080">Nenda juu ya ukurasa</translation>
 <translation id="5042305953558921026">Kitufe cha hali ya muhtasari</translation>
@@ -132,6 +136,7 @@
 <translation id="5899919361772749550">Onyesha au ufiche dashibodi ya Zana za Wasanidi Programu</translation>
 <translation id="5919628958418675842">Washa au uzime skrini ya faragha</translation>
 <translation id="5921745308587794300">Zungusha dirisha</translation>
+<translation id="5926306472221400972">Piga picha ya skrini nzima</translation>
 <translation id="6022924867608035986">Futa maandishi ya kisanduku cha utafutaji</translation>
 <translation id="6045998054441862242">Washa hali ya utofautishaji wa juu</translation>
 <translation id="6052614013050385269">Bofya kulia kiungo</translation>
@@ -149,6 +154,7 @@
 <translation id="6445033640292336367">Rudisha kichupo kwenye nafasi yake halisi</translation>
 <translation id="6474744297082284761">Sogeza mbali (wakati umeambatisha AU umewasha vikuzaji vya skrini nzima)</translation>
 <translation id="649811797655257835">Chagua faili, kisha ubofye <ph name="SPACE" /></translation>
+<translation id="6551886416582667425">Rekodi au upige picha ya sehemu ya skrini</translation>
 <translation id="6556040137485212400">Fungua dirisha ambalo halijatumika kwa muda mrefu zaidi</translation>
 <translation id="666343722268997814">Fungua menyu ya kipengee kinachoangaziwa kwa kubofya kulia</translation>
 <translation id="6671538777808758331">Nenda kwenye utafutaji unaofuata unaolingana na utafutaji wako</translation>
@@ -175,6 +181,7 @@
 <translation id="7611271430932669992">Sogeza uangaziaji kwenye dirisha ibukizi au visanduku</translation>
 <translation id="7635348532214572995">Sogeza aikoni ya programu kwenye gridi ya programu</translation>
 <translation id="766326951329901120">Bandika maudhui kutoka ubao wa kunakili katika muundo wa maandishi dhahiri</translation>
+<translation id="7673453620027697230">Rekodi au upige picha ya skrini ya dirisha</translation>
 <translation id="7703010453515335249">bano la kushoto</translation>
 <translation id="7724603315864178912">Kata</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, kisha <ph name="SPACE" /> au <ph name="ENTER" /></translation>

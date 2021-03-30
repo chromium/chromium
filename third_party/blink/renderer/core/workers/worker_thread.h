@@ -219,8 +219,6 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
 
   int GetWorkerThreadId() const { return worker_thread_id_; }
 
-  PlatformThreadId GetPlatformThreadId();
-
   bool IsForciblyTerminated() LOCKS_EXCLUDED(mutex_);
 
   void WaitForShutdownForTesting();

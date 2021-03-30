@@ -6,6 +6,7 @@
 
 #include "base/guid.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/thread_pool.h"
 #include "chrome/services/sharing/nearby/nearby_connections.h"
 #include "chrome/services/sharing/nearby/platform/atomic_boolean.h"
 #include "chrome/services/sharing/nearby/platform/atomic_uint32.h"
@@ -177,20 +178,23 @@ std::unique_ptr<WebRtcMedium> ImplementationPlatform::CreateWebRtcMedium() {
 
   const mojo::SharedRemote<network::mojom::P2PSocketManager>& socket_manager =
       connections.socket_manager();
-  const mojo::SharedRemote<network::mojom::MdnsResponder>& mdns_responder =
-      connections.mdns_responder();
+  const mojo::SharedRemote<
+      location::nearby::connections::mojom::MdnsResponderFactory>&
+      mdns_responder_factory = connections.mdns_responder_factory();
   const mojo::SharedRemote<sharing::mojom::IceConfigFetcher>&
       ice_config_fetcher = connections.ice_config_fetcher();
   const mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger>&
       messenger = connections.webrtc_signaling_messenger();
 
-  if (!socket_manager.is_bound() || !mdns_responder.is_bound() ||
+  if (!socket_manager.is_bound() || !mdns_responder_factory.is_bound() ||
       !ice_config_fetcher.is_bound() || !messenger.is_bound()) {
+    LOG(ERROR)
+        << "Not all webrtc dependencies were bound. Returning null medium";
     return nullptr;
   }
 
   return std::make_unique<chrome::WebRtcMedium>(
-      socket_manager, mdns_responder, ice_config_fetcher, messenger,
+      socket_manager, mdns_responder_factory, ice_config_fetcher, messenger,
       connections.GetThreadTaskRunner());
 }
 

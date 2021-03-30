@@ -15,6 +15,7 @@ Polymer({
 
   behaviors: [
     DeepLinkingBehavior,
+    I18nBehavior,
     settings.RouteObserverBehavior,
     settings.RouteOriginBehavior,
     WebUIListenerBehavior,
@@ -27,6 +28,23 @@ Polymer({
     prefs: {
       type: Object,
       notify: true,
+    },
+
+    /**
+     * Enum values for the 'settings.a11y.screen_magnifier_mouse_following_mode'
+     * preference. These values map to
+     * AccessibilityController::MagnifierMouseFollowingMode, and are written to
+     * prefs and metrics, so order should not be changed.
+     * @private {!Object<string, number>}
+     */
+    screenMagnifierMouseFollowingModePrefValues_: {
+      readOnly: true,
+      type: Object,
+      value: {
+        CONTINUOUS: 0,
+        CENTERED: 1,
+        EDGE: 2,
+      },
     },
 
     screenMagnifierZoomOptions_: {
@@ -150,11 +168,19 @@ Polymer({
     },
 
     /** @private */
-    shouldShowExperimentalCursorColor_: {
+    isMagnifierPanningImprovementsEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('isMagnifierPanningImprovementsEnabled');
+      },
+    },
+
+    /** @private */
+    isMagnifierContinuousMouseFollowingModeSettingEnabled_: {
       type: Boolean,
       value() {
         return loadTimeData.getBoolean(
-            'showExperimentalAccessibilityCursorColor');
+            'isMagnifierContinuousMouseFollowingModeSettingEnabled');
       },
     },
 
@@ -185,6 +211,16 @@ Polymer({
       type: Boolean,
       value() {
         return loadTimeData.getBoolean('isGuest');
+      }
+    },
+
+    /** @private */
+    screenMagnifierHintLabel_: {
+      type: String,
+      value() {
+        return this.i18n(
+            'screenMagnifierHintLabel',
+            this.i18n('screenMagnifierHintSearchKey'));
       }
     },
 
@@ -244,6 +280,7 @@ Polymer({
         chromeos.settings.mojom.Setting.kSelectToSpeak,
         chromeos.settings.mojom.Setting.kHighContrastMode,
         chromeos.settings.mojom.Setting.kFullscreenMagnifier,
+        chromeos.settings.mojom.Setting.kFullscreenMagnifierMouseFollowingMode,
         chromeos.settings.mojom.Setting.kFullscreenMagnifierFocusFollowing,
         chromeos.settings.mojom.Setting.kDockedMagnifier,
         chromeos.settings.mojom.Setting.kStickyKeys,

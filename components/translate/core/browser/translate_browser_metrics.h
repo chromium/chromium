@@ -80,9 +80,11 @@ enum class TargetLanguageOrigin {
   kApplicationUI,
   kAcceptLanguages,
   kDefaultEnglish,
+  kChangedByUser,
+  kUninitialized,
   // Insert new items here. Keep in sync with TranslateTargetLanguageOrigin in
   // enums.xml when adding values.
-  kMaxValue = kDefaultEnglish
+  kMaxValue = kUninitialized
 };
 
 enum class MenuTranslationUnavailableReason {
@@ -115,10 +117,6 @@ void ReportMenuTranslationUnavailableReason(
 void ReportLanguageDetectionContentLength(size_t length);
 
 void ReportLocalesOnDisabledByPrefs(base::StringPiece locale);
-
-// Called when Chrome Translate server sends the language list which includes
-// a undisplayable language in the user's locale.
-void ReportUndisplayableLanguage(base::StringPiece language);
 
 void ReportUnsupportedLanguageAtInitiation(base::StringPiece language);
 

@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">Skráin eða mappan er ónothæf.</translation>
 <translation id="1363028406613469049">Rekja</translation>
 <translation id="1378727793141957596">Velkomin(n) í Google Drive!</translation>
+<translation id="1379911846207762492">Þú getur gert skrár aðgengilegar án nettengingar til að geta opnað þær þegar engin nettenging er til staðar.</translation>
 <translation id="1383876407941801731">Leita</translation>
 <translation id="1395262318152388157">Leitarsleði</translation>
 <translation id="1404323374378969387">Norska</translation>
@@ -76,6 +77,7 @@
 <translation id="1807938677607439181">Allar skrár</translation>
 <translation id="1810764548349082891">Forskoðun ekki tiltæk</translation>
 <translation id="1812302367230252929">Amharíska umritun</translation>
+<translation id="1813278315230285598">Þjónusta</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Varúð:<ph name="END_BOLD" /> Þessar skrár eru til bráðabirgða og þeim kann að vera eytt sjálfkrafa til að losa um diskpláss. <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Mörgæs</translation>
 <translation id="183183971458492120">Sækir upplýsingar...</translation>
@@ -85,13 +87,14 @@
 <translation id="1853795129690976061">Þessari möppu er deilt með Linux</translation>
 <translation id="1864756863218646478">Skráin fannst ekki.</translation>
 <translation id="1920670151694390848">Malayalam umritun</translation>
+<translation id="1920798810075583923">Vatnsmelóna</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> var forsniðið</translation>
 <translation id="1931134289871235022">Slóvakíska</translation>
 <translation id="1933345018156373194">Flutningur mistókst, óvænt villa: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Finnskt</translation>
 <translation id="1942765061641586207">Upplausn myndar</translation>
-<translation id="1943097386230153518">Setja upp nýja þjónustu</translation>
 <translation id="1972984168337863910">Stækka svæði með ábendingum fyrir skrár</translation>
+<translation id="1984456723671657197">Þessi skráargerð er ekki studd. <ph name="BEGIN_LINK_HELP" />Nánar<ph name="END_LINK_HELP" /> um að opna skrár í Chrome OS.</translation>
 <translation id="1995337122023280937">Fara í staðsetningu skráar</translation>
 <translation id="2001796770603320721">Stjórna á Drive</translation>
 <translation id="2009067268969781306">Þegar drif er forsniðið eyðast öll gögn af því. Ekki er hægt að afturkalla þessa aðgerð.</translation>
@@ -118,6 +121,7 @@
 <translation id="2288278176040912387">Grammófónn</translation>
 <translation id="2291538123825441971">Opnar <ph name="NUMBER_OF_FILES" /> skrár.</translation>
 <translation id="2303301624314357662">Opnar skrána <ph name="FILE_NAME" />.</translation>
+<translation id="2304820083631266885">Pláneta</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> hefur verið aftengt.</translation>
 <translation id="2325650632570794183">Þessi skráargerð er ekki studd. Farðu í vefverslun Chrome til að finna forrit sem getur opnað þessa skráargerð.</translation>
 <translation id="2326539130272988168">Búlgarska</translation>
@@ -142,7 +146,6 @@
 <translation id="255937426064304553">Bandarískt (alþjóðlegt)</translation>
 <translation id="2562685439590298522">Skjöl</translation>
 <translation id="2563185590376525700">Fúsi</translation>
-<translation id="2572501073504669105">Þú getur gert skrár aðgengilegar án nettengingar til að geta opnað þær þegar engin nettenging er til staðar.</translation>
 <translation id="2578394532502990878">Tamíl hljóðritun</translation>
 <translation id="2579959351793446050">Odia</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> myndskeið</translation>
@@ -186,6 +189,7 @@
 <translation id="299638574917407533">Franska (Kanada)</translation>
 <translation id="3003633581067744647">Skipta yfir í smámyndayfirlit</translation>
 <translation id="3007214526293698309">Festa hlutfall</translation>
+<translation id="3029114385395636667">Kveiktu á Google skjölum án nettengingar til að fá aðgang að Skjölum, Töflureiknum og Skyggnum án nettengingar.</translation>
 <translation id="303198083543495566">Landafræði</translation>
 <translation id="3047197340186497470">Kínverska Dayi</translation>
 <translation id="3057861065630527966">Afrita myndir og myndskeið</translation>
@@ -216,14 +220,17 @@
 <translation id="3335337277364016868">Upptökuár</translation>
 <translation id="3353984535370177728">Veldu möppu til að hlaða inn</translation>
 <translation id="3356580349448036450">Ljúka</translation>
+<translation id="3358452157379365236">Gítar</translation>
 <translation id="3382143449143186018">Nepalska með InScript-lyklaborði</translation>
 <translation id="3408236822532681288">Þýska (Þýskaland) með Neo 2-lyklaborði</translation>
 <translation id="3414856743105198592">Ef lausi geymslumiðillinn er forsniðinn eru öll gögn hreinsuð af honum. Viltu halda áfram?</translation>
 <translation id="3437801641691368414">Búin til</translation>
+<translation id="343907260260897561">Skyndimyndavél</translation>
 <translation id="3455931012307786678">Eistneska</translation>
 <translation id="3466147780910026086">Skannar geymslumiðilinn þinn...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> myndir afritaðar á <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="3475447146579922140">Google töflureiknir</translation>
+<translation id="3479552764303398839">Ekki núna</translation>
 <translation id="3486821258960016770">Mongólska</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> villur.</translation>
 <translation id="3522708245912499433">Portúgalskt</translation>
@@ -233,6 +240,7 @@
 <translation id="3553048479571901246">Til að opna skrár með <ph name="APP_NAME" /> skaltu fyrst afrita þær í skráamöppu Windows.</translation>
 <translation id="3556731189587832921">Enska (bandarísk) með alþjóðlegu tölvulyklaborði</translation>
 <translation id="357479282490346887">Litháískt</translation>
+<translation id="3592251141500063301">Ekki var hægt að gera <ph name="FILE_NAME" /> tiltækt án nettengingar</translation>
 <translation id="3603385196401704894">Kanadískt franskt</translation>
 <translation id="3606220979431771195">Tyrkneskt F</translation>
 <translation id="3616113530831147358">Hljóð</translation>
@@ -279,6 +287,7 @@
 <translation id="4124935795427217608">Einhyrningur</translation>
 <translation id="4158739975813877944">Opna spilunarlista</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> flutt.</translation>
+<translation id="4186579485882418952">Virkja ónettengdan aðgang</translation>
 <translation id="4193154014135846272">Google skjal</translation>
 <translation id="4197674956721858839">Þjappa val</translation>
 <translation id="4202378258276439759">Spænska (Rómanska-Ameríka)</translation>
@@ -292,6 +301,7 @@
 <translation id="4309915981827077375">Almennar upplýsingar</translation>
 <translation id="432252891123397018">Rúmenska með stöðluðu lyklaborði</translation>
 <translation id="4325128273762811722">Slóvenska</translation>
+<translation id="4326142238881453352">Grasafræðingur</translation>
 <translation id="4326192123064055915">Sopinn</translation>
 <translation id="4336032328163998280">Afritun mistókst. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">Sorani-kúrdíska með lyklaborði á arabískum grunni</translation>
@@ -327,7 +337,6 @@
 <translation id="4706042980341760088">Tamíl með ritvélarlyklaborði</translation>
 <translation id="4711094779914110278">Tyrkneskt</translation>
 <translation id="4712283082407695269">Opnar „<ph name="PATH" />“</translation>
-<translation id="4713544552769165154">Þessi skrá er þróuð fyrir tölvur sem nota Macintosh-hugbúnað. Hún er ekki samhæf við tækið þitt, sem notar Chrome OS. Leitaðu í <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> að öðru sambærilegu forriti í staðinn.<ph name="BEGIN_LINK_HELP" />Frekari upplýsingar<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> myndir afritaðar</translation>
 <translation id="4725511304875193254">Corgi-hundur</translation>
 <translation id="4732760563705710320">Útsendingartækið styður því miður ekki þetta myndskeið.</translation>
@@ -408,6 +417,7 @@
     <ph name="MARKUP_7" />Þú getur deilt, búið til og<ph name="MARKUP_8" />
     unnið í skrám ásamt öðrum, allt á einum stað.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Endurheimtar skrár af Google Drive</translation>
+<translation id="5288441970121584418">Hamborgari</translation>
 <translation id="5317780077021120954">Vista</translation>
 <translation id="5318819489018851358">Deila með Linux</translation>
 <translation id="5323213332664049067">Rómansk-amerískt</translation>
@@ -460,8 +470,6 @@
 <translation id="5833610766403489739">Þessi skrá hefur göltrast eitthvað á brott. Kannaðu stillingu niðurhalsstaðar og reyndu aftur.</translation>
 <translation id="5838451609423551646">Fjarlægja allar færslur úr vali.</translation>
 <translation id="5838825566232597749">Bandarískt alþjóðlegt Workman</translation>
-<translation id="5850516540536751549">Þessi skráargerð er ekki studd. Farðu í <ph name="BEGIN_LINK" />vefverslun Chrome<ph name="END_LINK" /> til að finna forrit sem getur opnað þessa skráargerð.
-    <ph name="BEGIN_LINK_HELP" />Frekari upplýsingar<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Ekkert að sjá hér...</translation>
 <translation id="5911887972742538906">Villa kom upp við uppsetningu Linux-forritsins.</translation>
 <translation id="5912396950572065471">Snið</translation>
@@ -499,10 +507,12 @@
 <translation id="6248400709929739064">Birta skjátexta</translation>
 <translation id="6269630227984243955">Malajíska</translation>
 <translation id="6287852322318138013">Veldu forrit til að opna þessa skrá</translation>
+<translation id="6321303798550928047">Veifar</translation>
 <translation id="6339145975392024142">Bandarískt alþjóðlegt tölvulyklaborð</translation>
 <translation id="6346310558342052870">Takmarkaður aðgangur</translation>
 <translation id="6356685157277930264">Gluggi með upplýsingum um skrár</translation>
 <translation id="6358884629796491903">Dreki</translation>
+<translation id="6367976544441405720">Sendiferðabíll</translation>
 <translation id="637062427944097960">Skráin var opnuð á öðru skjáborði. Skiptu yfir í <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) til að skoða hana.</translation>
 <translation id="6394388407447716302">Skrifvarin</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> atriði</translation>
@@ -526,6 +536,7 @@
 <translation id="6650726141019353908">Bleikt fiðrildi</translation>
 <translation id="6657585470893396449">Aðgangsorð</translation>
 <translation id="6673674183150363784">Franska (Frakkland) með Bépo-lyklaborði</translation>
+<translation id="6710022688720561421">Vélmenni</translation>
 <translation id="6710213216561001401">Til baka</translation>
 <translation id="6751256176799620176">Ein mappa valin</translation>
 <translation id="6790428901817661496">Spila</translation>
@@ -559,6 +570,7 @@
 <translation id="6965382102122355670">Í lagi</translation>
 <translation id="6970230597523682626">Búlgarskt</translation>
 <translation id="6973630695168034713">Möppur</translation>
+<translation id="6976795442547527108">Ljón</translation>
 <translation id="6978611942794658017">Þessi skrá er hönnuð fyrir tölvu með Windows-hugbúnaði. Hún er ekki samhæf tækinu þínu sem keyrir Chrome OS. Leitaðu að hentugu forriti í stað þessa í vefverslun Chrome.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Sænska</translation>
@@ -605,6 +617,7 @@
 <translation id="7532029025027028521">Persneska umritun</translation>
 <translation id="7544830582642184299">Veita Linux-forritum aðgang að skránum þínum á Google Drive. Breytingar samstillast við önnur tæki.</translation>
 <translation id="7544853251252956727">Stokka</translation>
+<translation id="7547009467130558110">Strigaskór</translation>
 <translation id="7547780573915868306">Litháíska</translation>
 <translation id="7547811415869834682">Hollenskt</translation>
 <translation id="7551643184018910560">Festa á hillu</translation>
@@ -619,6 +632,7 @@
 <translation id="7628656427739290098"><ph name="PERCENT" />% lokið.</translation>
 <translation id="7649070708921625228">Hjálp</translation>
 <translation id="7654209398114106148">Flytur <ph name="NUMBER_OF_ITEMS" /> atriði...</translation>
+<translation id="7655441028674523381">Greiður aðgangur að Google myndum</translation>
 <translation id="7658239707568436148">Hætta við</translation>
 <translation id="7663224033570512922">Hindí</translation>
 <translation id="7693909743393669729">Þegar drif er forsniðið eyðast öll gögn af því, og öll núverandi svæði þess, þ.m.t. svæði sem hugsanlega eru ekki sýnileg, eru fjarlægð. Ekki er hægt að afturkalla þessa aðgerð.</translation>
@@ -650,7 +664,6 @@
 <translation id="7839804798877833423">Um það bil <ph name="FILE_SIZE" /> af farsímagögnum verða notuð til að sækja þessar skrár.</translation>
 <translation id="7846076177841592234">Hætta við val</translation>
 <translation id="7853966320808728790">Franskt BÉPO</translation>
-<translation id="7864662577698025113">Bæta nýrri þjónustu við</translation>
 <translation id="7868774406711971383">Pólska</translation>
 <translation id="7873831373602885875">Ekki tókst að vista í <ph name="FOLDER_NAME" />. Allar breytingar verða vistaðar í <ph name="DOWNLOADS_FOLDER" /> í möppunni Niðurhal.</translation>
 <translation id="7874321682039004450">Filippseyska</translation>
@@ -665,13 +678,13 @@
 <translation id="7972920761225148017">Franska (Sviss)</translation>
 <translation id="7980421588063892270">Enska (bandarísk) með Colemak-lyklaborði</translation>
 <translation id="7982283708762922719">Hæð</translation>
+<translation id="79907182588096956">Þessi skrá er hönnuð fyrir tölvu sem notar Windows-hugbúnað. Hún er ekki samhæf tækinu þínu sem keyrir Chrome OS. <ph name="BEGIN_LINK_HELP" />Nánar<ph name="END_LINK_HELP" /> um að opna skrár í Chrome OS.</translation>
 <translation id="8008366997883261463">Frasier</translation>
 <translation id="8028993641010258682">Stærð</translation>
 <translation id="803771048473350947">Skrá</translation>
 <translation id="8038111231936746805">(sjálfgefið)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> hljóð</translation>
 <translation id="8045462269890919536">Rúmenskt</translation>
-<translation id="8052887694493382350">Þessi skrá er hönnuð fyrir tölvu sem notar Windows-hugbúnað. Hún er ekki samhæf við tæki sem keyrir Chrome OS. <ph name="BEGIN_LINK_HELP" />Frekari upplýsingar<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Allar breytingar verða vistaðar í <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Endurtaka</translation>
 <translation id="8106045200081704138">Deilt með mér</translation>
@@ -711,6 +724,7 @@
 <translation id="8466234950814670489">Tar-safnskrá</translation>
 <translation id="8475647382427415476">Google Drive tókst ekki að samstilla „<ph name="FILENAME" />“ rétt í þessu. Google Drive mun reyna aftur síðar.</translation>
 <translation id="8477649328507734757">Snúningur</translation>
+<translation id="8484284835977497781">Veldu úr nýlegum myndum.</translation>
 <translation id="8487700953926739672">Í boði án nettengingar</translation>
 <translation id="8521441079177373948">Breskt</translation>
 <translation id="8525306231823319788">Allur skjárinn</translation>
@@ -743,8 +757,10 @@
 <translation id="8860454412039442620">Excel-töflureiknir</translation>
 <translation id="8866284467018526531">Arabíska umritun</translation>
 <translation id="8900820606136623064">Ungverskt</translation>
+<translation id="8903931173357132290">Útskrifaður nemandi</translation>
 <translation id="8919081441417203123">Danskt</translation>
 <translation id="8965697826696209160">Ekki er nægilegt pláss.</translation>
+<translation id="8970501467542182729">Þessi skrá er hönnuð fyrir tölvu sem notar Macintosh-hugbúnað. Hún er ekki samhæf tækinu þínu sem keyrir Chrome OS. <ph name="BEGIN_LINK_HELP" />Nánar<ph name="END_LINK_HELP" /> um að opna skrár í Chrome OS.</translation>
 <translation id="8997962250644902079">Kínverska (hefðbundin) Pinyin</translation>
 <translation id="9017798300203431059">Rússneskt hljóðritunarlyklaborð</translation>
 <translation id="9034924485347205037">Linux-skrár</translation>

@@ -9,9 +9,9 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chromeos/arc/arc_util.h"
-#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
@@ -178,7 +178,7 @@ class ArcUsbHostKioskPermissionTest : public ArcUsbHostPermissionTest {
 
   void SetUpOnMainThread() override {
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<chromeos::FakeChromeUserManager>());
+        std::make_unique<ash::FakeChromeUserManager>());
     const AccountId account_id(AccountId::FromUserEmail(kTestProfileName));
     GetFakeUserManager()->AddArcKioskAppUser(account_id);
     GetFakeUserManager()->LoginUser(account_id);
@@ -200,8 +200,8 @@ class ArcUsbHostKioskPermissionTest : public ArcUsbHostPermissionTest {
   int accepted_response_count() const { return accepted_response_count_; }
 
  private:
-  chromeos::FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<chromeos::FakeChromeUserManager*>(
+  ash::FakeChromeUserManager* GetFakeUserManager() const {
+    return static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
 
@@ -217,8 +217,8 @@ IN_PROC_BROWSER_TEST_F(ArcUsbHostPermissionTest, UsbTemporayPermissionTest) {
   AddArcPackage(kPackageName);
   // Persistent device0.
   const std::string guid0 = "TestGuidXXXXXX0";
-  const base::string16 device_name0 = base::UTF8ToUTF16("TestDevice0");
-  const base::string16 serial_number0 = base::UTF8ToUTF16("TestSerialNumber0");
+  const std::u16string device_name0 = u"TestDevice0";
+  const std::u16string serial_number0 = u"TestSerialNumber0";
   const uint16_t vendor_id0 = 123;
   const uint16_t product_id0 = 456;
 
@@ -240,19 +240,19 @@ IN_PROC_BROWSER_TEST_F(ArcUsbHostPermissionTest, UsbChromePrefsTest) {
 
   // Persistent device0.
   const std::string guid0 = "TestGuidXXXXXX0";
-  const base::string16 device_name0 = base::UTF8ToUTF16("TestDevice0");
-  const base::string16 serial_number0 = base::UTF8ToUTF16("TestSerialNumber0");
+  const std::u16string device_name0 = u"TestDevice0";
+  const std::u16string serial_number0 = u"TestSerialNumber0";
   const uint16_t vendor_id0 = 123;
   const uint16_t product_id0 = 456;
   // Persistent device1.
   const std::string guid1 = "TestGuidXXXXXX1";
-  const base::string16 device_name1 = base::UTF8ToUTF16("TestDevice1");
-  const base::string16 serial_number1 = base::UTF8ToUTF16("TestSerialNumber1");
+  const std::u16string device_name1 = u"TestDevice1";
+  const std::u16string serial_number1 = u"TestSerialNumber1";
   const uint16_t vendor_id1 = 234;
   const uint16_t product_id1 = 567;
   // Non persistent device2.
   const std::string guid2 = "TestGuidXXXXXX2";
-  const base::string16 device_name2 = base::UTF8ToUTF16("TestDevice2");
+  const std::u16string device_name2 = u"TestDevice2";
   const uint16_t vendor_id2 = 345;
   const uint16_t product_id2 = 678;
 
@@ -261,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(ArcUsbHostPermissionTest, UsbChromePrefsTest) {
   ArcUsbHostPermissionManager::UsbDeviceEntry testDevice1(
       guid1, device_name1, serial_number1, vendor_id1, product_id1);
   ArcUsbHostPermissionManager::UsbDeviceEntry testDevice2(
-      guid2, device_name2, base::string16() /*serial_number*/, vendor_id2,
+      guid2, device_name2, std::u16string() /*serial_number*/, vendor_id2,
       product_id2);
 
   EXPECT_FALSE(HasUsbScanDeviceListPermission(kPackageName));
@@ -320,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(ArcUsbHostKioskPermissionTest, UsbKioskPermission) {
   AddArcPackage(kPackageName);
   // Persistent device0.
   const std::string guid = "TestGuidXXXXXX0";
-  const base::string16 serial_number = base::UTF8ToUTF16("TestSerialNumber0");
+  const std::u16string serial_number = u"TestSerialNumber0";
   const uint16_t vendor_id = 123;
   const uint16_t product_id = 456;
 
@@ -333,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(ArcUsbHostKioskPermissionTest, UsbKioskPermission) {
   EXPECT_EQ(++request_count, accepted_response_count());
 
   arc_usb_permission_manager()->RequestUsbAccessPermission(
-      kPackageName, guid, serial_number, base::string16(), base::string16(),
+      kPackageName, guid, serial_number, std::u16string(), std::u16string(),
       vendor_id, product_id,
       base::BindOnce(&ArcUsbHostKioskPermissionTest::set_response,
                      base::Unretained(this)));

@@ -155,6 +155,9 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   Member<EventCounts> event_counts_;
   mutable Member<PerformanceNavigation> navigation_;
   mutable Member<PerformanceTiming> timing_;
+  base::Optional<base::TimeDelta> pending_pointer_down_input_delay_;
+  base::Optional<base::TimeDelta> pending_pointer_down_processing_time_;
+  base::Optional<base::TimeDelta> pending_pointer_down_time_to_next_paint_;
 };
 
 }  // namespace blink

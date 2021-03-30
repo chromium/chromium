@@ -38,12 +38,12 @@
   // Unicode characters used in card number:
   //  - 0x0020 - Space.
   //  - 0x2060 - WORD-JOINER (makes string undivisible).
-  constexpr base::char16 separator[] = {0x2060, 0x0020, 0};
-  const base::string16 digits = creditCard.LastFourDigits();
+  constexpr char16_t separator[] = {0x2060, 0x0020, 0};
+  const std::u16string digits = creditCard.LastFourDigits();
   NSString* obfuscatedNumber = base::SysUTF16ToNSString(
-      autofill::kMidlineEllipsis + base::string16(separator) +
-      autofill::kMidlineEllipsis + base::string16(separator) +
-      autofill::kMidlineEllipsis + base::string16(separator) + digits);
+      autofill::kMidlineEllipsis + std::u16string(separator) +
+      autofill::kMidlineEllipsis + std::u16string(separator) +
+      autofill::kMidlineEllipsis + std::u16string(separator) + digits);
 
   // Use 2 digits year.
   NSString* expirationYear =

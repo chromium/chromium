@@ -6,6 +6,7 @@ module viz.mojom;
 
 import "gpu/ipc/common/mailbox_holder.mojom";
 import "gpu/ipc/common/vulkan_ycbcr_info.mojom";
+import "services/viz/public/mojom/compositing/resource_id.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/buffer_types.mojom";
 import "ui/gfx/mojom/color_space.mojom";
@@ -25,6 +26,7 @@ enum ResourceFormat {
   LUMINANCE_F16,
   RGBA_F16,
   R16_EXT,
+  RG16_EXT,
   RGBX_8888,
   BGRX_8888,
   RGBX_1010102,
@@ -36,7 +38,7 @@ enum ResourceFormat {
 
 // See components/viz/common/resources/transferable_resource.h.
 struct TransferableResource {
-  uint32 id;
+  ResourceId id;
   ResourceFormat format;
   uint32 filter;
   gfx.mojom.Size size;

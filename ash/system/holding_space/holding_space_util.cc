@@ -9,12 +9,56 @@
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
+#include "ui/gfx/canvas.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/painter.h"
 
 namespace ash {
 namespace holding_space_util {
 
 namespace {
+
+// CirclePainter ---------------------------------------------------------------
+
+class CirclePainter : public views::Painter {
+ public:
+  CirclePainter(SkColor color, size_t fixed_size)
+      : color_(color), fixed_size_(fixed_size) {}
+
+  CirclePainter(SkColor color, const gfx::InsetsF& insets)
+      : color_(color), insets_(insets) {}
+
+  CirclePainter(const CirclePainter&) = delete;
+  CirclePainter& operator=(const CirclePainter&) = delete;
+  ~CirclePainter() override = default;
+
+ private:
+  // views::Painter:
+  gfx::Size GetMinimumSize() const override { return gfx::Size(); }
+
+  void Paint(gfx::Canvas* canvas, const gfx::Size& size) override {
+    gfx::RectF bounds{gfx::SizeF(size)};
+
+    if (insets_.has_value())
+      bounds.Inset(insets_.value());
+
+    const float radius =
+        fixed_size_.has_value()
+            ? fixed_size_.value() / 2.f
+            : std::min(bounds.size().width(), bounds.size().height()) / 2.f;
+
+    cc::PaintFlags flags;
+    flags.setAntiAlias(true);
+    flags.setColor(color_);
+
+    canvas->DrawCircle(bounds.CenterPoint(), radius, flags);
+  }
+
+  const SkColor color_;
+  const base::Optional<size_t> fixed_size_;
+  const base::Optional<gfx::InsetsF> insets_;
+};
 
 // Helpers ---------------------------------------------------------------------
 
@@ -75,9 +119,7 @@ void AnimateOut(views::View* view,
             observer);
 }
 
-std::unique_ptr<views::Label> CreateLabel(LabelStyle style,
-                                          const base::string16& text) {
-  auto label = std::make_unique<views::Label>(text);
+void ApplyStyle(views::Label* label, LabelStyle style) {
   label->SetAutoColorReadabilityEnabled(false);
   label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary));
@@ -100,8 +142,26 @@ std::unique_ptr<views::Label> CreateLabel(LabelStyle style,
                                        gfx::Font::Weight::MEDIUM));
       break;
   }
+}
 
+std::unique_ptr<views::Label> CreateLabel(LabelStyle style,
+                                          const std::u16string& text) {
+  auto label = std::make_unique<views::Label>(text);
+  ApplyStyle(label.get(), style);
   return label;
+}
+
+std::unique_ptr<views::Background> CreateCircleBackground(SkColor color,
+                                                          size_t fixed_size) {
+  return views::CreateBackgroundFromPainter(
+      std::make_unique<CirclePainter>(color, fixed_size));
+}
+
+std::unique_ptr<views::Background> CreateCircleBackground(
+    SkColor color,
+    const gfx::InsetsF& insets) {
+  return views::CreateBackgroundFromPainter(
+      std::make_unique<CirclePainter>(color, insets));
 }
 
 }  // namespace holding_space_util

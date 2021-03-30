@@ -13,6 +13,12 @@ suite('NetworkProxyTest', function() {
   /** @type {!NetworkProxy|undefined} */
   let netProxy;
 
+  function flushAsync() {
+    Polymer.dom.flush();
+    // Use setTimeout to wait for the next macrotask.
+    return new Promise(resolve => setTimeout(resolve));
+  }
+
   setup(function() {
     netProxy = document.createElement('network-proxy');
     document.body.appendChild(netProxy);
@@ -33,4 +39,26 @@ suite('NetworkProxyTest', function() {
     proxyType.value = 'WPAD';
     proxyType.dispatchEvent(new Event('change'));
   });
+
+  test(
+      'Add exception button only enabled when value in input',
+      async function() {
+        let button = netProxy.$.proxyExclusionButton;
+        let input = netProxy.$.proxyExclusion;
+        assertTrue(!!button);
+        assertTrue(!!input);
+        assertTrue(button.disabled);
+
+        // Simulate typing a letter.
+        input.value = 'A';
+
+        await flushAsync();
+        assertFalse(button.disabled);
+
+        // Simulate deleting the letter.
+        input.value = '';
+
+        await flushAsync();
+        assertTrue(button.disabled);
+      });
 });

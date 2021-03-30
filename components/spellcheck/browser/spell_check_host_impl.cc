@@ -18,7 +18,7 @@ void SpellCheckHostImpl::RequestDictionary() {
   return;
 }
 
-void SpellCheckHostImpl::NotifyChecked(const base::string16& word,
+void SpellCheckHostImpl::NotifyChecked(const std::u16string& word,
                                        bool misspelled) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -28,7 +28,7 @@ void SpellCheckHostImpl::NotifyChecked(const base::string16& word,
 
 #if BUILDFLAG(USE_RENDERER_SPELLCHECKER)
 void SpellCheckHostImpl::CallSpellingService(
-    const base::string16& text,
+    const std::u16string& text,
     CallSpellingServiceCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -41,7 +41,7 @@ void SpellCheckHostImpl::CallSpellingService(
 #endif  // BUILDFLAG(USE_RENDERER_SPELLCHECKER)
 
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER) && !BUILDFLAG(ENABLE_SPELLING_SERVICE)
-void SpellCheckHostImpl::RequestTextCheck(const base::string16& text,
+void SpellCheckHostImpl::RequestTextCheck(const std::u16string& text,
                                           int route_id,
                                           RequestTextCheckCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -52,7 +52,7 @@ void SpellCheckHostImpl::RequestTextCheck(const base::string16& text,
   session_bridge_.RequestTextCheck(text, std::move(callback));
 }
 
-void SpellCheckHostImpl::CheckSpelling(const base::string16& word,
+void SpellCheckHostImpl::CheckSpelling(const std::u16string& word,
                                        int route_id,
                                        CheckSpellingCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -61,7 +61,7 @@ void SpellCheckHostImpl::CheckSpelling(const base::string16& word,
 }
 
 void SpellCheckHostImpl::FillSuggestionList(
-    const base::string16& word,
+    const std::u16string& word,
     FillSuggestionListCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   NOTREACHED();
@@ -69,15 +69,6 @@ void SpellCheckHostImpl::FillSuggestionList(
 }
 
 #if defined(OS_WIN)
-void SpellCheckHostImpl::GetPerLanguageSuggestions(
-    const base::string16& word,
-    GetPerLanguageSuggestionsCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  // This API requires Chrome-only features.
-  std::move(callback).Run(std::vector<std::vector<base::string16>>());
-}
-
 void SpellCheckHostImpl::InitializeDictionaries(
     InitializeDictionariesCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

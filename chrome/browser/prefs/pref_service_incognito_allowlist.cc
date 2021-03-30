@@ -13,7 +13,6 @@
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
-#include "components/rappor/rappor_pref_names.h"
 #include "components/reading_list/core/reading_list_pref_names.h"
 #include "components/ukm/ukm_pref_names.h"
 
@@ -41,6 +40,7 @@ const char* const kPersistentPrefNames[] = {
     ash::prefs::kAccessibilityScreenMagnifierCenterFocus,
     ash::prefs::kAccessibilityScreenMagnifierEnabled,
     ash::prefs::kAccessibilityScreenMagnifierFocusFollowingEnabled,
+    ash::prefs::kAccessibilityScreenMagnifierMouseFollowingMode,
     ash::prefs::kAccessibilityScreenMagnifierScale,
     ash::prefs::kAccessibilityVirtualKeyboardEnabled,
     ash::prefs::kAccessibilityMonoAudioEnabled,
@@ -57,12 +57,13 @@ const char* const kPersistentPrefNames[] = {
     ash::prefs::kAccessibilityFocusHighlightEnabled,
     ash::prefs::kAccessibilitySelectToSpeakEnabled,
     ash::prefs::kAccessibilitySwitchAccessEnabled,
-    ash::prefs::kAccessibilitySwitchAccessSelectKeyCodes,
-    ash::prefs::kAccessibilitySwitchAccessNextKeyCodes,
-    ash::prefs::kAccessibilitySwitchAccessPreviousKeyCodes,
+    ash::prefs::kAccessibilitySwitchAccessSelectDeviceKeyCodes,
+    ash::prefs::kAccessibilitySwitchAccessNextDeviceKeyCodes,
+    ash::prefs::kAccessibilitySwitchAccessPreviousDeviceKeyCodes,
     ash::prefs::kAccessibilitySwitchAccessAutoScanEnabled,
     ash::prefs::kAccessibilitySwitchAccessAutoScanSpeedMs,
     ash::prefs::kAccessibilitySwitchAccessAutoScanKeyboardSpeedMs,
+    ash::prefs::kAccessibilitySwitchAccessPointScanSpeedDipsPerSecond,
     ash::prefs::kAccessibilityDictationEnabled,
     ash::prefs::kDockedMagnifierEnabled,
     ash::prefs::kDockedMagnifierScale,
@@ -86,6 +87,7 @@ const char* const kPersistentPrefNames[] = {
     bookmarks::prefs::kManagedBookmarks,
     bookmarks::prefs::kManagedBookmarksFolderName,
     bookmarks::prefs::kShowAppsShortcutInBookmarkBar,
+    bookmarks::prefs::kShowReadingListInBookmarkBar,
     bookmarks::prefs::kShowManagedBookmarksInBookmarkBar,
     bookmarks::prefs::kShowBookmarkBar,
 #if defined(OS_ANDROID)
@@ -141,12 +143,6 @@ const char* const kPersistentPrefNames[] = {
     // should be written to the regular profile when changed in incognito mode.
     prefs::kUseCustomChromeFrame,
 #endif
-
-    // Rappor preferences are not used in incognito mode, but they are written
-    // in startup if they don't exist. So if the startup would be in incognito,
-    // they need to be persisted.
-    rappor::prefs::kRapporCohortSeed,
-    rappor::prefs::kRapporSecret,
 
     // Reading list preferences are common between incognito and regular mode.
     reading_list::prefs::kReadingListHasUnseenEntries,

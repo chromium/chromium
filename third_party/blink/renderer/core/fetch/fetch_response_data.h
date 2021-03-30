@@ -85,6 +85,8 @@ class CORE_EXPORT FetchResponseData final
   }
   bool HasRangeRequested() const { return has_range_requested_; }
 
+  int64_t GetPadding() const { return padding_; }
+  void SetPadding(int64_t padding) { padding_ = padding; }
   void SetResponseSource(network::mojom::FetchResponseSource response_source) {
     response_source_ = response_source;
   }
@@ -116,15 +118,14 @@ class CORE_EXPORT FetchResponseData final
   void SetAlpnNegotiatedProtocol(AtomicString alpn_negotiated_protocol) {
     alpn_negotiated_protocol_ = alpn_negotiated_protocol;
   }
-  void SetLoadedWithCredentials(bool loaded_with_credentials) {
-    loaded_with_credentials_ = loaded_with_credentials;
-  }
   void SetWasFetchedViaSpdy(bool was_fetched_via_spdy) {
     was_fetched_via_spdy_ = was_fetched_via_spdy;
   }
   void SetHasRangeRequested(bool has_range_requested) {
     has_range_requested_ = has_range_requested;
   }
+  void SetAuthChallengeInfo(
+      const base::Optional<net::AuthChallengeInfo>& auth_challenge_info);
 
   // If the type is Default, replaces |buffer_|.
   // If the type is Basic or CORS, replaces |buffer_| and
@@ -138,6 +139,8 @@ class CORE_EXPORT FetchResponseData final
 
   // Initialize non-body data from the given |response|.
   void InitFromResourceResponse(
+      ExecutionContext* context,
+      network::mojom::FetchResponseType response_type,
       const Vector<KURL>& request_url_list,
       const AtomicString& request_method,
       network::mojom::CredentialsMode request_credentials,
@@ -147,6 +150,7 @@ class CORE_EXPORT FetchResponseData final
 
  private:
   network::mojom::FetchResponseType type_;
+  int64_t padding_;
   network::mojom::FetchResponseSource response_source_;
   std::unique_ptr<TerminationReason> termination_reason_;
   Vector<KURL> url_list_;
@@ -162,9 +166,11 @@ class CORE_EXPORT FetchResponseData final
   HTTPHeaderSet cors_exposed_header_names_;
   net::HttpResponseInfo::ConnectionInfo connection_info_;
   AtomicString alpn_negotiated_protocol_;
-  bool loaded_with_credentials_;
   bool was_fetched_via_spdy_;
   bool has_range_requested_;
+  // |auth_challenge_info_| is a std::unique_ptr instead of base::Optional
+  // |because this member is empty in most cases.
+  std::unique_ptr<net::AuthChallengeInfo> auth_challenge_info_;
 
   DISALLOW_COPY_AND_ASSIGN(FetchResponseData);
 };

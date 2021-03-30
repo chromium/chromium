@@ -211,8 +211,7 @@ TEST_F(DeclarativeContentIsBookmarkedConditionTrackerTest,
   LoadURL(tab.get(), GURL("http://bookmarked/"));
   EXPECT_TRUE(delegate_.evaluation_requests().empty());
 
-  bookmark_model_->AddURL(bookmark_model_->other_node(), 0,
-                          base::ASCIIToUTF16("title"),
+  bookmark_model_->AddURL(bookmark_model_->other_node(), 0, u"title",
                           GURL("http://bookmarked/"));
 
   tracker_->TrackForWebContents(tab.get());
@@ -246,10 +245,8 @@ TEST_F(DeclarativeContentIsBookmarkedConditionTrackerTest,
 
   // Bookmark the first tab's URL.
   delegate_.evaluation_requests().clear();
-  const bookmarks::BookmarkNode* node =
-      bookmark_model_->AddURL(bookmark_model_->other_node(), 0,
-                              base::ASCIIToUTF16("title"),
-                              GURL("http://bookmarked/"));
+  const bookmarks::BookmarkNode* node = bookmark_model_->AddURL(
+      bookmark_model_->other_node(), 0, u"title", GURL("http://bookmarked/"));
   EXPECT_THAT(delegate_.evaluation_requests(),
               UnorderedElementsAre(tabs[0].get()));
   EXPECT_TRUE(CheckPredicates(tabs[0].get(), true));
@@ -292,10 +289,8 @@ TEST_F(DeclarativeContentIsBookmarkedConditionTrackerTest, ExtensiveChanges) {
     // added nodes.
     delegate_.evaluation_requests().clear();
     bookmark_model_->BeginExtensiveChanges();
-    const bookmarks::BookmarkNode* node =
-        bookmark_model_->AddURL(bookmark_model_->other_node(), 0,
-                                base::ASCIIToUTF16("title"),
-                                GURL("http://bookmarked/"));
+    const bookmarks::BookmarkNode* node = bookmark_model_->AddURL(
+        bookmark_model_->other_node(), 0, u"title", GURL("http://bookmarked/"));
     EXPECT_TRUE(delegate_.evaluation_requests().empty());
     EXPECT_TRUE(CheckPredicates(tabs[0].get(), false));
     EXPECT_TRUE(CheckPredicates(tabs[1].get(), false));
@@ -327,8 +322,7 @@ TEST_F(DeclarativeContentIsBookmarkedConditionTrackerTest, ExtensiveChanges) {
     const bookmarks::BookmarkNode* node = nullptr;
     {
       bookmarks::ScopedGroupBookmarkActions scoped_group(bookmark_model_);
-      node = bookmark_model_->AddURL(bookmark_model_->other_node(), 0,
-                                     base::ASCIIToUTF16("title"),
+      node = bookmark_model_->AddURL(bookmark_model_->other_node(), 0, u"title",
                                      GURL("http://bookmarked/"));
       EXPECT_TRUE(delegate_.evaluation_requests().empty());
       EXPECT_TRUE(CheckPredicates(tabs[0].get(), false));
@@ -361,11 +355,9 @@ TEST_F(DeclarativeContentIsBookmarkedConditionTrackerTest, ExtensiveChanges) {
 TEST_F(DeclarativeContentIsBookmarkedConditionTrackerTest, Navigation) {
   // Bookmark two URLs.
   delegate_.evaluation_requests().clear();
-  bookmark_model_->AddURL(bookmark_model_->other_node(), 0,
-                          base::ASCIIToUTF16("title"),
+  bookmark_model_->AddURL(bookmark_model_->other_node(), 0, u"title",
                           GURL("http://bookmarked1/"));
-  bookmark_model_->AddURL(bookmark_model_->other_node(), 0,
-                          base::ASCIIToUTF16("title"),
+  bookmark_model_->AddURL(bookmark_model_->other_node(), 0, u"title",
                           GURL("http://bookmarked2/"));
 
   // Create two tabs.

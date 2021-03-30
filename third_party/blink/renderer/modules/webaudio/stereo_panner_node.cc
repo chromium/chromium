@@ -21,7 +21,8 @@ StereoPannerHandler::StereoPannerHandler(AudioNode& node,
                                          AudioParamHandler& pan)
     : AudioHandler(kNodeTypeStereoPanner, node, sample_rate),
       pan_(&pan),
-      sample_accurate_pan_values_(audio_utilities::kRenderQuantumFrames) {
+      sample_accurate_pan_values_(
+          GetDeferredTaskHandler().RenderQuantumFrames()) {
   AddInput();
   AddOutput(2);
 
@@ -81,8 +82,8 @@ void StereoPannerHandler::Process(uint32_t frames_to_process) {
 }
 
 void StereoPannerHandler::ProcessOnlyAudioParams(uint32_t frames_to_process) {
-  float values[audio_utilities::kRenderQuantumFrames];
-  DCHECK_LE(frames_to_process, audio_utilities::kRenderQuantumFrames);
+  float values[GetDeferredTaskHandler().RenderQuantumFrames()];
+  DCHECK_LE(frames_to_process, GetDeferredTaskHandler().RenderQuantumFrames());
 
   pan_->CalculateSampleAccurateValues(values, frames_to_process);
 }

@@ -8,10 +8,6 @@ package feedwire;
 
 option optimize_for = LITE_RUNTIME;
 
-// Information on how to do content fulfillment for Chrome.
 message ChromeFulfillmentInfo {
-  // Whether the notice card has already been acknowledged by the user based on
-  // their views and clicks on the card. This is different from when the user
-  // explicitly dismiss the notice card by touching the button.
   optional bool notice_card_acknowledged = 1;
 }

@@ -277,12 +277,6 @@ WebViewEvents.prototype.handleLoadCommitEvent = function(event, eventName) {
                          event.processId,
                          event.visibleUrl);
 
-  // TODO(1149615): The |url| property of the loadcommit event is documented as
-  // being set to the committed URL, but was being incorrectly set. This
-  // preserves the existing incorrect behaviour which we'll defer fixing in
-  // case existing code relies on this behaviour.
-  event.url = event.visibleUrl;
-
   var webViewEvent = this.makeDomEvent(event, eventName);
   this.view.dispatchEvent(webViewEvent);
 };

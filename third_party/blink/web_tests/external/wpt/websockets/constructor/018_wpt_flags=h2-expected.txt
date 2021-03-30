@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL WebSockets: NULL char in url assert_unreached: error Reached unreachable code
+Harness: the test ran to completion.
+

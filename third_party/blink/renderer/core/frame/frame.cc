@@ -64,24 +64,6 @@
 namespace blink {
 
 // static
-Frame* Frame::ResolveFrame(const base::UnguessableToken& frame_token) {
-  if (!frame_token)
-    return nullptr;
-
-  // The frame token could refer to either a RemoteFrame or a LocalFrame, so
-  // need to check both.
-  auto* remote = RemoteFrame::FromFrameToken(frame_token);
-  if (remote)
-    return remote;
-
-  auto* local = LocalFrame::FromFrameToken(frame_token);
-  if (local)
-    return local;
-
-  return nullptr;
-}
-
-// static
 Frame* Frame::ResolveFrame(const FrameToken& frame_token) {
   if (frame_token.Is<RemoteFrameToken>())
     return RemoteFrame::FromFrameToken(frame_token.GetAs<RemoteFrameToken>());
@@ -115,6 +97,7 @@ void Frame::Trace(Visitor* visitor) const {
 }
 
 bool Frame::Detach(FrameDetachType type) {
+  TRACE_EVENT0("blink", "Frame::Detach");
   DCHECK(client_);
   // Detach() can be re-entered, so this can't simply DCHECK(IsAttached()).
   DCHECK(!IsDetached());
@@ -404,7 +387,8 @@ Frame::Frame(FrameClient* client,
              Frame* parent,
              Frame* previous_sibling,
              FrameInsertType insert_type,
-             const base::UnguessableToken& frame_token,
+             const FrameToken& frame_token,
+             const base::UnguessableToken& devtools_frame_token,
              WindowProxyManager* window_proxy_manager,
              WindowAgentFactory* inheriting_agent_factory)
     : tree_node_(this),
@@ -419,7 +403,7 @@ Frame::Frame(FrameClient* client,
                                 ? inheriting_agent_factory
                                 : MakeGarbageCollected<WindowAgentFactory>()),
       is_loading_(false),
-      devtools_frame_token_(client->GetDevToolsFrameToken()),
+      devtools_frame_token_(devtools_frame_token),
       frame_token_(frame_token) {
   InstanceCounters::IncrementCounter(InstanceCounters::kFrameCounter);
   if (parent_ && insert_type == FrameInsertType::kInsertInConstructor) {
@@ -542,11 +526,10 @@ Frame* Frame::Top() {
 }
 
 bool Frame::Swap(WebFrame* new_web_frame) {
+  DCHECK(IsAttached());
+
   using std::swap;
-  // TODO(dcheng): This should not be reachable. Reaching this implies `Swap()`
-  // is being called on an already-detached frame which should never happen...
-  if (!IsAttached())
-    return false;
+
   // Important: do not cache frame tree pointers (e.g.  `previous_sibling_`,
   // `next_sibling_`, `first_child_`, `last_child_`) here. It is possible for
   // `Detach()` to mutate the frame tree and cause cached values to become
@@ -600,7 +583,7 @@ bool Frame::Swap(WebFrame* new_web_frame) {
     To<WebRemoteFrameImpl>(new_web_frame)
         ->InitializeCoreFrame(*page, owner, WebFrame::FromCoreFrame(parent_),
                               nullptr, FrameInsertType::kInsertLater, name,
-                              &window_agent_factory());
+                              &window_agent_factory(), devtools_frame_token_);
     // At this point, a `RemoteFrame` will have already updated
     // `Page::MainFrame()` or `FrameOwner::ContentFrame()` as appropriate, and
     // its `parent_` pointer is also populated.

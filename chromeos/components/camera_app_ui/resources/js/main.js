@@ -4,15 +4,8 @@
 
 import {
   AppWindow,  // eslint-disable-line no-unused-vars
-  DEFAULT_PREVIEW_16X9_WINDOW_SIZE,
-  DEFAULT_PREVIEW_4X3_WINDOW_SIZE,
+  getDefaultWindowSize,
 } from './app_window.js';
-import {
-  BackgroundOps,  // eslint-disable-line no-unused-vars
-  createFakeBackgroundOps,
-  ForegroundOps,  // eslint-disable-line no-unused-vars
-} from './background_ops.js';
-import {browserProxy} from './browser_proxy/browser_proxy.js';
 import {assert, assertInstanceof} from './chrome_util.js';
 import {
   PhotoConstraintsPreferrer,
@@ -22,10 +15,15 @@ import {DeviceInfoUpdater} from './device/device_info_updater.js';
 import * as dom from './dom.js';
 import * as error from './error.js';
 import {GalleryButton} from './gallerybutton.js';
+import {Intent} from './intent.js';
 import * as metrics from './metrics.js';
 import * as filesystem from './models/file_system.js';
+import * as loadTimeData from './models/load_time_data.js';
+import * as localStorage from './models/local_storage.js';
+import {ChromeHelper} from './mojo/chrome_helper.js';
 import {notifyCameraResourceReady} from './mojo/device_operator.js';
 import * as nav from './nav.js';
+import {PerfLogger} from './perf.js';
 import {preloadImagesList} from './preload_images.js';
 import * as state from './state.js';
 import * as tooltip from './tooltip.js';
@@ -34,6 +32,7 @@ import * as util from './util.js';
 import {Camera} from './views/camera.js';
 import {CameraIntent} from './views/camera_intent.js';
 import {Dialog} from './views/dialog.js';
+import {PTZPanel} from './views/ptz_panel.js';
 import {
   BaseSettings,
   PrimarySettings,
@@ -42,30 +41,37 @@ import {
 import {View} from './views/view.js';
 import {Warning, WarningType} from './views/warning.js';
 import {WaitableEvent} from './waitable_event.js';
-import {windowController} from './window_controller/window_controller.js';
 
 /**
  * The app window instance which is used for communication with Tast tests. For
- * non-test sessions or test sessions but using the legacy communication
- * solution (chrome.runtime), it should be null.
+ * non-test sessions, it should be null.
  * @type {?AppWindow}
  */
 const appWindow = window['appWindow'];
 
 /**
  * Creates the Camera App main object.
- * @implements {ForegroundOps}
  */
 export class App {
   /**
-   * @param {!BackgroundOps} backgroundOps
+   * @param {{
+   *     perfLogger: !PerfLogger,
+   *     intent: ?Intent,
+   * }} params
+   * @public
    */
-  constructor(backgroundOps) {
+  constructor({perfLogger, intent}) {
     /**
-     * @type {!BackgroundOps}
+     * @type {!PerfLogger}
      * @private
      */
-    this.backgroundOps_ = backgroundOps;
+    this.perfLogger_ = perfLogger;
+
+    /**
+     * @type {?Intent}
+     * @private
+     */
+    this.intent_ = intent;
 
     /**
      * @type {!PhotoConstraintsPreferrer}
@@ -99,24 +105,30 @@ export class App {
      * @private
      */
     this.cameraView_ = (() => {
-      const intent = this.backgroundOps_.getIntent();
-      const perfLogger = this.backgroundOps_.getPerfLogger();
-      if (intent !== null && intent.shouldHandleResult) {
+      if (this.intent_ !== null && this.intent_.shouldHandleResult) {
         state.set(state.State.SHOULD_HANDLE_INTENT_RESULT, true);
         return new CameraIntent(
-            intent, this.infoUpdater_, this.photoPreferrer_,
-            this.videoPreferrer_, perfLogger);
+            this.intent_, this.infoUpdater_, this.photoPreferrer_,
+            this.videoPreferrer_, this.perfLogger_);
       } else {
-        const mode = intent !== null ? intent.mode : Mode.PHOTO;
+        const mode = this.intent_ !== null ? this.intent_.mode : Mode.PHOTO;
         return new Camera(
             this.galleryButton_, this.infoUpdater_, this.photoPreferrer_,
-            this.videoPreferrer_, mode, perfLogger);
+            this.videoPreferrer_, mode, this.perfLogger_);
       }
     })();
 
     document.body.addEventListener('keydown', this.onKeyPressed_.bind(this));
 
-    document.title = browserProxy.getI18nMessage('name');
+    // Disable the zoom in-out gesture which is triggered by wheel and pinch on
+    // trackpad.
+    document.body.addEventListener('wheel', (event) => {
+      if (event.ctrlKey) {
+        event.preventDefault();
+      }
+    }, {passive: false, capture: true});
+
+    document.title = loadTimeData.getI18nMessage('name');
     util.setupI18nElements(document.body);
     this.setupToggles_();
     this.setupSettingEffect_();
@@ -128,6 +140,7 @@ export class App {
     nav.setup([
       this.cameraView_,
       new PrimarySettings(),
+      new PTZPanel(),
       new BaseSettings(ViewName.GRID_SETTINGS),
       new BaseSettings(ViewName.TIMER_SETTINGS),
       resolutionSettings,
@@ -140,8 +153,6 @@ export class App {
     ]);
 
     nav.open(ViewName.SPLASH);
-    this.backgroundOps_.bindForegroundOps(this);
-    this.backgroundOps_.bindAppWindow(appWindow);
   }
 
   /**
@@ -149,7 +160,7 @@ export class App {
    * @private
    */
   setupToggles_() {
-    browserProxy.localStorageGet({expert: false})
+    localStorage.get({expert: false})
         .then((values) => state.set(state.State.EXPERT, values['expert']));
     dom.getAll('input', HTMLInputElement).forEach((element) => {
       element.addEventListener('keypress', (event) => {
@@ -163,7 +174,7 @@ export class App {
           ({[element.dataset['key']]: element.checked});
       const save = (element) => {
         if (element.dataset['key'] !== undefined) {
-          browserProxy.localStorageSet(payload(element));
+          localStorage.set(payload(element));
         }
       };
       element.addEventListener('change', (event) => {
@@ -177,15 +188,16 @@ export class App {
             // Handle unchecked grouped sibling radios.
             const grouped =
                 `input[type=radio][name=${element.name}]:not(:checked)`;
-            document.querySelectorAll(grouped).forEach(
-                (radio) =>
-                    radio.dispatchEvent(new Event('change')) && save(radio));
+            dom.getAll(grouped, HTMLInputElement)
+                .forEach(
+                    (radio) => radio.dispatchEvent(new Event('change')) &&
+                        save(radio));
           }
         }
       });
       if (element.dataset['key'] !== undefined) {
         // Restore the previously saved state on startup.
-        browserProxy.localStorageGet(payload(element))
+        localStorage.get(payload(element))
             .then(
                 (values) => util.toggleChecked(
                     element, values[element.dataset['key']]));
@@ -207,7 +219,7 @@ export class App {
    * @return {!Promise}
    */
   async start() {
-    document.documentElement.dir = browserProxy.getTextDirection();
+    document.documentElement.dir = loadTimeData.getTextDirection();
     try {
       await filesystem.initialize();
       const cameraDir = filesystem.getCameraDirectory();
@@ -219,14 +231,10 @@ export class App {
     }
 
     const showWindow = (async () => {
-      windowController.enable();
-      this.backgroundOps_.notifyActivation();
       // For intent only requiring open camera with specific mode without
-      // returning the capture result, called onIntentHandled() right
-      // after app successfully launched.
-      const intent = this.backgroundOps_.getIntent();
-      if (intent !== null && !intent.shouldHandleResult) {
-        intent.finish();
+      // returning the capture result, finish it directly.
+      if (this.intent_ !== null && !this.intent_.shouldHandleResult) {
+        this.intent_.finish();
       }
     })();
 
@@ -246,7 +254,8 @@ export class App {
       assert(cameraResourceInitialized.isSignaled());
       await this.suspend();
     };
-    await browserProxy.initCameraUsageMonitor(exploitUsage, releaseUsage);
+    await ChromeHelper.getInstance().initCameraUsageMonitor(
+        exploitUsage, releaseUsage);
 
     const startCamera = (async () => {
       await cameraResourceInitialized.wait();
@@ -254,21 +263,17 @@ export class App {
 
       if (isSuccess) {
         const aspectRatio = this.cameraView_.getPreviewAspectRatio();
-        if (Math.abs(4 / 3 - aspectRatio) < Math.abs(16 / 9 - aspectRatio)) {
-          window.resizeTo(...DEFAULT_PREVIEW_4X3_WINDOW_SIZE);
-        } else {
-          window.resizeTo(...DEFAULT_PREVIEW_16X9_WINDOW_SIZE);
-        }
+        const {width, height} = getDefaultWindowSize(aspectRatio);
+        window.resizeTo(width, height);
       }
 
       nav.close(ViewName.SPLASH);
       nav.open(ViewName.CAMERA);
-      await browserProxy.setLaunchingFromWindowCreationStartTime(async () => {
-        const windowCreationTime = window['windowCreationTime'];
-        this.backgroundOps_.getPerfLogger().start(
-            PerfEvent.LAUNCHING_FROM_WINDOW_CREATION, windowCreationTime);
-      });
-      this.backgroundOps_.getPerfLogger().stop(
+
+      const windowCreationTime = window['windowCreationTime'];
+      this.perfLogger_.start(
+          PerfEvent.LAUNCHING_FROM_WINDOW_CREATION, windowCreationTime);
+      this.perfLogger_.stop(
           PerfEvent.LAUNCHING_FROM_WINDOW_CREATION, {hasError: !isSuccess});
       if (appWindow !== null) {
         appWindow.onAppLaunched();
@@ -282,7 +287,8 @@ export class App {
         link.as = 'image';
         link.href = url;
         link.onload = () => resolve();
-        link.onerror = (e) => reject(e.reason);
+        link.onerror = () =>
+            reject(new Error(`Failed to preload image ${url}`));
         document.head.appendChild(link);
       });
       const results = await Promise.allSettled(
@@ -316,9 +322,7 @@ export class App {
   async suspend() {
     state.set(state.State.SUSPEND, true);
     await this.cameraView_.start();
-    windowController.disable();
-    this.backgroundOps_.notifySuspension();
-    nav.open(ViewName.WARNING, WarningType.CAMERA_BEING_USED);
+    nav.open(ViewName.WARNING, WarningType.CAMERA_PAUSED);
   }
 
   /**
@@ -326,9 +330,7 @@ export class App {
    */
   resume() {
     state.set(state.State.SUSPEND, false);
-    windowController.enable();
-    this.backgroundOps_.notifyActivation();
-    nav.close(ViewName.WARNING, WarningType.CAMERA_BEING_USED);
+    nav.close(ViewName.WARNING, WarningType.CAMERA_PAUSED);
   }
 }
 
@@ -346,16 +348,14 @@ let instance = null;
     return;
   }
 
-  let bgOps;
-  if (window['backgroundOps'] !== undefined) {
-    bgOps = window['backgroundOps'];
-  } else {
-    // TODO(crbug.com/980846): Refactor after migrating to SWA since there is no
-    // background page for SWA.
-    bgOps = createFakeBackgroundOps();
-  }
+  const perfLogger = new PerfLogger();
+  const url = new URL(window.location.href);
+  const intent =
+      url.searchParams.get('intentId') !== null ? Intent.create(url) : null;
 
-  browserProxy.setupUnloadListener(() => {
+  state.set(state.State.INTENT, intent !== null);
+
+  window.addEventListener('unload', () => {
     // For SWA, we don't cancel the unhandled intent here since there is no
     // guarantee that asynchronous calls in unload listener can be executed
     // properly. Therefore, we moved the logic for canceling unhandled intent to
@@ -365,16 +365,10 @@ let instance = null;
     }
   });
 
-  const testErrorCallback = bgOps.getTestingErrorCallback();
   metrics.initMetrics();
-  if (testErrorCallback !== null || appWindow !== null) {
+  if (appWindow !== null) {
     metrics.setMetricsEnabled(false);
   }
-
-  // TODO(crbug.com/1082585): Initializes it before any other javascript loaded.
-  error.initialize(testErrorCallback);
-
-  const perfLogger = bgOps.getPerfLogger();
 
   // Setup listener for performance events.
   perfLogger.addListener(({event, duration, perfInfo}) => {
@@ -417,7 +411,6 @@ let instance = null;
     });
   });
 
-  instance = new App(
-      /** @type {!BackgroundOps} */ (bgOps));
+  instance = new App({perfLogger, intent});
   await instance.start();
 })();

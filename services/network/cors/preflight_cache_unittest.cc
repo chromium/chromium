@@ -4,11 +4,9 @@
 
 #include "services/network/cors/preflight_cache.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "net/base/features.h"
 #include "net/http/http_request_headers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -137,10 +135,6 @@ TEST_F(PreflightCacheTest, CacheTimeout) {
 }
 
 TEST_F(PreflightCacheTest, RespectsNetworkIsolationKeys) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      net::features::kAppendFrameOriginToNetworkIsolationKey);
-
   const std::string kOriginStr1("http://www.test.com/A");
   const url::Origin kOrigin1 = url::Origin::Create(GURL(kOriginStr1));
   const net::NetworkIsolationKey kNik(kOrigin1, kOrigin1);
@@ -172,10 +166,6 @@ TEST_F(PreflightCacheTest, RespectsNetworkIsolationKeys) {
 }
 
 TEST_F(PreflightCacheTest, HandlesOpaqueOrigins) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      net::features::kAppendFrameOriginToNetworkIsolationKey);
-
   const url::Origin kOrigin1;
   const url::Origin kOrigin2;
   const net::NetworkIsolationKey kNik1(kOrigin1, kOrigin1);

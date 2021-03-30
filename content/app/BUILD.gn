@@ -71,6 +71,7 @@ source_set("content_main_runner_app") {
 
   configs += extra_configs
   deps = content_app_deps + [
+           "//components/power_scheduler",
            "//content/browser",
            "//content/gpu:gpu_sources",
            "//content/public/browser:browser_sources",

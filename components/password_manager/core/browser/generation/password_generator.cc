@@ -79,7 +79,7 @@ PasswordRequirementsSpec BuildDefaultSpec() {
 // Returns whether the password is difficult to read because it contains
 // sequences of '-' or '_' that are joined into long strokes on the screen
 // in many fonts.
-bool IsDifficultToRead(const base::string16& password) {
+bool IsDifficultToRead(const std::u16string& password) {
   return std::adjacent_find(password.begin(), password.end(),
                             [](auto a, auto b) {
                               return a == b && (a == '-' || a == '_');
@@ -91,7 +91,7 @@ bool IsDifficultToRead(const base::string16& password) {
 //
 // |spec| must contain values for at least all fields that are defined
 // in the spec of BuildDefaultSpec().
-base::string16 GenerateMaxEntropyPassword(PasswordRequirementsSpec spec) {
+std::u16string GenerateMaxEntropyPassword(PasswordRequirementsSpec spec) {
   using CharacterClass = PasswordRequirementsSpec_CharacterClass;
 
   // Determine target length.
@@ -104,14 +104,14 @@ base::string16 GenerateMaxEntropyPassword(PasswordRequirementsSpec spec) {
   target_length = std::min(target_length, 200u);
 
   // The password that is being generated in this function.
-  base::string16 password;
+  std::u16string password;
   password.reserve(target_length);
 
   // A list of CharacterClasses that have not been fully used.
   std::vector<CharacterClass*> classes;
   // The list of allowed characters in a specific class. This map exists
   // to calculate the string16 conversion only once.
-  std::map<CharacterClass*, base::string16> characters_of_class;
+  std::map<CharacterClass*, std::u16string> characters_of_class;
 
   // These are guaranteed to exist because |spec| is an overlay of the default
   // spec.
@@ -153,7 +153,7 @@ base::string16 GenerateMaxEntropyPassword(PasswordRequirementsSpec spec) {
   // accommodated.
   for (CharacterClass* character_class : classes) {
     while (character_class->min() > 0 && password.length() < target_length) {
-      const base::string16& possible_chars =
+      const std::u16string& possible_chars =
           characters_of_class[character_class];
       password += possible_chars[base::RandGenerator(possible_chars.length())];
       character_class->set_min(character_class->min() - 1);
@@ -210,7 +210,7 @@ void ConditionallyAddNumericDigitsToAlphabet(PasswordRequirementsSpec* spec) {
     spec->mutable_numeric()->mutable_character_set()->append("01");
 }
 
-base::string16 GeneratePassword(const PasswordRequirementsSpec& spec) {
+std::u16string GeneratePassword(const PasswordRequirementsSpec& spec) {
   PasswordRequirementsSpec actual_spec = BuildDefaultSpec();
 
   // Override all fields that are set in |spec|. Character classes are merged
@@ -220,7 +220,7 @@ base::string16 GeneratePassword(const PasswordRequirementsSpec& spec) {
   // For passwords without letters, add the '0' and '1' to the numeric alphabet.
   ConditionallyAddNumericDigitsToAlphabet(&actual_spec);
 
-  base::string16 password = GenerateMaxEntropyPassword(std::move(actual_spec));
+  std::u16string password = GenerateMaxEntropyPassword(std::move(actual_spec));
 
   // Catch cases where supplied spec is infeasible.
   if (password.empty())

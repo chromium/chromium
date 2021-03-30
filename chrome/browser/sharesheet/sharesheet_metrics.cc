@@ -16,17 +16,39 @@ namespace sharesheet {
 
 SharesheetMetrics::SharesheetMetrics() = default;
 
-void SharesheetMetrics::RecordSharesheetActionMetrics(UserAction action) {
+void SharesheetMetrics::RecordSharesheetActionMetrics(const UserAction action) {
   base::UmaHistogramEnumeration("ChromeOS.Sharesheet.UserAction", action);
 }
 
-void SharesheetMetrics::RecordSharesheetAppCount(int app_count) {
-  base::UmaHistogramExactLinear("ChromeOS.Sharesheet.AppCount", app_count,
+void SharesheetMetrics::RecordSharesheetAppCount(const int app_count) {
+  base::UmaHistogramExactLinear("ChromeOS.Sharesheet.AppCount.All", app_count,
                                 kMaxAppCount);
 }
 
-void SharesheetMetrics::RecordSharesheetFormFactor(FormFactor form_factor) {
+void SharesheetMetrics::RecordSharesheetArcAppCount(const int app_count) {
+  base::UmaHistogramExactLinear("ChromeOS.Sharesheet.AppCount.Arc", app_count,
+                                kMaxAppCount);
+}
+
+void SharesheetMetrics::RecordSharesheetWebAppCount(const int app_count) {
+  base::UmaHistogramExactLinear("ChromeOS.Sharesheet.AppCount.Web", app_count,
+                                kMaxAppCount);
+}
+
+void SharesheetMetrics::RecordSharesheetShareAction(const UserAction action) {
+  DCHECK(action == UserAction::kNearbyAction ||
+         action == UserAction::kDriveAction);
+  base::UmaHistogramEnumeration("ChromeOS.Sharesheet.ActionCount", action);
+}
+
+void SharesheetMetrics::RecordSharesheetFormFactor(
+    const FormFactor form_factor) {
   base::UmaHistogramEnumeration("ChromeOS.Sharesheet.FormFactor", form_factor);
+}
+
+void SharesheetMetrics::RecordSharesheetLaunchSource(
+    const LaunchSource source) {
+  base::UmaHistogramEnumeration("ChromeOS.Sharesheet.LaunchSource", source);
 }
 
 }  // namespace sharesheet

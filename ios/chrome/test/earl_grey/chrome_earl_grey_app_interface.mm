@@ -6,6 +6,7 @@
 #import "base/test/ios/wait_util.h"
 
 #include "base/command_line.h"
+#import "base/ios/ios_util.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -27,15 +28,17 @@
 #include "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/browser/ui/table_view/feature_flags.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/menu_util.h"
-#import "ios/chrome/browser/ui/util/multi_window_support.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
+#import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/test/app/bookmarks_test_util.h"
 #import "ios/chrome/test/app/browsing_data_test_util.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
@@ -44,6 +47,7 @@
 #import "ios/chrome/test/app/signin_test_util.h"
 #import "ios/chrome/test/app/sync_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
+#import "ios/chrome/test/app/window_test_util.h"
 #import "ios/chrome/test/earl_grey/accessibility_util.h"
 #import "ios/testing/hardware_keyboard_util.h"
 #import "ios/testing/nserror_util.h"
@@ -95,6 +99,10 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
 
 @implementation ChromeEarlGreyAppInterface
 
++ (BOOL)isRTL {
+  return UseRTLLayout();
+}
+
 + (NSError*)clearBrowsingHistory {
   if (chrome_test_util::ClearBrowsingHistory()) {
     return nil;
@@ -125,6 +133,15 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
 
   return testing::NSErrorWithLocalizedDescription(
       @"Clearing browser cache for main tabs timed out");
+}
+
++ (NSError*)clearAllWebStateBrowsingData {
+  if (chrome_test_util::ClearAllWebStateBrowsingData()) {
+    return nil;
+  }
+
+  return testing::NSErrorWithLocalizedDescription(
+      @"Clearing web state browsing data for main tabs timed out");
 }
 
 + (void)applicationOpenURL:(NSString*)spec {
@@ -321,6 +338,23 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
 
 #pragma mark - Window utilities (EG2)
 
+// Returns screen position of the given |windowNumber|
++ (CGRect)screenPositionOfScreenWithNumber:(int)windowNumber {
+  NSArray<SceneState*>* connectedScenes =
+      chrome_test_util::GetMainController().appState.connectedScenes;
+  NSString* accessibilityIdentifier =
+      [NSString stringWithFormat:@"%ld", (long)windowNumber];
+  for (SceneState* state in connectedScenes) {
+    if ([state.window.accessibilityIdentifier
+            isEqualToString:accessibilityIdentifier]) {
+      return
+          [state.window convertRect:state.window.frame
+                  toCoordinateSpace:state.window.screen.fixedCoordinateSpace];
+    }
+  }
+  return CGRectZero;
+}
+
 + (NSUInteger)windowCount WARN_UNUSED_RESULT {
   // If the scene API is in use, return the count of open sessions.
   if (@available(iOS 13, *)) {
@@ -349,8 +383,74 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
   return 1;
 }
 
++ (NSError*)openNewWindow {
+  if (!base::ios::IsMultipleScenesSupported()) {
+    return testing::NSErrorWithLocalizedDescription(
+        @"Multiwindow not supported");
+  }
+
+  if (@available(iOS 13, *)) {
+    NSUserActivity* activity =
+        [[NSUserActivity alloc] initWithActivityType:@"EG2NewWindow"];
+    UISceneActivationRequestOptions* options =
+        [[UISceneActivationRequestOptions alloc] init];
+    [UIApplication.sharedApplication
+        requestSceneSessionActivation:nil /* make a new scene */
+                         userActivity:activity
+                              options:options
+                         errorHandler:nil];
+    return nil;
+  }
+
+  return testing::NSErrorWithLocalizedDescription(
+      @"Multiwindow supported on iOS13+ only");
+}
+
++ (void)openNewTabInWindowWithNumber:(int)windowNumber {
+  chrome_test_util::OpenNewTabInWindowWithNumber(windowNumber);
+}
+
++ (void)changeWindowWithNumber:(int)windowNumber
+                   toNewNumber:(int)newWindowNumber {
+  NSArray<SceneState*>* connectedScenes =
+      chrome_test_util::GetMainController().appState.connectedScenes;
+  NSString* accessibilityIdentifier =
+      [NSString stringWithFormat:@"%ld", (long)windowNumber];
+  NSString* newAccessibilityIdentifier =
+      [NSString stringWithFormat:@"%ld", (long)newWindowNumber];
+  for (SceneState* state in connectedScenes) {
+    if ([state.window.accessibilityIdentifier
+            isEqualToString:accessibilityIdentifier]) {
+      state.window.accessibilityIdentifier = newAccessibilityIdentifier;
+      break;
+    }
+  }
+}
+
++ (void)closeWindowWithNumber:(int)windowNumber {
+  if (@available(iOS 13, *)) {
+    NSArray<SceneState*>* connectedScenes =
+        chrome_test_util::GetMainController().appState.connectedScenes;
+    NSString* accessibilityIdentifier =
+        [NSString stringWithFormat:@"%ld", (long)windowNumber];
+    for (SceneState* state in connectedScenes) {
+      if ([state.window.accessibilityIdentifier
+              isEqualToString:accessibilityIdentifier]) {
+        UIWindowSceneDestructionRequestOptions* options =
+            [[UIWindowSceneDestructionRequestOptions alloc] init];
+        options.windowDismissalAnimation =
+            UIWindowSceneDismissalAnimationStandard;
+        [UIApplication.sharedApplication
+            requestSceneSessionDestruction:state.scene.session
+                                   options:options
+                              errorHandler:nil];
+      }
+    }
+  }
+}
+
 + (void)closeAllExtraWindows {
-  if (!IsMultipleScenesSupported())
+  if (!base::ios::IsMultipleScenesSupported())
     return;
 
   if (@available(iOS 13, *)) {
@@ -379,6 +479,44 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
                                                          errorHandler:nil];
     }
   }
+}
+
++ (void)startLoadingURL:(NSString*)spec inWindowWithNumber:(int)windowNumber {
+  chrome_test_util::LoadUrlInWindowWithNumber(
+      GURL(base::SysNSStringToUTF8(spec)), windowNumber);
+}
+
++ (BOOL)isLoadingInWindowWithNumber:(int)windowNumber {
+  return chrome_test_util::IsLoadingInWindowWithNumber(windowNumber);
+}
+
++ (BOOL)waitForWindowIDInjectionIfNeededInWindowWithNumber:(int)windowNumber {
+  web::WebState* webState =
+      chrome_test_util::GetCurrentWebStateForWindowWithNumber(windowNumber);
+
+  if (webState->ContentIsHTML()) {
+    return web::WaitUntilWindowIdInjected(webState);
+  }
+
+  return YES;
+}
+
++ (BOOL)webStateContainsText:(NSString*)text
+          inWindowWithNumber:(int)windowNumber {
+  web::WebState* webState =
+      chrome_test_util::GetCurrentWebStateForWindowWithNumber(windowNumber);
+  return webState ? web::test::IsWebViewContainingText(
+                        webState, base::SysNSStringToUTF8(text))
+                  : NO;
+}
+
++ (NSUInteger)mainTabCountInWindowWithNumber:(int)windowNumber {
+  return chrome_test_util::GetMainTabCountForWindowWithNumber(windowNumber);
+}
+
++ (NSUInteger)incognitoTabCountInWindowWithNumber:(int)windowNumber {
+  return chrome_test_util::GetIncognitoTabCountForWindowWithNumber(
+      windowNumber);
 }
 
 #pragma mark - WebState Utilities (EG2)
@@ -536,6 +674,18 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
   return [web_state->GetWebViewProxy() bounds].size;
 }
 
++ (void)stopAllWebStatesLoading {
+  WebStateList* web_state_list =
+      chrome_test_util::GetMainController()
+          .interfaceProvider.currentInterface.browser->GetWebStateList();
+  for (int index = 0; index < web_state_list->count(); ++index) {
+    web::WebState* web_state = web_state_list->GetWebStateAt(index);
+    if (web_state->IsLoading()) {
+      web_state->Stop();
+    }
+  }
+}
+
 #pragma mark - Bookmarks Utilities (EG2)
 
 + (NSError*)waitForBookmarksToFinishinLoading {
@@ -670,6 +820,17 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
 
 + (NSString*)syncCacheGUID {
   return base::SysUTF8ToNSString(chrome_test_util::GetSyncCacheGuid());
+}
+
++ (NSError*)waitForSyncInvalidationFields {
+  const bool success = WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
+    return chrome_test_util::VerifySyncInvalidationFieldsPopulated();
+  });
+  if (!success) {
+    return testing::NSErrorWithLocalizedDescription(
+        @"The local DeviceInfo doesn't have invalidation fields");
+  }
+  return nil;
 }
 
 + (BOOL)isFakeSyncServerSetUp {
@@ -849,7 +1010,7 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
 }
 
 + (BOOL)areMultipleWindowsSupported {
-  return IsMultipleScenesSupported();
+  return base::ios::IsMultipleScenesSupported();
 }
 
 + (BOOL)isCloseAllTabsConfirmationEnabled {
@@ -937,6 +1098,96 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
 
 + (NSString*)pasteboardURLSpec {
   return [UIPasteboard generalPasteboard].URL.absoluteString;
+}
+
+#pragma mark - Watcher utilities
+
+// Delay between two watch cycles.
+const NSTimeInterval kWatcherCycleDelay = 0.2;
+
+// Set of buttons being watched for.
+NSMutableSet* watchingButtons;
+// Set of buttons that were actually watched.
+NSMutableSet* watchedButtons;
+
+// Current watch number, to allow terminating older scheduled runs.
+int watchRunNumber = 0;
+
++ (void)watchForButtonsWithLabels:(NSArray<NSString*>*)labels
+                          timeout:(NSTimeInterval)timeout {
+  watchRunNumber++;
+  watchedButtons = [NSMutableSet set];
+  watchingButtons = [NSMutableSet set];
+  for (NSString* label in labels) {
+    [watchingButtons addObject:label];
+  }
+  [self scheduleNextWatchForButtonsWithTimeout:timeout
+                                     runNumber:watchRunNumber];
+}
+
++ (BOOL)watcherDetectedButtonWithLabel:(NSString*)label {
+  return [watchedButtons containsObject:label];
+}
+
++ (void)stopWatcher {
+  [watchingButtons removeAllObjects];
+  [watchedButtons removeAllObjects];
+}
+
+// Schedule the next watch cycles from a background thread, that will dispatch
+// the actual check, async, on the main thread, since UI objects can only
+// be accessed from there. Scheduling directly on the main
+// thread would let EG to try to drain the main thread queue without
+// success.
++ (void)scheduleNextWatchForButtonsWithTimeout:(NSTimeInterval)timeout
+                                     runNumber:(int)runNumber {
+  dispatch_queue_t background_queue =
+      dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+  dispatch_after(
+      dispatch_time(DISPATCH_TIME_NOW,
+                    (int64_t)(kWatcherCycleDelay * NSEC_PER_SEC)),
+      background_queue, ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+          if (!watchingButtons.count || runNumber != watchRunNumber)
+            return;
+
+          [self findButtonsWithLabelsInViews:[UIApplication sharedApplication]
+                                                 .windows];
+
+          if (watchingButtons.count && timeout > 0.0) {
+            [self scheduleNextWatchForButtonsWithTimeout:timeout -
+                                                         kWatcherCycleDelay
+                                               runNumber:runNumber];
+          } else {
+            [watchingButtons removeAllObjects];
+          }
+        });
+      });
+}
+
+// Looks for a button (based on traits) with the given |label|,
+// recursively in the given |views|.
++ (void)findButtonsWithLabelsInViews:(NSArray<UIView*>*)views {
+  if (!watchingButtons.count)
+    return;
+
+  for (UIView* view in views) {
+    [self buttonsWithLabelsMatchView:view];
+    [self findButtonsWithLabelsInViews:view.subviews];
+  }
+}
+
+// Checks if the given |view| is a button (based on traits) with the
+// given accessibility label.
++ (void)buttonsWithLabelsMatchView:(UIView*)view {
+  if (![view respondsToSelector:@selector(accessibilityLabel)])
+    return;
+  if (([view accessibilityTraits] & UIAccessibilityTraitButton) == 0)
+    return;
+  if ([watchingButtons containsObject:view.accessibilityLabel]) {
+    [watchedButtons addObject:view.accessibilityLabel];
+    [watchingButtons removeObject:view.accessibilityLabel];
+  }
 }
 
 @end

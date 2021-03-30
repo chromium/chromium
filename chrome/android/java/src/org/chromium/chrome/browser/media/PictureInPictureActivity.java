@@ -21,6 +21,7 @@ import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -229,8 +230,8 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         // trigger playback.
         if (mMediaSessionObserver != null
                 && !mMediaSessionObserver.getMediaSession().isControllable()) {
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                    getApplicationContext(), 0, new Intent(ACTION_PLAY), 0);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0,
+                    new Intent(ACTION_PLAY), IntentUtils.getPendingIntentMutabilityFlag(false));
 
             actions.add(new RemoteAction(Icon.createWithResource(getApplicationContext(),
                                                  R.drawable.ic_play_arrow_white_36dp),

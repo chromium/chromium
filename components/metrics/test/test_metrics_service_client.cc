@@ -50,6 +50,10 @@ SystemProfileProto::Channel TestMetricsServiceClient::GetChannel() {
   return SystemProfileProto::CHANNEL_BETA;
 }
 
+bool TestMetricsServiceClient::IsExtendedStableChannel() {
+  return false;
+}
+
 std::string TestMetricsServiceClient::GetVersionString() {
   return version_string_;
 }

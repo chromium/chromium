@@ -11,17 +11,15 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
-
-namespace history {
-class HistoryService;
-}  // namespace history
 
 namespace syncer {
 class DeviceInfoTracker;
@@ -179,6 +177,9 @@ class SendTabToSelfBridge : public syncer::ModelTypeSyncBridge,
   // the target device name to cache guid map.
   base::Time oldest_non_expired_device_timestamp_;
   size_t number_of_devices_ = 0;
+
+  base::ScopedObservation<history::HistoryService, HistoryServiceObserver>
+      history_service_observation_{this};
 
   base::WeakPtrFactory<SendTabToSelfBridge> weak_ptr_factory_{this};
 

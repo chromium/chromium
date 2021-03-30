@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.test.util;
 
+import android.content.Context;
+
 import org.junit.rules.ExternalResource;
 
 import org.chromium.chrome.browser.tab.SadTab;
@@ -38,7 +40,8 @@ public class SadTabRule extends ExternalResource {
                 private boolean mShowing;
 
                 @Override
-                public void show() {
+                public void show(
+                        Context context, Runnable suggestionAction, Runnable buttonAction) {
                     mShowing = true;
                 }
 
@@ -56,7 +59,7 @@ public class SadTabRule extends ExternalResource {
         }
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             if (show) {
-                mSadTab.show();
+                mSadTab.show(mTab.getContext(), () -> {}, () -> {});
             } else {
                 mSadTab.removeIfPresent();
             }

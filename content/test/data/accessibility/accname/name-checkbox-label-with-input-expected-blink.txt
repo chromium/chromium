@@ -1,0 +1,1 @@
+checkBox name='foo bar baz' nameFrom=relatedElement

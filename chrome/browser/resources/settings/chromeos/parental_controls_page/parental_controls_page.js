@@ -103,6 +103,14 @@ Polymer({
         'start settings-box-text';
   },
 
+  /**
+   * @return {string}
+   * @private
+   */
+  getStartIcon_() {
+    return this.isAccountManagementFlowsV2Enabled_ ? 'cr20:kite' : '';
+  },
+
   /** @private */
   handleSetupButtonClick_(event) {
     event.stopPropagation();

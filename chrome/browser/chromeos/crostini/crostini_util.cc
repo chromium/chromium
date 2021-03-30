@@ -17,6 +17,7 @@
 #include "base/strings/strcat.h"
 #include "base/task/post_task.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/crostini/crostini_features.h"
 #include "chrome/browser/chromeos/crostini/crostini_installer.h"
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"
@@ -28,7 +29,6 @@
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_share_path.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/virtual_machines/virtual_machines_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_crostini_tracker.h"
@@ -41,7 +41,6 @@
 #include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader_dialog.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -388,7 +387,9 @@ void LaunchCrostiniApp(Profile* profile,
                        const std::vector<LaunchArg>& args,
                        CrostiniSuccessCallback callback) {
   // Policies can change under us, and crostini may now be forbidden.
-  if (!CrostiniFeatures::Get()->IsAllowedNow(profile)) {
+  std::string reason;
+  if (!CrostiniFeatures::Get()->IsAllowedNow(profile, &reason)) {
+    LOG(ERROR) << "Crostini not allowed: " << reason;
     return std::move(callback).Run(false, "Crostini UI not allowed");
   }
   auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile);
@@ -548,7 +549,7 @@ void UpdateContainerPref(Profile* profile,
   }
 }
 
-base::string16 GetTimeRemainingMessage(base::TimeTicks start, int percent) {
+std::u16string GetTimeRemainingMessage(base::TimeTicks start, int percent) {
   // Only estimate once we've spent at least 3 seconds OR gotten 10% of the way
   // through.
   constexpr base::TimeDelta kMinTimeForEstimate =
@@ -567,7 +568,6 @@ base::string16 GetTimeRemainingMessage(base::TimeTicks start, int percent) {
         IDS_CROSTINI_NOTIFICATION_OPERATION_STARTING);
   }
 }
-
 
 const ContainerId& DefaultContainerId() {
   static const base::NoDestructor<ContainerId> container_id(

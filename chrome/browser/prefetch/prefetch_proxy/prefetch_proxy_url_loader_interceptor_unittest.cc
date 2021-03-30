@@ -8,12 +8,12 @@
 
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
+#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_features.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetched_mainframe_response_container.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/no_state_prefetch/browser/prerender_handle.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
@@ -77,18 +77,21 @@ class PrefetchProxyURLLoaderInterceptorTest
   ~PrefetchProxyURLLoaderInterceptorTest() override = default;
 
   void TearDown() override {
-    prerender::PrerenderManager* prerender_manager =
-        prerender::PrerenderManagerFactory::GetForBrowserContext(profile());
-    prerender_manager->CancelAllPrerenders();
+    prerender::NoStatePrefetchManager* no_state_prefetch_manager =
+        prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
+            profile());
+    no_state_prefetch_manager->CancelAllPrerenders();
 
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  std::unique_ptr<prerender::PrerenderHandle> StartPrerender(const GURL& url) {
-    prerender::PrerenderManager* prerender_manager =
-        prerender::PrerenderManagerFactory::GetForBrowserContext(profile());
+  std::unique_ptr<prerender::NoStatePrefetchHandle> StartPrerender(
+      const GURL& url) {
+    prerender::NoStatePrefetchManager* no_state_prefetch_manager =
+        prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
+            profile());
 
-    return prerender_manager->AddPrerenderFromNavigationPredictor(
+    return no_state_prefetch_manager->AddPrerenderFromNavigationPredictor(
         url,
         web_contents()->GetController().GetDefaultSessionStorageNamespace(),
         kSize);

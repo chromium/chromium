@@ -60,7 +60,11 @@ class MockInputChannel : public mojom::InputChannel {
               GetRulebasedKeypressCountForTesting,
               (GetRulebasedKeypressCountForTestingCallback),
               (override));
-  MOCK_METHOD(void, CommitText, (const std::string& text), (override));
+  MOCK_METHOD(void,
+              CommitText,
+              (const std::string& text,
+               mojom::CommitTextCursorBehavior cursor_behavior),
+              (override));
   MOCK_METHOD(void, SetComposition, (const std::string& text), (override));
   MOCK_METHOD(void,
               SetCompositionRange,

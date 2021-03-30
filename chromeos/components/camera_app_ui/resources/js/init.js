@@ -2,8 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview
+ * strings.m.js is generated when we enable it via UseStringsJs() in webUI
+ * controller. When loading it, it will populate data such as localized strings
+ * into |window.loadTimeData|.
+ * @suppress {moduleLoad}
+ */
+import '/strings.m.js';
+
+import {dynamicImport} from './dynamic_import.js';
 import * as Comlink from './lib/comlink.js';
-// eslint-disable-next-line no-unused-vars
 
 document.addEventListener('DOMContentLoaded', async () => {
   const workerPath = '/js/test_bridge.js';
@@ -22,6 +31,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (appWindow !== null) {
     await appWindow.waitUntilReadyOnTastSide();
   }
+
+  // Dynamically import the error module here so that the codes can be counted
+  // by coverage report.
+  const errorModule = await dynamicImport('/js/error.js');
+  errorModule.initialize();
 
   const mainScript = document.createElement('script');
   mainScript.setAttribute('type', 'module');

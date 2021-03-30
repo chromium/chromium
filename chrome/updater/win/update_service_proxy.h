@@ -11,8 +11,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/updater/app/server/win/updater_idl.h"
-#include "chrome/updater/service_scope.h"
 #include "chrome/updater/update_service.h"
+#include "chrome/updater/updater_scope.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -26,6 +26,9 @@ enum class Error;
 
 namespace updater {
 
+struct RegistrationRequest;
+struct RegistrationResponse;
+
 // There are two threads running the code in this module. The main sequence is
 // bound to one thread, all the COM calls, inbound and outbound occur on the
 // second thread which serializes the tasks and the invocations originating
@@ -35,14 +38,14 @@ namespace updater {
 // All public functions and callbacks must be called on the same sequence.
 class UpdateServiceProxy : public UpdateService {
  public:
-  explicit UpdateServiceProxy(ServiceScope service_scope);
+  explicit UpdateServiceProxy(UpdaterScope updater_scope);
 
   // Overrides for updater::UpdateService.
   void GetVersion(
       base::OnceCallback<void(const base::Version&)> callback) const override;
-  void RegisterApp(
-      const RegistrationRequest& request,
-      base::OnceCallback<void(const RegistrationResponse&)> callback) override;
+  void RegisterApp(const RegistrationRequest& request,
+                   RegisterAppCallback callback) override;
+  void RunPeriodicTasks(base::OnceClosure callback) override;
   void UpdateAll(StateChangeCallback state_update, Callback callback) override;
   void Update(const std::string& app_id,
               Priority priority,
@@ -56,6 +59,9 @@ class UpdateServiceProxy : public UpdateService {
   // These functions runs on the |com_task_runner_|.
   void GetVersionOnSTA(
       base::OnceCallback<void(const base::Version&)> callback) const;
+  void RegisterAppOnSTA(const RegistrationRequest& request,
+                        RegisterAppCallback callback);
+  void RunPeriodicTasksOnSTA(base::OnceClosure callback);
   void UpdateAllOnSTA(StateChangeCallback state_update, Callback callback);
   void UpdateOnSTA(const std::string& app_id,
                    StateChangeCallback state_update,

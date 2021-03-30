@@ -5,12 +5,12 @@
 #ifndef FUCHSIA_ENGINE_BROWSER_AX_TREE_CONVERTER_H_
 #define FUCHSIA_ENGINE_BROWSER_AX_TREE_CONVERTER_H_
 
-#include <base/containers/flat_map.h>
-#include <base/optional.h>
 #include <fuchsia/accessibility/semantics/cpp/fidl.h>
 
 #include <unordered_map>
 
+#include "base/containers/flat_map.h"
+#include "base/optional.h"
 #include "content/public/browser/ax_event_notification_details.h"
 #include "fuchsia/engine/web_engine_export.h"
 
@@ -65,6 +65,7 @@ class WEB_ENGINE_EXPORT NodeIDMapper {
 // accepts partial updates, so |node| does not require all fields to be set.
 WEB_ENGINE_EXPORT fuchsia::accessibility::semantics::Node
 AXNodeDataToSemanticNode(const ui::AXNodeData& node,
+                         const ui::AXNodeData& container_node,
                          const ui::AXTreeID& tree_id,
                          bool is_root,
                          NodeIDMapper* id_mapper);

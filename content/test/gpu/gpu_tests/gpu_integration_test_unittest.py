@@ -19,6 +19,8 @@ from gpu_tests import gpu_integration_test
 from gpu_tests import path_util
 from gpu_tests import webgl_conformance_integration_test
 
+import mock
+
 from py_utils import tempfile_ext
 
 from telemetry.internal.util import binary_manager
@@ -197,6 +199,7 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
     self.assertTrue(set(['no-asan', 'webgl-version-2']).issubset(tag_set))
     self.assertFalse(set(['asan', 'webgl-version-1']) & tag_set)
 
+  @mock.patch('sys.platform', 'win32')
   def testGenerateNvidiaExampleTags(self):
     platform = fakes.FakePlatform('win', 'win10')
     browser = fakes.FakeBrowser(platform, 'release')
@@ -209,6 +212,7 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
             'no-passthrough', 'no-swiftshader-gl', 'skia-renderer-disabled'
         ]))
 
+  @mock.patch('sys.platform', 'darwin')
   def testGenerateVendorTagUsingVendorString(self):
     platform = fakes.FakePlatform('mac', 'mojave')
     browser = fakes.FakeBrowser(platform, 'release')
@@ -225,6 +229,7 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
             'no-swiftshader-gl', 'skia-renderer-disabled'
         ]))
 
+  @mock.patch('sys.platform', 'darwin')
   def testGenerateVendorTagUsingDeviceString(self):
     platform = fakes.FakePlatform('mac', 'mojave')
     browser = fakes.FakeBrowser(platform, 'release')
@@ -238,6 +243,24 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
             'imagination-Triangle-Monster-3000', 'angle-disabled',
             'no-passthrough', 'no-swiftshader-gl', 'skia-renderer-disabled'
         ]))
+
+  @mock.patch.dict(os.environ, clear=True)
+  def testGenerateDisplayServer(self):
+    platform = fakes.FakePlatform('mac', 'mojave')
+    browser = fakes.FakeBrowser(platform, 'release')
+
+    with mock.patch('sys.platform', 'darwin'):
+      tags = gpu_integration_test.GpuIntegrationTest.GetPlatformTags(browser)
+      for t in tags:
+        self.assertFalse(t.startswith('display-server'))
+
+    with mock.patch('sys.platform', 'linux2'):
+      tags = gpu_integration_test.GpuIntegrationTest.GetPlatformTags(browser)
+      self.assertIn('display-server-x', tags)
+
+      os.environ['WAYLAND_DISPLAY'] = 'wayland-0'
+      tags = gpu_integration_test.GpuIntegrationTest.GetPlatformTags(browser)
+      self.assertIn('display-server-wayland', tags)
 
   def testSimpleIntegrationTest(self):
     test_args = _IntegrationTestArgs('simple_integration_unittest')

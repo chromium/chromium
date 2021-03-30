@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -76,7 +77,7 @@ void DefaultBrowserInfoBarDelegate::InfoBarDismissed() {
                             NUM_INFO_BAR_USER_INTERACTION_TYPES);
 }
 
-base::string16 DefaultBrowserInfoBarDelegate::GetMessageText() const {
+std::u16string DefaultBrowserInfoBarDelegate::GetMessageText() const {
   return l10n_util::GetStringUTF16(IDS_DEFAULT_BROWSER_INFOBAR_TEXT);
 }
 
@@ -84,7 +85,7 @@ int DefaultBrowserInfoBarDelegate::GetButtons() const {
   return BUTTON_OK;
 }
 
-base::string16 DefaultBrowserInfoBarDelegate::GetButtonLabel(
+std::u16string DefaultBrowserInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   DCHECK_EQ(BUTTON_OK, button);
   return l10n_util::GetStringUTF16(IDS_DEFAULT_BROWSER_INFOBAR_OK_BUTTON_LABEL);

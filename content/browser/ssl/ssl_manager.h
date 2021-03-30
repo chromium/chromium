@@ -71,6 +71,7 @@ class CONTENT_EXPORT SSLManager {
   // appropriately. If the result could change the visible SSL state,
   // they notify the WebContents of the change via
   // DidChangeVisibleSecurityState();
+  // These methods are not called for resource preloads.
   void DidDisplayMixedContent();
   void DidContainInsecureFormAction();
   void DidDisplayContentWithCertErrors();

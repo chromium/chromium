@@ -45,11 +45,6 @@ class ChromePromptIPC {
   using PromptUserCallback =
       base::OnceCallback<void(PromptUserResponse::PromptAcceptance)>;
 
-  // If legacy Mojo IPC is in use this callback will be invoked by
-  // mojom::ChromePrompt::PromptUserCallback. Otherwise it is unused since
-  // DisableExtensions is unimplemented.
-  using DisableExtensionsCallback = base::OnceCallback<void(bool)>;
-
   // Sets |error_handler| as the connection error handler and completes whatever
   // initialization that needs to be done separately from construction. This
   // object doesn't own the error handler pointer.
@@ -65,18 +60,6 @@ class ChromePromptIPC {
       const std::vector<std::wstring>& registry_keys,
       const std::vector<std::wstring>& extension_ids,
       PromptUserCallback callback) = 0;
-
-  // Posts a PromptDisableExtensions() task to the IPC controller's thread.
-  // Internal state must be State::kDoneInteraction when the posted task runs.
-  virtual void PostDisableExtensionsTask(
-      const std::vector<std::wstring>& extension_ids,
-      DisableExtensionsCallback callback) = 0;
-
-  // Calls |delete_allowed_callback| if the IPC version supports deleting
-  // extensions, |delete_not_allowed_callback| otherwise.
-  virtual void TryDeleteExtensions(
-      base::OnceClosure delete_allowed_callback,
-      base::OnceClosure delete_not_allowed_callback) = 0;
 
  protected:
   virtual ~ChromePromptIPC();

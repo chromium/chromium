@@ -53,7 +53,7 @@ void BlockedInterceptionUI::PopulateStringsForHTML(
   load_time_data->SetBoolean("bad_clock", false);
   load_time_data->SetString("type", "BLOCKED_INTERCEPTION");
 
-  const base::string16 hostname(
+  const std::u16string hostname(
       common_string_util::GetFormattedHostName(request_url_));
 
   // Set strings that are shared between enterprise and non-enterprise

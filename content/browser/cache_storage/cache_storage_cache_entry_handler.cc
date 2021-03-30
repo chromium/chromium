@@ -8,7 +8,7 @@
 #include "base/guid.h"
 #include "base/optional.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
-#include "content/browser/background_fetch/storage/cache_entry_handler_impl.h"
+#include "content/browser/cache_storage/background_fetch_cache_entry_handler_impl.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
 #include "content/browser/cache_storage/legacy/legacy_cache_storage.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -354,14 +354,14 @@ void CacheStorageCacheEntryHandler::EraseDiskCacheBlobEntry(
 // static
 std::unique_ptr<CacheStorageCacheEntryHandler>
 CacheStorageCacheEntryHandler::CreateCacheEntryHandler(
-    CacheStorageOwner owner,
+    storage::mojom::CacheStorageOwner owner,
     scoped_refptr<BlobStorageContextWrapper> blob_storage_context) {
   switch (owner) {
-    case CacheStorageOwner::kCacheAPI:
+    case storage::mojom::CacheStorageOwner::kCacheAPI:
       return std::make_unique<CacheStorageCacheEntryHandlerImpl>(
           std::move(blob_storage_context));
-    case CacheStorageOwner::kBackgroundFetch:
-      return std::make_unique<background_fetch::CacheEntryHandlerImpl>(
+    case storage::mojom::CacheStorageOwner::kBackgroundFetch:
+      return std::make_unique<BackgroundFetchCacheEntryHandlerImpl>(
           std::move(blob_storage_context));
   }
   NOTREACHED();

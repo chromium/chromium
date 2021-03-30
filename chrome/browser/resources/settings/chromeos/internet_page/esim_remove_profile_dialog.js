@@ -14,10 +14,16 @@ Polymer({
   ],
 
   properties: {
-    /** @type {string} */
-    iccid: {
-      type: String,
-      value: '',
+    /** @type {?OncMojo.NetworkStateProperties} */
+    networkState: {
+      type: Object,
+      value: null,
+    },
+
+    /** @type {boolean} */
+    showCellularDisconnectWarning: {
+      type: Boolean,
+      value: false,
     },
 
     /** @type {string} */
@@ -25,60 +31,26 @@ Polymer({
       type: String,
       value: '',
     },
-
-    /** @private {string} */
-    errorMessage_: {
-      type: String,
-      value: '',
-    },
-
-    /** @private {boolean} */
-    isRemoveInProgress_: {
-      type: Boolean,
-      value: false,
-    }
   },
-
-  /**
-   * Provides an interface to the ESimManager Mojo service.
-   * @private {?chromeos.cellularSetup.mojom.ESimManagerRemote}
-   */
-  eSimManagerRemote_: null,
-
-  /** @private {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
-  networkConfig_: null,
 
   /** @private {?chromeos.cellularSetup.mojom.ESimProfileRemote} */
   esimProfileRemote_: null,
 
   /** @override */
-  created() {
-    this.eSimManagerRemote_ = cellular_setup.getESimManagerRemote();
-    this.networkConfig_ = network_config.MojoInterfaceProviderImpl.getInstance()
-                              .getMojoServiceRemote();
+  attached() {
     this.init_();
   },
 
   /** @private */
   async init_() {
-    const response = await this.eSimManagerRemote_.getAvailableEuiccs();
-    const euicc = response.euiccs[0];
-
-    const esimProfilesRemotes = await euicc.getProfileList();
-
-    for (const profileRemote of esimProfilesRemotes.profiles) {
-      const profileProperties = await profileRemote.getProperties();
-
-      if (profileProperties.properties.iccid !== this.iccid) {
-        continue;
-      }
-
-      this.esimProfileRemote_ = profileRemote;
-      this.esimProfileName_ = profileProperties.properties.nickname ?
-          this.convertString16ToJSString_(
-              profileProperties.properties.nickname) :
-          this.convertString16ToJSString_(profileProperties.properties.name);
+    if (!(this.networkState &&
+          this.networkState.type ===
+              chromeos.networkConfig.mojom.NetworkType.kCellular)) {
+      return;
     }
+    this.esimProfileRemote_ = await cellular_setup.getESimProfile(
+        this.networkState.typeState.cellular.iccid);
+    this.esimProfileName_ = this.networkState.name;
   },
 
   /**
@@ -104,23 +76,21 @@ Polymer({
    * @private
    */
   onRemoveProfileTap_(event) {
-    this.isRemoveInProgress_ = true;
-    this.esimProfileRemote_.uninstallProfile().then(response => {
-      this.handleRemoveProfileResponse(response.result);
+    this.esimProfileRemote_.uninstallProfile().then((response) => {
+      if (response.result ===
+          chromeos.cellularSetup.mojom.ESimOperationResult.kFailure) {
+        this.fire(
+            'show-error-toast', this.i18n('eSimRemoveProfileDialogError'));
+      }
     });
-  },
-
-  /**
-   * @param {chromeos.cellularSetup.mojom.ESimOperationResult} result
-   * @private
-   */
-  handleRemoveProfileResponse(result) {
-    this.isRemoveInProgress_ = false;
-    if (result === chromeos.cellularSetup.mojom.ESimOperationResult.kFailure) {
-      this.errorMessage_ = this.i18n('eSimRemoveProfileDialogError');
-      return;
-    }
     this.$.dialog.close();
+    const params = new URLSearchParams;
+    params.append(
+        'type',
+        OncMojo.getNetworkTypeString(
+            chromeos.networkConfig.mojom.NetworkType.kCellular));
+    settings.Router.getInstance().setCurrentRoute(
+        settings.routes.INTERNET_NETWORKS, params, /*isPopState=*/ true);
   },
 
   /**

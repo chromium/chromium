@@ -5,7 +5,7 @@
 import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
-import '../settings_shared_css.m.js';
+import '../settings_shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
@@ -15,7 +15,7 @@ import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behav
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {routes} from '../route.js';
-import {Route, RouteObserverBehavior, Router} from '../router.m.js';
+import {Route, RouteObserverBehavior, Router} from '../router.js';
 import {AllSitesAction2, ContentSetting, ContentSettingsTypes, SiteSettingSource} from '../site_settings/constants.js';
 import {SiteSettingsBehavior} from '../site_settings/site_settings_behavior.js';
 import {RawSiteException, RecentSitePermissions} from '../site_settings/site_settings_prefs_browser_proxy.js';
@@ -117,96 +117,70 @@ Polymer({
   getI18nContentTypeString_(contentSettingsType) {
     switch (contentSettingsType) {
       case ContentSettingsTypes.COOKIES:
-        return this.i18n('siteSettingsCookies');
+        return this.i18n('siteSettingsCookiesMidSentence');
       case ContentSettingsTypes.IMAGES:
-        return this.i18n('siteSettingsImages');
+        return this.i18n('siteSettingsImagesMidSentence');
       case ContentSettingsTypes.JAVASCRIPT:
-        return this.i18n('siteSettingsJavascript');
+        return this.i18n('siteSettingsJavascriptMidSentence');
       case ContentSettingsTypes.SOUND:
-        return this.i18n('siteSettingsSound');
+        return this.i18n('siteSettingsSoundMidSentence');
       case ContentSettingsTypes.POPUPS:
-        return this.i18n('siteSettingsPopups');
+        return this.i18n('siteSettingsPopupsMidSentence');
       case ContentSettingsTypes.GEOLOCATION:
-        return this.i18n('siteSettingsLocation');
+        return this.i18n('siteSettingsLocationMidSentence');
       case ContentSettingsTypes.NOTIFICATIONS:
-        return this.i18n('siteSettingsNotifications');
+        return this.i18n('siteSettingsNotificationsMidSentence');
       case ContentSettingsTypes.MIC:
-        return this.i18n('siteSettingsMic');
+        return this.i18n('siteSettingsMicMidSentence');
       case ContentSettingsTypes.CAMERA:
-        return this.i18n('siteSettingsCamera');
+        return this.i18n('siteSettingsCameraMidSentence');
       case ContentSettingsTypes.PROTOCOL_HANDLERS:
-        return this.i18n('siteSettingsHandlers');
+        return this.i18n('siteSettingsHandlersMidSentence');
       case ContentSettingsTypes.AUTOMATIC_DOWNLOADS:
-        return this.i18n('siteSettingsAutomaticDownloads');
+        return this.i18n('siteSettingsAutomaticDownloadsMidSentence');
       case ContentSettingsTypes.BACKGROUND_SYNC:
-        return this.i18n('siteSettingsBackgroundSync');
+        return this.i18n('siteSettingsBackgroundSyncMidSentence');
       case ContentSettingsTypes.MIDI_DEVICES:
-        return this.i18n('siteSettingsMidiDevices');
+        return this.i18n('siteSettingsMidiDevicesMidSentence');
       case ContentSettingsTypes.USB_DEVICES:
-        return this.i18n('siteSettingsUsbDevices');
+        return this.i18n('siteSettingsUsbDevicesMidSentence');
       case ContentSettingsTypes.SERIAL_PORTS:
-        return this.i18n('siteSettingsSerialPorts');
+        return this.i18n('siteSettingsSerialPortsMidSentence');
       case ContentSettingsTypes.BLUETOOTH_DEVICES:
-        return this.i18n('siteSettingsBluetoothDevices');
+        return this.i18n('siteSettingsBluetoothDevicesMidSentence');
       case ContentSettingsTypes.ZOOM_LEVELS:
-        return this.i18n('siteSettingsZoomLevels');
+        return this.i18n('siteSettingsZoomLevelsMidSentence');
       case ContentSettingsTypes.PROTECTED_CONTENT:
-        return this.i18n('siteSettingsProtectedContent');
+        return this.i18n('siteSettingsProtectedContentMidSentence');
       case ContentSettingsTypes.ADS:
-        return this.i18n('siteSettingsAds');
+        return this.i18n('siteSettingsAdsMidSentence');
       case ContentSettingsTypes.CLIPBOARD:
-        return this.i18n('siteSettingsClipboard');
+        return this.i18n('siteSettingsClipboardMidSentence');
       case ContentSettingsTypes.SENSORS:
-        return this.i18n('siteSettingsSensors');
+        return this.i18n('siteSettingsSensorsMidSentence');
       case ContentSettingsTypes.PAYMENT_HANDLER:
-        return this.i18n('siteSettingsPaymentHandler');
+        return this.i18n('siteSettingsPaymentHandlerMidSentence');
       case ContentSettingsTypes.MIXEDSCRIPT:
-        return this.i18n('siteSettingsInsecureContent');
+        return this.i18n('siteSettingsInsecureContentMidSentence');
       case ContentSettingsTypes.BLUETOOTH_SCANNING:
-        return this.i18n('siteSettingsBluetoothScanning');
+        return this.i18n('siteSettingsBluetoothScanningMidSentence');
       case ContentSettingsTypes.FILE_SYSTEM_WRITE:
-        return this.i18n('siteSettingsFileSystemWrite');
+        return this.i18n('siteSettingsFileSystemWriteMidSentence');
       case ContentSettingsTypes.HID_DEVICES:
-        return this.i18n('siteSettingsHidDevices');
+        return this.i18n('siteSettingsHidDevicesMidSentence');
       case ContentSettingsTypes.AR:
-        return this.i18n('siteSettingsAr');
+        return this.i18n('siteSettingsArMidSentence');
       case ContentSettingsTypes.VR:
-        return this.i18n('siteSettingsVr');
+        return this.i18n('siteSettingsVrMidSentence');
       case ContentSettingsTypes.WINDOW_PLACEMENT:
-        return this.i18n('siteSettingsWindowPlacement');
+        return this.i18n('siteSettingsWindowPlacementMidSentence');
       case ContentSettingsTypes.FONT_ACCESS:
-        return this.i18n('fonts');
+        return this.i18n('siteSettingsFontAccessMidSentence');
       case ContentSettingsTypes.IDLE_DETECTION:
-        return this.i18n('siteSettingsIdleDetection');
+        return this.i18n('siteSettingsIdleDetectionMidSentence');
       default:
         return '';
     }
-  },
-
-  /**
-   * Return the display string representing a permission change.
-   * @param {!RawSiteException} rawSiteException
-   * @param {boolean} sentenceStart Whether the returned string will start a
-   *     sentence.
-   * @return {string} The string representing the permission change.
-   * @private
-   */
-  getI18nPermissionChangeString_({setting, source, type}, sentenceStart) {
-    let change;
-    if (setting === ContentSetting.ALLOW) {
-      change = 'Allowed';
-    } else if (setting === ContentSetting.BLOCK) {
-      if (source === SiteSettingSource.EMBARGO) {
-        change = 'Autoblocked';
-      } else if (source === SiteSettingSource.PREFERENCE) {
-        change = 'Blocked';
-      } else {
-        return '';
-      }
-    }
-    const suffix = sentenceStart ? 'SentenceStart' : '';
-    const msgId = `recentPermissionChange${change}${suffix}`;
-    return this.i18n(msgId, this.getI18nContentTypeString_(type));
   },
 
   /**
@@ -239,24 +213,67 @@ Polymer({
    * @return {string} The display string for set of site permissions.
    * @private
    */
-  getPermissionsText_({recentPermissions, incognito}) {
-    const displayStrings = recentPermissions.map(
-        (rp, i) => this.getI18nPermissionChangeString_(rp, i === 0));
+  getPermissionsText_({recentPermissions}) {
+    // Recently changed permisisons for a site are grouped into three buckets,
+    // each described by a single sentence.
+    const groupSentences = [
+      this.getPermissionGroupText_(
+          'Allowed',
+          recentPermissions.filter(
+              exception => exception.setting === ContentSetting.ALLOW)),
+      this.getPermissionGroupText_(
+          'AutoBlocked',
+          recentPermissions.filter(
+              exception => exception.source === SiteSettingSource.EMBARGO)),
+      this.getPermissionGroupText_(
+          'Blocked',
+          recentPermissions.filter(
+              exception => exception.setting === ContentSetting.BLOCK &&
+                  exception.source !== SiteSettingSource.EMBARGO)),
+    ].filter(string => string.length > 0);
 
-    if (recentPermissions.length === 1 && !incognito) {
-      return displayStrings[0];
+    let finalText = '';
+    // The final text may be composed of multiple sentences, so may need the
+    // appropriate sentence separators.
+    for (const sentence of groupSentences) {
+      if (finalText.length > 0) {
+        // Whitespace is a valid sentence separator w.r.t i18n.
+        finalText += `${this.i18n('sentenceEnd')} ${sentence}`;
+      } else {
+        finalText = sentence;
+      }
+    }
+    if (groupSentences.length > 1) {
+      finalText += this.i18n('sentenceEnd');
+    }
+    return finalText;
+  },
+
+  /**
+   * Returns the display sentence which groups the provided |exceptions|
+   * together and applies the appropriate description based on |setting|.
+   * @param {string} setting
+   * @param {!Array<!RawSiteException>} exceptions
+   * @return {string} The display sentence.
+   * @private
+   */
+  getPermissionGroupText_(setting, exceptions) {
+    const typeStrings = exceptions.map(
+        exception => this.getI18nContentTypeString_(exception.type));
+
+    if (exceptions.length === 0) {
+      return '';
+    }
+    if (exceptions.length === 1) {
+      return this.i18n(`recentPermission${setting}OneItem`, ...typeStrings);
+    }
+    if (exceptions.length === 2) {
+      return this.i18n(`recentPermission${setting}TwoItems`, ...typeStrings);
     }
 
-    const itemsPart = [
-      'OneItem',
-      'TwoItems',
-      'ThreeItems',
-      'OverThreeItems',
-    ][Math.min(recentPermissions.length, 4) - 1];
-    const suffix = incognito ? 'Incognito' : '';
-    const i18nStringID = `recentPermissions${itemsPart}${suffix}`;
-
-    return this.i18n(i18nStringID, ...displayStrings);
+    return this.i18n(
+        `recentPermission${setting}MoreThanTwoItems`, typeStrings[0],
+        exceptions.length - 1);
   },
 
   /**

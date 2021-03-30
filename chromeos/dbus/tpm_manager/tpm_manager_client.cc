@@ -60,7 +60,7 @@ void OnSignalConnected(const std::string& interface_name,
                            << interface_name << "; signal: " << signal_name;
 }
 
-// "Real" implementation of TpmManagerClient taking to the TpmManager daemon
+// "Real" implementation of TpmManagerClient talking to the TpmManager daemon
 // on the Chrome OS side.
 class TpmManagerClientImpl : public TpmManagerClient {
  public:

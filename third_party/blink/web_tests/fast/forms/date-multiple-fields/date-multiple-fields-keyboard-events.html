@@ -23,7 +23,7 @@ Test following keys:
 <script>
 description('Multiple fields UI of month input type with keyboard events');
 if (window.internals)
-    internals.settings.setLangAttributeAwareFormControlUIEnabled(true);
+    internals.runtimeFlags.langAttributeAwareFormControlUIEnabled = true;
 var input = document.getElementById('input');
 
 function keyDown(key, modifiers)

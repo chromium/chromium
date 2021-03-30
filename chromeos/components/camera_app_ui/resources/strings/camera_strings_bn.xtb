@@ -15,6 +15,7 @@
 <translation id="2036868001356139588">টাইমারের সময়কাল</translation>
 <translation id="2050339315714019657">প্রতিকৃতি</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> চালু আছে</translation>
+<translation id="2144806332417375165">কাস্টম ভিডিও প্যারামিটার</translation>
 <translation id="229579744168541441">ডিস্কে এক্সপোর্ট করুন</translation>
 <translation id="2501278716633472235">ফিরে যান</translation>
 <translation id="2501853267655415902">রেকর্ডিং বন্ধ করা হয়েছে</translation>
@@ -33,7 +34,6 @@
 <translation id="3259149966178251584">ক্যামেরার রেজোলিউশন</translation>
 <translation id="3517926952904427380">পোর্ট্রেট ফটো তোলা যাচ্ছে না</translation>
 <translation id="3569311554794739032">আপনি কি সত্যিই <ph name="FILE" /> সরাতে চান?</translation>
-<translation id="3750315947605636967">অন্য অ্যাপ আপনার ক্যামেরা ব্যবহার করছে</translation>
 <translation id="3810838688059735925">ভিডিও</translation>
 <translation id="3838931309141338733">বারকোড স্ক্যান করুন</translation>
 <translation id="3892148308691398805">টেক্সট কপি করুন</translation>
@@ -76,10 +76,12 @@
 <translation id="7337660886763914220">ফাইল সিস্টেমে সমস্যা হয়েছে।</translation>
 <translation id="7450541714075000668">টেক্সট কপি করা হয়েছে</translation>
 <translation id="7557677699350329807">পরের ক্যামেরা বেছে নিন</translation>
+<translation id="7607002721634913082">বিরত রয়েছে</translation>
 <translation id="7608223098072244877">৪ x ৪</translation>
 <translation id="7649070708921625228">সহায়তা</translation>
 <translation id="7658239707568436148">বাতিল</translation>
 <translation id="7670511624014457267">৬০ FPS</translation>
+<translation id="7974782136796202581">ক্যামেরা অনুভূমিকভাবে সরিয়ে প্যানোরামা ছবি তোলা, ক্যামেরা কাত করে ধরা বা জুম করার বিকল্প দেখুন</translation>
 <translation id="7983668134180549431">টেক্সট শনাক্ত করা গেছে।</translation>
 <translation id="8067883171444229417">ভিডিও চালানোর বোতাম</translation>
 <translation id="8131740175452115882">নিশ্চিত হন</translation>

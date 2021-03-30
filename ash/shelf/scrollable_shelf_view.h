@@ -12,12 +12,14 @@
 #include "ash/drag_drop/drag_image_view.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_model.h"
+#include "ash/shelf/gradient_layer_delegate.h"
 #include "ash/shelf/scroll_arrow_view.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_button_delegate.h"
 #include "ash/shelf/shelf_container_view.h"
 #include "ash/shelf/shelf_tooltip_delegate.h"
 #include "ash/shelf/shelf_view.h"
+#include "base/callback_helpers.h"
 #include "base/cancelable_callback.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/animation/ink_drop_host_view.h"
@@ -175,21 +177,9 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
  private:
   friend class ShelfTestApi;
 
-  class GradientLayerDelegate;
   class ScrollableShelfArrowView;
   class DragIconDropAnimationDelegate;
   class ScopedActiveInkDropCountImpl;
-
-  struct FadeZone {
-    // Bounds of the fade in/out zone.
-    gfx::Rect zone_rect;
-
-    // Specifies the type of FadeZone: fade in or fade out.
-    bool fade_in = false;
-
-    // Indicates the drawing direction.
-    bool is_horizontal = false;
-  };
 
   enum ScrollStatus {
     // Indicates whether the gesture scrolling is across the main axis.
@@ -274,7 +264,7 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   bool ShouldHideTooltip(const gfx::Point& cursor_location) const override;
   const std::vector<aura::Window*> GetOpenWindowsForView(
       views::View* view) override;
-  base::string16 GetTitleForView(const views::View* view) const override;
+  std::u16string GetTitleForView(const views::View* view) const override;
   views::View* GetViewForEvent(const ui::Event& event) override;
 
   // ApplicationDragAndDropHost:
@@ -353,8 +343,8 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
 
   // Calculates the bounds of the gradient zone before/after the shelf
   // container.
-  FadeZone CalculateStartGradientZone() const;
-  FadeZone CalculateEndGradientZone() const;
+  GradientLayerDelegate::FadeZone CalculateStartGradientZone() const;
+  GradientLayerDelegate::FadeZone CalculateEndGradientZone() const;
 
   // Updates the visibility of gradient zones.
   void UpdateGradientZoneState();
@@ -363,8 +353,9 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   // different from the actual values.
   void MaybeUpdateGradientZone();
 
-  void PaintGradientZone(const FadeZone& start_gradient_zone,
-                         const FadeZone& end_gradient_zone);
+  void PaintGradientZone(
+      const GradientLayerDelegate::FadeZone& start_gradient_zone,
+      const GradientLayerDelegate::FadeZone& end_gradient_zone);
 
   bool ShouldApplyMaskLayerGradientZone() const;
 

@@ -69,7 +69,7 @@ class ScriptPreconditionTest : public testing::Test {
 
     SetUrl("http://www.example.com/path");
 
-    trigger_context_ = TriggerContext::CreateEmpty();
+    trigger_context_ = std::make_unique<TriggerContext>();
   }
 
  protected:
@@ -253,9 +253,10 @@ TEST_F(ScriptPreconditionTest, ParameterMustExist) {
 
   EXPECT_FALSE(Check(proto));
 
-  std::map<std::string, std::string> parameters;
-  parameters["param"] = "exists";
-  trigger_context_ = TriggerContext::Create(parameters, "");
+  trigger_context_ = std::make_unique<TriggerContext>(
+      std::make_unique<ScriptParameters>(
+          std::map<std::string, std::string>{{"param", "exists"}}),
+      TriggerContext::Options{});
 
   EXPECT_TRUE(Check(proto));
 }
@@ -268,9 +269,10 @@ TEST_F(ScriptPreconditionTest, ParameterMustNotExist) {
 
   EXPECT_TRUE(Check(proto));
 
-  std::map<std::string, std::string> parameters;
-  parameters["param"] = "exists";
-  trigger_context_ = TriggerContext::Create(parameters, "");
+  trigger_context_ = std::make_unique<TriggerContext>(
+      std::make_unique<ScriptParameters>(
+          std::map<std::string, std::string>{{"param", "exists"}}),
+      TriggerContext::Options{});
 
   EXPECT_FALSE(Check(proto));
 }
@@ -283,15 +285,16 @@ TEST_F(ScriptPreconditionTest, ParameterMustHaveValue) {
 
   EXPECT_FALSE(Check(proto));
 
-  std::map<std::string, std::string> parameters;
-  parameters["param"] = "another value";
-  trigger_context_ = TriggerContext::Create(parameters, "");
-
+  trigger_context_ = std::make_unique<TriggerContext>(
+      std::make_unique<ScriptParameters>(
+          std::map<std::string, std::string>{{"param", "another"}}),
+      TriggerContext::Options{});
   EXPECT_FALSE(Check(proto));
 
-  parameters["param"] = "value";
-  trigger_context_ = TriggerContext::Create(parameters, "");
-
+  trigger_context_ = std::make_unique<TriggerContext>(
+      std::make_unique<ScriptParameters>(
+          std::map<std::string, std::string>{{"param", "value"}}),
+      TriggerContext::Options{});
   EXPECT_TRUE(Check(proto));
 }
 

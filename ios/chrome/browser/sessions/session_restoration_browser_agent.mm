@@ -4,6 +4,7 @@
 
 #include "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 
+#import "base/ios/ios_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/favicon/ios/web_favicon_driver.h"
@@ -16,7 +17,6 @@
 #import "ios/chrome/browser/sessions/session_restoration_observer.h"
 #import "ios/chrome/browser/sessions/session_service_ios.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
-#import "ios/chrome/browser/ui/util/multi_window_support.h"
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/all_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -34,10 +34,6 @@
 #endif
 
 BROWSER_USER_DATA_KEY_IMPL(SessionRestorationBrowserAgent)
-
-namespace {
-const std::string kSessionDirectory = "Sessions";
-}
 
 // static
 void SessionRestorationBrowserAgent::CreateForBrowser(
@@ -74,7 +70,8 @@ SessionRestorationBrowserAgent::~SessionRestorationBrowserAgent() {
 }
 
 void SessionRestorationBrowserAgent::SetSessionID(
-    const std::string& session_identifier) {
+    NSString* session_identifier) {
+  DCHECK(session_identifier.length != 0);
   session_identifier_ = session_identifier;
 }
 
@@ -172,15 +169,14 @@ bool SessionRestorationBrowserAgent::RestoreSessionWindow(
 }
 
 bool SessionRestorationBrowserAgent::RestoreSession() {
+  DCHECK(session_identifier_.length != 0);
+
   PreviousSessionInfo* session_info = [PreviousSessionInfo sharedInstance];
-  BOOL is_previous_session_multi_window =
-      session_info.isMultiWindowEnabledSession;
-  BOOL force_single_window =
-      IsMultiwindowSupported() && !is_previous_session_multi_window;
-  NSString* path = base::SysUTF8ToNSString(
-      GetSessionStoragePath(force_single_window).AsUTF8Unsafe());
   auto scoped_restore = [session_info startSessionRestoration];
-  SessionIOS* session = [session_service_ loadSessionFromDirectory:path];
+
+  SessionIOS* session = [session_service_
+      loadSessionWithSessionID:session_identifier_
+                     directory:browser_state_->GetStatePath()];
   SessionWindowIOS* session_window = nil;
 
   if (session) {
@@ -196,13 +192,14 @@ bool SessionRestorationBrowserAgent::IsRestoringSession() {
 }
 
 void SessionRestorationBrowserAgent::SaveSession(bool immediately) {
+  DCHECK(session_identifier_.length != 0);
+
   if (!CanSaveSession())
     return;
 
-  NSString* path = base::SysUTF8ToNSString(
-      GetSessionStoragePath(/*force_single_window=*/false).AsUTF8Unsafe());
   [session_service_ saveSession:session_ios_factory_
-                      directory:path
+                      sessionID:session_identifier_
+                      directory:browser_state_->GetStatePath()
                     immediately:immediately];
 }
 
@@ -287,19 +284,6 @@ void SessionRestorationBrowserAgent::WebStateMoved(WebStateList* web_state_list,
 
   // Persist the session state if the new web state is not loading.
   SaveSession(/*immediately=*/false);
-}
-
-base::FilePath SessionRestorationBrowserAgent::GetSessionStoragePath(
-    bool force_single_window) {
-  base::FilePath path = browser_state_->GetStatePath();
-  if (!force_single_window && IsMultiwindowSupported() &&
-      !session_identifier_.empty()) {
-    path = path.Append(kSessionDirectory)
-               .Append(session_identifier_)
-               .AsEndingWithSeparator();
-  }
-
-  return path;
 }
 
 // WebStateObserver methods

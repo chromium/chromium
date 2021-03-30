@@ -24,6 +24,7 @@ Om hierdie toestemming te verleen, moet jy "<ph name="BUTTON_NAME" />" hieronder
 As "<ph name="SERVICE_SCRIPT_NAME" />" reeds gemerk is, moet jy dit ontmerk en dit dan weer merk.</translation>
 <translation id="225614027745146050">Welkom</translation>
 <translation id="2320166752086256636">Versteek sleutelbord</translation>
+<translation id="2333212046079545895">Kopierieg 2021 Google LLC. Alle regte voorbehou.</translation>
 <translation id="2359808026110333948">Gaan voort</translation>
 <translation id="2366718077645204424">Kan nie die gasheer bereik nie. Dit is waarskynlik weens die opstelling van die netwerk wat jy gebruik.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Is <ph name="RELATIVE_TIMESTAMP" /> laas aanlyn gesien.</translation>
@@ -71,6 +72,7 @@ As "<ph name="SERVICE_SCRIPT_NAME" />" reeds gemerk is, moet jy dit ontmerk en d
 <translation id="4405930547258349619">Kernbiblioteek</translation>
 <translation id="443560535555262820">Maak Toeganklikheid-voorkeure oop</translation>
 <translation id="4450893287417543264">Moenie weer wys nie</translation>
+<translation id="4512952200932940229">Kopiereg 2021 Die Chromium-outeurs. Alle regte voorbehou.</translation>
 <translation id="4513946894732546136">Terugvoer</translation>
 <translation id="4563926062592110512">Kliënt het ontkoppel: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4635770493235256822">Afstandtoestelle</translation>
@@ -129,7 +131,6 @@ As "<ph name="SERVICE_SCRIPT_NAME" />" reeds gemerk is, moet jy dit ontmerk en d
 <translation id="7067321367069083429">Skerm werk soos 'n raakskerm</translation>
 <translation id="7116737094673640201">Welkom by Chrome-afstandwerkskerm</translation>
 <translation id="7144878232160441200">Probeer weer</translation>
-<translation id="724402108658370587">Kopierieg 2020 Google LLC. Alle regte voorbehou.</translation>
 <translation id="7312846573060934304">Gasheer is vanlyn.</translation>
 <translation id="7319983568955948908">Hou op deel</translation>
 <translation id="7401733114166276557">Chrome-afstandwerkskerm</translation>
@@ -155,7 +156,6 @@ As "<ph name="SERVICE_SCRIPT_NAME" />" reeds gemerk is, moet jy dit ontmerk en d
 <translation id="8073845705237259513">Om Chrome-afstandwerkskerm te gebruik, moet jy 'n Google-rekening by jou toestel voeg.</translation>
 <translation id="809687642899217504">My rekenaars</translation>
 <translation id="8116630183974937060">'n Netwerkfout het voorgekom. Maak asseblief seker dat jou toestel aanlyn is en probeer weer.</translation>
-<translation id="8187079423890319756">Kopiereg 2013 Die Chromium-outeurs. Alle regte voorbehou.</translation>
 <translation id="8295077433896346116">Om <ph name="PRODUCT_NAME" /> te gebruik, moet jy die "Toeganklikheid"-toestemming verleen sodat invoer van die afstandmasjien af op hierdie Mac ingevoeg kan word.
 
 Klik "<ph name="BUTTON_NAME" />" hieronder om hierdie toestemming te verleen. Merk die blokkie langs "<ph name="SERVICE_SCRIPT_NAME" />" in die "Toeganklikheid"-voorkeurepaneel wat sal oopmaak.
@@ -174,6 +174,7 @@ As "<ph name="SERVICE_SCRIPT_NAME" />" reeds gemerk is, moet jy dit ontmerk en d
 <translation id="8743328882720071828">Wil jy <ph name="CLIENT_USERNAME" /> toelaat om jou rekenaar te sien en te beheer?</translation>
 <translation id="8747048596626351634">Sessie het omgeval of kon nie begin nie. As ~/.chrome-remote-desktop-session op die afstandrekenaar bestaan, moet jy seker maak dat dit 'n langlopende voorgrondproses begin, soos 'n werkskermomgewing of vensterbestuurder.</translation>
 <translation id="8804164990146287819">Privaatheidbeleid</translation>
+<translation id="8906511416443321782">Mikrofoontoegang word vereis om oudio vas te vang en dit na die Chrome-afstandwerkskermkliënt te stroom.</translation>
 <translation id="9111855907838866522">Jy is aan jou afstandtoestel gekoppel. Tik met vier vingers op die skerm om die kieslys oop te maak.</translation>
 <translation id="9126115402994542723">Moenie weer vir 'n PIN vra wanneer jy van hierdie toestel af aan hierdie gasheer koppel nie.</translation>
 <translation id="916856682307586697">Begin die verstek-XSession</translation>

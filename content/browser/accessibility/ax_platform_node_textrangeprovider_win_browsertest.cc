@@ -20,6 +20,8 @@
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
+#include "ui/accessibility/ax_node_position.h"
+#include "ui/accessibility/ax_tree_id.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -81,8 +83,8 @@ namespace content {
 class AXPlatformNodeTextRangeProviderWinBrowserTest
     : public AccessibilityContentBrowserTest {
  protected:
-  const base::string16 kEmbeddedCharacterAsString = {
-      ui::AXPlatformNodeBase::kEmbeddedCharacter};
+  const std::wstring kEmbeddedCharacterAsString{
+      base::as_wcstr(&ui::AXPlatformNodeBase::kEmbeddedCharacter), 1};
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -227,7 +229,7 @@ class AXPlatformNodeTextRangeProviderWinBrowserTest
     ASSERT_EQ(ax::mojom::Role::kIframe,
               leaf_iframe_browser_accessibility->GetRole());
 
-    AXTreeID iframe_tree_id = AXTreeID::FromString(
+    ui::AXTreeID iframe_tree_id = ui::AXTreeID::FromString(
         leaf_iframe_browser_accessibility->GetStringAttribute(
             ax::mojom::StringAttribute::kChildTreeId));
     BrowserAccessibilityManager* iframe_browser_accessibility_manager =
@@ -258,9 +260,9 @@ class AXPlatformNodeTextRangeProviderWinBrowserTest
                             BrowserAccessibility* browser_accessibility_start,
                             BrowserAccessibility* browser_accessibility_end,
                             const bool align_to_top) {
-    ui::AXNodePosition::AXPositionInstance start =
+    BrowserAccessibility::AXPosition start =
         browser_accessibility_start->CreateTextPositionAt(0);
-    ui::AXNodePosition::AXPositionInstance end =
+    BrowserAccessibility::AXPosition end =
         browser_accessibility_end->CreateTextPositionAt(0)
             ->CreatePositionAtEndOfAnchor();
 
@@ -440,8 +442,8 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       <!DOCTYPE html>
       <html>
         <body>
-          <input type='text' aria-label='input_text'>
-          <input type='search' aria-label='input_search'>
+          <input type="text" aria-label="input_text">
+          <input type="search" aria-label="input_search">
         </body>
       </html>
   )HTML"));
@@ -1211,7 +1213,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       FindNode(ax::mojom::Role::kStaticText, "end");
   ASSERT_NE(nullptr, end_node);
 
-  std::vector<base::string16> paragraphs = {
+  std::vector<std::wstring> paragraphs = {
       L"start",
       L"text with [:before] and [:after]content, then a",
       L"bold element with a [block]before content then a italic",
@@ -1388,7 +1390,7 @@ IN_PROC_BROWSER_TEST_F(
       FindNode(ax::mojom::Role::kStaticText, "end");
   ASSERT_NE(nullptr, end_node);
 
-  std::vector<base::string16> paragraphs = {
+  std::vector<std::wstring> paragraphs = {
       L"start",
       L"some text\n\n\n",
       L"more text",
@@ -1514,7 +1516,7 @@ IN_PROC_BROWSER_TEST_F(
       FindNode(ax::mojom::Role::kStaticText, "start");
   ASSERT_NE(nullptr, start_node);
 
-  std::vector<base::string16> paragraphs = {
+  std::vector<std::wstring> paragraphs = {
       L"start",
       L"text with [:before] and [:after]content, then a",
       L"bold element",
@@ -1593,7 +1595,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
 
   ComPtr<ITextRangeProvider> text_range_provider;
 
-  std::vector<base::string16> paragraphs = {
+  std::vector<std::wstring> paragraphs = {
       L"start\n",
       L"          First Paragraph\n",
       L"          Second Paragraph\n        \n",
@@ -1873,7 +1875,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       FindNode(ax::mojom::Role::kStaticText, "end");
   ASSERT_NE(nullptr, end_node);
 
-  std::vector<base::string16> paragraphs = {
+  std::vector<std::wstring> paragraphs = {
       L"start",
       kEmbeddedCharacterAsString,
       L"end",
@@ -2742,7 +2744,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
     GetTextRangeProviderFromTextNode(*node, &text_range_provider);
     ASSERT_NE(nullptr, text_range_provider.Get());
     EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"Some text");
-    AXTreeID old_tree_id = GetManager()->GetTreeID();
+    ui::AXTreeID old_tree_id = GetManager()->GetTreeID();
 
     // Reloading changes the tree id, triggering an AXTreeManager replacement.
     shell()->Reload();

@@ -80,7 +80,6 @@ const char kExternalClearKeyStorageIdTestKeySystem[] =
 const char kNoSessionToLoad[] = "";
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 const char kPersistentLicense[] = "PersistentLicense";
-const char kPersistentUsageRecord[] = "PersistentUsageRecord";
 const char kUnknownSession[] = "UnknownSession";
 #endif
 
@@ -356,9 +355,6 @@ class ECKEncryptedMediaTest : public EncryptedMediaTestBase,
     command_line->AppendSwitchASCII(
         switches::kOverrideEnabledCdmInterfaceVersion,
         base::NumberToString(GetCdmInterfaceVersion()));
-    command_line->AppendSwitchASCII(
-        switches::kEnableBlinkFeatures,
-        "EncryptedMediaPersistentUsageRecordSession");
   }
 };
 
@@ -879,18 +875,6 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, LoadSessionAfterClose) {
   RunEncryptedMediaTestPage("eme_load_session_after_close_test.html",
                             kExternalClearKeyKeySystem, query_params,
                             media::kEnded);
-}
-
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, VerifyPersistentUsageRecord) {
-  TestPlaybackCase(kExternalClearKeyKeySystem, kPersistentUsageRecord,
-                   media::kEnded);
-}
-
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, RemovePersistentUsageRecord) {
-  RunEncryptedMediaTest("eme_remove_session_test.html",
-                        "bear-320x240-v_enc-v.webm", kExternalClearKeyKeySystem,
-                        SrcType::MSE, kPersistentUsageRecord, false,
-                        PlayCount::ONCE, media::kEnded);
 }
 
 const char kExternalClearKeyDecryptOnlyKeySystem[] =

@@ -46,11 +46,11 @@ MTPReadFileWorker::~MTPReadFileWorker() {
 }
 
 void MTPReadFileWorker::WriteDataIntoSnapshotFile(
-    const SnapshotRequestInfo& request_info,
+    SnapshotRequestInfo request_info,
     const base::File::Info& snapshot_file_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  ReadDataChunkFromDeviceFile(
-      std::make_unique<SnapshotFileDetails>(request_info, snapshot_file_info));
+  ReadDataChunkFromDeviceFile(std::make_unique<SnapshotFileDetails>(
+      std::move(request_info), snapshot_file_info));
 }
 
 void MTPReadFileWorker::ReadDataChunkFromDeviceFile(
@@ -70,7 +70,7 @@ void MTPReadFileWorker::ReadDataChunkFromDeviceFile(
       snapshot_file_details_ptr->BytesToRead(),
       base::BindOnce(&MTPReadFileWorker::OnDidReadDataChunkFromDeviceFile,
                      weak_ptr_factory_.GetWeakPtr(),
-                     base::Passed(&snapshot_file_details)));
+                     std::move(snapshot_file_details)));
 }
 
 void MTPReadFileWorker::OnDidReadDataChunkFromDeviceFile(

@@ -114,7 +114,7 @@ class ShellExtensionLoaderTest : public ExtensionsTest {
   // Verifies the extension is correctly created and enabled.
   void ExpectEnabled(const Extension* extension) {
     ASSERT_TRUE(extension);
-    EXPECT_EQ(Manifest::COMMAND_LINE, extension->location());
+    EXPECT_EQ(mojom::ManifestLocation::kCommandLine, extension->location());
     ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context());
     EXPECT_TRUE(registry->enabled_extensions().Contains(extension->id()));
     EXPECT_FALSE(registry->GetExtensionById(

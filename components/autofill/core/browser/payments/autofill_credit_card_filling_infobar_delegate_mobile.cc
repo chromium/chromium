@@ -27,7 +27,7 @@ AutofillCreditCardFillingInfoBarDelegateMobile::
 #if defined(OS_IOS)
       card_label_(card.NetworkAndLastFourDigits()),
 #else
-      card_label_(base::string16(kMidlineEllipsis) + card.LastFourDigits()),
+      card_label_(std::u16string(kMidlineEllipsis) + card.LastFourDigits()),
 #endif
       card_sub_label_(card.AbbreviatedExpirationDateForDisplay(false)) {
 }
@@ -46,7 +46,7 @@ int AutofillCreditCardFillingInfoBarDelegateMobile::GetIconId() const {
   return IDR_INFOBAR_AUTOFILL_CC;
 }
 
-base::string16 AutofillCreditCardFillingInfoBarDelegateMobile::GetMessageText()
+std::u16string AutofillCreditCardFillingInfoBarDelegateMobile::GetMessageText()
     const {
 #if defined(OS_ANDROID)
   return l10n_util::GetStringUTF16(
@@ -78,7 +78,7 @@ AutofillCreditCardFillingInfoBarDelegateMobile::GetIdentifier() const {
   return AUTOFILL_CREDIT_CARD_FILLING_INFOBAR_DELEGATE_ANDROID;
 }
 
-base::string16 AutofillCreditCardFillingInfoBarDelegateMobile::GetButtonLabel(
+std::u16string AutofillCreditCardFillingInfoBarDelegateMobile::GetButtonLabel(
     InfoBarButton button) const {
   return l10n_util::GetStringUTF16(
       button == BUTTON_OK ? IDS_AUTOFILL_CREDIT_CARD_FILLING_INFOBAR_ACCEPT

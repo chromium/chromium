@@ -1,0 +1,22 @@
+<!--
+@BLINK-ALLOW:htmlTag*
+-->
+<!-- Create accessible objects inside of head, style, if styled to be visible -->
+<html>
+  <head>
+    <style>
+      head,style,script { display:block; }
+    </style>
+    <script>
+      var x = 3;
+    </script>
+  </head>
+</html>
+<body>
+  <style>
+    p { outline: 2px solid green; }
+  </style>
+  <script>
+    var x = 3;
+  </script>
+</body>

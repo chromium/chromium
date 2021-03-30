@@ -28,6 +28,11 @@ Polymer({
       observer: 'managedPropertiesChanged_',
     },
 
+    disabled: {
+      type: Boolean,
+      value: false,
+    },
+
     /**
      * Array of nameserver addresses stored as strings.
      * @private {!Array<string>}

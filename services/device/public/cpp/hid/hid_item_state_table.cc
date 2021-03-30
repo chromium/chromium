@@ -42,13 +42,31 @@ uint32_t MaybeCombineUsageAndUsagePage(
   return (global_stack.back().usage_page << (sizeof(uint16_t) * 8)) | usage;
 }
 
+// Interprets |value| as a two's complement signed integer |payload_size| bytes
+// wide. The value is returned as a 32-bit signed integer, extending the sign
+// bit as needed.
+int32_t Int32FromValueAndSize(uint32_t value, size_t payload_size) {
+  if (payload_size == 0)
+    return 0;
+
+  if (payload_size == 1)
+    return int8_t{uint8_t{value}};
+
+  if (payload_size == 2)
+    return int16_t{uint16_t{value}};
+
+  DCHECK_EQ(payload_size, 4u);
+  return value;
+}
+
 }  // namespace
 
 HidItemStateTable::HidItemStateTable() = default;
 HidItemStateTable::~HidItemStateTable() = default;
 
 void HidItemStateTable::SetItemValue(HidReportDescriptorItem::Tag tag,
-                                     uint32_t value) {
+                                     uint32_t value,
+                                     size_t payload_size) {
   if (IsGlobalItem(tag)) {
     if (global_stack.empty())
       global_stack.emplace_back();
@@ -58,16 +76,16 @@ void HidItemStateTable::SetItemValue(HidReportDescriptorItem::Tag tag,
         global.usage_page = value;
         break;
       case HidReportDescriptorItem::kTagLogicalMinimum:
-        global.logical_minimum = int32_t{value};
+        global.logical_minimum = Int32FromValueAndSize(value, payload_size);
         break;
       case HidReportDescriptorItem::kTagLogicalMaximum:
-        global.logical_maximum = int32_t{value};
+        global.logical_maximum = Int32FromValueAndSize(value, payload_size);
         break;
       case HidReportDescriptorItem::kTagPhysicalMinimum:
-        global.physical_minimum = int32_t{value};
+        global.physical_minimum = Int32FromValueAndSize(value, payload_size);
         break;
       case HidReportDescriptorItem::kTagPhysicalMaximum:
-        global.physical_maximum = int32_t{value};
+        global.physical_maximum = Int32FromValueAndSize(value, payload_size);
         break;
       case HidReportDescriptorItem::kTagUnitExponent:
         global.unit_exponent = value;

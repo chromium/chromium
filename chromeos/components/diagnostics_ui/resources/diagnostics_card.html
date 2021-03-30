@@ -2,50 +2,52 @@
   ::slotted([slot=chip]) {
     background-color: var(--google-grey-100);
     border-radius: 16px;
-    color: var(--diagnostics-overview-text-color);
-    padding: 4px 8px;
   }
+
   ::slotted([slot=icon]) {
-    background-color: rgba(var(--google-blue-refresh-500-rgb), .12);
+    --iron-icon-fill-color: var(--google-blue-600);
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+    background-color: var(--google-blue-50);
     border-radius: 50%;
-    color: var(--google-blue-600);
-    left: 5px;
-    padding: 2px;
+    margin: 0 20px;
+    padding: 8px;
     position: relative;
+  }
+
+  ::slotted([slot=title]) {
+    @apply --diagnostics-card-title-font;
   }
 
   ::slotted([slot=left-panel]) {
     flex: 1;
+    margin-bottom: 16px;
   }
 
   .card-container {
     display: flex;
     flex-direction: column;
-    margin-top: 12px;
+    margin: 12px 0 12px;
   }
 
   .card-header {
-    @apply --diagnostics-default-font;
     display: flex;
     justify-content: space-between;
-    min-height: 25px;
+    height: 20px;
+    padding-top: 10px;
   }
 
   .card-wrapper {
-    border: 1px solid var(--diagnostics-border-color);
-    border-radius: 14px;
+    border-radius: 4px;
+    box-shadow: var(--diagnostics-box-shadow);
     margin: 10px 0;
   }
 
   .data-points {
-    border-bottom: 1px solid var(--diagnostics-border-color);
+    border-bottom: 1px solid var(--google-grey-200);
     display: grid;
-    grid-template-columns: 1.5fr 0fr 1fr 0fr 1.5fr;
-    padding-bottom: 8px;
-  }
-
-  .icon {
-    width: 10%;
+    grid-template-columns: 1fr 0fr 1fr 0fr 1fr;
+    padding-inline: var(--data-point-container-padding);
   }
 
   .routine-container {
@@ -53,19 +55,15 @@
   }
 
   .spacing {
-    margin: 14px 0px;
-    padding-inline-end: 15px;
-    padding-inline-start: 15px;
+    margin-bottom: 16px;
+    margin-top: 12px;
+    padding-inline: 20px;
   }
 
   .top-section {
-    border-bottom: 1px solid var(--diagnostics-border-color);
+    border-bottom: 1px solid var(--google-grey-200);
     display: flex;
-    margin-bottom: 6px;
-    margin-top: 12px;
-    padding-bottom: 12px;
-    padding-inline-end: 15px;
-    padding-inline-start: 15px;
+    margin-top: 16px;
   }
 </style>
 <div class="card-container">
@@ -75,9 +73,7 @@
   </div>
   <div class="card-wrapper">
     <div class="top-section">
-      <div class="icon">
-        <slot name="icon"></slot>
-      </div>
+      <slot name="icon"></slot>
       <slot name="left-panel"></slot>
     </div>
     <div id="body" class="data-points" hidden$="[[hideDataPoints]]">

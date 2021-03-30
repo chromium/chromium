@@ -5,10 +5,12 @@
 #ifndef ASH_WM_DESKS_DESKS_UTIL_H_
 #define ASH_WM_DESKS_DESKS_UTIL_H_
 
+#include <algorithm>
 #include <vector>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "base/check_op.h"
 #include "ui/compositor/compositor.h"
 
 namespace aura {
@@ -57,6 +59,33 @@ ASH_EXPORT bool ShouldDesksBarBeCreated();
 
 // Selects and returns the compositor to measure performance metrics.
 ui::Compositor* GetSelectedCompositorForPerformanceMetrics();
+
+// Check if a desk is being dragged.
+ASH_EXPORT bool IsDraggingAnyDesk();
+
+// Move an item at |old_index| to |new_index|.
+template <typename T>
+ASH_EXPORT void ReorderItem(std::vector<T>& items,
+                            int old_index,
+                            int new_index) {
+  const int items_size = static_cast<int>(items.size());
+
+  DCHECK_GE(old_index, 0);
+  DCHECK_LT(old_index, items_size);
+  DCHECK_GE(new_index, 0);
+  DCHECK_LT(new_index, items_size);
+
+  if (old_index == new_index)
+    return;
+
+  auto start_iter = items.begin();
+  const int step = old_index < new_index ? 1 : -1;
+
+  for (auto iter = start_iter + old_index; iter != start_iter + new_index;
+       iter += step) {
+    std::iter_swap(iter, iter + step);
+  }
+}
 
 }  // namespace desks_util
 

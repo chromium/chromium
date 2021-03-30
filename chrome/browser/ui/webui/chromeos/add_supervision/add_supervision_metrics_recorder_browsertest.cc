@@ -26,6 +26,7 @@ class AddSupervisionMetricsRecorderTest : public InProcessBrowserTest {
   ~AddSupervisionMetricsRecorderTest() override = default;
 
   void SetUpOnMainThread() override {
+    identity_test_env_ = std::make_unique<signin::IdentityTestEnvironment>();
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     test_web_ui_.set_web_contents(web_contents);
@@ -43,20 +44,17 @@ class AddSupervisionMetricsRecorderTest : public InProcessBrowserTest {
   }
 
   void CloseAddSupervisionDialog() {
-    bool out_close_dialog =
-        AddSupervisionDialog::GetInstance()->DeprecatedOnDialogCloseRequested();
-    EXPECT_TRUE(out_close_dialog);
+    AddSupervisionDialog::GetInstance()->OnDialogWillClose();
     CloseNowForTesting();
   }
 
   void NotifySupervisionEnabled() {
-    signin::IdentityTestEnvironment identity_test_env;
     mojo::PendingReceiver<add_supervision::mojom::AddSupervisionHandler>
         receiver;
     AddSupervisionUI add_supervision_ui(&test_web_ui_);
     AddSupervisionHandler add_supervision_handler(
         std::move(receiver), &test_web_ui_,
-        identity_test_env.identity_manager(), &add_supervision_ui);
+        identity_test_env_->identity_manager(), &add_supervision_ui);
     add_supervision_handler.NotifySupervisionEnabled();
   }
 
@@ -68,6 +66,7 @@ class AddSupervisionMetricsRecorderTest : public InProcessBrowserTest {
  private:
   DISALLOW_COPY_AND_ASSIGN(AddSupervisionMetricsRecorderTest);
 
+  std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
   content::TestWebUI test_web_ui_;
 };
 

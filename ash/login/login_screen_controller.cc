@@ -11,6 +11,7 @@
 #include "ash/login/ui/lock_screen.h"
 #include "ash/login/ui/login_data_dispatcher.h"
 #include "ash/public/cpp/ash_pref_names.h"
+#include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "ash/public/cpp/login_screen_client.h"
 #include "ash/public/cpp/toast_data.h"
 #include "ash/root_window_controller.h"
@@ -163,14 +164,14 @@ void LoginScreenController::AuthenticateUserWithChallengeResponse(
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-bool LoginScreenController::ValidateParentAccessCode(
+ParentCodeValidationResult LoginScreenController::ValidateParentAccessCode(
     const AccountId& account_id,
     base::Time validation_time,
     const std::string& code) {
   DCHECK(!validation_time.is_null());
 
   if (!client_)
-    return false;
+    return ParentCodeValidationResult::kInternalError;
 
   return client_->ValidateParentAccessCode(account_id, code, validation_time);
 }
@@ -280,7 +281,7 @@ LoginScreenModel* LoginScreenController::GetModel() {
 void LoginScreenController::ShowKioskAppError(const std::string& message) {
   ToastData toast_data(
       "KioskAppError", base::UTF8ToUTF16(message), -1 /*duration_ms*/,
-      base::Optional<base::string16>(base::string16()) /*dismiss_text*/,
+      base::Optional<std::u16string>(std::u16string()) /*dismiss_text*/,
       true /*visible_on_lock_screen*/);
   Shell::Get()->toast_manager()->Show(toast_data);
 }
@@ -371,7 +372,7 @@ void LoginScreenController::ClearSecurityTokenPinRequest() {
   security_token_request_controller_.ClosePinUi();
 }
 bool LoginScreenController::SetLoginShelfGestureHandler(
-    const base::string16& nudge_text,
+    const std::u16string& nudge_text,
     const base::RepeatingClosure& fling_callback,
     base::OnceClosure exit_callback) {
   return Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
@@ -387,11 +388,13 @@ void LoginScreenController::ClearLoginShelfGestureHandler() {
 }
 
 void LoginScreenController::ShowLockScreen() {
+  CHECK(!LockScreen::HasInstance());
   OnShow();
   LockScreen::Show(LockScreen::ScreenType::kLock);
 }
 
 void LoginScreenController::ShowLoginScreen() {
+  CHECK(!LockScreen::HasInstance());
   // Login screen can only be used during login.
   session_manager::SessionState session_state =
       Shell::Get()->session_controller()->GetSessionState();
@@ -476,6 +479,13 @@ void LoginScreenController::OnFocusLeavingSystemTray(bool reverse) {
   if (!client_)
     return;
   client_->OnFocusLeavingSystemTray(reverse);
+}
+
+void LoginScreenController::OnLockScreenDestroyed() {
+  DCHECK_EQ(authentication_stage_, AuthenticationStage::kIdle);
+
+  // Still handle it to avoid crashes during Login/Lock/Unlock flows.
+  authentication_stage_ = AuthenticationStage::kIdle;
 }
 
 void LoginScreenController::NotifyLoginScreenShown() {

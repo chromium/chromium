@@ -6,6 +6,7 @@
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_SUBRESOURCE_FILTER_OBSERVER_TEST_UTILS_H_
 
 #include <map>
+#include <set>
 #include <utility>
 
 #include "base/macros.h"
@@ -43,10 +44,9 @@ class TestSubresourceFilterObserver : public SubresourceFilterObserver,
       const mojom::ActivationState& activation_state) override;
   void OnSubframeNavigationEvaluated(
       content::NavigationHandle* navigation_handle,
-      LoadPolicy load_policy,
-      bool is_ad_subframe) override;
-  void OnAdSubframeDetected(
-      content::RenderFrameHost* render_frame_host) override;
+      LoadPolicy load_policy) override;
+  void OnIsAdSubframeChanged(content::RenderFrameHost* render_frame_host,
+                             bool is_ad_subframe) override;
 
   // content::WebContentsObserver
   void DidFinishNavigation(
@@ -55,7 +55,9 @@ class TestSubresourceFilterObserver : public SubresourceFilterObserver,
   base::Optional<mojom::ActivationLevel> GetPageActivation(
       const GURL& url) const;
   base::Optional<LoadPolicy> GetSubframeLoadPolicy(const GURL& url) const;
-  base::Optional<bool> GetIsAdSubframe(int frame_tree_node_id) const;
+
+  bool GetIsAdSubframe(int frame_tree_node_id) const;
+
   base::Optional<mojom::ActivationLevel> GetPageActivationForLastCommittedLoad()
       const;
 
@@ -66,7 +68,9 @@ class TestSubresourceFilterObserver : public SubresourceFilterObserver,
 
  private:
   std::map<GURL, LoadPolicy> subframe_load_evaluations_;
-  std::map<int, bool> ad_subframe_evaluations_;
+
+  // Set of FrameTreeNode IDs representing frames tagged as ads.
+  std::set<int> ad_frames_;
 
   std::map<GURL, mojom::ActivationLevel> page_activations_;
   std::map<GURL, SafeBrowsingCheck> safe_browsing_checks_;

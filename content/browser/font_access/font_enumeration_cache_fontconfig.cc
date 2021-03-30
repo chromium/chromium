@@ -88,7 +88,8 @@ void FontEnumerationCacheFontconfig::PrepareFontEnumerationCache() {
   auto font_enumeration_table = std::make_unique<blink::FontEnumerationTable>();
 
   std::unique_ptr<FcObjectSet, decltype(&FcObjectSetDestroy)> object_set(
-      FcObjectSetBuild(FC_POSTSCRIPT_NAME, FC_FULLNAME, FC_FAMILY, nullptr),
+      FcObjectSetBuild(FC_POSTSCRIPT_NAME, FC_FULLNAME, FC_FAMILY, FC_STYLE,
+                       nullptr),
       FcObjectSetDestroy);
 
   std::unique_ptr<FcFontSet, decltype(&FcFontSetDestroy)> fontset(
@@ -105,6 +106,7 @@ void FontEnumerationCacheFontconfig::PrepareFontEnumerationCache() {
     char* postscript_name;
     char* full_name;
     char* family;
+    char* style;
     if (FcPatternGetString(fontset->fonts[i], FC_POSTSCRIPT_NAME, 0,
                            reinterpret_cast<FcChar8**>(&postscript_name)) !=
             FcResultMatch ||
@@ -113,6 +115,9 @@ void FontEnumerationCacheFontconfig::PrepareFontEnumerationCache() {
             FcResultMatch ||
         FcPatternGetString(fontset->fonts[i], FC_FAMILY, 0,
                            reinterpret_cast<FcChar8**>(&family)) !=
+            FcResultMatch ||
+        FcPatternGetString(fontset->fonts[i], FC_STYLE, 0,
+                           reinterpret_cast<FcChar8**>(&style)) !=
             FcResultMatch) {
       // Skip incomplete or malformed fonts.
       ++incomplete_count;
@@ -131,6 +136,7 @@ void FontEnumerationCacheFontconfig::PrepareFontEnumerationCache() {
     metadata.set_postscript_name(postscript_name);
     metadata.set_full_name(full_name);
     metadata.set_family(family);
+    metadata.set_style(style);
 
     blink::FontEnumerationTable_FontMetadata* added_font_meta =
         font_enumeration_table->add_fonts();

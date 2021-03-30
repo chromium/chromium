@@ -34,7 +34,7 @@ class ValidationMessageOverlayDelegateTest : public PaintTestConfigurations,
     // an extra step is required to ensure that the system font is configured.
     // See https://crbug.com/969622
     blink::WebFontRendering::SetMenuFontMetrics(
-        base::ASCIIToUTF16("Arial").c_str(), 12);
+        blink::WebString::FromASCII("Arial"), 12);
   }
 #endif
 };

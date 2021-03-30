@@ -230,10 +230,10 @@ TEST(JsonSchemaCompilerChoicesTest, NestedChoices) {
     EXPECT_FALSE(obj->as_integer);
     EXPECT_FALSE(obj->as_choice1);
     ASSERT_TRUE(obj->as_choice2);
-    ASSERT_TRUE(obj->as_choice2->as_double);
+    ASSERT_TRUE(obj->as_choice2->as_double_);
     EXPECT_FALSE(obj->as_choice2->as_choice_type);
     EXPECT_FALSE(obj->as_choice2->as_choice_types);
-    EXPECT_EQ(42.0, *obj->as_choice2->as_double);
+    EXPECT_EQ(42.0, *obj->as_choice2->as_double_);
 
     EXPECT_EQ(value, *obj->ToValue());
   }
@@ -248,7 +248,7 @@ TEST(JsonSchemaCompilerChoicesTest, NestedChoices) {
     EXPECT_FALSE(obj->as_integer);
     EXPECT_FALSE(obj->as_choice1);
     ASSERT_TRUE(obj->as_choice2);
-    EXPECT_FALSE(obj->as_choice2->as_double);
+    EXPECT_FALSE(obj->as_choice2->as_double_);
     ASSERT_TRUE(obj->as_choice2->as_choice_type);
     EXPECT_FALSE(obj->as_choice2->as_choice_types);
     {
@@ -278,7 +278,7 @@ TEST(JsonSchemaCompilerChoicesTest, NestedChoices) {
     EXPECT_FALSE(obj->as_integer);
     EXPECT_FALSE(obj->as_choice1);
     ASSERT_TRUE(obj->as_choice2);
-    EXPECT_FALSE(obj->as_choice2->as_double);
+    EXPECT_FALSE(obj->as_choice2->as_double_);
     EXPECT_FALSE(obj->as_choice2->as_choice_type);
     ASSERT_TRUE(obj->as_choice2->as_choice_types);
     // Bleh too much effort to test everything.

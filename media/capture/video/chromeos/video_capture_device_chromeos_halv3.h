@@ -7,7 +7,9 @@
 
 #include <memory>
 
+#include "media/capture/video/chromeos/camera_device_context.h"
 #include "media/capture/video/video_capture_device.h"
+#include "media/capture/video/video_capture_device_descriptor.h"
 
 namespace media {
 
@@ -17,8 +19,9 @@ class VideoCaptureDeviceChromeOSDelegate;
 class CAPTURE_EXPORT VideoCaptureDeviceChromeOSHalv3 final
     : public VideoCaptureDevice {
  public:
-  explicit VideoCaptureDeviceChromeOSHalv3(
-      std::unique_ptr<VideoCaptureDeviceChromeOSDelegate> delegate);
+  VideoCaptureDeviceChromeOSHalv3(
+      VideoCaptureDeviceChromeOSDelegate* delegate,
+      const VideoCaptureDeviceDescriptor& vcd_descriptor);
 
   ~VideoCaptureDeviceChromeOSHalv3() final;
 
@@ -32,7 +35,9 @@ class CAPTURE_EXPORT VideoCaptureDeviceChromeOSHalv3 final
                        SetPhotoOptionsCallback callback) final;
 
  private:
-  std::unique_ptr<VideoCaptureDeviceChromeOSDelegate> vcd_delegate_;
+  VideoCaptureDeviceChromeOSDelegate* vcd_delegate_;
+
+  ClientType client_type_;
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(VideoCaptureDeviceChromeOSHalv3);
 };

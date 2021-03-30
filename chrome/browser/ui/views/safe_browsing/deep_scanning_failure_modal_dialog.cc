@@ -13,6 +13,7 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace safe_browsing {
@@ -35,6 +36,7 @@ DeepScanningFailureModalDialog::DeepScanningFailureModalDialog(
     base::OnceClosure cancel_callback,
     base::OnceClosure open_now_callback)
     : open_now_callback_(std::move(open_now_callback)) {
+  SetModalType(ui::MODAL_TYPE_CHILD);
   SetTitle(IDS_DEEP_SCANNING_TIMED_OUT_DIALOG_TITLE);
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(
@@ -88,8 +90,7 @@ bool DeepScanningFailureModalDialog::ShouldShowCloseButton() const {
   return false;
 }
 
-ui::ModalType DeepScanningFailureModalDialog::GetModalType() const {
-  return ui::MODAL_TYPE_CHILD;
-}
+BEGIN_METADATA(DeepScanningFailureModalDialog, views::DialogDelegateView)
+END_METADATA
 
 }  // namespace safe_browsing

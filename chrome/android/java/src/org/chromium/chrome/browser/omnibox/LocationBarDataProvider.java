@@ -14,7 +14,6 @@ import androidx.annotation.StringRes;
 
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.toolbar.NewTabPageDelegate;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 
 /**
@@ -44,6 +43,8 @@ public interface LocationBarDataProvider {
 
         default void onTitleChanged(){};
         default void onUrlChanged(){};
+
+        default void hintZeroSuggestRefresh(){};
     }
 
     /** Adds an observer of changes to LocationBarDataProvider's data. */
@@ -100,9 +101,6 @@ public interface LocationBarDataProvider {
 
     /** Returns whether the page currently shown is an offline page. */
     boolean isOfflinePage();
-
-    /** Returns whether the page currently shown is a preview. */
-    boolean isPreview();
 
     /** Returns whether the page currently shown is a paint preview. */
     default boolean isPaintPreview() {

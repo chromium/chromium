@@ -13,9 +13,9 @@
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "device/vr/openxr/context_provider_callbacks.h"
 #include "device/vr/openxr/openxr_anchor_manager.h"
-#include "device/vr/openxr/openxr_anchor_request.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/windows/compositor_base.h"
+#include "gpu/command_buffer/client/gles2_interface.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -26,12 +26,13 @@
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
-struct XrView;
+namespace gfx {
+class GpuFence;
+}  // namespace gfx
 
 namespace device {
 
 class OpenXrApiWrapper;
-class OpenXRInputHelper;
 
 class OpenXrRenderLoop : public XRCompositorCommon,
                          public mojom::XREnvironmentIntegrationProvider,
@@ -48,13 +49,16 @@ class OpenXrRenderLoop : public XRCompositorCommon,
  private:
   // XRCompositorCommon:
   void ClearPendingFrameInternal() override;
+  bool IsUsingSharedImages() const override;
+  void SubmitFrameDrawnIntoTexture(int16_t frame_index,
+                                   const gpu::SyncToken&,
+                                   base::TimeDelta time_waited) override;
 
   // XRDeviceAbstraction:
   mojom::XRFrameDataPtr GetNextFrameData() override;
-  bool StartRuntime() override;
+  void StartRuntime(StartRuntimeCallback start_runtime_callback) override;
   void StopRuntime() override;
   void OnSessionStart() override;
-  bool PreComposite() override;
   bool HasSessionEnded() override;
   bool SubmitCompositedFrame() override;
   void EnableSupportedFeatures(
@@ -77,14 +81,11 @@ class OpenXrRenderLoop : public XRCompositorCommon,
                  mojom::VREyeParametersPtr* eye) const;
   void UpdateStageParameters();
 
-  void DisposeActiveAnchorCallbacks();
-
   // XREnvironmentIntegrationProvider
   void GetEnvironmentIntegrationProvider(
       mojo::PendingAssociatedReceiver<
           device::mojom::XREnvironmentIntegrationProvider> environment_provider)
       override;
-
   void SubscribeToHitTest(
       mojom::XRNativeOriginInformationPtr native_origin_information,
       const std::vector<mojom::EntityTypeForHitTest>& entity_types,
@@ -113,37 +114,23 @@ class OpenXrRenderLoop : public XRCompositorCommon,
       OpenXrAnchorManager* anchor_manager,
       const std::vector<mojom::XRInputSourceStatePtr>& input_state);
 
-  // An XrPosef with the space it is relative to
-  struct XrLocation {
-    XrPosef pose;
-    XrSpace space;
-  };
-  base::Optional<XrLocation> GetXrLocationFromNativeOriginInformation(
-      const OpenXrAnchorManager* anchor_manager,
-      const mojom::XRNativeOriginInformation& native_origin_information,
-      const gfx::Transform& native_origin_from_anchor,
-      const std::vector<mojom::XRInputSourceStatePtr>& input_state) const;
-  base::Optional<XrLocation> GetXrLocationFromReferenceSpace(
-      const mojom::XRNativeOriginInformation& native_origin_information,
-      const gfx::Transform& native_origin_from_anchor) const;
-
-  // viz::ContextLostObserver
-  void StartContextProviderIfNeeded();
+  void StartContextProviderIfNeeded(
+      StartRuntimeCallback start_runtime_callback);
   void OnContextProviderCreated(
+      StartRuntimeCallback start_runtime_callback,
       scoped_refptr<viz::ContextProvider> context_provider);
   void OnContextLostCallback(
       scoped_refptr<viz::ContextProvider> context_provider);
+
+  void OnWebXrTokenSignaled(int16_t frame_index,
+                            GLuint id,
+                            std::unique_ptr<gfx::GpuFence> gpu_fence);
 
   // Owned by OpenXrStatics
   XrInstance instance_;
   const OpenXrExtensionHelper& extension_helper_;
 
   std::unique_ptr<OpenXrApiWrapper> openxr_;
-  std::unique_ptr<OpenXRInputHelper> input_helper_;
-
-  bool anchors_enabled_{false};
-
-  std::vector<CreateAnchorRequest> create_anchor_requests_;
 
   base::RepeatingCallback<void(mojom::VRDisplayInfoPtr)>
       on_display_info_changed_;

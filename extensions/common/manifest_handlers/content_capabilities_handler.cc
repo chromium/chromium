@@ -51,7 +51,7 @@ ContentCapabilitiesHandler::~ContentCapabilitiesHandler() {
 }
 
 bool ContentCapabilitiesHandler::Parse(Extension* extension,
-                                       base::string16* error) {
+                                       std::u16string* error) {
   std::unique_ptr<ContentCapabilitiesInfo> info(new ContentCapabilitiesInfo);
 
   const base::Value* value = NULL;

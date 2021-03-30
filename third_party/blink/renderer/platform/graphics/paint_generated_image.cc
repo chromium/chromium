@@ -15,13 +15,13 @@ void PaintGeneratedImage::Draw(cc::PaintCanvas* canvas,
                                const PaintFlags& flags,
                                const FloatRect& dest_rect,
                                const FloatRect& src_rect,
+                               const SkSamplingOptions&,
                                RespectImageOrientationEnum,
                                ImageClampingMode,
                                ImageDecodingMode) {
   PaintCanvasAutoRestore ar(canvas, true);
   canvas->clipRect(dest_rect);
-  canvas->concat(SkMatrix::MakeRectToRect(src_rect, dest_rect,
-                                          SkMatrix::kFill_ScaleToFit));
+  canvas->concat(SkMatrix::RectToRect(src_rect, dest_rect));
   SkRect bounds = src_rect;
   canvas->saveLayer(&bounds, &flags);
   canvas->drawPicture(record_);

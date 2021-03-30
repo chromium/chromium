@@ -24,6 +24,7 @@
 #include "extensions/common/features/feature.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/feature_session_type.mojom.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 
 namespace extensions {
 
@@ -67,7 +68,7 @@ class SimpleFeature : public Feature {
   // extension::Feature:
   Availability IsAvailableToManifest(const HashedExtensionId& hashed_id,
                                      Manifest::Type type,
-                                     Manifest::Location location,
+                                     mojom::ManifestLocation location,
                                      int manifest_version,
                                      Platform platform) const override;
   Availability IsAvailableToContext(const Extension* extension,
@@ -83,7 +84,7 @@ class SimpleFeature : public Feature {
                           const char* const array[],
                           size_t array_length);
 
-  // Similar to Manifest::Location, these are the classes of locations
+  // Similar to mojom::ManifestLocation, these are the classes of locations
   // supported in feature files. These should only be used in this class and in
   // generated files.
   enum Location {
@@ -193,7 +194,7 @@ class SimpleFeature : public Feature {
   static bool IsIdInList(const HashedExtensionId& hashed_id,
                          const std::vector<std::string>& list);
 
-  bool MatchesManifestLocation(Manifest::Location manifest_location) const;
+  bool MatchesManifestLocation(mojom::ManifestLocation manifest_location) const;
 
   // Checks if the feature is allowed in a session of type |session_type|
   // (based on session type feature restrictions).
@@ -217,7 +218,7 @@ class SimpleFeature : public Feature {
   // properties.
   Availability GetManifestAvailability(const HashedExtensionId& hashed_id,
                                        Manifest::Type type,
-                                       Manifest::Location location,
+                                       mojom::ManifestLocation location,
                                        int manifest_version) const;
 
   // Returns the availability of the feature with respect to a given context.

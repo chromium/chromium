@@ -1,3 +1,4 @@
+afakhry@chromium.org
 jamescook@chromium.org
 oshima@chromium.org
 sky@chromium.org
@@ -7,6 +8,8 @@ per-file chrome_keyboard_ui*=yhanada@chromium.org
 per-file *login*=file://ash/login/OWNERS
 per-file keyboard_*=yhanada@chromium.org
 per-file *wallpaper*=file://ash/wallpaper/OWNERS
+per-file *capture_mode*=file://ash/capture_mode/OWNERS
+per-file recording_service_browsertest.cc=file://ash/capture_mode/OWNERS
 
 # Must be updated when a new OS settings section is added.
 per-file chrome_new_window_client*=file://chrome/browser/resources/settings/chromeos/OWNERS

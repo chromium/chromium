@@ -141,7 +141,7 @@ ChromeUpdateClientConfig::ChromeUpdateClientConfig(
   DCHECK(pref_service_);
 }
 
-int ChromeUpdateClientConfig::InitialDelay() const {
+double ChromeUpdateClientConfig::InitialDelay() const {
   return impl_.InitialDelay();
 }
 
@@ -179,7 +179,7 @@ base::Version ChromeUpdateClientConfig::GetBrowserVersion() const {
 }
 
 std::string ChromeUpdateClientConfig::GetChannel() const {
-  return chrome::GetChannelName();
+  return chrome::GetChannelName(chrome::WithExtendedStable(true));
 }
 
 std::string ChromeUpdateClientConfig::GetBrand() const {

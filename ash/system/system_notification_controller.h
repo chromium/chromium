@@ -16,10 +16,10 @@ class AutoConnectNotifierTest;
 class CapsLockNotificationController;
 class GestureEducationNotificationController;
 class CastNotificationController;
+class CellularSetupNotifier;
 class PowerNotificationController;
 class ScreenSecurityNotificationController;
 class SessionLimitNotificationController;
-class SupervisedNotificationController;
 class TracingNotificationController;
 class UpdateNotificationController;
 class WifiToggleNotificationController;
@@ -32,16 +32,17 @@ class SystemNotificationController {
 
  private:
   friend class AutoConnectNotifierTest;
+  friend class CellularSetupNotifierTest;
   friend class UpdateNotificationControllerTest;
   const std::unique_ptr<AutoConnectNotifier> auto_connect_;
   const std::unique_ptr<CapsLockNotificationController> caps_lock_;
   const std::unique_ptr<CastNotificationController> cast_;
+  const std::unique_ptr<CellularSetupNotifier> cellular_setup_notifier_;
   const std::unique_ptr<GestureEducationNotificationController>
       gesture_education_;
   const std::unique_ptr<PowerNotificationController> power_;
   const std::unique_ptr<ScreenSecurityNotificationController> screen_security_;
   const std::unique_ptr<SessionLimitNotificationController> session_limit_;
-  const std::unique_ptr<SupervisedNotificationController> supervised_;
   const std::unique_ptr<TracingNotificationController> tracing_;
   const std::unique_ptr<UpdateNotificationController> update_;
   const std::unique_ptr<WifiToggleNotificationController> wifi_toggle_;

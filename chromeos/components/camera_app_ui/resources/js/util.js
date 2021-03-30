@@ -2,18 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {browserProxy} from './browser_proxy/browser_proxy.js';
+import * as animate from './animation.js';
 import {assertInstanceof} from './chrome_util.js';
 import * as dom from './dom.js';
-import {reportError} from './error.js';
 import * as Comlink from './lib/comlink.js';
+import * as loadTimeData from './models/load_time_data.js';
 import * as state from './state.js';
 import * as tooltip from './tooltip.js';
 import {
-  ErrorLevel,
-  ErrorType,
   Facing,
-  UntrustedOrigin,  // eslint-disable-line no-unused-vars
 } from './type.js';
 import {WaitableEvent} from './waitable_event.js';
 
@@ -30,69 +27,6 @@ export function newDrawingCanvas({width, height}) {
   const ctx =
       assertInstanceof(canvas.getContext('2d'), CanvasRenderingContext2D);
   return {canvas, ctx};
-}
-
-/**
- * Cancels animating the element by removing 'animate' class.
- * @param {!HTMLElement} element Element for canceling animation.
- * @return {!Promise} Promise resolved when ongoing animation is canceled and
- *     next animation can be safely applied.
- */
-export function animateCancel(element) {
-  element.classList.remove('animate');
-  element.classList.add('cancel-animate');
-  /** @suppress {suspiciousCode} */
-  element.offsetWidth;  // Force calculation to re-apply animation.
-  element.classList.remove('cancel-animate');
-  // Assumes transitioncancel, transitionend, animationend events from previous
-  // animation are all cleared after requestAnimationFrame().
-  return new Promise((r) => requestAnimationFrame(r));
-}
-
-/**
- * Waits for animation completed.
- * @param {!HTMLElement} element Element to be animated.
- * @return {!Promise} Promise is resolved when animation is completed or
- *     cancelled.
- */
-function waitAnimationCompleted(element) {
-  return new Promise((resolve) => {
-    let animationCount = 0;
-    const onStart = (event) =>
-        void (event.target === element && animationCount++);
-    const onFinished = (event, callback) => {
-      if (event.target !== element || --animationCount !== 0) {
-        return;
-      }
-      events.forEach(([e, fn]) => element.removeEventListener(e, fn));
-      callback();
-    };
-    const events = [
-      ['transitionrun', onStart], ['animationstart', onStart],
-      ['transitionend', (event) => onFinished(event, resolve)],
-      ['animationend', (event) => onFinished(event, resolve)],
-      ['transitioncancel', (event) => onFinished(event, resolve)],
-      // animationcancel is not implemented on chrome.
-    ];
-    events.forEach(([e, fn]) => element.addEventListener(e, fn));
-  });
-}
-
-/**
- * Animates the element once by applying 'animate' class.
- * @param {!HTMLElement} element Element to be animated.
- * @param {function()=} callback Callback called on completion.
- */
-export function animateOnce(element, callback) {
-  animateCancel(element).then(() => {
-    element.classList.add('animate');
-    waitAnimationCompleted(element).finally(() => {
-      element.classList.remove('animate');
-      if (callback) {
-        callback();
-      }
-    });
-  });
 }
 
 /**
@@ -133,14 +67,6 @@ export function getShortcutIdentifier(event) {
 }
 
 /**
- * Makes the element unfocusable by mouse.
- * @param {!HTMLElement} element Element to be unfocusable.
- */
-export function makeUnfocusableByMouse(element) {
-  element.addEventListener('mousedown', (event) => event.preventDefault());
-}
-
-/**
  * Opens help.
  */
 export function openHelp() {
@@ -154,16 +80,16 @@ export function openHelp() {
  *     up with.
  */
 export function setupI18nElements(rootElement) {
-  const getElements = (attr) => rootElement.querySelectorAll('[' + attr + ']');
+  const getElements = (attr) =>
+      dom.getAllFrom(rootElement, '[' + attr + ']', HTMLElement);
   const getMessage = (element, attr) =>
-      browserProxy.getI18nMessage(element.getAttribute(attr));
+      loadTimeData.getI18nMessage(element.getAttribute(attr));
   const setAriaLabel = (element, attr) =>
       element.setAttribute('aria-label', getMessage(element, attr));
 
-  getElements('i18n-content')
+  getElements('i18n-text')
       .forEach(
-          (element) => element.textContent =
-              getMessage(element, 'i18n-content'));
+          (element) => element.textContent = getMessage(element, 'i18n-text'));
   getElements('i18n-tooltip-true')
       .forEach(
           (element) => element.setAttribute(
@@ -202,74 +128,6 @@ export function getDefaultFacing() {
 }
 
 /**
- * Scales the input picture to target width and height with respect to original
- * aspect ratio.
- * @param {!Blob} blob Blob of photo or video to be scaled.
- * @param {boolean} isVideo Picture is a video.
- * @param {number} width Target width to be scaled to.
- * @param {number=} height Target height to be scaled to. In default, set to
- *     corresponding rounded height with respect to target width and aspect
- *     ratio of input picture.
- * @return {!Promise<!Blob>} Promise for the result.
- */
-export async function scalePicture(blob, isVideo, width, height = undefined) {
-  const element = isVideo ? dom.create('video', HTMLVideoElement) :
-                            dom.create('img', HTMLImageElement);
-  if (isVideo) {
-    element.preload = 'auto';
-  }
-  try {
-    await new Promise((resolve, reject) => {
-      element.addEventListener(isVideo ? 'canplay' : 'load', resolve);
-      element.addEventListener('error', () => {
-        if (isVideo) {
-          let msg = 'Failed to load video';
-          /**
-           * https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/error
-           * @type {?MediaError}
-           */
-          const err = element.error;
-          if (err !== null) {
-            msg += `: ${err.message}`;
-          }
-          reject(new Error(msg));
-        } else {
-          reject(new Error('Failed to load image'));
-        }
-      });
-      element.src = URL.createObjectURL(blob);
-    });
-    if (height === undefined) {
-      const ratio = isVideo ? element.videoHeight / element.videoWidth :
-                              element.height / element.width;
-      height = Math.round(width * ratio);
-    }
-    const {canvas, ctx} = newDrawingCanvas({width, height});
-    ctx.drawImage(element, 0, 0, width, height);
-
-    /**
-     * @type {!Uint8ClampedArray} A one-dimensional pixels array in RGBA order.
-     */
-    const data = ctx.getImageData(0, 0, width, height).data;
-    if (data.every((byte) => byte === 0)) {
-      reportError(
-          ErrorType.BROKEN_THUMBNAIL, ErrorLevel.ERROR,
-          new Error('The thumbnail content is broken.'));
-      // Do not throw an error here. A black thumbnail is still better than no
-      // thumbnail to let user open the corresponding picutre in gallery.
-    }
-
-    return new Promise((resolve) => {
-      // TODO(b/174190121): Patch important exif entries from input blob to
-      // result blob.
-      canvas.toBlob(resolve, 'image/jpeg');
-    });
-  } finally {
-    URL.revokeObjectURL(element.src);
-  }
-}
-
-/**
  * Toggle checked value of element.
  * @param {!HTMLInputElement} element
  * @param {boolean} checked
@@ -289,7 +147,7 @@ export function bindElementAriaLabelWithState(
   const update = (value) => {
     const label = value ? onLabel : offLabel;
     element.setAttribute('i18n-label', label);
-    element.setAttribute('aria-label', browserProxy.getI18nMessage(label));
+    element.setAttribute('aria-label', loadTimeData.getI18nMessage(label));
   };
   update(state.get(s));
   state.addObserver(s, update);
@@ -312,7 +170,7 @@ export function setInkdropEffect(el) {
     el.style.setProperty('--drop-x', `${dropX}px`);
     el.style.setProperty('--drop-y', `${dropY}px`);
     el.style.setProperty('--drop-radius', `${radius}px`);
-    animateOnce(el);
+    animate.play(el);
   });
 }
 
@@ -333,14 +191,15 @@ export function instantiateTemplate(selector) {
  * Creates JS module by given |scriptUrl| under untrusted context with given
  * origin and returns its proxy.
  * @param {string} scriptUrl The URL of the script to load.
- * @param {!UntrustedOrigin} origin The origin of the untrusted context.
  * @return {!Promise<!Object>}
  */
-export async function createUntrustedJSModule(scriptUrl, origin) {
+export async function createUntrustedJSModule(scriptUrl) {
   const untrustedPageReady = new WaitableEvent();
   const iFrame = dom.create('iframe', HTMLIFrameElement);
   iFrame.addEventListener('load', () => untrustedPageReady.signal());
-  iFrame.setAttribute('src', `${origin}/views/untrusted_script_loader.html`);
+  iFrame.setAttribute(
+      'src',
+      'chrome-untrusted://camera-app/views/untrusted_script_loader.html');
   iFrame.hidden = true;
   document.body.appendChild(iFrame);
   await untrustedPageReady.wait();

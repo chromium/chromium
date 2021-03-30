@@ -5,13 +5,13 @@
 #include "chrome/browser/ui/views/payments/payment_method_view_controller.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
@@ -101,7 +101,7 @@ class PaymentMethodListItem : public PaymentRequestItemList::Item {
   }
 
   std::unique_ptr<views::View> CreateContentView(
-      base::string16* accessible_content) override {
+      std::u16string* accessible_content) override {
     DCHECK(accessible_content);
     auto card_info_container = std::make_unique<views::View>();
     if (!app_)
@@ -116,13 +116,13 @@ class PaymentMethodListItem : public PaymentRequestItemList::Item {
         views::BoxLayout::CrossAxisAlignment::kStart);
     card_info_container->SetLayoutManager(std::move(box_layout));
 
-    base::string16 label = app_->GetLabel();
+    std::u16string label = app_->GetLabel();
     if (!label.empty())
       card_info_container->AddChildView(new views::Label(label));
-    base::string16 sublabel = app_->GetSublabel();
+    std::u16string sublabel = app_->GetSublabel();
     if (!sublabel.empty())
       card_info_container->AddChildView(new views::Label(sublabel));
-    base::string16 missing_info;
+    std::u16string missing_info;
     if (!app_->IsCompleteForPayment()) {
       missing_info = app_->GetMissingInfoLabel();
       auto missing_info_label = std::make_unique<views::Label>(
@@ -147,7 +147,7 @@ class PaymentMethodListItem : public PaymentRequestItemList::Item {
     }
   }
 
-  base::string16 GetNameForDataType() override {
+  std::u16string GetNameForDataType() override {
     return l10n_util::GetStringUTF16(IDS_PAYMENTS_METHOD_OF_PAYMENT_LABEL);
   }
 
@@ -191,7 +191,7 @@ PaymentMethodViewController::PaymentMethodViewController(
 
 PaymentMethodViewController::~PaymentMethodViewController() {}
 
-base::string16 PaymentMethodViewController::GetSheetTitle() {
+std::u16string PaymentMethodViewController::GetSheetTitle() {
   return l10n_util::GetStringUTF16(
       IDS_PAYMENT_REQUEST_PAYMENT_METHOD_SECTION_NAME);
 }
@@ -219,11 +219,11 @@ bool PaymentMethodViewController::ShouldShowSecondaryButton() {
   return enable_add_card_;
 }
 
-base::string16 PaymentMethodViewController::GetSecondaryButtonLabel() {
+std::u16string PaymentMethodViewController::GetSecondaryButtonLabel() {
   return l10n_util::GetStringUTF16(IDS_PAYMENTS_ADD_CARD);
 }
 
-views::Button::PressedCallback
+PaymentRequestSheetController::ButtonCallback
 PaymentMethodViewController::GetSecondaryButtonCallback() {
   return base::BindRepeating(
       &PaymentRequestDialogView::ShowCreditCardEditor, dialog(),

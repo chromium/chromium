@@ -40,7 +40,7 @@ void AppInfoPanel::OpenLink(const GURL& url) {
 }
 
 std::unique_ptr<views::Label> AppInfoPanel::CreateHeading(
-    const base::string16& text) const {
+    const std::u16string& text) const {
   auto label = std::make_unique<AppInfoLabel>(text);
   label->SetFontList(ui::ResourceBundle::GetSharedInstance().GetFontList(
       ui::ResourceBundle::MediumFont));

@@ -10,12 +10,19 @@
 
 #include <algorithm>
 
-#include "base/allocator/partition_allocator/checked_ptr_support.h"
+#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "build/build_config.h"
 
 #if defined(OS_APPLE)
 #include <mach/vm_page_size.h>
+#endif
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && !defined(OFFICIAL_BUILD)
+// Too expensive for official builds, as it adds cache misses to all
+// allocations. On the other hand, we want wide metrics coverage to get
+// realistic profiles.
+#define PA_THREAD_CACHE_ALLOC_STATS
 #endif
 
 namespace base {
@@ -127,6 +134,16 @@ MaxSystemPagesPerSlotSpan() {
 //
 // QuarantineBitmaps are inserted for partitions that may have PCScan enabled.
 //
+// If refcount_at_end_allocation is enabled, RefcountBitmap(4KiB) is inserted
+// after the Metadata page for BackupRefPtr. The guard pages after the bitmap
+// will be 4KiB.
+//
+//...
+//     | Metadata page (4 KiB) |
+//     | RefcountBitmap (4 KiB)|
+//     | Guard pages (4 KiB)   |
+//...
+//
 // Each slot span is a contiguous range of one or more `PartitionPage`s. Note
 // that slot spans of different sizes may co-exist with one super page. Even
 // slot spans of the same size may support different slot sizes. However, all
@@ -193,7 +210,7 @@ NumPartitionPagesPerSuperPage() {
 // The two are separate on Windows 64 bits, where the first one is 8 bytes, and
 // the second one 16. We could technically return something different for
 // malloc() and operator new(), but this would complicate things, and most of
-// our allocations are presumaly coming from operator new() anyway.
+// our allocations are presumably coming from operator new() anyway.
 //
 // __STDCPP_DEFAULT_NEW_ALIGNMENT__ is C++17. As such, it is not defined on all
 // platforms, as Chrome's requirement is C++14 as of 2020.

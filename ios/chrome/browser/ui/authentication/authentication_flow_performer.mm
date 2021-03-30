@@ -264,7 +264,8 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
         IdentityManagerFactory::GetForBrowserState(browserState);
     base::Optional<AccountInfo> primary_account_info =
         identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
-            identity_manager->GetPrimaryAccountInfo());
+            identity_manager->GetPrimaryAccountInfo(
+                signin::ConsentLevel::kSync));
     DCHECK(primary_account_info);
     NSString* hostedDomain =
         base::SysUTF8ToNSString(primary_account_info->hosted_domain);

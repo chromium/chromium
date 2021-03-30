@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="module">
+import {MockBatteryMonitor} from './resources/mock-battery-monitor.js';
+
+const mock = new MockBatteryMonitor();
+
+function nextEvent(target, name) {
+  return new Promise(
+      resolve => target.addEventListener(name, resolve, {once: true}));
+}
+
+promise_test(async _ => {
+  mock.setBatteryStatus(false, 10, 20, 0.5);
+  const battery = await navigator.getBattery();
+
+  mock.verifyBatteryStatus(battery);
+
+  const events = Promise.all([
+    nextEvent(battery, 'chargingchange'),
+    nextEvent(battery, 'chargingtimechange'),
+    nextEvent(battery, 'dischargingtimechange'),
+    nextEvent(battery, 'levelchange'),
+  ]);
+
+  setTimeout(() => mock.setBatteryStatus(true, 11, 22, 0.6));
+
+  await events;
+  mock.verifyBatteryStatus(battery);
+}, 'event listeners fire as specified');
+</script>
+</body>
+</html>

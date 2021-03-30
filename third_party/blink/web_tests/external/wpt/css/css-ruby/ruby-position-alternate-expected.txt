@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+FAIL ruby-position "" alternate from over assert_true: expected true got false
+FAIL ruby-position "alternate" alternate from over assert_true: expected true got false
+FAIL ruby-position "alternate over" alternate from over assert_true: expected true got false
+FAIL ruby-position "over alternate" alternate from over assert_true: expected true got false
+FAIL ruby-position "alternate under" alternate from under assert_true: expected true got false
+FAIL ruby-position "under alternate" alternate from under assert_true: expected true got false
+FAIL ruby-position alternate from previous ruby text container assert_true: expected true got false
+Harness: the test ran to completion.
+

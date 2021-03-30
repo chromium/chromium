@@ -6,8 +6,8 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -24,6 +24,8 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -39,13 +41,14 @@ constexpr int kPasswordGenerationMaxWidth = 480;
 class PasswordGenerationPopupViewViews::GeneratedPasswordBox
     : public views::View {
  public:
+  METADATA_HEADER(GeneratedPasswordBox);
   GeneratedPasswordBox() = default;
   ~GeneratedPasswordBox() override = default;
 
   // Fills the view with strings provided by |controller|.
   void Init(PasswordGenerationPopupController* controller);
 
-  void UpdatePassword(const base::string16& password) {
+  void UpdatePassword(const std::u16string& password) {
     password_label_->SetText(password);
   }
 
@@ -155,6 +158,11 @@ void PasswordGenerationPopupViewViews::GeneratedPasswordBox::BuildColumnSet(
                         views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
 }
 
+BEGIN_METADATA(PasswordGenerationPopupViewViews,
+               GeneratedPasswordBox,
+               views::View)
+END_METADATA
+
 PasswordGenerationPopupViewViews::PasswordGenerationPopupViewViews(
     PasswordGenerationPopupController* controller,
     views::Widget* parent_widget)
@@ -261,9 +269,8 @@ void PasswordGenerationPopupViewViews::OnPaint(gfx::Canvas* canvas) {
 
 void PasswordGenerationPopupViewViews::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
-  node_data->SetName(
-      base::JoinString({controller_->SuggestedText(), controller_->password()},
-                       base::ASCIIToUTF16(" ")));
+  node_data->SetName(base::JoinString(
+      {controller_->SuggestedText(), controller_->password()}, u" "));
   node_data->SetDescription(controller_->HelpText());
   node_data->role = ax::mojom::Role::kMenuItem;
 }

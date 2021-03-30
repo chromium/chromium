@@ -20,6 +20,7 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view_observer.h"
@@ -54,7 +55,10 @@ gfx::Size GetBoundingSizeForVerticalStack(const gfx::Size& size1,
 // Simple container to bubble child view changes up the view hierarchy.
 class DialogClientView::ButtonRowContainer : public View {
  public:
+  METADATA_HEADER(ButtonRowContainer);
   explicit ButtonRowContainer(DialogClientView* owner) : owner_(owner) {}
+  ButtonRowContainer(const ButtonRowContainer&) = delete;
+  ButtonRowContainer& operator=(const ButtonRowContainer&) = delete;
 
   // View:
   void ChildPreferredSizeChanged(View* child) override {
@@ -66,9 +70,10 @@ class DialogClientView::ButtonRowContainer : public View {
 
  private:
   DialogClientView* const owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ButtonRowContainer);
 };
+
+BEGIN_METADATA(DialogClientView, ButtonRowContainer, View)
+END_METADATA
 
 DialogClientView::DialogClientView(Widget* owner, View* contents_view)
     : ClientView(owner, contents_view),
@@ -160,7 +165,9 @@ void DialogClientView::Layout() {
 bool DialogClientView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   DCHECK_EQ(accelerator.key_code(), ui::VKEY_ESCAPE);
 
-  GetWidget()->CloseWithReason(Widget::ClosedReason::kEscKeyPressed);
+  if (DialogDelegate* delegate = GetDialogDelegate())
+    delegate->CancelDialog();
+
   return true;
 }
 
@@ -245,7 +252,7 @@ void DialogClientView::UpdateDialogButton(LabelButton** member,
   const bool is_default = delegate->GetDefaultDialogButton() == type &&
                           (type != ui::DIALOG_BUTTON_CANCEL ||
                            PlatformStyle::kDialogDefaultButtonCanBeCancel);
-  const base::string16 title = delegate->GetDialogButtonLabel(type);
+  const std::u16string title = delegate->GetDialogButtonLabel(type);
 
   if (*member) {
     LabelButton* button = *member;

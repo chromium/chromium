@@ -44,8 +44,8 @@ class TestAXTreeManager : public AXTreeManager {
 
   // AXTreeManager implementation.
   AXNode* GetNodeFromTree(const AXTreeID tree_id,
-                          const AXNode::AXID node_id) const override;
-  AXNode* GetNodeFromTree(const AXNode::AXID node_id) const override;
+                          const AXNodeID node_id) const override;
+  AXNode* GetNodeFromTree(const AXNodeID node_id) const override;
   void AddObserver(AXTreeObserver* observer) override;
   void RemoveObserver(AXTreeObserver* observer) override;
   AXTreeID GetTreeID() const override;

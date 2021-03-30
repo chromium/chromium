@@ -7,6 +7,7 @@
 
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/supports_user_data.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
@@ -28,9 +29,22 @@ constexpr char kKeyBlockPasswordProtected[] = "block_password_protected";
 constexpr char kKeyBlockLargeFiles[] = "block_large_files";
 constexpr char kKeyBlockUnsupportedFileTypes[] = "block_unsupported_file_types";
 constexpr char kKeyMinimumDataSize[] = "minimum_data_size";
+constexpr char kKeyEnabledEventNames[] = "enabled_event_names";
+constexpr char kKeyCustomMessages[] = "custom_messages";
+constexpr char kKeyCustomMessagesMessage[] = "message";
+constexpr char kKeyCustomMessagesLearnMoreUrl[] = "learn_more_url";
+constexpr char kKeyMimeTypes[] = "mime_types";
+constexpr char kKeyEnterpriseId[] = "enterprise_id";
+
+// A MIME type string that matches all MIME types.
+constexpr char kWildcardMimeType[] = "*";
 
 enum class ReportingConnector {
   SECURITY_EVENT,
+};
+
+enum class FileSystemConnector {
+  SEND_DOWNLOAD_TO_CLOUD,
 };
 
 // Enum representing if an analysis should block further interactions with the
@@ -55,6 +69,8 @@ struct AnalysisSettings {
   bool block_password_protected_files = false;
   bool block_large_files = false;
   bool block_unsupported_file_types = false;
+  std::u16string custom_message_text;
+  GURL custom_message_learn_more_url;
 
   // Minimum text size for BulkDataEntry scans. 0 means no minimum.
   size_t minimum_data_size = 100;
@@ -62,22 +78,51 @@ struct AnalysisSettings {
   // The DM token to be used for scanning. May be empty, for example if this
   // scan is initiated by APP.
   std::string dm_token = "";
+
+  // Indicates if the scan is made at the profile level, or at the browser level
+  // if false.
+  bool per_profile = false;
 };
 
 struct ReportingSettings {
   ReportingSettings();
-  explicit ReportingSettings(GURL url, const std::string& dm_token);
+  ReportingSettings(GURL url, const std::string& dm_token, bool per_profile);
   ReportingSettings(ReportingSettings&&);
   ReportingSettings& operator=(ReportingSettings&&);
   ~ReportingSettings();
 
   GURL reporting_url;
+  std::set<std::string> enabled_event_names;
   std::string dm_token;
+
+  // Indicates if the report should be made for the profile, or the browser if
+  // false.
+  bool per_profile = false;
+};
+
+struct FileSystemSettings {
+  FileSystemSettings();
+  FileSystemSettings(const FileSystemSettings&);
+  FileSystemSettings(FileSystemSettings&&);
+  FileSystemSettings& operator=(const FileSystemSettings&);
+  FileSystemSettings& operator=(FileSystemSettings&&);
+  ~FileSystemSettings();
+
+  std::string service_provider;
+  GURL home;
+  GURL authorization_endpoint;
+  GURL token_endpoint;
+  std::string client_id;
+  std::string client_secret;
+  std::vector<std::string> scopes;
+  size_t max_direct_size;
+  std::set<std::string> mime_types;
 };
 
 // Returns the pref path corresponding to a connector.
 const char* ConnectorPref(AnalysisConnector connector);
 const char* ConnectorPref(ReportingConnector connector);
+const char* ConnectorPref(FileSystemConnector connector);
 const char* ConnectorScopePref(AnalysisConnector connector);
 const char* ConnectorScopePref(ReportingConnector connector);
 

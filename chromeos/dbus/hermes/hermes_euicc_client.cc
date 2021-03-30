@@ -18,12 +18,6 @@
 #include "dbus/property.h"
 #include "third_party/cros_system_api/dbus/hermes/dbus-constants.h"
 
-namespace hermes {
-namespace euicc {
-const char kEidProperty[] = "Eid";
-}  // namespace euicc
-}  // namespace hermes
-
 namespace chromeos {
 
 namespace {
@@ -40,6 +34,7 @@ HermesEuiccClient::Properties::Properties(
                    &installed_carrier_profiles_);
   RegisterProperty(hermes::euicc::kPendingProfilesProperty,
                    &pending_carrier_profiles_);
+  RegisterProperty(hermes::euicc::kPhysicalSlotProperty, &physical_slot_);
 }
 
 HermesEuiccClient::Properties::~Properties() = default;
@@ -88,10 +83,24 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void RequestPendingEvents(const dbus::ObjectPath& euicc_path,
-                            HermesResponseCallback callback) override {
+  void RequestInstalledProfiles(const dbus::ObjectPath& euicc_path,
+                                HermesResponseCallback callback) override {
     dbus::MethodCall method_call(hermes::kHermesEuiccInterface,
-                                 hermes::euicc::kRequestPendingEvents);
+                                 hermes::euicc::kRequestInstalledProfiles);
+    dbus::ObjectProxy* object_proxy = GetOrCreateProperties(euicc_path).first;
+    object_proxy->CallMethodWithErrorResponse(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&HermesEuiccClientImpl::OnHermesStatusResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  void RequestPendingProfiles(const dbus::ObjectPath& euicc_path,
+                              const std::string& root_smds,
+                              HermesResponseCallback callback) override {
+    dbus::MethodCall method_call(hermes::kHermesEuiccInterface,
+                                 hermes::euicc::kRequestPendingProfiles);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(root_smds);
     dbus::ObjectProxy* object_proxy = GetOrCreateProperties(euicc_path).first;
     object_proxy->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
@@ -154,6 +163,8 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
                                 dbus::Response* response,
                                 dbus::ErrorResponse* error_response) {
     if (error_response) {
+      NET_LOG(ERROR) << "Profile install failed with error: "
+                     << error_response->GetErrorName();
       std::move(callback).Run(
           HermesResponseStatusFromErrorName(error_response->GetErrorName()),
           nullptr);
@@ -178,6 +189,8 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
                               dbus::Response* response,
                               dbus::ErrorResponse* error_response) {
     if (error_response) {
+      NET_LOG(ERROR) << "Hermes Euicc operation failed with error: "
+                     << error_response->GetErrorName();
       std::move(callback).Run(
           HermesResponseStatusFromErrorName(error_response->GetErrorName()));
       return;

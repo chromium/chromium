@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/time/time.h"
 #include "cc/layers/deadline_policy.h"
 #include "components/viz/client/frame_evictor.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -38,7 +39,8 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
   class Client {
    public:
     virtual ~Client() {}
-    virtual void OnFrameTokenChanged(uint32_t frame_token) = 0;
+    virtual void OnFrameTokenChanged(uint32_t frame_token,
+                                     base::TimeTicks activation_time) = 0;
     virtual void WasEvicted() = 0;
   };
 
@@ -139,7 +141,8 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
 
   // viz::HostFrameSinkClient implementation.
   void OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override;
-  void OnFrameTokenChanged(uint32_t frame_token) override;
+  void OnFrameTokenChanged(uint32_t frame_token,
+                           base::TimeTicks activation_time) override;
 
   void ProcessCopyOutputRequest(
       std::unique_ptr<viz::CopyOutputRequest> request);

@@ -20,10 +20,6 @@ extern const base::FilePath::CharType kBrowserProcessExecutableName[];
 extern const base::FilePath::CharType kHelperProcessExecutableName[];
 extern const base::FilePath::CharType kBrowserProcessExecutablePath[];
 extern const base::FilePath::CharType kHelperProcessExecutablePath[];
-extern const base::FilePath::CharType kBrowserProcessExecutableNameChromium[];
-extern const base::FilePath::CharType kHelperProcessExecutableNameChromium[];
-extern const base::FilePath::CharType kBrowserProcessExecutablePathChromium[];
-extern const base::FilePath::CharType kHelperProcessExecutablePathChromium[];
 #if defined(OS_MAC)
 // NOTE: if you change the value of kFrameworkName, please don't forget to
 // update components/test/run_all_unittests.cc as well.
@@ -55,7 +51,6 @@ extern const base::FilePath::CharType kExtensionsCookieFilename[];
 extern const base::FilePath::CharType kFeatureEngagementTrackerStorageDirname[];
 extern const base::FilePath::CharType kFirstRunSentinel[];
 extern const base::FilePath::CharType kGCMStoreDirname[];
-extern const base::FilePath::CharType kHeavyAdInterventionOptOutDBFilename[];
 extern const base::FilePath::CharType kLocalStateFilename[];
 extern const base::FilePath::CharType kMediaCacheDirname[];
 extern const base::FilePath::CharType kNetworkPersistentStateFilename[];
@@ -117,9 +112,6 @@ extern const char kLockScreenProfile[];
 
 // Used to identify the application to the system AV function in Windows.
 extern const char kApplicationClientIDStringForAVScanning[];
-
-// The largest reasonable length we'd assume for a meta tag attribute.
-extern const size_t kMaxMetaTagAttributeLength;
 
 }  // namespace chrome
 

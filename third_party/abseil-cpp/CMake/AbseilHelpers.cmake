@@ -41,7 +41,7 @@ endif()
 # LINKOPTS: List of link options
 # PUBLIC: Add this so that this library will be exported under absl::
 # Also in IDE, target will appear in Abseil folder while non PUBLIC will be in Abseil/internal.
-# TESTONLY: When added, this target will only be built if user passes -DABSL_RUN_TESTS=ON to CMake.
+# TESTONLY: When added, this target will only be built if BUILD_TESTING=ON.
 #
 # Note:
 # By default, absl_cc_library will always create a library named absl_${NAME},
@@ -83,7 +83,7 @@ function(absl_cc_library)
     ${ARGN}
   )
 
-  if(ABSL_CC_LIB_TESTONLY AND NOT ABSL_RUN_TESTS)
+  if(ABSL_CC_LIB_TESTONLY AND NOT BUILD_TESTING)
     return()
   endif()
 
@@ -104,7 +104,7 @@ function(absl_cc_library)
     endif()
   endforeach()
 
-  if("${ABSL_CC_SRCS}" STREQUAL "")
+  if(ABSL_CC_SRCS STREQUAL "")
     set(ABSL_CC_LIB_IS_INTERFACE 1)
   else()
     set(ABSL_CC_LIB_IS_INTERFACE 0)
@@ -142,7 +142,7 @@ function(absl_cc_library)
   endif()
 
   # Generate a pkg-config file for every library:
-  if(${_build_type} STREQUAL "static" OR ${_build_type} STREQUAL "shared")
+  if(_build_type STREQUAL "static" OR _build_type STREQUAL "shared")
     if(NOT ABSL_CC_LIB_TESTONLY)
       if(absl_VERSION)
         set(PC_VERSION "${absl_VERSION}")
@@ -183,7 +183,7 @@ Cflags: -I\${includedir}${PC_CFLAGS}\n")
   endif()
 
   if(NOT ABSL_CC_LIB_IS_INTERFACE)
-    if(${_build_type} STREQUAL "dll_dep")
+    if(_build_type STREQUAL "dll_dep")
       # This target depends on the DLL. When adding dependencies to this target,
       # any depended-on-target which is contained inside the DLL is replaced
       # with a dependency on the DLL.
@@ -212,7 +212,7 @@ Cflags: -I\${includedir}${PC_CFLAGS}\n")
           "${_gtest_link_define}"
       )
 
-    elseif(${_build_type} STREQUAL "static" OR ${_build_type} STREQUAL "shared")
+    elseif(_build_type STREQUAL "static" OR _build_type STREQUAL "shared")
       add_library(${_NAME} "")
       target_sources(${_NAME} PRIVATE ${ABSL_CC_LIB_SRCS} ${ABSL_CC_LIB_HDRS})
       target_link_libraries(${_NAME}
@@ -273,7 +273,7 @@ Cflags: -I\${includedir}${PC_CFLAGS}\n")
         $<INSTALL_INTERFACE:${ABSL_INSTALL_INCLUDEDIR}>
       )
 
-    if (${_build_type} STREQUAL "dll")
+    if (_build_type STREQUAL "dll")
         set(ABSL_CC_LIB_DEPS abseil_dll)
     endif()
 
@@ -337,7 +337,7 @@ endfunction()
 #     gtest_main
 # )
 function(absl_cc_test)
-  if(NOT ABSL_RUN_TESTS)
+  if(NOT BUILD_TESTING)
     return()
   endif()
 

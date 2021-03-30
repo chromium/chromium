@@ -1,0 +1,24 @@
+Tests correctness of wheel scroll regions produced by SVG elements after parent update
+
+Scroll rectangles
+{
+    0 : {
+        rect : {
+            height : 50
+            width : 50
+            x : 108
+            y : 8
+        }
+        type : "WheelEventHandler"
+    }
+    1 : {
+        rect : {
+            height : 20
+            width : 20
+            x : 108
+            y : 108
+        }
+        type : "WheelEventHandler"
+    }
+}
+

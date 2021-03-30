@@ -9,13 +9,13 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import 'chrome://resources/cr_elements/cr_search_field/cr_search_field.m.js';
+import 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
-import '../settings_shared_css.m.js';
+import '../settings_shared_css.js';
 import './site_data_entry.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
@@ -25,11 +25,11 @@ import {ListPropertyUpdateBehavior} from 'chrome://resources/js/list_property_up
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {GlobalScrollTargetBehavior, GlobalScrollTargetBehaviorImpl} from '../global_scroll_target_behavior.m.js';
+import {GlobalScrollTargetBehavior, GlobalScrollTargetBehaviorImpl} from '../global_scroll_target_behavior.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverBehavior, Router} from '../router.m.js';
+import {Route, RouteObserverBehavior, Router} from '../router.js';
 
 import {LocalDataBrowserProxy, LocalDataBrowserProxyImpl, LocalDataItem} from './local_data_browser_proxy.js';
 import {SiteSettingsBehavior} from './site_settings_behavior.js';
@@ -130,12 +130,10 @@ Polymer({
   currentRouteChanged(currentRoute, previousRoute) {
     GlobalScrollTargetBehaviorImpl.currentRouteChanged.call(this, currentRoute);
     // Reload cookies on navigation to the site data page from a different
-    // route, except when a search query is present, as that will be handled by
-    // onFilterChanged_.
-    // TODO (crbug.com/1141796): Remove this layering violation.
-    const searchQueryParam =
-        Router.getInstance().getQueryParameters().get('searchSubpage');
-    if (currentRoute === routes.SITE_SETTINGS_SITE_DATA && !searchQueryParam) {
+    // page. Avoid reloading on repeated navigations to the same page, as these
+    // are likely search queries.
+    if (currentRoute === routes.SITE_SETTINGS_SITE_DATA &&
+        currentRoute !== previousRoute) {
       this.isLoading_ = true;
       // Needed to fix iron-list rendering issue. The list will not render
       // correctly until a scroll occurs.
@@ -205,12 +203,12 @@ Polymer({
    * @private
    */
   onFilterChanged_(current, previous) {
-    // Ignore the first undefined -> defined transition, unless |current| has a
-    // value. This can occur if the first navigation to the page contains a
-    // search query parameter.
-    // TODO (crbug.com/1141796): Remove requirement to perform this check as
-    // it is subtle and a flow on from a layering violation.
-    if (previous === undefined && !current) {
+    // Ignore filter changes which do not occur on the site data page. The
+    // site settings data details subpage expects the tree model to remain in
+    // the same state.
+    if (previous === undefined ||
+        Router.getInstance().getCurrentRoute() !==
+            routes.SITE_SETTINGS_SITE_DATA) {
       return;
     }
     this.updateSiteList_();
@@ -222,8 +220,8 @@ Polymer({
    */
   updateSiteList_() {
     this.isLoading_ = true;
-    this.browserProxy_.getDisplayList(this.filter).then(listInfo => {
-      this.updateList('sites', item => item.site, listInfo.items);
+    this.browserProxy_.getDisplayList(this.filter).then(localDataItems => {
+      this.updateList('sites', item => item.site, localDataItems);
       this.isLoading_ = false;
       this.fire('site-data-list-complete');
     });

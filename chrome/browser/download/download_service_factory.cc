@@ -15,11 +15,9 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/background_fetch/background_fetch_download_client.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_image_download_client.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_image_download_client.h"
 #include "chrome/browser/download/deferred_client_wrapper.h"
 #include "chrome/browser/download/download_manager_utils.h"
-#include "chrome/browser/download/download_task_scheduler_impl.h"
 #include "chrome/browser/download/simple_download_manager_coordinator_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_model_download_client.h"
@@ -28,18 +26,19 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/transition_manager/full_browser_transition_manager.h"
 #include "chrome/common/chrome_constants.h"
+#include "components/background_fetch/download_client.h"
 #include "components/download/content/factory/download_service_factory_helper.h"
 #include "components/download/content/factory/navigation_monitor_factory.h"
+#include "components/download/public/background_service/basic_task_scheduler.h"
 #include "components/download/public/background_service/blob_context_getter_factory.h"
 #include "components/download/public/background_service/clients.h"
 #include "components/download/public/background_service/download_service.h"
 #include "components/download/public/background_service/features.h"
 #include "components/download/public/common/simple_download_manager_coordinator.h"
-#include "components/download/public/task/task_scheduler.h"
 #include "components/keyed_service/core/simple_dependency_manager.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/offline_pages/buildflags/buildflags.h"
-#include "components/optimization_guide/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -59,7 +58,7 @@ namespace {
 
 std::unique_ptr<download::Client> CreateBackgroundFetchDownloadClient(
     Profile* profile) {
-  return std::make_unique<BackgroundFetchDownloadClient>(profile);
+  return std::make_unique<background_fetch::DownloadClient>(profile);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -196,7 +195,12 @@ std::unique_ptr<KeyedService> DownloadServiceFactory::BuildServiceInstanceFor(
     task_scheduler =
         std::make_unique<download::android::DownloadTaskScheduler>();
 #else
-    task_scheduler = std::make_unique<DownloadTaskSchedulerImpl>(key);
+    task_scheduler =
+        std::make_unique<download::BasicTaskScheduler>(base::BindRepeating(
+            [](SimpleFactoryKey* key) {
+              return DownloadServiceFactory::GetForKey(key);
+            },
+            key));
 #endif
     // Some tests doesn't initialize DownloadManager when profile is created,
     // and cause the download service to fail. Call

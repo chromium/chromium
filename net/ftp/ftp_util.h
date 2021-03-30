@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "net/base/net_export.h"
 
 namespace base {
@@ -30,26 +29,26 @@ class NET_EXPORT_PRIVATE FtpUtil {
   // Converts abbreviated month (like Nov) to its number (in range 1-12).
   // Note: in some locales abbreviations are more than three letters long,
   // and this function also handles them correctly.
-  static bool AbbreviatedMonthToNumber(const base::string16& text, int* number);
+  static bool AbbreviatedMonthToNumber(const std::u16string& text, int* number);
 
   // Converts a "ls -l" date listing to time. The listing comes in three
   // columns. The first one contains month, the second one contains day
   // of month. The third one is either a time (and then we guess the year based
   // on |current_time|), or is a year (and then we don't know the time).
-  static bool LsDateListingToTime(const base::string16& month,
-                                  const base::string16& day,
-                                  const base::string16& rest,
+  static bool LsDateListingToTime(const std::u16string& month,
+                                  const std::u16string& day,
+                                  const std::u16string& rest,
                                   const base::Time& current_time,
                                   base::Time* result);
 
   // Converts a Windows date listing to time. Returns true on success.
-  static bool WindowsDateListingToTime(const base::string16& date,
-                                       const base::string16& time,
+  static bool WindowsDateListingToTime(const std::u16string& date,
+                                       const std::u16string& time,
                                        base::Time* result);
 
   // Skips |columns| columns from |text| (whitespace-delimited), and returns the
   // remaining part, without leading/trailing whitespace.
-  static base::string16 GetStringPartAfterColumns(const base::string16& text,
+  static std::u16string GetStringPartAfterColumns(const std::u16string& text,
                                                   int columns);
 };
 

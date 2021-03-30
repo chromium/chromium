@@ -121,6 +121,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
     virtual void SetSimulateConfigurationResult(
         FakeShillSimulatedResult configuration_result) = 0;
 
+    // Clears profile list.
+    virtual void ClearProfiles() = 0;
+
    protected:
     virtual ~TestInterface() {}
   };

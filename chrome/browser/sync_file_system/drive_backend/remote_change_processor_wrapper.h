@@ -25,7 +25,7 @@ class RemoteChangeProcessorWrapper
 
   void PrepareForProcessRemoteChange(
       const storage::FileSystemURL& url,
-      const RemoteChangeProcessor::PrepareChangeCallback& callback);
+      RemoteChangeProcessor::PrepareChangeCallback callback);
 
   void ApplyRemoteChange(const FileChange& change,
                          const base::FilePath& local_path,
@@ -34,7 +34,7 @@ class RemoteChangeProcessorWrapper
 
   void FinalizeRemoteSync(const storage::FileSystemURL& url,
                           bool clear_local_changes,
-                          const base::Closure& completion_callback);
+                          base::OnceClosure completion_callback);
 
   void RecordFakeLocalChange(const storage::FileSystemURL& url,
                              const FileChange& change,

@@ -172,7 +172,7 @@ bool WindowTargeter::ProcessEventIfTargetsDifferentRootWindow(
         window_tree_host->GetRootTransform(),
         window_tree_host->GetRootTransformForLocalEventCoordinates());
   }
-  ignore_result(new_root->GetHost()->event_sink()->OnEventFromSource(event));
+  ignore_result(new_root->GetHost()->GetEventSink()->OnEventFromSource(event));
   return true;
 }
 

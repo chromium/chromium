@@ -14,16 +14,14 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 
 /**
  * This class binds an {@link OnClickListener} to a {@link View}.
- * TODO(crbug/1155123): Change this class to package internal after modularization
  */
-public class OnClickListenerViewBinder implements ViewBinder<PropertyModel, View, PropertyKey> {
+class OnClickListenerViewBinder implements ViewBinder<PropertyModel, View, PropertyKey> {
     private final ReadableObjectPropertyKey<OnClickListener> mOnClickListenerKey;
 
     /**
-     * TODO(crbug/1155123): Change this method to package internal after modularization
+     * Constructs a view binder for a key of {@link OnClickListener}.
      */
-    public OnClickListenerViewBinder(
-            ReadableObjectPropertyKey<OnClickListener> onClickListenerKey) {
+    OnClickListenerViewBinder(ReadableObjectPropertyKey<OnClickListener> onClickListenerKey) {
         mOnClickListenerKey = onClickListenerKey;
     }
 

@@ -16,7 +16,6 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
@@ -114,7 +113,7 @@ class TabSelectionEditorMediator
             }
         };
 
-        mTabModelSelectorObserver = new EmptyTabModelSelectorObserver() {
+        mTabModelSelectorObserver = new TabModelSelectorObserver() {
             @Override
             public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
                 // Incognito in both light/dark theme is the same as non-incognito mode in dark
@@ -223,6 +222,11 @@ class TabSelectionEditorMediator
     public void hide() {
         mResetHandler.resetWithListOfTabs(null, 0);
         mModel.set(TabSelectionEditorProperties.IS_VISIBLE, false);
+    }
+
+    @Override
+    public boolean isVisible() {
+        return isEditorVisible();
     }
 
     /**

@@ -64,6 +64,18 @@ TEST_F('NewTabPageUtilsTest', 'All', function() {
 });
 
 // eslint-disable-next-line no-var
+var NewTabPageMetricsUtilsTest = class extends NewTabPageBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/metrics_utils_test.js';
+  }
+};
+
+TEST_F('NewTabPageMetricsUtilsTest', 'All', function() {
+  mocha.run();
+});
+
+// eslint-disable-next-line no-var
 var NewTabPageCustomizeShortcutsTest = class extends NewTabPageBrowserTest {
   /** @override */
   get browsePreload() {
@@ -112,22 +124,10 @@ TEST_F('NewTabPageVoiceSearchOverlayTest', 'All', function() {
 });
 
 // eslint-disable-next-line no-var
-var NewTabPageFakeboxTest = class extends NewTabPageBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/fakebox_test.js';
-  }
-};
-
-TEST_F('NewTabPageFakeboxTest', 'All', function() {
-  mocha.run();
-});
-
-// eslint-disable-next-line no-var
 var NewTabPageRealboxTest = class extends NewTabPageBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/realbox_test.js';
+    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/realbox/realbox_test.js';
   }
 };
 
@@ -196,6 +196,19 @@ TEST_F('NewTabPageImgTest', 'All', function() {
 });
 
 // eslint-disable-next-line no-var
+var NewTabPageModulesModuleDescriptorTest =
+    class extends NewTabPageBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/modules/module_descriptor_test.js';
+  }
+};
+
+TEST_F('NewTabPageModulesModuleDescriptorTest', 'All', function() {
+  mocha.run();
+});
+
+// eslint-disable-next-line no-var
 var NewTabPageModulesModuleRegistryTest = class extends NewTabPageBrowserTest {
   /** @override */
   get browsePreload() {
@@ -204,6 +217,18 @@ var NewTabPageModulesModuleRegistryTest = class extends NewTabPageBrowserTest {
 };
 
 TEST_F('NewTabPageModulesModuleRegistryTest', 'All', function() {
+  mocha.run();
+});
+
+// eslint-disable-next-line no-var
+var NewTabPageModulesModuleHeaderTest = class extends NewTabPageBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/modules/module_header_test.js';
+  }
+};
+
+TEST_F('NewTabPageModulesModuleHeaderTest', 'All', function() {
   mocha.run();
 });
 

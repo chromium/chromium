@@ -23,10 +23,10 @@ class GtkUiDelegateWayland : public GtkUiDelegate {
   ~GtkUiDelegateWayland() override;
 
   // GtkUiDelegate:
-  void OnInitialized() override;
+  void OnInitialized(GtkWidget* widget) override;
   GdkKeymap* GetGdkKeymap() override;
   GdkWindow* GetGdkWindow(gfx::AcceleratedWidget window_id) override;
-  bool SetGdkWindowTransientFor(GdkWindow* window,
+  bool SetGtkWidgetTransientFor(GtkWidget* widget,
                                 gfx::AcceleratedWidget parent) override;
   void ClearTransientFor(gfx::AcceleratedWidget parent) override;
   void ShowGtkWindow(GtkWindow* window) override;
@@ -34,8 +34,8 @@ class GtkUiDelegateWayland : public GtkUiDelegate {
 
  private:
   // Called when xdg-foreign exports a parent window passed in
-  // SetGdkWindowTransientFor.
-  void OnHandle(GdkWindow* window, const std::string& handle);
+  // SetGtkWidgetTransientFor.
+  void OnHandle(GtkWidget* widget, const std::string& handle);
 
   WaylandConnection* const connection_;
 

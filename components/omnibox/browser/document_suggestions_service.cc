@@ -42,7 +42,7 @@ namespace {
 //            languageCode: "|locale|",
 //       }
 //     }
-std::string BuildDocumentSuggestionRequest(const base::string16& query) {
+std::string BuildDocumentSuggestionRequest(const std::u16string& query) {
   base::Value root(base::Value::Type::DICTIONARY);
   root.SetKey("query", base::Value(query));
   // The API supports pagination. We're always concerned with the first N
@@ -76,7 +76,7 @@ DocumentSuggestionsService::DocumentSuggestionsService(
 DocumentSuggestionsService::~DocumentSuggestionsService() {}
 
 void DocumentSuggestionsService::CreateDocumentSuggestionsRequest(
-    const base::string16& query,
+    const std::u16string& query,
     bool is_incognito,
     StartCallback start_callback,
     CompletionCallback completion_callback) {

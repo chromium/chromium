@@ -57,7 +57,6 @@ struct ChildProcessLauncherPriority {
   ChildProcessLauncherPriority(bool visible,
                                bool has_media_stream,
                                bool has_foreground_service_worker,
-                               bool has_only_low_priority_frames,
                                unsigned int frame_depth,
                                bool intersects_viewport,
                                bool boost_for_pending_views
@@ -69,7 +68,6 @@ struct ChildProcessLauncherPriority {
       : visible(visible),
         has_media_stream(has_media_stream),
         has_foreground_service_worker(has_foreground_service_worker),
-        has_only_low_priority_frames(has_only_low_priority_frames),
         frame_depth(frame_depth),
         intersects_viewport(intersects_viewport),
         boost_for_pending_views(boost_for_pending_views)
@@ -105,10 +103,6 @@ struct ChildProcessLauncherPriority {
   // worker that may need to service timely events from other, possibly visible,
   // processes.
   bool has_foreground_service_worker;
-
-  // True if this ChildProcessLauncher has a non-zero number of frames attached
-  // to it and they're all low priority.
-  bool has_only_low_priority_frames;
 
   // |frame_depth| is the depth of the shallowest frame this process is
   // responsible for which has |visible| visibility. It only makes sense to

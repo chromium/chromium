@@ -7,28 +7,27 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 
 namespace autofill {
 
 namespace data_util {
 
-// Converts the integer |expiration_month| to base::string16. Returns a value
+// Converts the integer |expiration_month| to std::u16string. Returns a value
 // between ["01"-"12"].
-base::string16 Expiration2DigitMonthAsString(int expiration_month);
+std::u16string Expiration2DigitMonthAsString(int expiration_month);
 
-// Converts the integer |expiration_year| to base::string16. Returns a value
+// Converts the integer |expiration_year| to std::u16string. Returns a value
 // between ["00"-"99"].
-base::string16 Expiration2DigitYearAsString(int expiration_year);
+std::u16string Expiration2DigitYearAsString(int expiration_year);
 
-// Converts the integer |expiration_year| to base::string16.
-base::string16 Expiration4DigitYearAsString(int expiration_year);
+// Converts the integer |expiration_year| to std::u16string.
+std::u16string Expiration4DigitYearAsString(int expiration_year);
 
 // Converts a string representation of a month (such as "February" or "feb."
 // or "2") into a numeric value in [1, 12]. Returns true on successful
 // conversion or false if a month was not recognized. When conversion fails,
 // |expiration_month| is not modified.
-bool ParseExpirationMonth(const base::string16& text,
+bool ParseExpirationMonth(const std::u16string& text,
                           const std::string& app_locale,
                           int* expiration_month);
 
@@ -36,7 +35,7 @@ bool ParseExpirationMonth(const base::string16& text,
 // |*expiration_year|. This function accepts two digit years as well as
 // four digit years between 2000 and 2999. Returns true on success.
 // On failure, no change is made to |*expiration_year|.
-bool ParseExpirationYear(const base::string16& text, int* expiration_year);
+bool ParseExpirationYear(const std::u16string& text, int* expiration_year);
 
 // Sets |*expiration_month| to |value| if |value| is a valid month (1-12).
 // Returns if any change is made to |*expiration_month|.
@@ -49,7 +48,7 @@ bool SetExpirationYear(int value, int* expiration_year);
 
 // Finds possible country code in |text| by fetching the first sub-group when
 // matched with |kAugmentedPhoneCountryCodeRe| regex.
-base::string16 FindPossiblePhoneCountryCode(const base::string16& text);
+std::u16string FindPossiblePhoneCountryCode(const std::u16string& text);
 
 }  // namespace data_util
 

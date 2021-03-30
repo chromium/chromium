@@ -25,6 +25,7 @@ class PLATFORM_EXPORT PaintGeneratedImage : public GeneratedImage {
             const cc::PaintFlags&,
             const FloatRect&,
             const FloatRect&,
+            const SkSamplingOptions&,
             RespectImageOrientationEnum,
             ImageClampingMode,
             ImageDecodingMode) override;

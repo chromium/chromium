@@ -11,16 +11,19 @@
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
 
+using chrome::android::ActivityType;
+
 // Keep this in sync with
 // chrome/android/java/src/org/chromium/chrome/browser/tabmodel/TabList.java
 static int INVALID_TAB_INDEX = -1;
 
-TabModel::TabModel(Profile* profile, bool is_tabbed_activity)
+TabModel::TabModel(Profile* profile, ActivityType activity_type)
     : profile_(profile),
+      activity_type_(activity_type),
       live_tab_context_(new AndroidLiveTabContext(this)),
-      synced_window_delegate_(
-          new browser_sync::SyncedWindowDelegateAndroid(this,
-                                                        is_tabbed_activity)),
+      synced_window_delegate_(new browser_sync::SyncedWindowDelegateAndroid(
+          this,
+          activity_type == ActivityType::kTabbed)),
       session_id_(SessionID::NewUnique()) {}
 
 TabModel::~TabModel() = default;

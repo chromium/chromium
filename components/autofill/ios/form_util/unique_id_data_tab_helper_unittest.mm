@@ -33,7 +33,7 @@ TEST_F(UniqueIDDataTabHelperTest, UniqueIdentifiers) {
       UniqueIDDataTabHelper::FromWebState(&second_web_state_)
           ->GetNextAvailableRendererID();
 
-  EXPECT_EQ(first_available_unique_id, 0U);
+  EXPECT_EQ(first_available_unique_id, 1U);
   EXPECT_EQ(first_available_unique_id, second_available_unique_id);
 
   UniqueIDDataTabHelper::FromWebState(&second_web_state_)

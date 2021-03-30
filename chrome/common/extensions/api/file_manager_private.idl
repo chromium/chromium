@@ -141,7 +141,7 @@ enum DeviceEventType {
 };
 
 // Drive sync error type.
-// Keep it synced with DriveSyncErrorType in operation_observer.h.
+// Keep it synced with DriveError::Type in drivefs.mojom.
 enum DriveSyncErrorType {
   // Request to delete a file without permission.
   delete_without_permission,
@@ -153,6 +153,26 @@ enum DriveSyncErrorType {
   no_local_space,
   // Miscellaneous errors other than listed above.
   misc
+};
+
+// Drive confirm dialog type.
+// Keep it synced with DialogReason::Type in drivefs.mojom.
+enum DriveConfirmDialogType {
+  // Request to enable Docs Offline to allow saving hosted files offline.
+  enable_docs_offline
+};
+
+// Possible result of dialog displayed as a result of the onDriveConfirmDialog
+// event. Sent back to the browser via notifyDriveDialogResult().
+enum DriveDialogResult {
+  // The dialog was not displayed to the user.
+  not_displayed,
+  // The user accepted the action proposed by the dialog.
+  accept,
+  // The user rejected the action proposed by the dialog.
+  reject,
+  // The user closed the dialog without selecting an option.
+  dismiss
 };
 
 // Result of task execution. If changing, update the strings used in
@@ -260,6 +280,12 @@ enum ProviderSource {
   file,
   device,
   network
+};
+
+enum SharesheetLaunchSource {
+  context_menu,
+  sharesheet_button,
+  unknown
 };
 
 // A file task represents an action that the file manager can perform over the
@@ -539,6 +565,16 @@ dictionary DriveSyncErrorEvent {
   DOMString fileUrl;
 };
 
+// Confirmation dialog from Drive asking the user to accept or reject an
+// action.
+dictionary DriveConfirmDialogEvent {
+  // Dialog type.
+  DriveConfirmDialogType type;
+
+  // File URL of the entry associated with the dialog.
+  DOMString fileUrl;
+};
+
 // Payload data for copy status progress updates.
 dictionary CopyProgressStatus {
   // The type of the progress event.
@@ -589,6 +625,16 @@ dictionary FileWatchEvent {
   // Detailed change information of change. It would be null if the detailed
   // information is not available.
   FileChange[]? changedFiles;
+};
+
+// Parameters passed to fileManagerPrivateInternal.getVolumeRoot function.
+dictionary GetVolumeRootOptions {
+  // The ID of the requested volume.
+  DOMString volumeId;
+
+  // Whether the requested file system should be writable. The default is
+  // read-only.
+  boolean? writable;
 };
 
 dictionary Preferences {
@@ -897,6 +943,10 @@ callback GetDirectorySizeCallback = void(double size);
 
 // |entries| Recently modified entries.
 callback GetRecentFilesCallback = void([instanceOf=Entry] object[] entries);
+
+// |rootDir| The root directory of the volume to which access was requested.
+callback GetVolumeRootCallback =
+    void([instanceof=DirectoryEntry] object rootDir);
 
 // |entries| Entries shared with crostini container.
 // |firstForSession| true the first time this is called for the session.
@@ -1265,6 +1315,12 @@ interface Functions {
                              RecentFileType fileType,
                              GetRecentFilesCallback callback);
 
+  // Requests the root directory of the volume with the ID specified in
+  // |options.volumeId|.
+  [nocompile]
+  static void getVolumeRoot(GetVolumeRootOptions options,
+                            GetVolumeRootCallback callback);
+
   // Starts and mounts crostini container.
   // |callback|
   static void mountCrostini(SimpleCallback callback);
@@ -1366,10 +1422,12 @@ interface Functions {
 
   // Invoke Sharesheet for selected files.
   // |entries| Array of selected entries.
+  // |launchSource| Source from which sharesheet was invoked.
   // |callback|
   [nocompile]
   static void invokeSharesheet([instanceof=Entry] object[] entries,
-                                     SimpleCallback callback);
+                               SharesheetLaunchSource launchSource,
+                               SimpleCallback callback);
 
   // Adds or removes a list of entries to temporary holding space. Any entries
   // whose current holding space state matches the intended state will be
@@ -1389,6 +1447,10 @@ interface Functions {
 
   // Returns true via `callback` if tablet mode is enabled, false otherwise.
   static void isTabletModeEnabled(BooleanCallback callback);
+
+  // Notifies the browser of the result of a dialog displayed earlier as a
+  // result of the onDriveConfirmDialog event.
+  static void notifyDriveDialogResult(DriveDialogResult result);
 };
 
 interface Events {
@@ -1409,6 +1471,8 @@ interface Events {
   static void onDeviceChanged(DeviceEvent event);
 
   static void onDriveSyncError(DriveSyncErrorEvent event);
+
+  static void onDriveConfirmDialog(DriveConfirmDialogEvent event);
 
   static void onAppsUpdated();
 

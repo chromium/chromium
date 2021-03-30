@@ -79,7 +79,7 @@ class NaClHostMessageFilter : public content::BrowserMessageFilter {
                    const PnaclCacheInfo& cache_info);
   void OnTranslationFinished(int instance, bool success);
   void OnMissingArchError(int render_view_id);
-  void OnOpenNaClExecutable(int render_view_id,
+  void OnOpenNaClExecutable(int render_frame_id,
                             const GURL& file_url,
                             bool enable_validation_caching,
                             IPC::Message* reply_msg);

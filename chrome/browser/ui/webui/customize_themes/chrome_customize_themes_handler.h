@@ -5,8 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CUSTOMIZE_THEMES_CHROME_CUSTOMIZE_THEMES_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CUSTOMIZE_THEMES_CHROME_CUSTOMIZE_THEMES_HANDLER_H_
 
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "chrome/browser/themes/theme_service_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -32,7 +31,7 @@ class ThemeService;
 // receiver about all theme updates in the current profile.
 class ChromeCustomizeThemesHandler
     : public customize_themes::mojom::CustomizeThemesHandler,
-      public content::NotificationObserver {
+      public ThemeServiceObserver {
  public:
   explicit ChromeCustomizeThemesHandler(
       mojo::PendingRemote<customize_themes::mojom::CustomizeThemesClient>
@@ -52,10 +51,8 @@ class ChromeCustomizeThemesHandler
   void ConfirmThemeChanges() override;
   void RevertThemeChanges() override;
 
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // ThemeServiceObserver:
+  void OnThemeChanged() override;
 
  private:
   void UpdateTheme();
@@ -67,8 +64,6 @@ class ChromeCustomizeThemesHandler
   Profile* const profile_;
   chrome_colors::ChromeColorsService* const chrome_colors_service_;
   ThemeService* const theme_service_;
-
-  content::NotificationRegistrar notification_registrar_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CUSTOMIZE_THEMES_CHROME_CUSTOMIZE_THEMES_HANDLER_H_

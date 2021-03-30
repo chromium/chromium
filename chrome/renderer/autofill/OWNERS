@@ -1,4 +1,3 @@
 file://components/autofill/OWNERS
 
-per-file *password*=kolos@chromium.org
-per-file *password*=vasilii@chromium.org
+per-file *password*=file://components/password_manager/OWNERS

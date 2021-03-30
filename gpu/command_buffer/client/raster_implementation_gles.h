@@ -86,6 +86,7 @@ class RASTER_EXPORT RasterImplementationGLES : public RasterInterface {
 
   // OOP-Raster
   void BeginRasterCHROMIUM(GLuint sk_color,
+                           GLboolean needs_clear,
                            GLuint msaa_sample_count,
                            GLboolean can_use_lcd_text,
                            const gfx::ColorSpace& color_space,

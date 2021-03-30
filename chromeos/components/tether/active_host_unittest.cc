@@ -91,8 +91,8 @@ class ActiveHostTest : public testing::Test {
     EXPECT_TRUE(active_host_->GetWifiNetworkGuid().empty());
     EXPECT_TRUE(active_host_->GetTetherNetworkGuid().empty());
 
-    active_host_->GetActiveHost(base::Bind(&ActiveHostTest::OnActiveHostFetched,
-                                           base::Unretained(this)));
+    active_host_->GetActiveHost(base::BindOnce(
+        &ActiveHostTest::OnActiveHostFetched, base::Unretained(this)));
     ASSERT_EQ(1u, get_active_host_results_.size());
     EXPECT_EQ(
         (GetActiveHostResult{ActiveHost::ActiveHostStatus::DISCONNECTED,
@@ -135,8 +135,8 @@ TEST_F(ActiveHostTest, TestConnecting) {
   EXPECT_EQ("tetherNetworkGuid", active_host_->GetTetherNetworkGuid());
   EXPECT_TRUE(active_host_->GetWifiNetworkGuid().empty());
 
-  active_host_->GetActiveHost(
-      base::Bind(&ActiveHostTest::OnActiveHostFetched, base::Unretained(this)));
+  active_host_->GetActiveHost(base::BindOnce(
+      &ActiveHostTest::OnActiveHostFetched, base::Unretained(this)));
   ASSERT_EQ(1u, get_active_host_results_.size());
   EXPECT_EQ(
       (GetActiveHostResult{
@@ -157,8 +157,8 @@ TEST_F(ActiveHostTest, TestConnected) {
   EXPECT_EQ("tetherNetworkGuid", active_host_->GetTetherNetworkGuid());
   EXPECT_EQ("wifiNetworkGuid", active_host_->GetWifiNetworkGuid());
 
-  active_host_->GetActiveHost(
-      base::Bind(&ActiveHostTest::OnActiveHostFetched, base::Unretained(this)));
+  active_host_->GetActiveHost(base::BindOnce(
+      &ActiveHostTest::OnActiveHostFetched, base::Unretained(this)));
   ASSERT_EQ(1u, get_active_host_results_.size());
   EXPECT_EQ(
       (GetActiveHostResult{

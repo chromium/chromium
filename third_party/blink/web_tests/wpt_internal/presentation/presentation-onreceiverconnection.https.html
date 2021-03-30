@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="module">
+import {PresentationServiceMock} from './resources/presentation-service-mock.js';
+
+const mock = new PresentationServiceMock();
+
+promise_test(async t => {
+  internals.settings.setPresentationReceiver(true);
+  t.add_cleanup(() => internals.settings.setPresentationReceiver(false));
+
+  const url = 'https://example.com/a.html';
+  const id = 'fakePresentationId';
+  mock.onSetReceiver = () => mock.onReceiverConnectionAvailable(url, id);
+
+  const list = await navigator.presentation.receiver.connectionList;
+  assert_equals(list.connections.length, 1);
+  assert_equals(list.connections[0].url, url);
+  assert_equals(list.connections[0].id, id);
+}, "Test presentation.receiver.connectionList resolves with incoming connection.");
+
+</script>
+</body>
+</html>

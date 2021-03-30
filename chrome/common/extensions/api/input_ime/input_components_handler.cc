@@ -48,7 +48,7 @@ InputComponentsHandler::~InputComponentsHandler() {
 }
 
 bool InputComponentsHandler::Parse(Extension* extension,
-                                   base::string16* error) {
+                                   std::u16string* error) {
   std::unique_ptr<InputComponents> info(new InputComponents);
   const base::ListValue* list_value = NULL;
   if (!extension->manifest()->GetList(keys::kInputComponents, &list_value)) {

@@ -125,13 +125,20 @@ bool IsDrmAtomicAvailable() {
 #endif
 }
 
+void wayland_log(const char* fmt, va_list argp) {
+  LOG(WARNING) << "libwayland: " << base::StringPrintV(fmt, argp);
+}
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 // Server, public:
 
-Server::Server(Display* display)
-    : display_(display), wl_display_(wl_display_create()) {
+Server::Server(Display* display) : display_(display) {
+  wl_log_set_handler_server(wayland_log);
+
+  wl_display_.reset(wl_display_create());
+
   serial_tracker_ = std::make_unique<SerialTracker>(wl_display_.get());
   wl_global_create(wl_display_.get(), &wl_compositor_interface,
                    kWlCompositorVersion, this, bind_compositor);

@@ -108,6 +108,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) CiceroneClient : public DBusClient {
     virtual void OnFileWatchTriggered(
         const vm_tools::cicerone::FileWatchTriggeredSignal& signal) {}
 
+    // This is signaled from Cicerone when a container runs into low disk space.
+    virtual void OnLowDiskSpaceTriggered(
+        const vm_tools::cicerone::LowDiskSpaceTriggeredSignal& signal) {}
+
    protected:
     virtual ~Observer() = default;
   };
@@ -158,7 +162,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) CiceroneClient : public DBusClient {
   // This should be true prior to calling ImportLxdContainer.
   virtual bool IsImportLxdContainerProgressSignalConnected() = 0;
 
-  // This should be true before expecting to recieve
+  // This should be true before expecting to receive
   // PendingAppListUpdatesSignal.
   virtual bool IsPendingAppListUpdatesSignalConnected() = 0;
 
@@ -173,6 +177,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) CiceroneClient : public DBusClient {
 
   // This should be true prior to calling AddFileWatch.
   virtual bool IsFileWatchTriggeredSignalConnected() = 0;
+
+  // This should be true before expecting to receive
+  // LowDiskSpaceTriggeredSignal.
+  virtual bool IsLowDiskSpaceTriggeredSignalConnected() = 0;
 
   // Launches an application inside a running Container.
   // |callback| is called after the method call finishes.

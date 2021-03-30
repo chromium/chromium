@@ -143,6 +143,8 @@ message MatchedScheduledTask {
 }
 
 // Next tag: 4
+// TODO(crbug.com/981388): Deprecate and remove this message. There is no
+// version of the Chrome Cleanup Tool that fills it in.
 message MatchedExtension {
   // The extension ID that the extension was installed with.
   optional string extension_id = 1;

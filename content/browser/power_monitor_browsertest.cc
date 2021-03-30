@@ -53,7 +53,7 @@ void StartUtilityProcessOnIOThread(
     mojo::PendingReceiver<mojom::PowerMonitorTest> receiver) {
   UtilityProcessHost* host = new UtilityProcessHost();
   host->SetMetricsName("test_process");
-  host->SetName(base::ASCIIToUTF16("TestProcess"));
+  host->SetName(u"TestProcess");
   EXPECT_TRUE(host->Start());
 
   host->GetChildProcess()->BindReceiver(std::move(receiver));

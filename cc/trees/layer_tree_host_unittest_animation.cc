@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/metrics/statistics_recorder.h"
 #include "cc/animation/animation.h"
-#include "cc/animation/animation_curve.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_id_provider.h"
 #include "cc/animation/animation_timeline.h"
@@ -19,8 +18,6 @@
 #include "cc/animation/scroll_offset_animation_curve.h"
 #include "cc/animation/scroll_offset_animation_curve_factory.h"
 #include "cc/animation/scroll_offset_animations.h"
-#include "cc/animation/timing_function.h"
-#include "cc/animation/transform_operations.h"
 #include "cc/base/completion_event.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/layer_impl.h"
@@ -33,6 +30,9 @@
 #include "cc/trees/target_property.h"
 #include "cc/trees/transform_node.h"
 #include "components/viz/common/quads/compositor_frame.h"
+#include "ui/gfx/animation/keyframe/animation_curve.h"
+#include "ui/gfx/animation/keyframe/timing_function.h"
+#include "ui/gfx/transform_operations.h"
 
 namespace cc {
 namespace {
@@ -185,7 +185,7 @@ class LayerTreeHostAnimationTestAddKeyframeModel
                               int group) override {
     EXPECT_LT(base::TimeTicks(), monotonic_time);
 
-    KeyframeModel* keyframe_model =
+    gfx::KeyframeModel* keyframe_model =
         animation_->GetKeyframeModel(TargetProperty::OPACITY);
     if (keyframe_model)
       animation_->RemoveKeyframeModel(keyframe_model->id());
@@ -376,8 +376,9 @@ class LayerTreeHostAnimationTestAddKeyframeModelWithTimingFunction
     KeyframeModel* keyframe_model =
         animation_child_impl->GetKeyframeModel(TargetProperty::OPACITY);
 
-    const FloatAnimationCurve* curve =
-        keyframe_model->curve()->ToFloatAnimationCurve();
+    const gfx::FloatAnimationCurve* curve =
+        gfx::FloatAnimationCurve::ToFloatAnimationCurve(
+            keyframe_model->curve());
     float start_opacity = curve->GetValue(base::TimeDelta());
     float end_opacity = curve->GetValue(curve->Duration());
     float linearly_interpolated_opacity =
@@ -554,9 +555,10 @@ class LayerTreeHostAnimationTestLayerAddedWithAnimation
       animation_->set_animation_delegate(this);
 
       // Any valid AnimationCurve will do here.
-      std::unique_ptr<AnimationCurve> curve(new FakeFloatAnimationCurve());
+      std::unique_ptr<gfx::AnimationCurve> curve(new FakeFloatAnimationCurve());
       std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
-          std::move(curve), 1, 1, TargetProperty::OPACITY));
+          std::move(curve), 1, 1,
+          KeyframeModel::TargetPropertyId(TargetProperty::OPACITY)));
       animation_->AddKeyframeModel(std::move(keyframe_model));
 
       // We add the animation *before* attaching the layer to the tree.
@@ -764,9 +766,8 @@ class LayerTreeHostAnimationTestCheckerboardDoesntStartAnimations
 MULTI_THREAD_TEST_F(
     LayerTreeHostAnimationTestCheckerboardDoesntStartAnimations);
 
-// Verifies that scroll offset animations are only accepted when impl-scrolling
-// is supported, and that when scroll offset animations are accepted,
-// scroll offset updates are sent back to the main thread.
+// Verifies that a scroll offset animation sends scroll offset updates back to
+// the main thread.
 class LayerTreeHostAnimationTestScrollOffsetChangesArePropagated
     : public LayerTreeHostAnimationTest {
  public:
@@ -794,13 +795,10 @@ class LayerTreeHostAnimationTestScrollOffsetChangesArePropagated
                 CreateEaseInOutAnimationForTesting(
                     gfx::ScrollOffset(500.f, 550.f)));
         std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
-            std::move(curve), 1, 0, TargetProperty::SCROLL_OFFSET));
+            std::move(curve), 1, 0,
+            KeyframeModel::TargetPropertyId(TargetProperty::SCROLL_OFFSET)));
         keyframe_model->set_needs_synchronized_start_time(true);
-        bool impl_scrolling_supported = proxy()->SupportsImplScrolling();
-        if (impl_scrolling_supported)
-          animation_child_->AddKeyframeModel(std::move(keyframe_model));
-        else
-          EndTest();
+        animation_child_->AddKeyframeModel(std::move(keyframe_model));
         break;
       }
       default:
@@ -864,10 +862,11 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationTakeover
     }
   }
 
-  void NotifyAnimationTakeover(base::TimeTicks monotonic_time,
-                               int target_property,
-                               base::TimeTicks animation_start_time,
-                               std::unique_ptr<AnimationCurve> curve) override {
+  void NotifyAnimationTakeover(
+      base::TimeTicks monotonic_time,
+      int target_property,
+      base::TimeTicks animation_start_time,
+      std::unique_ptr<gfx::AnimationCurve> curve) override {
     EndTest();
   }
 
@@ -937,12 +936,13 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationAdjusted
       GetImplTimelineAndAnimationByID(*host_impl);
       // This happens after the impl-only animation is added in
       // WillCommitCompleteOnThread.
-      KeyframeModel* keyframe_model =
+      gfx::KeyframeModel* keyframe_model =
           ScrollOffsetKeyframeEffect(*host_impl, scroll_layer_)
               .GetKeyframeModel(TargetProperty::SCROLL_OFFSET);
       DCHECK(keyframe_model);
-      ScrollOffsetAnimationCurve* curve =
-          keyframe_model->curve()->ToScrollOffsetAnimationCurve();
+      const ScrollOffsetAnimationCurve* curve =
+          ScrollOffsetAnimationCurve::ToScrollOffsetAnimationCurve(
+              keyframe_model->curve());
 
       // Verifiy the initial and target position before the scroll offset
       // update from MT.
@@ -962,12 +962,13 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationAdjusted
 
   void CommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
     if (host_impl->sync_tree()->source_frame_number() == 1) {
-      KeyframeModel* keyframe_model =
+      gfx::KeyframeModel* keyframe_model =
           ScrollOffsetKeyframeEffect(*host_impl, scroll_layer_)
               .GetKeyframeModel(TargetProperty::SCROLL_OFFSET);
       DCHECK(keyframe_model);
-      ScrollOffsetAnimationCurve* curve =
-          keyframe_model->curve()->ToScrollOffsetAnimationCurve();
+      const ScrollOffsetAnimationCurve* curve =
+          ScrollOffsetAnimationCurve::ToScrollOffsetAnimationCurve(
+              keyframe_model->curve());
       // Verifiy the initial and target position after the scroll offset
       // update from MT
       EXPECT_EQ(KeyframeModel::RunState::STARTING, keyframe_model->run_state());
@@ -1006,7 +1007,8 @@ class LayerTreeHostPresentationDuringAnimation
         ScrollOffsetAnimationCurveFactory::CreateEaseInOutAnimationForTesting(
             gfx::ScrollOffset(6500.f, 7500.f)));
     std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
-        std::move(curve), 1, 0, TargetProperty::SCROLL_OFFSET));
+        std::move(curve), 1, 0,
+        KeyframeModel::TargetPropertyId(TargetProperty::SCROLL_OFFSET)));
     keyframe_model->set_needs_synchronized_start_time(true);
 
     AttachAnimationsToTimeline();
@@ -1086,7 +1088,8 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationRemoval
         ScrollOffsetAnimationCurveFactory::CreateEaseInOutAnimationForTesting(
             gfx::ScrollOffset(6500.f, 7500.f)));
     std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
-        std::move(curve), 1, 0, TargetProperty::SCROLL_OFFSET));
+        std::move(curve), 1, 0,
+        KeyframeModel::TargetPropertyId(TargetProperty::SCROLL_OFFSET)));
     keyframe_model->set_needs_synchronized_start_time(true);
 
     AttachAnimationsToTimeline();
@@ -1211,7 +1214,8 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationCompletion
         ScrollOffsetAnimationCurveFactory::CreateEaseInOutAnimationForTesting(
             final_position_));
     std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
-        std::move(curve), 1, 0, TargetProperty::SCROLL_OFFSET));
+        std::move(curve), 1, 0,
+        KeyframeModel::TargetPropertyId(TargetProperty::SCROLL_OFFSET)));
     keyframe_model->set_needs_synchronized_start_time(true);
 
     AttachAnimationsToTimeline();
@@ -1421,9 +1425,9 @@ class LayerTreeHostAnimationTestPendingTreeAnimatesFirstCommit
 
   void BeginTest() override {
     // Add a translate from 6,7 to 8,9.
-    TransformOperations start;
+    gfx::TransformOperations start;
     start.AppendTranslate(6.f, 7.f, 0.f);
-    TransformOperations end;
+    gfx::TransformOperations end;
     end.AppendTranslate(8.f, 9.f, 0.f);
     AddAnimatedTransformToAnimation(animation_.get(), 4.0, start, end);
 
@@ -2167,9 +2171,9 @@ class ImplSideInvalidationWithoutCommitTestScroll
         ScrollOffsetAnimationCurveFactory::CreateEaseInOutAnimationForTesting(
             gfx::ScrollOffset(500.f, 550.f)));
     std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
-        std::move(curve), 1, 0, TargetProperty::SCROLL_OFFSET));
+        std::move(curve), 1, 0,
+        KeyframeModel::TargetPropertyId(TargetProperty::SCROLL_OFFSET)));
     keyframe_model->set_needs_synchronized_start_time(true);
-    ASSERT_TRUE(proxy()->SupportsImplScrolling());
     animation_child_->AddKeyframeModel(std::move(keyframe_model));
     PostSetNeedsCommitToMainThread();
   }
@@ -2262,9 +2266,9 @@ class LayerTreeHostAnimationTestChangeAnimation
     timeline_->DetachAnimation(animation_child_.get());
     animation_->AttachElement(layer_->element_id());
 
-    TransformOperations start;
+    gfx::TransformOperations start;
     start.AppendTranslate(5.f, 5.f, 0.f);
-    TransformOperations end;
+    gfx::TransformOperations end;
     end.AppendTranslate(5.f, 5.f, 0.f);
     AddAnimatedTransformToAnimation(animation_.get(), 1.0, start, end);
   }

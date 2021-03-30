@@ -117,6 +117,15 @@ bool DecoderTemplate<Traits>::IsClosed() {
 }
 
 template <typename Traits>
+HardwarePreference DecoderTemplate<Traits>::GetHardwarePreference(
+    const ConfigType&) {
+  return HardwarePreference::kAllow;
+}
+
+template <typename Traits>
+void DecoderTemplate<Traits>::SetHardwarePreference(HardwarePreference) {}
+
+template <typename Traits>
 void DecoderTemplate<Traits>::configure(const ConfigType* config,
                                         ExceptionState& exception_state) {
   DVLOG(1) << __func__;
@@ -147,6 +156,7 @@ void DecoderTemplate<Traits>::configure(const ConfigType* config,
   request->type = Request::Type::kConfigure;
   request->media_config = std::move(media_config);
   request->reset_generation = reset_generation_;
+  request->hw_pref = GetHardwarePreference(*config);
   requests_.push_back(request);
   ProcessRequests();
 }
@@ -167,9 +177,9 @@ void DecoderTemplate<Traits>::decode(const InputType* chunk,
   auto status_or_buffer = MakeDecoderBuffer(*chunk);
 
   if (status_or_buffer.has_value()) {
-    request->decoder_buffer = std::move(status_or_buffer.value());
+    request->decoder_buffer = std::move(status_or_buffer).value();
   } else {
-    request->status = std::move(status_or_buffer.error());
+    request->status = std::move(status_or_buffer).error();
   }
 
   requests_.push_back(request);
@@ -269,9 +279,9 @@ bool DecoderTemplate<Traits>::ProcessConfigureRequest(Request* request) {
     decoder_ = Traits::CreateDecoder(*ExecutionContext::From(script_state_),
                                      gpu_factories_, logger_->log());
     if (!decoder_) {
-      Shutdown(logger_->MakeException(
-          "Configuration error: Could not create decoder.",
-          media::StatusCode::kDecoderCreationFailed));
+      Shutdown(
+          logger_->MakeException("Internal error: Could not create decoder.",
+                                 media::StatusCode::kDecoderCreationFailed));
       return false;
     }
 
@@ -280,6 +290,9 @@ bool DecoderTemplate<Traits>::ProcessConfigureRequest(Request* request) {
     // which can happen if InitializeDecoder() calls it synchronously.
     pending_request_ = request;
     initializing_sync_ = true;
+
+    SetHardwarePreference(pending_request_->hw_pref);
+
     Traits::InitializeDecoder(
         *decoder_, *pending_request_->media_config,
         WTF::Bind(&DecoderTemplate::OnInitializeDone, WrapWeakPersistent(this)),
@@ -468,9 +481,13 @@ void DecoderTemplate<Traits>::OnConfigureFlushDone(media::Status status) {
   DCHECK_EQ(pending_request_->type, Request::Type::kConfigure);
 
   if (!status.is_ok()) {
-    Shutdown(logger_->MakeException("Configuration error.", status));
+    Shutdown(logger_->MakeException(
+        "Internal error: failed to flush out frames from previous config.",
+        status));
     return;
   }
+
+  SetHardwarePreference(pending_request_->hw_pref);
 
   // Processing continues in OnInitializeDone().
   Traits::InitializeDecoder(
@@ -490,7 +507,13 @@ void DecoderTemplate<Traits>::OnInitializeDone(media::Status status) {
   DCHECK_EQ(pending_request_->type, Request::Type::kConfigure);
 
   if (!status.is_ok()) {
-    Shutdown(logger_->MakeException("Decoder initialization error.", status));
+    std::string error_message = "Decoder initialization error.";
+    if (status.code() == media::StatusCode::kDecoderUnsupportedConfig) {
+      error_message =
+          "Unsupported configuration. Check isConfigSupported() prior to "
+          "calling configure().";
+    }
+    Shutdown(logger_->MakeException(error_message, status));
     return;
   }
 
@@ -573,7 +596,9 @@ void DecoderTemplate<Traits>::OnOutput(uint32_t reset_generation,
 
 template <typename Traits>
 void DecoderTemplate<Traits>::ContextDestroyed() {
+  state_ = V8CodecState(V8CodecState::Enum::kClosed);
   logger_->Neuter();
+  decoder_.reset();
 }
 
 template <typename Traits>

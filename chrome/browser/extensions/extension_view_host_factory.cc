@@ -14,7 +14,7 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
-#include "extensions/common/view_type.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 
 namespace extensions {
 
@@ -28,10 +28,10 @@ std::unique_ptr<ExtensionViewHost> CreateViewHostForExtension(
     const GURL& url,
     Profile* profile,
     Browser* browser,
-    ViewType view_type) {
+    mojom::ViewType view_type) {
   DCHECK(profile);
   // A NULL browser may only be given for dialogs.
-  DCHECK(browser || view_type == VIEW_TYPE_EXTENSION_DIALOG);
+  DCHECK(browser || view_type == mojom::ViewType::kExtensionDialog);
   scoped_refptr<content::SiteInstance> site_instance =
       ProcessManager::Get(profile)->GetSiteInstanceForURL(url);
   return std::make_unique<ExtensionViewHost>(extension, site_instance.get(),
@@ -45,7 +45,7 @@ std::unique_ptr<ExtensionViewHost> CreateViewHostForIncognito(
     const GURL& url,
     Profile* profile,
     Browser* browser,
-    ViewType view_type) {
+    mojom::ViewType view_type) {
   DCHECK(extension);
   DCHECK(profile->IsOffTheRecord());
 
@@ -82,10 +82,10 @@ std::unique_ptr<ExtensionViewHost> CreateViewHost(
     const GURL& url,
     Profile* profile,
     Browser* browser,
-    extensions::ViewType view_type) {
+    extensions::mojom::ViewType view_type) {
   DCHECK(profile);
   // A NULL browser may only be given for dialogs.
-  DCHECK(browser || view_type == VIEW_TYPE_EXTENSION_DIALOG);
+  DCHECK(browser || view_type == mojom::ViewType::kExtensionDialog);
 
   const Extension* extension = GetExtensionForUrl(profile, url);
   if (!extension)
@@ -105,8 +105,8 @@ std::unique_ptr<ExtensionViewHost> ExtensionViewHostFactory::CreatePopupHost(
     const GURL& url,
     Browser* browser) {
   DCHECK(browser);
-  return CreateViewHost(
-      url, browser->profile(), browser, VIEW_TYPE_EXTENSION_POPUP);
+  return CreateViewHost(url, browser->profile(), browser,
+                        mojom::ViewType::kExtensionPopup);
 }
 
 // static
@@ -114,7 +114,7 @@ std::unique_ptr<ExtensionViewHost> ExtensionViewHostFactory::CreateDialogHost(
     const GURL& url,
     Profile* profile) {
   DCHECK(profile);
-  return CreateViewHost(url, profile, NULL, VIEW_TYPE_EXTENSION_DIALOG);
+  return CreateViewHost(url, profile, NULL, mojom::ViewType::kExtensionDialog);
 }
 
 }  // namespace extensions

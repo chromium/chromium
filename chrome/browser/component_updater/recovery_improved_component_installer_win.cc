@@ -35,7 +35,7 @@ const base::FilePath::CharType kRecoveryFileName[] =
 
 // Returns the Chrome's appid registered with Google Update for updates.
 std::string GetBrowserAppId() {
-  return base::UTF16ToUTF8(install_static::GetAppGuid());
+  return base::WideToUTF8(install_static::GetAppGuid());
 }
 
 // Returns the current browser version.

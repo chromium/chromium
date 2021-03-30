@@ -154,7 +154,9 @@ void CandidateWindowControllerImpl::UpdateLookupTable(
 }
 
 void CandidateWindowControllerImpl::UpdatePreeditText(
-    const base::string16& text, unsigned int cursor, bool visible) {
+    const std::u16string& text,
+    unsigned int cursor,
+    bool visible) {
   // If it's not visible, hide the preedit text and return.
   if (!visible || text.empty()) {
     if (candidate_window_view_)

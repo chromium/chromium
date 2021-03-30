@@ -142,6 +142,7 @@ source_set("test_support") {
     "//media/base/android:test_support",
     "//media/filters:test_support",
     "//media/formats:test_support",
+    "//media/renderers:test_support",
     "//media/video:test_support",
   ]
 }
@@ -282,6 +283,8 @@ component("shared_memory_support") {
     "base/vector_math.cc",
     "base/vector_math.h",
     "base/vector_math_testing.h",
+    "base/video_types.cc",
+    "base/video_types.h",
   ]
   if (is_mac) {
     # These need to be included here because audio_latency.cc depends on them.

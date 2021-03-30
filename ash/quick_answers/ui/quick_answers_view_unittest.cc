@@ -4,10 +4,10 @@
 
 #include "ash/quick_answers/ui/quick_answers_view.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/quick_answers/quick_answers_controller_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_controller.h"
@@ -85,7 +85,7 @@ class QuickAnswersViewsTest : public AshTestBase {
   void CreateAndShowBasicMenu() {
     menu_delegate_ = std::make_unique<views::Label>();
     menu_model_ = std::make_unique<ui::SimpleMenuModel>(menu_delegate_.get());
-    menu_model_->AddItem(0, base::ASCIIToUTF16("Menu item"));
+    menu_model_->AddItem(0, u"Menu item");
     menu_runner_ = std::make_unique<views::MenuRunner>(
         menu_model_.get(), views::MenuRunner::CONTEXT_MENU);
     menu_parent_ = CreateTestWidget();

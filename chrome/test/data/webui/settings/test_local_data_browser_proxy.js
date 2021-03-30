@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import { CookieList,LocalDataBrowserProxy, LocalDataItem} from 'chrome://settings/lazy_load.js';
+import {CookieDetails, LocalDataBrowserProxy, LocalDataItem} from 'chrome://settings/lazy_load.js';
 
 import {TestBrowserProxy} from '../test_browser_proxy.m.js';
 // clang-format on
@@ -22,6 +22,7 @@ export class TestLocalDataBrowserProxy extends TestBrowserProxy {
       'removeAll',
       'removeShownItems',
       'removeItem',
+      'removeSite',
       'getCookieDetails',
       'getNumCookiesString',
       'reloadCookies',
@@ -29,8 +30,8 @@ export class TestLocalDataBrowserProxy extends TestBrowserProxy {
       'removeAllThirdPartyCookies',
     ]);
 
-    /** @private {?CookieList} */
-    this.cookieDetails_ = null;
+    /** @private {!Array<!CookieDetails>} */
+    this.cookieDetails_ = [];
 
     /** @private {Array<!LocalDataItem>} */
     this.cookieList_ = [];
@@ -41,7 +42,7 @@ export class TestLocalDataBrowserProxy extends TestBrowserProxy {
 
   /**
    * Test-only helper.
-   * @param {!CookieList} cookieDetails
+   * @param {!Array<!CookieDetails>} cookieDetails
    */
   setCookieDetails(cookieDetails) {
     this.cookieDetails_ = cookieDetails;
@@ -69,7 +70,7 @@ export class TestLocalDataBrowserProxy extends TestBrowserProxy {
         output.push(this.filteredCookieList_[i]);
       }
     }
-    return Promise.resolve({items: output, total: output.length});
+    return Promise.resolve(output);
   }
 
   /** @override */
@@ -84,15 +85,14 @@ export class TestLocalDataBrowserProxy extends TestBrowserProxy {
   }
 
   /** @override */
-  removeItem(id) {
-    this.methodCalled('removeItem', id);
+  removeSite(path) {
+    this.methodCalled('removeSite', path);
   }
 
   /** @override */
   getCookieDetails(site) {
     this.methodCalled('getCookieDetails', site);
-    return Promise.resolve(
-        this.cookieDetails_ || {id: '', children: [], start: 0});
+    return Promise.resolve(this.cookieDetails_);
   }
 
   /** @override */
@@ -109,8 +109,8 @@ export class TestLocalDataBrowserProxy extends TestBrowserProxy {
   }
 
   /** @override */
-  removeCookie(path) {
-    this.methodCalled('removeCookie', path);
+  removeItem(path) {
+    this.methodCalled('removeItem', path);
   }
 
   /** @override */

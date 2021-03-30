@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/components/web_app_shortcut.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 
 class Profile;
@@ -36,7 +37,10 @@ void RegisterFileHandlersWithOs(const AppId& app_id,
 
 // Undo the file extensions registration for the PWA with specified |app_id|.
 // If a shim app was required, also removes the shim app.
-void UnregisterFileHandlersWithOs(const AppId& app_id, Profile* profile);
+void UnregisterFileHandlersWithOs(const AppId& app_id,
+                                  Profile* profile,
+                                  std::unique_ptr<ShortcutInfo> info,
+                                  base::OnceCallback<void()> callback);
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 using RegisterMimeTypesOnLinuxCallback =

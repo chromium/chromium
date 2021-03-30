@@ -7,11 +7,11 @@
 
 #include <windows.h>
 
+#include <string>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
 #include "chrome/installer/util/work_item_list.h"
@@ -32,8 +32,8 @@ class InstallServiceWorkItemImpl {
     ServiceConfig(uint32_t service_type,
                   uint32_t service_start_type,
                   uint32_t service_error_control,
-                  const base::string16& service_cmd_line,
-                  const base::char16* dependencies_multi_sz);
+                  const std::wstring& service_cmd_line,
+                  const wchar_t* dependencies_multi_sz);
     ServiceConfig(ServiceConfig&& rhs);
 
     ServiceConfig& operator=(ServiceConfig&& rhs) = default;
@@ -44,16 +44,16 @@ class InstallServiceWorkItemImpl {
     uint32_t type;
     uint32_t start_type;
     uint32_t error_control;
-    base::string16 cmd_line;
-    std::vector<base::char16> dependencies;
+    std::wstring cmd_line;
+    std::vector<wchar_t> dependencies;
 
     DISALLOW_COPY_AND_ASSIGN(ServiceConfig);
   };
 
-  InstallServiceWorkItemImpl(const base::string16& service_name,
-                             const base::string16& display_name,
+  InstallServiceWorkItemImpl(const std::wstring& service_name,
+                             const std::wstring& display_name,
                              const base::CommandLine& service_cmd_line,
-                             const base::string16& registry_path,
+                             const std::wstring& registry_path,
                              const std::vector<GUID>& clsids,
                              const std::vector<GUID>& iids);
 
@@ -77,7 +77,7 @@ class InstallServiceWorkItemImpl {
 
   // Returns the versioned service name if one exists in the registry under the
   // named value service_name_. In other cases, it returns service_name_.
-  base::string16 GetCurrentServiceName() const;
+  std::wstring GetCurrentServiceName() const;
 
   // Returns a display name of the following format:
   // "Chrome Elevation Service (ChromeElevationService)"
@@ -87,12 +87,11 @@ class InstallServiceWorkItemImpl {
   // The "Chrome Elevation Service" fragment is the display_name_, and the
   // "ChromeElevationService1d59511c58deaa8" fragment is the versioned service
   // name returned from GetCurrentServiceName().
-  base::string16 GetCurrentServiceDisplayName() const;
+  std::wstring GetCurrentServiceDisplayName() const;
 
   // Copies and returns a vector containing a sequence of C-style strings
   // terminated with '\0\0'. Return an empty vector if the input is nullptr.
-  static std::vector<base::char16> MultiSzToVector(
-      const base::char16* multi_sz);
+  static std::vector<wchar_t> MultiSzToVector(const wchar_t* multi_sz);
 
  private:
   class ScHandleTraits {
@@ -147,20 +146,20 @@ class InstallServiceWorkItemImpl {
 
   // Generates a versioned service name prefixed with service_name_ and suffixed
   // with the current system time in hexadecimal format.
-  base::string16 GenerateVersionedServiceName() const;
+  std::wstring GenerateVersionedServiceName() const;
 
   // Persists the given service name in the registry.
-  bool SetServiceName(const base::string16& service_name) const;
+  bool SetServiceName(const std::wstring& service_name) const;
 
   // The COM registration is done using a contained WorkItemList.
   std::unique_ptr<WorkItemList> com_registration_work_items_;
 
   // The service name, or in the case of a conflict, the prefix for the service
   // name.
-  const base::string16 service_name_;
+  const std::wstring service_name_;
 
   // The service name displayed to the user.
-  const base::string16 display_name_;
+  const std::wstring display_name_;
 
   // The desired service command line.
   const base::CommandLine service_cmd_line_;
@@ -168,7 +167,7 @@ class InstallServiceWorkItemImpl {
   // The path under HKEY_LOCAL_MACHINE where the service persists information,
   // such as a versioned service name. For legacy reasons, this path is mapped
   // to the 32-bit view of the registry.
-  const base::string16 registry_path_;
+  const std::wstring registry_path_;
 
   // If COM CLSID/AppId registration is required, |clsids_| would be populated.
   const std::vector<GUID> clsids_;
@@ -196,7 +195,7 @@ class InstallServiceWorkItemImpl {
 
   // The service name prior to any modifications; may be either |service_name_|
   // or a value read from the registry.
-  base::string16 original_service_name_;
+  std::wstring original_service_name_;
 
   // True if a pre-existing service (named |original_service_name_|) could not
   // be deleted and still exists on rollback.

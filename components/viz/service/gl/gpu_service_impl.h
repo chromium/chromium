@@ -163,6 +163,9 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
   void DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
                               int client_id,
                               const gpu::SyncToken& sync_token) override;
+  void CopyGpuMemoryBuffer(gfx::GpuMemoryBufferHandle buffer_handle,
+                           base::UnsafeSharedMemoryRegion shared_memory,
+                           CopyGpuMemoryBufferCallback callback) override;
   void GetVideoMemoryUsageStats(
       GetVideoMemoryUsageStatsCallback callback) override;
   void StartPeakMemoryMonitor(uint32_t sequence_num) override;
@@ -314,6 +317,10 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
   DawnContextProvider* dawn_context_provider() { return nullptr; }
 #endif
 
+  using VisibilityChangedCallback =
+      base::RepeatingCallback<void(bool /*visible*/)>;
+  void SetVisibilityChangedCallback(VisibilityChangedCallback);
+
  private:
   void RecordLogMessage(int severity,
                         const std::string& header,
@@ -334,6 +341,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
   void RequestHDRStatusOnMainThread(RequestHDRStatusCallback callback);
 
   void OnBackgroundedOnMainThread();
+  void OnForegroundedOnMainThread();
 
   // Ensure that all peak memory tracking occurs on the main thread as all
   // MemoryTracker are created on that thread. All requests made before
@@ -427,6 +435,8 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
 
   // Display compositor contexts that don't have a corresponding GPU channel.
   base::ObserverList<gpu::DisplayContext>::Unchecked display_contexts_;
+
+  VisibilityChangedCallback visibility_changed_callback_;
 
   base::WeakPtr<GpuServiceImpl> weak_ptr_;
   base::WeakPtrFactory<GpuServiceImpl> weak_ptr_factory_{this};

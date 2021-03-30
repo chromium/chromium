@@ -42,7 +42,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
@@ -751,7 +750,7 @@ TEST_F(RenderAccessibilityImplTest, TestBoundsForFixedNodeAfterScroll) {
 
   int scroll_offset_y = 50;
 
-  ui::AXNode::AXID expected_id = ui::AXNode::kInvalidAXID;
+  ui::AXNodeID expected_id = ui::kInvalidAXNodeID;
   ui::AXRelativeBounds expected_bounds;
 
   // Prepare the expected information from the tree.
@@ -770,7 +769,7 @@ TEST_F(RenderAccessibilityImplTest, TestBoundsForFixedNodeAfterScroll) {
       }
     }
 
-    if (expected_id != ui::AXNode::kInvalidAXID)
+    if (expected_id != ui::kInvalidAXNodeID)
       break;
   }
 
@@ -821,7 +820,7 @@ TEST_F(RenderAccessibilityImplTest, TestBoundsForMultipleFixedNodeAfterScroll) {
 
   int scroll_offset_y = 50;
 
-  std::map<ui::AXNode::AXID, ui::AXRelativeBounds> expected;
+  std::map<ui::AXNodeID, ui::AXRelativeBounds> expected;
 
   // Prepare the expected information from the tree.
   const std::vector<ui::AXTreeUpdate>& updates = GetHandledAccUpdates();
@@ -913,7 +912,7 @@ TEST_F(RenderAccessibilityImplTest, TestFocusConsistency) {
   // The pattern up DOM/style updates above result in multiple AXTreeUpdates
   // sent over mojo. Search the updates to ensure that the button
   const std::vector<ui::AXTreeUpdate>& updates = GetHandledAccUpdates();
-  ui::AXNode::AXID focused_node = ui::AXNode::kInvalidAXID;
+  ui::AXNodeID focused_node = ui::kInvalidAXNodeID;
   bool found_button_update = false;
   for (const auto& update : updates) {
     if (update.has_tree_data)
@@ -932,7 +931,7 @@ TEST_F(RenderAccessibilityImplTest, TestFocusConsistency) {
 
 class MockPluginAccessibilityTreeSource : public content::PluginAXTreeSource {
  public:
-  MockPluginAccessibilityTreeSource(ui::AXNode::AXID root_node_id) {
+  MockPluginAccessibilityTreeSource(ui::AXNodeID root_node_id) {
     ax_tree_ = std::make_unique<ui::AXTree>();
     root_node_ =
         std::make_unique<ui::AXNode>(ax_tree_.get(), nullptr, root_node_id, 0);
@@ -940,7 +939,7 @@ class MockPluginAccessibilityTreeSource : public content::PluginAXTreeSource {
   ~MockPluginAccessibilityTreeSource() override {}
   bool GetTreeData(ui::AXTreeData* data) const override { return true; }
   ui::AXNode* GetRoot() const override { return root_node_.get(); }
-  ui::AXNode* GetFromId(ui::AXNode::AXID id) const override {
+  ui::AXNode* GetFromId(ui::AXNodeID id) const override {
     return (root_node_->data().id == id) ? root_node_.get() : nullptr;
   }
   int32_t GetId(const ui::AXNode* node) const override {
@@ -1004,7 +1003,7 @@ TEST_F(RenderAccessibilityImplTest, TestAXActionTargetFromNodeId) {
   EXPECT_EQ(ui::AXActionTarget::Type::kBlink, body_action_target->GetType());
 
   // An AxID for a Plugin node should produce a Plugin action target.
-  ui::AXNode::AXID root_node_id = GetRenderAccessibilityImpl()->GenerateAXID();
+  ui::AXNodeID root_node_id = GetRenderAccessibilityImpl()->GenerateAXID();
   MockPluginAccessibilityTreeSource pdf_acc_tree(root_node_id);
   GetRenderAccessibilityImpl()->SetPluginTreeSource(&pdf_acc_tree);
 
@@ -1063,7 +1062,7 @@ TEST_F(BlinkAXActionTargetTest, TestMethods) {
   WebAXObject input_checkbox = body.ChildAt(0);
   WebAXObject input_range = body.ChildAt(1);
   WebAXObject input_text = body.ChildAt(2);
-  WebAXObject option = body.ChildAt(3).ChildAt(0);
+  WebAXObject option = body.ChildAt(3).ChildAt(0).ChildAt(0);
   WebAXObject scroller = body.ChildAt(4);
   WebAXObject scroller_child = body.ChildAt(4).ChildAt(1);
   WebAXObject text_one = body.ChildAt(5).ChildAt(0);
@@ -1116,21 +1115,37 @@ TEST_F(BlinkAXActionTargetTest, TestMethods) {
             text_two_action_target->GetType());
 
   EXPECT_EQ(ax::mojom::CheckedState::kFalse, input_checkbox.CheckedState());
-  EXPECT_TRUE(input_checkbox_action_target->Click());
+  {
+    ui::AXActionData action_data;
+    action_data.action = ax::mojom::Action::kDoDefault;
+    EXPECT_TRUE(input_checkbox_action_target->PerformAction(action_data));
+  }
   EXPECT_EQ(ax::mojom::CheckedState::kTrue, input_checkbox.CheckedState());
 
   float value = 0.0f;
   EXPECT_TRUE(input_range.ValueForRange(&value));
   EXPECT_EQ(2.0f, value);
-  EXPECT_TRUE(input_range_action_target->Decrement());
+  {
+    ui::AXActionData action_data;
+    action_data.action = ax::mojom::Action::kDecrement;
+    EXPECT_TRUE(input_range_action_target->PerformAction(action_data));
+  }
   EXPECT_TRUE(input_range.ValueForRange(&value));
   EXPECT_EQ(1.0f, value);
-  EXPECT_TRUE(input_range_action_target->Increment());
+  {
+    ui::AXActionData action_data;
+    action_data.action = ax::mojom::Action::kIncrement;
+    EXPECT_TRUE(input_range_action_target->PerformAction(action_data));
+  }
   EXPECT_TRUE(input_range.ValueForRange(&value));
   EXPECT_EQ(2.0f, value);
 
   EXPECT_FALSE(input_range.IsFocused());
-  EXPECT_TRUE(input_range_action_target->Focus());
+  {
+    ui::AXActionData action_data;
+    action_data.action = ax::mojom::Action::kFocus;
+    EXPECT_TRUE(input_range_action_target->PerformAction(action_data));
+  }
   EXPECT_TRUE(input_range.IsFocused());
 
   gfx::RectF expected_bounds;
@@ -1160,8 +1175,13 @@ TEST_F(BlinkAXActionTargetTest, TestMethods) {
 #endif
 
   std::string value_to_set("test-value");
-  input_text_action_target->SetValue(value_to_set);
-  EXPECT_EQ(value_to_set, input_text.StringValue().Utf8());
+  {
+    ui::AXActionData action_data;
+    action_data.action = ax::mojom::Action::kSetValue;
+    action_data.value = value_to_set;
+    EXPECT_TRUE(input_text_action_target->PerformAction(action_data));
+  }
+  EXPECT_EQ(value_to_set, input_text.GetValueForControl().Utf8());
 
   // Setting selection requires layout to be clean.
   ASSERT_TRUE(root_obj.MaybeUpdateLayoutAndCheckValidity());
@@ -1198,8 +1218,12 @@ TEST_F(BlinkAXActionTargetTest, TestMethods) {
 
   scroller_action_target->SetScrollOffset(gfx::Point(0, 0));
   EXPECT_EQ(gfx::Point(0, 0), scroller_action_target->GetScrollOffset());
-  EXPECT_TRUE(
-      scroller_child_action_target->ScrollToGlobalPoint(gfx::Point(0, 0)));
+  {
+    ui::AXActionData action_data;
+    action_data.action = ax::mojom::Action::kScrollToPoint;
+    action_data.target_point = gfx::Point(0, 0);
+    EXPECT_TRUE(scroller_child_action_target->PerformAction(action_data));
+  }
   EXPECT_GE(scroller_action_target->GetScrollOffset().y(), 900);
 }
 

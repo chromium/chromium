@@ -59,9 +59,6 @@ ScopedStyleResolver* ScopedStyleResolver::Parent() const {
 }
 
 void ScopedStyleResolver::AddKeyframeRules(const RuleSet& rule_set) {
-  if (RuntimeEnabledFeatures::CSSKeyframesMemoryReductionEnabled())
-    return;
-
   const HeapVector<Member<StyleRuleKeyframes>> keyframes_rules =
       rule_set.KeyframesRules();
   for (auto rule : keyframes_rules)
@@ -93,6 +90,19 @@ void ScopedStyleResolver::AddFontFaceRules(const RuleSet& rule_set) {
     document.GetStyleResolver().InvalidateMatchedPropertiesCache();
 }
 
+void ScopedStyleResolver::AddCounterStyleRules(const RuleSet& rule_set) {
+  if (!RuntimeEnabledFeatures::CSSAtRuleCounterStyleInShadowDOMEnabled()) {
+    // Our support of @counter-style rules in shadow DOM is experimental and
+    // non-standard. See https://github.com/w3c/csswg-drafts/issues/5693
+    if (!GetTreeScope().RootNode().IsDocumentNode())
+      return;
+  }
+
+  if (rule_set.CounterStyleRules().IsEmpty())
+    return;
+  EnsureCounterStyleMap().AddCounterStyles(rule_set);
+}
+
 void ScopedStyleResolver::AppendActiveStyleSheets(
     unsigned index,
     const ActiveStyleSheetVector& active_sheets) {
@@ -109,8 +119,7 @@ void ScopedStyleResolver::AppendActiveStyleSheets(
     style_sheets_.push_back(sheet);
     AddKeyframeRules(rule_set);
     AddFontFaceRules(rule_set);
-    if (!rule_set.CounterStyleRules().IsEmpty())
-      EnsureCounterStyleMap().AddCounterStyles(rule_set);
+    AddCounterStyleRules(rule_set);
     AddSlottedRules(rule_set, sheet, index++);
   }
 }
@@ -143,47 +152,14 @@ void ScopedStyleResolver::ResetStyle() {
   viewport_dependent_media_query_results_.clear();
   device_dependent_media_query_results_.clear();
   keyframes_rule_map_.clear();
-  counter_style_map_.Clear();
+  if (counter_style_map_)
+    counter_style_map_->Dispose();
   slotted_rule_set_ = nullptr;
   needs_append_all_sheets_ = false;
 }
 
-const ActiveStyleSheetVector& ScopedStyleResolver::ActiveStyleSheets() {
-  StyleSheetCollection* collection =
-      GetTreeScope().GetDocument().GetStyleEngine().StyleSheetCollectionFor(
-          *scope_);
-  DCHECK(collection);
-  return collection->ActiveStyleSheets();
-}
-
-// static
-StyleRuleKeyframes*
-ScopedStyleResolver::KeyframeStylesForAnimationFromActiveSheets(
-    const AtomicString& name,
-    const ActiveStyleSheetVector& sheets) {
-  // We prefer non-vendor-prefixed over vendor-prefixed rules.
-  StyleRuleKeyframes* vendor_prefixed_result = nullptr;
-  for (auto sheet = sheets.rbegin(); sheet != sheets.rend(); ++sheet) {
-    RuleSet* rule_set = sheet->second;
-    if (!rule_set)
-      continue;
-    if (StyleRuleKeyframes* rule = rule_set->KeyframeStylesForAnimation(name)) {
-      if (!rule->IsVendorPrefixed())
-        return rule;
-      if (!vendor_prefixed_result)
-        vendor_prefixed_result = rule;
-    }
-  }
-  return vendor_prefixed_result;
-}
-
 StyleRuleKeyframes* ScopedStyleResolver::KeyframeStylesForAnimation(
     const AtomicString& animation_name) {
-  if (RuntimeEnabledFeatures::CSSKeyframesMemoryReductionEnabled()) {
-    return KeyframeStylesForAnimationFromActiveSheets(animation_name,
-                                                      ActiveStyleSheets());
-  }
-
   if (keyframes_rule_map_.IsEmpty())
     return nullptr;
 
@@ -195,7 +171,6 @@ StyleRuleKeyframes* ScopedStyleResolver::KeyframeStylesForAnimation(
 }
 
 void ScopedStyleResolver::AddKeyframeStyle(StyleRuleKeyframes* rule) {
-  DCHECK(!RuntimeEnabledFeatures::CSSKeyframesMemoryReductionEnabled());
   AtomicString name = rule->GetName();
 
   if (rule->IsVendorPrefixed()) {

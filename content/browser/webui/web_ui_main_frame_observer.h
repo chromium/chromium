@@ -7,7 +7,8 @@
 
 #include <stdint.h>
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -49,10 +50,10 @@ class CONTENT_EXPORT WebUIMainFrameObserver : public WebContentsObserver {
   void OnDidAddMessageToConsole(
       RenderFrameHost* source_frame,
       blink::mojom::ConsoleMessageLevel log_level,
-      const base::string16& message,
+      const std::u16string& message,
       int32_t line_no,
-      const base::string16& source_id,
-      const base::Optional<base::string16>& untrusted_stack_trace) override;
+      const std::u16string& source_id,
+      const base::Optional<std::u16string>& untrusted_stack_trace) override;
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 

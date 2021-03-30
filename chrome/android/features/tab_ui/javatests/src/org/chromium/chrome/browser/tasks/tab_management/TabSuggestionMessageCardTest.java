@@ -8,37 +8,47 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.AllOf.allOf;
 
 import static org.chromium.chrome.test.util.ViewUtils.onViewWaiting;
 
-import android.os.Build.VERSION_CODES;
+import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.test.util.UiRestriction;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 /**
  * End-to-end tests for TabSuggestion.
@@ -54,11 +64,16 @@ import org.chromium.ui.test.util.UiRestriction;
 @Features.DisableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         "force-fieldtrials=Study/Group"})
-@FlakyTest(message = "https://crbug.com/1161272")
 public class TabSuggestionMessageCardTest {
     // clang-format on
     private static final String BASE_PARAMS = "force-fieldtrial-params="
-            + "Study.Group:baseline_tab_suggestions/true/enable_launch_polish/true";
+            + "Study.Group:baseline_tab_suggestions/true/enable_launch_polish/true"
+            + "/min_time_between_prefetches/0/thumbnail_aspect_ratio/1.0";
+    private static final String ENABLE_CLOSE_SUGGESTION_PARAM =
+            "/baseline_close_tab_suggestions/true";
+    private static final String ENABLE_GROUP_SUGGESTION_PARAM =
+            "/baseline_group_tab_suggestions/true";
+
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
@@ -68,10 +83,51 @@ public class TabSuggestionMessageCardTest {
             "3 of your tabs haven't been used lately. Close them?";
     private final String mGroupingSuggestionMessage = "3 tabs seem related. Group them?";
 
+    private void createBlankBackgroundTabs(int numTabs) {
+        for (int i = 0; i < numTabs; i++) {
+            mActivityTestRule.getActivity().getTabCreator(false).createNewTab(
+                    new LoadUrlParams("about:blank"), TabLaunchType.FROM_LONGPRESS_BACKGROUND,
+                    null);
+        }
+    }
+
+    private void createBlankForegroundTabs(int numTabs) {
+        for (int i = 0; i < numTabs; i++) {
+            mActivityTestRule.getActivity().getTabCreator(false).createNewTab(
+                    new LoadUrlParams("about:blank"), TabLaunchType.FROM_CHROME_UI, null);
+        }
+    }
+
+    private CallbackHelper mPaintedCallback = new CallbackHelper();
+
     @Before
-    public void setUp() {
+    public void setUp() throws ExecutionException {
         mActivityTestRule.startMainActivityOnBlankPage();
-        TabUiTestHelper.prepareTabsWithThumbnail(mActivityTestRule, 3, 0, "about:blank");
+        ThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> new TabModelSelectorTabObserver(
+                                mActivityTestRule.getActivity().getTabModelSelector()) {
+                    @Override
+                    public void didFirstVisuallyNonEmptyPaint(Tab tab) {
+                        mPaintedCallback.notifyCalled();
+                    }
+                });
+
+        // TabObserver#didFirstVisuallyNonEmptyPaint will invalidate and fetch for new suggestion.
+        // Create one foreground tab and one background tab to ensure mPaintedCallback only call
+        // once to make the tests less flaky.
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(
+                () -> createBlankForegroundTabs(1));
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(
+                () -> createBlankBackgroundTabs(1));
+        assertThat("TabModelSelector should have total of 3 tabs",
+                mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount(), is(3));
+
+        try {
+            mPaintedCallback.waitForCallback(0);
+        } catch (TimeoutException ex) {
+            Assert.fail("Never received tab painted event");
+        }
     }
 
     private void enteringTabSwitcherAndVerifySuggestionIsShown(String suggestionText) {
@@ -107,8 +163,7 @@ public class TabSuggestionMessageCardTest {
 
     @Test
     @MediumTest
-    @FlakyTest(message = "crbug.com/1075650")
-    @CommandLineFlags.Add({BASE_PARAMS + "/baseline_close_tab_suggestions/true"})
+    @CommandLineFlags.Add({BASE_PARAMS + ENABLE_CLOSE_SUGGESTION_PARAM})
     public void closeTabSuggestionReviewedAndAccepted() {
         CriteriaHelper.pollUiThread(TabSuggestionMessageService::isSuggestionAvailableForTesting);
 
@@ -121,10 +176,7 @@ public class TabSuggestionMessageCardTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.
-    Add({BASE_PARAMS + "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0"})
-    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.N, message = "https://crbug.com/1095535")
-    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1095535")
+    @CommandLineFlags.Add({BASE_PARAMS + ENABLE_CLOSE_SUGGESTION_PARAM})
     public void closeTabSuggestionReviewedAndDismissed() {
         CriteriaHelper.pollUiThread(TabSuggestionMessageService::isSuggestionAvailableForTesting);
 
@@ -137,8 +189,7 @@ public class TabSuggestionMessageCardTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.
-    Add({BASE_PARAMS + "/baseline_group_tab_suggestions/true/min_time_between_prefetches/0"})
+    @CommandLineFlags.Add({BASE_PARAMS + ENABLE_GROUP_SUGGESTION_PARAM})
     public void groupTabSuggestionReviewedAndAccepted() {
         CriteriaHelper.pollUiThread(TabSuggestionMessageService::isSuggestionAvailableForTesting);
 
@@ -151,12 +202,8 @@ public class TabSuggestionMessageCardTest {
 
     @Test
     @MediumTest
-    // clang-format off
-    @CommandLineFlags.Add({BASE_PARAMS +
-        "/baseline_group_tab_suggestions/true/min_time_between_prefetches/0"})
-    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1102423")
+    @CommandLineFlags.Add({BASE_PARAMS + ENABLE_GROUP_SUGGESTION_PARAM})
     public void groupTabSuggestionReviewedAndDismissed() {
-        // clang-format on
         CriteriaHelper.pollUiThread(TabSuggestionMessageService::isSuggestionAvailableForTesting);
 
         enteringTabSwitcherAndVerifySuggestionIsShown(mGroupingSuggestionMessage);
@@ -169,8 +216,8 @@ public class TabSuggestionMessageCardTest {
     @Test
     @MediumTest
     // clang-format off
-    @CommandLineFlags.Add({BASE_PARAMS + "/baseline_group_tab_suggestions/true" +
-            "/baseline_close_tab_suggestions/true"})
+    @CommandLineFlags.Add({BASE_PARAMS + ENABLE_GROUP_SUGGESTION_PARAM +
+            ENABLE_CLOSE_SUGGESTION_PARAM})
     @DisabledTest(message = "crbug.com/1085452 Enable this test and remove the one below if the" +
             "bug is resolved")
     public void groupAndCloseTabSuggestionDismissedAndShowNext() {
@@ -190,11 +237,9 @@ public class TabSuggestionMessageCardTest {
     @Test
     @MediumTest
     @DisabledTest(message = "crbug.com/1085452")
-    // clang-format off
-    @CommandLineFlags.Add({BASE_PARAMS + "/baseline_group_tab_suggestions/true" +
-            "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0"})
+    @CommandLineFlags.
+    Add({BASE_PARAMS + ENABLE_GROUP_SUGGESTION_PARAM + ENABLE_CLOSE_SUGGESTION_PARAM})
     public void groupAndCloseTabSuggestionDismissedAndShowNext_temp() {
-        // clang-format on
         CriteriaHelper.pollUiThread(TabSuggestionMessageService::isSuggestionAvailableForTesting);
 
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
@@ -209,12 +254,10 @@ public class TabSuggestionMessageCardTest {
 
     @Test
     @MediumTest
-    // clang-format off
-    @CommandLineFlags.Add({BASE_PARAMS + "/baseline_group_tab_suggestions/true" +
-            "/baseline_close_tab_suggestions/true"})
+    @CommandLineFlags.
+    Add({BASE_PARAMS + ENABLE_GROUP_SUGGESTION_PARAM + ENABLE_CLOSE_SUGGESTION_PARAM})
     @DisabledTest(message = "crbug.com/1085452 Enable this test if the bug is resolved")
     public void groupAndCloseTabSuggestionReviewDismissedAndShowNext() {
-        // clang-format on
         CriteriaHelper.pollUiThread(TabSuggestionMessageService::isSuggestionAvailableForTesting);
 
         enteringTabSwitcherAndVerifySuggestionIsShown(mGroupingSuggestionMessage);
@@ -231,12 +274,10 @@ public class TabSuggestionMessageCardTest {
 
     @Test
     @MediumTest
-    // clang-format off
-    @CommandLineFlags.Add({BASE_PARAMS + "/baseline_group_tab_suggestions/true" +
-            "/baseline_close_tab_suggestions/true"})
+    @CommandLineFlags.
+    Add({BASE_PARAMS + ENABLE_GROUP_SUGGESTION_PARAM + ENABLE_CLOSE_SUGGESTION_PARAM})
     @DisabledTest(message = "crbug.com/1085452 Enable this test if the bug is resolved")
     public void groupAndCloseTabSuggestionAccepted() {
-        // clang-format on
         CriteriaHelper.pollUiThread(TabSuggestionMessageService::isSuggestionAvailableForTesting);
 
         enteringTabSwitcherAndVerifySuggestionIsShown(mGroupingSuggestionMessage);

@@ -9,7 +9,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/strings/string16.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/validation.h"
@@ -208,7 +207,7 @@ void CreditCardFormEventLogger::OnLog(const std::string& name,
 
 FormEvent CreditCardFormEventLogger::GetCardNumberStatusFormEvent(
     const CreditCard& credit_card) {
-  const base::string16 number = credit_card.number();
+  const std::u16string number = credit_card.number();
   FormEvent form_event =
       FORM_EVENT_SUBMIT_WITHOUT_SELECTING_SUGGESTIONS_UNKNOWN_CARD;
 

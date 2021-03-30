@@ -25,8 +25,7 @@ struct DisplayConfigurationParams;
 
 using GetDisplaysCallback =
     base::OnceCallback<void(const std::vector<DisplaySnapshot*>&)>;
-using ConfigureCallback =
-    base::OnceCallback<void(const base::flat_map<int64_t, bool>&)>;
+using ConfigureCallback = base::OnceCallback<void(bool)>;
 using GetHDCPStateCallback =
     base::OnceCallback<void(bool, HDCPState, ContentProtectionMethod)>;
 using SetHDCPStateCallback = base::OnceCallback<void(bool)>;

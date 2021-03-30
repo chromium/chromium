@@ -12,7 +12,7 @@ assert(!is_official_build,
 group("closure_compile") {
   deps = [
     ":trusted_closure_compile",
-    ":untrusted_closure_compile",
+    "dpsl:dpsl_closure_compile",
   ]
 }
 
@@ -21,27 +21,11 @@ js_type_check("trusted_closure_compile") {
   deps = [ ":trusted" ]
 }
 
-js_type_check("untrusted_closure_compile") {
-  closure_flags = system_app_closure_flags_strict
-  deps = [ ":untrusted" ]
-}
-
 js_library("trusted") {
   sources = [ "trusted.js" ]
   deps = [
-    ":message_types",
     "../mojom:mojom_js_library_for_compile",
+    "dpsl:types",
     "//chromeos/components/system_apps/public/js:message_pipe",
   ]
-}
-
-js_library("untrusted") {
-  sources = [ "untrusted.js" ]
-  deps = [
-    ":message_types",
-    "//chromeos/components/system_apps/public/js:message_pipe",
-  ]
-}
-
-js_library("message_types") {
 }

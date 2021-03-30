@@ -27,6 +27,7 @@ mac_app_bundle("alert_notification_xpc_service") {
   deps = [
     ":common",
     "//base",
+    "//chrome/services/mac_notifications/public/cpp:constants",
     "//third_party/crashpad/crashpad/client",
   ]
 
@@ -57,10 +58,7 @@ static_library("common") {
     "notification_builder_base.mm",
     "notification_builder_mac.h",
     "notification_builder_mac.mm",
-    "notification_constants_mac.h",
-    "notification_constants_mac.mm",
     "notification_delivery.h",
-    "notification_operation.h",
     "notification_response_builder_mac.h",
     "notification_response_builder_mac.mm",
     "unnotification_builder_mac.h",
@@ -71,5 +69,8 @@ static_library("common") {
     "xpc_mach_port.mm",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//chrome/services/mac_notifications/public/cpp:constants",
+  ]
 }

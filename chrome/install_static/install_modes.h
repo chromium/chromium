@@ -30,6 +30,7 @@
 
 #include <string>
 
+#include "build/branding_buildflags.h"
 #include "chrome/install_static/install_constants.h"
 
 // Include the brand-specific values. Each of these must define:
@@ -37,7 +38,7 @@
 //   array.
 // - NUM_INSTALL_MODES: the total number of modes (i.e., the number of items in
 //   kInstallModes.
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/install_static/google_chrome_install_modes.h"
 #else
 #include "chrome/install_static/chromium_install_modes.h"

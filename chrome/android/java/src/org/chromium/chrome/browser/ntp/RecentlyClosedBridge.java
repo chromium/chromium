@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ntp;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -87,7 +88,8 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
     }
 
     @NativeMethods
-    interface Natives {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public interface Natives {
         long init(RecentlyClosedBridge caller, Profile profile);
         void destroy(long nativeRecentlyClosedTabsBridge, RecentlyClosedBridge caller);
         boolean getRecentlyClosedTabs(long nativeRecentlyClosedTabsBridge,

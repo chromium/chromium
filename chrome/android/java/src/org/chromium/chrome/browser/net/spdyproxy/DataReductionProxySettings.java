@@ -312,7 +312,7 @@ public class DataReductionProxySettings {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         long init(DataReductionProxySettings caller);
         boolean isDataReductionProxyPromoAllowed(
                 long nativeDataReductionProxySettingsAndroid, DataReductionProxySettings caller);

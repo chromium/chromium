@@ -47,6 +47,8 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -164,9 +166,11 @@ gfx::ImageSkia SizeImageModel(const ui::ImageModel& image_model,
 // TODO(crbug.com/1146998): Adjust button size to be 16x16.
 class CircularImageButton : public views::ImageButton {
  public:
+  METADATA_HEADER(CircularImageButton);
+
   CircularImageButton(PressedCallback callback,
                       const gfx::VectorIcon& icon,
-                      const base::string16& text,
+                      const std::u16string& text,
                       SkColor background_profile_color = SK_ColorTRANSPARENT,
                       bool show_border = false)
       : ImageButton(std::move(callback)),
@@ -210,6 +214,9 @@ class CircularImageButton : public views::ImageButton {
   const SkColor background_profile_color_;
   bool show_border_;
 };
+
+BEGIN_METADATA(CircularImageButton, views::ImageButton)
+END_METADATA
 
 class FeatureButtonIconView : public views::ImageView {
  public:
@@ -308,9 +315,10 @@ class AvatarImageView : public views::ImageView {
 
 class SyncButton : public HoverButton {
  public:
+  METADATA_HEADER(SyncButton);
   SyncButton(PressedCallback callback,
              ProfileMenuViewBase* root_view,
-             const base::string16& clickable_text)
+             const std::u16string& clickable_text)
       : HoverButton(std::move(callback), clickable_text),
         root_view_(root_view) {}
 
@@ -323,6 +331,9 @@ class SyncButton : public HoverButton {
  private:
   const ProfileMenuViewBase* root_view_;
 };
+
+BEGIN_METADATA(SyncButton, HoverButton)
+END_METADATA
 
 class SyncImageView : public views::ImageView {
  public:
@@ -340,8 +351,8 @@ class SyncImageView : public views::ImageView {
 };
 
 void BuildProfileTitleAndSubtitle(views::View* parent,
-                                  const base::string16& title,
-                                  const base::string16& subtitle) {
+                                  const std::u16string& title,
+                                  const std::u16string& subtitle) {
   views::View* profile_titles_container =
       parent->AddChildView(std::make_unique<views::View>());
   // Separate the titles from the avatar image by the default margin.
@@ -415,7 +426,7 @@ void BuildProfileBackgroundContainer(
           std::make_unique<views::View>());
   heading_and_image_container->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded)
           .WithOrder(1));
   heading_and_image_container
@@ -458,7 +469,7 @@ void BuildProfileBackgroundContainer(
 
 ProfileMenuViewBase::EditButtonParams::EditButtonParams(
     const gfx::VectorIcon* edit_icon,
-    const base::string16& edit_tooltip_text,
+    const std::u16string& edit_tooltip_text,
     base::RepeatingClosure edit_action)
     : edit_icon(edit_icon),
       edit_tooltip_text(edit_tooltip_text),
@@ -549,12 +560,12 @@ gfx::ImageSkia ProfileMenuViewBase::GetSyncIcon() const {
 }
 
 void ProfileMenuViewBase::SetProfileIdentityInfo(
-    const base::string16& profile_name,
+    const std::u16string& profile_name,
     SkColor profile_background_color,
     base::Optional<EditButtonParams> edit_button_params,
     const ui::ImageModel& image_model,
-    const base::string16& title,
-    const base::string16& subtitle,
+    const std::u16string& title,
+    const std::u16string& subtitle,
     const ui::ThemedVectorIcon& avatar_header_art) {
   constexpr int kBottomMargin = kDefaultMargin;
   const bool new_design =
@@ -573,7 +584,9 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
 
   auto avatar_image_view = std::make_unique<AvatarImageView>(image_model, this);
 
-#if defined(OS_LINUX)
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // crbug.com/1161166: Orca does not read the accessible window title of the
   // bubble, so we duplicate it in the top-level menu item. To be revisited
   // after considering other options, including fixes on the AT side.
@@ -628,6 +641,10 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
     heading_label = std::make_unique<views::Label>(profile_name, font);
     heading_label->SetElideBehavior(gfx::ELIDE_TAIL);
     heading_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+    heading_label->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                                 views::MaximumFlexSizeRule::kUnbounded));
     if (background_color) {
       heading_label->SetAutoColorReadabilityEnabled(false);
       heading_label->SetEnabledColor(
@@ -656,9 +673,9 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
 void ProfileMenuViewBase::SetSyncInfo(const SyncInfo& sync_info,
                                       const base::RepeatingClosure& action,
                                       bool show_badge) {
-  const base::string16 description =
+  const std::u16string description =
       l10n_util::GetStringUTF16(sync_info.description_string_id);
-  const base::string16 clickable_text =
+  const std::u16string clickable_text =
       l10n_util::GetStringUTF16(sync_info.button_string_id);
   const int kDescriptionIconSpacing =
       ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -733,7 +750,7 @@ void ProfileMenuViewBase::SetSyncInfo(const SyncInfo& sync_info,
 
 void ProfileMenuViewBase::AddShortcutFeatureButton(
     const gfx::VectorIcon& icon,
-    const base::string16& text,
+    const std::u16string& text,
     base::RepeatingClosure action) {
   const int kButtonSpacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_BUTTON_HORIZONTAL);
@@ -759,7 +776,7 @@ void ProfileMenuViewBase::AddShortcutFeatureButton(
   button->SetFlipCanvasOnPaintForRTLUI(false);
 }
 
-void ProfileMenuViewBase::AddFeatureButton(const base::string16& text,
+void ProfileMenuViewBase::AddFeatureButton(const std::u16string& text,
                                            base::RepeatingClosure action,
                                            const gfx::VectorIcon& icon,
                                            float icon_to_image_ratio) {
@@ -786,7 +803,7 @@ void ProfileMenuViewBase::AddFeatureButton(const base::string16& text,
 }
 
 void ProfileMenuViewBase::SetProfileManagementHeading(
-    const base::string16& heading) {
+    const std::u16string& heading) {
   profile_mgmt_heading_ = heading;
 
   // Add separator before heading.
@@ -817,7 +834,7 @@ void ProfileMenuViewBase::SetProfileManagementHeading(
 
 void ProfileMenuViewBase::AddSelectableProfile(
     const ui::ImageModel& image_model,
-    const base::string16& name,
+    const std::u16string& name,
     bool is_guest,
     base::RepeatingClosure action) {
   // Initialize layout if this is the first time a button is added.
@@ -850,7 +867,7 @@ void ProfileMenuViewBase::AddSelectableProfile(
 
 void ProfileMenuViewBase::AddProfileManagementShortcutFeatureButton(
     const gfx::VectorIcon& icon,
-    const base::string16& text,
+    const std::u16string& text,
     base::RepeatingClosure action) {
   // Initialize layout if this is the first time a button is added.
   if (!profile_mgmt_shortcut_features_container_->GetLayoutManager()) {
@@ -869,7 +886,7 @@ void ProfileMenuViewBase::AddProfileManagementShortcutFeatureButton(
 
 void ProfileMenuViewBase::AddProfileManagementFeatureButton(
     const gfx::VectorIcon& icon,
-    const base::string16& text,
+    const std::u16string& text,
     base::RepeatingClosure action) {
   // Initialize layout if this is the first time a button is added.
   if (!profile_mgmt_features_container_->GetLayoutManager()) {

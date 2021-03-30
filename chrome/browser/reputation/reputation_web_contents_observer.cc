@@ -11,9 +11,11 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
 #include "build/build_config.h"
+#include "chrome/browser/lookalikes/lookalike_url_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/reputation/reputation_service.h"
 #include "chrome/browser/reputation/safety_tip_ui.h"
+#include "components/lookalikes/core/features.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
 #include "components/security_state/core/features.h"
 #include "components/security_state/core/security_state.h"
@@ -394,14 +396,58 @@ void ReputationWebContentsObserver::HandleReputationCheckResult(
     return;
   }
 
+  if (!base::FeatureList::IsEnabled(
+          lookalikes::features::kLookalikeDigitalAssetLinks) ||
+      !result.suggested_url.is_valid()) {
+    RecordPostFlagCheckHistogram(result.safety_tip_status);
+    ShowSafetyTipDialog(
+        web_contents(), result.safety_tip_status, result.suggested_url,
+        base::BindOnce(OnSafetyTipClosed, result, base::Time::Now(),
+                       navigation_source_id, profile_, result.url,
+                       result.safety_tip_status,
+                       std::move(safety_tip_close_callback_for_testing_)));
+    MaybeCallReputationCheckCallback(true);
+    return;
+  }
+
+  const url::Origin lookalike_origin = url::Origin::Create(result.url);
+  const url::Origin target_origin = url::Origin::Create(result.suggested_url);
+
+  DigitalAssetLinkCrossValidator::ResultCallback callback = base::BindOnce(
+      &ReputationWebContentsObserver::OnDigitalAssetLinkValidationResult,
+      weak_factory_.GetWeakPtr(), result, navigation_source_id);
+  digital_asset_link_validator_ =
+      std::make_unique<DigitalAssetLinkCrossValidator>(
+          profile_, lookalike_origin, target_origin,
+          LookalikeUrlService::kManifestFetchDelay.Get(),
+          LookalikeUrlService::Get(profile_)->clock(), std::move(callback));
+  digital_asset_link_validator_->Start();
+}
+
+void ReputationWebContentsObserver::OnDigitalAssetLinkValidationResult(
+    ReputationCheckResult result,
+    ukm::SourceId navigation_source_id,
+    bool validation_succeeded) {
+  if (validation_succeeded) {
+    // Don't show a safety tip dialog.
+    base::UmaHistogramEnumeration(
+        "Security.SafetyTips.ReputationCheckComplete.DidFinishNavigation",
+        security_state::SafetyTipStatus::kDigitalAssetLinkMatch);
+    RecordPostFlagCheckHistogram(
+        security_state::SafetyTipStatus::kDigitalAssetLinkMatch);
+    MaybeCallReputationCheckCallback(/*heuristics_checked=*/true);
+    return;
+  }
+
   RecordPostFlagCheckHistogram(result.safety_tip_status);
+
   ShowSafetyTipDialog(
       web_contents(), result.safety_tip_status, result.suggested_url,
       base::BindOnce(OnSafetyTipClosed, result, base::Time::Now(),
                      navigation_source_id, profile_, result.url,
                      result.safety_tip_status,
                      std::move(safety_tip_close_callback_for_testing_)));
-  MaybeCallReputationCheckCallback(true);
+  MaybeCallReputationCheckCallback(/*heuristics_checked=*/true);
 }
 
 void ReputationWebContentsObserver::MaybeCallReputationCheckCallback(

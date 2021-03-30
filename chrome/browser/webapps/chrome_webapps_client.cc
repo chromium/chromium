@@ -5,15 +5,23 @@
 #include "chrome/browser/webapps/chrome_webapps_client.h"
 
 #include "base/logging.h"
-#include "build/build_config.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
-#include "components/webapps/installable/installable_metrics.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
+#include "content/public/browser/web_contents.h"
 
 #if defined(OS_ANDROID)
+#include "chrome/browser/android/shortcut_helper.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
 #include "chrome/browser/android/webapk/webapk_install_service.h"
+#include "chrome/browser/banners/android/chrome_app_banner_manager_android.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "components/feature_engagement/public/event_constants.h"
+#include "components/feature_engagement/public/tracker.h"
+#include "components/webapps/browser/android/add_to_homescreen_params.h"
+#else
+#include "chrome/browser/banners/app_banner_manager_desktop.h"
 #endif
 
 namespace webapps {
@@ -70,16 +78,53 @@ WebappInstallSource ChromeWebappsClient::GetInstallSource(
   return WebappInstallSource::COUNT;
 }
 
+AppBannerManager* ChromeWebappsClient::GetAppBannerManager(
+    content::WebContents* web_contents) {
+#if defined(OS_ANDROID)
+  return ChromeAppBannerManagerAndroid::FromWebContents(web_contents);
+#else
+  return AppBannerManagerDesktop::FromWebContents(web_contents);
+#endif
+}
+
+#if defined(OS_ANDROID)
 bool ChromeWebappsClient::IsInstallationInProgress(
     content::WebContents* web_contents,
     const GURL& manifest_url) {
-#if defined(OS_ANDROID)
   return WebApkInstallService::Get(web_contents->GetBrowserContext())
       ->IsInstallInProgress(manifest_url);
-#else
-  NOTREACHED();
-  return false;
-#endif
 }
+
+bool ChromeWebappsClient::CanShowAppBanners(
+    content::WebContents* web_contents) {
+  TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
+  return tab && static_cast<android::TabWebContentsDelegateAndroid*>(
+                    tab->web_contents()->GetDelegate())
+                    ->CanShowAppBanners();
+}
+
+void ChromeWebappsClient::OnWebApkInstallInitiatedFromAppMenu(
+    content::WebContents* web_contents) {
+  DVLOG(2) << "Sending event: IPH used for Installing PWA";
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserContext(
+          web_contents->GetBrowserContext());
+  tracker->NotifyEvent(feature_engagement::events::kPwaInstallMenuSelected);
+}
+
+void ChromeWebappsClient::InstallWebApk(content::WebContents* web_contents,
+                                        const AddToHomescreenParams& params) {
+  WebApkInstallService::Get(web_contents->GetBrowserContext())
+      ->InstallAsync(web_contents, *(params.shortcut_info), params.primary_icon,
+                     params.has_maskable_primary_icon, params.install_source);
+}
+
+void ChromeWebappsClient::InstallShortcut(content::WebContents* web_contents,
+                                          const AddToHomescreenParams& params) {
+  ShortcutHelper::AddToLauncherWithSkBitmap(
+      web_contents, *(params.shortcut_info), params.primary_icon,
+      params.has_maskable_primary_icon);
+}
+#endif
 
 }  // namespace webapps

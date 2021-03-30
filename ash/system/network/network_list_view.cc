@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -40,6 +41,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
 
+using chromeos::network_config::IsInhibited;
 using chromeos::network_config::NetworkTypeMatchesType;
 using chromeos::network_config::StateIsConnected;
 
@@ -61,6 +63,7 @@ namespace {
 
 const int kMobileNetworkBatteryIconSize = 18;
 const int kPowerStatusPaddingRight = 10;
+const double kAlphaValueForInhibitedIconOpacity = 0.3;
 
 bool IsSecondaryUser() {
   SessionControllerImpl* session_controller =
@@ -77,6 +80,58 @@ SkColor GetIconColor() {
 bool IsManagedByPolicy(const NetworkInfo& info) {
   return info.source == OncSource::kDevicePolicy ||
          info.source == OncSource::kUserPolicy;
+}
+
+bool ShouldShowActivateCellularNetwork(const NetworkInfo& info) {
+  return NetworkTypeMatchesType(info.type, NetworkType::kCellular) &&
+         info.activation_state == ActivationStateType::kNotActivated &&
+         chromeos::features::IsCellularActivationUiEnabled();
+}
+
+gfx::ImageSkia GetNetworkImageForNetwork(const NetworkInfo& info) {
+  gfx::ImageSkia network_image;
+  if (NetworkTypeMatchesType(info.type, NetworkType::kMobile) &&
+      info.connection_state == ConnectionStateType::kNotConnected) {
+    // Mobile icons which are not connecting or connected should display a small
+    // "X" icon superimposed so that it is clear that they are disconnected.
+    network_image = gfx::ImageSkiaOperations::CreateSuperimposedImage(
+        info.image, gfx::CreateVectorIcon(kNetworkMobileNotConnectedXIcon,
+                                          info.image.height(), GetIconColor()));
+  } else {
+    network_image = info.image;
+  }
+
+  // When we are inhibited, cellular devices should have a grayed out appearance
+  // since the rows are disabled, which gives users the impression that these
+  // networks are unavailable. We must change the image before we add it to the
+  // view, and then alter the label and sub-label if they exist after it is
+  // added to the view.
+  if (info.inhibited) {
+    network_image = gfx::ImageSkiaOperations::CreateTransparentImage(
+        network_image, kAlphaValueForInhibitedIconOpacity);
+  }
+  return network_image;
+}
+
+// If inhibited, creates a grayed out affect by replacing colors of the
+// network's label and sub label to their disabled color counterparts, if
+// the labels exist.
+void SetNetworkViewTextStyle(HoverHighlightView* view,
+                             const NetworkInfo& info) {
+  if (!info.inhibited)
+    return;
+  if (view->text_label()) {
+    auto text_label_color = AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary);
+    view->text_label()->SetEnabledColor(
+        AshColorProvider::GetDisabledColor(text_label_color));
+  }
+  if (view->sub_text_label()) {
+    auto sub_text_color = AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPositive);
+    view->sub_text_label()->SetEnabledColor(
+        AshColorProvider::GetDisabledColor(sub_text_color));
+  }
 }
 
 }  // namespace
@@ -138,13 +193,21 @@ void NetworkListView::OnGetNetworkStateList(
 
     auto info = std::make_unique<NetworkInfo>(network->guid);
     ActivationStateType activation_state = ActivationStateType::kUnknown;
+    const chromeos::network_config::mojom::DeviceStateProperties*
+        cellular_device = model()->GetDevice(NetworkType::kCellular);
     switch (network->type) {
       case NetworkType::kCellular:
         activation_state =
             network->type_state->get_cellular()->activation_state;
-        // If cellular is not enabled, skip cellular networks with no service.
+        info->activation_state = activation_state;
+        if (cellular_device && IsInhibited(cellular_device))
+          info->inhibited = true;
+
+        // If cellular is not enabled, skip cellular networks with no service,
+        // unless the device state is inhibited.
         if (model()->GetDeviceState(NetworkType::kCellular) !=
                 DeviceStateType::kEnabled &&
+            !info->inhibited &&
             activation_state == ActivationStateType::kNoService) {
           continue;
         }
@@ -171,9 +234,13 @@ void NetworkListView::OnGetNetworkStateList(
     // |network_list_| only contains non virtual networks.
     info->image = network_icon::GetImageForNonVirtualNetwork(
         network.get(), network_icon::ICON_TYPE_LIST, false /* badge_vpn */);
+
+    // If the device state is inhibited, we want to have the cellular network
+    // rows disabled and not connectable.
     info->disable = activation_state == ActivationStateType::kActivating ||
-                    network->prohibited_by_policy;
-    info->connectable = network->connectable;
+                    network->prohibited_by_policy || info->inhibited;
+    info->connectable = network->connectable && info->inhibited;
+
     if (network->prohibited_by_policy) {
       info->tooltip =
           l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_PROHIBITED);
@@ -360,22 +427,19 @@ bool NetworkListView::ShouldMobileDataSectionBeShown() {
 void NetworkListView::UpdateViewForNetwork(HoverHighlightView* view,
                                            const NetworkInfo& info) {
   view->Reset();
-  gfx::ImageSkia network_image;
-  if (NetworkTypeMatchesType(info.type, NetworkType::kMobile) &&
-      info.connection_state == ConnectionStateType::kNotConnected) {
-    // Mobile icons which are not connecting or connected should display a small
-    // "X" icon superimposed so that it is clear that they are disconnected.
-    network_image = gfx::ImageSkiaOperations::CreateSuperimposedImage(
-        info.image, gfx::CreateVectorIcon(kNetworkMobileNotConnectedXIcon,
-                                          info.image.height(), GetIconColor()));
-  } else {
-    network_image = info.image;
-  }
-  view->AddIconAndLabel(network_image, info.label);
-  if (StateIsConnected(info.connection_state))
+  view->AddIconAndLabel(GetNetworkImageForNetwork(info), info.label);
+
+  SetNetworkViewTextStyle(view, info);
+
+  if (ShouldShowActivateCellularNetwork(info)) {
+    SetupUnactivatedCellularNetworkListItem(
+        view, l10n_util::GetStringUTF16(
+                  IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CLICK_TO_ACTIVATE));
+  } else if (StateIsConnected(info.connection_state)) {
     SetupConnectedScrollListItem(view);
-  else if (info.connection_state == ConnectionStateType::kConnecting)
+  } else if (info.connection_state == ConnectionStateType::kConnecting) {
     SetupConnectingScrollListItem(view);
+  }
   view->SetTooltipText(info.tooltip);
 
   // Add an additional icon to the right of the label for networks
@@ -398,7 +462,18 @@ void NetworkListView::UpdateViewForNetwork(HoverHighlightView* view,
   needs_relayout_ = true;
 }
 
-base::string16 NetworkListView::GenerateAccessibilityLabel(
+void NetworkListView::SetupUnactivatedCellularNetworkListItem(
+    HoverHighlightView* view,
+    const std::u16string& sub_text) {
+  DCHECK(view->is_populated());
+
+  view->SetSubText(sub_text);
+  view->sub_text_label()->SetEnabledColor(
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kTextColorWarning));
+}
+
+std::u16string NetworkListView::GenerateAccessibilityLabel(
     const NetworkInfo& info) {
   if (CanNetworkConnect(info.connection_state, info.type, info.connectable)) {
     return l10n_util::GetStringFUTF16(
@@ -408,9 +483,9 @@ base::string16 NetworkListView::GenerateAccessibilityLabel(
                                     info.label);
 }
 
-base::string16 NetworkListView::GenerateAccessibilityDescription(
+std::u16string NetworkListView::GenerateAccessibilityDescription(
     const NetworkInfo& info) {
-  base::string16 connection_status;
+  std::u16string connection_status;
   if (StateIsConnected(info.connection_state) ||
       info.connection_state == ConnectionStateType::kConnecting) {
     connection_status = l10n_util::GetStringUTF16(
@@ -436,7 +511,7 @@ base::string16 NetworkListView::GenerateAccessibilityDescription(
       }
       return info.label;
     case NetworkType::kWiFi: {
-      base::string16 security_label = l10n_util::GetStringUTF16(
+      std::u16string security_label = l10n_util::GetStringUTF16(
           info.secured ? IDS_ASH_STATUS_TRAY_NETWORK_STATUS_SECURED
                        : IDS_ASH_STATUS_TRAY_NETWORK_STATUS_UNSECURED);
       if (!connection_status.empty()) {
@@ -461,6 +536,11 @@ base::string16 NetworkListView::GenerateAccessibilityDescription(
           base::FormatPercent(info.signal_strength));
     }
     case NetworkType::kCellular:
+      if (info.activation_state == ActivationStateType::kNotActivated &&
+          chromeos::features::IsCellularActivationUiEnabled()) {
+        return l10n_util::GetStringUTF16(
+            IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CLICK_TO_ACTIVATE);
+      }
       if (!connection_status.empty()) {
         if (IsManagedByPolicy(info)) {
           return l10n_util::GetStringFUTF16(
@@ -491,7 +571,7 @@ base::string16 NetworkListView::GenerateAccessibilityDescription(
           base::FormatPercent(info.signal_strength),
           base::FormatPercent(info.battery_percentage));
     default:
-      return base::ASCIIToUTF16("");
+      return u"";
   }
 }  // namespace tray
 

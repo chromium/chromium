@@ -16,7 +16,6 @@ buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
     "ENABLE_EXTENSIONS=$enable_extensions",
-    "ENABLE_WIFI_DISPLAY=$enable_wifi_display",
     "ENABLE_AUTOFILL_ASSISTANT_API=$enable_autofill_assistant_api",
   ]
 }

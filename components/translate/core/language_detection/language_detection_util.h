@@ -7,24 +7,37 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 
 namespace translate {
 
+// Given a detected language and whether that detection is reliable, returns the
+// ISO 639 language code of |utf8_text|. Returns
+// |translate::kUnknownLanguageCode|
+//  for unreliable, "unknown", and xx-Latn predictions that are currently not
+// supported.
+std::string FilterDetectedLanguage(const std::string& utf8_text,
+                                   const std::string& detected_language,
+                                   bool is_detection_reliable);
+
 // Returns the ISO 639 language code of the specified |utf8_text|, or
 // |translate::kUnknownLanguageCode| if it failed. |is_model_reliable| will be
-// set as true if CLD says the detection is reliable.
+// set as true if CLD says the detection is reliable and
+// |model_reliability_score| will contain the model's confidence in that
+// detection.
 std::string DetermineTextLanguage(const std::string& utf8_text,
-                                  bool* is_model_reliable);
+                                  bool* is_model_reliable,
+                                  float& model_reliability_score);
 
 // Determines content page language from Content-Language code and contents.
-// Returns the contents language results in |model_detected_language_p| and
-// |is_model_reliable_p|.
+// Returns the contents language results in |model_detected_language| and
+// |is_model_reliable| and the model's confidence it its detection language
+// in |model_reliability_score|.
 std::string DeterminePageLanguage(const std::string& code,
                                   const std::string& html_lang,
-                                  const base::string16& contents,
+                                  const std::u16string& contents,
                                   std::string* model_detected_language,
-                                  bool* is_model_reliable);
+                                  bool* is_model_reliable,
+                                  float& model_reliability_score);
 
 // Determines content page language from Content-Language code and contents
 // language.

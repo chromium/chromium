@@ -214,6 +214,14 @@
       default_value: "false",
       custom_compare: true,
     },
+    // True if this ComputedStyle is the result of CustomStyleForLayoutObject()
+    // that uses font metrics in its calculation.
+    {
+      name: "CustomStyleCallbackDependsOnFont",
+      field_template: "monotonic_flag",
+      default_value: "false",
+      custom_compare: true,
+    },
     // These properties only have generated storage, and their methods are handwritten in ComputedStyle.
     {
       name: "StyleType",
@@ -228,7 +236,7 @@
     {
       name: "PseudoBits",
       field_template: "primitive",
-      field_size: 9,
+      field_size: 11,
       default_value: "kPseudoIdNone",
       type_name: "unsigned",
       custom_copy: true,
@@ -281,6 +289,13 @@
       default_value: "FillLayer(EFillLayerType::kBackground, true)",
       field_group: "background",
       computed_style_custom_functions: ["getter", "setter"],
+    },
+    {
+      name: "HasClipPath",
+      field_template: "primitive",
+      type_name: "bool",
+      default_value: "false",
+      field_group: "visual",
     },
     {
       name: "HasAutoClip",
@@ -378,14 +393,6 @@
     // expressed by 'will-change: contents' includes descendants.
     {
       name: "SubtreeWillChangeContents",
-      inherited: true,
-      field_template: "primitive",
-      type_name: "bool",
-      default_value: "false",
-      field_group: "*",
-    },
-    {
-      name: "SelfOrAncestorHasDirAutoAttribute",
       inherited: true,
       field_template: "primitive",
       type_name: "bool",
@@ -1043,6 +1050,15 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
+    },
+    {
+      name: "BaselineShiftType",
+      field_group: "svg->misc",
+      // Use a keyword?
+      field_template: "primitive",
+      field_size: 2,
+      type_name: "EBaselineShiftType",
+      default_value: "EBaselineShiftType::kLength",
     },
     {
       name: "DependsOnContainerQueries",

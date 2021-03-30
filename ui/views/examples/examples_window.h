@@ -23,6 +23,8 @@ namespace examples {
 
 VIEWS_EXAMPLES_EXPORT extern const char kExamplesWidgetName[];
 
+VIEWS_EXAMPLES_EXPORT bool CheckCommandLineUsage();
+
 // Returns the current widget.
 VIEWS_EXAMPLES_EXPORT Widget* GetExamplesWidget();
 

@@ -3,10 +3,9 @@
 // found in the LICENSE file.
 
 import {eventToPromise} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/_test_resources/webui/test_util.m.js';
-import {FittingType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/constants.js';
-import {PDFScriptingAPI} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_scripting_api.js';
-import {PDFViewerElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer.js';
+import {FittingType, PDFScriptingAPI, PDFViewerElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
 import {createWheelEvent} from './test_util.js';
@@ -139,6 +138,16 @@ const tests = [
       chrome.test.assertEq(0, selectedText.length);
       chrome.test.succeed();
     });
+  },
+  // Note: The following test needs to be the last one, because subsequent calls
+  // to requestFullScreen() fail with an "API can only be initiated by a user
+  // gesture" error.
+  async function testFocusAfterExiting() {
+    await ensureFullscreen();
+    document.exitFullscreen();
+    await eventToPromise('fullscreenchange', scroller);
+    chrome.test.assertEq('EMBED', getDeepActiveElement().nodeName);
+    chrome.test.succeed();
   },
 ];
 

@@ -7,6 +7,7 @@
 
 #include <fuchsia/ui/gfx/cpp/fidl.h>
 #include <fuchsia/ui/input/cpp/fidl.h>
+#include <fuchsia/ui/input3/cpp/fidl.h>
 #include <lib/ui/scenic/cpp/resources.h>
 #include <lib/ui/scenic/cpp/session.h>
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
@@ -16,8 +17,9 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "ui/base/ime/fuchsia/keyboard_client.h"
 #include "ui/events/fuchsia/input_event_dispatcher.h"
-#include "ui/events/fuchsia/input_event_dispatcher_delegate.h"
+#include "ui/events/fuchsia/input_event_sink.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -30,9 +32,8 @@ namespace ui {
 
 class ScenicWindowManager;
 
-class COMPONENT_EXPORT(OZONE) ScenicWindow
-    : public PlatformWindow,
-      public InputEventDispatcherDelegate {
+class COMPONENT_EXPORT(OZONE) ScenicWindow : public PlatformWindow,
+                                             public InputEventSink {
  public:
   // Both |window_manager| and |delegate| must outlive the ScenicWindow.
   // |view_token| is passed to Scenic to attach the view to the view tree.
@@ -49,10 +50,13 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow
   // causing its contents to be displayed in this window.
   void AttachSurfaceView(fuchsia::ui::views::ViewHolderToken token);
 
+  // Returns a ViewRef associated with this window.
+  fuchsia::ui::views::ViewRef CloneViewRef();
+
   // PlatformWindow implementation.
   gfx::Rect GetBounds() const override;
   void SetBounds(const gfx::Rect& bounds) override;
-  void SetTitle(const base::string16& title) override;
+  void SetTitle(const std::u16string& title) override;
   void Show(bool inactive) override;
   void Hide() override;
   void Close() override;
@@ -92,7 +96,7 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow
   // Called from OnScenicEvents() to handle input events.
   void OnInputEvent(const fuchsia::ui::input::InputEvent& event);
 
-  // InputEventDispatcher::Delegate interface.
+  // InputEventSink implementation.
   void DispatchEvent(ui::Event* event) override;
 
   void UpdateSize();
@@ -104,8 +108,16 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow
   // Dispatches Scenic input events as Chrome ui::Events.
   InputEventDispatcher event_dispatcher_;
 
+  fuchsia::ui::input3::KeyboardPtr keyboard_service_;
+  std::unique_ptr<KeyboardClient> keyboard_client_;
+
   // Scenic session used for all drawing operations in this View.
   scenic::Session scenic_session_;
+
+  // Handle to a kernel object which identifies this window's View
+  // across the system. ViewRef consumers can access the handle by
+  // calling CloneViewRef().
+  fuchsia::ui::views::ViewRef view_ref_;
 
   // The view resource in |scenic_session_|.
   scenic::View view_;

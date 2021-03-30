@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -16,8 +17,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
 #include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/chromeos/arc/fileapi/arc_file_system_bridge.h"
 #include "chrome/browser/chromeos/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/chromeos/note_taking_controller_client.h"
@@ -29,7 +30,6 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/disks/disk.h"
 #include "components/arc/arc_prefs.h"
@@ -99,7 +99,9 @@ IntentHandlerInfoPtr CreateIntentHandlerInfo(const std::string& name,
 // Converts a filesystem path to an ARC URL.
 std::string GetArcUrl(const base::FilePath& path) {
   GURL url;
-  EXPECT_TRUE(file_manager::util::ConvertPathToArcUrl(path, &url));
+  bool requires_sharing = false;
+  EXPECT_TRUE(
+      file_manager::util::ConvertPathToArcUrl(path, &url, &requires_sharing));
   return url.spec();
 }
 
@@ -235,8 +237,9 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
                                       flags & ENABLE_PLAY_STORE);
     NoteTakingHelper::Initialize();
     NoteTakingHelper::Get()->SetProfileWithEnabledLockScreenApps(profile());
-    NoteTakingHelper::Get()->set_launch_chrome_app_callback_for_test(base::Bind(
-        &NoteTakingHelperTest::LaunchChromeApp, base::Unretained(this)));
+    NoteTakingHelper::Get()->set_launch_chrome_app_callback_for_test(
+        base::BindRepeating(&NoteTakingHelperTest::LaunchChromeApp,
+                            base::Unretained(this)));
   }
 
   // Creates an extension.
@@ -299,7 +302,7 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
   }
   void UninstallExtension(const extensions::Extension* extension,
                           Profile* profile) {
-    base::string16 error;
+    std::u16string error;
     extensions::ExtensionSystem::Get(profile)
         ->extension_service()
         ->UninstallExtension(
@@ -346,8 +349,8 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
     RegisterUserProfilePrefs(prefs->registry());
     profile_prefs_ = prefs.get();
     return profile_manager()->CreateTestingProfile(
-        kTestProfileName, std::move(prefs), base::ASCIIToUTF16("Test profile"),
-        1 /*avatar_id*/, std::string() /*supervised_user_id*/,
+        kTestProfileName, std::move(prefs), u"Test profile", 1 /*avatar_id*/,
+        std::string() /*supervised_user_id*/,
         TestingProfile::TestingFactories());
   }
 
@@ -831,8 +834,8 @@ TEST_F(NoteTakingHelperTest, AddProfileWithPlayStoreEnabled) {
   RegisterUserProfilePrefs(prefs->registry());
   prefs->SetBoolean(arc::prefs::kArcEnabled, true);
   profile_manager()->CreateTestingProfile(
-      kSecondProfileName, std::move(prefs), base::ASCIIToUTF16("Second User"),
-      1 /* avatar_id */, std::string() /* supervised_user_id */,
+      kSecondProfileName, std::move(prefs), u"Second User", 1 /* avatar_id */,
+      std::string() /* supervised_user_id */,
       TestingProfile::TestingFactories());
   EXPECT_TRUE(helper()->play_store_enabled());
   EXPECT_FALSE(helper()->android_apps_received());
@@ -1437,9 +1440,8 @@ TEST_F(NoteTakingHelperTest, LockScreenSupportInSecondaryProfile) {
   sync_preferences::TestingPrefServiceSyncable* profile_prefs = prefs.get();
   const std::string kSecondProfileName = "second-profile";
   TestingProfile* second_profile = profile_manager()->CreateTestingProfile(
-      kSecondProfileName, std::move(prefs), base::ASCIIToUTF16("Test profile"),
-      1 /*avatar_id*/, std::string() /*supervised_user_id*/,
-      TestingProfile::TestingFactories());
+      kSecondProfileName, std::move(prefs), u"Test profile", 1 /*avatar_id*/,
+      std::string() /*supervised_user_id*/, TestingProfile::TestingFactories());
   InitExtensionService(second_profile);
 
   // Add test apps to secondary profile.

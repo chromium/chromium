@@ -42,7 +42,7 @@ class AXSystemCaretWinTest : public test::DesktopWidgetTest {
     widget_->SetBounds(gfx::Rect(0, 0, 200, 200));
     textfield_ = new Textfield();
     textfield_->SetBounds(0, 0, 200, 20);
-    textfield_->SetText(base::ASCIIToUTF16("Some text."));
+    textfield_->SetText(u"Some text.");
     widget_->GetRootView()->AddChildView(textfield_);
     test::WidgetActivationWaiter waiter(widget_, true);
     widget_->Show();
@@ -342,7 +342,7 @@ TEST_F(AXSystemCaretWinTest, TestCaretMSAAEvents) {
 
   {
     // Move focus to a button.
-    LabelButton button{Button::PressedCallback(), base::string16()};
+    LabelButton button{Button::PressedCallback(), std::u16string()};
     button.SetBounds(500, 0, 200, 20);
     widget_->GetRootView()->AddChildView(&button);
     test::WidgetActivationWaiter waiter(widget_, true);

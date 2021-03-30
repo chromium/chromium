@@ -37,7 +37,7 @@ struct CustomHomePagesTableModel::Entry {
   GURL url;
 
   // Page title.  If this is empty, we'll display the URL as the entry.
-  base::string16 title;
+  std::u16string title;
 
   // If not |base::CancelableTaskTracker::kBadTaskId|, indicates we're loading
   // the title for the page.
@@ -189,15 +189,15 @@ int CustomHomePagesTableModel::RowCount() {
   return static_cast<int>(entries_.size());
 }
 
-base::string16 CustomHomePagesTableModel::GetText(int row, int column_id) {
+std::u16string CustomHomePagesTableModel::GetText(int row, int column_id) {
   DCHECK(column_id == 0);
   DCHECK(row >= 0 && row < RowCount());
   return entries_[row].title.empty() ? FormattedURL(row) : entries_[row].title;
 }
 
-base::string16 CustomHomePagesTableModel::GetTooltip(int row) {
+std::u16string CustomHomePagesTableModel::GetTooltip(int row) {
   return entries_[row].title.empty()
-             ? base::string16()
+             ? std::u16string()
              : l10n_util::GetStringFUTF16(IDS_SETTINGS_ON_STARTUP_PAGE_TOOLTIP,
                                           entries_[row].title,
                                           FormattedURL(row));
@@ -288,8 +288,8 @@ void CustomHomePagesTableModel::OnGotTitle(const GURL& entry_url,
   }
 }
 
-base::string16 CustomHomePagesTableModel::FormattedURL(int row) const {
-  base::string16 url = url_formatter::FormatUrl(entries_[row].url);
+std::u16string CustomHomePagesTableModel::FormattedURL(int row) const {
+  std::u16string url = url_formatter::FormatUrl(entries_[row].url);
   url = base::i18n::GetDisplayStringInLTRDirectionality(url);
   return url;
 }

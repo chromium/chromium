@@ -24,6 +24,7 @@ class MultiDeviceSetupClient;
 }  // namespace multidevice_setup
 
 namespace secure_channel {
+class ConnectionManager;
 class SecureChannelClient;
 }  // namespace secure_channel
 
@@ -31,13 +32,13 @@ namespace phonehub {
 
 class BrowserTabsModelController;
 class BrowserTabsModelProvider;
-class ConnectionManager;
 class CrosStateSender;
 class InvalidConnectionDisconnector;
 class MessageSender;
 class MessageReceiver;
 class MultideviceSetupStateUpdater;
 class MutablePhoneModel;
+class NotificationProcessor;
 class PhoneStatusProcessor;
 class UserActionRecorder;
 
@@ -61,6 +62,7 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   FeatureStatusProvider* GetFeatureStatusProvider() override;
   FindMyDeviceController* GetFindMyDeviceController() override;
   NotificationAccessManager* GetNotificationAccessManager() override;
+  NotificationInteractionHandler* GetNotificationInteractionHandler() override;
   NotificationManager* GetNotificationManager() override;
   OnboardingUiTracker* GetOnboardingUiTracker() override;
   PhoneModel* GetPhoneModel() override;
@@ -71,19 +73,22 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   // KeyedService:
   void Shutdown() override;
 
-  std::unique_ptr<UserActionRecorder> user_action_recorder_;
-  std::unique_ptr<ConnectionManager> connection_manager_;
+  std::unique_ptr<secure_channel::ConnectionManager> connection_manager_;
   std::unique_ptr<FeatureStatusProvider> feature_status_provider_;
+  std::unique_ptr<UserActionRecorder> user_action_recorder_;
   std::unique_ptr<MessageReceiver> message_receiver_;
   std::unique_ptr<MessageSender> message_sender_;
+  std::unique_ptr<MutablePhoneModel> phone_model_;
   std::unique_ptr<CrosStateSender> cros_state_sender_;
   std::unique_ptr<DoNotDisturbController> do_not_disturb_controller_;
   std::unique_ptr<ConnectionScheduler> connection_scheduler_;
   std::unique_ptr<FindMyDeviceController> find_my_device_controller_;
   std::unique_ptr<NotificationAccessManager> notification_access_manager_;
+  std::unique_ptr<NotificationInteractionHandler>
+      notification_interaction_handler_;
   std::unique_ptr<NotificationManager> notification_manager_;
   std::unique_ptr<OnboardingUiTracker> onboarding_ui_tracker_;
-  std::unique_ptr<MutablePhoneModel> phone_model_;
+  std::unique_ptr<NotificationProcessor> notification_processor_;
   std::unique_ptr<PhoneStatusProcessor> phone_status_processor_;
   std::unique_ptr<TetherController> tether_controller_;
   std::unique_ptr<BrowserTabsModelProvider> browser_tabs_model_provider_;

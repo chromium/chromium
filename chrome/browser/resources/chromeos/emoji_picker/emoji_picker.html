@@ -1,13 +1,184 @@
-<!DOCTYPE HTML>
-<html>
-<head>
-  <meta charset="utf-8">
-  <link rel="stylesheet" href="emoji_picker.css">
-  <script type="module" src="emoji_picker.js"></script>
-</head>
-<body>
-  <h1>Emoji picker</h1>
-  <p id="welcome-message"></p>
-  <div id="emoji-picker"></div>
-</body>
-</html>
+<style>
+  :host {
+    /* Values overriden in Javascript from constants.js. */
+    --emoji-picker-height: 0;
+    --emoji-picker-side-padding: 0;
+    --emoji-picker-top-padding: 0;
+    --emoji-picker-width: 0;
+    --emoji-size: 0;
+    --emoji-per-row: 0;
+    /* Values set in css only. */
+    --emoji-group-tabs-left: -4px;
+    --emoji-group-button-size: 36px;
+    --emoji-divider-color: var(--google-grey-200);
+    /* Actual properties of the emoji picker */
+
+
+
+    display: flex;
+    flex-direction: column;
+    font-family: 'Roboto', sans-serif;
+    height: calc(var(--emoji-picker-height) - var(--emoji-picker-top-padding));
+    margin-top: 0;
+    padding-top: var(--emoji-picker-top-padding);
+    width: var(--emoji-picker-width);
+  }
+
+  .side-padding {
+    padding-inline-end: var(--emoji-picker-side-padding);
+    padding-inline-start: var(--emoji-picker-side-padding);
+  }
+
+  @media (prefers-color-scheme-dark) {
+    :host {
+      --emoji-divider-color: var(--google-grey-900);
+    }
+  }
+  
+  #searchContainer,
+  #listContainer {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow-y: hidden;
+    width: 100%;
+  }
+
+  #tabs {
+    display: flex;
+    flex-shrink: 0;
+    left: var(--emoji-group-tabs-left);
+    overflow-x: scroll;
+    scroll-behavior: smooth;
+    width: 100%;
+  }
+
+  #tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  #tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  #groups {
+    flex-grow: 1;
+    overflow-y: scroll;
+  }
+
+  .chevron {
+    background-color: var(--cr-card-background-color);
+    height: var(--emoji-group-button-size);
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    width: var(--emoji-group-button-size);
+    z-index: 2;
+  }
+
+  #rightChevron {
+    left: calc(var(--emoji-group-button-size) * 8 +
+      var(--emoji-picker-side-padding));
+  }
+
+  #leftChevron {
+    display: none;
+    left: 10px;
+  }
+
+  .divider {
+    border-top: 1px solid var(--emoji-divider-color);
+    width: var(--emoji-picker-width);
+  }
+
+  .sr-only {
+    color: transparent;
+    position: absolute;
+    z-index: -2;
+  }
+
+  #bar {
+    background-color: var(--cr-checked-color);
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+    flex-shrink: 0;
+    height: 2px;
+    margin-inline-start: 2px;
+    position: relative;
+    transition: all 200ms;
+    width: 32px;
+  }
+</style>
+
+<div class="sr-only" aria-live="polite">
+  Insert emoji by activating them. Close with escape.
+  Some emoji have variants which can be opened with context menu.
+  Use the emoji group buttons or headings to jump to emoji groups.
+</div>
+
+<div id="message" class="sr-only" aria-live="polite"></div>
+<div class="side-padding">
+  <emoji-search id$="searchContainer" emoji-data="[[emojiData]]"
+    search="{{search}}">
+  </emoji-search>
+</div>
+
+<div id="listContainer">
+  <div class="sr-only" role="heading" aria-level="1">Emoji Group Buttons</div>
+  <div class="side-padding">
+    <div id="tabs" on-scroll="onGroupsScroll">
+      <cr-icon-button id="leftChevron" class="chevron"
+        on-click="onLeftChevronClick"
+        iron-icon="emoji_picker:keyboard_arrow_left">
+      </cr-icon-button>
+      <template is="dom-repeat" items="[[emojiGroupTabs]]">
+        <emoji-group-button data-group$="[[item.groupId]]"
+          group-id="[[item.groupId]]" active="[[item.active]]"
+          icon="[[item.icon]]" name="[[item.name]]">
+        </emoji-group-button>
+      </template>
+      <!--Fake group button to increase maximum scrolling, need an icon to
+        render as invisible-->
+      <emoji-group-button id="fake" icon="[[emojiGroupTabs[0].icon]]">
+      </emoji-group-button>
+      <emoji-group-button id="fake" icon="[[emojiGroupTabs[0].icon]]">
+      </emoji-group-button>
+      <emoji-group-button id="fake" icon="[[emojiGroupTabs[0].icon]]">
+      </emoji-group-button>
+      <emoji-group-button id="fake" icon="[[emojiGroupTabs[0].icon]]">
+      </emoji-group-button>
+      <emoji-group-button id="RightChevronScrollTarget"
+        icon="[[emojiGroupTabs[0].icon]]">
+      </emoji-group-button>
+      <cr-icon-button id="rightChevron" class="chevron"
+        on-click="onRightChevronClick"
+        iron-icon="emoji_picker:keyboard_arrow_right">
+      </cr-icon-button>
+    </div>
+  </div>
+  <div class="sr-only" role="heading" aria-level="1">Emoji Groups</div>
+  <div class="side-padding">
+    <div id="bar" on-transitionend="onBarTransitionEnd"></div>
+  </div>
+  <div class="divider"></div>
+
+  <div class="side-padding" id="groups" on-scroll="onEmojiScroll">
+    <!--
+      history is the "recently used" group and is populated in code,
+      whereas the other groups are created from the emoji metadata.
+    -->
+    <div data-group="history">
+      <template is="dom-if" if="[[history.emoji.length]]">
+        <emoji-group data="[[history]]" preferred="{}">
+        </emoji-group>
+      </template>
+    </div>
+    <template is="dom-repeat" items="[[emojiData]]">
+      <div data-group$="[[index]]">
+        <emoji-group data="[[item]]" preferred="[[preferenceMapping]]">
+        </emoji-group>
+      </div>
+    </template>
+  </div>
+
+</div>

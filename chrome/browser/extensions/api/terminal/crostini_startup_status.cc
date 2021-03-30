@@ -87,9 +87,7 @@ void CrostiniStartupStatus::ShowProgressAtInterval() {
 
 void CrostiniStartupStatus::OnStageStarted(InstallerState stage) {
   stage_ = stage;
-  if (stage_index_ < kMaxStage) {
-    ++stage_index_;
-  }
+  stage_index_ = static_cast<int>(stage) + 1;
   if (!verbose_) {
     return;
   }

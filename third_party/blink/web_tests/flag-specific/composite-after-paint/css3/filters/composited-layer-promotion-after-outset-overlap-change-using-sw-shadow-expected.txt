@@ -44,7 +44,8 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='software-layer-to-promote' class='final-drop-shadow'",
       "position": [100, 100],
-      "bounds": [200, 200]
+      "bounds": [200, 200],
+      "contentsOpaqueForText": true
     }
   ],
   "transforms": [

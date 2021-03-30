@@ -31,7 +31,7 @@ void SigninErrorController::Update() {
   bool error_changed = false;
 
   const CoreAccountId& primary_account_id =
-      identity_manager_->GetPrimaryAccountId();
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
 
   if (identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
           primary_account_id)) {
@@ -149,17 +149,12 @@ void SigninErrorController::OnErrorStateOfRefreshTokenUpdatedForAccount(
   Update();
 }
 
-void SigninErrorController::OnPrimaryAccountSet(
-    const CoreAccountInfo& primary_account_info) {
-  // Ignore updates to the primary account if not in PRIMARY_ACCOUNT mode.
-  if (account_mode_ != AccountMode::PRIMARY_ACCOUNT)
+void SigninErrorController::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  if (event.GetEventTypeFor(signin::ConsentLevel::kSync) ==
+      signin::PrimaryAccountChangeEvent::Type::kNone) {
     return;
-
-  Update();
-}
-
-void SigninErrorController::OnPrimaryAccountCleared(
-    const CoreAccountInfo& previous_primary_account_info) {
+  }
   // Ignore updates to the primary account if not in PRIMARY_ACCOUNT mode.
   if (account_mode_ != AccountMode::PRIMARY_ACCOUNT)
     return;

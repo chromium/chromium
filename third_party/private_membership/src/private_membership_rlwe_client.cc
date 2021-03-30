@@ -24,6 +24,8 @@
 #include "third_party/private_membership/src/internal/rlwe_id_utils.h"
 #include "third_party/private_membership/src/internal/rlwe_params.h"
 #include "third_party/private_membership/src/internal/utils.h"
+#include "absl/container/flat_hash_map.h"
+#include "absl/container/flat_hash_set.h"
 #include "third_party/shell-encryption/src/polynomial.h"
 #include "third_party/shell-encryption/src/status_macros.h"
 #include "third_party/shell-encryption/src/symmetric_encryption_with_prng.h"
@@ -65,13 +67,24 @@ PrivateMembershipRlweClient::CreateInternal(
     return absl::InvalidArgumentError("Plaintext ids must not be empty.");
   }
 
+  // Remove duplicate IDs.
+  absl::flat_hash_set<std::string> hashed_rlwe_plaintext_ids;
+  std::vector<RlwePlaintextId> unique_plaintext_ids;
+  for (int i = 0; i < plaintext_ids.size(); ++i) {
+    std::string hash = HashRlwePlaintextId(plaintext_ids[i]);
+    if (!hashed_rlwe_plaintext_ids.contains(hash)) {
+      unique_plaintext_ids.push_back(plaintext_ids[i]);
+    }
+    hashed_rlwe_plaintext_ids.insert(hash);
+  }
+
   // Create the cipher with new key or from existing key depending on whether
   // the key was provided.
   auto status_or_ec_cipher = ec_cipher_key.has_value()
-          ? private_join_and_compute::ECCommutativeCipher::CreateFromKey(
-                kCurveId, ec_cipher_key.value(),
-                private_join_and_compute::ECCommutativeCipher::HashType::SHA256)
-          : private_join_and_compute::ECCommutativeCipher::CreateWithNewKey(
+           ? private_join_and_compute::ECCommutativeCipher::CreateFromKey(
+                 kCurveId, ec_cipher_key.value(),
+                 private_join_and_compute::ECCommutativeCipher::HashType::SHA256)
+           : private_join_and_compute::ECCommutativeCipher::CreateWithNewKey(
                 kCurveId, private_join_and_compute::ECCommutativeCipher::HashType::SHA256);
 
   if (!status_or_ec_cipher.ok()) {
@@ -79,10 +92,10 @@ PrivateMembershipRlweClient::CreateInternal(
   }
   auto ec_cipher = std::move(status_or_ec_cipher).ValueOrDie();
 
-  return absl::WrapUnique<PrivateMembershipRlweClient>(
+   return absl::WrapUnique<PrivateMembershipRlweClient>(
       new PrivateMembershipRlweClient(use_case, plaintext_ids,
-                                      std::move(ec_cipher),
-                                      std::move(prng_seed_generator)));
+                                       std::move(ec_cipher),
+                                       std::move(prng_seed_generator)));
 }
 
 PrivateMembershipRlweClient::PrivateMembershipRlweClient(
@@ -128,6 +141,19 @@ PrivateMembershipRlweClient::CreateQueryRequest(
     return absl::InvalidArgumentError(
         "Encrypted bucket ID length must be non-negative and at most 30.");
   }
+
+  // Check number of responses. If there are duplicates, we will ignore
+  // duplicates. Therefore, we don't err when there are too many responses.
+  if (oprf_response.doubly_encrypted_ids_size() <
+      client_encrypted_id_to_plaintext_id_.size()) {
+    return absl::InvalidArgumentError(
+        "OPRF response missing a response to a requested ID.");
+  } else if (oprf_response.doubly_encrypted_ids_size() >
+             client_encrypted_id_to_plaintext_id_.size()) {
+    return absl::InvalidArgumentError(
+        "OPRF response contains too many responses.");
+  }
+
   int encrypted_buckets_count = 1 << encrypted_bucket_id_length;
   RLWE_ASSIGN_OR_RETURN(
       pir_client_, internal::PirClient::Create(oprf_response.rlwe_parameters(),
@@ -138,18 +164,34 @@ PrivateMembershipRlweClient::CreateQueryRequest(
   request.set_use_case(use_case_);
   request.set_key_version(oprf_response.key_version());
 
+  // Keep track of seen plaintext IDs to check for duplicates.
+  absl::flat_hash_set<std::string> seen_encrypted_ids;
+
   for (const auto& doubly_encrypted_id : oprf_response.doubly_encrypted_ids()) {
     private_membership::rlwe::PrivateMembershipRlweQuery single_query;
     single_query.set_queried_encrypted_id(
         doubly_encrypted_id.queried_encrypted_id());
+    std::string encrypted_id = doubly_encrypted_id.queried_encrypted_id();
+
+    // Check validity of returned queried ID.
+    if (!client_encrypted_id_to_plaintext_id_.contains(encrypted_id)) {
+      return absl::InvalidArgumentError(
+          "OPRF response contains a response to an erroneous encrypted ID.");
+    }
+
+    // Already processed a response for this encrypted ID. Ignore this one.
+    if (seen_encrypted_ids.contains(encrypted_id)) {
+      return absl::InvalidArgumentError(
+          "OPRF response contains duplicate responses for the same ID.");
+    }
+    seen_encrypted_ids.insert(encrypted_id);
 
     // Compute the hashed bucket id if the hashed bucket parameter is set in
     // the response.
     if (oprf_response.hashed_buckets_parameters().hashed_bucket_id_length() >
         0) {
       const RlwePlaintextId& plaintext_id =
-          client_encrypted_id_to_plaintext_id_[doubly_encrypted_id
-                                                   .queried_encrypted_id()];
+          client_encrypted_id_to_plaintext_id_[encrypted_id];
       RLWE_ASSIGN_OR_RETURN(
           HashedBucketId hashed_bucket_id,
           HashedBucketId::Create(plaintext_id,
@@ -181,8 +223,7 @@ PrivateMembershipRlweClient::CreateQueryRequest(
     RLWE_ASSIGN_OR_RETURN(*single_query.mutable_pir_request(),
                           pir_client_->CreateRequest(encrypted_bucket_id));
 
-    client_encrypted_id_to_server_encrypted_id_[doubly_encrypted_id
-                                                    .queried_encrypted_id()] =
+    client_encrypted_id_to_server_encrypted_id_[encrypted_id] =
         server_encrypted_id;
 
     *request.add_queries() = single_query;
@@ -197,8 +238,36 @@ PrivateMembershipRlweClient::CreateQueryRequest(
 PrivateMembershipRlweClient::ProcessResponse(
     const private_membership::rlwe::PrivateMembershipRlweQueryResponse&
         query_response) {
+  // Check response length for missing responses. Will ignore any duplicates.
+  if (query_response.pir_responses_size() <
+      client_encrypted_id_to_plaintext_id_.size()) {
+    return absl::InvalidArgumentError(
+        "Query response missing a response to a requested ID.");
+  } else if (query_response.pir_responses_size() >
+             client_encrypted_id_to_plaintext_id_.size()) {
+    return absl::InvalidArgumentError(
+        "Query response contains too many responses.");
+  }
+
+  // Keep track of seen encrypted IDs to avoid duplicates.
+  absl::flat_hash_set<std::string> seen_encrypted_ids;
+
   MembershipResponseMap membership_response_map;
   for (const auto& pir_response : query_response.pir_responses()) {
+    std::string encrypted_id = pir_response.queried_encrypted_id();
+    if (!client_encrypted_id_to_plaintext_id_.contains(encrypted_id) ||
+        !client_encrypted_id_to_server_encrypted_id_.contains(encrypted_id)) {
+      return absl::InvalidArgumentError(
+          "Query response contains a response to an erroneous encrypted ID.");
+    }
+
+    // Already processed this encrypted ID. Ignore this one.
+    if (seen_encrypted_ids.contains(encrypted_id)) {
+      return absl::InvalidArgumentError(
+          "Query response contains duplicate responses for the same ID.");
+    }
+    seen_encrypted_ids.insert(encrypted_id);
+
     RLWE_ASSIGN_OR_RETURN(
         std::vector<uint8_t> serialized_encrypted_bucket_byte,
         pir_client_->ProcessResponse(pir_response.pir_response()));
@@ -219,16 +288,15 @@ PrivateMembershipRlweClient::ProcessResponse(
 
     // Plaintext id associated with the client encrypted id.
     const RlwePlaintextId& plaintext_id =
-        client_encrypted_id_to_plaintext_id_[pir_response
-                                                 .queried_encrypted_id()];
+        client_encrypted_id_to_plaintext_id_[encrypted_id];
     // Server key encrypted id associated with the client encrypted id.
     const std::string& server_encrypted_id =
-        client_encrypted_id_to_server_encrypted_id_
-            [pir_response.queried_encrypted_id()];
+        client_encrypted_id_to_server_encrypted_id_[encrypted_id];
     RLWE_ASSIGN_OR_RETURN(auto membership, CheckMembership(server_encrypted_id,
                                                            encrypted_bucket));
     membership_response_map.Update(plaintext_id, membership);
   }
+
   return membership_response_map;
 }
 
@@ -308,7 +376,8 @@ PirClientImpl<ModularInt>::Create(
   int levels_of_recursion = rlwe_params.levels_of_recursion();
   if (levels_of_recursion <= 0 || levels_of_recursion > kMaxLevelsOfRecursion) {
     return absl::InvalidArgumentError(
-        "Levels of recursion must be positive and at most 100.");
+        absl::StrCat("Levels of recursion, ", levels_of_recursion,
+                     ", must be positive and at most ", kMaxLevelsOfRecursion));
   }
   // Create parameters.
   std::vector<std::unique_ptr<const typename ModularInt::Params>>
@@ -412,6 +481,11 @@ template <typename ModularInt>
                                                    modulus_params_[0].get());
 
   // Fill plaintext indicator vector with only zeroes at first.
+  if (branching_factor * rlwe_params_.levels_of_recursion() >
+      kMaxRequestEntries) {
+    return absl::InvalidArgumentError(
+        absl::StrCat("Number of request entries exceeds ", kMaxRequestEntries));
+  }
   std::vector<::rlwe::Polynomial<ModularInt>> plaintexts(
       branching_factor * rlwe_params_.levels_of_recursion(), zero_poly);
 

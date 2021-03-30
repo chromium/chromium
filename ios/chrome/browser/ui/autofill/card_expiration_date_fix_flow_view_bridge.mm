@@ -67,8 +67,8 @@ CardExpirationDateFixFlowViewBridge::GetController() {
 }
 
 void CardExpirationDateFixFlowViewBridge::OnConfirmedExpirationDate(
-    const base::string16& month,
-    const base::string16& year) {
+    const std::u16string& month,
+    const std::u16string& year) {
   controller_->OnAccepted(month, year);
   PerformClose();
 }

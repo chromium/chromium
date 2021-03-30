@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_ICON_CONTAINER_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_ICON_CONTAINER_H_
 
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 class PageActionIconController;
@@ -22,15 +23,14 @@ class PageActionIconContainer {
 class PageActionIconContainerView : public views::View,
                                     public PageActionIconContainer {
  public:
+  METADATA_HEADER(PageActionIconContainerView);
   explicit PageActionIconContainerView(const PageActionIconParams& params);
+  PageActionIconContainerView(const PageActionIconContainerView&) = delete;
+  PageActionIconContainerView& operator=(const PageActionIconContainerView&) =
+      delete;
   ~PageActionIconContainerView() override;
 
   PageActionIconController* controller() { return controller_.get(); }
-
-  // views::View:
-  const char* GetClassName() const override;
-
-  static const char kPageActionIconContainerViewClassName[];
 
  private:
   // views::View:
@@ -40,8 +40,6 @@ class PageActionIconContainerView : public views::View,
   void AddPageActionIcon(views::View* icon) override;
 
   std::unique_ptr<PageActionIconController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(PageActionIconContainerView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_ICON_CONTAINER_H_

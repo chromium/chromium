@@ -39,7 +39,7 @@ ShareToData* ShareToDataForWebState(web::WebState* web_state,
   if (last_committed_item) {
     // Do not use WebState::GetTitle() as it returns the display title, not the
     // original page title.
-    const base::string16& original_title = last_committed_item->GetTitle();
+    const std::u16string& original_title = last_committed_item->GetTitle();
     if (!original_title.empty()) {
       // If the original page title exists, it is expected to match the Tab's
       // title. If this ever changes, then a decision has to be made on which

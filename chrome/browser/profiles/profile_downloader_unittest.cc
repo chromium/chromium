@@ -53,7 +53,6 @@ class ProfileDownloaderTest
   network::mojom::URLLoaderFactory* GetURLLoaderFactory() override {
     return &test_url_loader_factory_;
   }
-  bool IsPreSignin() const override { return false; }
   void OnProfileDownloadSuccess(ProfileDownloader* downloader) override {
 
   }

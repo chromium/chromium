@@ -7,9 +7,9 @@
 
 #include <stdint.h>
 #include <ostream>
+#include <string>
 
 #include "base/optional.h"
-#include "base/strings/string16.h"
 
 namespace chromeos {
 namespace phonehub {
@@ -47,7 +47,7 @@ class PhoneStatusModel {
     SignalStrength signal_strength;
 
     // Name of the service provider (e.g., "Google Fi").
-    base::string16 mobile_provider;
+    std::u16string mobile_provider;
   };
 
   enum class ChargingState {

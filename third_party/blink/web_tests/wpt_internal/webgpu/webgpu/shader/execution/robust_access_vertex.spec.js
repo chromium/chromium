@@ -152,7 +152,7 @@ class DrawCall {
     if (partialLastNumber) {
       size -= 3;
     }
-    this.device.defaultQueue.writeBuffer(vertexBuffer, 0, vertexArray, size);
+    this.device.queue.writeBuffer(vertexBuffer, 0, vertexArray, size);
     return vertexBuffer;
   }
 
@@ -163,7 +163,7 @@ class DrawCall {
       usage: GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST,
     });
 
-    this.device.defaultQueue.writeBuffer(indexBuffer, 0, indexArray);
+    this.device.queue.writeBuffer(indexBuffer, 0, indexArray);
     return indexBuffer;
   }
 
@@ -307,11 +307,11 @@ g.test('vertexAccess')
     }
 
     // Vertex buffer descriptors
-    const vertexBuffers = [];
+    const buffers = [];
     {
       let currAttribute = 0;
       for (let i = 0; i < bufferContents.length; i++) {
-        vertexBuffers.push({
+        buffers.push({
           arrayStride: attributesPerBuffer * typeInfo.size,
           stepMode: i === 0 ? 'instance' : 'vertex',
           attributes: Array(attributesPerBuffer)
@@ -332,11 +332,11 @@ g.test('vertexAccess')
     }
 
     const pipeline = t.device.createRenderPipeline({
-      vertexStage: {
+      vertex: {
         module: t.device.createShaderModule({
           code: `
             [[builtin(position)]] var<out> Position : vec4<f32>;
-            [[builtin(vertex_idx)]] var<in> VertexIndex : u32;
+            [[builtin(vertex_index)]] var<in> VertexIndex : u32;
             ${layoutStr}
 
             fn valid(f : f32) -> bool {
@@ -356,19 +356,20 @@ g.test('vertexAccess')
                    VertexIndex < ${vertexIndexOffset + numVertices}u);
 
               if (attributesInBounds && (${!p.indexed} || indexInBounds)) {
-                # Success case, move the vertex out of the viewport
+                // Success case, move the vertex out of the viewport
                 Position = vec4<f32>(-1.0, 0.0, 0.0, 1.0);
               } else {
-                # Failure case, move the vertex inside the viewport
+                // Failure case, move the vertex inside the viewport
                 Position = vec4<f32>(0.0, 0.0, 0.0, 1.0);
               }
             }`,
         }),
 
         entryPoint: 'main',
+        buffers,
       },
 
-      fragmentStage: {
+      fragment: {
         module: t.device.createShaderModule({
           code: `
             [[location(0)]] var<out> fragColor : vec4<f32>;
@@ -378,20 +379,17 @@ g.test('vertexAccess')
         }),
 
         entryPoint: 'main',
+        targets: [{ format: 'rgba8unorm' }],
       },
 
-      primitiveTopology: 'point-list',
-      colorStates: [{ format: 'rgba8unorm' }],
-      vertexState: {
-        vertexBuffers,
-      },
+      primitive: { topology: 'point-list' },
     });
 
     // Pipeline setup, texture setup
     const colorAttachment = t.device.createTexture({
       format: 'rgba8unorm',
-      size: { width: 1, height: 1, depth: 1 },
-      usage: GPUTextureUsage.COPY_SRC | GPUTextureUsage.OUTPUT_ATTACHMENT,
+      size: { width: 1, height: 1, depthOrArrayLayers: 1 },
+      usage: GPUTextureUsage.COPY_SRC | GPUTextureUsage.RENDER_ATTACHMENT,
     });
 
     const colorAttachmentView = colorAttachment.createView();
@@ -416,7 +414,7 @@ g.test('vertexAccess')
     draw.insertInto(pass, p.indexed, p.indirect);
 
     pass.endPass();
-    t.device.defaultQueue.submit([encoder.finish()]);
+    t.device.queue.submit([encoder.finish()]);
 
     // Validate we see green instead of red, meaning no fragment ended up on-screen
     t.expectSinglePixelIn2DTexture(

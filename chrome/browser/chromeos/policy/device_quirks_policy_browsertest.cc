@@ -6,8 +6,8 @@
 #include "base/files/file_util.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/quirks/quirks_manager.h"
 #include "content/public/test/browser_test.h"
@@ -59,15 +59,13 @@ class DeviceQuirksPolicyTest : public policy::DevicePolicyCrosBrowserTest {
   // return the icc file in our fake downloads directory; if disabled, it will
   // return before looking there.
   bool TestQuirksEnabled() {
-    base::RunLoop run_loop;
-    end_message_loop_ = run_loop.QuitClosure();
     icc_path_.clear();
 
+    base::RunLoop run_loop;
     quirks::QuirksManager::Get()->RequestIccProfilePath(
         kProductId, kDisplayName,
         base::BindOnce(&DeviceQuirksPolicyTest::OnQuirksClientFinished,
-                       base::Unretained(this)));
-
+                       base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
 
     // Quirks only returns our fake file if it's enabled.
@@ -75,14 +73,14 @@ class DeviceQuirksPolicyTest : public policy::DevicePolicyCrosBrowserTest {
   }
 
   // Callback from RequestIccProfilePath().
-  void OnQuirksClientFinished(const base::FilePath& path, bool downloaded) {
+  void OnQuirksClientFinished(base::OnceClosure quit_closure,
+                              const base::FilePath& path,
+                              bool downloaded) {
     ASSERT_FALSE(downloaded);
     icc_path_ = path;
-    ASSERT_TRUE(!end_message_loop_.is_null());
-    end_message_loop_.Run();
+    std::move(quit_closure).Run();
   }
 
-  base::Closure end_message_loop_;  // Callback to terminate message loop.
   base::FilePath icc_path_;         // Path to icc file if found or downloaded.
 
  private:

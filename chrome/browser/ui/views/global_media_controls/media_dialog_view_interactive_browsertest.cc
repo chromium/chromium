@@ -23,6 +23,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/media_message_center/media_notification_view_impl.h"
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
 #include "components/media_router/browser/test/mock_media_router.h"
@@ -99,7 +100,7 @@ class MediaToolbarButtonWatcher : public MediaToolbarButtonObserver,
     Wait();
   }
 
-  void WaitForDialogToContainText(const base::string16& text) {
+  void WaitForDialogToContainText(const std::u16string& text) {
     if (DialogContainsText(text))
       return;
 
@@ -186,7 +187,7 @@ class MediaToolbarButtonWatcher : public MediaToolbarButtonObserver,
 
   // Checks the title and artist of each notification in the dialog to see if
   // |text| is contained anywhere in the dialog.
-  bool DialogContainsText(const base::string16& text) {
+  bool DialogContainsText(const std::u16string& text) {
     for (const auto& notification_pair :
          MediaDialogView::GetDialogViewForTesting()
              ->GetNotificationsForTesting()) {
@@ -230,7 +231,7 @@ class MediaToolbarButtonWatcher : public MediaToolbarButtonObserver,
 
   MediaDialogView* observed_dialog_ = nullptr;
   bool waiting_for_dialog_to_contain_text_ = false;
-  base::string16 expected_text_;
+  std::u16string expected_text_;
   int expected_notification_count_ = 0;
   bool expected_pip_visibility_ = false;
 
@@ -258,6 +259,7 @@ class TestWebContentsPresentationManager
   MOCK_CONST_METHOD0(HasDefaultPresentationRequest, bool());
   MOCK_CONST_METHOD0(GetDefaultPresentationRequest,
                      const content::PresentationRequest&());
+  MOCK_METHOD0(GetMediaRoutes, std::vector<media_router::MediaRoute>());
 
   void OnPresentationResponse(
       const content::PresentationRequest& presentation_request,
@@ -321,10 +323,12 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUp() override {
+    // TODO(crbug.com/1182859): Update this test to enable the
+    // kUseSodaForLiveCaption feature.
     feature_list_.InitWithFeatures(
         {media::kGlobalMediaControls, media::kGlobalMediaControlsForCast,
-         media::kLiveCaption},
-        {});
+         media::kLiveCaption, feature_engagement::kIPHLiveCaptionFeature},
+        {media::kUseSodaForLiveCaption});
 
     presentation_manager_ =
         std::make_unique<TestWebContentsPresentationManager>();
@@ -396,7 +400,7 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
     // The test HTML files used in these tests contain "play()" functions that
     // play the video.
     GetActiveWebContents()->GetMainFrame()->ExecuteJavaScriptForTests(
-        base::ASCIIToUTF16("play()"), base::NullCallback());
+        u"play()", base::NullCallback());
   }
 
   void WaitForStart() {
@@ -415,12 +419,12 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
 
   void DisablePictureInPicture() {
     GetActiveWebContents()->GetMainFrame()->ExecuteJavaScriptForTests(
-        base::ASCIIToUTF16("disablePictureInPicture()"), base::NullCallback());
+        u"disablePictureInPicture()", base::NullCallback());
   }
 
   void EnablePictureInPicture() {
     GetActiveWebContents()->GetMainFrame()->ExecuteJavaScriptForTests(
-        base::ASCIIToUTF16("enablePictureInPicture()"), base::NullCallback());
+        u"enablePictureInPicture()", base::NullCallback());
   }
 
   void WaitForEnterPictureInPicture() {
@@ -443,7 +447,7 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
 
   bool IsDialogVisible() { return MediaDialogView::IsShowing(); }
 
-  void WaitForDialogToContainText(const base::string16& text) {
+  void WaitForDialogToContainText(const std::u16string& text) {
     MediaToolbarButtonWatcher(GetToolbarIcon())
         .WaitForDialogToContainText(text);
   }
@@ -489,7 +493,7 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
     ClickButton(live_caption_button);
   }
 
-  void ClickNotificationByTitle(const base::string16& title) {
+  void ClickNotificationByTitle(const std::u16string& title) {
     ASSERT_TRUE(MediaDialogView::IsShowing());
     MediaNotificationContainerImplView* notification =
         GetNotificationByTitle(title);
@@ -544,12 +548,12 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
         ->live_caption_title_new_badge_;
   }
 
-  void OnSODAProgress(int progress) {
-    MediaDialogView::GetDialogViewForTesting()->OnSODAProgress(progress);
+  void OnSodaProgress(int progress) {
+    MediaDialogView::GetDialogViewForTesting()->OnSodaProgress(progress);
   }
 
-  void OnSODAInstalled() {
-    MediaDialogView::GetDialogViewForTesting()->OnSODAInstalled();
+  void OnSodaInstalled() {
+    MediaDialogView::GetDialogViewForTesting()->OnSodaInstalled();
   }
 
  protected:
@@ -587,7 +591,7 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
 
   // Finds a MediaNotificationContainerImplView by title.
   MediaNotificationContainerImplView* GetNotificationByTitle(
-      const base::string16& title) {
+      const std::u16string& title) {
     for (const auto& notification_pair :
          MediaDialogView::GetDialogViewForTesting()
              ->GetNotificationsForTesting()) {
@@ -635,8 +639,8 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
 
   // The dialog should contain the title and artist. These are taken from
   // video-with-metadata.html.
-  WaitForDialogToContainText(base::ASCIIToUTF16("Big Buck Bunny"));
-  WaitForDialogToContainText(base::ASCIIToUTF16("Blender Foundation"));
+  WaitForDialogToContainText(u"Big Buck Bunny");
+  WaitForDialogToContainText(u"Blender Foundation");
 
   // Clicking on the pause button in the dialog should pause the media on the
   // page.
@@ -695,8 +699,8 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
 
   // The dialog should contain the title and artist. These are taken from
   // video-with-metadata.html.
-  WaitForDialogToContainText(base::ASCIIToUTF16("Big Buck Bunny"));
-  WaitForDialogToContainText(base::ASCIIToUTF16("Blender Foundation"));
+  WaitForDialogToContainText(u"Big Buck Bunny");
+  WaitForDialogToContainText(u"Blender Foundation");
 
   // Clicking on the pause button in the dialog should pause the media on the
   // page.
@@ -745,10 +749,10 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, ShowsMultipleMediaSessions) {
   EXPECT_TRUE(IsDialogVisible());
 
   // The dialog should show both media sessions.
-  WaitForDialogToContainText(base::ASCIIToUTF16("Big Buck Bunny"));
-  WaitForDialogToContainText(base::ASCIIToUTF16("Blender Foundation"));
-  WaitForDialogToContainText(base::ASCIIToUTF16("Different Title"));
-  WaitForDialogToContainText(base::ASCIIToUTF16("Another Artist"));
+  WaitForDialogToContainText(u"Big Buck Bunny");
+  WaitForDialogToContainText(u"Blender Foundation");
+  WaitForDialogToContainText(u"Different Title");
+  WaitForDialogToContainText(u"Another Artist");
 }
 
 IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
@@ -776,14 +780,14 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   EXPECT_TRUE(IsDialogVisible());
 
   // Wait for the dialog to be populated.
-  WaitForDialogToContainText(base::ASCIIToUTF16("Big Buck Bunny"));
-  WaitForDialogToContainText(base::ASCIIToUTF16("Different Title"));
+  WaitForDialogToContainText(u"Big Buck Bunny");
+  WaitForDialogToContainText(u"Different Title");
 
   // The second tab should be the active tab.
   EXPECT_EQ(second_web_contents, GetActiveWebContents());
 
   // Clicking the first notification should make the first tab active.
-  ClickNotificationByTitle(base::ASCIIToUTF16("Big Buck Bunny"));
+  ClickNotificationByTitle(u"Big Buck Bunny");
   EXPECT_EQ(first_web_contents, GetActiveWebContents());
 }
 
@@ -952,19 +956,19 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, LiveCaptionProgressUpdate) {
             base::UTF16ToUTF8(GetLiveCaptionTitleNewBadgeLabel()->GetText()));
 
   ClickEnableLiveCaptionOnDialog();
-  OnSODAProgress(0);
+  OnSodaProgress(0);
   EXPECT_EQ("Downloading… 0%",
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 
-  OnSODAProgress(12);
+  OnSodaProgress(12);
   EXPECT_EQ("Downloading… 12%",
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 
-  OnSODAProgress(100);
+  OnSodaProgress(100);
   EXPECT_EQ("Downloading… 100%",
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 
-  OnSODAInstalled();
+  OnSodaInstalled();
   EXPECT_EQ("Live Caption (English only)",
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 }

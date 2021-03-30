@@ -144,4 +144,19 @@ TEST_F(InsertListCommandTest, InsertListWithCollapsedVisibility) {
       "</dl>",
       GetSelectionTextFromBody());
 }
+
+// Refer https://crbug.com/1183158
+TEST_F(InsertListCommandTest, UnlistifyParagraphWithNonEditable) {
+  GetDocument().setDesignMode("on");
+  Selection().SetSelection(
+      SetSelectionTextToBody("<li>a|<div contenteditable=false>b</div></li>"),
+      SetSelectionOptions());
+  auto* command = MakeGarbageCollected<InsertListCommand>(
+      GetDocument(), InsertListCommand::kUnorderedList);
+
+  // Crash happens here.
+  EXPECT_FALSE(command->Apply());
+  EXPECT_EQ("<ul><li>a|<div contenteditable=\"false\">b</div></li></ul><br>",
+            GetSelectionTextFromBody());
+}
 }

@@ -6,6 +6,8 @@
 
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -73,6 +75,8 @@ IN_PROC_BROWSER_TEST_F(PinnedTabServiceBrowserTest, TabStripEmpty) {
 
   // When tab strip is empty, browser window will be closed and PinnedTabService
   // must update data on this event.
+  ScopedProfileKeepAlive profile_keep_alive(
+      profile, ProfileKeepAliveOrigin::kBrowserWindow);
   BrowserRemovalWaiter waiter(browser());
   tab_strip_model->SetTabPinned(0, false);
   EXPECT_TRUE(
@@ -98,6 +102,8 @@ IN_PROC_BROWSER_TEST_F(PinnedTabServiceBrowserTest, CloseWindow) {
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   tab_strip_model->SetTabPinned(0, true);
 
+  ScopedProfileKeepAlive profile_keep_alive(
+      profile, ProfileKeepAliveOrigin::kBrowserWindow);
   BrowserRemovalWaiter waiter(browser());
   browser()->window()->Close();
   waiter.WaitForRemoval();

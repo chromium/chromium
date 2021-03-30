@@ -26,6 +26,6 @@ int MediaMessageIdToGrdId(media::MessageId message_id) {
 
 }  // namespace
 
-base::string16 ChromeMediaLocalizedStringProvider(media::MessageId message_id) {
+std::u16string ChromeMediaLocalizedStringProvider(media::MessageId message_id) {
   return l10n_util::GetStringUTF16(MediaMessageIdToGrdId(message_id));
 }

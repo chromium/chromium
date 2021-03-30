@@ -13,7 +13,6 @@
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -56,6 +55,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/switches.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
@@ -117,6 +117,10 @@ class AutofillTest : public InProcessBrowserTest {
     // Don't want Keychain coming up on Mac.
     test::DisableSystemServices(browser()->profile()->GetPrefs());
 
+    // Wait for Personal Data Manager to be fully loaded to prevent that
+    // spurious notifications deceive the tests.
+    WaitForPersonalDataManagerToBeLoaded(browser()->profile());
+
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
@@ -130,6 +134,13 @@ class AutofillTest : public InProcessBrowserTest {
             ->autofill_manager();
     autofill_manager->client()->HideAutofillPopup(PopupHidingReason::kTabGone);
     test::ReenableSystemServices();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    // Slower test bots (chromeos, debug, etc) are flaky
+    // due to slower loading interacting with deferred commits.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
   PersonalDataManager* personal_data_manager() {
@@ -188,7 +199,10 @@ class AutofillTest : public InProcessBrowserTest {
     base::FilePath data_file =
         ui_test_utils::GetTestFilePath(base::FilePath().AppendASCII("autofill"),
                                        base::FilePath().AppendASCII(filename));
-    CHECK(base::ReadFileToString(data_file, &data));
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      CHECK(base::ReadFileToString(data_file, &data));
+    }
     std::vector<std::string> lines = base::SplitString(
         data, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     int parsed_profiles = 0;
@@ -231,8 +245,7 @@ class AutofillTest : public InProcessBrowserTest {
 // Test that Autofill aggregates a minimum valid profile.
 // The minimum required address fields must be specified: First Name, Last Name,
 // Address Line 1, City, Zip Code, and State.
-// TODO(crbug.com/1090343): Flaky on all platforms.
-IN_PROC_BROWSER_TEST_F(AutofillTest, DISABLED_AggregatesMinValidProfile) {
+IN_PROC_BROWSER_TEST_F(AutofillTest, AggregatesMinValidProfile) {
   FormMap data;
   data["NAME_FIRST"] = "Bob";
   data["NAME_LAST"] = "Smith";
@@ -264,16 +277,7 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, AggregatesMinValidProfileDifferentJS) {
 
 // Form submitted via JavaScript, the user's personal data is updated even
 // if the event handler on the submit event prevents submission of the form.
-// Flaky on Mac: https://crbug.com/1078506.
-#if defined(OS_MAC)
-#define MAYBE_ProfilesAggregatedWithSubmitHandler \
-  DISABLED_ProfilesAggregatedWithSubmitHandler
-#else
-#define MAYBE_ProfilesAggregatedWithSubmitHandler \
-  ProfilesAggregatedWithSubmitHandler
-#endif
-IN_PROC_BROWSER_TEST_F(AutofillTest,
-                       MAYBE_ProfilesAggregatedWithSubmitHandler) {
+IN_PROC_BROWSER_TEST_F(AutofillTest, ProfilesAggregatedWithSubmitHandler) {
   FormMap data;
   data["NAME_FIRST"] = "Bob";
   data["NAME_LAST"] = "Smith";
@@ -292,9 +296,9 @@ IN_PROC_BROWSER_TEST_F(AutofillTest,
   // The AutofillManager will update the user's profile.
   EXPECT_EQ(1u, personal_data_manager()->GetProfiles().size());
 
-  EXPECT_EQ(ASCIIToUTF16("Bob"),
+  EXPECT_EQ(u"Bob",
             personal_data_manager()->GetProfiles()[0]->GetRawInfo(NAME_FIRST));
-  EXPECT_EQ(ASCIIToUTF16("Smith"),
+  EXPECT_EQ(u"Smith",
             personal_data_manager()->GetProfiles()[0]->GetRawInfo(NAME_LAST));
 }
 
@@ -385,18 +389,17 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, ProfileSavedWithValidCountryPhone) {
     FillFormAndSubmit("autofill_test_form.html", profiles[i]);
 
   ASSERT_EQ(2u, personal_data_manager()->GetProfiles().size());
-  int us_address_index =
-      personal_data_manager()->GetProfiles()[0]->GetRawInfo(
-          ADDRESS_HOME_LINE1) == ASCIIToUTF16("123 Cherry Ave")
-          ? 0
-          : 1;
+  int us_address_index = personal_data_manager()->GetProfiles()[0]->GetRawInfo(
+                             ADDRESS_HOME_LINE1) == u"123 Cherry Ave"
+                             ? 0
+                             : 1;
 
   EXPECT_EQ(
-      ASCIIToUTF16("408-871-4567"),
+      u"408-871-4567",
       personal_data_manager()->GetProfiles()[us_address_index]->GetRawInfo(
           PHONE_HOME_WHOLE_NUMBER));
   ASSERT_EQ(
-      ASCIIToUTF16("+49 40-80-81-79-000"),
+      u"+49 40-80-81-79-000",
       personal_data_manager()->GetProfiles()[1 - us_address_index]->GetRawInfo(
           PHONE_HOME_WHOLE_NUMBER));
 }
@@ -422,17 +425,16 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, AppendCountryCodeForAggregatedPhones) {
   ASSERT_EQ(2u, personal_data_manager()->GetProfiles().size());
   int second_address_index =
       personal_data_manager()->GetProfiles()[0]->GetRawInfo(
-          ADDRESS_HOME_LINE1) == ASCIIToUTF16("4321 H St.")
+          ADDRESS_HOME_LINE1) == u"4321 H St."
           ? 0
           : 1;
 
-  EXPECT_EQ(ASCIIToUTF16("+49 8450 777777"),
-            personal_data_manager()
-                ->GetProfiles()[1 - second_address_index]
-                ->GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
+  EXPECT_EQ(u"+49 8450 777777", personal_data_manager()
+                                    ->GetProfiles()[1 - second_address_index]
+                                    ->GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
 
   EXPECT_EQ(
-      ASCIIToUTF16("08450 777777"),
+      u"08450 777777",
       personal_data_manager()->GetProfiles()[second_address_index]->GetRawInfo(
           PHONE_HOME_WHOLE_NUMBER));
 }
@@ -443,18 +445,7 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, AppendCountryCodeForAggregatedPhones) {
 //   The phone number does not have a leading '+'.
 //   The phone number has a leading international direct dialing (IDD) code.
 // This does not apply to US numbers. For US numbers, '+' is removed.
-
-// Flaky on Windows. http://crbug.com/500491
-// Also flaky on Linux. http://crbug.com/935629
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
-#define MAYBE_UsePlusSignForInternationalNumber \
-    DISABLED_UsePlusSignForInternationalNumber
-#else
-#define MAYBE_UsePlusSignForInternationalNumber \
-    UsePlusSignForInternationalNumber
-#endif
-
-IN_PROC_BROWSER_TEST_F(AutofillTest, MAYBE_UsePlusSignForInternationalNumber) {
+IN_PROC_BROWSER_TEST_F(AutofillTest, UsePlusSignForInternationalNumber) {
   std::vector<FormMap> profiles;
 
   FormMap data1;
@@ -598,9 +589,7 @@ IN_PROC_BROWSER_TEST_F(AutofillTest,
 // Mininum address values needed during aggregation are: address line 1, city,
 // state, and zip code.
 // Profiles are merged when data for address line 1 and city match.
-// DISABLED: http://crbug.com/281541
-IN_PROC_BROWSER_TEST_F(AutofillTest,
-                       DISABLED_ProfilesNotMergedWhenNoMinAddressData) {
+IN_PROC_BROWSER_TEST_F(AutofillTest, ProfilesNotMergedWhenNoMinAddressData) {
   AggregateProfilesIntoAutofillPrefs("dataset_no_address.txt");
 
   ASSERT_EQ(0u, personal_data_manager()->GetProfiles().size());
@@ -609,6 +598,8 @@ IN_PROC_BROWSER_TEST_F(AutofillTest,
 // Test Autofill ability to merge duplicate profiles and throw away junk.
 // TODO(isherman): this looks redundant, consider removing.
 // DISABLED: http://crbug.com/281541
+// This tests opens and submits over 240 forms which does not finish within the
+// allocated time of browser_tests. This should be converted into a unittest.
 IN_PROC_BROWSER_TEST_F(AutofillTest,
                        DISABLED_MergeAggregatedDuplicatedProfiles) {
   int num_of_profiles =
@@ -647,7 +638,8 @@ class AutofillAccessibilityTest : public AutofillTest {
 };
 
 // Test that autofill available state is correctly set on accessibility node.
-IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest, TestAutofillState) {
+// crbug.com/1162484
+IN_PROC_BROWSER_TEST_F(AutofillAccessibilityTest, DISABLED_TestAutofillState) {
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
 
   // Navigate to url.
@@ -809,6 +801,13 @@ class FormSubmissionDetectionTest
     SetUpServer();
     NavigateToPage("/form.html");
     Mock();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    // Slower test bots (chromeos, debug, etc) are flaky
+    // due to slower loading interacting with deferred commits.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
   void TearDownOnMainThread() override {}

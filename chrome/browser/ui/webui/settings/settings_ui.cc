@@ -18,6 +18,9 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/account_manager_facade_factory.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/hats/hats_service.h"
@@ -65,6 +68,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/settings_resources.h"
 #include "chrome/grit/settings_resources_map.h"
+#include "components/account_manager_core/account_manager_facade.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -93,25 +97,29 @@
 #include "chrome/browser/ui/webui/settings/languages_handler.h"
 #endif  // defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/language/core/common/language_experiments.h"
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/account_manager/account_manager.h"
+#include "ash/components/account_manager/account_manager_factory.h"
+#include "ash/constants/ash_features.h"
+#include "chrome/browser/ash/account_manager/account_manager_util.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/account_manager/account_manager_util.h"
 #include "chrome/browser/chromeos/android_sms/android_sms_app_manager.h"
 #include "chrome/browser/chromeos/android_sms/android_sms_service_factory.h"
 #include "chrome/browser/chromeos/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/chromeos/phonehub/phone_hub_manager_factory.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/certificate_provisioning_ui_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/account_manager_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/android_apps_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/multidevice_handler.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/browser_resources.h"
-#include "chromeos/components/account_manager/account_manager.h"
-#include "chromeos/components/account_manager/account_manager_factory.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/login/auth/password_visibility_utils.h"
 #include "components/arc/arc_util.h"
 #include "components/user_manager/user.h"
@@ -251,20 +259,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                                                profile->GetPrefs()->GetBoolean(
                                                    prefs::kSigninAllowed));
 
-  html_source->AddBoolean(
-      "safeBrowsingEnhancedEnabled",
-      base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection));
-
-  html_source->AddBoolean(
-      "passwordsWeaknessCheck",
-      base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordsWeaknessCheck));
-
-  html_source->AddBoolean(
-      "editPasswordsInSettings",
-      base::FeatureList::IsEnabled(
-          password_manager::features::kEditPasswordsInSettings));
-
   html_source->AddBoolean("showImportPasswords",
                           base::FeatureList::IsEnabled(
                               password_manager::features::kPasswordImport));
@@ -294,6 +288,12 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
           features::kChromeCleanupScanCompletedNotification));
 #endif
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+  html_source->AddBoolean("enableDesktopRestructuredLanguageSettings",
+                          base::FeatureList::IsEnabled(
+                              language::kDesktopRestructuredLanguageSettings));
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   html_source->AddBoolean("splitSettingsSyncEnabled",
                           chromeos::features::IsSplitSettingsSyncEnabled());
@@ -309,21 +309,18 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
   // This is the browser settings page.
   html_source->AddBoolean("isOSSettings", false);
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
-  html_source->AddBoolean("newProfilePicker", base::FeatureList::IsEnabled(
-                                                  features::kNewProfilePicker));
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   html_source->AddBoolean(
       "safetyCheckWeakPasswordsEnabled",
       base::FeatureList::IsEnabled(features::kSafetyCheckWeakPasswords));
 
-  html_source->AddBoolean(
-      "privacySandboxSettingsEnabled",
-      base::FeatureList::IsEnabled(features::kPrivacySandboxSettings));
-
   AddSettingsPageUIHandler(std::make_unique<AboutHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ResetSettingsHandler>(profile));
+
+  html_source->AddBoolean(
+      "searchHistoryLink",
+      base::FeatureList::IsEnabled(features::kSearchHistoryLink));
 
   // Add a handler to provide pluralized strings.
   auto plural_string_handler = std::make_unique<PluralStringHandler>();
@@ -364,10 +361,14 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                    profile, chrome::FaviconUrlFormat::kFavicon2));
 
   // Privacy Sandbox
-  if (base::FeatureList::IsEnabled(features::kPrivacySandboxSettings)) {
+  bool sandbox_enabled = PrivacySandboxSettingsFactory::GetForProfile(profile)
+                             ->PrivacySandboxSettingsFunctional();
+  html_source->AddBoolean("privacySandboxSettingsEnabled", sandbox_enabled);
+  if (sandbox_enabled) {
     html_source->AddResourcePath(
         "privacySandbox", IDR_SETTINGS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_HTML);
   }
+
   TryShowHatsSurveyWithTimeout();
 }
 
@@ -379,16 +380,20 @@ void SettingsUI::InitBrowserSettingsWebUIHandlers() {
 
   // TODO(jamescook): Sort out how account management is split between Chrome OS
   // and browser settings.
-  if (chromeos::IsAccountManagerAvailable(profile)) {
-    chromeos::AccountManagerFactory* factory =
+  if (ash::IsAccountManagerAvailable(profile)) {
+    auto* factory =
         g_browser_process->platform_part()->GetAccountManagerFactory();
-    chromeos::AccountManager* account_manager =
+    auto* account_manager =
         factory->GetAccountManager(profile->GetPath().value());
     DCHECK(account_manager);
+    auto* account_manager_facade =
+        ::GetAccountManagerFacade(profile->GetPath().value());
+    DCHECK(account_manager_facade);
 
     web_ui()->AddMessageHandler(
         std::make_unique<chromeos::settings::AccountManagerUIHandler>(
-            account_manager, IdentityManagerFactory::GetForProfile(profile)));
+            account_manager, account_manager_facade,
+            IdentityManagerFactory::GetForProfile(profile)));
   }
 
   // MultideviceHandler is required in browser settings to show a special note
@@ -414,9 +419,6 @@ void SettingsUI::InitBrowserSettingsWebUIHandlers() {
             android_sms_service ? android_sms_service->android_sms_app_manager()
                                 : nullptr));
   }
-
-  web_ui()->AddMessageHandler(
-      std::make_unique<chromeos::settings::AndroidAppsHandler>(profile));
 }
 #else   // BUILDFLAG(IS_CHROMEOS_ASH)
 void SettingsUI::BindInterface(

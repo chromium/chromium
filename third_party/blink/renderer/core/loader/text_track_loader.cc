@@ -164,6 +164,7 @@ void TextTrackLoader::Trace(Visitor* visitor) const {
   visitor->Trace(client_);
   visitor->Trace(cue_parser_);
   visitor->Trace(document_);
+  visitor->Trace(cue_load_timer_);
   RawResourceClient::Trace(visitor);
   VTTParserClient::Trace(visitor);
 }

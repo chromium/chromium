@@ -80,6 +80,11 @@ void AvatarButtonErrorController::SyncErrorObserver::OnStateChanged(
   avatar_button_error_controller_->UpdateSyncError(HasSyncError());
 }
 
+void AvatarButtonErrorController::SyncErrorObserver::OnSyncShutdown(
+    syncer::SyncService* sync_service) {
+  sync_observer_.Remove(sync_service);
+}
+
 bool AvatarButtonErrorController::SyncErrorObserver::HasSyncError() {
   syncer::SyncService* sync_service =
       ProfileSyncServiceFactory::GetForProfile(profile_);

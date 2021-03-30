@@ -61,9 +61,9 @@ console-log-linkify-…ack-in-errors.js:68 Error broken stack #5
 console-log-linkify-…ack-in-errors.js:69 Error broken stack #6
     at foob.js foob.js:40
 stack-with-sourceMap.coffee:2 Error
-    at letsFailWithStack(a:1:2) (stack-with-sourceMap.coffee:2)
+    at window.letsFailWithStack (stack-with-sourceMap.coffee:2)
     at eval (eval at letsFailWithStackInEval (stack-with-sourceMap.coffee:8), <anonymous>:1:1)
-    at Failure.letsFailWithStackInEval(a) [as letsFailWithStackInEval] (stack-with-sourceMap.coffee:8)
+    at Failure.letsFailWithStackInEval (stack-with-sourceMap.coffee:8)
     at window.failure (stack-with-sourceMap.coffee:13)
     at <anonymous>:1:1
 

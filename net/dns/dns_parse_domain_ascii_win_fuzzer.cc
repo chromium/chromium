@@ -16,11 +16,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   if (size > 8 * 1024)
     return 0;
 
-  base::StringPiece16 widestr(
-      reinterpret_cast<const base::StringPiece16::value_type*>(data), size / 2);
-  std::string result;
+  base::WStringPiece widestr(reinterpret_cast<const wchar_t*>(data), size / 2);
+  std::string result = net::internal::ParseDomainASCII(widestr);
 
-  if (net::internal::ParseDomainASCII(widestr, &result))
+  if (!result.empty())
     // Call base::ToLowerASCII to get some additional code coverage signal.
     result = base::ToLowerASCII(result);
 

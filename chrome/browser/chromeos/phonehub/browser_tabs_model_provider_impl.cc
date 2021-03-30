@@ -55,6 +55,12 @@ void BrowserTabsModelProviderImpl::OnHostStatusChanged(
 }
 
 void BrowserTabsModelProviderImpl::TriggerRefresh() {
+  // crbug/1158480: Currently (January 2021), updates to synced sessions
+  // sometimes take a long time to arrive. As a workaround,
+  // SyncService::TriggerRefresh() is used, which bypasses some of the potential
+  // sources of latency (e.g. for delivering an invalidation), but not others
+  // (e.g. backend replication delay). I.e SyncService::TriggerRefresh() will
+  // not guarantee an immediate update.
   sync_service_->TriggerRefresh({syncer::SESSIONS});
 }
 

@@ -22,7 +22,7 @@ COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) extern const char kCountHistogramName[];
 // Creates a string describing media session metadata intended to be read out by
 // a screen reader.
 COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER)
-base::string16 GetAccessibleNameFromMetadata(
+std::u16string GetAccessibleNameFromMetadata(
     media_session::MediaMetadata session_metadata);
 
 // Returns actions that can be displayed as buttons in the media controller UI

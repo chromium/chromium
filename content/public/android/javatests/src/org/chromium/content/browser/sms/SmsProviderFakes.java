@@ -54,7 +54,7 @@ class SmsProviderFakes {
 
             Wrappers.WebOTPServiceContext context = super.getContext();
             assert context != null;
-            BroadcastReceiver receiver = context.getRegisteredVerificationReceiver();
+            BroadcastReceiver receiver = context.createVerificationReceiverForTesting();
             receiver.onReceive(context, intent);
         }
 
@@ -89,7 +89,7 @@ class SmsProviderFakes {
                     SmsCodeRetriever.EXTRA_STATUS, new Status(CommonStatusCodes.TIMEOUT));
             intent.putExtras(bundle);
 
-            BroadcastReceiver receiver = context.getRegisteredVerificationReceiver();
+            BroadcastReceiver receiver = context.createVerificationReceiverForTesting();
             receiver.onReceive(context, intent);
         }
 
@@ -108,16 +108,16 @@ class SmsProviderFakes {
         }
 
         @CalledByNative("FakeSmsRetrieverClient")
-        private void triggerUserDeniesPermission(WindowAndroid window) {
+        private void triggerUserDeniesPermission(WindowAndroid window, boolean isLocalRequest) {
             Wrappers.WebOTPServiceContext context = super.getContext();
             assert context != null;
 
-            SmsVerificationReceiver receiver = context.getRegisteredVerificationReceiver();
-            receiver.onPermissionDone(window, Activity.RESULT_CANCELED);
+            SmsVerificationReceiver receiver = context.createVerificationReceiverForTesting();
+            receiver.onPermissionDone(window, Activity.RESULT_CANCELED, isLocalRequest);
         }
 
         @CalledByNative("FakeSmsRetrieverClient")
-        private void triggerUserGrantsPermission(WindowAndroid window) {
+        private void triggerUserGrantsPermission(WindowAndroid window, boolean isLocalRequest) {
             Wrappers.WebOTPServiceContext context = super.getContext();
             if (context == null) {
                 Log.v(TAG,
@@ -127,16 +127,16 @@ class SmsProviderFakes {
             }
 
             SmsVerificationReceiver receiver =
-                    (SmsVerificationReceiver) context.getRegisteredVerificationReceiver();
-            receiver.onPermissionDone(window, Activity.RESULT_OK);
+                    (SmsVerificationReceiver) context.createVerificationReceiverForTesting();
+            receiver.onPermissionDone(window, Activity.RESULT_OK, isLocalRequest);
         }
 
         @CalledByNative("FakeSmsRetrieverClient")
-        private void triggerFailure(String type) {
+        private void triggerFailure(String type, boolean isLocalRequest) {
             Wrappers.WebOTPServiceContext context = super.getContext();
             assert context != null;
 
-            SmsVerificationReceiver receiver = context.getRegisteredVerificationReceiver();
+            SmsVerificationReceiver receiver = context.createVerificationReceiverForTesting();
             Log.i(TAG, "receiver %s", receiver);
 
             int code;
@@ -157,7 +157,7 @@ class SmsProviderFakes {
 
             ApiException e = new ApiException(new Status(code));
 
-            receiver.onRetrieverTaskFailure(null, e);
+            receiver.onRetrieverTaskFailure(null, isLocalRequest, e);
         }
 
         // ---------------------------------------------------------------------

@@ -77,12 +77,6 @@ interface BroadcastChannel : EventTarget
     method postMessage
     setter onmessage
     setter onmessageerror
-interface BucketManager
-    attribute @@toStringTag
-    method constructor
-    method delete
-    method keys
-    method openOrCreate
 interface ByteLengthQueuingStrategy
     attribute @@toStringTag
     getter highWaterMark
@@ -126,6 +120,9 @@ interface CanMakePaymentEvent : ExtendableEvent
     method constructor
     method respondWith
     method respondWithMinimalUI
+interface CanvasFilter
+    attribute @@toStringTag
+    method constructor
 interface CanvasGradient
     attribute @@toStringTag
     method addColorStop
@@ -564,7 +561,6 @@ interface FileSystemHandle
     method requestPermission
 interface FileSystemWritableFileStream : WritableStream
     attribute @@toStringTag
-    method close
     method constructor
     method seek
     method truncate
@@ -578,6 +574,7 @@ interface FontFace
     getter featureSettings
     getter lineGapOverride
     getter loaded
+    getter sizeAdjust
     getter status
     getter stretch
     getter style
@@ -592,6 +589,7 @@ interface FontFace
     setter family
     setter featureSettings
     setter lineGapOverride
+    setter sizeAdjust
     setter stretch
     setter style
     setter unicodeRange
@@ -718,23 +716,6 @@ interface IDBObjectStore
     method put
     method putAllValues
     setter name
-interface IDBObservation
-    attribute @@toStringTag
-    getter key
-    getter type
-    getter value
-    method constructor
-interface IDBObserver
-    attribute @@toStringTag
-    method constructor
-    method observe
-    method unobserve
-interface IDBObserverChanges
-    attribute @@toStringTag
-    getter database
-    getter records
-    getter transaction
-    method constructor
 interface IDBOpenDBRequest : IDBRequest
     attribute @@toStringTag
     getter onblocked
@@ -906,8 +887,11 @@ interface NativeIOFileManager
     method constructor
     method delete
     method getAll
+    method getRemainingCapacity
     method open
+    method releaseCapacity
     method rename
+    method requestCapacity
 interface NavigationPreloadManager
     attribute @@toStringTag
     method constructor
@@ -1035,6 +1019,7 @@ interface OffscreenCanvasRenderingContext2D
     method lineTo
     method measureText
     method moveTo
+    method perspective
     method putImageData
     method quadraticCurveTo
     method rect
@@ -1042,6 +1027,8 @@ interface OffscreenCanvasRenderingContext2D
     method resetTransform
     method restore
     method rotate
+    method rotate3d
+    method rotateAxis
     method roundRect
     method save
     method scale
@@ -1218,7 +1205,7 @@ interface Permissions
     method request
     method requestAll
     method revoke
-interface Profiler
+interface Profiler : EventTarget
     attribute @@toStringTag
     getter sampleInterval
     getter stopped
@@ -1435,6 +1422,20 @@ interface ServiceWorkerRegistration : EventTarget
     method unregister
     method update
     setter onupdatefound
+interface StorageBucket
+    attribute @@toStringTag
+    method constructor
+    method durability
+    method estimate
+    method expires
+    method persisted
+    method setExpires
+interface StorageBucketManager
+    attribute @@toStringTag
+    method constructor
+    method delete
+    method keys
+    method open
 interface StorageManager : EventTarget
     attribute @@toStringTag
     getter onquotachange
@@ -1566,6 +1567,14 @@ interface URL
     setter username
 interface URLPattern
     attribute @@toStringTag
+    getter hash
+    getter hostname
+    getter password
+    getter pathname
+    getter port
+    getter protocol
+    getter search
+    getter username
     method constructor
     method exec
     method test
@@ -2930,7 +2939,6 @@ interface WorkerGlobalScope : EventTarget
     getter indexedDB
     getter isSecureContext
     getter location
-    getter nativeIO
     getter navigator
     getter onerror
     getter onlanguagechange
@@ -2940,6 +2948,7 @@ interface WorkerGlobalScope : EventTarget
     getter origin
     getter performance
     getter self
+    getter storageFoundation
     getter trustedTypes
     method atob
     method btoa

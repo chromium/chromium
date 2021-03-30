@@ -126,17 +126,12 @@ class CORE_EXPORT DevToolsAgent : public GarbageCollected<DevToolsAgent>,
 
   Client* client_;
   // DevToolsAgent is not tied to ExecutionContext
-  HeapMojoAssociatedReceiver<mojom::blink::DevToolsAgent,
-                             DevToolsAgent,
-                             HeapMojoWrapperMode::kWithoutContextObserver>
+  HeapMojoAssociatedReceiver<mojom::blink::DevToolsAgent, DevToolsAgent>
       associated_receiver_{this, nullptr};
   // DevToolsAgent is not tied to ExecutionContext
-  HeapMojoRemote<mojom::blink::DevToolsAgentHost,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      host_remote_{nullptr};
+  HeapMojoRemote<mojom::blink::DevToolsAgentHost> host_remote_{nullptr};
   // DevToolsAgent is not tied to ExecutionContext
-  HeapMojoAssociatedRemote<mojom::blink::DevToolsAgentHost,
-                           HeapMojoWrapperMode::kWithoutContextObserver>
+  HeapMojoAssociatedRemote<mojom::blink::DevToolsAgentHost>
       associated_host_remote_{nullptr};
   Member<InspectedFrames> inspected_frames_;
   Member<CoreProbeSink> probe_sink_;

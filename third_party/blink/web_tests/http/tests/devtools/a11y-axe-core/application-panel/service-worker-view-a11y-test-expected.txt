@@ -1,4 +1,0 @@
-Tests accessibility of ServiceWorkersView on application panel.
-aXe violations: []
-
-

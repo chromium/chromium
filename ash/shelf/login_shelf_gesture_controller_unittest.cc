@@ -11,6 +11,7 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "base/callback_helpers.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
@@ -20,7 +21,7 @@ class TestLoginShelfFlingHandler {
   TestLoginShelfFlingHandler() {
     gesture_detection_active_ =
         Shell::Get()->login_screen_controller()->SetLoginShelfGestureHandler(
-            base::ASCIIToUTF16("Test swipe"),
+            u"Test swipe",
             base::BindRepeating(&TestLoginShelfFlingHandler::OnFlingDetected,
                                 base::Unretained(this)),
             base::BindOnce(
@@ -706,7 +707,7 @@ TEST_F(LoginShelfGestureControllerTest, HandlerExitsOnShutdown) {
   TabletModeControllerTestApi().EnterTabletMode();
 
   Shell::Get()->login_screen_controller()->SetLoginShelfGestureHandler(
-      base::ASCIIToUTF16("Test swipe"), base::DoNothing(), base::DoNothing());
+      u"Test swipe", base::DoNothing(), base::DoNothing());
 }
 
 }  // namespace ash

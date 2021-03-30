@@ -11,7 +11,7 @@ ContextMenuParams::ContextMenuParams(const ContextMenuParams& other) = default;
 ContextMenuParams::~ContextMenuParams() = default;
 
 ContextMenuParams::ContextMenuParams(
-    const UntrustworthyContextMenuParams& other)
+    const blink::UntrustworthyContextMenuParams& other)
     : UntrustworthyContextMenuParams(other) {}
 
 }  // namespace content

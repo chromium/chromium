@@ -277,10 +277,10 @@ class ContentBrowserTestSanityTest : public ContentBrowserTest {
   void Test() {
     GURL url = GetTestUrl(".", "simple_page.html");
 
-    base::string16 expected_title(base::ASCIIToUTF16("OK"));
+    std::u16string expected_title(u"OK");
     TitleWatcher title_watcher(shell()->web_contents(), expected_title);
     EXPECT_TRUE(NavigateToURL(shell(), url));
-    base::string16 title = title_watcher.WaitAndGetTitle();
+    std::u16string title = title_watcher.WaitAndGetTitle();
     EXPECT_EQ(expected_title, title);
   }
 };
@@ -353,9 +353,12 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, RunTimeoutInstalled) {
   EXPECT_TRUE(run_timeout);
   EXPECT_LT(run_timeout->timeout, TestTimeouts::test_launcher_timeout());
 
-  static const base::RepeatingClosure& static_on_timeout =
-      run_timeout->on_timeout;
-  EXPECT_FATAL_FAILURE(static_on_timeout.Run(), "RunLoop::Run() timed out");
+  static auto& static_on_timeout_cb = run_timeout->on_timeout;
+  EXPECT_FATAL_FAILURE(static_on_timeout_cb.Run(FROM_HERE),
+                       "RunLoop::Run() timed out. Timeout set at "
+                       // We don't test the line number but it would be present.
+                       "ProxyRunTestOnMainThreadLoop@../../content/public/test/"
+                       "browser_test_base.cc:");
 }
 
 }  // namespace content

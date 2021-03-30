@@ -78,7 +78,7 @@ class MockInstalledApplications : public InstalledApplications {
 };
 
 constexpr wchar_t kCertificatePath[] = L"CertificatePath";
-constexpr wchar_t kCertificateSubject[] = L"CertificateSubject";
+constexpr char16_t kCertificateSubject[] = u"CertificateSubject";
 
 constexpr wchar_t kDllPath1[] = L"c:\\path\\to\\module.dll";
 constexpr wchar_t kDllPath2[] = L"c:\\some\\shellextension.dll";
@@ -135,12 +135,12 @@ class IncompatibleApplicationsUpdaterTest : public testing::Test,
     NO_REGISTRY_ENTRY,
   };
   void AddIncompatibleApplication(const base::FilePath& injected_module_path,
-                                  const base::string16& application_name,
+                                  const std::wstring& application_name,
                                   Option option) {
     static constexpr wchar_t kUninstallRegKeyFormat[] =
         L"dummy\\uninstall\\%ls";
 
-    const base::string16 registry_key_path =
+    const std::wstring registry_key_path =
         base::StringPrintf(kUninstallRegKeyFormat, application_name.c_str());
 
     installed_applications_.AddIncompatibleApplication(

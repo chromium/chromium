@@ -37,7 +37,7 @@ class PasswordBubbleControllerBase {
   virtual ~PasswordBubbleControllerBase();
 
   // Subclasses must override this method to provide the proper title.
-  virtual base::string16 GetTitle() const = 0;
+  virtual std::u16string GetTitle() const = 0;
 
   // Subclasses must override this method to report their interactions.
   virtual void ReportInteractions() = 0;

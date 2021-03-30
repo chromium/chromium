@@ -3,8 +3,9 @@
 <link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_indicator.html">
+<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="../../i18n_setup.html">
+<link rel="import" href="chrome://resources/html/load_time_data.html">
 <link rel="import" href="../../prefs/prefs_behavior.html">
 <link rel="import" href="../deep_linking_behavior.html">
 <link rel="import" href="../os_route.html">
@@ -12,13 +13,13 @@
 <link rel="import" href="../../settings_page/settings_animated_pages.html">
 <link rel="import" href="../../settings_page/settings_subpage.html">
 <link rel="import" href="../../settings_shared_css.html">
+<link rel="import" href="../guest_os/guest_os_shared_paths.html">
+<link rel="import" href="../guest_os/guest_os_shared_usb_devices.html">
 <link rel="import" href="../localized_link/localized_link.html">
 <link rel="import" href="crostini_arc_adb.html">
 <link rel="import" href="crostini_browser_proxy.html">
 <link rel="import" href="crostini_export_import.html">
 <link rel="import" href="crostini_port_forwarding.html">
-<link rel="import" href="crostini_shared_paths.html">
-<link rel="import" href="crostini_shared_usb_devices.html">
 <link rel="import" href="crostini_subpage.html">
 
 <dom-module id="settings-crostini-page">
@@ -103,18 +104,19 @@
       <template is="dom-if" route-path="/crostini/sharedPaths">
         <settings-subpage
             associated-control="[[$$('#crostini')]]"
-            page-title="$i18n{crostiniSharedPaths}">
-          <settings-crostini-shared-paths prefs="{{prefs}}">
-          </settings-crostini-shared-paths>
+            page-title="$i18n{guestOsSharedPaths}">
+          <settings-guest-os-shared-paths
+              guest-os-type="crostini" prefs="{{prefs}}">
+          </settings-guest-os-shared-paths>
         </settings-subpage>
       </template>
 
       <template is="dom-if" route-path="/crostini/sharedUsbDevices">
         <settings-subpage
             associated-control="[[$$('#crostini')]]"
-            page-title="$i18n{crostiniSharedUsbDevicesLabel}">
-          <settings-crostini-shared-usb-devices prefs="{{prefs}}">
-          </settings-crostini-shared-usb-devices>
+            page-title="$i18n{guestOsSharedUsbDevicesLabel}">
+          <settings-guest-os-shared-usb-devices guest-os-type="crostini">
+          </settings-guest-os-shared-usb-devices>
         </settings-subpage>
       </template>
     </settings-animated-pages>

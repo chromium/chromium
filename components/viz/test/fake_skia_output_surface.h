@@ -74,7 +74,7 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
       sk_sp<SkColorSpace> image_color_space,
       SkYUVAInfo::PlaneConfig plane_config,
       SkYUVAInfo::Subsampling subsampling) override;
-  void SwapBuffersSkipped() override {}
+  void SwapBuffersSkipped(const gfx::Rect root_pass_damage_rect) override {}
   SkCanvas* BeginPaintRenderPass(const AggregatedRenderPassId& id,
                                  const gfx::Size& surface_size,
                                  ResourceFormat format,
@@ -112,6 +112,8 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
   sk_sp<SkDeferredDisplayList> EndPaintRenderPassOverlay() override;
 #endif
 
+  void PreserveChildSurfaceControls() override {}
+
   // ExternalUseClient implementation:
   gpu::SyncToken ReleaseImageContexts(
       const std::vector<std::unique_ptr<ImageContext>> image_contexts) override;
@@ -130,6 +132,14 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
   void ScheduleGpuTaskForTesting(
       base::OnceClosure callback,
       std::vector<gpu::SyncToken> sync_tokens) override;
+
+  void UsePlatformDelegatedInkForTesting() {
+    capabilities_.supports_delegated_ink = true;
+  }
+
+  gfx::DelegatedInkMetadata* last_delegated_ink_metadata() const {
+    return last_delegated_ink_metadata_.get();
+  }
 
  private:
   explicit FakeSkiaOutputSurface(
@@ -152,6 +162,9 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
 
   // SkSurfaces for render passes, sk_surfaces_[0] is the root surface.
   base::flat_map<AggregatedRenderPassId, sk_sp<SkSurface>> sk_surfaces_;
+
+  // Most recent delegated ink metadata to have arrived via a SwapBuffers call.
+  std::unique_ptr<gfx::DelegatedInkMetadata> last_delegated_ink_metadata_;
 
   THREAD_CHECKER(thread_checker_);
 

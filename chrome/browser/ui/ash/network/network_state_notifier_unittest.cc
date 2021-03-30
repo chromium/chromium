@@ -15,7 +15,6 @@
 #include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
-#include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/network_connect.h"
 #include "chromeos/network/network_handler.h"
 #include "testing/platform_test.h"
@@ -45,6 +44,7 @@ class NetworkConnectTestDelegate : public NetworkConnect::Delegate {
     return false;
   }
   void ShowMobileSetupDialog(const std::string& service_path) override {}
+  void ShowCarrierAccountDetail(const std::string& service_path) override {}
   void ShowNetworkConnectError(const std::string& error_name,
                                const std::string& network_id) override {
     network_state_notifier_->ShowNetworkConnectErrorForGuid(error_name,
@@ -65,7 +65,6 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-    LoginState::Initialize();
     shill_clients::InitializeFakes();
     SetupDefaultShillState();
     NetworkHandler::Initialize();
@@ -77,7 +76,6 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
   void TearDown() override {
     NetworkConnect::Shutdown();
     network_connect_delegate_.reset();
-    LoginState::Shutdown();
     NetworkHandler::Shutdown();
     shill_clients::Shutdown();
     BrowserWithTestWindowTest::TearDown();

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next min version: 3
+// Next min version: 4
 
 module cros.mojom;
 
@@ -13,6 +13,9 @@ enum CameraFacing {
   CAMERA_FACING_BACK = 0,
   CAMERA_FACING_FRONT = 1,
   CAMERA_FACING_EXTERNAL = 2,
+  CAMERA_FACING_VIRTUAL_BACK = 3,
+  CAMERA_FACING_VIRTUAL_FRONT = 4,
+  CAMERA_FACING_VIRTUAL_EXTERNAL = 5,
 };
 
 struct CameraResourceCost {
@@ -101,6 +104,7 @@ interface CameraModule {
   // Gets various info about the camera specified by |camera_id|.
   GetCameraInfo@2(int32 camera_id) => (int32 result, CameraInfo? camera_info);
 
+  // [Deprecated in version 3]
   // Registers the CameraModuleCallbacks interface with the camera HAL.
   SetCallbacks@3(pending_remote<CameraModuleCallbacks> callbacks)
       => (int32 result);
@@ -122,4 +126,11 @@ interface CameraModule {
   [MinVersion=2]
   GetVendorTagOps@6(pending_receiver<VendorTagOps> vendor_tag_ops_request)
       => ();
+
+  // Registers the CameraModuleCallbacks associated interface with the camera
+  // HAL. TODO(b/169324225): Migrate all camera HAL clients to use this.
+  [MinVersion=3]
+  SetCallbacksAssociated@7(
+      pending_associated_remote<CameraModuleCallbacks> callbacks)
+      => (int32 result);
 };

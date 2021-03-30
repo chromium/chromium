@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -70,6 +69,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #else
+#include "chrome/browser/flags/android/chrome_session_state.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
@@ -107,12 +107,17 @@ ukm::UkmService* GetUkmService() {
 }
 
 #if defined(OS_ANDROID)
+
+// ActivityType that doesn't restore tabs on cold start.
+// Any type other than kTabbed is fine.
+const auto TEST_ACTIVITY_TYPE = chrome::android::ActivityType::kCustomTab;
+
 // TestTabModel provides a means of creating a tab associated with a given
 // profile. The new tab can then be added to Android's TabModelList.
 class TestTabModel : public TabModel {
  public:
   explicit TestTabModel(Profile* profile)
-      : TabModel(profile, /*is_tabbed_activity=*/false),
+      : TabModel(profile, TEST_ACTIVITY_TYPE),
         web_contents_(content::WebContents::Create(
             content::WebContents::CreateParams(GetProfile()))) {}
 
@@ -121,6 +126,9 @@ class TestTabModel : public TabModel {
   // TabModel:
   int GetTabCount() const override { return 0; }
   int GetActiveIndex() const override { return 0; }
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const override {
+    return nullptr;
+  }
   content::WebContents* GetActiveWebContents() const override {
     return web_contents_.get();
   }
@@ -272,7 +280,7 @@ class UkmBrowserTestBase : public SyncTest {
     base::RunLoop run_loop;
     profile_manager->CreateProfileAsync(
         new_path, base::BindRepeating(&UnblockOnProfileCreation, &run_loop),
-        base::string16(), std::string());
+        std::u16string(), std::string());
     run_loop.Run();
     Profile* profile = profile_manager->GetProfileByPath(new_path);
     SetupMockGaiaResponsesForProfile(profile);
@@ -301,8 +309,8 @@ class UkmBrowserTest : public UkmBrowserTestBase {
     // would need to remove the pre-existing TabModel and add a new one.
     // Having an empty TabModelList allows us to simply add the appropriate
     // TabModel.
-    TabModelList::RemoveTabModel(TabModelList::get(0));
-    EXPECT_EQ(0U, TabModelList::size());
+    TabModelList::RemoveTabModel(TabModelList::models()[0]);
+    EXPECT_EQ(0U, TabModelList::models().size());
   }
 #endif  // defined(OS_ANDROID)
 
@@ -474,6 +482,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, IncognitoPlusRegularCheck) {
   ClosePlatformBrowser(browser);
 }
 
+#if !defined(OS_ANDROID) && !defined(CHROME_OS)
 class GuestUkmBrowserTest : public UkmBrowserTest,
                             public ::testing::WithParamInterface<bool> {
  public:
@@ -487,7 +496,6 @@ class GuestUkmBrowserTest : public UkmBrowserTest,
 };
 
 // Make sure that UKM is disabled while a guest profile's window is open.
-#if !defined(OS_ANDROID) && !defined(CHROME_OS)
 IN_PROC_BROWSER_TEST_P(GuestUkmBrowserTest, RegularPlusGuestCheck) {
   ukm::UkmTestHelper ukm_test_helper(GetUkmService());
   MetricsConsentOverride metrics_consent(true);
@@ -513,11 +521,11 @@ IN_PROC_BROWSER_TEST_P(GuestUkmBrowserTest, RegularPlusGuestCheck) {
   harness->service()->GetUserSettings()->SetSyncRequested(false);
   CloseBrowserSynchronously(regular_browser);
 }
-#endif  // !defined(OS_ANDROID) && !defined(CHROME_OS)
 
 INSTANTIATE_TEST_SUITE_P(AllGuestTypes,
                          GuestUkmBrowserTest,
                          /*is_ephemeral=*/testing::Bool());
+#endif  // !defined(OS_ANDROID) && !defined(CHROME_OS)
 
 // Make sure that UKM is disabled while an non-sync profile's window is open.
 #if !defined(OS_ANDROID)
@@ -622,16 +630,8 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, LogProtoData) {
 // Keep this test in sync with testUKMDemographicsReportingWithFeatureEnabled
 // and testUKMDemographicsReportingWithFeatureDisabled in
 // ios/chrome/browser/metrics/demographics_egtest.mm.
-// TODO(1102747): Crashes on android asan.
-#if defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
-#define MAYBE_AddSyncedUserBirthYearAndGenderToProtoData \
-  DISABLED_AddSyncedUserBirthYearAndGenderToProtoData
-#else
-#define MAYBE_AddSyncedUserBirthYearAndGenderToProtoData \
-  AddSyncedUserBirthYearAndGenderToProtoData
-#endif
 IN_PROC_BROWSER_TEST_P(UkmBrowserTestWithDemographics,
-                       MAYBE_AddSyncedUserBirthYearAndGenderToProtoData) {
+                       AddSyncedUserBirthYearAndGenderToProtoData) {
   ukm::UkmTestHelper ukm_test_helper(GetUkmService());
   test::DemographicsTestParams param = GetParam();
   MetricsConsentOverride metrics_consent(true);

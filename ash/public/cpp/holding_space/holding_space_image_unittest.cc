@@ -8,21 +8,34 @@
 #include <utility>
 #include <vector>
 
+#include "ash/public/cpp/file_icon_util.h"
+#include "ash/public/cpp/holding_space/holding_space_color_provider.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/paint_vector_icon.h"
 
 namespace ash {
 
 namespace {
+
+// Appearance.
+constexpr gfx::Size kImageSize(32, 32);
+constexpr int kFileTypeIconSize = 20;
+constexpr SkColor kFileTypeIconColor(gfx::kPlaceholderColor);
+
+// Helpers ---------------------------------------------------------------------
 
 SkBitmap CreateBitmap(int width, int height, SkColor color) {
   SkBitmap bitmap;
@@ -31,9 +44,34 @@ SkBitmap CreateBitmap(int width, int height, SkColor color) {
   return bitmap;
 }
 
-gfx::ImageSkia CreateImageSkia(int width, int height, SkColor color) {
-  return gfx::ImageSkia::CreateFrom1xBitmap(CreateBitmap(width, height, color));
+gfx::ImageSkia ExtractFileTypeIcon(const gfx::ImageSkia& image) {
+  gfx::Rect file_type_icon_bounds(image.size());
+  file_type_icon_bounds.ClampToCenteredSize(
+      gfx::Size(kFileTypeIconSize, kFileTypeIconSize));
+  return gfx::ImageSkiaOperations::ExtractSubset(image, file_type_icon_bounds);
 }
+
+bool ContainsFileTypeIcon(const gfx::ImageSkia& image,
+                          const base::FilePath& file_path) {
+  gfx::ImageSkia actual = ExtractFileTypeIcon(image);
+  gfx::ImageSkia expected = GetIconForPath(file_path, kFileTypeIconColor);
+  return gfx::test::AreImagesEqual(gfx::Image(actual), gfx::Image(expected));
+}
+
+bool ContainsFolderTypeIcon(const gfx::ImageSkia& image) {
+  gfx::ImageSkia actual = ExtractFileTypeIcon(image);
+  gfx::ImageSkia expected = gfx::CreateVectorIcon(
+      chromeos::kFiletypeFolderIcon, kFileTypeIconSize, kFileTypeIconColor);
+  return gfx::test::AreImagesEqual(gfx::Image(actual), gfx::Image(expected));
+}
+
+// Fake implementation of HoldingSpaceColorProvider.
+class FakeHoldingSpaceColorProvider : public HoldingSpaceColorProvider {
+ public:
+  // HoldingSpaceColorProvider:
+  SkColor GetBackgroundColor() const override { return gfx::kPlaceholderColor; }
+  SkColor GetFileIconColor() const override { return kFileTypeIconColor; }
+};
 
 // Helper class that provides a test implementation for the async bitmap
 // resolver callback used to generate holding space image representations.
@@ -51,7 +89,6 @@ class ImageGenerator {
 
   void GenerateImage(const base::FilePath& file_path,
                      const gfx::Size& size,
-                     float scale,
                      HoldingSpaceImage::BitmapCallback callback) {
     auto request = std::make_unique<PendingRequest>();
     request->file_path = file_path;
@@ -81,17 +118,18 @@ class ImageGenerator {
 
     pending_requests_.erase(it);
 
-    std::move(callback).Run(&result);
+    std::move(callback).Run(&result, base::File::FILE_OK);
   }
 
-  void FailRequest(size_t index) {
+  void FailRequest(size_t index,
+                   base::File::Error error = base::File::FILE_ERROR_FAILED) {
     ASSERT_LT(index, pending_requests_.size());
 
     auto it = pending_requests_.begin() + index;
     HoldingSpaceImage::BitmapCallback callback = std::move((*it)->callback);
     pending_requests_.erase(it);
 
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(/*bitmap=*/nullptr, error);
   }
 
  private:
@@ -114,11 +152,11 @@ class TestImageClient {
     image_subscription_ = image_->AddImageSkiaChangedCallback(
         base::BindRepeating(&TestImageClient::OnHoldingSpaceItemImageChanged,
                             base::Unretained(this)));
-    image_->image_skia().GetRepresentation(1.0f);
+    image_->GetImageSkia().GetRepresentation(1.0f);
   }
 
   void OnHoldingSpaceItemImageChanged() {
-    image_->image_skia().GetRepresentation(1.0f);
+    image_->GetImageSkia().GetRepresentation(1.0f);
     ++image_change_count_;
   }
 
@@ -137,20 +175,14 @@ class TestImageClient {
 std::unique_ptr<HoldingSpaceItem> CreateTestItem(
     const base::FilePath& file_path,
     ImageGenerator* image_generator,
-    int image_size,
-    SkColor image_color) {
+    const gfx::Size& image_size) {
   const GURL file_system_url("filesystem:file_system_url");
-  gfx::ImageSkia placeholder(
-      CreateImageSkia(image_size, image_size, image_color));
-  placeholder.AddRepresentation(gfx::ImageSkiaRep(
-      CreateBitmap(image_size * 2, image_size * 2, image_color), 2));
-
   return HoldingSpaceItem::CreateFileBackedItem(
       HoldingSpaceItem::Type::kPinnedFile, file_path, file_system_url,
       base::BindLambdaForTesting([&](HoldingSpaceItem::Type type,
                                      const base::FilePath& file_path) {
         return std::make_unique<HoldingSpaceImage>(
-            file_path, placeholder, image_generator->CreateResolverCallback());
+            image_size, file_path, image_generator->CreateResolverCallback());
       }));
 }
 
@@ -165,6 +197,7 @@ class HoldingSpaceImageTest : public ::testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
+  FakeHoldingSpaceColorProvider holding_space_color_provider_;
 };
 
 // Tests the basic flow for generating holding space image bitmaps.
@@ -172,8 +205,7 @@ TEST_F(HoldingSpaceImageTest, ImageGeneration) {
   const base::FilePath kTestFile("test_file.test");
   ImageGenerator image_generator;
   std::unique_ptr<HoldingSpaceItem> holding_space_item =
-      CreateTestItem(kTestFile, &image_generator, /*image_size=*/10,
-                     /*image_color=*/SK_ColorRED);
+      CreateTestItem(kTestFile, &image_generator, kImageSize);
 
   EXPECT_EQ(0u, image_generator.NumberOfPendingRequests());
 
@@ -184,9 +216,9 @@ TEST_F(HoldingSpaceImageTest, ImageGeneration) {
   EXPECT_EQ(0u, image_client.GetAndResetImageChangeCount());
 
   // The image should return the placeholder bitmap.
-  gfx::ImageSkia image = holding_space_item->image().image_skia();
-  EXPECT_EQ(gfx::Size(10, 10), image.size());
-  EXPECT_EQ(SK_ColorRED, image.bitmap()->getColor(5, 5));
+  gfx::ImageSkia image = holding_space_item->image().GetImageSkia();
+  EXPECT_EQ(kImageSize, image.size());
+  EXPECT_EQ(SK_ColorTRANSPARENT, image.bitmap()->getColor(5, 5));
 
   // Generate the holding space item image, and verify the icon has been
   // updated.
@@ -194,8 +226,8 @@ TEST_F(HoldingSpaceImageTest, ImageGeneration) {
   image_generator.FulfillRequest(0, SK_ColorBLUE);
   EXPECT_EQ(1u, image_client.GetAndResetImageChangeCount());
 
-  image = holding_space_item->image().image_skia();
-  EXPECT_EQ(gfx::Size(10, 10), image.size());
+  image = holding_space_item->image().GetImageSkia();
+  EXPECT_EQ(kImageSize, image.size());
   EXPECT_EQ(SK_ColorBLUE, image.bitmap()->getColor(5, 5));
 
   EXPECT_EQ(0u, image_generator.NumberOfPendingRequests());
@@ -208,8 +240,7 @@ TEST_F(HoldingSpaceImageTest, ImageGenerationWith2xScale) {
   const base::FilePath kTestFile("test_file.test");
   ImageGenerator image_generator;
   std::unique_ptr<HoldingSpaceItem> holding_space_item =
-      CreateTestItem(kTestFile, &image_generator, /*image_size=*/10,
-                     /*image_color=*/SK_ColorRED);
+      CreateTestItem(kTestFile, &image_generator, kImageSize);
 
   TestImageClient image_client(&holding_space_item->image());
   EXPECT_EQ(0u, image_client.GetAndResetImageChangeCount());
@@ -218,8 +249,8 @@ TEST_F(HoldingSpaceImageTest, ImageGenerationWith2xScale) {
   image_generator.FulfillRequest(0, SK_ColorBLUE);
   EXPECT_EQ(1u, image_client.GetAndResetImageChangeCount());
 
-  gfx::ImageSkia image = holding_space_item->image().image_skia();
-  EXPECT_EQ(gfx::Size(10, 10), image.size());
+  gfx::ImageSkia image = holding_space_item->image().GetImageSkia();
+  EXPECT_EQ(kImageSize, image.size());
   EXPECT_EQ(SK_ColorBLUE, image.bitmap()->getColor(5, 5));
 
   EXPECT_EQ(0u, image_generator.NumberOfPendingRequests());
@@ -231,49 +262,79 @@ TEST_F(HoldingSpaceImageTest, ImageGenerationWith2xScale) {
   EXPECT_EQ(0u, image_client.GetAndResetImageChangeCount());
 
   // Use placeholder while the image request is in progress.
-  EXPECT_EQ(20, bitmap_2x.height());
-  EXPECT_EQ(20, bitmap_2x.width());
-  EXPECT_EQ(SK_ColorRED, bitmap_2x.getColor(5, 5));
+  EXPECT_EQ(kImageSize.height() * 2, bitmap_2x.height());
+  EXPECT_EQ(kImageSize.width() * 2, bitmap_2x.width());
+  EXPECT_EQ(SK_ColorTRANSPARENT, bitmap_2x.getColor(5, 5));
 
   // Verify that the image gets updated once the holding space image is
   // generated.
   image_generator.FulfillRequest(0, SK_ColorBLUE);
 
-  image = holding_space_item->image().image_skia();
+  image = holding_space_item->image().GetImageSkia();
   const SkBitmap loaded_bitmap_2x = image.GetRepresentation(2.0f).GetBitmap();
-  EXPECT_EQ(20, loaded_bitmap_2x.height());
-  EXPECT_EQ(20, loaded_bitmap_2x.width());
+  EXPECT_EQ(kImageSize.height() * 2, loaded_bitmap_2x.height());
+  EXPECT_EQ(kImageSize.width() * 2, loaded_bitmap_2x.width());
   EXPECT_EQ(SK_ColorBLUE, loaded_bitmap_2x.getColor(5, 5));
 }
 
 // Verifies that the holding space image handles failed holding space image
 // requests.
 TEST_F(HoldingSpaceImageTest, ImageLoadFailure) {
+  const base::FilePath file_path("test_file.txt");
   ImageGenerator image_generator;
   std::unique_ptr<HoldingSpaceItem> holding_space_item =
-      CreateTestItem(base::FilePath("test_file.txt"), &image_generator,
-                     /*image_size=*/10, /*image_color=*/SK_ColorRED);
+      CreateTestItem(file_path, &image_generator, kImageSize);
 
   EXPECT_EQ(0u, image_generator.NumberOfPendingRequests());
 
-  // Test image client requests an image representation durion construction.
+  // Test image client requests an image representation during construction.
   TestImageClient image_client(&holding_space_item->image());
   EXPECT_EQ(1u, image_generator.NumberOfPendingRequests());
   EXPECT_EQ(0u, image_client.GetAndResetImageChangeCount());
 
   // Use placeholder while the image request is in progress.
-  gfx::ImageSkia image = holding_space_item->image().image_skia();
-  EXPECT_EQ(gfx::Size(10, 10), image.size());
-  EXPECT_EQ(SK_ColorRED, image.bitmap()->getColor(5, 5));
+  gfx::ImageSkia image = holding_space_item->image().GetImageSkia();
+  EXPECT_EQ(kImageSize, image.size());
+  EXPECT_EQ(SK_ColorTRANSPARENT, image.bitmap()->getColor(5, 5));
 
-  // Simulate failed holding space item image request, and verify the icon keeps
-  // using the placeholder image.
+  // Simulate failed holding space item image request, and verify the icon will
+  // fallback to the file type icon.
   image_generator.FailRequest(0);
 
+  EXPECT_EQ(1u, image_client.GetAndResetImageChangeCount());
+  image = holding_space_item->image().GetImageSkia();
+  EXPECT_EQ(kImageSize, image.size());
+  EXPECT_TRUE(ContainsFileTypeIcon(image, file_path));
+}
+
+// Verifies that the holding space image handles failed holding space image
+// requests and special cases the fallback image for folders.
+TEST_F(HoldingSpaceImageTest, ImageLoadFailureForFolder) {
+  ImageGenerator image_generator;
+  std::unique_ptr<HoldingSpaceItem> holding_space_item = CreateTestItem(
+      base::FilePath("test_folder"), &image_generator, kImageSize);
+
+  EXPECT_EQ(0u, image_generator.NumberOfPendingRequests());
+
+  // Test image client requests an image representation during construction.
+  TestImageClient image_client(&holding_space_item->image());
+  EXPECT_EQ(1u, image_generator.NumberOfPendingRequests());
   EXPECT_EQ(0u, image_client.GetAndResetImageChangeCount());
-  image = holding_space_item->image().image_skia();
-  EXPECT_EQ(gfx::Size(10, 10), image.size());
-  EXPECT_EQ(SK_ColorRED, image.bitmap()->getColor(5, 5));
+
+  // Use placeholder while the image request is in progress.
+  gfx::ImageSkia image = holding_space_item->image().GetImageSkia();
+  EXPECT_EQ(kImageSize, image.size());
+  EXPECT_EQ(SK_ColorTRANSPARENT, image.bitmap()->getColor(5, 5));
+
+  // Simulate failed holding space item image request using the special case
+  // error code used to signal that the backing file is a folder.
+  image_generator.FailRequest(0, base::File::FILE_ERROR_NOT_A_FILE);
+
+  // Verify the image will fallback to the folder type icon.
+  EXPECT_EQ(1u, image_client.GetAndResetImageChangeCount());
+  image = holding_space_item->image().GetImageSkia();
+  EXPECT_EQ(kImageSize, image.size());
+  EXPECT_TRUE(ContainsFolderTypeIcon(image));
 }
 
 // Verifies that the holding space image can be updated using
@@ -282,8 +343,7 @@ TEST_F(HoldingSpaceImageTest, ImageRefresh) {
   ImageGenerator image_generator;
   const base::FilePath kTestFile("test_file.test");
   std::unique_ptr<HoldingSpaceItem> holding_space_item =
-      CreateTestItem(kTestFile, &image_generator, /*image_size=*/10,
-                     /*image_color=*/SK_ColorRED);
+      CreateTestItem(kTestFile, &image_generator, kImageSize);
 
   // Finish loading the initial image.
   TestImageClient image_client(&holding_space_item->image());
@@ -292,8 +352,8 @@ TEST_F(HoldingSpaceImageTest, ImageRefresh) {
   image_generator.FulfillRequest(0, SK_ColorBLUE);
   EXPECT_EQ(1u, image_client.GetAndResetImageChangeCount());
 
-  gfx::ImageSkia image = holding_space_item->image().image_skia();
-  EXPECT_EQ(gfx::Size(10, 10), image.size());
+  gfx::ImageSkia image = holding_space_item->image().GetImageSkia();
+  EXPECT_EQ(kImageSize, image.size());
   EXPECT_EQ(SK_ColorBLUE, image.bitmap()->getColor(5, 5));
   EXPECT_EQ(0u, image_client.GetAndResetImageChangeCount());
 
@@ -308,8 +368,8 @@ TEST_F(HoldingSpaceImageTest, ImageRefresh) {
   EXPECT_EQ(kTestFile, image_generator.GetPendingRequestFilePath(0));
 
   // While image load request is in progress, use the previously loaded icon.
-  image = holding_space_item->image().image_skia();
-  EXPECT_EQ(gfx::Size(10, 10), image.size());
+  image = holding_space_item->image().GetImageSkia();
+  EXPECT_EQ(kImageSize, image.size());
   EXPECT_EQ(SK_ColorBLUE, image.bitmap()->getColor(5, 5));
   EXPECT_EQ(1u, image_client.GetAndResetImageChangeCount());
 
@@ -318,8 +378,8 @@ TEST_F(HoldingSpaceImageTest, ImageRefresh) {
   image_generator.FulfillRequest(0, SK_ColorGREEN);
   EXPECT_EQ(1u, image_client.GetAndResetImageChangeCount());
 
-  image = holding_space_item->image().image_skia();
-  EXPECT_EQ(gfx::Size(10, 10), image.size());
+  image = holding_space_item->image().GetImageSkia();
+  EXPECT_EQ(kImageSize, image.size());
   EXPECT_EQ(SK_ColorGREEN, image.bitmap()->getColor(5, 5));
 
   EXPECT_EQ(0u, image_generator.NumberOfPendingRequests());
@@ -332,8 +392,7 @@ TEST_F(HoldingSpaceImageTest, ImageRefreshThrottling) {
   ImageGenerator image_generator;
   const base::FilePath kTestFile("test_file.test");
   std::unique_ptr<HoldingSpaceItem> holding_space_item =
-      CreateTestItem(kTestFile, &image_generator, /*image_size=*/10,
-                     /*image_color=*/SK_ColorRED);
+      CreateTestItem(kTestFile, &image_generator, kImageSize);
 
   // Finish loading the initial image.
   TestImageClient image_client(&holding_space_item->image());
@@ -341,8 +400,8 @@ TEST_F(HoldingSpaceImageTest, ImageRefreshThrottling) {
   image_generator.FulfillRequest(0, SK_ColorBLUE);
   EXPECT_EQ(1u, image_client.GetAndResetImageChangeCount());
 
-  gfx::ImageSkia image = holding_space_item->image().image_skia();
-  EXPECT_EQ(gfx::Size(10, 10), image.size());
+  gfx::ImageSkia image = holding_space_item->image().GetImageSkia();
+  EXPECT_EQ(kImageSize, image.size());
   EXPECT_EQ(SK_ColorBLUE, image.bitmap()->getColor(5, 5));
   EXPECT_EQ(0u, image_client.GetAndResetImageChangeCount());
 
@@ -365,8 +424,8 @@ TEST_F(HoldingSpaceImageTest, ImageRefreshThrottling) {
   image_generator.FulfillRequest(0, SK_ColorGREEN);
   EXPECT_EQ(1u, image_client.GetAndResetImageChangeCount());
 
-  image = holding_space_item->image().image_skia();
-  EXPECT_EQ(gfx::Size(10, 10), image.size());
+  image = holding_space_item->image().GetImageSkia();
+  EXPECT_EQ(kImageSize, image.size());
   EXPECT_EQ(SK_ColorGREEN, image.bitmap()->getColor(5, 5));
 
   EXPECT_EQ(0u, image_generator.NumberOfPendingRequests());
@@ -377,9 +436,8 @@ TEST_F(HoldingSpaceImageTest, ImageRefreshThrottling) {
 // load is in progress.
 TEST_F(HoldingSpaceImageTest, ImageRefreshDuringInitialLoad) {
   ImageGenerator image_generator;
-  std::unique_ptr<HoldingSpaceItem> holding_space_item =
-      CreateTestItem(base::FilePath("test_file.txt"), &image_generator,
-                     /*image_size=*/10, /*image_color=*/SK_ColorRED);
+  std::unique_ptr<HoldingSpaceItem> holding_space_item = CreateTestItem(
+      base::FilePath("test_file.txt"), &image_generator, kImageSize);
 
   // The test client implementation requests an image on construction.
   TestImageClient image_client(&holding_space_item->image());
@@ -387,18 +445,18 @@ TEST_F(HoldingSpaceImageTest, ImageRefreshDuringInitialLoad) {
   EXPECT_EQ(0u, image_client.GetAndResetImageChangeCount());
 
   // Use placeholder while the image load is in progress.
-  gfx::ImageSkia image = holding_space_item->image().image_skia();
-  EXPECT_EQ(gfx::Size(10, 10), image.size());
-  EXPECT_EQ(SK_ColorRED, image.bitmap()->getColor(5, 5));
+  gfx::ImageSkia image = holding_space_item->image().GetImageSkia();
+  EXPECT_EQ(kImageSize, image.size());
+  EXPECT_EQ(SK_ColorTRANSPARENT, image.bitmap()->getColor(5, 5));
 
   holding_space_item->InvalidateImage();
   ASSERT_TRUE(
       holding_space_item->image_for_testing().FireInvalidateTimerForTesting());
 
   // Verify that placeholder image remains to be used.
-  image = holding_space_item->image().image_skia();
-  EXPECT_EQ(gfx::Size(10, 10), image.size());
-  EXPECT_EQ(SK_ColorRED, image.bitmap()->getColor(5, 5));
+  image = holding_space_item->image().GetImageSkia();
+  EXPECT_EQ(kImageSize, image.size());
+  EXPECT_EQ(SK_ColorTRANSPARENT, image.bitmap()->getColor(5, 5));
 
   EXPECT_EQ(2u, image_generator.NumberOfPendingRequests());
   EXPECT_EQ(1u, image_client.GetAndResetImageChangeCount());
@@ -407,17 +465,17 @@ TEST_F(HoldingSpaceImageTest, ImageRefreshDuringInitialLoad) {
   image_generator.FulfillRequest(0, SK_ColorBLUE);
   EXPECT_EQ(0u, image_client.GetAndResetImageChangeCount());
 
-  image = holding_space_item->image().image_skia();
-  EXPECT_EQ(gfx::Size(10, 10), image.size());
-  EXPECT_EQ(SK_ColorRED, image.bitmap()->getColor(5, 5));
+  image = holding_space_item->image().GetImageSkia();
+  EXPECT_EQ(kImageSize, image.size());
+  EXPECT_EQ(SK_ColorTRANSPARENT, image.bitmap()->getColor(5, 5));
 
   // Fulfill the later request, and verify the icon gets updated.
   EXPECT_EQ(1u, image_generator.NumberOfPendingRequests());
   image_generator.FulfillRequest(0, SK_ColorGREEN);
   EXPECT_EQ(1u, image_client.GetAndResetImageChangeCount());
 
-  image = holding_space_item->image().image_skia();
-  EXPECT_EQ(gfx::Size(10, 10), image.size());
+  image = holding_space_item->image().GetImageSkia();
+  EXPECT_EQ(kImageSize, image.size());
   EXPECT_EQ(SK_ColorGREEN, image.bitmap()->getColor(5, 5));
 
   EXPECT_EQ(0u, image_generator.NumberOfPendingRequests());
@@ -430,9 +488,8 @@ TEST_F(HoldingSpaceImageTest, ImageRefreshDuringInitialLoad) {
 TEST_F(HoldingSpaceImageTest,
        ImageRefreshDuringInitialLoadWithOutOfOrderResponses) {
   ImageGenerator image_generator;
-  std::unique_ptr<HoldingSpaceItem> holding_space_item =
-      CreateTestItem(base::FilePath("test_file.txt"), &image_generator,
-                     /*image_size=*/10, /*image_color=*/SK_ColorRED);
+  std::unique_ptr<HoldingSpaceItem> holding_space_item = CreateTestItem(
+      base::FilePath("test_file.txt"), &image_generator, kImageSize);
 
   // The test client implementation requests an image on construction.
   TestImageClient image_client(&holding_space_item->image());
@@ -440,9 +497,9 @@ TEST_F(HoldingSpaceImageTest,
   EXPECT_EQ(0u, image_client.GetAndResetImageChangeCount());
 
   // Use placeholder while the image load is in progress.
-  gfx::ImageSkia image = holding_space_item->image().image_skia();
-  EXPECT_EQ(gfx::Size(10, 10), image.size());
-  EXPECT_EQ(SK_ColorRED, image.bitmap()->getColor(5, 5));
+  gfx::ImageSkia image = holding_space_item->image().GetImageSkia();
+  EXPECT_EQ(kImageSize, image.size());
+  EXPECT_EQ(SK_ColorTRANSPARENT, image.bitmap()->getColor(5, 5));
 
   holding_space_item->InvalidateImage();
   ASSERT_TRUE(
@@ -454,8 +511,8 @@ TEST_F(HoldingSpaceImageTest,
   image_generator.FulfillRequest(1, SK_ColorGREEN);
   EXPECT_EQ(1u, image_client.GetAndResetImageChangeCount());
 
-  image = holding_space_item->image().image_skia();
-  EXPECT_EQ(gfx::Size(10, 10), image.size());
+  image = holding_space_item->image().GetImageSkia();
+  EXPECT_EQ(kImageSize, image.size());
   EXPECT_EQ(SK_ColorGREEN, image.bitmap()->getColor(5, 5));
 
   // Fulfill the initial request, and verify the result is ignored
@@ -463,8 +520,8 @@ TEST_F(HoldingSpaceImageTest,
   image_generator.FulfillRequest(0, SK_ColorBLUE);
   EXPECT_EQ(0u, image_client.GetAndResetImageChangeCount());
 
-  image = holding_space_item->image().image_skia();
-  EXPECT_EQ(gfx::Size(10, 10), image.size());
+  image = holding_space_item->image().GetImageSkia();
+  EXPECT_EQ(kImageSize, image.size());
   EXPECT_EQ(SK_ColorGREEN, image.bitmap()->getColor(5, 5));
 
   EXPECT_EQ(0u, image_generator.NumberOfPendingRequests());
@@ -476,16 +533,15 @@ TEST_F(HoldingSpaceImageTest,
 // using the image placeholder).
 TEST_F(HoldingSpaceImageTest, ImageRequestsAfterItemDestruction) {
   ImageGenerator image_generator;
-  std::unique_ptr<HoldingSpaceItem> holding_space_item =
-      CreateTestItem(base::FilePath("test_file.txt"), &image_generator,
-                     /*image_size=*/10, /*image_color=*/SK_ColorRED);
+  std::unique_ptr<HoldingSpaceItem> holding_space_item = CreateTestItem(
+      base::FilePath("test_file.txt"), &image_generator, kImageSize);
 
   // Finish the flow for loading 1x bitmap.
   TestImageClient image_client(&holding_space_item->image());
   image_generator.FulfillRequest(0, SK_ColorBLUE);
 
-  gfx::ImageSkia image = holding_space_item->image().image_skia();
-  EXPECT_EQ(gfx::Size(10, 10), image.size());
+  gfx::ImageSkia image = holding_space_item->image().GetImageSkia();
+  EXPECT_EQ(kImageSize, image.size());
   EXPECT_EQ(SK_ColorBLUE, image.bitmap()->getColor(5, 5));
 
   // Reset the holding space item, and request 2x representation.
@@ -494,9 +550,9 @@ TEST_F(HoldingSpaceImageTest, ImageRequestsAfterItemDestruction) {
 
   // Verify that image returns the placeholder bitmap, and that no image
   // generation requests are actually issued.
-  EXPECT_EQ(20, bitmap_2x.height());
-  EXPECT_EQ(20, bitmap_2x.width());
-  EXPECT_EQ(SK_ColorRED, bitmap_2x.getColor(5, 5));
+  EXPECT_EQ(kImageSize.height() * 2, bitmap_2x.height());
+  EXPECT_EQ(kImageSize.width() * 2, bitmap_2x.width());
+  EXPECT_EQ(SK_ColorTRANSPARENT, bitmap_2x.getColor(5, 5));
 
   EXPECT_EQ(0u, image_generator.NumberOfPendingRequests());
 }
@@ -505,25 +561,24 @@ TEST_F(HoldingSpaceImageTest, ImageRequestsAfterItemDestruction) {
 // image load is still in progress.
 TEST_F(HoldingSpaceImageTest, ItemDestructionDuringImageLoad) {
   ImageGenerator image_generator;
-  std::unique_ptr<HoldingSpaceItem> holding_space_item =
-      CreateTestItem(base::FilePath("test_file.txt"), &image_generator,
-                     /*image_size=*/10, /*image_color=*/SK_ColorRED);
+  std::unique_ptr<HoldingSpaceItem> holding_space_item = CreateTestItem(
+      base::FilePath("test_file.txt"), &image_generator, kImageSize);
 
   TestImageClient image_client(&holding_space_item->image());
   EXPECT_EQ(1u, image_generator.NumberOfPendingRequests());
   EXPECT_EQ(0u, image_client.GetAndResetImageChangeCount());
 
-  gfx::ImageSkia image = holding_space_item->image().image_skia();
-  EXPECT_EQ(gfx::Size(10, 10), image.size());
-  EXPECT_EQ(SK_ColorRED, image.bitmap()->getColor(5, 5));
+  gfx::ImageSkia image = holding_space_item->image().GetImageSkia();
+  EXPECT_EQ(kImageSize, image.size());
+  EXPECT_EQ(SK_ColorTRANSPARENT, image.bitmap()->getColor(5, 5));
 
   // Reset the item, and then simulate image request response.
   holding_space_item.reset();
   image_generator.FulfillRequest(0, SK_ColorBLUE);
 
   // Verify that the image keeps using the placeholder bitmap.
-  EXPECT_EQ(gfx::Size(10, 10), image.size());
-  EXPECT_EQ(SK_ColorRED, image.bitmap()->getColor(5, 5));
+  EXPECT_EQ(kImageSize, image.size());
+  EXPECT_EQ(SK_ColorTRANSPARENT, image.bitmap()->getColor(5, 5));
 
   EXPECT_EQ(0u, image_generator.NumberOfPendingRequests());
   EXPECT_EQ(0u, image_client.GetAndResetImageChangeCount());
@@ -533,9 +588,8 @@ TEST_F(HoldingSpaceImageTest, ItemDestructionDuringImageLoad) {
 // image load is still in progress, in case the pending image load fails.
 TEST_F(HoldingSpaceImageTest, ItemDestructionDuringFailedImageLoad) {
   ImageGenerator image_generator;
-  std::unique_ptr<HoldingSpaceItem> holding_space_item =
-      CreateTestItem(base::FilePath("test_file.txt"), &image_generator,
-                     /*image_size=*/10, /*image_color=*/SK_ColorRED);
+  std::unique_ptr<HoldingSpaceItem> holding_space_item = CreateTestItem(
+      base::FilePath("test_file.txt"), &image_generator, kImageSize);
 
   EXPECT_EQ(0u, image_generator.NumberOfPendingRequests());
   TestImageClient image_client(&holding_space_item->image());
@@ -543,17 +597,17 @@ TEST_F(HoldingSpaceImageTest, ItemDestructionDuringFailedImageLoad) {
   EXPECT_EQ(1u, image_generator.NumberOfPendingRequests());
   EXPECT_EQ(0u, image_client.GetAndResetImageChangeCount());
 
-  gfx::ImageSkia image = holding_space_item->image().image_skia();
-  EXPECT_EQ(gfx::Size(10, 10), image.size());
-  EXPECT_EQ(SK_ColorRED, image.bitmap()->getColor(5, 5));
+  gfx::ImageSkia image = holding_space_item->image().GetImageSkia();
+  EXPECT_EQ(kImageSize, image.size());
+  EXPECT_EQ(SK_ColorTRANSPARENT, image.bitmap()->getColor(5, 5));
 
   // Reset the item, and then simulate a failed image request response.
   holding_space_item.reset();
   image_generator.FailRequest(0);
 
   // Verify that the image keeps using the placeholder bitmap.
-  EXPECT_EQ(gfx::Size(10, 10), image.size());
-  EXPECT_EQ(SK_ColorRED, image.bitmap()->getColor(5, 5));
+  EXPECT_EQ(kImageSize, image.size());
+  EXPECT_EQ(SK_ColorTRANSPARENT, image.bitmap()->getColor(5, 5));
 
   EXPECT_EQ(0u, image_generator.NumberOfPendingRequests());
   EXPECT_EQ(0u, image_client.GetAndResetImageChangeCount());
@@ -563,9 +617,8 @@ TEST_F(HoldingSpaceImageTest, ItemDestructionDuringFailedImageLoad) {
 // while image refresh is in progress.
 TEST_F(HoldingSpaceImageTest, ItemDestructionDuringImageRefresh) {
   ImageGenerator image_generator;
-  std::unique_ptr<HoldingSpaceItem> holding_space_item =
-      CreateTestItem(base::FilePath("test_file.txt"), &image_generator,
-                     /*image_size=*/10, /*image_color=*/SK_ColorRED);
+  std::unique_ptr<HoldingSpaceItem> holding_space_item = CreateTestItem(
+      base::FilePath("test_file.txt"), &image_generator, kImageSize);
 
   // Run thr flow for loading the initial image version.
   TestImageClient image_client(&holding_space_item->image());
@@ -573,8 +626,8 @@ TEST_F(HoldingSpaceImageTest, ItemDestructionDuringImageRefresh) {
   EXPECT_EQ(0u, image_generator.NumberOfPendingRequests());
   EXPECT_EQ(1u, image_client.GetAndResetImageChangeCount());
 
-  gfx::ImageSkia image = holding_space_item->image().image_skia();
-  EXPECT_EQ(gfx::Size(10, 10), image.size());
+  gfx::ImageSkia image = holding_space_item->image().GetImageSkia();
+  EXPECT_EQ(kImageSize, image.size());
   EXPECT_EQ(SK_ColorBLUE, image.bitmap()->getColor(5, 5));
 
   holding_space_item->InvalidateImage();
@@ -588,7 +641,7 @@ TEST_F(HoldingSpaceImageTest, ItemDestructionDuringImageRefresh) {
   image_generator.FulfillRequest(0, SK_ColorGREEN);
 
   // Verify that the image keeps using previously generated icon.
-  EXPECT_EQ(gfx::Size(10, 10), image.size());
+  EXPECT_EQ(kImageSize, image.size());
   EXPECT_EQ(SK_ColorBLUE, image.bitmap()->getColor(5, 5));
 
   EXPECT_EQ(0u, image_generator.NumberOfPendingRequests());
@@ -601,8 +654,7 @@ TEST_F(HoldingSpaceImageTest, HandleBackingFilePathChange) {
   const base::FilePath kTestFile("test_file.test");
   ImageGenerator image_generator;
   std::unique_ptr<HoldingSpaceItem> holding_space_item =
-      CreateTestItem(kTestFile, &image_generator, /*image_size=*/10,
-                     /*image_color=*/SK_ColorRED);
+      CreateTestItem(kTestFile, &image_generator, kImageSize);
 
   EXPECT_EQ(0u, image_generator.NumberOfPendingRequests());
 
@@ -621,8 +673,8 @@ TEST_F(HoldingSpaceImageTest, HandleBackingFilePathChange) {
   image_generator.FulfillRequest(0, SK_ColorBLUE);
   EXPECT_EQ(1u, image_client.GetAndResetImageChangeCount());
 
-  gfx::ImageSkia image = holding_space_item->image().image_skia();
-  EXPECT_EQ(gfx::Size(10, 10), image.size());
+  gfx::ImageSkia image = holding_space_item->image().GetImageSkia();
+  EXPECT_EQ(kImageSize, image.size());
   EXPECT_EQ(SK_ColorBLUE, image.bitmap()->getColor(5, 5));
   EXPECT_EQ(0u, image_client.GetAndResetImageChangeCount());
 
@@ -637,8 +689,8 @@ TEST_F(HoldingSpaceImageTest, HandleBackingFilePathChange) {
   image_generator.FulfillRequest(0, SK_ColorGREEN);
   EXPECT_EQ(1u, image_client.GetAndResetImageChangeCount());
 
-  image = holding_space_item->image().image_skia();
-  EXPECT_EQ(gfx::Size(10, 10), image.size());
+  image = holding_space_item->image().GetImageSkia();
+  EXPECT_EQ(kImageSize, image.size());
   EXPECT_EQ(SK_ColorGREEN, image.bitmap()->getColor(5, 5));
   EXPECT_EQ(0u, image_client.GetAndResetImageChangeCount());
 }
@@ -649,8 +701,7 @@ TEST_F(HoldingSpaceImageTest, HandleBackingFilePathChangeFor2xBitmap) {
   const base::FilePath kTestFile("test_file.test");
   ImageGenerator image_generator;
   std::unique_ptr<HoldingSpaceItem> holding_space_item =
-      CreateTestItem(kTestFile, &image_generator, /*image_size=*/10,
-                     /*image_color=*/SK_ColorRED);
+      CreateTestItem(kTestFile, &image_generator, kImageSize);
 
   EXPECT_EQ(0u, image_generator.NumberOfPendingRequests());
 
@@ -668,7 +719,7 @@ TEST_F(HoldingSpaceImageTest, HandleBackingFilePathChangeFor2xBitmap) {
       kUpdatedTestFile, GURL("filesystem:updated_file_system_url"));
   EXPECT_EQ(0u, image_generator.NumberOfPendingRequests());
 
-  gfx::ImageSkia image = holding_space_item->image().image_skia();
+  gfx::ImageSkia image = holding_space_item->image().GetImageSkia();
   image.GetRepresentation(2.0f);
 
   EXPECT_EQ(1u, image_generator.NumberOfPendingRequests());
@@ -676,8 +727,8 @@ TEST_F(HoldingSpaceImageTest, HandleBackingFilePathChangeFor2xBitmap) {
   image_generator.FulfillRequest(0, SK_ColorBLUE);
 
   const SkBitmap bitmap_2x = image.GetRepresentation(2.0f).GetBitmap();
-  EXPECT_EQ(20, bitmap_2x.height());
-  EXPECT_EQ(20, bitmap_2x.width());
+  EXPECT_EQ(kImageSize.height() * 2, bitmap_2x.height());
+  EXPECT_EQ(kImageSize.width() * 2, bitmap_2x.width());
   EXPECT_EQ(SK_ColorBLUE, bitmap_2x.getColor(10, 10));
   EXPECT_EQ(1u, image_client.GetAndResetImageChangeCount());
 }
@@ -688,8 +739,7 @@ TEST_F(HoldingSpaceImageTest, RetryFailedImageRequestsOnFilePathChange) {
   const base::FilePath kTestFile("test_file.test");
   ImageGenerator image_generator;
   std::unique_ptr<HoldingSpaceItem> holding_space_item =
-      CreateTestItem(kTestFile, &image_generator, /*image_size=*/10,
-                     /*image_color=*/SK_ColorRED);
+      CreateTestItem(kTestFile, &image_generator, kImageSize);
 
   EXPECT_EQ(0u, image_generator.NumberOfPendingRequests());
 
@@ -698,7 +748,7 @@ TEST_F(HoldingSpaceImageTest, RetryFailedImageRequestsOnFilePathChange) {
   EXPECT_EQ(1u, image_generator.NumberOfPendingRequests());
   EXPECT_EQ(kTestFile, image_generator.GetPendingRequestFilePath(0));
 
-  // Update the backing file path, and simulate image load failure..
+  // Update the backing file path, and simulate image load failure.
   const base::FilePath kUpdatedTestFile("updated_test_file.test");
   holding_space_item->UpdateBackingFile(
       kUpdatedTestFile, GURL("filesystem:updated_file_system_url"));
@@ -711,8 +761,8 @@ TEST_F(HoldingSpaceImageTest, RetryFailedImageRequestsOnFilePathChange) {
 
   image_generator.FulfillRequest(0, SK_ColorBLUE);
 
-  gfx::ImageSkia image = holding_space_item->image().image_skia();
-  EXPECT_EQ(gfx::Size(10, 10), image.size());
+  gfx::ImageSkia image = holding_space_item->image().GetImageSkia();
+  EXPECT_EQ(kImageSize, image.size());
   EXPECT_EQ(SK_ColorBLUE, image.bitmap()->getColor(5, 5));
   EXPECT_EQ(1u, image_client.GetAndResetImageChangeCount());
 }
@@ -724,8 +774,7 @@ TEST_F(HoldingSpaceImageTest,
   const base::FilePath kTestFile("test_file.test");
   ImageGenerator image_generator;
   std::unique_ptr<HoldingSpaceItem> holding_space_item =
-      CreateTestItem(kTestFile, &image_generator, /*image_size=*/10,
-                     /*image_color=*/SK_ColorRED);
+      CreateTestItem(kTestFile, &image_generator, kImageSize);
 
   EXPECT_EQ(0u, image_generator.NumberOfPendingRequests());
 
@@ -736,9 +785,9 @@ TEST_F(HoldingSpaceImageTest,
   // Simulate request failure before updating the backing file path.
   image_generator.FailRequest(0);
 
-  gfx::ImageSkia image = holding_space_item->image().image_skia();
-  EXPECT_EQ(gfx::Size(10, 10), image.size());
-  EXPECT_EQ(SK_ColorRED, image.bitmap()->getColor(5, 5));
+  gfx::ImageSkia image = holding_space_item->image().GetImageSkia();
+  EXPECT_EQ(kImageSize, image.size());
+  EXPECT_TRUE(ContainsFileTypeIcon(image, kTestFile));
 
   // Update the backing file path, and verify the failed request was not
   // retried.
@@ -749,10 +798,10 @@ TEST_F(HoldingSpaceImageTest,
   // Verify that image load is retried using the new file path.
   EXPECT_EQ(0u, image_generator.NumberOfPendingRequests());
 
-  image = holding_space_item->image().image_skia();
-  EXPECT_EQ(gfx::Size(10, 10), image.size());
-  EXPECT_EQ(SK_ColorRED, image.bitmap()->getColor(5, 5));
-  EXPECT_EQ(0u, image_client.GetAndResetImageChangeCount());
+  image = holding_space_item->image().GetImageSkia();
+  EXPECT_EQ(kImageSize, image.size());
+  EXPECT_TRUE(ContainsFileTypeIcon(image, kTestFile));
+  EXPECT_EQ(1u, image_client.GetAndResetImageChangeCount());
 }
 
 // Tests that failed image loads will be not be retried for requests issued
@@ -761,8 +810,7 @@ TEST_F(HoldingSpaceImageTest, DontRetryImageRequestsFailedAfterPathChange) {
   const base::FilePath kTestFile("test_file.test");
   ImageGenerator image_generator;
   std::unique_ptr<HoldingSpaceItem> holding_space_item =
-      CreateTestItem(kTestFile, &image_generator, /*image_size=*/10,
-                     /*image_color=*/SK_ColorRED);
+      CreateTestItem(kTestFile, &image_generator, kImageSize);
 
   EXPECT_EQ(0u, image_generator.NumberOfPendingRequests());
 
@@ -778,10 +826,10 @@ TEST_F(HoldingSpaceImageTest, DontRetryImageRequestsFailedAfterPathChange) {
   EXPECT_EQ(kUpdatedTestFile, image_generator.GetPendingRequestFilePath(0));
   image_generator.FailRequest(0);
 
-  gfx::ImageSkia image = holding_space_item->image().image_skia();
-  EXPECT_EQ(gfx::Size(10, 10), image.size());
-  EXPECT_EQ(SK_ColorRED, image.bitmap()->getColor(5, 5));
-  EXPECT_EQ(0u, image_client.GetAndResetImageChangeCount());
+  gfx::ImageSkia image = holding_space_item->image().GetImageSkia();
+  EXPECT_EQ(kImageSize, image.size());
+  EXPECT_TRUE(ContainsFileTypeIcon(image, kUpdatedTestFile));
+  EXPECT_EQ(1u, image_client.GetAndResetImageChangeCount());
 
   // Verify that the request is not retried.
   EXPECT_EQ(0u, image_generator.NumberOfPendingRequests());
@@ -792,8 +840,7 @@ TEST_F(HoldingSpaceImageTest, DontRetryImageLoadOnBackingFileChange) {
   const base::FilePath kTestFile("test_file.test");
   ImageGenerator image_generator;
   std::unique_ptr<HoldingSpaceItem> holding_space_item =
-      CreateTestItem(kTestFile, &image_generator, /*image_size=*/10,
-                     /*image_color=*/SK_ColorRED);
+      CreateTestItem(kTestFile, &image_generator, kImageSize);
 
   EXPECT_EQ(0u, image_generator.NumberOfPendingRequests());
 
@@ -804,8 +851,8 @@ TEST_F(HoldingSpaceImageTest, DontRetryImageLoadOnBackingFileChange) {
   image_generator.FulfillRequest(0, SK_ColorBLUE);
 
   EXPECT_EQ(1u, image_client.GetAndResetImageChangeCount());
-  gfx::ImageSkia image = holding_space_item->image().image_skia();
-  EXPECT_EQ(gfx::Size(10, 10), image.size());
+  gfx::ImageSkia image = holding_space_item->image().GetImageSkia();
+  EXPECT_EQ(kImageSize, image.size());
   EXPECT_EQ(SK_ColorBLUE, image.bitmap()->getColor(5, 5));
 
   // Update the backing file path, and verify the image load is not requested
@@ -814,8 +861,8 @@ TEST_F(HoldingSpaceImageTest, DontRetryImageLoadOnBackingFileChange) {
   holding_space_item->UpdateBackingFile(
       kUpdatedTestFile, GURL("filesystem:updated_file_system_url"));
 
-  image = holding_space_item->image().image_skia();
-  EXPECT_EQ(gfx::Size(10, 10), image.size());
+  image = holding_space_item->image().GetImageSkia();
+  EXPECT_EQ(kImageSize, image.size());
   EXPECT_EQ(SK_ColorBLUE, image.bitmap()->getColor(5, 5));
 
   // Verify that the request is not retried.
@@ -830,8 +877,7 @@ TEST_F(HoldingSpaceImageTest,
   const base::FilePath kTestFile("test_file.test");
   ImageGenerator image_generator;
   std::unique_ptr<HoldingSpaceItem> holding_space_item =
-      CreateTestItem(kTestFile, &image_generator, /*image_size=*/10,
-                     /*image_color=*/SK_ColorRED);
+      CreateTestItem(kTestFile, &image_generator, kImageSize);
   EXPECT_EQ(0u, image_generator.NumberOfPendingRequests());
 
   // Create test image client.
@@ -850,8 +896,8 @@ TEST_F(HoldingSpaceImageTest,
   image_generator.FulfillRequest(0, SK_ColorBLUE);
 
   EXPECT_EQ(1u, image_client.GetAndResetImageChangeCount());
-  gfx::ImageSkia image = holding_space_item->image().image_skia();
-  EXPECT_EQ(gfx::Size(10, 10), image.size());
+  gfx::ImageSkia image = holding_space_item->image().GetImageSkia();
+  EXPECT_EQ(kImageSize, image.size());
   EXPECT_EQ(SK_ColorBLUE, image.bitmap()->getColor(5, 5));
 
   // Verify that the request is not retried.
@@ -874,8 +920,7 @@ TEST_F(HoldingSpaceImageTest, ItemPathMovedAndModifiedDuringInitialLoad) {
   const base::FilePath kTestFile("test_file.test");
   ImageGenerator image_generator;
   std::unique_ptr<HoldingSpaceItem> holding_space_item =
-      CreateTestItem(kTestFile, &image_generator, /*image_size=*/10,
-                     /*image_color=*/SK_ColorRED);
+      CreateTestItem(kTestFile, &image_generator, kImageSize);
   EXPECT_EQ(0u, image_generator.NumberOfPendingRequests());
 
   // Create test image client to initiate image request.
@@ -901,9 +946,9 @@ TEST_F(HoldingSpaceImageTest, ItemPathMovedAndModifiedDuringInitialLoad) {
   image_generator.FulfillRequest(0, SK_ColorBLUE);
 
   EXPECT_EQ(0u, image_client.GetAndResetImageChangeCount());
-  gfx::ImageSkia image = holding_space_item->image().image_skia();
-  EXPECT_EQ(gfx::Size(10, 10), image.size());
-  EXPECT_EQ(SK_ColorRED, image.bitmap()->getColor(5, 5));
+  gfx::ImageSkia image = holding_space_item->image().GetImageSkia();
+  EXPECT_EQ(kImageSize, image.size());
+  EXPECT_EQ(SK_ColorTRANSPARENT, image.bitmap()->getColor(5, 5));
 
   // Finish the later request, and verify the image gets updated.
   EXPECT_EQ(1u, image_generator.NumberOfPendingRequests());
@@ -911,8 +956,8 @@ TEST_F(HoldingSpaceImageTest, ItemPathMovedAndModifiedDuringInitialLoad) {
   image_generator.FulfillRequest(0, SK_ColorGREEN);
 
   EXPECT_EQ(1u, image_client.GetAndResetImageChangeCount());
-  image = holding_space_item->image().image_skia();
-  EXPECT_EQ(gfx::Size(10, 10), image.size());
+  image = holding_space_item->image().GetImageSkia();
+  EXPECT_EQ(kImageSize, image.size());
   EXPECT_EQ(SK_ColorGREEN, image.bitmap()->getColor(5, 5));
 
   EXPECT_EQ(0u, image_generator.NumberOfPendingRequests());

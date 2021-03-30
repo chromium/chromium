@@ -8,8 +8,8 @@
 
 #include "base/memory/memory_pressure_listener.h"
 
-#include "chrome/browser/chromeos/arc/process/arc_process.h"
-#include "chrome/browser/chromeos/arc/process/arc_process_service.h"
+#include "chrome/browser/ash/arc/process/arc_process.h"
+#include "chrome/browser/ash/arc/process/arc_process_service.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "components/arc/mojom/process.mojom.h"
 #include "components/performance_manager/graph/graph_impl_operations.h"
@@ -330,7 +330,8 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, ArcDontTrimOnlyIfDisabled) {
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
 }
 
-TEST_F(WorkingSetTrimmerPolicyChromeOSTest, ArcTrimOnlyIfEnabled) {
+// TODO(crbug.com/1177146) Re-enable test
+TEST_F(WorkingSetTrimmerPolicyChromeOSTest, DISABLED_ArcTrimOnlyIfEnabled) {
   policy()->trim_arc_on_memory_pressure(true);
   FastForwardBy(base::TimeDelta::FromSeconds(1));
   EXPECT_CALL(*policy(), TrimArcProcesses).Times(1);

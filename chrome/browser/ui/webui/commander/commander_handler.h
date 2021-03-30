@@ -18,7 +18,7 @@ class CommanderHandler : public content::WebUIMessageHandler {
   class Delegate {
    public:
     // Called when the text is changed in the WebUI interface.
-    virtual void OnTextChanged(const base::string16& text) = 0;
+    virtual void OnTextChanged(const std::u16string& text) = 0;
     // Called when an option is selected (clicked or enter pressed) in the WebUI
     // interface.
     virtual void OnOptionSelected(size_t option_index, int result_set_id) = 0;

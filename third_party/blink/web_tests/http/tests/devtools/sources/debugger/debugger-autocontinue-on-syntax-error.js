@@ -5,8 +5,8 @@
 (async function() {
   TestRunner.addResult(
       `Tests that debugger won't stop on syntax errors even if "pause on uncaught exceptions" is on.\n`);
-  await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('sources');
 
   SourcesTestRunner.startDebuggerTest(step1);

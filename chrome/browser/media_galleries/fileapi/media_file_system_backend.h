@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media_galleries/media_galleries_preferences.h"
+#include "components/download/public/common/quarantine_connection.h"
 #include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/task_runner_bound_observer_list.h"
 
@@ -37,7 +38,9 @@ class MediaPathFilter;
 
 class MediaFileSystemBackend : public storage::FileSystemBackend {
  public:
-  explicit MediaFileSystemBackend(const base::FilePath& profile_path);
+  MediaFileSystemBackend(
+      const base::FilePath& profile_path,
+      download::QuarantineConnectionCallback quarantine_connection_callback);
   ~MediaFileSystemBackend() override;
 
   // Asserts that the current task is sequenced with any other task that calls

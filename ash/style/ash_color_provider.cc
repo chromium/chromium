@@ -9,9 +9,9 @@
 #include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
+#include "ash/public/cpp/style/color_mode_observer.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/system/dark_mode/color_mode_observer.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/bind.h"
 #include "base/check_op.h"
@@ -106,6 +106,20 @@ SkColor ResolveColor(AshColorProvider::ContentLayerType type,
   return cros_colors::ResolveColor(TypeToColorName(type), is_dark_mode);
 }
 
+// Notify all the other components to update on the color mode changes. Only
+// Chrome browser is notified currently, will include WebUI, Arc etc later.
+void NotifyColorModeChanges(bool is_dark_mode_enabled) {
+  auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+  native_theme->set_use_dark_colors(is_dark_mode_enabled);
+  native_theme->NotifyObservers();
+
+  auto* native_theme_web = ui::NativeTheme::GetInstanceForWeb();
+  native_theme_web->set_preferred_color_scheme(
+      is_dark_mode_enabled ? ui::NativeTheme::PreferredColorScheme::kDark
+                           : ui::NativeTheme::PreferredColorScheme::kLight);
+  native_theme_web->NotifyObservers();
+}
+
 }  // namespace
 
 AshColorProvider::AshColorProvider() {
@@ -165,8 +179,7 @@ void AshColorProvider::OnSessionStateChanged(
     session_manager::SessionState state) {
   if (!features::IsDarkLightModeEnabled())
     return;
-  ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(
-      IsDarkModeEnabled());
+  NotifyColorModeChanges(IsDarkModeEnabled());
 }
 
 SkColor AshColorProvider::GetShieldLayerColor(ShieldLayerType type) const {
@@ -234,9 +247,12 @@ SkColor AshColorProvider::GetContentLayerColor(ContentLayerType type) const {
     case ContentLayerType::kButtonLabelColorBlue:
     case ContentLayerType::kSliderColorActive:
     case ContentLayerType::kRadioColorActive:
-    case ContentLayerType::kSwitchAccessInnerStrokeColor:
     case ContentLayerType::kSwitchKnobColorActive:
+    case ContentLayerType::kProgressBarColorForeground:
       return is_dark_mode ? gfx::kGoogleBlue300 : gfx::kGoogleBlue600;
+    case ContentLayerType::kProgressBarColorBackground:
+      return SkColorSetA(
+          is_dark_mode ? gfx::kGoogleBlue300 : gfx::kGoogleBlue600, 0x4C);
     case ContentLayerType::kSwitchTrackColorActive:
       return GetSecondToneColor(
           GetContentLayerColor(ContentLayerType::kSwitchKnobColorActive));
@@ -249,8 +265,10 @@ SkColor AshColorProvider::GetContentLayerColor(ContentLayerType type) const {
           GetContentLayerColor(ContentLayerType::kAppStateIndicatorColor));
     case ContentLayerType::kCurrentDeskColor:
       return is_dark_mode ? SK_ColorWHITE : SK_ColorBLACK;
+    case ContentLayerType::kSwitchAccessInnerStrokeColor:
+      return gfx::kGoogleBlue300;
     case ContentLayerType::kSwitchAccessOuterStrokeColor:
-      return is_dark_mode ? SK_ColorBLACK : SK_ColorWHITE;
+      return gfx::kGoogleBlue900;
     default:
       return ResolveColor(type, is_dark_mode);
   }
@@ -382,9 +400,7 @@ void AshColorProvider::ToggleColorMode() {
   active_user_pref_service_->SetBoolean(prefs::kDarkModeEnabled,
                                         !IsDarkModeEnabled());
   active_user_pref_service_->CommitPendingWrite();
-
-  ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(
-      IsDarkModeEnabled());
+  NotifyColorModeChanges(IsDarkModeEnabled());
 }
 
 void AshColorProvider::UpdateColorModeThemed(bool is_themed) {

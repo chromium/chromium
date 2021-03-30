@@ -18,7 +18,8 @@
 #include "ui/resources/grit/ui_resources.h"
 
 #if defined(OS_WIN)
-#include "ui/base/cursor/cursor_loader_win.h"
+#include "ui/base/cursor/cursor_loader.h"
+#include "ui/base/cursor/win/win_cursor.h"
 #include "ui/gfx/icon_util.h"
 #endif
 
@@ -297,9 +298,10 @@ bool GetCursorDataFor(CursorSize cursor_size,
 SkBitmap GetDefaultBitmap(const Cursor& cursor) {
 #if defined(OS_WIN)
   Cursor cursor_copy = cursor;
-  ui::CursorLoaderWin cursor_loader;
+  CursorLoader cursor_loader;
   cursor_loader.SetPlatformCursor(&cursor_copy);
-  return IconUtil::CreateSkBitmapFromHICON(cursor_copy.platform());
+  return IconUtil::CreateSkBitmapFromHICON(
+      static_cast<WinCursor*>(cursor_copy.platform())->hcursor());
 #else
   int resource_id;
   gfx::Point hotspot;
@@ -316,9 +318,10 @@ SkBitmap GetDefaultBitmap(const Cursor& cursor) {
 gfx::Point GetDefaultHotspot(const Cursor& cursor) {
 #if defined(OS_WIN)
   Cursor cursor_copy = cursor;
-  ui::CursorLoaderWin cursor_loader;
+  CursorLoader cursor_loader;
   cursor_loader.SetPlatformCursor(&cursor_copy);
-  return IconUtil::GetHotSpotFromHICON(cursor_copy.platform());
+  return IconUtil::GetHotSpotFromHICON(
+      static_cast<WinCursor*>(cursor_copy.platform())->hcursor());
 #else
   int resource_id;
   gfx::Point hotspot;

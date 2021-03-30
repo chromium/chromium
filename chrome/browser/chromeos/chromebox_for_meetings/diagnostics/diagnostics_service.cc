@@ -53,7 +53,6 @@ void DiagnosticsService::GetCrosHealthdTelemetry(
        cros_healthd::mojom::ProbeCategoryEnum::kMemory,
        cros_healthd::mojom::ProbeCategoryEnum::kFan,
        cros_healthd::mojom::ProbeCategoryEnum::kStatefulPartition,
-       cros_healthd::mojom::ProbeCategoryEnum::kBluetooth,
        cros_healthd::mojom::ProbeCategoryEnum::kSystem,
        cros_healthd::mojom::ProbeCategoryEnum::kNetwork},
       std::move(callback));

@@ -10,22 +10,27 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/views/views_export.h"
 
 namespace views {
+
+class View;
+
 namespace metadata {
 
 enum class PropertyFlags : uint32_t {
   // By default, properties are read/write. This flag indicates that the given
   // property metadata instance needs no special attention.
   kEmpty = 0x00,
-  // Property metadata instance should be treated as read-only. Calling
-  // SetValueAsString() will trigger a NOTREACHED() error under debug.
+  // Property metadata instance should be treated as read-only. SetValueAsString
+  // should not be called since there may not be a conversion from a string for
+  // the type of the property. (see kIsSerializable below for additional info).
+  // Calling SetValueAsString() may trigger a NOTREACHED() error under debug.
   kReadOnly = 0x01,
   // Property metadata can be serialized to or from a string. Needs to make sure
   // this flag is set to have meaningful SetValueAsString() and
-  // GetValueFromString().
+  // GetValueFromString(). This is ultimately a signal indicating the underlying
+  // TypeConverter is able to convert the value to/from a string.
   kSerializable = 0x100,
 };
 
@@ -140,6 +145,7 @@ class VIEWS_EXPORT ClassMetaData {
 // accessors to get/set the value of the member on an object.
 class VIEWS_EXPORT MemberMetaDataBase {
  public:
+  using ValueStrings = std::vector<std::u16string>;
   MemberMetaDataBase(const std::string& member_name,
                      const std::string& member_type)
       : member_name_(member_name), member_type_(member_type) {}
@@ -150,15 +156,26 @@ class VIEWS_EXPORT MemberMetaDataBase {
   // Access the value of this member and return it as a string.
   // |obj| is the instance on which to obtain the value of the property this
   // metadata represents.
-  virtual base::string16 GetValueAsString(void* obj) const = 0;
+  virtual std::u16string GetValueAsString(View* obj) const = 0;
 
   // Set the value of this member through a string on a specified object.
   // |obj| is the instance on which to set the value of the property this
   // metadata represents.
-  virtual void SetValueAsString(void* obj, const base::string16& new_value);
+  virtual void SetValueAsString(View* obj, const std::u16string& new_value);
 
   // Return various information flags about the property.
   virtual PropertyFlags GetPropertyFlags() const = 0;
+
+  // Return a list of valid property values as a vector of strings. An empty
+  // vector indicates that the natural limits of the underlying type applies.
+  virtual ValueStrings GetValidValues() const;
+
+  // Return an optional prefix string used by the ui-devtools frontend to
+  // prepend to the member name which causes a special value editor to become
+  // available. For instance, an SkColor member type would add the "--" string
+  // which tells the frontend to display a color swatch and a color editing
+  // dialog.
+  virtual const char* GetMemberNamePrefix() const;
 
   const std::string& member_name() const { return member_name_; }
   const std::string& member_type() const { return member_type_; }

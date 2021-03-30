@@ -1,0 +1,16 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+async_test(t => {
+  appHistory.onnavigate = t.step_func_done(e => {
+    assert_true(e.cancelable);
+    assert_true(e.canRespond);
+    assert_false(e.userInitiated);
+    assert_true(e.hashChange);
+    assert_equals(e.formData, null);
+    e.preventDefault();
+  });
+  window.onload = t.step_func(() => window.open("#", "_self"));
+}, "window.open() fires navigate event when targeting self");
+</script>

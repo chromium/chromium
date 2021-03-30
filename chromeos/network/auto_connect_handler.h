@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_NETWORK_AUTO_CONNECT_HANDLER_H_
 #define CHROMEOS_NETWORK_AUTO_CONNECT_HANDLER_H_
 
+#include <set>
 #include <string>
 
 #include "base/component_export.h"
@@ -52,6 +53,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) AutoConnectHandler
   void PoliciesApplied(const std::string& userhash) override;
 
   // NetworkStateHandlerObserver
+  void ScanStarted(const DeviceState* device) override;
   void ScanCompleted(const DeviceState* device) override;
 
   // ClientCertResolver::Observer
@@ -112,6 +114,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) AutoConnectHandler
   // Calls Shill.Manager.ConnectToBestServices().
   void CallShillConnectToBestServices();
 
+  // Returns all hidden hex SSIDs that are currently configured in shill.
+  std::set<std::string> GetConfiguredHiddenHexSsids();
+
   // Local references to the associated handler instances.
   ClientCertResolver* client_cert_resolver_;
   NetworkConnectionHandler* network_connection_handler_;
@@ -146,6 +151,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) AutoConnectHandler
   // The bitwise OR of all AutoConnectReason which have triggered auto-
   // connection.
   int auto_connect_reasons_;
+
+  // Set of hex SSIDs that were configured as hidden SSIDs when the current scan
+  // started. Empty if no (known) scan is in progress.
+  std::set<std::string> hidden_hex_ssids_at_scan_start_;
+
+  // When true, a scan has been re-requested because the set of hidden SSIDs
+  // changed during a scan and a ConnectToBestServices call is pending.
+  bool rescan_triggered_due_to_hidden_ssids_ = false;
 
   base::ObserverList<Observer>::Unchecked observer_list_;
 

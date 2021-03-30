@@ -47,6 +47,7 @@ class CORE_EXPORT ReadableStreamBytesConsumer final : public BytesConsumer {
   void OnRead(DOMUint8Array*);
   void OnReadDone();
   void OnRejected();
+  void SetErrored();
   void Notify();
 
   Member<ReadableStreamDefaultReader> reader_;

@@ -4,10 +4,10 @@
 
 #include "extensions/browser/policy_check.h"
 
+#include <string>
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/test/test_browser_context.h"
 #include "extensions/browser/extension_system.h"
@@ -39,7 +39,7 @@ class ManagementPolicyMock : public ManagementPolicy::Provider {
   }
 
   bool UserMayLoad(const Extension* extension,
-                   base::string16* error) const override {
+                   std::u16string* error) const override {
     EXPECT_EQ(extension_, extension);
     if (!may_load_)
       *error = base::ASCIIToUTF16(kDummyPolicyError);

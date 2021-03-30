@@ -1,7 +1,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that User-Agent override works for requests from Service Workers.\n`);
-  await TestRunner.loadModule('application_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('application_test_runner');
   await ApplicationTestRunner.resetState();
   await TestRunner.showPanel('resources');
 

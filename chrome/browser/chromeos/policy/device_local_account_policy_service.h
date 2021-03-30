@@ -17,27 +17,30 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/chromeos/extensions/device_local_account_external_policy_loader.h"
 #include "chrome/browser/chromeos/policy/device_local_account_extension_tracker.h"
 #include "chrome/browser/chromeos/policy/device_local_account_external_data_manager.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/component_cloud_policy_service.h"
 #include "components/policy/core/common/schema_registry.h"
 
+namespace ash {
+class DeviceSettingsService;
+}  // namespace ash
+
 namespace base {
 class SequencedTaskRunner;
-}
+}  // namespace base
 
 namespace chromeos {
-class DeviceSettingsService;
 class SessionManagerClient;
-}
+}  // namespace chromeos
 
 namespace network {
 class SharedURLLoaderFactory;
-}
+}  // namespace network
 
 namespace policy {
 
@@ -66,7 +69,7 @@ class DeviceLocalAccountPolicyBroker
       std::unique_ptr<DeviceLocalAccountPolicyStore> store,
       scoped_refptr<DeviceLocalAccountExternalDataManager>
           external_data_manager,
-      const base::Closure& policy_updated_callback,
+      const base::RepeatingClosure& policy_updated_callback,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       const scoped_refptr<base::SequencedTaskRunner>&
           resource_cache_task_runner,
@@ -105,7 +108,7 @@ class DeviceLocalAccountPolicyBroker
   // Fire up the cloud connection for fetching policy for the account from the
   // cloud if this is an enterprise-managed device.
   void ConnectIfPossible(
-      chromeos::DeviceSettingsService* device_settings_service,
+      ash::DeviceSettingsService* device_settings_service,
       DeviceManagementService* device_management_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
@@ -138,7 +141,7 @@ class DeviceLocalAccountPolicyBroker
       extension_loader_;
   CloudPolicyCore core_;
   std::unique_ptr<ComponentCloudPolicyService> component_policy_service_;
-  base::Closure policy_update_callback_;
+  base::RepeatingClosure policy_update_callback_;
   std::unique_ptr<AffiliatedCloudPolicyInvalidator> invalidator_;
   const scoped_refptr<base::SequencedTaskRunner> resource_cache_task_runner_;
 
@@ -165,8 +168,8 @@ class DeviceLocalAccountPolicyService {
 
   DeviceLocalAccountPolicyService(
       chromeos::SessionManagerClient* session_manager_client,
-      chromeos::DeviceSettingsService* device_settings_service,
-      chromeos::CrosSettings* cros_settings,
+      ash::DeviceSettingsService* device_settings_service,
+      ash::CrosSettings* cros_settings,
       AffiliatedInvalidationServiceProvider* invalidation_service_provider,
       scoped_refptr<base::SequencedTaskRunner> store_background_task_runner,
       scoped_refptr<base::SequencedTaskRunner> extension_cache_task_runner,
@@ -236,8 +239,8 @@ class DeviceLocalAccountPolicyService {
   base::ObserverList<Observer, true>::Unchecked observers_;
 
   chromeos::SessionManagerClient* session_manager_client_;
-  chromeos::DeviceSettingsService* device_settings_service_;
-  chromeos::CrosSettings* cros_settings_;
+  ash::DeviceSettingsService* device_settings_service_;
+  ash::CrosSettings* cros_settings_;
   AffiliatedInvalidationServiceProvider* invalidation_service_provider_;
 
   DeviceManagementService* device_management_service_;

@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
-#include "third_party/blink/renderer/core/layout/layout_geometry_map.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
@@ -149,14 +148,12 @@ void LayoutInline::DeleteLineBoxes() {
 void LayoutInline::ClearFirstInlineFragmentItemIndex() {
   NOT_DESTROYED();
   CHECK(IsInLayoutNGInlineFormattingContext()) << *this;
-  DCHECK(RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled());
   first_fragment_item_index_ = 0u;
 }
 
 void LayoutInline::SetFirstInlineFragmentItemIndex(wtf_size_t index) {
   NOT_DESTROYED();
   CHECK(IsInLayoutNGInlineFormattingContext()) << *this;
-  DCHECK(RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled());
   DCHECK_NE(index, 0u);
   first_fragment_item_index_ = index;
 }
@@ -727,8 +724,8 @@ LayoutBlockFlow* LayoutInline::CreateAnonymousContainerForBlockChildren() {
   // inline. We take all of the children after |beforeChild| and put them in a
   // clone of this object.
   scoped_refptr<ComputedStyle> new_style =
-      ComputedStyle::CreateAnonymousStyleWithDisplay(StyleRef(),
-                                                     EDisplay::kBlock);
+      GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
+          StyleRef(), EDisplay::kBlock);
   const LayoutBlock* containing_block = ContainingBlock();
   // The anon block we create here doesn't exist in the CSS spec, so we need to
   // ensure that any blocks it contains inherit properly from its true
@@ -946,16 +943,66 @@ void LayoutInline::CollectCulledLineBoxRectsInFlippedBlocksDirection(
   }
 }
 
+bool LayoutInline::AbsoluteTransformDependsOnPoint(
+    const LayoutObject& object) const {
+  const LayoutObject* current = &object;
+  const LayoutObject* container = object.Container();
+  while (container) {
+    if (current->OffsetForContainerDependsOnPoint(container))
+      return true;
+    current = container;
+    container = container->Container();
+  }
+  return false;
+}
+
+void LayoutInline::LocalQuadsForSelf(Vector<FloatQuad>& quads) const {
+  QuadsForSelfInternal(quads, 0, false);
+}
+
 void LayoutInline::AbsoluteQuadsForSelf(Vector<FloatQuad>& quads,
                                         MapCoordinatesFlags mode) const {
+  QuadsForSelfInternal(quads, mode, true);
+}
+
+void LayoutInline::QuadsForSelfInternal(Vector<FloatQuad>& quads,
+                                        MapCoordinatesFlags mode,
+                                        bool map_to_absolute) const {
   NOT_DESTROYED();
-  LayoutGeometryMap geometry_map(mode);
-  geometry_map.PushMappingsToAncestor(this, nullptr);
-  CollectLineBoxRects([&quads, &geometry_map](const PhysicalRect& r) {
-    quads.push_back(geometry_map.AbsoluteQuad(r));
-  });
-  if (quads.IsEmpty())
-    quads.push_back(geometry_map.AbsoluteQuad(PhysicalRect()));
+  base::Optional<TransformationMatrix> mapping_to_absolute;
+  // Set to true if the transform to absolute space depends on the point
+  // being mapped (in which case we can't use LocalToAbsoluteTransform).
+  bool transform_depends_on_point = false;
+  bool transform_depends_on_point_computed = false;
+  auto PushAbsoluteQuad = [&transform_depends_on_point,
+                           &transform_depends_on_point_computed,
+                           &mapping_to_absolute, &quads, mode,
+                           this](const PhysicalRect& rect) {
+    if (!transform_depends_on_point_computed) {
+      transform_depends_on_point_computed = true;
+      transform_depends_on_point = AbsoluteTransformDependsOnPoint(*this);
+      if (!transform_depends_on_point)
+        mapping_to_absolute.emplace(LocalToAbsoluteTransform(mode));
+    }
+    if (transform_depends_on_point)
+      quads.push_back(LocalToAbsoluteQuad(FloatQuad(FloatRect(rect)), mode));
+    else
+      quads.push_back(mapping_to_absolute->MapQuad(FloatQuad(FloatRect(rect))));
+  };
+
+  CollectLineBoxRects(
+      [&PushAbsoluteQuad, &map_to_absolute, &quads](const PhysicalRect& rect) {
+        if (map_to_absolute)
+          PushAbsoluteQuad(rect);
+        else
+          quads.push_back(FloatQuad(FloatRect(rect)));
+      });
+  if (quads.IsEmpty()) {
+    if (map_to_absolute)
+      PushAbsoluteQuad(PhysicalRect());
+    else
+      quads.push_back(FloatQuad());
+  }
 }
 
 base::Optional<PhysicalOffset> LayoutInline::FirstLineBoxTopLeftInternal()
@@ -1102,12 +1149,6 @@ bool LayoutInline::NodeAtPoint(HitTestResult& result,
       if (NGBoxFragmentPainter(cursor, item, *box_fragment)
               .NodeAtPoint(result, hit_test_location, child_offset,
                            accumulated_offset, hit_test_action)) {
-        // TODO(layout-dev): Make this work with block fragmentation. We should
-        // ideally store the containing box fragment in the hit-test result
-        // here, but doing that might prevent us from finding the right fragment
-        // item later on in PositionForPoint(), if the inline has been offset
-        // from its static position. So clear it.
-        result.SetBoxFragment(nullptr);
         return true;
       }
     }

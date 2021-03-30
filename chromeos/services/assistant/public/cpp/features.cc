@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "chromeos/services/assistant/public/cpp/features.h"
-#include "chromeos/constants/chromeos_features.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 
 namespace chromeos {
@@ -32,17 +32,11 @@ const base::Feature kAssistantLauncherChipIntegration{
 const base::Feature kAssistantRoutines{"AssistantRoutines",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kAssistantTimersV2{"AssistantTimersV2",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kAssistantWaitScheduling{"AssistantWaitScheduling",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kEnableBetterAssistant{"EnableBetterAssistant",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kEnableAmbientAssistant{"EnableAmbientAssistant",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kEnableDspHotword{"EnableDspHotword",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
@@ -53,9 +47,6 @@ const base::Feature kEnableStereoAudioInput{"AssistantEnableStereoAudioInput",
 const base::Feature kEnablePowerManager{"ChromeOSAssistantEnablePowerManager",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kEnableOnDeviceAssistant{"OnDeviceAssistant",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kEnableLibAssistantBetaBackend{
     "LibAssistantBetaBackend", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -65,12 +56,6 @@ const base::Feature kEnableMediaSessionIntegration{
 // Disable voice match for test purpose.
 const base::Feature kDisableVoiceMatch{"DisableVoiceMatch",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
-
-bool IsAmbientAssistantEnabled() {
-  return chromeos::features::IsAmbientModeEnabled() &&
-         base::FeatureList::IsEnabled(
-             assistant::features::kEnableAmbientAssistant);
-}
 
 bool IsAppSupportEnabled() {
   return base::FeatureList::IsEnabled(
@@ -113,10 +98,6 @@ bool IsPowerManagerEnabled() {
   return base::FeatureList::IsEnabled(kEnablePowerManager);
 }
 
-bool IsOnDeviceAssistantEnabled() {
-  return base::FeatureList::IsEnabled(kEnableOnDeviceAssistant);
-}
-
 bool IsLibAssistantBetaBackendEnabled() {
   return base::FeatureList::IsEnabled(kEnableLibAssistantBetaBackend);
 }
@@ -129,10 +110,6 @@ bool IsStereoAudioInputEnabled() {
   return base::FeatureList::IsEnabled(kEnableStereoAudioInput) ||
          // Audio eraser requires 2 channel input.
          base::FeatureList::IsEnabled(kAssistantAudioEraser);
-}
-
-bool IsTimersV2Enabled() {
-  return base::FeatureList::IsEnabled(kAssistantTimersV2);
 }
 
 bool IsVoiceMatchDisabled() {

@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_forward.h"
+#include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
@@ -27,6 +29,22 @@ class ArcClientAdapter {
    public:
     virtual ~Observer() = default;
     virtual void ArcInstanceStopped() = 0;
+  };
+
+  // DemoModeDelegate contains functions used to load the demo session apps for
+  // ARC. The adapter cannot do this directly because chromeos::DemoSession
+  // classes are in //chrome.
+  class DemoModeDelegate {
+   public:
+    virtual ~DemoModeDelegate() = default;
+
+    // Ensures that the demo session offline resources are loaded, if demo mode
+    // is enabled. This must be called before GetDemoAppsPath().
+    virtual void EnsureOfflineResourcesLoaded(base::OnceClosure callback) = 0;
+
+    // Gets the path of the image containing demo session Android apps. Returns
+    // an empty path if demo mode is not enabled.
+    virtual base::FilePath GetDemoAppsPath() = 0;
   };
 
   // Creates a default instance of ArcClientAdapter.
@@ -52,6 +70,10 @@ class ArcClientAdapter {
   virtual void SetUserInfo(const cryptohome::Identification& cryptohome_id,
                            const std::string& hash,
                            const std::string& serial_number) = 0;
+
+  // Provides the DemoModeDelegate which will be used to load the demo session
+  // apps path.
+  virtual void SetDemoModeDelegate(DemoModeDelegate* delegate) = 0;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

@@ -33,7 +33,7 @@ void AXRelationCache::DoInitialDocumentScan() {
         << "Unclean document at lifecycle " << document.Lifecycle().ToString();
 #endif
     if (element.FastHasAttribute(html_names::kAriaOwnsAttr)) {
-      if (AXObject* owner = GetOrCreate(&element)) {
+      if (AXObject* owner = GetOrCreate(&element, nullptr)) {
         owner_ids_to_update_.insert(owner->AXObjectID());
       }
     }
@@ -56,7 +56,8 @@ void AXRelationCache::ProcessUpdatesWithCleanLayout() {
 }
 
 bool AXRelationCache::IsAriaOwned(const AXObject* child) const {
-  return aria_owned_child_to_owner_mapping_.Contains(child->AXObjectID());
+  return child &&
+         aria_owned_child_to_owner_mapping_.Contains(child->AXObjectID());
 }
 
 AXObject* AXRelationCache::GetAriaOwnedParent(const AXObject* child) const {
@@ -94,29 +95,62 @@ static bool ContainsCycle(AXObject* owner, AXObject* child) {
 
 bool AXRelationCache::IsValidOwnsRelation(AXObject* owner,
                                           AXObject* child) const {
-  if (!child)
+  if (!IsValidOwner(owner) || !IsValidOwnedChild(child))
     return false;
-
-  // Some objects aren't allowed to aria-own children - in particular
-  // aria-owns is sometimes set on combo boxes but we don't want to
-  // rearrange the tree because then we'd interpret that as the owned
-  // children actually being part of the editable content of the text
-  // field.
-  if (!owner->CanHaveChildren() || owner->IsNativeTextControl() ||
-      owner->HasContentEditableAttributeSet()) {
-    return false;
-  }
 
   // If this child is already aria-owned by a different owner, continue.
   // It's an author error if this happens and we don't worry about which of
-  // the two owners wins ownership of the child, as long as only one of them
-  // does.
+  // the two owners wins ownership, as long as only one of them does.
   if (IsAriaOwned(child) && GetAriaOwnedParent(child) != owner)
     return false;
 
   // You can't own yourself or an ancestor!
   if (ContainsCycle(owner, child))
     return false;
+
+  return true;
+}
+
+bool AXRelationCache::IsValidOwner(AXObject* owner) {
+  if (!owner->GetNode()) {
+    NOTREACHED() << "Cannot use aria-owns without a node on both ends";
+    return false;
+  }
+
+  // Can't have children.
+  if (!owner->CanHaveChildren())
+    return false;
+
+  // An aria-owns is disallowed on editable roots, such as <input>, <textarea>
+  // and content editables, otherwise the result would be unworkable and totally
+  // unexpected on the browser side.
+  if (owner->IsEditableRoot())
+    return false;
+
+  // Images can only use <img usemap> to "own" <area> children.
+  // This requires special parenting logic, and aria-owns is prevented here in
+  // order to keep things from getting too complex.
+  if (owner->RoleValue() == ax::mojom::blink::Role::kImage)
+    return false;
+
+  // Similarly, do not allow <area> to own another object.
+  if (owner->IsImageMapLink())
+    return false;
+
+  return true;
+}
+
+bool AXRelationCache::IsValidOwnedChild(AXObject* child) {
+  if (!child)
+    return false;
+
+  if (!child->GetNode()) {
+    NOTREACHED() << "Cannot use aria-owns without a node on both ends";
+    return false;
+  }
+
+  if (child->IsImageMapLink())
+    return false;  // An area can't be owned, only parented by <img usemap>.
 
   return true;
 }
@@ -141,8 +175,8 @@ void AXRelationCache::UnmapOwnedChildren(const AXObject* owner,
       // back to its real parent in the tree by detaching it from its current
       // parent and calling childrenChanged on its real parent.
       removed_child->DetachFromParent();
-      AXObject* real_parent = removed_child->ParentObjectIncludedInTree();
-
+      // Recompute the real parent and cache it.
+      AXObject* real_parent = removed_child->ParentObject();
       ChildrenChanged(real_parent);
     }
   }
@@ -160,6 +194,7 @@ void AXRelationCache::MapOwnedChildren(const AXObject* owner,
     // on the original parent so that it can recompute its list of children.
     AXObject* original_parent = added_child->ParentObject();
     added_child->DetachFromParent();
+    added_child->SetParent(const_cast<AXObject*>(owner));
     ChildrenChanged(original_parent);
   }
 }
@@ -174,14 +209,20 @@ void AXRelationCache::UpdateAriaOwnsFromAttrAssociatedElementsWithCleanLayout(
 
   Vector<String> owned_id_vector;
   for (const auto& element : attr_associated_elements) {
-    AXObject* child = GetOrCreate(element);
+    // Pass in owner parent assuming that the owns relationship will be valid.
+    // It will be cleared below if the owns relationship is found to be invalid.
+    AXObject* child = GetOrCreate(element, owner);
 
     // TODO(meredithl): Determine how to update reverse relations for elements
     // without an id.
     if (element->GetIdAttribute())
       owned_id_vector.push_back(element->GetIdAttribute());
-    if (IsValidOwnsRelation(const_cast<AXObject*>(owner), child))
-      validated_owned_children_result.push_back(GetOrCreate(element));
+    if (IsValidOwnsRelation(const_cast<AXObject*>(owner), child)) {
+      validated_owned_children_result.push_back(child);
+    } else if (child) {
+      // Invalid owns relation: repair the parent that was set above.
+      child->SetParent(child->ComputeParentImpl());
+    }
   }
 
   // Track reverse relations for future tree updates.
@@ -243,9 +284,16 @@ void AXRelationCache::UpdateAriaOwnsWithCleanLayout(AXObject* owner) {
     Vector<AXID> validated_owned_child_axids;
     for (const String& id_name : owned_id_vector) {
       Element* child_element = scope.getElementById(AtomicString(id_name));
-      AXObject* child = GetOrCreate(child_element);
-      if (IsValidOwnsRelation(const_cast<AXObject*>(owner), child))
+      // Pass in owner parent assuming that the owns relationship will be valid.
+      // It will be cleared below if the owns relationship is found to be
+      // invalid.
+      AXObject* child = GetOrCreate(child_element, owner);
+      if (IsValidOwnsRelation(const_cast<AXObject*>(owner), child)) {
         owned_children.push_back(child);
+      } else if (child) {
+        // Invalid owns relation: repair the parent that was set above.
+        child->SetParent(child->ComputeParentImpl());
+      }
     }
   }
 
@@ -274,18 +322,22 @@ void AXRelationCache::UpdateAriaOwnerToChildrenMappingWithCleanLayout(
   UnmapOwnedChildren(owner, current_child_axids);
   MapOwnedChildren(owner, validated_owned_child_axids);
 
+#if DCHECK_IS_ON()
+  // Owned children must be in tree to avoid serialization issues.
+  for (AXObject* child : validated_owned_children_result) {
+    DCHECK(child->AccessibilityIsIncludedInTree())
+        << "Owned child not in tree: " << child->ToString(true, false)
+        << "\nRecompute included in tree: "
+        << child->ComputeAccessibilityIsIgnoredButIncludedInTree();
+  }
+#endif
+
   // Finally, update the mapping from the owner to the list of child IDs.
   aria_owner_to_children_mapping_.Set(owner->AXObjectID(),
                                       validated_owned_child_axids);
 
   ChildrenChanged(owner);
-
-#if DCHECK_IS_ON()
-  // Owned children must be in tree to avoid serialization issues.
-  for (AXObject* child : validated_owned_children_result) {
-    DCHECK(child->AccessibilityIsIncludedInTree());
-  }
-#endif
+  owner->UpdateChildrenIfNecessary();
 }
 
 bool AXRelationCache::MayHaveHTMLLabelViaForAttribute(
@@ -318,9 +370,18 @@ void AXRelationCache::GetReverseRelated(
   }
 }
 
-void AXRelationCache::UpdateRelatedTree(Node* node) {
+void AXRelationCache::UpdateRelatedTree(Node* node, AXObject* obj) {
   HeapVector<Member<AXObject>> related_sources;
-  AXObject* related_target = Get(node);
+#if DCHECK_IS_ON()
+  DCHECK(node);
+  AXObject* obj_for_node = Get(node);
+  DCHECK(!obj || obj_for_node == obj)
+      << "Object and node did not match:"
+      << "\n* node = " << node << "\n* obj = " << obj->ToString(true, true)
+      << "\n* obj_for_node = "
+      << (obj_for_node ? obj_for_node->ToString(true, true) : "null");
+#endif
+  AXObject* related_target = obj ? obj : Get(node);
   // If it's already owned, schedule an update on the owner.
   if (related_target && IsAriaOwned(related_target)) {
     AXObject* owned_parent = GetAriaOwnedParent(related_target);
@@ -351,8 +412,10 @@ void AXRelationCache::UpdateRelatedText(Node* node) {
     HeapVector<Member<AXObject>> related_sources;
     GetReverseRelated(current_node, related_sources);
     for (AXObject* related : related_sources) {
-      if (related)
-        object_cache_->MarkAXObjectDirty(related, /*subtree=*/false);
+      if (related) {
+        object_cache_->MarkAXObjectDirtyWithCleanLayout(related,
+                                                        /*subtree=*/false);
+      }
     }
 
     // Ancestors that may derive their accessible name from descendant content
@@ -360,7 +423,7 @@ void AXRelationCache::UpdateRelatedText(Node* node) {
     if (current_node != node) {
       AXObject* obj = Get(current_node);
       if (obj && obj->SupportsNameFromContents(/*recursive=*/false))
-        object_cache_->MarkAXObjectDirty(obj, /*subtree=*/false);
+        object_cache_->MarkAXObjectDirtyWithCleanLayout(obj, /*subtree=*/false);
     }
 
     // Forward relation via <label for="[id]">.
@@ -407,8 +470,8 @@ AXObject* AXRelationCache::Get(Node* node) {
   return object_cache_->Get(node);
 }
 
-AXObject* AXRelationCache::GetOrCreate(Node* node) {
-  return object_cache_->GetOrCreate(node);
+AXObject* AXRelationCache::GetOrCreate(Node* node, const AXObject* owner) {
+  return object_cache_->GetOrCreate(node, const_cast<AXObject*>(owner));
 }
 
 void AXRelationCache::ChildrenChanged(AXObject* object) {
@@ -422,7 +485,7 @@ void AXRelationCache::LabelChanged(Node* node) {
     all_previously_seen_label_target_ids_.insert(id);
     if (auto* control = To<HTMLLabelElement>(node)->control()) {
       if (AXObject* obj = Get(control))
-        object_cache_->MarkAXObjectDirty(obj, /*subtree=*/false);
+        object_cache_->MarkAXObjectDirtyWithCleanLayout(obj, /*subtree=*/false);
     }
   }
 }

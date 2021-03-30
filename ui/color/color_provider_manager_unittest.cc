@@ -18,7 +18,7 @@ namespace {
 
 class ColorProviderManagerTest : public testing::Test {
  public:
-  ColorProviderManagerTest() = default;
+  ColorProviderManagerTest() { ColorProviderManager::ResetForTesting(); }
   ColorProviderManagerTest(const ColorProviderManagerTest&) = delete;
   ColorProviderManagerTest& operator=(const ColorProviderManagerTest&) = delete;
   ~ColorProviderManagerTest() override {
@@ -27,9 +27,9 @@ class ColorProviderManagerTest : public testing::Test {
 };
 
 ColorProvider* GetLightNormalColorProvider() {
-  return ColorProviderManager::Get().GetColorProviderFor(
-      ColorProviderManager::ColorMode::kLight,
-      ColorProviderManager::ContrastMode::kNormal);
+  return ColorProviderManager::GetForTesting().GetColorProviderFor(
+      {ColorProviderManager::ColorMode::kLight,
+       ColorProviderManager::ContrastMode::kNormal});
 }
 
 }  // namespace
@@ -47,9 +47,10 @@ TEST_F(ColorProviderManagerTest, Persistence) {
 // Verifies that the initializer is called for each newly created color
 // provider.
 TEST_F(ColorProviderManagerTest, SetInitializer) {
-  ColorProviderManager::Get().SetColorProviderInitializer(base::BindRepeating(
-      [](ColorProvider* provider, ColorProviderManager::ColorMode,
-         ColorProviderManager::ContrastMode) {
+  ColorProviderManager::GetForTesting().SetColorProviderInitializer(
+      base::BindRepeating([](ColorProvider* provider,
+                             ColorProviderManager::ColorMode,
+                             ColorProviderManager::ContrastMode) {
         provider->AddMixer().AddSet(
             {kColorSetTest0, {{kColorTest0, SK_ColorBLUE}}});
       }));

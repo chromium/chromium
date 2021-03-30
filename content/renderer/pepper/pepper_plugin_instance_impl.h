@@ -21,7 +21,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/layer.h"
@@ -29,10 +28,13 @@
 #include "cc/paint/paint_canvas.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "content/common/content_export.h"
+#include "content/common/pepper_plugin.mojom.h"
 #include "content/public/renderer/pepper_plugin_instance.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "gin/handle.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "ppapi/c/dev/pp_cursor_type_dev.h"
 #include "ppapi/c/dev/ppp_printing_dev.h"
 #include "ppapi/c/dev/ppp_text_input_dev.h"
@@ -119,7 +121,8 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
       public PepperPluginInstance,
       public ppapi::PPB_Instance_Shared,
       public cc::TextureLayerClient,
-      public RenderFrameObserver {
+      public RenderFrameObserver,
+      public mojom::PepperPluginInstance {
  public:
   // Create and return a PepperPluginInstanceImpl object which supports the most
   // recent version of PPP_Instance possible by querying the given
@@ -135,8 +138,16 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   // Currently only used in tests.
   static PepperPluginInstanceImpl* GetForTesting(PP_Instance instance_id);
 
+  // Returns the associated RenderFrameImpl. Can be null (in tests) or if the
+  // frame has been destroyed.
   RenderFrameImpl* render_frame() const { return render_frame_; }
   PluginModule* module() const { return module_.get(); }
+
+  // Returns the associated mojo host channel to the browser. Can be null if
+  // `render_frame()` returns null.
+  mojom::PepperPluginInstanceHost* GetPepperPluginInstanceHost() {
+    return pepper_host_remote_.get();
+  }
 
   blink::WebPluginContainer* container() const { return container_; }
 
@@ -222,29 +233,29 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
                    const gfx::Rect& unobscured);
 
   // Handlers for composition events.
-  void OnImeSetComposition(const base::string16& text,
+  void OnImeSetComposition(const std::u16string& text,
                            const std::vector<ui::ImeTextSpan>& ime_text_spans,
                            int selection_start,
                            int selection_end);
-  void OnImeCommitText(const base::string16& text,
+  void OnImeCommitText(const std::u16string& text,
                        const gfx::Range& replacement_range,
                        int relative_cursor_pos);
   void OnImeFinishComposingText(bool keep_selection);
-  void HandlePepperImeCommit(const base::string16& text);
-  bool HandleCompositionStart(const base::string16& text);
+  void HandlePepperImeCommit(const std::u16string& text);
+  bool HandleCompositionStart(const std::u16string& text);
   bool HandleCompositionUpdate(
-      const base::string16& text,
+      const std::u16string& text,
       const std::vector<ui::ImeTextSpan>& ime_text_spans,
       int selection_start,
       int selection_end);
-  bool HandleCompositionEnd(const base::string16& text);
-  bool HandleTextInput(const base::string16& text);
+  bool HandleCompositionEnd(const std::u16string& text);
+  bool HandleTextInput(const std::u16string& text);
 
   // Gets the current text input status.
   ui::TextInputType text_input_type() const { return text_input_type_; }
   gfx::Rect GetCaretBounds() const;
   bool IsPluginAcceptingCompositionEvents() const;
-  void GetSurroundingText(base::string16* text, gfx::Range* range) const;
+  void GetSurroundingText(std::u16string* text, gfx::Range* range) const;
 
   // Notifications about focus changes, see has_webkit_focus_ below.
   void SetWebKitFocus(bool has_focus);
@@ -260,8 +271,8 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   void AddPluginObject(PluginObject* plugin_object);
   void RemovePluginObject(PluginObject* plugin_object);
 
-  base::string16 GetSelectedText(bool html);
-  base::string16 GetLinkAtPosition(const gfx::Point& point);
+  std::u16string GetSelectedText(bool html);
+  std::u16string GetLinkAtPosition(const gfx::Point& point);
   void RequestSurroundingText(size_t desired_number_of_characters);
   bool StartFind(const std::string& search_text,
                  bool case_sensitive,
@@ -361,7 +372,7 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   bool IsRectTopmost(const gfx::Rect& rect) override;
   int MakePendingFileRefRendererHost(const base::FilePath& path) override;
   void SetEmbedProperty(PP_Var key, PP_Var value) override;
-  void SetSelectedText(const base::string16& selected_text) override;
+  void SetSelectedText(const std::u16string& selected_text) override;
   void SetLinkUnderCursor(const std::string& url) override;
   void SetTextInputType(ui::TextInputType type) override;
   void PostMessageToJavaScript(PP_Var message) override;
@@ -485,6 +496,9 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   // Delete should be called by the WebPlugin before this destructor.
   ~PepperPluginInstanceImpl() override;
 
+  // mojom::PepperPluginInstance overrides:
+  void SetVolume(double volume) override;
+
   // Class to record document load notifications and play them back once the
   // real document loader becomes available. Used only by external instances.
   class ExternalDocumentLoader : public blink::WebAssociatedURLLoaderClient {
@@ -579,10 +593,10 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
 
   // Internal helper functions for HandleCompositionXXX().
   bool SendCompositionEventToPlugin(PP_InputEvent_Type type,
-                                    const base::string16& text);
+                                    const std::u16string& text);
   bool SendCompositionEventWithImeTextSpanInformationToPlugin(
       PP_InputEvent_Type type,
-      const base::string16& text,
+      const std::u16string& text,
       const std::vector<ui::ImeTextSpan>& ime_text_spans,
       int selection_start,
       int selection_end);
@@ -807,7 +821,7 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   bool external_document_load_;
 
   // The link currently under the cursor.
-  base::string16 link_under_cursor_;
+  std::u16string link_under_cursor_;
 
   // We store the isolate at construction so that we can be sure to use the
   // Isolate in which this Instance was created when interacting with v8.
@@ -816,7 +830,7 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   bool is_deleted_;
 
   // The text that is currently selected in the plugin.
-  base::string16 selected_text_;
+  std::u16string selected_text_;
 
   // The most recently committed texture. This is kept around in case the layer
   // needs to be regenerated.
@@ -842,7 +856,10 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
 
   // Current text input composition text. Empty if no composition is in
   // progress.
-  base::string16 composition_text_;
+  std::u16string composition_text_;
+
+  mojo::AssociatedRemote<mojom::PepperPluginInstanceHost> pepper_host_remote_;
+  mojo::AssociatedReceiver<mojom::PepperPluginInstance> pepper_receiver_{this};
 
   // We use a weak ptr factory for scheduling DidChangeView events so that we
   // can tell whether updates are pending and consolidate them. When there's

@@ -39,6 +39,7 @@
 #include "extensions/common/manifest_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 
 using testing::_;
 using testing::AtLeast;
@@ -582,7 +583,7 @@ TEST_F(MenuManagerTest, ExecuteCommand) {
   params.media_type = blink::mojom::ContextMenuDataMediaType::kImage;
   params.src_url = GURL("http://foo.bar/image.png");
   params.page_url = GURL("http://foo.bar");
-  params.selection_text = base::ASCIIToUTF16("Hello World");
+  params.selection_text = u"Hello World";
   params.is_editable = false;
 
   const Extension* extension = AddExtension("test");
@@ -635,7 +636,7 @@ TEST_F(MenuManagerTest, ExecuteCommand) {
   ASSERT_TRUE(info->GetString("pageUrl", &tmp));
   ASSERT_EQ(params.page_url.spec(), tmp);
 
-  base::string16 tmp16;
+  std::u16string tmp16;
   ASSERT_TRUE(info->GetString("selectionText", &tmp16));
   ASSERT_EQ(params.selection_text, tmp16);
 
@@ -860,7 +861,8 @@ class MenuManagerStorageTest : public MenuManagerTest,
     dictionary.SetPath(manifest_keys::kBackgroundScripts, std::move(value));
     dictionary.SetPath(manifest_keys::kBackgroundPersistent,
                        base::Value(false));
-    return prefs_.AddExtensionWithManifest(dictionary, Manifest::INTERNAL);
+    return prefs_.AddExtensionWithManifest(dictionary,
+                                           mojom::ManifestLocation::kInternal);
   }
 
   scoped_refptr<const Extension> AddServiceWorkerExtension(
@@ -869,7 +871,8 @@ class MenuManagerStorageTest : public MenuManagerTest,
     TestExtensionPrefs::AddDefaultManifestKeys(name, &dictionary);
     dictionary.SetStringPath(manifest_keys::kBackgroundServiceWorkerScript,
                              "background.js");
-    return prefs_.AddExtensionWithManifest(dictionary, Manifest::INTERNAL);
+    return prefs_.AddExtensionWithManifest(dictionary,
+                                           mojom::ManifestLocation::kInternal);
   }
 
   scoped_refptr<const Extension> CreateTestExtension() {

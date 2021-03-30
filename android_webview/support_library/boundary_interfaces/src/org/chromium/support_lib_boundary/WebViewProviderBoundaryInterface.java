@@ -20,7 +20,7 @@ public interface WebViewProviderBoundaryInterface {
     void addWebMessageListener(String jsObjectName, String[] allowedOriginRules,
             /* WebMessageListener */ InvocationHandler listener);
     void removeWebMessageListener(String jsObjectName);
-    /* ScriptReference */ InvocationHandler addDocumentStartJavaScript(
+    /* ScriptHandler */ InvocationHandler addDocumentStartJavaScript(
             String script, String[] allowedOriginRules);
     WebViewClient getWebViewClient();
     WebChromeClient getWebChromeClient();

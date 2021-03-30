@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/online_login_helper.h"
 
+#include "chrome/browser/ash/login/signin_partition_manager.h"
+#include "chrome/browser/ash/login/ui/login_display_host_webui.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/login/signin_partition_manager.h"
-#include "chrome/browser/chromeos/login/ui/login_display_host_webui.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
@@ -15,6 +15,7 @@
 #include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/login/auth/challenge_response/cert_utils.h"
 #include "chromeos/login/auth/cryptohome_key_constants.h"
+#include "components/sync/driver/sync_driver_switches.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -74,6 +75,8 @@ void SetCookieForPartition(
   std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
       gaia_url, gaps_cookie_value, base::Time::Now(),
       base::nullopt /* server_time */));
+  if (!cc)
+    return;
 
   const net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
   partition->GetCookieManagerForBrowserProcess()->SetCanonicalCookie(
@@ -107,6 +110,7 @@ bool BuildUserContextForGaiaSignIn(
     bool using_saml_api,
     const std::string& password,
     const SamlPasswordAttributes& password_attributes,
+    const base::Optional<SyncTrustedVaultKeys>& sync_trusted_vault_keys,
     const LoginClientCertUsageObserver&
         extension_provided_client_cert_usage_observer,
     UserContext* user_context,
@@ -148,6 +152,11 @@ bool BuildUserContextForGaiaSignIn(
       user_context->SetSamlPasswordAttributes(password_attributes);
     }
   }
+
+  if (sync_trusted_vault_keys.has_value()) {
+    user_context->SetSyncTrustedVaultKeys(*sync_trusted_vault_keys);
+  }
+
   return true;
 }
 

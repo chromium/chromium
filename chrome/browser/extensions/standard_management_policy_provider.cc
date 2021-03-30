@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/logging.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "extensions/common/constants.h"
@@ -24,7 +23,7 @@ namespace {
 // fills |error| with corresponding error message if necessary.
 bool AdminPolicyIsModifiable(const Extension* source_extension,
                              const Extension* extension,
-                             base::string16* error) {
+                             std::u16string* error) {
   // Component and force installed extensions can enable/disable all other
   // extensions including force installed ones (but component are off limits).
   const bool component_or_force_installed =
@@ -74,7 +73,7 @@ std::string
 
 bool StandardManagementPolicyProvider::UserMayLoad(
     const Extension* extension,
-    base::string16* error) const {
+    std::u16string* error) const {
   // Component extensions are always allowed, besides the camera app that can be
   // disabled by extension policy. This is a temporary solution until there's a
   // dedicated policy to disable the camera, at which point the special check in
@@ -138,7 +137,7 @@ bool StandardManagementPolicyProvider::UserMayLoad(
 
 bool StandardManagementPolicyProvider::UserMayInstall(
     const Extension* extension,
-    base::string16* error) const {
+    std::u16string* error) const {
   ExtensionManagement::InstallationMode installation_mode =
       settings_->GetInstallationMode(extension);
 
@@ -153,27 +152,27 @@ bool StandardManagementPolicyProvider::UserMayInstall(
 
 bool StandardManagementPolicyProvider::UserMayModifySettings(
     const Extension* extension,
-    base::string16* error) const {
+    std::u16string* error) const {
   return AdminPolicyIsModifiable(nullptr, extension, error);
 }
 
 bool StandardManagementPolicyProvider::ExtensionMayModifySettings(
     const Extension* source_extension,
     const Extension* extension,
-    base::string16* error) const {
+    std::u16string* error) const {
   return AdminPolicyIsModifiable(source_extension, extension, error);
 }
 
 bool StandardManagementPolicyProvider::MustRemainEnabled(
     const Extension* extension,
-    base::string16* error) const {
+    std::u16string* error) const {
   return !AdminPolicyIsModifiable(nullptr, extension, error);
 }
 
 bool StandardManagementPolicyProvider::MustRemainDisabled(
     const Extension* extension,
     disable_reason::DisableReason* reason,
-    base::string16* error) const {
+    std::u16string* error) const {
   std::string required_version;
   if (!settings_->CheckMinimumVersion(extension, &required_version)) {
     if (reason)
@@ -191,7 +190,7 @@ bool StandardManagementPolicyProvider::MustRemainDisabled(
 
 bool StandardManagementPolicyProvider::MustRemainInstalled(
     const Extension* extension,
-    base::string16* error) const {
+    std::u16string* error) const {
   ExtensionManagement::InstallationMode mode =
       settings_->GetInstallationMode(extension);
   // Disallow removing of recommended extension, to avoid re-install it
@@ -211,7 +210,7 @@ bool StandardManagementPolicyProvider::MustRemainInstalled(
 
 bool StandardManagementPolicyProvider::ShouldForceUninstall(
     const Extension* extension,
-    base::string16* error) const {
+    std::u16string* error) const {
   if (UserMayLoad(extension, error))
     return false;
   if (settings_->GetInstallationMode(extension) ==
@@ -223,7 +222,7 @@ bool StandardManagementPolicyProvider::ShouldForceUninstall(
 
 bool StandardManagementPolicyProvider::ReturnLoadError(
     const extensions::Extension* extension,
-    base::string16* error) const {
+    std::u16string* error) const {
   if (error) {
     *error = l10n_util::GetStringFUTF16(
         IDS_EXTENSION_CANT_INSTALL_POLICY_BLOCKED,

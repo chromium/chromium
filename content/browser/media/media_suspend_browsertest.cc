@@ -5,7 +5,8 @@
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/media/media_browsertest.h"
-#include "content/common/media/media_player_delegate_messages.h"
+#include "content/browser/media/media_web_contents_observer.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -16,11 +17,6 @@
 #include "media/base/test_data_util.h"
 
 namespace content {
-
-static void SuspendAllMediaPlayersInRenderFrame(RenderFrameHost* rfh) {
-  rfh->Send(
-      new MediaPlayerDelegateMsg_SuspendAllMediaPlayers(rfh->GetRoutingID()));
-}
 
 // This browser test ensures the force suspend IPC messages are working properly
 // and that players suspended in this way can be resumed. Note: This does not
@@ -36,11 +32,11 @@ class MediaSuspendTest : public MediaBrowserTest {
         media::GetTestDataFilePath("media_suspend_test.html"),
         media::GetURLQueryString(query_params));
 
-    const base::string16 kError = base::ASCIIToUTF16(media::kError);
+    const std::u16string kError = base::ASCIIToUTF16(media::kError);
 
     {
       VLOG(0) << "Waiting for test URL: " << gurl << ", to load.";
-      const base::string16 kLoaded = base::ASCIIToUTF16("LOADED");
+      const std::u16string kLoaded = u"LOADED";
       TitleWatcher title_watcher(shell()->web_contents(), kLoaded);
       title_watcher.AlsoWaitForTitle(kError);
       EXPECT_TRUE(NavigateToURL(shell(), gurl));
@@ -49,11 +45,12 @@ class MediaSuspendTest : public MediaBrowserTest {
 
     {
       VLOG(0) << "Suspending and waiting for suspend to occur.";
-      const base::string16 kSuspended = base::ASCIIToUTF16("SUSPENDED");
+      const std::u16string kSuspended = u"SUSPENDED";
       TitleWatcher title_watcher(shell()->web_contents(), kSuspended);
       title_watcher.AlsoWaitForTitle(kError);
-      shell()->web_contents()->ForEachFrame(
-          base::BindRepeating(&SuspendAllMediaPlayersInRenderFrame));
+      static_cast<WebContentsImpl*>(shell()->web_contents())
+          ->media_web_contents_observer()
+          ->SuspendAllMediaPlayers();
       ASSERT_EQ(kSuspended, title_watcher.WaitAndGetTitle());
     }
 
@@ -64,7 +61,7 @@ class MediaSuspendTest : public MediaBrowserTest {
 
     {
       VLOG(0) << "Waiting for playback to resume.";
-      const base::string16 kEnded = base::ASCIIToUTF16(media::kEnded);
+      const std::u16string kEnded = base::ASCIIToUTF16(media::kEnded);
       TitleWatcher title_watcher(shell()->web_contents(), kEnded);
       title_watcher.AlsoWaitForTitle(kError);
       ASSERT_TRUE(ExecuteScript(shell(), "video.play();"));

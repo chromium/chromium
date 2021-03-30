@@ -5,11 +5,12 @@
 #ifndef ASH_SHELF_LOGIN_SHELF_GESTURE_CONTROLLER_H_
 #define ASH_SHELF_LOGIN_SHELF_GESTURE_CONTROLLER_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 #include "ash/shelf/drag_handle.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "base/timer/timer.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -31,7 +32,7 @@ class ASH_EXPORT LoginShelfGestureController : public views::WidgetObserver {
  public:
   LoginShelfGestureController(Shelf* shelf,
                               DragHandle* drag_handle,
-                              const base::string16& gesture_nudge,
+                              const std::u16string& gesture_nudge,
                               const base::RepeatingClosure fling_handler,
                               base::OnceClosure exit_handler);
   LoginShelfGestureController(const LoginShelfGestureController& other) =

@@ -24,7 +24,7 @@ class FakeTestCertVerifierParamsFactory
   FakeTestCertVerifierParamsFactory();
   ~FakeTestCertVerifierParamsFactory() override;
 
-  static mojom::CertVerifierParamsPtr GetCertVerifierParams();
+  static mojom::CertVerifierServiceRemoteParamsPtr GetCertVerifierParams();
 
  private:
   // cert_verifier::mojom::CertVerifierService implementation:

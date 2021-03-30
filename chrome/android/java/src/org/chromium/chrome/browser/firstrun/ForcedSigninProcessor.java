@@ -4,108 +4,109 @@
 
 package org.chromium.chrome.browser.firstrun;
 
+import android.accounts.Account;
 import android.app.Activity;
 
-import androidx.annotation.Nullable;
-
-import org.chromium.base.Log;
+import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
+import org.chromium.chrome.browser.childaccounts.ChildAccountService;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.services.AndroidChildAccountHelper;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
-import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.externalauth.UserRecoverableErrorHandler;
+import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.ChildAccountStatus;
+import org.chromium.components.signin.base.CoreAccountId;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+
+import java.util.List;
 
 /**
  * A helper to perform all necessary steps for forced sign in.
  * The helper performs:
  * - necessary child account checks;
- * - automatic non-interactive forced sign in for child accounts; and
+ * - automatic non-interactive sign in for child accounts; and
  * The helper calls the observer's onSignInComplete() if
  * - nothing needs to be done, or when
  * - the sign in is complete.
  *
  * Usage:
- * ForcedSigninProcessor.start(appContext).
+ * ForcedSigninProcessor.start().
  */
 public final class ForcedSigninProcessor {
-    private static final String TAG = "ForcedSignin";
-
     /*
      * Only for static usage.
      */
     private ForcedSigninProcessor() {}
 
     /**
-     * Check whether a forced automatic signin is required and process it if it is.
+     * Check whether an automatic signin is required and process it if it is.
      * This is triggered once per Chrome Application lifetime and every time the Account state
      * changes with early exit if an account has already been signed in.
      */
-    public static void start(@Nullable final Runnable onComplete) {
-        new AndroidChildAccountHelper() {
-            @Override
-            public void onParametersReady() {
-                boolean hasChildAccount = ChildAccountStatus.isChild(getChildAccountStatus());
-                AccountManagementFragment.setSignOutAllowedPreferenceValue(!hasChildAccount);
-                if (hasChildAccount) {
-                    processForcedSignIn(onComplete);
-                }
+    public static void start() {
+        ChildAccountService.checkChildAccountStatus(status -> {
+            if (ChildAccountStatus.isChild(status)) {
+                final AccountManagerFacade accountManagerFacade =
+                        AccountManagerFacadeProvider.getInstance();
+                // Account cache is already available when child account status is ready.
+                final List<Account> accounts = accountManagerFacade.tryGetGoogleAccounts();
+                assert accounts.size() == 1 : "Child account should be the only account on device!";
+                new AsyncTask<String>() {
+                    @Override
+                    protected String doInBackground() {
+                        return accountManagerFacade.getAccountGaiaId(accounts.get(0).name);
+                    }
+
+                    @Override
+                    protected void onPostExecute(String accountGaiaId) {
+                        final CoreAccountInfo coreAccountInfo =
+                                new CoreAccountInfo(new CoreAccountId(accountGaiaId),
+                                        accounts.get(0).name, accountGaiaId);
+                        signinAndEnableSync(coreAccountInfo);
+                    }
+                }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
-        }.start();
+        });
     }
 
     /**
      * Processes the fully automatic non-FRE-related forced sign-in.
-     * This is used to enforce the environment for Android EDU and child accounts.
+     * This is used to enforce the environment for child accounts.
      */
-    private static void processForcedSignIn(@Nullable final Runnable onComplete) {
-        if (FirstRunUtils.canAllowSync()
-                && IdentityServicesProvider.get()
-                           .getIdentityManager(Profile.getLastUsedRegularProfile())
-                           .hasPrimaryAccount()) {
+    private static void signinAndEnableSync(final CoreAccountInfo childAccount) {
+        final Profile profile = Profile.getLastUsedRegularProfile();
+        if (IdentityServicesProvider.get().getIdentityManager(profile).hasPrimaryAccount()) {
             // TODO(https://crbug.com/1044206): Remove this.
             ProfileSyncService.get().setFirstSetupComplete(SyncFirstSetupCompleteSource.BASIC_FLOW);
         }
-
-        final SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
-                Profile.getLastUsedRegularProfile());
+        final SigninManager signinManager =
+                IdentityServicesProvider.get().getSigninManager(profile);
         // By definition we have finished all the checks for first run.
         signinManager.onFirstRunCheckDone();
-        if (!FirstRunUtils.canAllowSync() || !signinManager.isSignInAllowed()) {
-            Log.d(TAG, "Sign in disallowed");
-            return;
-        }
-        AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts(accounts -> {
-            if (accounts.size() != 1) {
-                Log.d(TAG, "Incorrect number of accounts (%d)", accounts.size());
-                return;
-            }
-            signinManager.signinAndEnableSync(SigninAccessPoint.FORCED_SIGNIN, accounts.get(0),
+        if (signinManager.isSignInAllowed()) {
+            signinManager.signinAndEnableSync(SigninAccessPoint.FORCED_SIGNIN, childAccount,
                     new SigninManager.SignInCallback() {
                         @Override
                         public void onSignInComplete() {
                             // TODO(https://crbug.com/1044206): Remove this.
-                            ProfileSyncService.get().setFirstSetupComplete(
-                                    SyncFirstSetupCompleteSource.BASIC_FLOW);
-                            if (onComplete != null) {
-                                onComplete.run();
+                            ProfileSyncService syncService = ProfileSyncService.get();
+                            if (syncService == null) {
+                                // Sync was disabled with a command-line flag, skip sign-in.
+                                return;
                             }
+                            syncService.setFirstSetupComplete(
+                                    SyncFirstSetupCompleteSource.BASIC_FLOW);
                         }
 
                         @Override
-                        public void onSignInAborted() {
-                            if (onComplete != null) {
-                                onComplete.run();
-                            }
-                        }
+                        public void onSignInAborted() {}
                     });
-        });
+        }
     }
 
     /**

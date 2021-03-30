@@ -73,12 +73,12 @@ abstract class NotificationTask extends AsyncTask<Boolean> {
     }
 
     protected AutofillId notifyViewAppeared(
-            PlatformSessionData parentPlatformSessionData, ContentCaptureData data) {
+            PlatformSessionData parentPlatformSessionData, ContentCaptureDataBase data) {
         ViewStructure viewStructure = PlatformAPIWrapper.getInstance().newVirtualViewStructure(
                 parentPlatformSessionData.contentCaptureSession,
                 parentPlatformSessionData.autofillId, data.getId());
 
-        if (!data.hasChildren()) viewStructure.setText(data.getValue());
+        viewStructure.setText(data.getText());
         Rect rect = data.getBounds();
         // Always set scroll as (0, 0).
         viewStructure.setDimens(rect.left, rect.top, 0, 0, rect.width(), rect.height());
@@ -88,13 +88,13 @@ abstract class NotificationTask extends AsyncTask<Boolean> {
     }
 
     public PlatformSessionData createOrGetSession(
-            PlatformSessionData parentPlatformSessionData, ContentCaptureData frame) {
+            PlatformSessionData parentPlatformSessionData, ContentCaptureFrame frame) {
         PlatformSessionData platformSessionData =
                 mPlatformSession.getFrameIdToPlatformSessionData().get(frame.getId());
-        if (platformSessionData == null && !TextUtils.isEmpty(frame.getValue())) {
+        if (platformSessionData == null && !TextUtils.isEmpty(frame.getUrl())) {
             ContentCaptureSession session =
                     PlatformAPIWrapper.getInstance().createContentCaptureSession(
-                            parentPlatformSessionData.contentCaptureSession, frame.getValue());
+                            parentPlatformSessionData.contentCaptureSession, frame.getUrl());
             AutofillId autofillId = PlatformAPIWrapper.getInstance().newAutofillId(
                     parentPlatformSessionData.contentCaptureSession,
                     mPlatformSession.getRootPlatformSessionData().autofillId, frame.getId());

@@ -11,11 +11,12 @@ import {TabData} from './tab_data.js';
  * @param {string} input
  * @param {!Array<!TabData>} records
  * @param {!Object} options
- * @return {!Array<!TabData>}
+ * @return {!Array<!TabData>} A new array of entries satisfying the input. If no
+ *     search input is present, returns a shallow copy of the records.
  */
 export function fuzzySearch(input, records, options) {
   if (input.length === 0) {
-    return records;
+    return [...records];
   }
   // Fuse does not handle exact match searches well. It indiscriminately
   // searches for direct matches that appear anywhere in the string. This
@@ -34,7 +35,7 @@ export function fuzzySearch(input, records, options) {
     result = new Fuse(records, options).search(input).map(result => {
       const titleMatch = result.matches.find(e => e.key === 'tab.title');
       const hostnameMatch = result.matches.find(e => e.key === 'hostname');
-      const item = Object.assign({}, result.item);
+      const item = cloneTabDataObj(result.item);
       if (titleMatch) {
         item.titleHighlightRanges = convertToRanges(titleMatch.indices);
       }
@@ -46,6 +47,16 @@ export function fuzzySearch(input, records, options) {
   }
   performance.mark('search_algorithm:benchmark_end');
   return result;
+}
+
+/**
+ * @param {!TabData} tabData
+ * @return {!TabData}
+ */
+function cloneTabDataObj(tabData) {
+  const clone = Object.assign({}, tabData);
+  Object.setPrototypeOf(clone, TabData.prototype);
+  return /** @type {!TabData} */ (clone);
 }
 
 /**
@@ -100,7 +111,7 @@ function exactSearch(searchText, records, options) {
     if (!titleHighlightRanges.length && !hostnameHighlightRanges.length) {
       continue;
     }
-    const matchedTab = /** @type {!TabData} */ (Object.assign({}, tab));
+    const matchedTab = cloneTabDataObj(tab);
     if (titleHighlightRanges.length) {
       matchedTab.titleHighlightRanges = titleHighlightRanges;
     }

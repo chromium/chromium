@@ -244,7 +244,7 @@ void FullCardRequest::OnDidGetRealPan(
       // to avoid an unwanted registration prompt.
       unmask_response_details_ = response_details;
 
-      const base::string16 cvc =
+      const std::u16string cvc =
           (base::FeatureList::IsEnabled(
                features::kAutofillEnableGoogleIssuedCard) ||
            base::FeatureList::IsEnabled(

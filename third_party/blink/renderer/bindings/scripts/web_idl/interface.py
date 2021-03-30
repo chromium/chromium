@@ -180,8 +180,9 @@ class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
         self._constructor_groups = tuple([
             ConstructorGroup(
                 group_ir,
-                filter(lambda x: x.identifier == group_ir.identifier,
-                       self._constructors),
+                list(
+                    filter(lambda x: x.identifier == group_ir.identifier,
+                           self._constructors)),
                 owner=self) for group_ir in ir.constructor_groups
         ])
         assert len(self._constructor_groups) <= 1
@@ -192,8 +193,9 @@ class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
         self._named_constructor_groups = tuple([
             ConstructorGroup(
                 group_ir,
-                filter(lambda x: x.identifier == group_ir.identifier,
-                       self._named_constructors),
+                list(
+                    filter(lambda x: x.identifier == group_ir.identifier,
+                           self._named_constructors)),
                 owner=self) for group_ir in ir.named_constructor_groups
         ])
         self._operations = tuple([
@@ -203,22 +205,23 @@ class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
         self._operation_groups = tuple([
             OperationGroup(
                 group_ir,
-                filter(lambda x: x.identifier == group_ir.identifier,
-                       self._operations),
+                list(
+                    filter(lambda x: x.identifier == group_ir.identifier,
+                           self._operations)),
                 owner=self) for group_ir in ir.operation_groups
         ])
         self._exposed_constructs = tuple(ir.exposed_constructs)
         self._legacy_window_aliases = tuple(ir.legacy_window_aliases)
         self._indexed_and_named_properties = None
-        indexed_and_named_property_operations = filter(
-            lambda x: x.is_indexed_or_named_property_operation,
-            self._operations)
+        indexed_and_named_property_operations = list(
+            filter(lambda x: x.is_indexed_or_named_property_operation,
+                   self._operations))
         if indexed_and_named_property_operations:
             self._indexed_and_named_properties = IndexedAndNamedProperties(
                 indexed_and_named_property_operations, owner=self)
         self._stringifier = None
-        stringifier_operation_irs = filter(lambda x: x.is_stringifier,
-                                           ir.operations)
+        stringifier_operation_irs = list(
+            filter(lambda x: x.is_stringifier, ir.operations))
         if stringifier_operation_irs:
             assert len(stringifier_operation_irs) == 1
             op_ir = make_copy(stringifier_operation_irs[0])
@@ -231,8 +234,9 @@ class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
             attribute = None
             if operation.stringifier_attribute:
                 attr_id = operation.stringifier_attribute
-                attributes = filter(lambda x: x.identifier == attr_id,
-                                    self._attributes)
+                attributes = list(
+                    filter(lambda x: x.identifier == attr_id,
+                           self._attributes))
                 assert len(attributes) == 1
                 attribute = attributes[0]
             self._stringifier = Stringifier(operation, attribute, owner=self)
@@ -578,8 +582,9 @@ class Iterable(WithDebugInfo):
         self._operation_groups = tuple([
             OperationGroup(
                 group_ir,
-                filter(lambda x: x.identifier == group_ir.identifier,
-                       self._operations),
+                list(
+                    filter(lambda x: x.identifier == group_ir.identifier,
+                           self._operations)),
                 owner=owner) for group_ir in ir.operation_groups
         ])
 
@@ -666,8 +671,9 @@ class Maplike(WithDebugInfo):
         self._operation_groups = tuple([
             OperationGroup(
                 group_ir,
-                filter(lambda x: x.identifier == group_ir.identifier,
-                       self._operations),
+                list(
+                    filter(lambda x: x.identifier == group_ir.identifier,
+                           self._operations)),
                 owner=owner) for group_ir in ir.operation_groups
         ])
 
@@ -755,8 +761,9 @@ class Setlike(WithDebugInfo):
         self._operation_groups = tuple([
             OperationGroup(
                 group_ir,
-                filter(lambda x: x.identifier == group_ir.identifier,
-                       self._operations),
+                list(
+                    filter(lambda x: x.identifier == group_ir.identifier,
+                           self._operations)),
                 owner=owner) for group_ir in ir.operation_groups
         ])
 

@@ -5,8 +5,9 @@
 // clang-format off
 // #import './app_windows.m.js';
 // #import * as wrappedAsyncUtil from '../../common/js/async_util.m.js'; const {AsyncUtil} = wrappedAsyncUtil;
-// #import * as wrappedAppUtil from '../../../base/js/app_util.m.js'; const {appUtil} = wrappedAppUtil;
+// #import * as wrappedAppUtil from '../../common/js/app_util.m.js'; const {appUtil} = wrappedAppUtil;
 // #import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
+// #import {xfm} from '../../common/js/xfm.m.js';
 // clang-format on
 
 /**
@@ -103,7 +104,7 @@
 
       let lastBounds;
       let isMaximized = false;
-      chrome.storage.local.get([boundsKey, maximizedKey], preferences => {
+      xfm.storage.local.get([boundsKey, maximizedKey], preferences => {
         if (!chrome.runtime.lastError) {
           lastBounds = preferences[boundsKey];
           isMaximized = preferences[maximizedKey];
@@ -253,7 +254,7 @@
     // Remember the last window state (maximized or normal).
     const preferences = {};
     preferences[AppWindowWrapper.MAXIMIZED_KEY_] = this.window_.isMaximized();
-    chrome.storage.local.set(preferences);
+    xfm.storage.local.set(preferences);
 
     // Unload the window.
     const appWindow = this.window_;
@@ -270,7 +271,7 @@
         appUtil.AppCache.update(entry.key, entry.value);
       });
     }
-    chrome.storage.local.remove(this.id_);  // Forget the persisted state.
+    xfm.storage.local.remove(this.id_);  // Forget the persisted state.
 
     // Remove the window from the set.
     delete window.appWindows[this.id_];
@@ -285,7 +286,7 @@
       const preferences = {};
       preferences[AppWindowWrapper.makeGeometryKey(this.url_)] =
           this.window_.getBounds();
-      chrome.storage.local.set(preferences);
+      xfm.storage.local.set(preferences);
     }
   }
 }
@@ -369,11 +370,11 @@ AppWindowWrapper.SHIFT_DISTANCE = 40;
   }
 
   /**
-   * Reopen a window if its state is saved in the local storage.
+   * Reopen a window if its state is saved in the local xfm.storage.
    * @param {function()=} opt_callback Completion callback.
    */
   reopen(opt_callback) {
-    chrome.storage.local.get(this.id_, items => {
+    xfm.storage.local.get(this.id_, items => {
       const value = items[this.id_];
       if (!value) {
         opt_callback && opt_callback();

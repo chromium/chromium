@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
+#include "third_party/blink/renderer/core/editing/inline_box_position.h"
 #include "third_party/blink/renderer/core/editing/local_caret_rect.h"
 #include "third_party/blink/renderer/core/editing/ng_flat_tree_shorthands.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
@@ -38,6 +39,8 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/line/inline_box.h"
+#include "third_party/blink/renderer/core/layout/line/root_inline_box.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
@@ -71,6 +74,37 @@ void VisiblePositionTemplate<Strategy>::Trace(Visitor* visitor) const {
 }
 
 template <typename Strategy>
+static inline bool InDifferentLinesOfSameInlineFormattingContext(
+    const PositionWithAffinityTemplate<Strategy>& position1,
+    const PositionWithAffinityTemplate<Strategy>& position2) {
+  DCHECK(position1.IsNotNull());
+  DCHECK(position2.IsNotNull());
+  // Optimization for common cases.
+  if (position1 == position2)
+    return false;
+  // InSameLine may DCHECK that the anchors have a layout object.
+  if (!position1.AnchorNode()->GetLayoutObject() ||
+      !position2.AnchorNode()->GetLayoutObject())
+    return false;
+  // Return false if the positions are in the same line.
+  if (InSameLine(position1, position2))
+    return false;
+  // Return whether the positions are in the same inline formatting context.
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
+    const LayoutBlockFlow* block1 =
+        NGInlineFormattingContextOf(position1.GetPosition());
+    return block1 &&
+           block1 == NGInlineFormattingContextOf(position2.GetPosition());
+  }
+  const InlineBox* inline_box1 = ComputeInlineBoxPosition(position1).inline_box;
+  if (!inline_box1)
+    return false;
+  const InlineBox* inline_box2 = ComputeInlineBoxPosition(position2).inline_box;
+  return inline_box2 &&
+         inline_box1->Root().LineBoxes() == inline_box2->Root().LineBoxes();
+}
+
+template <typename Strategy>
 VisiblePositionTemplate<Strategy> VisiblePositionTemplate<Strategy>::Create(
     const PositionWithAffinityTemplate<Strategy>& position_with_affinity) {
   if (position_with_affinity.IsNull())
@@ -82,55 +116,59 @@ VisiblePositionTemplate<Strategy> VisiblePositionTemplate<Strategy>::Create(
   DocumentLifecycle::DisallowTransitionScope disallow_transition(
       document.Lifecycle());
 
-  // Find the canonical position with a backward preference.
-  const PositionWithAffinityTemplate<Strategy> backward_position =
-      SnapBackward(position_with_affinity.GetPosition());
-  if (backward_position.IsNull())
+  const PositionTemplate<Strategy> deep_position =
+      CanonicalPositionOf(position_with_affinity.GetPosition());
+  if (deep_position.IsNull())
     return VisiblePositionTemplate<Strategy>();
-  const PositionWithAffinityTemplate<Strategy> backward_position_upstream(
-      backward_position.GetPosition(), TextAffinity::kUpstream);
-  const PositionWithAffinityTemplate<Strategy> backward_position_downstream(
-      backward_position.GetPosition(), TextAffinity::kDownstream);
+  const PositionWithAffinityTemplate<Strategy> downstream_position(
+      deep_position);
+  if (position_with_affinity.Affinity() == TextAffinity::kDownstream) {
+    // Fast path for common cases.
+    if (position_with_affinity == downstream_position)
+      return VisiblePositionTemplate<Strategy>(downstream_position);
+
+    // If the canonical position went into a previous line of the same inline
+    // formatting context, use the start of the current line instead.
+    const PositionInFlatTree& flat_deep_position =
+        ToPositionInFlatTree(deep_position);
+    const PositionInFlatTree& flat_position =
+        ToPositionInFlatTree(position_with_affinity.GetPosition());
+    if (flat_deep_position.IsNotNull() && flat_position.IsNotNull() &&
+        flat_deep_position < flat_position &&
+        InDifferentLinesOfSameInlineFormattingContext(position_with_affinity,
+                                                      downstream_position)) {
+      const PositionWithAffinityTemplate<Strategy>& start_of_line =
+          StartOfLine(position_with_affinity);
+      if (start_of_line.IsNull())
+        return VisiblePositionTemplate<Strategy>();
+      return VisiblePositionTemplate<Strategy>(start_of_line);
+    }
+
+    // Otherwise use the canonical position.
+    return VisiblePositionTemplate<Strategy>(downstream_position);
+  }
 
   if (RuntimeEnabledFeatures::BidiCaretAffinityEnabled() &&
-      NGInlineFormattingContextOf(backward_position.GetPosition())) {
-    if (position_with_affinity.Affinity() == TextAffinity::kDownstream)
-      return VisiblePositionTemplate<Strategy>(backward_position_downstream);
+      NGInlineFormattingContextOf(deep_position)) {
     // When not at a line wrap or bidi boundary, make sure to end up with
     // |TextAffinity::Downstream| affinity.
-    if (AbsoluteCaretBoundsOf(backward_position_upstream) ==
-        AbsoluteCaretBoundsOf(backward_position_downstream)) {
-      return VisiblePositionTemplate<Strategy>(backward_position_downstream);
+    const PositionWithAffinityTemplate<Strategy> upstream_position(
+        deep_position, TextAffinity::kUpstream);
+
+    if (AbsoluteCaretBoundsOf(downstream_position) !=
+        AbsoluteCaretBoundsOf(upstream_position)) {
+      return VisiblePositionTemplate<Strategy>(upstream_position);
     }
-    return VisiblePositionTemplate<Strategy>(backward_position_upstream);
+    return VisiblePositionTemplate<Strategy>(downstream_position);
   }
 
-  // Find the canonical position with a forward preference. If backward_position
-  // has a downstream affinity, it means that we couldn't find any backward
-  // candidate, so they must be equal and we can avoid calling SnapForward().
-  // The forward canonical position can't be null because we already checked
-  // that the backward one is not null.
-  const PositionWithAffinityTemplate<Strategy> forward_position =
-      backward_position.Affinity() == TextAffinity::kDownstream
-          ? backward_position
-          : SnapForward(position_with_affinity.GetPosition());
-  DCHECK(forward_position.IsNotNull());
-
-  // Fast path to avoid slow InSameLine() below in common cases.
-  if (position_with_affinity.Affinity() == TextAffinity::kDownstream &&
-      backward_position_downstream == forward_position) {
-    return VisiblePositionTemplate<Strategy>(backward_position_downstream);
-  }
-
-  // When not at a line wrap, make sure to end up with the backward canonical
-  // position with |TextAffinity::Downstream| affinity.
-  if (InSameLine(backward_position_upstream, forward_position))
-    return VisiblePositionTemplate<Strategy>(backward_position_downstream);
-  if (position_with_affinity.Affinity() == TextAffinity::kUpstream)
-    return VisiblePositionTemplate<Strategy>(backward_position_upstream);
-  if (StartOfLine(forward_position).IsNull())
-    return VisiblePositionTemplate<Strategy>(backward_position_downstream);
-  return VisiblePositionTemplate<Strategy>(forward_position);
+  // When not at a line wrap, make sure to end up with
+  // |TextAffinity::Downstream| affinity.
+  const PositionWithAffinityTemplate<Strategy> upstream_position(
+      deep_position, TextAffinity::kUpstream);
+  if (InSameLine(downstream_position, upstream_position))
+    return VisiblePositionTemplate<Strategy>(downstream_position);
+  return VisiblePositionTemplate<Strategy>(upstream_position);
 }
 
 template <typename Strategy>

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/gfx/image/image.h"
 
 namespace gfx {
@@ -20,14 +19,14 @@ struct SharingApp {
  public:
   SharingApp(const gfx::VectorIcon* vector_icon,
              const gfx::Image& image,
-             base::string16 name,
+             std::u16string name,
              std::string identifier);
   SharingApp(SharingApp&& other);
   ~SharingApp();
 
   const gfx::VectorIcon* vector_icon = nullptr;
   gfx::Image image;
-  base::string16 name;
+  std::u16string name;
   std::string identifier;
 
  private:

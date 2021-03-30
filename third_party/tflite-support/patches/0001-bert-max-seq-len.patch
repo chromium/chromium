@@ -1,0 +1,25 @@
+From 49cd597b3c1fbfef2e3772682aa98575654131ba Mon Sep 17 00:00:00 2001
+From: Sophie Chang <sophiechang@chromium.org>
+Date: Mon, 1 Mar 2021 19:33:21 +0000
+Subject: [PATCH] allow for more tokens
+
+---
+ .../cc/task/text/nlclassifier/bert_nl_classifier.h              | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/third_party/tflite-support/src/tensorflow_lite_support/cc/task/text/nlclassifier/bert_nl_classifier.h b/third_party/tflite-support/src/tensorflow_lite_support/cc/task/text/nlclassifier/bert_nl_classifier.h
+index cd5c5a3ade03..e78085d98761 100644
+--- a/third_party/tflite-support/src/tensorflow_lite_support/cc/task/text/nlclassifier/bert_nl_classifier.h
++++ b/third_party/tflite-support/src/tensorflow_lite_support/cc/task/text/nlclassifier/bert_nl_classifier.h
+@@ -52,7 +52,7 @@ class BertNLClassifier : public NLClassifier {
+  public:
+   using NLClassifier::NLClassifier;
+   // Max number of tokens to pass to the model.
+-  static constexpr int kMaxSeqLen = 128;
++  static constexpr int kMaxSeqLen = 512;
+ 
+   // Factory function to create a BertNLClassifier from TFLite model with
+   // metadata.
+-- 
+2.30.1.766.gb4fecdf3b7-goog
+

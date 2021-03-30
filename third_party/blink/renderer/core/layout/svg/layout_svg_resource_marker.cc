@@ -53,10 +53,14 @@ void LayoutSVGResourceMarker::UpdateLayout() {
   ClearInvalidationMask();
 }
 
+bool LayoutSVGResourceMarker::FindCycleFromSelf() const {
+  NOT_DESTROYED();
+  return FindCycleInSubtree(*this);
+}
+
 void LayoutSVGResourceMarker::RemoveAllClientsFromCache() {
   NOT_DESTROYED();
-  MarkAllClientsForInvalidation(SVGResourceClient::kLayoutInvalidation |
-                                SVGResourceClient::kBoundariesInvalidation);
+  MarkAllClientsForInvalidation(kLayoutInvalidation | kBoundariesInvalidation);
 }
 
 FloatRect LayoutSVGResourceMarker::MarkerBoundaries(

@@ -4,6 +4,8 @@
 
 #include "ash/public/cpp/system_tray_test_api.h"
 
+#include <string>
+
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/accessibility/select_to_speak_tray.h"
@@ -13,7 +15,6 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
-#include "base/strings/string16.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view.h"
@@ -48,7 +49,7 @@ bool SystemTrayTestApi::IsTrayBubbleExpanded() {
 }
 
 void SystemTrayTestApi::ShowBubble() {
-  GetTray()->ShowBubble(false /* show_by_click */);
+  GetTray()->ShowBubble();
 }
 
 void SystemTrayTestApi::CloseBubble() {
@@ -64,18 +65,18 @@ void SystemTrayTestApi::ExpandBubble() {
 }
 
 void SystemTrayTestApi::ShowAccessibilityDetailedView() {
-  GetTray()->ShowBubble(false /* show_by_click */);
+  GetTray()->ShowBubble();
   GetTray()->bubble_->controller_->ShowAccessibilityDetailedView();
 }
 
 void SystemTrayTestApi::ShowNetworkDetailedView() {
-  GetTray()->ShowBubble(false /* show_by_click */);
+  GetTray()->ShowBubble();
   GetTray()->bubble_->controller_->ShowNetworkDetailedView(true /* force */);
 }
 
 bool SystemTrayTestApi::IsBubbleViewVisible(int view_id, bool open_tray) {
   if (open_tray)
-    GetTray()->ShowBubble(false /* show_by_click */);
+    GetTray()->ShowBubble();
   views::View* view = GetBubbleView(view_id);
   return view && view->GetVisible();
 }
@@ -92,14 +93,14 @@ void SystemTrayTestApi::ClickBubbleView(int view_id) {
   }
 }
 
-base::string16 SystemTrayTestApi::GetBubbleViewTooltip(int view_id) {
+std::u16string SystemTrayTestApi::GetBubbleViewTooltip(int view_id) {
   views::View* view = GetBubbleView(view_id);
-  return view ? view->GetTooltipText(gfx::Point()) : base::string16();
+  return view ? view->GetTooltipText(gfx::Point()) : std::u16string();
 }
 
-base::string16 SystemTrayTestApi::GetBubbleViewText(int view_id) {
+std::u16string SystemTrayTestApi::GetBubbleViewText(int view_id) {
   views::View* view = GetBubbleView(view_id);
-  return view ? static_cast<views::Label*>(view)->GetText() : base::string16();
+  return view ? static_cast<views::Label*>(view)->GetText() : std::u16string();
 }
 
 bool SystemTrayTestApi::Is24HourClock() {

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests to ensure column names are matching data.\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
   await TestRunner.evaluateInPagePromise(`
       function sendXHRRequest() {

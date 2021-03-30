@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "build/build_config.h"
@@ -51,7 +50,7 @@ struct CachedServerCardInfo {
   // An unmasked CreditCard.
   CreditCard card;
 
-  base::string16 cvc;
+  std::u16string cvc;
 
   // Number of times this card was accessed from the cache.
   int cache_uses = 0;
@@ -72,7 +71,7 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
     virtual void OnCreditCardFetched(
         bool did_succeed,
         const CreditCard* credit_card = nullptr,
-        const base::string16& cvc = base::string16()) = 0;
+        const std::u16string& cvc = std::u16string()) = 0;
   };
 
   CreditCardAccessManager(
@@ -95,8 +94,8 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   // Returns true if the |card| is deletable. Fills out
   // |title| and |body| with relevant user-facing text.
   bool GetDeletionConfirmationText(const CreditCard* card,
-                                   base::string16* title,
-                                   base::string16* body);
+                                   std::u16string* title,
+                                   std::u16string* body);
 
   // Returns false only if some form of authentication is still in progress.
   bool ShouldClearPreviewedForm();
@@ -130,7 +129,7 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   // Caches CreditCard and corresponding CVC for unmasked card so that
   // card info can later be filled without attempting to auth again.
   // TODO(crbug/1069929): Add browsertests for this.
-  void CacheUnmaskedCardInfo(const CreditCard& card, const base::string16& cvc);
+  void CacheUnmaskedCardInfo(const CreditCard& card, const std::u16string& cvc);
 
   CreditCardCVCAuthenticator* GetOrCreateCVCAuthenticator();
 
@@ -198,7 +197,7 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   void OnFIDOAuthenticationComplete(
       bool did_succeed,
       const CreditCard* card = nullptr,
-      const base::string16& cvc = base::string16()) override;
+      const std::u16string& cvc = std::u16string()) override;
   void OnFidoAuthorizationComplete(bool did_succeed) override;
 #endif
 
@@ -313,7 +312,7 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   // When authorizing a new card, the CVC will be temporarily stored after the
   // first CVC check, and then will be used to fill the form after FIDO
   // authentication is complete.
-  base::string16 cvc_ = base::string16();
+  std::u16string cvc_ = std::u16string();
 
   // Set to true only if user has a verifying platform authenticator.
   // e.g. Touch/Face ID, Windows Hello, Android fingerprint, etc., is available

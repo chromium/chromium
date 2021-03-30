@@ -40,9 +40,11 @@ namespace sandbox {
 namespace {
 
 bool IsBaselinePolicyAllowed(int sysno) {
+  // clang-format off
   return SyscallSets::IsAllowedAddressSpaceAccess(sysno) ||
          SyscallSets::IsAllowedBasicScheduler(sysno) ||
          SyscallSets::IsAllowedEpoll(sysno) ||
+         SyscallSets::IsEventFd(sysno) ||
          SyscallSets::IsAllowedFileSystemAccessViaFd(sysno) ||
          SyscallSets::IsAllowedFutex(sysno) ||
          SyscallSets::IsAllowedGeneralIo(sysno) ||
@@ -59,6 +61,7 @@ bool IsBaselinePolicyAllowed(int sysno) {
          SyscallSets::IsMipsPrivate(sysno) ||
 #endif
          SyscallSets::IsAllowedOperationOnFd(sysno);
+  // clang-format on
 }
 
 // System calls that will trigger the crashing SIGSYS handler.
@@ -68,7 +71,6 @@ bool IsBaselinePolicyWatched(int sysno) {
          SyscallSets::IsAdvancedTimer(sysno) ||
          SyscallSets::IsAsyncIo(sysno) ||
          SyscallSets::IsDebug(sysno) ||
-         SyscallSets::IsEventFd(sysno) ||
          SyscallSets::IsExtendedAttributes(sysno) ||
          SyscallSets::IsFaNotify(sysno) ||
          SyscallSets::IsFsControl(sysno) ||
@@ -157,7 +159,7 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
     return Allow();
 #endif
 
-  if (sysno == __NR_clock_gettime || sysno == __NR_clock_nanosleep) {
+  if (SyscallSets::IsClockApi(sysno)) {
     return RestrictClockID();
   }
 
@@ -191,8 +193,14 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
   }
 #endif
 
-  if (sysno == __NR_futex)
+  if (sysno == __NR_futex
+#if defined(__i386__) || defined(__arm__) || \
+    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
+      || sysno == __NR_futex_time64
+#endif
+  ) {
     return RestrictFutex();
+  }
 
   if (sysno == __NR_set_robust_list)
     return Error(EPERM);
@@ -259,6 +267,12 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
 
   if (SyscallSets::IsKill(sysno)) {
     return RestrictKillTarget(current_pid, sysno);
+  }
+
+  // memfd_create is considered a file system syscall which below will be denied
+  // with fs_denied_errno, we need memfd_create for Mojo shared memory channels.
+  if (sysno == __NR_memfd_create) {
+    return Allow();
   }
 
   if (SyscallSets::IsFileSystem(sysno) ||

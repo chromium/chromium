@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/heap/impl/heap_compact.h"
-
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
@@ -17,46 +15,15 @@
 
 namespace {
 
-enum VerifyArenaCompaction {
-  NoVerify,
-  VectorsAreCompacted,
-  HashTablesAreCompacted,
-};
-
 class IntWrapper : public blink::GarbageCollected<IntWrapper> {
  public:
-  static bool did_verify_at_least_once;
-
-  static IntWrapper* Create(int x, VerifyArenaCompaction verify = NoVerify) {
-    did_verify_at_least_once = false;
-    return blink::MakeGarbageCollected<IntWrapper>(x, verify);
+  static IntWrapper* Create(int x) {
+    return blink::MakeGarbageCollected<IntWrapper>(x);
   }
 
   virtual ~IntWrapper() = default;
 
   void Trace(blink::Visitor* visitor) const {
-    // Verify if compaction is indeed activated.
-
-    // There may be multiple passes over objects during a GC, even after
-    // compaction is finished. Filter out that cases here.
-    if (!visitor->Heap().Compaction()->IsCompacting())
-      return;
-
-    did_verify_at_least_once = true;
-    // What arenas end up being compacted is dependent on residency,
-    // so approximate the arena checks to fit.
-    blink::HeapCompact* compaction = visitor->Heap().Compaction();
-    switch (verify_) {
-      case NoVerify:
-        return;
-      case HashTablesAreCompacted:
-        CHECK(compaction->IsCompactingArena(
-            blink::BlinkGC::kHashTableArenaIndex));
-        return;
-      case VectorsAreCompacted:
-        CHECK(compaction->IsCompactingVectorArenasForTesting());
-        return;
-    }
   }
 
   int Value() const { return x_; }
@@ -67,16 +34,13 @@ class IntWrapper : public blink::GarbageCollected<IntWrapper> {
 
   unsigned GetHash() { return IntHash<int>::GetHash(x_); }
 
-  IntWrapper(int x, VerifyArenaCompaction verify) : x_(x), verify_(verify) {}
+  explicit IntWrapper(int x) : x_(x) {}
 
  private:
   IntWrapper() = delete;
 
   int x_;
-  VerifyArenaCompaction verify_;
 };
-
-bool IntWrapper::did_verify_at_least_once = false;
 
 static_assert(WTF::IsTraceable<IntWrapper>::value,
               "IsTraceable<> template failed to recognize trace method.");
@@ -95,7 +59,7 @@ namespace blink {
 class HeapCompactTest : public TestSupportingGC {
  public:
   void PerformHeapCompaction() {
-    ThreadState::Current()->EnableCompactionForNextGCForTesting();
+    ForceCompactionForNextGC();
     PreciselyCollectGarbage();
   }
 };
@@ -103,7 +67,7 @@ class HeapCompactTest : public TestSupportingGC {
 TEST_F(HeapCompactTest, CompactVector) {
   ClearOutOldGarbage();
 
-  IntWrapper* val = IntWrapper::Create(1, VectorsAreCompacted);
+  IntWrapper* val = IntWrapper::Create(1);
   Persistent<IntVector> vector = MakeGarbageCollected<IntVector>(10, val);
   EXPECT_EQ(10u, vector->size());
 
@@ -121,7 +85,7 @@ TEST_F(HeapCompactTest, CompactHashMap) {
 
   Persistent<IntMap> int_map = MakeGarbageCollected<IntMap>();
   for (wtf_size_t i = 0; i < 100; ++i) {
-    IntWrapper* val = IntWrapper::Create(i, HashTablesAreCompacted);
+    IntWrapper* val = IntWrapper::Create(i);
     int_map->insert(val, 100 - i);
   }
 
@@ -130,7 +94,6 @@ TEST_F(HeapCompactTest, CompactHashMap) {
     EXPECT_EQ(k.key->Value(), 100 - k.value);
 
   PerformHeapCompaction();
-  EXPECT_TRUE(IntWrapper::did_verify_at_least_once);
 
   for (auto k : *int_map)
     EXPECT_EQ(k.key->Value(), 100 - k.value);
@@ -146,7 +109,7 @@ TEST_F(HeapCompactTest, CompactVectorPartHashMap) {
   for (size_t i = 0; i < 10; ++i) {
     IntMap map;
     for (wtf_size_t j = 0; j < 10; ++j) {
-      IntWrapper* val = IntWrapper::Create(j, VectorsAreCompacted);
+      IntWrapper* val = IntWrapper::Create(j);
       map.insert(val, 10 - j);
     }
     int_map_vector->push_back(map);
@@ -161,7 +124,6 @@ TEST_F(HeapCompactTest, CompactVectorPartHashMap) {
   }
 
   PerformHeapCompaction();
-  EXPECT_TRUE(IntWrapper::did_verify_at_least_once);
 
   EXPECT_EQ(10u, int_map_vector->size());
   for (auto map : *int_map_vector) {
@@ -182,7 +144,7 @@ TEST_F(HeapCompactTest, CompactHashPartVector) {
   for (wtf_size_t i = 0; i < 10; ++i) {
     IntVector* vector = MakeGarbageCollected<IntVector>();
     for (wtf_size_t j = 0; j < 10; ++j) {
-      vector->push_back(IntWrapper::Create(j, HashTablesAreCompacted));
+      vector->push_back(IntWrapper::Create(j));
     }
     int_vector_map->insert(1 + i, vector);
   }
@@ -196,7 +158,6 @@ TEST_F(HeapCompactTest, CompactHashPartVector) {
   }
 
   PerformHeapCompaction();
-  EXPECT_TRUE(IntWrapper::did_verify_at_least_once);
 
   EXPECT_EQ(10u, int_vector_map->size());
   for (const IntVector* int_vector : int_vector_map->Values()) {
@@ -210,7 +171,7 @@ TEST_F(HeapCompactTest, CompactHashPartVector) {
 TEST_F(HeapCompactTest, CompactDeques) {
   Persistent<IntDeque> deque = MakeGarbageCollected<IntDeque>();
   for (int i = 0; i < 8; ++i) {
-    deque->push_front(IntWrapper::Create(i, VectorsAreCompacted));
+    deque->push_front(IntWrapper::Create(i));
   }
   EXPECT_EQ(8u, deque->size());
 
@@ -218,7 +179,6 @@ TEST_F(HeapCompactTest, CompactDeques) {
     EXPECT_EQ(static_cast<int>(7 - i), deque->at(i)->Value());
 
   PerformHeapCompaction();
-  EXPECT_TRUE(IntWrapper::did_verify_at_least_once);
 
   for (wtf_size_t i = 0; i < deque->size(); ++i)
     EXPECT_EQ(static_cast<int>(7 - i), deque->at(i)->Value());
@@ -228,7 +188,7 @@ TEST_F(HeapCompactTest, CompactLinkedHashSet) {
   using OrderedHashSet = HeapLinkedHashSet<Member<IntWrapper>>;
   Persistent<OrderedHashSet> set = MakeGarbageCollected<OrderedHashSet>();
   for (int i = 0; i < 13; ++i) {
-    IntWrapper* value = IntWrapper::Create(i, HashTablesAreCompacted);
+    IntWrapper* value = IntWrapper::Create(i);
     set->insert(value);
   }
   EXPECT_EQ(13u, set->size());
@@ -255,7 +215,6 @@ TEST_F(HeapCompactTest, CompactLinkedHashSet) {
   }
 
   PerformHeapCompaction();
-  EXPECT_TRUE(IntWrapper::did_verify_at_least_once);
 
   expected = 0;
   for (IntWrapper* v : *set) {
@@ -282,7 +241,6 @@ TEST_F(HeapCompactTest, CompactLinkedHashSetVector) {
   }
 
   PerformHeapCompaction();
-  EXPECT_TRUE(IntWrapper::did_verify_at_least_once);
 
   expected = 0;
   for (IntVector* v : *set) {
@@ -312,7 +270,6 @@ TEST_F(HeapCompactTest, CompactLinkedHashSetMap) {
   }
 
   PerformHeapCompaction();
-  EXPECT_TRUE(IntWrapper::did_verify_at_least_once);
 
   expected = 0;
   for (const Inner* v : *set) {
@@ -343,7 +300,6 @@ TEST_F(HeapCompactTest, CompactLinkedHashSetNested) {
   }
 
   PerformHeapCompaction();
-  EXPECT_TRUE(IntWrapper::did_verify_at_least_once);
 
   expected = 0;
   for (const Inner* v : *set) {
@@ -373,10 +329,9 @@ TEST_F(HeapCompactTest, CompactInlinedBackingStore) {
   {
     // Create a map that is reclaimed during compaction.
     (MakeGarbageCollected<MapWithInlinedBacking>())
-        ->insert(IntWrapper::Create(1, HashTablesAreCompacted),
-                 MakeGarbageCollected<Value>());
+        ->insert(IntWrapper::Create(1), MakeGarbageCollected<Value>());
 
-    IntWrapper* wrapper = IntWrapper::Create(1, HashTablesAreCompacted);
+    IntWrapper* wrapper = IntWrapper::Create(1);
     Value* storage = MakeGarbageCollected<Value>();
     storage->push_front(wrapper);
     map->insert(wrapper, std::move(storage));

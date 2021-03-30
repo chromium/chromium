@@ -24,7 +24,7 @@ class SuggestionsService : public KeyedService {
       base::RepeatingCallback<void(const SuggestionsProfile&)>;
 
   using ResponseCallbackList =
-      base::CallbackList<void(const SuggestionsProfile&)>;
+      base::RepeatingCallbackList<void(const SuggestionsProfile&)>;
 
   // Initiates a network request for suggestions if sync state allows and there
   // is no pending request. Returns true iff sync state allowed for a request,

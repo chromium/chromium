@@ -8,11 +8,11 @@
 
 #include "base/bind.h"
 #include "base/process/process.h"
+#include "base/tracing/perfetto_task_runner.h"
 #include "build/build_config.h"
 #include "services/tracing/perfetto/perfetto_service.h"
 #include "services/tracing/public/cpp/perfetto/producer_client.h"
 #include "services/tracing/public/cpp/perfetto/shared_memory.h"
-#include "services/tracing/public/cpp/perfetto/task_runner.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/commit_data_request.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/data_source_descriptor.h"
@@ -20,7 +20,7 @@
 
 namespace tracing {
 
-ProducerHost::ProducerHost(PerfettoTaskRunner* task_runner)
+ProducerHost::ProducerHost(base::tracing::PerfettoTaskRunner* task_runner)
     : task_runner_(task_runner) {}
 
 ProducerHost::~ProducerHost() {

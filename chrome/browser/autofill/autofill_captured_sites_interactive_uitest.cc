@@ -12,7 +12,6 @@
 #include "base/guid.h"
 #include "base/macros.h"
 #include "base/path_service.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -46,6 +45,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/autofill_util.h"
+#include "components/variations/variations_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
@@ -88,7 +88,7 @@ class AutofillCapturedSitesInteractiveTest
  public:
   // TestRecipeReplayChromeFeatureActionExecutor
   bool AutofillForm(const std::string& focus_element_css_selector,
-                    const std::vector<std::string> iframe_path,
+                    const std::vector<std::string>& iframe_path,
                     const int attempts,
                     content::RenderFrameHost* frame) override {
     content::WebContents* web_contents =
@@ -155,8 +155,7 @@ class AutofillCapturedSitesInteractiveTest
                          base::CompareCase::INSENSITIVE_ASCII)) {
       if (type == autofill::CREDIT_CARD_NAME_FIRST ||
           type == autofill::CREDIT_CARD_NAME_LAST) {
-        card_.SetRawInfo(autofill::CREDIT_CARD_NAME_FULL,
-                         base::ASCIIToUTF16(""));
+        card_.SetRawInfo(autofill::CREDIT_CARD_NAME_FULL, u"");
       }
       card_.SetRawInfo(type, base::UTF8ToUTF16(field_value));
     } else {
@@ -238,6 +237,8 @@ class AutofillCapturedSitesInteractiveTest
         /*enabled_features=*/{features::kAutofillShowTypePredictions},
         /*disabled_features=*/{features::kAutofillCacheQueryResponses});
     command_line->AppendSwitch(switches::kShowAutofillTypePredictions);
+    command_line->AppendSwitchASCII(
+        variations::switches::kVariationsOverrideCountry, "us");
     command_line->AppendSwitchASCII(::switches::kForceFieldTrials, "Foo/Bar");
 
     captured_sites_test_utils::TestRecipeReplayer::SetUpCommandLine(
@@ -302,6 +303,9 @@ class AutofillCapturedSitesInteractiveTest
 };
 
 IN_PROC_BROWSER_TEST_P(AutofillCapturedSitesInteractiveTest, Recipe) {
+  captured_sites_test_utils::PrintInstructions(
+      "autofill_captured_sites_interactive_uitest");
+
   // Prints the path of the test to be executed.
   VLOG(1) << GetParam().site_name;
 
@@ -309,7 +313,8 @@ IN_PROC_BROWSER_TEST_P(AutofillCapturedSitesInteractiveTest, Recipe) {
   ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &src_dir));
 
   bool test_completed = recipe_replayer()->ReplayTest(
-      GetParam().capture_file_path, GetParam().recipe_file_path);
+      GetParam().capture_file_path, GetParam().recipe_file_path,
+      captured_sites_test_utils::GetCommandFilePath());
   if (!test_completed)
     ADD_FAILURE() << "Full execution was unable to complete.";
 

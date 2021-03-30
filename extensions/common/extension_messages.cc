@@ -27,6 +27,8 @@ using extensions::ManifestPermission;
 using extensions::ManifestPermissionSet;
 using extensions::PermissionSet;
 using extensions::URLPatternSet;
+using extensions::mojom::APIPermissionID;
+using extensions::mojom::ManifestLocation;
 
 ExtensionMsg_PermissionSetStruct::ExtensionMsg_PermissionSetStruct() {
 }
@@ -55,7 +57,7 @@ ExtensionMsg_PermissionSetStruct::ToPermissionSet() const {
 }
 
 ExtensionMsg_Loaded_Params::ExtensionMsg_Loaded_Params()
-    : location(Manifest::INVALID_LOCATION),
+    : location(ManifestLocation::kInvalidLocation),
       creation_flags(Extension::NO_FLAGS) {}
 
 ExtensionMsg_Loaded_Params::~ExtensionMsg_Loaded_Params() {}
@@ -79,7 +81,8 @@ ExtensionMsg_Loaded_Params::ExtensionMsg_Loaded_Params(
           extension->permissions_data()->UsesDefaultPolicyHostRestrictions()),
       id(extension->id()),
       worker_activation_sequence(worker_activation_sequence),
-      creation_flags(extension->creation_flags()) {
+      creation_flags(extension->creation_flags()),
+      guid(extension->guid()) {
   if (include_tab_permissions) {
     for (const auto& pair :
          extension->permissions_data()->tab_specific_permissions()) {
@@ -117,6 +120,7 @@ scoped_refptr<Extension> ExtensionMsg_Loaded_Params::ConvertToExtension(
       permissions_data->UpdateTabSpecificPermissions(
           pair.first, *pair.second.ToPermissionSet());
     }
+    extension->SetGUID(guid);
   }
   return extension;
 }
@@ -215,7 +219,8 @@ bool ParamTraits<APIPermissionSet>::Read(const base::Pickle* m,
     if (!ReadParam(m, iter, &id))
       return false;
     const APIPermissionInfo* permission_info =
-      extensions::PermissionsInfo::GetInstance()->GetByID(id);
+        extensions::PermissionsInfo::GetInstance()->GetByID(
+            static_cast<APIPermissionID>(id));
     if (!permission_info)
       return false;
     std::unique_ptr<APIPermission> p(permission_info->CreateAPIPermission());
@@ -268,30 +273,6 @@ void ParamTraits<ManifestPermissionSet>::Log(
   LogParam(p.map(), l);
 }
 
-void ParamTraits<HostID>::Write(base::Pickle* m, const param_type& p) {
-  WriteParam(m, p.type());
-  WriteParam(m, p.id());
-}
-
-bool ParamTraits<HostID>::Read(const base::Pickle* m,
-                               base::PickleIterator* iter,
-                               param_type* r) {
-  HostID::HostType type;
-  std::string id;
-  if (!ReadParam(m, iter, &type))
-    return false;
-  if (!ReadParam(m, iter, &id))
-    return false;
-  *r = HostID(type, id);
-  return true;
-}
-
-void ParamTraits<HostID>::Log(
-    const param_type& p, std::string* l) {
-  LogParam(p.type(), l);
-  LogParam(p.id(), l);
-}
-
 void ParamTraits<ExtensionMsg_PermissionSetStruct>::Write(base::Pickle* m,
                                                           const param_type& p) {
   WriteParam(m, p.apis);
@@ -332,6 +313,7 @@ void ParamTraits<ExtensionMsg_Loaded_Params>::Write(base::Pickle* m,
   WriteParam(m, p.policy_allowed_hosts);
   WriteParam(m, p.uses_default_policy_blocked_allowed_hosts);
   WriteParam(m, p.worker_activation_sequence);
+  WriteParam(m, p.guid);
 }
 
 bool ParamTraits<ExtensionMsg_Loaded_Params>::Read(const base::Pickle* m,
@@ -347,7 +329,8 @@ bool ParamTraits<ExtensionMsg_Loaded_Params>::Read(const base::Pickle* m,
          ReadParam(m, iter, &p->policy_blocked_hosts) &&
          ReadParam(m, iter, &p->policy_allowed_hosts) &&
          ReadParam(m, iter, &p->uses_default_policy_blocked_allowed_hosts) &&
-         ReadParam(m, iter, &p->worker_activation_sequence);
+         ReadParam(m, iter, &p->worker_activation_sequence) &&
+         ReadParam(m, iter, &p->guid);
 }
 
 void ParamTraits<ExtensionMsg_Loaded_Params>::Log(const param_type& p,

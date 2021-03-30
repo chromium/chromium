@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -32,12 +33,15 @@ public class CurrentTabObserverTest {
     @Mock
     private TabObserver mTabObserver;
 
+    @Mock
+    private Callback<Tab> mSwapCallback;
+
     @Before
     public void beforeTest() {
         MockitoAnnotations.initMocks(this);
 
         mTabSupplier = new ObservableSupplierImpl<>();
-        mCurrentTabObserver = new CurrentTabObserver(mTabSupplier, mTabObserver);
+        mCurrentTabObserver = new CurrentTabObserver(mTabSupplier, mTabObserver, mSwapCallback);
     }
 
     @Test
@@ -65,5 +69,25 @@ public class CurrentTabObserverTest {
 
         mTabSupplier.set(null);
         verify(mTab2).removeObserver(mTabObserver);
+    }
+
+    @Test
+    public void testSwapCallback() {
+        // When the current tab is swapped, |mSwapCallback| should be notified.
+        mTabSupplier.set(mTab);
+        verify(mSwapCallback).onResult(mTab);
+    }
+
+    @Test
+    public void testNullSwapCallback() {
+        mCurrentTabObserver.destroy();
+
+        // Null swap callback for CurrentTabObserver should just work without crashing.
+        mCurrentTabObserver =
+                new CurrentTabObserver(mTabSupplier, mTabObserver, /* swapCallback=*/null);
+        mTabSupplier.set(mTab);
+        verify(mTab).addObserver(mTabObserver);
+        mTabSupplier.set(null);
+        verify(mTab).removeObserver(mTabObserver);
     }
 }

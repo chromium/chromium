@@ -6,8 +6,9 @@
 
 #include <stddef.h>
 
+#include <string>
+
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -202,7 +203,7 @@ class AutofillTypeValidationTest
     : public testing::TestWithParam<ValidationCase> {};
 
 TEST_P(AutofillTypeValidationTest, IsValidForType) {
-  base::string16 error_message;
+  std::u16string error_message;
   EXPECT_EQ(GetParam().expected_valid,
             IsValidForType(ASCIIToUTF16(GetParam().value),
                            GetParam().field_type, &error_message))
@@ -361,7 +362,7 @@ class AutofillCCNumberValidationTest
     : public testing::TestWithParam<CCNumberCase> {};
 
 TEST_P(AutofillCCNumberValidationTest, IsValidCreditCardNumber) {
-  base::string16 error_message;
+  std::u16string error_message;
   EXPECT_EQ(GetParam().expected_valid,
             IsValidCreditCardNumberForBasicCardNetworks(
                 ASCIIToUTF16(GetParam().value),
@@ -525,14 +526,10 @@ INSTANTIATE_TEST_SUITE_P(UPIVirtualPaymentAddress,
                                          "ybl"));
 
 TEST(AutofillValidation, IsUPIVirtualPaymentAddress_Others) {
-  EXPECT_TRUE(
-      IsUPIVirtualPaymentAddress(ASCIIToUTF16("12345@HDFC0000001.ifsc.npci")));
-  EXPECT_TRUE(
-      IsUPIVirtualPaymentAddress(ASCIIToUTF16("234567890123@aadhaar.npci")));
-  EXPECT_TRUE(
-      IsUPIVirtualPaymentAddress(ASCIIToUTF16("9800011111@mobile.npci")));
-  EXPECT_TRUE(
-      IsUPIVirtualPaymentAddress(ASCIIToUTF16("1234123412341234@rupay.npci")));
+  EXPECT_TRUE(IsUPIVirtualPaymentAddress(u"12345@HDFC0000001.ifsc.npci"));
+  EXPECT_TRUE(IsUPIVirtualPaymentAddress(u"234567890123@aadhaar.npci"));
+  EXPECT_TRUE(IsUPIVirtualPaymentAddress(u"9800011111@mobile.npci"));
+  EXPECT_TRUE(IsUPIVirtualPaymentAddress(u"1234123412341234@rupay.npci"));
 }
 
 class AutofillIsInternationalBankAccountNumber

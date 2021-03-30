@@ -25,8 +25,9 @@ class WPTManifestUnitTest(unittest.TestCase):
 
         self.assertEqual(host.executive.calls, [[
             'python3',
-            '/mock-checkout/third_party/blink/tools/blinkpy/third_party/wpt/wpt/wpt',
+            '/mock-checkout/third_party/wpt_tools/wpt/wpt',
             'manifest',
+            '-v',
             '--no-download',
             '--tests-root',
             WEB_TEST_DIR + '/external/wpt',
@@ -48,8 +49,9 @@ class WPTManifestUnitTest(unittest.TestCase):
 
         self.assertEqual(host.executive.calls, [[
             'python3',
-            '/mock-checkout/third_party/blink/tools/blinkpy/third_party/wpt/wpt/wpt',
+            '/mock-checkout/third_party/wpt_tools/wpt/wpt',
             'manifest',
+            '-v',
             '--no-download',
             '--tests-root',
             WEB_TEST_DIR + '/external/wpt',
@@ -69,8 +71,9 @@ class WPTManifestUnitTest(unittest.TestCase):
         WPTManifest.ensure_manifest(port, 'wpt_internal')
         self.assertEqual(host.executive.calls, [[
             'python3',
-            '/mock-checkout/third_party/blink/tools/blinkpy/third_party/wpt/wpt/wpt',
+            '/mock-checkout/third_party/wpt_tools/wpt/wpt',
             'manifest',
+            '-v',
             '--no-download',
             '--tests-root',
             WEB_TEST_DIR + '/wpt_internal',

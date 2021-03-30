@@ -146,7 +146,8 @@ SANDBOX_TEST(Credentials, CanDetectRoot) {
 }
 
 // Disabled on ASAN because of crbug.com/451603.
-SANDBOX_TEST(Credentials, DISABLE_ON_ASAN(DropFileSystemAccessIsSafe)) {
+// Disabled on MSAN due to crbug.com/1180105
+SANDBOX_TEST(Credentials, DISABLE_ON_SANITIZERS(DropFileSystemAccessIsSafe)) {
   CHECK(Credentials::HasFileSystemAccess());
   CHECK(Credentials::DropAllCapabilities());
   // Probably missing kernel support.
@@ -162,7 +163,8 @@ SANDBOX_TEST(Credentials, DISABLE_ON_ASAN(DropFileSystemAccessIsSafe)) {
 
 // Check that after dropping filesystem access and dropping privileges
 // it is not possible to regain capabilities.
-SANDBOX_TEST(Credentials, DISABLE_ON_ASAN(CannotRegainPrivileges)) {
+// Disabled on MSAN due to crbug.com/1180105
+SANDBOX_TEST(Credentials, DISABLE_ON_SANITIZERS(CannotRegainPrivileges)) {
   base::ScopedFD proc_fd(ProcUtil::OpenProc());
   CHECK(Credentials::DropAllCapabilities(proc_fd.get()));
   // Probably missing kernel support.
@@ -251,7 +253,9 @@ void SignalHandler(int sig) {
 // glibc (and some other libcs) caches the PID and TID in TLS. This test
 // verifies that these values are correct after DropFilesystemAccess.
 // Disabled on ASAN because of crbug.com/451603.
-SANDBOX_TEST(Credentials, DISABLE_ON_ASAN(DropFileSystemAccessPreservesTLS)) {
+// Disabled on MSAN due to crbug.com/1180105
+SANDBOX_TEST(Credentials,
+             DISABLE_ON_SANITIZERS(DropFileSystemAccessPreservesTLS)) {
   // Probably missing kernel support.
   if (!Credentials::MoveToNewUserNS()) return;
   CHECK(Credentials::DropFileSystemAccess(ProcUtil::OpenProc().get()));

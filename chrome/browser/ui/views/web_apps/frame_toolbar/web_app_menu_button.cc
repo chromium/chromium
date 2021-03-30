@@ -23,11 +23,12 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/window/hit_test_utils.h"
 
 WebAppMenuButton::WebAppMenuButton(BrowserView* browser_view,
-                                   base::string16 accessible_name)
+                                   std::u16string accessible_name)
     : AppMenuButton(base::BindRepeating(&WebAppMenuButton::ButtonPressed,
                                         base::Unretained(this))),
       browser_view_(browser_view) {
@@ -36,7 +37,7 @@ WebAppMenuButton::WebAppMenuButton(BrowserView* browser_view,
   SetInkDropMode(InkDropMode::ON);
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
-  base::string16 application_name = accessible_name;
+  std::u16string application_name = accessible_name;
   if (application_name.empty() && browser_view->browser()->app_controller()) {
     application_name =
         browser_view->browser()->app_controller()->GetAppShortName();
@@ -57,9 +58,16 @@ WebAppMenuButton::WebAppMenuButton(BrowserView* browser_view,
 WebAppMenuButton::~WebAppMenuButton() = default;
 
 void WebAppMenuButton::SetColor(SkColor color) {
+  if (color_ == color)
+    return;
+  color_ = color;
   SetImageModel(views::Button::STATE_NORMAL,
                 ui::ImageModel::FromVectorIcon(kBrowserToolsIcon, color));
-  ink_drop_color_ = color;
+  OnPropertyChanged(&color_, views::kPropertyEffectsNone);
+}
+
+SkColor WebAppMenuButton::GetColor() const {
+  return color_;
 }
 
 void WebAppMenuButton::StartHighlightAnimation() {
@@ -88,7 +96,7 @@ void WebAppMenuButton::ButtonPressed(const ui::Event& event) {
 }
 
 SkColor WebAppMenuButton::GetInkDropBaseColor() const {
-  return ink_drop_color_;
+  return GetColor();
 }
 
 void WebAppMenuButton::FadeHighlightOff() {
@@ -100,6 +108,6 @@ void WebAppMenuButton::FadeHighlightOff() {
   }
 }
 
-const char* WebAppMenuButton::GetClassName() const {
-  return "WebAppMenuButton";
-}
+BEGIN_METADATA(WebAppMenuButton, AppMenuButton)
+ADD_PROPERTY_METADATA(SkColor, Color, views::metadata::SkColorConverter)
+END_METADATA

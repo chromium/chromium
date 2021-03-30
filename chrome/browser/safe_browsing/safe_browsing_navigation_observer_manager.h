@@ -18,6 +18,10 @@
 
 class Profile;
 
+namespace content {
+class NavigationHandle;
+}
+
 namespace safe_browsing {
 
 class SafeBrowsingNavigationObserver;
@@ -86,6 +90,14 @@ struct NavigationEventList {
                                        const GURL& target_main_frame_url,
                                        SessionID target_tab_id);
 
+  // Finds the the navigation event in the |pending_navigation_events_| map that
+  // has the same destination URL as the |target_url|. If there are multiple
+  // matches, returns the one with the latest updated time.
+  // TODO(crbug.com/1161342): This function is currently only called in tests.
+  // It will be used when a new API IdentifyPendingReferrerChainByEventURL is
+  // added.
+  NavigationEvent* FindPendingNavigationEvent(const GURL& target_url);
+
   // Finds the most recent retargeting NavigationEvent that satisfies the
   // |target_tab_id|.
   NavigationEvent* FindRetargetingNavigationEvent(
@@ -94,11 +106,27 @@ struct NavigationEventList {
 
   void RecordNavigationEvent(std::unique_ptr<NavigationEvent> nav_event);
 
+  void RecordPendingNavigationEvent(
+      content::NavigationHandle* navigation_handle,
+      std::unique_ptr<NavigationEvent> nav_event);
+
+  void AddRedirectUrlToPendingNavigationEvent(
+      content::NavigationHandle* navigation_handle,
+      const GURL& server_redirect_url);
+
+  void RemovePendingNavigationEvent(
+      content::NavigationHandle* navigation_handle);
+
   // Removes stale NavigationEvents and return the number of items removed.
   std::size_t CleanUpNavigationEvents();
 
+  // TODO(crbug.com/1161342): Rename this function to NavigationEventsSize.
   std::size_t Size() { return navigation_events_.size(); }
+  std::size_t PendingNavigationEventsSize() {
+    return pending_navigation_events_.size();
+  }
 
+  // TODO(crbug.com/1161342): Rename this function to GetNavigationEvent.
   NavigationEvent* Get(std::size_t index) {
     return navigation_events_[index].get();
   }
@@ -108,8 +136,19 @@ struct NavigationEventList {
     return navigation_events_;
   }
 
+  const base::flat_map<content::NavigationHandle*,
+                       std::unique_ptr<NavigationEvent>>&
+  pending_navigation_events() {
+    return pending_navigation_events_;
+  }
+
  private:
   base::circular_deque<std::unique_ptr<NavigationEvent>> navigation_events_;
+  // A map of pending navigation events. They are added when the navigation
+  // starts and removed when the navigation is finished.
+  base::flat_map<content::NavigationHandle*, std::unique_ptr<NavigationEvent>>
+      pending_navigation_events_;
+
   const std::size_t size_limit_;
 };
 
@@ -143,7 +182,14 @@ class SafeBrowsingNavigationObserverManager
 
   // Adds |nav_event| to |navigation_event_list_|. Object pointed to by
   // |nav_event| will be no longer accessible after this function.
-  void RecordNavigationEvent(std::unique_ptr<NavigationEvent> nav_event);
+  void RecordNavigationEvent(content::NavigationHandle* navigation_handle,
+                             std::unique_ptr<NavigationEvent> nav_event);
+  void RecordPendingNavigationEvent(
+      content::NavigationHandle* navigation_handle,
+      std::unique_ptr<NavigationEvent> nav_event);
+  void AddRedirectUrlToPendingNavigationEvent(
+      content::NavigationHandle* navigation_handle,
+      const GURL& server_redirect_url);
   void RecordUserGestureForWebContents(content::WebContents* web_contents);
   void OnUserGestureConsumed(content::WebContents* web_contents);
   bool HasUserGesture(content::WebContents* web_contents);
@@ -157,15 +203,29 @@ class SafeBrowsingNavigationObserverManager
   // addresses that are older than kNavigationFootprintTTLInSecond.
   void CleanUpStaleNavigationFootprints();
 
-  // Based on the |target_url| and |target_tab_id|, traces back the observed
+  // Based on the |event_url| and |event_tab_id|, traces back the observed
   // NavigationEvents in navigation_event_list_ to identify the sequence of
   // navigations leading to the target, with the coverage limited to
   // |user_gesture_count_limit| number of user gestures. Then converts these
-  // identified NavigationEvents into ReferrerChainEntrys and append them to
+  // identified NavigationEvents into ReferrerChainEntrys and appends them to
   // |out_referrer_chain|.
   AttributionResult IdentifyReferrerChainByEventURL(
       const GURL& event_url,
       SessionID event_tab_id,  // Invalid if tab id is unknown or not available.
+      int user_gesture_count_limit,
+      ReferrerChain* out_referrer_chain) override;
+
+  // Based on the |event_url|, traces back the observed PendingNavigationEvents
+  // and NavigationEvents in navigation_event_list_ to identify the sequence of
+  // navigations leading to the |event_url|, with the coverage limited to
+  // |user_gesture_count_limit| number of user gestures. Then converts these
+  // identified NavigationEvents into ReferrerChainEntrys and appends them to
+  // |out_referrer_chain|.
+  // Note that the first entry of the ReferrerChainEntrys is matched against the
+  // PendingNavigationEvents, and the remaining entries are matched against the
+  // NavigationEvents.
+  AttributionResult IdentifyReferrerChainByPendingEventURL(
+      const GURL& event_url,
       int user_gesture_count_limit,
       ReferrerChain* out_referrer_chain) override;
 
@@ -174,7 +234,7 @@ class SafeBrowsingNavigationObserverManager
   // sequence of navigations leading to the event hosting page, with the
   // coverage limited to |user_gesture_count_limit| number of user gestures.
   // Then converts these identified NavigationEvents into ReferrerChainEntrys
-  // and append them to |out_referrer_chain|.
+  // and appends them to |out_referrer_chain|.
   AttributionResult IdentifyReferrerChainByWebContents(
       content::WebContents* web_contents,
       int user_gesture_count_limit,
@@ -199,8 +259,7 @@ class SafeBrowsingNavigationObserverManager
   // Records the creation of a new WebContents by |source_web_contents|. This is
   // used to detect cross-frame and cross-tab navigations.
   void RecordNewWebContents(content::WebContents* source_web_contents,
-                            int source_render_process_id,
-                            int source_render_frame_id,
+                            content::RenderFrameHost* source_render_frame_host,
                             const GURL& target_url,
                             ui::PageTransition page_transition,
                             content::WebContents* target_web_contents,
@@ -222,6 +281,7 @@ class SafeBrowsingNavigationObserverManager
   friend class TestNavigationObserverManager;
   friend class SBNavigationObserverBrowserTest;
   friend class SBNavigationObserverTest;
+  friend class ClientSideDetectionDelegateTest;
 
   struct GurlHash {
     std::size_t operator()(const GURL& url) const {

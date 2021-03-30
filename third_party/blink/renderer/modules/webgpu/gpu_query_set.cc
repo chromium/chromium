@@ -37,20 +37,15 @@ GPUQuerySet* GPUQuerySet::Create(GPUDevice* device,
     dawn_desc.label = label.c_str();
   }
 
-  return MakeGarbageCollected<GPUQuerySet>(
+  GPUQuerySet* query_set = MakeGarbageCollected<GPUQuerySet>(
       device,
       device->GetProcs().deviceCreateQuerySet(device->GetHandle(), &dawn_desc));
+  query_set->setLabel(webgpu_desc->label());
+  return query_set;
 }
 
 GPUQuerySet::GPUQuerySet(GPUDevice* device, WGPUQuerySet querySet)
     : DawnObject<WGPUQuerySet>(device, querySet) {}
-
-GPUQuerySet::~GPUQuerySet() {
-  if (IsDawnControlClientDestroyed()) {
-    return;
-  }
-  GetProcs().querySetRelease(GetHandle());
-}
 
 void GPUQuerySet::destroy() {
   GetProcs().querySetDestroy(GetHandle());

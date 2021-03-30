@@ -15,7 +15,7 @@
 #include "base/observer_list_types.h"
 #include "base/optional.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/chromeos/authpolicy/kerberos_files_handler.h"
+#include "chrome/browser/ash/authpolicy/kerberos_files_handler.h"
 #include "chromeos/dbus/kerberos/kerberos_service.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/policy_namespace.h"

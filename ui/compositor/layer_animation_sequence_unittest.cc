@@ -112,7 +112,8 @@ TEST(LayerAnimationSequenceTest, SingleThreadedElement) {
 }
 
 // Check that the sequences progresses the delegate as expected when it contains
-// multiple elements. Note, see the layer animator tests for cyclic sequences.
+// multiple elements. Note, see the layer animator tests for repeating
+// sequences.
 TEST(LayerAnimationSequenceTest, MultipleElement) {
   LayerAnimationSequence sequence;
   TestLayerAnimationDelegate delegate;
@@ -197,8 +198,8 @@ TEST(LayerAnimationSequenceTest, MultipleElement) {
       sequence.properties());
 }
 
-// Check that a sequence can still be aborted if it has cycled many times.
-TEST(LayerAnimationSequenceTest, AbortingCyclicSequence) {
+// Check that a sequence can still be aborted if it has repeated many times.
+TEST(LayerAnimationSequenceTest, AbortingRepeatingSequence) {
   LayerAnimationSequence sequence;
   TestLayerAnimationDelegate delegate;
   float start_brightness = 0.0f;
@@ -211,7 +212,7 @@ TEST(LayerAnimationSequenceTest, AbortingCyclicSequence) {
   sequence.AddElement(
       LayerAnimationElement::CreateBrightnessElement(start_brightness, delta));
 
-  sequence.set_is_cyclic(true);
+  sequence.set_is_repeating(true);
 
   delegate.SetBrightnessFromAnimation(start_brightness,
                                       PropertyChangeReason::NOT_FROM_ANIMATION);
@@ -235,7 +236,7 @@ TEST(LayerAnimationSequenceTest, AbortingCyclicSequence) {
 }
 
 // Check that a sequence can be 'fast-forwarded' to the end and the target set.
-// Also check that this has no effect if the sequence is cyclic.
+// Also check that this has no effect if the sequence is repeating.
 TEST(LayerAnimationSequenceTest, SetTarget) {
   LayerAnimationSequence sequence;
   TestLayerAnimationDelegate delegate;
@@ -250,7 +251,7 @@ TEST(LayerAnimationSequenceTest, SetTarget) {
   sequence.GetTargetValue(&target_value);
   EXPECT_FLOAT_EQ(target_opacity, target_value.opacity);
 
-  sequence.set_is_cyclic(true);
+  sequence.set_is_repeating(true);
   target_value.opacity = start_opacity;
   sequence.GetTargetValue(&target_value);
   EXPECT_FLOAT_EQ(start_opacity, target_value.opacity);
@@ -279,7 +280,8 @@ TEST(LayerAnimationSequenceTest, ToString) {
   base::TimeDelta delta = base::TimeDelta::FromSeconds(1);
   LayerAnimationSequence sequence;
   EXPECT_EQ(
-      "LayerAnimationSequence{size=0, properties=, elements=[], is_cyclic=0, "
+      "LayerAnimationSequence{size=0, properties=, elements=[], "
+      "is_repeating=0, "
       "group_id=0}",
       sequence.ToString());
 
@@ -292,7 +294,7 @@ TEST(LayerAnimationSequenceTest, ToString) {
           "LayerAnimationSequence{size=1, properties=BRIGHTNESS, "
           "elements=[LayerAnimationElement{name=BrightnessTransition, id=%d, "
           "group=0, last_progressed_fraction=0.00}], "
-          "is_cyclic=0, group_id=0}",
+          "is_repeating=0, group_id=0}",
           brightness_id),
       sequence.ToString());
 
@@ -300,7 +302,7 @@ TEST(LayerAnimationSequenceTest, ToString) {
       LayerAnimationElement::CreateOpacityElement(1.0f, delta);
   int opacity_id = opacity->keyframe_model_id();
   sequence.AddElement(std::move(opacity));
-  sequence.set_is_cyclic(true);
+  sequence.set_is_repeating(true);
   sequence.set_animation_group_id(1973);
   EXPECT_EQ(
       base::StringPrintf(
@@ -309,7 +311,7 @@ TEST(LayerAnimationSequenceTest, ToString) {
           "group=0, last_progressed_fraction=0.00}, "
           "LayerAnimationElement{name=ThreadedOpacityTransition, id=%d, "
           "group=0, "
-          "last_progressed_fraction=0.00}], is_cyclic=1, "
+          "last_progressed_fraction=0.00}], is_repeating=1, "
           "group_id=1973}",
           brightness_id, opacity_id),
       sequence.ToString());

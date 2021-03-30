@@ -16,19 +16,22 @@
 #include "base/win/scoped_safearray.h"
 #include "base/win/scoped_variant.h"
 #include "base/win/windows_version.h"
-#include "content/browser/accessibility/accessibility_tree_formatter_utils_win.h"
 #include "content/browser/accessibility/browser_accessibility_com_win.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/browser_accessibility_manager_win.h"
+#include "ui/accessibility/platform/inspect/ax_inspect_utils_win.h"
 #include "ui/accessibility/platform/uia_registrar_win.h"
 #include "ui/base/win/atl_module.h"
 
 namespace content {
 
+using ui::BstrToUTF8;
+using ui::UiaIdentifierToString;
+
 namespace {
 
 std::string UiaIdentifierToStringPretty(int32_t id) {
-  auto str = base::UTF16ToUTF8(UiaIdentifierToString(id));
+  auto str = base::WideToUTF8(UiaIdentifierToString(id));
   // Remove UIA_ prefix, and EventId/PropertyId suffixes
   if (base::StartsWith(str, "UIA_", base::CompareCase::SENSITIVE))
     str = str.substr(base::size("UIA_") - 1);
@@ -44,15 +47,6 @@ std::string UiaIdentifierToStringPretty(int32_t id) {
 // static
 volatile base::subtle::Atomic32 AccessibilityEventRecorderUia::instantiated_ =
     0;
-
-// static
-std::unique_ptr<AccessibilityEventRecorder>
-AccessibilityEventRecorderUia::CreateUia(BrowserAccessibilityManager* manager,
-                                         base::ProcessId pid,
-                                         const AXTreeSelector& selector) {
-  return std::make_unique<AccessibilityEventRecorderUia>(manager, pid,
-                                                         selector.pattern);
-}
 
 AccessibilityEventRecorderUia::AccessibilityEventRecorderUia(
     BrowserAccessibilityManager* manager,
@@ -111,7 +105,7 @@ void AccessibilityEventRecorderUia::Thread::ThreadMain() {
 
   // Register the custom event to mark the end of the test.
   shutdown_sentinel_ =
-      ui::UiaRegistrarWin::GetInstance().GetUiaTestCompleteEventId();
+      ui::UiaRegistrarWin::GetInstance().GetTestCompleteEventId();
 
   // Find the IUIAutomationElement for the root content window
   uia_->ElementFromHandle(hwnd_, &root_);
@@ -156,7 +150,7 @@ void AccessibilityEventRecorderUia::Thread::ThreadMain() {
   // Subscribe to all automation events (except structure-change events and
   // live-region events, which are handled elsewhere).
   static const EVENTID kMinEvent = UIA_ToolTipOpenedEventId;
-  static const EVENTID kMaxEvent = UIA_NotificationEventId;
+  static const EVENTID kMaxEvent = UIA_ActiveTextPositionChangedEventId;
   for (EVENTID event_id = kMinEvent; event_id <= kMaxEvent; ++event_id) {
     if (event_id != UIA_StructureChangedEventId &&
         event_id != UIA_LiveRegionChangedEventId) {

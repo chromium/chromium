@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_MEDIA_GALLERIES_FILEAPI_AV_SCANNING_FILE_VALIDATOR_H_
 
 #include "base/macros.h"
+#include "components/download/public/common/quarantine_connection.h"
 #include "storage/browser/file_system/copy_or_move_file_validator.h"
 
 namespace base {
@@ -23,9 +24,12 @@ class AVScanningFileValidator : public storage::CopyOrMoveFileValidator {
                                 ResultCallback result_callback) override;
 
  protected:
-  AVScanningFileValidator();
+  explicit AVScanningFileValidator(
+      download::QuarantineConnectionCallback quarantine_connection_callback);
 
  private:
+  download::QuarantineConnectionCallback quarantine_connection_callback_;
+
   DISALLOW_COPY_AND_ASSIGN(AVScanningFileValidator);
 };
 

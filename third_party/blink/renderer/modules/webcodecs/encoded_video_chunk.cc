@@ -14,37 +14,38 @@
 namespace blink {
 
 EncodedVideoChunk* EncodedVideoChunk::Create(EncodedVideoChunkInit* init) {
-  EncodedVideoMetadata metadata;
-  metadata.timestamp = base::TimeDelta::FromMicroseconds(init->timestamp());
-  metadata.key_frame = (init->type() == "key");
-  if (init->hasDuration()) {
-    metadata.duration = base::TimeDelta::FromMicroseconds(init->duration());
-  }
+  auto timestamp = base::TimeDelta::FromMicroseconds(init->timestamp());
+  bool key_frame = (init->type() == "key");
   DOMArrayPiece piece(init->data());
 
   // A full copy of the data happens here.
   auto* buffer = piece.IsNull()
                      ? nullptr
                      : DOMArrayBuffer::Create(piece.Data(), piece.ByteLength());
-  return MakeGarbageCollected<EncodedVideoChunk>(metadata, buffer);
+  auto* result =
+      MakeGarbageCollected<EncodedVideoChunk>(timestamp, key_frame, buffer);
+  if (init->hasDuration())
+    result->duration_ = base::TimeDelta::FromMicroseconds(init->duration());
+  return result;
 }
 
-EncodedVideoChunk::EncodedVideoChunk(EncodedVideoMetadata metadata,
+EncodedVideoChunk::EncodedVideoChunk(base::TimeDelta timestamp,
+                                     bool key_frame,
                                      DOMArrayBuffer* buffer)
-    : metadata_(metadata), buffer_(buffer) {}
+    : timestamp_(timestamp), key_frame_(key_frame), buffer_(buffer) {}
 
 String EncodedVideoChunk::type() const {
-  return metadata_.key_frame ? "key" : "delta";
+  return key_frame_ ? "key" : "delta";
 }
 
 uint64_t EncodedVideoChunk::timestamp() const {
-  return metadata_.timestamp.InMicroseconds();
+  return timestamp_.InMicroseconds();
 }
 
 base::Optional<uint64_t> EncodedVideoChunk::duration() const {
-  if (!metadata_.duration)
+  if (!duration_.has_value())
     return base::nullopt;
-  return metadata_.duration->InMicroseconds();
+  return duration_->InMicroseconds();
 }
 
 DOMArrayBuffer* EncodedVideoChunk::data() const {

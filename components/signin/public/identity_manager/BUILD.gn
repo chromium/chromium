@@ -10,6 +10,8 @@ if (is_android) {
 
 source_set("identity_manager") {
   sources = [
+    "access_token_constants.cc",
+    "access_token_constants.h",
     "access_token_fetcher.cc",
     "access_token_fetcher.h",
     "access_token_info.cc",
@@ -167,5 +169,9 @@ source_set("test_support") {
 
   if (is_chromeos_lacros) {
     deps += [ "//components/account_manager_core" ]
+  }
+
+  if (is_android) {
+    deps += [ "//components/signin/public/android:test_support_jni_headers" ]
   }
 }

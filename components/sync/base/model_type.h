@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "components/sync/base/enum_set.h"
 
 namespace base {
@@ -19,7 +20,6 @@ class Value;
 
 namespace sync_pb {
 class EntitySpecifics;
-class SyncEntity;
 }
 
 namespace syncer {
@@ -36,14 +36,13 @@ namespace syncer {
 // update the |kModelTypeInfoMap| struct in model_type.cc and also the
 // SyncModelType histogram suffix in histograms.xml
 enum ModelType {
-  // Object type unknown.  Objects may transition through
-  // the unknown state during their initial creation, before
-  // their properties are set.  After deletion, object types
-  // are generally preserved.
+  // Object type unknown. This may be used when:
+  // a) The client received *valid* data from a data type which this version
+  // is unaware of (only present in versions newer than this one, or present
+  // in older versions but removed since).
+  // b) The client received invalid data from the server due to some error.
+  // c) A data object was just created, in which case this is a temporary state.
   UNSPECIFIED,
-  // A permanent folder whose children may be of mixed
-  // datatypes (e.g. the "Google Chrome" folder).
-  TOP_LEVEL_FOLDER,
 
   // ------------------------------------ Start of "real" model types.
   // The model types declared before here are somewhat special, as they
@@ -97,10 +96,6 @@ enum ModelType {
   HISTORY_DELETE_DIRECTIVES,
   // Custom spelling dictionary entries.
   DICTIONARY,
-  // Favicon images, including both the image URL and the actual pixels.
-  DEPRECATED_FAVICON_IMAGES,
-  // Favicon tracking information, i.e. metadata such as last visit date.
-  DEPRECATED_FAVICON_TRACKING,
   // Client-specific metadata, synced before other user types.
   DEVICE_INFO,
   // These preferences are synced before other user types and are never
@@ -156,7 +151,8 @@ enum ModelType {
   NIGORI,
   LAST_REAL_MODEL_TYPE = NIGORI,
 
-  NUM_ENTRIES,
+  // NEW ENTRIES MUST BE ADDED ABOVE THIS.
+  LAST_ENTRY = LAST_REAL_MODEL_TYPE,
 };
 
 using ModelTypeSet =
@@ -164,9 +160,13 @@ using ModelTypeSet =
 using FullModelTypeSet = EnumSet<ModelType, UNSPECIFIED, LAST_REAL_MODEL_TYPE>;
 using ModelTypeNameMap = std::map<ModelType, const char*>;
 
+constexpr int GetNumModelTypes() {
+  return static_cast<int>(ModelType::LAST_ENTRY) + 1;
+}
+
 inline ModelType ModelTypeFromInt(int i) {
   DCHECK_GE(i, 0);
-  DCHECK_LT(i, ModelType::NUM_ENTRIES);
+  DCHECK_LT(i, GetNumModelTypes());
   return static_cast<ModelType>(i);
 }
 
@@ -181,7 +181,7 @@ inline ModelType ModelTypeFromInt(int i) {
 // SyncModelType suffix in histograms.xml.
 enum class ModelTypeForHistograms {
   kUnspecified = 0,
-  kTopLevelFolder = 1,
+  // kTopLevelFolder = 1,
   kBookmarks = 2,
   kPreferences = 3,
   kPasswords = 4,
@@ -203,8 +203,8 @@ enum class ModelTypeForHistograms {
   // kDeprecatedSyncedNotifications = 20,
   kPriorityPreferences = 21,
   kDictionary = 22,
-  kFaviconImages = 23,
-  kFaviconTracking = 24,
+  // kFaviconImages = 23,
+  // kFaviconTracking = 24,
   kProxyTabs = 25,
   kSupervisedUserSettings = 26,
   // kDeprecatedSupervisedUsers = 27,
@@ -236,15 +236,8 @@ enum class ModelTypeForHistograms {
 // Used to mark the type of EntitySpecifics that has no actual data.
 void AddDefaultFieldValue(ModelType type, sync_pb::EntitySpecifics* specifics);
 
-// Extract the model type of a SyncEntity protocol buffer.  ModelType is a
-// local concept: the enum is not in the protocol.  The SyncEntity's ModelType
-// is inferred from the presence of particular datatype field in the
-// entity specifics.
-ModelType GetModelType(const sync_pb::SyncEntity& sync_entity);
-
-// Extract the model type from an EntitySpecifics field.  Note that there
-// are some ModelTypes (like TOP_LEVEL_FOLDER) that can't be inferred this way;
-// prefer using GetModelType where possible.
+// Extract the model type from an EntitySpecifics field. ModelType is a
+// local concept: the enum is not in the protocol.
 ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics);
 
 // Protocol types are those types that have actual protocol buffer
@@ -256,8 +249,7 @@ constexpr ModelTypeSet ProtocolTypes() {
       AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_METADATA, AUTOFILL_WALLET_OFFER,
       THEMES, TYPED_URLS, EXTENSIONS, SEARCH_ENGINES, SESSIONS, APPS,
       APP_SETTINGS, EXTENSION_SETTINGS, HISTORY_DELETE_DIRECTIVES, DICTIONARY,
-      DEPRECATED_FAVICON_IMAGES, DEPRECATED_FAVICON_TRACKING, DEVICE_INFO,
-      PRIORITY_PREFERENCES, SUPERVISED_USER_SETTINGS, APP_LIST,
+      DEVICE_INFO, PRIORITY_PREFERENCES, SUPERVISED_USER_SETTINGS, APP_LIST,
       DEPRECATED_SUPERVISED_USER_ALLOWLISTS, ARC_PACKAGE, PRINTERS,
       READING_LIST, USER_EVENTS, NIGORI, USER_CONSENTS, SEND_TAB_TO_SELF,
       SECURITY_EVENTS, WEB_APPS, WIFI_CONFIGURATIONS, OS_PREFERENCES,
@@ -433,7 +425,7 @@ bool RealModelTypeToNotificationType(ModelType model_type,
 // iff |notification_type| was the notification type of a real model
 // type and |model_type| was filled in.
 bool NotificationTypeToRealModelType(const std::string& notification_type,
-                                     ModelType* model_type);
+                                     ModelType* model_type) WARN_UNUSED_RESULT;
 
 // Returns true if |model_type| is a real datatype
 bool IsRealDataType(ModelType model_type);

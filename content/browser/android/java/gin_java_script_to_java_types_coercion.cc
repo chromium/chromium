@@ -67,7 +67,7 @@ jint RoundDoubleToInt(const double& x) {
 }
 
 jvalue CoerceJavaScriptIntegerToJavaValue(JNIEnv* env,
-                                          const base::Value* value,
+                                          int64_t integer_value,
                                           const JavaType& target_type,
                                           bool coerce_to_string,
                                           GinJavaBridgeError* error) {
@@ -78,29 +78,27 @@ jvalue CoerceJavaScriptIntegerToJavaValue(JNIEnv* env,
   // all but the lowest n buts, where n is the number of bits in the target
   // type.
   jvalue result;
-  int int_value;
-  value->GetAsInteger(&int_value);
   switch (target_type.type) {
     case JavaType::TypeByte:
-      result.b = static_cast<jbyte>(int_value);
+      result.b = static_cast<jbyte>(integer_value);
       break;
     case JavaType::TypeChar:
-      result.c = static_cast<jchar>(int_value);
+      result.c = static_cast<jchar>(integer_value);
       break;
     case JavaType::TypeShort:
-      result.s = static_cast<jshort>(int_value);
+      result.s = static_cast<jshort>(integer_value);
       break;
     case JavaType::TypeInt:
-      result.i = int_value;
+      result.i = static_cast<jint>(integer_value);
       break;
     case JavaType::TypeLong:
-      result.j = int_value;
+      result.j = integer_value;
       break;
     case JavaType::TypeFloat:
-      result.f = int_value;
+      result.f = integer_value;
       break;
     case JavaType::TypeDouble:
-      result.d = int_value;
+      result.d = integer_value;
       break;
     case JavaType::TypeObject:
       // LIVECONNECT_COMPLIANCE: Existing behavior is to convert to null. Spec
@@ -108,10 +106,11 @@ jvalue CoerceJavaScriptIntegerToJavaValue(JNIEnv* env,
       result.l = NULL;
       break;
     case JavaType::TypeString:
-      result.l = coerce_to_string ? ConvertUTF8ToJavaString(
-                                        env, base::NumberToString(int_value))
-                                        .Release()
-                                  : NULL;
+      result.l = coerce_to_string
+                     ? ConvertUTF8ToJavaString(
+                           env, base::NumberToString(integer_value))
+                           .Release()
+                     : NULL;
       break;
     case JavaType::TypeBoolean:
       // LIVECONNECT_COMPLIANCE: Existing behavior is to convert to false. Spec
@@ -663,14 +662,22 @@ jvalue CoerceGinJavaBridgeValueToJavaValue(JNIEnv* env,
       return CoerceJavaScriptNullOrUndefinedToJavaValue(
           env, value, target_type, coerce_to_string, error);
     case GinJavaBridgeValue::TYPE_NONFINITE: {
-      float float_value;
-      gin_value->GetAsNonFinite(&float_value);
+      float float_value = 0.f;
+      if (!gin_value->GetAsNonFinite(&float_value))
+        return jvalue();
       return CoerceJavaScriptDoubleToJavaValue(
           env, float_value, target_type, coerce_to_string, error);
     }
     case GinJavaBridgeValue::TYPE_OBJECT_ID:
       return CoerceJavaScriptObjectToJavaValue(
           env, value, target_type, coerce_to_string, object_refs, error);
+    case GinJavaBridgeValue::TYPE_UINT32: {
+      uint32_t uint32_value = 0;
+      if (!gin_value->GetAsUInt32(&uint32_value))
+        return jvalue();
+      return CoerceJavaScriptIntegerToJavaValue(env, uint32_value, target_type,
+                                                coerce_to_string, error);
+    }
     default:
       NOTREACHED();
   }
@@ -702,7 +709,7 @@ jvalue CoerceJavaScriptValueToJavaValue(JNIEnv* env,
   switch (value->type()) {
     case base::Value::Type::INTEGER:
       return CoerceJavaScriptIntegerToJavaValue(
-          env, value, target_type, coerce_to_string, error);
+          env, value->GetInt(), target_type, coerce_to_string, error);
     case base::Value::Type::DOUBLE: {
       double double_value;
       value->GetAsDouble(&double_value);

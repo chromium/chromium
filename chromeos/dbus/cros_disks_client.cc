@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -26,6 +27,8 @@
 #include "base/task_runner_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chromeos/dbus/constants/dbus_switches.h"
+#include "chromeos/dbus/fake_cros_disks_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
@@ -773,7 +776,12 @@ CrosDisksClient::~CrosDisksClient() = default;
 
 // static
 std::unique_ptr<CrosDisksClient> CrosDisksClient::Create() {
-  return std::make_unique<CrosDisksClientImpl>();
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kCrosDisksFake)) {
+    return std::make_unique<FakeCrosDisksClient>();
+  } else {
+    return std::make_unique<CrosDisksClientImpl>();
+  }
 }
 
 // static

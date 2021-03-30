@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">Post i lista</translation>
 <translation id="1013742170491673792">sökfält</translation>
 <translation id="1014370462248694370">Svep åt höger med två fingrar</translation>
-<translation id="1016393160682012902">Tryck på en tangent på tangentbordet, en tangent på den uppdateringsbara punktskriftsskärmen eller en skärmrörelse om du vill veta vad den gör. Tryck på Ctrl och w eller Esc när du vill avsluta.</translation>
 <translation id="1022586497894531524">Är det första gången du använder talad feedback med ChromeVox? I dessa korta självstudier förklaras de grundläggande stegen för att komma igång med ChromeVox.</translation>
 <translation id="1025074108959230262">Låsta knappar har inaktiverats</translation>
 <translation id="1031961866430398710">sedan</translation>
@@ -150,6 +149,7 @@
 <translation id="2045055672832940894">Det finns ingen föregående kontroll</translation>
 <translation id="2045606329038304310">Formulärfältskontroll</translation>
 <translation id="2063539687800151747">Epigraf</translation>
+<translation id="2074531330963286860">Det finns tillgängliga åtgärder. Visa genom att trycka på söktangenten + punkt.</translation>
 <translation id="2086961585857038472">Nästa ord</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">se</translation>
@@ -976,6 +976,7 @@
 <translation id="827266600368092403">Börja eller sluta markera</translation>
 <translation id="827422111966801947">Indigoblå</translation>
 <translation id="8276439074553447000">Hoppa till föregående fokuserbara objekt</translation>
+<translation id="8279039817939141096">Tryck på en tangent på tangentbordet, en tangent på den uppdateringsbara punktskriftsskärmen eller en skärmrörelse om du vill veta vad den gör. Avsluta genom att svepa åt vänster med två fingrar eller trycka på Ctrl och W, blanksteg och Z eller Esc.</translation>
 <translation id="8283603667300770666">Nästa formulärfält</translation>
 <translation id="8310185481635255431">Det finns inga fler länkar</translation>
 <translation id="831207808878314375">Definition</translation>

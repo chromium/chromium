@@ -62,7 +62,7 @@ void TestLoginScreen::RequestSecurityTokenPin(
 void TestLoginScreen::ClearSecurityTokenPinRequest() {}
 
 bool TestLoginScreen::SetLoginShelfGestureHandler(
-    const base::string16& nudge_text,
+    const std::u16string& nudge_text,
     const base::RepeatingClosure& fling_callback,
     base::OnceClosure exit_callback) {
   return false;

@@ -3,7 +3,12 @@
 // found in the LICENSE file.
 
 #include "content/browser/renderer_host/navigation_request.h"
+
+#include <string>
+#include <vector>
+
 #include "base/bind.h"
+#include "base/i18n/number_formatting.h"
 #include "base/macros.h"
 #include "base/optional.h"
 #include "build/build_config.h"
@@ -17,6 +22,8 @@
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_web_contents.h"
 #include "net/ssl/ssl_connection_status_flags.h"
+#include "services/network/public/cpp/content_security_policy/content_security_policy.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 
 namespace content {
@@ -28,7 +35,7 @@ class DeletingNavigationThrottle : public NavigationThrottle {
   DeletingNavigationThrottle(NavigationHandle* handle,
                              const base::RepeatingClosure& deletion_callback)
       : NavigationThrottle(handle), deletion_callback_(deletion_callback) {}
-  ~DeletingNavigationThrottle() override {}
+  ~DeletingNavigationThrottle() override = default;
 
   NavigationThrottle::ThrottleCheckResult WillStartRequest() override {
     deletion_callback_.Run();
@@ -60,9 +67,7 @@ class DeletingNavigationThrottle : public NavigationThrottle {
 
 class NavigationRequestTest : public RenderViewHostImplTestHarness {
  public:
-  NavigationRequestTest()
-      : was_callback_called_(false),
-        callback_result_(NavigationThrottle::DEFER) {}
+  NavigationRequestTest() : callback_result_(NavigationThrottle::DEFER) {}
 
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
@@ -200,7 +205,7 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
     request_ = NavigationRequest::CreateBrowserInitiated(
         main_test_rfh()->frame_tree_node(), std::move(common_params),
         std::move(commit_params), false /* browser-initiated */,
-        false /* is_prerendering */, nullptr /* initiator_frame_token */,
+        false /* was_opener_suppressed */, nullptr /* initiator_frame_token */,
         ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
         std::string() /* extra_headers */, nullptr /* frame_entry */,
         nullptr /* entry */, nullptr /* post_body */,
@@ -220,7 +225,7 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
   }
 
   std::unique_ptr<NavigationRequest> request_;
-  bool was_callback_called_;
+  bool was_callback_called_ = false;
   NavigationThrottle::ThrottleCheckResult callback_result_;
 };
 
@@ -445,9 +450,10 @@ namespace {
 class GetRenderFrameHostOnFailureNavigationThrottle
     : public NavigationThrottle {
  public:
-  GetRenderFrameHostOnFailureNavigationThrottle(NavigationHandle* handle)
+  explicit GetRenderFrameHostOnFailureNavigationThrottle(
+      NavigationHandle* handle)
       : NavigationThrottle(handle) {}
-  ~GetRenderFrameHostOnFailureNavigationThrottle() override {}
+  ~GetRenderFrameHostOnFailureNavigationThrottle() override = default;
 
   NavigationThrottle::ThrottleCheckResult WillFailRequest() override {
     EXPECT_TRUE(navigation_handle()->GetRenderFrameHost());
@@ -550,6 +556,262 @@ TEST_F(NavigationRequestTest, PolicyContainerInheritance) {
             ->policy_container_host()
             ->referrer_policy());
   }
+}
+
+TEST_F(NavigationRequestTest, DnsAliasesCanBeAccessed) {
+  // Create simulated NavigationRequest for the URL, which has aliases.
+  const GURL kUrl = GURL("http://chromium.org");
+  auto navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(kUrl, main_rfh());
+  std::vector<std::string> dns_aliases({"alias1", "alias2"});
+  navigation->SetResponseDnsAliases(std::move(dns_aliases));
+
+  // Start the navigation.
+  navigation->Start();
+  EXPECT_EQ(net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN,
+            navigation->GetNavigationHandle()->GetConnectionInfo());
+
+  // Commit the navigation.
+  navigation->set_http_connection_info(
+      net::HttpResponseInfo::CONNECTION_INFO_QUIC_35);
+  navigation->ReadyToCommit();
+  EXPECT_EQ(net::HttpResponseInfo::CONNECTION_INFO_QUIC_35,
+            navigation->GetNavigationHandle()->GetConnectionInfo());
+
+  // Verify that the aliases are accessible from the NavigationRequest.
+  EXPECT_THAT(navigation->GetNavigationHandle()->GetDnsAliases(),
+              testing::ElementsAre("alias1", "alias2"));
+}
+
+TEST_F(NavigationRequestTest, NoDnsAliases) {
+  // Create simulated NavigationRequest for the URL, which does not
+  // have aliases. (Note the empty alias list.)
+  const GURL kUrl = GURL("http://chromium.org");
+  auto navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(kUrl, main_rfh());
+  std::vector<std::string> dns_aliases;
+  navigation->SetResponseDnsAliases(std::move(dns_aliases));
+
+  // Start the navigation.
+  navigation->Start();
+  EXPECT_EQ(net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN,
+            navigation->GetNavigationHandle()->GetConnectionInfo());
+
+  // Commit the navigation.
+  navigation->set_http_connection_info(
+      net::HttpResponseInfo::CONNECTION_INFO_QUIC_35);
+  navigation->ReadyToCommit();
+  EXPECT_EQ(net::HttpResponseInfo::CONNECTION_INFO_QUIC_35,
+            navigation->GetNavigationHandle()->GetConnectionInfo());
+
+  // Verify that there are no aliases in the NavigationRequest.
+  EXPECT_TRUE(navigation->GetNavigationHandle()->GetDnsAliases().empty());
+}
+
+// Test that the required CSP of every frame is computed/inherited correctly and
+// that the Sec-Required-CSP header is set.
+class CSPEmbeddedEnforcementUnitTest : public NavigationRequestTest {
+ protected:
+  TestRenderFrameHost* main_rfh() {
+    return static_cast<TestRenderFrameHost*>(NavigationRequestTest::main_rfh());
+  }
+
+  // Simulate the |csp| attribute being set in |rfh|'s frame. Then navigate it.
+  // Returns the request's Sec-Required-CSP header.
+  std::string NavigateWithRequiredCSP(TestRenderFrameHost** rfh,
+                                      std::string required_csp) {
+    TestRenderFrameHost* document = *rfh;
+
+    if (!required_csp.empty()) {
+      auto headers =
+          base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+      headers->SetHeader("Content-Security-Policy", required_csp);
+      std::vector<network::mojom::ContentSecurityPolicyPtr> policies;
+      network::AddContentSecurityPolicyFromHeaders(
+          *headers, GURL("https://example.com/"), &policies);
+      document->frame_tree_node()->set_csp_attribute(std::move(policies[0]));
+    }
+
+    // Chrome blocks a document navigating to a URL if more than one of its
+    // ancestors have the same URL. Use a different URL every time, to
+    // avoid blocking navigation of the grandchild frame.
+    static int nonce = 0;
+    GURL url("https://www.example.com" + base::NumberToString(nonce++));
+
+    auto navigation =
+        content::NavigationSimulator::CreateRendererInitiated(url, *rfh);
+    navigation->Start();
+    NavigationRequest* request =
+        NavigationRequest::From(navigation->GetNavigationHandle());
+    std::string sec_required_csp;
+    request->GetRequestHeaders().GetHeader("sec-required-csp",
+                                           &sec_required_csp);
+
+    // Complete the navigation so that the required csp is stored in the
+    // RenderFrameHost, so that when we will add children to this document they
+    // will be able to get the parent's required csp (and hence also test that
+    // the whole logic works).
+    auto response_headers =
+        base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+    response_headers->SetHeader("Allow-CSP-From", "*");
+    navigation->SetResponseHeaders(response_headers);
+    navigation->Commit();
+
+    *rfh = static_cast<TestRenderFrameHost*>(
+        navigation->GetFinalRenderFrameHost());
+
+    return sec_required_csp;
+  }
+
+  TestRenderFrameHost* AddChild(TestRenderFrameHost* parent) {
+    return static_cast<TestRenderFrameHost*>(
+        content::RenderFrameHostTester::For(parent)->AppendChild(""));
+  }
+};
+
+TEST_F(CSPEmbeddedEnforcementUnitTest, TopLevel) {
+  TestRenderFrameHost* top_document = main_rfh();
+  std::string sec_required_csp = NavigateWithRequiredCSP(&top_document, "");
+  EXPECT_EQ("", sec_required_csp);
+  EXPECT_FALSE(top_document->required_csp());
+}
+
+TEST_F(CSPEmbeddedEnforcementUnitTest, ChildNoCSP) {
+  TestRenderFrameHost* top_document = main_rfh();
+  TestRenderFrameHost* child_document = AddChild(top_document);
+  std::string sec_required_csp = NavigateWithRequiredCSP(&child_document, "");
+  EXPECT_EQ("", sec_required_csp);
+  EXPECT_FALSE(child_document->required_csp());
+}
+
+TEST_F(CSPEmbeddedEnforcementUnitTest, ChildWithCSP) {
+  TestRenderFrameHost* top_document = main_rfh();
+  TestRenderFrameHost* child_document = AddChild(top_document);
+  std::string sec_required_csp =
+      NavigateWithRequiredCSP(&child_document, "script-src 'none'");
+  EXPECT_EQ("script-src 'none'", sec_required_csp);
+  EXPECT_TRUE(child_document->required_csp());
+  EXPECT_EQ("script-src 'none'",
+            child_document->required_csp()->header->header_value);
+}
+
+TEST_F(CSPEmbeddedEnforcementUnitTest, ChildSiblingNoCSP) {
+  TestRenderFrameHost* top_document = main_rfh();
+  TestRenderFrameHost* child_document = AddChild(top_document);
+  NavigateWithRequiredCSP(&child_document, "script-src 'none'");
+  TestRenderFrameHost* sibling_document = AddChild(top_document);
+  std::string sec_required_csp = NavigateWithRequiredCSP(&sibling_document, "");
+  EXPECT_FALSE(sibling_document->required_csp());
+}
+
+TEST_F(CSPEmbeddedEnforcementUnitTest, ChildSiblingCSP) {
+  TestRenderFrameHost* top_document = main_rfh();
+  TestRenderFrameHost* child_document = AddChild(top_document);
+  NavigateWithRequiredCSP(&child_document, "script-src 'none'");
+  TestRenderFrameHost* sibling_document = AddChild(top_document);
+  std::string sec_required_csp =
+      NavigateWithRequiredCSP(&sibling_document, "script-src 'none'");
+  EXPECT_EQ("script-src 'none'", sec_required_csp);
+  EXPECT_TRUE(sibling_document->required_csp());
+  EXPECT_EQ("script-src 'none'",
+            sibling_document->required_csp()->header->header_value);
+}
+
+TEST_F(CSPEmbeddedEnforcementUnitTest, GrandChildNoCSP) {
+  TestRenderFrameHost* top_document = main_rfh();
+  TestRenderFrameHost* child_document = AddChild(top_document);
+  NavigateWithRequiredCSP(&child_document, "script-src 'none'");
+  TestRenderFrameHost* grand_child_document = AddChild(child_document);
+  std::string sec_required_csp =
+      NavigateWithRequiredCSP(&grand_child_document, "");
+  EXPECT_EQ("script-src 'none'", sec_required_csp);
+  EXPECT_TRUE(grand_child_document->required_csp());
+  EXPECT_EQ("script-src 'none'",
+            grand_child_document->required_csp()->header->header_value);
+}
+
+TEST_F(CSPEmbeddedEnforcementUnitTest, GrandChildSameCSP) {
+  TestRenderFrameHost* top_document = main_rfh();
+  TestRenderFrameHost* child_document = AddChild(top_document);
+  NavigateWithRequiredCSP(&child_document, "script-src 'none'");
+  TestRenderFrameHost* grand_child_document = AddChild(child_document);
+  std::string sec_required_csp =
+      NavigateWithRequiredCSP(&grand_child_document, "script-src 'none'");
+  EXPECT_EQ("script-src 'none'", sec_required_csp);
+  EXPECT_TRUE(grand_child_document->required_csp());
+  EXPECT_EQ("script-src 'none'",
+            grand_child_document->required_csp()->header->header_value);
+}
+
+TEST_F(CSPEmbeddedEnforcementUnitTest, GrandChildDifferentCSP) {
+  TestRenderFrameHost* top_document = main_rfh();
+  TestRenderFrameHost* child_document = AddChild(top_document);
+  NavigateWithRequiredCSP(&child_document, "script-src 'none'");
+  TestRenderFrameHost* grand_child_document = AddChild(child_document);
+  std::string sec_required_csp =
+      NavigateWithRequiredCSP(&grand_child_document, "img-src 'none'");
+
+  // This seems weird, but it is the intended behaviour according to the spec.
+  // The problem is that "script-src 'none'" does not subsume "img-src 'none'",
+  // so "img-src 'none'" on the grandchild is an invalid csp attribute, and we
+  // just discard it in favour of the parent's csp attribute.
+  //
+  // This should probably be fixed in the specification:
+  // https://github.com/w3c/webappsec-cspee/pull/11
+  EXPECT_EQ("script-src 'none'", sec_required_csp);
+  EXPECT_TRUE(grand_child_document->required_csp());
+  EXPECT_EQ("script-src 'none'",
+            grand_child_document->required_csp()->header->header_value);
+}
+
+TEST_F(CSPEmbeddedEnforcementUnitTest, InvalidCSP) {
+  TestRenderFrameHost* top_document = main_rfh();
+  TestRenderFrameHost* child_document = AddChild(top_document);
+  std::string sec_required_csp =
+      NavigateWithRequiredCSP(&child_document, "report-to group");
+  EXPECT_EQ("", sec_required_csp);
+  EXPECT_FALSE(child_document->required_csp());
+}
+
+TEST_F(CSPEmbeddedEnforcementUnitTest, InvalidCspAndInheritFromParent) {
+  TestRenderFrameHost* top_document = main_rfh();
+  TestRenderFrameHost* child_document = AddChild(top_document);
+  NavigateWithRequiredCSP(&child_document, "script-src 'none'");
+  TestRenderFrameHost* grand_child_document = AddChild(child_document);
+  std::string sec_required_csp =
+      NavigateWithRequiredCSP(&grand_child_document, "report-to group");
+  EXPECT_EQ("script-src 'none'", sec_required_csp);
+  EXPECT_TRUE(grand_child_document->required_csp());
+  EXPECT_EQ("script-src 'none'",
+            grand_child_document->required_csp()->header->header_value);
+}
+
+TEST_F(CSPEmbeddedEnforcementUnitTest,
+       SemiInvalidCspAndInheritSameCspFromParent) {
+  TestRenderFrameHost* top_document = main_rfh();
+  TestRenderFrameHost* child_document = AddChild(top_document);
+  NavigateWithRequiredCSP(&child_document, "script-src 'none'");
+  TestRenderFrameHost* grand_child_document = AddChild(child_document);
+  std::string sec_required_csp = NavigateWithRequiredCSP(
+      &grand_child_document, "script-src 'none'; report-to group");
+  EXPECT_EQ("script-src 'none'", sec_required_csp);
+  EXPECT_TRUE(grand_child_document->required_csp());
+  EXPECT_EQ("script-src 'none'",
+            grand_child_document->required_csp()->header->header_value);
+}
+
+TEST_F(CSPEmbeddedEnforcementUnitTest,
+       SemiInvalidCspAndInheritDifferentCspFromParent) {
+  TestRenderFrameHost* top_document = main_rfh();
+  TestRenderFrameHost* child_document = AddChild(top_document);
+  NavigateWithRequiredCSP(&child_document, "script-src 'none'");
+  TestRenderFrameHost* grand_child_document = AddChild(child_document);
+  std::string sec_required_csp = NavigateWithRequiredCSP(
+      &grand_child_document, "sandbox; report-to group");
+  EXPECT_EQ("script-src 'none'", sec_required_csp);
+  EXPECT_TRUE(grand_child_document->required_csp());
+  EXPECT_EQ("script-src 'none'",
+            grand_child_document->required_csp()->header->header_value);
 }
 
 }  // namespace content

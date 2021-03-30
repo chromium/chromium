@@ -240,6 +240,21 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
             weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void ToggleFeature(const std::string& feature, bool enable) override {
+    dbus::MethodCall method_call(update_engine::kUpdateEngineInterface,
+                                 update_engine::kToggleFeature);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(feature);
+    writer.AppendBool(enable);
+    VLOG(1) << "Requesting UpdateEngine to " << (enable ? "enable" : "disable")
+            << " feature " << feature;
+
+    update_engine_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&UpdateEngineClientImpl::OnToggleFeature,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
  protected:
   void Init(dbus::Bus* bus) override {
     update_engine_proxy_ = bus->GetObjectProxy(
@@ -429,6 +444,15 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
     std::move(callback).Run();
   }
 
+  // Called when a response for ToggleFeature() is received.
+  void OnToggleFeature(dbus::Response* response) {
+    if (!response) {
+      LOG(ERROR) << "ToggleFeature call failed.";
+      return;
+    }
+    VLOG(1) << "Successfully updated feature value.";
+  }
+
   // Called when a response for SetUpdateOverCellularOneTimePermission() is
   // received.
   void OnSetUpdateOverCellularOneTimePermission(
@@ -574,6 +598,11 @@ class UpdateEngineClientStubImpl : public UpdateEngineClient {
       const std::string& update_version,
       int64_t update_size,
       UpdateOverCellularOneTimePermissionCallback callback) override {}
+
+  void ToggleFeature(const std::string& feature, bool enable) override {
+    VLOG(1) << "Requesting to set " << feature
+            << " to: " << (enable ? "enabled" : "disabled");
+  }
 
  private:
   void StateTransition() {

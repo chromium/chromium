@@ -14,7 +14,7 @@ namespace blink {
 // static
 const char MediaKeysController::kSupplementName[] = "MediaKeysController";
 
-MediaKeysController::MediaKeysController() = default;
+MediaKeysController::MediaKeysController() : Supplement(nullptr) {}
 
 WebEncryptedMediaClient* MediaKeysController::EncryptedMediaClient(
     ExecutionContext* context) {

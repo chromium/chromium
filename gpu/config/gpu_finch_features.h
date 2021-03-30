@@ -19,6 +19,7 @@ namespace features {
 #if defined(OS_ANDROID)
 GPU_EXPORT extern const base::Feature kUseGles2ForOopR;
 GPU_EXPORT extern const base::Feature kAndroidSurfaceControl;
+GPU_EXPORT extern const base::Feature kWebViewSurfaceControl;
 GPU_EXPORT extern const base::Feature kAImageReader;
 GPU_EXPORT extern const base::Feature kWebViewVulkan;
 GPU_EXPORT extern const base::Feature kLimitAImageReaderMaxSizeToOne;
@@ -29,10 +30,10 @@ GPU_EXPORT extern const base::Feature kDefaultEnableGpuRasterization;
 
 GPU_EXPORT extern const base::Feature kDefaultEnableOopRasterization;
 
+GPU_EXPORT extern const base::Feature kCanvasOopRasterization;
+
 #if defined(OS_WIN)
 GPU_EXPORT extern const base::Feature kGpuProcessHighPriorityWin;
-
-GPU_EXPORT extern const base::Feature kDirectCompositionUseOverlayDamageList;
 #endif
 
 GPU_EXPORT extern const base::Feature kGpuUseDisplayThreadPriority;
@@ -53,9 +54,9 @@ GPU_EXPORT extern const base::Feature kVulkan;
 
 GPU_EXPORT extern const base::Feature kSkiaDawn;
 
-GPU_EXPORT extern const base::Feature kEnableSharedImageForWebview;
-
 GPU_EXPORT extern const base::Feature kEnableGrShaderCacheForVulkan;
+
+GPU_EXPORT extern const base::Feature kEnableVkPipelineCache;
 
 GPU_EXPORT bool IsUsingVulkan();
 #if defined(OS_ANDROID)

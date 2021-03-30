@@ -40,7 +40,8 @@ void UpdateAppRegistryCache(Profile* profile,
 
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->AppRegistryCache()
-      .OnApps(std::move(apps));
+      .OnApps(std::move(apps), apps::mojom::AppType::kExtension,
+              false /* should_notify_initialized */);
 }
 
 ash::AppListItem* GetAppListItem(const std::string& id) {

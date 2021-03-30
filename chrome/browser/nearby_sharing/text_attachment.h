@@ -16,7 +16,10 @@ class TextAttachment : public Attachment {
  public:
   using Type = sharing::mojom::TextMetadata::Type;
 
-  TextAttachment(Type type, std::string text_body);
+  TextAttachment(Type type,
+                 std::string text_body,
+                 base::Optional<std::string> text_title,
+                 base::Optional<std::string> mime_type);
   TextAttachment(int64_t id, Type type, std::string text_title, int64_t size);
   TextAttachment(const TextAttachment&);
   TextAttachment(TextAttachment&&);
@@ -39,6 +42,7 @@ class TextAttachment : public Attachment {
   Type type_;
   std::string text_title_;
   std::string text_body_;
+  std::string mime_type_;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_TEXT_ATTACHMENT_H_

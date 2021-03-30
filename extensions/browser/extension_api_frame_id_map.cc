@@ -56,31 +56,9 @@ ExtensionApiFrameIdMap::FrameData::FrameData(
 ExtensionApiFrameIdMap::FrameData& ExtensionApiFrameIdMap::FrameData::operator=(
     const ExtensionApiFrameIdMap::FrameData& other) = default;
 
-ExtensionApiFrameIdMap::RenderFrameIdKey::RenderFrameIdKey()
-    : render_process_id(content::ChildProcessHost::kInvalidUniqueID),
-      frame_routing_id(MSG_ROUTING_NONE) {}
+ExtensionApiFrameIdMap::ExtensionApiFrameIdMap() = default;
 
-ExtensionApiFrameIdMap::RenderFrameIdKey::RenderFrameIdKey(
-    int render_process_id,
-    int frame_routing_id)
-    : render_process_id(render_process_id),
-      frame_routing_id(frame_routing_id) {}
-
-bool ExtensionApiFrameIdMap::RenderFrameIdKey::operator<(
-    const RenderFrameIdKey& other) const {
-  return std::tie(render_process_id, frame_routing_id) <
-         std::tie(other.render_process_id, other.frame_routing_id);
-}
-
-bool ExtensionApiFrameIdMap::RenderFrameIdKey::operator==(
-    const RenderFrameIdKey& other) const {
-  return render_process_id == other.render_process_id &&
-         frame_routing_id == other.frame_routing_id;
-}
-
-ExtensionApiFrameIdMap::ExtensionApiFrameIdMap() {}
-
-ExtensionApiFrameIdMap::~ExtensionApiFrameIdMap() {}
+ExtensionApiFrameIdMap::~ExtensionApiFrameIdMap() = default;
 
 // static
 ExtensionApiFrameIdMap* ExtensionApiFrameIdMap::Get() {
@@ -112,13 +90,7 @@ int ExtensionApiFrameIdMap::GetParentFrameId(content::RenderFrameHost* rfh) {
 // static
 int ExtensionApiFrameIdMap::GetParentFrameId(
     content::NavigationHandle* navigation_handle) {
-  if (navigation_handle->IsInMainFrame())
-    return kInvalidFrameId;
-
-  if (navigation_handle->IsParentMainFrame())
-    return kTopFrameId;
-
-  return navigation_handle->GetParentFrame()->GetFrameTreeNodeId();
+  return GetFrameId(navigation_handle->GetParentFrame());
 }
 
 // static
@@ -147,11 +119,14 @@ content::RenderFrameHost* ExtensionApiFrameIdMap::GetRenderFrameHostById(
 }
 
 ExtensionApiFrameIdMap::FrameData ExtensionApiFrameIdMap::KeyToValue(
-    const RenderFrameIdKey& key,
+    content::GlobalFrameRoutingId key,
     bool require_live_frame) const {
-  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
-      key.render_process_id, key.frame_routing_id);
+  return KeyToValue(content::RenderFrameHost::FromID(key), require_live_frame);
+}
 
+ExtensionApiFrameIdMap::FrameData ExtensionApiFrameIdMap::KeyToValue(
+    content::RenderFrameHost* rfh,
+    bool require_live_frame) const {
   if (!rfh || (require_live_frame && !rfh->IsRenderFrameLive()))
     return FrameData();
 
@@ -166,15 +141,13 @@ ExtensionApiFrameIdMap::FrameData ExtensionApiFrameIdMap::KeyToValue(
 }
 
 ExtensionApiFrameIdMap::FrameData ExtensionApiFrameIdMap::GetFrameData(
-    int render_process_id,
-    int render_frame_id) {
+    content::GlobalFrameRoutingId rfh_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const RenderFrameIdKey key(render_process_id, render_frame_id);
-  auto frame_id_iter = deleted_frame_data_map_.find(key);
+  auto frame_id_iter = deleted_frame_data_map_.find(rfh_id);
   if (frame_id_iter != deleted_frame_data_map_.end())
     return frame_id_iter->second;
 
-  return KeyToValue(key, true /* require_live_frame */);
+  return KeyToValue(rfh_id, true /* require_live_frame */);
 }
 
 void ExtensionApiFrameIdMap::OnRenderFrameDeleted(
@@ -182,17 +155,17 @@ void ExtensionApiFrameIdMap::OnRenderFrameDeleted(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(rfh);
 
-  const RenderFrameIdKey key(rfh->GetProcess()->GetID(), rfh->GetRoutingID());
+  const content::GlobalFrameRoutingId key(rfh->GetGlobalFrameRoutingId());
   // TODO(http://crbug.com/522129): This is necessary right now because beacon
   // requests made in window.onunload may start after this has been called.
   // Delay the RemoveFrameData() call, so we will still have the frame data
   // cached when the beacon request comes in.
   deleted_frame_data_map_.insert(
-      {key, KeyToValue(key, false /* require_live_frame */)});
+      {key, KeyToValue(rfh, false /* require_live_frame */)});
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](ExtensionApiFrameIdMap* self, const RenderFrameIdKey& key) {
+          [](ExtensionApiFrameIdMap* self, content::GlobalFrameRoutingId key) {
             self->deleted_frame_data_map_.erase(key);
           },
           base::Unretained(this), key));

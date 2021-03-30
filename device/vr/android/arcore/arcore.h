@@ -37,10 +37,35 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCore {
   struct InitializeResult {
     std::unordered_set<device::mojom::XRSessionFeature> enabled_features;
 
-    InitializeResult(const std::unordered_set<device::mojom::XRSessionFeature>&
-                         enabled_features);
+    // If the depth sensing API was requested, the depth_configuration will
+    // contain the device-selected depth API usage and data format.
+
+    base::Optional<device::mojom::XRDepthConfig> depth_configuration;
+
+    InitializeResult(
+        const std::unordered_set<device::mojom::XRSessionFeature>&
+            enabled_features,
+        base::Optional<device::mojom::XRDepthConfig> depth_configuration);
     InitializeResult(const InitializeResult& other);
     ~InitializeResult();
+  };
+
+  struct DepthSensingConfiguration {
+    std::vector<device::mojom::XRDepthUsage> depth_usage_preference;
+    std::vector<device::mojom::XRDepthDataFormat> depth_data_format_preference;
+
+    DepthSensingConfiguration(
+        std::vector<device::mojom::XRDepthUsage> depth_usage_preference,
+        std::vector<device::mojom::XRDepthDataFormat>
+            depth_data_format_preference);
+    ~DepthSensingConfiguration();
+
+    DepthSensingConfiguration(const DepthSensingConfiguration& other);
+    DepthSensingConfiguration(DepthSensingConfiguration&& other);
+
+    DepthSensingConfiguration& operator=(
+        const DepthSensingConfiguration& other);
+    DepthSensingConfiguration& operator=(DepthSensingConfiguration&& other);
   };
 
   // Initializes the runtime and returns whether it was successful.
@@ -51,7 +76,8 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCore {
           required_features,
       const std::unordered_set<device::mojom::XRSessionFeature>&
           optional_features,
-      const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images) = 0;
+      const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images,
+      base::Optional<DepthSensingConfiguration> depth_sensing_config) = 0;
 
   // Returns the target framerate range in Hz. Actual capture frame rate will
   // vary within this range, i.e. lower in low light to increase exposure time.
@@ -63,6 +89,7 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCore {
   virtual void SetCameraTexture(uint32_t camera_texture_id) = 0;
 
   gfx::Transform GetCameraUvFromScreenUvTransform() const;
+  gfx::Transform GetDepthUvFromScreenUvTransform() const;
 
   virtual gfx::Transform GetProjectionMatrix(float near, float far) = 0;
 

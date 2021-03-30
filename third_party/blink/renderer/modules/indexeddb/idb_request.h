@@ -30,6 +30,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_IDB_REQUEST_H_
 
 #include <memory>
+#include <utility>
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
@@ -54,7 +55,6 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 
@@ -99,7 +99,11 @@ class MODULES_EXPORT IDBRequest : public EventTargetWithInlineData,
     // This is used for internal requests that should not show up in an
     // application's trace. Examples of internal requests are the requests
     // issued by DevTools, and the requests used to populate indexes.
-    explicit AsyncTraceState() = default;
+    AsyncTraceState() = default;
+
+    // Disallow copy and assign.
+    AsyncTraceState(const AsyncTraceState&) = delete;
+    AsyncTraceState& operator=(const AsyncTraceState&) = delete;
 
     // Creates an instance that produces begin/end events with the given name.
     //
@@ -157,8 +161,6 @@ class MODULES_EXPORT IDBRequest : public EventTargetWithInlineData,
     const char* trace_event_name_ = nullptr;
     // Uniquely generated ID that ties an async trace's begin and end events.
     size_t id_ = 0;
-
-    DISALLOW_COPY_AND_ASSIGN(AsyncTraceState);
   };
 
   static IDBRequest* Create(ScriptState*,
@@ -275,10 +277,6 @@ class MODULES_EXPORT IDBRequest : public EventTargetWithInlineData,
       bool key_only,
       mojo::PendingReceiver<mojom::blink::IDBDatabaseGetAllResultSink>
           receiver);
-
-  // Only used in webkitGetDatabaseNames(), which is deprecated and hopefully
-  // going away soon.
-  void EnqueueResponse(const Vector<String>&);
 
   // Only IDBOpenDBRequest instances should receive these:
   virtual void EnqueueBlocked(int64_t old_version) { NOTREACHED(); }

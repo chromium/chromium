@@ -31,15 +31,13 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_DRAGGABLE_REGION_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_DRAGGABLE_REGION_H_
 
-#include "third_party/blink/public/platform/web_common.h"
-#include "third_party/blink/public/platform/web_rect.h"
-#include "third_party/blink/public/platform/web_string.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
 struct WebDraggableRegion {
   bool draggable;
-  WebRect bounds;
+  gfx::Rect bounds;
 };
 
 }  // namespace blink

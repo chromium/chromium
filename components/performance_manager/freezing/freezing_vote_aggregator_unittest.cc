@@ -75,12 +75,9 @@ class FreezingVoteAggregatorTest : public testing::Test {
 };
 
 TEST_F(FreezingVoteAggregatorTest, EndToEnd) {
-  FreezingVotingChannelWrapper voter0;
-  voter0.SetVotingChannel(aggregator()->GetVotingChannel());
-  FreezingVotingChannelWrapper voter1;
-  voter1.SetVotingChannel(aggregator()->GetVotingChannel());
-  FreezingVotingChannelWrapper voter2;
-  voter2.SetVotingChannel(aggregator()->GetVotingChannel());
+  FreezingVotingChannel voter0 = aggregator()->GetVotingChannel();
+  FreezingVotingChannel voter1 = aggregator()->GetVotingChannel();
+  FreezingVotingChannel voter2 = aggregator()->GetVotingChannel();
 
   // Create some dummy votes for each PageNode and immediately expect
   // them to propagate upwards.
@@ -162,13 +159,15 @@ TEST_F(FreezingVoteAggregatorTest, EndToEnd) {
       observer().HasVote(aggregator_voter_id(), kPageNode0, kCanFreezeVote1));
   EXPECT_TRUE(observer().HasVote(aggregator_voter_id(), kPageNode1,
                                  kCannotFreezeVote1));
+
+  // Clear the votes.
+  voter0.InvalidateVote(kPageNode0);
+  voter0.InvalidateVote(kPageNode1);
 }
 
 TEST_F(FreezingVoteAggregatorTest, VoteIntegrity) {
-  FreezingVotingChannelWrapper voter0;
-  voter0.SetVotingChannel(aggregator()->GetVotingChannel());
-  FreezingVotingChannelWrapper voter1;
-  voter1.SetVotingChannel(aggregator()->GetVotingChannel());
+  FreezingVotingChannel voter0 = aggregator()->GetVotingChannel();
+  FreezingVotingChannel voter1 = aggregator()->GetVotingChannel();
 
   // Submit a first vote, this should be the only vote tracked by the
   // aggregator.
@@ -222,10 +221,8 @@ TEST_F(FreezingVoteAggregatorTest, VoteIntegrity) {
 // Tests that submitting a second vote with the same value as the first one does
 // not change the upstreamed vote.
 TEST_F(FreezingVoteAggregatorTest, VoteConsistency) {
-  FreezingVotingChannelWrapper voter0;
-  voter0.SetVotingChannel(aggregator()->GetVotingChannel());
-  FreezingVotingChannelWrapper voter1;
-  voter1.SetVotingChannel(aggregator()->GetVotingChannel());
+  FreezingVotingChannel voter0 = aggregator()->GetVotingChannel();
+  FreezingVotingChannel voter1 = aggregator()->GetVotingChannel();
 
   // Submit a first vote.
   voter0.SubmitVote(kPageNode0, kCanFreezeVote0);

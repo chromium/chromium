@@ -4,10 +4,13 @@
 <translation id="1075622780330595106">V poslednom čase ste nepoužili tento počet kariet: <ph name="NUMBER_OF_TABS" />. Chcete ich zavrieť?</translation>
 <translation id="1181037720776840403">Odstrániť</translation>
 <translation id="125153950246128346">Klepnutím zobrazíte ďalšiu kartu</translation>
+<translation id="1302104331113804646">Nastavenia sledovania cien</translation>
+<translation id="1378979118429748177">Dostávajte upozornenia pri poklesoch cien</translation>
 <translation id="1657719826150349398">Presunúť kartu nadol</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> karta}few{<ph name="TABS_COUNT_MANY" /> karty}many{<ph name="TABS_COUNT_MANY" /> tabs}other{<ph name="TABS_COUNT_MANY" /> kariet}}</translation>
 <translation id="2277224997687551299">Upraviť názov skupiny</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Odstrániť <ph name="TABS_COUNT_ONE" /> vybranú kartu zo skupiny}few{Odstrániť <ph name="TABS_COUNT_MANY" /> vybrané karty zo skupiny}many{Remove <ph name="TABS_COUNT_MANY" /> selected tabs from group.}other{Odstrániť <ph name="TABS_COUNT_MANY" /> vybraných kariet zo skupiny}}</translation>
+<translation id="2479148705183875116">Prejsť do Nastavení</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Zbaliť <ph name="TABS_COUNT_ONE" /> kartu}few{Zbaliť skupinu s <ph name="TABS_COUNT_MANY" /> kartami}many{Collapse tab group with <ph name="TABS_COUNT_MANY" /> tabs.}other{Zbaliť skupinu s <ph name="TABS_COUNT_MANY" /> kartami}}</translation>
 <translation id="2569352796411618312">Návrh: V poslednom čase ste nepoužili viacero kariet (<ph name="NUMBER_OF_TABS" />). Chcete ich zavrieť?</translation>
 <translation id="257674075312929031">Skupina</translation>
@@ -15,13 +18,16 @@
 <translation id="2671423594960767771">Zdieľať skupinu</translation>
 <translation id="2759453070259087442">Rozbaľte skupinu kariet <ph name="TITLE_OF_GROUP" /> pomocou <ph name="NUMBER_OF_TABS" /> kariet.</translation>
 <translation id="2977480621796371840">Odstrániť zo skupiny</translation>
+<translation id="3291470810748040983">Keď bude na otvorenej karte nižšia cena, dostanete upozornenie</translation>
 <translation id="3328308545011660196">Návrh: Zdá, sa že niekoľko (<ph name="NUMBER_OF_TABS" />) kariet spolu súvisí. Chcete ich zoskupiť?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Zbaliť <ph name="TABS_COUNT_ONE" /> kartu}few{Zbaliť skupinu <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> kartami}many{Collapse <ph name="TITLE_OF_GROUP" /> tab group with <ph name="TABS_COUNT_MANY" /> tabs.}other{Zbaliť skupinu <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> kartami}}</translation>
+<translation id="3882834874697329510">Ak chcete dostať upozornenie, keď sa na otvorenej karte zníži cena, zapnite upozornenia v Nastaveniach.</translation>
+<translation id="3940195383040445971">Sledovať ceny na kartách</translation>
+<translation id="3996880007329611795">Dostávať upozornenia</translation>
 <translation id="4133493477912226187">Zdá sa, že niekoľko (<ph name="NUMBER_OF_TABS" />) kariet spolu súvisí. Chcete ich zoskupiť?</translation>
 <translation id="4212246570487010370">Pokračovať v prehliadaní</translation>
 <translation id="4450893287417543264">Nabudúce nezobrazovať</translation>
 <translation id="4648718555153979859">Tu sú zoskupené vaše karty</translation>
-<translation id="4922064041913095674">Zistite, ktorá položka na vašich otvorených kartách má lepšiu cenu</translation>
 <translation id="492284538114688557">Zistil sa pokles ceny</translation>
 <translation id="5007392906805964215">Prezrieť</translation>
 <translation id="5073204694187207510">Skryť mriežku na celú obrazovku</translation>
@@ -30,6 +36,7 @@
 <translation id="5533021382642990449">Zobraziť neskôr</translation>
 <translation id="5558362125926932819">Zavrieť skupinu s <ph name="NUMBER_OF_TABS" /> kartami</translation>
 <translation id="5580090775658607195">Počet zoskupených kariet: <ph name="TAB_COUNT" /></translation>
+<translation id="575494663145460764">Chcete dostávať upozornenia na poklesy cien?</translation>
 <translation id="58326064309361797">Karty zoskupíte presunutím</translation>
 <translation id="5846292395804797011">Zavrieť skupinu <ph name="TITLE_OF_GROUP" /> s <ph name="NUMBER_OF_TABS" /> kartami</translation>
 <translation id="6040143037577758943">Zavrieť</translation>
@@ -41,6 +48,7 @@
 <translation id="6856809498882026482">Skryť režim hromadného výberu</translation>
 <translation id="7151209024774799310">Odstrániť karty zo skupiny</translation>
 <translation id="7204204600596740190">Režim hromadného výberu</translation>
+<translation id="7352298686197644113">Zistite, ktorá položka na vašich otvorených kartách má nižšiu cenu</translation>
 <translation id="753732157349120914">Prepínač kariet</translation>
 <translation id="7559245342362162951">Zobraziť karty skupiny v mriežke na celú obrazovku</translation>
 <translation id="7792771145871471484">Prezrieť návrhy.</translation>
@@ -52,7 +60,10 @@
 <translation id="8304833501377495048">Už nechcete zobrazovať panel kariet?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Zavrieť <ph name="TABS_COUNT_ONE" /> vybranú kartu}few{Zavrieť <ph name="TABS_COUNT_MANY" /> vybrané karty}many{Close <ph name="TABS_COUNT_MANY" /> selected tabs}other{Zavrieť <ph name="TABS_COUNT_MANY" /> vybraných kariet}}</translation>
 <translation id="8557923272772633250">Rozbaľte skupinu s <ph name="NUMBER_OF_TABS" /> kartami.</translation>
+<translation id="860282621117673749">Upozornenia na poklesy cien</translation>
+<translation id="8714939927607906138">Nižšia cena</translation>
 <translation id="8749939518995770034">Zavretý panel kariet</translation>
+<translation id="8820741577754260431">Zobrazte si na kartách poklesy cien</translation>
 <translation id="9150694013019234766">Prepínajte karty v skupine kariet v dolnej časti obrazovky</translation>
 <translation id="9169594135889675189">Pridať novú kartu do skupiny</translation>
 <translation id="959682366969460160">Usporiadanie položiek</translation>

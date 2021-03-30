@@ -13,9 +13,9 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-import '../icons.m.js';
-import '../settings_shared_css.m.js';
-import '../settings_vars_css.m.js';
+import '../icons.js';
+import '../settings_shared_css.js';
+import '../settings_vars_css.js';
 import './passwords_shared_css.js';
 
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
@@ -57,23 +57,13 @@ Polymer({
       value: null,
     },
 
-
-    /** @private */
-    editPasswordsInSettings_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('editPasswordsInSettings');
-      }
-    },
-
     /**
-     * Check if editPasswordsInSettings flag is true and entry isn't federation
-     * credential.
+     * Check if entry isn't federation credential.
      * @private
      */
     isEditDialog_: {
       type: Boolean,
-      computed: 'computeIsEditDialog_(editPasswordsInSettings_, entry)'
+      computed: 'computeIsEditDialog_(entry)',
     },
 
     /**
@@ -129,13 +119,12 @@ Polymer({
   },
 
   /**
-   * Helper function that checks if editPasswordsInSettings flag is true and
-   * entry isn't federation credential.
+   * Helper function that checks entry isn't federation credential.
    * @return {boolean}
    * @private
    */
   computeIsEditDialog_() {
-    return this.editPasswordsInSettings_ && !this.entry.federationText;
+    return !this.entry.federationText;
   },
 
   /**

@@ -103,7 +103,7 @@ bool AppModalDialogViewViews::IsShowing() const {
 //////////////////////////////////////////////////////////////////////////////
 // AppModalDialogViewViews, views::DialogDelegate implementation:
 
-base::string16 AppModalDialogViewViews::GetWindowTitle() const {
+std::u16string AppModalDialogViewViews::GetWindowTitle() const {
   return controller_->title();
 }
 

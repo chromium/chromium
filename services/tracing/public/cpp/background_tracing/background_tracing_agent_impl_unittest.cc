@@ -5,6 +5,7 @@
 #include "services/tracing/public/cpp/background_tracing/background_tracing_agent_impl.h"
 
 #include "base/run_loop.h"
+#include "base/task/thread_pool.h"
 
 #include "base/metrics/histogram_macros.h"
 #include "base/test/task_environment.h"
@@ -67,6 +68,8 @@ class BackgroundTracingAgentImplTest : public testing::Test {
 
   BackgroundTracingAgentClientRecorder* recorder() const { return recorder_; }
 
+  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
+
  private:
   base::test::TaskEnvironment task_environment_;
   mojo::Remote<tracing::mojom::BackgroundTracingAgentProvider> provider_;
@@ -79,7 +82,7 @@ class BackgroundTracingAgentImplTest : public testing::Test {
 };
 
 TEST_F(BackgroundTracingAgentImplTest, TestInitialize) {
-  base::RunLoop().RunUntilIdle();
+  RunUntilIdle();
   EXPECT_EQ(1, recorder()->on_initialized_count());
 }
 
@@ -88,19 +91,56 @@ TEST_F(BackgroundTracingAgentImplTest, TestHistogramDoesNotTrigger) {
 
   agent()->SetUMACallback("foo1", 20000, 25000, true);
 
-  base::RunLoop().RunUntilIdle();
+  RunUntilIdle();
 
   EXPECT_EQ(1, recorder()->on_initialized_count());
   EXPECT_EQ(0, recorder()->on_trigger_background_trace_count());
   EXPECT_EQ(0, recorder()->on_abort_background_trace_count());
 }
 
-TEST_F(BackgroundTracingAgentImplTest, TestHistogramTriggers) {
+TEST_F(BackgroundTracingAgentImplTest, TestHistogramTriggers_ExistingSample) {
+  // Ensure that a sample exists by the time SetUMACallback is processed.
   LOCAL_HISTOGRAM_COUNTS("foo2", 2);
 
   agent()->SetUMACallback("foo2", 1, 3, true);
 
-  base::RunLoop().RunUntilIdle();
+  // RunLoop ensures that SetUMACallback and OnTriggerBackgroundTrace mojo
+  // messages are processed.
+  RunUntilIdle();
+
+  EXPECT_EQ(1, recorder()->on_initialized_count());
+  EXPECT_EQ(1, recorder()->on_trigger_background_trace_count());
+  EXPECT_EQ(0, recorder()->on_abort_background_trace_count());
+  EXPECT_EQ("foo2", recorder()->on_trigger_background_trace_histogram_name());
+}
+
+TEST_F(BackgroundTracingAgentImplTest, TestHistogramTriggers_SameThread) {
+  agent()->SetUMACallback("foo2", 1, 3, true);
+  // RunLoop ensures that SetUMACallback mojo message is processed.
+  RunUntilIdle();
+
+  LOCAL_HISTOGRAM_COUNTS("foo2", 2);
+
+  // RunLoop ensures that OnTriggerBackgroundTrace mojo message is processed.
+  RunUntilIdle();
+
+  EXPECT_EQ(1, recorder()->on_initialized_count());
+  EXPECT_EQ(1, recorder()->on_trigger_background_trace_count());
+  EXPECT_EQ(0, recorder()->on_abort_background_trace_count());
+  EXPECT_EQ("foo2", recorder()->on_trigger_background_trace_histogram_name());
+}
+
+TEST_F(BackgroundTracingAgentImplTest, TestHistogramTriggers_CrossThread) {
+  agent()->SetUMACallback("foo2", 1, 3, true);
+  // RunLoop ensures that SetUMACallback mojo message is processed.
+  RunUntilIdle();
+
+  base::ThreadPool::PostTask(
+      FROM_HERE, base::BindOnce([]() { LOCAL_HISTOGRAM_COUNTS("foo2", 2); }));
+
+  // RunLoop ensures that ThreadPool::PostTask and OnTriggerBackgroundTrace mojo
+  // message are processed.
+  RunUntilIdle();
 
   EXPECT_EQ(1, recorder()->on_initialized_count());
   EXPECT_EQ(1, recorder()->on_trigger_background_trace_count());
@@ -113,7 +153,7 @@ TEST_F(BackgroundTracingAgentImplTest, TestHistogramAborts) {
 
   agent()->SetUMACallback("foo3", 1, 3, false);
 
-  base::RunLoop().RunUntilIdle();
+  RunUntilIdle();
 
   EXPECT_EQ(1, recorder()->on_initialized_count());
   EXPECT_EQ(0, recorder()->on_trigger_background_trace_count());

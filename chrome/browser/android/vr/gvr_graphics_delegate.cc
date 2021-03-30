@@ -160,12 +160,20 @@ void GvrGraphicsDelegate::Init(
 
 void GvrGraphicsDelegate::InitializeGl(gfx::AcceleratedWidget window,
                                        bool start_in_webxr_mode) {
+  // We can only share native GL resources with GVR, and GVR doesn't support
+  // ANGLE, so disable it.
+  // TODO(crbug.com/1170580): support ANGLE with cardboard?
+  gl::init::DisableANGLE();
+
   if (gl::GetGLImplementation() == gl::kGLImplementationNone &&
       !gl::init::InitializeGLOneOff()) {
     LOG(ERROR) << "gl::init::InitializeGLOneOff failed";
     browser_->ForceExitVr();
     return;
   }
+
+  DCHECK(gl::GetGLImplementation() != gl::kGLImplementationEGLANGLE);
+
   scoped_refptr<gl::GLSurface> surface;
   if (window) {
     DCHECK(!surfaceless_rendering_);

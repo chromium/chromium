@@ -8,12 +8,13 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/vector_icons.h"
 
 namespace views {
 
 MdTextButtonWithDownArrow::MdTextButtonWithDownArrow(PressedCallback callback,
-                                                     const base::string16& text)
+                                                     const std::u16string& text)
     : MdTextButton(std::move(callback), text) {
   SetHorizontalAlignment(gfx::ALIGN_RIGHT);
   SetImageLabelSpacing(LayoutProvider::Get()->GetDistanceMetric(
@@ -44,5 +45,8 @@ void MdTextButtonWithDownArrow::SetDropArrowImage() {
       color_utils::DeriveDefaultIconColor(label()->GetEnabledColor()));
   SetImage(Button::STATE_NORMAL, drop_arrow_image);
 }
+
+BEGIN_METADATA(MdTextButtonWithDownArrow, views::MdTextButton)
+END_METADATA
 
 }  // namespace views

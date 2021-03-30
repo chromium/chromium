@@ -49,6 +49,8 @@ class FakeMultiDeviceSetupClient : public MultiDeviceSetupClient {
       mojom::EventTypeForDebugging expected_type,
       bool success);
 
+  size_t NumPendingSetFeatureEnabledStateCalls() const;
+
   size_t num_remove_host_device_called() {
     return num_remove_host_device_called_;
   }

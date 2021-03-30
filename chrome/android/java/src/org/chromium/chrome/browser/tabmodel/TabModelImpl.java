@@ -13,17 +13,16 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.HistoricalTabSaver;
 import org.chromium.chrome.browser.tab.InterceptNavigationDelegateTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
-import org.chromium.chrome.browser.tab.state.PersistedTabData;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.components.external_intents.InterceptNavigationDelegateImpl;
@@ -31,6 +30,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.mojom.WindowOpenDisposition;
+import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 import java.util.ArrayList;
@@ -59,7 +59,6 @@ public class TabModelImpl extends TabModelJniBridge {
     private final TabCreator mIncognitoTabCreator;
     private final TabModelOrderController mOrderController;
     private final TabContentManager mTabContentManager;
-    private final TabPersistentStore mTabSaver;
     private final TabModelDelegate mModelDelegate;
     private final ObserverList<TabModelObserver> mObservers;
     private final NextTabPolicySupplier mNextTabPolicySupplier;
@@ -87,18 +86,17 @@ public class TabModelImpl extends TabModelJniBridge {
     private boolean mIsUndoSupported = true;
     private boolean mActive;
 
-    public TabModelImpl(@NonNull Profile profile, boolean isTabbedActivity,
+    public TabModelImpl(@NonNull Profile profile, @ActivityType int activityType,
             TabCreator regularTabCreator, TabCreator incognitoTabCreator,
             TabModelOrderController orderController, TabContentManager tabContentManager,
-            TabPersistentStore tabSaver, NextTabPolicySupplier nextTabPolicySupplier,
+            NextTabPolicySupplier nextTabPolicySupplier,
             AsyncTabParamsManager asyncTabParamsManager, TabModelDelegate modelDelegate,
             boolean supportUndo) {
-        super(profile, isTabbedActivity);
+        super(profile, activityType);
         mRegularTabCreator = regularTabCreator;
         mIncognitoTabCreator = incognitoTabCreator;
         mOrderController = orderController;
         mTabContentManager = tabContentManager;
-        mTabSaver = tabSaver;
         mNextTabPolicySupplier = nextTabPolicySupplier;
         mAsyncTabParamsManager = asyncTabParamsManager;
         mModelDelegate = modelDelegate;
@@ -355,9 +353,6 @@ public class TabModelImpl extends TabModelJniBridge {
             }
         }
 
-        // Re-save the tab list now that it is being kept.
-        mTabSaver.saveTabListAsynchronously();
-
         for (TabModelObserver obs : mObservers) obs.tabClosureUndone(tab);
     }
 
@@ -449,7 +444,7 @@ public class TabModelImpl extends TabModelJniBridge {
 
     @Override
     public void closeAllTabs(boolean allowDelegation, boolean uponExit) {
-        mTabSaver.cancelLoadingTabs(isIncognito());
+        for (TabModelObserver obs : mObservers) obs.willCloseAllTabs(isIncognito());
 
         if (uponExit) {
             commitAllTabClosures();
@@ -662,11 +657,8 @@ public class TabModelImpl extends TabModelJniBridge {
      */
     private void finalizeTabClosure(Tab tab, boolean notifyTabClosureCommitted) {
         if (mTabContentManager != null) mTabContentManager.removeTabThumbnail(tab.getId());
-        mTabSaver.removeTabFromQueues(tab);
-        PersistedTabData.onTabClose(tab);
 
-        if (!isIncognito()) HistoricalTabSaver.createHistoricalTab(tab);
-
+        for (TabModelObserver obs : mObservers) obs.didCloseTab(tab);
         for (TabModelObserver obs : mObservers) obs.didCloseTab(tab.getId(), tab.isIncognito());
         if (notifyTabClosureCommitted) {
             for (TabModelObserver obs : mObservers) obs.tabClosureCommitted(tab);
@@ -819,7 +811,7 @@ public class TabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public void openNewTab(Tab parent, String url, @Nullable Origin initiatorOrigin,
+    public void openNewTab(Tab parent, GURL url, @Nullable Origin initiatorOrigin,
             String extraHeaders, ResourceRequestBody postData, int disposition,
             boolean persistParentage, boolean isRendererInitiated) {
         if (parent.isClosing()) return;

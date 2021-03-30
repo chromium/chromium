@@ -11,6 +11,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -26,14 +27,15 @@
 #include "content/public/browser/resource_context.h"
 #include "crypto/nss_util.h"
 #include "net/base/net_errors.h"
+#include "net/cert/cert_database.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util_nss.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/certificate_provider/certificate_provider.h"
-#include "chrome/browser/chromeos/certificate_provider/certificate_provider_service.h"
-#include "chrome/browser/chromeos/certificate_provider/certificate_provider_service_factory.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/chromeos/policy/user_network_configuration_updater.h"
 #include "chrome/browser/chromeos/policy/user_network_configuration_updater_factory.h"
 #include "chromeos/network/onc/certificate_scope.h"
@@ -54,7 +56,7 @@ using content::BrowserThread;
 //                  \--------------------------------------v
 //                                CertificateManagerModel::GetCertDBOnIOThread
 //                                                         |
-//                                     GetNSSCertDatabaseForResourceContext
+//                                               NssCertDatabaseGetter
 //                                                         |
 //                               CertificateManagerModel::DidGetCertDBOnIOThread
 //                                                         |
@@ -178,13 +180,23 @@ class CertificateManagerModel::CertsSource {
 
 namespace {
 // Provides certificates enumerable from a NSSCertDatabase.
-class CertsSourcePlatformNSS : public CertificateManagerModel::CertsSource {
+class CertsSourcePlatformNSS : public CertificateManagerModel::CertsSource,
+                               net::CertDatabase::Observer {
  public:
   CertsSourcePlatformNSS(base::RepeatingClosure certs_source_updated_callback,
                          net::NSSCertDatabase* nss_cert_database)
       : CertsSource(certs_source_updated_callback),
-        cert_db_(nss_cert_database) {}
+        cert_db_(nss_cert_database) {
+    // Observe CertDatabase changes to refresh when it's updated.
+    cert_database_observation_.Observe(net::CertDatabase::GetInstance());
+  }
   ~CertsSourcePlatformNSS() override = default;
+
+  // net::CertDatabase::Observer
+  void OnCertDBChanged() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    Refresh();
+  }
 
   void Refresh() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -210,10 +222,7 @@ class CertsSourcePlatformNSS : public CertificateManagerModel::CertsSource {
 
   bool Delete(CERTCertificate* cert) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    bool result = cert_db_->DeleteCertAndKey(cert);
-    if (result)
-      Refresh();
-    return result;
+    return cert_db_->DeleteCertAndKey(cert);
   }
 
  private:
@@ -236,7 +245,7 @@ class CertsSourcePlatformNSS : public CertificateManagerModel::CertsSource {
           x509_certificate_model::GetType(cert_info.cert.get());
       bool can_be_deleted = !cert_info.on_read_only_slot;
       bool hardware_backed = cert_info.hardware_backed;
-      base::string16 name = GetName(cert_info.cert.get(), hardware_backed);
+      std::u16string name = GetName(cert_info.cert.get(), hardware_backed);
 
       cert_infos.push_back(std::make_unique<CertificateManagerModel::CertInfo>(
           /*cert=*/std::move(cert_info.cert), type, name, can_be_deleted,
@@ -249,9 +258,9 @@ class CertsSourcePlatformNSS : public CertificateManagerModel::CertsSource {
     SetCertInfos(std::move(cert_infos));
   }
 
-  static base::string16 GetName(CERTCertificate* cert,
+  static std::u16string GetName(CERTCertificate* cert,
                                 bool is_hardware_backed) {
-    base::string16 name =
+    std::u16string name =
         base::UTF8ToUTF16(x509_certificate_model::GetCertNameOrNickname(cert));
     if (is_hardware_backed) {
       name = l10n_util::GetStringFUTF16(
@@ -263,6 +272,10 @@ class CertsSourcePlatformNSS : public CertificateManagerModel::CertsSource {
 
   // The source NSSCertDatabase used for listing certificates.
   net::NSSCertDatabase* cert_db_;
+
+  // ScopedObservation to keep track of the observer for net::CertDatabase.
+  base::ScopedObservation<net::CertDatabase, net::CertDatabase::Observer>
+      cert_database_observation_{this};
 
   base::WeakPtrFactory<CertsSourcePlatformNSS> weak_ptr_factory_{this};
 
@@ -350,7 +363,7 @@ class CertsSourcePolicy : public CertificateManagerModel::CertsSource,
         continue;
 
       net::CertType type = x509_certificate_model::GetType(nss_cert.get());
-      base::string16 cert_name = base::UTF8ToUTF16(
+      std::u16string cert_name = base::UTF8ToUTF16(
           x509_certificate_model::GetCertNameOrNickname(nss_cert.get()));
       cert_infos.push_back(std::make_unique<CertificateManagerModel::CertInfo>(
           std::move(nss_cert), type, std::move(cert_name),
@@ -414,9 +427,9 @@ class CertsSourceExtensions : public CertificateManagerModel::CertsSource {
       if (!nss_cert)
         continue;
 
-      base::string16 cert_name = base::UTF8ToUTF16(
+      std::u16string cert_name = base::UTF8ToUTF16(
           x509_certificate_model::GetCertNameOrNickname(nss_cert.get()));
-      base::string16 display_name = l10n_util::GetStringFUTF16(
+      std::u16string display_name = l10n_util::GetStringFUTF16(
           IDS_CERT_MANAGER_EXTENSION_PROVIDED_FORMAT, std::move(cert_name));
 
       cert_infos.push_back(std::make_unique<CertificateManagerModel::CertInfo>(
@@ -443,7 +456,7 @@ class CertsSourceExtensions : public CertificateManagerModel::CertsSource {
 
 CertificateManagerModel::CertInfo::CertInfo(net::ScopedCERTCertificate cert,
                                             net::CertType type,
-                                            base::string16 name,
+                                            std::u16string name,
                                             bool can_be_deleted,
                                             bool untrusted,
                                             Source source,
@@ -498,10 +511,10 @@ void CertificateManagerModel::Create(
 #endif
 
   content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CertificateManagerModel::GetCertDBOnIOThread,
-                     std::move(params), browser_context->GetResourceContext(),
-                     observer, std::move(callback)));
+      FROM_HERE, base::BindOnce(&CertificateManagerModel::GetCertDBOnIOThread,
+                                std::move(params),
+                                CreateNSSCertDatabaseGetter(browser_context),
+                                observer, std::move(callback)));
 }
 
 CertificateManagerModel::CertificateManagerModel(
@@ -613,31 +626,21 @@ void CertificateManagerModel::FilterAndBuildOrgGroupingMap(
 
 int CertificateManagerModel::ImportFromPKCS12(PK11SlotInfo* slot_info,
                                               const std::string& data,
-                                              const base::string16& password,
+                                              const std::u16string& password,
                                               bool is_extractable) {
-  int result = cert_db_->ImportFromPKCS12(slot_info, data, password,
-                                          is_extractable, nullptr);
-  if (result == net::OK)
-    Refresh();
-  return result;
+  return cert_db_->ImportFromPKCS12(slot_info, data, password, is_extractable,
+                                    nullptr);
 }
 
 int CertificateManagerModel::ImportUserCert(const std::string& data) {
-  int result = cert_db_->ImportUserCert(data);
-  if (result == net::OK)
-    Refresh();
-  return result;
+  return cert_db_->ImportUserCert(data);
 }
 
 bool CertificateManagerModel::ImportCACerts(
     const net::ScopedCERTCertificateList& certificates,
     net::NSSCertDatabase::TrustBits trust_bits,
     net::NSSCertDatabase::ImportCertFailureList* not_imported) {
-  const size_t num_certs = certificates.size();
-  bool result = cert_db_->ImportCACerts(certificates, trust_bits, not_imported);
-  if (result && not_imported->size() != num_certs)
-    Refresh();
-  return result;
+  return cert_db_->ImportCACerts(certificates, trust_bits, not_imported);
 }
 
 bool CertificateManagerModel::ImportServerCert(
@@ -709,7 +712,7 @@ void CertificateManagerModel::DidGetCertDBOnIOThread(
 // static
 void CertificateManagerModel::GetCertDBOnIOThread(
     std::unique_ptr<Params> params,
-    content::ResourceContext* resource_context,
+    NssCertDatabaseGetter database_getter,
     CertificateManagerModel::Observer* observer,
     CreationCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -718,8 +721,8 @@ void CertificateManagerModel::GetCertDBOnIOThread(
       base::BindOnce(&CertificateManagerModel::DidGetCertDBOnIOThread,
                      std::move(params), observer, std::move(callback)));
 
-  net::NSSCertDatabase* cert_db = GetNSSCertDatabaseForResourceContext(
-      resource_context, did_get_cert_db_callback);
+  net::NSSCertDatabase* cert_db =
+      std::move(database_getter).Run(did_get_cert_db_callback);
   // If the NSS database was already available, |cert_db| is non-null and
   // |did_get_cert_db_callback| has not been called. Call it explicitly.
   if (cert_db)

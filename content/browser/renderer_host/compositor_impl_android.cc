@@ -341,8 +341,6 @@ void CompositorImpl::SetRootWindow(gfx::NativeWindow root_window) {
   }
 
   root_window_ = root_window;
-  if (base::FeatureList::IsEnabled(features::kForce60HzRefreshRate))
-    root_window_->SetForce60HzRefreshRate();
   root_window_->SetLayer(root_layer ? root_layer : cc::Layer::Create());
   root_window_->GetLayer()->SetBounds(size_);
   root_window->AttachCompositor(this);
@@ -489,8 +487,11 @@ void CompositorImpl::TearDownDisplayAndUnregisterRootFrameSink() {
     // execution of this call.
     display_private_->ForceImmediateDrawAndSwapIfPossible();
   }
-  GetHostFrameSinkManager()->InvalidateFrameSinkId(frame_sink_id_);
+  // Reset |display_private_| first since InvalidateFrameSinkId() will send a
+  // sync IPC. This guards against reentrant code using |display_private_|
+  // before it can be reset.
   display_private_.reset();
+  GetHostFrameSinkManager()->InvalidateFrameSinkId(frame_sink_id_);
 }
 
 void CompositorImpl::RegisterRootFrameSink() {
@@ -917,6 +918,11 @@ void CompositorImpl::CacheBackBufferForCurrentSurface() {
 
 void CompositorImpl::EvictCachedBackBuffer() {
   cached_back_buffer_.reset();
+}
+
+void CompositorImpl::PreserveChildSurfaceControls() {
+  if (display_private_)
+    display_private_->PreserveChildSurfaceControls();
 }
 
 void CompositorImpl::RequestPresentationTimeForNextFrame(

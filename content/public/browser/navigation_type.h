@@ -13,22 +13,17 @@ enum NavigationType {
   // Unknown type.
   NAVIGATION_TYPE_UNKNOWN,
 
-  // A new page was navigated to in the main frame. This covers all cases where
+  // A new entry was navigated to in the main frame. This covers all cases where
   // the main frame navigated and a new navigation entry was created. This means
-  // cases like navigations to a hash on the same page are NEW_PAGE, not
-  // IN_PAGE. (Navigation entries created by subframe navigations are
-  // NEW_SUBFRAME.)
-  NAVIGATION_TYPE_NEW_PAGE,
+  // cases like navigations to a hash on the same document are NEW_ENTRY.
+  // (Navigation entries created by subframe navigations are NEW_SUBFRAME.)
+  NAVIGATION_TYPE_NEW_ENTRY,
 
-  // Renavigating to an existing navigation entry. This is the case for history
-  // navigation, reloads, and location.replace().
-  NAVIGATION_TYPE_EXISTING_PAGE,
-
-  // The same page has been reloaded as a result of the user requesting
-  // navigation to that same page (like pressing Enter in the URL bar). This
-  // is not the same as an in-page navigation because we'll actually have a
-  // pending entry for the load, which is then meaningless.
-  NAVIGATION_TYPE_SAME_PAGE,
+  // Navigating to an existing navigation entry. This is the case for session
+  // history navigations, reloads, and history.replaceState(). It also includes
+  // reloads as a result of the user requesting a navigation to the same URL
+  // (e.g., pressing Enter in the URL bar).
+  NAVIGATION_TYPE_EXISTING_ENTRY,
 
   // A new subframe was manually navigated by the user. We will create a new
   // NavigationEntry so they can go back to the previous subframe content

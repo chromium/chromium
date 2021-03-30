@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+bluetooth_test(
+    () => {
+      function assert_expected_events(events) {
+        assert_equals(events.length, 4);
+        assert_equals(events[0], 'chooser-opened(https://web-platform.test:8444)');
+        assert_equals(events[1], 'discovering');
+        let idsByName = new AddDeviceEventSet();
+        idsByName.assert_add_device_event(events[2]);
+        assert_true(idsByName.has('Heart Rate Device'));
+        assert_equals(events[3], 'discovery-idle');
+        return idsByName;
+      };
+
+      setBluetoothManualChooser(true);
+      // Open a chooser.
+      let firstRequestDevicePromise =
+          setBluetoothFakeAdapter('HeartRateAdapter')
+              .then(
+                  () => assert_promise_rejects_with_message(
+                      requestDeviceWithTrustedClick(
+                          {filters: [{services: ['heart_rate']}]}),
+                      new DOMException(
+                          'User cancelled the requestDevice() chooser.',
+                          'NotFoundError')));
+
+      return getBluetoothManualChooserEvents(4)
+          .then(assert_expected_events)
+          .then(() => {
+            // Open another chooser.
+            let secondRequestDevicePromise =
+                requestDeviceWithTrustedClick(
+                    {filters: [{services: ['heart_rate']}]})
+                    .then(
+                        device => assert_equals(
+                            device.constructor.name, 'BluetoothDevice'));
+            return getBluetoothManualChooserEvents(4)
+                .then(assert_expected_events)
+                .then(idsByName => {
+                  sendBluetoothManualChooserEvent(
+                      'selected', idsByName.get('Heart Rate Device'));
+                  return Promise.all(
+                      [firstRequestDevicePromise, secondRequestDevicePromise]);
+                });
+          });
+    },
+    'A second call to requestDevice with the chooser opened will close the ' +
+        'previous chooser.');
+</script>

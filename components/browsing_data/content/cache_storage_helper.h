@@ -15,10 +15,10 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
-#include "content/public/browser/cache_storage_context.h"
 #include "url/origin.h"
 
 namespace content {
+class StoragePartition;
 struct StorageUsageInfo;
 }
 
@@ -37,7 +37,7 @@ class CacheStorageHelper
 
   // Create a CacheStorageHelper instance for the Cache Storage
   // stored in |context|'s associated profile's user data directory.
-  explicit CacheStorageHelper(content::CacheStorageContext* context);
+  explicit CacheStorageHelper(content::StoragePartition* partition);
 
   // Starts the fetching process, which will notify its completion via
   // |callback|. This must be called only in the UI thread.
@@ -49,7 +49,7 @@ class CacheStorageHelper
   virtual ~CacheStorageHelper();
 
   // Owned by the profile.
-  content::CacheStorageContext* cache_storage_context_;
+  content::StoragePartition* partition_;
 
  private:
   friend class base::RefCountedThreadSafe<CacheStorageHelper>;
@@ -62,7 +62,8 @@ class CacheStorageHelper
 // info by a call when accessed.
 class CannedCacheStorageHelper : public CacheStorageHelper {
  public:
-  explicit CannedCacheStorageHelper(content::CacheStorageContext* context);
+  explicit CannedCacheStorageHelper(
+      content::StoragePartition* storage_partition);
 
   // Add a Cache Storage to the set of canned Cache Storages that is
   // returned by this helper.

@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">সূচীৰ বস্তু</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">দুটা আঙুলিৰে সোঁফাললৈ ছোৱাইপ কৰক</translation>
-<translation id="1016393160682012902">ইয়াৰ কাৰ্যকাৰিতাসমূহৰ বিষয়ে জানিবলৈ এটা qwerty কী অথবা ৰিফ্ৰেশ্ব কৰিব পৰা ব্ৰেইল কী টিপক অথবা নিৰ্দেশত স্পৰ্শ কৰক। বন্ধ কৰিবলৈ control আৰু w বা escape টিপক।</translation>
 <translation id="1022586497894531524">আপুনি প্ৰথমবাৰৰ বাবে ChromeVoxৰ কথিত প্ৰতিক্ৰিয়া ব্যৱহাৰ কৰিছে নেকি? এই দ্ৰুত টিউট’ৰিয়েলে ChromeVox আৰম্ভ কৰা সম্পৰ্কে গুৰুত্বপূৰ্ণ কথাবোৰ ব্যাখ্যা কৰে৷</translation>
 <translation id="1025074108959230262">Chrome Goodies অক্ষম কৰা আছে</translation>
 <translation id="1031961866430398710">তাৰ পিছত</translation>
@@ -150,6 +149,7 @@
 <translation id="2045055672832940894">কোনো পূৰ্বৱৰ্তী নিয়ন্ত্ৰণ নাই</translation>
 <translation id="2045606329038304310">ফৰ্মৰ ক্ষেত্ৰৰ নিয়ন্ত্ৰণ</translation>
 <translation id="2063539687800151747">এপিগ্ৰাফ</translation>
+<translation id="2074531330963286860">কাৰ্য উপলব্ধ। চাবলৈ ছাৰ্চ + পিৰিয়ড টিপক</translation>
 <translation id="2086961585857038472">পৰৱৰ্তী শব্দ</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">as</translation>
@@ -806,7 +806,7 @@
 <translation id="7039555289296502784">জলফাইৰঙী</translation>
 <translation id="7041173719775863268">আৰু বাছনি কৰা পাঠ নাই</translation>
 <translation id="7043850226734279132">গাঢ় খাকী</translation>
-<translation id="7051308646573997571">ক’ৰেল</translation>
+<translation id="7051308646573997571">Coral</translation>
 <translation id="7062635574500127092">গাঢ় সেউজ-নীলা</translation>
 <translation id="7086377898680121060">উজ্জ্বলতা বঢ়াওক</translation>
 <translation id="7088743565397416204">ফ’কাছ কৰা বস্তুটো সক্ৰিয় কৰিবলৈ দুবাৰ টিপক</translation>
@@ -975,6 +975,7 @@
 <translation id="827266600368092403">বাছনি আৰম্ভ অথবা সমাপ্ত কৰক</translation>
 <translation id="827422111966801947">ইণ্ডিগ'</translation>
 <translation id="8276439074553447000">ফ’কাছ কৰিব পৰা পূর্বৰ বস্তুলৈ যাওক</translation>
+<translation id="8279039817939141096">ইয়াৰ কাৰ্যকাৰিতাসমূহৰ বিষয়ে জানিবলৈ এটা qwerty কী অথবা ৰিফ্ৰেশ্ব কৰিব পৰা ব্ৰেইল কী টিপক অথবা নিৰ্দেশত স্পৰ্শ কৰক। wৰ সৈতে কণ্ট্ৰ’ল আৰু Zৰ সৈতে স্পেচ টিপক, দুটা আঙুলিৰে বাওঁফালে ছোৱাইপ কৰক অথবা বাহিৰ হ'বলৈ এস্কে’প টিপক।</translation>
 <translation id="8283603667300770666">ফর্মৰ পৰৱর্তী ক্ষেত্ৰ</translation>
 <translation id="8310185481635255431">কোনো পৰৱৰ্তী লিংক নাই</translation>
 <translation id="831207808878314375">সংজ্ঞা</translation>

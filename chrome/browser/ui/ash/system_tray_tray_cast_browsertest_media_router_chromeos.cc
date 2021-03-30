@@ -59,14 +59,14 @@ class SystemTrayTrayCastMediaRouterChromeOSTest : public InProcessBrowserTest {
     return !GetNotificationString().empty();
   }
 
-  base::string16 GetNotificationString() {
+  std::u16string GetNotificationString() {
     message_center::NotificationList::Notifications notification_set =
         message_center::MessageCenter::Get()->GetVisibleNotifications();
     for (auto* notification : notification_set) {
       if (notification->id() == kNotificationId)
         return notification->title();
     }
-    return base::string16();
+    return std::u16string();
   }
 
   media_router::MediaSinksObserver* media_sinks_observer() const {
@@ -203,8 +203,7 @@ IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastMediaRouterChromeOSTest,
       multiple_routes, std::vector<media_router::MediaRoute::Id>());
   content::RunAllPendingInMessageLoop();
   EXPECT_TRUE(IsCastingNotificationVisible());
-  EXPECT_NE(base::string16::npos,
-            GetNotificationString().find(base::ASCIIToUTF16("Local Sink")));
+  EXPECT_NE(std::u16string::npos, GetNotificationString().find(u"Local Sink"));
 
   // When a casting session stops, we shouldn't display the cast view.
   media_routes_observer()->OnRoutesUpdated(

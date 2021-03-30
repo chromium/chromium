@@ -34,7 +34,7 @@ CSSParserTokenRange ConsumeNestedArgument(CSSParserTokenRange& range) {
   return range.MakeSubRange(&first, &range.Peek());
 }
 
-bool AtEndIgnoringWhitepace(CSSParserTokenRange range) {
+bool AtEndIgnoringWhitespace(CSSParserTokenRange range) {
   range.ConsumeWhitespace();
   return range.AtEnd();
 }
@@ -427,8 +427,9 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumeCompoundSelector(
   // [1] https://drafts.csswg.org/selectors/#matches
   // [2] https://drafts.csswg.org/selectors/#selector-subject
   base::AutoReset<bool> ignore_namespace(
-      &ignore_default_namespace_, resist_default_namespace_ && !has_q_name &&
-                                      AtEndIgnoringWhitepace(range));
+      &ignore_default_namespace_,
+      ignore_default_namespace_ || (resist_default_namespace_ && !has_q_name &&
+                                    AtEndIgnoringWhitespace(range)));
 
   if (!compound_selector) {
     AtomicString namespace_uri = DetermineNamespace(namespace_prefix);
@@ -627,7 +628,7 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
   selector->SetMatch(colons == 1 ? CSSSelector::kPseudoClass
                                  : CSSSelector::kPseudoElement);
 
-  AtomicString value = token.Value().ToAtomicString().LowerASCII();
+  AtomicString value = token.Value().ToAtomicString();
   bool has_arguments = token.GetType() == kFunctionToken;
   selector->UpdatePseudoType(value, *context_, has_arguments, context_->Mode());
 
@@ -699,6 +700,10 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
     case CSSSelector::kPseudoCue: {
       DisallowPseudoElementsScope scope(this);
       base::AutoReset<bool> inside_compound(&inside_compound_pseudo_, true);
+      base::AutoReset<bool> ignore_namespace(
+          &ignore_default_namespace_,
+          ignore_default_namespace_ ||
+              selector->GetPseudoType() == CSSSelector::kPseudoCue);
 
       std::unique_ptr<CSSSelectorList> selector_list =
           std::make_unique<CSSSelectorList>();
@@ -708,9 +713,9 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
 
       if (!selector_list->HasOneSelector()) {
         if (selector->GetPseudoType() == CSSSelector::kPseudoHost)
-          context_->Count(WebFeature::kCSSPseudoHostCompoundList);
+          return nullptr;
         if (selector->GetPseudoType() == CSSSelector::kPseudoHostContext)
-          context_->Count(WebFeature::kCSSPseudoHostContextCompoundList);
+          return nullptr;
       }
 
       selector->SetSelectorList(std::move(selector_list));
@@ -729,8 +734,7 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
       selector->SetSelectorList(std::move(selector_list));
       return selector;
     }
-    case CSSSelector::kPseudoDir:
-    case CSSSelector::kPseudoState: {
+    case CSSSelector::kPseudoDir: {
       const CSSParserToken& ident = block.ConsumeIncludingWhitespace();
       if (ident.GetType() != kIdentToken || !block.AtEnd())
         return nullptr;
@@ -851,6 +855,9 @@ CSSSelector::AttributeMatchType CSSSelectorParser::ConsumeAttributeFlags(
   const CSSParserToken& flag = range.ConsumeIncludingWhitespace();
   if (EqualIgnoringASCIICase(flag.Value(), "i"))
     return CSSSelector::AttributeMatchType::kCaseInsensitive;
+  else if (EqualIgnoringASCIICase(flag.Value(), "s") &&
+           RuntimeEnabledFeatures::CSSCaseSensitiveSelectorEnabled())
+    return CSSSelector::AttributeMatchType::kCaseSensitiveAlways;
   failed_parsing_ = true;
   return CSSSelector::AttributeMatchType::kCaseSensitive;
 }
@@ -1114,7 +1121,6 @@ WebFeature FeatureForWebKitCustomPseudoElement(const AtomicString& name) {
        WebFeature::kCSSSelectorWebkitDatetimeEditWeekField},
       {"-webkit-datetime-edit-year-field",
        WebFeature::kCSSSelectorWebkitDatetimeEditYearField},
-      {"-webkit-details-marker", WebFeature::kCSSSelectorWebkitDetailsMarker},
       {"-webkit-file-upload-button",
        WebFeature::kCSSSelectorWebkitFileUploadButton},
       {"-webkit-inner-spin-button",

@@ -13,6 +13,7 @@
 #include "chrome/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
+#include "components/optimization_guide/proto/models.pb.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_info.h"
 #include "content/public/test/browser_test.h"

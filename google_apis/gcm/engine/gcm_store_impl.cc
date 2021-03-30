@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/sequenced_task_runner.h"
 #include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_tokenizer.h"
@@ -24,6 +25,8 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "google_apis/gcm/base/encryptor.h"
+#include "google_apis/gcm/base/gcm_constants.h"
+#include "google_apis/gcm/base/gcm_features.h"
 #include "google_apis/gcm/base/mcs_message.h"
 #include "google_apis/gcm/base/mcs_util.h"
 #include "google_apis/gcm/protocol/mcs.pb.h"
@@ -63,6 +66,9 @@ enum LoadStatus {
 
 // Limit to the number of outstanding messages per app.
 const int kMessagesPerAppLimit = 20;
+
+// Separator used to split persistent ID and expiration time.
+constexpr char kIncomingMsgSeparator[] = "|";
 
 // ---- LevelDB keys. ----
 // Key for this device's android id.
@@ -130,6 +136,14 @@ std::string ParseRegistrationKey(const std::string& key) {
 
 std::string MakeIncomingKey(const std::string& persistent_id) {
   return kIncomingMsgKeyStart + persistent_id;
+}
+
+std::string MakeIncomingData(const std::string& persistent_id) {
+  return base::StrCat(
+      {persistent_id, kIncomingMsgSeparator,
+       base::NumberToString(
+           base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds() +
+           kIncomingMessageTTL.InMicroseconds())});
 }
 
 std::string MakeOutgoingKey(const std::string& persistent_id) {
@@ -513,9 +527,9 @@ void GCMStoreImpl::Backend::AddIncomingMessage(const std::string& persistent_id,
   write_options.sync = true;
 
   std::string key = MakeIncomingKey(persistent_id);
-  const leveldb::Status s = db_->Put(write_options,
-                                     MakeSlice(key),
-                                     MakeSlice(persistent_id));
+  std::string data = MakeIncomingData(persistent_id);
+  const leveldb::Status s =
+      db_->Put(write_options, MakeSlice(key), MakeSlice(data));
   if (s.ok()) {
     foreground_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), true));
@@ -981,6 +995,7 @@ bool GCMStoreImpl::Backend::LoadIncomingMessages(
   read_options.verify_checksums = true;
 
   std::unique_ptr<leveldb::Iterator> iter(db_->NewIterator(read_options));
+  std::vector<std::string> expired_incoming_messages;
   for (iter->Seek(MakeSlice(kIncomingMsgKeyStart));
        iter->Valid() && iter->key().ToString() < kIncomingMsgKeyEnd;
        iter->Next()) {
@@ -991,9 +1006,44 @@ bool GCMStoreImpl::Backend::LoadIncomingMessages(
       return false;
     }
     DVLOG(1) << "Found incoming message with id " << s.ToString();
-    incoming_messages->push_back(s.ToString());
+    std::string data = s.ToString();
+    size_t found = data.find(kIncomingMsgSeparator);
+    if (found != std::string::npos) {
+      std::string persistent_id = data.substr(0, found);
+      int64_t expiration_time = 0LL;
+      if (!base::StringToInt64(
+              data.substr(found + base::size(kIncomingMsgSeparator) - 1),
+              &expiration_time)) {
+        LOG(ERROR)
+            << "Failed to parse expiration time from the incoming message "
+            << data;
+        expiration_time = 0LL;
+      }
+      if (base::Time::Now() <
+          base::Time::FromDeltaSinceWindowsEpoch(
+              base::TimeDelta::FromMicroseconds(expiration_time))) {
+        incoming_messages->push_back(std::move(persistent_id));
+      } else {
+        expired_incoming_messages.push_back(std::move(persistent_id));
+      }
+    } else {
+      if (base::FeatureList::IsEnabled(
+              features::kGCMDeleteIncomingMessagesWithoutTTL)) {
+        // No expiration time can be found from |data|. The messeage should be
+        // added with the legacy non-TTL path. Treat it as expired.
+        expired_incoming_messages.push_back(std::move(data));
+      } else {
+        incoming_messages->push_back(std::move(data));
+      }
+    }
   }
-
+  if (!expired_incoming_messages.empty()) {
+    DVLOG(1) << "Removing " << expired_incoming_messages.size()
+             << " expired incoming messages.";
+    UMA_HISTOGRAM_COUNTS_1M("GCM.ExpiredIncomingMessages",
+                            expired_incoming_messages.size());
+    RemoveIncomingMessages(expired_incoming_messages, base::DoNothing());
+  }
   return true;
 }
 

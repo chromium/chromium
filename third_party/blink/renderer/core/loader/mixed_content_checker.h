@@ -35,14 +35,14 @@
 #include "base/macros.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/content_security_notifier.mojom-blink-forward.h"
-#include "third_party/blink/public/platform/web_mixed_content.h"
-#include "third_party/blink/public/platform/web_mixed_content_context_type.h"
+#include "third_party/blink/public/mojom/loader/mixed_content.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/https_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
+#include "third_party/blink/renderer/platform/loader/mixed_content.h"
 #include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -109,17 +109,14 @@ class CORE_EXPORT MixedContentChecker final {
                                 WebContentSettingsClient* settings_client,
                                 const KURL& url);
 
-  static void CheckMixedPrivatePublic(LocalFrame*,
-                                      const ResourceResponse& response);
-
-  static WebMixedContentContextType ContextTypeForInspector(
+  static mojom::blink::MixedContentContextType ContextTypeForInspector(
       LocalFrame*,
       const ResourceRequest&);
 
   static void HandleCertificateError(
       const ResourceResponse&,
       mojom::blink::RequestContextType,
-      WebMixedContent::CheckModeForPlugin,
+      MixedContent::CheckModeForPlugin,
       mojom::blink::ContentSecurityNotifier& notifier);
 
   // Receive information about mixed content found externally.
@@ -148,8 +145,7 @@ class CORE_EXPORT MixedContentChecker final {
       mojom::RequestContextFrameType,
       WebContentSettingsClient* settings_client);
 
-  static WebMixedContent::CheckModeForPlugin DecideCheckModeForPlugin(
-      Settings*);
+  static MixedContent::CheckModeForPlugin DecideCheckModeForPlugin(Settings*);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(MixedContentCheckerTest, HandleCertificateError);

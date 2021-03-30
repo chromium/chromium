@@ -29,7 +29,7 @@ class NearOomMonitor {
   base::TimeDelta GetMonitoringInterval() const { return monitoring_interval_; }
   base::TimeDelta GetCooldownInterval() const { return cooldown_interval_; }
 
-  using CallbackList = base::CallbackList<void()>;
+  using CallbackList = base::RepeatingClosureList;
 
   // Registers a callback which is invoked when this monitor detects near-OOM
   // situation. The callback will be called on the task runner on which this

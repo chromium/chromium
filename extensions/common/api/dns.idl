@@ -10,7 +10,7 @@ namespace dns {
     long resultCode;
 
     // A string representing the IP address literal. Supplied only if resultCode
-    // indicates success. Note that we presently return only IPv4 addresses.
+    // indicates success.
     DOMString? address;
   };
 
@@ -20,8 +20,8 @@ namespace dns {
     // Resolves the given hostname or IP address literal.
     // |hostname| : The hostname to resolve.
     // |callback| : Called when the resolution operation completes.
-    static void resolve(DOMString hostname,
-                        ResolveCallback callback);
+    [supportsPromises] static void resolve(DOMString hostname,
+                                           ResolveCallback callback);
   };
 
 };

@@ -72,6 +72,21 @@ v8::Local<v8::Value> DOMWindow::Wrap(v8::Isolate* isolate,
       ->GlobalProxyIfNotDetached();
 }
 
+v8::MaybeLocal<v8::Value> DOMWindow::WrapV2(ScriptState* script_state) {
+  // TODO(yukishiino): Get understanding of why it's possible to initialize
+  // the context after the frame is detached.  And then, remove the following
+  // lines.  See also https://crbug.com/712638 .
+  Frame* frame = GetFrame();
+  if (!frame)
+    return v8::Null(script_state->GetIsolate());
+
+  // TODO(yukishiino): Make this function always return the non-empty handle
+  // even if the frame is detached because the global proxy must always exist
+  // per spec.
+  return frame->GetWindowProxy(script_state->World())
+      ->GlobalProxyIfNotDetached();
+}
+
 v8::Local<v8::Object> DOMWindow::AssociateWithWrapper(
     v8::Isolate*,
     const WrapperTypeInfo*,
@@ -447,7 +462,7 @@ void DOMWindow::InstallCoopAccessMonitor(
 
   DCHECK(accessing_frame->IsMainFrame());
   monitor.report_type = report_type;
-  monitor.accessing_main_frame = accessing_frame->GetFrameToken();
+  monitor.accessing_main_frame = accessing_frame->GetLocalFrameToken();
   monitor.endpoint_defined = endpoint_defined;
   monitor.reported_window_url = std::move(reported_window_url);
 
@@ -501,13 +516,25 @@ void DOMWindow::ReportCoopAccess(const char* property_name) {
 
   // Iframes are allowed to trigger reports, only when they are same-origin with
   // their top-level document.
-  if (accessing_frame->IsCrossOriginToParentFrame())
+  if (accessing_frame->IsCrossOriginToMainFrame())
     return;
+
+  // See https://crbug.com/1183571
+  // We assumed accessing_frame->IsCrossOriginToMainFrame() implies
+  // accessing_frame->Tree().Top() to be a LocalFrame. This might not be the
+  // case after all, some crashes are reported. This block speculatively returns
+  // early to avoid crashing.
+  // TODO(https://crbug.com/1183571): Check if crashes are still happening and
+  // remove this block.
+  if (!accessing_frame->Tree().Top().IsLocalFrame()) {
+    NOTREACHED();
+    return;
+  }
 
   LocalFrame& accessing_main_frame =
       To<LocalFrame>(accessing_frame->Tree().Top());
-  const base::UnguessableToken& accessing_main_frame_token =
-      accessing_main_frame.GetFrameToken();
+  const LocalFrameToken accessing_main_frame_token =
+      accessing_main_frame.GetLocalFrameToken();
 
   auto* it = coop_access_monitor_.begin();
   while (it != coop_access_monitor_.end()) {
@@ -656,10 +683,24 @@ void DOMWindow::DoPostMessage(scoped_refptr<SerializedScriptValue> message,
   if (options->includeUserActivation())
     user_activation = UserActivation::CreateSnapshot(source);
 
+  // TODO(mustaq): This is an ad-hoc mechanism to support delegating a single
+  // capability.  We need to add a structure to support passing other
+  // capabilities.  An explainer for the general delegation API is here:
+  // https://github.com/mustaqahmed/capability-delegation
+  bool delegate_payment_request = false;
+  if (RuntimeEnabledFeatures::CapabilityDelegationPaymentRequestEnabled(
+          GetExecutionContext()) &&
+      LocalFrame::HasTransientUserActivation(source_frame) &&
+      options->hasCreateToken()) {
+    Vector<String> capability_list;
+    options->createToken().Split(' ', capability_list);
+    delegate_payment_request = capability_list.Contains("paymentrequest");
+  }
+
   MessageEvent* event =
       MessageEvent::Create(std::move(channels), std::move(message),
                            source->GetSecurityOrigin()->ToString(), String(),
-                           source, user_activation);
+                           source, user_activation, delegate_payment_request);
 
   SchedulePostMessage(event, std::move(target), source);
 }
@@ -673,13 +714,14 @@ void DOMWindow::Trace(Visitor* visitor) const {
 }
 
 void DOMWindow::DisconnectCoopAccessMonitor(
-    base::UnguessableToken accessing_main_frame) {
+    const LocalFrameToken& accessing_main_frame) {
   auto* it = coop_access_monitor_.begin();
   while (it != coop_access_monitor_.end()) {
-    if (it->accessing_main_frame == accessing_main_frame)
+    if (it->accessing_main_frame == accessing_main_frame) {
       it = coop_access_monitor_.erase(it);
-    else
+    } else {
       ++it;
+    }
   }
 }
 

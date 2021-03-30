@@ -21,6 +21,8 @@
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_utils.h"
 
+using extensions::mojom::APIPermissionID;
+
 namespace extensions {
 
 namespace automation_errors {
@@ -82,12 +84,12 @@ PermissionIDSet AutomationManifestPermission::GetPermissions() const {
   // Meant to mimic the behavior of GetMessages().
   PermissionIDSet permissions;
   if (automation_info_->desktop) {
-    permissions.insert(APIPermission::kFullAccess);
+    permissions.insert(APIPermissionID::kFullAccess);
   } else if (automation_info_->matches.MatchesAllURLs()) {
     if (automation_info_->interact) {
-      permissions.insert(APIPermission::kHostsAll);
+      permissions.insert(APIPermissionID::kHostsAll);
     } else {
-      permissions.insert(APIPermission::kHostsAllReadOnly);
+      permissions.insert(APIPermissionID::kHostsAllReadOnly);
     }
   } else {
     // Check if we get any additional permissions from FilterHostPermissions.
@@ -96,9 +98,9 @@ PermissionIDSet AutomationManifestPermission::GetPermissions() const {
         automation_info_->matches, &regular_hosts, &permissions);
     std::set<std::string> hosts =
         permission_message_util::GetDistinctHosts(regular_hosts, true, true);
-    APIPermission::ID permission_id = automation_info_->interact
-                                          ? APIPermission::kHostReadWrite
-                                          : APIPermission::kHostReadOnly;
+    APIPermissionID permission_id = automation_info_->interact
+                                        ? APIPermissionID::kHostReadWrite
+                                        : APIPermissionID::kHostReadOnly;
     for (const auto& host : hosts)
       permissions.insert(permission_id, base::UTF8ToUTF16(host));
   }
@@ -106,7 +108,7 @@ PermissionIDSet AutomationManifestPermission::GetPermissions() const {
 }
 
 bool AutomationManifestPermission::FromValue(const base::Value* value) {
-  base::string16 error;
+  std::u16string error;
   automation_info_.reset(
       AutomationInfo::FromValue(*value, NULL /* install_warnings */, &error)
           .release());
@@ -168,7 +170,7 @@ AutomationHandler::AutomationHandler() = default;
 
 AutomationHandler::~AutomationHandler() = default;
 
-bool AutomationHandler::Parse(Extension* extension, base::string16* error) {
+bool AutomationHandler::Parse(Extension* extension, std::u16string* error) {
   const base::Value* automation = nullptr;
   CHECK(extension->manifest()->Get(keys::kAutomation, &automation));
   std::vector<InstallWarning> install_warnings;
@@ -217,7 +219,7 @@ const AutomationInfo* AutomationInfo::Get(const Extension* extension) {
 std::unique_ptr<AutomationInfo> AutomationInfo::FromValue(
     const base::Value& value,
     std::vector<InstallWarning>* install_warnings,
-    base::string16* error) {
+    std::u16string* error) {
   std::unique_ptr<Automation> automation = Automation::FromValue(value, error);
   if (!automation)
     return nullptr;

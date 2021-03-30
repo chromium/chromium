@@ -174,6 +174,10 @@ XrSystemId OpenXrTestHelper::GetSystemId() {
   return system_id_;
 }
 
+XrSystemProperties OpenXrTestHelper::GetSystemProperties() {
+  return kSystemProperties;
+}
+
 XrResult OpenXrTestHelper::GetSession(XrSession* session) {
   RETURN_IF(session_state_ != XR_SESSION_STATE_UNKNOWN,
             XR_ERROR_VALIDATION_FAILURE,

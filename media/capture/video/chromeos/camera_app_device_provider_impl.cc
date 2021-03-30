@@ -54,4 +54,27 @@ void CameraAppDeviceProviderImpl::IsSupported(IsSupportedCallback callback) {
   bridge_->IsSupported(std::move(callback));
 }
 
+void CameraAppDeviceProviderImpl::SetMultipleStreamsEnabled(
+    const std::string& source_id,
+    bool enabled,
+    SetMultipleStreamsEnabledCallback callback) {
+  mapping_callback_.Run(
+      source_id,
+      media::BindToCurrentLoop(base::BindOnce(
+          &CameraAppDeviceProviderImpl::SetMultipleStreamsEnabledWithDeviceId,
+          weak_ptr_factory_.GetWeakPtr(), enabled, std::move(callback))));
+}
+
+void CameraAppDeviceProviderImpl::SetMultipleStreamsEnabledWithDeviceId(
+    bool enabled,
+    SetMultipleStreamsEnabledCallback callback,
+    const base::Optional<std::string>& device_id) {
+  if (!device_id.has_value()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  bridge_->SetMultipleStreamsEnabled(*device_id, enabled, std::move(callback));
+}
+
 }  // namespace media

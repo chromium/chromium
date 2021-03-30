@@ -27,10 +27,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_IMAGE_SET_VALUE_H_
 
 #include "third_party/blink/renderer/core/css/css_value_list.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cross_origin_attribute_value.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
-#include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -41,7 +39,7 @@ class StyleImage;
 
 class CSSImageSetValue : public CSSValueList {
  public:
-  explicit CSSImageSetValue(CSSParserMode);
+  explicit CSSImageSetValue();
   ~CSSImageSetValue();
 
   bool IsCachePending(float device_scale_factor) const;
@@ -54,13 +52,6 @@ class CSSImageSetValue : public CSSValueList {
 
   String CustomCSSText() const;
 
-  struct ImageWithScale {
-    DISALLOW_NEW();
-    String image_url;
-    Referrer referrer;
-    float scale_factor;
-  };
-
   CSSImageSetValue* ValueWithURLsMadeAbsolute();
 
   bool HasFailedOrCanceledSubresources() const;
@@ -68,6 +59,12 @@ class CSSImageSetValue : public CSSValueList {
   void TraceAfterDispatch(blink::Visitor*) const;
 
  protected:
+  struct ImageWithScale {
+    DISALLOW_NEW();
+    wtf_size_t index;
+    float scale_factor;
+  };
+
   ImageWithScale BestImageForScaleFactor(float scale_factor);
 
  private:
@@ -80,8 +77,6 @@ class CSSImageSetValue : public CSSValueList {
   Member<StyleImage> cached_image_;
   float cached_scale_factor_;
 
-  bool is_ad_related_ = false;
-  CSSParserMode parser_mode_;
   Vector<ImageWithScale> images_in_set_;
 };
 

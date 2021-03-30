@@ -185,11 +185,16 @@ bool D3D11TextureHelper::CompositeToBackBuffer() {
   CleanupLayerData(render_state_.source_);
   CleanupLayerData(render_state_.overlay_);
 
-  if (!render_state_.source_.source_texture_ &&
-      !render_state_.overlay_.source_texture_)
-    return false;
+  // We should always have a target texture that WebXR
+  // is rendering into.
   if (!render_state_.target_texture_)
     return false;
+
+  // Source texture is optional depending on whether we're using
+  // shared images for the destination.
+  if (!render_state_.source_.source_texture_ &&
+      !render_state_.overlay_.source_texture_)
+    return true;
 
   HRESULT hr = S_OK;
   if (render_state_.source_.keyed_mutex_) {
@@ -482,7 +487,7 @@ bool D3D11TextureHelper::CompositeLayer(LayerData& layer) {
   return true;
 }
 
-bool D3D11TextureHelper::SetSourceTexture(
+void D3D11TextureHelper::SetSourceTexture(
     base::win::ScopedHandle texture_handle,
     gfx::RectF left,
     gfx::RectF right) {
@@ -493,23 +498,26 @@ bool D3D11TextureHelper::SetSourceTexture(
   render_state_.source_.right_ = right;
   render_state_.source_.submitted_this_frame_ = true;
 
+  if (!texture_handle.IsValid()) {
+    return;
+  }
+
   if (!EnsureInitialized())
-    return false;
+    return;
+
   HRESULT hr = render_state_.d3d11_device_->OpenSharedResource1(
       texture_handle.Get(),
       IID_PPV_ARGS(&(render_state_.source_.keyed_mutex_)));
   if (FAILED(hr)) {
     TraceDXError(ErrorLocation::OpenSource, hr);
-    return false;
+    return;
   }
   hr = render_state_.source_.keyed_mutex_.As(
       &(render_state_.source_.source_texture_));
   if (FAILED(hr)) {
     render_state_.source_.keyed_mutex_ = nullptr;
-    return false;
+    return;
   }
-
-  return true;
 }
 
 bool D3D11TextureHelper::SetOverlayTexture(
@@ -545,9 +553,11 @@ bool D3D11TextureHelper::UpdateBackbufferSizes() {
   if (!EnsureInitialized())
     return false;
 
+  // Source texture is optional depending on whether we're using
+  // shared images for the destination.
   if (!render_state_.source_.source_texture_ &&
       !render_state_.overlay_.source_texture_)
-    return false;
+    return true;
 
   if (force_viewport_) {
     target_size_ = default_size_;
@@ -574,68 +584,6 @@ bool D3D11TextureHelper::UpdateBackbufferSizes() {
   return true;
 }
 
-void D3D11TextureHelper::AllocateBackBuffer() {
-  if (!EnsureInitialized())
-    return;
-
-  // If we don't have anything to composite, just return.
-  if (!render_state_.source_.source_texture_ &&
-      !render_state_.overlay_.source_texture_)
-    return;
-
-  LayerData* layer = render_state_.overlay_.source_texture_
-                         ? &render_state_.overlay_
-                         : &render_state_.source_;
-
-  D3D11_TEXTURE2D_DESC desc_desired;
-  layer->source_texture_->GetDesc(&desc_desired);
-  desc_desired.MiscFlags = 0;
-  desc_desired.Width = target_size_.width();
-  desc_desired.Height = target_size_.height();
-
-  if (render_state_.target_texture_) {
-    D3D11_TEXTURE2D_DESC desc_target;
-    render_state_.target_texture_->GetDesc(&desc_target);
-    // If the target should change size, format, or other properties reallocate
-    // a new texture and new render target view.
-    if (desc_desired.Width != desc_target.Width ||
-        desc_desired.Height != desc_target.Height ||
-        desc_desired.MipLevels != desc_target.MipLevels ||
-        desc_desired.ArraySize != desc_target.ArraySize ||
-        desc_desired.Format != desc_target.Format ||
-        desc_desired.SampleDesc.Count != desc_target.SampleDesc.Count ||
-        desc_desired.SampleDesc.Quality != desc_target.SampleDesc.Quality ||
-        desc_desired.Usage != desc_target.Usage ||
-        desc_desired.BindFlags != desc_target.BindFlags ||
-        desc_desired.CPUAccessFlags != desc_target.CPUAccessFlags ||
-        desc_desired.MiscFlags != desc_target.MiscFlags) {
-      render_state_.target_texture_ = nullptr;
-      render_state_.render_target_view_ = nullptr;
-    }
-  }
-
-  if (!render_state_.target_texture_) {
-    // Ignoring error - target_texture_ will be null on failure.
-    render_state_.d3d11_device_->CreateTexture2D(
-        &desc_desired, nullptr, &(render_state_.target_texture_));
-  }
-}
-
-const Microsoft::WRL::ComPtr<ID3D11Texture2D>&
-D3D11TextureHelper::GetBackbuffer() {
-  return render_state_.target_texture_;
-}
-
-void D3D11TextureHelper::DiscardView() {
-  if (render_state_.render_target_view_ &&
-      render_state_.d3d11_device_context_) {
-    Microsoft::WRL::ComPtr<ID3D11DeviceContext1> context1;
-    if (SUCCEEDED(render_state_.d3d11_device_context_.As(&context1))) {
-      context1->DiscardView(render_state_.render_target_view_.Get());
-    }
-  }
-}
-
 void D3D11TextureHelper::SetBackbuffer(
     Microsoft::WRL::ComPtr<ID3D11Texture2D> back_buffer) {
   if (render_state_.target_texture_ != back_buffer) {
@@ -650,16 +598,12 @@ Microsoft::WRL::ComPtr<IDXGIAdapter> D3D11TextureHelper::GetAdapter() {
   HRESULT hr = CreateDXGIFactory1(IID_PPV_ARGS(&dxgi_factory));
   if (FAILED(hr))
     return nullptr;
-  if (adapter_index_ >= 0) {
-    dxgi_factory->EnumAdapters(adapter_index_, &adapter);
-  } else {
-    // We don't have a valid adapter index, lets see if we have a valid LUID.
-    Microsoft::WRL::ComPtr<IDXGIFactory4> dxgi_factory4;
-    hr = dxgi_factory.As(&dxgi_factory4);
-    if (FAILED(hr))
-      return nullptr;
-    dxgi_factory4->EnumAdapterByLuid(adapter_luid_, IID_PPV_ARGS(&adapter));
-  }
+  // We don't have a valid adapter index, lets see if we have a valid LUID.
+  Microsoft::WRL::ComPtr<IDXGIFactory4> dxgi_factory4;
+  hr = dxgi_factory.As(&dxgi_factory4);
+  if (FAILED(hr))
+    return nullptr;
+  dxgi_factory4->EnumAdapterByLuid(adapter_luid_, IID_PPV_ARGS(&adapter));
   return adapter;
 }
 
@@ -701,14 +645,8 @@ bool D3D11TextureHelper::EnsureInitialized() {
   return SUCCEEDED(hr);
 }
 
-bool D3D11TextureHelper::SetAdapterIndex(int32_t index) {
-  adapter_index_ = index;
-  return (index >= 0);
-}
-
 bool D3D11TextureHelper::SetAdapterLUID(const LUID& luid) {
   adapter_luid_ = luid;
-  adapter_index_ = -1;
   return true;
 }
 

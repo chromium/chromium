@@ -146,12 +146,13 @@ class CppBundleGenerator(object):
     for platform in model_object.platforms:
       if platform == Platforms.CHROMEOS:
         # TODO(https://crbug.com/1052397): For readability, this should become
-        # defined(OS_CHROMEOS) && BUILDFLAG(IS_ASH).
-        ifdefs.append('(defined(OS_CHROMEOS) && !BUILDFLAG(IS_LACROS))')
+        # defined(OS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_ASH).
+        ifdefs.append('(defined(OS_CHROMEOS) && '
+                      '!BUILDFLAG(IS_CHROMEOS_LACROS))')
       elif platform == Platforms.LACROS:
         # TODO(https://crbug.com/1052397): For readability, this should become
-        # defined(OS_CHROMEOS) && BUILDFLAG(IS_LACROS).
-        ifdefs.append('BUILDFLAG(IS_LACROS)')
+        # defined(OS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_LACROS).
+        ifdefs.append('BUILDFLAG(IS_CHROMEOS_LACROS)')
       elif platform == Platforms.LINUX:
         ifdefs.append('(defined(OS_LINUX) && !defined(OS_CHROMEOS))')
       elif platform == Platforms.MAC:

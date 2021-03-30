@@ -14,7 +14,7 @@
 // #import '../search/user_action_recorder.mojom-lite.js';
 // clang-format on
 
-/* export */ class PrefToSettingMetricConverter {
+/* #export */ class PrefToSettingMetricConverter {
   /**
    * @param {string} prefKey
    * @param {*} prefValue
@@ -36,6 +36,14 @@
         return {
           setting: chromeos.settings.mojom.Setting.kTouchpadSpeed,
           value: {intValue: /** @type {number} */ (prefValue)}
+        };
+
+      // os_privacy_page/os_privacy_page.js
+      case 'cros.device.peripheral_data_access_enabled':
+        return {
+          setting:
+              chromeos.settings.mojom.Setting.kPeripheralDataAccessProtection,
+          value: {boolValue: /** @type {boolean} */ (prefValue)}
         };
 
       // pref to setting metric not implemented.

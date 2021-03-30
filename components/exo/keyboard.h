@@ -11,7 +11,6 @@
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/exo/keyboard_observer.h"
 #include "components/exo/seat_observer.h"
@@ -39,6 +38,8 @@ class Keyboard : public ui::EventHandler,
                  public ash::ImeControllerImpl::Observer {
  public:
   Keyboard(std::unique_ptr<KeyboardDelegate> delegate, Seat* seat);
+  Keyboard(const Keyboard&) = delete;
+  Keyboard& operator=(const Keyboard&) = delete;
   ~Keyboard() override;
 
   KeyboardDelegate* delegate() const { return delegate_.get(); }
@@ -75,6 +76,8 @@ class Keyboard : public ui::EventHandler,
   // Overridden from ash::ImeControllerImpl::Observer
   void OnCapsLockChanged(bool enabled) override;
   void OnKeyboardLayoutNameChanged(const std::string& layout_name) override;
+
+  Surface* focused_surface_for_testing() const { return focus_; }
 
  private:
   // Change keyboard focus to |surface|.
@@ -135,8 +138,6 @@ class Keyboard : public ui::EventHandler,
   base::ObserverList<KeyboardObserver>::Unchecked observer_list_;
 
   base::WeakPtrFactory<Keyboard> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Keyboard);
 };
 
 }  // namespace exo

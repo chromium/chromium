@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/core/css/cssom/cross_thread_style_value.h"
 
 #include <memory>
+#include <utility>
+
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -103,7 +105,7 @@ TEST_F(CrossThreadStyleValueTest, PassUnsupportedValueCrossThread) {
       CrossThreadBindOnce(&CrossThreadStyleValueTest::CheckUnsupportedValue,
                           CrossThreadUnretained(this),
                           CrossThreadUnretained(&waitable_event),
-                          WTF::Passed(std::move(value))));
+                          std::move(value)));
   waitable_event.Wait();
 
   ShutDownThread();
@@ -134,7 +136,7 @@ TEST_F(CrossThreadStyleValueTest, PassUnparsedValueCrossThread) {
       CrossThreadBindOnce(&CrossThreadStyleValueTest::CheckUnparsedValue,
                           CrossThreadUnretained(this),
                           CrossThreadUnretained(&waitable_event),
-                          WTF::Passed(std::move(value))));
+                          std::move(value)));
   waitable_event.Wait();
 
   ShutDownThread();
@@ -166,7 +168,7 @@ TEST_F(CrossThreadStyleValueTest, PassKeywordValueCrossThread) {
       CrossThreadBindOnce(&CrossThreadStyleValueTest::CheckKeywordValue,
                           CrossThreadUnretained(this),
                           CrossThreadUnretained(&waitable_event),
-                          WTF::Passed(std::move(value))));
+                          std::move(value)));
   waitable_event.Wait();
 
   ShutDownThread();
@@ -198,7 +200,7 @@ TEST_F(CrossThreadStyleValueTest, PassUnitValueCrossThread) {
       CrossThreadBindOnce(&CrossThreadStyleValueTest::CheckUnitValue,
                           CrossThreadUnretained(this),
                           CrossThreadUnretained(&waitable_event),
-                          WTF::Passed(std::move(value))));
+                          std::move(value)));
   waitable_event.Wait();
 
   ShutDownThread();
@@ -230,7 +232,7 @@ TEST_F(CrossThreadStyleValueTest, PassColorValueCrossThread) {
       CrossThreadBindOnce(&CrossThreadStyleValueTest::CheckColorValue,
                           CrossThreadUnretained(this),
                           CrossThreadUnretained(&waitable_event),
-                          WTF::Passed(std::move(value))));
+                          std::move(value)));
   waitable_event.Wait();
 
   ShutDownThread();

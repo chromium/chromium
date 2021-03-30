@@ -42,9 +42,10 @@ class TestMenuDelegate : public MenuDelegate {
                        ui::MenuSourceType source_type) override;
   void ExecuteCommand(int id) override;
   void OnMenuClosed(MenuItemView* menu) override;
-  int OnPerformDrop(MenuItemView* menu,
-                    DropPosition position,
-                    const ui::DropTargetEvent& event) override;
+  ui::mojom::DragOperation OnPerformDrop(
+      MenuItemView* menu,
+      DropPosition position,
+      const ui::DropTargetEvent& event) override;
   int GetDragOperations(MenuItemView* sender) override;
   void WriteDragData(MenuItemView* sender, OSExchangeData* data) override;
   void WillHideMenu(MenuItemView* menu) override;

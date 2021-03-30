@@ -13,6 +13,8 @@ source_set("lib") {
     "gzipper.h",
     "json_parser_impl.cc",
     "json_parser_impl.h",
+    "web_bundle_builder.cc",
+    "web_bundle_builder.h",
     "web_bundler.cc",
     "web_bundler.h",
     "xml_parser.cc",
@@ -31,6 +33,7 @@ source_set("lib") {
   deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//components/cbor",
     "//components/web_package",
     "//mojo/public/cpp/bindings",
     "//net",
@@ -62,6 +65,7 @@ source_set("tests") {
     "public/cpp/json_sanitizer_unittest.cc",
     "public/cpp/safe_web_bundle_parser_unittest.cc",
     "public/cpp/safe_xml_parser_unittest.cc",
+    "web_bundle_builder_unittest.cc",
     "xml_parser_unittest.cc",
   ]
 

@@ -44,7 +44,7 @@ void QuickAnswersNotice::AcceptNotice(NoticeInteractionType interaction) {
                           GetImpressionDuration());
 
   // Marks the notice as accepted.
-  prefs_->SetBoolean(prefs::kQuickAnswersConsented, true);
+  prefs_->SetBoolean(prefs::kQuickAnswersNoticed, true);
 }
 
 bool QuickAnswersNotice::ShouldShowNotice() const {
@@ -53,7 +53,7 @@ bool QuickAnswersNotice::ShouldShowNotice() const {
 }
 
 bool QuickAnswersNotice::IsAccepted() const {
-  return prefs_->GetBoolean(prefs::kQuickAnswersConsented);
+  return prefs_->GetBoolean(prefs::kQuickAnswersNoticed);
 }
 
 bool QuickAnswersNotice::HasReachedImpressionCap() const {

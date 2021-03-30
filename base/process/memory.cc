@@ -14,8 +14,10 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/debug/alias.h"
+#include "base/immediate_crash.h"
 #include "base/logging.h"
 #include "base/partition_alloc_buildflags.h"
+#include "base/stl_util.h"
 #if BUILDFLAG(USE_PARTITION_ALLOC)
 #include "base/allocator/partition_allocator/page_allocator.h"
 #endif
@@ -23,9 +25,13 @@
 
 namespace base {
 
+size_t g_oom_size = 0U;
+
 namespace internal {
 
+// Crash server classifies base::internal::OnNoMemoryInternal as OOM.
 NOINLINE void OnNoMemoryInternal(size_t size) {
+  g_oom_size = size;
 #if defined(OS_WIN)
   // Kill the process. This is important for security since most of code
   // does not check the result of memory allocation.
@@ -47,31 +53,20 @@ NOINLINE void OnNoMemoryInternal(size_t size) {
   //
   // Additionally, this is unlikely to work, since allocating from an OOM
   // handler is likely to fail.
-  abort();  // SIGABRT cannot really be caught, this will always _exit().
-
+  //
+  // Use IMMEDIATE_CRASH() so that the top frame in the crash is our code,
+  // rather than using abort() or similar; this avoids the crash server needing
+  // to be able to successfully unwind through libc to get to the correct
+  // address, which is particularly an issue on Android.
+  IMMEDIATE_CRASH();
 #endif  // defined(OS_WIN)
 }
 
 }  // namespace internal
 
-// Defined in memory_win.cc for Windows.
-#if !defined(OS_WIN)
-
-namespace {
-
-// Breakpad server classifies base::`anonymous namespace'::OnNoMemory as
-// out-of-memory crash.
-NOINLINE void OnNoMemory(size_t size) {
+void TerminateBecauseOutOfMemory(size_t size) {
   internal::OnNoMemoryInternal(size);
 }
-
-}  // namespace
-
-void TerminateBecauseOutOfMemory(size_t size) {
-  OnNoMemory(size);
-}
-
-#endif  // !defined(OS_WIN)
 
 // Defined in memory_mac.mm for Mac.
 #if !defined(OS_APPLE)

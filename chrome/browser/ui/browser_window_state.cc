@@ -156,6 +156,16 @@ void SaveWindowWorkspace(const Browser* browser, const std::string& workspace) {
     session_service->SetWindowWorkspace(browser->session_id(), workspace);
 }
 
+void SaveWindowVisibleOnAllWorkspaces(const Browser* browser,
+                                      bool visible_on_all_workspaces) {
+  SessionService* session_service =
+      SessionServiceFactory::GetForProfileIfExisting(browser->profile());
+  if (session_service) {
+    session_service->SetWindowVisibleOnAllWorkspaces(browser->session_id(),
+                                                     visible_on_all_workspaces);
+  }
+}
+
 void GetSavedWindowBoundsAndShowState(const Browser* browser,
                                       gfx::Rect* bounds,
                                       ui::WindowShowState* show_state) {

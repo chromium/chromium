@@ -94,8 +94,16 @@ class CanvasResourceProvider::CanvasImageProvider : public cc::ImageProvider {
   cc::ImageProvider::ScopedResult GetRasterContent(
       const cc::DrawImage&) override;
 
+  void ReleaseLockedImages() { locked_images_.clear(); }
+
  private:
+  void CanUnlockImage(ScopedResult);
+  void CleanupLockedImages();
+  bool IsHardwareDecodeCache() const;
+
   cc::PlaybackImageProvider::RasterMode raster_mode_;
+  bool cleanup_task_pending_ = false;
+  Vector<ScopedResult> locked_images_;
   base::Optional<cc::PlaybackImageProvider> playback_image_provider_n32_;
   base::Optional<cc::PlaybackImageProvider> playback_image_provider_f16_;
 
@@ -400,6 +408,12 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     return cached_snapshot_;
   }
 
+  void WillDrawIfNeeded() final {
+    if (cached_snapshot_) {
+      WillDraw();
+    }
+  }
+
   void WillDrawInternal(bool write_to_local_texture) {
     DCHECK(resource_);
 
@@ -451,6 +465,10 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
               old_mailbox, mailbox, GetBackingTextureTarget(), 0, 0, 0, 0,
               Size().Width(), Size().Height(), false /* unpack_flip_y */,
               false /* unpack_premultiply_alpha */);
+        } else if (use_oop_rasterization_) {
+          // If we're not copying over the previous contents, we need to ensure
+          // that the image is cleared on the next BeginRasterCHROMIUM.
+          is_cleared_ = false;
         }
 
         // In non-OOPR mode we need to update the client side SkSurface with the
@@ -510,14 +528,16 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     gfx::Size size(Size().Width(), Size().Height());
     size_t max_op_size_hint =
         gpu::raster::RasterInterface::kDefaultMaxOpSizeHint;
-    bool use_lcd = false;
     gfx::Rect full_raster_rect(Size().Width(), Size().Height());
     gfx::Rect playback_rect(Size().Width(), Size().Height());
     gfx::Vector2dF post_translate(0.f, 0.f);
 
+    const bool needs_clear = !is_cleared_;
+    is_cleared_ = true;
+
     ri->BeginRasterCHROMIUM(
-        background_color, 0 /* msaa_sample_count */, use_lcd,
-        ColorParams().GetStorageGfxColorSpace(),
+        background_color, needs_clear, /*msaa_sample_count=*/0,
+        /*can_use_lcd_text=*/false, ColorParams().GetStorageGfxColorSpace(),
         resource()->GetOrCreateGpuMailbox(kUnverifiedSyncToken).name);
 
     ri->RasterCHROMIUM(list.get(), GetOrCreateCanvasImageProvider(), size,
@@ -611,11 +631,10 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     DCHECK(!resource()->is_cross_thread())
         << "Write access is only allowed on the owning thread";
 
-    if (current_resource_has_write_access_ || IsGpuContextLost() ||
-        use_oop_rasterization_)
+    if (current_resource_has_write_access_ || IsGpuContextLost())
       return;
 
-    if (is_accelerated_) {
+    if (is_accelerated_ && !use_oop_rasterization_) {
       resource()->BeginWriteAccess();
     }
 
@@ -631,17 +650,22 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     if (!current_resource_has_write_access_ || IsGpuContextLost())
       return;
 
-    DCHECK(!use_oop_rasterization_);
-
     if (is_accelerated_) {
       // We reset |mode_| here since the draw commands which overwrite the
       // complete canvas must have been flushed at this point without triggering
       // copy-on-write.
       mode_ = SkSurface::kRetain_ContentChangeMode;
-      // Issue any skia work using this resource before releasing write access.
-      FlushGrContext();
-      resource()->EndWriteAccess();
+
+      if (!use_oop_rasterization_) {
+        // Issue any skia work using this resource before releasing write
+        // access.
+        FlushGrContext();
+        resource()->EndWriteAccess();
+      }
     } else {
+      // Currently we never use OOP raster when the resource is not accelerated
+      // so we check that assumption here.
+      DCHECK(!use_oop_rasterization_);
       if (ShouldReplaceTargetBuffer())
         resource_ = NewOrRecycledResource();
       resource()->CopyRenderingResultsToGpuMemoryBuffer(
@@ -662,6 +686,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
   const uint32_t shared_image_usage_flags_;
   bool current_resource_has_write_access_ = false;
   const bool use_oop_rasterization_;
+  bool is_cleared_ = false;
   scoped_refptr<CanvasResource> resource_;
   scoped_refptr<StaticBitmapImage> cached_snapshot_;
 };
@@ -911,7 +936,8 @@ CanvasResourceProvider::CreateSharedImageProvider(
       base::FeatureList::IsEnabled(blink::features::kDawn2dCanvas);
   // TODO(senorblanco): once Dawn reports maximum texture size, Dawn Canvas
   // should respect it.  http://crbug.com/1082760
-  if (!skia_use_dawn && (size.Width() > capabilities.max_texture_size ||
+  if (!skia_use_dawn && (size.Width() < 1 || size.Height() < 1 ||
+                         size.Width() > capabilities.max_texture_size ||
                          size.Height() > capabilities.max_texture_size)) {
     return nullptr;
   }
@@ -943,6 +969,20 @@ CanvasResourceProvider::CreateSharedImageProvider(
   }
 
   return nullptr;
+}
+
+std::unique_ptr<CanvasResourceProvider>
+CanvasResourceProvider::CreateWebGPUImageProvider(
+    const IntSize& size,
+    SkFilterQuality filter_quality,
+    const CanvasResourceParams& params,
+    ShouldInitialize initialize_provider,
+    base::WeakPtr<WebGraphicsContext3DProviderWrapper>
+        context_provider_wrapper) {
+  return CreateSharedImageProvider(
+      size, filter_quality, params, initialize_provider,
+      std::move(context_provider_wrapper), RasterMode::kGPU,
+      true /* is_origin_top_left */, gpu::SHARED_IMAGE_USAGE_WEBGPU);
 }
 
 std::unique_ptr<CanvasResourceProvider>
@@ -1058,9 +1098,66 @@ CanvasResourceProvider::CanvasImageProvider::GetRasterContent(
   if (playback_image_provider_f16_ &&
       draw_image.paint_image().is_high_bit_depth()) {
     DCHECK(playback_image_provider_f16_);
-    return playback_image_provider_f16_->GetRasterContent(draw_image);
+    scoped_decoded_image =
+        playback_image_provider_f16_->GetRasterContent(draw_image);
+  } else {
+    scoped_decoded_image =
+        playback_image_provider_n32_->GetRasterContent(draw_image);
   }
-  return playback_image_provider_n32_->GetRasterContent(draw_image);
+
+  // Holding onto locked images here is a performance optimization for the
+  // gpu image decode cache.  For that cache, it is expensive to lock and
+  // unlock gpu discardable, and so it is worth it to hold the lock on
+  // these images across multiple potential decodes.  In the software case,
+  // locking in this manner makes it easy to run out of discardable memory
+  // (backed by shared memory sometimes) because each per-colorspace image
+  // decode cache has its own limit.  In the software case, just unlock
+  // immediately and let the discardable system manage the cache logic
+  // behind the scenes.
+  if (!scoped_decoded_image.needs_unlock() || !IsHardwareDecodeCache()) {
+    return scoped_decoded_image;
+  }
+
+  constexpr int kMaxLockedImagesCount = 500;
+  if (!scoped_decoded_image.decoded_image().is_budgeted() ||
+      locked_images_.size() > kMaxLockedImagesCount) {
+    // If we have exceeded the budget, ReleaseLockedImages any locked decodes.
+    ReleaseLockedImages();
+  }
+
+  auto decoded_draw_image = scoped_decoded_image.decoded_image();
+  return ScopedResult(decoded_draw_image,
+                      base::BindOnce(&CanvasImageProvider::CanUnlockImage,
+                                     weak_factory_.GetWeakPtr(),
+                                     std::move(scoped_decoded_image)));
+}
+
+void CanvasResourceProvider::CanvasImageProvider::CanUnlockImage(
+    ScopedResult image) {
+  // We should early out and avoid calling this function for software decodes.
+  DCHECK(IsHardwareDecodeCache());
+
+  // Because these image decodes are being done in javascript calling into
+  // canvas code, there's no obvious time to do the cleanup.  To handle this,
+  // post a cleanup task to run after javascript is done running.
+  if (!cleanup_task_pending_) {
+    cleanup_task_pending_ = true;
+    Thread::Current()->GetTaskRunner()->PostTask(
+        FROM_HERE, base::BindOnce(&CanvasImageProvider::CleanupLockedImages,
+                                  weak_factory_.GetWeakPtr()));
+  }
+
+  locked_images_.push_back(std::move(image));
+}
+
+void CanvasResourceProvider::CanvasImageProvider::CleanupLockedImages() {
+  cleanup_task_pending_ = false;
+  ReleaseLockedImages();
+}
+
+bool CanvasResourceProvider::CanvasImageProvider::IsHardwareDecodeCache()
+    const {
+  return raster_mode_ != cc::PlaybackImageProvider::RasterMode::kSoftware;
 }
 
 CanvasResourceProvider::CanvasResourceProvider(
@@ -1143,6 +1240,8 @@ CanvasResourceProvider::GetOrCreateCanvasImageProvider() {
 }
 
 cc::PaintCanvas* CanvasResourceProvider::Canvas() {
+  WillDrawIfNeeded();
+
   if (!recorder_) {
     // A raw pointer is safe here because the callback is only used by the
     // |recorder_|.
@@ -1167,6 +1266,11 @@ void CanvasResourceProvider::OnFlushForImage(PaintImage::ContentId content_id) {
     if (canvas->IsCachingImage(content_id))
       this->FlushCanvas();
   }
+}
+
+void CanvasResourceProvider::ReleaseLockedImages() {
+  if (canvas_image_provider_)
+    canvas_image_provider_->ReleaseLockedImages();
 }
 
 scoped_refptr<StaticBitmapImage> CanvasResourceProvider::SnapshotInternal(
@@ -1423,7 +1527,7 @@ void CanvasResourceProvider::RestoreBackBuffer(const cc::PaintImage& image) {
   EnsureSkiaCanvas();
   cc::PaintFlags copy_paint;
   copy_paint.setBlendMode(SkBlendMode::kSrc);
-  skia_canvas_->drawImage(image, 0, 0, &copy_paint);
+  skia_canvas_->drawImage(image, 0, 0, SkSamplingOptions(), &copy_paint);
 }
 
 bool CanvasResourceProvider::HasRecordedDrawOps() const {

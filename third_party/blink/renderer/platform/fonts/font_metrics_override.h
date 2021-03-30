@@ -14,7 +14,7 @@ struct FontMetricsOverride {
   base::Optional<float> descent_override;
   base::Optional<float> line_gap_override;
   base::Optional<float> advance_override;
-  base::Optional<float> advance_proportional_override;
+  base::Optional<float> advance_override_vertical_upright;
 };
 
 }  // namespace blink

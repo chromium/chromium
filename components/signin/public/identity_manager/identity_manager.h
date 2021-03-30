@@ -27,12 +27,14 @@
 
 #if defined(OS_ANDROID)
 #include "base/android/jni_android.h"
+#include "base/containers/flat_map.h"
+#include "base/time/time.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-namespace chromeos {
+namespace ash {
 class AccountManager;
-}  // namespace chromeos
+}
 #endif
 
 namespace gaia {
@@ -77,45 +79,12 @@ class IdentityManager : public KeyedService,
 
     // Called when there is a change in the primary account or in the consent
     // level for the primary account.
+    //
+    // Note: Observers are not allowed to change the primary account directly
+    // from this methood as that would lead to |event_details| not being correct
+    // for the future observers.
     virtual void OnPrimaryAccountChanged(
         const PrimaryAccountChangeEvent& event_details) {}
-
-    // Called when an account becomes the user's primary account.
-    // This method is not called during a reauth.
-    // DEPRECATED: Use OnPrimaryAccountChanged() instead.
-    virtual void OnPrimaryAccountSet(
-        const CoreAccountInfo& primary_account_info) {}
-
-    // Called when the user moves from having a primary account to no longer
-    // having a primary account (note that the user may still have an
-    // *unconsented* primary account after this event; see./README.md).
-    // DEPRECATED: Use OnPrimaryAccountChanged() instead.
-    virtual void OnPrimaryAccountCleared(
-        const CoreAccountInfo& previous_primary_account_info) {}
-
-    // TODO(crbug.com/1046746): Move to |SigninClient|.
-    // Called Before notifying all the observers of |OnPrimaryAccountCleared|.
-    // |OnPrimaryAccountCleared| should be used instead in general.This function
-    // should be used carefully, as the value of the unconsented primary account
-    // is not properly defined when it is run and can be changed meanwhile.
-    virtual void BeforePrimaryAccountCleared(
-        const CoreAccountInfo& previous_primary_account_info) {}
-
-    // When the unconsented primary account (see ./README.md) of the user
-    // changes, this callback gets called with the new account as
-    // |unconsented_primary_account_info|. If after the change, there is no
-    // unconsented primary account, |unconsented_primary_account_info| is empty.
-    // This does not get called when the unconsented account becomes consented
-    // (as the same account was unconsented before so there is no change). In
-    // all other changes (the unconsented primary account gets added, changed or
-    // removed), this notification is called only once. Note: we do not use the
-    // {Set, Cleared} notifications like for the primary account above because
-    // the identity manager does not have clear guarantees that that account
-    // cannot change in one atomic operation (without getting cleared in the
-    // mean-time).
-    // DEPRECATED: Use OnPrimaryAccountChanged() instead.
-    virtual void OnUnconsentedPrimaryAccountChanged(
-        const CoreAccountInfo& unconsented_primary_account_info) {}
 
     // Called when a new refresh token is associated with |account_info|.
     // NOTE: On a signin event, the ordering of this callback wrt the
@@ -178,6 +147,10 @@ class IdentityManager : public KeyedService,
 
     // Called after removing an account info.
     virtual void OnExtendedAccountInfoRemoved(const AccountInfo& info) {}
+
+    // Called on Shutdown(), for observers that aren't KeyedServices to remove
+    // their observers.
+    virtual void OnIdentityManagerShutdown(IdentityManager* identity_manager) {}
   };
 
   // Methods to register or remove observers.
@@ -192,18 +165,16 @@ class IdentityManager : public KeyedService,
   // Returns a non-empty struct if the primary account exists and was granted
   // the required consent level.
   // TODO(1046746): Update (./README.md).
-  CoreAccountInfo GetPrimaryAccountInfo(
-      ConsentLevel consent = ConsentLevel::kSync) const;
+  CoreAccountInfo GetPrimaryAccountInfo(ConsentLevel consent_level) const;
 
   // Provides access to the account ID of the user's primary account. Simple
   // convenience wrapper over GetPrimaryAccountInfo().account_id.
-  CoreAccountId GetPrimaryAccountId(
-      ConsentLevel consent = ConsentLevel::kSync) const;
+  CoreAccountId GetPrimaryAccountId(ConsentLevel consent_level) const;
 
   // Returns whether the user's primary account is available. If consent is
   // |ConsentLevel::kSync| then true implies that the user has blessed this
   // account for sync.
-  bool HasPrimaryAccount(ConsentLevel consent = ConsentLevel::kSync) const;
+  bool HasPrimaryAccount(ConsentLevel consent_level) const;
 
   // Creates an AccessTokenFetcher given the passed-in information.
   std::unique_ptr<AccessTokenFetcher> CreateAccessTokenFetcherForAccount(
@@ -256,7 +227,7 @@ class IdentityManager : public KeyedService,
 
   // Returns true if (a) the primary account exists, and (b) a refresh token
   // exists for the primary account.
-  bool HasPrimaryAccountWithRefreshToken() const;
+  bool HasPrimaryAccountWithRefreshToken(ConsentLevel consent_level) const;
 
   // Returns true if a refresh token exists for |account_id|.
   bool HasAccountWithRefreshToken(const CoreAccountId& account_id) const;
@@ -407,7 +378,7 @@ class IdentityManager : public KeyedService,
     std::unique_ptr<DeviceAccountsSynchronizer> device_accounts_synchronizer;
     std::unique_ptr<DiagnosticsProvider> diagnostics_provider;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    chromeos::AccountManager* chromeos_account_manager = nullptr;
+    ash::AccountManager* ash_account_manager = nullptr;
 #endif
 
     InitParameters();
@@ -420,6 +391,9 @@ class IdentityManager : public KeyedService,
 
   explicit IdentityManager(IdentityManager::InitParameters&& parameters);
   ~IdentityManager() override;
+
+  // KeyedService:
+  void Shutdown() override;
 
   // Performs initialization that is dependent on the network being
   // initialized.
@@ -495,6 +469,12 @@ class IdentityManager : public KeyedService,
 
   base::android::ScopedJavaLocalRef<jobjectArray> GetAccountsWithRefreshTokens(
       JNIEnv* env) const;
+
+  // Forces refreshing extended account info with image for the given
+  // core account id.
+  void ForceRefreshOfExtendedAccountInfo(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& j_core_account_id);
 #endif
 
  private:
@@ -626,7 +606,7 @@ class IdentityManager : public KeyedService,
   AccountFetcherService* GetAccountFetcherService() const;
   GaiaCookieManagerService* GetGaiaCookieManagerService() const;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::AccountManager* GetChromeOSAccountManager() const;
+  ash::AccountManager* GetAshAccountManager() const;
 #endif
 
   // Populates and returns an AccountInfo object corresponding to |account_id|,
@@ -676,14 +656,6 @@ class IdentityManager : public KeyedService,
   void OnAccountUpdated(const AccountInfo& info);
   void OnAccountRemoved(const AccountInfo& info);
 
-  // Fire the deprecated observer methods for settings and clearing the primary
-  // account.
-  void FirePrimaryAccountSet(const PrimaryAccountChangeEvent& event_details);
-  void FireUnconsentedPrimaryAccountChanged(
-      const PrimaryAccountChangeEvent& event_details);
-  void FirePrimaryAccountCleared(
-      const PrimaryAccountChangeEvent& event_details);
-
   // Backing signin classes.
   std::unique_ptr<AccountTrackerService> account_tracker_service_;
   std::unique_ptr<ProfileOAuth2TokenService> token_service_;
@@ -713,10 +685,15 @@ class IdentityManager : public KeyedService,
 #if defined(OS_ANDROID)
   // Java-side IdentityManager object.
   base::android::ScopedJavaGlobalRef<jobject> java_identity_manager_;
+
+  // CoreAccountId and the corresponding fetch start time, this is only
+  // used to record account information fetch duration.
+  base::flat_map<CoreAccountId, base::TimeTicks>
+      account_info_fetch_start_times_;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::AccountManager* chromeos_account_manager_ = nullptr;
+  ash::AccountManager* ash_account_manager_ = nullptr;
 #endif
 
   DISALLOW_COPY_AND_ASSIGN(IdentityManager);

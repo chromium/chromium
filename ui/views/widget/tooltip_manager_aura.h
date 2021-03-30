@@ -5,9 +5,10 @@
 #ifndef UI_VIEWS_WIDGET_TOOLTIP_MANAGER_AURA_H_
 #define UI_VIEWS_WIDGET_TOOLTIP_MANAGER_AURA_H_
 
+#include <string>
+
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/tooltip_manager.h"
@@ -55,7 +56,7 @@ class VIEWS_EXPORT TooltipManagerAura : public TooltipManager {
   aura::Window* GetWindow();
 
   Widget* widget_;
-  base::string16 tooltip_text_;
+  std::u16string tooltip_text_;
 
   DISALLOW_COPY_AND_ASSIGN(TooltipManagerAura);
 };

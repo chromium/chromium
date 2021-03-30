@@ -61,7 +61,6 @@ class CONTENT_EXPORT PrefetchURLLoader : public network::mojom::URLLoader,
   // additionally create a request (e.g. for fetching certificate if the
   // prefetch was for a signed exchange).
   PrefetchURLLoader(
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       int frame_tree_node_id,
@@ -101,6 +100,7 @@ class CONTENT_EXPORT PrefetchURLLoader : public network::mojom::URLLoader,
   void ResumeReadingBodyFromNet() override;
 
   // network::mojom::URLLoaderClient overrides:
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
   void OnReceiveResponse(network::mojom::URLResponseHeadPtr head) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          network::mojom::URLResponseHeadPtr head) override;

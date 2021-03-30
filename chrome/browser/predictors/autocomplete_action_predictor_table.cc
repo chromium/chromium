@@ -59,7 +59,7 @@ AutocompleteActionPredictorTable::Row::Row()
 }
 
 AutocompleteActionPredictorTable::Row::Row(const Row::Id& id,
-                                           const base::string16& user_text,
+                                           const std::u16string& user_text,
                                            const GURL& url,
                                            int number_of_hits,
                                            int number_of_misses)
@@ -67,8 +67,7 @@ AutocompleteActionPredictorTable::Row::Row(const Row::Id& id,
       user_text(user_text),
       url(url),
       number_of_hits(number_of_hits),
-      number_of_misses(number_of_misses) {
-}
+      number_of_misses(number_of_misses) {}
 
 AutocompleteActionPredictorTable::Row::Row(const Row& row)
     : id(row.id),

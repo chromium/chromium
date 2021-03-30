@@ -9,7 +9,6 @@ import android.os.Handler;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.OfflineContentAvailabilityStatusProvider;
-import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
@@ -36,8 +35,7 @@ public class OfflineIndicatorInProductHelpController
         mActivity = activity;
         mToolbarManager = toolbarManager;
         mAppMenuHandler = appMenuHandler;
-        mUserEducationHelper =
-                new UserEducationHelper(mActivity, mHandler, TrackerFactory::getTrackerForProfile);
+        mUserEducationHelper = new UserEducationHelper(mActivity, mHandler);
 
         assert coordinator != null;
         mCoordinator = coordinator;

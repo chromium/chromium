@@ -10,7 +10,7 @@
 #include "components/invalidation/public/invalidation_handler.h"
 #include "components/invalidation/public/topic_invalidation_map.h"
 
-namespace syncer {
+namespace invalidation {
 
 class FakeInvalidationHandler : public InvalidationHandler {
  public:
@@ -30,7 +30,7 @@ class FakeInvalidationHandler : public InvalidationHandler {
   void OnIncomingInvalidation(
       const TopicInvalidationMap& invalidation_map) override;
   std::string GetOwnerName() const override;
-  bool IsPublicTopic(const syncer::Topic& topic) const override;
+  bool IsPublicTopic(const Topic& topic) const override;
 
  private:
   InvalidatorState state_;
@@ -39,6 +39,6 @@ class FakeInvalidationHandler : public InvalidationHandler {
   std::string owner_name_;
 };
 
-}  // namespace syncer
+}  // namespace invalidation
 
 #endif  // COMPONENTS_INVALIDATION_IMPL_FAKE_INVALIDATION_HANDLER_H_

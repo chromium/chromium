@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_WEBXR_ANDROID_XR_INSTALL_INFOBAR_H_
 #define COMPONENTS_WEBXR_ANDROID_XR_INSTALL_INFOBAR_H_
 
+#include <string>
+
 #include "base/callback.h"
-#include "base/strings/string16.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar_delegate.h"
 
@@ -28,9 +29,9 @@ class XrInstallInfoBar : public ConfirmInfoBarDelegate {
 
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
   int GetIconId() const override;
-  base::string16 GetMessageText() const override;
+  std::u16string GetMessageText() const override;
   int GetButtons() const override;
-  base::string16 GetButtonLabel(InfoBarButton button) const override;
+  std::u16string GetButtonLabel(InfoBarButton button) const override;
 
  private:
   // Called when the OK button is pressed. If this function returns true, the

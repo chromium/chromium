@@ -18,7 +18,6 @@
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/common/api/declarative_net_request.h"
-#include "extensions/common/api/declarative_net_request/utils.h"
 #include "net/http/http_util.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
@@ -143,7 +142,7 @@ uint8_t GetOptionsMask(const dnr_api::Rule& parsed_rule) {
   uint8_t mask = flat_rule::OptionFlag_NONE;
 
   if (parsed_rule.action.type == dnr_api::RULE_ACTION_TYPE_ALLOW)
-    mask |= flat_rule::OptionFlag_IS_WHITELIST;
+    mask |= flat_rule::OptionFlag_IS_ALLOWLIST;
 
   if (!IsCaseSensitive(parsed_rule))
     mask |= flat_rule::OptionFlag_IS_CASE_INSENSITIVE;

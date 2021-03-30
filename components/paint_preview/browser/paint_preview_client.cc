@@ -301,6 +301,11 @@ void PaintPreviewClient::CapturePaintPreview(
   auto* metadata = document_data.proto.mutable_metadata();
   metadata->set_url(url.spec());
   metadata->set_version(kPaintPreviewVersion);
+  auto* chromeVersion = metadata->mutable_chrome_version();
+  chromeVersion->set_major(CHROME_VERSION_MAJOR);
+  chromeVersion->set_minor(CHROME_VERSION_MINOR);
+  chromeVersion->set_build(CHROME_VERSION_BUILD);
+  chromeVersion->set_patch(CHROME_VERSION_PATCH);
   document_data.callback = std::move(callback);
   document_data.source_id =
       ukm::GetSourceIdForWebContentsDocument(web_contents());

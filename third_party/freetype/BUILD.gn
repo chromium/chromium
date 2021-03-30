@@ -37,7 +37,6 @@ config("freetype_component_config") {
   if (!is_component_build) {
     defines += [ "CHROMIUM_RESTRICT_VISIBILITY" ]
   }
-
 }
 
 config("freetype_config") {
@@ -126,6 +125,7 @@ source_set("freetype_source") {
 
   if (!is_android) {
     sources += [
+      "src/src/base/ftcid.c",
       "src/src/cid/type1cid.c",
       "src/src/type1/type1.c",
     ]
@@ -135,9 +135,7 @@ source_set("freetype_source") {
     # Needed for content_shell on Linux and Chromecast, since fontconfig
     # requires FT_Get_BDF_Property.
     sources += [ "src/src/base/ftbdf.c" ]
-  }
 
-  if (is_linux || is_chromeos || is_chromecast) {
     # Needed on Fedora whose libfreetype builds ftsynth.c containing
     # FT_GlyphSlot_Embolden, which we need to replace in content_shell if
     # we are linking against our own FreeType.

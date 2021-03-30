@@ -39,9 +39,10 @@ class AXMenuList final : public AXLayoutObject {
 
   AccessibilityExpanded IsExpanded() const final;
   bool OnNativeClickAction() override;
-  void ClearChildren() override;
+  void ClearChildren() const override;
+  void Detach() override;
 
-  void DidUpdateActiveOption(int option_index);
+  void DidUpdateActiveOption();
   void DidShowPopup();
   void DidHidePopup();
 

@@ -15,9 +15,6 @@ namespace blink {
 
 struct LogicalOffset;
 
-// TODO(wangxianzhu): Make it a constexpr when LayoutUnit allows it.
-#define kIndefiniteSize LayoutUnit(-1)
-
 // LogicalSize is the size of rect (typically a fragment) in the logical
 // coordinate system.
 // For more information about physical and logical coordinate systems, see:

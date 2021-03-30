@@ -18,6 +18,7 @@
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 #import "ios/web_view/internal/cwv_ssl_status_internal.h"
+#import "ios/web_view/internal/cwv_ssl_util.h"
 #import "ios/web_view/internal/cwv_web_view_internal.h"
 #include "ios/web_view/internal/web_view_browser_state.h"
 #import "ios/web_view/internal/web_view_early_page_script_provider.h"
@@ -72,8 +73,12 @@ bool WebViewWebClient::IsAppSpecificURL(const GURL& url) const {
 }
 
 std::string WebViewWebClient::GetUserAgent(web::UserAgentType type) const {
-  return web::BuildMobileUserAgent(
-      base::SysNSStringToUTF8([CWVWebView userAgentProduct]));
+  if (CWVWebView.customUserAgent) {
+    return base::SysNSStringToUTF8(CWVWebView.customUserAgent);
+  } else {
+    return web::BuildMobileUserAgent(
+        base::SysNSStringToUTF8([CWVWebView userAgentProduct]));
+  }
 }
 
 base::StringPiece WebViewWebClient::GetDataResource(
@@ -107,60 +112,15 @@ NSString* WebViewWebClient::GetDocumentStartScriptForMainFrame(
   return [scripts componentsJoinedByString:@";"];
 }
 
-base::string16 WebViewWebClient::GetPluginNotSupportedText() const {
+std::u16string WebViewWebClient::GetPluginNotSupportedText() const {
   return l10n_util::GetStringUTF16(IDS_PLUGIN_NOT_SUPPORTED);
 }
 
-void WebViewWebClient::AllowCertificateError(
-    web::WebState* web_state,
-    int net_error,
-    const net::SSLInfo& ssl_info,
-    const GURL& request_url,
-    bool overridable,
-    int64_t navigation_id,
-    base::OnceCallback<void(bool)> callback) {
-  CWVWebView* web_view = [CWVWebView webViewForWebState:web_state];
-
-  SEL selector = @selector
-      (webView:didFailNavigationWithSSLError:overridable:decisionHandler:);
-  if ([web_view.navigationDelegate respondsToSelector:selector]) {
-    CWVCertStatus cert_status =
-        CWVCertStatusFromNetCertStatus(ssl_info.cert_status);
-    ssl_errors::ErrorInfo error_info = ssl_errors::ErrorInfo::CreateError(
-        ssl_errors::ErrorInfo::NetErrorToErrorType(net_error),
-        ssl_info.cert.get(), request_url);
-    NSString* error_description =
-        base::SysUTF16ToNSString(error_info.short_description());
-    NSError* error =
-        [NSError errorWithDomain:NSURLErrorDomain
-                            code:NSURLErrorSecureConnectionFailed
-                        userInfo:@{
-                          NSLocalizedDescriptionKey : error_description,
-                          CWVCertStatusKey : @(cert_status),
-                        }];
-
-    __block base::OnceCallback<void(bool)> local_callback = std::move(callback);
-    void (^decisionHandler)(CWVSSLErrorDecision) =
-        ^(CWVSSLErrorDecision decision) {
-          switch (decision) {
-            case CWVSSLErrorDecisionOverrideErrorAndReload: {
-              std::move(local_callback).Run(true);
-              break;
-            }
-            case CWVSSLErrorDecisionDoNothing: {
-              std::move(local_callback).Run(false);
-              break;
-            }
-          }
-        };
-
-    [web_view.navigationDelegate webView:web_view
-           didFailNavigationWithSSLError:error
-                             overridable:overridable
-                         decisionHandler:decisionHandler];
-  } else {
-    std::move(callback).Run(false);
-  }
+bool WebViewWebClient::IsLegacyTLSAllowedForHost(web::WebState* web_state,
+                                                 const std::string& hostname) {
+  // TODO(crbug.com/1191799): Legacy TLS should be supported via an interstitial
+  // UI that allows the user to override if desired.
+  return true;
 }
 
 bool WebViewWebClient::EnableLongPressAndForceTouchHandling() const {

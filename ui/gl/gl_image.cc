@@ -29,7 +29,9 @@ unsigned GLImage::GetDataFormat() {
   unsigned internalformat = GetInternalFormat();
   switch (internalformat) {
     case GL_R16_EXT:
-      return GL_RED;
+      return GL_RED_EXT;
+    case GL_RG16_EXT:
+      return GL_RG_EXT;
     case GL_RGB10_A2_EXT:
       return GL_RGBA;
     case GL_RGB_YCRCB_420_CHROMIUM:

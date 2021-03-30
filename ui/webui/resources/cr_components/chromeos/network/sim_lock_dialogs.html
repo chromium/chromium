@@ -1,0 +1,155 @@
+<link rel="import" href="../../../html/polymer.html">
+
+<link rel="import" href="../../../cr_elements/cr_button/cr_button.html">
+<link rel="import" href="../../../cr_elements/cr_dialog/cr_dialog.html">
+<link rel="import" href="../../../cr_elements/icons.html">
+<link rel="import" href="../../../html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="mojo_interface_provider.html">
+<link rel="import" href="network_password_input.html">
+<link rel="import" href="network_shared_css.html">
+<link rel="import" href="onc_mojo.html">
+
+<dom-module id="sim-lock-dialogs">
+  <template>
+    <style>
+      .dialog-error {
+        color: red;
+        font-size: 125%;
+        font-weight: 500;
+        margin-bottom: 10px;
+      }
+    </style>
+    <!-- Enter PIN dialog -->
+    <cr-dialog id="enterPinDialog" close-text="[[i18n('close')]]">
+      <div slot="title">[[i18n('networkSimEnterPinTitle')]]</div>
+      <div slot="body">
+        <network-password-input id="enterPin"
+            value="{{pin_}}"
+            label="[[i18n('networkSimEnterPin')]]"
+            on-enter="sendEnterPin_"
+            disabled="[[inProgress_]]">
+        </network-password-input>
+        <div class="dialog-error">
+          [[getErrorMsg_(error_, deviceState)]]
+        </div>
+      </div>
+      <div slot="button-container">
+        <cr-button class="cancel-button" on-click="onCancelClick_">
+          [[i18n('cancel')]]
+        </cr-button>
+        <cr-button class="action-button"
+            on-click="sendEnterPin_"
+            disabled="[[!enterPinEnabled_]]">
+          [[i18n('networkSimEnter')]]
+        </cr-button>
+      </div>
+    </cr-dialog>
+
+    <!-- Change PIN dialog -->
+    <cr-dialog id="changePinDialog" close-text="[[i18n('close')]]">
+      <div slot="title">[[i18n('networkSimChangePinTitle')]]</div>
+      <div slot="body">
+        <network-password-input id="changePinOld"
+            value="{{pin_}}"
+            label="[[i18n('networkSimEnterOldPin')]]"
+            disabled="[[inProgress_]]">
+        </network-password-input>
+        <network-password-input id="changePinNew1"
+            value="{{pin_new1_}}"
+            label="[[i18n('networkSimEnterNewPin')]]"
+            disabled="[[inProgress_]]">
+        </network-password-input>
+        <network-password-input id="changePinNew2"
+            value="{{pin_new2_}}"
+            label="[[i18n('networkSimReEnterNewPin')]]"
+            on-enter="sendChangePin_"
+            disabled="[[inProgress_]]">
+        </network-password-input>
+        <div class="dialog-error">
+          [[getErrorMsg_(error_, deviceState)]]
+        </div>
+      </div>
+      <div slot="button-container">
+        <cr-button class="cancel-button" on-click="onCancelClick_">
+          [[i18n('cancel')]]
+        </cr-button>
+        <cr-button class="action-button"
+            on-click="sendChangePin_"
+            disabled="[[!changePinEnabled_]]">
+          [[i18n('networkSimChange')]]
+        </cr-button>
+      </div>
+    </cr-dialog>
+
+    <!-- Unlock PIN dialog -->
+    <cr-dialog id="unlockPinDialog" close-text="[[i18n('close')]]">
+      <div slot="title">[[i18n('networkSimLockedTitle')]]</div>
+      <div slot="body">
+        <network-password-input id="unlockPin"
+            value="{{pin_}}"
+            label="[[i18n('networkSimEnterPin')]]"
+            on-enter="sendUnlockPin_"
+            disabled="[[inProgress_]]">
+        </network-password-input>
+        <div class="dialog-error">
+          [[getErrorMsg_(error_, deviceState)]]
+        </div>
+      </div>
+      <div slot="button-container">
+        <cr-button class="cancel-button" on-click="onCancelClick_">
+          [[i18n('cancel')]]
+        </cr-button>
+        <cr-button class="action-button"
+            on-click="sendUnlockPin_"
+            disabled="[[!enterPinEnabled_]]">
+          [[i18n('networkSimUnlock')]]
+        </cr-button>
+      </div>
+    </cr-dialog>
+
+    <!-- Unlock PUK dialog -->
+    <cr-dialog id="unlockPukDialog" close-text="[[i18n('close')]]">
+      <div slot="title">[[i18n('networkSimLockedTitle')]]</div>
+      <div slot="body">
+        <div>
+          [[i18n('networkSimPukDialogSubtitle')]]
+        </div>
+        <network-password-input id="unlockPuk"
+            value="{{puk_}}"
+            label="[[i18n('networkSimEnterPuk')]]"
+            disabled="[[inProgress_]]">
+        </network-password-input>
+        <div class="dialog-error">
+          [[getErrorMsg_(error_, deviceState)]]
+        </div>
+        <network-password-input id="unlockPin1"
+            value="{{pin_new1_}}"
+            label="[[i18n('networkSimEnterNewPin')]]"
+            disabled="[[inProgress_]]">
+        </network-password-input>
+        <network-password-input id="unlockPin2"
+            value="{{pin_new2_}}"
+            label="[[i18n('networkSimReEnterNewPin')]]"
+            on-enter="sendUnlockPuk_"
+            disabled="[[inProgress_]]">
+        </network-password-input>
+        <div class="dialog-error">
+          [[i18n('networkSimLockedWarning')]]
+        </div>
+      </div>
+      <div slot="button-container">
+        <cr-button class="cancel-button" on-click="onCancelClick_">
+          [[i18n('cancel')]]
+        </cr-button>
+        <cr-button class="action-button"
+            on-click="sendUnlockPuk_"
+            disabled="[[!enterPukEnabled_]]">
+          [[i18n('networkSimUnlock')]]
+        </cr-button>
+      </div>
+    </cr-dialog>
+  </template>
+  <script src="sim_lock_dialogs.js"></script>
+</dom-module>

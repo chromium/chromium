@@ -86,7 +86,8 @@ void WaylandBufferManagerConnector::OnBufferManagerHostPtrBinded(
 #endif
   buffer_manager_gpu_remote->Initialize(
       std::move(buffer_manager_host), buffer_formats_with_modifiers,
-      supports_dma_buf, buffer_manager_host_->SupportsAcquireFence());
+      supports_dma_buf, buffer_manager_host_->SupportsViewporter(),
+      buffer_manager_host_->SupportsAcquireFence());
 }
 
 void WaylandBufferManagerConnector::OnTerminateGpuProcess(std::string message) {

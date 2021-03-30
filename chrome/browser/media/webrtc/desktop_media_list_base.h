@@ -34,7 +34,7 @@ class DesktopMediaListBase : public DesktopMediaList {
   void Update(UpdateCallback callback) override;
   int GetSourceCount() const override;
   const Source& GetSource(int index) const override;
-  content::DesktopMediaID::Type GetMediaListType() const override;
+  DesktopMediaList::Type GetMediaListType() const override;
 
   static uint32_t GetImageHash(const gfx::Image& image);
 
@@ -42,11 +42,14 @@ class DesktopMediaListBase : public DesktopMediaList {
   using RefreshCallback = UpdateCallback;
 
   struct SourceDescription {
-    SourceDescription(content::DesktopMediaID id, const base::string16& name);
+    SourceDescription(content::DesktopMediaID id, const std::u16string& name);
 
     content::DesktopMediaID id;
-    base::string16 name;
+    std::u16string name;
   };
+
+  DesktopMediaListBase(base::TimeDelta update_period,
+                       DesktopMediaListObserver* observer);
 
   // Before this method is called, |refresh_callback_| must be non-null, and
   // after it completes (usually asychnonrously), |refresh_callback_| must be
@@ -76,7 +79,7 @@ class DesktopMediaListBase : public DesktopMediaList {
       content::DesktopMediaID(content::DesktopMediaID::TYPE_NONE, -1);
 
   // Desktop media type of the list.
-  content::DesktopMediaID::Type type_ = content::DesktopMediaID::TYPE_NONE;
+  DesktopMediaList::Type type_ = DesktopMediaList::Type::kNone;
 
  private:
   // Post a task for next list update.

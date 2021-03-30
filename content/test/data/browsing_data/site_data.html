@@ -131,6 +131,27 @@
     }
   }
 
+  async function setStorageFoundation() {
+    try {
+      let f = await storageFoundation.open('foo');
+      // TODO(https://crbug.com/1177307): Implement a more robust deletion
+      // strategy that works reliably for open files on Windows 7.
+      await f.close();
+      success_();
+    } catch (e) {
+      failure_();
+    }
+  }
+
+  async function hasStorageFoundation() {
+    try {
+      let dir = await storageFoundation.getAll();
+      domAutomationController.send(dir.indexOf('foo') != -1);
+    } catch (e) {
+      failure_();
+    }
+  }
+
   function setWebSql() {
     var db = openDatabase('testdb', '1.0', 'a test db', 1024);
     db.transaction(function (tx) {
@@ -174,6 +195,46 @@
       domAutomationController.send(hasStore);
     }
     open.onerror = failure_;
+  }
+
+  function worker_(command) {
+    let worker = new Worker("site_data_worker.js");
+    worker.onmessage = e => {
+      domAutomationController.send(e.data);
+    };
+    worker.postMessage(command)
+  }
+
+  function hasWorkerFileSystemAccess() {
+    worker_("hasFileSystemAccess");
+  }
+
+  function setWorkerFileSystemAccess() {
+    worker_("setFileSystemAccess");
+  }
+
+  function hasWorkerCacheStorage() {
+    worker_("hasCacheStorage");
+  }
+
+  function setWorkerCacheStorage() {
+    worker_("setCacheStorage");
+  }
+
+  function hasWorkerIndexedDb() {
+    worker_("hasIndexedDb");
+  }
+
+  function setWorkerIndexedDb() {
+    worker_("setIndexedDb");
+  }
+
+  function hasWorkerStorageFoundation() {
+    worker_("hasStorageFoundation");
+  }
+
+  function setWorkerStorageFoundation() {
+    worker_("setStorageFoundation");
   }
 
   function setHistory() {

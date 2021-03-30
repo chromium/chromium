@@ -52,6 +52,9 @@ shared_highlighting::LinkGenerationError OutcomeToError(
     case LinkGenerationOutcome::kAmbiguous:
       return LinkGenerationError::kContextExhausted;
       break;
+    case LinkGenerationOutcome::kTimeout:
+      return LinkGenerationError::kTimeout;
+      break;
     case LinkGenerationOutcome::kSuccess:
       // kSuccess is not supposed to happen, as it is not an error.
       NOTREACHED();
@@ -80,6 +83,19 @@ base::Optional<CGRect> ParseRect(const base::Value* value) {
 
   return CGRectMake(xValue->GetDouble(), yValue->GetDouble(),
                     widthValue->GetDouble(), heightValue->GetDouble());
+}
+
+base::Optional<GURL> ParseURL(const std::string* url_value) {
+  if (!url_value) {
+    return base::nullopt;
+  }
+
+  GURL url(*url_value);
+  if (!url.is_empty() && url.is_valid()) {
+    return url;
+  }
+
+  return base::nullopt;
 }
 
 CGRect ConvertToBrowserRect(CGRect web_view_rect, web::WebState* web_state) {

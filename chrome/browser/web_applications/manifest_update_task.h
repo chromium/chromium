@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/components/web_app_icon_downloader.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "components/services/app_service/public/cpp/file_handler.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 
@@ -25,10 +26,20 @@ struct InstallableData;
 
 namespace web_app {
 
+namespace internal {
+// Checks for whether file handlers have changed. Ignores differences in names,
+// which aren't stored in the apps::FileHandlers, and ordering, which may
+// change after being inserted into a set or map.
+bool HaveFileHandlersChanged(
+    const apps::FileHandlers* old_handlers,
+    const std::vector<blink::Manifest::FileHandler>& new_handlers);
+}  // namespace internal
+
 class AppIconManager;
 class AppRegistrar;
 class WebAppUiManager;
 class InstallManager;
+class OsIntegrationManager;
 enum class InstallResultCode;
 
 // This enum is recorded by UMA, the numeric values must not change.
@@ -46,7 +57,9 @@ enum ManifestUpdateResult {
   kIconDownloadFailed = 10,
   kIconReadFromDiskFailed = 11,
   kAppIdMismatch = 12,
-  kMaxValue = kAppIdMismatch,
+  kAppAssociationsUpdateFailed = 13,
+  kAppAssociationsUpdated = 14,
+  kMaxValue = kAppAssociationsUpdated,
 };
 
 // Checks whether the installed web app associated with a given WebContents has
@@ -79,7 +92,8 @@ class ManifestUpdateTask final
                      const AppRegistrar& registrar,
                      const AppIconManager& icon_manager,
                      WebAppUiManager* ui_manager,
-                     InstallManager* install_manager);
+                     InstallManager* install_manager,
+                     OsIntegrationManager& os_integration_manager);
 
   ~ManifestUpdateTask() override;
 
@@ -98,7 +112,9 @@ class ManifestUpdateTask final
     kPendingIconDownload,
     kPendingIconReadFromDisk,
     kPendingWindowsClosed,
+    kPendingMaybeReadExistingIcons,
     kPendingInstallation,
+    kPendingAssociationsUpdate,
   };
 
   void OnDidGetInstallableData(const webapps::InstallableData& data);
@@ -110,11 +126,15 @@ class ManifestUpdateTask final
   bool IsUpdateNeededForIconContents(
       const IconBitmaps& disk_icon_bitmaps) const;
   void OnAllShortcutsMenuIconsRead(
-      ShortcutsMenuIconsBitmaps disk_shortcuts_menu_icons);
+      ShortcutsMenuIconBitmaps disk_shortcuts_menu_icons);
   bool IsUpdateNeededForShortcutsMenuIconsContents(
-      const ShortcutsMenuIconsBitmaps& disk_shortcuts_menu_icons) const;
+      const ShortcutsMenuIconBitmaps& disk_shortcuts_menu_icons) const;
+  bool IsUpdateNeededForWebAppOriginAssociations() const;
+  void NoManifestUpdateRequired();
+  void OnWebAppOriginAssociationsUpdated(bool success);
   void UpdateAfterWindowsClose();
   void OnAllAppWindowsClosed();
+  void OnExistingIconsRead(IconBitmaps icon_bitmaps);
   void OnInstallationComplete(
       const AppId& app_id,
       InstallResultCode code);
@@ -124,6 +144,7 @@ class ManifestUpdateTask final
   const AppIconManager& icon_manager_;
   WebAppUiManager& ui_manager_;
   InstallManager& install_manager_;
+  OsIntegrationManager& os_integration_manager_;
 
   Stage stage_;
   base::Optional<WebApplicationInfo> web_application_info_;

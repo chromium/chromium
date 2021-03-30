@@ -30,10 +30,13 @@ generate_stubs("libva_stubs") {
 }
 
 source_set("vaapi") {
+  assert(use_libgav1_parser)
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
   sources = [
     "accelerated_video_encoder.cc",
     "accelerated_video_encoder.h",
+    "av1_vaapi_video_decoder_delegate.cc",
+    "av1_vaapi_video_decoder_delegate.h",
     "h264_encoder.cc",
     "h264_encoder.h",
     "h264_vaapi_video_decoder_delegate.cc",
@@ -112,10 +115,7 @@ source_set("vaapi") {
   ]
 
   if (is_chromeos_ash) {
-    assert(use_libgav1_parser)
     sources += [
-      "av1_vaapi_video_decoder_delegate.cc",
-      "av1_vaapi_video_decoder_delegate.h",
       "vaapi_jpeg_encode_accelerator.cc",
       "vaapi_jpeg_encode_accelerator.h",
       "vaapi_mjpeg_decode_accelerator.cc",
@@ -176,6 +176,7 @@ source_set("common") {
   ]
   public_deps = [
     "//base",
+    "//build/config/linux/libdrm",
     "//gpu",
     "//media",
     "//media/gpu:common",
@@ -222,6 +223,7 @@ source_set("unit_test") {
     "vaapi_image_decode_accelerator_worker_unittest.cc",
     "vaapi_video_decode_accelerator_unittest.cc",
     "vaapi_video_encode_accelerator_unittest.cc",
+    "vaapi_wrapper_unittest.cc",
     "vp9_encoder_unittest.cc",
     "vp9_temporal_layers_unittest.cc",
   ]
@@ -341,6 +343,8 @@ group("vaapi_fuzzers") {
 executable("decode_test") {
   testonly = true
   sources = [
+    "test/av1_decoder.cc",
+    "test/av1_decoder.h",
     "test/decode.cc",
     "test/macros.h",
     "test/scoped_va_config.cc",
@@ -361,6 +365,7 @@ executable("decode_test") {
     "//media",
     "//media:test_support",
     "//media/gpu:common",
+    "//third_party/libgav1:libgav1",
     "//third_party/libyuv",
     "//ui/gfx/codec:codec",
     "//ui/gfx/geometry",

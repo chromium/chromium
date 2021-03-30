@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests Summary view of detailed heap snapshots. The "Show All" button must show all nodes.\n`);
-  await TestRunner.loadModule('heap_profiler_test_runner');
+  await TestRunner.loadTestModule('heap_profiler_test_runner');
   await TestRunner.showPanel('heap_profiler');
 
   var instanceCount = 25;

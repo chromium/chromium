@@ -5,16 +5,15 @@
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 
 #include "ash/public/cpp/test/shell_test_api.h"
-#include "chrome/browser/chromeos/login/login_manager_test.h"
-#include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
-#include "chrome/browser/chromeos/login/test/oobe_base_test.h"
+#include "chrome/browser/ash/login/login_manager_test.h"
+#include "chrome/browser/ash/login/test/login_manager_mixin.h"
+#include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_view_host.h"
@@ -33,7 +32,7 @@ class MockSystemWebDialog : public SystemWebDialogDelegate {
  public:
   explicit MockSystemWebDialog(const char* id = nullptr)
       : SystemWebDialogDelegate(GURL(chrome::kChromeUIIntenetConfigDialogURL),
-                                base::string16()) {
+                                std::u16string()) {
     if (id)
       id_ = std::string(id);
   }

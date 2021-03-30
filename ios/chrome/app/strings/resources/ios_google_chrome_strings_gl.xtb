@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
 <translation id="1282031177488366470">Axudar a mellorar o rendemento e as funcións de Chrome</translation>
+<translation id="1314663809820920746">Podes seguir vendo os marcadores, o historial, os contrasinais e o resto das opcións de configuración que teñas neste dispositivo. Se fas cambios, non se sincronizarán coa túa Conta de Google.</translation>
 <translation id="1479202195792305274">Chrome pode comprobar os teus contrasinais cando inicies sesión coa túa Conta de Google.</translation>
 <translation id="1504372625950710826">Chrome non puido buscar actualizacións. Verifica a conexión a Internet.</translation>
 <translation id="1682483655351012182">Sincronizar os teus datos de Chrome</translation>
@@ -10,6 +11,7 @@
 <translation id="2009224836393115614">Chrome non puido comprobar os teus contrasinais. Verifica a conexión a Internet.</translation>
 <translation id="2147651015520127414">Chrome verificou que <ph name="ISSUER" /> emitiu o certificado deste sitio web.</translation>
 <translation id="2199719347983604670">Datos procedentes da Sincronización de Chrome</translation>
+<translation id="2342919707875585281">Chrome comparte a localización cos sitios que queiras.</translation>
 <translation id="2347208864470321755">Cando está activada esta función, Chrome ofrece a tradución de páxinas escritas noutros idiomas a través do Tradutor de Google. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="2415682770504543561">Fai que Chrome sexa o teu navegador predeterminado</translation>
 <translation id="2574249610672786438">Para ver as túas pestanas desde calquera dispositivo no que utilices Chrome, inicia sesión en todos eles</translation>
@@ -17,9 +19,9 @@
 <translation id="257708665678654955">Queres que a próxima vez Google Chrome che ofreza a posibilidade de traducir as páxinas en <ph name="LANGUAGE_NAME" /> deste sitio?</translation>
 <translation id="2695886661449553974">Chrome non puido buscar actualizacións. Téntao máis tarde.</translation>
 <translation id="2732745070297234559">Chrome non puido comprobar todos os contrasinais. Téntao de novo mañá.</translation>
+<translation id="2740105938841089077">Utiliza Chrome para abrir as ligazóns</translation>
 <translation id="2919738076569633423">Ao usar Chrome, aceptas as <ph name="BEGIN_LINK_TOS" />Condicións de servizo<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Dado que estás pechando sesión nunha conta xestionada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, eliminaranse os teus datos de Chrome deste dispositivo, pero conservaranse na túa Conta de Google.</translation>
-<translation id="3148688391461398285">Obtén unha mellor experiencia en Chrome baseada na túa localización.</translation>
 <translation id="3167189358072330585">A túa conta non funciona en Google Chrome. Ponte en contacto co teu administrador de dominio ou utiliza unha conta normal de Google para iniciar sesión.</translation>
 <translation id="3173834708294760622">Páxina de Google Chrome</translation>
 <translation id="3196546062792660320">Chrome fai que aforres tempo ao pasar as túas contas á web. Podes engadir ou eliminar contas en Configuración.</translation>
@@ -28,7 +30,9 @@
 <translation id="3522659714780527202">Para ver as túas pestanas desde calquera dispositivo no que utilices Chrome, activa a sincronización</translation>
 <translation id="3533694711092285624">Non hai contrasinais gardados. Chrome pode comprobar os teus contrasinais cando os gardes.</translation>
 <translation id="3706101708757577809">Xa podes utilizar Chrome sempre que toques ligazóns en mensaxes, en documentos e noutras aplicacións.</translation>
+<translation id="3720541637541300822">Bloquear pestanas do modo de incógnito ao pechar Chrome</translation>
 <translation id="384394811301901750">Google Chrome non pode usar a cámara neste momento</translation>
+<translation id="38949020760388809">Escolle se queres borrar os teus datos de Chrome deste dispositivo ou conservalos.</translation>
 <translation id="3980220367029651214">Estás cambiando a conta de sincronización <ph name="USER_EMAIL1" /> por <ph name="USER_EMAIL2" />. <ph name="DOMAIN" /> xestiona os datos de Chrome actuais. Ao realizar esta acción, eliminaranse os teus datos deste dispositivo, pero conservaranse en <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">A túa organización require que manteñas a sesión pechada en Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome non ten acceso ás túas fotos nin aos teus vídeos. Activa o acceso en Configuración de iOS &gt; Privacidade &gt; Fotos.</translation>
@@ -51,13 +55,15 @@
 <translation id="5854621639439811139">Consello sobre Chrome: Agora algúns botóns, como Atrás, Adiante e Buscar, están na parte inferior da pantalla.</translation>
 <translation id="6036420186814142909">Google Chrome inclúe funcións que che axudan a xestionar os teus datos de Internet e a rapidez coa que podes cargar páxinas web.
 <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
+<translation id="6181930887571472871">Pásate a Chrome</translation>
 <translation id="6238746320622508509">Permite que Chrome bloquee as pestanas do modo de incógnito.</translation>
 <translation id="6573431926118603307">Aquí aparecerán as pestanas que abrises en Chrome noutros dispositivos.</translation>
 <translation id="6600954340915313787">Copiouse en Chrome</translation>
+<translation id="6634107063912726160">Cando peches sesión, Chrome non sincronizará datos novos coa túa Conta de Google. Os datos que se sincronizasen antes permanecerán na conta.</translation>
 <translation id="6648150602980899529">Estás iniciando sesión cunha conta xestionada por <ph name="DOMAIN" /> e proporcionándolle ao seu administrador o control dos teus datos de Chrome, que quedarán ligados permanentemente a esta conta. Se pechas sesión en Chrome, eliminaranse os teus datos deste dispositivo, pero seguirán almacenados na túa conta de Google.</translation>
 <translation id="6676840375528380067">Queres borrar os teus datos de Chrome deste dispositivo?</translation>
-<translation id="6822363243974874813">Mentres tiñas a sesión pechada en Chrome, borráronse deste dispositivo os marcadores, o historial, os contrasinais e outras opcións de configuración. Os teus datos sincronizados de Chrome seguen gardándose na túa conta de Google.</translation>
 <translation id="6822673484890854830">Chrome non puido comprobar todos os contrasinais. Téntao de novo máis tarde.</translation>
+<translation id="6964931465519938134">Xa podes utilizar Chrome sempre que toques ligazóns en mensaxes, en documentos e noutras aplicacións.</translation>
 <translation id="7124339256045485976">Mantén Chrome actualizado</translation>
 <translation id="7161390184744336561">A versión de Google Chrome está desactualizada</translation>
 <translation id="7165736900384873061">Comeza a usar o escáner de códigos QR de Google Chrome</translation>
@@ -67,17 +73,22 @@
 <translation id="7265369419224458312">Accede ás pestanas que abriches no teu ordenador desde aquí mesmo. Só tes que abrir Chrome no teu ordenador, ir ao menú e seleccionar Iniciar sesión en Chrome…</translation>
 <translation id="7272930098487145294">Se queres gardar imaxes, toca Configuración para que Chrome poida engadir as túas fotos</translation>
 <translation id="7400722733683201933">Acerca de Google Chrome</translation>
+<translation id="7501046334262221972">Se queres que Chrome pase a ser o teu navegador predeterminado, abre Configuración. Toca Aplicación de navegador predeterminada e, a continuación, selecciona Chrome.</translation>
 <translation id="756809126120519699">Borráronse os datos de Chrome</translation>
 <translation id="7626032353295482388">Dámosche a benvida a Chrome</translation>
 <translation id="7662994914830945754">Para ver as túas pestanas desde calquera equipo no que utilices Chrome, inicia sesión e activa a sincronización</translation>
 <translation id="766361182512894255">O teu contrasinal quedou exposto debido a unha violación da seguranza dos datos. Chrome recoméndache que o cambies agora.</translation>
 <translation id="7698568245838009292">Chrome quere acceder á cámara</translation>
 <translation id="7855730255114109580">Google Chrome está actualizado</translation>
-<translation id="8045508249136869751">Para facer que Chrome sexa o teu navegador predeterminado, abre Settings (Configuración), toca Default Browser App (Aplicación de navegador predeterminada) e selecciona Chrome.</translation>
+<translation id="8109233255338845204"><ph name="HOSTED_DOMAIN" /> xestiona a túa conta, polo que se borrarán os teus datos de Chrome deste dispositivo.</translation>
 <translation id="8160472928944011082">Non se puido actualizar Chrome</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os dereitos reservados.</translation>
 <translation id="840168496893712993">Algúns complementos fan que Chrome falle. Proba a desinstalalos.</translation>
 <translation id="8459495907675268833">Os datos seleccionados elimináronse de Chrome e dos dispositivos sincronizados. É posible que a túa conta de Google teña outras formas do historial de navegación, como buscas e actividade doutros servizos de Google, en history.google.com.</translation>
+<translation id="850555388806794946">Para facer que Chrome sexa o teu navegador predeterminado, sigue estes pasos:
+  1. Abre Configuración
+  2. Toca Aplicación de navegador predeterminada
+  3. Selecciona Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="9135668017386497357">Se permites que Chrome saiba cal é a túa localización, este enviaralla ao teu motor de busca predeterminado e aos sitios aos que lles concedas a autorización pertinente. Os sitios poderán preguntarche pola túa localización se teñen información local que mostrarche (por exemplo, noticias ou tendas próximas).</translation>
 </translationbundle>

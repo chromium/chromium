@@ -25,16 +25,14 @@ MediaHistoryUI::MediaHistoryUI(content::WebUI* web_ui)
   // Setup the data source behind chrome://media-history.
   std::unique_ptr<content::WebUIDataSource> source(
       content::WebUIDataSource::Create(chrome::kChromeUIMediaHistoryHost));
-  source->AddResourcePath("media-data-table.js", IDR_MEDIA_DATA_TABLE_JS);
-  source->AddResourcePath("media-history.js", IDR_MEDIA_HISTORY_JS);
-  source->AddResourcePath(
-      "services/media_session/public/mojom/media_session.mojom-lite.js",
-      IDR_MEDIA_SESSION_MOJOM_LITE_JS);
+  source->AddResourcePath("media_data_table.js", IDR_MEDIA_DATA_TABLE_JS);
+  source->AddResourcePath("media_history.js", IDR_MEDIA_HISTORY_JS);
+  source->AddResourcePath("media_session.mojom-lite.js",
+                          IDR_MEDIA_SESSION_MOJOM_LITE_JS);
   source->AddResourcePath("ui/gfx/geometry/mojom/geometry.mojom-lite.js",
                           IDR_UI_GEOMETRY_MOJOM_LITE_JS);
-  source->AddResourcePath(
-      "chrome/browser/media/history/media_history_store.mojom-lite.js",
-      IDR_MEDIA_HISTORY_STORE_MOJOM_LITE_JS);
+  source->AddResourcePath("media_history_store.mojom-lite.js",
+                          IDR_MEDIA_HISTORY_STORE_MOJOM_LITE_JS);
   source->SetDefaultResource(IDR_MEDIA_HISTORY_HTML);
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source.release());
 }

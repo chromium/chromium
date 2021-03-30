@@ -8,9 +8,9 @@
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-forward.h"
+#include "third_party/blink/public/mojom/loader/mixed_content.mojom-shared.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-forward.h"
 #include "third_party/blink/public/platform/web_common.h"
-#include "third_party/blink/public/platform/web_mixed_content_context_type.h"
 
 namespace blink {
 
@@ -41,7 +41,7 @@ BLINK_PLATFORM_EXPORT mojom::RequestContextType
 GetRequestContextTypeForWebURLRequest(const WebURLRequest& request);
 BLINK_PLATFORM_EXPORT network::mojom::RequestDestination
 GetRequestDestinationForWebURLRequest(const WebURLRequest& request);
-BLINK_PLATFORM_EXPORT WebMixedContentContextType
+BLINK_PLATFORM_EXPORT mojom::MixedContentContextType
 GetMixedContentContextTypeForWebURLRequest(const WebURLRequest& request);
 
 }  // namespace blink

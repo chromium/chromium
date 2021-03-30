@@ -16,17 +16,16 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_shelf.h"
-#include "chrome/browser/media/kaleidoscope/constants.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -45,7 +44,7 @@
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
-#include "chrome/browser/web_applications/system_web_app_manager.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
@@ -62,13 +61,13 @@
 #include "url/url_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/app_management/app_management_uma.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes_util.h"
 #include "chromeos/components/connectivity_diagnostics/url_constants.h"
-#include "chromeos/constants/chromeos_features.h"
 #else
 #include "chrome/browser/ui/signin_view_controller.h"
 #endif
@@ -98,7 +97,7 @@ void FocusWebContents(Browser* browser) {
 void ShowSingletonTabIgnorePathOverwriteNTP(Browser* browser, const GURL& url) {
   NavigateParams params(GetSingletonTabNavigateParams(browser, url));
   params.path_behavior = NavigateParams::IGNORE_AND_NAVIGATE;
-  ShowSingletonTabOverwritingNTP(browser, std::move(params));
+  ShowSingletonTabOverwritingNTP(browser, &params);
 }
 
 void OpenBookmarkManagerForNode(Browser* browser, int64_t node_id) {
@@ -117,7 +116,7 @@ void LaunchReleaseNotesImpl(Profile* profile,
       apps::AppServiceProxyFactory::GetForProfileRedirectInIncognito(profile);
   proxy->LaunchAppWithUrl(web_app::kHelpAppId, ui::EventFlags::EF_NONE,
                           GURL("chrome://help-app/updates"), source,
-                          display::kDefaultDisplayId);
+                          apps::MakeWindowInfo(display::kDefaultDisplayId));
 }
 
 #endif
@@ -147,7 +146,7 @@ void ShowHelpImpl(Browser* browser, Profile* profile, HelpSource source) {
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfileRedirectInIncognito(profile);
   proxy->Launch(web_app::kHelpAppId, ui::EventFlags::EF_NONE, app_launch_source,
-                display::kDefaultDisplayId);
+                apps::MakeWindowInfo(display::kDefaultDisplayId));
 #else
   GURL url;
   switch (source) {
@@ -254,9 +253,9 @@ void ShowDownloads(Browser* browser) {
   if (browser->window() && browser->window()->IsDownloadShelfVisible())
     browser->window()->GetDownloadShelf()->Close();
 
-  ShowSingletonTabOverwritingNTP(
-      browser,
+  NavigateParams params(
       GetSingletonTabNavigateParams(browser, GURL(kChromeUIDownloadsURL)));
+  ShowSingletonTabOverwritingNTP(browser, &params);
 }
 
 void ShowExtensions(Browser* browser,
@@ -280,6 +279,13 @@ void ShowHelp(Browser* browser, HelpSource source) {
 void ShowHelpForProfile(Profile* profile, HelpSource source) {
   ShowHelpImpl(NULL, profile, source);
 }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+void ShowChromeTips(Browser* browser) {
+  static const char kChromeTipsURL[] = "https://www.google.com/chrome/tips/";
+  ShowSingletonTab(browser, GURL(kChromeTipsURL));
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 void LaunchReleaseNotes(Profile* profile, apps::mojom::LaunchSource source) {
 #if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -421,12 +427,6 @@ void ShowSearchEngineSettings(Browser* browser) {
   ShowSettingsSubPage(browser, kSearchEnginesSubPage);
 }
 
-void ShowKaleidoscope(Browser* browser) {
-  base::RecordAction(UserMetricsAction("ShowKaleidoscope"));
-  ShowSingletonTabIgnorePathOverwriteNTP(browser,
-                                         GURL(kKaleidoscopeWatchUIURL));
-}
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void ShowEnterpriseManagementPageInTabbedBrowser(Browser* browser) {
   // Management shows in a tab because it has a "back" arrow that takes the
@@ -450,34 +450,23 @@ void ShowAppManagementPage(Profile* profile,
                                                                sub_page);
 }
 
-void ShowPrintManagementApp(Profile* profile,
-                            PrintManagementAppEntryPoint entry_point) {
-  DCHECK(
-      base::FeatureList::IsEnabled(chromeos::features::kPrintJobManagementApp));
-  DCHECK(entry_point == PrintManagementAppEntryPoint::kSettings ||
-         entry_point == PrintManagementAppEntryPoint::kNotification);
-
-  base::UmaHistogramEnumeration("Printing.CUPS.PrintManagementAppEntryPoint",
-                                entry_point);
-  LaunchSystemWebApp(profile, web_app::SystemAppType::PRINT_MANAGEMENT,
-                     GURL(chrome::kChromeUIPrintManagementUrl));
+void ShowPrintManagementApp(Profile* profile) {
+  LaunchSystemWebAppAsync(profile, web_app::SystemAppType::PRINT_MANAGEMENT);
 }
 
 void ShowConnectivityDiagnosticsApp(Profile* profile) {
-  DCHECK(base::FeatureList::IsEnabled(
-      chromeos::features::kConnectivityDiagnosticsWebUi));
-  LaunchSystemWebApp(profile, web_app::SystemAppType::CONNECTIVITY_DIAGNOSTICS,
-                     GURL(chromeos::kChromeUIConnectivityDiagnosticsUrl));
+  LaunchSystemWebAppAsync(profile,
+                          web_app::SystemAppType::CONNECTIVITY_DIAGNOSTICS);
 }
 
-void ShowScanningApp(Profile* profile,
-                     chromeos::scanning::ScanAppEntryPoint entry_point) {
-  DCHECK(base::FeatureList::IsEnabled(chromeos::features::kScanningUI));
-  DCHECK_EQ(chromeos::scanning::ScanAppEntryPoint::kSettings, entry_point);
+void ShowScanningApp(Profile* profile) {
+  LaunchSystemWebAppAsync(profile, web_app::SystemAppType::SCANNING);
+}
 
-  LaunchSystemWebApp(profile, web_app::SystemAppType::SCANNING,
-                     GURL(chrome::kChromeUIScanningAppURL));
-  chromeos::scanning::RecordScanAppEntryPoint(entry_point);
+void ShowDiagnosticsApp(Profile* profile) {
+  DCHECK(base::FeatureList::IsEnabled(chromeos::features::kDiagnosticsApp));
+
+  LaunchSystemWebAppAsync(profile, web_app::SystemAppType::DIAGNOSTICS);
 }
 
 GURL GetOSSettingsUrl(const std::string& sub_page) {
@@ -504,14 +493,14 @@ void ShowBrowserSignin(Browser* browser,
 
   profiles::BubbleViewMode bubble_view_mode;
   if (IdentityManagerFactory::GetForProfile(original_profile)
-          ->HasPrimaryAccount()) {
+          ->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     bubble_view_mode = profiles::BUBBLE_VIEW_MODE_GAIA_REAUTH;
   } else {
     switch (consent_level) {
       case signin::ConsentLevel::kSync:
         bubble_view_mode = profiles::BUBBLE_VIEW_MODE_GAIA_SIGNIN;
         break;
-      case signin::ConsentLevel::kNotRequired:
+      case signin::ConsentLevel::kSignin:
         bubble_view_mode = profiles::BUBBLE_VIEW_MODE_GAIA_ADD_ACCOUNT;
         break;
     }
@@ -525,7 +514,7 @@ void ShowBrowserSigninOrSettings(Browser* browser,
   Profile* original_profile = browser->profile()->GetOriginalProfile();
   DCHECK(original_profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed));
   if (IdentityManagerFactory::GetForProfile(original_profile)
-          ->HasPrimaryAccount())
+          ->HasPrimaryAccount(signin::ConsentLevel::kSync))
     ShowSettings(browser);
   else
     ShowBrowserSignin(browser, access_point, signin::ConsentLevel::kSync);

@@ -3,32 +3,51 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:clickable="true"
-    android:focusable="true"
-    android:textAppearance="@style/TextAppearance.TextSmall.Primary"
-    android:layout_height="fill_parent"
     android:layout_width="69sp"
+    android:layout_height="fill_parent"
     android:layout_marginStart="8dp"
-    android:layout_marginEnd="8dp"
-    android:paddingTop="28dp"
-    android:background="?attr/selectableItemBackground"
-    android:gravity="center_horizontal"
-    android:orientation="vertical" >
-    <ImageView android:id="@+id/icon"
-        android:layout_height="24dp"
-        android:layout_width="24dp"
-        android:scaleType="fitCenter"
-        tools:ignore="ContentDescription" />
-    <TextView android:id="@+id/text"
-        android:layout_width="fill_parent"
+    android:layout_marginEnd="8dp">
+
+   <LinearLayout android:id="@+id/layout"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="28dp"
+        android:background="?attr/selectableItemBackground"
+        android:gravity="center_horizontal"
+        android:orientation="vertical" >
+
+        <ImageView android:id="@+id/icon"
+            android:layout_height="24dp"
+            android:layout_width="24dp"
+            android:scaleType="fitCenter"
+            tools:ignore="ContentDescription" />
+
+        <TextView android:id="@+id/text"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="2"
+            android:paddingTop="13dp"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.TextSmall.Primary" />
+
+    </LinearLayout>
+
+    <TextView android:id="@+id/display_new"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ellipsize="end"
-        android:gravity="center"
-        android:maxLines="2"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:maxLines="1"
         android:paddingTop="13dp"
-        android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.TextSmall.Primary" />
-</LinearLayout>
+        android:text="@string/new_badge"
+        android:textAppearance="@style/TextAppearance.TextSmall.Blue"
+        android:visibility="gone"/>
+
+</RelativeLayout>

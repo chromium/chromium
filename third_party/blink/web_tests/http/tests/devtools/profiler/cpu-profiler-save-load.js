@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that CPU profiling is able to save/load.\n`);
-  await TestRunner.loadModule('cpu_profiler_test_runner');
+  await TestRunner.loadTestModule('cpu_profiler_test_runner');
   await TestRunner.showPanel('js_profiler');
   await TestRunner.evaluateInPagePromise(`
       function pageFunction() {

@@ -163,7 +163,8 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, MaxOffscreenTabs) {
 }
 
 // Tests that tab capture video frames can be received in a VIDEO element.
-IN_PROC_BROWSER_TEST_F(TabCaptureApiPixelTest, EndToEndWithoutRemoting) {
+// Disabled due to flakes on multiple platforms; see https://crbug.com/1040894.
+IN_PROC_BROWSER_TEST_F(TabCaptureApiPixelTest, DISABLED_EndToEndWithoutRemoting) {
   if (IsTooIntensiveForThisPlatform()) {
     LOG(WARNING) << "Skipping this CPU-intensive test on this platform/build.";
     return;
@@ -183,7 +184,8 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiPixelTest, EndToEndWithoutRemoting) {
 // received in a VIDEO element.  More allowance is provided for color deviation
 // because of the additional layers of video processing performed within
 // WebRTC.
-IN_PROC_BROWSER_TEST_F(TabCaptureApiPixelTest, EndToEndThroughWebRTC) {
+// Disabled due to flakes on multiple platforms; see https://crbug.com/1040894.
+IN_PROC_BROWSER_TEST_F(TabCaptureApiPixelTest, DISABLED_EndToEndThroughWebRTC) {
   if (IsTooIntensiveForThisPlatform()) {
     LOG(WARNING) << "Skipping this CPU-intensive test on this platform/build.";
     return;
@@ -355,8 +357,10 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, MAYBE_GrantForChromePages) {
 // Tests that a tab in incognito mode can be captured.
 IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, CaptureInSplitIncognitoMode) {
   AddExtensionToCommandLineAllowlist();
-  ASSERT_TRUE(RunExtensionSubtest("tab_capture", "start_tab_capture.html",
-                                  kFlagEnableIncognito, kFlagUseIncognito))
+  ASSERT_TRUE(RunExtensionTest({.name = "tab_capture",
+                                .page_url = "start_tab_capture.html",
+                                .open_in_incognito = true},
+                               {.allow_in_incognito = true}))
       << message_;
 }
 

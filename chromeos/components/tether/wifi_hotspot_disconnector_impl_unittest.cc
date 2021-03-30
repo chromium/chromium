@@ -75,10 +75,12 @@ class TestNetworkConnectionHandler : public NetworkConnectionHandler {
                         network_handler::ErrorCallback error_callback,
                         bool check_error_state,
                         ConnectCallbackMode mode) override {}
-  void Init(NetworkStateHandler* network_state_handler,
-            NetworkConfigurationHandler* network_configuration_handler,
-            ManagedNetworkConfigurationHandler*
-                managed_network_configuration_handler) override {}
+  void Init(
+      NetworkStateHandler* network_state_handler,
+      NetworkConfigurationHandler* network_configuration_handler,
+      ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
+      CellularESimConnectionHandler* cellular_esim_connection_handler)
+      override {}
 
  private:
   base::OnceClosure disconnect_callback_;
@@ -141,8 +143,8 @@ class WifiHotspotDisconnectorImplTest : public testing::Test {
         wifi_network_guid,
         base::BindOnce(&WifiHotspotDisconnectorImplTest::SuccessCallback,
                        base::Unretained(this)),
-        base::Bind(&WifiHotspotDisconnectorImplTest::ErrorCallback,
-                   base::Unretained(this)));
+        base::BindOnce(&WifiHotspotDisconnectorImplTest::ErrorCallback,
+                       base::Unretained(this)));
   }
 
   void OnNetworkConnectionManagerDisconnect() {

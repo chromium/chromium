@@ -14,8 +14,12 @@ component("x11") {
   deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//net",
     "//skia",
     "//ui/base",
+    "//ui/base:hit_test",
+    "//ui/base:wm_role_names",
+    "//ui/base/dragdrop:types",
     "//ui/base/x",
     "//ui/events",
     "//ui/events/devices",

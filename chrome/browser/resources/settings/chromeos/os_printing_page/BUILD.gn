@@ -4,180 +4,11 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/polymer.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../os_settings.gni")
 
-js_type_check("closure_compile") {
-  deps = [
-    ":cups_add_print_server_dialog",
-    ":cups_add_printer_dialog",
-    ":cups_add_printer_manually_dialog",
-    ":cups_add_printer_manufacturer_model_dialog",
-    ":cups_edit_printer_dialog",
-    ":cups_printer_dialog_error",
-    ":cups_printer_dialog_util",
-    ":cups_printers",
-    ":cups_printers_browser_proxy",
-    ":cups_printers_entry_manager",
-    ":cups_settings_add_printer_dialog",
-    ":os_printing_page",
-  ]
-}
-
-js_library("cups_settings_add_printer_dialog") {
-  deps = [
-    ":cups_add_print_server_dialog",
-    ":cups_add_printer_dialog",
-    ":cups_add_printer_manually_dialog",
-    ":cups_add_printer_manufacturer_model_dialog",
-    ":cups_printers_browser_proxy",
-    "../localized_link:localized_link",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("cups_add_print_server_dialog") {
-  deps = [
-    ":cups_printers_browser_proxy",
-    "../localized_link:localized_link",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("cups_add_printer_manufacturer_model_dialog") {
-  deps = [
-    ":cups_printers_browser_proxy",
-    "../localized_link:localized_link",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("cups_add_printer_manually_dialog") {
-  deps = [
-    ":cups_printers_browser_proxy",
-    "../localized_link:localized_link",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("cups_add_printer_dialog") {
-  deps = [ ":cups_printers_browser_proxy" ]
-}
-
-js_library("cups_printer_dialog_error") {
-  deps = [ ":cups_printers_browser_proxy" ]
-}
-
-js_library("cups_edit_printer_dialog") {
-  deps = [
-    "..:metrics_recorder",
-    "../localized_link:localized_link",
-    "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider",
-    "//ui/webui/resources/cr_components/chromeos/network:network_listener_behavior",
-    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
-  ]
-}
-
-js_library("cups_nearby_printers") {
-  deps = [
-    ":cups_printer_types",
-    ":cups_printers_browser_proxy",
-    ":cups_printers_entry",
-    ":cups_printers_entry_list_behavior",
-    ":cups_printers_entry_manager",
-    "..:metrics_recorder",
-    "//ui/webui/resources/js:list_property_update_behavior",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("cups_printer_dialog_util") {
-  deps = [ "//ui/webui/resources/js:cr" ]
-}
-
-js_library("cups_printer_types") {
-  deps = [ ":cups_printers_browser_proxy" ]
-}
-
-js_library("cups_printers") {
-  deps = [
-    ":cups_nearby_printers",
-    ":cups_printers_browser_proxy",
-    ":cups_printers_entry_manager",
-    ":cups_saved_printers",
-    "..:deep_linking_behavior",
-    "..:os_route",
-    "../..:router",
-    "../localized_link:localized_link",
-    "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider",
-    "//ui/webui/resources/cr_components/chromeos/network:network_listener_behavior",
-    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
-    "//ui/webui/resources/cr_elements/cr_toast:cr_toast",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink",
-  ]
-}
-
-js_library("cups_printers_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr" ]
-}
-
-js_library("cups_printers_entry") {
-  deps = [
-    ":cups_printer_types",
-    ":cups_printers_browser_proxy",
-    "//ui/webui/resources/js/cr/ui:focus_row_behavior",
-  ]
-}
-
-js_library("cups_printers_entry_list_behavior") {
-  deps = [
-    ":cups_printer_types",
-    "//ui/webui/resources/js:list_property_update_behavior",
-  ]
-}
-
-js_library("cups_printers_entry_manager") {
-  deps = [
-    ":cups_printer_types",
-    ":cups_printers_browser_proxy",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-  ]
-}
-
-js_library("cups_saved_printers") {
-  deps = [
-    ":cups_printer_types",
-    ":cups_printers_browser_proxy",
-    ":cups_printers_entry",
-    ":cups_printers_entry_list_behavior",
-    ":cups_printers_entry_manager",
-    "..:metrics_recorder",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
-    "//ui/webui/resources/js:list_property_update_behavior",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("os_printing_page") {
-  deps = [
-    "..:deep_linking_behavior",
-    "..:metrics_recorder",
-    "..:os_route",
-    "../..:router",
-    "../../settings_page:settings_animated_pages",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:load_time_data",
-  ]
-}
-
 js_type_check("closure_compile_module") {
+  closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
     ":cups_add_print_server_dialog.m",
@@ -291,7 +122,7 @@ js_library("cups_printers.m") {
     ":cups_settings_add_printer_dialog.m",
     "..:deep_linking_behavior.m",
     "..:os_route.m",
-    "../..:router.m",
+    "../..:router",
     "//ui/webui/resources/cr_components/chromeos/network:network_listener_behavior.m",
     "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
     "//ui/webui/resources/js:assert.m",
@@ -353,7 +184,7 @@ js_library("os_printing_page.m") {
     "..:deep_linking_behavior.m",
     "..:metrics_recorder.m",
     "..:os_route.m",
-    "../..:router.m",
+    "../..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
   ]
@@ -495,8 +326,6 @@ polymer_modulizer("os_printing_page") {
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
 }
-
-import("//ui/webui/resources/tools/js_modulizer.gni")
 
 js_modulizer("modulize") {
   input_files = [

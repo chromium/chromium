@@ -24,6 +24,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace chromeos {
@@ -60,7 +61,7 @@ RequestPinView::~RequestPinView() {
 }
 
 void RequestPinView::ContentsChanged(views::Textfield* sender,
-                                     const base::string16& new_contents) {
+                                     const std::u16string& new_contents) {
   DialogModelChanged();
 }
 
@@ -111,7 +112,7 @@ views::View* RequestPinView::GetInitiallyFocusedView() {
   return textfield_;
 }
 
-base::string16 RequestPinView::GetWindowTitle() const {
+std::u16string RequestPinView::GetWindowTitle() const {
   return window_title_;
 }
 
@@ -143,7 +144,7 @@ void RequestPinView::SetExtensionName(const std::string& extension_name) {
 
 void RequestPinView::UpdateHeaderText() {
   int label_text_id = IDS_REQUEST_PIN_DIALOG_HEADER;
-  base::string16 label_text =
+  std::u16string label_text =
       l10n_util::GetStringFUTF16(label_text_id, window_title_, code_type_);
   header_label_->SetText(label_text);
   header_label_->SizeToPreferredSize();
@@ -166,7 +167,7 @@ void RequestPinView::Init() {
 
   // Information label.
   int label_text_id = IDS_REQUEST_PIN_DIALOG_HEADER;
-  base::string16 label_text = l10n_util::GetStringUTF16(label_text_id);
+  std::u16string label_text = l10n_util::GetStringUTF16(label_text_id);
   auto header_label = std::make_unique<views::Label>(label_text);
   header_label->SetEnabled(true);
   header_label_ = layout->AddView(std::move(header_label));
@@ -226,7 +227,7 @@ void RequestPinView::SetErrorMessage(security_token_pin::ErrorLabel error_label,
     return;
   }
 
-  base::string16 error_message = security_token_pin::GenerateErrorMessage(
+  std::u16string error_message = security_token_pin::GenerateErrorMessage(
       error_label, attempts_left, accept_input);
 
   error_label_->SetVisible(true);
@@ -236,5 +237,8 @@ void RequestPinView::SetErrorMessage(security_token_pin::ErrorLabel error_label,
   error_label_->SizeToPreferredSize();
   textfield_->SetInvalid(true);
 }
+
+BEGIN_METADATA(RequestPinView, views::DialogDelegateView)
+END_METADATA
 
 }  // namespace chromeos

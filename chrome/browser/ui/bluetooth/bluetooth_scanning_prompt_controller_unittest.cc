@@ -45,88 +45,78 @@ class BluetoothScanningPromptControllerWithDevicesAddedTest
  public:
   BluetoothScanningPromptControllerWithDevicesAddedTest() {
     bluetooth_scanning_prompt_controller_.AddOrUpdateDevice(
-        "id_a", /*should_update_name=*/false, base::ASCIIToUTF16("a"));
+        "id_a", /*should_update_name=*/false, u"a");
     bluetooth_scanning_prompt_controller_.AddOrUpdateDevice(
-        "id_b", /*should_update_name=*/false, base::ASCIIToUTF16("b"));
+        "id_b", /*should_update_name=*/false, u"b");
     bluetooth_scanning_prompt_controller_.AddOrUpdateDevice(
-        "id_c", /*should_update_name=*/false, base::ASCIIToUTF16("c"));
+        "id_c", /*should_update_name=*/false, u"c");
   }
 };
 
 TEST_F(BluetoothScanningPromptControllerTest, AddDevice) {
   EXPECT_CALL(mock_bluetooth_scanning_prompt_view_, OnOptionAdded(0)).Times(1);
   bluetooth_scanning_prompt_controller_.AddOrUpdateDevice(
-      "id_a", /*should_update_name=*/false, base::ASCIIToUTF16("a"));
+      "id_a", /*should_update_name=*/false, u"a");
   EXPECT_EQ(1u, bluetooth_scanning_prompt_controller_.NumOptions());
-  EXPECT_EQ(base::ASCIIToUTF16("a"),
-            bluetooth_scanning_prompt_controller_.GetOption(0));
+  EXPECT_EQ(u"a", bluetooth_scanning_prompt_controller_.GetOption(0));
   testing::Mock::VerifyAndClearExpectations(
       &mock_bluetooth_scanning_prompt_view_);
 
   EXPECT_CALL(mock_bluetooth_scanning_prompt_view_, OnOptionAdded(1)).Times(1);
   bluetooth_scanning_prompt_controller_.AddOrUpdateDevice(
-      "id_b", /*should_update_name=*/false, base::ASCIIToUTF16("b"));
+      "id_b", /*should_update_name=*/false, u"b");
   EXPECT_EQ(2u, bluetooth_scanning_prompt_controller_.NumOptions());
-  EXPECT_EQ(base::ASCIIToUTF16("b"),
-            bluetooth_scanning_prompt_controller_.GetOption(1));
+  EXPECT_EQ(u"b", bluetooth_scanning_prompt_controller_.GetOption(1));
   testing::Mock::VerifyAndClearExpectations(
       &mock_bluetooth_scanning_prompt_view_);
 
   EXPECT_CALL(mock_bluetooth_scanning_prompt_view_, OnOptionAdded(2)).Times(1);
   bluetooth_scanning_prompt_controller_.AddOrUpdateDevice(
-      "id_c", /*should_update_name=*/false, base::ASCIIToUTF16("c"));
+      "id_c", /*should_update_name=*/false, u"c");
   EXPECT_EQ(3u, bluetooth_scanning_prompt_controller_.NumOptions());
-  EXPECT_EQ(base::ASCIIToUTF16("c"),
-            bluetooth_scanning_prompt_controller_.GetOption(2));
+  EXPECT_EQ(u"c", bluetooth_scanning_prompt_controller_.GetOption(2));
 }
 
 TEST_F(BluetoothScanningPromptControllerTest,
        MultipleDevicesWithSameNameShowIds) {
   bluetooth_scanning_prompt_controller_.AddOrUpdateDevice(
-      "id_a_1", /*should_update_name=*/false, base::ASCIIToUTF16("a"));
-  EXPECT_EQ(base::ASCIIToUTF16("a"),
-            bluetooth_scanning_prompt_controller_.GetOption(0));
+      "id_a_1", /*should_update_name=*/false, u"a");
+  EXPECT_EQ(u"a", bluetooth_scanning_prompt_controller_.GetOption(0));
 
   bluetooth_scanning_prompt_controller_.AddOrUpdateDevice(
-      "id_b", /*should_update_name=*/false, base::ASCIIToUTF16("b"));
+      "id_b", /*should_update_name=*/false, u"b");
   bluetooth_scanning_prompt_controller_.AddOrUpdateDevice(
-      "id_a_2", /*should_update_name=*/false, base::ASCIIToUTF16("a"));
-  EXPECT_EQ(base::ASCIIToUTF16("a (id_a_1)"),
-            bluetooth_scanning_prompt_controller_.GetOption(0));
-  EXPECT_EQ(base::ASCIIToUTF16("b"),
-            bluetooth_scanning_prompt_controller_.GetOption(1));
-  EXPECT_EQ(base::ASCIIToUTF16("a (id_a_2)"),
-            bluetooth_scanning_prompt_controller_.GetOption(2));
+      "id_a_2", /*should_update_name=*/false, u"a");
+  EXPECT_EQ(u"a (id_a_1)", bluetooth_scanning_prompt_controller_.GetOption(0));
+  EXPECT_EQ(u"b", bluetooth_scanning_prompt_controller_.GetOption(1));
+  EXPECT_EQ(u"a (id_a_2)", bluetooth_scanning_prompt_controller_.GetOption(2));
 }
 
 TEST_F(BluetoothScanningPromptControllerTest, UpdateDeviceName) {
   bluetooth_scanning_prompt_controller_.AddOrUpdateDevice(
-      "id_a", /*should_update_name=*/false, base::ASCIIToUTF16("a"));
-  EXPECT_EQ(base::ASCIIToUTF16("a"),
-            bluetooth_scanning_prompt_controller_.GetOption(0));
+      "id_a", /*should_update_name=*/false, u"a");
+  EXPECT_EQ(u"a", bluetooth_scanning_prompt_controller_.GetOption(0));
 
   EXPECT_CALL(mock_bluetooth_scanning_prompt_view_, OnOptionUpdated(0))
       .Times(1);
   bluetooth_scanning_prompt_controller_.AddOrUpdateDevice(
-      "id_a", /*should_update_name=*/false, base::ASCIIToUTF16("aa"));
+      "id_a", /*should_update_name=*/false, u"aa");
   // The name is still "a" since |should_update_name| is false.
-  EXPECT_EQ(base::ASCIIToUTF16("a"),
-            bluetooth_scanning_prompt_controller_.GetOption(0));
+  EXPECT_EQ(u"a", bluetooth_scanning_prompt_controller_.GetOption(0));
   testing::Mock::VerifyAndClearExpectations(
       &mock_bluetooth_scanning_prompt_view_);
 
   EXPECT_CALL(mock_bluetooth_scanning_prompt_view_, OnOptionUpdated(0))
       .Times(1);
   bluetooth_scanning_prompt_controller_.AddOrUpdateDevice(
-      "id_a", true /* should_update_name */, base::ASCIIToUTF16("aa"));
+      "id_a", true /* should_update_name */, u"aa");
   EXPECT_EQ(1u, bluetooth_scanning_prompt_controller_.NumOptions());
-  EXPECT_EQ(base::ASCIIToUTF16("aa"),
-            bluetooth_scanning_prompt_controller_.GetOption(0));
+  EXPECT_EQ(u"aa", bluetooth_scanning_prompt_controller_.GetOption(0));
 }
 
 TEST_F(BluetoothScanningPromptControllerWithDevicesAddedTest,
        InitialNoOptionsText) {
-  EXPECT_EQ(base::ASCIIToUTF16("No nearby devices found."),
+  EXPECT_EQ(u"No nearby devices found.",
             bluetooth_scanning_prompt_controller_.GetNoOptionsText());
 }
 

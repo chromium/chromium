@@ -66,9 +66,7 @@ void SessionActivationObserverHolder::NotifyLockStateChanged(bool locked) {
 }
 
 void SessionActivationObserverHolder::PruneObserverMap() {
-  base::EraseIf(observer_map_, [](auto& item) {
-    return !item.second->might_have_observers();
-  });
+  base::EraseIf(observer_map_, [](auto& item) { return item.second->empty(); });
 }
 
 }  // namespace ash

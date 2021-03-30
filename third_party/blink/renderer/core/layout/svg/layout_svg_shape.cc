@@ -76,10 +76,9 @@ void LayoutSVGShape::StyleDidChange(StyleDifference diff,
   // couple of additional properties that *won't* cause a layout, but are
   // significant enough to require invalidating the cache.
   if (!diff.NeedsFullLayout() && old_style && stroke_path_cache_) {
-    const auto& old_svg_style = old_style->SvgStyle();
-    const auto& svg_style = StyleRef().SvgStyle();
-    if (old_svg_style.StrokeDashOffset() != svg_style.StrokeDashOffset() ||
-        *old_svg_style.StrokeDashArray() != *svg_style.StrokeDashArray()) {
+    const ComputedStyle& style = StyleRef();
+    if (old_style->StrokeDashOffset() != style.StrokeDashOffset() ||
+        *old_style->StrokeDashArray() != *style.StrokeDashArray()) {
       stroke_path_cache_.reset();
     }
   }
@@ -113,7 +112,7 @@ void LayoutSVGShape::CreatePath() {
 
 float LayoutSVGShape::DashScaleFactor() const {
   NOT_DESTROYED();
-  if (StyleRef().SvgStyle().StrokeDashArray()->data.IsEmpty())
+  if (!StyleRef().HasDashArray())
     return 1;
   return To<SVGGeometryElement>(*GetElement()).PathLengthScaleFactor();
 }
@@ -135,11 +134,11 @@ void LayoutSVGShape::UpdateShapeFromElement() {
 
 namespace {
 
-bool HasMiterJoinStyle(const SVGComputedStyle& svg_style) {
-  return svg_style.JoinStyle() == kMiterJoin;
+bool HasMiterJoinStyle(const ComputedStyle& style) {
+  return style.JoinStyle() == kMiterJoin;
 }
-bool HasSquareCapStyle(const SVGComputedStyle& svg_style) {
-  return svg_style.CapStyle() == kSquareCap;
+bool HasSquareCapStyle(const ComputedStyle& style) {
+  return style.CapStyle() == kSquareCap;
 }
 
 }  // namespace
@@ -159,14 +158,14 @@ FloatRect LayoutSVGShape::ApproximateStrokeBoundingBox(
 
   float delta = stroke_width / 2;
   if (geometry_class_ != kSimple) {
-    const SVGComputedStyle& svg_style = StyleRef().SvgStyle();
-    if (geometry_class_ != kNoMiters && HasMiterJoinStyle(svg_style)) {
-      const float miter = svg_style.StrokeMiterLimit();
-      if (miter < M_SQRT2 && HasSquareCapStyle(svg_style))
+    const ComputedStyle& style = StyleRef();
+    if (geometry_class_ != kNoMiters && HasMiterJoinStyle(style)) {
+      const float miter = style.StrokeMiterLimit();
+      if (miter < M_SQRT2 && HasSquareCapStyle(style))
         delta *= M_SQRT2;
       else
         delta *= std::max(miter, 1.0f);
-    } else if (HasSquareCapStyle(svg_style)) {
+    } else if (HasSquareCapStyle(style)) {
       delta *= M_SQRT2;
     }
   }
@@ -176,7 +175,7 @@ FloatRect LayoutSVGShape::ApproximateStrokeBoundingBox(
 
 FloatRect LayoutSVGShape::HitTestStrokeBoundingBox() const {
   NOT_DESTROYED();
-  if (StyleRef().SvgStyle().HasStroke())
+  if (StyleRef().HasStroke())
     return stroke_bounding_box_;
   return ApproximateStrokeBoundingBox(fill_bounding_box_);
 }
@@ -246,8 +245,7 @@ bool LayoutSVGShape::FillContains(const HitTestLocation& location,
   if (!fill_bounding_box_.Contains(location.TransformedPoint()))
     return false;
 
-  if (requires_fill &&
-      !HasPaintServer(*this, StyleRef().SvgStyle().FillPaint()))
+  if (requires_fill && !HasPaintServer(*this, StyleRef().FillPaint()))
     return false;
 
   return ShapeDependentFillContains(location, fill_rule);
@@ -257,14 +255,14 @@ bool LayoutSVGShape::StrokeContains(const HitTestLocation& location,
                                     bool requires_stroke) {
   NOT_DESTROYED();
   // "A zero value causes no stroke to be painted."
-  if (StyleRef().SvgStyle().StrokeWidth().IsZero())
+  if (StyleRef().StrokeWidth().IsZero())
     return false;
 
   if (requires_stroke) {
     if (!StrokeBoundingBox().Contains(location.TransformedPoint()))
       return false;
 
-    if (!HasPaintServer(*this, StyleRef().SvgStyle().StrokePaint()))
+    if (!HasPaintServer(*this, StyleRef().StrokePaint()))
       return false;
   } else {
     if (!HitTestStrokeBoundingBox().Contains(location.TransformedPoint()))
@@ -423,16 +421,15 @@ bool LayoutSVGShape::HitTestShape(const HitTestRequest& request,
     return true;
 
   // TODO(chrishtr): support rect-based intersections in the cases below.
-  const SVGComputedStyle& svg_style = StyleRef().SvgStyle();
+  const ComputedStyle& style = StyleRef();
   if (hit_rules.can_hit_stroke &&
-      (svg_style.HasStroke() || !hit_rules.require_stroke) &&
+      (style.HasStroke() || !hit_rules.require_stroke) &&
       StrokeContains(local_location, hit_rules.require_stroke))
     return true;
-  WindRule fill_rule = svg_style.FillRule();
+  WindRule fill_rule = style.FillRule();
   if (request.SvgClipContent())
-    fill_rule = svg_style.ClipRule();
-  if (hit_rules.can_hit_fill &&
-      (svg_style.HasFill() || !hit_rules.require_fill) &&
+    fill_rule = style.ClipRule();
+  if (hit_rules.can_hit_fill && (style.HasFill() || !hit_rules.require_fill) &&
       FillContains(local_location, hit_rules.require_fill, fill_rule))
     return true;
   return false;
@@ -440,7 +437,7 @@ bool LayoutSVGShape::HitTestShape(const HitTestRequest& request,
 
 FloatRect LayoutSVGShape::CalculateStrokeBoundingBox() const {
   NOT_DESTROYED();
-  if (!StyleRef().SvgStyle().HasStroke() || IsShapeEmpty())
+  if (!StyleRef().HasStroke() || IsShapeEmpty())
     return fill_bounding_box_;
   if (HasNonScalingStroke())
     return CalculateNonScalingStrokeBoundingBox();
@@ -450,7 +447,7 @@ FloatRect LayoutSVGShape::CalculateStrokeBoundingBox() const {
 FloatRect LayoutSVGShape::CalculateNonScalingStrokeBoundingBox() const {
   NOT_DESTROYED();
   DCHECK(path_);
-  DCHECK(StyleRef().SvgStyle().HasStroke());
+  DCHECK(StyleRef().HasStroke());
   DCHECK(HasNonScalingStroke());
 
   FloatRect stroke_bounding_box = fill_bounding_box_;
@@ -469,7 +466,7 @@ FloatRect LayoutSVGShape::CalculateNonScalingStrokeBoundingBox() const {
 float LayoutSVGShape::StrokeWidth() const {
   NOT_DESTROYED();
   SVGLengthContext length_context(GetElement());
-  return length_context.ValueForLength(StyleRef().SvgStyle().StrokeWidth());
+  return length_context.ValueForLength(StyleRef().StrokeWidth());
 }
 
 float LayoutSVGShape::StrokeWidthForMarkerUnits() const {
@@ -498,8 +495,9 @@ LayoutSVGShapeRareData& LayoutSVGShape::EnsureRareData() const {
 RasterEffectOutset LayoutSVGShape::VisualRectOutsetForRasterEffects() const {
   NOT_DESTROYED();
   // Account for raster expansions due to SVG stroke hairline raster effects.
-  if (StyleRef().SvgStyle().HasVisibleStroke()) {
-    if (StyleRef().SvgStyle().CapStyle() != kButtCap)
+  const ComputedStyle& style = StyleRef();
+  if (style.HasVisibleStroke()) {
+    if (style.CapStyle() != kButtCap)
       return RasterEffectOutset::kWholePixel;
     return RasterEffectOutset::kHalfPixel;
   }

@@ -30,9 +30,6 @@ class AllPasswordsBottomSheetHelper
   base::Optional<size_t> available_credentials() const {
     return available_credentials_;
   }
-  autofill::mojom::FocusedFieldType last_focused_field_type() const {
-    return last_focused_field_type_;
-  }
 
   void SetLastFocusedFieldType(
       autofill::mojom::FocusedFieldType focused_field_type);

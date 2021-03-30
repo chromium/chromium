@@ -5,8 +5,8 @@
 (async function() {
   TestRunner.addResult(
       `Tests that fetch logging works when XMLHttpRequest Logging is Enabled and doesn't show logs when it is Disabled.\n`);
-  await TestRunner.loadModule('console_test_runner');
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.evaluateInPagePromise(`
       function requestHelper(method, url, callback)
       {

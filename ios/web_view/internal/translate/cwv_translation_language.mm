@@ -4,7 +4,8 @@
 
 #import "ios/web_view/internal/translate/cwv_translation_language_internal.h"
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "base/strings/sys_string_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -18,8 +19,8 @@
 @synthesize nativeName = _nativeName;
 
 - (instancetype)initWithLanguageCode:(const std::string&)languageCode
-                       localizedName:(const base::string16&)localizedName
-                          nativeName:(const base::string16&)nativeName {
+                       localizedName:(const std::u16string&)localizedName
+                          nativeName:(const std::u16string&)nativeName {
   self = [super init];
   if (self) {
     _languageCode = base::SysUTF8ToNSString(languageCode);

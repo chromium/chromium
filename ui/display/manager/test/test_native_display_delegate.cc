@@ -73,15 +73,15 @@ bool TestNativeDisplayDelegate::Configure(
 void TestNativeDisplayDelegate::Configure(
     const std::vector<display::DisplayConfigurationParams>& config_requests,
     ConfigureCallback callback) {
-  base::flat_map<int64_t, bool> statuses;
+  bool config_success = true;
   for (const auto& config : config_requests)
-    statuses.insert(std::make_pair(config.id, Configure(config)));
+    config_success &= Configure(config);
 
   if (run_async_) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), statuses));
+        FROM_HERE, base::BindOnce(std::move(callback), config_success));
   } else {
-    std::move(callback).Run(statuses);
+    std::move(callback).Run(config_success);
   }
 }
 

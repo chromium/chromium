@@ -126,9 +126,9 @@ WebFrame* WebFrame::FromCoreFrame(Frame* frame) {
 }
 
 WebFrame::WebFrame(mojom::blink::TreeScopeType scope,
-                   const base::UnguessableToken& frame_token)
+                   const FrameToken& frame_token)
     : scope_(scope), frame_token_(frame_token) {
-  DCHECK(frame_token_);
+  DCHECK(frame_token.value());
 }
 
 void WebFrame::Close() {}

@@ -116,7 +116,7 @@ public class ImageDescriptionsController {
      */
     public void onImageDescriptionsMenuItemSelected(
             Context context, ModalDialogManager modalDialogManager, WebContents webContents) {
-        Profile profile = Profile.fromWebContents(webContents);
+        Profile profile = Profile.getLastUsedRegularProfile();
         boolean enabledBeforeMenuItemSelected = imageDescriptionsEnabled(profile);
 
         if (enabledBeforeMenuItemSelected) {

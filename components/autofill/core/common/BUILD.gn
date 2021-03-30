@@ -49,11 +49,12 @@ static_library("common") {
     "password_form_generation_data.h",
     "password_generation_util.cc",
     "password_generation_util.h",
-    "renderer_id.h",
     "save_password_progress_logger.cc",
     "save_password_progress_logger.h",
     "signatures.cc",
     "signatures.h",
+    "unique_ids.cc",
+    "unique_ids.h",
   ]
 
   deps = [

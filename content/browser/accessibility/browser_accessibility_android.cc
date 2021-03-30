@@ -19,6 +19,7 @@
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_assistant_structure.h"
+#include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/platform/ax_android_constants.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
@@ -54,6 +55,12 @@ enum { ANDROID_VIEW_ACCESSIBILITY_RANGE_TYPE_FLOAT = 1 };
 }  // namespace
 
 namespace content {
+
+namespace {
+// The minimum amount of characters that must be typed into a text field before
+// AT will communicate invalid content to the user.
+constexpr int kMinimumCharacterCountForInvalid = 7;
+}  // namespace
 
 // static
 BrowserAccessibility* BrowserAccessibility::Create() {
@@ -91,7 +98,7 @@ void BrowserAccessibilityAndroid::OnLocationChanged() {
   manager->FireLocationChanged(this);
 }
 
-base::string16
+std::u16string
 BrowserAccessibilityAndroid::GetLocalizedStringForImageAnnotationStatus(
     ax::mojom::ImageAnnotationStatus status) const {
   // Default to standard text, except for special case of eligible.
@@ -122,8 +129,8 @@ BrowserAccessibilityAndroid::GetLocalizedStringForImageAnnotationStatus(
 }
 
 void BrowserAccessibilityAndroid::AppendTextToString(
-    base::string16 extra_text,
-    base::string16* string) const {
+    std::u16string extra_text,
+    std::u16string* string) const {
   if (extra_text.empty())
     return;
 
@@ -132,7 +139,7 @@ void BrowserAccessibilityAndroid::AppendTextToString(
     return;
   }
 
-  *string += base::string16(base::ASCIIToUTF16(", ")) + extra_text;
+  *string += std::u16string(u", ") + extra_text;
 }
 
 bool BrowserAccessibilityAndroid::IsCheckable() const {
@@ -209,8 +216,29 @@ bool BrowserAccessibilityAndroid::IsComboboxControl() const {
 }
 
 bool BrowserAccessibilityAndroid::IsContentInvalid() const {
-  return HasIntAttribute(ax::mojom::IntAttribute::kInvalidState) &&
-         GetData().GetInvalidState() != ax::mojom::InvalidState::kFalse;
+  if (HasIntAttribute(ax::mojom::IntAttribute::kInvalidState) &&
+      GetData().GetInvalidState() != ax::mojom::InvalidState::kFalse) {
+    // We will not report content as invalid until a certain number of
+    // characters have been typed to prevent verbose announcements to the user.
+    return (GetInnerText().length() > kMinimumCharacterCountForInvalid);
+  }
+
+  return false;
+}
+
+bool BrowserAccessibilityAndroid::IsDisabledDescendant() const {
+  // Iterate over parents and see if any are disabled.
+  BrowserAccessibilityAndroid* parent =
+      static_cast<BrowserAccessibilityAndroid*>(PlatformGetParent());
+  while (parent != nullptr) {
+    if (!parent->IsEnabled()) {
+      return true;
+    }
+    parent =
+        static_cast<BrowserAccessibilityAndroid*>(parent->PlatformGetParent());
+  }
+
+  return false;
 }
 
 bool BrowserAccessibilityAndroid::IsDismissable() const {
@@ -326,8 +354,9 @@ bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
 
   // The root inside a portal is not interesting.
   if (ui::IsPlatformDocument(GetRole()) && PlatformGetParent() &&
-      PlatformGetParent()->GetRole() == ax::mojom::Role::kPortal)
+      PlatformGetParent()->GetRole() == ax::mojom::Role::kPortal) {
     return false;
+  }
 
   // Mark as uninteresting if it's hidden, even if it is focusable.
   if (IsInvisibleOrIgnored())
@@ -336,7 +365,7 @@ bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
   // Walk up the ancestry. A non-focusable child of a control is not
   // interesting. A child of an invisible iframe is also not interesting.
   const BrowserAccessibility* parent = PlatformGetParent();
-  while (parent != nullptr) {
+  while (parent) {
     if (ui::IsControl(parent->GetRole()) && !IsFocusable())
       return false;
 
@@ -455,11 +484,13 @@ bool BrowserAccessibilityAndroid::IsLeaf() const {
   if (BrowserAccessibility::IsLeaf())
     return true;
 
-  // Iframes are always allowed to contain children.
+  // Document roots (e.g. kRootWebArea and kPdfRoot), and iframes are always
+  // allowed to contain children.
   if (ui::IsIframe(GetRole()) || ui::IsPlatformDocument(GetRole()))
     return false;
 
-  // Button, date and time controls should drop their children.
+  // Button, date and time controls should not expose their children to Android
+  // accessibility APIs.
   switch (GetRole()) {
     case ax::mojom::Role::kButton:
     case ax::mojom::Role::kDate:
@@ -477,26 +508,22 @@ bool BrowserAccessibilityAndroid::IsLeaf() const {
   BrowserAccessibilityManagerAndroid* manager_android =
       static_cast<BrowserAccessibilityManagerAndroid*>(manager());
   if (manager_android->prune_tree_for_screen_reader()) {
-    // Headings with text can drop their children.
-    base::string16 name = GetInnerText();
+    // For some nodes, we will consider children before determining if the node
+    // is a leaf. For nodes with relevant children, we will return false here
+    // and allow the child nodes to be set as a leaf.
+
+    // Headings with text can drop their children (with exceptions).
+    std::u16string name = GetInnerText();
     if (GetRole() == ax::mojom::Role::kHeading && !name.empty()) {
-      if (HasFocusableNonOptionChild()) {
-        return false;
-      } else {
-        return true;
-      }
+      return IsLeafConsideringChildren();
     }
 
-    // Focusable nodes with text can drop their children.
+    // Focusable nodes with text can drop their children (with exceptions).
     if (HasState(ax::mojom::State::kFocusable) && !name.empty()) {
-      if (HasFocusableNonOptionChild()) {
-        return false;
-      } else {
-        return true;
-      }
+      return IsLeafConsideringChildren();
     }
 
-    // Nodes with only static text as children can drop their children.
+    // Nodes with only static text can drop their children.
     if (HasOnlyTextChildren())
       return true;
   }
@@ -504,13 +531,54 @@ bool BrowserAccessibilityAndroid::IsLeaf() const {
   return false;
 }
 
-base::string16 BrowserAccessibilityAndroid::GetInnerText() const {
+bool BrowserAccessibilityAndroid::IsLeafConsideringChildren() const {
+  // This is called from IsLeaf, so don't call PlatformChildCount
+  // from within this!
+
+  // Check for any children that should be exposed and return false if found (by
+  // returning false we are saying the parent node is NOT a leaf and this child
+  // node should instead be the leaf).
+  //
+  // If a node has a child that meets any of these criteria, it is NOT a leaf:
+  //
+  //   * child is focusable, and NOT a menu option
+  //   * child is a table, cell, or row
+  //
+  for (auto it = InternalChildrenBegin(); it != InternalChildrenEnd(); ++it) {
+    BrowserAccessibility* child = it.get();
+
+    if (child->HasState(ax::mojom::State::kFocusable) &&
+        child->GetRole() != ax::mojom::Role::kMenuListOption) {
+      return false;
+    }
+
+    if (child->GetRole() == ax::mojom::Role::kTable ||
+        child->GetRole() == ax::mojom::Role::kCell ||
+        child->GetRole() == ax::mojom::Role::kRow ||
+        child->GetRole() == ax::mojom::Role::kLayoutTable ||
+        child->GetRole() == ax::mojom::Role::kLayoutTableCell ||
+        child->GetRole() == ax::mojom::Role::kLayoutTableRow) {
+      return false;
+    }
+
+    // Check nested children and return false if any meet above criteria.
+    if (!static_cast<BrowserAccessibilityAndroid*>(child)
+             ->IsLeafConsideringChildren())
+      return false;
+  }
+
+  // If no such children were found, return true signaling the parent node can
+  // be the leaf node.
+  return true;
+}
+
+std::u16string BrowserAccessibilityAndroid::GetInnerText() const {
   if (ui::IsIframe(GetRole()))
-    return base::string16();
+    return std::u16string();
 
   // First, always return the |value| attribute if this is an
   // input field.
-  base::string16 value = GetValueForControl();
+  std::u16string value = GetValueForControl();
   if (ShouldExposeValueAsName())
     return value;
 
@@ -526,7 +594,7 @@ base::string16 BrowserAccessibilityAndroid::GetInnerText() const {
         base::StringPrintf("#%02X%02X%02X", red, green, blue));
   }
 
-  base::string16 text = GetNameAsString16();
+  std::u16string text = GetNameAsString16();
   if (text.empty())
     text = value;
 
@@ -571,15 +639,15 @@ base::string16 BrowserAccessibilityAndroid::GetInnerText() const {
   if (text.empty() &&
       (ui::IsLink(GetRole()) || ui::IsImageOrVideo(GetRole())) &&
       !HasExplicitlyEmptyName()) {
-    base::string16 url = GetString16Attribute(ax::mojom::StringAttribute::kUrl);
+    std::u16string url = GetString16Attribute(ax::mojom::StringAttribute::kUrl);
     text = ui::AXUrlBaseText(url);
   }
 
   return text;
 }
 
-base::string16 BrowserAccessibilityAndroid::GetValueForControl() const {
-  base::string16 value = BrowserAccessibility::GetValueForControl();
+std::u16string BrowserAccessibilityAndroid::GetValueForControl() const {
+  std::u16string value = BrowserAccessibility::GetValueForControl();
 
   // Optionally replace entered password text with bullet characters
   // based on a user preference.
@@ -594,41 +662,41 @@ base::string16 BrowserAccessibilityAndroid::GetValueForControl() const {
       // we rely on the password field's shadow dom.
       value = BrowserAccessibility::GetInnerText();
     } else if (!manager->ShouldExposePasswordText()) {
-      value = base::string16(value.size(), ui::kSecurePasswordBullet);
+      value = std::u16string(value.size(), ui::kSecurePasswordBullet);
     }
   }
 
   return value;
 }
 
-base::string16 BrowserAccessibilityAndroid::GetHint() const {
-  std::vector<base::string16> strings;
+std::u16string BrowserAccessibilityAndroid::GetHint() const {
+  std::vector<std::u16string> strings;
 
   // If we're returning the value as the main text, the name needs to be
   // part of the hint.
   if (ShouldExposeValueAsName()) {
-    base::string16 name = GetNameAsString16();
+    std::u16string name = GetNameAsString16();
     if (!name.empty())
       strings.push_back(name);
   }
 
   if (GetData().GetNameFrom() != ax::mojom::NameFrom::kPlaceholder) {
-    base::string16 placeholder =
+    std::u16string placeholder =
         GetString16Attribute(ax::mojom::StringAttribute::kPlaceholder);
     if (!placeholder.empty())
       strings.push_back(placeholder);
   }
 
-  base::string16 description =
+  std::u16string description =
       GetString16Attribute(ax::mojom::StringAttribute::kDescription);
   if (!description.empty())
     strings.push_back(description);
 
-  return base::JoinString(strings, base::ASCIIToUTF16(" "));
+  return base::JoinString(strings, u" ");
 }
 
-base::string16 BrowserAccessibilityAndroid::GetStateDescription() const {
-  std::vector<base::string16> state_descs;
+std::u16string BrowserAccessibilityAndroid::GetStateDescription() const {
+  std::vector<std::u16string> state_descs;
 
   // For multiselectable state, generate a state description. We do not set a
   // state description for pop up/<select> to prevent double utterances.
@@ -662,10 +730,10 @@ base::string16 BrowserAccessibilityAndroid::GetStateDescription() const {
     state_descs.push_back(GetAriaCurrentStateDescription());
 
   // Concatenate all state descriptions and return.
-  return base::JoinString(state_descs, base::ASCIIToUTF16(" "));
+  return base::JoinString(state_descs, u" ");
 }
 
-base::string16 BrowserAccessibilityAndroid::GetMultiselectableStateDescription()
+std::u16string BrowserAccessibilityAndroid::GetMultiselectableStateDescription()
     const {
   content::ContentClient* content_client = content::GetContentClient();
 
@@ -688,7 +756,7 @@ base::string16 BrowserAccessibilityAndroid::GetMultiselectableStateDescription()
 
   // Generate a state description of the form: "multiselectable, x of y
   // selected.".
-  std::vector<base::string16> values;
+  std::vector<std::u16string> values;
   values.push_back(base::NumberToString16(selected_count));
   values.push_back(base::NumberToString16(child_count));
   return base::ReplaceStringPlaceholders(
@@ -697,7 +765,7 @@ base::string16 BrowserAccessibilityAndroid::GetMultiselectableStateDescription()
       values, nullptr);
 }
 
-base::string16 BrowserAccessibilityAndroid::GetToggleButtonStateDescription()
+std::u16string BrowserAccessibilityAndroid::GetToggleButtonStateDescription()
     const {
   content::ContentClient* content_client = content::GetContentClient();
 
@@ -708,20 +776,20 @@ base::string16 BrowserAccessibilityAndroid::GetToggleButtonStateDescription()
   return content_client->GetLocalizedString(IDS_AX_TOGGLE_BUTTON_OFF);
 }
 
-base::string16 BrowserAccessibilityAndroid::GetCheckboxStateDescription()
+std::u16string BrowserAccessibilityAndroid::GetCheckboxStateDescription()
     const {
   content::ContentClient* content_client = content::GetContentClient();
 
   return content_client->GetLocalizedString(IDS_AX_CHECKBOX_PARTIALLY_CHECKED);
 }
 
-base::string16 BrowserAccessibilityAndroid::GetListBoxStateDescription() const {
+std::u16string BrowserAccessibilityAndroid::GetListBoxStateDescription() const {
   content::ContentClient* content_client = content::GetContentClient();
 
   // For empty list boxes, we will return an empty string.
   int item_count = GetItemCount();
   if (!item_count)
-    return base::string16();
+    return std::u16string();
 
   // Otherwise, we will communicate "x items" as the state description.
   return base::ReplaceStringPlaceholders(
@@ -729,7 +797,7 @@ base::string16 BrowserAccessibilityAndroid::GetListBoxStateDescription() const {
       base::NumberToString16(item_count), nullptr);
 }
 
-base::string16 BrowserAccessibilityAndroid::GetListBoxItemStateDescription()
+std::u16string BrowserAccessibilityAndroid::GetListBoxItemStateDescription()
     const {
   content::ContentClient* content_client = content::GetContentClient();
 
@@ -738,7 +806,7 @@ base::string16 BrowserAccessibilityAndroid::GetListBoxItemStateDescription()
 
   // If we cannot find the parent collection, escape with an empty string.
   if (!parent)
-    return base::string16();
+    return std::u16string();
 
   // For list box items, we will communicate "in list, item x of y". We add
   // one (1) to our index to offset from counting at 0.
@@ -748,12 +816,12 @@ base::string16 BrowserAccessibilityAndroid::GetListBoxItemStateDescription()
   return base::ReplaceStringPlaceholders(
       content_client->GetLocalizedString(
           IDS_AX_LIST_BOX_ITEM_STATE_DESCRIPTION),
-      std::vector<base::string16>({base::NumberToString16(item_index),
+      std::vector<std::u16string>({base::NumberToString16(item_index),
                                    base::NumberToString16(item_count)}),
       nullptr);
 }
 
-base::string16 BrowserAccessibilityAndroid::GetAriaCurrentStateDescription()
+std::u16string BrowserAccessibilityAndroid::GetAriaCurrentStateDescription()
     const {
   content::ContentClient* content_client = content::GetContentClient();
 
@@ -784,7 +852,7 @@ base::string16 BrowserAccessibilityAndroid::GetAriaCurrentStateDescription()
   return content_client->GetLocalizedString(message_id);
 }
 
-base::string16 BrowserAccessibilityAndroid::GetComboboxExpandedText() const {
+std::u16string BrowserAccessibilityAndroid::GetComboboxExpandedText() const {
   content::ContentClient* content_client = content::GetContentClient();
 
   // We consider comboboxes of the form:
@@ -850,7 +918,7 @@ base::string16 BrowserAccessibilityAndroid::GetComboboxExpandedText() const {
       base::NumberToString16(*controlled_node->GetSetSize()), nullptr);
 }
 
-base::string16 BrowserAccessibilityAndroid::GetComboboxExpandedTextFallback()
+std::u16string BrowserAccessibilityAndroid::GetComboboxExpandedTextFallback()
     const {
   content::ContentClient* content_client = content::GetContentClient();
 
@@ -891,17 +959,17 @@ std::string BrowserAccessibilityAndroid::GetRoleString() const {
   return ui::ToString(GetRole());
 }
 
-base::string16 BrowserAccessibilityAndroid::GetRoleDescription() const {
+std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
   content::ContentClient* content_client = content::GetContentClient();
 
   // As a special case, if we have a heading level return a string like
   // "heading level 1", etc. - and if the heading consists of a link,
   // append the word link as well.
   if (GetRole() == ax::mojom::Role::kHeading) {
-    base::string16 role_description;
+    std::u16string role_description;
     int level = GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel);
     if (level >= 1 && level <= 6) {
-      std::vector<base::string16> values;
+      std::vector<std::u16string> values;
       values.push_back(base::NumberToString16(level));
       role_description = base::ReplaceStringPlaceholders(
           content_client->GetLocalizedString(IDS_AX_ROLE_HEADING_WITH_LEVEL),
@@ -912,8 +980,8 @@ base::string16 BrowserAccessibilityAndroid::GetRoleDescription() const {
     }
 
     if (IsHeadingLink()) {
-      role_description += base::ASCIIToUTF16(" ") +
-                          content_client->GetLocalizedString(IDS_AX_ROLE_LINK);
+      role_description +=
+          u" " + content_client->GetLocalizedString(IDS_AX_ROLE_LINK);
     }
 
     return role_description;
@@ -1052,9 +1120,29 @@ base::string16 BrowserAccessibilityAndroid::GetRoleDescription() const {
     case ax::mojom::Role::kDate:
       message_id = IDS_AX_ROLE_DATE;
       break;
-    case ax::mojom::Role::kDateTime:
-      message_id = IDS_AX_ROLE_DATE_TIME;
+    case ax::mojom::Role::kDateTime: {
+      const ui::AXNodeData& data = GetData();
+      std::string type;
+      if (data.GetStringAttribute(ax::mojom::StringAttribute::kInputType,
+                                  &type)) {
+        // Returns a specific role to better aid users on the control type
+        // they are interacting with. This differs from Android text input type
+        // which has a more granular mapping that determines type of keyboard
+        // to display.
+        if (type == "datetime-local") {
+          message_id = IDS_AX_ROLE_DATE_TIME_LOCAL;
+        } else if (type == "month") {
+          message_id = IDS_AX_ROLE_MONTH;
+        } else if (type == "week") {
+          message_id = IDS_AX_ROLE_WEEK;
+        } else {
+          message_id = IDS_AX_ROLE_DATE_TIME;
+        }
+      } else {
+        message_id = IDS_AX_ROLE_DATE_TIME;
+      }
       break;
+    }
     case ax::mojom::Role::kDefinition:
       message_id = IDS_AX_ROLE_DEFINITION;
       break;
@@ -1269,9 +1357,6 @@ base::string16 BrowserAccessibilityAndroid::GetRoleDescription() const {
       break;
     case ax::mojom::Role::kIgnored:
       // No role description.
-      break;
-    case ax::mojom::Role::kImageMap:
-      message_id = IDS_AX_ROLE_GRAPHIC;
       break;
     case ax::mojom::Role::kImage:
       message_id = IDS_AX_ROLE_GRAPHIC;
@@ -1540,7 +1625,7 @@ base::string16 BrowserAccessibilityAndroid::GetRoleDescription() const {
   if (message_id != -1)
     return content_client->GetLocalizedString(message_id);
 
-  return base::string16();
+  return std::u16string();
 }
 
 int BrowserAccessibilityAndroid::GetItemIndex() const {
@@ -1773,8 +1858,8 @@ int BrowserAccessibilityAndroid::GetTextChangeRemovedCount() const {
 }
 
 // static
-size_t BrowserAccessibilityAndroid::CommonPrefixLength(const base::string16 a,
-                                                       const base::string16 b) {
+size_t BrowserAccessibilityAndroid::CommonPrefixLength(const std::u16string a,
+                                                       const std::u16string b) {
   size_t a_len = a.length();
   size_t b_len = b.length();
   size_t i = 0;
@@ -1785,8 +1870,8 @@ size_t BrowserAccessibilityAndroid::CommonPrefixLength(const base::string16 a,
 }
 
 // static
-size_t BrowserAccessibilityAndroid::CommonSuffixLength(const base::string16 a,
-                                                       const base::string16 b) {
+size_t BrowserAccessibilityAndroid::CommonSuffixLength(const std::u16string a,
+                                                       const std::u16string b) {
   size_t a_len = a.length();
   size_t b_len = b.length();
   size_t i = 0;
@@ -1800,19 +1885,19 @@ size_t BrowserAccessibilityAndroid::CommonSuffixLength(const base::string16 a,
 // |BrowserAccessibilityCocoa::computeTextEdit|.
 //
 // static
-size_t BrowserAccessibilityAndroid::CommonEndLengths(const base::string16 a,
-                                                     const base::string16 b) {
+size_t BrowserAccessibilityAndroid::CommonEndLengths(const std::u16string a,
+                                                     const std::u16string b) {
   size_t prefix_len = CommonPrefixLength(a, b);
   // Remove the matching prefix before finding the suffix. Otherwise, if
   // old_value_ is "a" and new_value_ is "aa", "a" will be double-counted as
   // both a prefix and a suffix of "aa".
-  base::string16 a_body = a.substr(prefix_len, std::string::npos);
-  base::string16 b_body = b.substr(prefix_len, std::string::npos);
+  std::u16string a_body = a.substr(prefix_len, std::string::npos);
+  std::u16string b_body = b.substr(prefix_len, std::string::npos);
   size_t suffix_len = CommonSuffixLength(a_body, b_body);
   return prefix_len + suffix_len;
 }
 
-base::string16 BrowserAccessibilityAndroid::GetTextChangeBeforeText() const {
+std::u16string BrowserAccessibilityAndroid::GetTextChangeBeforeText() const {
   return old_value_;
 }
 
@@ -1830,9 +1915,9 @@ int BrowserAccessibilityAndroid::GetSelectionStart() const {
     return 0;
   }
 
-  auto position = anchor_object->CreatePositionAt(
+  AXPosition position = anchor_object->CreatePositionAt(
       unignored_selection.anchor_offset, unignored_selection.anchor_affinity);
-  while (position->GetAnchor() && position->GetAnchor() != this)
+  while (position->GetAnchor() && position->GetAnchor() != node())
     position = position->CreateParentPosition();
 
   return !position->IsNullPosition() ? position->text_offset() : 0;
@@ -1852,9 +1937,9 @@ int BrowserAccessibilityAndroid::GetSelectionEnd() const {
   if (!focus_object)
     return 0;
 
-  auto position = focus_object->CreatePositionAt(
+  AXPosition position = focus_object->CreatePositionAt(
       unignored_selection.focus_offset, unignored_selection.focus_affinity);
-  while (position->GetAnchor() && position->GetAnchor() != this)
+  while (position->GetAnchor() && position->GetAnchor() != node())
     position = position->CreateParentPosition();
 
   return !position->IsNullPosition() ? position->text_offset() : 0;
@@ -1872,8 +1957,9 @@ int BrowserAccessibilityAndroid::AndroidInputType() const {
   if (html_tag != "input")
     return ANDROID_TEXT_INPUTTYPE_TYPE_NULL;
 
+  const ui::AXNodeData& data = GetData();
   std::string type;
-  if (!GetHtmlAttribute("type", &type))
+  if (!data.GetStringAttribute(ax::mojom::StringAttribute::kInputType, &type))
     return ANDROID_TEXT_INPUTTYPE_TYPE_TEXT;
 
   if (type.empty() || type == "text" || type == "search")
@@ -2041,15 +2127,15 @@ void BrowserAccessibilityAndroid::GetWordBoundaries(
     return;
   }
 
-  base::string16 concatenated_text;
+  std::u16string concatenated_text;
   for (auto it = InternalChildrenBegin(); it != InternalChildrenEnd(); ++it) {
     BrowserAccessibilityAndroid* child =
         static_cast<BrowserAccessibilityAndroid*>(it.get());
-    base::string16 child_text = child->GetInnerText();
+    std::u16string child_text = child->GetInnerText();
     concatenated_text += child->GetInnerText();
   }
 
-  base::string16 text = GetInnerText();
+  std::u16string text = GetInnerText();
   if (text.empty() || concatenated_text == text) {
     // Great - this node is just the concatenation of its children, so
     // we can get the word boundaries recursively.
@@ -2075,22 +2161,7 @@ void BrowserAccessibilityAndroid::GetWordBoundaries(
   }
 }
 
-bool BrowserAccessibilityAndroid::HasFocusableNonOptionChild() const {
-  // This is called from IsLeaf, so don't call PlatformChildCount
-  // from within this!
-  for (auto it = InternalChildrenBegin(); it != InternalChildrenEnd(); ++it) {
-    BrowserAccessibility* child = it.get();
-    if (child->HasState(ax::mojom::State::kFocusable) &&
-        child->GetRole() != ax::mojom::Role::kMenuListOption)
-      return true;
-    if (static_cast<BrowserAccessibilityAndroid*>(child)
-            ->HasFocusableNonOptionChild())
-      return true;
-  }
-  return false;
-}
-
-base::string16 BrowserAccessibilityAndroid::GetTargetUrl() const {
+std::u16string BrowserAccessibilityAndroid::GetTargetUrl() const {
   if (ui::IsImageOrVideo(GetRole()) || ui::IsLink(GetRole()))
     return GetString16Attribute(ax::mojom::StringAttribute::kUrl);
 
@@ -2140,7 +2211,7 @@ void BrowserAccessibilityAndroid::GetSuggestions(
           suggestion_ends->push_back(suggestion_end);
         }
       }
-      start_offset += node->GetText().length();
+      start_offset += node->GetInnerText().length();
     }
 
     // Implementation of NextInTreeOrder, but walking the internal tree.
@@ -2198,6 +2269,34 @@ bool BrowserAccessibilityAndroid::HasImage() const {
   return false;
 }
 
+BrowserAccessibility*
+BrowserAccessibilityAndroid::PlatformGetLowestPlatformAncestor() const {
+  BrowserAccessibility* current_object =
+      const_cast<BrowserAccessibilityAndroid*>(this);
+  BrowserAccessibility* lowest_unignored_node = current_object;
+  if (lowest_unignored_node->IsIgnored())
+    lowest_unignored_node = lowest_unignored_node->PlatformGetParent();
+  DCHECK(!lowest_unignored_node || !lowest_unignored_node->IsIgnored())
+      << "`BrowserAccessibility::PlatformGetParent()` should return either an "
+         "unignored object or nullptr.";
+
+  // `highest_leaf_node` could be nullptr.
+  BrowserAccessibility* highest_leaf_node = lowest_unignored_node;
+  // For the purposes of this method, a leaf node does not include leaves in the
+  // internal accessibility tree, only in the platform exposed tree.
+  for (BrowserAccessibility* ancestor_node = lowest_unignored_node;
+       ancestor_node; ancestor_node = ancestor_node->PlatformGetParent()) {
+    if (ancestor_node->IsLeaf())
+      highest_leaf_node = ancestor_node;
+  }
+  if (highest_leaf_node)
+    return highest_leaf_node;
+
+  if (lowest_unignored_node)
+    return lowest_unignored_node;
+  return current_object;
+}
+
 bool BrowserAccessibilityAndroid::HasOnlyTextChildren() const {
   // This is called from IsLeaf, so don't call PlatformChildCount
   // from within this!
@@ -2249,7 +2348,7 @@ void BrowserAccessibilityAndroid::OnDataChanged() {
   BrowserAccessibility::OnDataChanged();
 
   if (IsTextField()) {
-    base::string16 value = GetValueForControl();
+    std::u16string value = GetValueForControl();
     if (value != new_value_) {
       old_value_ = new_value_;
       new_value_ = value;
@@ -2272,13 +2371,13 @@ int BrowserAccessibilityAndroid::CountChildrenWithRole(
   return count;
 }
 
-base::string16 BrowserAccessibilityAndroid::GetContentInvalidErrorMessage()
+std::u16string BrowserAccessibilityAndroid::GetContentInvalidErrorMessage()
     const {
   content::ContentClient* content_client = content::GetContentClient();
   int message_id = -1;
 
   if (!IsContentInvalid())
-    return base::string16();
+    return std::u16string();
 
   switch (GetData().GetInvalidState()) {
     case ax::mojom::InvalidState::kNone:
@@ -2304,7 +2403,7 @@ base::string16 BrowserAccessibilityAndroid::GetContentInvalidErrorMessage()
   if (message_id != -1)
     return content_client->GetLocalizedString(message_id);
 
-  return base::string16();
+  return std::u16string();
 }
 
 }  // namespace content

@@ -22,12 +22,11 @@ using extensions::ManifestPermissionSet;
 using extensions::ManifestHandler;
 namespace errors = extensions::manifest_errors;
 
-bool CreateManifestPermission(
-    const std::string& permission_name,
-    const base::Value* permission_value,
-    ManifestPermissionSet* manifest_permissions,
-    base::string16* error,
-    std::vector<std::string>* unhandled_permissions) {
+bool CreateManifestPermission(const std::string& permission_name,
+                              const base::Value* permission_value,
+                              ManifestPermissionSet* manifest_permissions,
+                              std::u16string* error,
+                              std::vector<std::string>* unhandled_permissions) {
   std::unique_ptr<ManifestPermission> permission(
       ManifestHandler::CreatePermission(permission_name));
 
@@ -61,7 +60,7 @@ namespace extensions {
 bool ManifestPermissionSet::ParseFromJSON(
     const base::ListValue* permissions,
     ManifestPermissionSet* manifest_permissions,
-    base::string16* error,
+    std::u16string* error,
     std::vector<std::string>* unhandled_permissions) {
   for (size_t i = 0; i < permissions->GetSize(); ++i) {
     std::string permission_name;

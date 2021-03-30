@@ -120,7 +120,7 @@ Skeletons SkeletonGenerator::GetSkeletons(base::StringPiece16 hostname) {
   // If input has any characters outside Latin-Greek-Cyrillic and [0-9._-],
   // there is no point in getting rid of diacritics because combining marks
   // attached to non-LGC characters are already blocked.
-  if (lgc_letters_n_ascii_.span(host, 0, USET_SPAN_CONTAINED) == host.length())
+  if (ShouldRemoveDiacriticsFromLabel(host))
     diacritic_remover_->transliterate(host);
   extra_confusable_mapper_->transliterate(host);
 
@@ -138,6 +138,11 @@ Skeletons SkeletonGenerator::GetSkeletons(base::StringPiece16 hostname) {
     skeletons.insert(skeleton);
   }
   return skeletons;
+}
+
+bool SkeletonGenerator::ShouldRemoveDiacriticsFromLabel(
+    const icu::UnicodeString& label) const {
+  return lgc_letters_n_ascii_.containsAll(label);
 }
 
 void SkeletonGenerator::AddSkeletonMapping(const icu::UnicodeString& host,

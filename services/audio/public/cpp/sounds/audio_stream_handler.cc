@@ -19,8 +19,8 @@
 #include "media/audio/wav_audio_handler.h"
 #include "media/base/channel_layout.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
+#include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "services/audio/public/cpp/output_device.h"
-#include "services/audio/public/mojom/stream_factory.mojom.h"
 
 namespace audio {
 
@@ -70,7 +70,7 @@ class AudioStreamHandler::AudioStreamContainer
       if (g_observer_for_testing) {
         g_observer_for_testing->Initialize(this, params);
       } else {
-        mojo::PendingRemote<audio::mojom::StreamFactory> stream_factory;
+        mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory;
         stream_factory_binder_.Run(
             stream_factory.InitWithNewPipeAndPassReceiver());
         device_ = std::make_unique<audio::OutputDevice>(
@@ -164,7 +164,7 @@ class AudioStreamHandler::AudioStreamContainer
   size_t cursor_;
   bool delayed_stop_posted_;
   std::unique_ptr<media::WavAudioHandler> wav_audio_;
-  base::CancelableClosure stop_closure_;
+  base::CancelableRepeatingClosure stop_closure_;
 
   DISALLOW_COPY_AND_ASSIGN(AudioStreamContainer);
 };

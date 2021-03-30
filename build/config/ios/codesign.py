@@ -63,7 +63,7 @@ def LoadPlistFile(plist_path):
         subprocess.check_output(
             ['xcrun', 'plutil', '-convert', 'xml1', '-o', '-', plist_path]))
   else:
-    with open(plist_path) as fp:
+    with open(plist_path, 'rb') as fp:
       return plistlib.load(fp)
 
 

@@ -11,7 +11,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sharing/click_to_call/feature.h"
 #include "chrome/browser/sharing/click_to_call/phone_number_regex.h"
 #include "chrome/browser/sharing/sharing_service.h"
 #include "chrome/browser/sharing/sharing_service_factory.h"
@@ -42,7 +41,7 @@ bool IsClickToCallEnabled(content::BrowserContext* browser_context) {
 
   SharingService* sharing_service =
       SharingServiceFactory::GetForBrowserContext(browser_context);
-  return sharing_service && base::FeatureList::IsEnabled(kClickToCallUI);
+  return sharing_service != nullptr;
 }
 
 }  // namespace
@@ -86,10 +85,10 @@ base::Optional<std::string> ExtractPhoneNumber(
 
 std::string GetUnescapedURLContent(const GURL& url) {
   std::string content_string(url.GetContent());
-  url::RawCanonOutputT<base::char16> unescaped_content;
+  url::RawCanonOutputT<char16_t> unescaped_content;
   url::DecodeURLEscapeSequences(content_string.data(), content_string.size(),
                                 url::DecodeURLMode::kUTF8OrIsomorphic,
                                 &unescaped_content);
   return base::UTF16ToUTF8(
-      base::string16(unescaped_content.data(), unescaped_content.length()));
+      std::u16string(unescaped_content.data(), unescaped_content.length()));
 }

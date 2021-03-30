@@ -11,15 +11,15 @@
 #include "ash/public/cpp/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "chrome/browser/chromeos/login/quick_unlock/auth_token.h"
-#include "chrome/browser/chromeos/login/quick_unlock/fingerprint_storage.h"
-#include "chrome/browser/chromeos/login/quick_unlock/pin_backend.h"
-#include "chrome/browser/chromeos/login/quick_unlock/pin_storage_prefs.h"
-#include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_factory.h"
-#include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_storage.h"
-#include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_utils.h"
-#include "chrome/browser/chromeos/login/users/chrome_user_manager.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/login/quick_unlock/auth_token.h"
+#include "chrome/browser/ash/login/quick_unlock/fingerprint_storage.h"
+#include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
+#include "chrome/browser/ash/login/quick_unlock/pin_storage_prefs.h"
+#include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
+#include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
+#include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
+#include "chrome/browser/ash/login/users/chrome_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
@@ -77,9 +77,6 @@ constexpr size_t kMinLengthForNonWeakPin = 2U;
 // www.datagenetics.com/blog/september32012/.
 constexpr const char* kMostCommonPins[] = {"1212", "1004", "2000", "6969",
                                            "1122", "1313", "2001", "1010"};
-
-// QuickUnlockPrivateGetAuthTokenFunction test observer.
-QuickUnlockPrivateGetAuthTokenFunction::TestObserver* test_observer;
 
 // Returns the active set of quick unlock modes.
 void ComputeActiveModes(Profile* profile, ActiveModeCallback result) {
@@ -229,12 +226,6 @@ void QuickUnlockPrivateGetAuthTokenFunction::
   authenticator_allocator_ = allocator;
 }
 
-// static
-void QuickUnlockPrivateGetAuthTokenFunction::SetTestObserver(
-    QuickUnlockPrivateGetAuthTokenFunction::TestObserver* observer) {
-  test_observer = observer;
-}
-
 ExtensionFunction::ResponseAction
 QuickUnlockPrivateGetAuthTokenFunction::Run() {
   std::unique_ptr<quick_unlock_private::GetAuthToken::Params> params =
@@ -246,9 +237,6 @@ QuickUnlockPrivateGetAuthTokenFunction::Run() {
           GetActiveProfile(browser_context()));
   chromeos::UserContext user_context(*user);
   user_context.SetKey(chromeos::Key(params->account_password));
-
-  if (test_observer)
-    test_observer->OnGetAuthTokenCalled(params->account_password);
 
   // Lazily allocate the authenticator. We do this here, instead of in the ctor,
   // so that tests can install a fake.
@@ -270,7 +258,7 @@ QuickUnlockPrivateGetAuthTokenFunction::Run() {
       FROM_HERE,
       base::BindOnce(&chromeos::ExtendedAuthenticator::AuthenticateToCheck,
                      extended_authenticator_.get(), user_context,
-                     base::Closure()));
+                     base::OnceClosure()));
 
   return RespondLater();
 }

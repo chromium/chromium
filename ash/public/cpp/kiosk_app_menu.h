@@ -10,7 +10,6 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback_forward.h"
-#include "base/strings/string16.h"
 #include "components/account_id/account_id.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -33,7 +32,7 @@ struct ASH_PUBLIC_EXPORT KioskAppMenuEntry {
   // For ARC kiosk apps only, the account id for the app.
   AccountId account_id;
 
-  base::string16 name;
+  std::u16string name;
 
   gfx::ImageSkia icon;
 };

@@ -13,7 +13,7 @@
 class MediaGalleryContextMenu : public ui::SimpleMenuModel,
                                 public ui::SimpleMenuModel::Delegate {
  public:
-  typedef base::Callback<void(MediaGalleryPrefId pref_id)>
+  typedef base::RepeatingCallback<void(MediaGalleryPrefId pref_id)>
       ForgetGalleryCallback;
 
   explicit MediaGalleryContextMenu(const ForgetGalleryCallback& callback);

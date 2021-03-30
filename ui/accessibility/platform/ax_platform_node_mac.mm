@@ -57,8 +57,8 @@ RoleMap BuildRoleMap() {
       {ax::mojom::Role::kColorWell, NSAccessibilityColorWellRole},
       {ax::mojom::Role::kColumn, NSAccessibilityColumnRole},
       {ax::mojom::Role::kColumnHeader, @"AXCell"},
-      {ax::mojom::Role::kComboBoxGrouping, NSAccessibilityGroupRole},
-      {ax::mojom::Role::kComboBoxMenuButton, NSAccessibilityPopUpButtonRole},
+      {ax::mojom::Role::kComboBoxGrouping, NSAccessibilityComboBoxRole},
+      {ax::mojom::Role::kComboBoxMenuButton, NSAccessibilityComboBoxRole},
       {ax::mojom::Role::kComment, NSAccessibilityGroupRole},
       {ax::mojom::Role::kComplementary, NSAccessibilityGroupRole},
       {ax::mojom::Role::kContentDeletion, NSAccessibilityGroupRole},
@@ -142,7 +142,6 @@ RoleMap BuildRoleMap() {
       {ax::mojom::Role::kIframePresentational, NSAccessibilityGroupRole},
       {ax::mojom::Role::kIgnored, NSAccessibilityUnknownRole},
       {ax::mojom::Role::kImage, NSAccessibilityImageRole},
-      {ax::mojom::Role::kImageMap, NSAccessibilityGroupRole},
       {ax::mojom::Role::kInputTime, @"AXTimeField"},
       {ax::mojom::Role::kLabelText, NSAccessibilityGroupRole},
       {ax::mojom::Role::kLayoutTable, NSAccessibilityGroupRole},
@@ -287,6 +286,10 @@ EventMap BuildEventMap() {
        NSAccessibilityFocusedUIElementChangedNotification},
       {ax::mojom::Event::kFocusContext,
        NSAccessibilityFocusedUIElementChangedNotification},
+      {ax::mojom::Event::kMenuStart, (id)kAXMenuOpenedNotification},
+      {ax::mojom::Event::kMenuEnd, (id)kAXMenuClosedNotification},
+      {ax::mojom::Event::kMenuPopupStart, (id)kAXMenuOpenedNotification},
+      {ax::mojom::Event::kMenuPopupEnd, (id)kAXMenuClosedNotification},
       {ax::mojom::Event::kTextChanged, NSAccessibilityTitleChangedNotification},
       {ax::mojom::Event::kValueChanged,
        NSAccessibilityValueChangedNotification},
@@ -702,6 +705,10 @@ bool IsAXSetter(SEL selector) {
 }
 
 - (NSString*)AXRoleDescription {
+  if (_node->HasStringAttribute(ax::mojom::StringAttribute::kRoleDescription)) {
+    return [base::SysUTF8ToNSString(_node->GetStringAttribute(
+        ax::mojom::StringAttribute::kRoleDescription)) lowercaseString];
+  }
   switch (_node->GetData().role) {
     case ax::mojom::Role::kTab:
       // There is no NSAccessibilityTabRole or similar (AXRadioButton is used
@@ -1011,6 +1018,10 @@ bool IsAXSetter(SEL selector) {
   return [self AXSubrole];
 }
 
+- (NSString*)accessibilityRoleDescription {
+  return [self AXRoleDescription];
+}
+
 - (BOOL)isAccessibilitySelectorAllowed:(SEL)selector {
   if (!_node)
     return NO;
@@ -1281,7 +1292,7 @@ void AXPlatformNodeMac::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
   NotifyMacEvent(native_node_, event_type);
 }
 
-void AXPlatformNodeMac::AnnounceText(const base::string16& text) {
+void AXPlatformNodeMac::AnnounceText(const std::u16string& text) {
   PostAnnouncementNotification(base::SysUTF16ToNSString(text),
                                [native_node_ AXWindow], false);
 }

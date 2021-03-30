@@ -4,6 +4,7 @@
 
 #include "chrome/browser/download/download_ui_model.h"
 
+#include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -17,6 +18,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/core/features.h"
 #include "net/base/mime_util.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -33,16 +35,16 @@
 
 using base::TimeDelta;
 using download::DownloadItem;
-using safe_browsing::DownloadFileType;
 using offline_items_collection::FailState;
+using safe_browsing::DownloadFileType;
 
 namespace {
 
 // TODO(qinmin): Migrate this description generator to OfflineItemUtils once
 // that component gets used to build desktop UI.
-base::string16 FailStateMessage(FailState fail_state) {
+std::u16string FailStateMessage(FailState fail_state) {
   int string_id = IDS_DOWNLOAD_INTERRUPTED_STATUS;
-  base::string16 status_text;
+  std::u16string status_text;
 
   switch (fail_state) {
     case FailState::FILE_ACCESS_DENIED:
@@ -167,13 +169,13 @@ bool DownloadUIModel::HasSupportedImageMimeType() const {
   return false;
 }
 
-base::string16 DownloadUIModel::GetProgressSizesString() const {
-  base::string16 size_ratio;
+std::u16string DownloadUIModel::GetProgressSizesString() const {
+  std::u16string size_ratio;
   int64_t size = GetCompletedBytes();
   int64_t total = GetTotalBytes();
   if (total > 0) {
     ui::DataUnits amount_units = ui::GetByteDisplayUnits(total);
-    base::string16 simple_size =
+    std::u16string simple_size =
         ui::FormatBytesWithUnits(size, amount_units, false);
 
     // In RTL locales, we render the text "size/total" in an RTL context. This
@@ -181,7 +183,7 @@ base::string16 DownloadUIModel::GetProgressSizesString() const {
     // as "MB 123/456" because it ends with an LTR run. In order to solve this,
     // we mark the total string as an LTR string if the UI layout is
     // right-to-left so that the string "456 MB" is treated as an LTR run.
-    base::string16 simple_total =
+    std::u16string simple_total =
         base::i18n::GetDisplayStringInLTRDirectionality(
             ui::FormatBytesWithUnits(total, amount_units, true));
     size_ratio = l10n_util::GetStringFUTF16(IDS_DOWNLOAD_STATUS_SIZES,
@@ -192,22 +194,22 @@ base::string16 DownloadUIModel::GetProgressSizesString() const {
   return size_ratio;
 }
 
-base::string16 DownloadUIModel::GetInterruptReasonText() const {
+std::u16string DownloadUIModel::GetInterruptReasonText() const {
   if (GetState() != DownloadItem::INTERRUPTED ||
       GetLastFailState() == FailState::USER_CANCELED) {
-    return base::string16();
+    return std::u16string();
   }
   return FailStateMessage(GetLastFailState());
 }
 
-base::string16 DownloadUIModel::GetStatusText() const {
+std::u16string DownloadUIModel::GetStatusText() const {
   switch (GetState()) {
     case DownloadItem::IN_PROGRESS:
       return GetInProgressStatusString();
     case DownloadItem::COMPLETE:
       return GetFileExternallyRemoved()
                  ? l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_REMOVED)
-                 : base::string16();
+                 : std::u16string();
     case DownloadItem::INTERRUPTED: {
       const FailState fail_state = GetLastFailState();
       if (fail_state != FailState::USER_CANCELED) {
@@ -221,21 +223,21 @@ base::string16 DownloadUIModel::GetStatusText() const {
       return l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_CANCELLED);
     case DownloadItem::MAX_DOWNLOAD_STATE:
       NOTREACHED();
-      return base::string16();
+      return std::u16string();
   }
 }
 
-base::string16 DownloadUIModel::GetTooltipText() const {
-  base::string16 tooltip = GetFileNameToReportUser().LossyDisplayName();
+std::u16string DownloadUIModel::GetTooltipText() const {
+  std::u16string tooltip = GetFileNameToReportUser().LossyDisplayName();
   if (GetState() == DownloadItem::INTERRUPTED &&
       GetLastFailState() != FailState::USER_CANCELED) {
-    tooltip += base::ASCIIToUTF16("\n") +
-               OfflineItemUtils::GetFailStateMessage(GetLastFailState());
+    tooltip +=
+        u"\n" + OfflineItemUtils::GetFailStateMessage(GetLastFailState());
   }
   return tooltip;
 }
 
-base::string16 DownloadUIModel::GetWarningText(const base::string16& filename,
+std::u16string DownloadUIModel::GetWarningText(const std::u16string& filename,
                                                size_t* offset) const {
   *offset = std::string::npos;
   switch (GetDangerType()) {
@@ -281,8 +283,11 @@ base::string16 DownloadUIModel::GetWarningText(const base::string16& filename,
       return l10n_util::GetStringFUTF16(
           IDS_PROMPT_DOWNLOAD_SENSITIVE_CONTENT_BLOCKED, filename, offset);
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
-      return l10n_util::GetStringFUTF16(IDS_PROMPT_APP_DEEP_SCANNING, filename,
-                                        offset);
+      return l10n_util::GetStringFUTF16(
+          base::FeatureList::IsEnabled(safe_browsing::kPromptEsbForDeepScanning)
+              ? IDS_PROMPT_DEEP_SCANNING
+              : IDS_PROMPT_APP_DEEP_SCANNING,
+          filename, offset);
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE:
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS:
@@ -309,10 +314,10 @@ base::string16 DownloadUIModel::GetWarningText(const base::string16& filename,
       break;
   }
 
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16 DownloadUIModel::GetWarningConfirmButtonText() const {
+std::u16string DownloadUIModel::GetWarningConfirmButtonText() const {
   const auto kDangerousFile = download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE;
   return l10n_util::GetStringUTF16(
       (GetDangerType() == kDangerousFile && IsExtensionDownload())
@@ -330,8 +335,8 @@ Profile* DownloadUIModel::profile() const {
   return nullptr;
 }
 
-base::string16 DownloadUIModel::GetTabProgressStatusText() const {
-  return base::string16();
+std::u16string DownloadUIModel::GetTabProgressStatusText() const {
+  return std::u16string();
 }
 
 int64_t DownloadUIModel::GetCompletedBytes() const {
@@ -636,7 +641,7 @@ bool DownloadUIModel::IsExtensionDownload() const {
   return false;
 }
 
-base::string16 DownloadUIModel::GetInProgressStatusString() const {
+std::u16string DownloadUIModel::GetInProgressStatusString() const {
   DCHECK_EQ(DownloadItem::IN_PROGRESS, GetState());
 
   TimeDelta time_remaining;
@@ -644,7 +649,7 @@ base::string16 DownloadUIModel::GetInProgressStatusString() const {
   bool time_remaining_known = (!IsPaused() && TimeRemaining(&time_remaining));
 
   // Indication of progress. (E.g.:"100/200 MB" or "100MB")
-  base::string16 size_ratio = GetProgressSizesString();
+  std::u16string size_ratio = GetProgressSizesString();
 
   // The download is a CRX (app, extension, theme, ...) and it is being unpacked
   // and validated.

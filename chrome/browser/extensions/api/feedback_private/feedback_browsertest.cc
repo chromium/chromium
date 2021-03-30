@@ -65,12 +65,12 @@ class FeedbackTest : public ExtensionBrowserTest {
                        const std::string& extra_diagnostics,
                        bool from_assistant = false,
                        bool include_bluetooth_logs = false) {
-    base::Closure callback = base::Bind(&StopMessageLoopCallback);
+    base::OnceClosure callback = base::BindOnce(&StopMessageLoopCallback);
     extensions::FeedbackPrivateGetStringsFunction::set_test_callback(&callback);
     InvokeFeedbackUI(flow, extra_diagnostics, from_assistant,
                      include_bluetooth_logs);
     content::RunMessageLoop();
-    extensions::FeedbackPrivateGetStringsFunction::set_test_callback(NULL);
+    extensions::FeedbackPrivateGetStringsFunction::set_test_callback(nullptr);
   }
 
   void VerifyFeedbackAppLaunch() {
@@ -324,7 +324,8 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_GetTargetTabUrl) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(FeedbackTest, SubmissionTest) {
+// Disabled due to flake: https://crbug.com/1180373
+IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_SubmissionTest) {
   WaitForExtensionViewsToLoad();
 
   ASSERT_TRUE(IsFeedbackAppAvailable());

@@ -42,7 +42,10 @@ class KerberosSection : public OsSettingsSection,
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
   // KerberosCredentialsManager::Observer:
+  void OnAccountsChanged() override;
   void OnKerberosEnabledStateChanged() override;
+
+  void UpdateKerberosSearchConcepts();
 
   KerberosCredentialsManager* kerberos_credentials_manager_;
 };

@@ -160,7 +160,7 @@ LoopbackHandler::~LoopbackHandler() = default;
 
 void LoopbackHandler::AddConnection(
     std::unique_ptr<MixerLoopbackConnection> connection) {
-  io_.Post(FROM_HERE, &LoopbackIO::AddConnection, std::move(connection));
+  io_.AsyncCall(&LoopbackIO::AddConnection).WithArgs(std::move(connection));
 }
 
 void LoopbackHandler::SetDataSize(int data_size_bytes) {
@@ -169,8 +169,8 @@ void LoopbackHandler::SetDataSize(int data_size_bytes) {
   }
 
   if (SetDataSizeInternal(data_size_bytes) && sample_rate_ != 0) {
-    io_.Post(FROM_HERE, &LoopbackIO::SetStreamConfig, format_, sample_rate_,
-             num_channels_, data_size_);
+    io_.AsyncCall(&LoopbackIO::SetStreamConfig)
+        .WithArgs(format_, sample_rate_, num_channels_, data_size_);
   }
 }
 
@@ -220,8 +220,8 @@ void LoopbackHandler::SendDataInternal(int64_t timestamp,
     format_ = format;
     sample_rate_ = sample_rate;
     num_channels_ = num_channels;
-    io_.Post(FROM_HERE, &LoopbackIO::SetStreamConfig, format_, sample_rate_,
-             num_channels_, data_size_);
+    io_.AsyncCall(&LoopbackIO::SetStreamConfig)
+        .WithArgs(format_, sample_rate_, num_channels_, data_size_);
   }
 
   DCHECK_LE(data_size_bytes, data_size_);
@@ -229,8 +229,8 @@ void LoopbackHandler::SendDataInternal(int64_t timestamp,
   auto buffer = buffer_pool_->GetBuffer();
   memcpy(buffer->data() + mixer_service::MixerSocket::kAudioMessageHeaderSize,
          data, data_size_bytes);
-  io_.Post(FROM_HERE, &LoopbackIO::SendData, std::move(buffer), data_size_bytes,
-           timestamp);
+  io_.AsyncCall(&LoopbackIO::SendData)
+      .WithArgs(std::move(buffer), data_size_bytes, timestamp);
 }
 
 void LoopbackHandler::SendInterruptInternal(LoopbackInterruptReason reason) {
@@ -238,7 +238,7 @@ void LoopbackHandler::SendInterruptInternal(LoopbackInterruptReason reason) {
     return;
   }
 
-  io_.Post(FROM_HERE, &LoopbackIO::SendInterrupt, reason);
+  io_.AsyncCall(&LoopbackIO::SendInterrupt).WithArgs(reason);
 }
 
 }  // namespace media

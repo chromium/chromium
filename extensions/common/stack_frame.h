@@ -8,9 +8,9 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 
 namespace extensions {
 
@@ -19,13 +19,13 @@ struct StackFrame {
   StackFrame(const StackFrame& frame);
   StackFrame(uint32_t line_number,
              uint32_t column_number,
-             const base::string16& source,
-             const base::string16& function);
+             const std::u16string& source,
+             const std::u16string& function);
   ~StackFrame();
 
   // Construct a stack frame from a reported plain-text frame.
   static std::unique_ptr<StackFrame> CreateFromText(
-      const base::string16& frame_text);
+      const std::u16string& frame_text);
 
   bool operator==(const StackFrame& rhs) const;
 
@@ -34,8 +34,8 @@ struct StackFrame {
   // and column numbers shouldn't exceed UINT32_MAX even on 64 bit builds.
   uint32_t line_number;
   uint32_t column_number;
-  base::string16 source;
-  base::string16 function;  // optional
+  std::u16string source;
+  std::u16string function;  // optional
 };
 
 typedef std::vector<StackFrame> StackTrace;

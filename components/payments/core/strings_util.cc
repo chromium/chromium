@@ -15,7 +15,7 @@
 
 namespace payments {
 
-base::string16 GetShippingAddressLabelFromAutofillProfile(
+std::u16string GetShippingAddressLabelFromAutofillProfile(
     const autofill::AutofillProfile& profile,
     const std::string& locale) {
   // Name, phone number, and country are not included in the shipping address
@@ -34,7 +34,7 @@ base::string16 GetShippingAddressLabelFromAutofillProfile(
                                         base::size(kLabelFields), locale);
 }
 
-base::string16 GetBillingAddressLabelFromAutofillProfile(
+std::u16string GetBillingAddressLabelFromAutofillProfile(
     const autofill::AutofillProfile& profile,
     const std::string& locale) {
   // Name, company, phone number, and country are not included in the billing
@@ -52,7 +52,7 @@ base::string16 GetBillingAddressLabelFromAutofillProfile(
                                         base::size(kLabelFields), locale);
 }
 
-base::string16 GetShippingAddressSelectorInfoMessage(
+std::u16string GetShippingAddressSelectorInfoMessage(
     PaymentShippingType shipping_type) {
   switch (shipping_type) {
     case payments::PaymentShippingType::DELIVERY:
@@ -66,11 +66,11 @@ base::string16 GetShippingAddressSelectorInfoMessage(
           IDS_PAYMENTS_SELECT_SHIPPING_ADDRESS_FOR_SHIPPING_METHODS);
     default:
       NOTREACHED();
-      return base::string16();
+      return std::u16string();
   }
 }
 
-base::string16 GetShippingAddressSectionString(
+std::u16string GetShippingAddressSectionString(
     PaymentShippingType shipping_type) {
   switch (shipping_type) {
     case PaymentShippingType::DELIVERY:
@@ -81,12 +81,12 @@ base::string16 GetShippingAddressSectionString(
       return l10n_util::GetStringUTF16(IDS_PAYMENTS_SHIPPING_ADDRESS_LABEL);
     default:
       NOTREACHED();
-      return base::string16();
+      return std::u16string();
   }
 }
 
 #if defined(OS_IOS)
-base::string16 GetChooseShippingAddressButtonLabel(
+std::u16string GetChooseShippingAddressButtonLabel(
     PaymentShippingType shipping_type) {
   switch (shipping_type) {
     case PaymentShippingType::DELIVERY:
@@ -100,11 +100,11 @@ base::string16 GetChooseShippingAddressButtonLabel(
           IDS_PAYMENTS_CHOOSE_SHIPPING_ADDRESS_LABEL);
     default:
       NOTREACHED();
-      return base::string16();
+      return std::u16string();
   }
 }
 
-base::string16 GetAddShippingAddressButtonLabel(
+std::u16string GetAddShippingAddressButtonLabel(
     PaymentShippingType shipping_type) {
   switch (shipping_type) {
     case PaymentShippingType::DELIVERY:
@@ -115,11 +115,11 @@ base::string16 GetAddShippingAddressButtonLabel(
       return l10n_util::GetStringUTF16(IDS_PAYMENTS_ADD_SHIPPING_ADDRESS_LABEL);
     default:
       NOTREACHED();
-      return base::string16();
+      return std::u16string();
   }
 }
 
-base::string16 GetChooseShippingOptionButtonLabel(
+std::u16string GetChooseShippingOptionButtonLabel(
     PaymentShippingType shipping_type) {
   switch (shipping_type) {
     case PaymentShippingType::DELIVERY:
@@ -132,12 +132,12 @@ base::string16 GetChooseShippingOptionButtonLabel(
           IDS_PAYMENTS_CHOOSE_SHIPPING_OPTION_LABEL);
     default:
       NOTREACHED();
-      return base::string16();
+      return std::u16string();
   }
 }
 #endif  // defined(OS_IOS)
 
-base::string16 GetShippingOptionSectionString(
+std::u16string GetShippingOptionSectionString(
     PaymentShippingType shipping_type) {
   switch (shipping_type) {
     case PaymentShippingType::DELIVERY:
@@ -148,7 +148,7 @@ base::string16 GetShippingOptionSectionString(
       return l10n_util::GetStringUTF16(IDS_PAYMENTS_SHIPPING_OPTION_LABEL);
     default:
       NOTREACHED();
-      return base::string16();
+      return std::u16string();
   }
 }
 

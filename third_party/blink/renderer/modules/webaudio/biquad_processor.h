@@ -57,6 +57,7 @@ class BiquadProcessor final : public AudioDSPKernelProcessor {
 
   BiquadProcessor(float sample_rate,
                   uint32_t number_of_channels,
+                  unsigned render_quantum_frames,
                   AudioParamHandler& frequency,
                   AudioParamHandler& q,
                   AudioParamHandler& gain,

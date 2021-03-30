@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">फाइल किंवा डिरेक्टरी वापरण्यायोग्य नाही.</translation>
 <translation id="1363028406613469049">ट्रॅक</translation>
 <translation id="1378727793141957596">Google ड्राइव्ह मध्ये तुमचे स्वागत आहे!</translation>
+<translation id="1379911846207762492">तुमच्याकडे इंटरनेट कनेक्शन नसल्यास, तुम्ही फाइल ॲक्सेस करण्यासाठी त्या ऑफलाइन उपलब्ध करू शकता.</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1395262318152388157">स्लायाडर शोधा</translation>
 <translation id="1404323374378969387">नॉर्वेजियन</translation>
@@ -76,6 +77,7 @@
 <translation id="1807938677607439181">सर्व फाइल</translation>
 <translation id="1810764548349082891">कोणतेही पूर्वावलोकन उपलब्ध नाही</translation>
 <translation id="1812302367230252929">अम्हारिक लिप्यंतरण</translation>
+<translation id="1813278315230285598">सेवा</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />ताकीद:<ph name="END_BOLD" />  या फाइल तात्पुरत्या आहेत आणि डिस्क स्थान मुक्त करण्‍यासाठी कदाचित स्वयंचलितपणे हटविल्या जातील.  <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">पेंग्विन</translation>
 <translation id="183183971458492120">माहिती लोड करत आहे...</translation>
@@ -85,13 +87,14 @@
 <translation id="1853795129690976061">हे नेटवर्क Linux सोबत शेअर केलेले आहे</translation>
 <translation id="1864756863218646478">फाइल आढळू शकली नाही.</translation>
 <translation id="1920670151694390848">मल्याळम लिप्यंतरण</translation>
+<translation id="1920798810075583923">कलिंगड</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> फॉरमॅट केली आहे</translation>
 <translation id="1931134289871235022">स्लोव्हाक</translation>
 <translation id="1933345018156373194">हलवता आले नाही, अनपेक्षित एरर: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">फिन्निश</translation>
 <translation id="1942765061641586207">इमेज रिझोल्युशन</translation>
-<translation id="1943097386230153518">नवीन सेवा इंस्टॉल करा</translation>
 <translation id="1972984168337863910">फाइल फीडबॅक पॅनलचा विस्तार करा</translation>
+<translation id="1984456723671657197">या फाइलच्या प्रकाराला सपोर्ट नाही. Chrome OS वर फाइल उघडणे याविषयी<ph name="BEGIN_LINK_HELP" />अधिक जाणून घ्या<ph name="END_LINK_HELP" />.</translation>
 <translation id="1995337122023280937">फाइल स्थानावर जा</translation>
 <translation id="2001796770603320721">ड्राइव्ह मध्ये व्यवस्थापित करा</translation>
 <translation id="2009067268969781306">ड्राइव्ह फॉरमॅट त्यावर स्टोअर केलेला डेटा हटवेल. ही क्रिया पहिल्यासारखी केली जाऊ शकत नाही.</translation>
@@ -99,7 +102,7 @@
 <translation id="2028997212275086731">RAR संग्रहण</translation>
 <translation id="2037845485764049925">रशियन</translation>
 <translation id="2046702855113914483">रामेन</translation>
-<translation id="2070909990982335904">डॉटने प्रारंभ होणारी नावे सिस्टमसाठी आरक्षित आहेत. कृपया दुसरे नाव निवडा.</translation>
+<translation id="2070909990982335904">डॉटने सुरू होणारी नावे सिस्टमसाठी आरक्षित आहेत. कृपया दुसरे नाव निवडा.</translation>
 <translation id="2079545284768500474">पहिल्यासारखे करा</translation>
 <translation id="2084108471225856927">डिव्हाइस सेटिंग्ज</translation>
 <translation id="2085470240340828803">"<ph name="FILENAME" />" नावाची फाईल आधीपासूनच विद्यमान आहे. तुम्ही काय करू इच्छिता?</translation>
@@ -118,6 +121,7 @@
 <translation id="2288278176040912387">रेकॉर्ड प्लेयर</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> फाइल उघडत आहे</translation>
 <translation id="2303301624314357662">फाइल <ph name="FILE_NAME" /> उघडत आहे.</translation>
+<translation id="2304820083631266885">ग्रह</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> बाहेर काढले गेले आहे.</translation>
 <translation id="2325650632570794183">हा फाइल प्रकार सपोर्टेड नाही. कृपया या प्रकारची फाइल उघडू शकणारे अ‍ॅप शोधण्यासाठी Chrome वेब स्टोअरला भेट द्या.</translation>
 <translation id="2326539130272988168">बल्गेरियन</translation>
@@ -142,7 +146,6 @@
 <translation id="255937426064304553">यूएस आंतरराष्ट्रीय</translation>
 <translation id="2562685439590298522">Docs</translation>
 <translation id="2563185590376525700">बेडूक</translation>
-<translation id="2572501073504669105">तुमच्याकडे इंटरनेट कनेक्शन नसते तेव्हा तुम्ही फाइल ॲक्सेस करण्यासाठी त्या ऑफलाइन उपलब्ध करू शकता.</translation>
 <translation id="2578394532502990878">तमिळ फोनेटिक</translation>
 <translation id="2579959351793446050">ओडिया</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> व्हिडिओ</translation>
@@ -186,6 +189,7 @@
 <translation id="299638574917407533">फ्रेंच (कॅनडा)</translation>
 <translation id="3003633581067744647">थंबनेल व्ह्यू वर स्विच करा</translation>
 <translation id="3007214526293698309">गुणोत्तराचे निराकरण करा</translation>
+<translation id="3029114385395636667">Docs, Sheets आणि Slides ऑफलाइन उपलब्ध होण्यासाठी Google Docs Offline हे सुरू करा.</translation>
 <translation id="303198083543495566">भूगोल</translation>
 <translation id="3047197340186497470">चीनी दाई</translation>
 <translation id="3057861065630527966">तुमचे फोटो आणि व्हिडिओंचा बॅकअप घ्या</translation>
@@ -216,14 +220,17 @@
 <translation id="3335337277364016868">रेकॉर्ड केलेले वर्ष</translation>
 <translation id="3353984535370177728">अपलोड करण्यासाठी एक फोल्डर निवडा</translation>
 <translation id="3356580349448036450">पूर्ण</translation>
+<translation id="3358452157379365236">गिटार</translation>
 <translation id="3382143449143186018">InScript कीबोर्डसह नेपाळी</translation>
 <translation id="3408236822532681288">निओ 2 कीबोर्डसह जर्मन (जर्मनी)</translation>
 <translation id="3414856743105198592">काढता येणार्‍या मीडिआचे स्वरूपन सर्व डेटा पुसून टाकत आहे. तुम्ही सुरू ठेवू इच्छिता?</translation>
 <translation id="3437801641691368414">तयार केल्याची वेळ</translation>
+<translation id="343907260260897561">इंस्टंट कॅमेरा</translation>
 <translation id="3455931012307786678">इस्टोनियन</translation>
 <translation id="3466147780910026086">तुमचे मीडिया डिव्हाइस स्कॅन करीत आहे...</translation>
 <translation id="3468522857997926824"><ph name="BEGIN_LINK" />Google ड्राइव्ह<ph name="END_LINK" /> वर <ph name="FILE_COUNT" /> फोटोंचा बॅकअप घेतला</translation>
 <translation id="3475447146579922140">Google स्प्रेडशीट</translation>
+<translation id="3479552764303398839">सध्या नाही</translation>
 <translation id="3486821258960016770">मंगोलियन</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> एरर.</translation>
 <translation id="3522708245912499433">पोर्तुगीज</translation>
@@ -233,6 +240,7 @@
 <translation id="3553048479571901246"><ph name="APP_NAME" /> सोबत फाइल उघडण्यासाठी, प्रथम त्या Windows फाइल फोल्डरमध्ये कॉपी करा.</translation>
 <translation id="3556731189587832921">आंतरराष्ट्रीय पीसी कीबोर्डसह इंग्रजी (यूएस)</translation>
 <translation id="357479282490346887">लिथुआनियन</translation>
+<translation id="3592251141500063301"><ph name="FILE_NAME" /> ऑफलाइन उपलब्ध करता आली नाही</translation>
 <translation id="3603385196401704894">कॅनेडियन फ्रेंच</translation>
 <translation id="3606220979431771195">तुर्की-F</translation>
 <translation id="3616113530831147358">ऑडिओ</translation>
@@ -279,6 +287,7 @@
 <translation id="4124935795427217608">युनिकॉर्न</translation>
 <translation id="4158739975813877944">प्लेलिस्ट उघडा</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> हलवला.</translation>
+<translation id="4186579485882418952">ऑफलाइन हे एक्स्टेंशन सुरू करा</translation>
 <translation id="4193154014135846272">Google दस्तऐवज</translation>
 <translation id="4197674956721858839">झिप निवड</translation>
 <translation id="4202378258276439759">स्पॅनिश (लॅटिन अमेरिका)</translation>
@@ -292,6 +301,7 @@
 <translation id="4309915981827077375">सामान्य माहिती</translation>
 <translation id="432252891123397018">मानक कीबोर्डसह रोमानियन</translation>
 <translation id="4325128273762811722">स्लोव्हेनियन</translation>
+<translation id="4326142238881453352">वनस्पति शास्त्रज्ञ</translation>
 <translation id="4326192123064055915">कॉफी</translation>
 <translation id="4336032328163998280">कॉपी ऑपरेशन अयशस्वी. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">अरेबिक आधारित कीबोर्डसह सोरानी कुर्दिश</translation>
@@ -327,7 +337,6 @@
 <translation id="4706042980341760088">टाइपरायटर कीबोर्डसह तमिळ</translation>
 <translation id="4711094779914110278">तुर्की</translation>
 <translation id="4712283082407695269">"<ph name="PATH" />" उघडत आहे</translation>
-<translation id="4713544552769165154">ही फाइल Macintosh सॉफ्टवेअर वापरून एका कॉंप्युटरसाठी डिझाइन केली आहे. ही Chrome OS चालवणार्‍या तुमच्या डिव्हाइसशी सुसंगत नाही. कृपया एका सोयीस्कर रिप्लेसमेंट अ‍ॅप साठी <ph name="BEGIN_LINK" />Chrome वेब स्टोअर<ph name="END_LINK" /> शोधा.<ph name="BEGIN_LINK_HELP" />अधिक जाणून घ्या<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> फोटोंचा बॅकअप घेतला</translation>
 <translation id="4725511304875193254">कॉर्गी</translation>
 <translation id="4732760563705710320">क्षमस्‍व, आपल्‍या कास्‍ट डिव्‍हाइसद्वारे हा व्‍हिडिओ समर्थित नाही.</translation>
@@ -408,6 +417,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <ph name="MARKUP_7" />फाइलवर इतरांसह सर्व एकाच ठिकाणी<ph name="MARKUP_8" />
 शेअर करा, तयार करा आणि सहयोग करा.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google ड्राइव्ह वरून पुनर्प्राप्त केलेल्‍या फाइल</translation>
+<translation id="5288441970121584418">बर्गर</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">सेव्ह करा</translation>
 <translation id="5318819489018851358">Linux वापरून शेअर करा</translation>
@@ -461,8 +471,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="5833610766403489739">ही फाइल कुठेतरी हरवली आहे. कृपया तुमचे डाउनलोड स्थान सेटिंग तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="5838451609423551646">निवडीमधून सर्व नोंदी काढून टाकल्या आहेत.</translation>
 <translation id="5838825566232597749">यूएस कामगार आंतरराष्ट्रीय</translation>
-<translation id="5850516540536751549">हा फाइल प्रकार सपोर्टेड नाही. कृपया या प्रकारची फाइल उघडू शकणारे अ‍ॅप शोधण्यासाठी <ph name="BEGIN_LINK" />Chrome वेब स्टोअर<ph name="END_LINK" /> ला भेट द्या.
-<ph name="BEGIN_LINK_HELP" />अधिक जाणून घ्या<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">येथे पाहण्यासाठी काहीही नाही...</translation>
 <translation id="5911887972742538906">तुमच्या Linux ॲप्लिकेशनच्या इंस्टॉलेशन दरम्यान एरर आली आहे.</translation>
 <translation id="5912396950572065471">फॉरमॅट</translation>
@@ -500,10 +508,12 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6248400709929739064">उपशीर्षके सुरू करा</translation>
 <translation id="6269630227984243955">मलय</translation>
 <translation id="6287852322318138013">ही फाईल उघडण्यासाठी ॲप निवडा</translation>
+<translation id="6321303798550928047">हात हलवणे</translation>
 <translation id="6339145975392024142">युएस इंटरनॅशनल (PC)</translation>
 <translation id="6346310558342052870">ॲक्सेस प्रतिबंधित केला</translation>
 <translation id="6356685157277930264">फाइल फीडबॅक विंडो</translation>
 <translation id="6358884629796491903">ड्रॅगन</translation>
+<translation id="6367976544441405720">व्हॅन</translation>
 <translation id="637062427944097960">ही फाइल एका भिन्न डेस्कटॉपवर उघडलेली आहे. ती पाहण्यासाठी <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) वर हलवा.</translation>
 <translation id="6394388407447716302">रीड-ओन्ली</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> आयटम</translation>
@@ -527,6 +537,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6650726141019353908">गुलाबी फुलपाखरू</translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="6673674183150363784">Bépo कीबोर्डसह फ्रेंच (फ्रान्स)</translation>
+<translation id="6710022688720561421">रोबोट</translation>
 <translation id="6710213216561001401">मागील</translation>
 <translation id="6751256176799620176">1 फोल्डर निवडले</translation>
 <translation id="6790428901817661496">प्ले करा</translation>
@@ -560,6 +571,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6965382102122355670">ठीक आहे</translation>
 <translation id="6970230597523682626">बल्गेरियन</translation>
 <translation id="6973630695168034713">फोल्डर</translation>
+<translation id="6976795442547527108">सिंह</translation>
 <translation id="6978611942794658017">ही फाईल Windows सॉफ्‍टवेअर वापरून PC साठी डिझाइन केली आहे. ही Chrome OS चालविणार्‍या आपल्‍या डिव्‍हाइससह सुसंगत नाही. कृपया एका योग्य प्रतिस्थापन अ‍ॅपसाठी Chrome वेब स्‍टोअर शोधा.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">स्वीडिश</translation>
@@ -606,6 +618,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7532029025027028521">पर्शियन लिप्यंतरण</translation>
 <translation id="7544830582642184299">Linux ॲप्सना तुमच्या Google Drive मधील फाइल ॲक्सेस करण्याची परवानगी द्या. बदल तुमच्या इतर डिव्हाइसवर सिंक होतील.</translation>
 <translation id="7544853251252956727">शफल करा</translation>
+<translation id="7547009467130558110">स्नीकर</translation>
 <translation id="7547780573915868306">लिथुआनियन</translation>
 <translation id="7547811415869834682">डच</translation>
 <translation id="7551643184018910560">शेल्फवर पिन करा</translation>
@@ -620,6 +633,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7628656427739290098"><ph name="PERCENT" />% पूर्ण झाले.</translation>
 <translation id="7649070708921625228">मदत</translation>
 <translation id="7654209398114106148"><ph name="NUMBER_OF_ITEMS" /> आयटम हलवत आहे...</translation>
+<translation id="7655441028674523381">Google Photos सहजपणे ॲक्सेस करा</translation>
 <translation id="7658239707568436148">रद्द करा</translation>
 <translation id="7663224033570512922">हिंदी</translation>
 <translation id="7693909743393669729">ड्राइव्ह फॉरमॅट केल्याने त्यावर स्टोअर केलेला सर्व डेटा मिटवला जाईल आणि दृश्यमान नसू शकणार्‍या पार्टिशनसह, सध्याची सर्व पार्टिशन काढून टाकली जातील. ही कृती पहिल्यासारखी केली जाऊ शकत नाही.</translation>
@@ -651,7 +665,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7839804798877833423">या फाइल प्राप्त करताना अंदाजे <ph name="FILE_SIZE" /> मोबाइल डेटा वापरला जाईल.</translation>
 <translation id="7846076177841592234">निवड रद्द करा</translation>
 <translation id="7853966320808728790">फ्रेंच बेपो</translation>
-<translation id="7864662577698025113">नवीन सेवा जोडा</translation>
 <translation id="7868774406711971383">पोलिश</translation>
 <translation id="7873831373602885875"><ph name="FOLDER_NAME" /> वर सेव्ह करू शकत नाही. सर्व संपादने डाउनलोड फोल्‍डरमधील <ph name="DOWNLOADS_FOLDER" /> मध्ये सेव्ह केली जातील.</translation>
 <translation id="7874321682039004450">फिलिपिनो</translation>
@@ -666,13 +679,13 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7972920761225148017">फ्रेंच (स्वित्झर्लंड)</translation>
 <translation id="7980421588063892270">कोलमॅक कीबोर्डसह इंग्रजी (यूएस)</translation>
 <translation id="7982283708762922719">उंची</translation>
+<translation id="79907182588096956">ही फाइल Windows सॉफ्टवेअर वापरणार्‍या PC साठी डिझाइन केली आहे. ही तुमच्या Chrome OS रन करणार्‍या डिव्हाइससोबत कंपॅटिबल नाही. Chrome OS वर फाइल उघडणे याविषयी<ph name="BEGIN_LINK_HELP" />अधिक जाणून घ्या<ph name="END_LINK_HELP" />.</translation>
 <translation id="8008366997883261463">कुत्रा</translation>
 <translation id="8028993641010258682">आकार</translation>
 <translation id="803771048473350947">फाइल</translation>
 <translation id="8038111231936746805">(डीफॉल्ट)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> ऑडिओ</translation>
 <translation id="8045462269890919536">रोमानियन</translation>
-<translation id="8052887694493382350">ही फाइल Windows सॉफ्टवेअर वापरणार्‍या PC साठी डिझाइन केली आहे. ही तुमच्या Chrome OS रन करणार्‍या डिव्हाइससोबत कंपॅटिबल नाही. <ph name="BEGIN_LINK_HELP" />अधिक जाणून घ्या<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">सर्व संपादने <ph name="DOWNLOADS_FOLDER" /> मध्ये सेव्ह केली जातील.</translation>
 <translation id="8079530767338315840">पुनरावृत्ती करा</translation>
 <translation id="8106045200081704138">माझ्याशी शेअर केलेले</translation>
@@ -712,6 +725,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8466234950814670489">Tar संग्रहण</translation>
 <translation id="8475647382427415476">आत्ता "<ph name="FILENAME" />" संकालित करण्यात Google ड्राइव्ह अक्षम होते. Google ड्राइव्ह नंतर पुन्हा प्रयत्न करेल.</translation>
 <translation id="8477649328507734757">फिरवणे</translation>
+<translation id="8484284835977497781">तुमच्या अलीकडील फोटोमधून निवडा.</translation>
 <translation id="8487700953926739672">ऑफलाइन उपलब्ध</translation>
 <translation id="8521441079177373948">यूके</translation>
 <translation id="8525306231823319788">फुल स्क्रीन</translation>
@@ -744,8 +758,10 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8860454412039442620">Excel स्प्रेडशीट</translation>
 <translation id="8866284467018526531">अरबी लिप्यंतरण</translation>
 <translation id="8900820606136623064">हंगेरियन</translation>
+<translation id="8903931173357132290">पदवीधर</translation>
 <translation id="8919081441417203123">डॅनिश</translation>
 <translation id="8965697826696209160">पुरेशी जागा नाही.</translation>
+<translation id="8970501467542182729">ही फाइल Macintosh सॉफ्टवेअर वापरणार्‍या कॉंप्युटरसाठी डिझाइन केली आहे. ही तुमच्या Chrome OS रन करणार्‍या डिव्हाइससोबत कंपॅटिबल नाही. Chrome OS वर फाइल उघडणे याविषयी<ph name="BEGIN_LINK_HELP" />अधिक जाणून घ्या<ph name="END_LINK_HELP" />.</translation>
 <translation id="8997962250644902079">चीनी (पारंपरिक) पिनयिन</translation>
 <translation id="9017798300203431059">रशियन ध्वन्यात्मक</translation>
 <translation id="9034924485347205037">Linux फाइल</translation>

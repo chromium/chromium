@@ -67,8 +67,8 @@ class TestPageActionIconView : public PageActionIconView {
   }
 
   views::BubbleDialogDelegate* GetBubble() const override { return nullptr; }
-  base::string16 GetTextForTooltipAndAccessibleName() const override {
-    return base::ASCIIToUTF16("TestTooltip");
+  std::u16string GetTextForTooltipAndAccessibleName() const override {
+    return u"TestTooltip";
   }
 
   bool IsLabelVisible() const { return label()->GetVisible(); }

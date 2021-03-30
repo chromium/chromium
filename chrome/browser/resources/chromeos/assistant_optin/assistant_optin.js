@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+HTMLImports.whenReady(() => {
 // <include src="../login/components/multi_step_behavior.js">
 // <include src="../login/components/oobe_types.js">
 // <include src="../login/components/oobe_buttons.js">
-// <include src="../login/components/oobe_dialog_host_behavior.js">
 // <include src="assistant_optin_flow.js">
 // <include src="browser_proxy.js">
 
@@ -17,10 +17,13 @@ cr.define('login.AssistantOptInFlowScreen', function() {
      */
     show() {
       var url = new URL(document.URL);
+      $('assistant-optin-flow-card').onBeforeShow();
       $('assistant-optin-flow-card')
           .onShow(
               url.searchParams.get('flow-type'),
-              url.searchParams.get('caption-bar-height'));
+              url.searchParams.get('caption-bar-height'),
+              url.searchParams.get('oobe-dialog-height'),
+              url.searchParams.get('oobe-dialog-width'));
     },
 
     /**
@@ -64,6 +67,12 @@ cr.define('login.AssistantOptInFlowScreen', function() {
   };
 });
 
-document.addEventListener('DOMContentLoaded', function() {
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', function() {
+    login.AssistantOptInFlowScreen.show();
+  });
+} else {
   login.AssistantOptInFlowScreen.show();
+}
+
 });

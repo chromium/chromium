@@ -103,7 +103,7 @@ class BookmarkBarNavigationTest : public InProcessBrowserTest {
     bookmarks::test::WaitForBookmarkModelToLoad(model);
     model->ClearStore();
     std::string url = "/echoheader?";
-    model->AddURL(model->bookmark_bar_node(), 0, base::ASCIIToUTF16("Example"),
+    model->AddURL(model->bookmark_bar_node(), 0, u"Example",
                   https_test_server_.GetURL(url + header));
   }
 
@@ -290,8 +290,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBarNavigationTest, ExternalHandlerAllowed) {
       BookmarkModelFactory::GetForBrowserContext(browser()->profile());
   bookmarks::test::WaitForBookmarkModelToLoad(model);
   model->ClearStore();
-  model->AddURL(model->bookmark_bar_node(), 0, base::ASCIIToUTF16("Example"),
-                external_url);
+  model->AddURL(model->bookmark_bar_node(), 0, u"Example", external_url);
 
   // First, get into a known (unblocked) state.
   ExternalProtocolHandler::PermitLaunchUrl();

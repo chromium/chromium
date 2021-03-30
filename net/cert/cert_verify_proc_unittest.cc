@@ -16,6 +16,7 @@
 #include "base/rand_util.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -1604,7 +1605,14 @@ TEST_P(CertVerifyProcInternalTest, PublicKeyHashes) {
 // the required key usage for serverAuth.
 // TODO(mattm): This cert fails for many reasons, replace with a generated one
 // that tests only the desired case.
-TEST_P(CertVerifyProcInternalTest, WrongKeyPurpose) {
+//
+// Disabled on Android, crbug.com/1167663.
+#if defined(OS_ANDROID)
+#define MAYBE_WrongKeyPurpose DISABLED_WrongKeyPurpose
+#else
+#define MAYBE_WrongKeyPurpose WrongKeyPurpose
+#endif
+TEST_P(CertVerifyProcInternalTest, MAYBE_WrongKeyPurpose) {
   base::FilePath certs_dir = GetTestCertsDirectory();
 
   scoped_refptr<X509Certificate> server_cert =
@@ -2996,7 +3004,7 @@ class CertVerifyProcInternalWithNetFetchingTest
 
   // Returns a random URL path (starting with /) that has the given suffix.
   static std::string MakeRandomPath(base::StringPiece suffix) {
-    return "/" + MakeRandomHexString(12) + suffix.as_string();
+    return "/" + MakeRandomHexString(12) + std::string(suffix);
   }
 
   // Returns a URL to |path| for the current test server.
@@ -3199,7 +3207,7 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
   // Setup the test server to reply with the correct intermediate.
   RegisterSimpleTestServerHandler(
       ca_issuers_path, HTTP_OK, "application/pkix-cert",
-      x509_util::CryptoBufferAsStringPiece(intermediate.get()).as_string());
+      std::string(x509_util::CryptoBufferAsStringPiece(intermediate.get())));
 
   // Trust the root certificate.
   ScopedTestRoot scoped_root(root.get());
@@ -3358,7 +3366,9 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
   leaf.SetSubjectAltName(kHostname);
 
   // Make two versions of the intermediate - one that is SHA256 signed, and one
-  // that is SHA1 signed.
+  // that is SHA1 signed. Note that the subjectKeyIdentifier for `intermediate`
+  // is intentionally not changed, so that path building will consider both
+  // certificate paths.
   intermediate.SetSignatureAlgorithmRsaPkca1(DigestAlgorithm::Sha256);
   intermediate.SetRandomSerialNumber();
   auto intermediate_sha256 = intermediate.DupCertBuffer();
@@ -3374,8 +3384,8 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
   // Setup the test server to reply with the SHA256 intermediate.
   RegisterSimpleTestServerHandler(
       ca_issuers_path, HTTP_OK, "application/pkix-cert",
-      x509_util::CryptoBufferAsStringPiece(intermediate_sha256.get())
-          .as_string());
+      std::string(
+          x509_util::CryptoBufferAsStringPiece(intermediate_sha256.get())));
 
   // Build a chain to verify that includes the SHA1 intermediate.
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;

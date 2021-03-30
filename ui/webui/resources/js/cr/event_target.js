@@ -21,5 +21,6 @@ cr.define('cr', function() {
   /** @override */ NativeEventTarget.prototype.removeEventListener;
 
   // #cr_define_end
+  console.warn('crbug/1173575, non-JS module files deprecated.');
   return {EventTarget: NativeEventTarget};
 });

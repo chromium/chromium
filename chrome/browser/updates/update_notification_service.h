@@ -11,7 +11,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "components/keyed_service/core/keyed_service.h"
+#include "components/keyed_service/core/keyed_service.h"  // nognservice
 
 namespace notifications {
 struct ThrottleConfig;

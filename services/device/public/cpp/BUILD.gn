@@ -70,4 +70,11 @@ source_set("test_support") {
     "//testing/gtest",
     "//url",
   ]
+
+  if (is_mac) {
+    sources += [
+      "test/fake_geolocation_system_permission.cc",
+      "test/fake_geolocation_system_permission.h",
+    ]
+  }
 }

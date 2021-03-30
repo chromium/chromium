@@ -19,16 +19,16 @@ namespace {
 ModuleInspectionResult CreateTestModuleInspectionResult() {
   ModuleInspectionResult inspection_result;
 
-  inspection_result.location = L"location";
-  inspection_result.basename = L"basename";
-  inspection_result.product_name = L"product_name";
-  inspection_result.description = L"description";
-  inspection_result.version = L"version";
+  inspection_result.location = u"location";
+  inspection_result.basename = u"basename";
+  inspection_result.product_name = u"product_name";
+  inspection_result.description = u"description";
+  inspection_result.version = u"version";
   inspection_result.certificate_info.type =
       CertificateInfo::Type::CERTIFICATE_IN_FILE;
   inspection_result.certificate_info.path =
       base::FilePath(L"certificate_info_path");
-  inspection_result.certificate_info.subject = L"certificate_info_subject";
+  inspection_result.certificate_info.subject = u"certificate_info_subject";
 
   return inspection_result;
 }

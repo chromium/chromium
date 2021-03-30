@@ -21,7 +21,7 @@ struct PLATFORM_EXPORT StructTraits<blink::mojom::FetchAPIRequestBodyDataView,
   static void SetToNull(blink::ResourceRequestBody* out) {
     *out = blink::ResourceRequestBody();
   }
-  static WTF::Vector<blink::mojom::blink::FetchAPIDataElementPtr> elements(
+  static WTF::Vector<network::DataElement> elements(
       blink::ResourceRequestBody& mutable_body);
   static int64_t identifier(const blink::ResourceRequestBody& body) {
     return body.FormBody() ? body.FormBody()->Identifier() : 0;

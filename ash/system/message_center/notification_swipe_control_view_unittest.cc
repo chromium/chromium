@@ -5,8 +5,8 @@
 #include "ash/system/message_center/notification_swipe_control_view.h"
 
 #include <memory>
+#include <string>
 
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -72,9 +72,8 @@ class NotificationSwipeControlViewTest : public testing::Test {
         message_center::SettingsButtonHandler::DELEGATE;
     rich_data.should_show_snooze_button = true;
     message_center::Notification notification(
-        message_center::NOTIFICATION_TYPE_SIMPLE, "id",
-        base::UTF8ToUTF16("title"), base::UTF8ToUTF16("id"), gfx::Image(),
-        base::string16(), GURL(),
+        message_center::NOTIFICATION_TYPE_SIMPLE, "id", u"title", u"id",
+        gfx::Image(), std::u16string(), GURL(),
         message_center::NotifierId(message_center::NotifierType::APPLICATION,
                                    "notifier_id"),
         rich_data, nullptr);

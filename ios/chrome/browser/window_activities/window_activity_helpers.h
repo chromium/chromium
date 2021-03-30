@@ -62,6 +62,11 @@ NSUserActivity* ActivityToLoadURL(WindowActivityOrigin origin, const GURL& url);
 // within a browser.
 NSUserActivity* ActivityToMoveTab(NSString* tab_id);
 
+// Returns an activity based on |activity_to_adapt| info, changing its mode to
+// follow |incognito|.
+NSUserActivity* AdaptUserActivityToIncognito(NSUserActivity* activity_to_adapt,
+                                             bool incognito);
+
 // true if |activity| is one that indicates a URL load (including loading the
 // new tab page in a new tab).
 bool ActivityIsURLLoad(NSUserActivity* activity);

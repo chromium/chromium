@@ -74,9 +74,9 @@ def run_script(argv, funcs):
 
 
 def run_command(argv, env=None, cwd=None):
-  print 'Running %r in %r (env: %r)' % (argv, cwd, env)
+  print('Running %r in %r (env: %r)' % (argv, cwd, env))
   rc = test_env.run_command(argv, env=env, cwd=cwd)
-  print 'Command %r returned exit code %d' % (argv, rc)
+  print('Command %r returned exit code %d' % (argv, rc))
   return rc
 
 
@@ -345,13 +345,13 @@ class BaseIsolatedScriptArgsAdapter(object):
     valid = True
     try:
       env['CHROME_HEADLESS'] = '1'
-      print 'Running command: %s\nwith env: %r' % (
-          ' '.join(cmd), env)
+      print('Running command: %s\nwith env: %r' % (
+          ' '.join(cmd), env))
       if self.options.xvfb:
         exit_code = xvfb.run_executable(cmd, env)
       else:
         exit_code = test_env.run_command(cmd, env=env)
-      print 'Command returned exit code %d' % exit_code
+      print('Command returned exit code %d' % exit_code)
       self.do_post_test_run_tasks()
       return exit_code
     except Exception:

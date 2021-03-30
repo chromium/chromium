@@ -9,7 +9,7 @@ NAME_LAST | apellidos | Surname(s) |  | internacion_1-default
 UNKNOWN_TYPE | sexo | Gender | 0 | internacion_1-default
 UNKNOWN_TYPE | fechaNacimiento | Date of birth |  | internacion_1-default
 ADDRESS_HOME_COUNTRY | nacionalidad | Nationality (Country) | 0 | internacion_1-default
-ADDRESS_HOME_COUNTRY | paisNacimiento | Country of birth | 0 | internacion_1-default
+ADDRESS_HOME_STATE | paisNacimiento | Country of birth | 0 | internacion_1-default
 UNKNOWN_TYPE | tipoDocumento | Type of document | 0 | internacion_1-default
 UNKNOWN_TYPE | numeroDocumento | Document number |  | internacion_1-default
 UNKNOWN_TYPE | confirmarNumeroDocumento | Document number (Confirmation) |  | internacion_1-default

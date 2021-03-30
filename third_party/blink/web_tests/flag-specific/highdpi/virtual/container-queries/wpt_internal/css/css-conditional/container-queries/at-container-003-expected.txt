@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL Children respond to changes in container size assert_equals: expected "rgb(255, 0, 0)" but got "rgb(0, 128, 0)"
+FAIL Descendants respond to changes in container size assert_equals: expected "rgb(255, 0, 0)" but got "rgb(0, 128, 0)"
+Harness: the test ran to completion.
+

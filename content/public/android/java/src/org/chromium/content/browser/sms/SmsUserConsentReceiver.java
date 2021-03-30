@@ -53,6 +53,7 @@ public class SmsUserConsentReceiver extends BroadcastReceiver {
     }
 
     public void destroy() {
+        if (mDestroyed) return;
         if (DEBUG) Log.d(TAG, "Destroying SmsUserConsentReceiver.");
         mDestroyed = true;
         mContext.unregisterReceiver(this);

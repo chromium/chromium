@@ -25,6 +25,14 @@ void ClassicScript::Trace(Visitor* visitor) const {
   visitor->Trace(script_source_code_);
 }
 
+ScriptEvaluationResult ClassicScript::RunScriptOnScriptStateAndReturnValue(
+    ScriptState* script_state,
+    ExecuteScriptPolicy policy,
+    V8ScriptRunner::RethrowErrorsOption rethrow_errors) {
+  return V8ScriptRunner::CompileAndRunScript(script_state, this, policy,
+                                             std::move(rethrow_errors));
+}
+
 void ClassicScript::RunScript(LocalDOMWindow* window) {
   return RunScript(window,
                    ExecuteScriptPolicy::kDoNotExecuteScriptWhenScriptsDisabled);
@@ -39,16 +47,31 @@ void ClassicScript::RunScript(LocalDOMWindow* window,
 v8::Local<v8::Value> ClassicScript::RunScriptAndReturnValue(
     LocalDOMWindow* window,
     ExecuteScriptPolicy policy) {
-  return window->GetScriptController().EvaluateScriptInMainWorld(
-      GetScriptSourceCode(), BaseURL(), sanitize_script_errors_, FetchOptions(),
-      policy);
+  ScriptEvaluationResult result = RunScriptOnScriptStateAndReturnValue(
+      ToScriptStateForMainWorld(window->GetFrame()), policy);
+
+  if (result.GetResultType() == ScriptEvaluationResult::ResultType::kSuccess)
+    return result.GetSuccessValue();
+  return v8::Local<v8::Value>();
 }
 
 v8::Local<v8::Value> ClassicScript::RunScriptInIsolatedWorldAndReturnValue(
     LocalDOMWindow* window,
     int32_t world_id) {
-  return window->GetScriptController().ExecuteScriptInIsolatedWorld(
-      world_id, GetScriptSourceCode(), BaseURL(), sanitize_script_errors_);
+  DCHECK_GT(world_id, 0);
+
+  // Unlike other methods, RunScriptInIsolatedWorldAndReturnValue()'s
+  // default policy is kExecuteScriptWhenScriptsDisabled, to keep existing
+  // behavior.
+  ScriptEvaluationResult result = RunScriptOnScriptStateAndReturnValue(
+      ToScriptState(window->GetFrame(),
+                    *DOMWrapperWorld::EnsureIsolatedWorld(
+                        ToIsolate(window->GetFrame()), world_id)),
+      ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
+
+  if (result.GetResultType() == ScriptEvaluationResult::ResultType::kSuccess)
+    return result.GetSuccessValue();
+  return v8::Local<v8::Value>();
 }
 
 bool ClassicScript::RunScriptOnWorkerOrWorklet(
@@ -57,9 +80,8 @@ bool ClassicScript::RunScriptOnWorkerOrWorklet(
 
   v8::HandleScope handle_scope(
       global_scope.ScriptController()->GetScriptState()->GetIsolate());
-  ScriptEvaluationResult result =
-      global_scope.ScriptController()->EvaluateAndReturnValue(
-          GetScriptSourceCode(), sanitize_script_errors_);
+  ScriptEvaluationResult result = RunScriptOnScriptStateAndReturnValue(
+      global_scope.ScriptController()->GetScriptState());
   return result.GetResultType() == ScriptEvaluationResult::ResultType::kSuccess;
 }
 

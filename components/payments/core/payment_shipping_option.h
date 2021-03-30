@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_PAYMENTS_CORE_PAYMENT_SHIPPING_OPTION_H_
 #define COMPONENTS_PAYMENTS_CORE_PAYMENT_SHIPPING_OPTION_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "components/payments/core/payment_currency_amount.h"
 
 // C++ bindings for the PaymentRequest API PaymentShippingOption. Conforms to

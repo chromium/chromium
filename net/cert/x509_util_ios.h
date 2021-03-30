@@ -32,8 +32,8 @@ CreateSecCertificateFromX509Certificate(const X509Certificate* cert);
 // |sec_chain|.
 NET_EXPORT scoped_refptr<X509Certificate>
 CreateX509CertificateFromSecCertificate(
-    SecCertificateRef sec_cert,
-    const std::vector<SecCertificateRef>& sec_chain);
+    base::ScopedCFTypeRef<SecCertificateRef> sec_cert,
+    const std::vector<base::ScopedCFTypeRef<SecCertificateRef>>& sec_chain);
 
 }  // namespace x509_util
 

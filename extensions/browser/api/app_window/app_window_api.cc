@@ -153,7 +153,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
   // TODO(devlin): Investigate if this is still used. If not, kill it dead!
   GURL absolute = GURL(params->url);
   if (absolute.has_scheme()) {
-    if (extension()->location() == Manifest::COMPONENT) {
+    if (extension()->location() == mojom::ManifestLocation::kComponent) {
       url = absolute;
     } else {
       // Show error when url passed isn't local.

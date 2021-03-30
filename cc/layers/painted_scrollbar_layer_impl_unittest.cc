@@ -55,7 +55,7 @@ TEST(PaintedScrollbarLayerImplTest, Occlusion) {
   scrollbar_layer_impl->SetScrollLayerLength(200.f);
   scrollbar_layer_impl->set_track_ui_resource_id(track_uid);
   scrollbar_layer_impl->set_thumb_ui_resource_id(thumb_uid);
-  scrollbar_layer_impl->set_scrollbar_painted_opacity(painted_opacity_);
+  scrollbar_layer_impl->SetScrollbarPaintedOpacity(painted_opacity_);
   CopyProperties(impl.root_layer(), scrollbar_layer_impl);
 
   impl.CalcDrawProps(viewport_size);
@@ -132,6 +132,17 @@ TEST(PaintedScrollbarLayerImplTest, Occlusion) {
     EXPECT_EQ(2u, impl.quad_list().size());
     EXPECT_EQ(2u, partially_occluded_count);
   }
+}
+
+TEST(PaintedScrollbarLayerImplTest, PaintedOpacityChangesInvalidate) {
+  LayerTreeImplTestBase impl;
+  ScrollbarOrientation orientation = ScrollbarOrientation::VERTICAL;
+  PaintedScrollbarLayerImpl* scrollbar_layer_impl =
+      impl.AddLayer<PaintedScrollbarLayerImpl>(orientation, false, false);
+  EXPECT_FALSE(
+      scrollbar_layer_impl->LayerPropertyChangedNotFromPropertyTrees());
+  scrollbar_layer_impl->SetScrollbarPaintedOpacity(0.3f);
+  EXPECT_TRUE(scrollbar_layer_impl->LayerPropertyChangedNotFromPropertyTrees());
 }
 
 }  // namespace

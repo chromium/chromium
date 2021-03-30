@@ -18,7 +18,6 @@ namespace blink {
 class ComputedStyle;
 class NGEarlyBreak;
 class NGLayoutResult;
-struct MinMaxSizesInput;
 
 // Operations provided by a layout algorithm.
 class NGLayoutAlgorithmOperations {
@@ -33,7 +32,7 @@ class NGLayoutAlgorithmOperations {
   // The result will not take any min-width, max-width or width properties into
   // account.
   virtual MinMaxSizesResult ComputeMinMaxSizes(
-      const MinMaxSizesInput&) const = 0;
+      const MinMaxSizesFloatInput&) const = 0;
 };
 
 // Parameters to pass when creating a layout algorithm for a block node.
@@ -83,6 +82,7 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
   // NGBlockBreakToken.
   explicit NGLayoutAlgorithm(const NGLayoutAlgorithmParams& params)
       : node_(To<NGInputNodeType>(params.node)),
+        early_break_(params.early_break),
         break_token_(params.break_token),
         container_builder_(
             params.node,
@@ -129,7 +129,35 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
     return container_builder_.ChildAvailableSize();
   }
 
+  // Lay out again, this time with a predefined good breakpoint that we
+  // discovered in the first pass. This happens when we run out of space in a
+  // fragmentainer at an less-than-ideal location, due to breaking restrictions,
+  // such as orphans, widows, break-before:avoid or break-after:avoid.
+  template <typename Algorithm>
+  scoped_refptr<const NGLayoutResult> RelayoutAndBreakEarlier(
+      const NGEarlyBreak& breakpoint) {
+    // Not allowed to recurse!
+    DCHECK(!early_break_);
+
+    NGLayoutAlgorithmParams params(
+        Node(), container_builder_.InitialFragmentGeometry(), ConstraintSpace(),
+        BreakToken(), &breakpoint);
+    Algorithm algorithm_with_break(params);
+    auto& new_builder = algorithm_with_break.container_builder_;
+    new_builder.SetBoxType(container_builder_.BoxType());
+    // We're not going to run out of space in the next layout pass, since we're
+    // breaking earlier, so no space shortage will be detected. Repeat what we
+    // found in this pass.
+    new_builder.PropagateSpaceShortage(
+        container_builder_.MinimalSpaceShortage());
+    return algorithm_with_break.Layout();
+  }
+
   NGInputNodeType node_;
+
+  // When set, this will specify where to break before or inside. If not set,
+  // the algorithm will need to figure out where to break on its own.
+  const NGEarlyBreak* early_break_ = nullptr;
 
   // The break token from which we are currently resuming layout.
   scoped_refptr<const NGBreakTokenType> break_token_;

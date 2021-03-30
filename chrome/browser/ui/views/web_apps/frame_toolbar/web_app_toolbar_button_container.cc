@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -19,8 +20,10 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_origin_text.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "ui/base/hit_test.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/window/hit_test_utils.h"
 
 namespace {
@@ -104,31 +107,22 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
     // for example, the menu button or other toolbar buttons, and pinned
     // extensions should hide before other toolbar buttons.
     constexpr int kLowPriorityFlexOrder = 2;
-    if (base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu)) {
-      extensions_container_ =
-          AddChildView(std::make_unique<ExtensionsToolbarContainer>(
-              browser_view_->browser(),
-              ExtensionsToolbarContainer::DisplayMode::kCompact));
-      extensions_container_->SetProperty(
-          views::kFlexBehaviorKey,
-          views::FlexSpecification(
-              extensions_container_->animating_layout_manager()
-                  ->GetDefaultFlexRule())
-              .WithOrder(kLowPriorityFlexOrder));
-      views::SetHitTestComponent(extensions_container_,
-                                 static_cast<int>(HTCLIENT));
-    } else {
-      browser_actions_container_ =
-          AddChildView(std::make_unique<BrowserActionsContainer>(
-              browser_view_->browser(), nullptr, this,
-              false /* interactive */));
-      browser_actions_container_->SetProperty(
-          views::kFlexBehaviorKey,
-          views::FlexSpecification(browser_actions_container_->GetFlexRule())
-              .WithOrder(kLowPriorityFlexOrder));
-      views::SetHitTestComponent(browser_actions_container_,
-                                 static_cast<int>(HTCLIENT));
-    }
+
+    auto display_mode =
+        base::FeatureList::IsEnabled(features::kDesktopPWAsElidedExtensionsMenu)
+            ? ExtensionsToolbarContainer::DisplayMode::kAutoHide
+            : ExtensionsToolbarContainer::DisplayMode::kCompact;
+    extensions_container_ =
+        AddChildView(std::make_unique<ExtensionsToolbarContainer>(
+            browser_view_->browser(), display_mode));
+    extensions_container_->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(
+            extensions_container_->GetAnimatingLayoutManager()
+                ->GetDefaultFlexRule())
+            .WithOrder(kLowPriorityFlexOrder));
+    views::SetHitTestComponent(extensions_container_,
+                               static_cast<int>(HTCLIENT));
   }
 
   if (app_controller->HasTitlebarMenuButton()) {
@@ -171,7 +165,7 @@ void WebAppToolbarButtonContainer::SetColors(SkColor foreground_color,
   if (content_settings_container_)
     content_settings_container_->SetIconColor(foreground_color_);
   if (extensions_container_)
-    extensions_container_->OverrideIconColor(foreground_color_);
+    extensions_container_->SetIconColor(foreground_color_);
   page_action_icon_controller_->SetIconColor(foreground_color_);
   if (web_app_menu_button_)
     web_app_menu_button_->SetColor(foreground_color_);
@@ -195,10 +189,6 @@ views::FlexRule WebAppToolbarButtonContainer::GetFlexRule() const {
             toolbar_button_provider->GetToolbarButtonSize().height());
       },
       base::Unretained(toolbar_button_provider_), layout->GetDefaultFlexRule());
-}
-
-const char* WebAppToolbarButtonContainer::GetClassName() const {
-  return "WebAppToolbarButtonContainer";
 }
 
 void WebAppToolbarButtonContainer::DisableAnimationForTesting() {
@@ -227,13 +217,13 @@ gfx::Insets WebAppToolbarButtonContainer::GetPageActionIconInsets(
 
 // Methods for coordinate the titlebar animation (origin text slide, menu
 // highlight and icon fade in).
-bool WebAppToolbarButtonContainer::ShouldAnimate() const {
+bool WebAppToolbarButtonContainer::GetAnimate() const {
   return !g_animation_disabled_for_testing &&
          !browser_view_->immersive_mode_controller()->IsEnabled();
 }
 
 void WebAppToolbarButtonContainer::StartTitlebarAnimation() {
-  if (!ShouldAnimate())
+  if (!GetAnimate())
     return;
 
   if (web_app_origin_text_)
@@ -253,54 +243,6 @@ void WebAppToolbarButtonContainer::FadeInContentSettingIcons() {
 void WebAppToolbarButtonContainer::ChildPreferredSizeChanged(
     views::View* child) {
   PreferredSizeChanged();
-}
-
-views::LabelButton* WebAppToolbarButtonContainer::GetOverflowReferenceView() {
-  return web_app_menu_button_;
-}
-
-base::Optional<int> WebAppToolbarButtonContainer::GetMaxBrowserActionsWidth()
-    const {
-  // Our maximum size is 1 icon so don't specify a pixel-width max here.
-  return base::Optional<int>();
-}
-
-bool WebAppToolbarButtonContainer::CanShowIconInToolbar() const {
-  return false;
-}
-
-std::unique_ptr<ToolbarActionsBar>
-WebAppToolbarButtonContainer::CreateToolbarActionsBar(
-    ToolbarActionsBarDelegate* delegate,
-    Browser* browser,
-    ToolbarActionsBar* main_bar) const {
-  DCHECK_EQ(browser_view_->browser(), browser);
-  class WebAppToolbarActionsBar : public ToolbarActionsBar {
-   public:
-    using ToolbarActionsBar::ToolbarActionsBar;
-
-    gfx::Insets GetIconAreaInsets() const override {
-      // TODO(calamity): Unify these toolbar action insets with other clients
-      // once all toolbar button sizings are consolidated.
-      // https://crbug.com/822967.
-      return gfx::Insets(2);
-    }
-
-    size_t GetIconCount() const override {
-      // Only show an icon when an extension action is popped out due to
-      // activation, and none otherwise.
-      return GetPoppedOutAction() ? 1 : 0;
-    }
-
-    int GetMinimumWidth() const override {
-      // Allow the BrowserActionsContainer to collapse completely and be hidden
-      return 0;
-    }
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(WebAppToolbarActionsBar);
-  };
-  return std::make_unique<WebAppToolbarActionsBar>(delegate, browser, main_bar);
 }
 
 SkColor
@@ -349,13 +291,14 @@ WebAppToolbarButtonContainer::GetWebContentsForPageActionIconView() {
   return browser_view_->GetActiveWebContents();
 }
 
+// views::WidgetObserver:
 void WebAppToolbarButtonContainer::OnWidgetVisibilityChanged(
     views::Widget* widget,
     bool visible) {
   if (!visible || !pending_widget_visibility_)
     return;
   pending_widget_visibility_ = false;
-  if (ShouldAnimate()) {
+  if (GetAnimate()) {
     if (content_settings_container_)
       content_settings_container_->SetUpForFadeIn();
     animation_start_delay_.Start(
@@ -363,3 +306,7 @@ void WebAppToolbarButtonContainer::OnWidgetVisibilityChanged(
         &WebAppToolbarButtonContainer::StartTitlebarAnimation);
   }
 }
+
+BEGIN_METADATA(WebAppToolbarButtonContainer, views::View)
+ADD_READONLY_PROPERTY_METADATA(bool, Animate)
+END_METADATA

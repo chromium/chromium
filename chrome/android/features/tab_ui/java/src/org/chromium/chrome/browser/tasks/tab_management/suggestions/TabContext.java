@@ -10,12 +10,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import org.chromium.chrome.browser.engagement.SiteEngagementService;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.site_engagement.SiteEngagementService;
 import org.chromium.content_public.browser.NavigationEntry;
 
 import java.util.ArrayList;
@@ -109,13 +109,13 @@ public class TabContext {
         public static TabInfo createFromTab(Tab tab) {
             String referrerUrl = getReferrerUrlFromTab(tab);
             return new TabInfo(tab.getId(), tab.getTitle(), tab.getUrlString(),
-                    tab.getOriginalUrl(), referrerUrl != null ? referrerUrl : "",
+                    tab.getOriginalUrl().getSpec(), referrerUrl != null ? referrerUrl : "",
                     CriticalPersistedTabData.from(tab).getTimestampMillis(), tab.getUrlString(),
                     tab.isIncognito());
         }
 
         public double getSiteEngagementScore() {
-            return SiteEngagementService.getForProfile(Profile.getLastUsedRegularProfile())
+            return SiteEngagementService.getForBrowserContext(Profile.getLastUsedRegularProfile())
                     .getScore(visibleUrl);
         }
 

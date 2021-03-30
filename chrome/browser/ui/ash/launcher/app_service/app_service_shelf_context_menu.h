@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/arc/app_shortcuts/arc_app_shortcut_item.h"
+#include "chrome/browser/apps/app_service/app_shortcut_item.h"
 #include "chrome/browser/ui/ash/launcher/shelf_context_menu.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/constants.h"
@@ -85,9 +85,7 @@ class AppServiceShelfContextMenu : public ShelfContextMenu {
   std::unique_ptr<ui::SimpleMenuModel> submenu_;
 
   // Caches the app shortcut items.
-  // TODO(crbug.com/1140356): Extract arc::ArcAppShortcutItems class as public
-  // apps::AppShortcutItems.
-  std::unique_ptr<arc::ArcAppShortcutItems> app_shortcut_items_;
+  std::unique_ptr<apps::AppShortcutItems> app_shortcut_items_;
 
   std::unique_ptr<extensions::ContextMenuMatcher> extension_menu_items_;
 

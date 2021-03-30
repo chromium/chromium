@@ -98,17 +98,6 @@ spdy::SettingsMap GetHttp2Settings(
   return http2_settings;
 }
 
-bool ConfigureWebsocketOverHttp2(
-    const base::CommandLine& command_line,
-    const VariationParameters& http2_trial_params) {
-  if (command_line.HasSwitch(switches::kEnableWebsocketOverHttp2))
-    return true;
-
-  const std::string websocket_value =
-      GetVariationParam(http2_trial_params, "websocket_over_http2");
-  return websocket_value == "true";
-}
-
 int ConfigureSpdySessionMaxQueuedCappedFrames(
     const base::CommandLine& /*command_line*/,
     const VariationParameters& http2_trial_params) {
@@ -170,9 +159,6 @@ void ConfigureHttp2Params(const base::CommandLine& command_line,
                         "http2_end_stream_with_data_frame") == "true") {
     params->http2_end_stream_with_data_frame = true;
   }
-
-  params->enable_websocket_over_http2 =
-      ConfigureWebsocketOverHttp2(command_line, http2_trial_params);
 
   params->spdy_session_max_queued_capped_frames =
       ConfigureSpdySessionMaxQueuedCappedFrames(command_line,

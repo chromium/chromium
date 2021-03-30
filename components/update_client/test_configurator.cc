@@ -56,7 +56,7 @@ TestConfigurator::TestConfigurator(PrefService* pref_service)
 
 TestConfigurator::~TestConfigurator() = default;
 
-int TestConfigurator::InitialDelay() const {
+double TestConfigurator::InitialDelay() const {
   return initial_time_;
 }
 
@@ -162,7 +162,7 @@ void TestConfigurator::SetOnDemandTime(int seconds) {
   ondemand_time_ = seconds;
 }
 
-void TestConfigurator::SetInitialDelay(int seconds) {
+void TestConfigurator::SetInitialDelay(double seconds) {
   initial_time_ = seconds;
 }
 

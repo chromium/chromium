@@ -35,14 +35,14 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/chromeos/policy/active_directory_policy_manager.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/policy/device_cloud_policy_manager_chromeos.h"
 #include "chrome/browser/chromeos/policy/device_cloud_policy_store_chromeos.h"
 #include "chrome/browser/chromeos/policy/device_local_account.h"
 #include "chrome/browser/chromeos/policy/device_local_account_policy_service.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -201,7 +201,7 @@ Value ChromePolicyConversionsClient::GetDeviceLocalAccountPolicies() {
   DCHECK(device_local_account_policy_service);  // always non null for
                                                 // affiliated users.
   std::vector<DeviceLocalAccount> device_local_accounts =
-      GetDeviceLocalAccounts(chromeos::CrosSettings::Get());
+      GetDeviceLocalAccounts(ash::CrosSettings::Get());
   for (const auto& account : device_local_accounts) {
     const std::string user_id = account.user_id;
 

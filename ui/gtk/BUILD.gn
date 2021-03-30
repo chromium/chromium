@@ -2,15 +2,46 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_linux || is_chromeos_lacros || is_chromeos,
-       "This file should only be referenced on Linux")
-
+import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/linux/gtk/gtk.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//printing/buildflags/buildflags.gni")
+import("//testing/test.gni")
+import("//tools/generate_stubs/rules.gni")
+
+assert(is_linux || is_chromeos_lacros || is_chromeos,
+       "This file should only be referenced on Linux")
+
+buildflag_header("gtk_buildflags") {
+  header = "gtk_buildflags.h"
+
+  flags = [ "GTK_VERSION=$gtk_version" ]
+}
+
+source_set("gtk_types") {
+  sources = [ "gtk_types.h" ]
+  deps = [ ":gtk_buildflags" ]
+}
+
+generate_stubs("gtk_stubs") {
+  sigs = [
+    "gdk_pixbuf.sigs",
+    "gdk.sigs",
+    "gsk.sigs",
+    "gtk.sigs",
+  ]
+  extra_header = "gtk.fragment"
+  output_name = "gtk_stubs"
+  deps = [
+    ":gtk_types",
+    "//build/config/linux/gtk",
+  ]
+  logging_function = "LogNoop()"
+  logging_include = "ui/gtk/log_noop.h"
+}
 
 component("gtk_ui_delegate") {
   public = [ "gtk_ui_delegate.h" ]
@@ -19,14 +50,18 @@ component("gtk_ui_delegate") {
     "//base",
     "//ui/gfx",
   ]
+  public_deps = [ ":gtk_buildflags" ]
   defines = [ "IS_GTK_IMPL" ]
 }
 
 component("gtk") {
   public = [ "gtk_ui.h" ]
+
+  friend = [ ":gtk_unittests" ]
+
   sources = [
-    "gtk_key_bindings_handler.cc",
-    "gtk_key_bindings_handler.h",
+    "gtk_compat.cc",
+    "gtk_compat.h",
     "gtk_ui.cc",
     "gtk_util.cc",
     "gtk_util.h",
@@ -49,6 +84,13 @@ component("gtk") {
     "settings_provider_gtk.cc",
     "settings_provider_gtk.h",
   ]
+  if (gtk_version <= 3) {
+    # GTK4 dropped custom key bindings.
+    sources += [
+      "gtk_key_bindings_handler.cc",
+      "gtk_key_bindings_handler.h",
+    ]
+  }
   defines = [ "IS_GTK_IMPL" ]
   configs += [ "//build/config/linux/pangocairo" ]
   if (use_gio) {
@@ -64,6 +106,8 @@ component("gtk") {
   }
 
   deps = [
+    ":gtk_stubs",
+    ":gtk_types",
     "//base",
     "//build/config/linux/gtk:gtkprint",
     "//printing",
@@ -103,4 +147,21 @@ component("gtk") {
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }
+}
+
+test("gtk_unittests") {
+  sources = [ "native_theme_gtk_unittest.cc" ]
+
+  deps = [
+    ":gtk",
+    "//base/test:run_all_unittests",
+    "//base/test:test_support",
+
+    # Required so that including gtk_util.h can resolve <gtk/gtk.h>.
+    "//build/config/linux/gtk",
+    "//testing/gtest",
+    "//ui/base:features",
+    "//ui/native_theme",
+    "//ui/native_theme:test_support",
+  ]
 }

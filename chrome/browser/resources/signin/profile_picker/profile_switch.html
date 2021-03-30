@@ -1,0 +1,78 @@
+<style include="profile-picker-shared">
+  #outerContainer {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+  }
+
+  #profileCardContainer {
+    align-items: center;
+    align-self: center;
+    border: 1px solid var(--google-grey-300);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    height: var(--profile-item-height);
+    justify-content: center;
+    margin: 200px 0 37px;
+    position: relative;
+    width: var(--profile-item-width);
+  }
+
+  #avatarContainer {
+    height: var(--profile-card-avatar-icon-size);
+    position: relative;
+  }
+
+  #profileName {
+    top: 0;
+  }
+
+  #gaiaName {
+    bottom: 0;
+  }
+
+  #titleContainer {
+    text-align: center;
+  }
+
+  h2 {
+    margin-block-start: 0;
+  }
+
+  #actionContainer {
+    margin: auto 40px 40px auto;
+  }
+
+  cr-button {
+    margin-inline-start: 8px;
+    min-width: 111px;
+  }
+</style>
+
+<div id="outerContainer">
+  <div id="profileCardContainer">
+    <div id="avatarContainer">
+      <img class="profile-avatar" alt="" src="[[profileState_.avatarIcon]]">
+    </div>
+    <div id="profileName" class="profile-card-info prominent-text">
+      [[profileState_.localProfileName]]
+    </div>
+    <div id="gaiaName" class="profile-card-info secondary-text">
+      [[profileState_.gaiaName]]
+    </div>
+  </div>
+  <div id="titleContainer">
+    <h2>$i18n{profileSwitchTitle}</h2>
+    <h3>$i18n{profileSwitchSubtitle}</h3>
+  </div>
+  <div id="actionContainer">
+    <cr-button id="cancelButton" on-click="onCancelClick_">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button id="switchButton" class="action-button"
+        disabled="[[!isProfileStateInitialized_]]" on-click="onSwitchClick_">
+      $i18n{switchButtonLabel}
+    </cr-button>
+  </div>
+</div>

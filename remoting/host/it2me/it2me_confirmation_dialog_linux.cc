@@ -116,7 +116,7 @@ void It2MeConfirmationDialogLinux::CreateWindow(
   GtkWidget* content_area =
       gtk_dialog_get_content_area(GTK_DIALOG(confirmation_window_));
 
-  base::string16 dialog_text =
+  std::u16string dialog_text =
       base::i18n::MessageFormatter::FormatWithNumberedArgs(
           l10n_util::GetStringUTF16(
               IDS_SHARE_CONFIRM_DIALOG_MESSAGE_WITH_USERNAME),

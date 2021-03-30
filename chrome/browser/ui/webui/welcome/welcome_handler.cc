@@ -56,7 +56,8 @@ void WelcomeHandler::HandleActivateSignIn(const base::ListValue* args) {
   result_ = WelcomeResult::STARTED_SIGN_IN;
   base::RecordAction(base::UserMetricsAction("WelcomePage_SignInClicked"));
 
-  if (IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount()) {
+  if (IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
+          signin::ConsentLevel::kSync)) {
     // In general, this page isn't shown to signed-in users; however, if one
     // should arrive here, then opening the sign-in dialog will likely lead
     // to a crash. Thus, we just act like sign-in was "successful" and whisk

@@ -58,12 +58,6 @@ void ServiceWorkerJobCoordinator::JobQueue::AbortAll() {
   jobs_.clear();
 }
 
-void ServiceWorkerJobCoordinator::JobQueue::ClearForShutdown() {
-  for (const auto& job : jobs_)
-    job->WillShutDown();
-  jobs_.clear();
-}
-
 ServiceWorkerJobCoordinator::ServiceWorkerJobCoordinator(
     ServiceWorkerContextCore* context)
     : context_(context) {
@@ -145,12 +139,6 @@ void ServiceWorkerJobCoordinator::Abort(const GURL& scope) {
 void ServiceWorkerJobCoordinator::AbortAll() {
   for (auto& job_pair : job_queues_)
     job_pair.second.AbortAll();
-  job_queues_.clear();
-}
-
-void ServiceWorkerJobCoordinator::ClearForShutdown() {
-  for (auto& job_pair : job_queues_)
-    job_pair.second.ClearForShutdown();
   job_queues_.clear();
 }
 

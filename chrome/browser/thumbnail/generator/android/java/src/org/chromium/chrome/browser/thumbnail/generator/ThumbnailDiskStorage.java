@@ -86,6 +86,18 @@ public class ThumbnailDiskStorage implements ThumbnailGeneratorCallback {
     @VisibleForTesting
     long mSizeBytes;
 
+    // These references allow tests to wait on tasks instead of polling with CriteriaHelper.
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    AsyncTask<Void> mInitTask;
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    AsyncTask<Void> mLastClearTask;
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    AsyncTask<Void> mLastCacheThumbnailTask;
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    AsyncTask<Bitmap> mLastGetThumbnailTask;
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    AsyncTask<Void> mLastRemoveThumbnailTask;
+
     // Whether or not this class has been destroyed and should not be used.
     private boolean mDestroyed;
 
@@ -108,8 +120,7 @@ public class ThumbnailDiskStorage implements ThumbnailGeneratorCallback {
     /**
      * Writes to disk cache.
      */
-    @VisibleForTesting
-    class CacheThumbnailTask extends BackgroundOnlyAsyncTask<Void> {
+    private class CacheThumbnailTask extends BackgroundOnlyAsyncTask<Void> {
         private final String mContentId;
         private final Bitmap mBitmap;
         private final int mIconSizePx;
@@ -192,7 +203,7 @@ public class ThumbnailDiskStorage implements ThumbnailGeneratorCallback {
         mDelegate = delegate;
         mThumbnailGenerator = thumbnailGenerator;
         mMaxCacheBytes = maxCacheSizeBytes;
-        new InitTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+        mInitTask = new InitTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
 
     /**
@@ -218,7 +229,7 @@ public class ThumbnailDiskStorage implements ThumbnailGeneratorCallback {
      */
     public void clear() {
         ThreadUtils.assertOnUiThread();
-        new ClearTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+        mLastClearTask = new ClearTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
 
     /**
@@ -229,7 +240,8 @@ public class ThumbnailDiskStorage implements ThumbnailGeneratorCallback {
         ThreadUtils.assertOnUiThread();
         if (mDestroyed || TextUtils.isEmpty(request.getContentId())) return;
 
-        new GetThumbnailTask(request).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+        mLastGetThumbnailTask =
+                new GetThumbnailTask(request).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
 
     /**
@@ -248,8 +260,8 @@ public class ThumbnailDiskStorage implements ThumbnailGeneratorCallback {
 
         ThreadUtils.assertOnUiThread();
         if (bitmap != null && !TextUtils.isEmpty(contentId)) {
-            new CacheThumbnailTask(contentId, bitmap, iconSizePx)
-                    .executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+            mLastCacheThumbnailTask = new CacheThumbnailTask(contentId, bitmap, iconSizePx)
+                                              .executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
         }
         mDelegate.onThumbnailRetrieved(contentId, bitmap);
     }
@@ -479,7 +491,8 @@ public class ThumbnailDiskStorage implements ThumbnailGeneratorCallback {
 
         if (!sIconSizesMap.containsKey(contentId)) return;
 
-        new RemoveThumbnailTask(contentId).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+        mLastRemoveThumbnailTask =
+                new RemoveThumbnailTask(contentId).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
 
     /**

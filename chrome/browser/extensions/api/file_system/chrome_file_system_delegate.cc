@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/file_system/chrome_file_system_delegate.h"
 
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/strings/string16.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/file_system/file_entry_picker.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
@@ -171,7 +171,7 @@ void OnConsentReceived(content::BrowserContext* browser_context,
   std::string register_name = "fs";
   const storage::IsolatedContext::ScopedFSHandle file_system =
       isolated_context->RegisterFileSystemForPath(
-          storage::kFileSystemTypeNativeForPlatformApp,
+          storage::kFileSystemTypeLocalForPlatformApp,
           std::string() /* file_system_id */, original_url.path(),
           &register_name);
   if (!file_system.is_valid()) {
@@ -297,7 +297,7 @@ bool ChromeFileSystemDelegate::ShowSelectFileDialog(
 
 void ChromeFileSystemDelegate::ConfirmSensitiveDirectoryAccess(
     bool has_write_permission,
-    const base::string16& app_name,
+    const std::u16string& app_name,
     content::WebContents* web_contents,
     base::OnceClosure on_accept,
     base::OnceClosure on_cancel) {

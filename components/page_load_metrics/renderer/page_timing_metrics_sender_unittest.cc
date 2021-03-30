@@ -165,7 +165,7 @@ TEST_F(PageTimingMetricsSenderTest, SendMobileFriendlinessEvents) {
   mojom::PageLoadTiming timing;
   blink::MobileFriendliness mobile_friendliness;
   mobile_friendliness.viewport_hardcoded_width = 480;
-  mobile_friendliness.allow_user_zoom = true;
+  mobile_friendliness.allow_user_zoom = blink::mojom::ViewportStatus::kYes;
   InitPageLoadTimingForTest(&timing);
   metrics_sender_->Update(timing.Clone(),
                           PageTimingMetadataRecorder::MonotonicTiming());
@@ -175,7 +175,7 @@ TEST_F(PageTimingMetricsSenderTest, SendMobileFriendlinessEvents) {
 
   blink::MobileFriendliness expected_mf;
   expected_mf.viewport_hardcoded_width = 480;
-  expected_mf.allow_user_zoom = true;
+  expected_mf.allow_user_zoom = blink::mojom::ViewportStatus::kYes;
   validator_.UpdateExpectedMobileFriendliness(expected_mf);
   metrics_sender_->mock_timer()->Fire();
   validator_.VerifyExpectedMobileFriendliness();
@@ -425,7 +425,7 @@ TEST_F(PageTimingMetricsSenderTest, SendPageRenderData) {
   metrics_sender_->DidObserveLayoutNg(2, 0, 7, 5);
   metrics_sender_->DidObserveLayoutShift(0.5, true);
 
-  mojom::FrameRenderDataUpdate render_data(1.5, 1.0, 5, 2, 17, 9, {});
+  mojom::FrameRenderDataUpdate render_data(1.5, 1.0, 5, 2, 17, 9, {}, {});
   validator_.UpdateExpectFrameRenderDataUpdate(render_data);
 
   metrics_sender_->mock_timer()->Fire();
@@ -439,13 +439,27 @@ TEST_F(PageTimingMetricsSenderTest, SendFrameIntersectionUpdate) {
                           PageTimingMetadataRecorder::MonotonicTiming());
   validator_.ExpectPageLoadTiming(timing);
 
-  metrics_sender_->OnMainFrameIntersectionChanged(blink::WebRect(0, 0, 1, 1));
+  metrics_sender_->OnMainFrameIntersectionChanged(gfx::Rect(0, 0, 1, 1));
   mojom::FrameIntersectionUpdate frame_intersection_update(
       gfx::Rect(0, 0, 1, 1));
   validator_.UpdateExpectFrameIntersectionUpdate(frame_intersection_update);
 
   metrics_sender_->mock_timer()->Fire();
   validator_.VerifyExpectedFrameIntersectionUpdate();
+}
+
+TEST_F(PageTimingMetricsSenderTest, FirstContentfulPaintForcesSend) {
+  mojom::PageLoadTiming timing;
+  InitPageLoadTimingForTest(&timing);
+  timing.paint_timing->first_contentful_paint = base::TimeDelta::FromSeconds(1);
+  validator_.ExpectPageLoadTiming(timing);
+
+  // Updating when |timing| has FCP will cause the metrics to be sent urgently.
+  metrics_sender_->Update(timing.Clone(),
+                          PageTimingMetadataRecorder::MonotonicTiming());
+  EXPECT_EQ(metrics_sender_->mock_timer()->GetCurrentDelay(),
+            base::TimeDelta::FromMilliseconds(0));
+  metrics_sender_->mock_timer()->Fire();
 }
 
 }  // namespace page_load_metrics

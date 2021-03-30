@@ -306,6 +306,21 @@ use_glib=true
 use_gtk=true
 ```
 
+Running some test suites requires a Wayland server. If you're not
+running one you can use a locally compiled version of Weston. This is
+what the build bots do. Add this to your gn args:
+
+``` shell
+use_bundled_weston = true
+```
+
+Then run the xvfb.py wrapper script and tell it to start Weston:
+
+``` shell
+cd out/debug  # or your out directory
+../../testing/xvfb.py --use-weston --no-xvfb ./views_unittests --ozone-platform=wayland --enable-features=UseOzonePlatform
+```
+
 Feel free to discuss with us on freenode.net, `#ozone-wayland` channel or on
 `ozone-dev`, or on `#ozone-wayland-x11` channel in [chromium slack](https://www.chromium.org/developers/slack).
 

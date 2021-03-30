@@ -4,7 +4,10 @@
 
 #include "tools/win/chromeexts/chrome_exts_command.h"
 
+#include <string>
+
 #include "base/check.h"
+#include "base/strings/utf_string_conversions.h"
 
 namespace tools {
 namespace win {
@@ -18,12 +21,18 @@ HRESULT ChromeExtsCommand::Initialize(IDebugClient* debug_client,
                                       const char* args) {
   DCHECK(debug_client);
   DCHECK(args);
-  args_ = args;
+
   debug_client_ = debug_client;
-  HRESULT hr = debug_client_->QueryInterface(IID_PPV_ARGS(&debug_control_));
-  if (FAILED(hr)) {
-    return hr;
+  debug_control_ = GetDebugClientAs<IDebugControl>();
+  if (!debug_control_) {
+    return E_FAIL;
   }
+
+  // base::CommandLine assumes the first token to be the command itself. The
+  // windbg args do not include this and must be included manually.
+  command_line_.ParseFromString(std::wstring(L"cmd ") +
+                                base::ASCIIToWide(args));
+
   return S_OK;
 }
 

@@ -125,7 +125,7 @@ suite('StartupUrlDialog', function() {
 
   // Test that validation occurs as the user is typing, and that the action
   // button is updated accordingly.
-  test('Validation', function() {
+  test('Validation', async function() {
     document.body.appendChild(dialog);
 
     const actionButton = dialog.$.actionButton;
@@ -137,22 +137,18 @@ suite('StartupUrlDialog', function() {
     browserProxy.setUrlValidity(false);
     pressSpace(inputElement);
 
-    return browserProxy.whenCalled('validateStartupPage')
-        .then(function(url) {
-          assertEquals(expectedUrl, url);
-          assertTrue(actionButton.disabled);
-          assertTrue(!!inputElement.invalid);
+    const url = await browserProxy.whenCalled('validateStartupPage');
+    assertEquals(expectedUrl, url);
+    assertTrue(actionButton.disabled);
+    assertTrue(!!inputElement.invalid);
 
-          browserProxy.setUrlValidity(true);
-          browserProxy.resetResolver('validateStartupPage');
-          pressSpace(inputElement);
+    browserProxy.setUrlValidity(true);
+    browserProxy.resetResolver('validateStartupPage');
+    pressSpace(inputElement);
 
-          return browserProxy.whenCalled('validateStartupPage');
-        })
-        .then(function() {
-          assertFalse(actionButton.disabled);
-          assertFalse(!!inputElement.invalid);
-        });
+    await browserProxy.whenCalled('validateStartupPage');
+    assertFalse(actionButton.disabled);
+    assertFalse(!!inputElement.invalid);
   });
 
   /**
@@ -160,7 +156,7 @@ suite('StartupUrlDialog', function() {
    * button is tapped.
    * @param {string} proxyMethodName
    */
-  function testProxyCalled(proxyMethodName) {
+  async function testProxyCalled(proxyMethodName) {
     const actionButton = dialog.$.actionButton;
     actionButton.disabled = false;
 
@@ -168,33 +164,29 @@ suite('StartupUrlDialog', function() {
     // an invalid URL.
     browserProxy.setUrlValidity(false);
     actionButton.click();
-    return browserProxy.whenCalled(proxyMethodName)
-        .then(function() {
-          assertTrue(dialog.$.dialog.open);
+    await browserProxy.whenCalled(proxyMethodName);
+    assertTrue(dialog.$.dialog.open);
 
-          // Test that dialog is closed if the user submits a valid URL.
-          browserProxy.setUrlValidity(true);
-          browserProxy.resetResolver(proxyMethodName);
-          actionButton.click();
-          return browserProxy.whenCalled(proxyMethodName);
-        })
-        .then(function() {
-          assertFalse(dialog.$.dialog.open);
-        });
+    // Test that dialog is closed if the user submits a valid URL.
+    browserProxy.setUrlValidity(true);
+    browserProxy.resetResolver(proxyMethodName);
+    actionButton.click();
+    await browserProxy.whenCalled(proxyMethodName);
+    assertFalse(dialog.$.dialog.open);
   }
 
-  test('AddStartupPage', function() {
+  test('AddStartupPage', async function() {
     document.body.appendChild(dialog);
-    return testProxyCalled('addStartupPage');
+    await testProxyCalled('addStartupPage');
   });
 
-  test('EditStartupPage', function() {
+  test('EditStartupPage', async function() {
     dialog.model = createSampleUrlEntry();
     document.body.appendChild(dialog);
-    return testProxyCalled('editStartupPage');
+    await testProxyCalled('editStartupPage');
   });
 
-  test('Enter key submits', function() {
+  test('Enter key submits', async function() {
     document.body.appendChild(dialog);
 
     // Input a URL and force validation.
@@ -202,11 +194,10 @@ suite('StartupUrlDialog', function() {
     inputElement.value = 'foo.com';
     pressSpace(inputElement);
 
-    return browserProxy.whenCalled('validateStartupPage').then(function() {
-      keyEventOn(inputElement, 'keypress', 13, undefined, 'Enter');
+    await browserProxy.whenCalled('validateStartupPage');
+    keyEventOn(inputElement, 'keypress', 13, undefined, 'Enter');
 
-      return browserProxy.whenCalled('addStartupPage');
-    });
+    await browserProxy.whenCalled('addStartupPage');
   });
 });
 
@@ -238,18 +229,18 @@ suite('StartupUrlsPage', function() {
   });
 
   // Test that the page is requesting information from the browser.
-  test('Initialization', function() {
-    return browserProxy.whenCalled('loadStartupPages');
+  test('Initialization', async function() {
+    await browserProxy.whenCalled('loadStartupPages');
   });
 
-  test('UseCurrentPages', function() {
+  test('UseCurrentPages', async function() {
     const useCurrentPagesButton = page.$$('#useCurrentPages > a');
     assertTrue(!!useCurrentPagesButton);
     useCurrentPagesButton.click();
-    return browserProxy.whenCalled('useCurrentPages');
+    await browserProxy.whenCalled('useCurrentPages');
   });
 
-  test('AddPage_OpensDialog', function() {
+  test('AddPage_OpensDialog', async function() {
     const addPageButton = page.$$('#addPage > a');
     assertTrue(!!addPageButton);
     assertFalse(!!page.$$('settings-startup-url-dialog'));
@@ -345,7 +336,7 @@ suite('StartupUrlEntry', function() {
     element.remove();
   });
 
-  test('MenuOptions_Remove', function() {
+  test('MenuOptions_Remove', async function() {
     element.editable = true;
     flush();
 
@@ -357,10 +348,8 @@ suite('StartupUrlEntry', function() {
 
     const removeButton = element.shadowRoot.querySelector('#remove');
     removeButton.click();
-    return browserProxy.whenCalled('removeStartupPage')
-        .then(function(modelIndex) {
-          assertEquals(element.model.modelIndex, modelIndex);
-        });
+    const modelIndex = await browserProxy.whenCalled('removeStartupPage');
+    assertEquals(element.model.modelIndex, modelIndex);
   });
 
   test('Editable', function() {

@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Verify that tab keeps selected as the persistence binding comes in.\n`);
-  await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('bindings_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadTestModule('bindings_test_runner');
   await TestRunner.addScriptTag('resources/foo.js');
   await TestRunner.showPanel('sources');
 

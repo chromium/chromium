@@ -119,7 +119,7 @@ class TestPlatformFieldTrials : public PlatformFieldTrials {
   void SetupFieldTrials() override {}
   void SetupFeatureControllingFieldTrials(
       bool has_seed,
-      const base::FieldTrial::EntropyProvider& low_entropy_provider,
+      const base::FieldTrial::EntropyProvider* low_entropy_provider,
       base::FeatureList* feature_list) override {}
 
  private:
@@ -152,6 +152,7 @@ class MockSafeSeedManager : public SafeSeedManager {
   DISALLOW_COPY_AND_ASSIGN(MockSafeSeedManager);
 };
 
+// TODO(crbug.com/1167566): Remove when fake VariationsServiceClient created.
 class TestVariationsServiceClient : public VariationsServiceClient {
  public:
   TestVariationsServiceClient() = default;

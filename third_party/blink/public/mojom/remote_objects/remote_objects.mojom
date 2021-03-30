@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 
 // These interfaces allow an object implemented outside the Blink renderer
@@ -37,6 +38,10 @@ interface RemoteObject {
   [Sync] GetMethods() => (array<string> method_names);
   [Sync] InvokeMethod(string name, array<RemoteInvocationArgument> arguments)
       => (RemoteInvocationResult result);
+
+  // Notifies ReleaseObject is called by RemoteObjectHost interface to ensure
+  // the object's unreference when the pipe is closed.
+  NotifyReleasedObject();
 };
 
 // Implemented in the renderer.
@@ -61,12 +66,30 @@ enum SingletonJavaScriptValue {
   kUndefined,
 };
 
+enum RemoteArrayType {
+  kInt8Array = 1,
+  kUint8Array,
+  kInt16Array,
+  kUint16Array,
+  kInt32Array,
+  kUint32Array,
+  kFloat32Array,
+  kFloat64Array,
+};
+
+struct RemoteTypedArray {
+  RemoteArrayType type;
+  mojo_base.mojom.BigBuffer buffer;
+};
+
 union RemoteInvocationArgument {
   double number_value;
   bool boolean_value;
   mojo_base.mojom.String16 string_value;
   SingletonJavaScriptValue singleton_value;
   array<RemoteInvocationArgument> array_value;
+  RemoteTypedArray typed_array_value;
+  int32 object_id_value;
 };
 
 enum RemoteInvocationError {
@@ -74,6 +97,7 @@ enum RemoteInvocationError {
   METHOD_NOT_FOUND,
   OBJECT_GET_CLASS_BLOCKED,
   EXCEPTION_THROWN,
+  NON_ASSIGNABLE_TYPES,
 };
 
 union RemoteInvocationResultValue {

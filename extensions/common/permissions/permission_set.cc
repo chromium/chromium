@@ -13,6 +13,8 @@
 #include "extensions/common/url_pattern.h"
 #include "url/gurl.h"
 
+using extensions::mojom::APIPermissionID;
+
 namespace extensions {
 
 PermissionSet::PermissionSet() {}
@@ -177,14 +179,15 @@ bool PermissionSet::HasAPIPermission(const std::string& permission_name) const {
   return (permission && apis_.count(permission->id()));
 }
 
-bool PermissionSet::CheckAPIPermission(APIPermission::ID permission) const {
+bool PermissionSet::CheckAPIPermission(APIPermissionID permission) const {
   return CheckAPIPermissionWithParam(permission, NULL);
 }
 
 bool PermissionSet::CheckAPIPermissionWithParam(
-    APIPermission::ID permission,
+    APIPermissionID permission,
     const APIPermission::CheckParam* param) const {
-  APIPermissionSet::const_iterator iter = apis().find(permission);
+  APIPermissionSet::const_iterator iter =
+      apis().find(static_cast<APIPermission::ID>(permission));
   if (iter == apis().end())
     return false;
   return iter->Check(param);
@@ -240,11 +243,11 @@ PermissionSet::PermissionSet(const PermissionSet& other)
 void PermissionSet::InitImplicitPermissions() {
   // The downloads permission implies the internal version as well.
   if (apis_.find(APIPermission::kDownloads) != apis_.end())
-    apis_.insert(APIPermission::kDownloadsInternal);
+    apis_.insert(APIPermissionID::kDownloadsInternal);
 
   // The fileBrowserHandler permission implies the internal version as well.
   if (apis_.find(APIPermission::kFileBrowserHandler) != apis_.end())
-    apis_.insert(APIPermission::kFileBrowserHandlerInternal);
+    apis_.insert(APIPermissionID::kFileBrowserHandlerInternal);
 }
 
 void PermissionSet::InitEffectiveHosts() {

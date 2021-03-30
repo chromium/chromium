@@ -86,14 +86,14 @@ class ExclusiveAccessBubble : public gfx::AnimationDelegate {
   void ExitExclusiveAccess();
 
   // The following strings may change according to the content type and URL.
-  base::string16 GetCurrentMessageText() const;
-  base::string16 GetCurrentDenyButtonText() const;
-  base::string16 GetCurrentAllowButtonText() const;
+  std::u16string GetCurrentMessageText() const;
+  std::u16string GetCurrentDenyButtonText() const;
+  std::u16string GetCurrentAllowButtonText() const;
 
   // This string *may* contain the name of the key surrounded in pipe characters
   // ('|'), which should be drawn graphically as a key, not displayed literally.
   // |accelerator| is the name of the key to exit fullscreen mode.
-  base::string16 GetInstructionText(const base::string16& accelerator) const;
+  std::u16string GetInstructionText(const std::u16string& accelerator) const;
 
   bool IsHideTimeoutRunning() const;
 

@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+PASS Wildcard list subsumes an empty source list.
+PASS Wildcard list subsumes a source list with `none`.
+PASS Wildcard list subsumes another wildcard list.
+PASS Wildcard list subsumes a list of policies with wildcards in source lists.
+PASS Wildcard list is equivalent to a specific list of scheme expressions and their secure variants.
+PASS Wildcard list is equivalent to a specific list of scheme expressions.
+PASS Wildcard list subsumption logic should not affect other keyword expressions.
+PASS Wildcard list might include other scheme source expressions.
+PASS Effective wildcard list should be properly found.
+PASS Wildcard does not subsume empty list.
+PASS Empty source list does not subsume a wildcard source list.
+PASS 'none' does not subsume a wildcard source list.
+PASS Wildcard source list does not subsume `data:` scheme source expression.
+PASS Wildcard source list does not subsume `blob:` scheme source expression.
+PASS Source expressions do not subsume effective nonce expressions.
+PASS Wildcard source list is not subsumed by a host expression.
+PASS Wildcard list with keywords is not subsumed by a wildcard list.
+FAIL Wildcard list with 'unsafe-hashed-attributes' is not subsumed by a wildcard list. assert_equals: expected (undefined) undefined but got (boolean) true
+PASS Wildcard list with 'unsafe-inline' is not subsumed by a wildcard list.
+PASS Wildcard list with 'unsafe-eval' is not subsumed by a wildcard list.
+PASS Wildcard list with 'unsafe-eval' is not subsumed by list with a single expression.
+PASS The same as above but for 'unsafe-inline'.
+PASS `data:` is not subsumed by a wildcard list.
+PASS `blob:` is not subsumed by a wildcard list.
+Harness: the test ran to completion.
+

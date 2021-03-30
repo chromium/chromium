@@ -100,8 +100,8 @@ class SafeBrowsingUserInteractionObserver
   ~SafeBrowsingUserInteractionObserver() override;
 
   // content::WebContentsObserver methods:
-  void RenderViewHostChanged(content::RenderViewHost* old_host,
-                             content::RenderViewHost* new_host) override;
+  void RenderFrameHostChanged(content::RenderFrameHost* old_frame,
+                              content::RenderFrameHost* new_frame) override;
   void WebContentsDestroyed() override;
   void DidFinishNavigation(content::NavigationHandle* handle) override;
   void DidToggleFullscreenModeForTab(bool entered_fullscreen,

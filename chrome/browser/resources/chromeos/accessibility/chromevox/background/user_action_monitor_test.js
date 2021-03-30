@@ -9,6 +9,11 @@ GEN_INCLUDE(['../testing/chromevox_next_e2e_test_base.js']);
  * Test fixture for UserActionMonitor.
  */
 ChromeVoxUserActionMonitorTest = class extends ChromeVoxNextE2ETest {
+  /** @override */
+  setUp() {
+    window.GestureType = chrome.accessibilityPrivate.Gesture;
+  }
+
   /**
    * Returns the start node of the current ChromeVox range.
    * @return {AutomationNode}
@@ -442,6 +447,24 @@ TEST_F('ChromeVoxUserActionMonitorTest', 'StopPropagation', function() {
     keyboardHandler.onKeyDown(TestUtils.createMockKeyEvent(KeyCode.CONTROL));
     keyboardHandler.onKeyUp(TestUtils.createMockKeyEvent(KeyCode.CONTROL));
     assertFalse(executedCommand);
+    assertTrue(finished);
+  });
+});
+
+// Tests that we can match a gesture when it's performed.
+TEST_F('ChromeVoxUserActionMonitorTest', 'Gestures', function() {
+  this.runWithLoadedTree(this.simpleDoc, function() {
+    const onGesture = GestureCommandHandler.onAccessibilityGesture_;
+    let finished = false;
+    const actions = [{type: 'gesture', value: GestureType.SWIPE_RIGHT1}];
+    const onFinished = () => finished = true;
+
+    ChromeVoxState.instance.createUserActionMonitor(actions, onFinished);
+    onGesture(GestureType.SWIPE_LEFT1);
+    assertFalse(finished);
+    onGesture(GestureType.SWIPE_LEFT2);
+    assertFalse(finished);
+    onGesture(GestureType.SWIPE_RIGHT1);
     assertTrue(finished);
   });
 });

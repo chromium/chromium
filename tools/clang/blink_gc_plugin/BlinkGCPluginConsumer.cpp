@@ -86,10 +86,14 @@ BlinkGCPluginConsumer::BlinkGCPluginConsumer(
       json_(0) {
   // Only check structures in the blink and WebKit namespaces.
   options_.checked_namespaces.insert("blink");
+  options_.checked_namespaces.insert("cppgc");
 
   // Ignore GC implementation files.
   options_.ignored_directories.push_back(
       "third_party/blink/renderer/platform/heap/");
+  options_.ignored_directories.push_back("v8/src/heap/cppgc/");
+  options_.ignored_directories.push_back("v8/src/heap/cppgc-js/");
+
   options_.allowed_directories.push_back(
       "third_party/blink/renderer/platform/heap/test/");
 }
@@ -106,18 +110,14 @@ void BlinkGCPluginConsumer::HandleTranslationUnit(ASTContext& context) {
 
   if (options_.dump_graph) {
     std::error_code err;
-    // TODO: Make createDefaultOutputFile or a shorter createOutputFile work.
+    SmallString<128> OutputFile(instance_.getFrontendOpts().OutputFile);
+    llvm::sys::path::replace_extension(OutputFile, "graph.json");
     json_ = JsonWriter::from(instance_.createOutputFile(
-        "",                                      // OutputPath
-        err,                                     // Errors
+        OutputFile,                              // OutputPath
         true,                                    // Binary
         true,                                    // RemoveFileOnSignal
-        instance_.getFrontendOpts().OutputFile,  // BaseInput
-        "graph.json",                            // Extension
         false,                                   // UseTemporary
-        false,                                   // CreateMissingDirectories
-        0,                                       // ResultPathName
-        0));                                     // TempPathName
+        false));                                 // CreateMissingDirectories
     if (!err && json_) {
       json_->OpenList();
     } else {
@@ -371,7 +371,9 @@ void BlinkGCPluginConsumer::CheckPolymorphicClass(
 CXXRecordDecl* BlinkGCPluginConsumer::GetLeftMostBase(
     CXXRecordDecl* left_most) {
   CXXRecordDecl::base_class_iterator it = left_most->bases_begin();
+  CXXRecordDecl* previous_left_most = left_most;
   while (it != left_most->bases_end()) {
+    previous_left_most = left_most;
     if (it->getType()->isDependentType())
       left_most = RecordInfo::GetDependentTemplatedDecl(*it->getType());
     else
@@ -379,6 +381,12 @@ CXXRecordDecl* BlinkGCPluginConsumer::GetLeftMostBase(
     if (!left_most || !left_most->hasDefinition())
       return 0;
     it = left_most->bases_begin();
+  }
+  if (Config::IsCppgcGCBase(left_most->getName())) {
+    // In the cppgc library, the GC base classes share a common parent. The
+    // common parent should be ignored for the purposes of getting the left
+    // most base.
+    return previous_left_most;
   }
   return left_most;
 }

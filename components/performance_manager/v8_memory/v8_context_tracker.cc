@@ -200,6 +200,7 @@ void V8ContextTracker::OnRemoteIframeAttached(
     FrameNodeImpl* parent_frame_node,
     const blink::RemoteFrameToken& remote_frame_token,
     mojom::IframeAttributionDataPtr iframe_attribution_data) {
+  DCHECK(parent_frame_node);
   DCHECK_ON_GRAPH_SEQUENCE(parent_frame_node->graph());
 
   // RemoteFrameTokens are issued by the browser to a renderer, so if we receive
@@ -222,7 +223,8 @@ void V8ContextTracker::OnRemoteIframeAttached(
   };
   std::unique_ptr<Data> data(
       new Data{mojo::GetBadMessageCallback(), remote_frame_token,
-               std::move(iframe_attribution_data), nullptr});
+               std::move(iframe_attribution_data), nullptr,
+               parent_frame_node->GetWeakPtr()});
 
   auto on_pm_seq = base::BindOnce([](std::unique_ptr<Data> data, Graph* graph) {
     DCHECK(data);
@@ -266,7 +268,7 @@ void V8ContextTracker::OnRemoteIframeAttached(
     DCHECK(on_pm_seq);
     DCHECK(data);
     if (auto* rfh = content::RenderFrameHost::FromPlaceholderToken(
-            rph_id.value(), data->remote_frame_token.value())) {
+            rph_id.value(), data->remote_frame_token)) {
       data->frame_node =
           PerformanceManager::GetFrameNodeForRenderFrameHost(rfh);
       PerformanceManager::CallOnGraph(
@@ -476,6 +478,11 @@ void V8ContextTracker::OnRemoteIframeAttachedImpl(
     mojom::IframeAttributionDataPtr iframe_attribution_data) {
   DCHECK(bad_message_callback);
   DCHECK_ON_GRAPH_SEQUENCE(frame_node->graph());
+
+  if (!frame_node->parent_frame_node()) {
+    // This may happen for custom HTML elements. Ignore such calls.
+    return;
+  }
 
   if (frame_node->parent_frame_node() != parent_frame_node) {
     std::move(bad_message_callback)

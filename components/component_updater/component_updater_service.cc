@@ -24,6 +24,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/component_updater/component_updater_service_internal.h"
+#include "components/component_updater/component_updater_utils.h"
 #include "components/update_client/configurator.h"
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/update_client.h"
@@ -48,7 +49,7 @@ namespace component_updater {
 
 ComponentInfo::ComponentInfo(const std::string& id,
                              const std::string& fingerprint,
-                             const base::string16& name,
+                             const std::u16string& name,
                              const base::Version& version)
     : id(id), fingerprint(fingerprint), name(name), version(version) {}
 ComponentInfo::ComponentInfo(const ComponentInfo& other) = default;
@@ -95,7 +96,7 @@ void CrxUpdateService::Start() {
           << config_->NextCheckDelay() << " seconds. ";
 
   scheduler_->Schedule(
-      base::TimeDelta::FromSeconds(config_->InitialDelay()),
+      base::TimeDelta::FromSecondsD(config_->InitialDelay()),
       base::TimeDelta::FromSeconds(config_->NextCheckDelay()),
       base::BindRepeating(
           base::IgnoreResult(&CrxUpdateService::CheckForUpdates),
@@ -129,8 +130,6 @@ bool CrxUpdateService::RegisterComponent(const CrxComponent& component) {
 
   components_.insert(std::make_pair(component.app_id, component));
   components_order_.push_back(component.app_id);
-  for (const auto& mime_type : component.handled_mime_types)
-    component_ids_by_mime_type_[mime_type] = component.app_id;
 
   // Create an initial state for this component. The state is mutated in
   // response to events from the UpdateClient instance.
@@ -195,20 +194,6 @@ std::vector<std::string> CrxUpdateService::GetComponentIDs() const {
   return ids;
 }
 
-std::unique_ptr<ComponentInfo> CrxUpdateService::GetComponentForMimeType(
-    const std::string& mime_type) const {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  const auto it = component_ids_by_mime_type_.find(mime_type);
-  if (it == component_ids_by_mime_type_.end())
-    return nullptr;
-  const auto component = GetComponent(it->second);
-  if (!component)
-    return nullptr;
-  return std::make_unique<ComponentInfo>(
-      GetCrxComponentID(*component), component->fingerprint,
-      base::UTF8ToUTF16(component->name), component->version);
-}
-
 std::vector<ComponentInfo> CrxUpdateService::GetComponents() const {
   DCHECK(thread_checker_.CalledOnValidThread());
   std::vector<ComponentInfo> result;
@@ -228,10 +213,7 @@ OnDemandUpdater& CrxUpdateService::GetOnDemandUpdater() {
 base::Optional<CrxComponent> CrxUpdateService::GetComponent(
     const std::string& id) const {
   DCHECK(thread_checker_.CalledOnValidThread());
-  const auto it = components_.find(id);
-  if (it != components_.end())
-    return it->second;
-  return base::nullopt;
+  return component_updater::GetComponent(components_, id);
 }
 
 const CrxUpdateItem* CrxUpdateService::GetComponentState(
@@ -395,10 +377,7 @@ bool CrxUpdateService::GetComponentDetails(const std::string& id,
 std::vector<base::Optional<CrxComponent>> CrxUpdateService::GetCrxComponents(
     const std::vector<std::string>& ids) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  std::vector<base::Optional<CrxComponent>> components;
-  for (const auto& id : ids)
-    components.push_back(GetComponent(id));
-  return components;
+  return component_updater::GetCrxComponents(components_, ids);
 }
 
 void CrxUpdateService::OnUpdateComplete(Callback callback,

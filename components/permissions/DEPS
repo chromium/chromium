@@ -1,5 +1,6 @@
 include_rules = [
   "+components/autofill_assistant/browser/public",
+  "+components/back_forward_cache",
   "+components/content_settings/core",
   "+components/keyed_service/content",
   "+components/keyed_service/core",
@@ -17,7 +18,7 @@ include_rules = [
   "+services/metrics/public/cpp",
   "+sql",
   "+services/network/public/cpp/is_potentially_trustworthy.h",
-  "+third_party/blink/public/mojom/feature_policy",
+  "+third_party/blink/public/mojom/permissions_policy",
   "+third_party/blink/public/mojom/quota",
   "+third_party/sqlite",
   "+ui/base",

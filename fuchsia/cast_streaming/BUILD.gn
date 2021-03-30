@@ -72,18 +72,19 @@ source_set("cast_streaming_test_sender") {
   testonly = true
   deps = [
     ":cast_streaming_core",
-    "//base",
-    "//components/openscreen_platform",
-    "//media",
     "//media/mojo/common",
     "//media/mojo/mojom",
     "//mojo/public/cpp/system",
-    "//third_party/openscreen/src/cast/common:public",
-    "//third_party/openscreen/src/cast/streaming:sender",
     "//third_party/openscreen/src/platform:api",
     "//third_party/openscreen/src/util",
   ]
-  visibility = [ ":*" ]
+  public_deps = [
+    "//base",
+    "//components/openscreen_platform",
+    "//media",
+    "//third_party/openscreen/src/cast/common:public",
+    "//third_party/openscreen/src/cast/streaming:sender",
+  ]
   sources = [
     "test/cast_message_port_sender_impl.cc",
     "test/cast_message_port_sender_impl.h",

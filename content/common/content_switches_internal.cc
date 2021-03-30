@@ -40,12 +40,12 @@ namespace {
 
 #if defined(OS_WIN)
 
-base::string16 ToNativeString(base::StringPiece string) {
-  return base::ASCIIToUTF16(string);
+std::wstring ToNativeString(base::StringPiece string) {
+  return base::ASCIIToWide(string);
 }
 
-std::string FromNativeString(base::StringPiece16 string) {
-  return base::UTF16ToASCII(string);
+std::string FromNativeString(base::WStringPiece string) {
+  return base::WideToASCII(string);
 }
 
 #else  // defined(OS_WIN)
@@ -127,7 +127,7 @@ std::vector<std::string> FeaturesFromSwitch(
     const base::CommandLine& command_line,
     const char* switch_name) {
   using NativeString = base::CommandLine::StringType;
-  using NativeStringPiece = base::BasicStringPiece<NativeString>;
+  using NativeStringPiece = base::CommandLine::StringPieceType;
 
   std::vector<std::string> features;
   if (!command_line.HasSwitch(switch_name))

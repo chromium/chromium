@@ -126,6 +126,11 @@ class FaviconDatabase {
   // of the bitmaps for |icon_id| to be out of date.
   bool SetFaviconOutOfDate(favicon_base::FaviconID icon_id);
 
+  // Mark all favicons as out of date that have been modified at or after
+  // |begin| and before |end|. This will set |last_updated| for all matching
+  // bitmaps to be out of date.
+  bool SetFaviconsOutOfDateBetween(base::Time begin, base::Time end);
+
   // Retrieves the newest |last_updated| time across all bitmaps for |icon_id|.
   // Returns true if successful and if there is at least one bitmap.
   bool GetFaviconLastUpdatedTime(favicon_base::FaviconID icon_id,

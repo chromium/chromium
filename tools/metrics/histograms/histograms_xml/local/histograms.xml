@@ -60,6 +60,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="LocalSearchService.BindIndexHasError" enum="Boolean"
+    expires_after="2021-12-30">
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <summary>
+    Whether or not BindIndex calls to LocalSearchService have errors. It is
+    reported once for every BindIndex call. Chrome OS only.
+  </summary>
+</histogram>
+
 <histogram name="LocalSearchService.DailySearch" units="count"
     expires_after="2021-06-30">
 <!-- Name completed by histogram_suffixes name="IndexId" -->
@@ -110,6 +121,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>wrong@chromium.org</owner>
   <summary>
     Number of results for each successful search. Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram name="LocalSearchService.NumberSearchPerformedDone" enum="Boolean"
+    expires_after="2021-12-30">
+<!-- Name completed by histogram_suffixes name="IndexId" -->
+
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <summary>
+    This is recorded each time a search is successfully performed using
+    LocalSearchService. Always records true. Chrome OS only.
   </summary>
 </histogram>
 

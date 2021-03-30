@@ -39,7 +39,7 @@ TEST_F(L10nUtilMacTest, FixUpWindowsStyleLabel) {
     { @"(&b)foo", @"foo" },
   };
   for (size_t idx = 0; idx < base::size(data); ++idx) {
-    base::string16 input16(base::SysNSStringToUTF16(data[idx].input));
+    std::u16string input16(base::SysNSStringToUTF16(data[idx].input));
 
     NSString* result = l10n_util::FixUpWindowsStyleLabel(input16);
     EXPECT_TRUE(result != nil) << "Fixup Failed, idx = " << idx;
@@ -52,7 +52,7 @@ TEST_F(L10nUtilMacTest, FixUpWindowsStyleLabel) {
 
 TEST_F(L10nUtilMacTest, GetDisplayNameForLocale) {
   // Test documented error cases and return values of GetDisplayNameForLocale.
-  base::string16 result = l10n_util::GetDisplayNameForLocale("xyz", "en");
+  std::u16string result = l10n_util::GetDisplayNameForLocale("xyz", "en");
   EXPECT_EQ(base::SysNSStringToUTF16(@"xyz"), result);
 
   result = l10n_util::GetDisplayNameForLocale("Xyz", "en");

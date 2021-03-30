@@ -120,7 +120,8 @@ struct ShapeResult::RunInfo : public RefCounted<ShapeResult::RunInfo> {
         canvas_rotation_(other.canvas_rotation_) {}
 
   unsigned NumGlyphs() const { return glyph_data_.size(); }
-  bool Rtl() const { return HB_DIRECTION_IS_BACKWARD(direction_); }
+  bool IsLtr() const { return HB_DIRECTION_IS_FORWARD(direction_); }
+  bool IsRtl() const { return HB_DIRECTION_IS_BACKWARD(direction_); }
   bool IsHorizontal() const { return HB_DIRECTION_IS_HORIZONTAL(direction_); }
   CanvasRotationInVertical CanvasRotation() const { return canvas_rotation_; }
   unsigned NextSafeToBreakOffset(unsigned) const;
@@ -163,17 +164,20 @@ struct ShapeResult::RunInfo : public RefCounted<ShapeResult::RunInfo> {
   GlyphDataRange FindGlyphDataRange(unsigned start_character_index,
                                     unsigned end_character_index) const {
     GlyphDataRange range = GetGlyphDataRange().FindGlyphDataRange(
-        Rtl(), start_character_index, end_character_index);
+        IsRtl(), start_character_index, end_character_index);
     return range;
   }
 
   // Creates a new RunInfo instance representing a subset of the current run.
+  // Returns |nullptr| if there are no glyphs in the specified range.
   scoped_refptr<RunInfo> CreateSubRun(unsigned start, unsigned end) {
     DCHECK(end > start);
     unsigned number_of_characters = std::min(end - start, num_characters_);
     auto glyphs = FindGlyphDataRange(start, end);
     unsigned number_of_glyphs =
         static_cast<unsigned>(std::distance(glyphs.begin, glyphs.end));
+    if (UNLIKELY(!number_of_glyphs))
+      return nullptr;
 
     auto run =
         Create(font_data_.get(), direction_, canvas_rotation_, script_,
@@ -205,7 +209,7 @@ struct ShapeResult::RunInfo : public RefCounted<ShapeResult::RunInfo> {
                num_characters_ + other.num_characters_);
     // Note: We populate |graphemes_| on demand, e.g. hit testing.
     const int index_adjust = other.start_index_ - start_index_;
-    if (UNLIKELY(Rtl())) {
+    if (UNLIKELY(IsRtl())) {
       run->glyph_data_.CopyFrom(other.glyph_data_, glyph_data_);
       auto* const end = run->glyph_data_.begin() + other.glyph_data_.size();
       for (auto* it = run->glyph_data_.begin(); it < end; ++it)
@@ -232,7 +236,7 @@ struct ShapeResult::RunInfo : public RefCounted<ShapeResult::RunInfo> {
   }
 
   void ExpandRangeToIncludePartialGlyphs(int offset, int* from, int* to) const {
-    int start = !Rtl() ? offset : (offset + num_characters_);
+    int start = IsLtr() ? offset : (offset + num_characters_);
     int end = offset + num_characters_;
 
     for (unsigned i = 0; i < glyph_data_.size(); ++i) {
@@ -240,7 +244,7 @@ struct ShapeResult::RunInfo : public RefCounted<ShapeResult::RunInfo> {
       if (start == index)
         continue;
 
-      if (!Rtl())
+      if (IsLtr())
         end = index;
 
       if (end > *from && start < *to) {
@@ -248,7 +252,7 @@ struct ShapeResult::RunInfo : public RefCounted<ShapeResult::RunInfo> {
         *to = std::max(*to, end);
       }
 
-      if (!Rtl())
+      if (IsLtr())
         end = offset + num_characters_;
       else
         end = start;
@@ -492,6 +496,15 @@ struct ShapeResult::RunInfo : public RefCounted<ShapeResult::RunInfo> {
 
     unsigned size() const { return offsets_.size(); }
     bool IsEmpty() const { return size() == 0; }
+
+    const HarfBuzzRunGlyphData& front() const {
+      CHECK(!IsEmpty());
+      return (*this)[0];
+    }
+    const HarfBuzzRunGlyphData& back() const {
+      CHECK(!IsEmpty());
+      return (*this)[size() - 1];
+    }
 
     void Reverse() {
       std::reverse(begin(), end());

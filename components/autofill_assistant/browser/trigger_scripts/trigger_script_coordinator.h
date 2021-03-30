@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "components/autofill_assistant/browser/client.h"
 #include "components/autofill_assistant/browser/metrics.h"
+#include "components/autofill_assistant/browser/onboarding_result.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/service/service_request_sender.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
@@ -47,11 +48,14 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
     virtual void OnTriggerScriptFinished(
         Metrics::LiteScriptFinishedState state) = 0;
     virtual void OnVisibilityChanged(bool visible) = 0;
+    virtual void OnOnboardingRequested(bool use_dialog_onboarding) = 0;
   };
 
-  // |client| and |web_contents| must outlive this instance.
+  // |web_contents| must outlive this instance.
   TriggerScriptCoordinator(
-      Client* client,
+      content::WebContents* web_contents,
+      WebsiteLoginManager* website_login_manager,
+      base::RepeatingCallback<bool(void)> is_first_time_user_callback,
       std::unique_ptr<WebController> web_controller,
       std::unique_ptr<ServiceRequestSender> request_sender,
       const GURL& get_trigger_scripts_server,
@@ -99,6 +103,9 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   void AddObserver(Observer* observer);
   void RemoveObserver(const Observer* observer);
 
+  // Called when onboarding for trigger script is finished.
+  void OnOnboardingFinished(bool onboardingShown, OnboardingResult result);
+
  private:
   friend class TriggerScriptCoordinatorTest;
 
@@ -118,17 +125,28 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   void Stop(Metrics::LiteScriptFinishedState state);
   GURL GetCurrentURL() const;
   void OnEffectiveVisibilityChanged();
+  void OnboardingRequested();
 
   // Can be invoked to trigger an immediate check of the trigger condition,
   // reusing the dynamic results of the last time. Does nothing if there are no
   // previous results to reuse.
   void RunOutOfScheduleTriggerConditionCheck();
 
-  void NotifyOnTriggerScriptFinished(Metrics::LiteScriptFinishedState state);
+  void NotifyOnTriggerScriptFinished(TriggerUIType trigger_ui_type,
+                                     Metrics::LiteScriptFinishedState state);
 
-  // Used to retrieve deps and also to request shutdown and, if applicable,
-  // start of the regular script.
-  Client* client_;
+  // Value of trigger_ui_type for the currently visible script, if there is one.
+  //
+  // When recording a hide or stop action, be sure to capture the type before
+  // hiding the script.
+  TriggerUIType GetTriggerUiTypeForVisibleScript() const;
+
+  // Used to query login information for the current webcontents.
+  WebsiteLoginManager* website_login_manager_;
+
+  // Callback that can be used to query whether a user has seen the trigger
+  // script UI at least once or not.
+  base::RepeatingCallback<bool(void)> is_first_time_user_callback_;
 
   // The original deeplink to request trigger scripts for.
   GURL deeplink_url_;

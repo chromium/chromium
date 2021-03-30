@@ -273,7 +273,7 @@ AutocompleteMatch HistoryQuickProvider::QuickMatchToACMatch(
   if (match.TryRichAutocompletion(match.contents, match.description,
                                   autocomplete_input_)) {
     // If rich autocompletion applies, we skip trying the alternatives below.
-  } else if (inline_autocomplete_offset != base::string16::npos) {
+  } else if (inline_autocomplete_offset != std::u16string::npos) {
     match.inline_autocompletion =
         match.fill_into_edit.substr(inline_autocomplete_offset);
     match.SetAllowedToBeDefault(autocomplete_input_);

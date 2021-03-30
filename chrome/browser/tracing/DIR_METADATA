@@ -1,4 +1,4 @@
-monorail:  {
-  component:  "Speed>Tracing"
+monorail: {
+  component: "Speed>Tracing"
 }
-team_email:  "tracing@chromium.org"
+team_email: "tracing@chromium.org"

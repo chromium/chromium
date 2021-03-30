@@ -6,12 +6,11 @@
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_PERMISSION_CHIP_H_
 
 #include "base/timer/timer.h"
+#include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_request.h"
-#include "ui/gfx/animation/animation_delegate.h"
-#include "ui/gfx/animation/slide_animation.h"
-#include "ui/views/animation/animation_delegate_views.h"
-#include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/accessible_pane_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget_observer.h"
 
 class Browser;
@@ -28,15 +27,14 @@ class BubbleOwnerDelegate {
 
 // A chip view shown in the location bar to notify user about a permission
 // request. Shows a permission bubble on click.
-class PermissionChip : public views::View,
-                       public views::AnimationDelegateViews,
+class PermissionChip : public views::AccessiblePaneView,
                        public views::WidgetObserver,
                        public BubbleOwnerDelegate {
  public:
+  METADATA_HEADER(PermissionChip);
   explicit PermissionChip(Browser* browser);
-  PermissionChip(const PermissionChip& mask_layer) = delete;
-  PermissionChip& operator=(const PermissionChip& mask_layer) = delete;
-
+  PermissionChip(const PermissionChip& chip) = delete;
+  PermissionChip& operator=(const PermissionChip& chip) = delete;
   ~PermissionChip() override;
 
   void DisplayRequest(permissions::PermissionPrompt::Delegate* delegate);
@@ -44,19 +42,13 @@ class PermissionChip : public views::View,
   void OpenBubble();
   void Hide();
   void Reshow();
-  bool HasActiveRequest();
+  bool GetActiveRequest() const;
 
   views::Button* button() { return chip_button_; }
-  bool is_collapsed() { return is_collapsed_; }
-
-  // views::AnimationDelegateViews:
-  void AnimationEnded(const gfx::Animation* animation) override;
-  void AnimationProgressed(const gfx::Animation* animation) override;
+  bool is_fully_collapsed() const { return chip_button_->GetFullyCollapsed(); }
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
-  void OnThemeChanged() override;
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
@@ -69,13 +61,16 @@ class PermissionChip : public views::View,
   }
 
  private:
+  bool ShouldBubbleStartOpen() const;
+
+  void Show(bool always_open_bubble);
   void ChipButtonPressed();
   void Collapse();
+  void ExpandAnimationEnded();
   void StartCollapseTimer();
-  int GetIconSize() const;
-  void UpdatePermissionIconAndTextColor();
-  base::string16 GetPermissionMessage();
-  const gfx::VectorIcon& GetPermissionIconId();
+  std::u16string GetPermissionMessage() const;
+  const gfx::VectorIcon& GetPermissionIconId() const;
+  void AnnouncePermissionRequested();
 
   void AnimateCollapse();
   void AnimateExpand();
@@ -84,24 +79,19 @@ class PermissionChip : public views::View,
   permissions::PermissionPrompt::Delegate* delegate_ = nullptr;
   PermissionPromptBubbleView* prompt_bubble_ = nullptr;
 
-  // An animation used for expanding and collapsing the chip.
-  std::unique_ptr<gfx::SlideAnimation> animation_;
-
   // A timer used to collapse the chip after a delay.
   base::OneShotTimer timer_;
 
+  base::OneShotTimer announce_timer_;
+
   // The button that displays the icon and text.
-  views::MdTextButton* chip_button_;
+  OmniboxChipButton* chip_button_ = nullptr;
 
   // The time when the permission was requested.
   base::TimeTicks requested_time_;
 
   // If uma metric was already recorded on the button click.
   bool already_recorded_interaction_ = false;
-
-  // If chip is collapsed. In the collapsed state, only an icon is visible,
-  // without text.
-  bool is_collapsed_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_PERMISSION_CHIP_H_

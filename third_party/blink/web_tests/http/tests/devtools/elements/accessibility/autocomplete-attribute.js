@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Tests that autocompletions are computed correctly when editing the ARIA pane.\n`);
-  await TestRunner.loadModule('elements_test_runner');
-  await TestRunner.loadModule('accessibility_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadTestModule('accessibility_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <span id="inspected" aria-checked="true" role="checkbox"></span>

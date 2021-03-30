@@ -43,10 +43,20 @@ body {
   -webkit-box-align: center;
   display: block;
   height: 100%;
-  overflow: visible;
+  overflow-x: visible;
+  overflow-y: auto;
   padding: unset;
   position: relative;
   width: 192px;
+}
+
+.dialog-topbar::-webkit-scrollbar-thumb {
+  background: #888;
+  display: none;
+}
+
+.dialog-topbar.show-scroll-bar::-webkit-scrollbar-thumb {
+  display: block;
 }
 
 .dialog-topbar .spacer {

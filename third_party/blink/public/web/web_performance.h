@@ -138,6 +138,9 @@ class WebPerformance {
   BLINK_EXPORT double ParseBlockedOnScriptExecutionFromDocumentWriteDuration()
       const;
   BLINK_EXPORT base::Optional<base::TimeTicks> LastPortalActivatedPaint() const;
+  BLINK_EXPORT base::Optional<base::TimeTicks> UnloadStart() const;
+  BLINK_EXPORT base::Optional<base::TimeTicks> UnloadEnd() const;
+  BLINK_EXPORT base::Optional<base::TimeTicks> CommitNavigationEnd() const;
 
 #if INSIDE_BLINK
   BLINK_EXPORT WebPerformance(WindowPerformance*);

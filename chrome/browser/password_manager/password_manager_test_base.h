@@ -170,6 +170,7 @@ class PasswordManagerBrowserTestBase : public CertVerifierBrowserTest {
   void SetUp() override;
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
+  void SetUpCommandLine(base::CommandLine* command_line) override;
 
   // Creates a new tab with all the password manager test hooks and returns it
   // in |web_contents|.

@@ -355,13 +355,11 @@ void CloudExternalDataManagerBase::Backend::StartDownload(
   const MetadataEntry& metadata = metadata_[policy];
   updater_->FetchExternalData(
       policy,
-      ExternalPolicyDataUpdater::Request(metadata.url,
-                                         metadata.hash,
+      ExternalPolicyDataUpdater::Request(metadata.url, metadata.hash,
                                          GetMaxExternalDataSize(policy)),
-      base::Bind(&CloudExternalDataManagerBase::Backend::OnDownloadSuccess,
-                 base::Unretained(this),
-                 policy,
-                 metadata.hash));
+      base::BindRepeating(
+          &CloudExternalDataManagerBase::Backend::OnDownloadSuccess,
+          base::Unretained(this), policy, metadata.hash));
 }
 
 CloudExternalDataManagerBase::CloudExternalDataManagerBase(

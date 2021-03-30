@@ -177,7 +177,7 @@ TEST_F(AuthenticatedLeakCheckTest, GetAccessTokenBeforeEncryption) {
               LookupSingleLeak(
                   _, access_token,
                   AllOf(Field(&LookupSingleLeakPayload::username_hash_prefix,
-                              ElementsAre(0xBD, 0x74, 0xA9, 0x20)),
+                              ElementsAre(0xBD, 0x74, 0xA9, 0x00)),
                         Field(&LookupSingleLeakPayload::encrypted_payload,
                               testing::Ne(""))),
                   _));
@@ -211,7 +211,7 @@ TEST_F(AuthenticatedLeakCheckTest, GetAccessTokenAfterEncryption) {
               LookupSingleLeak(
                   _, access_token,
                   AllOf(Field(&LookupSingleLeakPayload::username_hash_prefix,
-                              ElementsAre(0xBD, 0x74, 0xA9, 0x20)),
+                              ElementsAre(0xBD, 0x74, 0xA9, 0x00)),
                         Field(&LookupSingleLeakPayload::encrypted_payload,
                               testing::Ne(""))),
                   _));
@@ -263,11 +263,11 @@ TEST_F(AuthenticatedLeakCheckTest, ParseResponse_DecryptionError) {
   std::string key_server;
   // Append trash bytes to force a decryption error.
   response->reencrypted_lookup_hash =
-      CipherReEncrypt(payload_and_callback.payload, &key_server) +
+      *CipherReEncrypt(payload_and_callback.payload, &key_server) +
       "trash_bytes";
   response->encrypted_leak_match_prefixes.push_back(
-      crypto::SHA256HashString(CipherEncryptWithKey(
-          ScryptHashUsernameAndPassword("another_username", kPassword),
+      crypto::SHA256HashString(*CipherEncryptWithKey(
+          *ScryptHashUsernameAndPassword("another_username", kPassword),
           key_server)));
 
   EXPECT_CALL(delegate(), OnLeakDetectionDone(false, GURL(kExampleCom),
@@ -297,10 +297,10 @@ TEST_F(AuthenticatedLeakCheckTest, ParseResponse_NoLeak) {
   auto response = std::make_unique<SingleLookupResponse>();
   std::string key_server;
   response->reencrypted_lookup_hash =
-      CipherReEncrypt(payload_and_callback.payload, &key_server);
+      *CipherReEncrypt(payload_and_callback.payload, &key_server);
   response->encrypted_leak_match_prefixes.push_back(
-      crypto::SHA256HashString(CipherEncryptWithKey(
-          ScryptHashUsernameAndPassword("another_username", kPassword),
+      crypto::SHA256HashString(*CipherEncryptWithKey(
+          *ScryptHashUsernameAndPassword("another_username", kPassword),
           key_server)));
 
   EXPECT_CALL(delegate(), OnLeakDetectionDone(false, GURL(kExampleCom),
@@ -337,10 +337,10 @@ TEST_F(AuthenticatedLeakCheckTest, ParseResponse_Leak) {
   auto response = std::make_unique<SingleLookupResponse>();
   std::string key_server;
   response->reencrypted_lookup_hash =
-      CipherReEncrypt(payload_and_callback.payload, &key_server);
+      *CipherReEncrypt(payload_and_callback.payload, &key_server);
   response->encrypted_leak_match_prefixes.push_back(
-      crypto::SHA256HashString(CipherEncryptWithKey(
-          ScryptHashUsernameAndPassword(canonicalized_username, kPassword),
+      crypto::SHA256HashString(*CipherEncryptWithKey(
+          *ScryptHashUsernameAndPassword(canonicalized_username, kPassword),
           key_server)));
 
   EXPECT_CALL(delegate(), OnLeakDetectionDone(true, GURL(kExampleCom),

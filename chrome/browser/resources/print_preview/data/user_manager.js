@@ -44,8 +44,6 @@ Polymer({
     /** @type {?InvitationStore} */
     invitationStore: Object,
 
-    shouldReloadCookies: Boolean,
-
     /** @type {!Array<string>} */
     users: {
       type: Array,
@@ -92,11 +90,11 @@ Polymer({
           'user-accounts-updated', this.updateUsers_.bind(this));
       this.updateUsers_(userAccounts);
     } else {
-      // Request the Google Docs destination from the Google Cloud Print server
+      // Request the cookies destinations from the Google Cloud Print server
       // directly. We have to do this in incognito mode in order to get the
       // user's login state.
-      this.destinationStore.startLoadCookieDestination(
-          Destination.GooglePromotedId.DOCS);
+      this.destinationStore.startLoadCloudDestinations(
+          DestinationOrigin.COOKIES);
       this.addWebUIListener('check-for-account-update', () => {
         this.destinationStore.startLoadCloudDestinations(
             DestinationOrigin.COOKIES);
@@ -184,7 +182,7 @@ Polymer({
     this.destinationStore.setActiveUser(user);
     this.activeUser = user;
 
-    if (!this.shouldReloadCookies || !user) {
+    if (!user) {
       return;
     }
 

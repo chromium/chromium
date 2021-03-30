@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
+// #import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+// #import {loadTimeData} from '../../i18n_setup.js';
+// #import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 
 // Identifiers for the default Crostini VM and container.
-/** @type {string} */ const DEFAULT_CROSTINI_VM = 'termina';
-/** @type {string} */ const DEFAULT_CROSTINI_CONTAINER = 'penguin';
+/** @type {string} */ /* #export */ const DEFAULT_CROSTINI_VM = 'termina';
+/** @type {string} */ /* #export */ const DEFAULT_CROSTINI_CONTAINER =
+    'penguin';
 
 
 /**
@@ -14,31 +17,17 @@
  * (chrome/browser/chromeos/crostini/crostini_port_forwarder.h).
  * @enum {number}
  */
-const CrostiniPortProtocol = {
+/* #export */ const CrostiniPortProtocol = {
   TCP: 0,
   UDP: 1,
 };
-
-/**
- * @typedef {{path: string,
- *            pathDisplayText: string}}
- */
-let CrostiniSharedPath;
-
-/**
- * @typedef {{label: string,
- *            guid: string,
- *            shared: boolean,
- *            shareWillReassign: boolean}}
- */
-let CrostiniSharedUsbDevice;
 
 /**
  * @typedef {{label: string,
  *            port_number: number,
  *            protocol_type: !CrostiniPortProtocol}}
  */
-let CrostiniPortSetting;
+/* #export */ let CrostiniPortSetting;
 
 /**
  * @typedef {{succeeded: boolean,
@@ -48,48 +37,42 @@ let CrostiniPortSetting;
  *            defaultIndex: number,
  *            ticks: !Array}}
  */
-let CrostiniDiskInfo;
+/* #export */ let CrostiniDiskInfo;
 
 /**
  * @typedef {{port_number: number,
  *            protocol_type: !CrostiniPortProtocol}}
  */
-let CrostiniPortActiveSetting;
+/* #export */ let CrostiniPortActiveSetting;
+
+/**
+ * @enum {string}
+ */
+/* #export */ const PortState = {
+  VALID: '',
+  INVALID: loadTimeData.getString('crostiniPortForwardingAddError'),
+  DUPLICATE: loadTimeData.getString('crostiniPortForwardingAddExisting'),
+};
+
+/* #export */ const MIN_VALID_PORT_NUMBER =
+    1024;  // Minimum 16-bit integer value.
+/* #export */ const MAX_VALID_PORT_NUMBER =
+    65535;  // Maximum 16-bit integer value.
+
 
 /**
  * @fileoverview A helper object used by the "Linux Apps" (Crostini) section
  * to install and uninstall Crostini.
  */
+
 cr.define('settings', function() {
   /** @interface */
-  class CrostiniBrowserProxy {
+  /* #export */ class CrostiniBrowserProxy {
     /* Show crostini installer. */
     requestCrostiniInstallerView() {}
 
     /* Show remove crostini dialog. */
     requestRemoveCrostini() {}
-
-    /**
-     * @param {!Array<string>} paths Paths to sanitze.
-     * @return {!Promise<!Array<string>>} Text to display in UI.
-     */
-    getCrostiniSharedPathsDisplayText(paths) {}
-
-    /** Called when page is ready. */
-    notifyCrostiniSharedUsbDevicesPageReady() {}
-
-    /**
-     * @param {string} guid Unique device identifier.
-     * @param {boolean} shared Whether device is currently shared with Crostini.
-     */
-    setCrostiniUsbDeviceShared(guid, shared) {}
-
-    /**
-     * @param {string} vmName VM to stop sharing path with.
-     * @param {string} path Path to stop sharing.
-     * @return {!Promise<boolean>} Result of unsharing.
-     */
-    removeCrostiniSharedPath(vmName, path) {}
 
     /**
      * Request chrome send a crostini-installer-status-changed event with the
@@ -249,8 +232,10 @@ cr.define('settings', function() {
     getCrostiniMicSharingEnabled() {}
   }
 
-  /** @implements {settings.CrostiniBrowserProxy} */
-  class CrostiniBrowserProxyImpl {
+  /**
+   * @implements {settings.CrostiniBrowserProxy}
+   */
+  /* #export */ class CrostiniBrowserProxyImpl {
     /** @override */
     requestCrostiniInstallerView() {
       chrome.send('requestCrostiniInstallerView');
@@ -259,26 +244,6 @@ cr.define('settings', function() {
     /** @override */
     requestRemoveCrostini() {
       chrome.send('requestRemoveCrostini');
-    }
-
-    /** @override */
-    getCrostiniSharedPathsDisplayText(paths) {
-      return cr.sendWithPromise('getCrostiniSharedPathsDisplayText', paths);
-    }
-
-    /** @override */
-    notifyCrostiniSharedUsbDevicesPageReady() {
-      return cr.sendWithPromise('notifyCrostiniSharedUsbDevicesPageReady');
-    }
-
-    /** @override */
-    setCrostiniUsbDeviceShared(guid, shared) {
-      return chrome.send('setCrostiniUsbDeviceShared', [guid, shared]);
-    }
-
-    /** @override */
-    removeCrostiniSharedPath(vmName, path) {
-      return cr.sendWithPromise('removeCrostiniSharedPath', vmName, path);
     }
 
     /** @override */

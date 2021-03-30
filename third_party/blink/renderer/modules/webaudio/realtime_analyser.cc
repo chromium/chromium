@@ -46,9 +46,9 @@ const unsigned RealtimeAnalyser::kMaxFFTSize = 32768;
 const unsigned RealtimeAnalyser::kInputBufferSize =
     RealtimeAnalyser::kMaxFFTSize * 2;
 
-RealtimeAnalyser::RealtimeAnalyser()
+RealtimeAnalyser::RealtimeAnalyser(unsigned render_quantum_frames)
     : input_buffer_(kInputBufferSize),
-      down_mix_bus_(AudioBus::Create(1, audio_utilities::kRenderQuantumFrames)),
+      down_mix_bus_(AudioBus::Create(1, render_quantum_frames)),
       fft_size_(kDefaultFFTSize),
       magnitude_buffer_(kDefaultFFTSize / 2),
       smoothing_time_constant_(kDefaultSmoothingTimeConstant),

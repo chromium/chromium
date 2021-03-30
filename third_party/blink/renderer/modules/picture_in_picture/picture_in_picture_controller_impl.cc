@@ -12,8 +12,8 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/media/display_type.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_picture_in_picture_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -75,13 +75,13 @@ PictureInPictureControllerImpl::IsDocumentAllowed(bool report_failure) const {
     return Status::kDisabledBySystem;
 
   // If document is not allowed to use the policy-controlled feature named
-  // "picture-in-picture", return kDisabledByFeaturePolicy status.
+  // "picture-in-picture", return kDisabledByPermissionsPolicy status.
   if (RuntimeEnabledFeatures::PictureInPictureAPIEnabled() &&
       !GetSupplementable()->GetExecutionContext()->IsFeatureEnabled(
-          blink::mojom::blink::FeaturePolicyFeature::kPictureInPicture,
+          blink::mojom::blink::PermissionsPolicyFeature::kPictureInPicture,
           report_failure ? ReportOptions::kReportOnFailure
                          : ReportOptions::kDoNotReport)) {
-    return Status::kDisabledByFeaturePolicy;
+    return Status::kDisabledByPermissionsPolicy;
   }
 
   return Status::kEnabled;
@@ -178,9 +178,10 @@ void PictureInPictureControllerImpl::EnterPictureInPicture(
   session_observer_receiver_.Bind(
       session_observer.InitWithNewPipeAndPassReceiver(), task_runner);
 
-  mojo::PendingRemote<media::mojom::blink::MediaPlayer> media_player_remote;
+  mojo::PendingAssociatedRemote<media::mojom::blink::MediaPlayer>
+      media_player_remote;
   video_element->BindMediaPlayerReceiver(
-      media_player_remote.InitWithNewPipeAndPassReceiver());
+      media_player_remote.InitWithNewEndpointAndPassReceiver());
 
   picture_in_picture_service_->StartSession(
       video_element->GetWebMediaPlayer()->GetDelegateId(),

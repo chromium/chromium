@@ -34,6 +34,9 @@
       <output filename="locale_settings_zh-HK.pak" type="data_package" lang="zh-HK" />
       <output filename="locale_settings_zu.pak" type="data_package" lang="zu" />
     </if>
+    <if expr="chromeos or lacros">
+      <output filename="locale_settings_is.pak" type="data_package" lang="is" />
+    </if>
     <output filename="locale_settings_am.pak" type="data_package" lang="am" />
     <output filename="locale_settings_ar.pak" type="data_package" lang="ar" />
     <output filename="locale_settings_bg.pak" type="data_package" lang="bg" />
@@ -49,7 +52,6 @@
     <output filename="locale_settings_es-419.pak" type="data_package" lang="es-419" />
     <output filename="locale_settings_et.pak" type="data_package" lang="et" />
     <output filename="locale_settings_fa.pak" type="data_package" lang="fa" />
-    <output filename="locale_settings_fake-bidi.pak" type="data_package" lang="fake-bidi" />
     <output filename="locale_settings_fi.pak" type="data_package" lang="fi" />
     <output filename="locale_settings_fil.pak" type="data_package" lang="fil" />
     <output filename="locale_settings_fr.pak" type="data_package" lang="fr" />
@@ -90,6 +92,10 @@
     <output filename="locale_settings_vi.pak" type="data_package" lang="vi" />
     <output filename="locale_settings_zh-CN.pak" type="data_package" lang="zh-CN" />
     <output filename="locale_settings_zh-TW.pak" type="data_package" lang="zh-TW" />
+
+    <!-- Pseudolocales -->
+    <output filename="locale_settings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="locale_settings_en-XA.pak" type="data_package" lang="en-XA" />
   </outputs>
   <translations>
     <file path="locale_settings_am.xtb" lang="am" />
@@ -144,7 +150,9 @@
     <file path="locale_settings_vi.xtb" lang="vi" />
     <file path="locale_settings_zh-CN.xtb" lang="zh-CN" />
     <file path="locale_settings_zh-TW.xtb" lang="zh-TW" />
-    <file path="locale_settings_fake-bidi.xtb" lang="fake-bidi" />
+
+    <!-- ar-XB falls back to ar, but we want it to fall back to english -->
+    <file path="locale_settings_ar-XB.xtb" lang="ar-XB" />
   </translations>
   <release seq="1" allow_pseudo="false">
     <messages fallback_to_english="true">

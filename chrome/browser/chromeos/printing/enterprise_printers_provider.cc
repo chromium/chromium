@@ -9,11 +9,11 @@
 #include "base/hash/md5.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/chromeos/printing/bulk_printers_calculator.h"
 #include "chrome/browser/chromeos/printing/bulk_printers_calculator_factory.h"
 #include "chrome/browser/chromeos/printing/calculators_policies_binder.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/printing/printer_configuration.h"
@@ -52,7 +52,7 @@ void AddPrintersFromMap(
 class EnterprisePrintersProviderImpl : public EnterprisePrintersProvider,
                                        public BulkPrintersCalculator::Observer {
  public:
-  EnterprisePrintersProviderImpl(CrosSettings* settings, Profile* profile)
+  EnterprisePrintersProviderImpl(ash::CrosSettings* settings, Profile* profile)
       : profile_(profile) {
     // initialization of pref_change_registrar
     pref_change_registrar_.Init(profile->GetPrefs());
@@ -287,7 +287,7 @@ void EnterprisePrintersProvider::RegisterProfilePrefs(
 
 // static
 std::unique_ptr<EnterprisePrintersProvider> EnterprisePrintersProvider::Create(
-    CrosSettings* settings,
+    ash::CrosSettings* settings,
     Profile* profile) {
   return std::make_unique<EnterprisePrintersProviderImpl>(settings, profile);
 }

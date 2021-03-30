@@ -20,7 +20,7 @@ if (is_nacl) {
 }
 
 declare_args() {
-  # Enables whitelist generation for IDR_ grit defines seen by the compiler.
+  # Enables allowlist generation for IDR_ grit defines seen by the compiler.
   # Currently works only on some platforms and enabled by default for official
   # builds. Requires debug info.
   enable_resource_allowlist_generation =
@@ -162,6 +162,14 @@ template("gcc_toolchain") {
     } else {
       toolchain_uses_goma = use_goma
     }
+
+    # x86_64-nacl-* is ELF-32 and Goma/RBE won't support ELF-32.
+    if (toolchain_uses_goma &&
+        get_path_info(invoker.cc, "name") == "x86_64-nacl-gcc") {
+      # it will also disable x86_64-nacl-g++ since these are in
+      # the same toolchain.
+      toolchain_uses_goma = false
+    }
     if (defined(toolchain_args.cc_wrapper)) {
       toolchain_cc_wrapper = toolchain_args.cc_wrapper
     } else {
@@ -183,7 +191,14 @@ template("gcc_toolchain") {
     # gomacc in that case.
     goma_path = "$goma_dir/gomacc"
     if (toolchain_uses_rbe) {
-      compiler_prefix = "${cc_rewrapper} "
+      if (defined(toolchain_args.rbe_cc_cfg_file)) {
+        toolchain_rbe_cc_cfg_file = toolchain_args.rbe_cc_cfg_file
+      } else {
+        toolchain_rbe_cc_cfg_file = rbe_cc_cfg_file
+      }
+
+      # C/C++ (clang) rewrapper prefix to use when use_rbe is true.
+      compiler_prefix = "${rbe_bin_dir}/rewrapper -cfg=${toolchain_rbe_cc_cfg_file} -exec_root=${rbe_exec_root} "
     } else if (toolchain_uses_goma &&
                (!defined(invoker_toolchain_args.needs_gomacc_path_arg) ||
                 !invoker_toolchain_args.needs_gomacc_path_arg)) {
@@ -246,7 +261,7 @@ template("gcc_toolchain") {
             rebase_path(toolchain_coverage_instrumentation_input_file,
                         root_build_dir)
       }
-      compiler_prefix = "${_coverage_wrapper} " + compiler_prefix
+      compiler_prefix = "$python_path ${_coverage_wrapper} " + compiler_prefix
     }
 
     cc = compiler_prefix + invoker.cc
@@ -413,7 +428,7 @@ template("gcc_toolchain") {
       # Map file adds ~10% to the link time on a z620.
       # With target_os="android", libchrome.so.map.gz is ~20MB.
       map_switch = ""
-      if (enable_linker_map && is_official_build) {
+      if (enable_linker_map) {
         map_file = "$unstripped_sofile.map.gz"
         map_switch = " --map-file \"$map_file\""
       }
@@ -561,7 +576,7 @@ template("gcc_toolchain") {
       # Map file adds ~10% to the link time on a z620.
       # With target_os="android", libchrome.so.map.gz is ~20MB.
       map_switch = ""
-      if (enable_linker_map && is_official_build) {
+      if (enable_linker_map) {
         map_file = "$unstripped_outfile.map.gz"
         map_switch = " --map-file \"$map_file\""
       }
@@ -645,7 +660,7 @@ template("clang_toolchain") {
     ld = cxx
     readelf = "${toolprefix}readelf"
     ar = "${prefix}/llvm-ar"
-    nm = "${toolprefix}nm"
+    nm = "${prefix}/llvm-nm"
 
     forward_variables_from(invoker,
                            [

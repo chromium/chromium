@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_item.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_session_controller.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_observer.h"
+#include "chrome/browser/ui/views/global_media_controls/test_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/media_message_center/media_notification_controller.h"
@@ -25,6 +26,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/test/view_metadata_test_utils.h"
 #include "ui/views/widget/widget_utils.h"
 
 using media_session::mojom::MediaPlaybackState;
@@ -106,8 +108,10 @@ class MediaNotificationContainerImplViewTest : public ChromeViewsTestBase {
   // ViewsTestBase:
   void SetUp() override {
     ViewsTestBase::SetUp();
+    item_ = std::make_unique<MockMediaNotificationItem>();
     SetUpCommon(std::make_unique<MediaNotificationContainerImplView>(
-        kTestNotificationId, nullptr, nullptr));
+        kTestNotificationId, item_->GetWeakPtr(), nullptr,
+        GlobalMediaControlsEntryPoint::kToolbarIcon));
   }
 
   void SetUpCommon(std::unique_ptr<MediaNotificationContainerImplView>
@@ -199,9 +203,9 @@ class MediaNotificationContainerImplViewTest : public ChromeViewsTestBase {
 
   void SimulateMetadataChanged() {
     media_session::MediaMetadata metadata;
-    metadata.source_title = base::ASCIIToUTF16("source_title2");
-    metadata.title = base::ASCIIToUTF16("title2");
-    metadata.artist = base::ASCIIToUTF16("artist2");
+    metadata.source_title = u"source_title2";
+    metadata.title = u"title2";
+    metadata.artist = u"artist2";
     GetView()->UpdateWithMediaMetadata(metadata);
   }
 
@@ -246,6 +250,10 @@ class MediaNotificationContainerImplViewTest : public ChromeViewsTestBase {
     return notification_container_;
   }
 
+  base::WeakPtr<MockMediaNotificationItem> notification_item() {
+    return item_->GetWeakPtr();
+  }
+
  private:
   void SimulateSessionInfo(bool playing) {
     media_session::mojom::MediaSessionInfoPtr session_info(
@@ -261,9 +269,9 @@ class MediaNotificationContainerImplViewTest : public ChromeViewsTestBase {
     SimulateSessionInfo(true);
 
     media_session::MediaMetadata metadata;
-    metadata.source_title = base::ASCIIToUTF16("source_title");
-    metadata.title = base::ASCIIToUTF16("title");
-    metadata.artist = base::ASCIIToUTF16("artist");
+    metadata.source_title = u"source_title";
+    metadata.title = u"title";
+    metadata.artist = u"artist";
     GetView()->UpdateWithMediaMetadata(metadata);
 
     SimulateOnlyPlayPauseEnabled();
@@ -282,6 +290,7 @@ class MediaNotificationContainerImplViewTest : public ChromeViewsTestBase {
   std::unique_ptr<views::Widget> widget_;
   MediaNotificationContainerImplView* notification_container_ = nullptr;
   std::unique_ptr<MockMediaNotificationContainerObserver> observer_;
+  std::unique_ptr<MockMediaNotificationItem> item_;
 
   // Set of actions currently enabled.
   base::flat_set<MediaSessionAction> actions_;
@@ -363,7 +372,8 @@ class MediaNotificationContainerImplViewCastTest
         std::move(session_controller), &profile_);
 
     SetUpCommon(std::make_unique<MediaNotificationContainerImplView>(
-        kTestNotificationId, item_->GetWeakPtr(), nullptr));
+        kTestNotificationId, item_->GetWeakPtr(), nullptr,
+        GlobalMediaControlsEntryPoint::kToolbarIcon));
   }
 
   void TearDown() override {
@@ -489,7 +499,8 @@ TEST_F(MediaNotificationContainerImplViewTest, SendsMetadataUpdates) {
 
 TEST_F(MediaNotificationContainerImplViewTest, SendsDestroyedUpdates) {
   auto container = std::make_unique<MediaNotificationContainerImplView>(
-      kOtherTestNotificationId, nullptr, nullptr);
+      kOtherTestNotificationId, notification_item(), nullptr,
+      GlobalMediaControlsEntryPoint::kToolbarIcon);
   MockMediaNotificationContainerObserver observer;
   container->AddObserver(&observer);
 
@@ -515,6 +526,13 @@ TEST_F(MediaNotificationContainerImplViewTest, SendsSinkUpdates) {
   // been chosen.
   EXPECT_CALL(observer(), OnAudioSinkChosen(kTestNotificationId, "foobar"));
   notification_container()->OnAudioSinkChosen("foobar");
+}
+
+TEST_F(MediaNotificationContainerImplViewTest, MetadataTest) {
+  auto container_view = std::make_unique<MediaNotificationContainerImplView>(
+      kOtherTestNotificationId, notification_item(), nullptr,
+      GlobalMediaControlsEntryPoint::kToolbarIcon);
+  views::test::TestViewMetadata(container_view.get());
 }
 
 TEST_F(MediaNotificationContainerImplViewOverlayControlsTest,

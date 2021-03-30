@@ -15,18 +15,18 @@
 namespace safe_browsing {
 
 // This provides a simpler interface to
-// SafeBrowsingDatabaseManager::CheckCsdWhitelistUrl() for callers that
+// SafeBrowsingDatabaseManager::CheckCsdAllowlistUrl() for callers that
 // don't want to track their own clients.
 
 class AllowlistCheckerClient : public SafeBrowsingDatabaseManager::Client {
  public:
-  using BoolCallback = base::OnceCallback<void(bool /* is_whitelisted */)>;
+  using BoolCallback = base::OnceCallback<void(bool /* is_allowlisted */)>;
 
   // Static method to lookup |url| on the CSD allowlist. |callback| will be
   // called when the lookup result is known, or on time out, or if the
   // |database_manager| gets shut down, whichever happens first.
   // Must be called on IO thread.
-  static void StartCheckCsdWhitelist(
+  static void StartCheckCsdAllowlist(
       scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
       const GURL& url,
       BoolCallback callback_for_result);
@@ -49,7 +49,7 @@ class AllowlistCheckerClient : public SafeBrowsingDatabaseManager::Client {
   ~AllowlistCheckerClient() override;
 
   // SafeBrowsingDatabaseMananger::Client impl
-  void OnCheckWhitelistUrlResult(bool is_whitelisted) override;
+  void OnCheckAllowlistUrlResult(bool is_allowlisted) override;
   void OnCheckUrlForHighConfidenceAllowlist(bool did_match_allowlist) override;
 
  private:
@@ -73,7 +73,7 @@ class AllowlistCheckerClient : public SafeBrowsingDatabaseManager::Client {
   // Calls the |callback_for_result_| with the result of the lookup or timeout.
   void OnCheckUrlResult(bool did_match_allowlist);
 
-  // Called when the call to CheckCsdWhitelistUrl times out.
+  // Called when the call to CheckCsdAllowlistUrl times out.
   void OnTimeout();
 
   // For setting up timeout behavior.

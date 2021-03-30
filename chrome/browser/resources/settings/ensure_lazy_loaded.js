@@ -22,7 +22,7 @@ export function ensureLazyLoaded() {
       // </if>
       'settings-a11y-page', 'settings-downloads-page',
       'settings-languages-page', 'settings-reset-page',
-      // <if expr="not chromeos">
+      // <if expr="not chromeos and not lacros">
       'settings-system-page',
       // </if>
       // <if expr="not is_macosx">

@@ -17,15 +17,15 @@
 namespace net {
 
 bool ParseFtpDirectoryListingWindows(
-    const std::vector<base::string16>& lines,
+    const std::vector<std::u16string>& lines,
     std::vector<FtpDirectoryListingEntry>* entries) {
   for (size_t i = 0; i < lines.size(); i++) {
     if (lines[i].empty())
       continue;
 
-    std::vector<base::string16> columns = base::SplitString(
-        base::CollapseWhitespace(lines[i], false), base::ASCIIToUTF16(" "),
-        base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+    std::vector<std::u16string> columns =
+        base::SplitString(base::CollapseWhitespace(lines[i], false), u" ",
+                          base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
     // Every line of the listing consists of the following:
     //

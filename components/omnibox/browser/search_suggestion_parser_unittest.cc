@@ -126,8 +126,8 @@ TEST(SearchSuggestionParserTest, ParseSuggestResults) {
   base::Optional<base::Value> root_val = base::JSONReader::Read(json_data);
   ASSERT_TRUE(root_val);
   TestSchemeClassifier scheme_classifier;
-  AutocompleteInput input(base::ASCIIToUTF16("chris"),
-                          metrics::OmniboxEventProto::NTP, scheme_classifier);
+  AutocompleteInput input(u"chris", metrics::OmniboxEventProto::NTP,
+                          scheme_classifier);
   SearchSuggestionParser::Results results;
   ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
       *root_val, input, scheme_classifier, /*default_result_relevance=*/400,
@@ -140,18 +140,16 @@ TEST(SearchSuggestionParserTest, ParseSuggestResults) {
   ASSERT_EQ(851, results.verbatim_relevance);
   {
     const auto& suggestion_result = results.suggest_results[0];
-    ASSERT_EQ(base::ASCIIToUTF16("christmas"), suggestion_result.suggestion());
-    ASSERT_EQ(base::ASCIIToUTF16(""), suggestion_result.annotation());
+    ASSERT_EQ(u"christmas", suggestion_result.suggestion());
+    ASSERT_EQ(u"", suggestion_result.annotation());
     // This entry has no image.
     ASSERT_EQ("", suggestion_result.image_dominant_color());
     ASSERT_EQ(GURL(), suggestion_result.image_url());
   }
   {
     const auto& suggestion_result = results.suggest_results[1];
-    ASSERT_EQ(base::ASCIIToUTF16("christopher doe"),
-              suggestion_result.suggestion());
-    ASSERT_EQ(base::ASCIIToUTF16("American author"),
-              suggestion_result.annotation());
+    ASSERT_EQ(u"christopher doe", suggestion_result.suggestion());
+    ASSERT_EQ(u"American author", suggestion_result.annotation());
     ASSERT_EQ("#424242", suggestion_result.image_dominant_color());
     ASSERT_EQ(GURL("http://example.com/a.png"), suggestion_result.image_url());
   }
@@ -159,13 +157,13 @@ TEST(SearchSuggestionParserTest, ParseSuggestResults) {
 
 TEST(SearchSuggestionParserTest, SuggestClassification) {
   SearchSuggestionParser::SuggestResult result(
-      base::ASCIIToUTF16("foobar"), AutocompleteMatchType::SEARCH_SUGGEST, {},
-      false, 400, true, base::string16());
+      u"foobar", AutocompleteMatchType::SEARCH_SUGGEST, {}, false, 400, true,
+      std::u16string());
   AutocompleteMatch::ValidateClassifications(result.match_contents(),
                                              result.match_contents_class());
 
   // Nothing should be bolded for ZeroSuggest classified input.
-  result.ClassifyMatchContents(true, base::string16());
+  result.ClassifyMatchContents(true, std::u16string());
   AutocompleteMatch::ValidateClassifications(result.match_contents(),
                                              result.match_contents_class());
   const ACMatchClassifications kNone = {
@@ -173,7 +171,7 @@ TEST(SearchSuggestionParserTest, SuggestClassification) {
   EXPECT_EQ(kNone, result.match_contents_class());
 
   // Test a simple case of bolding half the text.
-  result.ClassifyMatchContents(false, base::ASCIIToUTF16("foo"));
+  result.ClassifyMatchContents(false, u"foo");
   AutocompleteMatch::ValidateClassifications(result.match_contents(),
                                              result.match_contents_class());
   const ACMatchClassifications kHalfBolded = {
@@ -185,13 +183,13 @@ TEST(SearchSuggestionParserTest, SuggestClassification) {
   // would otherwise bold-all, we leave the existing classifications alone.
   // This is weird, but it's in the function contract, and is useful for
   // flicker-free search suggestions as the user types.
-  result.ClassifyMatchContents(false, base::ASCIIToUTF16("apple"));
+  result.ClassifyMatchContents(false, u"apple");
   AutocompleteMatch::ValidateClassifications(result.match_contents(),
                                              result.match_contents_class());
   EXPECT_EQ(kHalfBolded, result.match_contents_class());
 
   // And finally, test the case where we do allow bolding-all.
-  result.ClassifyMatchContents(true, base::ASCIIToUTF16("apple"));
+  result.ClassifyMatchContents(true, u"apple");
   AutocompleteMatch::ValidateClassifications(result.match_contents(),
                                              result.match_contents_class());
   const ACMatchClassifications kBoldAll = {
@@ -203,8 +201,8 @@ TEST(SearchSuggestionParserTest, NavigationClassification) {
   TestSchemeClassifier scheme_classifier;
   SearchSuggestionParser::NavigationResult result(
       scheme_classifier, GURL("https://news.google.com/"),
-      AutocompleteMatchType::Type::NAVSUGGEST, {}, base::string16(),
-      std::string(), false, 400, true, base::ASCIIToUTF16("google"));
+      AutocompleteMatchType::Type::NAVSUGGEST, {}, std::u16string(),
+      std::string(), false, 400, true, u"google");
   AutocompleteMatch::ValidateClassifications(result.match_contents(),
                                              result.match_contents_class());
   const ACMatchClassifications kBoldMiddle = {
@@ -216,19 +214,17 @@ TEST(SearchSuggestionParserTest, NavigationClassification) {
 
   // Reclassifying in a way that would cause bold-none if it's disallowed should
   // do nothing.
-  result.CalculateAndClassifyMatchContents(
-      false, base::ASCIIToUTF16("term not found"));
+  result.CalculateAndClassifyMatchContents(false, u"term not found");
   EXPECT_EQ(kBoldMiddle, result.match_contents_class());
 
   // Test the allow bold-nothing case too.
-  result.CalculateAndClassifyMatchContents(
-      true, base::ASCIIToUTF16("term not found"));
+  result.CalculateAndClassifyMatchContents(true, u"term not found");
   const ACMatchClassifications kAnnotateUrlOnly = {
       {0, AutocompleteMatch::ACMatchClassification::URL}};
   EXPECT_EQ(kAnnotateUrlOnly, result.match_contents_class());
 
   // Nothing should be bolded for ZeroSuggest classified input.
-  result.CalculateAndClassifyMatchContents(true, base::string16());
+  result.CalculateAndClassifyMatchContents(true, std::u16string());
   AutocompleteMatch::ValidateClassifications(result.match_contents(),
                                              result.match_contents_class());
   const ACMatchClassifications kNone = {
@@ -273,8 +269,7 @@ TEST(SearchSuggestionParserTest, ParseHeaderInfo) {
   base::Optional<base::Value> root_val = base::JSONReader::Read(json_data);
   ASSERT_TRUE(root_val);
   TestSchemeClassifier scheme_classifier;
-  AutocompleteInput input(base::ASCIIToUTF16(""),
-                          metrics::OmniboxEventProto::NTP_REALBOX,
+  AutocompleteInput input(u"", metrics::OmniboxEventProto::NTP_REALBOX,
                           scheme_classifier);
   SearchSuggestionParser::Results results;
   ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
@@ -287,25 +282,23 @@ TEST(SearchSuggestionParserTest, ParseHeaderInfo) {
 
   {
     const auto& suggestion_result = results.suggest_results[0];
-    ASSERT_EQ(base::ASCIIToUTF16("los angeles"),
-              suggestion_result.suggestion());
+    ASSERT_EQ(u"los angeles", suggestion_result.suggestion());
     // This suggestion does not belong to a group.
     ASSERT_EQ(base::nullopt, suggestion_result.suggestion_group_id());
   }
   {
     const auto& suggestion_result = results.suggest_results[1];
-    ASSERT_EQ(base::ASCIIToUTF16("san diego"), suggestion_result.suggestion());
+    ASSERT_EQ(u"san diego", suggestion_result.suggestion());
     ASSERT_EQ(40007, *suggestion_result.suggestion_group_id());
   }
   {
     const auto& suggestion_result = results.suggest_results[2];
-    ASSERT_EQ(base::ASCIIToUTF16("las vegas"), suggestion_result.suggestion());
+    ASSERT_EQ(u"las vegas", suggestion_result.suggestion());
     ASSERT_EQ(40008, *suggestion_result.suggestion_group_id());
   }
   {
     const auto& suggestion_result = results.suggest_results[3];
-    ASSERT_EQ(base::ASCIIToUTF16("san francisco"),
-              suggestion_result.suggestion());
+    ASSERT_EQ(u"san francisco", suggestion_result.suggestion());
     ASSERT_EQ(40009, *suggestion_result.suggestion_group_id());
   }
 }
@@ -325,8 +318,7 @@ TEST(SearchSuggestionParserTest, ParseValidSubtypes) {
   base::Optional<base::Value> root_val = base::JSONReader::Read(json_data);
   ASSERT_TRUE(root_val);
   TestSchemeClassifier scheme_classifier;
-  AutocompleteInput input(base::ASCIIToUTF16(""),
-                          metrics::OmniboxEventProto::NTP_REALBOX,
+  AutocompleteInput input(u"", metrics::OmniboxEventProto::NTP_REALBOX,
                           scheme_classifier);
   SearchSuggestionParser::Results results;
   ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
@@ -335,22 +327,22 @@ TEST(SearchSuggestionParserTest, ParseValidSubtypes) {
 
   {
     const auto& suggestion_result = results.suggest_results[0];
-    ASSERT_EQ(base::ASCIIToUTF16("one"), suggestion_result.suggestion());
+    ASSERT_EQ(u"one", suggestion_result.suggestion());
     ASSERT_THAT(suggestion_result.subtypes(), testing::ElementsAre(1));
   }
   {
     const auto& suggestion_result = results.suggest_results[1];
-    ASSERT_EQ(base::ASCIIToUTF16("two"), suggestion_result.suggestion());
+    ASSERT_EQ(u"two", suggestion_result.suggestion());
     ASSERT_THAT(suggestion_result.subtypes(), testing::ElementsAre(21, 22));
   }
   {
     const auto& suggestion_result = results.suggest_results[2];
-    ASSERT_EQ(base::ASCIIToUTF16("three"), suggestion_result.suggestion());
+    ASSERT_EQ(u"three", suggestion_result.suggestion());
     ASSERT_THAT(suggestion_result.subtypes(), testing::ElementsAre(31, 32, 33));
   }
   {
     const auto& suggestion_result = results.suggest_results[3];
-    ASSERT_EQ(base::ASCIIToUTF16("four"), suggestion_result.suggestion());
+    ASSERT_EQ(u"four", suggestion_result.suggestion());
     ASSERT_THAT(suggestion_result.subtypes(), testing::ElementsAre(44));
   }
 }
@@ -371,8 +363,7 @@ TEST(SearchSuggestionParserTest, IgnoresExcessiveSubtypeEntries) {
   base::Optional<base::Value> root_val = base::JSONReader::Read(json_data);
   ASSERT_TRUE(root_val);
   TestSchemeClassifier scheme_classifier;
-  AutocompleteInput input(base::ASCIIToUTF16(""),
-                          metrics::OmniboxEventProto::NTP_REALBOX,
+  AutocompleteInput input(u"", metrics::OmniboxEventProto::NTP_REALBOX,
                           scheme_classifier);
   SearchSuggestionParser::Results results;
   ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
@@ -399,8 +390,7 @@ TEST(SearchSuggestionParserTest, IgnoresMissingSubtypeEntries) {
   base::Optional<base::Value> root_val = base::JSONReader::Read(json_data);
   ASSERT_TRUE(root_val);
   TestSchemeClassifier scheme_classifier;
-  AutocompleteInput input(base::ASCIIToUTF16(""),
-                          metrics::OmniboxEventProto::NTP_REALBOX,
+  AutocompleteInput input(u"", metrics::OmniboxEventProto::NTP_REALBOX,
                           scheme_classifier);
   SearchSuggestionParser::Results results;
   ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
@@ -429,8 +419,7 @@ TEST(SearchSuggestionParserTest, IgnoresUnexpectedSubtypeValues) {
   base::Optional<base::Value> root_val = base::JSONReader::Read(json_data);
   ASSERT_TRUE(root_val);
   TestSchemeClassifier scheme_classifier;
-  AutocompleteInput input(base::ASCIIToUTF16(""),
-                          metrics::OmniboxEventProto::NTP_REALBOX,
+  AutocompleteInput input(u"", metrics::OmniboxEventProto::NTP_REALBOX,
                           scheme_classifier);
   SearchSuggestionParser::Results results;
   ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
@@ -460,8 +449,7 @@ TEST(SearchSuggestionParserTest, IgnoresSubtypesIfNotAList) {
   base::Optional<base::Value> root_val = base::JSONReader::Read(json_data);
   ASSERT_TRUE(root_val);
   TestSchemeClassifier scheme_classifier;
-  AutocompleteInput input(base::ASCIIToUTF16(""),
-                          metrics::OmniboxEventProto::NTP_REALBOX,
+  AutocompleteInput input(u"", metrics::OmniboxEventProto::NTP_REALBOX,
                           scheme_classifier);
   SearchSuggestionParser::Results results;
   ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(
@@ -488,8 +476,7 @@ TEST(SearchSuggestionParserTest, SubtypesWithEmptyArraysAreValid) {
   base::Optional<base::Value> root_val = base::JSONReader::Read(json_data);
   ASSERT_TRUE(root_val);
   TestSchemeClassifier scheme_classifier;
-  AutocompleteInput input(base::ASCIIToUTF16(""),
-                          metrics::OmniboxEventProto::NTP_REALBOX,
+  AutocompleteInput input(u"", metrics::OmniboxEventProto::NTP_REALBOX,
                           scheme_classifier);
   SearchSuggestionParser::Results results;
   ASSERT_TRUE(SearchSuggestionParser::ParseSuggestResults(

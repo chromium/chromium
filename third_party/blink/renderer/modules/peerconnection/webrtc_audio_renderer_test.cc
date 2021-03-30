@@ -17,6 +17,7 @@
 #include "media/base/mock_audio_renderer_sink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/audio/web_audio_device_source_type.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_renderer.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -34,6 +35,7 @@
 #include "third_party/webrtc/api/media_stream_interface.h"
 
 using testing::_;
+using testing::DoAll;
 using testing::InvokeWithoutArgs;
 using testing::Return;
 using testing::SaveArg;
@@ -137,19 +139,21 @@ class MAYBE_WebRtcAudioRendererTest : public testing::Test {
         agent_group_scheduler_(
             blink::scheduler::WebThreadScheduler::MainThreadScheduler()
                 ->CreateAgentGroupScheduler()),
-        web_view_(blink::WebView::Create(/*client=*/nullptr,
-                                         /*is_hidden=*/false,
-                                         /*is_inside_portal=*/false,
-                                         /*compositing_enabled=*/false,
-                                         /*opener=*/nullptr,
-                                         mojo::NullAssociatedReceiver(),
-                                         *agent_group_scheduler_)),
-        web_local_frame_(blink::WebLocalFrame::CreateMainFrame(
-            web_view_,
-            &web_local_frame_client_,
-            nullptr,
-            base::UnguessableToken::Create(),
-            /*policy_container=*/nullptr))
+        web_view_(blink::WebView::Create(
+            /*client=*/nullptr,
+            /*is_hidden=*/false,
+            /*is_inside_portal=*/false,
+            /*compositing_enabled=*/false,
+            /*opener=*/nullptr,
+            mojo::NullAssociatedReceiver(),
+            *agent_group_scheduler_,
+            /*session_storage_namespace_id=*/base::EmptyString())),
+        web_local_frame_(
+            blink::WebLocalFrame::CreateMainFrame(web_view_,
+                                                  &web_local_frame_client_,
+                                                  nullptr,
+                                                  LocalFrameToken(),
+                                                  /*policy_container=*/nullptr))
 #endif
   {
     MediaStreamSourceVector dummy_components;
@@ -207,6 +211,7 @@ class MAYBE_WebRtcAudioRendererTest : public testing::Test {
   }
 
   void TearDown() override {
+    base::RunLoop().RunUntilIdle();
     renderer_proxy_ = nullptr;
     renderer_ = nullptr;
     stream_descriptor_ = nullptr;

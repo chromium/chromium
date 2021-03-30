@@ -11,7 +11,7 @@
 namespace {
 
 static bool affects_alpha(const SkColorFilter* cf) {
-  return cf && !(cf->getFlags() & SkColorFilter::kAlphaUnchanged_Flag);
+  return cf && !cf->isAlphaUnchanged();
 }
 
 }  // namespace
@@ -126,7 +126,7 @@ SkPaint PaintFlags::ToSkPaint() const {
   SkPaint paint;
   paint.setPathEffect(path_effect_);
   if (shader_)
-    paint.setShader(shader_->GetSkShader());
+    paint.setShader(shader_->GetSkShader(getFilterQuality()));
   paint.setMaskFilter(mask_filter_);
   paint.setColorFilter(color_filter_);
   if (image_filter_)

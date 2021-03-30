@@ -32,6 +32,7 @@
 
 #include <memory>
 
+#include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/animation/scroll_offset_animation_curve.h"
 #include "cc/layers/picture_layer.h"
@@ -100,6 +101,10 @@ ScrollResult ScrollAnimator::UserScroll(
   // invoked as soon as the animation is finished. If we don't animate the
   // scroll, the callback is invoked immediately without being stored.
   DCHECK(HasRunningAnimation() || on_finish_.is_null());
+
+#if defined(OS_MAC)
+  have_scrolled_since_page_load_ = true;
+#endif
 
   base::ScopedClosureRunner run_on_return(std::move(on_finish));
 
@@ -351,9 +356,10 @@ void ScrollAnimator::UpdateCompositorAnimations() {
   }
 
   if (run_state_ == RunState::kWaitingToSendToCompositor) {
-    if (!element_id_)
+    if (!element_id_) {
       ReattachCompositorAnimationIfNeeded(
           GetScrollableArea()->GetCompositorAnimationTimeline());
+    }
 
     if (!animation_curve_)
       CreateAnimationCurve();
@@ -386,15 +392,18 @@ void ScrollAnimator::CancelAnimation() {
   ScrollAnimatorCompositorCoordinator::CancelAnimation();
   if (on_finish_)
     std::move(on_finish_).Run();
+#if defined(OS_MAC)
+  have_scrolled_since_page_load_ = false;
+#endif
 }
 
 void ScrollAnimator::TakeOverCompositorAnimation() {
   ScrollAnimatorCompositorCoordinator::TakeOverCompositorAnimation();
 }
 
-void ScrollAnimator::LayerForCompositedScrollingDidChange(
-    CompositorAnimationTimeline* timeline) {
-  ReattachCompositorAnimationIfNeeded(timeline);
+void ScrollAnimator::MainThreadScrollingDidChange() {
+  ReattachCompositorAnimationIfNeeded(
+      GetScrollableArea()->GetCompositorAnimationTimeline());
 }
 
 bool ScrollAnimator::RegisterAndScheduleAnimation() {

@@ -124,7 +124,7 @@ class ExtensionEventObserver : public ProfileManagerObserver,
   // empty, |this| isn't blocking suspend.
   base::UnguessableToken block_suspend_token_;
 
-  base::CancelableClosure suspend_readiness_callback_;
+  base::CancelableOnceClosure suspend_readiness_callback_;
 
   base::WeakPtrFactory<ExtensionEventObserver> weak_factory_{this};
 

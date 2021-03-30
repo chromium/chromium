@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/macros.h"
@@ -121,14 +122,15 @@ class WebIDBCursorImplTest : public testing::Test {
         blink::scheduler::GetSingleThreadTaskRunnerForTesting());
   }
 
+  // Disallow copy and assign.
+  WebIDBCursorImplTest(const WebIDBCursorImplTest&) = delete;
+  WebIDBCursorImplTest& operator=(const WebIDBCursorImplTest&) = delete;
+
  protected:
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
   std::unique_ptr<IDBKey> null_key_;
   std::unique_ptr<WebIDBCursorImpl> cursor_;
   std::unique_ptr<MockCursorImpl> mock_cursor_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebIDBCursorImplTest);
 };
 
 TEST_F(WebIDBCursorImplTest, PrefetchTest) {

@@ -41,6 +41,9 @@ void FullRestoreFileHandler::WriteToFile(
 }
 
 std::unique_ptr<RestoreData> FullRestoreFileHandler::ReadFromFile() {
+  if (!base::PathExists(file_path_))
+    return std::make_unique<RestoreData>();
+
   std::string full_restore_data;
   if (!ReadDataBlocking(full_restore_data) || full_restore_data.empty())
     return nullptr;

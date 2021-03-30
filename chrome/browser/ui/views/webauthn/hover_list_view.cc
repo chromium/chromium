@@ -23,6 +23,7 @@
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/vector_icons.h"
 
 namespace {
@@ -35,8 +36,8 @@ enum class ItemType {
 
 std::unique_ptr<WebAuthnHoverButton> CreateHoverButtonForListItem(
     const gfx::VectorIcon* vector_icon,
-    base::string16 item_title,
-    base::string16 item_description,
+    std::u16string item_title,
+    std::u16string item_description,
     views::Button::PressedCallback callback,
     bool is_two_line_item,
     ItemType item_type = ItemType::kButton) {
@@ -166,8 +167,8 @@ HoverListView::~HoverListView() {
 }
 
 void HoverListView::AppendListItemView(const gfx::VectorIcon* icon,
-                                       base::string16 item_text,
-                                       base::string16 description_text,
+                                       std::u16string item_text,
+                                       std::u16string description_text,
                                        int item_tag) {
   auto hover_button = CreateHoverButtonForListItem(
       icon, item_text, description_text,
@@ -185,7 +186,7 @@ void HoverListView::AppendListItemView(const gfx::VectorIcon* icon,
 void HoverListView::CreateAndAppendPlaceholderItem() {
   auto placeholder_item = CreateHoverButtonForListItem(
       model_->GetPlaceholderIcon(), model_->GetPlaceholderText(),
-      base::string16(), views::Button::PressedCallback(),
+      std::u16string(), views::Button::PressedCallback(),
       /*is_two_line_item=*/false, ItemType::kPlaceholder);
   item_container_->AddChildView(placeholder_item.get());
   auto* separator = AddSeparatorAsChild(item_container_);
@@ -292,7 +293,7 @@ int HoverListView::GetPreferredViewHeight() const {
       model_->GetPreferredItemCount() - tags_to_list_item_views_.size();
   if (reserved_items > 0) {
     auto dummy_hover_button = CreateHoverButtonForListItem(
-        &gfx::kNoneIcon, base::string16(), base::string16(),
+        &gfx::kNoneIcon, std::u16string(), std::u16string(),
         views::Button::PressedCallback(), is_two_line_list_);
     const auto list_item_height =
         separator_height + dummy_hover_button->GetPreferredSize().height();
@@ -300,3 +301,7 @@ int HoverListView::GetPreferredViewHeight() const {
   }
   return std::min(kMaxViewHeight, size);
 }
+
+BEGIN_METADATA(HoverListView, views::View)
+ADD_READONLY_PROPERTY_METADATA(int, PreferredViewHeight)
+END_METADATA

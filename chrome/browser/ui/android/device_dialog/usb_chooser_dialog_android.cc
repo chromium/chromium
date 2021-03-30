@@ -94,7 +94,7 @@ void UsbChooserDialogAndroid::OnOptionAdded(size_t index) {
   std::string item_id_str = base::NumberToString(item_id);
   item_id_map_.insert(item_id_map_.begin() + index, item_id_str);
 
-  base::string16 device_name = controller_->GetOption(index);
+  std::u16string device_name = controller_->GetOption(index);
   Java_UsbChooserDialog_addDevice(
       env, java_dialog_,
       base::android::ConvertUTF8ToJavaString(env, item_id_str),

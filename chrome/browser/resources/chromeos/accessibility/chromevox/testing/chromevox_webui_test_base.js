@@ -2,8 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-GEN_INCLUDE(['../../common/testing/assert_additions.js']);
-GEN_INCLUDE(['common.js', '../../common/testing/callback_helper.js']);
+// clang-format off
+GEN_INCLUDE([
+  '../../common/testing/assert_additions.js',
+  '../../common/testing/common.js',
+  '../../common/testing/callback_helper.js'
+]);
+// clang-format on
 
 /**
  * Base test fixture for ChromeVox webui tests. Run in a Blink renderer.

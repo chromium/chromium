@@ -32,9 +32,9 @@ constexpr int kLabelFontDelta = 2;
 // Values of the backdrop.
 constexpr int kBackdropBorderRoundingDp = 4;
 
-base::string16 GetWindowTitle(aura::Window* window) {
+std::u16string GetWindowTitle(aura::Window* window) {
   aura::Window* transient_root = wm::GetTransientRoot(window);
-  const base::string16* overview_title =
+  const std::u16string* overview_title =
       transient_root->GetProperty(chromeos::kWindowOverviewTitleKey);
   return (overview_title && !overview_title->empty())
              ? *overview_title
@@ -130,7 +130,7 @@ WindowMiniView::WindowMiniView(aura::Window* source_window)
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
-  window_observer_.Add(source_window);
+  window_observation_.Observe(source_window);
 
   header_view_ = AddChildView(std::make_unique<views::View>());
   header_view_->SetPaintToLayer();
@@ -218,7 +218,7 @@ void WindowMiniView::OnWindowDestroying(aura::Window* window) {
   if (window != source_window_)
     return;
 
-  window_observer_.RemoveAll();
+  window_observation_.Reset();
   source_window_ = nullptr;
   SetShowPreview(false);
 }

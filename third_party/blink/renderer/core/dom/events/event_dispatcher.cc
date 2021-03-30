@@ -29,23 +29,24 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
-#include "third_party/blink/renderer/core/dom/container_node.h"
-#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
+#include "third_party/blink/renderer/core/dom/events/event_dispatch_result.h"
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
+#include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/events/window_event_context.h"
+#include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
-#include "third_party/blink/renderer/core/events/pointer_event.h"
+#include "third_party/blink/renderer/core/events/simulated_event_util.h"
 #include "third_party/blink/renderer/core/frame/ad_tracker.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
+#include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation_controller.h"
 #include "third_party/blink/renderer/core/timing/event_timing.h"
@@ -53,30 +54,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
-namespace {
-Event* CreateEvent(const AtomicString& event_type,
-                   Node& node,
-                   const Event* underlying_event,
-                   SimulatedClickCreationScope creation_scope) {
-  DCHECK(event_type == event_type_names::kClick ||
-         event_type == event_type_names::kMousedown ||
-         event_type == event_type_names::kMouseup ||
-         event_type == event_type_names::kMouseover);
-  if (RuntimeEnabledFeatures::ClickPointerEventEnabled() &&
-      event_type == event_type_names::kClick) {
-    // TODO (crbug.com/1150979) Figure out if we can fire pointer events
-    // instead of mousedown/mouseup/mouseover or if we need to fire both pointer
-    // events and mouse events at the same time. The mouse events are used for
-    // accessibility.
-    return PointerEvent::Create(event_type_names::kClick,
-                                node.GetDocument().domWindow(),
-                                underlying_event, creation_scope);
-  } else {
-    return MouseEvent::Create(event_type, node.GetDocument().domWindow(),
-                              underlying_event, creation_scope);
-  }
-}
-}  // namespace
 
 DispatchEventResult EventDispatcher::DispatchEvent(Node& node, Event& event) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("blink.debug"),
@@ -104,7 +81,6 @@ void EventDispatcher::DispatchScopedEvent(Node& node, Event& event) {
 void EventDispatcher::DispatchSimulatedClick(
     Node& node,
     const Event* underlying_event,
-    SimulatedClickMouseEventOptions mouse_event_options,
     SimulatedClickCreationScope creation_scope) {
   // This persistent vector doesn't cause leaks, because added Nodes are removed
   // before dispatchSimulatedClick() returns. This vector is here just to
@@ -122,31 +98,45 @@ void EventDispatcher::DispatchSimulatedClick(
 
   nodes_dispatching_simulated_clicks->insert(&node);
 
-  if (mouse_event_options == kSendMouseOverUpDownEvents) {
-    EventDispatcher(node, *CreateEvent(event_type_names::kMouseover, node,
-                                       underlying_event, creation_scope))
-        .Dispatch();
-  }
-
   Element* element = DynamicTo<Element>(node);
-  if (mouse_event_options != kSendNoEvents) {
-    EventDispatcher(node, *CreateEvent(event_type_names::kMousedown, node,
-                                       underlying_event, creation_scope))
-        .Dispatch();
+  bool prevent_mouse_events = false;
+
+  if (creation_scope == SimulatedClickCreationScope::kFromAccessibility) {
+    DispatchEventResult dispatch_result =
+        EventDispatcher(node, *SimulatedEventUtil::CreateEvent(
+                                  event_type_names::kPointerdown, node,
+                                  underlying_event, creation_scope))
+            .Dispatch();
+    prevent_mouse_events =
+        dispatch_result == DispatchEventResult::kCanceledByEventHandler;
+    if (!prevent_mouse_events) {
+      EventDispatcher(node, *SimulatedEventUtil::CreateEvent(
+                                event_type_names::kMousedown, node,
+                                underlying_event, creation_scope))
+          .Dispatch();
+    }
     if (element)
       element->SetActive(true);
-    EventDispatcher(node, *CreateEvent(event_type_names::kMouseup, node,
-                                       underlying_event, creation_scope))
+    EventDispatcher(node, *SimulatedEventUtil::CreateEvent(
+                              event_type_names::kPointerup, node,
+                              underlying_event, creation_scope))
         .Dispatch();
+    if (!prevent_mouse_events) {
+      EventDispatcher(node, *SimulatedEventUtil::CreateEvent(
+                                event_type_names::kMouseup, node,
+                                underlying_event, creation_scope))
+          .Dispatch();
+    }
   }
   // Some elements (e.g. the color picker) may set active state to true before
   // calling this method and expect the state to be reset during the call.
   if (element)
     element->SetActive(false);
 
-  // always send click
-  EventDispatcher(node, *CreateEvent(event_type_names::kClick, node,
-                                     underlying_event, creation_scope))
+  // Always send click.
+  EventDispatcher(
+      node, *SimulatedEventUtil::CreateEvent(event_type_names::kClick, node,
+                                             underlying_event, creation_scope))
       .Dispatch();
 
   nodes_dispatching_simulated_clicks->erase(&node);
@@ -170,6 +160,10 @@ DispatchEventResult EventDispatcher::Dispatch() {
   LocalFrame* frame = node_->GetDocument().GetFrame();
   if (frame && frame->DomWindow())
     eventTiming = EventTiming::Create(frame->DomWindow(), *event_);
+  if (event_->type() == event_type_names::kChange && event_->isTrusted() &&
+      view_) {
+    view_->GetLayoutShiftTracker().NotifyChangeEvent();
+  }
   event_->GetEventPath().EnsureWindowEventContext();
 
   const bool is_click =
@@ -218,8 +212,8 @@ DispatchEventResult EventDispatcher::Dispatch() {
   DCHECK(!EventDispatchForbiddenScope::IsEventDispatchForbidden());
 #endif
   DCHECK(event_->target());
-  TRACE_EVENT1("devtools.timeline", "EventDispatch", "data",
-               inspector_event_dispatch_event::Data(*event_));
+  DEVTOOLS_TIMELINE_TRACE_EVENT("EventDispatch",
+                                inspector_event_dispatch_event::Data, *event_);
   EventDispatchHandlingState* pre_dispatch_event_handler_result = nullptr;
   if (DispatchEventPreProcess(activation_target,
                               pre_dispatch_event_handler_result) ==

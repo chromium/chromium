@@ -39,8 +39,8 @@ class VersionHandler : public content::WebUIMessageHandler {
   // Callback which handles returning the executable and profile paths to the
   // front end.
   void OnGotFilePaths(std::string callback_id,
-                      base::string16* executable_path_data,
-                      base::string16* profile_path_data);
+                      std::u16string* executable_path_data,
+                      std::u16string* profile_path_data);
 
   // Factory for the creating refs in callbacks.
   base::WeakPtrFactory<VersionHandler> weak_ptr_factory_{this};

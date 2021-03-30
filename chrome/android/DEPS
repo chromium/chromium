@@ -5,34 +5,14 @@ include_rules = [
   # should add an allow rule to a DEPS file in the relevant directory.
   "-chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
 
-  "+chrome/browser/browser_controls/android",
-  "+chrome/browser/device",
-  "+chrome/browser/enterprise",
-  "+chrome/browser/feedback/android",
-  "+chrome/browser/flags/android",
-  "+chrome/browser/fullscreen/android",
-  "+chrome/browser/image_descriptions",
-  "+chrome/browser/ui/android/layouts/java",
-  "+chrome/browser/notifications",
-  "+chrome/browser/password_manager/android",
-  "+chrome/browser/policy/android",
-  "+chrome/browser/preferences/android/java",
-  "+chrome/browser/safe_browsing/android",
-  "+chrome/browser/safety_check/android",
-  "+chrome/browser/signin/services/android/java",
-  "+chrome/browser/signin/ui/android/java",
-  "+chrome/browser/settings/android",
-  "+chrome/browser/ui/android/favicon/java",
-  "+chrome/browser/ui/android/native_page",
-  "+chrome/browser/ui/messages/android",
-  "+chrome/browser/uid/android",
-  "+chrome/browser/user_education",
-  "+chrome/browser/util/android/java",
-  "+chrome/browser/version",
-  "+chrome/browser/video_tutorials",
-  "+chrome/browser/webauthn/android",
-  "+components/browser_ui/android/bottomsheet",
+  # Allow dependencies on chrome/browser modules
+  "+chrome/browser",
+
+  # Restrict dependencies to xsurface by default (crbug.com/1115137)
+  "-chrome/browser/xsurface",
+
   "+components/browser_ui/banners/android",
+  "+components/browser_ui/bottomsheet/android",
   "+components/browser_ui/contacts_picker/android",
   "+components/browser_ui/display_cutout/android",
   "+components/browser_ui/media/android",
@@ -53,6 +33,7 @@ include_rules = [
   "+components/favicon_base",
   "+components/find_in_page/android",
   "+components/infobars/android",
+  "+components/installedapp/android",
   "+components/invalidation",
   "+components/javascript_dialogs/android",
   "+components/messages/android",
@@ -63,8 +44,8 @@ include_rules = [
   "+components/prefs/android",
   "+components/query_tiles",
   "+components/security_interstitials/content/android",
-  "+components/signin/core/browser/android",
   "+components/signin/public/android",
+  "+components/site_engagement/content/android",
   "+components/spellcheck/browser",
   "+components/strictmode/android",
   "+components/subresource_filter/android",
@@ -72,7 +53,7 @@ include_rules = [
   "+components/user_prefs/android",
   "+components/viz/common/java",
   "+components/webapk/android",
-  "+components/webapps/android/java",
+  "+components/webapps/browser/android/java",
   "+components/webrtc/android",
   "+jni",
   "+media/base/android/java",
@@ -81,6 +62,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  # Allow dependencies to xsurface from AppHooks only (crbug.com/1115137)
   "chrome/android/java/src/org/chromium/chrome/browser/AppHooks.java": [
     "+chrome/browser/xsurface/android",
   ],
@@ -111,9 +93,6 @@ specific_include_rules = {
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
   "AutofillAssistantFacade\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
-  ],
-  "AutofillKeyboardAccessoryViewBridge\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
   "ManualFillingComponentBridge\.java": [
@@ -168,12 +147,6 @@ specific_include_rules = {
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
   "VrShellDelegate\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
-  ],
-  "VrWindowAndroid\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
-  ],
-  "FeedSurfaceCoordinator\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
 }

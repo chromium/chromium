@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "build/build_config.h"
-#include "content/public/browser/ax_inspect_factory.h"
+#include "ui/accessibility/platform/inspect/ax_tree_formatter.h"
 
 #if defined(OS_WIN)
 #include "base/win/scoped_com_initializer.h"

@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "media/base/mock_filters.h"
 #include "media/cdm/default_cdm_factory.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/services/cdm_service.h"
@@ -26,17 +27,46 @@ namespace {
 using testing::_;
 using testing::Invoke;
 using testing::InvokeWithoutArgs;
+using testing::NiceMock;
+using testing::Return;
 
 MATCHER_P(MatchesResult, success, "") {
   return arg->success == success;
 }
 
-const char kClearKeyKeySystem[] = "org.w3.clearkey";
-const char kInvalidKeySystem[] = "invalid.key.system";
+// MockCdmFactory treats any non-empty key system as valid and the empty key
+// system as invalid.
+const char kValidKeySystem[] = "org.w3.clearkey";
+const char kInvalidKeySystem[] = "";
+
+// Needed since MockCdmServiceClient needs to return unique_ptr of CdmFactory.
+class CdmFactoryWrapper : public CdmFactory {
+ public:
+  explicit CdmFactoryWrapper(CdmFactory* cdm_factory)
+      : cdm_factory_(cdm_factory) {}
+
+  // CdmFactory implementation.
+  void Create(const std::string& key_system,
+              const CdmConfig& cdm_config,
+              const SessionMessageCB& session_message_cb,
+              const SessionClosedCB& session_closed_cb,
+              const SessionKeysChangeCB& session_keys_change_cb,
+              const SessionExpirationUpdateCB& session_expiration_update_cb,
+              CdmCreatedCB cdm_created_cb) override {
+    cdm_factory_->Create(key_system, cdm_config, session_message_cb,
+                         session_closed_cb, session_keys_change_cb,
+                         session_expiration_update_cb,
+                         std::move(cdm_created_cb));
+  }
+
+ private:
+  CdmFactory* const cdm_factory_;
+};
 
 class MockCdmServiceClient : public media::CdmService::Client {
  public:
-  MockCdmServiceClient() = default;
+  explicit MockCdmServiceClient(CdmFactory* cdm_factory)
+      : cdm_factory_(cdm_factory) {}
   ~MockCdmServiceClient() override = default;
 
   // media::CdmService::Client implementation.
@@ -44,12 +74,15 @@ class MockCdmServiceClient : public media::CdmService::Client {
 
   std::unique_ptr<media::CdmFactory> CreateCdmFactory(
       mojom::FrameInterfaceFactory* frame_interfaces) override {
-    return std::make_unique<media::DefaultCdmFactory>();
+    return std::make_unique<CdmFactoryWrapper>(cdm_factory_);
   }
 
 #if BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
   void AddCdmHostFilePaths(std::vector<media::CdmHostFilePath>*) override {}
 #endif  // BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
+
+ private:
+  CdmFactory* const cdm_factory_;
 };
 
 class CdmServiceTest : public testing::Test {
@@ -62,7 +95,11 @@ class CdmServiceTest : public testing::Test {
   MOCK_METHOD0(CdmConnectionClosed, void());
 
   void Initialize() {
-    auto mock_cdm_service_client = std::make_unique<MockCdmServiceClient>();
+    EXPECT_CALL(*mock_cdm_, GetCdmContext())
+        .WillRepeatedly(Return(&cdm_context_));
+
+    auto mock_cdm_service_client =
+        std::make_unique<MockCdmServiceClient>(&mock_cdm_factory_);
     mock_cdm_service_client_ = mock_cdm_service_client.get();
 
     service_ = std::make_unique<CdmService>(
@@ -106,17 +143,21 @@ class CdmServiceTest : public testing::Test {
   mojo::Remote<mojom::CdmFactory> cdm_factory_remote_;
   mojo::Remote<mojom::ContentDecryptionModule> cdm_remote_;
 
+  // MojoCdmService will always create/use `mock_cdm_factory_` and `mock_cdm_`,
+  // so it's easier to set expectations on them.
+  scoped_refptr<MockCdm> mock_cdm_{new MockCdm()};
+  MockCdmFactory mock_cdm_factory_{mock_cdm_};
+  NiceMock<MockCdmContext> cdm_context_;
+
  private:
   void OnCdmCreated(bool expected_result,
                     mojo::PendingRemote<mojom::ContentDecryptionModule> remote,
-                    const base::Optional<base::UnguessableToken>& cdm_id,
-                    mojo::PendingRemote<mojom::Decryptor> decryptor,
+                    media::mojom::CdmContextPtr cdm_context,
                     const std::string& error_message) {
     if (!expected_result) {
       EXPECT_FALSE(remote);
-      EXPECT_FALSE(decryptor);
+      EXPECT_FALSE(cdm_context);
       EXPECT_TRUE(!error_message.empty());
-      EXPECT_FALSE(cdm_id);
       return;
     }
     EXPECT_TRUE(remote);
@@ -153,7 +194,7 @@ TEST_F(CdmServiceTest, LoadCdm) {
 
 TEST_F(CdmServiceTest, InitializeCdm_Success) {
   Initialize();
-  InitializeCdm(kClearKeyKeySystem, true);
+  InitializeCdm(kValidKeySystem, true);
 }
 
 TEST_F(CdmServiceTest, InitializeCdm_InvalidKeySystem) {
@@ -163,9 +204,9 @@ TEST_F(CdmServiceTest, InitializeCdm_InvalidKeySystem) {
 
 TEST_F(CdmServiceTest, DestroyAndRecreateCdm) {
   Initialize();
-  InitializeCdm(kClearKeyKeySystem, true);
+  InitializeCdm(kValidKeySystem, true);
   cdm_remote_.reset();
-  InitializeCdm(kClearKeyKeySystem, true);
+  InitializeCdm(kValidKeySystem, true);
 }
 
 // CdmFactory disconnection will cause the service to idle.
@@ -173,7 +214,7 @@ TEST_F(CdmServiceTest, DestroyCdmFactory) {
   Initialize();
   auto* service = cdm_service();
 
-  InitializeCdm(kClearKeyKeySystem, true);
+  InitializeCdm(kValidKeySystem, true);
   EXPECT_EQ(service->BoundCdmFactorySizeForTesting(), 1u);
   EXPECT_EQ(service->UnboundCdmFactorySizeForTesting(), 0u);
 
@@ -185,9 +226,9 @@ TEST_F(CdmServiceTest, DestroyCdmFactory) {
 }
 
 // Destroy service will destroy the CdmFactory and all CDMs.
-TEST_F(CdmServiceTest, DestroyCdmService) {
+TEST_F(CdmServiceTest, DestroyCdmService_AfterCdmCreation) {
   Initialize();
-  InitializeCdm(kClearKeyKeySystem, true);
+  InitializeCdm(kValidKeySystem, true);
 
   base::RunLoop run_loop;
   // Ideally we should not care about order, and should only quit the loop when
@@ -196,6 +237,19 @@ TEST_F(CdmServiceTest, DestroyCdmService) {
   EXPECT_CALL(*this, CdmConnectionClosed())
       .WillOnce(Invoke(&run_loop, &base::RunLoop::Quit));
   DestroyService();
+  run_loop.Run();
+}
+
+// Before the CDM is fully created, CdmService has been destroyed. We should
+// fail gracefully instead of a crash. See crbug.com/1190319.
+TEST_F(CdmServiceTest, DestroyCdmService_DuringCdmCreation) {
+  base::RunLoop run_loop;
+  EXPECT_CALL(*this, CdmFactoryConnectionClosed())
+      .WillOnce(Invoke(&run_loop, &base::RunLoop::Quit));
+  mock_cdm_factory_.SetBeforeCreationCB(base::BindRepeating(
+      &CdmServiceTest::DestroyService, base::Unretained(this)));
+  Initialize();
+  InitializeCdm(kValidKeySystem, true);
   run_loop.Run();
 }
 

@@ -202,27 +202,25 @@ class D3D11VideoDecoderTest : public ::testing::Test {
             get_device_cb, *supported_configs, is_hdr_supported_));
   }
 
-  void InitializeDecoder(const VideoDecoderConfig& config,
-                         StatusCode expectation = StatusCode::kOk) {
+  void InitializeDecoder(const VideoDecoderConfig& config, bool expectSuccess) {
     const bool low_delay = false;
     CdmContext* cdm_context = nullptr;
 
-    if (expectation == StatusCode::kOk) {
+    if (expectSuccess) {
       EXPECT_CALL(*this, MockInitCB(_)).Times(0);
       EXPECT_CALL(*impl_, MockInitialize());
     } else {
       EXPECT_CALL(*this, MockInitCB(_)).Times(1);
     }
-    decoder_->Initialize(
-        config, low_delay, cdm_context,
-        base::BindOnce(&D3D11VideoDecoderTest::CheckExpectedStatus,
-                       base::Unretained(this), expectation),
-        base::DoNothing(), base::DoNothing());
+    decoder_->Initialize(config, low_delay, cdm_context,
+                         base::BindOnce(&D3D11VideoDecoderTest::CheckStatus,
+                                        base::Unretained(this), expectSuccess),
+                         base::DoNothing(), base::DoNothing());
     base::RunLoop().RunUntilIdle();
   }
 
-  void CheckExpectedStatus(Status expected, Status actual) {
-    ASSERT_EQ(expected.code(), actual.code());
+  void CheckStatus(bool expectSuccess, Status actual) {
+    ASSERT_EQ(expectSuccess, actual.is_ok());
     MockInitCB(actual);
   }
 
@@ -263,10 +261,9 @@ TEST_F(D3D11VideoDecoderTest, SupportsVP9Profile0WithDecoderEnabled) {
   CreateDecoder();
   // We don't support vp9 on windows 7 and below.
   if (base::win::GetVersion() <= base::win::Version::WIN7) {
-    InitializeDecoder(configuration,
-                      StatusCode::kDecoderInitializeNeverCompleted);
+    InitializeDecoder(configuration, false);
   } else {
-    InitializeDecoder(configuration);
+    InitializeDecoder(configuration, true);
   }
 }
 
@@ -277,8 +274,7 @@ TEST_F(D3D11VideoDecoderTest, DoesNotSupportVP9WithLegacyGPU) {
 
   EnableDecoder(D3D11_DECODER_PROFILE_VP9_VLD_PROFILE0);
   CreateDecoder();
-  InitializeDecoder(configuration,
-                    StatusCode::kDecoderInitializeNeverCompleted);
+  InitializeDecoder(configuration, false);
 }
 
 TEST_F(D3D11VideoDecoderTest, DoesNotSupportVP9WithGPUWorkaroundDisableVPX) {
@@ -288,8 +284,7 @@ TEST_F(D3D11VideoDecoderTest, DoesNotSupportVP9WithGPUWorkaroundDisableVPX) {
 
   EnableDecoder(D3D11_DECODER_PROFILE_VP9_VLD_PROFILE0);
   CreateDecoder();
-  InitializeDecoder(configuration,
-                    StatusCode::kDecoderInitializeNeverCompleted);
+  InitializeDecoder(configuration, false);
 }
 
 TEST_F(D3D11VideoDecoderTest, DoesNotSupportVP9WithoutDecoderEnabled) {
@@ -299,8 +294,7 @@ TEST_F(D3D11VideoDecoderTest, DoesNotSupportVP9WithoutDecoderEnabled) {
   // Enable a non-VP9 decoder.
   EnableDecoder(D3D11_DECODER_PROFILE_H264_VLD_NOFGT);  // Paranoia, not VP9.
   CreateDecoder();
-  InitializeDecoder(configuration,
-                    StatusCode::kDecoderInitializeNeverCompleted);
+  InitializeDecoder(configuration, false);
 }
 
 TEST_F(D3D11VideoDecoderTest, DoesNotSupportsH264HIGH10Profile) {
@@ -309,7 +303,7 @@ TEST_F(D3D11VideoDecoderTest, DoesNotSupportsH264HIGH10Profile) {
   VideoDecoderConfig high10 = TestVideoConfig::NormalCodecProfile(
       kCodecH264, H264PROFILE_HIGH10PROFILE);
 
-  InitializeDecoder(high10, StatusCode::kDecoderInitializeNeverCompleted);
+  InitializeDecoder(high10, false);
 }
 
 TEST_F(D3D11VideoDecoderTest, SupportsH264WithAutodetectedConfig) {
@@ -318,7 +312,7 @@ TEST_F(D3D11VideoDecoderTest, SupportsH264WithAutodetectedConfig) {
   VideoDecoderConfig normal =
       TestVideoConfig::NormalCodecProfile(kCodecH264, H264PROFILE_MAIN);
 
-  InitializeDecoder(normal);
+  InitializeDecoder(normal, true);
   // TODO(liberato): Check |last_video_decoder_desc_| for sanity.
 }
 
@@ -336,7 +330,7 @@ TEST_F(D3D11VideoDecoderTest, DoesNotSupportH264IfNoSupportedConfig) {
   VideoDecoderConfig normal =
       TestVideoConfig::NormalCodecProfile(kCodecH264, H264PROFILE_MAIN);
 
-  InitializeDecoder(normal, StatusCode::kDecoderInitializeNeverCompleted);
+  InitializeDecoder(normal, false);
 }
 
 TEST_F(D3D11VideoDecoderTest, DoesNotSupportEncryptionWithoutFlag) {
@@ -346,8 +340,7 @@ TEST_F(D3D11VideoDecoderTest, DoesNotSupportEncryptionWithoutFlag) {
   encrypted_config.SetIsEncrypted(true);
 
   DisableFeature(kHardwareSecureDecryption);
-  InitializeDecoder(encrypted_config,
-                    StatusCode::kDecoderInitializeNeverCompleted);
+  InitializeDecoder(encrypted_config, false);
 }
 
 TEST_F(D3D11VideoDecoderTest, IgnoreWorkaroundsIgnoresWorkaround) {
@@ -357,7 +350,7 @@ TEST_F(D3D11VideoDecoderTest, IgnoreWorkaroundsIgnoresWorkaround) {
   gpu_workarounds_.disable_d3d11_video_decoder = true;
   CreateDecoder();
   InitializeDecoder(
-      TestVideoConfig::NormalCodecProfile(kCodecH264, H264PROFILE_MAIN));
+      TestVideoConfig::NormalCodecProfile(kCodecH264, H264PROFILE_MAIN), true);
 }
 
 TEST_F(D3D11VideoDecoderTest, WorkaroundTurnsOffDecoder) {
@@ -365,8 +358,7 @@ TEST_F(D3D11VideoDecoderTest, WorkaroundTurnsOffDecoder) {
   gpu_workarounds_.disable_d3d11_video_decoder = true;
   CreateDecoder();
   InitializeDecoder(
-      TestVideoConfig::NormalCodecProfile(kCodecH264, H264PROFILE_MAIN),
-      StatusCode::kDecoderInitializeNeverCompleted);
+      TestVideoConfig::NormalCodecProfile(kCodecH264, H264PROFILE_MAIN), false);
 }
 
 TEST_F(D3D11VideoDecoderTest, DoesNotSupportEncryptionWithFlagOn11_0) {
@@ -377,8 +369,7 @@ TEST_F(D3D11VideoDecoderTest, DoesNotSupportEncryptionWithFlagOn11_0) {
   // 11.1 version, except for the D3D11 version.
 
   EnableFeature(kHardwareSecureDecryption);
-  InitializeDecoder(encrypted_config,
-                    StatusCode::kDecoderInitializeNeverCompleted);
+  InitializeDecoder(encrypted_config, false);
 }
 
 TEST_F(D3D11VideoDecoderTest, DISABLED_SupportsEncryptionWithFlagOn11_1) {
@@ -390,7 +381,7 @@ TEST_F(D3D11VideoDecoderTest, DISABLED_SupportsEncryptionWithFlagOn11_1) {
   ON_CALL(*mock_d3d11_device_.Get(), GetFeatureLevel)
       .WillByDefault(Return(D3D_FEATURE_LEVEL_11_1));
   EnableFeature(kHardwareSecureDecryption);
-  InitializeDecoder(encrypted_config);
+  InitializeDecoder(encrypted_config, true);
 }
 
 // TODO(xhwang): Add tests to cover kWaitingForNewKey and kWaitingForReset.

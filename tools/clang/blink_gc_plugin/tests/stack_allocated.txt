@@ -23,9 +23,9 @@ class DerivedHeapObject2 : public HeapObject {
 ./stack_allocated.h:44:3: warning: [blink-gc] Garbage collected class 'DerivedHeapObject2' is not permitted to override its new operator.
   STACK_ALLOCATED();
   ^
-./heap/stubs.h:195:5: note: expanded from macro 'STACK_ALLOCATED'
-    __attribute__((annotate("blink_stack_allocated")))      \
-    ^
+./heap/stubs.h:362:3: note: expanded from macro 'STACK_ALLOCATED'
+  __attribute__((annotate("blink_stack_allocated"))) \
+  ^
 In file included from stack_allocated.cpp:5:
 ./stack_allocated.h:24:5: warning: [blink-gc] Class 'StackObject' has untraced or not traceable fields.
     void Trace(Visitor* visitor) const { visitor->Trace(m_obj); }

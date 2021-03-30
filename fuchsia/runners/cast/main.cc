@@ -66,8 +66,8 @@ int main(int argc, char** argv) {
       command_line->HasSwitch(kForceHeadlessForTestsSwitch) ||
       GetConfigBool(kHeadlessConfigKey);
   CastRunner runner(enable_headless);
-  base::fuchsia::ScopedServiceBinding<fuchsia::sys::Runner> binding(
-      outgoing_directory, &runner);
+  base::ScopedServiceBinding<fuchsia::sys::Runner> binding(outgoing_directory,
+                                                           &runner);
 
   if (command_line->HasSwitch(kDisableVulkanForTestsSwitch)) {
     runner.set_disable_vulkan_for_test();  // IN-TEST

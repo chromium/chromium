@@ -310,10 +310,6 @@ class AX_EXPORT AXPlatformNodeAuraLinux : public AXPlatformNodeBase {
                           PlatformAttributeList* attributes) override;
 
  private:
-  using AXPositionInstance = AXNodePosition::AXPositionInstance;
-  using AXPositionInstanceType = typename AXPositionInstance::element_type;
-  using AXNodeRange = AXRange<AXPositionInstanceType>;
-
   // This is static to ensure that we aren't trying to access the rest of the
   // accessibility tree during node initialization.
   static ImplementedAtkInterfaces GetGTypeInterfaceMask(const AXNodeData& data);

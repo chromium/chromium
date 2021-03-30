@@ -34,7 +34,7 @@ class MostVisitedSitesProvider : public AutocompleteProvider {
   ~MostVisitedSitesProvider() override;
 
   // Constructs an AutocompleteMatch from supplied details.
-  AutocompleteMatch BuildMatch(const base::string16& description,
+  AutocompleteMatch BuildMatch(const std::u16string& description,
                                const GURL& url,
                                int relevance,
                                AutocompleteMatchType::Type type);

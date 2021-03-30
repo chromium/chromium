@@ -58,7 +58,8 @@ void ScrollPredictor::ResetOnGestureScrollBegin(const WebGestureEvent& event) {
 
 std::unique_ptr<EventWithCallback> ScrollPredictor::ResampleScrollEvents(
     std::unique_ptr<EventWithCallback> event_with_callback,
-    base::TimeTicks frame_time) {
+    base::TimeTicks frame_time,
+    base::TimeDelta frame_interval) {
   if (!should_resample_scroll_events_)
     return event_with_callback;
 
@@ -79,7 +80,8 @@ std::unique_ptr<EventWithCallback> ScrollPredictor::ResampleScrollEvents(
       UpdatePrediction(coalesced_event.event_->Event(), frame_time);
 
     if (should_resample_scroll_events_) {
-      ResampleEvent(frame_time, event_with_callback->event_pointer(),
+      ResampleEvent(frame_time, frame_interval,
+                    event_with_callback->event_pointer(),
                     &event_with_callback->latency_info());
     }
 
@@ -128,6 +130,7 @@ void ScrollPredictor::UpdatePrediction(const WebInputEvent& event,
 }
 
 void ScrollPredictor::ResampleEvent(base::TimeTicks frame_time,
+                                    base::TimeDelta frame_interval,
                                     WebInputEvent* event,
                                     ui::LatencyInfo* latency_info) {
   DCHECK(event->GetType() == WebInputEvent::Type::kGestureScrollUpdate);
@@ -151,7 +154,7 @@ void ScrollPredictor::ResampleEvent(base::TimeTicks frame_time,
   base::TimeTicks prediction_time =
       gesture_event->TimeStamp() + prediction_delta;
 
-  auto result = predictor_->GeneratePrediction(prediction_time);
+  auto result = predictor_->GeneratePrediction(prediction_time, frame_interval);
   if (result) {
     predicted_accumulated_delta = result->pos;
     gesture_event->SetTimeStamp(result->time_stamp);

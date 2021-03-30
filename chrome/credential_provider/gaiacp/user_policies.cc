@@ -45,7 +45,7 @@ UserPolicies::UserPolicies()
 
   // Override with existing registry entry if any.
   DWORD reg_validity_period_days;
-  HRESULT hr = GetGlobalFlag(base::UTF8ToUTF16(kKeyValidityPeriodInDays),
+  HRESULT hr = GetGlobalFlag(base::UTF8ToWide(kKeyValidityPeriodInDays),
                              &reg_validity_period_days);
   if (SUCCEEDED(hr)) {
     validity_period_days = reg_validity_period_days;

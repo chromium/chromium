@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/optional.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 
@@ -161,8 +161,8 @@ const char* DisplayResolutionHandler::SettingName() {
 void DisplayResolutionHandler::OnSettingUpdate() {
   policy_enabled_ = false;
   const base::DictionaryValue* resolution_pref = nullptr;
-  chromeos::CrosSettings::Get()->GetDictionary(
-      chromeos::kDeviceDisplayResolution, &resolution_pref);
+  ash::CrosSettings::Get()->GetDictionary(chromeos::kDeviceDisplayResolution,
+                                          &resolution_pref);
   if (!resolution_pref)
     return;
 

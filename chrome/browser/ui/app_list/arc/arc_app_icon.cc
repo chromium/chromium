@@ -16,6 +16,7 @@
 #include "base/lazy_instance.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
@@ -26,6 +27,7 @@
 #include "chrome/grit/component_extension_resources.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/grit/extensions_browser_resources.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size.h"
@@ -35,6 +37,11 @@
 namespace {
 
 bool disable_safe_decoding_for_testing = false;
+
+data_decoder::DataDecoder& GetDataDecoder() {
+  static base::NoDestructor<data_decoder::DataDecoder> data_decoder;
+  return *data_decoder;
+}
 
 }  // namespace
 
@@ -168,7 +175,8 @@ ArcAppIcon::DecodeRequest::DecodeRequest(
     bool retain_padding,
     gfx::ImageSkia& image_skia,
     std::map<ui::ScaleFactor, base::Time>& incomplete_scale_factors)
-    : host_(host),
+    : ImageRequest(&GetDataDecoder()),
+      host_(host),
       descriptor_(descriptor),
       resize_allowed_(resize_allowed),
       retain_padding_(retain_padding),
@@ -244,18 +252,6 @@ ArcAppIcon::ArcAppIcon(content::BrowserContext* context,
   const std::vector<ui::ScaleFactor>& scale_factors =
       ui::GetSupportedScaleFactors();
   switch (icon_type) {
-    case IconType::kUncompressed:
-      image_skia_ = gfx::ImageSkia(
-          std::make_unique<Source>(weak_ptr_factory_.GetWeakPtr(),
-                                   resource_size_in_dip),
-          resource_size);
-      // Deliberately fall through to IconType::kCompressed to update
-      // |incomplete_scale_factors_|.
-      FALLTHROUGH;
-    case IconType::kCompressed:
-      for (const auto& scale_factor : scale_factors)
-        incomplete_scale_factors_.insert({scale_factor, base::Time::Now()});
-      break;
     case IconType::kAdaptive:
       foreground_image_skia_ = gfx::ImageSkia(
           std::make_unique<Source>(weak_ptr_factory_.GetWeakPtr(),
@@ -275,6 +271,24 @@ ArcAppIcon::ArcAppIcon(content::BrowserContext* context,
             {scale_factor, base::Time::Now()});
         background_incomplete_scale_factors_.insert(
             {scale_factor, base::Time::Now()});
+        is_adaptive_icons_.insert({scale_factor, true});
+      }
+      // Deliberately fall through to IconType::kUncompressed to update
+      // |image_skia_| and |incomplete_scale_factors_|.
+      FALLTHROUGH;
+    case IconType::kUncompressed:
+      image_skia_ = gfx::ImageSkia(
+          std::make_unique<Source>(weak_ptr_factory_.GetWeakPtr(),
+                                   resource_size_in_dip),
+          resource_size);
+      // Deliberately fall through to IconType::kCompressed to update
+      // |incomplete_scale_factors_|.
+      FALLTHROUGH;
+    case IconType::kCompressed:
+      for (const auto& scale_factor : scale_factors) {
+        incomplete_scale_factors_.insert({scale_factor, base::Time::Now()});
+        if (icon_type != IconType::kAdaptive)
+          is_adaptive_icons_.insert({scale_factor, false});
       }
       break;
   }
@@ -284,15 +298,6 @@ ArcAppIcon::~ArcAppIcon() = default;
 
 void ArcAppIcon::LoadSupportedScaleFactors() {
   switch (icon_type_) {
-    case IconType::kUncompressed:
-      // Calling GetRepresentation indirectly calls LoadForScaleFactor but also
-      // first initializes image_skia_ with the placeholder icons (e.g.
-      // IDR_APP_DEFAULT_ICON), via ArcAppIcon::Source::GetImageForScale.
-      for (auto scale_factor : incomplete_scale_factors_) {
-        image_skia_.GetRepresentation(
-            ui::GetScaleForScaleFactor(scale_factor.first));
-      }
-      break;
     case IconType::kCompressed:
       for (auto scale_factor : incomplete_scale_factors_)
         LoadForScaleFactor(scale_factor.first);
@@ -306,11 +311,22 @@ void ArcAppIcon::LoadSupportedScaleFactors() {
         background_image_skia_.GetRepresentation(
             ui::GetScaleForScaleFactor(scale_factor.first));
       }
+      // Deliberately fall through to IconType::kCompressed to update
+      // |image_skia_|.
+      FALLTHROUGH;
+    case IconType::kUncompressed:
+      // Calling GetRepresentation indirectly calls LoadForScaleFactor but also
+      // first initializes image_skia_ with the placeholder icons (e.g.
+      // IDR_APP_DEFAULT_ICON), via ArcAppIcon::Source::GetImageForScale.
+      for (auto scale_factor : incomplete_scale_factors_) {
+        image_skia_.GetRepresentation(
+            ui::GetScaleForScaleFactor(scale_factor.first));
+      }
       break;
   }
 }
 
-bool ArcAppIcon::EverySupportedScaleFactorIsLoaded() const {
+bool ArcAppIcon::EverySupportedScaleFactorIsLoaded() {
   switch (icon_type_) {
     case IconType::kUncompressed:
       // Deliberately fall through to IconType::kCompressed to check
@@ -318,9 +334,40 @@ bool ArcAppIcon::EverySupportedScaleFactorIsLoaded() const {
       FALLTHROUGH;
     case IconType::kCompressed:
       return incomplete_scale_factors_.empty();
-    case IconType::kAdaptive:
-      return foreground_incomplete_scale_factors_.empty() &&
-             background_incomplete_scale_factors_.empty();
+    case IconType::kAdaptive: {
+      // Check whether there is non-adaptive icon for any scale.
+      bool is_adaptive_icon = true;
+      for (const auto& it : is_adaptive_icons_) {
+        if (!it.second) {
+          is_adaptive_icon = false;
+          break;
+        }
+      }
+
+      // All scales have adaptive icon.
+      if (is_adaptive_icon) {
+        return foreground_incomplete_scale_factors_.empty() &&
+               background_incomplete_scale_factors_.empty();
+      }
+
+      // Some scales have non-adaptive icons. Copy the decode image
+      // representation from |foreground_image_skia_| to |image_skia_|.
+      for (auto it = is_adaptive_icons_.begin(); it != is_adaptive_icons_.end();
+           it++) {
+        if (it->second &&
+            !base::Contains(foreground_incomplete_scale_factors_, it->first)) {
+          it->second = false;
+          float scale = ui::GetScaleForScaleFactor(it->first);
+          image_skia_.RemoveRepresentation(scale);
+          image_skia_.AddRepresentation(
+              foreground_image_skia_.GetRepresentation(scale));
+          image_skia_.RemoveUnsupportedRepresentationsForScale(scale);
+          incomplete_scale_factors_.erase(it->first);
+        }
+      }
+
+      return incomplete_scale_factors_.empty();
+    }
   }
 }
 
@@ -635,18 +682,15 @@ void ArcAppIcon::OnIconRead(
       // without |background_icon_path|, so |unsafe_icon_data| could have one
       // element for |foreground_icon_path| only.
       if (read_result->unsafe_icon_data.size() == 1) {
-        is_adaptive_icon_ = false;
+        is_adaptive_icons_[read_result->scale_factor] = false;
         DecodeImage(read_result->unsafe_icon_data[0],
                     ArcAppIconDescriptor(resource_size_in_dip_,
                                          read_result->scale_factor),
                     read_result->resize_allowed, false /* retain_padding */,
-                    foreground_image_skia_,
-                    foreground_incomplete_scale_factors_);
-        background_incomplete_scale_factors_.clear();
+                    image_skia_, incomplete_scale_factors_);
         return;
       }
 
-      is_adaptive_icon_ = true;
       DCHECK_EQ(2u, read_result->unsafe_icon_data.size());
       DecodeImage(read_result->unsafe_icon_data[0],
                   ArcAppIconDescriptor(resource_size_in_dip_,

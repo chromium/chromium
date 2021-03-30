@@ -47,6 +47,11 @@ class GFX_EXPORT SurfaceControl {
   // Returns true if tagging a surface with a frame rate value is supported.
   static bool SupportsSetFrameRate();
 
+  // Applies transaction. Used to emulate webview functor interface, where we
+  // pass raw ASurfaceTransaction object. For use inside Chromium use
+  // Transaction class below instead.
+  static void ApplyTransaction(ASurfaceTransaction* transaction);
+
   class GFX_EXPORT Surface : public base::RefCounted<Surface> {
    public:
     Surface();
@@ -118,6 +123,7 @@ class GFX_EXPORT SurfaceControl {
     void SetColorSpace(const Surface& surface,
                        const gfx::ColorSpace& color_space);
     void SetFrameRate(const Surface& surface, float frame_rate);
+    void SetParent(const Surface& surface, Surface* new_parent);
 
     // Sets the callback which will be dispatched when the transaction is acked
     // by the framework.

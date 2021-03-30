@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.video_tutorials;
 
+import android.os.SystemClock;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
@@ -115,6 +117,7 @@ public class PlaybackStateObserver extends MediaSessionObserver {
     public void mediaSessionStateChanged(boolean isControllable, boolean isSuspended) {
         mIsControllable = isControllable;
         mIsSuspended = isSuspended;
+        updateState(mLastPosition);
     }
 
     private void updateState(MediaPosition newPosition) {
@@ -164,12 +167,15 @@ public class PlaybackStateObserver extends MediaSessionObserver {
         long updatedPosition = (long) (mediaPosition.getPosition()
                 + (elapsedTime * mediaPosition.getPlaybackRate()));
         updatedPosition = Math.min(updatedPosition, mediaPosition.getDuration());
+        if (mediaPosition.getDuration() - updatedPosition < 100) {
+            updatedPosition = mediaPosition.getDuration();
+        }
         return updatedPosition;
     }
 
     private static long getCurrentSystemTime() {
         if (sCurrentSystemTimeForTesting != null) return sCurrentSystemTimeForTesting;
-        return System.currentTimeMillis();
+        return SystemClock.elapsedRealtime();
     }
 
     @VisibleForTesting

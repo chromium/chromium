@@ -8,11 +8,12 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/linux/gtk/gtk.gni")
 import("//build/config/linux/pangocairo/pangocairo.gni")
+import("//build/config/locales.gni")
 import("//build/config/ozone.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
 import("//build/util/branding.gni")
-import("//components/system_media_controls/linux/buildflags/buildflags.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//tools/grit/grit_rule.gni")
 import("//ui/base/ui_features.gni")
@@ -80,6 +81,8 @@ source_set("hit_test") {
       "hit_test_x11.h",
     ]
   }
+
+  deps = [ "//base" ]
 }
 
 component("base") {
@@ -91,7 +94,6 @@ component("base") {
     "default_style.h",
     "device_form_factor.h",
     "device_form_factor_desktop.cc",
-    "dragdrop/drag_drop_types.h",
     "dragdrop/drop_target_event.cc",
     "dragdrop/drop_target_event.h",
     "dragdrop/os_exchange_data.cc",
@@ -170,6 +172,7 @@ component("base") {
     "webui/i18n_source_stream.h",
     "webui/jstemplate_builder.cc",
     "webui/jstemplate_builder.h",
+    "webui/resource_path.h",
     "webui/web_ui_util.cc",
     "webui/web_ui_util.h",
     "window_open_disposition.cc",
@@ -190,7 +193,6 @@ component("base") {
 
   if (is_win) {
     sources += [
-      "dragdrop/drag_drop_types_win.cc",
       "dragdrop/drag_source_win.cc",
       "dragdrop/drag_source_win.h",
       "dragdrop/drop_target_win.cc",
@@ -276,6 +278,8 @@ component("base") {
       "cocoa/focus_window_set.mm",
       "cocoa/menu_controller.h",
       "cocoa/menu_controller.mm",
+      "cocoa/nsmenuitem_additions.h",
+      "cocoa/nsmenuitem_additions.mm",
       "cocoa/permissions_utils.h",
       "cocoa/permissions_utils.mm",
       "cocoa/quartz_util.h",
@@ -302,7 +306,6 @@ component("base") {
       "cocoa/weak_ptr_nsobject.mm",
       "cocoa/window_size_constants.h",
       "cocoa/window_size_constants.mm",
-      "dragdrop/drag_drop_types_mac.mm",
       "dragdrop/os_exchange_data_provider_builder_mac.h",
       "dragdrop/os_exchange_data_provider_builder_mac.mm",
       "dragdrop/os_exchange_data_provider_mac.h",
@@ -324,8 +327,6 @@ component("base") {
     sources += [
       "accelerators/accelerator.cc",
       "accelerators/accelerator.h",
-      "accelerators/accelerator_history.cc",
-      "accelerators/accelerator_history.h",
       "accelerators/accelerator_manager.cc",
       "accelerators/accelerator_manager.h",
       "accelerators/media_keys_listener.cc",
@@ -334,8 +335,6 @@ component("base") {
       "accelerators/media_keys_util.h",
       "accelerators/menu_label_accelerator_util.cc",
       "accelerators/menu_label_accelerator_util.h",
-      "accelerators/system_media_controls_media_keys_listener.cc",
-      "accelerators/system_media_controls_media_keys_listener.h",
       "base_window.cc",
       "base_window.h",
       "emoji/emoji_panel_helper.h",
@@ -356,6 +355,8 @@ component("base") {
       sources += [
         "accelerators/menu_label_accelerator_util_linux.cc",
         "accelerators/menu_label_accelerator_util_linux.h",
+        "linux/linux_desktop.cc",
+        "linux/linux_desktop.h",
       ]
     }
 
@@ -390,8 +391,6 @@ component("base") {
       "accelerators/global_media_keys_listener_win.h",
       "accelerators/media_keys_listener_win.cc",
     ]
-  } else if (use_mpris) {
-    sources += [ "accelerators/media_keys_listener_linux.cc" ]
   } else {
     sources += [ "accelerators/media_keys_listener_stub.cc" ]
   }
@@ -431,6 +430,7 @@ component("base") {
   ]
 
   deps = [
+    ":locales_list",
     "//base:base_static",
     "//base:i18n",
     "//base/third_party/dynamic_annotations",
@@ -444,6 +444,7 @@ component("base") {
     "//third_party/zlib/google:compression_utils",
     "//ui/base:data_exchange",
     "//ui/base/clipboard:clipboard_types",
+    "//ui/base/dragdrop/mojom",
     "//ui/display",
     "//ui/events",
     "//ui/events/devices",
@@ -460,7 +461,7 @@ component("base") {
   if (!is_ios) {
     # iOS does not use Chromium-specific code for event handling.
     public_deps += [
-      "//ui/base/dragdrop/file_info",
+      "//ui/base/clipboard:file_info",
       "//ui/events:events_base",
       "//ui/events/platform",
     ]
@@ -492,8 +493,6 @@ component("base") {
       deps += [ "//ui/gfx/x" ]
     }
   }
-
-  deps += [ "//components/system_media_controls" ]
 
   if (use_x11 && use_aura) {
     sources += [
@@ -565,7 +564,6 @@ component("base") {
 
   if (!toolkit_views && !use_aura) {
     sources -= [
-      "dragdrop/drag_drop_types.h",
       "dragdrop/drop_target_event.cc",
       "dragdrop/drop_target_event.h",
       "dragdrop/os_exchange_data.cc",
@@ -610,7 +608,7 @@ component("data_exchange") {
   deps = [
     "//base",
     "//ui/base/clipboard:clipboard_types",
-    "//ui/base/dragdrop/file_info",
+    "//ui/base/clipboard:file_info",
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//url",
@@ -872,6 +870,7 @@ test("ui_base_unittests") {
 
   sources = [
     "class_property_unittest.cc",
+    "clipboard/file_info_unittest.cc",
     "ime/utf_offset_unittest.cc",
     "l10n/l10n_util_unittest.cc",
     "l10n/time_format_unittest.cc",
@@ -904,7 +903,10 @@ test("ui_base_unittests") {
     "webui/i18n_source_stream_unittest.cc",
   ]
   if (is_mac) {
-    sources += [ "l10n/l10n_util_mac_unittest.mm" ]
+    sources += [
+      "cocoa/nsmenuitem_additions_unittest.mm",
+      "l10n/l10n_util_mac_unittest.mm",
+    ]
   }
   if (!is_ios) {
     sources += [ "user_activity/user_activity_detector_unittest.cc" ]
@@ -918,7 +920,7 @@ test("ui_base_unittests") {
   }
 
   data = []
-  data_deps = []
+  data_deps = [ "//testing/buildbot/filters:ui_base_unittests_filters" ]
   deps = [
     ":ui_base_test_resources_grit",
     ":ui_base_unittests_bundle_data",
@@ -940,7 +942,9 @@ test("ui_base_unittests") {
     "//ui/base:ui_data_pack",
     "//ui/base/clipboard:clipboard_test",
     "//ui/base/clipboard:clipboard_types",
+    "//ui/base/clipboard:file_info",
     "//ui/base/cursor:unittests",
+    "//ui/base/data_transfer_policy:unittests",
     "//ui/base/prediction:prediction",
     "//ui/display",
     "//ui/events:events_base",
@@ -967,11 +971,9 @@ test("ui_base_unittests") {
     ]
   } else {  # !is_ios
     sources += [
-      "accelerators/accelerator_history_unittest.cc",
       "accelerators/accelerator_manager_unittest.cc",
       "accelerators/accelerator_unittest.cc",
       "accelerators/menu_label_accelerator_util_unittest.cc",
-      "accelerators/system_media_controls_media_keys_listener_unittest.cc",
       "models/dialog_model_unittest.cc",
       "models/list_model_unittest.cc",
       "models/list_selection_model_unittest.cc",
@@ -979,7 +981,6 @@ test("ui_base_unittests") {
       "text/bytes_formatting_unittest.cc",
       "webui/web_ui_util_unittest.cc",
     ]
-    deps += [ "//components/system_media_controls:test_support" ]
 
     if (is_linux || is_chromeos) {
       sources +=
@@ -1033,9 +1034,13 @@ test("ui_base_unittests") {
         "ime/chromeos/extension_ime_util_unittest.cc",
         "ime/chromeos/ime_keyboard_unittest.cc",
         "ime/chromeos/input_method_chromeos_unittest.cc",
+        "ime/chromeos/input_method_descriptor_unittest.cc",
         "ime/chromeos/input_method_util_unittest.cc",
       ]
-      deps += [ "//ui/base/ime/chromeos" ]
+      deps += [
+        "//build:branding_buildflags",
+        "//ui/base/ime/chromeos",
+      ]
     }
     if ((is_linux || is_chromeos_lacros) && use_aura) {
       sources += [ "dragdrop/os_exchange_data_provider_non_backed_unittest.cc" ]
@@ -1218,4 +1223,34 @@ source_set("base_interactive_ui_tests") {
       "//ui/events:events",
     ]
   }
+}
+
+fuzzer_test("file_info_fuzzer") {
+  sources = [ "clipboard/file_info_fuzzer.cc" ]
+  deps = [
+    "//base",
+    "//ui/base/clipboard:file_info",
+  ]
+}
+
+# Same as locales, but includes "en" on Apple platforms.
+# Apple platforms use "en" instead of "en-US" (see the definition of
+# |locales_as_mac_outputs| in locales.gni). However, we still want to keep
+# "en-US" in the list as the |ResourceBundle::GetLocaleFilePath| implementations
+# in ui/base/resource/resource_bundle_{mac,ios}.mm return a valid path for
+# "en-US" (as they internally rewrite it as "en" instead).
+locales_for_platform_list = locales
+if (is_apple) {
+  locales_for_platform_list += [ "en" ]
+}
+
+action("locales_list_gen") {
+  script = "//tools/l10n/generate_locales_list.py"
+  outputs = [ "$root_gen_dir/ui/base/l10n/l10n_util_locales_list.inc" ]
+  args = rebase_path(outputs, root_build_dir) + locales_for_platform_list
+}
+
+source_set("locales_list") {
+  deps = [ ":locales_list_gen" ]
+  sources = [ "$root_gen_dir/ui/base/l10n/l10n_util_locales_list.inc" ]
 }

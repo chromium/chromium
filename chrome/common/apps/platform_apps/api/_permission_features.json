@@ -10,7 +10,7 @@
   "arcAppsPrivate": {
     "channel": "stable",
     "extension_types": ["platform_app"],
-    "whitelist": [
+    "allowlist": [
       "46578A13607D38F1DC8E280C4F499FB0A2F9565C", // http://crbug.com/819404
       "898FB5A39687D210766B8998BA4530B99C9E6586", // http://crbug.com/819404
       "82F30B65397BC3E4ADE627BBD857AB8A58210648", // http://crbug.com/819404
@@ -56,7 +56,7 @@
   "musicManagerPrivate": {
     "channel": "stable",
     "extension_types": ["platform_app"],
-    "whitelist": [
+    "allowlist": [
       "4B1D0E19C6C43C008C44A8278C8B5BFE15ABEB3C", // Music Manager
       "B8F61FD1B25DE03706DBB8906A73261E4DBB992A", // Test
       "F7FA7ABC1ECB89BA8EE6656847EFABBF43BB9BCA",
@@ -78,7 +78,7 @@
     "channel": "stable",
     "extension_types": ["platform_app"],
     "platforms": ["chromeos"],
-    "whitelist": [
+    "allowlist": [
       "A948368FC53BE437A55FEB414106E207925482F5",  // Files app
       "8C726564C6DBE7380BAB388DE6CC7EC93EB44B06",  // Video player
       "5065C83E84321221675D20FBE4DC43C655CC8C6F"   // Files app tests

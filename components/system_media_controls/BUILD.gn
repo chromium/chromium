@@ -16,12 +16,12 @@ component("system_media_controls") {
 
   deps = [
     "//base",
+    "//services/media_session/public/cpp",
     "//ui/gfx",
   ]
 
   public_deps = [ "//skia" ]
 
-  # TODO(https://crbug.com/949596): Move MPRIS and Now Playing here.
   if (is_win) {
     sources = [
       "win/system_media_controls_win.cc",

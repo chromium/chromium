@@ -247,8 +247,8 @@ class PipelineIntegrationTestBase : public Pipeline::Client {
   MOCK_METHOD1(OnVideoOpacityChange, void(bool));
   MOCK_METHOD1(OnVideoFrameRateChange, void(base::Optional<int>));
   MOCK_METHOD0(OnVideoAverageKeyframeDistanceUpdate, void());
-  MOCK_METHOD1(OnAudioDecoderChange, void(const PipelineDecoderInfo&));
-  MOCK_METHOD1(OnVideoDecoderChange, void(const PipelineDecoderInfo&));
+  MOCK_METHOD1(OnAudioDecoderChange, void(const AudioDecoderInfo&));
+  MOCK_METHOD1(OnVideoDecoderChange, void(const VideoDecoderInfo&));
   MOCK_METHOD1(OnRemotePlayStateChange, void(MediaStatus::State state));
 
  private:

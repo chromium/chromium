@@ -32,7 +32,6 @@
 namespace blink {
 
 class Document;
-class FetchParameters;
 
 // This class represents an <image> that loads a single image resource (the
 // url(...) function.)
@@ -41,9 +40,12 @@ class StyleFetchedImage final : public StyleImage,
   USING_PRE_FINALIZER(StyleFetchedImage, Dispose);
 
  public:
-  StyleFetchedImage(const Document&,
-                    FetchParameters&,
-                    bool is_lazyload_deferred);
+  StyleFetchedImage(ImageResourceContent* image,
+                    const Document&,
+                    bool is_lazyload_possibly_deferred,
+                    bool origin_clean,
+                    bool is_ad_related,
+                    const KURL&);
   ~StyleFetchedImage() override;
 
   WrappedImagePtr Data() const override;
@@ -69,8 +71,6 @@ class StyleFetchedImage final : public StyleImage,
                                 const FloatSize& target_size) const override;
   bool KnownToBeOpaque(const Document&, const ComputedStyle&) const override;
   ImageResourceContent* CachedImage() const override;
-
-  const KURL& Url() const { return url_; }
 
   void LoadDeferredImage(const Document& document);
 

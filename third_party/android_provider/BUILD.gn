@@ -10,5 +10,5 @@ android_library("android_provider_java") {
   sources = [
     "java/src/org/chromium/third_party/android/provider/MediaStoreUtils.java",
   ]
-  deps = [ "//third_party/android_deps:androidx_annotation_annotation_java" ]
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
 }

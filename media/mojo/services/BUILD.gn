@@ -145,6 +145,16 @@ component("services") {
     deps +=
         [ "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu" ]
   }
+
+  if (is_win) {
+    sources += [
+      "media_foundation_mojo_media_client.cc",
+      "media_foundation_mojo_media_client.h",
+      "media_foundation_renderer_wrapper.cc",
+      "media_foundation_renderer_wrapper.h",
+    ]
+    deps += [ "//media/base/win:media_foundation_util" ]
+  }
 }
 
 source_set("unit_tests") {

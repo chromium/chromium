@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<body>
+  <portal src="autofocus-portal.html"></portal>
+  <script>
+    let portal = document.querySelector('portal');
+    let loadComplete = new Promise(r => portal.onload = () => r(true));
+    function activate() {
+      return portal.activate().then(() => true, () => false);
+    }
+  </script>
+</body>

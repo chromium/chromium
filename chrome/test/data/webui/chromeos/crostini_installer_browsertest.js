@@ -7,7 +7,6 @@
  */
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
-GEN('#include "chromeos/constants/chromeos_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 function CrostiniInstallerBrowserTest() {}
@@ -17,8 +16,6 @@ CrostiniInstallerBrowserTest.prototype = {
 
   browsePreload:
       'chrome://crostini-installer/test_loader.html?module=chromeos/crostini_installer_app_test.js',
-
-  extraLibraries: [],
 };
 
 

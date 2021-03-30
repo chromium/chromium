@@ -4,12 +4,12 @@
 
 #include "content/child/child_process_sandbox_support_impl_mac.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string16.h"
 #include "base/strings/sys_string_conversions.h"
 #include "content/common/mac/font_loader.h"
 #include "content/public/child/child_thread.h"
@@ -34,7 +34,7 @@ bool WebSandboxSupportMac::LoadFont(
   if (!sandbox_support_)
     return false;
   base::ScopedCFTypeRef<CFStringRef> name_ref(CTFontCopyPostScriptName(font));
-  base::string16 font_name = SysCFStringRefToUTF16(name_ref);
+  std::u16string font_name = SysCFStringRefToUTF16(name_ref);
   float font_point_size = CTFontGetSize(font);
   mojo::ScopedSharedBufferHandle font_data;
   bool success = sandbox_support_->LoadFont(font_name, font_point_size,

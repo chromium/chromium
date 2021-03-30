@@ -119,18 +119,15 @@ ChromeContentBrowserClientChromeOsPart ::
     ~ChromeContentBrowserClientChromeOsPart() = default;
 
 void ChromeContentBrowserClientChromeOsPart::OverrideWebkitPrefs(
-    content::RenderViewHost* rvh,
+    content::WebContents* web_contents,
     blink::web_pref::WebPreferences* web_prefs) {
-  content::WebContents* contents =
-      content::WebContents::FromRenderViewHost(rvh);
-
   // A webcontents may not be the delegate of the render view host such as in
   // the case of interstitial pages.
-  if (!contents)
+  if (!web_contents)
     return;
 
-  OverrideWebkitPrefsForTabletMode(contents, web_prefs);
-  OverrideFontSize(contents, web_prefs);
+  OverrideWebkitPrefsForTabletMode(web_contents, web_prefs);
+  OverrideFontSize(web_contents, web_prefs);
 }
 
 // static

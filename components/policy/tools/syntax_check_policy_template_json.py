@@ -595,12 +595,12 @@ class PolicyTemplateChecker(object):
       # try and ensure the items are still described in the descriptions.
       value_to_names = {
           None: {'None', 'Unset', 'unset', 'not set', 'not configured'},
-          True: {'True', 'Enable', 'enable'},
-          False: {'False', 'Disable', 'disable'},
+          True: {'true', 'enable'},
+          False: {'false', 'disable'},
       }
       for value in required_values:
         names = value_to_names[value]
-        if not any(name in policy['desc'] for name in names):
+        if not any(name in policy['desc'].lower() for name in names):
           self._Warning(
               ('Policy %s doesn\'t seem to describe what happens when it is '
                'set to %s. If possible update the description to describe this '
@@ -633,7 +633,7 @@ class PolicyTemplateChecker(object):
               self._Error(
                   ('Policy %s of type main has an item with a value %s, value '
                    'must be one of %s') %
-                  (policy.get('name'), name, required_names))
+                  (policy.get('name'), value, required_values))
 
       if not values_seen.issuperset(required_values):
         self._Error(
@@ -668,7 +668,7 @@ class PolicyTemplateChecker(object):
         file_path = owner[len(FILE_PREFIX):]
         full_file_path = os.path.join(SOURCE_DIR, file_path)
         if not (os.path.exists(full_file_path)):
-          self._Error(
+          self._Warning(
               'Policy %s lists non-existant owners files, %s, as an owner. '
               'Please either add the owners file or remove it from this list.' %
               (policy.get('name'), full_file_path))

@@ -64,6 +64,7 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
   void Start(std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles);
 
   // network::mojom::URLLoaderClient
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
   void OnReceiveResponse(network::mojom::URLResponseHeadPtr head) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          network::mojom::URLResponseHeadPtr head) override;
@@ -77,6 +78,9 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
   std::unique_ptr<WorkerScriptLoaderFactory> script_loader_factory_;
+
+  // Request ID for a browser-initiated request.
+  const int request_id_;
 
   std::unique_ptr<network::ResourceRequest> resource_request_;
   CreateAndStartCallback callback_;

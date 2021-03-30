@@ -191,9 +191,8 @@ PermissionsRequestFunction::PermissionsRequestFunction() {}
 PermissionsRequestFunction::~PermissionsRequestFunction() {}
 
 ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
-  if (!user_gesture() &&
-      !ignore_user_gesture_for_tests &&
-      extension_->location() != Manifest::COMPONENT) {
+  if (!user_gesture() && !ignore_user_gesture_for_tests &&
+      extension_->location() != mojom::ManifestLocation::kComponent) {
     return RespondNow(Error(kUserGestureRequiredError));
   }
 
@@ -300,7 +299,8 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
           ->GetPermissionMessages(message_provider->GetAllPermissionIDs(
               *total_new_permissions, extension()->GetType()))
           .empty();
-  if (has_no_warnings || extension_->location() == Manifest::COMPONENT) {
+  if (has_no_warnings ||
+      extension_->location() == mojom::ManifestLocation::kComponent) {
     OnInstallPromptDone(ExtensionInstallPrompt::Result::ACCEPTED);
     return did_respond() ? AlreadyResponded() : RespondLater();
   }
@@ -338,21 +338,22 @@ void PermissionsRequestFunction::OnInstallPromptDone(
     return;
   }
   PermissionsUpdater permissions_updater(browser_context());
-  if (!requested_withheld_->IsEmpty()) {
-    requesting_withheld_permissions_ = true;
+  requesting_withheld_permissions_ = !requested_withheld_->IsEmpty();
+  requesting_optional_permissions_ = !requested_optional_->IsEmpty();
+  if (requesting_withheld_permissions_) {
     permissions_updater.GrantRuntimePermissions(
         *extension(), *requested_withheld_,
         base::BindOnce(&PermissionsRequestFunction::OnRuntimePermissionsGranted,
                        base::RetainedRef(this)));
   }
-  if (!requested_optional_->IsEmpty()) {
-    requesting_optional_permissions_ = true;
+  if (requesting_optional_permissions_) {
     permissions_updater.GrantOptionalPermissions(
         *extension(), *requested_optional_,
         base::BindOnce(
             &PermissionsRequestFunction::OnOptionalPermissionsGranted,
             base::RetainedRef(this)));
   }
+
   // Grant{Runtime|Optional}Permissions calls above can finish synchronously.
   if (!did_respond())
     RespondIfRequestsFinished();

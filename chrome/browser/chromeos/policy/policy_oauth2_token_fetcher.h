@@ -33,8 +33,8 @@ class PolicyOAuth2TokenFetcher {
   // network calls so tests can avoid a dependency on GAIA.
   static void UseFakeTokensForTesting();
 
-  using TokenCallback =
-      base::Callback<void(const std::string&, const GoogleServiceAuthError&)>;
+  using TokenCallback = base::OnceCallback<void(const std::string&,
+                                                const GoogleServiceAuthError&)>;
 
   PolicyOAuth2TokenFetcher();
   virtual ~PolicyOAuth2TokenFetcher();
@@ -44,11 +44,11 @@ class PolicyOAuth2TokenFetcher {
   virtual void StartWithAuthCode(
       const std::string& auth_code,
       scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory,
-      const TokenCallback& callback) = 0;
+      TokenCallback callback) = 0;
   virtual void StartWithRefreshToken(
       const std::string& oauth2_refresh_token,
       scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory,
-      const TokenCallback& callback) = 0;
+      TokenCallback callback) = 0;
 
   // Returns true if we have previously attempted to fetch tokens with this
   // class and failed.

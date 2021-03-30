@@ -7,6 +7,10 @@ import("//third_party/flatbuffers/flatbuffer.gni")
 
 config("flatbuffers_config") {
   include_dirs = [ "src/include" ]
+
+  # Required to prevent static initialization of locale
+  # in util.cpp
+  defines = [ "FLATBUFFERS_LOCALE_INDEPENDENT=0" ]
 }
 
 # The part of FlatBuffers that Chrome is interested in.
@@ -29,21 +33,6 @@ source_set("flatbuffers") {
   configs += [ "//build/config/compiler:no_chromium_code" ]
 
   public_configs = [ ":flatbuffers_config" ]
-}
-
-# Needed for TFLite support.
-source_set("tflite_deps") {
-  public = [
-    "src/include/flatbuffers/flexbuffers.h",
-    "src/include/flatbuffers/util.h",
-  ]
-
-  sources = [ "src/src/util.cpp" ]
-
-  public_deps = [ ":flatbuffers" ]
-
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
 }
 
 # The complete FlatBuffers library, as required to build the flatc compiler and

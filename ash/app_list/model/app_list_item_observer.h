@@ -5,12 +5,13 @@
 #ifndef ASH_APP_LIST_MODEL_APP_LIST_ITEM_OBSERVER_H_
 #define ASH_APP_LIST_MODEL_APP_LIST_ITEM_OBSERVER_H_
 
-#include "ash/app_list/model/app_list_model_export.h"
+#include "ash/ash_export.h"
+#include "base/observer_list_types.h"
 
 namespace ash {
 enum class AppListConfigType;
 
-class APP_LIST_MODEL_EXPORT AppListItemObserver {
+class ASH_EXPORT AppListItemObserver : public base::CheckedObserver {
  public:
   // Invoked after item's icon is changed.
   // |config_type| The app list configuration type for which the item icon
@@ -23,11 +24,14 @@ class APP_LIST_MODEL_EXPORT AppListItemObserver {
   // Invoked when the item's notification badge visibility is changed.
   virtual void ItemBadgeVisibilityChanged() {}
 
+  // Invoked when the item's notification badge color is changed.
+  virtual void ItemBadgeColorChanged() {}
+
   // Invoked when the item is about to be destroyed.
   virtual void ItemBeingDestroyed() {}
 
  protected:
-  virtual ~AppListItemObserver() {}
+  ~AppListItemObserver() override;
 };
 
 }  // namespace ash

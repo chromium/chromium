@@ -25,6 +25,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension_builder.h"
@@ -93,15 +94,15 @@ TEST_F(LoginUIServiceTest, CanSetMultipleLoginUIs) {
   EXPECT_EQ(nullptr, service.current_login_ui());
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(LoginUIServiceTest, SetProfileBlockingErrorMessage) {
   LoginUIService service(profile_);
 
   service.SetProfileBlockingErrorMessage();
 
-  EXPECT_EQ(base::string16(), service.GetLastLoginResult());
-  EXPECT_EQ(base::string16(), service.GetLastLoginErrorEmail());
-  EXPECT_TRUE(service.IsDisplayingProfileBlockedErrorMessage());
+  EXPECT_EQ(service.GetLastLoginError(), SigninUIError::ProfileIsBlocked());
 }
+#endif
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 class LoginUIServiceExtensionLoginPromptTest
@@ -157,10 +158,11 @@ TEST_F(LoginUIServiceExtensionLoginPromptTest, Show) {
 }
 
 TEST_F(LoginUIServiceExtensionLoginPromptTest, AsLockedProfile) {
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(g_browser_process->profile_manager()
-                  ->GetProfileAttributesStorage()
-                  .GetProfileAttributesWithPath(profile()->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile()->GetPath());
+  ASSERT_NE(entry, nullptr);
   entry->SetIsSigninRequired(true);
   service_->ShowExtensionLoginPrompt(/*restricted_to_primary_account=*/true,
                                      /*email_hint=*/std::string());

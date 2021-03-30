@@ -14,10 +14,9 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 namespace blink {
 class WebFormControlElement;
@@ -103,7 +102,7 @@ class FormCache {
 
   // The cached initial values for <select> elements. Entries are keyed by
   // unique_renderer_form_control_id of the WebSelectElements.
-  std::map<FieldRendererId, base::string16> initial_select_values_;
+  std::map<FieldRendererId, std::u16string> initial_select_values_;
 
   // The cached initial values for checkable <input> elements. Entries are
   // keyed by the unique_renderer_form_control_id of the WebInputElements.

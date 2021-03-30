@@ -36,7 +36,23 @@
             android:visibility="gone"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"/>
+        <org.chromium.components.page_info.PageInfoRowView
+            android:id="@+id/page_info_history_row"
+            android:visibility="gone"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"/>
     </LinearLayout>
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/page_info_forget_site_button"
+        android:text="@string/page_info_history_forget"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/page_info_popup_padding_sides"
+        android:paddingHorizontal="@dimen/page_info_popup_button_padding_sides"
+        android:layout_gravity="end"
+        style="@style/TextButton"/>
 
     <TextView
         android:id="@+id/page_info_preview_load_original"

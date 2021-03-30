@@ -55,7 +55,8 @@ std::unique_ptr<APIPermission> UnpackPermissionWithArguments(
   // Explicitly check the permissions that accept arguments until
   // https://crbug.com/162042 is fixed.
   const APIPermissionInfo* usb_device_permission_info =
-      PermissionsInfo::GetInstance()->GetByID(APIPermission::kUsbDevice);
+      PermissionsInfo::GetInstance()->GetByID(
+          mojom::APIPermissionID::kUsbDevice);
   if (permission_name == usb_device_permission_info->name()) {
     permission =
         std::make_unique<UsbDevicePermission>(usb_device_permission_info);
@@ -107,7 +108,8 @@ bool UnpackAPIPermissions(const std::vector<std::string>& permissions_input,
                                                 permission_str);
         return false;
       }
-      apis.insert(permission_info->id());
+      apis.insert(static_cast<extensions::mojom::APIPermissionID>(
+          permission_info->id()));
     }
   }
 

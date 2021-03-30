@@ -8,12 +8,14 @@
 #include "ash/ash_export.h"
 #include "ash/clipboard/clipboard_history.h"
 #include "ash/clipboard/clipboard_history_controller_impl.h"
+#include "ash/clipboard/clipboard_nudge_constants.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
 #include "ui/base/clipboard/clipboard_observer.h"
+#include "ui/compositor/layer_animation_observer.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -62,9 +64,21 @@ class ASH_EXPORT ClipboardNudgeController
   // Resets nudge state and show nudge timer.
   void HandleNudgeShown();
 
+  // Checks whether we should show the context menu 'new' badge.
+  bool ShouldShowNewFeatureBadge();
+
+  // Increment the 'new' feature badge shown count.
+  void MarkNewFeatureBadgeShown();
+
   // ClipboardHistoryControllerImpl:
   void OnClipboardHistoryMenuShown() override;
   void OnClipboardHistoryPasted() override;
+
+  // Shows the nudge widget.
+  void ShowNudge(ClipboardNudgeType nudge_type);
+
+  // Ensure the destruction of a clipboard nudge that is animating.
+  void ForceCloseAnimatingNudge();
 
   // Test methods for overriding and resetting the clock used by GetTime.
   void OverrideClockForTesting(base::Clock* test_clock);
@@ -73,18 +87,20 @@ class ASH_EXPORT ClipboardNudgeController
   const ClipboardState& GetClipboardStateForTesting();
   ClipboardNudge* GetClipboardNudgeForTesting() { return nudge_.get(); }
 
+  // Test method for triggering the nudge timer to hide.
+  void FireHideNudgeTimerForTesting();
+
  private:
   // Gets the number of times the nudge has been shown.
   int GetShownCount(PrefService* prefs);
   // Gets the last time the nudge was shown.
   base::Time GetLastShownTime(PrefService* prefs);
+  // Gets the number of times the context menu 'new' badge has been shown.
+  int GetNewFeatureBadgeShownCount(PrefService* prefs);
   // Checks whether another nudge can be shown.
   bool ShouldShowNudge(PrefService* prefs);
   // Gets the current time. Can be overridden for testing.
   base::Time GetTime();
-
-  // Shows the nudge widget.
-  void ShowNudge();
 
   // Hides the nudge widget.
   void HideNudge();
@@ -113,6 +129,8 @@ class ASH_EXPORT ClipboardNudgeController
 
   // Timer to hide the clipboard nudge.
   base::OneShotTimer hide_nudge_timer_;
+
+  std::unique_ptr<ui::ImplicitAnimationObserver> hide_nudge_animation_observer_;
 
   base::WeakPtrFactory<ClipboardNudgeController> weak_ptr_factory_{this};
 };

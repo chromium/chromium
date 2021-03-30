@@ -164,7 +164,7 @@ class AllPasswordsBottomSheetViewBinder {
                             : credential.getPassword());
 
             // Set the default icon, then try to get a better one.
-            FaviconHelper faviconHelper = new FaviconHelper(view.getContext());
+            FaviconHelper faviconHelper = FaviconHelper.create(view.getContext());
             ImageView iconView = view.findViewById(R.id.favicon);
             setIconForBitmap(iconView,
                     faviconHelper.getDefaultIcon(credential.isAndroidCredential()

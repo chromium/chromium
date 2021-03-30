@@ -47,9 +47,7 @@ class MODULES_EXPORT PaymentManager final : public ScriptWrappable {
       payments::mojom::blink::PaymentHandlerStatus status);
 
   Member<ServiceWorkerRegistration> registration_;
-  HeapMojoRemote<payments::mojom::blink::PaymentManager,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      manager_;
+  HeapMojoRemote<payments::mojom::blink::PaymentManager> manager_;
   Member<PaymentInstruments> instruments_;
   String user_hint_;
   Member<ScriptPromiseResolver> enable_delegations_resolver_;

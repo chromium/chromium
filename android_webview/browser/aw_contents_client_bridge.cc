@@ -293,15 +293,15 @@ void AwContentsClientBridge::ProvideClientCertificateResponse(
 void AwContentsClientBridge::RunJavaScriptDialog(
     content::JavaScriptDialogType dialog_type,
     const GURL& origin_url,
-    const base::string16& message_text,
-    const base::string16& default_prompt_text,
+    const std::u16string& message_text,
+    const std::u16string& default_prompt_text,
     content::JavaScriptDialogManager::DialogClosedCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   JNIEnv* env = AttachCurrentThread();
 
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
   if (!obj) {
-    std::move(callback).Run(false, base::string16());
+    std::move(callback).Run(false, std::u16string());
     return;
   }
 
@@ -347,11 +347,11 @@ void AwContentsClientBridge::RunBeforeUnloadDialog(
 
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
   if (!obj) {
-    std::move(callback).Run(false, base::string16());
+    std::move(callback).Run(false, std::u16string());
     return;
   }
 
-  const base::string16 message_text =
+  const std::u16string message_text =
       l10n_util::GetStringUTF16(IDS_BEFOREUNLOAD_MESSAGEBOX_MESSAGE);
 
   int callback_id = pending_js_dialog_callbacks_.Add(
@@ -367,7 +367,7 @@ void AwContentsClientBridge::RunBeforeUnloadDialog(
                                                    callback_id);
 }
 
-bool AwContentsClientBridge::ShouldOverrideUrlLoading(const base::string16& url,
+bool AwContentsClientBridge::ShouldOverrideUrlLoading(const std::u16string& url,
                                                       bool has_user_gesture,
                                                       bool is_redirect,
                                                       bool is_main_frame,
@@ -553,7 +553,7 @@ void AwContentsClientBridge::ConfirmJsResult(JNIEnv* env,
     LOG(WARNING) << "Unexpected JS dialog confirm. " << id;
     return;
   }
-  base::string16 prompt_text;
+  std::u16string prompt_text;
   if (prompt) {
     prompt_text = ConvertJavaStringToUTF16(env, prompt);
   }
@@ -588,7 +588,7 @@ void AwContentsClientBridge::CancelJsResult(JNIEnv*,
     LOG(WARNING) << "Unexpected JS dialog cancel. " << id;
     return;
   }
-  std::move(*callback).Run(false, base::string16());
+  std::move(*callback).Run(false, std::u16string());
   pending_js_dialog_callbacks_.Remove(id);
 }
 

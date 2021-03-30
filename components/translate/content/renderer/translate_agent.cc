@@ -5,6 +5,7 @@
 #include "components/translate/content/renderer/translate_agent.h"
 
 #include <stddef.h>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
@@ -13,10 +14,8 @@
 #include "base/json/string_escape.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/metrics/histogram_macros_local.h"
 #include "base/notreached.h"
 #include "base/single_thread_task_runner.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/translate/content/renderer/isolated_world_util.h"
@@ -35,6 +34,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 #include "v8/include/v8.h"
 
 using blink::WebDocument;
@@ -61,6 +61,9 @@ const int kTranslateStatusCheckDelayMs = 400;
 // Language name passed to the Translate element for it to detect the language.
 const char kAutoDetectionLanguage[] = "auto";
 
+// The current CLD model version.
+constexpr char kCLDModelVersion[] = "CLD3";
+
 // Returns the language detection model that is shared across the RenderFrames
 // in the renderer.
 translate::LanguageDetectionModel& GetLanguageDetectionModel() {
@@ -82,6 +85,19 @@ TranslateAgent::TranslateAgent(content::RenderFrame* render_frame,
       extension_scheme_(extension_scheme) {
   translate_task_runner_ = this->render_frame()->GetTaskRunner(
       blink::TaskType::kInternalTranslation);
+
+  if (translate::IsTFLiteLanguageDetectionEnabled()) {
+    translate::LanguageDetectionModel& language_detection_model =
+        GetLanguageDetectionModel();
+    if (!language_detection_model.IsAvailable()) {
+      // TODO(crbug.com/1160948): Consider tracking if another agent associated
+      // with the same LanguageDetectionModel has already requested a model be
+      // provided by the translate host.
+      GetTranslateHandler()->GetLanguageDetectionModel(
+          base::BindOnce(&TranslateAgent::UpdateLanguageDetectionModel,
+                         weak_pointer_factory_.GetWeakPtr()));
+    }
+  }
 }
 
 TranslateAgent::~TranslateAgent() {}
@@ -91,7 +107,7 @@ void TranslateAgent::PrepareForUrl(const GURL& url) {
   ResetPage();
 }
 
-void TranslateAgent::PageCaptured(const base::string16& contents) {
+void TranslateAgent::PageCaptured(const std::u16string& contents) {
   // Get the document language as set by WebKit from the http-equiv
   // meta tag for "content-language".  This may or may not also
   // have a value derived from the actual Content-Language HTTP
@@ -99,7 +115,7 @@ void TranslateAgent::PageCaptured(const base::string16& contents) {
   // original intent of http-equiv to be an equivalent) with the former
   // being the language of the document and the latter being the
   // language of the intended audience (a distinction really only
-  // relevant for things like langauge textbooks).  This distinction
+  // relevant for things like language textbooks).  This distinction
   // shouldn't affect translation.
   WebLocalFrame* main_frame = render_frame()->GetWebFrame();
   if (!main_frame)
@@ -112,23 +128,34 @@ void TranslateAgent::PageCaptured(const base::string16& contents) {
   std::string html_lang = web_detection_details.html_language.Utf8();
   std::string model_detected_language;
   bool is_model_reliable = false;
+  std::string detection_model_version;
+  float model_reliability_score = 0.0;
 
   std::string language;
   if (translate::IsTFLiteLanguageDetectionEnabled()) {
+    if (!document.Url().ProtocolIs(url::kHttpsScheme) &&
+        !document.Url().ProtocolIs(url::kHttpScheme)) {
+      // TFLite-based language detection only supports HTTP/HTTPS pages.
+      // Others should be ignored, for example the New Tab Page.
+      return;
+    }
     translate::LanguageDetectionModel& language_detection_model =
         GetLanguageDetectionModel();
     bool is_available = language_detection_model.IsAvailable();
     language = is_available ? language_detection_model.DeterminePageLanguage(
                                   content_language, html_lang, contents,
-                                  &model_detected_language, &is_model_reliable)
+                                  &model_detected_language, &is_model_reliable,
+                                  model_reliability_score)
                             : translate::kUnknownLanguageCode;
-    LOCAL_HISTOGRAM_BOOLEAN(
+    UMA_HISTOGRAM_BOOLEAN(
         "LanguageDetection.TFLiteModel.WasModelAvailableForDetection",
         is_available);
+    detection_model_version = language_detection_model.GetModelVersion();
   } else {
-    language =
-        DeterminePageLanguage(content_language, html_lang, contents,
-                              &model_detected_language, &is_model_reliable);
+    language = DeterminePageLanguage(
+        content_language, html_lang, contents, &model_detected_language,
+        &is_model_reliable, model_reliability_score);
+    detection_model_version = kCLDModelVersion;
   }
 
   if (language.empty())
@@ -147,6 +174,8 @@ void TranslateAgent::PageCaptured(const base::string16& contents) {
   details.has_notranslate = web_detection_details.has_no_translate_meta;
   details.html_root_language = html_lang;
   details.adopted_language = language;
+  details.model_reliability_score = model_reliability_score;
+  details.detection_model_version = detection_model_version;
 
   // TODO(hajimehoshi): If this affects performance, it should be set only if
   // translate-internals tab exists.
@@ -500,6 +529,12 @@ std::string TranslateAgent::BuildTranslationScript(
   return "cr.googleTranslate.translate(" +
          base::GetQuotedJSONString(source_lang) + "," +
          base::GetQuotedJSONString(target_lang) + ")";
+}
+
+void TranslateAgent::UpdateLanguageDetectionModel(base::File model_file) {
+  translate::LanguageDetectionModel& language_detection_model =
+      GetLanguageDetectionModel();
+  language_detection_model.UpdateWithFile(std::move(model_file));
 }
 
 }  // namespace translate

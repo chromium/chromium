@@ -51,8 +51,9 @@ class TestPlatformWindowDelegate : public PlatformWindowDelegate {
   }
 
   // PlatformWindowDelegate:
-  void OnBoundsChanged(const gfx::Rect& new_bounds) override {
-    changed_bounds_ = new_bounds;
+  void OnBoundsChanged(
+      const PlatformWindowDelegate::BoundsChange& change) override {
+    changed_bounds_ = change.bounds;
     if (!quit_closure_.is_null() && changed_bounds_ == expected_bounds_)
       std::move(quit_closure_).Run();
   }
@@ -73,6 +74,20 @@ class TestPlatformWindowDelegate : public PlatformWindowDelegate {
   }
   void OnActivationChanged(bool active) override {}
   void OnMouseEnter() override {}
+  SkPath GetWindowMaskForWindowShapeInPixels() override {
+    SkPath window_mask;
+    int right = changed_bounds_.width();
+    int bottom = changed_bounds_.height();
+
+    window_mask.moveTo(0, 0);
+    window_mask.lineTo(0, bottom);
+    window_mask.lineTo(right, bottom);
+    window_mask.lineTo(right, 10);
+    window_mask.lineTo(right - 10, 10);
+    window_mask.lineTo(right - 10, 0);
+    window_mask.close();
+    return window_mask;
+  }
 
  private:
   gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;
@@ -90,18 +105,6 @@ class ShapedX11ExtensionDelegate : public X11ExtensionDelegate {
   ~ShapedX11ExtensionDelegate() override = default;
 
   void OnLostMouseGrab() override {}
-  void GetWindowMask(const gfx::Size& size, SkPath* window_mask) override {
-    int right = size.width();
-    int bottom = size.height();
-
-    window_mask->moveTo(0, 0);
-    window_mask->lineTo(0, bottom);
-    window_mask->lineTo(right, bottom);
-    window_mask->lineTo(right, 10);
-    window_mask->lineTo(right - 10, 10);
-    window_mask->lineTo(right - 10, 0);
-    window_mask->close();
-  }
 #if BUILDFLAG(USE_ATK)
   bool OnAtkKeyEvent(AtkKeyEventStruct* atk_key_event,
                      bool transient) override {
@@ -237,10 +240,8 @@ class X11WindowTest : public testing::Test {
   TestScreen* test_screen_ = nullptr;
 };
 
-// https://crbug.com/898742: Test might be flaky. Disable again if it is still
-// flaky after it is moved from views_unittests to x11_unittests. Tests that the
-// shape is properly set on the x window.
-TEST_F(X11WindowTest, Shape) {
+// https://crbug.com/898742: Test is flaky.
+TEST_F(X11WindowTest, DISABLED_Shape) {
   if (!IsShapeExtensionAvailable())
     return;
 
@@ -256,6 +257,8 @@ TEST_F(X11WindowTest, Shape) {
   const x11::Window x11_window = window->window();
   ASSERT_TRUE(x11_window != x11::Window::None);
 
+  // Force PlatformWindowDelegate::OnBoundsChanged.
+  window->SetBounds(bounds);
   // Force update the window region.
   window->ResetWindowRegion();
 
@@ -275,6 +278,8 @@ TEST_F(X11WindowTest, Shape) {
 
   // Changing window's size should update the shape.
   window->SetBounds(gfx::Rect(100, 100, 200, 200));
+  // Force update the window region.
+  window->ResetWindowRegion();
   connection->DispatchAll();
 
   if (window->GetBounds().width() == 200) {

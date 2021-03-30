@@ -24,7 +24,6 @@ import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import org.chromium.base.Log;
-import org.chromium.base.annotations.RemovableInRelease;
 import org.chromium.chromecast.base.Both;
 import org.chromium.chromecast.base.CastSwitches;
 import org.chromium.chromecast.base.Controller;
@@ -299,22 +298,18 @@ public class CastWebContentsActivity extends Activity {
         }
     }
 
-    @RemovableInRelease
     public void finishForTesting() {
         mIsFinishingState.set("Finish for testing");
     }
 
-    @RemovableInRelease
     public void testingModeForTesting() {
         mIsTestingState.set(Unit.unit());
     }
 
-    @RemovableInRelease
     public void setAudioManagerForTesting(CastAudioManager audioManager) {
         mAudioManagerState.set(audioManager);
     }
 
-    @RemovableInRelease
     public void setSurfaceHelperForTesting(CastWebContentsSurfaceHelper surfaceHelper) {
         mSurfaceHelperState.set(surfaceHelper);
     }

@@ -7,15 +7,8 @@ import("//tools/polymer/polymer.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../os_settings.gni")
 
-js_type_check("closure_compile") {
-  deps = [ ":localized_link" ]
-}
-
-js_library("localized_link") {
-  deps = [ "//ui/webui/resources/js:assert" ]
-}
-
 js_type_check("closure_compile_module") {
+  closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [ ":localized_link.m" ]
 }
@@ -38,6 +31,7 @@ polymer_modulizer("localized_link") {
   html_file = "localized_link.html"
   html_type = "dom-module"
   namespace_rewrites = os_settings_namespace_rewrites
+  migrated_imports = os_settings_migrated_imports
   auto_imports =
       os_settings_auto_imports +
       [ "ui/webui/resources/html/assert.html|assert,assertNotReached" ]

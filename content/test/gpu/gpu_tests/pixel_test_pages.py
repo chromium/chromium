@@ -330,6 +330,10 @@ class PixelTestPages(object):
                       base_name + '_OffscreenCanvasIBRCWebGLWorker',
                       test_rect=[0, 0, 300, 300],
                       optional_action='RunOffscreenCanvasIBRCWebGLTest'),
+        PixelTestPage('pixel_webgl_preserved_after_tab_switch.html',
+                      base_name + '_WebGLPreservedAfterTabSwitch',
+                      test_rect=[0, 0, 300, 300],
+                      optional_action='SwitchTabsAndCopyImage'),
     ]
 
   # Pages that should be run with GPU rasterization enabled.

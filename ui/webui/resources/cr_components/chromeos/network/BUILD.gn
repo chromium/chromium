@@ -3,12 +3,16 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../os_cr_components.gni")
 
 assert(is_chromeos, "Only ChromeOS components belong here.")
 
 js_type_check("closure_compile") {
+  uses_legacy_modules = true
   deps = [
+    ":cellular_utils",
     ":cr_policy_network_behavior_mojo",
     ":cr_policy_network_indicator_mojo",
     ":mojo_interface_provider",
@@ -21,7 +25,6 @@ js_type_check("closure_compile") {
     ":network_icon",
     ":network_ip_config",
     ":network_list",
-    ":network_list_item",
     ":network_list_types",
     ":network_listener_behavior",
     ":network_nameservers",
@@ -33,6 +36,7 @@ js_type_check("closure_compile") {
     ":network_select",
     ":network_siminfo",
     ":onc_mojo",
+    ":sim_lock_dialogs",
   ]
 }
 
@@ -63,7 +67,9 @@ js_library("cr_policy_network_indicator_mojo") {
 js_library("network_apnlist") {
   deps = [
     ":network_config",
+    ":onc_mojo",
     "//ui/webui/resources/js:i18n_behavior",
+    "//ui/webui/resources/js:load_time_data",
   ]
 }
 
@@ -158,6 +164,7 @@ js_library("network_property_list_mojo") {
   deps = [
     ":cr_policy_network_behavior_mojo",
     ":onc_mojo",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:i18n_behavior",
   ]
@@ -186,11 +193,10 @@ js_library("network_siminfo") {
   deps = [
     ":mojo_interface_provider",
     ":onc_mojo",
-    "//ui/webui/resources/js:assert",
+    ":sim_lock_dialogs",
     "//ui/webui/resources/js:i18n_behavior",
     "//ui/webui/resources/js/cr/ui:focus_without_ink",
   ]
-  extra_sources = [ "$interfaces_path/networking_private_interface.js" ]
 }
 
 js_library("network_icon") {
@@ -250,9 +256,27 @@ js_library("onc_mojo") {
   ]
 }
 
+js_library("cellular_utils") {
+  deps = [
+    ":mojo_interface_provider",
+    ":onc_mojo",
+  ]
+}
+
+js_library("sim_lock_dialogs") {
+  deps = [
+    ":mojo_interface_provider",
+    ":onc_mojo",
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:i18n_behavior",
+    "//ui/webui/resources/js/cr/ui:focus_without_ink",
+  ]
+}
+
 js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
+    ":cellular_utils.m",
     ":cr_policy_network_behavior_mojo.m",
     ":cr_policy_network_indicator_mojo.m",
     ":mojo_interface_provider.m",
@@ -279,6 +303,7 @@ js_type_check("closure_compile_module") {
     ":network_shared_css.m",
     ":network_siminfo.m",
     ":onc_mojo.m",
+    ":sim_lock_dialogs.m",
   ]
 
   # closure_flags = default_closure_args + [
@@ -321,10 +346,12 @@ js_library("network_apnlist.m") {
   deps = [
     ":network_property_list_mojo.m",
     ":network_shared_css.m",
+    ":onc_mojo.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
   extra_deps = [ ":network_apnlist_module" ]
 }
@@ -441,6 +468,7 @@ js_library("network_list.m") {
   deps = [
     ":network_list_item.m",
     ":network_list_types.m",
+    ":onc_mojo.m",
     "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements:cr_scrollable_behavior.m",
@@ -452,8 +480,11 @@ js_library("network_list.m") {
 js_library("network_list_item.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network/network_list_item.m.js" ]
   deps = [
+    ":cr_policy_network_behavior_mojo.m",
     ":mojo_interface_provider.m",
     ":network_list_types.m",
+    ":onc_mojo.m",
+    "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js/cr/ui:focus_row_behavior.m",
   ]
@@ -462,6 +493,7 @@ js_library("network_list_item.m") {
 
 js_library("network_list_types.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network/network_list_types.m.js" ]
+  deps = [ ":onc_mojo.m" ]
   extra_deps = [ ":modulize" ]
 }
 
@@ -513,6 +545,7 @@ js_library("network_property_list_mojo.m") {
     ":network_shared_css.m",
     ":onc_mojo.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
     "//ui/webui/resources/js:assert.m",
   ]
   extra_deps = [ ":network_property_list_mojo_module" ]
@@ -586,14 +619,15 @@ js_library("network_siminfo.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network/network_siminfo.m.js" ]
   deps = [
     ":mojo_interface_provider.m",
+    ":network_list_types.m",
     ":network_password_input.m",
     ":network_shared_css.m",
     ":onc_mojo.m",
+    ":sim_lock_dialogs.m",
     "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
     "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
     "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle.m",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior",
@@ -612,7 +646,32 @@ js_library("onc_mojo.m") {
   extra_deps = [ ":modulize" ]
 }
 
-import("//tools/polymer/polymer.gni")
+js_library("cellular_utils.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network/cellular_utils.m.js" ]
+  deps = [
+    ":mojo_interface_provider.m",
+    ":onc_mojo.m",
+  ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("sim_lock_dialogs.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network/sim_lock_dialogs.m.js" ]
+  deps = [
+    ":mojo_interface_provider.m",
+    ":network_password_input.m",
+    ":network_shared_css.m",
+    ":onc_mojo.m",
+    "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
+    "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+  extra_deps = [ ":sim_lock_dialogs_module" ]
+}
 
 group("polymer3_elements") {
   public_deps = [
@@ -638,6 +697,7 @@ group("polymer3_elements") {
     ":network_select_module",
     ":network_shared_css_module",
     ":network_siminfo_module",
+    ":sim_lock_dialogs_module",
   ]
 }
 
@@ -801,13 +861,20 @@ polymer_modulizer("network_siminfo") {
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
 }
 
-import("//ui/webui/resources/tools/js_modulizer.gni")
+polymer_modulizer("sim_lock_dialogs") {
+  js_file = "sim_lock_dialogs.js"
+  html_file = "sim_lock_dialogs.html"
+  html_type = "dom-module"
+  auto_imports = cr_components_chromeos_auto_imports
+  namespace_rewrites = cr_components_chromeos_namespace_rewrites
+}
 
 js_modulizer("modulize") {
   input_files = [
     "cr_policy_network_behavior_mojo.js",
     "mojo_interface_provider.js",
     "network_config_element_behavior.js",
+    "cellular_utils.js",
     "network_listener_behavior.js",
     "network_list_types.js",
     "onc_mojo.js",

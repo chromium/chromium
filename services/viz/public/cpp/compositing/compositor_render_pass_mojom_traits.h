@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
+#include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "services/viz/public/cpp/compositing/copy_output_request_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/quads_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/compositor_render_pass.mojom-shared.h"
@@ -56,6 +57,11 @@ struct StructTraits<viz::mojom::CompositorRenderPassDataView,
   static base::Optional<gfx::RRectF> backdrop_filter_bounds(
       const std::unique_ptr<viz::CompositorRenderPass>& input) {
     return input->backdrop_filter_bounds;
+  }
+
+  static viz::SubtreeCaptureId subtree_capture_id(
+      const std::unique_ptr<viz::CompositorRenderPass>& input) {
+    return input->subtree_capture_id;
   }
 
   static bool has_transparent_background(

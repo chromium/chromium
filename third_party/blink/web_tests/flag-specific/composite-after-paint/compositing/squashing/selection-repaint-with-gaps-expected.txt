@@ -9,6 +9,7 @@
     {
       "name": "LayoutNGBlockFlow DIV class='overlap'",
       "bounds": [300, 500],
+      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 1
     },
@@ -16,6 +17,7 @@
       "name": "LayoutNGBlockFlow (positioned) DIV class='item'",
       "position": [15, 35],
       "bounds": [100, 210],
+      "contentsOpaqueForText": true,
       "invalidations": [
         [0, 80, 40, 40]
       ]
@@ -44,6 +46,7 @@
     {
       "name": "LayoutNGBlockFlow DIV class='overlap'",
       "bounds": [300, 500],
+      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 1
     },
@@ -51,6 +54,7 @@
       "name": "LayoutNGBlockFlow (positioned) DIV class='item'",
       "position": [15, 35],
       "bounds": [100, 210],
+      "contentsOpaqueForText": true,
       "invalidations": [
         [0, 160, 40, 40],
         [0, 80, 40, 40]

@@ -78,11 +78,11 @@ StyledLabel::StyledLabel() = default;
 
 StyledLabel::~StyledLabel() = default;
 
-const base::string16& StyledLabel::GetText() const {
+const std::u16string& StyledLabel::GetText() const {
   return text_;
 }
 
-void StyledLabel::SetText(base::string16 text) {
+void StyledLabel::SetText(std::u16string text) {
   // Failing to trim trailing whitespace will cause later confusion when the
   // text elider tries to do so internally. There's no obvious reason to
   // preserve trailing whitespace anyway.
@@ -349,7 +349,7 @@ void StyledLabel::CalculateLayout(int width) const {
   // Try to preserve leading whitespace on the first line.
   bool can_trim_leading_whitespace = false;
   StyleRanges::const_iterator current_range = style_ranges_.begin();
-  for (base::string16 remaining_string = text_;
+  for (std::u16string remaining_string = text_;
        content_width > 0 && !remaining_string.empty();) {
     layout_size_info_.line_sizes.emplace_back(0, line_height);
     auto& line_size = layout_size_info_.line_sizes.back();
@@ -374,7 +374,7 @@ void StyledLabel::CalculateLayout(int width) const {
         range = current_range->range;
 
       const size_t position = text_.size() - remaining_string.size();
-      std::vector<base::string16> substrings;
+      std::vector<std::u16string> substrings;
       // If the current range is not a custom_view, then we use
       // ElideRectangleText() to determine the line wrapping. Note: if it is a
       // custom_view, then the |position| should equal range.start() because the
@@ -430,7 +430,7 @@ void StyledLabel::CalculateLayout(int width) const {
         }
       }
 
-      base::string16 chunk;
+      std::u16string chunk;
       View* custom_view = nullptr;
       std::unique_ptr<Label> label;
       if (position >= range.start()) {
@@ -517,7 +517,7 @@ void StyledLabel::CalculateLayout(int width) const {
 }
 
 std::unique_ptr<Label> StyledLabel::CreateLabel(
-    const base::string16& text,
+    const std::u16string& text,
     const RangeStyleInfo& style_info,
     const gfx::Range& range) const {
   std::unique_ptr<Label> result;
@@ -574,7 +574,7 @@ void StyledLabel::RemoveOrDeleteAllChildViews() {
 }
 
 BEGIN_METADATA(StyledLabel, View)
-ADD_PROPERTY_METADATA(base::string16, Text)
+ADD_PROPERTY_METADATA(std::u16string, Text)
 ADD_PROPERTY_METADATA(int, TextContext)
 ADD_PROPERTY_METADATA(int, DefaultTextStyle)
 ADD_PROPERTY_METADATA(int, LineHeight)

@@ -56,6 +56,9 @@ class TestSessionControllerClient : public SessionControllerClient {
     use_lower_case_user_id_ = value;
   }
 
+  int attempt_restart_chrome_count() const {
+    return attempt_restart_chrome_count_;
+  }
   int request_sign_out_count() const { return request_sign_out_count_; }
 
   // Helpers to set SessionController state.
@@ -135,6 +138,7 @@ class TestSessionControllerClient : public SessionControllerClient {
 
   bool use_lower_case_user_id_ = true;
   int request_sign_out_count_ = 0;
+  int attempt_restart_chrome_count_ = 0;
 
   bool should_show_lock_screen_ = false;
 

@@ -72,8 +72,6 @@ class BLINK_EXPORT WebFrame {
   // Returns the number of live WebFrame objects, used for leak checking.
   static int InstanceCount();
 
-  // TODO(crbug.com/1096617): Remove the UnguessableToken version of this.
-  static WebFrame* FromFrameToken(const base::UnguessableToken&);
   static WebFrame* FromFrameToken(const FrameToken&);
 
   virtual bool IsWebLocalFrame() const = 0;
@@ -154,6 +152,12 @@ class BLINK_EXPORT WebFrame {
   // notifications.
   virtual bool IsLoading() const;
 
+  // Ad Tagging ---------------------------------------------------------
+
+  // True if the frame is thought (heuristically) to be created for
+  // advertising purposes.
+  virtual bool IsAdSubframe() const = 0;
+
   // Utility -------------------------------------------------------------
 
   // Returns the frame inside a given frame or iframe element. Returns 0 if
@@ -163,8 +167,7 @@ class BLINK_EXPORT WebFrame {
   // This identifier represents the stable identifier between a
   // LocalFrame  <--> RenderFrameHostImpl or a
   // RemoteFrame <--> RenderFrameProxyHost in the browser process.
-  // TODO(crbug.com/1096617): Make this return a FrameToken instead.
-  const base::UnguessableToken& GetFrameToken() const { return frame_token_; }
+  const FrameToken& GetFrameToken() const { return frame_token_; }
 
 #if INSIDE_BLINK
   static WebFrame* FromCoreFrame(Frame*);
@@ -174,8 +177,7 @@ class BLINK_EXPORT WebFrame {
 #endif
 
  protected:
-  explicit WebFrame(mojom::TreeScopeType,
-                    const base::UnguessableToken& frame_token);
+  explicit WebFrame(mojom::TreeScopeType, const FrameToken& frame_token);
   virtual ~WebFrame() = default;
 
  private:
@@ -185,7 +187,7 @@ class BLINK_EXPORT WebFrame {
   // TODO(dtapuska): Remove the need for this variable. This is stored here
   // because a WebRemote's core frame is created inside the bowels of the Swap
   // call.
-  const base::UnguessableToken frame_token_;
+  const FrameToken frame_token_;
 };
 
 }  // namespace blink

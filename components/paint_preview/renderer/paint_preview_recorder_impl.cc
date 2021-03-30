@@ -9,6 +9,7 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
+#include "base/bind_post_task.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
 #include "base/task/task_traits.h"
@@ -29,6 +30,8 @@ namespace paint_preview {
 
 namespace {
 
+// Represents a finished recording of the page represented by the response and
+// status of the mojo message.
 struct FinishedRecording {
   FinishedRecording(mojom::PaintPreviewStatus status,
                     mojom::PaintPreviewCaptureResponsePtr response)
@@ -45,60 +48,123 @@ struct FinishedRecording {
   mojom::PaintPreviewCaptureResponsePtr response;
 };
 
-FinishedRecording FinishRecording(
-    sk_sp<const cc::PaintRecord> recording,
-    const gfx::Rect& bounds,
+using CapturePaintPreviewCallback =
+    base::OnceCallback<void(mojom::PaintPreviewStatus,
+                            mojom::PaintPreviewCaptureResponsePtr)>;
+
+// Finishes building the PaintPreviewCaptureResponse mojo message and sends it
+// or sends an error if the status is not `PaintPreviewStatus::kOK`
+void BuildAndSendResponse(std::unique_ptr<PaintPreviewTracker> tracker,
+                          FinishedRecording out,
+                          CapturePaintPreviewCallback callback) {
+  if (out.status == mojom::PaintPreviewStatus::kOk) {
+    BuildResponse(tracker.get(), out.response.get(), /*log=*/true);
+  }
+  std::move(callback).Run(out.status, std::move(out.response));
+}
+
+// Records `skp` to `skp_file` on the threadpool to avoid blocking the main
+// thread.
+void RecordToFileOnThreadPool(sk_sp<const SkPicture> skp,
+                              base::File skp_file,
+                              std::unique_ptr<PaintPreviewTracker> tracker,
+                              base::Optional<size_t> max_capture_size,
+                              FinishedRecording out,
+                              CapturePaintPreviewCallback callback) {
+  TRACE_EVENT0("paint_preview", "RecordToFileOnThreadPool");
+  size_t serialized_size = 0;
+  tracker->GetImageSerializationContext()->skip_texture_backed = true;
+  bool success = RecordToFile(std::move(skp_file), skp, tracker.get(),
+                              max_capture_size, &serialized_size);
+  out.status = success ? mojom::PaintPreviewStatus::kOk
+                       : mojom::PaintPreviewStatus::kCaptureFailed;
+  out.response->serialized_size = serialized_size;
+
+  BuildAndSendResponse(std::move(tracker), std::move(out), std::move(callback));
+}
+
+// Handles file persistence storage.
+void SerializeFileRecording(sk_sp<const SkPicture> skp,
+                            base::File skp_file,
+                            std::unique_ptr<PaintPreviewTracker> tracker,
+                            base::Optional<size_t> max_capture_size,
+                            FinishedRecording out,
+                            CapturePaintPreviewCallback callback) {
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
+       base::WithBaseSyncPrimitives()},
+      BindOnce(&RecordToFileOnThreadPool, skp, std::move(skp_file),
+               std::move(tracker), max_capture_size, std::move(out),
+               base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+                                  std::move(callback))));
+}
+
+// Handles memory buffer persistence storage.
+void SerializeMemoryBufferRecording(
+    sk_sp<const SkPicture> skp,
     std::unique_ptr<PaintPreviewTracker> tracker,
-    RecordingPersistence persistence,
-    base::File skp_file,
     base::Optional<size_t> max_capture_size,
-    mojom::PaintPreviewCaptureResponsePtr response) {
-  TRACE_EVENT0("paint_preview", "FinishRecording");
-  FinishedRecording out(mojom::PaintPreviewStatus::kOk, std::move(response));
+    FinishedRecording out,
+    CapturePaintPreviewCallback callback) {
+  TRACE_EVENT0("paint_preview", "SerializeMemoryBufferRecording");
+  size_t serialized_size = 0;
+  base::Optional<mojo_base::BigBuffer> buffer =
+      RecordToBuffer(skp, tracker.get(), max_capture_size, &serialized_size);
+  out.status = buffer.has_value() ? mojom::PaintPreviewStatus::kOk
+                                  : mojom::PaintPreviewStatus::kCaptureFailed;
+  out.response->skp.emplace(std::move(buffer.value()));
+  out.response->serialized_size = serialized_size;
+
+  BuildAndSendResponse(std::move(tracker), std::move(out), std::move(callback));
+}
+
+// Finishes the recording process by converting the `recording` to an SkPicture.
+// Serialization is then delegated based on the type of `persistence`.
+void FinishRecordingOnUIThread(sk_sp<const cc::PaintRecord> recording,
+                               const gfx::Rect& bounds,
+                               std::unique_ptr<PaintPreviewTracker> tracker,
+                               RecordingPersistence persistence,
+                               base::File skp_file,
+                               base::Optional<size_t> max_capture_size,
+                               mojom::PaintPreviewCaptureResponsePtr response,
+                               CapturePaintPreviewCallback callback) {
+  TRACE_EVENT0("paint_preview", "FinishRecordingOnUIThread");
   DCHECK(tracker);
   if (!tracker) {
-    out.status = mojom::PaintPreviewStatus::kCaptureFailed;
-    return out;
+    std::move(callback).Run(mojom::PaintPreviewStatus::kCaptureFailed,
+                            std::move(response));
+    return;
   }
 
   TRACE_EVENT_BEGIN0("paint_preview", "ParseGlyphsAndLinks");
   ParseGlyphsAndLinks(recording.get(), tracker.get());
   TRACE_EVENT_END0("paint_preview", "ParseGlyphsAndLinks");
 
-  TRACE_EVENT0("paint_preview", "SerializeAsSkPicture");
-
-  bool success = false;
-  size_t serialized_size = 0;
-  {
-    auto skp = PaintRecordToSkPicture(recording, tracker.get(), bounds);
-    recording.reset();
-    if (!skp) {
-      out.status = mojom::PaintPreviewStatus::kCaptureFailed;
-      return out;
-    }
-
-    switch (persistence) {
-      case RecordingPersistence::kFileSystem:
-        success = RecordToFile(std::move(skp_file), skp, tracker.get(),
-                               max_capture_size, &serialized_size);
-        break;
-      case RecordingPersistence::kMemoryBuffer:
-        base::Optional<mojo_base::BigBuffer> buffer = RecordToBuffer(
-            skp, tracker.get(), max_capture_size, &serialized_size);
-        success = buffer.has_value();
-        out.response->skp.emplace(std::move(buffer.value()));
-        break;
-    }
+  // This cannot be done async if the recording contains a GPU accelerated
+  // image.
+  TRACE_EVENT_BEGIN0("paint_preview", "ConvertToSkPicture");
+  auto skp = PaintRecordToSkPicture(recording, tracker.get(), bounds);
+  recording.reset();
+  if (!skp) {
+    std::move(callback).Run(mojom::PaintPreviewStatus::kCaptureFailed,
+                            std::move(response));
+    return;
   }
+  TRACE_EVENT_BEGIN0("paint_preview", "ConvertToSkPicture");
 
-  if (!success) {
-    out.status = mojom::PaintPreviewStatus::kCaptureFailed;
-    return out;
+  FinishedRecording out(mojom::PaintPreviewStatus::kOk, std::move(response));
+  switch (persistence) {
+    case RecordingPersistence::kFileSystem:
+      SerializeFileRecording(skp, std::move(skp_file), std::move(tracker),
+                             max_capture_size, std::move(out),
+                             std::move(callback));
+      break;
+    case RecordingPersistence::kMemoryBuffer:
+      SerializeMemoryBufferRecording(skp, std::move(tracker), max_capture_size,
+                                     std::move(out), std::move(callback));
+      break;
   }
-
-  BuildResponse(tracker.get(), out.response.get(), /*log=*/true);
-  out.response->serialized_size = serialized_size;
-  return out;
 }
 
 }  // namespace
@@ -145,6 +211,9 @@ void PaintPreviewRecorderImpl::OnDestruct() {
 
 void PaintPreviewRecorderImpl::BindPaintPreviewRecorder(
     mojo::PendingAssociatedReceiver<mojom::PaintPreviewRecorder> receiver) {
+  // Capture requests can occur multiple times on the same frame. If the browser
+  // has released its endpoint and creates a new one this needs to be reset.
+  paint_preview_recorder_receiver_.reset();
   paint_preview_recorder_receiver_.Bind(std::move(receiver));
 }
 
@@ -164,10 +233,10 @@ void PaintPreviewRecorderImpl::CapturePaintPreviewInternal(
   DCHECK_EQ(is_main_frame_, params->is_main_frame);
   // Default to using the clip rect.
   gfx::Rect bounds = params->clip_rect;
+  auto document_size = frame->DocumentSize();
+  gfx::Rect document_rect = gfx::Rect(document_size);
   if (bounds.IsEmpty() || params->clip_rect_is_hint) {
     // If the clip rect is empty or only a hint try to use the document size.
-    auto size = frame->DocumentSize();
-    gfx::Rect document_rect = gfx::Rect(0, 0, size.width, size.height);
     if (!document_rect.IsEmpty())
       bounds = document_rect;
 
@@ -182,12 +251,36 @@ void PaintPreviewRecorderImpl::CapturePaintPreviewInternal(
                               std::move(response));
       return;
     }
+  } else {
+    // Overflow check and confirm that that the document has a size.
+    if (document_rect.IsEmpty() || bounds.x() >= document_rect.width() ||
+        bounds.y() >= document_rect.height() || bounds.x() < 0 ||
+        bounds.y() < 0) {
+      std::move(callback).Run(mojom::PaintPreviewStatus::kCaptureFailed,
+                              std::move(response));
+      return;
+    }
+
+    // If either width or height is 0 capture the full extent in that dimension
+    // while still respecting the provided x and y.
+    if (bounds.width() == 0) {
+      bounds.set_width(document_rect.width());
+    }
+    if (bounds.height() == 0) {
+      bounds.set_height(document_rect.height());
+    }
+
+    // Clamp width and height to be the document size.
+    bounds.set_width(
+        std::min(document_rect.width() - bounds.x(), bounds.width()));
+    bounds.set_height(
+        std::min(document_rect.height() - bounds.y(), bounds.height()));
   }
 
   auto tracker = std::make_unique<PaintPreviewTracker>(
       params->guid, frame->GetEmbeddingToken(), is_main_frame_);
-  auto size = frame->GetScrollOffset();
-  response->scroll_offsets = gfx::Size(size.width, size.height);
+  auto offset = frame->GetScrollOffset();
+  response->scroll_offsets = gfx::Size(offset.x(), offset.y());
 
   cc::PaintRecorder recorder;
   cc::PaintCanvas* canvas =
@@ -248,13 +341,10 @@ void PaintPreviewRecorderImpl::CapturePaintPreviewInternal(
     image_ctx->max_representation_size = params->max_capture_size;
   }
 
-  // This cannot be done async if the recording contains a GPU accelerated
-  // image.
-  FinishedRecording recording = FinishRecording(
-      recorder.finishRecordingAsPicture(), bounds, std::move(tracker),
-      params->persistence, std::move(params->file), max_capture_size,
-      std::move(response));
-  std::move(callback).Run(recording.status, std::move(recording.response));
+  FinishRecordingOnUIThread(recorder.finishRecordingAsPicture(), bounds,
+                            std::move(tracker), params->persistence,
+                            std::move(params->file), max_capture_size,
+                            std::move(response), std::move(callback));
 }
 
 }  // namespace paint_preview

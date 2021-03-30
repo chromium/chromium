@@ -110,18 +110,12 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
         getPreferenceScreen().addPreference(autofillSwitch);
 
         for (AutofillProfile profile : PersonalDataManager.getInstance().getProfilesForSettings()) {
+            assert profile.getIsLocal();
             // Add a preference for the profile.
-            Preference pref;
-            if (profile.getIsLocal()) {
-                pref = new AutofillProfileEditorPreference(getStyledContext());
-                pref.setTitle(profile.getFullName());
-                pref.setSummary(profile.getLabel());
-                pref.setKey(pref.getTitle().toString()); // For testing.
-            } else {
-                pref = new Preference(getStyledContext());
-                pref.setWidgetLayoutResource(R.layout.autofill_server_data_label);
-                pref.setFragment(AutofillServerProfileFragment.class.getName());
-            }
+            Preference pref = new AutofillProfileEditorPreference(getStyledContext());
+            pref.setTitle(profile.getFullName());
+            pref.setSummary(profile.getLabel());
+            pref.setKey(pref.getTitle().toString()); // For testing.
             Bundle args = pref.getExtras();
             args.putString(AutofillEditorBase.AUTOFILL_GUID, profile.getGUID());
             try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {

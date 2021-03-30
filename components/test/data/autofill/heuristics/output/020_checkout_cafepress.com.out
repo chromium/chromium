@@ -24,7 +24,7 @@ UNKNOWN_TYPE | ShowGiftMsg | This is a gift order. Check this box to see gift op
 UNKNOWN_TYPE | GiftMessage | One message per order You have |  | ShipName_2-default
 UNKNOWN_TYPE | countdown | You have | 300 | ShipName_2-default
 UNKNOWN_TYPE | ApplyGiftWrap | (+$0.00) | on | ShipName_2-default
-UNKNOWN_TYPE | txtCoupon | Apply Promo Code |  | ShipName_2-default
+MERCHANT_PROMO_CODE | txtCoupon | Apply Promo Code |  | ShipName_2-default
 UNKNOWN_TYPE | PaymentMethod | PayByCafeCash | PayByCafeCash | ShipName_2-default
 UNKNOWN_TYPE | PaymentMethod | PayByGC | PayByGC | ShipName_2-default
 UNKNOWN_TYPE | PaymentMethod | PayByCCGC | PayByCCGC | ShipName_2-default

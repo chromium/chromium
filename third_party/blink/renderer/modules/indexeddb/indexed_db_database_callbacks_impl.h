@@ -22,6 +22,12 @@ class IndexedDBDatabaseCallbacksImpl
       std::unique_ptr<WebIDBDatabaseCallbacks> callbacks);
   ~IndexedDBDatabaseCallbacksImpl() override;
 
+  // Disallow copy and assign.
+  IndexedDBDatabaseCallbacksImpl(const IndexedDBDatabaseCallbacksImpl&) =
+      delete;
+  IndexedDBDatabaseCallbacksImpl& operator=(
+      const IndexedDBDatabaseCallbacksImpl&) = delete;
+
   // mojom::blink::IDBDatabaseCallbacks implementation
   void ForcedClose() override;
   void VersionChange(int64_t old_version, int64_t new_version) override;
@@ -29,12 +35,9 @@ class IndexedDBDatabaseCallbacksImpl
              mojom::blink::IDBException code,
              const WTF::String& message) override;
   void Complete(int64_t transaction_id) override;
-  void Changes(mojom::blink::IDBObserverChangesPtr changes) override;
 
  private:
   std::unique_ptr<WebIDBDatabaseCallbacks> callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBDatabaseCallbacksImpl);
 };
 
 }  // namespace blink

@@ -51,6 +51,13 @@ class CONTENT_EXPORT FileURLLoaderObserver
 // The URLLoader created by this function does *not* automatically follow
 // filesytem links (e.g. Windows shortcuts) or support directory listing.
 // A directory path will always yield a FILE_NOT_FOUND network error.
+//
+// TODO(lukasza): Responding with file contents is (a little bit, not quite)
+// duplicated across FileURLLoaderFactory, ContentURLLoaderFactory and
+// ExtensionURLLoaderFactory.  Consider moving file-handling functionality
+// into a shared base class of network::mojom::URLLoaderFactory (similarly to
+// how SelfDeletingURLLoaderFactory provides lifetime management for its derived
+// classes).
 CONTENT_EXPORT void CreateFileURLLoaderBypassingSecurityChecks(
     const network::ResourceRequest& request,
     mojo::PendingReceiver<network::mojom::URLLoader> loader,

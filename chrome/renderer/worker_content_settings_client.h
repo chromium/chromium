@@ -29,6 +29,8 @@ class WorkerContentSettingsClient : public blink::WebContentSettingsClient {
 
   // WebContentSettingsClient overrides.
   std::unique_ptr<blink::WebContentSettingsClient> Clone() override;
+  void AllowStorageAccess(StorageType storage_type,
+                          base::OnceCallback<void(bool)> callback) override;
   bool AllowStorageAccessSync(StorageType storage_type) override;
   bool AllowRunningInsecureContent(bool allowed_per_settings,
                                    const blink::WebURL& url) override;

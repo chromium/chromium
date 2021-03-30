@@ -82,10 +82,49 @@ CanvasColorParams::CanvasColorParams(CanvasColorSpace color_space,
       pixel_format_(pixel_format),
       opacity_mode_(opacity_mode) {}
 
+CanvasColorParams::CanvasColorParams(const WTF::String& color_space,
+                                     const WTF::String& pixel_format,
+                                     bool has_alpha) {
+  if (color_space == kRec2020CanvasColorSpaceName)
+    color_space_ = CanvasColorSpace::kRec2020;
+  else if (color_space == kP3CanvasColorSpaceName)
+    color_space_ = CanvasColorSpace::kP3;
+
+  if (pixel_format == kF16CanvasPixelFormatName)
+    pixel_format_ = CanvasPixelFormat::kF16;
+
+  if (!has_alpha)
+    opacity_mode_ = kOpaque;
+}
+
 CanvasResourceParams CanvasColorParams::GetAsResourceParams() const {
   SkAlphaType alpha_type =
       opacity_mode_ == kOpaque ? kOpaque_SkAlphaType : kPremul_SkAlphaType;
   return CanvasResourceParams(color_space_, GetSkColorType(), alpha_type);
+}
+
+const char* CanvasColorParams::GetColorSpaceAsString() const {
+  switch (color_space_) {
+    case CanvasColorSpace::kSRGB:
+      return kSRGBCanvasColorSpaceName;
+    case CanvasColorSpace::kRec2020:
+      return kRec2020CanvasColorSpaceName;
+    case CanvasColorSpace::kP3:
+      return kP3CanvasColorSpaceName;
+  };
+  CHECK(false);
+  return "";
+}
+
+const char* CanvasColorParams::GetPixelFormatAsString() const {
+  switch (pixel_format_) {
+    case CanvasPixelFormat::kF16:
+      return kF16CanvasPixelFormatName;
+    case CanvasPixelFormat::kUint8:
+      return kUint8CanvasPixelFormatName;
+  };
+  CHECK(false);
+  return "";
 }
 
 SkColorType CanvasColorParams::GetSkColorType() const {

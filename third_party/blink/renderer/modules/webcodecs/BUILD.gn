@@ -13,8 +13,14 @@ blink_modules_sources("webcodecs") {
     "audio_decoder.h",
     "audio_decoder_broker.cc",
     "audio_decoder_broker.h",
+    "audio_encoder.cc",
+    "audio_encoder.h",
     "audio_frame.cc",
     "audio_frame.h",
+    "audio_frame_attachment.cc",
+    "audio_frame_attachment.h",
+    "audio_frame_serialization_data.cc",
+    "audio_frame_serialization_data.h",
     "codec_config_eval.h",
     "codec_logger.cc",
     "codec_logger.h",
@@ -26,12 +32,18 @@ blink_modules_sources("webcodecs") {
     "decoder_template.h",
     "encoded_audio_chunk.cc",
     "encoded_audio_chunk.h",
-    "encoded_audio_metadata.h",
     "encoded_video_chunk.cc",
     "encoded_video_chunk.h",
-    "encoded_video_metadata.h",
+    "encoder_base.cc",
+    "encoder_base.h",
+    "hardware_preference.cc",
+    "hardware_preference.h",
     "image_decoder_external.cc",
     "image_decoder_external.h",
+    "image_track.cc",
+    "image_track.h",
+    "image_track_list.cc",
+    "image_track_list.h",
     "plane.cc",
     "plane.h",
     "video_decoder.cc",
@@ -48,10 +60,6 @@ blink_modules_sources("webcodecs") {
     "video_frame_handle.h",
     "video_frame_logger.cc",
     "video_frame_logger.h",
-    "video_track_reader.cc",
-    "video_track_reader.h",
-    "video_track_writer.cc",
-    "video_track_writer.h",
   ]
   deps = [
     "//media",
@@ -59,6 +67,7 @@ blink_modules_sources("webcodecs") {
     "//media/mojo/clients",
     "//media/mojo/mojom",
     "//third_party/libyuv:libyuv",
+    "//third_party/opus",
   ]
   if (media_use_openh264) {
     deps += [ "//third_party/openh264:encoder" ]
@@ -75,12 +84,12 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "audio_decoder_broker_test.cc",
+    "audio_frame_test.cc",
     "decoder_selector_test.cc",
     "encoded_video_chunk_test.cc",
     "image_decoder_external_test.cc",
     "video_decoder_broker_test.cc",
     "video_frame_test.cc",
-    "video_track_reader_writer_test.cc",
   ]
 
   configs += [
@@ -109,5 +118,6 @@ source_set("unit_tests") {
 }
 
 fuzzable_proto_library("fuzzer_protos") {
+  generate_python = true
   sources = [ "fuzzer_inputs.proto" ]
 }

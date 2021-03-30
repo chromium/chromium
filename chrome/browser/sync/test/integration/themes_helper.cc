@@ -116,11 +116,11 @@ ThemeConditionChecker::ThemeConditionChecker(
     : profile_(profile),
       debug_message_(debug_message),
       exit_condition_(exit_condition) {
-  registrar_.Add(this, chrome::NOTIFICATION_BROWSER_THEME_CHANGED,
-                 content::Source<ThemeService>(GetThemeService(profile_)));
+  GetThemeService(profile_)->AddObserver(this);
 }
 
 ThemeConditionChecker::~ThemeConditionChecker() {
+  GetThemeService(profile_)->RemoveObserver(this);
 }
 
 bool ThemeConditionChecker::IsExitConditionSatisfied(std::ostream* os) {
@@ -128,11 +128,7 @@ bool ThemeConditionChecker::IsExitConditionSatisfied(std::ostream* os) {
   return exit_condition_.Run(GetThemeService(profile_));
 }
 
-void ThemeConditionChecker::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(chrome::NOTIFICATION_BROWSER_THEME_CHANGED, type);
+void ThemeConditionChecker::OnThemeChanged() {
   CheckExitCondition();
 }
 

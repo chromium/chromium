@@ -13,7 +13,6 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/tabmodel/AsyncTabParamsManager.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/EmptyTabModel.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/EmptyTabModelFilter.java",
-    "android/java/src/org/chromium/chrome/browser/tabmodel/EmptyTabModelSelectorObserver.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoStateProvider.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabHost.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabHostRegistry.java",
@@ -23,6 +22,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/tabmodel/NextTabPolicy.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabCreator.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabCreatorManager.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabCreatorManagerSupplier.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabList.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModel.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelFilter.java",
@@ -34,6 +34,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelector.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorFactory.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorObserver.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorSupplier.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabModelObserver.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabObserver.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelUtils.java",
@@ -47,7 +48,8 @@ android_library("java") {
     "//chrome/browser/tab:java",
     "//components/embedder_support/android:util_java",
     "//content/public/android:content_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_full_java",
     "//url:gurl_java",
   ]
 }
@@ -73,7 +75,7 @@ android_library("javatests") {
     "//chrome/test/android:chrome_java_test_support",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
-    "//third_party/android_deps:androidx_test_runner_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]

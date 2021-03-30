@@ -41,10 +41,6 @@ namespace tracing {
 class TraceEventSystemStatsMonitor;
 }
 
-namespace performance_monitor {
-class SystemMonitor;
-}
-
 class ChromeBrowserMainParts : public content::BrowserMainParts {
  public:
   ~ChromeBrowserMainParts() override;
@@ -74,8 +70,9 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   void PostMainMessageLoopStart() override;
   int PreCreateThreads() override;
   void PostCreateThreads() override;
-  void PreMainMessageLoopRun() override;
-  bool MainMessageLoopRun(int* result_code) override;
+  int PreMainMessageLoopRun() override;
+  void WillRunMainMessageLoop(
+      std::unique_ptr<base::RunLoop>& run_loop) override;
   void PostMainMessageLoopRun() override;
   void PostDestroyThreads() override;
 
@@ -155,10 +152,6 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   // Vector of additional ChromeBrowserMainExtraParts.
   // Parts are deleted in the inverse order they are added.
   std::vector<std::unique_ptr<ChromeBrowserMainExtraParts>> chrome_extra_parts_;
-
-  // The system monitor instance, used by some subsystems to collect the system
-  // metrics they need.
-  std::unique_ptr<performance_monitor::SystemMonitor> system_monitor_;
 
   // The system stats monitor used by chrome://tracing. This doesn't do anything
   // until tracing of the |system_stats| category is enabled.

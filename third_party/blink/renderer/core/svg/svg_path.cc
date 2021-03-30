@@ -82,9 +82,7 @@ std::unique_ptr<SVGPathByteStream> ConditionallyAddPathByteStreams(
 
 SVGPath::SVGPath() : path_value_(CSSPathValue::EmptyPathValue()) {}
 
-SVGPath::SVGPath(CSSPathValue* path_value) : path_value_(path_value) {
-  DCHECK(path_value_);
-}
+SVGPath::SVGPath(const CSSPathValue& path_value) : path_value_(path_value) {}
 
 SVGPath::~SVGPath() = default;
 
@@ -93,7 +91,7 @@ String SVGPath::ValueAsString() const {
 }
 
 SVGPath* SVGPath::Clone() const {
-  return MakeGarbageCollected<SVGPath>(path_value_);
+  return MakeGarbageCollected<SVGPath>(*path_value_);
 }
 
 SVGParsingError SVGPath::SetValueAsString(const String& string) {
@@ -110,7 +108,7 @@ SVGPropertyBase* SVGPath::CloneForAnimation(const String& value) const {
       std::make_unique<SVGPathByteStream>();
   BuildByteStreamFromString(value, *byte_stream);
   return MakeGarbageCollected<SVGPath>(
-      MakeGarbageCollected<CSSPathValue>(std::move(byte_stream)));
+      *MakeGarbageCollected<CSSPathValue>(std::move(byte_stream)));
 }
 
 void SVGPath::Add(const SVGPropertyBase* other, const SVGElement*) {

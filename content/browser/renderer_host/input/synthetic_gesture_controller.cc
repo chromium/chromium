@@ -7,11 +7,11 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target.h"
 #include "content/common/input/synthetic_smooth_scroll_gesture_params.h"
-#include "content/common/input_messages.h"
 #include "content/public/browser/render_widget_host.h"
 
 namespace content {
@@ -48,7 +48,7 @@ void SyntheticGestureController::EnsureRendererInitialized(
   // have been updated in the browser. https://crbug.com/985374.
   gesture_target_->WaitForTargetAck(
       SyntheticGestureParams::WAIT_FOR_INPUT_PROCESSED,
-      SyntheticGestureParams::DEFAULT_INPUT, std::move(wrapper));
+      content::mojom::GestureSourceType::kDefaultInput, std::move(wrapper));
 }
 
 void SyntheticGestureController::UpdateSyntheticGestureTarget(
@@ -67,9 +67,7 @@ void SyntheticGestureController::QueueSyntheticGesture(
 
 void SyntheticGestureController::QueueSyntheticGestureCompleteImmediately(
     std::unique_ptr<SyntheticGesture> synthetic_gesture) {
-  QueueSyntheticGesture(std::move(synthetic_gesture),
-                        base::BindOnce([](SyntheticGesture::Result result) {}),
-                        true);
+  QueueSyntheticGesture(std::move(synthetic_gesture), base::DoNothing(), true);
 }
 
 void SyntheticGestureController::QueueSyntheticGesture(

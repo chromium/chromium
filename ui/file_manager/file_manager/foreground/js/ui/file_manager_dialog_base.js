@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {util} from '../../../common/js/util.m.js';
+// #import {BaseDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
+
 /**
  * This class is an extended class, to manage the status of the dialogs.
  */
-class FileManagerDialogBase extends cr.ui.dialogs.BaseDialog {
+/* #export */ class FileManagerDialogBase extends cr.ui.dialogs.BaseDialog {
   /**
    * @param {HTMLElement} parentNode Parent node of the dialog.
    */
@@ -15,6 +18,15 @@ class FileManagerDialogBase extends cr.ui.dialogs.BaseDialog {
     if (util.isFilesNg()) {
       this.container.classList.add('files-ng');
     }
+  }
+
+  /**
+   * @protected
+   * @override
+   */
+  initDom() {
+    super.initDom();
+    super.hasModalContainer = true;
   }
 
   /**
@@ -101,15 +113,25 @@ class FileManagerDialogBase extends cr.ui.dialogs.BaseDialog {
   }
 
   /**
-   * @param {Function=} opt_onHide Called when the dialog is hidden.
+   * @override
+   * @suppress {accessControls}
    */
-  hide(opt_onHide) {
+  show_(...args) {
+    this.parentNode_ = util.getFilesAppModalDialogInstance();
+
+    super.show_(...args);
+
+    this.parentNode_.showModal();
+  }
+
+  /**
+   * @override
+   */
+  hide(...args) {
+    this.parentNode_.close();
+
     FileManagerDialogBase.shown = false;
-    super.hide(() => {
-      if (opt_onHide) {
-        opt_onHide();
-      }
-    });
+    super.hide(...args);
   }
 }
 

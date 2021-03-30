@@ -61,7 +61,7 @@ class CastBluetoothChooserTest : public testing::Test {
   ~CastBluetoothChooserTest() override = default;
 
   void AddDeviceToChooser(const std::string& address) {
-    chooser().AddOrUpdateDevice(address, false, base::string16(), false, false,
+    chooser().AddOrUpdateDevice(address, false, std::u16string(), false, false,
                                 0);
   }
 

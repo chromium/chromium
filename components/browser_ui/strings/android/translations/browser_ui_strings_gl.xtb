@@ -13,15 +13,17 @@
 <translation id="1272079795634619415">Deter</translation>
 <translation id="1289742167380433257">Para gardar os teus datos, Google optimizou as imaxes desta páxina.</translation>
 <translation id="129382876167171263">Os ficheiros gardados polos sitios web aparecen aquí</translation>
+<translation id="1317194122196776028">Esquecer este sitio</translation>
 <translation id="1364532808393826295"><ph name="APP_NAME" />: <ph name="NOTIFICATION_MESSAGE" /></translation>
 <translation id="1369915414381695676">Engadiuse o sitio <ph name="SITE_NAME" /></translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1384959399684842514">Pausouse a descarga</translation>
 <translation id="1415402041810619267">URL truncado</translation>
-<translation id="1431402976894535801">Impedir que os sitios saiban cando estás activo</translation>
 <translation id="1446450296470737166">Permitir control disposit. MIDI</translation>
 <translation id="1509960214886564027">As funcións de moitos sitios poden deixar de funcionar</translation>
 <translation id="1620510694547887537">Cámara</translation>
+<translation id="1644574205037202324">Historial</translation>
+<translation id="1647582022260550163">Seguro que queres restablecer os permisos, así como borrar as cookies e os datos do sitio?</translation>
 <translation id="1660204651932907780">Permite que os sitios reproduzan son (recomendado)</translation>
 <translation id="1677097821151855053">As cookies e outros datos do sitio utilízanse para lembrarte (por exemplo, á hora de iniciar de sesión ou de personalizar anuncios). Se queres xestionar as cookies para todos os sitios, vai a <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="1688867105868176567">Queres borrar os datos do sitio?</translation>
@@ -39,7 +41,6 @@
 <translation id="1994173015038366702">URL do sitio</translation>
 <translation id="2025115093177348061">Realidade aumentada</translation>
 <translation id="2030769033451695672">Toca para volver a <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
-<translation id="2054665754582400095">A túa presenza</translation>
 <translation id="2079545284768500474">Desfacer</translation>
 <translation id="2091887806945687916">Son</translation>
 <translation id="2107397443965016585">Preguntar antes de permitir que os sitios reproduzan contido protexido (recomendado)</translation>
@@ -82,7 +83,6 @@
 <translation id="3114012059975132928">Reprodutor de vídeo</translation>
 <translation id="3115898365077584848">Mostrar información</translation>
 <translation id="3123473560110926937">Anuncios bloqueados nalgúns sitios</translation>
-<translation id="3165371858310906303">Preguntar cando un sitio queira saber se estás activo</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> de datos almacenados</translation>
 <translation id="321187648315454507">Para permitir que <ph name="APP_NAME" /> che envíe notificacións, actívaas tamén en <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Micrófono</translation>
@@ -93,7 +93,6 @@
 <translation id="3386292677130313581">Pregunta antes de permitir que os sitios coñezan a túa localización (recomendado)</translation>
 <translation id="3538390592868664640">Impide que os sitios creen un mapa 3D do que te rodea e fagan un seguimento da posición da cámara</translation>
 <translation id="3586500876634962664">Uso da cámara e do micrófono</translation>
-<translation id="3587482841069643663">Todos</translation>
 <translation id="358794129225322306">Permite que un sitio descargue varios ficheiros automaticamente.</translation>
 <translation id="3594780231884063836">Silenciar o vídeo</translation>
 <translation id="3596414637720633074">Bloquear cookies de terceiros no modo de incógnito</translation>
@@ -101,9 +100,11 @@
 <translation id="3744111561329211289">Sincronización en segundo plano</translation>
 <translation id="3763247130972274048">Toca dúas veces cara á esquerda ou á dereita no vídeo para saltar 10 s</translation>
 <translation id="381841723434055211">Números de teléfono</translation>
+<translation id="3835233591525155343">Uso do dispositivo</translation>
 <translation id="385051799172605136">Atrás</translation>
 <translation id="3859306556332390985">Buscar cara adiante</translation>
 <translation id="3955193568934677022">Permitir que os sitios reproduzan contido protexido (recomendado)</translation>
+<translation id="3967822245660637423">Descarga completa</translation>
 <translation id="3987993985790029246">Copiar ligazón</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
 <translation id="4002066346123236978">Título</translation>
@@ -117,6 +118,7 @@
 <translation id="429312253194641664">Un sitio está reproducindo contido multimedia</translation>
 <translation id="42981349822642051">Ampliar</translation>
 <translation id="4336434711095810371">Borrar todos os datos</translation>
+<translation id="4402755511846832236">Impide que os sitios saiban se estás utilizando este dispositivo de maneira activa</translation>
 <translation id="4433925000917964731">Páxina en modo básico ofrecida por Google.</translation>
 <translation id="4434045419905280838">Ventás emerxentes e redireccións</translation>
 <translation id="445467742685312942">Permitir que os sitios reproduzan contido protexido</translation>
@@ -129,6 +131,7 @@
 <translation id="4670064810192446073">Realidade virtual</translation>
 <translation id="4708011789095599544">Seguro que queres borrar as cookies e outros datos deste sitio web?</translation>
 <translation id="4751476147751820511">Sensores de movemento ou de luz</translation>
+<translation id="4836046166855586901">Pregúntache sempre que un sitio quere saber se estás utilizando este dispositivo de maneira activa</translation>
 <translation id="4883854917563148705">Non se pode restablecer a configuración xestionada</translation>
 <translation id="4887024562049524730">Pregunta antes de permitir que os sitios utilicen os teus datos e dispositivos de realidade virtual (recomendado)</translation>
 <translation id="4962975101802056554">Revogar todos os permisos do dispositivo</translation>
@@ -279,6 +282,7 @@
 <translation id="8447861592752582886">Revoga o permiso do dispositivo</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 cookie en uso}other{# cookies en uso}}</translation>
 <translation id="8463851957836045671">O sitio é rápido</translation>
+<translation id="8487700953926739672">Dispoñible sen conexión</translation>
 <translation id="851751545965956758">Non permitir que os sitios se conecten aos dispositivos</translation>
 <translation id="8525306231823319788">Pantalla completa</translation>
 <translation id="857943718398505171">Permitido (recomendado)</translation>
@@ -301,10 +305,12 @@
 <translation id="894871326938397531">Saír do modo de incógnito?</translation>
 <translation id="8958424370300090006">Bloquea cookies para un sitio específico.</translation>
 <translation id="8959122750345127698">A navegación é inaccesible: <ph name="URL" /></translation>
+<translation id="8986362086234534611">Borrar</translation>
 <translation id="9019902583201351841">Xestionado por teus pais</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> máis}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> máis}}</translation>
 <translation id="913657688200966289">Activa os permisos para <ph name="APP_NAME" /> en <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
+<translation id="930525582205581608">Queres esquecer este sitio?</translation>
 <translation id="965817943346481315">Bloquear se o sitio mostra anuncios enganosos ou intrusivos (recomendado)</translation>
 <translation id="967624055006145463">Datos almacenados</translation>
 </translationbundle>

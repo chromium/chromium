@@ -99,8 +99,9 @@ class {{export_attribute}} {{struct.name}} {
   static bool Deserialize(const void* data,
                           size_t data_num_bytes,
                           UserType* output) {
+    mojo::Message message;
     return mojo::internal::DeserializeImpl<{{struct.name}}::DataView>(
-        data, data_num_bytes, std::vector<mojo::ScopedHandle>(), output, Validate);
+        message, data, data_num_bytes, output, Validate);
   }
 
   template <typename UserType>
@@ -122,8 +123,7 @@ class {{export_attribute}} {{struct.name}} {
     }
     input.SerializeIfNecessary();
     return mojo::internal::DeserializeImpl<{{struct.name}}::DataView>(
-        input.payload(), input.payload_num_bytes(),
-        std::move(*input.mutable_handles()), output, Validate);
+        input, input.payload(), input.payload_num_bytes(), output, Validate);
   }
 
 {#--- Struct members #}
@@ -134,54 +134,8 @@ class {{export_attribute}} {{struct.name}} {
   {{type}} {{name}};
 {%- endfor %}
 
-  // Write this structure into |value|. The members are represented as a
-  // dictionary |member name|: |member value|. This method does not deal with
-  // the dictionary name. The caller is responsible for not calling
-  // |AsValueInto| when |value| expects array items (see Array/Dictionary
-  // methods of |base::trace_event::TracedValue|).
-  //
-  // |value| The TracedValue to be written into.
-  //
-  // Example uses:
-  //
-  //   // |my_var1, my_var2| are variables with defined |AsValueInto| method.
-  //   auto value = std::make_unique<base::trace_event::TracedValue>();
-  //   value->BeginDictionary("my_var1");
-  //   my_var1.AsValueInto(value.get());
-  //   value->EndDictionary();
-  //   value->BeginDictionary("my_var2");
-  //   my_var2.AsValueInto(value.get());
-  //   value->EndDictionary();
-  //
-  //   // |my_var| is a variable with defined |AsValueInto| method.
-  //   auto value = std::make_unique<base::trace_event::TracedValue>();
-  //   my_var.AsValueInto(value.get());
-  //   TRACE_EVENT1("test", "test", "my_var", std::move(value));
-  //
-  // Calling |AsValueInto| on two objects without opening and closing a
-  // dictionary for each object is theoretically possible, but strongly
-  // discouraged due to potential name collisions:
-  //
-  //   struct A {
-  //     int foo;
-  //   };
-  //   struct B {
-  //     int bar;
-  //   };
-  //   struct C {
-  //     int foo;
-  //     int bar;
-  //   };
-  //   auto value1 = std::make_unique<base::trace_event::TracedValue>();
-  //   auto value2 = std::make_unique<base::trace_event::TracedValue>();
-  //   A a;
-  //   B b;
-  //   C c;
-  //   // value1 and value2 will be filled with the same information:
-  //   a.AsValueInto(value1);
-  //   b.AsValueInto(value1);
-  //   c.AsValueInto(value2);
-  void AsValueInto(base::trace_event::TracedValue* value) const;
+  // Serialise this struct into a trace.
+  void WriteIntoTracedValue(perfetto::TracedValue context) const;
 
  private:
   static bool Validate(const void* data,

@@ -15,7 +15,6 @@ import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
 import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
@@ -28,7 +27,6 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.AppHooks;
-import org.chromium.chrome.browser.ChromeLocalizationUtils;
 import org.chromium.chrome.browser.ChromeStrictMode;
 import org.chromium.chrome.browser.FileProviderHelper;
 import org.chromium.chrome.browser.app.flags.ChromeCachedFlags;
@@ -47,7 +45,6 @@ import org.chromium.content_public.browser.DeviceUtils;
 import org.chromium.content_public.browser.SpeechRecognition;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.net.NetworkChangeNotifier;
-import org.chromium.ui.resources.ResourceExtractor;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -140,17 +137,17 @@ public class ChromeBrowserInitializer {
                 return startGpuProcess;
             }
         };
-        handlePreNativeStartup(parts);
+        handlePreNativeStartupAndLoadLibraries(parts);
         handlePostNativeStartup(false, parts);
     }
 
     /**
-     * Execute startup tasks that can be done without native libraries. See {@link BrowserParts} for
-     * a list of calls to be implemented.
+     * Executes startup tasks that can be done without native libraries, then loads the libraries.
+     * See {@link BrowserParts} for a list of calls to be implemented.
      * @param parts The delegate for the {@link ChromeBrowserInitializer} to communicate
      *              initialization tasks.
      */
-    public void handlePreNativeStartup(final BrowserParts parts) {
+    public void handlePreNativeStartupAndLoadLibraries(final BrowserParts parts) {
         ThreadUtils.checkUiThread();
         if (parts.isActivityFinishingOrDestroyed()) return;
         ProcessInitializationHandler.getInstance().initializePreNative();
@@ -171,7 +168,7 @@ public class ChromeBrowserInitializer {
      */
     private void onInflationComplete(final BrowserParts parts) {
         if (parts.isActivityFinishingOrDestroyed()) return;
-        postInflationStartup();
+        mPostInflationStartupComplete = true;
         parts.postInflationStartup();
     }
 
@@ -223,20 +220,6 @@ public class ChromeBrowserInitializer {
         ApplicationStatus.registerStateListenerForAllActivities(createActivityStateListener());
 
         mPreInflationStartupComplete = true;
-    }
-
-    private void postInflationStartup() {
-        ThreadUtils.assertOnUiThread();
-        if (mPostInflationStartupComplete) return;
-
-        // Check to see if we need to extract any new resources from the APK. This could
-        // be on first run when we need to extract all the .pak files we need, or after
-        // the user has switched locale, in which case we want new locale resources.
-        ResourceExtractor.get().setResultTraits(UiThreadTaskTraits.BOOTSTRAP);
-        ResourceExtractor.get().startExtractingResources(LocaleUtils.toLanguage(
-                ChromeLocalizationUtils.getUiLocaleStringForCompressedPak()));
-
-        mPostInflationStartupComplete = true;
     }
 
     /**

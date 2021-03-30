@@ -33,6 +33,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_view_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/child_process_host.h"
@@ -751,6 +752,8 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
               browser_context_));
   WebRequestProxyingURLLoaderFactory::StartProxying(
       browser_context, is_navigation ? -1 : render_process_id,
+      frame ? frame->GetRoutingID() : MSG_ROUTING_NONE,
+      frame ? frame->GetRenderViewHost()->GetRoutingID() : MSG_ROUTING_NONE,
       &request_id_generator_, std::move(navigation_ui_data),
       std::move(navigation_id), ukm_source_id, std::move(proxied_receiver),
       std::move(target_factory_remote), std::move(header_client_receiver),
@@ -935,7 +938,8 @@ bool ExtensionWebRequestEventRouter::RequestFilter::InitFromValue(
         URLPattern pattern(URLPattern::SCHEME_HTTP | URLPattern::SCHEME_HTTPS |
                            URLPattern::SCHEME_FTP | URLPattern::SCHEME_FILE |
                            URLPattern::SCHEME_EXTENSION |
-                           URLPattern::SCHEME_WS | URLPattern::SCHEME_WSS);
+                           URLPattern::SCHEME_WS | URLPattern::SCHEME_WSS |
+                           URLPattern::SCHEME_URN);
         if (!urls_value->GetString(i, &url) ||
             pattern.Parse(url) != URLPattern::ParseResult::kSuccess) {
           *error = ErrorUtils::FormatErrorMessage(
@@ -2611,9 +2615,7 @@ WebRequestInternalAddEventListenerFunction::Run() {
     // webRequests initiated by a regular extension.
     if (!(ArePublicSessionRestrictionsEnabled() && extension->is_extension()) &&
         extension->permissions_data()
-            ->GetEffectiveHostPermissions(
-                PermissionsData::EffectiveHostPermissionsMode::
-                    kIncludeTabSpecific)
+            ->GetEffectiveHostPermissions()
             .is_empty() &&
         extension->permissions_data()
             ->withheld_permissions()
@@ -2779,8 +2781,8 @@ WebRequestInternalEventHandledFunction::Run() {
       EXTENSION_FUNCTION_VALIDATE(value->GetDictionary(
           keys::kAuthCredentialsKey,
           &credentials_value));
-      base::string16 username;
-      base::string16 password;
+      std::u16string username;
+      std::u16string password;
       EXTENSION_FUNCTION_VALIDATE(
           credentials_value->GetString(keys::kUsernameKey, &username));
       EXTENSION_FUNCTION_VALIDATE(

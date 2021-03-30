@@ -23,7 +23,7 @@ void ProcessPowerEventHelper(PowerMonitorSource::PowerEvent event) {
   PowerMonitorSource::ProcessPowerEvent(event);
 }
 
-bool PowerMonitorDeviceSource::IsOnBatteryPowerImpl() {
+bool PowerMonitorDeviceSource::IsOnBatteryPower() {
   base::ScopedCFTypeRef<CFTypeRef> info(IOPSCopyPowerSourcesInfo());
   if (!info)
     return false;
@@ -67,7 +67,7 @@ bool PowerMonitorDeviceSource::IsOnBatteryPowerImpl() {
   return found_battery;
 }
 
-PowerObserver::DeviceThermalState
+PowerThermalObserver::DeviceThermalState
 PowerMonitorDeviceSource::GetCurrentThermalState() {
   return thermal_state_observer_->GetCurrentThermalState();
 }

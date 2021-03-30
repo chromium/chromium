@@ -52,8 +52,7 @@ class NearbyConnections : public mojom::NearbyConnections {
       mojo::PendingReceiver<mojom::NearbyConnections> nearby_connections,
       mojom::NearbyConnectionsDependenciesPtr dependencies,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
-      base::OnceClosure on_disconnect,
-      std::unique_ptr<ServiceController> service_controller = nullptr);
+      base::OnceClosure on_disconnect);
 
   NearbyConnections(const NearbyConnections&) = delete;
   NearbyConnections& operator=(const NearbyConnections&) = delete;
@@ -73,9 +72,10 @@ class NearbyConnections : public mojom::NearbyConnections {
       const {
     return socket_manager_;
   }
-  const mojo::SharedRemote<network::mojom::MdnsResponder>& mdns_responder()
-      const {
-    return mdns_responder_;
+  const mojo::SharedRemote<
+      location::nearby::connections::mojom::MdnsResponderFactory>&
+  mdns_responder_factory() const {
+    return mdns_responder_factory_;
   }
   const mojo::SharedRemote<sharing::mojom::IceConfigFetcher>&
   ice_config_fetcher() const {
@@ -153,10 +153,28 @@ class NearbyConnections : public mojom::NearbyConnections {
   // Returns the task runner for the thread that created |this|.
   scoped_refptr<base::SingleThreadTaskRunner> GetThreadTaskRunner();
 
+  void SetServiceControllerForTesting(
+      std::unique_ptr<ServiceController> service_controller);
+
  private:
+  // These values are used for metrics. Entries should not be renumbered and
+  // numeric values should never be reused. If entries are added, kMaxValue
+  // should be updated.
+  enum class MojoDependencyName {
+    kNearbyConnections = 0,
+    kBluetoothAdapter = 1,
+    kSocketManager = 2,
+    kMdnsResponder = 3,
+    kIceConfigFetcher = 4,
+    kWebRtcSignalingMessenger = 5,
+    kMaxValue = kWebRtcSignalingMessenger
+  };
+
   Core* GetCore(const std::string& service_id);
 
-  void OnDisconnect();
+  std::string GetMojoDependencyName(MojoDependencyName dependency_name);
+
+  void OnDisconnect(MojoDependencyName dependency_name);
 
   mojo::Receiver<mojom::NearbyConnections> nearby_connections_;
   base::OnceClosure on_disconnect_;
@@ -165,7 +183,8 @@ class NearbyConnections : public mojom::NearbyConnections {
   // to sequence binding the Remote.
   mojo::SharedRemote<bluetooth::mojom::Adapter> bluetooth_adapter_;
   mojo::SharedRemote<network::mojom::P2PSocketManager> socket_manager_;
-  mojo::SharedRemote<network::mojom::MdnsResponder> mdns_responder_;
+  mojo::SharedRemote<location::nearby::connections::mojom::MdnsResponderFactory>
+      mdns_responder_factory_;
   mojo::SharedRemote<sharing::mojom::IceConfigFetcher> ice_config_fetcher_;
   mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger>
       webrtc_signaling_messenger_;

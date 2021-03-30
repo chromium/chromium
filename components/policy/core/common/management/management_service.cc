@@ -58,6 +58,11 @@ ManagementService::GetManagementAuthorityTrustworthiness() {
   return GetTrustworthiness(GetManagementAuthorities());
 }
 
+bool ManagementService::IsManaged() {
+  return GetManagementAuthorityTrustworthiness() >
+         ManagementAuthorityTrustworthiness::NONE;
+}
+
 void ManagementService::SetManagementStatusProvider(
     std::vector<std::unique_ptr<ManagementStatusProvider>> providers) {
   management_status_providers_ = std::move(providers);

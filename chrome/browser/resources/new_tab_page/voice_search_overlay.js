@@ -9,7 +9,9 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {BrowserProxy} from './browser_proxy.js';
+
+import {NewTabPageProxy} from './new_tab_page_proxy.js';
+import {WindowProxy} from './window_proxy.js';
 
 /**
  * Threshold for considering an interim speech transcript result as "confident
@@ -195,7 +197,7 @@ class VoiceSearchOverlayElement extends PolymerElement {
   constructor() {
     super();
     /** @private {newTabPage.mojom.PageHandlerRemote} */
-    this.pageHandler_ = BrowserProxy.getInstance().handler;
+    this.pageHandler_ = NewTabPageProxy.getInstance().handler;
     /** @private {webkitSpeechRecognition} */
     this.voiceRecognition_ = new webkitSpeechRecognition();
     this.voiceRecognition_.continuous = false;
@@ -211,8 +213,8 @@ class VoiceSearchOverlayElement extends PolymerElement {
     this.voiceRecognition_.onnomatch = () => {
       this.onError_(Error.kNoMatch);
     };
-    /** @private {number|undefined} */
-    this.timerId_ = undefined;
+    /** @private {?number} */
+    this.timerId_ = null;
   }
 
   /** @override */
@@ -307,8 +309,8 @@ class VoiceSearchOverlayElement extends PolymerElement {
 
   /** @private */
   resetIdleTimer_() {
-    BrowserProxy.getInstance().clearTimeout(this.timerId_);
-    this.timerId_ = BrowserProxy.getInstance().setTimeout(
+    WindowProxy.getInstance().clearTimeout(this.timerId_);
+    this.timerId_ = WindowProxy.getInstance().setTimeout(
         this.onIdleTimeout_.bind(this), IDLE_TIMEOUT_MS);
   }
 
@@ -332,8 +334,8 @@ class VoiceSearchOverlayElement extends PolymerElement {
    * @private
    */
   resetErrorTimer_(duration) {
-    BrowserProxy.getInstance().clearTimeout(this.timerId_);
-    this.timerId_ = BrowserProxy.getInstance().setTimeout(() => {
+    WindowProxy.getInstance().clearTimeout(this.timerId_);
+    this.timerId_ = WindowProxy.getInstance().setTimeout(() => {
       this.$.dialog.close();
     }, duration);
   }
@@ -426,7 +428,7 @@ class VoiceSearchOverlayElement extends PolymerElement {
     queryUrl.search = searchParams.toString();
     this.pageHandler_.onVoiceSearchAction(
         newTabPage.mojom.VoiceSearchAction.kQuerySubmitted);
-    BrowserProxy.getInstance().navigate(queryUrl.href);
+    WindowProxy.getInstance().navigate(queryUrl.href);
   }
 
   /** @private */
@@ -474,12 +476,12 @@ class VoiceSearchOverlayElement extends PolymerElement {
         this.state_ !== State.RESULT_RECEIVED) {
       return;
     }
-    this.micVolumeLevel_ = BrowserProxy.getInstance().random();
+    this.micVolumeLevel_ = WindowProxy.getInstance().random();
     this.micVolumeDuration_ = Math.round(
         VOLUME_ANIMATION_DURATION_MIN_MS +
-        BrowserProxy.getInstance().random() *
+        WindowProxy.getInstance().random() *
             VOLUME_ANIMATION_DURATION_RANGE_MS);
-    BrowserProxy.getInstance().setTimeout(
+    WindowProxy.getInstance().setTimeout(
         this.animateVolume_.bind(this), this.micVolumeDuration_);
   }
 

@@ -22,8 +22,6 @@ class CrostiniUpgraderUI
     : public ui::MojoWebDialogUI,
       public chromeos::crostini_upgrader::mojom::PageHandlerFactory {
  public:
-  static bool IsEnabled();
-
   explicit CrostiniUpgraderUI(content::WebUI* web_ui);
   ~CrostiniUpgraderUI() override;
 

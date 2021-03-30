@@ -67,8 +67,8 @@ class MockVideoDecoder : public VideoDecoder {
  public:
   MockVideoDecoder() {
     // Treat const getters like a NiceMock.
-    EXPECT_CALL(*this, GetDisplayName())
-        .WillRepeatedly(Return("MockVideoDecoder"));
+    EXPECT_CALL(*this, GetDecoderType())
+        .WillRepeatedly(Return(VideoDecoderType::kTesting));
     EXPECT_CALL(*this, NeedsBitstreamConversion())
         .WillRepeatedly(Return(false));
     EXPECT_CALL(*this, CanReadWithoutStalling()).WillRepeatedly(Return(true));
@@ -86,7 +86,7 @@ class MockVideoDecoder : public VideoDecoder {
   ~MockVideoDecoder() override {}
 
   // media::VideoDecoder implementation
-  MOCK_CONST_METHOD0(GetDisplayName, std::string());
+  MOCK_CONST_METHOD0(GetDecoderType, VideoDecoderType());
 
   // Initialize() records values before delegating to the mock method.
   void Initialize(const VideoDecoderConfig& config,
@@ -144,7 +144,7 @@ class MockVideoDecoder : public VideoDecoder {
             PIXEL_FORMAT_ARGB, mailbox_holders, GetReleaseMailboxCB(),
             config_.coded_size(), config_.visible_rect(),
             config_.natural_size(), buffer->timestamp());
-        frame->metadata()->power_efficient = true;
+        frame->metadata().power_efficient = true;
         output_cb_.Run(frame);
       }
     }
@@ -250,6 +250,7 @@ class MojoVideoDecoderIntegrationTest : public ::testing::Test {
     StrictMock<base::MockCallback<VideoDecoder::InitCB>> init_cb;
     EXPECT_CALL(init_cb, Run(_)).WillOnce(SaveArg<0>(&result));
 
+    EXPECT_EQ(client_->GetDecoderType(), VideoDecoderType::kUnknown);
     client_->Initialize(TestVideoConfig::NormalH264(), false, nullptr,
                         init_cb.Get(), output_cb_.Get(), waiting_cb_.Get());
     RunUntilIdle();
@@ -382,7 +383,7 @@ TEST_F(MojoVideoDecoderIntegrationTest, GetSupportedConfigs) {
 
 TEST_F(MojoVideoDecoderIntegrationTest, Initialize) {
   ASSERT_TRUE(Initialize());
-  EXPECT_EQ(client_->GetDisplayName(), "MojoVideoDecoder");
+  EXPECT_EQ(client_->GetDecoderType(), VideoDecoderType::kTesting);
   EXPECT_EQ(client_->NeedsBitstreamConversion(), false);
   EXPECT_EQ(client_->CanReadWithoutStalling(), true);
   EXPECT_EQ(client_->GetMaxDecodeRequests(), kMaxDecodeRequests);

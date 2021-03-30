@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that console.group/groupEnd messages won't be coalesced. Bug 56114. Bug 63521.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`

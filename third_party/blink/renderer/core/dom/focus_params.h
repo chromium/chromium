@@ -31,6 +31,7 @@ struct FocusParams {
   mojom::blink::FocusType type = mojom::blink::FocusType::kNone;
   InputDeviceCapabilities* source_capabilities = nullptr;
   const FocusOptions* options = nullptr;
+  bool omit_blur_events = false;
 };
 
 }  // namespace blink

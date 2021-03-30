@@ -167,8 +167,9 @@ TEST_F(CameraHalDelegateTest, GetBuiltinCameraInfo) {
       };
 
   auto set_callbacks_cb =
-      [&](mojo::PendingRemote<cros::mojom::CameraModuleCallbacks>& callbacks,
-          cros::mojom::CameraModule::SetCallbacksCallback&) {
+      [&](mojo::PendingAssociatedRemote<cros::mojom::CameraModuleCallbacks>&
+              callbacks,
+          cros::mojom::CameraModule::SetCallbacksAssociatedCallback&) {
         mock_camera_module_.NotifyCameraDeviceChange(
             2, cros::mojom::CameraDeviceStatus::CAMERA_DEVICE_STATUS_PRESENT);
       };
@@ -176,10 +177,12 @@ TEST_F(CameraHalDelegateTest, GetBuiltinCameraInfo) {
   EXPECT_CALL(mock_camera_module_, DoGetNumberOfCameras(_))
       .Times(1)
       .WillOnce(Invoke(get_number_of_cameras_cb));
-  EXPECT_CALL(mock_camera_module_,
-              DoSetCallbacks(
-                  A<mojo::PendingRemote<cros::mojom::CameraModuleCallbacks>&>(),
-                  A<cros::mojom::CameraModule::SetCallbacksCallback&>()))
+  EXPECT_CALL(
+      mock_camera_module_,
+      DoSetCallbacksAssociated(
+          A<mojo::PendingAssociatedRemote<
+              cros::mojom::CameraModuleCallbacks>&>(),
+          A<cros::mojom::CameraModule::SetCallbacksAssociatedCallback&>()))
       .Times(1)
       .WillOnce(Invoke(set_callbacks_cb));
   EXPECT_CALL(mock_camera_module_,
@@ -228,7 +231,7 @@ TEST_F(CameraHalDelegateTest, GetBuiltinCameraInfo) {
   EXPECT_CALL(mock_gpu_memory_buffer_manager_,
               CreateGpuMemoryBuffer(
                   _, gfx::BufferFormat::YUV_420_BIPLANAR,
-                  gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE,
+                  gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
                   gpu::kNullSurfaceHandle))
       .Times(1)
       .WillOnce(Invoke(&unittest_internal::MockGpuMemoryBufferManager::

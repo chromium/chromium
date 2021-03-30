@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "services/viz/public/cpp/compositing/begin_frame_args_mojom_traits.h"
+#include "services/viz/public/cpp/compositing/compositor_frame_transition_directive_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/selection_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/surface_id_mojom_traits.h"
 #include "services/viz/public/cpp/crash_keys.h"
@@ -50,16 +51,15 @@ bool StructTraits<viz::mojom::CompositorFrameMetadataDataView,
         data.top_controls_visible_height());
   }
 
-  if (!data.ReadLatencyInfo(&out->latency_info) ||
-      !data.ReadReferencedSurfaces(&out->referenced_surfaces) ||
-      !data.ReadDeadline(&out->deadline) ||
-      !data.ReadActivationDependencies(&out->activation_dependencies) ||
-      !data.ReadBeginFrameAck(&out->begin_frame_ack)) {
-    return false;
-  }
-  return data.ReadPreferredFrameInterval(&out->preferred_frame_interval) &&
+  return data.ReadLatencyInfo(&out->latency_info) &&
+         data.ReadReferencedSurfaces(&out->referenced_surfaces) &&
+         data.ReadDeadline(&out->deadline) &&
+         data.ReadActivationDependencies(&out->activation_dependencies) &&
+         data.ReadBeginFrameAck(&out->begin_frame_ack) &&
+         data.ReadPreferredFrameInterval(&out->preferred_frame_interval) &&
          data.ReadDisplayTransformHint(&out->display_transform_hint) &&
-         data.ReadDelegatedInkMetadata(&out->delegated_ink_metadata);
+         data.ReadDelegatedInkMetadata(&out->delegated_ink_metadata) &&
+         data.ReadTransitionDirectives(&out->transition_directives);
 }
 
 }  // namespace mojo

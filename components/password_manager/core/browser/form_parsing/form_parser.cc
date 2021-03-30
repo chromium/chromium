@@ -19,7 +19,6 @@
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -28,14 +27,13 @@
 #include "components/autofill/core/browser/autofill_regexes.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 
 using autofill::FieldPropertiesFlags;
 using autofill::FormData;
 using autofill::FormFieldData;
-using base::string16;
 
 namespace password_manager {
 
@@ -82,24 +80,24 @@ AutocompleteFlag ExtractAutocompleteFlag(const std::string& attribute) {
 }
 
 // Returns true if the |str| contains words related to CVC fields.
-bool StringMatchesCVC(const base::string16& str) {
-  static const base::NoDestructor<base::string16> kCardCvcReCached(
+bool StringMatchesCVC(const std::u16string& str) {
+  static const base::NoDestructor<std::u16string> kCardCvcReCached(
       base::UTF8ToUTF16(autofill::kCardCvcRe));
 
   return autofill::MatchesPattern(str, *kCardCvcReCached);
 }
 
 // Returns true if the |str| contains words related to SSN fields.
-bool StringMatchesSSN(const base::string16& str) {
-  static const base::NoDestructor<base::string16> kSSNReCached(
+bool StringMatchesSSN(const std::u16string& str) {
+  static const base::NoDestructor<std::u16string> kSSNReCached(
       base::UTF8ToUTF16(autofill::kSocialSecurityRe));
 
   return autofill::MatchesPattern(str, *kSSNReCached);
 }
 
 // Returns true if the |str| contains words related to one time password fields.
-bool StringMatchesOTP(const base::string16& str) {
-  static const base::NoDestructor<base::string16> kOTPReCached(
+bool StringMatchesOTP(const std::u16string& str) {
+  static const base::NoDestructor<std::u16string> kOTPReCached(
       base::UTF8ToUTF16(autofill::kOneTimePwdRe));
 
   return autofill::MatchesPattern(str, *kOTPReCached);
@@ -175,18 +173,18 @@ bool MatchesInteractability(const ProcessedField& processed_field,
            FieldPropertiesFlags::kAutofilled));
 }
 
-bool DoesStringContainOnlyDigits(const base::string16& s) {
-  return base::ranges::all_of(s, &base::IsAsciiDigit<base::char16>);
+bool DoesStringContainOnlyDigits(const std::u16string& s) {
+  return base::ranges::all_of(s, &base::IsAsciiDigit<char16_t>);
 }
 
 // Heuristics to determine that a string is very unlikely to be a username.
-bool IsProbablyNotUsername(const base::string16& s) {
+bool IsProbablyNotUsername(const std::u16string& s) {
   return s.empty() || (s.size() < 3 && DoesStringContainOnlyDigits(s));
 }
 
-// Returns |typed_value| if it is not empty, |value| otherwise.
-const base::string16& GetFieldValue(const FormFieldData& field) {
-  return field.typed_value.empty() ? field.value : field.typed_value;
+// Returns |user_input| if it is not empty, |value| otherwise.
+const std::u16string& GetFieldValue(const FormFieldData& field) {
+  return field.user_input.empty() ? field.value : field.user_input;
 }
 
 // A helper struct that is used to capture significant fields to be used for
@@ -214,6 +212,12 @@ struct SignificantFields {
     DCHECK(!confirmation_password || new_password)
         << "There is no password to confirm if there is no new password field.";
     return password || new_password;
+  }
+
+  // Returns whether a new password fields without a corresponding confirmation
+  // password field was found.
+  bool MissesConfirmationPassword() const {
+    return new_password && !confirmation_password;
   }
 
   void ClearAllPasswordFields() {
@@ -247,6 +251,34 @@ ProcessedField* FindField(std::vector<ProcessedField>* processed_fields,
       return &processed_field;
   }
   return nullptr;
+}
+
+// Given a `new_password` field tries to find a matching confirmation_password
+// field in `processed_fields` that succeeds `new_password` and has matching
+// interactability and value.
+// Returns that field or nullptr if no such field could be found.
+const FormFieldData* FindConfirmationPasswordField(
+    const std::vector<ProcessedField>& processed_fields,
+    const FormFieldData& new_password) {
+  auto new_password_field = base::ranges::find(processed_fields, &new_password,
+                                               &ProcessedField::field);
+  if (new_password_field == processed_fields.end())
+    return nullptr;
+
+  // Find a processed field following `new_password_field` with matching
+  // interactability and value.
+  auto MatchesNewPasswordField = [new_password_field](
+                                     const ProcessedField& field) {
+    return MatchesInteractability(field, new_password_field->interactability) &&
+           GetFieldValue(*new_password_field->field) ==
+               GetFieldValue(*field.field);
+  };
+  auto confirmation_password_field =
+      std::find_if(std::next(new_password_field), processed_fields.end(),
+                   MatchesNewPasswordField);
+  return confirmation_password_field != processed_fields.end()
+             ? confirmation_password_field->field
+             : nullptr;
 }
 
 // Tries to parse |processed_fields| based on server |predictions|. Uses |mode|
@@ -750,7 +782,7 @@ void ParseUsingBaseHeuristics(
 // manager refer to a field. The fuzzing infrastructure doed not run on iOS, so
 // the iOS specific parts of PasswordForm are also built on fuzzer enabled
 // platforms. See http://crbug.com/896594
-string16 GetPlatformSpecificIdentifier(const FormFieldData& field) {
+std::u16string GetPlatformSpecificIdentifier(const FormFieldData& field) {
 #if defined(OS_IOS)
   return field.unique_id;
 #else
@@ -825,7 +857,7 @@ std::vector<ProcessedField> ProcessFields(
     if (!field.IsTextInputElement())
       continue;
 
-    const base::string16& field_value = GetFieldValue(field);
+    const std::u16string& field_value = GetFieldValue(field);
     if (consider_only_non_empty && field_value.empty())
       continue;
 
@@ -1004,6 +1036,22 @@ std::unique_ptr<PasswordForm> FormDataParser::Parse(const FormData& form_data,
           method = UsernameDetectionMethod::kHtmlBasedClassifier;
         }
       }
+    }
+
+    // If we're in saving mode and have found a new password but not a
+    // confirmation password field, try to infer the confirmation password field
+    // by trying to find a field that succeeds the new password field and has
+    // matching interactability and value. This should only have an effect if
+    // the new password field was found using server predictions or autocomplete
+    // attributes. In the case of local heuristics we already made use of the
+    // field's value to find a confirmation password field, and thus won't find
+    // it now if we didn't find it already.
+    if (mode == Mode::kSaving &&
+        significant_fields.MissesConfirmationPassword() &&
+        base::FeatureList::IsEnabled(
+            features::kInferConfirmationPasswordField)) {
+      significant_fields.confirmation_password = FindConfirmationPasswordField(
+          processed_fields, *significant_fields.new_password);
     }
   }
 

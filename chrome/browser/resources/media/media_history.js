@@ -2,16 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js';
+import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
+import 'chrome://resources/mojo/url/mojom/origin.mojom-lite.js';
+import './ui/gfx/geometry/mojom/geometry.mojom-lite.js';
+import './media_session.mojom-lite.js';
+import './media_history_store.mojom-lite.js';
+
+import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+import {TabBox} from 'chrome://resources/js/cr/ui/tabs.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
+
+import {MediaDataTable, MediaDataTableDelegate} from './media_data_table.js';
 
 // Allow a function to be provided by tests, which will be called when
 // the page has been populated.
 const mediaHistoryPageIsPopulatedResolver = new PromiseResolver();
-function whenPageIsPopulatedForTest() {
+window.whenPageIsPopulatedForTest = function() {
   return mediaHistoryPageIsPopulatedResolver.promise;
-}
-
-(function() {
+};
 
 let store = null;
 let statsTableBody = null;
@@ -34,7 +49,7 @@ function createStatsRow(name, count) {
   return document.importNode(template.content, true);
 }
 
-/** @implements {cr.ui.MediaDataTableDelegate} */
+/** @implements {MediaDataTableDelegate} */
 class MediaHistoryTableDelegate {
   /**
    * Formats a field to be displayed in the data table and inserts it into the
@@ -202,11 +217,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
   delegate = new MediaHistoryTableDelegate();
 
-  originsTable = new cr.ui.MediaDataTable($('origins-table'), delegate);
-  playbacksTable = new cr.ui.MediaDataTable($('playbacks-table'), delegate);
-  sessionsTable = new cr.ui.MediaDataTable($('sessions-table'), delegate);
+  originsTable = new MediaDataTable($('origins-table'), delegate);
+  playbacksTable = new MediaDataTable($('playbacks-table'), delegate);
+  sessionsTable = new MediaDataTable($('sessions-table'), delegate);
 
-  cr.ui.decorate('tabbox', cr.ui.TabBox);
+  decorate('tabbox', TabBox);
 
   // Allow tabs to be navigated to by fragment. The fragment with be of the
   // format "#tab-<tab id>".
@@ -247,4 +262,3 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 });
-})();

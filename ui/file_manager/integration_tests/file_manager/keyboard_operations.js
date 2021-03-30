@@ -14,13 +14,11 @@
 async function waitAndAcceptDialog(appId) {
   const okButton = '.cr-dialog-ok';
 
-  // Wait for the Ok button to appear.
-  await remoteCall.waitForElement(appId, okButton);
+  // Wait until the dialog is shown.
+  await remoteCall.waitForElement(appId, '.cr-dialog-container.shown');
 
-  // Click the Ok button.
-  chrome.test.assertTrue(
-      await remoteCall.callRemoteTestUtil('fakeMouseClick', appId, [okButton]),
-      'Dialog Ok button click failed');
+  // Click the dialog OK button.
+  await remoteCall.waitAndClickElement(appId, okButton);
 
   // Wait until the dialog closes.
   await remoteCall.waitForElementLost(appId, '.cr-dialog-container');
@@ -114,7 +112,8 @@ async function keyboardDelete(path, deleteHasDialog) {
       'deleteFile failed');
 
   // Run the delete entry confirmation dialog.
-  if (deleteHasDialog) {
+  if (deleteHasDialog ||
+      await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
     await waitAndAcceptDialog(appId);
   }
 
@@ -146,7 +145,8 @@ async function keyboardDeleteFolder(path, treeItem, deleteHasDialog) {
       'deleteFile failed');
 
   // Run the delete entry confirmation dialog.
-  if (deleteHasDialog) {
+  if (deleteHasDialog ||
+      await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
     await waitAndAcceptDialog(appId);
   }
 
@@ -342,8 +342,13 @@ testcase.keyboardFocusOutlineVisible = async () => {
   await remoteCall.waitForElementsCount(appId, htmlFocusOutlineVisible, 1);
 
   // Send mousedown to the toolbar delete button.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'fakeEvent', appId, ['#delete-button', 'mousedown']));
+  if (await sendTestMessage({name: 'isTrashEnabled'}) === 'true') {
+    chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+        'fakeEvent', appId, ['#move-to-trash-button', 'mousedown']));
+  } else {
+    chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+        'fakeEvent', appId, ['#delete-button', 'mousedown']));
+  }
 
   // Check: the html element should not have focus-outline-visible class.
   await remoteCall.waitForElementLost(appId, htmlFocusOutlineVisible);
@@ -359,8 +364,13 @@ testcase.keyboardFocusOutlineVisibleMouse = async () => {
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // Send mousedown to the toolbar delete button.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'fakeEvent', appId, ['#delete-button', 'mousedown']));
+  if (await sendTestMessage({name: 'isTrashEnabled'}) === 'true') {
+    chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+        'fakeEvent', appId, ['#move-to-trash-button', 'mousedown']));
+  } else {
+    chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+        'fakeEvent', appId, ['#delete-button', 'mousedown']));
+  }
 
   // Check: the html element should have pointer-active class.
   const htmlPointerActive = ['html.pointer-active'];
@@ -370,8 +380,13 @@ testcase.keyboardFocusOutlineVisibleMouse = async () => {
   await remoteCall.waitForElementLost(appId, ['html.focus-outline-visible']);
 
   // Send mouseup to the toolbar delete button.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'fakeEvent', appId, ['#delete-button', 'mouseup']));
+  if (await sendTestMessage({name: 'isTrashEnabled'}) === 'true') {
+    chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+        'fakeEvent', appId, ['#move-to-trash-button', 'mouseup']));
+  } else {
+    chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+        'fakeEvent', appId, ['#delete-button', 'mouseup']));
+  }
 
   // Check: the html element should not have pointer-active class.
   await remoteCall.waitForElementLost(appId, htmlPointerActive);
@@ -432,26 +447,31 @@ testcase.keyboardDisableCopyWhenDialogDisplayed = async () => {
   await remoteCall.callRemoteTestUtil(
       'fakeMouseClick', appId, ['#delete-button']);
 
-  // Confirm that the delete confirmation dialog is shown.
+  // Check: the delete confirm dialog should appear.
   await remoteCall.waitForElement(appId, '.cr-dialog-container.shown');
+
+  // Check: the dialog 'Cancel' button should be focused by default.
+  const defaultButton =
+      await remoteCall.waitForElement(appId, '.cr-dialog-cancel:focus');
+  chrome.test.assertEq('Cancel', defaultButton.text);
 
   // Try to copy file. We need to use execCommand as the command handler that
   // interprets key strokes will drop events if there is a dialog on screen.
   chrome.test.assertTrue(
       await remoteCall.callRemoteTestUtil('execCommand', appId, ['copy']));
 
-  // Press Cancel button to stop the delete operation.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, ['button.cr-dialog-cancel']));
+  // Click the delete confirm dialog 'Cancel' button to cancel the deletion.
+  await remoteCall.waitAndClickElement(appId, '.cr-dialog-cancel');
 
-  // Wait for dialog to disappear.
-  chrome.test.assertTrue(
-      await remoteCall.waitForElementLost(appId, '.cr-dialog-container.shown'));
+  // Check: the delete confirm dialog should close.
+  await remoteCall.waitForElementLost(appId, '.cr-dialog-container.shown');
+
+  // Send a paste command to the file-list.
   const key = ['#file-list', 'v', true, false, false];
   chrome.test.assertTrue(
       await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, key));
 
-  // Check no files were pasted.
+  // Check: no files should be pasted.
   const files = TestEntryInfo.getExpectedRows([ENTRIES.hello]);
   await remoteCall.waitForFiles(appId, files);
 };

@@ -6,6 +6,7 @@ import './edu_coexistence_css.js';
 import './edu_coexistence_template.js';
 import './edu_coexistence_button.js';
 import './gaia_action_buttons.js';
+import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -63,35 +64,42 @@ Polymer({
     EduCoexistenceBrowserProxyImpl.getInstance().dialogClose();
   },
 
-  /**
-   * Takes the appropriate "back" action from the GAIA edu login page.
-   * @param {Event} e
-   * @private
-   */
-  handleGaiaLoginGoBack_(e) {
-    e.stopPropagation();
-    this.webview_.back();
-    this.webview_.focus();
-  },
-
   loadAuthExtension_(data) {
     // Set up the controller.
     this.controller_.loadAuthExtension(data);
 
     this.webview_.addEventListener('contentload', () => {
       this.loading_ = false;
+      this.configureUiForGaiaFlow();
     });
+  },
 
-    this.webview_.addEventListener('loadcommit', (e) => {
-      this.configureUiForGaiaFlow(new URL(e.url));
+  handleGaiaLoginGoBack_(e) {
+    e.stopPropagation();
+    let backButton = this.root.getElementById('gaia-back-button');
+    if (backButton.disabled) {
+      // This is a safeguard against this method getting called somehow
+      // despite the button being disabled.
+      return;
+    }
+    backButton.disabled = true;
+
+    this.webview_.back((success /* ignored */) => {
+      // Wait a full second after the callback fires before processing another
+      // click on the back button.  This delay is needed because the callback
+      // fires before the content finishes navigating to the previous page.
+      setTimeout(() => {
+        backButton.disabled = false;
+      }, 1000 /* 1 second */);
+      this.webview_.focus();
     });
   },
 
   /**
    * Configures the UI for showing/hiding the GAIA login flow.
-   * @param {URL} currentUrl
    */
-  configureUiForGaiaFlow(currentUrl) {
+  configureUiForGaiaFlow() {
+    var currentUrl = new URL(this.webview_.src);
     var mainDiv = this.$$('edu-coexistence-template').$$('div.main');
 
     if (currentUrl.hostname !== this.controller_.getFlowOriginHostname()) {
@@ -121,11 +129,16 @@ Polymer({
   ready() {
     this.addWebUIListener(
         'load-auth-extension', data => this.loadAuthExtension_(data));
+    this.webview_ =
+        /** @type {!WebView} */ (this.$.signinFrame);
+
+    this.webview_.addEventListener('loadabort', () => {
+      this.loading_ = false;
+      this.fire('go-error');
+    });
 
     EduCoexistenceBrowserProxyImpl.getInstance().initializeEduArgs().then(
         (data) => {
-          this.webview_ =
-              /** @type {!WebView} */ (this.$.signinFrame);
           this.controller_ =
               new EduCoexistenceController(this, this.webview_, data);
 

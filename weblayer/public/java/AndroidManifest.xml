@@ -16,6 +16,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+    <uses-permission android:name="android.permission.NFC"/>
     <uses-permission android:name="android.permission.READ_CONTACTS"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
@@ -103,6 +104,16 @@
             android:exported="false"
             android:isolatedProcess="true"
             android:process=":decoder_service" />
+
+        <!-- Used for GPay Dynamic Update -->
+        <service
+            android:name="org.chromium.weblayer.GooglePayDataCallbacksServiceWrapper"
+            android:permission="com.google.android.gms.permission.BIND_PAYMENTS_CALLBACK_SERVICE"
+            android:exported="true">
+            <intent-filter>
+              <action android:name="com.google.android.gms.wallet.callback.PAYMENT_DATA_CALLBACKS"/>
+            </intent-filter>
+        </service>
 
         <!-- Cast support -->
         <!-- TODO(crbug.com/1148410): remove this. -->

@@ -24,7 +24,7 @@ namespace blink {
 //
 // Guidelines for when and how to use it can be found in:
 //
-//     //docs/privacy_budget_instrumentation.md#gating
+//     //docs/privacy_budget/privacy_budget_instrumentation.md#gating
 //
 class BLINK_COMMON_EXPORT IdentifiabilityStudySettings {
  public:

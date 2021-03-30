@@ -21,6 +21,7 @@
 namespace base {
 class CommandLine;
 class FilePath;
+class TimeDelta;
 }
 
 namespace content {
@@ -152,9 +153,6 @@ class BrowserTestBase : public testing::Test {
   // instead.
   void UseSoftwareCompositing();
 
-  // Returns true if the test will be using GL acceleration via a software GL.
-  bool UsingSoftwareGL() const;
-
   // Should be in PreRunTestOnMainThread, with the initial WebContents for the
   // main window. This allows the test harness to watch it for navigations so
   // that it can sync the host_resolver() rules to the out-of-process network
@@ -165,7 +163,8 @@ class BrowserTestBase : public testing::Test {
 #if defined(OS_ANDROID)
   // Android browser tests need to wait for async initialization in Java code.
   // This waits for those to complete before we can continue with the test.
-  void WaitUntilJavaIsReady(base::OnceClosure quit_closure);
+  void WaitUntilJavaIsReady(base::OnceClosure quit_closure,
+                            const base::TimeDelta& wait_retry_left);
 #endif
   // Performs a bunch of setup, and then runs the browser test body.
   void ProxyRunTestOnMainThreadLoop();

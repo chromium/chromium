@@ -15,6 +15,7 @@
 <translation id="2036868001356139588">টাইমাৰৰ দৈৰ্ঘ্য</translation>
 <translation id="2050339315714019657">প’ৰ্ট্ৰেইট</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> সক্ৰিয় হৈ আছে</translation>
+<translation id="2144806332417375165">কাষ্টম ভিডিঅ’ পেৰামিটাৰ</translation>
 <translation id="229579744168541441">ডিস্কলৈ ৰপ্তানি কৰক</translation>
 <translation id="2501278716633472235">উভতি যাওক</translation>
 <translation id="2501853267655415902">ৰেকৰ্ডিং বন্ধ কৰা হ’ল</translation>
@@ -33,7 +34,6 @@
 <translation id="3259149966178251584">কেমেৰা ৰিজ'লিউশ্বন</translation>
 <translation id="3517926952904427380">প’ৰ্ট্ৰেইট ফট’ ল’ব নোৱাৰিলে</translation>
 <translation id="3569311554794739032">আপুনি সঁচাকৈয়ে <ph name="FILE" /> আঁতৰাবলৈ বিচাৰে বুলি নিশ্চিতনে?</translation>
-<translation id="3750315947605636967">অন্য এটা এপে আপোনাৰ কেমেৰাটো ব্যৱহাৰ কৰি আছে</translation>
 <translation id="3810838688059735925">ভিডিঅ’</translation>
 <translation id="3838931309141338733">বাৰক’ড স্কেন কৰক</translation>
 <translation id="3892148308691398805">পাঠৰ প্ৰতিলিপি কৰক</translation>
@@ -76,10 +76,12 @@
 <translation id="7337660886763914220">ফাইল ছিষ্টেমৰ আসোঁৱাহ।</translation>
 <translation id="7450541714075000668">পাঠৰ প্ৰতিলিপি কৰা হ’ল</translation>
 <translation id="7557677699350329807">পৰৱৰ্তী কেমেৰালৈ সলনি কৰক</translation>
+<translation id="7607002721634913082">পজ হৈ আছে</translation>
 <translation id="7608223098072244877">৪x৪</translation>
 <translation id="7649070708921625228">সহায়</translation>
 <translation id="7658239707568436148">বাতিল কৰক</translation>
 <translation id="7670511624014457267">৬০ FPS</translation>
+<translation id="7974782136796202581">পেন কৰা, হেলনীয়া কৰা, জুমৰ বিকল্পসমূহ দেখুৱাওক</translation>
 <translation id="7983668134180549431">পাঠ চিনাক্ত কৰা হৈছে।</translation>
 <translation id="8067883171444229417">ভিডিঅ’ প্লে কৰক</translation>
 <translation id="8131740175452115882">নিশ্চিত কৰক</translation>

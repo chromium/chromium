@@ -43,7 +43,7 @@ class PLATFORM_EXPORT ScriptRunIterator {
   void OpenBracket(UChar32);
   void CloseBracket(UChar32);
   bool MergeSets();
-  void FixupStack(UScriptCode resolved_script);
+  void FixupStack(UScriptCode resolved_script, bool exclude_last);
   bool Fetch(wtf_size_t* pos, UChar32*);
 
   UScriptCode ResolveCurrentScript() const;

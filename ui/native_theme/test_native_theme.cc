@@ -9,11 +9,6 @@ namespace ui {
 TestNativeTheme::TestNativeTheme() : NativeTheme(false) {}
 TestNativeTheme::~TestNativeTheme() = default;
 
-SkColor TestNativeTheme::GetSystemColor(ColorId color_id,
-                                        ColorScheme color_scheme) const {
-  return SK_ColorRED;
-}
-
 gfx::Size TestNativeTheme::GetPartSize(Part part,
                                        State state,
                                        const ExtraParams& extra) const {
@@ -25,7 +20,9 @@ void TestNativeTheme::Paint(cc::PaintCanvas* canvas,
                             State state,
                             const gfx::Rect& rect,
                             const ExtraParams& extra,
-                            ColorScheme color_scheme) const {}
+                            ColorScheme color_scheme,
+                            const base::Optional<SkColor>& accent_color) const {
+}
 
 bool TestNativeTheme::SupportsNinePatch(Part part) const {
   return false;
@@ -39,8 +36,8 @@ gfx::Rect TestNativeTheme::GetNinePatchAperture(Part part) const {
   return gfx::Rect();
 }
 
-bool TestNativeTheme::UsesHighContrastColors() const {
-  return high_contrast_;
+bool TestNativeTheme::UserHasContrastPreference() const {
+  return contrast_preference_;
 }
 
 bool TestNativeTheme::ShouldUseDarkColors() const {
@@ -64,6 +61,12 @@ void TestNativeTheme::AddColorSchemeNativeThemeObserver(
       std::make_unique<ui::NativeTheme::ColorSchemeNativeThemeObserver>(
           theme_to_update);
   AddObserver(color_scheme_observer_.get());
+}
+
+SkColor TestNativeTheme::GetSystemColorDeprecated(ColorId color_id,
+                                                  ColorScheme color_scheme,
+                                                  bool apply_processing) const {
+  return SK_ColorRED;
 }
 
 }  // namespace ui

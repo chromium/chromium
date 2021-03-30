@@ -122,11 +122,11 @@ void PooledSharedImageVideoProvider::OnImageReturned(
     const gpu::SyncToken& sync_token) {
   // An image has been returned to us.  Wait for |sync_token| and then send it
   // to ProcessFreePooledImage to re-use / pool / delete.
-  gpu_helper_.Post(FROM_HERE, &GpuHelper::OnImageReturned, sync_token,
-                   pooled_image->record.codec_image_holder,
-                   BindToCurrentLoop(base::BindOnce(
-                       &PooledSharedImageVideoProvider::ProcessFreePooledImage,
-                       weak_factory_.GetWeakPtr(), pooled_image)));
+  gpu_helper_.AsyncCall(&GpuHelper::OnImageReturned)
+      .WithArgs(sync_token, pooled_image->record.codec_image_holder,
+                BindToCurrentLoop(base::BindOnce(
+                    &PooledSharedImageVideoProvider::ProcessFreePooledImage,
+                    weak_factory_.GetWeakPtr(), pooled_image)));
 }
 
 void PooledSharedImageVideoProvider::ProcessFreePooledImage(

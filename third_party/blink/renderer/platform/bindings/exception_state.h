@@ -34,7 +34,8 @@
 #include "base/macros.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
-#include "third_party/blink/renderer/platform/bindings/scoped_persistent.h"
+#include "third_party/blink/renderer/platform/bindings/exception_context.h"
+#include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -49,22 +50,64 @@ class PLATFORM_EXPORT ExceptionState {
   STACK_ALLOCATED();
 
  public:
-  enum ContextType {
-    kConstructionContext,
-    kExecutionContext,
-    kDeletionContext,
-    kGetterContext,
-    kSetterContext,
-    kEnumerationContext,
-    kQueryContext,
-    kIndexedGetterContext,
-    kIndexedSetterContext,
-    kIndexedDeletionContext,
-    kNamedGetterContext,
-    kNamedSetterContext,
-    kNamedDeletionContext,
-    kUnknownContext,  // FIXME: Remove this once we've flipped over to the new
-                      // API.
+  // TODO(peria): Replace following enum aliases.
+  using ContextType = ExceptionContext::Context;
+  static constexpr ContextType kConstructionContext =
+      ExceptionContext::Context::kConstructorOperationInvoke;
+  static constexpr ContextType kExecutionContext =
+      ExceptionContext::Context::kOperationInvoke;
+  static constexpr ContextType kDeletionContext =
+      ExceptionContext::Context::kNamedPropertyDelete;
+  static constexpr ContextType kGetterContext =
+      ExceptionContext::Context::kAttributeGet;
+  static constexpr ContextType kSetterContext =
+      ExceptionContext::Context::kAttributeSet;
+  static constexpr ContextType kEnumerationContext =
+      ExceptionContext::Context::kNamedPropertyEnumerate;
+  static constexpr ContextType kQueryContext =
+      ExceptionContext::Context::kNamedPropertyQuery;
+  static constexpr ContextType kIndexedGetterContext =
+      ExceptionContext::Context::kIndexedPropertyGet;
+  static constexpr ContextType kIndexedSetterContext =
+      ExceptionContext::Context::kIndexedPropertySet;
+  static constexpr ContextType kIndexedDeletionContext =
+      ExceptionContext::Context::kIndexedPropertyDelete;
+  static constexpr ContextType kNamedGetterContext =
+      ExceptionContext::Context::kNamedPropertyGet;
+  static constexpr ContextType kNamedSetterContext =
+      ExceptionContext::Context::kNamedPropertySet;
+  static constexpr ContextType kNamedDeletionContext =
+      ExceptionContext::Context::kNamedPropertyDelete;
+  static constexpr ContextType kUnknownContext =
+      ExceptionContext::Context::kUnknown;
+
+  // ContextScope represents a stack of ExceptionContext in order to represent
+  // nested exception contexts such like an IDL dictionary in another IDL
+  // dictionary.
+  class ContextScope {
+    STACK_ALLOCATED();
+
+   public:
+    explicit ContextScope(const ExceptionContext& context,
+                          ExceptionState& exception_state)
+        : exception_state_(exception_state), context_(context) {
+      exception_state_.PushContextScope(this);
+    }
+    ContextScope(const ContextScope&) = delete;
+    ContextScope& operator=(const ContextScope&) = delete;
+
+    ~ContextScope() { exception_state_.PopContextScope(); }
+
+   private:
+    void SetParent(const ContextScope* parent) { parent_ = parent; }
+    const ContextScope* GetParent() const { return parent_; }
+    const ExceptionContext& GetContext() const { return context_; }
+
+    ExceptionState& exception_state_;
+    const ContextScope* parent_ = nullptr;
+    const ExceptionContext context_;
+
+    friend class ExceptionState;
   };
 
   // A function pointer type that creates a DOMException.
@@ -77,36 +120,25 @@ class PLATFORM_EXPORT ExceptionState {
   // Sets the function to create a DOMException. Must be called only once.
   static void SetCreateDOMExceptionFunction(CreateDOMExceptionFunction);
 
+  ExceptionState(v8::Isolate* isolate, const ExceptionContext& context)
+      : main_context_(context), isolate_(isolate) {}
+
+  ExceptionState(v8::Isolate* isolate, ExceptionContext&& context)
+      : main_context_(std::move(context)), isolate_(isolate) {}
+
   ExceptionState(v8::Isolate* isolate,
                  ContextType context_type,
                  const char* interface_name,
                  const char* property_name)
-      : code_(0),
-        context_(context_type),
-        property_name_(property_name),
-        interface_name_(interface_name),
-        isolate_(isolate) {}
+      : ExceptionState(
+            isolate,
+            ExceptionContext(context_type, interface_name, property_name)) {}
 
   ExceptionState(v8::Isolate* isolate,
                  ContextType context_type,
                  const char* interface_name)
-      : ExceptionState(isolate, context_type, interface_name, nullptr) {
-#if DCHECK_IS_ON()
-    switch (context_) {
-      case kConstructionContext:
-      case kEnumerationContext:
-      case kIndexedGetterContext:
-      case kIndexedSetterContext:
-      case kIndexedDeletionContext:
-      case kNamedGetterContext:
-      case kNamedSetterContext:
-      case kNamedDeletionContext:
-        break;
-      default:
-        NOTREACHED();
-    }
-#endif  // DCHECK_IS_ON()
-  }
+      : ExceptionState(isolate,
+                       ExceptionContext(context_type, interface_name)) {}
 
   ~ExceptionState() {
     if (!exception_.IsEmpty()) {
@@ -153,7 +185,7 @@ class PLATFORM_EXPORT ExceptionState {
   // that V8ThrowDOMException::CreateOrEmpty may return an empty handle.
   bool HadException() const { return code_; }
 
-  void ClearException();
+  virtual void ClearException();
 
   ExceptionCode Code() const { return code_; }
 
@@ -169,30 +201,51 @@ class PLATFORM_EXPORT ExceptionState {
     return exception_.NewLocal(isolate_);
   }
 
-  ContextType Context() const { return context_; }
-  const char* PropertyName() const { return property_name_; }
-  const char* InterfaceName() const { return interface_name_; }
+  // Returns the context of what Web API is currently being executed.
+  const ExceptionContext& GetContext() const {
+    DCHECK(!context_stack_top_);
+    return main_context_;
+  }
+
+  // Deprecated APIs to get information about where this ExceptionState has
+  // been created.
+  ContextType Context() const { return GetContext().GetContext(); }
+  const char* PropertyName() const { return GetContext().GetPropertyName(); }
+  const char* InterfaceName() const { return GetContext().GetClassName(); }
 
  protected:
   void SetException(ExceptionCode, const String&, v8::Local<v8::Value>);
+  void SetExceptionCode(ExceptionCode);
+  v8::Isolate* GetIsolate() { return isolate_; }
 
  private:
+  void PushContextScope(ContextScope* scope);
+  void PopContextScope();
+
   String AddExceptionContext(const String&) const;
 
   // Since DOMException is defined in core/, we need a dependency injection in
   // order to create a DOMException in platform/.
   static CreateDOMExceptionFunction s_create_dom_exception_func_;
 
-  ExceptionCode code_;
-  ContextType context_;
+  // The main context represents what Web API is currently being executed.
+  // This is embedded without using ContextScope in order to avoid an overhead
+  // of ContextScope.
+  ExceptionContext main_context_;
+
+  // `context_stack_top_` points to the top of the context stack which
+  // represents additional (nested) contexts such as an IDL dictionary in a
+  // member of another IDL dictionary.  nullptr means no additional context.
+  const ContextScope* context_stack_top_ = nullptr;
+
+  v8::Isolate* isolate_;
+  ExceptionCode code_ = 0;
   String message_;
-  const char* property_name_;
-  const char* interface_name_;
   // The exception is empty when it was thrown through
   // DummyExceptionStateForTesting.
-  ScopedPersistent<v8::Value> exception_;
-  v8::Isolate* isolate_;
+  TraceWrapperV8Reference<v8::Value> exception_;
 
+  friend class ContextScope;
   DISALLOW_COPY_AND_ASSIGN(ExceptionState);
 };
 

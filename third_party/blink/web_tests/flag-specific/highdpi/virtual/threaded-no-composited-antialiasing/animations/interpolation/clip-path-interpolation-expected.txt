@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+PASS This test uses interpolation-test.js.
+FAIL CSS Transitions: property <clip-path> from [inset(20px)] to [inset(40%)] at (3.40282e+38) is [inset(calc(3.40282e+38% - 2.26855e+38px))] assert_equals: expected "inset ( calc ( 3.4e + 38 % - infpx ) ) " but got "inset ( calc ( 3.4e + 38 % - 2.27e + 38px ) ) "
+FAIL CSS Transitions with transition: all: property <clip-path> from [inset(20px)] to [inset(40%)] at (3.40282e+38) is [inset(calc(3.40282e+38% - 2.26855e+38px))] assert_equals: expected "inset ( calc ( 3.4e + 38 % - infpx ) ) " but got "inset ( calc ( 3.4e + 38 % - 2.27e + 38px ) ) "
+FAIL CSS Animations: property <clip-path> from [inset(20px)] to [inset(40%)] at (3.40282e+38) is [inset(calc(3.40282e+38% - 2.26855e+38px))] assert_equals: expected "inset ( calc ( 3.4e + 38 % - infpx ) ) " but got "inset ( calc ( 3.4e + 38 % - 2.27e + 38px ) ) "
+FAIL Web Animations: property <clip-path> from [inset(20px)] to [inset(40%)] at (3.40282e+38) is [inset(calc(3.40282e+38% - 2.26855e+38px))] assert_equals: expected "inset ( calc ( 3.4e + 38 % - infpx ) ) " but got "inset ( calc ( 3.4e + 38 % - 2.27e + 38px ) ) "
+Harness: the test ran to completion.
+

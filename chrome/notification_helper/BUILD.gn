@@ -15,7 +15,10 @@ executable("notification_helper") {
     "notification_helper_crash_reporter_client.h",
   ]
 
-  configs -= [ "//build/config/win:console" ]
+  configs -= [
+    "//build/config/compiler:cet_shadow_stack",
+    "//build/config/win:console",
+  ]
   configs += [ "//build/config/win:windowed" ]
 
   deps = [
@@ -25,6 +28,7 @@ executable("notification_helper") {
     "//base",
     "//build/win:default_exe_manifest",
     "//chrome/common:version_header",
+    "//chrome/install_static:install_static_util",
     "//chrome/install_static:primary_module",
     "//components/crash/core/app",
     "//components/crash/core/app:crash_export_thunks",

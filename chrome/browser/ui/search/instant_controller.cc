@@ -21,8 +21,10 @@
 
 class InstantController::TabObserver : public content::WebContentsObserver {
  public:
-  TabObserver(content::WebContents* web_contents, const base::Closure& callback)
-      : content::WebContentsObserver(web_contents), callback_(callback) {}
+  TabObserver(content::WebContents* web_contents,
+              base::RepeatingClosure callback)
+      : content::WebContentsObserver(web_contents),
+        callback_(std::move(callback)) {}
   ~TabObserver() override = default;
 
  private:
@@ -34,7 +36,7 @@ class InstantController::TabObserver : public content::WebContentsObserver {
     }
   }
 
-  base::Closure callback_;
+  base::RepeatingClosure callback_;
 
   DISALLOW_COPY_AND_ASSIGN(TabObserver);
 };
@@ -64,8 +66,9 @@ void InstantController::OnTabStripModelChanged(
 void InstantController::StartWatchingTab(content::WebContents* web_contents) {
   if (!tab_observer_ || tab_observer_->web_contents() != web_contents) {
     tab_observer_ = std::make_unique<TabObserver>(
-        web_contents, base::Bind(&InstantController::UpdateInfoForInstantTab,
-                                 base::Unretained(this)));
+        web_contents,
+        base::BindRepeating(&InstantController::UpdateInfoForInstantTab,
+                            base::Unretained(this)));
     // If this tab is an NTP, immediately send it the required info.
     if (search::IsInstantNTP(web_contents)) {
       UpdateInfoForInstantTab();

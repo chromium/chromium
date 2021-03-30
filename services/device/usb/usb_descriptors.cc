@@ -35,7 +35,7 @@ using mojom::UsbUsageType;
 
 namespace {
 
-using IndexMap = std::map<uint8_t, base::string16>;
+using IndexMap = std::map<uint8_t, std::u16string>;
 using IndexMapPtr = std::unique_ptr<IndexMap>;
 
 // Standard USB requests and descriptor types:
@@ -187,24 +187,24 @@ void OnReadDeviceDescriptor(
 
 void StoreStringDescriptor(IndexMap::iterator it,
                            base::OnceClosure callback,
-                           const base::string16& string) {
+                           const std::u16string& string) {
   it->second = string;
   std::move(callback).Run();
 }
 
 void OnReadStringDescriptor(
-    base::OnceCallback<void(const base::string16&)> callback,
+    base::OnceCallback<void(const std::u16string&)> callback,
     UsbTransferStatus status,
     scoped_refptr<base::RefCountedBytes> buffer,
     size_t length) {
-  base::string16 string;
+  std::u16string string;
   if (status == UsbTransferStatus::COMPLETED &&
       ParseUsbStringDescriptor(
           std::vector<uint8_t>(buffer->front(), buffer->front() + length),
           &string)) {
     std::move(callback).Run(string);
   } else {
-    std::move(callback).Run(base::string16());
+    std::move(callback).Run(std::u16string());
   }
 }
 
@@ -212,7 +212,7 @@ void ReadStringDescriptor(
     scoped_refptr<UsbDeviceHandle> device_handle,
     uint8_t index,
     uint16_t language_id,
-    base::OnceCallback<void(const base::string16&)> callback) {
+    base::OnceCallback<void(const std::u16string&)> callback) {
   auto buffer = base::MakeRefCounted<base::RefCountedBytes>(255);
   device_handle->ControlTransfer(
       UsbTransferDirection::INBOUND, UsbControlTransferType::STANDARD,
@@ -225,7 +225,7 @@ void ReadStringDescriptor(
 void OnReadLanguageIds(scoped_refptr<UsbDeviceHandle> device_handle,
                        IndexMapPtr index_map,
                        base::OnceCallback<void(IndexMapPtr)> callback,
-                       const base::string16& languages) {
+                       const std::u16string& languages) {
   // Default to English unless the device provides a language and then just pick
   // the first one.
   uint16_t language_id = languages.empty() ? 0x0409 : languages[0];
@@ -362,7 +362,7 @@ void ReadUsbDescriptors(
 }
 
 bool ParseUsbStringDescriptor(const std::vector<uint8_t>& descriptor,
-                              base::string16* output) {
+                              std::u16string* output) {
   if (descriptor.size() < 2 || descriptor[1] != kStringDescriptorType)
     return false;
 
@@ -374,9 +374,9 @@ bool ParseUsbStringDescriptor(const std::vector<uint8_t>& descriptor,
     return false;
 
   // The string is returned by the device in UTF-16LE.
-  *output = base::string16(
-      reinterpret_cast<const base::char16*>(descriptor.data() + 2),
-      length / 2 - 1);
+  *output =
+      std::u16string(reinterpret_cast<const char16_t*>(descriptor.data() + 2),
+                     (length - 2) / sizeof(char16_t));
   return true;
 }
 

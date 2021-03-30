@@ -6,11 +6,21 @@
  * @fileoverview Polymer element for displaying material design for ARC Terms Of
  * Service screen.
  */
+'use strict';
+
+(function() {
+
+// Enum that describes the current state of the Arc Terms Of Service screen
+const UIState = {
+  LOADING: 'loading',
+  LOADED: 'loaded',
+  ERROR: 'error',
+};
 
 Polymer({
   is: 'arc-tos-element',
 
-  behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
+  behaviors: [OobeI18nBehavior, MultiStepBehavior, LoginScreenBehavior],
 
   EXTERNAL_API: [
     'setMetricsMode',
@@ -180,6 +190,13 @@ Polymer({
    */
   termsOfServiceHostName_: 'https://play.google.com',
 
+
+  defaultUIStep() {
+    return UIState.LOADING;
+  },
+
+  UI_STEPS: UIState,
+
   /** @override */
   ready() {
     this.initializeLoginScreen('ArcTermsOfServiceScreen', {
@@ -201,7 +218,6 @@ Polymer({
    * Event handler that is invoked just before the screen is shown.
    */
   onBeforeShow() {
-    this.focusButton_();
     this.is_shown_ = true;
     window.setTimeout(this.applyOobeConfiguration_.bind(this), 0);
 
@@ -256,6 +272,7 @@ Polymer({
   /** Called when dialog is hidden. */
   onBeforeHide() {
     this.reset_();
+    this.is_shown_ = false;
   },
 
   /**
@@ -265,20 +282,6 @@ Polymer({
   reset_() {
     this.showFullDialog = false;
     this.$.arcTosNextButton.focus();
-  },
-
-  focusButton_() {
-    var id;
-    if (this.hasClass_('arc-tos-loaded')) {
-      id = 'arcTosNextButton';
-    } else if (this.hasClass_('error')) {
-      id = 'arcTosRetryButton';
-    }
-
-    if (typeof id === 'undefined')
-      return;
-
-    Polymer.RenderStatus.afterNextRender(this, () => this.$[id].focus());
   },
 
   /**
@@ -410,7 +413,7 @@ Polymer({
     countryCode = countryCode.toLowerCase();
 
     if (this.language_ && this.language_ == language && this.countryCode_ &&
-        this.countryCode_ == countryCode && !this.classList.contains('error') &&
+        this.countryCode_ == countryCode && this.uiStep != UIState.ERROR &&
         !this.usingOfflineTerms_ && this.tosContent_) {
       this.enableButtons_(true);
       return;
@@ -436,7 +439,7 @@ Polymer({
 
     // Try to use currently loaded document first.
     var self = this;
-    if (termsView.src != '' && this.classList.contains('arc-tos-loaded')) {
+    if (termsView.src != '' && this.uiStep == UIState.LOADED) {
       var navigateScript = 'processLangZoneTerms(true, \'' + language +
           '\', \'' + countryCode + '\');';
       termsView.executeScript({code: navigateScript}, function(results) {
@@ -489,7 +492,7 @@ Polymer({
    * @param {boolean} child whether current account is a child account.
    */
   setArcManaged(managed, child) {
-    this.$.arcTosViewContainer.hidden = managed;
+    this.$.arcTosView.hidden = managed;
     this.isChild = child;
   },
 
@@ -531,9 +534,7 @@ Polymer({
     this.usingOfflineTerms_ = false;
     var termsView = this.$.arcTosView;
     termsView.src = this.termsOfServiceHostName_ + '/about/play-terms.html';
-    this.removeClass_('arc-tos-loaded');
-    this.removeClass_('error');
-    this.addClass_('arc-tos-loading');
+    this.setUIStep(UIState.LOADING);
     this.enableButtons_(false);
   },
 
@@ -549,36 +550,6 @@ Polymer({
    */
   clearDemoMode() {
     this.demoMode = false;
-  },
-
-  /**
-   * Adds new class to the list of classes of root OOBE style.
-   * @param {string} className class to remove.
-   *
-   * @private
-   */
-  addClass_(className) {
-    this.$.arcTosDialog.classList.add(className);
-  },
-
-  /**
-   * Removes class from the list of classes of root OOBE style.
-   * @param {string} className class to remove.
-   *
-   * @private
-   */
-  removeClass_(className) {
-    this.$.arcTosDialog.classList.remove(className);
-  },
-
-  /**
-   * Checks if class exists in the list of classes of root OOBE style.
-   * @param {string} className class to check.
-   *
-   * @private
-   */
-  hasClass_(className) {
-    return this.$.arcTosDialog.classList.contains(className);
   },
 
   /**
@@ -642,13 +613,14 @@ Polymer({
    * @private
    */
   setTermsViewContentLoadedState_() {
-    this.removeClass_('arc-tos-loading');
-    this.removeClass_('error');
-    this.addClass_('arc-tos-loaded');
-
+    if (this.uiStep == UIState.LOADED) {
+      return;
+    }
+    this.setUIStep(UIState.LOADED);
     this.enableButtons_(true);
     this.showFullDialog = false;
-    this.$.arcTosNextButton.focus();
+    if (this.is_shown_)
+      this.$.arcTosNextButton.focus();
   },
 
   /**
@@ -673,9 +645,7 @@ Polymer({
    */
   showError_() {
     this.termsError = true;
-    this.removeClass_('arc-tos-loading');
-    this.removeClass_('arc-tos-loaded');
-    this.addClass_('error');
+    this.setUIStep(UIState.ERROR);
 
     this.enableButtons_(true);
     this.$.arcTosRetryButton.focus();
@@ -700,16 +670,6 @@ Polymer({
    */
   isDemoModeSetup_() {
     return this.demoMode;
-  },
-
-  /**
-   * Shows loading screen for debugging purpose
-   */
-  showLoadingScreenForTesting() {
-    this.removeClass_('arc-tos-loaded');
-    this.removeClass_('error');
-    this.addClass_('arc-tos-loading');
-    this.enableButtons_(false);
   },
 
   onPolicyLinkClick_() {
@@ -814,5 +774,6 @@ Polymer({
       this.lastFocusedElement_.focus();
       this.lastFocusedElement_ = null;
     }
-  }
+  },
 });
+})();

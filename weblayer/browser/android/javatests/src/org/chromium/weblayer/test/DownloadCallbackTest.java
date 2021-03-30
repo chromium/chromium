@@ -31,7 +31,6 @@ import org.chromium.weblayer.DownloadState;
 import org.chromium.weblayer.Profile;
 import org.chromium.weblayer.Tab;
 import org.chromium.weblayer.TabListCallback;
-import org.chromium.weblayer.WebLayer;
 import org.chromium.weblayer.shell.InstrumentationActivity;
 
 import java.io.File;
@@ -46,8 +45,6 @@ public class DownloadCallbackTest {
     @Rule
     public InstrumentationActivityTestRule mActivityTestRule =
             new InstrumentationActivityTestRule();
-
-    private static boolean sIsFileNameSupported;
 
     private InstrumentationActivity mActivity;
     private Callback mCallback;
@@ -94,9 +91,7 @@ public class DownloadCallbackTest {
         public void onDownloadCompleted(Download download) {
             mSeenCompleted = true;
             mLocation = download.getLocation().toString();
-            if (sIsFileNameSupported) {
-                mFileName = download.getFileNameToReportToUser().toString();
-            }
+            mFileName = download.getFileNameToReportToUser().toString();
             mState = download.getState();
             mError = download.getError();
             mMimetype = download.getMimeType();
@@ -142,9 +137,6 @@ public class DownloadCallbackTest {
             Profile profile = mActivity.getBrowser().getProfile();
             profile.setDownloadCallback(mCallback);
             profile.setDownloadDirectory(new File(tempDownloadDirectory));
-
-            sIsFileNameSupported =
-                    WebLayer.getSupportedMajorVersion(mActivity.getApplicationContext()) >= 86;
         });
     }
 
@@ -188,7 +180,6 @@ public class DownloadCallbackTest {
      */
     @Test
     @SmallTest
-    @MinWebLayerVersion(86) // Behavior landed in 86.
     public void testFirstNavigationIsDownloadClosesTab() throws Throwable {
         // Set up listening for the tab removal that we expect to happen.
         CallbackHelper onTabRemovedCallbackHelper = new CallbackHelper();
@@ -251,9 +242,7 @@ public class DownloadCallbackTest {
 
         Assert.assertTrue(mCallback.mLocation.contains(
                 "org.chromium.weblayer.shell/cache/weblayer/Downloads/"));
-        if (sIsFileNameSupported) {
-            Assert.assertTrue(mCallback.mFileName.contains("test"));
-        }
+        Assert.assertTrue(mCallback.mFileName.contains("test"));
         Assert.assertEquals(DownloadState.COMPLETE, mCallback.mState);
         Assert.assertEquals(DownloadError.NO_ERROR, mCallback.mError);
         Assert.assertEquals("text/html", mCallback.mMimetype);

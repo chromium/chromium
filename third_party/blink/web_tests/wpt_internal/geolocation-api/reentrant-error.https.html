@@ -1,0 +1,56 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/testharness-adapter.js"></script>
+</head>
+<body>
+<script type="module">
+import {GeolocationMock} from './resources/geolocation-mock.js';
+
+description("Tests that reentrant calls to Geolocation methods from the error callback are OK.");
+
+let mockMessage = 'test';
+
+let error;
+
+const mock = new GeolocationMock();
+mock.setGeolocationPermission(true);
+mock.setGeolocationPositionUnavailableError(mockMessage);
+
+let errorCallbackInvoked = false;
+navigator.geolocation.getCurrentPosition(function(p) {
+    testFailed('Success callback invoked unexpectedly');
+    finishJSTest();
+}, function(e) {
+    if (errorCallbackInvoked) {
+        testFailed('Error callback invoked unexpectedly');
+        finishJSTest();
+    }
+    errorCallbackInvoked = true;
+
+    error = e;
+    assert_equals(error.code, error.POSITION_UNAVAILABLE);
+    assert_equals(error.message, mockMessage);
+    continueTest();
+});
+
+function continueTest() {
+    mockMessage += ' repeat';
+
+    mock.setGeolocationPositionUnavailableError(mockMessage);
+
+    navigator.geolocation.getCurrentPosition(function(p) {
+        testFailed('Success callback invoked unexpectedly');
+        finishJSTest();
+    }, function(e) {
+        error = e;
+        assert_equals(error.code, error.POSITION_UNAVAILABLE);
+        assert_equals(error.message, mockMessage);
+        finishJSTest();
+    });
+}
+</script>
+</body>
+</html>

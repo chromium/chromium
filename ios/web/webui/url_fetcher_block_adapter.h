@@ -39,6 +39,8 @@ class URLFetcherBlockAdapter {
   // Starts the fetch.
   virtual void Start();
 
+  GURL getUrl() { return url_; }
+
  protected:
   void OnURLLoadComplete(std::unique_ptr<std::string> response_body);
 

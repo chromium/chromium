@@ -146,23 +146,25 @@
                 MultiDeviceFeature.WIFI_SYNC, pageContentData)]]"
             restamp>
           <settings-multidevice-wifi-sync-item id="wifiSyncItem"
-              page-content-data="[[pageContentData]]">
+              page-content-data="[[pageContentData]]"
+              deep-link-focus-id$="[[Setting.kWifiSyncOnOff]]">
           </settings-multidevice-wifi-sync-item>
         </template>
       </div>
     </template>
     <div class="settings-box two-line">
-        <div id="forget-device-label" class="start">
-            $i18n{multideviceForgetDevice}
-            <div class="secondary">
-                $i18n{multideviceForgetDeviceSummary}
-            </div>
+      <div id="forgetDeviceLabel" class="start" aria-hidden="true">
+        $i18n{multideviceForgetDevice}
+        <div id="forgetDeviceSummary" class="secondary" aria-hidden="true">
+            $i18n{multideviceForgetDeviceSummary}
         </div>
-        <cr-button on-click="handleForgetDeviceClick_"
+      </div>
+      <cr-button on-click="handleForgetDeviceClick_"
           aria-labelledby="forgetDeviceLabel"
+          aria-describedby="forgetDeviceSummary"
           deep-link-focus-id$="[[Setting.kForgetPhone]]">
-           $i18n{multideviceForgetDeviceDisconnect}
-        </cr-button>
+        $i18n{multideviceForgetDeviceDisconnect}
+      </cr-button>
     </div>
     <cr-dialog id="forgetDeviceDialog">
       <div slot="title">$i18n{multideviceForgetDevice}</div>

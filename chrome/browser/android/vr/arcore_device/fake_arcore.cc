@@ -27,14 +27,26 @@ base::Optional<ArCore::InitializeResult> FakeArCore::Initialize(
         required_features,
     const std::unordered_set<device::mojom::XRSessionFeature>&
         optional_features,
-    const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images) {
+    const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images,
+    base::Optional<ArCore::DepthSensingConfiguration> depth_sensing_config) {
   DCHECK(IsOnGlThread());
 
   std::unordered_set<device::mojom::XRSessionFeature> enabled_features;
   enabled_features.insert(required_features.begin(), required_features.end());
   enabled_features.insert(optional_features.begin(), optional_features.end());
 
-  return ArCore::InitializeResult(enabled_features);
+  // Fake device does not support depth for now:
+  if (base::Contains(required_features,
+                     device::mojom::XRSessionFeature::DEPTH)) {
+    return base::nullopt;
+  }
+
+  if (base::Contains(optional_features,
+                     device::mojom::XRSessionFeature::DEPTH)) {
+    enabled_features.erase(device::mojom::XRSessionFeature::DEPTH);
+  }
+
+  return ArCore::InitializeResult(enabled_features, base::nullopt);
 }
 
 void FakeArCore::SetDisplayGeometry(

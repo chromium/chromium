@@ -33,6 +33,8 @@ class WebView {
  public:
   virtual ~WebView() {}
 
+  virtual bool IsServiceWorker() const = 0;
+
   // Return the id for this WebView.
   virtual std::string GetId() = 0;
 

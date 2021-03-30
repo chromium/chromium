@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.m.js';
+// #import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
+// #import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
+// #import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
+// #import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+
 cr.define('cr.ui', () => {
   /**
    * Creates a menu that supports sub-menus.
@@ -14,7 +20,7 @@ cr.define('cr.ui', () => {
    * @extends {cr.ui.Menu}
    * @implements {EventListener}
    */
-  class MultiMenu {
+  /* #export */ class MultiMenu {
     constructor() {
       /**
        * Whether a sub-menu is positioned on the left of its parent.
@@ -207,9 +213,7 @@ cr.define('cr.ui', () => {
     positionSubMenu_(item, subMenu) {
       const style = subMenu.style;
 
-      if (util.isFilesNg()) {
-        style.marginTop = '0';  // crbug.com/1066727
-      }
+      style.marginTop = '0';  // crbug.com/1066727
 
       // The sub-menu needs to sit aligned to the top and side of
       // the menu-item passed in. It also needs to fit inside the viewport
@@ -299,7 +303,7 @@ cr.define('cr.ui', () => {
      * @private
      */
     findMenuItem(node) {
-      const MenuItem = cr.ui.MenuItem;
+      /* #ignore */ const MenuItem = cr.ui.MenuItem;
       while (node && node.parentNode !== this && !(node instanceof MenuItem)) {
         node = node.parentNode;
       }
@@ -453,5 +457,6 @@ cr.define('cr.ui', () => {
   }
 
   // Export
+  // #cr_define_end
   return {MultiMenu};
 });

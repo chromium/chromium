@@ -41,4 +41,7 @@ specific_include_rules = {
     "canvas_fuzzer.cc": [
         "+base/test/bind.h",
     ],
+    "web_ax_object.cc": [
+        "+ui/accessibility/ax_action_data.h",
+    ],
 }

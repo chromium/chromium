@@ -11,7 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
-#include "components/feed/core/v2/public/feed_stream_api.h"
+#include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/leveldb_proto/public/proto_database.h"
@@ -31,6 +31,9 @@ class DeletionInfo;
 namespace feedstore {
 class Record;
 }  // namespace feedstore
+namespace feedkvstore {
+class Entry;
+}  // namespace feedkvstore
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
@@ -48,6 +51,7 @@ class MetricsReporter;
 class FeedNetwork;
 class FeedStore;
 class FeedStream;
+class PersistentKeyValueStoreImpl;
 class ImageFetcher;
 
 namespace internal {
@@ -69,19 +73,23 @@ class FeedService : public KeyedService {
     virtual void ClearAll() = 0;
     // Fetch the image and store it in the disk cache.
     virtual void PrefetchImage(const GURL& url) = 0;
+    // Register the synthetic field experiments for UMA.
+    virtual void RegisterExperiments(const Experiments& experiments) = 0;
   };
 
   // Construct a FeedService given an already constructed FeedStream.
   // Used for testing only.
   explicit FeedService(std::unique_ptr<FeedStream> stream);
 
-  // Construct a new FeedStreamApi along with FeedService.
+  // Construct a new FeedApi along with FeedService.
   FeedService(
       std::unique_ptr<Delegate> delegate,
       std::unique_ptr<RefreshTaskScheduler> refresh_task_scheduler,
       PrefService* profile_prefs,
       PrefService* local_state,
       std::unique_ptr<leveldb_proto::ProtoDatabase<feedstore::Record>> database,
+      std::unique_ptr<leveldb_proto::ProtoDatabase<feedkvstore::Entry>>
+          key_value_store_database,
       signin::IdentityManager* identity_manager,
       history::HistoryService* history_service,
       offline_pages::PrefetchService* prefetch_service,
@@ -94,11 +102,11 @@ class FeedService : public KeyedService {
   FeedService(const FeedService&) = delete;
   FeedService& operator=(const FeedService&) = delete;
 
-  FeedStreamApi* GetStream();
+  FeedApi* GetStream();
 
   void ClearCachedData();
 
-  RefreshTaskScheduler* GetRefreshTaskScheduler() {
+  RefreshTaskScheduler* GetRefreshTaskScheduler() const {
     return refresh_task_scheduler_.get();
   }
 
@@ -114,8 +122,8 @@ class FeedService : public KeyedService {
   void OnApplicationStateChange(base::android::ApplicationState state);
 #endif
 
-  // These components are owned for construction of |FeedStreamApi|. These will
-  // be null if |FeedStreamApi| is created externally.
+  // These components are owned for construction of |FeedApi|. These will
+  // be null if |FeedApi| is created externally.
   std::unique_ptr<Delegate> delegate_;
   std::unique_ptr<StreamDelegateImpl> stream_delegate_;
   std::unique_ptr<MetricsReporter> metrics_reporter_;
@@ -123,6 +131,7 @@ class FeedService : public KeyedService {
   std::unique_ptr<FeedNetwork> feed_network_;
   std::unique_ptr<ImageFetcher> image_fetcher_;
   std::unique_ptr<FeedStore> store_;
+  std::unique_ptr<PersistentKeyValueStoreImpl> persistent_key_value_store_;
   std::unique_ptr<RefreshTaskScheduler> refresh_task_scheduler_;
   std::unique_ptr<HistoryObserverImpl> history_observer_;
   std::unique_ptr<IdentityManagerObserverImpl> identity_manager_observer_;

@@ -11,6 +11,7 @@
 
 #include "base/base64.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
+#include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/navigation_controller.h"
@@ -22,7 +23,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
-#include "third_party/blink/public/platform/web_mixed_content_context_type.h"
+#include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
 
 namespace content {
 namespace protocol {
@@ -51,15 +52,15 @@ std::string SecurityStyleToProtocolSecurityState(
 }
 
 std::string MixedContentTypeToProtocolMixedContentType(
-    blink::WebMixedContentContextType mixed_content_type) {
+    blink::mojom::MixedContentContextType mixed_content_type) {
   switch (mixed_content_type) {
-    case blink::WebMixedContentContextType::kNotMixedContent:
+    case blink::mojom::MixedContentContextType::kNotMixedContent:
       return Security::MixedContentTypeEnum::None;
-    case blink::WebMixedContentContextType::kBlockable:
+    case blink::mojom::MixedContentContextType::kBlockable:
       return Security::MixedContentTypeEnum::Blockable;
-    case blink::WebMixedContentContextType::kOptionallyBlockable:
+    case blink::mojom::MixedContentContextType::kOptionallyBlockable:
       return Security::MixedContentTypeEnum::OptionallyBlockable;
-    case blink::WebMixedContentContextType::kShouldBeBlockable:
+    case blink::mojom::MixedContentContextType::kShouldBeBlockable:
       // kShouldBeBlockable is not used for explanations.
       NOTREACHED();
       return Security::MixedContentTypeEnum::OptionallyBlockable;
@@ -198,7 +199,8 @@ void SecurityHandler::DidFinishNavigation(NavigationHandle* navigation_handle) {
   if (cert_error_override_mode_ == CertErrorOverrideMode::kHandleEvents) {
     BackForwardCache::DisableForRenderFrameHost(
         navigation_handle->GetPreviousRenderFrameHostId(),
-        "content::protocol::SecurityHandler");
+        BackForwardCacheDisable::DisabledReason(
+            BackForwardCacheDisable::DisabledReasonId::kSecurityHandler));
     FlushPendingCertificateErrorNotifications();
   }
 }

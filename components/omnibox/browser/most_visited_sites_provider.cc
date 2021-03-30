@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/strings/string16.h"
 #include "components/history/core/browser/top_sites.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -57,7 +56,7 @@ MostVisitedSitesProvider::MostVisitedSitesProvider(
 MostVisitedSitesProvider::~MostVisitedSitesProvider() = default;
 
 AutocompleteMatch MostVisitedSitesProvider::BuildMatch(
-    const base::string16& description,
+    const std::u16string& description,
     const GURL& url,
     int relevance,
     AutocompleteMatchType::Type type) {
@@ -90,7 +89,7 @@ void MostVisitedSitesProvider::OnMostVisitedUrlsAvailable(
 
   if (base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles)) {
     AutocompleteMatch match = BuildMatch(
-        base::string16(), GURL::EmptyGURL(), kMostVisitedTilesRelevance,
+        std::u16string(), GURL::EmptyGURL(), kMostVisitedTilesRelevance,
         AutocompleteMatchType::TILE_NAVSUGGEST);
     match.navsuggest_tiles.reserve(urls.size());
 

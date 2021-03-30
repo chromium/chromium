@@ -48,10 +48,10 @@ class GCAPILastRunTest : public ::testing::Test {
   }
 
   bool SetLastRunTime(int64_t last_run_time) {
-    return SetLastRunTimeString(base::NumberToString16(last_run_time));
+    return SetLastRunTimeString(base::NumberToWString(last_run_time));
   }
 
-  bool SetLastRunTimeString(const base::string16& last_run_time_string) {
+  bool SetLastRunTimeString(const std::wstring& last_run_time_string) {
     const wchar_t* base_path = google_update::kRegPathClientState;
     std::wstring path(base_path);
     path += L"\\";

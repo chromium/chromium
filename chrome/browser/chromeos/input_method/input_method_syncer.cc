@@ -8,6 +8,7 @@
 #include <set>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -17,7 +18,6 @@
 #include "base/task_runner.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync_preferences/pref_service_syncable.h"
@@ -149,9 +149,8 @@ void InputMethodSyncer::Initialize() {
                                  prefs_);
   enabled_imes_syncable_.Init(prefs::kLanguageEnabledImesSyncable, prefs_);
 
-  BooleanPrefMember::NamedChangeCallback callback =
-      base::Bind(&InputMethodSyncer::OnPreferenceChanged,
-                 base::Unretained(this));
+  BooleanPrefMember::NamedChangeCallback callback = base::BindRepeating(
+      &InputMethodSyncer::OnPreferenceChanged, base::Unretained(this));
   preferred_languages_.Init(language::prefs::kPreferredLanguages, prefs_,
                             callback);
   preload_engines_.Init(prefs::kLanguagePreloadEngines,

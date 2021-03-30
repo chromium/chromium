@@ -60,11 +60,11 @@ android_library("system_webview_shell_apk_java") {
     ":system_webview_shell_apk_resources",
     "//base:base_java",
     "//third_party/android_deps:android_support_v7_appcompat_java",
-    "//third_party/android_deps:androidx_activity_activity_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//third_party/android_deps:androidx_savedstate_savedstate_java",
-    "//third_party/android_deps:androidx_webkit_webkit_java",
     "//third_party/android_deps:guava_android_java",
+    "//third_party/androidx:androidx_activity_activity_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_savedstate_savedstate_java",
+    "//third_party/androidx:androidx_webkit_webkit_java",
   ]
   resources_package = "org.chromium.webview_shell"
 }
@@ -109,9 +109,9 @@ instrumentation_test_apk("system_webview_shell_page_cycler_apk") {
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
     "//testing/android/reporter:reporter_java",
-    "//third_party/android_deps:androidx_test_runner_java",
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
   ]
 }
@@ -130,10 +130,10 @@ instrumentation_test_apk("system_webview_shell_layout_test_apk") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//testing/android/reporter:reporter_java",
-    "//third_party/android_deps:androidx_test_runner_java",
     "//third_party/android_sdk:android_test_base_java",
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
   ]
   data = [

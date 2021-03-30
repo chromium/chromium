@@ -177,8 +177,7 @@ void HostListService::HandleFetchFailure(const ProtobufHttpStatus& status) {
 }
 
 void HostListService::OnUserUpdated(bool is_user_signed_in) {
-  directory_client_.Post(FROM_HERE,
-                         &DirectoryServiceClient::CancelPendingRequests);
+  directory_client_.AsyncCall(&DirectoryServiceClient::CancelPendingRequests);
   SetState(State::NOT_FETCHED);
   if (is_user_signed_in) {
     RequestFetch();

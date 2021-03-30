@@ -15,6 +15,15 @@ namespace network {
 TestURLLoaderClient::TestURLLoaderClient() = default;
 TestURLLoaderClient::~TestURLLoaderClient() = default;
 
+void TestURLLoaderClient::OnReceiveEarlyHints(
+    network::mojom::EarlyHintsPtr early_hints) {
+  EXPECT_FALSE(has_received_response_);
+  EXPECT_FALSE(has_received_cached_metadata_);
+  EXPECT_FALSE(has_received_completion_);
+  has_received_early_hints_ = true;
+  early_hints_.push_back(std::move(early_hints));
+}
+
 void TestURLLoaderClient::OnReceiveResponse(
     mojom::URLResponseHeadPtr response_head) {
   EXPECT_FALSE(has_received_response_);

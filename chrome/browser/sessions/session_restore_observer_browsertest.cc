@@ -11,6 +11,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker_test_support.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/sessions/session_restore.h"
@@ -116,7 +118,6 @@ class SessionRestoreObserverTest : public InProcessBrowserTest {
     SessionServiceTestHelper helper(
         SessionServiceFactory::GetForProfile(browser()->profile()));
     helper.SetForceBrowserNotAliveWithNoWindows(true);
-    helper.ReleaseService();
 #endif
     ASSERT_TRUE(embedded_test_server()->Start());
   }
@@ -124,8 +125,10 @@ class SessionRestoreObserverTest : public InProcessBrowserTest {
   Browser* QuitBrowserAndRestore(Browser* browser) {
     Profile* profile = browser->profile();
 
-    std::unique_ptr<ScopedKeepAlive> keep_alive(new ScopedKeepAlive(
-        KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED));
+    auto keep_alive = std::make_unique<ScopedKeepAlive>(
+        KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED);
+    auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+        profile, ProfileKeepAliveOrigin::kBrowserWindow);
     CloseBrowserSynchronously(browser);
 
     // Create a new window, which should trigger session restore.

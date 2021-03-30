@@ -7,10 +7,12 @@
 
 #include "base/component_export.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/gtk/gtk_buildflags.h"
 
 using GdkKeymap = struct _GdkKeymap;
-using GdkWindow = struct _GdkWindow;
 using GtkWindow = struct _GtkWindow;
+using GtkWidget = struct _GtkWidget;
+using GdkWindow = struct _GdkWindow;
 
 namespace ui {
 
@@ -34,8 +36,9 @@ class COMPONENT_EXPORT(GTK) GtkUiDelegate {
   // Returns the current active instance.
   static GtkUiDelegate* instance();
 
-  // Called when the GtkUi instance initialization process finished.
-  virtual void OnInitialized() = 0;
+  // Called when the GtkUi instance initialization process finished. |widget| is
+  // a dummy window passed in for context.
+  virtual void OnInitialized(GtkWidget* widget) = 0;
 
   // Gets the GdkKeymap instance, which is used to translate KeyEvents into
   // GdkEvents before filtering them through GtkIM API.
@@ -48,7 +51,7 @@ class COMPONENT_EXPORT(GTK) GtkUiDelegate {
 
   // Gtk dialog windows must be set transient for the browser window. This
   // function abstracts away such functionality.
-  virtual bool SetGdkWindowTransientFor(GdkWindow* window,
+  virtual bool SetGtkWidgetTransientFor(GtkWidget* widget,
                                         gfx::AcceleratedWidget parent) = 0;
   virtual void ClearTransientFor(gfx::AcceleratedWidget parent) = 0;
 

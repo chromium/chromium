@@ -113,6 +113,38 @@ this document.
 
 ---
 
+### Proxy
+
+Hooking into runtime-level object meta-operations.
+
+**Usage Example:**
+
+```js
+const keyTracker = new Proxy({}, {
+  keysCreated: 0,
+
+  get (receiver, key) {
+    if (key in receiver) {
+      console.log('key already exists');
+    } else {
+      ++this.keysCreated;
+      console.log(this.keysCreated + ' keys created!');
+      receiver[key] = true;
+    }
+  },
+});
+
+keyTracker.key1;  // '1 keys created!'
+keyTracker.key1;  // 'key already exists'
+keyTracker.key2;  // '2 keys created!'
+```
+
+**Documentation:** [link](https://tc39.github.io/ecma262/#sec-proxy-object-internal-methods-and-internal-slots)
+
+**Discussion Notes / Link to Thread:** [link](https://groups.google.com/a/chromium.org/g/chromium-dev/c/-vdPXELXCx4/m/gXfP5vpVBwAJ)
+
+---
+
 ### Classes
 
 OOP-style and boilerplate-free class syntax, including inheritance, `super()`,
@@ -873,38 +905,6 @@ new UInt8ClampedArray();
 ```
 
 **Documentation:** [link](https://tc39.github.io/ecma262/#sec-typedarray-objects)
-
-**Discussion Notes / Link to Thread:**
-
----
-
-### Proxy
-
-Hooking into runtime-level object meta-operations.
-
-**Usage Example:**
-
-```js
-const keyTracker = new Proxy({}, {
-  keysCreated: 0,
-
-  get (receiver, key) {
-    if (key in receiver) {
-      console.log('key already exists');
-    } else {
-      ++this.keysCreated;
-      console.log(this.keysCreated + ' keys created!');
-      receiver[key] = true;
-    }
-  },
-});
-
-keyTracker.key1;  // '1 keys created!'
-keyTracker.key1;  // 'key already exists'
-keyTracker.key2;  // '2 keys created!'
-```
-
-**Documentation:** [link](https://tc39.github.io/ecma262/#sec-proxy-object-internal-methods-and-internal-slots)
 
 **Discussion Notes / Link to Thread:**
 

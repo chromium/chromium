@@ -11,6 +11,8 @@
 #include "net/http/http_util.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
+#include "weblayer/browser/navigation_ui_data_impl.h"
+#include "weblayer/browser/page_impl.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/jni_array.h"
@@ -94,6 +96,35 @@ jboolean NavigationImpl::SetUserAgentString(
   return true;
 }
 
+jboolean NavigationImpl::DisableNetworkErrorAutoReload(JNIEnv* env) {
+  if (!safe_to_disable_network_error_auto_reload_)
+    return false;
+  DisableNetworkErrorAutoReload();
+  return true;
+}
+
+jboolean NavigationImpl::AreIntentLaunchesAllowedInBackground(JNIEnv* env) {
+  NavigationUIDataImpl* navigation_ui_data = static_cast<NavigationUIDataImpl*>(
+      navigation_handle_->GetNavigationUIData());
+
+  if (!navigation_ui_data)
+    return false;
+
+  return navigation_ui_data->are_intent_launches_allowed_in_background();
+}
+
+base::android::ScopedJavaLocalRef<jstring> NavigationImpl::GetReferrer(
+    JNIEnv* env) {
+  return ScopedJavaLocalRef<jstring>(
+      base::android::ConvertUTF8ToJavaString(env, GetReferrer().spec()));
+}
+
+jlong NavigationImpl::GetPage(JNIEnv* env) {
+  if (!safe_to_get_page_)
+    return -1;
+  return reinterpret_cast<intptr_t>(GetPage());
+}
+
 void NavigationImpl::SetResponse(
     std::unique_ptr<embedder_support::WebResourceResponse> response) {
   response_ = std::move(response);
@@ -112,6 +143,18 @@ bool NavigationImpl::IsPageInitiated() {
 
 bool NavigationImpl::IsReload() {
   return navigation_handle_->GetReloadType() != content::ReloadType::NONE;
+}
+
+bool NavigationImpl::IsServedFromBackForwardCache() {
+  return navigation_handle_->IsServedFromBackForwardCache();
+}
+
+Page* NavigationImpl::GetPage() {
+  if (!safe_to_get_page_)
+    return nullptr;
+
+  return PageImpl::GetForCurrentDocument(
+      navigation_handle_->GetRenderFrameHost());
 }
 
 GURL NavigationImpl::GetURL() {
@@ -212,6 +255,19 @@ void NavigationImpl::SetUserAgentString(const std::string& value) {
       /* override_in_new_tabs */ false);
   navigation_handle_->SetIsOverridingUserAgent(!value.empty());
   set_user_agent_string_called_ = true;
+}
+
+void NavigationImpl::DisableNetworkErrorAutoReload() {
+  DCHECK(safe_to_disable_network_error_auto_reload_);
+  disable_network_error_auto_reload_ = true;
+}
+
+bool NavigationImpl::IsFormSubmission() {
+  return navigation_handle_->IsFormSubmission();
+}
+
+GURL NavigationImpl::GetReferrer() {
+  return navigation_handle_->GetReferrer().url;
 }
 
 #if defined(OS_ANDROID)

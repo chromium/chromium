@@ -11,10 +11,13 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/i18n/rtl.h"
 #include "base/path_service.h"
 #include "base/system/sys_info.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/simple_key_map.h"
+#include "components/site_isolation/site_isolation_policy.h"
+#include "components/strings/grit/components_locale_settings.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/resource_context.h"
@@ -24,6 +27,7 @@
 #include "media/capabilities/in_memory_video_decode_stats_db_impl.h"
 #include "media/mojo/services/video_decode_perf_history.h"
 #include "services/network/public/cpp/network_switches.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -89,6 +93,10 @@ WebEngineBrowserContext::WebEngineBrowserContext(bool force_incognito)
   simple_factory_key_ =
       std::make_unique<SimpleFactoryKey>(GetPath(), IsOffTheRecord());
   SimpleKeyMap::GetInstance()->Associate(this, simple_factory_key_.get());
+
+  // TODO(crbug.com/1181156): Should apply any persisted isolated origins here.
+  // However, since WebEngine does not persist any, that would currently be a
+  // no-op.
 }
 
 WebEngineBrowserContext::~WebEngineBrowserContext() {
@@ -189,6 +197,10 @@ WebEngineBrowserContext::GetVideoDecodePerfHistory() {
   // Delegate to the base class for stateful VideoDecodePerfHistory DB
   // creation.
   return BrowserContext::GetVideoDecodePerfHistory();
+}
+
+std::string WebEngineBrowserContext::GetPreferredLanguages() const {
+  return l10n_util::GetStringUTF8(IDS_ACCEPT_LANGUAGES);
 }
 
 media::VideoDecodePerfHistory*

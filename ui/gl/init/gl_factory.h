@@ -49,7 +49,7 @@ GL_INIT_EXPORT bool InitializeExtensionSettingsOneOffPlatform();
 // Initializes GL bindings using the provided parameters. This might be required
 // for use in tests.
 GL_INIT_EXPORT bool InitializeStaticGLBindingsImplementation(
-    GLImplementation impl,
+    GLImplementationParts impl,
     bool fallback_to_software_gl);
 
 // Initializes GL platform using the provided parameters. This might be required
@@ -101,6 +101,9 @@ GL_INIT_EXPORT scoped_refptr<GLSurface> CreateOffscreenGLSurfaceWithFormat(
 // bindings.
 GL_INIT_EXPORT void SetDisabledExtensionsPlatform(
     const std::string& disabled_extensions);
+
+// Disable ANGLE and force to use native or other GL implementation.
+GL_INIT_EXPORT void DisableANGLE();
 
 }  // namespace init
 }  // namespace gl

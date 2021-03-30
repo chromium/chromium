@@ -83,16 +83,7 @@ void ScriptRunner::ContextLifecycleStateChanged(
 }
 
 bool ScriptRunner::IsExecutionSuspended() {
-  return !GetExecutionContext() || GetExecutionContext()->IsContextPaused() ||
-         is_force_deferred_;
-}
-
-void ScriptRunner::SetForceDeferredExecution(bool force_deferred) {
-  DCHECK(force_deferred != is_force_deferred_);
-
-  is_force_deferred_ = force_deferred;
-  if (!IsExecutionSuspended())
-    PostTasksForReadyScripts(FROM_HERE);
+  return !GetExecutionContext() || GetExecutionContext()->IsContextPaused();
 }
 
 void ScriptRunner::PostTasksForReadyScripts(

@@ -329,7 +329,7 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 
 - (void)updateTooltipIfRequiredAt:(const gfx::Point&)locationInContent {
   DCHECK(_bridge);
-  base::string16 newTooltipText;
+  std::u16string newTooltipText;
 
   _bridge->host()->GetTooltipTextAt(locationInContent, &newTooltipText);
   if (newTooltipText != _lastTooltipText) {
@@ -443,6 +443,15 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
     text = [text string];
 
   bool isCharacterEvent = _keyDownEvent && [text length] == 1;
+
+  // For some reason, shift-enter (not shift-return) results in the insertion of
+  // a string with a single character, U+0003, END OF TEXT. Continuing on this
+  // route will result in a forged event that loses the shift modifier.
+  // Therefore, early return. When -keyDown: resumes, it will use a ui::KeyEvent
+  // constructor that works. See https://crbug.com/1188713#c4 for the analysis.
+  if (isCharacterEvent && [text characterAtIndex:0] == 0x0003)
+    return;
+
   // Pass "character" events to the View hierarchy. Cases this handles (non-
   // exhaustive)-
   //    - Space key press on controls. Unlike Tab and newline which have
@@ -1290,7 +1299,7 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
          [types containsObject:base::mac::CFToNSCast(kUTTypeUTF8PlainText)]);
 
   bool result = NO;
-  base::string16 text;
+  std::u16string text;
   if (_bridge)
     _bridge->text_input_host()->GetSelectionText(&result, &text);
   if (!result)
@@ -1324,7 +1333,7 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   // See https://crbug.com/888782.
   if (range.location == NSNotFound)
     range.length = 0;
-  base::string16 substring;
+  std::u16string substring;
   gfx::Range actual_range = gfx::Range::InvalidRange();
   if (_bridge) {
     _bridge->text_input_host()->GetAttributedSubstringForRange(

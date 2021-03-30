@@ -16,11 +16,15 @@ static_library("profiling_host") {
 
   deps = [
     "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
     "//chrome/common:non_code_constants",
     "//components/heap_profiling/multi_process",
     "//components/services/heap_profiling/public/cpp",
+    "//components/version_info",
     "//content/public/browser",
     "//content/public/common",
+    "//third_party/zlib:zlib",
 
     # Added to support the dependency on //chrome/browser/metrics
     # TODO(darin): We should instead have a way to express that dependency here.
@@ -38,6 +42,7 @@ source_set("profiling_browsertests") {
   deps = [
     "//base",
     "//base/allocator:buildflags",
+    "//chrome/browser/profiling_host",
     "//chrome/common:non_code_constants",
     "//components/heap_profiling/multi_process:test_support",
     "//components/services/heap_profiling/public/cpp",

@@ -78,7 +78,7 @@ AppModalDialogManager::AppModalDialogManager()
 
 AppModalDialogManager::~AppModalDialogManager() {}
 
-base::string16 AppModalDialogManager::GetTitle(
+std::u16string AppModalDialogManager::GetTitle(
     content::WebContents* web_contents,
     const GURL& alerting_frame_url) {
   // For extensions, show the extension name, but only if the origin of
@@ -117,7 +117,7 @@ GURL UnwrapURL(const GURL& url) {
 }  // namespace
 
 // static
-base::string16 AppModalDialogManager::GetTitleImpl(
+std::u16string AppModalDialogManager::GetTitleImpl(
     const GURL& parent_frame_url,
     const GURL& alerting_frame_url) {
   GURL unwrapped_parent_frame_url = UnwrapURL(parent_frame_url);
@@ -129,11 +129,11 @@ base::string16 AppModalDialogManager::GetTitleImpl(
   if (unwrapped_alerting_frame_url.IsStandard() &&
       !unwrapped_alerting_frame_url.SchemeIsFile()) {
 #if defined(OS_ANDROID)
-    base::string16 url_string = url_formatter::FormatUrlForSecurityDisplay(
+    std::u16string url_string = url_formatter::FormatUrlForSecurityDisplay(
         unwrapped_alerting_frame_url,
         url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
 #else
-    base::string16 url_string = url_formatter::ElideHost(
+    std::u16string url_string = url_formatter::ElideHost(
         unwrapped_alerting_frame_url, gfx::FontList(), kUrlElideWidth);
 #endif
     return l10n_util::GetStringFUTF16(
@@ -151,8 +151,8 @@ void AppModalDialogManager::RunJavaScriptDialog(
     content::WebContents* web_contents,
     content::RenderFrameHost* render_frame_host,
     content::JavaScriptDialogType dialog_type,
-    const base::string16& message_text,
-    const base::string16& default_prompt_text,
+    const std::u16string& message_text,
+    const std::u16string& default_prompt_text,
     DialogClosedCallback callback,
     bool* did_suppress_message) {
   *did_suppress_message = false;
@@ -165,7 +165,7 @@ void AppModalDialogManager::RunJavaScriptDialog(
     return;
   }
 
-  base::string16 dialog_title =
+  std::u16string dialog_title =
       GetTitle(web_contents, render_frame_host->GetLastCommittedURL());
 
   extensions_client_->OnDialogOpened(web_contents);
@@ -202,7 +202,7 @@ void AppModalDialogManager::RunBeforeUnloadDialogWithOptions(
   if (extra_data->suppress_javascript_messages_) {
     // If a site harassed the user enough for them to put it on mute, then it
     // lost its privilege to deny unloading.
-    std::move(callback).Run(true, base::string16());
+    std::move(callback).Run(true, std::u16string());
     return;
   }
 
@@ -218,7 +218,7 @@ void AppModalDialogManager::RunBeforeUnloadDialogWithOptions(
   // This message used to be customizable, but it was frequently abused by
   // scam websites so the specification was changed.
 
-  base::string16 title;
+  std::u16string title;
   if (is_app) {
     title = l10n_util::GetStringUTF16(
         is_reload ? IDS_BEFORERELOAD_APP_MESSAGEBOX_TITLE
@@ -228,7 +228,7 @@ void AppModalDialogManager::RunBeforeUnloadDialogWithOptions(
                                           ? IDS_BEFORERELOAD_MESSAGEBOX_TITLE
                                           : IDS_BEFOREUNLOAD_MESSAGEBOX_TITLE);
   }
-  const base::string16 message =
+  const std::u16string message =
       l10n_util::GetStringUTF16(IDS_BEFOREUNLOAD_MESSAGEBOX_MESSAGE);
 
   extensions_client_->OnDialogOpened(web_contents);
@@ -236,7 +236,7 @@ void AppModalDialogManager::RunBeforeUnloadDialogWithOptions(
   AppModalDialogQueue::GetInstance()->AddDialog(new AppModalDialogController(
       web_contents, &javascript_dialog_extra_data_, title,
       content::JAVASCRIPT_DIALOG_TYPE_CONFIRM, message,
-      base::string16(),  // default_prompt_text
+      std::u16string(),  // default_prompt_text
       ShouldDisplaySuppressCheckbox(extra_data),
       true,  // is_before_unload_dialog
       is_reload,
@@ -248,7 +248,7 @@ void AppModalDialogManager::RunBeforeUnloadDialogWithOptions(
 bool AppModalDialogManager::HandleJavaScriptDialog(
     content::WebContents* web_contents,
     bool accept,
-    const base::string16* prompt_override) {
+    const std::u16string* prompt_override) {
   AppModalDialogQueue* dialog_queue = AppModalDialogQueue::GetInstance();
   if (!dialog_queue->HasActiveDialog() ||
       dialog_queue->active_dialog()->web_contents() != web_contents) {
@@ -293,7 +293,7 @@ void AppModalDialogManager::CancelDialogs(content::WebContents* web_contents,
 void AppModalDialogManager::OnDialogClosed(content::WebContents* web_contents,
                                            DialogClosedCallback callback,
                                            bool success,
-                                           const base::string16& user_input) {
+                                           const std::u16string& user_input) {
   // If an extension opened this dialog then the extension may shut down its
   // lazy background page after the dialog closes. (Dialogs are closed before
   // their WebContents is destroyed so |web_contents| is still valid here.)

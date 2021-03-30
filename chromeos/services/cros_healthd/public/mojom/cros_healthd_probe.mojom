@@ -116,6 +116,25 @@ struct ProcessInfo {
   // Unused memory available to the process, in KiB. This will always be
   // |total_memory_kib| - |resident_memory_kib|.
   uint32 free_memory_kib;
+  // The sum of bytes passed to system read calls. This includes terminal
+  // I/O and is independent of whether the physical disk is accessed.
+  uint64 bytes_read;
+  // The sum of bytes passed to system write calls. This includes terminal
+  // I/O and is independent of whether the physical disk is accessed.
+  uint64 bytes_written;
+  // Attempted count of read syscalls.
+  uint64 read_system_calls;
+  // Attempted count of write syscalls.
+  uint64 write_system_calls;
+  // Attempt to count the number of bytes which this process really did cause
+  // to be fetched from the storage layer.
+  uint64 physical_bytes_read;
+  // Attempt to count the number of bytes which this process caused to be sent
+  // to the storage layer.
+  uint64 physical_bytes_written;
+  // Number of bytes which this process caused to not happen, by truncating
+  // pagecache.
+  uint64 cancelled_bytes_written;
 };
 
 // Battery probe result. Can either be populated with the BatteryInfo or an

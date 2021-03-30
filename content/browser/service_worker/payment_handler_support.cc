@@ -5,7 +5,6 @@
 #include "content/browser/service_worker/payment_handler_support.h"
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/storage_partition_impl.h"
@@ -50,9 +49,10 @@ class ShowPaymentHandlerWindowReplier {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     if (response_callback_) {
       DCHECK(fallback_);
-      base::PostTask(
-          FROM_HERE, {ServiceWorkerContext::GetCoreThreadId()},
-          base::BindOnce(std::move(fallback_), std::move(response_callback_)));
+      BrowserThread::GetTaskRunnerForThread(
+          ServiceWorkerContext::GetCoreThreadId())
+          ->PostTask(FROM_HERE, base::BindOnce(std::move(fallback_),
+                                               std::move(response_callback_)));
     }
   }
 

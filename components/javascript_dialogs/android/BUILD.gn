@@ -21,10 +21,9 @@ android_library("java") {
     ":java_resources",
     ":jni_headers",
     "//base:base_java",
-    "//base:jni_java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_java",
   ]
 }

@@ -15,6 +15,7 @@ namespace web {
 FakeShouldAllowRequestInfo::FakeShouldAllowRequestInfo()
     : request_info(ui::PageTransition::PAGE_TRANSITION_FIRST,
                    /*target_frame_is_main=*/false,
+                   /*target_frame_is_cross_origin=*/false,
                    /*has_user_gesture=*/false) {}
 FakeShouldAllowRequestInfo::~FakeShouldAllowRequestInfo() = default;
 

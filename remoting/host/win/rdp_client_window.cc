@@ -7,13 +7,13 @@
 #include <wtsdefs.h>
 
 #include <list>
+#include <string>
 
 #include "base/bind.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_local.h"
 #include "base/win/scoped_bstr.h"
@@ -67,7 +67,7 @@ base::LazyInstance<base::ThreadLocalPointer<RdpClientWindow::WindowHook>>::
 // FindWindowEx() this function walks the tree of windows recursively. The walk
 // is done in breadth-first order. The function returns nullptr if the child
 // window could not be found.
-HWND FindWindowRecursively(HWND parent, const base::string16& class_name) {
+HWND FindWindowRecursively(HWND parent, const std::wstring& class_name) {
   std::list<HWND> windows;
   windows.push_back(parent);
 
@@ -77,7 +77,7 @@ HWND FindWindowRecursively(HWND parent, const base::string16& class_name) {
       // See if the window class name matches |class_name|.
       WCHAR name[kMaxWindowClassLength];
       int length = GetClassName(child, name, base::size(name));
-      if (base::string16(name, length)  == class_name)
+      if (std::wstring(name, length) == class_name)
         return child;
 
       // Remember the window to look through its children.
@@ -265,8 +265,8 @@ LRESULT RdpClientWindow::OnCreate(CREATESTRUCT* create_struct) {
   Microsoft::WRL::ComPtr<mstsc::IMsTscSecuredSettings> secured_settings;
   Microsoft::WRL::ComPtr<mstsc::IMsRdpClientSecuredSettings> secured_settings2;
   base::win::ScopedBstr server_name(
-      base::UTF8ToUTF16(server_endpoint_.ToStringWithoutPort()));
-  base::win::ScopedBstr terminal_id(base::UTF8ToUTF16(terminal_id_));
+      base::UTF8ToWide(server_endpoint_.ToStringWithoutPort()));
+  base::win::ScopedBstr terminal_id(base::UTF8ToWide(terminal_id_));
 
   // Create the child window that actually hosts the ActiveX control.
   RECT rect = {0, 0, screen_resolution_.dimensions().width(),

@@ -229,6 +229,8 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
   int DescriptionElementCount();
   v8::Local<v8::Object> DescriptionElementAtIndex(unsigned index);
 
+  std::vector<std::string> GetMisspellings() const;
+
   std::string Placeholder();
 
   blink::WebAXObject accessibility_object_;

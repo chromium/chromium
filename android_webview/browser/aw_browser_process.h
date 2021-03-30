@@ -7,13 +7,13 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_AW_BROWSER_PROCESS_H_
 #define ANDROID_WEBVIEW_BROWSER_AW_BROWSER_PROCESS_H_
 
+#include "android_webview/browser/aw_apk_type.h"
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_feature_list_creator.h"
 #include "android_webview/browser/lifecycle/aw_contents_lifecycle_notifier.h"
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_allowlist_manager.h"
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_ui_manager.h"
 #include "base/feature_list.h"
-#include "components/power_metrics/android_battery_metrics.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/android/remote_database_manager.h"
@@ -73,6 +73,7 @@ class AwBrowserProcess {
   void PreMainMessageLoopRun();
 
   static void TriggerMinidumpUploading();
+  static ApkType GetApkType();
 
  private:
   void CreateSafeBrowsingUIManager();
@@ -111,7 +112,6 @@ class AwBrowserProcess {
       safe_browsing_allowlist_manager_;
 
   std::unique_ptr<VisibilityMetricsLogger> visibility_metrics_logger_;
-  std::unique_ptr<power_metrics::AndroidBatteryMetrics> battery_metrics_;
   std::unique_ptr<AwContentsLifecycleNotifier> aw_contents_lifecycle_notifier_;
 
   DISALLOW_COPY_AND_ASSIGN(AwBrowserProcess);

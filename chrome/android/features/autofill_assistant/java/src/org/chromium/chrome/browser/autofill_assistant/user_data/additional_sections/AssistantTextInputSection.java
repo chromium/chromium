@@ -84,7 +84,8 @@ public class AssistantTextInputSection implements AssistantAdditionalSection {
                     EditorFieldModel.createTextInput(typeHint, mHint, /* suggestions = */ null,
                             /* formatter = */ null, /* validator = */ null,
                             /* valueIconGenerator = */ null, /* requiredErrorMessage = */ null,
-                            /* invalidErrorMessage = */ null, mValue),
+                            /* invalidErrorMessage = */ null,
+                            EditorFieldModel.LENGTH_COUNTER_LIMIT_NONE, mValue),
                     (v, actionId, event)
                             -> false,
                     /* filter = */ null, textWatcher);

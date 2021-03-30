@@ -604,4 +604,30 @@ TEST_F(VideoUtilTest, I420CopyWithPadding) {
   EXPECT_TRUE(VerifyCopyWithPadding(*src_frame, *dst_frame));
 }
 
+TEST_F(VideoUtilTest, WrapAsI420VideoFrame) {
+  gfx::Size size(640, 480);
+  scoped_refptr<VideoFrame> src_frame =
+      VideoFrame::CreateFrame(PIXEL_FORMAT_I420A, size, gfx::Rect(size), size,
+                              base::TimeDelta::FromDays(1));
+
+  scoped_refptr<VideoFrame> dst_frame = WrapAsI420VideoFrame(src_frame);
+  EXPECT_EQ(dst_frame->format(), PIXEL_FORMAT_I420);
+  EXPECT_EQ(dst_frame->timestamp(), src_frame->timestamp());
+  EXPECT_EQ(dst_frame->coded_size(), src_frame->coded_size());
+  EXPECT_EQ(dst_frame->visible_rect(), src_frame->visible_rect());
+  EXPECT_EQ(dst_frame->natural_size(), src_frame->natural_size());
+
+  std::vector<size_t> planes = {VideoFrame::kYPlane, VideoFrame::kUPlane,
+                                VideoFrame::kVPlane};
+  for (auto plane : planes)
+    EXPECT_EQ(dst_frame->data(plane), src_frame->data(plane));
+
+  // Check that memory for planes is not released upon destruction of the
+  // original frame pointer (new frame holds a reference). This check relies on
+  // ASAN.
+  src_frame.reset();
+  for (auto plane : planes)
+    memset(dst_frame->data(plane), 1, dst_frame->stride(plane));
+}
+
 }  // namespace media

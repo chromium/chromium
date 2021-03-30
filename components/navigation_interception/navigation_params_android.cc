@@ -4,11 +4,8 @@
 
 #include "components/navigation_interception/navigation_params_android.h"
 
-#include "base/android/jni_string.h"
 #include "components/navigation_interception/jni_headers/NavigationParams_jni.h"
-
-using base::android::ConvertUTF8ToJavaString;
-using base::android::ScopedJavaLocalRef;
+#include "url/android/gurl_android.h"
 
 namespace navigation_interception {
 
@@ -19,18 +16,14 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaNavigationParams(
   const GURL& url = params.base_url_for_data_url().is_empty()
                         ? params.url()
                         : params.base_url_for_data_url();
-  ScopedJavaLocalRef<jstring> jstring_url =
-      ConvertUTF8ToJavaString(env, url.possibly_invalid_spec());
-
-  ScopedJavaLocalRef<jstring> jstring_referrer =
-      ConvertUTF8ToJavaString(env, params.referrer().url.spec());
 
   return Java_NavigationParams_create(
-      env, jstring_url, jstring_referrer, params.navigation_id(),
-      params.is_post(), params.has_user_gesture(), params.transition_type(),
-      params.is_redirect(), params.is_external_protocol(),
-      params.is_main_frame(), params.is_renderer_initiated(),
-      has_user_gesture_carryover,
+      env, url::GURLAndroid::FromNativeGURL(env, url),
+      url::GURLAndroid::FromNativeGURL(env, params.referrer().url),
+      params.navigation_id(), params.is_post(), params.has_user_gesture(),
+      params.transition_type(), params.is_redirect(),
+      params.is_external_protocol(), params.is_main_frame(),
+      params.is_renderer_initiated(), has_user_gesture_carryover,
       params.initiator_origin() ? params.initiator_origin()->CreateJavaObject()
                                 : nullptr);
 }

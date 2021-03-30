@@ -8,8 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/app_window/app_window_registry.h"
@@ -20,8 +18,6 @@ class Profile;
 class WebAuthFlowTest;
 
 namespace content {
-class NotificationDetails;
-class NotificationSource;
 class StoragePartition;
 }
 
@@ -44,8 +40,7 @@ namespace extensions {
 //
 // A WebAuthFlow can be started in Mode::SILENT, which never displays
 // a window. If a window would be required, the flow fails.
-class WebAuthFlow : public content::NotificationObserver,
-                    public content::WebContentsObserver,
+class WebAuthFlow : public content::WebContentsObserver,
                     public AppWindowRegistry::Observer {
  public:
   enum Mode {
@@ -115,13 +110,10 @@ class WebAuthFlow : public content::NotificationObserver,
   void OnAppWindowAdded(AppWindow* app_window) override;
   void OnAppWindowRemoved(AppWindow* app_window) override;
 
-  // NotificationObserver implementation.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
   // WebContentsObserver implementation.
   void DidStopLoading() override;
+  void InnerWebContentsCreated(
+      content::WebContents* inner_web_contents) override;
   void RenderProcessGone(base::TerminationStatus status) override;
   void TitleWasSet(content::NavigationEntry* entry) override;
   void DidStartNavigation(
@@ -143,8 +135,6 @@ class WebAuthFlow : public content::NotificationObserver,
   AppWindow* app_window_;
   std::string app_window_key_;
   bool embedded_window_created_;
-
-  content::NotificationRegistrar registrar_;
 
   DISALLOW_COPY_AND_ASSIGN(WebAuthFlow);
 };

@@ -11,7 +11,6 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_view.h"
-#include "base/scoped_observer.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer.h"
@@ -72,6 +71,9 @@ bool WallpaperWidgetController::Reparent(int container) {
 bool WallpaperWidgetController::SetWallpaperBlur(
     float blur,
     const base::TimeDelta& animation_duration) {
+  if (!widget_->GetNativeWindow())
+    return false;
+
   StopAnimating();
   bool blur_changed = wallpaper_view_->blur_sigma() != blur;
 

@@ -13,11 +13,9 @@ namespace autofill {
 
 AutofillKey::AutofillKey() {}
 
-AutofillKey::AutofillKey(const base::string16& name,
-                         const base::string16& value)
-    : name_(name),
-      value_(value) {
-}
+AutofillKey::AutofillKey(const std::u16string& name,
+                         const std::u16string& value)
+    : name_(name), value_(value) {}
 
 AutofillKey::AutofillKey(const std::string& name,
                          const std::string& value)

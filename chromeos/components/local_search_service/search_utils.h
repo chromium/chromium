@@ -5,7 +5,8 @@
 #ifndef CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_SEARCH_UTILS_H_
 #define CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_SEARCH_UTILS_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 
 namespace chromeos {
 namespace local_search_service {
@@ -14,17 +15,17 @@ struct Result;
 
 // Score is non-zero if |query| is a prefix of |text|. No case normalization is
 // done.
-float ExactPrefixMatchScore(const base::string16& query,
-                            const base::string16& text);
+float ExactPrefixMatchScore(const std::u16string& query,
+                            const std::u16string& text);
 
 // Returns block matching ratio between |query| and |text|. No case
 // normalization is done.
-float BlockMatchScore(const base::string16& query, const base::string16& text);
+float BlockMatchScore(const std::u16string& query, const std::u16string& text);
 
 // |query| approximately matches |text| if its prefix score is above the
 // |prefix_threshold| or block matching score is above |block_threshold|.
-bool IsRelevantApproximately(const base::string16& query,
-                             const base::string16& text,
+bool IsRelevantApproximately(const std::u16string& query,
+                             const std::u16string& text,
                              float prefix_threshold,
                              float block_threshold);
 

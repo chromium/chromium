@@ -11,7 +11,6 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
@@ -93,8 +92,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerClientsApiBrowserTest, Navigate) {
   EXPECT_EQ(true, EvalJs(shell(), navigate_script));
 
   // The page should be navigated to empty.html.
-  const base::string16 title =
-      base::ASCIIToUTF16("ServiceWorker test - empty page");
+  const std::u16string title = u"ServiceWorker test - empty page";
   TitleWatcher title_watcher(shell()->web_contents(), title);
   EXPECT_EQ(title, title_watcher.WaitAndGetTitle());
 }

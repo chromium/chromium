@@ -9,15 +9,15 @@
  */
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.m.js';
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import '../controls/settings_toggle_button.m.js';
-import '../prefs/prefs.m.js';
+import '../controls/settings_toggle_button.js';
+import '../prefs/prefs.js';
 import '../site_settings/settings_category_default_radio_group.js';
-import '../settings_page/settings_animated_pages.m.js';
-import '../settings_page/settings_subpage.m.js';
-import '../settings_shared_css.m.js';
+import '../settings_page/settings_animated_pages.js';
+import '../settings_page/settings_subpage.js';
+import '../settings_shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
@@ -28,14 +28,13 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 import {HatsBrowserProxyImpl} from '../hats_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
-import {SyncBrowserProxyImpl, SyncStatus} from '../people_page/sync_browser_proxy.m.js';
-import {PrefsBehavior} from '../prefs/prefs_behavior.m.js';
+import {PrefsBehavior} from '../prefs/prefs_behavior.js';
 import {routes} from '../route.js';
-import {RouteObserverBehavior, Router} from '../router.m.js';
+import {RouteObserverBehavior, Router} from '../router.js';
 import {ChooserType, ContentSettingsTypes, CookieControlsMode, NotificationSetting} from '../site_settings/constants.js';
 import {SiteSettingsPrefsBrowserProxyImpl} from '../site_settings/site_settings_prefs_browser_proxy.js';
 
-import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from './privacy_page_browser_proxy.m.js';
+import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from './privacy_page_browser_proxy.js';
 
 /**
  * @typedef {{
@@ -65,12 +64,6 @@ Polymer({
       type: Object,
       notify: true,
     },
-
-    /**
-     * The current sync status, supplied by SyncBrowserProxy.
-     * @type {?SyncStatus}
-     */
-    syncStatus: Object,
 
     /** @private */
     isGuest_: {
@@ -236,26 +229,12 @@ Polymer({
         'onBlockAutoplayStatusChanged',
         this.onBlockAutoplayStatusChanged_.bind(this));
 
-    SyncBrowserProxyImpl.getInstance().getSyncStatus().then(
-        this.handleSyncStatus_.bind(this));
-    this.addWebUIListener(
-        'sync-status-changed', this.handleSyncStatus_.bind(this));
-
     SiteSettingsPrefsBrowserProxyImpl.getInstance()
         .getCookieSettingDescription()
         .then(description => this.cookieSettingDescription_ = description);
     this.addWebUIListener(
         'cookieSettingDescriptionChanged',
         description => this.cookieSettingDescription_ = description);
-  },
-
-  /**
-   * Handler for when the sync state is pushed from the browser.
-   * @param {?SyncStatus} syncStatus
-   * @private
-   */
-  handleSyncStatus_(syncStatus) {
-    this.syncStatus = syncStatus;
   },
 
   /** @protected */
@@ -336,9 +315,10 @@ Polymer({
 
   /** @private */
   onPrivacySandboxClick_() {
-    // TODO(crbug/1159942): Replace this with an ordinary OpenWindowProxy call
-    // once crbug/1159942 is fixed.
-    window.location = 'chrome://settings/privacySandbox';
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.PrivacySandbox.OpenedFromSettingsParent');
+    // TODO(crbug/1159942): Replace this with an ordinary OpenWindowProxy call.
+    this.shadowRoot.getElementById('privacySandboxLink').click();
   },
 
   /** @private */
@@ -356,5 +336,15 @@ Polymer({
   /** @private */
   tryShowHatsSurvey_() {
     HatsBrowserProxyImpl.getInstance().tryShowSurvey();
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  computePrivacySandboxSublabel_() {
+    return this.getPref('privacy_sandbox.apis_enabled').value ?
+        this.i18n('privacySandboxTrialsEnabled') :
+        this.i18n('privacySandboxTrialsDisabled');
   },
 });

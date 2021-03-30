@@ -52,12 +52,12 @@ VerifyStatus GetVerifyStatus(const uint8_t* buffer,
 
 // RulesetIndexer --------------------------------------------------------------
 
-const int RulesetIndexer::kIndexedFormatVersion = 27;
+const int RulesetIndexer::kIndexedFormatVersion = 28;
 
 // This static assert is meant to catch cases where
 // url_pattern_index::kUrlPatternIndexFormatVersion is incremented without
 // updating RulesetIndexer::kIndexedFormatVersion.
-static_assert(url_pattern_index::kUrlPatternIndexFormatVersion == 6,
+static_assert(url_pattern_index::kUrlPatternIndexFormatVersion == 7,
               "kUrlPatternIndexFormatVersion has changed, make sure you've "
               "also updated RulesetIndexer::kIndexedFormatVersion above.");
 
@@ -74,7 +74,7 @@ bool RulesetIndexer::AddUrlRule(const proto::UrlRule& rule) {
   if (!offset.o)
     return false;
 
-  if (rule.semantics() == proto::RULE_SEMANTICS_BLACKLIST) {
+  if (rule.semantics() == proto::RULE_SEMANTICS_BLOCKLIST) {
     blocklist_.IndexUrlRule(offset);
   } else {
     const auto* flat_rule = flatbuffers::GetTemporaryPointer(builder_, offset);
@@ -150,7 +150,7 @@ LoadPolicy IndexedRulesetMatcher::GetLoadPolicyForResourceLoad(
   if (!rule)
     return LoadPolicy::ALLOW;
 
-  return rule->options() & url_pattern_index::flat::OptionFlag_IS_WHITELIST
+  return rule->options() & url_pattern_index::flat::OptionFlag_IS_ALLOWLIST
              ? LoadPolicy::EXPLICITLY_ALLOW
              : LoadPolicy::DISALLOW;
 }

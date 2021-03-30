@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "ash/public/cpp/session/session_observer.h"
+#include "base/callback_helpers.h"
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
@@ -31,7 +32,7 @@
 #include "chrome/browser/nearby_sharing/nearby_connections_manager.h"
 #include "chrome/browser/nearby_sharing/nearby_file_handler.h"
 #include "chrome/browser/nearby_sharing/nearby_notification_manager.h"
-#include "chrome/browser/nearby_sharing/nearby_process_manager.h"
+#include "chrome/browser/nearby_sharing/nearby_share_profile_info_provider_impl.h"
 #include "chrome/browser/nearby_sharing/nearby_share_settings.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
 #include "chrome/browser/nearby_sharing/outgoing_share_target_info.h"
@@ -40,8 +41,10 @@
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
 #include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
 #include "chrome/services/sharing/public/proto/wire_format.pb.h"
+#include "chromeos/services/nearby/public/cpp/nearby_process_manager.h"
 #include "chromeos/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "device/bluetooth/bluetooth_adapter.h"
 
 class FastInitiationManager;
 class NearbyConnectionsManager;
@@ -53,24 +56,31 @@ class NotificationDisplayService;
 class PrefService;
 class Profile;
 
+namespace NearbySharingServiceUnitTests {
+class NearbySharingServiceImplTest;
+}
+
 // All methods should be called from the same sequence that created the service.
 class NearbySharingServiceImpl
     : public NearbySharingService,
       public nearby_share::mojom::NearbyShareSettingsObserver,
       public NearbyShareCertificateManager::Observer,
-      public NearbyProcessManager::Observer,
       public device::BluetoothAdapter::Observer,
       public NearbyConnectionsManager::IncomingConnectionListener,
       public NearbyConnectionsManager::DiscoveryListener,
       public ash::SessionObserver,
       public PowerClient::Observer {
  public:
+  // The number of unexpected nearby process shutdowns that we allow during a
+  // fixed window before deciding not to restart the process.
+  static constexpr int kMaxRecentNearbyProcessUnexpectedShutdownCount = 4;
+
   explicit NearbySharingServiceImpl(
       PrefService* prefs,
       NotificationDisplayService* notification_display_service,
       Profile* profile,
       std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager,
-      NearbyProcessManager* process_manager,
+      chromeos::nearby::NearbyProcessManager* process_manager,
       std::unique_ptr<PowerClient> power_client);
   ~NearbySharingServiceImpl() override;
 
@@ -91,7 +101,12 @@ class NearbySharingServiceImpl
   StatusCodes UnregisterReceiveSurface(
       TransferUpdateCallback* transfer_callback) override;
   StatusCodes ClearForegroundReceiveSurfaces() override;
-  bool IsInHighVisibility() override;
+  bool IsInHighVisibility() const override;
+  bool IsTransferring() const override;
+  bool IsReceivingFile() const override;
+  bool IsSendingFile() const override;
+  bool IsScanning() const override;
+  bool IsConnecting() const override;
   StatusCodes SendAttachments(
       const ShareTarget& share_target,
       std::vector<std::unique_ptr<Attachment>> attachments) override;
@@ -101,6 +116,7 @@ class NearbySharingServiceImpl
               StatusCodesCallback status_codes_callback) override;
   void Cancel(const ShareTarget& share_target,
               StatusCodesCallback status_codes_callback) override;
+  bool DidLocalUserCancelTransfer(const ShareTarget& share_target) override;
   void Open(const ShareTarget& share_target,
             StatusCodesCallback status_codes_callback) override;
   void OpenURL(GURL url) override;
@@ -112,17 +128,10 @@ class NearbySharingServiceImpl
   NearbyShareContactManager* GetContactManager() override;
   NearbyShareCertificateManager* GetCertificateManager() override;
 
-  // NearbyProcessManager::Observer:
-  void OnNearbyProfileChanged(Profile* profile) override;
-  void OnNearbyProcessStarted() override;
-  void OnNearbyProcessStopped() override;
-
   // NearbyConnectionsManager::IncomingConnectionListener:
   void OnIncomingConnection(const std::string& endpoint_id,
                             const std::vector<uint8_t>& endpoint_info,
                             NearbyConnection* connection) override;
-
-  bool IsTransferring() const override;
 
   // Test methods
   void FlushMojoForTesting();
@@ -131,6 +140,8 @@ class NearbySharingServiceImpl
   }
 
  private:
+  friend class NearbySharingServiceUnitTests::NearbySharingServiceImplTest;
+
   // nearby_share::mojom::NearbyShareSettingsObserver:
   void OnEnabledChanged(bool enabled) override;
   void OnDeviceNameChanged(const std::string& device_name) override;
@@ -173,13 +184,30 @@ class NearbySharingServiceImpl
   void OnStartFastInitiationAdvertisingError();
   void StopFastInitiationAdvertising();
   void OnStopFastInitiationAdvertising();
+
+  // Processes endpoint discovered/lost events. We queue up the events to ensure
+  // each discovered or lost event is fully handled before the next is run. For
+  // example, we don't want to start processing an endpoint-lost event before
+  // the corresponding endpoint-discovered event is finished. This is especially
+  // important because of the asynchronous steps required to process an
+  // endpoint-discovered event.
+  void AddEndpointDiscoveryEvent(base::OnceClosure event);
+  void HandleEndpointDiscovered(const std::string& endpoint_id,
+                                const std::vector<uint8_t>& endpoint_info);
+  void HandleEndpointLost(const std::string& endpoint_id);
+  void FinishEndpointDiscoveryEvent();
   void OnOutgoingAdvertisementDecoded(
       const std::string& endpoint_id,
+      const std::vector<uint8_t>& endpoint_info,
       sharing::mojom::AdvertisementPtr advertisement);
   void OnOutgoingDecryptedCertificate(
       const std::string& endpoint_id,
+      const std::vector<uint8_t>& endpoint_info,
       sharing::mojom::AdvertisementPtr advertisement,
       base::Optional<NearbyShareDecryptedPublicCertificate> certificate);
+  void ScheduleCertificateDownloadDuringDiscovery(size_t attempt_count);
+  void OnCertificateDownloadDuringDiscoveryTimerFired(size_t attempt_count);
+
   bool IsBluetoothPresent() const;
   bool IsBluetoothPowered() const;
   bool HasAvailableConnectionMediums();
@@ -291,6 +319,20 @@ class NearbySharingServiceImpl
   void OnIncomingMutualAcceptanceTimeout(const ShareTarget& share_target);
   void OnOutgoingMutualAcceptanceTimeout(const ShareTarget& share_target);
 
+  void OnNearbyProcessStopped(
+      chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason
+          shutdown_reason);
+  void CleanupAfterNearbyProcessStopped();
+  void RestartNearbyProcessIfAppropriate(
+      chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason
+          shutdown_reason);
+  bool ShouldRestartNearbyProcess(
+      chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason
+          shutdown_reason);
+  void ClearRecentNearbyProcessUnexpectedShutdownCount();
+  void BindToNearbyProcess();
+  sharing::mojom::NearbySharingDecoder* GetNearbySharingDecoder();
+
   base::Optional<ShareTarget> CreateShareTarget(
       const std::string& endpoint_id,
       const sharing::mojom::AdvertisementPtr& advertisement,
@@ -316,7 +358,7 @@ class NearbySharingServiceImpl
       const ShareTarget& share_target);
 
   NearbyConnection* GetConnection(const ShareTarget& share_target);
-  base::Optional<std::vector<uint8_t>> GetBluetoothMacAddress(
+  base::Optional<std::vector<uint8_t>> GetBluetoothMacAddressForShareTarget(
       const ShareTarget& share_target);
 
   void ClearOutgoingShareTargetInfoMap();
@@ -327,6 +369,8 @@ class NearbySharingServiceImpl
   void OnStartAdvertisingResult(
       bool used_device_name,
       NearbyConnectionsManager::ConnectionsStatus status);
+  void OnStartDiscoveryResult(
+      NearbyConnectionsManager::ConnectionsStatus status);
   void SetInHighVisibility(bool in_high_visibility);
 
   // Note: |share_target| is intentionally passed by value. A share target
@@ -334,19 +378,24 @@ class NearbySharingServiceImpl
   // cancellation process.
   void DoCancel(ShareTarget share_target,
                 StatusCodesCallback status_codes_callback,
-                bool write_cancel_frame);
+                bool is_initiator_of_cancellation);
+
+  void AbortAndCloseConnectionIfNecessary(const TransferMetadata::Status status,
+                                          const ShareTarget& share_target);
 
   Profile* profile_;
   std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager_;
-  NearbyProcessManager* process_manager_;
+  chromeos::nearby::NearbyProcessManager* process_manager_;
+  std::unique_ptr<
+      chromeos::nearby::NearbyProcessManager::NearbyProcessReference>
+      process_reference_;
   std::unique_ptr<PowerClient> power_client_;
-  ScopedObserver<NearbyProcessManager, NearbyProcessManager::Observer>
-      nearby_process_observer_{this};
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   std::unique_ptr<FastInitiationManager> fast_initiation_manager_;
   std::unique_ptr<NearbyNotificationManager> nearby_notification_manager_;
   NearbyShareHttpNotifier nearby_share_http_notifier_;
   std::unique_ptr<NearbyShareClientFactory> http_client_factory_;
+  std::unique_ptr<NearbyShareProfileInfoProvider> profile_info_provider_;
   std::unique_ptr<NearbyShareLocalDeviceDataManager> local_device_data_manager_;
   std::unique_ptr<NearbyShareContactManager> contact_manager_;
   std::unique_ptr<NearbyShareCertificateManager> certificate_manager_;
@@ -354,6 +403,7 @@ class NearbySharingServiceImpl
   NearbyFileHandler file_handler_;
   bool is_screen_locked_ = false;
   base::OneShotTimer rotate_background_advertisement_timer_;
+  base::OneShotTimer certificate_download_during_discovery_timer_;
   base::OneShotTimer process_shutdown_pending_timer_;
 
   // A list of service observers.
@@ -401,7 +451,15 @@ class NearbySharingServiceImpl
       outgoing_share_target_info_map_;
   // For metrics. The IDs of ShareTargets that are cancelled while trying to
   // establish an outgoing connection.
-  base::flat_set<base::UnguessableToken> cancelled_share_target_ids_;
+  base::flat_set<base::UnguessableToken> all_cancelled_share_target_ids_;
+  // The IDs of ShareTargets that we cancelled the transfer to.
+  base::flat_set<base::UnguessableToken> locally_cancelled_share_target_ids_;
+  // A map from endpoint ID to endpoint info from discovered, contact-based
+  // advertisements that could not decrypt any available public certificates.
+  // During discovery, if certificates are downloaded, we revist this map and
+  // retry certificate decryption.
+  base::flat_map<std::string, std::vector<uint8_t>>
+      discovered_advertisements_to_retry_map_;
 
   // A mapping of Attachment Id to additional AttachmentInfo related to the
   // Attachment.
@@ -434,9 +492,19 @@ class NearbySharingServiceImpl
   // True when we are advertising with a device name visible to everyone.
   bool in_high_visibility = false;
 
+  int recent_nearby_process_unexpected_shutdown_count_ = 0;
+  base::OneShotTimer clear_recent_nearby_process_shutdown_count_timer_;
+
   // Available free disk space for testing. Using real disk space can introduce
   // flakiness in tests.
   base::Optional<int64_t> free_disk_space_for_testing_;
+
+  // A queue of endpoint-discovered and endpoint-lost events that ensures the
+  // events are processed sequentially, in the order received from Nearby
+  // Connections. An event is processed either immediately, if there are no
+  // other events in the queue, or as soon as the previous event processing
+  // finishes. When processing finishes, the event is removed from the queue.
+  base::queue<base::OnceClosure> endpoint_discovery_events_;
 
   mojo::Receiver<nearby_share::mojom::NearbyShareSettingsObserver>
       settings_receiver_{this};
@@ -444,6 +512,8 @@ class NearbySharingServiceImpl
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<NearbySharingServiceImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<NearbySharingServiceImpl>
+      endpoint_discovery_weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARING_SERVICE_IMPL_H_

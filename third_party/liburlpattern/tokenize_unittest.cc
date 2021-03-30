@@ -117,12 +117,6 @@ TEST(TokenizeTest, EscapedCharAtEnd) {
                   absl::InvalidArgumentError("Trailing escape character"));
 }
 
-TEST(TokenizeTest, EscapedInvalidChar) {
-  // Use a single byte invalid character since the escape only applies to the
-  // next byte character.
-  RunTokenizeTest("\\\xff", absl::InvalidArgumentError("Invalid character"));
-}
-
 TEST(TokenizeTest, Name) {
   std::vector<Token> expected_tokens = {
       Token(TokenType::kName, 0, "Foo_1"),
@@ -136,8 +130,64 @@ TEST(TokenizeTest, NameWithZeroLength) {
                   absl::InvalidArgumentError("Missing parameter name"));
 }
 
-TEST(TokenizeTest, NameWithInvalidChar) {
-  RunTokenizeTest("/:fooßar", absl::InvalidArgumentError("Invalid character"));
+TEST(TokenizeTest, NameWithUnicodeChar) {
+  std::vector<Token> expected_tokens = {
+      Token(TokenType::kChar, 0, "/"),
+      Token(TokenType::kName, 1, "fooßar"),
+      Token(TokenType::kEnd, 9, absl::string_view()),
+  };
+  RunTokenizeTest("/:fooßar", expected_tokens);
+}
+
+TEST(TokenizeTest, NameWithSpaceFirstChar) {
+  RunTokenizeTest("/: bad",
+                  absl::InvalidArgumentError("Missing parameter name"));
+}
+
+TEST(TokenizeTest, NameWithDollarFirst) {
+  std::vector<Token> expected_tokens = {
+      Token(TokenType::kChar, 0, "/"),
+      Token(TokenType::kName, 1, "$foo"),
+      Token(TokenType::kEnd, 6, absl::string_view()),
+  };
+  RunTokenizeTest("/:$foo", expected_tokens);
+}
+
+TEST(TokenizeTest, NameWithDollarLater) {
+  std::vector<Token> expected_tokens = {
+      Token(TokenType::kChar, 0, "/"),
+      Token(TokenType::kName, 1, "foo$"),
+      Token(TokenType::kEnd, 6, absl::string_view()),
+  };
+  RunTokenizeTest("/:foo$", expected_tokens);
+}
+
+TEST(TokenizeTest, NameWithUnderscoreFirst) {
+  std::vector<Token> expected_tokens = {
+      Token(TokenType::kChar, 0, "/"),
+      Token(TokenType::kName, 1, "_foo"),
+      Token(TokenType::kEnd, 6, absl::string_view()),
+  };
+  RunTokenizeTest("/:_foo", expected_tokens);
+}
+
+TEST(TokenizeTest, NameWithUnderscoreLater) {
+  std::vector<Token> expected_tokens = {
+      Token(TokenType::kChar, 0, "/"),
+      Token(TokenType::kName, 1, "foo_"),
+      Token(TokenType::kEnd, 6, absl::string_view()),
+  };
+  RunTokenizeTest("/:foo_", expected_tokens);
+}
+
+TEST(TokenizeTest, NameFollowedByEscapedChar) {
+  std::vector<Token> expected_tokens = {
+      Token(TokenType::kChar, 0, "/"),
+      Token(TokenType::kName, 1, "foo"),
+      Token(TokenType::kEscapedChar, 5, ":"),
+      Token(TokenType::kEnd, 7, absl::string_view()),
+  };
+  RunTokenizeTest("/:foo\\:", expected_tokens);
 }
 
 TEST(TokenizeTest, NameAndFileExtension) {
@@ -263,6 +313,23 @@ TEST(TokenizeTest, RegexInPath) {
   RunTokenizeTest("/foo/(.*)/bar", expected_tokens);
 }
 
+TEST(TokenizeTest, WildcardInPath) {
+  std::vector<Token> expected_tokens = {
+      Token(TokenType::kChar, 0, "/"),
+      Token(TokenType::kChar, 1, "f"),
+      Token(TokenType::kChar, 2, "o"),
+      Token(TokenType::kChar, 3, "o"),
+      Token(TokenType::kChar, 4, "/"),
+      Token(TokenType::kAsterisk, 5, "*"),
+      Token(TokenType::kChar, 6, "/"),
+      Token(TokenType::kChar, 7, "b"),
+      Token(TokenType::kChar, 8, "a"),
+      Token(TokenType::kChar, 9, "r"),
+      Token(TokenType::kEnd, 10, absl::string_view()),
+  };
+  RunTokenizeTest("/foo/*/bar", expected_tokens);
+}
+
 TEST(TokenizeTest, ModifierStar) {
   std::vector<Token> expected_tokens = {
       Token(TokenType::kChar, 0, "/"),
@@ -271,7 +338,7 @@ TEST(TokenizeTest, ModifierStar) {
       Token(TokenType::kChar, 3, "o"),
       Token(TokenType::kChar, 4, "o"),
       Token(TokenType::kClose, 5, "}"),
-      Token(TokenType::kModifier, 6, "*"),
+      Token(TokenType::kAsterisk, 6, "*"),
       Token(TokenType::kEnd, 7, absl::string_view()),
   };
   RunTokenizeTest("/{foo}*", expected_tokens);
@@ -285,7 +352,7 @@ TEST(TokenizeTest, ModifierPlus) {
       Token(TokenType::kChar, 3, "o"),
       Token(TokenType::kChar, 4, "o"),
       Token(TokenType::kClose, 5, "}"),
-      Token(TokenType::kModifier, 6, "+"),
+      Token(TokenType::kOtherModifier, 6, "+"),
       Token(TokenType::kEnd, 7, absl::string_view()),
   };
   RunTokenizeTest("/{foo}+", expected_tokens);
@@ -299,7 +366,7 @@ TEST(TokenizeTest, ModifierQuestion) {
       Token(TokenType::kChar, 3, "o"),
       Token(TokenType::kChar, 4, "o"),
       Token(TokenType::kClose, 5, "}"),
-      Token(TokenType::kModifier, 6, "?"),
+      Token(TokenType::kOtherModifier, 6, "?"),
       Token(TokenType::kEnd, 7, absl::string_view()),
   };
   RunTokenizeTest("/{foo}?", expected_tokens);
@@ -317,7 +384,7 @@ TEST(TokenizeTest, Everything) {
       Token(TokenType::kChar, 15, "/"),
       Token(TokenType::kName, 16, "bar"),
       Token(TokenType::kClose, 20, "}"),
-      Token(TokenType::kModifier, 21, "*"),
+      Token(TokenType::kAsterisk, 21, "*"),
       Token(TokenType::kEnd, 22, absl::string_view()),
   };
   RunTokenizeTest("/\\foo/(a(?.*)){/:bar}*", expected_tokens);

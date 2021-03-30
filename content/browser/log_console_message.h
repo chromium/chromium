@@ -5,8 +5,9 @@
 #ifndef CONTENT_BROWSER_LOG_CONSOLE_MESSAGE_H_
 #define CONTENT_BROWSER_LOG_CONSOLE_MESSAGE_H_
 
+#include <string>
+
 #include "base/logging.h"
-#include "base/strings/string16.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 
 namespace content {
@@ -17,11 +18,11 @@ logging::LogSeverity ConsoleMessageLevelToLogSeverity(
 // Optionally logs a message from the console, depending on the set logging
 // levels and incognito state.
 void LogConsoleMessage(blink::mojom::ConsoleMessageLevel log_level,
-                       const base::string16& message,
+                       const std::u16string& message,
                        int32_t line_number,
                        bool is_builtin_component,
                        bool is_off_the_record,
-                       const base::string16& source_id);
+                       const std::u16string& source_id);
 
 }  // namespace content
 

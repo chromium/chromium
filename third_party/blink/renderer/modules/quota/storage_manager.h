@@ -71,12 +71,8 @@ class StorageManager final : public EventTargetWithInlineData,
   // provider, and returns it,
   mojom::blink::QuotaManagerHost* GetQuotaHost(ExecutionContext*);
 
-  HeapMojoRemote<mojom::blink::PermissionService,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      permission_service_;
-  HeapMojoRemote<mojom::blink::QuotaManagerHost,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      quota_host_;
+  HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
+  HeapMojoRemote<mojom::blink::QuotaManagerHost> quota_host_;
 
   HeapMojoReceiver<mojom::blink::QuotaChangeListener, StorageManager>
       change_listener_receiver_;

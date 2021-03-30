@@ -108,9 +108,9 @@ void DynamicsCompressorHandler::Process(uint32_t frames_to_process) {
 void DynamicsCompressorHandler::ProcessOnlyAudioParams(
     uint32_t frames_to_process) {
   DCHECK(Context()->IsAudioThread());
-  DCHECK_LE(frames_to_process, audio_utilities::kRenderQuantumFrames);
+  DCHECK_LE(frames_to_process, GetDeferredTaskHandler().RenderQuantumFrames());
 
-  float values[audio_utilities::kRenderQuantumFrames];
+  float values[GetDeferredTaskHandler().RenderQuantumFrames()];
 
   threshold_->CalculateSampleAccurateValues(values, frames_to_process);
   knee_->CalculateSampleAccurateValues(values, frames_to_process);

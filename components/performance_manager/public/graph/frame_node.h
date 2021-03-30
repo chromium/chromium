@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_GRAPH_FRAME_NODE_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_GRAPH_FRAME_NODE_H_
 
+#include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/optional.h"
@@ -59,6 +60,7 @@ class FrameNode : public Node {
   using LifecycleState = mojom::LifecycleState;
   using Observer = FrameNodeObserver;
   using PageNodeVisitor = base::RepeatingCallback<bool(const PageNode*)>;
+  using WorkerNodeVisitor = base::RepeatingCallback<bool(const WorkerNode*)>;
 
   class ObserverDefaultImpl;
 
@@ -167,6 +169,16 @@ class FrameNode : public Node {
   virtual const base::flat_set<const WorkerNode*> GetChildWorkerNodes()
       const = 0;
 
+  // Visits the child dedicated workers of this frame. The iteration is halted
+  // if the visitor returns false. Returns true if every call to the visitor
+  // returned true, false otherwise.
+  //
+  // The reason why we don't have a generic VisitChildWorkers method is that
+  // a service/shared worker may appear as a child of multiple other nodes
+  // and thus may be visited multiple times.
+  virtual bool VisitChildDedicatedWorkers(
+      const WorkerNodeVisitor& visitor) const = 0;
+
   // Returns the current priority of the frame, and the reason for the frame
   // having that particular priority.
   virtual const PriorityAndReason& GetPriorityAndReason() const = 0;
@@ -203,10 +215,14 @@ class FrameNodeObserver {
 
   // Node lifetime notifications.
 
-  // Called when a |frame_node| is added to the graph.
+  // Called when a |frame_node| is added to the graph. Observers must not make
+  // any property changes or cause re-entrant notifications during the scope of
+  // this call. Instead, make property changes via a separate posted task.
   virtual void OnFrameNodeAdded(const FrameNode* frame_node) = 0;
 
-  // Called before a |frame_node| is removed from the graph.
+  // Called before a |frame_node| is removed from the graph. Observers must not
+  // make any property changes or cause re-entrant notifications during the
+  // scope of this call.
   virtual void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) = 0;
 
   // Notifications of property changes.

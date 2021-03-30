@@ -54,7 +54,7 @@ bool GeolocationPermissionContextDelegateAndroid::DecidePermission(
 bool GeolocationPermissionContextDelegateAndroid::IsInteractable(
     content::WebContents* web_contents) {
   TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
-  return !tab || tab->IsUserInteractable();
+  return tab && tab->IsUserInteractable();
 }
 
 PrefService* GeolocationPermissionContextDelegateAndroid::GetPrefs(

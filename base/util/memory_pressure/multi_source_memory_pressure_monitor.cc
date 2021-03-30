@@ -10,7 +10,12 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
+#include "base/tracing_buildflags.h"
 #include "base/util/memory_pressure/system_memory_pressure_evaluator.h"
+
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+#include "base/trace_event/memory_pressure_level_proto.h"  // no-presubmit-check
+#endif
 
 namespace util {
 
@@ -81,9 +86,14 @@ void MultiSourceMemoryPressureMonitor::OnMemoryPressureLevelChanged(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(current_pressure_level_, level);
 
-  TRACE_EVENT_INSTANT1(
+  TRACE_EVENT_INSTANT(
       "base", "MultiSourceMemoryPressureMonitor::OnMemoryPressureLevelChanged",
-      TRACE_EVENT_SCOPE_THREAD, "level", level);
+      [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_chrome_memory_pressure_notification();
+        data->set_level(
+            base::trace_event::MemoryPressureLevelToTraceEnum(level));
+      });
 
   // Records the duration of the latest pressure session, there are 4
   // transitions of interest:

@@ -4,11 +4,11 @@
 
 #include "chrome/browser/chromeos/sync/split_settings_sync_field_trial.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/common/channel_info.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/variations_associated_data.h"
@@ -63,9 +63,12 @@ std::string CreateFirstRunTrial(base::FeatureList* feature_list) {
     case version_info::Channel::CANARY:
     case version_info::Channel::DEV:
     case version_info::Channel::BETA:
-      enabled_percent = 50;
-      disabled_percent = 50;
-      default_percent = 0;
+      // Field trial is disabled due to b/171471530.
+      // TODO(khorimoto): Re-enable the trial once the underlying issue is
+      // fixed.
+      enabled_percent = 0;
+      disabled_percent = 0;
+      default_percent = 100;
       break;
     case version_info::Channel::STABLE:
       // Disabled on Stable pending approval (see https://crbug.com/1020731).
@@ -123,6 +126,13 @@ void Create(base::FeatureList* feature_list, PrefService* local_state) {
     local_state->SetString(kTrialGroupPrefName, trial_group);
   } else {
     // Group already assigned.
+
+    // Field trial is disabled due to b/171471530. Override the existing trial
+    // and use kDefaultGroup instead.
+    // TODO(khorimoto): Remove the line below once the underlying issue from
+    // b/171471530 is fixed.
+    trial_group = kDefaultGroup;
+
     CreateSubsequentRunTrial(feature_list, trial_group);
   }
 }

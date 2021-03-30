@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/extensions/blocked_action_bubble_delegate.h"
 
+#include <string>
 #include <utility>
 
-#include "base/strings/string16.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
@@ -28,26 +28,26 @@ bool BlockedActionBubbleDelegate::ShouldCloseOnDeactivate() {
   return true;
 }
 
-base::string16 BlockedActionBubbleDelegate::GetHeadingText() {
+std::u16string BlockedActionBubbleDelegate::GetHeadingText() {
   return l10n_util::GetStringUTF16(IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_HEADING);
 }
 
-base::string16 BlockedActionBubbleDelegate::GetBodyText(
+std::u16string BlockedActionBubbleDelegate::GetBodyText(
     bool anchored_to_action) {
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16 BlockedActionBubbleDelegate::GetItemListText() {
-  return base::string16();  // No item list.
+std::u16string BlockedActionBubbleDelegate::GetItemListText() {
+  return std::u16string();  // No item list.
 }
 
-base::string16 BlockedActionBubbleDelegate::GetActionButtonText() {
+std::u16string BlockedActionBubbleDelegate::GetActionButtonText() {
   return l10n_util::GetStringUTF16(
       IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_OK_BUTTON);
 }
 
-base::string16 BlockedActionBubbleDelegate::GetDismissButtonText() {
-  return base::string16();
+std::u16string BlockedActionBubbleDelegate::GetDismissButtonText() {
+  return std::u16string();
 }
 
 ui::DialogButton BlockedActionBubbleDelegate::GetDefaultDialogButton() {

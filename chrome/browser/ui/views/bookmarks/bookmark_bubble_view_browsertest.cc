@@ -39,7 +39,7 @@ class BookmarkBubbleViewBrowserTest : public DialogBrowserTest {
 #endif
 
     const GURL url = GURL("https://www.google.com");
-    const base::string16 title = base::ASCIIToUTF16("Title");
+    const std::u16string title = u"Title";
     bookmarks::BookmarkModel* bookmark_model =
         BookmarkModelFactory::GetForBrowserContext(browser()->profile());
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);

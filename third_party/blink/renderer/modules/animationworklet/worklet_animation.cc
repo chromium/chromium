@@ -166,6 +166,13 @@ base::Optional<base::TimeDelta> CalculateStartTime(
     base::TimeDelta current_time,
     double playback_rate,
     AnimationTimeline& timeline) {
+  // Handle some special cases, note |playback_rate| can never be 0 before
+  // SetPlaybackRateInternal has a DCHECK for that.
+  DCHECK_NE(playback_rate, 0);
+  if (current_time.is_max())
+    return base::TimeDelta::FromMilliseconds(0);
+  if (current_time.is_min())
+    return base::TimeDelta::Max();
   base::Optional<double> timeline_current_time_ms =
       timeline.CurrentTimeMilliseconds();
   return base::TimeDelta::FromMillisecondsD(timeline_current_time_ms.value()) -
@@ -477,8 +484,9 @@ void WorkletAnimation::Update(TimingUpdateReason reason) {
   DCHECK_EQ(effects_.size(), local_times_.size());
   for (wtf_size_t i = 0; i < effects_.size(); ++i) {
     effects_[i]->UpdateInheritedTime(
-        local_times_[i] ? base::Optional<double>(local_times_[i]->InSecondsF())
-                        : base::nullopt,
+        local_times_[i]
+            ? base::make_optional(AnimationTimeDelta(local_times_[i].value()))
+            : base::nullopt,
         base::nullopt, reason);
   }
 }

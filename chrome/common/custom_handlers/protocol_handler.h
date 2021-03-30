@@ -30,6 +30,20 @@ class ProtocolHandler {
                   base::Time last_modified,
                   blink::ProtocolHandlerSecurityLevel security_level);
 
+  static ProtocolHandler CreateWebAppProtocolHandler(
+      const std::string& protocol,
+      const GURL& url,
+      const std::string& app_id);
+
+  ProtocolHandler(const std::string& protocol,
+                  const GURL& url,
+                  const std::string& app_id,
+                  base::Time last_modified,
+                  blink::ProtocolHandlerSecurityLevel security_level);
+
+  ProtocolHandler(const ProtocolHandler& other);
+  ~ProtocolHandler();
+
   // Creates a ProtocolHandler with fields from the dictionary. Returns an
   // empty ProtocolHandler if the input is invalid.
   static ProtocolHandler CreateProtocolHandler(
@@ -61,14 +75,15 @@ class ProtocolHandler {
 
   // Returns a friendly name for |protocol| if one is available, otherwise
   // this function returns |protocol|.
-  static base::string16 GetProtocolDisplayName(const std::string& protocol);
+  static std::u16string GetProtocolDisplayName(const std::string& protocol);
 
   // Returns a friendly name for |this.protocol_| if one is available, otherwise
   // this function returns |this.protocol_|.
-  base::string16 GetProtocolDisplayName() const;
+  std::u16string GetProtocolDisplayName() const;
 
   const std::string& protocol() const { return protocol_; }
   const GURL& url() const { return url_;}
+  const base::Optional<std::string>& web_app_id() const { return web_app_id_; }
   const base::Time& last_modified() const { return last_modified_; }
 
   bool IsEmpty() const {
@@ -89,6 +104,7 @@ class ProtocolHandler {
 
   std::string protocol_;
   GURL url_;
+  base::Optional<std::string> web_app_id_;
   base::Time last_modified_;
   blink::ProtocolHandlerSecurityLevel security_level_;
 };

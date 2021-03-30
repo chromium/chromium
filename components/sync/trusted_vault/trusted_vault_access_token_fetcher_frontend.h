@@ -46,12 +46,8 @@ class TrustedVaultAccessTokenFetcherFrontend
                         TrustedVaultAccessTokenFetcher::TokenCallback callback);
 
   // signin::IdentityManager::Observer implementation.
-  void OnPrimaryAccountSet(
-      const CoreAccountInfo& primary_account_info) override;
-  void OnPrimaryAccountCleared(
-      const CoreAccountInfo& previous_primary_account_info) override;
-  void OnUnconsentedPrimaryAccountChanged(
-      const CoreAccountInfo& unconsented_primary_account_info) override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
 
  private:
   // Updates |primary_account_| and runs |pending_requests_| in case

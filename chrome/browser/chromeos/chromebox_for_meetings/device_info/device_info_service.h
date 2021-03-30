@@ -7,8 +7,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/chromeos/chromebox_for_meetings/service_adaptor.h"
-#include "chrome/browser/chromeos/settings/device_settings_service.h"
 #include "chromeos/dbus/chromebox_for_meetings/cfm_observer.h"
 #include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_info.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"

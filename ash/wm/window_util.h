@@ -107,9 +107,6 @@ ASH_EXPORT aura::Window* GetRootWindowAt(const gfx::Point& point_in_screen);
 // virtual screen coordinates.
 ASH_EXPORT aura::Window* GetRootWindowMatching(const gfx::Rect& rect_in_screen);
 
-// Returns true if |window| is an ARC app window.
-ASH_EXPORT bool IsArcWindow(const aura::Window* window);
-
 // Returns true if |window| is an ARC PIP window.
 ASH_EXPORT bool IsArcPipWindow(const aura::Window* window);
 
@@ -142,6 +139,10 @@ WindowTransientDescendantIteratorRange GetVisibleTransientTreeIterator(
 // hidden if |top_inset| is not zero.
 gfx::RectF GetTransformedBounds(aura::Window* transformed_window,
                                 int top_inset);
+
+// If multi profile is on, check if |window| should be shown for the current
+// user.
+bool ShouldShowForCurrentUser(aura::Window* window);
 
 }  // namespace window_util
 }  // namespace ash

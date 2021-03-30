@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_INPUT_WEB_KEYBOARD_EVENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_INPUT_WEB_KEYBOARD_EVENT_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "third_party/blink/public/common/input/web_input_event.h"
 
 namespace blink {
@@ -59,8 +60,8 @@ class BLINK_COMMON_EXPORT WebKeyboardEvent : public WebInputEvent {
   // Windows guarantee one character per event.  The Mac does not, but in
   // reality that's all it ever gives.  We're generous, and cap it a bit
   // longer.
-  base::char16 text[kTextLengthCap] = {};
-  base::char16 unmodified_text[kTextLengthCap] = {};
+  char16_t text[kTextLengthCap] = {};
+  char16_t unmodified_text[kTextLengthCap] = {};
 
   WebKeyboardEvent(Type type, int modifiers, base::TimeTicks time_stamp)
       : WebInputEvent(type, modifiers, time_stamp) {}

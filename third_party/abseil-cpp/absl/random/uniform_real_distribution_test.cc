@@ -20,11 +20,13 @@
 #include <random>
 #include <sstream>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "absl/base/internal/raw_logging.h"
+#include "absl/numeric/internal/representation.h"
 #include "absl/random/internal/chi_square.h"
 #include "absl/random/internal/distribution_test_util.h"
 #include "absl/random/internal/pcg_engine.h"
@@ -55,7 +57,15 @@ namespace {
 template <typename RealType>
 class UniformRealDistributionTest : public ::testing::Test {};
 
-using RealTypes = ::testing::Types<float, double, long double>;
+// double-double arithmetic is not supported well by either GCC or Clang; see
+// https://gcc.gnu.org/bugzilla/show_bug.cgi?id=99048,
+// https://bugs.llvm.org/show_bug.cgi?id=49131, and
+// https://bugs.llvm.org/show_bug.cgi?id=49132. Don't bother running these tests
+// with double doubles until compiler support is better.
+using RealTypes =
+    std::conditional<absl::numeric_internal::IsDoubleDouble(),
+                     ::testing::Types<float, double>,
+                     ::testing::Types<float, double, long double>>::type;
 
 TYPED_TEST_SUITE(UniformRealDistributionTest, RealTypes);
 

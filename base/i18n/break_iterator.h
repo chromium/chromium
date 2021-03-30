@@ -7,9 +7,10 @@
 
 #include <stddef.h>
 
+#include <string>
+
 #include "base/i18n/base_i18n_export.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 
 // The BreakIterator class iterates through the words, word breaks, and
@@ -98,9 +99,9 @@ class BASE_I18N_EXPORT BreakIterator {
   BreakIterator(const StringPiece16& str, BreakType break_type);
   // Make a rule-based iterator. BreakType == RULE_BASED is implied.
   // TODO(andrewhayden): This signature could easily be misinterpreted as
-  // "(const string16& str, const string16& locale)". We should do something
-  // better.
-  BreakIterator(const StringPiece16& str, const string16& rules);
+  // "(const std::u16string& str, const std::u16string& locale)". We should do
+  // something better.
+  BreakIterator(const StringPiece16& str, const std::u16string& rules);
   ~BreakIterator();
 
   // Init() must be called before any of the iterators are valid.
@@ -116,7 +117,7 @@ class BASE_I18N_EXPORT BreakIterator {
   // Updates the text used by the iterator, resetting the iterator as if
   // if Init() had been called again. Any old state is lost. Returns true
   // unless there is an error setting the text.
-  bool SetText(const base::char16* text, const size_t length);
+  bool SetText(const char16_t* text, const size_t length);
 
   // Under BREAK_WORD mode, returns true if the break we just hit is the
   // end of a word. (Otherwise, the break iterator just skipped over e.g.
@@ -156,7 +157,7 @@ class BASE_I18N_EXPORT BreakIterator {
   // Returns the string between prev() and pos().
   // Advance() must have been called successfully at least once for pos() to
   // have advanced to somewhere useful.
-  string16 GetString() const;
+  std::u16string GetString() const;
 
   StringPiece16 GetStringPiece() const;
 
@@ -178,7 +179,7 @@ class BASE_I18N_EXPORT BreakIterator {
   StringPiece16 string_;
 
   // Rules for our iterator. Mutually exclusive with break_type_.
-  const string16 rules_;
+  const std::u16string rules_;
 
   // The breaking style (word/space/newline). Mutually exclusive with rules_
   BreakType break_type_;

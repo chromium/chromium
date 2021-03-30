@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_CLIENT_SIDE_DETECTION_HOST_DELEGATE_H_
 #define CHROME_BROWSER_SAFE_BROWSING_CLIENT_SIDE_DETECTION_HOST_DELEGATE_H_
 
+#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/content/browser/client_side_detection_host.h"
 
 namespace safe_browsing {
@@ -27,9 +28,23 @@ class ClientSideDetectionHostDelegate
       override;
   scoped_refptr<BaseUIManager> GetSafeBrowsingUIManager() override;
   ClientSideDetectionService* GetClientSideDetectionService() override;
+  void AddReferrerChain(ClientPhishingRequest* verdict,
+                        GURL current_url) override;
+
+  void SetNavigationObserverManagerForTest(
+      SafeBrowsingNavigationObserverManager* navigation_observer_manager) {
+    navigation_observer_manager_ = navigation_observer_manager;
+  }
+
+ protected:
+  scoped_refptr<SafeBrowsingNavigationObserverManager>
+  GetSafeBrowsingNavigationObserverManager();
+  size_t CountOfRecentNavigationsToAppend(
+      SafeBrowsingNavigationObserverManager::AttributionResult result);
 
  private:
   content::WebContents* web_contents_;
+  SafeBrowsingNavigationObserverManager* navigation_observer_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(ClientSideDetectionHostDelegate);
 };

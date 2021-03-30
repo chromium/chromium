@@ -65,7 +65,7 @@ def DevicePathComponentsFor(host_path, output_directory):
 
   e.g., given
 
-    '$CHROMIUM_SRC/foo/bar/baz.txt'
+    '$RUNTIME_DEPS_ROOT_DIR/foo/bar/baz.txt'
 
   this would return
 
@@ -73,12 +73,16 @@ def DevicePathComponentsFor(host_path, output_directory):
 
   This handles a couple classes of paths differently than it otherwise would:
     - All .pak files get mapped to top-level paks/
-    - Anything in the output directory gets mapped relative to the output
-      directory rather than the source directory.
+    - All other dependencies get mapped to the top level directory
+        - If a file is not in the output directory then it's relative path to
+          the output directory will start with .. strings, so we remove those
+          and then the path gets mapped to the top-level directory
+        - If a file is in the output directory then the relative path to the
+          output directory gets mapped to the top-level directory
 
   e.g. given
 
-    '$CHROMIUM_SRC/out/Release/icu_fake_dir/icudtl.dat'
+    '$RUNTIME_DEPS_ROOT_DIR/out/Release/icu_fake_dir/icudtl.dat'
 
   this would return
 
@@ -89,18 +93,20 @@ def DevicePathComponentsFor(host_path, output_directory):
   Returns:
     A list of device path components.
   """
-  if host_path.startswith(output_directory):
-    if os.path.splitext(host_path)[1] == '.pak':
-      return [None, 'paks', os.path.basename(host_path)]
-    rel_host_path = os.path.relpath(host_path, output_directory)
-  else:
-    rel_host_path = os.path.relpath(host_path, constants.DIR_SOURCE_ROOT)
+  if (host_path.startswith(output_directory) and
+      os.path.splitext(host_path)[1] == '.pak'):
+    return [None, 'paks', os.path.basename(host_path)]
+
+  rel_host_path = os.path.relpath(host_path, output_directory)
 
   device_path_components = [None]
   p = rel_host_path
   while p:
     p, d = os.path.split(p)
-    if d:
+    # The relative path from the output directory to a file under the runtime
+    # deps root directory may start with multiple .. strings, so they need to
+    # be skipped.
+    if d and d != os.pardir:
       device_path_components.insert(1, d)
   return device_path_components
 

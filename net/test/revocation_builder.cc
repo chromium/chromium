@@ -5,6 +5,7 @@
 #include "net/test/revocation_builder.h"
 
 #include "base/hash/sha1.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_util.h"
@@ -115,7 +116,7 @@ std::string PKeyToSPK(const EVP_PKEY* pkey) {
   }
   spk.remove_prefix(1);
 
-  return spk.as_string();
+  return std::string(spk);
 }
 
 // Returns a DER-encoded OCSPResponse with the given |response_status|.

@@ -28,11 +28,6 @@ class IdentityManagerFactory : public BrowserContextKeyedServiceFactory {
     virtual void IdentityManagerCreated(
         signin::IdentityManager* identity_manager) {}
 
-    // Called when a IdentityManager instance is being shut down. Observers
-    // of |identity_manager| should remove themselves at this point.
-    virtual void IdentityManagerShutdown(
-        signin::IdentityManager* identity_manager) {}
-
    protected:
     ~Observer() override {}
   };
@@ -61,7 +56,6 @@ class IdentityManagerFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-  void BrowserContextShutdown(content::BrowserContext* profile) override;
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
 

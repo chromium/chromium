@@ -17,19 +17,6 @@
 
 namespace net {
 
-namespace {
-
-// On Windows, can't request specific (random) ports, since that will trigger
-// firewall prompts, so request default ones (but experimentally, the OS appears
-// to still allocate random ports).
-#if defined(OS_WIN)
-const DatagramSocket::BindType kBindType = DatagramSocket::DEFAULT_BIND;
-#else
-const DatagramSocket::BindType kBindType = DatagramSocket::RANDOM_BIND;
-#endif
-
-}  // namespace
-
 DnsSocketAllocator::DnsSocketAllocator(ClientSocketFactory* socket_factory,
                                        std::vector<IPEndPoint> nameservers,
                                        NetLog* net_log)
@@ -50,8 +37,8 @@ DnsSocketAllocator::CreateConnectedUdpSocket(size_t server_index,
   std::unique_ptr<DatagramClientSocket> socket;
 
   NetLogSource no_source;
-  socket = socket_factory_->CreateDatagramClientSocket(kBindType, net_log_,
-                                                       no_source);
+  socket = socket_factory_->CreateDatagramClientSocket(
+      DatagramSocket::RANDOM_BIND, net_log_, no_source);
   DCHECK(socket);
 
   *out_connection_error = socket->Connect(nameservers_[server_index]);

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 
 struct AutocompleteMatch;
 
@@ -81,6 +80,12 @@ struct AutocompleteMatchType {
   // Converts |type| to a string representation. Used in logging.
   static std::string ToString(AutocompleteMatchType::Type type);
 
+  // Use this function to convert integers to AutocompleteMatchType enum values.
+  // If you're sure it will be valid, you can call CHECK on the return value.
+  // Returns true if |value| was successfully converted to a valid enum value.
+  // The valid enum value will be written into |result|.
+  static bool FromInteger(int value, Type* result);
+
   // Returns the accessibility label for an AutocompleteMatch |match|
   // whose text is |match_text| The accessibility label describes the
   // match for use in a screenreader or other assistive technology.
@@ -98,12 +103,12 @@ struct AutocompleteMatchType {
   // TODO(tommycli): It seems odd that we are passing in both |match| and
   // |match_text|. Using just |match.contents| or |match.fill_into_edit| seems
   // like it could replace |match_text|. Investigate this.
-  static base::string16 ToAccessibilityLabel(
+  static std::u16string ToAccessibilityLabel(
       const AutocompleteMatch& match,
-      const base::string16& match_text,
+      const std::u16string& match_text,
       size_t match_index = 0,
       size_t total_matches = 0,
-      int additional_message_id = 0,
+      const std::u16string& additional_message_format = std::u16string(),
       int* label_prefix_length = nullptr);
 };
 

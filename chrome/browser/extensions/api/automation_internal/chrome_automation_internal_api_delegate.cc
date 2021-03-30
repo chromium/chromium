@@ -26,7 +26,10 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/arc/accessibility/arc_accessibility_helper_bridge.h"
+#include "chrome/browser/ash/crosapi/automation_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/arc/accessibility/arc_accessibility_helper_bridge.h"
 #endif
 
 namespace extensions {
@@ -82,6 +85,13 @@ content::WebContents* ChromeAutomationInternalApiDelegate::GetActiveWebContents(
 bool ChromeAutomationInternalApiDelegate::EnableTree(
     const ui::AXTreeID& tree_id) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // CrosapiManager may not be initialized on unit testing.
+  // Propagate the EnableTree signal to crosapi clients.
+  if (crosapi::CrosapiManager::IsInitialized()) {
+    crosapi::CrosapiManager::Get()->crosapi_ash()->automation_ash()->EnableTree(
+        tree_id);
+  }
+
   arc::ArcAccessibilityHelperBridge* bridge =
       arc::ArcAccessibilityHelperBridge::GetForBrowserContext(
           GetActiveUserContext());
@@ -92,6 +102,17 @@ bool ChromeAutomationInternalApiDelegate::EnableTree(
 }
 
 void ChromeAutomationInternalApiDelegate::EnableDesktop() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // CrosapiManager may not be initialized on unit testing.
+  // Propagate the EnableDesktop signal to crosapi clients.
+  if (crosapi::CrosapiManager::IsInitialized()) {
+    crosapi::CrosapiManager::Get()
+        ->crosapi_ash()
+        ->automation_ash()
+        ->EnableDesktop();
+  }
+#endif
+
 #if defined(USE_AURA)
   AutomationManagerAura::GetInstance()->Enable();
 #else
@@ -108,10 +129,11 @@ ui::AXTreeID ChromeAutomationInternalApiDelegate::GetAXTreeID() {
 #endif
 }
 
-void ChromeAutomationInternalApiDelegate::SetEventBundleSink(
-    ui::AXEventBundleSink* sink) {
+void ChromeAutomationInternalApiDelegate::SetAutomationEventRouterInterface(
+    AutomationEventRouterInterface* router) {
 #if defined(USE_AURA)
-  AutomationManagerAura::GetInstance()->set_event_bundle_sink(sink);
+  AutomationManagerAura::GetInstance()->set_automation_event_router_interface(
+      router);
 #else
   NOTIMPLEMENTED();
 #endif

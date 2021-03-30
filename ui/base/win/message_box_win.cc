@@ -4,8 +4,9 @@
 
 #include "ui/base/win/message_box_win.h"
 
+#include <string>
+
 #include "base/i18n/rtl.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 
@@ -22,11 +23,11 @@ int MessageBox(HWND hwnd,
   if (base::i18n::IsRTL())
     actual_flags |= MB_RIGHT | MB_RTLREADING;
 
-  base::string16 localized_text = base::WideToUTF16(text);
+  std::u16string localized_text = base::WideToUTF16(text);
   base::i18n::AdjustStringForLocaleDirection(&localized_text);
   const wchar_t* text_ptr = base::as_wcstr(localized_text);
 
-  base::string16 localized_caption = base::WideToUTF16(caption);
+  std::u16string localized_caption = base::WideToUTF16(caption);
   base::i18n::AdjustStringForLocaleDirection(&localized_caption);
   const wchar_t* caption_ptr = base::as_wcstr(localized_caption);
 

@@ -15,11 +15,12 @@
 
 namespace media {
 
-// Helper class that implements PowerObserver and handles threading. A task
-// runner is given, on which suspend and resume notification callbacks are run.
-// It also provides a function to check if we are suspending on the task runner.
+// Helper class that implements PowerSuspendObserver and handles threading. A
+// task runner is given, on which suspend and resume notification callbacks are
+// run. It also provides a function to check if we are suspending on the task
+// runner.
 // Note that on Linux suspend/resume information is not supported.
-class MEDIA_EXPORT PowerObserverHelper : public base::PowerObserver {
+class MEDIA_EXPORT PowerObserverHelper : public base::PowerSuspendObserver {
  public:
   PowerObserverHelper(scoped_refptr<base::SequencedTaskRunner> task_runner,
                       base::RepeatingClosure suspend_callback,
@@ -57,7 +58,7 @@ class MEDIA_EXPORT PowerObserverHelper : public base::PowerObserver {
   base::RepeatingClosure suspend_callback_;
   base::RepeatingClosure resume_callback_;
 
-  // base::PowerObserver implementation.
+  // base::PowerSuspendObserver implementation.
   void OnSuspend() override;
   void OnResume() override;
 

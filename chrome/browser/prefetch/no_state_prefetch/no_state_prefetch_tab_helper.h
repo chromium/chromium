@@ -11,10 +11,10 @@
 
 namespace prerender {
 
-class PrerenderManager;
+class NoStatePrefetchManager;
 
-// Notifies the PrerenderManager with the events happening in the WebContents
-// for NoStatePrefetch.
+// Notifies the NoStatePrefetchManager with the events happening in the
+// WebContents for NoStatePrefetch.
 class NoStatePrefetchTabHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<NoStatePrefetchTabHelper> {

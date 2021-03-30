@@ -55,7 +55,6 @@
 #include "weblayer/browser/browser_process.h"
 #include "weblayer/browser/java/jni/ProfileImpl_jni.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_service.h"
-#include "weblayer/browser/user_agent.h"
 #endif
 
 #if defined(OS_POSIX)
@@ -289,6 +288,7 @@ void ProfileImpl::ClearBrowsingData(
         remove_mask |= content::BrowsingDataRemover::DATA_TYPE_MEDIA_LICENSES;
         remove_mask |= BrowsingDataRemoverDelegate::DATA_TYPE_ISOLATED_ORIGINS;
         remove_mask |= BrowsingDataRemoverDelegate::DATA_TYPE_FAVICONS;
+        remove_mask |= BrowsingDataRemoverDelegate::DATA_TYPE_AD_INTERVENTIONS;
         remove_mask |= content::BrowsingDataRemover::DATA_TYPE_TRUST_TOKENS;
         remove_mask |= content::BrowsingDataRemover::DATA_TYPE_CONVERSIONS;
         break;
@@ -312,6 +312,11 @@ void ProfileImpl::SetDownloadDirectory(const base::FilePath& directory) {
 
 void ProfileImpl::SetDownloadDelegate(DownloadDelegate* delegate) {
   download_delegate_ = delegate;
+}
+
+void ProfileImpl::SetGoogleAccountAccessTokenFetchDelegate(
+    GoogleAccountAccessTokenFetchDelegate* delegate) {
+  access_token_fetch_delegate_ = delegate;
 }
 
 CookieManager* ProfileImpl::GetCookieManager() {

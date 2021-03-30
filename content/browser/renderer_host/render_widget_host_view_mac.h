@@ -24,6 +24,7 @@
 #include "content/common/render_widget_host_ns_view.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
 #include "ui/accelerated_widget_mac/accelerated_widget_mac.h"
 #include "ui/base/cocoa/accessibility_focus_overrider.h"
 #include "ui/base/cocoa/remote_layer_api.h"
@@ -129,8 +130,8 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   void SetIsLoading(bool is_loading) override;
   void RenderProcessGone() override;
   void Destroy() override;
-  void SetTooltipText(const base::string16& tooltip_text) override;
-  void DisplayTooltipText(const base::string16& tooltip_text) override;
+  void SetTooltipText(const std::u16string& tooltip_text) override;
+  void DisplayTooltipText(const std::u16string& tooltip_text) override;
   gfx::Size GetRequestedRendererSize() override;
   uint32_t GetCaptureSequenceNumber() const override;
   bool IsSurfaceAvailableForCopy() override;
@@ -147,6 +148,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   gfx::NativeViewAccessible AccessibilityGetNativeViewAccessibleForWindow()
       override;
   base::Optional<SkColor> GetBackgroundColor() override;
+  void OnSynchronizedDisplayPropertiesChanged(bool rotation) override;
 
   void TransformPointToRootSurface(gfx::PointF* point) override;
   gfx::Rect GetBoundsInRootWindow() override;
@@ -222,7 +224,8 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   // RenderFrameMetadataProvider::Observer
   void OnRenderFrameMetadataChangedBeforeActivation(
       const cc::RenderFrameMetadata& metadata) override {}
-  void OnRenderFrameMetadataChangedAfterActivation() override;
+  void OnRenderFrameMetadataChangedAfterActivation(
+      base::TimeTicks activation_time) override;
   void OnRenderFrameSubmission() override {}
   void OnLocalSurfaceIdChanged(
       const cc::RenderFrameMetadata& metadata) override {}
@@ -357,12 +360,12 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
       std::unique_ptr<blink::WebCoalescedInputEvent> event) override;
   void SmartMagnify(
       std::unique_ptr<blink::WebCoalescedInputEvent> event) override;
-  void ImeSetComposition(const base::string16& text,
+  void ImeSetComposition(const std::u16string& text,
                          const std::vector<ui::ImeTextSpan>& ime_text_spans,
                          const gfx::Range& replacement_range,
                          int selection_start,
                          int selection_end) override;
-  void ImeCommitText(const base::string16& text,
+  void ImeCommitText(const std::u16string& text,
                      const gfx::Range& replacement_range) override;
   void ImeFinishComposingText() override;
   void ImeCancelCompositionFromCocoa() override;
@@ -402,7 +405,8 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
 
   // BrowserCompositorMacClient implementation.
   SkColor BrowserCompositorMacGetGutterColor() const override;
-  void OnFrameTokenChanged(uint32_t frame_token) override;
+  void OnFrameTokenChanged(uint32_t frame_token,
+                           base::TimeTicks activation_time) override;
   void DestroyCompositorForShutdown() override;
   bool OnBrowserCompositorSurfaceIdChanged() override;
   std::vector<viz::SurfaceId> CollectSurfaceIdsForEviction() override;
@@ -476,6 +480,13 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
 
   MouseWheelPhaseHandler* GetMouseWheelPhaseHandler() override;
 
+  void ShowSharePicker(
+      const std::string& title,
+      const std::string& text,
+      const std::string& url,
+      const std::vector<std::string>& file_paths,
+      blink::mojom::ShareService::ShareCallback callback) override;
+
  protected:
   // This class is to be deleted through the Destroy method.
   ~RenderWidgetHostViewMac() override;
@@ -514,7 +525,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
 
   // Gets a textual view of the page's contents, and passes it to the callback
   // provided.
-  using SpeechCallback = base::OnceCallback<void(const base::string16&)>;
+  using SpeechCallback = base::OnceCallback<void(const std::u16string&)>;
   void GetPageTextForSpeech(SpeechCallback callback);
 
   // Interface through which the NSView is to be manipulated. This points either

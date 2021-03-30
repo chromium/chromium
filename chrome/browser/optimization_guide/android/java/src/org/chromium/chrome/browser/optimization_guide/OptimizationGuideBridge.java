@@ -12,8 +12,8 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
+import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
 import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType;
-import org.chromium.components.optimization_guide.proto.PerformanceHintsMetadataProto.PerformanceHintsMetadata;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.url.GURL;
 
@@ -34,13 +34,14 @@ public class OptimizationGuideBridge {
      */
     public interface OptimizationGuideCallback {
         void onOptimizationGuideDecision(
-                @OptimizationGuideDecision int decision, @Nullable OptimizationMetadata metadata);
+                @OptimizationGuideDecision int decision, @Nullable Any metadata);
     }
 
     /**
      * Initializes the C++ side of this class, using the Optimization Guide Decider for the last
      * used Profile.
      */
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public OptimizationGuideBridge() {
         ThreadUtils.assertOnUiThread();
 
@@ -91,40 +92,55 @@ public class OptimizationGuideBridge {
      */
     public void canApplyOptimization(NavigationHandle navigationHandle,
             OptimizationType optimizationType, OptimizationGuideCallback callback) {
-        ThreadUtils.assertOnUiThread();
         assert navigationHandle.isInMainFrame();
 
+        canApplyOptimization(navigationHandle.getUrl(), optimizationType, callback);
+    }
+
+    /**
+     * @param url main frame navigation URL an optimization decision is being made for.
+     * @param optimizationType {@link OptimizationType} decision is being made for
+     * @param callback {@link OptimizationGuideCallback} optimization decision is passed in
+     */
+    public void canApplyOptimization(
+            GURL url, OptimizationType optimizationType, OptimizationGuideCallback callback) {
+        ThreadUtils.assertOnUiThread();
+
         if (mNativeOptimizationGuideBridge == 0) {
-            callback.onOptimizationGuideDecision(OptimizationGuideDecision.FALSE, null);
+            callback.onOptimizationGuideDecision(OptimizationGuideDecision.UNKNOWN, null);
             return;
         }
 
-        OptimizationGuideBridgeJni.get().canApplyOptimization(mNativeOptimizationGuideBridge,
-                navigationHandle.getUrl(), optimizationType.getNumber(), callback);
+        OptimizationGuideBridgeJni.get().canApplyOptimization(
+                mNativeOptimizationGuideBridge, url, optimizationType.getNumber(), callback);
     }
 
     @CalledByNative
     private static void onOptimizationGuideDecision(OptimizationGuideCallback callback,
-            @OptimizationGuideDecision int optimizationGuideDecision, Object optimizationMetadata) {
+            @OptimizationGuideDecision int optimizationGuideDecision,
+            @Nullable byte[] serializedAnyMetadata) {
         callback.onOptimizationGuideDecision(
-                optimizationGuideDecision, (OptimizationMetadata) optimizationMetadata);
+                optimizationGuideDecision, deserializeAnyMetadata(serializedAnyMetadata));
     }
 
-    @CalledByNative
-    private static OptimizationMetadata createOptimizationMetadataWithPerformanceHintsMetadata(
-            byte[] serializedPerformanceHintsMetadata) {
-        OptimizationMetadata optimizationMetadata = new OptimizationMetadata();
+    @Nullable
+    private static Any deserializeAnyMetadata(@Nullable byte[] serializedAnyMetadata) {
+        if (serializedAnyMetadata == null) {
+            return null;
+        }
+
+        Any anyMetadata;
         try {
-            optimizationMetadata.setPerformanceHintsMetadata(
-                    PerformanceHintsMetadata.parseFrom(serializedPerformanceHintsMetadata));
+            anyMetadata = Any.parseFrom(serializedAnyMetadata);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
             return null;
         }
-        return optimizationMetadata;
+        return anyMetadata;
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         long init();
         void destroy(long nativeOptimizationGuideBridge);
         void registerOptimizationTypes(long nativeOptimizationGuideBridge, int[] optimizationTypes);

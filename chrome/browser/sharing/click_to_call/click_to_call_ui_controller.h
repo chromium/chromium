@@ -42,15 +42,16 @@ class ClickToCallUiController
                         SharingClickToCallEntryPoint entry_point);
 
   // Overridden from SharingUiController:
-  base::string16 GetTitle(SharingDialogType dialog_type) override;
+  std::u16string GetTitle(SharingDialogType dialog_type) override;
   PageActionIconType GetIconType() override;
-  sync_pb::SharingSpecificFields::EnabledFeatures GetRequiredFeature() override;
+  sync_pb::SharingSpecificFields::EnabledFeatures GetRequiredFeature()
+      const override;
   void OnDeviceChosen(const syncer::DeviceInfo& device) override;
   void OnAppChosen(const SharingApp& app) override;
   void OnDialogClosed(SharingDialog* dialog) override;
-  base::string16 GetContentType() const override;
+  std::u16string GetContentType() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-  base::string16 GetTextForTooltipAndAccessibleName() const override;
+  std::u16string GetTextForTooltipAndAccessibleName() const override;
   SharingFeatureName GetFeatureMetricsPrefix() const override;
   void OnDialogShown(bool has_devices, bool has_apps) override;
 

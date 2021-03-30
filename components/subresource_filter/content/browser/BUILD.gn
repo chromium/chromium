@@ -52,6 +52,7 @@ static_library("browser") {
   ]
   deps = [
     "//base",
+    "//components/content_settings/browser",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
     "//components/keyed_service/core",
@@ -78,6 +79,8 @@ static_library("browser") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "ad_tagging_browser_test_utils.cc",
+    "ad_tagging_browser_test_utils.h",
     "async_document_subresource_filter_test_utils.cc",
     "async_document_subresource_filter_test_utils.h",
     "fake_safe_browsing_database_manager.cc",
@@ -86,17 +89,32 @@ static_library("test_support") {
     "subframe_navigation_test_utils.h",
     "subresource_filter_observer_test_utils.cc",
     "subresource_filter_observer_test_utils.h",
+    "subresource_filter_test_harness.cc",
+    "subresource_filter_test_harness.h",
     "test_ruleset_publisher.cc",
     "test_ruleset_publisher.h",
+    "test_subresource_filter_client.cc",
+    "test_subresource_filter_client.h",
   ]
   deps = [
     ":browser",
     "//base/test:test_support",
+    "//components/content_settings/browser",
+    "//components/content_settings/browser:test_support",
+    "//components/content_settings/core/browser",
+    "//components/prefs:test_support",
+    "//components/safe_browsing/core/db:database_manager",
+    "//components/subresource_filter/content/common",
+    "//components/subresource_filter/core/browser",
+    "//components/subresource_filter/core/browser:test_support",
     "//components/subresource_filter/core/common",
     "//components/subresource_filter/core/common:test_support",
+    "//components/sync_preferences:test_support",
+    "//components/user_prefs",
     "//content/public/browser",
     "//content/test:test_support",
     "//net",
+    "//services/network/public/mojom",
     "//testing/gtest:gtest",
     "//url",
   ]
@@ -118,8 +136,10 @@ source_set("unit_tests") {
     "ruleset_publisher_impl_unittest.cc",
     "ruleset_service_unittest.cc",
     "subframe_navigation_filtering_throttle_unittest.cc",
+    "subresource_filter_configuration_unittest.cc",
     "subresource_filter_content_settings_manager_unittest.cc",
     "subresource_filter_safe_browsing_activation_throttle_unittest.cc",
+    "subresource_filter_unittest.cc",
     "verified_ruleset_dealer_unittest.cc",
   ]
   deps = [

@@ -110,11 +110,6 @@ InterventionPolicyDatabaseComponentInstallerPolicy::GetInstallerAttributes()
   return update_client::InstallerAttributes();
 }
 
-std::vector<std::string>
-InterventionPolicyDatabaseComponentInstallerPolicy::GetMimeTypes() const {
-  return std::vector<std::string>();
-}
-
 void RegisterInterventionPolicyDatabaseComponent(
     ComponentUpdateService* cus,
     resource_coordinator::InterventionPolicyDatabase* database) {

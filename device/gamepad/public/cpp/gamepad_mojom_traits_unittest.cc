@@ -55,9 +55,9 @@ Gamepad GetWebGamepadInstance(GamepadTestDataType type) {
     wgp.angular_acceleration = wgv;
   }
 
-  constexpr base::char16 kTestIdString[] = {L'M', L'o', L'c', L'k', L'S',
-                                            L't', L'i', L'c', L'k', L' ',
-                                            L'3', L'0', L'0', L'0', L'\0'};
+  constexpr char16_t kTestIdString[] = {L'M', L'o', L'c', L'k', L'S',
+                                        L't', L'i', L'c', L'k', L' ',
+                                        L'3', L'0', L'0', L'0', L'\0'};
   constexpr size_t kTestIdStringLength = base::size(kTestIdString);
 
   Gamepad send;

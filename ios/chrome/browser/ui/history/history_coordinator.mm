@@ -4,11 +4,14 @@
 
 #include "ios/chrome/browser/ui/history/history_coordinator.h"
 
+#import "base/ios/ios_util.h"
 #include "components/history/core/browser/browsing_history_service.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/sync/driver/sync_service.h"
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/sync/profile_sync_service_factory.h"
 #import "ios/chrome/browser/ui/activity_services/activity_params.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
@@ -25,7 +28,6 @@
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/table_view/feature_flags.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
-#import "ios/chrome/browser/ui/util/multi_window_support.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -213,16 +215,19 @@
                                          [weakSelf onOpenedURLInNewTab];
                                        }]];
 
-    [menuElements
-        addObject:
-            [actionFactory
-                actionToOpenInNewIncognitoTabWithURL:item.URL
-                                          completion:^{
-                                            [weakSelf
-                                                onOpenedURLInNewIncognitoTab];
-                                          }]];
+    UIAction* incognitoAction = [actionFactory
+        actionToOpenInNewIncognitoTabWithURL:item.URL
+                                  completion:^{
+                                    [weakSelf onOpenedURLInNewIncognitoTab];
+                                  }];
+    if (IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs())) {
+      // Disable the "Open in Incognito" option if the incognito mode is
+      // disabled.
+      incognitoAction.attributes = UIMenuElementAttributesDisabled;
+    }
+    [menuElements addObject:incognitoAction];
 
-    if (IsMultipleScenesSupported()) {
+    if (base::ios::IsMultipleScenesSupported()) {
       [menuElements
           addObject:
               [actionFactory

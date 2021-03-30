@@ -1,0 +1,16 @@
+# TODO(https://crbug.com/1184127). Investigate and fix failures.
+-GetInstalledVersionLinuxTest.WithVersion
+-MultiProcessLockTest.BasicCreationTest
+-MultiProcessLockTest.LockScope
+-MultiProcessLockTest.RecursiveLock
+-MultiProcessLockTest.SimpleLock
+-NativeDesktopMediaListTest.AddNativeWindow
+-NativeDesktopMediaListTest.MoveWindow
+-NativeDesktopMediaListTest.RemoveAllWindows
+-NativeDesktopMediaListTest.RemoveNativeWindow
+-NativeDesktopMediaListTest.UpdateThumbnail
+-NativeDesktopMediaListTest.UpdateTitle
+-NativeDesktopMediaListTest.WindowFiltering
+-NativeDesktopMediaListTest.Windows
+-RelaunchNotificationControllerPlatformImplTest.SynchronousNotification
+-ServiceProcessStateTest.Singleton

@@ -172,7 +172,7 @@ base::span<const PermissionsUIInfo> GetContentSettingsUIInfo() {
 #endif
     {ContentSettingsType::BLUETOOTH_GUARD, IDS_PAGE_INFO_TYPE_BLUETOOTH},
     {ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
-     IDS_PAGE_INFO_TYPE_NATIVE_FILE_SYSTEM_WRITE},
+     IDS_PAGE_INFO_TYPE_FILE_SYSTEM_ACCESS_WRITE},
     {ContentSettingsType::BLUETOOTH_SCANNING,
      IDS_PAGE_INFO_TYPE_BLUETOOTH_SCANNING},
     {ContentSettingsType::NFC, IDS_PAGE_INFO_TYPE_NFC},
@@ -221,7 +221,7 @@ CreateSecurityDescriptionForSafetyTip(
     security_description->summary = l10n_util::GetStringUTF16(
         IDS_PAGE_INFO_SAFETY_TIP_BAD_REPUTATION_TITLE);
   } else {
-    const base::string16 safe_host =
+    const std::u16string safe_host =
         security_interstitials::common_string_util::GetFormattedHostName(
             safe_url);
     security_description->summary = l10n_util::GetStringFUTF16(
@@ -394,17 +394,17 @@ PageInfoUI::GetSecurityDescription(const IdentityInfo& identity_info) const {
 PageInfoUI::~PageInfoUI() = default;
 
 // static
-base::string16 PageInfoUI::PermissionTypeToUIString(ContentSettingsType type) {
+std::u16string PageInfoUI::PermissionTypeToUIString(ContentSettingsType type) {
   for (const PermissionsUIInfo& info : GetContentSettingsUIInfo()) {
     if (info.type == type)
       return l10n_util::GetStringUTF16(info.string_id);
   }
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 // static
-base::string16 PageInfoUI::PermissionActionToUIString(
+std::u16string PageInfoUI::PermissionActionToUIString(
     PageInfoUiDelegate* delegate,
     ContentSettingsType type,
     ContentSetting setting,
@@ -451,7 +451,7 @@ base::string16 PageInfoUI::PermissionActionToUIString(
     case content_settings::SETTING_SOURCE_NONE:
     default:
       NOTREACHED();
-      return base::string16();
+      return std::u16string();
   }
   int button_text_id = button_text_ids[effective_setting];
 
@@ -466,10 +466,9 @@ base::string16 PageInfoUI::PermissionActionToUIString(
 }
 
 // static
-base::string16 PageInfoUI::PermissionDecisionReasonToUIString(
+std::u16string PageInfoUI::PermissionDecisionReasonToUIString(
     PageInfoUiDelegate* delegate,
-    const PageInfo::PermissionInfo& permission,
-    const GURL& url) {
+    const PageInfo::PermissionInfo& permission) {
   ContentSetting effective_setting = GetEffectiveSetting(
       permission.type, permission.setting, permission.default_setting);
   int message_id = kInvalidResourceID;
@@ -489,7 +488,7 @@ base::string16 PageInfoUI::PermissionDecisionReasonToUIString(
   if (permission.setting == CONTENT_SETTING_BLOCK &&
       permissions::PermissionUtil::IsPermission(permission.type)) {
     permissions::PermissionResult permission_result =
-        delegate->GetPermissionStatus(permission.type, url);
+        delegate->GetPermissionStatus(permission.type);
     switch (permission_result.source) {
       case permissions::PermissionStatusSource::MULTIPLE_DISMISSALS:
         message_id = IDS_PAGE_INFO_PERMISSION_AUTOMATICALLY_BLOCKED;
@@ -506,7 +505,7 @@ base::string16 PageInfoUI::PermissionDecisionReasonToUIString(
     message_id = IDS_PAGE_INFO_PERMISSION_ADS_SUBTITLE;
 
   if (message_id == kInvalidResourceID)
-    return base::string16();
+    return std::u16string();
   return l10n_util::GetStringUTF16(message_id);
 }
 
@@ -723,7 +722,7 @@ const gfx::ImageSkia PageInfoUI::GetPermissionIcon(
       icon = &vector_icons::kVrHeadsetIcon;
       break;
     case ContentSettingsType::WINDOW_PLACEMENT:
-      icon = &vector_icons::kWindowPlacementIcon;
+      icon = &vector_icons::kSelectWindowIcon;
       break;
     case ContentSettingsType::FONT_ACCESS:
       icon = &vector_icons::kFontDownloadIcon;
@@ -732,7 +731,7 @@ const gfx::ImageSkia PageInfoUI::GetPermissionIcon(
       icon = &vector_icons::kVideogameAssetIcon;
       break;
     case ContentSettingsType::IDLE_DETECTION:
-      icon = &vector_icons::kPersonIcon;
+      icon = &vector_icons::kDevicesIcon;
       break;
     default:
       // All other |ContentSettingsType|s do not have icons on desktop or are
@@ -845,6 +844,7 @@ PageInfoUI::CreateSafetyTipSecurityDescription(
       // not visible to the user, so don't affect Page Info.
       break;
 
+    case security_state::SafetyTipStatus::kDigitalAssetLinkMatch:
     case security_state::SafetyTipStatus::kNone:
     case security_state::SafetyTipStatus::kUnknown:
       break;

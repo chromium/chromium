@@ -14,6 +14,7 @@
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/crash_report/crash_loop_detection_util.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
+#include "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/browser/web_state_list/session_metrics.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/web/public/browser_state.h"
@@ -157,7 +158,7 @@ void WebStateListMetricsBrowserAgent::DidFinishNavigation(
 void WebStateListMetricsBrowserAgent::PageLoaded(
     web::WebState* web_state,
     web::PageLoadCompletionStatus load_completion_status) {
-  switch ([[UIApplication sharedApplication] statusBarOrientation]) {
+  switch (GetInterfaceOrientation()) {
     case UIInterfaceOrientationPortrait:
     case UIInterfaceOrientationPortraitUpsideDown:
       UMA_HISTOGRAM_BOOLEAN("Tab.PageLoadInPortrait", YES);

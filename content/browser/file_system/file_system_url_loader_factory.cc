@@ -24,7 +24,6 @@
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/non_network_url_loader_factory_base.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/child_process_host.h"
@@ -40,6 +39,7 @@
 #include "net/base/mime_util.h"
 #include "net/http/http_byte_range.h"
 #include "net/http/http_util.h"
+#include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "storage/browser/file_system/file_stream_reader.h"
@@ -291,7 +291,7 @@ class FileSystemDirectoryURLLoader : public FileSystemEntryURLLoader {
       relative_path =
           base::FilePath(FILE_PATH_LITERAL("/") + relative_path.value());
 #endif
-      const base::string16& title = relative_path.LossyDisplayName();
+      const std::u16string& title = relative_path.LossyDisplayName();
       data_.append(net::GetDirectoryListingHeader(title));
     }
 
@@ -329,7 +329,7 @@ class FileSystemDirectoryURLLoader : public FileSystemEntryURLLoader {
     }
 
     const DirectoryEntry& entry = entries_[index];
-    const base::string16& name = base::FilePath(entry.name).LossyDisplayName();
+    const std::u16string& name = base::FilePath(entry.name).LossyDisplayName();
     data_.append(net::GetDirectoryListingEntry(
         name, std::string(),
         entry.type == filesystem::mojom::FsFileType::DIRECTORY, file_info.size,
@@ -351,7 +351,7 @@ class FileSystemDirectoryURLLoader : public FileSystemEntryURLLoader {
     mojo::ScopedDataPipeProducerHandle producer_handle;
     mojo::ScopedDataPipeConsumerHandle consumer_handle;
     MojoResult rv =
-        mojo::CreateDataPipe(&options, &producer_handle, &consumer_handle);
+        mojo::CreateDataPipe(&options, producer_handle, consumer_handle);
     if (rv != MOJO_RESULT_OK) {
       OnClientComplete(net::ERR_FAILED);
       return;
@@ -488,7 +488,7 @@ class FileSystemFileURLLoader : public FileSystemEntryURLLoader {
 
     mojo::ScopedDataPipeProducerHandle producer_handle;
     MojoResult rv =
-        mojo::CreateDataPipe(&options, &producer_handle, &consumer_handle_);
+        mojo::CreateDataPipe(&options, producer_handle, consumer_handle_);
     if (rv != MOJO_RESULT_OK) {
       OnClientComplete(net::ERR_FAILED);
       return;
@@ -600,13 +600,14 @@ class FileSystemFileURLLoader : public FileSystemEntryURLLoader {
 
 // A URLLoaderFactory used for the filesystem:// scheme used when the Network
 // Service is enabled.
-class FileSystemURLLoaderFactory : public NonNetworkURLLoaderFactoryBase {
+class FileSystemURLLoaderFactory
+    : public network::SelfDeletingURLLoaderFactory {
  public:
   FileSystemURLLoaderFactory(
       FactoryParams params,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver)
-      : NonNetworkURLLoaderFactoryBase(std::move(factory_receiver)),
+      : network::SelfDeletingURLLoaderFactory(std::move(factory_receiver)),
         params_(std::move(params)),
         io_task_runner_(io_task_runner) {}
 
@@ -615,7 +616,6 @@ class FileSystemURLLoaderFactory : public NonNetworkURLLoaderFactoryBase {
  private:
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& request,
@@ -660,7 +660,8 @@ CreateFileSystemURLLoaderFactory(
                           file_system_context, storage_domain};
 
   // The FileSystemURLLoaderFactory will delete itself when there are no more
-  // receivers - see the NonNetworkURLLoaderFactoryBase::OnDisconnect method.
+  // receivers - see the network::SelfDeletingURLLoaderFactory::OnDisconnect
+  // method.
   new FileSystemURLLoaderFactory(
       std::move(params), GetIOThreadTaskRunner({}),
       pending_remote.InitWithNewPipeAndPassReceiver());

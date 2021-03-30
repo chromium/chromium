@@ -42,8 +42,8 @@ class ExtensionHostDelegate {
   // implementation may wish to add preference observers to |web_contents|.
   virtual void OnExtensionHostCreated(content::WebContents* web_contents) = 0;
 
-  // Called after |host| creates a RenderView for an extension.
-  virtual void OnRenderViewCreatedForBackgroundPage(ExtensionHost* host) = 0;
+  // Called after |host| creates the renderer main frame for an extension.
+  virtual void OnMainFrameCreatedForBackgroundPage(ExtensionHost* host) = 0;
 
   // Returns the embedder's JavaScriptDialogManager or NULL if the embedder
   // does not support JavaScript dialogs.

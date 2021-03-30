@@ -96,8 +96,8 @@ v8::Local<v8::Object> AsV8Object(v8::Isolate* isolate) {
     for (const auto& method : methods) {
       v8::Local<v8::FunctionTemplate> function = v8::FunctionTemplate::New(
           isolate, BoundLogMethodCallback,
-          v8::Integer::New(isolate, static_cast<int>(method.level)));
-      function->RemovePrototype();
+          v8::Integer::New(isolate, static_cast<int>(method.level)),
+          v8::Local<v8::Signature>(), 0, v8::ConstructorBehavior::kThrow);
       templ->Set(gin::StringToSymbol(isolate, method.name), function);
     }
     data->SetObjectTemplate(&kWrapperInfo, templ);

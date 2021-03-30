@@ -9,12 +9,9 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
-#include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/task/cancelable_task_tracker.h"
-#include "base/token.h"
 #include "components/sessions/core/command_storage_manager.h"
+#include "components/sessions/core/session_command.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/sessions_export.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -91,6 +88,10 @@ SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateLastActiveTimeCommand(
 SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateSetWindowWorkspaceCommand(
     const SessionID& window_id,
     const std::string& workspace);
+
+SESSIONS_EXPORT std::unique_ptr<SessionCommand>
+CreateSetWindowVisibleOnAllWorkspacesCommand(const SessionID& window_id,
+                                             bool visible_on_all_workspaces);
 
 SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateSetTabGuidCommand(
     const SessionID& tab_id,

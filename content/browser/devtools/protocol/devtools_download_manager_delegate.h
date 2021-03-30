@@ -68,6 +68,7 @@ class CONTENT_EXPORT DevToolsDownloadManagerDelegate
       download::DownloadItem* item,
       content::DownloadOpenDelayedCallback callback) override;
   void GetNextId(content::DownloadIdCallback callback) override;
+  download::DownloadItem* GetDownloadByGuid(const std::string& guid) override;
 
  private:
   friend class base::RefCounted<DevToolsDownloadManagerDelegate>;

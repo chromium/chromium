@@ -1,0 +1,4 @@
+include_rules = [
+  "+extensions/components/native_app_window",
+  "+third_party/securemessage",
+]

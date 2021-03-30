@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_CHROMEOS_CHILD_ACCOUNTS_TIME_LIMITS_WEB_TIME_NAVIGATION_OBSERVER_H_
 #define CHROME_BROWSER_CHROMEOS_CHILD_ACCOUNTS_TIME_LIMITS_WEB_TIME_NAVIGATION_OBSERVER_H_
 
+#include <string>
+
 #include "base/observer_list_types.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/child_accounts/time_limits/app_types.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -71,7 +72,7 @@ class WebTimeNavigationObserver
     return last_navigation_info_;
   }
 
-  const base::Optional<base::string16>& previous_title() const {
+  const base::Optional<std::u16string>& previous_title() const {
     return previous_title_;
   }
 
@@ -87,7 +88,7 @@ class WebTimeNavigationObserver
 
   base::Optional<NavigationInfo> last_navigation_info_ = base::nullopt;
 
-  base::Optional<base::string16> previous_title_;
+  base::Optional<std::u16string> previous_title_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

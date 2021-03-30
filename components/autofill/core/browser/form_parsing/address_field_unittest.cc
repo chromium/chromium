@@ -9,103 +9,33 @@
 
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/string16.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
+#include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "testing/gtest/include/gtest/gtest.h"
-
-using base::ASCIIToUTF16;
 
 namespace autofill {
 
-class AddressFieldTest : public testing::Test {
+class AddressFieldTest : public FormFieldTest {
  public:
   AddressFieldTest() = default;
   AddressFieldTest(const AddressFieldTest&) = delete;
   AddressFieldTest& operator=(const AddressFieldTest&) = delete;
 
-  // Add a field with |control_type|, the |name|, the |label| the expected
-  // parsed type |expected_type|.
-  void AddFormFieldData(std::string control_type,
-                        std::string name,
-                        std::string label,
-                        ServerFieldType expected_type) {
-    FormFieldData field_data;
-    field_data.form_control_type = control_type;
-    field_data.name = base::UTF8ToUTF16(name);
-    field_data.label = base::UTF8ToUTF16(label);
-    field_data.unique_renderer_id = MakeFieldRendererId();
-    list_.push_back(std::make_unique<AutofillField>(field_data));
-    expected_classifications_.insert(
-        std::make_pair(field_data.unique_renderer_id, expected_type));
-  }
-
-  // Convenience wrapper for text control elements.
-  void AddTextFormFieldData(std::string name,
-                            std::string label,
-                            ServerFieldType expected_classification) {
-    AddFormFieldData("text", name, label, expected_classification);
-  }
-
-  // Apply parsing and verify the expected types.
-  // |parsed| indicates if at least one field could be parsed successfully.
-  // |page_language| the language to be used for parsing, default empty value
-  // means the language is unknown and patterns of all languages are used.
-  void ClassifyAndVerify(bool parsed = true,
-                         const LanguageCode& page_language = LanguageCode("")) {
-    AutofillScanner scanner(list_);
-    field_ = Parse(&scanner, page_language);
-
-    if (!parsed) {
-      ASSERT_EQ(nullptr, field_.get());
-      return;
-    }
-    ASSERT_NE(nullptr, field_.get());
-    field_->AddClassificationsForTesting(&field_candidates_map_);
-
-    for (const std::pair<FieldRendererId, ServerFieldType> it :
-         expected_classifications_) {
-      ASSERT_TRUE(field_candidates_map_.find(it.first) !=
-                  field_candidates_map_.end());
-      EXPECT_EQ(it.second, field_candidates_map_[it.first].BestHeuristicType());
-    }
-  }
-
  protected:
-  // Downcast for tests.
-  static std::unique_ptr<AddressField> Parse(
-      AutofillScanner* scanner,
-      const LanguageCode& page_language) {
-    std::unique_ptr<FormField> field =
-        AddressField::Parse(scanner, page_language, nullptr);
-    return std::unique_ptr<AddressField>(
-        static_cast<AddressField*>(field.release()));
+  std::unique_ptr<FormField> Parse(AutofillScanner* scanner,
+                                   const LanguageCode& page_language) override {
+    return AddressField::Parse(scanner, page_language, nullptr);
   }
-
-  FieldRendererId MakeFieldRendererId() {
-    return FieldRendererId(++id_counter_);
-  }
-
-  std::vector<std::unique_ptr<AutofillField>> list_;
-  std::unique_ptr<AddressField> field_;
-  FieldCandidatesMap field_candidates_map_;
-  std::map<FieldRendererId, ServerFieldType> expected_classifications_;
-
- private:
-  uint64_t id_counter_ = 0;
 };
 
 TEST_F(AddressFieldTest, Empty) {
-  ClassifyAndVerify(/*parsed=*/false);
+  ClassifyAndVerify(ParseResult::NOT_PARSED);
 }
 
 TEST_F(AddressFieldTest, NonParse) {
   AddTextFormFieldData("", "", UNKNOWN_TYPE);
-  ClassifyAndVerify(/*parsed=*/false);
+  ClassifyAndVerify(ParseResult::NOT_PARSED);
 }
 
 TEST_F(AddressFieldTest, ParseOneLineAddress) {
@@ -187,7 +117,7 @@ TEST_F(AddressFieldTest, NotParseHouseNumberWithoutStreetName) {
       features::kAutofillEnableSupportForMoreStructureInAddresses);
 
   AddTextFormFieldData("house-number", "House number", UNKNOWN_TYPE);
-  ClassifyAndVerify(/*parsed=*/false);
+  ClassifyAndVerify(ParseResult::NOT_PARSED);
 }
 
 // Tests that the dependent locality is correctly classified with
@@ -279,13 +209,29 @@ TEST_F(AddressFieldTest, ParseTurkishCityStateWithLabelPrecedence) {
 
   AddTextFormFieldData("city", "Il", ADDRESS_HOME_STATE);
   AddTextFormFieldData("county", "Ilce", ADDRESS_HOME_CITY);
-  ClassifyAndVerify(/*parsed=*/true, LanguageCode("tr"));
+  ClassifyAndVerify(ParseResult::PARSED, LanguageCode("tr"));
 }
 
 // Tests that address name is not misclassified as address.
 TEST_F(AddressFieldTest, NotParseAddressName) {
   AddTextFormFieldData("address", "Adres Başlığı", UNKNOWN_TYPE);
-  ClassifyAndVerify(/*parsed=*/false, LanguageCode("tr"));
+  ClassifyAndVerify(ParseResult::NOT_PARSED, LanguageCode("tr"));
+}
+
+// Tests that the address components sequence in a label is classified
+// as |ADDRESS_HOME_LINE1|.
+TEST_F(AddressFieldTest, ParseAddressComponentsSequenceAsAddressLine1) {
+  AddTextFormFieldData("detail", "Улица, дом, квартира", ADDRESS_HOME_LINE1);
+  ClassifyAndVerify(ParseResult::PARSED, LanguageCode("ru"));
+}
+
+// Tests that the address components sequence in a label is classified
+// as |ADDRESS_HOME_STREET_ADDRESS|.
+TEST_F(AddressFieldTest, ParseAddressComponentsSequenceAsStreetAddress) {
+  AddFormFieldData("textarea", "detail",
+                   "Mahalle, sokak, cadde ve diğer bilgilerinizi girin",
+                   ADDRESS_HOME_STREET_ADDRESS);
+  ClassifyAndVerify(ParseResult::PARSED, LanguageCode("tr"));
 }
 
 }  // namespace autofill

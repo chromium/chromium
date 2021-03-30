@@ -15,6 +15,7 @@
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -138,6 +139,8 @@ void TtsControllerImpl::SpeakOrEnqueue(
   if (TtsPlatformLoading() ||
       (engine_delegate_ && !engine_delegate_->IsBuiltInTtsEngineInitialized(
                                utterance->GetBrowserContext()))) {
+    GetTtsPlatform()->LoadBuiltInTtsEngine(utterance->GetBrowserContext());
+
     if (utterance->GetShouldClearQueue())
       ClearUtteranceQueue(true);
 
@@ -294,6 +297,11 @@ void TtsControllerImpl::OnTtsEvent(int utterance_id,
 
 void TtsControllerImpl::GetVoices(BrowserContext* browser_context,
                                   std::vector<VoiceData>* out_voices) {
+  if (browser_context && engine_delegate_ &&
+      engine_delegate_->IsBuiltInTtsEngineInitialized(browser_context)) {
+    engine_delegate_->GetVoices(browser_context, out_voices);
+  }
+
   TtsPlatform* tts_platform = GetTtsPlatform();
   DCHECK(tts_platform);
   // Ensure we have all built-in voices loaded. This is a no-op if already
@@ -301,9 +309,6 @@ void TtsControllerImpl::GetVoices(BrowserContext* browser_context,
   tts_platform->LoadBuiltInTtsEngine(browser_context);
   if (TtsPlatformReady())
     tts_platform->GetVoices(out_voices);
-
-  if (browser_context && engine_delegate_)
-    engine_delegate_->GetVoices(browser_context, out_voices);
 }
 
 bool TtsControllerImpl::IsSpeaking() {
@@ -312,7 +317,7 @@ bool TtsControllerImpl::IsSpeaking() {
 }
 
 void TtsControllerImpl::VoicesChanged() {
-  if (!voices_changed_delegates_.might_have_observers() || TtsPlatformLoading())
+  if (voices_changed_delegates_.empty() || TtsPlatformLoading())
     return;
 
   // Existence of platform tts indicates explicit requests to tts. Since
@@ -516,13 +521,14 @@ void TtsControllerImpl::OnSpeakFinished(int utterance_id, bool success) {
   if (!current_utterance_ || current_utterance_->GetId() != utterance_id)
     return;
 
-  // If the native voice wasn't able to process this speech, see if
-  // the browser has built-in TTS that isn't loaded yet.
-  if (GetTtsPlatform()->LoadBuiltInTtsEngine(
-          current_utterance_->GetBrowserContext())) {
-    utterance_list_.emplace_back(std::move(current_utterance_));
-    return;
-  }
+  // If the native voice wasn't able to process this speech, see if the browser
+  // has built-in TTS that crashed and needs re-loading or the utterance came
+  // from a profile that no longer exists e.g. login.
+  // The controller only ends up here if we had at some point completely
+  // initialized native tts and tts engine delegate (see SpeakOrEnqueue), so
+  // drop the utterance from re-processing.
+  GetTtsPlatform()->LoadBuiltInTtsEngine(
+      current_utterance_->GetBrowserContext());
 
   current_utterance_->OnTtsEvent(TTS_EVENT_ERROR, kInvalidCharIndex,
                                  kInvalidLength, GetTtsPlatform()->GetError());
@@ -561,14 +567,19 @@ void TtsControllerImpl::SpeakNextUtterance() {
 
   // Start speaking the next utterance in the queue.  Keep trying in case
   // one fails but there are still more in the queue to try.
+  TtsUtterance* previous_utterance = nullptr;
   while (!utterance_list_.empty() && !current_utterance_) {
     std::unique_ptr<TtsUtterance> utterance =
         std::move(utterance_list_.front());
     utterance_list_.pop_front();
+    DCHECK(previous_utterance != utterance.get());
+
     if (ShouldSpeakUtterance(utterance.get()))
       SpeakNow(std::move(utterance));
     else
       utterance->Finish();
+
+    previous_utterance = utterance.get();
   }
 }
 
@@ -691,11 +702,13 @@ int TtsControllerImpl::GetMatchingVoice(TtsUtterance* utterance,
 
     // Prefer the utterance language.
     if (!voice.lang.empty() && !utterance->GetLang().empty()) {
-      // An exact language match is worth more than a partial match.
-      if (voice.lang == utterance->GetLang()) {
+      // An exact locale match is worth more than a partial match.
+      // Convert locales to lowercase to handle cases like "en-us" vs. "en-US".
+      if (base::EqualsCaseInsensitiveASCII(voice.lang, utterance->GetLang())) {
         score += 128;
-      } else if (l10n_util::GetLanguage(voice.lang) ==
-                 l10n_util::GetLanguage(utterance->GetLang())) {
+      } else if (base::EqualsCaseInsensitiveASCII(
+                     l10n_util::GetLanguage(voice.lang),
+                     l10n_util::GetLanguage(utterance->GetLang()))) {
         score += 64;
       }
     }
@@ -739,8 +752,9 @@ int TtsControllerImpl::GetMatchingVoice(TtsUtterance* utterance,
     if (!voice.lang.empty()) {
       if (voice.lang == app_lang) {
         score += 2;
-      } else if (l10n_util::GetLanguage(voice.lang) ==
-                 l10n_util::GetLanguage(app_lang)) {
+      } else if (base::EqualsCaseInsensitiveASCII(
+                     l10n_util::GetLanguage(voice.lang),
+                     l10n_util::GetLanguage(app_lang))) {
         score += 1;
       }
     }

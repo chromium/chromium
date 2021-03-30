@@ -9,12 +9,12 @@
 
 #include "base/process/kill.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
+#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/prefetch/no_state_prefetch/prerender_test_utils.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/no_state_prefetch/browser/prerender_handle.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
@@ -342,17 +342,17 @@ TEST_F(TabLoadTrackerTest, PrerenderContentsDoesNotChangeUiTabCounts) {
   TestWebContentsObserver observer2(contents2(), &tracker());
 
   // Prerender some contents.
-  prerender::PrerenderManager* prerender_manager =
-      prerender::PrerenderManagerFactory::GetForBrowserContext(profile());
+  prerender::NoStatePrefetchManager* no_state_prefetch_manager =
+      prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(profile());
   GURL url("http://www.example.com");
   const gfx::Size kSize(640, 480);
-  std::unique_ptr<prerender::PrerenderHandle> prerender_handle(
-      prerender_manager->AddPrerenderFromOmnibox(
+  std::unique_ptr<prerender::NoStatePrefetchHandle> no_state_prefetch_handle(
+      no_state_prefetch_manager->AddPrerenderFromOmnibox(
           url, contents1()->GetController().GetDefaultSessionStorageNamespace(),
           kSize));
-  EXPECT_NE(nullptr, prerender_handle);
+  EXPECT_NE(nullptr, no_state_prefetch_handle);
   const std::vector<content::WebContents*> contentses =
-      prerender_manager->GetAllNoStatePrefetchingContentsForTesting();
+      no_state_prefetch_manager->GetAllNoStatePrefetchingContentsForTesting();
   ASSERT_EQ(1U, contentses.size());
 
   // Prerendering should not change the UI tab counts, but should increase
@@ -366,7 +366,7 @@ TEST_F(TabLoadTrackerTest, PrerenderContentsDoesNotChangeUiTabCounts) {
   EXPECT_UI_TAB_COUNTS(2, 1, 1, 0);
   testing::Mock::VerifyAndClearExpectations(&observer());
 
-  prerender_manager->CancelAllPrerenders();
+  no_state_prefetch_manager->CancelAllPrerenders();
 }
 
 TEST_F(TabLoadTrackerTest, SwapInUiTabContents) {

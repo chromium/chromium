@@ -5,8 +5,8 @@
 #include "chrome/services/machine_learning/in_process_tflite_predictor.h"
 
 #include "base/check.h"
+#include "components/optimization_guide/core/tflite_op_resolver.h"
 #include "third_party/tflite/src/tensorflow/lite/interpreter.h"
-#include "third_party/tflite/src/tensorflow/lite/kernels/register.h"
 #include "third_party/tflite/src/tensorflow/lite/model.h"
 
 namespace machine_learning {
@@ -46,7 +46,7 @@ bool InProcessTFLitePredictor::LoadModel() {
 }
 
 bool InProcessTFLitePredictor::BuildInterpreter() {
-  tflite::ops::builtin::BuiltinOpResolver resolver;
+  optimization_guide::TFLiteOpResolver resolver;
   tflite::InterpreterBuilder builder(*model_, resolver);
 
   if (builder(&interpreter_, num_threads_) != kTfLiteOk || !interpreter_)

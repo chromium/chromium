@@ -34,9 +34,9 @@ using chrome::mojom::AvailableContentType;
 // characters. Additionally, javascript needs UTF16 strings. So we instead
 // encode to UTF16, and then store that data as base64.
 std::string ConvertToUTF16Base64(const std::string& text) {
-  base::string16 text_utf16 = base::UTF8ToUTF16(text);
+  std::u16string text_utf16 = base::UTF8ToUTF16(text);
   std::string utf16_bytes;
-  for (base::char16 c : text_utf16) {
+  for (char16_t c : text_utf16) {
     utf16_bytes.push_back(static_cast<char>(c >> 8));
     utf16_bytes.push_back(static_cast<char>(c & 0xff));
   }

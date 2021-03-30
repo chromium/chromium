@@ -11,6 +11,7 @@
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
+#include "ui/gfx/animation/keyframe/animation_curve.h"
 
 namespace gfx {
 struct PresentationFeedback;
@@ -131,11 +132,11 @@ class TestHooks : public AnimationDelegate {
   void NotifyAnimationAborted(base::TimeTicks monotonic_time,
                               int target_property,
                               int group) override {}
-  void NotifyAnimationTakeover(base::TimeTicks monotonic_time,
-                               int target_property,
-                               base::TimeTicks animation_start_time,
-                               std::unique_ptr<AnimationCurve> curve) override {
-  }
+  void NotifyAnimationTakeover(
+      base::TimeTicks monotonic_time,
+      int target_property,
+      base::TimeTicks animation_start_time,
+      std::unique_ptr<gfx::AnimationCurve> curve) override {}
   void NotifyLocalTimeUpdated(
       base::Optional<base::TimeDelta> local_time) override {}
 

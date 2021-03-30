@@ -47,17 +47,17 @@ class TestOmniboxEditModel : public OmniboxEditModel {
       : OmniboxEditModel(view, controller, std::move(client)) {}
   bool PopupIsOpen() const override { return true; }
 
-  const base::string16& text() const { return text_; }
+  const std::u16string& text() const { return text_; }
   bool is_temporary_text() const { return is_temporary_text_; }
 
-  void OnPopupDataChanged(const base::string16& temporary_text,
+  void OnPopupDataChanged(const std::u16string& temporary_text,
                           bool is_temporary_text,
-                          const base::string16& inline_autocompletion,
-                          const base::string16& prefix_autocompletion,
+                          const std::u16string& inline_autocompletion,
+                          const std::u16string& prefix_autocompletion,
                           const SplitAutocompletion& split_autocompletion,
-                          const base::string16& keyword,
+                          const std::u16string& keyword,
                           bool is_keyword_hint,
-                          const base::string16& additional_text) override {
+                          const std::u16string& additional_text) override {
     OmniboxEditModel::OnPopupDataChanged(
         temporary_text, is_temporary_text, inline_autocompletion,
         prefix_autocompletion, split_autocompletion, keyword, is_keyword_hint,
@@ -68,7 +68,7 @@ class TestOmniboxEditModel : public OmniboxEditModel {
 
  private:
   // Contains the most recent text passed by the popup model to the edit model.
-  base::string16 text_;
+  std::u16string text_;
   bool is_temporary_text_ = false;
 };
 
@@ -142,13 +142,12 @@ TEST_F(OmniboxPopupModelTest, SetSelectedLine) {
   for (size_t i = 0; i < 2; ++i) {
     AutocompleteMatch match(nullptr, 1000, false,
                             AutocompleteMatchType::URL_WHAT_YOU_TYPED);
-    match.keyword = base::ASCIIToUTF16("match");
+    match.keyword = u"match";
     match.allowed_to_be_default_match = true;
     matches.push_back(match);
   }
   auto* result = &model()->autocomplete_controller()->result_;
-  AutocompleteInput input(base::UTF8ToUTF16("match"),
-                          metrics::OmniboxEventProto::NTP,
+  AutocompleteInput input(u"match", metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
   result->AppendMatches(input, matches);
   result->SortAndCull(input, nullptr);
@@ -166,12 +165,11 @@ TEST_F(OmniboxPopupModelTest, SetSelectedLineWithNoDefaultMatches) {
   for (size_t i = 0; i < 2; ++i) {
     AutocompleteMatch match(nullptr, 1000, false,
                             AutocompleteMatchType::URL_WHAT_YOU_TYPED);
-    match.keyword = base::ASCIIToUTF16("match");
+    match.keyword = u"match";
     matches.push_back(match);
   }
   auto* result = &model()->autocomplete_controller()->result_;
-  AutocompleteInput input(base::UTF8ToUTF16("match"),
-                          metrics::OmniboxEventProto::NTP,
+  AutocompleteInput input(u"match", metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
   result->AppendMatches(input, matches);
   result->SortAndCull(input, nullptr);
@@ -198,13 +196,12 @@ TEST_F(OmniboxPopupModelTest, PopupPositionChanging) {
   for (size_t i = 0; i < 3; ++i) {
     AutocompleteMatch match(nullptr, 1000, false,
                             AutocompleteMatchType::URL_WHAT_YOU_TYPED);
-    match.keyword = base::ASCIIToUTF16("match");
+    match.keyword = u"match";
     match.allowed_to_be_default_match = true;
     matches.push_back(match);
   }
   auto* result = &model()->autocomplete_controller()->result_;
-  AutocompleteInput input(base::UTF8ToUTF16("match"),
-                          metrics::OmniboxEventProto::NTP,
+  AutocompleteInput input(u"match", metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
   result->AppendMatches(input, matches);
   result->SortAndCull(input, nullptr);
@@ -227,7 +224,7 @@ TEST_F(OmniboxPopupModelTest, PopupStepSelection) {
   for (size_t i = 0; i < 4; ++i) {
     AutocompleteMatch match(nullptr, 1000, false,
                             AutocompleteMatchType::URL_WHAT_YOU_TYPED);
-    match.keyword = base::ASCIIToUTF16("match");
+    match.keyword = u"match";
     match.allowed_to_be_default_match = true;
     matches.push_back(match);
   }
@@ -243,11 +240,10 @@ TEST_F(OmniboxPopupModelTest, PopupStepSelection) {
   matches[3].suggestion_group_id = 7;
 
   auto* result = &model()->autocomplete_controller()->result_;
-  AutocompleteInput input(base::UTF8ToUTF16("match"),
-                          metrics::OmniboxEventProto::NTP,
+  AutocompleteInput input(u"match", metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
   result->AppendMatches(input, matches);
-  result->MergeHeadersMap({{7, base::UTF8ToUTF16("header")}});
+  result->MergeHeadersMap({{7, u"header"}});
   result->SortAndCull(input, nullptr);
   popup_model()->OnResultChanged();
   EXPECT_EQ(0u, model()->popup_model()->selected_line());
@@ -313,7 +309,7 @@ TEST_F(OmniboxPopupModelTest, PopupStepSelectionWithHiddenGroupIds) {
   for (size_t i = 0; i < 4; ++i) {
     AutocompleteMatch match(nullptr, 1000, false,
                             AutocompleteMatchType::URL_WHAT_YOU_TYPED);
-    match.keyword = base::ASCIIToUTF16("match");
+    match.keyword = u"match";
     match.allowed_to_be_default_match = true;
     matches.push_back(match);
   }
@@ -325,11 +321,10 @@ TEST_F(OmniboxPopupModelTest, PopupStepSelectionWithHiddenGroupIds) {
       pref_service(), 7, omnibox::SuggestionGroupVisibility::HIDDEN);
 
   auto* result = &model()->autocomplete_controller()->result_;
-  AutocompleteInput input(base::UTF8ToUTF16("match"),
-                          metrics::OmniboxEventProto::NTP,
+  AutocompleteInput input(u"match", metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
   result->AppendMatches(input, matches);
-  result->MergeHeadersMap({{7, base::UTF8ToUTF16("header")}});
+  result->MergeHeadersMap({{7, u"header"}});
   result->SortAndCull(input, nullptr);
   popup_model()->OnResultChanged();
   EXPECT_EQ(0u, model()->popup_model()->selected_line());
@@ -386,7 +381,7 @@ TEST_F(OmniboxPopupModelSuggestionButtonRowTest,
   for (size_t i = 0; i < 4; ++i) {
     AutocompleteMatch match(nullptr, 1000, false,
                             AutocompleteMatchType::URL_WHAT_YOU_TYPED);
-    match.keyword = base::ASCIIToUTF16("match");
+    match.keyword = u"match";
     match.allowed_to_be_default_match = true;
     matches.push_back(match);
   }
@@ -405,11 +400,10 @@ TEST_F(OmniboxPopupModelSuggestionButtonRowTest,
   matches[3].suggestion_group_id = 7;
 
   auto* result = &model()->autocomplete_controller()->result_;
-  AutocompleteInput input(base::UTF8ToUTF16("match"),
-                          metrics::OmniboxEventProto::NTP,
+  AutocompleteInput input(u"match", metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
   result->AppendMatches(input, matches);
-  result->MergeHeadersMap({{7, base::UTF8ToUTF16("header")}});
+  result->MergeHeadersMap({{7, u"header"}});
   result->SortAndCull(input, nullptr);
   popup_model()->OnResultChanged();
   EXPECT_EQ(0u, model()->popup_model()->selected_line());
@@ -480,7 +474,7 @@ TEST_F(OmniboxPopupModelSuggestionButtonRowTest,
   for (size_t i = 0; i < 5; ++i) {
     AutocompleteMatch match(nullptr, 1000, false,
                             AutocompleteMatchType::URL_WHAT_YOU_TYPED);
-    match.keyword = base::ASCIIToUTF16("match");
+    match.keyword = u"match";
     match.allowed_to_be_default_match = true;
     matches.push_back(match);
   }
@@ -501,11 +495,10 @@ TEST_F(OmniboxPopupModelSuggestionButtonRowTest,
   matches[4].suggestion_group_id = 7;
 
   auto* result = &model()->autocomplete_controller()->result_;
-  AutocompleteInput input(base::UTF8ToUTF16("match"),
-                          metrics::OmniboxEventProto::NTP,
+  AutocompleteInput input(u"match", metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
   result->AppendMatches(input, matches);
-  result->MergeHeadersMap({{7, base::UTF8ToUTF16("header")}});
+  result->MergeHeadersMap({{7, u"header"}});
   result->SortAndCull(input, nullptr);
   popup_model()->OnResultChanged();
   EXPECT_EQ(0u, model()->popup_model()->selected_line());
@@ -586,29 +579,28 @@ TEST_F(OmniboxPopupModelTest, PopupInlineAutocompleteAndTemporaryText) {
     matches.push_back(match);
   }
 
-  matches[0].fill_into_edit = base::UTF8ToUTF16("a1");
-  matches[0].inline_autocompletion = base::UTF8ToUTF16("1");
-  matches[1].fill_into_edit = base::UTF8ToUTF16("a2");
-  matches[2].fill_into_edit = base::UTF8ToUTF16("a3");
+  matches[0].fill_into_edit = u"a1";
+  matches[0].inline_autocompletion = u"1";
+  matches[1].fill_into_edit = u"a2";
+  matches[2].fill_into_edit = u"a3";
   matches[2].suggestion_group_id = 7;
 
   auto* result = &model()->autocomplete_controller()->result_;
-  AutocompleteInput input(base::UTF8ToUTF16("a"),
-                          metrics::OmniboxEventProto::NTP,
+  AutocompleteInput input(u"a", metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
   result->AppendMatches(input, matches);
-  result->MergeHeadersMap({{7, base::UTF8ToUTF16("header")}});
+  result->MergeHeadersMap({{7, u"header"}});
   result->SortAndCull(input, nullptr);
   popup_model()->OnResultChanged();
 
   // Simulate OmniboxController updating the popup, then check initial state.
-  model()->OnPopupDataChanged(base::string16(),
-                              /*is_temporary_text=*/false,
-                              base::UTF8ToUTF16("1"), base::string16(), {},
-                              base::string16(), false, base::string16());
+  model()->OnPopupDataChanged(std::u16string(),
+                              /*is_temporary_text=*/false, u"1",
+                              std::u16string(), {}, std::u16string(), false,
+                              std::u16string());
   EXPECT_EQ(Selection(0, OmniboxPopupModel::NORMAL),
             model()->popup_model()->selection());
-  EXPECT_EQ(base::UTF8ToUTF16("1"), model()->text());
+  EXPECT_EQ(u"1", model()->text());
   EXPECT_FALSE(model()->is_temporary_text());
 
   // Tab down to second match.
@@ -616,7 +608,7 @@ TEST_F(OmniboxPopupModelTest, PopupInlineAutocompleteAndTemporaryText) {
                                OmniboxPopupModel::kStateOrLine);
   EXPECT_EQ(Selection(1, OmniboxPopupModel::NORMAL),
             model()->popup_model()->selection());
-  EXPECT_EQ(base::UTF8ToUTF16("a2"), model()->text());
+  EXPECT_EQ(u"a2", model()->text());
   EXPECT_TRUE(model()->is_temporary_text());
 
   // Tab down to header above the third match, expect that we have an empty
@@ -625,7 +617,7 @@ TEST_F(OmniboxPopupModelTest, PopupInlineAutocompleteAndTemporaryText) {
                                OmniboxPopupModel::kStateOrLine);
   EXPECT_EQ(Selection(2, OmniboxPopupModel::FOCUSED_BUTTON_HEADER),
             model()->popup_model()->selection());
-  EXPECT_EQ(base::string16(), model()->text());
+  EXPECT_EQ(std::u16string(), model()->text());
   EXPECT_TRUE(model()->is_temporary_text());
 
   // Now tab down to the third match, and expect that we update the temporary
@@ -634,7 +626,7 @@ TEST_F(OmniboxPopupModelTest, PopupInlineAutocompleteAndTemporaryText) {
                                OmniboxPopupModel::kStateOrLine);
   EXPECT_EQ(Selection(2, OmniboxPopupModel::NORMAL),
             model()->popup_model()->selection());
-  EXPECT_EQ(base::UTF8ToUTF16("a3"), model()->text());
+  EXPECT_EQ(u"a3", model()->text());
   EXPECT_TRUE(model()->is_temporary_text());
 
   // Now tab backwards to the header again, expect that we have an empty string
@@ -643,7 +635,7 @@ TEST_F(OmniboxPopupModelTest, PopupInlineAutocompleteAndTemporaryText) {
                                OmniboxPopupModel::kStateOrLine);
   EXPECT_EQ(Selection(2, OmniboxPopupModel::FOCUSED_BUTTON_HEADER),
             model()->popup_model()->selection());
-  EXPECT_EQ(base::string16(), model()->text());
+  EXPECT_EQ(std::u16string(), model()->text());
   EXPECT_TRUE(model()->is_temporary_text());
 
   // Now tab backwards to the second match, expect we update the temporary text
@@ -652,7 +644,7 @@ TEST_F(OmniboxPopupModelTest, PopupInlineAutocompleteAndTemporaryText) {
                                OmniboxPopupModel::kStateOrLine);
   EXPECT_EQ(Selection(1, OmniboxPopupModel::NORMAL),
             model()->popup_model()->selection());
-  EXPECT_EQ(base::UTF8ToUTF16("a2"), model()->text());
+  EXPECT_EQ(u"a2", model()->text());
   EXPECT_TRUE(model()->is_temporary_text());
 }
 
@@ -798,15 +790,14 @@ TEST_F(OmniboxPopupModelTest, TestFocusFixing) {
   ACMatches matches;
   AutocompleteMatch match(nullptr, 1000, false,
                           AutocompleteMatchType::URL_WHAT_YOU_TYPED);
-  match.contents = base::ASCIIToUTF16("match1.com");
+  match.contents = u"match1.com";
   match.destination_url = GURL("http://match1.com");
   match.allowed_to_be_default_match = true;
   match.has_tab_match = true;
   matches.push_back(match);
 
   auto* result = &model()->autocomplete_controller()->result_;
-  AutocompleteInput input(base::UTF8ToUTF16("match"),
-                          metrics::OmniboxEventProto::NTP,
+  AutocompleteInput input(u"match", metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
   result->AppendMatches(input, matches);
   result->SortAndCull(input, nullptr);
@@ -826,7 +817,7 @@ TEST_F(OmniboxPopupModelTest, TestFocusFixing) {
   // shouldn't change focused state.
   matches[0].relevance = 999;
   // Give it a different name so not deduped.
-  matches[0].contents = base::ASCIIToUTF16("match2.com");
+  matches[0].contents = u"match2.com";
   matches[0].destination_url = GURL("http://match2.com");
   result->AppendMatches(input, matches);
   result->SortAndCull(input, nullptr);
@@ -843,7 +834,7 @@ TEST_F(OmniboxPopupModelTest, TestFocusFixing) {
   popup_model()->SetSelectedLineState(
       OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH);
   matches[0].relevance = 999;
-  matches[0].contents = base::ASCIIToUTF16("match3.com");
+  matches[0].contents = u"match3.com";
   matches[0].destination_url = GURL("http://match3.com");
   result->AppendMatches(input, matches);
   result->SortAndCull(input, nullptr);
@@ -856,7 +847,7 @@ TEST_F(OmniboxPopupModelTest, TestFocusFixing) {
   popup_model()->SetSelectedLineState(
       OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH);
   matches[0].relevance = 1100;
-  matches[0].contents = base::ASCIIToUTF16("match4.com");
+  matches[0].contents = u"match4.com";
   matches[0].destination_url = GURL("http://match4.com");
   result->AppendMatches(input, matches);
   result->SortAndCull(input, nullptr);

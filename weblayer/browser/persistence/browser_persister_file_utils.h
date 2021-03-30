@@ -22,10 +22,15 @@ class ProfileImpl;
 base::flat_set<std::string> GetBrowserPersistenceIdsOnBackgroundThread(
     const base::FilePath& path);
 
-// Returns the path to save persistence information. |base_path| is the base
-// path of the profile, and |browser_id| the persistence id.
-base::FilePath BuildPathForBrowserPersister(const base::FilePath& base_path,
-                                            const std::string& browser_id);
+// Returns the base path to save persistence information. `profile_path` is the
+// path of the profile, and `browser_id` the persistence id.
+//
+// WARNING: persistence code writes more than one file. Historically it wrote
+// to the value returned by this. Now it writes to the value returned by this
+// with the suffix"_TIMESTAMP", where TIMESTAMP is the time stamp.
+base::FilePath BuildBasePathForBrowserPersister(
+    const base::FilePath& profile_path,
+    const std::string& browser_id);
 
 // Implementation of RemoveBrowserPersistenceStorage(). Tries to remove all
 // the persistence files for the set of browser persistence ids.

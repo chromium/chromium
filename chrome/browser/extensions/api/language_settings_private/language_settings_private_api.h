@@ -119,6 +119,51 @@ class LanguageSettingsPrivateMoveLanguageFunction : public ExtensionFunction {
   DISALLOW_COPY_AND_ASSIGN(LanguageSettingsPrivateMoveLanguageFunction);
 };
 
+// Implements the languageSettingsPrivate.getAlwaysTranslateLanguages method.
+class LanguageSettingsPrivateGetAlwaysTranslateLanguagesFunction
+    : public ExtensionFunction {
+ public:
+  LanguageSettingsPrivateGetAlwaysTranslateLanguagesFunction();
+  DECLARE_EXTENSION_FUNCTION(
+      "languageSettingsPrivate.getAlwaysTranslateLanguages",
+      LANGUAGESETTINGSPRIVATE_GETALWAYSTRANSLATELANGUAGES)
+
+ protected:
+  ~LanguageSettingsPrivateGetAlwaysTranslateLanguagesFunction() override;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+
+ private:
+  ChromeExtensionFunctionDetails chrome_details_;
+
+  DISALLOW_COPY_AND_ASSIGN(
+      LanguageSettingsPrivateGetAlwaysTranslateLanguagesFunction);
+};
+
+// Implements the languageSettingsPrivate.setLanguageAlwaysTranslateState
+// method.
+class LanguageSettingsPrivateSetLanguageAlwaysTranslateStateFunction
+    : public ExtensionFunction {
+ public:
+  LanguageSettingsPrivateSetLanguageAlwaysTranslateStateFunction();
+  DECLARE_EXTENSION_FUNCTION(
+      "languageSettingsPrivate.setLanguageAlwaysTranslateState",
+      LANGUAGESETTINGSPRIVATE_SETLANGUAGEALWAYSTRANSLATESTATE)
+
+ protected:
+  ~LanguageSettingsPrivateSetLanguageAlwaysTranslateStateFunction() override;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+
+ private:
+  ChromeExtensionFunctionDetails chrome_details_;
+
+  DISALLOW_COPY_AND_ASSIGN(
+      LanguageSettingsPrivateSetLanguageAlwaysTranslateStateFunction);
+};
+
 // Implements the languageSettingsPrivate.getSpellcheckDictionaryStatuses
 // method.
 class LanguageSettingsPrivateGetSpellcheckDictionaryStatusesFunction
@@ -223,6 +268,28 @@ class LanguageSettingsPrivateGetTranslateTargetLanguageFunction
 
   DISALLOW_COPY_AND_ASSIGN(
       LanguageSettingsPrivateGetTranslateTargetLanguageFunction);
+};
+
+// Implements the languageSettingsPrivate.setTranslateTargetLanguage method.
+class LanguageSettingsPrivateSetTranslateTargetLanguageFunction
+    : public ExtensionFunction {
+ public:
+  LanguageSettingsPrivateSetTranslateTargetLanguageFunction();
+  DECLARE_EXTENSION_FUNCTION(
+      "languageSettingsPrivate.setTranslateTargetLanguage",
+      LANGUAGESETTINGSPRIVATE_SETTRANSLATETARGETLANGUAGE)
+
+ protected:
+  ~LanguageSettingsPrivateSetTranslateTargetLanguageFunction() override;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+
+ private:
+  ChromeExtensionFunctionDetails chrome_details_;
+
+  DISALLOW_COPY_AND_ASSIGN(
+      LanguageSettingsPrivateSetTranslateTargetLanguageFunction);
 };
 
 // Implements the languageSettingsPrivate.getInputMethodLists method.

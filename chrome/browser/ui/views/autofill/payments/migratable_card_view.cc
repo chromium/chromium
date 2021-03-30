@@ -24,10 +24,9 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace autofill {
-
-constexpr char MigratableCardView::kViewClassName[] = "MigratableCardView";
 
 MigratableCardView::MigratableCardView(
     const MigratableCreditCard& migratable_credit_card,
@@ -73,7 +72,7 @@ MigratableCardView::MigratableCardView(
 
 MigratableCardView::~MigratableCardView() = default;
 
-bool MigratableCardView::IsSelected() const {
+bool MigratableCardView::GetSelected() const {
   return !checkbox_ || checkbox_->GetChecked();
 }
 
@@ -81,13 +80,9 @@ std::string MigratableCardView::GetGuid() const {
   return migratable_credit_card_.credit_card().guid();
 }
 
-base::string16 MigratableCardView::GetCardIdentifierString() const {
+std::u16string MigratableCardView::GetCardIdentifierString() const {
   return migratable_credit_card_.credit_card()
       .CardIdentifierStringForAutofillDisplay();
-}
-
-const char* MigratableCardView::GetClassName() const {
-  return kViewClassName;
 }
 
 std::unique_ptr<views::View>
@@ -117,7 +112,7 @@ MigratableCardView::GetMigratableCardDescriptionView(
       if (should_show_checkbox) {
         checkbox_ = migratable_card_description_view->AddChildView(
             std::make_unique<views::Checkbox>(
-                base::string16(),
+                std::u16string(),
                 base::BindRepeating(&MigratableCardView::CheckboxPressed,
                                     base::Unretained(this))));
         checkbox_->SetChecked(true);
@@ -218,5 +213,11 @@ void MigratableCardView::CheckboxPressed() {
   InvalidateLayout();
   parent_dialog_->UpdateLayout();
 }
+
+BEGIN_METADATA(MigratableCardView, views::View)
+ADD_READONLY_PROPERTY_METADATA(bool, Selected)
+ADD_READONLY_PROPERTY_METADATA(std::string, Guid)
+ADD_READONLY_PROPERTY_METADATA(std::u16string, CardIdentifierString)
+END_METADATA
 
 }  // namespace autofill

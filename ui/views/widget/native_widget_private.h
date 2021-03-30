@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/native_widget_types.h"
@@ -154,7 +153,7 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
                                   ui::WindowShowState* show_state) const = 0;
 
   // Sets the NativeWindow title. Returns true if the title changed.
-  virtual bool SetWindowTitle(const base::string16& title) = 0;
+  virtual bool SetWindowTitle(const std::u16string& title) = 0;
 
   // Sets the Window icons. |window_icon| is a 16x16 icon suitable for use in
   // a title bar. |app_icon| is a larger size for use in the host environment

@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/strings/string16.h"
 #include "components/offline_pages/core/offline_page_archive_publisher.h"
 #include "components/offline_pages/core/offline_page_item.h"
 #include "components/offline_pages/core/offline_page_types.h"

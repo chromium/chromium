@@ -50,7 +50,9 @@ class OrdinalNumber final {
   static OrdinalNumber FromOneBasedInt(int one_based_int) {
     return OrdinalNumber(one_based_int - 1);
   }
-  OrdinalNumber() : zero_based_value_(0) {}
+
+  // Use First() instead.
+  OrdinalNumber() = delete;
 
   int ZeroBasedInt() const { return zero_based_value_; }
   int OneBasedInt() const { return zero_based_value_ + 1; }
@@ -77,7 +79,10 @@ class TextPosition final {
  public:
   TextPosition(OrdinalNumber line, OrdinalNumber column)
       : line_(line), column_(column) {}
-  TextPosition() = default;
+
+  // Use MinimumPosition() instead.
+  TextPosition() = delete;
+
   bool operator==(const TextPosition& other) const {
     return line_ == other.line_ && column_ == other.column_;
   }

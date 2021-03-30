@@ -36,8 +36,7 @@ class PaymentRequestStateTest : public testing::Test,
                                 public PaymentRequestState::Delegate {
  protected:
   PaymentRequestStateTest()
-      : web_contents_(web_contents_factory_.CreateWebContents(&context_)),
-        num_on_selected_information_changed_called_(0),
+      : num_on_selected_information_changed_called_(0),
         test_payment_request_delegate_(/*task_executor=*/nullptr,
                                        &test_personal_data_manager_),
         journey_logger_(test_payment_request_delegate_.IsOffTheRecord(),
@@ -46,6 +45,10 @@ class PaymentRequestStateTest : public testing::Test,
         credit_card_visa_(autofill::test::GetCreditCard()) {
     scoped_feature_list_.InitAndDisableFeature(
         features::kServiceWorkerPaymentApps);
+
+    // Must be initialized after scoped_feature_list_ (crbug.com/1172599)
+    web_contents_ = web_contents_factory_.CreateWebContents(&context_);
+
     test_personal_data_manager_.SetAutofillCreditCardEnabled(true);
     test_personal_data_manager_.SetAutofillProfileEnabled(true);
     test_personal_data_manager_.SetAutofillWalletImportEnabled(true);

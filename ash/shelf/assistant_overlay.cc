@@ -24,7 +24,6 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
@@ -207,4 +206,10 @@ const char* AssistantOverlay::GetClassName() const {
   return "AssistantOverlay";
 }
 
+void AssistantOverlay::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  circle_layer_delegate_.set_color(
+      AshColorProvider::Get()->GetRippleAttributes().base_color);
+  SchedulePaint();
+}
 }  // namespace ash

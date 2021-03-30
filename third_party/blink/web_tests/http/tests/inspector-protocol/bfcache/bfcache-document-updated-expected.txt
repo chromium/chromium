@@ -1,0 +1,4 @@
+Tests that document is updated after a BFCache navigation
+documentUpdated received after regular navigation
+documentUpdated received after bfcache navigation
+

@@ -30,7 +30,9 @@ constexpr char kVersionPath[] = "version";
 
 }  // namespace
 
-HoldingSpaceItem::~HoldingSpaceItem() = default;
+HoldingSpaceItem::~HoldingSpaceItem() {
+  deletion_callback_list_.Notify();
+}
 
 bool HoldingSpaceItem::operator==(const HoldingSpaceItem& rhs) const {
   return type_ == rhs.type_ && id_ == rhs.id_ && file_path_ == rhs.file_path_ &&
@@ -113,6 +115,11 @@ base::DictionaryValue HoldingSpaceItem::Serialize() const {
   return dict;
 }
 
+base::CallbackListSubscription HoldingSpaceItem::AddDeletionCallback(
+    base::RepeatingClosureList::CallbackType callback) const {
+  return deletion_callback_list_.Add(std::move(callback));
+}
+
 bool HoldingSpaceItem::IsFinalized() const {
   return !file_system_url_.is_empty();
 }
@@ -136,11 +143,23 @@ void HoldingSpaceItem::InvalidateImage() {
     image_->Invalidate();
 }
 
+bool HoldingSpaceItem::IsScreenCapture() const {
+  switch (type_) {
+    case HoldingSpaceItem::Type::kScreenshot:
+    case HoldingSpaceItem::Type::kScreenRecording:
+      return true;
+    case HoldingSpaceItem::Type::kDownload:
+    case HoldingSpaceItem::Type::kNearbyShare:
+    case HoldingSpaceItem::Type::kPinnedFile:
+      return false;
+  }
+}
+
 HoldingSpaceItem::HoldingSpaceItem(Type type,
                                    const std::string& id,
                                    const base::FilePath& file_path,
                                    const GURL& file_system_url,
-                                   const base::string16& text,
+                                   const std::u16string& text,
                                    std::unique_ptr<HoldingSpaceImage> image)
     : type_(type),
       id_(id),

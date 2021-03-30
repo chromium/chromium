@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+bluetooth_test(() => {
+  return setBluetoothFakeAdapter('DisconnectingHealthThermometerAdapter')
+    .then(() => requestDeviceWithTrustedClick({
+      filters: [{services: ['health_thermometer']}]}))
+    .then(device => device.gatt.connect())
+    .then(gattServer => gattServer.getPrimaryService('health_thermometer'))
+    .then(service => service.getCharacteristic('measurement_interval'))
+    .then(characteristic => {
+      return Promise.all([characteristic.getDescriptor('gatt.characteristic_user_description'),
+                          characteristic.getDescriptor('gatt.client_characteristic_configuration')]);
+    }).then(descriptors => {
+      assert_equals(descriptors[0].characteristic, descriptors[1].characteristic);
+    });
+}, "Same parent characteristic returned from multiple descriptors.");
+</script>

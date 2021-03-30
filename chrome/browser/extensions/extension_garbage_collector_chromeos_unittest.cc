@@ -13,8 +13,8 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/extension_assets_manager_chromeos.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -63,7 +63,7 @@ class ExtensionGarbageCollectorChromeOSUnitTest
     // Initialize the UserManager singleton to a fresh FakeChromeUserManager
     // instance.
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<chromeos::FakeChromeUserManager>());
+        std::make_unique<ash::FakeChromeUserManager>());
 
     GetFakeUserManager()->AddUser(user_manager::StubAccountId());
     GetFakeUserManager()->LoginUser(user_manager::StubAccountId());
@@ -123,7 +123,7 @@ class ExtensionGarbageCollectorChromeOSUnitTest
         .SetVersion(version)
         .SetID(id)
         .SetPath(path)
-        .SetLocation(Manifest::INTERNAL)
+        .SetLocation(mojom::ManifestLocation::kInternal)
         .Build();
   }
 
@@ -131,8 +131,8 @@ class ExtensionGarbageCollectorChromeOSUnitTest
     return ExtensionPrefs::Get(profile_.get());
   }
 
-  chromeos::FakeChromeUserManager* GetFakeUserManager() {
-    return static_cast<chromeos::FakeChromeUserManager*>(
+  ash::FakeChromeUserManager* GetFakeUserManager() {
+    return static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
 

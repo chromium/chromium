@@ -115,6 +115,12 @@ source_set("test_support") {
   ]
 }
 
+static_library("run_all_integration_tests") {
+  testonly = true
+  sources = [ "run_all_integration_tests.cc" ]
+  deps = [ "//base/test:test_support" ]
+}
+
 # Unit-tests for all //fuchsia/base utilities.
 test("cr_fuchsia_base_unittests") {
   sources = [

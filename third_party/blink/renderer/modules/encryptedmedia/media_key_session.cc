@@ -79,11 +79,12 @@ static bool IsValidSessionId(const String& session_id) {
   if (!session_id.ContainsOnlyASCIIOrEmpty())
     return false;
 
-  // Check that |session_id| only contains non-space printable characters for
+  // Check that |sanitized_session_id| only contains printable characters for
   // easier logging. Note that checking alphanumeric is too strict because there
-  // are key systems using Base64 session IDs. See https://crbug.com/902828.
+  // are key systems using Base64 session IDs (which may include spaces). See
+  // https://crbug.com/902828.
   for (unsigned i = 0; i < session_id.length(); ++i) {
-    if (!IsASCIIPrintable(session_id[i]) || session_id[i] == ' ')
+    if (!IsASCIIPrintable(session_id[i]))
       return false;
   }
 
@@ -97,8 +98,6 @@ static bool IsPersistentSessionType(WebEncryptedMediaSessionType session_type) {
     case WebEncryptedMediaSessionType::kTemporary:
       return false;
     case WebEncryptedMediaSessionType::kPersistentLicense:
-      return true;
-    case WebEncryptedMediaSessionType::kPersistentUsageRecord:
       return true;
     case blink::WebEncryptedMediaSessionType::kUnknown:
       break;
@@ -1039,6 +1038,7 @@ void MediaKeySession::Trace(Visitor* visitor) const {
   visitor->Trace(media_keys_);
   visitor->Trace(key_statuses_map_);
   visitor->Trace(closed_promise_);
+  visitor->Trace(action_timer_);
   EventTargetWithInlineData::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }

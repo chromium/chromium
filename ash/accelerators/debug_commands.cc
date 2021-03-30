@@ -161,8 +161,7 @@ void PerformDebugActionIfEnabled(AcceleratorAction action) {
       break;
     case DEBUG_SHOW_TOAST:
       Shell::Get()->toast_manager()->Show(
-          ToastData("id", base::ASCIIToUTF16("Toast"), 5000 /* duration_ms */,
-                    base::ASCIIToUTF16("Dismiss")));
+          ToastData("id", u"Toast", 5000 /* duration_ms */, u"Dismiss"));
       break;
     case DEBUG_TOGGLE_DEVICE_SCALE_FACTOR:
       Shell::Get()->display_manager()->ToggleDisplayScaleFactor();

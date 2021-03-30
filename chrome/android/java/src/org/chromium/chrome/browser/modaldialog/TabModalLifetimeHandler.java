@@ -4,16 +4,23 @@
 
 package org.chromium.chrome.browser.modaldialog;
 
+import android.app.Activity;
+
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
+import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
+import org.chromium.chrome.browser.modaldialog.ChromeTabModalPresenter.TabModalBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
+import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -51,31 +58,60 @@ public class TabModalLifetimeHandler implements NativeInitObserver, Destroyable 
         }
     };
 
-    private ChromeActivity mActivity;
+    private Activity mActivity;
+    private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final ModalDialogManager mManager;
-    private final Supplier<ComposedBrowserControlsVisibilityDelegate> mAppVisibilityDelegate;
+    private final Supplier<ComposedBrowserControlsVisibilityDelegate>
+            mAppVisibilityDelegateSupplier;
     private final Supplier<TabObscuringHandler> mTabObscuringHandlerSupplier;
+    private final Supplier<ToolbarManager> mToolbarManagerSupplier;
+    private final Supplier<ContextualSearchManager> mContextualSearchManagerSupplier;
+    private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final Supplier<BrowserControlsVisibilityManager>
+            mBrowserControlsVisibilityManagerSupplier;
+    private final Supplier<FullscreenManager> mFullscreenManagerSupplier;
+    private final TabModalBrowserControlsVisibilityDelegate mVisibilityDelegate;
     private ChromeTabModalPresenter mPresenter;
     private TabModelSelectorTabModelObserver mTabModelObserver;
     private Tab mActiveTab;
     private int mTabModalSuspendedToken;
 
     /**
-     * @param activity The {@link ChromeActivity} that this handler is attached to.
+     * @param activity The {@link Activity} that this handler is attached to.
+     * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} for the activity.
      * @param manager The {@link ModalDialogManager} that this handler handles.
-     * @param appVisibilityDelegate The {@link ComposedBrowserControlsVisibilityDelegate} that
-     *                              handles the application browser controls visibility.
-     * @param tabObscuringHandler {@link TabObscuringHandler} object.
+     * @param appVisibilityDelegateSupplier Supplies the delegate that handles the application
+     *                                      browser controls visibility.
+     * @param tabObscuringHandlerSupplier Supplies the {@link TabObscuringHandler} object.
+     * @param toolbarManagerSupplier Supplies the {@link ToolbarManager} object.
+     * @param contextualSearchManagerSupplier Supplies the {@link ContextualSearchManager} object.
+     * @param tabModelSelectorSupplier Supplies the {@link TabModelSelector} object.
+     * @param browserControlsVisibilityManagerSupplier Supplies the
+     *                                                 {@link BrowserControlsVisibilityManager}.
+     * @param fullscreenManagerSupplier Supplies the {@link FullscreenManager} object.
      */
-    public TabModalLifetimeHandler(ChromeActivity activity, ModalDialogManager manager,
-            Supplier<ComposedBrowserControlsVisibilityDelegate> appVisibilityDelegate,
-            Supplier<TabObscuringHandler> tabObscuringHandler) {
+    public TabModalLifetimeHandler(Activity activity,
+            ActivityLifecycleDispatcher activityLifecycleDispatcher, ModalDialogManager manager,
+            Supplier<ComposedBrowserControlsVisibilityDelegate> appVisibilityDelegateSupplier,
+            Supplier<TabObscuringHandler> tabObscuringHandlerSupplier,
+            Supplier<ToolbarManager> toolbarManagerSupplier,
+            Supplier<ContextualSearchManager> contextualSearchManagerSupplier,
+            Supplier<TabModelSelector> tabModelSelectorSupplier,
+            Supplier<BrowserControlsVisibilityManager> browserControlsVisibilityManagerSupplier,
+            Supplier<FullscreenManager> fullscreenManagerSupplier) {
         mActivity = activity;
+        mActivityLifecycleDispatcher = activityLifecycleDispatcher;
+        mActivityLifecycleDispatcher.register(this);
         mManager = manager;
-        mAppVisibilityDelegate = appVisibilityDelegate;
-        mTabObscuringHandlerSupplier = tabObscuringHandler;
-        activity.getLifecycleDispatcher().register(this);
+        mAppVisibilityDelegateSupplier = appVisibilityDelegateSupplier;
+        mTabObscuringHandlerSupplier = tabObscuringHandlerSupplier;
         mTabModalSuspendedToken = TokenHolder.INVALID_TOKEN;
+        mToolbarManagerSupplier = toolbarManagerSupplier;
+        mFullscreenManagerSupplier = fullscreenManagerSupplier;
+        mBrowserControlsVisibilityManagerSupplier = browserControlsVisibilityManagerSupplier;
+        mVisibilityDelegate = new TabModalBrowserControlsVisibilityDelegate();
+        mContextualSearchManagerSupplier = contextualSearchManagerSupplier;
+        mTabModelSelectorSupplier = tabModelSelectorSupplier;
     }
 
     /**
@@ -99,12 +135,20 @@ public class TabModalLifetimeHandler implements NativeInitObserver, Destroyable 
 
     @Override
     public void onFinishNativeInitialization() {
-        mPresenter = new ChromeTabModalPresenter(mActivity, mTabObscuringHandlerSupplier);
-        mAppVisibilityDelegate.get().addDelegate(mPresenter.getBrowserControlsVisibilityDelegate());
+        assert mTabModelSelectorSupplier.hasValue();
+        TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
+        assert mBrowserControlsVisibilityManagerSupplier.hasValue();
+        assert mFullscreenManagerSupplier.hasValue();
+        mPresenter = new ChromeTabModalPresenter(mActivity, mTabObscuringHandlerSupplier,
+                mToolbarManagerSupplier, mContextualSearchManagerSupplier,
+                mFullscreenManagerSupplier.get(), mBrowserControlsVisibilityManagerSupplier.get(),
+                tabModelSelector);
+        assert mAppVisibilityDelegateSupplier.hasValue();
+        mAppVisibilityDelegateSupplier.get().addDelegate(
+                mPresenter.getBrowserControlsVisibilityDelegate());
         mManager.registerPresenter(mPresenter, ModalDialogType.TAB);
 
-        handleTabChanged(mActivity.getActivityTab());
-        TabModelSelector tabModelSelector = mActivity.getTabModelSelector();
+        handleTabChanged(tabModelSelector.getCurrentTab());
         mTabModelObserver = new TabModelSelectorTabModelObserver(tabModelSelector) {
             @Override
             public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
@@ -137,6 +181,8 @@ public class TabModalLifetimeHandler implements NativeInitObserver, Destroyable 
             mActiveTab.removeObserver(mTabObserver);
             mActiveTab = null;
         }
+
+        mActivityLifecycleDispatcher.unregister(this);
         mActivity = null;
     }
 

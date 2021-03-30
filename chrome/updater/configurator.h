@@ -29,6 +29,7 @@ class ProtocolHandlerFactory;
 
 namespace updater {
 
+class ActivityDataService;
 class UpdaterPrefs;
 class ExternalConstants;
 
@@ -39,7 +40,7 @@ class Configurator : public update_client::Configurator {
   Configurator& operator=(const Configurator&) = delete;
 
   // Configurator for update_client::Configurator.
-  int InitialDelay() const override;
+  double InitialDelay() const override;
   int NextCheckDelay() const override;
   int OnDemandDelay() const override;
   int UpdateDelay() const override;
@@ -68,6 +69,7 @@ class Configurator : public update_client::Configurator {
   bool IsPerUserInstall() const override;
   std::unique_ptr<update_client::ProtocolHandlerFactory>
   GetProtocolHandlerFactory() const override;
+  int ServerKeepAliveSeconds() const;
 
  private:
   friend class base::RefCountedThreadSafe<Configurator>;
@@ -75,6 +77,7 @@ class Configurator : public update_client::Configurator {
 
   std::unique_ptr<UpdaterPrefs> prefs_;
   std::unique_ptr<ExternalConstants> external_constants_;
+  std::unique_ptr<ActivityDataService> activity_data_service_;
   scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory_;
   scoped_refptr<update_client::CrxDownloaderFactory> crx_downloader_factory_;
   scoped_refptr<update_client::UnzipperFactory> unzip_factory_;

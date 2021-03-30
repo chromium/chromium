@@ -11,6 +11,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/chrome_switches.h"
+#include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/translate/translate_app_interface.h"
@@ -160,6 +161,29 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
   [ChromeEarlGrey loadURL:GURL("chrome://policy")];
   [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
                                                     IDS_POLICY_HEADER_NAME)];
+}
+
+// Tests changing the DefaultSearchProviderEnabled policy while the settings
+// are open updates the UI.
+- (void)testDefaultSearchProviderUpdate {
+  SetPolicy(true, policy::key::kDefaultSearchProviderEnabled);
+
+  [ChromeEarlGreyUI openSettingsMenu];
+
+  // Check that the non-managed item is present.
+  [[[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                           kSettingsSearchEngineCellId)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:grey_allOf(
+                               grey_accessibilityID(kSettingsTableViewId),
+                               grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
+
+  SetPolicy(false, policy::key::kDefaultSearchProviderEnabled);
+
+  // After setting the policy to false, the item should be replaced.
+  VerifyManagedSettingItem(kSettingsManagedSearchEngineCellId,
+                           kSettingsTableViewId);
 }
 
 // Tests for the DefaultSearchProviderEnabled policy.
@@ -379,14 +403,14 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
 
   // Check the navigation.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
-                                          "chrome://management")]
+                                          kChromeUIManagementURL)]
       assertWithMatcher:grey_notNil()];
 }
 
 // Test the chrome://management page when no machine level policy is set.
 - (void)testManagementPageUnmanaged {
   // Open the management page and check if the content is expected.
-  [ChromeEarlGrey loadURL:GURL("chrome://management")];
+  [ChromeEarlGrey loadURL:GURL(kChromeUIManagementURL)];
   [ChromeEarlGrey
       waitForWebStateContainingText:l10n_util::GetStringUTF8(
                                         IDS_IOS_MANAGEMENT_UI_UNMANAGED_DESC)];
@@ -399,7 +423,7 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
   SetPolicy(false, policy::key::kTranslateEnabled);
 
   // Open the management page and check if the content is expected.
-  [ChromeEarlGrey loadURL:GURL("chrome://management")];
+  [ChromeEarlGrey loadURL:GURL(kChromeUIManagementURL)];
   [ChromeEarlGrey
       waitForWebStateContainingText:l10n_util::GetStringUTF8(
                                         IDS_IOS_MANAGEMENT_UI_MESSAGE)];

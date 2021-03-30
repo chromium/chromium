@@ -23,11 +23,13 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Add www. and .com to your input in the address bar, then open the page</translation>
+<translation id="1768987374400973299">Take screenshot/recording</translation>
 <translation id="1872219238824176091">Remove the current desk</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, then <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> or <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">Go to next tab</translation>
 <translation id="2010818616644390445">Go to the last tab in the window</translation>
 <translation id="2040706009561734834">Open/close the launcher</translation>
+<translation id="2086334242442703436">Open emoji picker</translation>
 <translation id="2088054208777350526">Search for keyboard shortcuts</translation>
 <translation id="2125211348069077981"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="E" /> or <ph name="F" /></translation>
 <translation id="2145908266289632567">Text Editing</translation>
@@ -46,6 +48,7 @@
 <translation id="2480851840841871861">Open Google Assistant</translation>
 <translation id="2488661730534396940">Activate the desk on the left</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516999188535378855">Open Diagnostics app</translation>
 <translation id="2530339807289914946">Scroll down the web page</translation>
 <translation id="2530896289327917474">Turn caret browsing on or off</translation>
 <translation id="2574014812750545982">Reset zoom level on the page</translation>
@@ -110,6 +113,7 @@
 <translation id="4801989101741319327">Move to the end of the next word</translation>
 <translation id="4866066940972151697">Activate the desk on the right</translation>
 <translation id="4916163929714267752">Open the link in a new window</translation>
+<translation id="492453977506755176">Capture mode key</translation>
 <translation id="5030659775136592441">Show bookmark manager</translation>
 <translation id="5034421018520995080">Go to top of page</translation>
 <translation id="5042305953558921026">Overview mode key</translation>
@@ -132,6 +136,7 @@
 <translation id="5899919361772749550">Show or hide the Developer Tools console</translation>
 <translation id="5919628958418675842">Turn privacy screen on or off</translation>
 <translation id="5921745308587794300">Rotate window</translation>
+<translation id="5926306472221400972">Take fullscreen screenshot</translation>
 <translation id="6022924867608035986">Clear search box text</translation>
 <translation id="6045998054441862242">Turn on high contrast mode</translation>
 <translation id="6052614013050385269">Right-click a link</translation>
@@ -149,6 +154,7 @@
 <translation id="6445033640292336367">Return the tab to its original position</translation>
 <translation id="6474744297082284761">Zoom out (when docked OR full-screen magnifiers enabled)</translation>
 <translation id="649811797655257835">Select the file, then press <ph name="SPACE" /></translation>
+<translation id="6551886416582667425">Take partial screenshot/recording</translation>
 <translation id="6556040137485212400">Open the window that has not been used for the longest time</translation>
 <translation id="666343722268997814">Open right-click menu for highlighted item</translation>
 <translation id="6671538777808758331">Go to the next match for your search</translation>
@@ -175,6 +181,7 @@
 <translation id="7611271430932669992">Move focus to pop-ups and dialogues</translation>
 <translation id="7635348532214572995">Move an app icon around the app grid</translation>
 <translation id="766326951329901120">Paste content from the clipboard as plain text</translation>
+<translation id="7673453620027697230">Take window screenshot/recording</translation>
 <translation id="7703010453515335249">bracket left</translation>
 <translation id="7724603315864178912">Cut</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, then <ph name="SPACE" /> or <ph name="ENTER" /></translation>

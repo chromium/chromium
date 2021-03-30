@@ -4,6 +4,7 @@
 
 #include "ash/login/ui/login_pin_input_view.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/login/ui/access_code_input.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
@@ -11,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -183,7 +183,7 @@ void LoginPinInputView::Init(const OnPinSubmit& on_submit,
   on_changed_ = on_changed;
 }
 
-void LoginPinInputView::SubmitPin(const base::string16& pin) {
+void LoginPinInputView::SubmitPin(const std::u16string& pin) {
   DCHECK(on_submit_);
   on_submit_.Run(pin);
 }
@@ -194,21 +194,32 @@ void LoginPinInputView::UpdateLength(const size_t pin_length) {
   if (pin_length == 0 || pin_length == length_)
     return;
 
+  length_ = pin_length;
+  UpdateView();
+}
+
+void LoginPinInputView::UpdatePalette(const LoginPalette& palette) {
+  palette_ = palette;
+  UpdateView();
+}
+
+void LoginPinInputView::UpdateView() {
+  bool was_visible = GetVisible();
+
   // Hide the view before deleting.
   SetVisible(false);
 
-  length_ = pin_length;
   RemoveChildView(code_input_);
   delete code_input_;
   code_input_ = AddChildView(std::make_unique<LoginPinInput>(
-      pin_length, palette_,
+      length_, palette_,
       base::BindRepeating(&LoginPinInputView::SubmitPin,
                           base::Unretained(this)),
       base::BindRepeating(&LoginPinInputView::OnChanged,
                           base::Unretained(this))));
   is_read_only_ = false;
   Layout();
-  SetVisible(true);
+  SetVisible(was_visible);
 }
 
 void LoginPinInputView::SetAuthenticateWithEmptyPinOnReturnKey(bool enabled) {
@@ -255,7 +266,7 @@ bool LoginPinInputView::OnKeyPressed(const ui::KeyEvent& event) {
   // when the last digit is inserted.
   if (event.key_code() == ui::KeyboardCode::VKEY_RETURN && !is_read_only_ &&
       authenticate_with_empty_pin_on_return_key_) {
-    SubmitPin(base::UTF8ToUTF16(""));
+    SubmitPin(u"");
     return true;
   }
 

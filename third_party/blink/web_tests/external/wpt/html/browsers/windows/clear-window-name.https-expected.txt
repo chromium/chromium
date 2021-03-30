@@ -8,5 +8,6 @@ PASS Window.name is not reset at the same-origin navigation with window.opener s
 FAIL Window.name is reset at the first first cross-origin navigation with window.opener set to null assert_unreached: Stash result does not equal expected result. Reached unreachable code
 PASS Window.name is set by the window
 FAIL Window.name is reset at the first cross-origin navigation assert_unreached: Stash result does not equal expected result. Reached unreachable code
+PASS window.name is not reset after navigating to an about:blank page from a non-about:blank page
 Harness: the test ran to completion.
 

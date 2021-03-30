@@ -38,6 +38,22 @@ const ComputedStyle* NGLogicalLineItem::Style() const {
   return nullptr;
 }
 
+std::ostream& operator<<(std::ostream& stream, const NGLogicalLineItem& item) {
+  stream << "NGLogicalLineItem(";
+  if (item.IsPlaceholder())
+    stream << " placeholder";
+  stream << " inline_size=" << item.inline_size;
+  if (item.inline_item)
+    stream << " " << item.inline_item->ToString().Utf8().c_str();
+  if (item.PhysicalFragment())
+    stream << " Fragment=" << *item.PhysicalFragment();
+  if (item.GetLayoutObject())
+    stream << " LayoutObject=" << *item.GetLayoutObject();
+  stream << ")";
+  // Feel free to add more information.
+  return stream;
+}
+
 NGLogicalLineItem* NGLogicalLineItems::FirstInFlowChild() {
   for (auto& child : *this) {
     if (child.HasInFlowFragment())

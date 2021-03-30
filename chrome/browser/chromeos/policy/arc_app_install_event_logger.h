@@ -12,7 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/arc/policy/arc_policy_bridge.h"
+#include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/chromeos/policy/arc_app_install_event_log_collector.h"
 #include "chrome/browser/chromeos/policy/install_event_logger_base.h"
 #include "components/policy/core/common/policy_service.h"

@@ -16,7 +16,6 @@
 #include "chrome/browser/safe_browsing/certificate_reporting_service_factory.h"
 #include "chrome/browser/safe_browsing/certificate_reporting_service_test_utils.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -29,6 +28,7 @@
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/x509_certificate.h"
@@ -36,8 +36,8 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
+#include "services/cert_verifier/public/mojom/trial_comparison_cert_verifier.mojom.h"
 #include "services/network/public/cpp/features.h"
-#include "services/network/public/mojom/trial_comparison_cert_verifier.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -82,18 +82,18 @@ MATCHER_P(CertChainMatches, expected_cert, "") {
 }  // namespace
 
 class MockTrialComparisonCertVerifierConfigClient
-    : public network::mojom::TrialComparisonCertVerifierConfigClient {
+    : public cert_verifier::mojom::TrialComparisonCertVerifierConfigClient {
  public:
   MockTrialComparisonCertVerifierConfigClient(
       mojo::PendingReceiver<
-          network::mojom::TrialComparisonCertVerifierConfigClient>
+          cert_verifier::mojom::TrialComparisonCertVerifierConfigClient>
           config_client_receiver)
       : receiver_(this, std::move(config_client_receiver)) {}
 
   MOCK_METHOD1(OnTrialConfigUpdated, void(bool allowed));
 
  private:
-  mojo::Receiver<network::mojom::TrialComparisonCertVerifierConfigClient>
+  mojo::Receiver<cert_verifier::mojom::TrialComparisonCertVerifierConfigClient>
       receiver_;
 };
 
@@ -148,7 +148,8 @@ class TrialComparisonCertVerifierControllerTest : public testing::Test {
   }
 
   void CreateController(Profile* profile) {
-    mojo::PendingRemote<network::mojom::TrialComparisonCertVerifierConfigClient>
+    mojo::PendingRemote<
+        cert_verifier::mojom::TrialComparisonCertVerifierConfigClient>
         config_client;
     auto config_client_receiver =
         config_client.InitWithNewPipeAndPassReceiver();
@@ -188,7 +189,8 @@ class TrialComparisonCertVerifierControllerTest : public testing::Test {
   TrialComparisonCertVerifierController& trial_controller() {
     return *trial_controller_;
   }
-  network::mojom::TrialComparisonCertVerifierReportClient* report_client() {
+  cert_verifier::mojom::TrialComparisonCertVerifierReportClient*
+  report_client() {
     return report_client_.get();
   }
   MockTrialComparisonCertVerifierConfigClient& mock_config_client() {
@@ -218,7 +220,7 @@ class TrialComparisonCertVerifierControllerTest : public testing::Test {
   std::unique_ptr<TestingProfileManager> profile_manager_;
   TestingProfile* profile_;
 
-  mojo::Remote<network::mojom::TrialComparisonCertVerifierReportClient>
+  mojo::Remote<cert_verifier::mojom::TrialComparisonCertVerifierReportClient>
       report_client_;
   std::unique_ptr<TrialComparisonCertVerifierController> trial_controller_;
   std::unique_ptr<StrictMock<MockTrialComparisonCertVerifierConfigClient>>
@@ -243,7 +245,7 @@ TEST_F(TrialComparisonCertVerifierControllerTest, NothingEnabled) {
   report_client()->SendTrialReport(
       "hostname", leaf_cert_1_, false, false, false, false,
       std::vector<uint8_t>(), std::vector<uint8_t>(), ok_result_, ok_result_,
-      network::mojom::CertVerifierDebugInfo::New());
+      cert_verifier::mojom::CertVerifierDebugInfo::New());
   // Ensure any in-flight mojo calls get run.
   base::RunLoop().RunUntilIdle();
   // Expect no report since the trial is not allowed.
@@ -266,7 +268,7 @@ TEST_F(TrialComparisonCertVerifierControllerTest,
   report_client()->SendTrialReport(
       "hostname", leaf_cert_1_, false, false, false, false,
       std::vector<uint8_t>(), std::vector<uint8_t>(), ok_result_, ok_result_,
-      network::mojom::CertVerifierDebugInfo::New());
+      cert_verifier::mojom::CertVerifierDebugInfo::New());
 
   // Ensure any in-flight mojo calls get run.
   base::RunLoop().RunUntilIdle();
@@ -279,7 +281,7 @@ TEST_F(TrialComparisonCertVerifierControllerTest,
        NotOfficialBuildTrialEnabled) {
   scoped_feature_ = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_->InitAndEnableFeature(
-      features::kCertDualVerificationTrialFeature);
+      net::features::kCertDualVerificationTrialFeature);
   CreateController();
 
   EXPECT_FALSE(trial_controller().IsAllowed());
@@ -303,7 +305,7 @@ TEST_F(TrialComparisonCertVerifierControllerTest,
   report_client()->SendTrialReport(
       "hostname", leaf_cert_1_, false, false, false, false,
       std::vector<uint8_t>(), std::vector<uint8_t>(), ok_result_, ok_result_,
-      network::mojom::CertVerifierDebugInfo::New());
+      cert_verifier::mojom::CertVerifierDebugInfo::New());
 
   // Ensure any in-flight mojo calls get run.
   base::RunLoop().RunUntilIdle();
@@ -317,7 +319,7 @@ TEST_F(TrialComparisonCertVerifierControllerTest, OfficialBuildTrialEnabled) {
   TrialComparisonCertVerifierController::SetFakeOfficialBuildForTesting(true);
   scoped_feature_ = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_->InitAndEnableFeature(
-      features::kCertDualVerificationTrialFeature);
+      net::features::kCertDualVerificationTrialFeature);
   CreateController();
 
   EXPECT_FALSE(trial_controller().IsAllowed());
@@ -338,7 +340,7 @@ TEST_F(TrialComparisonCertVerifierControllerTest, OfficialBuildTrialEnabled) {
   report_client()->SendTrialReport(
       "127.0.0.1", leaf_cert_1_, false, false, false, false,
       std::vector<uint8_t>{4, 5, 6}, std::vector<uint8_t>{7, 8, 9}, ok_result_,
-      bad_result_, network::mojom::CertVerifierDebugInfo::New());
+      bad_result_, cert_verifier::mojom::CertVerifierDebugInfo::New());
 
   // Ensure any in-flight mojo calls get run.
   base::RunLoop().RunUntilIdle();
@@ -386,7 +388,7 @@ TEST_F(TrialComparisonCertVerifierControllerTest, OfficialBuildTrialEnabled) {
   report_client()->SendTrialReport(
       "hostname", leaf_cert_1_, false, false, false, false,
       std::vector<uint8_t>(), std::vector<uint8_t>(), ok_result_, bad_result_,
-      network::mojom::CertVerifierDebugInfo::New());
+      cert_verifier::mojom::CertVerifierDebugInfo::New());
   // Ensure any in-flight mojo calls get run.
   base::RunLoop().RunUntilIdle();
   // Expect no report since the trial is not allowed.
@@ -398,13 +400,14 @@ TEST_F(TrialComparisonCertVerifierControllerTest,
   TrialComparisonCertVerifierController::SetFakeOfficialBuildForTesting(true);
   scoped_feature_ = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_->InitAndEnableFeature(
-      features::kCertDualVerificationTrialFeature);
+      net::features::kCertDualVerificationTrialFeature);
   CreateController();
 
-  mojo::Remote<network::mojom::TrialComparisonCertVerifierReportClient>
+  mojo::Remote<cert_verifier::mojom::TrialComparisonCertVerifierReportClient>
       report_client_2;
 
-  mojo::PendingRemote<network::mojom::TrialComparisonCertVerifierConfigClient>
+  mojo::PendingRemote<
+      cert_verifier::mojom::TrialComparisonCertVerifierConfigClient>
       config_client_2;
   auto config_client_2_receiver =
       config_client_2.InitWithNewPipeAndPassReceiver();
@@ -435,11 +438,11 @@ TEST_F(TrialComparisonCertVerifierControllerTest,
   report_client()->SendTrialReport(
       "127.0.0.1", leaf_cert_1_, false, false, false, false,
       std::vector<uint8_t>(), std::vector<uint8_t>(), ok_result_, bad_result_,
-      network::mojom::CertVerifierDebugInfo::New());
+      cert_verifier::mojom::CertVerifierDebugInfo::New());
   report_client_2->SendTrialReport(
       "127.0.0.2", leaf_cert_1_, false, false, false, false,
       std::vector<uint8_t>(), std::vector<uint8_t>(), ok_result_, bad_result_,
-      network::mojom::CertVerifierDebugInfo::New());
+      cert_verifier::mojom::CertVerifierDebugInfo::New());
 
   // Ensure any in-flight mojo calls get run.
   base::RunLoop().RunUntilIdle();
@@ -490,11 +493,11 @@ TEST_F(TrialComparisonCertVerifierControllerTest,
   report_client()->SendTrialReport(
       "hostname", leaf_cert_1_, false, false, false, false,
       std::vector<uint8_t>(), std::vector<uint8_t>(), ok_result_, bad_result_,
-      network::mojom::CertVerifierDebugInfo::New());
+      cert_verifier::mojom::CertVerifierDebugInfo::New());
   report_client_2->SendTrialReport(
       "hostname2", leaf_cert_1_, false, false, false, false,
       std::vector<uint8_t>(), std::vector<uint8_t>(), ok_result_, bad_result_,
-      network::mojom::CertVerifierDebugInfo::New());
+      cert_verifier::mojom::CertVerifierDebugInfo::New());
   // Ensure any in-flight mojo calls get run.
   base::RunLoop().RunUntilIdle();
   // Expect no report since the trial is not allowed.
@@ -506,7 +509,7 @@ TEST_F(TrialComparisonCertVerifierControllerTest,
   TrialComparisonCertVerifierController::SetFakeOfficialBuildForTesting(true);
   scoped_feature_ = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_->InitAndEnableFeatureWithParameters(
-      features::kCertDualVerificationTrialFeature, {{"uma_only", "true"}});
+      net::features::kCertDualVerificationTrialFeature, {{"uma_only", "true"}});
   CreateController();
 
   EXPECT_FALSE(trial_controller().IsAllowed());
@@ -528,7 +531,7 @@ TEST_F(TrialComparisonCertVerifierControllerTest,
   report_client()->SendTrialReport(
       "127.0.0.1", leaf_cert_1_, false, false, false, false,
       std::vector<uint8_t>(), std::vector<uint8_t>(), ok_result_, bad_result_,
-      network::mojom::CertVerifierDebugInfo::New());
+      cert_verifier::mojom::CertVerifierDebugInfo::New());
 
   // Ensure any in-flight mojo calls get run.
   base::RunLoop().RunUntilIdle();
@@ -542,7 +545,7 @@ TEST_F(TrialComparisonCertVerifierControllerTest,
   TrialComparisonCertVerifierController::SetFakeOfficialBuildForTesting(true);
   scoped_feature_ = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_->InitAndEnableFeature(
-      features::kCertDualVerificationTrialFeature);
+      net::features::kCertDualVerificationTrialFeature);
   CreateController(profile()->GetPrimaryOTRProfile());
 
   EXPECT_FALSE(trial_controller().IsAllowed());
@@ -558,7 +561,7 @@ TEST_F(TrialComparisonCertVerifierControllerTest,
   report_client()->SendTrialReport(
       "hostname", leaf_cert_1_, false, false, false, false,
       std::vector<uint8_t>(), std::vector<uint8_t>(), ok_result_, ok_result_,
-      network::mojom::CertVerifierDebugInfo::New());
+      cert_verifier::mojom::CertVerifierDebugInfo::New());
   // Ensure any in-flight mojo calls get run.
   base::RunLoop().RunUntilIdle();
   // Expect no report since the trial is not allowed.

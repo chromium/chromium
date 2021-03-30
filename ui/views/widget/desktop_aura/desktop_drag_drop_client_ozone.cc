@@ -5,11 +5,11 @@
 #include "ui/views/widget/desktop_aura/desktop_drag_drop_client_ozone.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/aura/client/capture_client.h"
@@ -27,7 +27,6 @@
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/platform_window/platform_window_delegate.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/widget/desktop_aura/desktop_native_cursor_manager.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
@@ -112,10 +111,8 @@ DesktopDragDropClientOzone::DragContext::~DragContext() = default;
 
 DesktopDragDropClientOzone::DesktopDragDropClientOzone(
     aura::Window* root_window,
-    views::DesktopNativeCursorManager* cursor_manager,
     ui::WmDragHandler* drag_handler)
     : root_window_(root_window),
-      cursor_manager_(cursor_manager),
       drag_handler_(drag_handler) {}
 
 DesktopDragDropClientOzone::~DesktopDragDropClientOzone() {
@@ -147,8 +144,7 @@ int DesktopDragDropClientOzone::StartDragAndDrop(
   auto initial_cursor = source_window->GetHost()->last_cursor();
   drag_operation_ = operation;
   if (cursor_client) {
-    cursor_client->SetCursor(cursor_manager_->GetInitializedCursor(
-        ui::mojom::CursorType::kGrabbing));
+    cursor_client->SetCursor(ui::mojom::CursorType::kGrabbing);
   }
 
   if (DragImageIsNeeded()) {
@@ -237,8 +233,10 @@ int DesktopDragDropClientOzone::OnDragMotion(const gfx::PointF& point,
   int client_operation = ui::DragDropTypes::DRAG_NONE;
   std::unique_ptr<ui::DropTargetEvent> event =
       UpdateTargetAndCreateDropEvent(point, modifiers);
-  if (drag_drop_delegate_ && event)
-    client_operation = drag_drop_delegate_->OnDragUpdated(*event);
+  if (drag_drop_delegate_ && event) {
+    client_operation =
+        drag_drop_delegate_->OnDragUpdated(*event).drag_operation;
+  }
   return client_operation;
 }
 
@@ -331,7 +329,7 @@ void DesktopDragDropClientOzone::OnDragOperationChanged(
       cursor_type = ui::mojom::CursorType::kDndLink;
       break;
   }
-  cursor_client->SetCursor(cursor_manager_->GetInitializedCursor(cursor_type));
+  cursor_client->SetCursor(cursor_type);
 }
 
 void DesktopDragDropClientOzone::OnDragFinished(int dnd_action) {

@@ -159,16 +159,12 @@ void V8PerIsolateData::WillBeDestroyed(v8::Isolate* isolate) {
 
   data->ClearScriptRegexpContext();
 
-  // Detach V8's garbage collector.
-  // Need to finalize an already running garbage collection as otherwise
-  // callbacks are missing and state gets out of sync.
-  ThreadState* const thread_state = ThreadState::Current();
-  thread_state->FinishIncrementalMarkingIfRunning(
-      BlinkGC::CollectionType::kMajor, BlinkGC::kHeapPointersOnStack,
-      BlinkGC::kAtomicMarking, BlinkGC::kEagerSweeping,
-      BlinkGC::GCReason::kThreadTerminationGC);
+  ThreadState::Current()->DetachFromIsolate();
+
   data->active_script_wrappable_manager_.Clear();
-  thread_state->DetachFromIsolate();
+  // Callbacks can be removed as they only cover single events (e.g. atomic
+  // pause) and they cannot get out of sync.
+  DCHECK_EQ(0u, data->gc_callback_depth_);
   isolate->RemoveGCPrologueCallback(data->prologue_callback_);
   isolate->RemoveGCEpilogueCallback(data->epilogue_callback_);
 }

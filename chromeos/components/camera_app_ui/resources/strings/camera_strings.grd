@@ -3,121 +3,69 @@
 <grit base_dir="." current_release="1" latest_public_release="0"
       output_all_resource_defines="false" enc_check="möl" source_lang_id="en">
   <outputs>
-     <!-- For Platform app usage -->
-    <output filename="${out_camera_app_dir}/_locales/am/messages.json" type="chrome_messages_json" lang="am"/>
-    <output filename="${out_camera_app_dir}/_locales/ar/messages.json" type="chrome_messages_json" lang="ar"/>
-    <output filename="${out_camera_app_dir}/_locales/bg/messages.json" type="chrome_messages_json" lang="bg"/>
-    <output filename="${out_camera_app_dir}/_locales/bn/messages.json" type="chrome_messages_json" lang="bn"/>
-    <output filename="${out_camera_app_dir}/_locales/ca/messages.json" type="chrome_messages_json" lang="ca"/>
-    <output filename="${out_camera_app_dir}/_locales/cs/messages.json" type="chrome_messages_json" lang="cs"/>
-    <output filename="${out_camera_app_dir}/_locales/da/messages.json" type="chrome_messages_json" lang="da"/>
-    <output filename="${out_camera_app_dir}/_locales/de/messages.json" type="chrome_messages_json" lang="de"/>
-    <output filename="${out_camera_app_dir}/_locales/el/messages.json" type="chrome_messages_json" lang="el"/>
-    <output filename="${out_camera_app_dir}/_locales/en_GB/messages.json" type="chrome_messages_json" lang="en-GB"/>
-    <output filename="${out_camera_app_dir}/_locales/en/messages.json" type="chrome_messages_json" lang="en"/>
-    <output filename="${out_camera_app_dir}/_locales/es/messages.json" type="chrome_messages_json" lang="es"/>
-    <output filename="${out_camera_app_dir}/_locales/es_419/messages.json" type="chrome_messages_json" lang="es-419"/>
-    <output filename="${out_camera_app_dir}/_locales/et/messages.json" type="chrome_messages_json" lang="et"/>
-    <output filename="${out_camera_app_dir}/_locales/fa/messages.json" type="chrome_messages_json" lang="fa"/>
-    <output filename="${out_camera_app_dir}/_locales/fi/messages.json" type="chrome_messages_json" lang="fi"/>
-    <output filename="${out_camera_app_dir}/_locales/fil/messages.json" type="chrome_messages_json" lang="fil"/>
-    <output filename="${out_camera_app_dir}/_locales/fr/messages.json" type="chrome_messages_json" lang="fr"/>
-    <output filename="${out_camera_app_dir}/_locales/gu/messages.json" type="chrome_messages_json" lang="gu"/>
-    <output filename="${out_camera_app_dir}/_locales/he/messages.json" type="chrome_messages_json" lang="he"/>
-    <output filename="${out_camera_app_dir}/_locales/hi/messages.json" type="chrome_messages_json" lang="hi"/>
-    <output filename="${out_camera_app_dir}/_locales/hr/messages.json" type="chrome_messages_json" lang="hr"/>
-    <output filename="${out_camera_app_dir}/_locales/hu/messages.json" type="chrome_messages_json" lang="hu"/>
-    <output filename="${out_camera_app_dir}/_locales/id/messages.json" type="chrome_messages_json" lang="id"/>
-    <output filename="${out_camera_app_dir}/_locales/it/messages.json" type="chrome_messages_json" lang="it"/>
-    <output filename="${out_camera_app_dir}/_locales/ja/messages.json" type="chrome_messages_json" lang="ja"/>
-    <output filename="${out_camera_app_dir}/_locales/kn/messages.json" type="chrome_messages_json" lang="kn"/>
-    <output filename="${out_camera_app_dir}/_locales/ko/messages.json" type="chrome_messages_json" lang="ko"/>
-    <output filename="${out_camera_app_dir}/_locales/lt/messages.json" type="chrome_messages_json" lang="lt"/>
-    <output filename="${out_camera_app_dir}/_locales/lv/messages.json" type="chrome_messages_json" lang="lv"/>
-    <output filename="${out_camera_app_dir}/_locales/ml/messages.json" type="chrome_messages_json" lang="ml"/>
-    <output filename="${out_camera_app_dir}/_locales/mr/messages.json" type="chrome_messages_json" lang="mr"/>
-    <output filename="${out_camera_app_dir}/_locales/ms/messages.json" type="chrome_messages_json" lang="ms"/>
-    <output filename="${out_camera_app_dir}/_locales/nl/messages.json" type="chrome_messages_json" lang="nl"/>
-    <output filename="${out_camera_app_dir}/_locales/nb/messages.json" type="chrome_messages_json" lang="no"/>
-    <output filename="${out_camera_app_dir}/_locales/pl/messages.json" type="chrome_messages_json" lang="pl"/>
-    <output filename="${out_camera_app_dir}/_locales/pt_BR/messages.json" type="chrome_messages_json" lang="pt-BR"/>
-    <output filename="${out_camera_app_dir}/_locales/pt_PT/messages.json" type="chrome_messages_json" lang="pt-PT"/>
-    <output filename="${out_camera_app_dir}/_locales/ro/messages.json" type="chrome_messages_json" lang="ro"/>
-    <output filename="${out_camera_app_dir}/_locales/ru/messages.json" type="chrome_messages_json" lang="ru"/>
-    <output filename="${out_camera_app_dir}/_locales/sk/messages.json" type="chrome_messages_json" lang="sk"/>
-    <output filename="${out_camera_app_dir}/_locales/sl/messages.json" type="chrome_messages_json" lang="sl"/>
-    <output filename="${out_camera_app_dir}/_locales/sr/messages.json" type="chrome_messages_json" lang="sr"/>
-    <output filename="${out_camera_app_dir}/_locales/sv/messages.json" type="chrome_messages_json" lang="sv"/>
-    <output filename="${out_camera_app_dir}/_locales/sw/messages.json" type="chrome_messages_json" lang="sw"/>
-    <output filename="${out_camera_app_dir}/_locales/ta/messages.json" type="chrome_messages_json" lang="ta"/>
-    <output filename="${out_camera_app_dir}/_locales/te/messages.json" type="chrome_messages_json" lang="te"/>
-    <output filename="${out_camera_app_dir}/_locales/th/messages.json" type="chrome_messages_json" lang="th"/>
-    <output filename="${out_camera_app_dir}/_locales/tr/messages.json" type="chrome_messages_json" lang="tr"/>
-    <output filename="${out_camera_app_dir}/_locales/uk/messages.json" type="chrome_messages_json" lang="uk"/>
-    <output filename="${out_camera_app_dir}/_locales/vi/messages.json" type="chrome_messages_json" lang="vi"/>
-    <output filename="${out_camera_app_dir}/_locales/zh_CN/messages.json" type="chrome_messages_json" lang="zh-CN"/>
-    <output filename="${out_camera_app_dir}/_locales/zh_TW/messages.json" type="chrome_messages_json" lang="zh-TW"/>
-
-    <!-- For SWA usage -->
-    <output filename="${gen_camera_app_dir}/strings/grit/chromeos_camera_app_strings.h" type="rc_header">
+    <output filename="grit/chromeos_camera_app_strings.h" type="rc_header">
       <emit emit_type='prepend'></emit>
     </output>
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_am.pak" type="data_package" lang="am" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_ar.pak" type="data_package" lang="ar" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_bg.pak" type="data_package" lang="bg" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_bn.pak" type="data_package" lang="bn" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_ca.pak" type="data_package" lang="ca" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_cs.pak" type="data_package" lang="cs" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_da.pak" type="data_package" lang="da" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_de.pak" type="data_package" lang="de" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_el.pak" type="data_package" lang="el" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_en-GB.pak" type="data_package" lang="en-GB" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_en-US.pak" type="data_package" lang="en" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_es.pak" type="data_package" lang="es" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_es-419.pak" type="data_package" lang="es-419" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_et.pak" type="data_package" lang="et" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_fa.pak" type="data_package" lang="fa" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_fake-bidi.pak" type="data_package" lang="fake-bidi" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_fi.pak" type="data_package" lang="fi" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_fil.pak" type="data_package" lang="fil" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_fr.pak" type="data_package" lang="fr" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_gu.pak" type="data_package" lang="gu" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_he.pak" type="data_package" lang="he" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_hi.pak" type="data_package" lang="hi" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_hr.pak" type="data_package" lang="hr" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_hu.pak" type="data_package" lang="hu" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_id.pak" type="data_package" lang="id" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_it.pak" type="data_package" lang="it" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_ja.pak" type="data_package" lang="ja" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_kn.pak" type="data_package" lang="kn" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_ko.pak" type="data_package" lang="ko" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_lt.pak" type="data_package" lang="lt" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_lv.pak" type="data_package" lang="lv" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_ml.pak" type="data_package" lang="ml" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_mr.pak" type="data_package" lang="mr" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_ms.pak" type="data_package" lang="ms" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_nl.pak" type="data_package" lang="nl" />
+    <output filename="chromeos_camera_app_strings_am.pak" type="data_package" lang="am" />
+    <output filename="chromeos_camera_app_strings_ar.pak" type="data_package" lang="ar" />
+    <output filename="chromeos_camera_app_strings_bg.pak" type="data_package" lang="bg" />
+    <output filename="chromeos_camera_app_strings_bn.pak" type="data_package" lang="bn" />
+    <output filename="chromeos_camera_app_strings_ca.pak" type="data_package" lang="ca" />
+    <output filename="chromeos_camera_app_strings_cs.pak" type="data_package" lang="cs" />
+    <output filename="chromeos_camera_app_strings_da.pak" type="data_package" lang="da" />
+    <output filename="chromeos_camera_app_strings_de.pak" type="data_package" lang="de" />
+    <output filename="chromeos_camera_app_strings_el.pak" type="data_package" lang="el" />
+    <output filename="chromeos_camera_app_strings_en-GB.pak" type="data_package" lang="en-GB" />
+    <output filename="chromeos_camera_app_strings_en-US.pak" type="data_package" lang="en" />
+    <output filename="chromeos_camera_app_strings_es.pak" type="data_package" lang="es" />
+    <output filename="chromeos_camera_app_strings_es-419.pak" type="data_package" lang="es-419" />
+    <output filename="chromeos_camera_app_strings_et.pak" type="data_package" lang="et" />
+    <output filename="chromeos_camera_app_strings_fa.pak" type="data_package" lang="fa" />
+    <output filename="chromeos_camera_app_strings_fi.pak" type="data_package" lang="fi" />
+    <output filename="chromeos_camera_app_strings_fil.pak" type="data_package" lang="fil" />
+    <output filename="chromeos_camera_app_strings_fr.pak" type="data_package" lang="fr" />
+    <output filename="chromeos_camera_app_strings_gu.pak" type="data_package" lang="gu" />
+    <output filename="chromeos_camera_app_strings_he.pak" type="data_package" lang="he" />
+    <output filename="chromeos_camera_app_strings_hi.pak" type="data_package" lang="hi" />
+    <output filename="chromeos_camera_app_strings_hr.pak" type="data_package" lang="hr" />
+    <output filename="chromeos_camera_app_strings_hu.pak" type="data_package" lang="hu" />
+    <output filename="chromeos_camera_app_strings_id.pak" type="data_package" lang="id" />
+    <output filename="chromeos_camera_app_strings_is.pak" type="data_package" lang="is" />
+    <output filename="chromeos_camera_app_strings_it.pak" type="data_package" lang="it" />
+    <output filename="chromeos_camera_app_strings_ja.pak" type="data_package" lang="ja" />
+    <output filename="chromeos_camera_app_strings_kn.pak" type="data_package" lang="kn" />
+    <output filename="chromeos_camera_app_strings_ko.pak" type="data_package" lang="ko" />
+    <output filename="chromeos_camera_app_strings_lt.pak" type="data_package" lang="lt" />
+    <output filename="chromeos_camera_app_strings_lv.pak" type="data_package" lang="lv" />
+    <output filename="chromeos_camera_app_strings_ml.pak" type="data_package" lang="ml" />
+    <output filename="chromeos_camera_app_strings_mr.pak" type="data_package" lang="mr" />
+    <output filename="chromeos_camera_app_strings_ms.pak" type="data_package" lang="ms" />
+    <output filename="chromeos_camera_app_strings_nl.pak" type="data_package" lang="nl" />
     <!-- The translation console uses 'no' for Norwegian Bokmål. It should
          be 'nb'. -->
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_nb.pak" type="data_package" lang="no" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_pl.pak" type="data_package" lang="pl" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_pt-BR.pak" type="data_package" lang="pt-BR" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_pt-PT.pak" type="data_package" lang="pt-PT" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_ro.pak" type="data_package" lang="ro" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_ru.pak" type="data_package" lang="ru" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_sk.pak" type="data_package" lang="sk" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_sl.pak" type="data_package" lang="sl" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_sr.pak" type="data_package" lang="sr" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_sv.pak" type="data_package" lang="sv" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_sw.pak" type="data_package" lang="sw" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_ta.pak" type="data_package" lang="ta" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_te.pak" type="data_package" lang="te" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_th.pak" type="data_package" lang="th" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_tr.pak" type="data_package" lang="tr" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_uk.pak" type="data_package" lang="uk" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_vi.pak" type="data_package" lang="vi" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
-    <output filename="${gen_camera_app_dir}/strings/chromeos_camera_app_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+    <output filename="chromeos_camera_app_strings_nb.pak" type="data_package" lang="no" />
+    <output filename="chromeos_camera_app_strings_pl.pak" type="data_package" lang="pl" />
+    <output filename="chromeos_camera_app_strings_pt-BR.pak" type="data_package" lang="pt-BR" />
+    <output filename="chromeos_camera_app_strings_pt-PT.pak" type="data_package" lang="pt-PT" />
+    <output filename="chromeos_camera_app_strings_ro.pak" type="data_package" lang="ro" />
+    <output filename="chromeos_camera_app_strings_ru.pak" type="data_package" lang="ru" />
+    <output filename="chromeos_camera_app_strings_sk.pak" type="data_package" lang="sk" />
+    <output filename="chromeos_camera_app_strings_sl.pak" type="data_package" lang="sl" />
+    <output filename="chromeos_camera_app_strings_sr.pak" type="data_package" lang="sr" />
+    <output filename="chromeos_camera_app_strings_sv.pak" type="data_package" lang="sv" />
+    <output filename="chromeos_camera_app_strings_sw.pak" type="data_package" lang="sw" />
+    <output filename="chromeos_camera_app_strings_ta.pak" type="data_package" lang="ta" />
+    <output filename="chromeos_camera_app_strings_te.pak" type="data_package" lang="te" />
+    <output filename="chromeos_camera_app_strings_th.pak" type="data_package" lang="th" />
+    <output filename="chromeos_camera_app_strings_tr.pak" type="data_package" lang="tr" />
+    <output filename="chromeos_camera_app_strings_uk.pak" type="data_package" lang="uk" />
+    <output filename="chromeos_camera_app_strings_vi.pak" type="data_package" lang="vi" />
+    <output filename="chromeos_camera_app_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
+    <output filename="chromeos_camera_app_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+
+    <!-- Pseudolocales -->
+    <output filename="chromeos_camera_app_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="chromeos_camera_app_strings_en-XA.pak" type="data_package" lang="en-XA" />
   </outputs>
   <translations>
     <file path="camera_strings_af.xtb" lang="af" />
@@ -202,7 +150,7 @@
     <file path="camera_strings_zh-TW.xtb" lang="zh-TW" />
     <file path="camera_strings_zu.xtb" lang="zu" />
   </translations>
-  <release allow_pseudo="false" seq="1">
+  <release seq="1">
     <messages fallback_to_english="true">
       <message desc="Label for timer-duration: 10 seconds." name="IDS_LABEL_TIMER_10S">
         10 seconds
@@ -224,6 +172,9 @@
       </message>
       <message desc="Label for the exporting button." name="IDS_EXPORT_BUTTON">
         Export to disk
+      </message>
+      <message desc="Label for the button to open pan tilt zoom control panel" name="IDS_OPEN_PTZ_PANEL_BUTTON">
+        Pan tilt zoom
       </message>
       <message desc="Label for the checkbox to toggle the 3 seconds countdown timer." name="IDS_TOGGLE_TIMER_3S_BUTTON">
         3 seconds timer
@@ -360,6 +311,27 @@
       <message desc="Label for snackbar message when a link is copied" name="IDS_SNACKBAR_TEXT_COPIED">
         Text copied
       </message>
+      <message desc="Label for tilt up camera preview" name="IDS_TILT_UP_BUTTON">
+        Tilt up
+      </message>
+      <message desc="Label for pan right camera preview" name="IDS_PAN_RIGHT_BUTTON">
+        Pan right
+      </message>
+      <message desc="Label for tilt down camera preview" name="IDS_TILT_DOWN_BUTTON">
+        Tilt down
+      </message>
+      <message desc="Label for pan left camera preview" name="IDS_PAN_LEFT_BUTTON">
+        Pan left
+      </message>
+      <message desc="Label for zoom in camera preview" name="IDS_ZOOM_IN_BUTTON">
+        Zoom in
+      </message>
+      <message desc="Label for zoom out camera preview" name="IDS_ZOOM_OUT_BUTTON">
+        Zoom out
+      </message>
+      <message desc="Label for expert mode option: custom video parameters." name="IDS_EXPERT_CUSTOM_VIDEO_PARAMETERS">
+        Custom video parameters
+      </message>
       <message desc="Error message when the device does not support expert mode but tries to enable it." name="IDS_ERROR_MSG_EXPERT_MODE_NOT_SUPPORTED">
         Expert mode is not supported on this device
       </message>
@@ -369,7 +341,7 @@
       <message desc="Error message shown when failing to take photo." name="IDS_ERROR_MSG_TAKE_PHOTO_FAILED">
         Unable to take photo
       </message>
-      <message desc="Error message shown when failing to take portrait photo." name="IDS_ERROR_MSG_TAKE_PORTRAIT_PHOTO_FAILED">
+      <message desc="Error message shown when failing to take portrait (bokeh effect, background blur) photo." name="IDS_ERROR_MSG_TAKE_PORTRAIT_BOKEH_PHOTO_FAILED">
         Unable to take portrait photo
       </message>
       <message desc="Short description of the Camera App." name="IDS_DESCRIPTION">
@@ -444,10 +416,10 @@
       <message desc="Label for switch to take square photo mode button." name="IDS_LABEL_SWITCH_TAKE_SQUARE_PHOTO_BUTTON">
         Square
       </message>
-      <message desc="Label for spoken feedback to read out switch to take portrait photo mode button." name="IDS_SWITCH_TAKE_PORTRAIT_PHOTO_BUTTON">
+      <message desc="Label for spoken feedback to read out switch to take portrait (bokeh effect, background blur) photo mode button." name="IDS_SWITCH_TAKE_PORTRAIT_BOKEH_PHOTO_BUTTON">
         Switch to take portrait photo
       </message>
-      <message desc="Label for switch to take portrait photo mode button." name="IDS_LABEL_SWITCH_TAKE_PORTRAIT_PHOTO_BUTTON">
+      <message desc="Label for switch to take portrait (bokeh effect, background blur) photo mode button." name="IDS_LABEL_SWITCH_TAKE_PORTRAIT_BOKEH_PHOTO_BUTTON">
         Portrait
       </message>
       <message desc="Label for the confirm button to confirm with the reviewed photo or video." name="IDS_CONFIRM_REVIEW_BUTTON">
@@ -476,8 +448,8 @@ If your feedback is about image or video quality, please attach a sample photo o
       <message desc="Label for close introducing new camera App UI banner button." name="IDS_BANNER_CLOSE_BUTTON">
         Close
       </message>
-      <message desc="Error message shown when the camera is being used by some other instance." name="IDS_ERROR_MSG_CAMERA_BEING_USED">
-        Your camera is being used by another app
+      <message desc="Error message shown on camera app window when the app is paused." name="IDS_ERROR_MSG_CAMERA_PAUSED">
+        Paused
       </message>
     </messages>
   </release>

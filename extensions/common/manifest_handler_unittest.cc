@@ -76,7 +76,7 @@ class ManifestHandlerTest : public testing::Test {
                      [](const std::string& s) { return s.c_str(); });
     }
 
-    bool Parse(Extension* extension, base::string16* error) override {
+    bool Parse(Extension* extension, std::u16string* error) override {
       watcher_->Record(name_);
       return true;
     }
@@ -103,7 +103,7 @@ class ManifestHandlerTest : public testing::Test {
                                ParsingWatcher* watcher)
         : TestManifestHandler(name, keys, prereqs, watcher) {
     }
-    bool Parse(Extension* extension, base::string16* error) override {
+    bool Parse(Extension* extension, std::u16string* error) override {
       *error = base::ASCIIToUTF16(name_);
       return false;
     }
@@ -134,7 +134,7 @@ class ManifestHandlerTest : public testing::Test {
                      [](const std::string& s) { return s.c_str(); });
     }
 
-    bool Parse(Extension* extension, base::string16* error) override {
+    bool Parse(Extension* extension, std::u16string* error) override {
       return true;
     }
 
@@ -223,9 +223,9 @@ TEST_F(ManifestHandlerTest, FailingHandlers) {
 
   // Succeeds when "a" is not recognized.
   std::string error;
-  scoped_refptr<Extension> extension =
-      Extension::Create(base::FilePath(), Manifest::INVALID_LOCATION,
-                        *manifest_a, Extension::NO_FLAGS, &error);
+  scoped_refptr<Extension> extension = Extension::Create(
+      base::FilePath(), mojom::ManifestLocation::kInvalidLocation, *manifest_a,
+      Extension::NO_FLAGS, &error);
   EXPECT_TRUE(extension.get());
 
   // Register a handler for "a" that fails.
@@ -235,12 +235,9 @@ TEST_F(ManifestHandlerTest, FailingHandlers) {
       "A", SingleKey("a"), std::vector<std::string>(), &watcher));
   ManifestHandler::FinalizeRegistration();
 
-  extension = Extension::Create(
-      base::FilePath(),
-      Manifest::INVALID_LOCATION,
-      *manifest_a,
-      Extension::NO_FLAGS,
-      &error);
+  extension = Extension::Create(base::FilePath(),
+                                mojom::ManifestLocation::kInvalidLocation,
+                                *manifest_a, Extension::NO_FLAGS, &error);
   EXPECT_FALSE(extension.get());
   EXPECT_EQ("A", error);
 }

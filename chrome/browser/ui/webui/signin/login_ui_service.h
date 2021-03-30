@@ -11,8 +11,8 @@
 
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Browser;
@@ -44,6 +44,9 @@ class LoginUIService : public KeyedService {
     CONFIGURE_SYNC_FIRST,
     // Turn sync on process was aborted, don't start sync or show settings.
     ABORT_SYNC,
+    // The dialog got closed without any explicit user action. The impact of
+    // this action depends on the particular flow.
+    UI_CLOSED,
   };
 
   // Interface for obervers of LoginUIService.
@@ -85,39 +88,28 @@ class LoginUIService : public KeyedService {
                                 const std::string& email_hint);
 
   // Displays login results. This is either the Modal Signin Error dialog if
-  // |error_message| is a non-empty string, or the User Menu with a blue header
-  // toast otherwise.
-  virtual void DisplayLoginResult(Browser* browser,
-                                  const base::string16& error_message,
-                                  const base::string16& email);
+  // |error.message()| is a non-empty string, or the User Menu with a blue
+  // header toast otherwise.
+  virtual void DisplayLoginResult(Browser* browser, const SigninUIError& error);
 
   // Set the profile blocking modal error dialog message.
   virtual void SetProfileBlockingErrorMessage();
 
-  // Gets whether the Modal Signin Error dialog should display profile blocking
-  // error message.
-  bool IsDisplayingProfileBlockedErrorMessage() const;
-
-  // Gets the last login result set through |DisplayLoginResult|.
-  const base::string16& GetLastLoginResult() const;
-
-  // Gets the last email used for signing in when a signin error occured; set
-  // through |DisplayLoginResult|.
-  const base::string16& GetLastLoginErrorEmail() const;
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  // Gets the last error set through |DisplayLoginResult|.
+  const SigninUIError& GetLastLoginError() const;
+#endif
 
  private:
   // Weak pointers to the recently opened UIs, with the most recent in front.
   std::list<LoginUI*> ui_list_;
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   Profile* profile_;
+  SigninUIError last_login_error_ = SigninUIError::Ok();
 #endif
 
   // List of observers.
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  base::string16 last_login_result_;
-  base::string16 last_login_error_email_;
-  bool is_displaying_profile_blocking_error_message_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(LoginUIService);
 };

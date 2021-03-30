@@ -78,7 +78,7 @@ void AddLabeledRowToGridLayout(GridLayout* layout,
 std::vector<std::unique_ptr<MdTextButton>> MakeButtonsInState(
     Button::ButtonState state) {
   std::vector<std::unique_ptr<MdTextButton>> buttons;
-  const base::string16 button_text = base::ASCIIToUTF16("Button");
+  const std::u16string button_text = u"Button";
   auto primary = std::make_unique<views::MdTextButton>(
       Button::PressedCallback(), button_text);
   primary->SetProminent(true);

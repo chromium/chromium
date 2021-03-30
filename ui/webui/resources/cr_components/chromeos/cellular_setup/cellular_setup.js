@@ -24,10 +24,7 @@ Polymer({
      * Name of the currently displayed sub-page.
      * @private {!cellularSetup.CellularSetupPageName|null}
      */
-    currentPageName: {
-      type: String,
-      value: cellularSetup.CellularSetupPageName.SETUP_FLOW_SELECTION,
-    },
+    currentPageName: String,
 
     /**
      * Current user selected setup flow page name.
@@ -57,14 +54,65 @@ Polymer({
       type: Object,
       observer: 'onPageChange_',
     },
+
+    /**
+     * Text for the button_bar's 'Forward' button.
+     * @private {string}
+     */
+    forwardButtonLabel_: {
+      type: String,
+    }
   },
 
   listeners: {
     'backward-nav-requested': 'onBackwardNavRequested_',
     'retry-requested': 'onRetryRequested_',
-    'complete-flow-requested': 'onCompleteFlowRequested_',
     'forward-nav-requested': 'onForwardNavRequested_',
     'cancel-requested': 'onCancelRequested_',
+    'focus-default-button': 'onFocusDefaultButton_',
+  },
+
+
+  /** @override */
+  attached() {
+    if (!this.currentPageName) {
+      this.setCurrentPage_();
+    }
+  },
+
+  /**
+   * Sets current cellular setup flow, one of eSIM flow, pSIM flow or
+   * selection flow, depending on available pSIM and eSIM slots.
+   * @private
+   */
+  setCurrentPage_() {
+    const networkConfig = network_config.MojoInterfaceProviderImpl.getInstance()
+                              .getMojoServiceRemote();
+    networkConfig.getDeviceStateList().then(response => {
+      const deviceStateList = response.result;
+
+      const deviceState = deviceStateList.find(
+          (device) => device.type ===
+              chromeos.networkConfig.mojom.NetworkType.kCellular);
+
+      if (!deviceState) {
+        this.currentPageName =
+            cellularSetup.CellularSetupPageName.SETUP_FLOW_SELECTION;
+        return;
+      }
+
+      const {pSimSlots, eSimSlots} = getSimSlotCount(deviceState);
+
+      if (pSimSlots > 0 && eSimSlots === 0) {
+        this.currentPageName = cellularSetup.CellularSetupPageName.PSIM_FLOW_UI;
+        return;
+      } else if (pSimSlots === 0 && eSimSlots > 0) {
+        this.currentPageName = cellularSetup.CellularSetupPageName.ESIM_FLOW_UI;
+        return;
+      }
+      this.currentPageName =
+          cellularSetup.CellularSetupPageName.SETUP_FLOW_SELECTION;
+    });
   },
 
   /** @private */
@@ -98,11 +146,6 @@ Polymer({
   },
 
   /** @private */
-  onCompleteFlowRequested_() {
-    // TODO(crbug.com/1093185): Add completion logic.
-  },
-
-  /** @private */
   onForwardNavRequested_() {
     // Switch current page to user selected flow when navigating forward from
     // setup selection.
@@ -112,6 +155,11 @@ Polymer({
       return;
     }
     this.currentPage_.navigateForward();
+  },
+
+  /** @private */
+  onFocusDefaultButton_() {
+    this.$.buttonBar.focusDefaultButton();
   },
 
   /**

@@ -30,18 +30,16 @@ TEST(ModuleInfoTest, InspectModule) {
   ModuleInspectionResult inspection_result =
       InspectModule(GetKernel32DllFilePath());
 
-  EXPECT_STREQ(L"c:\\windows\\system32\\", inspection_result.location.c_str());
-  EXPECT_STREQ(L"kernel32.dll", inspection_result.basename.c_str());
-  EXPECT_STREQ(L"Microsoft\xAE Windows\xAE Operating System",
-               inspection_result.product_name.c_str());
-  EXPECT_STREQ(L"Windows NT BASE API Client DLL",
-               inspection_result.description.c_str());
+  EXPECT_EQ(u"c:\\windows\\system32\\", inspection_result.location);
+  EXPECT_EQ(u"kernel32.dll", inspection_result.basename);
+  EXPECT_EQ(u"Microsoft\xAE Windows\xAE Operating System",
+            inspection_result.product_name);
+  EXPECT_EQ(u"Windows NT BASE API Client DLL", inspection_result.description);
   EXPECT_FALSE(inspection_result.version.empty());
   EXPECT_EQ(inspection_result.certificate_info.type,
             CertificateInfo::Type::CERTIFICATE_IN_CATALOG);
   EXPECT_FALSE(inspection_result.certificate_info.path.empty());
-  EXPECT_STREQ(L"Microsoft Windows",
-               inspection_result.certificate_info.subject.c_str());
+  EXPECT_EQ(u"Microsoft Windows", inspection_result.certificate_info.subject);
 }
 
 TEST(ModuleInfoTest, GenerateCodeId) {
@@ -52,13 +50,13 @@ TEST(ModuleInfoTest, GenerateCodeId) {
 
 TEST(ModuleInfoTest, NormalizeInspectionResult) {
   ModuleInspectionResult test_case;
-  test_case.location = L"%variable%\\PATH\\TO\\file.txt";
-  test_case.version = L"23, 32, 43, 55 win7_rtm.123456-1234";
+  test_case.location = u"%variable%\\PATH\\TO\\file.txt";
+  test_case.version = u"23, 32, 43, 55 win7_rtm.123456-1234";
 
   ModuleInspectionResult expected;
-  expected.location = L"%variable%\\path\\to\\";
-  expected.basename = L"file.txt";
-  expected.version = L"23.32.43.55";
+  expected.location = u"%variable%\\path\\to\\";
+  expected.basename = u"file.txt";
+  expected.version = u"23.32.43.55";
 
   internal::NormalizeInspectionResult(&test_case);
 

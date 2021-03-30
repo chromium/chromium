@@ -35,18 +35,6 @@
 
 namespace autofill {
 
-SaveCardBubbleViews::SyncPromoDelegate::SyncPromoDelegate(
-    SaveCardBubbleController* controller,
-    signin_metrics::AccessPoint access_point)
-    : controller_(controller), access_point_(access_point) {
-  DCHECK(controller_);
-}
-
-void SaveCardBubbleViews::SyncPromoDelegate::OnEnableSync(
-    const AccountInfo& account) {
-  controller_->OnSyncPromoAccepted(account, access_point_);
-}
-
 SaveCardBubbleViews::SaveCardBubbleViews(views::View* anchor_view,
                                          content::WebContents* web_contents,
                                          SaveCardBubbleController* controller)
@@ -107,8 +95,8 @@ void SaveCardBubbleViews::AddedToWidget() {
       std::make_unique<TitleWithIconAndSeparatorView>(GetWindowTitle()));
 }
 
-base::string16 SaveCardBubbleViews::GetWindowTitle() const {
-  return controller_ ? controller_->GetWindowTitle() : base::string16();
+std::u16string SaveCardBubbleViews::GetWindowTitle() const {
+  return controller_ ? controller_->GetWindowTitle() : std::u16string();
 }
 
 void SaveCardBubbleViews::WindowClosing() {
@@ -128,7 +116,7 @@ views::View* SaveCardBubbleViews::GetFootnoteViewForTesting() {
   return footnote_view_;
 }
 
-const base::string16 SaveCardBubbleViews::GetCardIdentifierString() const {
+const std::u16string SaveCardBubbleViews::GetCardIdentifierString() const {
   return controller_->GetCard().CardIdentifierStringForAutofillDisplay();
 }
 
@@ -145,7 +133,7 @@ std::unique_ptr<views::View> SaveCardBubbleViews::CreateMainContentView() {
 
   // If applicable, add the upload explanation label.  Appears above the card
   // info.
-  base::string16 explanation = controller_->GetExplanatoryMessage();
+  std::u16string explanation = controller_->GetExplanatoryMessage();
   if (!explanation.empty()) {
     auto* const explanation_label =
         view->AddChildView(std::make_unique<views::Label>(

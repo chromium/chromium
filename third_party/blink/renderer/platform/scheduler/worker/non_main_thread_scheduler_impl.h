@@ -37,13 +37,17 @@ class PLATFORM_EXPORT NonMainThreadSchedulerImpl : public ThreadSchedulerImpl {
       base::sequence_manager::SequenceManager* sequence_manager,
       WorkerSchedulerProxy* proxy);
 
-  // Blink should use NonMainThreadSchedulerImpl::DefaultTaskQueue instead of
-  // WebThreadScheduler::DefaultTaskRunner.
-  virtual scoped_refptr<NonMainThreadTaskQueue> DefaultTaskQueue() = 0;
+  // Performs initialization that must occur after the constructor of all
+  // subclasses has run. Must be invoked before any other method. Must be
+  // invoked on the same sequence as the constructor.
+  virtual void Init() {}
 
-  // Must be called before the scheduler can be used. Does any post construction
-  // initialization needed such as initializing idle period detection.
-  void Init();
+  // Attaches the scheduler to the current thread. Must be invoked on the thread
+  // that runs tasks from this scheduler, before running tasks from this
+  // scheduler.
+  void AttachToCurrentThread();
+
+  virtual scoped_refptr<NonMainThreadTaskQueue> DefaultTaskQueue() = 0;
 
   virtual void OnTaskCompleted(
       NonMainThreadTaskQueue* worker_task_queue,
@@ -107,9 +111,6 @@ class PLATFORM_EXPORT NonMainThreadSchedulerImpl : public ThreadSchedulerImpl {
       TaskType default_task_type);
 
   friend class WorkerScheduler;
-
-  // Called during Init() for delayed initialization for subclasses.
-  virtual void InitImpl() = 0;
 
   NonMainThreadSchedulerHelper* helper() { return &helper_; }
 

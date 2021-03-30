@@ -270,6 +270,7 @@ class SequenceCheckerOwner {
 // Verifies SequenceCheckerImpl::CalledOnValidSequence() returns true if called
 // during thread destruction.
 TEST(SequenceCheckerTest, CalledOnValidSequenceFromThreadDestruction) {
+  SequenceChecker::EnableStackLogging();
   ThreadLocalOwnedPointer<SequenceCheckerOwner> thread_local_owner;
   {
     test::TaskEnvironment task_environment;

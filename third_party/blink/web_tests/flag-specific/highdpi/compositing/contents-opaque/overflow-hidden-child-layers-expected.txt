@@ -1,0 +1,30 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV class='box'",
+      "position": [-45, -45],
+      "bounds": [240, 240],
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#C0C0C0",
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [87, 75, 0, 1]
+      ]
+    }
+  ]
+}
+

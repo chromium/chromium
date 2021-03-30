@@ -33,8 +33,6 @@
 
 namespace blink {
 
-const int kButtonShadowHeight = 2;
-
 LayoutFileUploadControl::LayoutFileUploadControl(Element* input)
     : LayoutBlockFlow(input) {
   DCHECK_EQ(To<HTMLInputElement>(input)->type(), input_type_names::kFile);
@@ -86,19 +84,6 @@ String LayoutFileUploadControl::FileTextValue() const {
   if (input->files()->length() >= 2)
     return StringTruncator::RightTruncate(text, width, StyleRef().GetFont());
   return StringTruncator::CenterTruncate(text, width, StyleRef().GetFont());
-}
-
-// Override to allow effective clip rect to be bigger than the padding box
-// because of kButtonShadowHeight.
-PhysicalRect LayoutFileUploadControl::OverflowClipRect(
-    const PhysicalOffset& additional_offset,
-    OverlayScrollbarClipBehavior) const {
-  NOT_DESTROYED();
-  PhysicalRect rect(additional_offset, Size());
-  rect.Expand(BorderInsets());
-  rect.offset.top -= LayoutUnit(kButtonShadowHeight);
-  rect.size.height += LayoutUnit(kButtonShadowHeight) * 2;
-  return rect;
 }
 
 }  // namespace blink

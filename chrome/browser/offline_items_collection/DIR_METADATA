@@ -1,4 +1,4 @@
-monorail:  {
+monorail: {
   component: "UI>Browser>Downloads"
 }
 team_email: "chrome-downloads@chromium.org"

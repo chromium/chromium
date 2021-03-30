@@ -24,19 +24,18 @@ namespace settings {
 const char OnStartupHandler::kOnStartupNtpExtensionEventName[] =
     "update-ntp-extension";
 
-OnStartupHandler::OnStartupHandler(Profile* profile)
-    : extension_registry_observer_(this), profile_(profile) {
+OnStartupHandler::OnStartupHandler(Profile* profile) : profile_(profile) {
   DCHECK(profile);
 }
 OnStartupHandler::~OnStartupHandler() {}
 
 void OnStartupHandler::OnJavascriptAllowed() {
-  extension_registry_observer_.Add(
+  extension_registry_observation_.Observe(
       extensions::ExtensionRegistry::Get(profile_));
 }
 
 void OnStartupHandler::OnJavascriptDisallowed() {
-  extension_registry_observer_.RemoveAll();
+  extension_registry_observation_.Reset();
 }
 
 void OnStartupHandler::RegisterMessages() {

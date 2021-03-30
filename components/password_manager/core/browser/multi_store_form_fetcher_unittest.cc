@@ -439,30 +439,30 @@ TEST_F(MultiStoreFormFetcherTest, MovingToAccountStoreIsBlocked) {
   EXPECT_FALSE(form_fetcher_->IsMovingBlocked(kUser, psl_form.username_value));
 }
 
-TEST_F(MultiStoreFormFetcherTest, CompromisedCredentials) {
+TEST_F(MultiStoreFormFetcherTest, InsecureCredentials) {
   Fetch();
-  CompromisedCredentials profile_store_compromised_credentials(
-      form_digest_.signon_realm, base::ASCIIToUTF16("profile_username"),
-      base::Time::FromTimeT(1), CompromiseType::kLeaked, IsMuted(false));
-  profile_store_compromised_credentials.in_store =
+  InsecureCredential profile_store_insecure_credentials(
+      form_digest_.signon_realm, u"profile_username", base::Time::FromTimeT(1),
+      InsecureType::kLeaked, IsMuted(false));
+  profile_store_insecure_credentials.in_store =
       PasswordForm::Store::kProfileStore;
 
-  CompromisedCredentials account_store_compromised_credentials(
-      form_digest_.signon_realm, base::ASCIIToUTF16("account_username"),
-      base::Time::FromTimeT(1), CompromiseType::kLeaked, IsMuted(false));
-  account_store_compromised_credentials.in_store =
+  InsecureCredential account_store_insecure_credentials(
+      form_digest_.signon_realm, u"account_username", base::Time::FromTimeT(1),
+      InsecureType::kLeaked, IsMuted(false));
+  account_store_insecure_credentials.in_store =
       PasswordForm::Store::kAccountStore;
 
-  static_cast<CompromisedCredentialsConsumer*>(form_fetcher_.get())
-      ->OnGetCompromisedCredentials({profile_store_compromised_credentials});
+  static_cast<InsecureCredentialsConsumer*>(form_fetcher_.get())
+      ->OnGetInsecureCredentials({profile_store_insecure_credentials});
 
-  static_cast<CompromisedCredentialsConsumer*>(form_fetcher_.get())
-      ->OnGetCompromisedCredentials({account_store_compromised_credentials});
+  static_cast<InsecureCredentialsConsumer*>(form_fetcher_.get())
+      ->OnGetInsecureCredentials({account_store_insecure_credentials});
 
-  EXPECT_THAT(form_fetcher_->GetCompromisedCredentials(),
-              testing::UnorderedElementsAreArray(
-                  {profile_store_compromised_credentials,
-                   account_store_compromised_credentials}));
+  EXPECT_THAT(
+      form_fetcher_->GetInsecureCredentials(),
+      testing::UnorderedElementsAreArray({profile_store_insecure_credentials,
+                                          account_store_insecure_credentials}));
 }
 
 }  // namespace password_manager

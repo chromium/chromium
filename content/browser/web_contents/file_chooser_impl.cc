@@ -6,6 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "content/browser/child_process_security_policy_impl.h"
+#include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -87,6 +88,16 @@ mojo::Remote<blink::mojom::FileChooser> FileChooserImpl::CreateBoundForTesting(
   return chooser;
 }
 
+// static
+std::pair<FileChooserImpl*, mojo::Remote<blink::mojom::FileChooser>>
+FileChooserImpl::CreateForTesting(RenderFrameHostImpl* render_frame_host) {
+  mojo::Remote<blink::mojom::FileChooser> chooser;
+  FileChooserImpl* impl = new FileChooserImpl(render_frame_host);
+  mojo::MakeSelfOwnedReceiver(base::WrapUnique(impl),
+                              chooser.BindNewPipeAndPassReceiver());
+  return std::make_pair(impl, std::move(chooser));
+}
+
 FileChooserImpl::FileChooserImpl(RenderFrameHostImpl* render_frame_host)
     : render_frame_host_(render_frame_host) {
   Observe(WebContents::FromRenderFrameHost(render_frame_host));
@@ -118,8 +129,10 @@ void FileChooserImpl::OpenFileChooser(blink::mojom::FileChooserParamsPtr params,
 
   // Don't allow page with open FileChooser to enter BackForwardCache to avoid
   // any unexpected behaviour from BackForwardCache.
-  BackForwardCache::DisableForRenderFrameHost(render_frame_host_,
-                                              "FileChooser");
+  BackForwardCache::DisableForRenderFrameHost(
+      render_frame_host_,
+      BackForwardCacheDisable::DisabledReason(
+          BackForwardCacheDisable::DisabledReasonId::kFileChooser));
 
   static_cast<WebContentsImpl*>(web_contents())
       ->RunFileChooser(render_frame_host_, std::move(listener), *params);
@@ -151,8 +164,10 @@ void FileChooserImpl::FileSelected(
     const base::FilePath& base_dir,
     blink::mojom::FileChooserParams::Mode mode) {
   listener_impl_ = nullptr;
-  if (!render_frame_host_)
+  if (!render_frame_host_) {
+    std::move(callback_).Run(nullptr);
     return;
+  }
   storage::FileSystemContext* file_system_context = nullptr;
   const int pid = render_frame_host_->GetProcess()->GetID();
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
@@ -182,8 +197,6 @@ void FileChooserImpl::FileSelected(
 
 void FileChooserImpl::FileSelectionCanceled() {
   listener_impl_ = nullptr;
-  if (!render_frame_host_)
-    return;
   std::move(callback_).Run(nullptr);
 }
 

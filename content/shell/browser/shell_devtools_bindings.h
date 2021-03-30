@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 
+#include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/containers/unique_ptr_adapters.h"

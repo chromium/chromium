@@ -21,6 +21,19 @@ Polymer({
       notify: true,
     },
 
+    /** @private {!Array<!chrome.languageSettingsPrivate.Language>} */
+    displayedLanguages_: {
+      type: Array,
+      computed: `getLanguages_(languages.supported, languages.enabled.*,
+          filterValue_)`,
+    },
+
+    /** @private {boolean} */
+    displayedLanguagesEmpty_: {
+      type: Boolean,
+      computed: 'isZero_(displayedLanguages_.length)',
+    },
+
     /** @type {!LanguageHelper} */
     languageHelper: Object,
 
@@ -169,5 +182,14 @@ Polymer({
     } else if (e.key !== 'PageDown' && e.key !== 'PageUp') {
       this.$.search.scrollIntoViewIfNeeded();
     }
+  },
+
+  /**
+   * @param {number} num
+   * @return {boolean}
+   * @private
+   */
+  isZero_(num) {
+    return num === 0;
   },
 });

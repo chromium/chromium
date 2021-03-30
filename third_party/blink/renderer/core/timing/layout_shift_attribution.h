@@ -11,6 +11,7 @@
 namespace blink {
 
 class DOMRectReadOnly;
+class Node;
 class ScriptState;
 class ScriptValue;
 
@@ -27,6 +28,9 @@ class CORE_EXPORT LayoutShiftAttribution : public ScriptWrappable {
   ~LayoutShiftAttribution() override;
 
   Node* node() const;
+  // Return node_ unconditionally, skipping the checks that apply
+  // to exposing it through bindings.
+  Node* rawNodeForInspector() const;
   DOMRectReadOnly* previousRect() const;
   DOMRectReadOnly* currentRect() const;
 

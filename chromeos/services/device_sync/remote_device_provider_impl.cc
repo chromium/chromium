@@ -6,13 +6,13 @@
 
 #include <algorithm>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/secure_message_delegate_impl.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/device_sync/remote_device_loader.h"
 #include "chromeos/services/device_sync/remote_device_v2_loader_impl.h"
 

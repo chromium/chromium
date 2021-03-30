@@ -37,7 +37,7 @@ class CORE_EXPORT FindInPage final : public GarbageCollected<FindInPage>,
                     bool* active_now = nullptr);
 
   void SetTickmarks(const WebElement& target,
-                    const WebVector<WebRect>& tickmarks);
+                    const WebVector<gfx::Rect>& tickmarks);
 
   int FindMatchMarkersVersion() const;
 

@@ -41,7 +41,6 @@
 #include "ios/chrome/browser/web/chrome_web_client.h"
 #import "ios/chrome/browser/web/chrome_web_test.h"
 #include "ios/chrome/browser/webdata_services/web_data_service_factory.h"
-#import "ios/web/public/deprecated/crw_js_injection_receiver.h"
 #include "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -147,10 +146,9 @@ void CheckField(const FormStructure& form,
   FAIL() << "Missing field " << name;
 }
 
-AutofillEntry CreateAutofillEntry(const base::string16& value) {
+AutofillEntry CreateAutofillEntry(const std::u16string& value) {
   const base::Time kNow = AutofillClock::Now();
-  return AutofillEntry(AutofillKey(base::ASCIIToUTF16("Name"), value), kNow,
-                       kNow);
+  return AutofillEntry(AutofillKey(u"Name", value), kNow, kNow);
 }
 
 // Forces rendering of a UIView. This is used in tests to make sure that UIKit
@@ -292,10 +290,6 @@ void AutofillControllerTest::SetUp() {
 
   [accessory_mediator_ injectWebState:web_state()];
   [accessory_mediator_ injectProvider:suggestion_controller_];
-  auto suggestionManager = base::mac::ObjCCastStrict<JsSuggestionManager>(
-      [web_state()->GetJSInjectionReceiver()
-          instanceOfClass:[JsSuggestionManager class]]);
-  [accessory_mediator_ injectSuggestionManager:suggestionManager];
 
   histogram_tester_.reset(new base::HistogramTester());
 }
@@ -384,7 +378,7 @@ TEST_F(AutofillControllerTest, ReadFormName) {
           ->autofill_manager();
   const auto& forms = autofill_manager->form_structures();
   const auto& form = *(forms.begin()->second);
-  EXPECT_EQ(base::UTF8ToUTF16("form1"), form.ToFormData().name);
+  EXPECT_EQ(u"form1", form.ToFormData().name);
 }
 
 // Checks that an HTML page containing a profile-type form which is submitted
@@ -411,16 +405,14 @@ TEST_F(AutofillControllerTest, ProfileImport) {
   if (profiles.size() != 1)
     FAIL() << "Not exactly one profile found after attempted import";
   const AutofillProfile& profile = *profiles[0];
-  EXPECT_EQ(base::UTF8ToUTF16("Homer Simpson"),
+  EXPECT_EQ(u"Homer Simpson",
             profile.GetInfo(AutofillType(NAME_FULL), "en-US"));
-  EXPECT_EQ(base::UTF8ToUTF16("123 Main Street"),
+  EXPECT_EQ(u"123 Main Street",
             profile.GetInfo(AutofillType(ADDRESS_HOME_LINE1), "en-US"));
-  EXPECT_EQ(base::UTF8ToUTF16("Springfield"),
+  EXPECT_EQ(u"Springfield",
             profile.GetInfo(AutofillType(ADDRESS_HOME_CITY), "en-US"));
-  EXPECT_EQ(base::UTF8ToUTF16("IL"),
-            profile.GetInfo(AutofillType(ADDRESS_HOME_STATE), "en-US"));
-  EXPECT_EQ(base::UTF8ToUTF16("55123"),
-            profile.GetInfo(AutofillType(ADDRESS_HOME_ZIP), "en-US"));
+  EXPECT_EQ(u"IL", profile.GetInfo(AutofillType(ADDRESS_HOME_STATE), "en-US"));
+  EXPECT_EQ(u"55123", profile.GetInfo(AutofillType(ADDRESS_HOME_ZIP), "en-US"));
 }
 
 void AutofillControllerTest::SetUpForSuggestions(
@@ -430,11 +422,11 @@ void AutofillControllerTest::SetUpForSuggestions(
       PersonalDataManagerFactory::GetForBrowserState(
           ChromeBrowserState::FromBrowserState(GetBrowserState()));
   AutofillProfile profile(base::GenerateGUID(), "https://www.example.com/");
-  profile.SetRawInfo(NAME_FULL, base::UTF8ToUTF16("Homer Simpson"));
-  profile.SetRawInfo(ADDRESS_HOME_LINE1, base::UTF8ToUTF16("123 Main Street"));
-  profile.SetRawInfo(ADDRESS_HOME_CITY, base::UTF8ToUTF16("Springfield"));
-  profile.SetRawInfo(ADDRESS_HOME_STATE, base::UTF8ToUTF16("IL"));
-  profile.SetRawInfo(ADDRESS_HOME_ZIP, base::UTF8ToUTF16("55123"));
+  profile.SetRawInfo(NAME_FULL, u"Homer Simpson");
+  profile.SetRawInfo(ADDRESS_HOME_LINE1, u"123 Main Street");
+  profile.SetRawInfo(ADDRESS_HOME_CITY, u"Springfield");
+  profile.SetRawInfo(ADDRESS_HOME_STATE, u"IL");
+  profile.SetRawInfo(ADDRESS_HOME_ZIP, u"55123");
   EXPECT_EQ(0U, personal_data_manager->GetProfiles().size());
   personal_data_manager->SaveImportedProfile(profile);
   EXPECT_EQ(1U, personal_data_manager->GetProfiles().size());
@@ -497,11 +489,11 @@ TEST_F(AutofillControllerTest, MultipleProfileSuggestions) {
   PersonalDataManagerFinishedProfileTasksWaiter waiter(personal_data_manager);
 
   AutofillProfile profile(base::GenerateGUID(), "https://www.example.com/");
-  profile.SetRawInfo(NAME_FULL, base::UTF8ToUTF16("Homer Simpson"));
-  profile.SetRawInfo(ADDRESS_HOME_LINE1, base::UTF8ToUTF16("123 Main Street"));
-  profile.SetRawInfo(ADDRESS_HOME_CITY, base::UTF8ToUTF16("Springfield"));
-  profile.SetRawInfo(ADDRESS_HOME_STATE, base::UTF8ToUTF16("IL"));
-  profile.SetRawInfo(ADDRESS_HOME_ZIP, base::UTF8ToUTF16("55123"));
+  profile.SetRawInfo(NAME_FULL, u"Homer Simpson");
+  profile.SetRawInfo(ADDRESS_HOME_LINE1, u"123 Main Street");
+  profile.SetRawInfo(ADDRESS_HOME_CITY, u"Springfield");
+  profile.SetRawInfo(ADDRESS_HOME_STATE, u"IL");
+  profile.SetRawInfo(ADDRESS_HOME_ZIP, u"55123");
   EXPECT_EQ(0U, personal_data_manager->GetProfiles().size());
 
   personal_data_manager->SaveImportedProfile(profile);
@@ -509,12 +501,11 @@ TEST_F(AutofillControllerTest, MultipleProfileSuggestions) {
 
   EXPECT_EQ(1U, personal_data_manager->GetProfiles().size());
   AutofillProfile profile2(base::GenerateGUID(), "https://www.example.com/");
-  profile2.SetRawInfo(NAME_FULL, base::UTF8ToUTF16("Larry Page"));
-  profile2.SetRawInfo(ADDRESS_HOME_LINE1,
-                      base::UTF8ToUTF16("1600 Amphitheatre Parkway"));
-  profile2.SetRawInfo(ADDRESS_HOME_CITY, base::UTF8ToUTF16("Mountain View"));
-  profile2.SetRawInfo(ADDRESS_HOME_STATE, base::UTF8ToUTF16("CA"));
-  profile2.SetRawInfo(ADDRESS_HOME_ZIP, base::UTF8ToUTF16("94043"));
+  profile2.SetRawInfo(NAME_FULL, u"Larry Page");
+  profile2.SetRawInfo(ADDRESS_HOME_LINE1, u"1600 Amphitheatre Parkway");
+  profile2.SetRawInfo(ADDRESS_HOME_CITY, u"Mountain View");
+  profile2.SetRawInfo(ADDRESS_HOME_STATE, u"CA");
+  profile2.SetRawInfo(ADDRESS_HOME_ZIP, u"94043");
   personal_data_manager->SaveImportedProfile(profile2);
   EXPECT_EQ(2U, personal_data_manager->GetProfiles().size());
   EXPECT_TRUE(LoadHtmlAndWaitForFormFetched(kProfileFormHtml, 1));
@@ -537,26 +528,26 @@ TEST_F(AutofillControllerTest, KeyValueImport) {
           chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS);
   __block TestConsumer consumer;
   const int limit = 1;
-  consumer.result_ = {CreateAutofillEntry(base::ASCIIToUTF16("Should")),
-                      CreateAutofillEntry(base::ASCIIToUTF16("get")),
-                      CreateAutofillEntry(base::ASCIIToUTF16("overwritten"))};
-  web_data_service->GetFormValuesForElementName(
-      base::UTF8ToUTF16("greeting"), base::string16(), limit, &consumer);
+  consumer.result_ = {CreateAutofillEntry(u"Should"),
+                      CreateAutofillEntry(u"get"),
+                      CreateAutofillEntry(u"overwritten")};
+  web_data_service->GetFormValuesForElementName(u"greeting", std::u16string(),
+                                                limit, &consumer);
   base::ThreadPoolInstance::Get()->FlushForTesting();
   WaitForBackgroundTasks();
   // No value should be returned before anything is loaded via form submission.
   ASSERT_EQ(0U, consumer.result_.size());
   ExecuteJavaScript(@"submit.click()");
   WaitForCondition(^bool {
-    web_data_service->GetFormValuesForElementName(
-        base::UTF8ToUTF16("greeting"), base::string16(), limit, &consumer);
+    web_data_service->GetFormValuesForElementName(u"greeting", std::u16string(),
+                                                  limit, &consumer);
     return consumer.result_.size();
   });
   base::ThreadPoolInstance::Get()->FlushForTesting();
   WaitForBackgroundTasks();
   // One result should be returned, matching the filled value.
   ASSERT_EQ(1U, consumer.result_.size());
-  EXPECT_EQ(base::UTF8ToUTF16("Hello"), consumer.result_[0].key().value());
+  EXPECT_EQ(u"Hello", consumer.result_[0].key().value());
 }
 
 void AutofillControllerTest::SetUpKeyValueData() {
@@ -566,8 +557,8 @@ void AutofillControllerTest::SetUpKeyValueData() {
   // Load value into database.
   std::vector<FormFieldData> values;
   FormFieldData fieldData;
-  fieldData.name = base::UTF8ToUTF16("greeting");
-  fieldData.value = base::UTF8ToUTF16("Bonjour");
+  fieldData.name = u"greeting";
+  fieldData.value = u"Bonjour";
   values.push_back(fieldData);
   web_data_service->AddFormFields(values);
 
@@ -691,15 +682,14 @@ TEST_F(AutofillControllerTest, CreditCardImport) {
       personal_data_manager->GetCreditCards();
   ASSERT_EQ(1U, credit_cards.size());
   const CreditCard& credit_card = *credit_cards[0];
-  EXPECT_EQ(base::UTF8ToUTF16("Superman"),
+  EXPECT_EQ(u"Superman",
             credit_card.GetInfo(AutofillType(CREDIT_CARD_NAME_FULL), "en-US"));
-  EXPECT_EQ(base::UTF8ToUTF16("4000444444444444"),
+  EXPECT_EQ(u"4000444444444444",
             credit_card.GetInfo(AutofillType(CREDIT_CARD_NUMBER), "en-US"));
-  EXPECT_EQ(base::UTF8ToUTF16("11"),
+  EXPECT_EQ(u"11",
             credit_card.GetInfo(AutofillType(CREDIT_CARD_EXP_MONTH), "en-US"));
-  EXPECT_EQ(
-      base::UTF8ToUTF16("2999"),
-      credit_card.GetInfo(AutofillType(CREDIT_CARD_EXP_4_DIGIT_YEAR), "en-US"));
+  EXPECT_EQ(u"2999", credit_card.GetInfo(
+                         AutofillType(CREDIT_CARD_EXP_4_DIGIT_YEAR), "en-US"));
 }
 
 }  // namespace

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_FORCED_EXTENSIONS_FORCE_INSTALLED_METRICS_H_
 #define CHROME_BROWSER_EXTENSIONS_FORCED_EXTENSIONS_FORCE_INSTALLED_METRICS_H_
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
@@ -46,7 +46,9 @@ class ForceInstalledMetrics : public ForceInstalledTracker::Observer {
     // Session with Regular new user, which has a user name and password.
     USER_TYPE_REGULAR_NEW = 2,
     USER_TYPE_PUBLIC_ACCOUNT = 3,
-    USER_TYPE_SUPERVISED = 4,
+    // TODO(crbug/1155729): Legacy supervised users are deprecated. Use
+    // USER_TYPE_CHILD instead. Remove this enum.
+    USER_TYPE_SUPERVISED_DEPRECATED = 4,
     USER_TYPE_KIOSK_APP = 5,
     USER_TYPE_CHILD = 6,
     USER_TYPE_ARC_KIOSK_APP = 7,
@@ -104,8 +106,9 @@ class ForceInstalledMetrics : public ForceInstalledTracker::Observer {
   // session.
   bool ready_reported_ = false;
 
-  ScopedObserver<ForceInstalledTracker, ForceInstalledTracker::Observer>
-      tracker_observer_{this};
+  base::ScopedObservation<ForceInstalledTracker,
+                          ForceInstalledTracker::Observer>
+      tracker_observation_{this};
 
   // Tracks installation reporting timeout.
   std::unique_ptr<base::OneShotTimer> timer_;

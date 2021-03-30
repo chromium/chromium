@@ -35,7 +35,6 @@
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/navigation_policy.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -130,6 +129,9 @@ class DelegatingURLLoaderClient final : public network::mojom::URLLoaderClient {
   }
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override {
     client_->OnTransferSizeUpdated(transfer_size_diff);
+  }
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
+    client_->OnReceiveEarlyHints(std::move(early_hints));
   }
   void OnReceiveResponse(network::mojom::URLResponseHeadPtr head) override {
     if (devtools_enabled_) {
@@ -786,7 +788,7 @@ bool ServiceWorkerFetchDispatcher::MaybeStartNavigationPreload(
   }
 
   factory->CreateLoaderAndStart(
-      url_loader.InitWithNewPipeAndPassReceiver(), -1 /* routing_id? */,
+      url_loader.InitWithNewPipeAndPassReceiver(),
       GlobalRequestID::MakeBrowserInitiated().request_id,
       network::mojom::kURLLoadOptionNone, resource_request,
       std::move(url_loader_client_to_pass),

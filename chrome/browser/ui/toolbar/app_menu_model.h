@@ -80,6 +80,7 @@ enum AppMenuAction {
   // Only used by WebAppMenuModel:
   MENU_ACTION_UNINSTALL_APP = 51,
   MENU_ACTION_SHOW_KALEIDOSCOPE = 52,
+  MENU_ACTION_CHROME_TIPS = 53,
   LIMIT_MENU_ACTION
 };
 
@@ -137,7 +138,7 @@ class AppMenuModel : public ui::SimpleMenuModel,
 
   // Overridden for both ButtonMenuItemModel::Delegate and SimpleMenuModel:
   bool IsItemForCommandIdDynamic(int command_id) const override;
-  base::string16 GetLabelForCommandId(int command_id) const override;
+  std::u16string GetLabelForCommandId(int command_id) const override;
   ui::ImageModel GetIconForCommandId(int command_id) const override;
   void ExecuteCommand(int command_id, int event_flags) override;
   bool IsCommandIdChecked(int command_id) const override;
@@ -175,10 +176,6 @@ class AppMenuModel : public ui::SimpleMenuModel,
 
   // Appends a clipboard menu (without separators).
   void CreateCutCopyPasteMenu();
-
-  // Add a menu item for the browser action icons if there is overflow, returns
-  // whether the menu was added.
-  bool CreateActionToolbarOverflowMenu();
 
   // Appends a zoom menu (without separators).
   void CreateZoomMenu();
@@ -220,7 +217,7 @@ class AppMenuModel : public ui::SimpleMenuModel,
   std::unique_ptr<ui::ButtonMenuItemModel> zoom_menu_item_model_;
 
   // Label of the zoom label in the zoom menu item.
-  base::string16 zoom_label_;
+  std::u16string zoom_label_;
 
   // Bookmark submenu.
   std::unique_ptr<BookmarkSubMenuModel> bookmark_sub_menu_model_;

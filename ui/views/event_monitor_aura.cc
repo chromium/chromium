@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/check_op.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/events/event_observer.h"
@@ -25,21 +25,23 @@ class WindowMonitorAura : public EventMonitorAura, public aura::WindowObserver {
                     const std::set<ui::EventType>& types)
       : EventMonitorAura(event_observer, target_window, types),
         target_window_(target_window) {
-    window_observer_.Add(target_window);
+    window_observation_.Observe(target_window);
   }
   ~WindowMonitorAura() override = default;
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override {
     DCHECK_EQ(window, target_window_);
-    window_observer_.Remove(target_window_);
+    DCHECK(window_observation_.IsObservingSource(target_window_));
+    window_observation_.Reset();
     target_window_ = nullptr;
     TearDown();
   }
 
  private:
   aura::Window* target_window_;
-  ScopedObserver<aura::Window, aura::WindowObserver> window_observer_{this};
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      window_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WindowMonitorAura);
 };

@@ -32,13 +32,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_POINT_H_
 
 #include "third_party/blink/renderer/core/svg/properties/svg_listable_property.h"
-#include "third_party/blink/renderer/core/svg/svg_parsing_error.h"
 #include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
-class AffineTransform;
 class SVGPointTearOff;
 
 class SVGPoint final : public SVGListablePropertyBase {
@@ -59,10 +57,7 @@ class SVGPoint final : public SVGListablePropertyBase {
   void SetX(float f) { value_.SetX(f); }
   void SetY(float f) { value_.SetY(f); }
 
-  FloatPoint MatrixTransform(const AffineTransform&) const;
-
   String ValueAsString() const override;
-  SVGParsingError SetValueAsString(const String&);
 
   void Add(const SVGPropertyBase*, const SVGElement*) override;
   void CalculateAnimatedValue(
@@ -80,9 +75,6 @@ class SVGPoint final : public SVGListablePropertyBase {
   AnimatedPropertyType GetType() const override { return ClassType(); }
 
  private:
-  template <typename CharType>
-  SVGParsingError Parse(const CharType* ptr, const CharType* end);
-
   FloatPoint value_;
 };
 

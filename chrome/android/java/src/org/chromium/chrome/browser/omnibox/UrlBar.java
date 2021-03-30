@@ -39,10 +39,10 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.compat.ApiHelperForO;
-import org.chromium.chrome.browser.WindowDelegate;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.WindowDelegate;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/strings/string16.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom.h"
@@ -142,7 +141,7 @@ class OsSettingsSection {
   mojom::SearchResultPtr GenerateSectionSearchResult(
       double relevance_score) const;
 
-  static base::string16 GetHelpUrlWithBoard(const std::string& original_url);
+  static std::u16string GetHelpUrlWithBoard(const std::string& original_url);
 
  protected:
   static void RegisterNestedSettingBulk(

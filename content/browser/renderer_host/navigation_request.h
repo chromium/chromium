@@ -6,6 +6,8 @@
 #define CONTENT_BROWSER_RENDERER_HOST_NAVIGATION_REQUEST_H_
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/callback_forward.h"
@@ -17,7 +19,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "content/browser/initiator_csp_context.h"
 #include "content/browser/loader/navigation_url_loader_delegate.h"
 #include "content/browser/navigation_subresource_loader_params.h"
 #include "content/browser/prerender/prerender_host.h"
@@ -26,6 +27,9 @@
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_throttle_runner.h"
 #include "content/browser/renderer_host/policy_container_host.h"
+#include "content/browser/renderer_host/policy_container_navigation_bundle.h"
+#include "content/browser/renderer_host/render_frame_host_csp_context.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/web_package/web_bundle_handle.h"
 #include "content/common/content_export.h"
@@ -39,7 +43,6 @@
 #include "content/public/browser/navigation_type.h"
 #include "content/public/browser/peak_gpu_memory_tracker.h"
 #include "content/public/browser/render_process_host_observer.h"
-#include "content/public/common/impression.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -48,11 +51,16 @@
 #include "net/base/proxy_server.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/content_security_policy/csp_context.h"
 #include "services/network/public/cpp/origin_policy.h"
 #include "services/network/public/mojom/blocked_by_response_reason.mojom-shared.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
+#include "third_party/blink/public/common/navigation/impression.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/loader/mixed_content.mojom-forward.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/scoped_java_ref.h"
@@ -76,6 +84,7 @@ class AppCacheNavigationHandle;
 class CrossOriginEmbedderPolicyReporter;
 class WebBundleHandleTracker;
 class WebBundleNavigationInfo;
+class SubresourceWebBundleNavigationInfo;
 class FrameNavigationEntry;
 class FrameTreeNode;
 class NavigationURLLoader;
@@ -170,15 +179,15 @@ class CONTENT_EXPORT NavigationRequest
       mojom::CommonNavigationParamsPtr common_params,
       mojom::CommitNavigationParamsPtr commit_params,
       bool browser_initiated,
-      bool is_prerendering,
-      const base::UnguessableToken* initiator_frame_token,
+      bool was_opener_suppressed,
+      const blink::LocalFrameToken* initiator_frame_token,
       int initiator_process_id,
       const std::string& extra_headers,
       FrameNavigationEntry* frame_entry,
       NavigationEntryImpl* entry,
       const scoped_refptr<network::ResourceRequestBody>& post_body,
       std::unique_ptr<NavigationUIData> navigation_ui_data,
-      const base::Optional<Impression>& impression);
+      const base::Optional<blink::Impression>& impression);
 
   // Creates a request for a renderer-initiated navigation.
   // Note: |body| is sent to the IO thread when calling BeginNavigation, and
@@ -195,8 +204,6 @@ class CONTENT_EXPORT NavigationRequest
       bool override_user_agent,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
       mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
-      mojo::PendingRemote<blink::mojom::NavigationInitiator>
-          navigation_initiator,
       scoped_refptr<PrefetchedSignedExchangeCache>
           prefetched_signed_exchange_cache,
       std::unique_ptr<WebBundleHandleTracker> web_bundle_handle_tracker);
@@ -224,6 +231,8 @@ class CONTENT_EXPORT NavigationRequest
       const blink::PageState& page_state,
       std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter,
       std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info,
+      std::unique_ptr<SubresourceWebBundleNavigationInfo>
+          subresource_web_bundle_navigation_info,
       int http_response_code);
 
   static NavigationRequest* From(NavigationHandle* handle);
@@ -238,29 +247,31 @@ class CONTENT_EXPORT NavigationRequest
   // is at (or past) WILL_PROCESS_RESPONSE.
   bool HasCommittingOrigin(const url::Origin& origin);
 
-  // Returns whether and how this navigation request is requesting opt-in
+  // Returns whether this navigation request is requesting opt-in
   // origin-isolation.
-  enum class OptInIsolationCheckResult {
-    NONE,          // no isolation requested
-    HEADER,        // requested using the Origin-Isolation header
-    ORIGIN_POLICY  // requested using origin policy
-  };
-  OptInIsolationCheckResult IsOptInIsolationRequested(const GURL& url);
+  bool IsOptInIsolationRequested();
 
-  // The origin isolation end result is determined early in the lifecycle of a
-  // NavigationRequest, but used late. In particular, we want to trigger use
+  // The Origin-Agent-Cluster end result is determined early in the lifecycle of
+  // a NavigationRequest, but used late. In particular, we want to trigger use
   // counters and console warnings once navigation has committed.
-  enum class OptInOriginIsolationEndResult {
-    kNotRequestedAndNotIsolated,
-    kNotRequestedButIsolated,
-    kRequestedViaOriginPolicyButNotIsolated,
-    kRequestedViaOriginPolicyAndIsolated,
-    kRequestedViaHeaderButNotIsolated,
-    kRequestedViaHeaderAndIsolated
+  // This enum is used in UMA histograms, so existing values should neither be
+  // reordered or removed.
+  enum class OriginAgentClusterEndResult {
+    kNotRequestedAndNotOriginKeyed,
+    kNotRequestedButOriginKeyed,
+    kRequestedButNotOriginKeyed,
+    kRequestedAndOriginKeyed,
+    kMaxValue = kRequestedAndOriginKeyed
   };
-  void DetermineOriginIsolationEndResult(
-      OptInIsolationCheckResult check_result);
-  void ProcessOriginIsolationEndResult();
+  void DetermineOriginAgentClusterEndResult(bool is_requested);
+  void ProcessOriginAgentClusterEndResult();
+
+  // Returns true if this navigation's COOP header implies that the destination
+  // site of this navigation should be site-isolated.  In addition to checking
+  // for eligible COOP header values, this function also verifies other
+  // criteria, such as whether this feature is enabled on the device (e.g.,
+  // above memory threshold) or whether the site is already isolated.
+  bool ShouldRequestSiteIsolationForCOOP();
 
   // NavigationHandle implementation:
   int64_t GetNavigationId() override;
@@ -269,7 +280,6 @@ class CONTENT_EXPORT NavigationRequest
   SiteInstanceImpl* GetStartingSiteInstance() override;
   SiteInstanceImpl* GetSourceSiteInstance() override;
   bool IsInMainFrame() override;
-  bool IsParentMainFrame() override;
   bool IsRendererInitiated() override;
   bool WasServerRedirect() override;
   const std::vector<GURL>& GetRedirectChain() override;
@@ -325,11 +335,12 @@ class CONTENT_EXPORT NavigationRequest
   bool WasResponseCached() override;
   const net::ProxyServer& GetProxyServer() override;
   const std::string& GetHrefTranslate() override;
-  const base::Optional<Impression>& GetImpression() override;
-  const base::Optional<base::UnguessableToken>& GetInitiatorFrameToken()
+  const base::Optional<blink::Impression>& GetImpression() override;
+  const base::Optional<blink::LocalFrameToken>& GetInitiatorFrameToken()
       override;
   int GetInitiatorProcessID() override;
   const base::Optional<url::Origin>& GetInitiatorOrigin() override;
+  const std::vector<std::string>& GetDnsAliases() override;
   bool IsSameProcess() override;
   NavigationEntry* GetNavigationEntry() override;
   int GetNavigationEntryOffset() override;
@@ -342,12 +353,11 @@ class CONTENT_EXPORT NavigationRequest
   void SetSilentlyIgnoreErrors() override;
   network::mojom::WebSandboxFlags SandboxFlagsToCommit() override;
   bool IsWaitingToCommit() override;
+  void WriteIntoTracedValue(perfetto::TracedValue context) override;
 
   // Called on the UI thread by the Navigator to start the navigation.
   // The NavigationRequest can be deleted while BeginNavigation() is called.
   void BeginNavigation();
-
-  void ForceCSPForResponse(const std::string& csp);
 
   const mojom::CommonNavigationParams& common_params() const {
     return *common_params_;
@@ -364,16 +374,6 @@ class CONTENT_EXPORT NavigationRequest
   // Updates the navigation start time.
   void set_navigation_start_time(const base::TimeTicks& time) {
     common_params_->navigation_start = time;
-  }
-
-  bool did_same_site_proactive_browsing_instance_swap() {
-    return did_same_site_proactive_browsing_instance_swap_;
-  }
-
-  void set_did_same_site_proactive_browsing_instance_swap(
-      bool did_same_site_proactive_browsing_instance_swap) {
-    did_same_site_proactive_browsing_instance_swap_ =
-        did_same_site_proactive_browsing_instance_swap;
   }
 
   void set_is_cross_browsing_instance(bool is_cross_browsing_instance) {
@@ -626,7 +626,7 @@ class CONTENT_EXPORT NavigationRequest
     return begin_params_->request_destination;
   }
 
-  blink::WebMixedContentContextType mixed_content_context_type() const {
+  blink::mojom::MixedContentContextType mixed_content_context_type() const {
     return begin_params_->mixed_content_context_type;
   }
 
@@ -634,10 +634,6 @@ class CONTENT_EXPORT NavigationRequest
   // BeginNavigation(), or if the request was created at commit time by calling
   // CreateForCommit().
   bool IsNavigationStarted() const;
-
-  // Prerender2:
-  // Returns true if it is a prerendering navigation.
-  bool IsPrerendering() const;
 
   // Restart the navigation restoring the page from the back-forward cache
   // as a regular non-bfcached history navigation.
@@ -661,20 +657,33 @@ class CONTENT_EXPORT NavigationRequest
     return response_should_be_rendered_;
   }
 
-  network::mojom::ClientSecurityStatePtr BuildClientSecurityState() const;
+  // Must only be called after ReadyToCommitNavigation().
+  network::mojom::ClientSecurityStatePtr BuildClientSecurityState();
 
   bool ua_change_requires_reload() const { return ua_change_requires_reload_; }
 
-  const network::mojom::ContentSecurityPolicy* required_csp() {
-    return required_csp_.get();
-  }
   void SetRequiredCSP(network::mojom::ContentSecurityPolicyPtr csp);
   network::mojom::ContentSecurityPolicyPtr TakeRequiredCSP();
 
-  std::unique_ptr<PolicyContainerHost> TakePolicyContainerHost();
-  PolicyContainerHost* policy_container_host() {
-    return policy_container_host_.get();
-  }
+  // Returns a pointer to the policies copied from the navigation initiator.
+  // Returns nullptr if this navigation had no initiator.
+  const PolicyContainerPolicies* GetInitiatorPolicyContainerPolicies() const;
+
+  // Returns the policies of the new document being navigated to.
+  //
+  // Must only be called after ReadyToCommitNavigation().
+  const PolicyContainerPolicies& GetPolicyContainerPolicies() const;
+
+  // Creates a new policy container for Blink connected to this navigation's
+  // PolicyContainerHost.
+  //
+  // Must only be called after ReadyToCommitNavigation().
+  blink::mojom::PolicyContainerPtr CreatePolicyContainerForBlink();
+
+  // Moves this navigation's PolicyContainerHost out of this instance.
+  //
+  // Must only be called after ReadyToCommitNavigation().
+  scoped_refptr<PolicyContainerHost> TakePolicyContainerHost();
 
   CrossOriginEmbedderPolicyReporter* coep_reporter() {
     return coep_reporter_.get();
@@ -734,10 +743,6 @@ class CONTENT_EXPORT NavigationRequest
   // renamed GetOriginToCommit() and the value pushed to blink.
   url::Origin GetOriginForURLLoaderFactory();
 
-  // Add information about this NavigationRequest to |traced_value| for
-  // tracing purposes.
-  void AsValueInto(base::trace_event::TracedValue* traced_value);
-
   // If this navigation fails with net::ERR_BLOCKED_BY_CLIENT, act as if it were
   // cancelled by the user and do not commit an error page.
   void SetSilentlyIgnoreBlockedByClient() {
@@ -784,18 +789,58 @@ class CONTENT_EXPORT NavigationRequest
   //          NavigationThrottle.
   bool NeedsUrlLoader();
 
-  bool is_web_secure_context() const { return is_web_secure_context_; }
   network::CrossOriginEmbedderPolicy cross_origin_embedder_policy() const {
     return cross_origin_embedder_policy_;
-  }
-  network::mojom::IPAddressSpace ip_address_space() const {
-    return ip_address_space_;
   }
 
   network::mojom::PrivateNetworkRequestPolicy private_network_request_policy()
       const {
     return private_network_request_policy_;
   }
+
+  // Whether this navigation request waits for the result of beforeunload before
+  // proceeding.
+  bool IsWaitingForBeforeUnload();
+
+  // If the response is loaded from a WebBundle, returns the URL of the
+  // WebBundle. Otherwise, returns an empty URL.
+  GURL GetWebBundleURL();
+  // Creates a SubresourceWebBundleNavigationInfo if the response is loaded from
+  // a WebBundle.
+  std::unique_ptr<SubresourceWebBundleNavigationInfo>
+  GetSubresourceWebBundleNavigationInfo();
+
+  // Returns the original request url:
+  // - If this navigation resulted in an error page, this will return the URL
+  // of the page that failed to load.
+  // - If this is navigation is triggered by loadDataWithBaseURL or related
+  // functions, this will return the data URL (or data header, in case of
+  // loadDataAsStringWithBaseURL).
+  // - Otherwise, this will return the first URL in |redirect_chain_|. This
+  // means if the navigation is started due to a client redirect, we will return
+  // the URL of the page that initiated the client redirect. Otherwise we will
+  // return the first destination URL for this navigation.
+  // NOTE: This might result in a different value than original_url in
+  // |commit_params_|, which is always set to the first destination URL for this
+  // navigation.
+  const GURL& GetOriginalRequestURL();
+
+  // Prerender2:
+  // Returns true if this navigation will activate a prerendered page. It is
+  // only meaningful to call this after BeginNavigation().
+  bool IsPrerenderedPageActivation() const;
+
+  // This is the same as |NavigationHandle::IsServedFromBackForwardCache|, but
+  // adds a const qualifier.
+  bool IsServedFromBackForwardCache() const;
+
+  // See comments for |prerender_navigation_entry_|.
+  void SetPrerenderNavigationEntry(
+      std::unique_ptr<NavigationEntryImpl> prerender_navigation_entry) {
+    prerender_navigation_entry_ = std::move(prerender_navigation_entry);
+  }
+
+  std::unique_ptr<NavigationEntryImpl> TakePrerenderNavigationEntry();
 
  private:
   friend class NavigationRequestTest;
@@ -808,20 +853,25 @@ class CONTENT_EXPORT NavigationRequest
       bool browser_initiated,
       bool from_begin_navigation,
       bool is_for_commit,
-      bool is_prerendering,
       const FrameNavigationEntry* frame_navigation_entry,
       NavigationEntryImpl* navitation_entry,
       std::unique_ptr<NavigationUIData> navigation_ui_data,
       mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
-      mojo::PendingRemote<blink::mojom::NavigationInitiator>
-          navigation_initiator,
       RenderFrameHostImpl* rfh_restored_from_back_forward_cache,
-      int initiator_process_id);
+      int initiator_process_id,
+      bool was_opener_suppressed);
 
-  // Checks if the response requests an isolated origin (using either origin
-  // policy or the Origin-Isolation header), and if so opts in the origin to be
-  // isolated.
+  // Checks if the response requests an isolated origin via the
+  // Origin-Agent-Cluster header, and if so opts in the origin to be isolated.
   void CheckForIsolationOptIn(const GURL& url);
+
+  // Use to manually opt an origin into Origin-keyed Agent Cluster (OAC) in the
+  // event that process-isolation isn't being used for OAC.
+  // TODO(wjmaclean): When we switch to using separate SiteInstances even for
+  // same-process OAC, then this function can be removed.
+  void AddSameProcessOriginAgentClusterOptInIfNecessary(
+      const IsolationContext& isolation_context,
+      const GURL& url);
 
   // NavigationURLLoaderDelegate implementation.
   void OnRequestRedirected(
@@ -834,7 +884,7 @@ class CONTENT_EXPORT NavigationRequest
       mojo::ScopedDataPipeConsumerHandle response_body,
       GlobalRequestID request_id,
       bool is_download,
-      NavigationDownloadPolicy download_policy,
+      blink::NavigationDownloadPolicy download_policy,
       net::NetworkIsolationKey network_isolation_key,
       base::Optional<SubresourceLoaderParams> subresource_loader_params)
       override;
@@ -879,10 +929,16 @@ class CONTENT_EXPORT NavigationRequest
   // be destroyed after this call.
   void CommitNavigation();
 
+  // Commits the navigation to an existing page (back-forward cache navigation
+  // or prerender activation). NavigationRequest will be destroyed after this
+  // call.
+  void CommitPageActivation();
+
   // Checks if the specified CSP context's relevant CSP directive
   // allows the navigation. This is called to perform the frame-src
   // and navigate-to checks.
   bool IsAllowedByCSPDirective(
+      const std::vector<network::mojom::ContentSecurityPolicyPtr>& policies,
       network::CSPContext* context,
       network::mojom::CSPDirectiveName directive,
       bool has_followed_redirect,
@@ -895,7 +951,10 @@ class CONTENT_EXPORT NavigationRequest
   // Returns net::OK if the checks pass, and net::ERR_ABORTED or
   // net::ERR_BLOCKED_BY_CSP depending on which checks fail.
   net::Error CheckCSPDirectives(
-      RenderFrameHostImpl* parent,
+      RenderFrameHostCSPContext parent_context,
+      const PolicyContainerPolicies* parent_policies,
+      RenderFrameHostCSPContext initiator_context,
+      const PolicyContainerPolicies* initiator_policies,
       bool has_followed_redirect,
       bool url_upgraded_after_redirect,
       bool is_response_check,
@@ -914,7 +973,16 @@ class CONTENT_EXPORT NavigationRequest
   // Builds the parameters used to commit a navigation to a page that was
   // restored from the back-forward cache.
   mojom::DidCommitProvisionalLoadParamsPtr
-  MakeDidCommitProvisionalLoadParamsForBFCache();
+  MakeDidCommitProvisionalLoadParamsForBFCacheRestore();
+
+  // Builds the parameters used to commit a navigation to a prerendered page
+  // that was activated.
+  mojom::DidCommitProvisionalLoadParamsPtr
+  MakeDidCommitProvisionalLoadParamsForPrerenderActivation();
+
+  // Builds generic activation parameters used to commit a navigation to a page.
+  mojom::DidCommitProvisionalLoadParamsPtr
+  MakeDidCommitProvisionalLoadParamsForActivation();
 
   // This enum describes the result of the credentialed subresource check for
   // the request.
@@ -947,6 +1015,27 @@ class CONTENT_EXPORT NavigationRequest
     BLOCK_REQUEST,
   };
   AboutSrcDocCheckResult CheckAboutSrcDoc() const;
+
+  // When the embedder requires the use of Content Security Policy via Embedded
+  // Enforcement, framed documents must either:
+  // 1. Use the 'allow-csp-from' header to opt-into enforcement.
+  // 2. Enforce its own CSP that subsumes the required CSP.
+  // Framed documents that fail to do either of these will be blocked.
+  //
+  // See:
+  // - https://w3c.github.io/webappsec-cspee/#required-csp-header
+  // - https://w3c.github.io/webappsec-cspee/#allow-csp-from-header
+  //
+  // SetupCSPEmbeddedEnforcement() retrieve the iframe 'csp' attribute applying.
+  // CheckCSPEmbeddedEnforcement() inspects the response headers. It decides if
+  // the 'csp' attribute should be installed into the child. This might also
+  // block it and display an error page instead.
+  void SetupCSPEmbeddedEnforcement();
+  enum class CSPEmbeddedEnforcementResult {
+    ALLOW_RESPONSE,
+    BLOCK_RESPONSE,
+  };
+  CSPEmbeddedEnforcementResult CheckCSPEmbeddedEnforcement();
 
   // Called before a commit. Updates the history index and length held in
   // CommitNavigationParams. This is used to update this shared state with the
@@ -985,7 +1074,7 @@ class CONTENT_EXPORT NavigationRequest
   // Record download related UseCounters when navigation is a download before
   // filtered by download_policy.
   void RecordDownloadUseCountersPrePolicyCheck(
-      NavigationDownloadPolicy download_policy);
+      blink::NavigationDownloadPolicy download_policy);
 
   // Record download related UseCounters when navigation is a download after
   // filtered by download_policy.
@@ -1063,20 +1152,11 @@ class CONTENT_EXPORT NavigationRequest
   // redirect.
   void UpdateStateFollowingRedirect(const GURL& new_referrer_url);
 
-  // Returns whether the ready-to-commit navigation will yield a secure context.
-  //
-  // Helper for UpdateClientSecurityStateInternals().
-  //
-  // Implements the following algorithm:
-  // https://w3c.github.io/webappsec-secure-contexts/#is-settings-object-contextually-secure
-  bool IsWebSecureContext() const;
-
-  // Updates the internals used to construct a ClientSecurityState during
-  // ReadyToCommitNavigation().
+  // Updates |private_network_request_policy_| for ReadyToCommitNavigation().
   //
   // Must not be called for same-document navigation requests nor for requests
-  // served from the back-forward cache.
-  void UpdateClientSecurityStateInternals();
+  // served from the back-forward cache or from prerendered pages.
+  void UpdatePrivateNetworkRequestPolicy();
 
   // Called when the navigation is ready to be committed. This will update the
   // |state_| and inform the delegate.
@@ -1140,11 +1220,25 @@ class CONTENT_EXPORT NavigationRequest
   // NavigationRequest is in.
   NavigationControllerImpl* GetNavigationController();
 
+  // Computes the PolicyContainerPolicies and the sandbox flags to use for
+  // committing a regular document.
+  // Called when the response to commit is known.
+  void ComputePoliciesToCommit();
+
+  // Computes the PolicyContainerPolicies and the sandbox flags to use for
+  // committing an error document.
+  //
+  // Note:
+  // |ComputePoliciesToCommit()| can be followed by
+  // |ComputePoliciesToCommitForErrorPage()|. This happens when the decision to
+  // commit an error document happens after receiving the regular document's
+  // response.
+  void ComputePoliciesToCommitForError();
+
   // Compute the sandbox policy of the document to be loaded. This is called
-  // once the final response is known. It is based on the current FramePolicy
-  // and the response's CSP.
-  void ComputeSandboxFlagsToCommit(
-      const network::mojom::URLResponseHead* response_head);
+  // once the final response is known. It is based on the current FramePolicy,
+  // the response's CSP and the embedder's HTMLIframeElement.csp.
+  void ComputeSandboxFlagsToCommit();
 
   // DCHECK that tranistioning from the current state to |state| valid. This
   // does nothing in non-debug builds.
@@ -1161,11 +1255,6 @@ class CONTENT_EXPORT NavigationRequest
   // If appropriate, this applies (2), deletes |this|, and returns true.
   // In that case, the caller must immediately return.
   bool MaybeCancelFailedNavigation();
-
-  // Prerender2:
-  // Returns true if this navigation will activate a prerendered page. It is
-  // only meaningful to call this after BeginNavigation().
-  bool IsPrerenderedPageActivation() const;
 
   // Never null. The pointee node owns this navigation request instance.
   FrameTreeNode* const frame_tree_node_;
@@ -1266,6 +1355,8 @@ class CONTENT_EXPORT NavigationRequest
   // checks are performed by the NavigationHandle.
   bool has_stale_copy_in_cache_ = false;
   net::Error net_error_ = net::OK;
+  int extended_error_code_ = 0;
+
   // Detailed host resolution error information. The error code in
   // |resolve_error_info_.error| should be consistent with (but not necessarily
   // the same as) |net_error_|. In the case of a host resolution error, for
@@ -1281,8 +1372,6 @@ class CONTENT_EXPORT NavigationRequest
   // The SiteInfo of this navigation, as obtained from
   // SiteInstanceImpl::ComputeSiteInfo().
   SiteInfo site_info_;
-
-  const std::unique_ptr<InitiatorCSPContext> initiator_csp_context_;
 
   base::OnceClosure on_start_checks_complete_closure_;
 
@@ -1382,10 +1471,6 @@ class CONTENT_EXPORT NavigationRequest
   // Set in ReadyToCommitNavigation.
   bool is_same_process_ = true;
 
-  // Prerender2:
-  // Indicates if it is a prerendering navigation request.
-  const bool is_prerendering_ = false;
-
   // If set, starting the navigation will immediately result in an error page
   // with this html as content and |net_error| as the network error.
   std::string post_commit_error_page_html_;
@@ -1471,12 +1556,17 @@ class CONTENT_EXPORT NavigationRequest
   // The frame with the corresponding frame token may have been deleted before
   // the navigation begins. This parameter is defined if and only if
   // |initiator_process_id_| below is.
-  const base::Optional<base::UnguessableToken> initiator_frame_token_;
+  const base::Optional<blink::LocalFrameToken> initiator_frame_token_;
 
   // ID of the renderer process of the frame host that initiated the navigation.
   // This is defined if and only if |initiator_frame_token_| above is, and it is
   // only valid in conjunction with it.
   int initiator_process_id_ = ChildProcessHost::kInvalidUniqueID;
+
+  // Whether a navigation in a new window had the opener suppressed. False if
+  // the navigation is not in a new window. Can only be true for renderer
+  // initiated navigations which use `CreateBrowserInitiated()`.
+  bool was_opener_suppressed_ = false;
 
   // This tracks a connection between the current pending entry and this
   // request, such that the pending entry can be discarded if no requests are
@@ -1497,10 +1587,9 @@ class CONTENT_EXPORT NavigationRequest
   // the RenderFrameHost at DidCommitNavigation time.
   network::mojom::ContentSecurityPolicyPtr required_csp_;
 
-  // Holds the PolicyContainerHost for the new document that will be created by
-  // this navigation. It is moved into the RenderFrameHostImpl at
-  // DidCommitNavigation time.
-  std::unique_ptr<PolicyContainerHost> policy_container_host_;
+  // Non-nullopt from construction until |TakePolicyContainerHost()| is called.
+  base::Optional<PolicyContainerNavigationBundle>
+      policy_container_navigation_bundle_;
 
   std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter_;
 
@@ -1520,10 +1609,6 @@ class CONTENT_EXPORT NavigationRequest
   // If true, changes to the user-agent override require a reload. If false, a
   // reload is not necessary.
   bool ua_change_requires_reload_ = true;
-
-  // Whether we're doing a same-site proactive BrowsingInstance swap for this
-  // navigation.
-  bool did_same_site_proactive_browsing_instance_swap_ = false;
 
   // Controls whether or not an error page is displayed on error. If set to
   // true, an error will be treated as if the user simply cancelled the
@@ -1547,15 +1632,20 @@ class CONTENT_EXPORT NavigationRequest
   // The sandbox flags of the document to be loaded.
   base::Optional<network::mojom::WebSandboxFlags> sandbox_flags_to_commit_;
 
-  OptInOriginIsolationEndResult origin_isolation_end_result_ =
-      OptInOriginIsolationEndResult::kNotRequestedAndNotIsolated;
+  OriginAgentClusterEndResult origin_agent_cluster_end_result_ =
+      OriginAgentClusterEndResult::kNotRequestedAndNotOriginKeyed;
 
   net::IsolationInfo isolation_info_for_subresources_;
 
   // Prerender2:
-  // This is valid only when this navigation will activate the prerendered
-  // page.
-  std::unique_ptr<PrerenderHost> prerender_host_;
+  // The root frame tree node id of the prerendered page. This is valid only
+  // when this navigation will activate a prerendered page.
+  int prerender_frame_tree_node_id_ = RenderFrameHost::kNoFrameTreeNodeId;
+  // Used to store a cloned NavigationEntry for activating a prerendered page.
+  // |prerender_navigation_entry_| is cloned and stored in NavigationRequest
+  // when the prerendered page is transferred to the target FrameTree and is
+  // consumed when NavigationController needs a new entry to commit.
+  std::unique_ptr<NavigationEntryImpl> prerender_navigation_entry_;
 
   // The following fields that constitute the ClientSecurityState. This
   // state is used to take security decisions about the request, and later on
@@ -1567,12 +1657,10 @@ class CONTENT_EXPORT NavigationRequest
   // TODO(ahemery, titouan): Move some elements to the policy container or
   // rework inheritance.
   // https://crbug.com/1154729
-  bool is_web_secure_context_ = false;
   network::CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
-  network::mojom::IPAddressSpace ip_address_space_ =
-      network::mojom::IPAddressSpace::kUnknown;
   network::mojom::PrivateNetworkRequestPolicy private_network_request_policy_ =
-      network::mojom::PrivateNetworkRequestPolicy::kAllow;
+      network::mojom::PrivateNetworkRequestPolicy::
+          kWarnFromInsecureToMorePrivate;
 
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 

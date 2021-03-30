@@ -8,22 +8,19 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/optional.h"
 #include "base/path_service.h"
+#include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_path_override.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "chrome/browser/download/download_service_factory.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_model_download_observer.h"
-#include "chrome/browser/profiles/profile_key.h"
-#include "chrome/common/chrome_paths.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/download/public/background_service/test/mock_download_service.h"
-#include "components/optimization_guide/optimization_guide_enums.h"
-#include "components/optimization_guide/optimization_guide_features.h"
-#include "components/optimization_guide/optimization_guide_switches.h"
-#include "components/optimization_guide/optimization_guide_util.h"
+#include "components/optimization_guide/core/optimization_guide_enums.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/services/unzip/in_process_unzipper.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -56,47 +53,33 @@ class TestPredictionModelDownloadObserver
 enum class PredictionModelDownloadFileStatus {
   kVerifiedCrxWithGoodModelFiles,
   kVerifiedCrxWithNoFiles,
+  kVerifiedCrxWithInvalidPublisher,
   kVerifiedCrxWithBadModelInfoFile,
   kVerifiedCrxWithInvalidModelInfo,
   kVerfiedCrxWithValidModelInfoNoModelFile,
   kUnverifiedFile,
 };
 
-class PredictionModelDownloadManagerTest
-    : public ChromeRenderViewHostTestHarness {
+class PredictionModelDownloadManagerTest : public testing::Test {
  public:
   PredictionModelDownloadManagerTest() = default;
   ~PredictionModelDownloadManagerTest() override = default;
 
   void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
-
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    mock_download_service_ = static_cast<download::test::MockDownloadService*>(
-        DownloadServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-            profile()->GetProfileKey(),
-            base::BindRepeating([](SimpleFactoryKey* key)
-                                    -> std::unique_ptr<KeyedService> {
-              return std::make_unique<download::test::MockDownloadService>();
-            })));
+    mock_download_service_ =
+        std::make_unique<download::test::MockDownloadService>();
     download_manager_ = std::make_unique<PredictionModelDownloadManager>(
-        profile(), task_environment()->GetMainThreadTaskRunner());
+        mock_download_service_.get(), temp_dir_.GetPath(),
+        task_environment_.GetMainThreadTaskRunner());
 
     unzip::SetUnzipperLaunchOverrideForTesting(
         base::BindRepeating(&unzip::LaunchInProcessUnzipper));
-
-    path_override_ = std::make_unique<base::ScopedPathOverride>(
-        chrome::DIR_OPTIMIZATION_GUIDE_PREDICTION_MODELS, temp_dir_.GetPath(),
-        /*is_absolute=*/true,
-        /*create=*/false);
   }
 
   void TearDown() override {
     download_manager_.reset();
     mock_download_service_ = nullptr;
-    path_override_.reset();
-
-    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   PredictionModelDownloadManager* download_manager() {
@@ -104,7 +87,7 @@ class PredictionModelDownloadManagerTest
   }
 
   download::test::MockDownloadService* download_service() {
-    return mock_download_service_;
+    return mock_download_service_.get();
   }
 
  protected:
@@ -137,7 +120,7 @@ class PredictionModelDownloadManagerTest
   }
 
   void RunUntilIdle() {
-    task_environment()->RunUntilIdle();
+    task_environment_.RunUntilIdle();
 
     // Wait for all delayed tasks to finish.
     base::RunLoop run_loop;
@@ -153,6 +136,8 @@ class PredictionModelDownloadManagerTest
     switch (file_status) {
       case PredictionModelDownloadFileStatus::kUnverifiedFile:
         return temp_dir_.GetPath().AppendASCII("unverified.crx3");
+      case PredictionModelDownloadFileStatus::kVerifiedCrxWithInvalidPublisher:
+        return temp_dir_.GetPath().AppendASCII("invalidpublisher.crx3");
       case PredictionModelDownloadFileStatus::kVerifiedCrxWithNoFiles:
         return temp_dir_.GetPath().AppendASCII("nofiles.crx3");
       case PredictionModelDownloadFileStatus::kVerifiedCrxWithBadModelInfoFile:
@@ -172,21 +157,51 @@ class PredictionModelDownloadManagerTest
         switches::kDisableModelDownloadVerificationForTesting);
   }
 
+  // Retries until the path has been deleted or until all handles to |path| have
+  // been closed. Returns whether |path| has been deleted.
+  //
+  // See crbug/1156112#c1 for suggested mitigation steps.
+  bool HasPathBeenDeleted(const base::FilePath& path) {
+    while (true) {
+      RunUntilIdle();
+
+      bool path_exists = base::PathExists(path);
+      if (!path_exists)
+        return true;
+
+      // Retry if the last file error is access denied since it's likely that
+      // the file is in the process of being deleted.
+    }
+  }
+
  private:
   void WriteFileForStatus(PredictionModelDownloadFileStatus status) {
-    if (status == PredictionModelDownloadFileStatus::kVerifiedCrxWithNoFiles ||
+    base::FilePath source_root_dir;
+    base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
+    if (status == PredictionModelDownloadFileStatus::
+                      kVerifiedCrxWithInvalidPublisher ||
         status == PredictionModelDownloadFileStatus::kUnverifiedFile) {
-      base::FilePath path;
-      base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
-      base::FilePath crx_path = path.AppendASCII("components")
-                                    .AppendASCII("test")
-                                    .AppendASCII("data")
-                                    .AppendASCII("crx_file");
+      base::FilePath crx_file_source_dir =
+          source_root_dir.AppendASCII("components")
+              .AppendASCII("test")
+              .AppendASCII("data")
+              .AppendASCII("crx_file");
       std::string crx_file =
           status == PredictionModelDownloadFileStatus::kUnverifiedFile
               ? "unsigned.crx3"
-              : "valid_publisher.crx3";
-      ASSERT_TRUE(base::CopyFile(crx_path.AppendASCII(crx_file),
+              : "valid_publisher.crx3";  // Despite name, wrong publisher.
+      ASSERT_TRUE(base::CopyFile(crx_file_source_dir.AppendASCII(crx_file),
+                                 GetFilePathForDownloadFileStatus(status)));
+      return;
+    }
+
+    if (status == PredictionModelDownloadFileStatus::kVerifiedCrxWithNoFiles) {
+      base::FilePath invalid_crx_model = source_root_dir.AppendASCII("chrome")
+                                             .AppendASCII("test")
+                                             .AppendASCII("data")
+                                             .AppendASCII("optimization_guide")
+                                             .AppendASCII("invalid_model.crx3");
+      ASSERT_TRUE(base::CopyFile(invalid_crx_model,
                                  GetFilePathForDownloadFileStatus(status)));
       return;
     }
@@ -221,9 +236,9 @@ class PredictionModelDownloadManagerTest
         zip::Zip(zip_dir, GetFilePathForDownloadFileStatus(status), true));
   }
 
+  base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
-  std::unique_ptr<base::ScopedPathOverride> path_override_;
-  download::test::MockDownloadService* mock_download_service_;
+  std::unique_ptr<download::test::MockDownloadService> mock_download_service_;
   std::unique_ptr<PredictionModelDownloadManager> download_manager_;
 };
 
@@ -243,9 +258,9 @@ TEST_F(PredictionModelDownloadManagerTest, DownloadServiceReadyPersistsGuids) {
   EXPECT_CALL(*download_service(), CancelDownload(Eq("pending3")));
   download_manager()->CancelAllPendingDownloads();
 
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PredictionModelDownloadManager.DownloadSucceeded",
-      true, 3);
+  // The successful downloads should not trigger us to do anything with them.
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionModelDownloadManager.DownloadSucceeded", 0);
 }
 
 TEST_F(PredictionModelDownloadManagerTest, StartDownloadRestrictedDownloading) {
@@ -401,12 +416,42 @@ TEST_F(PredictionModelDownloadManagerTest, UnverifiedFileShouldDeleteTempFile) {
   RunUntilIdle();
 
   EXPECT_FALSE(observer.last_ready_model().has_value());
-  EXPECT_FALSE(base::PathExists(GetFilePathForDownloadFileStatus(
+  EXPECT_TRUE(HasPathBeenDeleted(GetFilePathForDownloadFileStatus(
       PredictionModelDownloadFileStatus::kUnverifiedFile)));
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PredictionModelDownloadManager."
       "DownloadStatus",
       PredictionModelDownloadStatus::kFailedCrxVerification, 1);
+}
+
+// TODO(crbug.com/1156112): Flaky on Windows.
+#if defined(OS_WIN)
+#define MAYBE_VerifiedCrxWithInvalidPublisherShouldDeleteTempFile \
+  DISABLED_VerifiedCrxWithInvalidPublisherShouldDeleteTempFile
+#else
+#define MAYBE_VerifiedCrxWithInvalidPublisherShouldDeleteTempFile \
+  VerifiedCrxWithInvalidPublisherShouldDeleteTempFile
+#endif
+TEST_F(PredictionModelDownloadManagerTest,
+       MAYBE_VerifiedCrxWithInvalidPublisherShouldDeleteTempFile) {
+  base::HistogramTester histogram_tester;
+
+  TestPredictionModelDownloadObserver observer;
+  download_manager()->AddObserver(&observer);
+
+  SetDownloadSucceeded(
+      "model",
+      PredictionModelDownloadFileStatus::kVerifiedCrxWithInvalidPublisher);
+  RunUntilIdle();
+
+  EXPECT_FALSE(observer.last_ready_model().has_value());
+  EXPECT_TRUE(HasPathBeenDeleted(GetFilePathForDownloadFileStatus(
+      PredictionModelDownloadFileStatus::kVerifiedCrxWithInvalidPublisher)));
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelDownloadManager."
+      "DownloadStatus",
+      PredictionModelDownloadStatus::kFailedCrxInvalidPublisher, 1);
 }
 
 TEST_F(PredictionModelDownloadManagerTest,
@@ -421,7 +466,7 @@ TEST_F(PredictionModelDownloadManagerTest,
   RunUntilIdle();
 
   EXPECT_FALSE(observer.last_ready_model().has_value());
-  EXPECT_FALSE(base::PathExists(GetFilePathForDownloadFileStatus(
+  EXPECT_TRUE(HasPathBeenDeleted(GetFilePathForDownloadFileStatus(
       PredictionModelDownloadFileStatus::kVerifiedCrxWithNoFiles)));
 
   histogram_tester.ExpectUniqueSample(
@@ -444,7 +489,7 @@ TEST_F(PredictionModelDownloadManagerTest,
   RunUntilIdle();
 
   EXPECT_FALSE(observer.last_ready_model().has_value());
-  EXPECT_FALSE(base::PathExists(GetFilePathForDownloadFileStatus(
+  EXPECT_TRUE(HasPathBeenDeleted(GetFilePathForDownloadFileStatus(
       PredictionModelDownloadFileStatus::kVerifiedCrxWithBadModelInfoFile)));
 
   histogram_tester.ExpectUniqueSample(
@@ -467,7 +512,7 @@ TEST_F(PredictionModelDownloadManagerTest,
   RunUntilIdle();
 
   EXPECT_FALSE(observer.last_ready_model().has_value());
-  EXPECT_FALSE(base::PathExists(GetFilePathForDownloadFileStatus(
+  EXPECT_TRUE(HasPathBeenDeleted(GetFilePathForDownloadFileStatus(
       PredictionModelDownloadFileStatus::kVerifiedCrxWithInvalidModelInfo)));
 
   histogram_tester.ExpectUniqueSample(
@@ -489,7 +534,7 @@ TEST_F(PredictionModelDownloadManagerTest,
   RunUntilIdle();
 
   EXPECT_FALSE(observer.last_ready_model().has_value());
-  EXPECT_FALSE(base::PathExists(GetFilePathForDownloadFileStatus(
+  EXPECT_TRUE(HasPathBeenDeleted(GetFilePathForDownloadFileStatus(
       PredictionModelDownloadFileStatus::
           kVerfiedCrxWithValidModelInfoNoModelFile)));
 
@@ -499,9 +544,17 @@ TEST_F(PredictionModelDownloadManagerTest,
       PredictionModelDownloadStatus::kFailedModelFileNotFound, 1);
 }
 
+// TODO(crbug.com/1156112): Flaky on Windows.
+#if defined(OS_WIN)
+#define MAYBE_VerifiedCrxWithGoodModelFilesShouldDeleteDownloadFileButHaveContentExtracted \
+  DISABLED_VerifiedCrxWithGoodModelFilesShouldDeleteDownloadFileButHaveContentExtracted
+#else
+#define MAYBE_VerifiedCrxWithGoodModelFilesShouldDeleteDownloadFileButHaveContentExtracted \
+  VerifiedCrxWithGoodModelFilesShouldDeleteDownloadFileButHaveContentExtracted
+#endif
 TEST_F(
     PredictionModelDownloadManagerTest,
-    VerifiedCrxWithGoodModelFilesShouldDeleteDownloadFileButHaveContentExtracted) {
+    MAYBE_VerifiedCrxWithGoodModelFilesShouldDeleteDownloadFileButHaveContentExtracted) {
   base::HistogramTester histogram_tester;
 
   TestPredictionModelDownloadObserver observer;
@@ -524,7 +577,7 @@ TEST_F(
           .value(),
       FILE_PATH_LITERAL("OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD_123.tflite"));
   // Downloaded file should still be deleted.
-  EXPECT_FALSE(base::PathExists(GetFilePathForDownloadFileStatus(
+  EXPECT_TRUE(HasPathBeenDeleted(GetFilePathForDownloadFileStatus(
       PredictionModelDownloadFileStatus::kVerifiedCrxWithGoodModelFiles)));
 
   histogram_tester.ExpectUniqueSample(

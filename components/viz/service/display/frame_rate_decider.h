@@ -61,8 +61,7 @@ class VIZ_SERVICE_EXPORT FrameRateDecider : public SurfaceObserver {
   FrameRateDecider(SurfaceManager* surface_manager,
                    Client* client,
                    bool hw_support_for_multiple_refresh_rates,
-                   bool supports_set_frame_rate,
-                   size_t num_of_frames_to_toggle_interval);
+                   bool supports_set_frame_rate);
   ~FrameRateDecider() override;
 
   void SetSupportedFrameIntervals(

@@ -17,11 +17,6 @@ ActiveDirectoryAccountReconcilorDelegate::
 ActiveDirectoryAccountReconcilorDelegate::
     ~ActiveDirectoryAccountReconcilorDelegate() = default;
 
-bool ActiveDirectoryAccountReconcilorDelegate::IsAccountConsistencyEnforced()
-    const {
-  return true;
-}
-
 gaia::GaiaSource ActiveDirectoryAccountReconcilorDelegate::GetGaiaApiSource()
     const {
   return gaia::GaiaSource::kAccountReconcilorMirror;

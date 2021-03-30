@@ -5,7 +5,8 @@
 #ifndef WEBLAYER_PUBLIC_TAB_OBSERVER_H_
 #define WEBLAYER_PUBLIC_TAB_OBSERVER_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 
 class GURL;
 
@@ -22,7 +23,7 @@ class TabObserver {
 
   // Called when the title of this tab changes. Note before the page sets a
   // title, the title may be a portion of the Uri.
-  virtual void OnTitleUpdated(const base::string16& title) {}
+  virtual void OnTitleUpdated(const std::u16string& title) {}
 
  protected:
   virtual ~TabObserver() {}

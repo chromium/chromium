@@ -2,10 +2,38 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {MetadataItem} from './metadata/metadata_item.m.js';
+// #import {FileTasks} from './file_tasks.m.js';
+// #import {FilesQuickView} from '../elements/files_quick_view.m.js';
+// #import {VolumeManager} from '../../externs/volume_manager.m.js';
+// #import {MetadataBoxController} from './metadata_box_controller.m.js';
+// #import {FileListSelectionModel} from './ui/file_list_selection_model.m.js';
+// #import {TaskController} from './task_controller.m.js';
+// #import {QuickViewModel} from './quick_view_model.m.js';
+// #import {MultiMenuButton} from './ui/multi_menu_button.m.js';
+// #import {ListContainer} from './ui/list_container.m.js';
+// #import {MetadataModel} from './metadata/metadata_model.m.js';
+// #import {CommandHandlerDeps} from '../../externs/command_handler_deps.m.js';
+// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
+// #import {ThumbnailLoader} from './thumbnail_loader.m.js';
+// #import {ImageLoaderClient} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/image_loader_client.m.js';
+// #import {LoadImageResponseStatus, LoadImageRequest} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.m.js';
+// #import {FileType} from '../../common/js/file_type.m.js';
+// #import {CommandHandler} from './file_manager_commands.m.js';
+// #import {FilesConfirmDialog} from './ui/files_confirm_dialog.m.js';
+// #import {constants} from './constants.m.js';
+// #import {util, str} from '../../common/js/util.m.js';
+// #import {DialogType} from './dialog_type.m.js';
+// #import {QuickViewUma} from './quick_view_uma.m.js';
+// #import {FileSelectionHandler} from './file_selection.m.js';
+// clang-format on
+
 /**
  * Controller for QuickView.
  */
-class QuickViewController {
+/* #export */ class QuickViewController {
   /**
    * This should be initialized with |init_| method.
    *
@@ -159,10 +187,16 @@ class QuickViewController {
    */
   createQuickView_() {
     return new Promise((resolve, reject) => {
-      Polymer.Base.importHref(constants.FILES_QUICK_VIEW_HTML, () => {
-        const quickView = document.querySelector('#quick-view');
+      const quickView = document.querySelector('#quick-view');
+      // Workaround: Polymer.Base is only defined on Polymer2.
+      // For Polymer3 the QuickView is already imported at the top.
+      if (window.Polymer && window.Polymer.Base) {
+        /* #ignore */ Polymer.Base.importHref(
+            /* #ignore */ constants.FILES_QUICK_VIEW_HTML,
+            /* #ignore */ () => resolve(quickView), reject);
+      } else {
         resolve(quickView);
-      }, reject);
+      }
     });
   }
 
@@ -307,6 +341,7 @@ class QuickViewController {
 
       this.deleteConfirmDialog_ = new FilesConfirmDialog(dialogElement);
       this.deleteConfirmDialog_.setOkLabel(str('DELETE_BUTTON_LABEL'));
+      this.deleteConfirmDialog_.focusCancelButton = true;
 
       dialogElement.addEventListener('keydown', event => {
         event.stopPropagation();
@@ -325,7 +360,8 @@ class QuickViewController {
 
     // Delete the entry if the entry can be deleted.
     CommandHandler.getCommand('delete').deleteEntries(
-        [entry], this.fileManager_, this.deleteConfirmDialog_);
+        [entry], this.fileManager_, /*permanentlyDelete=*/ false,
+        this.deleteConfirmDialog_);
   }
 
   /**
@@ -514,7 +550,7 @@ class QuickViewController {
     const volumeInfo = this.volumeManager_.getVolumeInfo(entry);
     let localFile = volumeInfo &&
         QuickViewController.LOCAL_VOLUME_TYPES_.indexOf(
-            volumeInfo.volumeType) >= 0;
+            assert(volumeInfo.volumeType)) >= 0;
 
     // Treat certain types on Drive as if they were local (try auto-play etc).
     if (entryIsOnDrive && (type === 'audio' || type === 'video')) {

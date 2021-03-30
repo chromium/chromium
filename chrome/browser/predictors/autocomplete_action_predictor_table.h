@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/sqlite_proto/table_manager.h"
 #include "url/gurl.h"
 
@@ -46,7 +45,7 @@ class AutocompleteActionPredictorTable : public sqlite_proto::TableManager {
 
     // Only used by unit tests.
     Row(const Id& id,
-        const base::string16& user_text,
+        const std::u16string& user_text,
         const GURL& url,
         int number_of_hits,
         int number_of_misses);
@@ -54,7 +53,7 @@ class AutocompleteActionPredictorTable : public sqlite_proto::TableManager {
     Row(const Row& row);
 
     Id id;
-    base::string16 user_text;
+    std::u16string user_text;
     GURL url;
     int number_of_hits;
     int number_of_misses;

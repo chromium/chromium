@@ -54,10 +54,10 @@ struct HashTableConstIteratorAdapter<HashTableType,
       ValuesIterator;
 
   using iterator_category = std::bidirectional_iterator_tag;
-  using value_type = HashTableType;
+  using value_type = ValueType;
   using difference_type = ptrdiff_t;
-  using pointer = value_type*;
-  using reference = value_type&;
+  using pointer = const ValueType*;
+  using reference = const ValueType&;
 
   HashTableConstIteratorAdapter() = default;
   HashTableConstIteratorAdapter(
@@ -72,13 +72,21 @@ struct HashTableConstIteratorAdapter<HashTableType,
     ++impl_;
     return *this;
   }
-  // postfix ++ intentionally omitted
+  HashTableConstIteratorAdapter operator++(int) {
+    HashTableConstIteratorAdapter copy(*this);
+    ++*this;
+    return copy;
+  }
 
   HashTableConstIteratorAdapter& operator--() {
     --impl_;
     return *this;
   }
-  // postfix -- intentionally omitted
+  HashTableConstIteratorAdapter operator--(int) {
+    HashTableConstIteratorAdapter copy(*this);
+    --*this;
+    return copy;
+  }
 
   KeysIterator Keys() { return KeysIterator(*this); }
   ValuesIterator Values() { return ValuesIterator(*this); }
@@ -101,10 +109,10 @@ struct HashTableIteratorAdapter<HashTableType,
       ValuesIterator;
 
   using iterator_category = std::bidirectional_iterator_tag;
-  using value_type = HashTableType;
+  using value_type = ValueType;
   using difference_type = ptrdiff_t;
-  using pointer = value_type*;
-  using reference = value_type&;
+  using pointer = ValueType*;
+  using reference = ValueType&;
 
   HashTableIteratorAdapter() = default;
   HashTableIteratorAdapter(const typename HashTableType::iterator& impl)
@@ -118,13 +126,21 @@ struct HashTableIteratorAdapter<HashTableType,
     ++impl_;
     return *this;
   }
-  // postfix ++ intentionally omitted
+  HashTableIteratorAdapter operator++(int) {
+    HashTableIteratorAdapter copy(*this);
+    ++*this;
+    return copy;
+  }
 
   HashTableIteratorAdapter& operator--() {
     --impl_;
     return *this;
   }
-  // postfix -- intentionally omitted
+  HashTableIteratorAdapter operator--(int) {
+    HashTableIteratorAdapter copy(*this);
+    --*this;
+    return copy;
+  }
 
   operator HashTableConstIteratorAdapter<HashTableType, ValueType>() {
     typename HashTableType::const_iterator i = impl_;
@@ -147,6 +163,12 @@ struct HashTableConstKeysIterator {
       ConstIterator;
 
  public:
+  using iterator_category = typename ConstIterator::iterator_category;
+  using value_type = KeyType;
+  using difference_type = typename ConstIterator::difference_type;
+  using pointer = const KeyType*;
+  using reference = const KeyType&;
+
   HashTableConstKeysIterator(const ConstIterator& impl) : impl_(impl) {}
 
   const KeyType* Get() const { return &(impl_.Get()->key); }
@@ -157,13 +179,21 @@ struct HashTableConstKeysIterator {
     ++impl_;
     return *this;
   }
-  // postfix ++ intentionally omitted
+  HashTableConstKeysIterator operator++(int) {
+    HashTableConstKeysIterator copy(*this);
+    ++*this;
+    return copy;
+  }
 
   HashTableConstKeysIterator& operator--() {
     --impl_;
     return *this;
   }
-  // postfix -- intentionally omitted
+  HashTableConstKeysIterator operator--(int) {
+    HashTableConstKeysIterator copy(*this);
+    --*this;
+    return copy;
+  }
 
   ConstIterator impl_;
 };
@@ -178,6 +208,12 @@ struct HashTableConstValuesIterator {
       ConstIterator;
 
  public:
+  using iterator_category = typename ConstIterator::iterator_category;
+  using value_type = MappedType;
+  using difference_type = typename ConstIterator::difference_type;
+  using pointer = const MappedType*;
+  using reference = const MappedType&;
+
   HashTableConstValuesIterator(const ConstIterator& impl) : impl_(impl) {}
 
   const MappedType* Get() const { return &(impl_.Get()->value); }
@@ -188,13 +224,21 @@ struct HashTableConstValuesIterator {
     ++impl_;
     return *this;
   }
-  // postfix ++ intentionally omitted
+  HashTableConstValuesIterator operator++(int) {
+    HashTableConstValuesIterator copy(*this);
+    ++*this;
+    return copy;
+  }
 
   HashTableConstValuesIterator& operator--() {
     --impl_;
     return *this;
   }
-  // postfix -- intentionally omitted
+  HashTableConstValuesIterator operator--(int) {
+    HashTableConstValuesIterator copy(*this);
+    --*this;
+    return copy;
+  }
 
   ConstIterator impl_;
 };
@@ -212,6 +256,12 @@ struct HashTableKeysIterator {
       ConstIterator;
 
  public:
+  using iterator_category = typename Iterator::iterator_category;
+  using value_type = KeyType;
+  using difference_type = typename Iterator::difference_type;
+  using pointer = KeyType*;
+  using reference = KeyType&;
+
   HashTableKeysIterator(const Iterator& impl) : impl_(impl) {}
 
   KeyType* Get() const { return &(impl_.Get()->key); }
@@ -222,13 +272,21 @@ struct HashTableKeysIterator {
     ++impl_;
     return *this;
   }
-  // postfix ++ intentionally omitted
+  HashTableKeysIterator operator++(int) {
+    HashTableKeysIterator copy(*this);
+    ++*this;
+    return copy;
+  }
 
   HashTableKeysIterator& operator--() {
     --impl_;
     return *this;
   }
-  // postfix -- intentionally omitted
+  HashTableKeysIterator operator--(int) {
+    HashTableKeysIterator copy(*this);
+    --*this;
+    return copy;
+  }
 
   operator HashTableConstKeysIterator<HashTableType, KeyType, MappedType>() {
     ConstIterator i = impl_;
@@ -251,6 +309,12 @@ struct HashTableValuesIterator {
       ConstIterator;
 
  public:
+  using iterator_category = typename Iterator::iterator_category;
+  using value_type = MappedType;
+  using difference_type = typename Iterator::difference_type;
+  using pointer = MappedType*;
+  using reference = MappedType&;
+
   HashTableValuesIterator(const Iterator& impl) : impl_(impl) {}
 
   MappedType* Get() const { return &(impl_.Get()->value); }
@@ -261,13 +325,21 @@ struct HashTableValuesIterator {
     ++impl_;
     return *this;
   }
-  // postfix ++ intentionally omitted
+  HashTableValuesIterator operator++(int) {
+    HashTableValuesIterator copy(*this);
+    ++*this;
+    return copy;
+  }
 
   HashTableValuesIterator& operator--() {
     --impl_;
     return *this;
   }
-  // postfix -- intentionally omitted
+  HashTableValuesIterator operator--(int) {
+    HashTableValuesIterator copy(*this);
+    --*this;
+    return copy;
+  }
 
   operator HashTableConstValuesIterator<HashTableType, KeyType, MappedType>() {
     ConstIterator i = impl_;

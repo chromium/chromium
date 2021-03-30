@@ -6,6 +6,11 @@
 
 #include <memory>
 
+#include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/layout_types.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/views/metadata/type_conversion.h"
+
 namespace views {
 
 FlexLayoutView::FlexLayoutView()
@@ -139,5 +144,31 @@ FlexAllocationOrder FlexLayoutView::GetFlexAllocationOrder() const {
 FlexRule FlexLayoutView::GetDefaultFlexRule() const {
   return layout_->GetDefaultFlexRule();
 }
+
+DEFINE_ENUM_CONVERTERS(LayoutOrientation,
+                       {LayoutOrientation::kHorizontal, u"kHorizontal"},
+                       {LayoutOrientation::kVertical, u"kVertical"})
+
+DEFINE_ENUM_CONVERTERS(LayoutAlignment,
+                       {LayoutAlignment::kStart, u"kStart"},
+                       {LayoutAlignment::kCenter, u"kCenter"},
+                       {LayoutAlignment::kEnd, u"kEnd"},
+                       {LayoutAlignment::kStretch, u"kStretch"})
+
+DEFINE_ENUM_CONVERTERS(FlexAllocationOrder,
+                       {FlexAllocationOrder::kNormal, u"kNormal"},
+                       {FlexAllocationOrder::kReverse, u"kReverse"})
+
+BEGIN_METADATA(FlexLayoutView, View)
+ADD_PROPERTY_METADATA(LayoutOrientation, Orientation)
+ADD_PROPERTY_METADATA(LayoutAlignment, MainAxisAlignment)
+ADD_PROPERTY_METADATA(LayoutAlignment, CrossAxisAlignment)
+ADD_PROPERTY_METADATA(const gfx::Insets, InteriorMargin)
+ADD_PROPERTY_METADATA(int, MinimumCrossAxisSize)
+ADD_PROPERTY_METADATA(bool, CollapseMargins)
+ADD_PROPERTY_METADATA(bool, IncludeHostInsetsInLayout)
+ADD_PROPERTY_METADATA(bool, IgnoreDefaultMainAxisMargins)
+ADD_PROPERTY_METADATA(FlexAllocationOrder, FlexAllocationOrder)
+END_METADATA
 
 }  // namespace views

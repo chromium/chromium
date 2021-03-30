@@ -44,7 +44,7 @@ TransactionImpl::~TransactionImpl() {
 }
 
 void TransactionImpl::CreateObjectStore(int64_t object_store_id,
-                                        const base::string16& name,
+                                        const std::u16string& name,
                                         const blink::IndexedDBKeyPath& key_path,
                                         bool auto_increment) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -81,9 +81,6 @@ void TransactionImpl::DeleteObjectStore(int64_t object_store_id) {
 
   IndexedDBConnection* connection = transaction_->connection();
   if (!connection->IsConnected())
-    return;
-
-  if (!connection->database()->IsObjectStoreIdInMetadata(object_store_id))
     return;
 
   transaction_->ScheduleTask(
@@ -258,9 +255,9 @@ void TransactionImpl::CreateExternalObjects(
         }
         break;
       }
-      case blink::mojom::IDBExternalObject::Tag::NATIVE_FILE_SYSTEM_TOKEN:
+      case blink::mojom::IDBExternalObject::Tag::FILE_SYSTEM_ACCESS_TOKEN:
         (*external_objects)[i] = IndexedDBExternalObject(
-            std::move(object->get_native_file_system_token()));
+            std::move(object->get_file_system_access_token()));
         break;
     }
   }
@@ -284,8 +281,8 @@ void TransactionImpl::Commit(int64_t num_errors_handled) {
   }
 
   indexed_db_context_->quota_manager_proxy()->GetUsageAndQuota(
-      indexed_db_context_->IDBTaskRunner(), origin_,
-      blink::mojom::StorageType::kTemporary,
+      origin_, blink::mojom::StorageType::kTemporary,
+      indexed_db_context_->IDBTaskRunner(),
       base::BindOnce(&TransactionImpl::OnGotUsageAndQuotaForCommit,
                      weak_factory_.GetWeakPtr()));
 }

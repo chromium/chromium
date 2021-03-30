@@ -171,13 +171,12 @@ std::set<MenuItem::Id> MenuItem::RemoveAllDescendants() {
   return result;
 }
 
-base::string16 MenuItem::TitleWithReplacement(const base::string16& selection,
+std::u16string MenuItem::TitleWithReplacement(const std::u16string& selection,
                                               size_t max_length) const {
-  base::string16 result = base::UTF8ToUTF16(title_);
+  std::u16string result = base::UTF8ToUTF16(title_);
   // TODO(asargent) - Change this to properly handle %% escaping so you can
   // put "%s" in titles that won't get substituted.
-  base::ReplaceSubstringsAfterOffset(
-      &result, 0, base::ASCIIToUTF16("%s"), selection);
+  base::ReplaceSubstringsAfterOffset(&result, 0, u"%s", selection);
 
   if (result.length() > max_length)
     result = gfx::TruncateString(result, max_length, gfx::WORD_BREAK);
@@ -313,11 +312,12 @@ const char MenuManager::kOnWebviewContextMenus[] =
 
 MenuManager::MenuManager(content::BrowserContext* context, StateStore* store)
     : browser_context_(context), store_(store) {
-  extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context_));
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(browser_context_));
   Profile* profile = Profile::FromBrowserContext(context);
-  observed_profiles_.Add(profile);
+  observed_profiles_.AddObservation(profile);
   if (profile->HasPrimaryOTRProfile())
-    observed_profiles_.Add(profile->GetPrimaryOTRProfile());
+    observed_profiles_.AddObservation(profile->GetPrimaryOTRProfile());
   if (store_)
     store_->RegisterKey(kContextMenusKey);
 }
@@ -880,11 +880,11 @@ void MenuManager::OnExtensionUnloaded(content::BrowserContext* browser_context,
 }
 
 void MenuManager::OnOffTheRecordProfileCreated(Profile* off_the_record) {
-  observed_profiles_.Add(off_the_record);
+  observed_profiles_.AddObservation(off_the_record);
 }
 
 void MenuManager::OnProfileWillBeDestroyed(Profile* profile) {
-  observed_profiles_.Remove(profile);
+  observed_profiles_.RemoveObservation(profile);
   if (profile->IsOffTheRecord())
     RemoveAllIncognitoContextItems();
 }

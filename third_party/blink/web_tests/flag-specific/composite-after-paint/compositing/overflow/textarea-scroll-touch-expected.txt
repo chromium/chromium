@@ -17,7 +17,8 @@
     {
       "name": "Scroll corner of LayoutNGTextControlMultiLine TEXTAREA",
       "position": [193, 18],
-      "bounds": [261, 126]
+      "bounds": [261, 126],
+      "contentsOpaqueForText": true
     },
     {
       "name": "LayoutNGTextControlMultiLine TEXTAREA",
@@ -43,6 +44,7 @@
       "name": "Scroll corner of LayoutNGTextControlMultiLine TEXTAREA",
       "position": [175, 95],
       "bounds": [30, 30],
+      "contentsOpaqueForText": true,
       "transform": 3
     },
     {

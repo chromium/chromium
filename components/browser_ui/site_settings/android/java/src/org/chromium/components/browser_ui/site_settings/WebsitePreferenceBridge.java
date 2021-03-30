@@ -138,10 +138,9 @@ public class WebsitePreferenceBridge {
      */
     @CalledByNative
     private static void insertChosenObjectInfoIntoList(ArrayList<ChosenObjectInfo> list,
-            @ContentSettingsType int contentSettingsType, String origin, String embedder,
-            String name, String object, boolean isManaged) {
-        list.add(new ChosenObjectInfo(
-                contentSettingsType, origin, embedder, name, object, isManaged));
+            @ContentSettingsType int contentSettingsType, String origin, String name, String object,
+            boolean isManaged) {
+        list.add(new ChosenObjectInfo(contentSettingsType, origin, name, object, isManaged));
     }
 
     /**
@@ -341,7 +340,7 @@ public class WebsitePreferenceBridge {
                 @ContentSettingsType int type, Object list);
         void resetNotificationsSettingsForTest(BrowserContextHandle browserContextHandle);
         void revokeObjectPermission(BrowserContextHandle browserContextHandle,
-                @ContentSettingsType int type, String origin, String embedder, String object);
+                @ContentSettingsType int type, String origin, String object);
         boolean isContentSettingsPatternValid(String pattern);
         boolean urlMatchesContentSettingsPattern(String url, String pattern);
         void fetchStorageInfo(BrowserContextHandle browserContextHandle, Object callback);

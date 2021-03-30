@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/printing/cups_printer_status_creator.h"
+#include "components/device_event_log/device_event_log.h"
 
 namespace chromeos {
 
@@ -17,6 +18,10 @@ CupsPrinterStatus PrinterStatusToCupsPrinterStatus(
   CupsPrinterStatus cups_printer_status(printer_id);
 
   for (const auto& reason : printer_status.reasons) {
+    // TODO(crbug.com/1027400): Remove log once bug is confirmed fix.
+    PRINTER_LOG(DEBUG) << "Printer status received for printer " << printer_id
+                       << " reason: " << static_cast<int>(reason.reason)
+                       << " severity: " << static_cast<int>(reason.severity);
     cups_printer_status.AddStatusReason(
         PrinterReasonToCupsReason(reason.reason),
         PrinterSeverityToCupsSeverity(reason.severity));

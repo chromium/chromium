@@ -55,7 +55,7 @@ void PopulateAlternativeStateNameMapForTesting(
     AlternativeStateNameMap::GetInstance()->AddEntry(
         AlternativeStateNameMap::CountryCode(country_code),
         AlternativeStateNameMap::StateName(base::UTF8ToUTF16(key)), state_entry,
-        alternatives, &canonical_state_name);
+        alternatives, canonical_state_name);
   }
 }
 

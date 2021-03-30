@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/storage/storage_controller.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
@@ -72,8 +74,7 @@ TEST(StorageControllerTest, CacheLimit) {
             mojo::MakeSelfOwnedReceiver(std::make_unique<MockDomStorage>(),
                                         std::move(receiver));
           },
-          WTF::Passed(
-              connection.dom_storage_remote.BindNewPipeAndPassReceiver())));
+          connection.dom_storage_remote.BindNewPipeAndPassReceiver()));
 
   StorageController controller(std::move(connection),
                                scheduler::GetSingleThreadTaskRunnerForTesting(),
@@ -131,9 +132,8 @@ TEST(StorageControllerTest, CacheLimitSessionStorage) {
             mojo::MakeSelfOwnedReceiver(std::move(dom_storage_ptr),
                                         std::move(receiver));
           },
-          WTF::Passed(std::move(mock_dom_storage)),
-          WTF::Passed(
-              connection.dom_storage_remote.BindNewPipeAndPassReceiver())));
+          std::move(mock_dom_storage),
+          connection.dom_storage_remote.BindNewPipeAndPassReceiver()));
 
   StorageController controller(std::move(connection), nullptr, kTestCacheLimit);
 

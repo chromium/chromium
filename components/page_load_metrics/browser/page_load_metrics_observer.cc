@@ -8,6 +8,9 @@
 
 namespace page_load_metrics {
 
+MemoryUpdate::MemoryUpdate(content::GlobalFrameRoutingId id, int64_t delta)
+    : routing_id(id), delta_bytes(delta) {}
+
 ExtraRequestCompleteInfo::ExtraRequestCompleteInfo(
     const url::Origin& origin_of_final_url,
     const net::IPEndPoint& remote_endpoint,

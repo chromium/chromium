@@ -34,7 +34,6 @@ config("internal_config") {
     "//build/config/compiler:no_size_t_to_int_warning",
   ]
   if (is_posix || is_fuchsia) {
-    cflags_c = [ "-std=c99" ]
     defines += [ "_XOPEN_SOURCE=700" ]
   }
 }
@@ -96,8 +95,12 @@ if (is_win && !is_msan && current_cpu != "arm64") {
     } else if (current_cpu == "arm64") {
       if (is_linux || is_chromeos || is_android) {
         sources += crypto_sources_linux_aarch64
-      } else if (is_ios) {
+      } else if (is_apple) {
+        # TODO(davidben): Rename all the file lists, etc., upstream from mac
+        # and ios to apple.
         sources += crypto_sources_ios_aarch64
+      } else if (is_win) {
+        sources += crypto_sources_win_aarch64
       } else {
         public_configs = [ ":no_asm_config" ]
       }
@@ -173,6 +176,11 @@ if (build_with_chromium) {
       "test_data_chromium.cc",
     ]
     deps += [ "//base/test:test_support" ]
+
+    if (is_fuchsia) {
+      additional_manifest_fragments =
+          [ "//build/config/fuchsia/test/network_capabilities.test-cmx" ]
+    }
   }
 
   test("boringssl_ssl_tests") {

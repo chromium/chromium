@@ -71,7 +71,8 @@ bool UnixDomainClientSocket::FillAddress(const std::string& socket_path,
 }
 
 int UnixDomainClientSocket::Connect(CompletionOnceCallback callback) {
-  DCHECK(!socket_);
+  if (IsConnected())
+    return OK;
 
   SockaddrStorage address;
   if (!FillAddress(socket_path_, use_abstract_namespace_, &address))

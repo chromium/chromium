@@ -147,6 +147,20 @@ message ClientPhishingRequest {
   // The visual feature match results.
   // Allow multiple results if there are more than one matched target.
   repeated VisionMatchResult vision_match = 20;
+
+  // Indicates whether the request is due to a match on the DOM features.
+  optional bool is_dom_match = 21;
+
+  // If we can find the complete referrer chain, this field will contains URLs
+  // transitions from landing referrer to event in reverse chronological
+  // order, i.e. event url comes first in this list, and landing referrer
+  // comes last.
+  // For Enhanced Protection users, if the referrer
+  // chain is empty or partially missing, we will add/append recent navigation
+  // events to this list. The type of these entries will be RECENT_NAVIGATION.
+  repeated ReferrerChainEntry referrer_chain = 22;
+
+  // next available tag number: 23.
 }
 
 // Vision match result for one target image.
@@ -208,7 +222,7 @@ message LoginReputationClientRequest {
     // transitions from landing referrer to event in reverse chronological
     // order, i.e. event url comes first in this list, and landing referrer
     // comes last.
-    // For Safe Browsing Extended Reporting or Scout users, if the referrer
+    // For Safe Browsing Extended Reporting, if the referrer
     // chain is empty or partially missing, we will add/append recent navigation
     // events to this list. The type of these entries will be RECENT_NAVIGATION.
     repeated ReferrerChainEntry referrer_chain = 5;
@@ -413,7 +427,7 @@ message LoginReputationClientResponse {
     SAFE = 1;
     // The site has low reputation or low popularity.
     LOW_REPUTATION = 2;
-    // The url matches with blacklist entries.
+    // The url matches with blocklist entries.
     PHISHING = 3;
   }
   optional VerdictType verdict_type = 1;
@@ -760,7 +774,7 @@ message ClientDownloadRequest {
   // transitions from landing referrer to event in reverse chronological
   // order, i.e. event url comes first in this list, and landing referrer
   // comes last.
-  // For Safe Browsing Extended Reporting or Scout users, if the referrer chain
+  // For Safe Browsing Extended Reporting, if the referrer chain
   // is empty or partially missing, we will add/append recent navigation events
   // to this list. The type of these entries will be RECENT_NAVIGATION.
   repeated ReferrerChainEntry referrer_chain = 36;
@@ -831,7 +845,7 @@ message ReferrerChainEntry {
 
     DEPRECATED_SERVER_REDIRECT = 5;  // Deprecated
 
-    // For Safe Browsing Extended Reporting or Scout users, if the referrer
+    // For Safe Browsing Extended Reporting, if the referrer
     // chain is empty or partially missing, we will add/append recent navigation
     // events to this list. RECENT_NAVIGATION type is set for these cases.
     RECENT_NAVIGATION = 6;
@@ -1120,7 +1134,7 @@ message ClientIncidentReport {
         optional ClientDownloadRequest.ImageHeaders image_headers = 5;
       }
       repeated Dll dll = 9;
-      repeated string blacklisted_dll = 10;
+      repeated string blocklisted_dll = 10;
       message ModuleState {
         enum ModifiedState {
           UNKNOWN = 0;
@@ -1153,7 +1167,7 @@ message ClientIncidentReport {
         STATE_UNKNOWN = 0;
         STATE_ENABLED = 1;
         STATE_DISABLED = 2;
-        STATE_BLACKLISTED = 3;
+        STATE_BLOCKLISTED = 3;
         STATE_BLOCKED = 4;
         STATE_TERMINATED = 5;
       }
@@ -1336,14 +1350,16 @@ message ClientSafeBrowsingReportRequest {
   enum SafeBrowsingUrlApiType {
     SAFE_BROWSING_URL_API_TYPE_UNSPECIFIED = 0;
     // Native implementation of Safe Browsing API v3 protocol.
-    PVER3_NATIVE = 1;
+    // Deprecated as of 2021-1. V3 protocol is not used anymore.
+    PVER3_NATIVE = 1 [deprecated = true];
     // Native implementation of Safe Browsing API v4 protocol.
     PVER4_NATIVE = 2;
     // Android SafetyNet API.
     // https://developer.android.com/training/safetynet/safebrowsing.html
     ANDROID_SAFETYNET = 3;
     // Flywheel (data compression service).
-    FLYWHEEL = 4;
+    // Deprecated as of 2021-1. Data saver has been completely turned down.
+    FLYWHEEL = 4 [deprecated = true];
     // Safe Browsing real time API.
     REAL_TIME = 5;
   }
@@ -1425,7 +1441,7 @@ message ExtensionWebStoreInstallRequest {
   // transitions from landing referrer to event in reverse chronological
   // order, i.e. event url comes first in this list, and landing referrer
   // comes last.
-  // For Safe Browsing Extended Reporting or Scout users, if the referrer
+  // For Safe Browsing Extended Reporting, if the referrer
   // chain is empty or partially missing, we will add/append recent navigation
   // events to this list. The type of these entries will be RECENT_NAVIGATION.
   repeated ReferrerChainEntry referrer_chain = 1;

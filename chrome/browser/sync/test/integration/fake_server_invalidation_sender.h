@@ -5,12 +5,10 @@
 #ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_FAKE_SERVER_INVALIDATION_SENDER_H_
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_FAKE_SERVER_INVALIDATION_SENDER_H_
 
-#include "base/macros.h"
-
 #include "components/sync/base/model_type.h"
 #include "components/sync/test/fake_server/fake_server.h"
 
-namespace syncer {
+namespace invalidation {
 class FCMNetworkHandler;
 }
 
@@ -24,8 +22,12 @@ class FakeServerInvalidationSender : public FakeServer::Observer {
   FakeServerInvalidationSender(
       const std::string& client_id,
       bool self_notify,
-      base::RepeatingCallback<syncer::FCMNetworkHandler*()>
+      base::RepeatingCallback<invalidation::FCMNetworkHandler*()>
           fcm_network_handler_getter);
+  FakeServerInvalidationSender(const FakeServerInvalidationSender& other) =
+      delete;
+  FakeServerInvalidationSender& operator=(
+      const FakeServerInvalidationSender& other) = delete;
   ~FakeServerInvalidationSender() override;
 
   // FakeServer::Observer implementation.
@@ -35,10 +37,8 @@ class FakeServerInvalidationSender : public FakeServer::Observer {
  private:
   const std::string client_id_;
   const bool self_notify_;
-  const base::RepeatingCallback<syncer::FCMNetworkHandler*()>
+  const base::RepeatingCallback<invalidation::FCMNetworkHandler*()>
       fcm_network_handler_getter_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeServerInvalidationSender);
 };
 
 }  // namespace fake_server

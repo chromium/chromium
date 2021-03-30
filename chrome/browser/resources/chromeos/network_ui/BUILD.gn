@@ -2,9 +2,71 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+preprocess_folder = "preprocessed"
+preprocess_manifest = "preprocessed_manifest.json"
+preprocess_gen_manifest = "preprocessed_gen_manifest.json"
+
+generate_grd("build_grd") {
+  grd_prefix = "network_ui"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+  input_files = [ "network.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+
+  deps = [
+    ":preprocess",
+    ":preprocess_generated",
+  ]
+  manifest_files = [
+    "$target_gen_dir/$preprocess_manifest",
+    "$target_gen_dir/$preprocess_gen_manifest",
+  ]
+}
+
+preprocess_if_expr("preprocess") {
+  in_folder = "./"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_manifest"
+  in_files = [ "network_ui_browser_proxy.js" ]
+}
+
+preprocess_if_expr("preprocess_generated") {
+  deps = [ ":web_components" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
+  in_files = [
+    "network_logs_ui.js",
+    "network_state_ui.js",
+    "network_ui.js",
+  ]
+}
+
+grit("resources") {
+  defines = chrome_grit_defines
+
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/network_ui_resources.grd"
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "grit/network_ui_resources.h",
+    "grit/network_ui_resources_map.cc",
+    "grit/network_ui_resources_map.h",
+    "network_ui_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
 
 js_type_check("closure_compile") {
+  is_polymer3 = true
   deps = [
     ":network_logs_ui",
     ":network_state_ui",
@@ -16,17 +78,17 @@ js_type_check("closure_compile") {
 js_library("network_ui") {
   deps = [
     ":network_ui_browser_proxy",
-    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
-    "//ui/webui/resources/cr_components/chromeos/network_health:network_diagnostics",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:load_time_data",
+    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
+    "//ui/webui/resources/cr_components/chromeos/network_health:network_diagnostics.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 
 js_library("network_logs_ui") {
   deps = [
     ":network_ui_browser_proxy",
-    "//ui/webui/resources/js:i18n_behavior",
+    "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }
 
@@ -34,15 +96,23 @@ js_library("network_state_ui") {
   deps = [
     ":network_ui_browser_proxy",
     "//chromeos/services/network_config/public/mojom:mojom_js_library_for_compile",
-    "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider",
-    "//ui/webui/resources/cr_components/chromeos/network:network_icon",
-    "//ui/webui/resources/cr_components/chromeos/network:network_list",
-    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
+    "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider.m",
+    "//ui/webui/resources/cr_components/chromeos/network:network_icon.m",
+    "//ui/webui/resources/cr_components/chromeos/network:network_list.m",
+    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
   ]
   externs_list = chrome_extension_public_externs +
                  [ "$externs_path/networking_private.js" ]
 }
 
 js_library("network_ui_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr" ]
+  deps = [ "//ui/webui/resources/js:cr.m" ]
+}
+
+html_to_js("web_components") {
+  js_files = [
+    "network_logs_ui.js",
+    "network_state_ui.js",
+    "network_ui.js",
+  ]
 }

@@ -9,21 +9,13 @@
 
 namespace content {
 
-blink::ForcedColors WebThemeEngineMac::GetForcedColors() const {
-  return forced_colors_;
-}
-
-void WebThemeEngineMac::SetForcedColors(
-    const blink::ForcedColors forced_colors) {
-  forced_colors_ = forced_colors;
-}
-
 void WebThemeEngineMac::Paint(cc::PaintCanvas* canvas,
                               WebThemeEngine::Part part,
                               WebThemeEngine::State state,
                               const gfx::Rect& rect,
                               const WebThemeEngine::ExtraParams* extra_params,
-                              blink::mojom::ColorScheme color_scheme) {
+                              blink::mojom::ColorScheme color_scheme,
+                              const base::Optional<SkColor>& accent_color) {
   if (IsScrollbarPart(part)) {
     PaintMacScrollBarParts(canvas, part, state, rect, extra_params,
                            color_scheme);
@@ -31,7 +23,7 @@ void WebThemeEngineMac::Paint(cc::PaintCanvas* canvas,
   }
 
   WebThemeEngineDefault::Paint(canvas, part, state, rect, extra_params,
-                               color_scheme);
+                               color_scheme, accent_color);
 }
 
 bool WebThemeEngineMac::IsScrollbarPart(WebThemeEngine::Part part) {

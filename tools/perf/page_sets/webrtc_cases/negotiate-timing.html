@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<!--
+ *  Copyright (c) 2021 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree.
+-->
+<html>
+<head>
+
+
+    <base target="_blank">
+
+    <title>Peer connection - Renegotiate</title>
+
+
+</head>
+
+<body>
+
+<div id="container">
+    <h1><a href="//webrtc.github.io/samples/" title="WebRTC samples homepage">WebRTC samples</a>
+        <span>Peer connection negotiation timing</span></h1>
+
+    <video id="localVideo" playsinline autoplay muted></video>
+    <video id="remoteVideo" playsinline autoplay></video>
+
+    <div>
+        <button id="startButton">Start</button>
+        <button id="callButton">Call</button>
+        <button id="renegotiateButton">Renegotiate</button>
+        <button id="hangupButton">Hang Up</button>
+    </div>
+    <div>
+      <p>
+        Video sections after renegotiating: <input type="number" id="videoSections" value="5">
+      </p>
+    </div>
+    <p>View the console to see logging. The <code>MediaStream</code> object <code>localStream</code>, and the <code>RTCPeerConnection</code>
+        objects <code>pc1</code> and <code>pc2</code> are in global scope, so you can inspect them in the console as
+        well.</p>
+    <p>
+      <div id="log">
+        Log goes here
+      </div>
+    </p>
+    <a href="https://github.com/webrtc/samples/tree/gh-pages/src/content/peerconnection/negotiate-timing"
+       title="View source for this page on GitHub" id="viewSource">View source on GitHub</a>
+
+</div>
+
+
+<script src="negotiate-timing.js"></script>
+</body></html>

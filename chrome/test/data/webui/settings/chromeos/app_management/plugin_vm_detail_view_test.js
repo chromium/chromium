@@ -2,6 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import 'chrome://os-settings/chromeos/os_settings.js';
+
+// #import {PluginVmBrowserProxyImpl, PluginVmPermissionType, createPermission, PermissionValueType, Bool, AppManagementStore, updateSelectedAppId, getPermissionValueBool, convertOptionalBoolToBool} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {TestPluginVmBrowserProxy} from './test_plugin_vm_browser_proxy.m.js';
+// #import {setupFakeHandler, replaceStore, replaceBody, getPermissionCrToggleByType, getPermissionToggleByType} from './test_util.m.js';
+// clang-format on
+
 'use strict';
 
 suite('<app-management-plugin-vm-detail-view>', function() {
@@ -37,7 +45,7 @@ suite('<app-management-plugin-vm-detail-view>', function() {
   }
 
   function getSelectedAppFromStore() {
-    const storeData = app_management.Store.getInstance().data;
+    const storeData = app_management.AppManagementStore.getInstance().data;
     return storeData.apps[storeData.selectedAppId];
   }
 
@@ -129,7 +137,7 @@ suite('<app-management-plugin-vm-detail-view>', function() {
     };
     const app = await fakeHandler.addApp(null, options);
     appId = app.id;
-    app_management.Store.getInstance().dispatch(
+    app_management.AppManagementStore.getInstance().dispatch(
         app_management.actions.updateSelectedAppId(appId));
 
     pluginVmDetailView =
@@ -140,7 +148,7 @@ suite('<app-management-plugin-vm-detail-view>', function() {
 
   test('App is rendered correctly', function() {
     assertEquals(
-        app_management.Store.getInstance().data.selectedAppId,
+        app_management.AppManagementStore.getInstance().data.selectedAppId,
         pluginVmDetailView.app_.id);
   });
 

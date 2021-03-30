@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/mac/scoped_nsobject.h"
-#include "content/public/common/menu_item.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
 
 // WebMenuRunner ---------------------------------------------------------------

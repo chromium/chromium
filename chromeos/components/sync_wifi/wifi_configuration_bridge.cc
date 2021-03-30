@@ -32,6 +32,7 @@
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/protocol/wifi_configuration_specifics.pb.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace chromeos {
@@ -89,6 +90,7 @@ WifiConfigurationBridge::~WifiConfigurationBridge() {
 // static
 void WifiConfigurationBridge::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kIsFirstRun, true);
+  registry->RegisterBooleanPref(kHasFixedAutoconnect, false);
 }
 
 void WifiConfigurationBridge::OnShuttingDown() {
@@ -205,6 +207,10 @@ void WifiConfigurationBridge::OnGetAllSyncableNetworksResult(
   batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
   Commit(std::move(batch));
   metrics_recorder_->RecordTotalCount(entries_.size());
+  // If zero networks are synced log the reason.
+  if (entries_.size() == 0) {
+    local_network_collector_->RecordZeroNetworksEligibleForSync();
+  }
 }
 
 base::Optional<syncer::ModelError> WifiConfigurationBridge::ApplySyncChanges(
@@ -243,6 +249,10 @@ base::Optional<syncer::ModelError> WifiConfigurationBridge::ApplySyncChanges(
   batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
   Commit(std::move(batch));
   metrics_recorder_->RecordTotalCount(entries_.size());
+  // If zero networks are synced log the reason.
+  if (entries_.size() == 0) {
+    local_network_collector_->RecordZeroNetworksEligibleForSync();
+  }
 
   return base::nullopt;
 }
@@ -315,6 +325,13 @@ void WifiConfigurationBridge::OnReadAllData(
       base::BindOnce(&WifiConfigurationBridge::OnReadAllMetadata,
                      weak_ptr_factory_.GetWeakPtr()));
 
+  // Temporary fix for networks which accidentally had autoconnect disabled.
+  if (!pref_service_->GetBoolean(kHasFixedAutoconnect)) {
+    local_network_collector_->ExecuteAfterNetworksLoaded(
+        base::BindOnce(&WifiConfigurationBridge::FixAutoconnect,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
   int entries_size = entries_.size();
   // Do not log the total network count during OOBE. It returns 0 even if there
   // are networks synced since MergeSyncData has not executed yet.
@@ -327,6 +344,28 @@ void WifiConfigurationBridge::OnReadAllData(
     }
   }
   metrics_recorder_->RecordTotalCount(entries_size);
+  // If zero networks are synced log the reason.
+  if (entries_size == 0) {
+    local_network_collector_->RecordZeroNetworksEligibleForSync();
+  }
+}
+
+void WifiConfigurationBridge::FixAutoconnect() {
+  // Temporary fix for networks which accidentally had autoconnect disabled.
+  if (!pref_service_->GetBoolean(kHasFixedAutoconnect)) {
+    std::vector<sync_pb::WifiConfigurationSpecifics> protos;
+    for (const auto& entry : entries_) {
+      protos.push_back(entry.second);
+    }
+    local_network_collector_->FixAutoconnect(
+        protos,
+        base::BindOnce(&WifiConfigurationBridge::OnFixAutoconnectComplete,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void WifiConfigurationBridge::OnFixAutoconnectComplete() {
+  pref_service_->SetBoolean(kHasFixedAutoconnect, true);
 }
 
 void WifiConfigurationBridge::OnReadAllMetadata(
@@ -337,6 +376,20 @@ void WifiConfigurationBridge::OnReadAllMetadata(
     return;
   }
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
+
+  // Make a copy in case the map is modified while iterating over the pending
+  // updates.  This could happen if sync is disabled while iterating.
+  base::flat_map<std::string,
+                 base::Optional<sync_pb::WifiConfigurationSpecifics>>
+      updates = networks_to_sync_when_ready_;
+  for (auto const& it : updates) {
+    if (it.second) {
+      SaveNetworkToSync(it.second);
+      continue;
+    }
+    RemoveNetworkFromSync(it.first);
+  }
+  networks_to_sync_when_ready_.clear();
 }
 
 void WifiConfigurationBridge::OnCommit(
@@ -419,6 +472,14 @@ void WifiConfigurationBridge::SaveNetworkToSync(
     return;
   }
 
+  // If the sync backend hasn't finished initializing the bridge, then store
+  // this update to be processed later.
+  if (!store_ || !change_processor()->IsTrackingMetadata()) {
+    networks_to_sync_when_ready_.insert_or_assign(
+        NetworkIdentifier::FromProto(*proto).SerializeToString(), proto);
+    return;
+  }
+
   std::unique_ptr<syncer::EntityData> entity_data =
       GenerateWifiEntityData(*proto);
   auto id = NetworkIdentifier::FromProto(*proto);
@@ -435,6 +496,10 @@ void WifiConfigurationBridge::SaveNetworkToSync(
                  << NetworkId(NetworkStateFromNetworkIdentifier(id))
                  << " to sync.";
   metrics_recorder_->RecordTotalCount(entries_.size());
+  // If zero networks are synced log the reason.
+  if (entries_.size() == 0) {
+    local_network_collector_->RecordZeroNetworksEligibleForSync();
+  }
 }
 
 void WifiConfigurationBridge::OnNetworkCreated(const std::string& guid) {
@@ -476,9 +541,7 @@ void WifiConfigurationBridge::OnBeforeConfigurationRemoved(
 
   NET_LOG(EVENT) << "Storing metadata for " << NetworkPathId(service_path)
                  << " in preparation for removal.";
-  std::string storage_key = id->SerializeToString();
-  if (entries_.contains(storage_key))
-    pending_deletes_[guid] = storage_key;
+  pending_deletes_[guid] = id->SerializeToString();
 }
 
 void WifiConfigurationBridge::OnConfigurationRemoved(
@@ -490,7 +553,21 @@ void WifiConfigurationBridge::OnConfigurationRemoved(
     return;
   }
 
-  std::string storage_key = pending_deletes_[network_guid];
+  const std::string& storage_key = pending_deletes_[network_guid];
+  if (!store_ || !change_processor()->IsTrackingMetadata()) {
+    networks_to_sync_when_ready_.insert_or_assign(storage_key, base::nullopt);
+    return;
+  }
+
+  RemoveNetworkFromSync(storage_key);
+}
+
+void WifiConfigurationBridge::RemoveNetworkFromSync(
+    const std::string& storage_key) {
+  if (!entries_.contains(storage_key)) {
+    return;  // Network is not synced.
+  }
+
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
   batch->DeleteData(storage_key);

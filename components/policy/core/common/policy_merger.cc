@@ -72,7 +72,8 @@ bool PolicyListMerger::CanMerge(const std::string& policy_name,
     return false;
 
   if (!policy.value()->is_list()) {
-    policy.AddError(IDS_POLICY_LIST_MERGING_WRONG_POLICY_TYPE_SPECIFIED);
+    policy.AddMessage(PolicyMap::MessageType::kError,
+                      IDS_POLICY_LIST_MERGING_WRONG_POLICY_TYPE_SPECIFIED);
     return false;
   }
 
@@ -98,11 +99,11 @@ void PolicyListMerger::DoMerge(PolicyMap::Entry* policy) const {
   // Concatenates the values from accepted conflicting sources to the policy
   // value while avoiding duplicates.
   for (const auto& it : policy->conflicts) {
-    if (!PolicyMerger::ConflictCanBeMerged(it, *policy)) {
+    if (!PolicyMerger::ConflictCanBeMerged(it.entry(), *policy)) {
       continue;
     }
 
-    for (const base::Value& val : it.value()->GetList()) {
+    for (const base::Value& val : it.entry().value()->GetList()) {
       if (duplicates.find(&val) != duplicates.end())
         continue;
       duplicates.insert(&val);
@@ -160,12 +161,15 @@ bool PolicyDictionaryMerger::CanMerge(const std::string& policy_name,
     return false;
 
   if (!allowed_to_merge) {
-    policy.AddError(IDS_POLICY_DICTIONARY_MERGING_POLICY_NOT_ALLOWED);
+    policy.AddMessage(PolicyMap::MessageType::kError,
+                      IDS_POLICY_DICTIONARY_MERGING_POLICY_NOT_ALLOWED);
     return false;
   }
 
   if (!policy.value()->is_dict()) {
-    policy.AddError(IDS_POLICY_DICTIONARY_MERGING_WRONG_POLICY_TYPE_SPECIFIED);
+    policy.AddMessage(
+        PolicyMap::MessageType::kError,
+        IDS_POLICY_DICTIONARY_MERGING_WRONG_POLICY_TYPE_SPECIFIED);
     return false;
   }
 
@@ -177,7 +181,7 @@ void PolicyDictionaryMerger::DoMerge(PolicyMap::Entry* policy) const {
   std::vector<const PolicyMap::Entry*> policies;
   policies.push_back(policy);
   for (const auto& it : policy->conflicts)
-    policies.push_back(&it);
+    policies.push_back(&it.entry());
 
   std::sort(policies.begin(), policies.end(),
             [](const PolicyMap::Entry* a, const PolicyMap::Entry* b) {
@@ -247,9 +251,9 @@ void PolicyGroupMerger::Merge(PolicyMap::PolicyMapType* policies) const {
         highest_set_priority = policy.DeepCopy();
       } else {
         for (const auto& conflict : policy.conflicts) {
-          if (conflict.has_higher_priority_than(highest_set_priority) &&
-              conflict.source > highest_set_priority.source) {
-            highest_set_priority = conflict.DeepCopy();
+          if (conflict.entry().has_higher_priority_than(highest_set_priority) &&
+              conflict.entry().source > highest_set_priority.source) {
+            highest_set_priority = conflict.entry().DeepCopy();
           }
         }
       }

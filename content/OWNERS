@@ -12,6 +12,8 @@
 # For public questions directed to OWNERS, you can send email
 # to content-owners@chromium.org.
 
+set noparent
+# NOTE: keep this in sync with lsc-owners-override@chromium.org owners
 alexmos@chromium.org
 arthursonzogni@chromium.org
 avi@chromium.org
@@ -24,6 +26,7 @@ jochen@chromium.org
 kinuko@chromium.org
 nasko@chromium.org
 pfeldman@chromium.org
+# NOTE: keep this in sync with lsc-owners-override@chromium.org owners
 
 # per-file rules:
 # These are for the common case of adding or renaming files. If you're doing

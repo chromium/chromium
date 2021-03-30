@@ -14,7 +14,7 @@
 #include "components/metrics_services_manager/metrics_services_manager_client.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/settings/stats_reporting_controller.h"
+#include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #endif
 
 class PrefService;
@@ -76,7 +76,6 @@ class ChromeMetricsServicesManagerClient
   class ChromeEnabledStateProvider;
 
   // metrics_services_manager::MetricsServicesManagerClient:
-  std::unique_ptr<rappor::RapporServiceImpl> CreateRapporServiceImpl() override;
   std::unique_ptr<variations::VariationsService> CreateVariationsService()
       override;
   std::unique_ptr<metrics::MetricsServiceClient> CreateMetricsServiceClient()

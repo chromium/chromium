@@ -91,8 +91,7 @@ class NeedsAdjustPointer<T, false> {
   static_assert(sizeof(T), "T must be fully defined");
 
  public:
-  static const bool value =
-      IsGarbageCollectedMixin<typename std::remove_const<T>::type>::value;
+  static const bool value = true;
 };
 
 // TODO(sof): migrate to wtf/TypeTraits.h

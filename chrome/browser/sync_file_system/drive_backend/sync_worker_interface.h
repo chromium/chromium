@@ -70,16 +70,16 @@ class SyncWorkerInterface {
   virtual void UninstallOrigin(const GURL& origin,
                                RemoteFileSyncService::UninstallFlag flag,
                                SyncStatusCallback callback) = 0;
-  virtual void ProcessRemoteChange(const SyncFileCallback& callback) = 0;
+  virtual void ProcessRemoteChange(SyncFileCallback callback) = 0;
   virtual void SetRemoteChangeProcessor(
       RemoteChangeProcessorOnWorker* remote_change_processor_on_worker) = 0;
   virtual RemoteServiceState GetCurrentState() const = 0;
   virtual void GetOriginStatusMap(
-      const RemoteFileSyncService::StatusMapCallback& callback) = 0;
+      RemoteFileSyncService::StatusMapCallback callback) = 0;
   virtual std::unique_ptr<base::ListValue> DumpFiles(const GURL& origin) = 0;
   virtual std::unique_ptr<base::ListValue> DumpDatabase() = 0;
   virtual void SetSyncEnabled(bool enabled) = 0;
-  virtual void PromoteDemotedChanges(const base::Closure& callback) = 0;
+  virtual void PromoteDemotedChanges(base::OnceClosure callback) = 0;
 
   // See LocalChangeProcessor for the details.
   virtual void ApplyLocalChange(const FileChange& local_change,

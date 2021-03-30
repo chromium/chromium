@@ -98,13 +98,6 @@ public class Browser {
         for (TabListCallback callback : mTabListCallbacks) {
             callback.onWillDestroyBrowserAndAllTabs();
         }
-
-        // See comment in Tab$TabClientImpl.onTabDestroyed for details on this.
-        if (WebLayer.getSupportedMajorVersionInternal() >= 87) return;
-
-        for (Tab tab : getTabs()) {
-            Tab.unregisterTab(tab);
-        }
     }
 
     // Called after the browser was destroyed.
@@ -231,14 +224,9 @@ public class Browser {
      * Returns true if this Browser is in the process of restoring the previous state.
      *
      * @param True if restoring previous state.
-     *
-     * @since 87
      */
     public boolean isRestoringPreviousState() {
         ThreadCheck.ensureOnUiThread();
-        if (WebLayer.getSupportedMajorVersionInternal() < 87) {
-            throw new UnsupportedOperationException();
-        }
         throwIfDestroyed();
         try {
             return mImpl.isRestoringPreviousState();
@@ -251,14 +239,9 @@ public class Browser {
      * Adds a BrowserRestoreCallback.
      *
      * @param callback The BrowserRestoreCallback.
-     *
-     * @since 87
      */
     public void registerBrowserRestoreCallback(@NonNull BrowserRestoreCallback callback) {
         ThreadCheck.ensureOnUiThread();
-        if (WebLayer.getSupportedMajorVersionInternal() < 87) {
-            throw new UnsupportedOperationException();
-        }
         throwIfDestroyed();
         mBrowserRestoreCallbacks.addObserver(callback);
     }
@@ -267,14 +250,9 @@ public class Browser {
      * Removes a BrowserRestoreCallback.
      *
      * @param callback The BrowserRestoreCallback.
-     *
-     * @since 87
      */
     public void unregisterBrowserRestoreCallback(@NonNull BrowserRestoreCallback callback) {
         ThreadCheck.ensureOnUiThread();
-        if (WebLayer.getSupportedMajorVersionInternal() < 87) {
-            throw new UnsupportedOperationException();
-        }
         throwIfDestroyed();
         mBrowserRestoreCallbacks.removeObserver(callback);
     }
@@ -310,16 +288,11 @@ public class Browser {
      *        contexts where the URL should be visible to the user.
      * @param animate Whether or not any height/visibility changes that result from this call
      *        should be animated.
-     *
-     * @since 86
      */
     public void setTopView(@Nullable View view, int minHeight, boolean onlyExpandControlsAtPageTop,
             boolean animate) {
         ThreadCheck.ensureOnUiThread();
         throwIfDestroyed();
-        if (WebLayer.getSupportedMajorVersionInternal() < 86) {
-            throw new UnsupportedOperationException();
-        }
         try {
             mImpl.setTopViewAndScrollingBehavior(
                     ObjectWrapper.wrap(view), minHeight, onlyExpandControlsAtPageTop, animate);
@@ -332,8 +305,6 @@ public class Browser {
      * Sets the View shown at the bottom of the browser. A value of null removes the view.
      *
      * @param view The new bottom-view.
-     *
-     * @since 84
      */
     public void setBottomView(@Nullable View view) {
         ThreadCheck.ensureOnUiThread();
@@ -397,15 +368,10 @@ public class Browser {
     /**
      * Creates a new tab attached to this browser. This will call {@link TabListCallback#onTabAdded}
      * with the new tab.
-     *
-     * @since 85
      */
     public @NonNull Tab createTab() {
         ThreadCheck.ensureOnUiThread();
         throwIfDestroyed();
-        if (WebLayer.getSupportedMajorVersionInternal() < 85) {
-            throw new UnsupportedOperationException();
-        }
         try {
             ITab iTab = mImpl.createTab();
             Tab tab = Tab.getTabById(iTab.getId());
@@ -422,18 +388,43 @@ public class Browser {
      * need to control z-order with other views or other BrowserFragmentImpls. Note embedder should
      * keep WebLayer in the default non-embedding mode when user is interacting with the web
      * content. Embedding mode does not support encrypted video.
+     * Deprecated in 90. Use setEmbeddabilityMode instead.
      *
      * @param enable Whether to support embedding
      * @param callback {@link Callback} to be called with a boolean indicating whether request
      * succeeded. A request might fail if it is subsumed by a subsequent request, or if this object
      * is destroyed.
      */
+    @Deprecated
     public void setSupportsEmbedding(boolean enable, @NonNull Callback<Boolean> callback) {
         ThreadCheck.ensureOnUiThread();
         throwIfDestroyed();
         try {
             mImpl.setSupportsEmbedding(
                     enable, ObjectWrapper.wrap((ValueCallback<Boolean>) callback::onResult));
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
+    /**
+     * See BrowserEmbeddabilityMode for details. The default mode is UNSUPPORTED.
+     * @param mode the requested embedding mode.
+     * @param callback {@link Callback} to be called with a boolean indicating whether request
+     * succeeded. A request might fail if it is subsumed by a subsequent request, or if this object
+     * is destroyed.
+     * @since 90
+     */
+    public void setEmbeddabilityMode(
+            @BrowserEmbeddabilityMode int mode, @NonNull Callback<Boolean> callback) {
+        ThreadCheck.ensureOnUiThread();
+        if (WebLayer.getSupportedMajorVersionInternal() < 90) {
+            throw new UnsupportedOperationException();
+        }
+        throwIfDestroyed();
+        try {
+            mImpl.setEmbeddabilityMode(
+                    mode, ObjectWrapper.wrap((ValueCallback<Boolean>) callback::onResult));
         } catch (RemoteException e) {
             throw new APICallException(e);
         }
@@ -467,6 +458,31 @@ public class Browser {
     }
 
     /**
+     * Controls how sites are themed when WebLayer is in dark mode. WebLayer considers itself to be
+     * in dark mode if the UI_MODE_NIGHT_YES flag of its Resources' Configuration's uiMode field is
+     * set, which is typically controlled with AppCompatDelegate#setDefaultNightMode. By default
+     * pages will only be rendered in dark mode if WebLayer is in dark mode and they provide a dark
+     * theme in CSS. See DarkModeStrategy for other possible configurations.
+     *
+     * @see DarkModeStrategy
+     * @param strategy See {@link DarkModeStrategy}.
+     *
+     * @since 90
+     */
+    public void setDarkModeStrategy(@DarkModeStrategy int strategy) {
+        ThreadCheck.ensureOnUiThread();
+        if (WebLayer.getSupportedMajorVersionInternal() < 89) {
+            throw new UnsupportedOperationException();
+        }
+        throwIfDestroyed();
+        try {
+            mImpl.setDarkModeStrategy(strategy);
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
+    /**
      * Returns {@link Profile} associated with this Browser Fragment. Multiple fragments can share
      * the same Profile.
      */
@@ -483,7 +499,6 @@ public class Browser {
 
     /**
      * Returns the UrlBarController.
-     * @since 82
      */
     @NonNull
     public UrlBarController getUrlBarController() {
@@ -535,7 +550,6 @@ public class Browser {
             for (TabListCallback callback : mTabListCallbacks) {
                 callback.onTabRemoved(tab);
             }
-            tab.onRemovedFromBrowser();
         }
 
         @Override

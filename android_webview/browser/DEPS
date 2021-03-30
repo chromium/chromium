@@ -13,10 +13,13 @@ include_rules = [
   "+components/autofill/core/browser",
   "+components/autofill/core/common",
   "+components/cdm/browser",
+  "+components/component_updater/android",
+  "+components/component_updater/installer_policies",
   "+components/crash/content/browser",
   "+components/crash/core",
   "+components/download/public/common",
   "+components/embedder_support/android/metrics",
+  "+components/embedder_support/origin_trials",
   "+components/favicon_base",
   "+components/flags_ui",
   "+components/heap_profiling",
@@ -61,6 +64,8 @@ include_rules = [
   "+components/embedder_support/android",
 
   "+printing",
+
+  "+services/cert_verifier/public/mojom",
 
   "+services/metrics/public/cpp/ukm_source_id.h",
 

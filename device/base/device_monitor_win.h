@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 #include "base/win/windows_types.h"
 #include "device/base/device_base_export.h"
 

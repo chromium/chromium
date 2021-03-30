@@ -28,7 +28,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_database_helper.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
-#include "chrome/browser/subresource_filter/chrome_subresource_filter_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -370,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   proto::UrlRule rule = testing::CreateSuffixRule("included_script.html");
   proto::UrlRule allowlist_rule = testing::CreateSuffixRule(kAllowlistedDomain);
   allowlist_rule.set_anchor_right(proto::ANCHOR_TYPE_NONE);
-  allowlist_rule.set_semantics(proto::RULE_SEMANTICS_WHITELIST);
+  allowlist_rule.set_semantics(proto::RULE_SEMANTICS_ALLOWLIST);
   ASSERT_NO_FATAL_FAILURE(SetRulesetWithRules({rule, allowlist_rule}));
 
   ui_test_utils::NavigateToURL(browser(), url);
@@ -662,13 +661,13 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   // component is faulty. The CHECK assumes that the crash URL and other
   // renderer debug URLs do not create a navigation throttle. See
   // crbug.com/736658.
-  content::WindowedNotificationObserver observer(
-      content::NOTIFICATION_WEB_CONTENTS_DISCONNECTED,
-      content::NotificationService::AllSources());
+  content::RenderProcessHostWatcher crash_observer(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
   browser()->OpenURL(content::OpenURLParams(
       GURL(content::kChromeUICrashURL), content::Referrer(),
       WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED, false));
-  observer.Wait();
+  crash_observer.Wait();
 }
 
 // Test that resources in frames with an aborted initial load due to a doc.write
@@ -684,9 +683,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   ResetConfiguration(std::move(config));
 
   // Watches for title set by onload and onerror callbacks of tested resource
-  content::TitleWatcher title_watcher(web_contents(),
-                                      base::ASCIIToUTF16("failed"));
-  title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16("loaded"));
+  content::TitleWatcher title_watcher(web_contents(), u"failed");
+  title_watcher.AlsoWaitForTitle(u"loaded");
 
   ui_test_utils::NavigateToURL(
       browser(),
@@ -694,7 +692,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
           "/subresource_filter/docwrite_loads_disallowed_resource.html"));
 
   // Check the load was blocked.
-  EXPECT_EQ(base::ASCIIToUTF16("failed"), title_watcher.WaitAndGetTitle());
+  EXPECT_EQ(u"failed", title_watcher.WaitAndGetTitle());
 }
 
 // Test that resources in frames with an aborted initial load due to a
@@ -710,9 +708,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   ResetConfiguration(std::move(config));
 
   // Watches for title set by onload and onerror callbacks of tested resource
-  content::TitleWatcher title_watcher(web_contents(),
-                                      base::ASCIIToUTF16("failed"));
-  title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16("loaded"));
+  content::TitleWatcher title_watcher(web_contents(), u"failed");
+  title_watcher.AlsoWaitForTitle(u"loaded");
 
   ui_test_utils::NavigateToURL(
       browser(),
@@ -720,7 +717,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
           "/subresource_filter/window_stop_loads_disallowed_resource.html"));
 
   // Check the load was blocked.
-  EXPECT_EQ(base::ASCIIToUTF16("failed"), title_watcher.WaitAndGetTitle());
+  EXPECT_EQ(u"failed", title_watcher.WaitAndGetTitle());
 }
 
 // Test that a frame with an aborted initial load due to a frame deletion does
@@ -728,14 +725,13 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
 IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
                        FrameDeletedDuringLoad_DoesNotCrash) {
   // Watches for title set by end of frame deletion script.
-  content::TitleWatcher title_watcher(web_contents(),
-                                      base::ASCIIToUTF16("done"));
+  content::TitleWatcher title_watcher(web_contents(), u"done");
   ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
                      "/subresource_filter/delete_loading_frame.html"));
 
   // Wait for the script to complete.
-  EXPECT_EQ(base::ASCIIToUTF16("done"), title_watcher.WaitAndGetTitle());
+  EXPECT_EQ(u"done", title_watcher.WaitAndGetTitle());
 }
 
 // Test that an allowed resource in the child of a frame with its initial load
@@ -752,9 +748,8 @@ IN_PROC_BROWSER_TEST_F(
   ResetConfiguration(std::move(config));
 
   // Watches for title set by onload and onerror callbacks of tested resource.
-  content::TitleWatcher title_watcher(web_contents(),
-                                      base::ASCIIToUTF16("failed"));
-  title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16("loaded"));
+  content::TitleWatcher title_watcher(web_contents(), u"failed");
+  title_watcher.AlsoWaitForTitle(u"loaded");
 
   ui_test_utils::NavigateToURL(
       browser(),
@@ -776,7 +771,7 @@ IN_PROC_BROWSER_TEST_F(
   )SCRIPT"));
 
   // Check the load wasn't blocked.
-  EXPECT_EQ(base::ASCIIToUTF16("loaded"), title_watcher.WaitAndGetTitle());
+  EXPECT_EQ(u"loaded", title_watcher.WaitAndGetTitle());
 }
 
 // Test that a disallowed resource in the child of a frame with its initial load
@@ -793,9 +788,8 @@ IN_PROC_BROWSER_TEST_F(
   ResetConfiguration(std::move(config));
 
   // Watches for title set by onload and onerror callbacks of tested resource.
-  content::TitleWatcher title_watcher(web_contents(),
-                                      base::ASCIIToUTF16("failed"));
-  title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16("loaded"));
+  content::TitleWatcher title_watcher(web_contents(), u"failed");
+  title_watcher.AlsoWaitForTitle(u"loaded");
 
   ui_test_utils::NavigateToURL(
       browser(),
@@ -817,7 +811,7 @@ IN_PROC_BROWSER_TEST_F(
   )SCRIPT"));
 
   // Check the load was blocked.
-  EXPECT_EQ(base::ASCIIToUTF16("failed"), title_watcher.WaitAndGetTitle());
+  EXPECT_EQ(u"failed", title_watcher.WaitAndGetTitle());
 }
 
 IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
@@ -866,11 +860,11 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
             "/subresource_filter/popup_disallowed_load_helper.html"));
     ASSERT_TRUE(ExecJs(web_contents(), test_case_script));
     content::TitleWatcher title_watcher(popup_observer.GetWebContents(),
-                                        base::ASCIIToUTF16("failed"));
-    title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16("loaded"));
+                                        u"failed");
+    title_watcher.AlsoWaitForTitle(u"loaded");
 
     // Check the load was blocked.
-    EXPECT_EQ(base::ASCIIToUTF16("failed"), title_watcher.WaitAndGetTitle());
+    EXPECT_EQ(u"failed", title_watcher.WaitAndGetTitle());
   }
 }
 
@@ -895,12 +889,10 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
                                             "b.com", "/title2.html"))));
 
   {
-    content::TitleWatcher title_watcher(
-        popup_observer.GetWebContents(),
-        base::ASCIIToUTF16("Title Of Awesomeness"));
+    content::TitleWatcher title_watcher(popup_observer.GetWebContents(),
+                                        u"Title Of Awesomeness");
     // Wait for popup to finish loading
-    EXPECT_EQ(base::ASCIIToUTF16("Title Of Awesomeness"),
-              title_watcher.WaitAndGetTitle());
+    EXPECT_EQ(u"Title Of Awesomeness", title_watcher.WaitAndGetTitle());
   }
 
   // Check histograms agree that activation was not inherited.
@@ -925,11 +917,11 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
     )SCRIPT"));
 
   content::TitleWatcher title_watcher(popup_observer.GetWebContents(),
-                                      base::ASCIIToUTF16("failed"));
-  title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16("loaded"));
+                                      u"failed");
+  title_watcher.AlsoWaitForTitle(u"loaded");
 
   // Check the load was blocked.
-  EXPECT_EQ(base::ASCIIToUTF16("failed"), title_watcher.WaitAndGetTitle());
+  EXPECT_EQ(u"failed", title_watcher.WaitAndGetTitle());
 
   // Check the new histograms agree that activation was inherited.
   tester.ExpectBucketCount(kPageLoadActivationStateHistogram,
@@ -977,11 +969,11 @@ IN_PROC_BROWSER_TEST_F(
   original_web_contents->ClosePage();
 
   content::TitleWatcher title_watcher(popup_observer.GetWebContents(),
-                                      base::ASCIIToUTF16("failed"));
-  title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16("loaded"));
+                                      u"failed");
+  title_watcher.AlsoWaitForTitle(u"loaded");
 
   // Check the load was blocked.
-  EXPECT_EQ(base::ASCIIToUTF16("failed"), title_watcher.WaitAndGetTitle());
+  EXPECT_EQ(u"failed", title_watcher.WaitAndGetTitle());
 
   // Check histograms agree that activation was inherited.
   tester.ExpectBucketCount(kPageLoadActivationStateHistogram,

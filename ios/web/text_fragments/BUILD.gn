@@ -1,0 +1,27 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//ios/build/config.gni")
+
+source_set("text_fragments") {
+  deps = [
+    "//base",
+    "//components/shared_highlighting/core/common",
+    "//ios/web/common:features",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/navigation",
+    "//ios/web/public/navigation:referrer",
+    "//ios/web/web_state:web_state_impl_header",
+    "//ios/web/web_state/ui:web_view_handler",
+    "//services/metrics/public/cpp:metrics_cpp",
+  ]
+
+  sources = [
+    "crw_text_fragments_handler.h",
+    "crw_text_fragments_handler.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}

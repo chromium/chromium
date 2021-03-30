@@ -266,8 +266,8 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
     auto result = base::MakeRefCounted<::media::DecoderBuffer>(size);
 
     if (output_format_ == kOutputSigned16) {
-      bus->ToInterleaved(num_frames, OutputFormatSizeInBytes(output_format_),
-                         result->writable_data());
+      bus->ToInterleaved<::media::SignedInt16SampleTypeTraits>(
+          num_frames, reinterpret_cast<int16_t*>(result->writable_data()));
     } else if (output_format_ == kOutputPlanarFloat) {
       // Data in an AudioBus is already in planar float format; just copy each
       // channel into the result buffer in order.

@@ -17,7 +17,6 @@
 #include "ui/gl/gl_surface.h"
 
 namespace base {
-class Thread;
 class WaitableEvent;
 }
 
@@ -88,7 +87,6 @@ class FakeWindow {
   base::SequenceChecker ui_checker_;
 
   // Render thread members.
-  std::unique_ptr<base::Thread> render_thread_;
   base::SequenceChecker rt_checker_;
   scoped_refptr<base::SingleThreadTaskRunner> render_thread_loop_;
   scoped_refptr<gl::GLSurface> surface_;

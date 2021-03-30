@@ -21,8 +21,10 @@ import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_FAKE_S
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_INCOGNITO_DESCRIPTION_INITIALIZED;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_INCOGNITO_DESCRIPTION_VISIBLE;
+import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_LENS_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_TAB_CAROUSEL_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_VOICE_RECOGNITION_BUTTON_VISIBLE;
+import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.LENS_BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.MORE_TABS_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_TOP_MARGIN;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.MV_TILES_VISIBLE;
@@ -56,7 +58,6 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.IncognitoCookieControlsManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -66,8 +67,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Tests for {@link TasksViewBinder}. */
@@ -84,12 +83,6 @@ public class TasksViewBinderTest extends DummyUiActivityTestCase {
     public void setUpTest() throws Exception {
         super.setUpTest();
         MockitoAnnotations.initMocks(this);
-
-        Map<String, Boolean> testFeatures = new HashMap<>();
-        testFeatures.put(ChromeFeatureList.INTEREST_FEED_V2, false);
-        testFeatures.put(ChromeFeatureList.INTEREST_FEED_CONTENT_SUGGESTIONS, true);
-        testFeatures.put(ChromeFeatureList.REPORT_FEED_USER_ACTIONS, false);
-        ChromeFeatureList.setTestFeatures(testFeatures);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mTasksView = (TasksView) getActivity().getLayoutInflater().inflate(
@@ -189,6 +182,29 @@ public class TasksViewBinderTest extends DummyUiActivityTestCase {
     }
 
     @Test
+    @SmallTest
+    public void testSetLensButtonVisibilityAndClickListener() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mTasksViewPropertyModel.set(IS_FAKE_SEARCH_BOX_VISIBLE, true);
+            mTasksViewPropertyModel.set(IS_LENS_BUTTON_VISIBLE, true);
+        });
+        assertTrue(isViewVisible(R.id.lens_camera_button_end));
+
+        mViewClicked.set(false);
+        onView(withId(R.id.lens_camera_button_end)).perform(click());
+        assertFalse(mViewClicked.get());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mTasksViewPropertyModel.set(LENS_BUTTON_CLICK_LISTENER, mViewOnClickListener);
+        });
+        onView(withId(R.id.lens_camera_button_end)).perform(click());
+        assertTrue(mViewClicked.get());
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mTasksViewPropertyModel.set(IS_LENS_BUTTON_VISIBLE, false));
+        assertFalse(isViewVisible(R.id.lens_camera_button_end));
+    }
+
+    @Test
     @UiThreadTest
     @SmallTest
     public void testSetMVTilesVisibility() {
@@ -209,7 +225,7 @@ public class TasksViewBinderTest extends DummyUiActivityTestCase {
         // Note that onView(R.id.more_tabs).perform(click()) can not be used since it requires 90
         // percent of the view's area is displayed to the users. However, this view has negative
         // margin which makes the percentage is less than 90.
-        // TODO (crbug.com/1025296): Investigate whether this would be a problem for real users.
+        // TODO (crbug.com/1186752): Investigate whether this would be a problem for real users.
         mTasksView.findViewById(R.id.more_tabs).performClick();
         assertFalse(mViewClicked.get());
         mTasksViewPropertyModel.set(MORE_TABS_CLICK_LISTENER, mViewOnClickListener);

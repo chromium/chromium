@@ -232,7 +232,7 @@ void MediaTray::OnNotificationListViewSizeChanged() {
   bubble_->GetBubbleView()->UpdateBubble();
 }
 
-base::string16 MediaTray::GetAccessibleNameForTray() {
+std::u16string MediaTray::GetAccessibleNameForTray() {
   return l10n_util::GetStringUTF16(
       IDS_ASH_GLOBAL_MEDIA_CONTROLS_BUTTON_TOOLTIP_TEXT);
 }
@@ -251,11 +251,11 @@ bool MediaTray::PerformAction(const ui::Event& event) {
   if (bubble_)
     CloseBubble();
   else
-    ShowBubble(event.IsMouseEvent() || event.IsGestureEvent());
+    ShowBubble();
   return true;
 }
 
-void MediaTray::ShowBubble(bool show_by_click) {
+void MediaTray::ShowBubble() {
   DCHECK(MediaNotificationProvider::Get());
   SetNotificationColorTheme();
 
@@ -272,7 +272,7 @@ void MediaTray::ShowBubble(bool show_by_click) {
   init_params.has_shadow = false;
   init_params.translucent = true;
   init_params.corner_radius = kTrayItemCornerRadius;
-  init_params.show_by_click = show_by_click;
+  init_params.reroute_event_handler = true;
 
   TrayBubbleView* bubble_view = new TrayBubbleView(init_params);
 
@@ -289,13 +289,6 @@ void MediaTray::ShowBubble(bool show_by_click) {
   bubble_ = std::make_unique<TrayBubbleWrapper>(this, bubble_view,
                                                 false /*is_persistent*/);
   SetIsActive(true);
-
-  // Only focus the widget if it's opened by the keyboard.
-  if (!show_by_click) {
-    views::Widget* widget = bubble_->GetBubbleWidget();
-    widget->widget_delegate()->SetCanActivate(true);
-    Shell::Get()->focus_cycler()->FocusWidget(widget);
-  }
 
   base::UmaHistogramBoolean("Media.CrosGlobalMediaControls.RepeatUsageOnShelf",
                             bubble_has_shown_);
@@ -358,7 +351,7 @@ void MediaTray::UpdateDisplayState() {
   SetVisiblePreferred(should_show);
 }
 
-base::string16 MediaTray::GetAccessibleNameForBubble() {
+std::u16string MediaTray::GetAccessibleNameForBubble() {
   return l10n_util::GetStringUTF16(IDS_ASH_GLOBAL_MEDIA_CONTROLS_TITLE);
 }
 

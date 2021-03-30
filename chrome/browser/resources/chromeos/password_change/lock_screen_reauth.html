@@ -3,6 +3,7 @@
 
 <head>
   <include src="../login/components/oobe_icons.html">
+  <include src="../login/components/oobe_buttons.html">
   <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
 
   <script src="chrome://resources/js/cr.js"></script>
@@ -17,17 +18,49 @@
   <dom-module id="lock-reauth">
     <template>
       <style>
-        ::part(dialog) {
-          /* The HTML dialog should fill the entire system dialog. */
-          height: 100%;
+        :host {
+          padding: 0;
+          margin: 0;
+          top: 0;
+          left: 0;
+          position: fixed;
           width: 100%;
-          display: flex;
+          height: 100%;
         }
 
-        ::part(wrapper) {
+        .content-wrapper {
+          display: flex;
+          flex-direction: column;
           height: 100%;
           width: 100%;
+        }
+
+        #body {
           display: flex;
+          flex-direction: column;
+          flex-grow: 1;
+          align-self: stretch;
+          width: 100%;
+          height: 100%;
+        }
+
+        #saml-container {
+          /* #F1F3F4 */
+          background: rgb(241, 243, 244);
+           /* #000000 */
+          box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.17);
+          height: 44px;
+          display: flex;
+          justify-content: flex-end;
+          text-align: center;
+        }
+
+        #samlNoticeMessage {
+           /* #6a6a6a */
+          color: rgb(106, 106, 106);
+          font-size: 13px;
+          padding-top: 15px;
+          flex: 1;
         }
 
         #saml-close-button {
@@ -35,20 +68,20 @@
           --cr-icon-button-margin-start: 0;
         }
 
-        [slot='body'],
         #signin-frame {
+          flex: 1;
           width: 100%;
           height: 100%;
         }
 
-        #title-icon {
+        .title-icon {
           --iron-icon-height: 32px;
           --iron-icon-width: 32px;
           /* #1a73e8 */
           --iron-icon-fill-color: rgb(26, 115, 232);
         }
 
-        [slot='header'] {
+        .header {
           background: white;
           padding-bottom: 0;
           padding-inline-end: 64px;
@@ -57,67 +90,197 @@
           flex: 1;
         }
 
-        [slot='header'],
-        #title {
-          /* #202124 */
-          color: rgb(32, 33, 36);
+        .title {
+          color: var(--cr-primary-text-color);
           font-size: 28px;
           font-weight: 400;
-          padding-top: 20px;
+          padding-top: 15px;
           margin: 0;
         }
 
-        [slot='header'],
-        #subtitle {
-          /* #5f6368 */
-          color: rgb(95, 99, 104);
+        .subtitle {
+          color: var(--cr-secondary-text-color);
+          line-height: 150%;
           font-size: 13px;
           font-weight: 400;
-          padding-top: 8px;
+          padding-top: 15px;
           margin: 0;
+          /* This is a temporary workaround and should not be migrated
+          to new UI design. */
+          max-width: 600px;
         }
 
-        [slot="button-container"] {
-          padding: 40px;
+        .illustration-container {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex: 3;
+        }
+
+        .illustration {
+          height: 100%;
+          width: 100%;
+          max-width: 500px;
+          object-fit: contain;
+        }
+
+        .button-container {
+          display: flex;
+          justify-content: flex-end;
+          flex-shrink: 0;
+          padding-bottom: 40px;
+          padding-inline-end: 40px;
+        }
+
+        [hidden] {
+          display: none !important;
+        }
+
+        .input-container {
+          width: 75%;
+          border: 0;
+          flex: 2;
+          justify-content: flex-start;
+          padding-inline-start: 64px;
+        }
+
+        cr-input {
+          --cr-input-min-height: 32px;
+          --cr-input-border-radius: 4px 4px 0 0;
+          max-width: 560px;
+          padding-bottom: 8px;
+        }
+
+        :host-context([dir=rtl]) #arrowForward {
+          transform: rotate(180deg);
         }
       </style>
-      <cr-dialog id="dialog" exportparts="dialog">
-        <div slot="header">
-          <iron-icon id="title-icon" icon="oobe-64:alert"></iron-icon>
-          <div id="title" hidden="[[isErrorDisplayed_]]">
+      <div class="content-wrapper" hidden="[[!isVerifyUser_]]" role="dialog"
+          aria-modal="true"
+          aria-label="$i18n{loginWelcomeMessage}">
+        <div class="header">
+          <iron-icon class="title-icon" icon="oobe-32:avatar"></iron-icon>
+          <div class="title">
             $i18n{loginWelcomeMessage}
           </div>
-          <div id="title" hidden="[[!isErrorDisplayed_]]">
-            $i18n{loginWelcomeMessageWithError}
-          </div>
-          <div id="subtitle" hidden="[[isErrorDisplayed_]]">
+          <div class="subtitle">
             $i18n{lockScreenReauthSubtitile}
           </div>
-          <div id="subtitle" hidden="[[!isErrorDisplayed_]]">
-            $i18n{lockScreenReauthSubtitileWithError}
-          </div>
         </div>
-        <div slot="body" hidden="[[isButtonsEnabled_]]">
-          <cr-icon-button id="saml-close-button" iron-icon="cr:close" on-click="onCloseTap_">
-          </cr-icon-button>
-          <webview id="signin-frame" name="signin-frame" class="flex">
-          </webview>
+        <div class="illustration-container">
+          <img class="illustration"
+               srcset="../login/images/1x/verify-account.svg 1x,
+                       ../login/images/2x/verify-account.svg 2x">
         </div>
-        <div slot="button-container" class="flex layout horizontal">
-          <cr-button id="cancelButton" class="cancel-button" on-click="onCloseTap_"
-              hidden="[[!isButtonsEnabled_]]">
+        <div class="flex layout horizontal button-container">
+          <cr-button id="cancelButton" class="cancel-button" on-click="onCloseTap_">
             $i18n{lockScreenCancelButton}
           </cr-button>
-          <cr-button id="nextButton" class="action-button" on-click="onNext_"
-              hidden="[[!isVerifyButtonEnabled_]]">
+          <cr-button id="nextButton" class="action-button" on-click="onVerify_">
             $i18n{lockScreenVerifyButton}
           </cr-button>
-          <cr-button id="nextButton" class="action-button" on-click="onNext_"
-              hidden="[[!isVerifyAgainButtonEnabled_]]">
+        </div>
+      </div>
+
+      <div class="content-wrapper" hidden="[[!isErrorDisplayed_]]" role="dialog"
+          aria-modal="true"
+          aria-label="$i18n{loginWelcomeMessageWithError}">
+        <div class="header">
+          <iron-icon class="title-icon" icon="oobe-32:warning"></iron-icon>
+          <div class="title">
+            $i18n{loginWelcomeMessageWithError}
+          </div>
+          <div class="subtitle">
+            <div>$i18n{lockScreenReauthSubtitile1WithError}</div>
+            <div>$i18n{lockScreenReauthSubtitile2WithError}</div>
+          </div>
+        </div>
+        <div class="illustration-container">
+          <img class="illustration"
+               srcset="../login/images/1x/error.svg 1x,
+                       ../login/images/2x/error.svg 2x">
+        </div>
+        <div class="flex layout horizontal button-container">
+          <cr-button id="cancelButton" class="cancel-button" on-click="onCloseTap_">
+            $i18n{lockScreenCancelButton}
+          </cr-button>
+          <cr-button id="nextButton" class="action-button" on-click="onVerify_">
             $i18n{lockScreenVerifyAgainButton}
           </cr-button>
         </div>
-      </cr-dialog>
+      </div>
+
+      <div id="body" hidden="[[!isSamlPage_]]">
+        <div id="saml-container">
+          <span id="samlNoticeMessage"></span>
+          <cr-icon-button id="saml-close-button" iron-icon="cr:close"
+              on-click="onCloseTap_" aria-label="$i18n{lockScreenCloseButton}">
+          </cr-icon-button>
+        </div>
+        <webview id="signin-frame" name="signin-frame" class="flex">
+        </webview>
+      </div>
+
+      <div class="content-wrapper" hidden="[[!isConfirmPassword_]]">
+        <div class="header">
+          <iron-icon class="title-icon" icon="oobe-32:lock"></iron-icon>
+          <div class="title">
+            [[email_]]
+          </div>
+          <div class="subtitle" hidden="[[isManualInput_]]">
+            $i18n{confirmPasswordSubtitle}
+          </div>
+          <div class="subtitle" hidden="[[!isManualInput_]]">
+            $i18n{manualPasswordSubtitle}
+          </div>
+        </div>
+        <div class="input-container">
+          <cr-input type="password" id="passwordInput" required
+              placeholder="[[passwordPlaceholder_(locale, isManualInput_)]]"
+              error-message="[[passwordErrorText_(locale, isManualInput_)]]">
+          </cr-input>
+          <cr-input type="password" id="confirmPasswordInput" required
+              placeholder="$i18n{confirmPasswordLabel}"
+              error-message="$i18n{manualPasswordMismatch}"
+              hidden="[[!isManualInput_]]">
+          </cr-input>
+        </div>
+        <div class="flex layout horizontal button-container">
+          <cr-button id="cancelButton" class="cancel-button" on-click="onCloseTap_">
+            $i18n{lockScreenCancelButton}
+          </cr-button>
+          <cr-button id="nextButton" class="action-button" on-click="onConfirm_">
+            $i18n{lockScreenNextButton}
+            <iron-icon id="arrowForward" icon="oobe-buttons-40:arrow-forward"></iron-icon>
+          </cr-button>
+        </div>
+      </div>
+
+      <div class="content-wrapper" hidden="[[!isPasswordChanged_]]">
+        <div class="header">
+          <iron-icon class="title-icon" icon="oobe-32:lock"></iron-icon>
+          <div class="title">
+            $i18n{passwordChangedTitle}
+          </div>
+          <div class="subtitle">
+            $i18n{passwordChangedSubtitle}
+          </div>
+        </div>
+        <div class="input-container">
+          <cr-input type="password" id="oldPasswordInput" required
+                placeholder="$i18n{passwordChangedOldPasswordHint}"
+                error-message="$i18n{passwordChangedIncorrectOldPassword}">
+        </div>
+        <div class="flex layout horizontal button-container">
+          <cr-button id="cancelButton" class="cancel-button" on-click="onCloseTap_">
+            $i18n{lockScreenCancelButton}
+          </cr-button>
+          <cr-button id="nextButton" class="action-button" on-click="onNext_">
+            $i18n{lockScreenNextButton}
+            <iron-icon icon="oobe-buttons-40:arrow-forward"></iron-icon>
+          </cr-button>
+        </div>
+      </div>
     </template>
   </dom-module>
 </head>

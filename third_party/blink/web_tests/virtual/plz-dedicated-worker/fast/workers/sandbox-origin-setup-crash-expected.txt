@@ -1,0 +1,4 @@
+CONSOLE ERROR: line 3: The Content Security Policy directive 'sandbox' is ignored when delivered via a <meta> element.
+CONSOLE ERROR: The Content Security Policy directive 'sandbox' is ignored when delivered via a <meta> element.
+CONSOLE ERROR: The Content Security Policy directive 'sandbox' is ignored when delivered via a <meta> element.
+PASS if no crash.

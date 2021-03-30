@@ -115,7 +115,8 @@ aura::Window* AppListPresenterImpl::GetWindow() const {
              : nullptr;
 }
 
-void AppListPresenterImpl::Show(int64_t display_id,
+void AppListPresenterImpl::Show(AppListViewState preferred_state,
+                                int64_t display_id,
                                 base::TimeTicks event_time_stamp) {
   if (is_target_visibility_show_) {
     // Launcher is always visible on the internal display when home launcher is
@@ -142,7 +143,7 @@ void AppListPresenterImpl::Show(int64_t display_id,
     SetView(view);
     view_->GetWidget()->GetNativeWindow()->TrackOcclusionState();
   }
-  delegate_->ShowForDisplay(display_id);
+  delegate_->ShowForDisplay(preferred_state, display_id);
 
   OnVisibilityChanged(GetTargetVisibility(), display_id);
 }
@@ -225,9 +226,9 @@ ShelfAction AppListPresenterImpl::ToggleAppList(
     Dismiss(event_time_stamp);
     return SHELF_ACTION_APP_LIST_DISMISSED;
   }
-  Show(display_id, event_time_stamp);
-  if (request_fullscreen)
-    view_->SetState(AppListViewState::kFullscreenAllApps);
+  Show(request_fullscreen ? AppListViewState::kFullscreenAllApps
+                          : AppListViewState::kPeeking,
+       display_id, event_time_stamp);
   return SHELF_ACTION_APP_LIST_SHOWN;
 }
 
@@ -337,13 +338,6 @@ bool AppListPresenterImpl::IsShowingEmbeddedAssistantUI() const {
   }
 
   return false;
-}
-
-void AppListPresenterImpl::SetExpandArrowViewVisibility(bool show) {
-  if (view_) {
-    view_->app_list_main_view()->contents_view()->SetExpandArrowViewVisibility(
-        show);
-  }
 }
 
 void AppListPresenterImpl::OnTabletModeChanged(bool started) {

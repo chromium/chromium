@@ -20,6 +20,9 @@ class TestGetParts(unittest.TestCase):
         self.assertEqual(
             'test.signing.bundle_id.framework.AlertNotificationService',
             all_parts['notification-xpc'].identifier)
+        self.assertEqual(
+            'test.signing.bundle_id.framework.AlertNotificationService',
+            all_parts['helper-alerts'].identifier)
         self.assertEqual('test.signing.bundle_id.helper',
                          all_parts['helper-app'].identifier)
 
@@ -33,6 +36,9 @@ class TestGetParts(unittest.TestCase):
         self.assertEqual(
             'test.signing.bundle_id.framework.AlertNotificationService',
             all_parts['notification-xpc'].identifier)
+        self.assertEqual(
+            'test.signing.bundle_id.framework.AlertNotificationService',
+            all_parts['helper-alerts'].identifier)
         self.assertEqual('test.signing.bundle_id.helper',
                          all_parts['helper-app'].identifier)
 
@@ -51,6 +57,9 @@ class TestGetParts(unittest.TestCase):
         self.assertEqual(
             'test.signing.bundle_id.canary.framework.AlertNotificationService',
             all_parts['notification-xpc'].identifier)
+        self.assertEqual(
+            'test.signing.bundle_id.canary.framework.AlertNotificationService',
+            all_parts['helper-alerts'].identifier)
         self.assertEqual('test.signing.bundle_id.helper',
                          all_parts['helper-app'].identifier)
 
@@ -92,6 +101,12 @@ class TestGetParts(unittest.TestCase):
                 model.CodeSignOptions.KILL +
                 model.CodeSignOptions.HARDENED_RUNTIME),
             set(all_parts['notification-xpc'].options))
+        self.assertEqual(
+            set(model.CodeSignOptions.RESTRICT +
+                model.CodeSignOptions.LIBRARY_VALIDATION +
+                model.CodeSignOptions.KILL +
+                model.CodeSignOptions.HARDENED_RUNTIME),
+            set(all_parts['helper-alerts'].options))
         self.assertEqual(
             set(model.CodeSignOptions.RESTRICT +
                 model.CodeSignOptions.LIBRARY_VALIDATION +
@@ -250,14 +265,14 @@ class TestSignChrome(unittest.TestCase):
         ])
 
     @mock.patch(
-        'signing.commands.plistlib.readPlist',
+        'signing.commands.read_plist',
         side_effect=_get_plist_read('99.0.9999.99'))
     def test_sanity_check_ok(self, read_plist, **kwargs):
         config = model.Distribution().to_config(test_config.TestConfig())
         parts.sign_chrome(self.paths, config, sign_framework=True)
 
     @mock.patch(
-        'signing.commands.plistlib.readPlist',
+        'signing.commands.read_plist',
         side_effect=_get_plist_read('55.0.5555.55'))
     def test_sanity_check_bad(self, read_plist, **kwargs):
         config = model.Distribution().to_config(test_config.TestConfig())

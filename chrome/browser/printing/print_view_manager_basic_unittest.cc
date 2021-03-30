@@ -12,7 +12,6 @@
 #include "chrome/browser/printing/printer_query.h"
 #include "chrome/browser/printing/printing_init.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/printing/common/print_messages.h"
 #include "content/public/browser/render_process_host.h"
 
 namespace printing {

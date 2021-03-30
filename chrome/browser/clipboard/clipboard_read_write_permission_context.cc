@@ -7,14 +7,14 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request_id.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
 ClipboardReadWritePermissionContext::ClipboardReadWritePermissionContext(
     content::BrowserContext* browser_context)
     : PermissionContextBase(
           browser_context,
           ContentSettingsType::CLIPBOARD_READ_WRITE,
-          blink::mojom::FeaturePolicyFeature::kClipboardRead) {}
+          blink::mojom::PermissionsPolicyFeature::kClipboardRead) {}
 
 ClipboardReadWritePermissionContext::~ClipboardReadWritePermissionContext() {}
 

@@ -42,17 +42,11 @@ suite('SiteDataDetailsSubpage', function() {
     type: 'cookie'
   };
 
-  /** @type {!CookieList} */
-  const cookieList = {
-    id: 'fooId',
-    children: [cookieDetails],
-  };
-
   const site = 'foo.com';
 
   setup(function() {
     browserProxy = new TestLocalDataBrowserProxy();
-    browserProxy.setCookieDetails(cookieList);
+    browserProxy.setCookieDetails([cookieDetails]);
     LocalDataBrowserProxyImpl.instance_ = browserProxy;
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.instance_ = testMetricsBrowserProxy;

@@ -122,7 +122,9 @@ class ChromeScreenshotGrabber : public ash::ScreenshotDelegate {
 
   Profile* GetProfile();
 
-  bool IsScreenshotAllowed(const ScreenshotArea& area) const;
+  // Returns whether taking a screenshot for |area| is allowed or not.
+  // If not, shows a corresponding notification as well.
+  bool CheckIfScreenshotAllowed(const ScreenshotArea& area);
 
   std::unique_ptr<ui::ScreenshotGrabber> screenshot_grabber_;
 

@@ -1,4 +1,0 @@
-include_rules = [
-  "+content/public/browser",
-  "+content/public/common",
-]

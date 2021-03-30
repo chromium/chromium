@@ -13,18 +13,17 @@
 #include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/ash/login/lock/screen_locker.h"
+#include "chrome/browser/ash/login/session/user_session_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/input_method/assistive_window_properties.h"
 #include "chrome/browser/chromeos/input_method/input_host_helper.h"
 #include "chrome/browser/chromeos/input_method/input_method_engine.h"
 #include "chrome/browser/chromeos/input_method/native_input_method_engine.h"
-#include "chrome/browser/chromeos/login/lock/screen_locker.h"
-#include "chrome/browser/chromeos/login/session/user_session_manager.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/common/extensions/api/input_ime.h"
 #include "chrome/common/extensions/api/input_method_private.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/manifest_handlers/background_info.h"
@@ -257,6 +256,7 @@ class ImeObserverChromeOS : public ui::ImeObserver {
   }
 
   void OnFocus(
+      int context_id,
       const IMEEngineHandlerInterface::InputContext& context) override {
     if (extension_id_.empty())
       return;
@@ -266,7 +266,7 @@ class ImeObserverChromeOS : public ui::ImeObserver {
     // inputs. We ensure that we only trigger one OnFocus event.
     if (ExtensionHasListener(input_method_private::OnFocus::kEventName)) {
       input_method_private::InputContext input_context;
-      input_context.context_id = context.id;
+      input_context.context_id = context_id;
       input_context.type = input_method_private::ParseInputContextType(
           ConvertInputContextType(context));
       input_context.mode = input_method_private::ParseInputModeType(
@@ -296,7 +296,7 @@ class ImeObserverChromeOS : public ui::ImeObserver {
       return;
     }
 
-    ImeObserver::OnFocus(context);
+    ImeObserver::OnFocus(context_id, context);
   }
 
   void OnAssistiveWindowButtonClicked(
@@ -438,9 +438,14 @@ class ImeObserverChromeOS : public ui::ImeObserver {
     if (flags & ui::TEXT_INPUT_FLAG_AUTOCAPITALIZE_SENTENCES)
       return input_method_private::AUTO_CAPITALIZE_TYPE_SENTENCES;
 
-    // Autocapitalize flag may be missing for native text fields.
-    // See https://crbug.com/1002713.
-    return input_method_private::AUTO_CAPITALIZE_TYPE_NONE;
+    // Autocapitalize flag may be missing for native text fields, crbug/1002713.
+    // As a safe default, use input_method_private::AUTO_CAPITALIZE_TYPE_OFF
+    // ("off" in API specs). This corresponds to Blink's "off" represented by
+    // ui::TEXT_INPUT_FLAG_AUTOCAPITALIZE_NONE. Note: This fallback must not be
+    // input_method_private::AUTO_CAPITALIZE_TYPE_NONE which means "unspecified"
+    // and translates to JS falsy empty string, because the API specifies a
+    // non-falsy AutoCapitalizeType enum for InputContext.autoCapitalize.
+    return input_method_private::AUTO_CAPITALIZE_TYPE_OFF;
   }
 
   bool ConvertInputContextSpellCheck(
@@ -626,7 +631,7 @@ InputMethodEngine* InputImeEventRouter::GetEngine(
   }
 }
 
-InputMethodEngineBase* InputImeEventRouter::GetEngineIfActive(
+InputMethodEngine* InputImeEventRouter::GetEngineIfActive(
     const std::string& extension_id,
     std::string* error) {
   auto it = engine_map_.find(extension_id);
@@ -1028,7 +1033,7 @@ void InputImeAPI::OnExtensionLoaded(content::BrowserContext* browser_context,
       // can receive the onActivate event to recover itself upon the
       // unexpected unload.
       std::string error;
-      InputMethodEngineBase* engine =
+      InputMethodEngine* engine =
           event_router->GetEngineIfActive(extension->id(), &error);
       DCHECK(engine) << error;
       // When extension is unloaded unexpectedly and reloaded, OS doesn't pass

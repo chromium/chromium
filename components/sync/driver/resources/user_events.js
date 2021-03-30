@@ -2,23 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.define('chrome.sync.user_events', function() {
-  function write() {
-    chrome.sync.writeUserEvent(
-      $('event-time-usec-input').value,
-      $('navigation-id-input').value);
-  }
+import {$} from 'chrome://resources/js/util.m.js';
+import {writeUserEvent} from './chrome_sync.js';
 
-  function onLoad() {
-    $('create-event-button').addEventListener('click', write);
-  }
+function write() {
+  writeUserEvent(
+      $('event-time-usec-input').value, $('navigation-id-input').value);
+}
 
-  return {
-    onLoad: onLoad
-  };
-});
-
-document.addEventListener(
-    'DOMContentLoaded',
-    chrome.sync.user_events.onLoad,
-    false);
+document.addEventListener('DOMContentLoaded', () => {
+  $('create-event-button').addEventListener('click', write);
+}, false);

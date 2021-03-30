@@ -1,0 +1,24 @@
+crbug.com/621258: Don't let repeating headers overlap on pages that contain two tables.
+
+Col 1
+
+Te	xt
+Te	xt
+Te	xt
+Te	xt
+Te	xt
+Te	xt
+Te	xt
+Col 2
+Te	xt
+Te	xt
+Te	xt
+Te	xt
+Te	xt
+Te	xt
+Te	xt
+Te	xt
+FAIL:
+Expected 204 for clientTop+offsetTop, but got 209, clientTop: 0, + offsetTop: 209. 
+
+<td id="cell" data-total-y="204">Te</td>

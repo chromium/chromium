@@ -17,12 +17,9 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/search/arc/arc_playstore_search_result.h"
 #include "chrome/common/chrome_features.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "chromeos/constants/chromeos_pref_names.h"
 #include "components/arc/app/arc_playstore_search_request_state.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
-#include "components/prefs/pref_service.h"
 
 namespace {
 constexpr int kHistogramBuckets = 13;
@@ -111,22 +108,10 @@ ash::AppListSearchResultType ArcPlayStoreSearchProvider::ResultType() {
   return ash::AppListSearchResultType::kPlayStoreApp;
 }
 
-void ArcPlayStoreSearchProvider::Start(const base::string16& query) {
+void ArcPlayStoreSearchProvider::Start(const std::u16string& query) {
   last_query_ = query;
   // Clear any results from the previous query.
   ClearResultsSilently();
-
-  // Always check if suggested content is enabled before searching for play
-  // store apps.
-  PrefService* pref_service = profile_->GetPrefs();
-  bool is_suggested_content_toggle_enabled =
-      base::FeatureList::IsEnabled(chromeos::features::kSuggestedContentToggle);
-  if (is_suggested_content_toggle_enabled && pref_service) {
-    bool is_suggested_content_enabled =
-        pref_service->GetBoolean(chromeos::prefs::kSuggestedContentEnabled);
-    if (!is_suggested_content_enabled)
-      return;
-  }
 
   arc::mojom::AppInstance* app_instance =
       arc::ArcServiceManager::Get()
@@ -147,7 +132,7 @@ void ArcPlayStoreSearchProvider::Start(const base::string16& query) {
 }
 
 void ArcPlayStoreSearchProvider::OnResults(
-    const base::string16& query,
+    const std::u16string& query,
     base::TimeTicks query_start_time,
     arc::ArcPlayStoreSearchRequestState state,
     std::vector<arc::mojom::AppDiscoveryResultPtr> results) {

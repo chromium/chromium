@@ -46,4 +46,8 @@ content::BrowserContext* WebAppMetricsFactory::GetBrowserContextToUse(
   return GetBrowserContextForWebAppMetrics(context);
 }
 
+bool WebAppMetricsFactory::ServiceIsCreatedWithBrowserContext() const {
+  return true;
+}
+
 }  //  namespace web_app

@@ -26,6 +26,7 @@
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/rectf.h"
 #include "components/autofill_assistant/browser/string_conversions_util.h"
+#include "components/autofill_assistant/browser/user_data_util.h"
 #include "components/autofill_assistant/browser/web/web_controller_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -51,22 +52,34 @@ const char* const kGetVisualViewport =
 // Scrolls to the specified node with top padding. The top padding can
 // be specified through pixels or ratio. Pixels take precedence.
 const char* const kScrollIntoViewWithPaddingScript =
-    R"(function(node, topPaddingPixels, topPaddingRatio) {
+    R"(function(node, topPaddingPixels, topPaddingRatio, container = null) {
     node.scrollIntoViewIfNeeded();
+
+    let scrollable = window;
+    let containerTop = 0;
+    if (container){
+      scrollable = container;
+      containerTop = container.getBoundingClientRect().top;
+    }
+
     const rect = node.getBoundingClientRect();
     let topPadding = topPaddingPixels;
     if (!topPadding){
       topPadding = window.innerHeight * topPaddingRatio;
     }
-    window.scrollBy({top: rect.top - topPadding});
+
+    scrollable.scrollBy({top: rect.top - topPadding - containerTop});
   })";
 
 // Scroll the window or any scrollable container as needed for the element to
-// appear centered. This is in preparation of a click, to improve the chances
-// for the element to click to be visible.
-const char* const kScrollIntoViewCenterScript =
-    R"(function(node) {
-    node.scrollIntoView({block: "center", inline: "center"});
+// appear, center if specified.
+const char* const kScrollIntoViewScript =
+    R"(function(center) {
+      if (center) {
+        this.scrollIntoView({block: "center", inline: "center"});
+      } else {
+        this.scrollIntoViewIfNeeded();
+      }
   })";
 
 // Javascript to select a value from a select box. Also fires a "change" event
@@ -157,8 +170,8 @@ const char* const kGetElementTagScript = "function () { return this.tagName; }";
 
 // Javascript code to click on an element.
 const char* const kClickElementScript =
-    R"(function (selector) {
-      selector.click();
+    R"(function () {
+      this.click();
     })";
 
 // Javascript code that returns a promise that will succeed once the main
@@ -187,6 +200,10 @@ const char* const kSendChangeEventScript =
          e.initEvent('change', true, true);
          this.dispatchEvent(e);
        })";
+
+const char* const kDispatchEventToDocumentScript =
+    R"(const event = new Event('duplexweb');
+       document.dispatchEvent(event);)";
 
 // Converts a int that correspond to the DocumentReadyState enum into an
 // equivalent quoted Javascript string.
@@ -380,15 +397,16 @@ void WebController::OnJavaScriptResultForStringArray(
 }
 
 void WebController::ScrollIntoView(
+    bool center,
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
   std::vector<std::unique_ptr<runtime::CallArgument>> argument;
-  AddRuntimeCallArgumentObjectId(element.object_id(), &argument);
+  AddRuntimeCallArgument(center, &argument);
   devtools_client_->GetRuntime()->CallFunctionOn(
       runtime::CallFunctionOnParams::Builder()
           .SetObjectId(element.object_id())
           .SetArguments(std::move(argument))
-          .SetFunctionDeclaration(std::string(kScrollIntoViewCenterScript))
+          .SetFunctionDeclaration(std::string(kScrollIntoViewScript))
           .SetReturnByValue(true)
           .Build(),
       element.node_frame_id(),
@@ -427,9 +445,9 @@ void WebController::OnCheckOnTop(
 }
 
 void WebController::WaitUntilElementIsStable(
-    const ElementFinder::Result& element,
     int max_rounds,
     base::TimeDelta check_interval,
+    const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback) {
   std::unique_ptr<ElementPositionGetter> getter =
       std::make_unique<ElementPositionGetter>(devtools_client_.get(),
@@ -468,12 +486,9 @@ void WebController::ClickOrTapElement(
       element, std::move(callback));
 
   if (click_type == ClickType::JAVASCRIPT) {
-    std::vector<std::unique_ptr<runtime::CallArgument>> argument;
-    AddRuntimeCallArgumentObjectId(element.object_id(), &argument);
     devtools_client_->GetRuntime()->CallFunctionOn(
         runtime::CallFunctionOnParams::Builder()
             .SetObjectId(element.object_id())
-            .SetArguments(std::move(argument))
             .SetFunctionDeclaration(kClickElementScript)
             .Build(),
         element.node_frame_id(),
@@ -748,8 +763,7 @@ void WebController::FillAddressForm(
     base::OnceCallback<void(const ClientStatus&)> callback) {
   VLOG(3) << __func__ << " " << selector;
   auto data_to_autofill = std::make_unique<FillFormInputData>();
-  data_to_autofill->profile =
-      std::make_unique<autofill::AutofillProfile>(*profile);
+  data_to_autofill->profile = MakeUniqueFromProfile(*profile);
   FindElement(selector,
               /* strict_mode= */ true,
               base::BindOnce(&WebController::OnFindElementForFillingForm,
@@ -760,7 +774,7 @@ void WebController::FillAddressForm(
 
 void WebController::FillCardForm(
     std::unique_ptr<autofill::CreditCard> card,
-    const base::string16& cvc,
+    const std::u16string& cvc,
     const Selector& selector,
     base::OnceCallback<void(const ClientStatus&)> callback) {
   VLOG(3) << __func__ << " " << selector;
@@ -915,10 +929,10 @@ void WebController::OnGetFormAndFieldDataForRetrieving(
 }
 
 void WebController::SelectOption(
-    const ElementFinder::Result& element,
     const std::string& re2,
     bool case_sensitive,
     SelectOptionProto::OptionComparisonAttribute option_comparison_attribute,
+    const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
 #ifdef NDEBUG
   VLOG(3) << __func__ << " re2=(redacted)"
@@ -991,12 +1005,9 @@ void WebController::OnSelectOption(
 void WebController::HighlightElement(
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-  std::vector<std::unique_ptr<runtime::CallArgument>> argument;
-  AddRuntimeCallArgumentObjectId(element.object_id(), &argument);
   devtools_client_->GetRuntime()->CallFunctionOn(
       runtime::CallFunctionOnParams::Builder()
           .SetObjectId(element.object_id())
-          .SetArguments(std::move(argument))
           .SetFunctionDeclaration(std::string(kHighlightElementScript))
           .SetReturnByValue(true)
           .Build(),
@@ -1009,6 +1020,7 @@ void WebController::HighlightElement(
 }
 
 void WebController::ScrollToElementPosition(
+    std::unique_ptr<ElementFinder::Result> container,
     const ElementFinder::Result& element,
     const TopPadding& top_padding,
     base::OnceCallback<void(const ClientStatus&)> callback) {
@@ -1016,6 +1028,10 @@ void WebController::ScrollToElementPosition(
   AddRuntimeCallArgumentObjectId(element.object_id(), &arguments);
   AddRuntimeCallArgument(top_padding.pixels(), &arguments);
   AddRuntimeCallArgument(top_padding.ratio(), &arguments);
+  if (container) {
+    AddRuntimeCallArgumentObjectId(container->object_id(), &arguments);
+  }
+
   devtools_client_->GetRuntime()->CallFunctionOn(
       runtime::CallFunctionOnParams::Builder()
           .SetObjectId(element.object_id())
@@ -1052,8 +1068,8 @@ void WebController::GetFieldValue(
 }
 
 void WebController::GetStringAttribute(
-    const ElementFinder::Result& element,
     const std::vector<std::string>& attributes,
+    const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&, const std::string&)>
         callback) {
   VLOG(3) << __func__ << " attributes=[" << base::JoinString(attributes, ",")
@@ -1106,8 +1122,8 @@ void WebController::SelectFieldValue(
 }
 
 void WebController::SetValueAttribute(
-    const ElementFinder::Result& element,
     const std::string& value,
+    const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
   std::vector<std::unique_ptr<runtime::CallArgument>> argument;
   AddRuntimeCallArgument(value, &argument);
@@ -1126,9 +1142,9 @@ void WebController::SetValueAttribute(
 }
 
 void WebController::SetAttribute(
-    const ElementFinder::Result& element,
     const std::vector<std::string>& attributes,
     const std::string& value,
+    const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
   DVLOG(3) << __func__ << " attributes=[" << base::JoinString(attributes, ",")
            << "], value=" << value;
@@ -1167,33 +1183,36 @@ void WebController::SendTextInput(
     const std::string& value,
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-  SendKeyboardInput(element, UTF8ToUnicode(value),
-                    key_press_delay_in_millisecond, std::move(callback));
+  SendKeyboardInput(UTF8ToUnicode(value), key_press_delay_in_millisecond,
+                    element, std::move(callback));
 }
 
 void WebController::SendKeyboardInput(
-    const ElementFinder::Result& element,
     const std::vector<UChar32>& codepoints,
     const int key_press_delay_in_millisecond,
+    const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-  if (VLOG_IS_ON(3)) {
-    std::string input_str;
-    if (!UnicodeToUTF8(codepoints, &input_str)) {
-      input_str.assign("<invalid input>");
-    }
-#ifdef NDEBUG
-    VLOG(3) << __func__ << " input=(redacted)";
-#else
-    DVLOG(3) << __func__ << " input=" << input_str;
-#endif
-  }
-
-  DispatchKeyboardTextDownEvent(
-      element.node_frame_id(), codepoints, 0,
-      /* delay= */ false, key_press_delay_in_millisecond,
+  auto worker =
+      std::make_unique<SendKeyboardInputWorker>(devtools_client_.get());
+  auto* ptr = worker.get();
+  pending_workers_.emplace_back(std::move(worker));
+  ptr->Start(
+      element.node_frame_id(), codepoints, key_press_delay_in_millisecond,
       base::BindOnce(&DecorateWebControllerStatus,
                      WebControllerErrorInfoProto::SEND_KEYBOARD_INPUT,
-                     std::move(callback)));
+                     base::BindOnce(&WebController::OnSendKeyboardInputDone,
+                                    weak_ptr_factory_.GetWeakPtr(), ptr,
+                                    std::move(callback))));
+}
+
+void WebController::OnSendKeyboardInputDone(
+    SendKeyboardInputWorker* worker_to_release,
+    base::OnceCallback<void(const ClientStatus&)> callback,
+    const ClientStatus& status) {
+  base::EraseIf(pending_workers_, [worker_to_release](const auto& worker) {
+    return worker.get() == worker_to_release;
+  });
+  std::move(callback).Run(status);
 }
 
 void WebController::FocusField(
@@ -1213,89 +1232,6 @@ void WebController::FocusField(
                      base::BindOnce(&DecorateWebControllerStatus,
                                     WebControllerErrorInfoProto::FOCUS_FIELD,
                                     std::move(wrapped_callback))));
-}
-
-void WebController::DispatchKeyboardTextDownEvent(
-    const std::string& node_frame_id,
-    const std::vector<UChar32>& codepoints,
-    size_t index,
-    bool delay,
-    int delay_in_millisecond,
-    base::OnceCallback<void(const ClientStatus&)> callback) {
-  if (index >= codepoints.size()) {
-    std::move(callback).Run(OkClientStatus());
-    return;
-  }
-
-  if (delay && delay_in_millisecond > 0) {
-    content::GetUIThreadTaskRunner({})->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(
-            &WebController::DispatchKeyboardTextDownEvent,
-            weak_ptr_factory_.GetWeakPtr(), node_frame_id, codepoints, index,
-            /* delay= */ false, delay_in_millisecond, std::move(callback)),
-        base::TimeDelta::FromMilliseconds(delay_in_millisecond));
-    return;
-  }
-
-  devtools_client_->GetInput()->DispatchKeyEvent(
-      CreateKeyEventParamsForCharacter(
-          autofill_assistant::input::DispatchKeyEventType::KEY_DOWN,
-          codepoints[index]),
-      node_frame_id,
-      base::BindOnce(&WebController::DispatchKeyboardTextUpEvent,
-                     weak_ptr_factory_.GetWeakPtr(), node_frame_id, codepoints,
-                     index, delay_in_millisecond, std::move(callback)));
-}
-
-void WebController::DispatchKeyboardTextUpEvent(
-    const std::string& node_frame_id,
-    const std::vector<UChar32>& codepoints,
-    size_t index,
-    int delay_in_millisecond,
-    base::OnceCallback<void(const ClientStatus&)> callback) {
-  DCHECK_LT(index, codepoints.size());
-  devtools_client_->GetInput()->DispatchKeyEvent(
-      CreateKeyEventParamsForCharacter(
-          autofill_assistant::input::DispatchKeyEventType::KEY_UP,
-          codepoints[index]),
-      node_frame_id,
-      base::BindOnce(
-          &WebController::DispatchKeyboardTextDownEvent,
-          weak_ptr_factory_.GetWeakPtr(), node_frame_id, codepoints, index + 1,
-          /* delay= */ true, delay_in_millisecond, std::move(callback)));
-}
-
-auto WebController::CreateKeyEventParamsForCharacter(
-    autofill_assistant::input::DispatchKeyEventType type,
-    UChar32 codepoint) -> DispatchKeyEventParamsPtr {
-  auto params = input::DispatchKeyEventParams::Builder().SetType(type).Build();
-
-  std::string text;
-  if (AppendUnicodeToUTF8(codepoint, &text)) {
-    params->SetText(text);
-  } else {
-#ifdef NDEBUG
-    VLOG(1) << __func__ << ": Failed to convert codepoint to UTF-8";
-#else
-    DVLOG(1) << __func__
-             << ": Failed to convert codepoint to UTF-8: " << codepoint;
-#endif
-  }
-
-  auto dom_key = ui::DomKey::FromCharacter(codepoint);
-  if (dom_key.IsValid()) {
-    params->SetKey(ui::KeycodeConverter::DomKeyToKeyString(dom_key));
-  } else {
-#ifdef NDEBUG
-    VLOG(1) << __func__ << ": Failed to set DomKey for codepoint";
-#else
-    DVLOG(1) << __func__
-             << ": Failed to set DomKey for codepoint: " << codepoint;
-#endif
-  }
-
-  return params;
 }
 
 void WebController::GetVisualViewport(
@@ -1441,6 +1377,35 @@ void WebController::SendChangeEvent(
           base::BindOnce(&DecorateWebControllerStatus,
                          WebControllerErrorInfoProto::SEND_CHANGE_EVENT,
                          std::move(callback))));
+}
+
+void WebController::DispatchJsEvent(
+    base::OnceCallback<void(const ClientStatus&)> callback) const {
+  devtools_client_->GetRuntime()->Evaluate(
+      runtime::EvaluateParams::Builder()
+          .SetExpression(kDispatchEventToDocumentScript)
+          .SetReturnByValue(true)
+          .Build(),
+      ElementFinder::Result().node_frame_id(),
+      base::BindOnce(
+          &WebController::OnDispatchJsEvent, weak_ptr_factory_.GetWeakPtr(),
+          base::BindOnce(
+              &DecorateWebControllerStatus,
+              WebControllerErrorInfoProto::DISPATCH_EVENT_ON_DOCUMENT,
+              std::move(callback))));
+}
+
+void WebController::OnDispatchJsEvent(
+    base::OnceCallback<void(const ClientStatus&)> callback,
+    const DevtoolsClient::ReplyStatus& reply_status,
+    std::unique_ptr<runtime::EvaluateResult> result) const {
+  ClientStatus status =
+      CheckJavaScriptResult(reply_status, result.get(), __FILE__, __LINE__);
+  if (!status.ok()) {
+    VLOG(1) << __func__
+            << "Failed dispatching JavaScript event with status: " << status;
+  }
+  std::move(callback).Run(status);
 }
 
 base::WeakPtr<WebController> WebController::GetWeakPtr() const {

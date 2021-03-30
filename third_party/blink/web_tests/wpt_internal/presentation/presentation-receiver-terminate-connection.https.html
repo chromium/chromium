@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<button>click me</button>
+<script type="module">
+import {PresentationServiceMock, waitForClick} from './resources/presentation-service-mock.js';
+
+const mock = new PresentationServiceMock();
+const button = document.querySelector('button');
+
+promise_test(async _ => {
+  let controllerConnectionTerminated = false;
+
+  await waitForClick(button);
+  const connection =
+      await new PresentationRequest("https://example.com/").start();
+  connection.onterminate = () => {
+    assert_equals(connection.state, "terminated");
+    controllerConnectionTerminated = true;
+  };
+
+  // Open a receiver page and pass controller connection's
+  // controllerConnectionPtr and receiverConnectionRequest to it.
+  const w = window.open("resources/presentation-receiver-postmessage.html");
+  w.controllerConnectionPtr = mock.getControllerConnectionPtr();
+  w.receiverConnectionRequest = mock.getReceiverConnectionRequest();
+
+  return new Promise(resolve => {
+    window.addEventListener("message", e => {
+      if (e.data == "passed" || e.data == "failed") {
+        assert_equals("passed", e.data, "Receiver connection is terminated!");
+        assert_true(controllerConnectionTerminated);
+        resolve();
+      }
+    });
+  });
+}, "receiver connection.terminate() should close receiver frame");
+
+</script>
+</body>
+</html>

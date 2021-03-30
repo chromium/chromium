@@ -108,7 +108,7 @@ void ContentInputDelegate::ClearTextInputState() {
 
 void ContentInputDelegate::OnWebInputTextChanged(
     TextInputInfo pending_input_info,
-    const base::string16& text) {
+    const std::u16string& text) {
   pending_input_info.text = text;
   DCHECK(!update_state_callbacks_.empty());
 

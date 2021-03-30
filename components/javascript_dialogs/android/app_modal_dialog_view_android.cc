@@ -102,7 +102,7 @@ void AppModalDialogViewAndroid::CloseAppModalDialog() {
 }
 
 void AppModalDialogViewAndroid::AcceptAppModalDialog() {
-  base::string16 prompt_text;
+  std::u16string prompt_text;
   controller_->OnAccept(prompt_text, false);
   delete this;
 }
@@ -112,7 +112,7 @@ void AppModalDialogViewAndroid::DidAcceptAppModalDialog(
     const JavaParamRef<jobject>&,
     const JavaParamRef<jstring>& prompt,
     bool should_suppress_js_dialogs) {
-  base::string16 prompt_text =
+  std::u16string prompt_text =
       base::android::ConvertJavaStringToUTF16(env, prompt);
   controller_->OnAccept(prompt_text, should_suppress_js_dialogs);
   delete this;

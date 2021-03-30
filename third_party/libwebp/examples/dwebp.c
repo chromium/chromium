@@ -76,7 +76,8 @@ static int SaveOutput(const WebPDecBuffer* const buffer,
 
 static void Help(void) {
   printf("Usage: dwebp in_file [options] [-o out_file]\n\n"
-         "Decodes the WebP image file to PNG format [Default]\n"
+         "Decodes the WebP image file to PNG format [Default].\n"
+         "Note: Animated WebP files are not supported.\n\n"
          "Use following options to convert into alternate image formats:\n"
          "  -pam ......... save the raw RGBA samples as a color PAM\n"
          "  -ppm ......... save the raw RGB samples as a color PPM\n"

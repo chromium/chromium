@@ -10,7 +10,7 @@
 #error "This file requires ARC support."
 #endif
 
-FakeInfobarIOS::FakeInfobarIOS(InfobarType type, base::string16 message_text)
+FakeInfobarIOS::FakeInfobarIOS(InfobarType type, std::u16string message_text)
     : InfoBarIOS(type, std::make_unique<FakeInfobarDelegate>(message_text)) {}
 
 FakeInfobarIOS::FakeInfobarIOS(

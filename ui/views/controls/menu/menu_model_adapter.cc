@@ -100,8 +100,8 @@ MenuItemView* MenuModelAdapter::AddMenuItemFromModelAt(ui::MenuModel* model,
 
   if (*type == MenuItemView::Type::kSeparator) {
     return menu->AddMenuItemAt(
-        menu_index, item_id, base::string16(), base::string16(),
-        base::string16(), ui::ThemedVectorIcon(), gfx::ImageSkia(),
+        menu_index, item_id, std::u16string(), std::u16string(),
+        std::u16string(), ui::ThemedVectorIcon(), gfx::ImageSkia(),
         ui::ThemedVectorIcon(), *type, model->GetSeparatorTypeAt(model_index));
   }
 
@@ -122,6 +122,8 @@ MenuItemView* MenuModelAdapter::AddMenuItemFromModelAt(ui::MenuModel* model,
   if (model->IsAlertedAt(model_index))
     menu_item_view->SetAlerted();
   menu_item_view->set_is_new(model->IsNewFeatureAt(model_index));
+  menu_item_view->set_may_have_mnemonics(
+      model->MayHaveMnemonicsAt(model_index));
 
   return menu_item_view;
 }
@@ -185,14 +187,14 @@ bool MenuModelAdapter::GetAccelerator(int id,
   return false;
 }
 
-base::string16 MenuModelAdapter::GetLabel(int id) const {
+std::u16string MenuModelAdapter::GetLabel(int id) const {
   ui::MenuModel* model = menu_model_;
   int index = 0;
   if (ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index))
     return model->GetLabelAt(index);
 
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 void MenuModelAdapter::GetLabelStyle(int id, LabelStyle* style) const {

@@ -35,8 +35,9 @@ static FillLayer* AccessFillLayerForSize(const CSSProperty& property,
 }
 
 SizeList SizeListPropertyFunctions::GetInitialSizeList(
-    const CSSProperty& property) {
-  return GetSizeList(property, ComputedStyle::InitialStyle());
+    const CSSProperty& property,
+    const ComputedStyle& initial_style) {
+  return GetSizeList(property, initial_style);
 }
 
 SizeList SizeListPropertyFunctions::GetSizeList(const CSSProperty& property,

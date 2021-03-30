@@ -107,9 +107,7 @@ class MODULES_EXPORT FetchEvent final
       handled_property_;
   // This is currently null for navigation while https://crbug.com/900700 is
   // being implemented.
-  HeapMojoRemote<mojom::blink::WorkerTimingContainer,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      worker_timing_remote_;
+  HeapMojoRemote<mojom::blink::WorkerTimingContainer> worker_timing_remote_;
   String client_id_;
   String resulting_client_id_;
   bool is_reload_;

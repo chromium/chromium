@@ -60,7 +60,7 @@ class TileManager {
   // Id of the last tile, if it exists.
   virtual void OnQuerySelected(
       const base::Optional<std::string>& parent_tile_id,
-      const base::string16& query_text) = 0;
+      const std::u16string& query_text) = 0;
 
   TileManager();
   virtual ~TileManager() = default;

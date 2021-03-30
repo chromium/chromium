@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_APPS_PLATFORM_APPS_SHORTCUT_MANAGER_H_
 #define CHROME_BROWSER_APPS_PLATFORM_APPS_SHORTCUT_MANAGER_H_
 
-#include "base/macros.h"
+#include <string>
+
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -33,6 +34,8 @@ class AppShortcutManager : public KeyedService,
 
   explicit AppShortcutManager(Profile* profile);
 
+  AppShortcutManager(const AppShortcutManager&) = delete;
+  AppShortcutManager& operator=(const AppShortcutManager&) = delete;
   ~AppShortcutManager() override;
 
   // Schedules a call to UpdateShortcutsForAllAppsNow() if kAppShortcutsVersion
@@ -66,8 +69,6 @@ class AppShortcutManager : public KeyedService,
       extension_registry_observer_{this};
 
   base::WeakPtrFactory<AppShortcutManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppShortcutManager);
 };
 
 #endif  // CHROME_BROWSER_APPS_PLATFORM_APPS_SHORTCUT_MANAGER_H_

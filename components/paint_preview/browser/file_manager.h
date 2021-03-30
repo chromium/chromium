@@ -97,13 +97,6 @@ class FileManager : public base::RefCountedThreadSafe<FileManager> {
   // Lists the current set of in-use DirectoryKeys.
   base::flat_set<DirectoryKey> ListUsedKeys() const;
 
-  // Returns a list of the least recently modified artifact sets until which
-  // when deleted would result in a total capture size on disk that is less than
-  // |max_size|.
-  std::vector<DirectoryKey> GetOldestArtifactsForCleanup(
-      size_t max_size,
-      base::TimeDelta expiry_horizon);
-
  private:
   friend class base::RefCountedThreadSafe<FileManager>;
   ~FileManager();

@@ -9,10 +9,10 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 
 #include "base/callback_forward.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/strings/string16.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/system/buffer.h"
 
@@ -46,7 +46,7 @@ class FontLoader {
   // sending over IPC. On failure, zeroes and an invalid handle are reported
   // to the callback.
   CONTENT_EXPORT
-  static void LoadFont(const base::string16& font_name,
+  static void LoadFont(const std::u16string& font_name,
                        float font_point_size,
                        LoadedCallback callback);
 
@@ -68,7 +68,7 @@ class FontLoader {
 
   CONTENT_EXPORT
   static std::unique_ptr<ResultInternal> LoadFontForTesting(
-      const base::string16& font_name,
+      const std::u16string& font_name,
       float font_point_size);
 };
 

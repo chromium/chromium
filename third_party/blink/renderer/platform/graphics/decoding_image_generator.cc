@@ -211,7 +211,7 @@ bool DecodingImageGenerator::GetPixels(const SkImageInfo& dst_info,
       decoded = bitmap.installPixels(target_info, memory, adjusted_row_bytes);
       DCHECK(decoded);
 
-      canvas->drawBitmap(bitmap, 0, 0, &paint);
+      canvas->drawImage(bitmap.asImage(), 0, 0, SkSamplingOptions(), &paint);
     }
   }
   return decoded;

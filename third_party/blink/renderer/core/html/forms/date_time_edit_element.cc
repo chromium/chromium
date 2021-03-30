@@ -29,7 +29,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
-#include "third_party/blink/renderer/core/frame/use_counter_helper.h"
+#include "third_party/blink/renderer/core/frame/use_counter_impl.h"
 #include "third_party/blink/renderer/core/html/forms/date_time_field_elements.h"
 #include "third_party/blink/renderer/core/html/forms/date_time_fields_state.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
@@ -571,10 +571,12 @@ void DateTimeEditElement::BlurByOwner() {
     field->blur();
 }
 
-scoped_refptr<ComputedStyle> DateTimeEditElement::CustomStyleForLayoutObject() {
-  // FIXME: This is a kind of layout. We might want to introduce new
-  // layoutObject.
-  scoped_refptr<ComputedStyle> style = OriginalStyleForLayoutObject();
+scoped_refptr<ComputedStyle> DateTimeEditElement::CustomStyleForLayoutObject(
+    const StyleRecalcContext& style_recalc_context) {
+  // TODO(crbug.com/1181868): This is a kind of layout. We might want to
+  // introduce new LayoutObject.
+  scoped_refptr<ComputedStyle> style =
+      OriginalStyleForLayoutObject(style_recalc_context);
   float width = 0;
   for (Node* child = FieldsWrapperElement()->firstChild(); child;
        child = child->nextSibling()) {
@@ -594,6 +596,7 @@ scoped_refptr<ComputedStyle> DateTimeEditElement::CustomStyleForLayoutObject() {
     }
   }
   style->SetWidth(Length::Fixed(ceilf(width)));
+  style->SetCustomStyleCallbackDependsOnFont();
   return style;
 }
 

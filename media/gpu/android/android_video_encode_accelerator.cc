@@ -147,8 +147,7 @@ bool AndroidVideoEncodeAccelerator::Initialize(const Config& config,
 
   client_ptr_factory_.reset(new base::WeakPtrFactory<Client>(client));
 
-  if (!(MediaCodecUtil::SupportsSetParameters() &&
-        config.input_format == PIXEL_FORMAT_I420)) {
+  if (config.input_format != PIXEL_FORMAT_I420) {
     DLOG(ERROR) << "Unexpected combo: " << config.input_format << ", "
                 << GetProfileName(config.output_profile);
     return false;

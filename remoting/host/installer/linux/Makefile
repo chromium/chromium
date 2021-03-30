@@ -12,6 +12,7 @@ endif
 
 CRON_DIR = $(DESTDIR)/etc/cron.daily
 DOC_DIR = $(DESTDIR)/usr/share/doc/chrome-remote-desktop
+SYSTEMD_UNIT_DIR = $(DESTDIR)/lib/systemd/system
 INSTALL_DIR = $(DESTDIR)/opt/google/chrome-remote-desktop
 CHROME_NATIVE_MESSAGING_DIR = $(DESTDIR)/etc/opt/chrome/native-messaging-hosts
 FIREFOX_NATIVE_MESSAGING_DIR = $(DESTDIR)/usr/lib/mozilla/native-messaging-hosts
@@ -34,6 +35,7 @@ install:
 	install -d "$(DOC_DIR)"
 	install -d "$(INSTALL_DIR)"
 	install -d "$(INSTALL_DIR)/remoting_locales"
+	install -d "$(SYSTEMD_UNIT_DIR)"
 	install -d "$(CHROME_NATIVE_MESSAGING_DIR)"
 	install -d "$(FIREFOX_NATIVE_MESSAGING_DIR)"
 
@@ -80,12 +82,18 @@ install:
 	  "$(INSTALL_DIR)/remote-assistance-host"
 
 	install -m 0644 \
-          "$(BUILD_DIR)/icudtl.dat" "$(INSTALL_DIR)/icudtl.dat"
+	  "$(BUILD_DIR)/icudtl.dat" "$(INSTALL_DIR)/icudtl.dat"
 
 	for locale in $$(ls $(BUILD_DIR)/remoting_locales); do \
 	  install "$(BUILD_DIR)/remoting_locales/$$locale" \
 	    "$(INSTALL_DIR)/remoting_locales/$$locale"; \
 	done
+
+	install -m 0644 \
+	  "$(SRC_DIR)/remoting/host/installer/linux/chrome-remote-desktop@.service" \
+	  "$(SYSTEMD_UNIT_DIR)/chrome-remote-desktop@.service"
+	# Mask the SysV-style init script under systemd so both don't end up enabled.
+	ln -s /dev/null "$(SYSTEMD_UNIT_DIR)/chrome-remote-desktop.service"
 
 	install $(BUILD_DIR)/remoting/installer/cron/chrome-remote-desktop \
 	  "$(CRON_DIR)/chrome-remote-desktop"

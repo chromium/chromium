@@ -7,9 +7,7 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_utils.h"
-#include "chrome/browser/sharing/click_to_call/feature.h"
 #include "chrome/browser/sharing/mock_sharing_service.h"
 #include "chrome/browser/sharing/sharing_fcm_handler.h"
 #include "chrome/browser/sharing/sharing_fcm_sender.h"
@@ -72,7 +70,6 @@ class ClickToCallUtilsTest : public testing::Test {
     return create_service_ ? std::make_unique<MockSharingService>() : nullptr;
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   bool create_service_ = true;
@@ -83,27 +80,18 @@ class ClickToCallUtilsTest : public testing::Test {
 }  // namespace
 
 TEST_F(ClickToCallUtilsTest, NoSharingService_DoNotOfferAnyMenu) {
-  scoped_feature_list_.InitAndEnableFeature(kClickToCallUI);
   create_service_ = false;
   EXPECT_FALSE(ShouldOfferClickToCallForURL(&profile_, GURL(kTelUrl)));
   ExpectClickToCallDisabledForSelectionText(kSelectionTextWithNumber);
 }
 
-TEST_F(ClickToCallUtilsTest, UIFlagDisabled_DoNotOfferAnyMenu) {
-  scoped_feature_list_.InitAndDisableFeature(kClickToCallUI);
-  EXPECT_FALSE(ShouldOfferClickToCallForURL(&profile_, GURL(kTelUrl)));
-  ExpectClickToCallDisabledForSelectionText(kSelectionTextWithNumber);
-}
-
 TEST_F(ClickToCallUtilsTest, PolicyDisabled_DoNotOfferAnyMenu) {
-  scoped_feature_list_.InitAndEnableFeature(kClickToCallUI);
   profile_.GetPrefs()->SetBoolean(prefs::kClickToCallEnabled, false);
   EXPECT_FALSE(ShouldOfferClickToCallForURL(&profile_, GURL(kTelUrl)));
   ExpectClickToCallDisabledForSelectionText(kSelectionTextWithNumber);
 }
 
 TEST_F(ClickToCallUtilsTest, IncognitoProfile_DoNotOfferAnyMenu) {
-  scoped_feature_list_.InitAndEnableFeature(kClickToCallUI);
   EXPECT_FALSE(ShouldOfferClickToCallForURL(profile_.GetPrimaryOTRProfile(),
                                             GURL(kTelUrl)));
   ExpectClickToCallDisabledForSelectionText(kSelectionTextWithNumber,
@@ -111,24 +99,19 @@ TEST_F(ClickToCallUtilsTest, IncognitoProfile_DoNotOfferAnyMenu) {
 }
 
 TEST_F(ClickToCallUtilsTest, EmptyTelLink_DoNotOfferForLink) {
-  scoped_feature_list_.InitAndEnableFeature(kClickToCallUI);
   EXPECT_FALSE(ShouldOfferClickToCallForURL(&profile_, GURL(kEmptyTelUrl)));
 }
 
 TEST_F(ClickToCallUtilsTest, TelLink_OfferForLink) {
-  scoped_feature_list_.InitAndEnableFeature(kClickToCallUI);
   EXPECT_TRUE(ShouldOfferClickToCallForURL(&profile_, GURL(kTelUrl)));
 }
 
 TEST_F(ClickToCallUtilsTest, NonTelLink_DoNotOfferForLink) {
-  scoped_feature_list_.InitAndEnableFeature(kClickToCallUI);
   EXPECT_FALSE(ShouldOfferClickToCallForURL(&profile_, GURL(kNonTelUrl)));
 }
 
 TEST_F(ClickToCallUtilsTest,
        SelectionText_ValidPhoneNumberRegex_OfferForSelection) {
-  scoped_feature_list_.InitAndEnableFeature(kClickToCallUI);
-
   // Stores a mapping of selected text to expected phone number parsed.
   std::map<std::string, std::string> expectations;
   // Selection text only consists of the phone number.
@@ -164,7 +147,6 @@ TEST_F(ClickToCallUtilsTest,
 
 TEST_F(ClickToCallUtilsTest,
        SelectionText_InvalidPhoneNumberRegex_DoNotOfferForSelection) {
-  scoped_feature_list_.InitAndEnableFeature(kClickToCallUI);
   std::vector<std::string> invalid_selection_texts;
 
   // Does not contain any number.
@@ -187,7 +169,6 @@ TEST_F(ClickToCallUtilsTest,
 }
 
 TEST_F(ClickToCallUtilsTest, SelectionText_Length) {
-  scoped_feature_list_.InitAndEnableFeature(kClickToCallUI);
   // Expect text length of 30 to pass.
   EXPECT_NE(base::nullopt, ExtractPhoneNumberForClickToCall(
                                &profile_, " +1 2 3 4 5 6 7 8 9 0 1 2 3 45"));
@@ -197,7 +178,6 @@ TEST_F(ClickToCallUtilsTest, SelectionText_Length) {
 }
 
 TEST_F(ClickToCallUtilsTest, SelectionText_Digits) {
-  scoped_feature_list_.InitAndEnableFeature(kClickToCallUI);
   // Expect text with 15 digits to pass.
   EXPECT_NE(base::nullopt,
             ExtractPhoneNumberForClickToCall(&profile_, "+123456789012345"));

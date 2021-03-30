@@ -12,6 +12,7 @@
 #include "base/task/thread_pool.h"
 #include "components/base32/base32.h"
 #include "components/sessions/core/command_storage_backend.h"
+#include "components/sessions/core/session_constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "weblayer/browser/browser_impl.h"
 #include "weblayer/browser/browser_list.h"
@@ -27,9 +28,19 @@ bool RemoveBrowserPersistenceStorageOnBackgroundThread(
   bool all_succeeded = true;
   for (const std::string& id : ids) {
     DCHECK(!id.empty());
-    base::FilePath persistence_path = BuildPathForBrowserPersister(path, id);
+    // Original persistence path.
+    const base::FilePath persistence_path =
+        BuildBasePathForBrowserPersister(path, id);
     if (!base::DeleteFile(persistence_path))
       all_succeeded = false;
+
+    // Remove persistence paths with timestamps.
+    auto paths = sessions::CommandStorageBackend::GetSessionFilePaths(
+        persistence_path, sessions::CommandStorageManager::kOther);
+    for (const auto& path : paths) {
+      if (!base::DeleteFile(path))
+        all_succeeded = false;
+    }
   }
   return all_succeeded;
 }
@@ -50,10 +61,16 @@ base::flat_set<std::string> GetBrowserPersistenceIdsOnBackgroundThread(
     if (base_name.size() <= base::size(BrowserImpl::kPersistenceFilePrefix))
       continue;
 
-    const std::string encoded_id =
+    const std::string encoded_id_and_timestamp =
         base_name.substr(base::size(BrowserImpl::kPersistenceFilePrefix) - 1);
+    const size_t separator_index = encoded_id_and_timestamp.find(
+        base::FilePath(sessions::kTimestampSeparator).MaybeAsASCII());
+    const std::string encoded_id =
+        separator_index == std::string::npos
+            ? encoded_id_and_timestamp
+            : encoded_id_and_timestamp.substr(0, separator_index);
     const std::string decoded_id = base32::Base32Decode(encoded_id);
-    if (!decoded_id.empty() &&
+    if (!decoded_id.empty() && ids.count(decoded_id) == 0 &&
         sessions::CommandStorageBackend::IsValidFile(name)) {
       ids.insert(decoded_id);
     }
@@ -61,12 +78,13 @@ base::flat_set<std::string> GetBrowserPersistenceIdsOnBackgroundThread(
   return ids;
 }
 
-base::FilePath BuildPathForBrowserPersister(const base::FilePath& base_path,
-                                            const std::string& browser_id) {
+base::FilePath BuildBasePathForBrowserPersister(
+    const base::FilePath& profile_path,
+    const std::string& browser_id) {
   DCHECK(!browser_id.empty());
   const std::string encoded_name = base32::Base32Encode(browser_id);
-  return base_path.AppendASCII(BrowserImpl::kPersistenceFilePrefix +
-                               encoded_name);
+  return profile_path.AppendASCII(BrowserImpl::kPersistenceFilePrefix +
+                                  encoded_name);
 }
 
 void RemoveBrowserPersistenceStorageImpl(

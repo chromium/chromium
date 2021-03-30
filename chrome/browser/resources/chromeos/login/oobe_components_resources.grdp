@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <!-- OOBE Components -->
+  <include name="IDR_OOBE_COMPONENTS_I18N_BEHAVIOR_HTML" file="components/oobe_i18n_behavior/oobe_i18n_behavior.html" resource_path="components/oobe_i18n_behavior.html" type="chrome_html" />
+  <include name="IDR_OOBE_COMPONENTS_I18N_BEHAVIOR_JS" file="components/oobe_i18n_behavior/oobe_i18n_behavior.js" resource_path="components/oobe_i18n_behavior.js" type="chrome_html" />
+  <include name="IDR_OOBE_COMPONENTS_I18N_SETUP_HTML" file="components/oobe_i18n_behavior/i18n_setup.html" resource_path="components/i18n_setup.html" type="chrome_html" />
+  <include name="IDR_OOBE_COMPONENTS_DIALOG_HOST_BEHAVIOR_HTML" file="components/oobe_dialog_host_behavior/oobe_dialog_host_behavior.html" resource_path="components/oobe_dialog_host_behavior.html" type="chrome_html" />
+  <include name="IDR_OOBE_COMPONENTS_DIALOG_HOST_BEHAVIOR_JS" file="components/oobe_dialog_host_behavior/oobe_dialog_host_behavior.js" resource_path="components/oobe_dialog_host_behavior.js" type="chrome_html" />
+  <include name="IDR_OOBE_COMPONENTS_FOCUS_BEHAVIOR_HTML" file="components/oobe_focus_behavior/oobe_focus_behavior.html" resource_path="components/oobe_focus_behavior.html" type="chrome_html" />
+  <include name="IDR_OOBE_COMPONENTS_FOCUS_BEHAVIOR_JS" file="components/oobe_focus_behavior/oobe_focus_behavior.js" resource_path="components/oobe_focus_behavior.js" type="chrome_html" />
+  <include name="IDR_OOBE_COMPONENTS_SCROLLABLE_BEHAVIOR_HTML" file="components/oobe_scrollable_behavior/oobe_scrollable_behavior.html" resource_path="components/oobe_scrollable_behavior.html" type="chrome_html" />
+  <include name="IDR_OOBE_COMPONENTS_SCROLLABLE_BEHAVIOR_JS" file="components/oobe_scrollable_behavior/oobe_scrollable_behavior.js" resource_path="components/oobe_scrollable_behavior.js" type="chrome_html" />
+
+  <include name="IDR_OOBE_COMPONENTS_LOGIN_SCREEN_BEHAVIOR_HTML" file="components/login_screen_behavior.html" type="chrome_html" />
+  <include name="IDR_OOBE_COMPONENTS_LOGIN_SCREEN_BEHAVIOR_JS" file="components/login_screen_behavior.js" type="chrome_html" />
+  <include name="IDR_OOBE_COMPONENTS_MULTI_STEP_BEHAVIOR_HTML" file="components/multi_step_behavior.html" type="chrome_html" />
+  <include name="IDR_OOBE_COMPONENTS_MULTI_STEP_BEHAVIOR_JS" file="components/multi_step_behavior.js" type="chrome_html" />
+
+  <include name="IDR_OOBE_COMPONENTS_HD_IRON_ICON_HTML" file="components/hd_iron_icon/hd_iron_icon.html" resource_path="components/hd_iron_icon.html" type="chrome_html" />
+  <include name="IDR_OOBE_COMPONENTS_HD_IRON_ICON_JS" file="components/hd_iron_icon/hd_iron_icon.js" resource_path="components/hd_iron_icon.js" type="chrome_html" />
+
+  <include name="IDR_OOBE_COMPONENTS_OOBE_DIALOG_HTML" file="components/oobe_dialog/oobe_dialog.html" resource_path="components/oobe_dialog.html" type="chrome_html" />
+  <include name="IDR_OOBE_COMPONENTS_OOBE_DIALOG_JS" file="components/oobe_dialog/oobe_dialog.js" resource_path="components/oobe_dialog.js" type="chrome_html" />
+  <include name="IDR_OOBE_COMPONENTS_OOBE_LOADING_DIALOG_HTML" file="components/oobe_loading_dialog/oobe_loading_dialog.html" resource_path="components/oobe_loading_dialog.html" type="chrome_html" />
+  <include name="IDR_OOBE_COMPONENTS_OOBE_LOADING_DIALOG_JS" file="components/oobe_loading_dialog/oobe_loading_dialog.js" resource_path="components/oobe_loading_dialog.js" type="chrome_html" />
+
+  <include name="IDR_OOBE_COMPONENTS_OOBE_CAROUSEL_HTML" file="components/oobe_carousel/oobe_carousel.html" resource_path="components/oobe_carousel.html" type="chrome_html" />
+  <include name="IDR_OOBE_COMPONENTS_OOBE_CAROUSEL_JS" file="components/oobe_carousel/oobe_carousel.js" resource_path="components/oobe_carousel.js" type="chrome_html" />
+  <include name="IDR_OOBE_COMPONENTS_OOBE_SLIDE_HTML" file="components/oobe_slide/oobe_slide.html" resource_path="components/oobe_slide.html" type="chrome_html" />
+  <include name="IDR_OOBE_COMPONENTS_OOBE_SLIDE_JS" file="components/oobe_slide/oobe_slide.js" resource_path="components/oobe_slide.js" type="chrome_html" />
+  <include name="IDR_OOBE_COMPONENTS_PROGRESS_LIST_ITEM_HTML" file="components/progress_list_item/progress_list_item.html" resource_path="components/progress_list_item.html" type="chrome_html" />
+  <include name="IDR_OOBE_COMPONENTS_PROGRESS_LIST_ITEM_JS" file="components/progress_list_item/progress_list_item.js" resource_path="components/progress_list_item.js" type="chrome_html" />
+  <include name="IDR_OOBE_COMPONENTS_THROBBER_NOTICE_HTML" file="components/throbber_notice/throbber_notice.html" resource_path="components/throbber_notice.html" type="chrome_html" />
+  <include name="IDR_OOBE_COMPONENTS_THROBBER_NOTICE_JS" file="components/throbber_notice/throbber_notice.js" resource_path="components/throbber_notice.html" type="chrome_html" />
+</grit-part>

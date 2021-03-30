@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.IntentUtils;
@@ -37,11 +38,12 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
-import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler;
 import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler.RequestMetadata;
+import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -78,32 +80,9 @@ public class IntentHandler {
     private static final String TAG = "IntentHandler";
 
     /**
-     * Document mode: If true, Chrome is launched into the same Task.
-     * Note: used by first-party applications, do not rename.
-     */
-    public static final String EXTRA_APPEND_TASK = "com.android.chrome.append_task";
-
-    /**
-     * Document mode: If true, keep tasks in Recents when a user hits back at the root URL.
-     * Note: used by first-party applications, do not rename.
-     */
-    public static final String EXTRA_PRESERVE_TASK = "com.android.chrome.preserve_task";
-
-    /**
-     * Document mode: If true, opens the document in background.
-     * Note: used by first-party applications, do not rename.
-     */
-    public static final String EXTRA_OPEN_IN_BG = "com.android.chrome.open_with_affiliation";
-
-    /**
-     * Document mode: Records what caused a document to be created.
-     */
-    public static final String EXTRA_STARTED_BY = "com.android.chrome.started_by";
-
-    /**
      * Tab ID to use when creating a new Tab.
      */
-    public static final String EXTRA_TAB_ID = "com.android.chrome.tab_id";
+    private static final String EXTRA_TAB_ID = "com.android.chrome.tab_id";
 
     /**
      * The tab id of the parent tab, if any.
@@ -206,6 +185,27 @@ public class IntentHandler {
     public static final String EXTRA_POST_DATA_TYPE = "com.android.chrome.post_data_type";
 
     /**
+     * A boolean to indicate whether this Intent originated from the Open In Browser Custom Tab
+     * feature.
+     */
+    public static final String EXTRA_FROM_OPEN_IN_BROWSER =
+            "com.android.chrome.from_open_in_browser";
+
+    /**
+     * Interested entities within Chrome relying on launching Incognito CCT should set this in their
+     *{@link CustomTabIntent} in order to identify themselves for metric purposes.
+     **/
+    public static final String EXTRA_INCOGNITO_CCT_CALLER_ID =
+            "org.chromium.chrome.browser.customtabs.EXTRA_INCOGNITO_CCT_CALLER_ID";
+
+    /**
+     * A boolean to indicate whether the ChromeTabbedActivity task was started by this Intent. Only
+     * used for external View intents.
+     */
+    public static final String EXTRA_STARTED_TABBED_CHROME_TASK =
+            "org.chromium.chrome.browser.started_chrome_task";
+
+    /**
      * Fake ComponentName used in constructing TRUSTED_APPLICATION_CODE_EXTRA.
      */
     private static ComponentName sFakeComponentName;
@@ -216,7 +216,8 @@ public class IntentHandler {
     private static int sReferrerId;
     private static String sPendingIncognitoUrl;
 
-    public static final String PACKAGE_GSA = "com.google.android.googlequicksearchbox";
+    public static final String PACKAGE_GSA = GSAState.PACKAGE_NAME;
+
     private static final String PACKAGE_GMAIL = "com.google.android.gm";
     private static final String PACKAGE_PLUS = "com.google.android.apps.plus";
     private static final String PACKAGE_HANGOUTS = "com.google.android.talk";
@@ -231,6 +232,8 @@ public class IntentHandler {
     private static final String NEWS_LINK_PREFIX = "http://news.google.com/news/url?";
     private static final String YOUTUBE_LINK_PREFIX_HTTPS = "https://www.youtube.com/redirect?";
     private static final String YOUTUBE_LINK_PREFIX_HTTP = "http://www.youtube.com/redirect?";
+    private static final String BRING_TAB_TO_FRONT_EXTRA = "BRING_TAB_TO_FRONT";
+    public static final String BRING_TAB_TO_FRONT_SOURCE_EXTRA = "BRING_TAB_TO_FRONT_SOURCE";
 
     /**
      * Represents popular external applications that can load a page in Chrome via intent.
@@ -263,6 +266,32 @@ public class IntentHandler {
         int YOUTUBE = 15;
         // Update ClientAppId in enums.xml when adding new items.
         int NUM_ENTRIES = 16;
+    }
+
+    /**
+     * Represents apps that launch Incognito CCT.
+     * DO NOT reorder items in this interface, because it's mirrored to UMA (as
+     * {@link IncognitoCCTCallerId}). Values should be enumerated from 0.
+     * When removing items, comment them out and keep existing numeric values stable.
+     */
+    @IntDef({IncognitoCCTCallerId.OTHER_APPS, IncognitoCCTCallerId.GOOGLE_APPS,
+            IncognitoCCTCallerId.OTHER_CHROME_FEATURES, IncognitoCCTCallerId.READER_MODE,
+            IncognitoCCTCallerId.READ_LATER})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface IncognitoCCTCallerId {
+        int OTHER_APPS = 0;
+        int GOOGLE_APPS = 1;
+        // This should not be used, it's a fallback for Chrome features that didn't identify
+        // themselves. Please see {@link
+        // IncognitoCustomTabIntentDataProvider#addIncongitoExtrasForChromeFeatures}
+        int OTHER_CHROME_FEATURES = 2;
+
+        // Chrome Features
+        int READER_MODE = 3;
+        int READ_LATER = 4;
+
+        // Update {@link IncognitoCCTCallerId} in enums.xml when adding new items.
+        int NUM_ENTRIES = 5;
     }
 
     private static ComponentName getFakeComponentName(String packageName) {
@@ -318,9 +347,18 @@ public class IntentHandler {
         // be reused.
         int REUSE_TAB_MATCHING_ID_ELSE_NEW_TAB = 6;
 
-        String BRING_TAB_TO_FRONT_STRING = "BRING_TAB_TO_FRONT";
         String REUSE_TAB_MATCHING_ID_STRING = "REUSE_TAB_MATCHING_ID";
         String REUSE_TAB_ORIGINAL_URL_STRING = "REUSE_TAB_ORIGINAL_URL";
+    }
+
+    @IntDef({BringToFrontSource.ACTIVATE_TAB, BringToFrontSource.NOTIFICATION,
+            BringToFrontSource.SEARCH_ACTIVITY})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface BringToFrontSource {
+        int INVALID = -1;
+        int ACTIVATE_TAB = 0;
+        int NOTIFICATION = 1;
+        int SEARCH_ACTIVITY = 2;
     }
 
     /**
@@ -490,8 +528,7 @@ public class IntentHandler {
                 IntentWithRequestMetadataHandler.getInstance().getRequestMetadataAndClear(intent);
         @TabOpenType
         int tabOpenType = getTabOpenType(intent);
-        int tabIdToBringToFront = IntentUtils.safeGetIntExtra(
-                intent, TabOpenType.BRING_TAB_TO_FRONT_STRING, Tab.INVALID_TAB_ID);
+        int tabIdToBringToFront = getBringTabToFrontId(intent);
         if (url == null && tabIdToBringToFront == Tab.INVALID_TAB_ID
                 && tabOpenType != TabOpenType.OPEN_NEW_INCOGNITO_TAB) {
             return handleWebSearchIntent(intent)
@@ -570,7 +607,7 @@ public class IntentHandler {
         if (isValidReferrerHeader(referrerExtra)) {
             return referrerExtra.toString();
         } else if (IntentHandler.notSecureIsIntentChromeOrFirstParty(intent)
-                || ChromeApplication.getComponent()
+                || ChromeApplicationImpl.getComponent()
                            .resolveSessionDataHolder()
                            .canActiveHandlerUseReferrer(customTabsSession, referrerExtra)) {
             return referrerExtra.toString();
@@ -722,7 +759,8 @@ public class IntentHandler {
         Intent fakeIntent = new Intent();
         Context appContext = ContextUtils.getApplicationContext();
         fakeIntent.setComponent(getFakeComponentName(appContext.getPackageName()));
-        return PendingIntent.getActivity(appContext, 0, fakeIntent, 0);
+        return PendingIntent.getActivity(
+                appContext, 0, fakeIntent, IntentUtils.getPendingIntentMutabilityFlag(false));
     }
 
     /**
@@ -777,11 +815,16 @@ public class IntentHandler {
     /**
      * Sets TRUSTED_APPLICATION_CODE_EXTRA on the provided intent to identify it as coming from
      * a trusted source.
+     *
+     * @param intent An Intent that targets either the Chrome package, or explicitly targets a
+     *         Chrome component.
      */
     public static void addTrustedIntentExtras(Intent intent) {
-        if (ExternalNavigationDelegateImpl.willChromeHandleIntent(intent, true)) {
-            addTrustedIntentExtrasInternal(intent);
-        }
+        boolean toChrome =
+                IntentUtils.intentTargetsSelf(ContextUtils.getApplicationContext(), intent);
+        assert toChrome;
+        // For security reasons we have to check the asserted condition anyways.
+        if (toChrome) addTrustedIntentExtrasInternal(intent);
     }
 
     @VisibleForTesting
@@ -1031,7 +1074,7 @@ public class IntentHandler {
      * @param intent An Intent to be checked.
      * @return Whether an intent originates from Chrome.
      */
-    public static boolean wasIntentSenderChrome(Intent intent) {
+    public static boolean wasIntentSenderChrome(@Nullable Intent intent) {
         if (sTestForceIntentSenderChromeToTrue) return true;
 
         if (intent == null) return false;
@@ -1099,6 +1142,15 @@ public class IntentHandler {
                 != 0;
     }
 
+    /**
+     * Returns whether the Intent specifies to create a new Tab from the launcher shortcut.
+     */
+    static boolean isTabOpenAsNewTabFromLauncher(Intent intent) {
+        return IntentUtils.safeGetBooleanExtra(intent, Browser.EXTRA_CREATE_NEW_TAB, false)
+                && IntentUtils.safeGetBooleanExtra(
+                        intent, IntentHandler.EXTRA_INVOKED_FROM_SHORTCUT, false);
+    }
+
     /*
      * The default behavior here is to open in a new tab.  If this is changed, ensure
      * intents with action NDEF_DISCOVERED (links beamed over NFC) are handled properly.
@@ -1111,9 +1163,7 @@ public class IntentHandler {
         if (IntentUtils.safeGetBooleanExtra(intent, EXTRA_OPEN_NEW_INCOGNITO_TAB, false)) {
             return TabOpenType.OPEN_NEW_INCOGNITO_TAB;
         }
-        if (IntentUtils.safeGetIntExtra(
-                    intent, TabOpenType.BRING_TAB_TO_FRONT_STRING, Tab.INVALID_TAB_ID)
-                != Tab.INVALID_TAB_ID) {
+        if (getBringTabToFrontId(intent) != Tab.INVALID_TAB_ID) {
             return TabOpenType.BRING_TAB_TO_FRONT;
         }
 
@@ -1433,6 +1483,84 @@ public class IntentHandler {
         IntentHandler.addTrustedIntentExtras(newIntent);
 
         return newIntent;
+    }
+
+    /**
+     * Creates an Intent that tells Chrome to bring an Activity for a particular Tab back to the
+     * foreground.
+     * @param tabId The id of the Tab to bring to the foreground.
+     * @param bringToFrontSource The source of the bring to front Intent, used for gathering
+     *         metrics.
+     * @return Created Intent or null if this operation isn't possible.
+     */
+    @Nullable
+    public static Intent createTrustedBringTabToFrontIntent(
+            int tabId, @BringToFrontSource int bringToFrontSource) {
+        // Iterate through all {@link CustomTab}s and check whether the given tabId belongs to a
+        // {@link CustomTab}. If so, return null as the client app's task cannot be foregrounded.
+        for (Activity activity : ApplicationStatus.getRunningActivities()) {
+            if (activity instanceof CustomTabActivity
+                    && ((CustomTabActivity) activity).getActivityTab() != null
+                    && tabId == ((CustomTabActivity) activity).getActivityTab().getId()) {
+                return null;
+            }
+        }
+
+        Context context = ContextUtils.getApplicationContext();
+        Intent intent = new Intent(context, ChromeLauncherActivity.class);
+        intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
+        intent.putExtra(BRING_TAB_TO_FRONT_EXTRA, tabId);
+        intent.putExtra(BRING_TAB_TO_FRONT_SOURCE_EXTRA, bringToFrontSource);
+        IntentHandler.addTrustedIntentExtras(intent);
+        return intent;
+    }
+
+    public static int getBringTabToFrontId(Intent intent) {
+        if (!wasIntentSenderChrome(intent)) return Tab.INVALID_TAB_ID;
+        return IntentUtils.safeGetIntExtra(intent, BRING_TAB_TO_FRONT_EXTRA, Tab.INVALID_TAB_ID);
+    }
+
+    /**
+     * Sets the Tab Id extra for a given intent. Will only be usable by trusted Chrome intents.
+     */
+    public static void setTabId(Intent intent, int tabId) {
+        intent.putExtra(IntentHandler.EXTRA_TAB_ID, tabId);
+    }
+
+    /**
+     * @return the Tab Id extra from an intent, or INVALID_TAB_ID if Tab Id isn't present, or the
+     * intent isn't trusted.
+     */
+    public static int getTabId(@Nullable Intent intent) {
+        if (!wasIntentSenderChrome(intent)) return Tab.INVALID_TAB_ID;
+        return IntentUtils.safeGetIntExtra(intent, EXTRA_TAB_ID, Tab.INVALID_TAB_ID);
+    }
+
+    /**
+     * Handles an inconsistency in the Android platform, where if an Activity finishes itself, then
+     * is resumed from recents, it's re-launched with the original intent that launched the activity
+     * initially.
+     *
+     * @return the provided intent, if the intent is not from Android Recents. Otherwise, rewrites
+     *         the intent to be a consistent MAIN intent from recents.
+     */
+    public static Intent rewriteFromHistoryIntent(Intent intent) {
+        // When a self-finished Activity is created from recents, Android launches it with its
+        // original base intent (with FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY added). This can lead
+        // to duplicating actions when launched from recents, like re-launching tabs, or firing
+        // additional app redirects, etc.
+        // Instead of teaching all of Chrome about this, just make intents consistent when Chrome is
+        // created from recents.
+        if (0 != (intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY)) {
+            Intent newIntent = new Intent(Intent.ACTION_MAIN);
+            // Make sure to carry over the FROM_HISTORY flag to avoid confusing metrics.
+            newIntent.setFlags(intent.getFlags());
+            newIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+            newIntent.setComponent(intent.getComponent());
+            newIntent.setPackage(intent.getPackage());
+            return newIntent;
+        }
+        return intent;
     }
 
     /**

@@ -49,16 +49,18 @@ export function hide() {
 
 /**
  * Shows a tooltip over the hovered element.
- * @param {!HTMLInputElement} element Hovered element whose tooltip to be shown.
+ * @param {!HTMLElement} element Hovered element whose tooltip to be shown.
  */
 function show(element) {
   hide();
   let message = element.getAttribute('aria-label');
-  if (element.hasAttribute('tooltip-true') && element.checked) {
-    message = element.getAttribute('tooltip-true');
-  }
-  if (element.hasAttribute('tooltip-false') && !element.checked) {
-    message = element.getAttribute('tooltip-false');
+  if (element instanceof HTMLInputElement) {
+    if (element.hasAttribute('tooltip-true') && element.checked) {
+      message = element.getAttribute('tooltip-true');
+    }
+    if (element.hasAttribute('tooltip-false') && !element.checked) {
+      message = element.getAttribute('tooltip-false');
+    }
   }
   wrapper.textContent = message;
   hovered = element;
@@ -68,10 +70,10 @@ function show(element) {
 
 /**
  * Sets up tooltips for elements.
- * @param {!NodeList<!HTMLInputElement>} elements Elements whose tooltips to be
- *     shown.
- * @return {!NodeList<!HTMLInputElement>} Elements whose tooltips have been set
- *     up.
+ * @param {!NodeListOf<!HTMLElement>} elements Elements whose tooltips to
+ *     be shown.
+ * @return {!NodeListOf<!HTMLElement>} Elements whose tooltips have been
+ *     set up.
  */
 export function setup(elements) {
   wrapper = dom.get('#tooltip', HTMLElement);

@@ -41,34 +41,14 @@ base::OnceCallback<void(
 {%-   if method_parameters -%}
   TRACE_EVENT{{trace_event_type}}1(
     "mojom", "{{method_name}}", "{{parameter_group}}",
-    [&](){
-      auto value = std::make_unique<base::trace_event::TracedValue>();
-      base::trace_event::TracedValue* raw_value = value.get();
+    [&](perfetto::TracedValue context){
+      auto dict = std::move(context).WriteDictionary();
 {%-     for param in method_parameters %}
-{%-       if dereference_parameters -%}
-{%-         set cpp_parameter_ptr = prefix + param.name %}
-{%-         set cpp_parameter_name = "(*%s)" % cpp_parameter_ptr %}
-      if ({{cpp_parameter_ptr}}) {
-{%-         for line in param.kind|write_input_param_for_tracing(
-                                     parameter_name=param.name,
-                                     cpp_parameter_name=cpp_parameter_name,
-                                     value='raw_value') %}
-        {{line}}
-{%-         endfor %}
-      } else {
-        raw_value->SetString("{{param.name}}", "nullptr");
-      }
-{%-       else %}  {#- if dereference_parameters #}
-{%-         for line in param.kind|write_input_param_for_tracing(
-                                     parameter_name=param.name,
-                                     cpp_parameter_name=prefix+param.name,
-                                     value='raw_value') %}
-      {{line}}
-{%-         endfor %}
-{%-       endif  %}  {#- if dereference_parameters #}
+      perfetto::WriteIntoTracedValueWithFallback(
+           dict.AddItem("{{param.name}}"), {{prefix+param.name}}, 
+                        "<value of type {{param.kind|cpp_wrapper_param_type}}>");
 {%-     endfor %}
-      return value;
-    }());
+   });
 {%-   else -%}  {#- if method_parameters -#}
   TRACE_EVENT{{trace_event_type}}0("mojom", "{{method_name}}");
 {%-   endif %}  {#- if method_parameters #}
@@ -108,15 +88,11 @@ base::OnceCallback<void(
   mojo::Message {{message_object_name}}(
       {{message_name}}, {{flags_text}}, 0, 0, nullptr);
 {%-   endif %}
-  auto* buffer = {{message_object_name}}.payload_buffer();
-  {{params_struct|get_qualified_name_for_kind(internal=True)}}::BufferWriter
-      params;
-  mojo::internal::SerializationContext serialization_context;
-  {{struct_macros.serialize(params_struct, params_description,
-                            param_name_prefix, "params", "buffer",
-                            "&serialization_context")}}
-  {{message_object_name}}.AttachHandlesFromSerializationContext(
-      &serialization_context);
+  mojo::internal::MessageFragment<
+      {{params_struct|get_qualified_name_for_kind(internal=True)}}> params(
+          {{message_object_name}});
+  {{struct_macros.serialize(
+      params_struct, params_description, param_name_prefix, "params")}}
 {%- endmacro %}
 
 {%- macro define_message_type(interface, message_typename, message_name,
@@ -261,12 +237,12 @@ class {{message_typename}}
 
  private:
   // mojo::internal::UnserializedMessageContext:
-  void Serialize(mojo::internal::SerializationContext* serialization_context,
-                 mojo::internal::Buffer* buffer) override {
-    {{params_struct|get_qualified_name_for_kind(internal=True)}}::BufferWriter
-        params;
-    {{struct_macros.serialize(params_struct, params_description, "param_%s_",
-                              "params", "buffer", "serialization_context")}}
+  void Serialize(mojo::Message& message) override {
+    mojo::internal::MessageFragment<
+        {{params_struct|get_qualified_name_for_kind(internal=True)}}> params(
+            message);
+    {{struct_macros.serialize(
+        params_struct, params_description, "param_%s_", "params")}}
   }
 
 {%-     for param in parameters %}

@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult('Test that relative links and links with hash open in the sources panel.\n');
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.addScriptTag('../resources/source3.js');
   await TestRunner.evaluateInPagePromise('foo()');

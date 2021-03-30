@@ -33,13 +33,13 @@ bool SpellcheckLanguage::InitializeIfNeeded() {
 }
 
 SpellcheckLanguage::SpellcheckWordResult SpellcheckLanguage::SpellCheckWord(
-    const base::char16* text_begin,
+    const char16_t* text_begin,
     size_t position_in_text,
     size_t text_length,
     int tag,
     size_t* skip_or_misspelling_start,
     size_t* skip_or_misspelling_len,
-    std::vector<base::string16>* optional_suggestions) {
+    std::vector<std::u16string>* optional_suggestions) {
   DCHECK_GE(text_length, position_in_text);
   DCHECK(skip_or_misspelling_start && skip_or_misspelling_len)
       << "Out vars must be given.";
@@ -59,7 +59,7 @@ SpellcheckLanguage::SpellcheckWordResult SpellcheckLanguage::SpellCheckWord(
   if (remaining_text_len == 0)
     return IS_CORRECT;  // No input means always spelled correctly.
 
-  base::string16 word;
+  std::u16string word;
   size_t word_start;
   size_t word_length;
   if (!text_iterator_.IsInitialized() &&
@@ -114,7 +114,7 @@ SpellcheckLanguage::SpellcheckWordResult SpellcheckLanguage::SpellCheckWord(
 // This function is a fall-back when the SpellcheckWordIterator class
 // returns a concatenated word which is not in the selected dictionary
 // (e.g. "in'n'out") but each word is valid.
-bool SpellcheckLanguage::IsValidContraction(const base::string16& contraction,
+bool SpellcheckLanguage::IsValidContraction(const std::u16string& contraction,
                                             int tag) {
   if (!contraction_iterator_.IsInitialized() &&
       !contraction_iterator_.Initialize(&character_attributes_, false)) {
@@ -125,7 +125,7 @@ bool SpellcheckLanguage::IsValidContraction(const base::string16& contraction,
 
   contraction_iterator_.SetText(contraction.c_str(), contraction.length());
 
-  base::string16 word;
+  std::u16string word;
   size_t word_start;
   size_t word_length;
 
@@ -149,6 +149,6 @@ bool SpellcheckLanguage::IsEnabled() {
   return platform_spelling_engine_->IsEnabled();
 }
 
-bool SpellcheckLanguage::IsTextInSameScript(const base::string16& text) const {
+bool SpellcheckLanguage::IsTextInSameScript(const std::u16string& text) const {
   return character_attributes_.IsTextInSameScript(text);
 }

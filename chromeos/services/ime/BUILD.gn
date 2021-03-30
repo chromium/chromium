@@ -26,7 +26,6 @@ source_set("decoder") {
   deps = [
     ":constants",
     "//base",
-    "//chromeos/constants",
     "//chromeos/services/ime/public/cpp:buildflags",
     "//chromeos/services/ime/public/cpp/shared_lib:interfaces",
   ]
@@ -49,8 +48,8 @@ source_set("lib") {
   deps = [
     ":constants",
     ":decoder",
+    "//ash/constants",
     "//base",
-    "//chromeos/constants",
     "//chromeos/services/ime/public/cpp:buildflags",
     "//chromeos/services/ime/public/cpp:rulebased",
     "//chromeos/services/ime/public/cpp/shared_lib:interfaces",
@@ -85,9 +84,9 @@ source_set("services_unittests") {
   deps = [
     ":lib",
     ":test_support",
+    "//ash/constants",
     "//base",
     "//base/test:test_support",
-    "//chromeos/constants:constants",
     "//chromeos/services/ime/public/mojom",
     "//chromeos/services/ime/public/proto:messages_proto",
     "//mojo/public/cpp/bindings",

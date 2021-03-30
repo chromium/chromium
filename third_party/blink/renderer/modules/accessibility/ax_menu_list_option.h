@@ -37,19 +37,13 @@ class AXObjectCacheImpl;
 class AXMenuListOption final : public AXNodeObject {
  public:
   AXMenuListOption(HTMLOptionElement*, AXObjectCacheImpl&);
-  ~AXMenuListOption() override;
+  ~AXMenuListOption() override = default;
 
  private:
-  void Trace(Visitor*) const override;
-
   bool IsMenuListOption() const override { return true; }
 
-  Node* GetNode() const override { return element_; }
-  void Detach() override;
-  bool IsDetached() const override { return !element_; }
-  LocalFrameView* DocumentFrameView() const override;
   bool CanHaveChildren() const override { return false; }
-  AXObject* ComputeParent() const override;
+  AXObject* ComputeParentImpl() const override;
 
   Element* ActionElement() const override;
   bool IsVisible() const override;
@@ -70,8 +64,6 @@ class AXMenuListOption final : public AXNodeObject {
                          NameSources*) const override;
   bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
   HTMLSelectElement* ParentSelectNode() const;
-
-  Member<HTMLOptionElement> element_;
 
   DISALLOW_COPY_AND_ASSIGN(AXMenuListOption);
 };

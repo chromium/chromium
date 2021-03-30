@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/macros.h"
@@ -95,6 +96,8 @@ class ArcMetricsService : public KeyedService,
   void ReportArcCorePriAbiMigFailedTries(uint32_t failed_attempts) override;
   void ReportArcCorePriAbiMigDowngradeDelay(base::TimeDelta delay) override;
   void ReportArcCorePriAbiMigBootTime(base::TimeDelta duration) override;
+  void ReportClipboardDragDropEvent(
+      mojom::ArcClipboardDragDropEvent event_type) override;
 
   // wm::ActivationChangeObserver overrides.
   // Records to UMA when a user has interacted with an ARC app window.
@@ -115,6 +118,13 @@ class ArcMetricsService : public KeyedService,
 
   void AddAppKillObserver(AppKillObserver* obs);
   void RemoveAppKillObserver(AppKillObserver* obs);
+
+  // Finds the boot_progress_arc_upgraded event, removes it from |events|, and
+  // returns the event time. If the boot_progress_arc_upgraded event is not
+  // found, base::nullopt is returned. This function is public for testing
+  // purposes.
+  base::Optional<base::TimeTicks> GetArcStartTimeFromEvents(
+      std::vector<mojom::BootProgressEventPtr>& events);
 
  private:
   // Adapter to be able to also observe ProcessInstance events.

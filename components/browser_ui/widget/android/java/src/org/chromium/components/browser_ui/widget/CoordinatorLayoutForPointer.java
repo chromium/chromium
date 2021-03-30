@@ -16,9 +16,11 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 /**
  * This class overrides {@link onResolvePointerIcon} method to correctly determine the pointer icon
  * from a mouse motion event. This is needed because the default android impl does not consider
- * view visibility.
+ * view visibility. It also allows a delegate to observe touch events.
  */
 public class CoordinatorLayoutForPointer extends CoordinatorLayout {
+    private Runnable mTouchEventCallback;
+
     public CoordinatorLayoutForPointer(Context context, AttributeSet attrs) {
         super(context, attrs);
         setFocusable(false);
@@ -44,5 +46,22 @@ public class CoordinatorLayoutForPointer extends CoordinatorLayout {
             }
         }
         return super.onResolvePointerIcon(event, pointerIndex);
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        if (mTouchEventCallback != null) {
+            mTouchEventCallback.run();
+        }
+        return super.onInterceptTouchEvent(ev);
+    }
+
+    /**
+     * Set a callback that is run for every intercepted touch event on this view and its children.
+     */
+    public void setTouchEventCallback(Runnable touchEventCallback) {
+        assert mTouchEventCallback == null
+                || touchEventCallback == null : "Another touchEventCallback is already set.";
+        mTouchEventCallback = touchEventCallback;
     }
 }

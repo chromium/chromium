@@ -43,7 +43,7 @@ scoped_refptr<const Extension> CreateExtensionWithPermissions(
   if (allow_file_access)
     creation_flags |= Extension::ALLOW_FILE_ACCESS;
   return ExtensionBuilder()
-      .SetLocation(Manifest::INTERNAL)
+      .SetLocation(mojom::ManifestLocation::kInternal)
       .SetManifest(DictionaryBuilder()
                        .Set("name", name)
                        .Set("description", "foo")

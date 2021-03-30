@@ -185,6 +185,32 @@ void AddImgPvrGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
   permissions->push_back(BrokerFilePermission::ReadWrite(kPvrSyncPath));
 }
 
+void AddDrmGpuDevPermissions(std::vector<BrokerFilePermission>* permissions,
+                             const std::string& path) {
+  struct stat st;
+
+  if (stat(path.c_str(), &st) == 0) {
+    permissions->push_back(BrokerFilePermission::ReadWrite(path));
+
+    uint32_t major = (static_cast<uint32_t>(st.st_rdev) >> 8) & 0xff;
+    uint32_t minor = static_cast<uint32_t>(st.st_rdev) & 0xff;
+    std::string char_device_path =
+        base::StringPrintf("/sys/dev/char/%u:%u/", major, minor);
+    permissions->push_back(
+        BrokerFilePermission::ReadOnlyRecursive(char_device_path));
+  }
+}
+
+void AddDrmGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
+  permissions->push_back(BrokerFilePermission::ReadOnly("/dev/dri"));
+  for (int i = 0; i <= 9; ++i) {
+    AddDrmGpuDevPermissions(permissions,
+                            base::StringPrintf("/dev/dri/card%d", i));
+    AddDrmGpuDevPermissions(permissions,
+                            base::StringPrintf("/dev/dri/renderD%d", i + 128));
+  }
+}
+
 void AddAmdGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
   static const char* const kReadOnlyList[] = {"/etc/ld.so.cache",
                                               "/usr/lib64/libEGL.so.1",
@@ -192,11 +218,12 @@ void AddAmdGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
   for (const char* item : kReadOnlyList)
     permissions->push_back(BrokerFilePermission::ReadOnly(item));
 
+  AddDrmGpuPermissions(permissions);
+
+  // NOTE: control nodes are probably not required:
+  // NOTE: amdgpu.ids should probably be read-only:
   static const char* const kReadWriteList[] = {
-      "/dev/dri",
-      "/dev/dri/card0",
       "/dev/dri/controlD64",
-      "/dev/dri/renderD128",
       "/sys/class/drm/card0/device/config",
       "/sys/class/drm/controlD64/device/config",
       "/sys/class/drm/renderD128/device/config",
@@ -215,25 +242,12 @@ void AddAmdGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
 
 void AddIntelGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
   static const char* const kReadOnlyList[] = {
-      "/dev/dri",
       "/usr/share/vulkan/icd.d",
       "/usr/share/vulkan/icd.d/intel_icd.x86_64.json"};
   for (const char* item : kReadOnlyList)
     permissions->push_back(BrokerFilePermission::ReadOnly(item));
 
-  // TODO(hob): Allow all valid render node paths.
-  static const char kRenderNodePath[] = "/dev/dri/renderD128";
-  struct stat st;
-  if (stat(kRenderNodePath, &st) == 0) {
-    permissions->push_back(BrokerFilePermission::ReadWrite(kRenderNodePath));
-
-    uint32_t major = (static_cast<uint32_t>(st.st_rdev) >> 8) & 0xff;
-    uint32_t minor = static_cast<uint32_t>(st.st_rdev) & 0xff;
-    std::string char_device_path =
-        base::StringPrintf("/sys/dev/char/%u:%u/", major, minor);
-    permissions->push_back(
-        BrokerFilePermission::ReadOnlyRecursive(char_device_path));
-  }
+  AddDrmGpuPermissions(permissions);
 }
 
 void AddArmGpuPermissions(std::vector<BrokerFilePermission>* permissions) {
@@ -335,6 +349,8 @@ std::vector<BrokerFilePermission> FilePermissionsForGpu(
     if (IsArchitectureArm()) {
       AddImgPvrGpuPermissions(&permissions);
       AddArmGpuPermissions(&permissions);
+      // Add standard DRM permissions for snapdragon:
+      AddDrmGpuPermissions(&permissions);
       return permissions;
     }
     if (options.use_amd_specific_policies) {
@@ -371,10 +387,28 @@ void LoadArmGpuLibraries() {
         break;
     }
   } else {
-    dlopen(kLibMaliPath, dlopen_flag);
+    bool is_mali = dlopen(kLibMaliPath, dlopen_flag) != nullptr;
 
     // Preload the Tegra V4L2 (video decode acceleration) library.
-    dlopen(kLibTegraPath, dlopen_flag);
+    bool is_tegra = dlopen(kLibTegraPath, dlopen_flag) != nullptr;
+
+    // Preload mesa related libraries for devices which use mesa
+    // (ie. not mali or tegra):
+    if (!is_mali && !is_tegra &&
+        (nullptr != dlopen("libglapi.so", dlopen_flag))) {
+      const char* driver_paths[] = {
+#if defined(DRI_DRIVER_DIR)
+        DRI_DRIVER_DIR "/msm_dri.so",
+#else
+        "/usr/lib64/dri/msm_dri.so",
+        "/usr/lib/dri/msm_dri.so",
+#endif
+        nullptr
+      };
+
+      for (int i = 0; driver_paths[i] != nullptr; i++)
+        dlopen(driver_paths[i], dlopen_flag);
+    }
   }
 }
 
@@ -460,8 +494,9 @@ sandbox::syscall_broker::BrokerCommandSet CommandSetForGPU(
   command_set.set(sandbox::syscall_broker::COMMAND_ACCESS);
   command_set.set(sandbox::syscall_broker::COMMAND_OPEN);
   command_set.set(sandbox::syscall_broker::COMMAND_STAT);
-  if (IsChromeOS() && (options.use_amd_specific_policies ||
-                       options.use_intel_specific_policies)) {
+  if (IsChromeOS() &&
+      (options.use_amd_specific_policies ||
+       options.use_intel_specific_policies || IsArchitectureArm())) {
     command_set.set(sandbox::syscall_broker::COMMAND_READLINK);
   }
   return command_set;

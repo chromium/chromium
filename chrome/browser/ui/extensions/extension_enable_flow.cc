@@ -14,13 +14,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow_delegate.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_source.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/user_manager.h"
+#include "chrome/browser/ui/profile_picker.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -133,8 +131,8 @@ void ExtensionEnableFlow::CheckPermissionAndMaybePromptUser() {
 
   if (profiles::IsProfileLocked(profile_->GetPath())) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-    UserManager::Show(base::FilePath(),
-                      profiles::USER_MANAGER_SELECT_PROFILE_NO_ACTION);
+    ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileLocked);
+
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
     return;
   }
@@ -154,8 +152,8 @@ void ExtensionEnableFlow::CheckPermissionAndMaybePromptUser() {
   ExtensionInstallPrompt::PromptType type =
       ExtensionInstallPrompt::GetReEnablePromptTypeForExtension(profile_,
                                                                 extension);
-  prompt_->ShowDialog(base::Bind(&ExtensionEnableFlow::InstallPromptDone,
-                                 weak_ptr_factory_.GetWeakPtr()),
+  prompt_->ShowDialog(base::BindOnce(&ExtensionEnableFlow::InstallPromptDone,
+                                     weak_ptr_factory_.GetWeakPtr()),
                       extension, nullptr,
                       std::make_unique<ExtensionInstallPrompt::Prompt>(type),
                       ExtensionInstallPrompt::GetDefaultShowDialogCallback());
@@ -198,20 +196,18 @@ void ExtensionEnableFlow::OnBlockedByParentDialogDone() {
 void ExtensionEnableFlow::StartObserving() {
   extension_registry_observer_.Add(
       extensions::ExtensionRegistry::Get(profile_));
-  registrar_.Add(this,
-                 extensions::NOTIFICATION_EXTENSION_LOAD_ERROR,
-                 content::Source<Profile>(profile_));
+  load_error_observation_.Observe(extensions::LoadErrorReporter::GetInstance());
 }
 
 void ExtensionEnableFlow::StopObserving() {
-  registrar_.RemoveAll();
   extension_registry_observer_.RemoveAll();
+  load_error_observation_.Reset();
 }
 
-void ExtensionEnableFlow::Observe(int type,
-                                  const content::NotificationSource& source,
-                                  const content::NotificationDetails& details) {
-  DCHECK_EQ(extensions::NOTIFICATION_EXTENSION_LOAD_ERROR, type);
+void ExtensionEnableFlow::OnLoadFailure(
+    content::BrowserContext* browser_context,
+    const base::FilePath& file_path,
+    const std::string& error) {
   StopObserving();
   delegate_->ExtensionEnableFlowAborted(
       /*user_initiated=*/false);  // |delegate_| may delete us.

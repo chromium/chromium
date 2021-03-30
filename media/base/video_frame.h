@@ -346,6 +346,12 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
                              size_t plane,
                              const gfx::Size& coded_size);
 
+  // Returns the plane gfx::Size (in samples) for a plane of the given coded
+  // size and format.
+  static gfx::Size PlaneSizeInSamples(VideoPixelFormat format,
+                                      size_t plane,
+                                      const gfx::Size& coded_size);
+
   // Returns horizontal bits per pixel for given |plane| and |format|.
   static int PlaneHorizontalBitsPerPixel(VideoPixelFormat format, size_t plane);
 
@@ -398,7 +404,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   //
   // The region is NOT owned by the video frame. Both the region and its
   // associated mapping must outlive this instance.
-  void BackWithSharedMemory(base::UnsafeSharedMemoryRegion* region);
+  void BackWithSharedMemory(const base::UnsafeSharedMemoryRegion* region);
 
   // As above, but the VideoFrame owns the shared memory region as well as the
   // mapping. They will be destroyed with their VideoFrame.
@@ -406,7 +412,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
                                  base::WritableSharedMemoryMapping mapping);
 
   // Valid for shared memory backed VideoFrames.
-  base::UnsafeSharedMemoryRegion* shm_region() {
+  const base::UnsafeSharedMemoryRegion* shm_region() {
     DCHECK(IsValidSharedMemoryFrame());
     DCHECK(storage_type_ == STORAGE_SHMEM);
     return shm_region_;
@@ -559,10 +565,8 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   //
   // TODO(miu): Move some of the "extra" members of VideoFrame (below) into
   // here as a later clean-up step.
-  //
-  // TODO(https://crbug.com/1096727): change the return type to const&.
-  const VideoFrameMetadata* metadata() const { return &metadata_; }
-  VideoFrameMetadata* metadata() { return &metadata_; }
+  const VideoFrameMetadata& metadata() const { return metadata_; }
+  VideoFrameMetadata& metadata() { return metadata_; }
   void set_metadata(const VideoFrameMetadata& metadata) {
     metadata_ = metadata;
   }
@@ -574,9 +578,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // This is the media timestamp, and not the reference time.
   // See VideoFrameMetadata::REFERENCE_TIME for details.
   base::TimeDelta timestamp() const { return timestamp_; }
-  void set_timestamp(base::TimeDelta timestamp) {
-    timestamp_ = timestamp;
-  }
+  void set_timestamp(base::TimeDelta timestamp) { timestamp_ = timestamp; }
 
   // It uses |client| to insert a new sync token and potentially waits on an
   // older sync token. The final sync point will be used to release this
@@ -685,7 +687,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
 
   // Shared memory handle, if this frame is STORAGE_SHMEM.  The region pointed
   // to is unowned.
-  base::UnsafeSharedMemoryRegion* shm_region_ = nullptr;
+  const base::UnsafeSharedMemoryRegion* shm_region_ = nullptr;
 
   // Used if this is a STORAGE_SHMEM frame with owned shared memory. In that
   // case, shm_region_ will refer to this region.

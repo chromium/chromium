@@ -73,6 +73,7 @@ import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabCoordinator;
+import org.chromium.chrome.browser.password_manager.ConfirmationDialogHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -121,6 +122,8 @@ public class ManualFillingControllerTest {
     private CompositorViewHolder mMockCompositorViewHolder;
     @Mock
     private BottomSheetController mMockBottomSheetController;
+    @Mock
+    private ConfirmationDialogHelper mMockConfirmationHelper;
     @Mock
     private FullscreenManager mMockFullscreenManager;
     @Mock
@@ -320,7 +323,7 @@ public class ManualFillingControllerTest {
         when(mMockResources.getConfiguration()).thenReturn(config);
         AccessorySheetTabCoordinator.IconProvider.setIconForTesting(mock(Drawable.class));
         mController.initialize(mMockWindow, mMockKeyboardAccessory, mMockAccessorySheet,
-                mMockBottomSheetController);
+                mMockBottomSheetController, mMockConfirmationHelper);
     }
 
     @Test
@@ -1051,6 +1054,14 @@ public class ManualFillingControllerTest {
         mMediator.onLayoutChange(mMockContentView, 0, 0, 320, 90, 0, 0, 320, 180);
 
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(EXTENDING_KEYBOARD));
+    }
+
+    @Test
+    public void testCallsHelperToConfirmDeletion() {
+        Runnable testRunnable = () -> {};
+        mMediator.confirmOperation("Suggestion", "Delete it?", testRunnable);
+        verify(mMockConfirmationHelper)
+                .showConfirmation("Suggestion", "Delete it?", R.string.ok, testRunnable);
     }
 
     /**

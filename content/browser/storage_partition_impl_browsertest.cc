@@ -179,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(StoragePartitionImplBrowsertest, NetworkContext) {
   request.method = "GET";
   mojo::PendingRemote<network::mojom::URLLoader> loader;
   loader_factory->CreateLoaderAndStart(
-      loader.InitWithNewPipeAndPassReceiver(), 2, 1,
+      loader.InitWithNewPipeAndPassReceiver(), 1,
       network::mojom::kURLLoadOptionNone, request, client.CreateRemote(),
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 

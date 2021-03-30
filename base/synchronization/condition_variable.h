@@ -68,6 +68,7 @@
 
 #include "base/base_export.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
@@ -90,8 +91,8 @@ class BASE_EXPORT ConditionVariable {
   // Wait() releases the caller's critical section atomically as it starts to
   // sleep, and the reacquires it when it is signaled. The wait functions are
   // susceptible to spurious wakeups. (See usage note 1 for more details.)
-  void Wait();
-  void TimedWait(const TimeDelta& max_time);
+  void NOT_TAIL_CALLED Wait();
+  void NOT_TAIL_CALLED TimedWait(const TimeDelta& max_time);
 
   // Broadcast() revives all waiting threads. (See usage note 2 for more
   // details.)

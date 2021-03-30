@@ -79,6 +79,8 @@ class PLATFORM_EXPORT Font {
     return font_description_;
   }
 
+  enum class DrawType { kGlyphsOnly, kGlyphsAndClusters };
+
   enum CustomFontNotReadyAction {
     kDoNotPaintIfFontNotReady,
     kUseFallbackIfFontNotReady
@@ -91,25 +93,29 @@ class PLATFORM_EXPORT Font {
                 const TextRunPaintInfo&,
                 const FloatPoint&,
                 float device_scale_factor,
-                const cc::PaintFlags&) const;
+                const cc::PaintFlags&,
+                DrawType = DrawType::kGlyphsOnly) const;
   void DrawText(cc::PaintCanvas*,
                 const TextRunPaintInfo&,
                 const FloatPoint&,
                 float device_scale_factor,
                 cc::NodeId node_id,
-                const cc::PaintFlags&) const;
+                const cc::PaintFlags&,
+                DrawType = DrawType::kGlyphsOnly) const;
   void DrawText(cc::PaintCanvas*,
                 const NGTextFragmentPaintInfo&,
                 const FloatPoint&,
                 float device_scale_factor,
                 cc::NodeId node_id,
-                const cc::PaintFlags&) const;
+                const cc::PaintFlags&,
+                DrawType = DrawType::kGlyphsOnly) const;
   bool DrawBidiText(cc::PaintCanvas*,
                     const TextRunPaintInfo&,
                     const FloatPoint&,
                     CustomFontNotReadyAction,
                     float device_scale_factor,
-                    const cc::PaintFlags&) const;
+                    const cc::PaintFlags&,
+                    DrawType = DrawType::kGlyphsOnly) const;
   void DrawEmphasisMarks(cc::PaintCanvas*,
                          const TextRunPaintInfo&,
                          const AtomicString& mark,
@@ -215,6 +221,9 @@ class PLATFORM_EXPORT Font {
   }
 
   void ReportNotDefGlyph() const;
+
+  void ReportEmojiSegmentGlyphCoverage(unsigned num_clusters,
+                                       unsigned num_broken_clusters) const;
 
  private:
   enum ForTextEmphasisOrNot { kNotForTextEmphasis, kForTextEmphasis };

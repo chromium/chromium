@@ -15,7 +15,7 @@ namespace base {
 
 namespace {
 
-static const size_t kNpos = string16::npos;
+static const size_t kNpos = std::u16string::npos;
 
 }  // namespace
 
@@ -45,7 +45,7 @@ TEST(UTFOffsetStringConversionsTest, AdjustOffset) {
   }
 
   struct UTF16ToUTF8Case {
-    char16 utf16[10];
+    char16_t utf16[10];
     size_t input_offset;
     size_t output_offset;
   } utf16_to_utf8_cases[] = {

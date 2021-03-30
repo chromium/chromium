@@ -14,7 +14,7 @@ HeadlessContentClient::HeadlessContentClient() = default;
 
 HeadlessContentClient::~HeadlessContentClient() = default;
 
-base::string16 HeadlessContentClient::GetLocalizedString(int message_id) {
+std::u16string HeadlessContentClient::GetLocalizedString(int message_id) {
   return l10n_util::GetStringUTF16(message_id);
 }
 

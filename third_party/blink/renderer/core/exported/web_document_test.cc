@@ -202,7 +202,6 @@ namespace {
 const char* g_base_url_origin_a = "http://example.test:0/";
 const char* g_base_url_origin_sub_a = "http://subdomain.example.test:0/";
 const char* g_base_url_origin_secure_a = "https://example.test:0/";
-const char* g_base_url_sandbox_origin_a = "http://sandbox.example.test:0/";
 const char* g_base_url_origin_b = "http://not-example.test:0/";
 const char* g_empty_file = "first_party/empty.html";
 const char* g_nested_data = "first_party/nested-data.html";
@@ -234,10 +233,6 @@ KURL ToOriginSubA(const char* file) {
 
 KURL ToOriginSecureA(const char* file) {
   return ToKURL(std::string(g_base_url_origin_secure_a) + file);
-}
-
-KURL ToOriginSandboxA(const char* file) {
-  return ToKURL(std::string(g_base_url_sandbox_origin_a) + file);
 }
 
 KURL ToOriginB(const char* file) {
@@ -278,21 +273,8 @@ void WebDocumentFirstPartyTest::SetUpTestCase() {
   RegisterMockedURLLoad(ToOriginA(g_nested_origin_b_in_origin_b),
                         g_nested_origin_b_in_origin_b);
   RegisterMockedURLLoad(ToOriginA(g_nested_src_doc), g_nested_src_doc);
-
   RegisterMockedURLLoad(ToOriginSubA(g_empty_file), g_empty_file);
   RegisterMockedURLLoad(ToOriginSecureA(g_empty_file), g_empty_file);
-
-  WebURLResponse response(ToOriginSandboxA(g_empty_file));
-  response.SetMimeType(WebString::FromUTF8("text/html"));
-  response.SetHttpHeaderField(http_names::kContentType,
-                              WebString::FromUTF8("text/html"));
-  response.SetHttpHeaderField(http_names::kContentSecurityPolicy,
-                              WebString::FromUTF8("sandbox"));
-  response.SetHttpStatusCode(200);
-  url_test_helpers::RegisterMockedURLLoadWithCustomResponse(
-      ToOriginSandboxA(g_empty_file), test::CoreTestDataPath(g_empty_file),
-      response);
-
   RegisterMockedURLLoad(ToOriginB(g_empty_file), g_empty_file);
   RegisterMockedURLLoad(ToOriginB(g_nested_origin_a), g_nested_origin_a);
   RegisterMockedURLLoad(ToOriginB(g_nested_origin_b), g_nested_origin_b);
@@ -346,8 +328,13 @@ TEST_F(WebDocumentFirstPartyTest, Empty) {
 }
 
 TEST_F(WebDocumentFirstPartyTest, EmptySandbox) {
-  web_view_helper_.InitializeAndLoad(std::string(g_base_url_sandbox_origin_a) +
-                                     g_empty_file);
+  web_view_helper_.Initialize();
+  WebLocalFrameImpl* frame = web_view_helper_.GetWebView()->MainFrameImpl();
+  auto params = WebNavigationParams::CreateWithHTMLStringForTesting(
+      /*html=*/"", KURL("https://a.com"));
+  params->sandbox_flags = network::mojom::blink::WebSandboxFlags::kAll;
+  frame->CommitNavigation(std::move(params), nullptr /* extra_data */);
+  frame_test_helpers::PumpPendingRequestsForFrameToLoad(frame);
 
   ASSERT_TRUE(TopDocument()->TopFrameOrigin()->IsOpaque())
       << TopDocument()->TopFrameOrigin()->ToUrlOrigin().GetDebugString();
@@ -395,8 +382,12 @@ TEST_F(WebDocumentFirstPartyTest, NestedOriginSecureA) {
 
   ASSERT_TRUE(SiteForCookiesEqual(g_nested_origin_secure_a,
                                   TopDocument()->SiteForCookies()));
-  ASSERT_TRUE(SiteForCookiesEqual(g_nested_origin_secure_a,
-                                  NestedDocument()->SiteForCookies()));
+  // Since NestedDocument is secure, and the parent is insecure, its
+  // SiteForCookies will be null and therefore will not match.
+  ASSERT_FALSE(SiteForCookiesEqual(g_nested_origin_secure_a,
+                                   NestedDocument()->SiteForCookies()));
+  // However its site shouldn't be opaque
+  ASSERT_FALSE(NestedDocument()->SiteForCookies().site().opaque());
 
   ASSERT_TRUE(
       OriginsEqual(g_nested_origin_secure_a, TopDocument()->TopFrameOrigin()));

@@ -148,8 +148,8 @@ TEST_F(SharingDialogViewTest, DevicePressed) {
 }
 
 TEST_F(SharingDialogViewTest, AppPressed) {
-  SharingApp app(&vector_icons::kOpenInNewIcon, gfx::Image(),
-                 base::UTF8ToUTF16("app0"), std::string());
+  SharingApp app(&vector_icons::kOpenInNewIcon, gfx::Image(), u"app0",
+                 std::string());
   EXPECT_CALL(app_callback_, Call(AppEquals(&app)));
 
   auto dialog_data = CreateDialogData(/*devices=*/3, /*apps=*/2);
@@ -202,7 +202,7 @@ TEST_F(SharingDialogViewTest, FootnoteOtherOrigin) {
 }
 
 TEST_F(SharingDialogViewTest, HelpTextNoOrigin) {
-  base::string16 expected_default = l10n_util::GetStringUTF16(
+  std::u16string expected_default = l10n_util::GetStringUTF16(
       IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_HELP_TEXT_NO_DEVICES);
 
   // Expect default help text if no initiating origin is set.
@@ -214,7 +214,7 @@ TEST_F(SharingDialogViewTest, HelpTextNoOrigin) {
 }
 
 TEST_F(SharingDialogViewTest, HelpTextCurrentOrigin) {
-  base::string16 expected_default = l10n_util::GetStringUTF16(
+  std::u16string expected_default = l10n_util::GetStringUTF16(
       IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_HELP_TEXT_NO_DEVICES);
 
   // Expect default help text if the initiating origin matches the main frame
@@ -230,9 +230,9 @@ TEST_F(SharingDialogViewTest, HelpTextCurrentOrigin) {
 
 TEST_F(SharingDialogViewTest, HelpTextOtherOrigin) {
   url::Origin other_origin = url::Origin::Create(GURL("https://example.com"));
-  base::string16 origin_text = url_formatter::FormatOriginForSecurityDisplay(
+  std::u16string origin_text = url_formatter::FormatOriginForSecurityDisplay(
       other_origin, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
-  base::string16 expected_origin = l10n_util::GetStringFUTF16(
+  std::u16string expected_origin = l10n_util::GetStringFUTF16(
       IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_HELP_TEXT_NO_DEVICES_ORIGIN,
       origin_text);
 

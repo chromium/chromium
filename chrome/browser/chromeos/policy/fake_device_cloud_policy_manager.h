@@ -31,7 +31,7 @@ class FakeDeviceCloudPolicyManager : public DeviceCloudPolicyManagerChromeOS {
   }
 
   // DeviceCloudPolicyManagerChromeOS:
-  void Unregister(const UnregisterCallback& callback) override;
+  void Unregister(UnregisterCallback callback) override;
   void Disconnect() override;
 
  private:

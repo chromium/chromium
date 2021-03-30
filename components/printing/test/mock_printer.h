@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "components/printing/common/print.mojom-forward.h"
 #include "printing/image.h"
 #include "printing/mojom/print.mojom.h"
@@ -152,8 +151,8 @@ class MockPrinter {
 
   // Used for displaying headers and footers.
   bool display_header_footer_;
-  base::string16 title_;
-  base::string16 url_;
+  std::u16string title_;
+  std::u16string url_;
 
   // Used for generating invalid settings.
   bool use_invalid_settings_;

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_helpers.h"
 #include "chrome/browser/ui/views/accessibility/caption_bubble_model.h"
 #include "ui/native_theme/caption_style.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -18,10 +19,6 @@
 
 namespace base {
 class RetainingOneShotTimer;
-}
-
-namespace gfx {
-struct VectorIcon;
 }
 
 namespace views {
@@ -63,8 +60,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   // created when a tab activates and exists for the lifetime of that tab.
   void SetModel(CaptionBubbleModel* model);
 
-  // Changes the caption style of the caption bubble. For now, this only sets
-  // the caption text size.
+  // Changes the caption style of the caption bubble.
   void UpdateCaptionStyle(base::Optional<ui::CaptionStyle> caption_style);
 
   // Returns whether the bubble has activity, with the above definition of
@@ -92,7 +88,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   void OnFocus() override;
   void OnBlur() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  base::string16 GetAccessibleWindowTitle() const override;
+  std::u16string GetAccessibleWindowTitle() const override;
   void AddedToWidget() override;
 
  private:
@@ -129,22 +125,25 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
 
   // Returns the number of lines in the caption bubble label that are rendered.
   size_t GetNumLinesInLabel() const;
-
-  double GetTextScaleFactor();
   int GetNumLinesVisible();
-  void UpdateTextSize();
   void UpdateContentSize();
   void Redraw();
-  std::unique_ptr<views::ImageButton> BuildImageButton(
-      views::Button::PressedCallback callback,
-      const gfx::VectorIcon& icon,
-      const int tooltip_text_id);
-  std::vector<std::string> GetAXLineTextForTesting();
+  void Hide();
+
+  // The following methods set the caption bubble style based on the user's
+  // preferences, which are stored in `caption_style_`.
+  void SetCaptionBubbleStyle();
+  double GetTextScaleFactor();
+  void SetTextSizeAndFontFamily();
+  void SetTextColor();
+  void SetBackgroundColor();
 
   // After 5 seconds of inactivity, hide the caption bubble. Activity is defined
   // as transcription received from the speech service or user interacting with
   // the bubble through focus, pressing buttons, or dragging.
   void OnInactivityTimeout();
+
+  std::vector<std::string> GetAXLineTextForTesting();
 
   // Unowned. Owned by views hierarchy.
   CaptionBubbleLabel* label_;

@@ -11,9 +11,9 @@
 #include "ash/public/cpp/login_screen_model.h"
 #include "ash/public/cpp/login_types.h"
 #include "base/macros.h"
-#include "chrome/browser/chromeos/login/ui/login_screen_extension_ui/create_options.h"
-#include "chrome/browser/chromeos/login/ui/login_screen_extension_ui/window.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/login/ui/login_screen_extension_ui/create_options.h"
+#include "chrome/browser/ash/login/ui/login_screen_extension_ui/window.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login_screen_client.h"
 #include "chromeos/tpm/install_attributes.h"
@@ -125,7 +125,7 @@ bool UiHandler::Show(const extensions::Extension* extension,
   CreateOptions create_options(
       GetHardcodedExtensionName(extension),
       extension->GetResourceURL(resource_path), can_be_closed_by_user,
-      base::BindOnce(base::IgnoreResult(&UiHandler::RemoveWindowForExtension),
+      base::BindOnce(base::IgnoreResult(&UiHandler::OnWindowClosed),
                      weak_ptr_factory_.GetWeakPtr(), extension->id()));
 
   current_window_ = std::make_unique<ExtensionIdToWindowMapping>(
@@ -134,26 +134,42 @@ bool UiHandler::Show(const extensions::Extension* extension,
   return true;
 }
 
-bool UiHandler::Close(const extensions::Extension* extension,
-                      std::string* error) {
+void UiHandler::Close(const extensions::Extension* extension,
+                      WindowClosedCallback close_callback) {
   CHECK(CanUseLoginScreenUiApi(extension));
-  if (!RemoveWindowForExtension(extension->id())) {
-    *error = kErrorNoExistingWindow;
-    return false;
-  }
-  return true;
+  close_callback_ = std::move(close_callback);
+  RemoveWindowForExtension(extension->id());
 }
 
-bool UiHandler::RemoveWindowForExtension(const std::string& extension_id) {
+void UiHandler::RemoveWindowForExtension(const std::string& extension_id) {
+  if (!HasOpenWindow(extension_id)) {
+    if (!close_callback_.is_null()) {
+      std::move(close_callback_).Run(/*success=*/false, kErrorNoExistingWindow);
+      close_callback_.Reset();
+    }
+    return;
+  }
+
+  ResetWindowAndHide();
+}
+
+void UiHandler::OnWindowClosed(const std::string& extension_id) {
+  if (!close_callback_.is_null()) {
+    std::move(close_callback_).Run(/*success=*/true, base::nullopt);
+    close_callback_.Reset();
+  }
+
   if (!HasOpenWindow(extension_id))
-    return false;
+    return;
 
-  current_window_.reset(nullptr);
+  ResetWindowAndHide();
+}
 
+void UiHandler::ResetWindowAndHide() {
   ash::LoginScreen::Get()->GetModel()->NotifyOobeDialogState(
       ash::OobeDialogState::HIDDEN);
 
-  return true;
+  current_window_.reset(nullptr);
 }
 
 bool UiHandler::HasOpenWindow(const std::string& extension_id) const {

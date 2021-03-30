@@ -29,10 +29,6 @@ bool IsIncludedInPromoFieldTrial();
 // a FRE promotion for the data reduction proxy.
 bool IsIncludedInFREPromoFieldTrial();
 
-// Returns true if DRP config service should always be fetched even if DRP
-// holdback is enabled.
-bool ForceEnableClientConfigServiceForAllDataSaverUsers();
-
 // Returns the server experiments option name. This name is used in the request
 // headers to the data saver proxy. This name is also used to set the experiment
 // name using finch trial.
@@ -42,19 +38,6 @@ std::string GetDataSaverServerExperimentsOptionName();
 // headers to the data saver proxy. Returned value may be empty indicating no
 // experiment is enabled.
 std::string GetDataSaverServerExperiments();
-
-// If the Data Reduction Proxy config client is being used, the URL for the
-// Data Reduction Proxy config service.
-GURL GetConfigServiceURL();
-
-// Retrieves the int stored in |param_name| from the field trial group
-// |group|. If the value is not present, cannot be parsed, or is less than
-// |min_value|, returns |default_value|.
-int GetFieldTrialParameterAsInteger(const std::string& group,
-                                    const std::string& param_name,
-                                    int default_value,
-                                    int min_value);
-
 
 }  // namespace params
 

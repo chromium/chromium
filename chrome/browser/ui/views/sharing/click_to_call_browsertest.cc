@@ -12,7 +12,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/policy/policy_test_utils.h"
@@ -20,7 +19,6 @@
 #include "chrome/browser/sharing/click_to_call/click_to_call_metrics.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_utils.h"
-#include "chrome/browser/sharing/click_to_call/feature.h"
 #include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/sharing_constants.h"
 #include "chrome/browser/sharing/sharing_sync_preference.h"
@@ -61,10 +59,10 @@ enum class ClickToCallPolicy {
 
 }  // namespace
 
-// Base browser tests for the Click To Call feature.
-class BaseClickToCallBrowserTest : public SharingBrowserTest {
+// Browser tests for the Click To Call feature.
+class ClickToCallBrowserTest : public SharingBrowserTest {
  public:
-  ~BaseClickToCallBrowserTest() override {}
+  ~ClickToCallBrowserTest() override = default;
 
   std::string GetTestPageURL() const override {
     return std::string(kTestPageURL);
@@ -80,8 +78,6 @@ class BaseClickToCallBrowserTest : public SharingBrowserTest {
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
-
   std::string HistogramName(const char* suffix) {
     return base::StrCat({"Sharing.ClickToCall", suffix});
   }
@@ -90,17 +86,6 @@ class BaseClickToCallBrowserTest : public SharingBrowserTest {
       const base::HistogramTester& histograms) {
     return histograms.GetTotalCountsForPrefix(HistogramName(""));
   }
-};
-
-// Browser tests for the Click To Call feature.
-class ClickToCallBrowserTest : public BaseClickToCallBrowserTest {
- public:
-  ClickToCallBrowserTest() {
-    feature_list_.InitAndEnableFeature(kClickToCallUI);
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // TODO(himanshujaju): Add UI checks.
@@ -363,8 +348,7 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, CloseTabWithBubble) {
 
   // Click on the tel link to trigger the bubble view.
   web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
-      base::ASCIIToUTF16("document.querySelector('a').click();"),
-      base::NullCallback());
+      u"document.querySelector('a').click();", base::NullCallback());
   // Wait until the bubble is visible.
   run_loop.Run();
 
@@ -393,8 +377,7 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, LeftClick_ChooseDevice) {
 
   // Click on the tel link to trigger the bubble view.
   web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
-      base::ASCIIToUTF16("document.querySelector('a').click();"),
-      base::NullCallback());
+      u"document.querySelector('a').click();", base::NullCallback());
   // Wait until the bubble is visible.
   run_loop.Run();
 
@@ -469,8 +452,7 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, NavigateDifferentOrigin) {
 
   // Click on the tel link to trigger the bubble view.
   web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
-      base::ASCIIToUTF16("document.querySelector('a').click();"),
-      base::NullCallback());
+      u"document.querySelector('a').click();", base::NullCallback());
   // Wait until the bubble is visible.
   run_loop.Run();
   EXPECT_NE(nullptr, click_to_call_icon->GetBubble());
@@ -486,9 +468,7 @@ class ClickToCallPolicyTest
     : public policy::PolicyTest,
       public testing::WithParamInterface<ClickToCallPolicy> {
  public:
-  ClickToCallPolicyTest() {
-    scoped_feature_list_.InitAndEnableFeature(kClickToCallUI);
-  }
+  ClickToCallPolicyTest() = default;
   ~ClickToCallPolicyTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -507,9 +487,6 @@ class ClickToCallPolicyTest
 
     provider_.UpdateChromePolicy(policies);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(ClickToCallPolicyTest, RunTest) {

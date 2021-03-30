@@ -149,6 +149,15 @@ class LayoutViewHitTestTest : public testing::WithParamInterface<HitTestConfig>,
     GetFrame().GetSettings()->SetEditingBehaviorType(
         GetParam().editing_behavior);
   }
+
+  PositionWithAffinity HitTest(int left, int top) {
+    const HitTestRequest hit_request(HitTestRequest::kActive);
+    const HitTestLocation hit_location(PhysicalOffset(left, top));
+    HitTestResult hit_result(hit_request, hit_location);
+    if (!GetLayoutView().HitTest(hit_location, hit_result))
+      return PositionWithAffinity();
+    return hit_result.GetPosition();
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -167,6 +176,338 @@ INSTANTIATE_TEST_SUITE_P(
         HitTestConfig{true, mojom::EditingBehavior::kEditingUnixBehavior},
         HitTestConfig{true, mojom::EditingBehavior::kEditingAndroidBehavior},
         HitTestConfig{true, mojom::EditingBehavior::kEditingChromeOSBehavior}));
+
+TEST_P(LayoutViewHitTestTest, EmptySpan) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { margin: 0px; font: 10px/10px Ahem; }"
+      "#target { width: 50px; }"
+      "b { border: solid 5px green; }");
+  SetBodyInnerHTML("<div id=target>AB<b></b></div>");
+  auto& target = *GetElementById("target");
+  auto& ab = *To<Text>(target.firstChild());
+  const auto after_ab =
+      PositionWithAffinity(Position(ab, 2), TextAffinity::kUpstream);
+
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 0)), HitTest(0, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 0)), HitTest(5, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 1),
+                                 LayoutNG() ? TextAffinity::kDownstream
+                                            : TextAffinity::kUpstream),
+            HitTest(10, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 1),
+                                 LayoutNG() ? TextAffinity::kDownstream
+                                            : TextAffinity::kUpstream),
+            HitTest(15, 5));
+  EXPECT_EQ(after_ab, HitTest(20, 5));
+  EXPECT_EQ(after_ab, HitTest(25, 5));
+  EXPECT_EQ(after_ab, HitTest(30, 5));
+  EXPECT_EQ(after_ab, HitTest(35, 5));
+  EXPECT_EQ(after_ab, HitTest(40, 5));
+  EXPECT_EQ(after_ab, HitTest(45, 5));
+  EXPECT_EQ(after_ab, HitTest(50, 5));
+  EXPECT_EQ(after_ab, HitTest(55, 5));
+}
+
+// http://crbug.com/1171070
+// See also, FloatLeft*, DOM order of "float" should not affect hit testing.
+TEST_P(LayoutViewHitTestTest, FloatLeftLeft) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { margin: 0px; font: 10px/10px Ahem; }"
+      "#target { width: 70px; }"
+      ".float { float: left; margin-right: 10px; }");
+  SetBodyInnerHTML("<div id=target><div class=float>ab</div>xy</div>");
+  // NGFragmentItem
+  //   [0] kLine (30,0)x(20,10)
+  //   [1] kBox/Floating (0,0)x(20,10)
+  //   [2] kText "xy" (30,0)x(20,10)
+  auto& target = *GetElementById("target");
+  auto& ab = *To<Text>(target.firstChild()->firstChild());
+  auto& xy = *To<Text>(target.lastChild());
+
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 0)), HitTest(0, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 0)), HitTest(5, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 1),
+                                 LayoutNG() ? TextAffinity::kDownstream
+                                            : TextAffinity::kUpstream),
+            HitTest(15, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 0)), HitTest(20, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 0)), HitTest(25, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 0)), HitTest(30, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 0)), HitTest(35, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 1),
+                                 LayoutNG() ? TextAffinity::kDownstream
+                                            : TextAffinity::kUpstream),
+            HitTest(40, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 1),
+                                 LayoutNG() ? TextAffinity::kDownstream
+                                            : TextAffinity::kUpstream),
+            HitTest(45, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 2), TextAffinity::kUpstream),
+            HitTest(50, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 2), TextAffinity::kUpstream),
+            HitTest(55, 5));
+}
+
+// http://crbug.com/1171070
+// See also, FloatLeft*, DOM order of "float" should not affect hit testing.
+TEST_P(LayoutViewHitTestTest, FloatLeftMiddle) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { margin: 0px; font: 10px/10px Ahem; }"
+      "#target { width: 70px; }"
+      ".float { float: left; margin-right: 10px; }");
+  SetBodyInnerHTML("<div id=target>x<div class=float>ab</div>y</div>");
+  // NGFragmentItem
+  //   [0] kLine (30,0)x(20,10)
+  //   [1] kText "x" (30,0)x(10,10)
+  //   [1] kBox/Floating (0,0)x(20,10)
+  //   [2] kText "y" (40,0)x(10,10)
+  auto& target = *GetElementById("target");
+  auto& ab = *To<Text>(target.firstChild()->nextSibling()->firstChild());
+  auto& x = *To<Text>(target.firstChild());
+  auto& y = *To<Text>(target.lastChild());
+
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 0)), HitTest(0, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 0)), HitTest(5, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 1),
+                                 LayoutNG() ? TextAffinity::kDownstream
+                                            : TextAffinity::kUpstream),
+            HitTest(15, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(x, 0)), HitTest(20, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(x, 0)), HitTest(25, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(x, 0)), HitTest(30, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(x, 0)), HitTest(35, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(y, 0)), HitTest(40, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(y, 0)), HitTest(45, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(y, 1), TextAffinity::kUpstream),
+            HitTest(50, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(y, 1), TextAffinity::kUpstream),
+            HitTest(55, 5));
+}
+
+// http://crbug.com/1171070
+// See also, FloatLeft*, DOM order of "float" should not affect hit testing.
+TEST_P(LayoutViewHitTestTest, FloatLeftRight) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { margin: 0px; font: 10px/10px Ahem; }"
+      "#target { width: 70px; }"
+      ".float { float: left; margin-right: 10px; }");
+  SetBodyInnerHTML("<div id=target>xy<div class=float>ab</div></div>");
+  // NGFragmentItem
+  //   [0] kLine (30,0)x(20,10)
+  //   [1] kText "xy" (30,0)x(20,10)
+  //   [2] kBox/Floating (0,0)x(20,10)
+  auto& target = *GetElementById("target");
+  auto& ab = *To<Text>(target.lastChild()->firstChild());
+  auto& xy = *To<Text>(target.firstChild());
+
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 0)), HitTest(0, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 0)), HitTest(5, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 1),
+                                 LayoutNG() ? TextAffinity::kDownstream
+                                            : TextAffinity::kUpstream),
+            HitTest(15, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 0)), HitTest(20, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 0)), HitTest(25, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 0)), HitTest(30, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 0)), HitTest(35, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 1),
+                                 LayoutNG() ? TextAffinity::kDownstream
+                                            : TextAffinity::kUpstream),
+            HitTest(40, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 1),
+                                 LayoutNG() ? TextAffinity::kDownstream
+                                            : TextAffinity::kUpstream),
+            HitTest(45, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 2), TextAffinity::kUpstream),
+            HitTest(50, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 2), TextAffinity::kUpstream),
+            HitTest(55, 5));
+}
+
+// http://crbug.com/1171070
+// See also, FloatRight*, DOM order of "float" should not affect hit testing.
+TEST_P(LayoutViewHitTestTest, FloatRightLeft) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { margin: 0px; font: 10px/10px Ahem; }"
+      "#target { width: 50px; }"
+      ".float { float: right; }");
+  SetBodyInnerHTML("<div id=target>xy<div class=float>ab</div></div>");
+  // NGFragmentItem
+  //   [0] kLine (0,0)x(20,10)
+  //   [1] kBox/Floating (30,0)x(20,10)
+  auto& target = *GetElementById("target");
+  auto& ab = *To<Text>(target.lastChild()->firstChild());
+  auto& xy = *To<Text>(target.firstChild());
+
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 0)), HitTest(0, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 0)), HitTest(5, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 1),
+                                 LayoutNG() ? TextAffinity::kDownstream
+                                            : TextAffinity::kUpstream),
+            HitTest(15, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 2), TextAffinity::kUpstream),
+            HitTest(20, 5))
+      << "at right of 'xy'";
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 2), TextAffinity::kUpstream),
+            HitTest(25, 5))
+      << "right of 'xy'";
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 0)), HitTest(30, 5))
+      << "inside float";
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 0)), HitTest(35, 5))
+      << "inside float";
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 1),
+                                 LayoutNG() ? TextAffinity::kDownstream
+                                            : TextAffinity::kUpstream),
+            HitTest(40, 5))
+      << "inside float";
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 1),
+                                 LayoutNG() ? TextAffinity::kDownstream
+                                            : TextAffinity::kUpstream),
+            HitTest(45, 5))
+      << "inside float";
+
+  // |HitTestResult| holds <body>.
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 2), TextAffinity::kUpstream),
+            HitTest(50, 5))
+      << "at right side of float";
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 2), TextAffinity::kUpstream),
+            HitTest(55, 5))
+      << "right of float";
+}
+
+// http://crbug.com/1171070
+// See also, FloatRight*, DOM order of "float" should not affect hit testing.
+TEST_P(LayoutViewHitTestTest, FloatRightMiddle) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { margin: 0px; font: 10px/10px Ahem; }"
+      "#target { width: 50px; }"
+      ".float { float: right; }");
+  SetBodyInnerHTML("<div id=target>x<div class=float>ab</div>y</div>");
+  // NGFragmentItem
+  //   [0] kLine (0,0)x(20,10)
+  //   [1] kText "x" (0,0)x(10,10)
+  //   [2] kBox/Floating (30,0)x(20,10)
+  //   [3] kText "y" (10,0)x(10,10)
+  auto& target = *GetElementById("target");
+  auto& ab = *To<Text>(target.firstChild()->nextSibling()->firstChild());
+  auto& x = *To<Text>(target.firstChild());
+  auto& y = *To<Text>(target.lastChild());
+
+  EXPECT_EQ(PositionWithAffinity(Position(x, 0)), HitTest(0, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(x, 0)), HitTest(5, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(y, 0)), HitTest(15, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(y, 1), TextAffinity::kUpstream),
+            HitTest(20, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(y, 1), TextAffinity::kUpstream),
+            HitTest(25, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 0)), HitTest(30, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 0)), HitTest(35, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 1),
+                                 LayoutNG() ? TextAffinity::kDownstream
+                                            : TextAffinity::kUpstream),
+            HitTest(40, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 1),
+                                 LayoutNG() ? TextAffinity::kDownstream
+                                            : TextAffinity::kUpstream),
+            HitTest(45, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(y, 1), TextAffinity::kUpstream),
+            HitTest(50, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(y, 1), TextAffinity::kUpstream),
+            HitTest(55, 5));
+}
+
+// http://crbug.com/1171070
+// See also, FloatRight*, DOM order of "float" should not affect hit testing.
+TEST_P(LayoutViewHitTestTest, FloatRightRight) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { margin: 0px; font: 10px/10px Ahem; }"
+      "#target { width: 50px; }"
+      ".float { float: right; }");
+  SetBodyInnerHTML("<div id=target><div class=float>ab</div>xy</div>");
+  //   [0] kLine (0,0)x(20,10)
+  //   [1] kBox/Floating (30,0)x(20,10)
+  //   [2] kText "xy" (0,0)x(20,10)
+  auto& target = *GetElementById("target");
+  auto& ab = *To<Text>(target.firstChild()->firstChild());
+  auto& xy = *To<Text>(target.lastChild());
+
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 0)), HitTest(0, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 0)), HitTest(5, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 1),
+                                 LayoutNG() ? TextAffinity::kDownstream
+                                            : TextAffinity::kUpstream),
+            HitTest(15, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 2), TextAffinity::kUpstream),
+            HitTest(20, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 2), TextAffinity::kUpstream),
+            HitTest(25, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 0)), HitTest(30, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 0)), HitTest(35, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 1),
+                                 LayoutNG() ? TextAffinity::kDownstream
+                                            : TextAffinity::kUpstream),
+            HitTest(40, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 1),
+                                 LayoutNG() ? TextAffinity::kDownstream
+                                            : TextAffinity::kUpstream),
+            HitTest(45, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 2), TextAffinity::kUpstream),
+            HitTest(50, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 2), TextAffinity::kUpstream),
+            HitTest(55, 5));
+}
+
+TEST_P(LayoutViewHitTestTest, PositionAbsolute) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { margin: 0px; font: 10px/10px Ahem; }"
+      "#target { width: 70px; }"
+      ".abspos { position: absolute; left: 40px; top: 0px; }");
+  SetBodyInnerHTML("<div id=target><div class=abspos>ab</div>xy</div>");
+  // NGFragmentItem
+  //   [0] kLine (0,0)x(20,10)
+  //   [2] kText "xy" (30,0)x(20,10)
+  // Note: position:absolute isn't in NGFragmentItems of #target.
+  auto& target = *GetElementById("target");
+  auto& ab = *To<Text>(target.firstChild()->firstChild());
+  auto& xy = *To<Text>(target.lastChild());
+
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 0)), HitTest(0, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 0)), HitTest(5, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 1),
+                                 LayoutNG() ? TextAffinity::kDownstream
+                                            : TextAffinity::kUpstream),
+            HitTest(15, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 2), TextAffinity::kUpstream),
+            HitTest(20, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 2), TextAffinity::kUpstream),
+            HitTest(25, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 2), TextAffinity::kUpstream),
+            HitTest(30, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 2), TextAffinity::kUpstream),
+            HitTest(35, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 0)), HitTest(40, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 0)), HitTest(45, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 1),
+                                 LayoutNG() ? TextAffinity::kDownstream
+                                            : TextAffinity::kUpstream),
+            HitTest(50, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(ab, 1),
+                                 LayoutNG() ? TextAffinity::kDownstream
+                                            : TextAffinity::kUpstream),
+            HitTest(55, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 2), TextAffinity::kUpstream),
+            HitTest(60, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(xy, 2), TextAffinity::kUpstream),
+            HitTest(65, 5));
+}
 
 TEST_P(LayoutViewHitTestTest, HitTestHorizontal) {
   LoadAhem();
@@ -612,6 +953,93 @@ TEST_P(LayoutViewHitTestTest, HitTestVerticalRLRoot) {
           ? PositionWithAffinity(Position(text, 5), TextAffinity::kUpstream)
           : PositionWithAffinity(Position(text, 5), TextAffinity::kDownstream),
       result.GetPosition());
+}
+
+// http://crbug.com/1164974
+TEST_P(LayoutViewHitTestTest, PseudoElementAfterBlock) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { margin: 0px; font: 10px/15px Ahem; }"
+      "p::after { content: 'XY' }");
+  SetBodyInnerHTML("<div><p id=target>ab</p></div>");
+  const auto& text_ab = *To<Text>(GetElementById("target")->firstChild());
+  // In legacy layout, this position comes from |LayoutBlock::PositionBox()|
+  // for mac/unix, or |LayoutObject::FindPosition()| on android/windows.
+  const auto expected = PositionWithAffinity(
+      IsAndroidOrWindowsEditingBehavior() ? Position(text_ab, 2)
+                                          : Position(text_ab, 0),
+      LayoutNG() && IsAndroidOrWindowsEditingBehavior()
+          ? TextAffinity::kUpstream
+          : TextAffinity::kDownstream);
+
+  EXPECT_EQ(expected, HitTest(20, 5)) << "after ab";
+  EXPECT_EQ(expected, HitTest(25, 5)) << "at X";
+  EXPECT_EQ(expected, HitTest(35, 5)) << "at Y";
+  EXPECT_EQ(expected, HitTest(40, 5)) << "after Y";
+  EXPECT_EQ(expected, HitTest(50, 5)) << "after XY";
+}
+
+// http://crbug.com/1043471
+TEST_P(LayoutViewHitTestTest, PseudoElementAfterInline) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { margin: 0px; font: 10px/10px Ahem; }"
+      "#cd::after { content: 'XYZ'; margin-left: 100px; }");
+  SetBodyInnerHTML("<div id=ab>ab<span id=cd>cd</span></div>");
+  const auto& text_ab = *To<Text>(GetElementById("ab")->firstChild());
+  const auto& text_cd = *To<Text>(GetElementById("cd")->lastChild());
+
+  EXPECT_EQ(PositionWithAffinity(Position(text_ab, 0)), HitTest(5, 5));
+  // Because of hit testing at "b", position should be |kDownstream|.
+  EXPECT_EQ(PositionWithAffinity(Position(text_ab, 1),
+                                 LayoutNG() ? TextAffinity::kDownstream
+                                            : TextAffinity::kUpstream),
+            HitTest(15, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(text_cd, 0)), HitTest(25, 5));
+  // Because of hit testing at "d", position should be |kDownstream|.
+  EXPECT_EQ(PositionWithAffinity(Position(text_cd, 1),
+                                 LayoutNG() ? TextAffinity::kDownstream
+                                            : TextAffinity::kUpstream),
+            HitTest(35, 5));
+  // Because of hit testing at right of <span cd>, result position should be
+  // |kUpstream|.
+  EXPECT_EQ(PositionWithAffinity(Position(text_cd, 2),
+                                 LayoutNG() ? TextAffinity::kUpstream
+                                            : TextAffinity::kDownstream),
+            HitTest(45, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(text_cd, 2),
+                                 LayoutNG() ? TextAffinity::kUpstream
+                                            : TextAffinity::kDownstream),
+            HitTest(55, 5));
+  EXPECT_EQ(PositionWithAffinity(Position(text_cd, 2),
+                                 LayoutNG() ? TextAffinity::kUpstream
+                                            : TextAffinity::kDownstream),
+            HitTest(65, 5));
+}
+
+TEST_P(LayoutViewHitTestTest, PseudoElementAfterBlockWithMargin) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { margin: 0px; font: 10px/15px Ahem; }"
+      "p::after { content: 'XY'; margin-left: 10px;}");
+  SetBodyInnerHTML("<div><p id=target>ab</p></div>");
+  const auto& text_ab = *To<Text>(GetElementById("target")->firstChild());
+  // In legacy layout, this position comes from |LayoutBlock::PositionBox()|
+  // for mac/unix, or |LayoutObject::FindPosition()| on android/windows.
+  const auto expected = PositionWithAffinity(
+      IsAndroidOrWindowsEditingBehavior() ? Position(text_ab, 2)
+                                          : Position(text_ab, 0),
+      LayoutNG() && IsAndroidOrWindowsEditingBehavior()
+          ? TextAffinity::kUpstream
+          : TextAffinity::kDownstream);
+
+  EXPECT_EQ(expected, HitTest(20, 5)) << "after ab";
+  EXPECT_EQ(expected, HitTest(25, 5)) << "at margin-left";
+  EXPECT_EQ(expected, HitTest(30, 5)) << "before X";
+  EXPECT_EQ(expected, HitTest(35, 5)) << "at X";
+  EXPECT_EQ(expected, HitTest(45, 5)) << "at Y";
+  EXPECT_EQ(expected, HitTest(50, 5)) << "after Y";
+  EXPECT_EQ(expected, HitTest(55, 5)) << "after XY";
 }
 
 }  // namespace blink

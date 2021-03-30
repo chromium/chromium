@@ -5,34 +5,41 @@
 #include "ash/events/accessibility_event_rewriter.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
-#include "ash/accessibility/point_scan_controller.h"
+#include "ash/accessibility/magnifier/magnification_controller.h"
+#include "ash/accessibility/switch_access/point_scan_controller.h"
 #include "ash/keyboard/keyboard_util.h"
-#include "ash/magnifier/magnification_controller.h"
 #include "ash/public/cpp/accessibility_event_rewriter_delegate.h"
 #include "ash/shell.h"
 #include "ui/chromeos/events/event_rewriter_chromeos.h"
-#include "ui/events/devices/input_device.h"
+#include "ui/events/devices/device_data_manager.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/types/event_type.h"
 
 namespace ash {
 
+namespace {
+
+// Returns a ui::InputDeviceType given a Switch Access string device type.
+ui::InputDeviceType GetInputDeviceType(
+    const std::string& switch_access_device_type) {
+  if (switch_access_device_type == kSwitchAccessInternalDevice)
+    return ui::INPUT_DEVICE_INTERNAL;
+  if (switch_access_device_type == kSwitchAccessUsbDevice)
+    return ui::INPUT_DEVICE_USB;
+  if (switch_access_device_type == kSwitchAccessBluetoothDevice)
+    return ui::INPUT_DEVICE_BLUETOOTH;
+
+  NOTREACHED();
+  return ui::INPUT_DEVICE_UNKNOWN;
+}
+}  // namespace
+
 AccessibilityEventRewriter::AccessibilityEventRewriter(
     ui::EventRewriterChromeOS* event_rewriter_chromeos,
     AccessibilityEventRewriterDelegate* delegate)
     : delegate_(delegate), event_rewriter_chromeos_(event_rewriter_chromeos) {
   Shell::Get()->accessibility_controller()->SetAccessibilityEventRewriter(this);
-
-  // By default, observe all input device types.
-  keyboard_input_device_types_.insert(ui::INPUT_DEVICE_INTERNAL);
-  keyboard_input_device_types_.insert(ui::INPUT_DEVICE_USB);
-  keyboard_input_device_types_.insert(ui::INPUT_DEVICE_BLUETOOTH);
-  keyboard_input_device_types_.insert(ui::INPUT_DEVICE_UNKNOWN);
-
-  UpdateKeyboardDeviceIds();
-
-  observer_.Add(ui::DeviceDataManager::GetInstance());
 }
 
 AccessibilityEventRewriter::~AccessibilityEventRewriter() {
@@ -66,58 +73,36 @@ void AccessibilityEventRewriter::OnUnhandledSpokenFeedbackEvent(
   }
 }
 
-bool AccessibilityEventRewriter::SetKeyCodesForSwitchAccessCommand(
-    std::set<int> new_key_codes,
+void AccessibilityEventRewriter::SetKeyCodesForSwitchAccessCommand(
+    const std::map<int, std::set<std::string>>& key_codes,
     SwitchAccessCommand command) {
-  bool has_changed = false;
-  std::set<int> to_clear;
-
-  // Clear old values that conflict with the new assignment.
-  // TODO(anastasi): convert to use iterators directly and remove has_changed as
-  // an extra step.
-  for (const auto& val : key_code_to_switch_access_command_) {
-    int old_key_code = val.first;
-    SwitchAccessCommand old_command = val.second;
-
-    if (new_key_codes.count(old_key_code) > 0) {
-      if (old_command != command) {
-        has_changed = true;
-        // Modifying the map while iterating through it causes reference
-        // failures.
-        to_clear.insert(old_key_code);
-      } else {
-        new_key_codes.erase(old_key_code);
-      }
-      continue;
-    }
-
-    // This value was previously mapped to the command, but is no longer.
-    if (old_command == command) {
-      has_changed = true;
-      to_clear.insert(old_key_code);
-      switch_access_key_codes_to_capture_.erase(old_key_code);
+  // Remove all keys for the command.
+  for (auto it = key_code_to_switch_access_command_.begin();
+       it != key_code_to_switch_access_command_.end();) {
+    if (it->second == command) {
+      switch_access_key_codes_to_capture_.erase(it->first);
+      it = key_code_to_switch_access_command_.erase(it);
+    } else {
+      it++;
     }
   }
-  for (int key_code : to_clear) {
-    key_code_to_switch_access_command_.erase(key_code);
+
+  for (const auto& key_code : key_codes) {
+    // Remove any preexisting key.
+    switch_access_key_codes_to_capture_.erase(key_code.first);
+    key_code_to_switch_access_command_.erase(key_code.first);
+
+    // Map device types from Switch Access's internal representation.
+    std::set<ui::InputDeviceType> device_types;
+    for (const std::string& switch_access_device : key_code.second)
+      device_types.insert(GetInputDeviceType(switch_access_device));
+
+    switch_access_key_codes_to_capture_.insert({key_code.first, device_types});
+    key_code_to_switch_access_command_.insert({key_code.first, command});
   }
 
-  if (new_key_codes.size() == 0)
-    return has_changed;
-
-  // Add any new key codes to the map.
-  for (int key_code : new_key_codes) {
-    switch_access_key_codes_to_capture_.insert(key_code);
-    key_code_to_switch_access_command_[key_code] = command;
-  }
-
-  return true;
-}
-
-void AccessibilityEventRewriter::SetKeyboardInputDeviceTypes(
-    const std::set<ui::InputDeviceType>& keyboard_input_device_types) {
-  keyboard_input_device_types_ = keyboard_input_device_types;
-  UpdateKeyboardDeviceIds();
+  // Conflict resolution occurs up the stack (e.g. in the settings pages for
+  // Switch Access).
 }
 
 bool AccessibilityEventRewriter::RewriteEventForChromeVox(
@@ -178,10 +163,29 @@ bool AccessibilityEventRewriter::RewriteEventForSwitchAccess(
     return false;
 
   const ui::KeyEvent* key_event = event.AsKeyEvent();
-  bool capture =
-      switch_access_key_codes_to_capture_.count(key_event->key_code()) > 0;
+  const auto& key =
+      switch_access_key_codes_to_capture_.find(key_event->key_code());
+  if (key == switch_access_key_codes_to_capture_.end())
+    return false;
 
-  if (capture && key_event->type() == ui::ET_KEY_PRESSED) {
+  int source_device_id = key_event->source_device_id();
+  ui::InputDeviceType keyboard_type = ui::INPUT_DEVICE_UNKNOWN;
+  for (const auto& keyboard :
+       ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
+    if (source_device_id == keyboard.id) {
+      keyboard_type = keyboard.type;
+      break;
+    }
+  }
+
+  // An unknown |source_device_id| needs to pass this check as it's set that way
+  // in tests.
+  if (source_device_id != ui::ED_UNKNOWN_DEVICE &&
+      key->second.count(keyboard_type) == 0) {
+    return false;
+  }
+
+  if (key_event->type() == ui::ET_KEY_PRESSED) {
     AccessibilityControllerImpl* accessibility_controller =
         Shell::Get()->accessibility_controller();
 
@@ -199,7 +203,7 @@ bool AccessibilityEventRewriter::RewriteEventForSwitchAccess(
       delegate_->SendSwitchAccessCommand(command);
     }
   }
-  return capture;
+  return true;
 }
 
 bool AccessibilityEventRewriter::RewriteEventForMagnifier(
@@ -266,15 +270,6 @@ void AccessibilityEventRewriter::OnMagnifierKeyReleased(
   delegate_->SendMagnifierCommand(MagnifierCommand::kMoveStop);
 }
 
-void AccessibilityEventRewriter::UpdateKeyboardDeviceIds() {
-  keyboard_device_ids_.clear();
-  for (auto& keyboard :
-       ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
-    if (keyboard_input_device_types_.count(keyboard.type))
-      keyboard_device_ids_.insert(keyboard.id);
-  }
-}
-
 void AccessibilityEventRewriter::MaybeSendMouseEvent(const ui::Event& event) {
   // Mouse moves are the only pertinent event for accessibility component
   // extensions.
@@ -288,11 +283,6 @@ void AccessibilityEventRewriter::MaybeSendMouseEvent(const ui::Event& event) {
 ui::EventDispatchDetails AccessibilityEventRewriter::RewriteEvent(
     const ui::Event& event,
     const Continuation continuation) {
-  if (event.IsKeyEvent() && event.source_device_id() != ui::ED_UNKNOWN_DEVICE &&
-      keyboard_device_ids_.count(event.source_device_id()) == 0) {
-    return SendEvent(continuation, &event);
-  }
-
   bool captured = false;
   if (!delegate_)
     return SendEvent(continuation, &event);
@@ -318,12 +308,6 @@ ui::EventDispatchDetails AccessibilityEventRewriter::RewriteEvent(
 
   return captured ? DiscardEvent(continuation)
                   : SendEvent(continuation, &event);
-}
-
-void AccessibilityEventRewriter::OnInputDeviceConfigurationChanged(
-    uint8_t input_device_types) {
-  if (input_device_types & ui::InputDeviceEventObserver::kKeyboard)
-    UpdateKeyboardDeviceIds();
 }
 
 }  // namespace ash

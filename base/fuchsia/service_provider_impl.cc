@@ -8,7 +8,6 @@
 #include <utility>
 
 namespace base {
-namespace fuchsia {
 
 // static
 std::unique_ptr<ServiceProviderImpl>
@@ -49,5 +48,4 @@ void ServiceProviderImpl::OnBindingSetEmpty() {
   std::move(on_last_client_disconnected_).Run();
 }
 
-}  // namespace fuchsia
 }  // namespace base

@@ -14,8 +14,8 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "base/win/scoped_com_initializer.h"
@@ -34,15 +34,15 @@ constexpr wchar_t kSelectFileDefaultTitle[] = L"Open";
 constexpr wchar_t kSaveFileDefaultTitle[] = L"Save As";
 
 // Returns the title of |window|.
-base::string16 GetWindowTitle(HWND window) {
+std::wstring GetWindowTitle(HWND window) {
   wchar_t buffer[256];
   UINT count = ::GetWindowText(window, buffer, base::size(buffer));
-  return base::string16(buffer, count);
+  return std::wstring(buffer, count);
 }
 
 // Waits for a dialog window whose title is |dialog_title| to show and returns
 // its handle.
-HWND WaitForDialogWindow(const base::string16& dialog_title) {
+HWND WaitForDialogWindow(const std::wstring& dialog_title) {
   // File dialogs uses this class name.
   static constexpr wchar_t kDialogClassName[] = L"#32770";
 
@@ -104,14 +104,14 @@ HWND WaitForDialogPrompt(HWND owner) {
 }
 
 // Returns the text of the dialog item in |window| whose id is |dialog_item_id|.
-base::string16 GetDialogItemText(HWND window, int dialog_item_id) {
+std::wstring GetDialogItemText(HWND window, int dialog_item_id) {
   if (!window)
-    return base::string16();
+    return std::wstring();
 
   wchar_t buffer[256];
   UINT count =
       ::GetDlgItemText(window, dialog_item_id, buffer, base::size(buffer));
-  return base::string16(buffer, count);
+  return std::wstring(buffer, count);
 }
 
 // Sends a command to |window| using PostMessage().
@@ -219,9 +219,9 @@ TEST_F(SelectFileDialogWinTest, CancelAllDialogs) {
       file_type_info_index = 1;
     }
 
-    dialog->SelectFile(test_case.dialog_type, base::string16(),
+    dialog->SelectFile(test_case.dialog_type, std::u16string(),
                        base::FilePath(), file_type_info.get(),
-                       file_type_info_index, base::string16(), native_window(),
+                       file_type_info_index, std::wstring(), native_window(),
                        nullptr);
 
     // Accept the default value.
@@ -247,19 +247,19 @@ TEST_F(SelectFileDialogWinTest, UploadFolderCheckStrings) {
   scoped_refptr<ui::SelectFileDialog> dialog =
       ui::SelectFileDialog::Create(this, nullptr);
   dialog->SelectFile(ui::SelectFileDialog::SELECT_UPLOAD_FOLDER,
-                     base::string16(), default_path, nullptr, 0, L"",
+                     std::u16string(), default_path, nullptr, 0, L"",
                      native_window(), nullptr);
 
   // Wait for the window to open and make sure the window title was changed from
   // the default title for a regular select folder operation.
-  HWND window = WaitForDialogWindow(
-      l10n_util::GetStringUTF16(IDS_SELECT_UPLOAD_FOLDER_DIALOG_TITLE));
+  HWND window = WaitForDialogWindow(base::UTF16ToWide(
+      l10n_util::GetStringUTF16(IDS_SELECT_UPLOAD_FOLDER_DIALOG_TITLE)));
   EXPECT_NE(GetWindowTitle(window), kSelectFolderDefaultTitle);
 
   // Check the OK button text.
-  EXPECT_EQ(
-      GetDialogItemText(window, 1),
-      l10n_util::GetStringUTF16(IDS_SELECT_UPLOAD_FOLDER_DIALOG_UPLOAD_BUTTON));
+  EXPECT_EQ(GetDialogItemText(window, 1),
+            base::UTF16ToWide(l10n_util::GetStringUTF16(
+                IDS_SELECT_UPLOAD_FOLDER_DIALOG_UPLOAD_BUTTON)));
 
   // Close the dialog.
   SendCommand(window, IDOK);
@@ -274,7 +274,7 @@ TEST_F(SelectFileDialogWinTest, UploadFolderCheckStrings) {
 // Specifying the title when opening a dialog to select a file, select multiple
 // files or save a file doesn't do anything.
 TEST_F(SelectFileDialogWinTest, SpecifyTitle) {
-  static constexpr wchar_t kTitle[] = L"FooBar Title";
+  static constexpr char16_t kTitle[] = u"FooBar Title";
 
   // Create some file in a test folder.
   base::ScopedTempDir scoped_temp_dir;
@@ -315,7 +315,7 @@ TEST_F(SelectFileDialogWinTest, TestSelectFile) {
 
   scoped_refptr<ui::SelectFileDialog> dialog =
       ui::SelectFileDialog::Create(this, nullptr);
-  dialog->SelectFile(ui::SelectFileDialog::SELECT_OPEN_FILE, base::string16(),
+  dialog->SelectFile(ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string(),
                      default_path, nullptr, 0, L"", native_window(), nullptr);
 
   // Wait for the window to open
@@ -342,7 +342,7 @@ TEST_F(SelectFileDialogWinTest, TestSaveFile) {
 
   scoped_refptr<ui::SelectFileDialog> dialog =
       ui::SelectFileDialog::Create(this, nullptr);
-  dialog->SelectFile(ui::SelectFileDialog::SELECT_SAVEAS_FILE, base::string16(),
+  dialog->SelectFile(ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
                      default_path, &file_type_info, 1, L"", native_window(),
                      nullptr);
 
@@ -366,7 +366,7 @@ TEST_F(SelectFileDialogWinTest, OnlyBasename) {
 
   scoped_refptr<ui::SelectFileDialog> dialog =
       ui::SelectFileDialog::Create(this, nullptr);
-  dialog->SelectFile(ui::SelectFileDialog::SELECT_SAVEAS_FILE, base::string16(),
+  dialog->SelectFile(ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
                      default_path, &file_type_info, 1, L"", native_window(),
                      nullptr);
 
@@ -393,7 +393,7 @@ TEST_F(SelectFileDialogWinTest, SaveAsDifferentExtension) {
 
   scoped_refptr<ui::SelectFileDialog> dialog =
       ui::SelectFileDialog::Create(this, nullptr);
-  dialog->SelectFile(ui::SelectFileDialog::SELECT_SAVEAS_FILE, base::string16(),
+  dialog->SelectFile(ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
                      default_path, &file_type_info, 1, L"html", native_window(),
                      nullptr);
 
@@ -420,7 +420,7 @@ TEST_F(SelectFileDialogWinTest, OpenFileDifferentExtension) {
 
   scoped_refptr<ui::SelectFileDialog> dialog =
       ui::SelectFileDialog::Create(this, nullptr);
-  dialog->SelectFile(ui::SelectFileDialog::SELECT_OPEN_FILE, base::string16(),
+  dialog->SelectFile(ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string(),
                      default_path, &file_type_info, 1, L"html", native_window(),
                      nullptr);
 
@@ -443,7 +443,7 @@ TEST_F(SelectFileDialogWinTest, SelectNonExistingFile) {
 
   scoped_refptr<ui::SelectFileDialog> dialog =
       ui::SelectFileDialog::Create(this, nullptr);
-  dialog->SelectFile(ui::SelectFileDialog::SELECT_OPEN_FILE, base::string16(),
+  dialog->SelectFile(ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string(),
                      default_path, nullptr, 0, L"", native_window(), nullptr);
 
   HWND window = WaitForDialogWindow(kSelectFileDefaultTitle);
@@ -479,7 +479,7 @@ TEST_F(SelectFileDialogWinTest, SaveFileOverwritePrompt) {
 
   scoped_refptr<ui::SelectFileDialog> dialog =
       ui::SelectFileDialog::Create(this, nullptr);
-  dialog->SelectFile(ui::SelectFileDialog::SELECT_SAVEAS_FILE, base::string16(),
+  dialog->SelectFile(ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
                      default_path, &file_type_info, 1, L"", native_window(),
                      nullptr);
 

@@ -45,22 +45,11 @@ int ReleaseReservationOrTerminate(size_t size) {
   constexpr int kRetryAllocation = 1;
   if (internal::ReleaseAddressSpaceReservation())
     return kRetryAllocation;
-  internal::OnNoMemoryInternal(size);
-  return 0;
-}
-
-// TODO(crbug.com/1062949): Remove the NOINLINE once the crash servers handle
-// the |OnNoMemoryInternal()| signature..
-NOINLINE int OnNoMemory(size_t size) {
-  internal::OnNoMemoryInternal(size);
+  TerminateBecauseOutOfMemory(size);
   return 0;
 }
 
 }  // namespace
-
-void TerminateBecauseOutOfMemory(size_t size) {
-  OnNoMemory(size);
-}
 
 void EnableTerminationOnHeapCorruption() {
   // Ignore the result code. Supported on XP SP3 and Vista.

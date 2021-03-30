@@ -6,10 +6,10 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_AUTOFILL_SAVE_CARD_INFOBAR_DELEGATE_MOBILE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_metrics.h"
@@ -46,19 +46,19 @@ class AutofillSaveCardInfoBarDelegateMobile : public ConfirmInfoBarDelegate {
 
   bool upload() const { return upload_; }
   int issuer_icon_id() const { return issuer_icon_id_; }
-  const base::string16& card_label() const { return card_label_; }
-  const base::string16& card_sub_label() const { return card_sub_label_; }
+  const std::u16string& card_label() const { return card_label_; }
+  const std::u16string& card_sub_label() const { return card_sub_label_; }
   const LegalMessageLines& legal_message_lines() const {
     return legal_message_lines_;
   }
-  const base::string16& card_last_four_digits() const {
+  const std::u16string& card_last_four_digits() const {
     return card_last_four_digits_;
   }
-  const base::string16& cardholder_name() const { return cardholder_name_; }
-  const base::string16& expiration_date_month() const {
+  const std::u16string& cardholder_name() const { return cardholder_name_; }
+  const std::u16string& expiration_date_month() const {
     return expiration_date_month_;
   }
-  const base::string16& expiration_date_year() const {
+  const std::u16string& expiration_date_year() const {
     return expiration_date_year_;
   }
 
@@ -70,16 +70,16 @@ class AutofillSaveCardInfoBarDelegateMobile : public ConfirmInfoBarDelegate {
   bool IsGooglePayBrandingEnabled() const;
 
   // Description text to be shown above the card information in the infobar.
-  base::string16 GetDescriptionText() const;
+  std::u16string GetDescriptionText() const;
 
   // ConfirmInfoBarDelegate:
   int GetIconId() const override;
-  base::string16 GetMessageText() const override;
+  std::u16string GetMessageText() const override;
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
   bool ShouldExpire(const NavigationDetails& details) const override;
   void InfoBarDismissed() override;
   int GetButtons() const override;
-  base::string16 GetButtonLabel(InfoBarButton button) const override;
+  std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool Accept() override;
   bool Cancel() override;
 
@@ -87,9 +87,9 @@ class AutofillSaveCardInfoBarDelegateMobile : public ConfirmInfoBarDelegate {
   // Updates and then saves the card using |cardholder_name|,
   // |expiration_date_month| and |expiration_date_year|, which were provided
   // as part of the iOS save card Infobar dialog.
-  virtual bool UpdateAndAccept(base::string16 cardholder_name,
-                               base::string16 expiration_date_month,
-                               base::string16 expiration_date_year);
+  virtual bool UpdateAndAccept(std::u16string cardholder_name,
+                               std::u16string expiration_date_month,
+                               std::u16string expiration_date_year);
 #endif  // defined(OS_IOS)
 
  private:
@@ -132,22 +132,22 @@ class AutofillSaveCardInfoBarDelegateMobile : public ConfirmInfoBarDelegate {
   int issuer_icon_id_;
 
   // The label for the card to show in the content of the infobar.
-  base::string16 card_label_;
+  std::u16string card_label_;
 
   // The sub-label for the card to show in the content of the infobar.
-  base::string16 card_sub_label_;
+  std::u16string card_sub_label_;
 
   // The last four digits of the card for which save is being offered.
-  base::string16 card_last_four_digits_;
+  std::u16string card_last_four_digits_;
 
   // The card holder name of the card for which save is being offered.
-  base::string16 cardholder_name_;
+  std::u16string cardholder_name_;
 
   // The expiration month of the card for which save is being offered.
-  base::string16 expiration_date_month_;
+  std::u16string expiration_date_month_;
 
   // The expiration year of the card for which save is being offered.
-  base::string16 expiration_date_year_;
+  std::u16string expiration_date_year_;
 
   // The legal message lines to show in the content of the infobar.
   const LegalMessageLines& legal_message_lines_;

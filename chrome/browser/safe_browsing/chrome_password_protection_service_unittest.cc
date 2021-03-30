@@ -35,7 +35,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/safe_browsing/content/password_protection/password_protection_navigation_throttle.h"
-#include "components/safe_browsing/content/password_protection/password_protection_request.h"
+#include "components/safe_browsing/content/password_protection/password_protection_request_content.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/features.h"
@@ -125,7 +125,7 @@ constexpr struct {
   // The enum to log in the user event for that response.
   PasswordReuseLookup::LookupResult lookup_result;
 } kTestCasesWithoutVerdict[]{
-    {RequestOutcome::MATCHED_WHITELIST, PasswordReuseLookup::WHITELIST_HIT},
+    {RequestOutcome::MATCHED_ALLOWLIST, PasswordReuseLookup::WHITELIST_HIT},
     {RequestOutcome::URL_NOT_VALID_FOR_REPUTATION_COMPUTING,
      PasswordReuseLookup::URL_UNSUPPORTED},
     {RequestOutcome::CANCELED, PasswordReuseLookup::REQUEST_FAILURE},
@@ -330,7 +330,7 @@ class ChromePasswordProtectionServiceTest
     std::vector<password_manager::MatchingReusedCredential> credentials = {
         {"somedomain.com"}};
     if (trigger_type == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE) {
-      request_ = new PasswordProtectionRequest(
+      request_ = new PasswordProtectionRequestContent(
           web_contents(), GURL(kPhishingURL), GURL(), GURL(),
           web_contents()->GetContentsMimeType(), kUserName,
           PasswordType::PASSWORD_TYPE_UNKNOWN, credentials, trigger_type, true,
@@ -338,7 +338,7 @@ class ChromePasswordProtectionServiceTest
     } else {
       ASSERT_EQ(LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
                 trigger_type);
-      request_ = new PasswordProtectionRequest(
+      request_ = new PasswordProtectionRequestContent(
           web_contents(), GURL(kPhishingURL), GURL(), GURL(),
           web_contents()->GetContentsMimeType(), kUserName,
           reused_password_type, credentials, trigger_type,
@@ -400,7 +400,7 @@ class ChromePasswordProtectionServiceTest
   sync_preferences::TestingPrefServiceSyncable test_pref_service_;
   scoped_refptr<HostContentSettingsMap> content_setting_map_;
   std::unique_ptr<MockChromePasswordProtectionService> service_;
-  scoped_refptr<PasswordProtectionRequest> request_;
+  scoped_refptr<PasswordProtectionRequestContent> request_;
   std::unique_ptr<LoginReputationClientResponse> verdict_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
@@ -550,42 +550,42 @@ TEST_F(ChromePasswordProtectionServiceTest,
 }
 
 TEST_F(ChromePasswordProtectionServiceTest,
-       VerifyPingingIsSkippedIfMatchEnterpriseWhitelist) {
+       VerifyPingingIsSkippedIfMatchEnterpriseAllowlist) {
   ASSERT_FALSE(
-      profile()->GetPrefs()->HasPrefPath(prefs::kSafeBrowsingWhitelistDomains));
+      profile()->GetPrefs()->HasPrefPath(prefs::kSafeBrowsingAllowlistDomains));
 
-  // If there's no whitelist, IsURLWhitelistedForPasswordEntry(_) should
+  // If there's no allowlist, IsURLAllowlistedForPasswordEntry(_) should
   // return false.
-  EXPECT_FALSE(service_->IsURLWhitelistedForPasswordEntry(
+  EXPECT_FALSE(service_->IsURLAllowlistedForPasswordEntry(
       GURL("https://www.mydomain.com")));
 
-  // Verify if match enterprise whitelist.
-  base::ListValue whitelist;
-  whitelist.AppendString("mydomain.com");
-  whitelist.AppendString("mydomain.net");
-  profile()->GetPrefs()->Set(prefs::kSafeBrowsingWhitelistDomains, whitelist);
-  EXPECT_TRUE(service_->IsURLWhitelistedForPasswordEntry(
+  // Verify if match enterprise allowlist.
+  base::ListValue allowlist;
+  allowlist.AppendString("mydomain.com");
+  allowlist.AppendString("mydomain.net");
+  profile()->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains, allowlist);
+  EXPECT_TRUE(service_->IsURLAllowlistedForPasswordEntry(
       GURL("https://www.mydomain.com")));
 
   // Verify if matches enterprise change password url.
-  profile()->GetPrefs()->ClearPref(prefs::kSafeBrowsingWhitelistDomains);
-  EXPECT_FALSE(service_->IsURLWhitelistedForPasswordEntry(
+  profile()->GetPrefs()->ClearPref(prefs::kSafeBrowsingAllowlistDomains);
+  EXPECT_FALSE(service_->IsURLAllowlistedForPasswordEntry(
       GURL("https://www.mydomain.com")));
 
   profile()->GetPrefs()->SetString(prefs::kPasswordProtectionChangePasswordURL,
                                    "https://mydomain.com/change_password.html");
-  EXPECT_TRUE(service_->IsURLWhitelistedForPasswordEntry(
+  EXPECT_TRUE(service_->IsURLAllowlistedForPasswordEntry(
       GURL("https://mydomain.com/change_password.html#ref?user_name=alice")));
 
   // Verify if matches enterprise login url.
-  profile()->GetPrefs()->ClearPref(prefs::kSafeBrowsingWhitelistDomains);
+  profile()->GetPrefs()->ClearPref(prefs::kSafeBrowsingAllowlistDomains);
   profile()->GetPrefs()->ClearPref(prefs::kPasswordProtectionChangePasswordURL);
-  EXPECT_FALSE(service_->IsURLWhitelistedForPasswordEntry(
+  EXPECT_FALSE(service_->IsURLAllowlistedForPasswordEntry(
       GURL("https://www.mydomain.com")));
   base::ListValue login_urls;
   login_urls.AppendString("https://mydomain.com/login.html");
   profile()->GetPrefs()->Set(prefs::kPasswordProtectionLoginURLs, login_urls);
-  EXPECT_TRUE(service_->IsURLWhitelistedForPasswordEntry(
+  EXPECT_TRUE(service_->IsURLAllowlistedForPasswordEntry(
       GURL("https://mydomain.com/login.html#ref?user_name=alice")));
 }
 
@@ -596,7 +596,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
   std::vector<password_manager::MatchingReusedCredential> credentials = {
       {"http://example.test"}, {"http://2.example.com"}};
 
-  EXPECT_CALL(*password_store_, AddCompromisedCredentialsImpl(_)).Times(2);
+  EXPECT_CALL(*password_store_, AddInsecureCredentialImpl(_)).Times(2);
   service_->PersistPhishedSavedPasswordCredential(credentials);
 }
 
@@ -605,13 +605,13 @@ TEST_F(ChromePasswordProtectionServiceTest,
   service_->ConfigService(/*is_incognito=*/false,
                           /*is_extended_reporting=*/true);
   std::vector<password_manager::MatchingReusedCredential> credentials = {
-      {"http://example.test", base::ASCIIToUTF16("username1")},
-      {"http://2.example.test", base::ASCIIToUTF16("username2")}};
+      {"http://example.test", u"username1"},
+      {"http://2.example.test", u"username2"}};
 
   EXPECT_CALL(*password_store_,
-              RemoveCompromisedCredentialsImpl(
+              RemoveInsecureCredentialsImpl(
                   _, _,
-                  password_manager::RemoveCompromisedCredentialsReason::
+                  password_manager::RemoveInsecureCredentialsReason::
                       kMarkSiteAsLegitimate))
       .Times(2);
   service_->RemovePhishedSavedPasswordCredential(credentials);
@@ -663,7 +663,7 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyUpdateSecurityState) {
   GURL url("http://password_reuse_url.com");
   NavigateAndCommit(url);
   SBThreatType current_threat_type = SB_THREAT_TYPE_UNUSED;
-  ASSERT_FALSE(service_->ui_manager()->IsUrlWhitelistedOrPendingForWebContents(
+  ASSERT_FALSE(service_->ui_manager()->IsUrlAllowlistedOrPendingForWebContents(
       url, false, web_contents()->GetController().GetLastCommittedEntry(),
       web_contents(), false, &current_threat_type));
   EXPECT_EQ(SB_THREAT_TYPE_UNUSED, current_threat_type);
@@ -682,7 +682,7 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyUpdateSecurityState) {
 
   service_->UpdateSecurityState(SB_THREAT_TYPE_SIGNED_IN_SYNC_PASSWORD_REUSE,
                                 reused_password_type, web_contents());
-  ASSERT_TRUE(service_->ui_manager()->IsUrlWhitelistedOrPendingForWebContents(
+  ASSERT_TRUE(service_->ui_manager()->IsUrlAllowlistedOrPendingForWebContents(
       url, false, web_contents()->GetController().GetLastCommittedEntry(),
       web_contents(), false, &current_threat_type));
   EXPECT_EQ(SB_THREAT_TYPE_SIGNED_IN_SYNC_PASSWORD_REUSE, current_threat_type);
@@ -690,7 +690,7 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyUpdateSecurityState) {
   service_->UpdateSecurityState(safe_browsing::SB_THREAT_TYPE_SAFE,
                                 reused_password_type, web_contents());
   current_threat_type = SB_THREAT_TYPE_UNUSED;
-  service_->ui_manager()->IsUrlWhitelistedOrPendingForWebContents(
+  service_->ui_manager()->IsUrlAllowlistedOrPendingForWebContents(
       url, false, web_contents()->GetController().GetLastCommittedEntry(),
       web_contents(), false, &current_threat_type);
   EXPECT_EQ(SB_THREAT_TYPE_UNUSED, current_threat_type);
@@ -717,7 +717,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
   service_->MaybeLogPasswordReuseDetectedEvent(web_contents());
   EXPECT_TRUE(GetUserEventService()->GetRecordedUserEvents().empty());
   service_->MaybeLogPasswordReuseLookupEvent(
-      web_contents(), RequestOutcome::MATCHED_WHITELIST,
+      web_contents(), RequestOutcome::MATCHED_ALLOWLIST,
       PasswordType::PRIMARY_ACCOUNT_PASSWORD, nullptr);
   EXPECT_TRUE(GetUserEventService()->GetRecordedUserEvents().empty());
 
@@ -1166,7 +1166,10 @@ TEST_F(ChromePasswordProtectionServiceTest,
                                     PASSWORD_REUSE);
   NavigateAndCommit(GURL(kPasswordReuseURL));
 
-  service_->MaybeReportPasswordReuseDetected(web_contents(), kUserName,
+  PrepareRequest(LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+                 PasswordType::SAVED_PASSWORD,
+                 /*is_warning_showing=*/false);
+  service_->MaybeReportPasswordReuseDetected(request_.get(), kUserName,
                                              PasswordType::ENTERPRISE_PASSWORD,
                                              /*is_phishing_url =*/true);
   base::RunLoop().RunUntilIdle();
@@ -1182,7 +1185,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
   // GSuite, event should be sent.
   service_->SetAccountInfo(kUserName);
   service_->SetIsAccountSignedIn(true);
-  service_->MaybeReportPasswordReuseDetected(web_contents(), kUserName,
+  service_->MaybeReportPasswordReuseDetected(request_.get(), kUserName,
                                              PasswordType::OTHER_GAIA_PASSWORD,
                                              /*is_phishing_url =*/true);
   base::RunLoop().RunUntilIdle();
@@ -1192,7 +1195,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
 
   // If no password is used , no event should be sent.
   service_->MaybeReportPasswordReuseDetected(
-      web_contents(), kUserName, PasswordType::PASSWORD_TYPE_UNKNOWN,
+      request_.get(), kUserName, PasswordType::PASSWORD_TYPE_UNKNOWN,
       /*is_phishing_url =*/true);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(2, test_event_router_->GetEventCount(
@@ -1200,7 +1203,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
 
   // If user is in incognito mode, no event should be sent.
   service_->ConfigService(true /*incognito*/, false /*SBER*/);
-  service_->MaybeReportPasswordReuseDetected(web_contents(), kUserName,
+  service_->MaybeReportPasswordReuseDetected(request_.get(), kUserName,
                                              PasswordType::ENTERPRISE_PASSWORD,
                                              /*is_phishing_url =*/true);
   base::RunLoop().RunUntilIdle();
@@ -1220,7 +1223,10 @@ TEST_F(ChromePasswordProtectionServiceTest,
                                     PASSWORD_REUSE);
   NavigateAndCommit(GURL(kPasswordReuseURL));
 
-  service_->MaybeReportPasswordReuseDetected(web_contents(), kUserName,
+  PrepareRequest(LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+                 PasswordType::SAVED_PASSWORD,
+                 /*is_warning_showing=*/false);
+  service_->MaybeReportPasswordReuseDetected(request_.get(), kUserName,
                                              PasswordType::ENTERPRISE_PASSWORD,
                                              /*is_phishing_url =*/true);
   base::RunLoop().RunUntilIdle();
@@ -1229,7 +1235,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
 
   // If user is a Gmail user and not an enterprise password is used , no event
   // should be sent.
-  service_->MaybeReportPasswordReuseDetected(web_contents(), kUserName,
+  service_->MaybeReportPasswordReuseDetected(request_.get(), kUserName,
                                              PasswordType::OTHER_GAIA_PASSWORD,
                                              /*is_phishing_url =*/true);
   base::RunLoop().RunUntilIdle();
@@ -1238,7 +1244,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
 
   // If user is a Gmail user and no password is used , no event should be sent.
   service_->MaybeReportPasswordReuseDetected(
-      web_contents(), kUserName, PasswordType::PASSWORD_TYPE_UNKNOWN,
+      request_.get(), kUserName, PasswordType::PASSWORD_TYPE_UNKNOWN,
       /*is_phishing_url =*/true);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, test_event_router_->GetEventCount(
@@ -1247,7 +1253,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
 #endif
 
 TEST_F(ChromePasswordProtectionServiceTest, VerifyGetWarningDetailTextSaved) {
-  base::string16 warning_text =
+  std::u16string warning_text =
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SAVED);
   ReusedPasswordAccountType reused_password_type;
   reused_password_type.set_account_type(
@@ -1264,7 +1270,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
       ReusedPasswordAccountType::SAVED_PASSWORD);
   std::vector<std::string> domains{"www.example.com"};
   service_->set_saved_passwords_matching_domains(domains);
-  base::string16 warning_text = l10n_util::GetStringFUTF16(
+  std::u16string warning_text = l10n_util::GetStringFUTF16(
       IDS_PAGE_INFO_CHECK_PASSWORD_DETAILS_SAVED_1_DOMAIN,
       base::UTF8ToUTF16(domains[0]));
   std::vector<size_t> placeholder_offsets;
@@ -1294,9 +1300,8 @@ TEST_F(ChromePasswordProtectionServiceTest,
   domains.push_back("amazon.com");
   service_->set_saved_passwords_matching_domains(domains);
   warning_text = l10n_util::GetStringFUTF16(
-      IDS_PAGE_INFO_CHECK_PASSWORD_DETAILS_SAVED_3_DOMAIN,
-      base::UTF8ToUTF16("amazon.com"), base::UTF8ToUTF16(domains[0]),
-      base::UTF8ToUTF16(domains[1]));
+      IDS_PAGE_INFO_CHECK_PASSWORD_DETAILS_SAVED_3_DOMAIN, u"amazon.com",
+      base::UTF8ToUTF16(domains[0]), base::UTF8ToUTF16(domains[1]));
   EXPECT_EQ(warning_text, service_->GetWarningDetailText(reused_password_type,
                                                          &placeholder_offsets));
 }
@@ -1308,8 +1313,8 @@ TEST_F(ChromePasswordProtectionServiceTest,
   domains.push_back("amazon.com");
   service_->set_saved_passwords_matching_domains(domains);
   // Default domains should be prioritzed over other domains.
-  std::vector<base::string16> expected_placeholders{
-      base::UTF8ToUTF16("amazon.com"), base::UTF8ToUTF16(domains[0]),
+  std::vector<std::u16string> expected_placeholders{
+      u"amazon.com", base::UTF8ToUTF16(domains[0]),
       base::UTF8ToUTF16(domains[1])};
   EXPECT_EQ(expected_placeholders,
             service_->GetPlaceholdersForSavedPasswordWarningText());
@@ -1317,14 +1322,14 @@ TEST_F(ChromePasswordProtectionServiceTest,
 
 TEST_F(ChromePasswordProtectionServiceTest,
        VerifyGetWarningDetailTextEnterprise) {
-  base::string16 warning_text_non_sync = l10n_util::GetStringUTF16(
+  std::u16string warning_text_non_sync = l10n_util::GetStringUTF16(
       IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SIGNED_IN_NON_SYNC);
-  base::string16 generic_enterprise_warning_text = l10n_util::GetStringUTF16(
+  std::u16string generic_enterprise_warning_text = l10n_util::GetStringUTF16(
       IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_ENTERPRISE);
-  base::string16 warning_text_with_org_name = l10n_util::GetStringFUTF16(
+  std::u16string warning_text_with_org_name = l10n_util::GetStringFUTF16(
       IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_ENTERPRISE_WITH_ORG_NAME,
-      base::UTF8ToUTF16("example.com"));
-  base::string16 warning_text_sync =
+      u"example.com");
+  std::u16string warning_text_sync =
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SYNC);
 
   ReusedPasswordAccountType reused_password_type;
@@ -1364,9 +1369,9 @@ TEST_F(ChromePasswordProtectionServiceTest,
 }
 
 TEST_F(ChromePasswordProtectionServiceTest, VerifyGetWarningDetailTextGmail) {
-  base::string16 warning_text_non_sync = l10n_util::GetStringUTF16(
+  std::u16string warning_text_non_sync = l10n_util::GetStringUTF16(
       IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SIGNED_IN_NON_SYNC);
-  base::string16 warning_text_sync =
+  std::u16string warning_text_sync =
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SYNC);
 
   base::test::ScopedFeatureList feature_list;
@@ -1386,7 +1391,7 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyGetWarningDetailTextGmail) {
 TEST_F(ChromePasswordProtectionServiceTest, VerifyCanShowInterstitial) {
   // Do not show interstitial if policy not set for password_alert.
   ASSERT_FALSE(
-      profile()->GetPrefs()->HasPrefPath(prefs::kSafeBrowsingWhitelistDomains));
+      profile()->GetPrefs()->HasPrefPath(prefs::kSafeBrowsingAllowlistDomains));
   GURL trigger_url = GURL(kPhishingURL);
   ReusedPasswordAccountType reused_password_type;
   reused_password_type.set_account_type(
@@ -1444,11 +1449,11 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyCanShowInterstitial) {
                                     PASSWORD_REUSE);
   EXPECT_TRUE(service_->CanShowInterstitial(reused_password_type, trigger_url));
 
-  // Add |trigger_url| to enterprise whitelist.
-  base::ListValue whitelisted_domains;
-  whitelisted_domains.AppendString(trigger_url.host());
-  profile()->GetPrefs()->Set(prefs::kSafeBrowsingWhitelistDomains,
-                             whitelisted_domains);
+  // Add |trigger_url| to enterprise allowlist.
+  base::ListValue allowlisted_domains;
+  allowlisted_domains.AppendString(trigger_url.host());
+  profile()->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains,
+                             allowlisted_domains);
   reused_password_type.set_account_type(
       ReusedPasswordAccountType::SAVED_PASSWORD);
   reused_password_type.set_is_account_syncing(false);
@@ -1507,17 +1512,17 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyGetPingNotSentReason) {
                   GURL("about:blank"), reused_password_type));
   }
   {
-    // Whitelisted by policy.
+    // Allowlisted by policy.
     ReusedPasswordAccountType reused_password_type;
     service_->ConfigService(false /*incognito*/, false /*SBER*/);
     reused_password_type.set_account_type(ReusedPasswordAccountType::GSUITE);
     profile()->GetPrefs()->SetInteger(prefs::kPasswordProtectionWarningTrigger,
                                       PHISHING_REUSE);
-    base::ListValue whitelist;
-    whitelist.AppendString("mydomain.com");
-    whitelist.AppendString("mydomain.net");
-    profile()->GetPrefs()->Set(prefs::kSafeBrowsingWhitelistDomains, whitelist);
-    EXPECT_EQ(RequestOutcome::MATCHED_ENTERPRISE_WHITELIST,
+    base::ListValue allowlist;
+    allowlist.AppendString("mydomain.com");
+    allowlist.AppendString("mydomain.net");
+    profile()->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains, allowlist);
+    EXPECT_EQ(RequestOutcome::MATCHED_ENTERPRISE_ALLOWLIST,
               service_->GetPingNotSentReason(
                   LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
                   GURL("https://www.mydomain.com"), reused_password_type));
@@ -1560,8 +1565,7 @@ TEST_F(ChromePasswordProtectionServiceWithAccountPasswordStoreTest,
       {.signon_realm = "http://2.example.test",
        .in_store = password_manager::PasswordForm::Store::kAccountStore}};
 
-  EXPECT_CALL(*account_password_store_, AddCompromisedCredentialsImpl(_))
-      .Times(2);
+  EXPECT_CALL(*account_password_store_, AddInsecureCredentialImpl(_)).Times(2);
   service_->PersistPhishedSavedPasswordCredential(credentials);
 }
 
@@ -1570,15 +1574,15 @@ TEST_F(ChromePasswordProtectionServiceWithAccountPasswordStoreTest,
   service_->ConfigService(/*is_incognito=*/false,
                           /*is_extended_reporting=*/true);
   std::vector<password_manager::MatchingReusedCredential> credentials = {
-      {"http://example.test", base::ASCIIToUTF16("username1"),
+      {"http://example.test", u"username1",
        password_manager::PasswordForm::Store::kAccountStore},
-      {"http://2.example.test", base::ASCIIToUTF16("username2"),
+      {"http://2.example.test", u"username2",
        password_manager::PasswordForm::Store::kAccountStore}};
 
   EXPECT_CALL(*account_password_store_,
-              RemoveCompromisedCredentialsImpl(
+              RemoveInsecureCredentialsImpl(
                   _, _,
-                  password_manager::RemoveCompromisedCredentialsReason::
+                  password_manager::RemoveInsecureCredentialsReason::
                       kMarkSiteAsLegitimate))
       .Times(2);
   service_->RemovePhishedSavedPasswordCredential(credentials);

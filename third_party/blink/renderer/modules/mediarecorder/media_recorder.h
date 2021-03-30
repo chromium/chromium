@@ -49,6 +49,7 @@ class MODULES_EXPORT MediaRecorder
   String state() const;
   uint32_t videoBitsPerSecond() const { return video_bits_per_second_; }
   uint32_t audioBitsPerSecond() const { return audio_bits_per_second_; }
+  String audioBitrateMode() const;
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(start, kStart)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(stop, kStop)

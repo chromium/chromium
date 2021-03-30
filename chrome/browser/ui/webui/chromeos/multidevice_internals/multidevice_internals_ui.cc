@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/multidevice_internals/multidevice_internals_ui.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/containers/span.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/multidevice_internals/multidevice_internals_logs_handler.h"
@@ -12,7 +13,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/multidevice_internals_resources.h"
 #include "chrome/grit/multidevice_internals_resources_map.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/web_ui_util.h"

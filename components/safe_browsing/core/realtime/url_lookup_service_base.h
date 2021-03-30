@@ -30,12 +30,6 @@ class SimpleURLLoader;
 class SharedURLLoaderFactory;
 }  // namespace network
 
-namespace syncer {
-class SyncService;
-}
-
-class PrefService;
-
 namespace safe_browsing {
 
 using RTLookupRequestCallback =
@@ -53,12 +47,8 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   explicit RealTimeUrlLookupServiceBase(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       VerdictCacheManager* cache_manager,
-      syncer::SyncService* sync_service,
-      PrefService* pref_service,
-      const ChromeUserPopulation::ProfileManagementStatus&
-          profile_management_status,
-      bool is_under_advanced_protection,
-      bool is_off_the_record);
+      base::RepeatingCallback<ChromeUserPopulation()>
+          get_user_population_callback);
   ~RealTimeUrlLookupServiceBase() override;
 
   // Returns true if |url|'s scheme can be checked.
@@ -74,8 +64,8 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // local hash-based method.
   bool IsInBackoffMode() const;
 
-  // Start the full URL lookup for |url|, call |request_callback| on the same
-  // thread when request is sent, call |response_callback| on the same thread
+  // Start the full URL lookup for |url|, call |request_callback| on the IO
+  // thread when request is sent, call |response_callback| on the IO thread
   // when response is received.
   // Note that |request_callback| is not called if there's a valid entry in the
   // cache for |url|.
@@ -121,7 +111,7 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
       base::flat_map<network::SimpleURLLoader*, RTLookupResponseCallback>;
 
   // Returns the endpoint that the URL lookup will be sent to.
-  static GURL GetRealTimeLookupUrl();
+  virtual GURL GetRealTimeLookupUrl() const = 0;
 
   // Returns the traffic annotation tag that is attached in the simple URL
   // loader.
@@ -193,8 +183,6 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // Fills in fields in |RTLookupRequest|.
   std::unique_ptr<RTLookupRequest> FillRequestProto(const GURL& url);
 
-  bool IsHistorySyncEnabled();
-
   // Count of consecutive failures to complete URL lookup requests. When it
   // reaches |kMaxFailuresToEnforceBackoff|, we enter the backoff mode. It gets
   // reset when we complete a lookup successfully or when the backoff reset
@@ -220,24 +208,11 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // Unowned object used for getting and storing real time url check cache.
   VerdictCacheManager* cache_manager_;
 
-  // Unowned object used for checking sync status of the profile.
-  syncer::SyncService* sync_service_;
-
-  // Unowned object used for getting preference settings.
-  PrefService* pref_service_;
-
-  const ChromeUserPopulation::ProfileManagementStatus
-      profile_management_status_;
-
-  // Whether the profile is enrolled in  advanced protection.
-  bool is_under_advanced_protection_;
-
-  // A boolean indicates whether the profile associated with this
-  // |url_lookup_service| is an off the record profile.
-  bool is_off_the_record_;
-
   // All requests that are sent but haven't received a response yet.
   PendingRTLookupRequests pending_requests_;
+
+  // Used to populate the ChromeUserPopulation field in requests.
+  base::RepeatingCallback<ChromeUserPopulation()> get_user_population_callback_;
 
   friend class RealTimeUrlLookupServiceTest;
   friend class ChromeEnterpriseRealTimeUrlLookupServiceTest;

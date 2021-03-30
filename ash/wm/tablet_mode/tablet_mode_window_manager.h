@@ -9,6 +9,7 @@
 
 #include <map>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -17,7 +18,6 @@
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_observer.h"
-#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -105,6 +105,8 @@ class ASH_EXPORT TabletModeWindowManager : public aura::WindowObserver,
 
  private:
   using WindowToState = std::map<aura::Window*, TabletModeWindowState*>;
+  using WindowAndStateTypeList =
+      std::vector<std::pair<aura::Window*, chromeos::WindowStateType>>;
 
   // If |from_clamshell| is true, returns the bounds or state type that |window|
   // had before tablet mode started. If |from_clamshell| is false, returns the
@@ -116,14 +118,13 @@ class ASH_EXPORT TabletModeWindowManager : public aura::WindowObserver,
 
   // Returns the windows that are going to be carried over to split view during
   // clamshell <-> tablet transition or multi-user switch transition.
-  base::flat_map<aura::Window*, chromeos::WindowStateType>
+  std::vector<std::pair<aura::Window*, chromeos::WindowStateType>>
   GetCarryOverWindowsInSplitView(bool clamshell_to_tablet) const;
 
   // Calculates the split view divider position that will best preserve the
   // bounds of the windows.
   int CalculateCarryOverDividerPosition(
-      const base::flat_map<aura::Window*, chromeos::WindowStateType>&
-          windows_in_splitview,
+      const WindowAndStateTypeList& windows_in_splitview,
       bool clamshell_to_tablet) const;
 
   // Maximizes all windows, except that snapped windows shall carry over to
@@ -136,8 +137,7 @@ class ASH_EXPORT TabletModeWindowManager : public aura::WindowObserver,
   // windows will be carried over to clamshell split view. |was_in_overview|
   // indicates whether overview is active before entering clamshell mode.
   void ArrangeWindowsForClamshellMode(
-      base::flat_map<aura::Window*, chromeos::WindowStateType>
-          windows_in_splitview,
+      WindowAndStateTypeList windows_in_splitview,
       bool was_in_overview);
 
   // If the given window should be handled by us, this function will add it to

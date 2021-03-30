@@ -215,7 +215,7 @@ void ParseFileURL(const char* url, int url_len, Parsed* parsed) {
   DoParseFileURL(url, url_len, parsed);
 }
 
-void ParseFileURL(const base::char16* url, int url_len, Parsed* parsed) {
+void ParseFileURL(const char16_t* url, int url_len, Parsed* parsed) {
   DoParseFileURL(url, url_len, parsed);
 }
 

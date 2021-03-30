@@ -113,7 +113,7 @@ public class NavigationRecorderTest {
             }
         });
 
-        mTestSetupRule.loadUrl(null);
+        mTestSetupRule.loadUrl((String) null);
         callback.waitForCallback(0);
     }
 

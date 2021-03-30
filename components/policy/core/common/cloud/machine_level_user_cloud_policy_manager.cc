@@ -63,10 +63,6 @@ void MachineLevelUserCloudPolicyManager::Connect(
     external_data_manager_->Connect(std::move(url_loader_factory));
 }
 
-bool MachineLevelUserCloudPolicyManager::IsClientRegistered() {
-  return client() && client()->is_registered();
-}
-
 void MachineLevelUserCloudPolicyManager::AddClientObserver(
     CloudPolicyClient::Observer* observer) {
   if (client())

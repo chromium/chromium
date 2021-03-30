@@ -1284,7 +1284,7 @@ namespace test {
 #include "components/url_formatter/spoof_checks/top_domains/test_domains-trie-inc.cc"
 }
 
-bool IsPunycode(const base::string16& s) {
+bool IsPunycode(const std::u16string& s) {
   return s.size() > 4 && s[0] == L'x' && s[1] == L'n' && s[2] == L'-' &&
          s[3] == L'-';
 }
@@ -1337,8 +1337,8 @@ TEST_F(IDNSpoofCheckerTest, IDNToUnicode) {
       ASSERT_EQ(unsafe_result.result, ASCIIToUTF16(kIdnCases[i].input));
     }
 
-    const base::string16 output(IDNToUnicode(kIdnCases[i].input));
-    const base::string16 expected(kIdnCases[i].expected_result == kSafe
+    const std::u16string output(IDNToUnicode(kIdnCases[i].input));
+    const std::u16string expected(kIdnCases[i].expected_result == kSafe
                                       ? WideToUTF16(kIdnCases[i].unicode_output)
                                       : ASCIIToUTF16(kIdnCases[i].input));
     EXPECT_EQ(expected, output)

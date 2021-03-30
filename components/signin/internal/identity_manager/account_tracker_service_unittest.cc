@@ -356,15 +356,8 @@ class AccountTrackerServiceTest : public testing::Test {
   }
 
   void DeleteAccountTracker() {
-    if (account_fetcher_) {
-      account_fetcher_->Shutdown();
-      account_fetcher_.reset();
-    }
-
-    if (account_tracker_) {
-      account_tracker_->Shutdown();
-      account_tracker_.reset();
-    }
+    account_fetcher_.reset();
+    account_tracker_.reset();
     // Allow residual |account_tracker_| posted tasks to run.
     task_environment_.RunUntilIdle();
   }
@@ -443,6 +436,7 @@ TEST_F(AccountTrackerServiceTest, TokenAvailable_Revoked) {
 }
 
 TEST_F(AccountTrackerServiceTest, TokenAvailable_UserInfo_ImageSuccess) {
+  base::HistogramTester histogram_tester;
   SimulateTokenAvailable(kAccountKeyAlpha);
   ReturnAccountInfoFetchSuccess(kAccountKeyAlpha);
   EXPECT_TRUE(account_fetcher()->IsAllUserInfoFetched());
@@ -467,9 +461,14 @@ TEST_F(AccountTrackerServiceTest, TokenAvailable_UserInfo_ImageSuccess) {
   EXPECT_FALSE(account_info.account_image.IsEmpty());
   EXPECT_EQ(account_info.last_downloaded_image_url_with_size,
             AccountKeyToPictureURLWithSize(kAccountKeyAlpha));
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountFetcher.AccountUserInfoFetchTime", 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountFetcher.AccountAvatarFetchTime", 1);
 }
 
 TEST_F(AccountTrackerServiceTest, TokenAvailable_UserInfo_ImageFailure) {
+  base::HistogramTester histogram_tester;
   SimulateTokenAvailable(kAccountKeyAlpha);
   ReturnAccountInfoFetchSuccess(kAccountKeyAlpha);
   EXPECT_TRUE(account_fetcher()->IsAllUserInfoFetched());
@@ -488,6 +487,10 @@ TEST_F(AccountTrackerServiceTest, TokenAvailable_UserInfo_ImageFailure) {
       AccountKeyToAccountId(kAccountKeyAlpha));
   EXPECT_TRUE(account_info.account_image.IsEmpty());
   EXPECT_TRUE(account_info.last_downloaded_image_url_with_size.empty());
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountFetcher.AccountUserInfoFetchTime", 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountFetcher.AccountAvatarFetchTime", 0);
 }
 
 TEST_F(AccountTrackerServiceTest, TokenAvailable_UserInfo_Revoked) {
@@ -508,10 +511,15 @@ TEST_F(AccountTrackerServiceTest, TokenAvailable_UserInfo_Revoked) {
 }
 
 TEST_F(AccountTrackerServiceTest, TokenAvailable_UserInfoFailed) {
+  base::HistogramTester histogram_tester;
   SimulateTokenAvailable(kAccountKeyAlpha);
   ReturnAccountInfoFetchFailure(kAccountKeyAlpha);
   EXPECT_TRUE(account_fetcher()->IsAllUserInfoFetched());
   EXPECT_TRUE(CheckAccountTrackerEvents({}));
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountFetcher.AccountInfoFetchTime", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.AccountFetcher.AccountAvatarFetchTime", 0);
 }
 
 TEST_F(AccountTrackerServiceTest, TokenAvailableTwice_UserInfoOnce) {

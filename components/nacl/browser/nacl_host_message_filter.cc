@@ -53,15 +53,12 @@ ppapi::PpapiPermissions GetNaClPermissions(
   return ppapi::PpapiPermissions::GetForCommandLine(nacl_permissions);
 }
 
-ppapi::PpapiPermissions GetPpapiPermissions(uint32_t permission_bits,
-                                            int render_process_id,
-                                            int render_view_id) {
+ppapi::PpapiPermissions GetPpapiPermissions(
+    uint32_t permission_bits,
+    content::RenderFrameHost* frame_host) {
   // We get the URL from WebContents from the RenderViewHost, since we don't
   // have a BrowserPpapiHost yet.
-  content::RenderProcessHost* host =
-      content::RenderProcessHost::FromID(render_process_id);
-  content::RenderViewHost* view_host =
-      content::RenderViewHost::FromID(render_process_id, render_view_id);
+  content::RenderViewHost* view_host = frame_host->GetRenderViewHost();
   if (!view_host)
     return ppapi::PpapiPermissions();
   GURL document_url;
@@ -69,8 +66,7 @@ ppapi::PpapiPermissions GetPpapiPermissions(uint32_t permission_bits,
       content::WebContents::FromRenderViewHost(view_host);
   if (contents)
     document_url = contents->GetLastCommittedURL();
-  return GetNaClPermissions(permission_bits,
-                            host->GetBrowserContext(),
+  return GetNaClPermissions(permission_bits, frame_host->GetBrowserContext(),
                             document_url);
 }
 
@@ -147,7 +143,7 @@ void NaClHostMessageFilter::OnLaunchNaCl(
 
   // If we're running llc or ld for the PNaCl translator, we don't need to look
   // up permissions, and we don't have the right browser state to look up some
-  // of the whitelisting parameters anyway.
+  // of the allowed parameters anyway.
   if (launch_params.process_type == kPNaClTranslatorProcessType) {
     uint32_t perms = launch_params.permission_bits & ppapi::PERMISSION_DEV;
     content::GetIOThreadTaskRunner({})->PostTask(
@@ -170,19 +166,17 @@ void NaClHostMessageFilter::LaunchNaClContinuation(
     NaClBrowserDelegate::MapUrlToLocalFilePathCallback map_url_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  ppapi::PpapiPermissions permissions =
-      GetPpapiPermissions(launch_params.permission_bits,
-                          render_process_id_,
-                          launch_params.render_view_id);
-
-  content::RenderViewHost* rvh = content::RenderViewHost::FromID(
-      render_process_id(), launch_params.render_view_id);
-  if (!rvh) {
+  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
+      render_process_id(), launch_params.render_frame_id);
+  if (!rfh) {
     bad_message::ReceivedBadMessage(
         this, bad_message::NHMF_LAUNCH_CONTINUATION_BAD_ROUTING_ID);
     delete reply_msg;
     return;
   }
+
+  ppapi::PpapiPermissions permissions =
+      GetPpapiPermissions(launch_params.permission_bits, rfh);
 
   nacl::NaClLaunchParams safe_launch_params(launch_params);
   safe_launch_params.resource_prefetch_request_list.clear();
@@ -192,15 +186,15 @@ void NaClHostMessageFilter::LaunchNaClContinuation(
 #if !defined(OS_WIN)
   const std::vector<NaClResourcePrefetchRequest>& original_request_list =
       launch_params.resource_prefetch_request_list;
-  content::SiteInstance* site_instance = rvh->GetSiteInstance();
-  for (size_t i = 0; i < original_request_list.size(); ++i) {
-    GURL gurl(original_request_list[i].resource_url);
+  content::SiteInstance* site_instance = rfh->GetSiteInstance();
+  for (const auto& original_request : original_request_list) {
+    GURL gurl(original_request.resource_url);
     // Important security check: Do the same check as OpenNaClExecutable()
     // in nacl_file_host.cc.
     if (!site_instance->IsSameSiteWithURL(gurl))
       continue;
     safe_launch_params.resource_prefetch_request_list.push_back(
-        original_request_list[i]);
+        original_request);
   }
 #endif
 
@@ -362,16 +356,12 @@ void NaClHostMessageFilter::OnMissingArchError(int render_view_id) {
       ShowMissingArchInfobar(render_process_id_, render_view_id);
 }
 
-void NaClHostMessageFilter::OnOpenNaClExecutable(
-    int render_view_id,
-    const GURL& file_url,
-    bool enable_validation_caching,
-    IPC::Message* reply_msg) {
-  nacl_file_host::OpenNaClExecutable(this,
-                                     render_view_id,
-                                     file_url,
-                                     enable_validation_caching,
-                                     reply_msg);
+void NaClHostMessageFilter::OnOpenNaClExecutable(int render_frame_id,
+                                                 const GURL& file_url,
+                                                 bool enable_validation_caching,
+                                                 IPC::Message* reply_msg) {
+  nacl_file_host::OpenNaClExecutable(this, render_frame_id, file_url,
+                                     enable_validation_caching, reply_msg);
 }
 
 void NaClHostMessageFilter::OnNaClDebugEnabledForURL(const GURL& nmf_url,

@@ -7,8 +7,8 @@
 #include <memory>
 #include <string>
 
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/wilco_dtc_supportd/wilco_dtc_supportd_client.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/grit/generated_resources.h"
@@ -73,7 +73,7 @@ class WilcoDtcSupportdNotificationControllerTest
     ProfileHelper::Get()->SetActiveUserIdForTesting(kProfileName);
 
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<chromeos::FakeChromeUserManager>());
+        std::make_unique<FakeChromeUserManager>());
 
     auto account = AccountId::FromUserEmail(kProfileName);
     GetFakeUserManager()->AddUser(account);
@@ -109,8 +109,8 @@ class WilcoDtcSupportdNotificationControllerTest
   }
 
  private:
-  chromeos::FakeChromeUserManager* GetFakeUserManager() {
-    return static_cast<chromeos::FakeChromeUserManager*>(
+  FakeChromeUserManager* GetFakeUserManager() {
+    return static_cast<FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
 

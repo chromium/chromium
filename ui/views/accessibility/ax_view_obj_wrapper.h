@@ -7,9 +7,10 @@
 
 #include <stdint.h>
 
+#include <string>
 #include <vector>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/views/accessibility/ax_aura_obj_wrapper.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
@@ -29,11 +30,10 @@ class AXViewObjWrapper : public AXAuraObjWrapper, public ViewObserver {
   View* view() { return view_; }
 
   // AXAuraObjWrapper overrides.
-  bool IsIgnored() override;
   AXAuraObjWrapper* GetParent() override;
   void GetChildren(std::vector<AXAuraObjWrapper*>* out_children) override;
   void Serialize(ui::AXNodeData* out_node_data) override;
-  int32_t GetUniqueId() const final;
+  ui::AXNodeID GetUniqueId() const final;
   bool HandleAccessibleAction(const ui::AXActionData& action) override;
   std::string ToString() const override;
 
@@ -43,7 +43,7 @@ class AXViewObjWrapper : public AXAuraObjWrapper, public ViewObserver {
  private:
   View* view_;
 
-  ScopedObserver<View, ViewObserver> observer_{this};
+  base::ScopedObservation<View, ViewObserver> observation_{this};
 };
 
 }  // namespace views

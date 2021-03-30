@@ -173,6 +173,7 @@ void CSSSelectorWatch::WatchCSSSelectors(const Vector<String>& selectors) {
 
 void CSSSelectorWatch::Trace(Visitor* visitor) const {
   visitor->Trace(watched_callback_selectors_);
+  visitor->Trace(callback_selector_change_timer_);
   Supplement<Document>::Trace(visitor);
 }
 

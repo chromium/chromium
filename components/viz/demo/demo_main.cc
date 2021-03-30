@@ -168,8 +168,8 @@ class DemoWindow : public ui::PlatformWindowDelegate {
   }
 
   // ui::PlatformWindowDelegate:
-  void OnBoundsChanged(const gfx::Rect& new_bounds) override {
-    host_->Resize(new_bounds.size());
+  void OnBoundsChanged(const BoundsChange& bounds) override {
+    host_->Resize(bounds.bounds.size());
   }
 
   void OnAcceleratedWidgetAvailable(gfx::AcceleratedWidget widget) override {

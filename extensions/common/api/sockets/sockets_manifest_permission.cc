@@ -18,6 +18,8 @@
 #include "ipc/ipc_message.h"
 #include "ui/base/l10n/l10n_util.h"
 
+using extensions::mojom::APIPermissionID;
+
 namespace extensions {
 
 namespace sockets_errors {
@@ -34,7 +36,7 @@ static bool ParseHostPattern(
     SocketsManifestPermission* permission,
     content::SocketPermissionRequest::OperationType operation_type,
     const std::string& host_pattern,
-    base::string16* error) {
+    std::u16string* error) {
   SocketPermissionEntry entry;
   if (!SocketPermissionEntry::ParseHostPattern(
           operation_type, host_pattern, &entry)) {
@@ -50,7 +52,7 @@ static bool ParseHostPatterns(
     SocketsManifestPermission* permission,
     content::SocketPermissionRequest::OperationType operation_type,
     const std::unique_ptr<SocketHostPatterns>& host_patterns,
-    base::string16* error) {
+    std::u16string* error) {
   if (!host_patterns)
     return true;
 
@@ -93,7 +95,7 @@ bool AddAnyHostMessage(const SocketPermissionEntrySet& sockets,
   for (const auto& socket : sockets) {
     if (socket.IsAddressBoundType() &&
         socket.GetHostType() == SocketPermissionEntry::ANY_HOST) {
-      ids->insert(APIPermission::kSocketAnyHost);
+      ids->insert(APIPermissionID::kSocketAnyHost);
       return true;
     }
   }
@@ -104,14 +106,14 @@ bool AddAnyHostMessage(const SocketPermissionEntrySet& sockets,
 // messages are needed from |sockets|, and adds permissions to |ids|.
 void AddSubdomainHostMessage(const SocketPermissionEntrySet& sockets,
                              PermissionIDSet* ids) {
-  std::set<base::string16> domains;
+  std::set<std::u16string> domains;
   for (const auto& socket : sockets) {
     if (socket.GetHostType() == SocketPermissionEntry::HOSTS_IN_DOMAINS)
       domains.insert(base::UTF8ToUTF16(socket.pattern().host));
   }
   if (!domains.empty()) {
     for (const auto& domain : domains)
-      ids->insert(APIPermission::kSocketDomainHosts, domain);
+      ids->insert(APIPermissionID::kSocketDomainHosts, domain);
   }
 }
 
@@ -119,14 +121,14 @@ void AddSubdomainHostMessage(const SocketPermissionEntrySet& sockets,
 // messages are needed from |sockets|, and adds permissions to |ids|.
 void AddSpecificHostMessage(const SocketPermissionEntrySet& sockets,
                             PermissionIDSet* ids) {
-  std::set<base::string16> hostnames;
+  std::set<std::u16string> hostnames;
   for (const auto& socket : sockets) {
     if (socket.GetHostType() == SocketPermissionEntry::SPECIFIC_HOSTS)
       hostnames.insert(base::UTF8ToUTF16(socket.pattern().host));
   }
   if (!hostnames.empty()) {
     for (const auto& hostname : hostnames)
-      ids->insert(APIPermission::kSocketSpecificHosts, hostname);
+      ids->insert(APIPermissionID::kSocketSpecificHosts, hostname);
   }
 }
 
@@ -136,7 +138,7 @@ void AddNetworkListMessage(const SocketPermissionEntrySet& sockets,
                            PermissionIDSet* ids) {
   for (const auto& socket : sockets) {
     if (socket.pattern().type == SocketPermissionRequest::NETWORK_STATE) {
-      ids->insert(APIPermission::kNetworkState);
+      ids->insert(APIPermissionID::kNetworkState);
     }
   }
 }
@@ -150,7 +152,7 @@ SocketsManifestPermission::~SocketsManifestPermission() {}
 // static
 std::unique_ptr<SocketsManifestPermission> SocketsManifestPermission::FromValue(
     const base::Value& value,
-    base::string16* error) {
+    std::u16string* error) {
   std::unique_ptr<Sockets> sockets = Sockets::FromValue(value, error);
   if (!sockets)
     return std::unique_ptr<SocketsManifestPermission>();
@@ -221,7 +223,7 @@ PermissionIDSet SocketsManifestPermission::GetPermissions() const {
 bool SocketsManifestPermission::FromValue(const base::Value* value) {
   if (!value)
     return false;
-  base::string16 error;
+  std::u16string error;
   std::unique_ptr<SocketsManifestPermission> manifest_permission(
       SocketsManifestPermission::FromValue(*value, &error));
 

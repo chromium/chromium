@@ -6,6 +6,7 @@
 
 #include "base/numerics/ranges.h"
 #include "chrome/browser/vr/input_event.h"
+#include "ui/gfx/animation/keyframe/transition.h"
 
 namespace vr {
 
@@ -100,8 +101,8 @@ void ScrollableElement::AddScrollingChild(std::unique_ptr<UiElement> child) {
 
 void ScrollableElement::OnScrollBegin(std::unique_ptr<InputEvent> gesture,
                                       const gfx::PointF& position) {
-  cached_transition_ = animation().transition();
-  animation().set_transition(Transition());
+  cached_transition_ = animator().transition();
+  animator().set_transition(gfx::Transition());
 }
 
 void ScrollableElement::OnScrollUpdate(std::unique_ptr<InputEvent> gesture,
@@ -118,7 +119,7 @@ void ScrollableElement::OnScrollUpdate(std::unique_ptr<InputEvent> gesture,
 
 void ScrollableElement::OnScrollEnd(std::unique_ptr<InputEvent> gesture,
                                     const gfx::PointF& position) {
-  animation().set_transition(cached_transition_);
+  animator().set_transition(cached_transition_);
 }
 
 }  // namespace vr

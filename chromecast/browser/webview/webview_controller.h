@@ -28,6 +28,7 @@ class NavigationThrottle;
 namespace chromecast {
 
 class WebviewNavigationThrottle;
+class WebviewTest;
 
 // This owns a WebContents and CastWebContents and processes proto commands
 // to allow the web contents to be controlled and embedded.
@@ -36,6 +37,9 @@ class WebviewController : public CastWebContents::Delegate,
                           public WebContentController {
  public:
   WebviewController(content::BrowserContext* browser_context,
+                    Client* client,
+                    bool enabled_for_dev);
+  WebviewController(std::unique_ptr<content::BrowserContext> browser_context,
                     Client* client,
                     bool enabled_for_dev);
   ~WebviewController() override;
@@ -62,9 +66,15 @@ class WebviewController : public CastWebContents::Delegate,
   void OnNavigationThrottleDestroyed(WebviewNavigationThrottle* throttle);
 
  protected:
+  FRIEND_TEST_ALL_PREFIXES(WebviewTest, SetInsets);
+  FRIEND_TEST_ALL_PREFIXES(WebviewTest, UserDataOverrideOnFirstRequest);
+  FRIEND_TEST_ALL_PREFIXES(WebviewTest, UserDataOverride);
+  FRIEND_TEST_ALL_PREFIXES(WebviewTest, VerifyNavigationDelegation);
+
   content::WebContents* GetWebContents() override;
 
  private:
+  void HandleLoadUrl(const webview::NavigateRequest& request);
   void HandleUpdateSettings(const webview::UpdateSettingsRequest& request);
   void HandleSetAutoMediaPlaybackPolicy(
       const webview::SetAutoMediaPlaybackPolicyRequest& request);
@@ -81,6 +91,10 @@ class WebviewController : public CastWebContents::Delegate,
 
   // content::WebContentsObserver
   void DidFirstVisuallyNonEmptyPaint() override;
+
+  // BrowserContext instances must outlive their WebContents, so destroy this
+  // last.
+  std::unique_ptr<content::BrowserContext> owned_context_;
 
   const bool enabled_for_dev_;
   std::unique_ptr<content::WebContents> contents_;

@@ -11,6 +11,8 @@ from gpu_tests import common_browser_args as cba
 from gpu_tests import gpu_integration_test
 from gpu_tests import path_util
 
+_GPU_PAGE_TIMEOUT = 30
+
 data_path = os.path.join(path_util.GetChromiumSrcDir(), 'content', 'test',
                          'data')
 
@@ -43,7 +45,8 @@ def _GetBrowserBridgeProperty(tab, path):
   """The GPU WebUI uses JS modules and may not have initialized the global
     browserBridge object by the time we can start injecting JavaScript. This
     ensures we don't have that problem."""
-  tab.WaitForJavaScriptCondition('window.gpuPagePopulated', timeout=10)
+  tab.WaitForJavaScriptCondition('window.gpuPagePopulated',
+                                 timeout=_GPU_PAGE_TIMEOUT)
   return tab.EvaluateJavaScript('browserBridge.' + path)
 
 
@@ -119,7 +122,9 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
               'gpu/functional_blank.html'), ('GpuProcess_swiftshader_for_webgl',
                                              'gpu/functional_webgl.html'),
              ('GpuProcess_webgl_disabled_extension',
-              'gpu/functional_webgl_disabled_extension.html'))
+              'gpu/functional_webgl_disabled_extension.html'),
+             ('GpuProcess_webgpu_iframe_removed',
+              'gpu/webgpu-iframe-removed.html'))
 
     for t in tests:
       yield (t[0], t[1], ('_' + t[0]))
@@ -274,7 +279,8 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     self.RestartBrowserIfNecessaryWithArgs(
         ['--use_gpu_driver_workaround_for_testing'])
     self._Navigate(test_path)
-    self.tab.WaitForJavaScriptCondition('window.gpuPagePopulated', timeout=10)
+    self.tab.WaitForJavaScriptCondition('window.gpuPagePopulated',
+                                        timeout=_GPU_PAGE_TIMEOUT)
     self._ValidateDriverBugWorkarounds('use_gpu_driver_workaround_for_testing',
                                        None)
 
@@ -330,7 +336,8 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     self.RestartBrowserIfNecessaryWithArgs([])
     self._Navigate(test_path)
     self._VerifyGpuProcessPresent()
-    self.tab.WaitForJavaScriptCondition('window.gpuPagePopulated', timeout=10)
+    self.tab.WaitForJavaScriptCondition('window.gpuPagePopulated',
+                                        timeout=_GPU_PAGE_TIMEOUT)
     recorded_workarounds, recorded_disabled_gl_extensions = (
         self._CompareAndCaptureDriverBugWorkarounds())
     # Relaunch the browser enabling test group 1 with entry 215, where
@@ -343,7 +350,8 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     self.RestartBrowserIfNecessaryWithArgs(additional_args)
     self._Navigate(test_path)
     self._VerifyGpuProcessPresent()
-    self.tab.WaitForJavaScriptCondition('window.gpuPagePopulated', timeout=10)
+    self.tab.WaitForJavaScriptCondition('window.gpuPagePopulated',
+                                        timeout=_GPU_PAGE_TIMEOUT)
     new_workarounds, new_disabled_gl_extensions = (
         self._CompareAndCaptureDriverBugWorkarounds())
     diff = set(recorded_workarounds).symmetric_difference(new_workarounds)
@@ -404,7 +412,8 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         '--use_gpu_driver_workaround_for_testing=0'
     ])
     self._Navigate(test_path)
-    self.tab.WaitForJavaScriptCondition('window.gpuPagePopulated', timeout=10)
+    self.tab.WaitForJavaScriptCondition('window.gpuPagePopulated',
+                                        timeout=_GPU_PAGE_TIMEOUT)
     workarounds, _ = (self._CompareAndCaptureDriverBugWorkarounds())
     if 'use_gpu_driver_workaround_for_testing' in workarounds:
       self.fail('use_gpu_driver_workaround_for_testing erroneously present')
@@ -586,6 +595,12 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       self.fail(
           'Backgrounded high-performance WebGL context did not release the '
           'hold on the high-performance GPU')
+
+  def _GpuProcess_webgpu_iframe_removed(self, test_path):
+    self.RestartBrowserIfNecessaryWithArgs([
+        '--enable-unsafe-webgpu',
+    ])
+    self._NavigateAndWait(test_path)
 
   @classmethod
   def ExpectationsFiles(cls):

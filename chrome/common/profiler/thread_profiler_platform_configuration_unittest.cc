@@ -12,6 +12,10 @@
 #include "components/version_info/version_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if defined(OS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 #if (defined(OS_WIN) && defined(ARCH_CPU_X86_64)) || \
     (defined(OS_MAC) && defined(ARCH_CPU_X86_64)) || \
     (defined(OS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE))
@@ -79,13 +83,24 @@ TEST_F(ThreadProfilerPlatformConfigurationTest, IsSupported) {
 
   EXPECT_FALSE(config()->IsSupported(base::nullopt));
 #else
+#if defined(OS_MAC)
+  // Sampling profiler does not work on macOS 11.0 yet:
+  // https://crbug.com/1101399
+  const bool on_canary = base::mac::IsAtMostOS10_15();
+  const bool on_dev = base::mac::IsAtMostOS10_15();
+  const bool on_default = base::mac::IsAtMostOS10_15();
+#else
+  const bool on_canary = true;
+  const bool on_dev = true;
+  const bool on_default = true;
+#endif
   EXPECT_FALSE(config()->IsSupported(version_info::Channel::UNKNOWN));
-  EXPECT_TRUE(config()->IsSupported(version_info::Channel::CANARY));
-  EXPECT_TRUE(config()->IsSupported(version_info::Channel::DEV));
+  EXPECT_EQ(on_canary, config()->IsSupported(version_info::Channel::CANARY));
+  EXPECT_EQ(on_dev, config()->IsSupported(version_info::Channel::DEV));
   EXPECT_FALSE(config()->IsSupported(version_info::Channel::BETA));
   EXPECT_FALSE(config()->IsSupported(version_info::Channel::STABLE));
 
-  EXPECT_TRUE(config()->IsSupported(base::nullopt));
+  EXPECT_EQ(on_default, config()->IsSupported(base::nullopt));
 #endif
 }
 

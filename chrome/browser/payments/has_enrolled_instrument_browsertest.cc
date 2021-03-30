@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_P(HasEnrolledInstrumentTest, InvalidCardNumber) {
   AddAutofillProfile(address);
   autofill::CreditCard card = CreatCreditCardForProfile(address);
   card.SetRawInfo(autofill::ServerFieldType::CREDIT_CARD_NUMBER,
-                  base::ASCIIToUTF16("1111111111111111"));
+                  u"1111111111111111");
   AddCreditCard(card);
 
   ExpectHasEnrolledInstrumentIs(false);
@@ -163,12 +163,15 @@ IN_PROC_BROWSER_TEST_P(HasEnrolledInstrumentTest, ExpiredCard) {
 IN_PROC_BROWSER_TEST_P(HasEnrolledInstrumentTest,
                        HaveNoNameShippingAndBillingAddress) {
   autofill::AutofillProfile address = autofill::test::GetFullProfile();
-  address.SetRawInfo(autofill::ServerFieldType::NAME_FIRST, base::string16());
-  address.SetRawInfo(autofill::ServerFieldType::NAME_MIDDLE, base::string16());
-  address.SetRawInfo(autofill::ServerFieldType::NAME_LAST, base::string16());
-  // For structured names, it is neccessary to explicitely reset the full name.
-  address.SetInfo(autofill::ServerFieldType::NAME_FULL, base::string16(),
+  address.SetRawInfo(autofill::ServerFieldType::NAME_FIRST, std::u16string());
+  address.SetRawInfo(autofill::ServerFieldType::NAME_MIDDLE, std::u16string());
+  address.SetRawInfo(autofill::ServerFieldType::NAME_LAST, std::u16string());
+  // For structured names, it is necessary to explicitly reset the full name
+  // and the full name with the prefix.
+  address.SetInfo(autofill::ServerFieldType::NAME_FULL, std::u16string(),
                   "en-US");
+  address.SetInfo(autofill::ServerFieldType::NAME_FULL_WITH_HONORIFIC_PREFIX,
+                  std::u16string(), "en-US");
   AddAutofillProfile(address);
   CreateAndAddCreditCardForProfile(address);
 
@@ -211,7 +214,7 @@ IN_PROC_BROWSER_TEST_P(HasEnrolledInstrumentTest,
                        HaveNoStreetShippingAndBillingAddress) {
   autofill::AutofillProfile address = autofill::test::GetFullProfile();
   address.SetRawInfo(autofill::ServerFieldType::ADDRESS_HOME_STREET_ADDRESS,
-                     base::string16());
+                     std::u16string());
   AddAutofillProfile(address);
   CreateAndAddCreditCardForProfile(address);
 
@@ -222,7 +225,7 @@ IN_PROC_BROWSER_TEST_P(HasEnrolledInstrumentTest,
 IN_PROC_BROWSER_TEST_P(HasEnrolledInstrumentTest, NoEmailAddress) {
   autofill::AutofillProfile address = autofill::test::GetFullProfile();
   address.SetRawInfo(autofill::ServerFieldType::EMAIL_ADDRESS,
-                     base::string16());
+                     std::u16string());
   AddAutofillProfile(address);
   CreateAndAddCreditCardForProfile(address);
 
@@ -246,7 +249,7 @@ IN_PROC_BROWSER_TEST_P(HasEnrolledInstrumentTest, NoEmailAddress) {
 IN_PROC_BROWSER_TEST_P(HasEnrolledInstrumentTest, InvalidEmailAddress) {
   autofill::AutofillProfile address = autofill::test::GetFullProfile();
   address.SetRawInfo(autofill::ServerFieldType::EMAIL_ADDRESS,
-                     base::ASCIIToUTF16("this-is-not-a-valid-email-address"));
+                     u"this-is-not-a-valid-email-address");
   AddAutofillProfile(address);
   CreateAndAddCreditCardForProfile(address);
 

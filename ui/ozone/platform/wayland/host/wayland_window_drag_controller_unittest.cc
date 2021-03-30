@@ -10,12 +10,14 @@
 
 #include <cstdint>
 
+#include "base/bind.h"
 #include "base/notreached.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device.h"
 #include "ui/ozone/platform/wayland/host/wayland_screen.h"
@@ -30,7 +32,7 @@
 #include "ui/ozone/platform/wayland/test/test_data_offer.h"
 #include "ui/ozone/platform/wayland/test/test_data_source.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
-#include "ui/ozone/platform/wayland/test/wayland_test.h"
+#include "ui/ozone/platform/wayland/test/wayland_drag_drop_test.h"
 #include "ui/ozone/test/mock_platform_window_delegate.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
 #include "ui/platform_window/platform_window_delegate.h"
@@ -41,14 +43,14 @@ using testing::Mock;
 
 namespace ui {
 
-class WaylandWindowDragControllerTest : public WaylandTest,
-                                        public wl::TestDataDevice::Delegate {
+class WaylandWindowDragControllerTest : public WaylandDragDropTest {
  public:
   WaylandWindowDragControllerTest() = default;
   ~WaylandWindowDragControllerTest() override = default;
 
   void SetUp() override {
-    WaylandTest::SetUp();
+    WaylandDragDropTest::SetUp();
+
     screen_ = std::make_unique<WaylandScreen>(connection_.get());
 
     wl_seat_send_capabilities(server_.seat()->resource(),
@@ -59,16 +61,6 @@ class WaylandWindowDragControllerTest : public WaylandTest,
 
     EXPECT_FALSE(window_->has_pointer_focus());
     EXPECT_EQ(State::kIdle, drag_controller()->state());
-
-    data_device_manager_ = server_.data_device_manager();
-    DCHECK(data_device_manager_);
-
-    source_ = nullptr;
-    data_device_manager_->data_device()->set_delegate(this);
-  }
-
-  void TearDown() override {
-    data_device_manager_->data_device()->set_delegate(nullptr);
   }
 
   WaylandWindowDragController* drag_controller() const {
@@ -79,51 +71,10 @@ class WaylandWindowDragControllerTest : public WaylandTest,
     return connection_->wayland_window_manager();
   }
 
-  uint32_t NextSerial() const {
-    static uint32_t serial = 0;
-    return ++serial;
-  }
-
-  uint32_t NextTime() const {
-    static uint32_t timestamp = 0;
-    return ++timestamp;
-  }
+  MockPlatformWindowDelegate& delegate() { return delegate_; }
 
  protected:
   using State = WaylandWindowDragController::State;
-
-  // wl::TestDataDevice::Delegate:
-  void StartDrag(wl::TestDataSource* source,
-                 wl::MockSurface* origin,
-                 uint32_t serial) override {
-    EXPECT_FALSE(source_);
-    source_ = source;
-    OfferAndEnter(origin);
-  }
-
-  // Helper functions
-  void SendDndMotion(const gfx::Point& location) {
-    EXPECT_TRUE(source_);
-    wl_fixed_t x = wl_fixed_from_int(location.x());
-    wl_fixed_t y = wl_fixed_from_int(location.y());
-    data_device_manager_->data_device()->OnMotion(NextTime(), x, y);
-  }
-
-  void SendDndEnter(WaylandWindow* window) {
-    EXPECT_TRUE(window);
-    OfferAndEnter(server_.GetObject<wl::MockSurface>(
-        window->root_surface()->GetSurfaceId()));
-  }
-
-  void SendDndLeave() {
-    EXPECT_TRUE(source_);
-    data_device_manager_->data_device()->OnLeave();
-  }
-
-  void SendDndDrop() {
-    EXPECT_TRUE(source_);
-    source_->OnCancelled();
-  }
 
   void SendPointerEnter(WaylandWindow* window,
                         MockPlatformWindowDelegate* delegate) {
@@ -181,24 +132,17 @@ class WaylandWindowDragControllerTest : public WaylandTest,
               screen_->GetLocalProcessWidgetAtPoint(location, {}));
   }
 
-  void OfferAndEnter(wl::MockSurface* surface) {
-    EXPECT_TRUE(source_);
-    auto* data_device = data_device_manager_->data_device();
-    auto* offer = data_device->OnDataOffer();
-    EXPECT_EQ(1u, source_->mime_types().size());
-    for (const auto& mime_type : source_->mime_types())
-      offer->OnOffer(mime_type, {});
-
-    wl_data_device_send_enter(data_device->resource(), NextSerial(),
-                              surface->resource(), 0, 0, offer->resource());
-  }
+  // For the context of window drag, "drop" is detected through
+  // wl_data_source::cancelled in the regular case. Unless extended-drag
+  // protocol is available.
+  //
+  // TODO(crbug.com/1116431): Support extended-drag in test compositor.
+  void SendDndDrop() { SendDndCancelled(); }
 
   // client objects
   std::unique_ptr<WaylandScreen> screen_;
 
   // server objects
-  wl::TestDataDeviceManager* data_device_manager_;
-  wl::TestDataSource* source_;
   wl::MockPointer* pointer_;
 };
 
@@ -266,10 +210,10 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop) {
   });
 
   EXPECT_CALL(delegate_, OnBoundsChanged(_))
-      .WillOnce([&](const gfx::Rect& bounds) {
+      .WillOnce([&](const PlatformWindowDelegate::BoundsChange& bounds) {
         EXPECT_EQ(State::kDetached, drag_controller()->state());
         EXPECT_EQ(kDragging, test_step);
-        EXPECT_EQ(gfx::Point(20, 20), bounds.origin());
+        EXPECT_EQ(gfx::Point(20, 20), bounds.bounds.origin());
 
         SendDndDrop();
         test_step = kDropping;
@@ -356,10 +300,10 @@ TEST_P(WaylandWindowDragControllerTest, DragExitWindowAndDrop) {
   });
 
   EXPECT_CALL(delegate_, OnBoundsChanged(_))
-      .WillOnce([&](const gfx::Rect& bounds) {
+      .WillOnce([&](const PlatformWindowDelegate::BoundsChange& bounds) {
         EXPECT_EQ(State::kDetached, drag_controller()->state());
         EXPECT_EQ(kDragging, test_step);
-        EXPECT_EQ(gfx::Point(20, 20), bounds.origin());
+        EXPECT_EQ(gfx::Point(20, 20), bounds.bounds.origin());
 
         SendDndLeave();
         SendDndDrop();
@@ -464,14 +408,14 @@ TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop) {
   });
 
   EXPECT_CALL(delegate_, OnBoundsChanged(_))
-      .WillOnce([&](const gfx::Rect& bounds) {
+      .WillOnce([&](const PlatformWindowDelegate::BoundsChange& bounds) {
         EXPECT_EQ(State::kDetached, drag_controller()->state());
         EXPECT_EQ(kDragging, test_step);
-        EXPECT_EQ(gfx::Point(50, 50), bounds.origin());
+        EXPECT_EQ(gfx::Point(50, 50), bounds.bounds.origin());
 
         // Exit |source_window| and enter the |target_window|.
         SendDndLeave();
-        SendDndEnter(target_window);
+        SendDndEnter(target_window, {});
         test_step = kEnteredTarget;
       });
 
@@ -586,7 +530,7 @@ TEST_P(WaylandWindowDragControllerTest, RestoreDuringWindowDragSession) {
   wl::ScopedWlArray states({XDG_TOPLEVEL_STATE_ACTIVATED});
 
   // Maximize and check restored bounds is correctly set.
-  const gfx::Rect maximized_bounds = gfx::Rect(0, 0, 1024, 768);
+  gfx::Rect maximized_bounds = {0, 0, 1024, 768};
   EXPECT_CALL(delegate_, OnBoundsChanged(testing::Eq(maximized_bounds)));
   window_->Maximize();
   states.AddStateToWlArray(XDG_TOPLEVEL_STATE_MAXIMIZED);
@@ -690,10 +634,10 @@ TEST_P(WaylandWindowDragControllerTest, IgnorePointerEventsUntilDrop) {
   });
 
   EXPECT_CALL(delegate_, OnBoundsChanged(_))
-      .WillOnce([&](const gfx::Rect& bounds) {
+      .WillOnce([&](const PlatformWindowDelegate::BoundsChange& bounds) {
         EXPECT_EQ(State::kDetached, drag_controller()->state());
         EXPECT_EQ(kDragging, test_step);
-        EXPECT_EQ(gfx::Point(100, 100), bounds.origin());
+        EXPECT_EQ(gfx::Point(100, 100), bounds.bounds.origin());
 
         // Send a few wl_pointer::motion events skipping sync and dispatch
         // checks, which will be done at |kDropping| test step handling.
@@ -721,6 +665,65 @@ TEST_P(WaylandWindowDragControllerTest, IgnorePointerEventsUntilDrop) {
             screen_->GetLocalProcessWidgetAtPoint({100, 100}, {}));
   EXPECT_EQ(gfx::kNullAcceleratedWidget,
             screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
+}
+
+// Regression test for https://crbug.com/1169446.
+TEST_P(WaylandWindowDragControllerTest, MotionEventsSkippedWhileReattaching) {
+  auto* dragged_window = window_.get();
+  EXPECT_TRUE(dragged_window);
+
+  SendPointerEnter(dragged_window, &delegate_);
+  SendPointerPress(dragged_window, &delegate_, BTN_LEFT);
+  SendPointerMotion(dragged_window, &delegate_, {10, 10});
+
+  auto* wayland_extension = GetWaylandExtension(*window_);
+  wayland_extension->StartWindowDraggingSessionIfNeeded();
+  EXPECT_EQ(State::kAttached, drag_controller()->state());
+
+  auto* move_loop_handler = GetWmMoveLoopHandler(*window_);
+  ASSERT_TRUE(move_loop_handler);
+
+  auto test = [](WaylandWindowDragControllerTest* self,
+                 WmMoveLoopHandler* move_loop_handler) {
+    // While in |kDetached| state, motion events are expected to be propagated
+    // by window drag controller.
+    EXPECT_EQ(State::kDetached, self->drag_controller()->state());
+    self->SendDndMotion({30, 30});
+    EXPECT_CALL(self->delegate(), DispatchEvent(_)).Times(1);
+    self->Sync();
+
+    move_loop_handler->EndMoveLoop();
+    self->Sync();
+
+    // Otherwise, after the move loop is requested to quit, but before it really
+    // ends (ie. kAttaching state), motion events are **not** expected to be
+    // propagated.
+    EXPECT_EQ(State::kAttaching, self->drag_controller()->state());
+    self->SendDndMotion({30, 30});
+    EXPECT_CALL(self->delegate(), DispatchEvent(_)).Times(0);
+    self->Sync();
+  };
+  ScheduleTestTask(base::BindOnce(test, base::Unretained(this),
+                                  base::Unretained(move_loop_handler)));
+
+  // Spins move loop for |window_1|.
+  move_loop_handler->RunMoveLoop({});
+
+  // When the transition to |kAttached| state is finally done (ie. nested loop
+  // quits), motion events are then expected to be propagated by window drag
+  // controller as usual.
+  EXPECT_EQ(State::kAttached, drag_controller()->state());
+  SendDndMotion({30, 30});
+  EXPECT_CALL(delegate(), DispatchEvent(_)).Times(1);
+  Sync();
+
+  SendDndDrop();
+  EXPECT_CALL(delegate(), DispatchEvent(_)).Times(1);
+  Sync();
+
+  SendPointerEnter(window_.get(), &delegate_);
+
+  EXPECT_EQ(State::kIdle, drag_controller()->state());
 }
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,

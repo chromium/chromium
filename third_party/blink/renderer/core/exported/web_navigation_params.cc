@@ -41,29 +41,32 @@ std::unique_ptr<WebNavigationParams> WebNavigationParams::CreateFromInfo(
   result->navigation_timings.input_start = info.input_start;
   result->initiator_origin_trial_features =
       info.initiator_origin_trial_features;
-  result->ip_address_space = info.initiator_address_space;
   result->frame_policy = info.frame_policy;
-  result->had_transient_activation = info.url_request.HasUserGesture();
+  result->had_transient_user_activation = info.url_request.HasUserGesture();
+  result->sandbox_flags = info.frame_policy.sandbox_flags;
   return result;
 }
 
 // static
-std::unique_ptr<WebNavigationParams> WebNavigationParams::CreateWithHTMLString(
-    base::span<const char> html,
-    const WebURL& base_url) {
+std::unique_ptr<WebNavigationParams>
+WebNavigationParams::CreateWithHTMLStringForTesting(base::span<const char> html,
+                                                    const WebURL& base_url) {
   auto result = std::make_unique<WebNavigationParams>();
   result->url = base_url;
+  result->sandbox_flags = network::mojom::WebSandboxFlags::kNone;
   FillStaticResponse(result.get(), "text/html", "UTF-8", html);
   return result;
 }
 
 #if INSIDE_BLINK
 // static
-std::unique_ptr<WebNavigationParams> WebNavigationParams::CreateWithHTMLBuffer(
+std::unique_ptr<WebNavigationParams>
+WebNavigationParams::CreateWithHTMLBufferForTesting(
     scoped_refptr<SharedBuffer> buffer,
     const KURL& base_url) {
   auto result = std::make_unique<WebNavigationParams>();
   result->url = base_url;
+  result->sandbox_flags = network::mojom::WebSandboxFlags::kNone;
   FillStaticResponse(result.get(), "text/html", "UTF-8",
                      base::make_span(buffer->Data(), buffer->size()));
   return result;

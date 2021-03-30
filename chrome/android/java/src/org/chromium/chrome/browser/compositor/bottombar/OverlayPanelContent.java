@@ -333,7 +333,7 @@ public class OverlayPanelContent {
         OverlayViewDelegate delegate = new OverlayViewDelegate(cv);
         mWebContents.initialize(ChromeVersionInfo.getProductVersion(), delegate, cv,
                 mActivity.getWindowAndroid(), WebContents.createDefaultInternalsHolder());
-        ContentUtils.setUserAgentOverride(mWebContents);
+        ContentUtils.setUserAgentOverride(mWebContents, /* overrideInNewTabs= */ false);
 
         // Transfers the ownership of the WebContents to the native OverlayPanelContent.
         OverlayPanelContentJni.get().setWebContents(mNativeOverlayPanelContentPtr,
@@ -359,7 +359,7 @@ public class OverlayPanelContent {
                     @Override
                     public void didStartNavigation(NavigationHandle navigation) {
                         if (navigation.isInMainFrame() && !navigation.isSameDocument()) {
-                            String url = navigation.getUrlString();
+                            String url = navigation.getUrl().getSpec();
                             mContentDelegate.onMainFrameLoadStarted(
                                     url, !TextUtils.equals(url, mLoadedUrl));
                         }
@@ -374,8 +374,8 @@ public class OverlayPanelContent {
                     public void didFinishNavigation(NavigationHandle navigation) {
                         if (navigation.hasCommitted() && navigation.isInMainFrame()) {
                             mIsProcessingPendingNavigation = false;
-                            mContentDelegate.onMainFrameNavigation(navigation.getUrlString(),
-                                    !TextUtils.equals(navigation.getUrlString(), mLoadedUrl),
+                            mContentDelegate.onMainFrameNavigation(navigation.getUrl().getSpec(),
+                                    !TextUtils.equals(navigation.getUrl().getSpec(), mLoadedUrl),
                                     isHttpFailureCode(navigation.httpStatusCode()),
                                     navigation.isErrorPage());
                         }
@@ -411,8 +411,6 @@ public class OverlayPanelContent {
             mDidStartLoadingUrl = false;
             mIsProcessingPendingNavigation = false;
             mShouldReuseWebContents = false;
-
-            setVisibility(false);
         }
     }
 

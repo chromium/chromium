@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -23,8 +24,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings.h"
-#include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings_factory.h"
 #include "chrome/browser/domain_reliability/service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -55,6 +54,7 @@
 #include "net/http/http_auth_preferences.h"
 #include "net/http/http_util.h"
 #include "net/ssl/client_cert_store.h"
+#include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -62,16 +62,16 @@
 #include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/certificate_provider/certificate_provider.h"
-#include "chrome/browser/chromeos/certificate_provider/certificate_provider_service.h"
-#include "chrome/browser/chromeos/certificate_provider/certificate_provider_service_factory.h"
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/net/client_cert_store_chromeos.h"
 #include "chrome/browser/chromeos/policy/policy_cert_service.h"
 #include "chrome/browser/chromeos/policy/policy_cert_service_factory.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #endif
@@ -97,7 +97,7 @@
 #include "extensions/common/constants.h"
 #endif
 
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/cert_db_initializer_factory.h"
 #include "chrome/browser/lacros/client_cert_store_lacros.h"
 #endif
@@ -280,7 +280,8 @@ void ProfileNetworkContextService::ConfigureNetworkContextParams(
     bool in_memory,
     const base::FilePath& relative_partition_path,
     network::mojom::NetworkContextParams* network_context_params,
-    network::mojom::CertVerifierCreationParams* cert_verifier_creation_params) {
+    cert_verifier::mojom::CertVerifierCreationParams*
+        cert_verifier_creation_params) {
   ConfigureNetworkContextParamsInternal(in_memory, relative_partition_path,
                                         network_context_params,
                                         cert_verifier_creation_params);
@@ -584,7 +585,7 @@ ProfileNetworkContextService::CreateClientCertStore() {
       std::make_unique<net::ClientCertStoreNSS>(
           base::BindRepeating(&CreateCryptoModuleBlockingPasswordDelegate,
                               kCryptoModulePasswordClientAuth));
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   CertDbInitializer* cert_db_initializer =
       CertDbInitializerFactory::GetForProfileIfExists(profile_);
   if (!cert_db_initializer || !profile_->IsMainProfile()) {
@@ -595,7 +596,7 @@ ProfileNetworkContextService::CreateClientCertStore() {
 
   store = std::make_unique<ClientCertStoreLacros>(cert_db_initializer,
                                                   std::move(store));
-#endif  // BUILDFLAG(IS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   return store;
 #elif defined(OS_WIN)
@@ -618,11 +619,11 @@ bool GetHttpCacheBackendResetParam(PrefService* local_state) {
   base::FieldTrial* field_trial = base::FeatureList::GetFieldTrial(
       net::features::kSplitCacheByNetworkIsolationKey);
   std::string current_field_trial_status =
-      (field_trial ? field_trial->group_name() : "None") + " ";
-  field_trial = base::FeatureList::GetFieldTrial(
-      net::features::kAppendFrameOriginToNetworkIsolationKey);
-  current_field_trial_status +=
       (field_trial ? field_trial->group_name() : "None");
+  // This used to be used for keying on main frame only vs main frame +
+  // innermost frame, but the feature was removed, and now it's always keyed on
+  // both.
+  current_field_trial_status += " None";
   // This used to be for keying on scheme + eTLD+1 vs origin, but the trial was
   // removed, and now it's always keyed on eTLD+1. Still keeping a third "None"
   // to avoid resetting the disk cache.
@@ -641,7 +642,8 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
     bool in_memory,
     const base::FilePath& relative_partition_path,
     network::mojom::NetworkContextParams* network_context_params,
-    network::mojom::CertVerifierCreationParams* cert_verifier_creation_params) {
+    cert_verifier::mojom::CertVerifierCreationParams*
+        cert_verifier_creation_params) {
   if (profile_->IsOffTheRecord())
     in_memory = true;
   base::FilePath path(GetPartitionPath(relative_partition_path));
@@ -768,21 +770,22 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   // using the TrialComparisonCertVerifier requires knowing whether Chrome is
   // using the system verifier.
   DCHECK(cert_verifier_creation_params);
-  DCHECK_NE(
-      cert_verifier_creation_params->use_builtin_cert_verifier,
-      network::mojom::CertVerifierCreationParams::CertVerifierImpl::kDefault);
+  DCHECK_NE(cert_verifier_creation_params->use_builtin_cert_verifier,
+            cert_verifier::mojom::CertVerifierCreationParams::CertVerifierImpl::
+                kDefault);
   if (!in_memory &&
       cert_verifier_creation_params->use_builtin_cert_verifier ==
-          network::mojom::CertVerifierCreationParams::CertVerifierImpl::
+          cert_verifier::mojom::CertVerifierCreationParams::CertVerifierImpl::
               kSystem &&
       TrialComparisonCertVerifierController::MaybeAllowedForProfile(profile_)) {
-    mojo::PendingRemote<network::mojom::TrialComparisonCertVerifierConfigClient>
+    mojo::PendingRemote<
+        cert_verifier::mojom::TrialComparisonCertVerifierConfigClient>
         config_client;
     auto config_client_receiver =
         config_client.InitWithNewPipeAndPassReceiver();
 
     cert_verifier_creation_params->trial_comparison_cert_verifier_params =
-        network::mojom::TrialComparisonCertVerifierParams::New();
+        cert_verifier::mojom::TrialComparisonCertVerifierParams::New();
 
     if (!trial_comparison_cert_verifier_controller_) {
       trial_comparison_cert_verifier_controller_ =
@@ -811,15 +814,6 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
             ? *g_discard_domain_reliability_uploads_for_testing
             : !g_browser_process->local_state()->GetBoolean(
                   metrics::prefs::kMetricsReportingEnabled);
-  }
-
-  auto* drp_settings =
-      DataReductionProxyChromeSettingsFactory::GetForBrowserContext(profile_);
-  if (drp_settings) {
-    mojo::Remote<network::mojom::CustomProxyConfigClient> config_client;
-    network_context_params->custom_proxy_config_client_receiver =
-        config_client.BindNewPipeAndPassReceiver();
-    drp_settings->AddCustomProxyConfigClient(std::move(config_client));
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -860,7 +854,7 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
 
   // Should be initialized with existing per-profile CORS access lists.
   network_context_params->cors_origin_access_list =
-      profile_->GetSharedCorsOriginAccessList()
+      content::BrowserContext::GetSharedCorsOriginAccessList(profile_)
           ->GetOriginAccessList()
           .CreateCorsOriginAccessPatternsList();
 

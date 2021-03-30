@@ -32,8 +32,8 @@ LayoutUnit NGUnpositionedListMarker::InlineOffset(
   LayoutObject* list_item =
       marker_layout_object_->Marker().ListItem(*marker_layout_object_);
   auto margins = ListMarker::InlineMarginsForOutside(
-      marker_layout_object_->StyleRef(), list_item->StyleRef(),
-      marker_inline_size);
+      list_item->GetDocument(), marker_layout_object_->StyleRef(),
+      list_item->StyleRef(), marker_inline_size);
   return margins.first;
 }
 
@@ -161,9 +161,8 @@ LayoutUnit NGUnpositionedListMarker::ComputeIntrudedFloatOffset(
       container_builder->BfcLineOffset() +
           border_scrollbar_padding.inline_start,
       *container_builder->BfcBlockOffset() + marker_block_offset};
-  LayoutUnit available_size = container_builder->InlineSize() -
-                              border_scrollbar_padding.inline_start -
-                              border_scrollbar_padding.inline_end;
+  const LayoutUnit available_size =
+      container_builder->ChildAvailableSize().inline_size;
   NGLayoutOpportunity opportunity =
       space.ExclusionSpace().FindLayoutOpportunity(origin_offset,
                                                    available_size);

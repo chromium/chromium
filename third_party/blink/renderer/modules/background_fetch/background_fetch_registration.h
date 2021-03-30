@@ -137,8 +137,7 @@ class BackgroundFetchRegistration final
       registration_service_;
 
   HeapMojoReceiver<blink::mojom::blink::BackgroundFetchRegistrationObserver,
-                   BackgroundFetchRegistration,
-                   HeapMojoWrapperMode::kWithoutContextObserver>
+                   BackgroundFetchRegistration>
       observer_receiver_;
 };
 

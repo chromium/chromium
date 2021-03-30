@@ -25,7 +25,7 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/web_mixed_content_context_type.h"
+#include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -701,10 +701,10 @@ TEST(SecurityStateContentUtilsTest, SafetyTipExplanation_Lookalike) {
   EXPECT_EQ(l10n_util::GetStringUTF8(IDS_SECURITY_TAB_SAFETY_TIP_TITLE),
             explanations.summary);
   EXPECT_EQ(1u, explanations.insecure_explanations.size());
-  EXPECT_EQ(l10n_util::GetStringFUTF8(
-                IDS_SECURITY_TAB_SAFETY_TIP_LOOKALIKE_DESCRIPTION,
-                base::ASCIIToUTF16("good-site.test")),
-            explanations.insecure_explanations[0].description);
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF8(
+          IDS_SECURITY_TAB_SAFETY_TIP_LOOKALIKE_DESCRIPTION, u"good-site.test"),
+      explanations.insecure_explanations[0].description);
 }
 
 // Tests that a Safebrowsing warning and a bad reputation warning in
@@ -831,7 +831,7 @@ TEST(SecurityStateContentUtilsTest, DefaultSecurityStyleExplanation) {
                                                 "description");
 
   EXPECT_EQ(false, !!explanation.certificate);
-  EXPECT_EQ(blink::WebMixedContentContextType::kNotMixedContent,
+  EXPECT_EQ(blink::mojom::MixedContentContextType::kNotMixedContent,
             explanation.mixed_content_type);
 }
 

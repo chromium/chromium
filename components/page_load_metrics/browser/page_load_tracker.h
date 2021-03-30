@@ -12,6 +12,7 @@
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
+#include "components/page_load_metrics/browser/page_load_metrics_event.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/browser/page_load_metrics_update_dispatcher.h"
@@ -39,6 +40,7 @@ class WebContents;
 
 namespace page_load_metrics {
 
+struct MemoryUpdate;
 class PageLoadMetricsEmbedderInterface;
 
 namespace internal {
@@ -227,7 +229,8 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   const mojom::FrameMetadata& GetMainFrameMetadata() const override;
   const mojom::FrameMetadata& GetSubframeMetadata() const override;
   const PageRenderData& GetPageRenderData() const override;
-  const NormalizedCLSData& GetNormalizedCLSData() const override;
+  const NormalizedCLSData& GetNormalizedCLSData(
+      BfcacheStrategy bfcache_strategy) const override;
   const mojom::InputTiming& GetPageInputTiming() const override;
   const blink::MobileFriendliness& GetMobileFriendliness() const override;
   const PageRenderData& GetMainFrameRenderData() const override;
@@ -254,7 +257,8 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
                              base::TimeTicks failed_load_time);
   void PageHidden();
   void PageShown();
-  void FrameDeleted(content::RenderFrameHost* rfh);
+  void RenderFrameDeleted(content::RenderFrameHost* rfh);
+  void FrameDeleted(int frame_tree_node_id);
 
   void OnInputEvent(const blink::WebInputEvent& event);
 
@@ -362,9 +366,8 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
       const content::WebContentsObserver::MediaPlayerInfo& video_type,
       content::RenderFrameHost* render_frame_host);
 
-  // Informs the observers that the event corresponding to |event_key| has
-  // occurred.
-  void BroadcastEventToObservers(const void* const event_key);
+  // Informs the observers that |event| has occurred.
+  void BroadcastEventToObservers(PageLoadMetricsEvent event);
 
   void OnEnterBackForwardCache();
   void OnRestoreFromBackForwardCache(
@@ -373,6 +376,9 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   // Called when the page tracked was just activated after being loaded inside a
   // portal.
   void DidActivatePortal(base::TimeTicks activation_time);
+
+  // Called when V8 per-frame memory usage updates are available.
+  void OnV8MemoryChanged(const std::vector<MemoryUpdate>& memory_updates);
 
  private:
   // This function converts a TimeTicks value taken in the browser process

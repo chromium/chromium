@@ -45,7 +45,7 @@ android_library("weblayer_shell_java") {
     "//components/strictmode/android:java",
     "//third_party/android_deps:android_support_v4_java",
     "//third_party/android_deps:android_support_v7_appcompat_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//weblayer/public/java",
   ]
   sources = [
@@ -83,6 +83,7 @@ template("weblayer_shell_apk_helper") {
     android_manifest_dep = ":$_manifest_target"
 
     command_line_flags_file = "weblayer-command-line"
+    proguard_enabled = !is_java_debug
 
     # Add a native lib so the ABI is compatible with the implementation APK.
     native_lib_placeholders = [ "libdummy.so" ]
@@ -169,6 +170,26 @@ if (enable_chrome_android_internal) {
       "//clank/android_webview:system_webview_google_apk",
     ]
   }
+
+  generate_wrapper("run_weblayer_shell_trichrome_google") {
+    testonly = true
+    wrapper_script = "$root_out_dir/bin/run_weblayer_shell_trichrome_google"
+    executable = "//weblayer/tools/run_weblayer_shell.py"
+    executable_args = [
+      "--shell-apk-path",
+      "@WrappedPath(apks/WebLayerShellSystemWebView.apk)",
+      "--support-apk-path",
+      "@WrappedPath(apks/TrichromeLibraryGoogle.apk)",
+      "--switch-webview-to",
+      "@WrappedPath(apks/TrichromeWebViewGoogle.apk)",
+    ]
+
+    deps = [
+      ":weblayer_shell_system_webview_apk",
+      "//clank/android_webview:trichrome_webview_google_apk",
+      "//clank/java:trichrome_library_google_apk",
+    ]
+  }
 }
 
 generate_wrapper("run_weblayer_shell_webview") {
@@ -250,9 +271,15 @@ android_apk("weblayer_support_apk") {
   shared_libraries = [ "//weblayer:libweblayer_test" ]
 }
 
-python_library("weblayer_shell_wpt") {
-  testonly = true
-  pydeps_file = "//testing/scripts/run_android_wpt.pydeps"
+script_test("weblayer_shell_wpt") {
+  script = "//testing/scripts/run_android_wpt.py"
+  args = [
+    "--product=android_weblayer",
+    "--weblayer-shell=apks/WebLayerShell.apk",
+    "--weblayer-support=apks/WebLayerSupport.apk",
+    "--webdriver-binary=clang_x64/chromedriver",
+    "-v",
+  ]
   data_deps = [
     ":weblayer_shell_apk",
     ":weblayer_support_apk",

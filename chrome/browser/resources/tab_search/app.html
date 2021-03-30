@@ -1,8 +1,4 @@
 <style include="mwb-shared-style">
-  #tabsList {
-    --list-max-height: 280px;
-  }
-
   #no-results {
     color: var(--cr-primary-text-color);
     font-size: var(--mwb-primary-text-font-size);
@@ -40,6 +36,20 @@
       --iron-icon-fill-color: var(--google-blue-refresh-300);
     }
   }
+
+  .list-section-title {
+    align-items: center;
+    background-color: var(--mwb-background-color);
+    color: var(--cr-secondary-text-color);
+    display: flex;
+    font-size: var(--mwb-list-section-title-font-size);
+    height: var(--mwb-list-section-title-height);
+    padding-inline-start: 8px;
+    position: sticky;
+    text-transform: uppercase;
+    top: 0;
+    z-index: 1000;
+  }
 </style>
 <iron-iconset-svg name="ts" size="24">
   <svg>
@@ -57,18 +67,23 @@
     on-search-changed="onSearchChanged_"
     search-result-text="[[searchResultText_]]">
 </tab-search-search-field>
-<div hidden="[[!filteredOpenTabs_.length]]">
-  <infinite-list id="tabsList" items="[[filteredOpenTabs_]]" >
-    <template is="dom-repeat">
+<div hidden="[[!filteredTabItemsCount_(filteredOpenTabs_, filteredRecentlyClosedTabs_)]]">
+  <infinite-list id="tabsList" max-height="[[listMaxHeight_(availableHeight_)]]"
+      items="[[listItems_(filteredOpenTabs_, filteredRecentlyClosedTabs_)]]">
+    <template data-type="TitleItem">
+      <div class="list-section-title">[[item.title]]</div>
+    </template>
+    <template data-type="TabData" data-selectable>
       <tab-search-item id="[[item.tab.tabId]]" aria-label="[[ariaLabel_(item)]]"
-          class="mwb-list-item" data="[[item]]" on-click="onItemClick_"
-          on-close="onItemClose_" on-focus="onItemFocus_"
-          on-keydown="onItemKeyDown_" tabindex="0" role="option">
+          class="mwb-list-item" data="[[item]]" index="[[index]]"
+          on-click="onItemClick_" on-close="onItemClose_"
+          on-focus="onItemFocus_" on-keydown="onItemKeyDown_" role="option"
+          tabindex="0">
       </tab-search-item>
     </template>
   </infinite-list>
 </div>
-<div id="no-results" hidden="[[filteredOpenTabs_.length]]">
+<div id="no-results" hidden="[[filteredTabItemsCount_(filteredOpenTabs_, filteredRecentlyClosedTabs_)]]">
   $i18n{noResultsFound}
 </div>
 <template is="dom-if" if="[[feedbackButtonEnabled_]]">

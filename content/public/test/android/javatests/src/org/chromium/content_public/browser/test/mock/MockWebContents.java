@@ -12,6 +12,7 @@ import android.os.Parcel;
 import androidx.annotation.Nullable;
 
 import org.chromium.content_public.browser.AccessibilitySnapshotCallback;
+import org.chromium.content_public.browser.GlobalFrameRoutingId;
 import org.chromium.content_public.browser.ImageDownloadCallback;
 import org.chromium.content_public.browser.JavaScriptCallback;
 import org.chromium.content_public.browser.MessagePort;
@@ -42,6 +43,9 @@ public class MockWebContents implements WebContents {
     public void initialize(String productVersion, ViewAndroidDelegate viewDelegate,
             ViewEventSink.InternalAccessDelegate accessDelegate, WindowAndroid windowAndroid,
             WebContents.InternalsHolder internalsHolder) {}
+
+    @Override
+    public void clearJavaWebContentsObservers() {}
 
     @Override
     public int describeContents() {
@@ -91,7 +95,7 @@ public class MockWebContents implements WebContents {
     }
 
     @Override
-    public RenderFrameHost getRenderFrameHostFromId(int renderProcessId, int renderFrameId) {
+    public RenderFrameHost getRenderFrameHostFromId(GlobalFrameRoutingId id) {
         return null;
     }
 
@@ -184,7 +188,7 @@ public class MockWebContents implements WebContents {
             int startAdjust, int endAdjust, boolean showSelectionMenu) {}
 
     @Override
-    public String getLastCommittedUrl() {
+    public GURL getLastCommittedUrl() {
         return null;
     }
 
@@ -256,7 +260,7 @@ public class MockWebContents implements WebContents {
     public void setSpatialNavigationDisabled(boolean disabled) {}
 
     @Override
-    public int downloadImage(String url, boolean isFavicon, int maxBitmapSize, boolean bypassCache,
+    public int downloadImage(GURL url, boolean isFavicon, int maxBitmapSize, boolean bypassCache,
             ImageDownloadCallback callback) {
         return 0;
     }

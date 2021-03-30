@@ -29,8 +29,8 @@
 #import "chrome/updater/app/server/mac/update_service_wrappers.h"
 #include "chrome/updater/mac/scoped_xpc_service_mock.h"
 #import "chrome/updater/mac/xpc_service_names.h"
-#include "chrome/updater/service_scope.h"
 #include "chrome/updater/unittest_util.h"
+#include "chrome/updater/updater_scope.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -55,7 +55,7 @@ class StateChangeTestEngine {
   // Construct a StateChangeTestEngine that will issue the given states in
   // the given sequence, and verify that it observes the expected items
   // in its callback.
-  StateChangeTestEngine(std::vector<StatePair>&& state_vec);
+  explicit StateChangeTestEngine(std::vector<StatePair> state_vec);
 
   ~StateChangeTestEngine();
 
@@ -73,7 +73,7 @@ class StateChangeTestEngine {
   // of the test - this is intended to be used to send the final reply.
   void StartSimulating(
       base::scoped_nsprotocol<id<CRUUpdateStateObserving>> observer,
-      base::OnceClosure&& done_cb);
+      base::OnceClosure done_cb);
 
  private:
   using vec_size_t = std::vector<StatePair>::size_type;
@@ -123,8 +123,8 @@ class StateChangeTestEngine {
 const StateChangeTestEngine::vec_size_t StateChangeTestEngine::kNotStarted;
 const StateChangeTestEngine::vec_size_t StateChangeTestEngine::kDone;
 
-StateChangeTestEngine::StateChangeTestEngine(std::vector<StatePair>&& state_vec)
-    : state_seq_(state_vec) {}
+StateChangeTestEngine::StateChangeTestEngine(std::vector<StatePair> state_vec)
+    : state_seq_(std::move(state_vec)) {}
 
 StateChangeTestEngine::~StateChangeTestEngine() {
   EXPECT_NE(next_observation_, kNotStarted)
@@ -138,7 +138,7 @@ StateChangeTestEngine::~StateChangeTestEngine() {
 
 void StateChangeTestEngine::StartSimulating(
     base::scoped_nsprotocol<id<CRUUpdateStateObserving>> observer,
-    base::OnceClosure&& done_cb) {
+    base::OnceClosure done_cb) {
   EXPECT_TRUE(callback_prepared_)
       << "TEST ISSUE:  StateChangetestEngine cannot StartSimulating without "
          "Watch()ing for event callbacks";
@@ -294,7 +294,7 @@ void MacUpdateServiceProxyTest::SetUp() {
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([this]() {
         service_ =
-            base::MakeRefCounted<UpdateServiceProxy>(ServiceScope::kUser);
+            base::MakeRefCounted<UpdateServiceProxy>(UpdaterScope::kUser);
       }));
 }
 

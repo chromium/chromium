@@ -16,8 +16,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowOpenFocus) {
 // window can automatically be activated.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowOpen) {
   extensions::ResultCatcher catcher;
-  ASSERT_TRUE(LoadExtensionIncognito(
-      test_data_dir_.AppendASCII("window_open").AppendASCII("spanning")));
+  ASSERT_TRUE(LoadExtension(
+      test_data_dir_.AppendASCII("window_open").AppendASCII("spanning"),
+      {.allow_in_incognito = true}));
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 

@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_METRICS_PLUGIN_METRICS_PROVIDER_H_
 
 #include <map>
+#include <string>
 #include <vector>
 
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "components/metrics/metrics_provider.h"
 #include "content/public/browser/browser_child_process_observer.h"
@@ -104,7 +104,7 @@ class PluginMetricsProvider : public metrics::MetricsProvider,
   std::vector<content::WebPluginInfo> plugins_;
 
   // Buffer of child process notifications for quick access.
-  std::map<base::string16, ChildProcessStats> child_process_stats_buffer_;
+  std::map<std::u16string, ChildProcessStats> child_process_stats_buffer_;
 
   base::WeakPtrFactory<PluginMetricsProvider> weak_ptr_factory_{this};
 

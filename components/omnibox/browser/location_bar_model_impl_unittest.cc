@@ -40,10 +40,10 @@ class FakeLocationBarModelDelegate : public LocationBarModelDelegate {
   }
 
   // LocationBarModelDelegate:
-  base::string16 FormattedStringWithEquivalentMeaning(
+  std::u16string FormattedStringWithEquivalentMeaning(
       const GURL& url,
-      const base::string16& formatted_url) const override {
-    return formatted_url + base::ASCIIToUTF16("/TestSuffix");
+      const std::u16string& formatted_url) const override {
+    return formatted_url + u"/TestSuffix";
   }
 
   bool GetURL(GURL* url) const override {
@@ -156,24 +156,23 @@ class LocationBarModelImplHideOnInteractionTest
 TEST_F(LocationBarModelImplRevealOnHoverTest, DisplayUrl) {
   delegate()->SetURL(GURL("http://www.example.test/foo"));
 #if defined(OS_IOS)
-  EXPECT_EQ(base::ASCIIToUTF16("http://www.example.test/TestSuffix"),
-            model()->GetURLForDisplay());
+  EXPECT_EQ(u"http://www.example.test/TestSuffix", model()->GetURLForDisplay());
 #else   // #!defined(OS_IOS)
-  EXPECT_EQ(base::ASCIIToUTF16("http://www.example.test/foo/TestSuffix"),
+  EXPECT_EQ(u"http://www.example.test/foo/TestSuffix",
             model()->GetURLForDisplay());
 #endif  // #!defined(OS_IOS)
-  EXPECT_EQ(base::ASCIIToUTF16("http://www.example.test/foo/TestSuffix"),
+  EXPECT_EQ(u"http://www.example.test/foo/TestSuffix",
             model()->GetFormattedFullURL());
 
   delegate()->SetURL(GURL("https://www.example.test/foo"));
 #if defined(OS_IOS)
-  EXPECT_EQ(base::ASCIIToUTF16("https://www.example.test/TestSuffix"),
+  EXPECT_EQ(u"https://www.example.test/TestSuffix",
             model()->GetURLForDisplay());
 #else   // #!defined(OS_IOS)
-  EXPECT_EQ(base::ASCIIToUTF16("https://www.example.test/foo/TestSuffix"),
+  EXPECT_EQ(u"https://www.example.test/foo/TestSuffix",
             model()->GetURLForDisplay());
 #endif  // #!defined(OS_IOS)
-  EXPECT_EQ(base::ASCIIToUTF16("https://www.example.test/foo/TestSuffix"),
+  EXPECT_EQ(u"https://www.example.test/foo/TestSuffix",
             model()->GetFormattedFullURL());
 }
 
@@ -183,24 +182,23 @@ TEST_F(LocationBarModelImplRevealOnHoverTest, DisplayUrl) {
 TEST_F(LocationBarModelImplHideOnInteractionTest, DisplayUrl) {
   delegate()->SetURL(GURL("http://www.example.test/foo"));
 #if defined(OS_IOS)
-  EXPECT_EQ(base::ASCIIToUTF16("http://www.example.test/TestSuffix"),
-            model()->GetURLForDisplay());
+  EXPECT_EQ(u"http://www.example.test/TestSuffix", model()->GetURLForDisplay());
 #else   // #!defined(OS_IOS)
-  EXPECT_EQ(base::ASCIIToUTF16("http://www.example.test/foo/TestSuffix"),
+  EXPECT_EQ(u"http://www.example.test/foo/TestSuffix",
             model()->GetURLForDisplay());
 #endif  // #!defined(OS_IOS)
-  EXPECT_EQ(base::ASCIIToUTF16("http://www.example.test/foo/TestSuffix"),
+  EXPECT_EQ(u"http://www.example.test/foo/TestSuffix",
             model()->GetFormattedFullURL());
 
   delegate()->SetURL(GURL("https://www.example.test/foo"));
 #if defined(OS_IOS)
-  EXPECT_EQ(base::ASCIIToUTF16("https://www.example.test/TestSuffix"),
+  EXPECT_EQ(u"https://www.example.test/TestSuffix",
             model()->GetURLForDisplay());
 #else   // #!defined(OS_IOS)
-  EXPECT_EQ(base::ASCIIToUTF16("https://www.example.test/foo/TestSuffix"),
+  EXPECT_EQ(u"https://www.example.test/foo/TestSuffix",
             model()->GetURLForDisplay());
 #endif  // #!defined(OS_IOS)
-  EXPECT_EQ(base::ASCIIToUTF16("https://www.example.test/foo/TestSuffix"),
+  EXPECT_EQ(u"https://www.example.test/foo/TestSuffix",
             model()->GetFormattedFullURL());
 }
 
@@ -210,27 +208,24 @@ TEST_F(LocationBarModelImplTest,
 
   // Verify that both the full formatted URL and the display URL add the test
   // suffix.
-  EXPECT_EQ(base::ASCIIToUTF16("www.google.com/TestSuffix"),
-            model()->GetFormattedFullURL());
-  EXPECT_EQ(base::ASCIIToUTF16("google.com/TestSuffix"),
-            model()->GetURLForDisplay());
+  EXPECT_EQ(u"www.google.com/TestSuffix", model()->GetFormattedFullURL());
+  EXPECT_EQ(u"google.com/TestSuffix", model()->GetURLForDisplay());
 }
 
 TEST_F(LocationBarModelImplTest, FormatsReaderModeUrls) {
   const GURL http_url("http://www.example.com/article.html");
   // Get the real article's URL shown to the user.
   delegate()->SetURL(http_url);
-  base::string16 originalDisplayUrl = model()->GetURLForDisplay();
-  base::string16 originalFormattedFullUrl = model()->GetFormattedFullURL();
+  std::u16string originalDisplayUrl = model()->GetURLForDisplay();
+  std::u16string originalFormattedFullUrl = model()->GetFormattedFullURL();
   // We expect that they don't start with "http://." We want the reader mode
   // URL shown to the user to be the same as this original URL.
 #if defined(OS_IOS)
-  EXPECT_EQ(base::ASCIIToUTF16("example.com/TestSuffix"), originalDisplayUrl);
+  EXPECT_EQ(u"example.com/TestSuffix", originalDisplayUrl);
 #else   // #!defined(OS_IOS)
-  EXPECT_EQ(base::ASCIIToUTF16("example.com/article.html/TestSuffix"),
-            originalDisplayUrl);
+  EXPECT_EQ(u"example.com/article.html/TestSuffix", originalDisplayUrl);
 #endif  // #defined (OS_IOS)
-  EXPECT_EQ(base::ASCIIToUTF16("www.example.com/article.html/TestSuffix"),
+  EXPECT_EQ(u"www.example.com/article.html/TestSuffix",
             originalFormattedFullUrl);
 
   GURL distilled = dom_distiller::url_utils::GetDistillerViewUrlFromUrl(
@@ -251,24 +246,20 @@ TEST_F(LocationBarModelImplTest, FormatsReaderModeUrls) {
       dom_distiller::kDomDistillerScheme, https_url, "title");
   delegate()->SetURL(distilled);
   EXPECT_EQ(originalDisplayUrl, model()->GetURLForDisplay());
-  EXPECT_EQ(
-      base::ASCIIToUTF16("https://www.example.com/article.html/TestSuffix"),
-      model()->GetFormattedFullURL());
+  EXPECT_EQ(u"https://www.example.com/article.html/TestSuffix",
+            model()->GetFormattedFullURL());
 
   // Invalid dom-distiller:// URLs should be shown, because they do not
   // correspond to any article.
   delegate()->SetURL(GURL(("chrome-distiller://abc/?url=invalid")));
 #if defined(OS_IOS)
-  EXPECT_EQ(base::ASCIIToUTF16("chrome-distiller://abc/TestSuffix"),
-            model()->GetURLForDisplay());
+  EXPECT_EQ(u"chrome-distiller://abc/TestSuffix", model()->GetURLForDisplay());
 #else   // #!defined(OS_IOS)
-  EXPECT_EQ(
-      base::ASCIIToUTF16("chrome-distiller://abc/?url=invalid/TestSuffix"),
-      model()->GetURLForDisplay());
+  EXPECT_EQ(u"chrome-distiller://abc/?url=invalid/TestSuffix",
+            model()->GetURLForDisplay());
 #endif  // #defined (OS_IOS)
-  EXPECT_EQ(
-      base::ASCIIToUTF16("chrome-distiller://abc/?url=invalid/TestSuffix"),
-      model()->GetFormattedFullURL());
+  EXPECT_EQ(u"chrome-distiller://abc/?url=invalid/TestSuffix",
+            model()->GetFormattedFullURL());
 }
 
 // TODO(https://crbug.com/1010418): Fix flakes on linux_chromium_asan_rel_ng and
@@ -315,8 +306,7 @@ TEST_F(LocationBarModelImplTest, GetVectorIcon) {
 // iOS.
 TEST_F(LocationBarModelImplTest, BlobDisplayURLIOS) {
   delegate()->SetURL(GURL("blob:http://example.test/foo"));
-  EXPECT_EQ(base::ASCIIToUTF16("example.test/TestSuffix"),
-            model()->GetURLForDisplay());
+  EXPECT_EQ(u"example.test/TestSuffix", model()->GetURLForDisplay());
 }
 
 #endif  // defined(OS_IOS)

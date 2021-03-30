@@ -6,14 +6,17 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 
 namespace storage {
 
 QuotaOverrideHandle::QuotaOverrideHandle(
-    scoped_refptr<QuotaManagerProxy> quota_manager)
-    : quota_manager_(quota_manager) {
-  quota_manager_->GetOverrideHandleId(
+    scoped_refptr<QuotaManagerProxy> quota_manager_proxy)
+    : quota_manager_proxy_(std::move(quota_manager_proxy)) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  quota_manager_proxy_->GetOverrideHandleId(
+      base::SequencedTaskRunnerHandle::Get(),
       base::BindOnce(&QuotaOverrideHandle::DidGetOverrideHandleId,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -21,7 +24,7 @@ QuotaOverrideHandle::QuotaOverrideHandle(
 QuotaOverrideHandle::~QuotaOverrideHandle() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (id_.has_value()) {
-    quota_manager_->WithdrawOverridesForHandle(id_.value());
+    quota_manager_proxy_->WithdrawOverridesForHandle(id_.value());
   }
 }
 
@@ -39,8 +42,9 @@ void QuotaOverrideHandle::OverrideQuotaForOrigin(
         origin, quota_size, std::move(callback)));
     return;
   }
-  quota_manager_->OverrideQuotaForOrigin(id_.value(), origin, quota_size,
-                                         std::move(callback));
+  quota_manager_proxy_->OverrideQuotaForOrigin(
+      id_.value(), origin, quota_size, base::SequencedTaskRunnerHandle::Get(),
+      std::move(callback));
 }
 
 void QuotaOverrideHandle::DidGetOverrideHandleId(int id) {

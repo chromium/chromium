@@ -66,13 +66,11 @@ Path SVGCircleElement::AsPath() const {
   SVGLengthContext length_context(this);
   const ComputedStyle& style = ComputedStyleRef();
 
-  const SVGComputedStyle& svg_style = style.SvgStyle();
-
-  float r = length_context.ValueForLength(svg_style.R(), style,
-                                          SVGLengthMode::kOther);
+  float r =
+      length_context.ValueForLength(style.R(), style, SVGLengthMode::kOther);
   if (r > 0) {
-    FloatPoint center(length_context.ResolveLengthPair(svg_style.Cx(),
-                                                       svg_style.Cy(), style));
+    FloatPoint center(
+        length_context.ResolveLengthPair(style.Cx(), style.Cy(), style));
     FloatSize radii(r, r);
     path.AddEllipse(FloatRect(center - radii, radii.ScaledBy(2)));
   }

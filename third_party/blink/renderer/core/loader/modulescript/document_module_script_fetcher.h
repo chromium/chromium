@@ -23,6 +23,7 @@ class CORE_EXPORT DocumentModuleScriptFetcher final
 
   // Implements ModuleScriptFetcher.
   void Fetch(FetchParameters&,
+             ModuleType,
              ResourceFetcher*,
              ModuleGraphLevel,
              Client*) override;
@@ -35,6 +36,7 @@ class CORE_EXPORT DocumentModuleScriptFetcher final
 
  private:
   Member<Client> client_;
+  ModuleType expected_module_type_;
 };
 
 }  // namespace blink

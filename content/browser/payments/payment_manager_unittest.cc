@@ -19,7 +19,7 @@ using ::payments::mojom::PaymentHandlerStatus;
 using ::payments::mojom::PaymentInstrument;
 using ::payments::mojom::PaymentInstrumentPtr;
 
-const char kServiceWorkerScope[] = "https://example.com/a";
+const char kServiceWorkerScope[] = "https://example.com/a/";
 const char kServiceWorkerScript[] = "https://example.com/a/script.js";
 
 void DeletePaymentInstrumentCallback(PaymentHandlerStatus* out_status,

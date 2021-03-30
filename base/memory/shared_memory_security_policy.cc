@@ -40,7 +40,7 @@ base::Optional<size_t> AlignWithPageSize(size_t size) {
 #else
   const size_t page_size = GetPageSize();
 #endif  // defined(OS_WIN)
-  size_t rounded_size = bits::Align(size, page_size);
+  size_t rounded_size = bits::AlignUp(size, page_size);
 
   // Fail on overflow.
   if (rounded_size < size)

@@ -9,6 +9,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/full_restore/app_launch_info.h"
+#include "components/full_restore/window_info.h"
 
 namespace full_restore {
 
@@ -38,14 +39,15 @@ RestoreData::RestoreData(std::unique_ptr<base::Value> restore_data_value) {
 
     for (base::DictionaryValue::Iterator data_iter(*data_dict);
          !data_iter.IsAtEnd(); data_iter.Advance()) {
-      int id = 0;
-      if (!base::StringToInt(data_iter.key(), &id)) {
+      int window_id = 0;
+      if (!base::StringToInt(data_iter.key(), &window_id)) {
         DVLOG(0) << "Fail to parse full restore data. "
                  << "Cannot find the valid id.";
         continue;
       }
-      app_id_to_launch_list_[app_id][id] = std::make_unique<AppRestoreData>(
-          std::move(*data_dict->FindDictKey(data_iter.key())));
+      app_id_to_launch_list_[app_id][window_id] =
+          std::make_unique<AppRestoreData>(
+              std::move(*data_dict->FindDictKey(data_iter.key())));
     }
   }
 }
@@ -80,15 +82,110 @@ base::Value RestoreData::ConvertToValue() const {
   return restore_data_dict;
 }
 
+bool RestoreData::HasAppRestoreData(const std::string& app_id,
+                                    int32_t window_id) {
+  return GetAppRestoreData(app_id, window_id) != nullptr;
+}
+
 void RestoreData::AddAppLaunchInfo(
     std::unique_ptr<AppLaunchInfo> app_launch_info) {
-  if (!app_launch_info || !app_launch_info->id.has_value())
+  if (!app_launch_info || !app_launch_info->window_id.has_value())
     return;
 
   const std::string app_id = app_launch_info->app_id;
-  const int32_t id = app_launch_info->id.value();
-  app_id_to_launch_list_[app_id][id] =
+  const int32_t window_id = app_launch_info->window_id.value();
+  app_id_to_launch_list_[app_id][window_id] =
       std::make_unique<AppRestoreData>(std::move(app_launch_info));
+}
+
+void RestoreData::ModifyWindowInfo(const std::string& app_id,
+                                   int32_t window_id,
+                                   const WindowInfo& window_info) {
+  auto* app_restore_data = GetAppRestoreData(app_id, window_id);
+  if (app_restore_data)
+    app_restore_data->ModifyWindowInfo(window_info);
+}
+
+void RestoreData::SetNextRestoreWindowIdForChromeApp(
+    const std::string& app_id) {
+  auto it = app_id_to_launch_list_.find(app_id);
+  if (it == app_id_to_launch_list_.end())
+    return;
+
+  chrome_app_id_to_current_window_id_[app_id] = it->second.begin()->first;
+
+  if (it->second.size() == 1)
+    return;
+
+  // When a chrome app has multiple windows, all windows will be sent to the
+  // background.
+  for (auto& data_it : it->second)
+    data_it.second->activation_index = INT32_MIN;
+}
+
+void RestoreData::RemoveAppRestoreData(const std::string& app_id,
+                                       int window_id) {
+  if (app_id_to_launch_list_.find(app_id) == app_id_to_launch_list_.end())
+    return;
+
+  app_id_to_launch_list_[app_id].erase(window_id);
+  if (app_id_to_launch_list_[app_id].empty())
+    app_id_to_launch_list_.erase(app_id);
+}
+
+void RestoreData::RemoveWindowInfo(const std::string& app_id, int window_id) {
+  auto* app_restore_data = GetAppRestoreData(app_id, window_id);
+  if (app_restore_data)
+    app_restore_data->ClearWindowInfo();
+}
+
+void RestoreData::RemoveApp(const std::string& app_id) {
+  app_id_to_launch_list_.erase(app_id);
+  chrome_app_id_to_current_window_id_.erase(app_id);
+}
+
+std::unique_ptr<WindowInfo> RestoreData::GetWindowInfo(
+    const std::string& app_id,
+    int window_id) {
+  auto* app_restore_data = GetAppRestoreData(app_id, window_id);
+  return app_restore_data ? app_restore_data->GetWindowInfo() : nullptr;
+}
+
+int32_t RestoreData::FetchRestoreWindowId(const std::string& app_id) {
+  auto it = app_id_to_launch_list_.find(app_id);
+  if (it == app_id_to_launch_list_.end())
+    return 0;
+
+  if (chrome_app_id_to_current_window_id_.find(app_id) ==
+      chrome_app_id_to_current_window_id_.end()) {
+    return 0;
+  }
+
+  int window_id = chrome_app_id_to_current_window_id_[app_id];
+
+  // Move to the next window_id.
+  auto data_it = it->second.find(window_id);
+  DCHECK(data_it != it->second.end());
+  ++data_it;
+  if (data_it == it->second.end())
+    chrome_app_id_to_current_window_id_.erase(app_id);
+  else
+    chrome_app_id_to_current_window_id_[app_id] = data_it->first;
+
+  return window_id;
+}
+
+AppRestoreData* RestoreData::GetAppRestoreData(const std::string& app_id,
+                                               int window_id) {
+  auto it = app_id_to_launch_list_.find(app_id);
+  if (it == app_id_to_launch_list_.end())
+    return nullptr;
+
+  auto data_it = it->second.find(window_id);
+  if (data_it == it->second.end())
+    return nullptr;
+
+  return data_it->second.get();
 }
 
 }  // namespace full_restore

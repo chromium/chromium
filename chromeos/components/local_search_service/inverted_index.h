@@ -15,7 +15,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
-#include "base/strings/string16.h"
 #include "chromeos/components/local_search_service/shared_structs.h"
 
 namespace chromeos {
@@ -34,13 +33,13 @@ using TfidfResult = std::tuple<std::string, Posting, float>;
 using DocLength = std::unordered_map<std::string, uint32_t>;
 
 // A map from terms to their PostingList.
-using Dictionary = std::unordered_map<base::string16, PostingList>;
+using Dictionary = std::unordered_map<std::u16string, PostingList>;
 
 // A set of terms.
-using TermSet = std::unordered_set<base::string16>;
+using TermSet = std::unordered_set<std::u16string>;
 
 // Data structure to store TF-IDF cache keyed by terms.
-using TfidfCache = std::unordered_map<base::string16, std::vector<TfidfResult>>;
+using TfidfCache = std::unordered_map<std::u16string, std::vector<TfidfResult>>;
 
 // Tuple to store document state variables.
 using DocumentStateVariables = std::tuple<DocLength, Dictionary, TermSet>;
@@ -62,12 +61,12 @@ class InvertedIndex {
   InvertedIndex& operator=(const InvertedIndex&) = delete;
 
   // Returns document ID and positions of a term.
-  PostingList FindTerm(const base::string16& term) const;
+  PostingList FindTerm(const std::u16string& term) const;
 
   // Returns documents that approximately match one or more terms in |terms|.
   // Returned documents will be ranked.
   std::vector<Result> FindMatchingDocumentsApproximately(
-      const std::unordered_set<base::string16>& terms,
+      const std::unordered_set<std::u16string>& terms,
       double prefix_threshold,
       double block_threshold) const;
 
@@ -109,7 +108,7 @@ class InvertedIndex {
   // the cache.
   // Note: client of this function should call BuildInvertedIndex before using
   // this function to have up-to-date score.
-  std::vector<TfidfResult> GetTfidf(const base::string16& term) const;
+  std::vector<TfidfResult> GetTfidf(const std::u16string& term) const;
 
   // Builds the inverted index.
   void BuildInvertedIndex();

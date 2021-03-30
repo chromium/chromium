@@ -15,7 +15,12 @@ source_set("system_info") {
     "system_info_provider.h",
   ]
 
-  deps = [ "//extensions/common/api" ]
+  deps = [
+    "//components/storage_monitor",
+    "//content/public/browser",
+    "//extensions/browser/api/system_display",
+    "//extensions/common/api",
+  ]
 
   public_deps = [ "//extensions/browser:browser_sources" ]
 }

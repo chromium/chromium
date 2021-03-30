@@ -18,9 +18,9 @@ SyncedWindowDelegatesGetterAndroid::~SyncedWindowDelegatesGetterAndroid() {}
 SyncedWindowDelegatesGetterAndroid::SyncedWindowDelegateMap
 SyncedWindowDelegatesGetterAndroid::GetSyncedWindowDelegates() {
   SyncedWindowDelegateMap synced_window_delegates;
-  for (auto i = TabModelList::begin(); i != TabModelList::end(); ++i) {
-    synced_window_delegates[(*i)->GetSyncedWindowDelegate()->GetSessionId()] =
-        (*i)->GetSyncedWindowDelegate();
+  for (const TabModel* model : TabModelList::models()) {
+    synced_window_delegates[model->GetSyncedWindowDelegate()->GetSessionId()] =
+        model->GetSyncedWindowDelegate();
   }
   return synced_window_delegates;
 }

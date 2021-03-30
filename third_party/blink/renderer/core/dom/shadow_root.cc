@@ -63,6 +63,8 @@ ShadowRoot::ShadowRoot(Document& document, ShadowRootType type)
       registered_with_parent_shadow_root_(false),
       delegates_focus_(false),
       slot_assignment_mode_(static_cast<unsigned>(SlotAssignmentMode::kAuto)),
+      needs_dir_auto_attribute_update_(false),
+      supports_name_based_slot_assignment_(false),
       unused_(0) {}
 
 ShadowRoot::~ShadowRoot() = default;
@@ -124,6 +126,8 @@ void ShadowRoot::setInnerHTML(const String& html,
           html, &host(), kAllowScriptingContent, "innerHTML",
           /*include_shadow_roots=*/false, exception_state)) {
     ReplaceChildrenWithFragment(this, fragment, exception_state);
+    if (auto* element = DynamicTo<HTMLElement>(host()))
+      element->AdjustDirectionalityIfNeededAfterShadowRootChanged();
   }
 }
 
@@ -131,6 +135,20 @@ void ShadowRoot::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
   DCHECK(!NeedsReattachLayoutTree());
   DCHECK(!ChildNeedsReattachLayoutTree());
   RebuildChildrenLayoutTrees(whitespace_attacher);
+}
+
+void ShadowRoot::DetachLayoutTree(bool performing_reattach) {
+  ContainerNode::DetachLayoutTree(performing_reattach);
+
+  // Shadow host may contain unassigned light dom children that need detaching.
+  // Assigned nodes are detached by the slot element.
+  for (Node& child : NodeTraversal::ChildrenOf(host())) {
+    if (!child.IsSlotable() || child.AssignedSlotWithoutRecalc())
+      continue;
+
+    if (child.GetDocument() == GetDocument())
+      child.DetachLayoutTree(performing_reattach);
+  }
 }
 
 Node::InsertionNotificationRequest ShadowRoot::InsertedInto(
@@ -205,6 +223,18 @@ StyleSheetList& ShadowRoot::StyleSheets() {
   if (!style_sheet_list_)
     SetStyleSheets(MakeGarbageCollected<StyleSheetList>(this));
   return *style_sheet_list_;
+}
+
+void ShadowRoot::EnableNameBasedSlotAssignment() {
+  DCHECK(IsUserAgent());
+  supports_name_based_slot_assignment_ = true;
+  // Mark that the document contains a shadow tree since we rely on slotchange
+  // events.
+  GetDocument().SetShadowCascadeOrder(ShadowCascadeOrder::kShadowCascade);
+}
+
+bool ShadowRoot::SupportsNameBasedSlotAssignment() const {
+  return !IsUserAgent() || supports_name_based_slot_assignment_;
 }
 
 void ShadowRoot::Trace(Visitor* visitor) const {

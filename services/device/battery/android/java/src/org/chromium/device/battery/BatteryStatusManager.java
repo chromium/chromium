@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.task.AsyncTask;
 import org.chromium.device.mojom.BatteryStatus;
 
 /**
@@ -140,10 +141,22 @@ class BatteryStatusManager {
         batteryStatus.level = level;
 
         if (mAndroidBatteryManager != null) {
-            updateBatteryStatus(batteryStatus);
+            // Doing an AsyncTask since querying the BatteryManager might be slow. In the past, it
+            // has caused ANRs when executed on the main thread - see crbug.com/1163401.
+            new AsyncTask<BatteryStatus>() {
+                @Override
+                protected BatteryStatus doInBackground() {
+                    updateBatteryStatus(batteryStatus);
+                    return batteryStatus;
+                }
+                @Override
+                protected void onPostExecute(BatteryStatus batteryStatus) {
+                    mCallback.onBatteryStatusChanged(batteryStatus);
+                }
+            }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        } else {
+            mCallback.onBatteryStatusChanged(batteryStatus);
         }
-
-        mCallback.onBatteryStatusChanged(batteryStatus);
     }
 
     private void updateBatteryStatus(BatteryStatus batteryStatus) {

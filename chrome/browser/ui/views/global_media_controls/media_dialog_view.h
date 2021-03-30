@@ -14,7 +14,9 @@
 #include "chrome/browser/accessibility/soda_installer.h"
 #include "chrome/browser/ui/global_media_controls/media_dialog_delegate.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_observer.h"
+#include "chrome/browser/ui/views/global_media_controls/global_media_controls_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 class MediaDialogViewObserver;
 class MediaNotificationContainerImplView;
@@ -26,17 +28,33 @@ class Profile;
 namespace views {
 class Label;
 class ToggleButton;
-}
+}  // namespace views
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 // Dialog that shows media controls that control the active media session.
 class MediaDialogView : public views::BubbleDialogDelegateView,
                         public MediaDialogDelegate,
                         public MediaNotificationContainerObserver,
-                        public speech::SODAInstaller::Observer {
+                        public speech::SodaInstaller::Observer {
  public:
+  METADATA_HEADER(MediaDialogView);
+
+  MediaDialogView(const MediaDialogView&) = delete;
+  MediaDialogView& operator=(const MediaDialogView&) = delete;
+
   static views::Widget* ShowDialog(views::View* anchor_view,
                                    MediaNotificationService* service,
-                                   Profile* profile);
+                                   Profile* profile,
+                                   GlobalMediaControlsEntryPoint entry_point);
+  static views::Widget* ShowDialogForPresentationRequest(
+      views::View* anchor_view,
+      MediaNotificationService* service,
+      Profile* profile,
+      content::WebContents* contents,
+      GlobalMediaControlsEntryPoint entry_point);
   static void HideDialog();
   static bool IsShowing();
 
@@ -77,9 +95,12 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
 
  private:
   friend class MediaDialogViewBrowserTest;
-  explicit MediaDialogView(views::View* anchor_view,
-                           MediaNotificationService* service,
-                           Profile* profile);
+  MediaDialogView(views::View* anchor_view,
+                  MediaNotificationService* service,
+                  Profile* profile,
+                  content::WebContents* contents,
+                  GlobalMediaControlsEntryPoint entry_point);
+
   ~MediaDialogView() override;
 
   static MediaDialogView* instance_;
@@ -97,10 +118,10 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   void ToggleLiveCaption(bool enabled);
   void UpdateBubbleSize();
 
-  // SODAInstaller::Observer overrides:
-  void OnSODAInstalled() override;
-  void OnSODAError() override;
-  void OnSODAProgress(int progress) override;
+  // SodaInstaller::Observer overrides:
+  void OnSodaInstalled() override;
+  void OnSodaError() override;
+  void OnSodaProgress(int progress) override;
 
   MediaNotificationService* const service_;
 
@@ -120,7 +141,11 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   views::Label* live_caption_title_ = nullptr;
   views::ToggleButton* live_caption_button_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(MediaDialogView);
+  // It stores the WebContents* from which a MediaRouterDialogControllerViews
+  // opened the dialog for a presentation request. It is nullptr if the dialog
+  // is opened from the toolbar.
+  content::WebContents* const web_contents_for_presentation_request_ = nullptr;
+  const GlobalMediaControlsEntryPoint entry_point_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_DIALOG_VIEW_H_

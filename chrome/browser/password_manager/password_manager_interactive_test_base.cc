@@ -32,7 +32,7 @@ void PasswordManagerInteractiveTestBase::FillElementWithValue(
       RenderFrameHost(),
       base::StringPrintf("document.getElementById('%s').focus();",
                          element_id.c_str())));
-  for (base::char16 character : value) {
+  for (char16_t character : value) {
     ui::DomKey dom_key = ui::DomKey::FromCharacter(character);
     const ui::PrintableCodeEntry* code_entry = std::find_if(
         std::begin(ui::kPrintableCodeMap), std::end(ui::kPrintableCodeMap),
@@ -139,6 +139,8 @@ void PasswordManagerInteractiveTestBase::VerifyPasswordIsSavedAndFilled(
 // Erases all characters that have been typed into |field_id|.
 void PasswordManagerInteractiveTestBase::SimulateUserDeletingFieldContent(
     const std::string& field_id) {
+  SCOPED_TRACE(::testing::Message()
+               << "SimulateUserDeletingFieldContent " << field_id);
   std::string focus("document.getElementById('" + field_id + "').focus();");
   ASSERT_TRUE(content::ExecuteScript(WebContents(), focus));
   std::string select("document.getElementById('" + field_id + "').select();");

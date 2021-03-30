@@ -7,6 +7,7 @@ package org.chromium.base;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CheckDiscard;
+import org.chromium.build.BuildConfig;
 
 import java.lang.ref.PhantomReference;
 import java.lang.ref.ReferenceQueue;
@@ -122,7 +123,7 @@ public class LifetimeAssert {
     }
 
     public static LifetimeAssert create(Object target) {
-        if (!BuildConfig.DCHECK_IS_ON) {
+        if (!BuildConfig.ENABLE_ASSERTS) {
             return null;
         }
         return new LifetimeAssert(
@@ -130,7 +131,7 @@ public class LifetimeAssert {
     }
 
     public static LifetimeAssert create(Object target, boolean safeToGc) {
-        if (!BuildConfig.DCHECK_IS_ON) {
+        if (!BuildConfig.ENABLE_ASSERTS) {
             return null;
         }
         return new LifetimeAssert(
@@ -138,7 +139,7 @@ public class LifetimeAssert {
     }
 
     public static void setSafeToGc(LifetimeAssert asserter, boolean value) {
-        if (BuildConfig.DCHECK_IS_ON) {
+        if (BuildConfig.ENABLE_ASSERTS) {
             // This guaratees that the target object is reachable until after mSafeToGc value
             // is updated here. See comment on Reference.reachabilityFence and review comments
             // on https://chromium-review.googlesource.com/c/chromium/src/+/1887151 for a
@@ -146,14 +147,14 @@ public class LifetimeAssert {
             // reachabilityFence because robolectric has problems mocking out that method,
             // and this should work for all Android versions.
             synchronized (asserter.mTarget) {
-                // asserter is never null when DCHECK_IS_ON.
+                // asserter is never null when ENABLE_ASSERTS.
                 asserter.mWrapper.mSafeToGc = value;
             }
         }
     }
 
     public static void assertAllInstancesDestroyedForTesting() throws LifetimeAssertException {
-        if (!BuildConfig.DCHECK_IS_ON) {
+        if (!BuildConfig.ENABLE_ASSERTS) {
             return;
         }
         synchronized (WrappedReference.sActiveWrappers) {

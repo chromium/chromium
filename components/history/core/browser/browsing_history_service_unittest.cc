@@ -255,7 +255,7 @@ class BrowsingHistoryServiceTest : public ::testing::Test {
   TestBrowsingHistoryDriver::QueryResult QueryHistory(
       const QueryOptions& options) {
     size_t previous_results_count = driver()->GetQueryResults().size();
-    service()->QueryHistory(base::string16(), options);
+    service()->QueryHistory(std::u16string(), options);
     BlockUntilHistoryProcessesPendingRequests();
     const std::vector<TestBrowsingHistoryDriver::QueryResult> all_results =
         driver()->GetQueryResults();
@@ -644,7 +644,7 @@ TEST_F(BrowsingHistoryServiceTest, WebHistoryTimeout) {
   driver()->SetWebHistory(&timeout);
   ResetService(driver(), local_history(), sync());
   EXPECT_EQ(0U, driver()->GetQueryResults().size());
-  service()->QueryHistory(base::string16(), QueryOptions());
+  service()->QueryHistory(std::u16string(), QueryOptions());
   EXPECT_EQ(0U, driver()->GetQueryResults().size());
   BlockUntilHistoryProcessesPendingRequests();
   timer()->Fire();

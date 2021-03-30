@@ -6,8 +6,7 @@
 
 #include <algorithm>
 
-#include <base/optional.h>
-
+#include "base/optional.h"
 #include "third_party/blink/renderer/core/paint/text_decoration_info.h"
 #include "third_party/blink/renderer/platform/fonts/font_metrics.h"
 #include "third_party/blink/renderer/platform/fonts/font_vertical_position_type.h"

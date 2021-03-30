@@ -38,9 +38,9 @@ class UsbDeviceAndroid : public UsbDevice {
                    uint16_t vendor_id,
                    uint16_t product_id,
                    uint16_t device_version,
-                   const base::string16& manufacturer_string,
-                   const base::string16& product_string,
-                   const base::string16& serial_number,
+                   const std::u16string& manufacturer_string,
+                   const std::u16string& product_string,
+                   const std::u16string& serial_number,
                    const base::android::JavaRef<jobject>& wrapper);
   ~UsbDeviceAndroid() override;
 

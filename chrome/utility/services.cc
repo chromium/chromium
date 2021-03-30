@@ -23,12 +23,15 @@
 #include "components/services/patch/public/mojom/file_patcher.mojom.h"
 #include "components/services/unzip/public/mojom/unzipper.mojom.h"
 #include "components/services/unzip/unzipper_impl.h"
+#include "components/webapps/services/web_app_origin_association/public/mojom/web_app_origin_association_parser.mojom.h"
+#include "components/webapps/services/web_app_origin_association/web_app_origin_association_parser_impl.h"
 #include "content/public/common/content_features.h"
 #include "content/public/utility/utility_thread.h"
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/service_factory.h"
 #include "printing/buildflags/buildflags.h"
+#include "third_party/blink/public/common/features.h"
 
 #if defined(OS_WIN)
 #include "chrome/services/util_win/public/mojom/util_read_icon.mojom.h"
@@ -38,7 +41,12 @@
 #include "components/services/quarantine/public/cpp/quarantine_features_win.h"  // nogncheck
 #include "components/services/quarantine/public/mojom/quarantine.mojom.h"  // nogncheck
 #include "components/services/quarantine/quarantine_impl.h"  // nogncheck
+#include "media/mojo/services/media_service_factory.h"       // nogncheck
 #endif  // defined(OS_WIN)
+
+#if defined(OS_MAC)
+#include "chrome/services/mac_notifications/mac_notification_provider_impl.h"
+#endif  // defined(OS_MAC)
 
 #if !defined(OS_ANDROID)
 #include "chrome/common/importer/profile_import.mojom.h"
@@ -137,6 +145,13 @@ auto RunMachineLearningService(
       std::move(receiver));
 }
 
+auto RunWebAppOriginAssociationParser(
+    mojo::PendingReceiver<webapps::mojom::WebAppOriginAssociationParser>
+        receiver) {
+  return std::make_unique<webapps::WebAppOriginAssociationParserImpl>(
+      std::move(receiver));
+}
+
 #if defined(OS_WIN)
 auto RunQuarantineService(
     mojo::PendingReceiver<quarantine::mojom::Quarantine> receiver) {
@@ -153,6 +168,15 @@ auto RunWindowsIconReader(
   return std::make_unique<UtilReadIcon>(std::move(receiver));
 }
 #endif  // defined(OS_WIN)
+
+#if defined(OS_MAC)
+auto RunMacNotificationService(
+    mojo::PendingReceiver<mac_notifications::mojom::MacNotificationProvider>
+        receiver) {
+  return std::make_unique<mac_notifications::MacNotificationProviderImpl>(
+      std::move(receiver));
+}
+#endif  // defined(OS_MAC)
 
 #if !defined(OS_ANDROID)
 auto RunProxyResolver(
@@ -282,6 +306,13 @@ auto RunAssistantAudioDecoder(
 #endif
 #endif
 
+#if defined(OS_WIN)
+auto RunMediaFoundationService(
+    mojo::PendingReceiver<media::mojom::MediaService> receiver) {
+  return media::CreateMediaFoundationService(std::move(receiver));
+}
+#endif  // defined(OS_WIN)
+
 }  // namespace
 
 void RegisterElevatedMainThreadServices(mojo::ServiceFactory& services) {
@@ -300,6 +331,9 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunQRCodeGeneratorService);
   services.Add(RunMachineLearningService);
 
+  if (base::FeatureList::IsEnabled(blink::features::kWebAppEnableUrlHandlers))
+    services.Add(RunWebAppOriginAssociationParser);
+
 #if !defined(OS_ANDROID)
   services.Add(RunProfileImporter);
   services.Add(RunMirroringService);
@@ -310,11 +344,16 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunQuarantineService);
   services.Add(RunWindowsUtility);
   services.Add(RunWindowsIconReader);
+  services.Add(RunMediaFoundationService);
 #endif  // defined(OS_WIN)
 
 #if BUILDFLAG(ENABLE_PRINTING) && BUILDFLAG(IS_CHROMEOS_ASH)
   services.Add(RunCupsIppParser);
 #endif
+
+#if defined(OS_MAC)
+  services.Add(RunMacNotificationService);
+#endif  // defined(OS_MAC)
 
 #if BUILDFLAG(FULL_SAFE_BROWSING) || BUILDFLAG(IS_CHROMEOS_ASH)
   services.Add(RunFileUtil);

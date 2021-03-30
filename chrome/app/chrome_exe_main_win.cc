@@ -8,6 +8,7 @@
 #include <tchar.h>
 
 #include <algorithm>
+#include <array>
 #include <string>
 
 #include "base/at_exit.h"
@@ -16,12 +17,12 @@
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/process/memory.h"
 #include "base/process/process.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -55,6 +56,26 @@ int main();
 #endif
 
 namespace {
+
+// Sets the current working directory for the process to the directory holding
+// the executable if this is the browser process. This avoids leaking a handle
+// to an arbitrary directory to child processes (e.g., the crashpad handler
+// process) created before MainDllLoader changes the current working directory
+// to the browser's version directory.
+void SetCwdForBrowserProcess() {
+  if (!::IsBrowserProcess())
+    return;
+
+  std::array<wchar_t, MAX_PATH + 1> buffer;
+  buffer[0] = L'\0';
+  DWORD length = ::GetModuleFileName(nullptr, &buffer[0], buffer.size());
+  if (!length || length >= buffer.size())
+    return;
+
+  base::SetCurrentDirectory(
+      base::FilePath(base::FilePath::StringPieceType(&buffer[0], length))
+          .DirName());
+}
 
 bool IsFastStartSwitch(const std::string& command_line_switch) {
   return command_line_switch == switches::kProfileDirectory;
@@ -90,7 +111,7 @@ bool AttemptFastNotify(const base::CommandLine& command_line) {
 // Returns true if |command_line| contains a /prefetch:# argument where # is in
 // [1, 8].
 bool HasValidWindowsPrefetchArgument(const base::CommandLine& command_line) {
-  const base::char16 kPrefetchArgumentPrefix[] = L"/prefetch:";
+  const wchar_t kPrefetchArgumentPrefix[] = L"/prefetch:";
 
   for (const auto& arg : command_line.argv()) {
     if (arg.size() == base::size(kPrefetchArgumentPrefix) &&
@@ -119,7 +140,7 @@ bool RemoveAppCompatFlagsEntry() {
                KEY_READ | KEY_WRITE) == ERROR_SUCCESS) {
     std::wstring layers;
     if (key.ReadValue(current_exe.value().c_str(), &layers) == ERROR_SUCCESS) {
-      std::vector<base::string16> tokens = base::SplitString(
+      std::vector<std::wstring> tokens = base::SplitString(
           layers, L" ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
       size_t initial_size = tokens.size();
       static const wchar_t* const kCompatModeTokens[] = {
@@ -134,7 +155,7 @@ bool RemoveAppCompatFlagsEntry() {
       if (tokens.empty()) {
         result = key.DeleteValue(current_exe.value().c_str());
       } else {
-        base::string16 without_compat_mode_tokens =
+        std::wstring without_compat_mode_tokens =
             base::JoinString(tokens, L" ");
         result = key.WriteValue(current_exe.value().c_str(),
                                 without_compat_mode_tokens.c_str());
@@ -153,21 +174,14 @@ int RunFallbackCrashHandler(const base::CommandLine& cmd_line) {
   wchar_t exe_file[MAX_PATH] = {};
   CHECK(::GetModuleFileName(nullptr, exe_file, base::size(exe_file)));
 
-  base::string16 product_name;
-  base::string16 version;
-  base::string16 channel_name;
-  base::string16 special_build;
+  std::wstring product_name, version, channel_name, special_build;
   install_static::GetExecutableVersionDetails(exe_file, &product_name, &version,
                                               &special_build, &channel_name);
 
   return crash_reporter::RunAsFallbackCrashHandler(
-      cmd_line, base::UTF16ToUTF8(product_name), base::UTF16ToUTF8(version),
-      base::UTF16ToUTF8(channel_name));
+      cmd_line, base::WideToUTF8(product_name), base::WideToUTF8(version),
+      base::WideToUTF8(channel_name));
 }
-
-}  // namespace
-
-namespace {
 
 // In 32-bit builds, the main thread starts with the default (small) stack size.
 // The ARCH_CPU_32_BITS blocks here and below are in support of moving the main
@@ -250,6 +264,7 @@ int main() {
   // If we are already a fiber then continue normal execution.
 #endif  // defined(ARCH_CPU_32_BITS)
 
+  SetCwdForBrowserProcess();
   install_static::InitializeFromPrimaryModule();
   SignalInitializeCrashReporting();
 #if defined(ARCH_CPU_32_BITS)
@@ -356,10 +371,10 @@ int main() {
   delete loader;
 
   // Process shutdown is hard and some process types have been crashing during
-  // shutdown. TerminateProcess is safer and faster.
+  // shutdown. TerminateCurrentProcessImmediately is safer and faster.
   if (process_type == switches::kUtilityProcess ||
       process_type == switches::kPpapiPluginProcess) {
-    TerminateProcess(GetCurrentProcess(), rc);
+    base::Process::TerminateCurrentProcessImmediately(rc);
   }
   return rc;
 }

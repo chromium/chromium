@@ -1,0 +1,52 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++genericContainer ignored
+++++++++++staticText name='item1item2'
+++++++++++++inlineTextBox name='item1item2'
+++++++++++image
+++++++++genericContainer
+++++++++++staticText name='Some Text'
+++++++++++++inlineTextBox name='Some Text'
+++++++genericContainer
+++++++++staticText name='code'
+++++++++genericContainer
+++++++++++staticText name='Some Text'
+++++++++++++inlineTextBox name='Some Text'
+++++++genericContainer
+++++++++staticText ignored
+++++++++genericContainer
+++++++++++staticText name='Some Text'
+++++++++++++inlineTextBox name='Some Text'
+++++++genericContainer
+++++++++image name='star'
+++++++++genericContainer
+++++++++++staticText name='Some Text'
+++++++++++++inlineTextBox name='Some Text'
+++++++genericContainer
+++++++++image
+++++++++genericContainer
+++++++++++staticText name='Some Text'
+++++++++++++inlineTextBox name='Some Text'
+++++++genericContainer
+++++++++staticText name='a list of items'
+++++++++genericContainer
+++++++++++staticText name='Some Text'
+++++++++++++inlineTextBox name='Some Text'
+++++++genericContainer
+++++++++image
+++++++++genericContainer
+++++++++++staticText name='Some Text'
+++++++++++++inlineTextBox name='Some Text'
+++++++genericContainer
+++++++++paragraph
+++++++++++staticText name='Some Text'
+++++++++++++inlineTextBox name='Some Text'
+++++++image name='alt'
+++++++genericContainer
+++++++++staticText name='DOM Text'
+++++++++++inlineTextBox name='DOM Text'
+++++++genericContainer
+++++++++staticText name='DOM Text'
+++++++++++inlineTextBox name='DOM Text'

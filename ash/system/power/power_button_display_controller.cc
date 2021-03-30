@@ -32,13 +32,12 @@ PowerButtonDisplayController::PowerButtonDisplayController(
     BacklightsForcedOffSetter* backlights_forced_off_setter,
     const base::TickClock* tick_clock)
     : backlights_forced_off_setter_(backlights_forced_off_setter),
-      backlights_forced_off_observer_(this),
       tick_clock_(tick_clock) {
   chromeos::PowerManagerClient::Get()->AddObserver(this);
   ui::DeviceDataManager::GetInstance()->AddObserver(this);
   Shell::Get()->AddPreTargetHandler(this, ui::EventTarget::Priority::kSystem);
 
-  backlights_forced_off_observer_.Add(backlights_forced_off_setter_);
+  backlights_forced_off_observation_.Observe(backlights_forced_off_setter_);
 }
 
 PowerButtonDisplayController::~PowerButtonDisplayController() {

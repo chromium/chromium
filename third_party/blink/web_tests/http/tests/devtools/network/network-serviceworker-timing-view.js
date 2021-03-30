@@ -5,8 +5,8 @@
 (async function() {
     'use strict';
     TestRunner.addResult(`Tests that serviceworker timings are displayed correctly.\n`);
-    await TestRunner.loadModule('application_test_runner');
-    await TestRunner.loadModule('network_test_runner');
+    await TestRunner.loadModule('console'); await TestRunner.loadTestModule('application_test_runner');
+    await TestRunner.loadTestModule('network_test_runner');
     await TestRunner.showPanel('network');
 
     await TestRunner.reloadPagePromise();

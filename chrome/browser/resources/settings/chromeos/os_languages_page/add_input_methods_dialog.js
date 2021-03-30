@@ -9,10 +9,6 @@
 Polymer({
   is: 'os-settings-add-input-methods-dialog',
 
-  behaviors: [
-    CrScrollableBehavior,
-  ],
-
   properties: {
     /** @type {!LanguagesModel|undefined} */
     languages: Object,

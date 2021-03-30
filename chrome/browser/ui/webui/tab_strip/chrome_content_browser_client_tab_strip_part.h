@@ -17,7 +17,7 @@ class ChromeContentBrowserClientTabStripPart
   ~ChromeContentBrowserClientTabStripPart() override;
 
   // ChromeContentBrowserClientParts:
-  void OverrideWebkitPrefs(content::RenderViewHost* rvh,
+  void OverrideWebkitPrefs(content::WebContents* web_contents,
                            blink::web_pref::WebPreferences* web_prefs) override;
 
  private:

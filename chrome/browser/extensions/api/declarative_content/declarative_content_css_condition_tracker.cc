@@ -18,8 +18,10 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_source.h"
 #include "content/public/browser/render_process_host.h"
+#include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/common/api/declarative/declarative_constants.h"
 #include "extensions/common/extension_messages.h"
+#include "extensions/common/mojom/renderer.mojom.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"
 
@@ -35,8 +37,7 @@ const char kCssInvalidTypeOfParameter[] = "Attribute '%s' has an invalid type";
 // DeclarativeContentCssPredicate
 //
 
-DeclarativeContentCssPredicate::~DeclarativeContentCssPredicate() {
-}
+DeclarativeContentCssPredicate::~DeclarativeContentCssPredicate() = default;
 
 // static
 std::unique_ptr<DeclarativeContentCssPredicate>
@@ -85,18 +86,15 @@ DeclarativeContentCssPredicate::DeclarativeContentCssPredicate(
 //
 
 DeclarativeContentCssConditionTracker::PerWebContentsTracker::
-PerWebContentsTracker(
-    content::WebContents* contents,
-    const RequestEvaluationCallback& request_evaluation,
-    const WebContentsDestroyedCallback& web_contents_destroyed)
+    PerWebContentsTracker(content::WebContents* contents,
+                          RequestEvaluationCallback request_evaluation,
+                          WebContentsDestroyedCallback web_contents_destroyed)
     : WebContentsObserver(contents),
-      request_evaluation_(request_evaluation),
-      web_contents_destroyed_(web_contents_destroyed) {
-}
+      request_evaluation_(std::move(request_evaluation)),
+      web_contents_destroyed_(std::move(web_contents_destroyed)) {}
 
 DeclarativeContentCssConditionTracker::PerWebContentsTracker::
-~PerWebContentsTracker() {
-}
+    ~PerWebContentsTracker() = default;
 
 void DeclarativeContentCssConditionTracker::PerWebContentsTracker::
 OnWebContentsNavigation(content::NavigationHandle* navigation_handle) {
@@ -130,7 +128,7 @@ OnMessageReceived(
 
 void DeclarativeContentCssConditionTracker::PerWebContentsTracker::
 WebContentsDestroyed() {
-  web_contents_destroyed_.Run(web_contents());
+  std::move(web_contents_destroyed_).Run(web_contents());
 }
 
 void
@@ -155,7 +153,7 @@ DeclarativeContentCssConditionTracker::DeclarativeContentCssConditionTracker(
 }
 
 DeclarativeContentCssConditionTracker::
-~DeclarativeContentCssConditionTracker() {}
+    ~DeclarativeContentCssConditionTracker() = default;
 
 std::string DeclarativeContentCssConditionTracker::
 GetPredicateApiAttributeName() const {
@@ -220,8 +218,9 @@ void DeclarativeContentCssConditionTracker::TrackForWebContents(
     content::WebContents* contents) {
   per_web_contents_tracker_[contents] = std::make_unique<PerWebContentsTracker>(
       contents,
-      base::Bind(&Delegate::RequestEvaluation, base::Unretained(delegate_)),
-      base::Bind(
+      base::BindRepeating(&Delegate::RequestEvaluation,
+                          base::Unretained(delegate_)),
+      base::BindOnce(
           &DeclarativeContentCssConditionTracker::DeletePerWebContentsTracker,
           base::Unretained(this)));
   // Note: the condition is always false until we receive OnWatchedPageChange,
@@ -294,9 +293,13 @@ void DeclarativeContentCssConditionTracker::
 InstructRenderProcessIfManagingBrowserContext(
     content::RenderProcessHost* process,
     std::vector<std::string> watched_css_selectors) {
-  if (delegate_->ShouldManageConditionsForBrowserContext(
-          process->GetBrowserContext())) {
-    process->Send(new ExtensionMsg_WatchPages(watched_css_selectors));
+  content::BrowserContext* browser_context = process->GetBrowserContext();
+  if (delegate_->ShouldManageConditionsForBrowserContext(browser_context)) {
+    mojom::Renderer* renderer =
+        RendererStartupHelperFactory::GetForBrowserContext(browser_context)
+            ->GetRenderer(process);
+    if (renderer)
+      renderer->WatchPages(watched_css_selectors);
   }
 }
 

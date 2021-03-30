@@ -62,7 +62,8 @@ class InputEngine : public mojom::InputChannel {
   void ResetForRulebased() override;
   void GetRulebasedKeypressCountForTesting(
       GetRulebasedKeypressCountForTestingCallback callback) override;
-  void CommitText(const std::string& text) override;
+  void CommitText(const std::string& text,
+                  mojom::CommitTextCursorBehavior cursor_behavior) override;
   void SetComposition(const std::string& text) override;
   void SetCompositionRange(uint32_t start_byte_index,
                            uint32_t end_byte_index) override;
@@ -73,10 +74,11 @@ class InputEngine : public mojom::InputChannel {
 
   // TODO(https://crbug.com/837156): Implement a state for the interface.
 
- private:
+ protected:
   // Returns whether the given ime_spec is supported by rulebased engine.
   bool IsImeSupportedByRulebased(const std::string& ime_spec);
 
+ private:
   mojo::ReceiverSet<mojom::InputChannel, std::unique_ptr<InputEngineContext>>
       channel_receivers_;
 

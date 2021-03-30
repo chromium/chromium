@@ -9,7 +9,6 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/strings/string16.h"
 #include "base/values.h"
 
 namespace extensions {
@@ -31,7 +30,7 @@ struct PrinterProviderPrintJob {
   std::string printer_id;
 
   // The print job title.
-  base::string16 job_title;
+  std::u16string job_title;
 
   // The print job ticket.
   base::Value ticket;

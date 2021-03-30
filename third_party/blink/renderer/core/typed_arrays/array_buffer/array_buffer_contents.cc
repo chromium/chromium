@@ -25,10 +25,11 @@
  */
 
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
-#include "build/build_config.h"
 
-#include <string.h>
+#include <cstring>
+
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/bits.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
@@ -106,17 +107,38 @@ void ArrayBufferContents::CopyTo(ArrayBufferContents& other) {
       DataLength(), 1, IsShared() ? kShared : kNotShared, kDontInitialize);
   if (!IsValid() || !other.IsValid())
     return;
-  memcpy(other.Data(), Data(), DataLength());
+  std::memcpy(other.Data(), Data(), DataLength());
 }
 
 void* ArrayBufferContents::AllocateMemoryWithFlags(size_t size,
                                                    InitializationPolicy policy,
                                                    int flags) {
+  // The array buffer contents are sometimes expected to be 16-byte aligned in
+  // order to get the best optimization of SSE, especially in case of audio and
+  // video buffers.  Hence, align the given size up to 16-byte boundary.
+  // Technically speaking, 16-byte aligned size doesn't mean 16-byte aligned
+  // address, but this heuristics works with the current implementation of
+  // PartitionAlloc (and PartitionAlloc doesn't support a better way for now).
+  if (base::kAlignment < 16) {  // base::kAlignment is a compile-time constant.
+    size_t aligned_size = base::bits::AlignUp(size, 16);
+    if (size == 0) {
+      aligned_size = 16;
+    }
+    if (aligned_size >= size) {  // Only when no overflow
+      size = aligned_size;
+    }
+  }
+
   if (policy == kZeroInitialize) {
     flags |= base::PartitionAllocZeroFill;
   }
   void* data = WTF::Partitions::ArrayBufferPartition()->AllocFlags(
       flags, size, WTF_HEAP_PROFILER_TYPE_NAME(ArrayBufferContents));
+  if (base::kAlignment < 16) {
+    char* ptr = reinterpret_cast<char*>(data);
+    DCHECK_EQ(base::bits::AlignUp(ptr, 16), ptr)
+        << "Pointer " << ptr << " not 16B aligned for size " << size;
+  }
   InstanceCounters::IncrementCounter(
       InstanceCounters::kArrayBufferContentsCounter);
   return data;

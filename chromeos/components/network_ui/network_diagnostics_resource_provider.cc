@@ -32,6 +32,16 @@ constexpr webui::LocalizedString kLocalizedStrings[] = {
     {"NetworkDiagnosticsHttpsFirewall", IDS_NETWORK_DIAGNOSTICS_HTTPS_FIREWALL},
     {"NetworkDiagnosticsHttpsLatency", IDS_NETWORK_DIAGNOSTICS_HTTPS_LATENCY},
     {"NetworkDiagnosticsCaptivePortal", IDS_NETWORK_DIAGNOSTICS_CAPTIVE_PORTAL},
+    {"NetworkDiagnosticsVideoConferencing",
+     IDS_NETWORK_DIAGNOSTICS_VIDEO_CONFERENCING},
+    {"NetworkDiagnosticsConnectionGroup",
+     IDS_NETWORK_DIAGNOSTICS_CONNECTION_GROUP},
+    {"NetworkDiagnosticsWifiGroup", IDS_NETWORK_DIAGNOSTICS_WIFI_GROUP},
+    {"NetworkDiagnosticsGatewayGroup", IDS_NETWORK_DIAGNOSTICS_GATEWAY_GROUP},
+    {"NetworkDiagnosticsFirewallGroup", IDS_NETWORK_DIAGNOSTICS_FIREWALL_GROUP},
+    {"NetworkDiagnosticsDnsGroup", IDS_NETWORK_DIAGNOSTICS_DNS_GROUP},
+    {"NetworkDiagnosticsGoogleServicesGroup",
+     IDS_NETWORK_DIAGNOSTICS_GOOGLE_SERVICES_GROUP},
     {"NetworkDiagnosticsPassed", IDS_NETWORK_DIAGNOSTICS_PASSED},
     {"NetworkDiagnosticsFailed", IDS_NETWORK_DIAGNOSTICS_FAILED},
     {"NetworkDiagnosticsNotRun", IDS_NETWORK_DIAGNOSTICS_NOT_RUN},
@@ -99,6 +109,12 @@ constexpr webui::LocalizedString kLocalizedStrings[] = {
      IDS_NETWORK_DIAGNOSTICS_CAPTIVE_PORTAL_PROBLEM_PROXY_AUTH_REQUIRED},
     {"CaptivePortalProblem_NoInternet",
      IDS_NETWORK_DIAGNOSTICS_CAPTIVE_PORTAL_PROBLEM_NO_INTERNET},
+    {"VideoConferencingProblem_UdpFailure",
+     IDS_NETWORK_DIAGNOSTICS_VIDEO_CONFERENCING_PROBLEM_UPD_FAILURE},
+    {"VideoConferencingProblem_TcpFailure",
+     IDS_NETWORK_DIAGNOSTICS_VIDEO_CONFERENCING_PROBLEM_TCP_FAILURE},
+    {"VideoConferencingProblem_MediaFailure",
+     IDS_NETWORK_DIAGNOSTICS_VIDEO_CONFERENCING_PROBLEM_MEDIA_FAILURE},
 };
 
 struct WebUiResource {
@@ -124,26 +140,13 @@ struct StringMap {
   const char* value;
 };
 
-// TODO(crbug/1142857): Localize these strings after UX approval.
-constexpr StringMap kPlaceholderStrings[] = {
-    {"NetworkDiagnosticsConnectionGroup", "Connection"},
-    {"NetworkDiagnosticsWifiGroup", "WiFi"},
-    {"NetworkDiagnosticsGatewayGroup", "Gateway"},
-    {"NetworkDiagnosticsFirewallGroup", "Firewall"},
-    {"NetworkDiagnosticsDnsGroup", "DNS"},
-};
-
 }  // namespace
 
 void AddResources(content::WebUIDataSource* html_source) {
-  for (const auto& str : kLocalizedStrings)
-    html_source->AddLocalizedString(str.name, str.id);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   for (const auto& resource : kResources)
     html_source->AddResourcePath(resource.name, resource.id);
-
-  for (const auto& str : kPlaceholderStrings)
-    html_source->AddString(str.name, str.value);
 }
 
 }  // namespace network_diagnostics

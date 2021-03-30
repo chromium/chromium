@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_section.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace chromeos {
@@ -18,7 +18,7 @@ namespace settings {
 constexpr const char OsSettingsSection::kSettingIdUrlParam[];
 
 // static
-base::string16 OsSettingsSection::GetHelpUrlWithBoard(
+std::u16string OsSettingsSection::GetHelpUrlWithBoard(
     const std::string& original_url) {
   return base::ASCIIToUTF16(original_url +
                             "&b=" + base::SysInfo::GetLsbReleaseBoard());
@@ -60,7 +60,7 @@ mojom::SearchResultPtr OsSettingsSection::GenerateSectionSearchResult(
       ModifySearchResultUrl(mojom::SearchResultType::kSection,
                             {.section = GetSection()}, GetSectionPath()),
       GetSectionIcon(), relevance_score,
-      std::vector<base::string16>{
+      std::vector<std::u16string>{
           l10n_util::GetStringUTF16(IDS_INTERNAL_APP_SETTINGS),
           l10n_util::GetStringUTF16(GetSectionNameMessageId())},
       mojom::SearchResultDefaultRank::kMedium,

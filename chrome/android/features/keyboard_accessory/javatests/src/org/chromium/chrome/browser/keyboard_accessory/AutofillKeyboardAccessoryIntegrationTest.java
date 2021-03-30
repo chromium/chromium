@@ -165,7 +165,7 @@ public class AutofillKeyboardAccessoryIntegrationTest {
     @MediumTest
     public void testTapInputFieldShowsKeyboardAccessory() throws TimeoutException {
         loadTestPage(FakeKeyboard::new);
-        mHelper.clickNodeAndShowKeyboard("NAME_FIRST");
+        mHelper.clickNodeAndShowKeyboard("NAME_FIRST", 1);
         mHelper.waitForKeyboardAccessoryToBeShown();
     }
 
@@ -177,7 +177,7 @@ public class AutofillKeyboardAccessoryIntegrationTest {
     @FlakyTest(message = "https://crbug.com/984489")
     public void testSwitchFieldsRescrollsKeyboardAccessory() throws TimeoutException {
         loadTestPage(FakeKeyboard::new);
-        mHelper.clickNodeAndShowKeyboard("EMAIL_ADDRESS");
+        mHelper.clickNodeAndShowKeyboard("EMAIL_ADDRESS", 8);
         mHelper.waitForKeyboardAccessoryToBeShown(true);
 
         // Scroll to the second position and check it actually happened.
@@ -188,7 +188,7 @@ public class AutofillKeyboardAccessoryIntegrationTest {
         }, "Should keep the manual scroll position.");
 
         // Clicking any other node should now scroll the items back to the initial position.
-        mHelper.clickNodeAndShowKeyboard("NAME_LAST");
+        mHelper.clickNodeAndShowKeyboard("NAME_LAST", 2);
         CriteriaHelper.pollUiThread(() -> {
             return mHelper.getAccessoryBarView().computeHorizontalScrollOffset() == 0;
         }, "Should be scrolled back to position 0.");
@@ -208,7 +208,7 @@ public class AutofillKeyboardAccessoryIntegrationTest {
     testSelectSuggestionHidesKeyboardAccessory(@EnabledFeature int enabledFeature)
             throws ExecutionException, TimeoutException {
         loadTestPage(FakeKeyboard::new, enabledFeature);
-        mHelper.clickNodeAndShowKeyboard("NAME_FIRST");
+        mHelper.clickNodeAndShowKeyboard("NAME_FIRST", 1);
         mHelper.waitForKeyboardAccessoryToBeShown(true);
 
         TestThreadUtils.runOnUiThreadBlocking(
@@ -222,7 +222,7 @@ public class AutofillKeyboardAccessoryIntegrationTest {
             throws ExecutionException, TimeoutException {
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
         loadTestPage(MultiWindowKeyboard::new);
-        mHelper.clickNode("NAME_FIRST", FocusedFieldType.FILLABLE_NON_SEARCH_FIELD);
+        mHelper.clickNode("NAME_FIRST", 1, FocusedFieldType.FILLABLE_NON_SEARCH_FIELD);
         mHelper.waitForKeyboardAccessoryToBeShown(true);
 
         TestThreadUtils.runOnUiThreadBlocking(
@@ -235,7 +235,7 @@ public class AutofillKeyboardAccessoryIntegrationTest {
     public void testPressingBackButtonHidesAccessoryWithAutofillSuggestions()
             throws TimeoutException, ExecutionException {
         loadTestPage(MultiWindowKeyboard::new);
-        mHelper.clickNodeAndShowKeyboard("NAME_FIRST");
+        mHelper.clickNodeAndShowKeyboard("NAME_FIRST", 1);
         mHelper.waitForKeyboardAccessoryToBeShown(true);
 
         whenDisplayed(withId(R.id.bar_items_view))
@@ -255,7 +255,7 @@ public class AutofillKeyboardAccessoryIntegrationTest {
     public void testSheetHasMinimumSizeWhenTriggeredBySuggestion() throws TimeoutException {
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
         loadTestPage(MultiWindowKeyboard::new);
-        mHelper.clickNode("NAME_FIRST", FocusedFieldType.FILLABLE_NON_SEARCH_FIELD);
+        mHelper.clickNode("NAME_FIRST", 1, FocusedFieldType.FILLABLE_NON_SEARCH_FIELD);
         mHelper.waitForKeyboardAccessoryToBeShown(true);
 
         whenDisplayed(withId(R.id.bar_items_view))

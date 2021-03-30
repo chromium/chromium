@@ -43,6 +43,7 @@ namespace fileManagerPrivateInternal {
       void(fileManagerPrivate.InstallLinuxPackageResponse response);
   callback GetThumbnailCallback = void(DOMString ThumbnailDataUrl);
   callback BooleanCallback = void(boolean result);
+  callback GetVolumeRootCallback = void(EntryDescription rootDir);
 
   interface Functions {
     static void resolveIsolatedEntries(DOMString[] urls,
@@ -100,6 +101,8 @@ namespace fileManagerPrivateInternal {
         ValidatePathNameLengthCallback callback);
     static void getDirectorySize(DOMString url,
                                  GetDirectorySizeCallback callback);
+    static void getVolumeRoot(fileManagerPrivate.GetVolumeRootOptions options,
+                              GetVolumeRootCallback callback);
     static void getRecentFiles(fileManagerPrivate.SourceRestriction restriction,
                                fileManagerPrivate.RecentFileType file_type,
                                GetRecentFilesCallback callback);
@@ -128,7 +131,10 @@ namespace fileManagerPrivateInternal {
                                                  long heightHint,
                                                  GetThumbnailCallback callback);
     static void sharesheetHasTargets(DOMString[] urls, BooleanCallback callback);
-    static void invokeSharesheet(DOMString[] urls, SimpleCallback callback);
+    static void invokeSharesheet(
+        DOMString[] urls,
+        fileManagerPrivate.SharesheetLaunchSource launchSource,
+        SimpleCallback callback);
     static void toggleAddedToHoldingSpace(DOMString[] urls, boolean add,
                                           optional SimpleCallback callback);
   };

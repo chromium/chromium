@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -24,8 +24,8 @@ void KioskInfoService::Start(
   exported_object->ExportMethod(
       kKioskAppServiceInterface,
       kKioskAppServiceGetRequiredPlatformVersionMethod,
-      base::Bind(&KioskInfoService::GetKioskAppRequiredPlatformVersion,
-                 weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(&KioskInfoService::GetKioskAppRequiredPlatformVersion,
+                          weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&KioskInfoService::OnExported,
                      weak_ptr_factory_.GetWeakPtr()));
 }

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="16dp"
+    android:paddingBottom="8dp"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:orientation="horizontal">
+
+  <ImageView
+      android:id="@+id/menu_header_image"
+      android:layout_width="@dimen/launchpad_menu_header_image_size"
+      android:layout_height="@dimen/launchpad_menu_header_image_size"
+      android:layout_marginEnd="16dp"
+      android:importantForAccessibility="no"
+      android:scaleType="centerInside"
+      android:src="@color/thumbnail_placeholder_on_primary_bg" />
+
+  <LinearLayout
+      android:id="@+id/title_and_url"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_vertical"
+      android:orientation="vertical">
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/menu_header_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAppearance="@style/TextAppearance.TextSmall.Primary"
+        app:leading="@dimen/text_size_small_leading" />
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/menu_header_url"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+        app:leading="@dimen/text_size_small_leading" />
+  </LinearLayout>
+</LinearLayout>

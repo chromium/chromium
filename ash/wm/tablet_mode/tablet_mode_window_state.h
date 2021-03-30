@@ -45,11 +45,6 @@ class TabletModeWindowState : public WindowState::State {
   // Leaves the tablet mode by reverting to previous state object.
   void LeaveTabletMode(WindowState* window_state, bool was_in_overview);
 
-  // Handles Alt+[ if |snap_position| is |SplitViewController::LEFT|; handles
-  // Alt+] if |snap_position| is |SplitViewController::RIGHT|.
-  void CycleTabletSnap(WindowState* window_state,
-                       SplitViewController::SnapPosition snap_position);
-
   // WindowState::State overrides:
   void OnWMEvent(WindowState* window_state, const WMEvent* event) override;
 
@@ -88,6 +83,14 @@ class TabletModeWindowState : public WindowState::State {
   // Updates the bounds to the maximum possible bounds according to the current
   // window state. If |animated| is set we animate the change.
   void UpdateBounds(WindowState* window_state, bool animated);
+
+  // Handles Alt+[ if |snap_position| is |SplitViewController::LEFT|; handles
+  // Alt+] if |snap_position| is |SplitViewController::RIGHT|.
+  void CycleTabletSnap(WindowState* window_state,
+                       SplitViewController::SnapPosition snap_position);
+
+  // Snap the window in tablet split view if it can be snapped.
+  void DoTabletSnap(WindowState* window_state, WMEventType snap_event_type);
 
   // The original bounds and state object of the window.
   gfx::Rect old_window_bounds_in_screen_;

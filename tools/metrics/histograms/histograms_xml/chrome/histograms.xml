@@ -126,7 +126,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Chrome.Tabs.AnimationSmoothness.HoverCard.FadeIn" units="%"
-    expires_after="2021-06-04">
+    expires_after="2021-08-29">
   <owner>yichenz@chromium.org</owner>
   <owner>chromeos-wmp@google.com</owner>
   <summary>
@@ -145,7 +145,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Chrome.Tabs.AnimationSmoothness.TabLoading" units="%"
-    expires_after="2021-06-04">
+    expires_after="2021-08-09">
   <owner>yichenz@chromium.org</owner>
   <owner>chromeos-wmp@google.com</owner>
   <summary>
@@ -155,8 +155,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeColors.ColorApplied" enum="ChromeColorsInfo"
+    expires_after="2021-08-22">
+  <owner>alexilin@chromium.org</owner>
+  <owner>jkrcal@chromium.org</owner>
+  <summary>
+    Records the theme color every time the user clicks on a color icon in the
+    color picker.
+  </summary>
+</histogram>
+
 <histogram name="ChromeColors.ColorOnLoad" enum="ChromeColorsInfo"
-    expires_after="2021-05-16">
+    expires_after="2021-09-19">
   <owner>gayane@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
   <summary>
@@ -234,7 +244,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="ChromeMLService.EvaluationLatency" units="ms"
-    expires_after="2021-02-27">
+    expires_after="M92">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -245,7 +255,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="ChromeMLService.LoadModelResult"
-    enum="ChromeMLServiceLoadModelResult" expires_after="2021-02-27">
+    enum="ChromeMLServiceLoadModelResult" expires_after="M92">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -254,8 +264,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeMLService.PredictionResult.DecisionTreeModel"
-    enum="ChromeMLServiceDecisionTreePredictionResult"
-    expires_after="2021-02-27">
+    enum="ChromeMLServiceDecisionTreePredictionResult" expires_after="M92">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -264,7 +273,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeMLService.ServiceAliveDuration" units="ms"
-    expires_after="2021-02-27">
+    expires_after="M92">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -275,28 +284,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeMLService.ServiceCrash" enum="Boolean"
-    expires_after="2021-02-27">
+    expires_after="M92">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>Records if the Chrome ML Service crashed.</summary>
 </histogram>
 
 <histogram name="ChromeMLService.ServiceLaunch" enum="Boolean"
-    expires_after="2021-02-27">
+    expires_after="M92">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>Records if the Chrome ML Service launched successfully.</summary>
 </histogram>
 
 <histogram name="ChromeMLService.ServiceNormalTermination" enum="Boolean"
-    expires_after="2021-02-27">
+    expires_after="M92">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>Records if the Chrome ML Service terminated normally.</summary>
 </histogram>
 
 <histogram name="ChromeMLService.ServiceStatusWhenRequested"
-    enum="ChromeMLServiceRequestStatus" expires_after="2021-02-27">
+    enum="ChromeMLServiceRequestStatus" expires_after="M92">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -305,7 +314,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="ChromeMLService.ValidationLatency" units="ms"
-    expires_after="2021-02-27">
+    expires_after="M92">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>

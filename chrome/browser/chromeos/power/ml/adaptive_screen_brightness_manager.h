@@ -12,6 +12,10 @@
 #include "base/optional.h"
 #include "base/scoped_observer.h"
 #include "base/time/time.h"
+// TODO(https://crbug.com/1164001): use forward declaration when moving to
+// chrome/browser/ash/.
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/chromeos/power/ml/boot_clock.h"
 #include "chrome/browser/chromeos/power/ml/screen_brightness_event.pb.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -27,10 +31,6 @@ class RepeatingTimer;
 }  // namespace base
 
 namespace chromeos {
-
-class AccessibilityManager;
-class MagnificationManager;
-
 namespace power {
 namespace ml {
 

@@ -1,0 +1,26 @@
+Tests how let/const declarations interact with command line api.
+first 'let a = 1;' result: wasThrown = false
+second 'let a = 1;' result: wasThrown = true
+exception message: Uncaught SyntaxError: Identifier 'a' has already been declared
+{"result":{"type":"number","value":42,"description":"42"}}
+function $(selector, [startNode]) { [Command Line API] }
+function $$(selector, [startNode]) { [Command Line API] }
+function $x(xpath, [startNode]) { [Command Line API] }
+function dir(value) { [Command Line API] }
+function dirxml(value) { [Command Line API] }
+function keys(object) { [Command Line API] }
+function values(object) { [Command Line API] }
+function profile(title) { [Command Line API] }
+function profileEnd(title) { [Command Line API] }
+function monitorEvents(object, [types]) { [Command Line API] }
+function unmonitorEvents(object, [types]) { [Command Line API] }
+function inspect(object) { [Command Line API] }
+function copy(value) { [Command Line API] }
+function clear() { [Command Line API] }
+function getEventListeners(node) { [Command Line API] }
+function debug(function, condition) { [Command Line API] }
+function undebug(function) { [Command Line API] }
+function monitor(function) { [Command Line API] }
+function unmonitor(function) { [Command Line API] }
+function table(data, [columns]) { [Command Line API] }
+

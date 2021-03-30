@@ -4,10 +4,11 @@
 
 #include "components/bookmarks/browser/bookmark_storage.h"
 
+#include <string>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/strings/string16.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -23,7 +24,7 @@ std::unique_ptr<BookmarkModel> CreateModelWithOneBookmark() {
   std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
   model->ClearStore();
   const BookmarkNode* bookmark_bar = model->bookmark_bar_node();
-  model->AddURL(bookmark_bar, 0, base::string16(), GURL("http://url1.com"));
+  model->AddURL(bookmark_bar, 0, std::u16string(), GURL("http://url1.com"));
   return model;
 }
 

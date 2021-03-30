@@ -196,6 +196,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 - (TableViewTextEditItem*)websiteItem {
   TableViewTextEditItem* item =
       [[TableViewTextEditItem alloc] initWithType:ItemTypeWebsite];
+  item.textFieldBackgroundColor = [UIColor clearColor];
   item.textFieldName = l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_SITE);
   item.textFieldValue = self.password.website;
   item.textFieldEnabled = NO;
@@ -206,6 +207,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 - (TableViewTextEditItem*)usernameItem {
   TableViewTextEditItem* item =
       [[TableViewTextEditItem alloc] initWithType:ItemTypeUsername];
+  item.textFieldBackgroundColor = [UIColor clearColor];
   item.textFieldName =
       l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_USERNAME);
   item.textFieldValue = self.password.username;
@@ -228,6 +230,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 - (TableViewTextEditItem*)passwordItem {
   TableViewTextEditItem* item =
       [[TableViewTextEditItem alloc] initWithType:ItemTypePassword];
+  item.textFieldBackgroundColor = [UIColor clearColor];
   item.textFieldName =
       l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_PASSWORD);
   item.textFieldValue = [self isPasswordShown] || self.tableView.editing
@@ -256,6 +259,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 - (TableViewTextEditItem*)federationItem {
   TableViewTextEditItem* item =
       [[TableViewTextEditItem alloc] initWithType:ItemTypeFederation];
+  item.textFieldBackgroundColor = [UIColor clearColor];
   item.textFieldName =
       l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_FEDERATION);
   item.textFieldValue = self.password.federation;
@@ -362,15 +366,20 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   if (![menu isMenuVisible]) {
     menu.menuItems = [self menuItemsForItemType:itemType];
 
-    if (@available(iOS 13, *)) {
-      [menu showMenuFromView:tableView
-                        rect:[tableView rectForRowAtIndexPath:indexPath]];
-    } else {
-      [menu setTargetRect:[tableView rectForRowAtIndexPath:indexPath]
-                   inView:tableView];
-      [menu setMenuVisible:YES animated:YES];
-    }
+#if !defined(__IPHONE_13_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_13_0
+    [menu setTargetRect:[tableView rectForRowAtIndexPath:indexPath]
+                 inView:tableView];
+    [menu setMenuVisible:YES animated:YES];
+#else
+    [menu showMenuFromView:tableView
+                      rect:[tableView rectForRowAtIndexPath:indexPath]];
+#endif
   }
+}
+
+- (BOOL)tableView:(UITableView*)tableView
+    shouldHighlightRowAtIndexPath:(NSIndexPath*)indexPath {
+  return !self.editing;
 }
 
 #pragma mark - UITableViewDataSource
@@ -380,9 +389,9 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
 
-  cell.selectionStyle = UITableViewCellSelectionStyleNone;
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
   cell.tag = itemType;
+  cell.selectionStyle = UITableViewCellSelectionStyleDefault;
 
   switch (itemType) {
     case ItemTypeUsername: {
@@ -404,14 +413,14 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
                  addTarget:self
                     action:@selector(didTapShowHideButton:)
           forControlEvents:UIControlEventTouchUpInside];
-      return textFieldCell;
-    }
-    case ItemTypeChangePasswordButton:
-      cell.selectionStyle = UITableViewCellSelectionStyleDefault;
       break;
+    }
     case ItemTypeWebsite:
     case ItemTypeFederation:
+    case ItemTypeChangePasswordButton:
+      break;
     case ItemTypeChangePasswordRecommendation:
+      cell.selectionStyle = UITableViewCellSelectionStyleNone;
       break;
   }
   return cell;
@@ -661,6 +670,8 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 
 // Called when the user tapped on the show/hide button near password.
 - (void)didTapShowHideButton:(UIButton*)buttonView {
+  [self.tableView deselectRowAtIndexPath:self.tableView.indexPathForSelectedRow
+                                animated:NO];
   if (self.isPasswordShown) {
     self.passwordShown = NO;
     self.passwordTextItem.textFieldValue = kMaskedPassword;

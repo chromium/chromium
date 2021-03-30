@@ -4,11 +4,11 @@
 
 #include "chrome/browser/chromeos/display/quirks_manager_delegate_impl.h"
 
+#include "ash/constants/ash_paths.h"
 #include "base/path_service.h"
 #include "base/system/sys_info.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/common/chrome_paths.h"
-#include "chromeos/constants/chromeos_paths.h"
 #include "google_apis/google_api_keys.h"
 
 namespace {
@@ -38,8 +38,8 @@ base::FilePath QuirksManagerDelegateImpl::GetDisplayProfileDirectory() const {
 
 bool QuirksManagerDelegateImpl::DevicePolicyEnabled() const {
   bool quirks_enabled = true;
-  chromeos::CrosSettings::Get()->GetBoolean(
-      chromeos::kDeviceQuirksDownloadEnabled, &quirks_enabled);
+  ash::CrosSettings::Get()->GetBoolean(chromeos::kDeviceQuirksDownloadEnabled,
+                                       &quirks_enabled);
   return quirks_enabled;
 }
 

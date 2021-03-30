@@ -13,6 +13,9 @@
 #include "base/memory/ptr_util.h"
 #import "chrome/browser/chrome_browser_application_mac.h"
 #include "chrome/browser/ui/blocked_content/popunder_preventer.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/javascript_dialogs/chrome_javascript_app_modal_dialog_view_factory.h"
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
 #include "components/javascript_dialogs/app_modal_dialog_manager.h"
@@ -89,7 +92,7 @@ JavaScriptAppModalDialogCocoa::GetAlertParams() {
 
 void JavaScriptAppModalDialogCocoa::OnAlertFinished(
     AlertDisposition disposition,
-    const base::string16& text_field_value,
+    const std::u16string& text_field_value,
     bool check_box_value) {
   switch (disposition) {
     case AlertDisposition::PRIMARY_BUTTON:
@@ -106,6 +109,8 @@ void JavaScriptAppModalDialogCocoa::OnAlertFinished(
       controller_->OnClose();
       break;
   }
+  if (Browser* browser = BrowserList::GetInstance()->GetLastActive())
+    browser->window()->Show();
   delete this;
 }
 
@@ -147,7 +152,7 @@ void JavaScriptAppModalDialogCocoa::ActivateAppModalDialog() {
 void JavaScriptAppModalDialogCocoa::CloseAppModalDialog() {
   // This function expects that controller_->OnClose will be called before this
   // function completes.
-  OnAlertFinished(AlertDisposition::CLOSE, base::string16(),
+  OnAlertFinished(AlertDisposition::CLOSE, std::u16string(),
                   false /* check_box_value */);
 }
 
@@ -162,7 +167,7 @@ void JavaScriptAppModalDialogCocoa::AcceptAppModalDialog() {
 }
 
 void JavaScriptAppModalDialogCocoa::CancelAppModalDialog() {
-  OnAlertFinished(AlertDisposition::SECONDARY_BUTTON, base::string16(), false
+  OnAlertFinished(AlertDisposition::SECONDARY_BUTTON, std::u16string(), false
                   /* check_box_value */);
 }
 

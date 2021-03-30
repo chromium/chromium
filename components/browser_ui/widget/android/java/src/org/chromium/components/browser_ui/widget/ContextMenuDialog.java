@@ -20,7 +20,6 @@ import android.view.animation.ScaleAnimation;
 import android.widget.FrameLayout;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.Log;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.RectProvider;
@@ -32,7 +31,6 @@ import org.chromium.ui.widget.RectProvider;
 public class ContextMenuDialog extends AlwaysDismissedDialog {
     public static final int NO_CUSTOM_MARGIN = -1;
 
-    private static final String TAG = "ContextMenuDialog";
     private static final long ENTER_ANIMATION_DURATION_MS = 250;
     // Exit animation duration should be set to 60% of the enter animation duration.
     private static final long EXIT_ANIMATION_DURATION_MS = 150;
@@ -159,9 +157,6 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
             return;
         }
 
-        Thread.dumpStack();
-        Log.i(TAG, "Dialog " + this + " is being dismissed.");
-
         int[] contextMenuFinalLocationPx = new int[2];
         mContentView.getLocationOnScreen(contextMenuFinalLocationPx);
         // Recalculate mContextMenuDestinationY because the context menu's final location may not be
@@ -180,7 +175,6 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                Log.i(TAG, "Dismiss animation just ended for " + this);
                 ContextMenuDialog.super.dismiss();
             }
         });

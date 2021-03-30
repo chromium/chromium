@@ -20,7 +20,6 @@
 #include "ash/system/network/network_tray_view.h"
 #include "ash/system/power/tray_power.h"
 #include "ash/system/privacy_screen/privacy_screen_toast_controller.h"
-#include "ash/system/status_area_widget.h"
 #include "ash/system/time/time_tray_item_view.h"
 #include "ash/system/time/time_view.h"
 #include "ash/system/tray/tray_constants.h"
@@ -30,6 +29,7 @@
 #include "ash/system/unified/ime_mode_view.h"
 #include "ash/system/unified/managed_device_tray_item_view.h"
 #include "ash/system/unified/notification_counter_view.h"
+#include "ash/system/unified/notification_icons_controller.h"
 #include "ash/system/unified/unified_slider_bubble_controller.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_model.h"
@@ -53,7 +53,7 @@ class UnifiedSystemTray::UiDelegate : public MessageCenterUiDelegate {
   void OnMessageCenterContentsChanged() override;
   bool ShowPopups() override;
   void HidePopups() override;
-  bool ShowMessageCenter(bool show_by_click) override;
+  bool ShowMessageCenter() override;
   void HideMessageCenter() override;
 
   MessageCenterUiController* ui_controller() { return ui_controller_.get(); }
@@ -107,11 +107,11 @@ void UnifiedSystemTray::UiDelegate::HidePopups() {
   message_popup_collection_->SetTrayBubbleHeight(0);
 }
 
-bool UnifiedSystemTray::UiDelegate::ShowMessageCenter(bool show_by_click) {
+bool UnifiedSystemTray::UiDelegate::ShowMessageCenter() {
   if (owner_->IsBubbleShown())
     return false;
 
-  owner_->ShowBubbleInternal(show_by_click);
+  owner_->ShowBubbleInternal();
   return true;
 }
 
@@ -120,12 +120,13 @@ void UnifiedSystemTray::UiDelegate::HideMessageCenter() {}
 UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
     : TrayBackgroundView(shelf),
       ui_delegate_(std::make_unique<UiDelegate>(this)),
-      model_(std::make_unique<UnifiedSystemTrayModel>(
-          shelf->GetStatusAreaWidget()->GetRootView())),
+      model_(std::make_unique<UnifiedSystemTrayModel>(shelf)),
       slider_bubble_controller_(
           std::make_unique<UnifiedSliderBubbleController>(this)),
       privacy_screen_toast_controller_(
           std::make_unique<PrivacyScreenToastController>(this)),
+      notification_icons_controller_(
+          std::make_unique<NotificationIconsController>(this)),
       current_locale_view_(new CurrentLocaleView(shelf)),
       ime_mode_view_(new ImeModeView(shelf)),
       managed_device_view_(new ManagedDeviceTrayItemView(shelf)),
@@ -134,18 +135,21 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
                                     CameraMicTrayItemView::Type::kCamera)),
       mic_view_(
           new CameraMicTrayItemView(shelf, CameraMicTrayItemView::Type::kMic)),
-      notification_counter_item_(new NotificationCounterView(shelf)),
-      quiet_mode_view_(new QuietModeView(shelf)),
-      time_view_(new tray::TimeTrayItemView(shelf)) {
+      time_view_(new tray::TimeTrayItemView(shelf, model())) {
   tray_container()->SetMargin(
       kUnifiedTrayContentPadding -
           ShelfConfig::Get()->status_area_hit_region_padding(),
       0);
+
+  notification_icons_controller_->AddNotificationTrayItems(tray_container());
+  for (TrayItemView* tray_item : notification_icons_controller_->tray_items())
+    tray_items_.push_back(tray_item);
+  tray_items_.push_back(
+      notification_icons_controller_->notification_counter_view());
+  tray_items_.push_back(notification_icons_controller_->quiet_mode_view());
   AddTrayItemToContainer(current_locale_view_);
   AddTrayItemToContainer(ime_mode_view_);
   AddTrayItemToContainer(managed_device_view_);
-  AddTrayItemToContainer(notification_counter_item_);
-  AddTrayItemToContainer(quiet_mode_view_);
   AddTrayItemToContainer(camera_view_);
   AddTrayItemToContainer(mic_view_);
 
@@ -175,6 +179,10 @@ UnifiedSystemTray::~UnifiedSystemTray() {
   if (bubble_)
     bubble_->CloseNow();
   bubble_.reset();
+
+  // Reset the view to remove its dependency from |model_|, since this view is
+  // destructed after |model_|.
+  time_view_->Reset();
 }
 
 bool UnifiedSystemTray::IsBubbleShown() const {
@@ -198,7 +206,7 @@ bool UnifiedSystemTray::IsBubbleActive() const {
 
 void UnifiedSystemTray::ActivateBubble() {
   if (bubble_)
-    bubble_->ActivateBubble();
+    bubble_->GetBubbleWidget()->Activate();
 }
 
 void UnifiedSystemTray::CloseSecondaryBubbles() {
@@ -238,12 +246,12 @@ void UnifiedSystemTray::ShowVolumeSliderBubble() {
 
 void UnifiedSystemTray::ShowAudioDetailedViewBubble() {
   // The settings menu bubble gains focus when |show_by_click| is true.
-  ShowBubble(true /* show_by_click */);
+  ShowBubble();
   bubble_->ShowAudioDetailedView();
 }
 
-void UnifiedSystemTray::ShowNetworkDetailedViewBubble(bool show_by_click) {
-  ShowBubble(show_by_click);
+void UnifiedSystemTray::ShowNetworkDetailedViewBubble() {
+  ShowBubble();
   bubble_->ShowNetworkDetailedView(true /* force */);
 }
 
@@ -326,6 +334,10 @@ bool UnifiedSystemTray::ShouldEnableExtraKeyboardAccessibility() {
   return Shell::Get()->accessibility_controller()->spoken_feedback().enabled();
 }
 
+views::Widget* UnifiedSystemTray::GetBubbleWidget() const {
+  return bubble_ ? bubble_->GetBubbleWidget() : nullptr;
+}
+
 const char* UnifiedSystemTray::GetClassName() const {
   return "UnifiedSystemTray";
 }
@@ -353,21 +365,10 @@ void UnifiedSystemTray::SetTargetNotification(
   model_->SetTargetNotification(notification_id);
 }
 
-bool UnifiedSystemTray::PerformAction(const ui::Event& event) {
-  if (bubble_) {
-    CloseBubble();
-  } else {
-    ShowBubble(event.IsMouseEvent() || event.IsGestureEvent());
-    if (event.IsKeyEvent() || (event.flags() & ui::EF_TOUCH_ACCESSIBILITY))
-      ActivateBubble();
-  }
-  return true;
-}
-
-void UnifiedSystemTray::ShowBubble(bool show_by_click) {
+void UnifiedSystemTray::ShowBubble() {
   // ShowBubbleInternal will be called from UiDelegate.
   if (!bubble_)
-    ui_delegate_->ui_controller()->ShowMessageCenterBubble(show_by_click);
+    ui_delegate_->ui_controller()->ShowMessageCenterBubble();
 }
 
 void UnifiedSystemTray::CloseBubble() {
@@ -377,14 +378,14 @@ void UnifiedSystemTray::CloseBubble() {
   HideBubbleInternal();
 }
 
-base::string16 UnifiedSystemTray::GetAccessibleNameForBubble() {
+std::u16string UnifiedSystemTray::GetAccessibleNameForBubble() {
   if (IsBubbleShown())
     return GetAccessibleNameForQuickSettingsBubble();
   else
     return GetAccessibleNameForTray();
 }
 
-base::string16 UnifiedSystemTray::GetAccessibleNameForQuickSettingsBubble() {
+std::u16string UnifiedSystemTray::GetAccessibleNameForQuickSettingsBubble() {
   if (bubble_->unified_view()->IsDetailedViewShown())
     return bubble_->unified_view()->GetDetailedViewAccessibleName();
 
@@ -397,13 +398,13 @@ void UnifiedSystemTray::HandleLocaleChange() {
     item->HandleLocaleChange();
 }
 
-base::string16 UnifiedSystemTray::GetAccessibleNameForTray() {
-  base::string16 time = base::TimeFormatTimeOfDayWithHourClockType(
+std::u16string UnifiedSystemTray::GetAccessibleNameForTray() {
+  std::u16string time = base::TimeFormatTimeOfDayWithHourClockType(
       base::Time::Now(),
       Shell::Get()->system_tray_model()->clock()->hour_clock_type(),
       base::kKeepAmPm);
-  base::string16 battery = PowerStatus::Get()->GetAccessibleNameString(false);
-  std::vector<base::string16> status = {time, battery};
+  std::u16string battery = PowerStatus::Get()->GetAccessibleNameString(false);
+  std::vector<std::u16string> status = {time, battery};
 
   status.push_back(network_tray_view_->GetVisible()
                        ? network_tray_view_->GetAccessibleNameString()
@@ -414,9 +415,7 @@ base::string16 UnifiedSystemTray::GetAccessibleNameForTray() {
   status.push_back(camera_view_->GetVisible()
                        ? camera_view_->GetAccessibleNameString()
                        : base::EmptyString16());
-  status.push_back(notification_counter_item_->GetVisible()
-                       ? notification_counter_item_->GetAccessibleNameString()
-                       : base::EmptyString16());
+  status.push_back(notification_icons_controller_->GetAccessibleNameString());
   status.push_back(ime_mode_view_->GetVisible()
                        ? ime_mode_view_->label()->GetAccessibleNameString()
                        : base::EmptyString16());
@@ -444,17 +443,20 @@ void UnifiedSystemTray::UpdateLayout() {
   time_view_->UpdateAlignmentForShelf(shelf());
 }
 
-void UnifiedSystemTray::ShowBubbleInternal(bool show_by_click) {
+void UnifiedSystemTray::ShowBubbleInternal() {
   // Never show System Tray bubble in kiosk app mode.
   if (Shell::Get()->session_controller()->IsRunningInAppMode())
     return;
 
   CloseSecondaryBubbles();
 
-  bubble_ = std::make_unique<UnifiedSystemTrayBubble>(this, show_by_click);
+  bubble_ = std::make_unique<UnifiedSystemTrayBubble>(this);
 
   message_center_bubble_ = std::make_unique<UnifiedMessageCenterBubble>(this);
   message_center_bubble_->ShowBubble();
+
+  if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled())
+    ActivateBubble();
 
   first_interaction_recorded_ = false;
 
@@ -478,8 +480,7 @@ void UnifiedSystemTray::UpdateNotificationInternal() {
 }
 
 void UnifiedSystemTray::UpdateNotificationAfterDelay() {
-  notification_counter_item_->Update();
-  quiet_mode_view_->Update();
+  notification_icons_controller_->UpdateNotificationIndicators();
 }
 
 message_center::MessagePopupView*
@@ -492,4 +493,5 @@ void UnifiedSystemTray::AddTrayItemToContainer(TrayItemView* tray_item) {
   tray_items_.push_back(tray_item);
   tray_container()->AddChildView(tray_item);
 }
+
 }  // namespace ash

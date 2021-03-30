@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // error_counter.js must be loaded before all other scripts of the Files app.
-// <include src="../../../base/js/error_counter.js">
+// <include src="../../../file_manager/common/js/error_counter.js">
 
 // <include src="../../common/js/metrics.js">
 // <include src="metrics_start.js">

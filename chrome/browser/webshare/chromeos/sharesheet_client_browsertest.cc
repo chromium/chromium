@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, ShareTwoFiles) {
         file_paths = std::move(in_file_paths);
 
         EXPECT_EQ(content_types.size(), 2U);
-        EXPECT_EQ(content_types[0], "audio/mp3");
+        EXPECT_EQ(content_types[0], "audio/mpeg");
         EXPECT_EQ(content_types[1], "video/mp4");
 
         std::move(close_callback).Run(sharesheet::SharesheetResult::kSuccess);

@@ -51,7 +51,7 @@
       }
     ]
   },
-  "ADDRESS_HOME_APT_NUMBER": {
+  "ADDRESS_HOME_APT_NUM": {
     "en": [
       {
         "pattern_identifier": "en_apartment_number",
@@ -239,9 +239,19 @@
         "match_field_attributes": 3,
         "match_field_input_types": 1
       }
+    ],
+    "id": [
+      {
+        "pattern_identifier": "id_address_name_ignored_preserving",
+        "positive_pattern": "(label|judul|nama) alamat",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": 3,
+        "match_field_input_types": 1
+      }
     ]
   },
-  "COMPANY": {
+  "COMPANY_NAME": {
     "en": [
       {
         "pattern_identifier": "en_company_preserving",
@@ -341,6 +351,16 @@
         "match_field_attributes": 3,
         "match_field_input_types": 1
       }
+    ],
+    "id": [
+      {
+        "pattern_identifier": "id_company_preserving",
+        "positive_pattern": "(nama.?)?perusahaan",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": 3,
+        "match_field_input_types": 1
+      }
     ]
   },
   "ADDRESS_LINE_1": {
@@ -355,7 +375,7 @@
       },
       {
         "pattern_identifier": "en_address_line_1_label_preserving",
-        "positive_pattern": "(^\\W*address)|(address\\W*$)|(?:shipping|billing|mailing|pick.?up|drop.?off|delivery|sender|postal|recipient|home|work|office|school|business|mail)[\\s\\-]+address|address\\s+(of|for|to|from)",
+        "positive_pattern": "(^\\W*address)|(address\\W*$)|(?:shipping|billing|mailing|pick.?up|drop.?off|delivery|sender|postal|recipient|home|work|office|school|business|mail)[\\s\\-]+address|address\\s+(of|for|to|from)|street.*(house|building|apartment|floor)|(house|building|apartment|floor).*street",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": 1,
@@ -454,6 +474,14 @@
         "negative_pattern": null,
         "match_field_attributes": 3,
         "match_field_input_types": 1
+      },
+      {
+        "pattern_identifier": "ru_address_line_1_label_preserving",
+        "positive_pattern": "улиц.*(дом|корпус|квартир|этаж)|(дом|корпус|квартир|этаж).*улиц",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": 1,
+        "match_field_input_types": 1
       }
     ],
     "zh-CN": [
@@ -477,7 +505,7 @@
       },
       {
         "pattern_identifier": "tr_address_line_1_label_preserving",
-        "positive_pattern": "(\\b|_)adres(?! tarifi)(\\b|_)",
+        "positive_pattern": "(\\b|_)adres(?! tarifi)(\\b|_)|(sokak|cadde).*(apartman|bina|daire|mahalle)|(apartman|bina|daire|mahalle).*(sokak|cadde)",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": 1,
@@ -497,6 +525,25 @@
       {
         "pattern_identifier": "ko_address_line_1_label_preserving",
         "positive_pattern": "주소",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": 1,
+        "match_field_input_types": 1
+      }
+    ],
+    "id": [
+      {
+        "pattern_identifier": "id_address_line_1_preserving",
+        "positive_pattern": "^alamat",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": 3,
+        "match_field_input_types": 1
+      }
+    ,
+      {
+        "pattern_identifier": "id_address_line_1_label_preserving",
+        "positive_pattern": "^alamat",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": 1,
@@ -780,6 +827,16 @@
         "match_field_attributes": 3,
         "match_field_input_types": 137
       }
+    ],
+    "id": [
+      {
+        "pattern_identifier": "id_country_preserving",
+        "positive_pattern": "negara",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": 3,
+        "match_field_input_types": 137
+      }
     ]
   },
   "COUNTRY_LOCATION": {
@@ -934,6 +991,16 @@
         "match_field_attributes": 3,
         "match_field_input_types": 69
       }
+    ],
+    "id": [
+      {
+        "pattern_identifier": "id_zip_code_preserving",
+        "positive_pattern": "kode.?pos",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": 3,
+        "match_field_input_types": 69
+      }
     ]
   },
   "ZIP_4": {
@@ -983,6 +1050,16 @@
       {
         "pattern_identifier": "tr_dependent_locality_preserving",
         "positive_pattern": "mahalle|köy",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": 3,
+        "match_field_input_types": 137
+      }
+    ],
+    "id": [
+      {
+        "pattern_identifier": "id_dependent_locality_preserving",
+        "positive_pattern": "kecamatan",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": 3,
@@ -1130,6 +1207,16 @@
         "match_field_attributes": 3,
         "match_field_input_types": 137
       }
+    ],
+    "id": [
+      {
+        "pattern_identifier": "id_city_preserving",
+        "positive_pattern": "kota|kabupaten",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": 3,
+        "match_field_input_types": 137
+      }
     ]
   },
   "STATE": {
@@ -1227,6 +1314,16 @@
       {
         "pattern_identifier": "ko_state_preserving",
         "positive_pattern": "^시[·・]?도",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": 3,
+        "match_field_input_types": 137
+      }
+    ],
+    "id": [
+      {
+        "pattern_identifier": "id_state_preserving",
+        "positive_pattern": "provinci",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": 3,
@@ -1438,6 +1535,16 @@
         "match_field_attributes": 3,
         "match_field_input_types": 1
       }
+    ],
+    "id": [
+      {
+        "pattern_identifier": "id_name_on_card_preserving",
+        "positive_pattern": "nama.*kartu",
+        "positive_score": 1.0,
+        "negative_pattern": null,
+        "match_field_attributes": 3,
+        "match_field_input_types": 1
+      }
     ]
   },
   "NAME_ON_CARD_CONTEXTUAL": {
@@ -1552,6 +1659,16 @@
         "match_field_attributes": 3,
         "match_field_input_types": 101
       }
+    ],
+    "id": [
+      {
+        "pattern_identifier": "id_card_number_preserving",
+        "positive_pattern": "no.*kartu",
+        "positive_score": 1.0,
+        "negative_pattern": null,
+        "match_field_attributes": 3,
+        "match_field_input_types": 101
+      }
     ]
   },
   "CREDIT_CARD_VERIFICATION_CODE": {
@@ -1651,6 +1768,16 @@
       {
         "pattern_identifier": "zh_card_exp_month_preserving",
         "positive_pattern": "月",
+        "positive_score": 1.0,
+        "negative_pattern": null,
+        "match_field_attributes": 3,
+        "match_field_input_types": 205
+      }
+    ],
+    "id": [
+      {
+        "pattern_identifier": "id_card_exp_month_preserving",
+        "positive_pattern": "masa berlaku|berlaku hingga",
         "positive_score": 1.0,
         "negative_pattern": null,
         "match_field_attributes": 3,
@@ -1839,6 +1966,16 @@
       {
         "pattern_identifier": "ru_card_exp_date_preserving",
         "positive_pattern": "Срок действия карты",
+        "positive_score": 1.0,
+        "negative_pattern": null,
+        "match_field_attributes": 3,
+        "match_field_input_types": 205
+      }
+    ],
+    "id": [
+      {
+        "pattern_identifier": "id_card_exp_date_preserving",
+        "positive_pattern": "masa berlaku|berlaku hingga",
         "positive_score": 1.0,
         "negative_pattern": null,
         "match_field_attributes": 3,
@@ -2086,7 +2223,7 @@
     "en": [
       {
         "pattern_identifier": "en_full_name_preserving",
-        "positive_pattern": "^name|full.?name|your.?name|customer.?name|bill.?name|ship.?name|name.*first.*last|firstandlastname",
+        "positive_pattern": "^name|full.?name|your.?name|customer.?name|bill.?name|ship.?name|name.*first.*last|firstandlastname|contact.?(name|person)",
         "positive_score": 0.9,
         "negative_pattern": null,
         "match_field_attributes": 3,
@@ -2106,7 +2243,7 @@
     "fr": [
       {
         "pattern_identifier": "fr_full_name_preserving",
-        "positive_pattern": "^nom(?!bre)",
+        "positive_pattern": "^nom(?![a-zA-Z])",
         "positive_score": 0.9,
         "negative_pattern": null,
         "match_field_attributes": 3,
@@ -2153,6 +2290,16 @@
         "match_field_input_types": 1
       }
     ],
+    "ru": [
+      {
+        "pattern_identifier": "ru_full_name_preserving",
+        "positive_pattern": "контактное.?лицо",
+        "positive_score": 0.9,
+        "negative_pattern": null,
+        "match_field_attributes": 3,
+        "match_field_input_types": 1
+      }
+    ],
     "tr": [
       {
         "pattern_identifier": "tr_full_name_preserving",
@@ -2167,6 +2314,16 @@
       {
         "pattern_identifier": "ko_full_name_preserving",
         "positive_pattern": "성명",
+        "positive_score": 0.9,
+        "negative_pattern": null,
+        "match_field_attributes": 3,
+        "match_field_input_types": 1
+      }
+    ],
+    "id": [
+      {
+        "pattern_identifier": "id_full_name_preserving",
+        "positive_pattern": "nama.?(lengkap|penerima|kamu)",
         "positive_score": 0.9,
         "negative_pattern": null,
         "match_field_attributes": 3,
@@ -2326,6 +2483,16 @@
         "match_field_attributes": 3,
         "match_field_input_types": 1
       }
+    ],
+    "id": [
+      {
+        "pattern_identifier": "id_first_name_preserving",
+        "positive_pattern": "nama depan",
+        "positive_score": 0.9,
+        "negative_pattern": null,
+        "match_field_attributes": 3,
+        "match_field_input_types": 1
+      }
     ]
   },
   "MIDDLE_INITIAL": {
@@ -2386,7 +2553,7 @@
     "fr": [
       {
         "pattern_identifier": "fr_last_name_preserving",
-        "positive_pattern": "famille|^nom(?!bre)",
+        "positive_pattern": "famille|^nom(?![a-zA-Z])",
         "positive_score": 0.9,
         "negative_pattern": null,
         "match_field_attributes": 3,
@@ -2477,6 +2644,16 @@
       {
         "pattern_identifier": "ko_last_name_preserving",
         "positive_pattern": "\\b성(?:[^명]|\\b)",
+        "positive_score": 0.9,
+        "negative_pattern": null,
+        "match_field_attributes": 3,
+        "match_field_input_types": 1
+      }
+    ],
+    "id": [
+      {
+        "pattern_identifier": "id_last_name_preserving",
+        "positive_pattern": "nama belakang",
         "positive_score": 0.9,
         "negative_pattern": null,
         "match_field_attributes": 3,
@@ -2705,6 +2882,16 @@
       {
         "pattern_identifier": "ko_phone_preserving",
         "positive_pattern": "(?:전화|핸드폰|휴대폰|휴대전화)(?:.?번호)?",
+        "positive_score": 1.2,
+        "negative_pattern": null,
+        "match_field_attributes": 3,
+        "match_field_input_types": 69
+      }
+    ],
+    "id": [
+      {
+        "pattern_identifier": "id_phone_preserving",
+        "positive_pattern": "telepon|ponsel|(nomor|no\\.?).?(hp|handphone)",
         "positive_score": 1.2,
         "negative_pattern": null,
         "match_field_attributes": 3,

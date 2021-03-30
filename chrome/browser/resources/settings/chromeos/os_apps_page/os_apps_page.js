@@ -11,7 +11,7 @@ Polymer({
   is: 'os-settings-apps-page',
 
   behaviors: [
-    app_management.StoreClient,
+    app_management.AppManagementStoreClient,
     DeepLinkingBehavior,
     I18nBehavior,
     PrefsBehavior,

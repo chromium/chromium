@@ -3,13 +3,6 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
-import("../namespace_rewrites.gni")
-
-js_modulizer("modulize") {
-  input_files = [ "managed_footnote_test.js" ]
-  namespace_rewrites = test_namespace_rewrites
-}
 
 js_type_check("closure_compile") {
   is_polymer3 = true
@@ -24,6 +17,7 @@ js_type_check("closure_compile") {
     ":certificate_manager_provisioning_test",
     ":certificate_manager_test",
     ":customize_themes_test",
+    ":managed_dialog_test",
   ]
 }
 
@@ -65,6 +59,15 @@ js_library("customize_themes_test") {
     "//ui/webui/resources/cr_components/customize_themes",
     "//ui/webui/resources/cr_components/customize_themes:browser_proxy",
     "//ui/webui/resources/cr_components/customize_themes:theme_icon",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("managed_dialog_test") {
+  deps = [
+    "..:chai_assert",
+    "//ui/webui/resources/cr_components/managed_dialog",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

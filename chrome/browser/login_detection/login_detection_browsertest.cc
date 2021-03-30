@@ -8,10 +8,14 @@
 #include "chrome/browser/login_detection/login_detection_tab_helper.h"
 #include "chrome/browser/login_detection/login_detection_type.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/optimization_guide/content/browser/optimization_guide_decider.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/site_isolation/features.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
@@ -28,11 +32,19 @@ class LoginDetectionBrowserTest : public InProcessBrowserTest {
       : https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{kLoginDetection, {}},
-         {site_isolation::features::kSiteIsolationForPasswordSites, {}}},
+         {site_isolation::features::kSiteIsolationForPasswordSites, {}},
+         {optimization_guide::features::kOptimizationHints, {}}},
         {});
   }
 
   void SetUpOnMainThread() override {
+    auto* optimization_guide_decider =
+        OptimizationGuideKeyedServiceFactory::GetForProfile(
+            browser()->profile());
+    optimization_guide_decider->AddHintForTesting(
+        GURL("https://www.optguideloggedin.com/page.html"),
+        optimization_guide::proto::LOGIN_DETECTION, base::nullopt);
+
     https_test_server_.ServeFilesFromSourceDirectory("chrome/test/data");
     ASSERT_TRUE(https_test_server_.Start());
     histogram_tester_ = std::make_unique<base::HistogramTester>();
@@ -117,6 +129,14 @@ IN_PROC_BROWSER_TEST_F(LoginDetectionBrowserTest, PopUpBasedOAuthLoginFlow) {
   ui_test_utils::NavigateToURL(
       browser(), https_test_server_.GetURL("www.foo.com", "/title3.html"));
   ExpectLoginDetectionTypeMetric(LoginDetectionType::kOauthLogin);
+}
+
+IN_PROC_BROWSER_TEST_F(LoginDetectionBrowserTest,
+                       OptimizationGuideDetectedBlacklist) {
+  ui_test_utils::NavigateToURL(
+      browser(), GURL("https://www.optguideloggedin.com/page.html"));
+  ExpectLoginDetectionTypeMetric(
+      LoginDetectionType::kOptimizationGuideDetected);
 }
 
 }  // namespace login_detection

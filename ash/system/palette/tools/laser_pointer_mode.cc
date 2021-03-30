@@ -16,9 +16,18 @@ namespace ash {
 
 LaserPointerMode::LaserPointerMode(Delegate* delegate)
     : CommonPaletteTool(delegate) {
+  laser_pointer_controller_observation_.Observe(
+      Shell::Get()->laser_pointer_controller());
 }
 
 LaserPointerMode::~LaserPointerMode() = default;
+
+void LaserPointerMode::OnLaserPointerStateChanged(bool enabled) {
+  if (enabled)
+    delegate()->EnableTool(GetToolId());
+  else
+    delegate()->DisableTool(GetToolId());
+}
 
 PaletteGroup LaserPointerMode::GetGroup() const {
   return PaletteGroup::MODE;

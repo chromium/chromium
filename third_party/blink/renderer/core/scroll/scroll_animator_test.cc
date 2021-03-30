@@ -62,7 +62,8 @@ class MockScrollableAreaForAnimatorTest
   explicit MockScrollableAreaForAnimatorTest(bool scroll_animator_enabled,
                                              const ScrollOffset& min_offset,
                                              const ScrollOffset& max_offset)
-      : scroll_animator_enabled_(scroll_animator_enabled),
+      : ScrollableArea(blink::scheduler::GetSingleThreadTaskRunnerForTesting()),
+        scroll_animator_enabled_(scroll_animator_enabled),
         min_offset_(min_offset),
         max_offset_(max_offset) {}
 

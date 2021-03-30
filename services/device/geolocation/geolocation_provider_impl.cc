@@ -21,6 +21,7 @@
 #include "net/base/network_change_notifier.h"
 #include "services/device/geolocation/location_arbitrator.h"
 #include "services/device/geolocation/position_cache_impl.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_mac.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -37,6 +38,7 @@ base::LazyInstance<CustomLocationProviderCallback>::Leaky
 base::LazyInstance<std::unique_ptr<network::PendingSharedURLLoaderFactory>>::
     Leaky g_pending_url_loader_factory = LAZY_INSTANCE_INITIALIZER;
 base::LazyInstance<std::string>::Leaky g_api_key = LAZY_INSTANCE_INITIALIZER;
+GeolocationSystemPermissionManager* g_system_permission_manager;
 }  // namespace
 
 // static
@@ -49,11 +51,13 @@ void GeolocationProviderImpl::SetGeolocationConfiguration(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& api_key,
     const CustomLocationProviderCallback& custom_location_provider_getter,
+    GeolocationSystemPermissionManager* system_permission_manager,
     bool use_gms_core_location_provider) {
   if (url_loader_factory)
     g_pending_url_loader_factory.Get() = url_loader_factory->Clone();
   g_api_key.Get() = api_key;
   g_custom_location_provider_callback.Get() = custom_location_provider_getter;
+  g_system_permission_manager = system_permission_manager;
   if (use_gms_core_location_provider) {
 #if defined(OS_ANDROID)
     JNIEnv* env = base::android::AttachCurrentThread();
@@ -246,8 +250,8 @@ void GeolocationProviderImpl::Init() {
   DCHECK(!net::NetworkChangeNotifier::CreateIfNeeded())
       << "PositionCacheImpl needs a global NetworkChangeNotifier";
   arbitrator_ = std::make_unique<LocationArbitrator>(
-      g_custom_location_provider_callback.Get(), std::move(url_loader_factory),
-      g_api_key.Get(),
+      g_custom_location_provider_callback.Get(), g_system_permission_manager,
+      main_task_runner_, std::move(url_loader_factory), g_api_key.Get(),
       std::make_unique<PositionCacheImpl>(
           base::DefaultTickClock::GetInstance()));
   arbitrator_->SetUpdateCallback(callback);

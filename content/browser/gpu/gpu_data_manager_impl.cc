@@ -225,9 +225,9 @@ bool GpuDataManagerImpl::VulkanRequested() const {
   return private_->VulkanRequested();
 }
 
-void GpuDataManagerImpl::OnBrowserThreadsStarted() {
+void GpuDataManagerImpl::PostCreateThreads() {
   base::AutoLock auto_lock(lock_);
-  private_->OnBrowserThreadsStarted();
+  private_->PostCreateThreads();
 }
 
 void GpuDataManagerImpl::TerminateInfoCollectionGpuProcess() {

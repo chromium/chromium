@@ -83,7 +83,7 @@ ShortcutsBackendTest::MatchCoreForTesting(const std::string& url,
                                           AutocompleteMatch::Type type) {
   AutocompleteMatch match(nullptr, 0, 0, type);
   match.destination_url = GURL(url);
-  match.contents = base::ASCIIToUTF16("test");
+  match.contents = u"test";
   match.contents_class =
       AutocompleteMatch::ClassificationsFromString(contents_class);
   match.description_class =
@@ -98,8 +98,8 @@ ShortcutsBackendTest::MatchCoreForTesting(const std::string& url,
 void ShortcutsBackendTest::SetSearchProvider() {
   TemplateURLData data;
   data.SetURL("http://foo.com/search?bar={searchTerms}");
-  data.SetShortName(base::UTF8ToUTF16("foo"));
-  data.SetKeyword(base::UTF8ToUTF16("foo"));
+  data.SetShortName(u"foo");
+  data.SetKeyword(u"foo");
 
   TemplateURL* template_url =
       template_url_service_->Add(std::make_unique<TemplateURL>(data));
@@ -227,16 +227,16 @@ TEST_F(ShortcutsBackendTest, SanitizeMatchCore) {
 TEST_F(ShortcutsBackendTest, EntitySuggestionTest) {
   SetSearchProvider();
   AutocompleteMatch match;
-  match.fill_into_edit = base::UTF8ToUTF16("franklin d roosevelt");
+  match.fill_into_edit = u"franklin d roosevelt";
   match.type = AutocompleteMatchType::SEARCH_SUGGEST_ENTITY;
-  match.contents = base::UTF8ToUTF16("roosevelt");
+  match.contents = u"roosevelt";
   match.contents_class =
       AutocompleteMatch::ClassificationsFromString("0,0,5,2");
-  match.description = base::UTF8ToUTF16("Franklin D. Roosevelt");
+  match.description = u"Franklin D. Roosevelt";
   match.description_class = AutocompleteMatch::ClassificationsFromString("0,4");
   match.destination_url =
       GURL("http://www.foo.com/search?bar=franklin+d+roosevelt&gs_ssp=1234");
-  match.keyword = base::UTF8ToUTF16("foo");
+  match.keyword = u"foo";
   match.search_terms_args.reset(
       new TemplateURLRef::SearchTermsArgs(match.fill_into_edit));
 
@@ -248,7 +248,7 @@ TEST_F(ShortcutsBackendTest, EntitySuggestionTest) {
             match_core.destination_url.spec());
   EXPECT_EQ(match.fill_into_edit, match_core.contents);
   EXPECT_EQ("0,0", match_core.contents_class);
-  EXPECT_EQ(base::string16(), match_core.description);
+  EXPECT_EQ(std::u16string(), match_core.description);
   EXPECT_TRUE(match_core.description_class.empty());
 }
 
@@ -257,7 +257,7 @@ TEST_F(ShortcutsBackendTest, MatchCoreDescriptionTest) {
   // match.description.
   {
     AutocompleteMatch match;
-    match.description = base::UTF8ToUTF16("the cat");
+    match.description = u"the cat";
     match.description_class =
         AutocompleteMatch::ClassificationsFromString("0,1");
 
@@ -275,10 +275,10 @@ TEST_F(ShortcutsBackendTest, MatchCoreDescriptionTest) {
   // instead of match.description.
   {
     AutocompleteMatch match;
-    match.description = base::UTF8ToUTF16("the cat");
+    match.description = u"the cat";
     match.description_class =
         AutocompleteMatch::ClassificationsFromString("0,1");
-    match.description_for_shortcuts = base::UTF8ToUTF16("the elephant");
+    match.description_for_shortcuts = u"the elephant";
     match.description_class_for_shortcuts =
         AutocompleteMatch::ClassificationsFromString("0,4");
 
@@ -298,7 +298,7 @@ TEST_F(ShortcutsBackendTest, AddAndUpdateShortcut) {
   EXPECT_FALSE(changed_notified());
 
   ShortcutsDatabase::Shortcut shortcut(
-      "BD85DBA2-8C29-49F9-84AE-48E1E90880DF", base::ASCIIToUTF16("goog"),
+      "BD85DBA2-8C29-49F9-84AE-48E1E90880DF", u"goog",
       MatchCoreForTesting("http://www.google.com"), base::Time::Now(), 100);
   EXPECT_TRUE(AddShortcut(shortcut));
   EXPECT_TRUE(changed_notified());
@@ -309,7 +309,7 @@ TEST_F(ShortcutsBackendTest, AddAndUpdateShortcut) {
             shortcut_iter->second.match_core.contents);
 
   set_changed_notified(false);
-  shortcut.match_core.contents = base::ASCIIToUTF16("Google Web Search");
+  shortcut.match_core.contents = u"Google Web Search";
   EXPECT_TRUE(UpdateShortcut(shortcut));
   EXPECT_TRUE(changed_notified());
   shortcut_iter = shortcuts_map().find(shortcut.text);
@@ -322,22 +322,22 @@ TEST_F(ShortcutsBackendTest, AddAndUpdateShortcut) {
 TEST_F(ShortcutsBackendTest, DeleteShortcuts) {
   InitBackend();
   ShortcutsDatabase::Shortcut shortcut1(
-      "BD85DBA2-8C29-49F9-84AE-48E1E90880DF", base::ASCIIToUTF16("goog"),
+      "BD85DBA2-8C29-49F9-84AE-48E1E90880DF", u"goog",
       MatchCoreForTesting("http://www.google.com"), base::Time::Now(), 100);
   EXPECT_TRUE(AddShortcut(shortcut1));
 
   ShortcutsDatabase::Shortcut shortcut2(
-      "BD85DBA2-8C29-49F9-84AE-48E1E90880E0", base::ASCIIToUTF16("gle"),
+      "BD85DBA2-8C29-49F9-84AE-48E1E90880E0", u"gle",
       MatchCoreForTesting("http://www.google.com"), base::Time::Now(), 100);
   EXPECT_TRUE(AddShortcut(shortcut2));
 
   ShortcutsDatabase::Shortcut shortcut3(
-      "BD85DBA2-8C29-49F9-84AE-48E1E90880E1", base::ASCIIToUTF16("sp"),
+      "BD85DBA2-8C29-49F9-84AE-48E1E90880E1", u"sp",
       MatchCoreForTesting("http://www.sport.com"), base::Time::Now(), 10);
   EXPECT_TRUE(AddShortcut(shortcut3));
 
   ShortcutsDatabase::Shortcut shortcut4(
-      "BD85DBA2-8C29-49F9-84AE-48E1E90880E2", base::ASCIIToUTF16("mov"),
+      "BD85DBA2-8C29-49F9-84AE-48E1E90880E2", u"mov",
       MatchCoreForTesting("http://www.film.com"), base::Time::Now(), 10);
   EXPECT_TRUE(AddShortcut(shortcut4));
 

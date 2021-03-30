@@ -12,7 +12,6 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
@@ -50,7 +49,7 @@ class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
 
     // Some command ids have labels and icons that change over time.
     virtual bool IsItemForCommandIdDynamic(int command_id) const;
-    virtual base::string16 GetLabelForCommandId(int command_id) const;
+    virtual std::u16string GetLabelForCommandId(int command_id) const;
     // Gets the icon for the item with the specified id.
     virtual ImageModel GetIconForCommandId(int command_id) const;
 
@@ -81,22 +80,22 @@ class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
   ~SimpleMenuModel() override;
 
   // Methods for adding items to the model.
-  void AddItem(int command_id, const base::string16& label);
+  void AddItem(int command_id, const std::u16string& label);
   void AddItemWithStringId(int command_id, int string_id);
   void AddItemWithIcon(int command_id,
-                       const base::string16& label,
+                       const std::u16string& label,
                        const ui::ImageModel& icon);
   void AddItemWithStringIdAndIcon(int command_id,
                                   int string_id,
                                   const ui::ImageModel& icon);
-  void AddCheckItem(int command_id, const base::string16& label);
+  void AddCheckItem(int command_id, const std::u16string& label);
   void AddCheckItemWithStringId(int command_id, int string_id);
-  void AddRadioItem(int command_id, const base::string16& label, int group_id);
+  void AddRadioItem(int command_id, const std::u16string& label, int group_id);
   void AddRadioItemWithStringId(int command_id, int string_id, int group_id);
   void AddHighlightedItemWithIcon(int command_id,
-                                  const base::string16& label,
+                                  const std::u16string& label,
                                   const ui::ImageModel& icon);
-  void AddTitle(const base::string16& label);
+  void AddTitle(const std::u16string& label);
 
   // Adds a separator of the specified type to the model.
   // - Adding a separator after another separator is always invalid if they
@@ -109,7 +108,7 @@ class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
   // owned by the same owner of this SimpleMenuModel.
   void AddButtonItem(int command_id, ButtonMenuItemModel* model);
   void AddSubMenu(int command_id,
-                  const base::string16& label,
+                  const std::u16string& label,
                   MenuModel* model);
   void AddSubMenuWithStringId(int command_id, int string_id, MenuModel* model);
   void AddSubMenuWithStringIdAndIcon(int command_id,
@@ -117,7 +116,7 @@ class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
                                      MenuModel* model,
                                      const ui::ImageModel& icon);
   void AddActionableSubMenu(int command_id,
-                            const base::string16& label,
+                            const std::u16string& label,
                             MenuModel* model);
   void AddActionableSubmenuWithStringIdAndIcon(int command_id,
                                                int string_id,
@@ -125,22 +124,22 @@ class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
                                                const ui::ImageModel& icon);
 
   // Methods for inserting items into the model.
-  void InsertItemAt(int index, int command_id, const base::string16& label);
+  void InsertItemAt(int index, int command_id, const std::u16string& label);
   void InsertItemWithStringIdAt(int index, int command_id, int string_id);
   void InsertSeparatorAt(int index, MenuSeparatorType separator_type);
   void InsertCheckItemAt(int index,
                          int command_id,
-                         const base::string16& label);
+                         const std::u16string& label);
   void InsertCheckItemWithStringIdAt(int index, int command_id, int string_id);
   void InsertRadioItemAt(int index,
                          int command_id,
-                         const base::string16& label,
+                         const std::u16string& label,
                          int group_id);
   void InsertRadioItemWithStringIdAt(
       int index, int command_id, int string_id, int group_id);
   void InsertSubMenuAt(int index,
                        int command_id,
-                       const base::string16& label,
+                       const std::u16string& label,
                        MenuModel* model);
   void InsertSubMenuWithStringIdAt(
       int index, int command_id, int string_id, MenuModel* model);
@@ -152,10 +151,10 @@ class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
   void SetIcon(int index, const ui::ImageModel& icon);
 
   // Sets the label for the item at |index|.
-  void SetLabel(int index, const base::string16& label);
+  void SetLabel(int index, const std::u16string& label);
 
   // Sets the minor text for the item at |index|.
-  void SetMinorText(int index, const base::string16& minor_text);
+  void SetMinorText(int index, const std::u16string& minor_text);
 
   // Sets the minor icon for the item at |index|.
   void SetMinorIcon(int index, const ui::ImageModel& minor_icon);
@@ -168,6 +167,9 @@ class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
 
   // Sets whether the item at |index| is new.
   void SetIsNewFeatureAt(int index, bool is_new_feature);
+
+  // Sets whether the item at |index| is may have mnemonics.
+  void SetMayHaveMnemonicsAt(int index, bool may_have_mnemonics);
 
   // Clears all items. Note that it does not free MenuModel of submenu.
   void Clear();
@@ -182,8 +184,8 @@ class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
   ItemType GetTypeAt(int index) const override;
   ui::MenuSeparatorType GetSeparatorTypeAt(int index) const override;
   int GetCommandIdAt(int index) const override;
-  base::string16 GetLabelAt(int index) const override;
-  base::string16 GetMinorTextAt(int index) const override;
+  std::u16string GetLabelAt(int index) const override;
+  std::u16string GetMinorTextAt(int index) const override;
   ImageModel GetMinorIconAt(int index) const override;
   bool IsItemDynamicAt(int index) const override;
   bool GetAcceleratorAt(int index, ui::Accelerator* accelerator) const override;
@@ -195,6 +197,7 @@ class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
   bool IsVisibleAt(int index) const override;
   bool IsAlertedAt(int index) const override;
   bool IsNewFeatureAt(int index) const override;
+  bool MayHaveMnemonicsAt(int index) const override;
   void ActivatedAt(int index) override;
   void ActivatedAt(int index, int event_flags) override;
   MenuModel* GetSubmenuModelAt(int index) const override;
@@ -212,14 +215,14 @@ class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
  private:
   struct Item {
     Item(Item&&);
-    Item(int command_id, ItemType type, base::string16 label);
+    Item(int command_id, ItemType type, std::u16string label);
     Item& operator=(Item&&);
     ~Item();
 
     int command_id = 0;
     ItemType type = TYPE_COMMAND;
-    base::string16 label;
-    base::string16 minor_text;
+    std::u16string label;
+    std::u16string minor_text;
     ImageModel minor_icon;
     ImageModel icon;
     int group_id = -1;
@@ -229,6 +232,7 @@ class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
     bool enabled = true;
     bool visible = true;
     bool is_new_feature = false;
+    bool may_have_mnemonics = true;
   };
 
   typedef std::vector<Item> ItemVector;

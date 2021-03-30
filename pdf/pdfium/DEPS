@@ -1,10 +1,10 @@
 include_rules = [
   "+gin/array_buffer.h",
-  "+gin/public",
   "+gin/v8_initializer.h",
   "+printing/nup_parameters.h",
   "+printing/page_setup.h",
   "+printing/pdf_render_settings.h",
   "+third_party/pdfium/public",
   "+ui/gfx/codec/jpeg_codec.h",
+  "+v8/include/cppgc/platform.h",
 ]

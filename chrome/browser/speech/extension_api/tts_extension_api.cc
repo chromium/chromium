@@ -28,9 +28,29 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
+#include "chrome/common/extensions/extension_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace constants = tts_extension_api_constants;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+namespace {
+
+// ChromeOS source that triggered text-to-speech utterance.
+//
+// These values are logged to UMA. Entries should not be renumbered and
+// numeric values should never be reused. Please keep in sync with
+// "TextToSpeechSource" in src/tools/metrics/histograms/enums.xml.
+enum class UMATextToSpeechSource {
+  kOther = 0,
+  kChromeVox = 1,
+  kSelectToSpeak = 2,
+
+  kMaxValue = kSelectToSpeak,
+};
+
+}  // namespace
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace events {
 const char kOnEvent[] = "tts.onEvent";
@@ -267,6 +287,17 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
         options->GetInteger(constants::kSrcIdKey, &src_id));
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  UMATextToSpeechSource source = UMATextToSpeechSource::kOther;
+  const std::string host = source_url().host();
+  if (host == extension_misc::kSelectToSpeakExtensionId) {
+    source = UMATextToSpeechSource::kSelectToSpeak;
+  } else if (host == extension_misc::kChromeVoxExtensionId) {
+    source = UMATextToSpeechSource::kChromeVox;
+  }
+  UMA_HISTOGRAM_ENUMERATION("TextToSpeech.Utterance.Source", source);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   // If we got this far, the arguments were all in the valid format, so
   // send the success response to the callback now - this ensures that
   // the callback response always arrives before events, which makes
@@ -278,10 +309,13 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
     extensions::ExtensionHost* host =
         extensions::ProcessManager::Get(browser_context())
             ->GetBackgroundHostForExtension(extension()->id());
-    utterance = content::TtsUtterance::Create(host->host_contents());
-  } else {
-    utterance = content::TtsUtterance::Create(browser_context());
+
+    if (host && host->host_contents())
+      utterance = content::TtsUtterance::Create(host->host_contents());
   }
+
+  if (!utterance)
+    utterance = content::TtsUtterance::Create(browser_context());
 
   utterance->SetText(text);
   utterance->SetVoiceName(voice_name);

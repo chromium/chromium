@@ -53,6 +53,9 @@ third_party/libaddressinput/BUILD.gn.
       <output filename="address_input_strings_zh-HK.pak" type="data_package" lang="zh-HK" />
       <output filename="address_input_strings_zu.pak" type="data_package" lang="zu" />
     </if>
+    <if expr="chromeos or lacros">
+      <output filename="address_input_strings_is.pak" type="data_package" lang="is" />
+    </if>
     <output filename="address_input_strings_am.pak" type="data_package" lang="am" />
     <output filename="address_input_strings_ar.pak" type="data_package" lang="ar" />
     <output filename="address_input_strings_bg.pak" type="data_package" lang="bg" />
@@ -74,7 +77,6 @@ third_party/libaddressinput/BUILD.gn.
     </if>
     <output filename="address_input_strings_et.pak" type="data_package" lang="et" />
     <output filename="address_input_strings_fa.pak" type="data_package" lang="fa" />
-    <output filename="address_input_strings_fake-bidi.pak" type="data_package" lang="fake-bidi" />
     <output filename="address_input_strings_fi.pak" type="data_package" lang="fi" />
     <output filename="address_input_strings_fil.pak" type="data_package" lang="fil" />
     <output filename="address_input_strings_fr.pak" type="data_package" lang="fr" />
@@ -121,6 +123,10 @@ third_party/libaddressinput/BUILD.gn.
     <output filename="address_input_strings_vi.pak" type="data_package" lang="vi" />
     <output filename="address_input_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
     <output filename="address_input_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+
+    <!-- Pseudolocales -->
+    <output filename="address_input_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="address_input_strings_en-XA.pak" type="data_package" lang="en-XA" />
   </outputs>
 
   <!-- Chromium translations. -->
@@ -207,7 +213,7 @@ third_party/libaddressinput/BUILD.gn.
     <file path="resources/address_input_strings_zh-TW.xtb" lang="zh-TW" />
     <file path="resources/address_input_strings_zu.xtb" lang="zu" />
   </translations>
-  <release seq="1" allow_pseudo="false">
+  <release seq="1">
     <messages fallback_to_english="true">
       <!-- Chromium name for the file with original strings to work well with
            translation tools. -->

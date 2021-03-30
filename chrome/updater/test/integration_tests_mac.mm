@@ -3,11 +3,15 @@
 // found in the LICENSE file.
 
 #include <stdint.h>
+#include <string>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/mac/foundation_util.h"
+#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
@@ -15,34 +19,41 @@
 #include "base/version.h"
 #include "chrome/common/mac/launchd.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/external_constants_builder.h"
 #include "chrome/updater/launchd_util.h"
-#import "chrome/updater/mac/util.h"
+#import "chrome/updater/mac/mac_util.h"
 #include "chrome/updater/mac/xpc_service_names.h"
 #include "chrome/updater/prefs.h"
-#include "chrome/updater/test/integration_tests.h"
+#include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/test/test_app/constants.h"
 #include "chrome/updater/test/test_app/test_app_version.h"
-#include "chrome/updater/updater_version.h"
+#include "chrome/updater/updater_branding.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace updater {
 namespace test {
 
-// crbug.com/1112527: These tests are not compatible with component build.
-#if !defined(COMPONENT_BUILD)
-
 namespace {
 
-void RemoveJobFromLaunchd(Launchd::Domain domain,
-                          Launchd::Type type,
-                          base::ScopedCFTypeRef<CFStringRef> name) {
-  EXPECT_TRUE(Launchd::GetInstance()->DeletePlist(domain, type, name))
-      << "Failed to delete plist for " << name;
+Launchd::Domain LaunchdDomain(UpdaterScope scope) {
+  switch (scope) {
+    case UpdaterScope::kSystem:
+      return Launchd::Domain::Local;
+    case UpdaterScope::kUser:
+      return Launchd::Domain::User;
+  }
+}
 
-  // Return value is ignored, since RemoveJob returns false if the job already
-  // doesn't exist.
-  Launchd::GetInstance()->RemoveJob(base::SysCFStringRefToUTF8(name));
+Launchd::Type LaunchdType(UpdaterScope scope) {
+  switch (scope) {
+    case UpdaterScope::kSystem:
+      return Launchd::Type::Daemon;
+    case UpdaterScope::kUser:
+      return Launchd::Type::Agent;
+  }
 }
 
 base::FilePath GetExecutablePath() {
@@ -67,16 +78,33 @@ base::FilePath GetTestAppExecutablePath() {
       .Append(FILE_PATH_LITERAL(TEST_APP_FULLNAME_STRING));
 }
 
-base::FilePath GetProductPath() {
-  return base::mac::GetUserLibraryPath()
-      .AppendASCII(COMPANY_SHORTNAME_STRING)
+base::Optional<base::FilePath> GetProductPath(UpdaterScope scope) {
+  base::Optional<base::FilePath> path = GetLibraryFolderPath(scope);
+  if (!path)
+    return base::nullopt;
+
+  return path->AppendASCII(COMPANY_SHORTNAME_STRING)
       .AppendASCII(PRODUCT_FULLNAME_STRING);
 }
 
-void ExpectServiceAbsent(const std::string& service) {
+base::Optional<base::FilePath> GetActiveFile(UpdaterScope scope,
+                                             const std::string& id) {
+  const base::Optional<base::FilePath> path =
+      GetLibraryFolderPath(UpdaterScope::kUser);
+  if (!path)
+    return base::nullopt;
+
+  return path->AppendASCII(COMPANY_SHORTNAME_STRING)
+      .AppendASCII(COMPANY_SHORTNAME_STRING "SoftwareUpdate")
+      .AppendASCII("Actives")
+      .AppendASCII(id);
+}
+
+void ExpectServiceAbsent(UpdaterScope scope, const std::string& service) {
+  VLOG(0) << __func__ << " - scope: " << scope << ". service: " << service;
   bool success = false;
   base::RunLoop loop;
-  PollLaunchctlList(service, LaunchctlPresence::kAbsent,
+  PollLaunchctlList(scope, service, LaunchctlPresence::kAbsent,
                     base::TimeDelta::FromSeconds(7),
                     base::BindLambdaForTesting([&](bool result) {
                       success = result;
@@ -88,137 +116,203 @@ void ExpectServiceAbsent(const std::string& service) {
 
 }  // namespace
 
-base::FilePath GetDataDirPath() {
-  return base::mac::GetUserLibraryPath()
-      .AppendASCII("Application Support")
-      .AppendASCII(COMPANY_SHORTNAME_STRING)
+void EnterTestMode(const GURL& url) {
+  ASSERT_TRUE(ExternalConstantsBuilder()
+                  .SetUpdateURL(std::vector<std::string>{url.spec()})
+                  .SetUseCUP(false)
+                  .SetInitialDelay(0.1)
+                  .SetServerKeepAliveSeconds(1)
+                  .Overwrite());
+}
+
+base::Optional<base::FilePath> GetDataDirPath(UpdaterScope scope) {
+  base::Optional<base::FilePath> app_path =
+      GetApplicationSupportDirectory(scope);
+  if (!app_path) {
+    VLOG(1) << "Failed to get Application support path.";
+    return base::nullopt;
+  }
+
+  return app_path->AppendASCII(COMPANY_SHORTNAME_STRING)
       .AppendASCII(PRODUCT_FULLNAME_STRING);
 }
 
-void Clean() {
-  EXPECT_TRUE(base::DeletePathRecursively(GetProductPath()));
+void Clean(UpdaterScope scope) {
+  Launchd::Domain launchd_domain = LaunchdDomain(scope);
+  Launchd::Type launchd_type = LaunchdType(scope);
+
+  base::Optional<base::FilePath> path = GetProductPath(scope);
+  EXPECT_TRUE(path);
+  if (path)
+    EXPECT_TRUE(base::DeletePathRecursively(*path));
   EXPECT_TRUE(Launchd::GetInstance()->DeletePlist(
-      Launchd::User, Launchd::Agent, updater::CopyWakeLaunchdName()));
+      launchd_domain, launchd_type, updater::CopyWakeLaunchdName()));
   EXPECT_TRUE(Launchd::GetInstance()->DeletePlist(
-      Launchd::User, Launchd::Agent,
+      launchd_domain, launchd_type,
       updater::CopyUpdateServiceInternalLaunchdName()));
   EXPECT_TRUE(Launchd::GetInstance()->DeletePlist(
-      Launchd::User, Launchd::Agent, updater::CopyUpdateServiceLaunchdName()));
-  EXPECT_TRUE(base::DeletePathRecursively(GetDataDirPath()));
+      launchd_domain, launchd_type, updater::CopyUpdateServiceLaunchdName()));
+
+  path = GetDataDirPath(scope);
+  EXPECT_TRUE(path);
+  if (path)
+    EXPECT_TRUE(base::DeletePathRecursively(*path));
 
   @autoreleasepool {
-    NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-    [userDefaults
-        removeObjectForKey:[NSString stringWithUTF8String:kDevOverrideKeyUrl]];
-    [userDefaults
-        removeObjectForKey:[NSString
-                               stringWithUTF8String:kDevOverrideKeyUseCUP]];
-
-    // TODO(crbug.com/1096654): support machine case (Launchd::Domain::Local and
-    // Launchd::Type::Daemon).
-    RemoveJobFromLaunchd(Launchd::Domain::User, Launchd::Type::Agent,
+    RemoveJobFromLaunchd(scope, launchd_domain, launchd_type,
+                         CopyWakeLaunchdName());
+    RemoveJobFromLaunchd(scope, launchd_domain, launchd_type,
                          CopyUpdateServiceLaunchdName());
-    RemoveJobFromLaunchd(Launchd::Domain::User, Launchd::Type::Agent,
+    RemoveJobFromLaunchd(scope, launchd_domain, launchd_type,
                          CopyUpdateServiceInternalLaunchdName());
   }
 }
 
-void ExpectClean() {
+void ExpectClean(UpdaterScope scope) {
+  Launchd::Domain launchd_domain = LaunchdDomain(scope);
+  Launchd::Type launchd_type = LaunchdType(scope);
+
   // Files must not exist on the file system.
-  EXPECT_FALSE(base::PathExists(GetProductPath()));
+  base::Optional<base::FilePath> path = GetProductPath(scope);
+  EXPECT_TRUE(path);
+  if (path)
+    EXPECT_FALSE(base::PathExists(*path));
   EXPECT_FALSE(Launchd::GetInstance()->PlistExists(
-      Launchd::User, Launchd::Agent, updater::CopyWakeLaunchdName()));
+      launchd_domain, launchd_type, updater::CopyWakeLaunchdName()));
   EXPECT_FALSE(Launchd::GetInstance()->PlistExists(
-      Launchd::User, Launchd::Agent,
+      launchd_domain, launchd_type,
       updater::CopyUpdateServiceInternalLaunchdName()));
   EXPECT_FALSE(Launchd::GetInstance()->PlistExists(
-      Launchd::User, Launchd::Agent, updater::CopyUpdateServiceLaunchdName()));
-  EXPECT_FALSE(base::PathExists(GetDataDirPath()));
-  ExpectServiceAbsent(kUpdateServiceLaunchdName);
-  ExpectServiceAbsent(kUpdateServiceInternalLaunchdName);
+      launchd_domain, launchd_type, updater::CopyUpdateServiceLaunchdName()));
+
+  path = GetDataDirPath(scope);
+  EXPECT_TRUE(path);
+  if (path)
+    EXPECT_FALSE(base::PathExists(*path));
+
+  ExpectServiceAbsent(scope, kUpdateServiceLaunchdName);
+  ExpectServiceAbsent(scope, kUpdateServiceInternalLaunchdName);
 }
 
-void EnterTestMode() {
-  // TODO(crbug.com/1119857): Point this to an actual fake server.
-  @autoreleasepool {
-    NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-    [userDefaults setURL:[NSURL URLWithString:@"http://localhost:8367"]
-                  forKey:[NSString stringWithUTF8String:kDevOverrideKeyUrl]];
-    [userDefaults
-        setBool:NO
-         forKey:[NSString stringWithUTF8String:kDevOverrideKeyUseCUP]];
-  }
-}
+void ExpectInstalled(UpdaterScope scope) {
+  Launchd::Domain launchd_domain = LaunchdDomain(scope);
+  Launchd::Type launchd_type = LaunchdType(scope);
 
-void ExpectInstalled() {
   // Files must exist on the file system.
-  EXPECT_TRUE(base::PathExists(GetProductPath()));
-  EXPECT_TRUE(Launchd::GetInstance()->PlistExists(Launchd::User, Launchd::Agent,
+  base::Optional<base::FilePath> path = GetProductPath(scope);
+  EXPECT_TRUE(path);
+  if (path)
+    EXPECT_TRUE(base::PathExists(*path));
+
+  EXPECT_TRUE(Launchd::GetInstance()->PlistExists(launchd_domain, launchd_type,
                                                   CopyWakeLaunchdName()));
   EXPECT_TRUE(Launchd::GetInstance()->PlistExists(
-      Launchd::User, Launchd::Agent, CopyUpdateServiceInternalLaunchdName()));
+      launchd_domain, launchd_type, CopyUpdateServiceInternalLaunchdName()));
 }
 
-void Install() {
+void Install(UpdaterScope scope) {
   const base::FilePath path = GetExecutablePath();
   ASSERT_FALSE(path.empty());
   base::CommandLine command_line(path);
   command_line.AppendSwitch(kInstallSwitch);
   int exit_code = -1;
-  ASSERT_TRUE(Run(command_line, &exit_code));
-  EXPECT_EQ(0, exit_code);
+  ASSERT_TRUE(Run(scope, command_line, &exit_code));
+  EXPECT_EQ(exit_code, 0);
 }
 
-void ExpectActive() {
+void ExpectActiveUpdater(UpdaterScope scope) {
+  Launchd::Domain launchd_domain = LaunchdDomain(scope);
+  Launchd::Type launchd_type = LaunchdType(scope);
+
   // Files must exist on the file system.
-  EXPECT_TRUE(base::PathExists(GetProductPath()));
+  base::Optional<base::FilePath> path = GetProductPath(scope);
+  EXPECT_TRUE(path);
+  if (path)
+    EXPECT_TRUE(base::PathExists(*path));
+
   EXPECT_TRUE(Launchd::GetInstance()->PlistExists(
-      Launchd::User, Launchd::Agent, CopyUpdateServiceLaunchdName()));
+      launchd_domain, launchd_type, CopyUpdateServiceLaunchdName()));
 }
 
-void RegisterTestApp() {
+void RegisterTestApp(UpdaterScope scope) {
   const base::FilePath path = GetTestAppExecutablePath();
   ASSERT_FALSE(path.empty());
   base::CommandLine command_line(path);
   command_line.AppendSwitch(kRegisterUpdaterSwitch);
   int exit_code = -1;
-  ASSERT_TRUE(Run(command_line, &exit_code));
-  EXPECT_EQ(0, exit_code);
+  ASSERT_TRUE(Run(scope, command_line, &exit_code));
+  EXPECT_EQ(exit_code, 0);
 }
 
-base::FilePath GetInstalledExecutablePath() {
-  return GetUpdaterExecutablePath();
+base::Optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope) {
+  return GetUpdaterExecutablePath(scope);
 }
 
-void ExpectCandidateUninstalled() {
-  base::FilePath versioned_folder_path = GetVersionedUpdaterFolderPath();
-  EXPECT_FALSE(base::PathExists(versioned_folder_path));
+void ExpectCandidateUninstalled(UpdaterScope scope) {
+  Launchd::Domain launchd_domain = LaunchdDomain(scope);
+  Launchd::Type launchd_type = LaunchdType(scope);
+
+  base::Optional<base::FilePath> versioned_folder_path =
+      GetVersionedUpdaterFolderPath(scope);
+  EXPECT_TRUE(versioned_folder_path);
+  if (versioned_folder_path)
+    EXPECT_FALSE(base::PathExists(*versioned_folder_path));
+
+  EXPECT_FALSE(Launchd::GetInstance()->PlistExists(launchd_domain, launchd_type,
+                                                   CopyWakeLaunchdName()));
   EXPECT_FALSE(Launchd::GetInstance()->PlistExists(
-      Launchd::User, Launchd::Agent, CopyWakeLaunchdName()));
-  EXPECT_FALSE(Launchd::GetInstance()->PlistExists(
-      Launchd::User, Launchd::Agent, CopyUpdateServiceInternalLaunchdName()));
+      launchd_domain, launchd_type, CopyUpdateServiceInternalLaunchdName()));
 }
 
-void Uninstall() {
+void Uninstall(UpdaterScope scope) {
+  if (::testing::Test::HasFailure())
+    PrintLog(scope);
   // Copy logs from GetDataDirPath() before updater uninstalls itself
   // and deletes the path.
-  CopyLog(GetDataDirPath());
+  base::Optional<base::FilePath> path = GetDataDirPath(scope);
+  EXPECT_TRUE(path);
+  if (path)
+    CopyLog(*path);
 
   // Uninstall the updater.
-  const base::FilePath path = GetExecutablePath();
-  ASSERT_FALSE(path.empty());
-  base::CommandLine command_line(path);
+  path = GetExecutablePath();
+  ASSERT_TRUE(path);
+  base::CommandLine command_line(*path);
   command_line.AppendSwitch(kUninstallSwitch);
   int exit_code = -1;
-  ASSERT_TRUE(Run(command_line, &exit_code));
-  EXPECT_EQ(0, exit_code);
+  ASSERT_TRUE(Run(scope, command_line, &exit_code));
+  EXPECT_EQ(exit_code, 0);
 }
 
-base::FilePath GetFakeUpdaterInstallFolderPath(const base::Version& version) {
-  return GetExecutableFolderPathForVersion(version);
+base::Optional<base::FilePath> GetFakeUpdaterInstallFolderPath(
+    UpdaterScope scope,
+    const base::Version& version) {
+  return GetExecutableFolderPathForVersion(scope, version);
 }
 
-#endif  // !defined(COMPONENT_BUILD)
+void SetActive(UpdaterScope scope, const std::string& app_id) {
+  const base::Optional<base::FilePath> path = GetActiveFile(scope, app_id);
+  ASSERT_TRUE(path);
+  VLOG(0) << "Actives file: " << *path;
+  base::File::Error err = base::File::FILE_OK;
+  EXPECT_TRUE(base::CreateDirectoryAndGetError(path->DirName(), &err))
+      << "Error: " << err;
+  EXPECT_TRUE(base::WriteFile(*path, ""));
+}
+
+void ExpectActive(UpdaterScope scope, const std::string& app_id) {
+  const base::Optional<base::FilePath> path = GetActiveFile(scope, app_id);
+  ASSERT_TRUE(path);
+  EXPECT_TRUE(base::PathExists(*path));
+  EXPECT_TRUE(base::PathIsWritable(*path));
+}
+
+void ExpectNotActive(UpdaterScope scope, const std::string& app_id) {
+  const base::Optional<base::FilePath> path = GetActiveFile(scope, app_id);
+  ASSERT_TRUE(path);
+  EXPECT_FALSE(base::PathExists(*path));
+  EXPECT_FALSE(base::PathIsWritable(*path));
+}
 
 }  // namespace test
 }  // namespace updater

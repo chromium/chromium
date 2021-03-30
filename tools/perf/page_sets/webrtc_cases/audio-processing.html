@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<!--
+ *  Copyright (c) 2021 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree.
+-->
+<html>
+<head>
+
+
+    <base target="_blank">
+
+    <title>Insertable Streams - Audio</title>
+
+
+</head>
+
+<body>
+
+<div id="container">
+
+    <h1><a href="//webrtc.github.io/samples/" title="WebRTC samples homepage">WebRTC samples</a>
+        <span>Audio processing with insertable streams</span>
+    </h1>
+
+    <p>This sample shows how to perform processing on an audio stream using the experimental
+        <a href="https://github.com/w3c/mediacapture-insertable-streams">insertable streams</a> API.
+        It applies a low-pass filter in realtime to audio recorded from a microphone and plays it
+        back.
+    </p>
+    <audio id="audioOutput" controls></audio>
+
+    <div>
+        <button type="button" id="startButton">Start</button>
+        <button type="button" id="stopButton" disabled>Stop</button>
+    <div>
+    <p class="warning">Warning: if you're not using headphones, pressing Start will cause feedback.</p>
+
+    <p>View the console to see logging. The <code>audio</code>, <code>processor</code>,
+        <code>generator</code>, <code>transformer</code>, <code>stream</code> and
+        <code>processedStream</code> variables are in global scope, so you can inspect them from the
+        console. You may also adjust the level of filtering by assigning to <code>cutoff</code>.</p>
+
+    <p>
+        <b>Note</b>: This sample is using an experimental API that has not yet been standardized. As
+        of 2021-02-09, this API is available in Chrome M90 if the experimental code is enabled on
+        the command line with
+        <code>--enable-blink-features=WebCodecs,MediaStreamInsertableStreams</code>.
+    </p>
+    <a href="https://github.com/webrtc/samples/tree/gh-pages/src/content/insertable-streams/audio-processing"
+       title="View source for this page on GitHub" id="viewSource">View source on GitHub</a>
+
+</div>
+
+
+
+<script src="audio-processing.js"></script>
+</body></html>

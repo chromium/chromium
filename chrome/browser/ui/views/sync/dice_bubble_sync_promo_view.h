@@ -8,9 +8,9 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/sync/bubble_sync_promo_delegate.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 
@@ -27,6 +27,7 @@ class DiceSigninButtonView;
 //   with the user full name and avatar icon and allows the user to enable sync.
 class DiceBubbleSyncPromoView : public views::View {
  public:
+  METADATA_HEADER(DiceBubbleSyncPromoView);
   // Creates a personalized sync promo view.
   // |delegate| is not owned by DiceBubbleSyncPromoView.
   // The promo message is set to |accounts_promo_message_resource_id| when
@@ -42,6 +43,8 @@ class DiceBubbleSyncPromoView : public views::View {
                           int accounts_promo_message_resource_id = 0,
                           bool signin_button_prominent = true,
                           int text_style = views::style::STYLE_PRIMARY);
+  DiceBubbleSyncPromoView(const DiceBubbleSyncPromoView&) = delete;
+  DiceBubbleSyncPromoView& operator=(const DiceBubbleSyncPromoView&) = delete;
   ~DiceBubbleSyncPromoView() override;
 
   // Returns the sign-in button.
@@ -52,13 +55,8 @@ class DiceBubbleSyncPromoView : public views::View {
   // pressed.
   void EnableSync();
 
-  // views::View:
-  const char* GetClassName() const override;
-
   // Delegate, to handle clicks on the sign-in buttons.
   BubbleSyncPromoDelegate* delegate_;
   DiceSigninButtonView* signin_button_view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(DiceBubbleSyncPromoView);
 };
 #endif  // CHROME_BROWSER_UI_VIEWS_SYNC_DICE_BUBBLE_SYNC_PROMO_VIEW_H_

@@ -66,7 +66,10 @@ if (use_official_google_api_keys == "") {
 
 config("key_defines") {
   defines = []
-  if (is_chrome_branded || use_official_google_api_keys) {
+
+  # TODO(crbug.com/1171510): Refactor so use_official_google_api_keys can be
+  # used for Fuchsia.
+  if (!is_fuchsia && (is_chrome_branded || use_official_google_api_keys)) {
     defines += [ "USE_OFFICIAL_GOOGLE_API_KEYS=1" ]
   }
   if (google_api_key != "") {

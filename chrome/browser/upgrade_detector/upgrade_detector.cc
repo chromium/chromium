@@ -84,7 +84,7 @@ UpgradeDetector::~UpgradeDetector() {
 
 void UpgradeDetector::NotifyOutdatedInstall() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!observer_list_.might_have_observers())
+  if (observer_list_.empty())
     return;
 
   for (auto& observer : observer_list_)
@@ -93,7 +93,7 @@ void UpgradeDetector::NotifyOutdatedInstall() {
 
 void UpgradeDetector::NotifyOutdatedInstallNoAutoUpdate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!observer_list_.might_have_observers())
+  if (observer_list_.empty())
     return;
 
   for (auto& observer : observer_list_)
@@ -153,7 +153,7 @@ void UpgradeDetector::NotifyUpgrade() {
 
 void UpgradeDetector::NotifyUpgradeRecommended() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!observer_list_.might_have_observers())
+  if (observer_list_.empty())
     return;
 
   for (auto& observer : observer_list_)
@@ -162,7 +162,7 @@ void UpgradeDetector::NotifyUpgradeRecommended() {
 
 void UpgradeDetector::NotifyCriticalUpgradeInstalled() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!observer_list_.might_have_observers())
+  if (observer_list_.empty())
     return;
 
   for (auto& observer : observer_list_)
@@ -171,7 +171,7 @@ void UpgradeDetector::NotifyCriticalUpgradeInstalled() {
 
 void UpgradeDetector::NotifyUpdateOverCellularAvailable() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!observer_list_.might_have_observers())
+  if (observer_list_.empty())
     return;
 
   for (auto& observer : observer_list_)
@@ -180,7 +180,7 @@ void UpgradeDetector::NotifyUpdateOverCellularAvailable() {
 
 void UpgradeDetector::NotifyUpdateOverCellularOneTimePermissionGranted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!observer_list_.might_have_observers())
+  if (observer_list_.empty())
     return;
 
   for (auto& observer : observer_list_)
@@ -189,7 +189,7 @@ void UpgradeDetector::NotifyUpdateOverCellularOneTimePermissionGranted() {
 
 void UpgradeDetector::NotifyRelaunchOverriddenToRequired(bool override) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!observer_list_.might_have_observers())
+  if (observer_list_.empty())
     return;
 
   for (auto& observer : observer_list_)

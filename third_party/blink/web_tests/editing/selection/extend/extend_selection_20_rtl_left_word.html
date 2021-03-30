@@ -41,7 +41,7 @@ selection_test(
   selection => selection.modify('extend', 'left', 'word'),
   behavior === 'mac'
       ? '<div contenteditable dir="rtl">\u05D0\u05D1\u05D2^ abc| \u05D3\u05D4\u05D5<br>edf \u05D6\u05D7\u05D8 abrebg</div>'
-      : '<div contenteditable dir="rtl">\u05D0\u05D1\u05D2^ abc |\u05D3\u05D4\u05D5<br>edf \u05D6\u05D7\u05D8 abrebg</div>',
+      : '<div contenteditable dir="rtl">\u05D0\u05D1\u05D2^ |abc \u05D3\u05D4\u05D5<br>edf \u05D6\u05D7\u05D8 abrebg</div>',
   `${behavior} 20-3 rtl left word`);
 
 selection_test(
@@ -71,7 +71,9 @@ selection_test(
 selection_test(
   '<div contenteditable dir="rtl">\u05D0\u05D1\u05D2 abc| \u05D3\u05D4\u05D5<br>edf \u05D6\u05D7\u05D8 abrebg</div>',
   selection => selection.modify('extend', 'left', 'word'),
-  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D2 abc^ \u05D3\u05D4\u05D5|<br>edf \u05D6\u05D7\u05D8 abrebg</div>',
+  behavior === 'mac'
+      ? '<div contenteditable dir="rtl">\u05D0\u05D1\u05D2 abc^ \u05D3\u05D4\u05D5|<br>edf \u05D6\u05D7\u05D8 abrebg</div>'
+      : '<div contenteditable dir="rtl">\u05D0\u05D1\u05D2 abc^ |\u05D3\u05D4\u05D5<br>edf \u05D6\u05D7\u05D8 abrebg</div>',
   `${behavior} 20-7 rtl left word`);
 
 selection_test(
@@ -121,7 +123,7 @@ selection_test(
   selection => selection.modify('extend', 'left', 'word'),
   behavior === 'mac'
       ? '<div contenteditable dir="rtl">\u05D0\u05D1\u05D2 abc \u05D3\u05D4\u05D5<br>edf^ \u05D6\u05D7\u05D8| abrebg</div>'
-      : '<div contenteditable dir="rtl">\u05D0\u05D1\u05D2 abc \u05D3\u05D4\u05D5<br>edf^ \u05D6\u05D7\u05D8 |abrebg</div>',
+      : '<div contenteditable dir="rtl">\u05D0\u05D1\u05D2 abc \u05D3\u05D4\u05D5<br>edf^ |\u05D6\u05D7\u05D8 abrebg</div>',
   `${behavior} 20-14 rtl left word`);
 
 selection_test(
@@ -151,7 +153,9 @@ selection_test(
 selection_test(
   '<div contenteditable dir="rtl">\u05D0\u05D1\u05D2 abc \u05D3\u05D4\u05D5<br>edf \u05D6\u05D7\u05D8| abrebg</div>',
   selection => selection.modify('extend', 'left', 'word'),
-  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D2 abc \u05D3\u05D4\u05D5<br>edf \u05D6\u05D7\u05D8^ abrebg|</div>',
+  behavior === 'mac'
+      ? '<div contenteditable dir="rtl">\u05D0\u05D1\u05D2 abc \u05D3\u05D4\u05D5<br>edf \u05D6\u05D7\u05D8^ abrebg|</div>'
+      : '<div contenteditable dir="rtl">\u05D0\u05D1\u05D2 abc \u05D3\u05D4\u05D5<br>edf \u05D6\u05D7\u05D8^ |abrebg</div>',
   `${behavior} 20-18 rtl left word`);
 
 selection_test(

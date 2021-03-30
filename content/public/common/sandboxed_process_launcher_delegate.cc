@@ -30,6 +30,14 @@ void SandboxedProcessLauncherDelegate::PostSpawnTarget(
 bool SandboxedProcessLauncherDelegate::ShouldLaunchElevated() {
   return false;
 }
+
+bool SandboxedProcessLauncherDelegate::ShouldUnsandboxedRunInJob() {
+  return false;
+}
+
+bool SandboxedProcessLauncherDelegate::CetCompatible() {
+  return true;
+}
 #endif  // defined(OS_WIN)
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
@@ -52,11 +60,9 @@ bool SandboxedProcessLauncherDelegate::DisclaimResponsibility() {
   return false;
 }
 
-#if defined(ARCH_CPU_ARM64)
-bool SandboxedProcessLauncherDelegate::LaunchX86_64() {
+bool SandboxedProcessLauncherDelegate::EnableCpuSecurityMitigations() {
   return false;
 }
-#endif  // ARCH_CPU_ARM64
 
 #endif  // OS_MAC
 

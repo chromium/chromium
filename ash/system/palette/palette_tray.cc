@@ -35,6 +35,8 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/display/display.h"
@@ -91,20 +93,50 @@ bool ShouldShowOnDisplay(PaletteTray* palette_tray) {
 
 class BatteryView : public views::View {
  public:
-  explicit BatteryView(StylusBatteryDelegate* delegate) {
+  BatteryView() {
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 4));
 
+    SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+    SetVisible(stylus_battery_delegate_.ShouldShowBatteryStatus());
+
     icon_ = AddChildView(std::make_unique<views::ImageView>());
-    icon_->SetImage(delegate->GetBatteryImage());
+
+    if (stylus_battery_delegate_.IsBatteryStatusStale()) {
+      icon_->SetImage(stylus_battery_delegate_.GetBatteryStatusUnknownImage());
+      icon_->SetTooltipText(l10n_util::GetStringUTF16(
+          IDS_ASH_STYLUS_BATTERY_STATUS_STALE_TOOLTIP));
+    }
+
     label_ = AddChildView(std::make_unique<views::Label>(
-        l10n_util::GetStringUTF16(delegate->GetLabelIdForBatteryLevel())));
-    label_->SetEnabledColor(delegate->GetColorForBatteryLevel());
+        l10n_util::GetStringUTF16(IDS_ASH_STYLUS_BATTERY_LOW_LABEL)));
+    label_->SetEnabledColor(stylus_battery_delegate_.GetColorForBatteryLevel());
     TrayPopupUtils::SetLabelFontList(label_,
                                      TrayPopupUtils::FontStyle::kSmallTitle);
+
+    stylus_battery_delegate_.SetBatteryUpdateCallback(base::BindRepeating(
+        &BatteryView::OnBatteryLevelUpdated, base::Unretained(this)));
+
+    OnBatteryLevelUpdated();
+  }
+
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
+    node_data->role = ax::mojom::Role::kLabelText;
+    node_data->SetName(l10n_util::GetStringFUTF16(
+        IDS_ASH_STYLUS_BATTERY_PERCENT_ACCESSIBLE,
+        base::NumberToString16(
+            stylus_battery_delegate_.battery_level().value_or(0))));
+  }
+
+  void OnBatteryLevelUpdated() {
+    icon_->SetImage(stylus_battery_delegate_.GetBatteryImage());
+    label_->SetVisible(stylus_battery_delegate_.IsBatteryLevelLow() &&
+                       !stylus_battery_delegate_.IsBatteryStatusStale() &&
+                       !stylus_battery_delegate_.IsBatteryCharging());
   }
 
  private:
+  StylusBatteryDelegate stylus_battery_delegate_;
   views::ImageView* icon_ = nullptr;
   views::Label* label_ = nullptr;
 };
@@ -131,8 +163,7 @@ class TitleView : public views::View {
     layout_ptr->SetFlexForView(title_label, 1);
 
     if (ash::features::IsStylusBatteryStatusEnabled()) {
-      AddChildView(std::make_unique<BatteryView>(
-          palette_tray->stylus_battery_delegate()));
+      AddChildView(std::make_unique<BatteryView>());
 
       auto* separator = AddChildView(std::make_unique<views::Separator>());
       separator->SetPreferredHeight(GetPreferredSize().height());
@@ -239,7 +270,7 @@ void PaletteTray::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 // static
 void PaletteTray::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
-      prefs::kEnableStylusTools, true,
+      prefs::kEnableStylusTools, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterBooleanPref(
       prefs::kLaunchPaletteOnEjectEvent, true,
@@ -260,8 +291,17 @@ bool PaletteTray::ShouldShowPalette() const {
 }
 
 void PaletteTray::OnStylusEvent(const ui::TouchEvent& event) {
-  if (!HasSeenStylus() && local_state_)
+  if (!HasSeenStylus() && local_state_) {
     local_state_->SetBoolean(prefs::kHasSeenStylus, true);
+
+    // Flip the enable stylus tools setting if the user has never interacted
+    // with it. crbug/1122609
+    if (!pref_change_registrar_user_->prefs()->HasPrefPath(
+            prefs::kEnableStylusTools)) {
+      pref_change_registrar_user_->prefs()->SetBoolean(
+          prefs::kEnableStylusTools, true);
+    }
+  }
 
   // Attempt to show the welcome bubble.
   if (!welcome_bubble_->HasBeenShown() && active_user_pref_service_) {
@@ -328,7 +368,7 @@ void PaletteTray::OnThemeChanged() {
   UpdateTrayIcon();
 }
 
-base::string16 PaletteTray::GetAccessibleNameForTray() {
+std::u16string PaletteTray::GetAccessibleNameForTray() {
   return l10n_util::GetStringUTF16(IDS_ASH_STYLUS_TOOLS_TITLE);
 }
 
@@ -363,7 +403,7 @@ void PaletteTray::OnStylusStateChanged(ui::StylusState stylus_state) {
           prefs::kLaunchPaletteOnEjectEvent)) {
     if (stylus_state == ui::StylusState::REMOVED && !bubble_) {
       is_bubble_auto_opened_ = true;
-      ShowBubble(false /* show_by_click */);
+      ShowBubble();
     } else if (stylus_state == ui::StylusState::INSERTED && bubble_) {
       HidePalette();
     }
@@ -389,7 +429,7 @@ void PaletteTray::BubbleViewDestroyed() {
                              PaletteGroup::MODE) != PaletteToolId::NONE);
 }
 
-base::string16 PaletteTray::GetAccessibleNameForBubble() {
+std::u16string PaletteTray::GetAccessibleNameForBubble() {
   return GetAccessibleNameForTray();
 }
 
@@ -488,7 +528,7 @@ bool PaletteTray::PerformAction(const ui::Event& event) {
     return true;
   }
 
-  ShowBubble(event.IsMouseEvent() || event.IsGestureEvent());
+  ShowBubble();
   return true;
 }
 
@@ -496,7 +536,7 @@ void PaletteTray::CloseBubble() {
   HidePalette();
 }
 
-void PaletteTray::ShowBubble(bool show_by_click) {
+void PaletteTray::ShowBubble() {
   if (bubble_)
     return;
 
@@ -513,10 +553,10 @@ void PaletteTray::ShowBubble(bool show_by_click) {
   init_params.shelf_alignment = shelf()->alignment();
   init_params.preferred_width = kPaletteWidth;
   init_params.close_on_deactivate = true;
-  init_params.show_by_click = show_by_click;
   init_params.translucent = true;
   init_params.has_shadow = false;
   init_params.corner_radius = kTrayItemCornerRadius;
+  init_params.reroute_event_handler = true;
 
   // TODO(tdanderson): Refactor into common row layout code.
   // TODO(tdanderson|jdufault): Add material design ripple effects to the menu
@@ -565,6 +605,10 @@ void PaletteTray::ShowBubble(bool show_by_click) {
 
 TrayBubbleView* PaletteTray::GetBubbleView() {
   return bubble_ ? bubble_->bubble_view() : nullptr;
+}
+
+views::Widget* PaletteTray::GetBubbleWidget() const {
+  return bubble_ ? bubble_->GetBubbleWidget() : nullptr;
 }
 
 const char* PaletteTray::GetClassName() const {
@@ -640,10 +684,9 @@ bool PaletteTray::HasSeenStylus() {
 }
 
 void PaletteTray::UpdateIconVisibility() {
-  bool visible_preferred = HasSeenStylus() && is_palette_enabled_ &&
-                           stylus_utils::HasStylusInput() &&
-                           ShouldShowOnDisplay(this) &&
-                           palette_utils::IsInUserSession();
+  bool visible_preferred =
+      is_palette_enabled_ && stylus_utils::HasStylusInput() &&
+      ShouldShowOnDisplay(this) && palette_utils::IsInUserSession();
   SetVisiblePreferred(visible_preferred);
   if (visible_preferred)
     UpdateLayout();

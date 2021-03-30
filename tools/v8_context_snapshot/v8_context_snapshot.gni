@@ -18,7 +18,8 @@ declare_args() {
   use_v8_context_snapshot =
       !is_chromeos_ash && !is_android && !is_chromecast && !is_fuchsia &&
       !(host_os == "mac" && current_cpu == "x86") &&
-      (v8_target_cpu == target_cpu || is_msan) &&
+      v8_target_cpu == target_cpu &&
+      !(host_toolchain == default_toolchain && is_msan) &&
       !(is_win && host_os != "win") && !(is_mac && host_os != "mac")
 
   # We use a different filename for arm64 macOS builds so that the arm64 and

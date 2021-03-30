@@ -96,15 +96,15 @@ TEST_F(WKWebViewSecurityUtilTest, MakingTrustValid) {
   base::ScopedCFTypeRef<SecTrustRef> trust =
       CreateTestTrust(MakeTestCertChain(kTestSubject));
 
-  SecTrustResultType result = kSecTrustResultInvalid;
-  SecTrustEvaluate(trust, &result);
-  EXPECT_EQ(kSecTrustResultRecoverableTrustFailure, result);
+  CFErrorRef error;
+  BOOL trusted = SecTrustEvaluateWithError(trust, &error);
+  EXPECT_TRUE(!trusted && error);
 
   // Make sure that trust becomes valid after
   // |EnsureFutureTrustEvaluationSucceeds| call.
   EnsureFutureTrustEvaluationSucceeds(trust);
-  SecTrustEvaluate(trust, &result);
-  EXPECT_EQ(kSecTrustResultProceed, result);
+  trusted = SecTrustEvaluateWithError(trust, &error);
+  EXPECT_TRUE(trusted && !error);
 }
 
 // Tests CreateCertFromTrust.

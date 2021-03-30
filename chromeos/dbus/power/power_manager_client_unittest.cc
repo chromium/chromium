@@ -203,7 +203,7 @@ class PowerMonitorTestObserverLocal : public base::PowerMonitorTestObserver {
   using base::PowerMonitorTestObserver::PowerMonitorTestObserver;
 
   void OnThermalStateChange(
-      PowerObserver::DeviceThermalState new_state) override {
+      PowerThermalObserver::DeviceThermalState new_state) override {
     ASSERT_TRUE(cb);
     base::PowerMonitorTestObserver::OnThermalStateChange(new_state);
     std::move(cb).Run();
@@ -646,26 +646,30 @@ TEST_F(PowerManagerClientTest, ChangeAmbientColorTemperature) {
 // Tests that base::PowerMonitor observers are notified about thermal event.
 TEST_F(PowerManagerClientTest, ChangeThermalState) {
   PowerMonitorTestObserverLocal observer;
-  base::PowerMonitor::AddObserver(&observer);
+  base::PowerMonitor::AddPowerThermalObserver(&observer);
 
   base::PowerMonitor::Initialize(
       std::make_unique<base::PowerMonitorTestSource>());
 
   typedef struct {
     power_manager::ThermalEvent::ThermalState dbus_state;
-    base::PowerObserver::DeviceThermalState expected_state;
+    base::PowerThermalObserver::DeviceThermalState expected_state;
   } ThermalDBusTestType;
   ThermalDBusTestType thermal_states[] = {
       {.dbus_state = power_manager::ThermalEvent_ThermalState_UNKNOWN,
-       .expected_state = base::PowerObserver::DeviceThermalState::kUnknown},
+       .expected_state =
+           base::PowerThermalObserver::DeviceThermalState::kUnknown},
       {.dbus_state = power_manager::ThermalEvent_ThermalState_NOMINAL,
-       .expected_state = base::PowerObserver::DeviceThermalState::kNominal},
+       .expected_state =
+           base::PowerThermalObserver::DeviceThermalState::kNominal},
       {.dbus_state = power_manager::ThermalEvent_ThermalState_FAIR,
-       .expected_state = base::PowerObserver::DeviceThermalState::kFair},
+       .expected_state = base::PowerThermalObserver::DeviceThermalState::kFair},
       {.dbus_state = power_manager::ThermalEvent_ThermalState_SERIOUS,
-       .expected_state = base::PowerObserver::DeviceThermalState::kSerious},
+       .expected_state =
+           base::PowerThermalObserver::DeviceThermalState::kSerious},
       {.dbus_state = power_manager::ThermalEvent_ThermalState_CRITICAL,
-       .expected_state = base::PowerObserver::DeviceThermalState::kCritical},
+       .expected_state =
+           base::PowerThermalObserver::DeviceThermalState::kCritical},
   };
 
   for (const auto& p : thermal_states) {
@@ -686,7 +690,8 @@ TEST_F(PowerManagerClientTest, ChangeThermalState) {
     run_loop.Run();
   }
 
-  base::PowerMonitor::RemoveObserver(&observer);
+  base::PowerMonitor::RemovePowerThermalObserver(&observer);
+  base::PowerMonitor::ShutdownForTesting();
 }
 
 }  // namespace chromeos

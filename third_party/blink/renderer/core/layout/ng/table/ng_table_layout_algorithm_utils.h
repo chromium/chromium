@@ -47,6 +47,10 @@ class NGTableAlgorithmUtils {
       bool has_collapsed_borders,
       NGCacheSlot);
 
+  static wtf_size_t ComputeMaximumNonMergeableColumnCount(
+      const Vector<NGBlockNode>& columns,
+      bool is_fixed_layout);
+
   static scoped_refptr<NGTableTypes::Columns> ComputeColumnConstraints(
       const NGBlockNode& table,
       const NGTableGroupedChildren&,
@@ -61,6 +65,7 @@ class NGTableAlgorithmUtils {
       const NGTableBorders& table_borders,
       const LayoutUnit block_border_spacing,
       wtf_size_t section_index,
+      bool treat_section_as_tbody,
       NGTableTypes::Sections* sections,
       NGTableTypes::Rows* rows,
       NGTableTypes::CellBlockConstraints* cell_block_constraints);

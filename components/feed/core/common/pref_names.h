@@ -5,37 +5,17 @@
 #ifndef COMPONENTS_FEED_CORE_COMMON_PREF_NAMES_H_
 #define COMPONENTS_FEED_CORE_COMMON_PREF_NAMES_H_
 
+#include "build/build_config.h"
+
 class PrefRegistrySimple;
+class PrefService;
 
 namespace feed {
 
 namespace prefs {
 
-// The pref name for the period of time between background refreshes.
-extern const char kBackgroundRefreshPeriod[];
-
 // The pref name for the last time when a background fetch was attempted.
 extern const char kLastFetchAttemptTime[];
-
-// The pref name for today's count of RefreshThrottler requests, so far.
-extern const char kThrottlerRequestCount[];
-// The pref name for the current day for the counter of RefreshThrottler's
-// requests.
-extern const char kThrottlerRequestsDay[];
-
-// The pref name for the discounted average number of browsing sessions per hour
-// that involve opening a new NTP.
-extern const char kUserClassifierAverageSuggestionsViwedPerHour[];
-// The pref name for the discounted average number of browsing sessions per hour
-// that involve using content suggestions (i.e. opening one or clicking on the
-// "More" button).
-extern const char kUserClassifierAverageSuggestionsUsedPerHour[];
-
-// The pref name for the last time a surface was shown that displayed
-// suggestions to the user.
-extern const char kUserClassifierLastTimeToViewSuggestions[];
-// The pref name for the last time content suggestions were used by the user.
-extern const char kUserClassifierLastTimeToUseSuggestions[];
 
 // The pref name for the feed host override.
 extern const char kHostOverrideHost[];
@@ -56,9 +36,11 @@ extern const char kHasReachedClickAndViewActionsUploadConditions[];
 // detected.
 extern const char kLastFetchHadNoticeCard[];
 
-// The pref name for the bit that determines whether the last refresh request
-// was signed in. Currently only used in V1.
-extern const char kLastRefreshWasSignedIn[];
+// The pref name for the bit that determines whether logging is enabled for the
+// feed in the last fetch of content. iOS only.
+#if defined(OS_IOS)
+extern const char kLastFetchHadLoggingEnabled[];
+#endif  // defined(OS_IOS)
 
 // The pref name for the counter for the number of views on the notice card.
 extern const char kNoticeCardViewsCount[];
@@ -74,18 +56,24 @@ extern const char kThrottlerRequestCountListPrefName[];
 extern const char kThrottlerLastRequestTime[];
 // The pref name for storing |DebugStreamData|.
 extern const char kDebugStreamData[];
-// The pref name for storing the request schedule.
+// The pref names for storing the request schedules.
 extern const char kRequestSchedule[];
+extern const char kWebFeedsRequestSchedule[];
 // The pref name for storing the persistent metrics data.
 extern const char kMetricsData[];
 // The pref name for storing client instance id.
 extern const char kClientInstanceId[];
-// The pref name for the Actions endpoint override.
-extern const char kActionsEndpointOverride[];
+// The pref name for the Discover API endpoint override.
+extern const char kDiscoverAPIEndpointOverride[];
+// The pref name for storing the server experiments the client is in.
+extern const char kExperiments[];
+// If set to false, the WebFeed UI is disabled.
+extern const char kEnableWebFeedUI[];
 
 }  // namespace prefs
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
+void MigrateObsoleteProfilePrefsFeb_2021(PrefService* prefs);
 
 }  // namespace feed
 

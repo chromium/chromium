@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">Siyahı elementi</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">İki barmağınızla sağa çəkin</translation>
-<translation id="1016393160682012902">Rejimin funksiyasını öyrənmək üçün hər hansı standart düyməyə, brayl düyməsinə basın və ya jestə toxunun. Çıxış üçün ctrl+w, yaxud esc düyməsinə basın.</translation>
 <translation id="1022586497894531524">ChromeVox şifahi rəy xidmətindən ilk dəfədir istifadə edirisiniz? Bu kiçik təlimat vasitəsilə ChromeVox ilə necə başlamağın qaydalarını öyrənin.</translation>
 <translation id="1025074108959230262">Yapışqan rejim deaktivdir</translation>
 <translation id="1031961866430398710">sonra</translation>
@@ -150,6 +149,7 @@
 <translation id="2045055672832940894">Öncəki nəzarət yoxdur</translation>
 <translation id="2045606329038304310">Forma sahəsinə nəzarət</translation>
 <translation id="2063539687800151747">Epiqraf</translation>
+<translation id="2074531330963286860">Əlçatan fəaliyyətlər. Baxmaq üçün Axtarış+Nöqtə düymələrinə basın</translation>
 <translation id="2086961585857038472">Növbəti Söz</translation>
 <translation id="2087981446621639008">təsvir siyahısı təfsilatı</translation>
 <translation id="2089387485033699258">az</translation>
@@ -782,6 +782,7 @@
 <translation id="6837853484260746864">Ses seçin:</translation>
 <translation id="6858047746862060282">Proloq</translation>
 <translation id="6859876496651143278">Bir barmağınızla sola çəkin</translation>
+<translation id="6861391673272648730">Bu, ekranı deaktiv edir. Axtarış + Parlaqlığı artırma seçimləri ilə ekranı yenidən aktiv edə bilərsiniz. Onu deaktiv etmək istəyirsiniz?</translation>
 <translation id="6865519907510167493">Səhv yazılmış</translation>
 <translation id="6873188295213080042">İpucu: Naviqasiya üçün Axtarış düyməsinə basıb saxlayın və ox düymələrinə basın.</translation>
 <translation id="6894148351896207544">Cari vaxt və tarixi deyin</translation>
@@ -976,6 +977,7 @@
 <translation id="827266600368092403">Seçimi başladın və ya bitirin</translation>
 <translation id="827422111966801947">İndiqo</translation>
 <translation id="8276439074553447000">Əvvəlki fokuslanan elementə keçin</translation>
+<translation id="8279039817939141096">Rejimin funksiyasını öyrənmək üçün hər hansı standart düyməyə, brayl düyməsinə basın və ya jestə toxunun. Çıxış üçün ctrl+w, boşluq+Z düyməsinə basın, iki barmaqla sola sürüşdürün, yaxud esc düyməsinə basın.</translation>
 <translation id="8283603667300770666">Növbəti forma sahəsi</translation>
 <translation id="8310185481635255431">Sonrakı keçid yoxdur</translation>
 <translation id="831207808878314375">Təsvir</translation>

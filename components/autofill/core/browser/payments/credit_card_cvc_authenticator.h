@@ -6,8 +6,8 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_CREDIT_CARD_CVC_AUTHENTICATOR_H_
 
 #include <memory>
+#include <string>
 
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -34,8 +34,8 @@ class CreditCardCVCAuthenticator
       card = c;
       return *this;
     }
-    CVCAuthenticationResponse& with_cvc(const base::string16 s) {
-      cvc = base::string16(s);
+    CVCAuthenticationResponse& with_cvc(const std::u16string s) {
+      cvc = std::u16string(s);
       return *this;
     }
     CVCAuthenticationResponse& with_creation_options(
@@ -54,7 +54,7 @@ class CreditCardCVCAuthenticator
     }
     bool did_succeed = false;
     const CreditCard* card = nullptr;
-    base::string16 cvc = base::string16();
+    std::u16string cvc = std::u16string();
     base::Optional<base::Value> creation_options = base::nullopt;
     base::Optional<base::Value> request_options = base::nullopt;
     std::string card_authorization_token = std::string();
@@ -94,7 +94,7 @@ class CreditCardCVCAuthenticator
   void OnFullCardRequestSucceeded(
       const payments::FullCardRequest& full_card_request,
       const CreditCard& card,
-      const base::string16& cvc) override;
+      const std::u16string& cvc) override;
   void OnFullCardRequestFailed(
       payments::FullCardRequest::FailureType failure_type) override;
 

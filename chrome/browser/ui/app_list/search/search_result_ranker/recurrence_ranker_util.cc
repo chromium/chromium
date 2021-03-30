@@ -222,8 +222,6 @@ std::unique_ptr<RecurrencePredictor> MakePredictor(
     return std::make_unique<ExponentialWeightsEnsemble>(
         config.exponential_weights_ensemble(), model_identifier);
 
-  LogInitializationStatus(model_identifier,
-                          InitializationStatus::kInvalidConfigPredictor);
   NOTREACHED();
   return nullptr;
 }
@@ -257,12 +255,8 @@ void JsonConfigConverter::OnJsonParsed(
     data_decoder::DataDecoder::ValueOrError result) {
   RecurrenceRankerConfigProto proto;
   if (result.value && ConvertRecurrenceRanker(&result.value.value(), &proto)) {
-    LogJsonConfigConversionStatus(model_identifier,
-                                  JsonConfigConversionStatus::kSuccess);
     std::move(callback).Run(std::move(proto));
   } else {
-    LogJsonConfigConversionStatus(model_identifier,
-                                  JsonConfigConversionStatus::kFailure);
     std::move(callback).Run(base::nullopt);
   }
 }

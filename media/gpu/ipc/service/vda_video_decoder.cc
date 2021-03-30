@@ -207,11 +207,12 @@ VdaVideoDecoder::~VdaVideoDecoder() {
   DCHECK(!gpu_weak_vda_);
 }
 
-std::string VdaVideoDecoder::GetDisplayName() const {
+VideoDecoderType VdaVideoDecoder::GetDecoderType() const {
   DVLOG(3) << __func__;
   DCHECK(parent_task_runner_->BelongsToCurrentThread());
-
-  return "VdaVideoDecoder";
+  // TODO(tmathmeyer) query the accelerator for it's implementation type and
+  // return that instead.
+  return VideoDecoderType::kVda;
 }
 
 void VdaVideoDecoder::Initialize(const VideoDecoderConfig& config,
@@ -544,7 +545,7 @@ void VdaVideoDecoder::ProvidePictureBuffersAsync(uint32_t count,
   std::vector<PictureBuffer> picture_buffers =
       picture_buffer_manager_->CreatePictureBuffers(
           count, pixel_format, planes, texture_size, texture_target,
-          vda_->SupportsSharedImagePictureBuffers());
+          vda_->GetSharedImageTextureAllocationMode());
   if (picture_buffers.empty()) {
     parent_task_runner_->PostTask(
         FROM_HERE,
@@ -766,6 +767,10 @@ void VdaVideoDecoder::NotifyError(VideoDecodeAccelerator::Error error) {
 
 gpu::SharedImageStub* VdaVideoDecoder::GetSharedImageStub() const {
   return command_buffer_helper_->GetSharedImageStub();
+}
+
+CommandBufferHelper* VdaVideoDecoder::GetCommandBufferHelper() const {
+  return command_buffer_helper_.get();
 }
 
 void VdaVideoDecoder::NotifyErrorOnParentThread(

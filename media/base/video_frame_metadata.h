@@ -46,7 +46,7 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   };
 
   // Merges internal values from |metadata_source|.
-  void MergeMetadataFrom(const VideoFrameMetadata* metadata_source);
+  void MergeMetadataFrom(const VideoFrameMetadata& metadata_source);
 
   // Sources of VideoFrames use this marker to indicate that the associated
   // VideoFrame can be overlaid, case in which its contents do not need to be
@@ -114,8 +114,8 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // should use read lock fences.
   bool read_lock_fences_enabled = false;
 
-  // Indicates that the frame is rotated.
-  base::Optional<VideoRotation> rotation;
+  // Indicates that the frame has a rotation and/or flip.
+  base::Optional<VideoTransformation> transformation;
 
   // Android only: if set, then this frame is not suitable for overlay, even
   // if ALLOW_OVERLAY is set.  However, it allows us to process the overlay
@@ -133,6 +133,10 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // This video frame is protected by hardware. This option is valid only if
   // PROTECTED_VIDEO is also set to true.
   bool hw_protected = false;
+
+  // Identifier used to query if a HW protected video frame can still be
+  // properly displayed or not. Non-zero when valid.
+  uint32_t hw_protected_validation_id = 0;
 
   // An UnguessableToken that identifies VideoOverlayFactory that created
   // this VideoFrame. It's used by Cast to help with video hole punch.
@@ -165,7 +169,7 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // The RTP timestamp associated with this video frame. Stored as a double
   // since base::DictionaryValue doesn't have a uint32_t type.
   //
-  // https://w3c.github.io/webrtc-pc/#dom-rtcrtpcontributingsource
+  // https://w3c.github.io/webrtc-pc/#dom-rtcrtpcontributingsource-rtptimestamp
   base::Optional<double> rtp_timestamp;
 
   // For video frames coming from a remote source, this is the time the

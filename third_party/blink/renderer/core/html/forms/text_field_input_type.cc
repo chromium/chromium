@@ -45,7 +45,6 @@
 #include "third_party/blink/renderer/core/html/forms/text_control_inner_elements.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
-#include "third_party/blink/renderer/core/layout/layout_details_marker.h"
 #include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -61,12 +60,6 @@ class DataListIndicatorElement final : public HTMLDivElement {
  private:
   inline HTMLInputElement* HostInput() const {
     return To<HTMLInputElement>(OwnerShadowHost());
-  }
-
-  LayoutObject* CreateLayoutObject(const ComputedStyle&,
-                                   LegacyLayout) override {
-    UseCounter::Count(GetDocument(), WebFeature::kLegacyLayoutByDetailsMarker);
-    return new LayoutDetailsMarker(this);
   }
 
   EventDispatchHandlingState* PreDispatchEventHandler(Event& event) override {
@@ -99,6 +92,11 @@ class DataListIndicatorElement final : public HTMLDivElement {
   DataListIndicatorElement(Document& document) : HTMLDivElement(document) {
     SetShadowPseudoId(AtomicString("-webkit-calendar-picker-indicator"));
     setAttribute(html_names::kIdAttr, shadow_element_names::kIdPickerIndicator);
+    setAttribute(html_names::kStyleAttr,
+                 "display:list-item; list-style:disclosure-open inside; "
+                 "block-size:1em;");
+    // Do not expose list-item role.
+    setAttribute(html_names::kAriaHiddenAttr, "true");
   }
 };
 
@@ -484,7 +482,7 @@ bool TextFieldInputType::ShouldRespectListAttribute() {
   return true;
 }
 
-void TextFieldInputType::UpdatePlaceholderText() {
+void TextFieldInputType::UpdatePlaceholderText(bool is_suggested_value) {
   if (!SupportsPlaceholder())
     return;
   HTMLElement* placeholder = GetElement().PlaceholderElement();
@@ -511,6 +509,12 @@ void TextFieldInputType::UpdatePlaceholderText() {
     Node* previous = container ? container : GetElement().InnerEditorElement();
     previous->parentNode()->InsertBefore(placeholder, previous);
     SECURITY_DCHECK(placeholder->parentNode() == previous->parentNode());
+  }
+  if (is_suggested_value) {
+    placeholder->SetInlineStyleProperty(CSSPropertyID::kUserSelect,
+                                        CSSValueID::kNone, true);
+  } else {
+    placeholder->RemoveInlineStyleProperty(CSSPropertyID::kUserSelect);
   }
   placeholder->setTextContent(placeholder_text);
 }

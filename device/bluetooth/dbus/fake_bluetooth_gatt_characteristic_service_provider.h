@@ -59,7 +59,7 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothGattCharacteristicServiceProvider
           error_callback);
 
   // Method to simulate starting and stopping notifications.
-  bool NotificationsChange(bool start);
+  bool NotificationsChange(const dbus::ObjectPath& device_path, bool start);
 
   const dbus::ObjectPath& object_path() const override;
   const std::string& uuid() const { return uuid_; }

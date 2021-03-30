@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">Élément de liste</translation>
 <translation id="1013742170491673792">recherche</translation>
 <translation id="1014370462248694370">Balayer l'écran vers la droite avec deux doigts</translation>
-<translation id="1016393160682012902">Appuyez sur une touche du clavier ou une touche du clavier braille actualisable pour connaître sa fonction, ou effectuez un geste pour savoir quelle commande lui est associée. Appuyez sur Ctrl+W ou sur Échap pour quitter.</translation>
 <translation id="1022586497894531524">Est-ce la première fois que vous utilisez les commentaires audio de ChromeVox ? Ce tutoriel rapide explique les bases pour commencer à utiliser ChromeVox.</translation>
 <translation id="1025074108959230262">Mode persistant désactivé</translation>
 <translation id="1031961866430398710">puis</translation>
@@ -150,6 +149,7 @@
 <translation id="2045055672832940894">Aucune commande précédente</translation>
 <translation id="2045606329038304310">Contrôle des champs de formulaire</translation>
 <translation id="2063539687800151747">Épigraphe</translation>
+<translation id="2074531330963286860">Actions disponibles. Appuyez sur la touche de recherche + le point pour les afficher</translation>
 <translation id="2086961585857038472">Mot suivant</translation>
 <translation id="2087981446621639008">dtl lstdscrp</translation>
 <translation id="2089387485033699258">fr</translation>
@@ -912,7 +912,7 @@
 <translation id="7800558923657349506">Épilogue</translation>
 <translation id="7805768142964895445">État</translation>
 <translation id="7810781339813764006">Groupe suivant</translation>
-<translation id="7813616274030162878">Menu de Switch Access</translation>
+<translation id="7813616274030162878">Menu Switch Access</translation>
 <translation id="7839679365527550018">Mot précédent</translation>
 <translation id="7842115774595115751">Activer les commandes de navigation</translation>
 <translation id="7846634333498149051">Clavier</translation>
@@ -976,6 +976,7 @@
 <translation id="827266600368092403">Début ou fin de sélection</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8276439074553447000">Renvoyer à l'élément précédent pouvant être agrandi</translation>
+<translation id="8279039817939141096">Faites un geste ou appuyez sur une touche du clavier ou du clavier braille actualisable pour en connaître la fonction. Appuyez sur Ctrl+W, Espace+Z, balayez vers la gauche avec deux doigts ou appuyez sur Échap pour sortir.</translation>
 <translation id="8283603667300770666">Champ de formulaire suivant</translation>
 <translation id="8310185481635255431">Aucun lien suivant</translation>
 <translation id="831207808878314375">Définition</translation>

@@ -57,6 +57,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkCertificateHandler
     // The PKCS#11 identifier in slot:id format for user certificates.
     std::string pkcs11_id;
 
+    // True if a user certificate is stored in a slot that is available for
+    // network authentication.
+    bool available_for_network_auth = false;
+
     // True if a user certificate is stored in a hardware slot.
     bool hardware_backed = false;
 

@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests overlay layers are not present in the layer tree`);
 
-  await TestRunner.loadModule('layers_test_runner');
+  await TestRunner.loadModule('panels/layers'); await TestRunner.loadTestModule('layers_test_runner');
   await TestRunner.loadHTML(`
       <style>
       .layer {

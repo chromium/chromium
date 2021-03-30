@@ -23,11 +23,13 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">ଆଡ୍ରେସ୍‌ ବାର୍‌ରେ ଆପଣଙ୍କର ଇନ୍‍ପୁଟ୍‌ରେ www. ଏବଂ .com ଯୋଗ କରନ୍ତୁ, ଏହାପରେ ପୃଷ୍ଠା ଖୋଲନ୍ତୁ</translation>
+<translation id="1768987374400973299">ସ୍କ୍ରିନସଟ୍ ନିଅନ୍ତୁ/ରେକର୍ଡିଂ କରନ୍ତୁ</translation>
 <translation id="1872219238824176091">ବର୍ତ୍ତମାନର ଡେସ୍କକୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, ତା’ପରେ <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> କିମ୍ବା <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">ପରବର୍ତ୍ତୀ ଟାବ୍‌କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="2010818616644390445">ୱିଣ୍ଡୋର ଶେଷ ଟାବ୍‌କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="2040706009561734834">ଲଞ୍ଚର୍ ଖୋଲନ୍ତୁ/ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="2086334242442703436">ଇମୋଜି ପିକର୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="2088054208777350526">କୀବୋର୍ଡ ସର୍ଟକଟଗୁଡ଼ିକ ପାଇଁ ସନ୍ଧାନ କରନ୍ତୁ</translation>
 <translation id="2125211348069077981"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="E" /> କିମ୍ବା <ph name="F" /></translation>
 <translation id="2145908266289632567">ଟେକ୍ସଟ୍‍ ଏଡିଟିଂ</translation>
@@ -46,6 +48,7 @@
 <translation id="2480851840841871861">Google Assistant ଖୋଲନ୍ତୁ</translation>
 <translation id="2488661730534396940">ବାମ ପଟରେ ଥିବା ଡେସ୍କକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516999188535378855">ଡାଏଗ୍ନୋଷ୍ଟିକ୍ସ ଆପ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="2530339807289914946">ୱେବ୍ ପୃଷ୍ଠାରେ ତଳକୁ ସ୍କ୍ରୋଲ୍ କରନ୍ତୁ</translation>
 <translation id="2530896289327917474">କ୍ୟାରେଟ୍ ବ୍ରାଉଜିଂ ଚାଲୁ କିମ୍ବା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="2574014812750545982">ପୃଷ୍ଠାର ଜୁମ୍‍ ସ୍ତର ରିସେଟ୍‍ କରନ୍ତୁ</translation>
@@ -110,6 +113,7 @@
 <translation id="4801989101741319327">ପରବର୍ତ୍ତୀ ଶବ୍ଦର ଶେଷକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="4866066940972151697">ଡାହାଣ ପଟରେ ଥିବା ଡେସ୍କକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="4916163929714267752">ଏକ ନୂଆ ୱିଣ୍ଡୋରେ ଲିଙ୍କ୍ ଖୋଲନ୍ତୁ</translation>
+<translation id="492453977506755176">କ୍ୟାପଚର୍ ମୋଡ୍ କୀ</translation>
 <translation id="5030659775136592441">ବୁକ୍‌ମାର୍କ ପରିଚାଳକ ଦେଖାନ୍ତୁ</translation>
 <translation id="5034421018520995080">ପୃଷ୍ଠାର ଉପରିଭାଗକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="5042305953558921026">ସାଧାରଣ ସମୀକ୍ଷା ମୋଡ୍‌ କୀ</translation>
@@ -132,6 +136,7 @@
 <translation id="5899919361772749550">ଡେଭଲପର୍ ଟୁଲ୍ କନ୍‍‍ସୋଲ୍ ଦେଖାନ୍ତୁ କିମ୍ବା ଲୁଚାନ୍ତୁ</translation>
 <translation id="5919628958418675842">ଗୋପନୀୟତା ସ୍କ୍ରିନ୍ ଚାଲୁ କିମ୍ବା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5921745308587794300">ୱିଣ୍ଡୋ ଘୂରାନ୍ତୁ</translation>
+<translation id="5926306472221400972">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନର ସ୍କ୍ରିନସଟ୍ ନିଅନ୍ତୁ</translation>
 <translation id="6022924867608035986">ସର୍ଚ୍ଚବକ୍ସ ଟେକ୍ସଟ୍ ଖାଲି କରନ୍ତୁ</translation>
 <translation id="6045998054441862242">ଉଚ୍ଚ କଣ୍ଟ୍ରାଷ୍ଟ ମୋଡ୍ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="6052614013050385269">ଏକ ଲିଙ୍କ୍‌ରେ ରାଇଟ୍‍-କ୍ଲିକ୍ କରନ୍ତୁ</translation>
@@ -149,6 +154,7 @@
 <translation id="6445033640292336367">ଟାବ୍‌କୁ ଏହାର ମୂଳ ସ୍ଥିତିକୁ ଫେରାନ୍ତୁ</translation>
 <translation id="6474744297082284761">ଜୁମ୍ କମ୍ କରନ୍ତୁ (ଯେତେବେଳେ ଡକେଡ OR ପୂର୍ଣ୍ଣସ୍କ୍ରିନ ମାଗ୍ନିଫାଏର ସକ୍ଷମ ଥିବ)</translation>
 <translation id="649811797655257835">ଫାଇଲ୍ ଚୟନ କରନ୍ତୁ ଏବଂ ତା’ପରେ <ph name="SPACE" /> ଦବାନ୍ତୁ</translation>
+<translation id="6551886416582667425">ଆଂଶିକ ସ୍କ୍ରିନସଟ୍ ନିଅନ୍ତୁ/ରେକର୍ଡିଂ କରନ୍ତୁ</translation>
 <translation id="6556040137485212400">ସେହି ୱିଣ୍ଡୋ ଖୋଲନ୍ତୁ ଯାହା ସର୍ବାଧିକ ସମୟ ପର୍ଯ୍ୟନ୍ତ ଅବ୍ୟବହୃତ ଅଛି</translation>
 <translation id="666343722268997814">ହାଇଲାଇଟ୍ କରାଯାଇଥିବା ଆଇଟମ୍‌ଗୁଡ଼ିକ ପାଇଁ ଡାହାଣ-କ୍ଲିକ୍ ମେନୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="6671538777808758331">ଆପଣଙ୍କର ସନ୍ଧାନ ପାଇଁ ପରବର୍ତ୍ତୀ ମେଳକୁ ଯାଆନ୍ତୁ</translation>
@@ -175,6 +181,7 @@
 <translation id="7611271430932669992">ପପ୍‌ଅପ୍ସ ଏବଂ ଡାୟଲଗ୍‌ଆଡ଼କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="7635348532214572995">ଆପ୍ ଗ୍ରୀଡ୍‌ର ଚାରିପଟେ ଏକ ଆପ୍ ଆଇକନ୍ ମୁଭ୍ କରନ୍ତୁ</translation>
 <translation id="766326951329901120">କ୍ଲିପ୍‌ବୋର୍ଡ୍ ରୁ ବିଷୟବସ୍ତୁକୁ ସାଦା ଟେକ୍ସଟ୍ ରୂପେ ପେଷ୍ଟ କରନ୍ତୁ</translation>
+<translation id="7673453620027697230">ୱିଣ୍ଡୋ ସ୍କ୍ରିନସଟ୍ ନିଅନ୍ତୁ/ରେକର୍ଡିଂ କରନ୍ତୁ</translation>
 <translation id="7703010453515335249">ବାମ ବନ୍ଧନୀ</translation>
 <translation id="7724603315864178912">Cut</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, ତା'ପରେ <ph name="SPACE" /> କିମ୍ବା <ph name="ENTER" /></translation>

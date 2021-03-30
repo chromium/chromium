@@ -20,6 +20,16 @@ namespace {
 constexpr base::TimeDelta kMinTimeBetweenHistogramChanges =
     base::TimeDelta::FromSeconds(10);
 
+void RunOrPostTask(const scoped_refptr<base::SequencedTaskRunner>& task_runner,
+                   const base::Location& from_here,
+                   base::OnceClosure task) {
+  if (task_runner->RunsTasksInCurrentSequence()) {
+    std::move(task).Run();
+    return;
+  }
+  task_runner->PostTask(from_here, std::move(task));
+}
+
 }  // namespace
 
 BackgroundTracingAgentImpl::BackgroundTracingAgentImpl(
@@ -104,8 +114,8 @@ void BackgroundTracingAgentImpl::OnHistogramChanged(
   if (actual_value < histogram_lower_value ||
       actual_value > histogram_upper_value) {
     if (!repeat) {
-      task_runner->PostTask(
-          FROM_HERE,
+      RunOrPostTask(
+          task_runner, FROM_HERE,
           base::BindOnce(
               &BackgroundTracingAgentImpl::SendAbortBackgroundTracingMessage,
               weak_self));
@@ -120,9 +130,9 @@ void BackgroundTracingAgentImpl::OnHistogramChanged(
                 new_sample->set_sample(actual_value);
               });
 
-  task_runner->PostTask(
-      FROM_HERE, base::BindOnce(&BackgroundTracingAgentImpl::SendTriggerMessage,
-                                weak_self, histogram_name));
+  RunOrPostTask(task_runner, FROM_HERE,
+                base::BindOnce(&BackgroundTracingAgentImpl::SendTriggerMessage,
+                               weak_self, histogram_name));
 }
 
 void BackgroundTracingAgentImpl::SendTriggerMessage(

@@ -12,15 +12,15 @@
 
 namespace {
 
-base::string16 clean(base::string16 text) {
+std::u16string clean(std::u16string text) {
   const size_t kMaxTextLength = 2000;
   return base::i18n::ToLower(text.substr(0, kMaxTextLength));
 }
 
 }  // namespace
 
-TermMatches FindTermMatches(base::string16 find_text,
-                            base::string16 text,
+TermMatches FindTermMatches(std::u16string find_text,
+                            std::u16string text,
                             bool allow_prefix_matching,
                             bool allow_mid_word_matching) {
   find_text = clean(find_text);

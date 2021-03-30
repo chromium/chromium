@@ -599,6 +599,7 @@ void ScrollbarController::StartAutoScrollAnimation(
                                      ? AutoScrollDirection::AUTOSCROLL_BACKWARD
                                      : AutoScrollDirection::AUTOSCROLL_FORWARD;
 
+  layer_tree_host_impl_->mutator_host()->ScrollAnimationAbort();
   layer_tree_host_impl_->AutoScrollAnimationCreate(
       *scroll_node, target_offset_vector, std::abs(velocity));
 }

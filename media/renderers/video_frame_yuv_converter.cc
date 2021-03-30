@@ -108,6 +108,30 @@ GrGLenum GetSurfaceColorFormat(GrGLenum format, GrGLenum type) {
   return format;
 }
 
+bool DrawYUVImageToSkSurface(const VideoFrame* video_frame,
+                             sk_sp<SkImage> image,
+                             sk_sp<SkSurface> surface,
+                             bool use_visible_rect) {
+  if (!use_visible_rect) {
+    surface->getCanvas()->drawImage(image, 0, 0);
+  } else {
+    // Draw the planar SkImage to the SkSurface wrapping the WebGL texture.
+    // Using drawImageRect to draw visible rect from video frame to dst texture.
+    const gfx::Rect& visible_rect = video_frame->visible_rect();
+    const SkRect src_rect =
+        SkRect::MakeXYWH(visible_rect.x(), visible_rect.y(),
+                         visible_rect.width(), visible_rect.height());
+    const SkRect dst_rect =
+        SkRect::MakeWH(visible_rect.width(), visible_rect.height());
+    surface->getCanvas()->drawImageRect(image, src_rect, dst_rect,
+                                        SkSamplingOptions(), nullptr,
+                                        SkCanvas::kStrict_SrcRectConstraint);
+  }
+
+  surface->flushAndSubmit();
+  return true;
+}
+
 bool YUVGrBackendTexturesToSkSurface(
     GrDirectContext* gr_context,
     const VideoFrame* video_frame,
@@ -121,22 +145,23 @@ bool YUVGrBackendTexturesToSkSurface(
     return false;
   }
 
-  if (!use_visible_rect) {
-    surface->getCanvas()->drawImage(image, 0, 0);
-  } else {
-    // Draw the planar SkImage to the SkSurface wrapping the WebGL texture.
-    // Using drawImageRect to draw visible rect from video frame to dst texture.
-    const gfx::Rect& visible_rect = video_frame->visible_rect();
-    const SkRect src_rect =
-        SkRect::MakeXYWH(visible_rect.x(), visible_rect.y(),
-                         visible_rect.width(), visible_rect.height());
-    const SkRect dst_rect =
-        SkRect::MakeWH(visible_rect.width(), visible_rect.height());
-    surface->getCanvas()->drawImageRect(image, src_rect, dst_rect, nullptr);
+  return DrawYUVImageToSkSurface(video_frame, image, surface, use_visible_rect);
+}
+
+bool YUVPixmapsToSkSurface(GrDirectContext* gr_context,
+                           const VideoFrame* video_frame,
+                           const SkYUVAPixmaps yuva_pixmaps,
+                           sk_sp<SkSurface> surface,
+                           bool use_visible_rect) {
+  auto image =
+      SkImage::MakeFromYUVAPixmaps(gr_context, yuva_pixmaps, GrMipmapped::kNo,
+                                   false, SkColorSpace::MakeSRGB());
+
+  if (!image) {
+    return false;
   }
 
-  surface->flushAndSubmit();
-  return true;
+  return DrawYUVImageToSkSurface(video_frame, image, surface, use_visible_rect);
 }
 
 }  // namespace
@@ -163,6 +188,8 @@ class VideoFrameYUVConverter::VideoFrameYUVMailboxesHolder {
   GrYUVABackendTextures VideoFrameToSkiaTextures(
       const VideoFrame* video_frame,
       viz::RasterContextProvider* raster_context_provider);
+
+  SkYUVAPixmaps VideoFrameToSkiaPixmaps(const VideoFrame* video_frame);
 
   SkYUVAInfo::PlaneConfig plane_config() const { return plane_config_; }
 
@@ -329,6 +356,40 @@ VideoFrameYUVConverter::VideoFrameYUVMailboxesHolder::VideoFrameToSkiaTextures(
                                kTopLeft_GrSurfaceOrigin);
 }
 
+SkYUVAPixmaps
+VideoFrameYUVConverter::VideoFrameYUVMailboxesHolder::VideoFrameToSkiaPixmaps(
+    const VideoFrame* video_frame) {
+  std::tie(plane_config_, subsampling_) =
+      VideoPixelFormatToSkiaValues(video_frame->format());
+  DCHECK_NE(plane_config_, SkYUVAInfo::PlaneConfig::kUnknown);
+
+  SkISize video_size{video_frame->coded_size().width(),
+                     video_frame->coded_size().height()};
+  SkYUVAInfo yuva_info(video_size, plane_config_, subsampling_,
+                       ColorSpaceToSkYUVColorSpace(video_frame->ColorSpace()));
+  SkPixmap pixmaps[SkYUVAInfo::kMaxPlanes];
+  SkISize plane_sizes[SkYUVAInfo::kMaxPlanes];
+  int num_planes = yuva_info.planeDimensions(plane_sizes);
+
+  // Create SkImageInfos with the appropriate color types for 8 bit unorm data
+  // based on plane config.
+  size_t row_bytes[kMaxPlanes];
+  for (int i = 0; i < num_planes; ++i) {
+    row_bytes[i] =
+        VideoFrame::RowBytes(i, video_frame->format(), plane_sizes[i].width());
+  }
+
+  SkYUVAPixmapInfo pixmaps_infos(yuva_info, SkYUVAPixmaps::DataType::kUnorm8,
+                                 row_bytes);
+
+  for (int i = 0; i < num_planes; ++i) {
+    pixmaps[i].reset(pixmaps_infos.planeInfo(i), video_frame->data(i),
+                     pixmaps_infos.rowBytes(i));
+  }
+
+  return SkYUVAPixmaps::FromExternalPixmaps(yuva_info, pixmaps);
+}
+
 void VideoFrameYUVConverter::VideoFrameYUVMailboxesHolder::ImportTextures() {
   DCHECK(!imported_textures_)
       << "Textures should always be released after converting video frame. "
@@ -398,7 +459,8 @@ bool VideoFrameYUVConverter::ConvertYUVVideoFrame(
     unsigned int internal_format,
     unsigned int type,
     bool flip_y,
-    bool use_visible_rect) {
+    bool use_visible_rect,
+    bool use_sk_pixmap) {
   DCHECK(video_frame);
   DCHECK(IsVideoFrameFormatSupported(*video_frame))
       << "VideoFrame has an unsupported YUV format " << video_frame->format();
@@ -410,9 +472,10 @@ bool VideoFrameYUVConverter::ConvertYUVVideoFrame(
     holder_ = std::make_unique<VideoFrameYUVMailboxesHolder>();
 
   if (raster_context_provider->GrContext()) {
+    // Only SW VideoFrame direct uploading path use SkPixmap.
     return ConvertFromVideoFrameYUVWithGrContext(
         video_frame, raster_context_provider, dest_mailbox_holder,
-        internal_format, type, flip_y, use_visible_rect);
+        internal_format, type, flip_y, use_visible_rect, use_sk_pixmap);
   }
 
   auto* ri = raster_context_provider->RasterInterface();
@@ -437,11 +500,12 @@ bool VideoFrameYUVConverter::ConvertYUVVideoFrameToDstTextureNoCaching(
     unsigned int internal_format,
     unsigned int type,
     bool flip_y,
-    bool use_visible_rect) {
+    bool use_visible_rect,
+    bool use_sk_pixmap) {
   VideoFrameYUVConverter converter;
-  return converter.ConvertYUVVideoFrame(video_frame, raster_context_provider,
-                                        dest_mailbox_holder, internal_format,
-                                        type, flip_y, use_visible_rect);
+  return converter.ConvertYUVVideoFrame(
+      video_frame, raster_context_provider, dest_mailbox_holder,
+      internal_format, type, flip_y, use_visible_rect, use_sk_pixmap);
 }
 
 void VideoFrameYUVConverter::ReleaseCachedData() {
@@ -455,7 +519,8 @@ bool VideoFrameYUVConverter::ConvertFromVideoFrameYUVWithGrContext(
     unsigned int internal_format,
     unsigned int type,
     bool flip_y,
-    bool use_visible_rect) {
+    bool use_visible_rect,
+    bool use_sk_pixmap) {
   gpu::raster::RasterInterface* ri = raster_context_provider->RasterInterface();
   DCHECK(ri);
   ri->WaitSyncTokenCHROMIUM(dest_mailbox_holder.sync_token.GetConstData());
@@ -468,7 +533,8 @@ bool VideoFrameYUVConverter::ConvertFromVideoFrameYUVWithGrContext(
 
   bool result = ConvertFromVideoFrameYUVSkia(
       video_frame, raster_context_provider, dest_mailbox_holder.texture_target,
-      dest_tex_id, internal_format, type, flip_y, use_visible_rect);
+      dest_tex_id, internal_format, type, flip_y, use_visible_rect,
+      use_sk_pixmap);
 
   if (dest_mailbox_holder.mailbox.IsSharedImage())
     ri->EndSharedImageAccessDirectCHROMIUM(dest_tex_id);
@@ -485,7 +551,8 @@ bool VideoFrameYUVConverter::ConvertFromVideoFrameYUVSkia(
     unsigned int internal_format,
     unsigned int type,
     bool flip_y,
-    bool use_visible_rect) {
+    bool use_visible_rect,
+    bool use_sk_pixmap) {
   // Rendering YUV textures to SkSurface by dst texture
   GrDirectContext* gr_context = raster_context_provider->GrContext();
   DCHECK(gr_context);
@@ -493,10 +560,7 @@ bool VideoFrameYUVConverter::ConvertFromVideoFrameYUVSkia(
   // UpdateLastImage calls this function.
   DCHECK(IsVideoFrameFormatSupported(*video_frame));
 
-  GrYUVABackendTextures yuva_backend_textures =
-      holder_->VideoFrameToSkiaTextures(video_frame, raster_context_provider);
-  DCHECK(yuva_backend_textures.isValid());
-
+  // Create SkSurface with dst texture.
   GrGLTextureInfo result_gl_texture_info{};
   result_gl_texture_info.fID = texture_id;
   result_gl_texture_info.fTarget = texture_target;
@@ -522,13 +586,25 @@ bool VideoFrameYUVConverter::ConvertFromVideoFrameYUVSkia(
     return false;
   }
 
-  bool result = YUVGrBackendTexturesToSkSurface(gr_context, video_frame,
-                                                yuva_backend_textures, surface,
-                                                use_visible_rect);
+  bool result = false;
+  if (use_sk_pixmap) {
+    SkYUVAPixmaps yuva_pixmaps = holder_->VideoFrameToSkiaPixmaps(video_frame);
+    DCHECK(yuva_pixmaps.isValid());
 
-  // Release textures to guarantee |holder_| doesn't hold read access on
-  // textures it doesn't own.
-  holder_->ReleaseTextures();
+    result = YUVPixmapsToSkSurface(gr_context, video_frame, yuva_pixmaps,
+                                   surface, use_visible_rect);
+  } else {
+    GrYUVABackendTextures yuva_backend_textures =
+        holder_->VideoFrameToSkiaTextures(video_frame, raster_context_provider);
+    DCHECK(yuva_backend_textures.isValid());
+
+    result = YUVGrBackendTexturesToSkSurface(gr_context, video_frame,
+                                             yuva_backend_textures, surface,
+                                             use_visible_rect);
+    // Release textures to guarantee |holder_| doesn't hold read access on
+    // textures it doesn't own.
+    holder_->ReleaseTextures();
+  }
 
   return result;
 }

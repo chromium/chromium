@@ -96,7 +96,7 @@ TEST(CredentialLeakDialogUtilsTest, GetCheckPasswordsDescription) {
     if (kLeakTypesTestCases[i].leak_message_id ==
         IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE) {
       SCOPED_TRACE(testing::Message() << i);
-      base::string16 expected_message = l10n_util::GetStringUTF16(
+      std::u16string expected_message = l10n_util::GetStringUTF16(
           IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE);
       EXPECT_EQ(expected_message,
                 GetDescription(kLeakTypesTestCases[i].leak_type, origin));
@@ -110,7 +110,7 @@ TEST(CredentialLeakDialogUtilsTest, GetChangeAndCheckPasswordsDescription) {
     if (kLeakTypesTestCases[i].leak_message_id ==
         IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE) {
       SCOPED_TRACE(testing::Message() << i);
-      base::string16 expected_message = l10n_util::GetStringFUTF16(
+      std::u16string expected_message = l10n_util::GetStringFUTF16(
           IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE,
           url_formatter::FormatOriginForSecurityDisplay(
               url::Origin::Create(origin),
@@ -127,7 +127,7 @@ TEST(CredentialLeakDialogUtilsTest, GetChangePasswordDescription) {
     if (kLeakTypesTestCases[i].leak_message_id ==
         IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE) {
       SCOPED_TRACE(testing::Message() << i);
-      base::string16 expected_message = l10n_util::GetStringFUTF16(
+      std::u16string expected_message = l10n_util::GetStringFUTF16(
           IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE,
           url_formatter::FormatOriginForSecurityDisplay(
               url::Origin::Create(origin),
@@ -196,7 +196,7 @@ TEST_F(BulkCheckCredentialLeakDialogUtilsTest,
   const CredentialLeakType leak_type =
       CreateLeakType(IsSaved(true), IsReused(false), IsSyncing(true));
   const GURL origin("https://example.com");
-  base::string16 expected_message =
+  std::u16string expected_message =
       base::i18n::MessageFormatter::FormatWithNumberedArgs(
           l10n_util::GetStringUTF16(
               IDS_CREDENTIAL_LEAK_SAVED_PASSWORDS_MESSAGE),
@@ -218,7 +218,7 @@ TEST_F(BulkCheckCredentialLeakDialogUtilsTest,
   const CredentialLeakType leak_type =
       CreateLeakType(IsSaved(true), IsReused(true), IsSyncing(true));
   const GURL origin("https://example.com");
-  base::string16 expected_message =
+  std::u16string expected_message =
       base::i18n::MessageFormatter::FormatWithNumberedArgs(
           l10n_util::GetStringUTF16(
               IDS_CREDENTIAL_LEAK_SAVED_PASSWORDS_MESSAGE),
@@ -242,7 +242,7 @@ TEST_F(BulkCheckCredentialLeakDialogUtilsTest,
   const CredentialLeakType leak_type =
       CreateLeakType(IsSaved(false), IsReused(true), IsSyncing(true));
   const GURL origin("https://example.com");
-  base::string16 expected_message =
+  std::u16string expected_message =
       base::i18n::MessageFormatter::FormatWithNumberedArgs(
           l10n_util::GetStringUTF16(
               IDS_CREDENTIAL_LEAK_SAVED_PASSWORDS_MESSAGE),

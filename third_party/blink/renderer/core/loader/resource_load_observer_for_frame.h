@@ -31,11 +31,11 @@ class CORE_EXPORT ResourceLoadObserverForFrame final
 
   // ResourceLoadObserver implementation.
   void DidStartRequest(const FetchParameters&, ResourceType) override;
-  void WillSendRequest(uint64_t identifier,
-                       const ResourceRequest&,
+  void WillSendRequest(const ResourceRequest&,
                        const ResourceResponse& redirect_response,
                        ResourceType,
-                       const FetchInitiatorInfo&) override;
+                       const FetchInitiatorInfo&,
+                       RenderBlockingBehavior) override;
   void DidChangePriority(uint64_t identifier,
                          ResourceLoadPriority,
                          int intra_priority_value) override;
@@ -59,7 +59,6 @@ class CORE_EXPORT ResourceLoadObserverForFrame final
                       const ResourceError&,
                       int64_t encoded_data_length,
                       IsInternalRequest) override;
-  void EvictFromBackForwardCache(mojom::blink::RendererEvictionReason) override;
   void Trace(Visitor*) const override;
 
  private:

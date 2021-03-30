@@ -151,7 +151,7 @@ TEST_F(NotificationStoreTest, AddAndUpdate) {
   VerifyDataInDb(std::move(expected));
 
   // Update and verified the new data.
-  entry.notification_data.title = base::UTF8ToUTF16("test_title");
+  entry.notification_data.title = u"test_title";
   expected = std::make_unique<DbEntries>();
   expected->emplace_back(entry);
   store()->Update(kGuid, entry,

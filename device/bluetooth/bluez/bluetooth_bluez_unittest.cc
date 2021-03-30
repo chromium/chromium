@@ -389,7 +389,7 @@ TEST_F(BluetoothBlueZTest, AlreadyPresent) {
 }
 
 TEST_F(BluetoothBlueZTest, BecomePresent) {
-  fake_bluetooth_adapter_client_->SetVisible(false);
+  fake_bluetooth_adapter_client_->SetPresent(false);
   GetAdapter();
   ASSERT_FALSE(adapter_->IsPresent());
 
@@ -397,7 +397,7 @@ TEST_F(BluetoothBlueZTest, BecomePresent) {
   // with true, and IsPresent() to return true.
   TestBluetoothAdapterObserver observer(adapter_);
 
-  fake_bluetooth_adapter_client_->SetVisible(true);
+  fake_bluetooth_adapter_client_->SetPresent(true);
 
   EXPECT_EQ(1, observer.present_changed_count());
   EXPECT_TRUE(observer.last_present());
@@ -424,7 +424,7 @@ TEST_F(BluetoothBlueZTest, BecomeNotPresent) {
   // with false, and IsPresent() to return false.
   TestBluetoothAdapterObserver observer(adapter_);
 
-  fake_bluetooth_adapter_client_->SetVisible(false);
+  fake_bluetooth_adapter_client_->SetPresent(false);
 
   EXPECT_EQ(1, observer.present_changed_count());
   EXPECT_FALSE(observer.last_present());
@@ -458,7 +458,7 @@ TEST_F(BluetoothBlueZTest, SecondAdapter) {
   // we ignore the second adapter.
   TestBluetoothAdapterObserver observer(adapter_);
 
-  fake_bluetooth_adapter_client_->SetSecondVisible(true);
+  fake_bluetooth_adapter_client_->SetSecondPresent(true);
 
   EXPECT_EQ(0, observer.present_changed_count());
 
@@ -468,7 +468,7 @@ TEST_F(BluetoothBlueZTest, SecondAdapter) {
 
   // Try removing the first adapter, we should now act as if the adapter
   // is no longer present rather than fall back to the second.
-  fake_bluetooth_adapter_client_->SetVisible(false);
+  fake_bluetooth_adapter_client_->SetPresent(false);
 
   EXPECT_EQ(1, observer.present_changed_count());
   EXPECT_FALSE(observer.last_present());
@@ -497,7 +497,7 @@ TEST_F(BluetoothBlueZTest, SecondAdapter) {
   observer.Reset();
 
   // Removing the second adapter shouldn't set anything either.
-  fake_bluetooth_adapter_client_->SetSecondVisible(false);
+  fake_bluetooth_adapter_client_->SetSecondPresent(false);
 
   EXPECT_EQ(0, observer.device_removed_count());
   EXPECT_EQ(0, observer.powered_changed_count());
@@ -553,7 +553,7 @@ TEST_F(BluetoothBlueZTest, SetPoweredWhenNotPresent) {
   // with false, and IsPresent() to return false.
   TestBluetoothAdapterObserver observer(adapter_);
 
-  fake_bluetooth_adapter_client_->SetVisible(false);
+  fake_bluetooth_adapter_client_->SetPresent(false);
 
   EXPECT_EQ(1, observer.present_changed_count());
   EXPECT_FALSE(observer.last_present());
@@ -591,7 +591,7 @@ TEST_F(BluetoothBlueZTest, ChangeAdapterNameWhenNotPresent) {
   // with false, and IsPresent() to return false.
   TestBluetoothAdapterObserver observer(adapter_);
 
-  fake_bluetooth_adapter_client_->SetVisible(false);
+  fake_bluetooth_adapter_client_->SetPresent(false);
 
   EXPECT_EQ(1, observer.present_changed_count());
   EXPECT_FALSE(observer.last_present());
@@ -676,7 +676,7 @@ TEST_F(BluetoothBlueZTest, SetDiscoverableWhenNotPresent) {
   // with true, and IsDiscoverable() to return true.
   TestBluetoothAdapterObserver observer(adapter_);
 
-  fake_bluetooth_adapter_client_->SetVisible(false);
+  fake_bluetooth_adapter_client_->SetPresent(false);
 
   EXPECT_EQ(1, observer.present_changed_count());
   EXPECT_FALSE(observer.last_present());
@@ -788,7 +788,7 @@ TEST_F(BluetoothBlueZTest, PoweredAndDiscovering) {
   ASSERT_TRUE(adapter_->IsPowered());
   ASSERT_TRUE(IsAdapterDiscovering());
 
-  fake_bluetooth_adapter_client_->SetVisible(false);
+  fake_bluetooth_adapter_client_->SetPresent(false);
   ASSERT_FALSE(adapter_->IsPresent());
   ASSERT_FALSE(discovery_sessions_[0]->IsActive());
 
@@ -798,7 +798,7 @@ TEST_F(BluetoothBlueZTest, PoweredAndDiscovering) {
   // all return true.
   TestBluetoothAdapterObserver observer(adapter_);
 
-  fake_bluetooth_adapter_client_->SetVisible(true);
+  fake_bluetooth_adapter_client_->SetPresent(true);
 
   EXPECT_EQ(1, observer.present_changed_count());
   EXPECT_TRUE(observer.last_present());
@@ -816,7 +816,7 @@ TEST_F(BluetoothBlueZTest, PoweredAndDiscovering) {
 
   // Now mark the adapter not present again. Expect the methods to be called
   // again, to reset the properties back to false.
-  fake_bluetooth_adapter_client_->SetVisible(false);
+  fake_bluetooth_adapter_client_->SetPresent(false);
 
   EXPECT_EQ(1, observer.present_changed_count());
   EXPECT_FALSE(observer.last_present());
@@ -1089,7 +1089,7 @@ TEST_F(BluetoothBlueZTest, UnexpectedChangesDuringMultipleDiscoverySessions) {
   // Make the adapter disappear and appear. This will make it come back as
   // discovering. When this happens, the reference count should become and
   // remain 0 as no new request was made through the BluetoothAdapter.
-  fake_bluetooth_adapter_client_->SetVisible(false);
+  fake_bluetooth_adapter_client_->SetPresent(false);
   ASSERT_FALSE(adapter_->IsPresent());
   EXPECT_EQ(4, observer.discovering_changed_count());
   EXPECT_EQ(6, callback_count_);
@@ -1101,7 +1101,7 @@ TEST_F(BluetoothBlueZTest, UnexpectedChangesDuringMultipleDiscoverySessions) {
     EXPECT_FALSE(discovery_sessions_[i]->IsActive());
   discovery_sessions_.clear();
 
-  fake_bluetooth_adapter_client_->SetVisible(true);
+  fake_bluetooth_adapter_client_->SetPresent(true);
   ASSERT_TRUE(adapter_->IsPresent());
   EXPECT_EQ(5, observer.discovering_changed_count());
   EXPECT_EQ(6, callback_count_);

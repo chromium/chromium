@@ -21,7 +21,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
-namespace syncer {
+namespace invalidation {
 
 constexpr base::Feature kInvalidationsSkipUnsubscription{
     "InvalidationsSkipUnsubscription", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -131,6 +131,6 @@ class PerUserTopicSubscriptionRequest {
   base::WeakPtrFactory<PerUserTopicSubscriptionRequest> weak_ptr_factory_{this};
 };
 
-}  // namespace syncer
+}  // namespace invalidation
 
 #endif  // COMPONENTS_INVALIDATION_IMPL_PER_USER_TOPIC_SUBSCRIPTION_REQUEST_H_

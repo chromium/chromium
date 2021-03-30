@@ -9,6 +9,7 @@
 
 @protocol LocationBarConsumer;
 class TemplateURLService;
+class WebStateList;
 
 // A mediator object that updates location bar state not relating to the
 // LocationBarSteadyView. In practice, this is any state not relating to the
@@ -24,6 +25,13 @@ class TemplateURLService;
 // The consumer for this object. This can change during the lifetime of this
 // object and may be nil.
 @property(nonatomic, weak) id<LocationBarConsumer> consumer;
+
+// The WebStateList that this mediator listens for any changes on the active web
+// state.
+@property(nonatomic, assign) WebStateList* webStateList;
+
+// Stops observing all objects.
+- (void)disconnect;
 
 @end
 

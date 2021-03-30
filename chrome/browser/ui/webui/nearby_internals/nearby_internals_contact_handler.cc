@@ -104,14 +104,14 @@ void NearbyInternalsContactHandler::OnJavascriptAllowed() {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (service_) {
-    observer_.Add(service_->GetContactManager());
+    observation_.Observe(service_->GetContactManager());
   } else {
     NS_LOG(ERROR) << "No NearbyShareService instance to call.";
   }
 }
 
 void NearbyInternalsContactHandler::OnJavascriptDisallowed() {
-  observer_.RemoveAll();
+  observation_.Reset();
 }
 
 void NearbyInternalsContactHandler::InitializeContents(

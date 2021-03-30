@@ -14,6 +14,9 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/base/histograms.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
+#include "components/power_scheduler/power_mode.h"
+#include "components/power_scheduler/power_mode_arbiter.h"
+#include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
@@ -49,8 +52,10 @@ AsyncLayerTreeFrameSink::AsyncLayerTreeFrameSink(
       synthetic_begin_frame_source_(
           std::move(params->synthetic_begin_frame_source)),
       pipes_(std::move(params->pipes)),
-      wants_animate_only_begin_frames_(
-          params->wants_animate_only_begin_frames) {
+      wants_animate_only_begin_frames_(params->wants_animate_only_begin_frames),
+      animation_power_mode_voter_(
+          power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
+              "PowerModeVoter.Animation")) {
   DETACH_FROM_THREAD(thread_checker_);
 }
 
@@ -125,11 +130,12 @@ void AsyncLayerTreeFrameSink::SubmitCompositorFrame(
   DCHECK(frame.metadata.begin_frame_ack.has_damage);
   DCHECK(frame.metadata.begin_frame_ack.frame_id.IsSequenceValid());
 
-  TRACE_EVENT_WITH_FLOW1(
+  TRACE_EVENT_WITH_FLOW2(
       "viz,benchmark", "Graphics.Pipeline",
       TRACE_ID_GLOBAL(frame.metadata.begin_frame_ack.trace_id),
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "step",
-      "SubmitCompositorFrame");
+      "SubmitCompositorFrame", "local_surface_id",
+      local_surface_id_.ToString());
 
   if (local_surface_id_ == last_submitted_local_surface_id_) {
     DCHECK_EQ(last_submitted_device_scale_factor_, frame.device_scale_factor());
@@ -277,13 +283,23 @@ void AsyncLayerTreeFrameSink::ReclaimResources(
   client_->ReclaimResources(resources);
 }
 
+void AsyncLayerTreeFrameSink::OnCompositorFrameTransitionDirectiveProcessed(
+    uint32_t sequence_id) {
+  client_->OnCompositorFrameTransitionDirectiveProcessed(sequence_id);
+}
+
 void AsyncLayerTreeFrameSink::OnNeedsBeginFrames(bool needs_begin_frames) {
   DCHECK(compositor_frame_sink_ptr_);
   if (needs_begin_frames_ != needs_begin_frames) {
-    if (needs_begin_frames_) {
-      TRACE_EVENT_ASYNC_END0("cc,benchmark", "NeedsBeginFrames", this);
+    if (needs_begin_frames) {
+      TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("cc,benchmark", "NeedsBeginFrames",
+                                        this);
+      animation_power_mode_voter_->VoteFor(
+          power_scheduler::PowerMode::kAnimation);
     } else {
-      TRACE_EVENT_ASYNC_BEGIN0("cc,benchmark", "NeedsBeginFrames", this);
+      TRACE_EVENT_NESTABLE_ASYNC_END0("cc,benchmark", "NeedsBeginFrames", this);
+      animation_power_mode_voter_->ResetVoteAfterTimeout(
+          power_scheduler::PowerModeVoter::kAnimationTimeout);
     }
   }
   needs_begin_frames_ = needs_begin_frames;

@@ -17,7 +17,6 @@
 #include "base/memory/free_deleter.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "base/task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/events/keycodes/scoped_xkb.h"
@@ -92,7 +91,7 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) XkbKeyboardLayoutEngine
                                      xkb_keycode_t xkb_keycode,
                                      xkb_mod_mask_t xkb_flags,
                                      xkb_keysym_t xkb_keysym,
-                                     base::char16 character) const;
+                                     char16_t character) const;
 
   // Sets a new XKB keymap. This updates xkb_state_ (which takes ownership
   // of the keymap), and updates xkb_flag_map_ for the new keymap.
@@ -125,10 +124,10 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) XkbKeyboardLayoutEngine
   // Helper for difficult VKEY lookup. If |ui_flags| matches |base_flags|,
   // returns |base_character|; otherwise returns the XKB character for
   // the keycode and mapped |ui_flags|.
-  base::char16 XkbSubCharacter(xkb_keycode_t xkb_keycode,
-                               xkb_mod_mask_t base_flags,
-                               base::char16 base_character,
-                               xkb_mod_mask_t flags) const;
+  char16_t XkbSubCharacter(xkb_keycode_t xkb_keycode,
+                           xkb_mod_mask_t base_flags,
+                           char16_t base_character,
+                           xkb_mod_mask_t flags) const;
 
   // Callback when keymap file is loaded complete.
   void OnKeymapLoaded(const std::string& layout_name,

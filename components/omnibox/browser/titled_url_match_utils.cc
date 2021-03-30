@@ -22,15 +22,14 @@
 namespace {
 
 // Concatenates |ancestors| in reverse order and using '/' as the delimiter.
-base::string16 ConcatAncestorsTitles(
+std::u16string ConcatAncestorsTitles(
     std::vector<base::StringPiece16> ancestors) {
   return ancestors.empty()
-             ? base::string16()
+             ? std::u16string()
              : std::accumulate(std::next(ancestors.rbegin()), ancestors.rend(),
-                               base::string16(*ancestors.rbegin()),
-                               [](base::string16& a, base::StringPiece16& b) {
-                                 return a + base::UTF8ToUTF16("/") +
-                                        base::string16(b);
+                               std::u16string(*ancestors.rbegin()),
+                               [](std::u16string& a, base::StringPiece16& b) {
+                                 return a + u"/" + std::u16string(b);
                                });
 }
 
@@ -45,10 +44,10 @@ AutocompleteMatch TitledUrlMatchToAutocompleteMatch(
     AutocompleteProvider* provider,
     const AutocompleteSchemeClassifier& scheme_classifier,
     const AutocompleteInput& input,
-    const base::string16& fixed_up_input_text) {
-  const base::string16 title = titled_url_match.node->GetTitledUrlNodeTitle();
+    const std::u16string& fixed_up_input_text) {
+  const std::u16string title = titled_url_match.node->GetTitledUrlNodeTitle();
   const GURL& url = titled_url_match.node->GetTitledUrlNodeUrl();
-  const base::string16 path = ConcatAncestorsTitles(
+  const std::u16string path = ConcatAncestorsTitles(
       titled_url_match.node->GetTitledUrlNodeAncestorTitles());
 
   // The AutocompleteMatch we construct is non-deletable because the only way to
@@ -68,7 +67,7 @@ AutocompleteMatch TitledUrlMatchToAutocompleteMatch(
                                         &match_in_scheme, &match_in_subdomain);
   auto format_types = AutocompleteMatch::GetFormatTypes(
       input.parts().scheme.len > 0 || match_in_scheme, match_in_subdomain);
-  const base::string16 formatted_url = url_formatter::FormatUrl(
+  const std::u16string formatted_url = url_formatter::FormatUrl(
       url, format_types, net::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
 
   if (base::GetFieldTrialParamByFeatureAsBool(
@@ -106,11 +105,11 @@ AutocompleteMatch TitledUrlMatchToAutocompleteMatch(
   if (base::GetFieldTrialParamByFeatureAsBool(
           omnibox::kBookmarkPaths,
           OmniboxFieldTrial::kBookmarkPathsUiReplaceTitle, false)) {
-    match.description = path + base::UTF8ToUTF16("/") + title;
+    match.description = path + u"/" + title;
   } else if (base::GetFieldTrialParamByFeatureAsBool(
                  omnibox::kBookmarkPaths,
                  OmniboxFieldTrial::kBookmarkPathsUiAppendAfterTitle, false)) {
-    match.description = title + base::UTF8ToUTF16(" : ") + path;
+    match.description = title + u" : " + path;
   } else {
     match.description = title;
   }
@@ -139,7 +138,7 @@ AutocompleteMatch TitledUrlMatchToAutocompleteMatch(
 
   if (match.TryRichAutocompletion(match.contents, match.description, input)) {
     // If rich autocompletion applies, we skip trying the alternatives below.
-  } else if (inline_autocomplete_offset != base::string16::npos) {
+  } else if (inline_autocomplete_offset != std::u16string::npos) {
     match.inline_autocompletion =
         match.fill_into_edit.substr(inline_autocomplete_offset);
     match.SetAllowedToBeDefault(input);

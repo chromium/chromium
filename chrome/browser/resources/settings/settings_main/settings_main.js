@@ -14,10 +14,10 @@ import 'chrome://resources/js/search_highlight_utils.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../about_page/about_page.js';
 import '../basic_page/basic_page.js';
-import '../prefs/prefs.m.js';
-import '../search_settings.m.js';
-import '../settings_shared_css.m.js';
-import '../settings_vars_css.m.js';
+import '../prefs/prefs.js';
+import '../search_settings.js';
+import '../settings_shared_css.js';
+import '../settings_vars_css.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
@@ -27,7 +27,7 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 import {loadTimeData} from '../i18n_setup.js';
 import {PageVisibility} from '../page_visibility.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverBehavior, Router} from '../router.m.js';
+import {Route, RouteObserverBehavior, Router} from '../router.js';
 
 /**
  * @typedef {{about: boolean, settings: boolean}}

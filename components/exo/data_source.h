@@ -70,7 +70,7 @@ class DataSource {
   using ReadDataCallback =
       base::OnceCallback<void(const std::string&, const std::vector<uint8_t>&)>;
   using ReadTextDataCallback =
-      base::OnceCallback<void(const std::string&, base::string16)>;
+      base::OnceCallback<void(const std::string&, std::u16string)>;
   void GetDataForPreferredMimeTypes(ReadTextDataCallback text_reader,
                                     ReadDataCallback rtf_reader,
                                     ReadTextDataCallback html_reader,

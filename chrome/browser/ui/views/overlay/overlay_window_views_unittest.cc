@@ -314,3 +314,23 @@ TEST_F(OverlayWindowViewsTest, PreviousTrackButtonAddedWhenControlsHidden) {
       origin_before_layout);
   EXPECT_FALSE(overlay_window().IsLayoutPendingForTesting());
 }
+
+TEST_F(OverlayWindowViewsTest, UpdateVideoSizeDoesNotMoveWindow) {
+  // Enter PiP.
+  overlay_window().UpdateVideoSize({300, 200});
+  overlay_window().ShowInactive();
+
+  // Resize the window and move it toward the top-left corner of the work area.
+  // In production, resizing preserves the aspect ratio if possible, so we
+  // preserve it here too.
+  overlay_window().SetBounds({100, 100, 450, 300});
+
+  // Simulate a new surface layer and a change in the aspect ratio.
+  overlay_window().UpdateVideoSize({400, 200});
+
+  // The window should not move.
+  // The window size will be adjusted according to the new aspect ratio, and
+  // clamped to 500x250 to fit within the maximum size for the work area of
+  // 1000x1000.
+  EXPECT_EQ(gfx::Rect(100, 100, 500, 250), overlay_window().GetBounds());
+}

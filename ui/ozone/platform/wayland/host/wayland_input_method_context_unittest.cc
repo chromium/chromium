@@ -28,7 +28,7 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
   TestInputMethodContextDelegate() {}
   ~TestInputMethodContextDelegate() override {}
 
-  void OnCommit(const base::string16& text) override {
+  void OnCommit(const std::u16string& text) override {
     was_on_commit_called_ = true;
   }
   void OnPreeditChanged(const ui::CompositionText& composition_text) override {

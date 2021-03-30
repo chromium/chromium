@@ -30,8 +30,7 @@ class ZoomControllerTest : public ChromeRenderViewHostTestHarness {
 
     // This call is needed so that the RenderViewHost reports being alive. This
     // is only important for tests that call ZoomController::SetZoomLevel().
-    content::RenderViewHostTester::For(rvh())->CreateTestRenderView(
-        base::nullopt, MSG_ROUTING_NONE, false);
+    content::RenderViewHostTester::For(rvh())->CreateTestRenderView();
   }
 
   void TearDown() override {

@@ -1,0 +1,10 @@
+This tests keyboard scrolling by pages.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+FAIL document.scrollingElement.scrollTop >= window.innerHeight * 0.875 failed to change to true in 0.5 seconds.
+PASS document.scrollingElement.scrollTop became 0
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

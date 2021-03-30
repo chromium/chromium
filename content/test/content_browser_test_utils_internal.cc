@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/containers/stack.h"
 #include "base/json/json_reader.h"
 #include "base/stl_util.h"
@@ -23,15 +24,18 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/renderer_host/delegated_frame_host.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
+#include "content/browser/site_instance_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "content/public/test/browser_test_utils.h"
@@ -51,7 +55,7 @@ bool NavigateFrameToURL(FrameTreeNode* node, const GURL& url) {
   params.frame_tree_node_id = node->frame_tree_node_id();
   FrameTree* frame_tree = node->frame_tree();
 
-  node->navigator().GetController()->LoadURLWithParams(params);
+  node->navigator().controller().LoadURLWithParams(params);
   observer.Wait();
 
   if (!observer.last_navigation_succeeded()) {
@@ -110,11 +114,74 @@ bool NavigateToURLInSameBrowsingInstance(Shell* window, const GURL& url) {
   return true;
 }
 
-FrameTreeVisualizer::FrameTreeVisualizer() {
+bool IsExpectedSubframeErrorTransition(SiteInstance* start_site_instance,
+                                       SiteInstance* end_site_instance) {
+  bool site_instances_are_equal = (start_site_instance == end_site_instance);
+  bool is_error_page_site_instance =
+      (static_cast<SiteInstanceImpl*>(end_site_instance)
+           ->GetSiteInfo()
+           .is_error_page());
+  if (!SiteIsolationPolicy::IsErrorPageIsolationEnabled(
+          /*in_main_frame=*/false)) {
+    return site_instances_are_equal && !is_error_page_site_instance;
+  } else {
+    return !site_instances_are_equal && is_error_page_site_instance;
+  }
 }
 
-FrameTreeVisualizer::~FrameTreeVisualizer() {
+RenderFrameHost* CreateSubframe(WebContentsImpl* web_contents,
+                                std::string frame_id,
+                                const GURL& url,
+                                bool wait_for_navigation) {
+  RenderFrameHostCreatedObserver subframe_created_observer(web_contents);
+  TestNavigationObserver subframe_nav_observer(web_contents);
+  if (url.is_empty()) {
+    EXPECT_TRUE(ExecJs(web_contents, JsReplace(R"(
+          var iframe = document.createElement('iframe');
+          iframe.id = $1;
+          document.body.appendChild(iframe);
+      )",
+                                               frame_id)));
+  } else {
+    EXPECT_TRUE(ExecJs(web_contents, JsReplace(R"(
+          var iframe = document.createElement('iframe');
+          iframe.id = $1;
+          iframe.src = $2;
+          document.body.appendChild(iframe);
+      )",
+                                               frame_id, url)));
+  }
+  subframe_created_observer.Wait();
+  if (wait_for_navigation)
+    subframe_nav_observer.Wait();
+  FrameTreeNode* root = web_contents->GetFrameTree()->root();
+  return root->child_at(root->child_count() - 1)->current_frame_host();
 }
+
+Shell* OpenBlankWindow(WebContentsImpl* web_contents) {
+  FrameTreeNode* root = web_contents->GetFrameTree()->root();
+  ShellAddedObserver new_shell_observer;
+  EXPECT_TRUE(ExecJs(root, "last_opened_window = window.open()"));
+  Shell* new_shell = new_shell_observer.GetShell();
+  EXPECT_NE(new_shell->web_contents(), web_contents);
+  EXPECT_FALSE(
+      new_shell->web_contents()->GetController().GetLastCommittedEntry());
+  return new_shell;
+}
+
+Shell* OpenWindow(WebContentsImpl* web_contents, const GURL& url) {
+  FrameTreeNode* root = web_contents->GetFrameTree()->root();
+  ShellAddedObserver new_shell_observer;
+  EXPECT_TRUE(
+      ExecJs(root, JsReplace("last_opened_window = window.open($1)", url)));
+  Shell* new_shell = new_shell_observer.GetShell();
+  EXPECT_NE(new_shell->web_contents(), web_contents);
+  return new_shell;
+}
+
+FrameTreeVisualizer::FrameTreeVisualizer() = default;
+
+FrameTreeVisualizer::~FrameTreeVisualizer() = default;
 
 std::string FrameTreeVisualizer::DepictFrameTree(FrameTreeNode* root) {
   // Tracks the sites actually used in this depiction.
@@ -354,7 +421,7 @@ void FileChooserDelegate::RunFileChooser(
     const blink::mojom::FileChooserParams& params) {
   // Send the selected file to the renderer process.
   auto file_info = blink::mojom::FileChooserFileInfo::NewNativeFile(
-      blink::mojom::NativeFileInfo::New(file_, base::string16()));
+      blink::mojom::NativeFileInfo::New(file_, std::u16string()));
   std::vector<blink::mojom::FileChooserFileInfoPtr> files;
   files.push_back(std::move(file_info));
   listener->FileSelected(std::move(files), base::FilePath(),
@@ -415,9 +482,14 @@ RenderProcessHostBadIpcMessageWaiter::Wait() {
   return static_cast<bad_message::BadMessageReason>(internal_result.value());
 }
 
-ShowPopupWidgetWaiter::ShowPopupWidgetWaiter(WebContents* web_contents,
+ShowPopupWidgetWaiter::ShowPopupWidgetWaiter(WebContentsImpl* web_contents,
                                              RenderFrameHostImpl* frame_host)
-    : WebContentsObserver(web_contents), frame_host_(frame_host) {
+    : frame_host_(frame_host) {
+#if defined(OS_MAC) || defined(OS_ANDROID)
+  web_contents_ = web_contents;
+  web_contents_->set_show_popup_menu_callback_for_testing(base::BindOnce(
+      &ShowPopupWidgetWaiter::ShowPopupMenu, base::Unretained(this)));
+#endif
   frame_host_->SetCreateNewPopupCallbackForTesting(base::BindRepeating(
       &ShowPopupWidgetWaiter::DidCreatePopupWidget, base::Unretained(this)));
 }
@@ -435,7 +507,9 @@ void ShowPopupWidgetWaiter::Wait() {
 }
 
 void ShowPopupWidgetWaiter::Stop() {
-  Observe(nullptr);
+#if defined(OS_MAC) || defined(OS_ANDROID)
+  web_contents_->set_show_popup_menu_callback_for_testing(base::NullCallback());
+#endif
   frame_host_->SetCreateNewPopupCallbackForTesting(base::NullCallback());
   frame_host_ = nullptr;
 }
@@ -461,19 +535,9 @@ void ShowPopupWidgetWaiter::DidCreatePopupWidget(
 }
 
 #if defined(OS_MAC) || defined(OS_ANDROID)
-bool ShowPopupWidgetWaiter::ShowPopupMenu(
-    RenderFrameHost* render_frame_host,
-    mojo::PendingRemote<blink::mojom::PopupMenuClient>* popup_client,
-    const gfx::Rect& bounds,
-    int32_t item_height,
-    double font_size,
-    int32_t selected_item,
-    std::vector<blink::mojom::MenuItemPtr>* menu_items,
-    bool right_aligned,
-    bool allow_multiple_selection) {
+void ShowPopupWidgetWaiter::ShowPopupMenu(const gfx::Rect& bounds) {
   initial_rect_ = bounds;
   run_loop_.Quit();
-  return true;
 }
 #endif
 
@@ -547,7 +611,7 @@ BeforeUnloadBlockingDelegate::BeforeUnloadBlockingDelegate(
 
 BeforeUnloadBlockingDelegate::~BeforeUnloadBlockingDelegate() {
   if (!callback_.is_null())
-    std::move(callback_).Run(true, base::string16());
+    std::move(callback_).Run(true, std::u16string());
 
   web_contents_->SetDelegate(nullptr);
   web_contents_->SetJavaScriptDialogManagerForTesting(nullptr);
@@ -567,8 +631,8 @@ void BeforeUnloadBlockingDelegate::RunJavaScriptDialog(
     WebContents* web_contents,
     RenderFrameHost* render_frame_host,
     JavaScriptDialogType dialog_type,
-    const base::string16& message_text,
-    const base::string16& default_prompt_text,
+    const std::u16string& message_text,
+    const std::u16string& default_prompt_text,
     DialogClosedCallback callback,
     bool* did_suppress_message) {
   NOTREACHED();
@@ -586,7 +650,7 @@ void BeforeUnloadBlockingDelegate::RunBeforeUnloadDialog(
 bool BeforeUnloadBlockingDelegate::HandleJavaScriptDialog(
     WebContents* web_contents,
     bool accept,
-    const base::string16* prompt_override) {
+    const std::u16string* prompt_override) {
   NOTREACHED();
   return true;
 }
@@ -651,6 +715,98 @@ void DevToolsInspectorLogWatcher::FlushAndStopWatching() {
       this, base::as_bytes(base::make_span(kDisableLogMessage,
                                            strlen(kDisableLogMessage))));
   run_loop_disable_log_.Run();
+}
+
+FrameNavigateParamsCapturer::FrameNavigateParamsCapturer(FrameTreeNode* node)
+    : WebContentsObserver(
+          node->current_frame_host()->delegate()->GetAsWebContents()),
+      frame_tree_node_id_(node->frame_tree_node_id()) {}
+
+FrameNavigateParamsCapturer::~FrameNavigateParamsCapturer() = default;
+
+void FrameNavigateParamsCapturer::DidFinishNavigation(
+    NavigationHandle* navigation_handle) {
+  if (!navigation_handle->HasCommitted() ||
+      navigation_handle->GetFrameTreeNodeId() != frame_tree_node_id_ ||
+      navigations_remaining_ == 0) {
+    return;
+  }
+
+  --navigations_remaining_;
+  transitions_.push_back(navigation_handle->GetPageTransition());
+  urls_.push_back(navigation_handle->GetURL());
+  navigation_types_.push_back(
+      NavigationRequest::From(navigation_handle)->navigation_type());
+  is_same_documents_.push_back(navigation_handle->IsSameDocument());
+  did_replace_entries_.push_back(navigation_handle->DidReplaceEntry());
+  is_renderer_initiateds_.push_back(navigation_handle->IsRendererInitiated());
+  has_user_gestures_.push_back(navigation_handle->HasUserGesture());
+  if (!navigations_remaining_ &&
+      (!web_contents()->IsLoading() || !wait_for_load_))
+    loop_.Quit();
+}
+
+void FrameNavigateParamsCapturer::Wait() {
+  loop_.Run();
+}
+
+void FrameNavigateParamsCapturer::DidStopLoading() {
+  if (!navigations_remaining_)
+    loop_.Quit();
+}
+
+RenderFrameHostCreatedObserver::RenderFrameHostCreatedObserver(
+    WebContents* web_contents)
+    : WebContentsObserver(web_contents) {}
+
+RenderFrameHostCreatedObserver::RenderFrameHostCreatedObserver(
+    WebContents* web_contents,
+    int expected_frame_count)
+    : WebContentsObserver(web_contents),
+      expected_frame_count_(expected_frame_count) {}
+
+RenderFrameHostCreatedObserver::RenderFrameHostCreatedObserver(
+    WebContents* web_contents,
+    OnRenderFrameHostCreatedCallback on_rfh_created)
+    : WebContentsObserver(web_contents),
+      on_rfh_created_(std::move(on_rfh_created)) {}
+
+RenderFrameHostCreatedObserver::~RenderFrameHostCreatedObserver() = default;
+
+RenderFrameHost* RenderFrameHostCreatedObserver::Wait() {
+  if (frames_created_ < expected_frame_count_)
+    run_loop_.Run();
+
+  return last_rfh_;
+}
+
+void RenderFrameHostCreatedObserver::RenderFrameCreated(
+    RenderFrameHost* render_frame_host) {
+  frames_created_++;
+  last_rfh_ = render_frame_host;
+  if (on_rfh_created_)
+    on_rfh_created_.Run(render_frame_host);
+  if (frames_created_ == expected_frame_count_)
+    run_loop_.Quit();
+}
+
+BackForwardCache::DisabledReason RenderFrameHostDisabledForTestingReason() {
+  static const BackForwardCache::DisabledReason reason =
+      BackForwardCache::DisabledReason(
+          {BackForwardCache::DisabledSource::kTesting, 0,
+           "disabled for testing"});
+  return reason;
+}
+
+void DisableForRenderFrameHostForTesting(
+    content::RenderFrameHost* render_frame_host) {
+  content::BackForwardCache::DisableForRenderFrameHost(
+      render_frame_host, RenderFrameHostDisabledForTestingReason());
+}
+
+void DisableForRenderFrameHostForTesting(content::GlobalFrameRoutingId id) {
+  content::BackForwardCache::DisableForRenderFrameHost(
+      id, RenderFrameHostDisabledForTestingReason());
 }
 
 }  // namespace content

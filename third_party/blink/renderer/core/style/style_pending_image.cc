@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/core/style/style_pending_image.h"
 
+#include "third_party/blink/renderer/core/css/css_image_generator_value.h"
+#include "third_party/blink/renderer/core/css/css_image_set_value.h"
+#include "third_party/blink/renderer/core/css/css_image_value.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
@@ -13,14 +16,15 @@ CSSValue* StylePendingImage::ComputedCSSValue(const ComputedStyle& style,
   DCHECK(style.IsEnsuredInDisplayNone() ||
          style.Display() == EDisplay::kContents);
 
-  if (CSSImageValue* image_value = CssImageValue())
+  CSSValue* value = CssValue();
+  if (auto* image_value = DynamicTo<CSSImageValue>(value))
     return image_value->ValueWithURLMadeAbsolute();
-  if (CSSImageSetValue* image_set_value = CssImageSetValue())
+  if (auto* image_set_value = DynamicTo<CSSImageSetValue>(value))
     return image_set_value->ValueWithURLsMadeAbsolute();
-  if (CSSImageGeneratorValue* image_generator_value = CssImageGeneratorValue())
+  if (auto* image_generator_value = DynamicTo<CSSImageGeneratorValue>(value))
     return image_generator_value->ComputedCSSValue(style, allow_visited_style);
   NOTREACHED();
-  return CssValue();
+  return value;
 }
 
 }  // namespace blink

@@ -40,7 +40,7 @@ using base::UserMetricsAction;
 
 namespace {
 
-base::string16 GetInfoBarMessage(const PluginMetadata& metadata) {
+std::u16string GetInfoBarMessage(const PluginMetadata& metadata) {
   return l10n_util::GetStringFUTF16(metadata.plugin_is_deprecated()
                                         ? IDS_PLUGIN_DEPRECATED
                                         : IDS_PLUGIN_OUTDATED_PROMPT,
@@ -65,7 +65,7 @@ void OutdatedPluginInfoBarDelegate::Create(
 OutdatedPluginInfoBarDelegate::OutdatedPluginInfoBarDelegate(
     PluginInstaller* installer,
     std::unique_ptr<PluginMetadata> plugin_metadata,
-    const base::string16& message)
+    const std::u16string& message)
     : ConfirmInfoBarDelegate(),
       WeakPluginInstallerObserver(installer),
       identifier_(plugin_metadata->identifier()),
@@ -106,7 +106,7 @@ const gfx::VectorIcon& OutdatedPluginInfoBarDelegate::GetVectorIcon() const {
   return vector_icons::kExtensionIcon;
 }
 
-base::string16 OutdatedPluginInfoBarDelegate::GetLinkText() const {
+std::u16string OutdatedPluginInfoBarDelegate::GetLinkText() const {
   return l10n_util::GetStringUTF16(IDS_LEARN_MORE);
 }
 
@@ -118,7 +118,7 @@ void OutdatedPluginInfoBarDelegate::InfoBarDismissed() {
   base::RecordAction(UserMetricsAction("OutdatedPluginInfobar.Dismissed"));
 }
 
-base::string16 OutdatedPluginInfoBarDelegate::GetMessageText() const {
+std::u16string OutdatedPluginInfoBarDelegate::GetMessageText() const {
   return message_;
 }
 
@@ -130,7 +130,7 @@ int OutdatedPluginInfoBarDelegate::GetButtons() const {
   return BUTTON_OK | BUTTON_CANCEL;
 }
 
-base::string16 OutdatedPluginInfoBarDelegate::GetButtonLabel(
+std::u16string OutdatedPluginInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   return l10n_util::GetStringUTF16((button == BUTTON_OK) ?
       IDS_PLUGIN_UPDATE : IDS_PLUGIN_ENABLE_TEMPORARILY);
@@ -174,7 +174,7 @@ void OutdatedPluginInfoBarDelegate::OnlyWeakObserversLeft() {
 }
 
 void OutdatedPluginInfoBarDelegate::ReplaceWithInfoBar(
-    const base::string16& message) {
+    const std::u16string& message) {
   // Return early if the message doesn't change. This is important in case the
   // PluginInstaller is still iterating over its observers (otherwise we would
   // keep replacing infobar delegates infinitely).

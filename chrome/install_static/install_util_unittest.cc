@@ -279,7 +279,7 @@ TEST(InstallStaticTest, SpacesAndQuotesWindowsInspired) {
 TEST(InstallStaticTest, BrowserProcessTest) {
   EXPECT_FALSE(IsProcessTypeInitialized());
   InitializeProcessType();
-  EXPECT_FALSE(IsNonBrowserProcess());
+  EXPECT_TRUE(IsBrowserProcess());
 }
 
 class InstallStaticUtilTest
@@ -295,14 +295,14 @@ class InstallStaticUtilTest
 
   void SetUp() override {
     ASSERT_TRUE(!system_level_ || mode_->supports_system_level);
-    base::string16 path;
+    std::wstring path;
     ASSERT_NO_FATAL_FAILURE(
         override_manager_.OverrideRegistry(root_key_, &path));
     nt::SetTestingOverride(nt_root_key_, path);
   }
 
   void TearDown() override {
-    nt::SetTestingOverride(nt_root_key_, base::string16());
+    nt::SetTestingOverride(nt_root_key_, std::wstring());
   }
 
   bool system_level() const { return system_level_; }
@@ -526,7 +526,7 @@ TEST_P(InstallStaticUtilTest, GetToastActivatorClsid) {
             kToastActivatorClsids[std::get<0>(GetParam())]);
 
   auto clsid_str = base::win::WStringFromGUID(GetToastActivatorClsid());
-  EXPECT_THAT(base::as_wcstr(clsid_str.c_str()),
+  EXPECT_THAT(clsid_str.c_str(),
               StrCaseEq(kToastActivatorClsidsString[std::get<0>(GetParam())]));
 }
 
@@ -580,7 +580,7 @@ TEST_P(InstallStaticUtilTest, GetElevatorClsid) {
   EXPECT_EQ(GetElevatorClsid(), kElevatorClsids[std::get<0>(GetParam())]);
 
   auto clsid_str = base::win::WStringFromGUID(GetElevatorClsid());
-  EXPECT_THAT(base::as_wcstr(clsid_str.c_str()),
+  EXPECT_THAT(clsid_str.c_str(),
               StrCaseEq(kElevatorClsidsString[std::get<0>(GetParam())]));
 }
 
@@ -646,7 +646,7 @@ TEST_P(InstallStaticUtilTest, GetElevatorIid) {
   EXPECT_EQ(GetElevatorIid(), kElevatorIids[std::get<0>(GetParam())]);
 
   auto iid_str = base::win::WStringFromGUID(GetElevatorIid());
-  EXPECT_THAT(base::as_wcstr(iid_str.c_str()),
+  EXPECT_THAT(iid_str.c_str(),
               StrCaseEq(kElevatorIidsString[std::get<0>(GetParam())]));
 }
 
@@ -710,7 +710,8 @@ TEST_P(InstallStaticUtilTest, UsageStatsPolicy) {
 }
 
 TEST_P(InstallStaticUtilTest, GetChromeChannelName) {
-  EXPECT_EQ(default_channel(), GetChromeChannelName());
+  EXPECT_EQ(default_channel(),
+            GetChromeChannelName(/*with_extended_stable=*/false));
 }
 
 TEST_P(InstallStaticUtilTest, GetSandboxSidPrefix) {

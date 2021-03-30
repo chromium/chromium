@@ -38,7 +38,8 @@ class SyncSessionDurationsMetricsRecorderTest : public testing::Test {
     GoogleServiceAuthError auth_error(
         GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
     identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
-        identity_test_env_.identity_manager()->GetPrimaryAccountId(),
+        identity_test_env_.identity_manager()->GetPrimaryAccountId(
+            signin::ConsentLevel::kSync),
         auth_error);
     sync_service_.SetAuthError(auth_error);
   }

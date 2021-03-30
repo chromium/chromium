@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_AVATAR_TOOLBAR_BUTTON_H_
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
 #include "ui/events/event.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 class AvatarToolbarButtonDelegate;
 class Browser;
@@ -19,6 +19,8 @@ class Browser;
 class AvatarToolbarButton : public ToolbarButton,
                             ToolbarIconContainerView::Observer {
  public:
+  METADATA_HEADER(AvatarToolbarButton);
+
   // States of the button ordered in priority of getting displayed.
   enum class State {
     kIncognitoProfile,
@@ -42,11 +44,12 @@ class AvatarToolbarButton : public ToolbarButton,
   // ToolbarIconContainerView as a parent.
   explicit AvatarToolbarButton(Browser* browser);
   AvatarToolbarButton(Browser* browser, ToolbarIconContainerView* parent);
+  AvatarToolbarButton(const AvatarToolbarButton&) = delete;
+  AvatarToolbarButton& operator=(const AvatarToolbarButton&) = delete;
   ~AvatarToolbarButton() override;
 
   void UpdateText();
   void ShowAvatarHighlightAnimation();
-  bool IsParentHighlighted() const;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -54,7 +57,6 @@ class AvatarToolbarButton : public ToolbarButton,
   void NotifyHighlightAnimationFinished();
 
   // ToolbarButton:
-  const char* GetClassName() const override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   void OnBlur() override;
   void OnThemeChanged() override;
@@ -64,8 +66,6 @@ class AvatarToolbarButton : public ToolbarButton,
   // ToolbarIconContainerView::Observer:
   void OnHighlightChanged() override;
 
-  static const char kAvatarToolbarButtonClassName[];
-
  protected:
   // ToolbarButton:
   void NotifyClick(const ui::Event& event) override;
@@ -74,7 +74,7 @@ class AvatarToolbarButton : public ToolbarButton,
   FRIEND_TEST_ALL_PREFIXES(AvatarToolbarButtonTest,
                            HighlightMeetsMinimumContrast);
 
-  base::string16 GetAvatarTooltipText() const;
+  std::u16string GetAvatarTooltipText() const;
   ui::ImageModel GetAvatarIcon(ButtonState state,
                                const gfx::Image& profile_identity_image) const;
 
@@ -88,8 +88,6 @@ class AvatarToolbarButton : public ToolbarButton,
   base::ObserverList<Observer>::Unchecked observer_list_;
 
   base::WeakPtrFactory<AvatarToolbarButton> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AvatarToolbarButton);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_AVATAR_TOOLBAR_BUTTON_H_

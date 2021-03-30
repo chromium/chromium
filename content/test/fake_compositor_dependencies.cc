@@ -22,21 +22,8 @@ FakeCompositorDependencies::FakeCompositorDependencies() {
 FakeCompositorDependencies::~FakeCompositorDependencies() {
 }
 
-bool FakeCompositorDependencies::IsLcdTextEnabled() {
-  return false;
-}
-
-bool FakeCompositorDependencies::IsElasticOverscrollEnabled() {
-  return true;
-}
-
 bool FakeCompositorDependencies::IsUseZoomForDSFEnabled() {
   return use_zoom_for_dsf_;
-}
-
-bool FakeCompositorDependencies::IsSingleThreaded() {
-  // Currently never threaded compositing in unit tests.
-  return true;
 }
 
 blink::scheduler::WebThreadScheduler*
@@ -48,13 +35,20 @@ cc::TaskGraphRunner* FakeCompositorDependencies::GetTaskGraphRunner() {
   return &task_graph_runner_;
 }
 
-bool FakeCompositorDependencies::IsScrollAnimatorEnabled() {
-  return false;
-}
-
 std::unique_ptr<cc::UkmRecorderFactory>
 FakeCompositorDependencies::CreateUkmRecorderFactory() {
   return std::make_unique<cc::TestUkmRecorderFactory>();
+}
+
+gfx::RenderingPipeline* FakeCompositorDependencies::GetMainThreadPipeline() {
+  // TODO(crbug.com/1157620): Implement to test rendering pipelines.
+  return nullptr;
+}
+
+gfx::RenderingPipeline*
+FakeCompositorDependencies::GetCompositorThreadPipeline() {
+  // TODO(crbug.com/1157620): Implement to test rendering pipelines.
+  return nullptr;
 }
 
 }  // namespace content

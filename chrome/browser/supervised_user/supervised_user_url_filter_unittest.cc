@@ -537,8 +537,8 @@ TEST_F(SupervisedUserURLFilterTest, AllowlistsPatterns) {
 
   const std::string id1 = "ID1";
   const std::string id2 = "ID2";
-  const base::string16 title1 = base::ASCIIToUTF16("Title 1");
-  const base::string16 title2 = base::ASCIIToUTF16("Title 2");
+  const std::u16string title1 = u"Title 1";
+  const std::u16string title2 = u"Title 2";
   const std::vector<std::string> hostname_hashes;
   const GURL entry_point("https://entry.com");
 
@@ -557,11 +557,11 @@ TEST_F(SupervisedUserURLFilterTest, AllowlistsPatterns) {
   filter_.SetDefaultFilteringBehavior(SupervisedUserURLFilter::BLOCK);
   run_loop_.Run();
 
-  std::map<std::string, base::string16> expected_allowlists;
+  std::map<std::string, std::u16string> expected_allowlists;
   expected_allowlists[id1] = title1;
   expected_allowlists[id2] = title2;
 
-  std::map<std::string, base::string16> actual_allowlists =
+  std::map<std::string, std::u16string> actual_allowlists =
       filter_.GetMatchingAllowlistTitles(GURL("https://example.com"));
   ASSERT_EQ(expected_allowlists, actual_allowlists);
 
@@ -594,9 +594,9 @@ TEST_F(SupervisedUserURLFilterTest, AllowlistsHostnameHashes) {
   const std::string id1 = "ID1";
   const std::string id2 = "ID2";
   const std::string id3 = "ID3";
-  const base::string16 title1 = base::ASCIIToUTF16("Title 1");
-  const base::string16 title2 = base::ASCIIToUTF16("Title 2");
-  const base::string16 title3 = base::ASCIIToUTF16("Title 3");
+  const std::u16string title1 = u"Title 1";
+  const std::u16string title2 = u"Title 2";
+  const std::u16string title3 = u"Title 3";
   const GURL entry_point("https://entry.com");
 
   scoped_refptr<SupervisedUserSiteList> site_list1 = base::WrapRefCounted(
@@ -618,12 +618,12 @@ TEST_F(SupervisedUserURLFilterTest, AllowlistsHostnameHashes) {
   filter_.SetDefaultFilteringBehavior(SupervisedUserURLFilter::BLOCK);
   run_loop_.Run();
 
-  std::map<std::string, base::string16> expected_allowlists;
+  std::map<std::string, std::u16string> expected_allowlists;
   expected_allowlists[id1] = title1;
   expected_allowlists[id2] = title2;
   expected_allowlists[id3] = title3;
 
-  std::map<std::string, base::string16> actual_allowlists =
+  std::map<std::string, std::u16string> actual_allowlists =
       filter_.GetMatchingAllowlistTitles(GURL("http://example.com"));
   ASSERT_EQ(expected_allowlists, actual_allowlists);
 

@@ -13,6 +13,8 @@
 #include "extensions/common/manifest_handlers/web_app_shortcut_icons_handler.h"
 #include "extensions/common/manifest_test.h"
 
+using extensions::mojom::ManifestLocation;
+
 namespace extensions {
 
 namespace errors = manifest_errors;
@@ -20,10 +22,9 @@ namespace errors = manifest_errors;
 using WebAppShortcutIconsHandlerTest = ManifestTest;
 
 TEST_F(WebAppShortcutIconsHandlerTest, Valid) {
-  scoped_refptr<Extension> extension =
-      LoadAndExpectSuccess("web_app_shortcut_icons_valid.json",
-                           extensions::Manifest::Location::INTERNAL,
-                           extensions::Extension::FROM_BOOKMARK);
+  scoped_refptr<Extension> extension = LoadAndExpectSuccess(
+      "web_app_shortcut_icons_valid.json", ManifestLocation::kInternal,
+      extensions::Extension::FROM_BOOKMARK);
   ASSERT_TRUE(extension.get());
   ASSERT_TRUE(extension->from_bookmark());
 }
@@ -48,28 +49,26 @@ TEST_F(WebAppShortcutIconsHandlerTest, InvalidNotFromBookmarkApp) {
 TEST_F(WebAppShortcutIconsHandlerTest, InvalidShortcutIcons) {
   LoadAndExpectError("web_app_shortcut_icons_invalid1.json",
                      errors::kInvalidWebAppShortcutIcons,
-                     extensions::Manifest::Location::INTERNAL,
+                     ManifestLocation::kInternal,
                      extensions::Extension::FROM_BOOKMARK);
 }
 
 TEST_F(WebAppShortcutIconsHandlerTest, InvalidShortcutItemIcons) {
   LoadAndExpectError("web_app_shortcut_icons_invalid2.json",
                      errors::kInvalidWebAppShortcutItemIcons,
-                     extensions::Manifest::Location::INTERNAL,
+                     ManifestLocation::kInternal,
                      extensions::Extension::FROM_BOOKMARK);
 }
 
 TEST_F(WebAppShortcutIconsHandlerTest, InvalidShortcutItemIconKey) {
   LoadAndExpectError("web_app_shortcut_icons_invalid3.json",
-                     errors::kInvalidIconKey,
-                     extensions::Manifest::Location::INTERNAL,
+                     errors::kInvalidIconKey, ManifestLocation::kInternal,
                      extensions::Extension::FROM_BOOKMARK);
 }
 
 TEST_F(WebAppShortcutIconsHandlerTest, InvalidShortcutItemIconPath) {
   LoadAndExpectError("web_app_shortcut_icons_invalid4.json",
-                     errors::kInvalidIconPath,
-                     extensions::Manifest::Location::INTERNAL,
+                     errors::kInvalidIconPath, ManifestLocation::kInternal,
                      extensions::Extension::FROM_BOOKMARK);
 }
 

@@ -58,6 +58,8 @@ GAIAServiceType GetGAIAServiceTypeFromHeader(const std::string& header_value) {
 
 }  // namespace
 
+const char kChromeConnectedCookieName[] = "CHROME_CONNECTED";
+
 ChromeConnectedHeaderHelper::ChromeConnectedHeaderHelper(
     AccountConsistencyMethod account_consistency)
     : account_consistency_(account_consistency) {}

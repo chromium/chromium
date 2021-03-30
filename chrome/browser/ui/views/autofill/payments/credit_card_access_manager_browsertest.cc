@@ -30,6 +30,10 @@ class CreditCardAccessManagerBrowserTest : public InProcessBrowserTest {
     embedded_test_server()->ServeFilesFromSourceDirectory(
         "components/test/data/autofill");
     embedded_test_server()->StartAcceptingConnections();
+
+    // Wait for Personal Data Manager to be fully loaded to prevent that
+    // spurious notifications deceive the tests.
+    WaitForPersonalDataManagerToBeLoaded(browser()->profile());
   }
 
   CreditCardAccessManager* GetCreditCardAccessManager() {
@@ -61,8 +65,7 @@ IN_PROC_BROWSER_TEST_F(CreditCardAccessManagerBrowserTest,
   // CreditCardAccessManager is completely recreated on page navigation, so to
   // ensure we're not using stale pointers, always re-fetch it on use.
   EXPECT_TRUE(GetCreditCardAccessManager()->UnmaskedCardCacheIsEmpty());
-  GetCreditCardAccessManager()->CacheUnmaskedCardInfo(card,
-                                                      base::UTF8ToUTF16("123"));
+  GetCreditCardAccessManager()->CacheUnmaskedCardInfo(card, u"123");
   EXPECT_FALSE(GetCreditCardAccessManager()->UnmaskedCardCacheIsEmpty());
 
   // Cache should reset upon navigation.

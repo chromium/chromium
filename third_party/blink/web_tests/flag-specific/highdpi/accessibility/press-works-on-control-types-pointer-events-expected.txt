@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+PASS Center of line when starting point and end point's y coordinate is known
+PASS Center of line when starting point and end point's x coordinate is known
+PASS Center of rectangle given a DomRect
+FAIL Tests that pointer events, mouse events and click are fired for accessibility press assert_approx_equals: Event's pointerdown screenX position is the same correct for element with group id expected 400 +/- 1 but got 267
+FAIL Tests that pointer events, mouse events and click's coordinates are populated correctly for accessibility press when zoomed in assert_approx_equals: Event's pointerdown screenX position is the same correct for element with tab id expected 78.53333473205566 +/- 1 but got 52
+Harness: the test ran to completion.
+

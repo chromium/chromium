@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://wicg.github.io/native-file-system/#filesystemfilehandle
+// https://wicg.github.io/file-system-access/#filesystemfilehandle
 [
     Exposed=(Window,Worker),
     SecureContext,
     Serializable,
-    RuntimeEnabled=NativeFileSystem,
-    ImplementedAs=NativeFileSystemFileHandle
+    RuntimeEnabled=FileSystemAccess
 ] interface FileSystemFileHandle : FileSystemHandle {
-    [CallWith=ScriptState, RaisesException] Promise<FileSystemWritableFileStream> createWritable(optional FileSystemCreateWriterOptions options = {});
+    [CallWith=ScriptState, RaisesException]
+    Promise<FileSystemWritableFileStream> createWritable(optional FileSystemCreateWritableOptions options = {});
+
     [CallWith=ScriptState, RaisesException] Promise<File> getFile();
 };

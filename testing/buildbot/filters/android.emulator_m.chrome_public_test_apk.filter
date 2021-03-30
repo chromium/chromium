@@ -6,7 +6,8 @@
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallback
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallbackAndShortTimeout
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallbackInSubFrame
--org.chromium.chrome.browser.externalnav.UrlOverridingTest.testRedirectionFromIntentCold
+-org.chromium.chrome.browser.externalnav.UrlOverridingTest.testRedirectionFromIntentColdNoTask
+-org.chromium.chrome.browser.externalnav.UrlOverridingTest.testRedirectionFromIntentColdWithTask
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testRedirectionFromIntentWarm
 
 # vr tests do not apply to emulator
@@ -87,3 +88,19 @@
 # crbug.com/1146477
 -org.chromium.chrome.browser.autofill.AutofillUpstreamTest.testSaveCardInfoBarWithEmptyMonth
 -org.chromium.chrome.browser.autofill.AutofillUpstreamTest.testSaveCardInfoBarWithEmptyMonthAndYear
+
+# crbug.com/1131717
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantKeyboardIntegrationTest.keyboardDoesNotShowOnElementClickInIFrame
+
+# crbug.com/1179791
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantBackButtonIntegrationTest.navigationAfterBackButtonDestroysAutofillAssistantUi
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantChromeTabIntegrationTest.interactingWithLocationBarHidesAutofillAssistant
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantNavigationIntegrationTest.navigateDuringOnboardingRemovesUI
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantNavigationIntegrationTest.navigatingInStoppedAutofillAssistantStateRemovesUI
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantNavigationIntegrationTest.navigatingWithLocationBarShowsError
+
+# crbug.com/1179792
+-org.chromium.chrome.browser.customtabs.content.TabObserverRegistrarTest.testObserveActiveTab
+
+# crbug.com/1180466
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantOverlayIntegrationTest.testShowCastOnIFrameElement

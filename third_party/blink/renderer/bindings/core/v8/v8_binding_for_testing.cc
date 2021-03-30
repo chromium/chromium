@@ -18,7 +18,8 @@ std::unique_ptr<DummyPageHolder> V8TestingScope::CreateDummyPageHolder(
   std::unique_ptr<DummyPageHolder> holder = std::make_unique<DummyPageHolder>();
   if (url.IsValid()) {
     holder->GetFrame().Loader().CommitNavigation(
-        WebNavigationParams::CreateWithHTMLBuffer(SharedBuffer::Create(), url),
+        WebNavigationParams::CreateWithHTMLBufferForTesting(
+            SharedBuffer::Create(), url),
         nullptr /* extra_data */);
     blink::test::RunPendingTasks();
   }

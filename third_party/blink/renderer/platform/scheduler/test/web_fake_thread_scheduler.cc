@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/scheduler/test/fake_agent_group_scheduler_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/test/web_fake_widget_scheduler.h"
 
 namespace blink {
@@ -34,7 +35,7 @@ WebFakeThreadScheduler::CompositorTaskRunner() {
 
 std::unique_ptr<WebAgentGroupScheduler>
 WebFakeThreadScheduler::CreateAgentGroupScheduler() {
-  return nullptr;
+  return std::make_unique<FakeAgentGroupScheduler>(*this);
 }
 
 std::unique_ptr<WebWidgetScheduler>

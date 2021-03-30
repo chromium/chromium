@@ -121,7 +121,8 @@ public class BookmarkWidgetProvider extends AppWidgetProvider {
             Intent ic = new Intent(context, BookmarkWidgetProxy.class);
             views.setPendingIntentTemplate(R.id.bookmarks_list,
                     PendingIntent.getBroadcast(context, 0, ic,
-                    PendingIntent.FLAG_UPDATE_CURRENT));
+                            PendingIntent.FLAG_UPDATE_CURRENT
+                                    | IntentUtils.getPendingIntentMutabilityFlag(true)));
             appWidgetManager.updateAppWidget(appWidgetId, views);
         }
     }

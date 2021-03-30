@@ -29,15 +29,15 @@ namespace blink {
 
 float CalculateTextAnchorShift(const ComputedStyle& style, float length) {
   bool is_ltr = style.IsLeftToRightDirection();
-  switch (style.SvgStyle().TextAnchor()) {
+  switch (style.TextAnchor()) {
     default:
       NOTREACHED();
       FALLTHROUGH;
-    case TA_START:
+    case ETextAnchor::kStart:
       return is_ltr ? 0 : -length;
-    case TA_MIDDLE:
+    case ETextAnchor::kMiddle:
       return -length / 2;
-    case TA_END:
+    case ETextAnchor::kEnd:
       return is_ltr ? -length : 0;
   }
 }
@@ -46,15 +46,15 @@ namespace {
 
 bool NeedsTextAnchorAdjustment(const ComputedStyle& style) {
   bool is_ltr = style.IsLeftToRightDirection();
-  switch (style.SvgStyle().TextAnchor()) {
+  switch (style.TextAnchor()) {
     default:
       NOTREACHED();
       FALLTHROUGH;
-    case TA_START:
+    case ETextAnchor::kStart:
       return !is_ltr;
-    case TA_MIDDLE:
+    case ETextAnchor::kMiddle:
       return true;
-    case TA_END:
+    case ETextAnchor::kEnd:
       return is_ltr;
   }
 }

@@ -26,13 +26,15 @@ TestRenderFrameHostFactory::CreateRenderFrameHost(
     FrameTree* frame_tree,
     FrameTreeNode* frame_tree_node,
     int32_t routing_id,
-    const base::UnguessableToken& frame_token,
+    mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
+    const blink::LocalFrameToken& frame_token,
     bool renderer_initiated_creation,
-    RenderFrameHostImpl::LifecycleState lifecycle_state) {
+    RenderFrameHostImpl::LifecycleStateImpl lifecycle_state) {
   DCHECK(!renderer_initiated_creation);
   return std::make_unique<TestRenderFrameHost>(
       site_instance, std::move(render_view_host), delegate, frame_tree,
-      frame_tree_node, routing_id, frame_token, lifecycle_state);
+      frame_tree_node, routing_id, std::move(frame_remote), frame_token,
+      lifecycle_state);
 }
 
 }  // namespace content

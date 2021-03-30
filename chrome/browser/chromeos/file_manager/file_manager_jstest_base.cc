@@ -12,6 +12,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/chromeos/file_manager/file_manager_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -122,6 +123,8 @@ class TestFilesDataSource : public content::URLDataSource {
       // Add 'unsafe-inline' to CSP to allow the inline <script> in the
       // generated HTML to run see js_test_gen_html.py.
       return "script-src chrome://resources chrome://test 'self'  "
+             "chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj "
+             "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp "
              "'unsafe-inline'; ";
     } else if (directive ==
                    network::mojom::CSPDirectiveName::RequireTrustedTypesFor ||
@@ -228,6 +231,8 @@ void FileManagerJsTestBase::SetUpOnMainThread() {
       webui_controller_factory_.get());
   webui_controller_factory_->AddFactoryOverride(TestResourceUrl().host(),
                                                 test_webui_provider_.Pointer());
+  Profile* profile = browser()->profile();
+  file_manager::test::AddDefaultComponentExtensionsOnMainThread(profile);
 }
 
 void FileManagerJsTestBase::TearDownOnMainThread() {

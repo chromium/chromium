@@ -142,11 +142,11 @@ TEST_F(IndexedRuleTest, OptionsParsing) {
            flat_rule::OptionFlag_APPLIES_TO_FIRST_PARTY},
       {dnr_api::DOMAIN_TYPE_FIRSTPARTY, dnr_api::RULE_ACTION_TYPE_ALLOW,
        std::make_unique<bool>(true),
-       flat_rule::OptionFlag_IS_WHITELIST |
+       flat_rule::OptionFlag_IS_ALLOWLIST |
            flat_rule::OptionFlag_APPLIES_TO_FIRST_PARTY},
       {dnr_api::DOMAIN_TYPE_FIRSTPARTY, dnr_api::RULE_ACTION_TYPE_ALLOW,
        std::make_unique<bool>(false),
-       flat_rule::OptionFlag_IS_WHITELIST |
+       flat_rule::OptionFlag_IS_ALLOWLIST |
            flat_rule::OptionFlag_APPLIES_TO_FIRST_PARTY |
            flat_rule::OptionFlag_IS_CASE_INSENSITIVE},
   };
@@ -560,7 +560,7 @@ TEST_F(IndexedRuleTest, RedirectParsing) {
         base::JSONReader::Read(cases[i].redirect_dictionary_json);
     ASSERT_TRUE(redirect_val);
 
-    base::string16 error;
+    std::u16string error;
     rule.action.redirect = dnr_api::Redirect::FromValue(*redirect_val, &error);
     ASSERT_TRUE(rule.action.redirect);
     ASSERT_TRUE(error.empty());

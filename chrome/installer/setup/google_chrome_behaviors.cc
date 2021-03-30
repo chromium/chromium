@@ -36,11 +36,11 @@ namespace installer {
 
 namespace {
 
-constexpr base::StringPiece16 kUninstallSurveyUrl(
+constexpr base::WStringPiece kUninstallSurveyUrl(
     L"https://support.google.com/chrome?p=chrome_uninstall_survey");
 
-bool NavigateToUrlWithEdge(const base::string16& url) {
-  base::string16 protocol_url = L"microsoft-edge:" + url;
+bool NavigateToUrlWithEdge(const std::wstring& url) {
+  std::wstring protocol_url = L"microsoft-edge:" + url;
   SHELLEXECUTEINFO info = {sizeof(info)};
   info.fMask = SEE_MASK_NOASYNC;
   info.lpVerb = L"open";
@@ -52,7 +52,7 @@ bool NavigateToUrlWithEdge(const base::string16& url) {
   return false;
 }
 
-void NavigateToUrlWithIExplore(const base::string16& url) {
+void NavigateToUrlWithIExplore(const std::wstring& url) {
   base::FilePath iexplore;
   if (!base::PathService::Get(base::DIR_PROGRAM_FILES, &iexplore))
     return;
@@ -60,7 +60,7 @@ void NavigateToUrlWithIExplore(const base::string16& url) {
   iexplore = iexplore.AppendASCII("Internet Explorer");
   iexplore = iexplore.AppendASCII("iexplore.exe");
 
-  base::string16 command = L"\"" + iexplore.value() + L"\" " + url;
+  std::wstring command = L"\"" + iexplore.value() + L"\" " + url;
 
   int pid = 0;
   // The reason we use WMI to launch the process is because the uninstall
@@ -113,14 +113,14 @@ void UpdateInstallStatus(installer::ArchiveType archive_type,
 // - client
 // - ap
 // - crash_client_id
-base::string16 GetDistributionData() {
-  base::string16 result;
+std::wstring GetDistributionData() {
+  std::wstring result;
   base::win::RegKey client_state_key(
       install_static::IsSystemInstall() ? HKEY_LOCAL_MACHINE
                                         : HKEY_CURRENT_USER,
       install_static::GetClientStateKeyPath().c_str(),
       KEY_QUERY_VALUE | KEY_WOW64_32KEY);
-  base::string16 brand_value;
+  std::wstring brand_value;
   if (client_state_key.ReadValue(google_update::kRegRLZBrandField,
                                  &brand_value) == ERROR_SUCCESS) {
     result.append(google_update::kRegRLZBrandField);
@@ -129,7 +129,7 @@ base::string16 GetDistributionData() {
     result.append(L"&");
   }
 
-  base::string16 client_value;
+  std::wstring client_value;
   if (client_state_key.ReadValue(google_update::kRegClientField,
                                  &client_value) == ERROR_SUCCESS) {
     result.append(google_update::kRegClientField);
@@ -138,7 +138,7 @@ base::string16 GetDistributionData() {
     result.append(L"&");
   }
 
-  base::string16 ap_value;
+  std::wstring ap_value;
   // If we fail to read the ap key, send up "&ap=" anyway to indicate
   // that this was probably a stable channel release.
   client_state_key.ReadValue(google_update::kRegApField, &ap_value);
@@ -176,7 +176,7 @@ base::string16 GetDistributionData() {
 // query params in |distribution_data| are included in the URL.
 void DoPostUninstallOperations(const base::Version& version,
                                const base::FilePath& local_data_path,
-                               const base::string16& distribution_data) {
+                               const std::wstring& distribution_data) {
   // Send the Chrome version and OS version as params to the form. It would be
   // nice to send the locale, too, but I don't see an easy way to get that in
   // the existing code. It's something we can add later, if needed. We depend
@@ -185,20 +185,20 @@ void DoPostUninstallOperations(const base::Version& version,
   // string before using it in a URL.
   const base::win::OSInfo* os_info = base::win::OSInfo::GetInstance();
   base::win::OSInfo::VersionNumber version_number = os_info->version_number();
-  base::string16 os_version =
+  std::wstring os_version =
       base::StringPrintf(L"%d.%d.%d", version_number.major,
                          version_number.minor, version_number.build);
 
-  const base::string16 survey_url = base::string16(kUninstallSurveyUrl);
+  const std::wstring survey_url = std::wstring(kUninstallSurveyUrl);
 #if DCHECK_IS_ON()
   // The URL is expected to have a query part and not end with '&'.
   const size_t pos = survey_url.find(L'?');
-  DCHECK_NE(pos, base::string16::npos);
-  DCHECK_EQ(survey_url.find(L'?', pos + 1), base::string16::npos);
+  DCHECK_NE(pos, std::wstring::npos);
+  DCHECK_EQ(survey_url.find(L'?', pos + 1), std::wstring::npos);
   DCHECK_NE(survey_url.back(), L'&');
 #endif
   auto url = base::StringPrintf(L"%ls&crversion=%ls&os=%ls", survey_url.c_str(),
-                                base::ASCIIToUTF16(version.GetString()).c_str(),
+                                base::ASCIIToWide(version.GetString()).c_str(),
                                 os_version.c_str());
 
   if (!distribution_data.empty() && IsMetricsEnabled(local_data_path)) {

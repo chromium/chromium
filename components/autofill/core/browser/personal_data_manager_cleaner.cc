@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
 
@@ -17,14 +18,16 @@ namespace autofill {
 
 PersonalDataManagerCleaner::PersonalDataManagerCleaner(
     PersonalDataManager* personal_data_manager,
+    AlternativeStateNameMapUpdater* alternative_state_name_map_updater,
     PrefService* pref_service)
     : test_data_creator_(kDisusedDataModelDeletionTimeDelta,
                          personal_data_manager->app_locale()),
       personal_data_manager_(personal_data_manager),
-      pref_service_(pref_service) {
+      pref_service_(pref_service),
+      alternative_state_name_map_updater_(alternative_state_name_map_updater) {
   // Check if profile cleanup has already been performed this major version.
   is_autofill_profile_cleanup_pending_ =
-      pref_service_->GetInteger(prefs::kAutofillLastVersionDeduped) >=
+      pref_service_->GetInteger(prefs::kAutofillLastVersionDeduped) <
       CHROME_VERSION_MAJOR;
   DVLOG(1) << "Autofill profile cleanup "
            << (is_autofill_profile_cleanup_pending_ ? "needs to be"
@@ -34,7 +37,23 @@ PersonalDataManagerCleaner::PersonalDataManagerCleaner(
 
 PersonalDataManagerCleaner::~PersonalDataManagerCleaner() = default;
 
-void PersonalDataManagerCleaner::CleanupData() {
+void PersonalDataManagerCleaner::CleanupDataAndNotifyPersonalDataObservers() {
+  // The profile de-duplication is run once every major chrome version. If the
+  // profile de-duplication has not run for the |CHROME_VERSION_MAJOR| yet,
+  // |AlternativeStateNameMap| needs to be populated first. Otherwise,
+  // defer the insertion to when the observers are notified.
+  if (!alternative_state_name_map_updater_
+           ->is_alternative_state_name_map_populated() &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillUseAlternativeStateNameMap) &&
+      is_autofill_profile_cleanup_pending_) {
+    alternative_state_name_map_updater_->PopulateAlternativeStateNameMap(
+        base::BindOnce(&PersonalDataManagerCleaner::
+                           CleanupDataAndNotifyPersonalDataObservers,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
   // If sync is enabled for addresses, defer running cleanups until address
   // sync has started; otherwise, do it now.
   if (!personal_data_manager_->IsSyncEnabledFor(syncer::AUTOFILL_PROFILE))
@@ -49,9 +68,26 @@ void PersonalDataManagerCleaner::CleanupData() {
   personal_data_manager_->LogStoredProfileMetrics();
   personal_data_manager_->LogStoredCreditCardMetrics();
   personal_data_manager_->LogStoredOfferMetrics();
+
+  personal_data_manager_->NotifyPersonalDataObserver();
 }
 
 void PersonalDataManagerCleaner::SyncStarted(syncer::ModelType model_type) {
+  // The profile de-duplication is run once every major chrome version. If the
+  // profile de-duplication has not run for the |CHROME_VERSION_MAJOR| yet,
+  // |AlternativeStateNameMap| needs to be populated first. Otherwise,
+  // defer the insertion to when the observers are notified.
+  if (!alternative_state_name_map_updater_
+           ->is_alternative_state_name_map_populated() &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillUseAlternativeStateNameMap) &&
+      is_autofill_profile_cleanup_pending_) {
+    alternative_state_name_map_updater_->PopulateAlternativeStateNameMap(
+        base::BindOnce(&PersonalDataManagerCleaner::SyncStarted,
+                       weak_ptr_factory_.GetWeakPtr(), model_type));
+    return;
+  }
+
   // Run deferred autofill address profile startup code.
   // See: PersonalDataManager::OnSyncServiceInitialized
   if (model_type == syncer::AUTOFILL_PROFILE)
@@ -117,10 +153,17 @@ void PersonalDataManagerCleaner::RemoveOrphanAutofillTableRows() {
 }
 
 bool PersonalDataManagerCleaner::ApplyDedupingRoutine() {
-  if (!is_autofill_profile_cleanup_pending_)
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnableProfileDeduplication)) {
     return false;
+  }
 
-  is_autofill_profile_cleanup_pending_ = false;
+  // Check if de-duplication has already been performed on this major version.
+  if (!is_autofill_profile_cleanup_pending_) {
+    DVLOG(1)
+        << "Autofill profile de-duplication already performed for this version";
+    return false;
+  }
 
   const std::vector<AutofillProfile*>& profiles =
       personal_data_manager_->GetProfiles();
@@ -128,14 +171,6 @@ bool PersonalDataManagerCleaner::ApplyDedupingRoutine() {
   // No need to de-duplicate if there are less than two profiles.
   if (profiles.size() < 2) {
     DVLOG(1) << "Autofill profile de-duplication not needed.";
-    return false;
-  }
-
-  // Check if de-duplication has already been performed this major version.
-  if (pref_service_->GetInteger(prefs::kAutofillLastVersionDeduped) >=
-      CHROME_VERSION_MAJOR) {
-    DVLOG(1)
-        << "Autofill profile de-duplication already performed for this version";
     return false;
   }
 
@@ -170,9 +205,11 @@ bool PersonalDataManagerCleaner::ApplyDedupingRoutine() {
 
   UpdateCardsBillingAddressReference(guids_merge_map);
 
+  is_autofill_profile_cleanup_pending_ = false;
   // Set the pref to the current major version.
   pref_service_->SetInteger(prefs::kAutofillLastVersionDeduped,
                             CHROME_VERSION_MAJOR);
+
   return true;
 }
 

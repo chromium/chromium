@@ -970,7 +970,7 @@ gchar* GetText(AtkText* atk_text, gint start_offset, gint end_offset) {
   if (!obj)
     return nullptr;
 
-  base::string16 text = obj->GetHypertext();
+  std::u16string text = obj->GetHypertext();
 
   start_offset = obj->UnicodeToUTF16OffsetInText(start_offset);
   if (start_offset < 0 || start_offset >= static_cast<int>(text.size()))
@@ -1012,7 +1012,7 @@ gunichar GetCharacterAtOffset(AtkText* atk_text, int offset) {
   if (!obj)
     return 0;
 
-  base::string16 text = obj->GetHypertext();
+  std::u16string text = obj->GetHypertext();
   int32_t text_length = text.length();
 
   offset = obj->UnicodeToUTF16OffsetInText(offset);
@@ -1103,10 +1103,10 @@ char* GetTextWithBoundaryType(AtkText* atk_text,
   *start_offset_ptr = obj->UTF16ToUnicodeOffsetInText(start_offset);
   *end_offset_ptr = obj->UTF16ToUnicodeOffsetInText(end_offset);
 
-  base::string16 text = obj->GetHypertext();
+  std::u16string text = obj->GetHypertext();
   DCHECK_LE(end_offset, static_cast<int>(text.size()));
 
-  base::string16 substr = text.substr(start_offset, end_offset - start_offset);
+  std::u16string substr = text.substr(start_offset, end_offset - start_offset);
   return g_strdup(base::UTF16ToUTF8(substr).c_str());
 }
 
@@ -2545,8 +2545,9 @@ bool AXPlatformNodeAuraLinux::IsWebDocumentForRelations() {
 AtkObject* AXPlatformNodeAuraLinux::CreateAtkObject() {
   if (GetData().role != ax::mojom::Role::kApplication &&
       !GetDelegate()->IsToplevelBrowserWindow() &&
-      !GetAccessibilityMode().has_mode(AXMode::kNativeAPIs))
+      !GetAccessibilityMode().has_mode(AXMode::kNativeAPIs)) {
     return nullptr;
+  }
   if (GetDelegate()->IsChildOfLeaf())
     return nullptr;
   EnsureGTypeInit();
@@ -2802,9 +2803,7 @@ AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {
     case ax::mojom::Role::kIgnored:
       return ATK_ROLE_REDUNDANT_OBJECT;
     case ax::mojom::Role::kImage:
-      return ATK_ROLE_IMAGE;
-    case ax::mojom::Role::kImageMap:
-      return ATK_ROLE_IMAGE_MAP;
+      return IsImageWithMap() ? ATK_ROLE_IMAGE_MAP : ATK_ROLE_IMAGE;
     case ax::mojom::Role::kInlineTextBox:
       return kStaticRole;
     case ax::mojom::Role::kInputTime:
@@ -4185,7 +4184,7 @@ void AXPlatformNodeAuraLinux::UpdateHypertext() {
   ComputeHypertextRemovedAndInserted(old_hypertext, &shared_prefix, &old_len,
                                      &new_len);
   if (old_len > 0) {
-    base::string16 removed_substring =
+    std::u16string removed_substring =
         old_hypertext.hypertext.substr(shared_prefix, old_len);
 
     size_t shared_unicode_prefix = shared_prefix;
@@ -4201,7 +4200,7 @@ void AXPlatformNodeAuraLinux::UpdateHypertext() {
   }
 
   if (new_len > 0) {
-    base::string16 inserted_substring =
+    std::u16string inserted_substring =
         hypertext_.hypertext.substr(shared_prefix, new_len);
     size_t shared_unicode_prefix = UTF16ToUnicodeOffsetInText(shared_prefix);
     size_t shared_unicode_suffix =
@@ -4225,7 +4224,7 @@ AXPlatformNodeAuraLinux::GetHypertextAdjustments() {
 
   text_unicode_adjustments_.emplace();
 
-  base::string16 text = GetHypertext();
+  std::u16string text = GetHypertext();
   int32_t text_length = text.size();
   for (int32_t i = 0; i < text_length; i++) {
     uint32_t code_point;
@@ -4660,7 +4659,7 @@ bool AXPlatformNodeAuraLinux::SetTextSelectionForAtkText(int start_offset,
   start_offset = UnicodeToUTF16OffsetInText(start_offset);
   end_offset = UnicodeToUTF16OffsetInText(end_offset);
 
-  base::string16 text = GetHypertext();
+  std::u16string text = GetHypertext();
   if (start_offset < 0 || start_offset > int{text.length()})
     return false;
   if (end_offset < 0 || end_offset > int{text.length()})
@@ -4845,7 +4844,7 @@ AXPlatformNodeAuraLinux::GetUnclippedHypertextRangeBoundsRect(int start_offset,
   start_offset = UnicodeToUTF16OffsetInText(start_offset);
   end_offset = UnicodeToUTF16OffsetInText(end_offset);
 
-  base::string16 text = GetHypertext();
+  std::u16string text = GetHypertext();
   if (start_offset < 0 || start_offset > int{text.length()})
     return base::nullopt;
   if (end_offset < 0 || end_offset > int{text.length()})

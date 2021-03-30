@@ -57,7 +57,24 @@ void LayoutSVGResourcePattern::RemoveAllClientsFromCache() {
   pattern_map_->clear();
   should_collect_pattern_attributes_ = true;
   To<SVGPatternElement>(*GetElement()).InvalidateDependentPatterns();
-  MarkAllClientsForInvalidation(SVGResourceClient::kPaintInvalidation);
+  MarkAllClientsForInvalidation(kPaintInvalidation);
+}
+
+void LayoutSVGResourcePattern::WillBeDestroyed() {
+  NOT_DESTROYED();
+  To<SVGPatternElement>(*GetElement()).InvalidateDependentPatterns();
+  LayoutSVGResourcePaintServer::WillBeDestroyed();
+}
+
+void LayoutSVGResourcePattern::StyleDidChange(StyleDifference diff,
+                                              const ComputedStyle* old_style) {
+  NOT_DESTROYED();
+  LayoutSVGResourcePaintServer::StyleDidChange(diff, old_style);
+  if (old_style)
+    return;
+  // The resource has been attached, any linked <pattern> may need to
+  // re-evaluate its attributes.
+  To<SVGPatternElement>(*GetElement()).InvalidateDependentPatterns();
 }
 
 bool LayoutSVGResourcePattern::RemoveClientFromCache(
@@ -85,8 +102,7 @@ const PatternAttributes& LayoutSVGResourcePattern::EnsureAttributes() const {
   return Attributes();
 }
 
-bool LayoutSVGResourcePattern::FindCycleFromSelf(
-    SVGResourcesCycleSolver& solver) const {
+bool LayoutSVGResourcePattern::FindCycleFromSelf() const {
   NOT_DESTROYED();
   const PatternAttributes& attributes = EnsureAttributes();
   const SVGPatternElement* content_element = attributes.PatternContentElement();
@@ -94,7 +110,7 @@ bool LayoutSVGResourcePattern::FindCycleFromSelf(
     return false;
   const LayoutObject* content_object = content_element->GetLayoutObject();
   DCHECK(content_object);
-  return FindCycleInDescendants(solver, *content_object);
+  return FindCycleInDescendants(*content_object);
 }
 
 std::unique_ptr<PatternData> LayoutSVGResourcePattern::BuildPatternData(

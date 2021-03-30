@@ -18,7 +18,6 @@
 
 #if defined(OS_MAC)
 #include "sandbox/mac/seatbelt.h"
-#include "sandbox/policy/mac/sandbox_mac.h"
 #endif  // defined(OS_MAC)
 
 #if defined(OS_WIN)
@@ -39,35 +38,24 @@ bool Sandbox::Initialize(SandboxType sandbox_type,
 }
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
-#if defined(OS_MAC)
-bool Sandbox::Initialize(SandboxType sandbox_type, base::OnceClosure hook) {
-  // Warm up APIs before turning on the sandbox.
-  SandboxMac::Warmup(sandbox_type);
-
-  // Execute the post warmup callback.
-  if (!hook.is_null())
-    std::move(hook).Run();
-
-  // Actually sandbox the process.
-  return SandboxMac::Enable(sandbox_type);
-}
-#endif  // defined(OS_MAC)
-
 #if defined(OS_WIN)
 bool Sandbox::Initialize(SandboxType sandbox_type,
                          SandboxInterfaceInfo* sandbox_info) {
   BrokerServices* broker_services = sandbox_info->broker_services;
   if (broker_services) {
+    const base::CommandLine& command_line =
+        *base::CommandLine::ForCurrentProcess();
     if (!SandboxWin::InitBrokerServices(broker_services))
       return false;
 
-    // IMPORTANT: This piece of code needs to run as early as possible in the
-    // process because it will initialize the sandbox broker, which requires the
-    // process to swap its window station. During this time all the UI will be
-    // broken. This has to run before threads and windows are created.
-    if (!IsUnsandboxedSandboxType(sandbox_type)) {
-      // Precreate the desktop and window station used by the renderers.
+    // Only pre-create alternate desktop if there will be sandboxed processes in
+    // the future.
+    if (!command_line.HasSwitch(switches::kNoSandbox)) {
       scoped_refptr<TargetPolicy> policy = broker_services->CreatePolicy();
+      // IMPORTANT: This piece of code needs to run as early as possible in the
+      // process because it will initialize the sandbox broker, which requires
+      // the process to swap its window station. During this time all the UI
+      // will be broken. This has to run before threads and windows are created.
       ResultCode result = policy->CreateAlternateDesktop(true);
       CHECK(SBOX_ERROR_FAILED_TO_SWITCH_BACK_WINSTATION != result);
     }

@@ -8,8 +8,8 @@
 #include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "chrome/updater/service_scope.h"
 #include "chrome/updater/update_service_internal.h"
+#include "chrome/updater/updater_scope.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -20,7 +20,7 @@ namespace updater {
 // All functions and callbacks must be called on the same sequence.
 class UpdateServiceInternalProxy : public UpdateServiceInternal {
  public:
-  explicit UpdateServiceInternalProxy(ServiceScope scope);
+  explicit UpdateServiceInternalProxy(UpdaterScope scope);
 
   // Overrides for UpdateServiceInternal.
   void Run(base::OnceClosure callback) override;

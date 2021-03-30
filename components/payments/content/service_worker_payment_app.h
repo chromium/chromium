@@ -76,18 +76,18 @@ class ServiceWorkerPaymentApp : public PaymentApp,
   void ValidateCanMakePayment(ValidateCanMakePaymentCallback callback);
 
   // PaymentApp:
-  void InvokePaymentApp(Delegate* delegate) override;
+  void InvokePaymentApp(base::WeakPtr<Delegate> delegate) override;
   void OnPaymentAppWindowClosed() override;
   bool IsCompleteForPayment() const override;
   uint32_t GetCompletenessScore() const override;
   bool CanPreselect() const override;
-  base::string16 GetMissingInfoLabel() const override;
+  std::u16string GetMissingInfoLabel() const override;
   bool HasEnrolledInstrument() const override;
   void RecordUse() override;
   bool NeedsInstallation() const override;
   std::string GetId() const override;
-  base::string16 GetLabel() const override;
-  base::string16 GetSublabel() const override;
+  std::u16string GetLabel() const override;
+  std::u16string GetSublabel() const override;
   bool IsValidForModifier(
       const std::string& method,
       bool supported_networks_specified,
@@ -138,9 +138,7 @@ class ServiceWorkerPaymentApp : public PaymentApp,
   base::WeakPtr<PaymentRequestSpec> spec_;
   std::unique_ptr<content::StoredPaymentApp> stored_payment_app_info_;
 
-  // Weak pointer is fine here since the owner of this object is
-  // PaymentRequestState which also owns PaymentResponseHelper.
-  Delegate* delegate_;
+  base::WeakPtr<Delegate> delegate_;
 
   bool is_incognito_;
 

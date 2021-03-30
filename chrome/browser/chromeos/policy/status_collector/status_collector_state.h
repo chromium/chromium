@@ -31,7 +31,7 @@ class StatusCollectorState
  public:
   explicit StatusCollectorState(
       const scoped_refptr<base::SequencedTaskRunner> task_runner,
-      const StatusCollectorCallback& response);
+      StatusCollectorCallback response);
 
   // Returns a reference to the internal state of this object.
   StatusCollectorParams& response_params();

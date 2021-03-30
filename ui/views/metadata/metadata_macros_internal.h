@@ -14,8 +14,6 @@
 // Internal Metadata Generation Helpers ---------------------------------------
 
 #define METADATA_CLASS_NAME_INTERNAL(class_name) class_name##_MetaData
-#define METADATA_FUNCTION_PREFIX_INTERNAL(class_name) \
-  class_name::METADATA_CLASS_NAME_INTERNAL(class_name)
 
 // Metadata Accessors ---------------------------------------------------------
 #define METADATA_ACCESSORS_INTERNAL(class_name)      \
@@ -53,43 +51,53 @@
     static views::metadata::ClassMetaData* meta_data_ ALLOW_UNUSED_TYPE; \
   }
 
-#define METADATA_PROPERTY_TYPE_INTERNAL(property_type, property_name)     \
-  views::metadata::ClassPropertyMetaData<                                 \
-      ViewClass, property_type, decltype(&ViewClass::Set##property_name), \
-      &ViewClass::Set##property_name,                                     \
-      decltype(std::declval<ViewClass>().Get##property_name()),           \
-      &ViewClass::Get##property_name>
+#define METADATA_PROPERTY_TYPE_INTERNAL(property_type, property_name, ...) \
+  views::metadata::ObjectPropertyMetaData<                                 \
+      ViewClass, property_type, decltype(&ViewClass::Set##property_name),  \
+      &ViewClass::Set##property_name,                                      \
+      decltype(std::declval<ViewClass>().Get##property_name()),            \
+      &ViewClass::Get##property_name, ##__VA_ARGS__>
 
-#define METADATA_READONLY_PROPERTY_TYPE_INTERNAL(property_type, property_name) \
-  views::metadata::ClassPropertyReadOnlyMetaData<                              \
+#define METADATA_READONLY_PROPERTY_TYPE_INTERNAL(property_type, property_name, \
+                                                 ...)                          \
+  views::metadata::ObjectPropertyReadOnlyMetaData<                             \
       ViewClass, property_type,                                                \
       decltype(std::declval<ViewClass>().Get##property_name()),                \
-      &ViewClass::Get##property_name>
+      &ViewClass::Get##property_name, ##__VA_ARGS__>
 
-#define BEGIN_METADATA_INTERNAL(class_name)                                 \
-  views::metadata::ClassMetaData* class_name::METADATA_CLASS_NAME_INTERNAL( \
-      class_name)::meta_data_ = nullptr;                                    \
-                                                                            \
-  views::metadata::ClassMetaData* class_name::MetaData() {                  \
-    if (!METADATA_CLASS_NAME_INTERNAL(class_name)::meta_data_) {            \
-      METADATA_CLASS_NAME_INTERNAL(class_name)::meta_data_ =                \
-          views::metadata::MakeAndRegisterClassInfo<                        \
-              METADATA_CLASS_NAME_INTERNAL(class_name)>();                  \
-    }                                                                       \
-    return METADATA_CLASS_NAME_INTERNAL(class_name)::meta_data_;            \
-  }                                                                         \
-                                                                            \
-  views::metadata::ClassMetaData* class_name::GetClassMetaData() {          \
-    return MetaData();                                                      \
-  }                                                                         \
-                                                                            \
-  const char* class_name::GetClassName() const {                            \
-    return class_name::kViewClassName;                                      \
-  }                                                                         \
-  const char class_name::kViewClassName[] = #class_name;                    \
-                                                                            \
-  void METADATA_FUNCTION_PREFIX_INTERNAL(class_name)::BuildMetaData() {     \
-    SetTypeName(std::string(#class_name));
+#define METADATA_CLASS_PROPERTY_TYPE_INTERNAL(property_type, property_key, \
+                                              ...)                         \
+  views::metadata::ClassPropertyMetaData<decltype(property_key),           \
+                                         property_type, ##__VA_ARGS__>
+
+#define BEGIN_METADATA_INTERNAL(qualified_class_name, metadata_class_name,   \
+                                parent_class_name)                           \
+  views::metadata::ClassMetaData*                                            \
+      qualified_class_name::metadata_class_name::meta_data_ = nullptr;       \
+                                                                             \
+  views::metadata::ClassMetaData* qualified_class_name::MetaData() {         \
+    static_assert(                                                           \
+        std::is_base_of<parent_class_name, qualified_class_name>::value,     \
+        "class not child of parent");                                        \
+    if (!qualified_class_name::metadata_class_name::meta_data_) {            \
+      qualified_class_name::metadata_class_name::meta_data_ =                \
+          views::metadata::MakeAndRegisterClassInfo<                         \
+              qualified_class_name::metadata_class_name>();                  \
+    }                                                                        \
+    return qualified_class_name::metadata_class_name::meta_data_;            \
+  }                                                                          \
+                                                                             \
+  views::metadata::ClassMetaData* qualified_class_name::GetClassMetaData() { \
+    return MetaData();                                                       \
+  }                                                                          \
+                                                                             \
+  const char* qualified_class_name::GetClassName() const {                   \
+    return kViewClassName;                                                   \
+  }                                                                          \
+  const char qualified_class_name::kViewClassName[] = #qualified_class_name; \
+                                                                             \
+  void qualified_class_name::metadata_class_name::BuildMetaData() {          \
+    SetTypeName(std::string(#qualified_class_name));
 
 #define METADATA_PARENT_CLASS_INTERNAL(parent_class_name) \
   SetParentClassMetaData(parent_class_name::MetaData());

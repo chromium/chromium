@@ -13,7 +13,7 @@
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/login/users/scoped_test_user_manager.h"
+#include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
 #endif
 
 class Profile;
@@ -52,13 +52,16 @@ class TestExtensionSystem : public ExtensionSystem {
 
   void CreateSocketManager();
 
+  // Creates a UserScriptManager initialized with the testing profile,
+  void CreateUserScriptManager();
+
   void InitForRegularProfile(bool extensions_enabled) override {}
   void SetExtensionService(ExtensionService* service);
   ExtensionService* extension_service() override;
   RuntimeData* runtime_data() override;
   ManagementPolicy* management_policy() override;
   ServiceWorkerManager* service_worker_manager() override;
-  SharedUserScriptManager* shared_user_script_manager() override;
+  UserScriptManager* user_script_manager() override;
   StateStore* state_store() override;
   StateStore* rules_store() override;
   scoped_refptr<ValueStoreFactory> store_factory() override;
@@ -107,13 +110,14 @@ class TestExtensionSystem : public ExtensionSystem {
   scoped_refptr<InfoMap> info_map_;
   std::unique_ptr<QuotaService> quota_service_;
   std::unique_ptr<AppSorting> app_sorting_;
+  std::unique_ptr<UserScriptManager> user_script_manager_;
   base::OneShotEvent ready_;
 
   std::unique_ptr<data_decoder::test::InProcessDataDecoder>
       in_process_data_decoder_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<chromeos::ScopedTestUserManager> test_user_manager_;
+  std::unique_ptr<ash::ScopedTestUserManager> test_user_manager_;
 #endif
 };
 

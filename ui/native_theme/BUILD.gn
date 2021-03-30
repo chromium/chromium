@@ -21,6 +21,8 @@ component("native_theme") {
     "native_theme_features.h",
     "native_theme_observer.cc",
     "native_theme_observer.h",
+    "native_theme_utils.cc",
+    "native_theme_utils.h",
     "themed_vector_icon.cc",
     "themed_vector_icon.h",
   ]
@@ -33,6 +35,11 @@ component("native_theme") {
   }
 
   if (is_mac) {
+    frameworks = [
+      "CoreGraphics.framework",
+      "AppKit.framework",
+      "MediaAccessibility.framework",
+    ]
     sources += [
       "caption_style_mac.mm",
       "native_theme_mac.h",
@@ -71,14 +78,6 @@ component("native_theme") {
     "//ui/gfx/geometry",
     "//ui/resources",
   ]
-
-  if (is_mac) {
-    frameworks = [
-      "CoreGraphics.framework",
-      "AppKit.framework",
-      "MediaAccessibility.framework",
-    ]
-  }
 }
 
 if (is_win) {
@@ -116,6 +115,8 @@ source_set("test_support") {
   ]
 
   sources = [
+    "test/color_utils.cc",
+    "test/color_utils.h",
     "test_native_theme.cc",
     "test_native_theme.h",
   ]
@@ -133,10 +134,6 @@ test("native_theme_unittests") {
     sources += [ "native_theme_aura_unittest.cc" ]
   }
 
-  if (is_mac) {
-    sources += [ "native_theme_mac_unittest.mm" ]
-  }
-
   if (is_win) {
     sources += [
       "caption_style_win_unittest.cc",
@@ -147,6 +144,7 @@ test("native_theme_unittests") {
   deps = [
     ":native_theme",
     ":native_theme_browser",
+    ":test_support",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
     "//skia",
@@ -154,4 +152,9 @@ test("native_theme_unittests") {
     "//ui/base",
     "//ui/gfx/geometry:geometry",
   ]
+
+  if (is_mac) {
+    sources += [ "native_theme_mac_unittest.mm" ]
+    deps += [ "//ui/color" ]
+  }
 }

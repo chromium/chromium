@@ -9,5 +9,6 @@ specific_include_rules = {
   "ash_test_helper\.cc": [
     "+ash/host",
     "+chromeos/cryptohome",
+  "+chromeos/login/login_state",
   ],
 }

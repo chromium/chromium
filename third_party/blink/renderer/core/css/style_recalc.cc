@@ -15,11 +15,13 @@ bool StyleRecalcChange::TraverseChildren(const Element& element) const {
 }
 
 bool StyleRecalcChange::TraversePseudoElements(const Element& element) const {
-  return UpdatePseudoElements() || element.ChildNeedsStyleRecalc();
+  return UpdatePseudoElements() || RecalcContainerQueryDependent() ||
+         element.ChildNeedsStyleRecalc();
 }
 
 bool StyleRecalcChange::TraverseChild(const Node& node) const {
-  return ShouldRecalcStyleFor(node) || node.ChildNeedsStyleRecalc();
+  return ShouldRecalcStyleFor(node) || node.ChildNeedsStyleRecalc() ||
+         RecalcContainerQueryDependent();
 }
 
 bool StyleRecalcChange::ShouldRecalcStyleFor(const Node& node) const {
@@ -46,7 +48,12 @@ bool StyleRecalcChange::ShouldRecalcStyleFor(const Node& node) const {
 
 bool StyleRecalcChange::ShouldUpdatePseudoElement(
     const PseudoElement& pseudo_element) const {
-  return UpdatePseudoElements() || pseudo_element.NeedsStyleRecalc();
+  if (UpdatePseudoElements())
+    return true;
+  if (pseudo_element.NeedsStyleRecalc())
+    return true;
+  return RecalcContainerQueryDependent() &&
+         pseudo_element.ComputedStyleRef().DependsOnContainerQueries();
 }
 
 bool StyleRecalcChange::RecalcContainerQueryDependentChildren(
@@ -60,8 +67,21 @@ bool StyleRecalcChange::RecalcContainerQueryDependentChildren(
   // recalculating container queries. If the queries for this container also
   // changes, we will enter another container query recalc for this subtree from
   // layout.
-  const ComputedStyle* style = element.GetComputedStyle();
-  return style && !style->IsContainerForContainerQueries();
+  if (LayoutObject* layout_object = element.GetLayoutObject())
+    return !layout_object->IsContainerForContainerQueries();
+  return true;
+}
+
+StyleRecalcContext StyleRecalcContext::FromAncestors(Element& element) {
+  Element* ancestor = &element;
+  // TODO(crbug.com/1145970): Avoid this work if we're not inside a container.
+  while ((ancestor = DynamicTo<Element>(
+              LayoutTreeBuilderTraversal::Parent(*ancestor)))) {
+    ContainerQueryEvaluator* evaluator = ancestor->GetContainerQueryEvaluator();
+    if (evaluator)
+      return StyleRecalcContext{evaluator};
+  }
+  return StyleRecalcContext();
 }
 
 }  // namespace blink

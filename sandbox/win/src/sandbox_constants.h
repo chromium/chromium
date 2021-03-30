@@ -7,6 +7,8 @@
 
 namespace sandbox {
 // Strings used as keys in base::Value snapshots of Policies.
+extern const char kAppContainerCapabilities[];
+extern const char kAppContainerInitialCapabilities[];
 extern const char kAppContainerSid[];
 extern const char kDesiredIntegrityLevel[];
 extern const char kDesiredMitigations[];

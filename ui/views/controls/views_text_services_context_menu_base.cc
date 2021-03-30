@@ -85,7 +85,7 @@ bool ViewsTextServicesContextMenuBase::SupportsCommand(int command_id) const {
   return command_id == IDS_CONTENT_CONTEXT_EMOJI;
 }
 
-#if !defined(OS_APPLE)
+#if !defined(OS_APPLE) && !BUILDFLAG(IS_CHROMEOS_ASH)
 // static
 std::unique_ptr<ViewsTextServicesContextMenu>
 ViewsTextServicesContextMenu::Create(ui::SimpleMenuModel* menu,

@@ -56,16 +56,13 @@ public class CustomTabActivityTabControllerUnitTest {
     private CustomTabActivityTabController mTabController;
 
     @Mock
-    public ProfileProvider mProfileProvider;
-
-    @Mock
     private Profile mProfile;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        when(mProfileProvider.getLastUsedRegularProfile()).thenReturn(mProfile);
-        mTabController = env.createTabController(mProfileProvider);
+        Profile.setLastUsedProfileForTesting(mProfile);
+        mTabController = env.createTabController();
     }
 
     @Test

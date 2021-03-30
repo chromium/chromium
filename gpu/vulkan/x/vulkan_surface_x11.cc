@@ -20,7 +20,7 @@ std::unique_ptr<VulkanSurfaceX11> VulkanSurfaceX11::Create(
     VkInstance vk_instance,
     x11::Window parent_window) {
   auto* connection = x11::Connection::Get();
-  auto geometry = connection->GetGeometry({parent_window}).Sync();
+  auto geometry = connection->GetGeometry(parent_window).Sync();
   if (!geometry) {
     LOG(ERROR) << "GetGeometry failed for window "
                << static_cast<uint32_t>(parent_window) << ".";
@@ -59,6 +59,15 @@ std::unique_ptr<VulkanSurfaceX11> VulkanSurfaceX11::Create(
                                             parent_window, window);
 }
 
+// When the screen is off or the window is offscreen, the X server keeps
+// compositing windows with a 1Hz fake vblank.  However, there is an X server
+// bug: the requested hardware vblanks are lost when screen turns off, which
+// results in that tjh FIFO swapchain hangs.
+//
+// We work around the issue by setting the 2 seconds timeout for
+// vkAcquireNextImageKHR().  When timeout happens, we consider the swapchain
+// hang happened, and then make the surface lost, so a new swapchain will
+// be created.
 VulkanSurfaceX11::VulkanSurfaceX11(VkInstance vk_instance,
                                    VkSurfaceKHR vk_surface,
                                    x11::Window parent_window,
@@ -66,7 +75,9 @@ VulkanSurfaceX11::VulkanSurfaceX11(VkInstance vk_instance,
     : VulkanSurface(vk_instance,
                     static_cast<gfx::AcceleratedWidget>(window),
                     vk_surface,
-                    false /* use_protected_memory */),
+                    false /* use_protected_memory */,
+                    base::Time::kNanosecondsPerSecond *
+                        2 /* acquire_next_image_timeout_ns */),
       parent_window_(parent_window),
       window_(window),
       event_selector_(std::make_unique<x11::XScopedEventSelector>(

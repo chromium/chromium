@@ -67,14 +67,16 @@ class PLATFORM_EXPORT AudioDestination
   AudioDestination(AudioIOCallback&,
                    unsigned number_of_output_channels,
                    const WebAudioLatencyHint&,
-                   base::Optional<float> context_sample_rate);
+                   base::Optional<float> context_sample_rate,
+                   unsigned render_quantum_frames);
   ~AudioDestination() override;
 
   static scoped_refptr<AudioDestination> Create(
       AudioIOCallback&,
       unsigned number_of_output_channels,
       const WebAudioLatencyHint&,
-      base::Optional<float> context_sample_rate);
+      base::Optional<float> context_sample_rate,
+      unsigned render_quantum_frames);
 
   // The actual render function (WebAudioDevice::RenderCallback) isochronously
   // invoked by the media renderer. This is never called after Stop() is called.
@@ -120,6 +122,9 @@ class PLATFORM_EXPORT AudioDestination
   // Sets the detect silence flag for |web_audio_device_|.
   void SetDetectSilence(bool detect_silence);
 
+  // This should only be called from the audio thread.
+  unsigned RenderQuantumFrames() const { return render_quantum_frames_; }
+
  private:
   // Represents the current state of the underlying |WebAudioDevice| object
   // (RendererWebAudioDeviceImpl).
@@ -135,9 +140,11 @@ class PLATFORM_EXPORT AudioDestination
   void ProvideResamplerInput(int resampler_frame_delay, AudioBus* dest);
 
   // Check if the buffer size chosen by the WebAudioDevice is too large.
-  bool CheckBufferSize();
+  bool CheckBufferSize(unsigned render_quantum_frames);
 
   size_t HardwareBufferSize();
+
+  unsigned render_quantum_frames_;
 
   // Accessed by the main thread.
   std::unique_ptr<WebAudioDevice> web_audio_device_;

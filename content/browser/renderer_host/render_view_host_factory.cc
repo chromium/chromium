@@ -23,6 +23,7 @@ bool RenderViewHostFactory::is_real_render_view_host_ = false;
 
 // static
 RenderViewHost* RenderViewHostFactory::Create(
+    FrameTree* frame_tree,
     SiteInstance* instance,
     RenderViewHostDelegate* delegate,
     RenderWidgetHostDelegate* widget_delegate,
@@ -32,15 +33,15 @@ RenderViewHost* RenderViewHostFactory::Create(
   int32_t routing_id = instance->GetProcess()->GetNextRoutingID();
   int32_t widget_routing_id = instance->GetProcess()->GetNextRoutingID();
   if (factory_) {
-    return factory_->CreateRenderViewHost(instance, delegate, widget_delegate,
-                                          routing_id, main_frame_routing_id,
-                                          widget_routing_id, swapped_out);
+    return factory_->CreateRenderViewHost(
+        frame_tree, instance, delegate, widget_delegate, routing_id,
+        main_frame_routing_id, widget_routing_id, swapped_out);
   }
 
   RenderViewHostImpl* view_host = new RenderViewHostImpl(
-      instance,
+      frame_tree, instance,
       RenderWidgetHostFactory::Create(
-          widget_delegate,
+          frame_tree, widget_delegate,
           static_cast<SiteInstanceImpl*>(instance)->GetAgentSchedulingGroup(),
           widget_routing_id,
           /*hidden=*/true, renderer_initiated_creation),

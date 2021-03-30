@@ -26,6 +26,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.BuildConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -918,7 +919,7 @@ public class UnownedUserDataKeyTest {
 
     private void assertAsserts(Runnable runnable) {
         // When DCHECK is off, asserts are stripped.
-        if (!BuildConfig.DCHECK_IS_ON) return;
+        if (!BuildConfig.ENABLE_ASSERTS) return;
 
         try {
             runnable.run();

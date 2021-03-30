@@ -24,11 +24,6 @@
         "port_name": "mac-mac10.13",
         "specifiers": ["Mac10.13", "Release"]
     },
-    "Mac10.13 Tests (dbg)": {
-        "master": "chromium.mac",
-        "port_name": "mac-mac10.13",
-        "specifiers": ["Mac10.13", "Debug"]
-    },
     "Mac10.14 Tests": {
         "master": "chromium.mac",
         "port_name": "mac-mac10.14",
@@ -38,6 +33,11 @@
         "master": "chromium.mac",
         "port_name": "mac-mac10.15",
         "specifiers": ["Mac10.15", "Release"]
+    },
+    "Mac10.15 Tests (dbg)": {
+        "master": "chromium.mac",
+        "port_name": "mac-mac10.15",
+        "specifiers": ["Mac10.15", "Debug"]
     },
     "Mac11.0 Tests": {
         "master": "chromium.fyi",
@@ -158,6 +158,13 @@
         "specifiers": [
             "Android", "android_weblayer", "android_webview",
             "chrome_android", "Release"],
+        "is_try_builder": true
+    },
+    "linux-blink-optional-highdpi-rel": {
+        "master": "tryserver.blink",
+        "port_name": "linux-trusty",
+        "specifiers": ["Trusty", "Release"],
+        "flag_specific": "highdpi",
         "is_try_builder": true
     }
 }

@@ -7,6 +7,7 @@
 #include <atomic>
 
 #include "base/bind.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -16,6 +17,8 @@
 #include "chrome/browser/profiles/reporting_util.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/reporting/client/report_queue.h"
+#include "components/reporting/client/report_queue_provider.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -36,16 +39,23 @@ CreateReportQueueConfigGetter(Profile* profile) {
                    ::reporting::StatusOr<std::unique_ptr<
                        ::reporting::ReportQueueConfiguration>>)> complete_cb) {
               auto dm_token = GetDMToken(profile, /*only_affiliated=*/false);
+              if (!dm_token.is_valid()) {
+                std::move(complete_cb)
+                    .Run(::reporting::Status(
+                        ::reporting::error::INVALID_ARGUMENT,
+                        "DMToken must be valid"));
+                return;
+              }
               std::move(complete_cb)
                   .Run(::reporting::ReportQueueConfiguration::Create(
-                      dm_token, ::reporting::Destination::UPLOAD_EVENTS,
+                      dm_token.value(), ::reporting::Destination::UPLOAD_EVENTS,
                       base::BindRepeating(
                           []() { return ::reporting::Status::StatusOK(); })));
             },
             profile, std::move(complete_cb));
 
-        base::PostTask(FROM_HERE, {content::BrowserThread::UI},
-                       std::move(task));
+        content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
+                                                     std::move(task));
       },
       profile);
 }
@@ -116,8 +126,7 @@ void ExtensionInstallEventLogUploader::SetBuildReportQueueConfigurationForTests(
          ReportQueueConfigResultCallback complete_cb) {
         std::move(complete_cb)
             .Run(::reporting::ReportQueueConfiguration::Create(
-                DMToken::CreateValidTokenForTesting(dm_token),
-                ::reporting::Destination::UPLOAD_EVENTS,
+                dm_token, ::reporting::Destination::UPLOAD_EVENTS,
                 base::BindRepeating(
                     []() { return ::reporting::Status::StatusOK(); })));
       },
@@ -148,8 +157,8 @@ ExtensionInstallEventLogUploader::ReportQueueBuilder::~ReportQueueBuilder() =
 void ExtensionInstallEventLogUploader::ReportQueueBuilder::OnStart() {
   auto promo_result = leader_tracker_->RequestLeaderPromotion();
   if (!promo_result.ok()) {
-    // There is already a ReportQueueBuilder building a ReportQueue - go ahead
-    // and exit.
+    // There is already a ReportQueueBuilder building a ReportQueue - go
+    // ahead and exit.
     Complete();
     return;
   }
@@ -179,7 +188,7 @@ void ExtensionInstallEventLogUploader::ReportQueueBuilder::
 void ExtensionInstallEventLogUploader::ReportQueueBuilder::BuildReportQueue(
     std::unique_ptr<::reporting::ReportQueueConfiguration>
         report_queue_config) {
-  ::reporting::ReportingClient::CreateReportQueue(
+  ::reporting::ReportQueueProvider::CreateQueue(
       std::move(report_queue_config),
       base::BindOnce(&ReportQueueBuilder::OnReportQueueResult,
                      base::Unretained(this)));
@@ -249,10 +258,10 @@ void ExtensionInstallEventLogUploader::OnSerialized(
   // If another ReportQueueBuilder starts while the previous one is running, it
   // will exit early because the first ReportQueueBuilder will acquire leader
   // role from ReportQueueBuilderLeaderTracker.
-  // If the ReportQueueBuilder fails to build a ReportQueue, it will release the
-  // leader and the next ReportQueueBuilder will acquire the leader role.
-  // If a ReportQueueBuilder sets the report_queue_ after it has been checked
-  // here, a new ReportQueueBuilder will spawn, but will be unable to set the
+  // If the ReportQueueBuilder fails to build, it will release the leader and
+  // the next ReportQueueBuilder will acquire the leader role. If a
+  // ReportQueueBuilder sets the report_queue_ after it has been checked here,
+  // a new ReportQueueBuilder will spawn, but will be unable to set the
   // report_queue_.
   if (report_queue_ == nullptr) {
     auto set_report_queue_cb = base::BindOnce(

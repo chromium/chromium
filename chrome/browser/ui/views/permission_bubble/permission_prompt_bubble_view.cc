@@ -22,6 +22,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
+#include "components/permissions/request_type.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
@@ -40,6 +41,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/widget/widget.h"
 
@@ -50,8 +52,6 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
     PermissionPromptStyle prompt_style)
     : browser_(browser),
       delegate_(delegate),
-      visible_requests_(GetVisibleRequests()),
-      name_or_origin_(GetDisplayNameOrOrigin()),
       permission_requested_time_(permission_requested_time) {
   // Note that browser_ may be null in unit tests.
   DCHECK(delegate_);
@@ -61,7 +61,7 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
   // as the default action.
   SetDefaultButton(ui::DIALOG_BUTTON_NONE);
 
-  if (ShouldShowAllowThisTimeButton()) {
+  if (GetShowAllowThisTimeButton()) {
     // Host every button in the extra_view to have full control over the width
     // of the dialog.
     SetButtons(ui::DIALOG_BUTTON_NONE);
@@ -132,10 +132,10 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 
-  for (permissions::PermissionRequest* request : visible_requests_)
-    AddPermissionRequestLine(request);
+  for (permissions::PermissionRequest* request : GetVisibleRequests())
+    AddRequestLine(request);
 
-  base::Optional<base::string16> extra_text = GetExtraText();
+  base::Optional<std::u16string> extra_text = GetExtraText();
   if (extra_text.has_value()) {
     auto* extra_text_label =
         AddChildView(std::make_unique<views::Label>(extra_text.value()));
@@ -162,40 +162,39 @@ void PermissionPromptBubbleView::Show() {
     widget->ShowInactive();
 
   SizeToContents();
+
+  DCHECK(browser_->window());
+  set_parent_window(
+      platform_util::GetViewForWindow(browser_->window()->GetNativeWindow()));
+
   UpdateAnchorPosition();
   chrome::RecordDialogCreation(chrome::DialogIdentifier::PERMISSIONS);
 }
 
-std::vector<permissions::PermissionRequest*>
-PermissionPromptBubbleView::GetVisibleRequests() {
-  std::vector<permissions::PermissionRequest*> visible_requests;
+bool PermissionPromptBubbleView::ShouldShowRequest(
+    permissions::RequestType type) const {
+  if (type == permissions::RequestType::kCameraStream) {
+    // Hide camera request if camera PTZ request is present as well.
+    auto requests = delegate_->Requests();
+    return std::find_if(requests.begin(), requests.end(), [](auto* request) {
+             return request->GetRequestType() ==
+                    permissions::RequestType::kCameraPanTiltZoom;
+           }) == requests.end();
+  }
+  return true;
+}
 
+std::vector<permissions::PermissionRequest*>
+PermissionPromptBubbleView::GetVisibleRequests() const {
+  std::vector<permissions::PermissionRequest*> visible_requests;
   for (permissions::PermissionRequest* request : delegate_->Requests()) {
-    if (ShouldShowPermissionRequest(request))
+    if (ShouldShowRequest(request->GetRequestType()))
       visible_requests.push_back(request);
   }
   return visible_requests;
 }
 
-bool PermissionPromptBubbleView::ShouldShowPermissionRequest(
-    permissions::PermissionRequest* request) {
-  if (request->GetContentSettingsType() !=
-      ContentSettingsType::MEDIASTREAM_CAMERA) {
-    return true;
-  }
-
-  // Hide camera request only if camera PTZ request is present as well.
-  for (permissions::PermissionRequest* request : delegate_->Requests()) {
-    if (request->GetContentSettingsType() ==
-        ContentSettingsType::CAMERA_PAN_TILT_ZOOM) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-void PermissionPromptBubbleView::AddPermissionRequestLine(
+void PermissionPromptBubbleView::AddRequestLine(
     permissions::PermissionRequest* request) {
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
 
@@ -208,8 +207,9 @@ void PermissionPromptBubbleView::AddPermissionRequestLine(
 
   constexpr int kPermissionIconSize = 18;
   auto* icon = line_container->AddChildView(
-      std::make_unique<views::ColorTrackingIconView>(request->GetIconId(),
-                                                     kPermissionIconSize));
+      std::make_unique<views::ColorTrackingIconView>(
+          permissions::GetIconId(request->GetRequestType()),
+          kPermissionIconSize));
   icon->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
 
   auto* label = line_container->AddChildView(
@@ -219,10 +219,7 @@ void PermissionPromptBubbleView::AddPermissionRequestLine(
 }
 
 void PermissionPromptBubbleView::UpdateAnchorPosition() {
-  DCHECK(browser_->window());
-
-  set_parent_window(
-      platform_util::GetViewForWindow(browser_->window()->GetNativeWindow()));
+  DCHECK_EQ(browser_->window()->GetNativeWindow(), parent_window());
 
   bubble_anchor_util::AnchorConfiguration configuration =
       bubble_anchor_util::GetPermissionPromptBubbleAnchorConfiguration(
@@ -252,7 +249,7 @@ void PermissionPromptBubbleView::SetPromptStyle(
 }
 
 void PermissionPromptBubbleView::AddedToWidget() {
-  if (name_or_origin_.is_origin) {
+  if (GetDisplayNameIsOrigin()) {
     // There is a risk of URL spoofing from origins that are too wide to fit in
     // the bubble; elide origins from the front to prevent this.
     GetBubbleFrameView()->SetTitleView(
@@ -264,17 +261,17 @@ bool PermissionPromptBubbleView::ShouldShowCloseButton() const {
   return true;
 }
 
-base::string16 PermissionPromptBubbleView::GetWindowTitle() const {
+std::u16string PermissionPromptBubbleView::GetWindowTitle() const {
   int message_id;
-  if (ShouldShowAllowThisTimeButton()) {
+  if (GetShowAllowThisTimeButton()) {
     message_id = IDS_PERMISSIONS_BUBBLE_PROMPT_ONE_TIME;
   } else {
     message_id = IDS_PERMISSIONS_BUBBLE_PROMPT;
   }
-  return l10n_util::GetStringFUTF16(message_id, name_or_origin_.name_or_origin);
+  return l10n_util::GetStringFUTF16(message_id, GetDisplayName());
 }
 
-base::string16 PermissionPromptBubbleView::GetAccessibleWindowTitle() const {
+std::u16string PermissionPromptBubbleView::GetAccessibleWindowTitle() const {
   // Generate one of:
   //   $origin wants to: $permission
   //   $origin wants to: $permission and $permission
@@ -287,54 +284,60 @@ base::string16 PermissionPromptBubbleView::GetAccessibleWindowTitle() const {
   // There are three separate internationalized messages used, one for each
   // format of title, to provide for accurate i18n. See https://crbug.com/434574
   // for more details.
-  DCHECK(!visible_requests_.empty());
+  auto visible_requests = GetVisibleRequests();
+  DCHECK(!visible_requests.empty());
 
-  if (visible_requests_.size() == 1) {
+  if (visible_requests.size() == 1) {
     return l10n_util::GetStringFUTF16(
         IDS_PERMISSIONS_BUBBLE_PROMPT_ACCESSIBLE_TITLE_ONE_PERM,
-        name_or_origin_.name_or_origin,
-        visible_requests_[0]->GetMessageTextFragment());
+        GetDisplayName(), visible_requests[0]->GetMessageTextFragment());
   }
 
   int template_id =
-      visible_requests_.size() == 2
+      visible_requests.size() == 2
           ? IDS_PERMISSIONS_BUBBLE_PROMPT_ACCESSIBLE_TITLE_TWO_PERMS
           : IDS_PERMISSIONS_BUBBLE_PROMPT_ACCESSIBLE_TITLE_TWO_PERMS_MORE;
   return l10n_util::GetStringFUTF16(
-      template_id, name_or_origin_.name_or_origin,
-      visible_requests_[0]->GetMessageTextFragment(),
-      visible_requests_[1]->GetMessageTextFragment());
+      template_id, GetDisplayName(),
+      visible_requests[0]->GetMessageTextFragment(),
+      visible_requests[1]->GetMessageTextFragment());
 }
 
-PermissionPromptBubbleView::DisplayNameOrOrigin
-PermissionPromptBubbleView::GetDisplayNameOrOrigin() const {
-  DCHECK(!visible_requests_.empty());
+std::u16string PermissionPromptBubbleView::GetDisplayName() const {
+  DCHECK(!delegate_->Requests().empty());
   GURL origin_url = delegate_->GetRequestingOrigin();
 
   if (origin_url.SchemeIs(extensions::kExtensionScheme)) {
-    base::string16 extension_name =
+    std::u16string extension_name =
         extensions::ui_util::GetEnabledExtensionNameForUrl(origin_url,
                                                            browser_->profile());
     if (!extension_name.empty())
-      return {extension_name, false /* is_origin */};
+      return extension_name;
   }
 
   // File URLs should be displayed as "This file".
-  if (origin_url.SchemeIsFile()) {
-    return {l10n_util::GetStringUTF16(IDS_PERMISSIONS_BUBBLE_PROMPT_THIS_FILE),
-            false /* is_origin */};
-  }
+  if (origin_url.SchemeIsFile())
+    return l10n_util::GetStringUTF16(IDS_PERMISSIONS_BUBBLE_PROMPT_THIS_FILE);
 
   // Web URLs should be displayed as the origin in the URL.
-  return {url_formatter::FormatUrlForSecurityDisplay(
-              origin_url, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC),
-          true /* is_origin */};
+  return url_formatter::FormatUrlForSecurityDisplay(
+      origin_url, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
 }
 
-base::Optional<base::string16> PermissionPromptBubbleView::GetExtraText()
+bool PermissionPromptBubbleView::GetDisplayNameIsOrigin() const {
+  DCHECK(!delegate_->Requests().empty());
+  GURL origin_url = delegate_->GetRequestingOrigin();
+  return (!origin_url.SchemeIs(extensions::kExtensionScheme) ||
+          extensions::ui_util::GetEnabledExtensionNameForUrl(
+              origin_url, browser_->profile())
+              .empty()) &&
+         !origin_url.SchemeIsFile();
+}
+
+base::Optional<std::u16string> PermissionPromptBubbleView::GetExtraText()
     const {
-  switch (visible_requests_[0]->GetContentSettingsType()) {
-    case ContentSettingsType::STORAGE_ACCESS:
+  switch (delegate_->Requests()[0]->GetRequestType()) {
+    case permissions::RequestType::kStorageAccess:
       return l10n_util::GetStringFUTF16(
           IDS_STORAGE_ACCESS_PERMISSION_EXPLANATION,
           url_formatter::FormatUrlForSecurityDisplay(
@@ -374,7 +377,7 @@ void PermissionPromptBubbleView::RecordDecision() {
       base::TimeTicks::Now() - permission_requested_time_);
 }
 
-bool PermissionPromptBubbleView::ShouldShowAllowThisTimeButton() const {
+bool PermissionPromptBubbleView::GetShowAllowThisTimeButton() const {
   if (!base::FeatureList::IsEnabled(
           permissions::features::kOneTimeGeolocationPermission)) {
     return false;
@@ -382,6 +385,11 @@ bool PermissionPromptBubbleView::ShouldShowAllowThisTimeButton() const {
   if (delegate_->Requests().size() > 1)
     return false;
   CHECK_GT(delegate_->Requests().size(), 0u);
-  return delegate_->Requests()[0]->GetContentSettingsType() ==
-         ContentSettingsType::GEOLOCATION;
+  return delegate_->Requests()[0]->GetRequestType() ==
+         permissions::RequestType::kGeolocation;
 }
+
+BEGIN_METADATA(PermissionPromptBubbleView, views::BubbleDialogDelegateView)
+ADD_READONLY_PROPERTY_METADATA(std::u16string, DisplayName)
+ADD_READONLY_PROPERTY_METADATA(bool, DisplayNameIsOrigin)
+END_METADATA

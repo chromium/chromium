@@ -34,22 +34,6 @@ Polymer({
       },
     },
 
-    /** @private */
-    isPrintManagementEnabled_: {
-      type: Boolean,
-      value: function() {
-        return loadTimeData.getBoolean('printManagementEnabled');
-      }
-    },
-
-    /** @private */
-    isScanningAppEnabled_: {
-      type: Boolean,
-      value: function() {
-        return loadTimeData.getBoolean('scanningAppEnabled');
-      }
-    },
-
     /**
      * Used by DeepLinkingBehavior to focus this page's deep links.
      * @type {!Set<!chromeos.settings.mojom.Setting>}
@@ -83,14 +67,12 @@ Polymer({
 
   /** @private */
   onOpenPrintManagement_() {
-    assert(this.isPrintManagementEnabled_);
     settings.CupsPrintersBrowserProxyImpl.getInstance()
         .openPrintManagementApp();
   },
 
   /** @private */
   onOpenScanningApp_() {
-    assert(this.isScanningAppEnabled_);
     settings.CupsPrintersBrowserProxyImpl.getInstance().openScanningApp();
     settings.recordSettingChange(chromeos.settings.mojom.Setting.kScanningApp);
   }

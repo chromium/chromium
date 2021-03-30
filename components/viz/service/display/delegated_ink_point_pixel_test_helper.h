@@ -5,13 +5,17 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_DELEGATED_INK_POINT_PIXEL_TEST_HELPER_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_DELEGATED_INK_POINT_PIXEL_TEST_HELPER_H_
 
+#include <unordered_map>
 #include <vector>
 
-#include "components/viz/common/delegated_ink_metadata.h"
+#include "ui/gfx/delegated_ink_metadata.h"
+
+namespace gfx {
+class DelegatedInkPoint;
+}  // namespace gfx
 
 namespace viz {
 
-class DelegatedInkPoint;
 class DelegatedInkPointRendererBase;
 class DirectRenderer;
 
@@ -30,29 +34,39 @@ class DelegatedInkPointPixelTestHelper {
 
   explicit DelegatedInkPointPixelTestHelper(DirectRenderer* renderer);
   void SetRendererAndCreateInkRenderer(DirectRenderer* renderer);
-  DelegatedInkPointRendererBase* GetInkRenderer();
 
   void CreateAndSendMetadata(const gfx::PointF& point,
                              float diameter,
                              SkColor color,
+                             base::TimeTicks timestamp,
                              const gfx::RectF& presentation_area);
 
   void CreateAndSendMetadataFromLastPoint();
+  void CreateAndSendMetadataFromLastPoint(int32_t pointer_id);
 
   void CreateAndSendPoint(const gfx::PointF& point, base::TimeTicks timestamp);
-  void CreateAndSendPointFromMetadata();
+  void CreateAndSendPoint(const gfx::PointF& point,
+                          base::TimeTicks timestamp,
+                          int32_t pointer_id);
+
   // Used when sending multiple points to be drawn as a single trail, so it uses
   // the most recently provided point's timestamp to determine the new one.
   void CreateAndSendPointFromLastPoint(const gfx::PointF& point);
+  void CreateAndSendPointFromLastPoint(int32_t pointer_id,
+                                       const gfx::PointF& point);
 
   gfx::Rect GetDelegatedInkDamageRect();
+  gfx::Rect GetDelegatedInkDamageRect(int32_t pointer_id);
 
-  const DelegatedInkMetadata& metadata() { return metadata_; }
+  const gfx::DelegatedInkMetadata& metadata() { return metadata_; }
 
  private:
+  void CreateInkRenderer();
+
   DirectRenderer* renderer_ = nullptr;
-  std::vector<DelegatedInkPoint> ink_points_;
-  DelegatedInkMetadata metadata_;
+  DelegatedInkPointRendererBase* ink_renderer_ = nullptr;
+  std::unordered_map<int32_t, std::vector<gfx::DelegatedInkPoint>> ink_points_;
+  gfx::DelegatedInkMetadata metadata_;
 };
 
 }  // namespace viz

@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/strings/escape.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "net/base/net_export.h"
@@ -68,7 +67,7 @@ NET_EXPORT void AppendEscapedCharForHTML(char c, std::string* output);
 
 // Escapes chars that might cause this text to be interpreted as HTML tags.
 NET_EXPORT std::string EscapeForHTML(base::StringPiece text);
-NET_EXPORT base::string16 EscapeForHTML(base::StringPiece16 text);
+NET_EXPORT std::u16string EscapeForHTML(base::StringPiece16 text);
 
 // Unescaping ------------------------------------------------------------------
 
@@ -94,10 +93,10 @@ NET_EXPORT std::string UnescapeURLComponent(base::StringPiece escaped_text,
 // Unescapes the given substring as a URL, and then tries to interpret the
 // result as being encoded as UTF-8. If the result is convertible into UTF-8, it
 // will be returned as converted. If it is not, the original escaped string will
-// be converted into a base::string16 and returned.  |adjustments| provides
+// be converted into a std::u16string and returned.  |adjustments| provides
 // information on how the original string was adjusted to get the string
 // returned.
-NET_EXPORT base::string16 UnescapeAndDecodeUTF8URLComponentWithAdjustments(
+NET_EXPORT std::u16string UnescapeAndDecodeUTF8URLComponentWithAdjustments(
     base::StringPiece text,
     UnescapeRule::Type rules,
     base::OffsetAdjuster::Adjustments* adjustments);
@@ -125,7 +124,7 @@ NET_EXPORT bool UnescapeBinaryURLComponentSafe(base::StringPiece escaped_text,
 
 // Unescapes the following ampersand character codes from |text|:
 // &lt; &gt; &amp; &quot; &#39;
-NET_EXPORT base::string16 UnescapeForHTML(base::StringPiece16 text);
+NET_EXPORT std::u16string UnescapeForHTML(base::StringPiece16 text);
 
 }  // namespace net
 

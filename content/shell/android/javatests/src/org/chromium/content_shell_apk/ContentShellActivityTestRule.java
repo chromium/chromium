@@ -110,7 +110,7 @@ public class ContentShellActivityTestRule extends BaseActivityTestRule<ContentSh
         ContentShellActivity activity = launchContentShellWithUrl(isolatedTestFileUrl);
         Assert.assertNotNull(getActivity());
         waitForActiveShellToBeDoneLoading();
-        Assert.assertEquals(isolatedTestFileUrl, getWebContents().getLastCommittedUrl());
+        Assert.assertEquals(isolatedTestFileUrl, getWebContents().getLastCommittedUrl().getSpec());
         return activity;
     }
 
@@ -250,8 +250,7 @@ public class ContentShellActivityTestRule extends BaseActivityTestRule<ContentSh
             Criteria.checkThat("Shell is null.", shell, Matchers.notNullValue());
             Criteria.checkThat("Shell is still loading.", shell.isLoading(), Matchers.is(false));
             Criteria.checkThat("Shell's URL is empty or null.",
-                    shell.getWebContents().getLastCommittedUrl(),
-                    Matchers.not(Matchers.isEmptyOrNullString()));
+                    shell.getWebContents().getLastCommittedUrl().isEmpty(), Matchers.is(false));
         }, WAIT_FOR_ACTIVE_SHELL_LOADING_TIMEOUT, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 

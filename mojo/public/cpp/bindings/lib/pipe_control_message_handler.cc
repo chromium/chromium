@@ -7,7 +7,6 @@
 #include "base/logging.h"
 #include "mojo/public/cpp/bindings/interface_id.h"
 #include "mojo/public/cpp/bindings/lib/serialization.h"
-#include "mojo/public/cpp/bindings/lib/serialization_context.h"
 #include "mojo/public/cpp/bindings/lib/validation_context.h"
 #include "mojo/public/cpp/bindings/lib/validation_util.h"
 #include "mojo/public/cpp/bindings/pipe_control_message_handler_delegate.h"
@@ -60,15 +59,13 @@ bool PipeControlMessageHandler::Validate(Message* message) {
 }
 
 bool PipeControlMessageHandler::RunOrClosePipe(Message* message) {
-  internal::SerializationContext context;
   pipe_control::internal::RunOrClosePipeMessageParams_Data* params =
       reinterpret_cast<
           pipe_control::internal::RunOrClosePipeMessageParams_Data*>(
           message->mutable_payload());
-  context.TakeHandlesFromMessage(message);
   pipe_control::RunOrClosePipeMessageParamsPtr params_ptr;
   internal::Deserialize<pipe_control::RunOrClosePipeMessageParamsDataView>(
-      params, &params_ptr, &context);
+      params, &params_ptr, message);
 
   if (params_ptr->input->is_peer_associated_endpoint_closed_event()) {
     const auto& event =

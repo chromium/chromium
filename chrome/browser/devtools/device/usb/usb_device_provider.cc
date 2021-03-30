@@ -99,15 +99,15 @@ void UsbDeviceProvider::QueryDevices(SerialsCallback callback) {
 }
 
 void UsbDeviceProvider::QueryDeviceInfo(const std::string& serial,
-                                        const DeviceInfoCallback& callback) {
+                                        DeviceInfoCallback callback) {
   auto it = device_map_.find(serial);
   if (it == device_map_.end() || !it->second->is_connected()) {
     AndroidDeviceManager::DeviceInfo offline_info;
-    callback.Run(offline_info);
+    std::move(callback).Run(offline_info);
     return;
   }
   AndroidDeviceManager::QueryDeviceInfo(base::BindOnce(&RunCommand, it->second),
-                                        callback);
+                                        std::move(callback));
 }
 
 void UsbDeviceProvider::OpenSocket(const std::string& serial,

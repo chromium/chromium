@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chooser_controller/mock_chooser_controller_view.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -21,6 +22,7 @@ class FontAccessChooserControllerTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     mock_font_chooser_view_ = std::make_unique<MockChooserControllerView>();
+    content::ResetFontEnumerationCache();
   }
 
  protected:
@@ -31,14 +33,14 @@ class FontAccessChooserControllerTest : public ChromeRenderViewHostTestHarness {
 TEST_F(FontAccessChooserControllerTest, MultiSelectTest) {
   base::RunLoop run_loop;
   FontAccessChooserController controller(
-      main_rfh(), base::BindLambdaForTesting(
-                      [&](blink::mojom::FontEnumerationStatus status,
-                          std::vector<blink::mojom::FontMetadataPtr> items) {
-                        EXPECT_EQ(status,
-                                  blink::mojom::FontEnumerationStatus::kOk);
-                        EXPECT_EQ(items.size(), 2u);
-                        run_loop.Quit();
-                      }));
+      main_rfh(), /*selection=*/std::vector<std::string>(),
+      base::BindLambdaForTesting(
+          [&](blink::mojom::FontEnumerationStatus status,
+              std::vector<blink::mojom::FontMetadataPtr> items) {
+            EXPECT_EQ(status, blink::mojom::FontEnumerationStatus::kOk);
+            EXPECT_EQ(items.size(), 2u);
+            run_loop.Quit();
+          }));
 
   base::RunLoop readiness_loop;
   controller.SetReadyCallbackForTesting(readiness_loop.QuitClosure());
@@ -55,6 +57,7 @@ TEST_F(FontAccessChooserControllerTest, CancelTest) {
   base::RunLoop run_loop;
   FontAccessChooserController controller(
       main_rfh(),
+      /*selection=*/std::vector<std::string>(),
       base::BindLambdaForTesting(
           [&](blink::mojom::FontEnumerationStatus status,
               std::vector<blink::mojom::FontMetadataPtr> items) {
@@ -76,6 +79,7 @@ TEST_F(FontAccessChooserControllerTest, CloseTest) {
   base::RunLoop run_loop;
   FontAccessChooserController controller(
       main_rfh(),
+      /*selection=*/std::vector<std::string>(),
       base::BindLambdaForTesting(
           [&](blink::mojom::FontEnumerationStatus status,
               std::vector<blink::mojom::FontMetadataPtr> items) {
@@ -98,6 +102,7 @@ TEST_F(FontAccessChooserControllerTest, DestructorTest) {
   std::unique_ptr<FontAccessChooserController> controller =
       std::make_unique<FontAccessChooserController>(
           main_rfh(),
+          /*selection=*/std::vector<std::string>(),
           base::BindLambdaForTesting(
               [&](blink::mojom::FontEnumerationStatus status,
                   std::vector<blink::mojom::FontMetadataPtr> items) {

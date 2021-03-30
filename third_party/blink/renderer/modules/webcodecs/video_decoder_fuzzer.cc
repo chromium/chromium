@@ -70,36 +70,38 @@ DEFINE_TEXT_PROTO_FUZZER(
     Persistent<VideoDecoder> video_decoder = VideoDecoder::Create(
         script_state, video_decoder_init, IGNORE_EXCEPTION_FOR_TESTING);
 
-    for (auto& invocation : proto.invocations()) {
-      switch (invocation.Api_case()) {
-        case wc_fuzzer::VideoDecoderApiInvocation::kConfigure:
-          video_decoder->configure(
-              MakeVideoDecoderConfig(invocation.configure()),
-              IGNORE_EXCEPTION_FOR_TESTING);
-          break;
-        case wc_fuzzer::VideoDecoderApiInvocation::kDecode:
-          video_decoder->decode(
-              MakeEncodedVideoChunk(invocation.decode().chunk()),
-              IGNORE_EXCEPTION_FOR_TESTING);
-          break;
-        case wc_fuzzer::VideoDecoderApiInvocation::kFlush: {
-          // TODO(https://crbug.com/1119253): Fuzz whether to await resolution
-          // of the flush promise.
-          video_decoder->flush(IGNORE_EXCEPTION_FOR_TESTING);
-          break;
+    if (video_decoder) {
+      for (auto& invocation : proto.invocations()) {
+        switch (invocation.Api_case()) {
+          case wc_fuzzer::VideoDecoderApiInvocation::kConfigure:
+            video_decoder->configure(
+                MakeVideoDecoderConfig(invocation.configure()),
+                IGNORE_EXCEPTION_FOR_TESTING);
+            break;
+          case wc_fuzzer::VideoDecoderApiInvocation::kDecode:
+            video_decoder->decode(
+                MakeEncodedVideoChunk(invocation.decode().chunk()),
+                IGNORE_EXCEPTION_FOR_TESTING);
+            break;
+          case wc_fuzzer::VideoDecoderApiInvocation::kFlush: {
+            // TODO(https://crbug.com/1119253): Fuzz whether to await resolution
+            // of the flush promise.
+            video_decoder->flush(IGNORE_EXCEPTION_FOR_TESTING);
+            break;
+          }
+          case wc_fuzzer::VideoDecoderApiInvocation::kReset:
+            video_decoder->reset(IGNORE_EXCEPTION_FOR_TESTING);
+            break;
+          case wc_fuzzer::VideoDecoderApiInvocation::kClose:
+            video_decoder->close(IGNORE_EXCEPTION_FOR_TESTING);
+            break;
+          case wc_fuzzer::VideoDecoderApiInvocation::API_NOT_SET:
+            break;
         }
-        case wc_fuzzer::VideoDecoderApiInvocation::kReset:
-          video_decoder->reset(IGNORE_EXCEPTION_FOR_TESTING);
-          break;
-        case wc_fuzzer::VideoDecoderApiInvocation::kClose:
-          video_decoder->close(IGNORE_EXCEPTION_FOR_TESTING);
-          break;
-        case wc_fuzzer::VideoDecoderApiInvocation::API_NOT_SET:
-          break;
-      }
 
-      // Give other tasks a chance to run (e.g. calling our output callback).
-      base::RunLoop().RunUntilIdle();
+        // Give other tasks a chance to run (e.g. calling our output callback).
+        base::RunLoop().RunUntilIdle();
+      }
     }
   }
 

@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import functools
 import multiprocessing
+import sys
 
 from .package_initializer import package_initializer
 
@@ -28,6 +30,10 @@ class TaskQueue(object):
         else:
             self._single_process = False
             self._pool_size = multiprocessing.cpu_count()
+            if sys.platform == 'win32':
+                # TODO(crbug.com/1190269) - we can't use more than 56
+                # cores on Windows or Python3 may hang.
+                self._pool_size = min(self._pool_size, 56)
             self._pool = multiprocessing.Pool(self._pool_size,
                                               package_initializer().init)
         self._requested_tasks = []  # List of (func, args, kwargs)
@@ -77,7 +83,7 @@ class TaskQueue(object):
         def report_worker_task_progress():
             if not report_progress:
                 return
-            done_count = reduce(
+            done_count = functools.reduce(
                 lambda count, worker_task: count + bool(worker_task.ready()),
                 self._worker_tasks, 0)
             report_progress(len(self._worker_tasks), done_count)

@@ -16,52 +16,45 @@ constexpr int kHoldingSpaceBubbleContainerChildSpacing = 8;
 constexpr int kHoldingSpaceBubbleWidth = 360;
 constexpr gfx::Insets kHoldingSpaceChildBubblePadding(16);
 constexpr int kHoldingSpaceChildBubbleChildSpacing = 16;
-constexpr gfx::Insets kHoldingSpaceChipPadding(8);
-constexpr int kHoldingSpaceChipChildSpacing = 8;
-constexpr int kHoldingSpaceChipHeight = 40;
 constexpr int kHoldingSpaceChipIconSize = 24;
-constexpr int kHoldingSpaceChipWidth = 160;
-constexpr int kHoldingSpaceChipLabelMaskGradientWidth = 16;
-constexpr int kHoldingSpaceChipsPerRow = 2;
-constexpr int kHoldingSpaceColumnSpacing = 8;
-constexpr int kHoldingSpaceColumnWidth = 160;
 constexpr int kHoldingSpaceContextMenuMargin = 8;
 constexpr int kHoldingSpaceCornerRadius = 8;
 constexpr int kHoldingSpaceDownloadsChevronIconSize = 20;
 constexpr int kHoldingSpaceDownloadsHeaderSpacing = 16;
-constexpr int kHoldingSpaceFocusInsets = -2;
+constexpr int kHoldingSpaceFocusCornerRadius = 11;
+constexpr int kHoldingSpaceFocusInsets = -4;
 constexpr int kHoldingSpaceIconSize = 20;
-constexpr int kHoldingSpaceRowSpacing = 8;
-constexpr gfx::Insets kHoldingSpaceScreenCapturePadding(8);
-constexpr gfx::Size kHoldingSpaceScreenCapturePinButtonSize(24, 24);
-constexpr gfx::Size kHoldingSpaceScreenCapturePlayIconSize(32, 32);
-constexpr int kHoldingSpaceScreenCaptureSpacing = 8;
 constexpr gfx::Size kHoldingSpaceScreenCaptureSize(104, 80);
-constexpr gfx::Insets kHoldingSpaceScreenCapturesContainerPadding(8, 0);
 constexpr int kHoldingSpaceSectionChildSpacing = 16;
-constexpr float kHoldingSpaceSelectedOverlayOpacity = 0.24f;
+constexpr float kHoldingSpaceSelectedOverlayOpacity = 0.3f;
 constexpr int kHoldingSpaceTrayIconMaxVisiblePreviews = 3;
+constexpr int kHoldingSpaceTrayIconDefaultPreviewSize = 32;
+constexpr int kHoldingSpaceTrayIconSmallPreviewSize = 28;
 constexpr int kHoldingSpaceTrayIconSize = 20;
 
 // Context menu commands.
-enum HoldingSpaceCommandId {
+enum class HoldingSpaceCommandId {
   kCopyImageToClipboard,
   kHidePreviews,
+  kRemoveItem,
   kPinItem,
   kShowInFolder,
   kShowPreviews,
   kUnpinItem,
-  kMaxValue = kUnpinItem
 };
 
 // View IDs.
-constexpr int kHoldingSpaceFilesAppChipId = 1;
-constexpr int kHoldingSpaceItemPinButtonId = 2;
-constexpr int kHoldingSpacePinnedFilesBubbleId = 3;
-constexpr int kHoldingSpaceRecentFilesBubbleId = 4;
-constexpr int kHoldingSpaceScreenCapturePlayIconId = 5;
-constexpr int kHoldingSpaceTrayDefaultIconId = 6;
-constexpr int kHoldingSpaceTrayPreviewsIconId = 7;
+constexpr int kHoldingSpaceDownloadsSectionHeaderId = 1;
+constexpr int kHoldingSpaceFilesAppChipId = 2;
+constexpr int kHoldingSpaceItemCheckmarkId = 3;
+constexpr int kHoldingSpaceItemImageId = 4;
+constexpr int kHoldingSpaceItemPinButtonId = 5;
+constexpr int kHoldingSpacePinnedFilesBubbleId = 6;
+constexpr int kHoldingSpaceRecentFilesBubbleId = 7;
+constexpr int kHoldingSpaceScreenCapturePlayIconId = 8;
+constexpr int kHoldingSpaceTrayDefaultIconId = 9;
+constexpr int kHoldingSpaceTrayDropTargetOverlayId = 10;
+constexpr int kHoldingSpaceTrayPreviewsIconId = 11;
 
 // The maximum allowed age for files restored into the holding space model.
 // Note that this is not enforced for pinned items.

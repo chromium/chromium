@@ -15,6 +15,7 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace views {
 class Button;
@@ -34,6 +35,8 @@ class MediaNotificationItem;
 class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewModernImpl
     : public MediaNotificationView {
  public:
+  METADATA_HEADER(MediaNotificationViewModernImpl);
+
   // The name of the histogram used when recording whether the artwork was
   // present.
   static const char kArtworkHistogramName[];
@@ -108,7 +111,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewModernImpl
   // button's tooltip.
   void CreateMediaButton(views::View* parent_view,
                          media_session::mojom::MediaSessionAction action,
-                         const base::string16& accessible_name);
+                         const std::u16string& accessible_name);
 
   void UpdateActionButtonsVisibility();
 
@@ -132,7 +135,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewModernImpl
 
   // Stores the text to be read by screen readers describing the notification.
   // Contains the title, artist and album separated by hyphens.
-  base::string16 accessible_name_;
+  std::u16string accessible_name_;
 
   MediaNotificationBackground* background_;
 

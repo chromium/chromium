@@ -74,7 +74,7 @@ public class TestChildProcessService extends Service {
         }
 
         @Override
-        public void preloadNativeLibrary(Context hostContext) {
+        public void preloadNativeLibrary(String packageName) {
             LibraryLoader.getInstance().preloadNow();
         }
 

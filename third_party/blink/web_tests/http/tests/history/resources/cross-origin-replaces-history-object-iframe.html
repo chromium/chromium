@@ -9,16 +9,16 @@ window.onmessage = function(evt)
         setHistoryLength();
         return;
     } else
-        alert("Unknown message.");
+        console.log("Unknown message.");
 }
 
 function setHistoryLength()
 {
-    alert("Attempting to clear parent window's history object:");
+    console.log("Attempting to clear parent window's history object:");
     try {
         parent.window.history = "";
     } catch (e) {
-        alert("PASS: access to parent.window.history threw an exception.");
+        console.log("PASS: access to parent.window.history threw an exception.");
     }
     parent.window.postMessage("done", "*");
 }

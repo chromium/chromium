@@ -6,12 +6,15 @@
 #define CHROME_BROWSER_UI_VIEWS_STORAGE_STORAGE_PRESSURE_BUBBLE_VIEW_H_
 
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "url/origin.h"
 
 class Browser;
 
 class StoragePressureBubbleView : public views::BubbleDialogDelegateView {
  public:
+  METADATA_HEADER(StoragePressureBubbleView);
+
   static void ShowBubble(const url::Origin origin);
 
  private:

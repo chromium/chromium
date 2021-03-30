@@ -7,7 +7,16 @@
  *  {{path}}
 {%-  endfor %}
  */
+{% macro render_variables_for_mode(mode) -%}
+{%- for model_name, color in colors[mode].items() %}
+  {{model_name | to_css_var_name}}-rgb: {{color | css_color_rgb}};
+  {{model_name | to_css_var_name}}: {{css_color_from_rgb_var(model_name, color)}};
+{% endfor %}
 
+{%- for name, value in opacities[mode].items() %}
+  {{name | to_css_var_name}}: {{value | css_opacity}};
+{%  endfor -%}
+{%- endmacro %}
 {#
 The :not(body) adds extra selector specificity so that these colors 'win'
 against paper-styles/color.html.
@@ -15,12 +24,17 @@ TODO(https://crbug.com/1062154): Remove once deprecated colors are removed from
 Chrome OS pages.
 -#}
 html:not(body) {
-{%- for model_name, color in light_colors.items() %}
-  {{model_name | to_css_var_name}}-rgb: {{color | css_color_rgb}};
-  {{model_name | to_css_var_name}}: {{css_color_from_rgb_var(model_name, color.a)}};
-{%  endfor %}
+{{- render_variables_for_mode(Modes.DEFAULT) -}}
+
+
 }
-{%- if dark_colors %}
+
+{%- if colors[Modes.DARK] and dark_mode_selector is not none %}
+
+{{dark_mode_selector}} {
+{{- render_variables_for_mode(Modes.DARK) -}}
+}
+{%- elif colors[Modes.DARK] %}
 
 @media (prefers-color-scheme: dark) {
 {#-
@@ -29,11 +43,8 @@ against paper-styles/color.html.
 TODO(https://crbug.com/1062154): Remove once deprecated colors are removed from
 Chrome OS pages.
 #}
-  html:not(body) {
-{%- for model_name, color in dark_colors.items() %}
-    {{model_name | to_css_var_name}}-rgb: {{color | css_color_rgb}};
-    {{model_name | to_css_var_name}}: {{css_color_from_rgb_var(model_name, color.a)}};
-{%  endfor %}
-  }
+html:not(body) {
+{{- render_variables_for_mode(Modes.DARK) -}}
+}
 }
 {%- endif %}

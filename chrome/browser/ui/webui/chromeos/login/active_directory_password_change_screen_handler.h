@@ -8,13 +8,12 @@
 #include <string>
 
 #include "base/macros.h"
-#include "chrome/browser/chromeos/login/screens/active_directory_password_change_screen.h"
+#include "chrome/browser/ash/login/screens/active_directory_password_change_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
 namespace chromeos {
 
 class ActiveDirectoryPasswordChangeScreen;
-class CoreOobeView;
 
 // Interface for dependency injection between
 // ActiveDirectoryPasswordChangeScreen and its WebUI representation.
@@ -45,8 +44,7 @@ class ActiveDirectoryPasswordChangeScreenHandler
   using TView = ActiveDirectoryPasswordChangeView;
 
   ActiveDirectoryPasswordChangeScreenHandler(
-      JSCallsContainer* js_calls_container,
-      CoreOobeView* core_oobe_view);
+      JSCallsContainer* js_calls_container);
   ~ActiveDirectoryPasswordChangeScreenHandler() override;
 
   // BaseScreenHandler implementation:
@@ -69,9 +67,6 @@ class ActiveDirectoryPasswordChangeScreenHandler
                       const std::string& new_password);
 
   ActiveDirectoryPasswordChangeScreen* screen_ = nullptr;
-
-  // Non-owned. Used to display signin error.
-  CoreOobeView* core_oobe_view_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ActiveDirectoryPasswordChangeScreenHandler);
 };

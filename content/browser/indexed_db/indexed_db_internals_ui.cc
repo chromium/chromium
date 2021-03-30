@@ -38,17 +38,7 @@ namespace content {
 
 IndexedDBInternalsUI::IndexedDBInternalsUI(WebUI* web_ui)
     : WebUIController(web_ui) {
-  web_ui->RegisterMessageCallback(
-      "getAllOrigins", base::BindRepeating(&IndexedDBInternalsUI::GetAllOrigins,
-                                           base::Unretained(this)));
-
-  web_ui->RegisterMessageCallback(
-      "downloadOriginData",
-      base::BindRepeating(&IndexedDBInternalsUI::DownloadOriginData,
-                          base::Unretained(this)));
-  web_ui->RegisterMessageCallback(
-      "forceClose", base::BindRepeating(&IndexedDBInternalsUI::ForceCloseOrigin,
-                                        base::Unretained(this)));
+  web_ui->AddMessageHandler(std::make_unique<IndexedDBInternalsHandler>());
   WebUIDataSource* source =
       WebUIDataSource::Create(kChromeUIIndexedDBInternalsHost);
   source->OverrideContentSecurityPolicy(
@@ -69,42 +59,66 @@ IndexedDBInternalsUI::IndexedDBInternalsUI(WebUI* web_ui)
   WebUIDataSource::Add(browser_context, source);
 }
 
-IndexedDBInternalsUI::~IndexedDBInternalsUI() {}
+IndexedDBInternalsUI::~IndexedDBInternalsUI() = default;
 
-void IndexedDBInternalsUI::GetAllOrigins(const base::ListValue* args) {
+IndexedDBInternalsHandler::IndexedDBInternalsHandler() = default;
+
+IndexedDBInternalsHandler::~IndexedDBInternalsHandler() = default;
+
+void IndexedDBInternalsHandler::RegisterMessages() {
+  web_ui()->RegisterMessageCallback(
+      "getAllOrigins",
+      base::BindRepeating(&IndexedDBInternalsHandler::GetAllOrigins,
+                          base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "downloadOriginData",
+      base::BindRepeating(&IndexedDBInternalsHandler::DownloadOriginData,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "forceClose",
+      base::BindRepeating(&IndexedDBInternalsHandler::ForceCloseOrigin,
+                          base::Unretained(this)));
+}
+
+void IndexedDBInternalsHandler::OnJavascriptDisallowed() {
+  weak_factory_.InvalidateWeakPtrs();
+}
+
+void IndexedDBInternalsHandler::GetAllOrigins(const base::ListValue* args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  AllowJavascript();
   BrowserContext* browser_context =
       web_ui()->GetWebContents()->GetBrowserContext();
 
   BrowserContext::ForEachStoragePartition(
       browser_context,
       base::BindRepeating(
-          [](base::WeakPtr<IndexedDBInternalsUI> ui,
+          [](base::WeakPtr<IndexedDBInternalsHandler> handler,
              StoragePartition* partition) {
-            if (!ui)
+            if (!handler)
               return;
             auto& control = partition->GetIndexedDBControl();
             control.GetAllOriginsDetails(base::BindOnce(
-                [](base::WeakPtr<IndexedDBInternalsUI> ui,
+                [](base::WeakPtr<IndexedDBInternalsHandler> handler,
                    base::FilePath partition_path, bool incognito,
                    base::Value info_list) {
-                  if (!ui)
+                  if (!handler)
                     return;
 
-                  ui->OnOriginsReady(
+                  handler->OnOriginsReady(
                       info_list, incognito ? base::FilePath() : partition_path);
                 },
-                ui, partition->GetPath()));
+                handler, partition->GetPath()));
           },
           weak_factory_.GetWeakPtr()));
 }
 
-void IndexedDBInternalsUI::OnOriginsReady(const base::Value& origins,
-                                          const base::FilePath& path) {
+void IndexedDBInternalsHandler::OnOriginsReady(const base::Value& origins,
+                                               const base::FilePath& path) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  web_ui()->CallJavascriptFunctionUnsafe("indexeddb.onOriginsReady", origins,
-                                         base::Value(path.value()));
+  FireWebUIListener("origins-ready", origins, base::Value(path.AsUTF8Unsafe()));
 }
 
 static void FindControl(const base::FilePath& partition_path,
@@ -117,18 +131,25 @@ static void FindControl(const base::FilePath& partition_path,
   }
 }
 
-bool IndexedDBInternalsUI::GetOriginData(
+bool IndexedDBInternalsHandler::GetOriginData(
     const base::ListValue* args,
+    std::string* callback_id,
     base::FilePath* partition_path,
     Origin* origin,
     storage::mojom::IndexedDBControl** control) {
-  base::FilePath::StringType path_string;
-  if (!args->GetString(0, &path_string))
+  std::string callback_string;
+  if (!args->GetString(0, &callback_string)) {
     return false;
-  *partition_path = base::FilePath(path_string);
+  }
+  *callback_id = callback_string;
+
+  std::string path_string;
+  if (!args->GetString(1, &path_string))
+    return false;
+  *partition_path = base::FilePath::FromUTF8Unsafe(path_string);
 
   std::string url_string;
-  if (!args->GetString(1, &url_string))
+  if (!args->GetString(2, &url_string))
     return false;
 
   *origin = Origin::Create(GURL(url_string));
@@ -136,7 +157,7 @@ bool IndexedDBInternalsUI::GetOriginData(
   return GetOriginControl(*partition_path, *origin, control);
 }
 
-bool IndexedDBInternalsUI::GetOriginControl(
+bool IndexedDBInternalsHandler::GetOriginControl(
     const base::FilePath& path,
     const Origin& origin,
     storage::mojom::IndexedDBControl** control) {
@@ -156,90 +177,94 @@ bool IndexedDBInternalsUI::GetOriginControl(
   return true;
 }
 
-void IndexedDBInternalsUI::DownloadOriginData(const base::ListValue* args) {
+void IndexedDBInternalsHandler::DownloadOriginData(
+    const base::ListValue* args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  std::string callback_id;
   base::FilePath partition_path;
   Origin origin;
   storage::mojom::IndexedDBControl* control;
-  if (!GetOriginData(args, &partition_path, &origin, &control))
+  if (!GetOriginData(args, &callback_id, &partition_path, &origin, &control))
     return;
 
+  AllowJavascript();
   DCHECK(control);
   control->ForceClose(
       origin, storage::mojom::ForceCloseReason::FORCE_CLOSE_INTERNALS_PAGE,
       base::BindOnce(
-          [](base::WeakPtr<IndexedDBInternalsUI> ui, Origin origin,
-             base::FilePath partition_path,
-             storage::mojom::IndexedDBControl* control) {
+          [](base::WeakPtr<IndexedDBInternalsHandler> handler, Origin origin,
+             storage::mojom::IndexedDBControl* control,
+             const std::string& callback_id) {
             // Is the connection count always zero after closing,
             // such that this can be simplified?
             control->GetConnectionCount(
                 origin,
                 base::BindOnce(
-                    [](base::WeakPtr<IndexedDBInternalsUI> ui, Origin origin,
-                       base::FilePath partition_path,
-                       storage::mojom::IndexedDBControl* control,
+                    [](base::WeakPtr<IndexedDBInternalsHandler> handler,
+                       Origin origin, storage::mojom::IndexedDBControl* control,
+                       const std::string& callback_id,
                        uint64_t connection_count) {
-                      if (!ui)
+                      if (!handler)
                         return;
 
                       control->DownloadOriginData(
                           origin,
                           base::BindOnce(
-                              &IndexedDBInternalsUI::OnDownloadDataReady, ui,
-                              partition_path, origin, connection_count));
+                              &IndexedDBInternalsHandler::OnDownloadDataReady,
+                              handler, callback_id, connection_count));
                     },
-                    ui, origin, partition_path, control));
+                    handler, origin, control, callback_id));
           },
-          weak_factory_.GetWeakPtr(), origin, partition_path, control));
+          weak_factory_.GetWeakPtr(), origin, control, callback_id));
 }
 
-void IndexedDBInternalsUI::ForceCloseOrigin(const base::ListValue* args) {
+void IndexedDBInternalsHandler::ForceCloseOrigin(const base::ListValue* args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  std::string callback_id;
   base::FilePath partition_path;
   Origin origin;
   storage::mojom::IndexedDBControl* control;
-  if (!GetOriginData(args, &partition_path, &origin, &control))
+  if (!GetOriginData(args, &callback_id, &partition_path, &origin, &control))
     return;
 
+  AllowJavascript();
   control->ForceClose(
       origin, storage::mojom::ForceCloseReason::FORCE_CLOSE_INTERNALS_PAGE,
       base::BindOnce(
-          [](base::WeakPtr<IndexedDBInternalsUI> ui,
-             base::FilePath partition_path, Origin origin,
-             storage::mojom::IndexedDBControl* control) {
-            if (!ui)
+          [](base::WeakPtr<IndexedDBInternalsHandler> handler, Origin origin,
+             storage::mojom::IndexedDBControl* control,
+             const std::string& callback_id) {
+            if (!handler)
               return;
             control->GetConnectionCount(
-                origin, base::BindOnce(&IndexedDBInternalsUI::OnForcedClose, ui,
-                                       partition_path, origin));
+                origin,
+                base::BindOnce(&IndexedDBInternalsHandler::OnForcedClose,
+                               handler, callback_id));
           },
-          weak_factory_.GetWeakPtr(), partition_path, origin, control));
+          weak_factory_.GetWeakPtr(), origin, control, callback_id));
 }
 
-void IndexedDBInternalsUI::OnForcedClose(const base::FilePath& partition_path,
-                                         const Origin& origin,
-                                         uint64_t connection_count) {
-  web_ui()->CallJavascriptFunctionUnsafe(
-      "indexeddb.onForcedClose", base::Value(partition_path.value()),
-      base::Value(origin.Serialize()),
-      base::Value(static_cast<double>(connection_count)));
+void IndexedDBInternalsHandler::OnForcedClose(const std::string& callback_id,
+                                              uint64_t connection_count) {
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            base::Value(static_cast<double>(connection_count)));
 }
 
-void IndexedDBInternalsUI::OnDownloadDataReady(
-    const base::FilePath& partition_path,
-    const Origin& origin,
+void IndexedDBInternalsHandler::OnDownloadDataReady(
+    const std::string& callback_id,
     uint64_t connection_count,
     bool success,
     const base::FilePath& temp_path,
     const base::FilePath& zip_path) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!success)
+  if (!success) {
+    RejectJavascriptCallback(base::Value(callback_id), base::Value());
     return;
+  }
 
-  const GURL url = GURL(FILE_PATH_LITERAL("file://") + zip_path.value());
+  const GURL url = GURL("file://" + zip_path.AsUTF8Unsafe());
   WebContents* web_contents = web_ui()->GetWebContents();
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("indexed_db_internals_handler", R"(
@@ -275,8 +300,8 @@ void IndexedDBInternalsUI::OnDownloadDataReady(
   // to start, then attach a download::DownloadItem::Observer to observe the
   // state change to the finished state.
   dl_params->set_callback(base::BindOnce(
-      &IndexedDBInternalsUI::OnDownloadStarted, base::Unretained(this),
-      partition_path, origin, temp_path, connection_count));
+      &IndexedDBInternalsHandler::OnDownloadStarted, base::Unretained(this),
+      temp_path, callback_id, connection_count));
 
   BrowserContext* context = web_contents->GetBrowserContext();
   BrowserContext::GetDownloadManager(context)->DownloadUrl(
@@ -326,24 +351,22 @@ FileDeleter::~FileDeleter() {
                      std::move(temp_dir_)));
 }
 
-void IndexedDBInternalsUI::OnDownloadStarted(
-    const base::FilePath& partition_path,
-    const Origin& origin,
+void IndexedDBInternalsHandler::OnDownloadStarted(
     const base::FilePath& temp_path,
+    const std::string& callback_id,
     size_t connection_count,
     download::DownloadItem* item,
     download::DownloadInterruptReason interrupt_reason) {
   if (interrupt_reason != download::DOWNLOAD_INTERRUPT_REASON_NONE) {
     LOG(ERROR) << "Error downloading database dump: "
                << DownloadInterruptReasonToString(interrupt_reason);
+    RejectJavascriptCallback(base::Value(callback_id), base::Value());
     return;
   }
 
   item->AddObserver(new FileDeleter(temp_path));
-  web_ui()->CallJavascriptFunctionUnsafe(
-      "indexeddb.onOriginDownloadReady", base::Value(partition_path.value()),
-      base::Value(origin.Serialize()),
-      base::Value(static_cast<double>(connection_count)));
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            base::Value(static_cast<double>(connection_count)));
 }
 
 }  // namespace content

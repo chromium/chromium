@@ -55,7 +55,7 @@ class OmniboxViewIOS : public OmniboxView,
       const AutocompleteMatch& match,
       WindowOpenDisposition disposition,
       const GURL& alternate_nav_url,
-      const base::string16& pasted_text,
+      const std::u16string& pasted_text,
       size_t selected_line,
       base::TimeTicks match_selection_timestamp,
       base::Optional<GURL> optional_gurl);
@@ -64,16 +64,16 @@ class OmniboxViewIOS : public OmniboxView,
       const AutocompleteMatch& match,
       WindowOpenDisposition disposition,
       const GURL& alternate_nav_url,
-      const base::string16& pasted_text,
+      const std::u16string& pasted_text,
       size_t selected_line,
       base::TimeTicks match_selection_timestamp,
-      base::Optional<base::string16> optional_text);
+      base::Optional<std::u16string> optional_text);
 
   void OnReceiveClipboardImageForOpenMatch(
       const AutocompleteMatch& match,
       WindowOpenDisposition disposition,
       const GURL& alternate_nav_url,
-      const base::string16& pasted_text,
+      const std::u16string& pasted_text,
       size_t selected_line,
       base::TimeTicks match_selection_timestamp,
       base::Optional<gfx::Image> optional_image);
@@ -81,7 +81,7 @@ class OmniboxViewIOS : public OmniboxView,
   void OnReceiveImageMatchForOpenMatch(
       WindowOpenDisposition disposition,
       const GURL& alternate_nav_url,
-      const base::string16& pasted_text,
+      const std::u16string& pasted_text,
       size_t selected_line,
       base::TimeTicks match_selection_timestamp,
       base::Optional<AutocompleteMatch> optional_match);
@@ -90,22 +90,22 @@ class OmniboxViewIOS : public OmniboxView,
   void OpenMatch(const AutocompleteMatch& match,
                  WindowOpenDisposition disposition,
                  const GURL& alternate_nav_url,
-                 const base::string16& pasted_text,
+                 const std::u16string& pasted_text,
                  size_t selected_line,
                  base::TimeTicks match_selection_timestamp) override;
-  base::string16 GetText() const override;
-  void SetWindowTextAndCaretPos(const base::string16& text,
+  std::u16string GetText() const override;
+  void SetWindowTextAndCaretPos(const std::u16string& text,
                                 size_t caret_pos,
                                 bool update_popup,
                                 bool notify_text_changed) override;
   void SetCaretPos(size_t caret_pos) override;
   void RevertAll() override;
   void UpdatePopup() override;
-  void OnTemporaryTextMaybeChanged(const base::string16& display_text,
+  void OnTemporaryTextMaybeChanged(const std::u16string& display_text,
                                    const AutocompleteMatch& match,
                                    bool save_original_selection,
                                    bool notify_text_changed) override;
-  void OnInlineAutocompleteTextMaybeChanged(const base::string16& display_text,
+  void OnInlineAutocompleteTextMaybeChanged(const std::u16string& display_text,
                                             std::vector<gfx::Range> selections,
                                             size_t user_text_length) override;
   void OnBeforePossibleChange() override;
@@ -115,17 +115,17 @@ class OmniboxViewIOS : public OmniboxView,
 
   // OmniboxView stubs.
   void Update() override {}
-  void SetAdditionalText(const base::string16& text) override {}
+  void SetAdditionalText(const std::u16string& text) override {}
   void EnterKeywordModeForDefaultSearchProvider() override {}
   bool IsSelectAll() const override;
-  void GetSelectionBounds(base::string16::size_type* start,
-                          base::string16::size_type* end) const override;
+  void GetSelectionBounds(std::u16string::size_type* start,
+                          std::u16string::size_type* end) const override;
   size_t GetAllSelectionsLength() const override;
   void SelectAll(bool reversed) override {}
   void SetFocus(bool is_user_initiated) override {}
   void ApplyCaretVisibility() override {}
   void OnInlineAutocompleteTextCleared() override {}
-  void OnRevertTemporaryText(const base::string16& display_text,
+  void OnRevertTemporaryText(const std::u16string& display_text,
                              const AutocompleteMatch& match) override {}
   gfx::NativeView GetNativeView() const override;
   gfx::NativeView GetRelativeWindowForPopup() const override;
@@ -152,11 +152,11 @@ class OmniboxViewIOS : public OmniboxView,
       GURL favicon_url) override;
   void OnResultsChanged(const AutocompleteResult& result) override;
   void OnPopupDidScroll() override;
-  void OnSelectedMatchForAppending(const base::string16& str) override;
+  void OnSelectedMatchForAppending(const std::u16string& str) override;
   void OnSelectedMatchForOpening(AutocompleteMatch match,
                                  WindowOpenDisposition disposition,
                                  const GURL& alternate_nav_url,
-                                 const base::string16& pasted_text,
+                                 const std::u16string& pasted_text,
                                  size_t index) override;
 
   ChromeBrowserState* browser_state() { return browser_state_; }
@@ -192,7 +192,7 @@ class OmniboxViewIOS : public OmniboxView,
 
   // Calculates text attributes according to |display_text| and
   // returns them in an autoreleased object.
-  NSAttributedString* ApplyTextAttributes(const base::string16& text);
+  NSAttributedString* ApplyTextAttributes(const std::u16string& text);
 
   // Removes the query refinement chip from the omnibox.
   void RemoveQueryRefinementChip();

@@ -15,6 +15,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "ui/base/page_transition_types.h"
+#include "url/origin.h"
 
 namespace network {
 struct ResourceRequest;
@@ -29,14 +30,19 @@ class BLINK_PLATFORM_EXPORT WebURLRequestExtraData
   WebURLRequestExtraData(const WebURLRequestExtraData&) = delete;
   WebURLRequestExtraData& operator=(const WebURLRequestExtraData&) = delete;
 
-  void set_render_frame_id(int render_frame_id) {
-    render_frame_id_ = render_frame_id;
-  }
   void set_is_main_frame(bool is_main_frame) { is_main_frame_ = is_main_frame; }
   ui::PageTransition transition_type() const { return transition_type_; }
   void set_transition_type(ui::PageTransition transition_type) {
     transition_type_ = transition_type;
   }
+
+  // Set the top origin. Only applicable for frames.
+  void set_top_frame_origin(const url::Origin& origin) {
+    top_frame_origin_ = origin;
+  }
+
+  // The origin of the topmost frame. Only applicable for frames.
+  const url::Origin& top_frame_origin() { return top_frame_origin_; }
 
   // The request is for a prefetch-only client (i.e. running NoStatePrefetch)
   // and should use LOAD_PREFETCH network flags.
@@ -88,7 +94,6 @@ class BLINK_PLATFORM_EXPORT WebURLRequestExtraData
   virtual ~WebURLRequestExtraData();
 
  private:
-  base::Optional<int> render_frame_id_;
   bool is_main_frame_ = false;
   ui::PageTransition transition_type_ = ui::PAGE_TRANSITION_LINK;
   bool is_for_no_state_prefetch_ = false;
@@ -97,6 +102,9 @@ class BLINK_PLATFORM_EXPORT WebURLRequestExtraData
   WebVector<std::unique_ptr<URLLoaderThrottle>> url_loader_throttles_;
   scoped_refptr<WebFrameRequestBlocker> frame_request_blocker_;
   bool allow_cross_origin_auth_prompt_ = false;
+
+  // The origin of the top most frame. Only applicable for frames.
+  url::Origin top_frame_origin_;
 };
 
 }  // namespace blink

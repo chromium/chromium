@@ -80,7 +80,7 @@ Canvas log:
             }
             paint : {
                 color : "#FF000000"
-                filterLevel : "Medium"
+                filterLevel : "Low"
                 flags : "AntiAlias"
                 strokeCap : "Butt"
                 strokeJoin : "Miter"

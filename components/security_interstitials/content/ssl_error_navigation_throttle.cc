@@ -18,11 +18,17 @@ SSLErrorNavigationThrottle::SSLErrorNavigationThrottle(
     std::unique_ptr<SSLCertReporter> ssl_cert_reporter,
     SSLErrorNavigationThrottle::HandleSSLErrorCallback
         handle_ssl_error_callback,
-    IsInHostedAppCallback is_in_hosted_app_callback)
+    IsInHostedAppCallback is_in_hosted_app_callback,
+    ShouldIgnoreInterstitialBecauseNavigationDefaultedToHttpsCallback
+        should_ignore_interstitial_because_navigation_defaulted_to_https_callback)
     : content::NavigationThrottle(navigation_handle),
       ssl_cert_reporter_(std::move(ssl_cert_reporter)),
       handle_ssl_error_callback_(std::move(handle_ssl_error_callback)),
-      is_in_hosted_app_callback_(std::move(is_in_hosted_app_callback)) {}
+      is_in_hosted_app_callback_(std::move(is_in_hosted_app_callback)),
+      should_ignore_interstitial_because_navigation_defaulted_to_https_callback_(
+          std::move(
+              should_ignore_interstitial_because_navigation_defaulted_to_https_callback)) {
+}
 
 SSLErrorNavigationThrottle::~SSLErrorNavigationThrottle() {}
 
@@ -42,6 +48,16 @@ SSLErrorNavigationThrottle::WillFailRequest() {
   // Do not set special error page HTML for subframes; those are handled as
   // normal network errors.
   if (!handle->IsInMainFrame() || handle->GetWebContents()->IsPortal()) {
+    return content::NavigationThrottle::PROCEED;
+  }
+
+  // If the scheme of this navigation was upgraded to HTTPS (because the user
+  // didn't type a scheme), don't show an error.
+  // TypedNavigationUpgradeThrottle will handle the error and fall back to HTTP
+  // as needed.
+  if (std::move(
+          should_ignore_interstitial_because_navigation_defaulted_to_https_callback_)
+          .Run(handle)) {
     return content::NavigationThrottle::PROCEED;
   }
 

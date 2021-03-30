@@ -18,8 +18,9 @@
 #endif
 
 #if defined(OS_WIN)
-#include <base/strings/sys_string_conversions.h>
 #include <windows.h>
+
+#include "base/strings/sys_string_conversions.h"
 #endif
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)

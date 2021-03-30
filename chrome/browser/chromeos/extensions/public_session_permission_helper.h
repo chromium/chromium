@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/callback_forward.h"
+#include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/api_permission_set.h"
 
@@ -24,9 +25,11 @@ class Extension;
 
 namespace permission_helper {
 
-using RequestResolvedCallback = base::Callback<void(const PermissionIDSet&)>;
-using PromptFactory = base::Callback<std::unique_ptr<ExtensionInstallPrompt>(
-    content::WebContents*)>;
+using RequestResolvedCallback =
+    base::OnceCallback<void(const PermissionIDSet&)>;
+using PromptFactory =
+    base::OnceCallback<std::unique_ptr<ExtensionInstallPrompt>(
+        content::WebContents*)>;
 
 // In Public Sessions, extensions (and apps) are force-installed by admin policy
 // so the user does not get a chance to review the permissions for these
@@ -56,12 +59,12 @@ using PromptFactory = base::Callback<std::unique_ptr<ExtensionInstallPrompt>(
 bool HandlePermissionRequest(const Extension& extension,
                              const PermissionIDSet& requested_permissions,
                              content::WebContents* web_contents,
-                             const RequestResolvedCallback& callback,
-                             const PromptFactory& prompt_factory);
+                             RequestResolvedCallback callback,
+                             PromptFactory prompt_factory);
 
 // Returns true if user granted this permission to the extension.
 bool PermissionAllowed(const Extension* extension,
-                       APIPermission::ID permission);
+                       mojom::APIPermissionID permission);
 
 // Used to completely reset state in between tests.
 void ResetPermissionsForTesting();

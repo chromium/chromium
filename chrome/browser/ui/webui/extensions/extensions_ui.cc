@@ -48,7 +48,7 @@
 #include "ui/base/webui/web_ui_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos_factory.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ui/webui/extensions/chromeos/kiosk_apps_handler.h"
 #endif
 
@@ -241,6 +241,7 @@ content::WebUIDataSource* CreateMdExtensionsSource(Profile* profile,
     {"subpageArrowRoleDescription", IDS_EXTENSIONS_SUBPAGE_BUTTON},
     {"toolbarDevMode", IDS_EXTENSIONS_DEVELOPER_MODE},
     {"toolbarLoadUnpacked", IDS_EXTENSIONS_TOOLBAR_LOAD_UNPACKED},
+    {"toolbarLoadUnpackedDone", IDS_EXTENSIONS_TOOLBAR_LOAD_UNPACKED_DONE},
     {"toolbarPack", IDS_EXTENSIONS_TOOLBAR_PACK},
     {"toolbarUpdateNow", IDS_EXTENSIONS_TOOLBAR_UPDATE_NOW},
     {"toolbarUpdateNowTooltip", IDS_EXTENSIONS_TOOLBAR_UPDATE_NOW_TOOLTIP},
@@ -269,7 +270,7 @@ content::WebUIDataSource* CreateMdExtensionsSource(Profile* profile,
      IDS_EXTENSIONS_KIOSK_DISABLE_BAILOUT_SHORTCUT_WARNING_TITLE},
 #endif
   };
-  AddLocalizedStringsBulk(source, kLocalizedStrings);
+  source->AddLocalizedStrings(kLocalizedStrings);
 
   source->AddString("errorLinesNotShownSingular",
                     l10n_util::GetPluralStringFUTF16(
@@ -366,8 +367,7 @@ ExtensionsUI::ExtensionsUI(content::WebUI* web_ui)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   auto kiosk_app_handler = std::make_unique<chromeos::KioskAppsHandler>(
-      chromeos::OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(
-          profile));
+      ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(profile));
   web_ui->AddMessageHandler(std::move(kiosk_app_handler));
 #endif
 

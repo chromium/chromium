@@ -233,6 +233,10 @@ bool BrowserXRRuntimeImpl::SupportsFeature(
 
 #if BUILDFLAG(ENABLE_OPENXR)
     case device::mojom::XRDeviceId::OPENXR_DEVICE_ID:
+      // Only support hand input if the feature flag is enabled.
+      if (feature == device::mojom::XRSessionFeature::HAND_INPUT) {
+        return base::FeatureList::IsEnabled(features::kWebXrHandInput);
+      }
       return base::Contains(kOpenXRFeatures, feature);
 #endif
   }
@@ -426,6 +430,8 @@ void BrowserXRRuntimeImpl::EnsureInstalled(
     int render_process_id,
     int render_frame_id,
     base::OnceCallback<void(bool)> install_callback) {
+  DVLOG(2) << __func__;
+
   // If there's no install helper, then we can assume no install is needed.
   if (!install_helper_) {
     std::move(install_callback).Run(true);

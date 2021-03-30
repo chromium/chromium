@@ -10,7 +10,6 @@
 
 #include "ash/ash_export.h"
 #include "base/callback.h"
-#include "base/strings/string16.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/public/mojom/bluetooth_system.mojom-forward.h"
@@ -111,6 +110,15 @@ class ASH_EXPORT ShellDelegate {
   virtual media_session::MediaSessionService* GetMediaSessionService();
 
   virtual void OpenKeyboardShortcutHelpPage() const {}
+
+  // Returns if window browser sessions are restoring.
+  virtual bool IsSessionRestoreInProgress() const = 0;
+
+  // Ui Dev Tools control.
+  virtual bool IsUiDevToolsStarted() const;
+  virtual void StartUiDevTools() {}
+  virtual void StopUiDevTools() {}
+  virtual int GetUiDevToolsPort() const;
 };
 
 }  // namespace ash

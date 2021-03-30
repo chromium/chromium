@@ -8,6 +8,7 @@ import("//build/config/ui.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
+import("./tast_control.gni")
 
 assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
 
@@ -25,81 +26,79 @@ declare_args() {
 }
 
 component("chromeos") {
-  configs += [
-    ":chromeos_implementation",
-    "//build/config/linux/nss:system_nss_no_ssl_config",
-  ]
-  if (is_chromeos_device) {
-    configs += [ "//build/config/compiler:use_orderfile_for_hugepage" ]
-  }
-  public_deps = [
-    "//chromeos/constants",
-    "//components/policy/proto",
-  ]
-  deps = [
-    ":chromeos_export",
-    "//base",
-    "//base:i18n",
-    "//chromeos/dbus",
-    "//chromeos/dbus/constants",
-    "//google_apis",
-    "//services/network/public/cpp:cpp",
-    "//third_party/protobuf:protobuf_lite",
-  ]
-  sources = [
-    "hugepage_text/hugepage_text.cc",
-    "hugepage_text/hugepage_text.h",
-    "policy/weekly_time/time_utils.cc",
-    "policy/weekly_time/time_utils.h",
-    "policy/weekly_time/weekly_time.cc",
-    "policy/weekly_time/weekly_time.h",
-    "policy/weekly_time/weekly_time_interval.cc",
-    "policy/weekly_time/weekly_time_interval.h",
-    "printing/cups_printer_status.cc",
-    "printing/cups_printer_status.h",
-    "printing/epson_driver_matching.cc",
-    "printing/epson_driver_matching.h",
-    "printing/ppd_cache.cc",
-    "printing/ppd_cache.h",
-    "printing/ppd_line_reader.cc",
-    "printing/ppd_line_reader.h",
-    "printing/ppd_provider.h",
-    "printing/printer_configuration.cc",
-    "printing/printer_configuration.h",
-    "printing/printer_translator.cc",
-    "printing/printer_translator.h",
-    "printing/uri.cc",
-    "printing/uri.h",
-    "printing/uri_impl.cc",
-    "printing/uri_impl.h",
-    "printing/usb_printer_id.cc",
-    "printing/usb_printer_id.h",
-    "process_proxy/process_output_watcher.cc",
-    "process_proxy/process_output_watcher.h",
-    "process_proxy/process_proxy.cc",
-    "process_proxy/process_proxy.h",
-    "process_proxy/process_proxy_registry.cc",
-    "process_proxy/process_proxy_registry.h",
-    "scanning/scanner.cc",
-    "scanning/scanner.h",
-  ]
-  if (current_cpu == "arm" || current_cpu == "x86") {
-    defines = [ "BINDER_IPC_32BIT" ]
-  }
+  public_deps = []
+  deps = []
+  sources = []
 
-  if (is_printing_ppd_provider_v3) {
-    sources += [
-      "printing/ppd_metadata_manager.cc",
-      "printing/ppd_metadata_manager.h",
-      "printing/ppd_metadata_parser.cc",
-      "printing/ppd_metadata_parser.h",
-      "printing/ppd_provider_v3.cc",
-      "printing/ppd_provider_v3.h",
-      "printing/printer_config_cache.cc",
-      "printing/printer_config_cache.h",
+  if (is_chromeos_ash) {
+    configs += [
+      ":chromeos_implementation",
+      "//build/config/linux/nss:system_nss_no_ssl_config",
     ]
-  } else {
-    sources += [ "printing/ppd_provider.cc" ]
+    if (is_chromeos_device) {
+      configs += [ "//build/config/compiler:use_orderfile_for_hugepage" ]
+    }
+
+    public_deps += [ "//components/policy/proto" ]
+    deps += [
+      ":chromeos_export",
+      "//base",
+      "//base:i18n",
+      "//chromeos/dbus",
+      "//chromeos/dbus/constants",
+      "//google_apis",
+      "//services/network/public/cpp:cpp",
+      "//third_party/protobuf:protobuf_lite",
+    ]
+    sources += [
+      "hugepage_text/hugepage_text.cc",
+      "hugepage_text/hugepage_text.h",
+      "policy/weekly_time/time_utils.cc",
+      "policy/weekly_time/time_utils.h",
+      "policy/weekly_time/weekly_time.cc",
+      "policy/weekly_time/weekly_time.h",
+      "policy/weekly_time/weekly_time_interval.cc",
+      "policy/weekly_time/weekly_time_interval.h",
+      "printing/cups_printer_status.cc",
+      "printing/cups_printer_status.h",
+      "printing/epson_driver_matching.cc",
+      "printing/epson_driver_matching.h",
+      "printing/ppd_cache.cc",
+      "printing/ppd_cache.h",
+      "printing/ppd_line_reader.cc",
+      "printing/ppd_line_reader.h",
+      "printing/ppd_provider.h",
+      "printing/printer_configuration.cc",
+      "printing/printer_configuration.h",
+      "printing/printer_translator.cc",
+      "printing/printer_translator.h",
+      "printing/uri.cc",
+      "printing/uri.h",
+      "printing/uri_impl.cc",
+      "printing/uri_impl.h",
+      "printing/usb_printer_id.cc",
+      "printing/usb_printer_id.h",
+      "scanning/scanner.cc",
+      "scanning/scanner.h",
+    ]
+    if (current_cpu == "arm" || current_cpu == "x86") {
+      defines = [ "BINDER_IPC_32BIT" ]
+    }
+
+    if (is_printing_ppd_provider_v3) {
+      sources += [
+        "printing/ppd_metadata_manager.cc",
+        "printing/ppd_metadata_manager.h",
+        "printing/ppd_metadata_parser.cc",
+        "printing/ppd_metadata_parser.h",
+        "printing/ppd_provider_v3.cc",
+        "printing/ppd_provider_v3.h",
+        "printing/printer_config_cache.cc",
+        "printing/printer_config_cache.h",
+      ]
+    } else {
+      sources += [ "printing/ppd_provider.cc" ]
+    }
   }
 }
 
@@ -125,20 +124,24 @@ source_set("test_support_source_set") {
     ":test_utils",
   ]
   deps = [
-    "//chromeos/attestation:test_support",
-    "//chromeos/cryptohome:test_support",
-    "//chromeos/dbus:test_support",
-    "//chromeos/disks:test_support",
-    "//chromeos/login/auth:test_support",
-    "//chromeos/login/login_state:test_support",
-    "//chromeos/network:test_support",
-    "//chromeos/tpm:test_support",
-    "//google_apis",
-    "//net:test_support",
-    "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
+  if (is_chromeos_ash) {
+    deps += [
+      "//chromeos/attestation:test_support",
+      "//chromeos/cryptohome:test_support",
+      "//chromeos/dbus:test_support",
+      "//chromeos/disks:test_support",
+      "//chromeos/login/auth:test_support",
+      "//chromeos/login/login_state:test_support",
+      "//chromeos/network:test_support",
+      "//chromeos/tpm:test_support",
+      "//google_apis",
+      "//net:test_support",
+      "//services/network:test_support",
+    ]
+  }
 }
 
 source_set("test_utils") {
@@ -156,80 +159,87 @@ test("chromeos_unittests") {
   ]
 
   deps = [
-    ":test_support",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
-    "//chromeos/attestation:unit_tests",
-    "//chromeos/audio:unit_tests",
-    "//chromeos/cryptohome:unit_tests",
-    "//chromeos/dbus:test_support",
-    "//chromeos/dbus:unit_tests",
-    "//chromeos/dbus/services:unit_tests",
-    "//chromeos/disks:unit_tests",
-    "//chromeos/geolocation:unit_tests",
-    "//chromeos/login/auth:unit_tests",
-    "//chromeos/login/login_state:unit_tests",
-    "//chromeos/login/session:unit_tests",
-    "//chromeos/memory:unit_tests",
-    "//chromeos/memory/userspace_swap:unit_tests",
-    "//chromeos/network:test_support",
-    "//chromeos/network:unit_tests",
-    "//chromeos/services:unit_tests",
-    "//chromeos/settings:unit_tests",
-    "//chromeos/startup:unit_tests",
-    "//chromeos/system:unit_tests",
-    "//chromeos/timezone:unit_tests",
-    "//chromeos/tpm:unit_tests",
-    "//components/onc",
-    "//components/policy:generated",
-    "//components/policy/proto",
-    "//components/prefs:test_support",
-    "//components/proxy_config",
-    "//crypto",
-    "//crypto:platform",
-    "//dbus:test_support",
-    "//google_apis",
     "//mojo/core/embedder",
-    "//net",
-    "//net:test_support",
-    "//services/network:test_support",
-    "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/icu",
-    "//url",
-  ]
-  sources = [
-    "policy/weekly_time/time_utils_unittest.cc",
-    "policy/weekly_time/weekly_time_interval_unittest.cc",
-    "policy/weekly_time/weekly_time_unittest.cc",
-    "printing/cups_printer_status_unittest.cc",
-    "printing/epson_driver_matching_unittest.cc",
-    "printing/ppd_cache_unittest.cc",
-    "printing/ppd_line_reader_unittest.cc",
-    "printing/printer_configuration_unittest.cc",
-    "printing/printer_translator_unittest.cc",
-    "printing/uri_unittest.cc",
-    "printing/uri_unittest.h",
-    "printing/uri_unittest_consistency.cc",
-    "printing/usb_printer_id_unittest.cc",
-    "process_proxy/process_output_watcher_unittest.cc",
-    "process_proxy/process_proxy_unittest.cc",
-    "test/run_all_unittests.cc",
   ]
 
-  if (is_printing_ppd_provider_v3) {
-    sources += [
-      "printing/fake_printer_config_cache.cc",
-      "printing/fake_printer_config_cache.h",
-      "printing/ppd_metadata_manager_unittest.cc",
-      "printing/ppd_metadata_matchers.h",
-      "printing/ppd_metadata_parser_unittest.cc",
-      "printing/ppd_provider_v3_unittest.cc",
-      "printing/printer_config_cache_unittest.cc",
+  sources = [ "test/run_all_unittests.cc" ]
+
+  # Tests that common to Ash and Lacros.
+  deps += [ "//chromeos/system:unit_tests" ]
+
+  if (is_chromeos_ash) {
+    deps += [
+      ":test_support",
+      "//chromeos/attestation:unit_tests",
+      "//chromeos/crosapi/cpp:unit_tests",
+      "//chromeos/cryptohome:unit_tests",
+      "//chromeos/dbus:test_support",
+      "//chromeos/dbus:unit_tests",
+      "//chromeos/dbus/services:unit_tests",
+      "//chromeos/disks:unit_tests",
+      "//chromeos/geolocation:unit_tests",
+      "//chromeos/login/auth:unit_tests",
+      "//chromeos/login/login_state:unit_tests",
+      "//chromeos/login/session:unit_tests",
+      "//chromeos/memory:unit_tests",
+      "//chromeos/memory/userspace_swap:unit_tests",
+      "//chromeos/network:test_support",
+      "//chromeos/network:unit_tests",
+      "//chromeos/process_proxy:unit_tests",
+      "//chromeos/services:unit_tests",
+      "//chromeos/settings:unit_tests",
+      "//chromeos/startup:unit_tests",
+      "//chromeos/timezone:unit_tests",
+      "//chromeos/tpm:unit_tests",
+      "//components/onc",
+      "//components/policy:generated",
+      "//components/policy/proto",
+      "//components/prefs:test_support",
+      "//components/proxy_config",
+      "//crypto",
+      "//crypto:platform",
+      "//dbus:test_support",
+      "//google_apis",
+      "//net",
+      "//net:test_support",
+      "//services/network:test_support",
+      "//services/network/public/cpp",
+      "//third_party/icu",
+      "//url",
     ]
-  } else {
-    sources += [ "printing/ppd_provider_unittest.cc" ]
+    sources += [
+      "policy/weekly_time/time_utils_unittest.cc",
+      "policy/weekly_time/weekly_time_interval_unittest.cc",
+      "policy/weekly_time/weekly_time_unittest.cc",
+      "printing/cups_printer_status_unittest.cc",
+      "printing/epson_driver_matching_unittest.cc",
+      "printing/ppd_cache_unittest.cc",
+      "printing/ppd_line_reader_unittest.cc",
+      "printing/printer_configuration_unittest.cc",
+      "printing/printer_translator_unittest.cc",
+      "printing/uri_unittest.cc",
+      "printing/uri_unittest.h",
+      "printing/uri_unittest_consistency.cc",
+      "printing/usb_printer_id_unittest.cc",
+    ]
+
+    if (is_printing_ppd_provider_v3) {
+      sources += [
+        "printing/fake_printer_config_cache.cc",
+        "printing/fake_printer_config_cache.h",
+        "printing/ppd_metadata_manager_unittest.cc",
+        "printing/ppd_metadata_matchers.h",
+        "printing/ppd_metadata_parser_unittest.cc",
+        "printing/ppd_provider_v3_unittest.cc",
+        "printing/printer_config_cache_unittest.cc",
+      ]
+    } else {
+      sources += [ "printing/ppd_provider_unittest.cc" ]
+    }
   }
 
   data = [ "test/data/" ]
@@ -239,7 +249,7 @@ test("chromeos_unittests") {
 # linux-chromeos). See the following for reference:
 # https://chromium.googlesource.com/chromium/src/+/master/docs/chromeos_build_instructions.md
 # https://chromium.googlesource.com/chromiumos/docs/+/master/simple_chrome_workflow.md
-if (is_chromeos_device) {
+if (is_chromeos_ash && is_chromeos_device) {
   # This builds a tool that prepares a DUT or VM for testing, which can be
   # utilized by wrapping a host-side script test.
   generate_runner_script("cros_test_wrapper") {
@@ -252,7 +262,6 @@ if (is_chromeos_device) {
 
   tast_test("chrome_login_tast_tests") {
     tast_tests = [
-      "ui.ChromeLogin",
       "ui.ChromeCrashLoggedIn",
       "ui.ChromeCrashNotLoggedIn",
     ]
@@ -267,37 +276,10 @@ if (is_chromeos_device) {
   # Tast test sources live in the Chromium OS repository.
   # To diagnose tast failures or disable tests, see go/tast-failures
   tast_test("chrome_all_tast_tests") {
-    # To disable a specific test, add it the following list and cite a bug.
-    tast_disabled_tests = [
-      # crbug.com/1162346
-      "ui.WindowControl",
-
-      # crbug.com/1115622
-      "ui.ChromeLoginGAIA",
-
-      # crbug.com/1099695
-      "platform.Drivefs",
-
-      # crbug.com/1131496
-      "apps.LaunchHelpApp.clamshell_oobe_stable",
-      "apps.LaunchHelpApp.tablet_oobe_stable",
-
-      # crbug.com/1148036
-      "ui.ExistingUserLogin",
-      "ui.SigninProfileExtension",
-
-      # crbug.com/1154794
-      "policy.DefaultGeolocationSetting",
-
-      # crbug.com/1115622
-      "inputs.VirtualKeyboardOOBE",
-
-      # crbug.com/1156006
-      "filemanager.DragDrop",
-
-      # crbug.com/1158051
-      "policy.AllowDinosaurEasterEgg",
-    ]
+    # To disable a specific test, add it to the
+    # tast_disabled_tests_from_chrome_all list in "tast_control.gni" and cite
+    # a bug.
+    tast_disabled_tests = tast_disabled_tests_from_chrome_all
   }
 
   tast_test("chrome_all_tast_tests_informational") {
@@ -323,13 +305,15 @@ if (is_chromeos_device) {
   }
 }
 
-fuzzer_test("ppd_line_reader_fuzzer") {
-  sources = [ "printing/ppd_line_reader_fuzzer.cc" ]
-  deps = [ ":chromeos" ]
-}
+if (is_chromeos_ash) {
+  fuzzer_test("ppd_line_reader_fuzzer") {
+    sources = [ "printing/ppd_line_reader_fuzzer.cc" ]
+    deps = [ ":chromeos" ]
+  }
 
-fuzzer_test("uri_fuzzer") {
-  sources = [ "printing/uri_fuzzer.cc" ]
-  seed_corpus = "printing/uri_fuzzer_seed_corpus"
-  deps = [ ":chromeos" ]
+  fuzzer_test("uri_fuzzer") {
+    sources = [ "printing/uri_fuzzer.cc" ]
+    seed_corpus = "printing/uri_fuzzer_seed_corpus"
+    deps = [ ":chromeos" ]
+  }
 }

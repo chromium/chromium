@@ -259,7 +259,7 @@ ExtensionDownloader::~ExtensionDownloader() = default;
 bool ExtensionDownloader::AddPendingExtension(
     const std::string& id,
     const GURL& update_url,
-    Manifest::Location install_location,
+    mojom::ManifestLocation install_location,
     bool is_corrupt_reinstall,
     int request_id,
     ManifestFetchData::FetchPriority fetch_priority) {
@@ -275,7 +275,7 @@ bool ExtensionDownloader::AddPendingExtension(
 bool ExtensionDownloader::AddPendingExtensionWithVersion(
     const std::string& id,
     const GURL& update_url,
-    Manifest::Location install_location,
+    mojom::ManifestLocation install_location,
     bool is_corrupt_reinstall,
     int request_id,
     ManifestFetchData::FetchPriority fetch_priority,
@@ -339,7 +339,7 @@ bool ExtensionDownloader::AddExtensionData(
     const std::string& id,
     const base::Version& version,
     Manifest::Type extension_type,
-    Manifest::Location extension_location,
+    mojom::ManifestLocation extension_location,
     const GURL& extension_update_url,
     const ExtraParams& extra,
     int request_id,
@@ -415,7 +415,7 @@ bool ExtensionDownloader::AddExtensionData(
   // Find or create a ManifestFetchData to add this extension to.
   bool added = false;
   bool is_new_extension_force_installed =
-      extension_location == Manifest::Location::EXTERNAL_POLICY_DOWNLOAD;
+      extension_location == mojom::ManifestLocation::kExternalPolicyDownload;
   FetchDataGroupKey key(request_id, update_url,
                         is_new_extension_force_installed);
   auto existing_iter = fetches_preparing_.find(key);
@@ -600,6 +600,8 @@ void ExtensionDownloader::CreateManifestLoader() {
     // Non-webstore sources may require HTTP auth.
     resource_request->credentials_mode =
         network::mojom::CredentialsMode::kInclude;
+    resource_request->site_for_cookies =
+        net::SiteForCookies::FromUrl(active_request->full_url());
   }
 
   manifest_loader_ = network::SimpleURLLoader::Create(
@@ -1146,9 +1148,9 @@ void ExtensionDownloader::NotifyDelegateDownloadFinished(
   crx_info.expected_version = version;
   delegate_->OnExtensionDownloadFinished(
       crx_info, file_ownership_passed, url, ping_results_[id], request_ids,
-      from_cache ? base::BindRepeating(&ExtensionDownloader::CacheInstallDone,
-                                       weak_ptr_factory_.GetWeakPtr(),
-                                       base::Passed(&fetch_data))
+      from_cache ? base::BindOnce(&ExtensionDownloader::CacheInstallDone,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  std::move(fetch_data))
                  : ExtensionDownloaderDelegate::InstallCallback());
   if (!from_cache)
     ping_results_.erase(id);
@@ -1178,6 +1180,9 @@ void ExtensionDownloader::CreateExtensionLoader() {
   if (fetch->credentials != ExtensionFetch::CREDENTIALS_COOKIES || !is_secure) {
     extension_loader_resource_request_->credentials_mode =
         network::mojom::CredentialsMode::kOmit;
+  } else {
+    extension_loader_resource_request_->site_for_cookies =
+        net::SiteForCookies::FromUrl(fetch->url);
   }
 
   if (fetch->credentials == ExtensionFetch::CREDENTIALS_OAUTH2_TOKEN &&
@@ -1420,8 +1425,8 @@ bool ExtensionDownloader::IterateFetchCredentialsAfterFailure(
         signin::ScopeSet webstore_scopes;
         webstore_scopes.insert(kWebstoreOAuth2Scope);
         identity_manager_->RemoveAccessTokenFromCache(
-            identity_manager_->GetPrimaryAccountId(), webstore_scopes,
-            access_token_);
+            identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync),
+            webstore_scopes, access_token_);
         access_token_.clear();
         return true;
       }

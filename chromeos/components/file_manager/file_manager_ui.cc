@@ -9,6 +9,7 @@
 #include "chromeos/components/file_manager/file_manager_page_handler.h"
 #include "chromeos/components/file_manager/url_constants.h"
 #include "chromeos/grit/chromeos_file_manager_resources.h"
+#include "chromeos/grit/chromeos_file_manager_resources_map.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -21,16 +22,16 @@ namespace chromeos {
 namespace file_manager {
 
 void AddFilesAppResources(content::WebUIDataSource* source,
-                          const GritResourceMap* entries,
+                          const webui::ResourcePath* entries,
                           size_t size) {
   for (size_t i = 0; i < size; ++i) {
-    std::string path(entries[i].name);
+    std::string path(entries[i].path);
     // Only load resources for Files app.
     if (base::StartsWith(path, "file_manager/")) {
       // Files app UI has all paths relative to //ui/file_manager/file_manager/
       // so we remove the leading file_manager/ to match the existing paths.
       base::ReplaceFirstSubstringAfterOffset(&path, 0, "file_manager/", "");
-      source->AddResourcePath(path, entries[i].value);
+      source->AddResourcePath(path, entries[i].id);
     }
   }
 }
@@ -49,20 +50,10 @@ content::WebUIDataSource* FileManagerUI::CreateTrustedAppDataSource() {
 
   // Setup chrome://file-manager main and default page.
   source->AddResourcePath("", IDR_FILE_MANAGER_SWA_MAIN_HTML);
-  source->SetDefaultResource(IDR_FILE_MANAGER_SWA_MAIN_HTML);
 
   // Add chrome://file-manager content.
-  source->AddResourcePath("main.js", IDR_FILE_MANAGER_SWA_MAIN_JS);
-  source->AddResourcePath("file_manager_private_fakes.js",
-                          IDR_FILE_MANAGER_SWA_FILE_MANAGER_PRIVATE_FAKES_JS);
-  source->AddResourcePath("file_manager_fakes.js",
-                          IDR_FILE_MANAGER_SWA_FILE_MANAGER_FAKES_JS);
-  source->AddResourcePath("file_manager.mojom-lite.js",
-                          IDR_FILE_MANAGER_SWA_MOJO_LITE_JS);
-  source->AddResourcePath("browser_proxy.js",
-                          IDR_FILE_MANAGER_SWA_BROWSER_PROXY_JS);
-  source->AddResourcePath("script_loader.js",
-                          IDR_FILE_MANAGER_SWA_SCRIPT_LOADER_JS);
+  source->AddResourcePaths(base::make_span(kChromeosFileManagerResources,
+                                           kChromeosFileManagerResourcesSize));
 
   AddFilesAppResources(source, kFileManagerResources,
                        kFileManagerResourcesSize);
@@ -77,6 +68,7 @@ content::WebUIDataSource* FileManagerUI::CreateTrustedAppDataSource() {
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj "
+      "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp "
       "chrome://resources "
       "'self' ;");
 

@@ -64,8 +64,6 @@ base::LazyInstance<base::AtomicFlag>::Leaky g_startup_complete_flag;
 base::LazyInstance<base::circular_deque<AfterStartupTask*>>::Leaky
     g_after_startup_tasks;
 
-bool g_schedule_tasks_with_delay = true;
-
 bool IsBrowserStartupComplete() {
   // Be sure to initialize the LazyInstance on the main thread since the flag
   // may only be set on it's initializing thread.
@@ -81,18 +79,11 @@ void RunTask(std::unique_ptr<AfterStartupTask> queued_task) {
 }
 
 void ScheduleTask(std::unique_ptr<AfterStartupTask> queued_task) {
-  // Spread their execution over a brief time.
-  constexpr int kMinDelaySec = 0;
-  constexpr int kMaxDelaySec = 10;
   scoped_refptr<base::SequencedTaskRunner> target_runner =
       queued_task->task_runner;
   base::Location from_here = queued_task->from_here;
-  int delay_in_seconds = g_schedule_tasks_with_delay
-                             ? base::RandInt(kMinDelaySec, kMaxDelaySec)
-                             : 0;
-  target_runner->PostDelayedTask(
-      from_here, base::BindOnce(&RunTask, std::move(queued_task)),
-      base::TimeDelta::FromSeconds(delay_in_seconds));
+  target_runner->PostTask(from_here,
+                          base::BindOnce(&RunTask, std::move(queued_task)));
 }
 
 void QueueTask(std::unique_ptr<AfterStartupTask> queued_task) {
@@ -279,9 +270,4 @@ void AfterStartupTaskUtils::UnsafeResetForTesting() {
     return;
   g_startup_complete_flag.Get().UnsafeResetForTesting();
   DCHECK(!IsBrowserStartupComplete());
-}
-
-// static
-void AfterStartupTaskUtils::DisableScheduleTaskDelayForTesting() {
-  g_schedule_tasks_with_delay = false;
 }

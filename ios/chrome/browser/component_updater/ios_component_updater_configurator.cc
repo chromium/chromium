@@ -39,7 +39,7 @@ class IOSConfigurator : public update_client::Configurator {
   explicit IOSConfigurator(const base::CommandLine* cmdline);
 
   // update_client::Configurator overrides.
-  int InitialDelay() const override;
+  double InitialDelay() const override;
   int NextCheckDelay() const override;
   int OnDemandDelay() const override;
   int UpdateDelay() const override;
@@ -88,7 +88,7 @@ IOSConfigurator::IOSConfigurator(const base::CommandLine* cmdline)
     : configurator_impl_(ComponentUpdaterCommandLineConfigPolicy(cmdline),
                          false) {}
 
-int IOSConfigurator::InitialDelay() const {
+double IOSConfigurator::InitialDelay() const {
   return configurator_impl_.InitialDelay();
 }
 

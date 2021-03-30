@@ -2,7 +2,7 @@
 <script>
 testRunner.waitUntilDone();
 if (window.internals)
-    internals.settings.setLangAttributeAwareFormControlUIEnabled(true);
+    internals.runtimeFlags.langAttributeAwareFormControlUIEnabled = true;
 </script>
 <script src="../resources/picker-common.js"></script>
 <input type="time" id="time" value="14:15" lang="ru">

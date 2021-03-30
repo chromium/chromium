@@ -20,7 +20,6 @@
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/authenticator_selection_criteria.h"
 #include "device/fido/bio/enroller.h"
-#include "device/fido/client_data.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
@@ -111,10 +110,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialRequestHandler
     // discovered.
     bool allow_skipping_pin_touch = false;
 
-    // android_client_data_ext is a compatibility hack to support the Clank
-    // caBLEv2 authenticator.
-    base::Optional<AndroidClientDataExtensionInput> android_client_data_ext;
-
     // large_blob_support indicates whether the request should select for
     // authenticators supporting the largeBlobs extension (kRequired), merely
     // indicate support on the response (kPreferred), or ignore it
@@ -194,6 +189,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialRequestHandler
 
   CompletionCallback completion_callback_;
   State state_ = State::kWaitingForTouch;
+  bool suppress_attestation_ = false;
   CtapMakeCredentialRequest request_;
   base::Optional<base::RepeatingClosure> bio_enrollment_complete_barrier_;
   const Options options_;
@@ -208,6 +204,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialRequestHandler
   FidoAuthenticator* selected_authenticator_for_pin_uv_auth_token_ = nullptr;
   base::Optional<pin::TokenResponse> token_;
   std::unique_ptr<BioEnroller> bio_enroller_;
+
+  // On ChromeOS, non-U2F cross-platform requests may be dispatched to the
+  // platform authenticator if the request is user-presence-only and the
+  // authenticator has been configured for user-presence-only mode via an
+  // enterprise policy. For such requests, this field will be true.
+  bool allow_platform_authenticator_for_cross_platform_request_ = false;
+
   SEQUENCE_CHECKER(my_sequence_checker_);
   base::WeakPtrFactory<MakeCredentialRequestHandler> weak_factory_{this};
 

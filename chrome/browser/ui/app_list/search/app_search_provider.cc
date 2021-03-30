@@ -177,7 +177,7 @@ class AppSearchProvider::App {
     if (searchable_text_.empty())
       return false;
     if (tokenized_indexed_searchable_text_.empty()) {
-      for (const base::string16& curr_text : searchable_text_) {
+      for (const std::u16string& curr_text : searchable_text_) {
         tokenized_indexed_searchable_text_.push_back(
             std::make_unique<TokenizedString>(curr_text));
       }
@@ -205,7 +205,7 @@ class AppSearchProvider::App {
 
   AppSearchProvider::DataSource* data_source() { return data_source_; }
   const std::string& id() const { return id_; }
-  const base::string16& name() const { return name_; }
+  const std::u16string& name() const { return name_; }
   const base::Time& last_launch_time() const { return last_launch_time_; }
   const base::Time& install_time() const { return install_time_; }
 
@@ -215,10 +215,10 @@ class AppSearchProvider::App {
   bool searchable() const { return searchable_; }
   void set_searchable(bool searchable) { searchable_ = searchable; }
 
-  const std::vector<base::string16>& searchable_text() const {
+  const std::vector<std::u16string>& searchable_text() const {
     return searchable_text_;
   }
-  void AddSearchableText(const base::string16& searchable_text) {
+  void AddSearchableText(const std::u16string& searchable_text) {
     DCHECK(tokenized_indexed_searchable_text_.empty());
     searchable_text_.push_back(searchable_text);
   }
@@ -238,12 +238,12 @@ class AppSearchProvider::App {
   std::vector<std::unique_ptr<TokenizedString>>
       tokenized_indexed_searchable_text_;
   const std::string id_;
-  const base::string16 name_;
+  const std::u16string name_;
   const base::Time last_launch_time_;
   const base::Time install_time_;
   bool recommendable_ = true;
   bool searchable_ = true;
-  std::vector<base::string16> searchable_text_;
+  std::vector<std::u16string> searchable_text_;
   float relevance_threshold_ = 0.f;
   // Set to true in case app was installed internally, by sync, policy or as a
   // default app.
@@ -425,7 +425,7 @@ AppSearchProvider::AppSearchProvider(Profile* profile,
 
 AppSearchProvider::~AppSearchProvider() {}
 
-void AppSearchProvider::Start(const base::string16& query) {
+void AppSearchProvider::Start(const std::u16string& query) {
   // When the AppSearchProvider initializes, UpdateRecommendedResults is called
   // three times. We only want to start updating user prefs for release notes
   // after these first three calls are done.
@@ -486,9 +486,9 @@ void AppSearchProvider::UpdateRecommendedResults(
     if (!app->recommendable())
       continue;
 
-    base::string16 title = app->name();
+    std::u16string title = app->name();
     if (app->id() == ash::kInternalAppIdContinueReading) {
-      base::string16 navigation_title;
+      std::u16string navigation_title;
       if (!HasRecommendableForeignTab(profile_, &navigation_title,
                                       /*url=*/nullptr,
                                       open_tabs_ui_delegate_for_testing())) {

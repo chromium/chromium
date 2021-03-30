@@ -92,12 +92,9 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  UITableViewStyle style = base::FeatureList::IsEnabled(kSettingsRefresh)
-                               ? ChromeTableViewStyle()
-                               : UITableViewStyleGrouped;
-
   SafetyCheckTableViewController* viewController =
-      [[SafetyCheckTableViewController alloc] initWithStyle:style];
+      [[SafetyCheckTableViewController alloc]
+          initWithStyle:ChromeTableViewStyle()];
   self.viewController = viewController;
 
   scoped_refptr<IOSChromePasswordCheckManager> passwordCheckManager =

@@ -17,7 +17,6 @@
 #include "cc/trees/tree_synchronizer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/skia/include/effects/SkBlurImageFilter.h"
 
 namespace cc {
 namespace {

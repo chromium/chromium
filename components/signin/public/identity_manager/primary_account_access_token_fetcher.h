@@ -177,12 +177,12 @@ class PrimaryAccountAccessTokenFetcher : public IdentityManager::Observer {
   void StartAccessTokenRequest();
 
   // IdentityManager::Observer implementation.
-  void OnPrimaryAccountSet(
-      const CoreAccountInfo& primary_account_info) override;
-  void OnUnconsentedPrimaryAccountChanged(
-      const CoreAccountInfo& primary_account_info) override;
+  void OnPrimaryAccountChanged(const PrimaryAccountChangeEvent& event) override;
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
+
+  // IdentityManager::DiagnosticsObserver implementation.
+  void OnIdentityManagerShutdown(IdentityManager* identity_manager) override;
 
   // Checks whether credentials are now available and starts an access token
   // request if so. Should only be called in mode |kWaitUntilAvailable|.
@@ -209,7 +209,11 @@ class PrimaryAccountAccessTokenFetcher : public IdentityManager::Observer {
   std::unique_ptr<AccessTokenFetcher> access_token_fetcher_;
 
   // When a token request gets canceled, we want to retry once.
-  bool access_token_retried_;
+  bool access_token_retried_ = false;
+
+  // Used in kWaitUntilAvailable mode when waiting for the account to be
+  // available.
+  bool waiting_for_account_available_ = false;
 
   Mode mode_;
 

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # Copyright 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -16,14 +16,93 @@ import argparse
 import collections
 import copy
 import filecmp
-import json
 import hashlib
+import json
 import os
 import re
 import shutil
+import string
 import subprocess
 import sys
 import tempfile
+import xml.etree.ElementTree
+
+
+LLDBINIT_PATH = '$(PROJECT_DIR)/.lldbinit'
+
+
+class Template(string.Template):
+
+  """A subclass of string.Template that changes delimiter."""
+
+  delimiter = '@'
+
+
+def LoadSchemeTemplate(root):
+  """Return a string.Template object for scheme file loaded relative to root."""
+  path = os.path.join(root, 'ios', 'build', 'tools', 'xcodescheme.template')
+  with open(path) as file:
+    return Template(file.read())
+
+
+def CreateIdentifier(str_id):
+  """Return a 24 characters string that can be used as an identifier."""
+  return hashlib.sha1(str_id.encode("utf-8")).hexdigest()[:24].upper()
+
+
+def GenerateSchemeForTarget(project, old_project, name, product_name, template):
+  """Generates the .xcsheme file for target named |name|.
+
+  The file is generated in the new project schemes directory from a template.
+  If there is an existing previous project, then the old scheme file is copied
+  and the lldbinit setting is set. If lldbinit setting is already correct, the
+  file is not modified, just copied.
+  """
+  relative_path = os.path.join('xcshareddata', 'xcschemes', name + '.xcscheme')
+  identifier = CreateIdentifier('%s %s' % (name, product_name))
+
+  scheme_path = os.path.join(project, relative_path)
+  if not os.path.isdir(os.path.dirname(scheme_path)):
+    os.makedirs(os.path.dirname(scheme_path))
+
+  old_scheme_path = os.path.join(old_project, relative_path)
+  if os.path.exists(old_scheme_path):
+    made_changes = False
+
+    tree = xml.etree.ElementTree.parse(old_scheme_path)
+    root = tree.getroot()
+
+    for reference in root.findall('.//BuildableReference'):
+      for (attr, value) in (
+          ('BuildableName', product_name),
+          ('BlueprintName', name),
+          ('BlueprintIdentifier', identifier)):
+        if reference.get(attr) != value:
+          reference.set(attr, value)
+          made_changes = True
+
+    for child in root:
+      if child.tag not in ('TestAction', 'LaunchAction'):
+        continue
+
+      if child.get('customLLDBInitFile') != LLDBINIT_PATH:
+        child.set('customLLDBInitFile', LLDBINIT_PATH)
+        made_changes = True
+
+    if made_changes:
+      tree.write(scheme_path, xml_declaration=True, encoding='UTF-8')
+
+    else:
+      shutil.copyfile(old_scheme_path, scheme_path)
+
+  else:
+    with open(scheme_path, 'w') as scheme_file:
+      scheme_file.write(
+          template.substitute(
+              LLDBINIT_PATH=LLDBINIT_PATH,
+              BLUEPRINT_IDENTIFIER=identifier,
+              PRODUCT_NAME=product_name,
+              TARGET_NAME=name))
 
 
 class XcodeProject(object):
@@ -36,7 +115,7 @@ class XcodeProject(object):
     while True:
       self.counter += 1
       str_id = "%s %s %d" % (parent_name, obj['isa'], self.counter)
-      new_id = hashlib.sha1(str_id.encode("utf-8")).hexdigest()[:24].upper()
+      new_id = CreateIdentifier(str_id)
 
       # Make sure ID is unique. It's possible there could be an id conflict
       # since this is run after GN runs.
@@ -90,7 +169,7 @@ def WriteXcodeProject(output_path, json_string):
         os.path.join(output_path, 'project.pbxproj'))
 
 
-def UpdateXcodeProject(project_dir, configurations, root_dir):
+def UpdateXcodeProject(project_dir, old_project_dir, configurations, root_dir):
   """Update inplace Xcode project to support multiple configurations.
 
   Args:
@@ -102,6 +181,7 @@ def UpdateXcodeProject(project_dir, configurations, root_dir):
   """
   json_data = json.loads(LoadXcodeProjectAsJSON(project_dir))
   project = XcodeProject(json_data['objects'])
+  schemes_template = None
 
   objects_to_remove = []
   for value in list(project.objects.values()):
@@ -135,6 +215,23 @@ def UpdateXcodeProject(project_dir, configurations, root_dir):
         new_build_config['name'] = configuration
         value['buildConfigurations'].append(
             project.AddObject('products', new_build_config))
+
+    # Create scheme files for application, extensions and framework targets.
+    if isa == 'PBXNativeTarget':
+      product_type = value['productType']
+      if product_type not in (
+          'com.apple.product-type.app-extension',
+          'com.apple.product-type.application',
+          'com.apple.product-type.framework'):
+        continue
+
+      if schemes_template is None:
+        schemes_template = LoadSchemeTemplate(root_dir)
+
+      product = project.objects[value['productReference']]
+      GenerateSchemeForTarget(
+          project_dir, old_project_dir, value['name'],
+          product['path'], schemes_template)
 
   for object_id in objects_to_remove:
     del project.objects[object_id]
@@ -287,6 +384,7 @@ def ConvertGnXcodeProject(root_dir, input_dir, output_dir, configurations):
     if os.path.exists(os.path.join(input_dir, project_name)):
       UpdateXcodeProject(
           os.path.join(input_dir, project_name),
+          os.path.join(output_dir, project_name),
           configurations, root_dir)
 
       CopyTreeIfChanged(os.path.join(input_dir, project_name),

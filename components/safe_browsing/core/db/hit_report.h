@@ -16,12 +16,9 @@ namespace safe_browsing {
 // What service classified this threat as unsafe.
 enum class ThreatSource {
   UNKNOWN,
-  DATA_SAVER,             // From the Data Reduction service.
-  LOCAL_PVER3,            // From LocalSafeBrowsingDatabaseManager, protocol v3
   LOCAL_PVER4,            // From V4LocalDatabaseManager, protocol v4
   REMOTE,                 // From RemoteSafeBrowsingDatabaseManager
   CLIENT_SIDE_DETECTION,  // From ClientSideDetectionHost
-  PASSWORD_PROTECTION_SERVICE,  // From PasswordProtectionService
   REAL_TIME_CHECK,              // From RealTimeUrlLookupService
 };
 

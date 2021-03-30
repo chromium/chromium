@@ -6,7 +6,7 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "components/google/core/common/google_util.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
@@ -32,8 +32,8 @@ bool IsGoogleOriginURL(const GURL& origin_url) {
 void RecordNoStatePrefetchMetrics(
     content::NavigationHandle* navigation_handle,
     ukm::SourceId source_id,
-    prerender::PrerenderManager* prerender_manager) {
-  DCHECK(prerender_manager);
+    prerender::NoStatePrefetchManager* no_state_prefetch_manager) {
+  DCHECK(no_state_prefetch_manager);
 
   const std::vector<GURL>& redirects = navigation_handle->GetRedirectChain();
 
@@ -41,15 +41,17 @@ void RecordNoStatePrefetchMetrics(
   prerender::FinalStatus final_status;
   prerender::Origin prefetch_origin;
 
-  bool nostate_prefetch_entry_found = prerender_manager->GetPrefetchInformation(
-      navigation_handle->GetURL(), &prefetch_age, &final_status,
-      &prefetch_origin);
+  bool nostate_prefetch_entry_found =
+      no_state_prefetch_manager->GetPrefetchInformation(
+          navigation_handle->GetURL(), &prefetch_age, &final_status,
+          &prefetch_origin);
 
   // Try the URLs from the redirect chain.
   if (!nostate_prefetch_entry_found) {
     for (const auto& url : redirects) {
-      nostate_prefetch_entry_found = prerender_manager->GetPrefetchInformation(
-          url, &prefetch_age, &final_status, &prefetch_origin);
+      nostate_prefetch_entry_found =
+          no_state_prefetch_manager->GetPrefetchInformation(
+              url, &prefetch_age, &final_status, &prefetch_origin);
       if (nostate_prefetch_entry_found)
         break;
     }

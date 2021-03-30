@@ -41,7 +41,7 @@ void CreateAndSendMouseClick(aura::WindowTreeHost* host,
 
   // Send an ET_MOUSE_PRESSED event.
   ui::EventDispatchDetails details =
-      host->event_sink()->OnEventFromSource(&press_event);
+      host->GetEventSink()->OnEventFromSource(&press_event);
 
   if (details.dispatcher_destroyed)
     return;
@@ -52,7 +52,7 @@ void CreateAndSendMouseClick(aura::WindowTreeHost* host,
                                ui::EF_LEFT_MOUSE_BUTTON);
 
   // Send an ET_MOUSE_RELEASED event.
-  ignore_result(host->event_sink()->OnEventFromSource(&release_event));
+  ignore_result(host->GetEventSink()->OnEventFromSource(&release_event));
 }
 
 }  // namespace

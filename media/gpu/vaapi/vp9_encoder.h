@@ -44,8 +44,9 @@ class VP9Encoder : public AcceleratedVideoEncoder {
 
     // Quantization parameter. They are vp9 ac/dc indices and their ranges are
     // 0-255.
-    int initial_qp;
-    ScalingSettings scaling_settings;
+    uint8_t initial_qp;
+    uint8_t min_qp;
+    uint8_t max_qp;
 
     bool error_resilient_mode;
   };
@@ -92,7 +93,6 @@ class VP9Encoder : public AcceleratedVideoEncoder {
                    uint32_t framerate) override;
   gfx::Size GetCodedSize() const override;
   size_t GetMaxNumOfRefFrames() const override;
-  ScalingSettings GetScalingSettings() const override;
   bool PrepareEncodeJob(EncodeJob* encode_job) override;
   void BitrateControlUpdate(uint64_t encoded_chunk_size_bytes) override;
   BitstreamBufferMetadata GetMetadata(EncodeJob* encode_job,

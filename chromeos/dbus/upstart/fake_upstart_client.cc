@@ -104,7 +104,9 @@ void FakeUpstartClient::StopWilcoDtcService(VoidDBusMethodCallback callback) {
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
-void FakeUpstartClient::StartArcDataSnapshotd(VoidDBusMethodCallback callback) {
+void FakeUpstartClient::StartArcDataSnapshotd(
+    const std::vector<std::string>& upstart_env,
+    VoidDBusMethodCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }

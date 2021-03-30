@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<embed id=embedid src="../http/tests/resources/test.mp4">
+
+<script>
+test(() => {
+  embedid.src = '../http/tests/resources/test.webm';
+  assert_true(internals.isUseCounted(document, 3749));
+}, 'Verifies that changing embed src gets use counted.');
+</script>

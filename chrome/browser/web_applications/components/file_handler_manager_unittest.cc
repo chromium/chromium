@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/web_applications/test/test_app_registrar.h"
 #include "chrome/browser/web_applications/test/test_file_handler_manager.h"
@@ -106,11 +107,16 @@ TEST(FileHandlerUtilsTest, GetMimeTypesFromFileHandlers) {
 }
 
 class FileHandlerManagerTest : public WebAppTest {
+ public:
+  FileHandlerManagerTest() {
+    // |features_| needs to be initialized before SetUp kicks off tasks that
+    // check if a feature is enabled.
+    features_.InitAndEnableFeature(blink::features::kFileHandlingAPI);
+  }
+
  protected:
   void SetUp() override {
     WebAppTest::SetUp();
-
-    features_.InitAndEnableFeature(blink::features::kFileHandlingAPI);
 
     registrar_ = std::make_unique<TestAppRegistrar>();
     file_handler_manager_ = std::make_unique<TestFileHandlerManager>(profile());
@@ -158,7 +164,8 @@ TEST_F(FileHandlerManagerTest, FileHandlersAreNotAvailableUnlessEnabled) {
   }
 
   // Ensure they can be disabled.
-  file_handler_manager().DisableAndUnregisterOsFileHandlers(app_id);
+  file_handler_manager().DisableAndUnregisterOsFileHandlers(app_id, nullptr,
+                                                            base::DoNothing());
 
   {
     const auto* handlers =

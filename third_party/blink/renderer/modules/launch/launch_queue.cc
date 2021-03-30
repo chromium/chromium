@@ -6,7 +6,6 @@
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_launch_consumer.h"
 #include "third_party/blink/renderer/modules/launch/launch_params.h"
-#include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
 

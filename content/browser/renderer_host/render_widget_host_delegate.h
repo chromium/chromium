@@ -34,10 +34,6 @@ class Rect;
 class Size;
 }
 
-namespace rappor {
-class Sample;
-}
-
 namespace content {
 
 class BrowserAccessibilityManager;
@@ -140,7 +136,7 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // Send OS Cut/Copy/Paste actions to the focused frame.
   virtual void ExecuteEditCommand(
       const std::string& command,
-      const base::Optional<base::string16>& value) = 0;
+      const base::Optional<std::u16string>& value) = 0;
   virtual void Undo() = 0;
   virtual void Redo() = 0;
   virtual void Cut() = 0;
@@ -287,11 +283,6 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   virtual void FocusOwningWebContents(
       RenderWidgetHostImpl* render_widget_host) {}
 
-  // Augment a Rappor sample with eTLD+1 context. The caller is still
-  // responsible for logging the sample to the RapporService. Returns false
-  // if the eTLD+1 is not known for |render_widget_host|.
-  virtual bool AddDomainInfoToRapporSample(rappor::Sample* sample);
-
   // Return this object cast to a WebContents, if it is one. If the object is
   // not a WebContents, returns nullptr.
   virtual WebContents* GetAsWebContents();
@@ -322,12 +313,6 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
 
   // Notify the delegate that the screen orientation has been changed.
   virtual void DidChangeScreenOrientation() {}
-
-  // Returns the FrameTree that this RenderWidgetHost is attached to. If the
-  // RenderWidgetHost is attached to a frame, then its RenderFrameHost will be
-  // in the tree. Otherwise, the RenderWidgetHost is for a popup which was
-  // opened by a frame in the FrameTree.
-  virtual FrameTree* GetFrameTree();
 
   // Show the newly created widget with the specified bounds.
   // The widget is identified by the route_id passed to CreateNewWidget.

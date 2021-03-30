@@ -13,10 +13,11 @@
 #include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request_info.h"
+#include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
-#include "content/browser/service_worker/service_worker_controllee_request_handler.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
+#include "content/browser/service_worker/service_worker_object_host.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/origin_util.h"
 #include "content/public/common/url_constants.h"
@@ -122,8 +123,7 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
   ServiceWorkerContextCore* context_core =
       handle_->context_wrapper()->context();
   if (!context_core || !browser_context) {
-    LoaderCallbackWrapper(std::move(loader_callback),
-                          /*handler=*/{});
+    std::move(loader_callback).Run(/*handler=*/{});
     return;
   }
 
@@ -147,7 +147,7 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
     // `container_info`.
     DCHECK(!handle_->container_host());
     base::WeakPtr<ServiceWorkerContainerHost> container_host;
-    bool inherit_container_host_only = false;
+    bool inherit_controller_only = false;
 
     if (request_destination_ == network::mojom::RequestDestination::kDocument ||
         request_destination_ == network::mojom::RequestDestination::kIframe) {
@@ -176,84 +176,88 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
           tentative_resource_request.url.SchemeIsBlob()) {
         container_host->InheritControllerFrom(*parent_container_host,
                                               tentative_resource_request.url);
-        inherit_container_host_only = true;
+        inherit_controller_only = true;
       }
     }
     DCHECK(container_host);
     handle_->set_container_host(container_host);
 
-    // Also make the inner interceptor.
-    DCHECK(!handle_->interceptor());
-    handle_->set_interceptor(
-        std::make_unique<ServiceWorkerControlleeRequestHandler>(
-            context_core->AsWeakPtr(), container_host, request_destination_,
-            skip_service_worker_, handle_->service_worker_accessed_callback()));
-
-    // For the blob worker case, we only inherit the controller and do not
-    // let it intercept the requests. Blob URLs are not eligible to go through
-    // service worker interception. So just call the loader callback now.
-    // We don't use the interceptor but have to set it because we need
-    // ControllerServiceWorkerInfoPtr and ServiceWorkerObjectHost from the
-    // subresource loader params which is created by the interceptor.
-    if (inherit_container_host_only) {
-      LoaderCallbackWrapper(std::move(loader_callback),
-                            /*handler=*/{});
+    // For the blob worker case, we only inherit the controller and do not let
+    // it intercept the main resource request. Blob URLs are not eligible to
+    // go through service worker interception. So just call the loader
+    // callback now.
+    if (inherit_controller_only) {
+      std::move(loader_callback).Run(/*handler=*/{});
       return;
     }
   }
 
-  // Start the inner interceptor. We continue in
-  // LoaderCallbackWrapper() or the fallback callback is called.
-  handle_->interceptor()->MaybeCreateLoader(
-      tentative_resource_request, browser_context,
-      base::BindOnce(
-          &ServiceWorkerMainResourceLoaderInterceptor::LoaderCallbackWrapper,
-          GetWeakPtr(), std::move(loader_callback)),
+  // If we know there's no service worker for the origin, let's skip asking
+  // the storage to check the existence.
+  bool skip_service_worker =
+      skip_service_worker_ ||
+      !handle_->context_wrapper()->MaybeHasRegistrationForOrigin(
+          url::Origin::Create(tentative_resource_request.url));
+
+  // Create and start the handler for this request. It will invoke the loader
+  // callback or fallback callback.
+  request_handler_ = std::make_unique<ServiceWorkerControlleeRequestHandler>(
+      context_core->AsWeakPtr(), handle_->container_host(),
+      request_destination_, skip_service_worker,
+      handle_->service_worker_accessed_callback());
+  request_handler_->MaybeCreateLoader(
+      tentative_resource_request, browser_context, std::move(loader_callback),
       std::move(fallback_callback));
 }
 
 base::Optional<SubresourceLoaderParams>
 ServiceWorkerMainResourceLoaderInterceptor::
     MaybeCreateSubresourceLoaderParams() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return std::move(subresource_loader_params_);
-}
-
-void ServiceWorkerMainResourceLoaderInterceptor::LoaderCallbackWrapper(
-    LoaderCallback loader_callback,
-    SingleRequestURLLoaderFactory::RequestHandler handler) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  // For worker main script requests, |handle_| can be destroyed during
-  // interception. The initiator of this interceptor (i.e., WorkerScriptLoader)
-  // will handle the case.
-  // For navigation requests, this case should not happen because it's
-  // guaranteed that this interceptor is destroyed before |handle_|.
   if (!handle_) {
-    std::move(loader_callback).Run({});
-    return;
+    return base::nullopt;
+  }
+  base::WeakPtr<ServiceWorkerContainerHost> container_host =
+      handle_->container_host();
+
+  // We didn't find a matching service worker for this request, and
+  // ServiceWorkerContainerHost::SetControllerRegistration() was not called.
+  if (!container_host || !container_host->controller()) {
+    return base::nullopt;
   }
 
-  if (handle_->interceptor()) {
-    subresource_loader_params_ =
-        handle_->interceptor()->MaybeCreateSubresourceLoaderParams();
+  // Otherwise let's send the controller service worker information along
+  // with the navigation commit.
+  SubresourceLoaderParams params;
+  auto controller_info = blink::mojom::ControllerServiceWorkerInfo::New();
+  controller_info->mode = container_host->GetControllerMode();
+  // Note that |controller_info->remote_controller| is null if the controller
+  // has no fetch event handler. In that case the renderer frame won't get the
+  // controller pointer upon the navigation commit, and subresource loading will
+  // not be intercepted. (It might get intercepted later if the controller
+  // changes due to skipWaiting() so SetController is sent.)
+  mojo::Remote<blink::mojom::ControllerServiceWorker> remote =
+      container_host->GetRemoteControllerServiceWorker();
+  if (remote.is_bound()) {
+    controller_info->remote_controller = remote.Unbind();
   }
 
-  if (!handler) {
-    std::move(loader_callback).Run({});
-    return;
+  controller_info->client_id = container_host->client_uuid();
+  if (container_host->fetch_request_window_id()) {
+    controller_info->fetch_request_window_id =
+        base::make_optional(container_host->fetch_request_window_id());
   }
-
-  // The inner interceptor wants to handle the request.
-  std::move(loader_callback)
-      .Run(base::MakeRefCounted<SingleRequestURLLoaderFactory>(
-          std::move(handler)));
-}
-
-base::WeakPtr<ServiceWorkerMainResourceLoaderInterceptor>
-ServiceWorkerMainResourceLoaderInterceptor::GetWeakPtr() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return weak_factory_.GetWeakPtr();
+  base::WeakPtr<ServiceWorkerObjectHost> object_host =
+      container_host->GetOrCreateServiceWorkerObjectHost(
+          container_host->controller());
+  if (object_host) {
+    params.controller_service_worker_object_host = object_host;
+    controller_info->object_info = object_host->CreateIncompleteObjectInfo();
+  }
+  for (const auto feature : container_host->controller()->used_features()) {
+    controller_info->used_features.push_back(feature);
+  }
+  params.controller_service_worker_info = std::move(controller_info);
+  return base::Optional<SubresourceLoaderParams>(std::move(params));
 }
 
 ServiceWorkerMainResourceLoaderInterceptor::

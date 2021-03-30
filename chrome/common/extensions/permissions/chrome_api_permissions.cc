@@ -72,9 +72,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermission::kCookie, "cookies"},
     {APIPermission::kCryptotokenPrivate, "cryptotokenPrivate"},
-    {APIPermission::kDataReductionProxy, "dataReductionProxy",
-     APIPermissionInfo::kFlagImpliesFullURLAccess |
-         APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermission::kEnterpriseDeviceAttributes, "enterprise.deviceAttributes",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermission::kEnterpriseHardwarePlatform, "enterprise.hardwarePlatform",
@@ -156,8 +153,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermission::kNetworkingCastPrivate, "networking.castPrivate"},
     {APIPermission::kSystemPrivate, "systemPrivate",
-     APIPermissionInfo::kFlagCannotBeOptional},
-    {APIPermission::kCloudPrintPrivate, "cloudPrintPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermission::kInputMethodPrivate, "inputMethodPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},

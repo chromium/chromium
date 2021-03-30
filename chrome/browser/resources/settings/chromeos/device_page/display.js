@@ -7,9 +7,6 @@
  * 'settings-display' is the settings subpage for display settings.
  */
 cr.define('settings.display', function() {
-  const systemDisplayApi =
-      /** @type {!SystemDisplay} */ (chrome.system.display);
-
   /**
    * @typedef {{
    *   value: (!{
@@ -318,7 +315,7 @@ cr.define('settings.display', function() {
     attached() {
       this.displayChangedListener_ =
           this.displayChangedListener_ || this.getDisplayInfo_.bind(this);
-      settings.display.systemDisplayApi.onDisplayChanged.addListener(
+      settings.getDisplayApi().onDisplayChanged.addListener(
           this.displayChangedListener_);
 
       this.getDisplayInfo_();
@@ -327,7 +324,7 @@ cr.define('settings.display', function() {
 
     /** @override */
     detached() {
-      settings.display.systemDisplayApi.onDisplayChanged.removeListener(
+      settings.getDisplayApi().onDisplayChanged.removeListener(
           assert(this.displayChangedListener_));
 
       this.currentSelectedModeIndex_ = -1;
@@ -410,7 +407,7 @@ cr.define('settings.display', function() {
       /** @type {chrome.system.display.GetInfoFlags} */ const flags = {
         singleUnified: true
       };
-      settings.display.systemDisplayApi.getInfo(
+      settings.getDisplayApi().getInfo(
           flags, this.displayInfoFetched_.bind(this));
     },
 
@@ -422,7 +419,7 @@ cr.define('settings.display', function() {
       if (!displays.length) {
         return;
       }
-      settings.display.systemDisplayApi.getDisplayLayout(
+      settings.getDisplayApi().getDisplayLayout(
           this.displayLayoutFetched_.bind(this, displays));
       if (this.isMirrored_(displays)) {
         this.mirroringDestinationIds = displays[0].mirroringDestinationIds;
@@ -1193,7 +1190,7 @@ cr.define('settings.display', function() {
      * @private
      */
     onTouchCalibrationTap_(e) {
-      settings.display.systemDisplayApi.showNativeTouchCalibration(
+      settings.getDisplayApi().showNativeTouchCalibration(
           this.selectedDisplay.id);
     },
 
@@ -1216,7 +1213,7 @@ cr.define('settings.display', function() {
 
       /** @type {!chrome.system.display.DisplayProperties} */ const properties =
           {isPrimary: true};
-      settings.display.systemDisplayApi.setDisplayProperties(
+      settings.getDisplayApi().setDisplayProperties(
           this.selectedDisplay.id, properties,
           this.setPropertiesCallback_.bind(this));
     },
@@ -1301,7 +1298,7 @@ cr.define('settings.display', function() {
 
       this.refreshRateList_ = this.parentModeToRefreshRateMap_.get(
           /** @type {number} */ (this.selectedParentModePref_.value));
-      settings.display.systemDisplayApi.setDisplayProperties(
+      settings.getDisplayApi().setDisplayProperties(
           this.selectedDisplay.id, properties,
           this.setPropertiesCallback_.bind(this));
     },
@@ -1323,7 +1320,7 @@ cr.define('settings.display', function() {
                 /** @type {number} */ (this.selectedZoomPref_.value)
           };
 
-      settings.display.systemDisplayApi.setDisplayProperties(
+      settings.getDisplayApi().setDisplayProperties(
           this.selectedDisplay.id, properties,
           this.setPropertiesCallback_.bind(this));
     },
@@ -1351,7 +1348,7 @@ cr.define('settings.display', function() {
 
       /** @type {!chrome.system.display.DisplayProperties} */ const properties =
           {rotation: value};
-      settings.display.systemDisplayApi.setDisplayProperties(
+      settings.getDisplayApi().setDisplayProperties(
           this.selectedDisplay.id, properties,
           this.setPropertiesCallback_.bind(this));
     },
@@ -1368,7 +1365,7 @@ cr.define('settings.display', function() {
             chrome.system.display.MirrorMode.OFF :
             chrome.system.display.MirrorMode.NORMAL
       };
-      settings.display.systemDisplayApi.setMirrorMode(mirrorModeInfo, () => {
+      settings.getDisplayApi().setMirrorMode(mirrorModeInfo, () => {
         const error = chrome.runtime.lastError;
         if (error) {
           console.error('setMirrorMode Error: ' + error.message);
@@ -1382,7 +1379,7 @@ cr.define('settings.display', function() {
           {
             isUnified: !this.unifiedDesktopMode_,
           };
-      settings.display.systemDisplayApi.setDisplayProperties(
+      settings.getDisplayApi().setDisplayProperties(
           this.primaryDisplayId, properties,
           this.setPropertiesCallback_.bind(this));
     },
@@ -1492,7 +1489,5 @@ cr.define('settings.display', function() {
   });
 
   // #cr_define_end
-  return {
-    systemDisplayApi: systemDisplayApi,
-  };
+  return {};
 });

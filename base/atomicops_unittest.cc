@@ -181,11 +181,6 @@ static void TestStore() {
   base::subtle::NoBarrier_Store(&value, kVal2);
   EXPECT_EQ(kVal2, value);
 
-  base::subtle::Acquire_Store(&value, kVal1);
-  EXPECT_EQ(kVal1, value);
-  base::subtle::Acquire_Store(&value, kVal2);
-  EXPECT_EQ(kVal2, value);
-
   base::subtle::Release_Store(&value, kVal1);
   EXPECT_EQ(kVal1, value);
   base::subtle::Release_Store(&value, kVal2);
@@ -210,11 +205,6 @@ static void TestLoad() {
   EXPECT_EQ(kVal1, base::subtle::Acquire_Load(&value));
   value = kVal2;
   EXPECT_EQ(kVal2, base::subtle::Acquire_Load(&value));
-
-  value = kVal1;
-  EXPECT_EQ(kVal1, base::subtle::Release_Load(&value));
-  value = kVal2;
-  EXPECT_EQ(kVal2, base::subtle::Release_Load(&value));
 }
 
 TEST(AtomicOpsTest, Inc) {

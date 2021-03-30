@@ -13,6 +13,7 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane_listener.h"
 #include "ui/views/controls/tree/tree_view_controller.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class CookieInfoView;
@@ -42,16 +43,13 @@ class CollectedCookiesViews
       public views::TreeViewController,
       public content::WebContentsUserData<CollectedCookiesViews> {
  public:
+  METADATA_HEADER(CollectedCookiesViews);
+  CollectedCookiesViews(const CollectedCookiesViews&) = delete;
+  CollectedCookiesViews& operator=(const CollectedCookiesViews&) = delete;
   ~CollectedCookiesViews() override;
 
   // Use BrowserWindow::ShowCollectedCookiesDialog to show.
   static void CreateAndShowForWebContents(content::WebContents* web_contents);
-
-  // views::DialogDelegate:
-  base::string16 GetWindowTitle() const override;
-  ui::ModalType GetModalType() const override;
-  bool ShouldShowCloseButton() const override;
-  void DeleteDelegate() override;
 
   // views::TabbedPaneListener:
   void TabSelectedAt(int index) override;
@@ -69,6 +67,9 @@ class CollectedCookiesViews
   explicit CollectedCookiesViews(content::WebContents* web_contents);
 
   void OnDialogClosed();
+
+  // DialogDelegateView:
+  void DeleteDelegate() override;
 
   std::unique_ptr<views::View> CreateAllowedPane();
   std::unique_ptr<views::View> CreateBlockedPane();
@@ -127,8 +128,6 @@ class CollectedCookiesViews
   bool destroying_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(CollectedCookiesViews);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_COLLECTED_COOKIES_VIEWS_H_

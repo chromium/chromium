@@ -247,6 +247,8 @@ struct FulfillTrustTokenIssuanceRequest {
 // because the Java bindings append the suffix "Response" when generating
 // callback names.
 struct FulfillTrustTokenIssuanceAnswer {
+  // WARNING: Since these values are committed to histograms, please do not
+  // remove or reorder entries.
   enum Status {
     kOk,
     // It wasn't possible to route the issuance operation to the specified
@@ -276,4 +278,19 @@ struct TrustTokenOperationResult {
 
   // In case of TrustTokenOperationType::kIssuance.
   int32 issued_token_count = 0;
+};
+
+// Struct StoredTrustTokensForIssuer is used by DevTools to inspect
+// the current state of the Trust Token store.
+struct StoredTrustTokensForIssuer {
+  url.mojom.Origin issuer;
+  int32 count;
+};
+
+// Returned by DeleteStoredTrustTokens method on the NetworkContext.
+enum DeleteStoredTrustTokensStatus {
+  kSuccessTokensDeleted,
+  kSuccessNoTokensDeleted,
+  kFailureFeatureDisabled,
+  kFailureInvalidOrigin,
 };

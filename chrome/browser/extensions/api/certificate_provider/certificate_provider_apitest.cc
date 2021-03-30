@@ -25,10 +25,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/certificate_provider/certificate_provider.h"
-#include "chrome/browser/chromeos/certificate_provider/certificate_provider_service.h"
-#include "chrome/browser/chromeos/certificate_provider/certificate_provider_service_factory.h"
-#include "chrome/browser/chromeos/certificate_provider/test_certificate_provider_extension.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
+#include "chrome/browser/ash/certificate_provider/test_certificate_provider_extension.h"
 #include "chrome/browser/chromeos/ui/request_pin_view.h"
 #include "chrome/browser/extensions/api/certificate_provider/certificate_provider_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -192,12 +192,11 @@ class CertificateProviderApiTest : public extensions::ExtensionApiTest {
     base::Value autoselect_policy(base::Value::Type::LIST);
     autoselect_policy.Append(autoselect_pattern);
 
-    policy::PolicyMap policy;
-    policy.Set(policy::key::kAutoSelectCertificateForUrls,
-               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-               policy::POLICY_SOURCE_CLOUD, std::move(autoselect_policy),
-               nullptr);
-    provider_.UpdateChromePolicy(policy);
+    policy_map_.Set(policy::key::kAutoSelectCertificateForUrls,
+                    policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                    policy::POLICY_SOURCE_CLOUD, std::move(autoselect_policy),
+                    nullptr);
+    provider_.UpdateChromePolicy(policy_map_);
 
     content::RunAllPendingInMessageLoop();
 
@@ -264,6 +263,7 @@ class CertificateProviderApiTest : public extensions::ExtensionApiTest {
  protected:
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
   chromeos::CertificateProviderService* cert_provider_service_ = nullptr;
+  policy::PolicyMap policy_map_;
 
  private:
   const char* const kClientCertUrl = "/client-cert";
@@ -385,7 +385,7 @@ class CertificateProviderApiMockedExtensionTest
     {
       base::RunLoop run_loop;
       GetExtensionMainFrame()->ExecuteJavaScriptForTests(
-          base::ASCIIToUTF16("signatureRequestData;"),
+          u"signatureRequestData;",
           base::BindOnce(&StoreDigest, &request_data, run_loop.QuitClosure()));
       run_loop.Run();
     }
@@ -419,6 +419,26 @@ class CertificateProviderApiMockedExtensionTest
         GetCertFingerprint1(*certificate);
     EXPECT_EQ(GetPageTextContent(https_contents),
               "got client cert with fingerprint: " + client_cert_fingerprint);
+  }
+
+  void SetInterstitialBypass() {
+    // Navigate to the test server in a new tab (to not clobber the test
+    // fixture setup.
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), GetHttpsClientCertUrl(),
+        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+    auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
+
+    // Proceed through the interstitial to set an SSL bypass for this host.
+    content::TestNavigationObserver nav_observer(tab,
+                                                 /*number_of_navigations=*/1);
+    ASSERT_TRUE(content::ExecuteScript(
+        tab, "window.certificateErrorPageController.proceed();"));
+    nav_observer.Wait();
+
+    // Close the new tab to go back to the state set up by SetUpOnMainThread().
+    tab->Close();
   }
 
  private:
@@ -686,6 +706,11 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
 // order to make this algorithm employed.
 IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest, RsaMd5Sha1) {
   ASSERT_TRUE(StartHttpsServer(net::SSL_PROTOCOL_VERSION_TLS1_1));
+
+  // Bypass the legacy TLS interstitial. Future connections to the test server
+  // will now succeed.
+  SetInterstitialBypass();
+
   ExecuteJavascript("supportedAlgorithms = ['RSASSA_PKCS1_v1_5_MD5_SHA1'];");
   ExecuteJavascript("registerForSignatureRequests();");
   ExecuteJavascriptAndWaitForCallback("setCertificates();");
@@ -699,6 +724,11 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest, RsaMd5Sha1) {
 IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
                        LegacyRsaMd5Sha1) {
   ASSERT_TRUE(StartHttpsServer(net::SSL_PROTOCOL_VERSION_TLS1_1));
+
+  // Bypass the legacy TLS interstitial. Future connections to the test server
+  // will now succeed.
+  SetInterstitialBypass();
+
   ExecuteJavascript("supportedLegacyHashes = ['MD5_SHA1'];");
   ExecuteJavascript("registerAsLegacyCertificateProvider();");
   ExecuteJavascript("registerForLegacySignatureRequests();");
@@ -822,6 +852,11 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
 IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
                        RsaMd5Sha1AndOthers) {
   ASSERT_TRUE(StartHttpsServer(net::SSL_PROTOCOL_VERSION_TLS1_1));
+
+  // Bypass the legacy TLS interstitial. Future connections to the test server
+  // will now succeed.
+  SetInterstitialBypass();
+
   ExecuteJavascript(
       "supportedAlgorithms = ['RSASSA_PKCS1_v1_5_SHA512', "
       "'RSASSA_PKCS1_v1_5_SHA1', 'RSASSA_PKCS1_v1_5_MD5_SHA1'];");

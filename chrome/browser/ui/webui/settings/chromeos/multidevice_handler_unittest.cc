@@ -6,13 +6,13 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/android_sms/android_sms_urls.h"
 #include "chrome/browser/chromeos/android_sms/fake_android_sms_app_manager.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/components/phonehub/fake_notification_access_manager.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_android_sms_pairing_state_tracker.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -66,6 +66,8 @@ GenerateDefaultFeatureStatesMap() {
       {multidevice_setup::mojom::Feature::kPhoneHubTaskContinuation,
        multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost},
       {multidevice_setup::mojom::Feature::kWifiSync,
+       multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost},
+      {multidevice_setup::mojom::Feature::kEche,
        multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost}};
 }
 
@@ -176,7 +178,8 @@ class MultideviceHandlerTest : public testing::Test {
     handler_->RegisterMessages();
     handler_->AllowJavascript();
 
-    scoped_feature_list_.InitWithFeatures({chromeos::features::kPhoneHub}, {});
+    scoped_feature_list_.InitWithFeatures(
+        {chromeos::features::kPhoneHub, chromeos::features::kEcheSWA}, {});
   }
 
   void CallGetPageContentData() {

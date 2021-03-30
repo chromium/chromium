@@ -50,10 +50,13 @@ class RemoteAppsImpl : public remote_apps::mojom::RemoteApps {
           pending_observer);
 
   // remote_apps::mojom::RemoteApps:
-  void AddFolder(const std::string& name, AddFolderCallback callback) override;
+  void AddFolder(const std::string& name,
+                 bool add_to_front,
+                 AddFolderCallback callback) override;
   void AddApp(const std::string& name,
               const std::string& folder_id,
               const GURL& icon_url,
+              bool add_to_front,
               AddAppCallback callback) override;
 
   void OnAppLaunched(const std::string& id);

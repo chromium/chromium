@@ -1,4 +1,4 @@
-monorail:  {
-  component:  "UI>Settings>SafetyCheck"
+monorail: {
+  component: "UI>Settings>SafetyCheck"
 }
-team_email:  "chrome-friendly-settings@google.com"
+team_email: "chrome-friendly-settings@google.com"

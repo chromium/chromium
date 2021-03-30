@@ -100,13 +100,6 @@ void EventGeneratorDelegateAura::ConvertPointFromHost(
   window->GetHost()->ConvertPixelsToDIP(point);
 }
 
-ui::EventDispatchDetails EventGeneratorDelegateAura::DispatchKeyEventToIME(
-    ui::EventTarget* target,
-    ui::KeyEvent* event) {
-  Window* const window = WindowFromTarget(target);
-  return window->GetHost()->GetInputMethod()->DispatchKeyEvent(event);
-}
-
 gfx::Point EventGeneratorDelegateAura::CenterOfWindow(
     const Window* window) const {
   gfx::Point center = gfx::Rect(window->bounds().size()).CenterPoint();

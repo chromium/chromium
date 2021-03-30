@@ -34,6 +34,8 @@ class CastURLLoaderThrottle : public blink::URLLoaderThrottle {
   };
 
   CastURLLoaderThrottle(Delegate* delegate, const std::string& session_id);
+  CastURLLoaderThrottle(const CastURLLoaderThrottle&) = delete;
+  CastURLLoaderThrottle& operator=(const CastURLLoaderThrottle&) = delete;
   ~CastURLLoaderThrottle() override;
 
  private:
@@ -53,8 +55,6 @@ class CastURLLoaderThrottle : public blink::URLLoaderThrottle {
 
   base::WeakPtr<CastURLLoaderThrottle> weak_this_;
   base::WeakPtrFactory<CastURLLoaderThrottle> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastURLLoaderThrottle);
 };
 
 }  // namespace chromecast

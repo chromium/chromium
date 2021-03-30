@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
+#include "build/build_config.h"
 #include "media/base/callback_registry.h"
 #include "media/base/cdm_context.h"
 #include "media/base/cdm_initialized_promise.h"
@@ -43,9 +44,9 @@ class MojoCdm final : public ContentDecryptionModule,
  public:
   using MessageType = CdmMessageType;
 
+  // All parameters must be non-null.
   MojoCdm(mojo::Remote<mojom::ContentDecryptionModule> remote_cdm,
-          const base::Optional<base::UnguessableToken>& cdm_id,
-          mojo::PendingRemote<mojom::Decryptor> decryptor_remote,
+          media::mojom::CdmContextPtr cdm_context,
           const SessionMessageCB& session_message_cb,
           const SessionClosedCB& session_closed_cb,
           const SessionKeysChangeCB& session_keys_change_cb,
@@ -78,6 +79,9 @@ class MojoCdm final : public ContentDecryptionModule,
   std::unique_ptr<CallbackRegistration> RegisterEventCB(EventCB event_cb) final;
   Decryptor* GetDecryptor() final;
   base::Optional<base::UnguessableToken> GetCdmId() const final;
+#if defined(OS_WIN)
+  bool RequiresMediaFoundationRenderer() final;
+#endif  // defined(OS_WIN)
 
  private:
   ~MojoCdm() final;
@@ -113,26 +117,31 @@ class MojoCdm final : public ContentDecryptionModule,
   mojo::AssociatedReceiver<ContentDecryptionModuleClient> client_receiver_{
       this};
 
-  // Protects |cdm_id_|, |decryptor_remote_|, |decryptor_| and
-  // |decryptor_task_runner_| which could be accessed from other threads.
-  // See CdmContext implementation above.
+  // Protects |cdm_id_|, |decryptor_remote_|, |decryptor_|,
+  // |decryptor_task_runner_| and |requires_media_foundation_renderer_|, which
+  // could be accessed from other threads. See CdmContext implementation above.
   mutable base::Lock lock_;
 
   // CDM ID of the remote CDM. Set after initialization is completed. Must not
   // be invalid if initialization succeeded.
-  base::Optional<base::UnguessableToken> cdm_id_;
+  base::Optional<base::UnguessableToken> cdm_id_ GUARDED_BY(lock_);
 
   // The mojo::PendingRemote<mojom::Decryptor> exposed by the remote CDM. Set
   // after initialization is completed and cleared after |decryptor_| is
   // created. May be invalid after initialization if the CDM doesn't support a
   // Decryptor.
-  mojo::PendingRemote<mojom::Decryptor> decryptor_remote_;
+  mojo::PendingRemote<mojom::Decryptor> decryptor_remote_ GUARDED_BY(lock_);
 
   // Decryptor based on |decryptor_remote_|, lazily created in
   // GetDecryptor(). Since GetDecryptor() can be called on a different thread,
   // use |decryptor_task_runner_| to bind |decryptor_| to that thread.
-  std::unique_ptr<MojoDecryptor> decryptor_;
-  scoped_refptr<base::SingleThreadTaskRunner> decryptor_task_runner_;
+  std::unique_ptr<MojoDecryptor> decryptor_ GUARDED_BY(lock_);
+  scoped_refptr<base::SingleThreadTaskRunner> decryptor_task_runner_
+      GUARDED_BY(lock_);
+
+#if defined(OS_WIN)
+  bool requires_media_foundation_renderer_ GUARDED_BY(lock_) = false;
+#endif  // defined(OS_WIN)
 
   // Callbacks for firing session events.
   SessionMessageCB session_message_cb_;

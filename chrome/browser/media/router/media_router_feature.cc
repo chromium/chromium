@@ -33,24 +33,21 @@
 namespace media_router {
 
 #if !defined(OS_ANDROID)
-#if !defined(OFFICIAL_BUILD)
-// Enables the media router. Can be useful to disable for local
-// development on Mac because DIAL local discovery opens a local port
-// and triggers a permission prompt. Only toggleable for developer builds.
 const base::Feature kMediaRouter{"MediaRouter",
                                  base::FEATURE_ENABLED_BY_DEFAULT};
-#endif  // !defined(OFFICIAL_BUILD)
 // Controls if browser side DialMediaRouteProvider is enabled.
 const base::Feature kDialMediaRouteProvider{"DialMediaRouteProvider",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kCastMediaRouteProvider{"CastMediaRouteProvider",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kCastAllowAllIPsFeature{"CastAllowAllIPs",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kGlobalMediaControlsCastStartStop{
     "GlobalMediaControlsCastStartStop", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kAllowAllSitesToInitiateMirroring{
     "AllowAllSitesToInitiateMirroring", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kCastToMeetingFromCastDialog{
+    "CastToMeetingFromCastDialog", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // !defined(OS_ANDROID)
 
 #if defined(OS_ANDROID) || BUILDFLAG(ENABLE_EXTENSIONS)
@@ -64,10 +61,10 @@ const PrefService::Preference* GetMediaRouterPref(
 #endif  // defined(OS_ANDROID) || BUILDFLAG(ENABLE_EXTENSIONS)
 
 bool MediaRouterEnabled(content::BrowserContext* context) {
-#if !defined(OFFICIAL_BUILD) && !defined(OS_ANDROID)
+#if !defined(OS_ANDROID)
   if (!base::FeatureList::IsEnabled(kMediaRouter))
     return false;
-#endif  // !defined(OFFICIAL_BUILD) && !defined(OS_ANDROID)
+#endif  // !defined(OS_ANDROID)
 
 #if defined(OS_ANDROID) || BUILDFLAG(ENABLE_EXTENSIONS)
   static base::NoDestructor<base::flat_map<content::BrowserContext*, bool>>
@@ -145,10 +142,7 @@ bool CastMediaRouteProviderEnabled() {
 }
 
 bool GlobalMediaControlsCastStartStopEnabled() {
-  return base::FeatureList::IsEnabled(kGlobalMediaControlsCastStartStop) &&
-         base::FeatureList::IsEnabled(media::kGlobalMediaControlsForCast) &&
-         base::FeatureList::IsEnabled(
-             media::kGlobalMediaControlsOverlayControls);
+  return base::FeatureList::IsEnabled(kGlobalMediaControlsCastStartStop);
 }
 
 #endif  // !defined(OS_ANDROID)

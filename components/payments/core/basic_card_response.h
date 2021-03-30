@@ -6,8 +6,8 @@
 #define COMPONENTS_PAYMENTS_CORE_BASIC_CARD_RESPONSE_H_
 
 #include <memory>
+#include <string>
 
-#include "base/strings/string16.h"
 #include "components/payments/core/payment_address.h"
 
 namespace base {
@@ -30,20 +30,20 @@ struct BasicCardResponse {
   std::unique_ptr<base::DictionaryValue> ToDictionaryValue() const;
 
   // The cardholder's name as it appears on the card.
-  base::string16 cardholder_name;
+  std::u16string cardholder_name;
 
   // The primary account number (PAN) for the payment card.
-  base::string16 card_number;
+  std::u16string card_number;
 
   // A two-digit string for the expiry month of the card in the range 01 to 12.
-  base::string16 expiry_month;
+  std::u16string expiry_month;
 
   // A two-digit string for the expiry year of the card in the range 00 to 99.
-  base::string16 expiry_year;
+  std::u16string expiry_year;
 
   // A three or four digit string for the security code of the card (sometimes
   // known as the CVV, CVC, CVN, CVE or CID).
-  base::string16 card_security_code;
+  std::u16string card_security_code;
 
   // The billing address information associated with the payment card.
   mojom::PaymentAddressPtr billing_address;

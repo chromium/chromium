@@ -79,10 +79,21 @@ PageAllocationGranularityBaseMask() {
   return ~PageAllocationGranularityOffsetMask();
 }
 
+#if !defined(OS_APPLE)
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
+SystemPageShift() {
+#if defined(OS_WIN)
+  return 12;  // 4096=1<<12
+#else
+  return PageAllocationGranularityShift();
+#endif
+}
+#endif
+
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
 SystemPageSize() {
-#if defined(OS_WIN)
-  return 4096;
+#if !defined(OS_APPLE)
+  return 1 << SystemPageShift();
 #else
   return PageAllocationGranularity();
 #endif

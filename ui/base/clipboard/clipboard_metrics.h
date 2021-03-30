@@ -20,7 +20,8 @@ enum class ClipboardFormatMetric {
   kCustomData = 6,
   kWebSmartPaste = 7,  // Only used on write.
   kSvg = 8,
-  kMaxValue = kSvg,
+  kFilenames = 9,
+  kMaxValue = kFilenames,
 };
 
 void RecordRead(ClipboardFormatMetric metric);

@@ -211,7 +211,9 @@ class LayerTreeViewWithFrameSinkTrackingTest : public testing::Test {
     layer_tree_view_.Initialize(
         settings, blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
         /*compositor_thread=*/nullptr, &test_task_graph_runner_,
-        std::make_unique<cc::TestUkmRecorderFactory>());
+        std::make_unique<cc::TestUkmRecorderFactory>(),
+        /*main_thread_pipeline=*/nullptr,
+        /*compositor_thread_pipeline=*/nullptr);
   }
 
   void RunTest(int expected_successes, FailureMode failure_mode) {
@@ -332,7 +334,9 @@ TEST(LayerTreeViewTest, VisibilityTest) {
       cc::LayerTreeSettings(),
       blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
       /*compositor_thread=*/nullptr, &test_task_graph_runner,
-      std::make_unique<cc::TestUkmRecorderFactory>());
+      std::make_unique<cc::TestUkmRecorderFactory>(),
+      /*main_thread_pipeline=*/nullptr,
+      /*compositor_thread_pipeline=*/nullptr);
 
   {
     // Make one request and stop immediately while invisible.

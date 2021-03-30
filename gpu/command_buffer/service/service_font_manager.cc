@@ -101,7 +101,8 @@ class ServiceFontManager::SkiaDiscardableManager
     return font_manager_->DeleteHandle(handle_id);
   }
 
-  void notifyCacheMiss(SkStrikeClient::CacheMissType type) override {
+  void notifyCacheMiss(SkStrikeClient::CacheMissType type,
+                       int fontSize) override {
     UMA_HISTOGRAM_ENUMERATION("GPU.OopRaster.GlyphCacheMiss", type,
                               SkStrikeClient::CacheMissType::kLast + 1);
     // In general, Skia analysis of glyphs should find all cases.
@@ -111,8 +112,12 @@ class ServiceFontManager::SkiaDiscardableManager
 
     if (dump_count_ < kMaxDumps && base::RandInt(1, 100) == 1 &&
         !font_manager_->disable_oopr_debug_crash_dump()) {
-      ++dump_count_;
+      static crash_reporter::CrashKeyString<64> crash_key("oop_cache_miss");
+      crash_reporter::ScopedCrashKeyString auto_clear(
+          &crash_key, base::StringPrintf("type: %" PRIu32 ", fontSize: %d",
+                                         type, fontSize));
       base::debug::DumpWithoutCrashing();
+      ++dump_count_;
     }
   }
 

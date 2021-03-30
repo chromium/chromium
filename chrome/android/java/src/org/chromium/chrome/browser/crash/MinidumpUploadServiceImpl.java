@@ -10,17 +10,23 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Build;
 import android.os.PersistableBundle;
+import android.os.Process;
 
 import androidx.annotation.StringDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ApplicationState;
+import org.chromium.base.ApplicationStatus.ApplicationStateListener;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.components.background_task_scheduler.TaskIds;
+import org.chromium.components.crash.browser.ProcessExitReasonFromSystem;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 import org.chromium.components.minidump_uploader.MinidumpUploadCallable;
 import org.chromium.components.minidump_uploader.MinidumpUploadCallable.MinidumpUploadStatus;
@@ -116,11 +122,40 @@ public class MinidumpUploadServiceImpl extends MinidumpUploadService.Impl {
         MinidumpUploadJobService.scheduleUpload(builder);
     }
 
+    private ApplicationStateListener createApplicationStateListener() {
+        return newState -> {
+            SharedPreferencesManager.getInstance().writeInt(
+                    ChromePreferenceKeys.LAST_SESSION_APPLICATION_STATE, newState);
+        };
+    }
+
     /**
      * Stores the successes and failures from uploading crash to UMA,
      */
     public static void storeBreakpadUploadStatsInUma(CrashUploadCountStore pref) {
         sBrowserCrashMetricsInitialized.set(true);
+
+        SharedPreferencesManager sharedPrefs = SharedPreferencesManager.getInstance();
+        int previousPid = sharedPrefs.readInt(ChromePreferenceKeys.LAST_SESSION_BROWSER_PID);
+        @ApplicationState
+        int applicationExitState =
+                sharedPrefs.readInt(ChromePreferenceKeys.LAST_SESSION_APPLICATION_STATE);
+        String umaSuffix;
+        if (applicationExitState == ApplicationState.HAS_RUNNING_ACTIVITIES
+                || applicationExitState == ApplicationState.HAS_PAUSED_ACTIVITIES) {
+            umaSuffix = "Foreground";
+        } else {
+            umaSuffix = "Background";
+        }
+        sharedPrefs.writeInt(ChromePreferenceKeys.LAST_SESSION_BROWSER_PID, Process.myPid());
+        if (previousPid != 0) {
+            int reason = ProcessExitReasonFromSystem.getExitReason(previousPid);
+            ProcessExitReasonFromSystem.recordAsEnumHistogram(
+                    "Stability.Android.SystemExitReason.Browser", reason);
+            ProcessExitReasonFromSystem.recordAsEnumHistogram(
+                    "Stability.Android.SystemExitReason.Browser." + umaSuffix, reason);
+        }
+
         for (String type : TYPES) {
             for (int success = pref.getCrashSuccessUploadCount(type); success > 0; success--) {
                 RecordHistogram.recordEnumeratedHistogram(

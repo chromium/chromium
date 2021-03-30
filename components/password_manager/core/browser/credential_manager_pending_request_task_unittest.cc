@@ -87,8 +87,8 @@ class CredentialManagerPendingRequestTaskTest : public ::testing::Test {
     ON_CALL(delegate_mock_, GetOrigin)
         .WillByDefault(testing::Return(url::Origin::Create(url)));
 
-    form_.username_value = base::ASCIIToUTF16("Username");
-    form_.password_value = base::ASCIIToUTF16("Password");
+    form_.username_value = u"Username";
+    form_.password_value = u"Password";
     form_.url = url;
     form_.signon_realm = form_.url.GetOrigin().spec();
     form_.scheme = PasswordForm::Scheme::kHtml;
@@ -157,13 +157,13 @@ TEST_F(CredentialManagerPendingRequestTaskTest,
 
   PasswordForm profile_form = form_;
   profile_form.in_store = PasswordForm::Store::kProfileStore;
-  profile_form.password_value = base::ASCIIToUTF16("ProfilePassword");
+  profile_form.password_value = u"ProfilePassword";
   std::vector<std::unique_ptr<PasswordForm>> profile_forms;
   profile_forms.push_back(std::make_unique<PasswordForm>(profile_form));
 
   PasswordForm account_form = form_;
   account_form.in_store = PasswordForm::Store::kAccountStore;
-  account_form.password_value = base::ASCIIToUTF16("AccountPassword");
+  account_form.password_value = u"AccountPassword";
   std::vector<std::unique_ptr<PasswordForm>> account_forms;
   account_forms.push_back(std::make_unique<PasswordForm>(account_form));
 
@@ -212,7 +212,7 @@ TEST_F(CredentialManagerPendingRequestTaskTest,
       {federation_url}, StoresToQuery::kProfileAndAccountStores);
 
   form_.federation_origin = url::Origin::Create(federation_url);
-  form_.password_value = base::string16();
+  form_.password_value = std::u16string();
   form_.signon_realm = "federation://example.com/google.com";
 
   PasswordForm profile_form = form_;

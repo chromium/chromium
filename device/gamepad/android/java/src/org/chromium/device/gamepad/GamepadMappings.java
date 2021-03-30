@@ -32,18 +32,21 @@ abstract class GamepadMappings {
     static final String AMAZON_FIRE_DEVICE_NAME = "Amazon Fire Game Controller";
 
     @VisibleForTesting
-    static final int PS_DUALSHOCK_4_VENDOR_ID = 1356;
+    static final int SONY_VENDOR_ID = 0x054c;
     @VisibleForTesting
-    static final int PS_DUALSHOCK_4_PRODUCT_ID = 1476;
+    static final int PS_DUALSHOCK_4_PRODUCT_ID = 0x05c4;
     @VisibleForTesting
-    static final int PS_DUALSHOCK_4_SLIM_PRODUCT_ID = 2508;
+    static final int PS_DUALSHOCK_4_SLIM_PRODUCT_ID = 0x09cc;
     @VisibleForTesting
-    static final int PS_DUALSHOCK_4_USB_RECEIVER_PRODUCT_ID = 2976;
+    static final int PS_DUALSHOCK_4_USB_RECEIVER_PRODUCT_ID = 0x0ba0;
+    static final int PS_DUAL_SENSE_PRODUCT_ID = 0x0ce6;
 
     @VisibleForTesting
-    static final int XBOX_ONE_S_2016_FIRMWARE_VENDOR_ID = 0x045e;
+    static final int MICROSOFT_VENDOR_ID = 0x045e;
     @VisibleForTesting
     static final int XBOX_ONE_S_2016_FIRMWARE_PRODUCT_ID = 0x02e0;
+    @VisibleForTesting
+    static final int XBOX_SERIES_X_BLUETOOTH_PRODUCT_ID = 0x0b13;
 
     @VisibleForTesting
     static final int BROADCOM_VENDOR_ID = 0x0a5c;
@@ -53,7 +56,7 @@ abstract class GamepadMappings {
     private static final float BUTTON_AXIS_DEADZONE = 0.01f;
 
     public static GamepadMappings getMappings(InputDevice device, int[] axes, BitSet buttons) {
-        GamepadMappings mappings = getMappings(device.getProductId(), device.getVendorId(), axes);
+        GamepadMappings mappings = getMappings(device.getVendorId(), device.getProductId(), axes);
         if (mappings == null) {
             mappings = getMappings(device.getName());
         }
@@ -64,29 +67,39 @@ abstract class GamepadMappings {
     }
 
     @VisibleForTesting
-    static GamepadMappings getMappings(int productId, int vendorId, int[] axes) {
-        // Device name of a DualShock 4 gamepad is "Wireless Controller". This is not reliably
-        // unique so we better go by the product and vendor ids.
-        if (vendorId == PS_DUALSHOCK_4_VENDOR_ID
-                && (productId == PS_DUALSHOCK_4_PRODUCT_ID
-                           || productId == PS_DUALSHOCK_4_SLIM_PRODUCT_ID
-                           || productId == PS_DUALSHOCK_4_USB_RECEIVER_PRODUCT_ID)) {
-            // Android 9 included improvements for Sony PlayStation gamepads that changed the
-            // KeyEvent and MotionEvent codes for some buttons and axes. Use an alternate mapping
-            // for versions of Android that include these improvements.
-            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                return new XboxCompatibleGamepadMappings();
+    static GamepadMappings getMappings(int vendorId, int productId, int[] axes) {
+        if (vendorId == SONY_VENDOR_ID) {
+            if (productId == PS_DUALSHOCK_4_PRODUCT_ID
+                    || productId == PS_DUALSHOCK_4_SLIM_PRODUCT_ID
+                    || productId == PS_DUALSHOCK_4_USB_RECEIVER_PRODUCT_ID) {
+                // Android 9 included improvements for PS3 and PS4 gamepads that changed the
+                // KeyEvent and MotionEvent codes for some buttons and axes. Use an alternate
+                // mapping for versions of Android that include these improvements.
+                if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    return new XboxCompatibleGamepadMappings();
+                }
+                return new Ps4Ps5GamepadMappings();
             }
-            return new Dualshock4GamepadMappingsPreP();
+            if (productId == PS_DUAL_SENSE_PRODUCT_ID) {
+                // Android 12 includes a new driver for PS5 gamepads. Use an alternate mapping for
+                // versions of Android without this driver.
+                if (android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.R) {
+                    return new Ps4Ps5GamepadMappings();
+                }
+            }
         }
-        // Microsoft released a firmware update for the Xbox One S gamepad that modified the button
-        // and axis assignments. With the new firmware, these gamepads work correctly in Android
-        // using the default mapping, but a custom mapping is still required for the old firmware.
-        // Both gamepads return the same device name, so we must compare hardware IDs to distinguish
-        // them.
-        if (vendorId == XBOX_ONE_S_2016_FIRMWARE_VENDOR_ID
-                && productId == XBOX_ONE_S_2016_FIRMWARE_PRODUCT_ID) {
-            return new XboxOneS2016FirmwareMappings();
+        if (vendorId == MICROSOFT_VENDOR_ID) {
+            // Microsoft released a firmware update for the Xbox One S gamepad that modified the
+            // button and axis assignments. With the new firmware, these gamepads work correctly in
+            // Android using the default mapping, but a custom mapping is still required for the old
+            // firmware. Both gamepads return the same device name, so we must compare hardware IDs
+            // to distinguish them.
+            if (productId == XBOX_ONE_S_2016_FIRMWARE_PRODUCT_ID) {
+                return new XboxOneS2016FirmwareMappings();
+            }
+            if (productId == XBOX_SERIES_X_BLUETOOTH_PRODUCT_ID) {
+                return new XboxSeriesXBluetoothMappings();
+            }
         }
         if (vendorId == BROADCOM_VENDOR_ID && productId == SNAKEBYTE_IDROIDCON_PRODUCT_ID) {
             return new SnakebyteIDroidConMappings(axes);
@@ -427,6 +440,34 @@ abstract class GamepadMappings {
         }
     }
 
+    private static class XboxSeriesXBluetoothMappings extends GamepadMappings {
+        private static final int BUTTON_INDEX_SHARE = CanonicalButtonIndex.COUNT;
+
+        /**
+         * Method for mapping Xbox Series X controller (in Bluetooth mode) to
+         * standard gamepad button and axes values.
+         */
+        @Override
+        public void mapToStandardGamepad(
+                float[] mappedAxes, float[] mappedButtons, float[] rawAxes, float[] rawButtons) {
+            mapCommonXYABButtons(mappedButtons, rawButtons);
+            mapTriggerButtonsToTopShoulder(mappedButtons, rawButtons);
+            mapCommonThumbstickButtons(mappedButtons, rawButtons);
+            mapCommonStartSelectMetaButtons(mappedButtons, rawButtons);
+            mapHatAxisToDpadButtons(mappedButtons, rawAxes);
+            mapXYAxes(mappedAxes, rawAxes);
+            mapZAndRZAxesToRightStick(mappedAxes, rawAxes);
+            mapPedalAxesToBottomShoulder(mappedButtons, rawAxes);
+            mappedButtons[BUTTON_INDEX_SHARE] = rawButtons[KeyEvent.KEYCODE_MEDIA_RECORD];
+        }
+
+        @Override
+        public int getButtonsLength() {
+            // Include the Share button.
+            return CanonicalButtonIndex.COUNT + 1;
+        }
+    }
+
     private static class Dualshock3SixAxisGamepadMappingsPreP extends GamepadMappings {
         /**
          * Method for mapping DualShock 3 and SIXAXIS gamepad inputs to standard gamepad button and
@@ -475,15 +516,16 @@ abstract class GamepadMappings {
         }
     }
 
-    static class Dualshock4GamepadMappingsPreP extends GamepadMappings {
+    static class Ps4Ps5GamepadMappings extends GamepadMappings {
         // Scale input from [-1, 1] to [0, 1] uniformly.
         private static float scaleRxRy(float input) {
             return 1.f - ((1.f - input) / 2.f);
         }
 
         /**
-         * Method for mapping DualShock 4 gamepad inputs to standard gamepad button and axis values.
-         * This mapping function should only be used on Android 9 and earlier.
+         * Method for mapping DualShock 4 and DualSense gamepad inputs to standard gamepad button
+         * and axis values. This mapping function should only be used for DualShock 4 on Android 9
+         * and earlier and DualSense on Android 11 and earlier.
          */
         @Override
         public void mapToStandardGamepad(

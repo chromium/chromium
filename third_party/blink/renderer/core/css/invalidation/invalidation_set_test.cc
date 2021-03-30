@@ -385,12 +385,5 @@ TEST(InvalidationSetTest, SelfInvalidationSet_Combine) {
   EXPECT_TRUE(set->InvalidatesSelf());
 }
 
-#ifndef NDEBUG
-TEST(InvalidationSetTest, ShowDebug) {
-  scoped_refptr<InvalidationSet> set = DescendantInvalidationSet::Create();
-  set->Show();
-}
-#endif  // NDEBUG
-
 }  // namespace
 }  // namespace blink

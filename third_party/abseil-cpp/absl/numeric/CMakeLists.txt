@@ -86,3 +86,15 @@ absl_cc_library(
     absl::int128
   PUBLIC
 )
+
+absl_cc_library(
+  NAME
+    numeric_representation
+  HDRS
+    "internal/representation.h"
+  COPTS
+    ${ABSL_DEFAULT_COPTS}
+  DEPS
+    absl::config
+  PUBLIC
+)

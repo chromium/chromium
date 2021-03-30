@@ -39,7 +39,7 @@ class CONTENT_EXPORT FindRequestManager {
   // Initiates a find operation for |search_text| with the options specified in
   // |options|. |request_id| uniquely identifies the find request.
   void Find(int request_id,
-            const base::string16& search_text,
+            const std::u16string& search_text,
             blink::mojom::FindOptionsPtr options);
 
   // Stops the active find session and clears the general highlighting of the
@@ -120,14 +120,14 @@ class CONTENT_EXPORT FindRequestManager {
     int id = kInvalidId;
 
     // The text that is being searched for in this find request.
-    base::string16 search_text;
+    std::u16string search_text;
 
     // The set of find options in effect for this find request.
     blink::mojom::FindOptionsPtr options;
 
     FindRequest();
     FindRequest(int id,
-                const base::string16& search_text,
+                const std::u16string& search_text,
                 blink::mojom::FindOptionsPtr options);
     FindRequest(const FindRequest& request);
     ~FindRequest();

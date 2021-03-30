@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/modules/filesystem/dom_file_system.h"
 
 #include <memory>
+#include <utility>
 
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
@@ -174,8 +175,7 @@ void DOMFileSystem::ScheduleCallback(ExecutionContext* execution_context,
   execution_context->GetTaskRunner(TaskType::kFileReading)
       ->PostTask(FROM_HERE,
                  WTF::Bind(&RunCallback, WrapWeakPersistent(execution_context),
-                           WTF::Passed(std::move(task)),
-                           WTF::Passed(std::move(identifier))));
+                           std::move(task), std::move(identifier)));
 }
 
 void DOMFileSystem::Trace(Visitor* visitor) const {

@@ -8,8 +8,11 @@ namespace location {
 namespace nearby {
 namespace chrome {
 
-BluetoothDevice::BluetoothDevice(bluetooth::mojom::DeviceInfoPtr device_info)
-    : device_info_(std::move(device_info)) {}
+BluetoothDevice::BluetoothDevice(
+    bluetooth::mojom::DeviceInfoPtr device_info,
+    base::Optional<base::TimeTicks> last_discovered_time)
+    : device_info_(std::move(device_info)),
+      last_discovered_time_(last_discovered_time) {}
 
 BluetoothDevice::~BluetoothDevice() = default;
 
@@ -21,10 +24,12 @@ std::string BluetoothDevice::GetMacAddress() const {
   return device_info_->address;
 }
 
-void BluetoothDevice::UpdateDeviceInfo(
-    bluetooth::mojom::DeviceInfoPtr device_info) {
+void BluetoothDevice::UpdateDevice(
+    bluetooth::mojom::DeviceInfoPtr device_info,
+    base::Optional<base::TimeTicks> last_discovered_time) {
   DCHECK_EQ(device_info_->address, device_info->address);
   device_info_ = std::move(device_info);
+  last_discovered_time_ = last_discovered_time;
 }
 
 }  // namespace chrome

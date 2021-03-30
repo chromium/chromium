@@ -12,26 +12,18 @@
     [CallWith=ScriptState, RaisesException, MeasureAs=WebCodecsVideoEncoder]
     constructor(VideoEncoderInit init);
 
-    // The number of pending encode requests. This does not include requests that
-    // have been sent to the underlying codec.
-    //
-    // Applications can minimize underflow by enqueueing encode requests until
-    // |encodeQueueSize| is greater than a constant.
+    // The number of pending encode requests. This does not include requests
+    // that have been sent to the underlying codec.
     readonly attribute long encodeQueueSize;
 
-    // Performs original configuration of the encoder.
-    // Resolved after configuration is done. It should be called only
-    // once per encoder instance, before calling any other methods.
+    // Enqueues a control message to configure the video encoder for encoding
+    // frames as described by config.
     [RaisesException]
     void configure(VideoEncoderConfig config);
 
     // Enqueues a request to encode a frame.
     // Results of the encoding (EncodedVideoChunk) are returned via
     // the output callback provided in configure().
-    // Resolved when encoded processed the given frame.
-    // The output callback can be called before or after the result is resolved.
-    // Several encoded requests can be resolved before even a single output
-    // is produced.
     [RaisesException]
     void encode(VideoFrame frame,
                          optional VideoEncoderEncodeOptions options = {});
@@ -46,13 +38,11 @@
     //
     // Output for earlier encoding requests will not be emitted.
     // The next encoded frame will be a keyframe.
-    // Required a configure() to be call to set configuration once again.
+    // Requires configure() to be call to set configuration once again.
     [RaisesException]
     void reset();
 
     // Enqueues a request to shut down the encoder and free its resources.
-    // Resolved after all resources are released and all following requests
-    // rejected.
     [RaisesException]
     void close();
 

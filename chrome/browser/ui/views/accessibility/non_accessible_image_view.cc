@@ -6,6 +6,7 @@
 
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 NonAccessibleImageView::NonAccessibleImageView() {}
 
@@ -14,3 +15,6 @@ NonAccessibleImageView::~NonAccessibleImageView() {}
 void NonAccessibleImageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->AddState(ax::mojom::State::kInvisible);
 }
+
+BEGIN_METADATA(NonAccessibleImageView, views::ImageView)
+END_METADATA

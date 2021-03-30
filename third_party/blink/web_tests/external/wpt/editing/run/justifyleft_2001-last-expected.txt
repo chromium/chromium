@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 447 tests; 366 PASS, 81 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 447 tests; 372 PASS, 75 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:left>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra" queryCommandIndeterm("defaultparagraphseparator") before
 PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:left>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra" queryCommandState("defaultparagraphseparator") before
 FAIL [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:left>[foo<div style=text-align:left contenteditable=false>bar</div>baz]</div><p>extra" queryCommandValue("defaultparagraphseparator") before assert_equals: Wrong result returned expected "p" but got "div"
@@ -241,7 +241,7 @@ PASS [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifyleft"
 PASS [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra": execCommand("defaultparagraphseparator", false, "div") return value
 PASS [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra": execCommand("justifyleft", false, "") return value
 PASS [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" checks for modifications to non-editable content
-FAIL [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<p>extra</p>" but got "<div style=\"text-align:end\">foo</div><p>extra</p>"
+FAIL [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<p>extra</p>" but got "<div style=\"text-align:left\">foo</div><p>extra</p>"
 PASS [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandIndeterm("stylewithcss") before
 PASS [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandState("stylewithcss") before
 PASS [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandValue("stylewithcss") before
@@ -255,8 +255,8 @@ PASS [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifyleft"
 PASS [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandState("defaultparagraphseparator") after
 PASS [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandValue("defaultparagraphseparator") after
 PASS [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandIndeterm("justifyleft") before
-FAIL [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandState("justifyleft") before assert_equals: Wrong result returned expected false but got true
-FAIL [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandValue("justifyleft") before assert_equals: Wrong result returned expected "right" but got "true"
+PASS [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandState("justifyleft") before
+FAIL [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandValue("justifyleft") before assert_equals: Wrong result returned expected "right" but got "false"
 PASS [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandIndeterm("justifyleft") after
 PASS [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandState("justifyleft") after
 FAIL [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandValue("justifyleft") after assert_equals: Wrong result returned expected "left" but got "true"
@@ -264,7 +264,7 @@ PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyleft
 PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra": execCommand("defaultparagraphseparator", false, "div") return value
 PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra": execCommand("justifyleft", false, "") return value
 PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" checks for modifications to non-editable content
-FAIL [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<p>extra</p>" but got "<div style=\"text-align:end\">foo</div><p>extra</p>"
+FAIL [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<p>extra</p>" but got "<div style=\"text-align:left\">foo</div><p>extra</p>"
 PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandIndeterm("stylewithcss") before
 PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandState("stylewithcss") before
 PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandValue("stylewithcss") before
@@ -278,8 +278,8 @@ PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyleft
 PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandState("defaultparagraphseparator") after
 PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandValue("defaultparagraphseparator") after
 PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandIndeterm("justifyleft") before
-FAIL [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandState("justifyleft") before assert_equals: Wrong result returned expected false but got true
-FAIL [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandValue("justifyleft") before assert_equals: Wrong result returned expected "right" but got "true"
+PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandState("justifyleft") before
+FAIL [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandValue("justifyleft") before assert_equals: Wrong result returned expected "right" but got "false"
 PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandIndeterm("justifyleft") after
 PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandState("justifyleft") after
 FAIL [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandValue("justifyleft") after assert_equals: Wrong result returned expected "left" but got "true"
@@ -287,7 +287,7 @@ PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyleft","
 PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra": execCommand("defaultparagraphseparator", false, "p") return value
 PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra": execCommand("justifyleft", false, "") return value
 PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" checks for modifications to non-editable content
-FAIL [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<p>extra</p>" but got "<div style=\"text-align:end\">foo</div><p>extra</p>"
+FAIL [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<p>extra</p>" but got "<div style=\"text-align:left\">foo</div><p>extra</p>"
 PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandIndeterm("stylewithcss") before
 PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandState("stylewithcss") before
 PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandValue("stylewithcss") before
@@ -301,8 +301,8 @@ PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyleft","
 PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandState("defaultparagraphseparator") after
 PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandValue("defaultparagraphseparator") after
 PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandIndeterm("justifyleft") before
-FAIL [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandState("justifyleft") before assert_equals: Wrong result returned expected false but got true
-FAIL [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandValue("justifyleft") before assert_equals: Wrong result returned expected "right" but got "true"
+PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandState("justifyleft") before
+FAIL [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandValue("justifyleft") before assert_equals: Wrong result returned expected "right" but got "false"
 PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandIndeterm("justifyleft") after
 PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandState("justifyleft") after
 FAIL [["stylewithcss","true"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandValue("justifyleft") after assert_equals: Wrong result returned expected "left" but got "true"
@@ -310,7 +310,7 @@ PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyleft",
 PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra": execCommand("defaultparagraphseparator", false, "p") return value
 PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra": execCommand("justifyleft", false, "") return value
 PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" checks for modifications to non-editable content
-FAIL [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<p>extra</p>" but got "<div style=\"text-align:end\">foo</div><p>extra</p>"
+FAIL [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<p>extra</p>" but got "<div style=\"text-align:left\">foo</div><p>extra</p>"
 PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandIndeterm("stylewithcss") before
 PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandState("stylewithcss") before
 PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandValue("stylewithcss") before
@@ -324,8 +324,8 @@ PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyleft",
 PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandState("defaultparagraphseparator") after
 PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandValue("defaultparagraphseparator") after
 PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandIndeterm("justifyleft") before
-FAIL [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandState("justifyleft") before assert_equals: Wrong result returned expected false but got true
-FAIL [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandValue("justifyleft") before assert_equals: Wrong result returned expected "right" but got "true"
+PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandState("justifyleft") before
+FAIL [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandValue("justifyleft") before assert_equals: Wrong result returned expected "right" but got "false"
 PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandIndeterm("justifyleft") after
 PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandState("justifyleft") after
 FAIL [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifyleft",""]] "<div style=text-align:end>[foo]</div><p>extra" queryCommandValue("justifyleft") after assert_equals: Wrong result returned expected "left" but got "true"
@@ -364,7 +364,7 @@ FAIL [["defaultparagraphseparator","p"],["justifyleft",""]] "<div dir=rtl style=
 PASS [["defaultparagraphseparator","div"],["justifyleft",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra": execCommand("defaultparagraphseparator", false, "div") return value
 PASS [["defaultparagraphseparator","div"],["justifyleft",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra": execCommand("justifyleft", false, "") return value
 PASS [["defaultparagraphseparator","div"],["justifyleft",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" checks for modifications to non-editable content
-FAIL [["defaultparagraphseparator","div"],["justifyleft",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:left\"><div dir=\"rtl\">foo</div></div><p>extra</p>" but got "<div dir=\"rtl\" style=\"text-align:left\">foo</div><p>extra</p>"
+FAIL [["defaultparagraphseparator","div"],["justifyleft",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:left\"><div dir=\"rtl\">foo</div></div><p>extra</p>" but got "<div dir=\"rtl\" style=\"text-align:end\">foo</div><p>extra</p>"
 PASS [["defaultparagraphseparator","div"],["justifyleft",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" queryCommandIndeterm("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","div"],["justifyleft",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" queryCommandState("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","div"],["justifyleft",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" queryCommandValue("defaultparagraphseparator") before
@@ -372,15 +372,15 @@ PASS [["defaultparagraphseparator","div"],["justifyleft",""]] "<div dir=rtl styl
 PASS [["defaultparagraphseparator","div"],["justifyleft",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" queryCommandState("defaultparagraphseparator") after
 PASS [["defaultparagraphseparator","div"],["justifyleft",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" queryCommandValue("defaultparagraphseparator") after
 PASS [["defaultparagraphseparator","div"],["justifyleft",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" queryCommandIndeterm("justifyleft") before
-FAIL [["defaultparagraphseparator","div"],["justifyleft",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" queryCommandState("justifyleft") before assert_equals: Wrong result returned expected true but got false
-FAIL [["defaultparagraphseparator","div"],["justifyleft",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" queryCommandValue("justifyleft") before assert_equals: Wrong result returned expected "left" but got "false"
+PASS [["defaultparagraphseparator","div"],["justifyleft",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" queryCommandState("justifyleft") before
+FAIL [["defaultparagraphseparator","div"],["justifyleft",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" queryCommandValue("justifyleft") before assert_equals: Wrong result returned expected "left" but got "true"
 PASS [["defaultparagraphseparator","div"],["justifyleft",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" queryCommandIndeterm("justifyleft") after
 PASS [["defaultparagraphseparator","div"],["justifyleft",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" queryCommandState("justifyleft") after
 FAIL [["defaultparagraphseparator","div"],["justifyleft",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" queryCommandValue("justifyleft") after assert_equals: Wrong result returned expected "left" but got "true"
 PASS [["defaultparagraphseparator","p"],["justifyleft",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra": execCommand("defaultparagraphseparator", false, "p") return value
 PASS [["defaultparagraphseparator","p"],["justifyleft",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra": execCommand("justifyleft", false, "") return value
 PASS [["defaultparagraphseparator","p"],["justifyleft",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" checks for modifications to non-editable content
-FAIL [["defaultparagraphseparator","p"],["justifyleft",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:left\"><div dir=\"rtl\">foo</div></div><p>extra</p>" but got "<div dir=\"rtl\" style=\"text-align:left\">foo</div><p>extra</p>"
+FAIL [["defaultparagraphseparator","p"],["justifyleft",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\"text-align:left\"><div dir=\"rtl\">foo</div></div><p>extra</p>" but got "<div dir=\"rtl\" style=\"text-align:end\">foo</div><p>extra</p>"
 PASS [["defaultparagraphseparator","p"],["justifyleft",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" queryCommandIndeterm("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","p"],["justifyleft",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" queryCommandState("defaultparagraphseparator") before
 PASS [["defaultparagraphseparator","p"],["justifyleft",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" queryCommandValue("defaultparagraphseparator") before
@@ -388,8 +388,8 @@ PASS [["defaultparagraphseparator","p"],["justifyleft",""]] "<div dir=rtl style=
 PASS [["defaultparagraphseparator","p"],["justifyleft",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" queryCommandState("defaultparagraphseparator") after
 PASS [["defaultparagraphseparator","p"],["justifyleft",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" queryCommandValue("defaultparagraphseparator") after
 PASS [["defaultparagraphseparator","p"],["justifyleft",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" queryCommandIndeterm("justifyleft") before
-FAIL [["defaultparagraphseparator","p"],["justifyleft",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" queryCommandState("justifyleft") before assert_equals: Wrong result returned expected true but got false
-FAIL [["defaultparagraphseparator","p"],["justifyleft",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" queryCommandValue("justifyleft") before assert_equals: Wrong result returned expected "left" but got "false"
+PASS [["defaultparagraphseparator","p"],["justifyleft",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" queryCommandState("justifyleft") before
+FAIL [["defaultparagraphseparator","p"],["justifyleft",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" queryCommandValue("justifyleft") before assert_equals: Wrong result returned expected "left" but got "true"
 PASS [["defaultparagraphseparator","p"],["justifyleft",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" queryCommandIndeterm("justifyleft") after
 PASS [["defaultparagraphseparator","p"],["justifyleft",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" queryCommandState("justifyleft") after
 FAIL [["defaultparagraphseparator","p"],["justifyleft",""]] "<div dir=rtl style=text-align:end>[foo]</div><p>extra" queryCommandValue("justifyleft") after assert_equals: Wrong result returned expected "left" but got "true"

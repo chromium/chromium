@@ -23,6 +23,7 @@
 #include "ui/views/controls/resize_area_delegate.h"
 #include "ui/views/drag_controller.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -113,6 +114,8 @@ class BrowserActionsContainer : public views::View,
                                 public ToolbarActionView::Delegate,
                                 public views::WidgetObserver {
  public:
+  METADATA_HEADER(BrowserActionsContainer);
+
   class Delegate {
    public:
     virtual ~Delegate() {}
@@ -149,7 +152,7 @@ class BrowserActionsContainer : public views::View,
   ~BrowserActionsContainer() override;
 
   // Get the number of toolbar actions being displayed.
-  size_t num_toolbar_actions() const { return toolbar_action_views_.size(); }
+  size_t GetNumToolbarActions() const;
 
   // Returns the browser this container is associated with.
   Browser* browser() const { return browser_; }
@@ -166,12 +169,10 @@ class BrowserActionsContainer : public views::View,
   }
 
   // Whether we are performing resize animation on the container.
-  bool animating() const {
-    return resize_animation_ && resize_animation_->is_animating();
-  }
+  bool GetAnimating() const;
 
   // Is the view being resized?
-  bool resizing() const { return resize_starting_width_.has_value(); }
+  bool GetResizing() const;
 
   // Returns the ID of the action represented by the view at |index|.
   std::string GetIdAt(size_t index) const;
@@ -186,11 +187,11 @@ class BrowserActionsContainer : public views::View,
   // Returns how many actions are currently visible. If the intent is to find
   // how many are visible once the container finishes animation, see
   // VisibleBrowserActionsAfterAnimation() below.
-  size_t VisibleBrowserActions() const;
+  size_t GetVisibleBrowserActions() const;
 
   // Returns how many actions will be visible once the container finishes
   // animating to a new size, or (if not animating) the currently visible icons.
-  size_t VisibleBrowserActionsAfterAnimation() const;
+  size_t GetVisibleBrowserActionsAfterAnimation() const;
 
   // Sets the color for the separator if present, called after construction and
   // on theme changes.
@@ -207,7 +208,8 @@ class BrowserActionsContainer : public views::View,
   bool CanDrop(const ui::OSExchangeData& data) override;
   int OnDragUpdated(const ui::DropTargetEvent& event) override;
   void OnDragExited() override;
-  int OnPerformDrop(const ui::DropTargetEvent& event) override;
+  ui::mojom::DragOperation OnPerformDrop(
+      const ui::DropTargetEvent& event) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // Overridden from views::DragController:

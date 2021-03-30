@@ -25,12 +25,15 @@ void EnterpriseDomainModel::SetEnterpriseDomainInfo(
     bool active_directory_managed) {
   enterprise_domain_manager_ = enterprise_domain_manager;
   active_directory_managed_ = active_directory_managed;
-  NotifyChanged();
-}
-
-void EnterpriseDomainModel::NotifyChanged() {
   for (auto& observer : observers_)
     observer.OnEnterpriseDomainChanged();
+}
+
+void EnterpriseDomainModel::SetEnterpriseAccountDomainInfo(
+    const std::string& account_domain_manager) {
+  account_domain_manager_ = account_domain_manager;
+  for (auto& observer : observers_)
+    observer.OnEnterpriseAccountDomainChanged();
 }
 
 }  // namespace ash

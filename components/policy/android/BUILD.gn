@@ -6,6 +6,7 @@ import("//build/config/android/rules.gni")
 
 _jni_sources = [
   "java/src/org/chromium/components/policy/CombinedPolicyProvider.java",
+  "java/src/org/chromium/components/policy/PolicyCacheUpdater.java",
   "java/src/org/chromium/components/policy/PolicyConverter.java",
   "java/src/org/chromium/components/policy/PolicyMap.java",
   "java/src/org/chromium/components/policy/PolicyService.java",
@@ -21,8 +22,7 @@ java_cpp_strings("java_switches_srcjar") {
 android_library("policy_java") {
   deps = [
     "//base:base_java",
-    "//base:jni_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   srcjar_deps = [ ":java_switches_srcjar" ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
@@ -30,6 +30,8 @@ android_library("policy_java") {
   sources = _jni_sources + [
               "java/src/org/chromium/components/policy/AbstractAppRestrictionsProvider.java",
               "java/src/org/chromium/components/policy/AppRestrictionsProvider.java",
+              "java/src/org/chromium/components/policy/PolicyCache.java",
+              "java/src/org/chromium/components/policy/PolicyCacheProvider.java",
               "java/src/org/chromium/components/policy/PolicyProvider.java",
             ]
 }
@@ -40,7 +42,8 @@ android_library("policy_java_test_support") {
     ":policy_java",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/junit",
   ]
   sources = [
@@ -61,6 +64,8 @@ java_library("components_policy_junit_tests") {
   sources = [
     "junit/src/org/chromium/components/policy/AbstractAppRestrictionsProviderTest.java",
     "junit/src/org/chromium/components/policy/CombinedPolicyProviderTest.java",
+    "junit/src/org/chromium/components/policy/PolicyCacheProviderTest.java",
+    "junit/src/org/chromium/components/policy/PolicyCacheTest.java",
     "junit/src/org/chromium/components/policy/PolicyConverterTest.java",
     "junit/src/org/chromium/components/policy/test/annotations/PoliciesTest.java",
   ]
@@ -78,6 +83,7 @@ java_library("components_policy_junit_tests") {
 }
 
 _test_jni_sources = [
+  "javatests/src/org/chromium/components/policy/test/PolicyCacheUpdaterTestSupporter.java",
   "javatests/src/org/chromium/components/policy/test/PolicyMapTestSupporter.java",
   "javatests/src/org/chromium/components/policy/test/PolicyServiceTestSupporter.java",
 ]
@@ -87,7 +93,6 @@ android_library("native_test_support_java") {
   deps = [
     ":policy_java",
     "//base:base_java",
-    "//base:jni_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]

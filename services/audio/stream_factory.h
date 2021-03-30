@@ -18,9 +18,9 @@
 #include "base/threading/thread.h"
 #include "media/mojo/mojom/audio_logging.mojom.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
+#include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/audio/loopback_coordinator.h"
-#include "services/audio/public/mojom/stream_factory.mojom.h"
 
 namespace base {
 class UnguessableToken;
@@ -38,16 +38,16 @@ class LocalMuter;
 class LoopbackStream;
 class OutputStream;
 
-// This class is used to provide the StreamFactory interface. It will typically
-// be instantiated when needed and remain for the lifetime of the service.
-// Destructing the factory will also destroy all the streams it has created.
-// |audio_manager| must outlive the factory.
-class StreamFactory final : public mojom::StreamFactory {
+// This class is used to provide the AudioStreamFactory interface. It will
+// typically be instantiated when needed and remain for the lifetime of the
+// service. Destructing the factory will also destroy all the streams it has
+// created. |audio_manager| must outlive the factory.
+class StreamFactory final : public media::mojom::AudioStreamFactory {
  public:
   explicit StreamFactory(media::AudioManager* audio_manager);
   ~StreamFactory() final;
 
-  void Bind(mojo::PendingReceiver<mojom::StreamFactory> receiver);
+  void Bind(mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver);
 
   // StreamFactory implementation.
   void CreateInputStream(
@@ -75,8 +75,9 @@ class StreamFactory final : public mojom::StreamFactory {
       const media::AudioParameters& params,
       const base::UnguessableToken& group_id,
       CreateOutputStreamCallback created_callback) final;
-  void BindMuter(mojo::PendingAssociatedReceiver<mojom::LocalMuter> receiver,
-                 const base::UnguessableToken& group_id) final;
+  void BindMuter(
+      mojo::PendingAssociatedReceiver<media::mojom::LocalMuter> receiver,
+      const base::UnguessableToken& group_id) final;
   void CreateLoopbackStream(
       mojo::PendingReceiver<media::mojom::AudioInputStream> stream_receiver,
       mojo::PendingRemote<media::mojom::AudioInputStreamClient> client,
@@ -101,7 +102,7 @@ class StreamFactory final : public mojom::StreamFactory {
 
   media::AudioManager* const audio_manager_;
 
-  mojo::ReceiverSet<mojom::StreamFactory> receivers_;
+  mojo::ReceiverSet<media::mojom::AudioStreamFactory> receivers_;
 
   // Order of the following members is important for a clean shutdown.
   LoopbackCoordinator coordinator_;

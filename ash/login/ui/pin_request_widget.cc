@@ -58,8 +58,8 @@ void PinRequestWidget::SetShownCallbackForTesting(
 }
 
 void PinRequestWidget::UpdateState(PinRequestViewState state,
-                                   const base::string16& title,
-                                   const base::string16& description) {
+                                   const std::u16string& title,
+                                   const std::u16string& description) {
   DCHECK_EQ(instance_, this);
   GetView()->UpdateState(state, title, description);
 }

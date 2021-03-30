@@ -120,7 +120,11 @@ class AudioSinkAudioTrackImpl {
 
     // Maximum amount a timestamp may deviate from the previous one to be considered stable at
     // startup or after an underrun event.
-    private static final long MAX_STABLE_TIMESTAMP_DEVIATION_NSEC = 150 * USEC_IN_NSEC;
+    // According to CDD https://source.android.com/compatibility/android-cdd#5_6_audio_latency
+    // [C-1-1] The output timestamp returned by AudioTrack.getTimestamp and
+    // AAudioStream_getTimestamp is accurate to +/- 2 ms.
+    private static final long MAX_STABLE_TIMESTAMP_DEVIATION_NSEC = 2000 * USEC_IN_NSEC;
+
     // Number of consecutive stable timestamps needed to make it a valid reference point at startup
     // or after an underrun event.
     private static final int MIN_TIMESTAMP_STABILITY_CNT = 3;

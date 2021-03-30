@@ -78,6 +78,22 @@ enum class StatusCode : StatusCodeType {
   kCreateVideoProcessorEnumeratorFailed = 0x00000312,
   kCreateVideoProcessorFailed = 0x00000313,
   kQueryVideoContextFailed = 0x00000314,
+  kAcceleratorFlushFailed = 0x00000315,
+  kTryAgainNotSupported = 0x00000316,
+  kCryptoConfigFailed = 0x00000317,
+  kDecoderBeginFrameFailed = 0x00000318,
+  kReleaseDecoderBufferFailed = 0x00000319,
+  kGetPicParamBufferFailed = 0x00000320,
+  kReleasePicParamBufferFailed = 0x00000321,
+  kGetBitstreamBufferFailed = 0x00000322,
+  kReleaseBitstreamBufferFailed = 0x00000323,
+  kGetSliceControlBufferFailed = 0x00000324,
+  kReleaseSliceControlBufferFailed = 0x00000325,
+  kDecoderEndFrameFailed = 0x00000326,
+  kSubmitDecoderBuffersFailed = 0x00000327,
+  kGetQuantBufferFailed = 0x00000328,
+  kReleaseQuantBufferFailed = 0x00000329,
+  kBitstreamBufferSliceTooBig = 0x00000330,
 
   // MojoDecoder Errors: 0x04
   kMojoDecoderNoWrappedDecoder = 0x00000401,
@@ -159,6 +175,13 @@ enum class StatusCode : StatusCodeType {
 
   // Frame operation errors: 0x0A
   kUnsupportedFrameFormatError = 0x00000A01,
+
+  // DecoderStream errors: 0x0B
+  kDecoderStreamInErrorState = 0x00000B00,
+  kDecoderStreamReinitFailed = 0x00000B01,
+  // This is a temporary error for use while the demuxer doesn't return a
+  // proper status.
+  kDecoderStreamDemuxerError = 0x00000B02,
 
   // DecodeStatus temporary codes.  These names were chosen to match the
   // DecodeStatus enum, so that un-converted code can DecodeStatus::OK/etc.

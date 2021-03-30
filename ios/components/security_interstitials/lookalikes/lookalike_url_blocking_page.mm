@@ -47,8 +47,8 @@ LookalikeUrlBlockingPage::LookalikeUrlBlockingPage(
 LookalikeUrlBlockingPage::~LookalikeUrlBlockingPage() {
   // Update metrics when the interstitial is closed or user navigates away.
   ReportUkmForLookalikeUrlBlockingPageIfNeeded(
-      source_id_, match_type_,
-      LookalikeUrlBlockingPageUserAction::kCloseOrBack);
+      source_id_, match_type_, LookalikeUrlBlockingPageUserAction::kCloseOrBack,
+      /*triggered_by_initial_url=*/false);
 }
 
 bool LookalikeUrlBlockingPage::ShouldCreateNewNavigation() const {
@@ -104,14 +104,16 @@ void LookalikeUrlBlockingPage::HandleScriptCommand(
         security_interstitials::MetricsHelper::DONT_PROCEED);
     ReportUkmForLookalikeUrlBlockingPageIfNeeded(
         source_id_, match_type_,
-        LookalikeUrlBlockingPageUserAction::kAcceptSuggestion);
-      controller_->GoBack();
+        LookalikeUrlBlockingPageUserAction::kAcceptSuggestion,
+        /*triggered_by_initial_url=*/false);
+    controller_->GoBack();
   } else if (command == security_interstitials::CMD_PROCEED) {
     controller_->metrics_helper()->RecordUserDecision(
         security_interstitials::MetricsHelper::PROCEED);
     ReportUkmForLookalikeUrlBlockingPageIfNeeded(
         source_id_, match_type_,
-        LookalikeUrlBlockingPageUserAction::kClickThrough);
+        LookalikeUrlBlockingPageUserAction::kClickThrough,
+        /*triggered_by_initial_url=*/false);
     controller_->Proceed();
   }
 }

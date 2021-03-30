@@ -16,6 +16,8 @@
 @property(nonatomic, strong, readonly) UIButton* authenticateButton;
 // The button to go to the tab switcher.
 @property(nonatomic, strong, readonly) UIButton* tabSwitcherButton;
+// The image view with the incognito logo.
+@property(nonatomic, strong, readonly) UIView* logoView;
 
 @end
 

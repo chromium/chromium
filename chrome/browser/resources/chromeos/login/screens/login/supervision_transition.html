@@ -1,0 +1,70 @@
+<!-- Copyright 2018 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<link rel="import" href="/components/oobe_i18n_behavior.html">
+
+<link rel="import" href="/components/common_styles.html">
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
+<link rel="import" href="/components/login_screen_behavior.html">
+<link rel="import" href="/components/multi_step_behavior.html">
+
+<dom-module id="supervision-transition-element">
+  <template>
+    <style include="oobe-dialog-host">
+      paper-progress {
+        --paper-progress-active-color: rgb(66, 133, 244); /*#4285F4*/
+        --paper-progress-container-color: rgb(206, 224, 252); /*#CEE0FC*/
+        --paper-progress-secondary-color: rgb(66, 133, 244); /*#4285F4*/
+        height: 3px;
+        width: 100%;
+      }
+    </style>
+    <oobe-adaptive-dialog id="supervisionTransitionDialog" role="dialog"
+        aria-label$="[[getDialogA11yTitle_(locale, isRemovingSupervision_)]]"
+        for-step="progress">
+      <iron-icon slot="icon" src="chrome://oobe/supervision_icon.png"
+          aria-hidden="true">
+      </iron-icon>
+      <h1 slot="title" id="supervisionTitle">
+        <div hidden="[[isRemovingSupervision_]]">
+          [[i18nDynamic(locale,'addingSupervisionTitle')]]
+        </div>
+        <div hidden="[[!isRemovingSupervision_]]">
+          [[i18nDynamic(locale,'removingSupervisionTitle')]]
+        </div>
+      </h1>
+      <div slot="subtitle">
+        [[i18nDynamic(locale, 'supervisionTransitionIntroMessage')]]
+      </div>
+      <div slot="content" class="flex layout vertical center-justified"
+          aria-live="off">
+        <paper-progress class="slow" aria-hidden="true" indeterminate>
+        </paper-progress>
+      </div>
+    </oobe-adaptive-dialog>
+    <oobe-adaptive-dialog id="supervisionTransitionErrorDialog" role="alert"
+        aria-label$="[[i18nDynamic(locale,'supervisionTransitionErrorTitle')]]"
+        for-step="error">
+      <iron-icon slot="icon" src="chrome://oobe/supervision_icon.png"
+          aria-hidden="true">
+      </iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'supervisionTransitionErrorTitle')]]
+      </h1>
+      <div slot="subtitle">
+        [[i18nDynamic(locale, 'supervisionTransitionErrorMessage')]]
+      </div>
+      <div slot="content" class="flex layout vertical center center-justified">
+        <img class="oobe-illustration" srcset="../../images/1x/error.svg 1x,
+            ../../images/2x/error.svg 2x">
+      </div>
+      <div slot="bottom-buttons">
+        <oobe-text-button id="accept-button" on-click="onAcceptAndContinue_"
+            text-key="supervisionTransitionButton" class="focus-on-show"
+            inverse>
+        </oobe-text-button>
+      </div>
+    </oobe-adaptive-dialog>
+  </template>
+</dom-module>

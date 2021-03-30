@@ -29,9 +29,9 @@ class DevToolsEmbedderMessageDispatcher {
  public:
   class Delegate {
    public:
-    using DispatchCallback = base::Callback<void(const base::Value*)>;
+    using DispatchCallback = base::OnceCallback<void(const base::Value*)>;
 
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     virtual void ActivateWindow() = 0;
     virtual void CloseWindow() = 0;
@@ -39,8 +39,7 @@ class DevToolsEmbedderMessageDispatcher {
     virtual void SetInspectedPageBounds(const gfx::Rect& rect) = 0;
     virtual void InspectElementCompleted() = 0;
     virtual void InspectedURLChanged(const std::string& url) = 0;
-    virtual void SetIsDocked(const DispatchCallback& callback,
-                             bool is_docked) = 0;
+    virtual void SetIsDocked(DispatchCallback callback, bool is_docked) = 0;
     virtual void OpenInNewTab(const std::string& url) = 0;
     virtual void ShowItemInFolder(const std::string& file_system_path) = 0;
     virtual void SaveToFile(const std::string& url,
@@ -57,7 +56,7 @@ class DevToolsEmbedderMessageDispatcher {
                            const std::string& file_system_path,
                            const std::string& excluded_folders) = 0;
     virtual void StopIndexing(int index_request_id) = 0;
-    virtual void LoadNetworkResource(const DispatchCallback& callback,
+    virtual void LoadNetworkResource(DispatchCallback callback,
                                      const std::string& url,
                                      const std::string& headers,
                                      int stream_id) = 0;
@@ -82,7 +81,7 @@ class DevToolsEmbedderMessageDispatcher {
     virtual void OpenRemotePage(const std::string& browser_id,
                                 const std::string& url) = 0;
     virtual void OpenNodeFrontend() = 0;
-    virtual void GetPreferences(const DispatchCallback& callback) = 0;
+    virtual void GetPreferences(DispatchCallback callback) = 0;
     virtual void SetPreference(const std::string& name,
                                const std::string& value) = 0;
     virtual void RemovePreference(const std::string& name) = 0;
@@ -95,25 +94,25 @@ class DevToolsEmbedderMessageDispatcher {
     virtual void RecordPerformanceHistogram(const std::string& name,
                                             double duration) = 0;
     virtual void RecordUserMetricsAction(const std::string& name) = 0;
-    virtual void SendJsonRequest(const DispatchCallback& callback,
+    virtual void SendJsonRequest(DispatchCallback callback,
                                  const std::string& browser_id,
                                  const std::string& url) = 0;
-    virtual void Reattach(const DispatchCallback& callback) = 0;
+    virtual void Reattach(DispatchCallback callback) = 0;
     virtual void ReadyForTest() = 0;
     virtual void ConnectionReady() = 0;
     virtual void SetOpenNewWindowForPopups(bool value) = 0;
     virtual void RegisterExtensionsAPI(const std::string& origin,
                                        const std::string& script) = 0;
-    virtual void ShowSurvey(const DispatchCallback& callback,
+    virtual void ShowSurvey(DispatchCallback callback,
                             const std::string& trigger) = 0;
-    virtual void CanShowSurvey(const DispatchCallback& callback,
+    virtual void CanShowSurvey(DispatchCallback callback,
                                const std::string& trigger) = 0;
   };
 
   using DispatchCallback = Delegate::DispatchCallback;
 
-  virtual ~DevToolsEmbedderMessageDispatcher() {}
-  virtual bool Dispatch(const DispatchCallback& callback,
+  virtual ~DevToolsEmbedderMessageDispatcher() = default;
+  virtual bool Dispatch(DispatchCallback callback,
                         const std::string& method,
                         const base::ListValue* params) = 0;
 

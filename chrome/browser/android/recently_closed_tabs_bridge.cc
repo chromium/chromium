@@ -129,7 +129,7 @@ jboolean RecentlyClosedTabsBridge::OpenMostRecentlyClosedTab(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj) {
   EnsureTabRestoreService();
-  if (!tab_restore_service_ || TabModelList::empty() ||
+  if (!tab_restore_service_ || TabModelList::models().empty() ||
       tab_restore_service_->entries().empty())
     return false;
 

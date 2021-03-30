@@ -43,6 +43,7 @@
 
 namespace blink {
 
+class CSSPropertyValueSet;
 class CSSRule;
 class CSSStyleSheet;
 class CSSValue;
@@ -51,7 +52,7 @@ class Element;
 class FontResource;
 class ImageResourceContent;
 class LocalFrame;
-class CSSPropertyValueSet;
+class Node;
 
 struct SerializedResource;
 

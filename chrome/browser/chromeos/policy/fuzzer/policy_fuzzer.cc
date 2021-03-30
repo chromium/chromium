@@ -15,11 +15,11 @@
 #include "base/path_service.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "chrome/browser/ash/settings/device_settings_provider.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/chromeos/dbus/dbus_helper.h"
 #include "chrome/browser/chromeos/policy/device_policy_decoder_chromeos.h"
 #include "chrome/browser/chromeos/policy/fuzzer/policy_fuzzer.pb.h"
-#include "chrome/browser/chromeos/settings/device_settings_provider.h"
-#include "chrome/browser/chromeos/settings/device_settings_service.h"
 #include "chrome/browser/policy/configuration_policy_handler_list_factory.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/tpm/install_attributes.h"
@@ -78,7 +78,7 @@ struct PerInputEnvironment {
   ~PerInputEnvironment() {
     chromeos::ShutdownDBus();
     chromeos::InstallAttributes::Shutdown();
-    chromeos::DeviceSettingsService::Shutdown();
+    ash::DeviceSettingsService::Shutdown();
   }
 
   base::test::TaskEnvironment task_environment;
@@ -99,12 +99,12 @@ void CheckPolicyToCrosSettingsTranslation(
     const enterprise_management::ChromeDeviceSettingsProto&
         chrome_device_settings) {
   PrefValueMap cros_settings_prefs;
-  chromeos::DeviceSettingsProvider::DecodePolicies(chrome_device_settings,
-                                                   &cros_settings_prefs);
+  ash::DeviceSettingsProvider::DecodePolicies(chrome_device_settings,
+                                              &cros_settings_prefs);
 
   for (const auto& it : cros_settings_prefs) {
     const std::string& pref_name = it.first;
-    CHECK(chromeos::DeviceSettingsProvider::IsDeviceSetting(pref_name));
+    CHECK(ash::DeviceSettingsProvider::IsDeviceSetting(pref_name));
   }
 }
 

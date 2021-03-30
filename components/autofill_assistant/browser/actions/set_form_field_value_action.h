@@ -12,6 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "components/autofill_assistant/browser/action_value.pb.h"
 #include "components/autofill_assistant/browser/actions/action.h"
 #include "components/autofill_assistant/browser/string_conversions_util.h"
 #include "components/autofill_assistant/browser/user_data.h"
@@ -30,25 +31,21 @@ class SetFormFieldValueAction : public Action {
   FRIEND_TEST_ALL_PREFIXES(SetFormFieldValueActionTest,
                            PasswordIsClearedFromMemory);
 
-  // TODO(b/154067717): Remove PasswordValueType enum.
-  // Helper enum for |FieldInput| to describe the passwords-related actions.
-  enum class PasswordValueType { NOT_SET, STORED_PASSWORD };
-
   // A field input as extracted from the proto, but already checked for
   // validity.
   struct FieldInput {
     explicit FieldInput(std::unique_ptr<std::vector<UChar32>> keyboard_input);
     explicit FieldInput(std::string value);
-    explicit FieldInput(PasswordValueType password_type);
+    explicit FieldInput(PasswordManagerValue password_manager_value);
     FieldInput(FieldInput&& other);
     ~FieldInput();
 
     // The keys to press if either |keycode| or |keyboard_input| is set, else
     // nullptr.
     std::unique_ptr<std::vector<UChar32>> keyboard_input = nullptr;
-    // If the action is about passwords, the field describes whether the
-    // password should be retrieved from storage or generated.
-    PasswordValueType password_type = PasswordValueType::NOT_SET;
+    // If the action is about passwords, the field describes whether to use
+    // password or username.
+    PasswordManagerValue password_manager_value;
     // The string to input (for all other cases).
     std::string value;
   };
@@ -60,10 +57,13 @@ class SetFormFieldValueAction : public Action {
   void OnFindElement(const ClientStatus& element_status,
                      std::unique_ptr<ElementFinder::Result> element_result);
   void SetFieldValueSequentially(int field_index, const ClientStatus& status);
-  void OnGetStoredPassword(
+  void OnGetPasswordManagerValue(
       base::OnceCallback<void(const ClientStatus&)> next_field_callback,
-      bool success,
-      std::string password);
+      const ClientStatus& status,
+      const std::string& value);
+  void SetFieldValueAndCheckFallback(
+      const std::string& value,
+      base::OnceCallback<void(const ClientStatus&)> next_field_callback);
   void OnSetFieldValueAndCheckFallback(
       base::OnceCallback<void(const ClientStatus&)> next_field_callback,
       const std::string& requested_value,

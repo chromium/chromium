@@ -493,66 +493,72 @@ void VideoCaptureController::OnNewBuffer(
 }
 
 void VideoCaptureController::OnFrameReadyInBuffer(
-    int buffer_id,
-    int frame_feedback_id,
-    std::unique_ptr<
-        media::VideoCaptureDevice::Client::Buffer::ScopedAccessPermission>
-        buffer_read_permission,
-    media::mojom::VideoFrameInfoPtr frame_info) {
+    media::ReadyFrameInBuffer frame,
+    std::vector<media::ReadyFrameInBuffer> scaled_frames) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK_NE(buffer_id, media::VideoCaptureBufferPool::kInvalidId);
+  DCHECK_NE(frame.buffer_id, media::VideoCaptureBufferPool::kInvalidId);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "VideoCaptureController::OnFrameReadyInBuffer");
 
   frame_drop_log_state_ = FrameDropLogState();
 
-  auto buffer_context_iter = FindUnretiredBufferContextFromBufferId(buffer_id);
-  DCHECK(buffer_context_iter != buffer_contexts_.end());
-  buffer_context_iter->set_frame_feedback_id(frame_feedback_id);
-  DCHECK(!buffer_context_iter->HasConsumers());
+  // Make ready buffers, get frame contexts and set their feedback IDs.
+  // Transfer ownership of all the frame infos.
+  BufferContext* frame_context;
+  ReadyBuffer frame_ready_buffer = MakeReadyBufferAndSetContextFeedbackId(
+      frame.buffer_id, frame.frame_feedback_id, std::move(frame.frame_info),
+      &frame_context);
+
+  std::vector<BufferContext*> scaled_frame_contexts;
+  scaled_frame_contexts.reserve(scaled_frames.size());
+  std::vector<ReadyBuffer> scaled_frame_ready_buffers;
+  scaled_frame_ready_buffers.reserve(scaled_frames.size());
+  for (auto& scaled_frame : scaled_frames) {
+    BufferContext* scaled_frame_context;
+    scaled_frame_ready_buffers.push_back(MakeReadyBufferAndSetContextFeedbackId(
+        scaled_frame.buffer_id, scaled_frame.frame_feedback_id,
+        std::move(scaled_frame.frame_info), &scaled_frame_context));
+    scaled_frame_contexts.push_back(scaled_frame_context);
+  }
 
   if (state_ != blink::VIDEO_CAPTURE_STATE_ERROR) {
-    const int buffer_context_id = buffer_context_iter->buffer_context_id();
+    // Inform all active clients of the frames.
     for (const auto& client : controller_clients_) {
       if (client->session_closed || client->paused)
         continue;
-
-      // On the first use of a BufferContext for a particular client, call
-      // OnBufferCreated().
-      if (!base::Contains(client->known_buffer_context_ids,
-                          buffer_context_id)) {
-        client->known_buffer_context_ids.push_back(buffer_context_id);
-        client->event_handler->OnNewBuffer(
-            client->controller_id, buffer_context_iter->CloneBufferHandle(),
-            buffer_context_id);
+      MakeClientUseBufferContext(frame_context, client.get());
+      for (auto* scaled_frame_context : scaled_frame_contexts) {
+        MakeClientUseBufferContext(scaled_frame_context, client.get());
       }
-
-      if (!base::Contains(client->buffers_in_use, buffer_context_id))
-        client->buffers_in_use.push_back(buffer_context_id);
-      else
-        NOTREACHED() << "Unexpected duplicate buffer: " << buffer_context_id;
-
-      buffer_context_iter->IncreaseConsumerCount();
       client->event_handler->OnBufferReady(client->controller_id,
-                                           buffer_context_id, frame_info);
+                                           frame_ready_buffer,
+                                           scaled_frame_ready_buffers);
     }
-    if (buffer_context_iter->HasConsumers()) {
-      buffer_context_iter->set_read_permission(
-          std::move(buffer_read_permission));
+    // Transfer buffer read permissions to any contexts that now have consumers.
+    if (frame_context->HasConsumers()) {
+      frame_context->set_read_permission(
+          std::move(frame.buffer_read_permission));
+    }
+    for (size_t i = 0; i < scaled_frames.size(); ++i) {
+      if (!scaled_frame_contexts[i]->HasConsumers())
+        continue;
+      scaled_frame_contexts[i]->set_read_permission(
+          std::move(scaled_frames[i].buffer_read_permission));
     }
   }
 
   if (!has_received_frames_) {
     UMA_HISTOGRAM_COUNTS_1M("Media.VideoCapture.Width",
-                            frame_info->coded_size.width());
+                            frame_ready_buffer.frame_info->coded_size.width());
     UMA_HISTOGRAM_COUNTS_1M("Media.VideoCapture.Height",
-                            frame_info->coded_size.height());
-    UMA_HISTOGRAM_ASPECT_RATIO("Media.VideoCapture.AspectRatio",
-                               frame_info->coded_size.width(),
-                               frame_info->coded_size.height());
+                            frame_ready_buffer.frame_info->coded_size.height());
+    UMA_HISTOGRAM_ASPECT_RATIO(
+        "Media.VideoCapture.AspectRatio",
+        frame_ready_buffer.frame_info->coded_size.width(),
+        frame_ready_buffer.frame_info->coded_size.height());
     double frame_rate = 0.0f;
     if (video_capture_format_) {
-      frame_rate = frame_info->metadata.frame_rate.value_or(
+      frame_rate = frame_ready_buffer.frame_info->metadata.frame_rate.value_or(
           video_capture_format_->frame_rate);
     }
     UMA_HISTOGRAM_COUNTS_1M("Media.VideoCapture.FrameRate", frame_rate);
@@ -561,6 +567,46 @@ void VideoCaptureController::OnFrameReadyInBuffer(
     OnLog("First frame received at VideoCaptureController");
     has_received_frames_ = true;
   }
+}
+
+ReadyBuffer VideoCaptureController::MakeReadyBufferAndSetContextFeedbackId(
+    int buffer_id,
+    int frame_feedback_id,
+    media::mojom::VideoFrameInfoPtr frame_info,
+    BufferContext** out_buffer_context) {
+  auto buffer_context_iter = FindUnretiredBufferContextFromBufferId(buffer_id);
+  DCHECK(buffer_context_iter != buffer_contexts_.end());
+  BufferContext* buffer_context = &(*buffer_context_iter);
+  buffer_context->set_frame_feedback_id(frame_feedback_id);
+  DCHECK(!buffer_context->HasConsumers());
+  *out_buffer_context = buffer_context;
+  return ReadyBuffer(buffer_context->buffer_context_id(),
+                     std::move(frame_info));
+}
+
+void VideoCaptureController::MakeClientUseBufferContext(
+    BufferContext* frame_context,
+    ControllerClient* client) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  // On the first use of a BufferContext for a particular client, call
+  // OnBufferCreated().
+  if (!base::Contains(client->known_buffer_context_ids,
+                      frame_context->buffer_context_id())) {
+    client->known_buffer_context_ids.push_back(
+        frame_context->buffer_context_id());
+    client->event_handler->OnNewBuffer(client->controller_id,
+                                       frame_context->CloneBufferHandle(),
+                                       frame_context->buffer_context_id());
+  }
+  // Ensure buffer is registered as in use by the client.
+  if (!base::Contains(client->buffers_in_use,
+                      frame_context->buffer_context_id())) {
+    client->buffers_in_use.push_back(frame_context->buffer_context_id());
+  } else {
+    NOTREACHED() << "Unexpected duplicate buffer: "
+                 << frame_context->buffer_context_id();
+  }
+  frame_context->IncreaseConsumerCount();
 }
 
 void VideoCaptureController::OnBufferRetired(int buffer_id) {

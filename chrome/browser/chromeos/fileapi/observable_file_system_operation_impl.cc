@@ -4,9 +4,9 @@
 
 #include "chrome/browser/chromeos/fileapi/observable_file_system_operation_impl.h"
 
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/fileapi/file_change_service.h"
 #include "chrome/browser/chromeos/fileapi/file_change_service_factory.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

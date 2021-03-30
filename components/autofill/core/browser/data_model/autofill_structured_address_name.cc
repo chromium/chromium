@@ -21,16 +21,16 @@ namespace autofill {
 
 namespace structured_address {
 
-base::string16 ReduceToInitials(const base::string16& value) {
+std::u16string ReduceToInitials(const std::u16string& value) {
   if (value.empty())
-    return base::string16();
+    return std::u16string();
 
-  std::vector<base::string16> middle_name_tokens =
+  std::vector<std::u16string> middle_name_tokens =
       base::SplitString(value, base::ASCIIToUTF16(kNameSeparators),
                         base::WhitespaceHandling::TRIM_WHITESPACE,
                         base::SplitResult::SPLIT_WANT_NONEMPTY);
 
-  base::string16 result;
+  std::u16string result;
   result.reserve(middle_name_tokens.size());
   for (const auto& token : middle_name_tokens) {
     DCHECK(!token.empty());
@@ -40,18 +40,17 @@ base::string16 ReduceToInitials(const base::string16& value) {
 }
 
 NameHonorific::NameHonorific(AddressComponent* parent)
-    : AddressComponent(NAME_HONORIFIC_PREFIX, parent, {}, MergeMode::kDefault) {
-}
+    : AddressComponent(NAME_HONORIFIC_PREFIX, parent, MergeMode::kDefault) {}
 
 NameHonorific::~NameHonorific() = default;
 
 NameFirst::NameFirst(AddressComponent* parent)
-    : AddressComponent(NAME_FIRST, parent, {}, MergeMode::kDefault) {}
+    : AddressComponent(NAME_FIRST, parent, MergeMode::kDefault) {}
 
 NameFirst::~NameFirst() = default;
 
 NameMiddle::NameMiddle(AddressComponent* parent)
-    : AddressComponent(NAME_MIDDLE, parent, {}, MergeMode::kDefault) {}
+    : AddressComponent(NAME_MIDDLE, parent, MergeMode::kDefault) {}
 
 NameMiddle::~NameMiddle() = default;
 
@@ -62,7 +61,7 @@ void NameMiddle::GetAdditionalSupportedFieldTypes(
 
 bool NameMiddle::ConvertAndGetTheValueForAdditionalFieldTypeName(
     const std::string& type_name,
-    base::string16* value) const {
+    std::u16string* value) const {
   if (type_name == AutofillType::ServerFieldTypeToString(NAME_MIDDLE_INITIAL)) {
     if (value) {
       // If the stored value has the characteristics of containing only
@@ -82,7 +81,7 @@ bool NameMiddle::ConvertAndGetTheValueForAdditionalFieldTypeName(
 
 bool NameMiddle::ConvertAndSetValueForAdditionalFieldTypeName(
     const std::string& type_name,
-    const base::string16& value,
+    const std::u16string& value,
     const VerificationStatus& status) {
   if (type_name == AutofillType::ServerFieldTypeToString(NAME_MIDDLE_INITIAL)) {
     SetValue(value, status);
@@ -92,13 +91,12 @@ bool NameMiddle::ConvertAndSetValueForAdditionalFieldTypeName(
 }
 
 NameLastFirst::NameLastFirst(AddressComponent* parent)
-    : AddressComponent(NAME_LAST_FIRST, parent, {}, MergeMode::kDefault) {}
+    : AddressComponent(NAME_LAST_FIRST, parent, MergeMode::kDefault) {}
 
 NameLastFirst::~NameLastFirst() = default;
 
 NameLastConjunction::NameLastConjunction(AddressComponent* parent)
-    : AddressComponent(NAME_LAST_CONJUNCTION, parent, {}, MergeMode::kDefault) {
-}
+    : AddressComponent(NAME_LAST_CONJUNCTION, parent, MergeMode::kDefault) {}
 
 NameLastConjunction::~NameLastConjunction() = default;
 
@@ -113,14 +111,13 @@ std::vector<const re2::RE2*> NameLast::GetParseRegularExpressionsByRelevance()
 }
 
 NameLastSecond::NameLastSecond(AddressComponent* parent)
-    : AddressComponent(NAME_LAST_SECOND, parent, {}, MergeMode::kDefault) {}
+    : AddressComponent(NAME_LAST_SECOND, parent, MergeMode::kDefault) {}
 
 NameLastSecond::~NameLastSecond() = default;
 
 NameLast::NameLast(AddressComponent* parent)
     : AddressComponent(NAME_LAST,
                        parent,
-                       {&first_, &conjunction_, &second_},
                        MergeMode::kDefault) {}
 
 NameLast::~NameLast() = default;
@@ -137,15 +134,23 @@ NameFull::NameFull(AddressComponent* parent)
     : AddressComponent(
           NAME_FULL,
           parent,
-          {/*&name_honorific_,*/ &name_first_, &name_middle_, &name_last_},
           MergeMode::kDefault) {}
 
 NameFull::NameFull(const NameFull& other) : NameFull() {
   // The purpose of the copy operator is to copy the values and verification
   // statuses of all nodes in |other| to |this|. This exact functionality is
-  // already implemented in the assignment operator.
-  *this = other;
+  // already implemented as a recursive operation in the base class.
+  this->CopyFrom(other);
 }
+
+NameHonorificPrefix::NameHonorificPrefix(AddressComponent* parent)
+    : AddressComponent(NAME_HONORIFIC_PREFIX,
+                       parent,
+                       MergeMode::kUseBetterOrNewerForSameValue |
+                           MergeMode::kReplaceEmpty |
+                           MergeMode::kUseBetterOrMostRecentIfDifferent) {}
+
+NameHonorificPrefix::~NameHonorificPrefix() = default;
 
 void NameFull::MigrateLegacyStructure(bool is_verified_profile) {
   // Only if the name was imported from a legacy structure, the component has no
@@ -230,18 +235,55 @@ std::vector<const re2::RE2*> NameFull::GetParseRegularExpressionsByRelevance()
           pattern_provider->GetRegEx(RegEx::kParseLastCommaFirstMiddleName),
           pattern_provider->GetRegEx(RegEx::kParseFirstMiddleLastName)};
 }
-base::string16 NameFull::GetBestFormatString() const {
+std::u16string NameFull::GetBestFormatString() const {
   if (HasCjkNameCharacteristics(base::UTF16ToUTF8(name_first_.GetValue())) &&
       HasCjkNameCharacteristics(base::UTF16ToUTF8(name_last_.GetValue()))) {
-    return base::ASCIIToUTF16("${NAME_LAST}${NAME_FIRST}");
+    return u"${NAME_LAST}${NAME_FIRST}";
   }
-  // TODO(crbug.com/1113617): Honorifics are temporally disabled.
-  return
-      // base::ASCIIToUTF16( "${NAME_HONORIFIC_PREFIX} ${NAME_FIRST}
-      // ${NAME_MIDDLE} ${NAME_LAST}");
-      base::ASCIIToUTF16("${NAME_FIRST} ${NAME_MIDDLE} ${NAME_LAST}");
+  return u"${NAME_FIRST} ${NAME_MIDDLE} ${NAME_LAST}";
 }
 NameFull::~NameFull() = default;
+
+NameFullWithPrefix::NameFullWithPrefix() : NameFullWithPrefix(nullptr) {}
+
+NameFullWithPrefix::NameFullWithPrefix(AddressComponent* parent)
+    : AddressComponent(NAME_FULL_WITH_HONORIFIC_PREFIX,
+                       parent,
+                       MergeMode::kMergeChildrenAndReformatIfNeeded) {}
+
+NameFullWithPrefix::NameFullWithPrefix(const NameFullWithPrefix& other)
+    : NameFullWithPrefix() {
+  // The purpose of the copy operator is to copy the values and verification
+  // statuses of all nodes in |other| to |this|. This exact functionality is
+  // already implemented as a recursive operation in the base class.
+  this->CopyFrom(other);
+}
+
+NameFullWithPrefix::~NameFullWithPrefix() = default;
+
+std::vector<const re2::RE2*>
+NameFullWithPrefix::GetParseRegularExpressionsByRelevance() const {
+  auto* pattern_provider = StructuredAddressesRegExProvider::Instance();
+  return {pattern_provider->GetRegEx(RegEx::kParsePrefixedName)};
+}
+
+void NameFullWithPrefix::MigrateLegacyStructure(bool is_verified_profile) {
+  // If a verification status is set, the structure is already migrated.
+  if (GetVerificationStatus() != VerificationStatus::kNoStatus) {
+    return;
+  }
+
+  // If it is not migrated, continue with migrating the full name.
+  name_full_.MigrateLegacyStructure(is_verified_profile);
+
+  // Check if the tree is already in a completed state.
+  // If yes, build the root node from the subcomponents.
+  // Otherwise, this step is not necessary and will be taken care of in a later
+  // stage of the import process.
+  if (MaximumNumberOfAssignedAddressComponentsOnNodeToLeafPaths() > 1) {
+    FormatValueFromSubcomponents();
+  }
+}
 
 }  // namespace structured_address
 

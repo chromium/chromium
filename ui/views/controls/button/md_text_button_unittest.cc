@@ -15,7 +15,7 @@ namespace views {
 using MdTextButtonTest = ViewsTestBase;
 
 TEST_F(MdTextButtonTest, CustomPadding) {
-  const base::string16 text = base::ASCIIToUTF16("abc");
+  const std::u16string text = u"abc";
   auto button = std::make_unique<MdTextButton>(Button::PressedCallback(), text);
 
   const gfx::Insets custom_padding(10, 20);
@@ -32,8 +32,8 @@ TEST_F(MdTextButtonTest, BackgroundColorChangesWithWidgetActivation) {
     GTEST_SKIP() << "Button colors do not change with widget activation here.";
 
   std::unique_ptr<Widget> widget = CreateTestWidget();
-  auto* button = widget->SetContentsView(std::make_unique<MdTextButton>(
-      Button::PressedCallback(), base::ASCIIToUTF16("button")));
+  auto* button = widget->SetContentsView(
+      std::make_unique<MdTextButton>(Button::PressedCallback(), u"button"));
   button->SetProminent(true);
   button->SetBounds(0, 0, 70, 20);
   widget->LayoutRootViewIfNecessary();

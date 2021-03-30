@@ -20,14 +20,15 @@
 #include "media/base/async_destroy_video_decoder.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_util.h"
+#include "media/base/supported_video_decoder_config.h"
 #include "media/base/test_helpers.h"
+#include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/android/android_video_surface_chooser_impl.h"
 #include "media/gpu/android/fake_codec_allocator.h"
 #include "media/gpu/android/mock_android_video_surface_chooser.h"
 #include "media/gpu/android/mock_device_info.h"
 #include "media/gpu/android/video_frame_factory.h"
-#include "media/video/supported_video_decoder_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::test::RunCallback;
@@ -917,7 +918,7 @@ TEST_P(MediaCodecVideoDecoderTest, VideoFramesArePowerEfficient) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(!!most_recent_frame_);
-  EXPECT_TRUE(most_recent_frame_->metadata()->power_efficient);
+  EXPECT_TRUE(most_recent_frame_->metadata().power_efficient);
 }
 
 TEST_P(MediaCodecVideoDecoderH264Test, CsdIsIncludedInCodecConfig) {
@@ -996,6 +997,8 @@ static std::vector<VideoCodec> GetTestList() {
     test_codecs.push_back(kCodecVP8);
   if (MediaCodecUtil::IsVp9DecoderAvailable())
     test_codecs.push_back(kCodecVP9);
+  if (MediaCodecUtil::IsAv1DecoderAvailable())
+    test_codecs.push_back(kCodecAV1);
   return test_codecs;
 }
 
@@ -1013,6 +1016,20 @@ static std::vector<VideoCodec> GetVp8IfAvailable() {
              : std::vector<VideoCodec>();
 }
 
+// TODO(https://crbug.com/1179801): Uncomment once MediaCodecVideoDecoderVp9Test
+// is fixed.
+// static std::vector<VideoCodec> GetVp9IfAvailable() {
+//   return MediaCodecUtil::IsVp9DecoderAvailable()
+//              ? std::vector<VideoCodec>(1, kCodecVP9)
+//              : std::vector<VideoCodec>();
+// }
+
+static std::vector<VideoCodec> GetAv1IfAvailable() {
+  return MediaCodecUtil::IsAv1DecoderAvailable()
+             ? std::vector<VideoCodec>(1, kCodecAV1)
+             : std::vector<VideoCodec>();
+}
+
 INSTANTIATE_TEST_SUITE_P(MediaCodecVideoDecoderTest,
                          MediaCodecVideoDecoderTest,
                          testing::ValuesIn(GetTestList()));
@@ -1026,5 +1043,23 @@ INSTANTIATE_TEST_SUITE_P(MediaCodecVideoDecoderH264Test,
 INSTANTIATE_TEST_SUITE_P(MediaCodecVideoDecoderVp8Test,
                          MediaCodecVideoDecoderVp8Test,
                          testing::ValuesIn(GetVp8IfAvailable()));
+
+// TODO(https://crbug.com/1179801): Uncomment once MediaCodecVideoDecoderVp9Test
+// is fixed.
+// INSTANTIATE_TEST_SUITE_P(MediaCodecVideoDecoderVp9Test,
+//                          MediaCodecVideoDecoderVp9Test,
+//                          testing::ValuesIn(GetVp9IfAvailable()));
+
+INSTANTIATE_TEST_SUITE_P(MediaCodecVideoDecoderAV1Test,
+                         MediaCodecVideoDecoderAV1Test,
+                         testing::ValuesIn(GetAv1IfAvailable()));
+
+// TODO(https://crbug.com/1179801): Remove this annotation once
+// MediaCodecVideoDecoderVp9Test is fixed.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(MediaCodecVideoDecoderVp9Test);
+// This test suite is empty on some OSes.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(MediaCodecVideoDecoderAV1Test);
+// For builds without proprietary codecs
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(MediaCodecVideoDecoderH264Test);
 
 }  // namespace media

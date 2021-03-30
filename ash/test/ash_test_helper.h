@@ -45,7 +45,7 @@ namespace ash {
 class AppListTestHelper;
 class AmbientAshTestHelper;
 class TestKeyboardControllerObserver;
-class TestNewWindowDelegate;
+class TestNewWindowDelegateProvider;
 
 // A helper class that does common initialization required for Ash. Creates a
 // root window and an ash::Shell instance with a test delegate.
@@ -158,7 +158,7 @@ class AshTestHelper : public aura::test::AuraTestHelper {
   std::unique_ptr<BluezDBusManagerInitializer> bluez_dbus_manager_initializer_;
   std::unique_ptr<PowerPolicyControllerInitializer>
       power_policy_controller_initializer_;
-  std::unique_ptr<TestNewWindowDelegate> new_window_delegate_;
+  std::unique_ptr<TestNewWindowDelegateProvider> new_window_delegate_provider_;
   std::unique_ptr<views::TestViewsDelegate> test_views_delegate_;
   std::unique_ptr<TestSessionControllerClient> session_controller_client_;
   std::unique_ptr<TestKeyboardControllerObserver>

@@ -33,21 +33,9 @@ import zipfile
 # Assume this script is stored under third_party/android_deps/
 _CHROMIUM_SRC = os.path.normpath(os.path.join(__file__, '..', '..', '..'))
 
-# Directory for files which are used regardless of the android_deps directory.
-_GLOBAL_FILES_SUBDIR = os.path.join('third_party', 'android_deps')
-
-# Path to custom licenses under android_deps/
-_GLOBAL_LICENSE_SUBDIR = os.path.join(_GLOBAL_FILES_SUBDIR, 'licenses')
-
-# Location of the buildSrc directory used implement our gradle task.
-_GLOBAL_GRADLE_BUILDSRC_PATH = os.path.join(_GLOBAL_FILES_SUBDIR, 'buildSrc')
-
-# Location of the suppressions file for the dependency checker plugin
-_GLOBAL_GRADLE_SUPRESSIONS_PATH = os.path.join(
-    _GLOBAL_FILES_SUBDIR, 'vulnerability_supressions.xml')
-
 # Default android_deps directory.
-_DEFAULT_ANDROID_DEPS_DIR = os.path.join('third_party', 'android_deps')
+_PRIMARY_ANDROID_DEPS_DIR = os.path.join(_CHROMIUM_SRC, 'third_party',
+                                         'android_deps')
 
 # Path to additional_readme_paths.json relative to custom 'android_deps' directory.
 _ADDITIONAL_README_PATHS = 'additional_readme_paths.json'
@@ -61,28 +49,27 @@ _BUILD_GRADLE = 'build.gradle'
 # Location of the android_deps libs directory relative to custom 'android_deps' directory.
 _LIBS_DIR = 'libs'
 
-_JAVA_HOME = os.path.join(_CHROMIUM_SRC, 'third_party', 'jdk', 'current')
-_JETIFY_PATH = os.path.join(_CHROMIUM_SRC, 'third_party',
-                            'jetifier_standalone', 'bin',
-                            'jetifier-standalone')
-_JETIFY_CONFIG = os.path.join(_CHROMIUM_SRC, 'third_party',
-                              'jetifier_standalone', 'config',
-                              'ignore_R.config')
-
 _GN_PATH = os.path.join(_CHROMIUM_SRC, 'third_party', 'depot_tools', 'gn')
 
-# The list of git-controlled files that are checked or updated by this tool.
-_UPDATED_ANDROID_DEPS_FILES = [
+_GRADLEW = os.path.join(_CHROMIUM_SRC, 'third_party', 'gradle_wrapper',
+                        'gradlew')
+
+# Git-controlled files needed by, but not updated by this tool.
+# Relative to _PRIMARY_ANDROID_DEPS_DIR.
+_PRIMARY_ANDROID_DEPS_FILES = [
+    'buildSrc',
+    'licenses',
+    'settings.gradle.template',
+    'vulnerability_supressions.xml',
+]
+
+# Git-controlled files needed by and updated by this tool.
+# Relative to args.android_deps_dir.
+_CUSTOM_ANDROID_DEPS_FILES = [
     os.path.join('..', '..', 'DEPS'),
     _BUILD_GN,
     _ADDITIONAL_README_PATHS,
-]
-
-# Subset of |_UPDATED_ANDROID_DEPS_FILES| for which the file does not need to
-# exist.
-_UPDATED_ANDROID_DEPS_FILES_ALLOW_EMPTY = [
-    _BUILD_GN,
-    _ADDITIONAL_README_PATHS,
+    'subprojects.txt',
 ]
 
 # If this file exists in an aar file then it is appended to LICENSE
@@ -189,7 +176,7 @@ def DeleteDirectory(dir_path):
         shutil.rmtree(dir_path)
 
 
-def Copy(src_dir, src_paths, dst_dir, dst_paths, src_path_must_exist=False):
+def Copy(src_dir, src_paths, dst_dir, dst_paths, src_path_must_exist=True):
     """Copies |src_paths| in |src_dir| to |dst_paths| in |dst_dir|.
 
     Args:
@@ -197,8 +184,8 @@ def Copy(src_dir, src_paths, dst_dir, dst_paths, src_path_must_exist=False):
       src_paths: Files to copy.
       dst_dir: Directory containing |dst_paths|.
       dst_paths: Copy destinations.
-      src_paths_must_exist: If true, throw error if the file for one of|src_paths|
-        does not exist.
+      src_paths_must_exist: If False, do not throw error if the file for one of
+          |src_paths| does not exist.
     """
     assert len(src_paths) == len(dst_paths)
 
@@ -209,15 +196,24 @@ def Copy(src_dir, src_paths, dst_dir, dst_paths, src_path_must_exist=False):
         if os.path.exists(abs_src_path):
             CopyFileOrDirectory(abs_src_path, abs_dst_path)
         elif src_path_must_exist:
-            missing_files.append(src_paths[i])
+            missing_files.append(src_path)
 
     if missing_files:
         raise Exception('Missing files from {}: {}'.format(
             src_dir, missing_files))
 
 
-def CopyFileOrDirectory(src_path, dst_path):
-    """Copy file or directory |src_path| into |dst_path| exactly."""
+def CopyFileOrDirectory(src_path, dst_path, ignore_extension=None):
+    """Copy file or directory |src_path| into |dst_path| exactly.
+
+    Args:
+      src_path: Source path.
+      dst_path: Destination path.
+      ignore_extension: File extension of files not to copy, starting with '.'. If None, all files
+          are copied.
+    """
+    assert not ignore_extension or ignore_extension[0] == '.'
+
     src_path = os.path.normpath(src_path)
     dst_path = os.path.normpath(dst_path)
     logging.debug('copy [%s -> %s]', src_path, dst_path)
@@ -225,8 +221,12 @@ def CopyFileOrDirectory(src_path, dst_path):
     if os.path.isdir(src_path):
         # Copy directory recursively.
         DeleteDirectory(dst_path)
-        shutil.copytree(src_path, dst_path)
-    else:
+        ignore = None
+        if ignore_extension:
+            ignore = shutil.ignore_patterns('*' + ignore_extension)
+        shutil.copytree(src_path, dst_path, ignore=ignore)
+    elif not ignore_extension or not re.match('.*\.' + ignore_extension[1:],
+                                              src_path):
         shutil.copy(src_path, dst_path)
 
 
@@ -260,15 +260,6 @@ def FindInDirectory(directory, filename_filter):
     return files
 
 
-def NormalizeAndroidDepsDir(unnormalized_path):
-    normalized_path = os.path.relpath(unnormalized_path, _CHROMIUM_SRC)
-    build_gradle_dir = os.path.join(_CHROMIUM_SRC, normalized_path)
-    if not os.path.isfile(os.path.join(build_gradle_dir, _BUILD_GRADLE)):
-        raise Exception('--android-deps-dir {} does not contain {}.'.format(
-            build_gradle_dir, _BUILD_GRADLE))
-    return normalized_path
-
-
 # Named tuple describing a CIPD package.
 # - path: Path to cipd.yaml file.
 # - name: cipd package name.
@@ -282,28 +273,69 @@ _RE_CIPD_CREATE = re.compile('cipd create --pkg-def cipd.yaml -tag (\S*)')
 _RE_CIPD_PACKAGE = re.compile('package: (\S*)')
 
 
-def _CheckVulnerabilities(build_android_deps_dir, report_dst):
-    logging.info(
-        'Running Gradle dependencyCheckAnalyze. This may take a few minutes the first time.'
-    )
+def _ParseSubprojects(subproject_path):
+    """Parses listing of subproject build.gradle files. Returns list of paths."""
+    if not os.path.exists(subproject_path):
+        return None
 
-    abs_gradle_wrapper_path = os.path.join(_CHROMIUM_SRC, 'third_party',
-                                           'gradle_wrapper', 'gradlew')
+    subprojects = []
+    for subproject in open(subproject_path):
+        subproject = subproject.strip()
+        if subproject and not subproject.startswith('#'):
+            subprojects.append(subproject)
+    return subprojects
+
+
+def _GenerateSettingsGradle(subproject_dirs, settings_template_path,
+                            settings_out_path):
+    """Generates settings file by replacing "{{subproject_dirs}}" string in template.
+
+    Args:
+      subproject_dirs: List of subproject directories to substitute into template.
+      settings_template_path: Path of template file to substitute into.
+      settings_out_path: Path of output settings.gradle file.
+    """
+    with open(settings_template_path) as f:
+        template_content = f.read()
+
+    subproject_dirs_str = ''
+    if subproject_dirs:
+        subproject_dirs_str = '\'' + '\',\''.join(subproject_dirs) + '\''
+
+    template_content = template_content.replace('{{subproject_dirs}}',
+                                                subproject_dirs_str)
+    with open(settings_out_path, 'w') as f:
+        f.write(template_content)
+
+
+def _BuildGradleCmd(build_android_deps_dir, task):
+    cmd = [
+        _GRADLEW, '-b',
+        os.path.join(build_android_deps_dir, _BUILD_GRADLE), '--stacktrace',
+        task
+    ]
+    settings_gradle_path = os.path.join(build_android_deps_dir,
+                                        'settings.gradle')
+    if os.path.exists(settings_gradle_path):
+        cmd += ['-c', os.path.abspath(settings_gradle_path)]
+    return cmd
+
+
+def _CheckVulnerabilities(build_android_deps_dir, report_dst):
+    logging.warning('Running Gradle dependencyCheckAnalyze. This may take a '
+                    'few minutes the first time.')
 
     # Separate command from main gradle command so that we can provide specific
     # diagnostics in case of failure of this step.
-    gradle_cmd = [
-        abs_gradle_wrapper_path,
-        '-b',
-        os.path.join(build_android_deps_dir, _BUILD_GRADLE),
-        'dependencyCheckAnalyze',
-    ]
+    gradle_cmd = _BuildGradleCmd(build_android_deps_dir,
+                                 'dependencyCheckAnalyze')
 
     report_src = os.path.join(build_android_deps_dir, 'build', 'reports')
     if os.path.exists(report_dst):
         shutil.rmtree(report_dst)
 
     try:
+        logging.info('CMD: %s', ' '.join(gradle_cmd))
         subprocess.run(gradle_cmd, check=True)
     except subprocess.CalledProcessError:
         report_path = os.path.join(report_dst, 'dependency-check-report.html')
@@ -433,42 +465,6 @@ def _CreateAarInfos(aar_files):
             raise Exception('Command Failed: {}\n'.format(' '.join(cmd)))
 
 
-def _JetifyAll(files, android_deps):
-    env = os.environ.copy()
-    env['JAVA_HOME'] = _JAVA_HOME
-    env['ANDROID_DEPS'] = android_deps
-
-    # Don't jetify support lib or androidx.
-    EXCLUDE = ('android_arch_', 'androidx_', 'com_android_support_',
-               'errorprone', 'jetifier')
-
-    jobs = []
-    for path in files:
-        if any(x in path for x in EXCLUDE):
-            continue
-        cmd = [_JETIFY_PATH, '-c', _JETIFY_CONFIG, '-i', path, '-o', path]
-        # Hide output: "You don't need to run Jetifier."
-        proc = subprocess.Popen(cmd,
-                                env=env,
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.STDOUT,
-                                encoding='ascii')
-        jobs.append((cmd, proc))
-
-    num_required = 0
-    for cmd, proc in jobs:
-        output = proc.communicate()[0]
-        if proc.returncode:
-            raise Exception(
-                'Jetify failed for command: {}\nOutput:\n{}'.format(
-                    ' '.join(cmd), output))
-        if "You don't need to run Jetifier" not in output:
-            logging.info('Needed jetify: %s', cmd[-1])
-            num_required += 1
-    logging.info('Jetify was needed for %d out of %d files', num_required,
-                 len(jobs))
-
-
 def main():
     parser = argparse.ArgumentParser(
         description=__doc__,
@@ -476,7 +472,7 @@ def main():
     parser.add_argument(
         '--android-deps-dir',
         help='Path to directory containing build.gradle from chromium-dir.',
-        default=_DEFAULT_ANDROID_DEPS_DIR)
+        default=_PRIMARY_ANDROID_DEPS_DIR)
     parser.add_argument(
         '--build-dir',
         help='Path to build directory (default is temporary directory).')
@@ -499,68 +495,54 @@ def main():
         format='%(levelname).1s %(relativeCreated)6d %(message)s')
     debug = args.verbose_count >= 2
 
-    args.android_deps_dir = NormalizeAndroidDepsDir(args.android_deps_dir)
-
-    abs_android_deps_dir = os.path.normpath(
-        os.path.join(_CHROMIUM_SRC, args.android_deps_dir))
-
-    # The list of files and dirs that are copied to the build directory by this
-    # script. Should not include _UPDATED_ANDROID_DEPS_FILES.
-    copied_paths = {
-        _GLOBAL_GRADLE_BUILDSRC_PATH:
-        os.path.join(args.android_deps_dir, "buildSrc"),
-        _GLOBAL_GRADLE_SUPRESSIONS_PATH:
-        os.path.join(args.android_deps_dir, "vulnerability_supressions.xml"),
-        os.path.join(args.android_deps_dir, "build.gradle"):
-        os.path.join(args.android_deps_dir, "build.gradle"),
-    }
-
-    if not args.ignore_licenses:
-        copied_paths[_GLOBAL_LICENSE_SUBDIR] = _GLOBAL_LICENSE_SUBDIR
+    if not os.path.isfile(os.path.join(args.android_deps_dir, _BUILD_GRADLE)):
+        raise Exception('--android-deps-dir {} does not contain {}.'.format(
+            args.android_deps_dir, _BUILD_GRADLE))
+    is_primary_android_deps = args.android_deps_dir == _PRIMARY_ANDROID_DEPS_DIR
+    android_deps_subdir = os.path.relpath(args.android_deps_dir, _CHROMIUM_SRC)
 
     with BuildDir(args.build_dir) as build_dir:
-        build_android_deps_dir = os.path.join(build_dir, args.android_deps_dir)
+        build_android_deps_dir = os.path.join(build_dir, android_deps_subdir)
 
         logging.info('Using build directory: %s', build_dir)
-        Copy(abs_android_deps_dir,
-             _UPDATED_ANDROID_DEPS_FILES_ALLOW_EMPTY,
+        Copy(_PRIMARY_ANDROID_DEPS_DIR, _PRIMARY_ANDROID_DEPS_FILES,
+             build_android_deps_dir, _PRIMARY_ANDROID_DEPS_FILES)
+        Copy(args.android_deps_dir, [_BUILD_GRADLE], build_android_deps_dir,
+             [_BUILD_GRADLE])
+        Copy(args.android_deps_dir,
+             _CUSTOM_ANDROID_DEPS_FILES,
              build_android_deps_dir,
-             _UPDATED_ANDROID_DEPS_FILES_ALLOW_EMPTY,
-             src_path_must_exist=False)
-        updated_android_deps_files_must_exist = [
-            f for f in _UPDATED_ANDROID_DEPS_FILES
-            if f not in _UPDATED_ANDROID_DEPS_FILES_ALLOW_EMPTY
-        ]
-        Copy(abs_android_deps_dir,
-             updated_android_deps_files_must_exist,
-             build_android_deps_dir,
-             updated_android_deps_files_must_exist,
-             src_path_must_exist=True)
+             _CUSTOM_ANDROID_DEPS_FILES,
+             src_path_must_exist=is_primary_android_deps)
 
-        Copy(_CHROMIUM_SRC, list(copied_paths.keys()), build_dir,
-             list(copied_paths.values()))
+        subprojects = _ParseSubprojects(
+            os.path.join(args.android_deps_dir, 'subprojects.txt'))
+        subproject_dirs = []
+        if subprojects:
+            for (index, subproject) in enumerate(subprojects):
+                subproject_dir = 'subproject{}'.format(index)
+                Copy(args.android_deps_dir, [subproject],
+                     build_android_deps_dir,
+                     [os.path.join(subproject_dir, 'build.gradle')])
+                subproject_dirs.append(subproject_dir)
+
+        _GenerateSettingsGradle(
+            subproject_dirs,
+            os.path.join(_PRIMARY_ANDROID_DEPS_DIR,
+                         'settings.gradle.template'),
+            os.path.join(build_android_deps_dir, 'settings.gradle'))
 
         if not args.ignore_vulnerabilities:
-            report_dst = os.path.join(abs_android_deps_dir,
+            report_dst = os.path.join(args.android_deps_dir,
                                       'vulnerability_reports')
             _CheckVulnerabilities(build_android_deps_dir, report_dst)
 
         logging.info('Running Gradle.')
 
-        # Path to the gradlew script used to run build.gradle.
-        abs_gradle_wrapper_path = os.path.join(_CHROMIUM_SRC, 'third_party',
-                                               'gradle_wrapper', 'gradlew')
-
         # This gradle command generates the new DEPS and BUILD.gn files, it can
         # also handle special cases.
         # Edit BuildConfigGenerator.groovy#addSpecialTreatment for such cases.
-        gradle_cmd = [
-            abs_gradle_wrapper_path,
-            '-b',
-            os.path.join(build_android_deps_dir, _BUILD_GRADLE),
-            'setupRepository',
-            '--stacktrace',
-        ]
+        gradle_cmd = _BuildGradleCmd(build_android_deps_dir, 'setupRepository')
         if debug:
             gradle_cmd.append('--debug')
         if args.ignore_licenses:
@@ -579,14 +561,7 @@ def main():
         ]
         RunCommand(gn_args, print_stdout=debug, cwd=_CHROMIUM_SRC)
 
-        logging.info('# Jetify all libraries.')
         aar_files = FindInDirectory(build_libs_dir, '*.aar')
-        jar_files = FindInDirectory(build_libs_dir, '*.jar')
-        jetify_android_deps = build_libs_dir
-        if args.android_deps_dir != _DEFAULT_ANDROID_DEPS_DIR:
-            jetify_android_deps += ':' + os.path.join(
-                _CHROMIUM_SRC, _DEFAULT_ANDROID_DEPS_DIR, _LIBS_DIR)
-        _JetifyAll(aar_files + jar_files, jetify_android_deps)
 
         logging.info('# Generate Android .aar info files.')
         _CreateAarInfos(aar_files)
@@ -605,7 +580,7 @@ def main():
                             f.write(z.read(_THIRD_PARTY_LICENSE_FILENAME))
 
         logging.info('# Compare CIPD packages.')
-        existing_packages = ParseDeps(abs_android_deps_dir, _LIBS_DIR)
+        existing_packages = ParseDeps(args.android_deps_dir, _LIBS_DIR)
         build_packages = ParseDeps(build_android_deps_dir, _LIBS_DIR)
 
         deleted_packages = []
@@ -629,20 +604,25 @@ def main():
 
         # Copy updated DEPS and BUILD.gn to build directory.
         update_cmds = []
-        Copy(build_android_deps_dir, _UPDATED_ANDROID_DEPS_FILES,
-             abs_android_deps_dir, _UPDATED_ANDROID_DEPS_FILES)
+        Copy(build_android_deps_dir,
+             _CUSTOM_ANDROID_DEPS_FILES,
+             args.android_deps_dir,
+             _CUSTOM_ANDROID_DEPS_FILES,
+             src_path_must_exist=is_primary_android_deps)
 
         # Delete obsolete or updated package directories.
         for pkg in existing_packages.values():
-            pkg_path = os.path.join(abs_android_deps_dir, pkg.path)
+            pkg_path = os.path.join(args.android_deps_dir, pkg.path)
             DeleteDirectory(pkg_path)
 
         # Copy new and updated packages from build directory.
         for pkg in build_packages.values():
             pkg_path = pkg.path
-            dst_pkg_path = os.path.join(abs_android_deps_dir, pkg_path)
+            dst_pkg_path = os.path.join(args.android_deps_dir, pkg_path)
             src_pkg_path = os.path.join(build_android_deps_dir, pkg_path)
-            CopyFileOrDirectory(src_pkg_path, dst_pkg_path)
+            CopyFileOrDirectory(src_pkg_path,
+                                dst_pkg_path,
+                                ignore_extension=".tmp")
 
         # Useful for printing timestamp.
         logging.info('All Done.')

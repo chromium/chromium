@@ -27,6 +27,10 @@ struct ContentId;
 struct OfflineItem;
 }  // namespace offline_items_collection
 
+namespace views {
+class View;
+}
+
 // This is an abstract base class for platform specific download shelf
 // implementations.
 class DownloadShelf {
@@ -68,6 +72,7 @@ class DownloadShelf {
   void Unhide();
 
   Browser* browser() { return browser_; }
+  virtual views::View* GetView() = 0;
   bool is_hidden() const { return is_hidden_; }
 
  protected:

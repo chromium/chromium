@@ -42,7 +42,7 @@ class CORE_EXPORT ScriptPromiseResolver
 
  public:
   explicit ScriptPromiseResolver(ScriptState*);
-  virtual ~ScriptPromiseResolver();
+  ~ScriptPromiseResolver() override;
 
   void Dispose();
 

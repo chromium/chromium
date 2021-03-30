@@ -35,7 +35,7 @@ namespace {
 // |icon_letter| into a rounded background of |color|.
 class GeneratedIconImageSource : public gfx::CanvasImageSource {
  public:
-  explicit GeneratedIconImageSource(base::char16 icon_letter,
+  explicit GeneratedIconImageSource(char16_t icon_letter,
                                     SkColor color,
                                     SquareSizePx output_size)
       : gfx::CanvasImageSource(gfx::Size(output_size, output_size)),
@@ -78,13 +78,13 @@ class GeneratedIconImageSource : public gfx::CanvasImageSource {
     // The text rect's size needs to be odd to center the text correctly.
     gfx::Rect text_rect(icon_inset, icon_inset, icon_size + 1, icon_size + 1);
     canvas->DrawStringRectWithFlags(
-        base::string16(1, icon_letter_),
+        std::u16string(1, icon_letter_),
         gfx::FontList(gfx::Font(font_name, font_size)),
         color_utils::GetColorWithMaxContrast(color_), text_rect,
         gfx::Canvas::TEXT_ALIGN_CENTER);
   }
 
-  base::char16 icon_letter_;
+  char16_t icon_letter_;
 
   SkColor color_;
 
@@ -99,7 +99,7 @@ class GeneratedIconImageSource : public gfx::CanvasImageSource {
 void GenerateIcon(SizeToBitmap* bitmaps,
                   SquareSizePx output_size,
                   SkColor color,
-                  base::char16 icon_letter) {
+                  char16_t icon_letter) {
   // Do nothing if there is already an icon of |output_size|.
   if (bitmaps->count(output_size))
     return;
@@ -108,7 +108,7 @@ void GenerateIcon(SizeToBitmap* bitmaps,
 }
 
 void GenerateIcons(std::set<SquareSizePx> generate_sizes,
-                   base::char16 icon_letter,
+                   char16_t icon_letter,
                    SkColor generated_icon_color,
                    SizeToBitmap* bitmap_map) {
   // If no color has been specified, use a dark gray so it will stand out on the
@@ -166,7 +166,7 @@ SizeToBitmap ConstrainBitmapsToSizes(const std::vector<SkBitmap>& bitmaps,
 
 SkBitmap GenerateBitmap(SquareSizePx output_size,
                         SkColor color,
-                        base::char16 icon_letter) {
+                        char16_t icon_letter) {
   gfx::ImageSkia icon_image(std::make_unique<GeneratedIconImageSource>(
                                 icon_letter, color, output_size),
                             gfx::Size(output_size, output_size));
@@ -178,7 +178,7 @@ SkBitmap GenerateBitmap(SquareSizePx output_size,
   return dst;
 }
 
-base::char16 GenerateIconLetterFromUrl(const GURL& app_url) {
+char16_t GenerateIconLetterFromUrl(const GURL& app_url) {
   std::string app_url_part = " ";
   const std::string domain_and_registry =
       net::registry_controlled_domains::GetDomainAndRegistry(
@@ -192,14 +192,14 @@ base::char16 GenerateIconLetterFromUrl(const GURL& app_url) {
   }
 
   // Translate punycode into unicode before retrieving the first letter.
-  const base::string16 string_for_display =
+  const std::u16string string_for_display =
       url_formatter::IDNToUnicode(app_url_part);
 
-  base::char16 icon_letter = base::i18n::ToUpper(string_for_display)[0];
+  char16_t icon_letter = base::i18n::ToUpper(string_for_display)[0];
   return icon_letter;
 }
 
-base::char16 GenerateIconLetterFromAppName(const base::string16& app_name) {
+char16_t GenerateIconLetterFromAppName(const std::u16string& app_name) {
   CHECK(!app_name.empty());
   return base::i18n::ToUpper(app_name)[0];
 }
@@ -207,7 +207,7 @@ base::char16 GenerateIconLetterFromAppName(const base::string16& app_name) {
 SizeToBitmap ResizeIconsAndGenerateMissing(
     const std::vector<SkBitmap>& icons,
     const std::set<SquareSizePx>& sizes_to_generate,
-    base::char16 icon_letter,
+    char16_t icon_letter,
     SkColor* generated_icon_color,
     bool* is_generated_icon) {
   DCHECK(generated_icon_color);
@@ -246,9 +246,8 @@ SizeToBitmap ResizeIconsAndGenerateMissing(
 
 SizeToBitmap GenerateIcons(const std::string& app_name,
                            SkColor background_icon_color) {
-  const base::string16 app_name_utf16 = base::UTF8ToUTF16(app_name);
-  const base::char16 icon_letter =
-      GenerateIconLetterFromAppName(app_name_utf16);
+  const std::u16string app_name_utf16 = base::UTF8ToUTF16(app_name);
+  const char16_t icon_letter = GenerateIconLetterFromAppName(app_name_utf16);
 
   SizeToBitmap icons;
   for (SquareSizePx size : SizesToGenerate()) {

@@ -21,7 +21,6 @@
 #include "third_party/blink/renderer/modules/peerconnection/media_stream_track_metrics.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_receiver_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_sender_impl.h"
-#include "third_party/blink/renderer/modules/peerconnection/rtc_session_description_init.h"
 #include "third_party/blink/renderer/modules/peerconnection/thermal_resource.h"
 #include "third_party/blink/renderer/modules/peerconnection/thermal_uma_listener.h"
 #include "third_party/blink/renderer/modules/peerconnection/transceiver_state_surfacer.h"
@@ -54,6 +53,7 @@ class RTCAnswerOptionsPlatform;
 class RTCLegacyStats;
 class RTCOfferOptionsPlatform;
 class RTCPeerConnectionHandlerClient;
+class RTCSessionDescriptionInit;
 class RTCVoidRequest;
 class SetLocalDescriptionRequest;
 class WebLocalFrame;
@@ -175,7 +175,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
       const webrtc::PeerConnectionInterface::RTCConfiguration&
           server_configuration,
       const MediaConstraints& options,
-      const base::WeakPtr<PeerConnectionTracker>& peer_connection_tracker,
+      PeerConnectionTracker* peer_connection_tracker,
       ExceptionState& exception_state);
 
   // RTCPeerConnectionHandlerPlatform implementation
@@ -492,7 +492,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   // detect any removals during rollback.
   Vector<uintptr_t> previous_transceiver_ids_;
 
-  base::WeakPtr<PeerConnectionTracker> peer_connection_tracker_;
+  WeakPersistent<PeerConnectionTracker> peer_connection_tracker_;
 
   MediaStreamTrackMetrics track_metrics_;
 

@@ -5,14 +5,20 @@
 #ifndef COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_TEST_PROFILE_OAUTH2_TOKEN_SERVICE_DELEGATE_CHROMEOS_H_
 #define COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_TEST_PROFILE_OAUTH2_TOKEN_SERVICE_DELEGATE_CHROMEOS_H_
 
+#include "components/account_manager_core/account_manager_facade.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate_chromeos.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
 #include "services/network/test/test_network_connection_tracker.h"
 
 class AccountTrackerService;
-namespace chromeos {
+
+namespace ash {
 class AccountManager;
+}
+
+namespace crosapi {
+class AccountManagerAsh;
 }
 
 namespace signin {
@@ -27,7 +33,8 @@ class TestProfileOAuth2TokenServiceDelegateChromeOS
  public:
   TestProfileOAuth2TokenServiceDelegateChromeOS(
       AccountTrackerService* account_tracker_service,
-      chromeos::AccountManager* account_manager,
+      ash::AccountManager* account_manager,
+      crosapi::AccountManagerAsh* account_manager_ash,
       bool is_regular_profile);
   ~TestProfileOAuth2TokenServiceDelegateChromeOS() override;
   TestProfileOAuth2TokenServiceDelegateChromeOS(
@@ -67,6 +74,8 @@ class TestProfileOAuth2TokenServiceDelegateChromeOS
   // Owning pointer to TestNetworkConnectionTracker. Set only if it wasn't
   // created before initialization of this class.
   std::unique_ptr<network::TestNetworkConnectionTracker> owned_tracker_;
+  std::unique_ptr<account_manager::AccountManagerFacade>
+      account_manager_facade_;
   std::unique_ptr<ProfileOAuth2TokenServiceDelegateChromeOS> delegate_;
 };
 

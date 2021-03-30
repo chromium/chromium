@@ -16,7 +16,9 @@ namespace sms {
 // is asked for confirmation that it should be shared with the site (WebOTP).
 class SmsInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
-  SmsInfoBarDelegate(const url::Origin& origin,
+  using OriginList = std::vector<url::Origin>;
+
+  SmsInfoBarDelegate(const OriginList& origin_list,
                      const std::string& one_time_code,
                      base::OnceClosure on_confirm,
                      base::OnceClosure on_cancel);
@@ -25,16 +27,16 @@ class SmsInfoBarDelegate : public ConfirmInfoBarDelegate {
   // ConfirmInfoBarDelegate:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
   int GetIconId() const override;
-  base::string16 GetMessageText() const override;
+  std::u16string GetMessageText() const override;
   int GetButtons() const override;
-  base::string16 GetButtonLabel(InfoBarButton button) const override;
+  std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool Accept() override;
   void InfoBarDismissed() override;
 
-  base::string16 GetTitle() const;
+  std::u16string GetTitle() const;
 
  private:
-  const url::Origin origin_;
+  const OriginList origin_list_;
   const std::string one_time_code_;
   base::OnceClosure on_confirm_;
   base::OnceClosure on_cancel_;

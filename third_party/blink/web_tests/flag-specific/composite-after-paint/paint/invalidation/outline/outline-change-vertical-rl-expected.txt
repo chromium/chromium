@@ -3,6 +3,7 @@
     {
       "name": "Scrolling background of LayoutView #document",
       "bounds": [1016, 585],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#FFFFFF",
       "invalidations": [
         [0, 0, 1016, 128]

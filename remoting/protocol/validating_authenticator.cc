@@ -64,9 +64,9 @@ void ValidatingAuthenticator::ProcessMessage(
   state_ = PROCESSING_MESSAGE;
 
   current_authenticator_->ProcessMessage(
-      message, base::BindOnce(&ValidatingAuthenticator::UpdateState,
-                              weak_factory_.GetWeakPtr(),
-                              base::Passed(std::move(resume_callback))));
+      message,
+      base::BindOnce(&ValidatingAuthenticator::UpdateState,
+                     weak_factory_.GetWeakPtr(), std::move(resume_callback)));
 }
 
 std::unique_ptr<jingle_xmpp::XmlElement> ValidatingAuthenticator::GetNextMessage() {
@@ -132,8 +132,7 @@ void ValidatingAuthenticator::UpdateState(base::OnceClosure resume_callback) {
     validation_callback_.Run(
         remote_jid_,
         base::BindOnce(&ValidatingAuthenticator::OnValidateComplete,
-                       weak_factory_.GetWeakPtr(),
-                       base::Passed(std::move(resume_callback))));
+                       weak_factory_.GetWeakPtr(), std::move(resume_callback)));
   } else {
     std::move(resume_callback).Run();
   }

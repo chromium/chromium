@@ -23,8 +23,6 @@ import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 
-import java.util.Collections;
-
 public class SyncErrorCardPreference extends Preference
         implements ProfileSyncService.SyncStateChangedListener, ProfileDataCache.Observer {
     /**
@@ -56,7 +54,7 @@ public class SyncErrorCardPreference extends Preference
     public SyncErrorCardPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        mProfileDataCache = ProfileDataCache.createProfileDataCache(
+        mProfileDataCache = ProfileDataCache.createWithDefaultImageSize(
                 context, R.drawable.ic_sync_badge_error_20dp);
         setLayoutResource(R.layout.personalized_signin_promo_view_settings);
         mSyncError = SyncError.NO_ERROR;
@@ -124,8 +122,6 @@ public class SyncErrorCardPreference extends Preference
         if (signedInAccount == null) {
             return;
         }
-
-        mProfileDataCache.update(Collections.singletonList(signedInAccount));
         Drawable accountImage =
                 mProfileDataCache.getProfileDataOrDefault(signedInAccount).getImage();
         errorCardView.getImage().setImageDrawable(accountImage);
@@ -174,5 +170,24 @@ public class SyncErrorCardPreference extends Preference
     @Override
     public void onProfileDataUpdated(String accountEmail) {
         update();
+    }
+
+    private boolean isTrustedVaultError() {
+        switch (mSyncError) {
+            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
+            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
+                return true;
+            case SyncError.ANDROID_SYNC_DISABLED:
+            case SyncError.AUTH_ERROR:
+            case SyncError.CLIENT_OUT_OF_DATE:
+            case SyncError.OTHER_ERRORS:
+            case SyncError.PASSPHRASE_REQUIRED:
+            case SyncError.SYNC_SETUP_INCOMPLETE:
+            case SyncError.NO_ERROR:
+                return false;
+            default:
+                assert false : "Unknown sync error";
+                return false;
+        }
     }
 }

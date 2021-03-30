@@ -13,14 +13,17 @@ namespace content {
 class BrowserContext;
 }
 
+namespace heavy_ad_intervention {
 class HeavyAdService;
+}
 
 // LazyInstance that owns all HeavyAdServices and associates them with
 // Profiles.
 class HeavyAdServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
   // Gets the HeavyAdService instance for |context|.
-  static HeavyAdService* GetForBrowserContext(content::BrowserContext* context);
+  static heavy_ad_intervention::HeavyAdService* GetForBrowserContext(
+      content::BrowserContext* context);
 
   // Gets the LazyInstance that owns all HeavyAdServices.
   static HeavyAdServiceFactory* GetInstance();

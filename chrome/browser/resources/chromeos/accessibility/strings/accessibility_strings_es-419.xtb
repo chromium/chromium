@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">Elemento de lista</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">Deslizar dos dedos hacia la derecha</translation>
-<translation id="1016393160682012902">Presiona una tecla del teclado QWERTY o del teclado braille actualizable, o realiza un gesto táctil para conocer su función. Presiona Ctrl+W o Esc para salir.</translation>
 <translation id="1022586497894531524">¿Estás usando los comentarios por voz de ChromeVox por primera vez? En este instructivo rápido se explican los aspectos básicos para comenzar a usar ChromeVox.</translation>
 <translation id="1025074108959230262">Modo permanente inhabilitado</translation>
 <translation id="1031961866430398710">luego</translation>
@@ -150,6 +149,7 @@
 <translation id="2045055672832940894">No hay controles anteriores</translation>
 <translation id="2045606329038304310">Control de los campos del formulario</translation>
 <translation id="2063539687800151747">Epígrafe</translation>
+<translation id="2074531330963286860">Acciones disponibles. Presiona la tecla de búsqueda+punto para verlas.</translation>
 <translation id="2086961585857038472">Palabra siguiente</translation>
 <translation id="2087981446621639008">det listadesc</translation>
 <translation id="2089387485033699258">es-419</translation>
@@ -976,6 +976,7 @@
 <translation id="827266600368092403">Inicia o finaliza la selección</translation>
 <translation id="827422111966801947">Índigo</translation>
 <translation id="8276439074553447000">Saltar al elemento enfocable anterior</translation>
+<translation id="8279039817939141096">Presiona una tecla del teclado QWERTY o del teclado braille actualizable, o realiza un gesto táctil para conocer su función. Para salir, desliza dos dedos hacia la izquierda o presiona Esc, Ctrl+W o la barra espaciadora+Z.</translation>
 <translation id="8283603667300770666">Siguiente campo de formulario</translation>
 <translation id="8310185481635255431">No hay vínculos siguientes</translation>
 <translation id="831207808878314375">Definición</translation>

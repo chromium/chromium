@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests JS ignore list for timeline\n`);
-  await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   const sessionId = '6.23';
@@ -219,11 +219,11 @@
   dataProvider.setModel(PerformanceTestRunner.createPerformanceModelWithEvents(rawTraceEvents));
 
   TestRunner.addResult('\nIgnore listed url: lib_script.js');
-  Bindings.blackboxManager._blackboxURL('lib_script.js');
+  Bindings.ignoreListManager._ignoreListURL('lib_script.js');
   printTimelineData(dataProvider);
 
   TestRunner.addResult('\nUnignored url: lib_script.js');
-  Bindings.blackboxManager._unblackboxURL('lib_script.js');
+  Bindings.ignoreListManager._unIgnoreListURL('lib_script.js');
   printTimelineData(dataProvider);
   TestRunner.completeTest();
 })();

@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/base_paths_posix.h"
@@ -15,7 +16,6 @@
 #include "base/containers/contains.h"
 #include "base/i18n/time_formatting.h"
 #include "base/path_service.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
@@ -220,13 +220,13 @@ const char* DefaultGalleryTypeToStringValue(
 bool PopulateGalleryPrefInfoFromDictionary(
     const base::DictionaryValue& dict, MediaGalleryPrefInfo* out_gallery_info) {
   MediaGalleryPrefId pref_id;
-  base::string16 display_name;
+  std::u16string display_name;
   std::string device_id;
-  base::FilePath::StringType path;
+  std::string path;
   MediaGalleryPrefInfo::Type type = MediaGalleryPrefInfo::kInvalidType;
-  base::string16 volume_label;
-  base::string16 vendor_name;
-  base::string16 model_name;
+  std::u16string volume_label;
+  std::u16string vendor_name;
+  std::u16string model_name;
   double total_size_in_bytes = 0.0;
   double last_attach_time = 0.0;
   bool volume_metadata_valid = false;
@@ -268,7 +268,7 @@ bool PopulateGalleryPrefInfoFromDictionary(
   out_gallery_info->pref_id = pref_id;
   out_gallery_info->display_name = display_name;
   out_gallery_info->device_id = device_id;
-  out_gallery_info->path = base::FilePath(path);
+  out_gallery_info->path = base::FilePath::FromUTF8Unsafe(path);
   out_gallery_info->type = type;
   out_gallery_info->volume_label = volume_label;
   out_gallery_info->vendor_name = vendor_name;
@@ -288,7 +288,7 @@ std::unique_ptr<base::DictionaryValue> CreateGalleryPrefInfoDictionary(
   dict->SetString(kMediaGalleriesPrefIdKey,
                   base::NumberToString(gallery.pref_id));
   dict->SetString(kMediaGalleriesDeviceIdKey, gallery.device_id);
-  dict->SetString(kMediaGalleriesPathKey, gallery.path.value());
+  dict->SetString(kMediaGalleriesPathKey, gallery.path.AsUTF8Unsafe());
   dict->SetString(kMediaGalleriesTypeKey, TypeToStringValue(gallery.type));
 
   if (gallery.default_gallery_type != MediaGalleryPrefInfo::kNotDefault) {
@@ -330,7 +330,7 @@ bool HasAutoDetectedGalleryPermission(const extensions::Extension& extension) {
   chrome_apps::MediaGalleriesPermission::CheckParam param(
       chrome_apps::MediaGalleriesPermission::kAllAutoDetectedPermission);
   return extension.permissions_data()->CheckAPIPermissionWithParam(
-      extensions::APIPermission::kMediaGalleries, &param);
+      extensions::mojom::APIPermissionID::kMediaGalleries, &param);
 }
 
 // Retrieves the MediaGalleryPermission from the given dictionary; DCHECKs on
@@ -351,13 +351,11 @@ bool GetMediaGalleryPermissionFromDictionary(
 
 // For a device with |device_name| and a relative path |sub_folder|, construct
 // a display name. If |sub_folder| is empty, then just return |device_name|.
-base::string16 GetDisplayNameForSubFolder(const base::string16& device_name,
+std::u16string GetDisplayNameForSubFolder(const std::u16string& device_name,
                                           const base::FilePath& sub_folder) {
   if (sub_folder.empty())
     return device_name;
-  return (sub_folder.BaseName().LossyDisplayName() +
-          base::ASCIIToUTF16(" - ") +
-          device_name);
+  return (sub_folder.BaseName().LossyDisplayName() + u" - " + device_name);
 }
 
 }  // namespace
@@ -389,7 +387,7 @@ bool MediaGalleryPrefInfo::IsBlackListedType() const {
   return type == kBlackListed || type == kRemovedScan;
 }
 
-base::string16 MediaGalleryPrefInfo::GetGalleryDisplayName() const {
+std::u16string MediaGalleryPrefInfo::GetGalleryDisplayName() const {
   if (!StorageInfo::IsRemovableDevice(device_id)) {
     // For fixed storage, the default name is the fully qualified directory
     // name, or in the case of a root directory, the root directory name.
@@ -417,18 +415,18 @@ base::string16 MediaGalleryPrefInfo::GetGalleryDisplayName() const {
   StorageInfo info(device_id,
                    MediaStorageUtil::FindDevicePathById(device_id).value(),
                    volume_label, vendor_name, model_name, total_size_in_bytes);
-  base::string16 name = info.GetDisplayNameWithOverride(display_name, true);
+  std::u16string name = info.GetDisplayNameWithOverride(display_name, true);
   if (!path.empty())
     name = GetDisplayNameForSubFolder(name, path);
   return name;
 }
 
-base::string16 MediaGalleryPrefInfo::GetGalleryTooltip() const {
+std::u16string MediaGalleryPrefInfo::GetGalleryTooltip() const {
   return AbsolutePath().LossyDisplayName();
 }
 
-base::string16 MediaGalleryPrefInfo::GetGalleryAdditionalDetails() const {
-  base::string16 attached;
+std::u16string MediaGalleryPrefInfo::GetGalleryAdditionalDetails() const {
+  std::u16string attached;
   if (StorageInfo::IsRemovableDevice(device_id)) {
     if (MediaStorageUtil::IsRemovableStorageAttached(device_id)) {
       attached = l10n_util::GetStringUTF16(
@@ -518,20 +516,10 @@ void MediaGalleriesPreferences::AddDefaultGalleries() {
       DCHECK_NE(default_gallery_type, MediaGalleryPrefInfo::kNotDefault);
 
       AddOrUpdateGalleryInternal(
-          info.device_id(),
-          base::string16(),
-          relative_path,
-          MediaGalleryPrefInfo::kAutoDetected,
-          info.storage_label(),
-          info.vendor_name(),
-          info.model_name(),
-          info.total_size_in_bytes(),
-          base::Time(),
-          true,
-          0,
-          0,
-          0,
-          kCurrentPrefsVersion,
+          info.device_id(), std::u16string(), relative_path,
+          MediaGalleryPrefInfo::kAutoDetected, info.storage_label(),
+          info.vendor_name(), info.model_name(), info.total_size_in_bytes(),
+          base::Time(), true, 0, 0, 0, kCurrentPrefsVersion,
           default_gallery_type);
     }
   }
@@ -706,9 +694,9 @@ MediaGalleryPrefId MediaGalleriesPreferences::AddGallery(
     const std::string& device_id,
     const base::FilePath& relative_path,
     MediaGalleryPrefInfo::Type type,
-    const base::string16& volume_label,
-    const base::string16& vendor_name,
-    const base::string16& model_name,
+    const std::u16string& volume_label,
+    const std::u16string& vendor_name,
+    const std::u16string& model_name,
     uint64_t total_size_in_bytes,
     base::Time last_attach_time,
     int audio_count,
@@ -716,31 +704,20 @@ MediaGalleryPrefId MediaGalleriesPreferences::AddGallery(
     int video_count) {
   DCHECK(IsInitialized());
   return AddOrUpdateGalleryInternal(
-      device_id,
-      base::string16(),
-      relative_path,
-      type,
-      volume_label,
-      vendor_name,
-      model_name,
-      total_size_in_bytes,
-      last_attach_time,
-      true,
-      audio_count,
-      image_count,
-      video_count,
-      kCurrentPrefsVersion,
+      device_id, std::u16string(), relative_path, type, volume_label,
+      vendor_name, model_name, total_size_in_bytes, last_attach_time, true,
+      audio_count, image_count, video_count, kCurrentPrefsVersion,
       MediaGalleryPrefInfo::kNotDefault);
 }
 
 MediaGalleryPrefId MediaGalleriesPreferences::AddOrUpdateGalleryInternal(
     const std::string& device_id,
-    const base::string16& display_name,
+    const std::u16string& display_name,
     const base::FilePath& relative_path,
     MediaGalleryPrefInfo::Type type,
-    const base::string16& volume_label,
-    const base::string16& vendor_name,
-    const base::string16& model_name,
+    const std::u16string& volume_label,
+    const std::u16string& vendor_name,
+    const std::u16string& model_name,
     uint64_t total_size_in_bytes,
     base::Time last_attach_time,
     bool volume_metadata_valid,
@@ -892,7 +869,6 @@ MediaGalleryPrefId MediaGalleriesPreferences::AddOrUpdateGalleryInternal(
 
   return gallery_info.pref_id;
 }
-
 
 void MediaGalleriesPreferences::UpdateDefaultGalleriesPaths() {
   base::FilePath music_path;

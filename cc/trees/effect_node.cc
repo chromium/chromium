@@ -42,7 +42,8 @@ EffectNode::EffectNode()
       clip_id(0),
       target_id(1),
       closest_ancestor_with_cached_render_surface_id(-1),
-      closest_ancestor_with_copy_request_id(-1) {}
+      closest_ancestor_with_copy_request_id(-1),
+      closest_ancestor_being_captured_id(-1) {}
 
 EffectNode::EffectNode(const EffectNode& other) = default;
 
@@ -54,6 +55,7 @@ bool EffectNode::operator==(const EffectNode& other) const {
          stable_id == other.stable_id && opacity == other.opacity &&
          screen_space_opacity == other.screen_space_opacity &&
          backdrop_filter_quality == other.backdrop_filter_quality &&
+         subtree_capture_id == other.subtree_capture_id &&
          cache_render_surface == other.cache_render_surface &&
          has_copy_request == other.has_copy_request &&
          filters == other.filters &&
@@ -94,7 +96,9 @@ bool EffectNode::operator==(const EffectNode& other) const {
          closest_ancestor_with_cached_render_surface_id ==
              other.closest_ancestor_with_cached_render_surface_id &&
          closest_ancestor_with_copy_request_id ==
-             other.closest_ancestor_with_copy_request_id;
+             other.closest_ancestor_with_copy_request_id &&
+         closest_ancestor_being_captured_id ==
+             other.closest_ancestor_being_captured_id;
 }
 #endif  // DCHECK_IS_ON()
 
@@ -138,6 +142,12 @@ const char* RenderSurfaceReasonToString(RenderSurfaceReason reason) {
       return "cache";
     case RenderSurfaceReason::kCopyRequest:
       return "copy request";
+    case RenderSurfaceReason::kMirrored:
+      return "mirrored";
+    case RenderSurfaceReason::kSubtreeIsBeingCaptured:
+      return "subtree being captured";
+    case RenderSurfaceReason::kDocumentTransitionParticipant:
+      return "document transition participant";
     case RenderSurfaceReason::kTest:
       return "test";
     default:
@@ -172,6 +182,7 @@ void EffectNode::AsValueInto(base::trace_event::TracedValue* value) const {
     }
   }
   value->SetString("blend_mode", SkBlendMode_Name(blend_mode));
+  value->SetString("subtree_capture_id", subtree_capture_id.ToString());
   value->SetBoolean("cache_render_surface", cache_render_surface);
   value->SetBoolean("has_copy_request", has_copy_request);
   value->SetBoolean("double_sided", double_sided);
@@ -198,6 +209,8 @@ void EffectNode::AsValueInto(base::trace_event::TracedValue* value) const {
                     closest_ancestor_with_cached_render_surface_id);
   value->SetInteger("closest_ancestor_with_copy_request_id",
                     closest_ancestor_with_copy_request_id);
+  value->SetInteger("closest_ancestor_being_captured_id",
+                    closest_ancestor_being_captured_id);
   value->SetBoolean("affected_by_backdrop_filter", affected_by_backdrop_filter);
 }
 

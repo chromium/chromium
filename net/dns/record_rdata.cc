@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
+#include "base/strings/string_piece.h"
 #include "net/base/ip_address.h"
 #include "net/dns/dns_response.h"
 #include "net/dns/public/dns_protocol.h"
@@ -216,7 +217,7 @@ std::unique_ptr<TxtRecordRdata> TxtRecordRdata::Create(
     if (i + length >= data.size())
       return std::unique_ptr<TxtRecordRdata>();
 
-    rdata->texts_.push_back(data.substr(i + 1, length).as_string());
+    rdata->texts_.push_back(std::string(data.substr(i + 1, length)));
 
     // Move to the next string.
     i += length + 1;

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Test network status of non http request.\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
   await TestRunner.evaluateInPagePromise(`
       function addScriptElement(src)

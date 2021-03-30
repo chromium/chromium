@@ -12,6 +12,7 @@
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
+#include "third_party/blink/renderer/core/html/cross_origin_attribute.h"
 #include "third_party/blink/renderer/core/html/html_link_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/threadable_loader.h"
@@ -21,6 +22,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
@@ -31,7 +33,8 @@ class WebBundleLoader : public GarbageCollected<WebBundleLoader>,
  public:
   WebBundleLoader(LinkWebBundle& link_web_bundle,
                   Document& document,
-                  const KURL& url)
+                  const KURL& url,
+                  CrossOriginAttributeValue cross_origin_attribute_value)
       : link_web_bundle_(&link_web_bundle),
         url_(url),
         security_origin_(SecurityOrigin::Create(url)),
@@ -42,11 +45,21 @@ class WebBundleLoader : public GarbageCollected<WebBundleLoader>,
     // linked resource algorithm [1] for <link rel=webbundle> is defined.
     // [1]
     // https://html.spec.whatwg.org/multipage/semantics.html#fetch-and-process-the-linked-resource
-    request.SetRequestContext(mojom::blink::RequestContextType::SUBRESOURCE);
-    // TODO(crbug.com/1149816): Set CORS mode respecting the crossorigin=
-    // attribute of the <link> element.
+    request.SetRequestContext(
+        mojom::blink::RequestContextType::SUBRESOURCE_WEBBUNDLE);
+
+    // https://github.com/WICG/webpackage/blob/main/explainers/subresource-loading.md#requests-mode-and-credentials-mode
     request.SetMode(network::mojom::blink::RequestMode::kCors);
-    request.SetCredentialsMode(network::mojom::blink::CredentialsMode::kOmit);
+    switch (cross_origin_attribute_value) {
+      case kCrossOriginAttributeNotSet:
+      case kCrossOriginAttributeAnonymous:
+        request.SetCredentialsMode(
+            network::mojom::CredentialsMode::kSameOrigin);
+        break;
+      case kCrossOriginAttributeUseCredentials:
+        request.SetCredentialsMode(network::mojom::CredentialsMode::kInclude);
+        break;
+    }
     request.SetRequestDestination(
         network::mojom::RequestDestination::kWebBundle);
     request.SetPriority(ResourceLoadPriority::kHigh);
@@ -55,7 +68,7 @@ class WebBundleLoader : public GarbageCollected<WebBundleLoader>,
     web_bundle_handles_.Add(this,
                             web_bundle_handle.InitWithNewPipeAndPassReceiver());
     request.SetWebBundleTokenParams(ResourceRequestHead::WebBundleTokenParams(
-        web_bundle_token_, std::move(web_bundle_handle)));
+        url_, web_bundle_token_, std::move(web_bundle_handle)));
 
     ExecutionContext* execution_context = document.GetExecutionContext();
     ResourceLoaderOptions resource_loader_options(
@@ -75,17 +88,10 @@ class WebBundleLoader : public GarbageCollected<WebBundleLoader>,
   bool HasLoaded() const { return !failed_; }
 
   // ThreadableLoaderClient
-  void DidReceiveResponse(uint64_t, const ResourceResponse& response) override {
-    if (!cors::IsOkStatus(response.HttpStatusCode()))
-      failed_ = true;
-  }
-
   void DidStartLoadingResponseBody(BytesConsumer& consumer) override {
     // Drain |consumer| so that DidFinishLoading is surely called later.
     consumer.DrainAsDataPipe();
   }
-
-  void DidFinishLoading(uint64_t) override { link_web_bundle_->NotifyLoaded(); }
   void DidFail(const ResourceError&) override { DidFailInternal(); }
   void DidFailRedirectCheck() override { DidFailInternal(); }
 
@@ -99,6 +105,12 @@ class WebBundleLoader : public GarbageCollected<WebBundleLoader>,
     link_web_bundle_->OnWebBundleError(url_.ElidedString() + ": " +
                                        message.c_str());
   }
+  void OnWebBundleLoadFinished(bool success) override {
+    if (failed_)
+      return;
+    failed_ = !success;
+    link_web_bundle_->NotifyLoaded();
+  }
 
   const KURL& url() const { return url_; }
   scoped_refptr<SecurityOrigin> GetSecurityOrigin() const {
@@ -110,6 +122,8 @@ class WebBundleLoader : public GarbageCollected<WebBundleLoader>,
 
  private:
   void DidFailInternal() {
+    if (failed_)
+      return;
     failed_ = true;
     link_web_bundle_->NotifyLoaded();
   }
@@ -124,6 +138,12 @@ class WebBundleLoader : public GarbageCollected<WebBundleLoader>,
   // ResourceRequest is copied.
   mojo::ReceiverSet<network::mojom::WebBundleHandle> web_bundle_handles_;
 };
+
+// static
+bool LinkWebBundle::IsFeatureEnabled(const ExecutionContext* context) {
+  return context && context->IsSecureContext() &&
+         RuntimeEnabledFeatures::SubresourceWebBundlesEnabled(context);
+}
 
 LinkWebBundle::LinkWebBundle(HTMLLinkElement* owner) : LinkResource(owner) {
   UseCounter::Count(owner_->GetDocument().GetExecutionContext(),
@@ -163,6 +183,10 @@ void LinkWebBundle::Process() {
   if (!resource_fetcher)
     return;
 
+  // We don't support crossorigin= attribute's dynamic change. It seems
+  // other types of link elements doesn't support that too. See
+  // HTMLlinkElement::ParseAttribute, which doesn't call Process() for
+  // crossorigin= attribute change.
   if (!bundle_loader_ || bundle_loader_->url() != owner_->Href()) {
     if (resource_fetcher->ShouldBeLoadedFromWebBundle(owner_->Href())) {
       // This can happen when a requested bundle is a nested bundle.
@@ -182,7 +206,9 @@ void LinkWebBundle::Process() {
       return;
     }
     bundle_loader_ = MakeGarbageCollected<WebBundleLoader>(
-        *this, owner_->GetDocument(), owner_->Href());
+        *this, owner_->GetDocument(), owner_->Href(),
+        GetCrossOriginAttributeValue(
+            owner_->FastGetAttribute(html_names::kCrossoriginAttr)));
   }
 
   resource_fetcher->AddSubresourceWebBundle(*this);
@@ -209,7 +235,7 @@ void LinkWebBundle::OwnerRemoved() {
 bool LinkWebBundle::CanHandleRequest(const KURL& url) const {
   if (!url.IsValid())
     return false;
-  if (!owner_ || !owner_->ValidResourceUrls().Contains(url))
+  if (!ResourcesOrScopesMatch(url))
     return false;
   if (url.Protocol() == "urn")
     return true;
@@ -232,9 +258,26 @@ bool LinkWebBundle::CanHandleRequest(const KURL& url) const {
   return true;
 }
 
+bool LinkWebBundle::ResourcesOrScopesMatch(const KURL& url) const {
+  if (!owner_)
+    return false;
+  if (owner_->ValidResourceUrls().Contains(url))
+    return true;
+  for (const auto& scope : owner_->ValidScopeUrls()) {
+    if (url.GetString().StartsWith(scope.GetString()))
+      return true;
+  }
+  return false;
+}
+
 String LinkWebBundle::GetCacheIdentifier() const {
   DCHECK(bundle_loader_);
   return bundle_loader_->url().GetString();
+}
+
+const KURL& LinkWebBundle::GetBundleUrl() const {
+  DCHECK(bundle_loader_);
+  return bundle_loader_->url();
 }
 
 const base::UnguessableToken& LinkWebBundle::WebBundleToken() const {

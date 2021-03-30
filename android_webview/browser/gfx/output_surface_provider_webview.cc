@@ -8,10 +8,10 @@
 #include "android_webview/browser/gfx/aw_render_thread_context_provider.h"
 #include "android_webview/browser/gfx/aw_vulkan_context_provider.h"
 #include "android_webview/browser/gfx/deferred_gpu_command_service.h"
-#include "android_webview/browser/gfx/gpu_service_web_view.h"
+#include "android_webview/browser/gfx/gpu_service_webview.h"
 #include "android_webview/browser/gfx/parent_output_surface.h"
 #include "android_webview/browser/gfx/skia_output_surface_dependency_webview.h"
-#include "android_webview/browser/gfx/task_queue_web_view.h"
+#include "android_webview/browser/gfx/task_queue_webview.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -24,6 +24,7 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_share_group.h"
+#include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/init/gl_factory.h"
 
 namespace android_webview {
@@ -41,7 +42,7 @@ void OnContextLost(bool synthetic_loss) {
 
 }  // namespace
 
-OutputSurfaceProviderWebview::OutputSurfaceProviderWebview(
+OutputSurfaceProviderWebView::OutputSurfaceProviderWebView(
     AwVulkanContextProvider* vulkan_context_provider)
     : vulkan_context_provider_(vulkan_context_provider) {
   // Should be kept in sync with compositor_impl_android.cc.
@@ -56,11 +57,6 @@ OutputSurfaceProviderWebview::OutputSurfaceProviderWebview(
   enable_vulkan_ = features::IsUsingVulkan();
   DCHECK(!enable_vulkan_ || vulkan_context_provider_);
 
-  enable_shared_image_ =
-      base::FeatureList::IsEnabled(features::kEnableSharedImageForWebview);
-  LOG_IF(FATAL, enable_vulkan_ && !enable_shared_image_)
-      << "--webview-enable-vulkan only works with shared image "
-         "(--webview-enable-shared-image).";
   LOG_IF(FATAL, enable_vulkan_ && !renderer_settings_.use_skia_renderer)
       << "--webview-enable-vulkan only works with skia renderer "
          "(--enable-features=UseSkiaRenderer).";
@@ -71,23 +67,35 @@ OutputSurfaceProviderWebview::OutputSurfaceProviderWebview(
 
   InitializeContext();
 }
-OutputSurfaceProviderWebview::~OutputSurfaceProviderWebview() {
+OutputSurfaceProviderWebView::~OutputSurfaceProviderWebView() {
   // We must to destroy |gl_surface_| before |shared_context_state_|, so we will
   // still have context. NOTE: |shared_context_state_| holds ref to surface, but
   // it loses it before context.
   gl_surface_.reset();
 }
 
-void OutputSurfaceProviderWebview::InitializeContext() {
+void OutputSurfaceProviderWebView::InitializeContext() {
   DCHECK(!gl_surface_) << "InitializeContext() called twice";
-
+  // If EGL supports EGL_ANGLE_external_context_and_surface, then we will create
+  // an ANGLE context for the current native GL context.
+  const bool is_angle =
+      !enable_vulkan_ &&
+      gl::GLSurfaceEGL::IsANGLEExternalContextAndSurfaceSupported();
+  // TODO(penghuang): should we support GLRenderer?
+  if (is_angle) {
+    CHECK(renderer_settings_.use_skia_renderer)
+        << "GLRenderer doesn't work with ANGLE.";
+  }
   if (renderer_settings_.use_skia_renderer && !enable_vulkan_) {
     // We need to draw to FBO for External Stencil support with SkiaRenderer
-    gl_surface_ = base::MakeRefCounted<AwGLSurfaceExternalStencil>();
+    gl_surface_ = base::MakeRefCounted<AwGLSurfaceExternalStencil>(is_angle);
   } else {
     // TODO(crbug.com/1143279): Should not be needed when vulkan is enabled.
-    gl_surface_ = base::MakeRefCounted<AwGLSurface>();
+    gl_surface_ = base::MakeRefCounted<AwGLSurface>(is_angle);
   }
+
+  bool result = gl_surface_->Initialize(gl::GLSurfaceFormat());
+  DCHECK(result);
 
   if (renderer_settings_.use_skia_renderer) {
     auto share_group = base::MakeRefCounted<gl::GLShareGroup>();
@@ -95,8 +103,20 @@ void OutputSurfaceProviderWebview::InitializeContext() {
         GpuServiceWebView::GetInstance()
             ->gpu_feature_info()
             .enabled_gpu_driver_bug_workarounds);
-    auto gl_context = gl::init::CreateGLContext(
-        share_group.get(), gl_surface_.get(), gl::GLContextAttribs());
+    gl::GLContextAttribs attribs;
+    // For ANGLE EGL, we need to create ANGLE context from the current native
+    // EGL context.
+    attribs.angle_create_from_external_context = is_angle;
+
+    // Skip validation when dcheck is off.
+#if DCHECK_IS_ON()
+    attribs.can_skip_validation = false;
+#else
+    attribs.can_skip_validation = true;
+#endif
+
+    auto gl_context = gl::init::CreateGLContext(share_group.get(),
+                                                gl_surface_.get(), attribs);
     gl_context->MakeCurrent(gl_surface_.get());
 
     shared_context_state_ = base::MakeRefCounted<gpu::SharedContextState>(
@@ -128,7 +148,7 @@ void OutputSurfaceProviderWebview::InitializeContext() {
 }
 
 std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
-OutputSurfaceProviderWebview::CreateDisplayController() {
+OutputSurfaceProviderWebView::CreateDisplayController() {
   DCHECK(gl_surface_)
       << "InitializeContext() must be called before CreateOutputSurface()";
 
@@ -146,7 +166,7 @@ OutputSurfaceProviderWebview::CreateDisplayController() {
 }
 
 std::unique_ptr<viz::OutputSurface>
-OutputSurfaceProviderWebview::CreateOutputSurface(
+OutputSurfaceProviderWebView::CreateOutputSurface(
     viz::DisplayCompositorMemoryAndTaskController*
         display_compositor_controller) {
   DCHECK(gl_surface_)

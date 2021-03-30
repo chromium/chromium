@@ -6,11 +6,15 @@ import './scanning.mojom-lite.js';
 import './scan_settings_section.js';
 import './strings.m.js';
 
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {alphabeticalCompare, getSourceTypeString} from './scanning_app_util.js';
 import {SelectBehavior} from './select_behavior.js';
+
+/** @type {chromeos.scanning.mojom.SourceType} */
+const DEFAULT_SOURCE_TYPE = chromeos.scanning.mojom.SourceType.kFlatbed;
 
 /**
  * @fileoverview
@@ -23,21 +27,15 @@ Polymer({
 
   behaviors: [I18nBehavior, SelectBehavior],
 
-  properties: {
-    /** @type {!Array<!chromeos.scanning.mojom.ScanSource>} */
-    sources: {
-      type: Array,
-      value: () => [],
-    },
+  /**
+   * @param {number} index
+   * @return {string}
+   */
+  getOptionAtIndex(index) {
+    assert(index < this.options.length);
 
-    /** @type {string} */
-    selectedSource: {
-      type: String,
-      notify: true,
-    },
+    return this.options[index].name;
   },
-
-  observers: ['onSourcesChange_(sources.*)'],
 
   /**
    * @param {chromeos.scanning.mojom.SourceType} mojoSourceType
@@ -48,43 +46,18 @@ Polymer({
     return getSourceTypeString(mojoSourceType);
   },
 
-  /**
-   * "Flatbed" should always be the default option if it exists. If not, use
-   * the first source in the sources array.
-   * @return {string}
-   * @private
-   */
-  getDefaultSelectedSource_() {
-    const flatbedSourceIndex = this.sources.findIndex((source) => {
-      return source.type === chromeos.scanning.mojom.SourceType.kFlatbed;
+  sortOptions() {
+    this.options.sort((a, b) => {
+      return alphabeticalCompare(
+          getSourceTypeString(a.type), getSourceTypeString(b.type));
     });
-
-    return flatbedSourceIndex === -1 ? this.sources[0].name :
-                                       this.sources[flatbedSourceIndex].name;
   },
 
   /**
-   * Sorts the sources and sets the selected source when sources change.
-   * @private
-   */
-  onSourcesChange_() {
-    if (this.sources.length > 1) {
-      this.sources = this.customSort(
-          this.sources, alphabeticalCompare,
-          (source) => getSourceTypeString(source.type));
-    }
-
-    if (this.sources.length > 0) {
-      this.selectedSource = this.getDefaultSelectedSource_();
-    }
-  },
-
-  /**
-   * @param {!chromeos.scanning.mojom.SourceType} sourceType
+   * @param {!chromeos.scanning.mojom.ScanSource} option
    * @return {boolean}
-   * @private
    */
-  isDefaultSource_(sourceType) {
-    return sourceType === chromeos.scanning.mojom.SourceType.kFlatbed;
+  isDefaultOption(option) {
+    return option.type === DEFAULT_SOURCE_TYPE;
   },
 });

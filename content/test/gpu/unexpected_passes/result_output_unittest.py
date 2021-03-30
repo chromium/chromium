@@ -87,36 +87,47 @@ class ConvertUnmatchedResultsToStringDictUnittest(unittest.TestCase):
 class ConvertTestExpectationMapToStringDictUnittest(unittest.TestCase):
   def testEmptyMap(self):
     """Tests that providing an empty map is a no-op."""
-    self.assertEqual(result_output._ConvertTestExpectationMapToStringDict({}),
-                     {})
+    self.assertEqual(
+        result_output._ConvertTestExpectationMapToStringDict(
+            data_types.TestExpectationMap()), {})
 
   def testSemiStaleMap(self):
     """Tests that everything functions when regular data is provided."""
-    expectation_map = {
-        'foo': {
+    expectation_map = data_types.TestExpectationMap({
+        'foo':
+        data_types.ExpectationBuilderMap({
             data_types.Expectation('foo', ['win', 'intel'], ['RetryOnFailure']):
-            {
-                'builder': {
-                    'all_pass': uu.CreateStatsWithPassFails(2, 0),
-                    'all_fail': uu.CreateStatsWithPassFails(0, 2),
-                    'some_pass': uu.CreateStatsWithPassFails(1, 1),
-                },
-            },
+            data_types.BuilderStepMap({
+                'builder':
+                data_types.StepBuildStatsMap({
+                    'all_pass':
+                    uu.CreateStatsWithPassFails(2, 0),
+                    'all_fail':
+                    uu.CreateStatsWithPassFails(0, 2),
+                    'some_pass':
+                    uu.CreateStatsWithPassFails(1, 1),
+                }),
+            }),
             data_types.Expectation('foo', ['linux', 'intel'], [
                                        'RetryOnFailure'
-                                   ]): {
-                'builder': {
-                    'all_pass': uu.CreateStatsWithPassFails(2, 0),
-                }
-            },
+                                   ]):
+            data_types.BuilderStepMap({
+                'builder':
+                data_types.StepBuildStatsMap({
+                    'all_pass':
+                    uu.CreateStatsWithPassFails(2, 0),
+                }),
+            }),
             data_types.Expectation('foo', ['mac', 'intel'], ['RetryOnFailure']):
-            {
-                'builder': {
-                    'all_fail': uu.CreateStatsWithPassFails(0, 2),
-                }
-            },
-        },
-    }
+            data_types.BuilderStepMap({
+                'builder':
+                data_types.StepBuildStatsMap({
+                    'all_fail':
+                    uu.CreateStatsWithPassFails(0, 2),
+                }),
+            }),
+        }),
+    })
     expected_ouput = {
         'foo': {
             '"RetryOnFailure" expectation on "win intel"': {
@@ -374,31 +385,46 @@ class OutputResultsUnittest(fake_filesystem_unittest.TestCase):
   def testOutputResultsUnsupportedFormat(self):
     """Tests that passing in an unsupported format is an error."""
     with self.assertRaises(RuntimeError):
-      result_output.OutputResults({}, {}, {}, {}, [], 'asdf')
+      result_output.OutputResults(data_types.TestExpectationMap(),
+                                  data_types.TestExpectationMap(),
+                                  data_types.TestExpectationMap(), {}, [],
+                                  'asdf')
 
   def testOutputResultsSmoketest(self):
     """Test that nothing blows up when outputting."""
-    expectation_map = {
-        'foo': {
-            data_types.Expectation('foo', ['win', 'intel'], 'RetryOnFailure'): {
-                'stale': {
-                    'all_pass': uu.CreateStatsWithPassFails(2, 0),
-                },
-            },
-            data_types.Expectation('foo', ['linux'], 'Failure'): {
-                'semi_stale': {
-                    'all_pass': uu.CreateStatsWithPassFails(2, 0),
-                    'some_pass': uu.CreateStatsWithPassFails(1, 1),
-                    'none_pass': uu.CreateStatsWithPassFails(0, 2),
-                },
-            },
-            data_types.Expectation('foo', ['mac'], 'Failure'): {
-                'active': {
-                    'none_pass': uu.CreateStatsWithPassFails(0, 2),
-                },
-            },
-        },
-    }
+    expectation_map = data_types.TestExpectationMap({
+        'foo':
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation('foo', ['win', 'intel'], 'RetryOnFailure'):
+            data_types.BuilderStepMap({
+                'stale':
+                data_types.StepBuildStatsMap({
+                    'all_pass':
+                    uu.CreateStatsWithPassFails(2, 0),
+                }),
+            }),
+            data_types.Expectation('foo', ['linux'], 'Failure'):
+            data_types.BuilderStepMap({
+                'semi_stale':
+                data_types.StepBuildStatsMap({
+                    'all_pass':
+                    uu.CreateStatsWithPassFails(2, 0),
+                    'some_pass':
+                    uu.CreateStatsWithPassFails(1, 1),
+                    'none_pass':
+                    uu.CreateStatsWithPassFails(0, 2),
+                }),
+            }),
+            data_types.Expectation('foo', ['mac'], 'Failure'):
+            data_types.BuilderStepMap({
+                'active':
+                data_types.StepBuildStatsMap({
+                    'none_pass':
+                    uu.CreateStatsWithPassFails(0, 2),
+                }),
+            }),
+        }),
+    })
     unmatched_results = {
         'builder': [
             data_types.Result('foo', ['win', 'intel'], 'Failure', 'step_name',
@@ -474,7 +500,7 @@ class OutputUrlsForClDescriptionUnittest(fake_filesystem_unittest.TestCase):
     result_output._OutputUrlsForClDescription(urls, self._file_handle)
     self._file_handle.close()
     with open(self._filepath) as f:
-      self.assertEqual(f.read(), ('Affected bugs:\n'
+      self.assertEqual(f.read(), ('Affected bugs for CL description:\n'
                                   'Bug: 1234, angleproject:2345\n'))
 
   def testBugLimit(self):
@@ -490,7 +516,7 @@ class OutputUrlsForClDescriptionUnittest(fake_filesystem_unittest.TestCase):
     result_output._OutputUrlsForClDescription(urls, self._file_handle)
     self._file_handle.close()
     with open(self._filepath) as f:
-      self.assertEqual(f.read(), ('Affected bugs:\n'
+      self.assertEqual(f.read(), ('Affected bugs for CL description:\n'
                                   'Bug: 1, 2, 3, 4, 5\n'
                                   'Bug: 6\n'))
 
@@ -504,7 +530,7 @@ class OutputUrlsForClDescriptionUnittest(fake_filesystem_unittest.TestCase):
     self._file_handle.close()
     with open(self._filepath) as f:
       self.assertEqual(f.read(),
-                       ('Affected bugs:\n'
+                       ('Affected bugs for CL description:\n'
                         'Bug: averylongprojectthatwillgooverthelinelength:1\n'
                         'Bug: averylongprojectthatwillgooverthelinelength:2\n'))
 
@@ -517,7 +543,7 @@ class OutputUrlsForClDescriptionUnittest(fake_filesystem_unittest.TestCase):
     with open(self._filepath, 'w') as f:
       result_output._OutputUrlsForClDescription(urls, f)
     with open(self._filepath) as f:
-      self.assertEqual(f.read(), ('Affected bugs:\n'
+      self.assertEqual(f.read(), ('Affected bugs for CL description:\n'
                                   'Bug: %s:1, 2\n' % project_name))
 
     project_name += 'a'
@@ -528,7 +554,7 @@ class OutputUrlsForClDescriptionUnittest(fake_filesystem_unittest.TestCase):
     with open(self._filepath, 'w') as f:
       result_output._OutputUrlsForClDescription(urls, f)
     with open(self._filepath) as f:
-      self.assertEqual(f.read(), ('Affected bugs:\n'
+      self.assertEqual(f.read(), ('Affected bugs for CL description:\n'
                                   'Bug: %s:1\nBug: 2\n' % project_name))
 
   def testSingleBugOverLineLimit(self):
@@ -541,7 +567,7 @@ class OutputUrlsForClDescriptionUnittest(fake_filesystem_unittest.TestCase):
     result_output._OutputUrlsForClDescription(urls, self._file_handle)
     self._file_handle.close()
     with open(self._filepath) as f:
-      self.assertEqual(f.read(), ('Affected bugs:\n'
+      self.assertEqual(f.read(), ('Affected bugs for CL description:\n'
                                   'Bug: %s:1\n'
                                   'Bug: 2\n' % project_name))
 

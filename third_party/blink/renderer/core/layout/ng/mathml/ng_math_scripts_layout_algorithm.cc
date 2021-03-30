@@ -408,7 +408,7 @@ scoped_refptr<const NGLayoutResult> NGMathScriptsLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult NGMathScriptsLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesInput& child_input) const {
+    const MinMaxSizesFloatInput&) const {
   if (auto result = CalculateMinMaxSizesIgnoringChildren(
           Node(), BorderScrollbarPadding()))
     return *result;
@@ -421,18 +421,16 @@ MinMaxSizesResult NGMathScriptsLayoutAlgorithm::ComputeMinMaxSizes(
   DCHECK_GE(sub_sup_pairs.size(), 1ul);
 
   MinMaxSizes sizes;
-  bool depends_on_percentage_block_size = false;
+  bool depends_on_block_constraints = false;
 
-  ChildAndMetrics base_metrics = LayoutAndGetMetrics(base);
-  LayoutUnit base_italic_correction = std::min(
-      base_metrics.inline_size, base_metrics.result->MathItalicCorrection());
-  MinMaxSizesResult base_result =
-      ComputeMinAndMaxContentContribution(Style(), base, child_input);
-  base_result.sizes += ComputeMinMaxMargins(Style(), base).InlineSum();
+  // TODO(layout-dev): Determine the italic-correction without calling layout
+  // within ComputeMinMaxSizes, (or setup in an interoperable constraint-space).
+  LayoutUnit base_italic_correction;
+  const auto base_result = ComputeMinAndMaxContentContributionForMathChild(
+      Style(), ConstraintSpace(), base, ChildAvailableSize().block_size);
 
   sizes = base_result.sizes;
-  depends_on_percentage_block_size |=
-      base_result.depends_on_percentage_block_size;
+  depends_on_block_constraints |= base_result.depends_on_block_constraints;
 
   LayoutUnit space = GetSpaceAfterScript(Style());
   switch (Node().ScriptType()) {
@@ -440,20 +438,20 @@ MinMaxSizesResult NGMathScriptsLayoutAlgorithm::ComputeMinMaxSizes(
     case MathScriptType::kUnder:
     case MathScriptType::kOver:
     case MathScriptType::kSuper: {
-      NGBlockNode sub = sub_sup_pairs[0].sub;
-      NGBlockNode sup = sub_sup_pairs[0].sup;
-      auto first_post_script = sub ? sub : sup;
-      auto first_post_script_result = ComputeMinAndMaxContentContribution(
-          Style(), first_post_script, child_input);
-      first_post_script_result.sizes +=
-          ComputeMinMaxMargins(Style(), first_post_script).InlineSum();
+      const NGBlockNode sub = sub_sup_pairs[0].sub;
+      const NGBlockNode sup = sub_sup_pairs[0].sup;
+      const auto first_post_script = sub ? sub : sup;
+      const auto first_post_script_result =
+          ComputeMinAndMaxContentContributionForMathChild(
+              Style(), ConstraintSpace(), first_post_script,
+              ChildAvailableSize().block_size);
 
       sizes += first_post_script_result.sizes;
       if (sub)
         sizes -= base_italic_correction;
       sizes += space;
-      depends_on_percentage_block_size |=
-          first_post_script_result.depends_on_percentage_block_size;
+      depends_on_block_constraints |=
+          first_post_script_result.depends_on_block_constraints;
       break;
     }
     case MathScriptType::kSubSup:
@@ -462,36 +460,32 @@ MinMaxSizesResult NGMathScriptsLayoutAlgorithm::ComputeMinMaxSizes(
       MinMaxSizes sub_sup_pair_size;
       unsigned index = 0;
       do {
-        auto sub = sub_sup_pairs[index].sub;
+        const auto sub = sub_sup_pairs[index].sub;
         if (!sub)
           continue;
-        auto sub_result =
-            ComputeMinAndMaxContentContribution(Style(), sub, child_input);
-        sub_result.sizes += ComputeMinMaxMargins(Style(), sub).InlineSum();
+        auto sub_result = ComputeMinAndMaxContentContributionForMathChild(
+            Style(), ConstraintSpace(), sub, ChildAvailableSize().block_size);
         sub_result.sizes -= base_italic_correction;
         sub_sup_pair_size.Encompass(sub_result.sizes);
 
-        auto sup = sub_sup_pairs[index].sup;
+        const auto sup = sub_sup_pairs[index].sup;
         if (!sup)
           continue;
-        auto sup_result =
-            ComputeMinAndMaxContentContribution(Style(), sup, child_input);
-        sup_result.sizes += ComputeMinMaxMargins(Style(), sup).InlineSum();
+        const auto sup_result = ComputeMinAndMaxContentContributionForMathChild(
+            Style(), ConstraintSpace(), sup, ChildAvailableSize().block_size);
         sub_sup_pair_size.Encompass(sup_result.sizes);
 
         sizes += sub_sup_pair_size;
         sizes += space;
-        depends_on_percentage_block_size |=
-            sub_result.depends_on_percentage_block_size;
-        depends_on_percentage_block_size |=
-            sup_result.depends_on_percentage_block_size;
+        depends_on_block_constraints |= sub_result.depends_on_block_constraints;
+        depends_on_block_constraints |= sup_result.depends_on_block_constraints;
       } while (++index < sub_sup_pairs.size());
       break;
     }
   }
-  sizes += BorderScrollbarPadding().InlineSum();
 
-  return {sizes, depends_on_percentage_block_size};
+  sizes += BorderScrollbarPadding().InlineSum();
+  return MinMaxSizesResult(sizes, depends_on_block_constraints);
 }
 
 }  // namespace blink

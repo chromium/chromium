@@ -104,8 +104,6 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
 
   void SetWideColorEnabled(bool enabled);
 
-  void SetForce60HzRefreshRate();
-
   class TestHooks {
    public:
     virtual ~TestHooks() = default;
@@ -148,7 +146,6 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
   bool vsync_paused_ = false;
 
   TestHooks* test_hooks_ = nullptr;
-  bool force_60hz_refresh_rate_ = false;
 
   int selection_handles_active_count_ = 0;
 

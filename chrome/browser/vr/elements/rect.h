@@ -32,18 +32,18 @@ class VR_UI_EXPORT Rect : public UiElement {
   SkColor edge_color() const { return edge_color_; }
   void SetEdgeColor(SkColor color);
 
-  void NotifyClientColorAnimated(SkColor color,
-                                 int target_property_id,
-                                 cc::KeyframeModel* keyframe_model) override;
+  void OnColorAnimated(const SkColor& color,
+                       int target_property_id,
+                       gfx::KeyframeModel* keyframe_model) override;
 
   void Render(UiElementRenderer* renderer,
               const CameraModel& model) const override;
 
   void SetLocalOpacity(float opacity);
 
-  void NotifyClientFloatAnimated(float value,
-                                 int target_property_id,
-                                 cc::KeyframeModel* keyframe_model) override;
+  void OnFloatAnimated(const float& value,
+                       int target_property_id,
+                       gfx::KeyframeModel* keyframe_model) override;
 
   float ComputedAndLocalOpacityForTest() const override;
 

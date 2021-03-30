@@ -35,7 +35,6 @@ class HardwareRendererViz : public HardwareRenderer {
   class OnViz;
 
   void InitializeOnViz(RootFrameSinkGetter root_frame_sink_getter);
-  void DestroyOnViz();
   bool IsUsingVulkan() const;
 
   // Information about last delegated frame.
@@ -44,7 +43,7 @@ class HardwareRendererViz : public HardwareRenderer {
   viz::SurfaceId surface_id_;
 
   // Used to create viz::OutputSurface and gl::GLSurface
-  OutputSurfaceProviderWebview output_surface_provider_;
+  OutputSurfaceProviderWebView output_surface_provider_;
 
   // These are accessed on the viz thread.
   std::unique_ptr<OnViz> on_viz_;

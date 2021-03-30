@@ -7,31 +7,29 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
-
 namespace credential_provider {
 namespace extension {
 
 // The user, device and authentication details for task to be able to perform
 // its action.
 struct UserDeviceContext {
-  UserDeviceContext(base::string16 device_resource_id,
-                    base::string16 serial_number,
-                    base::string16 machine_guid,
-                    base::string16 user_sid,
-                    base::string16 dm_token);
+  UserDeviceContext(std::wstring device_resource_id,
+                    std::wstring serial_number,
+                    std::wstring machine_guid,
+                    std::wstring user_sid,
+                    std::wstring dm_token);
   UserDeviceContext(const UserDeviceContext& user_device_context);
   ~UserDeviceContext();
 
-  base::string16 device_resource_id;
-  base::string16 serial_number;
-  base::string16 machine_guid;
-  base::string16 user_sid;
+  std::wstring device_resource_id;
+  std::wstring serial_number;
+  std::wstring machine_guid;
+  std::wstring user_sid;
 
   // The dm_token is unique to device. It is uploaded into user device details
   // as part of GCPW login. The agent sends it along with identifiers to
   // authenticate the user.
-  base::string16 dm_token;
+  std::wstring dm_token;
 
   bool operator==(const UserDeviceContext& other_user_device_context);
 };

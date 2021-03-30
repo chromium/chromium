@@ -13,9 +13,13 @@ without changes to the corresponding grd file. -->
   </outputs>
   <release seq="1">
     <includes>
-      <include name="IDR_WEBUI_JS_JSTEMPLATE_COMPILED_JS"
-               file="../../../third_party/jstemplate/jstemplate_compiled.js"
-               resource_path="js/jstemplate_compiled.js" type="BINDATA"/>
+      <if expr="chromeos">
+        <include name="IDR_WEBUI_CROS_COLORS_CSS"
+                 file="${root_gen_dir}/ui/chromeos/colors/cros_colors.generated.css"
+                 resource_path="chromeos/colors/cros_colors.generated.css"
+                 type="chrome_html"
+                 use_base_dir="false" />
+      </if>
     </includes>
     <structures>
       <structure name="IDR_WEBUI_CSS_MENU_CSS"
@@ -23,9 +27,6 @@ without changes to the corresponding grd file. -->
                  flattenhtml="true" />
       <structure name="IDR_WEBUI_CSS_MENU_BUTTON_CSS"
                  file="css/menu_button.css" type="chrome_html"
-                 flattenhtml="true" />
-      <structure name="IDR_WEBUI_CSS_OVERLAY_CSS"
-                 file="css/overlay.css" type="chrome_html"
                  flattenhtml="true" />
       <structure name="IDR_WEBUI_CSS_SPINNER_CSS"
                  file="css/spinner.css" type="chrome_html"
@@ -36,18 +37,10 @@ without changes to the corresponding grd file. -->
       <structure name="IDR_WEBUI_CSS_WIDGETS_CSS"
                  file="css/widgets.css" type="chrome_html"
                  flattenhtml="true" />
-
       <if expr="chromeos">
-        <structure name="IDR_WEBUI_CROS_COLORS_CSS"
-                   file="${root_gen_dir}/ui/chromeos/colors/cros_colors.generated.css"
-                   type="chrome_html"
-                   use_base_dir="false" />
-      </if>
-
-      <if expr="not is_android and not is_ios">
-        <structure name="IDR_LOTTIE_LOTTIE_WORKER_MIN_JS"
-                   file="../../../third_party/lottie/lottie_worker.min.js"
-                   type="chrome_html" />
+        <structure name="IDR_WEBUI_CSS_OVERLAY_CSS"
+                   file="css/overlay.css" type="chrome_html"
+                   flattenhtml="true" />
       </if>
     </structures>
   </release>

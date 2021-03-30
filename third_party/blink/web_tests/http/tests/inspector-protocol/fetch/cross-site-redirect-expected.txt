@@ -1,0 +1,6 @@
+Tests that fetch correctly follows cross-site redirects.
+Request to https://start.test/, type: Document
+Request to https://a.test/, type: Document
+Request to https://b.test/, type: Document
+Request to https://c.test/, type: Document
+

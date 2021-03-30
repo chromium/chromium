@@ -8,6 +8,7 @@
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -17,6 +18,7 @@
 #include "ash/system/holding_space/holding_space_item_chip_view.h"
 #include "ash/system/holding_space/holding_space_item_chips_container.h"
 #include "ash/system/holding_space/holding_space_util.h"
+#include "base/callback_helpers.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -119,6 +121,9 @@ class FilesAppChip : public views::Button {
   }
 
   void OnPressed(const ui::Event& event) {
+    holding_space_metrics::RecordFilesAppChipAction(
+        holding_space_metrics::FilesAppChipAction::kClick);
+
     HoldingSpaceController::Get()->client()->OpenMyFiles(base::DoNothing());
   }
 };

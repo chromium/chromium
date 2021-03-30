@@ -10,6 +10,7 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/accessibility_delegate.h"
 #include "ash/animation/animation_change_type.h"
+#include "ash/components/audio/sounds.h"
 #include "ash/public/cpp/app_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_animation_types.h"
@@ -27,7 +28,6 @@
 #include "ash/wm/window_util.h"
 #include "base/auto_reset.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/audio/chromeos_sounds.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
@@ -63,7 +63,7 @@ class BackdropEventHandler : public ui::EventHandler {
         case ui::ET_SCROLL:
         case ui::ET_SCROLL_FLING_START:
           Shell::Get()->accessibility_controller()->PlayEarcon(
-              chromeos::SOUND_VOLUME_ADJUST);
+              Sound::kVolumeAdjust);
           break;
         default:
           break;
@@ -214,7 +214,7 @@ BackdropController::BackdropController(aura::Window* container)
 }
 
 BackdropController::~BackdropController() {
-  window_backdrop_observer_.RemoveAll();
+  window_backdrop_observations_.RemoveAllObservations();
   auto* shell = Shell::Get();
   // Shell destroys the TabletModeController before destroying all root windows.
   if (shell->tablet_mode_controller())
@@ -231,15 +231,15 @@ BackdropController::~BackdropController() {
 
 void BackdropController::OnWindowAddedToLayout(aura::Window* window) {
   if (DoesWindowCauseBackdropUpdates(window)) {
-    window_backdrop_observer_.Add(WindowBackdrop::Get(window));
+    window_backdrop_observations_.AddObservation(WindowBackdrop::Get(window));
     UpdateBackdrop();
   }
 }
 
 void BackdropController::OnWindowRemovedFromLayout(aura::Window* window) {
   WindowBackdrop* window_backdrop = WindowBackdrop::Get(window);
-  if (window_backdrop_observer_.IsObserving(window_backdrop))
-    window_backdrop_observer_.Remove(window_backdrop);
+  if (window_backdrop_observations_.IsObservingSource(window_backdrop))
+    window_backdrop_observations_.RemoveObservation(window_backdrop);
 
   if (DoesWindowCauseBackdropUpdates(window))
     UpdateBackdrop();
@@ -315,6 +315,9 @@ aura::Window* BackdropController::GetTopmostWindowWithBackdrop() {
     }
 
     if (!WindowShouldHaveBackdrop(window))
+      continue;
+
+    if (!window_util::ShouldShowForCurrentUser(window))
       continue;
 
     return window;

@@ -11,12 +11,10 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/clock.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/infobars/infobar_service.h"
@@ -96,10 +94,7 @@ class ToggledNotificationBlocker : public message_center::NotificationBlocker {
 // selects it when requesting one via navigator.mediaDevices.getDisplayMedia().
 class NotificationsTestWithFakeMediaStream : public NotificationsTest {
  public:
-  NotificationsTestWithFakeMediaStream() {
-    feature_list_.InitAndEnableFeature(
-        features::kMuteNotificationsDuringScreenShare);
-  }
+  NotificationsTestWithFakeMediaStream() = default;
   ~NotificationsTestWithFakeMediaStream() override = default;
 
   // InProcessBrowserTest:
@@ -111,9 +106,6 @@ class NotificationsTestWithFakeMediaStream : public NotificationsTest {
     command_line->AppendSwitchASCII(switches::kAutoSelectDesktopCaptureSource,
                                     "Entire screen");
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 #endif  // !defined(OS_ANDROID)
 
@@ -161,10 +153,8 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestCreateSimpleNotification) {
   ASSERT_EQ(1, GetNotificationCount());
   message_center::NotificationList::Notifications notifications =
       message_center::MessageCenter::Get()->GetVisibleNotifications();
-  EXPECT_EQ(base::ASCIIToUTF16("My Title"),
-            (*notifications.rbegin())->title());
-  EXPECT_EQ(base::ASCIIToUTF16("My Body"),
-            (*notifications.rbegin())->message());
+  EXPECT_EQ(u"My Title", (*notifications.rbegin())->title());
+  EXPECT_EQ(u"My Body", (*notifications.rbegin())->message());
 }
 
 IN_PROC_BROWSER_TEST_F(NotificationsTest, NotificationBlockerTest) {
@@ -433,8 +423,10 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, InlinePermissionRevokeUkm) {
   EXPECT_EQ(
       *ukm_recorder.GetEntryMetric(entry, "Source"),
       static_cast<int64_t>(permissions::PermissionSourceUI::INLINE_SETTINGS));
+  size_t num_values = 0;
   EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "PermissionType"),
-            static_cast<int64_t>(ContentSettingsType::NOTIFICATIONS));
+            ContentSettingTypeToHistogramValue(
+                ContentSettingsType::NOTIFICATIONS, &num_values));
   EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "Action"),
             static_cast<int64_t>(permissions::PermissionAction::REVOKED));
 }
@@ -523,9 +515,8 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestNotificationReplacement) {
   ASSERT_EQ(1, GetNotificationCount());
   message_center::NotificationList::Notifications notifications =
       message_center::MessageCenter::Get()->GetVisibleNotifications();
-  EXPECT_EQ(base::ASCIIToUTF16("Title2"), (*notifications.rbegin())->title());
-  EXPECT_EQ(base::ASCIIToUTF16("Body2"),
-            (*notifications.rbegin())->message());
+  EXPECT_EQ(u"Title2", (*notifications.rbegin())->title());
+  EXPECT_EQ(u"Body2", (*notifications.rbegin())->message());
 }
 
 IN_PROC_BROWSER_TEST_F(NotificationsTest,
@@ -806,8 +797,8 @@ IN_PROC_BROWSER_TEST_F(NotificationsTestWithFakeMediaStream,
   message_center::NotificationList::Notifications notifications =
       message_center::MessageCenter::Get()->GetVisibleNotifications();
   ASSERT_EQ(1u, notifications.size());
-  EXPECT_EQ(base::ASCIIToUTF16("My Title"), (*notifications.begin())->title());
-  EXPECT_EQ(base::ASCIIToUTF16("My Body"), (*notifications.begin())->message());
+  EXPECT_EQ(u"My Title", (*notifications.begin())->title());
+  EXPECT_EQ(u"My Body", (*notifications.begin())->message());
 
   // Open a new tab to a diffent origin from the one that shows notifications.
   chrome::NewTab(browser());
@@ -861,8 +852,8 @@ IN_PROC_BROWSER_TEST_F(NotificationsTestWithFakeMediaStream,
       message_center::MessageCenter::Get()->GetVisibleNotifications();
   ASSERT_EQ(3u, notifications.size());
   for (const auto* notification : notifications) {
-    EXPECT_EQ(base::ASCIIToUTF16("My Title"), notification->title());
-    EXPECT_EQ(base::ASCIIToUTF16("My Body"), notification->message());
+    EXPECT_EQ(u"My Title", notification->title());
+    EXPECT_EQ(u"My Body", notification->message());
   }
 }
 #endif  // !defined(OS_ANDROID)

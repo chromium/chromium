@@ -38,6 +38,7 @@ source_set("unit_tests") {
     "//components/security_state/core",
     "//components/strings",
     "//content/public/browser",
+    "//content/public/common",
     "//content/test:test_support",
     "//net",
     "//net:test_support",

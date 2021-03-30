@@ -10,8 +10,6 @@
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/js_messaging/page_script_util.h"
-#import "ios/web/public/deprecated/crw_js_injection_manager.h"
-#import "ios/web/public/deprecated/crw_js_injection_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -25,38 +23,8 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 namespace web {
 namespace test {
 
-id ExecuteJavaScript(CRWJSInjectionManager* manager, NSString* script) {
-  __block NSString* result = nil;
-  __block NSError* error = nil;
-  __block bool completed = false;
-  [manager executeJavaScript:script
-           completionHandler:^(id execution_result, NSError* execution_error) {
-             result = [execution_result copy];
-             error = [execution_error copy];
-             completed = true;
-           }];
-
-  BOOL success = WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return completed;
-  });
-  // Log stack trace to provide some context.
-  EXPECT_TRUE(success && !error)
-      << "CRWJSInjectionManager failed to complete javascript execution.\n"
-      << base::SysNSStringToUTF8(
-             [[NSThread callStackSymbols] componentsJoinedByString:@"\n"])
-      << "error: \n"
-      << base::SysNSStringToUTF8(error.description);
-  return result;
-}
-
-id ExecuteJavaScript(CRWJSInjectionReceiver* receiver, NSString* script) {
-  CRWJSInjectionManager* manager =
-      [[CRWJSInjectionManager alloc] initWithReceiver:receiver];
-  return ExecuteJavaScript(manager, script);
-}
-
 id ExecuteJavaScript(WKWebView* web_view, NSString* script) {
-  return ExecuteJavaScript(web_view, script, nil);
+  return ExecuteJavaScript(web_view, script, /*error=*/nil);
 }
 
 id ExecuteJavaScript(WKWebView* web_view,
@@ -87,6 +55,45 @@ id ExecuteJavaScript(WKWebView* web_view,
   return result;
 }
 
+#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
+id ExecuteJavaScript(WKWebView* web_view,
+                     WKContentWorld* content_world,
+                     NSString* script) {
+  return ExecuteJavaScript(web_view, content_world, script, /*error=*/nil);
+}
+
+id ExecuteJavaScript(WKWebView* web_view,
+                     WKContentWorld* content_world,
+                     NSString* script,
+                     NSError* __autoreleasing* error) {
+  __block id result;
+  __block bool completed = false;
+  __block NSError* block_error = nil;
+  SCOPED_TRACE(base::SysNSStringToUTF8(script));
+  [web_view evaluateJavaScript:script
+                       inFrame:nil
+                inContentWorld:content_world
+             completionHandler:^(id script_result, NSError* script_error) {
+               result = [script_result copy];
+               block_error = [script_error copy];
+               completed = true;
+             }];
+  BOOL success = WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    return completed;
+  });
+  // Log stack trace to provide some context.
+  EXPECT_TRUE(success)
+      << base::SysNSStringToUTF8(block_error.description)
+      << "\nWKWebView failed to complete javascript execution.\n"
+      << base::SysNSStringToUTF8(
+             [[NSThread callStackSymbols] componentsJoinedByString:@"\n"]);
+  if (error) {
+    *error = block_error;
+  }
+  return result;
+}
+#endif  // defined(__IPHONE14_0)
+
 bool LoadHtml(WKWebView* web_view, NSString* html, NSURL* base_url) {
   [web_view loadHTMLString:html baseURL:base_url];
 
@@ -104,6 +111,15 @@ bool WaitForInjectedScripts(WKWebView* web_view) {
 NSString* GetPageScript(NSString* script_file_name) {
   return web::GetPageScript(script_file_name);
 }
+
+NSString* GetSharedScripts() {
+  // Scripts must be all injected at once because as soon as __gCrWeb exists,
+  // injection is assumed to be done and __gCrWeb.message is used.
+  return [NSString stringWithFormat:@"%@; %@; %@", GetPageScript(@"base_js"),
+                                    GetPageScript(@"common_js"),
+                                    GetPageScript(@"message_js")];
+}
+
 }  // namespace test
 }  // namespace web
 

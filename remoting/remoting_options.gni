@@ -6,12 +6,13 @@ import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 
-enable_remoting_host =
-    is_win || (is_chromeos_ash || (is_linux && use_x11)) || is_mac
+enable_remoting_host = is_win || is_mac || is_chromeos_ash ||
+                       (is_linux && use_x11 && !is_chromeos_lacros)
 
-# TODO(crbug.com/1052397): Remove is_chromeos_lacros once the target_os switch is completed.
+# TODO(crbug.com/1052397): Remove is_chromeos_lacros once the target_os switch
+# is completed.
 enable_me2me_host =
-    is_win || ((is_linux || is_chromeos_lacros) && use_x11) || is_mac
+    is_win || is_mac || (is_linux && use_x11 && !is_chromeos_lacros)
 
 # Enable the multi-process host on Windows by default.
 if (is_win) {

@@ -42,9 +42,12 @@ class WebTestingSupport {
   // Injects the |internals| object into the frame for Javascript to use.
   static void InjectInternalsObject(WebLocalFrame*);
   static void InjectInternalsObject(v8::Local<v8::Context>);
-  // Resets the state of the |internals| object, and things that it modifies,
-  // back to their starting state at the end of a test.
-  static void ResetInternalsObject(WebLocalFrame*);
+  // Resets state on the main frame once a test is complete, including:
+  // - disposing any isolated worlds created by the test.
+  // - resetting the state of the |internals| object, and things that it
+  // modifies,
+  //   back to their starting state
+  static void ResetMainFrame(WebLocalFrame*);
 
   // Use this to install a mock scrollbar theme for tests. To use, simply
   // inherit your test class from this or instantiate it manually. The

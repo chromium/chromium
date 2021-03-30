@@ -53,8 +53,7 @@ class AccumulatorComponentState : public AgentImpl::ComponentStateBase {
 
  protected:
   AccumulatingTestInterfaceImpl service_;
-  base::fuchsia::ScopedServiceBinding<base::testfidl::TestInterface>
-      service_binding_;
+  base::ScopedServiceBinding<base::testfidl::TestInterface> service_binding_;
 };
 
 class KeepAliveComponentState : public AccumulatorComponentState {

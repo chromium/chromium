@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">Item de lista</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">Deslizar rapidamente com dois dedos para a direita</translation>
-<translation id="1016393160682012902">Prima uma tecla do teclado de esquema QWERTY, uma tecla de braille atualizável ou utilize um gesto de toque para conhecer a respetiva função. Prima Control + W ou Esc para sair.</translation>
 <translation id="1022586497894531524">Está a utilizar os feedback de voz do ChromeVox pela primeira vez? Este tutorial rápido explica as noções básicas para começar a utilizar o ChromeVox.</translation>
 <translation id="1025074108959230262">Modo aderente desativado</translation>
 <translation id="1031961866430398710">em seguida</translation>
@@ -150,6 +149,7 @@
 <translation id="2045055672832940894">Não existe nenhum controlo anterior.</translation>
 <translation id="2045606329038304310">Controlo do campo de formulário</translation>
 <translation id="2063539687800151747">Epígrafe</translation>
+<translation id="2074531330963286860">Ações disponíveis. Prima Pesquisar + Ponto para ver.</translation>
 <translation id="2086961585857038472">Palavra seguinte</translation>
 <translation id="2087981446621639008">dtl lstdscrções</translation>
 <translation id="2089387485033699258">pt-PT</translation>
@@ -976,6 +976,7 @@
 <translation id="827266600368092403">Inicie ou termine a seleção.</translation>
 <translation id="827422111966801947">Índigo</translation>
 <translation id="8276439074553447000">Ir para o anterior item a focar</translation>
+<translation id="8279039817939141096">Prima uma tecla do teclado de esquema QWERTY, uma tecla de braille atualizável ou utilize um gesto de toque para conhecer a respetiva função. Prima Control + W, Espaço + Z, Esc ou deslize rapidamente para a esquerda com dois dedos para sair.</translation>
 <translation id="8283603667300770666">Campo de formulário seguinte</translation>
 <translation id="8310185481635255431">Não existe nenhum link seguinte.</translation>
 <translation id="831207808878314375">Definição</translation>

@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/page/popup_opening_observer.h"
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
+#include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -85,7 +86,8 @@ class CORE_EXPORT ValidationMessageClientImpl final
   Member<const Element> current_anchor_;
   String message_;
   base::TimeTicks finish_time_;
-  std::unique_ptr<TimerBase> timer_;
+  Member<DisallowNewWrapper<HeapTaskRunnerTimer<ValidationMessageClientImpl>>>
+      timer_;
   std::unique_ptr<FrameOverlay> overlay_;
   // Raw pointer. This pointer is valid unless overlay_ is nullptr.
   ValidationMessageOverlayDelegate* overlay_delegate_ = nullptr;

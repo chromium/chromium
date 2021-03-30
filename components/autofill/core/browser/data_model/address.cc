@@ -45,7 +45,7 @@ bool Address::operator==(const Address& other) const {
   // TODO(crbug.com/1130194): Clean legacy implementation once structured
   // addresses are fully launched.
   if (structured_address::StructuredAddressesEnabled()) {
-    return structured_address_ == other.structured_address_;
+    return structured_address_.SameAs(other.structured_address_);
   }
 
   bool are_states_equal = (state_ == other.state_);
@@ -104,7 +104,9 @@ bool Address::MergeStructuredAddress(const Address& newer,
 
 base::Optional<AlternativeStateNameMap::CanonicalStateName>
 Address::GetCanonicalizedStateName() const {
-  return AlternativeStateNameMap::GetCanonicalStateName(country_code_, state_);
+  return AlternativeStateNameMap::GetCanonicalStateName(
+      base::UTF16ToUTF8(GetRawInfo(ADDRESS_HOME_COUNTRY)),
+      GetRawInfo(ADDRESS_HOME_STATE));
 }
 
 bool Address::IsStructuredAddressMergeable(const Address& newer) const {
@@ -116,8 +118,8 @@ const structured_address::Address& Address::GetStructuredAddress() const {
   return structured_address_;
 }
 
-base::string16 Address::GetRawInfo(ServerFieldType type) const {
-  DCHECK_EQ(ADDRESS_HOME, AutofillType(type).group());
+std::u16string Address::GetRawInfo(ServerFieldType type) const {
+  DCHECK_EQ(FieldTypeGroup::kAddressHome, AutofillType(type).group());
 
   // For structured addresses, the value can be directly retrieved.
   if (structured_address::StructuredAddressesEnabled())
@@ -125,13 +127,13 @@ base::string16 Address::GetRawInfo(ServerFieldType type) const {
 
   switch (type) {
     case ADDRESS_HOME_LINE1:
-      return street_address_.size() > 0 ? street_address_[0] : base::string16();
+      return street_address_.size() > 0 ? street_address_[0] : std::u16string();
 
     case ADDRESS_HOME_LINE2:
-      return street_address_.size() > 1 ? street_address_[1] : base::string16();
+      return street_address_.size() > 1 ? street_address_[1] : std::u16string();
 
     case ADDRESS_HOME_LINE3:
-      return street_address_.size() > 2 ? street_address_[2] : base::string16();
+      return street_address_.size() > 2 ? street_address_[2] : std::u16string();
 
     case ADDRESS_HOME_DEPENDENT_LOCALITY:
       return dependent_locality_;
@@ -152,13 +154,13 @@ base::string16 Address::GetRawInfo(ServerFieldType type) const {
       return base::ASCIIToUTF16(country_code_);
 
     case ADDRESS_HOME_STREET_ADDRESS:
-      return base::JoinString(street_address_, base::ASCIIToUTF16("\n"));
+      return base::JoinString(street_address_, u"\n");
 
     case ADDRESS_HOME_APT_NUM:
-      return base::string16();
+      return std::u16string();
 
     case ADDRESS_HOME_FLOOR:
-      return base::string16();
+      return std::u16string();
 
     // The following tokens are used for creating new type votes but should not
     // be filled into fields.
@@ -177,16 +179,20 @@ base::string16 Address::GetRawInfo(ServerFieldType type) const {
     case ADDRESS_HOME_SUBPREMISE:
       return subpremise_;
 
+    case ADDRESS_HOME_ADDRESS:
+    case ADDRESS_HOME_ADDRESS_WITH_NAME:
+      return std::u16string();
+
     default:
       NOTREACHED() << "Unrecognized type: " << type;
-      return base::string16();
+      return std::u16string();
   }
 }
 
 void Address::SetRawInfoWithVerificationStatus(ServerFieldType type,
-                                               const base::string16& value,
+                                               const std::u16string& value,
                                                VerificationStatus status) {
-  DCHECK_EQ(ADDRESS_HOME, AutofillType(type).group());
+  DCHECK_EQ(FieldTypeGroup::kAddressHome, AutofillType(type).group());
 
   // For structured addresses, the value can directly be set.
   // TODO(crbug.com/1130194): Clean legacy implementation once structured
@@ -196,7 +202,7 @@ void Address::SetRawInfoWithVerificationStatus(ServerFieldType type,
     // using the settings dialog. In case the settings dialog was used to change
     // the address to contain different tokens, the structure must be reset.
     if (type == ADDRESS_HOME_STREET_ADDRESS) {
-      const base::string16 current_value =
+      const std::u16string current_value =
           structured_address_.GetValueForType(type);
       if (!current_value.empty()) {
         bool token_equivalent = structured_address::AreStringTokenEquivalent(
@@ -270,13 +276,11 @@ void Address::SetRawInfoWithVerificationStatus(ServerFieldType type,
 
     case ADDRESS_HOME_STREET_ADDRESS:
       // If the street address changes, the structured tokens must be reset.
-      if (base::SplitString(value, base::ASCIIToUTF16("\n"),
-                            base::TRIM_WHITESPACE,
+      if (base::SplitString(value, u"\n", base::TRIM_WHITESPACE,
                             base::SPLIT_WANT_ALL) != street_address_) {
         ResetStructuredTokes();
-        street_address_ =
-            base::SplitString(value, base::ASCIIToUTF16("\n"),
-                              base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+        street_address_ = base::SplitString(value, u"\n", base::TRIM_WHITESPACE,
+                                            base::SPLIT_WANT_ALL);
       }
       break;
 
@@ -310,6 +314,9 @@ void Address::SetRawInfoWithVerificationStatus(ServerFieldType type,
     case ADDRESS_HOME_FLOOR:
       break;
 
+    case ADDRESS_HOME_ADDRESS:
+      break;
+
     default:
       NOTREACHED();
   }
@@ -323,7 +330,7 @@ void Address::ResetStructuredTokes() {
   subpremise_.clear();
 }
 
-void Address::GetMatchingTypes(const base::string16& text,
+void Address::GetMatchingTypes(const std::u16string& text,
                                const std::string& app_locale,
                                ServerFieldTypeSet* matching_types) const {
   FormGroup::GetMatchingTypes(text, app_locale, matching_types);
@@ -345,39 +352,24 @@ void Address::GetMatchingTypes(const base::string16& text,
   if (!entered_country_code.empty() && country_code == entered_country_code)
     matching_types->insert(ADDRESS_HOME_COUNTRY);
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillUseAlternativeStateNameMap)) {
-    base::Optional<AlternativeStateNameMap::CanonicalStateName>
-        canonical_state_name_from_text =
-            AlternativeStateNameMap::GetCanonicalStateName(country_code, text);
-    base::Optional<AlternativeStateNameMap::CanonicalStateName>
-        canonical_state_name_from_profile = GetCanonicalizedStateName();
+  l10n::CaseInsensitiveCompare compare;
+  AutofillProfileComparator comparator(app_locale);
+  // Check to see if the |text| could be the full name or abbreviation of a
+  // state.
+  std::u16string canon_text = comparator.NormalizeForComparison(text);
+  std::u16string state_name;
+  std::u16string state_abbreviation;
+  state_names::GetNameAndAbbreviation(canon_text, &state_name,
+                                      &state_abbreviation);
 
-    if (canonical_state_name_from_text && canonical_state_name_from_profile &&
-        canonical_state_name_from_text.value() ==
-            canonical_state_name_from_profile.value()) {
+  if (!state_name.empty() || !state_abbreviation.empty()) {
+    std::u16string canon_profile_state = comparator.NormalizeForComparison(
+        GetInfo(AutofillType(ADDRESS_HOME_STATE), app_locale));
+    if ((!state_name.empty() &&
+         compare.StringsEqual(state_name, canon_profile_state)) ||
+        (!state_abbreviation.empty() &&
+         compare.StringsEqual(state_abbreviation, canon_profile_state))) {
       matching_types->insert(ADDRESS_HOME_STATE);
-    }
-  } else {
-    l10n::CaseInsensitiveCompare compare;
-    AutofillProfileComparator comparator(app_locale);
-    // Check to see if the |text| could be the full name or abbreviation of a
-    // state.
-    base::string16 canon_text = comparator.NormalizeForComparison(text);
-    base::string16 state_name;
-    base::string16 state_abbreviation;
-    state_names::GetNameAndAbbreviation(canon_text, &state_name,
-                                        &state_abbreviation);
-
-    if (!state_name.empty() || !state_abbreviation.empty()) {
-      base::string16 canon_profile_state = comparator.NormalizeForComparison(
-          GetInfo(AutofillType(ADDRESS_HOME_STATE), app_locale));
-      if ((!state_name.empty() &&
-           compare.StringsEqual(state_name, canon_profile_state)) ||
-          (!state_abbreviation.empty() &&
-           compare.StringsEqual(state_abbreviation, canon_profile_state))) {
-        matching_types->insert(ADDRESS_HOME_STATE);
-      }
     }
   }
 }
@@ -405,7 +397,7 @@ void Address::GetSupportedTypes(ServerFieldTypeSet* supported_types) const {
   }
 }
 
-base::string16 Address::GetInfoImpl(const AutofillType& type,
+std::u16string Address::GetInfoImpl(const AutofillType& type,
                                     const std::string& locale) const {
   // Get the country code stored in the profile either from the structured
   // address if enabled or from the legacy field.
@@ -429,7 +421,7 @@ base::string16 Address::GetInfoImpl(const AutofillType& type,
 }
 
 bool Address::SetInfoWithVerificationStatusImpl(const AutofillType& type,
-                                                const base::string16& value,
+                                                const std::u16string& value,
                                                 const std::string& locale,
                                                 VerificationStatus status) {
   // TODO(crbug.com/1130194): Clean legacy implementation once structured
@@ -482,7 +474,7 @@ bool Address::SetInfoWithVerificationStatusImpl(const AutofillType& type,
     } else {
       country_code_ = country_code;
     }
-    return !country_code_.empty();
+    return !GetRawInfo(ADDRESS_HOME_COUNTRY).empty();
   }
 
   SetRawInfoWithVerificationStatus(storable_type, value, status);
@@ -496,7 +488,7 @@ bool Address::SetInfoWithVerificationStatusImpl(const AutofillType& type,
     if (structured_address::StructuredAddressesEnabled()) {
       return structured_address_.IsValueForTypeValid(
           ADDRESS_HOME_STREET_ADDRESS, /*wipe_if_not=*/true);
-    } else if (base::Contains(street_address_, base::string16())) {
+    } else if (base::Contains(street_address_, std::u16string())) {
       street_address_.clear();
       return false;
     }

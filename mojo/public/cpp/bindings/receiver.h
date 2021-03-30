@@ -146,6 +146,7 @@ class Receiver {
   // disconnection notifications on the default SequencedTaskRunner (i.e.
   // base::SequencedTaskRunnerHandle::Get() at the time of this call).
   void Bind(PendingReceiver<Interface> pending_receiver) {
+    DCHECK(!is_bound()) << "Receiver is already bound";
     Bind(std::move(pending_receiver), nullptr);
   }
 
@@ -156,6 +157,7 @@ class Receiver {
   // Receiver.
   void Bind(PendingReceiver<Interface> pending_receiver,
             scoped_refptr<base::SequencedTaskRunner> task_runner) {
+    DCHECK(!is_bound()) << "Receiver is already bound";
     if (pending_receiver) {
       internal_state_.Bind(pending_receiver.internal_state(),
                            std::move(task_runner));
@@ -179,6 +181,7 @@ class Receiver {
   // unbound those response callbacks are no longer valid and the Remote will
   // never be able to receive its expected responses.
   PendingReceiver<Interface> Unbind() WARN_UNUSED_RESULT {
+    DCHECK(is_bound());
     CHECK(!internal_state_.HasAssociatedInterfaces());
     return PendingReceiver<Interface>(
         internal_state_.Unbind().PassMessagePipe());

@@ -10,15 +10,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.test.filters.MediumTest;
 
-import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.DiscardableReferencePool;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -27,6 +29,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.thumbnail.generator.ThumbnailProvider.ThumbnailRequest;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /**
@@ -34,28 +37,33 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class ThumbnailProviderImplTest {
     private static final String TEST_DIRECTORY =
             "chrome/browser/thumbnail/generator/test/data/android/";
+    @ClassRule
+    public static ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public BlankCTATabInitialStateRule mInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
-    private ThumbnailProviderImpl mThumbnailProvider;
-    private DiscardableReferencePool mReferencePool;
+    private static ThumbnailProviderImpl sThumbnailProvider;
+    private static DiscardableReferencePool sReferencePool;
 
-    @Before
-    public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
+    @BeforeClass
+    public static void setUp() throws Exception {
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
-            mReferencePool = new DiscardableReferencePool();
-            mThumbnailProvider = new ThumbnailProviderImpl(
-                    mReferencePool, ThumbnailProviderImpl.ClientType.NTP_SUGGESTIONS);
+            sReferencePool = new DiscardableReferencePool();
+            sThumbnailProvider = new ThumbnailProviderImpl(
+                    sReferencePool, ThumbnailProviderImpl.ClientType.NTP_SUGGESTIONS);
         });
     }
 
-    @After
-    public void tearDown() {
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, mThumbnailProvider::destroy);
+    @AfterClass
+    public static void tearDown() {
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, sThumbnailProvider::destroy);
     }
 
     @Test
@@ -68,10 +76,10 @@ public class ThumbnailProviderImplTest {
 
         CallbackHelper thumbnailRetrievedCallbackHelper = new CallbackHelper();
         final TestThumbnailRequest request = new TestThumbnailRequest(
-                testFilePath, requiredSize, thumbnailRetrievedCallbackHelper);
+                testFilePath, requiredSize, thumbnailRetrievedCallbackHelper, "a");
 
         PostTask.runOrPostTask(
-                UiThreadTaskTraits.DEFAULT, () -> { mThumbnailProvider.getThumbnail(request); });
+                UiThreadTaskTraits.DEFAULT, () -> { sThumbnailProvider.getThumbnail(request); });
 
         thumbnailRetrievedCallbackHelper.waitForCallback(
                 "Reached timeout when fetching a thumbnail for a downloaded image.", 0);
@@ -89,10 +97,10 @@ public class ThumbnailProviderImplTest {
 
         CallbackHelper thumbnailRetrievedCallbackHelper = new CallbackHelper();
         final TestThumbnailRequest request = new TestThumbnailRequest(
-                testFilePath, requiredSize, thumbnailRetrievedCallbackHelper);
+                testFilePath, requiredSize, thumbnailRetrievedCallbackHelper, "b");
 
         PostTask.runOrPostTask(
-                UiThreadTaskTraits.DEFAULT, () -> { mThumbnailProvider.getThumbnail(request); });
+                UiThreadTaskTraits.DEFAULT, () -> { sThumbnailProvider.getThumbnail(request); });
 
         thumbnailRetrievedCallbackHelper.waitForCallback(
                 "Reached timeout when fetching a thumbnail for a downloaded image.", 0);
@@ -110,10 +118,10 @@ public class ThumbnailProviderImplTest {
 
         CallbackHelper thumbnailRetrievedCallbackHelper = new CallbackHelper();
         final TestThumbnailRequest request = new TestThumbnailRequest(
-                testFilePath, requiredSize, thumbnailRetrievedCallbackHelper);
+                testFilePath, requiredSize, thumbnailRetrievedCallbackHelper, "c");
 
         PostTask.runOrPostTask(
-                UiThreadTaskTraits.DEFAULT, () -> { mThumbnailProvider.getThumbnail(request); });
+                UiThreadTaskTraits.DEFAULT, () -> { sThumbnailProvider.getThumbnail(request); });
 
         thumbnailRetrievedCallbackHelper.waitForCallback(
                 "Reached timeout when fetching a thumbnail for a downloaded image.", 0);
@@ -131,10 +139,10 @@ public class ThumbnailProviderImplTest {
 
         CallbackHelper thumbnailRetrievedCallbackHelper = new CallbackHelper();
         final TestThumbnailRequest request = new TestThumbnailRequest(
-                testFilePath, requiredSize, thumbnailRetrievedCallbackHelper);
+                testFilePath, requiredSize, thumbnailRetrievedCallbackHelper, "d");
 
         PostTask.runOrPostTask(
-                UiThreadTaskTraits.DEFAULT, () -> { mThumbnailProvider.getThumbnail(request); });
+                UiThreadTaskTraits.DEFAULT, () -> { sThumbnailProvider.getThumbnail(request); });
 
         thumbnailRetrievedCallbackHelper.waitForCallback(
                 "Reached timeout when fetching a thumbnail for a downloaded image.", 0);
@@ -152,10 +160,10 @@ public class ThumbnailProviderImplTest {
 
         CallbackHelper thumbnailRetrievedCallbackHelper = new CallbackHelper();
         final TestThumbnailRequest request = new TestThumbnailRequest(
-                testFilePath, requiredSize, thumbnailRetrievedCallbackHelper);
+                testFilePath, requiredSize, thumbnailRetrievedCallbackHelper, "e");
 
         PostTask.runOrPostTask(
-                UiThreadTaskTraits.DEFAULT, () -> { mThumbnailProvider.getThumbnail(request); });
+                UiThreadTaskTraits.DEFAULT, () -> { sThumbnailProvider.getThumbnail(request); });
 
         thumbnailRetrievedCallbackHelper.waitForCallback(
                 "Reached timeout when fetching a thumbnail for a downloaded image.", 0);
@@ -174,12 +182,14 @@ public class ThumbnailProviderImplTest {
         private final int mRequiredSize;
         private Bitmap mRetrievedThumbnail;
         private CallbackHelper mThumbnailRetrievedCallbackHelper;
+        private String mContentId;
 
         TestThumbnailRequest(String filepath, int requiredSize,
-                CallbackHelper thumbnailRetrievedCallbackHelperHelper) {
+                CallbackHelper thumbnailRetrievedCallbackHelperHelper, String contentId) {
             mTestFilePath = filepath;
             mRequiredSize = requiredSize;
             mThumbnailRetrievedCallbackHelper = thumbnailRetrievedCallbackHelperHelper;
+            mContentId = contentId;
         }
 
         @Override
@@ -194,7 +204,10 @@ public class ThumbnailProviderImplTest {
 
         @Override
         public @Nullable String getContentId() {
-            return "contentId"; // None-null value for ThumbnailProviderImpl to work
+            // Non-null and unique value for ThumbnailProviderImpl to work to ensure
+            // results are not cached and reused across batched tests (which leads to erroneous
+            // results)
+            return mContentId;
         }
 
         @Override

@@ -1,16 +1,5 @@
-# Networking Metrics Owners
+per-file OWNERS=file://tools/metrics/histograms/histograms_xml/METRIC_REVIEWER_OWNERS
 
-dschinazi@chromium.org
-
-# If none of these reviewers are available, please send CLs to
-# <chromium-metrics-reviews@google.com>. See tools/metrics/histograms/OWNERS
-# for details.
-
-
-# Prefer chromium-metrics-reviews@google.com or the above owners instead.
-# Use the following owners only if:
-#  - The reviewer is available for review.
-#  - You work in the same area as them.
-#  - They are already a good reviewer for the non-metrics part of the CL.
-# See tools/metrics/histograms/histograms_xml/OWNERS for details.
+# Use either chromium-metrics-reviews@google.com or the below owners.
 csharrison@chromium.org
+dschinazi@chromium.org

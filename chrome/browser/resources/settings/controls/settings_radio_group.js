@@ -12,8 +12,20 @@
  *          label="Foo Options." buttons="{{fooOptionsList}}">
  *      </settings-radio-group>
  */
+import '//resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
+import '//resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
+import '../settings_shared_css.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {prefToString, stringToPrefValue} from '../prefs/pref_util.js';
+
+import {PrefControlBehavior} from './pref_control_behavior.js';
+
 Polymer({
   is: 'settings-radio-group',
+
+  _template: html`{__html_template__}`,
 
   behaviors: [PrefControlBehavior],
 
@@ -54,7 +66,7 @@ Polymer({
   /** Reset the selected value to match the current pref value. */
   resetToPrefValue() {
     const pref = /** @type {!chrome.settingsPrivate.PrefObject} */ (this.pref);
-    this.selected = Settings.PrefUtil.prefToString(pref);
+    this.selected = prefToString(pref);
   },
 
   /** Update the pref to the current selected value. */
@@ -62,9 +74,7 @@ Polymer({
     if (!this.pref) {
       return;
     }
-    this.set(
-        'pref.value',
-        Settings.PrefUtil.stringToPrefValue(this.selected, this.pref));
+    this.set('pref.value', stringToPrefValue(this.selected, this.pref));
   },
 
   /** @private */

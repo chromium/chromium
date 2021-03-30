@@ -9,11 +9,11 @@
 #include <winhttp.h>
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/strings/string16.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
 #include "net/proxy_resolution/polling_proxy_config_service.h"

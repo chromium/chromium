@@ -85,7 +85,7 @@ base::Value LoggerImpl::GetTileData() {
 }
 
 void LoggerImpl::OnServiceStatusChanged() {
-  if (!observers_.might_have_observers())
+  if (observers_.empty())
     return;
   base::Value service_status = GetServiceStatus();
   for (auto& observer : observers_)
@@ -93,7 +93,7 @@ void LoggerImpl::OnServiceStatusChanged() {
 }
 
 void LoggerImpl::OnTileDataAvailable() {
-  if (!observers_.might_have_observers())
+  if (observers_.empty())
     return;
   base::Value tile_data = GetTileData();
   for (auto& observer : observers_)

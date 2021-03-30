@@ -182,9 +182,9 @@ ManualFillingViewAndroid::ConvertAccessorySheetDataToJavaObject(
 UserInfo::Field ManualFillingViewAndroid::ConvertJavaUserInfoField(
     JNIEnv* env,
     const JavaRef<jobject>& j_field_to_convert) {
-  base::string16 display_text = ConvertJavaStringToUTF16(
+  std::u16string display_text = ConvertJavaStringToUTF16(
       env, Java_UserInfoField_getDisplayText(env, j_field_to_convert));
-  base::string16 a11y_description = ConvertJavaStringToUTF16(
+  std::u16string a11y_description = ConvertJavaStringToUTF16(
       env, Java_UserInfoField_getA11yDescription(env, j_field_to_convert));
   std::string id = ConvertJavaStringToUTF8(
       env, Java_UserInfoField_getId(env, j_field_to_convert));
@@ -245,10 +245,12 @@ void JNI_ManualFillingComponentBridge_CachePasswordSheetDataForTesting(
 void JNI_ManualFillingComponentBridge_NotifyFocusedFieldTypeForTesting(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_web_contents,
+    jlong j_focused_field_id,
     jint j_available) {
   ManualFillingControllerImpl::GetOrCreate(
       content::WebContents::FromJavaWebContents(j_web_contents))
       ->NotifyFocusedInputChanged(
+          autofill::FieldRendererId(j_focused_field_id),
           static_cast<autofill::mojom::FocusedFieldType>(j_available));
 }
 

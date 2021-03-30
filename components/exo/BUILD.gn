@@ -92,6 +92,8 @@ static_library("exo") {
     "//ui/accessibility:ax_base",
     "//ui/aura",
     "//ui/base/cursor",
+    "//ui/base/dragdrop:types",
+    "//ui/base/dragdrop/mojom",
     "//ui/base/ime",
     "//ui/compositor",
     "//ui/compositor_extra",
@@ -124,9 +126,9 @@ static_library("exo") {
   if (is_chromeos_ash) {
     deps += [
       "//ash",
+      "//ash/constants",
       "//ash/keyboard/ui",
       "//ash/public/cpp",
-      "//chromeos/constants",
       "//chromeos/crosapi/cpp",
       "//chromeos/ui/base",
       "//chromeos/ui/frame",
@@ -167,6 +169,8 @@ static_library("exo") {
       "toast_surface.cc",
       "toast_surface.h",
       "toast_surface_manager.h",
+      "ui_lock_bubble.cc",
+      "ui_lock_bubble.h",
       "ui_lock_controller.cc",
       "ui_lock_controller.h",
       "wm_helper_chromeos.cc",
@@ -212,6 +216,7 @@ source_set("test_support") {
     "//gpu",
     "//skia",
     "//ui/aura",
+    "//ui/base/dragdrop/mojom",
     "//ui/base/ime/init",
     "//ui/compositor",
     "//ui/compositor:test_support",
@@ -231,6 +236,8 @@ source_set("test_support") {
       "test/exo_test_data_exchange_delegate.h",
       "test/exo_test_helper.cc",
       "test/exo_test_helper.h",
+      "test/shell_surface_builder.cc",
+      "test/shell_surface_builder.h",
     ]
     deps += [
       "//ash:test_support",
@@ -298,6 +305,7 @@ source_set("unit_tests") {
       "seat_unittest.cc",
       "shared_memory_unittest.cc",
       "shell_surface_unittest.cc",
+      "shell_surface_util_unittest.cc",
       "sub_surface_unittest.cc",
       "surface_unittest.cc",
       "text_input_unittest.cc",
@@ -311,15 +319,18 @@ source_set("unit_tests") {
     deps += [
       "//ash",
       "//ash:test_support",
+      "//ash/constants",
       "//ash/keyboard/ui",
       "//ash/public/cpp",
+      "//ash/public/cpp/external_arc",
       "//build:chromeos_buildflags",
-      "//chromeos/constants",
       "//chromeos/ui/base",
       "//chromeos/ui/frame",
       "//ui/base:test_support",
       "//ui/base/cursor/mojom:cursor_type",
-      "//ui/base/dragdrop/mojom:mojom_shared",
+      "//ui/base/dragdrop:types",
+      "//ui/base/dragdrop/mojom",
+      "//ui/gfx/geometry",
     ]
   }
 
@@ -368,6 +379,7 @@ test("exo_unittests") {
     deps += [
       "//ash:test_support",
       "//ash/public/cpp",
+      "//components/exo/server:unit_tests",
     ]
 
     data_deps += [

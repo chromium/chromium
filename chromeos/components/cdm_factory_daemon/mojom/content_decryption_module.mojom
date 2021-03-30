@@ -31,7 +31,6 @@ enum EmeInitDataType {
 enum CdmSessionType {
   kTemporary,
   kPersistentLicense,
-  kPersistentUsageRecord,
 };
 
 // See media::CdmMessageType

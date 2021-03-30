@@ -4,10 +4,13 @@
 <translation id="1075622780330595106">ທ່ານບໍ່ໄດ້ໃຊ້ແຖບ <ph name="NUMBER_OF_TABS" /> ແຖບມາໄລຍະໜຶ່ງແລ້ວ. ປິດພວກມັນບໍ?</translation>
 <translation id="1181037720776840403">ລຶບອອກ</translation>
 <translation id="125153950246128346">ແຕະເພື່ອເບິ່ງແຖບອື່ນ</translation>
+<translation id="1302104331113804646">ການຕັ້ງຄ່າການຕິດຕາມລາຄາ</translation>
+<translation id="1378979118429748177">ຮັບການແຈ້ງເຕືອນເມື່ອມີການຫຼຸດລາຄາ</translation>
 <translation id="1657719826150349398">ຍ້າຍແຖບລົງ</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ແຖບ}other{<ph name="TABS_COUNT_MANY" /> ແຖບ}}</translation>
 <translation id="2277224997687551299">ແກ້ໄຂຊື່ກຸ່ມ</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{ລຶບ <ph name="TABS_COUNT_ONE" /> ແຖບທີ່ເລືອກອອກຈາກກຸ່ມ.}other{ລຶບ <ph name="TABS_COUNT_MANY" /> ແຖບທີ່ເລືອກອອກຈາກກຸ່ມ.}}</translation>
+<translation id="2479148705183875116">ໄປທີ່ການຕັ້ງຄ່າ</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{ຫຍໍ້ <ph name="TABS_COUNT_ONE" /> ແຖບລົງ.}other{ຫຍໍ້ກຸ່ມແຖບທີ່ມີ <ph name="TABS_COUNT_MANY" /> ແຖບແລ້ວ.}}</translation>
 <translation id="2569352796411618312">ການແນະນຳ: ທ່ານບໍ່ໄດ້ໃຊ້ແຖບຂອງທ່ານ <ph name="NUMBER_OF_TABS" /> ແຖບມາໄລຍະໜຶ່ງແລ້ວ. ປິດພວກມັນບໍ?</translation>
 <translation id="257674075312929031">ກຸ່ມ</translation>
@@ -15,13 +18,16 @@
 <translation id="2671423594960767771">ແບ່ງປັນກຸ່ມ</translation>
 <translation id="2759453070259087442">ຂະຫຍາຍກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /> ດ້ວຍແຖບ <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="2977480621796371840">ລຶບອອກຈາກກຸ່ມ</translation>
+<translation id="3291470810748040983">ທ່ານຈະໄດ້ຮັບແຈ້ງເຕືອນເມື່ອມີລາຄາຕໍ່າກວ່າໃນແຖບທີ່ເປີດຢູ່</translation>
 <translation id="3328308545011660196">ຄຳແນະນຳ: ເບິ່ງຄືວ່າມີ <ph name="NUMBER_OF_TABS" /> ແຖບທີ່ກ່ຽວຂ້ອງກັນ. ຈັດກຸ່ມພວກມັນບໍ?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{ຫຍໍ້ <ph name="TABS_COUNT_ONE" /> ແຖບລົງ.}other{ຫຍໍ້ກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /> ທີ່ມີ <ph name="TABS_COUNT_MANY" /> ແຖບລົງ.}}</translation>
+<translation id="3882834874697329510">ໃຫ້ເປີດໃຊ້ການແຈ້ງເຕືອນໃນການຕັ້ງຄ່າເພື່ອຮັບການແຈ້ງເຕືອນເມື່ອມີລາຄາທີ່ຕ່ຳກວ່າໃນແຖບໃດໜຶ່ງທີ່ເປີດໄວ້.</translation>
+<translation id="3940195383040445971">ຕິດຕາມລາຄາໃນແຖບ</translation>
+<translation id="3996880007329611795">ຮັບການແຈ້ງເຕືອນ</translation>
 <translation id="4133493477912226187">ເບິ່ງຄືວ່າມີ <ph name="NUMBER_OF_TABS" /> ແຖບກ່ຽວຂ້ອງກັນ. ຈັດກຸ່ມພວກມັນບໍ?</translation>
 <translation id="4212246570487010370">ສືບຕໍ່ທ່ອງເວັບ</translation>
 <translation id="4450893287417543264">ຢ່າສະແດງອີກ</translation>
 <translation id="4648718555153979859">ແຖບຂອງທ່ານຖືກຈັດເປັນກຸ່ມຮວມກັນຢູ່ບ່ອນນີ້</translation>
-<translation id="4922064041913095674">ເບິ່ງວ່າລາຍການໃດໃນແຖບທີ່ເປີດຢູ່ຂອງທ່ານມີລາຄາທີ່ດີກວ່າ</translation>
 <translation id="492284538114688557">ພົບເຫັນການຫຼຸດລາຄາ</translation>
 <translation id="5007392906805964215">ກວດສອບ</translation>
 <translation id="5073204694187207510">ເຊື່ອງຕາໜ່າງແບບເຕັມຈໍ</translation>
@@ -30,6 +36,7 @@
 <translation id="5533021382642990449">ສະແດງໃນພາຍຫຼັງ</translation>
 <translation id="5558362125926932819">ປິດກຸ່ມແຖບທີ່ມີ <ph name="NUMBER_OF_TABS" /> ແຖບ</translation>
 <translation id="5580090775658607195">ຈັດກຸ່ມ <ph name="TAB_COUNT" /> ແຖບແລ້ວ</translation>
+<translation id="575494663145460764">ຮັບແຈ້ງເຕືອນການຫຼຸດລາຄາບໍ?</translation>
 <translation id="58326064309361797">ລາກແຖບເພື່ອຈັດກຸ່ມພວກມັນ</translation>
 <translation id="5846292395804797011">ປິດກຸ່ມ <ph name="TITLE_OF_GROUP" /> ທີ່ມີ <ph name="NUMBER_OF_TABS" /> ແຖບ</translation>
 <translation id="6040143037577758943">ປິດ</translation>
@@ -41,6 +48,7 @@
 <translation id="6856809498882026482">ເຊື່ອງໂໝດເລືອກຫຼາຍລາຍການ</translation>
 <translation id="7151209024774799310">ລຶບແຖບອອກຈາກກຸ່ມ</translation>
 <translation id="7204204600596740190">ໂໝດເລືອກຫຼາຍລາຍການ</translation>
+<translation id="7352298686197644113">ເບິ່ງວ່າລາຍການໃດໃນແຖບທີ່ເປີດຢູ່ຂອງທ່ານມີລາຄາຕໍ່າກວ່າ</translation>
 <translation id="753732157349120914">ຕົວປ່ຽນແຖບ</translation>
 <translation id="7559245342362162951">ສະແດງແຖບຂອງກຸ່ມໃນຕາໜ່າງແບບເຕັມຈໍ</translation>
 <translation id="7792771145871471484">ກວດເບິ່ງການແນະນຳ.</translation>
@@ -52,7 +60,10 @@
 <translation id="8304833501377495048">ຫ້າມສະແດງລາຍແຖບອີກບໍ?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{ປິດ <ph name="TABS_COUNT_ONE" /> ແຖບທີ່ເລືອກ}other{ປິດ <ph name="TABS_COUNT_MANY" /> ແຖບທີ່ເລືອກ}}</translation>
 <translation id="8557923272772633250">ຂະຫຍາຍກຸ່ມແຖບທີ່ມີ <ph name="NUMBER_OF_TABS" /> ແຖບ.</translation>
+<translation id="860282621117673749">ແຈ້ງເຕືອນຫຼຸດລາຄາ</translation>
+<translation id="8714939927607906138">ລາຄາຕໍ່າກວ່າ</translation>
 <translation id="8749939518995770034">ປິດລາຍແຖບແລ້ວ</translation>
+<translation id="8820741577754260431">ເບິ່ງການຫຼຸດລາຄາສຳລັບແຖບຂອງທ່ານ</translation>
 <translation id="9150694013019234766">ປ່ຽນໄປມາລະຫວ່າງແຖບຕ່າງໆໃນກຸ່ມແຖບຂອງທ່ານຢູ່ໃກ້ລຸ່ມສຸດຂອງໜ້າຈໍ</translation>
 <translation id="9169594135889675189">ເພີ່ມແຖບໃໝ່ໃສ່ກຸ່ມ</translation>
 <translation id="959682366969460160">ຈັດໃຫ້ເປັນລະບຽບ</translation>

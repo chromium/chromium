@@ -2,8 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BackgroundManager, BrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import {createTestProxy} from './test_support.js';
+import {BackgroundManager} from 'chrome://new-tab-page/new_tab_page.js';
+
+class FakeIFrameElement extends HTMLIFrameElement {
+  constructor() {
+    super();
+    this.url = null;
+  }
+
+  get contentWindow() {
+    return {location: {replace: url => this.url = url}};
+  }
+}
+
+customElements.define('fake-iframe', FakeIFrameElement, {extends: 'iframe'});
 
 suite('NewTabPageBackgroundManagerTest', () => {
   /** @type {!BackgroundManager} */
@@ -11,12 +23,6 @@ suite('NewTabPageBackgroundManagerTest', () => {
 
   /** @type {Element} */
   let backgroundImage;
-
-  /**
-   * @implements {BrowserProxy}
-   * @extends {TestBrowserProxy}
-   */
-  let testProxy;
 
   /**
    * @param {string} url
@@ -30,18 +36,8 @@ suite('NewTabPageBackgroundManagerTest', () => {
   setup(() => {
     PolymerTest.clearBody();
 
-    testProxy = createTestProxy();
-    BrowserProxy.instance_ = testProxy;
-
-    backgroundImage = document.createElement('div');
+    backgroundImage = new FakeIFrameElement();
     backgroundImage.id = 'backgroundImage';
-    backgroundImage.contentWindow = {
-      location: {
-        replace: url => {
-          backgroundImage.url = url;
-        }
-      }
-    };
     document.body.appendChild(backgroundImage);
 
     backgroundManager = new BackgroundManager();

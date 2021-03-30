@@ -134,7 +134,7 @@ ChromeRuntimeAPIDelegate::ChromeRuntimeAPIDelegate(
   registrar_.Add(this,
                  extensions::NOTIFICATION_EXTENSION_UPDATE_FOUND,
                  content::NotificationService::AllSources());
-  extension_registry_observer_.Add(
+  extension_registry_observation_.Observe(
       extensions::ExtensionRegistry::Get(browser_context_));
 }
 
@@ -230,9 +230,8 @@ void ChromeRuntimeAPIDelegate::ReloadExtension(
   }
 }
 
-bool ChromeRuntimeAPIDelegate::CheckForUpdates(
-    const std::string& extension_id,
-    const UpdateCheckCallback& callback) {
+bool ChromeRuntimeAPIDelegate::CheckForUpdates(const std::string& extension_id,
+                                               UpdateCheckCallback callback) {
   ExtensionSystem* system = ExtensionSystem::Get(browser_context_);
   extensions::ExtensionService* service = system->extension_service();
   ExtensionUpdater* updater = service->updater();
@@ -246,10 +245,11 @@ bool ChromeRuntimeAPIDelegate::CheckForUpdates(
   // return a status of throttled.
   if (info.backoff->ShouldRejectRequest() || info.callbacks.size() >= 10) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(callback, UpdateCheckResult(
-                                                true, kUpdateThrottled, "")));
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       UpdateCheckResult(true, kUpdateThrottled, "")));
   } else {
-    info.callbacks.push_back(callback);
+    info.callbacks.push_back(std::move(callback));
 
     extensions::ExtensionUpdater::CheckParams params;
     params.ids = {extension_id};
@@ -410,7 +410,7 @@ void ChromeRuntimeAPIDelegate::CallUpdateCallbacks(
     return;
   std::vector<UpdateCheckCallback> callbacks;
   it->second.callbacks.swap(callbacks);
-  for (const auto& callback : callbacks) {
-    callback.Run(result);
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(result);
   }
 }

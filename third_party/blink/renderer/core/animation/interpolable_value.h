@@ -39,6 +39,7 @@ class CORE_EXPORT InterpolableValue {
   virtual bool IsBool() const { return false; }
   virtual bool IsList() const { return false; }
   virtual bool IsLength() const { return false; }
+  virtual bool IsAspectRatio() const { return false; }
   virtual bool IsShadow() const { return false; }
   virtual bool IsFilter() const { return false; }
   virtual bool IsTransformList() const { return false; }

@@ -8,15 +8,12 @@
 
 #include "base/bind.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "storage/browser/database/databases_table.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/sqlite/sqlite3.h"
-
-using base::ASCIIToUTF16;
 
 namespace storage {
 
@@ -25,7 +22,6 @@ static void CheckDetailsAreEqual(const DatabaseDetails& d1,
   EXPECT_EQ(d1.origin_identifier, d2.origin_identifier);
   EXPECT_EQ(d1.database_name, d2.database_name);
   EXPECT_EQ(d1.description, d2.description);
-  EXPECT_EQ(d1.estimated_size, d2.estimated_size);
 }
 
 static bool DatabasesTableIsEmpty(sql::Database* db) {
@@ -58,9 +54,8 @@ TEST(DatabasesTableTest, TestIt) {
   DatabaseDetails details_in1;
   DatabaseDetails details_out1;
   details_in1.origin_identifier = "origin1";
-  details_in1.database_name = ASCIIToUTF16("db1");
-  details_in1.description = ASCIIToUTF16("description_db1");
-  details_in1.estimated_size = 100;
+  details_in1.database_name = u"db1";
+  details_in1.description = u"description_db1";
 
   // Updating details for this database should fail.
   EXPECT_FALSE(databases_table.UpdateDatabaseDetails(details_in1));
@@ -83,9 +78,8 @@ TEST(DatabasesTableTest, TestIt) {
   // Insert details for another database with the same origin.
   DatabaseDetails details_in2;
   details_in2.origin_identifier = "origin1";
-  details_in2.database_name = ASCIIToUTF16("db2");
-  details_in2.description = ASCIIToUTF16("description_db2");
-  details_in2.estimated_size = 200;
+  details_in2.database_name = u"db2";
+  details_in2.description = u"description_db2";
   EXPECT_TRUE(databases_table.InsertDatabaseDetails(details_in2));
   EXPECT_EQ(2, databases_table.GetDatabaseID(details_in2.origin_identifier,
                                              details_in2.database_name));
@@ -93,9 +87,8 @@ TEST(DatabasesTableTest, TestIt) {
   // Insert details for a third database with a different origin.
   DatabaseDetails details_in3;
   details_in3.origin_identifier = "origin2";
-  details_in3.database_name = ASCIIToUTF16("db3");
-  details_in3.description = ASCIIToUTF16("description_db3");
-  details_in3.estimated_size = 300;
+  details_in3.database_name = u"db3";
+  details_in3.description = u"description_db3";
   EXPECT_TRUE(databases_table.InsertDatabaseDetails(details_in3));
   EXPECT_EQ(3, databases_table.GetDatabaseID(details_in3.origin_identifier,
                                              details_in3.database_name));
@@ -139,8 +132,8 @@ TEST(DatabasesTableTest, TestIt) {
       details_in1.origin_identifier, details_in1.database_name, &details_out1));
 
   // Check that trying to delete a record that doesn't exist fails.
-  EXPECT_FALSE(databases_table.DeleteDatabaseDetails(
-      "unknown_origin", ASCIIToUTF16("unknown_database")));
+  EXPECT_FALSE(databases_table.DeleteDatabaseDetails("unknown_origin",
+                                                     u"unknown_database"));
 
   ASSERT_TRUE(expecter.SawExpectedErrors());
 }

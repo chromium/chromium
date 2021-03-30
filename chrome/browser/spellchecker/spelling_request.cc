@@ -27,7 +27,7 @@ bool CompareLocation(const SpellCheckResult& r1, const SpellCheckResult& r2) {
 
 SpellingRequest::SpellingRequest(PlatformSpellChecker* platform_spell_checker,
                                  SpellingServiceClient* client,
-                                 const base::string16& text,
+                                 const std::u16string& text,
                                  int render_process_id,
                                  int document_tag,
                                  RequestTextCheckCallback callback,
@@ -119,7 +119,7 @@ void SpellingRequest::OnCheckCompleted() {
 
 void SpellingRequest::OnRemoteCheckCompleted(
     bool success,
-    const base::string16& text,
+    const std::u16string& text,
     const std::vector<SpellCheckResult>& results) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   remote_success_ = success;

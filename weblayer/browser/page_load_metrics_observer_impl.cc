@@ -6,14 +6,14 @@
 
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/no_state_prefetch/browser/prerender_util.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "weblayer/browser/navigation_controller_impl.h"
-#include "weblayer/browser/no_state_prefetch/prerender_manager_factory.h"
+#include "weblayer/browser/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "weblayer/browser/tab_impl.h"
 
 namespace weblayer {
@@ -28,13 +28,13 @@ PageLoadMetricsObserverImpl::OnCommit(
 
   // If URL-Keyed-Metrics (UKM) is enabled in the system, this is used to
   // populate it with top-level page-load metrics.
-  prerender::PrerenderManager* const prerender_manager =
-      PrerenderManagerFactory::GetForBrowserContext(
+  prerender::NoStatePrefetchManager* const no_state_prefetch_manager =
+      NoStatePrefetchManagerFactory::GetForBrowserContext(
           navigation_handle->GetWebContents()->GetBrowserContext());
-  if (!prerender_manager)
+  if (!no_state_prefetch_manager)
     return CONTINUE_OBSERVING;
   prerender::RecordNoStatePrefetchMetrics(navigation_handle, source_id,
-                                          prerender_manager);
+                                          no_state_prefetch_manager);
 #endif
   return CONTINUE_OBSERVING;
 }

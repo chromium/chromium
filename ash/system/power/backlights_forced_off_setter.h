@@ -15,7 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 
 namespace ash {
@@ -94,9 +94,9 @@ class ASH_EXPORT BacklightsForcedOffSetter
 
   base::ObserverList<ScreenBacklightObserver>::Unchecked observers_;
 
-  ScopedObserver<chromeos::PowerManagerClient,
-                 chromeos::PowerManagerClient::Observer>
-      power_manager_observer_;
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
+      power_manager_observation_{this};
 
   base::WeakPtrFactory<BacklightsForcedOffSetter> weak_ptr_factory_{this};
 

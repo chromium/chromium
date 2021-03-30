@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_THUMBNAILS_THUMBNAIL_READINESS_TRACKER_H_
 
 #include "base/callback.h"
+#include "chrome/browser/ui/thumbnails/thumbnail_image.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -13,19 +14,7 @@
 // navigation and loading state.
 class ThumbnailReadinessTracker : public content::WebContentsObserver {
  public:
-  enum class Readiness : int {
-    // The WebContents is not ready for capturing.
-    kNotReady = 0,
-    // Thumbnails can be captured, but the page might change. Don't use
-    // any captured frames as the final thumbnail.
-    kReadyForInitialCapture,
-    // A thumbnail can be captured that should be representative of the
-    // page's final state. For good measure, the client should still
-    // wait a few seconds to capture the final thumbnail since dynamic
-    // elements might not be in final position yet.
-    kReadyForFinalCapture,
-  };
-
+  using Readiness = ThumbnailImage::CaptureReadiness;
   using ReadinessChangeCallback = base::RepeatingCallback<void(Readiness)>;
 
   // |web_contents| should be a newly-created contents. If not, the
@@ -40,7 +29,8 @@ class ThumbnailReadinessTracker : public content::WebContentsObserver {
       content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void DocumentOnLoadCompletedInMainFrame() override;
+  void DocumentOnLoadCompletedInMainFrame(
+      content::RenderFrameHost* render_frame_host) override;
   void WebContentsDestroyed() override;
 
  private:

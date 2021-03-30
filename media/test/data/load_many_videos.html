@@ -5,33 +5,12 @@ containers to try to cover different read patterns.
 -->
 <html>
 <body onload="RunTest();">
-<video controls preload=auto src="bear-320x180-hi10p.mp4"></video><br>
 <video controls preload=auto src="bear-320x180-hi10p.mp4?A"></video><br>
 <video controls preload=auto src="bear-320x180-hi10p.mp4?B"></video><br>
 <video controls preload=auto src="bear-320x180-hi10p.mp4?C"></video><br>
 <video controls preload=auto src="bear-320x180-hi10p.mp4?D"></video><br>
 <video controls preload=auto src="bear-320x180-hi10p.mp4?E"></video><br>
 <video controls preload=auto src="bear-320x180-hi10p.mp4?F"></video><br>
-<video controls preload=auto src="bear-320x180-hi10p.mp4?G"></video><br>
-<video controls preload=auto src="bear-320x180-hi10p.mp4?H"></video><br>
-<video controls preload=auto src="bear-320x180-hi10p.mp4?I"></video><br>
-<video controls preload=auto src="bear-320x180-hi10p.mp4?J"></video><br>
-<video controls preload=auto src="bear-320x180-hi10p.mp4?K"></video><br>
-<video controls preload=auto src="bear-320x180-hi10p.mp4?L"></video><br>
-<video controls preload=auto src="bear-320x180-hi10p.mp4?M"></video><br>
-<video controls preload=auto src="bear-320x180-hi10p.mp4?N"></video><br>
-<video controls preload=auto src="bear-320x180-hi10p.mp4?O"></video><br>
-<video controls preload=auto src="bear-320x180-hi10p.mp4?P"></video><br>
-<video controls preload=auto src="bear-320x180-hi10p.mp4?Q"></video><br>
-<video controls preload=auto src="bear-320x180-hi10p.mp4?R"></video><br>
-<video controls preload=auto src="bear-320x180-hi10p.mp4?S"></video><br>
-<video controls preload=auto src="bear-320x180-hi10p.mp4?T"></video><br>
-<video controls preload=auto src="bear-320x180-hi10p.mp4?U"></video><br>
-<video controls preload=auto src="bear-320x180-hi10p.mp4?V"></video><br>
-<video controls preload=auto src="bear-320x180-hi10p.mp4?W"></video><br>
-<video controls preload=auto src="bear-320x180-hi10p.mp4?X"></video><br>
-<video controls preload=auto src="bear-320x180-hi10p.mp4?Y"></video><br>
-<video controls preload=auto src="bear-320x180-hi10p.mp4?Z"></video><br>
 <video controls preload=auto src="bear-1280x720.mp4"></video><br>
 <video controls preload=auto src="bear-320x240.webm"></video><br>
 <video controls preload=auto src="bear.mp4"></video><br>
@@ -49,14 +28,14 @@ containers to try to cover different read patterns.
     console.log("Done?");
     var players = document.getElementsByTagName("video");
     for (var i = 0; i < players.length; i++) {
-      if (players[i].readyState < 4) return;
+      if (players[i].readyState < 3) return;
     }
     document.title = "ENDED";
   }
   function RunTest() {
     var players = document.getElementsByTagName("video");
     for (var i = 0; i < players.length; i++) {
-      players[i].addEventListener('canplaythrough', function(e) { CheckIfDone(); });
+      players[i].addEventListener('canplay', function(e) { CheckIfDone(); });
     }
     CheckIfDone();
   }

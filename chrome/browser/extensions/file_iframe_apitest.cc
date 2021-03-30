@@ -29,8 +29,8 @@ class FileIFrameAPITest : public extensions::ExtensionBrowserTest {
     WriteBackgroundPage();
 
     ExtensionTestMessageListener listener(false /*will_reply*/);
-    int flags = has_file_access_ ? kFlagEnableFileAccess : kFlagNone;
-    ASSERT_TRUE(LoadExtensionWithFlags(extension_dir_.UnpackedPath(), flags));
+    ASSERT_TRUE(LoadExtension(extension_dir_.UnpackedPath(),
+                              {.allow_file_access = has_file_access_}));
     EXPECT_TRUE(listener.WaitUntilSatisfied());
 
     EXPECT_TRUE(listener.message() == "allowed" ||

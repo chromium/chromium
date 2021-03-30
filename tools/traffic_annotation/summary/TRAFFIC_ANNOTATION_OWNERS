@@ -2,7 +2,21 @@
 nicolaso@chromium.org
 
 # Central European Time
+# Please pick a random reviewer:
+#
+# cat tools/traffic_annotation/summary/TRAFFIC_ANNOTATION_OWNERS \
+#   | tail -n+10 | shuf | head -n 1
+#
+andzaytsev@google.com
+bsep@chromium.org
 dullweber@chromium.org
+eokoyomon@chromium.org
+harrisonsean@chromium.org
 mkwst@chromium.org
 msramek@chromium.org
+olesiamarukhno@chromium.org
+rainhard@chromium.org
 rhalavati@chromium.org
+roagarwal@chromium.org
+sauski@google.com
+sideyilmaz@chromium.org

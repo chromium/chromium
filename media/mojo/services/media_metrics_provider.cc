@@ -56,6 +56,10 @@ MediaMetricsProvider::MediaMetricsProvider(
       uma_info_(is_incognito == BrowsingMode::kIncognito) {}
 
 MediaMetricsProvider::~MediaMetricsProvider() {
+  // These UKM and UMA metrics do not apply to MediaStreams.
+  if (media_stream_type_ != mojom::MediaStreamType::kNone)
+    return;
+
   // UKM may be unavailable in content_shell or other non-chrome/ builds; it
   // may also be unavailable if browser shutdown has started; so this may be a
   // nullptr. If it's unavailable, UKM reporting will be skipped.
@@ -102,10 +106,9 @@ std::string MediaMetricsProvider::GetUMANameForAVStream(
     return uma_name + "Other";
 
 #if !defined(OS_ANDROID)
-  if (player_info.video_pipeline_info.decoder_name ==
-      DecryptingVideoDecoder::kDecoderName) {
+  if (player_info.video_pipeline_info.decoder_type ==
+      VideoDecoderType::kDecrypting)
     return uma_name + "DVD";
-  }
 #endif
 
   if (player_info.video_pipeline_info.has_decrypting_demuxer_stream)
@@ -142,7 +145,8 @@ void MediaMetricsProvider::ReportPipelineUMA() {
 
   // Report whether video decoder fallback happened, but only if a video decoder
   // was reported.
-  if (!uma_info_.video_pipeline_info.decoder_name.empty()) {
+  if (uma_info_.video_pipeline_info.decoder_type !=
+      VideoDecoderType::kUnknown) {
     base::UmaHistogramBoolean("Media.VideoDecoderFallback",
                               uma_info_.video_decoder_changed);
   }
@@ -195,21 +199,22 @@ void MediaMetricsProvider::SetHaveEnough() {
   uma_info_.has_reached_have_enough = true;
 }
 
-void MediaMetricsProvider::SetVideoPipelineInfo(
-    const PipelineDecoderInfo& info) {
-  auto old_name = uma_info_.video_pipeline_info.decoder_name;
-  if (!old_name.empty() && old_name != info.decoder_name)
+void MediaMetricsProvider::SetVideoPipelineInfo(const VideoDecoderInfo& info) {
+  auto old_decoder = uma_info_.video_pipeline_info.decoder_type;
+  if (old_decoder != VideoDecoderType::kUnknown &&
+      old_decoder != info.decoder_type)
     uma_info_.video_decoder_changed = true;
   uma_info_.video_pipeline_info = info;
 }
 
-void MediaMetricsProvider::SetAudioPipelineInfo(
-    const PipelineDecoderInfo& info) {
+void MediaMetricsProvider::SetAudioPipelineInfo(const AudioDecoderInfo& info) {
   uma_info_.audio_pipeline_info = info;
 }
 
-void MediaMetricsProvider::Initialize(bool is_mse,
-                                      mojom::MediaURLScheme url_scheme) {
+void MediaMetricsProvider::Initialize(
+    bool is_mse,
+    mojom::MediaURLScheme url_scheme,
+    mojom::MediaStreamType media_stream_type) {
   if (initialized_) {
     mojo::ReportBadMessage(kInvalidInitialize);
     return;
@@ -218,6 +223,7 @@ void MediaMetricsProvider::Initialize(bool is_mse,
   is_mse_ = is_mse;
   initialized_ = true;
   url_scheme_ = url_scheme;
+  media_stream_type_ = media_stream_type;
 }
 
 void MediaMetricsProvider::OnError(PipelineStatus status) {

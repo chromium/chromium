@@ -8,10 +8,12 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/policy_types.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_context.h"
 
 namespace base {
@@ -24,6 +26,9 @@ namespace enterprise_connectors {
 // Controls whether the Enterprise Connectors policies should be read by
 // ConnectorsManager.
 extern const base::Feature kEnterpriseConnectorsEnabled;
+
+// Controls whether per-profile Enterprise Connector policies are applied.
+extern const base::Feature kPerProfileConnectorsEnabled;
 
 // For the moment, service provider configurations are static and only support
 // google endpoints.  Therefore the configuration is placed here directly.
@@ -48,11 +53,31 @@ class ConnectorsService : public KeyedService {
   base::Optional<AnalysisSettings> GetAnalysisSettings(
       const GURL& url,
       AnalysisConnector connector);
+  base::Optional<FileSystemSettings> GetFileSystemSettings(
+      const GURL& url,
+      FileSystemConnector connector);
 
   bool IsConnectorEnabled(AnalysisConnector connector) const;
   bool IsConnectorEnabled(ReportingConnector connector) const;
+  bool IsConnectorEnabled(FileSystemConnector connector) const;
 
   bool DelayUntilVerdict(AnalysisConnector connector);
+
+  std::vector<std::string> GetAnalysisServiceProviderNames(
+      AnalysisConnector connector);
+  std::vector<std::string> GetReportingServiceProviderNames(
+      ReportingConnector connector);
+
+  // DM token accessor function for real-time URL checks. Returns a profile or
+  // browser DM token depending on the policy scope, and base::nullopt if there
+  // is no token to use.
+  base::Optional<std::string> GetDMTokenForRealTimeUrlCheck() const;
+
+  // Returns the value to used by the enterprise real-time URL check Connector
+  // if it is set and if the scope it's set at has a valid browser-profile
+  // affiliation.
+  safe_browsing::EnterpriseRealTimeUrlCheckMode GetAppliedRealTimeUrlCheck()
+      const;
 
   // Testing functions.
   ConnectorsManager* ConnectorsManagerForTesting();
@@ -71,8 +96,26 @@ class ConnectorsService : public KeyedService {
     // policy used to get a DM token.
     policy::PolicyScope scope;
   };
-  base::Optional<DmToken> GetDmToken(const char* pref);
 
+  // Returns the DM token to use with the given |scope_pref|. That pref should
+  // contain either POLICY_SCOPE_MACHINE or POLICY_SCOPE_USER.
+  base::Optional<DmToken> GetDmToken(const char* scope_pref) const;
+  base::Optional<DmToken> GetBrowserDmToken() const;
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  base::Optional<DmToken> GetProfileDmToken() const;
+
+  // Returns true if the browser isn't managed by CBCM, otherwise this checks if
+  // the affiliations IDs from the profile and browser policy fetching responses
+  // indicate that the same customer manages both.
+  bool CanUseProfileDmToken() const;
+#endif
+
+  // Returns the policy::PolicyScope stored in the given |scope_pref|.
+  policy::PolicyScope GetPolicyScope(const char* scope_pref) const;
+
+  // Returns whether Connectors are enabled at all. This can be false if:
+  // - The kEnterpriseConnectorsEnabled feature is disabled
+  // - The profile is incognito
   bool ConnectorsEnabled() const;
 
   content::BrowserContext* context_;

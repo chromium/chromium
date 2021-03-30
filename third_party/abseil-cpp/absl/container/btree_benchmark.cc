@@ -26,6 +26,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "benchmark/benchmark.h"
 #include "absl/base/internal/raw_logging.h"
 #include "absl/container/btree_map.h"
 #include "absl/container/btree_set.h"
@@ -39,7 +40,6 @@
 #include "absl/strings/cord.h"
 #include "absl/strings/str_format.h"
 #include "absl/time/time.h"
-#include "benchmark/benchmark.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -99,39 +99,6 @@ void BM_Insert(benchmark::State& state) {
 template <typename T>
 void BM_InsertSorted(benchmark::State& state) {
   BM_InsertImpl<T>(state, true);
-}
-
-// container::insert sometimes returns a pair<iterator, bool> and sometimes
-// returns an iterator (for multi- containers).
-template <typename Iter>
-Iter GetIterFromInsert(const std::pair<Iter, bool>& pair) {
-  return pair.first;
-}
-template <typename Iter>
-Iter GetIterFromInsert(const Iter iter) {
-  return iter;
-}
-
-// Benchmark insertion of values into a container at the end.
-template <typename T>
-void BM_InsertEnd(benchmark::State& state) {
-  using V = typename remove_pair_const<typename T::value_type>::type;
-  typename KeyOfValue<typename T::key_type, V>::type key_of_value;
-
-  T container;
-  const int kSize = 10000;
-  for (int i = 0; i < kSize; ++i) {
-    container.insert(Generator<V>(kSize)(i));
-  }
-  V v = Generator<V>(kSize)(kSize - 1);
-  typename T::key_type k = key_of_value(v);
-
-  auto it = container.find(k);
-  while (state.KeepRunning()) {
-    // Repeatedly removing then adding v.
-    container.erase(it);
-    it = GetIterFromInsert(container.insert(v));
-  }
 }
 
 // Benchmark inserting the first few elements in a container. In b-tree, this is
@@ -513,7 +480,6 @@ BTREE_TYPES(Time);
 #define MY_BENCHMARK3(type)               \
   MY_BENCHMARK4(type, Insert);            \
   MY_BENCHMARK4(type, InsertSorted);      \
-  MY_BENCHMARK4(type, InsertEnd);         \
   MY_BENCHMARK4(type, InsertSmall);       \
   MY_BENCHMARK4(type, Lookup);            \
   MY_BENCHMARK4(type, FullLookup);        \

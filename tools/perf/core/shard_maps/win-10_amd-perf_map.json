@@ -1,0 +1,33 @@
+{
+    "0": {
+        "benchmarks": {
+            "kraken": {
+                "abridged": false
+            },
+            "octane": {
+                "abridged": false
+            },
+            "system_health.common_desktop": {
+                "end": 39,
+                "abridged": false
+            }
+        }
+    },
+    "1": {
+        "benchmarks": {
+            "system_health.common_desktop": {
+                "begin": 39,
+                "abridged": false
+            }
+        }
+    },
+    "extra_infos": {
+        "num_stories": 82,
+        "predicted_min_shard_time": 410,
+        "predicted_min_shard_index": 0,
+        "predicted_max_shard_time": 410,
+        "predicted_max_shard_index": 0,
+        "shard #0": 410,
+        "shard #1": 410
+    }
+}

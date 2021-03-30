@@ -1,6 +1,7 @@
 include_rules = [
   "+chrome/app",
   "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  "+chrome/browser/android/browserservices/verification",
   "+chrome/browser/android/lifecycle",
   "+chrome/browser/image_fetcher",
   "+chrome/browser/paint_preview/android",
@@ -14,6 +15,7 @@ include_rules = [
   "+chrome/browser/endpoint_fetcher",
   "+chrome/browser/ui/android/appmenu",
   "-chrome/browser/ui/android/appmenu/internal",
+  "+chrome/browser/optimization_guide/android/java/src/org/chromium/chrome/browser/optimization_guide",
   "+chrome/browser/ui/android/theme/java",
   "+chrome/browser/ui/messages/android/java",
   "+chrome/browser/signin/services/android/java",
@@ -73,4 +75,7 @@ specific_include_rules = {
   "PageInfoPopupTest\.java": [
     "+content/public/android/java/src/org/chromium/content_public/common/ContentSwitches.java",
   ],
+  "ToolbarPhoneTest\.java": [
+    "+chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/ButtonData.java",
+  ]
 }

@@ -7,12 +7,15 @@ package org.chromium.chrome.browser.toolbar.menu_button;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
+import static org.mockito.Mockito.anyObject;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.content.res.Resources;
+import android.view.View;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -32,8 +35,12 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
+import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.TokenHolder;
+
+import java.lang.ref.WeakReference;
 
 /**
  * Unit tests for ToolbarAppMenuManager.
@@ -62,6 +69,12 @@ public class MenuButtonMediatorTest {
     ThemeColorProvider mThemeColorProvider;
     @Mock
     Resources mResources;
+    @Mock
+    private WindowAndroid mWindowAndroid;
+    @Mock
+    private KeyboardVisibilityDelegate mKeyboardDelegate;
+    @Mock
+    private View mUtilityView;
 
     private UpdateMenuItemHelper.MenuUiState mMenuUiState;
     private OneshotSupplierImpl<AppMenuCoordinator> mAppMenuSupplier;
@@ -88,6 +101,9 @@ public class MenuButtonMediatorTest {
         mAppMenuSupplier = new OneshotSupplierImpl<>();
         mMenuUiState = new UpdateMenuItemHelper.MenuUiState();
         doReturn(mMenuUiState).when(mUpdateMenuItemHelper).getUiState();
+        doReturn(mResources).when(mActivity).getResources();
+        doReturn(new WeakReference<>(mActivity)).when(mWindowAndroid).getActivity();
+        doReturn(mKeyboardDelegate).when(mWindowAndroid).getKeyboardDelegate();
 
         mMenuButtonMediator = new MenuButtonMediator(mPropertyModel, true,
                 ()
@@ -95,7 +111,7 @@ public class MenuButtonMediatorTest {
                 mRequestRenderRunnable, mThemeColorProvider,
                 ()
                         -> false,
-                mControlsVisibilityDelegate, mFocusFunction, mAppMenuSupplier, mResources);
+                mControlsVisibilityDelegate, mFocusFunction, mAppMenuSupplier, mWindowAndroid);
     }
 
     @Test
@@ -170,7 +186,7 @@ public class MenuButtonMediatorTest {
                 mRequestRenderRunnable, mThemeColorProvider,
                 ()
                         -> false,
-                mControlsVisibilityDelegate, mFocusFunction, mAppMenuSupplier, mResources);
+                mControlsVisibilityDelegate, mFocusFunction, mAppMenuSupplier, mWindowAndroid);
         doReturn(true).when(mActivity).isDestroyed();
         newMediator.updateStateChanged();
 
@@ -201,5 +217,19 @@ public class MenuButtonMediatorTest {
         mMenuButtonMediator.setAppMenuUpdateBadgeSuppressed(true);
         mMenuButtonMediator.updateReloadingState(true);
         mMenuButtonMediator.updateStateChanged();
+    }
+
+    @Test
+    public void testKeyboardIsDismissedWhenMenuShows() {
+        doReturn(mUtilityView).when(mActivity).getCurrentFocus();
+        mMenuButtonMediator.onMenuVisibilityChanged(true);
+        verify(mKeyboardDelegate).hideKeyboard(eq(mUtilityView));
+    }
+
+    @Test
+    public void testKeyboardIsNotDismissedWhenMenuShowsWithNoFocusedViews() {
+        doReturn(null).when(mActivity).getCurrentFocus();
+        mMenuButtonMediator.onMenuVisibilityChanged(true);
+        verify(mKeyboardDelegate, never()).hideKeyboard(anyObject());
     }
 }

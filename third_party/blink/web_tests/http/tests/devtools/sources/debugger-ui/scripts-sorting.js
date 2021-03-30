@@ -5,8 +5,8 @@
 (async function() {
   'use strict';
   TestRunner.addResult(`Tests scripts sorting in the scripts panel.\n`);
-  await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('sdk_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadTestModule('sdk_test_runner');
   await TestRunner.showPanel('sources');
 
   function createNavigatorView(constructor) {

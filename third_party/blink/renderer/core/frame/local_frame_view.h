@@ -75,7 +75,6 @@ class AXObjectCache;
 class ChromeClient;
 class CompositorAnimationTimeline;
 class DocumentLifecycle;
-class FloatRect;
 class FloatSize;
 class FragmentAnchor;
 class Frame;
@@ -256,8 +255,6 @@ class CORE_EXPORT LocalFrameView final
   bool GetIntrinsicSizingInfo(IntrinsicSizingInfo&) const override;
   bool HasIntrinsicSizingInfo() const override;
 
-  void UpdateCountersAfterStyleChange();
-
   void Dispose() override;
   void PropagateFrameRects() override;
   void InvalidateAllCustomScrollbarsOnActiveChanged();
@@ -349,9 +346,7 @@ class CORE_EXPORT LocalFrameView final
   // LocalFrame.
   void WillBeRemovedFromFrame();
 
-  bool IsUpdatingLifecycle() {
-    return target_state_ != DocumentLifecycle::kUninitialized;
-  }
+  bool IsUpdatingLifecycle() const;
 
   // Run all needed lifecycle stages. After calling this method, all frames will
   // be in the lifecycle state PaintClean.  If lifecycle throttling is allowed
@@ -501,11 +496,6 @@ class CORE_EXPORT LocalFrameView final
   // StyleChanged whenever window focus is changed.
   void RemoveScrollbar(Scrollbar*);
   void AddScrollbar(Scrollbar*);
-
-  // Clips the provided rect to the visible content area. For this purpose, we
-  // also query the chrome client for any active overrides to the visible area
-  // (e.g. DevTool's viewport override).
-  void ClipPaintRect(FloatRect*) const;
 
   // Indicates the root layer's scroll offset changed since the last frame
   void SetRootLayerDidScroll() { root_layer_did_scroll_ = true; }
@@ -666,8 +656,6 @@ class CORE_EXPORT LocalFrameView final
   // see: mainThreadScrollingReasons().
   MainThreadScrollingReasons MainThreadScrollingReasonsPerFrame() const;
 
-  bool HasVisibleSlowRepaintViewportConstrainedObjects() const;
-
   bool MapToVisualRectInRemoteRootFrame(PhysicalRect& rect,
                                         bool apply_overflow_clip = true);
 
@@ -713,8 +701,8 @@ class CORE_EXPORT LocalFrameView final
     return *paint_timing_detector_;
   }
 
-  MobileFriendlinessChecker& GetMobileFriendlinessChecker() const {
-    return *mobile_friendliness_checker_;
+  MobileFriendlinessChecker* GetMobileFriendlinessChecker() const {
+    return mobile_friendliness_checker_;
   }
   void DidChangeMobileFriendliness(const MobileFriendliness& mf);
 
@@ -770,7 +758,7 @@ class CORE_EXPORT LocalFrameView final
   void ParentVisibleChanged() override;
   void NotifyFrameRectsChangedIfNeeded();
   void SetViewportIntersection(const mojom::blink::ViewportIntersectionState&
-                                   intersection_state) override;
+                                   intersection_state) override {}
   void VisibilityForThrottlingChanged() override;
   bool LifecycleUpdatesThrottled() const override {
     return lifecycle_updates_throttled_;
@@ -889,8 +877,8 @@ class CORE_EXPORT LocalFrameView final
   void ClearLayoutSubtreeRootsAndMarkContainingBlocks();
 
   void PerformPreLayoutTasks();
-  void PerformLayout(bool in_subtree_layout);
-  void PerformPostLayoutTasks();
+  void PerformLayout();
+  void PerformPostLayoutTasks(bool view_size_changed);
 
   DocumentLifecycle& Lifecycle() const;
 
@@ -914,7 +902,7 @@ class CORE_EXPORT LocalFrameView final
 
   void UpdateGeometriesIfNeeded();
   bool WasViewportResized();
-  void SendResizeEventIfNeeded();
+  void SendResizeEventIfNeeded(bool visual_viewport_size_changed);
 
   void ScheduleUpdatePluginsIfNecessary();
   void UpdatePluginsTimerFired(TimerBase*);
@@ -994,9 +982,13 @@ class CORE_EXPORT LocalFrameView final
   // StyleEngine instead of the base background color.
   bool ShouldUseColorAdjustBackground() const;
 
-  // Appends the document transition from this view into the given vector.
+  // Verifies the shared elements for the document transition on this view.
+  void VerifySharedElementsForDocumentTransition();
+  // Append document transition requests from this view into the given vector.
   void AppendDocumentTransitionRequests(
       WTF::Vector<std::unique_ptr<DocumentTransition::Request>>&);
+
+  bool AnyFrameIsPrintingOrPaintingPreview();
 
   LayoutSize size_;
 
@@ -1015,7 +1007,7 @@ class CORE_EXPORT LocalFrameView final
   unsigned layout_count_for_testing_;
   unsigned lifecycle_update_count_for_testing_;
   unsigned nested_layout_count_;
-  TaskRunnerTimer<LocalFrameView> update_plugins_timer_;
+  HeapTaskRunnerTimer<LocalFrameView> update_plugins_timer_;
 
   bool first_layout_;
   UseColorAdjustBackground use_color_adjust_background_{
@@ -1023,6 +1015,10 @@ class CORE_EXPORT LocalFrameView final
   Color base_background_color_;
   IntSize last_viewport_size_;
   float last_zoom_factor_;
+
+  // Used for tracking the frame's size and replicating it to the browser
+  // process when it changes.
+  base::Optional<IntSize> frame_size_;
 
   AtomicString media_type_;
   AtomicString media_type_when_not_printing_;
@@ -1140,6 +1136,8 @@ class CORE_EXPORT LocalFrameView final
   UniqueObjectId unique_id_;
   Member<LayoutShiftTracker> layout_shift_tracker_;
   Member<PaintTimingDetector> paint_timing_detector_;
+
+  // This will be nullptr iff !frame_->IsMainFrame().
   Member<MobileFriendlinessChecker> mobile_friendliness_checker_;
 
   HeapHashSet<WeakMember<LifecycleNotificationObserver>> lifecycle_observers_;

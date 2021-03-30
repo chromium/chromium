@@ -95,7 +95,7 @@ If not, add it to the appropriate Module and then take it in the constructor of 
 
 ### access a Dagger class from a non-Dagger class
 
-If the class is a singleton, add a suitable *resolve* method to [ChromeAppComponent][4], you can then call `ChromeApplication.getComponent().resolveMyClass()` to get access.
+If the class is a singleton, add a suitable *resolve* method to [ChromeAppComponent][4], you can then call `ChromeApplicationImpl.getComponent().resolveMyClass()` to get access.
 
 If the class is `@ActivityScope`, add a suitable resolve method to [BaseCustomTabActivityComponent][5], and then get the object out of Dagger in `BaseCustomTabActivity#createComponent`.
 You can then fetch the instance off `BaseCustomTabActivity`.

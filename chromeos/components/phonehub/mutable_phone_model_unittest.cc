@@ -50,7 +50,7 @@ class MutablePhoneModelTest : public testing::Test {
 };
 
 TEST_F(MutablePhoneModelTest, PhoneName) {
-  const base::string16 fake_phone_name = base::UTF8ToUTF16("Phone name");
+  const std::u16string fake_phone_name = u"Phone name";
 
   // Set the phone name to be null (the default value); observers should
   // not be notified, since this is not a change.

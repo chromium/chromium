@@ -33,13 +33,15 @@ in the web test infrastructure.
 
 import time
 import collections
-import itertools
 import json
 import logging
 import optparse
 import re
 import sys
 import tempfile
+
+import six
+from six.moves import zip_longest
 
 from blinkpy.common import exit_codes
 from blinkpy.common import find_files
@@ -184,7 +186,7 @@ class Port(object):
     WEBDRIVER_SUBTEST_PYTEST_SEPARATOR = '::'
 
     # The following two constants must match. When adding a new WPT root, also
-    # remember to add an alias rule to third_party/wpt/wpt.config.json.
+    # remember to add an alias rule to //third_party/wpt_tools/wpt.config.json.
     # WPT_DIRS maps WPT roots on the file system to URL prefixes on wptserve.
     # The order matters: '/' MUST be the last URL prefix.
     WPT_DIRS = collections.OrderedDict([
@@ -417,7 +419,7 @@ class Port(object):
 
     def default_max_locked_shards(self):
         """Returns the number of "locked" shards to run in parallel (like the http tests)."""
-        max_locked_shards = int(self.default_child_processes()) / 4
+        max_locked_shards = int(self.default_child_processes()) // 4
         if not max_locked_shards:
             return 1
         return max_locked_shards
@@ -436,7 +438,8 @@ class Port(object):
     def baseline_search_path(self):
         return (self.get_option('additional_platform_directory', []) +
                 self._flag_specific_baseline_search_path() +
-                self._compare_baseline() + self.default_baseline_search_path())
+                self._compare_baseline() +
+                list(self.default_baseline_search_path()))
 
     def default_baseline_search_path(self):
         """Returns a list of absolute paths to directories to search under for baselines.
@@ -841,7 +844,10 @@ class Port(object):
         baseline_path = self.expected_filename(test_name, '.txt')
         if not self._filesystem.exists(baseline_path):
             return None
-        text = self._filesystem.read_binary_file(baseline_path)
+        if six.PY2:
+            text = self._filesystem.read_binary_file(baseline_path)
+        else:
+            text = self._filesystem.read_text_file(baseline_path)
         return text.replace('\r\n', '\n')
 
     def reference_files(self, test_name):
@@ -1331,7 +1337,8 @@ class Port(object):
         return self.results_directory()
 
     def inspector_build_directory(self):
-        return self._build_path('resources', 'inspector')
+        return self._build_path('gen', 'third_party', 'devtools-frontend',
+                                'src', 'front_end')
 
     def generated_sources_directory(self):
         return self._build_path('gen')
@@ -2045,8 +2052,8 @@ class Port(object):
         # This walks through the set of paths where we should look for tests.
         # For each path, a map can be provided that we replace 'path' with in
         # the result.
-        for filter_path, virtual_prefix in itertools.izip_longest(
-                filter_paths, virtual_prefixes):
+        for filter_path, virtual_prefix in zip_longest(filter_paths,
+                                                       virtual_prefixes):
             # This is to make sure "external[\\/]?" can also match to
             # external/wpt.
             # TODO(robertma): Remove this special case when external/wpt is

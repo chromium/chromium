@@ -12,7 +12,6 @@ import static org.chromium.chrome.browser.notifications.NotificationConstants.DE
 
 import android.app.Notification;
 import android.content.Context;
-import android.os.Looper;
 import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.SmallTest;
@@ -21,16 +20,20 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.AdvancedMockContext;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Test for DownloadForegroundServiceManager.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public final class DownloadForegroundServiceManagerTest {
     private static final int FAKE_DOWNLOAD_1 = 111;
     private static final int FAKE_DOWNLOAD_2 = 222;
@@ -111,23 +114,25 @@ public final class DownloadForegroundServiceManagerTest {
 
     @Before
     public void setUp() {
-        Looper.prepare();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mContext = new AdvancedMockContext(InstrumentationRegistry.getTargetContext());
+            mDownloadServiceManager = new MockDownloadForegroundServiceManager();
 
-        mContext = new AdvancedMockContext(InstrumentationRegistry.getTargetContext());
-        mDownloadServiceManager = new MockDownloadForegroundServiceManager();
-
-        mNotification =
-                NotificationWrapperBuilderFactory
-                        .createNotificationWrapperBuilder(true /* preferCompat */,
-                                ChromeChannelDefinitions.ChannelId.DOWNLOADS)
-                        .setSmallIcon(org.chromium.chrome.R.drawable.ic_file_download_white_24dp)
-                        .setContentTitle(FAKE_NOTIFICATION_CHANNEL)
-                        .setContentText(FAKE_NOTIFICATION_CHANNEL)
-                        .build();
+            mNotification =
+                    NotificationWrapperBuilderFactory
+                            .createNotificationWrapperBuilder(true /* preferCompat */,
+                                    ChromeChannelDefinitions.ChannelId.DOWNLOADS)
+                            .setSmallIcon(
+                                    org.chromium.chrome.R.drawable.ic_file_download_white_24dp)
+                            .setContentTitle(FAKE_NOTIFICATION_CHANNEL)
+                            .setContentText(FAKE_NOTIFICATION_CHANNEL)
+                            .build();
+        });
     }
 
     @Test
     @SmallTest
+    @UiThreadTest
     @Feature({"Download"})
     public void testBasicStartAndStop() {
         // Service starts and stops with addition and removal of one active download.
@@ -170,6 +175,7 @@ public final class DownloadForegroundServiceManagerTest {
 
     @Test
     @SmallTest
+    @UiThreadTest
     @Feature({"Download"})
     public void testDelayedStartStop() {
         // Calls to start and stop service.
@@ -190,6 +196,7 @@ public final class DownloadForegroundServiceManagerTest {
 
     @Test
     @SmallTest
+    @UiThreadTest
     @Feature({"Download"})
     public void testDelayedStartStopStart() {
         // Calls to start and stop and start service.
@@ -219,6 +226,7 @@ public final class DownloadForegroundServiceManagerTest {
 
     @Test
     @SmallTest
+    @UiThreadTest
     @Feature({"Download"})
     public void testIsNotificationKilledOrDetached() {
         // Service starts and is paused, not complete, so notification not killed but is detached.
@@ -265,6 +273,7 @@ public final class DownloadForegroundServiceManagerTest {
 
     @Test
     @SmallTest
+    @UiThreadTest
     @Feature({"Download"})
     public void testStopInitiallyAndCleanQueue() {
         // First call is a download being cancelled.

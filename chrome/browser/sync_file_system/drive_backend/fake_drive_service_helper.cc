@@ -291,9 +291,8 @@ DriveApiErrorCode FakeDriveServiceHelper::ReadFile(
   EXPECT_TRUE(base::CreateTemporaryFileInDir(temp_dir_, &temp_file));
   fake_drive_service_->DownloadFile(
       temp_file, file->file_id(),
-      base::Bind(&DownloadResultCallback, &error),
-      google_apis::GetContentCallback(),
-      google_apis::ProgressCallback());
+      base::BindOnce(&DownloadResultCallback, &error),
+      google_apis::GetContentCallback(), google_apis::ProgressCallback());
   base::RunLoop().RunUntilIdle();
   if (error != google_apis::HTTP_SUCCESS)
     return error;

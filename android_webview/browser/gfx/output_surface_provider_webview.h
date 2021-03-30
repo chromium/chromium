@@ -26,11 +26,11 @@ namespace android_webview {
 class AwVulkanContextProvider;
 
 // Effectively a data struct to pass pointers from render thread to viz thread.
-class OutputSurfaceProviderWebview {
+class OutputSurfaceProviderWebView {
  public:
-  explicit OutputSurfaceProviderWebview(
+  explicit OutputSurfaceProviderWebView(
       AwVulkanContextProvider* vulkan_context_provider);
-  ~OutputSurfaceProviderWebview();
+  ~OutputSurfaceProviderWebView();
 
   std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
   CreateDisplayController();
@@ -48,7 +48,6 @@ class OutputSurfaceProviderWebview {
   scoped_refptr<gpu::SharedContextState> shared_context_state() const {
     return shared_context_state_;
   }
-  bool enable_shared_image() const { return enable_shared_image_; }
 
  private:
   void InitializeContext();
@@ -60,7 +59,6 @@ class OutputSurfaceProviderWebview {
   viz::DebugRendererSettings debug_settings_;
   scoped_refptr<AwGLSurface> gl_surface_;
   scoped_refptr<gpu::SharedContextState> shared_context_state_;
-  bool enable_shared_image_;
   bool enable_vulkan_;
 };
 

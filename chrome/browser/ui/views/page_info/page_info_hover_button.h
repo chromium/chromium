@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_HOVER_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_HOVER_BUTTON_H_
 
+#include <string>
+
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/views/hover_button.h"
 
 namespace gfx {
@@ -45,16 +46,16 @@ class PageInfoHoverButton : public HoverButton {
   PageInfoHoverButton(views::Button::PressedCallback callback,
                       const gfx::ImageSkia& image_icon,
                       int title_resource_id,
-                      const base::string16& secondary_text,
+                      const std::u16string& secondary_text,
                       int click_target_id,
-                      const base::string16& tooltip_text,
-                      const base::string16& subtitle_text);
+                      const std::u16string& tooltip_text,
+                      const std::u16string& subtitle_text);
   ~PageInfoHoverButton() override {}
 
   // Updates the title text, and applies the secondary style to the secondary
   // text portion, if present.
   void SetTitleText(int title_resource_id,
-                    const base::string16& secondary_text);
+                    const std::u16string& secondary_text);
 
  protected:
   views::StyledLabel* title() const { return title_; }

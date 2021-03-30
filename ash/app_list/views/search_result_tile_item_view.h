@@ -8,11 +8,15 @@
 #include <memory>
 #include <vector>
 
-#include "ash/app_list/app_list_export.h"
 #include "ash/app_list/views/app_list_menu_model_adapter.h"
 #include "ash/app_list/views/search_result_base_view.h"
+#include "ash/ash_export.h"
 #include "base/macros.h"
 #include "ui/views/context_menu_controller.h"
+
+namespace ui {
+class ImageModel;
+}  // namespace ui
 
 namespace views {
 class ImageView;
@@ -26,18 +30,17 @@ class SearchResult;
 
 // A tile view that displays a search result. It hosts view for search result
 // that has SearchResult::DisplayType DISPLAY_TILE or DISPLAY_RECOMMENDATION.
-class APP_LIST_EXPORT SearchResultTileItemView
+class ASH_EXPORT SearchResultTileItemView
     : public SearchResultBaseView,
       public views::ContextMenuController {
  public:
-  SearchResultTileItemView(AppListViewDelegate* view_delegate,
-                           bool show_in_apps_page);
+  explicit SearchResultTileItemView(AppListViewDelegate* view_delegate);
   ~SearchResultTileItemView() override;
 
   void OnResultChanged() override;
 
   // Overridden from SearchResultBaseView:
-  base::string16 ComputeAccessibleName() const override;
+  std::u16string ComputeAccessibleName() const override;
 
   // Informs the SearchResultTileItemView of its parent's background color. The
   // controls within the SearchResultTileItemView will adapt to suit the given
@@ -83,28 +86,30 @@ class APP_LIST_EXPORT SearchResultTileItemView
   void OnButtonPressed(const ui::Event& event);
 
   void SetIcon(const gfx::ImageSkia& icon);
-  void SetBadgeIcon(const gfx::ImageSkia& badge_icon);
-  void SetTitle(const base::string16& title);
+  void SetBadgeIcon(const ui::ImageModel& badge_icon,
+                    bool use_badge_icon_background);
+  void SetTitle(const std::u16string& title);
   void SetRating(float rating);
-  void SetPrice(const base::string16& price);
+  void SetPrice(const std::u16string& price);
 
   AppListMenuModelAdapter::AppListViewAppType GetAppType() const;
 
   // Whether the tile view is a suggested app.
   bool IsSuggestedAppTile() const;
-  // Whether the tile view is a suggested app and shown in apps page ui.
-  bool IsSuggestedAppTileShownInAppPage() const;
 
   // Records an app being launched.
   void LogAppLaunchForSuggestedApp() const;
 
   void UpdateBackgroundColor();
 
+  // Gets the bounds for the selection ring (shown when the result is selected).
+  gfx::RectF GetSelectionRingBounds() const;
+
   // Overridden from views::View:
   void Layout() override;
   const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
-  base::string16 GetTooltipText(const gfx::Point& p) const override;
+  std::u16string GetTooltipText(const gfx::Point& p) const override;
 
   AppListViewDelegate* const view_delegate_;           // Owned by AppListView.
 
@@ -123,7 +128,6 @@ class APP_LIST_EXPORT SearchResultTileItemView
   // app.
   int group_index_in_container_view_;
   const bool is_app_reinstall_recommendation_enabled_;
-  const bool show_in_apps_page_;  // True if shown in app list's apps page.
 
   // Whether the result view moved into selected state only because a context
   // menu was shown.

@@ -75,7 +75,26 @@ void ReadingListModel::LeavingBatchUpdates() {
     observer.ReadingListModelCompletedBatchUpdates(this);
 }
 
+ReadingListModel::ScopedReadingListBatchUpdate::ScopedReadingListBatchUpdate(
+    ReadingListModel* model)
+    : model_(model) {
+  model->AddObserver(this);
+}
+
 ReadingListModel::ScopedReadingListBatchUpdate::
     ~ScopedReadingListBatchUpdate() {
+  if (model_) {
+    model_->EndBatchUpdates();
+    model_->RemoveObserver(this);
+  }
+}
+
+void ReadingListModel::ScopedReadingListBatchUpdate::ReadingListModelLoaded(
+    const ReadingListModel* model) {}
+
+void ReadingListModel::ScopedReadingListBatchUpdate::
+    ReadingListModelBeingShutdown(const ReadingListModel* model) {
   model_->EndBatchUpdates();
+  model_->RemoveObserver(this);
+  model_ = nullptr;
 }

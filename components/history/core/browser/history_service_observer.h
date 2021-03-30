@@ -64,7 +64,7 @@ class HistoryServiceObserver {
   virtual void OnKeywordSearchTermUpdated(HistoryService* history_service,
                                           const URLRow& row,
                                           KeywordID keyword_id,
-                                          const base::string16& term) {}
+                                          const std::u16string& term) {}
 
   // Sent when a keyword search term is deleted.
   // |url_id| is the id of the url row.

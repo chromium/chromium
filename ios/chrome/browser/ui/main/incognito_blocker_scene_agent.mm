@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/main/incognito_blocker_scene_agent.h"
 
+#import "base/ios/ios_util.h"
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
-#import "ios/chrome/browser/ui/util/multi_window_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -59,7 +59,7 @@
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
   if (level == SceneActivationLevelBackground &&
-      sceneState.incognitoContentVisible) {
+      (sceneState.incognitoContentVisible || sceneState.QRScannerVisible)) {
     // If the current BVC is incognito, or if we are in the tab switcher and
     // there are incognito tabs visible, place a full screen view containing
     // the switcher background to hide any incognito content.
@@ -76,7 +76,7 @@
 - (void)showOverlay {
   NSArray<UIWindow*>* windows = nil;
 
-  if (IsSceneStartupSupported()) {
+  if (base::ios::IsSceneStartupSupported()) {
     if (@available(iOS 13, *)) {
       windows = self.sceneState.scene.windows;
     }

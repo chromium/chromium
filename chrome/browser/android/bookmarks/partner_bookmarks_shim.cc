@@ -125,11 +125,11 @@ bool PartnerBookmarksShim::IsEditable(const BookmarkNode* node) const {
 
 void PartnerBookmarksShim::RemoveBookmark(const BookmarkNode* node) {
   DCHECK(IsEditable(node));
-  RenameBookmark(node, base::string16());
+  RenameBookmark(node, std::u16string());
 }
 
 void PartnerBookmarksShim::RenameBookmark(const BookmarkNode* node,
-                                          const base::string16& title) {
+                                          const std::u16string& title) {
   DCHECK(IsEditable(node));
   const NodeRenamingMapKey key(node->url(), node->GetTitle());
   node_rename_remove_map_[key] = title;
@@ -155,7 +155,7 @@ const BookmarkNode* PartnerBookmarksShim::GetNodeByID(int64_t id) const {
   return GetNodeByID(GetPartnerBookmarksRoot(), id);
 }
 
-base::string16 PartnerBookmarksShim::GetTitle(const BookmarkNode* node) const {
+std::u16string PartnerBookmarksShim::GetTitle(const BookmarkNode* node) const {
   DCHECK(node);
   DCHECK(IsPartnerBookmark(node));
 
@@ -196,7 +196,8 @@ void PartnerBookmarksShim::SetPartnerBookmarksRoot(
 }
 
 PartnerBookmarksShim::NodeRenamingMapKey::NodeRenamingMapKey(
-    const GURL& url, const base::string16& provider_title)
+    const GURL& url,
+    const std::u16string& provider_title)
     : url_(url), provider_title_(provider_title) {}
 
 PartnerBookmarksShim::NodeRenamingMapKey::~NodeRenamingMapKey() {}
@@ -267,8 +268,8 @@ void PartnerBookmarksShim::ReloadNodeMapping() {
     }
 
     std::string url;
-    base::string16 provider_title;
-    base::string16 mapped_title;
+    std::u16string provider_title;
+    std::u16string mapped_title;
     if (!dict->GetString(kMappingUrl, &url) ||
         !dict->GetString(kMappingProviderTitle, &provider_title) ||
         !dict->GetString(kMappingTitle, &mapped_title)) {
@@ -305,7 +306,7 @@ void PartnerBookmarksShim::GetPartnerBookmarksMatchingProperties(
     std::vector<const BookmarkNode*>* nodes) {
   DCHECK(nodes->size() <= max_count);
 
-  std::vector<base::string16> query_words =
+  std::vector<std::u16string> query_words =
       bookmarks::ParseBookmarkQuery(query);
   if (query_words.empty())
     return;

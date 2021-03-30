@@ -23,11 +23,11 @@ namespace chromeos {
 
 class FileFlusher::Job {
  public:
-  Job(const base::WeakPtr<FileFlusher>& master,
+  Job(const base::WeakPtr<FileFlusher>& flusher,
       const base::FilePath& path,
       bool recursive,
       const FileFlusher::OnFlushCallback& on_flush_callback,
-      const base::Closure& callback);
+      base::OnceClosure callback);
   ~Job() = default;
 
   void Start();
@@ -43,14 +43,14 @@ class FileFlusher::Job {
   // Schedule a FinishOnUIThread task to run on the UI thread.
   void ScheduleFinish();
 
-  // Finish the job by notifying |master_| and self destruct on the UI thread.
+  // Finish the job by notifying |flusher_| and self destruct on the UI thread.
   void FinishOnUIThread();
 
-  base::WeakPtr<FileFlusher> master_;
+  base::WeakPtr<FileFlusher> flusher_;
   const base::FilePath path_;
   const bool recursive_;
   const FileFlusher::OnFlushCallback on_flush_callback_;
-  const base::Closure callback_;
+  base::OnceClosure callback_;
 
   bool started_ = false;
   base::AtomicFlag cancel_flag_;
@@ -59,16 +59,16 @@ class FileFlusher::Job {
   DISALLOW_COPY_AND_ASSIGN(Job);
 };
 
-FileFlusher::Job::Job(const base::WeakPtr<FileFlusher>& master,
+FileFlusher::Job::Job(const base::WeakPtr<FileFlusher>& flusher,
                       const base::FilePath& path,
                       bool recursive,
                       const FileFlusher::OnFlushCallback& on_flush_callback,
-                      const base::Closure& callback)
-    : master_(master),
+                      base::OnceClosure callback)
+    : flusher_(flusher),
       path_(path),
       recursive_(recursive),
       on_flush_callback_(on_flush_callback),
-      callback_(callback) {}
+      callback_(std::move(callback)) {}
 
 void FileFlusher::Job::Start() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -93,7 +93,7 @@ void FileFlusher::Job::Cancel() {
 
   cancel_flag_.Set();
 
-  // Cancel() could be called in an iterator/range loop in master thus don't
+  // Cancel() could be called in an iterator/range loop in |flusher_| thus don't
   // invoke FinishOnUIThread in-place.
   if (!started())
     ScheduleFinish();
@@ -135,10 +135,10 @@ void FileFlusher::Job::FinishOnUIThread() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!callback_.is_null())
-    callback_.Run();
+    std::move(callback_).Run();
 
-  if (master_)
-    master_->OnJobDone(this);
+  if (flusher_)
+    flusher_->OnJobDone(this);
 
   delete this;
 }
@@ -146,7 +146,7 @@ void FileFlusher::Job::FinishOnUIThread() {
 ////////////////////////////////////////////////////////////////////////////////
 // FileFlusher
 
-FileFlusher::FileFlusher() {}
+FileFlusher::FileFlusher() = default;
 
 FileFlusher::~FileFlusher() {
   for (auto* job : jobs_)
@@ -155,14 +155,14 @@ FileFlusher::~FileFlusher() {
 
 void FileFlusher::RequestFlush(const base::FilePath& path,
                                bool recursive,
-                               const base::Closure& callback) {
+                               base::OnceClosure callback) {
   for (auto* job : jobs_) {
     if (path == job->path() || path.IsParent(job->path()))
       job->Cancel();
   }
 
   jobs_.push_back(new Job(weak_factory_.GetWeakPtr(), path, recursive,
-                          on_flush_callback_for_test_, callback));
+                          on_flush_callback_for_test_, std::move(callback)));
   ScheduleJob();
 }
 

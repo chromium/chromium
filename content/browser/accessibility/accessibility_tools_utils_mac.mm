@@ -50,6 +50,55 @@ NSArray* ChildrenOf(const id node) {
   return nil;
 }
 
+NSSize SizeOf(const id node) {
+  if (IsBrowserAccessibilityCocoa(node)) {
+    return [[static_cast<BrowserAccessibilityCocoa*>(node) size] sizeValue];
+  }
+
+  if (!IsAXUIElement(node)) {
+    NOTREACHED()
+        << "Only AXUIElementRef and BrowserAccessibilityCocoa are supported.";
+    return NSMakeSize(0, 0);
+  }
+
+  id value = AttributeValueOf(node, NSAccessibilitySizeAttribute);
+  if (value && CFGetTypeID(value) == AXValueGetTypeID()) {
+    AXValueType type = AXValueGetType(static_cast<AXValueRef>(value));
+    if (type == kAXValueCGSizeType) {
+      NSSize size;
+      if (AXValueGetValue(static_cast<AXValueRef>(value), type, &size)) {
+        return size;
+      }
+    }
+  }
+  return NSMakeSize(0, 0);
+}
+
+NSPoint PositionOf(const id node) {
+  if (IsBrowserAccessibilityCocoa(node)) {
+    return
+        [[static_cast<BrowserAccessibilityCocoa*>(node) position] pointValue];
+  }
+
+  if (!IsAXUIElement(node)) {
+    NOTREACHED()
+        << "Only AXUIElementRef and BrowserAccessibilityCocoa are supported.";
+    return NSMakePoint(0, 0);
+  }
+
+  id value = AttributeValueOf(node, NSAccessibilityPositionAttribute);
+  if (value && CFGetTypeID(value) == AXValueGetTypeID()) {
+    AXValueType type = AXValueGetType(static_cast<AXValueRef>(value));
+    if (type == kAXValueCGPointType) {
+      NSPoint point;
+      if (AXValueGetValue(static_cast<AXValueRef>(value), type, &point)) {
+        return point;
+      }
+    }
+  }
+  return NSMakePoint(0, 0);
+}
+
 NSArray* AttributeNamesOf(const id node) {
   if (IsBrowserAccessibilityCocoa(node))
     return [node accessibilityAttributeNames];
@@ -189,6 +238,10 @@ std::pair<AXUIElementRef, int> FindAXUIElement(const AXTreeSelector& selector) {
     title = kFirefoxTitle;
   } else if (selector.types & AXTreeSelector::Safari) {
     title = kSafariTitle;
+  } else {
+    LOG(ERROR) << selector.AppName()
+               << " application is not supported on the system";
+    return {nil, 0};
   }
 
   for (NSDictionary* window_info in windows) {

@@ -226,6 +226,11 @@ std::map<uint64_t, NativeWidgetNSWindowBridge*>& GetIdToWidgetImplMap() {
   return *id_map;
 }
 
+std::map<NSWindow*, std::u16string>& GetPendingWindowTitleMap() {
+  static base::NoDestructor<std::map<NSWindow*, std::u16string>> map;
+  return *map;
+}
+
 }  // namespace
 
 // static
@@ -313,6 +318,7 @@ NativeWidgetNSWindowBridge::NativeWidgetNSWindowBridge(
 
 NativeWidgetNSWindowBridge::~NativeWidgetNSWindowBridge() {
   display::Screen::GetScreen()->RemoveObserver(this);
+  GetPendingWindowTitleMap().erase(window_.get());
   // The delegate should be cleared already. Note this enforces the precondition
   // that -[NSWindow close] is invoked on the hosted window before the
   // destructor is called.
@@ -1028,7 +1034,8 @@ void NativeWidgetNSWindowBridge::OnShowAnimationComplete() {
   show_animation_.reset();
 }
 
-void NativeWidgetNSWindowBridge::InitCompositorView() {
+void NativeWidgetNSWindowBridge::InitCompositorView(
+    InitCompositorViewCallback callback) {
   // Use the regular window background for window modal sheets. The layer will
   // still paint over most of it, but the native -[NSApp beginSheet:] animation
   // blocks the UI thread, so there's no way to invalidate the shadow to match
@@ -1053,6 +1060,9 @@ void NativeWidgetNSWindowBridge::InitCompositorView() {
   // will be forwarded.
   UpdateWindowDisplay();
   UpdateWindowGeometry();
+
+  // Inform the browser of the CGWindowID for this NSWindow.
+  std::move(callback).Run([window_ windowNumber]);
 }
 
 void NativeWidgetNSWindowBridge::SortSubviews(
@@ -1263,9 +1273,30 @@ void NativeWidgetNSWindowBridge::MakeFirstResponder() {
   [window_ makeFirstResponder:bridged_view_];
 }
 
-void NativeWidgetNSWindowBridge::SetWindowTitle(const base::string16& title) {
-  NSString* new_title = base::SysUTF16ToNSString(title);
-  [window_ setTitle:new_title];
+void NativeWidgetNSWindowBridge::SetWindowTitle(const std::u16string& title) {
+  // Delay setting the window title until after any menu tracking is complete.
+  if (NSRunLoop.currentRunLoop.currentMode == NSEventTrackingRunLoopMode) {
+    // Install one run loop trigger to handle all the pending titles.
+    if (GetPendingWindowTitleMap().empty()) {
+      CFRunLoopPerformBlock(
+          [NSRunLoop.currentRunLoop getCFRunLoop], kCFRunLoopDefaultMode, ^{
+            for (const auto& pending_title : GetPendingWindowTitleMap()) {
+              pending_title.first.title =
+                  base::SysUTF16ToNSString(pending_title.second);
+            }
+
+            GetPendingWindowTitleMap().clear();
+          });
+    }
+
+    GetPendingWindowTitleMap()[window_.get()] = title;
+  } else {
+    window_.get().title = base::SysUTF16ToNSString(title);
+
+    // In case there is an unfired run loop trigger, erase any pending title so
+    // that the new title now being set doesn't get smashed.
+    GetPendingWindowTitleMap().erase(window_.get());
+  }
 }
 
 void NativeWidgetNSWindowBridge::ClearTouchBar() {

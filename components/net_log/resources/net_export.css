@@ -54,3 +54,7 @@ h2 {
   padding: 0.5em;
   line-height: 1.5em;
 }
+
+#log-max-filesize {
+  width: 4em;
+}

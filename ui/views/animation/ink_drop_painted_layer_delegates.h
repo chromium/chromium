@@ -35,10 +35,11 @@ class VIEWS_EXPORT BasePaintedLayerDelegate : public ui::LayerDelegate {
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                   float new_device_scale_factor) override;
 
+  SkColor color() const { return color_; }
+  void set_color(SkColor color) { color_ = color; }
+
  protected:
   explicit BasePaintedLayerDelegate(SkColor color);
-
-  SkColor color() const { return color_; }
 
  private:
   // The color to paint.

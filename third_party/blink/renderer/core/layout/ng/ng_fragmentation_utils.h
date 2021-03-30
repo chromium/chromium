@@ -18,6 +18,7 @@
 
 namespace blink {
 
+class NGEarlyBreak;
 class NGLayoutResult;
 
 // Join two adjacent break values specified on break-before and/or break-
@@ -66,6 +67,25 @@ NGBreakAppeal CalculateBreakAppealInside(const NGConstraintSpace& space,
                                          NGBlockNode child,
                                          const NGLayoutResult&);
 
+// To ensure content progression, we need fragmentainers to hold something
+// larger than 0. The spec says that fragmentainers have to accept at least 1px
+// of content. See https://www.w3.org/TR/css-break-3/#breaking-rules
+inline LayoutUnit ClampedToValidFragmentainerCapacity(LayoutUnit length) {
+  return std::max(length, LayoutUnit(1));
+}
+
+// Return the fragmentainer block-size to use during layout. This is normally
+// the same as the block-size we'll give to the fragment itself, but in order to
+// ensure content progression, we need fragmentainers to hold something larger
+// than 0 (even if the final fragentainer size may very well be 0). The spec
+// says that fragmentainers have to accept at least 1px of content. See
+// https://www.w3.org/TR/css-break-3/#breaking-rules
+inline LayoutUnit FragmentainerCapacity(const NGConstraintSpace& space) {
+  if (!space.HasKnownFragmentainerBlockSize())
+    return kIndefiniteSize;
+  return ClampedToValidFragmentainerCapacity(space.FragmentainerBlockSize());
+}
+
 // Return the block space that was available in the current fragmentainer at the
 // start of the current block formatting context. Note that if the start of the
 // current block formatting context is in a previous fragmentainer, the size of
@@ -75,7 +95,7 @@ NGBreakAppeal CalculateBreakAppealInside(const NGConstraintSpace& space,
 inline LayoutUnit FragmentainerSpaceAtBfcStart(const NGConstraintSpace& space) {
   if (!space.HasKnownFragmentainerBlockSize())
     return kIndefiniteSize;
-  return space.FragmentainerBlockSize() - space.FragmentainerOffsetAtBfc();
+  return FragmentainerCapacity(space) - space.FragmentainerOffsetAtBfc();
 }
 
 // Adjust margins to take fragmentation into account. Leading/trailing block
@@ -258,6 +278,19 @@ bool AttemptSoftBreak(const NGConstraintSpace&,
                       NGBreakAppeal appeal_before,
                       NGBoxFragmentBuilder*);
 
+// If we have an previously found break point, and we're entering an ancestor of
+// the node we're going to break before, return the early break inside. This can
+// then be passed to child layout, so that child layout eventually can tell
+// where to insert the break.
+const NGEarlyBreak* EnterEarlyBreakInChild(const NGBlockNode& child,
+                                           const NGEarlyBreak&);
+
+// Return true if this is the child that we had previously determined to break
+// before.
+bool IsEarlyBreakTarget(const NGEarlyBreak&,
+                        const NGBoxFragmentBuilder&,
+                        const NGLayoutInputNode& child);
+
 // Calculate the constraint space for columns of a multi-column layout.
 NGConstraintSpace CreateConstraintSpaceForColumns(
     const NGConstraintSpace& parent_space,
@@ -265,6 +298,13 @@ NGConstraintSpace CreateConstraintSpaceForColumns(
     LogicalSize percentage_resolution_size,
     bool allow_discard_start_margin,
     bool balance_columns);
+
+// Calculate the container builder and constraint space for a multicol.
+NGBoxFragmentBuilder CreateContainerBuilderForMulticol(
+    const NGBlockNode& multicol,
+    const NGConstraintSpace& space,
+    const NGFragmentGeometry& fragment_geometry);
+NGConstraintSpace CreateConstraintSpaceForMulticol(const NGBlockNode& multicol);
 
 // Return the adjusted child margin to be applied at the end of a fragment.
 // Margins should collapse with the fragmentainer boundary. |bfc_block_offset|

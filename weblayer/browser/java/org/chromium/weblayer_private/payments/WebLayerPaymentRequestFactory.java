@@ -17,14 +17,13 @@ import org.chromium.components.payments.PaymentRequestServiceUtil;
 import org.chromium.components.payments.PrefsStrings;
 import org.chromium.components.payments.SslValidityChecker;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.FeaturePolicyFeature;
+import org.chromium.content_public.browser.PermissionsPolicyFeature;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsStatics;
-import org.chromium.mojo.system.MojoException;
-import org.chromium.mojo.system.MojoResult;
 import org.chromium.payments.mojom.PaymentRequest;
 import org.chromium.services.service_manager.InterfaceFactory;
+import org.chromium.url.GURL;
 import org.chromium.weblayer_private.ProfileImpl;
 import org.chromium.weblayer_private.TabImpl;
 
@@ -63,7 +62,7 @@ public class WebLayerPaymentRequestFactory implements InterfaceFactory<PaymentRe
                     PaymentRequestServiceUtil.getLiveWebContents(mRenderFrameHost);
             if (webContents == null || webContents.isDestroyed()) return null;
 
-            String url = webContents.getLastCommittedUrl();
+            GURL url = webContents.getLastCommittedUrl();
             if (url == null || !OriginSecurityChecker.isSchemeCryptographic(url)) {
                 return null;
             }
@@ -105,9 +104,8 @@ public class WebLayerPaymentRequestFactory implements InterfaceFactory<PaymentRe
     @Override
     public PaymentRequest createImpl() {
         if (mRenderFrameHost == null) return new InvalidPaymentRequest();
-        if (!mRenderFrameHost.isFeatureEnabled(FeaturePolicyFeature.PAYMENT)) {
-            mRenderFrameHost.getRemoteInterfaces().onConnectionError(
-                    new MojoException(MojoResult.PERMISSION_DENIED));
+        if (!mRenderFrameHost.isFeatureEnabled(PermissionsPolicyFeature.PAYMENT)) {
+            mRenderFrameHost.terminateRendererDueToBadMessage(241 /*PAYMENTS_WITHOUT_PERMISSION*/);
             return null;
         }
 

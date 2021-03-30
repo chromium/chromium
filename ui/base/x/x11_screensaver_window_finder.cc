@@ -31,7 +31,7 @@ bool ScreensaverWindowFinder::ScreensaverWindowExists() {
       {x11::ScreenSaver::major_version, x11::ScreenSaver::minor_version});
 
   auto reply =
-      connection->screensaver().QueryInfo({connection->default_root()}).Sync();
+      connection->screensaver().QueryInfo(connection->default_root()).Sync();
   if (reply && static_cast<x11::ScreenSaver::State>(reply->state) ==
                    x11::ScreenSaver::State::On) {
     return true;

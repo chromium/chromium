@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -46,6 +47,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extension_message_bubble_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/crx_file/crx_verifier.h"
@@ -57,6 +59,7 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/browsertest_util.h"
@@ -67,6 +70,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/notification_types.h"
+#include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/browser/updater/extension_cache_fake.h"
@@ -74,14 +78,19 @@
 #include "extensions/common/extension_set.h"
 #include "extensions/common/file_test_util.h"
 #include "extensions/common/file_util.h"
+#include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/switches.h"
 #include "extensions/common/value_builder.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/constants/chromeos_switches.h"
+#include "ash/constants/ash_switches.h"
 #endif
 
+using extensions::mojom::ManifestLocation;
+
 namespace extensions {
+
+using extensions::service_worker_test_utils::TestRegistrationObserver;
 
 namespace {
 
@@ -276,6 +285,8 @@ void ExtensionBrowserTest::SetUpOnMainThread() {
   test_protocol_handler_ = base::BindRepeating(
       &ExtensionProtocolTestResourcesHandler, GetTestResourcesParentDir());
   SetExtensionProtocolTestHandler(&test_protocol_handler_);
+  content::URLDataSource::Add(profile(),
+                              std::make_unique<ThemeSource>(profile()));
 }
 
 void ExtensionBrowserTest::TearDownOnMainThread() {
@@ -286,55 +297,86 @@ void ExtensionBrowserTest::TearDownOnMainThread() {
 
 const Extension* ExtensionBrowserTest::LoadExtension(
     const base::FilePath& path) {
-  return LoadExtensionWithFlags(path, kFlagEnableFileAccess);
+  return LoadExtension(path, {});
 }
 
-const Extension* ExtensionBrowserTest::LoadExtensionIncognito(
-    const base::FilePath& path) {
-  return LoadExtensionWithFlags(path,
-                                kFlagEnableFileAccess | kFlagEnableIncognito);
-}
+const Extension* ExtensionBrowserTest::LoadExtension(
+    const base::FilePath& path,
+    const LoadOptions& options) {
+  ChromeTestExtensionLoader loader(profile());
+  loader.set_allow_incognito_access(options.allow_in_incognito);
+  loader.set_allow_file_access(options.allow_file_access);
+  loader.set_ignore_manifest_warnings(options.ignore_manifest_warnings);
+  loader.set_require_modern_manifest_version(
+      options.require_modern_manifest_version);
+  if (options.load_for_login_screen) {
+    loader.add_creation_flag(Extension::FOR_LOGIN_SCREEN);
+    loader.set_location(ManifestLocation::kExternalPolicy);
+  }
+  loader.set_wait_for_renderers(options.wait_for_renderers);
 
-const Extension* ExtensionBrowserTest::LoadExtensionWithFlags(
-    const base::FilePath& path, int flags) {
+  if (options.install_param != nullptr) {
+    loader.set_install_param(options.install_param);
+  }
+  // Attempt to convert the extension to run as a Service Worker-based
+  // extension if requested.
   base::FilePath extension_path = path;
-  if (flags & kFlagRunAsServiceWorkerBasedExtension) {
+  if (options.load_as_service_worker) {
     if (!CreateServiceWorkerBasedExtension(path, &extension_path))
       return nullptr;
   }
-  return LoadExtensionWithInstallParam(extension_path, flags, std::string());
+
+  std::unique_ptr<TestRegistrationObserver> registration_observer;
+
+  if (options.wait_for_registration_stored) {
+    registration_observer =
+        std::make_unique<TestRegistrationObserver>(profile_);
+  }
+
+  scoped_refptr<const Extension> extension =
+      loader.LoadExtension(extension_path);
+  if (extension)
+    observer_->set_last_loaded_extension_id(extension->id());
+
+  if (options.wait_for_registration_stored &&
+      BackgroundInfo::IsServiceWorkerBased(extension.get())) {
+    registration_observer->WaitForRegistrationStored();
+  }
+
+  return extension.get();
 }
 
 const Extension* ExtensionBrowserTest::LoadExtensionWithInstallParam(
     const base::FilePath& path,
     int flags,
     const std::string& install_param) {
-  // Make sure there aren't any stray bits in "flags." This could happen
-  // if someone inadvertently used any of the ExtensionApiTest flag values.
-  CHECK_LT(flags, kFlagNextValue);
-  ChromeTestExtensionLoader loader(profile());
-  loader.set_require_modern_manifest_version(
-      (flags & kFlagAllowOldManifestVersions) == 0);
-  loader.set_ignore_manifest_warnings(flags & kFlagIgnoreManifestWarnings);
-  loader.set_allow_incognito_access(flags & kFlagEnableIncognito);
-  loader.set_allow_file_access(flags & kFlagEnableFileAccess);
+  LoadOptions options;
+  if (flags & kFlagEnableIncognito) {
+    options.allow_in_incognito = true;
+  }
+  if (flags & kFlagEnableFileAccess) {
+    options.allow_file_access = true;
+  }
+  if (flags & kFlagIgnoreManifestWarnings) {
+    options.ignore_manifest_warnings = true;
+  }
+  if (flags & kFlagAllowOldManifestVersions) {
+    options.require_modern_manifest_version = false;
+  }
+  if (flags & kFlagLoadForLoginScreen) {
+    options.load_for_login_screen = true;
+  }
+  if (flags & kFlagRunAsServiceWorkerBasedExtension) {
+    options.load_as_service_worker = true;
+  }
+  if (flags & kFlagDontWaitForExtensionRenderers) {
+    options.wait_for_renderers = false;
+  }
   if (!install_param.empty()) {
-    loader.set_install_param(install_param);
+    options.install_param = install_param.c_str();
   }
 
-  // Note: Rely on the default value to wait for renderers unless otherwise
-  // specified.
-  if (flags & kFlagDontWaitForExtensionRenderers)
-    loader.set_wait_for_renderers(false);
-
-  if ((flags & kFlagLoadForLoginScreen) != 0) {
-    loader.add_creation_flag(Extension::FOR_LOGIN_SCREEN);
-    loader.set_location(Manifest::EXTERNAL_POLICY);
-  }
-  scoped_refptr<const Extension> extension = loader.LoadExtension(path);
-  if (extension)
-    observer_->set_last_loaded_extension_id(extension->id());
-  return extension.get();
+  return LoadExtension(path, options);
 }
 
 bool ExtensionBrowserTest::CreateServiceWorkerBasedExtension(
@@ -401,7 +443,7 @@ bool ExtensionBrowserTest::CreateServiceWorkerBasedExtension(
     return false;
   }
 
-  // Number of JS scripts must be > 1.
+  // Number of JS scripts must be >= 1.
   base::Value::ConstListView scripts_list = background_scripts_list->GetList();
   if (scripts_list.size() < 1) {
     ADD_FAILURE() << path.value()
@@ -569,16 +611,17 @@ const Extension* ExtensionBrowserTest::UpdateExtensionWaitForIdle(
     const base::FilePath& path,
     int expected_change) {
   return InstallOrUpdateExtension(id, path, INSTALL_UI_TYPE_NONE,
-                                  expected_change, Manifest::INTERNAL,
+                                  expected_change, ManifestLocation::kInternal,
                                   browser(), Extension::NO_FLAGS, false, false);
 }
 
 const Extension* ExtensionBrowserTest::InstallExtensionFromWebstore(
     const base::FilePath& path,
     int expected_change) {
-  return InstallOrUpdateExtension(
-      std::string(), path, INSTALL_UI_TYPE_AUTO_CONFIRM, expected_change,
-      Manifest::INTERNAL, browser(), Extension::FROM_WEBSTORE, true, false);
+  return InstallOrUpdateExtension(std::string(), path,
+                                  INSTALL_UI_TYPE_AUTO_CONFIRM, expected_change,
+                                  ManifestLocation::kInternal, browser(),
+                                  Extension::FROM_WEBSTORE, true, false);
 }
 
 const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
@@ -587,7 +630,7 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
     InstallUIType ui_type,
     int expected_change) {
   return InstallOrUpdateExtension(id, path, ui_type, expected_change,
-                                  Manifest::INTERNAL, browser(),
+                                  ManifestLocation::kInternal, browser(),
                                   Extension::NO_FLAGS, true, false);
 }
 
@@ -599,8 +642,8 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
     Browser* browser,
     Extension::InitFromValueFlags creation_flags) {
   return InstallOrUpdateExtension(id, path, ui_type, expected_change,
-                                  Manifest::INTERNAL, browser, creation_flags,
-                                  true, false);
+                                  ManifestLocation::kInternal, browser,
+                                  creation_flags, true, false);
 }
 
 const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
@@ -608,7 +651,7 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
     const base::FilePath& path,
     InstallUIType ui_type,
     int expected_change,
-    Manifest::Location install_source) {
+    ManifestLocation install_source) {
   return InstallOrUpdateExtension(id, path, ui_type, expected_change,
                                   install_source, browser(),
                                   Extension::NO_FLAGS, true, false);
@@ -619,7 +662,7 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
     const base::FilePath& path,
     InstallUIType ui_type,
     int expected_change,
-    Manifest::Location install_source,
+    ManifestLocation install_source,
     Browser* browser,
     Extension::InitFromValueFlags creation_flags,
     bool install_immediately,
@@ -647,7 +690,7 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
       int run_flags = ExtensionCreator::kNoRunFlags;
       if (creation_flags & Extension::FROM_BOOKMARK) {
         run_flags = ExtensionCreator::kBookmarkApp;
-        if (install_source == Manifest::EXTERNAL_COMPONENT)
+        if (install_source == ManifestLocation::kExternalComponent)
           run_flags |= ExtensionCreator::kSystemApp;
       }
 
@@ -693,7 +736,7 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
       VLOG(1) << "  " << extension->id();
 
     VLOG(1) << "Errors follow:";
-    const std::vector<base::string16>* errors =
+    const std::vector<std::u16string>* errors =
         LoadErrorReporter::GetInstance()->GetErrors();
     for (auto iter = errors->begin(); iter != errors->end(); ++iter)
       VLOG(1) << *iter;

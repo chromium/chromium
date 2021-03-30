@@ -70,6 +70,7 @@ class BrowserPersister : public sessions::CommandStorageManagerDelegate,
   bool ShouldUseDelayedSave() override;
   void OnWillSaveCommands() override;
   void OnGeneratedNewCryptoKey(const std::vector<uint8_t>& key) override;
+  void OnErrorWritingSessionCommands() override;
 
   // BrowserObserver;
   void OnTabAdded(Tab* tab) override;
@@ -103,8 +104,9 @@ class BrowserPersister : public sessions::CommandStorageManagerDelegate,
   void ScheduleRebuildOnNextSave();
 
   // Called with the contents of the previous session.
-  void OnGotCurrentSessionCommands(
-      std::vector<std::unique_ptr<sessions::SessionCommand>> commands);
+  void OnGotLastSessionCommands(
+      std::vector<std::unique_ptr<sessions::SessionCommand>> commands,
+      bool read_error);
 
   // Schedules commands to recreate the state of the specified tab.
   void BuildCommandsForTab(TabImpl* tab, int index_in_window);

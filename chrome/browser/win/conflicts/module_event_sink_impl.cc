@@ -45,7 +45,7 @@ bool GetModulePath(base::ProcessHandle process,
     temp_path.resize(2 * temp_path.size());
   }
 
-  *path = base::FilePath(base::StringPiece16(temp_path.data(), length));
+  *path = base::FilePath(base::WStringPiece(temp_path.data(), length));
   return true;
 }
 

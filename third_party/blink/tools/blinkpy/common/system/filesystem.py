@@ -30,10 +30,10 @@
 A FileSystem object can be used to represent dependency on the
 filesystem, and can be replaced with a MockFileSystem in tests.
 """
+from __future__ import unicode_literals
 
 import codecs
 import errno
-import exceptions
 import glob
 import hashlib
 import logging
@@ -44,6 +44,12 @@ import subprocess
 import sys
 import tempfile
 import time
+
+try:
+    import exceptions
+except ImportError:
+    # In py3, exceptions were moved into builtins
+    import builtins as exceptions
 
 _log = logging.getLogger(__name__)
 
@@ -75,7 +81,7 @@ class FileSystem(object):
         """
         if sys.platform == 'win32' and len(path) >= self.WINDOWS_MAX_PATH:
             assert not path.startswith(r'\\'), "must not already be UNC"
-            return ur'\\?\%s' % (self.abspath(path), )
+            return r'\\?\%s' % (self.abspath(path), )
         return path
 
     def abspath(self, path):
@@ -241,10 +247,10 @@ class FileSystem(object):
         return f, temp_name
 
     def open_binary_file_for_reading(self, path):
-        return file(self._path_for_access(path), 'rb')
+        return open(self._path_for_access(path), 'rb')
 
     def open_binary_file_for_writing(self, path):
-        return file(self._path_for_access(path), 'wb')
+        return open(self._path_for_access(path), 'wb')
 
     def read_binary_file(self, path):
         """Returns the contents of the file as a byte string."""
@@ -275,6 +281,9 @@ class FileSystem(object):
 
     def open_text_file_for_writing(self, path):
         return codecs.open(self._path_for_access(path), 'w', 'utf8')
+
+    def open_text_file_for_appending(self, path):
+        return codecs.open(self._path_for_access(path), 'a', 'utf8')
 
     def read_text_file(self, path):
         """Returns the contents of the file as a Unicode string.

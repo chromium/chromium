@@ -493,7 +493,6 @@ void FeatureInfo::InitializeFeatures() {
   // changed on another decoder that does expose them.
   ScopedPixelUnpackBufferOverride scoped_pbo_override(has_pixel_buffers, 0);
 
-  AddExtensionString("GL_ANGLE_translated_shader_source");
   AddExtensionString("GL_CHROMIUM_async_pixel_transfers");
   AddExtensionString("GL_CHROMIUM_bind_uniform_location");
   AddExtensionString("GL_CHROMIUM_color_space_metadata");
@@ -524,6 +523,16 @@ void FeatureInfo::InitializeFeatures() {
 
   if (gfx::HasExtension(extensions, "GL_ANGLE_translated_shader_source")) {
     feature_flags_.angle_translated_shader_source = true;
+  }
+
+  // The validating command decoder always supports
+  // ANGLE_translated_shader_source regardless of the underlying context. But
+  // passthrough relies on the underlying ANGLE context which can't always
+  // support it (e.g. on Vulkan shaders are translated directly to binary
+  // SPIR-V).
+  if (!is_passthrough_cmd_decoder_ ||
+      feature_flags_.angle_translated_shader_source) {
+    AddExtensionString("GL_ANGLE_translated_shader_source");
   }
 
   // Check if we should allow GL_EXT_texture_compression_dxt1 and
@@ -946,11 +955,11 @@ void FeatureInfo::InitializeFeatures() {
         enable_texture_storage = false;
         break;
       case CONTEXT_TYPE_OPENGLES3:
+      case CONTEXT_TYPE_OPENGLES31_FOR_TESTING:
         enable_texture_format_bgra8888 = false;
         break;
       case CONTEXT_TYPE_WEBGL1:
       case CONTEXT_TYPE_WEBGL2:
-      case CONTEXT_TYPE_WEBGL2_COMPUTE:
       case CONTEXT_TYPE_WEBGPU:
         break;
     }
@@ -2085,8 +2094,8 @@ bool FeatureInfo::IsWebGL2OrES3OrHigherContext() const {
   return IsWebGL2OrES3OrHigherContextType(context_type_);
 }
 
-bool FeatureInfo::IsWebGL2ComputeContext() const {
-  return IsWebGL2ComputeContextType(context_type_);
+bool FeatureInfo::IsES31ForTestingContext() const {
+  return IsES31ForTestingContextType(context_type_);
 }
 
 void FeatureInfo::AddExtensionString(const base::StringPiece& extension) {

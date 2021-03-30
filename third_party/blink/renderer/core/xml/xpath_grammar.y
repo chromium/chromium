@@ -269,7 +269,7 @@ NodeTest:
 OptionalPredicateList:
     /* empty */
     {
-      $$ = 0;
+      $$ = nullptr;
     }
     |
     PredicateList

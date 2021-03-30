@@ -16,16 +16,24 @@
 #include "base/strings/string_piece.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/blocked_content/popup_blocker.h"
 #include "components/captive_portal/core/buildflags.h"
+#include "components/content_capture/browser/content_capture_receiver_manager.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/embedder_support/content_settings_utils.h"
 #include "components/embedder_support/switches.h"
+#include "components/embedder_support/user_agent_utils.h"
+#include "components/error_page/common/error.h"
+#include "components/error_page/common/localized_error.h"
 #include "components/error_page/content/browser/net_error_auto_reloader.h"
 #include "components/network_time/network_time_tracker.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/no_state_prefetch/common/prerender_url_loader_throttle.h"
 #include "components/page_load_metrics/browser/metrics_navigation_throttle.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
+#include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "components/permissions/quota_permission_context_impl.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -75,6 +83,7 @@
 #include "url/url_constants.h"
 #include "weblayer/browser/browser_main_parts_impl.h"
 #include "weblayer/browser/browser_process.h"
+#include "weblayer/browser/cookie_settings_factory.h"
 #include "weblayer/browser/download_manager_delegate_impl.h"
 #include "weblayer/browser/feature_list_creator.h"
 #include "weblayer/browser/host_content_settings_map_factory.h"
@@ -82,7 +91,7 @@
 #include "weblayer/browser/navigation_controller_impl.h"
 #include "weblayer/browser/navigation_error_navigation_throttle.h"
 #include "weblayer/browser/navigation_ui_data_impl.h"
-#include "weblayer/browser/no_state_prefetch/prerender_manager_factory.h"
+#include "weblayer/browser/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "weblayer/browser/no_state_prefetch/prerender_utils.h"
 #include "weblayer/browser/page_specific_content_settings_delegate.h"
 #include "weblayer/browser/password_manager_driver_factory.h"
@@ -91,7 +100,6 @@
 #include "weblayer/browser/signin_url_loader_throttle.h"
 #include "weblayer/browser/system_network_context_manager.h"
 #include "weblayer/browser/tab_impl.h"
-#include "weblayer/browser/user_agent.h"
 #include "weblayer/browser/web_contents_view_delegate_impl.h"
 #include "weblayer/browser/weblayer_browser_interface_binders.h"
 #include "weblayer/browser/weblayer_security_blocking_page_factory.h"
@@ -135,7 +143,9 @@
 #include "weblayer/browser/weblayer_factory_impl_android.h"
 #endif
 
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_ANDROID)
 #include "content/public/common/content_descriptors.h"
 #endif
 
@@ -181,6 +191,11 @@ bool IsNetworkErrorAutoReloadEnabled() {
 }
 
 bool IsInHostedApp(content::WebContents* web_contents) {
+  return false;
+}
+
+bool ShouldIgnoreInterstitialBecauseNavigationDefaultedToHttps(
+    content::NavigationHandle* handle) {
   return false;
 }
 
@@ -256,7 +271,7 @@ void RegisterPrefs(PrefRegistrySimple* pref_registry) {
 mojo::PendingRemote<prerender::mojom::PrerenderCanceler> GetPrerenderCanceler(
     content::WebContents* web_contents) {
   mojo::PendingRemote<prerender::mojom::PrerenderCanceler> canceler;
-  weblayer::PrerenderContentsFromWebContents(web_contents)
+  weblayer::NoStatePrefetchContentsFromWebContents(web_contents)
       ->AddPrerenderCancelerReceiver(canceler.InitWithNewPipeAndPassReceiver());
   return canceler;
 }
@@ -265,8 +280,6 @@ mojo::PendingRemote<prerender::mojom::PrerenderCanceler> GetPrerenderCanceler(
 
 ContentBrowserClientImpl::ContentBrowserClientImpl(MainParams* params)
     : params_(params) {
-  if (!SystemNetworkContextManager::HasInstance())
-    SystemNetworkContextManager::CreateInstance(GetUserAgent());
 }
 
 ContentBrowserClientImpl::~ContentBrowserClientImpl() = default;
@@ -293,9 +306,80 @@ std::string ContentBrowserClientImpl::GetAcceptLangs(
   return i18n::GetAcceptLangs();
 }
 
+bool ContentBrowserClientImpl::AllowAppCache(
+    const GURL& manifest_url,
+    const GURL& site_for_cookies,
+    const base::Optional<url::Origin>& top_frame_origin,
+    content::BrowserContext* context) {
+  return embedder_support::AllowAppCache(
+      manifest_url, site_for_cookies, top_frame_origin,
+      CookieSettingsFactory::GetForBrowserContext(context).get());
+}
+
+content::AllowServiceWorkerResult ContentBrowserClientImpl::AllowServiceWorker(
+    const GURL& scope,
+    const GURL& site_for_cookies,
+    const base::Optional<url::Origin>& top_frame_origin,
+    const GURL& script_url,
+    content::BrowserContext* context) {
+  return embedder_support::AllowServiceWorker(
+      scope, site_for_cookies, top_frame_origin,
+      CookieSettingsFactory::GetForBrowserContext(context).get(),
+      HostContentSettingsMapFactory::GetForBrowserContext(context));
+}
+
+bool ContentBrowserClientImpl::AllowSharedWorker(
+    const GURL& worker_url,
+    const GURL& site_for_cookies,
+    const base::Optional<url::Origin>& top_frame_origin,
+    const std::string& name,
+    const url::Origin& constructor_origin,
+    content::BrowserContext* context,
+    int render_process_id,
+    int render_frame_id) {
+  return embedder_support::AllowSharedWorker(
+      worker_url, site_for_cookies, top_frame_origin,
+      CookieSettingsFactory::GetForBrowserContext(context).get());
+}
+
+void ContentBrowserClientImpl::AllowWorkerFileSystem(
+    const GURL& url,
+    content::BrowserContext* browser_context,
+    const std::vector<content::GlobalFrameRoutingId>& render_frames,
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(embedder_support::AllowWorkerFileSystem(
+      url, CookieSettingsFactory::GetForBrowserContext(browser_context).get()));
+}
+
+bool ContentBrowserClientImpl::AllowWorkerIndexedDB(
+    const GURL& url,
+    content::BrowserContext* browser_context,
+    const std::vector<content::GlobalFrameRoutingId>& render_frames) {
+  return embedder_support::AllowWorkerIndexedDB(
+      url, CookieSettingsFactory::GetForBrowserContext(browser_context).get());
+}
+
+bool ContentBrowserClientImpl::AllowWorkerCacheStorage(
+    const GURL& url,
+    content::BrowserContext* browser_context,
+    const std::vector<content::GlobalFrameRoutingId>& render_frames) {
+  return embedder_support::AllowWorkerCacheStorage(
+      url, CookieSettingsFactory::GetForBrowserContext(browser_context).get());
+}
+
+bool ContentBrowserClientImpl::AllowWorkerWebLocks(
+    const GURL& url,
+    content::BrowserContext* browser_context,
+    const std::vector<content::GlobalFrameRoutingId>& render_frames) {
+  return embedder_support::AllowWorkerWebLocks(
+      url, CookieSettingsFactory::GetForBrowserContext(browser_context).get());
+}
+
 content::WebContentsViewDelegate*
 ContentBrowserClientImpl::GetWebContentsViewDelegate(
     content::WebContents* web_contents) {
+  performance_manager::PerformanceManagerRegistry::GetInstance()
+      ->MaybeCreatePageNodeForWebContents(web_contents);
   return new WebContentsViewDelegateImpl(web_contents);
 }
 
@@ -321,24 +405,22 @@ void ContentBrowserClientImpl::LogWebFeatureForCurrentPage(
 }
 
 std::string ContentBrowserClientImpl::GetProduct() {
-  return weblayer::GetProduct();
+  return embedder_support::GetProduct();
 }
 
 std::string ContentBrowserClientImpl::GetUserAgent() {
-  return weblayer::GetUserAgent();
+  return embedder_support::GetUserAgent();
 }
 
 blink::UserAgentMetadata ContentBrowserClientImpl::GetUserAgentMetadata() {
-  return weblayer::GetUserAgentMetadata();
+  return embedder_support::GetUserAgentMetadata();
 }
 
 void ContentBrowserClientImpl::OverrideWebkitPrefs(
-    content::RenderViewHost* render_view_host,
+    content::WebContents* web_contents,
     blink::web_pref::WebPreferences* prefs) {
   prefs->default_encoding = l10n_util::GetStringUTF8(IDS_DEFAULT_ENCODING);
 
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderViewHost(render_view_host);
   TabImpl* tab = TabImpl::FromWebContents(web_contents);
   if (tab)
     tab->SetWebPreferences(prefs);
@@ -349,7 +431,8 @@ void ContentBrowserClientImpl::ConfigureNetworkContextParams(
     bool in_memory,
     const base::FilePath& relative_partition_path,
     network::mojom::NetworkContextParams* context_params,
-    network::mojom::CertVerifierCreationParams* cert_verifier_creation_params) {
+    cert_verifier::mojom::CertVerifierCreationParams*
+        cert_verifier_creation_params) {
   SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
       context_params, GetUserAgent());
   // Headers coming from the embedder are implicitly trusted and should not
@@ -382,7 +465,12 @@ void ContentBrowserClientImpl::ConfigureNetworkContextParams(
 
 void ContentBrowserClientImpl::OnNetworkServiceCreated(
     network::mojom::NetworkService* network_service) {
-#if defined(OS_LINUX)
+  if (!SystemNetworkContextManager::HasInstance())
+    SystemNetworkContextManager::CreateInstance(
+        embedder_support::GetUserAgent());
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   network::mojom::CryptConfigPtr config = network::mojom::CryptConfig::New();
   content::GetNetworkService()->SetCryptConfig(std::move(config));
 #endif
@@ -433,12 +521,12 @@ ContentBrowserClientImpl::CreateURLLoaderThrottles(
 
   // Create prerender URL throttle.
   auto* web_contents = wc_getter.Run();
-  auto* prerender_contents = PrerenderContentsFromWebContents(web_contents);
-  if (prerender_contents && prerender_contents->prerender_mode() !=
-                                prerender::mojom::PrerenderMode::kNoPrerender) {
+  auto* no_state_prefetch_contents =
+      NoStatePrefetchContentsFromWebContents(web_contents);
+  if (no_state_prefetch_contents) {
     result.push_back(std::make_unique<prerender::PrerenderURLLoaderThrottle>(
         prerender::PrerenderHistograms::GetHistogramPrefix(
-            prerender_contents->origin()),
+            no_state_prefetch_contents->origin()),
         GetPrerenderCanceler(web_contents)));
   }
 
@@ -495,14 +583,14 @@ ContentBrowserClientImpl::GetOriginsRequiringDedicatedProcess() {
 
 bool ContentBrowserClientImpl::MayReuseHost(
     content::RenderProcessHost* process_host) {
-  // If there is currently a prerender in progress for the host provided,
-  // it may not be shared. We require prerenders to be by themselves in a
-  // separate process so that we can monitor their resource usage.
-  prerender::PrerenderManager* prerender_manager =
-      PrerenderManagerFactory::GetForBrowserContext(
+  // If there is currently a no-state prefetcher in progress for the host
+  // provided, it may not be shared. We require prefetchers to be by themselves
+  // in a separate process so that we can monitor their resource usage.
+  prerender::NoStatePrefetchManager* no_state_prefetch_manager =
+      NoStatePrefetchManagerFactory::GetForBrowserContext(
           process_host->GetBrowserContext());
-  if (prerender_manager &&
-      !prerender_manager->MayReuseProcessHost(process_host)) {
+  if (no_state_prefetch_manager &&
+      !no_state_prefetch_manager->MayReuseProcessHost(process_host)) {
     return false;
   }
 
@@ -518,11 +606,11 @@ void ContentBrowserClientImpl::OverridePageVisibilityState(
       content::WebContents::FromRenderFrameHost(render_frame_host);
   DCHECK(web_contents);
 
-  prerender::PrerenderManager* prerender_manager =
-      PrerenderManagerFactory::GetForBrowserContext(
+  prerender::NoStatePrefetchManager* no_state_prefetch_manager =
+      NoStatePrefetchManagerFactory::GetForBrowserContext(
           web_contents->GetBrowserContext());
-  if (prerender_manager &&
-      prerender_manager->IsWebContentsPrerendering(web_contents)) {
+  if (no_state_prefetch_manager &&
+      no_state_prefetch_manager->IsWebContentsPrerendering(web_contents)) {
     *visibility_state = content::PageVisibilityState::kHiddenButPainting;
   }
 }
@@ -656,11 +744,26 @@ ContentBrowserClientImpl::CreateThrottlesForNavigation(
     content::NavigationHandle* handle) {
   std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
 
+  TabImpl* tab = TabImpl::FromWebContents(handle->GetWebContents());
+  NavigationControllerImpl* navigation_controller = nullptr;
+  if (tab) {
+    navigation_controller =
+        static_cast<NavigationControllerImpl*>(tab->GetNavigationController());
+  }
   if (handle->IsInMainFrame()) {
     NavigationUIDataImpl* navigation_ui_data =
         static_cast<NavigationUIDataImpl*>(handle->GetNavigationUIData());
+
+    NavigationImpl* navigation_impl = nullptr;
+    if (navigation_controller) {
+      navigation_impl =
+          navigation_controller->GetNavigationImplFromHandle(handle);
+    }
+
     if ((!navigation_ui_data ||
          !navigation_ui_data->disable_network_error_auto_reload()) &&
+        (!navigation_impl ||
+         !navigation_impl->disable_network_error_auto_reload()) &&
         IsNetworkErrorAutoReloadEnabled()) {
       auto auto_reload_throttle =
           error_page::NetErrorAutoReloader::MaybeCreateThrottleFor(handle);
@@ -683,18 +786,17 @@ ContentBrowserClientImpl::CreateThrottlesForNavigation(
 
   // The next highest priority throttle *must* be this as it's responsible for
   // calling to NavigationController for certain events.
-  TabImpl* tab = TabImpl::FromWebContents(handle->GetWebContents());
   if (tab) {
-    auto throttle =
-        static_cast<NavigationControllerImpl*>(tab->GetNavigationController())
-            ->CreateNavigationThrottle(handle);
+    auto throttle = navigation_controller->CreateNavigationThrottle(handle);
     if (throttle)
       throttles.push_back(std::move(throttle));
   }
 
   throttles.push_back(std::make_unique<SSLErrorNavigationThrottle>(
       handle, std::make_unique<SSLCertReporterImpl>(),
-      base::BindOnce(&HandleSSLErrorWrapper), base::BindOnce(&IsInHostedApp)));
+      base::BindOnce(&HandleSSLErrorWrapper), base::BindOnce(&IsInHostedApp),
+      base::BindOnce(
+          &ShouldIgnoreInterstitialBecauseNavigationDefaultedToHttps)));
 
   std::unique_ptr<security_interstitials::InsecureFormNavigationThrottle>
       insecure_form_throttle = security_interstitials::
@@ -757,6 +859,13 @@ bool ContentBrowserClientImpl::BindAssociatedReceiverFromFrame(
         render_frame_host);
     return true;
   }
+  if (interface_name == content_capture::mojom::ContentCaptureReceiver::Name_) {
+    content_capture::ContentCaptureReceiverManager::BindContentCaptureReceiver(
+        mojo::PendingAssociatedReceiver<
+            content_capture::mojom::ContentCaptureReceiver>(std::move(*handle)),
+        render_frame_host);
+    return true;
+  }
 
   return false;
 }
@@ -765,6 +874,9 @@ void ContentBrowserClientImpl::ExposeInterfacesToRenderer(
     service_manager::BinderRegistry* registry,
     blink::AssociatedInterfaceRegistry* associated_registry,
     content::RenderProcessHost* render_process_host) {
+  performance_manager::PerformanceManagerRegistry::GetInstance()
+      ->CreateProcessNodeAndExposeInterfacesToRendererProcess(
+          registry, render_process_host);
 #if defined(OS_ANDROID)
   auto create_spellcheck_host =
       [](mojo::PendingReceiver<spellcheck::mojom::SpellCheckHost> receiver) {
@@ -796,13 +908,15 @@ void ContentBrowserClientImpl::RegisterBrowserInterfaceBindersForFrame(
     content::RenderFrameHost* render_frame_host,
     mojo::BinderMapWithContext<content::RenderFrameHost*>* map) {
   PopulateWebLayerFrameBinders(render_frame_host, map);
+  performance_manager::PerformanceManagerRegistry::GetInstance()
+      ->ExposeInterfacesToRenderFrame(map);
 }
 
 void ContentBrowserClientImpl::RenderProcessWillLaunch(
     content::RenderProcessHost* host) {
 #if defined(OS_ANDROID)
   host->AddFilter(new cdm::CdmMessageFilterAndroid(
-      /*can_persist_data*/ true,
+      !host->GetBrowserContext()->IsOffTheRecord(),
       /*force_to_support_secure_codecs*/ false));
 #endif
   PageSpecificContentSettingsDelegate::UpdateRendererContentSettingRules(host);
@@ -817,6 +931,8 @@ void ContentBrowserClientImpl::CreateFeatureListAndFieldTrials() {
   local_state_ = CreateLocalState();
   feature_list_creator_ =
       std::make_unique<FeatureListCreator>(local_state_.get());
+  if (!SystemNetworkContextManager::HasInstance())
+    SystemNetworkContextManager::CreateInstance(GetUserAgent());
   feature_list_creator_->SetSystemNetworkContextManager(
       SystemNetworkContextManager::GetInstance());
   feature_list_creator_->CreateFeatureListAndFieldTrials();
@@ -828,7 +944,9 @@ SafeBrowsingService* ContentBrowserClientImpl::GetSafeBrowsingService() {
 }
 #endif
 
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_ANDROID)
 void ContentBrowserClientImpl::GetAdditionalMappedFilesForChildProcess(
     const base::CommandLine& command_line,
     int child_process_id,
@@ -999,7 +1117,9 @@ ukm::UkmService* ContentBrowserClientImpl::GetUkmService() {
 }
 
 bool ContentBrowserClientImpl::HasErrorPage(int http_status_code) {
-  return http_status_code >= 400;
+  // Use an internal error page, if we have one for the status code.
+  return error_page::LocalizedError::HasStrings(
+      error_page::Error::kHttpErrorDomain, http_status_code);
 }
 
 }  // namespace weblayer

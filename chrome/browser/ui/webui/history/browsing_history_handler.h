@@ -69,7 +69,7 @@ class BrowsingHistoryHandler : public content::WebUIMessageHandler,
   void set_clock(base::Clock* clock) { clock_ = clock; }
 
  protected:
-  virtual void SendHistoryQuery(int count, const base::string16& query);
+  virtual void SendHistoryQuery(int count, const std::u16string& query);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowsingHistoryHandlerTest,

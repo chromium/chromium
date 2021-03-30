@@ -66,9 +66,7 @@ void RenderAccessibilityManager::SetMode(uint32_t ax_mode) {
 }
 
 void RenderAccessibilityManager::FatalError() {
-  // Prevent code folding.
-  const int line_number = __LINE__;
-  base::debug::Alias(&line_number);
+  NO_CODE_FOLDING();
   CHECK(false) << "Invalid accessibility tree.";
 }
 

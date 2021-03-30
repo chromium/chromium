@@ -17,9 +17,9 @@
 #include "base/task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/system/user_removal_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/remote_commands/device_commands_factory_chromeos.h"
-#include "chrome/browser/chromeos/system/user_removal_manager.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -111,7 +111,7 @@ TEST_F(DeviceCommandWipeUsersJobTest, TestCommandLifetime) {
       CreateWipeUsersJob(kVeryoldCommandAge, service_.get());
 
   EXPECT_TRUE(
-      job->Run(base::Time::Now(), base::TimeTicks::Now(), base::Closure()));
+      job->Run(base::Time::Now(), base::TimeTicks::Now(), base::OnceClosure()));
 }
 
 // Make sure that the command's succeeded_callback is being invoked.

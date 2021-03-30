@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(PaymentMethodViewControllerTest,
 
   // Slightly different visa.
   autofill::CreditCard card2 = autofill::test::GetCreditCard();
-  card2.SetNumber(base::ASCIIToUTF16("4111111111111112"));
+  card2.SetNumber(u"4111111111111112");
   card2.set_billing_address_id(billing_profile.guid());
   card2.set_use_count(1U);
   AddCreditCard(card2);
@@ -176,10 +176,12 @@ IN_PROC_BROWSER_TEST_F(PaymentMethodViewControllerTest,
   SetDownloaderAndIgnorePortInOriginComparisonForTesting();
 
   ResetEventWaiterForDialogOpened();
-  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(),
-                              "testPaymentMethods([{supportedMethods: "
-                              "'https://google.com/pay'},{supportedMethods: "
-                              "'https://kylepay.com/webpay'}])"));
+  content::ExecuteScriptAsync(GetActiveWebContents(), R"(
+    testPaymentMethods([
+      {supportedMethods: 'https://google.com/pay'},
+      {supportedMethods: 'https://kylepay.com/webpay'},
+    ]);
+  )");
   WaitForObservedEvent();
 
   // Confirm that "Add card" button is not shown since "basic-card" is not

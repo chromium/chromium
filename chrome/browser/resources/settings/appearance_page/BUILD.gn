@@ -4,20 +4,7 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_js.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../settings.gni")
-
-js_type_check("closure_compile") {
-  deps = [ ":fonts_browser_proxy" ]
-}
-
-js_library("fonts_browser_proxy") {
-  deps = [
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-  ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
@@ -26,7 +13,7 @@ js_type_check("closure_compile_module") {
     ":appearance_browser_proxy",
     ":appearance_fonts_page",
     ":appearance_page",
-    ":fonts_browser_proxy.m",
+    ":fonts_browser_proxy",
     ":home_url_input",
   ]
 }
@@ -44,8 +31,8 @@ js_library("appearance_browser_proxy") {
 
 js_library("appearance_fonts_page") {
   deps = [
-    ":fonts_browser_proxy.m",
-    "../controls:settings_dropdown_menu.m",
+    ":fonts_browser_proxy",
+    "../controls:settings_dropdown_menu",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_slider:cr_slider.m",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -58,25 +45,23 @@ js_library("appearance_page") {
     ":appearance_browser_proxy",
     "..:page_visibility",
     "..:route",
-    "..:router.m",
-    "../controls:settings_dropdown_menu.m",
-    "../settings_page:settings_animated_pages.m",
+    "..:router",
+    "../controls:settings_dropdown_menu",
+    "../settings_page:settings_animated_pages",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 
-js_library("fonts_browser_proxy.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/appearance_page/fonts_browser_proxy.m.js" ]
+js_library("fonts_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("home_url_input") {
   deps = [
     ":appearance_browser_proxy",
-    "../controls:pref_control_behavior.m",
+    "../controls:pref_control_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/policy:cr_policy_indicator_behavior.m",
     "//ui/webui/resources/cr_elements/policy:cr_policy_pref_behavior.m",
@@ -85,22 +70,10 @@ js_library("home_url_input") {
   ]
 }
 
-group("web_components") {
-  public_deps = [
-    ":modulize",
-    ":web_components_local",
-  ]
-}
-
-html_to_js("web_components_local") {
+html_to_js("web_components") {
   js_files = [
     "appearance_fonts_page.js",
     "appearance_page.js",
     "home_url_input.js",
   ]
-}
-
-js_modulizer("modulize") {
-  input_files = [ "fonts_browser_proxy.js" ]
-  namespace_rewrites = settings_namespace_rewrites
 }

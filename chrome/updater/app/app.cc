@@ -11,12 +11,13 @@
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/updater/updater_scope.h"
 
 namespace updater {
 
 constexpr base::StringPiece App::kThreadPoolName;
 
-App::App() = default;
+App::App() : updater_scope_(GetProcessScope()) {}
 App::~App() = default;
 
 void App::InitializeThreadPool() {
@@ -48,6 +49,10 @@ int App::Run() {
 
 void App::Shutdown(int exit_code) {
   std::move(quit_).Run(exit_code);
+}
+
+UpdaterScope App::updater_scope() const {
+  return updater_scope_;
 }
 
 }  // namespace updater

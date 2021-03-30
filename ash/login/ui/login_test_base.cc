@@ -20,7 +20,8 @@
 
 namespace ash {
 
-LoginTestBase::LoginTestBase() = default;
+LoginTestBase::LoginTestBase()
+    : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
 LoginTestBase::~LoginTestBase() = default;
 

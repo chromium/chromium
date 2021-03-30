@@ -75,7 +75,6 @@
 #include "chrome/chrome_cleaner/parsers/json_parser/sandboxed_json_parser.h"
 #include "chrome/chrome_cleaner/parsers/shortcut_parser/broker/sandboxed_shortcut_parser.h"
 #include "chrome/chrome_cleaner/parsers/target/sandbox_setup.h"
-#include "chrome/chrome_cleaner/scanner/force_installed_extension_scanner_impl.h"
 #include "chrome/chrome_cleaner/settings/engine_settings.h"
 #include "chrome/chrome_cleaner/settings/matching_options.h"
 #include "chrome/chrome_cleaner/settings/settings.h"
@@ -256,12 +255,9 @@ chrome_cleaner::ResultCode RunChromeCleaner(
   if (engine_result != chrome_cleaner::RESULT_CODE_SUCCESS)
     return engine_result;
 
-  shutdown_sequence
-      .engine_facade = std::make_unique<chrome_cleaner::EngineFacade>(
-      shutdown_sequence.engine_client, json_parser.get(),
-      main_controller.main_dialog(),
-      std::make_unique<chrome_cleaner::ForceInstalledExtensionScannerImpl>(),
-      chrome_prompt_ipc);
+  shutdown_sequence.engine_facade =
+      std::make_unique<chrome_cleaner::EngineFacade>(
+          shutdown_sequence.engine_client);
 
   if (settings->execution_mode() == ExecutionMode::kScanning) {
     shutdown_sequence.engine_facade =

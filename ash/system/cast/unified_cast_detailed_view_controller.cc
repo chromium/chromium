@@ -26,7 +26,7 @@ views::View* UnifiedCastDetailedViewController::CreateView() {
   return view_;
 }
 
-base::string16 UnifiedCastDetailedViewController::GetAccessibleName() const {
+std::u16string UnifiedCastDetailedViewController::GetAccessibleName() const {
   return l10n_util::GetStringUTF16(
       IDS_ASH_QUICK_SETTINGS_BUBBLE_CAST_SETTINGS_ACCESSIBLE_DESCRIPTION);
 }

@@ -61,7 +61,7 @@ class FakeStatusIconObserver : public StatusIconObserver {
 StatusIconWin* CreateStatusIcon(StatusTray* tray) {
   return static_cast<StatusIconWin*>(tray->CreateStatusIcon(
       StatusTray::OTHER_ICON, gfx::test::CreateImageSkia(16, 16),
-      base::string16()));
+      std::u16string()));
 }
 
 }  // namespace
@@ -77,7 +77,7 @@ TEST(StatusTrayWinTest, CreateIconAndMenu) {
   StatusTrayWin tray;
   StatusIcon* icon = CreateStatusIcon(&tray);
   std::unique_ptr<StatusIconMenuModel> menu(new StatusIconMenuModel(NULL));
-  menu->AddItem(0, L"foo");
+  menu->AddItem(0, u"foo");
   icon->SetContextMenu(std::move(menu));
 }
 

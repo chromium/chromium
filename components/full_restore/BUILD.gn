@@ -9,6 +9,10 @@ component("full_restore") {
     "app_launch_info.h",
     "app_restore_data.cc",
     "app_restore_data.h",
+    "arc_read_handler.cc",
+    "arc_read_handler.h",
+    "arc_save_handler.cc",
+    "arc_save_handler.h",
     "full_restore_file_handler.cc",
     "full_restore_file_handler.h",
     "full_restore_info.cc",
@@ -30,10 +34,14 @@ component("full_restore") {
   public_deps = [
     "//ash/public/cpp",
     "//base",
+    "//chromeos/ui/base:base",
     "//components/account_id:account_id",
     "//components/services/app_service/public/cpp:intents",
     "//components/services/app_service/public/mojom",
+    "//components/sessions:session_id",
+    "//extensions/common:common_constants",
     "//ui/aura",
+    "//ui/views",
   ]
 }
 
@@ -42,11 +50,14 @@ source_set("unit_tests") {
 
   sources = [
     "full_restore_info_unittest.cc",
+    "full_restore_read_and_save_unittest.cc",
     "restore_data_unittest.cc",
   ]
 
   deps = [
     ":full_restore",
+    "//content/test:test_support",
     "//testing/gtest",
+    "//ui/aura:test_support",
   ]
 }

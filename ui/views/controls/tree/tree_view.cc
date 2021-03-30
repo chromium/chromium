@@ -609,7 +609,7 @@ void TreeView::TreeNodeChanged(TreeModel* model, TreeModelNode* model_node) {
 }
 
 void TreeView::ContentsChanged(Textfield* sender,
-                               const base::string16& new_contents) {}
+                               const std::u16string& new_contents) {}
 
 bool TreeView::HandleKeyEvent(Textfield* sender,
                               const ui::KeyEvent& key_event) {
@@ -659,7 +659,7 @@ void TreeView::SetSelectedRow(int row) {
   SetSelectedNode(GetNodeForRow(row));
 }
 
-base::string16 TreeView::GetTextForRow(int row) {
+std::u16string TreeView::GetTextForRow(int row) {
   return GetNodeForRow(row)->GetTitle();
 }
 
@@ -1086,7 +1086,7 @@ void TreeView::PaintRow(gfx::Canvas* canvas,
   }
 
   // Paint the auxiliary text.
-  base::string16 aux_text =
+  std::u16string aux_text =
       drawing_provider()->GetAuxiliaryTextForNode(this, node->model_node());
   if (!aux_text.empty()) {
     gfx::Rect aux_text_bounds = GetAuxiliaryTextBoundsForNode(node);

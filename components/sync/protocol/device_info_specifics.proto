@@ -74,6 +74,10 @@ message DeviceInfoSpecifics {
 
   // Device specific information for Sync invalidations.
   optional InvalidationSpecificFields invalidation_fields = 14;
+
+  // Information for contacting this device in order to perform security key
+  // operations.
+  optional PhoneAsASecurityKeySpecificFields paask_fields = 15;
 }
 
 // Feature specific information about the device that is running a sync-enabled
@@ -153,4 +157,29 @@ message InvalidationSpecificFields {
   // numbers of all EntitySpecifics fields supported by the server (see
   // components/sync/protocol/sync.proto).
   repeated int32 interested_data_type_ids = 2;
+}
+
+message PhoneAsASecurityKeySpecificFields {
+  // The encoded tunnel server in the same format as in the BLE advert. See
+  // device::cablev2::tunnelserver::DecodeDomain. (Actually a uint16 but
+  // proto doesn't have that as a type.)
+  optional uint32 tunnel_server_domain = 1;
+
+  // An FCM token that can be presented to the tunnel server to contact this
+  // device.
+  optional bytes contact_id = 2;
+
+  // A shared secret key, used to enable communication across devices via
+  // unauthenticated channels. Knowledge of this secret acts as proof that the
+  // remote end is authorized to talk to the device publishing this secret.
+  optional bytes secret = 3;
+
+  // An id that identifies |secret|. This, and |secret|, will be rotated and
+  // the ID allows this device to know which |secret| the counterparty is
+  // using.
+  optional fixed32 id = 4;
+
+  // A P-256, X9.62-encoded public key for this device. Specific to the Chrome
+  // instance.
+  optional bytes peer_public_key_x962 = 5;
 }

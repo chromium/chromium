@@ -8,23 +8,35 @@
 #include "base/callback.h"
 #include "components/flags_ui/feature_entry.h"
 #include "ui/views/controls/combobox/combobox.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
+class Browser;
 struct LabInfo;
+
+namespace views {
+class MdTextButton;
+}  // namespace views
 
 class ChromeLabsItemView : public views::View {
  public:
+  METADATA_HEADER(ChromeLabsItemView);
   ChromeLabsItemView(
       const LabInfo& lab,
       int default_index,
       const flags_ui::FeatureEntry* feature_entry,
       base::RepeatingCallback<void(ChromeLabsItemView* item_view)>
-          combobox_callback);
+          combobox_callback,
+      Browser* browser);
 
-  int GetSelectedIndex();
+  int GetSelectedIndex() const;
 
   views::Combobox* GetLabStateComboboxForTesting() {
     return lab_state_combobox_;
+  }
+
+  views::MdTextButton* GetFeedbackButtonForTesting() {
+    return feedback_button_;
   }
 
   const flags_ui::FeatureEntry* GetFeatureEntry();
@@ -34,6 +46,8 @@ class ChromeLabsItemView : public views::View {
   views::Combobox* lab_state_combobox_;
 
   const flags_ui::FeatureEntry* feature_entry_;
+
+  views::MdTextButton* feedback_button_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_ITEM_VIEW_H_

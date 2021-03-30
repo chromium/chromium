@@ -10,6 +10,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.browser_ui.http_auth.LoginPrompt;
+import org.chromium.url.GURL;
 
 /**
  * Handles showing http auth prompt.
@@ -20,9 +21,8 @@ public final class HttpAuthHandlerImpl implements LoginPrompt.Observer {
     private LoginPrompt mLoginPrompt;
 
     @CalledByNative
-    public static HttpAuthHandlerImpl create(
-            long nativeAuthHandler, TabImpl tab, String host, String url) {
-        return new HttpAuthHandlerImpl(nativeAuthHandler, tab.getBrowser().getContext(), host, url);
+    public static HttpAuthHandlerImpl create(long nativeAuthHandler, TabImpl tab, GURL url) {
+        return new HttpAuthHandlerImpl(nativeAuthHandler, tab.getBrowser().getContext(), url);
     }
 
     @CalledByNative
@@ -35,11 +35,10 @@ public final class HttpAuthHandlerImpl implements LoginPrompt.Observer {
         if (mLoginPrompt != null) mLoginPrompt.dismiss();
     }
 
-    private HttpAuthHandlerImpl(
-            long nativeHttpAuthHandlerImpl, Context context, String host, String url) {
+    private HttpAuthHandlerImpl(long nativeHttpAuthHandlerImpl, Context context, GURL url) {
         mNativeHttpAuthHandlerImpl = nativeHttpAuthHandlerImpl;
 
-        mLoginPrompt = new LoginPrompt(context, host, url, this);
+        mLoginPrompt = new LoginPrompt(context, url.getHost(), url, this);
         mLoginPrompt.show();
     }
 

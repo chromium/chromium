@@ -10,12 +10,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Process;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.ui.base.AndroidPermissionDelegate;
 import org.chromium.ui.base.PermissionCallback;
 import org.chromium.ui.base.WindowAndroid;
@@ -31,8 +33,16 @@ import java.util.Arrays;
  */
 public class VrWindowAndroid
         extends WindowAndroid implements ApplicationStatus.ActivityStateListener {
-    public VrWindowAndroid(ChromeActivity activity, DisplayAndroid display) {
+    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    /**
+     * @param activity The current application {@link Activity}.
+     * @param display The application {@link DisplayAndroid}.
+     * @param modalDialogManagerSupplier Supplies the current {@link ModalDialogManager}.
+     */
+    public VrWindowAndroid(Activity activity, DisplayAndroid display,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
         super(activity, display);
+        mModalDialogManagerSupplier = modalDialogManagerSupplier;
         ApplicationStatus.registerStateListenerForActivity(this, activity);
         setAndroidPermissionDelegate(new ActivityAndroidPermissionDelegate());
     }
@@ -73,9 +83,8 @@ public class VrWindowAndroid
     }
 
     @Override
-    public ModalDialogManager getModalDialogManager() {
-        ChromeActivity activity = (ChromeActivity) getActivity().get();
-        return activity == null ? null : activity.getModalDialogManager();
+    public @Nullable ModalDialogManager getModalDialogManager() {
+        return mModalDialogManagerSupplier.get();
     }
 
     // We can't request permissions inside of VR without getting kicked out of VR.

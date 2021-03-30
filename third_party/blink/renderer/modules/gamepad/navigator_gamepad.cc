@@ -148,7 +148,7 @@ GamepadList* NavigatorGamepad::getGamepads(Navigator& navigator,
   }
 
   if (!context->IsFeatureEnabled(
-          mojom::blink::FeaturePolicyFeature::kGamepad)) {
+          mojom::blink::PermissionsPolicyFeature::kGamepad)) {
     if (base::FeatureList::IsEnabled(features::kRestrictGamepadAccess)) {
       exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
       return nullptr;
@@ -216,7 +216,10 @@ void NavigatorGamepad::SampleGamepads() {
         gamepad = MakeGarbageCollected<Gamepad>(this, i, navigation_start_,
                                                 gamepads_start_);
       }
-      gamepad->UpdateFromDeviceState(device_gamepad);
+      bool cross_origin_isolated_capability =
+          DomWindow() ? DomWindow()->CrossOriginIsolatedCapability() : false;
+      gamepad->UpdateFromDeviceState(device_gamepad,
+                                     cross_origin_isolated_capability);
       gamepads_back_->Set(i, gamepad);
     } else {
       gamepads_back_->Set(i, nullptr);

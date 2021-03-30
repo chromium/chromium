@@ -22,10 +22,6 @@ class Service {
  public:
   virtual ~Service() = default;
 
-  // Whether this service is a lite service with limited capabilities, or a
-  // regular service that is allowed to communicate with the backend.
-  virtual bool IsLiteService() const = 0;
-
   using ResponseCallback =
       base::OnceCallback<void(int http_status, const std::string&)>;
   // Get scripts for a given |url|, which should be a valid URL.

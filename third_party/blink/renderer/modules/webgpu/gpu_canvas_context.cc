@@ -4,8 +4,10 @@
 
 #include "third_party/blink/renderer/modules/webgpu/gpu_canvas_context.h"
 
+#include "third_party/blink/renderer/bindings/modules/v8/offscreen_rendering_context.h"
 #include "third_party/blink/renderer/bindings/modules/v8/rendering_context.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_swap_chain_descriptor.h"
+#include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_adapter.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
@@ -80,6 +82,17 @@ void GPUCanvasContext::SetFilterQuality(SkFilterQuality filter_quality) {
   }
 }
 
+void GPUCanvasContext::SetOffscreenCanvasGetContextResult(
+    OffscreenRenderingContext& result) {
+  result.SetGPUCanvasContext(this);
+}
+
+ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
+    ScriptState* script_state) {
+  return MakeGarbageCollected<ImageBitmap>(
+      swapchain_->TransferToStaticBitmapImage());
+}
+
 // gpu_canvas_context.idl
 GPUSwapChain* GPUCanvasContext::configureSwapChain(
     const GPUSwapChainDescriptor* descriptor,
@@ -126,6 +139,13 @@ GPUSwapChain* GPUCanvasContext::configureSwapChain(
 
   swapchain_ = MakeGarbageCollected<GPUSwapChain>(
       this, descriptor->device(), usage, format, filter_quality_);
+  swapchain_->CcLayer()->SetContentsOpaque(!CreationAttributes().alpha);
+  swapchain_->setLabel(descriptor->label());
+
+  // If we don't notify the host that something has changed it may never check
+  // for the new cc::Layer.
+  Host()->SetNeedsCompositingUpdate();
+
   return swapchain_;
 }
 

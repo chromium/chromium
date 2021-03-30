@@ -24,6 +24,10 @@
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/memory/mem_entry_impl.h"
 
+namespace base {
+class Clock;
+}
+
 namespace net {
 class NetLog;
 }  // namespace net
@@ -83,6 +87,9 @@ class NET_EXPORT_PRIVATE MemBackendImpl final : public Backend {
   // most once.
   void SetPostCleanupCallback(base::OnceClosure cb);
 
+  static base::Time Now(const base::WeakPtr<MemBackendImpl>& self);
+  void SetClockForTesting(base::Clock* clock);  // doesn't take ownership.
+
   // Backend interface.
   int32_t GetEntryCount() const override;
   EntryResult OpenOrCreateEntry(const std::string& key,
@@ -131,6 +138,8 @@ class NET_EXPORT_PRIVATE MemBackendImpl final : public Backend {
   // Called when we get low on memory.
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+
+  base::Clock* custom_clock_for_testing_;  // usually nullptr.
 
   EntryMap entries_;
 

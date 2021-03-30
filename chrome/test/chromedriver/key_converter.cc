@@ -130,15 +130,15 @@ const ui::KeyboardCode kSpecialWebDriverKeys[] = {
     ui::VKEY_DELETE,
 };
 
-const base::char16 kWebDriverNullKey = 0xE000U;
-const base::char16 kWebDriverShiftKey = 0xE008U;
-const base::char16 kWebDriverControlKey = 0xE009U;
-const base::char16 kWebDriverAltKey = 0xE00AU;
-const base::char16 kWebDriverCommandKey = 0xE03DU;
-const base::char16 kWebDriverRightShiftKey = 0xE050U;
-const base::char16 kWebDriverRightControlKey = 0xE051U;
-const base::char16 kWebDriverRightAltKey = 0xE052U;
-const base::char16 kWebDriverRightCommandKey = 0xE053U;
+const char16_t kWebDriverNullKey = u'\uE000';
+const char16_t kWebDriverShiftKey = u'\uE008';
+const char16_t kWebDriverControlKey = u'\uE009';
+const char16_t kWebDriverAltKey = u'\uE00A';
+const char16_t kWebDriverCommandKey = u'\uE03D';
+const char16_t kWebDriverRightShiftKey = u'\uE050';
+const char16_t kWebDriverRightControlKey = u'\uE051';
+const char16_t kWebDriverRightAltKey = u'\uE052';
+const char16_t kWebDriverRightCommandKey = u'\uE053';
 
 // Returns whether the given key code has a corresponding printable char.
 // Notice: The given key code should be a special WebDriver key code.
@@ -150,7 +150,7 @@ bool IsSpecialKeyPrintable(ui::KeyboardCode key_code) {
 }
 
 // Returns whether the given key is a WebDriver key modifier.
-bool IsModifierKey(base::char16 key) {
+bool IsModifierKey(char16_t key) {
   switch (key) {
     case kWebDriverShiftKey:
     case kWebDriverControlKey:
@@ -169,8 +169,7 @@ bool IsModifierKey(base::char16 key) {
 // Gets the key code associated with |key|, if it is a special WebDriver key.
 // Returns whether |key| is a special WebDriver key. If true, |key_code| will
 // be set.
-bool KeyCodeFromSpecialWebDriverKey(base::char16 key,
-                                    ui::KeyboardCode* key_code) {
+bool KeyCodeFromSpecialWebDriverKey(char16_t key, ui::KeyboardCode* key_code) {
   int index = static_cast<int>(key) - 0xE000U;
   bool is_special_key =
       index >= 0 && index < static_cast<int>(base::size(kSpecialWebDriverKeys));
@@ -184,10 +183,10 @@ bool KeyCodeFromSpecialWebDriverKey(base::char16 key,
 // character, which is shorthand for the return key. Returns whether |key| is
 // a shorthand key. If true, |key_code| will be set and |client_should_skip|
 // will be set to whether the key should be skipped.
-bool KeyCodeFromShorthandKey(base::char16 key_utf16,
+bool KeyCodeFromShorthandKey(char16_t key_utf16,
                              ui::KeyboardCode* key_code,
                              bool* client_should_skip) {
-  base::string16 key_str_utf16;
+  std::u16string key_str_utf16;
   key_str_utf16.push_back(key_utf16);
   std::string key_str_utf8 = base::UTF16ToUTF8(key_str_utf16);
   if (key_str_utf8.length() != 1)
@@ -322,8 +321,8 @@ const char* const kNormalisedKeyValue[] = {
 //   compatible with Chrome.
 //   TODO(johnchen@chromium.org): Find a better way to handle this.
 const struct {
-  base::char16 key;
-  base::char16 alternate_key;
+  char16_t key;
+  char16_t alternate_key;
   std::string code;
 } kCodeForKey[] = {
     {'`',    '~',    "Backquote"},
@@ -448,13 +447,13 @@ int GetKeyLocation(uint32_t code_point) {
 
 }  // namespace
 
-Status ConvertKeysToKeyEvents(const base::string16& client_keys,
+Status ConvertKeysToKeyEvents(const std::u16string& client_keys,
                               bool release_modifiers,
                               int* modifiers,
                               std::vector<KeyEvent>* client_key_events) {
   std::vector<KeyEvent> key_events;
 
-  base::string16 keys = client_keys;
+  std::u16string keys = client_keys;
   // Add an implicit NULL character to the end of the input to depress all
   // modifiers.
   if (release_modifiers)
@@ -462,7 +461,7 @@ Status ConvertKeysToKeyEvents(const base::string16& client_keys,
 
   int sticky_modifiers = *modifiers;
   for (size_t i = 0; i < keys.size(); ++i) {
-    base::char16 key = keys[i];
+    char16_t key = keys[i];
 
     if (key == kWebDriverNullKey) {
       // Release all modifier keys and clear |stick_modifiers|.

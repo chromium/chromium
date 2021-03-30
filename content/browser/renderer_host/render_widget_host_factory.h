@@ -14,6 +14,7 @@
 
 namespace content {
 class AgentSchedulingGroupHost;
+class FrameTree;
 class RenderWidgetHostDelegate;
 class RenderWidgetHostImpl;
 
@@ -26,6 +27,7 @@ class RenderWidgetHostFactory {
   // the default one if no factory is registered. Ownership of the returned
   // pointer will be passed to the caller.
   static std::unique_ptr<RenderWidgetHostImpl> Create(
+      FrameTree* frame_tree,
       RenderWidgetHostDelegate* delegate,
       AgentSchedulingGroupHost& agent_scheduling_group,
       int32_t routing_id,
@@ -42,6 +44,7 @@ class RenderWidgetHostFactory {
   // You can derive from this class and specify an implementation for this
   // function to create a different kind of RenderWidgetHostImpl for testing.
   virtual std::unique_ptr<RenderWidgetHostImpl> CreateRenderWidgetHost(
+      FrameTree* frame_tree,
       RenderWidgetHostDelegate* delegate,
       AgentSchedulingGroupHost& agent_scheduling_group,
       int32_t routing_id,

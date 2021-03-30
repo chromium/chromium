@@ -21,6 +21,7 @@ Storage
  Cookies
   http://127.0.0.1:8000
   http://devtools.oopif.test:8000
+ Trust Tokens
 Cache
  Cache Storage
  Application Cache
@@ -54,6 +55,7 @@ Storage
  Cookies
   http://127.0.0.1:8000
   http://devtools.oopif.test:8000
+ Trust Tokens
 Cache
  Cache Storage
  Application Cache
@@ -89,6 +91,7 @@ Storage
  Cookies
   http://127.0.0.1:8000
   http://devtools.oopif.test:8000
+ Trust Tokens
 Cache
  Cache Storage
  Application Cache

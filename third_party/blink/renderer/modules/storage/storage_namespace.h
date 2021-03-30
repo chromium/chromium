@@ -29,6 +29,7 @@
 #include <memory>
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/mojom/dom_storage/dom_storage.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/dom_storage/session_storage_namespace.mojom-blink.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom-blink-forward.h"
@@ -49,7 +50,6 @@ class CachedStorageArea;
 class InspectorDOMStorageAgent;
 class StorageController;
 class SecurityOrigin;
-class WebViewClient;
 
 // Contains DOMStorage storage areas for origins & handles inspector agents. A
 // namespace is either a SessionStorage namespace with a namespace_id, or a
@@ -72,7 +72,9 @@ class MODULES_EXPORT StorageNamespace final
  public:
   static const char kSupplementName[];
 
-  static void ProvideSessionStorageNamespaceTo(Page&, WebViewClient*);
+  static void ProvideSessionStorageNamespaceTo(
+      Page&,
+      const SessionStorageNamespaceId&);
   static StorageNamespace* From(Page* page) {
     return Supplement<Page>::From<StorageNamespace>(page);
   }
@@ -128,9 +130,7 @@ class MODULES_EXPORT StorageNamespace final
   String namespace_id_;
   // |StorageNamespace| is a per-Page object and doesn't have any
   // |ExecutionContext|.
-  HeapMojoRemote<mojom::blink::SessionStorageNamespace,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      namespace_{nullptr};
+  HeapMojoRemote<mojom::blink::SessionStorageNamespace> namespace_{nullptr};
   HashMap<scoped_refptr<const SecurityOrigin>,
           scoped_refptr<CachedStorageArea>,
           SecurityOriginHash>

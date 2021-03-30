@@ -31,12 +31,15 @@ class ServiceWorkerContextCore;
 class ServiceWorkerRegistration;
 class ServiceWorkerVersion;
 
-// Handles main resource requests for service worker clients (documents and
-// shared workers).
+// Handles a main resource request for service worker clients (documents and
+// shared workers). This manages state for a single request and does not
+// live across redirects. ServiceWorkerMainResourceLoaderInterceptor creates
+// one instance of this class for each request/redirect.
 //
-// TODO(crbug.com/1138155): Merge into
-// ServiceWorkerMainResourceLoaderInterceptor now that they are on the same
-// thread.
+// This class associates the ServiceWorkerContainerHost undergoing navigation
+// with a controller service worker, after looking up the registration and
+// activating the service worker if needed.  Once ready, it creates
+// ServiceWorkerMainResourceLoader to perform the resource load.
 class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
  public:
   // If |skip_service_worker| is true, service workers are bypassed for
@@ -49,24 +52,13 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
       ServiceWorkerAccessedCallback service_worker_accessed_callback);
   ~ServiceWorkerControlleeRequestHandler();
 
-  // This could get called multiple times during the lifetime in redirect
-  // cases. (In fallback-to-network cases we basically forward the request
-  // to the request to the next request handler)
-  using ServiceWorkerLoaderCallback =
-      base::OnceCallback<void(SingleRequestURLLoaderFactory::RequestHandler)>;
+  // This is called only once. On redirects, a new instance of this
+  // class is created.
   void MaybeCreateLoader(
       const network::ResourceRequest& tentative_request,
       BrowserContext* browser_context,
-      ServiceWorkerLoaderCallback callback,
+      NavigationLoaderInterceptor::LoaderCallback loader_callback,
       NavigationLoaderInterceptor::FallbackCallback fallback_callback);
-  // Returns params with the ControllerServiceWorkerInfoPtr if we have found
-  // a matching controller service worker for the |request| that is given
-  // to MaybeCreateLoader(). Otherwise this returns base::nullopt.
-  base::Optional<SubresourceLoaderParams> MaybeCreateSubresourceLoaderParams();
-
-  // Does all initialization of |container_host_| for a request.
-  bool InitializeContainerHost(
-      const network::ResourceRequest& tentative_request);
 
   // Exposed for testing.
   ServiceWorkerMainResourceLoader* loader() {
@@ -76,6 +68,10 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
  private:
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerControlleeRequestHandlerTest,
                            ActivateWaitingVersion);
+
+  // Does all initialization of |container_host_| for a request.
+  void InitializeContainerHost(
+      const network::ResourceRequest& tentative_request);
 
   void ContinueWithRegistration(
       blink::ServiceWorkerStatusCode status,
@@ -93,10 +89,6 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
   void OnUpdatedVersionStatusChanged(
       scoped_refptr<ServiceWorkerRegistration> registration,
       scoped_refptr<ServiceWorkerVersion> version);
-
-  // Sets |job_| to nullptr, and clears all extra response info associated with
-  // that job, except for timing information.
-  void ClearJob();
 
   void CompleteWithoutLoader();
 
@@ -117,7 +109,7 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
   bool force_update_started_;
   base::TimeTicks registration_lookup_start_time_;
 
-  ServiceWorkerLoaderCallback loader_callback_;
+  NavigationLoaderInterceptor::LoaderCallback loader_callback_;
   NavigationLoaderInterceptor::FallbackCallback fallback_callback_;
 
   ServiceWorkerAccessedCallback service_worker_accessed_callback_;

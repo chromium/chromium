@@ -50,7 +50,7 @@ class AndroidCacheDatabase {
   // Add a row in the search_term table with the given |term| and
   // |last_visit_time|. Return the new row's id on success, otherwise 0 is
   // returned.
-  SearchTermID AddSearchTerm(const base::string16& term,
+  SearchTermID AddSearchTerm(const std::u16string& term,
                              const base::Time& last_visit_time);
 
   // Updates the |id|'s row with the given |row|; returns true on success.
@@ -59,7 +59,7 @@ class AndroidCacheDatabase {
   // Get SearchTermRow of the given |term|; return the row id on success.
   // otherwise 0 is returned.
   // The found row is return in |row| if it is not NULL.
-  SearchTermID GetSearchTerm(const base::string16& term, SearchTermRow* row);
+  SearchTermID GetSearchTerm(const std::u16string& term, SearchTermRow* row);
 
   // Delete the search terms which don't exist in keyword_search_terms table.
   bool DeleteUnusedSearchTerms();

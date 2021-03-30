@@ -17,5 +17,6 @@ struct AXTreeUpdate {
   int32 root_id;
   array<AXNodeData> nodes;
   ax.mojom.EventFrom event_from;
+  ax.mojom.Action event_from_action;
   array<EventIntent> event_intents;
 };

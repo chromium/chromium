@@ -274,6 +274,19 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
   };
   Recordings recordings_;
 
+  // The maximum number of Sources we'll keep in memory before discarding any
+  // new ones being added.
+  size_t max_sources_ = 500;
+
+  // The maximum number of Sources we can keep in memory at the end of the
+  // current reporting cycle that will stay accessible in the next reporting
+  // interval.
+  size_t max_kept_sources_ = 100;
+
+  // The maximum number of Entries we'll keep in memory before discarding any
+  // new ones being added.
+  size_t max_entries_ = 5000;
+
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

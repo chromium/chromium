@@ -132,10 +132,18 @@ class WebLayerVariationsHttpBrowserTest : public WebLayerBrowserTest {
   std::map<GURL, net::test_server::HttpRequest::HeaderMap> received_headers_;
 };
 
+// Fails flakily in TSAN: https://crbug.com/1192437
+#if defined(THREAD_SANITIZER)
+#define MAYBE_TestStrippingHeadersFromResourceRequest \
+  DISABLED_TestStrippingHeadersFromResourceRequest
+#else
+#define MAYBE_TestStrippingHeadersFromResourceRequest \
+  TestStrippingHeadersFromResourceRequest
+#endif
 // Verify in an integration test that the variations header (X-Client-Data) is
 // attached to network requests to Google but stripped on redirects.
 IN_PROC_BROWSER_TEST_F(WebLayerVariationsHttpBrowserTest,
-                       TestStrippingHeadersFromResourceRequest) {
+                       MAYBE_TestStrippingHeadersFromResourceRequest) {
   OneShotNavigationObserver observer(shell());
   shell()->tab()->GetNavigationController()->Navigate(GetGoogleRedirectUrl1());
   observer.WaitForNavigation();

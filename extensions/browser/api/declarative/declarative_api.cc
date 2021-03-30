@@ -16,7 +16,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
 #include "base/task_runner_util.h"
 #include "base/values.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -187,12 +186,12 @@ ExtensionFunction::ResponseAction RulesFunction::Run() {
   if (content::BrowserThread::CurrentlyOn(rules_registry_->owner_thread()))
     return RespondNow(RunAsyncOnCorrectThread());
 
-  scoped_refptr<base::SingleThreadTaskRunner> thread_task_runner =
-      base::CreateSingleThreadTaskRunner({rules_registry_->owner_thread()});
-  base::PostTaskAndReplyWithResult(
-      thread_task_runner.get(), FROM_HERE,
-      base::BindOnce(&RulesFunction::RunAsyncOnCorrectThread, this),
-      base::BindOnce(&RulesFunction::SendResponse, this));
+  content::BrowserThread::GetTaskRunnerForThread(
+      rules_registry_->owner_thread())
+      ->PostTaskAndReplyWithResult(
+          FROM_HERE,
+          base::BindOnce(&RulesFunction::RunAsyncOnCorrectThread, this),
+          base::BindOnce(&RulesFunction::SendResponse, this));
   return RespondLater();
 }
 

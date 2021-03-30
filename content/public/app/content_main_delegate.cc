@@ -36,6 +36,12 @@ int ContentMainDelegate::TerminateForFatalInitializationError() {
   return 0;
 }
 
+#if defined(OS_WIN)
+bool ContentMainDelegate::ShouldHandleConsoleControlEvents() {
+  return false;
+}
+#endif
+
 bool ContentMainDelegate::ShouldCreateFeatureList() {
   return true;
 }

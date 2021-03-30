@@ -12,7 +12,9 @@ import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.Context
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchBarControl;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchImageControl;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
+import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanelHelp;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPromoControl;
+import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.RelatedSearchesControl;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -44,13 +46,20 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
      * @param resourceManager Manager to get view and image resources.
      * @param panel The OverlayPanel to render.
      * @param searchBarControl The Search Bar control.
-     * @param barBannerControl The promotion for Contextual Search.
+     * @param barBannerControl An optional banner that shows above the Bar as a promo.
+     * @param promoControl The privacy Opt-in promo that appears below the Bar.
+     * @param relatedSearchesControl A control that displays Related Searches suggestions for the
+     *        user to consider for one-click searching.
+     * @param helpControl A control for the help section of the panel that promotes modified
+     *        user usage and appears below the Bar and above the content.
      * @param imageControl The object controlling the image displayed in the Bar.
      */
     public void update(ResourceManager resourceManager, ContextualSearchPanel panel,
             ContextualSearchBarControl searchBarControl,
             ContextualSearchBarBannerControl barBannerControl,
-            ContextualSearchPromoControl promoControl, ContextualSearchImageControl imageControl) {
+            ContextualSearchPromoControl promoControl, ContextualSearchPanelHelp helpControl,
+            RelatedSearchesControl relatedSearchesControl,
+            ContextualSearchImageControl imageControl) {
         // Don't try to update the layer if not initialized or showing.
         if (resourceManager == null || !panel.isShowing()) return;
 
@@ -76,6 +85,19 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
         float searchPromoOpacity = promoControl.getOpacity();
         int searchPromoBackgroundColor = promoControl.getBackgroundColor();
 
+        // Panel Help section
+        int panelHelpViewId = helpControl.getViewId();
+        boolean panelHelpVisible = helpControl.isVisible();
+        float panelHelpHeightPx = helpControl.getHeightPx();
+        float panelHelpOpacity = helpControl.getOpacity();
+        int panelHelpContainerBackgroundColor = helpControl.getContainerBackgroundColor();
+
+        // Related Searches section
+        int relatedSearchesViewId = relatedSearchesControl.getViewId();
+        boolean relatedSearchesVisible = relatedSearchesControl.isVisible();
+        float relatedSearchesHeightPx = relatedSearchesControl.getHeightPx();
+
+        // Banner etc.
         int searchBarBannerTextViewId = barBannerControl.getViewId();
         boolean searchBarBannerVisible = barBannerControl.isVisible();
         float searchBarBannerHeightPx = barBannerControl.getHeightPx();
@@ -128,11 +150,9 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
 
         WebContents panelWebContents = panel.getWebContents();
 
-        int roundedBarTopResourceId =
-                org.chromium.components.browser_ui.styles.R.drawable.top_round;
+        int roundedBarTopResourceId = R.drawable.top_round_foreground;
         int separatorLineColor = panel.getSeparatorLineColor();
-        // The top_round resource includes the shadow so we only need a side shadow.
-        int panelShadowResourceId = R.drawable.overlay_side_shadow;
+        int panelShadowResourceId = R.drawable.top_round_shadow;
         int closeIconResourceId = INVALID_RESOURCE_ID;
 
         // TODO(donnd): crbug.com/1143472 - Remove parameters for the now
@@ -149,6 +169,12 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
                 panel.getTabHeight() * mDpToPx, panel.getBasePageBrightness(),
                 panel.getBasePageY() * mDpToPx, panelWebContents, searchPromoVisible,
                 searchPromoHeightPx, searchPromoOpacity, searchPromoBackgroundColor,
+                // Panel Help
+                panelHelpViewId, panelHelpVisible, panelHelpHeightPx, panelHelpOpacity,
+                panelHelpContainerBackgroundColor,
+                // Related Searches
+                relatedSearchesViewId, relatedSearchesVisible, relatedSearchesHeightPx,
+                // Banner etc.
                 searchBarBannerVisible, searchBarBannerHeightPx, searchBarBannerPaddingPx,
                 searchBarBannerRippleWidthPx, searchBarBannerRippleOpacity,
                 searchBarBannerTextOpacity, searchPanelX * mDpToPx, searchPanelY * mDpToPx,
@@ -222,17 +248,24 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
                 int barBannerTextResourceId, float dpToPx, float layoutWidth, float layoutHeight,
                 float basePageBrightness, float basePageYOffset, WebContents webContents,
                 boolean searchPromoVisible, float searchPromoHeight, float searchPromoOpacity,
-                int searchPromoBackgroundColor, boolean searchBarBannerVisible,
-                float searchBarBannerHeight, float searchBarBannerPaddingPx,
-                float searchBarBannerRippleWidth, float searchBarBannerRippleOpacity,
-                float searchBarBannerTextOpacity, float searchPanelX, float searchPanelY,
-                float searchPanelWidth, float searchPanelHeight, float searchBarMarginSide,
-                float searchBarMarginTop, float searchBarHeight, float searchContextOpacity,
-                float searchTextLayerMinHeight, float searchTermOpacity,
-                float searchTermCaptionSpacing, float searchCaptionAnimationPercentage,
-                boolean searchCaptionVisible, boolean searchBarBorderVisible,
-                float searchBarBorderHeight, boolean quickActionIconVisible,
-                boolean thumbnailVisible, String thumbnailUrl,
+                int searchPromoBackgroundColor,
+                // Panel Help
+                int panelHelpResourceId, boolean panelHelpVisible, float panelHelpHeight,
+                float panelHelpOpacity, int panelHelpBackgroundColor,
+                // Related Searches
+                int relatedSearchesResourceId, boolean relatedSearchesVisible,
+                float relatedSearchesHeight,
+                // Banner etc
+                boolean searchBarBannerVisible, float searchBarBannerHeight,
+                float searchBarBannerPaddingPx, float searchBarBannerRippleWidth,
+                float searchBarBannerRippleOpacity, float searchBarBannerTextOpacity,
+                float searchPanelX, float searchPanelY, float searchPanelWidth,
+                float searchPanelHeight, float searchBarMarginSide, float searchBarMarginTop,
+                float searchBarHeight, float searchContextOpacity, float searchTextLayerMinHeight,
+                float searchTermOpacity, float searchTermCaptionSpacing,
+                float searchCaptionAnimationPercentage, boolean searchCaptionVisible,
+                boolean searchBarBorderVisible, float searchBarBorderHeight,
+                boolean quickActionIconVisible, boolean thumbnailVisible, String thumbnailUrl,
                 float customImageVisibilityPercentage, int barImageSize, int iconColor,
                 int dragHandlebarColor, float closeIconOpacity, boolean isProgressBarVisible,
                 float progressBarHeight, float progressBarOpacity, float progressBarCompletion,

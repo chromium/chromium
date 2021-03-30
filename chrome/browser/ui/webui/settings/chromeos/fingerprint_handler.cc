@@ -12,10 +12,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/login/quick_unlock/auth_token.h"
-#include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_factory.h"
-#include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_storage.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/login/quick_unlock/auth_token.h"
+#include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
+#include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -105,13 +105,13 @@ void FingerprintHandler::RegisterMessages() {
 void FingerprintHandler::OnJavascriptAllowed() {
   // SessionManager may not exist in some tests.
   if (SessionManager::Get())
-    session_observer_.Add(SessionManager::Get());
+    session_observation_.Observe(SessionManager::Get());
 
   fp_service_->AddFingerprintObserver(receiver_.BindNewPipeAndPassRemote());
 }
 
 void FingerprintHandler::OnJavascriptDisallowed() {
-  session_observer_.RemoveAll();
+  session_observation_.Reset();
   receiver_.reset();
 }
 

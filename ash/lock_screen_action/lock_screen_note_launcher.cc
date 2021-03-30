@@ -27,7 +27,7 @@ bool LockScreenNoteLauncher::Run(mojom::LockScreenNoteOrigin action_origin,
     return false;
 
   callback_ = std::move(callback);
-  tray_action_observer_.Add(Shell::Get()->tray_action());
+  tray_action_observation_.Observe(Shell::Get()->tray_action());
 
   Shell::Get()->tray_action()->RequestNewLockScreenNote(action_origin);
   return true;
@@ -42,7 +42,7 @@ void LockScreenNoteLauncher::OnLockScreenNoteStateChanged(
 }
 
 void LockScreenNoteLauncher::OnLaunchDone(bool success) {
-  tray_action_observer_.RemoveAll();
+  tray_action_observation_.Reset();
   if (!callback_.is_null())
     std::move(callback_).Run(success);
 }

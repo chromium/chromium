@@ -5,9 +5,14 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 
 #include "ash/public/cpp/ash_features.h"
+#include "base/callback_helpers.h"
 #include "base/json/json_writer.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_manager_test_helper.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_test_utils.h"
 #include "chrome/browser/chromeos/policy/login_policy_test_base.h"
@@ -45,9 +50,9 @@ const DlpContentRestrictionSet kScreenShareRestricted(
     DlpContentRestriction::kScreenShare);
 
 constexpr char kScreenCapturePausedNotificationId[] =
-    "screen_capture_dlp_paused";
+    "screen_capture_dlp_paused-label";
 constexpr char kScreenCaptureResumedNotificationId[] =
-    "screen_capture_dlp_resumed";
+    "screen_capture_dlp_resumed-label";
 
 constexpr char kAllowedUrl[] = "https://example.com";
 constexpr char kUrl1[] = "https://example1.com";
@@ -66,6 +71,10 @@ class DlpContentManagerBrowserTest : public InProcessBrowserTest {
     scoped_feature_list_.InitAndEnableFeature(ash::features::kCaptureMode);
     InProcessBrowserTest::SetUp();
   }
+
+ protected:
+  DlpContentManagerTestHelper helper_;
+  base::HistogramTester histogram_tester_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -95,36 +104,55 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenshotsRestricted) {
   EXPECT_FALSE(manager->IsScreenshotRestricted(window));
   EXPECT_FALSE(manager->IsScreenshotRestricted(partial_in));
   EXPECT_FALSE(manager->IsScreenshotRestricted(partial_out));
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, true, 0);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, false, 4);
 
-  manager->OnConfidentialityChanged(web_contents, kScreenshotRestricted);
+  helper_.ChangeConfidentiality(web_contents, kScreenshotRestricted);
   EXPECT_TRUE(manager->IsScreenshotRestricted(fullscreen));
   EXPECT_TRUE(manager->IsScreenshotRestricted(window));
   EXPECT_TRUE(manager->IsScreenshotRestricted(partial_in));
   EXPECT_FALSE(manager->IsScreenshotRestricted(partial_out));
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, true, 3);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, false, 5);
 
   web_contents->WasHidden();
-  manager->OnVisibilityChanged(web_contents);
+  helper_.ChangeVisibility(web_contents);
   EXPECT_FALSE(manager->IsScreenshotRestricted(fullscreen));
   EXPECT_TRUE(manager->IsScreenshotRestricted(window));
   EXPECT_FALSE(manager->IsScreenshotRestricted(partial_in));
   EXPECT_FALSE(manager->IsScreenshotRestricted(partial_out));
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, true, 4);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, false, 8);
 
   web_contents->WasShown();
-  manager->OnVisibilityChanged(web_contents);
+  helper_.ChangeVisibility(web_contents);
   EXPECT_TRUE(manager->IsScreenshotRestricted(fullscreen));
   EXPECT_TRUE(manager->IsScreenshotRestricted(window));
   EXPECT_TRUE(manager->IsScreenshotRestricted(partial_in));
   EXPECT_FALSE(manager->IsScreenshotRestricted(partial_out));
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, true, 7);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, false, 9);
 
-  manager->OnWebContentsDestroyed(web_contents);
+  helper_.DestroyWebContents(web_contents);
   EXPECT_FALSE(manager->IsScreenshotRestricted(fullscreen));
   EXPECT_FALSE(manager->IsScreenshotRestricted(partial_in));
   EXPECT_FALSE(manager->IsScreenshotRestricted(partial_out));
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, true, 7);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, false, 12);
 }
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
                        VideoCaptureStoppedWhenConfidentialWindowResized) {
-  DlpContentManager* manager = DlpContentManager::Get();
   aura::Window* root_window =
       browser()->window()->GetNativeWindow()->GetRootWindow();
 
@@ -147,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
   browser2->window()->SetBounds(gfx::Rect(0, 0, 700, 700));
 
   // Make first window content as confidential.
-  manager->OnConfidentialityChanged(web_contents1, kVideoCaptureRestricted);
+  helper_.ChangeConfidentiality(web_contents1, kVideoCaptureRestricted);
 
   // Start capture of the whole screen.
   base::RunLoop run_loop;
@@ -163,11 +191,12 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
 
   capture_mode_delegate->StopObservingRestrictedContent();
   browser2->window()->Close();
+  histogram_tester_.ExpectUniqueSample(
+      GetDlpHistogramPrefix() + dlp::kVideoCaptureInterruptedUMA, true, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
                        VideoCaptureStoppedWhenNonConfidentialWindowResized) {
-  DlpContentManager* manager = DlpContentManager::Get();
   aura::Window* root_window =
       browser()->window()->GetNativeWindow()->GetRootWindow();
 
@@ -190,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
   browser2->window()->SetBounds(gfx::Rect(0, 0, 700, 700));
 
   // Make first window content as confidential.
-  manager->OnConfidentialityChanged(web_contents1, kVideoCaptureRestricted);
+  helper_.ChangeConfidentiality(web_contents1, kVideoCaptureRestricted);
 
   // Start capture of the whole screen.
   base::RunLoop run_loop;
@@ -206,11 +235,12 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
 
   capture_mode_delegate->StopObservingRestrictedContent();
   browser2->window()->Close();
+  histogram_tester_.ExpectUniqueSample(
+      GetDlpHistogramPrefix() + dlp::kVideoCaptureInterruptedUMA, true, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
                        VideoCaptureNotStoppedWhenConfidentialWindowHidden) {
-  DlpContentManager* manager = DlpContentManager::Get();
   aura::Window* root_window =
       browser()->window()->GetNativeWindow()->GetRootWindow();
 
@@ -233,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
   browser2->window()->SetBounds(gfx::Rect(0, 0, 700, 700));
 
   // Make first window content as confidential.
-  manager->OnConfidentialityChanged(web_contents1, kVideoCaptureRestricted);
+  helper_.ChangeConfidentiality(web_contents1, kVideoCaptureRestricted);
 
   // Start capture of the whole screen.
   base::RunLoop run_loop;
@@ -251,6 +281,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
   capture_mode_delegate->StopObservingRestrictedContent();
 
   browser2->window()->Close();
+  histogram_tester_.ExpectTotalCount(
+      GetDlpHistogramPrefix() + dlp::kVideoCaptureInterruptedUMA, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
@@ -264,26 +296,39 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
       browser()->window()->GetNativeWindow()->GetRootWindow();
   const auto media_id = content::DesktopMediaID::RegisterNativeWindow(
       content::DesktopMediaID::TYPE_SCREEN, root_window);
-  manager->OnScreenCaptureStarted("label", {media_id}, base::DoNothing());
+  manager->OnScreenCaptureStarted("label", {media_id}, u"example.com",
+                                  base::DoNothing());
 
   EXPECT_FALSE(display_service_tester.GetNotification(
       kScreenCapturePausedNotificationId));
   EXPECT_FALSE(display_service_tester.GetNotification(
       kScreenCaptureResumedNotificationId));
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, true, 0);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, false, 0);
 
-  manager->OnConfidentialityChanged(web_contents, kScreenShareRestricted);
+  helper_.ChangeConfidentiality(web_contents, kScreenShareRestricted);
 
   EXPECT_TRUE(display_service_tester.GetNotification(
       kScreenCapturePausedNotificationId));
   EXPECT_FALSE(display_service_tester.GetNotification(
       kScreenCaptureResumedNotificationId));
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, true, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, false, 0);
 
-  manager->OnConfidentialityChanged(web_contents, kEmptyRestrictionSet);
+  helper_.ChangeConfidentiality(web_contents, kEmptyRestrictionSet);
 
   EXPECT_FALSE(display_service_tester.GetNotification(
       kScreenCapturePausedNotificationId));
   EXPECT_TRUE(display_service_tester.GetNotification(
       kScreenCaptureResumedNotificationId));
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, true, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, false, 1);
 
   manager->OnScreenCaptureStopped("label", media_id);
 
@@ -291,6 +336,10 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
       kScreenCapturePausedNotificationId));
   EXPECT_FALSE(display_service_tester.GetNotification(
       kScreenCaptureResumedNotificationId));
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, true, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, false, 1);
 }
 
 class DlpContentManagerPolicyBrowserTest : public LoginPolicyTestBase {
@@ -307,6 +356,9 @@ class DlpContentManagerPolicyBrowserTest : public LoginPolicyTestBase {
         policy, /*recommended=*/base::DictionaryValue(),
         ProfileManager::GetActiveUserProfile());
   }
+
+ protected:
+  DlpContentManagerTestHelper helper_;
 };
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerPolicyBrowserTest,
@@ -366,16 +418,14 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerPolicyBrowserTest,
   screenshot_and_videocapture.SetRestriction(
       DlpContentRestriction::kVideoCapture);
   EXPECT_EQ(screenshot_and_videocapture,
-            DlpContentManager::Get()->GetRestrictionSetForURL(GURL(kUrl1)));
+            helper_.GetRestrictionSetForURL(GURL(kUrl1)));
   EXPECT_EQ(kPrivacyScreenEnforced,
-            DlpContentManager::Get()->GetRestrictionSetForURL(GURL(kUrl2)));
-  EXPECT_EQ(kPrintRestricted,
-            DlpContentManager::Get()->GetRestrictionSetForURL(GURL(kUrl3)));
+            helper_.GetRestrictionSetForURL(GURL(kUrl2)));
+  EXPECT_EQ(kPrintRestricted, helper_.GetRestrictionSetForURL(GURL(kUrl3)));
   EXPECT_EQ(kScreenShareRestricted,
-            DlpContentManager::Get()->GetRestrictionSetForURL(GURL(kUrl4)));
-  EXPECT_EQ(
-      DlpContentRestrictionSet(),
-      DlpContentManager::Get()->GetRestrictionSetForURL(GURL(kAllowedUrl)));
+            helper_.GetRestrictionSetForURL(GURL(kUrl4)));
+  EXPECT_EQ(DlpContentRestrictionSet(),
+            helper_.GetRestrictionSetForURL(GURL(kAllowedUrl)));
 }
 
 }  // namespace policy

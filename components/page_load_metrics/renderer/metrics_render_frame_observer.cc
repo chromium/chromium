@@ -17,7 +17,6 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "third_party/blink/public/common/mobile_metrics/mobile_friendliness.h"
-#include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -147,6 +146,14 @@ void MetricsRenderFrameObserver::DidObserveLayoutShift(
   if (page_timing_metrics_sender_)
     page_timing_metrics_sender_->DidObserveLayoutShift(score,
                                                        after_input_or_scroll);
+}
+
+void MetricsRenderFrameObserver::DidObserveInputForLayoutShiftTracking(
+    base::TimeTicks timestamp) {
+  if (page_timing_metrics_sender_) {
+    page_timing_metrics_sender_->DidObserveInputForLayoutShiftTracking(
+        timestamp);
+  }
 }
 
 void MetricsRenderFrameObserver::DidObserveLayoutNg(uint32_t all_block_count,
@@ -303,14 +310,6 @@ void MetricsRenderFrameObserver::DidCreateDocumentElement() {
   if (render_frame()->IsMainFrame())
     return;
 
-  // Every frame creates an initial about:blank document element prior to
-  // receiving a navigation to about:blank. Ignore this initial document
-  // element.
-  if (!first_document_observed_) {
-    first_document_observed_ = true;
-    return;
-  }
-
   // A new document element was created in a frame that did not commit a
   // provisional load. This can be due to a doc.write in the frame that aborted
   // a navigation. Create a page timing sender to track this load. This sender
@@ -383,7 +382,7 @@ void MetricsRenderFrameObserver::OnAdResourceObserved(int request_id) {
 }
 
 void MetricsRenderFrameObserver::OnMainFrameIntersectionChanged(
-    const blink::WebRect& main_frame_intersection) {
+    const gfx::Rect& main_frame_intersection) {
   if (page_timing_metrics_sender_)
     page_timing_metrics_sender_->OnMainFrameIntersectionChanged(
         main_frame_intersection);

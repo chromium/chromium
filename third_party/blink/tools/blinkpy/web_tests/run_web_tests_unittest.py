@@ -964,15 +964,51 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
     def test_test_list(self):
         host = MockHost()
         filename = '/tmp/foo.txt'
-        host.filesystem.write_text_file(filename, 'passes/text.html')
+        test_list = 'passes/text.html'
+        host.filesystem.write_text_file(filename, test_list)
         tests_run = get_tests_run(['--test-list=%s' % filename], host=host)
-        self.assertEqual(['passes/text.html'], tests_run)
+        self.assertEqual([test_list], tests_run)
         host.filesystem.remove(filename)
+
+        # After the end of the with, the file is deleted.
         details, err, _ = logging_run(['--test-list=%s' % filename],
                                       tests_included=True,
                                       host=host)
         self.assertEqual(details.exit_code, exit_codes.NO_TESTS_EXIT_STATUS)
         self.assert_not_empty(err)
+
+    def test_test_list_filter_glob(self):
+        host = MockHost()
+        filename = '/tmp/foo.txt'
+        host.filesystem.write_text_file(filename, '-passes/t*')
+        args = ['passes/text.html', 'passes/image.html']
+        tests_run = get_tests_run(['--test-list=%s' % filename] + args,
+                                  host=host)
+        self.assertEqual(tests_run, ['passes/image.html'])
+
+    def test_test_list_filter(self):
+        host = MockHost()
+        filename = '/tmp/foo.txt'
+        host.filesystem.write_text_file(filename, '-passes/image.html')
+        args = ['passes/text.html', 'passes/image.html']
+        tests_run = get_tests_run(['--test-list=%s' % filename] + args,
+                                  host=host)
+        self.assertEqual(tests_run, ['passes/text.html'])
+
+    def test_test_list_union(self):
+        host = MockHost()
+        filename1 = '/tmp/foo1.txt'
+        filename2 = '/tmp/foo2.txt'
+        test_list1 = 'passes/text.html'
+        test_list2 = 'passes/image.html'
+        host.filesystem.write_text_file(filename1, test_list1)
+        host.filesystem.write_text_file(filename2, test_list2)
+        # host and host2 are the same
+        tests_run = get_tests_run(
+            ['--test-list=%s' % filename1,
+             '--test-list=%s' % filename2],
+            host=host)
+        self.assertEqual(tests_run, [test_list1, test_list2])
 
     def test_test_list_with_prefix(self):
         host = MockHost()

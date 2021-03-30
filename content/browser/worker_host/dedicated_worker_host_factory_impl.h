@@ -26,6 +26,7 @@ class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
   DedicatedWorkerHostFactoryImpl(
       int worker_process_id,
       base::Optional<GlobalFrameRoutingId> creator_render_frame_host_id,
+      base::Optional<blink::DedicatedWorkerToken> creator_worker_token,
       GlobalFrameRoutingId ancestor_render_frame_host_id,
       const url::Origin& creator_origin,
       const net::IsolationInfo& isolation_info,
@@ -37,8 +38,10 @@ class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
   // blink::mojom::DedicatedWorkerHostFactory:
   void CreateWorkerHost(
       const blink::DedicatedWorkerToken& token,
+      const GURL& script_url,
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
           broker_receiver,
+      mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost> host_receiver,
       base::OnceCallback<void(const network::CrossOriginEmbedderPolicy&)>
           callback) override;
 
@@ -59,6 +62,7 @@ class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
 
   // See comments on the corresponding members of DedicatedWorkerHost.
   const base::Optional<GlobalFrameRoutingId> creator_render_frame_host_id_;
+  const base::Optional<blink::DedicatedWorkerToken> creator_worker_token_;
   const GlobalFrameRoutingId ancestor_render_frame_host_id_;
 
   const url::Origin creator_origin_;

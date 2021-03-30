@@ -14,13 +14,13 @@
 #include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "components/cbor/diagnostic_writer.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/writer.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/authenticator_supported_options.h"
-#include "device/fido/client_data.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/opaque_attestation_statement.h"
@@ -104,13 +104,6 @@ ReadCTAPMakeCredentialResponse(FidoTransportProtocol transport_used,
     response.enterprise_attestation_returned = it->second.GetBool();
   }
 
-  if (base::FeatureList::IsEnabled(kWebAuthPhoneSupport)) {
-    it = decoded_map.find(CBOR(kAndroidClientDataExtOutputKey));
-    if (it != decoded_map.end() && it->second.is_bytestring()) {
-      response.set_android_client_data_ext(it->second.GetBytestring());
-    }
-  }
-
   it = decoded_map.find(CBOR(0x05));
   if (it != decoded_map.end()) {
     if (!it->second.is_bytestring() ||
@@ -154,7 +147,7 @@ base::Optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
         PublicKeyCredentialDescriptor::CreateFromCBORValue(it->second);
     if (!credential)
       return base::nullopt;
-    response.SetCredential(std::move(*credential));
+    response.credential = std::move(*credential);
   }
 
   it = response_map.find(CBOR(0x04));
@@ -162,7 +155,7 @@ base::Optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
     auto user = PublicKeyCredentialUserEntity::CreateFromCBORValue(it->second);
     if (!user)
       return base::nullopt;
-    response.SetUserEntity(std::move(*user));
+    response.user_entity = std::move(*user);
   }
 
   it = response_map.find(CBOR(0x05));
@@ -170,24 +163,21 @@ base::Optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
     if (!it->second.is_unsigned())
       return base::nullopt;
 
-    response.SetNumCredentials(it->second.GetUnsigned());
-  }
-
-  if (base::FeatureList::IsEnabled(kWebAuthPhoneSupport)) {
-    it = response_map.find(CBOR(kAndroidClientDataExtOutputKey));
-    if (it != response_map.end() && it->second.is_bytestring()) {
-      response.set_android_client_data_ext(it->second.GetBytestring());
-    }
+    response.num_credentials = it->second.GetUnsigned();
   }
 
   it = response_map.find(CBOR(0x07));
   if (it != response_map.end()) {
-    if (!it->second.is_bytestring() ||
-        it->second.GetBytestring().size() != kLargeBlobKeyLength) {
+    if (!it->second.is_bytestring()) {
       return base::nullopt;
     }
-    response.set_large_blob_key(
-        base::make_span<kLargeBlobKeyLength>(it->second.GetBytestring()));
+    const std::vector<uint8_t>& key = it->second.GetBytestring();
+    response.large_blob_key.emplace();
+    if (key.size() != response.large_blob_key->size()) {
+      return base::nullopt;
+    }
+    memcpy(response.large_blob_key->data(), key.data(),
+           response.large_blob_key->size());
   }
 
   return response;
@@ -288,8 +278,6 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
       const std::string& extension_str = extension.GetString();
       if (extension_str == kExtensionCredProtect) {
         options.supports_cred_protect = true;
-      } else if (extension_str == kExtensionAndroidClientData) {
-        options.supports_android_client_data_ext = true;
       }
       extensions.push_back(extension_str);
     }
@@ -548,6 +536,16 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
 
       response.algorithms.push_back(alg);
     }
+  }
+
+  it = response_map.find(CBOR(0x0b));
+  if (it != response_map.end()) {
+    if (!it->second.is_unsigned()) {
+      return base::nullopt;
+    }
+
+    response.max_serialized_large_blob_array =
+        base::saturated_cast<uint32_t>(it->second.GetUnsigned());
   }
 
   it = response_map.find(CBOR(0x0c));

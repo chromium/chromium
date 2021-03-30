@@ -69,7 +69,7 @@ PublicAccountWarningDialog::PublicAccountWarningDialog(
   SetLayoutManager(std::move(layout));
   SetBorder(views::CreateEmptyBorder(gfx::Insets(kDialogContentMarginDp)));
 
-  auto add_bulleted_label = [&](const base::string16& text) {
+  auto add_bulleted_label = [&](const std::u16string& text) {
     auto* container = new views::View();
     auto layout = std::make_unique<views::FlexLayout>();
     // Align the bullet to the top line of multi-line labels.

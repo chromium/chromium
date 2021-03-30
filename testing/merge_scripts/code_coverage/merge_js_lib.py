@@ -208,7 +208,7 @@ def _get_coverage_paths(input_dir):
   for dir_path, _sub_dirs, file_names in os.walk(input_dir):
     paths.extend([
       os.path.join(dir_path, fn) for fn in file_names
-      if fn.endswith('.json')
+      if fn.endswith('.cov.json')
     ])
   return paths
 

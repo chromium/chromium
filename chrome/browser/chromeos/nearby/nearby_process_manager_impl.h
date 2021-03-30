@@ -24,7 +24,7 @@ class NearbyConnectionsDependenciesProvider;
 // because its dependencies are associated with the current user.
 //
 // This class starts up the utility process when at least one client holds a
-// NearbyReferenceImpl object. When the first client requets a reference, this
+// NearbyReferenceImpl object. When the first client requests a reference, this
 // class creates a Mojo connection to the Sharing interface, which causes the
 // process to start up. Once the last remaining client deletes its reference,
 // this class invokes the asynchronous shutdown flow, then disconnects the
@@ -87,7 +87,7 @@ class NearbyProcessManagerImpl : public NearbyProcessManager {
 
   // NearbyProcessManagerImpl:
   std::unique_ptr<NearbyProcessReference> GetNearbyProcessReference(
-      base::OnceClosure on_process_stopped_callback) override;
+      NearbyProcessStoppedCallback on_process_stopped_callback) override;
 
   // KeyedService:
   void Shutdown() override;
@@ -95,9 +95,11 @@ class NearbyProcessManagerImpl : public NearbyProcessManager {
   // Returns whether the process was successfully bound.
   bool AttemptToBindToUtilityProcess();
 
-  void OnActiveSharingDisconnected();
+  void OnSharingProcessCrash();
+  void OnMojoPipeDisconnect();
   void OnReferenceDeleted(const base::UnguessableToken& reference_id);
-  void ShutDownProcess();
+  void ShutDownProcess(NearbyProcessShutdownReason shutdown_reason);
+  void NotifyProcessStopped(NearbyProcessShutdownReason shutdown_reason);
 
   NearbyConnectionsDependenciesProvider*
       nearby_connections_dependencies_provider_;
@@ -117,7 +119,7 @@ class NearbyProcessManagerImpl : public NearbyProcessManager {
 
   // Map which stores callbacks to be invoked if the Nearby process shuts down
   // unexpectedly, before clients release their references.
-  base::flat_map<base::UnguessableToken, base::OnceClosure>
+  base::flat_map<base::UnguessableToken, NearbyProcessStoppedCallback>
       id_to_process_stopped_callback_map_;
 
   bool shut_down_ = false;

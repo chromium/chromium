@@ -34,6 +34,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final
                                const base::Optional<PhysicalRect>
                                    updated_layout_overflow = base::nullopt);
 
+  using MulticolCollection = NGContainerFragmentBuilder::MulticolCollection;
   using PassKey = base::PassKey<NGPhysicalBoxFragment>;
   NGPhysicalBoxFragment(PassKey,
                         NGBoxFragmentBuilder* builder,
@@ -56,6 +57,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final
   scoped_refptr<const NGLayoutResult> CloneAsHiddenForPaint() const;
 
   ~NGPhysicalBoxFragment() {
+    ink_overflow_.Reset(InkOverflowType());
     if (has_fragment_items_)
       ComputeItemsAddress()->~NGFragmentItems();
     if (has_rare_data_)
@@ -130,6 +132,10 @@ class CORE_EXPORT NGPhysicalBoxFragment final
   // no out-of-flow positioned objects). This will return |base::nullopt| if:
   //  - The fragment is *not* a scroll container.
   //  - The scroll container contains no inflow children.
+  // This is normally the union of all inflow children's border-box rects
+  // (without relative positioning applied), however for grid layout it is the
+  // size and position of the grid instead.
+  // This is used for scrollable overflow calculations.
   const base::Optional<PhysicalRect> InflowBounds() const {
     if (!has_inflow_bounds_)
       return base::nullopt;
@@ -152,6 +158,20 @@ class CORE_EXPORT NGPhysicalBoxFragment final
         const_cast<Vector<NGPhysicalOutOfFlowPositionedNode>&>(
             ComputeRareDataAddress()->oof_positioned_fragmentainer_descendants);
     return {descendants.data(), descendants.size()};
+  }
+
+  bool HasMulticolsWithPendingOOFs() const {
+    if (!has_rare_data_)
+      return false;
+
+    return !ComputeRareDataAddress()->multicols_with_pending_oofs.IsEmpty();
+  }
+
+  MulticolCollection MulticolsWithPendingOOFs() const {
+    if (!has_rare_data_)
+      return MulticolCollection();
+    return const_cast<MulticolCollection&>(
+        ComputeRareDataAddress()->multicols_with_pending_oofs);
   }
 
   NGPixelSnappedPhysicalBoxStrut PixelSnappedPadding() const {
@@ -191,6 +211,14 @@ class CORE_EXPORT NGPhysicalBoxFragment final
     return is_inline_formatting_context_;
   }
 
+  // The |LayoutBox| whose |PhysicalFragments()| contains |this|. This is
+  // different from |GetLayoutObject()| if |this.IsColumnBox()|.
+  const LayoutBox* OwnerLayoutBox() const;
+  LayoutBox* MutableOwnerLayoutBox() const;
+
+  // Returns the offset in the |OwnerLayoutBox| coordinate system.
+  PhysicalOffset OffsetFromOwnerLayoutBox() const;
+
   PhysicalRect ScrollableOverflow(TextHeightType height_type) const;
   PhysicalRect ScrollableOverflowFromChildren(TextHeightType height_type) const;
 
@@ -208,6 +236,13 @@ class CORE_EXPORT NGPhysicalBoxFragment final
       OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize) const;
   LayoutSize PixelSnappedScrolledContentOffset() const;
   PhysicalSize ScrollSize() const;
+
+  NGInkOverflow::Type InkOverflowType() const {
+    return static_cast<NGInkOverflow::Type>(ink_overflow_type_);
+  }
+  bool HasInkOverflow() const {
+    return InkOverflowType() != NGInkOverflow::kNone;
+  }
 
   // Compute visual overflow of this box in the local coordinate.
   PhysicalRect ComputeSelfInkOverflow() const;
@@ -305,6 +340,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final
 
     Vector<NGPhysicalOutOfFlowPositionedNode>
         oof_positioned_fragmentainer_descendants;
+    MulticolCollection multicols_with_pending_oofs;
     const std::unique_ptr<const NGMathMLPaintInfo> mathml_paint_info;
 
     // TablesNG rare data.
@@ -373,12 +409,26 @@ class CORE_EXPORT NGPhysicalBoxFragment final
                                    bool inline_container_relative,
                                    Vector<PhysicalRect>* outline_rects) const;
 
+  PositionWithAffinity PositionForPointByClosestChild(
+      PhysicalOffset point_in_contents) const;
+
+  PositionWithAffinity PositionForPointInBlockFlowDirection(
+      PhysicalOffset point_in_contents) const;
+
+  PositionWithAffinity PositionForPointInTable(
+      PhysicalOffset point_in_contents) const;
+
+  PositionWithAffinity PositionForPointRespectingEditingBoundaries(
+      const NGPhysicalBoxFragment& child,
+      PhysicalOffset point_in_child) const;
+
 #if DCHECK_IS_ON()
   void CheckIntegrity() const;
 #endif
 
   LayoutUnit baseline_;
   LayoutUnit last_baseline_;
+  NGInkOverflow ink_overflow_;
   NGLink children_[];
   // fragment_items, borders, padding, and rare_data are after |children_| if
   // they are not empty/initial.

@@ -12,26 +12,35 @@
 // clang-format off
 #define CROSS_PLATFORM_COLOR_IDS \
   /* Core color concepts */ \
-  E_CPONLY(kColorAccent, kUiColorsStart) \
+  /* Use the 3 param macro so kColorAccent is set to the correct value. */ \
+  E_CPONLY(kColorAccent, kUiColorsStart, kUiColorsStart) \
   E(kColorAlertHighSeverity, NativeTheme::kColorId_AlertSeverityHigh) \
   E(kColorAlertLowSeverity, NativeTheme::kColorId_AlertSeverityLow) \
   E(kColorAlertMediumSeverity, NativeTheme::kColorId_AlertSeverityMedium) \
   E_CPONLY(kColorDisabledForeground) \
+  E_CPONLY(kColorEndpointBackground) \
+  E_CPONLY(kColorEndpointForeground) \
+  E_CPONLY(kColorItemHighlight) \
   E_CPONLY(kColorItemSelectionBackground) \
+  E_CPONLY(kColorMenuSelectionBackground) \
   E_CPONLY(kColorMidground) \
   E_CPONLY(kColorPrimaryBackground) \
   E_CPONLY(kColorPrimaryForeground) \
   E_CPONLY(kColorSecondaryForeground) \
+  E_CPONLY(kColorSubtleAccent) \
   E_CPONLY(kColorSubtleEmphasisBackground) \
   E_CPONLY(kColorTextSelectionBackground) \
+  E_CPONLY(kColorTextSelectionForeground) \
   \
   /* Further UI element colors */ \
   E(kColorAvatarHeaderArt, NativeTheme::kColorId_AvatarHeaderArt) \
   E(kColorAvatarIconGuest, NativeTheme::kColorId_AvatarIconGuest) \
   E(kColorAvatarIconIncognito, NativeTheme::kColorId_AvatarIconIncognito) \
   E(kColorBubbleBackground, NativeTheme::kColorId_BubbleBackground) \
+  E(kColorBubbleBorder, NativeTheme::kColorId_BubbleBorder) \
   E(kColorBubbleFooterBackground, \
     NativeTheme::kColorId_BubbleFooterBackground) \
+  E(kColorBubbleFooterBorder, NativeTheme::kColorId_BubbleFooterBorder) \
   E(kColorButtonBackground, NativeTheme::kColorId_ButtonColor) \
   /* TODO(https://crbug.com/1003612): Map this to old color id. */ \
   E_CPONLY(kColorButtonBackgroundPressed) \
@@ -45,6 +54,7 @@
   E(kColorButtonBorderDisabled, \
     NativeTheme::kColorId_DisabledButtonBorderColor) \
   E(kColorButtonForeground, NativeTheme::kColorId_ButtonEnabledColor) \
+  E(kColorButtonForegroundChecked, NativeTheme::kColorId_ButtonCheckedColor) \
   E(kColorButtonForegroundDisabled, NativeTheme::kColorId_ButtonDisabledColor) \
   E(kColorButtonForegroundProminent, \
     NativeTheme::kColorId_TextOnProminentButtonColor) \
@@ -52,10 +62,21 @@
     NativeTheme::kColorId_ButtonUncheckedColor) \
   E(kColorDialogBackground, NativeTheme::kColorId_DialogBackground) \
   E(kColorDialogForeground, NativeTheme::kColorId_DialogForeground) \
+  E(kColorDropdownBackground, NativeTheme::kColorId_DropdownBackgroundColor) \
+  E(kColorDropdownBackgroundSelected, \
+    NativeTheme::kColorId_DropdownSelectedBackgroundColor) \
+  E(kColorDropdownForeground, NativeTheme::kColorId_DropdownForegroundColor) \
+  E(kColorDropdownForegroundSelected, \
+    NativeTheme::kColorId_DropdownSelectedForegroundColor) \
   E(kColorFocusableBorderFocused, NativeTheme::kColorId_FocusedBorderColor) \
   E(kColorFocusableBorderUnfocused, \
     NativeTheme::kColorId_UnfocusedBorderColor) \
+  E(kColorFrameActive, NativeTheme::kColorId_CustomFrameActiveColor) \
+  E(kColorFrameInactive, NativeTheme::kColorId_CustomFrameInactiveColor) \
+  E(kColorHelpIconActive, NativeTheme::kColorId_TooltipIconHovered) \
+  E(kColorHelpIconInactive, NativeTheme::kColorId_TooltipIcon) \
   E(kColorIcon, NativeTheme::kColorId_DefaultIconColor) \
+  E(kColorIconDisabled, NativeTheme::kColorId_DisabledIconColor) \
   E(kColorLabelForeground, NativeTheme::kColorId_LabelEnabledColor) \
   E(kColorLabelForegroundDisabled, NativeTheme::kColorId_LabelDisabledColor) \
   E(kColorLabelForegroundSecondary, NativeTheme::kColorId_LabelSecondaryColor) \
@@ -68,6 +89,7 @@
   E(kColorLinkForegroundPressed, NativeTheme::kColorId_LinkPressed) \
   E(kColorMenuBackground, NativeTheme::kColorId_MenuBackgroundColor) \
   E(kColorMenuBorder, NativeTheme::kColorId_MenuBorderColor) \
+  E(kColorMenuDropmarker, NativeTheme::kColorId_MenuDropIndicator) \
   E(kColorMenuIcon, NativeTheme::kColorId_MenuIconColor) \
   E(kColorMenuItemBackgroundAlertedInitial, \
     NativeTheme::kColorId_MenuItemInitialAlertBackgroundColor) \
@@ -88,6 +110,61 @@
   E(kColorMenuItemForegroundSelected, \
     NativeTheme::kColorId_SelectedMenuItemForegroundColor) \
   E(kColorMenuSeparator, NativeTheme::kColorId_MenuSeparatorColor) \
+  E(kColorNotificationActionsBackground, \
+    NativeTheme::kColorId_NotificationActionsRowBackground) \
+  E(kColorNotificationBackgroundActive, \
+    NativeTheme::kColorId_NotificationBackgroundActive) \
+  E(kColorNotificationBackgroundInactive, \
+    NativeTheme::kColorId_NotificationBackground) \
+  E(kColorNotificationHeaderForeground, \
+    NativeTheme::kColorId_NotificationDefaultAccentColor) \
+  E(kColorNotificationIconBackground, \
+    NativeTheme::kColorId_MessageCenterSmallImageMaskBackground) \
+  E(kColorNotificationIconForeground, \
+    NativeTheme::kColorId_MessageCenterSmallImageMaskForeground) \
+  E(kColorNotificationImageBackground, \
+    NativeTheme::kColorId_NotificationLargeImageBackground) \
+  E(kColorNotificationInputBackground, \
+    NativeTheme::kColorId_NotificationInkDropBase) \
+  E(kColorNotificationInputForeground, \
+    NativeTheme::kColorId_NotificationColor) \
+  E(kColorNotificationInputPlaceholderForeground, \
+    NativeTheme::kColorId_NotificationPlaceholderColor) \
+  E(kColorOverlayScrollbarFill, \
+    NativeTheme::kColorId_OverlayScrollbarThumbFill) \
+  E(kColorOverlayScrollbarFillHovered, \
+    NativeTheme::kColorId_OverlayScrollbarThumbHoveredFill) \
+  E(kColorOverlayScrollbarStroke, \
+    NativeTheme::kColorId_OverlayScrollbarThumbStroke) \
+  E(kColorOverlayScrollbarStrokeHovered, \
+    NativeTheme::kColorId_OverlayScrollbarThumbHoveredStroke) \
+  E(kColorPwaSecurityChipForeground, \
+    NativeTheme::kColorId_CustomTabBarSecurityChipDefaultColor) \
+  E(kColorPwaSecurityChipForegroundDangerous, \
+    NativeTheme::kColorId_CustomTabBarSecurityChipDangerousColor) \
+  E(kColorPwaSecurityChipForegroundPolicyCert, \
+    NativeTheme::kColorId_CustomTabBarSecurityChipWithCertColor) \
+  E(kColorPwaSecurityChipForegroundSecure, \
+    NativeTheme::kColorId_CustomTabBarSecurityChipSecureColor) \
+  E(kColorPwaToolbarBackground, \
+    NativeTheme::kColorId_CustomTabBarBackgroundColor) \
+  E(kColorPwaToolbarForeground, \
+    NativeTheme::kColorId_CustomTabBarForegroundColor) \
+  E(kColorSeparator, NativeTheme::kColorId_SeparatorColor) \
+  E(kColorSliderThumb, NativeTheme::kColorId_SliderThumbDefault) \
+  E(kColorSliderThumbMinimal, NativeTheme::kColorId_SliderThumbMinimal) \
+  E(kColorSliderTrack, NativeTheme::kColorId_SliderTroughDefault) \
+  E(kColorSliderTrackMinimal, NativeTheme::kColorId_SliderTroughMinimal) \
+  E(kColorSyncInfoBackground, \
+    NativeTheme::kColorId_SyncInfoContainerNoPrimaryAccount) \
+  E(kColorSyncInfoBackgroundError, \
+    NativeTheme::kColorId_SyncInfoContainerError) \
+  E(kColorSyncInfoBackgroundPaused, \
+    NativeTheme::kColorId_SyncInfoContainerPaused) \
+  E(kColorTabBackgroundHighlighted, \
+    NativeTheme::kColorId_TabHighlightBackground) \
+  E(kColorTabBackgroundHighlightedFocused, \
+    NativeTheme::kColorId_TabHighlightFocusedBackground) \
   E(kColorTabBorderSelected, NativeTheme::kColorId_TabSelectedBorderColor) \
   E(kColorTabContentSeparator, NativeTheme::kColorId_TabBottomBorder) \
   E(kColorTabForeground, NativeTheme::kColorId_TabTitleColorInactive) \
@@ -122,6 +199,14 @@
   E(kColorTextfieldSelectionForeground, \
     NativeTheme::kColorId_TextfieldSelectionColor) \
   E(kColorThrobber, NativeTheme::kColorId_ThrobberSpinningColor) \
+  E(kColorThrobberPreconnect, NativeTheme::kColorId_ThrobberWaitingColor) \
+  E(kColorToggleButtonShadow, NativeTheme::kColorId_ToggleButtonShadowColor) \
+  E(kColorToggleButtonThumbOff, \
+    NativeTheme::kColorId_ToggleButtonThumbColorOff) \
+  E(kColorToggleButtonThumbOn, NativeTheme::kColorId_ToggleButtonThumbColorOn) \
+  E(kColorToggleButtonTrackOff, \
+    NativeTheme::kColorId_ToggleButtonTrackColorOff) \
+  E(kColorToggleButtonTrackOn, NativeTheme::kColorId_ToggleButtonTrackColorOn) \
   E(kColorTooltipBackground, NativeTheme::kColorId_TooltipBackground) \
   E(kColorTooltipForeground, NativeTheme::kColorId_TooltipText) \
   E(kColorTreeBackground, NativeTheme::kColorId_TreeBackground) \

@@ -106,6 +106,7 @@ if ({{variable}} != null) {
 }
 {%-   elif kind|is_enum_kind %}
     {{kind|java_class_for_enum}}.validate({{variable}});
+    {{variable}} = {{kind|java_class_for_enum}}.toKnownValue({{variable}});
 {%-   endif %}
 {%- endif %}
 {%- endmacro %}

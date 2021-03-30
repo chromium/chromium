@@ -21,6 +21,8 @@ namespace viz {
 // purpose is to temporally stabilize the result.
 class VIZ_SERVICE_EXPORT OverlayCandidateTemporalTracker {
  public:
+  OverlayCandidateTemporalTracker();
+
   // The |Config| contains values that are derived as part of a heuristic. This
   // |Config| allows for the potential of platform specific variations or
   // experiments.
@@ -55,10 +57,16 @@ class VIZ_SERVICE_EXPORT OverlayCandidateTemporalTracker {
 
   // This function adds a new record to the tracker if the |resource_id| has
   // changed since last update.
+  // The |force_resource_update| flag has been added for the case when the
+  // resource has been updated but the |resource_id| has not changed. The case
+  // for when this occurs is a low latency surface (ink). Fortunately, we can
+  // use surface damage to ascertain when these surfaces have changed despite
+  // the |resource_id| remaining constant.
   void AddRecord(uint64_t curr_frame,
                  float damage_area_ratio,
-                 unsigned resource_id,
-                 const Config& config);
+                 ResourceId resource_id,
+                 const Config& config,
+                 bool force_resource_update = false);
 
   // This function returns true when this tracker's 'AddRecord' was not called
   // in the previous frame. We require this behavior in order to know when an
@@ -76,7 +84,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidateTemporalTracker {
 
  private:
   void CategorizeDamageRatioRate(uint64_t curr_frame, const Config& config);
-  unsigned prev_resource_id = kInvalidResourceId;
+  ResourceId prev_resource_id = kInvalidResourceId;
 
   float ratio_rate_category = 0.0f;
   // Next empty slot index. Used for circular samples buffer.

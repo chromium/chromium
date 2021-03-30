@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/message_bundle.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 class ExtensionIconSet;
@@ -50,14 +51,14 @@ void UninstallExtension(const base::FilePath& extensions_dir,
 // the default manifest filename. Returns nullptr on failure, with a
 // description of the error in |error|.
 scoped_refptr<Extension> LoadExtension(const base::FilePath& extension_root,
-                                       Manifest::Location location,
+                                       mojom::ManifestLocation location,
                                        int flags,
                                        std::string* error);
 
 // The same as LoadExtension except use the provided |extension_id|.
 scoped_refptr<Extension> LoadExtension(const base::FilePath& extension_root,
                                        const std::string& extension_id,
-                                       Manifest::Location location,
+                                       mojom::ManifestLocation location,
                                        int flags,
                                        std::string* error);
 
@@ -68,7 +69,7 @@ scoped_refptr<Extension> LoadExtension(
     const base::FilePath& extension_root,
     const base::FilePath::CharType* manifest_file,
     const std::string& extension_id,
-    Manifest::Location location,
+    mojom::ManifestLocation location,
     int flags,
     std::string* error);
 

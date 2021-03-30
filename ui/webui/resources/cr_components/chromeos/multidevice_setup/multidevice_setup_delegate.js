@@ -8,7 +8,7 @@ cr.define('multidevice_setup', function() {
    * related logic.
    * @interface
    */
-  class MultiDeviceSetupDelegate {
+  /* #export */ class MultiDeviceSetupDelegate {
     /** @return {boolean} */
     isPasswordRequiredToSetHost() {}
 
@@ -29,6 +29,7 @@ cr.define('multidevice_setup', function() {
     getStartSetupCancelButtonTextId() {}
   }
 
+  // #cr_define_end
   return {
     MultiDeviceSetupDelegate: MultiDeviceSetupDelegate,
   };

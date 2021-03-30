@@ -114,6 +114,8 @@ bool GetFirstLDBFile(const base::FilePath& dir, base::FilePath* ldb_file) {
 }
 
 TEST(ChromiumEnv, RemoveBackupTables) {
+  base::test::TaskEnvironment env(
+      base::test::TaskEnvironment::MainThreadType::UI);
   Options options;
   options.create_if_missing = true;
   options.env = Env::Default();
@@ -594,8 +596,11 @@ TEST(ChromiumLevelDB, DeleteInMemoryDB) {
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
 
   // First create an on-disk db with an extra file.
-  const base::FilePath db_path = scoped_temp_dir.GetPath().AppendASCII("db");
-  base::FilePath temp_path = db_path.Append(FILE_PATH_LITERAL("Test file.txt"));
+  const base::FilePath db_path =
+      scoped_temp_dir.GetPath().AppendASCII("db").NormalizePathSeparatorsTo(
+          '/');
+  base::FilePath temp_path = db_path.Append(FILE_PATH_LITERAL("Test file.txt"))
+                                 .NormalizePathSeparatorsTo('/');
   leveldb_env::Options on_disk_options;
   on_disk_options.create_if_missing = true;
 

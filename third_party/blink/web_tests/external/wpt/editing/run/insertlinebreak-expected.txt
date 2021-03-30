@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1613 tests; 1582 PASS, 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1613 tests; 1583 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [["insertlinebreak",""]] "foo[bar]baz": execCommand("insertlinebreak", false, "") return value
 PASS [["insertlinebreak",""]] "foo[bar]baz" checks for modifications to non-editable content
 PASS [["insertlinebreak",""]] "foo[bar]baz" compare innerHTML
@@ -20,7 +20,7 @@ PASS [["insertlinebreak",""]] "fo[o<table><tr><td>b]ar</table>" queryCommandStat
 PASS [["insertlinebreak",""]] "fo[o<table><tr><td>b]ar</table>" queryCommandValue("insertlinebreak") after
 PASS [["insertlinebreak",""]] "<table><tr><td>[foo<td>bar]<tr><td>baz<td>quz</table>": execCommand("insertlinebreak", false, "") return value
 PASS [["insertlinebreak",""]] "<table><tr><td>[foo<td>bar]<tr><td>baz<td>quz</table>" checks for modifications to non-editable content
-FAIL [["insertlinebreak",""]] "<table><tr><td>[foo<td>bar]<tr><td>baz<td>quz</table>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><td><br><br></td><td><br></td></tr><tr><td>baz</td><td>quz</td></tr></tbody></table>" but got "<table><tbody><tr><td><br><br></td><td></td></tr><tr><td>baz</td><td>quz</td></tr></tbody></table>"
+PASS [["insertlinebreak",""]] "<table><tr><td>[foo<td>bar]<tr><td>baz<td>quz</table>" compare innerHTML
 PASS [["insertlinebreak",""]] "<table><tr><td>[foo<td>bar]<tr><td>baz<td>quz</table>" queryCommandIndeterm("insertlinebreak") before
 PASS [["insertlinebreak",""]] "<table><tr><td>[foo<td>bar]<tr><td>baz<td>quz</table>" queryCommandState("insertlinebreak") before
 PASS [["insertlinebreak",""]] "<table><tr><td>[foo<td>bar]<tr><td>baz<td>quz</table>" queryCommandValue("insertlinebreak") before
@@ -29,7 +29,7 @@ PASS [["insertlinebreak",""]] "<table><tr><td>[foo<td>bar]<tr><td>baz<td>quz</ta
 PASS [["insertlinebreak",""]] "<table><tr><td>[foo<td>bar]<tr><td>baz<td>quz</table>" queryCommandValue("insertlinebreak") after
 PASS [["insertlinebreak",""]] "<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<tr><td>baz<td>quz</table>": execCommand("insertlinebreak", false, "") return value
 PASS [["insertlinebreak",""]] "<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<tr><td>baz<td>quz</table>" checks for modifications to non-editable content
-FAIL [["insertlinebreak",""]] "<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<tr><td>baz<td>quz</table>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><td><br></td><td><br></td></tr><tr><td>baz</td><td>quz</td></tr></tbody></table>" but got "<table><tbody><tr><td><br><br></td><td></td></tr><tr><td>baz</td><td>quz</td></tr></tbody></table>"
+FAIL [["insertlinebreak",""]] "<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<tr><td>baz<td>quz</table>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><td><br></td><td><br></td></tr><tr><td>baz</td><td>quz</td></tr></tbody></table>" but got "<table><tbody><tr><td><br><br></td><td><br></td></tr><tr><td>baz</td><td>quz</td></tr></tbody></table>"
 PASS [["insertlinebreak",""]] "<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<tr><td>baz<td>quz</table>" queryCommandIndeterm("insertlinebreak") before
 PASS [["insertlinebreak",""]] "<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<tr><td>baz<td>quz</table>" queryCommandState("insertlinebreak") before
 PASS [["insertlinebreak",""]] "<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<tr><td>baz<td>quz</table>" queryCommandValue("insertlinebreak") before

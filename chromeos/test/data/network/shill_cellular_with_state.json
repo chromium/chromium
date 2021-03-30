@@ -45,7 +45,8 @@
       {
         "apn": "test-apn3",
         "username": "test-username3",
-        "password": "test-password3"
+        "password": "test-password3",
+        "attach": "attach"
       }
     ],
     "Cellular.HomeProvider": {

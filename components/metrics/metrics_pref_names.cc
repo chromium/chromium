@@ -88,13 +88,6 @@ const char kMetricsLastSeenPrefix[] =
 const char kMetricsFileMetricsMetadata[] =
     "user_experience_metrics.file_metrics_metadata";
 
-// Number of times the browser has been able to register crash reporting.
-const char kStabilityBreakpadRegistrationSuccess[] =
-    "user_experience_metrics.stability.breakpad_registration_ok";
-
-// Number of times the browser has failed to register crash reporting.
-const char kStabilityBreakpadRegistrationFail[] =
-    "user_experience_metrics.stability.breakpad_registration_fail";
 
 // A time stamp at which time the browser was known to be alive. Used to
 // evaluate whether the browser crash was due to a whole system crash.
@@ -119,13 +112,6 @@ const char kStabilityCrashCount[] =
 const char kStabilityCrashCountDueToGmsCoreUpdate[] =
     "user_experience_metrics.stability.crash_count_due_to_gms_core_update";
 
-// Number of times the browser has been run under a debugger.
-const char kStabilityDebuggerPresent[] =
-    "user_experience_metrics.stability.debugger_present";
-
-// Number of times the browser has not been run under a debugger.
-const char kStabilityDebuggerNotPresent[] =
-    "user_experience_metrics.stability.debugger_not_present";
 
 // True if the previous run of the program exited cleanly.
 const char kStabilityExitedCleanly[] =

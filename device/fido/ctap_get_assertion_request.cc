@@ -129,15 +129,7 @@ base::Optional<CtapGetAssertionRequest> CtapGetAssertionRequest::Parse(
       }
 
       const std::string& extension_id = extension.first.GetString();
-      if (extension_id == kExtensionAndroidClientData) {
-        base::Optional<AndroidClientDataExtensionInput>
-            android_client_data_ext =
-                AndroidClientDataExtensionInput::Parse(extension.second);
-        if (!android_client_data_ext) {
-          return base::nullopt;
-        }
-        request.android_client_data_ext = std::move(*android_client_data_ext);
-      } else if (extension_id == kExtensionHmacSecret) {
+      if (extension_id == kExtensionHmacSecret) {
         if (!extension.second.is_map()) {
           return base::nullopt;
         }
@@ -270,11 +262,6 @@ AsCTAPRequestValuePair(const CtapGetAssertionRequest& request) {
   }
 
   cbor::Value::MapValue extensions;
-
-  if (request.android_client_data_ext) {
-    extensions.emplace(kExtensionAndroidClientData,
-                       AsCBOR(*request.android_client_data_ext));
-  }
 
   if (request.large_blob_key) {
     extensions.emplace(kExtensionLargeBlobKey, cbor::Value(true));

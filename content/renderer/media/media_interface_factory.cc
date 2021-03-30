@@ -138,6 +138,26 @@ void MediaInterfaceFactory::CreateFlingingRenderer(
 }
 #endif  // defined(OS_ANDROID)
 
+#if defined(OS_WIN)
+void MediaInterfaceFactory::CreateMediaFoundationRenderer(
+    mojo::PendingReceiver<media::mojom::Renderer> receiver,
+    mojo::PendingReceiver<media::mojom::MediaFoundationRendererExtension>
+        renderer_extension_receiver) {
+  if (!task_runner_->BelongsToCurrentThread()) {
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&MediaInterfaceFactory::CreateMediaFoundationRenderer,
+                       weak_this_, std::move(receiver),
+                       std::move(renderer_extension_receiver)));
+    return;
+  }
+
+  DVLOG(1) << __func__;
+  GetMediaInterfaceFactory()->CreateMediaFoundationRenderer(
+      std::move(receiver), std::move(renderer_extension_receiver));
+}
+#endif  // defined(OS_WIN)
+
 void MediaInterfaceFactory::CreateCdm(const std::string& key_system,
                                       const media::CdmConfig& cdm_config,
                                       CreateCdmCallback callback) {

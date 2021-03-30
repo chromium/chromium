@@ -4,6 +4,7 @@
 
 #include "services/network/first_party_sets/first_party_sets.h"
 
+#include <initializer_list>
 #include <memory>
 
 #include "base/logging.h"
@@ -99,6 +100,24 @@ bool FirstPartySets::IsContextSamePartyWithSite(
 bool FirstPartySets::IsInNontrivialFirstPartySet(
     const net::SchemefulSite& site) const {
   return base::Contains(sets_, site);
+}
+
+base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>
+FirstPartySets::Sets() const {
+  base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>> sets;
+
+  for (const auto& pair : sets_) {
+    const net::SchemefulSite& member = pair.first;
+    const net::SchemefulSite& owner = pair.second;
+    auto set = sets.find(owner);
+    if (set == sets.end()) {
+      sets.emplace(owner, std::initializer_list<net::SchemefulSite>{member});
+    } else {
+      set->second.insert(member);
+    }
+  }
+
+  return sets;
 }
 
 void FirstPartySets::ApplyManuallySpecifiedSet() {

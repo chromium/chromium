@@ -6,6 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 source_set("components") {
   sources = [
+    "../system_web_apps/system_web_app_types.h",
     "app_icon_manager.cc",
     "app_icon_manager.h",
     "app_registrar.cc",
@@ -35,10 +36,10 @@ source_set("components") {
     "pending_app_manager.h",
     "policy/web_app_policy_constants.cc",
     "policy/web_app_policy_constants.h",
-    "policy/web_app_policy_manager.cc",
-    "policy/web_app_policy_manager.h",
     "protocol_handler_manager.cc",
     "protocol_handler_manager.h",
+    "url_handler_manager.cc",
+    "url_handler_manager.h",
     "web_app_audio_focus_id_map.cc",
     "web_app_audio_focus_id_map.h",
     "web_app_chromeos_data.cc",
@@ -57,8 +58,14 @@ source_set("components") {
     "web_app_id_constants.h",
     "web_app_install_utils.cc",
     "web_app_install_utils.h",
+    "web_app_origin_association_manager.cc",
+    "web_app_origin_association_manager.h",
+    "web_app_origin_association_task.cc",
+    "web_app_origin_association_task.h",
     "web_app_prefs_utils.cc",
     "web_app_prefs_utils.h",
+    "web_app_protocol_handler_registration.cc",
+    "web_app_protocol_handler_registration.h",
     "web_app_provider_base.cc",
     "web_app_provider_base.h",
     "web_app_provider_base_factory.cc",
@@ -69,6 +76,8 @@ source_set("components") {
     "web_app_shortcut.h",
     "web_app_shortcuts_menu.cc",
     "web_app_shortcuts_menu.h",
+    "web_app_system_web_app_data.cc",
+    "web_app_system_web_app_data.h",
     "web_app_tab_helper_base.cc",
     "web_app_tab_helper_base.h",
     "web_app_ui_manager.h",
@@ -101,10 +110,17 @@ source_set("components") {
     # Desktop linux, doesn't count ChromeOS.
     sources += [
       "web_app_file_handler_registration_linux.cc",
-      "web_app_run_on_os_login_linux.cc",
       "web_app_shortcut_linux.cc",
       "web_app_shortcut_linux.h",
     ]
+  }
+
+  if (is_linux) {
+    sources += [ "web_app_run_on_os_login_linux.cc" ]
+  }
+
+  if (is_chromeos_ash || is_chromeos_lacros) {
+    sources += [ "web_app_run_on_os_login_chromeos.cc" ]
   }
 
   if (is_mac) {
@@ -112,6 +128,7 @@ source_set("components") {
       "app_shim_registry_mac.cc",
       "app_shim_registry_mac.h",
       "web_app_file_handler_registration_mac.cc",
+      "web_app_run_on_os_login_mac.mm",
       "web_app_shortcut_mac.h",
       "web_app_shortcut_mac.mm",
     ]
@@ -122,6 +139,7 @@ source_set("components") {
       "web_app_file_handler_registration_win.cc",
       "web_app_handler_registration_utils_win.cc",
       "web_app_handler_registration_utils_win.h",
+      "web_app_protocol_handler_registration_win.cc",
       "web_app_run_on_os_login_win.cc",
       "web_app_shortcut_win.cc",
       "web_app_shortcut_win.h",
@@ -131,14 +149,29 @@ source_set("components") {
     ]
   }
 
-  public_deps =
-      [ "//components/services/app_service/public/cpp:app_share_target" ]
+  if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
+    sources += [
+      "url_handler_launch_params.cc",
+      "url_handler_launch_params.h",
+      "url_handler_manager_impl.cc",
+      "url_handler_manager_impl.h",
+      "url_handler_prefs.cc",
+      "url_handler_prefs.h",
+    ]
+  }
+
+  public_deps = [
+    "//components/services/app_service/public/cpp:app_share_target",
+    "//components/services/app_service/public/cpp:app_url_handling",
+  ]
 
   deps = [
+    "//base",
     "//build:chromeos_buildflags",
     "//chrome/app/resources:platform_locale_settings",
     "//chrome/app/theme:chrome_unscaled_resources",
     "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications:web_app_group",
     "//chrome/common",
     "//components/crx_file",
@@ -146,18 +179,30 @@ source_set("components") {
     "//components/pref_registry",
     "//components/services/app_service/public/cpp:protocol_handling",
     "//components/services/app_service/public/mojom",
+    "//components/site_engagement/content",
     "//components/site_engagement/core/mojom:mojo_bindings",
     "//components/user_manager:user_manager",
-    "//components/webapps",
+    "//components/webapps/browser",
+    "//components/webapps/common:mojo_bindings",
+    "//components/webapps/services/web_app_origin_association:lib",
+    "//components/webapps/services/web_app_origin_association:service",
     "//content/public/browser",
     "//extensions/common:common_constants",
+    "//mojo/public/cpp/bindings",
     "//net",
+    "//services/network/public/cpp",
     "//services/preferences/public/cpp",
     "//skia",
+    "//third_party/blink/public/common",
+    "//url",
   ]
 
   if (is_win) {
     deps += [ "//chrome/browser/web_applications/chrome_pwa_launcher:util" ]
+  }
+
+  if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
+    deps += [ "//base/util/values:values_util" ]
   }
 }
 
@@ -169,6 +214,7 @@ source_set("unit_tests") {
     "install_finalizer_unittest.cc",
     "os_integration_manager_unittest.cc",
     "pending_app_manager_unittest.cc",
+    "protocol_handler_manager_unittest.cc",
     "web_app_constants_unittest.cc",
     "web_app_data_retriever_unittest.cc",
     "web_app_helpers_unittest.cc",
@@ -185,13 +231,16 @@ source_set("unit_tests") {
     sources += [
       "web_app_file_handler_registration_win_unittest.cc",
       "web_app_handler_registration_utils_win_unittest.cc",
+      "web_app_protocol_handler_registration_win_unittest.cc",
       "web_app_run_on_os_login_win_unittest.cc",
+      "web_app_shortcut_win_unittest.cc",
     ]
   }
 
   if (is_mac) {
     sources += [
       "app_shim_registry_mac_unittest.cc",
+      "web_app_run_on_os_login_mac_unittest.mm",
       "web_app_shortcut_mac_unittest.mm",
     ]
   }
@@ -200,8 +249,18 @@ source_set("unit_tests") {
     # Desktop linux, doesn't count ChromeOS.
     sources += [
       "web_app_file_handler_registration_linux_unittest.cc",
-      "web_app_run_on_os_login_linux_unittest.cc",
       "web_app_shortcut_linux_unittest.cc",
+    ]
+  }
+
+  if (is_linux) {
+    sources += [ "web_app_run_on_os_login_linux_unittest.cc" ]
+  }
+
+  if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
+    sources += [
+      "url_handler_manager_impl_unittest.cc",
+      "url_handler_prefs_unittest.cc",
     ]
   }
 
@@ -210,13 +269,16 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//chrome/app/theme:theme_resources",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications:web_app_test_group",
     "//chrome/browser/web_applications:web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/browser/web_applications/extensions:extensions",
     "//chrome/test:test_support",
-    "//components/webapps",
-    "//components/webapps:test_support",
+    "//components/services/app_service/public/cpp:protocol_handling",
+    "//components/webapps/browser",
+    "//components/webapps/browser:test_support",
+    "//components/webapps/common:mojo_bindings",
     "//content/public/browser",
     "//services/preferences/public/cpp",
     "//skia",
@@ -231,12 +293,19 @@ source_set("unit_tests") {
   if (is_win) {
     deps += [ "//chrome/browser/web_applications/chrome_pwa_launcher:util" ]
   }
+
+  if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
+    deps += [ "//components/services/app_service/public/cpp:app_url_handling" ]
+  }
 }
 
 source_set("browser_tests") {
   testonly = true
 
-  sources = [ "web_app_url_loader_browsertest.cc" ]
+  sources = [
+    "web_app_origin_association_manager_browsertest.cc",
+    "web_app_url_loader_browsertest.cc",
+  ]
 
   if (is_linux || is_chromeos_lacros) {
     sources += [ "web_app_file_handler_registration_linux_browsertest.cc" ]
@@ -246,9 +315,14 @@ source_set("browser_tests") {
 
   deps = [
     ":components",
+    "//base",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
+    "//components/webapps/services/web_app_origin_association/test:test_support",
     "//net:test_support",
+    "//third_party/blink/public/common",
+    "//url",
   ]
 }

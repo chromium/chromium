@@ -30,9 +30,11 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
                                            public WebUIDataSource {
  public:
   // WebUIDataSource:
-  void AddString(base::StringPiece name, const base::string16& value) override;
+  void AddString(base::StringPiece name, const std::u16string& value) override;
   void AddString(base::StringPiece name, const std::string& value) override;
   void AddLocalizedString(base::StringPiece name, int ids) override;
+  void AddLocalizedStrings(
+      base::span<const webui::LocalizedString> strings) override;
   void AddLocalizedStrings(
       const base::DictionaryValue& localized_strings) override;
   void AddBoolean(base::StringPiece name, bool value) override;
@@ -40,6 +42,7 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
   void AddDouble(base::StringPiece name, double value) override;
   void UseStringsJs() override;
   void AddResourcePath(base::StringPiece path, int resource_id) override;
+  void AddResourcePaths(base::span<const webui::ResourcePath> paths) override;
   void SetDefaultResource(int resource_id) override;
   void SetRequestFilter(const WebUIDataSource::ShouldHandleRequestCallback&
                             should_handle_request_callback,

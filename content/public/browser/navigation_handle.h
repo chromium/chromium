@@ -7,13 +7,13 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "content/common/content_export.h"
 #include "content/public/browser/navigation_handle_timing.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/restore_type.h"
-#include "content/public/common/impression.h"
 #include "content/public/common/referrer.h"
 #include "net/base/auth.h"
 #include "net/base/ip_endpoint.h"
@@ -23,8 +23,11 @@
 #include "net/http/http_response_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "third_party/blink/public/common/navigation/impression.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/page_transition_types.h"
 
 class GURL;
@@ -90,10 +93,6 @@ class CONTENT_EXPORT NavigationHandle {
   // Whether the navigation is taking place in the main frame or in a subframe.
   // This remains constant over the navigation lifetime.
   virtual bool IsInMainFrame() = 0;
-
-  // Whether the navigation is taking place in a frame that is a direct child
-  // of the main frame. This remains constant over the navigation lifetime.
-  virtual bool IsParentMainFrame() = 0;
 
   // Whether the navigation was initiated by the renderer process. Examples of
   // renderer-initiated navigations include:
@@ -366,14 +365,14 @@ class CONTENT_EXPORT NavigationHandle {
   // Returns, if available, the impression associated with the link clicked to
   // initiate this navigation. The impression is available for the entire
   // lifetime of the navigation.
-  virtual const base::Optional<Impression>& GetImpression() = 0;
+  virtual const base::Optional<blink::Impression>& GetImpression() = 0;
 
   // Returns the frame token associated with the frame that initiated the
   // navigation. This can be nullptr if the navigation was not associated with a
   // frame, or may return a valid frame token to a frame that no longer exists
   // because it was deleted before the navigation began. This parameter is
   // defined if and only if GetInitiatorProcessID below is.
-  virtual const base::Optional<base::UnguessableToken>&
+  virtual const base::Optional<blink::LocalFrameToken>&
   GetInitiatorFrameToken() = 0;
 
   // Return the ID of the renderer process of the frame host that initiated the
@@ -384,6 +383,11 @@ class CONTENT_EXPORT NavigationHandle {
   // Returns, if available, the origin of the document that has initiated the
   // navigation for this NavigationHandle.
   virtual const base::Optional<url::Origin>& GetInitiatorOrigin() = 0;
+
+  // Retrieves any DNS aliases for the requested URL. The alias chain order
+  // is preserved in reverse, from canonical name (i.e. address record name)
+  // through to query name.
+  virtual const std::vector<std::string>& GetDnsAliases() = 0;
 
   // Whether the new document will be hosted in the same process as the current
   // document or not. Set only when the navigation commits.
@@ -437,6 +441,9 @@ class CONTENT_EXPORT NavigationHandle {
   // RenderFrameHost. This can either be for the commit of a successful
   // navigation or an error page.
   virtual bool IsWaitingToCommit() = 0;
+
+  // Write a representation of this object into a trace.
+  virtual void WriteIntoTracedValue(perfetto::TracedValue context) = 0;
 
   // Testing methods ----------------------------------------------------------
   //

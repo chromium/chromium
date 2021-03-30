@@ -9,15 +9,18 @@ import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FileUtils;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.AdvancedMockContext;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -38,7 +41,10 @@ import java.util.concurrent.Callable;
  * Test that migrating the old tab state folder structure to the new one works.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class RestoreMigrateTest {
+    private static final String TEST_DIR = "test";
+    private Context mAppContextToRestore;
     private Context mAppContext;
 
     private void writeStateFile(final TabModelSelector selector, int index) throws IOException {
@@ -73,10 +79,40 @@ public class RestoreMigrateTest {
 
     @Before
     public void setUp() {
-        mAppContext = new AdvancedMockContext(InstrumentationRegistry.getInstrumentation()
-                                                      .getTargetContext()
-                                                      .getApplicationContext());
+        mAppContextToRestore = ContextUtils.getApplicationContext();
+        mAppContext =
+                new AdvancedMockContextWithTestDir(InstrumentationRegistry.getInstrumentation()
+                                                           .getTargetContext()
+                                                           .getApplicationContext());
         ContextUtils.initApplicationContextForTests(mAppContext);
+        TabIdManager.resetInstanceForTesting();
+    }
+
+    static class AdvancedMockContextWithTestDir extends AdvancedMockContext {
+        private File mFileTestDir;
+
+        AdvancedMockContextWithTestDir(Context base) {
+            super(base);
+            mFileTestDir = new File(super.getFilesDir(), TEST_DIR);
+            mFileTestDir.mkdir();
+        }
+
+        @Override
+        public File getFilesDir() {
+            return mFileTestDir;
+        }
+    }
+
+    @After
+    public void tearDown() {
+        FileUtils.recursivelyDeleteFile(mAppContext.getFilesDir(), null);
+        FileUtils.recursivelyDeleteFile(
+                TabStateDirectory.getOrCreateTabbedModeStateDirectory(), null);
+        TabStateDirectory.resetTabbedModeStateDirectoryForTesting();
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.TABMODEL_HAS_RUN_FILE_MIGRATION, false);
+        TabbedModeTabPersistencePolicy.resetMigrationTaskForTesting();
+        ContextUtils.initApplicationContextForTests(mAppContextToRestore);
     }
 
     private TabPersistentStore buildTabPersistentStore(

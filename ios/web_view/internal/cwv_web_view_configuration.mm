@@ -27,6 +27,12 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+CWVWebViewConfiguration* gDefaultConfiguration = nil;
+CWVWebViewConfiguration* gIncognitoConfiguration = nil;
+NSHashTable<CWVWebViewConfiguration*>* gNonPersistentConfigurations = nil;
+}  // namespace
+
 @interface CWVWebViewConfiguration () {
   // The BrowserState for this configuration.
   std::unique_ptr<ios_web_view::WebViewBrowserState> _browserState;
@@ -44,16 +50,22 @@
 @synthesize syncController = _syncController;
 @synthesize userContentController = _userContentController;
 
-namespace {
-CWVWebViewConfiguration* gDefaultConfiguration = nil;
-CWVWebViewConfiguration* gIncognitoConfiguration = nil;
-}  // namespace
++ (void)initialize {
+  if (self != [CWVWebViewConfiguration class]) {
+    return;
+  }
+
+  ios_web_view::InitializeGlobalState();
+}
 
 + (void)shutDown {
-  // Incognito should be shut down first because it holds onto members of the
-  // non-incognito browser state. This ensures that the non-incognito browser
-  // state will not leave any dangling references.
-  [gIncognitoConfiguration shutDown];
+  // Non-persistent configurations should be shut down first because its browser
+  // state holds on to the default configuration's browser state. This ensures
+  // the non-persistent configurations will not reference a dangling pointer.
+  for (CWVWebViewConfiguration* nonPersistentConfiguration in
+           gNonPersistentConfigurations) {
+    [nonPersistentConfiguration shutDown];
+  }
   [gDefaultConfiguration shutDown];
 }
 
@@ -71,21 +83,28 @@ CWVWebViewConfiguration* gIncognitoConfiguration = nil;
 + (instancetype)incognitoConfiguration {
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    CWVWebViewConfiguration* defaultConfiguration = [self defaultConfiguration];
-    auto browserState = std::make_unique<ios_web_view::WebViewBrowserState>(
-        /* off_the_record = */ true, defaultConfiguration.browserState);
-    gIncognitoConfiguration = [[CWVWebViewConfiguration alloc]
-        initWithBrowserState:std::move(browserState)];
+    gIncognitoConfiguration = [self nonPersistentConfiguration];
   });
   return gIncognitoConfiguration;
 }
 
-+ (void)initialize {
-  if (self != [CWVWebViewConfiguration class]) {
-    return;
-  }
++ (CWVWebViewConfiguration*)nonPersistentConfiguration {
+  CWVWebViewConfiguration* defaultConfiguration = [self defaultConfiguration];
+  auto browserState = std::make_unique<ios_web_view::WebViewBrowserState>(
+      /* off_the_record = */ true, defaultConfiguration.browserState);
+  CWVWebViewConfiguration* nonPersistentConfiguration =
+      [[CWVWebViewConfiguration alloc]
+          initWithBrowserState:std::move(browserState)];
 
-  ios_web_view::InitializeGlobalState();
+  // Save a weak pointer to nonpersistent configurations so they may be shut
+  // down later.
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    gNonPersistentConfigurations = [NSHashTable weakObjectsHashTable];
+  });
+  [gNonPersistentConfigurations addObject:nonPersistentConfiguration];
+
+  return nonPersistentConfiguration;
 }
 
 - (instancetype)initWithBrowserState:

@@ -21,11 +21,13 @@ class AllWebStateObservationForwarder;
 
 // Provides method to set and remove parameter values.
 @protocol CrashReporterParameterSetter
-// Sets a parameter named |key| with value |value|.
-- (void)setReportParameterURL:(const GURL&)URL forKey:(NSString*)key;
+// Sets a parameter named |key||pending| with value |value|.
+- (void)setReportParameterURL:(const GURL&)URL
+                       forKey:(NSNumber*)key
+                      pending:(BOOL)pending;
 
-// Deletes the parameter |key|.
-- (void)removeReportParameter:(NSString*)key;
+// Deletes the parameter |key||pending|.
+- (void)removeReportParameter:(NSNumber*)key pending:(BOOL)pending;
 @end
 
 // WebStateListObserver that allows loaded urls to be sent to the crash server.
@@ -90,7 +92,7 @@ class CrashReporterURLObserver : public WebStateListObserver,
   void RemoveGroup(const std::string& group);
   // Map associating each Breakpad key with the group it is currently reporting
   // URLs for.
-  NSMutableDictionary<NSString*, NSString*>* breakpad_key_by_group_;
+  NSMutableDictionary<NSString*, NSNumber*>* breakpad_key_by_group_;
   // Map associating each WebState to its group.
   std::map<web::WebState*, std::string> web_state_to_group_;
   // Map associating each group to the WebState currently reported in crash
@@ -98,7 +100,7 @@ class CrashReporterURLObserver : public WebStateListObserver,
   std::map<std::string, web::WebState*> current_web_states_;
   // List of keys to use for recording URLs. This list is sorted such that a new
   // tab must use the first key in this list to record its URLs.
-  NSMutableArray<NSString*>* breakpad_keys_;
+  NSMutableArray<NSNumber*>* breakpad_keys_;
   // Forwards observer methods for all WebStates in the WebStateList monitored
   // by the CrashReporterURLObserver.
   std::map<WebStateList*, std::unique_ptr<AllWebStateObservationForwarder>>

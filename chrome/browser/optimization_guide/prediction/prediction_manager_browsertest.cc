@@ -8,37 +8,43 @@
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_run_loop_timeout.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/browser/optimization_guide/optimization_guide_session_statistic.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_switches.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
-#include "components/optimization_guide/optimization_guide_constants.h"
-#include "components/optimization_guide/optimization_guide_features.h"
-#include "components/optimization_guide/optimization_guide_store.h"
-#include "components/optimization_guide/optimization_guide_switches.h"
-#include "components/optimization_guide/optimization_guide_test_util.h"
+#include "components/optimization_guide/core/optimization_guide_constants.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_session_statistic.h"
+#include "components/optimization_guide/core/optimization_guide_store.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/core/optimization_guide_test_util.h"
+#include "components/optimization_guide/core/store_update_data.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "components/optimization_guide/store_update_data.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
-#include "components/previews/core/previews_features.h"
 #include "components/variations/hashing.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/network_connection_change_simulator.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_switches.h"
+#endif
 
 namespace {
 
@@ -78,8 +84,9 @@ void RetryForHistogramUntilCountReached(
 std::unique_ptr<optimization_guide::proto::PredictionModel>
 GetValidDecisionTreePredictionModel() {
   std::unique_ptr<optimization_guide::proto::PredictionModel> prediction_model =
-      GetMinimalDecisionTreePredictionModel(/* threshold= */ 5.0,
-                                            /* weight= */ 2.0);
+      optimization_guide::GetMinimalDecisionTreePredictionModel(
+          /* threshold= */ 5.0,
+          /* weight= */ 2.0);
 
   optimization_guide::proto::DecisionTree* decision_tree_model =
       prediction_model->mutable_model()->mutable_decision_tree();
@@ -264,7 +271,7 @@ class PredictionManagerBrowserTestBase : public InProcessBrowserTest {
     ASSERT_TRUE(https_server_->Start());
     https_url_with_content_ = https_server_->GetURL("/english_page.html");
     https_url_without_content_ = https_server_->GetURL("/empty.html");
-    model_file_url_ = models_server_->GetURL("/unsignedmodel.crx3");
+    model_file_url_ = models_server_->GetURL("/signed_valid_model.crx3");
 
     // Set up an OptimizationGuideKeyedService consumer.
     consumer_ = std::make_unique<OptimizationGuideConsumerWebContentsObserver>(
@@ -451,19 +458,12 @@ class PredictionManagerBrowserTest : public PredictionManagerBrowserTestBase {
         {optimization_guide::features::kOptimizationHints,
          optimization_guide::features::kRemoteOptimizationGuideFetching,
          optimization_guide::features::kOptimizationTargetPrediction},
-        {previews::features::kPreviews});
+        {});
   }
 };
 
-#if defined(OS_WIN) || defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
-#define DISABLE_ON_WIN_MAC_CHROMEOS(x) DISABLED_##x
-#else
-#define DISABLE_ON_WIN_MAC_CHROMEOS(x) x
-#endif
-
-IN_PROC_BROWSER_TEST_F(
-    PredictionManagerBrowserTest,
-    DISABLE_ON_WIN_MAC_CHROMEOS(FCPReachedSessionStatisticsUpdated)) {
+IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
+                       FCPReachedSessionStatisticsUpdated) {
   RegisterWithKeyedService();
   auto waiter = CreatePageLoadMetricsTestWaiter();
   waiter->AddPageExpectation(
@@ -477,9 +477,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(1u, session_fcp->GetNumberOfSamples());
 }
 
-IN_PROC_BROWSER_TEST_F(
-    PredictionManagerBrowserTest,
-    DISABLE_ON_WIN_MAC_CHROMEOS(NoFCPSessionStatisticsUnchanged)) {
+IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
+                       NoFCPSessionStatisticsUnchanged) {
   RegisterWithKeyedService();
   auto waiter = CreatePageLoadMetricsTestWaiter();
   waiter->AddPageExpectation(
@@ -500,9 +499,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(current_mean, session_fcp->GetMean());
 }
 
-IN_PROC_BROWSER_TEST_F(
-    PredictionManagerBrowserTest,
-    DISABLE_ON_WIN_MAC_CHROMEOS(ModelsAndFeaturesStoreInitialized)) {
+IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
+                       ModelsAndFeaturesStoreInitialized) {
   base::HistogramTester histogram_tester;
   content::NetworkConnectionChangeSimulator().SetConnectionType(
       network::mojom::ConnectionType::CONNECTION_2G);
@@ -525,9 +523,8 @@ IN_PROC_BROWSER_TEST_F(
       "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 2, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    PredictionManagerBrowserTest,
-    DISABLE_ON_WIN_MAC_CHROMEOS(OnlyHostModelFeaturesInGetModelsResponse)) {
+IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
+                       OnlyHostModelFeaturesInGetModelsResponse) {
   base::HistogramTester histogram_tester;
 
   SetResponseType(PredictionModelsFetcherRemoteResponseType::
@@ -546,9 +543,8 @@ IN_PROC_BROWSER_TEST_F(
       "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    PredictionManagerBrowserTest,
-    DISABLE_ON_WIN_MAC_CHROMEOS(OnlyPredictionModelsInGetModelsResponse)) {
+IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
+                       OnlyPredictionModelsInGetModelsResponse) {
   base::HistogramTester histogram_tester;
 
   SetResponseType(PredictionModelsFetcherRemoteResponseType::
@@ -573,9 +569,8 @@ IN_PROC_BROWSER_TEST_F(
       "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 2, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    PredictionManagerBrowserTest,
-    DISABLE_ON_WIN_MAC_CHROMEOS(PredictionModelFetchFailed)) {
+IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
+                       PredictionModelFetchFailed) {
   SetResponseType(PredictionModelsFetcherRemoteResponseType::kUnsuccessful);
   base::HistogramTester histogram_tester;
 
@@ -601,9 +596,8 @@ IN_PROC_BROWSER_TEST_F(
       "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    PredictionManagerBrowserTest,
-    DISABLE_ON_WIN_MAC_CHROMEOS(HostModelFeaturesClearedOnHistoryClear)) {
+IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
+                       HostModelFeaturesClearedOnHistoryClear) {
   base::HistogramTester histogram_tester;
 
   RegisterWithKeyedService();
@@ -708,9 +702,8 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest, IncognitoCanStillRead) {
       1);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    PredictionManagerBrowserTest,
-    DISABLE_ON_WIN_MAC_CHROMEOS(IncognitoDoesntFetchModels)) {
+IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
+                       IncognitoDoesntFetchModels) {
   SetResponseType(PredictionModelsFetcherRemoteResponseType::
                       kSuccessfulWithModelsAndFeatures);
   base::HistogramTester histogram_tester;
@@ -769,7 +762,7 @@ class PredictionManagerBrowserSameOriginTest
 // Regression test for https://crbug.com/1037945. Tests that the origin of the
 // previous navigation is computed correctly.
 IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserSameOriginTest,
-                       DISABLE_ON_WIN_MAC_CHROMEOS(IsSameOriginNavigation)) {
+                       IsSameOriginNavigation) {
   base::HistogramTester histogram_tester;
 
   RegisterWithKeyedService();
@@ -822,9 +815,8 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserSameOriginTest,
       "OptimizationGuide.PredictionManager.IsSameOrigin", true, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    PredictionManagerBrowserSameOriginTest,
-    DISABLE_ON_WIN_MAC_CHROMEOS(ShouldTargetNavigationAsync)) {
+IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserSameOriginTest,
+                       ShouldTargetNavigationAsync) {
   base::HistogramTester histogram_tester;
 
   RegisterWithKeyedService();
@@ -895,13 +887,12 @@ class PredictionManagerNoUserPermissionsTest
                "scoped_feature_list_trial_for_OptimizationHints,scoped_feature_"
                "list_trial_for_OptimizationHintsFetching"}}},
         },
-        {previews::features::kPreviews});
+        {});
   }
 };
 
 IN_PROC_BROWSER_TEST_F(PredictionManagerNoUserPermissionsTest,
-                       DISABLE_ON_WIN_MAC_CHROMEOS(
-                           HostsAndFieldTrialsNotPassedWhenNoUserPermissions)) {
+                       HostsAndFieldTrialsNotPassedWhenNoUserPermissions) {
   base::HistogramTester histogram_tester;
 
   SetResponseType(PredictionModelsFetcherRemoteResponseType::
@@ -944,6 +935,7 @@ class ModelFileObserver : public OptimizationTargetModelObserver {
   }
 
   void OnModelFileUpdated(proto::OptimizationTarget optimization_target,
+                          const base::Optional<proto::Any>& model_metadata,
                           const base::FilePath& file_path) override {
     if (file_received_callback_)
       std::move(file_received_callback_).Run(optimization_target, file_path);
@@ -965,6 +957,14 @@ class PredictionManagerModelDownloadingBrowserTest
     PredictionManagerBrowserTest::SetUpOnMainThread();
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PredictionManagerBrowserTest::SetUpCommandLine(command_line);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    command_line->AppendSwitch(
+        chromeos::switches::kIgnoreUserProfileMappingForTests);
+#endif
+  }
+
   void TearDownOnMainThread() override {
     PredictionManagerBrowserTest::TearDownOnMainThread();
   }
@@ -977,7 +977,7 @@ class PredictionManagerModelDownloadingBrowserTest
     OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
         ->AddObserverForOptimizationTargetModel(
             proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-            model_file_observer_.get());
+            /*model_metadata=*/base::nullopt, model_file_observer_.get());
   }
 
  private:
@@ -994,7 +994,7 @@ class PredictionManagerModelDownloadingBrowserTest
                "scoped_feature_list_trial_for_OptimizationHints,scoped_feature_"
                "list_trial_for_OptimizationHintsFetching"}}},
         },
-        {previews::features::kPreviews});
+        {});
     SetExpectedFieldTrialNames(base::flat_set<uint32_t>(
         {variations::HashName(
              "scoped_feature_list_trial_for_OptimizationHints"),
@@ -1005,10 +1005,8 @@ class PredictionManagerModelDownloadingBrowserTest
   std::unique_ptr<ModelFileObserver> model_file_observer_;
 };
 
-IN_PROC_BROWSER_TEST_F(
-    PredictionManagerModelDownloadingBrowserTest,
-    DISABLE_ON_WIN_MAC_CHROMEOS(
-        TestDownloadUrlAcceptedByDownloadServiceButInvalid)) {
+IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
+                       TestDownloadUrlAcceptedByDownloadServiceButInvalid) {
   base::HistogramTester histogram_tester;
 
   SetResponseType(PredictionModelsFetcherRemoteResponseType::
@@ -1030,14 +1028,8 @@ IN_PROC_BROWSER_TEST_F(
       "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    PredictionManagerModelDownloadingBrowserTest,
-    DISABLE_ON_WIN_MAC_CHROMEOS(TestSuccessfulModelFileFlow)) {
-  // TODO(crbug/1146151): Remove this switch once we can produce a signed model
-  // file.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableModelDownloadVerificationForTesting);
-
+IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
+                       TestSuccessfulModelFileFlow) {
   base::HistogramTester histogram_tester;
 
   SetResponseType(
@@ -1057,8 +1049,13 @@ IN_PROC_BROWSER_TEST_F(
   // containing a download URL and then subsequently downloaded.
   RegisterModelFileObserverWithKeyedService();
 
-  // Wait until the observer receives the file.
-  run_loop->Run();
+  // Wait until the observer receives the file. We increase the timeout to 60
+  // seconds here since the file is on the larger side.
+  {
+    base::test::ScopedRunLoopTimeout file_download_timeout(
+        FROM_HERE, base::TimeDelta::FromSeconds(60));
+    run_loop->Run();
+  }
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus",
@@ -1067,6 +1064,31 @@ IN_PROC_BROWSER_TEST_F(
       "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 123, 1);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 123, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
+                       TestSwitchProfileDoesntCrash) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath other_path =
+      profile_manager->GenerateNextProfileDirectoryPath();
+
+  base::RunLoop run_loop;
+
+  // Create an additional profile.
+  profile_manager->CreateProfileAsync(
+      other_path,
+      base::BindLambdaForTesting(
+          [&run_loop](Profile* profile, Profile::CreateStatus status) {
+            if (status == Profile::CREATE_STATUS_INITIALIZED)
+              run_loop.Quit();
+          }),
+      std::u16string(), std::string());
+
+  run_loop.Run();
+
+  Profile* profile = profile_manager->GetProfileByPath(other_path);
+  ASSERT_TRUE(profile);
+  CreateBrowser(profile);
 }
 
 }  // namespace optimization_guide

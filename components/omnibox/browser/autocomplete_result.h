@@ -18,6 +18,7 @@
 #include "url/gurl.h"
 
 #if defined(OS_ANDROID)
+#include "base/android/jni_array.h"
 #include "base/android/scoped_java_ref.h"
 #endif
 
@@ -55,6 +56,19 @@ class AutocompleteResult {
   // NOTE: Android specific methods are defined in autocomplete_match_android.cc
   base::android::ScopedJavaLocalRef<jobject> GetOrCreateJavaObject(
       JNIEnv* env) const;
+
+  // Construct an array of AutocompleteMatch objects arranged in the exact same
+  // order as |matches_|.
+  base::android::ScopedJavaLocalRef<jobjectArray> BuildJavaMatches(
+      JNIEnv* env) const;
+
+  // Group suggestions in specified range by search vs url.
+  // The range used is [first_index, last_index), which contains all the
+  // elements between first_index and last_index, including the element pointed
+  // by first_index, but not the element pointed by last_index.
+  void GroupSuggestionsBySearchVsURL(JNIEnv* env,
+                                     int firstIndex,
+                                     int lastIndex);
 #endif
 
   // Moves matches from |old_matches| to provide a consistent result set.
@@ -131,11 +145,6 @@ class AutocompleteResult {
   // Returns the default match if it exists, or nullptr otherwise.
   const AutocompleteMatch* default_match() const;
 
-  // Returns true if the top match is a verbatim search or URL match (see
-  // IsVerbatimType() in autocomplete_match.h), and the next match is not also
-  // some kind of verbatim match.
-  bool TopMatchIsStandaloneVerbatimMatch() const;
-
   // Returns the first match in |matches| which might be chosen as default.
   // If the page is not the fake box, the scores are not demoted by type.
   static ACMatches::const_iterator FindTopMatch(const AutocompleteInput& input,
@@ -201,7 +210,7 @@ class AutocompleteResult {
 
   // Gets the header string associated with |suggestion_group_id|. Returns an
   // empty string if no header is found.
-  base::string16 GetHeaderForGroupId(int suggestion_group_id) const;
+  std::u16string GetHeaderForGroupId(int suggestion_group_id) const;
 
   // Returns whether or not |suggestion_group_id| should be collapsed in the UI.
   // This method takes into account both the user's stored |prefs| as well as
@@ -219,12 +228,6 @@ class AutocompleteResult {
       const std::vector<MatchDedupComparator>& old_result,
       const AutocompleteResult& new_result);
 
-  // Group suggestions in specified range by search vs url.
-  // The range used is [first_index, last_index), which contains all the
-  // elements between first_index and last_index, including the element pointed
-  // by first_index, but not the element pointed by last_index.
-  void GroupSuggestionsBySearchVsURL(int first_index, int last_index) const;
-
   // This value should be comfortably larger than any max-autocomplete-matches
   // under consideration.
   static constexpr size_t kMaxAutocompletePositionValue = 30;
@@ -238,6 +241,8 @@ class AutocompleteResult {
   FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest,
                            DemoteOnDeviceSearchSuggestions);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest, BubbleURLSuggestions);
+  FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest,
+                           SortAndCullKeepGroupedSuggestionsLast);
   friend class HistoryURLProviderTest;
 
   typedef std::map<AutocompleteProvider*, ACMatches> ProviderToMatches;

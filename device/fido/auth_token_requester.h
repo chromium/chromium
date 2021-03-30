@@ -64,7 +64,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthTokenRequester {
    public:
     // ProvidePINCallback is used to provide the AuthTokenRequester with a PIN
     // entered by the user.
-    using ProvidePINCallback = base::OnceCallback<void(base::string16 pin)>;
+    using ProvidePINCallback = base::OnceCallback<void(std::u16string pin)>;
 
     virtual ~Delegate();
 
@@ -138,13 +138,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthTokenRequester {
   void ObtainTokenFromPIN();
   void OnGetPINRetries(CtapDeviceResponseCode status,
                        base::Optional<pin::RetriesResponse> response);
-  void HavePIN(base::string16 pin);
+  void HavePIN(std::u16string pin);
   void OnGetPINToken(std::string pin,
                      CtapDeviceResponseCode status,
                      base::Optional<pin::TokenResponse> response);
 
   void ObtainTokenFromNewPIN();
-  void HaveNewPIN(base::string16 pin);
+  void HaveNewPIN(std::u16string pin);
   void OnSetPIN(std::string pin,
                 CtapDeviceResponseCode status,
                 base::Optional<pin::EmptyResponse> response);

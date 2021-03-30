@@ -1,0 +1,16 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<iframe id="i" src="/common/blank.html"></iframe>
+<script>
+async_test(t => {
+  window.onload = t.step_func_done(() => {
+    let i_entry = i.contentWindow.appHistory.current;
+    assert_true(i_entry.sameDocument);
+    assert_not_equals(i_entry.url, "");
+    i.remove();
+    assert_false(i_entry.sameDocument);
+    assert_equals(i_entry.url, "");
+  });
+}, "AppHistoryEntry.sameDocument after detach");
+</script>

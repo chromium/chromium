@@ -26,7 +26,7 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/audio/cras_audio_handler.h"
+#include "ash/components/audio/cras_audio_handler.h"
 #endif
 
 namespace content {
@@ -36,7 +36,7 @@ namespace {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void SetKeyboardMicStreamActiveOnUIThread(bool active) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  chromeos::CrasAudioHandler::Get()->SetKeyboardMicActive(active);
+  ash::CrasAudioHandler::Get()->SetKeyboardMicActive(active);
 }
 #endif
 

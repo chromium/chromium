@@ -30,7 +30,7 @@ namespace {
 constexpr uint32_t kServiceType = SERVICE_WIN32_OWN_PROCESS;
 constexpr uint32_t kServiceStartType = SERVICE_DEMAND_START;
 constexpr uint32_t kServiceErrorControl = SERVICE_ERROR_NORMAL;
-constexpr base::char16 kServiceDependencies[] = L"RPCSS\0";
+constexpr wchar_t kServiceDependencies[] = L"RPCSS\0";
 
 // For the service handle, all permissions that could possibly be used in all
 // Do/Rollback scenarios are requested since the handle is reused.
@@ -95,24 +95,24 @@ void RecordWin32ApiErrorCode(const char* function) {
       base::StrCat({"Setup.Install.Win32ApiError.", function}), error_code);
 }
 
-base::string16 GetComRegistryPath(base::StringPiece16 hive, const GUID& guid) {
+std::wstring GetComRegistryPath(base::WStringPiece hive, const GUID& guid) {
   return base::StrCat(
       {L"Software\\Classes\\", hive, L"\\", base::win::WStringFromGUID(guid)});
 }
 
-base::string16 GetComClsidRegistryPath(const GUID& clsid) {
+std::wstring GetComClsidRegistryPath(const GUID& clsid) {
   return GetComRegistryPath(L"CLSID", clsid);
 }
 
-base::string16 GetComAppidRegistryPath(const GUID& appid) {
+std::wstring GetComAppidRegistryPath(const GUID& appid) {
   return GetComRegistryPath(L"AppID", appid);
 }
 
-base::string16 GetComIidRegistryPath(const GUID& iid) {
+std::wstring GetComIidRegistryPath(const GUID& iid) {
   return GetComRegistryPath(L"Interface", iid);
 }
 
-base::string16 GetComTypeLibRegistryPath(const GUID& iid) {
+std::wstring GetComTypeLibRegistryPath(const GUID& iid) {
   return GetComRegistryPath(L"TypeLib", iid);
 }
 
@@ -128,8 +128,8 @@ InstallServiceWorkItemImpl::ServiceConfig::ServiceConfig(
     uint32_t service_type,
     uint32_t service_start_type,
     uint32_t service_error_control,
-    const base::string16& service_cmd_line,
-    const base::char16* dependencies_multi_sz)
+    const std::wstring& service_cmd_line,
+    const wchar_t* dependencies_multi_sz)
     : is_valid(true),
       type(service_type),
       start_type(service_start_type),
@@ -143,10 +143,10 @@ InstallServiceWorkItemImpl::ServiceConfig::ServiceConfig(ServiceConfig&& rhs) =
 InstallServiceWorkItemImpl::ServiceConfig::~ServiceConfig() = default;
 
 InstallServiceWorkItemImpl::InstallServiceWorkItemImpl(
-    const base::string16& service_name,
-    const base::string16& display_name,
+    const std::wstring& service_name,
+    const std::wstring& display_name,
     const base::CommandLine& service_cmd_line,
-    const base::string16& registry_path,
+    const std::wstring& registry_path,
     const std::vector<GUID>& clsids,
     const std::vector<GUID>& iids)
     : com_registration_work_items_(WorkItem::CreateWorkItemList()),
@@ -233,8 +233,8 @@ bool InstallServiceWorkItemImpl::DoInstallService() {
 
 bool InstallServiceWorkItemImpl::DoComRegistration() {
   for (const auto& clsid : clsids_) {
-    const base::string16 clsid_reg_path = GetComClsidRegistryPath(clsid);
-    const base::string16 appid_reg_path = GetComAppidRegistryPath(clsid);
+    const std::wstring clsid_reg_path = GetComClsidRegistryPath(clsid);
+    const std::wstring appid_reg_path = GetComAppidRegistryPath(clsid);
 
     com_registration_work_items_->AddCreateRegKeyWorkItem(
         HKEY_LOCAL_MACHINE, clsid_reg_path, WorkItem::kWow64Default);
@@ -249,8 +249,8 @@ bool InstallServiceWorkItemImpl::DoComRegistration() {
   }
 
   for (const auto& iid : iids_) {
-    const base::string16 iid_reg_path = GetComIidRegistryPath(iid);
-    const base::string16 typelib_reg_path = GetComTypeLibRegistryPath(iid);
+    const std::wstring iid_reg_path = GetComIidRegistryPath(iid);
+    const std::wstring typelib_reg_path = GetComTypeLibRegistryPath(iid);
 
     // Registering the Ole Automation marshaler with the CLSID
     // {00020424-0000-0000-C000-000000000046} as the proxy/stub for the
@@ -459,12 +459,12 @@ bool InstallServiceWorkItemImpl::GetServiceConfig(ServiceConfig* config) const {
 // HKLM\Software\Google\Update\ClientState\{appguid}
 //  "Name"  "elevationservice", "Type" "REG_SZ", "Data" "elevationservice0394"
 bool InstallServiceWorkItemImpl::CreateAndSetServiceName() const {
-  const base::string16 versioned_service_name(GenerateVersionedServiceName());
+  const std::wstring versioned_service_name(GenerateVersionedServiceName());
   return SetServiceName(versioned_service_name);
 }
 
 bool InstallServiceWorkItemImpl::SetServiceName(
-    const base::string16& service_name) const {
+    const std::wstring& service_name) const {
   base::win::RegKey key;
 
   auto result = key.Create(HKEY_LOCAL_MACHINE, registry_path_.c_str(),
@@ -486,7 +486,7 @@ bool InstallServiceWorkItemImpl::SetServiceName(
   return true;
 }
 
-base::string16 InstallServiceWorkItemImpl::GetCurrentServiceName() const {
+std::wstring InstallServiceWorkItemImpl::GetCurrentServiceName() const {
   base::win::RegKey key;
 
   auto result = key.Open(HKEY_LOCAL_MACHINE, registry_path_.c_str(),
@@ -494,34 +494,33 @@ base::string16 InstallServiceWorkItemImpl::GetCurrentServiceName() const {
   if (result != ERROR_SUCCESS)
     return service_name_;
 
-  base::string16 versioned_service_name;
+  std::wstring versioned_service_name;
   key.ReadValue(service_name_.c_str(), &versioned_service_name);
   return versioned_service_name.empty() ? service_name_
                                         : versioned_service_name;
 }
 
-base::string16 InstallServiceWorkItemImpl::GetCurrentServiceDisplayName()
-    const {
+std::wstring InstallServiceWorkItemImpl::GetCurrentServiceDisplayName() const {
   return base::StringPrintf(L"%ls (%ls)", display_name_.c_str(),
                             GetCurrentServiceName().c_str());
 }
 
-std::vector<base::char16> InstallServiceWorkItemImpl::MultiSzToVector(
-    const base::char16* multi_sz) {
+std::vector<wchar_t> InstallServiceWorkItemImpl::MultiSzToVector(
+    const wchar_t* multi_sz) {
   if (!multi_sz)
-    return std::vector<base::char16>();
+    return std::vector<wchar_t>();
 
   if (!*multi_sz)
-    return std::vector<base::char16>(1, L'\0');
+    return std::vector<wchar_t>(1, L'\0');
 
   // Scan forward to the second terminating '\0' at the end of the list of
   // strings in the multi-sz.
-  const base::char16* scan = multi_sz;
+  const wchar_t* scan = multi_sz;
   do {
     scan += wcslen(scan) + 1;
   } while (*scan);
 
-  return std::vector<base::char16>(multi_sz, scan + 1);
+  return std::vector<wchar_t>(multi_sz, scan + 1);
 }
 
 bool InstallServiceWorkItemImpl::InstallNewService() {
@@ -621,8 +620,7 @@ bool InstallServiceWorkItemImpl::DeleteService(ScopedScHandle service) const {
   return true;
 }
 
-base::string16 InstallServiceWorkItemImpl::GenerateVersionedServiceName()
-    const {
+std::wstring InstallServiceWorkItemImpl::GenerateVersionedServiceName() const {
   const FILETIME filetime = base::Time::Now().ToFileTime();
   return base::StringPrintf(L"%ls%x%x", service_name_.c_str(),
                             filetime.dwHighDateTime, filetime.dwLowDateTime);

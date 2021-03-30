@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/storage_partition.h"
@@ -28,6 +29,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/common/api/extension_action/action_info_test_util.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -150,9 +152,8 @@ void DeclarativeContentApiTest::CheckIncognito(IncognitoMode mode,
   ExtensionTestMessageListener ready("ready", false);
   ExtensionTestMessageListener ready_incognito("ready (split)", false);
 
-  const Extension* extension =
-      is_enabled_in_incognito ? LoadExtensionIncognito(ext_dir_.UnpackedPath())
-                              : LoadExtension(ext_dir_.UnpackedPath());
+  const Extension* extension = LoadExtension(
+      ext_dir_.UnpackedPath(), {.allow_in_incognito = is_enabled_in_incognito});
   ASSERT_TRUE(extension);
 
   Browser* incognito_browser = CreateIncognitoBrowser();
@@ -237,18 +238,15 @@ void DeclarativeContentApiTest::CheckBookmarkEvents(bool match_is_bookmarked) {
   // Check rule evaluation on add/remove bookmark.
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(browser()->profile());
-  const bookmarks::BookmarkNode* node =
-      bookmark_model->AddURL(bookmark_model->other_node(), 0,
-                             base::ASCIIToUTF16("title"),
-                             GURL("http://test1/"));
+  const bookmarks::BookmarkNode* node = bookmark_model->AddURL(
+      bookmark_model->other_node(), 0, u"title", GURL("http://test1/"));
   EXPECT_EQ(match_is_bookmarked, action->GetIsVisible(tab_id));
 
   bookmark_model->Remove(node);
   EXPECT_EQ(!match_is_bookmarked, action->GetIsVisible(tab_id));
 
   // Check rule evaluation on navigate to bookmarked and non-bookmarked URL.
-  bookmark_model->AddURL(bookmark_model->other_node(), 0,
-                         base::ASCIIToUTF16("title"),
+  bookmark_model->AddURL(bookmark_model->other_node(), 0, u"title",
                          GURL("http://test2/"));
 
   NavigateInRenderer(tab, GURL("http://test2/"));
@@ -450,26 +448,29 @@ class ParameterizedShowActionDeclarativeContentApiTest
 
 void ParameterizedShowActionDeclarativeContentApiTest::TestShowAction(
     base::Optional<ActionInfo::Type> action_type) {
-  std::string manifest_with_custom_action = kDeclarativeContentManifest;
-  std::string action_key;
+  constexpr char kManifestTemplate[] =
+      R"({
+           "name": "Declarative Content Show Action",
+           "version": "0.1",
+           "manifest_version": %d,
+           %s
+           "permissions": ["declarativeContent"]
+         })";
+  std::string action_declaration;
+  int manifest_version = 2;
   if (action_type) {
-    switch (*action_type) {
-      case ActionInfo::TYPE_BROWSER:
-        action_key = R"("browser_action": {},)";
-        break;
-      case ActionInfo::TYPE_PAGE:
-        action_key = R"("page_action": {},)";
-        break;
-      case ActionInfo::TYPE_ACTION:
-        action_key = R"("action": {},)";
-        break;
-    }
+    action_declaration = base::StringPrintf(
+        R"("%s": {},)", GetManifestKeyForActionType(*action_type));
+    manifest_version = GetManifestVersionForActionType(*action_type);
   }
 
-  base::ReplaceSubstringsAfterOffset(&manifest_with_custom_action, 0,
-                                     "\"page_action\": {},", action_key);
-  ext_dir_.WriteManifest(manifest_with_custom_action);
-  ext_dir_.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundHelpers);
+  // Since this test uses the action API (which is restricted to MV3), we drive
+  // the interaction through pages, rather than the background script.
+  ext_dir_.WriteManifest(base::StringPrintf(kManifestTemplate, manifest_version,
+                                            action_declaration.c_str()));
+  ext_dir_.WriteFile(FILE_PATH_LITERAL("page.html"),
+                     R"("<html><script src="page.js"></script></html>)");
+  ext_dir_.WriteFile(FILE_PATH_LITERAL("page.js"), kBackgroundHelpers);
 
   ChromeTestExtensionLoader loader(profile());
   scoped_refptr<const Extension> extension =
@@ -489,6 +490,12 @@ void ParameterizedShowActionDeclarativeContentApiTest::TestShowAction(
   if (action->default_state() == ActionInfo::STATE_DISABLED)
     action->SetIsVisible(ExtensionAction::kDefaultTabId, false);
 
+  // Open the tab to invoke the APIs, as well as test the action visibility.
+  ui_test_utils::NavigateToURL(browser(),
+                               extension->GetResourceURL("page.html"));
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
   const char kScript[] =
       "setRules([{\n"
       "  conditions: [new PageStateMatcher({\n"
@@ -497,16 +504,15 @@ void ParameterizedShowActionDeclarativeContentApiTest::TestShowAction(
       "}], 'test_rule');\n";
   const char kSuccessStr[] = "test_rule";
 
-  std::string result = ExecuteScriptInBackgroundPage(
-      extension->id(), base::StringPrintf(kScript, GetParam()));
+  std::string result;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
+      tab, base::StringPrintf(kScript, GetParam()), &result));
 
   // Since extensions with no action provided are given a page action by default
   // (for visibility reasons) and ShowAction() should also work with
   // browser actions, both of these should pass.
   EXPECT_THAT(result, testing::HasSubstr(kSuccessStr));
 
-  content::WebContents* const tab =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
   NavigateInRenderer(tab, GURL("http://test/"));
 
   const int tab_id = sessions::SessionTabHelper::IdForTab(tab).id();
@@ -630,7 +636,8 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
   ext_dir_.WriteFile(FILE_PATH_LITERAL("background.js"),
                      kIncognitoSpecificBackground);
   ExtensionTestMessageListener ready("ready", false);
-  const Extension* extension = LoadExtensionIncognito(ext_dir_.UnpackedPath());
+  const Extension* extension =
+      LoadExtension(ext_dir_.UnpackedPath(), {.allow_in_incognito = true});
   ASSERT_TRUE(extension);
   ASSERT_TRUE(ready.WaitUntilSatisfied());
 
@@ -659,8 +666,9 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest, MAYBE_PRE_RulesPersistence) {
   // An on-disk extension is required so that it can be reloaded later in the
   // RulesPersistence test.
   const Extension* extension =
-      LoadExtensionIncognito(test_data_dir_.AppendASCII("declarative_content")
-                             .AppendASCII("persistence"));
+      LoadExtension(test_data_dir_.AppendASCII("declarative_content")
+                        .AppendASCII("persistence"),
+                    {.allow_in_incognito = true});
   ASSERT_TRUE(extension);
   ASSERT_EQ(kRulesExtensionName, extension->name());
   ASSERT_TRUE(ready.WaitUntilSatisfied());
@@ -984,10 +992,8 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
 }
 
 // https://crbug.com/517492
-// Fails on XP: http://crbug.com/515717
-// Fails on other platfomrs: http://crbug.com/1013457
 IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
-                       DISABLED_RemoveAllRulesAfterExtensionUninstall) {
+                       RemoveAllRulesAfterExtensionUninstall) {
   ext_dir_.WriteManifest(kDeclarativeContentManifest);
   ext_dir_.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundHelpers);
 
@@ -1007,12 +1013,12 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
   ExtensionService* extension_service = extensions::ExtensionSystem::Get(
       browser()->profile())->extension_service();
 
-  base::string16 error;
+  std::u16string error;
   ASSERT_TRUE(extension_service->UninstallExtension(
       extension->id(),
       UNINSTALL_REASON_FOR_TESTING,
       &error));
-  ASSERT_EQ(base::ASCIIToUTF16(""), error);
+  ASSERT_EQ(u"", error);
 
   // Reload the extension, then add and remove a rule.
   extension = LoadExtension(ext_dir_.UnpackedPath());

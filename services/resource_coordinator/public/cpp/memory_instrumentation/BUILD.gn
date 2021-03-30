@@ -12,6 +12,7 @@ component("memory_instrumentation") {
     "memory_instrumentation.h",
     "os_metrics.cc",
     "os_metrics.h",
+    "registry.h",
     "tracing_observer.cc",
     "tracing_observer.h",
     "tracing_observer_proto.cc",

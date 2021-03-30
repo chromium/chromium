@@ -146,17 +146,18 @@ class CAPTURE_EXPORT CameraDeviceContext {
 
   void SetScreenRotation(int screen_rotation);
 
+  // Controls whether the Chrome OS video capture device applies frame rotation
+  // according to sensor and UI rotation.
+  void SetCameraFrameRotationEnabledAtSource(bool is_enabled);
+
   // Gets the accumulated rotation that the camera frame needs to be rotated
   // to match the display orientation.  This includes the sensor orientation and
   // the screen rotation.
   int GetCameraFrameRotation();
 
-  // Gets the rotation needed to match the camera frame to the display, assuming
-  // the camera frame has 0 degree orientation.
-  int GetRotationForDisplay();
-
-  // Gets the rotation needed to get the camera frame to 0 degree orientation.
-  int GetRotationFromSensorOrientation();
+  // Gets whether the camera frame rotation is enabled inside the video capture
+  // device.
+  bool IsCameraFrameRotationEnabledAtSource();
 
   // Reserves a video capture buffer from the buffer pool provided by the video
   // |client_|.  Returns true if the operation succeeds; false otherwise.
@@ -177,14 +178,22 @@ class CAPTURE_EXPORT CameraDeviceContext {
   // The state the CameraDeviceDelegate currently is in.
   State state_;
 
+  // Lock to serialize the access to the various camera rotation state variables
+  // since they are access on multiple threads.
+  base::Lock rotation_state_lock_;
+
   // Clockwise angle through which the output image needs to be rotated to be
   // upright on the device screen in its native orientation.  This value should
   // be 0, 90, 180, or 270.
-  int sensor_orientation_;
+  int sensor_orientation_ GUARDED_BY(rotation_state_lock_);
 
   // Clockwise screen rotation in degrees. This value should be 0, 90, 180, or
   // 270.
-  int screen_rotation_;
+  int screen_rotation_ GUARDED_BY(rotation_state_lock_);
+
+  // Whether the camera frame rotation is enabled inside the video capture
+  // device.
+  bool frame_rotation_at_source_ GUARDED_BY(rotation_state_lock_);
 
   base::Lock client_lock_;
   // A map for client type and client instance.

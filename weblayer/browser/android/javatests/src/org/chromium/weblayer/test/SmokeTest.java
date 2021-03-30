@@ -4,8 +4,15 @@
 
 package org.chromium.weblayer.test;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.PixelCopy;
 
 import androidx.fragment.app.Fragment;
 import androidx.test.filters.SmallTest;
@@ -19,7 +26,9 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.weblayer.BrowserEmbeddabilityMode;
 import org.chromium.weblayer.shell.InstrumentationActivity;
 
 import java.lang.ref.PhantomReference;
@@ -35,26 +44,67 @@ public class SmokeTest {
     public InstrumentationActivityTestRule mActivityTestRule =
             new InstrumentationActivityTestRule();
 
+    // Should be used only for solid color pages, since the window is downsampled significantly.
+    @TargetApi(Build.VERSION_CODES.O)
+    private int getWindowCenterPixelColor(Activity activity) {
+        BoundedCountDownLatch latch = new BoundedCountDownLatch(1);
+        Bitmap bitmap = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888, /*hasAlpha=*/true);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PixelCopy.request(activity.getWindow(), bitmap,
+                    (int copyResult) -> { latch.countDown(); }, new Handler(Looper.myLooper()));
+        });
+        latch.timedAwait();
+        int color = bitmap.getPixel(100, 100);
+        bitmap.recycle();
+        return color;
+    }
+
+    private void checkColorIsClose(int color1, int color2, int tolerance) {
+        Criteria.checkThat(
+                Math.abs(Color.alpha(color1) - Color.alpha(color2)), Matchers.lessThan(tolerance));
+        Criteria.checkThat(
+                Math.abs(Color.red(color1) - Color.red(color2)), Matchers.lessThan(tolerance));
+        Criteria.checkThat(
+                Math.abs(Color.green(color1) - Color.green(color2)), Matchers.lessThan(tolerance));
+        Criteria.checkThat(
+                Math.abs(Color.blue(color1) - Color.blue(color2)), Matchers.lessThan(tolerance));
+    }
+
     @Test
     @SmallTest
-    public void testSetSupportEmbedding() {
+    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    @MinWebLayerVersion(90)
+    public void testSetEmbeddabilityMode() {
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl("about:blank");
 
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { activity.getBrowser().setSupportsEmbedding(true, (result) -> {}); });
-
-        BoundedCountDownLatch latch = new BoundedCountDownLatch(1);
-        String url = "data:text,foo";
-
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            activity.getBrowser().setSupportsEmbedding(true, (result) -> {
-                Assert.assertTrue(result);
-                latch.countDown();
-            });
+            activity.getBrowser().setEmbeddabilityMode(
+                    BrowserEmbeddabilityMode.SUPPORTED, (result) -> {});
         });
 
+        // Set css background color to blue with 50% transparency. CSS format is #RRGGBBAA.
+        mActivityTestRule.executeScriptSync("document.body.style.backgroundColor = \"#0000FF7F\";",
+                /*useSeparateIsolate=*/false);
+
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            // 50% blue is blended with white. Java color format is #AARRGGBB.
+            checkColorIsClose(0xFF7F7FFF, getWindowCenterPixelColor(activity), 10);
+        });
+
+        BoundedCountDownLatch latch = new BoundedCountDownLatch(1);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            activity.getBrowser().setEmbeddabilityMode(
+                    BrowserEmbeddabilityMode.SUPPORTED_WITH_TRANSPARENT_BACKGROUND, (result) -> {
+                        Assert.assertTrue(result);
+                        latch.countDown();
+                    });
+        });
         latch.timedAwait();
-        mActivityTestRule.navigateAndWait(url);
+
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            // 50% blue is blended with red. Java color format is #AARRGGBB.
+            checkColorIsClose(0xFF7F007F, getWindowCenterPixelColor(activity), 10);
+        });
     }
 
     @Test

@@ -30,7 +30,7 @@
 
 #include "third_party/blink/renderer/modules/webmidi/navigator_web_midi.h"
 
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_midi_options.h"
@@ -117,7 +117,7 @@ ScriptPromise NavigatorWebMIDI::requestMIDIAccess(
       WebFeature::kRequestMIDIAccessIframe_ObscuredByFootprinting);
 
   if (!window->IsFeatureEnabled(
-          mojom::blink::FeaturePolicyFeature::kMidiFeature,
+          mojom::blink::PermissionsPolicyFeature::kMidiFeature,
           ReportOptions::kReportOnFailure, kFeaturePolicyConsoleWarning)) {
     UseCounter::Count(window, WebFeature::kMidiDisabledByFeaturePolicy);
     exception_state.ThrowSecurityError(kFeaturePolicyErrorMessage);

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/locales.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//tools/grit/grit_rule.gni")
 
@@ -9,61 +10,8 @@ assert(enable_extensions)
 
 grit("strings") {
   source = "extensions_strings.grd"
-  outputs = [
-    "grit/extensions_strings.h",
-    "extensions_strings_am.pak",
-    "extensions_strings_ar.pak",
-    "extensions_strings_bg.pak",
-    "extensions_strings_bn.pak",
-    "extensions_strings_ca.pak",
-    "extensions_strings_cs.pak",
-    "extensions_strings_da.pak",
-    "extensions_strings_de.pak",
-    "extensions_strings_el.pak",
-    "extensions_strings_en-GB.pak",
-    "extensions_strings_en-US.pak",
-    "extensions_strings_es.pak",
-    "extensions_strings_es-419.pak",
-    "extensions_strings_et.pak",
-    "extensions_strings_fa.pak",
-    "extensions_strings_fake-bidi.pak",
-    "extensions_strings_fi.pak",
-    "extensions_strings_fil.pak",
-    "extensions_strings_fr.pak",
-    "extensions_strings_gu.pak",
-    "extensions_strings_he.pak",
-    "extensions_strings_hi.pak",
-    "extensions_strings_hr.pak",
-    "extensions_strings_hu.pak",
-    "extensions_strings_id.pak",
-    "extensions_strings_it.pak",
-    "extensions_strings_ja.pak",
-    "extensions_strings_kn.pak",
-    "extensions_strings_ko.pak",
-    "extensions_strings_lt.pak",
-    "extensions_strings_lv.pak",
-    "extensions_strings_ml.pak",
-    "extensions_strings_mr.pak",
-    "extensions_strings_ms.pak",
-    "extensions_strings_nl.pak",
-    "extensions_strings_nb.pak",
-    "extensions_strings_pl.pak",
-    "extensions_strings_pt-BR.pak",
-    "extensions_strings_pt-PT.pak",
-    "extensions_strings_ro.pak",
-    "extensions_strings_ru.pak",
-    "extensions_strings_sk.pak",
-    "extensions_strings_sl.pak",
-    "extensions_strings_sr.pak",
-    "extensions_strings_sv.pak",
-    "extensions_strings_sw.pak",
-    "extensions_strings_ta.pak",
-    "extensions_strings_te.pak",
-    "extensions_strings_th.pak",
-    "extensions_strings_tr.pak",
-    "extensions_strings_uk.pak",
-    "extensions_strings_vi.pak",
-    "extensions_strings_zh-CN.pak",
-    "extensions_strings_zh-TW.pak",
-  ]
+  outputs =
+      [ "grit/extensions_strings.h" ] +
+      process_file_template(locales_with_pseudolocales,
+                            [ "extensions_strings_{{source_name_part}}.pak" ])
 }

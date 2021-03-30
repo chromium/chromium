@@ -29,7 +29,7 @@ class RequirementsChecker : public PreloadCheck {
   // PreloadCheck:
   void Start(ResultCallback callback) override;
   // Joins multiple errors into a space-separated string.
-  base::string16 GetErrorMessage() const override;
+  std::u16string GetErrorMessage() const override;
 
  private:
   // Callback for the GpuFeatureChecker.

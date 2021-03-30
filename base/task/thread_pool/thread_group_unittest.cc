@@ -121,16 +121,19 @@ class ThreadGroupTestBase : public testing::Test, public ThreadGroup::Delegate {
 
   void CreateThreadGroup() {
     ASSERT_FALSE(thread_group_);
-    switch (GetPoolType()) {
-      case test::PoolType::GENERIC:
+    switch (GetGroupType()) {
+      case test::GroupType::GENERIC:
         thread_group_ = std::make_unique<ThreadGroupImpl>(
             "TestThreadGroup", "A", ThreadPriority::NORMAL,
             task_tracker_.GetTrackedRef(),
             tracked_ref_factory_.GetTrackedRef());
         break;
 #if HAS_NATIVE_THREAD_POOL()
-      case test::PoolType::NATIVE:
+      case test::GroupType::NATIVE:
         thread_group_ = std::make_unique<ThreadGroupNativeType>(
+#if defined(OS_APPLE)
+            ThreadPriority::NORMAL,
+#endif
             task_tracker_.GetTrackedRef(),
             tracked_ref_factory_.GetTrackedRef());
         break;
@@ -144,8 +147,8 @@ class ThreadGroupTestBase : public testing::Test, public ThreadGroup::Delegate {
   void StartThreadGroup(ThreadGroup::WorkerEnvironment worker_environment =
                             ThreadGroup::WorkerEnvironment::NONE) {
     ASSERT_TRUE(thread_group_);
-    switch (GetPoolType()) {
-      case test::PoolType::GENERIC: {
+    switch (GetGroupType()) {
+      case test::GroupType::GENERIC: {
         ThreadGroupImpl* thread_group_impl =
             static_cast<ThreadGroupImpl*>(thread_group_.get());
         thread_group_impl->Start(
@@ -154,7 +157,7 @@ class ThreadGroupTestBase : public testing::Test, public ThreadGroup::Delegate {
         break;
       }
 #if HAS_NATIVE_THREAD_POOL()
-      case test::PoolType::NATIVE: {
+      case test::GroupType::NATIVE: {
         ThreadGroupNativeType* thread_group_native_impl =
             static_cast<ThreadGroupNativeType*>(thread_group_.get());
         thread_group_native_impl->Start(worker_environment);
@@ -164,7 +167,7 @@ class ThreadGroupTestBase : public testing::Test, public ThreadGroup::Delegate {
     }
   }
 
-  virtual test::PoolType GetPoolType() const = 0;
+  virtual test::GroupType GetGroupType() const = 0;
 
   Thread service_thread_{"ThreadPoolServiceThread"};
   TaskTracker task_tracker_;
@@ -184,13 +187,13 @@ class ThreadGroupTestBase : public testing::Test, public ThreadGroup::Delegate {
 };
 
 class ThreadGroupTest : public ThreadGroupTestBase,
-                        public testing::WithParamInterface<test::PoolType> {
+                        public testing::WithParamInterface<test::GroupType> {
  public:
   ThreadGroupTest() = default;
   ThreadGroupTest(const ThreadGroupTest&) = delete;
   ThreadGroupTest& operator=(const ThreadGroupTest&) = delete;
 
-  test::PoolType GetPoolType() const override { return GetParam(); }
+  test::GroupType GetGroupType() const override { return GetParam(); }
 };
 
 // TODO(etiennep): Audit tests that don't need TaskSourceExecutionMode
@@ -198,7 +201,7 @@ class ThreadGroupTest : public ThreadGroupTestBase,
 class ThreadGroupTestAllExecutionModes
     : public ThreadGroupTestBase,
       public testing::WithParamInterface<
-          std::tuple<test::PoolType, TaskSourceExecutionMode>> {
+          std::tuple<test::GroupType, TaskSourceExecutionMode>> {
  public:
   ThreadGroupTestAllExecutionModes() = default;
   ThreadGroupTestAllExecutionModes(const ThreadGroupTestAllExecutionModes&) =
@@ -206,7 +209,7 @@ class ThreadGroupTestAllExecutionModes
   ThreadGroupTestAllExecutionModes& operator=(
       const ThreadGroupTestAllExecutionModes&) = delete;
 
-  test::PoolType GetPoolType() const override {
+  test::GroupType GetGroupType() const override {
     return std::get<0>(GetParam());
   }
 
@@ -927,41 +930,41 @@ TEST_P(ThreadGroupTest, JobTaskSourceUpdatePriority) {
 
 INSTANTIATE_TEST_SUITE_P(Generic,
                          ThreadGroupTest,
-                         ::testing::Values(test::PoolType::GENERIC));
+                         ::testing::Values(test::GroupType::GENERIC));
 INSTANTIATE_TEST_SUITE_P(
     GenericParallel,
     ThreadGroupTestAllExecutionModes,
-    ::testing::Combine(::testing::Values(test::PoolType::GENERIC),
+    ::testing::Combine(::testing::Values(test::GroupType::GENERIC),
                        ::testing::Values(TaskSourceExecutionMode::kParallel)));
 INSTANTIATE_TEST_SUITE_P(
     GenericSequenced,
     ThreadGroupTestAllExecutionModes,
-    ::testing::Combine(::testing::Values(test::PoolType::GENERIC),
+    ::testing::Combine(::testing::Values(test::GroupType::GENERIC),
                        ::testing::Values(TaskSourceExecutionMode::kSequenced)));
 INSTANTIATE_TEST_SUITE_P(
     GenericJob,
     ThreadGroupTestAllExecutionModes,
-    ::testing::Combine(::testing::Values(test::PoolType::GENERIC),
+    ::testing::Combine(::testing::Values(test::GroupType::GENERIC),
                        ::testing::Values(TaskSourceExecutionMode::kJob)));
 
 #if HAS_NATIVE_THREAD_POOL()
 INSTANTIATE_TEST_SUITE_P(Native,
                          ThreadGroupTest,
-                         ::testing::Values(test::PoolType::NATIVE));
+                         ::testing::Values(test::GroupType::NATIVE));
 INSTANTIATE_TEST_SUITE_P(
     NativeParallel,
     ThreadGroupTestAllExecutionModes,
-    ::testing::Combine(::testing::Values(test::PoolType::NATIVE),
+    ::testing::Combine(::testing::Values(test::GroupType::NATIVE),
                        ::testing::Values(TaskSourceExecutionMode::kParallel)));
 INSTANTIATE_TEST_SUITE_P(
     NativeSequenced,
     ThreadGroupTestAllExecutionModes,
-    ::testing::Combine(::testing::Values(test::PoolType::NATIVE),
+    ::testing::Combine(::testing::Values(test::GroupType::NATIVE),
                        ::testing::Values(TaskSourceExecutionMode::kSequenced)));
 INSTANTIATE_TEST_SUITE_P(
     NativeJob,
     ThreadGroupTestAllExecutionModes,
-    ::testing::Combine(::testing::Values(test::PoolType::NATIVE),
+    ::testing::Combine(::testing::Values(test::GroupType::NATIVE),
                        ::testing::Values(TaskSourceExecutionMode::kJob)));
 #endif
 

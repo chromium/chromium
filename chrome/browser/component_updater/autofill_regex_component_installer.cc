@@ -16,6 +16,7 @@
 #include "base/path_service.h"
 #include "base/stl_util.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/version.h"
 #include "components/autofill/core/browser/pattern_provider/pattern_configuration_parser.h"
 #include "components/component_updater/component_updater_paths.h"
@@ -127,13 +128,7 @@ AutofillRegexComponentInstallerPolicy::GetInstallerAttributes() const {
   return update_client::InstallerAttributes();
 }
 
-std::vector<std::string> AutofillRegexComponentInstallerPolicy::GetMimeTypes()
-    const {
-  return std::vector<std::string>();
-}
-
-void RegisterAutofillRegexComponent(ComponentUpdateService* cus,
-                                    const base::FilePath& user_data_dir) {
+void RegisterAutofillRegexComponent(ComponentUpdateService* cus) {
   VLOG(1) << "Registering Autofill Regex component.";
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<AutofillRegexComponentInstallerPolicy>());

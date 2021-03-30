@@ -7,61 +7,40 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojom") {
   sources = [
     "account_manager.mojom",
+    "automation.mojom",
     "bitmap.mojom",
     "cert_database.mojom",
     "clipboard.mojom",
     "crosapi.mojom",
+    "device_attributes.mojom",
     "feedback.mojom",
     "file_manager.mojom",
+    "idle_service.mojom",
     "keystore_service.mojom",
     "message_center.mojom",
     "metrics_reporting.mojom",
     "notification.mojom",
+    "prefs.mojom",
     "screen_manager.mojom",
     "select_file.mojom",
+    "task_manager.mojom",
     "test_controller.mojom",
+    "url_handler.mojom",
+    "video_capture.mojom",
   ]
   disable_variants = true
 
-  cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "crosapi.mojom.Bitmap"
-          cpp = "crosapi::Bitmap"
-          move_only = true
-        },
-      ]
-      traits_headers = [ "//chromeos/crosapi/mojom/bitmap_mojom_traits.h" ]
-      traits_public_deps = [
-        ":mojom_traits",
-        "//chromeos/crosapi/cpp",
-      ]
-    },
-  ]
-
   public_deps = [
+    "//chromeos/components/sensors/mojom",
+    "//chromeos/services/machine_learning/public/mojom",
+    "//media/capture/mojom:image_capture",
+    "//media/capture/mojom:video_capture_types",
     "//mojo/public/mojom/base",
     "//services/device/public/mojom:mojom",
     "//services/media_session/public/mojom:mojom",
+    "//ui/gfx/geometry/mojom",
     "//ui/gfx/image/mojom",
+    "//ui/gfx/mojom",
     "//url/mojom:url_mojom_gurl",
-  ]
-}
-
-component("mojom_traits") {
-  output_name = "crosapi_mojom_traits"
-
-  sources = [
-    "bitmap_mojom_traits.cc",
-    "bitmap_mojom_traits.h",
-  ]
-
-  defines = [ "IS_CROSAPI_MOJOM_TRAITS_IMPL" ]
-
-  public_deps = [
-    ":mojom_shared",
-    "//chromeos/crosapi/cpp",
-    "//mojo/public/cpp/base:shared_typemap_traits",
   ]
 }

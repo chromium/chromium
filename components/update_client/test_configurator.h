@@ -74,7 +74,7 @@ class TestConfigurator : public Configurator {
   TestConfigurator& operator=(const TestConfigurator&) = delete;
 
   // Overrides for Configurator.
-  int InitialDelay() const override;
+  double InitialDelay() const override;
   int NextCheckDelay() const override;
   int OnDemandDelay() const override;
   int UpdateDelay() const override;
@@ -104,7 +104,7 @@ class TestConfigurator : public Configurator {
 
   void SetBrand(const std::string& brand);
   void SetOnDemandTime(int seconds);
-  void SetInitialDelay(int seconds);
+  void SetInitialDelay(double seconds);
   void SetDownloadPreference(const std::string& download_preference);
   void SetEnabledCupSigning(bool use_cup_signing);
   void SetEnabledComponentUpdates(bool enabled_component_updates);
@@ -124,8 +124,8 @@ class TestConfigurator : public Configurator {
   class TestPatchService;
 
   std::string brand_;
-  int initial_time_;
-  int ondemand_time_;
+  double initial_time_{0};
+  int ondemand_time_{0};
   std::string download_preference_;
   bool enabled_cup_signing_;
   bool enabled_component_updates_;

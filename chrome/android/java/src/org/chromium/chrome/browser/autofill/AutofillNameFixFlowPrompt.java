@@ -37,7 +37,7 @@ public class AutofillNameFixFlowPrompt implements TextWatcher, ModalDialogProper
      */
     public interface AutofillNameFixFlowPromptDelegate {
         /**
-         * Called when dialog is dismissed.
+         * Called whenever the dialog is dismissed.
          */
         void onPromptDismissed();
 
@@ -176,11 +176,6 @@ public class AutofillNameFixFlowPrompt implements TextWatcher, ModalDialogProper
 
     @Override
     public void onDismiss(PropertyModel model, int dismissalCause) {
-        // Do not call dismissed on the delegate if dialog was dismissed either because the user
-        // accepted to save the card or was dismissed by native code.
-        if (dismissalCause != DialogDismissalCause.POSITIVE_BUTTON_CLICKED
-                && dismissalCause != DialogDismissalCause.DISMISSED_BY_NATIVE) {
-            mDelegate.onPromptDismissed();
-        }
+        mDelegate.onPromptDismissed();
     }
 }

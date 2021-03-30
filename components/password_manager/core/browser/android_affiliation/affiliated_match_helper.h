@@ -27,17 +27,17 @@ struct PasswordForm;
 // For each GetLogins() request, it provides the PasswordStore with a list of
 // additional realms that are affiliation-based matches to the observed realm.
 //
-// Currently, the only supported use-case is obtaining Android applications
-// affiliated with the web site containing the observed form. This is achieved
-// by implementing the "proactive fetching" strategy for interacting with the
-// AndroidAffiliationService (see android_affiliation_service.h for details),
-// with Android applications playing the role of facet Y.
+// Currently, the supported use-case is obtaining Android applications or Web
+// realms affiliated with the web site containing the observed form. This is
+// achieved by implementing the "proactive fetching" strategy for interacting
+// with the AndroidAffiliationService (see android_affiliation_service.h for
+// details), with Android applications and web realms playing the role of 
+// facet Y.
 //
 // More specifically, this class prefetches affiliation information on start-up
-// for all Android applications that the PasswordStore has credentials stored
-// for. Then, the actual GetLogins() can be restricted to the cache, so that
-// realms of the observed web forms will never be looked up against the
-// Affiliation API.
+// for all credentials stored in the PasswordStore. Then, the actual GetLogins()
+// can be restricted to the cache, so that realms of the observed web forms will
+// never be looked up against the Affiliation API.
 class AffiliatedMatchHelper : public PasswordStore::Observer,
                               public PasswordStoreConsumer {
  public:
@@ -59,10 +59,11 @@ class AffiliatedMatchHelper : public PasswordStore::Observer,
   // Schedules deferred initialization.
   void Initialize();
 
-  // Retrieves realms of Android applications affiliated with the realm of the
-  // |observed_form| if it is web-based. Otherwise, yields the empty list. The
-  // |result_callback| will be invoked in both cases, on the same thread.
-  virtual void GetAffiliatedAndroidRealms(
+  // Retrieves realms of Android applications and Web realms affiliated with the
+  // realm of the |observed_form| if it is web-based. Otherwise, yields the
+  // empty list. The |result_callback| will be invoked in both cases, on the
+  // same thread.
+  virtual void GetAffiliatedAndroidAndWebRealms(
       const PasswordStore::FormDigest& observed_form,
       AffiliatedRealmsCallback result_callback);
 
@@ -112,7 +113,7 @@ class AffiliatedMatchHelper : public PasswordStore::Observer,
   // Called back by AndroidAffiliationService to supply the list of facets
   // affiliated with |original_facet_uri| so that a GetAffiliatedAndroidRealms()
   // call can be completed.
-  void CompleteGetAffiliatedAndroidRealms(
+  void CompleteGetAffiliatedAndroidAndWebRealms(
       const FacetURI& original_facet_uri,
       AffiliatedRealmsCallback result_callback,
       const AffiliatedFacets& results,

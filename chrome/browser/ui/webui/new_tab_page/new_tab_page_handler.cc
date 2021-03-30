@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
 
+#include <algorithm>
+
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
@@ -14,23 +16,12 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
-#include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
-#include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service_factory.h"
-#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_features.h"
-#include "chrome/browser/favicon/favicon_service_factory.h"
-#include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/predictors/autocomplete_action_predictor.h"
-#include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/search/background/ntp_background_service.h"
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
 #include "chrome/browser/search/instant_service.h"
@@ -38,37 +29,23 @@
 #include "chrome/browser/search/promos/promo_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_provider_logos/logo_service_factory.h"
-#include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
-#include "chrome/browser/ui/search/omnibox_mojo_utils.h"
-#include "chrome/browser/ui/search/omnibox_utils.h"
+#include "chrome/browser/ui/webui/realbox/realbox.mojom.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/search/instant_types.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/keyed_service/core/service_access_type.h"
-#include "components/navigation_metrics/navigation_metrics.h"
-#include "components/omnibox/browser/autocomplete_classifier.h"
-#include "components/omnibox/browser/autocomplete_input.h"
-#include "components/omnibox/browser/autocomplete_match.h"
-#include "components/omnibox/browser/autocomplete_match_type.h"
-#include "components/omnibox/browser/omnibox_controller_emitter.h"
-#include "components/omnibox/browser/omnibox_event_global_tracker.h"
-#include "components/omnibox/browser/omnibox_log.h"
-#include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/search/ntp_features.h"
-#include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_provider_logos/logo_service.h"
 #include "components/search_provider_logos/switches.h"
-#include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/storage_partition.h"
-#include "net/cookies/cookie_util.h"
+#include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/color_utils.h"
 
 namespace {
@@ -90,15 +67,7 @@ new_tab_page::mojom::ThemePtr MakeTheme(const NtpTheme& ntp_theme) {
   }
   auto background_image = new_tab_page::mojom::BackgroundImage::New();
   if (!ntp_theme.custom_background_url.is_empty()) {
-    base::StringPiece url = ntp_theme.custom_background_url.spec();
-    // TODO(crbug.com/1041125): Clean up when chrome-search://local-ntp removed.
-    if (base::StartsWith(url, "chrome-search://local-ntp/")) {
-      background_image->url =
-          GURL("chrome-untrusted://new-tab-page/" +
-               url.substr(strlen("chrome-search://local-ntp/")).as_string());
-    } else {
-      background_image->url = ntp_theme.custom_background_url;
-    }
+    background_image->url = ntp_theme.custom_background_url;
   } else if (ntp_theme.has_theme_image) {
     theme->shortcut_use_title_pill = true;
     background_image->url =
@@ -180,7 +149,7 @@ new_tab_page::mojom::ThemePtr MakeTheme(const NtpTheme& ntp_theme) {
     theme->daily_refresh_collection_id = ntp_theme.collection_id;
   }
 
-  auto search_box = new_tab_page::mojom::SearchBoxTheme::New();
+  auto search_box = realbox::mojom::SearchBoxTheme::New();
   search_box->bg = ntp_theme.search_box.bg;
   search_box->icon = ntp_theme.search_box.icon;
   search_box->icon_selected = ntp_theme.search_box.icon_selected;
@@ -237,6 +206,7 @@ new_tab_page::mojom::ImageDoodlePtr MakeImageDoodle(
     int share_button_y,
     const std::string& share_button_icon,
     const std::string& share_button_bg,
+    double share_button_opacity,
     GURL log_url,
     GURL cta_log_url) {
   auto doodle = new_tab_page::mojom::ImageDoodle::New();
@@ -256,7 +226,9 @@ new_tab_page::mojom::ImageDoodlePtr MakeImageDoodle(
     doodle->share_button->y = share_button_y;
     doodle->share_button->icon_url = GURL(base::StringPrintf(
         "data:image/png;base64,%s", share_button_icon.c_str()));
-    doodle->share_button->background_color = ParseHexColor(share_button_bg);
+    doodle->share_button->background_color =
+        SkColorSetA(ParseHexColor(share_button_bg),
+                    std::max(0.0, std::min(share_button_opacity, 1.0)) * 255.0);
   }
   if (type == search_provider_logos::LogoType::ANIMATED) {
     doodle->image_impression_log_url = cta_log_url;
@@ -360,14 +332,6 @@ NewTabPageHandler::NewTabPageHandler(
       one_google_bar_service_(
           OneGoogleBarServiceFactory::GetForProfile(profile)),
       profile_(profile),
-      favicon_cache_(FaviconServiceFactory::GetForProfile(
-                         profile,
-                         ServiceAccessType::EXPLICIT_ACCESS),
-                     HistoryServiceFactory::GetForProfile(
-                         profile,
-                         ServiceAccessType::EXPLICIT_ACCESS)),
-      bitmap_fetcher_service_(
-          BitmapFetcherServiceFactory::GetForBrowserContext(profile)),
       web_contents_(web_contents),
       ntp_navigation_start_time_(ntp_navigation_start_time),
       logger_(profile, GURL(chrome::kChromeUINewTabPageURL)),
@@ -383,24 +347,13 @@ NewTabPageHandler::NewTabPageHandler(
   instant_service_->AddObserver(this);
   ntp_background_service_->AddObserver(this);
   instant_service_->UpdateNtpTheme();
-  OmniboxTabHelper::CreateForWebContents(web_contents);
-  OmniboxTabHelper::FromWebContents(web_contents_)->AddObserver(this);
-  promo_service_observer_.Add(promo_service_);
-  one_google_bar_service_observer_.Add(one_google_bar_service_);
-  logger_.SetModulesVisible(
-      profile_->GetPrefs()->GetBoolean(prefs::kNtpModulesVisible));
+  promo_service_observation_.Observe(promo_service_);
+  one_google_bar_service_observation_.Observe(one_google_bar_service_);
 }
 
 NewTabPageHandler::~NewTabPageHandler() {
   instant_service_->RemoveObserver(this);
   ntp_background_service_->RemoveObserver(this);
-  if (auto* helper = OmniboxTabHelper::FromWebContents(web_contents_)) {
-    helper->RemoveObserver(this);
-  }
-  // Clear pending bitmap requests.
-  for (auto bitmap_request_id : bitmap_request_ids_) {
-    bitmap_fetcher_service_->CancelRequest(bitmap_request_id);
-  }
   if (select_file_dialog_) {
     select_file_dialog_->ListenerDestroyed();
   }
@@ -409,6 +362,7 @@ NewTabPageHandler::~NewTabPageHandler() {
 // static
 void NewTabPageHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kNtpModulesVisible, true);
+  registry->RegisterListPref(prefs::kNtpDisabledModules, true);
 }
 
 void NewTabPageHandler::AddMostVisitedTile(
@@ -559,14 +513,6 @@ void NewTabPageHandler::GetBackgroundImages(
   ntp_background_service_->FetchCollectionImageInfo(collection_id);
 }
 
-void NewTabPageHandler::FocusOmnibox() {
-  search::FocusOmnibox(true, web_contents_);
-}
-
-void NewTabPageHandler::PasteIntoOmnibox(const std::string& text) {
-  search::PasteIntoOmnibox(base::UTF8ToUTF16(text), web_contents_);
-}
-
 void NewTabPageHandler::GetDoodle(GetDoodleCallback callback) {
   search_provider_logos::LogoCallbacks callbacks;
   std::string fresh_doodle_param;
@@ -600,12 +546,12 @@ void NewTabPageHandler::ChooseLocalCustomBackground(
   file_types.extensions[0].push_back(FILE_PATH_LITERAL("png"));
   file_types.extension_description_overrides.push_back(
       l10n_util::GetStringUTF16(IDS_UPLOAD_IMAGE_FORMAT));
+  choose_local_custom_background_callback_ = std::move(callback);
   select_file_dialog_->SelectFile(
-      ui::SelectFileDialog::SELECT_OPEN_FILE, base::string16(),
+      ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string(),
       profile_->last_selected_directory(), &file_types, 0,
       base::FilePath::StringType(), web_contents_->GetTopLevelNativeWindow(),
       nullptr);
-  choose_local_custom_background_callback_ = std::move(callback);
 }
 
 void NewTabPageHandler::GetOneGoogleBarParts(
@@ -618,7 +564,8 @@ void NewTabPageHandler::GetOneGoogleBarParts(
   bool wait_for_refresh =
       one_google_bar_service_->SetAdditionalQueryParams(query_params);
   if (one_google_bar_service_->one_google_bar_data().has_value() &&
-      !wait_for_refresh) {
+      !wait_for_refresh &&
+      base::FeatureList::IsEnabled(ntp_features::kCacheOneGoogleBar)) {
     OnOneGoogleBarDataUpdated();
   }
   one_google_bar_load_start_time_ = base::TimeTicks::Now();
@@ -674,12 +621,34 @@ void NewTabPageHandler::OnRestoreModule(const std::string& module_id) {
 
 void NewTabPageHandler::SetModulesVisible(bool visible) {
   profile_->GetPrefs()->SetBoolean(prefs::kNtpModulesVisible, visible);
-  UpdateModulesVisible();
+  UpdateDisabledModules();
 }
 
-void NewTabPageHandler::UpdateModulesVisible() {
-  page_->SetModulesVisible(
-      profile_->GetPrefs()->GetBoolean(prefs::kNtpModulesVisible));
+void NewTabPageHandler::SetModuleDisabled(const std::string& module_id,
+                                          bool disabled) {
+  ListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpDisabledModules);
+  if (disabled) {
+    update->AppendIfNotPresent(std::make_unique<base::Value>(module_id));
+  } else {
+    update->EraseListValue(base::Value(module_id));
+  }
+  UpdateDisabledModules();
+}
+
+void NewTabPageHandler::UpdateDisabledModules() {
+  std::vector<std::string> module_ids;
+  // If the module visibility is managed by policy we either disable all modules
+  // (if invisible) or no modules (if visible).
+  if (!profile_->GetPrefs()->IsManagedPreference(prefs::kNtpModulesVisible)) {
+    const auto* module_ids_value =
+        profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules);
+    for (const auto& id : *module_ids_value) {
+      module_ids.push_back(id.GetString());
+    }
+  }
+  page_->SetDisabledModules(
+      !profile_->GetPrefs()->GetBoolean(prefs::kNtpModulesVisible),
+      std::move(module_ids));
 }
 
 void NewTabPageHandler::OnPromoDataUpdated() {
@@ -716,7 +685,7 @@ void NewTabPageHandler::OnPromoDataUpdated() {
 }
 
 void NewTabPageHandler::OnPromoServiceShuttingDown() {
-  promo_service_observer_.RemoveAll();
+  promo_service_observation_.Reset();
   promo_service_ = nullptr;
 }
 
@@ -987,224 +956,6 @@ void NewTabPageHandler::OnVoiceSearchError(
   LogEvent(event);
 }
 
-void NewTabPageHandler::OnModuleImpression(const std::string& module_id,
-                                           double time) {
-  logger_.LogModuleImpression(
-      module_id, base::Time::FromJsTime(time) - ntp_navigation_start_time_);
-}
-
-void NewTabPageHandler::OnModuleLoaded(const std::string& module_id,
-                                       double time) {
-  logger_.LogModuleLoaded(
-      module_id, base::Time::FromJsTime(time) - ntp_navigation_start_time_);
-}
-
-void NewTabPageHandler::OnModuleUsage(const std::string& module_id) {
-  logger_.LogModuleUsage(module_id);
-}
-
-void NewTabPageHandler::OnModulesRendered(double time) {
-  logger_.LogEvent(NTP_MODULES_SHOWN,
-                   base::Time::FromJsTime(time) - ntp_navigation_start_time_);
-}
-
-void NewTabPageHandler::QueryAutocomplete(const base::string16& input,
-                                          bool prevent_inline_autocomplete) {
-  if (!autocomplete_controller_) {
-    autocomplete_controller_ = std::make_unique<AutocompleteController>(
-        std::make_unique<ChromeAutocompleteProviderClient>(profile_),
-        AutocompleteClassifier::DefaultOmniboxProviders());
-    autocomplete_controller_->AddObserver(this);
-
-    OmniboxControllerEmitter* emitter =
-        OmniboxControllerEmitter::GetForBrowserContext(profile_);
-    if (emitter)
-      autocomplete_controller_->AddObserver(emitter);
-  }
-
-  if (time_of_first_autocomplete_query_.is_null() && !input.empty())
-    time_of_first_autocomplete_query_ = base::TimeTicks::Now();
-
-  AutocompleteInput autocomplete_input(
-      input, metrics::OmniboxEventProto::NTP_REALBOX,
-      ChromeAutocompleteSchemeClassifier(profile_));
-  // TODO(tommycli): We use the input being empty as a signal we are requesting
-  // on-focus suggestions. It would be nice if we had a more explicit signal.
-  autocomplete_input.set_focus_type(input.empty() ? OmniboxFocusType::ON_FOCUS
-                                                  : OmniboxFocusType::DEFAULT);
-  autocomplete_input.set_prevent_inline_autocomplete(
-      prevent_inline_autocomplete);
-
-  // We do not want keyword matches for the NTP realbox, which has no UI
-  // facilities to support them.
-  autocomplete_input.set_prefer_keyword(false);
-  autocomplete_input.set_allow_exact_keyword_match(false);
-
-  autocomplete_controller_->Start(autocomplete_input);
-}
-
-void NewTabPageHandler::StopAutocomplete(bool clear_result) {
-  if (!autocomplete_controller_)
-    return;
-
-  autocomplete_controller_->Stop(clear_result);
-
-  if (clear_result)
-    time_of_first_autocomplete_query_ = base::TimeTicks();
-}
-
-void NewTabPageHandler::OpenAutocompleteMatch(
-    uint8_t line,
-    const GURL& url,
-    bool are_matches_showing,
-    base::TimeDelta time_elapsed_since_last_focus,
-    uint8_t mouse_button,
-    bool alt_key,
-    bool ctrl_key,
-    bool meta_key,
-    bool shift_key) {
-  if (autocomplete_controller_->result().size() <= line) {
-    return;
-  }
-
-  AutocompleteMatch match(autocomplete_controller_->result().match_at(line));
-  if (match.destination_url != url) {
-    // TODO(https://crbug.com/1020025): this could be malice or staleness.
-    // Either way: don't navigate.
-    return;
-  }
-
-  // TODO(crbug.com/1041129): The following logic for recording Omnibox metrics
-  // is largely copied from SearchTabHelper::OpenAutocompleteMatch(). Make sure
-  // any changes here is reflected there until one code path is obsolete.
-
-  const auto now = base::TimeTicks::Now();
-  base::TimeDelta elapsed_time_since_first_autocomplete_query =
-      now - time_of_first_autocomplete_query_;
-  autocomplete_controller_->UpdateMatchDestinationURLWithQueryFormulationTime(
-      elapsed_time_since_first_autocomplete_query, &match);
-
-  LOCAL_HISTOGRAM_BOOLEAN("Omnibox.EventCount", true);
-
-  UMA_HISTOGRAM_MEDIUM_TIMES("Omnibox.FocusToOpenTimeAnyPopupState3",
-                             time_elapsed_since_last_focus);
-
-  if (ui::PageTransitionTypeIncludingQualifiersIs(match.transition,
-                                                  ui::PAGE_TRANSITION_TYPED)) {
-    navigation_metrics::RecordOmniboxURLNavigation(match.destination_url);
-  }
-  // The following histogram should be recorded for both TYPED and pasted
-  // URLs, but should still exclude reloads.
-  if (ui::PageTransitionTypeIncludingQualifiersIs(match.transition,
-                                                  ui::PAGE_TRANSITION_TYPED) ||
-      ui::PageTransitionTypeIncludingQualifiersIs(match.transition,
-                                                  ui::PAGE_TRANSITION_LINK)) {
-    net::cookie_util::RecordCookiePortOmniboxHistograms(match.destination_url);
-  }
-
-  SuggestionAnswer::LogAnswerUsed(match.answer);
-
-  TemplateURLService* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(profile_);
-  if (template_url_service &&
-      template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
-          match.destination_url)) {
-    // Note: will always be false for the realbox.
-    UMA_HISTOGRAM_BOOLEAN("Omnibox.Search.OffTheRecord",
-                          profile_->IsOffTheRecord());
-    base::RecordAction(
-        base::UserMetricsAction("OmniboxDestinationURLIsSearchOnDSP"));
-  }
-
-  AutocompleteMatch::LogSearchEngineUsed(match, template_url_service);
-
-  auto* bookmark_model = BookmarkModelFactory::GetForBrowserContext(profile_);
-  if (bookmark_model->IsBookmarked(match.destination_url)) {
-    RecordBookmarkLaunch(BOOKMARK_LAUNCH_LOCATION_OMNIBOX,
-                         ProfileMetrics::GetBrowserProfileType(profile_));
-  }
-
-  const AutocompleteInput& input = autocomplete_controller_->input();
-  WindowOpenDisposition disposition = ui::DispositionFromClick(
-      /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
-      shift_key);
-
-  base::TimeDelta default_time_delta = base::TimeDelta::FromMilliseconds(-1);
-
-  if (time_of_first_autocomplete_query_.is_null())
-    elapsed_time_since_first_autocomplete_query = default_time_delta;
-
-  base::TimeDelta elapsed_time_since_last_change_to_default_match =
-      !autocomplete_controller_->last_time_default_match_changed().is_null()
-          ? now - autocomplete_controller_->last_time_default_match_changed()
-          : default_time_delta;
-
-  OmniboxLog log(
-      /*text=*/input.focus_type() != OmniboxFocusType::DEFAULT
-          ? base::string16()
-          : input.text(),
-      /*just_deleted_text=*/input.prevent_inline_autocomplete(),
-      /*input_type=*/input.type(),
-      /*in_keyword_mode=*/false,
-      /*entry_method=*/metrics::OmniboxEventProto::INVALID,
-      /*is_popup_open=*/are_matches_showing,
-      /*selected_index=*/line,
-      /*disposition=*/disposition,
-      /*is_paste_and_go=*/false,
-      /*tab_id=*/sessions::SessionTabHelper::IdForTab(web_contents_),
-      /*current_page_classification=*/metrics::OmniboxEventProto::NTP_REALBOX,
-      /*elapsed_time_since_user_first_modified_omnibox=*/
-      elapsed_time_since_first_autocomplete_query,
-      /*completed_length=*/match.allowed_to_be_default_match
-          ? match.inline_autocompletion.length()
-          : base::string16::npos,
-      /*elapsed_time_since_last_change_to_default_match=*/
-      elapsed_time_since_last_change_to_default_match,
-      /*result=*/autocomplete_controller_->result());
-  autocomplete_controller_->AddProviderAndTriggeringLogs(&log);
-
-  OmniboxEventGlobalTracker::GetInstance()->OnURLOpened(&log);
-
-  predictors::AutocompleteActionPredictorFactory::GetForProfile(profile_)
-      ->OnOmniboxOpenedUrl(log);
-
-  web_contents_->OpenURL(
-      content::OpenURLParams(match.destination_url, content::Referrer(),
-                             disposition, match.transition, false));
-}
-
-void NewTabPageHandler::DeleteAutocompleteMatch(uint8_t line) {
-  if (autocomplete_controller_->result().size() <= line ||
-      !autocomplete_controller_->result().match_at(line).SupportsDeletion()) {
-    return;
-  }
-
-  const auto& match = autocomplete_controller_->result().match_at(line);
-  if (match.SupportsDeletion()) {
-    autocomplete_controller_->Stop(false);
-    autocomplete_controller_->DeleteMatch(match);
-  }
-}
-
-void NewTabPageHandler::ToggleSuggestionGroupIdVisibility(
-    int32_t suggestion_group_id) {
-  if (!autocomplete_controller_)
-    return;
-
-  omnibox::SuggestionGroupVisibility new_value =
-      autocomplete_controller_->result().IsSuggestionGroupIdHidden(
-          profile_->GetPrefs(), suggestion_group_id)
-          ? omnibox::SuggestionGroupVisibility::SHOWN
-          : omnibox::SuggestionGroupVisibility::HIDDEN;
-  omnibox::SetSuggestionGroupVisibility(profile_->GetPrefs(),
-                                        suggestion_group_id, new_value);
-}
-
-void NewTabPageHandler::LogCharTypedToRepaintLatency(base::TimeDelta latency) {
-  UMA_HISTOGRAM_TIMES("NewTabPage.Realbox.CharTypedToRepaintLatency.ToPaint",
-                      latency);
-}
-
 void NewTabPageHandler::NtpThemeChanged(const NtpTheme& ntp_theme) {
   page_->SetTheme(MakeTheme(ntp_theme));
 }
@@ -1319,21 +1070,6 @@ void NewTabPageHandler::OnNtpBackgroundServiceShuttingDown() {
   ntp_background_service_ = nullptr;
 }
 
-void NewTabPageHandler::OnOmniboxInputStateChanged() {
-  // This handler was added for the local NTP to show the fakebox when pressing
-  // escape while the omnibox has focus. The WebUI NTP only shows the fakebox
-  // when blurring the omnibox. Thus, we do nothing here.
-}
-
-void NewTabPageHandler::OnOmniboxFocusChanged(OmniboxFocusState state,
-                                              OmniboxFocusChangeReason reason) {
-  page_->SetFakeboxFocused(state == OMNIBOX_FOCUS_INVISIBLE);
-  // Don't make fakebox re-appear for a short moment before navigating away.
-  if (web_contents_->GetController().GetPendingEntry() == nullptr) {
-    page_->SetFakeboxVisible(reason != OMNIBOX_FOCUS_CHANGE_TYPING);
-  }
-}
-
 void NewTabPageHandler::OnOneGoogleBarDataUpdated() {
   base::Optional<OneGoogleBarData> data =
       one_google_bar_service_->one_google_bar_data();
@@ -1363,13 +1099,14 @@ void NewTabPageHandler::OnOneGoogleBarDataUpdated() {
 }
 
 void NewTabPageHandler::OnOneGoogleBarServiceShuttingDown() {
-  one_google_bar_service_observer_.RemoveAll();
+  one_google_bar_service_observation_.Reset();
   one_google_bar_service_ = nullptr;
 }
 
 void NewTabPageHandler::FileSelected(const base::FilePath& path,
                                      int index,
                                      void* params) {
+  DCHECK(choose_local_custom_background_callback_);
   if (instant_service_) {
     profile_->set_last_selected_directory(path.DirName());
     instant_service_->SelectLocalBackgroundImage(path);
@@ -1381,61 +1118,19 @@ void NewTabPageHandler::FileSelected(const base::FilePath& path,
   LogEvent(NTP_CUSTOMIZE_LOCAL_IMAGE_DONE);
   LogEvent(NTP_BACKGROUND_UPLOAD_DONE);
 
-  std::move(choose_local_custom_background_callback_).Run(true);
+  if (choose_local_custom_background_callback_)
+    std::move(choose_local_custom_background_callback_).Run(true);
 }
 
 void NewTabPageHandler::FileSelectionCanceled(void* params) {
+  DCHECK(choose_local_custom_background_callback_);
   select_file_dialog_ = nullptr;
   // File selection can happen at any time after NTP load, and is not logged
   // with the event.
   LogEvent(NTP_CUSTOMIZE_LOCAL_IMAGE_CANCEL);
   LogEvent(NTP_BACKGROUND_UPLOAD_CANCEL);
-  std::move(choose_local_custom_background_callback_).Run(false);
-}
-
-void NewTabPageHandler::OnResultChanged(AutocompleteController* controller,
-                                        bool default_match_changed) {
-  DCHECK(controller == autocomplete_controller_.get());
-
-  page_->AutocompleteResultChanged(omnibox::CreateAutocompleteResult(
-      autocomplete_controller_->input().text(),
-      autocomplete_controller_->result(),
-      BookmarkModelFactory::GetForBrowserContext(profile_),
-      profile_->GetPrefs()));
-
-  // Clear pending bitmap requests before requesting new ones.
-  for (auto bitmap_request_id : bitmap_request_ids_) {
-    bitmap_fetcher_service_->CancelRequest(bitmap_request_id);
-  }
-  bitmap_request_ids_.clear();
-
-  int match_index = -1;
-  for (const auto& match : autocomplete_controller_->result()) {
-    match_index++;
-
-    // Request bitmaps for matche images.
-    if (!match.image_url.is_empty()) {
-      bitmap_request_ids_.push_back(bitmap_fetcher_service_->RequestImage(
-          match.image_url,
-          base::BindOnce(&NewTabPageHandler::OnRealboxBitmapFetched,
-                         weak_ptr_factory_.GetWeakPtr(), match_index,
-                         match.image_url)));
-    }
-
-    // Request favicons for navigational matches.
-    // TODO(crbug.com/1075848): Investigate using chrome://favicon2.
-    if (!AutocompleteMatch::IsSearchType(match.type) &&
-        match.type != AutocompleteMatchType::DOCUMENT_SUGGESTION) {
-      gfx::Image favicon = favicon_cache_.GetLargestFaviconForPageUrl(
-          match.destination_url,
-          base::BindOnce(&NewTabPageHandler::OnRealboxFaviconFetched,
-                         weak_ptr_factory_.GetWeakPtr(), match_index,
-                         match.destination_url));
-      if (!favicon.IsEmpty()) {
-        OnRealboxFaviconFetched(match_index, match.destination_url, favicon);
-      }
-    }
-  }
+  if (choose_local_custom_background_callback_)
+    std::move(choose_local_custom_background_callback_).Run(false);
 }
 
 void NewTabPageHandler::OnLogoAvailable(
@@ -1460,7 +1155,8 @@ void NewTabPageHandler::OnLogoAvailable(
         logo->metadata.width_px, logo->metadata.height_px, "#ffffff",
         logo->metadata.share_button_x, logo->metadata.share_button_y,
         logo->metadata.share_button_icon, logo->metadata.share_button_bg,
-        logo->metadata.log_url, logo->metadata.cta_log_url);
+        logo->metadata.share_button_opacity, logo->metadata.log_url,
+        logo->metadata.cta_log_url);
     if (logo->dark_encoded_image) {
       image_doodle->dark = MakeImageDoodle(
           logo->metadata.type, logo->dark_encoded_image->data(),
@@ -1470,7 +1166,8 @@ void NewTabPageHandler::OnLogoAvailable(
           logo->metadata.dark_share_button_x,
           logo->metadata.dark_share_button_y,
           logo->metadata.dark_share_button_icon,
-          logo->metadata.dark_share_button_bg, logo->metadata.dark_log_url,
+          logo->metadata.dark_share_button_bg,
+          logo->metadata.dark_share_button_opacity, logo->metadata.dark_log_url,
           logo->metadata.dark_cta_log_url);
     }
     image_doodle->on_click_url = logo->metadata.on_click_url;
@@ -1489,27 +1186,6 @@ void NewTabPageHandler::OnLogoAvailable(
   }
   doodle->description = logo->metadata.alt_text;
   std::move(callback).Run(std::move(doodle));
-}
-
-void NewTabPageHandler::OnRealboxBitmapFetched(int match_index,
-                                               const GURL& image_url,
-                                               const SkBitmap& bitmap) {
-  auto data = gfx::Image::CreateFrom1xBitmap(bitmap).As1xPNGBytes();
-  std::string data_url =
-      webui::GetPngDataUrl(data->front_as<unsigned char>(), data->size());
-
-  page_->AutocompleteMatchImageAvailable(match_index, image_url, data_url);
-}
-
-void NewTabPageHandler::OnRealboxFaviconFetched(int match_index,
-                                                const GURL& page_url,
-                                                const gfx::Image& favicon) {
-  DCHECK(!favicon.IsEmpty());
-  auto data = favicon.As1xPNGBytes();
-  std::string data_url =
-      webui::GetPngDataUrl(data->front_as<unsigned char>(), data->size());
-
-  page_->AutocompleteMatchImageAvailable(match_index, page_url, data_url);
 }
 
 void NewTabPageHandler::LogEvent(NTPLoggingEventType event) {

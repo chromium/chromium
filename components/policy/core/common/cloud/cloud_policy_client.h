@@ -313,8 +313,11 @@ class POLICY_EXPORT CloudPolicyClient {
 
   // Uploads a report containing enterprise connectors real-time security
   // events for |context|. As above, the client must be in a registered state.
-  // The |callback| will be called when the operation completes.
+  // If |include_device_info| is true, information specific to the device such
+  // as the device name, user, id and OS will be included in the report. The
+  // |callback| will be called when the operation completes.
   virtual void UploadSecurityEventReport(content::BrowserContext* context,
+                                         bool include_device_info,
                                          base::Value report,
                                          StatusCallback callback);
 
@@ -792,12 +795,15 @@ class POLICY_EXPORT CloudPolicyClient {
  private:
   // Creates a new real-time reporting job and appends it to |request_jobs_|.
   // The job will send its report to the |server_url| endpoint.  If
+  // |include_device_info| is true, information specific to the device such as
+  // the device name, user, id and OS will be included in the report. If
   // |add_connector_url_params| is true then URL paramaters specific to
   // enterprise connectors are added to the request uploading the report.
   // |callback| is invoked once the report is uploaded.
   DeviceManagementService::Job* CreateNewRealtimeReportingJob(
       base::Value report,
       const std::string& server_url,
+      bool include_device_info,
       bool add_connector_url_params,
       StatusCallback callback);
 

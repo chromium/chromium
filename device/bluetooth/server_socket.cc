@@ -24,16 +24,22 @@ ServerSocket::ServerSocket(
     : server_socket_(std::move(bluetooth_socket)) {}
 
 ServerSocket::~ServerSocket() {
-  server_socket_->Close();
+  server_socket_->Disconnect(base::DoNothing());
 }
 
 void ServerSocket::Accept(AcceptCallback callback) {
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   server_socket_->Accept(
       base::BindOnce(&ServerSocket::OnAccept, weak_ptr_factory_.GetWeakPtr(),
-                     copyable_callback),
+                     std::move(split_callback.first)),
       base::BindOnce(&ServerSocket::OnAcceptError,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.second)));
+}
+
+void ServerSocket::Disconnect(DisconnectCallback callback) {
+  DCHECK(server_socket_);
+  server_socket_->Disconnect(std::move(callback));
 }
 
 void ServerSocket::OnAccept(
@@ -43,21 +49,23 @@ void ServerSocket::OnAccept(
   mojo::ScopedDataPipeProducerHandle receive_pipe_producer_handle;
   mojo::ScopedDataPipeConsumerHandle receive_pipe_consumer_handle;
   MojoResult result =
-      mojo::CreateDataPipe(/*options=*/nullptr, &receive_pipe_producer_handle,
-                           &receive_pipe_consumer_handle);
+      mojo::CreateDataPipe(/*options=*/nullptr, receive_pipe_producer_handle,
+                           receive_pipe_consumer_handle);
   if (result != MOJO_RESULT_OK) {
-    bluetooth_socket->Close();
-    OnAcceptError(std::move(callback), "Failed to create receiving DataPipe.");
+    bluetooth_socket->Disconnect(base::BindOnce(
+        &ServerSocket::OnAcceptError, weak_ptr_factory_.GetWeakPtr(),
+        std::move(callback), "Failed to create receiving DataPipe."));
     return;
   }
 
   mojo::ScopedDataPipeProducerHandle send_pipe_producer_handle;
   mojo::ScopedDataPipeConsumerHandle send_pipe_consumer_handle;
-  result = mojo::CreateDataPipe(/*options=*/nullptr, &send_pipe_producer_handle,
-                                &send_pipe_consumer_handle);
+  result = mojo::CreateDataPipe(/*options=*/nullptr, send_pipe_producer_handle,
+                                send_pipe_consumer_handle);
   if (result != MOJO_RESULT_OK) {
-    bluetooth_socket->Close();
-    OnAcceptError(std::move(callback), "Failed to create sending DataPipe.");
+    bluetooth_socket->Disconnect(base::BindOnce(
+        &ServerSocket::OnAcceptError, weak_ptr_factory_.GetWeakPtr(),
+        std::move(callback), "Failed to create sending DataPipe."));
     return;
   }
 

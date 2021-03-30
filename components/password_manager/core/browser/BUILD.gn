@@ -50,10 +50,6 @@ static_library("browser") {
     "change_password_url_service.h",
     "change_password_url_service_impl.cc",
     "change_password_url_service_impl.h",
-    "compromised_credentials_consumer.cc",
-    "compromised_credentials_consumer.h",
-    "compromised_credentials_observer.cc",
-    "compromised_credentials_observer.h",
     "credential_cache.cc",
     "credential_cache.h",
     "credential_manager_impl.cc",
@@ -105,6 +101,10 @@ static_library("browser") {
     "http_password_store_migrator.h",
     "import/password_importer.cc",
     "import/password_importer.h",
+    "insecure_credentials_consumer.cc",
+    "insecure_credentials_consumer.h",
+    "insecure_credentials_observer.cc",
+    "insecure_credentials_observer.h",
     "insecure_credentials_table.cc",
     "insecure_credentials_table.h",
     "leak_detection_delegate.cc",
@@ -179,6 +179,7 @@ static_library("browser") {
     "password_session_durations_metrics_recorder.h",
     "password_store.cc",
     "password_store.h",
+    "password_store_change.cc",
     "password_store_change.h",
     "password_store_consumer.cc",
     "password_store_consumer.h",
@@ -224,8 +225,6 @@ static_library("browser") {
     "sync_credentials_filter.h",
     "ui/bulk_leak_check_service_adapter.cc",
     "ui/bulk_leak_check_service_adapter.h",
-    "ui/compromised_credentials_reader.cc",
-    "ui/compromised_credentials_reader.h",
     "ui/credential_provider_interface.h",
     "ui/credential_utils.h",
     "ui/export_flow.h",
@@ -233,6 +232,8 @@ static_library("browser") {
     "ui/import_flow.h",
     "ui/insecure_credentials_manager.cc",
     "ui/insecure_credentials_manager.h",
+    "ui/insecure_credentials_reader.cc",
+    "ui/insecure_credentials_reader.h",
     "ui/password_check_referrer.cc",
     "ui/password_check_referrer.h",
     "ui/plaintext_reason.h",
@@ -281,6 +282,7 @@ static_library("browser") {
     "//components/password_manager/core/common",
     "//components/pref_registry",
     "//components/prefs",
+    "//components/profile_metrics",
     "//components/safe_browsing/core:features",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/security_state/core",
@@ -426,7 +428,7 @@ if (is_android) {
   # Wrap the java_cpp_enum in android_library so it can be used by both
   # chrome_java and modules.
   android_library("password_manager_java_enums") {
-    deps = [ "//third_party/android_deps:androidx_annotation_annotation_java" ]
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
     srcjar_deps = [ ":password_manager_java_enums_srcjar" ]
   }
 
@@ -434,6 +436,7 @@ if (is_android) {
     sources = [
       "biometric_authenticator.h",
       "manage_passwords_referrer.h",
+      "password_manager_metrics_util.h",
     ]
   }
 }
@@ -596,7 +599,6 @@ source_set("unit_tests") {
     "browser_save_password_progress_logger_unittest.cc",
     "bulk_leak_check_service_unittest.cc",
     "change_password_url_service_impl_unittest.cc",
-    "compromised_credentials_observer_unittest.cc",
     "credential_cache_unittest.cc",
     "credential_manager_impl_unittest.cc",
     "credential_manager_logger_unittest.cc",
@@ -619,6 +621,7 @@ source_set("unit_tests") {
     "http_auth_manager_unittest.cc",
     "http_password_store_migrator_unittest.cc",
     "import/password_importer_unittest.cc",
+    "insecure_credentials_observer_unittest.cc",
     "insecure_credentials_table_unittest.cc",
     "leak_detection_delegate_helper_unittest.cc",
     "leak_detection_delegate_unittest.cc",
@@ -665,8 +668,8 @@ source_set("unit_tests") {
     "sync/password_sync_bridge_unittest.cc",
     "sync_credentials_filter_unittest.cc",
     "ui/bulk_leak_check_service_adapter_unittest.cc",
-    "ui/compromised_credentials_reader_unittest.cc",
     "ui/insecure_credentials_manager_unittest.cc",
+    "ui/insecure_credentials_reader_unittest.cc",
     "ui/post_save_compromised_helper_unittest.cc",
     "ui/saved_passwords_presenter_unittest.cc",
     "ui/weak_check_utility_unittest.cc",

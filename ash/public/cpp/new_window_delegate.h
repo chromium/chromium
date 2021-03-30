@@ -6,7 +6,6 @@
 #define ASH_PUBLIC_CPP_NEW_WINDOW_DELEGATE_H_
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/macros.h"
 
 class GURL;
 
@@ -16,7 +15,15 @@ namespace ash {
 // management responsibilities.
 class ASH_PUBLIC_EXPORT NewWindowDelegate {
  public:
+  virtual ~NewWindowDelegate();
+
+  // Returns an instance connected to ash-chrome.
   static NewWindowDelegate* GetInstance();
+
+  // Returns an instance connected to the primary browser.
+  // Specifically, if Lacros is the primary browser, the instance connected
+  // to the registered browser via crosapi.
+  static NewWindowDelegate* GetPrimary();
 
   // Invoked when the user uses Ctrl+T to open a new tab.
   virtual void NewTab() = 0;
@@ -38,6 +45,9 @@ class ASH_PUBLIC_EXPORT NewWindowDelegate {
   // Invoked when the user opens Crosh.
   virtual void OpenCrosh() = 0;
 
+  // Invoked when an accelerator is used to open diagnostics.
+  virtual void OpenDiagnostics() = 0;
+
   // Invoked when an accelerator is used to open help center.
   virtual void OpenGetHelp() = 0;
 
@@ -56,10 +66,23 @@ class ASH_PUBLIC_EXPORT NewWindowDelegate {
 
  protected:
   NewWindowDelegate();
-  virtual ~NewWindowDelegate();
+  NewWindowDelegate(const NewWindowDelegate&) = delete;
+  NewWindowDelegate& operator=(const NewWindowDelegate&) = delete;
+};
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(NewWindowDelegate);
+// Interface to provide delegate instances for
+// NewWindowDelegate::GetInstance/GetPrimary methods.
+class ASH_PUBLIC_EXPORT NewWindowDelegateProvider {
+ public:
+  virtual ~NewWindowDelegateProvider();
+  virtual NewWindowDelegate* GetInstance() = 0;
+  virtual NewWindowDelegate* GetPrimary() = 0;
+
+ protected:
+  NewWindowDelegateProvider();
+  NewWindowDelegateProvider(const NewWindowDelegateProvider&) = delete;
+  NewWindowDelegateProvider& operator=(const NewWindowDelegateProvider&) =
+      delete;
 };
 
 }  // namespace ash

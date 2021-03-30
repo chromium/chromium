@@ -6,6 +6,7 @@ module blink.mojom;
 
 import "services/network/public/mojom/fetch_api.mojom";
 import "services/network/public/mojom/url_loader.mojom";
+import "services/network/public/mojom/url_request.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "third_party/blink/public/mojom/loader/resource_load_info.mojom";
 import "url/mojom/url.mojom";

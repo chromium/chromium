@@ -110,8 +110,9 @@ bool AcceleratorManager::HasPriorityHandler(
   return map_iter->second.second.front()->CanHandleAccelerators();
 }
 
-void AcceleratorManager::UnregisterImpl(AcceleratorMap::iterator map_iter,
-                                        AcceleratorTarget* target) {
+void AcceleratorManager::UnregisterImpl(
+    AcceleratorTargetsMap::iterator map_iter,
+    AcceleratorTarget* target) {
   AcceleratorTargetList* targets = &map_iter->second.second;
   auto target_iter = std::find(targets->begin(), targets->end(), target);
   if (target_iter == targets->end()) {

@@ -283,7 +283,9 @@ void TabStripUIHandler::OnTabStripModelChanged(
                                              ->GetTabGroup(tab_group_id.value())
                                              ->ListTabs();
 
-        const auto& selected_tabs = selection.new_model.selected_indices();
+        const ui::ListSelectionModel::SelectedIndices& sel =
+            selection.new_model.selected_indices();
+        const auto& selected_tabs = std::vector<int>(sel.begin(), sel.end());
         const bool all_tabs_in_group =
             IsSortedAndContiguous(base::make_span(selected_tabs)) &&
             selected_tabs.front() == static_cast<int>(tabs_in_group.start()) &&
@@ -548,29 +550,23 @@ void TabStripUIHandler::HandleGetThemeColors(const base::ListValue* args) {
               ThemeProperties::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE),
           /* 16% opacity */ 0.16 * 255)));
 
-  colors.SetString("--tabstrip-tab-loading-spinning-color",
-                   color_utils::SkColorToRgbaString(embedder_->GetColor(
-                       ThemeProperties::COLOR_TAB_THROBBER_SPINNING)));
+  std::string throbber_color = color_utils::SkColorToRgbaString(
+      embedder_->GetColor(ThemeProperties::COLOR_TAB_THROBBER_SPINNING));
+  colors.SetString("--tabstrip-tab-loading-spinning-color", throbber_color);
   colors.SetString("--tabstrip-tab-waiting-spinning-color",
                    color_utils::SkColorToRgbaString(embedder_->GetColor(
                        ThemeProperties::COLOR_TAB_THROBBER_WAITING)));
   colors.SetString("--tabstrip-indicator-recording-color",
-                   color_utils::SkColorToRgbaString(embedder_->GetColor(
-                       ThemeProperties::COLOR_TAB_ALERT_RECORDING)));
-  colors.SetString("--tabstrip-indicator-pip-color",
-                   color_utils::SkColorToRgbaString(embedder_->GetColor(
-                       ThemeProperties::COLOR_TAB_PIP_PLAYING)));
-  colors.SetString("--tabstrip-indicator-capturing-color",
-                   color_utils::SkColorToRgbaString(embedder_->GetColor(
-                       ThemeProperties::COLOR_TAB_ALERT_CAPTURING)));
+                   color_utils::SkColorToRgbaString(embedder_->GetSystemColor(
+                       ui::NativeTheme::kColorId_AlertSeverityHigh)));
+  colors.SetString("--tabstrip-indicator-pip-color", throbber_color);
+  colors.SetString("--tabstrip-indicator-capturing-color", throbber_color);
   colors.SetString("--tabstrip-tab-blocked-color",
-                   color_utils::SkColorToRgbaString(
-                       ui::NativeTheme::GetInstanceForWeb()->GetSystemColor(
-                           ui::NativeTheme::kColorId_ProminentButtonColor)));
+                   color_utils::SkColorToRgbaString(embedder_->GetSystemColor(
+                       ui::NativeTheme::kColorId_ProminentButtonColor)));
   colors.SetString("--tabstrip-focus-outline-color",
-                   color_utils::SkColorToRgbaString(
-                       ui::NativeTheme::GetInstanceForWeb()->GetSystemColor(
-                           ui::NativeTheme::kColorId_FocusedBorderColor)));
+                   color_utils::SkColorToRgbaString(embedder_->GetSystemColor(
+                       ui::NativeTheme::kColorId_FocusedBorderColor)));
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   colors.SetString(
@@ -860,9 +856,11 @@ void TabStripUIHandler::HandleReportTabCreationDuration(
 void TabStripUIHandler::HandleThumbnailUpdate(
     content::WebContents* tab,
     ThumbnailTracker::CompressedThumbnailData image) {
-  // Send base-64 encoded image to JS side.
-  std::string data_uri =
-      webui::MakeDataURIForImage(base::make_span(image->data), "jpeg");
+  // Send base-64 encoded image to JS side. If |image| is blank (i.e.
+  // there is no data), send a blank URI.
+  std::string data_uri;
+  if (image)
+    data_uri = webui::MakeDataURIForImage(base::make_span(image->data), "jpeg");
 
   const int tab_id = extensions::ExtensionTabUtil::GetTabId(tab);
   FireWebUIListener("tab-thumbnail-updated", base::Value(tab_id),

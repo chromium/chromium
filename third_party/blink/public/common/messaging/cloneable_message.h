@@ -14,7 +14,7 @@
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_transfer_token.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom.h"
 #include "url/origin.h"
 
 namespace blink {
@@ -46,16 +46,16 @@ struct BLINK_COMMON_EXPORT CloneableMessage {
   std::vector<mojom::SerializedBlobPtr> blobs;
 
   // Populated by message senders to prevent remote origins from accessing
-  // |native_file_system_tokens|. Tokens from a remote origin must fail by
+  // |file_system_access_tokens|. Tokens from a remote origin must fail by
   // dispatching a 'messageerror' event instead of a 'message' event. If
   // somehow a compromised process bypasses this origin check, the
-  // NativeFileSystemManager in the browser process performs another origin
-  // check that will prevent the use of remote origin NativeFileSystemHandles.
+  // FileSystemAccessManager in the browser process performs another origin
+  // check that will prevent the use of remote origin FileSystemAccessHandles.
   //
   // The message sender may leave |sender_origin| null. When |sender_origin| is
   // null, the message receiver must handle the message like it is from an
   // unknown remote origin by dispatching the 'messageerror' event when
-  // |native_file_system_tokens| is not an empty array.
+  // |file_system_access_tokens| is not an empty array.
   base::Optional<url::Origin> sender_origin;
 
   // Stack trace captured by sender.
@@ -72,8 +72,8 @@ struct BLINK_COMMON_EXPORT CloneableMessage {
 
   // Tokens required to clone FileSystemFileHandles and/or
   // FileSystemDirectoryHandles.
-  std::vector<mojo::PendingRemote<mojom::NativeFileSystemTransferToken>>
-      native_file_system_tokens;
+  std::vector<mojo::PendingRemote<mojom::FileSystemAccessTransferToken>>
+      file_system_access_tokens;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(CloneableMessage);

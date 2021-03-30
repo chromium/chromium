@@ -577,7 +577,7 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
       return WritableStream::Deserialize(
           script_state_,
           CreateEntangledPort(GetScriptState(), streams_[index].channel),
-          exception_state);
+          std::move(streams_[index].writable_optimizer), exception_state);
     }
     case kTransformStreamTransferTag: {
       if (!TransferableStreamsEnabled())
@@ -606,8 +606,9 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
       // 2. Let writableRecord be !
       //    StructuredDeserializeWithTransfer(dataHolder.[[writable]], the
       //    current Realm).
-      WritableStream* writable = WritableStream::Deserialize(
-          script_state_, port_for_writable, exception_state);
+      WritableStream* writable =
+          WritableStream::Deserialize(script_state_, port_for_writable,
+                                      /*optimizer=*/nullptr, exception_state);
       if (!writable)
         return nullptr;
 
@@ -750,6 +751,14 @@ v8::MaybeLocal<v8::WasmModuleObject>
 V8ScriptValueDeserializer::GetWasmModuleFromId(v8::Isolate* isolate,
                                                uint32_t id) {
   if (id < serialized_script_value_->WasmModules().size()) {
+    ExecutionContext* execution_context = ExecutionContext::From(script_state_);
+    DCHECK(serialized_script_value_->origin());
+    UseCounter::Count(execution_context, WebFeature::kWasmModuleSharing);
+    if (!serialized_script_value_->origin()->IsSameOriginWith(
+            execution_context->GetSecurityOrigin())) {
+      UseCounter::Count(execution_context,
+                        WebFeature::kCrossOriginWasmModuleSharing);
+    }
     return v8::WasmModuleObject::FromCompiledModule(
         isolate, serialized_script_value_->WasmModules()[id]);
   }

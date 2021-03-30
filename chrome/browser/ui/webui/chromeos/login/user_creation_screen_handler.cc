@@ -5,9 +5,9 @@
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
 
 #include "base/values.h"
-#include "chrome/browser/chromeos/login/oobe_screen.h"
-#include "chrome/browser/chromeos/login/screens/user_creation_screen.h"
-#include "chrome/browser/chromeos/login/startup_utils.h"
+#include "chrome/browser/ash/login/oobe_screen.h"
+#include "chrome/browser/ash/login/screens/user_creation_screen.h"
+#include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
@@ -47,9 +47,8 @@ void UserCreationScreenHandler::DeclareLocalizedValues(
                IDS_OOBE_USER_CREATION_CHILD_BUTTON_DESCRIPTION);
   builder->AddF("childSignInTitle", IDS_OOBE_USER_CREATION_CHILD_SIGNIN_TITLE,
                 ui::GetChromeOSDeviceName());
-  builder->AddF("childSignInSubtitle",
-                IDS_OOBE_USER_CREATION_CHILD_SIGNIN_SUBTITLE,
-                ui::GetChromeOSDeviceNameInPlural());
+  builder->Add("childSignInSubtitle",
+               IDS_OOBE_USER_CREATION_CHILD_SIGNIN_SUBTITLE);
   builder->Add("createAccountForChildLabel",
                IDS_OOBE_USER_CREATION_CHILD_ACCOUNT_CREATION_BUTTON_LABEL);
   builder->Add("signInForChildLabel",

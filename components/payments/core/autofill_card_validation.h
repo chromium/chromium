@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 
 namespace autofill {
 
@@ -59,12 +58,12 @@ uint32_t GetCompletenessScore(
 // Return the message to be displayed to the user, indicating what's missing
 // to make the credit card complete for payment. If more than one thing is
 // missing, the message will be a generic "more information required".
-base::string16 GetCompletionMessageForCard(CreditCardCompletionStatus status);
+std::u16string GetCompletionMessageForCard(CreditCardCompletionStatus status);
 
 // Returns the title string for a card edit dialog. The title string will
 // mention what needs to be added/fixed to make the card valid if it is not
 // valid. Otherwise, it will be "Edit card".
-base::string16 GetEditDialogTitleForCard(CreditCardCompletionStatus status);
+std::u16string GetEditDialogTitleForCard(CreditCardCompletionStatus status);
 
 }  // namespace payments
 

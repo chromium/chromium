@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">სიის ელემენტი</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">ორი თითით გადაფურცვლა მარჯვნივ</translation>
-<translation id="1016393160682012902">ფუნქციების გასაცნობად დააჭირეთ qwerty კლავიშს, განახლებადი ბრაილის კლავიშს ან შეხების ჟესტს. გასასვლელად ერთდროულად დააჭირეთ control-სა და w-ს ან escape-ს.</translation>
 <translation id="1022586497894531524">ChromeVox-ის გახმოვანებულ უკუკავშირს პირველად იყენებთ? მოცემული სწრაფი სახელმძღვანელო ChromeVox-თან მუშაობის საფუძვლებს გაგაცნობთ.</translation>
 <translation id="1025074108959230262">ფიქსაციის რეჟიმი გამორთულია</translation>
 <translation id="1031961866430398710">შემდეგ</translation>
@@ -150,6 +149,7 @@
 <translation id="2045055672832940894">წინა მართვის საშუალება არ არის</translation>
 <translation id="2045606329038304310">ფორმის ველების მართვის საშუალებები</translation>
 <translation id="2063539687800151747">ეპიგრაფი</translation>
+<translation id="2074531330963286860">ხელმისაწვდომია მოქმედებები. სანახავად დააჭირეთ კლავიშთა კომბინაციას Search + წერტილი</translation>
 <translation id="2086961585857038472">შემდეგი სიტყვა</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">ka</translation>
@@ -975,6 +975,7 @@
 <translation id="827266600368092403">არჩევის დაწყება ან დასრულება</translation>
 <translation id="827422111966801947">ინდიგო</translation>
 <translation id="8276439074553447000">გადასვლა წინა ფოკუსირებად ელემენტზე</translation>
+<translation id="8279039817939141096">ფუნქციების გასაცნობად დააჭირეთ qwerty კლავიშს, განახლებადი ბრაილის კლავიშს ან შეხების ჟესტს. გასასვლელად ერთდროულად დააჭირეთ control-სა და w-ს, შორისსა და Z-ს, escape-ს ან გადაფურცლეთ მარცხნივ ორი თითით.</translation>
 <translation id="8283603667300770666">შემდეგი ფორმის ველი</translation>
 <translation id="8310185481635255431">შემდეგი ბმული არ არის</translation>
 <translation id="831207808878314375">განსაზღვრება</translation>

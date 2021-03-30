@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests the if events are getting emitted when coverage changes.\n`);
-  await TestRunner.loadModule('coverage_test_runner');
+  await TestRunner.loadModule('panels/coverage'); await TestRunner.loadTestModule('coverage_test_runner');
 
 
   TestRunner.addResult('Should have coverage information even when not covered yet');

@@ -34,7 +34,7 @@ class CORE_EXPORT IdleSpellCheckController final
 
  public:
   explicit IdleSpellCheckController(LocalDOMWindow&, SpellCheckRequester&);
-  ~IdleSpellCheckController();
+  ~IdleSpellCheckController() override;
 
   enum class State {
 #define V(state) k##state,

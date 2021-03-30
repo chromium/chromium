@@ -15,6 +15,7 @@ Polymer({
     DeepLinkingBehavior,
     settings.RouteObserverBehavior,
     LockStateBehavior,
+    PrefsBehavior,
   ],
 
   properties: {
@@ -70,17 +71,6 @@ Polymer({
     },
 
     /**
-     * Whether to show the Suggested Content toggle.
-     * @private
-     */
-    showSuggestedContentToggle_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('suggestedContentToggleEnabled');
-      },
-    },
-
-    /**
      * Used by DeepLinkingBehavior to focus this page's deep links.
      * @type {!Set<!chromeos.settings.mojom.Setting>}
      */
@@ -115,6 +105,75 @@ Polymer({
       },
       readOnly: true,
     },
+
+    /**
+     * True if Pciguard UI is enabled.
+     * @private
+     */
+    isPciguardUiEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('pciguardUiEnabled');
+      },
+      readOnly: true,
+    },
+
+    /**
+     * Whether the user is in guest mode.
+     * @private {boolean}
+     */
+    isGuestMode_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('isGuest');
+      },
+      readOnly: true,
+    },
+
+    /** @private */
+    showDisableProtectionDialog_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /** @private */
+    isThunderboltSupported_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /** @private */
+    isPeripheralProtectionToggleEnforced_: {
+      type: Boolean,
+      computed: 'computeIsPeripheralProtectionToggleEnforced_(' +
+          'prefs.cros.device.peripheral_data_access_enabled.*)',
+      reflectToAttribute: true,
+    },
+
+    /** @private */
+    dataAccessShiftTabPressed_: {
+      type: Boolean,
+      value: false,
+    }
+  },
+
+  /** @private {?settings.PeripheralDataAccessBrowserProxy} */
+  browserProxy_: null,
+
+  observers: ['onDataAccessFlagsSet_(isThunderboltSupported_.*)'],
+
+  /** @override */
+  created() {
+    this.browserProxy_ =
+        settings.PeripheralDataAccessBrowserProxyImpl.getInstance();
+
+    this.browserProxy_.isThunderboltSupported().then(enabled => {
+      this.isThunderboltSupported_ = enabled;
+      if (this.isPciguardUiEnabled_ && this.isThunderboltSupported_) {
+        this.supportedSettingIds.add(
+            chromeos.settings.mojom.Setting.kPeripheralDataAccessProtection);
+      }
+    });
   },
 
   /**
@@ -243,5 +302,100 @@ Polymer({
     this.clearAccountPasswordTimeoutId_ = setTimeout(() => {
       this.authToken_ = undefined;
     }, lifetimeMs);
+  },
+
+  /** @private */
+  onDisableProtectionDialogClosed_() {
+    this.showDisableProtectionDialog_ = false;
+  },
+
+  /** @private */
+  onPeripheralProtectionClick_() {
+    if (this.isPeripheralProtectionToggleEnforced_) {
+      return;
+    }
+
+    // Do not flip the actual toggle as this will flip the underlying pref.
+    // Instead if the user is attempting to disable the toggle, present the
+    // warning dialog.
+    if (!this.prefs['cros']['device']['peripheral_data_access_enabled'].value) {
+      this.showDisableProtectionDialog_ = true;
+      return;
+    }
+
+    // The underlying settings-toggle-button is disabled, therefore we will have
+    // to set the pref value manually to flip the toggle.
+    this.setPrefValue('cros.device.peripheral_data_access_enabled', false);
+  },
+
+  /**
+   * @return {boolean} True is the toggle is enforced.
+   * @private
+   */
+  computeIsPeripheralProtectionToggleEnforced_() {
+    return this.prefs['cros']['device']['peripheral_data_access_enabled']
+               .enforcement === chrome.settingsPrivate.Enforcement.ENFORCED;
+  },
+
+  /** @private */
+  onDataAccessToggleFocus_() {
+    if (this.isPeripheralProtectionToggleEnforced_) {
+      return;
+    }
+
+    // Don't consume the shift+tab focus event here. Instead redirect it to the
+    // previous element.
+    if (this.dataAccessShiftTabPressed_) {
+      this.dataAccessShiftTabPressed_ = false;
+      this.$$('#enableVerifiedAccess').focus();
+      return;
+    }
+
+    this.$$('#peripheralDataAccessProtection').focus();
+  },
+
+  /**
+   * Handles keyboard events in regards to #peripheralDataAccessProtection.
+   * The underlying cr-toggle is disabled so we need to handle the keyboard
+   * events manually.
+   * @param {!Event} event
+   * @private
+   */
+  onDataAccessToggleKeyPress_(event) {
+    // Handle Shift + Tab, we don't want to redirect back to the same toggle.
+    if (event.shiftKey && event.key === 'Tab') {
+      this.dataAccessShiftTabPressed_ = true;
+      return;
+    }
+
+    if ((event.key !== 'Enter' && event.key !== ' ') ||
+        this.isPeripheralProtectionToggleEnforced_) {
+      return;
+    }
+
+    event.stopPropagation();
+
+    if (!this.prefs['cros']['device']['peripheral_data_access_enabled'].value) {
+      this.showDisableProtectionDialog_ = true;
+      return;
+    }
+    this.setPrefValue('cros.device.peripheral_data_access_enabled', false);
+  },
+
+  /**
+   * This is used to add a keydown listener event for handling keyboard
+   * navigation inputs. We have to wait until #peripheralDataAccessProtection
+   * is rendered before adding the observer.
+   * @private
+   */
+  onDataAccessFlagsSet_() {
+    if (this.isThunderboltSupported_ && this.isPciguardUiEnabled_) {
+      Polymer.RenderStatus.afterNextRender(this, () => {
+        this.$$('#peripheralDataAccessProtection')
+            .$$('#control')
+            .addEventListener(
+                'keydown', this.onDataAccessToggleKeyPress_.bind(this));
+      });
+    }
   },
 });

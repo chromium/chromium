@@ -52,17 +52,17 @@ Grid::Grid() {}
 Grid::~Grid() {}
 
 void Grid::SetGridColor(SkColor color) {
-  animation().TransitionColorTo(last_frame_time(), GRID_COLOR, grid_color_,
-                                color);
+  animator().TransitionColorTo(this, last_frame_time(), GRID_COLOR, grid_color_,
+                               color);
 }
 
-void Grid::NotifyClientColorAnimated(SkColor color,
-                                     int target_property_id,
-                                     cc::KeyframeModel* keyframe_model) {
+void Grid::OnColorAnimated(const SkColor& color,
+                           int target_property_id,
+                           gfx::KeyframeModel* keyframe_model) {
   if (target_property_id == GRID_COLOR) {
     grid_color_ = color;
   } else {
-    Rect::NotifyClientColorAnimated(color, target_property_id, keyframe_model);
+    Rect::OnColorAnimated(color, target_property_id, keyframe_model);
   }
 }
 

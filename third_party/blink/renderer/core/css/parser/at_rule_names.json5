@@ -61,9 +61,6 @@
       name: "advance-override"
     },
     {
-      name: "advance-proportional-override"
-    },
-    {
       name: "fallback",
     },
     {
@@ -101,6 +98,9 @@
     },
     {
       name: "range",
+    },
+    {
+      name: "size-adjust",
     },
     {
       name: "source",

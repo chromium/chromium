@@ -46,7 +46,7 @@ using ScopedHCRYPTMSG = base::ScopedGeneric<HCRYPTMSG, ScopedHCRYPTMSGTraits>;
 
 // Returns the "Subject" field from the digital signature in the provided
 // binary, if any is present. Returns an empty string on failure.
-base::string16 GetSubjectNameInFile(const base::FilePath& filename) {
+std::u16string GetSubjectNameInFile(const base::FilePath& filename) {
   ScopedHCERTSTORE store;
   ScopedHCRYPTMSG message;
 
@@ -62,7 +62,7 @@ base::string16 GetSubjectNameInFile(const base::FilePath& filename) {
     store.reset(temp_store);
     message.reset(temp_message);
     if (!result)
-      return base::string16();
+      return std::u16string();
   }
 
   // Determine the size of the signer info data.
@@ -70,7 +70,7 @@ base::string16 GetSubjectNameInFile(const base::FilePath& filename) {
   bool result = !!CryptMsgGetParam(message.get(), CMSG_SIGNER_INFO_PARAM, 0,
                                    nullptr, &signer_info_size);
   if (!result)
-    return base::string16();
+    return std::u16string();
 
   // Allocate enough space to hold the signer info.
   std::unique_ptr<BYTE[]> signer_info_buffer(new BYTE[signer_info_size]);
@@ -81,7 +81,7 @@ base::string16 GetSubjectNameInFile(const base::FilePath& filename) {
   result = !!CryptMsgGetParam(message.get(), CMSG_SIGNER_INFO_PARAM, 0,
                               signer_info, &signer_info_size);
   if (!result)
-    return base::string16();
+    return std::u16string();
 
   // Search for the signer certificate.
   CERT_INFO CertInfo = {0};
@@ -93,29 +93,29 @@ base::string16 GetSubjectNameInFile(const base::FilePath& filename) {
       store.get(), X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, 0,
       CERT_FIND_SUBJECT_CERT, &CertInfo, nullptr);
   if (!cert_context)
-    return base::string16();
+    return std::u16string();
 
   // Determine the size of the Subject name.
   DWORD subject_name_size = CertGetNameString(
       cert_context, CERT_NAME_SIMPLE_DISPLAY_TYPE, 0, nullptr, nullptr, 0);
   if (!subject_name_size)
-    return base::string16();
+    return std::u16string();
 
-  base::string16 subject_name;
+  std::wstring subject_name;
   subject_name.resize(subject_name_size);
 
   // Get subject name.
   if (!(CertGetNameString(cert_context, CERT_NAME_SIMPLE_DISPLAY_TYPE, 0,
                           nullptr, const_cast<LPWSTR>(subject_name.c_str()),
                           subject_name_size))) {
-    return base::string16();
+    return std::u16string();
   }
 
   // The subject name is normalized because it can contain trailing null
   // characters.
   internal::NormalizeCertificateSubject(&subject_name);
 
-  return subject_name;
+  return base::AsString16(subject_name);
 }
 
 // Helper for scoped tracking a catalog admin context.
@@ -214,7 +214,7 @@ void GetCatalogCertificateInfo(const base::FilePath& filename,
   // Attempt to get the "Subject" field from the signature of the catalog file
   // itself.
   base::FilePath catalog_path(catalog_info.wszCatalogFile);
-  base::string16 subject = GetSubjectNameInFile(catalog_path);
+  std::u16string subject = GetSubjectNameInFile(catalog_path);
 
   if (subject.empty())
     return;
@@ -244,7 +244,7 @@ void GetCertificateInfo(const base::FilePath& filename,
   if (certificate_info->type == CertificateInfo::Type::CERTIFICATE_IN_CATALOG)
     return;
 
-  base::string16 subject = GetSubjectNameInFile(filename);
+  std::u16string subject = GetSubjectNameInFile(filename);
   if (subject.empty())
     return;
 
@@ -254,22 +254,22 @@ void GetCertificateInfo(const base::FilePath& filename,
 }
 
 bool IsMicrosoftModule(base::StringPiece16 subject) {
-  static constexpr wchar_t kMicrosoft[] = L"Microsoft ";
+  static constexpr char16_t kMicrosoft[] = u"Microsoft ";
   return base::StartsWith(subject, kMicrosoft);
 }
 
 StringMapping GetEnvironmentVariablesMapping(
-    const std::vector<base::string16>& environment_variables) {
+    const std::vector<std::wstring>& environment_variables) {
   std::unique_ptr<base::Environment> environment(base::Environment::Create());
 
   StringMapping string_mapping;
-  for (const base::string16& variable : environment_variables) {
+  for (const std::wstring& variable : environment_variables) {
     std::string value;
-    if (environment->GetVar(base::UTF16ToASCII(variable).c_str(), &value)) {
+    if (environment->GetVar(base::WideToASCII(variable).c_str(), &value)) {
       value = base::TrimString(value, "\\", base::TRIM_TRAILING).as_string();
-      string_mapping.push_back(
-          std::make_pair(base::i18n::ToLower(base::UTF8ToUTF16(value)),
-                         L"%" + base::i18n::ToLower(variable) + L"%"));
+      string_mapping.push_back(std::make_pair(
+          base::i18n::ToLower(base::UTF8ToUTF16(value)),
+          u"%" + base::i18n::ToLower(base::AsString16(variable)) + u"%"));
     }
   }
 
@@ -277,8 +277,8 @@ StringMapping GetEnvironmentVariablesMapping(
 }
 
 void CollapseMatchingPrefixInPath(const StringMapping& prefix_mapping,
-                                  base::string16* path) {
-  const base::string16 path_copy = *path;
+                                  std::u16string* path) {
+  const std::u16string path_copy = *path;
   DCHECK_EQ(base::i18n::ToLower(path_copy), path_copy);
 
   size_t min_length = std::numeric_limits<size_t>::max();
@@ -291,7 +291,7 @@ void CollapseMatchingPrefixInPath(const StringMapping& prefix_mapping,
         continue;
       }
 
-      base::string16 collapsed_path = path_copy;
+      std::u16string collapsed_path = path_copy;
       base::ReplaceFirstSubstringAfterOffset(&collapsed_path, 0, mapping.first,
                                              mapping.second);
       size_t length = collapsed_path.length() - mapping.second.length();
@@ -334,9 +334,9 @@ bool GetModuleImageSizeAndTimeDateStamp(const base::FilePath& path,
 
 namespace internal {
 
-void NormalizeCertificateSubject(base::string16* subject) {
+void NormalizeCertificateSubject(std::wstring* subject) {
   size_t first_null = subject->find(L'\0');
-  if (first_null != base::string16::npos)
+  if (first_null != std::wstring::npos)
     subject->resize(first_null);
 }
 

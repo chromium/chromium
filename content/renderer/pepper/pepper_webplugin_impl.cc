@@ -29,8 +29,6 @@
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_rect.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/web/web_associated_url_loader_client.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
@@ -48,8 +46,6 @@ using blink::WebPlugin;
 using blink::WebPluginContainer;
 using blink::WebPluginParams;
 using blink::WebPrintParams;
-using blink::WebRect;
-using blink::WebSize;
 using blink::WebString;
 using blink::WebURL;
 using blink::WebVector;
@@ -196,18 +192,18 @@ bool PepperWebPluginImpl::SupportsKeyboardFocus() const {
   return instance_ && instance_->SupportsKeyboardFocus();
 }
 
-void PepperWebPluginImpl::Paint(cc::PaintCanvas* canvas, const WebRect& rect) {
+void PepperWebPluginImpl::Paint(cc::PaintCanvas* canvas,
+                                const gfx::Rect& rect) {
   // Re-entrancy may cause JS to try to execute script on the plugin before it
   // is fully initialized. See: crbug.com/715747.
   if (instance_)
     instance_->Paint(canvas, plugin_rect_, rect);
 }
 
-void PepperWebPluginImpl::UpdateGeometry(
-    const WebRect& window_rect,
-    const WebRect& clip_rect,
-    const WebRect& unobscured_rect,
-    bool is_visible) {
+void PepperWebPluginImpl::UpdateGeometry(const gfx::Rect& window_rect,
+                                         const gfx::Rect& clip_rect,
+                                         const gfx::Rect& unobscured_rect,
+                                         bool is_visible) {
   plugin_rect_ = window_rect;
   if (instance_)
     instance_->ViewChanged(plugin_rect_, clip_rect, unobscured_rect);

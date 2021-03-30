@@ -11,6 +11,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -67,7 +68,7 @@ class DesktopMediaPickerController : private content::WebContentsObserver {
   // If an instance of this class is destroyed while the dialog is visible, the
   // dialog will be cleaned up, but |done_callback| will not be invoked.
   void Show(const Params& params,
-            const std::vector<content::DesktopMediaID::Type>& sources,
+            const std::vector<DesktopMediaList::Type>& sources,
             DoneCallback done_callback);
 
   // content::WebContentsObserver overrides.

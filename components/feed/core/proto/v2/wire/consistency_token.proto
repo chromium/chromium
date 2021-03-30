@@ -8,8 +8,6 @@ package feedwire;
 
 option optimize_for = LITE_RUNTIME;
 
-// A consistency token.
 message ConsistencyToken {
-  // Indicates the min version of storage to read from.
   optional bytes token = 1;
 }

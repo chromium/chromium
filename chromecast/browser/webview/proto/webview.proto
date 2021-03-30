@@ -285,6 +285,21 @@ message TextInputFocusEvent {
   int32 flags = 2;
 }
 
+// Used to represent a space within a rectangle by "shrinking" the rectangle by
+// the inset amount on all four sides.
+message SetInsetsRequest {
+  int32 top = 1;
+  int32 left = 2;
+  int32 bottom = 3;
+  int32 right = 4;
+}
+
+message GetUserAgentRequest {}
+
+message GetUserAgentResponse {
+  string user_agent = 1;
+}
+
 message WebviewRequest {
   // Unique identifier for the request. For requests that will have a response,
   // the response id will match the request id.
@@ -331,6 +346,8 @@ message WebviewRequest {
     AssociateCastAppWindowRequest associate = 20;
     ResizeRequest resize = 21;
     ClearCookiesRequest clear_cookies = 22;
+    SetInsetsRequest set_insets = 23;
+    GetUserAgentRequest get_user_agent = 24;
   }
 }
 
@@ -355,6 +372,7 @@ message WebviewResponse {
     ClearCookiesResponse clear_cookies = 11;
     TextInputFocusEvent input_focus_event = 12;
     AssociateCastAppWindowResponse associate = 20;
+    GetUserAgentResponse get_user_agent = 21;
   }
 }
 

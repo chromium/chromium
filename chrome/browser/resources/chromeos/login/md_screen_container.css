@@ -89,18 +89,11 @@ html:not([new-layout]) #oobe {
 }
 
 html[new-layout] #oobe {
+  display: grid;
   flex: 1 0 auto; /* grow shrink basis */
   min-height: var(--oobe-dialog-min-height);
+  place-items: center;
   width: 100%;
-}
-
-#oobe.account-picker {
-  max-height: unset;
-  max-width: unset;
-  padding-bottom: unset;
-  padding-inline-end: unset;
-  padding-inline-start: unset;
-  padding-top: unset;
 }
 
 html:not([new-layout]) #outer-container.fullscreen,

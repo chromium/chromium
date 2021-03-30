@@ -133,7 +133,7 @@ bool SiteIsolationPolicy::ArePreloadedIsolatedOriginsEnabled() {
 }
 
 // static
-bool SiteIsolationPolicy::IsOptInOriginIsolationEnabled() {
+bool SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled() {
   // If strict site isolation is in use (either by default on desktop or via a
   // user opt-in on Android), unconditionally enable opt-in origin isolation.
   if (UseDedicatedProcessesForAllSites())
@@ -144,7 +144,12 @@ bool SiteIsolationPolicy::IsOptInOriginIsolationEnabled() {
   if (IsSiteIsolationDisabled())
     return false;
 
-  return true;
+  return IsOriginAgentClusterEnabled();
+}
+
+// static
+bool SiteIsolationPolicy::IsOriginAgentClusterEnabled() {
+  return base::FeatureList::IsEnabled(features::kOriginIsolationHeader);
 }
 
 // static
@@ -181,18 +186,18 @@ void SiteIsolationPolicy::ApplyGlobalIsolatedOrigins() {
       ChildProcessSecurityPolicy::GetInstance();
 
   std::string from_cmdline = GetIsolatedOriginsFromCommandLine();
-  policy->AddIsolatedOrigins(
+  policy->AddFutureIsolatedOrigins(
       from_cmdline,
       ChildProcessSecurityPolicy::IsolatedOriginSource::COMMAND_LINE);
 
   std::string from_trial = GetIsolatedOriginsFromFieldTrial();
-  policy->AddIsolatedOrigins(
+  policy->AddFutureIsolatedOrigins(
       from_trial,
       ChildProcessSecurityPolicy::IsolatedOriginSource::FIELD_TRIAL);
 
   std::vector<url::Origin> from_embedder =
       GetContentClient()->browser()->GetOriginsRequiringDedicatedProcess();
-  policy->AddIsolatedOrigins(
+  policy->AddFutureIsolatedOrigins(
       from_embedder,
       ChildProcessSecurityPolicy::IsolatedOriginSource::BUILT_IN);
 }

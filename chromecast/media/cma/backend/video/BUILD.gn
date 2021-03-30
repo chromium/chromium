@@ -18,6 +18,7 @@ cast_source_set("av_sync_video") {
   deps = [
     "//base",
     "//chromecast/base",
+    "//chromecast/media/audio:rate_adjuster",
     "//chromecast/media/cma/backend:for_mixer_audio",
     "//chromecast/public",
     "//chromecast/public/media",

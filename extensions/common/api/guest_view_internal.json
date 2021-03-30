@@ -60,19 +60,18 @@
             "type": "object",
             "name": "createParams",
             "additionalProperties": {"type": "any"}
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {
-                "type": "object",
-                "name": "returnParams",
-                "additionalProperties": {"type": "any"}
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "type": "object",
+              "name": "returnParams",
+              "additionalProperties": {"type": "any"}
+            }
+          ]
+        }
       },
       {
         "name": "destroyGuest",
@@ -81,14 +80,13 @@
           {
             "type": "integer",
             "name": "instanceId"
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [],
-            "optional": true
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [],
+          "optional": true
+        }
       },
       {
         "name": "setSize",
@@ -102,14 +100,13 @@
           {
             "$ref": "SizeParams",
             "name": "params"
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [],
-            "optional": true
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [],
+          "optional": true
+        }
       }
     ]
   }

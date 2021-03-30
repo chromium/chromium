@@ -11,14 +11,14 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import '../controls/extension_controlled_indicator.m.js';
-import '../controls/settings_toggle_button.m.js';
-import '../prefs/prefs.m.js';
-import '../settings_shared_css.m.js';
+import '../controls/extension_controlled_indicator.js';
+import '../controls/settings_toggle_button.js';
+import '../prefs/prefs.js';
+import '../settings_shared_css.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.m.js';
+import {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
 
 import {SystemPageBrowserProxyImpl} from './system_page_browser_proxy.js';
 

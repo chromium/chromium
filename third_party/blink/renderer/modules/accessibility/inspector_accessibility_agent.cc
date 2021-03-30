@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/modules/accessibility/inspector_accessibility_agent.h"
 
 #include <memory>
+
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
+#include "third_party/blink/renderer/core/aom/accessible_node.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
@@ -289,9 +291,12 @@ void FillWidgetProperties(AXObject& ax_object,
           CreateProperty(AXPropertyNameEnum::Valuemax, CreateValue(max_value)));
     }
 
-    properties.emplace_back(
-        CreateProperty(AXPropertyNameEnum::Valuetext,
-                       CreateValue(ax_object.ValueDescription())));
+    properties.emplace_back(CreateProperty(
+        AXPropertyNameEnum::Valuetext,
+        CreateValue(
+            ax_object
+                .GetAOMPropertyOrARIAAttribute(AOMStringProperty::kValueText)
+                .GetString())));
   }
 }
 
@@ -846,9 +851,9 @@ void InspectorAccessibilityAgent::FillCoreProperties(
     if (ax_object.ValueForRange(&value))
       node_object.setValue(CreateValue(value));
   } else {
-    String string_value = ax_object.StringValue();
-    if (!string_value.IsEmpty())
-      node_object.setValue(CreateValue(string_value));
+    String value = ax_object.SlowGetValueForControlIncludingContentEditable();
+    if (!value.IsEmpty())
+      node_object.setValue(CreateValue(value));
   }
 
   if (fetch_relatives)

@@ -105,12 +105,10 @@ interface PasswordManagerDriver {
   // in `form_data` may or may not be empty
   InformAboutUserInput(FormData form_data);
 
-  // Notification that same-document navigation happened. We use this as a
-  // signal for successful login.
-  // TODO(crbug.com/949519): Rename this method to a more generic name since
-  // it's called in many scenarios other than SameDocumentNavigation such as
-  // FRAME_DETACHED.
-  SameDocumentNavigation(SubmissionIndicatorEvent submission_indication_event);
+  // Notification that a dynamic form submission was observed. This could be due
+  // to a same-document navigation, detaching a frame, or hiding / removing a
+  // form after an XHR.
+  DynamicFormSubmission(SubmissionIndicatorEvent submission_indication_event);
 
   // Notification that password form was cleared. This is used as a signal of
   // a successful submission for change password forms.
@@ -147,7 +145,8 @@ interface PasswordManagerDriver {
 
   // The focus changed to a different input in the same frame (e.g. tabbed from
   // email to password field).
-  FocusedInputChanged(FocusedFieldType focused_field_type);
+  FocusedInputChanged(FieldRendererId focused_field_id,
+                      FocusedFieldType focused_field_type);
 
   // Sends the success state of filling credentials into a form. This happens
   // only if the form being filled has a renderer_id. |result| is an

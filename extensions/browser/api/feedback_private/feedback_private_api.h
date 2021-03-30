@@ -37,6 +37,18 @@ class FeedbackPrivateAPI : public BrowserContextKeyedAPI {
   LogSourceAccessManager* GetLogSourceAccessManager() const;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+  // Create a FeedbackInfo to be passed to UI/JS
+  std::unique_ptr<api::feedback_private::FeedbackInfo> CreateFeedbackInfo(
+      const std::string& description_template,
+      const std::string& description_placeholder_text,
+      const std::string& category_tag,
+      const std::string& extra_diagnostics,
+      const GURL& page_url,
+      api::feedback_private::FeedbackFlow flow,
+      bool from_assistant,
+      bool include_bluetooth_logs,
+      bool from_chrome_labs_or_kaleidoscope);
+
   void RequestFeedbackForFlow(const std::string& description_template,
                               const std::string& description_placeholder_text,
                               const std::string& category_tag,
@@ -45,7 +57,7 @@ class FeedbackPrivateAPI : public BrowserContextKeyedAPI {
                               api::feedback_private::FeedbackFlow flow,
                               bool from_assistant = false,
                               bool include_bluetooth_logs = false,
-                              bool from_kaleidoscope = false);
+                              bool from_chrome_labs_or_kaleidoscope = false);
 
   // BrowserContextKeyedAPI implementation.
   static BrowserContextKeyedAPIFactory<FeedbackPrivateAPI>*
@@ -81,7 +93,7 @@ class FeedbackPrivateGetStringsFunction : public ExtensionFunction {
                              FEEDBACKPRIVATE_GETSTRINGS)
 
   // Invoke this callback when this function is called - used for testing.
-  static void set_test_callback(base::Closure* const callback) {
+  static void set_test_callback(base::OnceClosure* callback) {
     test_callback_ = callback;
   }
 
@@ -92,7 +104,7 @@ class FeedbackPrivateGetStringsFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  static base::Closure* test_callback_;
+  static base::OnceClosure* test_callback_;
 };
 
 class FeedbackPrivateGetUserEmailFunction : public ExtensionFunction {

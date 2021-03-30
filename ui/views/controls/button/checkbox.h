@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "cc/paint/paint_flags.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/focus_ring.h"
@@ -28,7 +27,7 @@ class VIEWS_EXPORT Checkbox : public LabelButton {
  public:
   METADATA_HEADER(Checkbox);
 
-  explicit Checkbox(const base::string16& label = base::string16(),
+  explicit Checkbox(const std::u16string& label = std::u16string(),
                     PressedCallback callback = PressedCallback());
   ~Checkbox() override;
 
@@ -83,9 +82,6 @@ class VIEWS_EXPORT Checkbox : public LabelButton {
 
   // True if the checkbox is checked.
   bool checked_ = false;
-
-  // The unique id for the associated label's accessible object.
-  int32_t label_ax_id_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(Checkbox);
 };

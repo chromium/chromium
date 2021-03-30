@@ -1,0 +1,31 @@
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<link rel="import" href="chrome://resources/html/polymer.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.html">
+
+<link rel="import" href="/components/common_styles.html">
+<link rel="import" href="/components/oobe_dialog.html">
+<link rel="import" href="/components/oobe_focus_behavior.html">
+
+<!--
+  oobe-dialog wrap which is used to unify usage of oobe-content-dialog during
+  layout transition.
+-->
+<dom-module id="oobe-content-dialog">
+  <template>
+    <style include="oobe-dialog-host"></style>
+    <oobe-dialog id="dialog" has-buttons="[[!noButtons]]"
+        hide-shadow$="[[hideShadow]]" no-lazy$="[[noLazy]]" no-header
+        no-footer-padding$="[[noFooterPadding]]"
+        footer-shrinkable$="[[footerShrinkable]]">
+      <slot slot="footer" name="content"></slot>
+      <slot slot="back-navigation" name="back-navigation"></slot>
+      <slot slot="bottom-buttons" name="bottom-buttons"></slot>
+    </oobe-dialog>
+  </template>
+  <script src="oobe_content_dialog.js"></script>
+</dom-module>

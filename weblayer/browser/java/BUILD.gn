@@ -95,10 +95,23 @@ java_cpp_enum("generated_enums") {
 }
 
 android_library("base_module_java") {
-  sources =
-      [ "org/chromium/weblayer_private/WebViewCompatibilityHelperImpl.java" ]
-  deps = [ "//base:base_java" ]
+  sources = [
+    "org/chromium/weblayer_private/BackgroundFetchHelper.java",
+    "org/chromium/weblayer_private/ChildProcessServiceImpl.java",
+    "org/chromium/weblayer_private/WebViewCompatibilityHelperImpl.java",
+  ]
+  deps = [
+    ":base_module_interfaces_java",
+    "$google_play_services_package:google_play_services_basement_java",
+    "//base:base_java",
+    "//components/embedder_support/android:application_java",
+    "//content/public/android:content_java",
+  ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
+  # Needed for android.webkit.WebViewFactory
+  alternative_android_sdk_dep =
+      "//third_party/android_sdk:public_framework_system_java"
 }
 
 android_library("java") {
@@ -111,7 +124,6 @@ android_library("java") {
     "org/chromium/weblayer_private/BrowserList.java",
     "org/chromium/weblayer_private/BrowserListObserver.java",
     "org/chromium/weblayer_private/BrowserViewController.java",
-    "org/chromium/weblayer_private/ChildProcessServiceImpl.java",
     "org/chromium/weblayer_private/ContactsPickerAdapter.java",
     "org/chromium/weblayer_private/ContentViewRenderView.java",
     "org/chromium/weblayer_private/ContentViewWithAutofill.java",
@@ -127,10 +139,12 @@ android_library("java") {
     "org/chromium/weblayer_private/FragmentWindowAndroid.java",
     "org/chromium/weblayer_private/FullscreenCallbackProxy.java",
     "org/chromium/weblayer_private/FullscreenToast.java",
+    "org/chromium/weblayer_private/GoogleAccountAccessTokenFetcherProxy.java",
     "org/chromium/weblayer_private/GoogleAccountsCallbackProxy.java",
     "org/chromium/weblayer_private/HttpAuthHandlerImpl.java",
     "org/chromium/weblayer_private/InfoBarContainer.java",
     "org/chromium/weblayer_private/InfoBarContainerView.java",
+    "org/chromium/weblayer_private/InstalledAppProviderFactory.java",
     "org/chromium/weblayer_private/IntentUtils.java",
     "org/chromium/weblayer_private/InterceptNavigationDelegateClientImpl.java",
     "org/chromium/weblayer_private/LocaleChangedBroadcastReceiver.java",
@@ -138,6 +152,7 @@ android_library("java") {
     "org/chromium/weblayer_private/NavigationControllerImpl.java",
     "org/chromium/weblayer_private/NavigationImpl.java",
     "org/chromium/weblayer_private/NewTabCallbackProxy.java",
+    "org/chromium/weblayer_private/PageImpl.java",
     "org/chromium/weblayer_private/PageInfoControllerDelegateImpl.java",
     "org/chromium/weblayer_private/PrerenderControllerImpl.java",
     "org/chromium/weblayer_private/ProfileImpl.java",
@@ -157,6 +172,7 @@ android_library("java") {
     "org/chromium/weblayer_private/WebLayerTabModalPresenter.java",
     "org/chromium/weblayer_private/WebMessageReplyProxyImpl.java",
     "org/chromium/weblayer_private/WebShareServiceFactory.java",
+    "org/chromium/weblayer_private/WebappsHelper.java",
     "org/chromium/weblayer_private/media/MediaRouteDialogFragmentImpl.java",
     "org/chromium/weblayer_private/media/MediaRouterClientImpl.java",
     "org/chromium/weblayer_private/media/MediaSessionManager.java",
@@ -169,19 +185,19 @@ android_library("java") {
     "org/chromium/weblayer_private/permissions/PermissionRequestUtils.java",
     "org/chromium/weblayer_private/resources/ResourceMapper.java",
     "org/chromium/weblayer_private/settings/SettingsFragmentImpl.java",
-    "org/chromium/weblayer_private/settings/WebLayerSiteSettingsClient.java",
+    "org/chromium/weblayer_private/settings/WebLayerSiteSettingsDelegate.java",
     _bundle_utils_output,
   ]
   resources_package = "org.chromium.weblayer_private"
 
   deps = [
+    ":base_module_interfaces_java",
     ":base_module_java",
     ":gms_bridge_java",
     ":interfaces_java",
     ":weblayer_bundle_utils",
     ":weblayer_resources",
     "//base:base_java",
-    "//base:jni_java",
     "//cc:cc_java",
     "//components/autofill/android/provider:java",
     "//components/browser_ui/banners/android:java",
@@ -201,11 +217,14 @@ android_library("java") {
     "//components/browser_ui/util/android:java",
     "//components/browser_ui/webshare/android:java",
     "//components/browser_ui/widget/android:java",
+    "//components/content_capture/android:java",
     "//components/content_settings/android:content_settings_enums_java",
     "//components/content_settings/android:java",
     "//components/crash/android:handler_java",
     "//components/crash/android:java",
+    "//components/download/internal/background_service:internal_java",
     "//components/download/internal/common:internal_java",
+    "//components/download/network:network_java",
     "//components/embedder_support/android:application_java",
     "//components/embedder_support/android:browser_context_java",
     "//components/embedder_support/android:content_view_java",
@@ -218,6 +237,7 @@ android_library("java") {
     "//components/infobars/android:infobar_android_enums_java",
     "//components/infobars/android:java",
     "//components/infobars/core:infobar_enums_java",
+    "//components/installedapp/android:java",
     "//components/javascript_dialogs/android:java",
     "//components/location/android:settings_java",
     "//components/media_router/browser/android:cast_options_provider_java",
@@ -244,6 +264,7 @@ android_library("java") {
     "//components/user_prefs/android:java",
     "//components/variations/android:variations_java",
     "//components/version_info/android:version_constants_java",
+    "//components/webapps/browser/android:java",
     "//components/webrtc/android:java",
     "//content/public/android:content_java",
     "//mojo/public/java:bindings_java",
@@ -251,16 +272,17 @@ android_library("java") {
     "//net/android:net_java",
     "//services/network/public/mojom:cookies_mojom_java",
     "//services/network/public/mojom:mojom_java",
+    "//services/network/public/mojom:url_loader_base_java",
     "//services/service_manager/public/java:service_manager_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//third_party/android_deps:androidx_appcompat_appcompat_java",
-    "//third_party/android_deps:androidx_appcompat_appcompat_resources_java",
-    "//third_party/android_deps:androidx_core_core_java",
-    "//third_party/android_deps:androidx_fragment_fragment_java",
-    "//third_party/android_deps:androidx_media_media_java",
-    "//third_party/android_deps:androidx_mediarouter_mediarouter_java",
-    "//third_party/android_deps:androidx_preference_preference_java",
     "//third_party/android_deps:material_design_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_media_media_java",
+    "//third_party/androidx:androidx_mediarouter_mediarouter_java",
+    "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//ui/android:ui_full_java",
     "//ui/android:ui_java",
@@ -296,16 +318,18 @@ android_resources("weblayer_test_resources") {
 android_library("test_java") {
   testonly = true
   sources = [
+    "org/chromium/weblayer_private/test/TestContentCaptureConsumer.java",
     "org/chromium/weblayer_private/test/TestInfoBar.java",
     "org/chromium/weblayer_private/test/TestWebLayerImpl.java",
   ]
   resources_package = "org.chromium.weblayer_private.test"
   deps = [
+    ":base_module_interfaces_java",
     ":interfaces_java",
     ":java",
     ":weblayer_test_resources",
     "//base:base_java",
-    "//base:jni_java",
+    "//components/content_capture/android:java",
     "//components/infobars/android:java",
     "//components/location/android:location_java",
     "//components/media_router/browser/android:java",
@@ -315,11 +339,66 @@ android_library("test_java") {
     "//net/android:net_java",
     "//services/device/public/java:geolocation_java",
     "//services/device/public/java:geolocation_java_test_support",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_full_java",
   ]
   srcjar_deps = [ ":test_aidl" ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+android_library("junit_test_support") {
+  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
+  bypass_platform_checks = true
+  testonly = true
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//components/payments/content/android:java",
+    "//components/payments/content/android:junit_test_support",
+    "//components/payments/content/android:service_java",
+    "//components/payments/mojom:mojom_java",
+    "//content/public/android:content_java",
+    "//mojo/public/java:bindings_java",
+    "//mojo/public/java:system_java",
+    "//third_party/android_deps:robolectric_all_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/blink/public/mojom:android_mojo_bindings_java",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_java",
+    "//url:gurl_junit_test_support",
+    "//url:origin_java",
+  ]
+  sources = [ "org/chromium/weblayer_private/payments/test_support/WebLayerPaymentRequestBuilder.java" ]
+}
+
+junit_binary("weblayer_junit_tests") {
+  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
+  bypass_platform_checks = true
+  testonly = true
+  sources = [ "org/chromium/weblayer_private/payments/WebLayerPaymentRequestServiceTest.java" ]
+  resources_package = "org.chromium.weblayer_private.test"
+  deps = [
+    ":java",
+    ":junit_test_support",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//components/payments/content/android:java",
+    "//components/payments/content/android:junit_test_support",
+    "//components/payments/content/android:service_java",
+    "//components/payments/mojom:mojom_java",
+    "//components/security_state/core:security_state_enums_java",
+    "//content/public/android:content_java",
+    "//mojo/public/java:bindings_java",
+    "//mojo/public/java:system_java",
+    "//services/service_manager/public/java:service_manager_java",
+    "//third_party/android_deps:robolectric_all_java",
+    "//third_party/blink/public/mojom:android_mojo_bindings_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
 }
 
 generate_jni_registration("test_weblayer_jni_registration") {
@@ -340,6 +419,7 @@ generate_jni("test_jni") {
 generate_jni("jni") {
   sources = [
     "org/chromium/weblayer_private/AutocompleteSchemeClassifierImpl.java",
+    "org/chromium/weblayer_private/BackgroundFetchHelper.java",
     "org/chromium/weblayer_private/BrowserControlsContainerView.java",
     "org/chromium/weblayer_private/BrowserImpl.java",
     "org/chromium/weblayer_private/BrowserList.java",
@@ -350,6 +430,7 @@ generate_jni("jni") {
     "org/chromium/weblayer_private/ErrorPageCallbackProxy.java",
     "org/chromium/weblayer_private/FaviconCallbackProxy.java",
     "org/chromium/weblayer_private/FullscreenCallbackProxy.java",
+    "org/chromium/weblayer_private/GoogleAccountAccessTokenFetcherProxy.java",
     "org/chromium/weblayer_private/GoogleAccountsCallbackProxy.java",
     "org/chromium/weblayer_private/HttpAuthHandlerImpl.java",
     "org/chromium/weblayer_private/InfoBarContainer.java",
@@ -358,6 +439,7 @@ generate_jni("jni") {
     "org/chromium/weblayer_private/NavigationControllerImpl.java",
     "org/chromium/weblayer_private/NavigationImpl.java",
     "org/chromium/weblayer_private/NewTabCallbackProxy.java",
+    "org/chromium/weblayer_private/PageImpl.java",
     "org/chromium/weblayer_private/PrerenderControllerImpl.java",
     "org/chromium/weblayer_private/ProfileImpl.java",
     "org/chromium/weblayer_private/TabCallbackProxy.java",
@@ -369,6 +451,7 @@ generate_jni("jni") {
     "org/chromium/weblayer_private/WebLayerImpl.java",
     "org/chromium/weblayer_private/WebMessageReplyProxyImpl.java",
     "org/chromium/weblayer_private/WebViewCompatibilityHelperImpl.java",
+    "org/chromium/weblayer_private/WebappsHelper.java",
     "org/chromium/weblayer_private/media/MediaRouterClientImpl.java",
     "org/chromium/weblayer_private/media/MediaStreamManager.java",
     "org/chromium/weblayer_private/metrics/MetricsServiceClient.java",
@@ -378,13 +461,24 @@ generate_jni("jni") {
   ]
 }
 
+android_library("base_module_interfaces_java") {
+  sources = [
+    "org/chromium/weblayer_private/interfaces/ObjectWrapper.java",
+    "org/chromium/weblayer_private/interfaces/StrictModeWorkaround.java",
+  ]
+
+  srcjar_deps = [ ":base_module_aidl" ]
+}
+
 android_library("interfaces_java") {
   sources = [
     "org/chromium/weblayer_private/interfaces/APICallException.java",
     "org/chromium/weblayer_private/interfaces/ActionModeItemType.java",
+    "org/chromium/weblayer_private/interfaces/BrowserEmbeddabilityMode.java",
     "org/chromium/weblayer_private/interfaces/BrowserFragmentArgs.java",
     "org/chromium/weblayer_private/interfaces/BrowsingDataType.java",
     "org/chromium/weblayer_private/interfaces/CookieChangeCause.java",
+    "org/chromium/weblayer_private/interfaces/DarkModeStrategy.java",
     "org/chromium/weblayer_private/interfaces/DownloadError.java",
     "org/chromium/weblayer_private/interfaces/DownloadState.java",
     "org/chromium/weblayer_private/interfaces/GoogleAccountServiceType.java",
@@ -392,18 +486,19 @@ android_library("interfaces_java") {
     "org/chromium/weblayer_private/interfaces/NavigateParams.java",
     "org/chromium/weblayer_private/interfaces/NavigationState.java",
     "org/chromium/weblayer_private/interfaces/NewTabType.java",
-    "org/chromium/weblayer_private/interfaces/ObjectWrapper.java",
     "org/chromium/weblayer_private/interfaces/RemoteMediaServiceConstants.java",
     "org/chromium/weblayer_private/interfaces/ScrollNotificationType.java",
     "org/chromium/weblayer_private/interfaces/SettingType.java",
     "org/chromium/weblayer_private/interfaces/SettingsFragmentArgs.java",
     "org/chromium/weblayer_private/interfaces/SettingsIntentHelper.java",
-    "org/chromium/weblayer_private/interfaces/StrictModeWorkaround.java",
     "org/chromium/weblayer_private/interfaces/UrlBarOptionsKeys.java",
     "org/chromium/weblayer_private/interfaces/WebLayerVersionConstants.java",
   ]
 
-  deps = [ "//third_party/android_deps:androidx_annotation_annotation_java" ]
+  deps = [
+    ":base_module_interfaces_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
 
   srcjar_deps = [ ":aidl" ]
 }
@@ -420,6 +515,7 @@ android_library("gms_bridge_java") {
   deps = [
     "//base:base_java",
     "//components/embedder_support/android/metrics:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 
   # The appropriate .class file will be loaded via a dependency to a library
@@ -433,15 +529,23 @@ android_library("gms_bridge_upstream_impl_java") {
   deps = [ ":gms_bridge_java" ]
 }
 
+android_aidl("base_module_aidl") {
+  import_include = [ "." ]
+  sources = [
+    "org/chromium/weblayer_private/interfaces/IChildProcessService.aidl",
+    "org/chromium/weblayer_private/interfaces/IObjectWrapper.aidl",
+  ]
+}
+
 android_aidl("aidl") {
   import_include = [ "." ]
   sources = [
     "org/chromium/weblayer_private/interfaces/IBrowser.aidl",
     "org/chromium/weblayer_private/interfaces/IBrowserClient.aidl",
     "org/chromium/weblayer_private/interfaces/IBrowserFragment.aidl",
-    "org/chromium/weblayer_private/interfaces/IChildProcessService.aidl",
     "org/chromium/weblayer_private/interfaces/IClientDownload.aidl",
     "org/chromium/weblayer_private/interfaces/IClientNavigation.aidl",
+    "org/chromium/weblayer_private/interfaces/IClientPage.aidl",
     "org/chromium/weblayer_private/interfaces/IContextMenuParams.aidl",
     "org/chromium/weblayer_private/interfaces/ICookieChangedCallbackClient.aidl",
     "org/chromium/weblayer_private/interfaces/ICookieManager.aidl",
@@ -454,6 +558,7 @@ android_aidl("aidl") {
     "org/chromium/weblayer_private/interfaces/IFaviconFetcherClient.aidl",
     "org/chromium/weblayer_private/interfaces/IFindInPageCallbackClient.aidl",
     "org/chromium/weblayer_private/interfaces/IFullscreenCallbackClient.aidl",
+    "org/chromium/weblayer_private/interfaces/IGoogleAccountAccessTokenFetcherClient.aidl",
     "org/chromium/weblayer_private/interfaces/IGoogleAccountsCallbackClient.aidl",
     "org/chromium/weblayer_private/interfaces/IMediaCaptureCallbackClient.aidl",
     "org/chromium/weblayer_private/interfaces/IMediaRouteDialogFragment.aidl",
@@ -461,7 +566,6 @@ android_aidl("aidl") {
     "org/chromium/weblayer_private/interfaces/INavigation.aidl",
     "org/chromium/weblayer_private/interfaces/INavigationController.aidl",
     "org/chromium/weblayer_private/interfaces/INavigationControllerClient.aidl",
-    "org/chromium/weblayer_private/interfaces/IObjectWrapper.aidl",
     "org/chromium/weblayer_private/interfaces/IPrerenderController.aidl",
     "org/chromium/weblayer_private/interfaces/IProfile.aidl",
     "org/chromium/weblayer_private/interfaces/IProfileClient.aidl",

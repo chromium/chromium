@@ -7,6 +7,7 @@ package org.chromium.bytecode;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.MethodRemapper;
 import org.objectweb.asm.commons.Remapper;
 
@@ -26,16 +27,29 @@ public class FragmentActivityReplacer extends ByteCodeRewriter {
     private static final String OLD_METHOD_DESCRIPTOR =
             "()Landroidx/fragment/app/FragmentActivity;";
     private static final String REQUIRE_ACTIVITY_METHOD_NAME = "requireActivity";
+    private static final String SUPPORT_LIFECYCLE_FRAGMENT_IMPL_BINARY_NAME =
+            "com.google.android.gms.common.api.internal.SupportLifecycleFragmentImpl";
 
     public static void main(String[] args) throws IOException {
-        // Invoke this script using //build/android/gyp/bytecode_processor.py
-        if (args.length != 2) {
-            System.err.println("Expected 2 arguments: [input.jar] [output.jar]");
+        // Invoke this script using //build/android/gyp/bytecode_rewriter.py
+        if (!(args.length == 2 || args.length == 3 && args[0].equals("--single-androidx"))) {
+            System.err.println("Expected arguments: [--single-androidx] <input.jar> <output.jar>");
             System.exit(1);
         }
 
-        FragmentActivityReplacer rewriter = new FragmentActivityReplacer();
-        rewriter.rewrite(new File(args[0]), new File(args[1]));
+        if (args.length == 2) {
+            FragmentActivityReplacer rewriter = new FragmentActivityReplacer(false);
+            rewriter.rewrite(new File(args[0]), new File(args[1]));
+        } else {
+            FragmentActivityReplacer rewriter = new FragmentActivityReplacer(true);
+            rewriter.rewrite(new File(args[1]), new File(args[2]));
+        }
+    }
+
+    private final boolean mSingleAndroidX;
+
+    public FragmentActivityReplacer(boolean singleAndroidX) {
+        mSingleAndroidX = singleAndroidX;
     }
 
     @Override
@@ -45,7 +59,7 @@ public class FragmentActivityReplacer extends ByteCodeRewriter {
 
     @Override
     protected ClassVisitor getClassVisitorForClass(String classPath, ClassVisitor delegate) {
-        ClassVisitor invocationVisitor = new InvocationReplacer(delegate);
+        ClassVisitor invocationVisitor = new InvocationReplacer(delegate, mSingleAndroidX);
         switch (classPath) {
             case "androidx/fragment/app/Fragment.class":
                 return new FragmentClassVisitor(invocationVisitor);
@@ -61,8 +75,11 @@ public class FragmentActivityReplacer extends ByteCodeRewriter {
      * the replaced method.
      */
     private static class InvocationReplacer extends ClassVisitor {
-        private InvocationReplacer(ClassVisitor baseVisitor) {
+        private final boolean mSingleAndroidX;
+
+        private InvocationReplacer(ClassVisitor baseVisitor, boolean singleAndroidX) {
             super(Opcodes.ASM7, baseVisitor);
+            mSingleAndroidX = singleAndroidX;
         }
 
         @Override
@@ -73,15 +90,58 @@ public class FragmentActivityReplacer extends ByteCodeRewriter {
                 @Override
                 public void visitMethodInsn(int opcode, String owner, String name,
                         String descriptor, boolean isInterface) {
-                    if ((opcode == Opcodes.INVOKEVIRTUAL || opcode == Opcodes.INVOKESPECIAL)
+                    boolean isFragmentGetActivity = name.equals(GET_ACTIVITY_METHOD_NAME)
                             && descriptor.equals(OLD_METHOD_DESCRIPTOR)
-                            && (name.equals(GET_ACTIVITY_METHOD_NAME)
-                                    || name.equals(REQUIRE_ACTIVITY_METHOD_NAME)
-                                    || name.equals(GET_LIFECYCLE_ACTIVITY_METHOD_NAME))) {
+                            && isFragmentSubclass(owner);
+                    boolean isFragmentRequireActivity = name.equals(REQUIRE_ACTIVITY_METHOD_NAME)
+                            && descriptor.equals(OLD_METHOD_DESCRIPTOR)
+                            && isFragmentSubclass(owner);
+                    boolean isSupportLifecycleFragmentImplGetLifecycleActivity =
+                            name.equals(GET_LIFECYCLE_ACTIVITY_METHOD_NAME)
+                            && descriptor.equals(OLD_METHOD_DESCRIPTOR)
+                            && owner.equals(SUPPORT_LIFECYCLE_FRAGMENT_IMPL_BINARY_NAME);
+                    if ((opcode == Opcodes.INVOKEVIRTUAL || opcode == Opcodes.INVOKESPECIAL)
+                            && (isFragmentGetActivity || isFragmentRequireActivity
+                                    || isSupportLifecycleFragmentImplGetLifecycleActivity)) {
                         super.visitMethodInsn(
                                 opcode, owner, name, NEW_METHOD_DESCRIPTOR, isInterface);
+                        if (mSingleAndroidX) {
+                            super.visitTypeInsn(
+                                    Opcodes.CHECKCAST, "androidx/fragment/app/FragmentActivity");
+                        }
                     } else {
                         super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
+                    }
+                }
+
+                private boolean isFragmentSubclass(String internalType) {
+                    // Look up classes with a ClassLoader that will resolve any R classes to Object.
+                    // This is fine in this case as resource classes shouldn't be in the class
+                    // hierarchy of any Fragments.
+                    ClassLoader resourceStubbingClassLoader = new ClassLoader() {
+                        @Override
+                        protected Class<?> findClass(String name) throws ClassNotFoundException {
+                            if (name.matches(".*\\.R(\\$.+)?")) {
+                                return Object.class;
+                            }
+                            return super.findClass(name);
+                        }
+                    };
+
+                    // This doesn't use Class#isAssignableFrom to avoid us needing to load
+                    // AndroidX's Fragment class, which may not be on the classpath.
+                    try {
+                        String binaryName = Type.getObjectType(internalType).getClassName();
+                        Class<?> clazz = resourceStubbingClassLoader.loadClass(binaryName);
+                        while (clazz != null) {
+                            if (clazz.getName().equals("androidx.fragment.app.Fragment")) {
+                                return true;
+                            }
+                            clazz = clazz.getSuperclass();
+                        }
+                        return false;
+                    } catch (ClassNotFoundException e) {
+                        throw new RuntimeException(e);
                     }
                 }
             };
@@ -127,6 +187,10 @@ public class FragmentActivityReplacer extends ByteCodeRewriter {
                         "activityFromContext", "(Landroid/content/Context;)Landroid/app/Activity;",
                         false);
                 baseVisitor.visitInsn(Opcodes.ARETURN);
+                // Since we set COMPUTE_FRAMES, the arguments of visitMaxs are ignored, but calling
+                // it forces ClassWriter to actually recompute the correct stack/local values.
+                // Without this call ClassWriter keeps the original stack=0,locals=1 which is wrong.
+                baseVisitor.visitMaxs(0, 0);
                 return null;
             }
 

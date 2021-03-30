@@ -64,11 +64,12 @@
         pref="{{prefs.settings.use_shared_proxies}}"
         label="$i18n{networkProxyAllowShared}"
         on-settings-boolean-control-change="onAllowSharedProxiesChange_"
-        no-set-pref>
+        no-set-pref
+        disabled="[[disabled]]">
     </settings-toggle-button>
 
     <div class="settings-box single-column stretch continuation indented">
-      <network-proxy editable
+      <network-proxy editable="[[!disabled]]"
           managed-properties="[[managedProperties]]"
           use-shared-proxies="[[useSharedProxies_]]">
       </network-proxy>

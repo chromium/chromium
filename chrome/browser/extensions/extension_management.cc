@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/extension_management.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
@@ -11,7 +12,6 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/syslog_logging.h"
@@ -27,6 +27,8 @@
 #include "chrome/browser/extensions/standard_management_policy_provider.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "components/crx_file/id_util.h"
@@ -37,13 +39,14 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/manifest_url_handlers.h"
 #include "extensions/common/permissions/api_permission_set.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/url_pattern.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #else
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #endif
@@ -176,6 +179,36 @@ bool ExtensionManagement::IsUpdateUrlOverridden(const ExtensionId& id) const {
   return it->second->override_update_url;
 }
 
+GURL ExtensionManagement::GetEffectiveUpdateURL(
+    const Extension& extension) const {
+  if (IsUpdateUrlOverridden(extension.id())) {
+    DCHECK(!extension.was_installed_by_default())
+        << "Update URL should not be overridden for default-installed "
+           "extensions!";
+    auto iter_id = settings_by_id_.find(extension.id());
+    const GURL update_url(iter_id->second->update_url);
+    // It's important that we never override a non-webstore update URL to be
+    // the webstore URL. Otherwise, a policy may inadvertently cause
+    // non-webstore extensions to be treated as from-webstore (including content
+    // verification, report abuse options, etc).
+    DCHECK(!extension_urls::IsWebstoreUpdateUrl(update_url))
+        << "Update URL cannot be overridden to be the webstore URL!";
+    return update_url;
+  }
+  return ManifestURL::GetUpdateURL(&extension);
+}
+
+bool ExtensionManagement::UpdatesFromWebstore(
+    const Extension& extension) const {
+  const bool is_webstore_url = extension_urls::IsWebstoreUpdateUrl(
+      GURL(GetEffectiveUpdateURL(extension)));
+  if (is_webstore_url) {
+    DCHECK(!IsUpdateUrlOverridden(extension.id()))
+        << "An extension's update URL cannot be overridden to the webstore.";
+  }
+  return is_webstore_url;
+}
+
 bool ExtensionManagement::IsInstallationExplicitlyAllowed(
     const ExtensionId& id) const {
   auto it = settings_by_id_.find(id);
@@ -220,6 +253,12 @@ bool ExtensionManagement::IsOffstoreInstallAllowed(
 bool ExtensionManagement::IsAllowedManifestType(
     Manifest::Type manifest_type,
     const std::string& extension_id) const {
+  // If a managed theme has been set for the current profile, theme extension
+  // installations are not allowed.
+  if (manifest_type == Manifest::Type::TYPE_THEME &&
+      ThemeServiceFactory::GetForProfile(profile_)->UsingPolicyTheme())
+    return false;
+
   if (!global_settings_->has_restricted_allowed_types)
     return true;
   const std::vector<Manifest::Type>& allowed_types =

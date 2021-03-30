@@ -28,6 +28,7 @@ source_set("commands") {
     "open_new_tab_command.mm",
     "page_info_commands.h",
     "password_breach_commands.h",
+    "password_protection_commands.h",
     "popup_menu_commands.h",
     "qr_generation_commands.h",
     "qr_scanner_commands.h",
@@ -40,6 +41,7 @@ source_set("commands") {
     "show_signin_command.mm",
     "snackbar_commands.h",
     "text_zoom_commands.h",
+    "thumb_strip_commands.h",
     "toolbar_commands.h",
     "whats_new_commands.h",
   ]

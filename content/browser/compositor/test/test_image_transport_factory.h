@@ -13,6 +13,7 @@
 #include "cc/test/test_task_graph_runner.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/surfaces/frame_sink_id_allocator.h"
+#include "components/viz/common/surfaces/subtree_capture_id_allocator.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "components/viz/test/test_frame_sink_manager.h"
 #include "components/viz/test/test_gpu_memory_buffer_manager.h"
@@ -44,6 +45,7 @@ class TestImageTransportFactory : public ui::ContextFactory,
   gpu::GpuMemoryBufferManager* GetGpuMemoryBufferManager() override;
   cc::TaskGraphRunner* GetTaskGraphRunner() override;
   viz::FrameSinkId AllocateFrameSinkId() override;
+  viz::SubtreeCaptureId AllocateSubtreeCaptureId() override;
   viz::HostFrameSinkManager* GetHostFrameSinkManager() override;
 
   // ImageTransportFactory implementation.
@@ -56,6 +58,7 @@ class TestImageTransportFactory : public ui::ContextFactory,
   viz::TestGpuMemoryBufferManager gpu_memory_buffer_manager_;
   viz::RendererSettings renderer_settings_;
   viz::FrameSinkIdAllocator frame_sink_id_allocator_;
+  viz::SubtreeCaptureIdAllocator subtree_capture_id_allocator_;
   scoped_refptr<viz::ContextProvider> shared_main_context_provider_;
   viz::HostFrameSinkManager host_frame_sink_manager_;
   viz::TestFrameSinkManagerImpl test_frame_sink_manager_impl_;

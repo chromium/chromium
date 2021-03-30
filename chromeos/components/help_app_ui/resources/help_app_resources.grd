@@ -21,13 +21,13 @@
           type="BINDATA" />
       <include name="IDR_HELP_APP_HELP_APP_MOJOM_JS"
           file="${root_gen_dir}/chromeos/components/help_app_ui/help_app_ui.mojom-lite.js"
-          use_base_dir="false" type="BINDATA" />
+          resource_path="help_app_ui.mojom-lite.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_HELP_APP_LOCAL_SEARCH_SERVICE_TYPES_MOJOM_JS"
-        file="${root_gen_dir}/chromeos/components/local_search_service/public/mojom/types.mojom-lite.js"
-          use_base_dir="false" type="BINDATA" />
+          file="${root_gen_dir}/chromeos/components/local_search_service/public/mojom/types.mojom-lite.js"
+          resource_path="local_search_service_types.mojom-lite.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_HELP_APP_LOCAL_SEARCH_SERVICE_INDEX_MOJOM_JS"
-        file="${root_gen_dir}/chromeos/components/local_search_service/public/mojom/index.mojom-lite.js"
-          use_base_dir="false" type="BINDATA" />
+          file="${root_gen_dir}/chromeos/components/local_search_service/public/mojom/index.mojom-lite.js"
+          resource_path="local_search_service_index.mojom-lite.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_HELP_APP_INDEX_SCRIPTS_JS" file="help_app_index_scripts.js" flattenhtml="true" type="BINDATA" />
 
       <!-- Unprivileged guest contents. -->

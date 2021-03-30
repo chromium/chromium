@@ -29,7 +29,7 @@ class GetInstalledVersionWinTest : public ::testing::Test {
                           KEY_SET_VALUE);
     ASSERT_TRUE(key.Valid());
     ASSERT_EQ(key.WriteValue(google_update::kRegVersionField,
-                             base::ASCIIToUTF16(version.GetString()).c_str()),
+                             base::ASCIIToWide(version.GetString()).c_str()),
               ERROR_SUCCESS);
   }
 
@@ -39,7 +39,7 @@ class GetInstalledVersionWinTest : public ::testing::Test {
                           KEY_SET_VALUE);
     ASSERT_TRUE(key.Valid());
     ASSERT_EQ(key.WriteValue(google_update::kRegCriticalVersionField,
-                             base::ASCIIToUTF16(version.GetString()).c_str()),
+                             base::ASCIIToWide(version.GetString()).c_str()),
               ERROR_SUCCESS);
   }
 

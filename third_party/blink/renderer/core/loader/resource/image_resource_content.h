@@ -30,6 +30,7 @@ class ImageResourceObserver;
 class ResourceError;
 class ResourceFetcher;
 class ResourceResponse;
+class UseCounter;
 
 // ImageResourceContent is a container that holds fetch result of
 // an ImageResource in a decoded form.
@@ -183,13 +184,17 @@ class CORE_EXPORT ImageResourceContent final
   // Returns true if the image content is well-compressed (and not full of
   // extraneous metadata). "well-compressed" is determined by comparing the
   // image's compression ratio against a specific value that is defined by an
-  // unoptimized image feature policy on |context|.
+  // unoptimized image policy on |context|.
   bool IsAcceptableCompressionRatio(ExecutionContext& context);
 
   void LoadDeferredImage(ResourceFetcher* fetcher);
 
   // Returns whether the resource request has been tagged as an ad.
   bool IsAdResource() const;
+
+  // Records the decoded image type in a UseCounter if the image is a
+  // BitmapImage. |use_counter| may be a null pointer.
+  void RecordDecodedImageType(UseCounter* use_counter);
 
  private:
   using CanDeferInvalidation = ImageResourceObserver::CanDeferInvalidation;

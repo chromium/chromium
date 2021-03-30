@@ -148,10 +148,22 @@ class EventReportValidator {
 // Helper functions that set Connector policies for testing.
 void SetAnalysisConnector(PrefService* prefs,
                           enterprise_connectors::AnalysisConnector connector,
-                          const std::string& pref_value);
-void SetOnSecurityEventReporting(PrefService* prefs, bool enabled);
+                          const std::string& pref_value,
+                          bool machine_scope = true);
+void SetOnSecurityEventReporting(
+    PrefService* prefs,
+    bool enabled,
+    const std::set<std::string>& enabled_event_names = std::set<std::string>(),
+    bool machine_scope = true);
 void ClearAnalysisConnector(PrefService* prefs,
                             enterprise_connectors::AnalysisConnector connector);
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Helper function to set the profile DM token. It installs a
+// MockCloudPolicyClient with |dm_token| into |profile|'s UserCloudPolicyManager
+// to simulate |profile|'s DM token.
+void SetProfileDMToken(Profile* profile, const std::string& dm_token);
+#endif
 
 }  // namespace safe_browsing
 

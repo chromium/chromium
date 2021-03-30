@@ -1,0 +1,13 @@
+Test to make sure 2nd page is printed.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+
+PASS: page number of "page1" is 0
+FAIL: expected page number of "page2" is 1. Was 0
+PASS: number of pages is 2
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

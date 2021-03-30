@@ -147,10 +147,10 @@ class MultiDeviceSetupImpl : public MultiDeviceSetupBase,
   std::unique_ptr<HostStatusProvider> host_status_provider_;
   std::unique_ptr<GrandfatheredEasyUnlockHostDisabler>
       grandfathered_easy_unlock_host_disabler_;
-  std::unique_ptr<WifiSyncFeatureManager> wifi_sync_feature_manager_;
-  std::unique_ptr<FeatureStateManager> feature_state_manager_;
   std::unique_ptr<HostDeviceTimestampManager> host_device_timestamp_manager_;
   std::unique_ptr<AccountStatusChangeDelegateNotifier> delegate_notifier_;
+  std::unique_ptr<WifiSyncFeatureManager> wifi_sync_feature_manager_;
+  std::unique_ptr<FeatureStateManager> feature_state_manager_;
   std::unique_ptr<DeviceReenroller> device_reenroller_;
   std::unique_ptr<AndroidSmsAppInstallingStatusObserver>
       android_sms_app_installing_host_observer_;

@@ -2,23 +2,74 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<dom-module id="oobe-dialog-host">
- <template>
-  <style>
-   <include src="../oobe_flex_layout.css">
-   <include src="../oobe_fonts.css">
-   <include src="../oobe_dialog_host.css">
-   <include src="../oobe_links.css">
-  </style>
- </template>
-</dom-module>
+<link rel="import" href="/components/oobe_custom_vars_css.html">
+<link rel="import" href="/components/oobe_shared_vars_css.html">
 
 <dom-module id="oobe-common">
- <template>
-  <style>
-   <include src="../oobe_flex_layout.css">
-   <include src="../oobe_fonts.css">
-   <include src="../oobe_links.css">
-  </style>
- </template>
+  <template>
+    <style>
+      <include src="../oobe_flex_layout.css">
+      <include src="../oobe_links.css">
+      :host {
+        --oobe-default-font: {
+            color: var(--oobe-text-color);
+            font-family: var(--oobe-default-font-family);
+            font-size: var(--oobe-default-font-size);
+            font-weight: var(--oobe-default-font-weight);
+            line-height: var(--oobe-default-line-height);
+        };
+
+        --oobe-header-font: {
+            font-family: var(--oobe-header-font-family);
+            font-size: var(--oobe-header-font-size);
+            font-weight: var(--oobe-default-font-weight);
+            line-height: var(--oobe-header-line-height);
+        };
+
+        --oobe-subheader-font: {
+            font-family: var(--oobe-subheader-font-family);
+            font-size: var(--oobe-subheader-font-size);
+            font-weight: var(--oobe-subheader-font-weight);
+            line-height: var(--oobe-subheader-line-height);
+        };
+
+        /* OOBE Modal Dialog */
+        --oobe-modal-dialog-header-font: {
+          font-family: var(--oobe-default-font-family);
+          font-size: var(--oobe-modal-dialog-header-font-size);
+          font-weight: var(--oobe-modal-dialog-header-font-weight);
+        };
+      }
+
+      /* Classes can-scroll is-scrolled scrolled-to-bottom are set by
+         OobeScrollableBehavior. */
+      .scrollable.can-scroll:not(.is-scrolled):not(.scrolled-to-bottom) {
+        background: linear-gradient(0deg,
+                        rgba(var(--google-grey-refresh-100-rgb), 1) 0,
+                        rgba(var(--google-grey-refresh-100-rgb), 0) 8px);
+
+      }
+      .scrollable.can-scroll.is-scrolled:not(.scrolled-to-bottom) {
+        background: linear-gradient(0deg,
+                        rgba(var(--google-grey-refresh-100-rgb), 1) 0,
+                        rgba(var(--google-grey-refresh-100-rgb), 0) 8px),
+                    linear-gradient(180deg,
+                        rgba(var(--google-grey-refresh-100-rgb), 1) 0,
+                        rgba(var(--google-grey-refresh-100-rgb), 0) 8px);
+      }
+      .scrollable.is-scrolled.scrolled-to-bottom {
+        background: linear-gradient(180deg,
+                        rgba(var(--google-grey-refresh-100-rgb), 1) 0,
+                        rgba(var(--google-grey-refresh-100-rgb), 0) 8px);
+      }
+    </style>
+  </template>
+</dom-module>
+
+<dom-module id="oobe-dialog-host">
+  <template>
+    <style include="oobe-common">
+      <include src="../oobe_dialog_host.css">
+    </style>
+  </template>
 </dom-module>

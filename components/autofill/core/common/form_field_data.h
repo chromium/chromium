@@ -8,14 +8,14 @@
 #include <stddef.h>
 
 #include <limits>
+#include <string>
 #include <type_traits>
 #include <vector>
 
 #include "base/i18n/rtl.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace base {
@@ -73,6 +73,8 @@ struct FormFieldData {
   FormFieldData& operator=(FormFieldData&&);
   ~FormFieldData();
 
+  FieldGlobalId global_id() const { return {host_frame, unique_renderer_id}; }
+
   // Returns true if both fields are identical, ignoring value- and
   // parsing related members.
   // See also SimilarFieldAs(), DynamicallySameFieldAs().
@@ -114,7 +116,7 @@ struct FormFieldData {
   //
   // TODO(crbug.com/896689): Expand the logic/application of this to other
   // platforms and/or merge this concept with |unique_renderer_id|.
-  base::string16 unique_id;
+  std::u16string unique_id;
 #define EXPECT_EQ_UNIQUE_ID(expected, actual) \
   EXPECT_EQ((expected).unique_id, (actual).unique_id)
 #else
@@ -131,19 +133,22 @@ struct FormFieldData {
   // priority given to the name_attribute. This value is used when computing
   // form signatures.
   // TODO(crbug/896689): remove this and use attributes/unique_id instead.
-  base::string16 name;
+  std::u16string name;
 
-  base::string16 id_attribute;
-  base::string16 name_attribute;
-  base::string16 label;
-  base::string16 value;
+  std::u16string id_attribute;
+  std::u16string name_attribute;
+  std::u16string label;
+  std::u16string value;
   std::string form_control_type;
   std::string autocomplete_attribute;
-  base::string16 placeholder;
-  base::string16 css_classes;
-  base::string16 aria_label;
-  base::string16 aria_description;
+  std::u16string placeholder;
+  std::u16string css_classes;
+  std::u16string aria_label;
+  std::u16string aria_description;
 
+  // Unique ID of the containing frame. A FormData must not be serialized if
+  // |host_frame| is default-initialized.
+  LocalFrameToken host_frame;
   // Unique renderer id returned by
   // WebFormControlElement::UniqueRendererFormId(). It is not persistent between
   // page loads, so it is not saved and not used in comparison in SameFieldAs().
@@ -173,12 +178,14 @@ struct FormFieldData {
   // serialised for storage.
   bool is_enabled = false;
   bool is_readonly = false;
-  base::string16 typed_value;
+  // Contains value that was either manually typed or autofilled on user
+  // trigger.
+  std::u16string user_input;
 
   // For the HTML snippet |<option value="US">United States</option>|, the
   // value is "US" and the contents are "United States".
-  std::vector<base::string16> option_values;
-  std::vector<base::string16> option_contents;
+  std::vector<std::u16string> option_values;
+  std::vector<std::u16string> option_contents;
 
   // Password Manager doesn't use labels nor client side nor server side, so
   // label_source isn't in serialize methods.
@@ -194,8 +201,8 @@ struct FormFieldData {
   // used for field comparison and aren't in serialize methods.
   // The datalist option is intentionally separated from option_values and
   // option_contents because they are handled very differently in autofill.
-  std::vector<base::string16> datalist_values;
-  std::vector<base::string16> datalist_labels;
+  std::vector<std::u16string> datalist_values;
+  std::vector<std::u16string> datalist_labels;
 };
 
 // Serialize and deserialize FormFieldData. These are used when FormData objects

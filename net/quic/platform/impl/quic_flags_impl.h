@@ -14,7 +14,6 @@
 #include "base/export_template.h"
 #include "base/optional.h"
 #include "net/third_party/quiche/src/common/platform/api/quiche_flags.h"
-#include "net/third_party/quiche/src/common/platform/api/quiche_string_piece.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_export.h"
 
 #define QUIC_PROTOCOL_FLAG(type, flag, ...) \

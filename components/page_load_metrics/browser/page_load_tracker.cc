@@ -15,6 +15,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "components/page_load_metrics/browser/page_load_metrics_embedder_interface.h"
+#include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
@@ -150,7 +151,7 @@ void DispatchEventsAfterBackForwardCacheRestore(
              ->request_animation_frames_after_back_forward_cache_restore
              .empty())) {
       observer->OnRequestAnimationFramesAfterBackForwardCacheRestoreInPage(
-          *new_timings[i]);
+          *new_timings[i], i);
     }
 
     auto first_input_delay =
@@ -401,11 +402,17 @@ void PageLoadTracker::PageShown() {
   INVOKE_AND_PRUNE_OBSERVERS(observers_, OnShown);
 }
 
-void PageLoadTracker::FrameDeleted(content::RenderFrameHost* rfh) {
-  metrics_update_dispatcher_.OnFrameDeleted(rfh);
-  largest_contentful_paint_handler_.OnFrameDeleted(rfh);
+void PageLoadTracker::FrameDeleted(int frame_tree_node_id) {
+  metrics_update_dispatcher_.OnFrameDeleted(frame_tree_node_id);
+  largest_contentful_paint_handler_.OnFrameDeleted(frame_tree_node_id);
   for (const auto& observer : observers_) {
-    observer->OnFrameDeleted(rfh);
+    observer->OnFrameDeleted(frame_tree_node_id);
+  }
+}
+
+void PageLoadTracker::RenderFrameDeleted(content::RenderFrameHost* rfh) {
+  for (const auto& observer : observers_) {
+    observer->OnRenderFrameDeleted(rfh);
   }
 }
 
@@ -490,6 +497,8 @@ void PageLoadTracker::OnInputEvent(const blink::WebInputEvent& event) {
 }
 
 void PageLoadTracker::FlushMetricsOnAppEnterBackground() {
+  metrics_update_dispatcher()->FlushPendingTimingUpdates();
+
   if (!app_entered_background_) {
     RecordAppBackgroundPageLoadCompleted(false);
     app_entered_background_ = true;
@@ -776,9 +785,9 @@ void PageLoadTracker::OnSubframeMetadataChanged(
   }
 }
 
-void PageLoadTracker::BroadcastEventToObservers(const void* const event_key) {
+void PageLoadTracker::BroadcastEventToObservers(PageLoadMetricsEvent event) {
   for (const auto& observer : observers_) {
-    observer->OnEventOccurred(event_key);
+    observer->OnEventOccurred(event);
   }
 }
 
@@ -911,8 +920,9 @@ const PageRenderData& PageLoadTracker::GetPageRenderData() const {
   return metrics_update_dispatcher_.page_render_data();
 }
 
-const NormalizedCLSData& PageLoadTracker::GetNormalizedCLSData() const {
-  return metrics_update_dispatcher_.normalized_cls_data();
+const NormalizedCLSData& PageLoadTracker::GetNormalizedCLSData(
+    BfcacheStrategy bfcache_strategy) const {
+  return metrics_update_dispatcher_.normalized_cls_data(bfcache_strategy);
 }
 
 const mojom::InputTiming& PageLoadTracker::GetPageInputTiming() const {
@@ -955,12 +965,16 @@ bool PageLoadTracker::IsFirstNavigationInWebContents() const {
 }
 
 void PageLoadTracker::OnEnterBackForwardCache() {
+  // In case of BackForwardCache, invoke and update the
+  // PageLoadMetricsUpdateDispatcher before the page is hidden to enable
+  // recording metrics that requires the page to be in foreground before
+  // entering BackForwardCache on navigation.
+  INVOKE_AND_PRUNE_OBSERVERS(observers_, OnEnterBackForwardCache,
+                             metrics_update_dispatcher_.timing());
+  metrics_update_dispatcher_.UpdateLayoutShiftNormalizationForBfcache();
   if (GetWebContents()->GetVisibility() == content::Visibility::VISIBLE) {
     PageHidden();
   }
-
-  INVOKE_AND_PRUNE_OBSERVERS(observers_, OnEnterBackForwardCache,
-                             metrics_update_dispatcher_.timing());
 }
 
 void PageLoadTracker::OnRestoreFromBackForwardCache(
@@ -982,6 +996,12 @@ void PageLoadTracker::OnRestoreFromBackForwardCache(
     observer->OnRestoreFromBackForwardCache(metrics_update_dispatcher_.timing(),
                                             navigation_handle);
   }
+}
+
+void PageLoadTracker::OnV8MemoryChanged(
+    const std::vector<MemoryUpdate>& memory_updates) {
+  for (const auto& observer : observers_)
+    observer->OnV8MemoryChanged(memory_updates);
 }
 
 }  // namespace page_load_metrics

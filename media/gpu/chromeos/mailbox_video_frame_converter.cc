@@ -237,8 +237,8 @@ void MailboxVideoFrameConverter::WrapMailboxAndVideoFrameAndOutput(
       GetRectSizeFromOrigin(frame->visible_rect()), frame->visible_rect(),
       frame->natural_size(), frame->timestamp());
   mailbox_frame->set_color_space(frame->ColorSpace());
-  mailbox_frame->set_metadata(*(frame->metadata()));
-  mailbox_frame->metadata()->read_lock_fences_enabled = true;
+  mailbox_frame->set_metadata(frame->metadata());
+  mailbox_frame->metadata().read_lock_fences_enabled = true;
 
   output_cb_.Run(mailbox_frame);
 }

@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/tracing_buildflags.h"
 
 namespace base {
 

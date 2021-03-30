@@ -290,20 +290,15 @@ void VRBrowserRendererThreadWin::StartOverlay() {
   initializing_graphics_->BindContext();
 
   // Create a vr::Ui
-  BrowserRendererBrowserInterface* browser_renderer_interface = nullptr;
   ui_browser_interface_ = std::make_unique<VRUiBrowserInterface>();
-  PlatformInputHandler* input = nullptr;
-  std::unique_ptr<KeyboardDelegate> keyboard_delegate;
-  std::unique_ptr<TextInputDelegate> text_input_delegate;
-  std::unique_ptr<AudioDelegate> audio_delegate;
   UiInitialState ui_initial_state = {};
   ui_initial_state.in_web_vr = true;
   ui_initial_state.browsing_disabled = true;
   ui_initial_state.supports_selection = false;
   std::unique_ptr<Ui> ui = std::make_unique<Ui>(
-      ui_browser_interface_.get(), input, std::move(keyboard_delegate),
-      std::move(text_input_delegate), std::move(audio_delegate),
-      ui_initial_state);
+      ui_browser_interface_.get(), nullptr /*input*/,
+      nullptr /*keyboard_delegate*/, nullptr /*text_input_delegate*/,
+      nullptr /*audio_delegate*/, ui_initial_state);
   static_cast<UiInterface*>(ui.get())->OnGlInitialized(
       kGlTextureLocationLocal,
       0 /* content_texture_id - we don't support content */,
@@ -338,7 +333,7 @@ void VRBrowserRendererThreadWin::StartOverlay() {
   browser_renderer_ = std::make_unique<BrowserRenderer>(
       std::move(ui), std::move(scheduler_delegate),
       std::move(initializing_graphics_), std::move(input_delegate),
-      browser_renderer_interface, kSlidingAverageSize);
+      nullptr /*browser_renderer_interface*/, kSlidingAverageSize);
 
   graphics_->ClearContext();
 
@@ -415,7 +410,7 @@ void VRBrowserRendererThreadWin::OnPose(int request_id,
     return;
   }
 
-  if (!graphics_->PreRender())
+  if (!PreRender())
     return;
 
   data = ValidateFrameData(std::move(data));
@@ -448,6 +443,20 @@ void VRBrowserRendererThreadWin::OnPose(int request_id,
                                     base::Unretained(this), data->frame_id),
                      head_from_world, draw_state_.ShouldDrawWebXR(),
                      draw_state_.ShouldDrawUI());
+}
+
+bool VRBrowserRendererThreadWin::PreRender() {
+  // GraphicsDelegateWin::PreRender can fail if the context has become lost
+  // due to hybrid adapter switching. Giving up on life means no overlays are
+  // submitted to the XR process, causing it hang, waiting forever. Instead,
+  // we shutdown and restart the overlay system, re-establishing the GPU process
+  // connection and all of the graphics related state in vr::Ui.
+  if (!graphics_->PreRender()) {
+    StopOverlay();
+    StartOverlay();
+    return graphics_->PreRender();
+  }
+  return true;
 }
 
 void VRBrowserRendererThreadWin::SubmitFrame(int16_t frame_id) {

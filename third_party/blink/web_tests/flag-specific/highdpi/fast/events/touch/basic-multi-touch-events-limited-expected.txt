@@ -1,0 +1,94 @@
+This tests basic multi touch event support. This is a limited version of test basic-multi-touch-events.html that avoids the situation where one touch point is released while another is maintained.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS lastEvent.type is "touchstart"
+PASS lastEvent.touches.length is 2
+PASS lastEvent.changedTouches.length is 2
+PASS lastEvent.targetTouches.length is 2
+PASS lastEvent.touches[0].pageX is 10
+PASS lastEvent.touches[0].pageY is 10
+PASS lastEvent.touches[0].clientX is 10
+PASS lastEvent.touches[0].clientY is 10
+PASS lastEvent.touches[0].identifier is 0
+PASS lastEvent.touches[1].pageX is 20
+PASS lastEvent.touches[1].pageY is 30
+PASS lastEvent.touches[1].clientX is 20
+PASS lastEvent.touches[1].clientY is 30
+PASS lastEvent.touches[1].identifier is 1
+PASS lastEvent.changedTouches[0].pageX is 10
+PASS lastEvent.changedTouches[0].pageY is 10
+PASS lastEvent.changedTouches[0].clientX is 10
+PASS lastEvent.changedTouches[0].clientY is 10
+PASS lastEvent.changedTouches[0].identifier is 0
+PASS lastEvent.changedTouches[1].pageX is 20
+PASS lastEvent.changedTouches[1].pageY is 30
+PASS lastEvent.changedTouches[1].clientX is 20
+PASS lastEvent.changedTouches[1].clientY is 30
+PASS lastEvent.changedTouches[1].identifier is 1
+PASS lastEvent.targetTouches[0].pageX is 10
+PASS lastEvent.targetTouches[0].pageY is 10
+PASS lastEvent.targetTouches[0].clientX is 10
+PASS lastEvent.targetTouches[0].clientY is 10
+PASS lastEvent.targetTouches[0].identifier is 0
+PASS lastEvent.targetTouches[1].pageX is 20
+PASS lastEvent.targetTouches[1].pageY is 30
+PASS lastEvent.targetTouches[1].clientX is 20
+PASS lastEvent.targetTouches[1].clientY is 30
+PASS lastEvent.targetTouches[1].identifier is 1
+PASS lastEvent.type is "touchmove"
+PASS lastEvent.touches.length is 2
+PASS lastEvent.changedTouches.length is 2
+PASS lastEvent.targetTouches.length is 2
+FAIL lastEvent.touches[0].pageX should be 15. Was 10.
+FAIL lastEvent.touches[0].pageY should be 15. Was 10.
+FAIL lastEvent.touches[0].clientX should be 15. Was 10.
+FAIL lastEvent.touches[0].clientY should be 15. Was 10.
+PASS lastEvent.touches[0].identifier is 0
+FAIL lastEvent.touches[1].pageX should be 25. Was 16.666667938232422.
+FAIL lastEvent.touches[1].pageY should be 35. Was 23.33333396911621.
+FAIL lastEvent.touches[1].clientX should be 25. Was 16.666667938232422.
+FAIL lastEvent.touches[1].clientY should be 35. Was 23.33333396911621.
+PASS lastEvent.touches[1].identifier is 1
+FAIL lastEvent.changedTouches[0].pageX should be 15. Was 10.
+FAIL lastEvent.changedTouches[0].pageY should be 15. Was 10.
+FAIL lastEvent.changedTouches[0].clientX should be 15. Was 10.
+FAIL lastEvent.changedTouches[0].clientY should be 15. Was 10.
+PASS lastEvent.changedTouches[0].identifier is 0
+FAIL lastEvent.changedTouches[1].pageX should be 25. Was 16.666667938232422.
+FAIL lastEvent.changedTouches[1].pageY should be 35. Was 23.33333396911621.
+FAIL lastEvent.changedTouches[1].clientX should be 25. Was 16.666667938232422.
+FAIL lastEvent.changedTouches[1].clientY should be 35. Was 23.33333396911621.
+PASS lastEvent.changedTouches[1].identifier is 1
+FAIL lastEvent.targetTouches[0].pageX should be 15. Was 10.
+FAIL lastEvent.targetTouches[0].pageY should be 15. Was 10.
+FAIL lastEvent.targetTouches[0].clientX should be 15. Was 10.
+FAIL lastEvent.targetTouches[0].clientY should be 15. Was 10.
+PASS lastEvent.targetTouches[0].identifier is 0
+FAIL lastEvent.targetTouches[1].pageX should be 25. Was 16.666667938232422.
+FAIL lastEvent.targetTouches[1].pageY should be 35. Was 23.33333396911621.
+FAIL lastEvent.targetTouches[1].clientX should be 25. Was 16.666667938232422.
+FAIL lastEvent.targetTouches[1].clientY should be 35. Was 23.33333396911621.
+PASS lastEvent.targetTouches[1].identifier is 1
+PASS lastEvent.type is "touchend"
+PASS lastEvent.touches.length is 0
+PASS lastEvent.changedTouches.length is 2
+PASS lastEvent.targetTouches.length is 0
+FAIL lastEvent.changedTouches[0].pageX should be 15. Was 10.
+FAIL lastEvent.changedTouches[0].pageY should be 15. Was 10.
+FAIL lastEvent.changedTouches[0].clientX should be 15. Was 10.
+FAIL lastEvent.changedTouches[0].clientY should be 15. Was 10.
+PASS lastEvent.changedTouches[0].identifier is 0
+FAIL lastEvent.changedTouches[1].pageX should be 25. Was 16.666667938232422.
+FAIL lastEvent.changedTouches[1].pageY should be 35. Was 23.33333396911621.
+FAIL lastEvent.changedTouches[1].clientX should be 25. Was 16.666667938232422.
+FAIL lastEvent.changedTouches[1].clientY should be 35. Was 23.33333396911621.
+PASS lastEvent.changedTouches[1].identifier is 1
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

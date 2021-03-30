@@ -15,7 +15,6 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/single_thread_task_runner.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -107,7 +106,9 @@ class OpenURLObserver : public WebContentsObserver {
     DCHECK(web_contents());
     DCHECK(callback_);
 
-    base::PostTask(FROM_HERE, {ServiceWorkerContext::GetCoreThreadId()},
+    BrowserThread::GetTaskRunnerForThread(
+        ServiceWorkerContext::GetCoreThreadId())
+        ->PostTask(FROM_HERE,
                    base::BindOnce(std::move(callback_), render_process_id,
                                   render_frame_id));
     Observe(nullptr);

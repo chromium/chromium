@@ -7,15 +7,16 @@
 
 #import "ios/web_view/public/cwv_credit_card_name_fixer.h"
 
+#include <string>
+
 #include "base/callback.h"
-#include "base/strings/string16.h"
 
 @interface CWVCreditCardNameFixer ()
 
 // Initialize with a suggested |name| and a |callback| to be invoked with the
 // chosen name.
 - (instancetype)initWithName:(NSString*)name
-                    callback:(base::OnceCallback<void(const base::string16&)>)
+                    callback:(base::OnceCallback<void(const std::u16string&)>)
                                  callback NS_DESIGNATED_INITIALIZER;
 
 @end

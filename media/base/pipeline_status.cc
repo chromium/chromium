@@ -162,24 +162,4 @@ bool operator!=(const PipelineStatistics& first,
   return !(first == second);
 }
 
-bool operator==(const PipelineDecoderInfo& first,
-                const PipelineDecoderInfo& second) {
-  return first.decoder_name == second.decoder_name &&
-         first.is_platform_decoder == second.is_platform_decoder &&
-         first.has_decrypting_demuxer_stream ==
-             second.has_decrypting_demuxer_stream;
-}
-
-bool operator!=(const PipelineDecoderInfo& first,
-                const PipelineDecoderInfo& second) {
-  return !(first == second);
-}
-
-std::ostream& operator<<(std::ostream& out, const PipelineDecoderInfo& info) {
-  return out << "{decoder_name:" << info.decoder_name << ","
-             << "is_platform_decoder:" << info.is_platform_decoder << ","
-             << "has_decrypting_demuxer_stream:"
-             << info.has_decrypting_demuxer_stream << "}";
-}
-
 }  // namespace media

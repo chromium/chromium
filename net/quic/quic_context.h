@@ -16,7 +16,15 @@ namespace net {
 // configuration.
 inline NET_EXPORT_PRIVATE quic::ParsedQuicVersionVector
 DefaultSupportedQuicVersions() {
-  return quic::ParsedQuicVersionVector{quic::ParsedQuicVersion::Q050()};
+  // The ordering of this list does not matter for Chrome because it respects
+  // the ordering received from the server via Alt-Svc. However, cronet offers
+  // an addQuicHint() API which uses the first version from this list until
+  // it receives Alt-Svc from the server. We therefore list Q050 first here
+  // because there are some cronet applications which communicate with servers
+  // that speak Q050 but not Draft29.
+  // TODO(dschinazi) Move Draft29 first once those servers support it.
+  return quic::ParsedQuicVersionVector{quic::ParsedQuicVersion::Q050(),
+                                       quic::ParsedQuicVersion::Draft29()};
 }
 
 // Obsolete QUIC supported versions are versions that are supported by the
@@ -171,7 +179,7 @@ struct NET_EXPORT QuicParams {
   // smoothed rtt is present.
   base::TimeDelta initial_rtt_for_handshake;
   // If true, QUIC with TLS will not try 0-RTT connection.
-  bool disable_tls_zero_rtt = false;
+  bool disable_tls_zero_rtt = true;
   // If true, gQUIC requests will always require confirmation.
   bool disable_gquic_zero_rtt = false;
   // Network Service Type of the socket for iOS. Default is NET_SERVICE_TYPE_BE

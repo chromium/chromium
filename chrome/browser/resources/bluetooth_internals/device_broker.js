@@ -9,51 +9,49 @@
  * DeviceRemote being shared among all requesters.
  */
 
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import './device.mojom-lite.js';
+import {getAdapterBroker} from './adapter_broker.js';
+
 // Expose for testing.
 /**
- * @type {?Map<string,
+ * @type {Map<string,
  *     !bluetooth.mojom.DeviceRemote|!Promise<!bluetooth.mojom.DeviceRemote>>}
  */
-let connectedDevices = null;
+export const connectedDevices = new Map();
 
-cr.define('device_broker', function() {
-  connectedDevices = new Map();
-
-  /**
-   * Creates a GATT connection to the device with |address|. If a connection to
-   * the device already exists, the promise is resolved with the existing
-   * DeviceRemote. If a connection is in progress, the promise resolves when
-   * the existing connection request promise is fulfilled.
-   * @param {string} address
-   * @return {!Promise<!bluetooth.mojom.DeviceRemote>}
-   */
-  function connectToDevice(address) {
-    const deviceOrPromise = connectedDevices.get(address) || null;
-    if (deviceOrPromise !== null) {
-      return Promise.resolve(deviceOrPromise);
-    }
-
-    const promise = /** @type {!Promise<!bluetooth.mojom.DeviceRemote>} */ (
-        adapter_broker.getAdapterBroker()
-            .then(function(adapterBroker) {
-              return adapterBroker.connectToDevice(address);
-            })
-            .then(function(device) {
-              connectedDevices.set(address, device);
-
-              device.onConnectionError.addListener(
-                  () => connectedDevices.delete(address));
-
-              return device;
-            })
-            .catch(function(error) {
-              connectedDevices.delete(address);
-              throw error;
-            }));
-
-    connectedDevices.set(address, promise);
-    return promise;
+/**
+ * Creates a GATT connection to the device with |address|. If a connection to
+ * the device already exists, the promise is resolved with the existing
+ * DeviceRemote. If a connection is in progress, the promise resolves when
+ * the existing connection request promise is fulfilled.
+ * @param {string} address
+ * @return {!Promise<!bluetooth.mojom.DeviceRemote>}
+ */
+export function connectToDevice(address) {
+  const deviceOrPromise = connectedDevices.get(address) || null;
+  if (deviceOrPromise !== null) {
+    return Promise.resolve(deviceOrPromise);
   }
 
-  return {connectToDevice: connectToDevice};
-});
+  const promise = /** @type {!Promise<!bluetooth.mojom.DeviceRemote>} */ (
+      getAdapterBroker()
+          .then(function(adapterBroker) {
+            return adapterBroker.connectToDevice(address);
+          })
+          .then(function(device) {
+            connectedDevices.set(address, device);
+
+            device.onConnectionError.addListener(
+                () => connectedDevices.delete(address));
+
+            return device;
+          })
+          .catch(function(error) {
+            connectedDevices.delete(address);
+            throw error;
+          }));
+
+  connectedDevices.set(address, promise);
+  return promise;
+}

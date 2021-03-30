@@ -7,11 +7,13 @@
 
 #include <stdint.h>
 
+#include <string>
+
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
+#include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
@@ -44,6 +46,10 @@ class WebWorkerFetchContext;
 namespace network {
 struct URLLoaderCompletionStatus;
 }  // namespace network
+
+namespace gfx {
+class Rect;
+}  // namespace gfx
 
 namespace content {
 
@@ -106,7 +112,10 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   // Called when a RenderFrame's page lifecycle state gets updated.
   virtual void DidSetPageLifecycleState() {}
 
-  // These match the Blink API notifications
+  // These match the Blink API notifications. These will not be called for the
+  // initial empty document, since that already exists before an observer for a
+  // frame has a chance to be created (before notification about the RenderFrame
+  // being created occurs).
   virtual void DidCreateNewDocument() {}
   virtual void DidCreateDocumentElement() {}
   // TODO(dgozman): replace next two methods with DidFinishNavigation.
@@ -153,9 +162,9 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   // internal), and |stack_trace| is the stack trace of the error in a
   // human-readable format (each frame is formatted as
   // "\n    at function_name (source:line_number:column_number)").
-  virtual void DetailedConsoleMessageAdded(const base::string16& message,
-                                           const base::string16& source,
-                                           const base::string16& stack_trace,
+  virtual void DetailedConsoleMessageAdded(const std::u16string& message,
+                                           const std::u16string& source,
+                                           const std::u16string& stack_trace,
                                            uint32_t line_number,
                                            int32_t severity_level) {}
 
@@ -199,6 +208,11 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   virtual void DidObserveLayoutShift(double score, bool after_input_or_scroll) {
   }
 
+  // Reports input timestamps for segmenting layout shifts
+  // (bit.ly/lsm-explainer) by users inputs to create Session window.
+  virtual void DidObserveInputForLayoutShiftTracking(
+      base::TimeTicks timestamp) {}
+
   // Reports the number of LayoutBlock creation, and LayoutObject::UpdateLayout
   // calls. All values are deltas since the last calls of this function.
   virtual void DidObserveLayoutNg(uint32_t all_block_count,
@@ -212,6 +226,11 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   // requests for placeholder images.
   virtual void DidObserveLazyLoadBehavior(
       blink::WebLocalFrameClient::LazyLoadBehavior lazy_load_behavior) {}
+
+#if !defined(OS_ANDROID)
+  // Reports that a resource will be requested.
+  virtual void WillSendRequest(const blink::WebURLRequest& request) {}
+#endif
 
   // Notification when the renderer a response started, completed or canceled.
   // Complete or Cancel is guaranteed to be called for a response that started.
@@ -261,8 +280,8 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   virtual void WillCreateWorkerFetchContext(blink::WebWorkerFetchContext*) {}
 
   // Called when a frame's intersection with the main frame changes.
-  virtual void OnMainFrameIntersectionChanged(
-      const blink::WebRect& intersect_rect) {}
+  virtual void OnMainFrameIntersectionChanged(const gfx::Rect& intersect_rect) {
+  }
 
   // Overlay-popup-ad violates The Better Ads Standards
   // (https://www.betterads.org/standards/). This method will be called when an

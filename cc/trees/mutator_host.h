@@ -28,8 +28,8 @@ class LayerTreeMutator;
 class ScrollTree;
 
 // Used as the return value of GetAnimationScales() to indicate that there is
-// no active scale animation or the scale cannot be computed.
-const float kNotScaled = 0;
+// no active transform animation or the scale cannot be computed.
+constexpr float kInvalidScale = 0.f;
 
 // A MutatorHost owns all the animation and mutation effects.
 // There is just one MutatorHost for LayerTreeHost on main renderer thread
@@ -42,8 +42,7 @@ class MutatorHost {
  public:
   virtual ~MutatorHost() = default;
 
-  virtual std::unique_ptr<MutatorHost> CreateImplInstance(
-      bool supports_impl_scrolling) const = 0;
+  virtual std::unique_ptr<MutatorHost> CreateImplInstance() const = 0;
 
   virtual void ClearMutators() = 0;
 
@@ -62,7 +61,6 @@ class MutatorHost {
 
   virtual void PushPropertiesTo(MutatorHost* host_impl) = 0;
 
-  virtual void SetSupportsScrollAnimations(bool supports_scroll_animations) = 0;
   virtual void SetScrollAnimationDurationForTesting(
       base::TimeDelta duration) = 0;
   virtual bool NeedsTickAnimations() const = 0;
@@ -120,16 +118,11 @@ class MutatorHost {
 
   virtual bool AnimationsPreserveAxisAlignment(ElementId element_id) const = 0;
 
-  // Gets scales transform animations. On return, |maximum_scale| is the maximum
-  // scale along any dimension at any destination in active scale animations,
-  // and |starting_scale| is the maximum of starting animation scale along any
-  // dimension at any destination in active scale animations. They are set to
-  // kNotScaled if there is no active scale animation or the scales cannot be
-  // computed.
-  virtual void GetAnimationScales(ElementId element_id,
-                                  ElementListType list_type,
-                                  float* maximum_scale,
-                                  float* starting_scale) const = 0;
+  // Returns the maximum scale along any dimension at any destination in active
+  // scale animations, or kInvalidScale if there is no active transform
+  // animation or the scale cannot be computed.
+  virtual float MaximumScale(ElementId element_id,
+                             ElementListType list_type) const = 0;
 
   virtual bool IsElementAnimating(ElementId element_id) const = 0;
   virtual bool HasTickingKeyframeModelForTesting(
@@ -166,6 +159,11 @@ class MutatorHost {
   virtual bool NextFrameHasPendingRAF() const = 0;
   virtual bool HasCanvasInvalidation() const = 0;
   virtual bool HasJSAnimation() const = 0;
+
+  // Iterates through all animations and returns the minimum tick interval.
+  // Returns 0 if there is a continuous animation which should be ticked
+  // as fast as possible.
+  virtual base::TimeDelta MinimumTickInterval() const = 0;
 
   using TrackedAnimationSequenceId = size_t;
   struct PendingThroughputTrackerInfo {

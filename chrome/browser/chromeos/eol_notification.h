@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EOL_NOTIFICATION_H_
 #define CHROME_BROWSER_CHROMEOS_EOL_NOTIFICATION_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/update_engine_client.h"
@@ -37,7 +38,7 @@ class EolNotification final : public message_center::NotificationObserver {
   void Close(bool by_user) override;
 
   void Click(const base::Optional<int>& button_index,
-             const base::Optional<base::string16>& reply) override;
+             const base::Optional<std::u16string>& reply) override;
 
  private:
   friend class EolNotificationTest;

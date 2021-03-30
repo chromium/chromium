@@ -10,8 +10,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/values.h"
+#include "chromeos/components/sync_wifi/network_eligibility_checker.h"
 #include "chromeos/network/network_connection_observer.h"
 #include "chromeos/network/network_state_handler_observer.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 
 namespace chromeos {
 
@@ -35,6 +37,8 @@ const char kApplyFailureReasonHistogram[] =
     "Network.Wifi.Synced.UpdateOperation.FailureReason";
 const char kApplyResultHistogram[] =
     "Network.Wifi.Synced.UpdateOperation.Result";
+const char kZeroNetworksSyncedReasonHistogram[] =
+    "Network.Wifi.Synced.ZeroNetworksEligibleForSync.Reason";
 
 const char kTotalCountHistogram[] = "Network.Wifi.Synced.TotalCount";
 
@@ -112,6 +116,9 @@ class SyncedNetworkMetricsLogger : public NetworkConnectionObserver,
                                        const std::string& error_string);
   void RecordApplyNetworkSuccess();
   void RecordTotalCount(int count);
+  void RecordZeroNetworksEligibleForSync(
+      base::flat_set<NetworkEligibilityStatus>
+          network_eligiblility_status_codes);
 
  private:
   static ConnectionFailureReason ConnectionFailureReasonToEnum(

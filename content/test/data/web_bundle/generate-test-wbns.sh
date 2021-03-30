@@ -52,3 +52,29 @@ gen-bundle \
   -primaryURL https://test.example.org/ \
   -har variants_test.har \
   -o variants_test.wbn
+
+# Generate a WBN which will be used as a cross origin bundle.
+gen-bundle \
+  -version b1 \
+  -har cross_origin.har \
+  -primaryURL https://cross-origin.test/web_bundle/resource.json \
+  -o cross_origin.wbn
+
+# Generate a WBN which will be used as a same origin bundle.
+gen-bundle \
+  -version b1 \
+  -har same_origin.har \
+  -primaryURL https://same-origin.test/web_bundle/resource.json \
+  -o same_origin.wbn
+
+# Generate a WBN which includes urn:uuid resources.
+gen-bundle \
+  -version b1 \
+  -har urn-uuid.har \
+  -primaryURL urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae \
+  -o urn-uuid.wbn
+
+# Update Content-Length header in urn-uuid.wbn.mock-http-headers.
+(cat cross_origin.wbn.mock-http-headers; \
+ echo Content-Length: `wc -c <urn-uuid.wbn`) \
+    > urn-uuid.wbn.mock-http-headers

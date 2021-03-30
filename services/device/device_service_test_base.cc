@@ -17,6 +17,10 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
 
+#if defined(OS_MAC)
+#include "services/device/public/cpp/test/fake_geolocation_system_permission.h"
+#endif
+
 namespace device {
 
 namespace {
@@ -30,22 +34,20 @@ std::unique_ptr<DeviceService> CreateTestDeviceService(
     scoped_refptr<base::SingleThreadTaskRunner> file_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    mojo::PendingReceiver<mojom::DeviceService> receiver) {
-#if defined(OS_ANDROID)
-  return CreateDeviceService(
-      file_task_runner, io_task_runner, url_loader_factory,
-      network::TestNetworkConnectionTracker::GetInstance(),
-      kTestGeolocationApiKey, false, WakeLockContextCallback(),
-      base::BindRepeating(&GetCustomLocationProviderForTest), nullptr,
-      std::move(receiver));
-#else
-  return CreateDeviceService(
-      file_task_runner, io_task_runner, url_loader_factory,
-      network::TestNetworkConnectionTracker::GetInstance(),
-      kTestGeolocationApiKey,
-      base::BindRepeating(&GetCustomLocationProviderForTest),
-      std::move(receiver));
-#endif
+    mojo::PendingReceiver<mojom::DeviceService> receiver,
+    GeolocationSystemPermissionManager* location_permission_manager) {
+  auto params = std::make_unique<DeviceServiceParams>();
+  params->file_task_runner = std::move(file_task_runner);
+  params->io_task_runner = std::move(io_task_runner);
+  params->url_loader_factory = std::move(url_loader_factory);
+  params->network_connection_tracker =
+      network::TestNetworkConnectionTracker::GetInstance();
+  params->geolocation_api_key = kTestGeolocationApiKey;
+  params->custom_location_provider_callback =
+      base::BindRepeating(&GetCustomLocationProviderForTest);
+  params->location_permission_manager = location_permission_manager;
+
+  return CreateDeviceService(std::move(params), std::move(receiver));
 }
 
 }  // namespace
@@ -61,11 +63,18 @@ DeviceServiceTestBase::DeviceServiceTestBase()
 DeviceServiceTestBase::~DeviceServiceTestBase() = default;
 
 void DeviceServiceTestBase::SetUp() {
+  GeolocationSystemPermissionManager* location_permission_manager = nullptr;
+#if defined(OS_MAC)
+  fake_location_permission_manager_ =
+      std::make_unique<FakeSystemGeolocationPermissionsManager>();
+  location_permission_manager = fake_location_permission_manager_.get();
+#endif
   service_ = CreateTestDeviceService(
       file_task_runner_, io_task_runner_,
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_),
-      service_remote_.BindNewPipeAndPassReceiver());
+      service_remote_.BindNewPipeAndPassReceiver(),
+      location_permission_manager);
 }
 
 void DeviceServiceTestBase::DestroyDeviceService() {

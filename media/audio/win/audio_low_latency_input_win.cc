@@ -918,7 +918,7 @@ HRESULT WASAPIAudioInputStream::SetCaptureDevice() {
     hr =
         enumerator->GetDefaultAudioEndpoint(data_flow, role, &endpoint_device_);
   } else {
-    hr = enumerator->GetDevice(base::UTF8ToUTF16(device_id_).c_str(),
+    hr = enumerator->GetDevice(base::UTF8ToWide(device_id_).c_str(),
                                &endpoint_device_);
   }
   if (FAILED(hr)) {

@@ -16,10 +16,10 @@
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/sync_base_switches.h"
 #include "components/sync/base/time.h"
+#include "components/sync/engine/entity_data.h"
+#include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/engine/sync_engine_switches.h"
-#include "components/sync/model/entity_data.h"
 #include "components/sync/nigori/keystore_keys_cryptographer.h"
-#include "components/sync/nigori/nigori.h"
 #include "components/sync/nigori/nigori_storage.h"
 #include "components/sync/nigori/pending_local_nigori_commit.h"
 #include "components/sync/protocol/encryption.pb.h"
@@ -659,6 +659,11 @@ KeystoreKeysHandler* NigoriSyncBridgeImpl::GetKeystoreKeysHandler() {
   return this;
 }
 
+Cryptographer* NigoriSyncBridgeImpl::GetCryptographer() {
+  DCHECK(state_.cryptographer);
+  return state_.cryptographer.get();
+}
+
 bool NigoriSyncBridgeImpl::NeedKeystoreKey() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Explicitly asks the server for keystore keys if it's first-time sync, i.e.
@@ -1024,7 +1029,7 @@ void NigoriSyncBridgeImpl::ApplyDisableSyncChanges() {
   // storing explicit passphrase key in prefs, we need to find better solution.
   storage_->ClearData();
   state_.keystore_keys_cryptographer = KeystoreKeysCryptographer::CreateEmpty();
-  state_.cryptographer = CryptographerImpl::CreateEmpty();
+  state_.cryptographer->ClearAllKeys();
   state_.pending_keys.reset();
   state_.pending_keystore_decryptor_token.reset();
   state_.passphrase_type = NigoriSpecifics::UNKNOWN;
@@ -1040,7 +1045,7 @@ void NigoriSyncBridgeImpl::ApplyDisableSyncChanges() {
                                                   false);
 }
 
-const CryptographerImpl& NigoriSyncBridgeImpl::GetCryptographerForTesting()
+const CryptographerImpl& NigoriSyncBridgeImpl::GetCryptographerImplForTesting()
     const {
   return *state_.cryptographer;
 }

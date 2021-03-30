@@ -77,7 +77,7 @@ BASE_EXPORT bool PerformInjectiveMultimapDestructive(
     InjectionDelegate* delegate);
 
 // This function will not call malloc but will mutate |map|
-static inline bool ShuffleFileDescriptors(InjectiveMultimap* map) {
+inline bool ShuffleFileDescriptors(InjectiveMultimap* map) {
   FileDescriptorTableInjection delegate;
   return PerformInjectiveMultimapDestructive(map, &delegate);
 }

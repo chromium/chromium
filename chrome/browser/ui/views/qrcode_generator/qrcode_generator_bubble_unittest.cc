@@ -20,15 +20,15 @@ class QRCodeGeneratorBubbleTest : public testing::Test {
 
 TEST_F(QRCodeGeneratorBubbleTest, SuggestedDownloadURLNoIP) {
   EXPECT_EQ(QRCodeGeneratorBubble::GetQRCodeFilenameForURL(GURL("10.1.2.3")),
-            base::ASCIIToUTF16("qrcode_chrome.png"));
+            u"qrcode_chrome.png");
 
   EXPECT_EQ(QRCodeGeneratorBubble::GetQRCodeFilenameForURL(
                 GURL("https://chromium.org")),
-            base::ASCIIToUTF16("qrcode_chromium.org.png"));
+            u"qrcode_chromium.org.png");
 
   EXPECT_EQ(
       QRCodeGeneratorBubble::GetQRCodeFilenameForURL(GURL("text, not url")),
-      base::ASCIIToUTF16("qrcode_chrome.png"));
+      u"qrcode_chrome.png");
 }
 
 }  // namespace

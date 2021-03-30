@@ -10,9 +10,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/network_element_localized_strings_provider.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/internet_detail_dialog_resources.h"
+#include "chrome/grit/internet_detail_dialog_resources_map.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
@@ -98,7 +101,7 @@ void InternetDetailDialog::ShowDialog(const std::string& network_id) {
 
 InternetDetailDialog::InternetDetailDialog(const NetworkState& network)
     : SystemWebDialogDelegate(GURL(chrome::kChromeUIIntenetDetailDialogURL),
-                              /* title= */ base::string16()),
+                              /* title= */ std::u16string()),
       network_id_(network.guid()),
       network_type_(network_util::TranslateShillTypeToONC(network.type())),
       network_name_(GetNetworkName8(network)) {
@@ -140,14 +143,12 @@ InternetDetailDialogUI::InternetDetailDialogUI(content::WebUI* web_ui)
   AddInternetStrings(source);
   source->AddLocalizedString("title", IDS_SETTINGS_INTERNET_DETAIL);
   source->UseStringsJs();
-#if BUILDFLAG(OPTIMIZE_WEBUI)
-  source->SetDefaultResource(IDR_INTERNET_DETAIL_DIALOG_VULCANIZED_HTML);
-  source->AddResourcePath("crisper.js", IDR_INTERNET_DETAIL_DIALOG_CRISPER_JS);
-#else
-  source->SetDefaultResource(IDR_INTERNET_DETAIL_DIALOG_HTML);
-  source->AddResourcePath("internet_detail_dialog.js",
-                          IDR_INTERNET_DETAIL_DIALOG_JS);
-#endif
+
+  webui::SetupWebUIDataSource(
+      source,
+      base::make_span(kInternetDetailDialogResources,
+                      kInternetDetailDialogResourcesSize),
+      IDR_INTERNET_DETAIL_DIALOG_INTERNET_DETAIL_DIALOG_CONTAINER_HTML);
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
 }
 

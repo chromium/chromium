@@ -7,10 +7,10 @@
 #include <utility>
 
 #include "base/metrics/field_trial_params.h"
-#include "chrome/browser/engagement/site_engagement_metrics.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/site_engagement/content/site_engagement_metrics.h"
 #include "media/base/media_switches.h"
 
 const char MediaEngagementScore::kVisitsKey[] = "visits";

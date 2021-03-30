@@ -59,18 +59,6 @@ class MojoChromePromptIPC : public ChromePromptIPC {
                           const std::vector<std::wstring>& extension_ids,
                           PromptUserCallback callback) override;
 
-  // Posts a PromptDisableExtensions() task to the IPC controller's thread.
-  // Internal state must be State::kDoneInteraction when the posted task runs.
-  void PostDisableExtensionsTask(const std::vector<std::wstring>& extension_ids,
-                                 DisableExtensionsCallback callback) override;
-
-  // Queries Chrome for its version of the ChromePrompt interface. If version
-  // >= 3 calls |delete_allowed_callback|. Calls |delete_not_allowed_callback|
-  // otherwise.
-  void TryDeleteExtensions(
-      base::OnceClosure delete_allowed_callback,
-      base::OnceClosure delete_not_allowed_callback) override;
-
  protected:
   // The destructor is only called by tests for doubles of this class. In the
   // cleaner, this object leaks, so we don't bother closing the connection
@@ -88,19 +76,11 @@ class MojoChromePromptIPC : public ChromePromptIPC {
                          const std::vector<std::wstring>& extension_ids,
                          PromptUserCallback callback);
 
-  void RunDisableExtensionsTask(const std::vector<std::wstring>& extension_ids,
-                                DisableExtensionsCallback callback);
-
   // Callback for mojom::ChromePrompt::PromptUser, internal state must be
   // State::kWaitingForResponseFromChrome. Invokes callback(prompt_acceptance)
   // and transitions to state State::kDoneInteraction.
   void OnChromeResponseReceived(PromptUserCallback callback,
                                 mojom::PromptAcceptance prompt_acceptance);
-
-  // Callback for mojom::ChromePrompt::DisableExtensions, internal state must
-  // be State::kDoneInteraction. Invokes callback(extensions_deleted).
-  void OnChromeResponseReceivedExtensions(DisableExtensionsCallback callback,
-                                          bool extensions_deleted);
 
   // Connection error handler. Invokes either
   // error_handler_->OnConnectionClosed() or

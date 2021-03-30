@@ -109,7 +109,7 @@ def expr_and(terms):
 
     if any(term.is_always_false for term in terms):
         return _Expr(False)
-    terms = filter(lambda x: not x.is_always_true, terms)
+    terms = list(filter(lambda x: not x.is_always_true, terms))
     if not terms:
         return _Expr(True)
     if len(terms) == 1:
@@ -124,7 +124,7 @@ def expr_or(terms):
 
     if any(term.is_always_true for term in terms):
         return _Expr(True)
-    terms = filter(lambda x: not x.is_always_false, terms)
+    terms = list(filter(lambda x: not x.is_always_false, terms))
     if not terms:
         return _Expr(False)
     if len(terms) == 1:
@@ -222,7 +222,7 @@ def expr_from_exposure(exposure,
     elif exposure.only_in_secure_contexts is False:
         secure_context_term = _Expr(True)
     else:
-        terms = map(ref_enabled, exposure.only_in_secure_contexts)
+        terms = list(map(ref_enabled, exposure.only_in_secure_contexts))
         secure_context_term = expr_or(
             [_Expr("${is_in_secure_context}"),
              expr_not(expr_and(terms))])
@@ -275,10 +275,11 @@ def expr_from_exposure(exposure,
 
     # [ContextEnabled]
     if exposure.context_enabled_features:
-        terms = map(
-            lambda feature: _Expr(
-                "${{context_feature_settings}}->is{}Enabled()".format(
-                    feature)), exposure.context_enabled_features)
+        terms = list(
+            map(
+                lambda feature: _Expr(
+                    "${{context_feature_settings}}->is{}Enabled()".format(
+                        feature)), exposure.context_enabled_features))
         context_enabled_terms.append(
             expr_and([_Expr("${context_feature_settings}"),
                       expr_or(terms)]))

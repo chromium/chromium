@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/mru_cache.h"
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/media_route_provider_helper.h"
@@ -40,12 +41,17 @@ class MediaSinkServiceStatus {
   // Returns current status as a JSON string.
   std::string GetStatusAsJSONString() const;
 
+  base::WeakPtr<MediaSinkServiceStatus> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
-  // Map of sinks sent to extension, keyed by provider name;
+  // Map of discovered sinks, keyed by provider name.
   base::flat_map<std::string, std::vector<MediaSinkInternal>> discovered_sinks_;
-  // Map of available sinks, keyed by media source
+  // Map of available sinks, keyed by media source.
   base::MRUCache<std::string, std::vector<MediaSinkInternal>> available_sinks_;
 
+  base::WeakPtrFactory<MediaSinkServiceStatus> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(MediaSinkServiceStatus);
 };
 

@@ -11,7 +11,7 @@
 namespace task_manager {
 
 // Defines a task manager representation of WebContents owned by the
-// PrerenderManager.
+// NoStatePrefetchManager.
 class PrerenderTask : public RendererTask {
  public:
   explicit PrerenderTask(content::WebContents* web_contents);

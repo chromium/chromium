@@ -127,8 +127,8 @@ TEST_F(BrowserActionManifestTest,
           }
         }
       })");
-  base::string16 error = ErrorUtils::FormatErrorMessageUTF16(
-      errors::kInvalidIconPath, "19");
+  std::u16string error =
+      ErrorUtils::FormatErrorMessageUTF16(errors::kInvalidIconPath, "19");
   LoadAndExpectError(
       ManifestData(std::move(manifest_value), "Invalid default icon"),
       errors::kInvalidIconPath);

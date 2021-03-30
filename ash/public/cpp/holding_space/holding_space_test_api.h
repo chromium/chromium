@@ -46,6 +46,9 @@ class ASH_EXPORT HoldingSpaceTestApi {
   // otherwise.
   bool IsShowingInShelf();
 
+  // Returns the header of the downloads section in holding space UI.
+  views::View* GetDownloadsSectionHeader();
+
   // Returns the collection of download chips in holding space UI.
   // If holding space UI is not visible, an empty collection is returned.
   std::vector<views::View*> GetDownloadChips();
@@ -60,6 +63,10 @@ class ASH_EXPORT HoldingSpaceTestApi {
 
   // Returns the holding space tray in the shelf.
   views::View* GetTray();
+
+  // Returns the view drawn on top of the holding space tray to indicate that
+  // it is a drop target capable of handling the current drag payload.
+  views::View* GetTrayDropTargetOverlay();
 
   // Returns the holding space tray icon view for the default, non content
   // forward  icon.

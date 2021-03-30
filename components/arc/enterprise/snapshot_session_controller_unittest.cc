@@ -39,16 +39,24 @@ class FakeObserver final : public SnapshotSessionController::Observer {
     apps_installed_percent_ = percent;
   }
 
+  void OnSnapshotSessionPolicyCompliant() override {
+    session_policy_compliant_num_++;
+  }
+
   int session_started_num() const { return session_started_num_; }
   int session_stopped_num() const { return session_stopped_num_; }
   int session_failed_num() const { return session_failed_num_; }
   int apps_installed_percent() const { return apps_installed_percent_; }
+  int session_policy_compliant_num() const {
+    return session_policy_compliant_num_;
+  }
 
  private:
   int session_started_num_ = 0;
   int session_stopped_num_ = 0;
   int session_failed_num_ = 0;
   int apps_installed_percent_ = -1;
+  int session_policy_compliant_num_ = 0;
 };
 
 }  // namespace
@@ -62,7 +70,6 @@ class SnapshotSessionControllerTest : public testing::Test {
     fake_user_manager_ = new user_manager::FakeUserManager();
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(fake_user_manager_));
-    apps_tracker_ = std::make_unique<FakeAppsTracker>();
     observer_ = std::make_unique<FakeObserver>();
     session_manager_.SetSessionState(session_manager::SessionState::UNKNOWN);
   }
@@ -81,8 +88,15 @@ class SnapshotSessionControllerTest : public testing::Test {
     session_manager_.SetSessionState(session_manager::SessionState::LOCKED);
   }
 
+  std::unique_ptr<FakeAppsTracker> CreateAppsTracker() {
+    auto apps_tracker = std::make_unique<FakeAppsTracker>();
+    apps_tracker_ = apps_tracker.get();
+
+    return apps_tracker;
+  }
+
   user_manager::FakeUserManager* user_manager() { return fake_user_manager_; }
-  FakeAppsTracker* apps_tracker() { return apps_tracker_.get(); }
+  FakeAppsTracker* apps_tracker() { return apps_tracker_; }
   FakeObserver* observer() { return observer_.get(); }
 
   base::test::TaskEnvironment task_environment_{
@@ -92,27 +106,30 @@ class SnapshotSessionControllerTest : public testing::Test {
   session_manager::SessionManager session_manager_;
   user_manager::FakeUserManager* fake_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-  std::unique_ptr<FakeAppsTracker> apps_tracker_;
+  FakeAppsTracker* apps_tracker_;
   std::unique_ptr<FakeObserver> observer_;
 };
 
 TEST_F(SnapshotSessionControllerTest, BasicPreLogin) {
   LoginAsPublicSession();
-  auto session_controller = SnapshotSessionController::Create(apps_tracker());
+  auto session_controller =
+      SnapshotSessionController::Create(CreateAppsTracker());
 
   EXPECT_TRUE(session_controller->get_timer_for_testing()->IsRunning());
   EXPECT_EQ(1, apps_tracker()->start_tracking_num());
 }
 
 TEST_F(SnapshotSessionControllerTest, BasicNoLogin) {
-  auto session_controller = SnapshotSessionController::Create(apps_tracker());
+  auto session_controller =
+      SnapshotSessionController::Create(CreateAppsTracker());
 
   EXPECT_FALSE(session_controller->get_timer_for_testing()->IsRunning());
   EXPECT_EQ(0, apps_tracker()->start_tracking_num());
 }
 
 TEST_F(SnapshotSessionControllerTest, StartSession) {
-  auto session_controller = SnapshotSessionController::Create(apps_tracker());
+  auto session_controller =
+      SnapshotSessionController::Create(CreateAppsTracker());
   session_controller->AddObserver(observer());
 
   LoginAsPublicSession();
@@ -125,7 +142,8 @@ TEST_F(SnapshotSessionControllerTest, StartSession) {
 
 TEST_F(SnapshotSessionControllerTest, StopSessionFailure) {
   LoginAsPublicSession();
-  auto session_controller = SnapshotSessionController::Create(apps_tracker());
+  auto session_controller =
+      SnapshotSessionController::Create(CreateAppsTracker());
   session_controller->AddObserver(observer());
 
   EXPECT_TRUE(session_controller->get_timer_for_testing()->IsRunning());
@@ -134,39 +152,40 @@ TEST_F(SnapshotSessionControllerTest, StopSessionFailure) {
   LogoutPublicSession();
   EXPECT_EQ(1, observer()->session_failed_num());
   EXPECT_FALSE(session_controller->get_timer_for_testing()->IsRunning());
-  EXPECT_EQ(1, apps_tracker()->stop_tracking_num());
 
   session_controller->RemoveObserver(observer());
 }
 
 TEST_F(SnapshotSessionControllerTest, StopSessionSuccess) {
   LoginAsPublicSession();
-  auto session_controller = SnapshotSessionController::Create(apps_tracker());
+  auto session_controller =
+      SnapshotSessionController::Create(CreateAppsTracker());
   session_controller->AddObserver(observer());
 
   EXPECT_TRUE(session_controller->get_timer_for_testing()->IsRunning());
   EXPECT_EQ(1, apps_tracker()->start_tracking_num());
   apps_tracker()->update_callback().Run(100 /* percent */);
-  EXPECT_EQ(1, apps_tracker()->stop_tracking_num());
+
+  apps_tracker()->finish_callback().Run();
+  EXPECT_EQ(1, observer()->session_policy_compliant_num());
 
   LogoutPublicSession();
   EXPECT_EQ(1, observer()->session_stopped_num());
   EXPECT_FALSE(session_controller->get_timer_for_testing()->IsRunning());
-  EXPECT_EQ(1, apps_tracker()->stop_tracking_num());
 
   session_controller->RemoveObserver(observer());
 }
 
 TEST_F(SnapshotSessionControllerTest, OnAppInstalled) {
   LoginAsPublicSession();
-  auto session_controller = SnapshotSessionController::Create(apps_tracker());
+  auto session_controller =
+      SnapshotSessionController::Create(CreateAppsTracker());
   session_controller->AddObserver(observer());
 
   EXPECT_TRUE(session_controller->get_timer_for_testing()->IsRunning());
   EXPECT_EQ(1, apps_tracker()->start_tracking_num());
 
   apps_tracker()->update_callback().Run(10 /* percent */);
-  EXPECT_EQ(0, apps_tracker()->stop_tracking_num());
   EXPECT_EQ(10, observer()->apps_installed_percent());
   EXPECT_TRUE(session_controller->get_timer_for_testing()->IsRunning());
 
@@ -175,7 +194,8 @@ TEST_F(SnapshotSessionControllerTest, OnAppInstalled) {
 
 TEST_F(SnapshotSessionControllerTest, StopSessionFailureDuration) {
   LoginAsPublicSession();
-  auto session_controller = SnapshotSessionController::Create(apps_tracker());
+  auto session_controller =
+      SnapshotSessionController::Create(CreateAppsTracker());
   session_controller->AddObserver(observer());
 
   EXPECT_TRUE(session_controller->get_timer_for_testing()->IsRunning());
@@ -184,7 +204,6 @@ TEST_F(SnapshotSessionControllerTest, StopSessionFailureDuration) {
   task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(5));
   task_environment_.RunUntilIdle();
 
-  EXPECT_EQ(1, apps_tracker()->stop_tracking_num());
   EXPECT_FALSE(session_controller->get_timer_for_testing()->IsRunning());
   EXPECT_EQ(1, observer()->session_failed_num());
 

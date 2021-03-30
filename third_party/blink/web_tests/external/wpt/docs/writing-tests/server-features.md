@@ -127,8 +127,8 @@ by default and needs to be run using `./wpt serve --h2` in order to enable it.
 The HTTP/2.0 server supports handlers that work per-frame; these, along with the
 API are documented in [Writing H2 Tests](h2tests).
 
-> <b>Important:</b> The HTTP/2.0 server requires you to have Python 2.7.10+
-and OpenSSL 1.0.2+. This is because HTTP/2.0 is negotiated using the
+> <b>Important:</b> The HTTP/2.0 server requires you to have
+OpenSSL 1.0.2+. This is because HTTP/2.0 is negotiated using the
 [TLS ALPN](https://tools.ietf.org/html/rfc7301) extension, which is only
 supported in
 [OpenSSL 1.0.2](https://www.openssl.org/news/openssl-1.0.2-notes.html) and up.
@@ -156,7 +156,7 @@ unless `--enable-quic` is specified to `./wpt run`.
 
 ### Test Features specified as query params
 
-Alternatively to specifying [Test Features](file-names.md#test-features) in
+Alternatively to specifying [Test Features](file-names.html#test-features) in
 the test filename, they can be specified by setting the `wpt_flags` in the
 [test variant](testharness.html#variants). For example, the following variant
 will be loaded over HTTPS:
@@ -165,3 +165,10 @@ will be loaded over HTTPS:
 ```
 
 `https`, `h2` and `www` features are supported by `wpt_flags`.
+
+Multiple features can be specified by having multiple `wpt_flags`. For example,
+the following variant will be loaded over HTTPS and run on the www subdomain.
+
+```html
+<meta name="variant" content="wpt_flags=www&wpt_flags=https">
+```

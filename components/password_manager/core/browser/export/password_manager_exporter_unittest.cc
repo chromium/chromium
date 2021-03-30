@@ -82,8 +82,8 @@ class FakeCredentialProvider : public CredentialProviderInterface {
 std::vector<std::unique_ptr<PasswordForm>> CreatePasswordList() {
   auto password_form = std::make_unique<PasswordForm>();
   password_form->url = GURL("http://accounts.google.com/a/LoginAuth");
-  password_form->username_value = base::ASCIIToUTF16("test@gmail.com");
-  password_form->password_value = base::ASCIIToUTF16("test1");
+  password_form->username_value = u"test@gmail.com";
+  password_form->password_value = u"test1";
 
   std::vector<std::unique_ptr<PasswordForm>> password_forms;
   password_forms.push_back(std::move(password_form));
@@ -275,8 +275,8 @@ TEST_F(PasswordManagerExporterTest, DeduplicatesAcrossPasswordStores) {
   auto password = std::make_unique<PasswordForm>();
   password->in_store = PasswordForm::Store::kProfileStore;
   password->url = GURL("http://g.com/auth");
-  password->username_value = base::ASCIIToUTF16("user");
-  password->password_value = base::ASCIIToUTF16("password");
+  password->username_value = u"user";
+  password->password_value = u"password";
 
   auto password_duplicate = std::make_unique<PasswordForm>(*password);
   password_duplicate->in_store = PasswordForm::Store::kAccountStore;

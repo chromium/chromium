@@ -35,11 +35,12 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -62,6 +63,8 @@ public class SingleTabSwitcherMediatorUnitTest {
     @Mock
     private TabModel mNormalTabModel;
     @Mock
+    private TabModelFilterProvider mTabModelFilterProvider;
+    @Mock
     private TabModel mIncognitoTabModel;
     @Mock
     private Tab mTab;
@@ -74,7 +77,7 @@ public class SingleTabSwitcherMediatorUnitTest {
     @Mock
     private TabSwitcher.OverviewModeObserver mOverviewModeObserver;
     @Captor
-    private ArgumentCaptor<EmptyTabModelSelectorObserver> mTabModelSelectorObserverCaptor;
+    private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
     @Captor
     private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor
@@ -90,6 +93,7 @@ public class SingleTabSwitcherMediatorUnitTest {
         doReturn(mNormalTabModel).when(mTabModelSelector).getModel(false);
         doReturn(mTabId).when(mTabModelSelector).getCurrentTabId();
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
+        doReturn(mTabModelFilterProvider).when(mTabModelSelector).getTabModelFilterProvider();
         doReturn(mTab).when(mNormalTabModel).getTabAt(0);
         doReturn(0).when(mNormalTabModel).index();
         doReturn(1).when(mNormalTabModel).getCount();
@@ -121,7 +125,8 @@ public class SingleTabSwitcherMediatorUnitTest {
         mMediator.addOverviewModeObserver(mOverviewModeObserver);
 
         mMediator.showOverview(true);
-        verify(mNormalTabModel).addObserver(mTabModelObserverCaptor.capture());
+        verify(mTabModelFilterProvider)
+                .addTabModelFilterObserver(mTabModelObserverCaptor.capture());
         verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
         verify(mTabListFaviconProvider)
                 .getFaviconForUrlAsync(eq(mUrlString), eq(false), mFaviconCallbackCaptor.capture());
@@ -150,7 +155,8 @@ public class SingleTabSwitcherMediatorUnitTest {
         mMediator.addOverviewModeObserver(mOverviewModeObserver);
 
         mMediator.showOverview(true);
-        verify(mNormalTabModel).addObserver(mTabModelObserverCaptor.capture());
+        verify(mTabModelFilterProvider)
+                .addTabModelFilterObserver(mTabModelObserverCaptor.capture());
         verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
         verify(mTabListFaviconProvider)
                 .getFaviconForUrlAsync(eq(mUrlString), eq(false), mFaviconCallbackCaptor.capture());
@@ -188,7 +194,8 @@ public class SingleTabSwitcherMediatorUnitTest {
         mMediator.addOverviewModeObserver(mOverviewModeObserver);
 
         mMediator.showOverview(true);
-        verify(mNormalTabModel).addObserver(mTabModelObserverCaptor.capture());
+        verify(mTabModelFilterProvider)
+                .addTabModelFilterObserver(mTabModelObserverCaptor.capture());
         verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
         verify(mTabListFaviconProvider)
                 .getFaviconForUrlAsync(eq(mUrlString), eq(false), mFaviconCallbackCaptor.capture());
@@ -216,7 +223,8 @@ public class SingleTabSwitcherMediatorUnitTest {
         mMediator.addOverviewModeObserver(mOverviewModeObserver);
 
         mMediator.showOverview(true);
-        verify(mNormalTabModel).addObserver(mTabModelObserverCaptor.capture());
+        verify(mTabModelFilterProvider)
+                .addTabModelFilterObserver(mTabModelObserverCaptor.capture());
         verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
         verify(mTabListFaviconProvider)
                 .getFaviconForUrlAsync(eq(mUrlString), eq(false), mFaviconCallbackCaptor.capture());
@@ -242,17 +250,17 @@ public class SingleTabSwitcherMediatorUnitTest {
         mMediator.setOnTabSelectingListener(mOnTabSelectingListener);
         mMediator.addOverviewModeObserver(mOverviewModeObserver);
 
-        assertFalse(mMediator.onBackPressed());
+        assertFalse(mMediator.onBackPressed(false));
 
         mMediator.showOverview(true);
-        assertTrue(mMediator.onBackPressed());
+        assertTrue(mMediator.onBackPressed(false));
         verify(mOnTabSelectingListener).onTabSelecting(anyLong(), eq(mTabId));
 
         doReturn(TabList.INVALID_TAB_INDEX).when(mTabModelSelector).getCurrentTabId();
-        assertFalse(mMediator.onBackPressed());
+        assertFalse(mMediator.onBackPressed(false));
 
         doReturn(mTabId).when(mTabModelSelector).getCurrentTabId();
         doReturn(true).when(mTabModelSelector).isIncognitoSelected();
-        assertFalse(mMediator.onBackPressed());
+        assertFalse(mMediator.onBackPressed(false));
     }
 }

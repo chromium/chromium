@@ -93,32 +93,40 @@ bool IsSolidColorPaint(const PaintFlags& flags) {
 
 // Returns true if the specified |drawn_shape| will cover the entire canvas
 // and that the canvas is not clipped (i.e. it covers ALL of the canvas).
+// We expect this method to return false most of the time so we take
+// conservative early-outs when possible.
 template <typename T>
 bool IsFullQuad(const SkCanvas& canvas, const T& drawn_shape) {
   if (!canvas.isClipRect())
     return false;
 
-  SkIRect clip_irect;
-  if (!canvas.getDeviceClipBounds(&clip_irect))
+  SkIRect clip_bounds;
+  if (!canvas.getDeviceClipBounds(&clip_bounds))
     return false;
 
   // if the clip is smaller than the canvas, we're partly clipped, so abort.
-  if (!clip_irect.contains(SkIRect::MakeSize(canvas.getBaseLayerSize())))
+  if (!clip_bounds.contains(SkIRect::MakeSize(canvas.getBaseLayerSize())))
     return false;
 
-  const SkMatrix& matrix = canvas.getTotalMatrix();
-  // If the transform results in a non-axis aligned
-  // rect, then be conservative and return false.
-  if (!matrix.rectStaysRect())
+  const SkM44& matrix = canvas.getLocalToDevice();
+  // If the transform results in a non-axis aligned rectangle, then be
+  // conservative and return false.
+  if (!MathUtil::SkM44Preserves2DAxisAlignment(matrix))
     return false;
 
-  SkMatrix inverse;
+  SkM44 inverse;
   if (!matrix.invert(&inverse))
     return false;
 
-  SkRect clip_rect = SkRect::Make(clip_irect);
-  inverse.mapRect(&clip_rect, clip_rect);
-  return drawn_shape.contains(clip_rect);
+  // Check that the drawn shape contains the canvas bounds when those bounds
+  // are transformed into the shape's coordinate space. Since we know the
+  // transform is axis aligned we only need to test two corners.
+  SkV4 upper_left = inverse.map(clip_bounds.left(), clip_bounds.top(), 0, 1);
+  SkV4 lower_right =
+      inverse.map(clip_bounds.right(), clip_bounds.bottom(), 0, 1);
+  SkRect transformed_clip_bounds = SkRect::MakeLTRB(
+      upper_left.x, upper_left.y, lower_right.x, lower_right.y);
+  return drawn_shape.contains(transformed_clip_bounds);
 }
 
 void CalculateSolidColor(SkColor src_color,
@@ -231,13 +239,12 @@ base::Optional<SkColor> SolidColorAnalyzer::DetermineIfSolidColor(
 
   struct Frame {
     Frame(PaintOpBuffer::CompositeIterator iter,
-          const SkMatrix& original_ctm,
+          const SkM44& original_ctm,
           int save_count)
         : iter(iter), original_ctm(original_ctm), save_count(save_count) {}
 
     PaintOpBuffer::CompositeIterator iter;
-    // TODO(aaronhk) should be an SkM44 crbug.com/1155544
-    const SkMatrix original_ctm;
+    const SkM44 original_ctm;
     int save_count = 0;
   };
 
@@ -250,7 +257,7 @@ base::Optional<SkColor> SolidColorAnalyzer::DetermineIfSolidColor(
   // constructed. Reserve this to 2, and go from there.
   stack.reserve(2);
   stack.emplace_back(PaintOpBuffer::CompositeIterator(buffer, offsets),
-                     canvas.getTotalMatrix(), canvas.getSaveCount());
+                     canvas.getLocalToDevice(), canvas.getSaveCount());
 
   int num_draw_ops = 0;
   while (!stack.empty()) {
@@ -270,7 +277,7 @@ base::Optional<SkColor> SolidColorAnalyzer::DetermineIfSolidColor(
         const DrawRecordOp* record_op = static_cast<const DrawRecordOp*>(op);
         stack.emplace_back(
             PaintOpBuffer::CompositeIterator(record_op->record.get(), nullptr),
-            canvas.getTotalMatrix(), canvas.getSaveCount());
+            canvas.getLocalToDevice(), canvas.getSaveCount());
         continue;
       }
 
@@ -351,10 +358,8 @@ base::Optional<SkColor> SolidColorAnalyzer::DetermineIfSolidColor(
 
       // The rest of the ops should only affect our state canvas.
       case PaintOpType::Concat:
-      case PaintOpType::Concat44:
       case PaintOpType::Scale:
       case PaintOpType::SetMatrix:
-      case PaintOpType::SetMatrix44:
       case PaintOpType::Restore:
       case PaintOpType::Rotate:
       case PaintOpType::Save:

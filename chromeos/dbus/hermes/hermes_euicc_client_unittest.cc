@@ -23,11 +23,12 @@ namespace chromeos {
 
 namespace {
 
-const char* kInvalidPath = "/test/invalid/path";
-const char* kTestActivationCode = "abc123";
-const char* kTestConfirmationCode = "def456";
-const char* kTestEuiccPath = "/org/chromium/hermes/Euicc/1";
-const char* kTestCarrierProfilePath = "/org/chromium/hermes/Profile/1";
+const char kInvalidPath[] = "/test/invalid/path";
+const char kTestRootSmds[] = "test.smds";
+const char kTestActivationCode[] = "abc123";
+const char kTestConfirmationCode[] = "def456";
+const char kTestEuiccPath[] = "/org/chromium/hermes/Euicc/1";
+const char kTestCarrierProfilePath[] = "/org/chromium/hermes/Profile/1";
 
 // Matches dbus::MethodCall for UninstallProfile call with given path.
 MATCHER_P(MatchUninstallProfileCall, expected_profile_path, "") {
@@ -39,6 +40,18 @@ MATCHER_P(MatchUninstallProfileCall, expected_profile_path, "") {
     *result_listener << "has method_name=" << arg->GetMember()
                      << " carrier_profile_path="
                      << carrier_profile_path.value();
+    return false;
+  }
+  return true;
+}
+
+MATCHER_P(MatchRequestPendingProfilesCall, expected_root_smds, "") {
+  dbus::MessageReader reader(arg);
+  std::string root_smds;
+  if (arg->GetMember() != hermes::euicc::kRequestPendingProfiles ||
+      !reader.PopString(&root_smds) || root_smds != expected_root_smds) {
+    *result_listener << "has method_name=" << arg->GetMember()
+                     << " root_smds=" << root_smds;
     return false;
   }
   return true;
@@ -218,14 +231,14 @@ TEST_F(HermesEuiccClientTest, TestInstallPendingProfile) {
   EXPECT_EQ(install_status, HermesResponseStatus::kErrorInvalidParameter);
 }
 
-TEST_F(HermesEuiccClientTest, TestRequestPendingEvents) {
+TEST_F(HermesEuiccClientTest, TestRequestInstalledProfiles) {
   dbus::ObjectPath test_euicc_path(kTestEuiccPath);
   dbus::MethodCall method_call(hermes::kHermesEuiccInterface,
-                               hermes::euicc::kRequestPendingEvents);
+                               hermes::euicc::kRequestInstalledProfiles);
   method_call.SetSerial(123);
   EXPECT_CALL(*proxy_.get(), DoCallMethodWithErrorResponse(
                                  hermes_test_utils::MatchMethodName(
-                                     hermes::euicc::kRequestPendingEvents),
+                                     hermes::euicc::kRequestInstalledProfiles),
                                  _, _))
       .Times(2)
       .WillRepeatedly(Invoke(this, &HermesEuiccClientTest::OnMethodCalled));
@@ -235,7 +248,7 @@ TEST_F(HermesEuiccClientTest, TestRequestPendingEvents) {
   // Verify that client makes corresponding dbus method call with
   // correct arguments.
   AddPendingMethodCallResult(dbus::Response::CreateEmpty(), nullptr);
-  client_->RequestPendingEvents(
+  client_->RequestInstalledProfiles(
       test_euicc_path,
       base::BindOnce(&hermes_test_utils::CopyHermesStatus, &status));
   base::RunLoop().RunUntilIdle();
@@ -246,8 +259,42 @@ TEST_F(HermesEuiccClientTest, TestRequestPendingEvents) {
       dbus::ErrorResponse::FromMethodCall(&method_call, hermes::kErrorUnknown,
                                           "");
   AddPendingMethodCallResult(nullptr, std::move(error_response));
-  client_->RequestPendingEvents(
+  client_->RequestInstalledProfiles(
       test_euicc_path,
+      base::BindOnce(&hermes_test_utils::CopyHermesStatus, &status));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(status, HermesResponseStatus::kErrorUnknown);
+}
+
+TEST_F(HermesEuiccClientTest, TestRequestPendingProfiles) {
+  dbus::ObjectPath test_euicc_path(kTestEuiccPath);
+  dbus::MethodCall method_call(hermes::kHermesEuiccInterface,
+                               hermes::euicc::kRequestPendingProfiles);
+  method_call.SetSerial(123);
+  EXPECT_CALL(*proxy_.get(),
+              DoCallMethodWithErrorResponse(
+                  MatchRequestPendingProfilesCall(kTestRootSmds), _, _))
+      .Times(2)
+      .WillRepeatedly(Invoke(this, &HermesEuiccClientTest::OnMethodCalled));
+
+  HermesResponseStatus status;
+
+  // Verify that client makes corresponding dbus method call with
+  // correct arguments.
+  AddPendingMethodCallResult(dbus::Response::CreateEmpty(), nullptr);
+  client_->RequestPendingProfiles(
+      test_euicc_path, kTestRootSmds,
+      base::BindOnce(&hermes_test_utils::CopyHermesStatus, &status));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(status, HermesResponseStatus::kSuccess);
+
+  // Verify that error responses are returned properly.
+  std::unique_ptr<dbus::ErrorResponse> error_response =
+      dbus::ErrorResponse::FromMethodCall(&method_call, hermes::kErrorUnknown,
+                                          "");
+  AddPendingMethodCallResult(nullptr, std::move(error_response));
+  client_->RequestPendingProfiles(
+      test_euicc_path, kTestRootSmds,
       base::BindOnce(&hermes_test_utils::CopyHermesStatus, &status));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(status, HermesResponseStatus::kErrorUnknown);
@@ -257,12 +304,12 @@ TEST_F(HermesEuiccClientTest, TestUninstallProfile) {
   dbus::ObjectPath test_euicc_path(kTestEuiccPath);
   dbus::ObjectPath test_carrier_path(kTestCarrierProfilePath);
   dbus::MethodCall method_call(hermes::kHermesEuiccInterface,
-                               hermes::euicc::kRequestPendingEvents);
+                               hermes::euicc::kUninstallProfile);
   method_call.SetSerial(123);
   EXPECT_CALL(*proxy_.get(),
               DoCallMethodWithErrorResponse(
                   MatchUninstallProfileCall(test_carrier_path), _, _))
-      .Times(1)
+      .Times(2)
       .WillRepeatedly(Invoke(this, &HermesEuiccClientTest::OnMethodCalled));
 
   HermesResponseStatus status;
@@ -275,6 +322,17 @@ TEST_F(HermesEuiccClientTest, TestUninstallProfile) {
       base::BindOnce(&hermes_test_utils::CopyHermesStatus, &status));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(status, HermesResponseStatus::kSuccess);
+
+  // Verify that error responses are returned properly.
+  std::unique_ptr<dbus::ErrorResponse> error_response =
+      dbus::ErrorResponse::FromMethodCall(&method_call, hermes::kErrorUnknown,
+                                          "");
+  AddPendingMethodCallResult(nullptr, std::move(error_response));
+  client_->UninstallProfile(
+      test_euicc_path, test_carrier_path,
+      base::BindOnce(&hermes_test_utils::CopyHermesStatus, &status));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(status, HermesResponseStatus::kErrorUnknown);
 }
 
 }  // namespace chromeos

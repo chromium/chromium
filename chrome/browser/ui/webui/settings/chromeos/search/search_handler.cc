@@ -66,7 +66,7 @@ void SearchHandler::BindInterface(
   receivers_.Add(this, std::move(pending_receiver));
 }
 
-void SearchHandler::Search(const base::string16& query,
+void SearchHandler::Search(const std::u16string& query,
                            uint32_t max_num_results,
                            mojom::ParentResultBehavior parent_result_behavior,
                            SearchCallback callback) {
@@ -260,7 +260,7 @@ mojom::SearchResultPtr SearchHandler::ResultToSearchResult(
 
   std::string url;
   mojom::SearchResultIdentifierPtr result_id;
-  std::vector<base::string16> hierarchy_strings;
+  std::vector<std::u16string> hierarchy_strings;
   switch (concept->type) {
     case mojom::SearchResultType::kSection: {
       mojom::Section section = concept->id.section;

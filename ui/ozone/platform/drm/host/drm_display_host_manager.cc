@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -51,8 +52,39 @@ base::FilePath MapDevPathToSysPath(const base::FilePath& device_path) {
   // symlink that points to something like
   // /sys/devices/pci0000:00/0000:00:02.0/0000:05:00.0/drm/card0, which exposes
   // some metadata about the attached device.
-  return base::MakeAbsoluteFilePath(
+  base::FilePath sys_path = base::MakeAbsoluteFilePath(
       base::FilePath("/sys/class/drm").Append(device_path.BaseName()));
+
+  std::vector<base::FilePath::StringType> components;
+  sys_path.GetComponents(&components);
+  base::FilePath path_thus_far;
+
+  for (const auto& component : components) {
+    if (path_thus_far.empty()) {
+      path_thus_far = base::FilePath(component);
+    } else {
+      path_thus_far = path_thus_far.Append(component);
+    }
+
+    // Newer versions of the EVDI kernel driver include a symlink to the USB
+    // device in the sysfs EVDI directory (e.g.
+    // /sys/devices/platform/evdi.0/device) for EVDI displays that are USB. If
+    // that symlink exists, read it, and use that path as the sysfs path for the
+    // display when calculating the association score to match it with a
+    // corresponding USB touch device. If the symlink doesn't exist, use the
+    // normal sysfs path.
+    if (base::StartsWith(component, "evdi", base::CompareCase::SENSITIVE)) {
+      base::FilePath usb_device_path;
+      if (base::ReadSymbolicLink(path_thus_far.Append("device"),
+                                 &usb_device_path)) {
+        return base::MakeAbsoluteFilePath(
+            path_thus_far.Append(usb_device_path));
+      }
+      break;
+    }
+  }
+
+  return sys_path;
 }
 
 void OpenDeviceAsync(const base::FilePath& device_path,
@@ -237,15 +269,11 @@ void DrmDisplayHostManager::UpdateDisplays(
 void DrmDisplayHostManager::ConfigureDisplays(
     const std::vector<display::DisplayConfigurationParams>& config_requests,
     display::ConfigureCallback callback) {
-  base::flat_map<int64_t, bool> dummy_statuses;
-  bool is_any_dummy = false;
   for (auto& config : config_requests) {
-    is_any_dummy |= GetDisplay(config.id)->is_dummy();
-    dummy_statuses.insert(std::make_pair(config.id, true));
-  }
-  if (is_any_dummy) {
-    std::move(callback).Run(dummy_statuses);
-    return;
+    if (GetDisplay(config.id)->is_dummy()) {
+      std::move(callback).Run(true);
+      return;
+    }
   }
 
   proxy_->GpuConfigureNativeDisplays(config_requests, std::move(callback));

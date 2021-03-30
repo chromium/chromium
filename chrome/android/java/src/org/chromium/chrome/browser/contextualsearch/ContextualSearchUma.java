@@ -879,6 +879,11 @@ public class ContextualSearchUma {
     public static void logAllResultsSeen(boolean wasPanelSeen) {
         RecordHistogram.recordBooleanHistogram(
                 "Search.ContextualSearch.All.ResultsSeen", wasPanelSeen);
+        // Log a user action for the wasPanelSeen case. This value is used as part of a high-level
+        // guiding metric, which is being migrated to user actions.
+        if (wasPanelSeen) {
+            RecordUserAction.record("Search.ContextualSearch.All.ResultsSeen.true");
+        }
     }
 
     /**
@@ -1295,6 +1300,11 @@ public class ContextualSearchUma {
         } else {
             RecordUserAction.record("ContextualSearch.ManualRefineMultiWord");
         }
+    }
+
+    /** Logs a UserAction that the user just acknowledged the Longpress in-panel-help. */
+    static void logInPanelHelpAcknowledged() {
+        RecordUserAction.record("ContextualSearch.logInPanelHelpAcknowledged");
     }
 
     /**

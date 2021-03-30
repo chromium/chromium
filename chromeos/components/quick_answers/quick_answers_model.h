@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"
@@ -84,7 +83,7 @@ struct QuickAnswerText : public QuickAnswerUiElement {
         text(base::UTF8ToUTF16(text)),
         color(color) {}
 
-  base::string16 text;
+  std::u16string text;
 
   // Attributes for text style.
   SkColor color = SK_ColorBLACK;
@@ -109,11 +108,7 @@ struct QuickAnswer {
   QuickAnswer();
   ~QuickAnswer();
 
-  //  TODO: Remove these after we deprecate simple UI version.
   ResultType result_type;
-  std::string primary_answer;
-  std::string secondary_answer;
-
   std::vector<std::unique_ptr<QuickAnswerUiElement>> title;
   std::vector<std::unique_ptr<QuickAnswerUiElement>> first_answer_row;
   std::vector<std::unique_ptr<QuickAnswerUiElement>> second_answer_row;

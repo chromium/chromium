@@ -46,15 +46,18 @@ BiquadFilterHandler::BiquadFilterHandler(AudioNode& node,
                                          AudioParamHandler& q,
                                          AudioParamHandler& gain,
                                          AudioParamHandler& detune)
-    : AudioBasicProcessorHandler(kNodeTypeBiquadFilter,
-                                 node,
-                                 sample_rate,
-                                 std::make_unique<BiquadProcessor>(sample_rate,
-                                                                   1,
-                                                                   frequency,
-                                                                   q,
-                                                                   gain,
-                                                                   detune)) {
+    : AudioBasicProcessorHandler(
+          kNodeTypeBiquadFilter,
+          node,
+          sample_rate,
+          std::make_unique<BiquadProcessor>(
+              sample_rate,
+              1,
+              node.context()->GetDeferredTaskHandler().RenderQuantumFrames(),
+              frequency,
+              q,
+              gain,
+              detune)) {
   DCHECK(Context());
   DCHECK(Context()->GetExecutionContext());
 
@@ -255,23 +258,23 @@ void BiquadFilterNode::getFrequencyResponse(
     NotShared<DOMFloat32Array> mag_response,
     NotShared<DOMFloat32Array> phase_response,
     ExceptionState& exception_state) {
-  size_t frequency_hz_length = frequency_hz.View()->length();
+  size_t frequency_hz_length = frequency_hz->length();
 
-  if (mag_response.View()->length() != frequency_hz_length) {
+  if (mag_response->length() != frequency_hz_length) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidAccessError,
         ExceptionMessages::IndexOutsideRange(
-            "magResponse length", mag_response.View()->length(),
-            frequency_hz_length, ExceptionMessages::kInclusiveBound,
-            frequency_hz_length, ExceptionMessages::kInclusiveBound));
+            "magResponse length", mag_response->length(), frequency_hz_length,
+            ExceptionMessages::kInclusiveBound, frequency_hz_length,
+            ExceptionMessages::kInclusiveBound));
     return;
   }
 
-  if (phase_response.View()->length() != frequency_hz_length) {
+  if (phase_response->length() != frequency_hz_length) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidAccessError,
         ExceptionMessages::IndexOutsideRange(
-            "phaseResponse length", phase_response.View()->length(),
+            "phaseResponse length", phase_response->length(),
             frequency_hz_length, ExceptionMessages::kInclusiveBound,
             frequency_hz_length, ExceptionMessages::kInclusiveBound));
     return;
@@ -288,8 +291,8 @@ void BiquadFilterNode::getFrequencyResponse(
   // If the length is 0, there's nothing to do.
   if (frequency_hz_length_as_int > 0) {
     GetBiquadProcessor()->GetFrequencyResponse(
-        frequency_hz_length_as_int, frequency_hz.View()->Data(),
-        mag_response.View()->Data(), phase_response.View()->Data());
+        frequency_hz_length_as_int, frequency_hz->Data(), mag_response->Data(),
+        phase_response->Data());
   }
 }
 

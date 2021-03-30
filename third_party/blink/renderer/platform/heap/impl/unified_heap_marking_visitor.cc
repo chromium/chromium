@@ -68,6 +68,7 @@ void UnifiedHeapMarkingVisitor::WriteBarrier(
 // static
 void UnifiedHeapMarkingVisitor::WriteBarrier(
     v8::Isolate* isolate,
+    v8::Local<v8::Object>&,
     const WrapperTypeInfo* wrapper_type_info,
     const void* object) {
   // |object| here is either ScriptWrappable or CustomWrappable.

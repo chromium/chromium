@@ -18,7 +18,6 @@
 #include "net/cert/x509_certificate.h"
 #include "net/quic/address_utils.h"
 #include "net/quic/quic_address_mismatch.h"
-#include "net/third_party/quiche/src/common/platform/api/quiche_string_piece.h"
 #include "net/third_party/quiche/src/quic/core/crypto/crypto_handshake_message.h"
 #include "net/third_party/quiche/src/quic/core/crypto/crypto_protocol.h"
 #include "net/third_party/quiche/src/quic/core/quic_connection_id.h"
@@ -162,6 +161,8 @@ void QuicConnectionLogger::OnFrameAddedToPacket(const quic::QuicFrame& frame) {
     case quic::PATH_CHALLENGE_FRAME:
       break;
     case quic::STOP_SENDING_FRAME:
+      base::UmaHistogramSparse("Net.QuicSession.StopSendingErrorCodeClient",
+                               frame.stop_sending_frame->error_code);
       break;
     case quic::MESSAGE_FRAME:
       break;
@@ -365,6 +366,8 @@ void QuicConnectionLogger::OnCryptoFrame(const quic::QuicCryptoFrame& frame) {
 
 void QuicConnectionLogger::OnStopSendingFrame(
     const quic::QuicStopSendingFrame& frame) {
+  base::UmaHistogramSparse("Net.QuicSession.StopSendingErrorCodeServer",
+                           frame.error_code);
   event_logger_.OnStopSendingFrame(frame);
 }
 

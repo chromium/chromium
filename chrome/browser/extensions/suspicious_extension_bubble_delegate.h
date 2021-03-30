@@ -24,16 +24,15 @@ class SuspiciousExtensionBubbleDelegate
       const std::string& extension_id,
       ExtensionMessageBubbleController::BubbleAction user_action) override;
   void PerformAction(const extensions::ExtensionIdList& list) override;
-  base::string16 GetTitle() const override;
-  base::string16 GetMessageBody(bool anchored_to_browser_action,
+  std::u16string GetTitle() const override;
+  std::u16string GetMessageBody(bool anchored_to_browser_action,
                                 int extension_count) const override;
-  base::string16 GetOverflowText(
-      const base::string16& overflow_count) const override;
+  std::u16string GetOverflowText(
+      const std::u16string& overflow_count) const override;
   GURL GetLearnMoreUrl() const override;
-  base::string16 GetActionButtonLabel() const override;
-  base::string16 GetDismissButtonLabel() const override;
+  std::u16string GetActionButtonLabel() const override;
+  std::u16string GetDismissButtonLabel() const override;
   bool ShouldCloseOnDeactivate() const override;
-  bool ShouldAcknowledgeOnDeactivate() const override;
   bool ShouldShowExtensionList() const override;
   bool ShouldShow(const ExtensionIdList& extensions) const override;
   void OnShown(const ExtensionIdList& extensions) override;

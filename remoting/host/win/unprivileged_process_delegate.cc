@@ -12,6 +12,7 @@
 
 #include <sddl.h>
 
+#include <string>
 #include <utility>
 
 #include "base/command_line.h"
@@ -19,7 +20,6 @@
 #include "base/logging.h"
 #include "base/rand_util.h"
 #include "base/single_thread_task_runner.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -100,8 +100,8 @@ bool CreateRestrictedToken(ScopedHandle* token_out) {
   // "SeChangeNotifyPrivilege" also allows it to open and manipulate objects
   // owned by the same user. This risk is only mitigated by setting the
   // process integrity level to Low.
-  std::vector<base::string16> exceptions;
-  exceptions.push_back(base::string16(L"SeChangeNotifyPrivilege"));
+  std::vector<std::wstring> exceptions;
+  exceptions.push_back(L"SeChangeNotifyPrivilege");
 
   // Remove privileges in the token.
   if (restricted_token.DeleteAllPrivileges(&exceptions) != ERROR_SUCCESS)
@@ -176,7 +176,7 @@ bool CreateWindowStationAndDesktop(ScopedSid logon_sid,
 
   WindowStationAndDesktop handles;
   handles.SetWindowStation(CreateWindowStation(
-      base::UTF8ToUTF16(window_station_name).c_str(), window_station_flags,
+      base::UTF8ToWide(window_station_name).c_str(), window_station_flags,
       desired_access, &security_attributes));
   if (!handles.window_station()) {
     PLOG(ERROR) << "CreateWindowStation() failed";

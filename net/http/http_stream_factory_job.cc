@@ -871,8 +871,8 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic() {
   int rv = quic_request_.Request(
       destination, quic_version_, request_info_.privacy_mode, priority_,
       request_info_.socket_tag, request_info_.network_isolation_key,
-      request_info_.disable_secure_dns, ssl_config->GetCertVerifyFlags(), url,
-      net_log_, &net_error_details_,
+      request_info_.disable_secure_dns, proxy_info_.is_direct(),
+      ssl_config->GetCertVerifyFlags(), url, net_log_, &net_error_details_,
       base::BindOnce(&Job::OnFailedOnDefaultNetwork, ptr_factory_.GetWeakPtr()),
       io_callback_);
   if (rv == OK) {
@@ -998,7 +998,10 @@ int HttpStreamFactory::Job::DoInitConnectionComplete(int result) {
         // Quic session is closed before stream can be created.
         return ERR_CONNECTION_CLOSED;
       }
-      stream_ = std::make_unique<QuicHttpStream>(std::move(session));
+      auto dns_aliases =
+          session->GetDnsAliasesForSessionKey(quic_request_.session_key());
+      stream_ = std::make_unique<QuicHttpStream>(std::move(session),
+                                                 std::move(dns_aliases));
     }
     next_state_ = STATE_NONE;
     return OK;
@@ -1044,6 +1047,8 @@ int HttpStreamFactory::Job::DoWaitingUserAction(int result) {
 int HttpStreamFactory::Job::SetSpdyHttpStreamOrBidirectionalStreamImpl(
     base::WeakPtr<SpdySession> session) {
   DCHECK(using_spdy_);
+  auto dns_aliases = session_->spdy_session_pool()->GetDnsAliasesForSessionKey(
+      spdy_session_key_);
 
   if (is_websocket_) {
     DCHECK_NE(job_type_, PRECONNECT);
@@ -1055,8 +1060,9 @@ int HttpStreamFactory::Job::SetSpdyHttpStreamOrBidirectionalStreamImpl(
       return ERR_NOT_IMPLEMENTED;
     }
 
-    websocket_stream_ = delegate_->websocket_handshake_stream_create_helper()
-                            ->CreateHttp2Stream(session);
+    websocket_stream_ =
+        delegate_->websocket_handshake_stream_create_helper()
+            ->CreateHttp2Stream(session, std::move(dns_aliases));
     return OK;
   }
   if (stream_type_ == HttpStreamRequest::BIDIRECTIONAL_STREAM) {
@@ -1069,8 +1075,8 @@ int HttpStreamFactory::Job::SetSpdyHttpStreamOrBidirectionalStreamImpl(
   // will be creating all the SpdyHttpStreams, since it will know when
   // SpdySessions become available.
 
-  stream_ = std::make_unique<SpdyHttpStream>(session, pushed_stream_id_,
-                                             net_log_.source());
+  stream_ = std::make_unique<SpdyHttpStream>(
+      session, pushed_stream_id_, net_log_.source(), std::move(dns_aliases));
   return OK;
 }
 
@@ -1146,15 +1152,14 @@ int HttpStreamFactory::Job::DoCreateStream() {
   bool is_trusted_proxy =
       !spdy_session_direct_ && proxy_info_.proxy_server().is_trusted_proxy();
 
-  base::WeakPtr<SpdySession> spdy_session =
+  base::WeakPtr<SpdySession> spdy_session;
+  int rv =
       session_->spdy_session_pool()->CreateAvailableSessionFromSocketHandle(
-          spdy_session_key_, is_trusted_proxy, std::move(connection_),
-          net_log_);
+          spdy_session_key_, is_trusted_proxy, std::move(connection_), net_log_,
+          &spdy_session);
 
-  if (!spdy_session->HasAcceptableTransportSecurity()) {
-    spdy_session->CloseSessionOnError(ERR_HTTP2_INADEQUATE_TRANSPORT_SECURITY,
-                                      "");
-    return ERR_HTTP2_INADEQUATE_TRANSPORT_SECURITY;
+  if (rv != OK) {
+    return rv;
   }
 
   url::SchemeHostPort scheme_host_port(

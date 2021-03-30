@@ -5,6 +5,8 @@
 Polymer({
   is: 'oobe-adaptive-dialog',
 
+  behaviors: [OobeFocusBehavior],
+
   properties: {
     /**
      * Hide the box shadow on the top of oobe-bottom
@@ -48,7 +50,17 @@ Polymer({
   },
 
   focus() {
-    this.$.dialog.focus();
+    /* When Network Selection Dialog is shown because user pressed "Back"
+       button on EULA screen, display_manager does not inform this dialog that
+       it is shown. It ouly focuses this dialog.
+       So this emulates show().
+       TODO (crbug.com/1159721): fix this once event flow is updated.
+    */
+    this.show();
+  },
+
+  show() {
+    this.focusMarkedElement(this);
   },
 
   onBeforeShow() {
@@ -61,12 +73,4 @@ Polymer({
   scrollToBottom() {
     this.$.dialog.scrollToBottom();
   },
-
-  /**
-   * This is called from oobe_welcome when this dialog is shown.
-   */
-  show() {
-    this.$.show();
-  },
-
 });

@@ -5,14 +5,15 @@
 #ifndef FUCHSIA_BASE_FAKE_COMPONENT_CONTEXT_H_
 #define FUCHSIA_BASE_FAKE_COMPONENT_CONTEXT_H_
 
-#include <fuchsia/base/agent_impl.h>
 #include <fuchsia/modular/cpp/fidl_test_base.h>
+
 #include <map>
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "base/strings/string_piece.h"
+#include "fuchsia/base/agent_impl.h"
 
 namespace cr_fuchsia {
 
@@ -43,8 +44,7 @@ class FakeComponentContext
   void NotImplemented_(const std::string& name) override;
 
  private:
-  base::fuchsia::ScopedServiceBinding<fuchsia::modular::ComponentContext>
-      binding_;
+  base::ScopedServiceBinding<fuchsia::modular::ComponentContext> binding_;
   const std::string component_url_;
   sys::OutgoingDirectory* const outgoing_directory_;
   fuchsia::sys::ServiceProviderPtr agent_services_;

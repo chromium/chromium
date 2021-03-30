@@ -41,6 +41,7 @@ class BiquadDSPKernel final : public AudioDSPKernel {
  public:
   explicit BiquadDSPKernel(BiquadProcessor* processor)
       : AudioDSPKernel(processor),
+        biquad_(processor->RenderQuantumFrames()),
         tail_time_(std::numeric_limits<double>::infinity()) {}
 
   // AudioDSPKernel

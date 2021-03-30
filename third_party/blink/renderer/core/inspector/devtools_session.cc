@@ -58,10 +58,10 @@ class DevToolsSession::IOSession : public mojom::blink::DevToolsSession {
       : io_task_runner_(io_task_runner),
         inspector_task_runner_(inspector_task_runner),
         session_(std::move(session)) {
-    PostCrossThreadTask(*io_task_runner, FROM_HERE,
-                        CrossThreadBindOnce(&IOSession::BindInterface,
-                                            CrossThreadUnretained(this),
-                                            WTF::Passed(std::move(receiver))));
+    PostCrossThreadTask(
+        *io_task_runner, FROM_HERE,
+        CrossThreadBindOnce(&IOSession::BindInterface,
+                            CrossThreadUnretained(this), std::move(receiver)));
   }
 
   ~IOSession() override = default;

@@ -107,7 +107,10 @@
 
     separator_color: "rgba($black_rgb, 0.12)",
 
-    link_color: "$google_blue_700",
+    link_color: {
+      light: "$google_blue_700",
+      dark: "$google_blue_300",
+    },
 
     /* button-primary */
     button_background_color_primary: "$icon_color_prominent",
@@ -201,5 +204,8 @@
     app_management_permission_icon_color: "$google_grey_600",
 
     user_icon_color_secondary: "rgb(210, 210, 212)",
+  },
+  opacities: {
+    disabled_opacity: 0.38,
   },
 }

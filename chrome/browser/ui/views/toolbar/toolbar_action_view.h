@@ -12,6 +12,7 @@
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/drag_controller.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 class ExtensionContextMenuController;
@@ -23,6 +24,8 @@ class ExtensionContextMenuController;
 class ToolbarActionView : public views::MenuButton,
                           public ToolbarActionViewDelegateViews {
  public:
+  METADATA_HEADER(ToolbarActionView);
+
   // Need DragController here because ToolbarActionView could be
   // dragged/dropped.
   class Delegate : public views::DragController {
@@ -83,11 +86,9 @@ class ToolbarActionView : public views::MenuButton,
   ExtensionContextMenuController* context_menu_controller_for_testing() const {
     return context_menu_controller_.get();
   }
-  static const char kClassName[];
 
  private:
   // views::MenuButton:
-  const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;

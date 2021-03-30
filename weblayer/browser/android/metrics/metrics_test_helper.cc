@@ -49,22 +49,23 @@ void RunConsentCallback(bool has_consent) {
       base::android::AttachCurrentThread(), has_consent);
 }
 
-ProfileImpl* CreateProfile(const std::string& name) {
+ProfileImpl* CreateProfile(const std::string& name, bool incognito) {
   DCHECK(!GetProfileByName(name));
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_MetricsTestHelper_createProfile(
-      env, base::android::ConvertUTF8ToJavaString(env, name));
+      env, base::android::ConvertUTF8ToJavaString(env, name), incognito);
   ProfileImpl* profile = GetProfileByName(name);
   // Creating a profile may involve storage partition initialization. Wait for
   // the initialization to be completed.
   content::RunAllTasksUntilIdle();
   return profile;
 }
-void DestroyProfile(const std::string& name) {
+
+void DestroyProfile(const std::string& name, bool incognito) {
   DCHECK(GetProfileByName(name));
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_MetricsTestHelper_destroyProfile(
-      env, base::android::ConvertUTF8ToJavaString(env, name));
+      env, base::android::ConvertUTF8ToJavaString(env, name), incognito);
 }
 
 void JNI_MetricsTestHelper_OnLogMetrics(

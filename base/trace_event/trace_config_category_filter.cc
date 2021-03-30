@@ -6,6 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/strings/pattern.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
@@ -41,11 +42,11 @@ void TraceConfigCategoryFilter::InitializeFromString(
     if (category.front() == '-') {
       // Excluded categories start with '-'.
       // Remove '-' from category string.
-      excluded_categories_.push_back(category.substr(1).as_string());
+      excluded_categories_.emplace_back(category.substr(1));
     } else if (StartsWith(category, TRACE_DISABLED_BY_DEFAULT(""))) {
-      disabled_categories_.push_back(category.as_string());
+      disabled_categories_.emplace_back(category);
     } else {
-      included_categories_.push_back(category.as_string());
+      included_categories_.emplace_back(category);
     }
   }
 }

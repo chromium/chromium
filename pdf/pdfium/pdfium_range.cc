@@ -25,7 +25,7 @@ void AdjustForBackwardsRange(int* index, int* count) {
 
 }  // namespace
 
-bool IsIgnorableCharacter(base::char16 c) {
+bool IsIgnorableCharacter(char16_t c) {
   return (c == kZeroWidthSpace) || (c == kPDFSoftHyphenMarker);
 }
 
@@ -94,16 +94,16 @@ const std::vector<gfx::Rect>& PDFiumRange::GetScreenRects(
   return cached_screen_rects_;
 }
 
-base::string16 PDFiumRange::GetText() const {
+std::u16string PDFiumRange::GetText() const {
   int index = char_index_;
   int count = char_count_;
-  base::string16 rv;
+  std::u16string rv;
   if (count == 0)
     return rv;
 
   AdjustForBackwardsRange(&index, &count);
   if (count > 0) {
-    PDFiumAPIStringBufferAdapter<base::string16> api_string_adapter(&rv, count,
+    PDFiumAPIStringBufferAdapter<std::u16string> api_string_adapter(&rv, count,
                                                                     false);
     unsigned short* data =
         reinterpret_cast<unsigned short*>(api_string_adapter.GetData());
@@ -111,7 +111,7 @@ base::string16 PDFiumRange::GetText() const {
     api_string_adapter.Close(written);
   }
 
-  base::EraseIf(rv, [](base::char16 c) { return IsIgnorableCharacter(c); });
+  base::EraseIf(rv, [](char16_t c) { return IsIgnorableCharacter(c); });
 
   return rv;
 }

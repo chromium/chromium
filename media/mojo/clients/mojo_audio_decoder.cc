@@ -47,8 +47,8 @@ bool MojoAudioDecoder::SupportsDecryption() const {
 #endif
 }
 
-std::string MojoAudioDecoder::GetDisplayName() const {
-  return "MojoAudioDecoder";
+AudioDecoderType MojoAudioDecoder::GetDecoderType() const {
+  return decoder_type_;
 }
 
 void MojoAudioDecoder::FailInit(InitCB init_cb, Status err) {
@@ -199,11 +199,13 @@ void MojoAudioDecoder::OnConnectionError() {
 }
 
 void MojoAudioDecoder::OnInitialized(const Status& status,
-                                     bool needs_bitstream_conversion) {
+                                     bool needs_bitstream_conversion,
+                                     AudioDecoderType decoder_type) {
   DVLOG(1) << __func__ << ": success:" << status.is_ok();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   needs_bitstream_conversion_ = needs_bitstream_conversion;
+  decoder_type_ = decoder_type;
 
   if (status.is_ok() && !mojo_decoder_buffer_writer_) {
     mojo::ScopedDataPipeConsumerHandle remote_consumer_handle;

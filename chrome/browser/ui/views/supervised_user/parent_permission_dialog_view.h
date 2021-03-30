@@ -16,6 +16,7 @@
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -44,6 +45,8 @@ class ParentPermissionInputSection;
 class ParentPermissionDialogView : public views::DialogDelegateView,
                                    public GaiaAuthConsumer {
  public:
+  METADATA_HEADER(ParentPermissionDialogView);
+
   class Observer {
    public:
     // Tells observers that their references to the view are becoming invalid.
@@ -53,12 +56,10 @@ class ParentPermissionDialogView : public views::DialogDelegateView,
 
   ParentPermissionDialogView(std::unique_ptr<Params> params,
                              Observer* observer);
-
-  ~ParentPermissionDialogView() override;
-
   ParentPermissionDialogView(const ParentPermissionDialogView&) = delete;
   ParentPermissionDialogView& operator=(const ParentPermissionDialogView&) =
       delete;
+  ~ParentPermissionDialogView() override;
 
   // Closes the dialog.
   void CloseDialog();
@@ -69,21 +70,21 @@ class ParentPermissionDialogView : public views::DialogDelegateView,
   // Removes the observer reference.
   void RemoveObserver();
 
-  void set_selected_parent_permission_email_address(
-      const base::string16& email_address) {
-    selected_parent_permission_email_ = email_address;
-  }
+  void SetSelectedParentPermissionEmail(const std::u16string& email_address);
+  std::u16string GetSelectedParentPermissionEmail() const;
 
-  void set_parent_permission_credential(const base::string16& credential) {
-    parent_permission_credential_ = credential;
-  }
+  void SetParentPermissionCredential(const std::u16string& credential);
+  std::u16string GetParentPermissionCredential() const;
 
-  bool invalid_credential_received() { return invalid_credential_received_; }
+  bool GetInvalidCredentialReceived() const;
+
   void SetIdentityManagerForTesting(signin::IdentityManager* identity_manager);
+
   void SetRepromptAfterIncorrectCredential(bool reprompt);
+  bool GetRepromptAfterIncorrectCredential() const;
 
  private:
-  base::string16 GetActiveUserFirstName() const;
+  std::u16string GetActiveUserFirstName() const;
 
   // views::View:
   void AddedToWidget() override;
@@ -93,7 +94,7 @@ class ParentPermissionDialogView : public views::DialogDelegateView,
   bool Accept() override;
 
   // views::WidgetDelegate:
-  base::string16 GetAccessibleWindowTitle() const override;
+  std::u16string GetAccessibleWindowTitle() const override;
 
   // Changes the widget size to accommodate the contents' preferred size.
   void ResizeWidget();
@@ -113,7 +114,7 @@ class ParentPermissionDialogView : public views::DialogDelegateView,
   // Given an email address of the child's parent, return the parents'
   // obfuscated gaia id.
   std::string GetParentObfuscatedGaiaID(
-      const base::string16& parent_email) const;
+      const std::u16string& parent_email) const;
 
   // Starts the Reauth-scoped OAuth access token fetch process.
   void StartReauthAccessTokenFetch(const std::string& parent_obfuscated_gaia_id,
@@ -150,7 +151,7 @@ class ParentPermissionDialogView : public views::DialogDelegateView,
   extensions::InstallPromptPermissions prompt_permissions_;
 
   // The email address of the parents to display in the dialog.
-  std::vector<base::string16> parent_permission_email_addresses_;
+  std::vector<std::u16string> parent_permission_email_addresses_;
 
   bool reprompt_after_incorrect_credential_ = true;
 
@@ -163,10 +164,10 @@ class ParentPermissionDialogView : public views::DialogDelegateView,
   bool invalid_credential_received_ = false;
 
   // The currently selected parent email.
-  base::string16 selected_parent_permission_email_;
+  std::u16string selected_parent_permission_email_;
 
   // The currently entered parent credential.
-  base::string16 parent_permission_credential_;
+  std::u16string parent_permission_credential_;
 
   // Parameters for the dialog.
   std::unique_ptr<Params> params_;

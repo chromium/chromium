@@ -168,6 +168,9 @@ class Surface final : public ui::PropertyHandler {
   // Request that surface should have the specified frame type.
   void SetFrame(SurfaceFrameType type);
 
+  // Request that the server should start resize on this surface.
+  void SetServerStartResize();
+
   // Request that surface should use a specific set of frame colors.
   void SetFrameColors(SkColor active_color, SkColor inactive_color);
 
@@ -181,6 +184,16 @@ class Surface final : public ui::PropertyHandler {
   // (plain fullscreen). If false, shelf auto-hides and can be shown with a
   // mouse gesture (immersive fullscreen).
   void SetUseImmersiveForFullscreen(bool value);
+
+  // Called to show the snap preview to the right or left, or to hide it.
+  void ShowSnapPreviewToRight();
+  void ShowSnapPreviewToLeft();
+  void HideSnapPreview();
+
+  // Called when the client was snapped to right or left, or reset.
+  void SetSnappedToRight();
+  void SetSnappedToLeft();
+  void UnsetSnap();
 
   // This sets the color space for the buffer for this surface.
   void SetColorSpace(gfx::ColorSpace color_space);
@@ -296,6 +309,11 @@ class Surface final : public ui::PropertyHandler {
 
   // Triggers sending an occlusion update to observers.
   void OnWindowOcclusionChanged();
+
+  // Triggers sending a locking status to observers.
+  // true : lock a frame to normal or restore state
+  // false : unlock the previously locked frame
+  void SetFrameLocked(bool lock);
 
   // True if the window for this surface has its occlusion tracked.
   bool IsTrackingOcclusion();

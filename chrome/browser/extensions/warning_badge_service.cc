@@ -36,7 +36,7 @@ class ErrorBadge : public GlobalError {
   // Implementation for GlobalError:
   bool HasMenuItem() override;
   int MenuItemCommandID() override;
-  base::string16 MenuItemLabel() override;
+  std::u16string MenuItemLabel() override;
   void ExecuteMenuItem(Browser* browser) override;
 
   bool HasBubbleView() override;
@@ -65,7 +65,7 @@ int ErrorBadge::MenuItemCommandID() {
   return GetMenuItemCommandID();
 }
 
-base::string16 ErrorBadge::MenuItemLabel() {
+std::u16string ErrorBadge::MenuItemLabel() {
   return l10n_util::GetStringUTF16(IDS_EXTENSION_WARNINGS_WRENCH_MENU_ITEM);
 }
 
@@ -100,10 +100,9 @@ int ErrorBadge::GetMenuItemCommandID() {
 
 }  // namespace
 
-WarningBadgeService::WarningBadgeService(Profile* profile)
-    : profile_(profile), warning_service_observer_(this) {
+WarningBadgeService::WarningBadgeService(Profile* profile) : profile_(profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  warning_service_observer_.Add(WarningService::Get(profile_));
+  warning_service_observation_.Observe(WarningService::Get(profile_));
 }
 
 WarningBadgeService::~WarningBadgeService() {

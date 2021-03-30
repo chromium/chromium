@@ -12,11 +12,11 @@
 #include <string>
 
 #include "base/files/file_util.h"
-#include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -25,6 +25,7 @@
 #include "url/gurl.h"
 
 #if defined(OS_MAC)
+#include "base/feature_list.h"
 #include "printing/backend/cups_connection.h"
 #include "printing/backend/cups_ipp_utils.h"
 #include "printing/backend/print_backend_cups_ipp.h"
@@ -41,6 +42,8 @@ PrintBackendCUPS::PrintBackendCUPS(const GURL& print_server_url,
       print_server_url_(print_server_url),
       cups_encryption_(encryption),
       blocking_(blocking) {}
+
+PrintBackendCUPS::~PrintBackendCUPS() = default;
 
 // static
 bool PrintBackendCUPS::PrinterBasicInfoFromCUPS(
@@ -100,6 +103,16 @@ bool PrintBackendCUPS::PrinterBasicInfoFromCUPS(
     printer_info->printer_description = info;
 #endif
   return true;
+}
+
+// static
+std::string PrintBackendCUPS::PrinterDriverInfoFromCUPS(
+    const cups_dest_t& printer) {
+  // base::StringPiece will correctly handle nullptrs from cupsGetOption(),
+  // whereas std::string will not. Thus do not directly assign to `result`.
+  base::StringPiece info(
+      cupsGetOption(kDriverNameTagName, printer.num_options, printer.options));
+  return std::string(info);
 }
 
 void PrintBackendCUPS::DestinationDeleter::operator()(cups_dest_t* dest) const {
@@ -204,14 +217,11 @@ std::string PrintBackendCUPS::GetPrinterDriverInfo(
   std::string result;
 
   ScopedDestination dest = GetNamedDest(printer_name);
-  if (!dest)
-    return result;
+  if (dest) {
+    DCHECK_EQ(printer_name, dest->name);
+    result = PrinterDriverInfoFromCUPS(*dest);
+  }
 
-  DCHECK_EQ(printer_name, dest->name);
-  const char* info =
-      cupsGetOption(kDriverNameTagName, dest->num_options, dest->options);
-  if (info)
-    result = *info;
   return result;
 }
 

@@ -121,13 +121,15 @@ class ThemePainter {
   virtual bool PaintProgressBar(const Element& element,
                                 const LayoutObject&,
                                 const PaintInfo&,
-                                const IntRect&) {
+                                const IntRect&,
+                                const ComputedStyle&) {
     return true;
   }
   virtual bool PaintSliderTrack(const Element& element,
                                 const LayoutObject&,
                                 const PaintInfo&,
-                                const IntRect&) {
+                                const IntRect&,
+                                const ComputedStyle&) {
     return true;
   }
   virtual bool PaintSliderThumb(const Element&,

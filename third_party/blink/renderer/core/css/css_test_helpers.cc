@@ -56,9 +56,8 @@ RuleSet& TestStyleSheet::GetRuleSet() {
 }
 
 void TestStyleSheet::AddCSSRules(const String& css_text, bool is_empty_sheet) {
-  TextPosition position;
   unsigned sheet_length = style_sheet_->length();
-  style_sheet_->Contents()->ParseStringAtPosition(css_text, position);
+  style_sheet_->Contents()->ParseString(css_text);
   if (!is_empty_sheet)
     ASSERT_GT(style_sheet_->length(), sheet_length);
   else
@@ -66,9 +65,8 @@ void TestStyleSheet::AddCSSRules(const String& css_text, bool is_empty_sheet) {
 }
 
 CSSStyleSheet* CreateStyleSheet(Document& document) {
-  TextPosition position;
-  return CSSStyleSheet::CreateInline(document, NullURL(), position,
-                                     UTF8Encoding());
+  return CSSStyleSheet::CreateInline(
+      document, NullURL(), TextPosition::MinimumPosition(), UTF8Encoding());
 }
 
 PropertyRegistration* CreatePropertyRegistration(const String& name) {
@@ -146,9 +144,8 @@ const CSSPropertyValueSet* ParseDeclarationBlock(const String& block_text,
 }
 
 StyleRuleBase* ParseRule(Document& document, String text) {
-  TextPosition position;
-  auto* sheet = CSSStyleSheet::CreateInline(document, NullURL(), position,
-                                            UTF8Encoding());
+  auto* sheet = CSSStyleSheet::CreateInline(
+      document, NullURL(), TextPosition::MinimumPosition(), UTF8Encoding());
   const auto* context = MakeGarbageCollected<CSSParserContext>(document);
   return CSSParser::ParseRule(context, sheet->Contents(), text);
 }

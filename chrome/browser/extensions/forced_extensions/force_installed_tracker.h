@@ -9,7 +9,7 @@
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "components/policy/core/common/policy_service.h"
@@ -101,16 +101,16 @@ class ForceInstalledTracker : public ExtensionRegistryObserver,
 
   enum class ExtensionStatus {
     // Extension appears in force-install list, but it not installed yet.
-    PENDING,
+    kPending,
 
     // Extension was successfully loaded.
-    LOADED,
+    kLoaded,
 
     // Extension is ready. This happens after loading.
-    READY,
+    kReady,
 
     // Extension installation failure was reported.
-    FAILED
+    kFailed
   };
 
   // Helper struct with supplementary info for extensions from force-install
@@ -203,10 +203,10 @@ class ForceInstalledTracker : public ExtensionRegistryObserver,
   };
   Status status_ = kWaitingForPolicyService;
 
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      registry_observer_{this};
-  ScopedObserver<InstallStageTracker, InstallStageTracker::Observer>
-      collector_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      registry_observation_{this};
+  base::ScopedObservation<InstallStageTracker, InstallStageTracker::Observer>
+      collector_observation_{this};
 
   base::ObserverList<Observer> observers_;
 };

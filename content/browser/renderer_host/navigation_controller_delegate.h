@@ -16,8 +16,6 @@
 namespace content {
 
 struct LoadCommittedDetails;
-class FrameTree;
-class RenderViewHost;
 class WebContents;
 
 // Interface for objects embedding a NavigationController to provide the
@@ -27,16 +25,12 @@ class NavigationControllerDelegate {
   virtual ~NavigationControllerDelegate() {}
 
   // Duplicates of WebContents methods.
-  virtual RenderViewHost* GetRenderViewHost() = 0;
-  virtual const std::string& GetContentsMimeType() = 0;
   virtual void NotifyNavigationStateChanged(InvalidateTypes changed_flags) = 0;
   virtual void Stop() = 0;
   virtual bool IsBeingDestroyed() = 0;
-  virtual bool CanOverscrollContent() const = 0;
 
   // Methods from WebContentsImpl that NavigationControllerImpl needs to
   // call.
-  virtual FrameTree* GetFrameTree() = 0;
   virtual void NotifyBeforeFormRepostWarningShow() = 0;
   virtual void NotifyNavigationEntryCommitted(
       const LoadCommittedDetails& load_details) = 0;
@@ -45,10 +39,7 @@ class NavigationControllerDelegate {
   virtual void NotifyNavigationListPruned(
       const PrunedDetails& pruned_details) = 0;
   virtual void NotifyNavigationEntriesDeleted() = 0;
-  virtual void SetHistoryOffsetAndLength(int history_offset,
-                                         int history_length) = 0;
   virtual void ActivateAndShowRepostFormWarningDialog() = 0;
-  virtual bool HasAccessedInitialDocument() = 0;
 
   // Returns whether URLs for aborted browser-initiated navigations should be
   // preserved in the omnibox.  Defaults to false.
@@ -57,8 +48,6 @@ class NavigationControllerDelegate {
   // This method is needed, since we are no longer guaranteed that the
   // embedder for NavigationController will be a WebContents object.
   virtual WebContents* GetWebContents() = 0;
-
-  virtual bool IsHidden() = 0;
 
   virtual void UpdateOverridingUserAgent() = 0;
 };

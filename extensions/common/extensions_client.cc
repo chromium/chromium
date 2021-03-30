@@ -102,14 +102,14 @@ std::set<base::FilePath> ExtensionsClient::GetBrowserImagePaths(
   return paths;
 }
 
-bool ExtensionsClient::ExtensionAPIEnabledInExtensionServiceWorkers() const {
-  return false;
-}
-
 void ExtensionsClient::AddOriginAccessPermissions(
     const Extension& extension,
     bool is_extension_active,
     std::vector<network::mojom::CorsOriginPatternPtr>* origin_patterns) const {}
+
+base::Optional<int> ExtensionsClient::GetExtensionExtendedErrorCode() const {
+  return base::nullopt;
+}
 
 void ExtensionsClient::DoInitialize() {
   initialize_called_ = true;

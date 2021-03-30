@@ -50,13 +50,8 @@ void LoadErrorReporter::ReportLoadError(
     const std::string& error,
     content::BrowserContext* browser_context,
     bool be_noisy) {
-  content::NotificationService::current()->Notify(
-      extensions::NOTIFICATION_EXTENSION_LOAD_ERROR,
-      content::Source<Profile>(Profile::FromBrowserContext(browser_context)),
-      content::Details<const std::string>(&error));
-
   std::string path_str = base::UTF16ToUTF8(extension_path.LossyDisplayName());
-  base::string16 message = base::UTF8ToUTF16(base::StringPrintf(
+  std::u16string message = base::UTF8ToUTF16(base::StringPrintf(
       "%s %s. %s",
       l10n_util::GetStringUTF8(IDS_EXTENSIONS_LOAD_ERROR_MESSAGE).c_str(),
       path_str.c_str(), error.c_str()));
@@ -65,7 +60,7 @@ void LoadErrorReporter::ReportLoadError(
     observer.OnLoadFailure(browser_context, extension_path, error);
 }
 
-void LoadErrorReporter::ReportError(const base::string16& message,
+void LoadErrorReporter::ReportError(const std::u16string& message,
                                     bool be_noisy) {
   // NOTE: There won't be a |ui_task_runner_| in the unit test environment.
   CHECK(!ui_task_runner_ || ui_task_runner_->BelongsToCurrentThread())
@@ -85,7 +80,7 @@ void LoadErrorReporter::ReportError(const base::string16& message,
   }
 }
 
-const std::vector<base::string16>* LoadErrorReporter::GetErrors() {
+const std::vector<std::u16string>* LoadErrorReporter::GetErrors() {
   return &errors_;
 }
 

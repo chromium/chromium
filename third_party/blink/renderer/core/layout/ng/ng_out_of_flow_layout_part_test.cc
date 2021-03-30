@@ -726,7 +726,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, PositionedFragmentationAndColumnSpanners) {
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   offset:unplaced size:1000x40
     offset:0,0 size:1000x40
-      offset:0,0 size:492x1
+      offset:0,0 size:492x0
         offset:0,0 size:30x0
       offset:0,0 size:1000x0
       offset:0,0 size:492x30
@@ -775,7 +775,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, PositionedFragmentationWithNestedSpanner) {
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   offset:unplaced size:1000x40
     offset:0,0 size:1000x40
-      offset:0,0 size:492x1
+      offset:0,0 size:492x0
         offset:0,0 size:30x0
       offset:0,0 size:1000x0
       offset:0,0 size:492x40
@@ -822,7 +822,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, PositionedFragmentationWithNestedSpanners) {
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   offset:unplaced size:1000x40
     offset:0,0 size:1000x40
-      offset:0,0 size:492x1
+      offset:0,0 size:492x0
       offset:0,0 size:1000x0
       offset:0,0 size:492x10
         offset:0,0 size:30x10
@@ -1128,17 +1128,17 @@ TEST_F(NGOutOfFlowLayoutPartTest,
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   offset:unplaced size:1000x0
     offset:0,0 size:1000x0
-      offset:0,0 size:492x1
+      offset:0,0 size:492x0
         offset:0,0 size:30x0
         offset:0,0 size:5x1
       offset:0,0 size:1000x0
       offset:0,0 size:1000x0
       offset:0,0 size:1000x0
-      offset:0,0 size:492x1
+      offset:0,0 size:492x0
         offset:0,0 size:5x1
-      offset:508,0 size:492x1
+      offset:508,0 size:492x0
         offset:0,0 size:5x1
-      offset:1016,0 size:492x1
+      offset:1016,0 size:492x0
         offset:0,0 size:5x1
 )DUMP";
   EXPECT_EQ(expectation, dump);
@@ -1177,7 +1177,7 @@ TEST_F(NGOutOfFlowLayoutPartTest, AbsposFragWithSpannerAndNewEmptyColumns) {
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   offset:unplaced size:1000x40
     offset:0,0 size:1000x40
-      offset:0,0 size:492x1
+      offset:0,0 size:492x0
         offset:0,0 size:30x0
       offset:0,0 size:1000x0
       offset:0,0 size:1000x0
@@ -1305,7 +1305,7 @@ TEST_F(NGOutOfFlowLayoutPartTest,
 }
 
 // Fragmented OOF element inside a nested multi-column.
-TEST_F(NGOutOfFlowLayoutPartTest, AbsposNestedFragmentation) {
+TEST_F(NGOutOfFlowLayoutPartTest, SimpleAbsposNestedFragmentation) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
@@ -1313,10 +1313,10 @@ TEST_F(NGOutOfFlowLayoutPartTest, AbsposNestedFragmentation) {
           columns:2; column-fill:auto; column-gap:0px;
         }
         .rel {
-          position: relative; width:55px;
+          position: relative; width:55px; height:80px;
         }
         .abs {
-          position:absolute; top:0px; bottom:0px; width:5px;
+          position:absolute; top:0px; width:5px; height:80px;
         }
       </style>
       <div id="container">
@@ -1325,7 +1325,6 @@ TEST_F(NGOutOfFlowLayoutPartTest, AbsposNestedFragmentation) {
           <div class="multicol" id="inner">
             <div class="rel">
               <div class="abs"></div>
-              <div style="height:250px; width:25px;"></div>
             </div>
           </div>
         </div>
@@ -1333,9 +1332,6 @@ TEST_F(NGOutOfFlowLayoutPartTest, AbsposNestedFragmentation) {
       )HTML");
   String dump = DumpFragmentTree(GetElementById("container"));
 
-  // TODO(almaher): There should be two abspos fragments with height 60 in the
-  // first outer column, and two with height 100/30 in the second outer column.
-  // There should not be a third outer column.
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   offset:unplaced size:1000x100
     offset:0,0 size:1000x100
@@ -1344,22 +1340,117 @@ TEST_F(NGOutOfFlowLayoutPartTest, AbsposNestedFragmentation) {
         offset:0,40 size:500x60
           offset:0,0 size:250x60
             offset:0,0 size:55x60
-              offset:0,0 size:25x60
+            offset:0,0 size:5x60
           offset:250,0 size:250x60
-            offset:0,0 size:55x60
-              offset:0,0 size:25x60
-        offset:0,40 size:5x60
-      offset:500,0 size:500x100
-        offset:0,0 size:500x100
-          offset:0,0 size:250x100
-            offset:0,0 size:55x100
-              offset:0,0 size:25x100
-          offset:250,0 size:250x100
-            offset:0,0 size:55x30
-              offset:0,0 size:25x30
-        offset:0,0 size:5x100
-      offset:1000,0 size:500x100
-        offset:0,0 size:5x90
+            offset:0,0 size:55x20
+            offset:0,0 size:5x20
+)DUMP";
+  EXPECT_EQ(expectation, dump);
+}
+
+// Fragmented OOF element inside a nested multi-column with new columns.
+TEST_F(NGOutOfFlowLayoutPartTest, AbsposNestedFragmentationNewColumns) {
+  SetBodyInnerHTML(
+      R"HTML(
+      <style>
+        .multicol {
+          columns:2; column-fill:auto; column-gap:0px;
+        }
+        #inner {
+          column-gap:16px; height:40px; padding:10px;
+        }
+        .rel {
+          position: relative; width:55px; height:20px;
+        }
+        .abs {
+          position:absolute; top:0px; width:5px; height:40px;
+        }
+      </style>
+      <div id="container">
+        <div class="multicol" id="outer" style="height:100px;">
+          <div style="height:40px; width:40px;"></div>
+          <div class="multicol" id="inner">
+            <div class="rel">
+              <div class="abs"></div>
+            </div>
+            <div style="column-span:all;"></div>
+            <div style="column-span:all;"></div>
+            <div style="column-span:all;"></div>
+          </div>
+        </div>
+      </div>
+      )HTML");
+  String dump = DumpFragmentTree(GetElementById("container"));
+
+  String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
+  offset:unplaced size:1000x100
+    offset:0,0 size:1000x100
+      offset:0,0 size:500x100
+        offset:0,0 size:40x40
+        offset:0,40 size:500x60
+          offset:10,10 size:232x10
+            offset:0,0 size:55x10
+            offset:0,0 size:5x10
+          offset:258,10 size:232x10
+            offset:0,0 size:55x10
+            offset:0,0 size:5x10
+            offset:248,0 size:5x10
+            offset:496,0 size:5x10
+          offset:10,20 size:480x0
+          offset:10,20 size:480x0
+          offset:10,20 size:480x0
+)DUMP";
+  EXPECT_EQ(expectation, dump);
+}
+
+// Fragmented OOF element inside a nested multi-column starting at a
+// fragmentainer index beyond the last existing fragmentainer.
+TEST_F(NGOutOfFlowLayoutPartTest, AbsposNestedFragmentationNewEmptyColumns) {
+  SetBodyInnerHTML(
+      R"HTML(
+      <style>
+        .multicol {
+          columns:2; column-fill:auto; column-gap:0px;
+        }
+        .rel {
+          position: relative; width:55px; height:80px;
+        }
+        .abs {
+          position:absolute; top:120px; width:5px; height:120px;
+        }
+      </style>
+      <div id="container">
+        <div class="multicol" id="outer" style="height:100px;">
+          <div style="height:40px; width:40px;"></div>
+          <div class="multicol" id="inner" style="column-gap:16px;">
+            <div class="rel">
+              <div class="abs"></div>
+            </div>
+            <div style="column-span:all;"></div>
+            <div style="column-span:all;"></div>
+            <div style="column-span:all;"></div>
+          </div>
+        </div>
+      </div>
+      )HTML");
+  String dump = DumpFragmentTree(GetElementById("container"));
+
+  String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
+  offset:unplaced size:1000x100
+    offset:0,0 size:1000x100
+      offset:0,0 size:500x100
+        offset:0,0 size:40x40
+        offset:0,40 size:500x40
+          offset:0,0 size:242x40
+            offset:0,0 size:55x40
+          offset:258,0 size:242x40
+            offset:0,0 size:55x40
+            offset:516,0 size:5x40
+            offset:774,0 size:5x40
+            offset:1032,0 size:5x40
+          offset:0,40 size:500x0
+          offset:0,40 size:500x0
+          offset:0,40 size:500x0
 )DUMP";
   EXPECT_EQ(expectation, dump);
 }
@@ -1374,7 +1465,7 @@ TEST_F(NGOutOfFlowLayoutPartTest,
           column-count:2; column-fill:auto; column-gap:16px; height:40px;
         }
         .rel {
-          position: relative;
+          position:relative; height:60px; width:32px;
         }
         .abs {
           position:absolute; bottom:0; width:5px; height:auto;
@@ -1382,7 +1473,7 @@ TEST_F(NGOutOfFlowLayoutPartTest,
       </style>
       <div id="container">
         <div id="multicol">
-          <div class="rel" style="height: 60px; width: 32px;">
+          <div class="rel">
             <div class="abs">
               <div style="width: 2px; height: 10px"></div>
               <div style="width: 3px; height: 20px"></div>

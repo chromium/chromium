@@ -7,10 +7,10 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/check.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -59,8 +59,8 @@ std::unique_ptr<FormField> AddressField::Parse(
   const AutofillField* const initial_field = scanner->Cursor();
   size_t saved_cursor = scanner->SaveCursor();
 
-  base::string16 attention_ignored = UTF8ToUTF16(kAttentionIgnoredRe);
-  base::string16 region_ignored = UTF8ToUTF16(kRegionIgnoredRe);
+  std::u16string attention_ignored = UTF8ToUTF16(kAttentionIgnoredRe);
+  std::u16string region_ignored = UTF8ToUTF16(kRegionIgnoredRe);
 
   const std::vector<MatchingPattern>& email_patterns =
       PatternProvider::GetInstance().GetMatchPatterns("EMAIL_ADDRESS",
@@ -202,7 +202,8 @@ bool AddressField::ParseCompany(AutofillScanner* scanner,
     return false;
 
   const std::vector<MatchingPattern>& company_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("COMPANY", page_language);
+      PatternProvider::GetInstance().GetMatchPatterns("COMPANY_NAME",
+                                                      page_language);
 
   return ParseField(scanner, UTF8ToUTF16(kCompanyRe), company_patterns,
                     &company_, {log_manager_, "kCompanyRe"});
@@ -230,7 +231,7 @@ bool AddressField::ParseAddressFieldSequence(
   const std::vector<MatchingPattern>& house_number_patterns =
       PatternProvider::GetInstance().GetMatchPatterns(ADDRESS_HOME_HOUSE_NUMBER,
                                                       page_language);
-  const std::vector<MatchingPattern>& apartement_number_patterns =
+  const std::vector<MatchingPattern>& apartment_number_patterns =
       PatternProvider::GetInstance().GetMatchPatterns(ADDRESS_HOME_APT_NUM,
                                                       page_language);
 
@@ -255,7 +256,7 @@ bool AddressField::ParseAddressFieldSequence(
         !apartment_number_ &&
         ParseFieldSpecifics(scanner, UTF8ToUTF16(kApartmentNumberRe),
                             MATCH_DEFAULT | MATCH_NUMBER | MATCH_TELEPHONE,
-                            apartement_number_patterns, &apartment_number_,
+                            apartment_number_patterns, &apartment_number_,
                             {log_manager_, "kApartmentNumberRe"})) {
       continue;
     }
@@ -298,8 +299,8 @@ bool AddressField::ParseAddressLines(AutofillScanner* scanner,
   if (address1_ || street_address_)
     return false;
 
-  base::string16 pattern = UTF8ToUTF16(kAddressLine1Re);
-  base::string16 label_pattern = UTF8ToUTF16(kAddressLine1LabelRe);
+  std::u16string pattern = UTF8ToUTF16(kAddressLine1Re);
+  std::u16string label_pattern = UTF8ToUTF16(kAddressLine1LabelRe);
 
   const std::vector<MatchingPattern>& address_line1_patterns =
       PatternProvider::GetInstance().GetMatchPatterns("ADDRESS_LINE_1",
@@ -465,7 +466,7 @@ bool AddressField::ParseState(AutofillScanner* scanner,
 
 AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelSeparately(
     AutofillScanner* scanner,
-    const base::string16& pattern,
+    const std::u16string& pattern,
     int match_type,
     const std::vector<MatchingPattern>& patterns,
     AutofillField** match,

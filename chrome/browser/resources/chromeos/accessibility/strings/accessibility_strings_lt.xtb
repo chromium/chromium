@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">Sąrašo elementas</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">Perbraukite dviem pirštais dešinėn</translation>
-<translation id="1016393160682012902">Paspauskite QWERTY klavišą, atnaujinamą Brailio rašto klavišą arba liečiamąjį gestą, kad sužinotumėte, kaip tai veikia. Paspauskite „Control“ ir w arba „Escape“, kad išeitumėte.</translation>
 <translation id="1022586497894531524">Ar „ChromeVox“ ekrano skaitymo balsu funkciją naudojate pirmą kartą? Šioje trumpoje mokymo programoje pateikiama pagrindinė informacija, kaip pradėti naudoti „ChromeVox“.</translation>
 <translation id="1025074108959230262">Fiksuojamasis režimas neleidžiamas</translation>
 <translation id="1031961866430398710">tada</translation>
@@ -150,6 +149,7 @@
 <translation id="2045055672832940894">Nėra ankstesnio valdiklio</translation>
 <translation id="2045606329038304310">Formos lauko valdymas</translation>
 <translation id="2063539687800151747">Epigrafas</translation>
+<translation id="2074531330963286860">Galimi veiksmai. Kad peržiūrėtumėte, paspauskite paieškos ir taško klavišus</translation>
 <translation id="2086961585857038472">Kitas žodis</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">lt</translation>
@@ -976,6 +976,7 @@
 <translation id="827266600368092403">Pradėti arba baigti pasirinkimą</translation>
 <translation id="827422111966801947">Indigo spalva</translation>
 <translation id="8276439074553447000">Pereiti prie ankstesni elemento, kurį galima fokusuoti</translation>
+<translation id="8279039817939141096">Paspauskite QWERTY klavišą, atnaujinamą Brailio rašto klavišą arba liečiamąjį gestą, kad sužinotumėte, kaip tai veikia. Paspauskite klavišą „Control“ ir W, tarpą ir Z, perbraukite kairėn dviem pirštais arba klavišą „Escape“, kad išeitumėte.</translation>
 <translation id="8283603667300770666">Kitas formos laukas</translation>
 <translation id="8310185481635255431">Nėra kitos nuorodos</translation>
 <translation id="831207808878314375">Apibrėžtis</translation>

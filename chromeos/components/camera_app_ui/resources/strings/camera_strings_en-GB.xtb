@@ -15,6 +15,7 @@
 <translation id="2036868001356139588">Timer duration</translation>
 <translation id="2050339315714019657">Portrait</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> active</translation>
+<translation id="2144806332417375165">Custom video parameters</translation>
 <translation id="229579744168541441">Export to disk</translation>
 <translation id="2501278716633472235">Go back</translation>
 <translation id="2501853267655415902">Recording stopped</translation>
@@ -33,7 +34,6 @@
 <translation id="3259149966178251584">Camera resolution</translation>
 <translation id="3517926952904427380">Unable to take portrait photo</translation>
 <translation id="3569311554794739032">Do you really want to remove <ph name="FILE" />?</translation>
-<translation id="3750315947605636967">Your camera is being used by another app</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Scan barcode</translation>
 <translation id="3892148308691398805">Copy text</translation>
@@ -76,10 +76,12 @@ If your feedback is about image or video quality, please attach a sample photo o
 <translation id="7337660886763914220">File system errors.</translation>
 <translation id="7450541714075000668">Text copied</translation>
 <translation id="7557677699350329807">Switch to next camera</translation>
+<translation id="7607002721634913082">Paused</translation>
 <translation id="7608223098072244877">4 by 4</translation>
 <translation id="7649070708921625228">Help</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7974782136796202581">Show pan tilt zoom options</translation>
 <translation id="7983668134180549431">Text detected.</translation>
 <translation id="8067883171444229417">Play video</translation>
 <translation id="8131740175452115882">Confirm</translation>

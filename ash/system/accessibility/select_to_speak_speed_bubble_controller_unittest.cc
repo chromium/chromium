@@ -162,16 +162,15 @@ TEST_F(SelectToSpeakSpeedBubbleControllerTest, SelectFasterOption) {
   EXPECT_EQ(client.last_select_to_speak_panel_action_value(), 2.0);
 }
 
-TEST_F(SelectToSpeakSpeedBubbleControllerTest, SelectDefaultOption) {
-  TestAccessibilityControllerClient client;
-  ShowSelectToSpeakSpeedBubble(/*rate=*/6.2);
+TEST_F(SelectToSpeakSpeedBubbleControllerTest, FocusRestoredToSpeedButton) {
+  ShowSelectToSpeakSpeedBubble(/*rate=*/1.2);
 
   GetEventGenerator()->GestureTapAt(
-      GetOption(100)->GetBoundsInScreen().CenterPoint());
+      GetOption(5)->GetBoundsInScreen().CenterPoint());
 
-  EXPECT_EQ(client.last_select_to_speak_panel_action(),
-            SelectToSpeakPanelAction::kChangeSpeed);
-  EXPECT_EQ(client.last_select_to_speak_panel_action_value(), 6.2);
+  FloatingMenuButton* speed_button =
+      GetMenuButton(SelectToSpeakMenuView::ButtonId::kSpeed);
+  EXPECT_TRUE(speed_button->HasFocus());
 }
 
 }  // namespace ash

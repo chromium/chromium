@@ -47,8 +47,6 @@ using variations::VariationsIdsProvider;
 }
 - (void)locationBarDidResignFirstResponder {
 }
-- (void)locationBarBeganEdit {
-}
 
 - (LocationBarModel*)locationBarModel {
   if (!_model) {

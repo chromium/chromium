@@ -17,8 +17,8 @@ void SetupWidgetInitParamsForContainer(views::Widget::InitParams* params,
   DCHECK_GE(container_id, ash::kShellWindowId_MinContainer);
   DCHECK_LE(container_id, ash::kShellWindowId_MaxContainer);
 
-  params->parent = ash::Shell::GetContainer(ash::Shell::GetPrimaryRootWindow(),
-                                            container_id);
+  params->parent = ash::Shell::GetContainer(
+      ash::Shell::GetRootWindowForNewWindows(), container_id);
 }
 
 int GetSystemModalDialogContainerId() {

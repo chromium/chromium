@@ -4,6 +4,8 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -11,24 +13,22 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drivefs_test_support.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/drive/drive_integration_service.h"
-#include "chrome/browser/chromeos/drive/drivefs_test_support.h"
 #include "chrome/browser/chromeos/file_manager/file_manager_test_util.h"
 #include "chrome/browser/chromeos/file_manager/mount_test_util.h"
 #include "chrome/browser/chromeos/file_manager/volume_manager.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/cast_config_controller_media_router.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/web_applications/system_web_app_manager.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -96,7 +96,7 @@ class FakeSelectFileDialog : public ui::SelectFileDialog {
         drivefs_root_(drivefs_root) {}
 
   void SelectFileImpl(Type type,
-                      const base::string16& title,
+                      const std::u16string& title,
                       const base::FilePath& default_path,
                       const FileTypeInfo* file_types,
                       int file_type_index,
@@ -428,7 +428,7 @@ class LocalFileSystemExtensionApiTest : public FileSystemExtensionApiTestBase {
   void AddTestMountPoint() override {
     EXPECT_TRUE(
         content::BrowserContext::GetMountPoints(profile())->RegisterFileSystem(
-            kLocalMountPointName, storage::kFileSystemTypeNativeLocal,
+            kLocalMountPointName, storage::kFileSystemTypeLocal,
             storage::FileSystemMountOption(), mount_point_dir_));
     VolumeManager::Get(profile())->AddVolumeForTesting(
         mount_point_dir_, VOLUME_TYPE_TESTING, chromeos::DEVICE_TYPE_UNKNOWN,
@@ -459,8 +459,7 @@ class RestrictedFileSystemExtensionApiTest
   void AddTestMountPoint() override {
     EXPECT_TRUE(
         content::BrowserContext::GetMountPoints(profile())->RegisterFileSystem(
-            kRestrictedMountPointName,
-            storage::kFileSystemTypeRestrictedNativeLocal,
+            kRestrictedMountPointName, storage::kFileSystemTypeRestrictedLocal,
             storage::FileSystemMountOption(), mount_point_dir_));
     VolumeManager::Get(profile())->AddVolumeForTesting(
         mount_point_dir_, VOLUME_TYPE_TESTING, chromeos::DEVICE_TYPE_UNKNOWN,
@@ -486,7 +485,7 @@ class DriveFileSystemExtensionApiTest : public FileSystemExtensionApiTestBase {
     ASSERT_TRUE(test_cache_root_.CreateUniqueTempDir());
 
     // This callback will get called during Profile creation.
-    create_drive_integration_service_ = base::Bind(
+    create_drive_integration_service_ = base::BindRepeating(
         &DriveFileSystemExtensionApiTest::CreateDriveIntegrationService,
         base::Unretained(this));
     service_factory_for_test_ =
@@ -574,10 +573,10 @@ class MultiProfileDriveFileSystemExtensionApiTest :
     ASSERT_TRUE(tmp_dir_.CreateUniqueTempDir());
 
     // This callback will get called during Profile creation.
-    create_drive_integration_service_ = base::Bind(
-        &MultiProfileDriveFileSystemExtensionApiTest::
-            CreateDriveIntegrationService,
-        base::Unretained(this));
+    create_drive_integration_service_ =
+        base::BindRepeating(&MultiProfileDriveFileSystemExtensionApiTest::
+                                CreateDriveIntegrationService,
+                            base::Unretained(this));
     service_factory_for_test_ =
         std::make_unique<DriveIntegrationServiceFactory::ScopedFactoryForTest>(
             &create_drive_integration_service_);
@@ -655,7 +654,7 @@ class LocalAndDriveFileSystemExtensionApiTest
     ASSERT_TRUE(test_cache_root_.CreateUniqueTempDir());
 
     // This callback will get called during Profile creation.
-    create_drive_integration_service_ = base::Bind(
+    create_drive_integration_service_ = base::BindRepeating(
         &LocalAndDriveFileSystemExtensionApiTest::CreateDriveIntegrationService,
         base::Unretained(this));
     service_factory_for_test_ =
@@ -667,7 +666,7 @@ class LocalAndDriveFileSystemExtensionApiTest
   void AddTestMountPoint() override {
     EXPECT_TRUE(
         content::BrowserContext::GetMountPoints(profile())->RegisterFileSystem(
-            kLocalMountPointName, storage::kFileSystemTypeNativeLocal,
+            kLocalMountPointName, storage::kFileSystemTypeLocal,
             storage::FileSystemMountOption(), local_mount_point_dir_));
     VolumeManager::Get(profile())->AddVolumeForTesting(
         local_mount_point_dir_, VOLUME_TYPE_TESTING,

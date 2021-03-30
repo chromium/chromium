@@ -73,6 +73,7 @@ class FakeUsbDeviceManager : public mojom::UsbDeviceManager {
                   GetDevicesCallback callback) override;
   void GetDevice(
       const std::string& guid,
+      const std::vector<uint8_t>& blocked_interface_classes,
       mojo::PendingReceiver<device::mojom::UsbDevice> device_receiver,
       mojo::PendingRemote<mojom::UsbDeviceClient> device_client) override;
   void GetSecurityKeyDevice(
@@ -88,10 +89,6 @@ class FakeUsbDeviceManager : public mojom::UsbDeviceManager {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void CheckAccess(const std::string& guid,
                    CheckAccessCallback callback) override;
-
-  void EnumerateDevicesAndSetVmSharingClient(
-      mojo::PendingAssociatedRemote<mojom::UsbDeviceManagerClient> client,
-      EnumerateDevicesAndSetVmSharingClientCallback callback) override;
 
   void OpenFileDescriptor(const std::string& guid,
                           uint32_t drop_privileges_mask,

@@ -116,36 +116,6 @@ class QuotaDatabaseTest : public testing::Test {
     EXPECT_FALSE(db.GetHostQuota(kHost, kPersistent, &quota));
   }
 
-  void GlobalQuota(const base::FilePath& kDbFile) {
-    QuotaDatabase db(kDbFile);
-    ASSERT_TRUE(db.LazyOpen(true));
-
-    const char* kTempQuotaKey = QuotaDatabase::kTemporaryQuotaOverrideKey;
-    const char* kAvailSpaceKey = QuotaDatabase::kDesiredAvailableSpaceKey;
-
-    int64_t value = 0;
-    const int64_t kValue1 = 456;
-    const int64_t kValue2 = 123000;
-    EXPECT_FALSE(db.GetQuotaConfigValue(kTempQuotaKey, &value));
-    EXPECT_FALSE(db.GetQuotaConfigValue(kAvailSpaceKey, &value));
-
-    EXPECT_TRUE(db.SetQuotaConfigValue(kTempQuotaKey, kValue1));
-    EXPECT_TRUE(db.GetQuotaConfigValue(kTempQuotaKey, &value));
-    EXPECT_EQ(kValue1, value);
-
-    EXPECT_TRUE(db.SetQuotaConfigValue(kTempQuotaKey, kValue2));
-    EXPECT_TRUE(db.GetQuotaConfigValue(kTempQuotaKey, &value));
-    EXPECT_EQ(kValue2, value);
-
-    EXPECT_TRUE(db.SetQuotaConfigValue(kAvailSpaceKey, kValue1));
-    EXPECT_TRUE(db.GetQuotaConfigValue(kAvailSpaceKey, &value));
-    EXPECT_EQ(kValue1, value);
-
-    EXPECT_TRUE(db.SetQuotaConfigValue(kAvailSpaceKey, kValue2));
-    EXPECT_TRUE(db.GetQuotaConfigValue(kAvailSpaceKey, &value));
-    EXPECT_EQ(kValue2, value);
-  }
-
   void OriginLastAccessTimeLRU(const base::FilePath& kDbFile) {
     QuotaDatabase db(kDbFile);
     ASSERT_TRUE(db.LazyOpen(true));
@@ -620,14 +590,6 @@ TEST_F(QuotaDatabaseTest, HostQuota) {
   const base::FilePath kDbFile = data_dir.GetPath().AppendASCII(kDBFileName);
   HostQuota(kDbFile);
   HostQuota(base::FilePath());
-}
-
-TEST_F(QuotaDatabaseTest, GlobalQuota) {
-  base::ScopedTempDir data_dir;
-  ASSERT_TRUE(data_dir.CreateUniqueTempDir());
-  const base::FilePath kDbFile = data_dir.GetPath().AppendASCII(kDBFileName);
-  GlobalQuota(kDbFile);
-  GlobalQuota(base::FilePath());
 }
 
 TEST_F(QuotaDatabaseTest, OriginLastAccessTimeLRU) {

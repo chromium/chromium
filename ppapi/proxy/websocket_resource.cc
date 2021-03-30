@@ -122,8 +122,9 @@ int32_t WebSocketResource::Connect(
   state_ = PP_WEBSOCKETREADYSTATE_CONNECTING;
   SendCreate(RENDERER, PpapiHostMsg_WebSocket_Create());
   PpapiHostMsg_WebSocket_Connect msg(url_->value(), protocol_strings);
-  Call<PpapiPluginMsg_WebSocket_ConnectReply>(RENDERER, msg,
-      base::Bind(&WebSocketResource::OnPluginMsgConnectReply, this));
+  Call<PpapiPluginMsg_WebSocket_ConnectReply>(
+      RENDERER, msg,
+      base::BindOnce(&WebSocketResource::OnPluginMsgConnectReply, this));
 
   return PP_OK_COMPLETIONPENDING;
 }
@@ -192,8 +193,9 @@ int32_t WebSocketResource::Close(uint16_t code,
   state_ = PP_WEBSOCKETREADYSTATE_CLOSING;
   PpapiHostMsg_WebSocket_Close msg(static_cast<int32_t>(code),
                                    reason_string);
-  Call<PpapiPluginMsg_WebSocket_CloseReply>(RENDERER, msg,
-      base::Bind(&WebSocketResource::OnPluginMsgCloseReply, this));
+  Call<PpapiPluginMsg_WebSocket_CloseReply>(
+      RENDERER, msg,
+      base::BindOnce(&WebSocketResource::OnPluginMsgCloseReply, this));
   return PP_OK_COMPLETIONPENDING;
 }
 

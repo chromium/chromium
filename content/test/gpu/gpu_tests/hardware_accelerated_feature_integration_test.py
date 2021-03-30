@@ -64,7 +64,7 @@ class HardwareAcceleratedFeatureIntegrationTest(
     feature = args[0]
     self._Navigate(test_path)
     tab = self.tab
-    tab.WaitForJavaScriptCondition('window.gpuPagePopulated', timeout=10)
+    tab.WaitForJavaScriptCondition('window.gpuPagePopulated', timeout=30)
     if not tab.EvaluateJavaScript(
         'VerifyHardwareAccelerated({{ feature }})', feature=feature):
       print 'Test failed. Printing page contents:'

@@ -11,30 +11,6 @@
 
 namespace IPC {
 
-void ParamTraits<net::AuthChallengeInfo>::Write(base::Pickle* m,
-                                                const param_type& p) {
-  WriteParam(m, p.is_proxy);
-  WriteParam(m, p.challenger);
-  WriteParam(m, p.scheme);
-  WriteParam(m, p.realm);
-  WriteParam(m, p.challenge);
-  WriteParam(m, p.path);
-}
-
-bool ParamTraits<net::AuthChallengeInfo>::Read(const base::Pickle* m,
-                                               base::PickleIterator* iter,
-                                               param_type* r) {
-  return ReadParam(m, iter, &r->is_proxy) &&
-         ReadParam(m, iter, &r->challenger) && ReadParam(m, iter, &r->scheme) &&
-         ReadParam(m, iter, &r->realm) && ReadParam(m, iter, &r->challenge) &&
-         ReadParam(m, iter, &r->path);
-}
-
-void ParamTraits<net::AuthChallengeInfo>::Log(const param_type& p,
-                                              std::string* l) {
-  l->append("<AuthChallengeInfo>");
-}
-
 void ParamTraits<net::AuthCredentials>::Write(base::Pickle* m,
                                               const param_type& p) {
   WriteParam(m, p.username());
@@ -44,9 +20,9 @@ void ParamTraits<net::AuthCredentials>::Write(base::Pickle* m,
 bool ParamTraits<net::AuthCredentials>::Read(const base::Pickle* m,
                                              base::PickleIterator* iter,
                                              param_type* r) {
-  base::string16 username;
+  std::u16string username;
   bool read_username = ReadParam(m, iter, &username);
-  base::string16 password;
+  std::u16string password;
   bool read_password = ReadParam(m, iter, &password);
 
   if (!read_username || !read_password)

@@ -126,12 +126,8 @@ UIImage* ImageForSegment(NSString* segment, BOOL selected) {
 @interface TabGridPageControlBackground : UIView
 @end
 
-#if defined(__IPHONE_13_4)
-@interface TabGridPageControl (Pointer) <UIPointerInteractionDelegate>
-@end
-#endif  // defined(__IPHONE_13_4)
-
-@interface TabGridPageControl () <UIGestureRecognizerDelegate> {
+@interface TabGridPageControl () <UIGestureRecognizerDelegate,
+                                  UIPointerInteractionDelegate> {
   UIAccessibilityElement* _incognitoAccessibilityElement;
   UIAccessibilityElement* _regularAccessibilityElement;
   UIAccessibilityElement* _remoteAccessibilityElement;
@@ -391,7 +387,6 @@ UIImage* ImageForSegment(NSString* segment, BOOL selected) {
   self.remoteIcon.center = [self centerOfSegment:TabGridPageRemoteTabs];
   self.remoteSelectedIcon.center = [self centerOfSegment:TabGridPageRemoteTabs];
 
-#if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
       self.incognitoHoverView.center =
           [self centerOfSegment:TabGridPageIncognitoTabs];
@@ -400,7 +395,6 @@ UIImage* ImageForSegment(NSString* segment, BOOL selected) {
       self.remoteHoverView.center =
           [self centerOfSegment:TabGridPageRemoteTabs];
   }
-#endif  // defined(__IPHONE_13_4)
 
   // Determine the slider origin and range; this is based on the layout guides
   // and can't be computed until they are determined.
@@ -565,7 +559,6 @@ UIImage* ImageForSegment(NSString* segment, BOOL selected) {
   [self.selectedImageView addSubview:remoteSelectedIcon];
   self.remoteSelectedIcon = remoteSelectedIcon;
 
-#if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
       CGRect segmentRect = CGRectMake(0, 0, kSegmentWidth, kOverallHeight);
       UIView* incognitoHoverView = [[UIView alloc] initWithFrame:segmentRect];
@@ -587,7 +580,6 @@ UIImage* ImageForSegment(NSString* segment, BOOL selected) {
       [self.sliderView
           addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
   }
-#endif  // defined(__IPHONE_13_4)
 
   // Update the label text, in case these properties have been set before the
   // views were set up.
@@ -656,8 +648,6 @@ UIImage* ImageForSegment(NSString* segment, BOOL selected) {
   }
 }
 
-#if defined(__IPHONE_13_4)
-
 #pragma mark UIPointerInteractionDelegate
 
 - (UIPointerRegion*)pointerInteraction:(UIPointerInteraction*)interaction
@@ -678,7 +668,6 @@ UIImage* ImageForSegment(NSString* segment, BOOL selected) {
                               cornerRadius:kCornerRadius];
   return [UIPointerStyle styleWithEffect:effect shape:shape];
 }
-#endif  // defined(__IPHONE_13_4)
 
 @end
 

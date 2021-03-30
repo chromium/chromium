@@ -10,6 +10,8 @@
 
 #include "base/bind.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/mojom/view_type.mojom.h"
+#include "extensions/common/view_type_util.h"
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/script_context.h"
 
@@ -41,9 +43,9 @@ void RuntimeCustomBindings::GetExtensionViews(
 
   std::string view_type_string =
       base::ToUpperASCII(*v8::String::Utf8Value(args.GetIsolate(), args[2]));
-  // |view_type| == VIEW_TYPE_INVALID means getting any type of
+  // |view_type| == mojom::ViewType::kInvalid means getting any type of
   // views.
-  ViewType view_type = VIEW_TYPE_INVALID;
+  mojom::ViewType view_type = mojom::ViewType::kInvalid;
   bool parsed_view_type = GetViewTypeFromString(view_type_string, &view_type);
   if (!parsed_view_type)
     CHECK_EQ("ALL", view_type_string);

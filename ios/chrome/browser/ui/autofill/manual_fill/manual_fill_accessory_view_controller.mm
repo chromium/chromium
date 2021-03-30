@@ -204,12 +204,10 @@ static NSTimeInterval MFAnimationDuration = 0.2;
   self.accountButton.hidden = self.isAddressButtonHidden;
   [icons addObject:self.accountButton];
 
-#if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
       for (UIButton* button in icons)
         button.pointerInteractionEnabled = YES;
   }
-#endif  // defined(__IPHONE_13_4)
 
   UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:icons];
   stackView.spacing =

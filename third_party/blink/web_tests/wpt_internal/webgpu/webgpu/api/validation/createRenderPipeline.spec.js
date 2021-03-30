@@ -2,6 +2,27 @@
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
  **/ export const description = `
 createRenderPipeline validation tests.
+
+TODO: review existing tests, write descriptions, and make sure tests are complete.
+      Make sure the following is covered. Consider splitting the file if too large/disjointed.
+> - various attachment problems
+>
+> - interface matching between vertex and fragment shader
+>     - superset, subset, etc.
+>
+> - vertex stage {valid, invalid}
+> - fragment stage {valid, invalid}
+> - primitive topology all possible values
+> - rasterizationState various values
+> - multisample count {0, 1, 3, 4, 8, 16, 1024}
+> - multisample mask {0, 0xFFFFFFFF}
+> - alphaToCoverage:
+>     - alphaToCoverageEnabled is { true, false } and sampleCount { = 1, = 4 }.
+>       The only failing case is (true, 1).
+>     - output SV_Coverage semantics is statically used by fragmentStage and
+>       alphaToCoverageEnabled is { true (fails), false (passes) }.
+>     - sampleMask is being used and alphaToCoverageEnabled is { true (fails), false (passes) }.
+
 `;
 import { poptions } from '../../../common/framework/params_builder.js';
 import { makeTestGroup } from '../../../common/framework/test_group.js';
@@ -11,15 +32,15 @@ import { ValidationTest } from './validation_test.js';
 
 class F extends ValidationTest {
   getDescriptor(options = {}) {
-    const defaultColorStates = [{ format: 'rgba8unorm' }];
+    const defaultTargets = [{ format: 'rgba8unorm' }];
     const {
-      primitiveTopology = 'triangle-list',
-      colorStates = defaultColorStates,
+      topology = 'triangle-list',
+      targets = defaultTargets,
       sampleCount = 1,
-      depthStencilState,
+      depthStencil,
     } = options;
 
-    const format = colorStates.length ? colorStates[0].format : 'rgba8unorm';
+    const format = targets.length ? targets[0].format : 'rgba8unorm';
 
     let fragColorType;
     let suffix;
@@ -35,7 +56,7 @@ class F extends ValidationTest {
     }
 
     return {
-      vertexStage: {
+      vertex: {
         module: this.device.createShaderModule({
           code: `
             [[builtin(position)]] var<out> Position : vec4<f32>;
@@ -48,7 +69,7 @@ class F extends ValidationTest {
         entryPoint: 'main',
       },
 
-      fragmentStage: {
+      fragment: {
         module: this.device.createShaderModule({
           code: `
             [[location(0)]] var<out> fragColor : vec4<${fragColorType}>;
@@ -58,13 +79,13 @@ class F extends ValidationTest {
         }),
 
         entryPoint: 'main',
+        targets,
       },
 
       layout: this.getPipelineLayout(),
-      primitiveTopology,
-      colorStates,
-      sampleCount,
-      depthStencilState,
+      primitive: { topology },
+      multisample: { count: sampleCount },
+      depthStencil,
     };
   }
 
@@ -76,8 +97,8 @@ class F extends ValidationTest {
     const { format, sampleCount } = params;
 
     return this.device.createTexture({
-      size: { width: 4, height: 4, depth: 1 },
-      usage: GPUTextureUsage.OUTPUT_ATTACHMENT,
+      size: { width: 4, height: 4, depthOrArrayLayers: 1 },
+      usage: GPUTextureUsage.RENDER_ATTACHMENT,
       format,
       sampleCount,
     });
@@ -94,7 +115,7 @@ g.test('basic_use_of_createRenderPipeline').fn(t => {
 
 g.test('at_least_one_color_state_is_required').fn(async t => {
   const goodDescriptor = t.getDescriptor({
-    colorStates: [{ format: 'rgba8unorm' }],
+    targets: [{ format: 'rgba8unorm' }],
   });
 
   // Control case
@@ -102,7 +123,7 @@ g.test('at_least_one_color_state_is_required').fn(async t => {
 
   // Fail because lack of color states
   const badDescriptor = t.getDescriptor({
-    colorStates: [],
+    targets: [],
   });
 
   t.expectValidationError(() => {
@@ -116,7 +137,9 @@ g.test('color_formats_must_be_renderable')
     const format = t.params.format;
     const info = kAllTextureFormatInfo[format];
 
-    const descriptor = t.getDescriptor({ colorStates: [{ format }] });
+    await t.selectDeviceOrSkipTestCase(info.extension);
+
+    const descriptor = t.getDescriptor({ targets: [{ format }] });
 
     if (info.renderable && info.color) {
       // Succeeds when color format is renderable
@@ -202,8 +225,8 @@ g.test('sample_count_must_be_equal_to_the_one_of_every_attachment_in_the_render_
 
     const pipelineWithDepthStencilOnly = t.device.createRenderPipeline(
       t.getDescriptor({
-        colorStates: [],
-        depthStencilState: { format: 'depth24plus-stencil8' },
+        targets: [],
+        depthStencil: { format: 'depth24plus-stencil8' },
         sampleCount: pipelineSamples,
       })
     );

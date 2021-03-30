@@ -11,8 +11,6 @@
 #include "base/strings/string_split.h"
 #include "base/task/post_task.h"
 #include "build/build_config.h"
-#include "chrome/browser/engagement/site_engagement_score.h"
-#include "chrome/browser/engagement/site_engagement_service.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/metrics/ukm_background_recorder_service.h"
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
@@ -21,6 +19,8 @@
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/offline_items_collection/core/update_delta.h"
+#include "components/site_engagement/content/site_engagement_score.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_index_context.h"
@@ -45,7 +45,6 @@ using offline_items_collection::OfflineItemSchedule;
 
 namespace {
 
-constexpr char kProviderNamespace[] = "content_index";
 constexpr char kEntryKeySeparator[] = "#";
 
 struct EntryKeyComponents {
@@ -100,6 +99,8 @@ OfflineItemFilter CategoryToFilter(blink::mojom::ContentCategory category) {
 
 }  // namespace
 
+const char ContentIndexProviderImpl::kProviderNamespace[] = "content_index";
+
 ContentIndexProviderImpl::ContentIndexProviderImpl(Profile* profile)
     : profile_(profile),
       metrics_(ukm::UkmBackgroundRecorderFactory::GetForProfile(profile)),
@@ -144,11 +145,9 @@ void ContentIndexProviderImpl::OnContentAdded(
   OfflineItemList items(1, EntryToOfflineItem(entry));
 
   // Delete the entry before adding it just in case the ID was overwritten.
-  for (auto& observer : observers_)
-    observer.OnItemRemoved(items[0].id);
+  NotifyItemRemoved(items[0].id);
 
-  for (auto& observer : observers_)
-    observer.OnItemsAdded(items);
+  NotifyItemsAdded(items);
 
   metrics_.RecordContentAdded(url::Origin::Create(entry.launch_url.GetOrigin()),
                               entry.description->category);
@@ -163,8 +162,7 @@ void ContentIndexProviderImpl::OnContentDeleted(
   std::string entry_key =
       EntryKey(service_worker_registration_id, origin, description_id);
   ContentId id(kProviderNamespace, entry_key);
-  for (auto& observer : observers_)
-    observer.OnItemRemoved(id);
+  NotifyItemRemoved(id);
 }
 
 void ContentIndexProviderImpl::OpenItem(
@@ -172,7 +170,7 @@ void ContentIndexProviderImpl::OpenItem(
     const ContentId& id) {
   auto components = GetEntryKeyComponents(id.id);
 
-  auto* storage_partition = content::BrowserContext::GetStoragePartitionForSite(
+  auto* storage_partition = content::BrowserContext::GetStoragePartitionForUrl(
       profile_, components.origin.GetURL(), /* can_create= */ false);
 
   if (!storage_partition || !storage_partition->GetContentIndexContext())
@@ -214,7 +212,7 @@ void ContentIndexProviderImpl::DidOpenTab(content::ContentIndexEntry entry,
 void ContentIndexProviderImpl::RemoveItem(const ContentId& id) {
   auto components = GetEntryKeyComponents(id.id);
 
-  auto* storage_partition = content::BrowserContext::GetStoragePartitionForSite(
+  auto* storage_partition = content::BrowserContext::GetStoragePartitionForUrl(
       profile_, components.origin.GetURL(), /* can_create= */ false);
 
   if (!storage_partition || !storage_partition->GetContentIndexContext())
@@ -244,7 +242,7 @@ void ContentIndexProviderImpl::GetItemById(const ContentId& id,
                                            SingleItemCallback callback) {
   auto components = GetEntryKeyComponents(id.id);
 
-  auto* storage_partition = content::BrowserContext::GetStoragePartitionForSite(
+  auto* storage_partition = content::BrowserContext::GetStoragePartitionForUrl(
       profile_, components.origin.GetURL(), /* can_create= */ false);
 
   if (!storage_partition || !storage_partition->GetContentIndexContext()) {
@@ -334,7 +332,7 @@ void ContentIndexProviderImpl::GetVisualsForItem(const ContentId& id,
                                                  VisualsCallback callback) {
   auto components = GetEntryKeyComponents(id.id);
 
-  auto* storage_partition = content::BrowserContext::GetStoragePartitionForSite(
+  auto* storage_partition = content::BrowserContext::GetStoragePartitionForUrl(
       profile_, components.origin.GetURL(), /* can_create= */ false);
 
   if (!storage_partition || !storage_partition->GetContentIndexContext()) {
@@ -401,12 +399,4 @@ void ContentIndexProviderImpl::ChangeSchedule(
     const ContentId& id,
     base::Optional<OfflineItemSchedule> schedule) {
   NOTREACHED();
-}
-
-void ContentIndexProviderImpl::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void ContentIndexProviderImpl::RemoveObserver(Observer* observer) {
-  observers_.RemoveObserver(observer);
 }

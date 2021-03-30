@@ -15,7 +15,6 @@
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/default_color_constants.h"
-#include "ash/style/default_colors.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/bind.h"
 #include "base/numerics/ranges.h"
@@ -103,6 +102,7 @@ class ScrollBarThumb : public views::BaseScrollBarThumb {
   gfx::Size CalculatePreferredSize() const override {
     return gfx::Size(kScrollThumbThicknessDp, kScrollThumbThicknessDp);
   }
+
   void OnPaint(gfx::Canvas* canvas) override {
     cc::PaintFlags fill_flags;
     fill_flags.setStyle(cc::PaintFlags::kFill_Style);
@@ -338,7 +338,7 @@ ScrollableUsersListView::ScrollableUsersListView(
   SetVerticalScrollBar(std::make_unique<UsersListScrollBar>(false));
   SetHorizontalScrollBar(std::make_unique<UsersListScrollBar>(true));
 
-  observer_.Add(Shell::Get()->wallpaper_controller());
+  observation_.Observe(Shell::Get()->wallpaper_controller());
 }
 
 ScrollableUsersListView::~ScrollableUsersListView() = default;
@@ -429,6 +429,11 @@ void ScrollableUsersListView::OnPaintBackground(gfx::Canvas* canvas) {
         render_bounds, login_constants::kNonBlurredWallpaperBackgroundRadiusDp,
         flags);
   }
+}
+
+void ScrollableUsersListView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  gradient_params_ = GradientParams::BuildForStyle(display_style_);
 }
 
 // When the active user is updated, the wallpaper changes. The gradient color

@@ -47,6 +47,7 @@ crashpad_static_library("client") {
     sources += [
       "crash_report_database_mac.mm",
       "crashpad_client_ios.cc",
+      "simulate_crash_ios.h",
     ]
   }
 
@@ -88,7 +89,7 @@ crashpad_static_library("client") {
     "../util",
   ]
 
-  deps = [ "//build:chromeos_buildflags" ]
+  deps = [ "../third_party/mini_chromium:chromeos_buildflags" ]
 
   if (crashpad_is_win) {
     libs = [ "rpcrt4.lib" ]

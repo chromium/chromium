@@ -129,9 +129,9 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) ContentDecryptionModuleAdapter
   void InitializeVideoDecoder(const media::VideoDecoderConfig& config,
                               DecoderInitCB init_cb) override;
   void DecryptAndDecodeAudio(scoped_refptr<media::DecoderBuffer> encrypted,
-                             const AudioDecodeCB& audio_decode_cb) override;
+                             AudioDecodeCB audio_decode_cb) override;
   void DecryptAndDecodeVideo(scoped_refptr<media::DecoderBuffer> encrypted,
-                             const VideoDecodeCB& video_decode_cb) override;
+                             VideoDecodeCB video_decode_cb) override;
   void ResetDecoder(StreamType stream_type) override;
   void DeinitializeDecoder(StreamType stream_type) override;
   bool CanAlwaysDecrypt() override;
@@ -160,6 +160,11 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) ContentDecryptionModuleAdapter
                  size_t expected_decrypt_size,
                  media::Decryptor::Status status,
                  const std::vector<uint8_t>& decrypted_data);
+  void GetHwKeyDataInternal(const std::string& key_id,
+                            const std::string& iv,
+                            const media::EncryptionScheme encryption_scheme,
+                            const std::vector<uint8_t>& hw_identifier,
+                            GetHwKeyDataCB callback);
 
   THREAD_CHECKER(thread_checker_);
 

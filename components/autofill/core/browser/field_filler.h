@@ -8,13 +8,14 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace autofill {
 
 class AddressNormalizer;
-class AutofillDataModel;
 class AutofillField;
 
 // Helper class to put user content in fields, to eventually send to the
@@ -25,28 +26,30 @@ class FieldFiller {
               AddressNormalizer* address_normalizer);
   ~FieldFiller();
 
-  // Set |field_data|'s value to the right value in |data_model|. Uses |field|
-  // to determine which field type should be filled, and |app_locale_| as hint
-  // when filling exceptional cases like phone number values. Returns |true| if
-  // the field has been filled, false otherwise. |cvc| is not stored in the
-  // data model and may be needed at fill time. If |failure_to_fill| is not
-  // null, errors are reported to that string.
+  // Set |field_data|'s value to the right value in |profile_or_credit_card|.
+  // Uses |field| to determine which field type should be filled, and
+  // |app_locale_| as hint when filling exceptional cases like phone number
+  // values. Returns |true| if the field has been filled, false otherwise. If
+  // |failure_to_fill| is not null, errors are reported to that string.
   bool FillFormField(const AutofillField& field,
-                     const AutofillDataModel& data_model,
+                     absl::variant<const AutofillProfile*, const CreditCard*>
+                         profile_or_credit_card,
                      FormFieldData* field_data,
-                     const base::string16& cvc,
+                     const std::u16string& cvc,
                      std::string* failure_to_fill = nullptr);
 
   // Returns the phone number value for the given |field|. The returned value
-  // might be |number|, or could possibly be a meaningful subset |number|, if
-  // that's appropriate for the field.
-  static base::string16 GetPhoneNumberValue(const AutofillField& field,
-                                            const base::string16& number,
-                                            const FormFieldData& field_data);
+  // might be |number|, or |phone_home_city_and_number|, or could possibly be a
+  // meaningful subset |number|, if that's appropriate for the field.
+  static std::u16string GetPhoneNumberValue(
+      const AutofillField& field,
+      const std::u16string& number,
+      const std::u16string& phone_home_city_and_number,
+      const FormFieldData& field_data);
 
   // Returns the index of the shortest entry in the given select field of which
   // |value| is a substring. Returns -1 if no such entry exists.
-  static int FindShortestSubstringMatchInSelect(const base::string16& value,
+  static int FindShortestSubstringMatchInSelect(const std::u16string& value,
                                                 bool ignore_whitespace,
                                                 const FormFieldData* field);
 

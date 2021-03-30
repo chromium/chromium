@@ -27,7 +27,6 @@
 #include "base/bind.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
 #include "chromeos/components/phonehub/phone_model.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/insets.h"
@@ -39,7 +38,7 @@ namespace ash {
 namespace {
 
 // Padding for tray icon (dp; the button that shows the phone_hub menu).
-constexpr int kTrayIconMainAxisInset = 8;
+constexpr int kTrayIconMainAxisInset = 6;
 constexpr int kTrayIconCrossAxisInset = 0;
 
 constexpr gfx::Insets kBubblePadding(0, 0, kBubbleBottomPaddingDip, 0);
@@ -48,7 +47,7 @@ constexpr gfx::Insets kBubblePadding(0, 0, kBubbleBottomPaddingDip, 0);
 
 PhoneHubTray::PhoneHubTray(Shelf* shelf)
     : TrayBackgroundView(shelf), ui_controller_(new PhoneHubUiController()) {
-  observed_phone_hub_ui_controller_.Add(ui_controller_.get());
+  observed_phone_hub_ui_controller_.Observe(ui_controller_.get());
 
   auto icon = std::make_unique<views::ImageView>();
   icon->SetTooltipText(
@@ -76,7 +75,7 @@ void PhoneHubTray::ClickedOutsideBubble() {
   CloseBubble();
 }
 
-base::string16 PhoneHubTray::GetAccessibleNameForTray() {
+std::u16string PhoneHubTray::GetAccessibleNameForTray() {
   return l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_TRAY_ACCESSIBLE_NAME);
 }
 
@@ -90,7 +89,7 @@ void PhoneHubTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {
     CloseBubble();
 }
 
-base::string16 PhoneHubTray::GetAccessibleNameForBubble() {
+std::u16string PhoneHubTray::GetAccessibleNameForBubble() {
   return GetAccessibleNameForTray();
 }
 
@@ -117,10 +116,18 @@ void PhoneHubTray::OnPhoneHubUiStateChanged() {
     return;
   }
 
-  if (content_view_)
+  if (content_view_) {
+    // If we are already showing the same content_view, no need to remove and
+    // update the tray.
+    // TODO(crbug.com/1185316) : Find way to update views without work around
+    // when same view is removed and added.
+    if (content_view->GetID() == content_view_->GetID())
+      return;
+
     bubble_view->RemoveChildView(content_view_);
-  content_view_ = content_view.get();
-  bubble_view->AddChildView(std::move(content_view));
+    delete content_view_;
+  }
+  content_view_ = bubble_view->AddChildView(std::move(content_view));
 
   // Updates bubble to handle possible size change with a different child view.
   bubble_view->UpdateBubble();
@@ -136,15 +143,7 @@ void PhoneHubTray::Initialize() {
   UpdateVisibility();
 }
 
-bool PhoneHubTray::PerformAction(const ui::Event& event) {
-  if (bubble_)
-    CloseBubble();
-  else
-    ShowBubble(event.IsMouseEvent() || event.IsGestureEvent());
-  return true;
-}
-
-void PhoneHubTray::ShowBubble(bool show_by_click) {
+void PhoneHubTray::ShowBubble() {
   if (bubble_)
     return;
 
@@ -161,8 +160,8 @@ void PhoneHubTray::ShowBubble(bool show_by_click) {
   init_params.close_on_deactivate = true;
   init_params.has_shadow = false;
   init_params.translucent = true;
+  init_params.reroute_event_handler = true;
   init_params.corner_radius = kTrayItemCornerRadius;
-  init_params.show_by_click = show_by_click;
 
   TrayBubbleView* bubble_view = new TrayBubbleView(init_params);
   bubble_view->SetBorder(views::CreateEmptyBorder(kBubblePadding));
@@ -186,20 +185,16 @@ void PhoneHubTray::ShowBubble(bool show_by_click) {
 
   SetIsActive(true);
 
-  // Only focus the widget if it's opened by the keyboard.
-  if (!show_by_click) {
-    views::Widget* widget = bubble_->GetBubbleWidget();
-    widget->widget_delegate()->SetCanActivate(true);
-    Shell::Get()->focus_cycler()->FocusWidget(widget);
-    widget->Activate();
-  }
-
   phone_hub_metrics::LogScreenOnBubbleOpen(
       content_view_->GetScreenForMetrics());
 }
 
 TrayBubbleView* PhoneHubTray::GetBubbleView() {
   return bubble_ ? bubble_->bubble_view() : nullptr;
+}
+
+views::Widget* PhoneHubTray::GetBubbleWidget() const {
+  return bubble_ ? bubble_->GetBubbleWidget() : nullptr;
 }
 
 const char* PhoneHubTray::GetClassName() const {

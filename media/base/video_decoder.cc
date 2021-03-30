@@ -29,6 +29,10 @@ int VideoDecoder::GetMaxDecodeRequests() const {
   return 1;
 }
 
+bool VideoDecoder::IsOptimizedForRTC() const {
+  return false;
+}
+
 // static
 int VideoDecoder::GetRecommendedThreadCount(int desired_threads) {
   // If the thread count is specified on the command line, respect it so long as

@@ -5,6 +5,7 @@
 #include "base/big_endian.h"
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_piece.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/proxy_server.h"
 #include "net/cert/mock_cert_verifier.h"
@@ -150,7 +151,7 @@ class HttpWithDnsOverHttpsTest : public TestWithTaskEnvironment {
                                   0x00, 0x01};
       http_response->set_content(
           std::string(header_data, sizeof(header_data)) +
-          query.question().as_string() +
+          std::string(query.question()) +
           std::string((char*)answer_data, sizeof(answer_data)));
       http_response->set_content_type("application/dns-message");
       return std::move(http_response);

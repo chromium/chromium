@@ -16,6 +16,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/stl_util.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -61,6 +62,10 @@ AwAutofillClient::GetAutocompleteHistoryManager() {
 }
 
 PrefService* AwAutofillClient::GetPrefs() {
+  return const_cast<PrefService*>(base::as_const(*this).GetPrefs());
+}
+
+const PrefService* AwAutofillClient::GetPrefs() const {
   return user_prefs::UserPrefs::Get(
       AwBrowserContext::FromWebContents(web_contents_));
 }
@@ -98,7 +103,7 @@ autofill::AddressNormalizer* AwAutofillClient::GetAddressNormalizer() {
   return nullptr;
 }
 
-const GURL& AwAutofillClient::GetLastCommittedURL() {
+const GURL& AwAutofillClient::GetLastCommittedURL() const {
   return web_contents_->GetLastCommittedURL();
 }
 
@@ -110,6 +115,10 @@ AwAutofillClient::GetSecurityLevelForUmaHistograms() {
 }
 
 const translate::LanguageState* AwAutofillClient::GetLanguageState() {
+  return nullptr;
+}
+
+translate::TranslateDriver* AwAutofillClient::GetTranslateDriver() {
   return nullptr;
 }
 
@@ -129,13 +138,13 @@ void AwAutofillClient::OnUnmaskVerificationResult(PaymentsRpcResult result) {
 }
 
 void AwAutofillClient::ConfirmAccountNameFixFlow(
-    base::OnceCallback<void(const base::string16&)> callback) {
+    base::OnceCallback<void(const std::u16string&)> callback) {
   NOTIMPLEMENTED();
 }
 
 void AwAutofillClient::ConfirmExpirationDateFixFlow(
     const autofill::CreditCard& card,
-    base::OnceCallback<void(const base::string16&, const base::string16&)>
+    base::OnceCallback<void(const std::u16string&, const std::u16string&)>
         callback) {
   NOTIMPLEMENTED();
 }
@@ -165,6 +174,12 @@ void AwAutofillClient::ConfirmCreditCardFillAssist(
   NOTIMPLEMENTED();
 }
 
+void AwAutofillClient::ConfirmSaveAddressProfile(
+    const autofill::AutofillProfile& profile,
+    AddressProfileSavePromptCallback callback) {
+  NOTIMPLEMENTED();
+}
+
 bool AwAutofillClient::HasCreditCardScanFeature() {
   return false;
 }
@@ -190,8 +205,8 @@ void AwAutofillClient::ShowAutofillPopup(
 }
 
 void AwAutofillClient::UpdateAutofillPopupDataListValues(
-    const std::vector<base::string16>& values,
-    const std::vector<base::string16>& labels) {
+    const std::vector<std::u16string>& values,
+    const std::vector<std::u16string>& labels) {
   // Leaving as an empty method since updating autofill popup window
   // dynamically does not seem to be a useful feature for android webview.
   // See crrev.com/18102002 if need to implement.
@@ -242,10 +257,10 @@ void AwAutofillClient::PropagateAutofillPredictions(
     const std::vector<autofill::FormStructure*>& forms) {}
 
 void AwAutofillClient::DidFillOrPreviewField(
-    const base::string16& autofilled_value,
-    const base::string16& profile_full_name) {}
+    const std::u16string& autofilled_value,
+    const std::u16string& profile_full_name) {}
 
-bool AwAutofillClient::IsContextSecure() {
+bool AwAutofillClient::IsContextSecure() const {
   content::SSLStatus ssl_status;
   content::NavigationEntry* navigation_entry =
       web_contents_->GetController().GetLastCommittedEntry();
@@ -267,7 +282,7 @@ bool AwAutofillClient::ShouldShowSigninPromo() {
   return false;
 }
 
-bool AwAutofillClient::AreServerCardsSupported() {
+bool AwAutofillClient::AreServerCardsSupported() const {
   return true;
 }
 

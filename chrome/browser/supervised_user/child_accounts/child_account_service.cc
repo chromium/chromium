@@ -33,7 +33,7 @@
 #include "content/public/browser/storage_partition.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #else
 #include "chrome/browser/signin/signin_util.h"
 #endif
@@ -105,7 +105,7 @@ void ChildAccountService::Init() {
   base::Optional<AccountInfo> primary_account_info =
       identity_manager_->FindExtendedAccountInfoForAccountWithRefreshToken(
           identity_manager_->GetPrimaryAccountInfo(
-              signin::ConsentLevel::kNotRequired));
+              signin::ConsentLevel::kSignin));
 
   if (primary_account_info.has_value())
     OnExtendedAccountInfoUpdated(primary_account_info.value());
@@ -161,7 +161,7 @@ bool ChildAccountService::SetActive(bool active) {
         SupervisedUserSettingsServiceFactory::GetForKey(
             profile_->GetProfileKey());
 
-    // In contrast to legacy SUs, child account SUs must sign in.
+    // In contrast to deprecated legacy SUs, child account SUs must sign in.
     settings_service->SetLocalSetting(supervised_users::kSigninAllowed,
                                       std::make_unique<base::Value>(true));
 
@@ -246,6 +246,21 @@ void ChildAccountService::SetIsChildAccount(bool is_child_account) {
   status_received_callback_list_.clear();
 }
 
+void ChildAccountService::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
+      signin::PrimaryAccountChangeEvent::Type::kSet) {
+    auto account_info =
+        identity_manager_->FindExtendedAccountInfoForAccountWithRefreshToken(
+            event_details.GetCurrentState().primary_account);
+    if (account_info.has_value()) {
+      OnExtendedAccountInfoUpdated(account_info.value());
+    }
+    // Otherwise OnExtendedAccountInfoUpdated will be notified once
+    // the account info is available.
+  }
+}
+
 void ChildAccountService::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
   // This method may get called when the account info isn't complete yet.
@@ -258,8 +273,8 @@ void ChildAccountService::OnExtendedAccountInfoUpdated(
   }
 
   // This class doesn't care about browser sync consent.
-  CoreAccountId auth_account_id = identity_manager_->GetPrimaryAccountId(
-      signin::ConsentLevel::kNotRequired);
+  CoreAccountId auth_account_id =
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   if (info.account_id != auth_account_id)
     return;
 
@@ -269,8 +284,8 @@ void ChildAccountService::OnExtendedAccountInfoUpdated(
 void ChildAccountService::OnExtendedAccountInfoRemoved(
     const AccountInfo& info) {
   // This class doesn't care about browser sync consent.
-  if (info.account_id != identity_manager_->GetPrimaryAccountId(
-                             signin::ConsentLevel::kNotRequired))
+  if (info.account_id !=
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin))
     return;
 
   SetIsChildAccount(false);
@@ -341,9 +356,9 @@ void ChildAccountService::PropagateChildStatusToUser(bool is_child) {
   user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
   if (user) {
-    // Note that supervised user is allowed to change type due to legacy
-    // initialization.
-    if (user->GetType() != user_manager::USER_TYPE_SUPERVISED) {
+    // Note that deprecated legacy supervised users are allowed to change type
+    // due to legacy initialization.
+    if (user->GetType() != user_manager::USER_TYPE_SUPERVISED_DEPRECATED) {
       if (is_child != (user->GetType() == user_manager::USER_TYPE_CHILD))
         LOG(FATAL) << "User child flag has changed: " << is_child;
     }

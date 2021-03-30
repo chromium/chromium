@@ -35,12 +35,16 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
   ~OverlayProcessorWin() override;
 
   bool IsOverlaySupported() const override;
+  gfx::Rect GetPreviousFrameOverlaysBoundingRect() const override;
   gfx::Rect GetAndResetOverlayDamage() override;
 
   // Returns true if the platform supports hw overlays and surface occluding
   // damage rect needs to be computed since it will be used by overlay
   // processor.
   bool NeedsSurfaceDamageRectList() const override;
+
+  // Set |is_video_capture_enabled_|.
+  void SetIsVideoCaptureEnabled(bool enabled) override;
 
   void AdjustOutputSurfaceOverlay(base::Optional<OutputSurfaceOverlayPlane>*
                                       output_surface_plane) override {}
@@ -76,6 +80,8 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
 
   // TODO(weiliangc): Eventually fold DCLayerOverlayProcessor into this class.
   std::unique_ptr<DCLayerOverlayProcessor> dc_layer_overlay_processor_;
+
+  bool is_video_capture_enabled_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(OverlayProcessorWin);
 };

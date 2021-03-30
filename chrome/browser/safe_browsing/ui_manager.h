@@ -43,7 +43,7 @@ class SafeBrowsingUIManager : public BaseUIManager {
   class Observer {
    public:
     // Called when |resource| is classified as unsafe by SafeBrowsing, and is
-    // not whitelisted.
+    // not allowlisted.
     // The |resource| must not be accessed after OnSafeBrowsingHit returns.
     // This method will be called on the UI thread.
     virtual void OnSafeBrowsingHit(const UnsafeResource& resource) = 0;
@@ -90,11 +90,11 @@ class SafeBrowsingUIManager : public BaseUIManager {
   void MaybeReportSafeBrowsingHit(const safe_browsing::HitReport& hit_report,
                                   content::WebContents* web_contents) override;
 
-  // Creates the whitelist URL set for tests that create a blocking page
+  // Creates the allowlist URL set for tests that create a blocking page
   // themselves and then simulate OnBlockingPageDone(). OnBlockingPageDone()
-  // expects the whitelist to exist, but the tests don't necessarily call
+  // expects the allowlist to exist, but the tests don't necessarily call
   // DisplayBlockingPage(), which creates it.
-  static void CreateWhitelistForTesting(content::WebContents* web_contents);
+  static void CreateAllowlistForTesting(content::WebContents* web_contents);
 
   // Add and remove observers. These methods must be invoked on the UI thread.
   void AddObserver(Observer* observer);
@@ -122,7 +122,7 @@ class SafeBrowsingUIManager : public BaseUIManager {
   friend class SafeBrowsingUIManagerTest;
   friend class TestSafeBrowsingUIManager;
 
-  static GURL GetMainFrameWhitelistUrlForResourceForTesting(
+  static GURL GetMainFrameAllowlistUrlForResourceForTesting(
       const safe_browsing::SafeBrowsingUIManager::UnsafeResource& resource);
 
   // Creates a blocking page, used for interstitials triggered by subresources.

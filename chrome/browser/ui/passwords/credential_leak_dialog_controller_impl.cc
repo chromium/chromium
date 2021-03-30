@@ -64,21 +64,21 @@ void CredentialLeakDialogControllerImpl::OnCloseDialog() {
   delegate_->OnLeakDialogHidden();
 }
 
-base::string16 CredentialLeakDialogControllerImpl::GetAcceptButtonLabel()
+std::u16string CredentialLeakDialogControllerImpl::GetAcceptButtonLabel()
     const {
   return password_manager::GetAcceptButtonLabel(leak_type_);
 }
 
-base::string16 CredentialLeakDialogControllerImpl::GetCancelButtonLabel()
+std::u16string CredentialLeakDialogControllerImpl::GetCancelButtonLabel()
     const {
   return password_manager::GetCancelButtonLabel();
 }
 
-base::string16 CredentialLeakDialogControllerImpl::GetDescription() const {
+std::u16string CredentialLeakDialogControllerImpl::GetDescription() const {
   return password_manager::GetDescription(leak_type_, origin_);
 }
 
-base::string16 CredentialLeakDialogControllerImpl::GetTitle() const {
+std::u16string CredentialLeakDialogControllerImpl::GetTitle() const {
   return password_manager::GetTitle(leak_type_);
 }
 

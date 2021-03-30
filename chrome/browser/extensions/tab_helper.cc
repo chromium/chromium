@@ -82,6 +82,9 @@ TabHelper::TabHelper(content::WebContents* web_contents)
   // The ActiveTabPermissionManager requires a session ID; ensure this
   // WebContents has one.
   CreateSessionServiceTabHelper(web_contents);
+  // We need an ExtensionWebContentsObserver, so make sure one exists (this is
+  // a no-op if one already does).
+  ChromeExtensionWebContentsObserver::CreateForWebContents(web_contents);
   // The Unretained() is safe because ForEachFrame() is synchronous.
   web_contents->ForEachFrame(
       base::BindRepeating(&TabHelper::SetTabId, base::Unretained(this)));
@@ -95,9 +98,6 @@ TabHelper::TabHelper(content::WebContents* web_contents)
     registry->MonitorWebContentsForRuleEvaluation(this->web_contents());
   });
 
-  // We need an ExtensionWebContentsObserver, so make sure one exists (this is
-  // a no-op if one already does).
-  ChromeExtensionWebContentsObserver::CreateForWebContents(web_contents);
   ExtensionWebContentsObserver::GetForWebContents(web_contents)->dispatcher()->
       set_delegate(this);
 
@@ -116,10 +116,10 @@ void TabHelper::SetExtensionApp(const Extension* extension) {
   extension_app_ = extension;
 
   if (extension_app_) {
-    registry_observer_.Add(
+    registry_observation_.Observe(
         ExtensionRegistry::Get(web_contents()->GetBrowserContext()));
   } else {
-    registry_observer_.RemoveAll();
+    registry_observation_.Reset();
   }
 
   UpdateExtensionAppIcon(extension_app_);
@@ -238,6 +238,12 @@ void TabHelper::DidCloneToNewWebContents(WebContents* old_web_contents,
   new_helper->extension_app_icon_ = extension_app_icon_;
 }
 
+void TabHelper::WebContentsDestroyed() {
+  InvokeForContentRulesRegistries([this](ContentRulesRegistry* registry) {
+    registry->WebContentsDestroyed(web_contents());
+  });
+}
+
 void TabHelper::OnGetAppInstallState(content::RenderFrameHost* host,
                                      const GURL& requestor_url,
                                      int return_route_id,
@@ -328,9 +334,9 @@ void TabHelper::SetTabId(content::RenderFrameHost* render_frame_host) {
   // We should wait for RenderFrameCreated() to happen, to avoid sending this
   // message twice.
   if (render_frame_host->IsRenderFrameCreated()) {
-    render_frame_host->Send(new ExtensionMsg_SetTabId(
-        render_frame_host->GetRoutingID(),
-        sessions::SessionTabHelper::IdForTab(web_contents()).id()));
+    ExtensionWebContentsObserver::GetForWebContents(web_contents())
+        ->GetLocalFrame(render_frame_host)
+        ->SetTabId(sessions::SessionTabHelper::IdForTab(web_contents()).id());
   }
 }
 

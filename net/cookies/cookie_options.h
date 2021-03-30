@@ -7,12 +7,14 @@
 #ifndef NET_COOKIES_COOKIE_OPTIONS_H_
 #define NET_COOKIES_COOKIE_OPTIONS_H_
 
+#include <ostream>
 #include <set>
 
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/cookies/cookie_inclusion_status.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -65,11 +67,31 @@ class NET_EXPORT CookieOptions {
     // context regardless the status of same-site features.
     ContextType context() const { return context_; }
     void set_context(ContextType context) { context_ = context; }
+    void set_context(std::pair<ContextType, bool> context) {
+      context_ = context.first;
+      affected_by_bugfix_1166211_ = context.second;
+    }
 
     ContextType schemeful_context() const { return schemeful_context_; }
     void set_schemeful_context(ContextType schemeful_context) {
       schemeful_context_ = schemeful_context;
     }
+    void set_schemeful_context(std::pair<ContextType, bool> schemeful_context) {
+      schemeful_context_ = schemeful_context.first;
+      schemeful_affected_by_bugfix_1166211_ = schemeful_context.second;
+    }
+
+    // Whether the request was affected by the bugfix, either schemefully or
+    // schemelessly.
+    // TODO(crbug.com/1166211): Remove once no longer needed.
+    bool AffectedByBugfix1166211() const;
+
+    // If the cookie was excluded solely due to the bugfix, this applies a
+    // warning to the status that will show up in the netlog. Also logs a
+    // histogram showing whether the warning was applied.
+    // TODO(crbug.com/1166211): Remove once no longer needed.
+    void MaybeApplyBugfix1166211WarningToStatusAndLogHistogram(
+        CookieInclusionStatus& status) const;
 
     NET_EXPORT friend bool operator==(
         const CookieOptions::SameSiteCookieContext& lhs,
@@ -79,10 +101,18 @@ class NET_EXPORT CookieOptions {
         const CookieOptions::SameSiteCookieContext& rhs);
 
    private:
-
     ContextType context_;
-
     ContextType schemeful_context_;
+
+    // Record whether the ContextType calculation was affected by the bugfix for
+    // crbug.com/1166211. These are for the purpose of recording histograms and
+    // adding warnings to CookieInclusionStatus.
+    // Note: These are not preserved when serializing/deserializing for mojo, as
+    // these are only used in URLRequestHttpJob, which does not make mojo calls
+    // with this struct (it is only relevant for HTTP requests).
+    // TODO(crbug.com/1166211): Remove once no longer needed.
+    bool affected_by_bugfix_1166211_ = false;
+    bool schemeful_affected_by_bugfix_1166211_ = false;
   };
 
   // Computed in URLRequestHttpJob for every cookie access attempt but is only
@@ -155,6 +185,13 @@ class NET_EXPORT CookieOptions {
   }
   uint32_t full_party_context_size() const { return full_party_context_size_; }
 
+  void set_is_in_nontrivial_first_party_set(bool is_member) {
+    is_in_nontrivial_first_party_set_ = is_member;
+  }
+  bool is_in_nontrivial_first_party_set() const {
+    return is_in_nontrivial_first_party_set_;
+  }
+
   // Convenience method for where you need a CookieOptions that will
   // work for getting/setting all types of cookies, including HttpOnly and
   // SameSite cookies. Also specifies not to update the access time, because
@@ -174,7 +211,31 @@ class NET_EXPORT CookieOptions {
   // The size of the isolation_info.party_context plus the top-frame site.
   // Stored for logging purposes.
   uint32_t full_party_context_size_ = 0;
+  // Whether the site requesting cookie access (as opposed to e.g. the
+  // `site_for_cookies`) is a member (or owner) of a nontrivial First-Party
+  // Set.
+  // This is included here temporarily, for the purpose of ignoring SameParty
+  // for sites that are not participating in the Origin Trial.
+  // TODO(https://crbug.com/1163990): remove this field.
+  bool is_in_nontrivial_first_party_set_ = false;
 };
+
+// Allows gtest to print more helpful error messages instead of printing hex.
+// (No need to null-check `os` because we can assume gtest will properly pass a
+// non-null pointer, and it is dereferenced immediately anyway.)
+inline void PrintTo(CookieOptions::SameSiteCookieContext::ContextType ct,
+                    std::ostream* os) {
+  *os << static_cast<int>(ct);
+}
+
+inline void PrintTo(const CookieOptions::SameSiteCookieContext& sscc,
+                    std::ostream* os) {
+  *os << "{ context: ";
+  PrintTo(sscc.context(), os);
+  *os << ", schemeful_context: ";
+  PrintTo(sscc.schemeful_context(), os);
+  *os << " }";
+}
 
 }  // namespace net
 

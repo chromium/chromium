@@ -37,6 +37,7 @@ component("aura") {
     "scoped_enable_unadjusted_mouse_events.h",
     "scoped_keyboard_hook.h",
     "scoped_simple_keyboard_hook.h",
+    "scoped_window_capture_request.h",
     "scoped_window_event_targeting_blocker.h",
     "scoped_window_targeter.h",
     "window.h",
@@ -79,6 +80,7 @@ component("aura") {
     "null_window_targeter.cc",
     "scoped_keyboard_hook.cc",
     "scoped_simple_keyboard_hook.cc",
+    "scoped_window_capture_request.cc",
     "scoped_window_event_targeting_blocker.cc",
     "scoped_window_targeter.cc",
     "window.cc",
@@ -132,6 +134,7 @@ component("aura") {
 
   public_deps = [
     "//ui/base/cursor:cursor_base",
+    "//ui/base/dragdrop:types",
     "//ui/base/dragdrop/mojom:mojom_headers",
     "//ui/base/ime",
     "//ui/compositor",
@@ -370,6 +373,11 @@ test("aura_unittests") {
 
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
+  }
+
+  if (is_fuchsia) {
+    additional_manifest_fragments =
+        [ "//build/config/fuchsia/test/present_view_capabilities.test-cmx" ]
   }
 
   data_deps = [ "//third_party/mesa_headers" ]

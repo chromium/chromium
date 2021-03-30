@@ -7,9 +7,34 @@
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "ui/aura/window_targeter.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
+namespace {
+
+class OverlayNativeViewHost : public views::NativeViewHost {
+ public:
+  OverlayNativeViewHost() = default;
+  OverlayNativeViewHost(const OverlayNativeViewHost&) = delete;
+  OverlayNativeViewHost& operator=(const OverlayNativeViewHost&) = delete;
+  ~OverlayNativeViewHost() final = default;
+  METADATA_HEADER(OverlayNativeViewHost);
+
+  // views::NativeViewHost:
+  void OnFocus() override {
+    auto* widget = views::Widget::GetWidgetForNativeView(native_view());
+    if (widget) {
+      GetWidget()->GetFocusManager()->set_shortcut_handling_suspended(true);
+      widget->GetNativeWindow()->Focus();
+    }
+  }
+};
+
+BEGIN_METADATA(OverlayNativeViewHost, views::NativeViewHost)
+END_METADATA
+
+}  // namespace
 
 ArcOverlayControllerImpl::ArcOverlayControllerImpl(aura::Window* host_window)
     : host_window_(host_window) {
@@ -19,7 +44,7 @@ ArcOverlayControllerImpl::ArcOverlayControllerImpl(aura::Window* host_window)
 
   host_window_observer_.Observe(host_window_);
 
-  overlay_container_ = new views::NativeViewHost();
+  overlay_container_ = new OverlayNativeViewHost();
   overlay_container_observer_.Observe(overlay_container_);
 
   auto* const widget = views::Widget::GetWidgetForNativeWindow(
@@ -30,6 +55,7 @@ ArcOverlayControllerImpl::ArcOverlayControllerImpl(aura::Window* host_window)
 }
 
 ArcOverlayControllerImpl::~ArcOverlayControllerImpl() {
+  ResetFocusBehavior();
   EnsureOverlayWindowClosed();
 }
 
@@ -51,6 +77,9 @@ void ArcOverlayControllerImpl::AttachOverlay(aura::Window* overlay_window) {
   overlay_container_->GetNativeViewContainer()->SetEventTargeter(
       std::make_unique<aura::WindowTargeter>());
 
+  overlay_container_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  overlay_container_->RequestFocus();
+
   UpdateHostBounds();
 }
 
@@ -58,10 +87,11 @@ void ArcOverlayControllerImpl::OnWindowDestroying(aura::Window* window) {
   if (host_window_observer_.IsObservingSource(window)) {
     host_window_ = nullptr;
     host_window_observer_.Reset();
-
     EnsureOverlayWindowClosed();
   }
+
   if (overlay_window_observer_.IsObservingSource(window)) {
+    ResetFocusBehavior();
     overlay_window_ = nullptr;
     overlay_window_observer_.Reset();
   }
@@ -69,6 +99,7 @@ void ArcOverlayControllerImpl::OnWindowDestroying(aura::Window* window) {
 
 void ArcOverlayControllerImpl::OnViewIsDeleting(views::View* observed_view) {
   if (overlay_container_observer_.IsObservingSource(observed_view)) {
+    ResetFocusBehavior();
     overlay_container_ = nullptr;
     overlay_container_observer_.Reset();
   }
@@ -115,4 +146,12 @@ void ArcOverlayControllerImpl::EnsureOverlayWindowClosed() {
   }
 }
 
+void ArcOverlayControllerImpl::ResetFocusBehavior() {
+  if (overlay_container_ && overlay_container_->GetWidget()) {
+    overlay_container_->SetFocusBehavior(views::View::FocusBehavior::NEVER);
+    overlay_container_->GetWidget()
+        ->GetFocusManager()
+        ->set_shortcut_handling_suspended(false);
+  }
+}
 }  // namespace ash

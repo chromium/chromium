@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/macros.h"
 #include "base/path_service.h"
+#include "base/strings/string_piece.h"
 #include "components/cast/message_port/message_port_fuchsia.h"
 #include "components/cast/message_port/test_message_port_receiver.h"
 #include "content/public/test/browser_test.h"
@@ -95,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(NamedMessagePortConnectorFuchsiaTest, EndToEnd) {
       [](std::string* received_port_name, CastMessagePort* received_port,
          base::RunLoop* receive_port_run_loop, base::StringPiece port_name,
          CastMessagePort port) -> bool {
-        *received_port_name = port_name.as_string();
+        *received_port_name = std::string(port_name);
         *received_port = std::move(port);
         receive_port_run_loop->Quit();
         return true;

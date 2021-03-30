@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/task/post_task.h"
 #include "content/browser/background_fetch/background_fetch_data_manager.h"
 #include "content/browser/background_fetch/background_fetch_job_controller.h"
 #include "content/browser/background_fetch/background_fetch_metrics.h"
@@ -32,13 +31,13 @@ using FailureReason = blink::mojom::BackgroundFetchFailureReason;
 
 BackgroundFetchContext::BackgroundFetchContext(
     BrowserContext* browser_context,
+    StoragePartition* storage_partition,
     const scoped_refptr<ServiceWorkerContextWrapper>& service_worker_context,
-    const scoped_refptr<CacheStorageContextImpl>& cache_storage_context,
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
     scoped_refptr<DevToolsBackgroundServicesContextImpl> devtools_context)
     : base::RefCountedDeleteOnSequence<BackgroundFetchContext>(
-          base::CreateSequencedTaskRunner(
-              {ServiceWorkerContext::GetCoreThreadId()})),
+          BrowserThread::GetTaskRunnerForThread(
+              ServiceWorkerContext::GetCoreThreadId())),
       browser_context_(browser_context),
       service_worker_context_(service_worker_context),
       devtools_context_(std::move(devtools_context)),
@@ -51,7 +50,7 @@ BackgroundFetchContext::BackgroundFetchContext(
   DCHECK(service_worker_context_);
 
   data_manager_ = std::make_unique<BackgroundFetchDataManager>(
-      browser_context_, service_worker_context, cache_storage_context,
+      browser_context_, storage_partition, service_worker_context,
       std::move(quota_manager_proxy));
   scheduler_ = std::make_unique<BackgroundFetchScheduler>(
       this, data_manager_.get(), registration_notifier_.get(), &delegate_proxy_,

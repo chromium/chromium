@@ -59,17 +59,7 @@ class TestDevicePermissionsPrompt
 
   void ShowDialog() override { prompt()->SetObserver(this); }
 
-  void OnDeviceAdded(size_t index, const base::string16& device_name) override {
-    OnDevicesChanged();
-  }
-
-  void OnDeviceRemoved(size_t index,
-                       const base::string16& device_name) override {
-    OnDevicesChanged();
-  }
-
- private:
-  void OnDevicesChanged() {
+  void OnDevicesInitialized() override {
     if (prompt()->multiple()) {
       for (size_t i = 0; i < prompt()->GetDeviceCount(); ++i) {
         prompt()->GrantDevicePermission(i);
@@ -78,7 +68,7 @@ class TestDevicePermissionsPrompt
     } else {
       for (size_t i = 0; i < prompt()->GetDeviceCount(); ++i) {
         // Always choose the device whose serial number is "A".
-        if (prompt()->GetDeviceSerialNumber(i) == base::UTF8ToUTF16("A")) {
+        if (prompt()->GetDeviceSerialNumber(i) == u"A") {
           prompt()->GrantDevicePermission(i);
           prompt()->Dismissed();
           return;
@@ -86,6 +76,12 @@ class TestDevicePermissionsPrompt
       }
     }
   }
+
+  void OnDeviceAdded(size_t index, const std::u16string& device_name) override {
+  }
+
+  void OnDeviceRemoved(size_t index,
+                       const std::u16string& device_name) override {}
 };
 
 class TestExtensionsAPIClient : public ShellExtensionsAPIClient {

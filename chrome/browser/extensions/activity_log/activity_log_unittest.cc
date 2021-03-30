@@ -18,14 +18,14 @@
 #include "chrome/browser/extensions/activity_log/activity_log_task_runner.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
-#include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
+#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/prefetch/no_state_prefetch/prerender_test_utils.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/no_state_prefetch/browser/prerender_handle.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -34,6 +34,7 @@
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/dom_action_types.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/mojom/renderer.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -80,9 +81,42 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
   void ActivateExtension(const std::string& extension_id) override {}
   void SetActivityLoggingEnabled(bool enabled) override {}
   void UnloadExtension(const std::string& extension_id) override {}
+  void SuspendExtension(
+      const std::string& extension_id,
+      mojom::Renderer::SuspendExtensionCallback callback) override {
+    std::move(callback).Run();
+  }
+  void CancelSuspendExtension(const std::string& extension_id) override {}
   void SetSessionInfo(version_info::Channel channel,
                       mojom::FeatureSessionType session,
                       bool is_lock_screen_context) override {}
+  void SetSystemFont(const std::string& font_family,
+                     const std::string& font_size) override {}
+  void SetWebViewPartitionID(const std::string& partition_id) override {}
+  void SetScriptingAllowlist(
+      const std::vector<std::string>& extension_ids) override {}
+  void ShouldSuspend(ShouldSuspendCallback callback) override {
+    std::move(callback).Run();
+  }
+  void TransferBlobs(TransferBlobsCallback callback) override {
+    std::move(callback).Run();
+  }
+  void UpdateDefaultPolicyHostRestrictions(
+      const URLPatternSet& default_policy_blocked_hosts,
+      const URLPatternSet& default_policy_allowed_hosts) override {}
+  void UpdateTabSpecificPermissions(const std::string& extension_id,
+                                    const URLPatternSet& new_hosts,
+                                    int tab_id,
+                                    bool update_origin_whitelist) override {}
+  void UpdateUserScripts(base::ReadOnlySharedMemoryRegion shared_memory,
+                         mojom::HostIDPtr host_id,
+                         std::vector<mojom::HostIDPtr> changed_hosts,
+                         bool allowlisted_only) override {}
+  void ClearTabSpecificPermissions(
+      const std::vector<std::string>& extension_ids,
+      int tab_id,
+      bool update_origin_whitelist) override {}
+  void WatchPages(const std::vector<std::string>& css_selectors) override {}
 
   mojo::AssociatedReceiverSet<mojom::Renderer> receivers_;
 };
@@ -126,8 +160,8 @@ class ActivityLogTest : public ChromeRenderViewHostTestHarness {
 
   void TearDown() override {
     base::RunLoop().RunUntilIdle();
-    SetActivityLogTaskRunnerForTesting(nullptr);
     ChromeRenderViewHostTestHarness::TearDown();
+    SetActivityLogTaskRunnerForTesting(nullptr);
   }
 
   static void RetrieveActions_LogAndFetchActions0(
@@ -288,21 +322,21 @@ TEST_F(ActivityLogTest, LogPrerender) {
   ASSERT_TRUE(GetDatabaseEnabled());
   GURL url("http://www.google.com");
 
-  prerender::PrerenderManager* prerender_manager =
-      prerender::PrerenderManagerFactory::GetForBrowserContext(profile());
+  prerender::NoStatePrefetchManager* no_state_prefetch_manager =
+      prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(profile());
 
   const gfx::Size kSize(640, 480);
-  std::unique_ptr<prerender::PrerenderHandle> prerender_handle(
-      prerender_manager->AddPrerenderFromOmnibox(
+  std::unique_ptr<prerender::NoStatePrefetchHandle> no_state_prefetch_handle(
+      no_state_prefetch_manager->AddPrerenderFromOmnibox(
           url,
           web_contents()->GetController().GetDefaultSessionStorageNamespace(),
           kSize));
 
   const std::vector<content::WebContents*> contentses =
-      prerender_manager->GetAllNoStatePrefetchingContentsForTesting();
+      no_state_prefetch_manager->GetAllNoStatePrefetchingContentsForTesting();
   ASSERT_EQ(1U, contentses.size());
   content::WebContents *contents = contentses[0];
-  ASSERT_TRUE(prerender_manager->IsWebContentsPrerendering(contents));
+  ASSERT_TRUE(no_state_prefetch_manager->IsWebContentsPrerendering(contents));
 
   activity_log->OnScriptsExecuted(contents, {{extension->id(), {"script"}}},
                                   url);
@@ -311,7 +345,7 @@ TEST_F(ActivityLogTest, LogPrerender) {
       extension->id(), Action::ACTION_ANY, "", "", "", 0,
       base::BindOnce(ActivityLogTest::Arguments_Prerender));
 
-  prerender_manager->CancelAllPrerenders();
+  no_state_prefetch_manager->CancelAllPrerenders();
 }
 
 TEST_F(ActivityLogTest, ArgUrlExtraction) {

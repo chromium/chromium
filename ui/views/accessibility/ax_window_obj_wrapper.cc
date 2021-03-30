@@ -81,7 +81,7 @@ AXWindowObjWrapper::AXWindowObjWrapper(AXAuraObjCache* aura_obj_cache,
     : AXAuraObjWrapper(aura_obj_cache),
       window_(window),
       is_root_window_(window->IsRootWindow()) {
-  observer_.Add(window);
+  observation_.Observe(window);
 
   if (is_root_window_)
     aura_obj_cache_->OnRootWindowObjCreated(window);
@@ -98,20 +98,29 @@ bool AXWindowObjWrapper::HandleAccessibleAction(
   return false;
 }
 
-bool AXWindowObjWrapper::IsIgnored() {
-  return false;
-}
-
 AXAuraObjWrapper* AXWindowObjWrapper::GetParent() {
   aura::Window* parent = window_->parent();
   if (!parent)
     return nullptr;
+
+  if (parent->GetProperty(ui::kChildAXTreeID) &&
+      ui::AXTreeID::FromString(*(parent->GetProperty(ui::kChildAXTreeID))) !=
+          ui::AXTreeIDUnknown()) {
+    return nullptr;
+  }
 
   return aura_obj_cache_->GetOrCreate(parent);
 }
 
 void AXWindowObjWrapper::GetChildren(
     std::vector<AXAuraObjWrapper*>* out_children) {
+  // Ignore this window's descendants if it has a child tree.
+  if (window_->GetProperty(ui::kChildAXTreeID) &&
+      ui::AXTreeID::FromString(*(window_->GetProperty(ui::kChildAXTreeID))) !=
+          ui::AXTreeIDUnknown()) {
+    return;
+  }
+
   for (auto* child : window_->children())
     out_children->push_back(aura_obj_cache_->GetOrCreate(child));
 
@@ -136,32 +145,34 @@ void AXWindowObjWrapper::Serialize(ui::AXNodeData* out_node_data) {
   out_node_data->relative_bounds.bounds =
       gfx::RectF(window_->GetBoundsInScreen());
   std::string* child_ax_tree_id_ptr = window_->GetProperty(ui::kChildAXTreeID);
-  if (child_ax_tree_id_ptr && ui::AXTreeID::FromString(*child_ax_tree_id_ptr) !=
-                                  ui::AXTreeIDUnknown()) {
-    // Most often, child AX trees are parented to Views. We need to handle
-    // the case where they're not here, but we don't want the same AX tree
-    // to be a child of two different parents.
-    //
-    // To avoid this double-parenting, only add the child tree ID of this
-    // window if the top-level window doesn't have an associated Widget.
-    //
-    // Also, if this window is not visible, its child tree should also be
-    // non-visible so prune it.
-    if (!window_->GetToplevelWindow() ||
-        GetWidgetForWindow(window_->GetToplevelWindow()) ||
-        !window_->IsVisible()) {
-      return;
-    }
+  if (child_ax_tree_id_ptr) {
+    ui::AXTreeID child_ax_tree_id =
+        ui::AXTreeID::FromString(*child_ax_tree_id_ptr);
+    if (child_ax_tree_id != ui::AXTreeIDUnknown()) {
+      // Most often, child AX trees are parented to Views. We need to handle
+      // the case where they're not here, but we don't want the same AX tree
+      // to be a child of two different parents.
+      //
+      // To avoid this double-parenting, only add the child tree ID of this
+      // window if the top-level window doesn't have an associated Widget.
+      //
+      // Also, if this window is not visible, its child tree should also be
+      // non-visible so prune it.
+      if (!window_->GetToplevelWindow() ||
+          GetWidgetForWindow(window_->GetToplevelWindow()) ||
+          !window_->IsVisible()) {
+        return;
+      }
 
-    out_node_data->AddStringAttribute(ax::mojom::StringAttribute::kChildTreeId,
-                                      *child_ax_tree_id_ptr);
+      out_node_data->AddChildTreeId(child_ax_tree_id);
+    }
   }
 
   out_node_data->AddStringAttribute(ax::mojom::StringAttribute::kClassName,
                                     GetWindowName(window_));
 }
 
-int32_t AXWindowObjWrapper::GetUniqueId() const {
+ui::AXNodeID AXWindowObjWrapper::GetUniqueId() const {
   return unique_id_.Get();
 }
 

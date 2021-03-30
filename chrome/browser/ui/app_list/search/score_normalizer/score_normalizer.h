@@ -11,25 +11,62 @@
 #include "base/logging.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ui/app_list/search/score_normalizer/balanced_reservoir.h"
 #include "components/prefs/pref_service.h"
 
 namespace app_list {
 
-// The launcher takes scores from providers, these all have different
-// distributions and ranges, which makes them difficult to compare. Here we have
-// implemented a way to normalize ChromeSearchResults so relevance scores can be
-// compared for the launcher.
+// ScoreNormalizer is responsible for normalizing relevance scores of search
+// results from providers. It learns to transform all scores to a uniformly
+// distributed normalized score between 0 to 1. The launcher takes scores of
+// results from many providers, these all have different distributions and
+// ranges, which makes them difficult to compare. After normalizing the
+// relevance scores can be compared and ranked in the launcher. This class
+// should only be initialized in a provider class where it can be called to
+// record and normalize scores.
+//
+// To normalize scores the ScoreNormalizer uses a BalancedReservoir. The
+// BalancedReservoir stores a subset of the search result scores, this subset of
+// scores is called dividers. To normalize a score, the quantile of that score
+// in the dividers is returned, this is always a value in (0,1). If a normalized
+// score of 1 is returned, this is either due to empty dividers or index out of
+// range when finding which index the score is in the dividers. The dividers are
+// updated such that the counts of scores observed between each divider remains
+// balanced. Each pair of adjacent dividers forms a histogram bin. To ensure
+// bins remain balanced with each new score added bins are:
+// 1. Split by adding the new score in between dividers.
+// 2. Smallest bins are then merged.
+// The L2 error is calculated to ensure splits and merges improve the balance of
+// the reservoir.
+//
+// Use of the ScoreNormalizer:
+// - Initialization. A profile is required since information about the provider
+// scores in the BalancedReservoir class are stored in prefs. The reservoir size
+// can be set to 25, or any other positive integer.
+// - RecordResults() should be called right before new results are swapped in
+// for old results in the providers. This updates the BalancedReservoir with the
+// provider's score distribution.
+// - NormalizeResults() should then be called. This changes the relevance scores
+// of the ChromeSearchResult in place with the normalized score.
 class ScoreNormalizer {
  public:
   using Results = std::vector<std::unique_ptr<ChromeSearchResult>>;
 
-  ScoreNormalizer(const std::string& provider, Profile* profile);
+  ScoreNormalizer(const std::string& provider,
+                  Profile* profile,
+                  const int reservoir_size);
 
   ~ScoreNormalizer();
 
-  // Record the results from a provider. Results are first converted into a
-  // vector of doubles and the distribution is then updated.
-  void Record(const Results& search_results);
+  ScoreNormalizer(const ScoreNormalizer&) = delete;
+  ScoreNormalizer& operator=(const ScoreNormalizer&) = delete;
+
+  // Records a score and updates the distribution by splitting and merging bins
+  // if there is an improvement in the error.
+  void RecordScore(const double score);
+
+  // Records the results from a provider and updates the distribution.
+  void RecordResults(const Results& results);
 
   // Takes the score from the provider and uses the
   // distribution that has been learnt about that provider
@@ -40,32 +77,12 @@ class ScoreNormalizer {
   // score by normalizing the score.
   void NormalizeResults(Results* results);
 
-  std::string get_provider() const { return provider_; }
-
  private:
   friend class ScoreNormalizerTest;
 
-  // Convert Results to a vector of doubles (scores).
-  std::vector<double> ConvertResultsToScores(
-      const ScoreNormalizer::Results& results) const;
-
-  // Updates the mean of the distribution with the new scores.
-  void UpdateDistribution(const std::vector<double>& new_scores);
-
-  // Reads distribution parameters from prefs and updates member variables.
-  // If data in prefs does not exist no update occurs.
-  void ReadPrefs();
-
-  // Writes to the prefs with information on the distribution.
-  void WritePrefs();
-
-  const std::string provider_;
-
-  Profile* profile_;
-
   // Distribution information, these are updated with every Record().
-  int num_results_ = 0;
-  double mean_ = 0;
+  const int reservoir_size_;
+  BalancedReservoir reservoir_;
 };
 
 }  // namespace app_list

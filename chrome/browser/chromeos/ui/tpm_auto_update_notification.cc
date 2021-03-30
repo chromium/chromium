@@ -4,9 +4,10 @@
 
 #include "chrome/browser/chromeos/ui/tpm_auto_update_notification.h"
 
+#include <string>
+
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -23,7 +24,7 @@ constexpr char kTPMAutoUpdateOnRebootNotificationId[] =
 
 void ShowAutoUpdateNotification(
     TpmAutoUpdateUserNotification notification_type) {
-  base::string16 title, text;
+  std::u16string title, text;
   std::string notification_id;
   bool pinned = false;
 
@@ -51,7 +52,7 @@ void ShowAutoUpdateNotification(
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title,
-          text, base::string16() /*display_source*/, GURL(),
+          text, std::u16string() /*display_source*/, GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT, notification_id),
           message_center::RichNotificationData(),

@@ -9,13 +9,18 @@
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_interface_ptr_info.h"
-#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/lib/multiplex_router.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 
 namespace mojo {
+
+template <typename T>
+class PendingAssociatedReceiver;
 
 template <typename T>
 struct PendingAssociatedRemoteConverter;
@@ -82,12 +87,32 @@ class PendingAssociatedRemote {
   uint32_t version() const { return version_; }
   void set_version(uint32_t version) { version_ = version; }
 
-  PendingAssociatedReceiver<Interface> InitWithNewEndpointAndPassReceiver() {
-    ScopedInterfaceEndpointHandle receiver_handle;
-    ScopedInterfaceEndpointHandle::CreatePairPendingAssociation(
-        &handle_, &receiver_handle);
-    set_version(0);
-    return PendingAssociatedReceiver<Interface>(std::move(receiver_handle));
+  PendingAssociatedReceiver<Interface> InitWithNewEndpointAndPassReceiver()
+      WARN_UNUSED_RESULT;
+
+  // Associates this endpoint with a dedicated message pipe. This allows the
+  // entangled AssociatedReceiver/AssociatedRemote endpoints to be used
+  // without ever being associated with any other mojom interfaces.
+  //
+  // Needless to say, messages sent between the two entangled endpoints will
+  // not be ordered with respect to any other mojom interfaces. This is
+  // generally useful for ignoring calls on an associated remote or for
+  // binding associated endpoints in tests.
+  void EnableUnassociatedUsage() {
+    DCHECK(is_valid());
+
+    MessagePipe pipe;
+    scoped_refptr<internal::MultiplexRouter> router0 =
+        new internal::MultiplexRouter(
+            std::move(pipe.handle0), internal::MultiplexRouter::MULTI_INTERFACE,
+            false, base::SequencedTaskRunnerHandle::Get());
+    scoped_refptr<internal::MultiplexRouter> router1 =
+        new internal::MultiplexRouter(
+            std::move(pipe.handle1), internal::MultiplexRouter::MULTI_INTERFACE,
+            true, base::SequencedTaskRunnerHandle::Get());
+
+    InterfaceId id = router1->AssociateInterface(PassHandle());
+    set_handle(router0->CreateLocalEndpointHandle(id));
   }
 
  private:
@@ -106,6 +131,22 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) NullAssociatedRemote {
     return PendingAssociatedRemote<Interface>();
   }
 };
+
+}  // namespace mojo
+
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+
+namespace mojo {
+
+template <typename Interface>
+PendingAssociatedReceiver<Interface>
+PendingAssociatedRemote<Interface>::InitWithNewEndpointAndPassReceiver() {
+  ScopedInterfaceEndpointHandle receiver_handle;
+  ScopedInterfaceEndpointHandle::CreatePairPendingAssociation(&handle_,
+                                                              &receiver_handle);
+  set_version(0);
+  return PendingAssociatedReceiver<Interface>(std::move(receiver_handle));
+}
 
 }  // namespace mojo
 

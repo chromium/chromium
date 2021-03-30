@@ -2178,11 +2178,13 @@ Vector<T, inlineCapacity, Allocator>::Trace(VisitorDispatcher visitor) const {
 
     // Bail out for concurrent marking.
     if (!VectorTraits<T>::kCanTraceConcurrently) {
-      if (visitor->DeferredTraceIfConcurrent(
-              {buffer, internal::DeferredTraceImpl<Allocator, VisitorDispatcher,
-                                                   T, inlineCapacity>},
-              inlineCapacity * sizeof(T)))
+      if (Allocator::DeferTraceToMutatorThreadIfConcurrent(
+              visitor, buffer,
+              internal::DeferredTraceImpl<Allocator, VisitorDispatcher, T,
+                                          inlineCapacity>,
+              inlineCapacity * sizeof(T))) {
         return;
+      }
     }
 
     // Inline buffer requires tracing immediately.

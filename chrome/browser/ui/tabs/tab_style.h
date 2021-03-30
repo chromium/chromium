@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_UI_TABS_TAB_STYLE_H_
 #define CHROME_BROWSER_UI_TABS_TAB_STYLE_H_
 
+#include <tuple>
+
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -74,8 +77,17 @@ class TabStyle {
 
   // Colors for various parts of the tab derived by TabStyle.
   struct TabColors {
-    SkColor foreground_color;
-    SkColor background_color;
+    SkColor foreground_color = gfx::kPlaceholderColor;
+    SkColor background_color = gfx::kPlaceholderColor;
+
+    TabColors() = default;
+    TabColors(SkColor foreground_color, SkColor background_color)
+        : foreground_color(foreground_color),
+          background_color(background_color) {}
+    bool operator==(const TabColors& other) const {
+      return std::tie(foreground_color, background_color) ==
+             std::tie(other.foreground_color, other.background_color);
+    }
   };
 
   TabStyle(const TabStyle&) = delete;

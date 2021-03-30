@@ -205,7 +205,7 @@ std::string SystemSnapshotWin::CPUVendor() const {
 
   crashpad::ScopedRegistryKey scoped_key(key);
   DWORD type;
-  wchar_t vendor_identifier[1024];
+  char16_t vendor_identifier[1024];
   DWORD vendor_identifier_size = sizeof(vendor_identifier);
 
   if (RegQueryValueEx(key,
@@ -219,9 +219,9 @@ std::string SystemSnapshotWin::CPUVendor() const {
   }
 
   std::string return_value;
-  DCHECK_EQ(vendor_identifier_size % sizeof(wchar_t), 0u);
+  DCHECK_EQ(vendor_identifier_size % sizeof(char16_t), 0u);
   base::UTF16ToUTF8(vendor_identifier,
-                    vendor_identifier_size / sizeof(wchar_t),
+                    vendor_identifier_size / sizeof(char16_t),
                     &return_value);
 
   return return_value.c_str();

@@ -7,8 +7,8 @@
 #include "base/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/components/phonehub/connection_manager.h"
 #include "chromeos/components/phonehub/feature_status.h"
+#include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
 
 namespace chromeos {
 namespace phonehub {
@@ -24,7 +24,7 @@ constexpr net::BackoffEntry::Policy kRetryBackoffPolicy = {
 };
 
 ConnectionSchedulerImpl::ConnectionSchedulerImpl(
-    ConnectionManager* connection_manager,
+    secure_channel::ConnectionManager* connection_manager,
     FeatureStatusProvider* feature_status_provider)
     : connection_manager_(connection_manager),
       feature_status_provider_(feature_status_provider),
@@ -50,7 +50,7 @@ void ConnectionSchedulerImpl::ScheduleConnectionNow() {
     return;
   }
 
-  connection_manager_->AttemptConnection();
+  connection_manager_->AttemptNearbyConnection();
 }
 
 void ConnectionSchedulerImpl::OnFeatureStatusChanged() {

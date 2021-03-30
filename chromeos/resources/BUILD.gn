@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//chromeos/assistant/assistant.gni")
+import("//chromeos/components/eche_app_ui/eche_app_ui.gni")
 import("//chromeos/components/help_app_ui/help_app_ui.gni")
 import("//chromeos/components/media_app_ui/media_app_ui.gni")
 import("//tools/grit/grit_rule.gni")
@@ -23,6 +24,7 @@ grit("resources") {
   defines = [
     "enable_cros_libassistant=$enable_cros_libassistant",
     "enable_cros_media_app=$enable_cros_media_app",
+    "enable_cros_eche_app=$enable_cros_eche_app",
   ]
 
   grit_flags = [
@@ -43,8 +45,14 @@ grit("resources") {
 
 # Resources used by chrome://camera-app.
 grit("camera_app_resources") {
-  source = "../components/camera_app_ui/resources/camera_app_resources.grd"
+  enable_input_discovery_for_gn_analyze = false
+  defines =
+      [ "SHARED_INTERMEDIATE_DIR=" + rebase_path(root_gen_dir, root_build_dir) ]
 
+  deps = [ "//chromeos/components/camera_app_ui:build_grd" ]
+
+  camera_app_gen_dir = "$root_gen_dir/chromeos/components/camera_app_ui"
+  source = "$camera_app_gen_dir/chromeos_camera_app_resources.grd"
   outputs = [
     "grit/chromeos_camera_app_resources.h",
     "grit/chromeos_camera_app_resources_map.cc",
@@ -52,14 +60,6 @@ grit("camera_app_resources") {
     "chromeos_camera_app_resources.pak",
   ]
   output_dir = "$root_gen_dir/chromeos"
-
-  deps = [
-    "//chromeos/components/camera_app_ui:mojo_bindings_js",
-    "//chromeos/components/camera_app_ui/resources/js:gen_preload_images_js",
-    "//media/capture/video/chromeos/mojom:cros_camera_js",
-    "//mojo/public/js:bindings_lite",
-    "//third_party/blink/public/mojom:mojom_platform_js",
-  ]
 }
 
 # Resources used by chrome://connectivity-diagnostics
@@ -101,6 +101,7 @@ if (!is_official_build) {
 
     deps = [
       "//chromeos/components/file_manager/mojom:mojom_js",
+      "//chromeos/components/file_manager/resources:build",
       "//chromeos/components/file_manager/resources:gen_main_html",
       "//mojo/public/js:bindings_lite",
     ]
@@ -272,5 +273,63 @@ grit("diagnostics_app_resources") {
     "grit/chromeos_diagnostics_app_resources_map.h",
   ]
 
+  output_dir = "$root_gen_dir/chromeos"
+}
+
+# Resources used by chrome://eche-app
+grit("eche_app_resources") {
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  eche_app_gen_dir = "$root_gen_dir/chromeos/components/eche_app_ui"
+  source = "$eche_app_gen_dir/chromeos_eche_app_resources.grd"
+  deps = [ "//chromeos/components/eche_app_ui:build_grd" ]
+
+  outputs = [
+    "grit/chromeos_eche_app_resources.h",
+    "grit/chromeos_eche_app_resources_map.cc",
+    "grit/chromeos_eche_app_resources_map.h",
+    "chromeos_eche_app_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chromeos"
+}
+
+# Resources automatically served by the chrome://eche-app bundle, obtained via DEPS.
+grit("eche_bundle_resources") {
+  # Obtained via an internal CIPD package in src/DEPS.
+  if (enable_cros_media_app) {
+    # Obtained via an internal CIPD package in src/DEPS.
+    source =
+        "../components/eche_app_ui/resources/prod/eche_bundle_resources.grd"
+  } else {
+    source = "../components/eche_app_ui/resources/mock/eche_bundle_mock_resources.grd"
+  }
+
+  use_brotli = true
+
+  outputs = [
+    "grit/chromeos_eche_bundle_resources.h",
+    "grit/chromeos_eche_bundle_resources_map.cc",
+    "grit/chromeos_eche_bundle_resources_map.h",
+    "chromeos_eche_bundle_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chromeos"
+}
+
+# Resources used by chrome://personalization SWA.
+grit("personalization_app_resources") {
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  personalization_app_gen_dir =
+      "$root_gen_dir/chromeos/components/personalization_app/resources"
+  source =
+      "$personalization_app_gen_dir/chromeos_personalization_app_resources.grd"
+  deps = [ "//chromeos/components/personalization_app/resources:build_grd" ]
+
+  outputs = [
+    "grit/chromeos_personalization_app_resources.h",
+    "grit/chromeos_personalization_app_resources_map.cc",
+    "grit/chromeos_personalization_app_resources_map.h",
+    "chromeos_personalization_app_resources.pak",
+  ]
   output_dir = "$root_gen_dir/chromeos"
 }

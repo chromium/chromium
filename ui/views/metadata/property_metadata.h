@@ -10,14 +10,49 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
+#include "ui/base/class_property.h"
 #include "ui/views/metadata/metadata_cache.h"
 #include "ui/views/metadata/metadata_types.h"
 #include "ui/views/metadata/type_conversion.h"
+#include "ui/views/view.h"
 #include "ui/views/views_export.h"
 
 namespace views {
 namespace metadata {
+namespace internal {
+
+template <typename TSource, typename TTarget, typename = void>
+struct DeRefHelper {
+  static TTarget Get(TSource value) { return value; }
+};
+
+template <typename TSource, typename TTarget>
+struct DeRefHelper<
+    TSource,
+    TTarget,
+    typename std::enable_if<!std::is_same<TSource, TTarget>::value>::type> {
+  static TTarget Get(TSource value) { return *value; }
+};
+
+template <typename TKey, typename TValue>
+struct ClassPropertyMetaDataTypeHelper;
+
+template <typename TKValue_, typename TValue_>
+struct ClassPropertyMetaDataTypeHelper<const ui::ClassProperty<TKValue_>* const,
+                                       TValue_> {
+  using TKValue = TKValue_;
+  using TValue = TValue_;
+
+  // Returns |value| when |TKValue| == |TValue|. Otherwise, TKValue must be the
+  // pointer type to TValue, returns |*value| instead.
+  // This is useful for owned propertyies like ui::ClassProperty<gfx::Insets*>
+  // where we want to inspect the actual value, rather than the pointer.
+  static TValue DeRef(TKValue value) {
+    return DeRefHelper<TKValue, TValue>::Get(value);
+  }
+};
+
+}  // namespace internal
 
 // Represents meta data for a specific read-only property member of class
 // |TClass|, with underlying type |TValue|, as the type of the actual member.
@@ -26,29 +61,36 @@ namespace metadata {
 template <typename TClass,
           typename TValue,
           typename TRet,
-          TRet (TClass::*Get)() const>
-class ClassPropertyReadOnlyMetaData : public MemberMetaDataBase {
+          TRet (TClass::*Get)() const,
+          typename TConverter = TypeConverter<TValue>>
+class ObjectPropertyReadOnlyMetaData : public MemberMetaDataBase {
  public:
   using MemberMetaDataBase::MemberMetaDataBase;
-  ~ClassPropertyReadOnlyMetaData() override = default;
+  ObjectPropertyReadOnlyMetaData(const ObjectPropertyReadOnlyMetaData&) =
+      delete;
+  ObjectPropertyReadOnlyMetaData& operator=(
+      const ObjectPropertyReadOnlyMetaData&) = delete;
+  ~ObjectPropertyReadOnlyMetaData() override = default;
 
-  base::string16 GetValueAsString(void* obj) const override {
-    if (!kIsSerializable)
-      return base::string16();
-    return TypeConverter<TValue>::ToString((static_cast<TClass*>(obj)->*Get)());
+  std::u16string GetValueAsString(View* obj) const override {
+    if (!kTypeIsSerializable && !kTypeIsReadOnly)
+      return std::u16string();
+    return TConverter::ToString((static_cast<TClass*>(obj)->*Get)());
   }
 
   PropertyFlags GetPropertyFlags() const override {
-    return kIsSerializable
+    return kTypeIsSerializable
                ? (PropertyFlags::kReadOnly | PropertyFlags::kSerializable)
                : PropertyFlags::kReadOnly;
   }
 
- private:
-  static constexpr bool kIsSerializable =
-      TypeConverter<TValue>::is_serializable;
+  const char* GetMemberNamePrefix() const override {
+    return TConverter::PropertyNamePrefix();
+  }
 
-  DISALLOW_COPY_AND_ASSIGN(ClassPropertyReadOnlyMetaData);
+ private:
+  static constexpr bool kTypeIsSerializable = TConverter::is_serializable;
+  static constexpr bool kTypeIsReadOnly = TConverter::is_read_only;
 };
 
 // Represents meta data for a specific property member of class |TClass|, with
@@ -61,34 +103,99 @@ template <typename TClass,
           typename TSig,
           TSig Set,
           typename TRet,
-          TRet (TClass::*Get)() const>
-class ClassPropertyMetaData
-    : public ClassPropertyReadOnlyMetaData<TClass, TValue, TRet, Get> {
+          TRet (TClass::*Get)() const,
+          typename TConverter = TypeConverter<TValue>>
+class ObjectPropertyMetaData
+    : public ObjectPropertyReadOnlyMetaData<TClass,
+                                            TValue,
+                                            TRet,
+                                            Get,
+                                            TConverter> {
  public:
-  using ClassPropertyReadOnlyMetaData<TClass, TValue, TRet, Get>::
-      ClassPropertyReadOnlyMetaData;
-  ~ClassPropertyMetaData() override = default;
+  using ObjectPropertyReadOnlyMetaData<TClass, TValue, TRet, Get, TConverter>::
+      ObjectPropertyReadOnlyMetaData;
+  ObjectPropertyMetaData(const ObjectPropertyMetaData&) = delete;
+  ObjectPropertyMetaData& operator=(const ObjectPropertyMetaData&) = delete;
+  ~ObjectPropertyMetaData() override = default;
 
-  void SetValueAsString(void* obj, const base::string16& new_value) override {
-    if (!kIsSerializable)
+  void SetValueAsString(View* obj, const std::u16string& new_value) override {
+    if (!kTypeIsSerializable || kTypeIsReadOnly)
       return;
-    if (base::Optional<TValue> result =
-            TypeConverter<TValue>::FromString(new_value)) {
+    if (base::Optional<TValue> result = TConverter::FromString(new_value)) {
       (static_cast<TClass*>(obj)->*Set)(std::move(result.value()));
     }
   }
 
+  MemberMetaDataBase::ValueStrings GetValidValues() const override {
+    if (!kTypeIsSerializable)
+      return {};
+    return TConverter::GetValidStrings();
+  }
+
   PropertyFlags GetPropertyFlags() const override {
-    return kIsSerializable
-               ? (PropertyFlags::kEmpty | PropertyFlags::kSerializable)
-               : PropertyFlags::kEmpty;
+    PropertyFlags flags = PropertyFlags::kEmpty;
+    if (kTypeIsSerializable)
+      flags = flags | PropertyFlags::kSerializable;
+    if (kTypeIsReadOnly)
+      flags = flags | PropertyFlags::kReadOnly;
+    return flags;
   }
 
  private:
-  static constexpr bool kIsSerializable =
-      TypeConverter<TValue>::is_serializable;
+  static constexpr bool kTypeIsSerializable = TConverter::is_serializable;
+  static constexpr bool kTypeIsReadOnly = TConverter::is_read_only;
+};
 
-  DISALLOW_COPY_AND_ASSIGN(ClassPropertyMetaData);
+// Represents metadata for a ui::ClassProperty attached on a class instance.
+// Converts property value to |TValue| when possible. This allows inspecting
+// the actual value when the property is a pointer of type |TValue*|.
+template <typename TKey,
+          typename TValue,
+          typename TConverter = TypeConverter<TValue>>
+class ClassPropertyMetaData : public MemberMetaDataBase {
+ public:
+  using TypeHelper = internal::ClassPropertyMetaDataTypeHelper<TKey, TValue>;
+  ClassPropertyMetaData(TKey key, const std::string& property_type)
+      : MemberMetaDataBase(key->name, property_type), key_(key) {}
+  ClassPropertyMetaData(const ClassPropertyMetaData&) = delete;
+  ClassPropertyMetaData& operator=(const ClassPropertyMetaData&) = delete;
+  ~ClassPropertyMetaData() override = default;
+
+  // Returns the property value as a string.
+  // If the property value is an pointer of type |TKValue*| and
+  // |TKValue| == |TValue|, dereferences the pointer.
+  std::u16string GetValueAsString(View* obj) const override {
+    typename TypeHelper::TKValue value = obj->GetProperty(key_);
+    if (std::is_pointer<typename TypeHelper::TKValue>::value && !value) {
+      return u"(not assigned)";
+    } else {
+      // GetProperty() returns a pointer when this is an owned property.
+      // If |TValue| is not pointer, DeRef() returns |*value|, otherwise
+      // it returns |value| as it is.
+      return TConverter::ToString(TypeHelper::DeRef(value));
+    }
+  }
+
+  void SetValueAsString(View* obj, const std::u16string& new_value) override {
+    base::Optional<TValue> value = TConverter::FromString(new_value);
+    if (value)
+      obj->SetProperty(key_, *value);
+  }
+
+  PropertyFlags GetPropertyFlags() const override {
+    PropertyFlags flags = PropertyFlags::kEmpty;
+    if (kTypeIsSerializable)
+      flags = flags | PropertyFlags::kSerializable;
+    if (kTypeIsReadOnly)
+      flags = flags | PropertyFlags::kReadOnly;
+    return flags;
+  }
+
+ private:
+  TKey key_;
+
+  static constexpr bool kTypeIsSerializable = TConverter::is_serializable;
+  static constexpr bool kTypeIsReadOnly = TConverter::is_read_only;
 };
 
 }  // namespace metadata

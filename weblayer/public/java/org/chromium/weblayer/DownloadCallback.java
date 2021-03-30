@@ -38,8 +38,6 @@ public abstract class DownloadCallback {
      * @param requestInitiator the initiating Uri, if present
      * @param callback a callback to allow or disallow the download. Must be called to avoid leaks,
      *         and must be called on the UI thread.
-     *
-     * @since 81
      */
     public abstract void allowDownload(@NonNull Uri uri, @NonNull String requestMethod,
             @Nullable Uri requestInitiator, @NonNull ValueCallback<Boolean> callback);
@@ -52,8 +50,6 @@ public abstract class DownloadCallback {
      * destroyed.
      *
      * @param download the unique object for this download.
-     *
-     * @since 81
      */
     public void onDownloadStarted(@NonNull Download download) {}
 
@@ -61,8 +57,6 @@ public abstract class DownloadCallback {
      * The download progress has changed.
      *
      * @param download the unique object for this download.
-     *
-     * @since 81
      */
     public void onDownloadProgressChanged(@NonNull Download download) {}
 
@@ -73,8 +67,6 @@ public abstract class DownloadCallback {
      * to it afterward.
      *
      * @param download the unique object for this download.
-     *
-     * @since 81
      */
     public void onDownloadCompleted(@NonNull Download download) {}
 
@@ -86,8 +78,6 @@ public abstract class DownloadCallback {
      * to it afterward.
      *
      * @param download the unique object for this download.
-     *
-     * @since 81
      */
     public void onDownloadFailed(@NonNull Download download) {}
 }

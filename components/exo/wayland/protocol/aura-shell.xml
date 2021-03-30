@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="14">
+  <interface name="zaura_shell" version="17">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -95,7 +95,7 @@
     </event>
   </interface>
 
-  <interface name="zaura_surface" version="12">
+  <interface name="zaura_surface" version="17">
     <description summary="aura shell interface to a wl_surface">
       An additional interface to a wl_surface object, which allows the
       client to access aura shell specific functionality for surface.
@@ -262,6 +262,70 @@
       <arg name="client_surface_id" type="string" />
     </request>
 
+    <!-- Version 15 additions -->
+
+    <request name="set_server_start_resize" since="15">
+      <description summary="request a server-side shadow for surface">
+	Suggests a surface to have client-side decoration, but
+	server-side decides when and where to start the resize. The server may also
+	apply visual effects to indicate that the resize operation is ongoing.
+      </description>
+    </request>
+
+    <!-- Version 16 additions -->
+
+    <enum name="snap_direction">
+      <description summary="surface snap directions">
+        Surface snap directions.
+      </description>
+      <entry name="none" value="0" summary=""/>
+      <entry name="left" value="1" summary=""/>
+      <entry name="right" value="2" summary=""/>
+    </enum>
+
+    <request name="intent_to_snap" since="16">
+      <description summary="client intents to snap the surface.">
+        Notify (or inform) the server the client's intent to snap the window.
+        To inform it's no longer willing to snap, send 'none'.
+      </description>
+      <arg name="direction" type="uint" enum="snap_direction"/>
+    </request>
+
+    <request name="set_snap_left" since="16">
+      <description summary="snap the surface to the left.">
+        Request that surface is snapped to the left.
+      </description>
+    </request>
+
+    <request name="set_snap_right" since="16">
+      <description summary="snap the surface to the right.">
+        Request that surface is snapped to the right.
+      </description>
+    </request>
+
+    <request name="unset_snap" since="16">
+      <description summary="Unset the surface snap.">
+        Request that surface resets snapping.
+      </description>
+    </request>
+
+    <!-- Version 17 additions -->
+
+    <event name="lock_frame_normal" since="17">
+      <description summary="Notify the client that server intent to lock window in normal or restore state">
+        Notifies the client to lock window in normal or restore state. When
+        window is locked, the window frame should look like it is in restored
+        state, but actually isn't. Locking happends while dragging a maximized
+        window.
+      </description>
+    </event>
+
+    <event name="unlock_frame_normal" since="17">
+      <description summary="Notify the client that server intent to unlock window's normal or restore state">
+        Notifies the client to unlock window if it is previously locked.
+        Unlocking happends while dragging a maximized window.
+      </description>
+    </event>
   </interface>
 
   <interface name="zaura_output" version="6">

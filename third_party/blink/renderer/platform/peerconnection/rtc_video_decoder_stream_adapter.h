@@ -18,16 +18,17 @@
 #include "media/base/media_switches.h"
 #include "media/base/overlay_info.h"
 #include "media/base/status.h"
+#include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_decoder_config.h"
 #include "media/filters/decoder_stream.h"
-#include "media/video/supported_video_decoder_config.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 #include "third_party/webrtc/modules/video_coding/include/video_codec_interface.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace base {
@@ -39,7 +40,6 @@ class DecoderBuffer;
 class DecoderFactory;
 class GpuVideoAcceleratorFactories;
 class MediaLog;
-class VideoFrame;
 }  // namespace media
 
 namespace blink {
@@ -63,11 +63,14 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
     : public webrtc::VideoDecoder {
  public:
   // Creates and initializes an RTCVideoDecoderStreamAdapter. Returns nullptr if
-  // |format| cannot be supported.
+  // |format| cannot be supported. The gpu_factories may be null, in which case
+  // only SW decoders will be used.
   // Called on the worker thread.
   static std::unique_ptr<RTCVideoDecoderStreamAdapter> Create(
       media::GpuVideoAcceleratorFactories* gpu_factories,
       media::DecoderFactory* decoder_factory,
+      scoped_refptr<base::SequencedTaskRunner> media_task_runner,
+      const gfx::ColorSpace& render_color_space,
       const webrtc::SdpVideoFormat& format);
 
   // Called on |media_task_runner_|.
@@ -87,7 +90,7 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
   // Called on the worker thread and on the DecodingThread.
   int32_t Release() override;
   // Called on the worker thread and on the DecodingThread.
-  const char* ImplementationName() const override;
+  DecoderInfo GetDecoderInfo() const override;
 
  private:
   class InternalDemuxerStream;
@@ -104,6 +107,8 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
   RTCVideoDecoderStreamAdapter(
       media::GpuVideoAcceleratorFactories* gpu_factories,
       media::DecoderFactory* decoder_factory,
+      scoped_refptr<base::SequencedTaskRunner> media_task_runner,
+      const gfx::ColorSpace& render_color_space,
       const media::VideoDecoderConfig& config,
       const webrtc::SdpVideoFormat& format);
 
@@ -112,8 +117,7 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
                                InitCB init_cb);
   void OnInitializeDone(base::TimeTicks start_time, bool success);
   void DecodeOnMediaThread(std::unique_ptr<PendingBuffer>);
-  void OnFrameReady(media::VideoDecoderStream::ReadStatus status,
-                    scoped_refptr<media::VideoFrame> frame);
+  void OnFrameReady(media::VideoDecoderStream::ReadResult result);
 
   bool ShouldReinitializeForSettingHDRColorSpace(
       const webrtc::EncodedImage& input_image) const;
@@ -145,6 +149,7 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
   const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   media::GpuVideoAcceleratorFactories* const gpu_factories_;
   media::DecoderFactory* const decoder_factory_;
+  gfx::ColorSpace render_color_space_;
   const webrtc::SdpVideoFormat format_;
   media::VideoDecoderConfig config_;
 
@@ -156,7 +161,6 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
   // Decoding thread members.
   bool key_frame_required_ = true;
   webrtc::VideoCodecType video_codec_type_ = webrtc::kVideoCodecGeneric;
-  webrtc::DecodedImageCallback* decode_complete_callback_ = nullptr;
 
   // Shared members.
   mutable base::Lock lock_;
@@ -172,8 +176,11 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
   bool init_decode_complete_ GUARDED_BY(lock_) = false;
   // Have we logged init status yet?
   bool logged_init_status_ GUARDED_BY(lock_) = false;
-  // Current decoder name, as reported by ImplementationName().
-  std::string decoder_name_ GUARDED_BY(lock_) = "ExternalDecoder";
+  // Current decoder info, as reported by GetDecoderInfo().
+  webrtc::VideoDecoder::DecoderInfo decoder_info_ GUARDED_BY(lock_);
+  // Current decode callback, if any.
+  webrtc::DecodedImageCallback* decode_complete_callback_ GUARDED_BY(lock_) =
+      nullptr;
 
   // Do we have an outstanding `DecoderStream::Read()`?
   // Media thread only.

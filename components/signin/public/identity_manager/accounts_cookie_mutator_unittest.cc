@@ -159,9 +159,9 @@ class AccountsCookieMutatorTest
  private:
   // AccountsCookieMutator::PartitionDelegate
   std::unique_ptr<GaiaAuthFetcher> CreateGaiaAuthFetcherForPartition(
-      GaiaAuthConsumer* consumer) override {
-    return test_signin_client_.CreateGaiaAuthFetcher(consumer,
-                                                     gaia::GaiaSource::kChrome);
+      GaiaAuthConsumer* consumer,
+      const gaia::GaiaSource& source) override {
+    return test_signin_client_.CreateGaiaAuthFetcher(consumer, source);
   }
 
   network::mojom::CookieManager* GetCookieManagerForPartition() override {
@@ -402,7 +402,7 @@ TEST_F(AccountsCookieMutatorTest,
       {account_id, other_account_id}};
   std::unique_ptr<AccountsCookieMutator::SetAccountsInCookieTask> task =
       accounts_cookie_mutator()->SetAccountsInCookieForPartition(
-          this, parameters,
+          this, parameters, gaia::GaiaSource::kChrome,
           base::BindOnce(
               [](base::OnceClosure quit_closure,
                  SetAccountsInCookieResult result) {
@@ -436,7 +436,7 @@ TEST_F(AccountsCookieMutatorTest, SetAccountsInCookieForPartition_Cancel) {
       {account_id, other_account_id}};
   std::unique_ptr<AccountsCookieMutator::SetAccountsInCookieTask> task =
       accounts_cookie_mutator()->SetAccountsInCookieForPartition(
-          this, parameters,
+          this, parameters, gaia::GaiaSource::kChrome,
           base::BindOnce([](SetAccountsInCookieResult) { NOTREACHED(); }));
   task.reset();
 }

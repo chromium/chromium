@@ -58,10 +58,6 @@ const base::Feature kHideFileUrlScheme{
     // need to show the file scheme.
     enabled_by_default_desktop_only};
 
-// Feature used to enable matching short words to bookmarks for suggestions.
-const base::Feature kOmniboxShortBookmarkSuggestions{
-    "OmniboxShortBookmarkSuggestions", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Feature used to force on the experiment of transmission of tail suggestions
 // from GWS to this client, currently testing for desktop.
 const base::Feature kOmniboxTailSuggestions{"OmniboxTailSuggestions",
@@ -168,7 +164,7 @@ const base::Feature kOmniboxMaxURLMatches{
 // would be shown. E.g., show up to 10 suggestions if doing so would display no
 // URLs; else show up to 8 suggestions if doing so would include 1 or more URLs.
 const base::Feature kDynamicMaxAutocomplete{"OmniboxDynamicMaxAutocomplete",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+                                            enabled_by_default_desktop_only};
 
 // Feature used to enable bubbling URL suggestions above search suggestions
 // after grouping if 2 conditions are met:
@@ -186,8 +182,8 @@ const base::Feature kClobberTriggersContextualWebZeroSuggest{
 
 // Used to adjust the age threshold since the last visit in order to consider a
 // normalized keyword search term as a zero-prefix suggestion. If disabled, the
-// default value of history::kLowQualityMatchAgeLimitInDays is used. If enabled,
-// the age threshold is determined by this feature's companion parameter,
+// default value of 7 days is used. If enabled, the age threshold is determined
+// by this feature's companion parameter,
 // OmniboxFieldTrial::kOmniboxLocalZeroSuggestAgeThresholdParam.
 const base::Feature kOmniboxLocalZeroSuggestAgeThreshold{
     "OmniboxLocalZeroSuggestAgeThreshold", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -202,8 +198,7 @@ const base::Feature kOmniboxLocalZeroSuggestForAuthenticatedUsers{
 // If enabled, ranks the local zero-prefix suggestions based on frecency
 // (combined frequency and recency).
 const base::Feature kOmniboxLocalZeroSuggestFrecencyRanking{
-    "OmniboxLocalZeroSuggestFrecencyRanking",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    "OmniboxLocalZeroSuggestFrecencyRanking", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Used to force enable/disable trending zero-prefix suggestions on the NTP
 // (Omnibox and NTP realbox). This feature triggers a server-side behavior only
@@ -279,6 +274,21 @@ const base::Feature kDisableCGIParamMatching{"OmniboxDisableCGIParamMatching",
 const base::Feature kNativeVoiceSuggestProvider{
     "OmniboxNativeVoiceSuggestProvider", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Features used to enable matching short inputs to bookmarks for suggestions.
+// By default, if both of the following are disabled, input words shorter than 3
+//   characters won't prefix match bookmarks. E.g., the inputs 'abc x' or 'x'
+//   won't match bookmark text 'abc xyz'.
+// If |kShortBookmarkSuggestions()| is enabled, this limitation is lifted and
+//   both inputs 'abc x' and 'x' can match bookmark text 'abc xyz'.
+// If |kShortBookmarkSuggestionsByTotalInputLength()| is enabled, matching is
+//   limited by input length rather than input word length. Input 'abc x' can
+//   but input 'x' can't match bookmark text 'abc xyz'.
+const base::Feature kShortBookmarkSuggestions{
+    "OmniboxShortBookmarkSuggestions", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kShortBookmarkSuggestionsByTotalInputLength{
+    "OmniboxShortBookmarkSuggestionsByTotalInputLength",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, inputs may match bookmark paths. These path matches won't
 // contribute to scoring. E.g. 'planets jupiter' can suggest a bookmark titled
 // 'Jupiter' with URL 'en.wikipedia.org/wiki/Jupiter' located in a path
@@ -316,6 +326,10 @@ const base::Feature kOmniboxSuggestionButtonRow{
 const base::Feature kOmniboxPedalSuggestions{"OmniboxPedalSuggestions",
                                              enabled_by_default_desktop_only};
 
+// Feature used to enable the second batch of Pedals (Safety Check, etc.).
+const base::Feature kOmniboxPedalsBatch2{"OmniboxPedalsBatch2",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Feature used to enable the keyword search button.
 const base::Feature kOmniboxKeywordSearchButton{
     "OmniboxKeywordSearchButton", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -343,6 +357,11 @@ const base::Feature kIntranetRedirectBehaviorPolicyRollout{
 // Android's built-in voice recognition service. Only works on Android.
 const base::Feature kOmniboxAssistantVoiceSearch{
     "OmniboxAssistantVoiceSearch", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// When enabled, two spaces are required after a keyword to trigger keyword
+// mode. This also overrides KeywordSearchButton disabling space-triggering.
+const base::Feature kDoubleSpaceKeywordTriggering{
+    "OmniboxDoubleSpaceKeywordTriggering", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Feature used to reveal the path, query and ref from steady state URLs
 // on hover.
@@ -373,6 +392,13 @@ const base::Feature kMaybeElideToRegistrableDomain{
 // necessary.
 const base::Feature kDefaultTypedNavigationsToHttps{
     "OmniboxDefaultTypedNavigationsToHttps", base::FEATURE_DISABLED_BY_DEFAULT};
+// Parameter name used to look up the delay before falling back to the HTTP URL
+// while trying an HTTPS URL. The parameter is treated as a TimeDelta, so the
+// unit must be included in the value as well (e.g. 3s for 3 seconds).
+// - If the HTTPS load finishes successfully during this time, the timer is
+//   cleared and no more work is done.
+// - Otherwise, a new navigation to the the fallback HTTP URL is started.
+const char kDefaultTypedNavigationsToHttpsTimeoutParam[] = "timeout";
 
 // NOTE: while this is enabled by default, CCT visits are only tagged with the
 // necessary transition type if the intent launching CCT supplies the

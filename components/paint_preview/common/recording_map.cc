@@ -15,7 +15,7 @@ namespace {
 
 base::FilePath ToFilePath(base::StringPiece path_str) {
 #if defined(OS_WIN)
-  return base::FilePath(base::UTF8ToUTF16(path_str));
+  return base::FilePath(base::UTF8ToWide(path_str));
 #else
   return base::FilePath(path_str);
 #endif

@@ -43,7 +43,7 @@ WeakPersistent<T> WrapWeakPersistent(
 }
 
 template <typename T>
-CrossThreadPersistent<T> WrapCrossthreadPersistent(
+CrossThreadPersistent<T> WrapCrossThreadPersistent(
     T* value,
     const cppgc::SourceLocation& loc = cppgc::SourceLocation::Current()) {
   return CrossThreadPersistent<T>(value, loc);
@@ -56,40 +56,24 @@ CrossThreadWeakPersistent<T> WrapCrossThreadWeakPersistent(
   return CrossThreadWeakPersistent<T>(value, loc);
 }
 
-template <typename T,
-          typename = std::enable_if_t<WTF::IsGarbageCollectedType<T>::value>>
-Persistent<T> WrapPersistentIfNeeded(T* value) {
-  return Persistent<T>(value);
-}
-
-template <typename T>
-T& WrapPersistentIfNeeded(T& value) {
-  return value;
-}
-
 #if BUILDFLAG(RAW_HEAP_SNAPSHOTS)
 #define PERSISTENT_FROM_HERE PersistentLocation::Current()
 #else
 #define PERSISTENT_FROM_HERE PersistentLocation()
 #endif  // BUILDFLAG(RAW_HEAP_SNAPSHOTS)
 
+template <typename U, typename T, typename weakness>
+cppgc::internal::BasicPersistent<U, weakness> DownCast(
+    const cppgc::internal::BasicPersistent<T, weakness>& p) {
+  return p.template To<U>();
+}
+
+template <typename U, typename T, typename weakness>
+cppgc::internal::BasicCrossThreadPersistent<U, weakness> DownCast(
+    const cppgc::internal::BasicCrossThreadPersistent<T, weakness>& p) {
+  return p.template To<U>();
+}
+
 }  // namespace blink
-
-namespace base {
-
-template <typename T>
-struct IsWeakReceiver<blink::WeakPersistent<T>> : std::true_type {};
-
-template <typename T>
-struct IsWeakReceiver<blink::CrossThreadWeakPersistent<T>> : std::true_type {};
-
-template <typename T>
-struct BindUnwrapTraits<blink::CrossThreadWeakPersistent<T>> {
-  static blink::CrossThreadPersistent<T> Unwrap(
-      const blink::CrossThreadWeakPersistent<T>& wrapped) {
-    return blink::CrossThreadPersistent<T>(wrapped);
-  }
-};
-}  // namespace base
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_PERSISTENT_H_

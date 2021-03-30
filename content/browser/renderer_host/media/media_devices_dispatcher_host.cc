@@ -17,6 +17,7 @@
 #include "base/task_runner_util.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/media/media_devices_permission_checker.h"
+#include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
@@ -76,8 +77,8 @@ void MediaDevicesDispatcherHost::Create(
           render_process_id, render_frame_id, media_stream_manager),
       std::move(receiver));
 
-  base::PostTask(FROM_HERE, {BrowserThread::UI},
-                 base::BindOnce(
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(
                      [](int render_process_id, int render_frame_id) {
                        RenderFrameHost* render_frame_host =
                            RenderFrameHost::FromID(render_process_id,
@@ -87,7 +88,10 @@ void MediaDevicesDispatcherHost::Create(
                          return;
 
                        BackForwardCache::DisableForRenderFrameHost(
-                           render_frame_host, "MediaDevicesDispatcherHost");
+                           render_frame_host,
+                           BackForwardCacheDisable::DisabledReason(
+                               BackForwardCacheDisable::DisabledReasonId::
+                                   kMediaDevicesDispatcherHost));
                      },
                      render_process_id, render_frame_id));
 }

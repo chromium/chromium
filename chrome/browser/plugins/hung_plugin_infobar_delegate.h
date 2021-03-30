@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_PLUGINS_HUNG_PLUGIN_INFOBAR_DELEGATE_H_
 #define CHROME_BROWSER_PLUGINS_HUNG_PLUGIN_INFOBAR_DELEGATE_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
 class HungPluginTabHelper;
@@ -18,27 +19,27 @@ class HungPluginInfoBarDelegate : public ConfirmInfoBarDelegate {
   static infobars::InfoBar* Create(InfoBarService* infobar_service,
                                    HungPluginTabHelper* helper,
                                    int plugin_child_id,
-                                   const base::string16& plugin_name);
+                                   const std::u16string& plugin_name);
 
  private:
   HungPluginInfoBarDelegate(HungPluginTabHelper* helper,
                             int plugin_child_id,
-                            const base::string16& plugin_name);
+                            const std::u16string& plugin_name);
   ~HungPluginInfoBarDelegate() override;
 
   // ConfirmInfoBarDelegate:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-  base::string16 GetMessageText() const override;
+  std::u16string GetMessageText() const override;
   int GetButtons() const override;
-  base::string16 GetButtonLabel(InfoBarButton button) const override;
+  std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool Accept() override;
 
   HungPluginTabHelper* helper_;
   int plugin_child_id_;
 
-  base::string16 message_;
-  base::string16 button_text_;
+  std::u16string message_;
+  std::u16string button_text_;
 };
 
 #endif  // CHROME_BROWSER_PLUGINS_HUNG_PLUGIN_INFOBAR_DELEGATE_H_

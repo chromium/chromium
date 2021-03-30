@@ -66,7 +66,10 @@
          navigation bar colors from being applied -->
     <style name="Theme.Chromium.SearchActivity" parent="Base.Theme.Chromium.WithWindowAnimation" />
 
-    <style name="Base.Theme.Chromium.TabbedMode" parent="Theme.Chromium.WithWindowAnimation" />
+    <style name="Base.Theme.Chromium.TabbedMode" parent="Theme.Chromium.WithWindowAnimation">
+        <!-- Attributes for material design component. See https://crbug.com/1186712 -->
+        <item name="colorSurface">@color/material_color_surface</item>
+    </style>
     <style name="Theme.Chromium.TabbedMode" parent="Base.Theme.Chromium.TabbedMode" />
 
     <!-- Web app themes -->
@@ -370,6 +373,10 @@
         <item name="android:background">@color/default_bg_color</item>
     </style>
 
+    <style name="NtpHeaderTabLayoutStyle" parent="TabLayoutStyle">
+        <item name="tabGravity">center</item>
+    </style>
+
     <!-- Misc styles -->
     <style name="LocationBarButton">
         <item name="android:background">@null</item>
@@ -461,13 +468,6 @@
     <style name="NavigationPopupDialog" parent="Widget.AppCompat.Light.ListPopupWindow" />
 
     <!-- Misc text appearance styles -->
-    <style name="TextAppearance.AddToHomeScreenEditText">
-        <item name="android:textSize">18sp</item>
-    </style>
-    <style name="TextAppearance.AddToHomeScreenWebAppName"
-        parent="TextAppearance.TextLarge.Primary">
-        <item name="android:textSize">20sp</item>
-    </style>
     <style name="TextAppearance.SearchEngineRecentTitle" parent="TextAppearance.RobotoMediumStyle">
         <item name="android:textColor">@color/default_text_color_link</item>
     </style>
@@ -551,7 +551,7 @@
 
     <!-- Content and Site Suggestions -->
     <style name="SuggestionCardModern" parent="Card">
-        <item name="android:layout_marginBottom">@dimen/content_suggestions_card_modern_margin</item>
+        <item name="android:layout_marginBottom">@dimen/content_suggestions_card_bottom_margin</item>
     </style>
 
     <!-- Password manager settings page -->

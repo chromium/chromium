@@ -93,17 +93,11 @@ class NGOffsetMappingTest : public NGLayoutTest {
   static const auto kCollapsed = NGOffsetMappingUnitType::kCollapsed;
   static const auto kIdentity = NGOffsetMappingUnitType::kIdentity;
 
-  void SetUp() override {
-    NGLayoutTest::SetUp();
-    style_ = ComputedStyle::Create();
-  }
-
   void SetupHtml(const char* id, String html) {
     SetBodyInnerHTML(html);
     layout_block_flow_ = To<LayoutBlockFlow>(GetLayoutObjectByElementId(id));
     DCHECK(layout_block_flow_->IsLayoutNGMixin());
     layout_object_ = layout_block_flow_->FirstChild();
-    style_ = layout_object_->Style();
   }
 
   const NGOffsetMapping& GetOffsetMapping() const {
@@ -235,7 +229,6 @@ class NGOffsetMappingTest : public NGLayoutTest {
     return GetOffsetMapping().GetLastPosition(offset);
   }
 
-  scoped_refptr<const ComputedStyle> style_;
   LayoutBlockFlow* layout_block_flow_ = nullptr;
   LayoutObject* layout_object_ = nullptr;
   FontCachePurgePreventer purge_preventer_;

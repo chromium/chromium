@@ -112,7 +112,7 @@ WebviewHandler::WebviewHandler() {
 WebviewHandler::~WebviewHandler() {
 }
 
-bool WebviewHandler::Parse(Extension* extension, base::string16* error) {
+bool WebviewHandler::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<WebviewInfo> info(new WebviewInfo(extension->id()));
 
   const base::Value* dict_value = nullptr;

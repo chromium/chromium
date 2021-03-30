@@ -53,7 +53,7 @@ STDMETHODIMP LegacyOnDemandImpl::createApp(BSTR app_id,
 }
 
 STDMETHODIMP LegacyOnDemandImpl::createInstalledApp(BSTR app_id) {
-  set_app_id(base::UTF16ToASCII(app_id));
+  set_app_id(base::WideToASCII(app_id));
   return S_OK;
 }
 

@@ -5,11 +5,12 @@
 import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
+  uses_legacy_modules = true
   testonly = true
   deps = [
     ":remote_call",
     ":test_util",
-    "//ui/file_manager/base/js:volume_manager_types",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
   ]
 }
 

@@ -81,7 +81,7 @@ source_set("utility") {
     ]
   }
 
-  if (is_ash && is_chrome_branded) {
+  if (is_chromeos_ash && is_chrome_branded) {
     deps += [
       "//services/shape_detection:lib",
       "//services/shape_detection/public/mojom",
@@ -94,7 +94,11 @@ source_set("utility") {
   }
 
   if (is_linux || is_chromeos) {
-    deps += [ "//content/utility/speech:speech_recognition_sandbox_hook" ]
+    deps += [
+      "//content/utility/speech:speech_recognition_sandbox_hook",
+      "//printing:printing_sandbox_hook",
+      "//services/network:network_sandbox_hook",
+    ]
   }
 
   if (enable_vr && !is_android) {

@@ -36,8 +36,10 @@ using ChromeInternalLogSourceTest = BrowserWithTestWindowTest;
 
 TEST_F(ChromeInternalLogSourceTest, VersionTagContainsActualVersion) {
   auto response = GetChromeInternalLogs();
-  EXPECT_PRED_FORMAT2(testing::IsSubstring, chrome::GetVersionString(),
-                      response->at("CHROME VERSION"));
+  EXPECT_PRED_FORMAT2(
+      testing::IsSubstring,
+      chrome::GetVersionString(chrome::WithExtendedStable(true)),
+      response->at("CHROME VERSION"));
 }
 
 #if defined(OS_MAC)

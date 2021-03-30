@@ -11,15 +11,15 @@ namespace ash {
 
 std::unique_ptr<message_center::Notification> CreateSystemNotification(
     const std::string& notification_id,
-    const base::string16& title,
-    const base::string16& message,
+    const std::u16string& title,
+    const std::u16string& message,
     const std::string& system_component_id,
     const base::RepeatingClosure& click_callback) {
   DCHECK(!click_callback.is_null());
   std::unique_ptr<message_center::Notification> notification =
       CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title,
-          message, base::string16() /* display_source */, GURL(),
+          message, std::u16string() /* display_source */, GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               system_component_id),
@@ -34,9 +34,9 @@ std::unique_ptr<message_center::Notification> CreateSystemNotification(
 std::unique_ptr<message_center::Notification> CreateSystemNotification(
     message_center::NotificationType type,
     const std::string& id,
-    const base::string16& title,
-    const base::string16& message,
-    const base::string16& display_source,
+    const std::u16string& title,
+    const std::u16string& message,
+    const std::u16string& display_source,
     const GURL& origin_url,
     const message_center::NotifierId& notifier_id,
     const message_center::RichNotificationData& optional_fields,

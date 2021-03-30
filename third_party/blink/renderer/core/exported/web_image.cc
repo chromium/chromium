@@ -34,17 +34,18 @@
 #include <memory>
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/platform/web_data.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
-SkBitmap WebImage::FromData(const WebData& data, const WebSize& desired_size) {
+SkBitmap WebImage::FromData(const WebData& data,
+                            const gfx::Size& desired_size) {
   const bool data_complete = true;
   std::unique_ptr<ImageDecoder> decoder(ImageDecoder::Create(
       data, data_complete, ImageDecoder::kAlphaPremultiplied,
@@ -60,13 +61,13 @@ SkBitmap WebImage::FromData(const WebData& data, const WebSize& desired_size) {
   int frame_area_at_index = 0;
   for (size_t i = 0; i < frame_count; ++i) {
     const IntSize frame_size = decoder->FrameSizeAtIndex(i);
-    if (WebSize(frame_size) == desired_size) {
+    if (gfx::Size(frame_size) == desired_size) {
       index = i;
       break;  // Perfect match.
     }
 
     const int frame_area = frame_size.Width() * frame_size.Height();
-    if (frame_area < (desired_size.width * desired_size.height))
+    if (frame_area < (desired_size.width() * desired_size.height()))
       break;  // No more frames that are large enough.
 
     if (!i || (frame_area < frame_area_at_index)) {
@@ -81,7 +82,8 @@ SkBitmap WebImage::FromData(const WebData& data, const WebSize& desired_size) {
   return frame->Bitmap();
 }
 
-SkBitmap WebImage::DecodeSVG(const WebData& data, const WebSize& desired_size) {
+SkBitmap WebImage::DecodeSVG(const WebData& data,
+                             const gfx::Size& desired_size) {
   scoped_refptr<SVGImage> svg_image = SVGImage::Create(nullptr);
   const bool data_complete = true;
   Image::SizeAvailability size_available =

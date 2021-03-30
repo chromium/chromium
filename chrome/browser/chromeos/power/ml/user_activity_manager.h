@@ -10,7 +10,7 @@
 #include "base/scoped_observer.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/login/users/chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/chromeos/power/ml/boot_clock.h"
 #include "chrome/browser/chromeos/power/ml/idle_event_notifier.h"
 #include "chrome/browser/chromeos/power/ml/user_activity_event.pb.h"
@@ -84,7 +84,7 @@ class UserActivityManager : public ui::UserActivityObserver,
       chromeos::PowerManagerClient* power_manager_client,
       session_manager::SessionManager* session_manager,
       mojo::PendingReceiver<viz::mojom::VideoDetectorObserver> receiver,
-      const chromeos::ChromeUserManager* user_manager);
+      const ChromeUserManager* user_manager);
   ~UserActivityManager() override;
 
   // ui::UserActivityObserver overrides.
@@ -198,7 +198,7 @@ class UserActivityManager : public ui::UserActivityObserver,
 
   mojo::Receiver<viz::mojom::VideoDetectorObserver> receiver_;
 
-  const chromeos::ChromeUserManager* const user_manager_;
+  const ChromeUserManager* const user_manager_;
 
   chromeos::PowerManagerClient* const power_manager_client_;
 

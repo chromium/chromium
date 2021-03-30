@@ -22,6 +22,12 @@ at the top. This can be helpful for checking which WebView version is installed
 & selected on the device.
 ***
 
+*** note
+This is *not* a production quality browser and does not implement suitable
+security UI to be used for anything other than testing WebView. This should not
+be shipped anywhere or used as the basis for implementing a browser.
+***
+
 ## Setting up the build
 
 WebView shell only requires `target_os = "android"`. The simplest option is to

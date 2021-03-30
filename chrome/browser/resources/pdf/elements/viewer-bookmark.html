@@ -1,17 +1,11 @@
     <style>
       #item {
-        align-items: center;
+        align-items: flex-start;
         cursor: pointer;
         display: flex;
-        height: 30px;
+        padding: 5px 0;
         position: relative;
         transition: background-color 100ms ease-out;
-      }
-
-      :host-context([pdf-viewer-update-enabled]) #item {
-        align-items: flex-start;
-        height: initial;
-        padding: 5px 0;
       }
 
       #item:hover {
@@ -19,10 +13,6 @@
       }
 
       #item:active {
-        background-color: rgba(var(--google-grey-900-rgb), 0.25);
-      }
-
-      :host-context([pdf-viewer-update-enabled]) #item:active {
         background-color: rgba(255, 255, 255, 0.25);
       }
 
@@ -30,15 +20,10 @@
         outline: none;
         overflow: hidden;
         text-overflow: ellipsis;
-        white-space: nowrap;
       }
 
       :host-context(.focus-outline-visible) #title:focus {
         outline: auto -webkit-focus-ring-color;
-      }
-
-      :host-context([pdf-viewer-update-enabled]) #title {
-        white-space: initial;
       }
 
       #expand-container {

@@ -68,15 +68,17 @@ class MockPaintCanvas : public cc::PaintCanvas {
                     SkScalar ry,
                     const PaintFlags& flags));
   MOCK_METHOD2(drawPath, void(const SkPath& path, const PaintFlags& flags));
-  MOCK_METHOD4(drawImage,
+  MOCK_METHOD5(drawImage,
                void(const PaintImage& image,
                     SkScalar left,
                     SkScalar top,
+                    const SkSamplingOptions&,
                     const PaintFlags* flags));
-  MOCK_METHOD5(drawImageRect,
+  MOCK_METHOD6(drawImageRect,
                void(const PaintImage& image,
                     const SkRect& src,
                     const SkRect& dst,
+                    const SkSamplingOptions&,
                     const PaintFlags* flags,
                     SkCanvas::SrcRectConstraint constraint));
   MOCK_METHOD3(drawSkottie,

@@ -24,6 +24,7 @@ Klicken Sie zum Erteilen dieser Berechtigung unten auf "<ph name="BUTTON_NAME" /
 Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, entfernen Sie diesen und klicken Sie noch einmal auf das Kästchen.</translation>
 <translation id="225614027745146050">Willkommen</translation>
 <translation id="2320166752086256636">Tastatur ausblenden</translation>
+<translation id="2333212046079545895">Copyright 2021 Google LLC. Alle Rechte vorbehalten.</translation>
 <translation id="2359808026110333948">Weiter</translation>
 <translation id="2366718077645204424">Die Verbindung zum Host kann nicht hergestellt werden. Das von Ihnen verwendete Netzwerk ist möglicherweise nicht korrekt konfiguriert.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> Zuletzt online: <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -71,6 +72,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="4405930547258349619">Zentrale Bibliothek</translation>
 <translation id="443560535555262820">Einstellungen für Bedienungshilfen öffnen</translation>
 <translation id="4450893287417543264">Nicht mehr anzeigen</translation>
+<translation id="4512952200932940229">Copyright 2021 The Chromium Authors. Alle Rechte vorbehalten.</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4563926062592110512">Client getrennt: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4635770493235256822">Remote-Geräte</translation>
@@ -129,7 +131,6 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="7067321367069083429">Bildschirm funktioniert wie ein Touchscreen</translation>
 <translation id="7116737094673640201">Willkommen bei Chrome Remote Desktop</translation>
 <translation id="7144878232160441200">Wiederholen</translation>
-<translation id="724402108658370587">Copyright 2020 Google LLC. Alle Rechte vorbehalten.</translation>
 <translation id="7312846573060934304">Host ist offline.</translation>
 <translation id="7319983568955948908">Freigabe beenden</translation>
 <translation id="7401733114166276557">Chrome Remote Desktop</translation>
@@ -155,7 +156,6 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="8073845705237259513">Wenn Sie Chrome Remote Desktop verwenden möchten, fügen Sie ein Google-Konto zu Ihrem Gerät hinzu.</translation>
 <translation id="809687642899217504">Meine Computer</translation>
 <translation id="8116630183974937060">Ein Netzwerkfehler ist aufgetreten. Bitte überprüfen Sie, ob das Gerät online ist, und versuchen Sie es erneut.</translation>
-<translation id="8187079423890319756">Copyright 2013 Die Chromium-Autoren. Alle Rechte vorbehalten</translation>
 <translation id="8295077433896346116">Sie müssen eine Berechtigung für die Bedienungshilfen erteilen, um <ph name="PRODUCT_NAME" /> zu verwenden. Erst dann kann dieser Mac über Eingaben vom Remote-Computer gesteuert werden.
 
 Klicken Sie zum Erteilen dieser Berechtigung auf "<ph name="BUTTON_NAME" />" unten, um die Einstellungen für die Bedienungshilfen zu öffnen. Klicken Sie dort das Kästchen neben "<ph name="SERVICE_SCRIPT_NAME" />" an.
@@ -174,6 +174,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="8743328882720071828">Möchten Sie zulassen, dass <ph name="CLIENT_USERNAME" /> auf Ihren Computer zugreifen und diesen steuern kann?</translation>
 <translation id="8747048596626351634">Die Sitzung ist abgestürzt oder konnte nicht gestartet werden. Wenn die Datei "~/.chrome-remote-desktop-session" auf dem Remote-Computer vorhanden ist, vergewissern Sie sich, dass ein längerer Vordergrundprozess wie eine Desktopumgebung oder ein Fenstermanager auf dem Computer gestartet wird.</translation>
 <translation id="8804164990146287819">Datenschutzerklärung</translation>
+<translation id="8906511416443321782">Mikrofonzugriff ist erforderlich, um Ton aufzunehmen und ihn auf den Chrome Remote Desktop-Client zu streamen.</translation>
 <translation id="9111855907838866522">Sie sind mit Ihrem Remote-Gerät verbunden. Tippen Sie zum Öffnen des Menüs mit vier Fingern auf den Bildschirm.</translation>
 <translation id="9126115402994542723">Beim Verbinden des Geräts mit diesem Host nicht mehr nach der PIN fragen</translation>
 <translation id="916856682307586697">Standard-XSession starten</translation>

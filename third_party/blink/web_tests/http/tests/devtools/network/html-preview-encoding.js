@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
     'Verifies that html resources are previewed with the encoding set in their content-type header');
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   async function runEncodingTest(url, nextTestCallback) {

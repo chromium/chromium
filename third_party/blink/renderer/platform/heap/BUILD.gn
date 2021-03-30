@@ -54,17 +54,24 @@ blink_platform_sources("heap") {
 
   sources = [
     "blink_gc_memory_dump_provider.h",
+    "collection_support/heap_deque.h",
+    "collection_support/heap_hash_counted_set.h",
+    "collection_support/heap_hash_map.h",
+    "collection_support/heap_hash_set.h",
     "collection_support/heap_hash_table_backing.h",
     "collection_support/heap_linked_hash_set.h",
     "collection_support/heap_linked_stack.h",
     "collection_support/heap_list_hash_set.h",
+    "collection_support/heap_vector.h",
     "collection_support/heap_vector_backing.h",
+    "custom_spaces.h",
     "disallow_new_wrapper.h",
     "garbage_collected.h",
     "gc_task_runner.h",
     "handle.h",
     "heap.h",
     "heap_allocator.h",
+    "heap_allocator_impl.h",
     "heap_stats_collector.h",
     "heap_traits.h",
     "member.h",
@@ -73,6 +80,7 @@ blink_platform_sources("heap") {
     "self_keep_alive.h",
     "thread_state.h",
     "thread_state_scopes.h",
+    "trace_traits.h",
     "unified_heap_controller.h",
     "unified_heap_marking_visitor.h",
     "visitor.h",
@@ -92,12 +100,15 @@ blink_platform_sources("heap") {
   if (enable_blink_heap_use_v8_oilpan) {
     sources += [
       "v8_wrapper/blink_gc.h",
+      "v8_wrapper/blink_gc_memory_dump_provider.cc",
       "v8_wrapper/blink_gc_memory_dump_provider.h",
-      "v8_wrapper/disallow_new_wrapper.h",
+      "v8_wrapper/collection_support/heap_hash_table_backing.h",
+      "v8_wrapper/collection_support/heap_vector_backing.h",
+      "v8_wrapper/custom_spaces.cc",
+      "v8_wrapper/custom_spaces.h",
       "v8_wrapper/garbage_collected.h",
-      "v8_wrapper/gc_task_runner.h",
       "v8_wrapper/heap.h",
-      "v8_wrapper/heap_allocator.h",
+      "v8_wrapper/heap_allocator_impl.h",
       "v8_wrapper/heap_stats_collector.h",
       "v8_wrapper/heap_traits.h",
       "v8_wrapper/member.h",
@@ -106,13 +117,19 @@ blink_platform_sources("heap") {
       "v8_wrapper/thread_state.cc",
       "v8_wrapper/thread_state.h",
       "v8_wrapper/thread_state_scopes.h",
+      "v8_wrapper/trace_traits.h",
       "v8_wrapper/unified_heap_controller.h",
       "v8_wrapper/unified_heap_marking_visitor.h",
       "v8_wrapper/visitor.h",
     ]
 
-    # Dependency on V8 which transitively depends on cppgc but exposes JS-related C++ heap through V8's Isolate.
-    deps += [ "//v8" ]
+    deps += [
+      "//gin:gin",
+
+      # Dependency on V8 which transitively depends on cppgc but exposes
+      # JS-related C++ heap through V8's Isolate.
+      "//v8",
+    ]
   } else {
     sources += [
       "impl/atomic_entry_flag.h",
@@ -120,23 +137,22 @@ blink_platform_sources("heap") {
       "impl/blink_gc.h",
       "impl/blink_gc_memory_dump_provider.cc",
       "impl/blink_gc_memory_dump_provider.h",
-      "impl/disallow_new_wrapper.h",
+      "impl/collection_support/heap_hash_table_backing.h",
+      "impl/collection_support/heap_vector_backing.h",
       "impl/finalizer_traits.h",
       "impl/garbage_collected.h",
       "impl/gc_info.cc",
       "impl/gc_info.h",
-      "impl/gc_task_runner.h",
       "impl/heap.cc",
       "impl/heap.h",
-      "impl/heap_allocator.cc",
-      "impl/heap_allocator.h",
+      "impl/heap_allocator_impl.cc",
+      "impl/heap_allocator_impl.h",
       "impl/heap_compact.cc",
       "impl/heap_compact.h",
       "impl/heap_page.cc",
       "impl/heap_page.h",
       "impl/heap_stats_collector.cc",
       "impl/heap_stats_collector.h",
-      "impl/heap_traits.h",
       "impl/marking_scheduling_oracle.cc",
       "impl/marking_scheduling_oracle.h",
       "impl/marking_verifier.cc",
@@ -190,9 +206,19 @@ source_set("test_support") {
   testonly = true
 
   sources = [
-    "heap_test_utilities.cc",
+    "heap_test_objects.cc",
+    "heap_test_objects.h",
     "heap_test_utilities.h",
   ]
+
+  if (enable_blink_heap_use_v8_oilpan) {
+    sources += [ "v8_wrapper/heap_test_utilities.h" ]
+  } else {
+    sources += [
+      "impl/heap_test_utilities.cc",
+      "impl/heap_test_utilities.h",
+    ]
+  }
 
   deps = [
     ":blink_heap_buildflags",
@@ -202,6 +228,11 @@ source_set("test_support") {
     "//third_party/blink/renderer/platform:platform",
     "//third_party/blink/renderer/platform/wtf:buildflags",
   ]
+
+  if (enable_blink_heap_use_v8_oilpan) {
+    deps += [ "//v8:v8_for_testing" ]
+  }
+
   public_deps = [ "//base/test:test_support" ]
 }
 
@@ -219,29 +250,42 @@ test("blink_heap_unittests") {
 
 source_set("blink_heap_unittests_sources") {
   testonly = true
-  sources = [
-    "../testing/run_all_tests.cc",
-    "test/blink_gc_memory_dump_provider_test.cc",
-    "test/card_table_test.cc",
-    "test/concurrent_marking_test.cc",
-    "test/gc_info_test.cc",
-    "test/heap_compact_test.cc",
-    "test/heap_linked_stack_test.cc",
-    "test/heap_stats_collector_test.cc",
-    "test/heap_test.cc",
-    "test/heap_thread_test.cc",
-    "test/heap_traits_test.cc",
-    "test/incremental_marking_test.cc",
-    "test/marking_scheduling_oracle_test.cc",
-    "test/marking_verifier_test.cc",
-    "test/name_trait_test.cc",
-    "test/object_start_bitmap_test.cc",
-    "test/persistent_test.cc",
-    "test/thread_state_scheduling_test.cc",
-    "test/weakness_marking_test.cc",
-    "test/worklist_test.cc",
-    "test/write_barrier_perftest.cc",
-  ]
+
+  sources = [ "../testing/run_all_tests.cc" ]
+
+  # TODO(1056170): Remove branch after implementing
+  # v8_wrapper/heap_test_utilities.* as tests should work for both
+  # implementations.
+  if (!enable_blink_heap_use_v8_oilpan) {
+    sources += [
+      "test/blink_gc_memory_dump_provider_test.cc",
+      "test/concurrent_marking_test.cc",
+      "test/heap_compact_test.cc",
+      "test/heap_linked_stack_test.cc",
+      "test/heap_test.cc",
+      "test/heap_traits_test.cc",
+      "test/incremental_marking_test.cc",
+      "test/persistent_test.cc",
+      "test/weakness_marking_test.cc",
+      "test/write_barrier_perftest.cc",
+    ]
+  }
+
+  if (!enable_blink_heap_use_v8_oilpan) {
+    sources += [
+      "impl/test/card_table_test.cc",
+      "impl/test/gc_info_test.cc",
+      "impl/test/heap_stats_collector_test.cc",
+      "impl/test/heap_thread_test.cc",
+      "impl/test/incremental_marking_internals_test.cc",
+      "impl/test/marking_scheduling_oracle_test.cc",
+      "impl/test/marking_verifier_test.cc",
+      "impl/test/name_trait_test.cc",
+      "impl/test/object_start_bitmap_test.cc",
+      "impl/test/thread_state_scheduling_test.cc",
+      "impl/test/worklist_test.cc",
+    ]
+  }
 
   if (enable_blink_heap_young_generation) {
     sources += [ "test/minor_gc_test.cc" ]

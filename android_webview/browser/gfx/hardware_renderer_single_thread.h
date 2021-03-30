@@ -44,6 +44,8 @@ class HardwareRendererSingleThread
   void ReclaimResources(
       const std::vector<viz::ReturnedResource>& resources) override;
   void OnBeginFramePausedChanged(bool paused) override;
+  void OnCompositorFrameTransitionDirectiveProcessed(
+      uint32_t sequence_id) override {}
 
   void AllocateSurface();
   void DestroySurface();

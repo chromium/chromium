@@ -57,8 +57,8 @@ class CustomHomePagesTableModel : public ui::TableModel {
 
   // TableModel overrides:
   int RowCount() override;
-  base::string16 GetText(int row, int column_id) override;
-  base::string16 GetTooltip(int row) override;
+  std::u16string GetText(int row, int column_id) override;
+  std::u16string GetTooltip(int row) override;
   void SetObserver(ui::TableModelObserver* observer) override;
 
  private:
@@ -96,7 +96,7 @@ class CustomHomePagesTableModel : public ui::TableModel {
   void RemoveWithoutNotification(int index);
 
   // Returns the URL for a particular row, formatted for display to the user.
-  base::string16 FormattedURL(int row) const;
+  std::u16string FormattedURL(int row) const;
 
   // Set of entries we're showing.
   std::vector<Entry> entries_;

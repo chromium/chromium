@@ -105,8 +105,9 @@ SurfaceFactoryCast::GetAllowedGLImplementations() {
   return impls;
 }
 
-GLOzone* SurfaceFactoryCast::GetGLOzone(gl::GLImplementation implementation) {
-  switch (implementation) {
+GLOzone* SurfaceFactoryCast::GetGLOzone(
+    const gl::GLImplementationParts& implementation) {
+  switch (implementation.gl) {
     case gl::kGLImplementationEGLGLES2:
       return egl_implementation_.get();
     default:

@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/text/text_boundaries.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 
@@ -49,8 +50,8 @@ static bool IsLineBreak(UChar ch) {
 }
 
 static bool IsWordBreak(UChar ch) {
-  return WTF::unicode::IsAlphanumeric(ch) || IsLineBreak(ch) ||
-         ch == kLowLineCharacter || WTF::unicode::IsPunct(ch);
+  return (WTF::unicode::IsPrintableChar(ch) && !IsWhitespace(ch)) ||
+         U16_IS_SURROGATE(ch) || IsLineBreak(ch) || ch == kLowLineCharacter;
 }
 
 PositionInFlatTree EndOfWordPositionInternal(const PositionInFlatTree& position,
@@ -127,17 +128,28 @@ PositionInFlatTree NextWordPositionInternal(
         // Move after line break
         if (IsLineBreak(text[runner]))
           return SkipWhitespaceIfNeeded(text, runner);
-        // Accumulate punctuation runs
+        // Accumulate punctuation/surrogate pair runs.
         if (static_cast<unsigned>(runner) < text.length() &&
-            WTF::unicode::IsPunct(text[runner])) {
+            (WTF::unicode::IsPunct(text[runner]) ||
+             U16_IS_SURROGATE(text[runner]))) {
           if (WTF::unicode::IsAlphanumeric(text[runner - 1]))
             return SkipWhitespaceIfNeeded(text, runner);
           continue;
         }
-        // We stop searching when the character preceding the break is
-        // alphanumeric or punctuations or underscore or linebreaks.
+        // We stop searching in the following conditions:
+        // 1. When the character preceding the break is
+        //    alphanumeric or punctuations or underscore or linebreaks.
+        // Only on Windows:
+        // 2. When the character preceding the break is a whitespace and
+        //    the character following it is an alphanumeric or punctuations
+        //    or underscore or linebreaks.
         if (static_cast<unsigned>(runner) < text.length() &&
             IsWordBreak(text[runner - 1]))
+          return SkipWhitespaceIfNeeded(text, runner);
+        else if (platform_word_behavior_ ==
+                     PlatformWordBehavior::kWordSkipSpaces &&
+                 static_cast<unsigned>(runner) < text.length() &&
+                 IsWhitespace(text[runner - 1]) && IsWordBreak(text[runner]))
           return SkipWhitespaceIfNeeded(text, runner);
       }
       if (text[text.length() - 1] != kNewlineCharacter)
@@ -197,9 +209,10 @@ PositionInFlatTree PreviousWordPositionInternal(
       int punct_runner = -1;
       for (int runner = it->preceding(offset); runner != kTextBreakDone;
            runner = it->preceding(runner)) {
-        // Accumulate punctuation runs
+        // Accumulate punctuation/surrogate pair runs.
         if (static_cast<unsigned>(runner) < text.length() &&
-            WTF::unicode::IsPunct(text[runner])) {
+            (WTF::unicode::IsPunct(text[runner]) ||
+             U16_IS_SURROGATE(text[runner]))) {
           if (WTF::unicode::IsAlphanumeric(text[runner - 1]))
             return Position::Before(runner);
           punct_runner = runner;

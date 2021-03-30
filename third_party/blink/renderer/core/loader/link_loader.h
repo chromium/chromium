@@ -59,7 +59,8 @@ class CORE_EXPORT LinkLoader final : public SingleModuleClient {
                       const WTF::TextEncoding&,
                       FetchParameters::DeferOption,
                       Document&,
-                      ResourceClient*);
+                      ResourceClient*,
+                      RenderBlockingBehavior);
 
   Resource* GetResourceForTesting();
 

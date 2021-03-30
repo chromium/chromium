@@ -19,7 +19,6 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/test_shell_delegate.h"
-#include "ash/window_factory.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
@@ -79,8 +78,8 @@ void SetInternalDisplayRotation(display::Display::Rotation rotation) {
 }
 
 void TriggerLidUpdate(const gfx::Vector3dF& lid) {
-  scoped_refptr<AccelerometerUpdate> update(new AccelerometerUpdate());
-  update->Set(ACCELEROMETER_SOURCE_SCREEN, lid.x(), lid.y(), lid.z());
+  AccelerometerUpdate update;
+  update.Set(ACCELEROMETER_SOURCE_SCREEN, lid.x(), lid.y(), lid.z());
   Shell::Get()->screen_orientation_controller()->OnAccelerometerUpdated(update);
 }
 
@@ -108,7 +107,7 @@ void Unlock(aura::Window* window) {
 
 // Creates a window of type WINDOW_TYPE_CONTROL.
 std::unique_ptr<aura::Window> CreateControlWindow() {
-  std::unique_ptr<aura::Window> window = window_factory::NewWindow(
+  std::unique_ptr<aura::Window> window = std::make_unique<aura::Window>(
       nullptr, aura::client::WindowType::WINDOW_TYPE_CONTROL);
   window->Init(ui::LAYER_NOT_DRAWN);
   window->set_owned_by_parent(false);
@@ -999,28 +998,27 @@ TEST_F(ScreenOrientationControllerTest,
   EXPECT_EQ(OrientationLockType::kAny, UserLockedOrientation());
 }
 
-class ForceInPhysicalTabletStateTest : public ScreenOrientationControllerTest {
+class SupportsClamshellAutoRotation : public ScreenOrientationControllerTest {
  public:
-  ForceInPhysicalTabletStateTest() = default;
-  ForceInPhysicalTabletStateTest(const ForceInPhysicalTabletStateTest&) =
-      delete;
-  ForceInPhysicalTabletStateTest& operator=(
-      const ForceInPhysicalTabletStateTest&) = delete;
-  ~ForceInPhysicalTabletStateTest() override = default;
+  SupportsClamshellAutoRotation() = default;
+  SupportsClamshellAutoRotation(const SupportsClamshellAutoRotation&) = delete;
+  SupportsClamshellAutoRotation& operator=(
+      const SupportsClamshellAutoRotation&) = delete;
+  ~SupportsClamshellAutoRotation() override = default;
 
   // ScreenOrientationControllerTest:
   void SetUp() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kForceInTabletPhysicalState);
+        switches::kSupportsClamshellAutoRotation);
     ScreenOrientationControllerTest::SetUp();
   }
 };
 
-// Tests that screen rotation is supported while the device is forced to stay
-// in physical tablet state.
-TEST_F(ForceInPhysicalTabletStateTest, ScreenRotation) {
+// Tests that auto rotation is supported even in clamshell when
+// kSupportsClamshellAutoRotation is set.
+TEST_F(SupportsClamshellAutoRotation, ScreenRotation) {
   TabletModeControllerTestApi tablet_mode_controller_test_api;
-  ASSERT_TRUE(tablet_mode_controller_test_api.IsInPhysicalTabletState());
+  ASSERT_FALSE(tablet_mode_controller_test_api.IsTabletModeStarted());
 
   // Test rotating in all directions are supported.
   TriggerLidUpdate(gfx::Vector3dF(kMeanGravityFloat, 0.0f, 0.0f));

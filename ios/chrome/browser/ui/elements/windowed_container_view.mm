@@ -14,7 +14,7 @@
 
 - (void)addSubview:(UIView*)view {
   self.hidden = YES;
-  UIWindow* keyWindow = [UIApplication sharedApplication].keyWindow;
+  UIWindow* keyWindow = GetAnyKeyWindow();
   if (self.superview != keyWindow)
     [keyWindow insertSubview:self atIndex:0];
 

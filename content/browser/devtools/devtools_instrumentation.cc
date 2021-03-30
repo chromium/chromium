@@ -15,6 +15,7 @@
 #include "content/browser/devtools/protocol/emulation_handler.h"
 #include "content/browser/devtools/protocol/fetch_handler.h"
 #include "content/browser/devtools/protocol/log_handler.h"
+#include "content/browser/devtools/protocol/network.h"
 #include "content/browser/devtools/protocol/network_handler.h"
 #include "content/browser/devtools/protocol/page_handler.h"
 #include "content/browser/devtools/protocol/security_handler.h"
@@ -67,43 +68,15 @@ void DispatchToAgents(int frame_tree_node_id,
     DispatchToAgents(ftn, method, std::forward<Args>(args)...);
 }
 
-template <typename Handler, typename... MethodArgs, typename... Args>
-void DispatchToWorkerAgents(int32_t worker_process_id,
-                            int32_t worker_route_id,
-                            void (Handler::*method)(MethodArgs...),
-                            Args&&... args) {
-  ServiceWorkerDevToolsAgentHost* service_worker_host =
-      ServiceWorkerDevToolsManager::GetInstance()
-          ->GetDevToolsAgentHostForWorker(worker_process_id, worker_route_id);
-  if (!service_worker_host)
-    return;
-  for (auto* h : Handler::ForAgentHost(service_worker_host))
-    (h->*method)(std::forward<Args>(args)...);
-
-  // TODO(crbug.com/1004979): Look for shared worker hosts here as well.
-}
-
-FrameTreeNode* GetFtnForNetworkRequest(int process_id, int routing_id) {
-  // Navigation requests start in the browser, before process_id is assigned, so
-  // the id is set to 0. In these situations, the routing_id is the frame tree
-  // node id, and can be used directly.
-  if (process_id == 0) {
-    return FrameTreeNode::GloballyFindByID(routing_id);
-  }
-  return FrameTreeNode::GloballyFindByID(
-      RenderFrameHost::GetFrameTreeNodeIdForRoutingId(process_id, routing_id));
-}
-
-std::unique_ptr<protocol::Audits::HeavyAdIssueDetails> GetHeavyAdIssueHelper(
-    RenderFrameHostImpl* frame,
-    blink::mojom::HeavyAdResolutionStatus resolution,
-    blink::mojom::HeavyAdReason reason) {
+std::unique_ptr<protocol::Audits::InspectorIssue> BuildHeavyAdIssue(
+    const blink::mojom::HeavyAdIssueDetailsPtr& issue_details) {
   protocol::String status =
-      (resolution == blink::mojom::HeavyAdResolutionStatus::kHeavyAdBlocked)
+      (issue_details->resolution ==
+       blink::mojom::HeavyAdResolutionStatus::kHeavyAdBlocked)
           ? protocol::Audits::HeavyAdResolutionStatusEnum::HeavyAdBlocked
           : protocol::Audits::HeavyAdResolutionStatusEnum::HeavyAdWarning;
   protocol::String reason_string;
-  switch (reason) {
+  switch (issue_details->reason) {
     case blink::mojom::HeavyAdReason::kNetworkTotalLimit:
       reason_string = protocol::Audits::HeavyAdReasonEnum::NetworkTotalLimit;
       break;
@@ -114,13 +87,67 @@ std::unique_ptr<protocol::Audits::HeavyAdIssueDetails> GetHeavyAdIssueHelper(
       reason_string = protocol::Audits::HeavyAdReasonEnum::CpuPeakLimit;
       break;
   }
-  return protocol::Audits::HeavyAdIssueDetails::Create()
-      .SetReason(reason_string)
-      .SetResolution(status)
-      .SetFrame(protocol::Audits::AffectedFrame::Create()
-                    .SetFrameId(frame->GetDevToolsFrameToken().ToString())
-                    .Build())
-      .Build();
+  auto heavy_ad_details =
+      protocol::Audits::HeavyAdIssueDetails::Create()
+          .SetReason(reason_string)
+          .SetResolution(status)
+          .SetFrame(protocol::Audits::AffectedFrame::Create()
+                        .SetFrameId(issue_details->frame->frame_id)
+                        .Build())
+          .Build();
+
+  auto protocol_issue_details =
+      protocol::Audits::InspectorIssueDetails::Create()
+          .SetHeavyAdIssueDetails(std::move(heavy_ad_details))
+          .Build();
+  auto issue =
+      protocol::Audits::InspectorIssue::Create()
+          .SetCode(protocol::Audits::InspectorIssueCodeEnum::HeavyAdIssue)
+          .SetDetails(std::move(protocol_issue_details))
+          .Build();
+  return issue;
+}
+
+std::unique_ptr<protocol::Audits::InspectorIssue> BuildTWAQualityIssue(
+    const blink::mojom::TrustedWebActivityIssueDetailsPtr& issue_details) {
+  protocol::String type_string;
+  switch (issue_details->violation_type) {
+    case blink::mojom::TwaQualityEnforcementViolationType::kHttpError:
+      type_string =
+          protocol::Audits::TwaQualityEnforcementViolationTypeEnum::KHttpError;
+      break;
+    case blink::mojom::TwaQualityEnforcementViolationType::kUnavailableOffline:
+      type_string = protocol::Audits::TwaQualityEnforcementViolationTypeEnum::
+          KUnavailableOffline;
+      break;
+    case blink::mojom::TwaQualityEnforcementViolationType::kDigitalAssetLinks:
+      type_string = protocol::Audits::TwaQualityEnforcementViolationTypeEnum::
+          KDigitalAssetLinks;
+      break;
+  }
+
+  auto twa_details = protocol::Audits::TrustedWebActivityIssueDetails::Create()
+                         .SetUrl(issue_details->url.spec())
+                         .SetViolationType(type_string)
+                         .Build();
+  if (issue_details->http_error_code)
+    twa_details->SetHttpStatusCode(issue_details->http_error_code);
+  if (issue_details->package_name)
+    twa_details->SetPackageName(*issue_details->package_name);
+  if (issue_details->signature)
+    twa_details->SetSignature(*issue_details->signature);
+
+  auto protocol_issue_details =
+      protocol::Audits::InspectorIssueDetails::Create()
+          .SetTwaQualityEnforcementDetails(std::move(twa_details))
+          .Build();
+  auto issue =
+      protocol::Audits::InspectorIssue::Create()
+          .SetCode(
+              protocol::Audits::InspectorIssueCodeEnum::TrustedWebActivityIssue)
+          .SetDetails(std::move(protocol_issue_details))
+          .Build();
+  return issue;
 }
 
 }  // namespace
@@ -138,6 +165,11 @@ void OnResetNavigationRequest(NavigationRequest* navigation_request) {
 void OnNavigationResponseReceived(
     const NavigationRequest& nav_request,
     const network::mojom::URLResponseHead& response) {
+  // This response is artificial (see CachedNavigationURLLoader), so we don't
+  // want to report it.
+  if (nav_request.IsServedFromBackForwardCache())
+    return;
+
   FrameTreeNode* ftn = nav_request.frame_tree_node();
   std::string id = nav_request.devtools_navigation_token().ToString();
   std::string frame_id = ftn->devtools_frame_token().ToString();
@@ -217,6 +249,11 @@ void OnNavigationRequestFailed(
     ReportBrowserInitiatedIssue(ftn->current_frame_host(),
                                 inspector_issue.get());
   }
+
+  // If a BFCache navigation fails, it will be restarted as a regular
+  // navigation, so we don't want to report this failure.
+  if (nav_request.IsServedFromBackForwardCache())
+    return;
 
   DispatchToAgents(ftn, &protocol::NetworkHandler::LoadingComplete, id,
                    protocol::Network::ResourceTypeEnum::Document, status);
@@ -358,9 +395,12 @@ bool ShouldWaitForDebuggerInWindowOpen() {
   return false;
 }
 
-void ApplyNetworkRequestOverrides(FrameTreeNode* frame_tree_node,
-                                  mojom::BeginNavigationParams* begin_params,
-                                  bool* report_raw_headers) {
+void ApplyNetworkRequestOverrides(
+    FrameTreeNode* frame_tree_node,
+    mojom::BeginNavigationParams* begin_params,
+    bool* report_raw_headers,
+    base::Optional<std::vector<net::SourceStream::SourceType>>*
+        devtools_accepted_stream_types) {
   bool disable_cache = false;
   DevToolsAgentHostImpl* agent_host =
       RenderFrameDevToolsAgentHost::GetFor(frame_tree_node);
@@ -373,7 +413,7 @@ void ApplyNetworkRequestOverrides(FrameTreeNode* frame_tree_node,
       continue;
     *report_raw_headers = true;
     network->ApplyOverrides(&headers, &begin_params->skip_service_worker,
-                            &disable_cache);
+                            &disable_cache, devtools_accepted_stream_types);
   }
 
   for (auto* emulation : protocol::EmulationHandler::ForAgentHost(agent_host))
@@ -599,6 +639,11 @@ void OnNavigationRequestWillBeSent(
     agent_host->OnNavigationRequestWillBeSent(navigation_request);
   }
 
+  // We use CachedNavigationURLLoader for BFCache navigations and don't actually
+  // send a network request, so we don't report this request to DevTools.
+  if (navigation_request.IsServedFromBackForwardCache())
+    return;
+
   // Make sure both back-ends yield the same timestamp.
   auto timestamp = base::TimeTicks::Now();
   DispatchToAgents(navigation_request.frame_tree_node(),
@@ -665,120 +710,6 @@ void PortalActivated(RenderFrameHostImpl* render_frame_host_impl) {
                    &protocol::TargetHandler::UpdatePortals);
 }
 
-void OnRequestWillBeSentExtraInfo(
-    int process_id,
-    int routing_id,
-    const std::string& devtools_request_id,
-    const net::CookieAccessResultList& request_cookie_list,
-    const std::vector<network::mojom::HttpRawHeaderPairPtr>& request_headers,
-    const network::mojom::ClientSecurityStatePtr security_state) {
-  FrameTreeNode* ftn = GetFtnForNetworkRequest(process_id, routing_id);
-  if (ftn) {
-    DispatchToAgents(ftn,
-                     &protocol::NetworkHandler::OnRequestWillBeSentExtraInfo,
-                     devtools_request_id, request_cookie_list, request_headers,
-                     security_state);
-    return;
-  }
-
-  // In the case of service worker network requests, there is no
-  // FrameTreeNode to use so instead we use the "routing_id" created with the
-  // worker and sent to the renderer process to send as the render_frame_id in
-  // the renderer's network::ResourceRequest which gets plubmed to here as
-  // routing_id.
-  DispatchToWorkerAgents(
-      process_id, routing_id,
-      &protocol::NetworkHandler::OnRequestWillBeSentExtraInfo,
-      devtools_request_id, request_cookie_list, request_headers,
-      security_state);
-}
-
-void OnResponseReceivedExtraInfo(
-    int process_id,
-    int routing_id,
-    const std::string& devtools_request_id,
-    const net::CookieAndLineAccessResultList& response_cookie_list,
-    const std::vector<network::mojom::HttpRawHeaderPairPtr>& response_headers,
-    const base::Optional<std::string>& response_headers_text) {
-  FrameTreeNode* ftn = GetFtnForNetworkRequest(process_id, routing_id);
-  if (ftn) {
-    DispatchToAgents(ftn,
-                     &protocol::NetworkHandler::OnResponseReceivedExtraInfo,
-                     devtools_request_id, response_cookie_list,
-                     response_headers, response_headers_text);
-    return;
-  }
-
-  // See comment on DispatchToWorkerAgents in OnRequestWillBeSentExtraInfo.
-  DispatchToWorkerAgents(process_id, routing_id,
-                         &protocol::NetworkHandler::OnResponseReceivedExtraInfo,
-                         devtools_request_id, response_cookie_list,
-                         response_headers, response_headers_text);
-}
-
-void OnCorsPreflightRequest(int32_t process_id,
-                            int32_t render_frame_id,
-                            const base::UnguessableToken& devtools_request_id,
-                            const network::ResourceRequest& request,
-                            const GURL& initiator_url,
-                            const std::string& initiator_devtools_request_id) {
-  FrameTreeNode* ftn = GetFtnForNetworkRequest(process_id, render_frame_id);
-  if (!ftn)
-    return;
-  auto timestamp = base::TimeTicks::Now();
-  auto id = devtools_request_id.ToString();
-  DispatchToAgents(ftn, &protocol::NetworkHandler::RequestSent, id,
-                   /* loader_id=*/"", request,
-                   protocol::Network::Initiator::TypeEnum::Preflight,
-                   initiator_url, initiator_devtools_request_id, timestamp);
-}
-
-void OnCorsPreflightResponse(int32_t process_id,
-                             int32_t render_frame_id,
-                             const base::UnguessableToken& devtools_request_id,
-                             const GURL& url,
-                             network::mojom::URLResponseHeadPtr head) {
-  FrameTreeNode* ftn = GetFtnForNetworkRequest(process_id, render_frame_id);
-  if (!ftn)
-    return;
-  auto id = devtools_request_id.ToString();
-  DispatchToAgents(ftn, &protocol::NetworkHandler::ResponseReceived, id,
-                   /* loader_id=*/"", url,
-                   protocol::Network::ResourceTypeEnum::Preflight, *head,
-                   protocol::Maybe<std::string>());
-}
-
-void OnCorsPreflightRequestCompleted(
-    int32_t process_id,
-    int32_t render_frame_id,
-    const base::UnguessableToken& devtools_request_id,
-    const network::URLLoaderCompletionStatus& status) {
-  FrameTreeNode* ftn = GetFtnForNetworkRequest(process_id, render_frame_id);
-  if (!ftn)
-    return;
-  auto id = devtools_request_id.ToString();
-  DispatchToAgents(ftn, &protocol::NetworkHandler::LoadingComplete, id,
-                   protocol::Network::ResourceTypeEnum::Preflight, status);
-}
-
-void OnTrustTokenOperationDone(
-    int32_t process_id,
-    int32_t routing_id,
-    const std::string& devtools_request_id,
-    const network::mojom::TrustTokenOperationResultPtr result) {
-  FrameTreeNode* ftn = GetFtnForNetworkRequest(process_id, routing_id);
-  if (ftn) {
-    DispatchToAgents(ftn, &protocol::NetworkHandler::OnTrustTokenOperationDone,
-                     devtools_request_id, *result);
-    return;
-  }
-
-  // See comment on DispatchToWorkerAgents in OnRequestWillBeSentExtraInfo.
-  DispatchToWorkerAgents(process_id, routing_id,
-                         &protocol::NetworkHandler::OnTrustTokenOperationDone,
-                         devtools_request_id, *result);
-}
-
 namespace {
 std::unique_ptr<protocol::Array<protocol::String>> BuildExclusionReasons(
     net::CookieInclusionStatus status) {
@@ -835,10 +766,6 @@ std::unique_ptr<protocol::Array<protocol::String>> BuildWarningReasons(
         protocol::Audits::SameSiteCookieWarningReasonEnum::
             WarnSameSiteUnspecifiedLaxAllowUnsafe);
   }
-
-  // If schemeful messages are disabled, don't add a warning for them.
-  if (!base::FeatureList::IsEnabled(features::kCookieDeprecationMessages))
-    return warning_reasons;
 
   // There can only be one of the following warnings.
   if (status.HasWarningReason(net::CookieInclusionStatus::
@@ -969,17 +896,25 @@ void ReportBrowserInitiatedIssue(RenderFrameHostImpl* frame,
   DispatchToAgents(ftn, &protocol::AuditsHandler::OnIssueAdded, issue);
 }
 
-std::unique_ptr<protocol::Audits::InspectorIssue> GetHeavyAdIssue(
+void BuildAndReportBrowserInitiatedIssue(
     RenderFrameHostImpl* frame,
-    blink::mojom::HeavyAdResolutionStatus resolution,
-    blink::mojom::HeavyAdReason reason) {
-  auto issue_details = protocol::Audits::InspectorIssueDetails::Create();
-  issue_details.SetHeavyAdIssueDetails(
-      GetHeavyAdIssueHelper(frame, resolution, reason));
-  return protocol::Audits::InspectorIssue::Create()
-      .SetCode(protocol::Audits::InspectorIssueCodeEnum::HeavyAdIssue)
-      .SetDetails(issue_details.Build())
-      .Build();
+    blink::mojom::InspectorIssueInfoPtr info) {
+  // This method does not support other types for now.
+  CHECK(info && info->details &&
+        (info->code == blink::mojom::InspectorIssueCode::kHeavyAdIssue &&
+             info->details->heavy_ad_issue_details ||
+         info->code ==
+                 blink::mojom::InspectorIssueCode::kTrustedWebActivityIssue &&
+             info->details->twa_issue_details));
+
+  std::unique_ptr<protocol::Audits::InspectorIssue> issue;
+  if (info->code ==
+      blink::mojom::InspectorIssueCode::kTrustedWebActivityIssue) {
+    issue = BuildTWAQualityIssue(info->details->twa_issue_details);
+  } else {
+    issue = BuildHeavyAdIssue(info->details->heavy_ad_issue_details);
+  }
+  ReportBrowserInitiatedIssue(frame, issue.get());
 }
 
 void OnQuicTransportHandshakeFailed(

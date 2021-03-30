@@ -361,6 +361,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
     kIdle,
   };
 
+  enum class PermissionStatus { kUndetermined = 0, kDenied, kAllowed };
+
   // Creates a new adapter. Initialize() must be called before the adapter can
   // be used.
   static scoped_refptr<BluetoothAdapter> CreateAdapter();
@@ -419,6 +421,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
 
   // Indicates whether the adapter radio is powered.
   virtual bool IsPowered() const = 0;
+
+  // Returns the status of the browser's Bluetooth permission status.
+  virtual PermissionStatus GetOsPermissionStatus() const;
 
   // Requests a change to the adapter radio power. Setting |powered| to true
   // will turn on the radio and false will turn it off. On success, |callback|

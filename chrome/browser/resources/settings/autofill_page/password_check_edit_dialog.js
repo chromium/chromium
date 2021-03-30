@@ -13,9 +13,9 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-import '../icons.m.js';
-import '../settings_shared_css.m.js';
-import '../settings_vars_css.m.js';
+import '../icons.js';
+import '../settings_shared_css.js';
+import '../settings_vars_css.js';
 import './passwords_shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';

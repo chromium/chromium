@@ -28,12 +28,6 @@ Polymer({
       type: String,
     },
 
-    /** @type {string} */
-    headerIcon: {
-      type: String,
-      value: '',
-    },
-
     /** @type {number} */
     value: {
       type: Number,
@@ -45,19 +39,6 @@ Polymer({
       type: Number,
       value: 100,
     },
-  },
-
-  /**
-   * Returns the percentage of the current bar chart, rounded to the nearest
-   * whole number.
-   * @param {number} currentValue
-   * @param {number} maxValue
-   * @return {string} i18n string for the percentage value.
-   * @private
-   */
-  computePercentage_(currentValue, maxValue) {
-    return loadTimeData.getStringF(
-        'percentageLabel', Math.round(100 * currentValue / maxValue));
   },
 
   /**

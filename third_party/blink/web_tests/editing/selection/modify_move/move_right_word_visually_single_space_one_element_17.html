@@ -57,37 +57,37 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr">abc \u202Bבאד| def\u202C xyz</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr">abc \u202B\u05D1\u05D0\u05D3 def\u202C xyz|</div>',
+  '<div contenteditable dir="ltr">abc \u202B\u05D1\u05D0\u05D3 |def\u202C xyz</div>',
   '17-8 right word');
 
 selection_test(
   '<div contenteditable dir="ltr">abc \u202Bבאד |def\u202C xyz</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr">abc \u202B\u05D1\u05D0\u05D3 def\u202C xyz|</div>',
+  '<div contenteditable dir="ltr">abc \u202B\u05D1\u05D0\u05D3 def\u202C |xyz</div>',
   '17-9 right word');
 
 selection_test(
   '<div contenteditable dir="ltr">abc \u202Bבאד d|ef\u202C xyz</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr">abc \u202B\u05D1\u05D0\u05D3 def\u202C xyz|</div>',
+  '<div contenteditable dir="ltr">abc \u202B\u05D1\u05D0\u05D3 def\u202C |xyz</div>',
   '17-10 right word');
 
 selection_test(
   '<div contenteditable dir="ltr">abc \u202Bבאד de|f\u202C xyz</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr">abc \u202B\u05D1\u05D0\u05D3 def\u202C xyz|</div>',
+  '<div contenteditable dir="ltr">abc \u202B\u05D1\u05D0\u05D3 def\u202C |xyz</div>',
   '17-11 right word');
 
 selection_test(
   '<div contenteditable dir="ltr">abc \u202Bבאד def|\u202C xyz</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr">abc \u202B\u05D1\u05D0\u05D3 def\u202C xyz|</div>',
+  '<div contenteditable dir="ltr">abc \u202B\u05D1\u05D0\u05D3 def\u202C |xyz</div>',
   '17-12 right word');
 
 selection_test(
   '<div contenteditable dir="ltr">abc \u202Bבאד def\u202C| xyz</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr">abc \u202B\u05D1\u05D0\u05D3 def\u202C xyz|</div>',
+  '<div contenteditable dir="ltr">abc \u202B\u05D1\u05D0\u05D3 def\u202C |xyz</div>',
   '17-13 right word');
 
 selection_test(

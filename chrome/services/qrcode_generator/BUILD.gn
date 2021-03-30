@@ -13,7 +13,7 @@ source_set("qrcode_generator") {
   deps = [
     "//base",
     "//chrome:strings",
-    "//chrome/common/qr_code_generator",
+    "//components/qr_code_generator",
     "//mojo/public/cpp/bindings",
     "//net",
     "//ui/gfx",

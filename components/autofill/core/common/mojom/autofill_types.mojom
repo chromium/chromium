@@ -7,6 +7,7 @@ module autofill.mojom;
 import "mojo/public/mojom/base/text_direction.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
@@ -66,6 +67,11 @@ enum ButtonTitleType {
   SPAN = 7                         // e.g. <span name='btn'>
 };
 
+// autofill::LocalFrameToken
+struct LocalFrameToken {
+  mojo_base.mojom.UnguessableToken token;
+};
+
 // autofill::FormRendererId
 struct FormRendererId {
   uint32 id;
@@ -118,6 +124,7 @@ struct FormFieldData {
   mojo_base.mojom.String16 css_classes;
   mojo_base.mojom.String16 aria_label;
   mojo_base.mojom.String16 aria_description;
+  LocalFrameToken host_frame;
   FieldRendererId unique_renderer_id;
   uint32 properties_mask;
   int32 form_control_ax_id;
@@ -132,7 +139,7 @@ struct FormFieldData {
   mojo_base.mojom.TextDirection text_direction;
   bool is_enabled;
   bool is_readonly;
-  mojo_base.mojom.String16 typed_value;
+  mojo_base.mojom.String16 user_input;
 
   array<mojo_base.mojom.String16> option_values;
   array<mojo_base.mojom.String16> option_contents;
@@ -162,7 +169,7 @@ struct FormData {
   bool is_action_empty;
   url.mojom.Origin main_frame_origin;
   bool is_form_tag;
-  bool is_formless_checkout;
+  LocalFrameToken host_frame;
   FormRendererId unique_renderer_id;
   SubmissionIndicatorEvent submission_event;
   array<FormFieldData> fields;

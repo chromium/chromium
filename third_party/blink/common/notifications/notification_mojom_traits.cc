@@ -29,7 +29,7 @@ bool ValidateVibrationPattern(const std::vector<int>& vibration_pattern) {
 }
 
 bool ValidateActions(
-    const std::vector<blink::PlatformNotificationAction>& actions) {
+    const std::vector<blink::mojom::NotificationActionPtr>& actions) {
   return actions.size() <= kMaximumActions;
 }
 
@@ -41,23 +41,6 @@ bool ValidateData(const std::vector<char>& data) {
 }  // namespace
 
 namespace mojo {
-
-// static
-bool StructTraits<blink::mojom::NotificationActionDataView,
-                  blink::PlatformNotificationAction>::
-    Read(blink::mojom::NotificationActionDataView notification_action,
-         blink::PlatformNotificationAction* out) {
-  base::Optional<base::string16> placeholder;
-  if (!notification_action.ReadType(&out->type) ||
-      !notification_action.ReadTitle(&out->title) ||
-      !notification_action.ReadAction(&out->action) ||
-      !notification_action.ReadIcon(&out->icon) ||
-      !notification_action.ReadPlaceholder(&placeholder)) {
-    return false;
-  }
-  out->placeholder = std::move(placeholder);
-  return true;
-}
 
 // static
 bool StructTraits<blink::mojom::NotificationDataDataView,

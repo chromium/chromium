@@ -48,7 +48,7 @@ Polymer({
 
     /**
      * The template instance.
-     * @private {?Element}
+     * @private {?Element|?TemplateInstanceBase}
      */
     instance_: {
       type: Object,
@@ -80,13 +80,13 @@ Polymer({
 
   attached() {
     const template = this.getContentChildren()[0];
-    this.templatize(template);
+    this.templatize(/** @type {!HTMLTemplateElement} */ (template));
 
     // This call stamps all the child elements of the dom-switch at once
     // (calling their created Polymer lifecycle callbacks). If optimisations
     // are required in the future, it may be possible to only stamp children
     // on demand as they are rendered.
-    this.instance_ = this.stamp({});
+    this.instance_ = (this.stamp({}));
 
     const children = this.instance_.root.children;
     for (const child of children) {

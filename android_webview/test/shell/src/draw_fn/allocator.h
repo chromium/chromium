@@ -9,17 +9,32 @@
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
+#include "ui/gfx/android/android_surface_control_compat.h"
 
 namespace draw_fn {
+
+void SetDrawFnUseVulkan(bool use_vulkan);
 
 AwDrawFnFunctionTable* GetDrawFnFunctionTable();
 
 struct FunctorData {
+  FunctorData();
+  FunctorData(int functor,
+              void* data,
+              AwDrawFnFunctorCallbacks* functor_callbacks);
+  ~FunctorData();
+  FunctorData(FunctorData&&);
+  FunctorData& operator=(FunctorData&&);
+
+  FunctorData(const FunctorData&) = delete;
+  FunctorData& operator=(const FunctorData&) = delete;
+
   int functor = 0;
   void* data = nullptr;
   AwDrawFnFunctorCallbacks* functor_callbacks = nullptr;
   bool released_by_functor = false;
   bool released_by_manager = false;
+  scoped_refptr<gfx::SurfaceControl::Surface> overlay_surface;
 };
 
 class Allocator {
@@ -27,7 +42,7 @@ class Allocator {
   static Allocator* Get();
 
   int allocate(void* data, AwDrawFnFunctorCallbacks* functor_callbacks);
-  FunctorData get(int functor);
+  FunctorData& get(int functor);
   void MarkReleasedByFunctor(int functor);
   void MarkReleasedByManager(int functor);
 

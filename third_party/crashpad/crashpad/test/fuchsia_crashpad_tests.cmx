@@ -11,7 +11,7 @@
         "sdk/lib/diagnostics/syslog/client.shard.cmx"
     ],
     "program": {
-        "binary": "test/crashpad_tests"
+        "binary": "bin/crashpad_tests"
     },
     "sandbox": {
         "features": [

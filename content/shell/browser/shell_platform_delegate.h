@@ -6,9 +6,9 @@
 #define CONTENT_SHELL_BROWSER_SHELL_PLATFORM_DELEGATE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/containers/flat_map.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
@@ -66,7 +66,7 @@ class ShellPlatformDelegate {
   virtual void SetIsLoading(Shell* shell, bool loading);
 
   // Set the title of shell window
-  virtual void SetTitle(Shell* shell, const base::string16& title);
+  virtual void SetTitle(Shell* shell, const std::u16string& title);
 
   // Called when the main frame is created in the renderer process; forwarded
   // from WebContentsObserver. If navigation creates a new main frame, this may

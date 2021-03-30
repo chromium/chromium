@@ -217,6 +217,12 @@ def GetApkAnalyzerPath():
   return os.environ.get('APK_ANALYZER', default_path)
 
 
+def GetAapt2Path():
+  default_path = FromToolsSrcRootRelative(
+      os.path.join('third_party', 'android_build_tools', 'aapt2', 'aapt2'))
+  return os.environ.get('AAPT2', default_path)
+
+
 def GetJavaHome():
   return FromToolsSrcRootRelative(os.path.join('third_party', 'jdk', 'current'))
 

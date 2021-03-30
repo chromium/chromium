@@ -13,7 +13,6 @@
 
 #include "base/containers/queue.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -47,7 +46,7 @@ class MockBluetoothDevice : public BluetoothDevice {
   MOCK_CONST_METHOD0(GetDeviceID, uint16_t());
   MOCK_CONST_METHOD0(GetAppearance, uint16_t());
   MOCK_CONST_METHOD0(GetName, base::Optional<std::string>());
-  MOCK_CONST_METHOD0(GetNameForDisplay, base::string16());
+  MOCK_CONST_METHOD0(GetNameForDisplay, std::u16string());
   MOCK_CONST_METHOD0(GetDeviceType, BluetoothDeviceType());
   MOCK_CONST_METHOD0(IsPaired, bool());
   MOCK_CONST_METHOD0(IsConnected, bool());

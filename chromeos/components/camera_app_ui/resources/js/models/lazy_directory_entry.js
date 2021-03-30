@@ -3,16 +3,16 @@
 // found in the LICENSE file.
 
 import {
-  AbstractDirectoryEntry,  // eslint-disable-line no-unused-vars
-} from './file_system_entry.js';
+  DirectoryAccessEntry,  // eslint-disable-line no-unused-vars
+} from './file_system_access_entry.js';
 
 /**
  * Gets directory entry by given |name| under |parentDir| directory. If the
  * directory does not exist, returns a lazy directory which will only be created
  * once there is any file written in it.
- * @param {!AbstractDirectoryEntry} parentDir Parent directory.
+ * @param {!DirectoryAccessEntry} parentDir Parent directory.
  * @param {string} name Name of the target directory.
- * @return {!Promise<!AbstractDirectoryEntry>}
+ * @return {!Promise<!DirectoryAccessEntry>}
  */
 export async function getMaybeLazyDirectory(parentDir, name) {
   const targetDir =
@@ -24,16 +24,16 @@ export async function getMaybeLazyDirectory(parentDir, name) {
 /**
  * A directory entry which will only create itself if there is any
  * file/directory created under it.
- * @implements {AbstractDirectoryEntry}
+ * @implements {DirectoryAccessEntry}
  */
 class LazyDirectoryEntry {
   /**
-   * @param {!AbstractDirectoryEntry} parentDirectory
+   * @param {!DirectoryAccessEntry} parentDirectory
    * @param {string} name
    */
   constructor(parentDirectory, name) {
     /**
-     * @type {!AbstractDirectoryEntry}
+     * @type {!DirectoryAccessEntry}
      * @private
      */
     this.parent_ = parentDirectory;
@@ -45,13 +45,13 @@ class LazyDirectoryEntry {
     this.name_ = name;
 
     /**
-     * @type {?AbstractDirectoryEntry}
+     * @type {?DirectoryAccessEntry}
      * @private
      */
     this.directory_ = null;
 
     /**
-     * @type {?Promise<!AbstractDirectoryEntry>}
+     * @type {?Promise<!DirectoryAccessEntry>}
      * @private
      */
     this.creatingDirectory_ = null;
@@ -117,18 +117,18 @@ class LazyDirectoryEntry {
   /**
    * Gets the directory which this entry points to. Create it if it does not
    * exist.
-   * @return {!Promise<!AbstractDirectoryEntry>}
+   * @return {!Promise<!DirectoryAccessEntry>}
    * @private
    */
   async getRealDirectory_() {
     if (this.creatingDirectory_ === null) {
       this.creatingDirectory_ =
-          (async () => /** @type {!AbstractDirectoryEntry} */ (
+          (async () => /** @type {!DirectoryAccessEntry} */ (
                await this.parent_.getDirectory(
                    {name: this.name_, createIfNotExist: true})))();
     }
     this.directory_ =
-        /** @type {!AbstractDirectoryEntry} */ (await this.creatingDirectory_);
+        /** @type {!DirectoryAccessEntry} */ (await this.creatingDirectory_);
     return this.directory_;
   }
 }

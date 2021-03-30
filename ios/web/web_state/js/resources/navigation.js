@@ -87,13 +87,6 @@ window.history.replaceState = function(stateObject, pageTitle, pageUrl) {
 };
 
 window.addEventListener('hashchange', function(evt) {
-  // Because hash changes don't trigger __gCrWeb.didFinishNavigation, so fetch
-  // favicons for the new page manually.
-  __gCrWeb.message.invokeOnHost({
-    'command': 'favicon.favicons',
-    'favicons': __gCrWeb.common.getFavicons()
-  });
-
   __gCrWeb.message.invokeOnHost({'command': 'navigation.hashchange'});
 });
 

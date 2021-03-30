@@ -196,14 +196,16 @@ class ImportNotifier(object):
             full_directory = self.host.filesystem.join(
                 self.finder.web_tests_dir(), directory)
             owners_file = self.host.filesystem.join(full_directory, 'OWNERS')
+            metadata_file = self.host.filesystem.join(full_directory,
+                                                      'WPT_METADATA')
             is_wpt_notify_enabled = self.owners_extractor.is_wpt_notify_enabled(
-                owners_file)
+                metadata_file)
 
             owners = self.owners_extractor.extract_owners(owners_file)
             # owners may be empty but not None.
             cc = owners
 
-            component = self.owners_extractor.extract_component(owners_file)
+            component = self.owners_extractor.extract_component(metadata_file)
             # component could be None.
             components = [component] if component else None
 

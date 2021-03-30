@@ -181,8 +181,8 @@ void SaveUpdateWithAccountStoreBubbleController::OnNeverForThisSiteClicked() {
 }
 
 void SaveUpdateWithAccountStoreBubbleController::OnCredentialEdited(
-    base::string16 new_username,
-    base::string16 new_password) {
+    std::u16string new_username,
+    std::u16string new_password) {
   DCHECK(state_ == password_manager::ui::PENDING_PASSWORD_STATE ||
          state_ == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE);
   pending_password_.username_value = std::move(new_username);
@@ -269,8 +269,7 @@ SaveUpdateWithAccountStoreBubbleController::GetPrimaryAccountEmail() {
       IdentityManagerFactory::GetForProfile(profile);
   if (!identity_manager)
     return std::string();
-  return identity_manager
-      ->GetPrimaryAccountInfo(signin::ConsentLevel::kNotRequired)
+  return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
       .email;
 }
 
@@ -287,7 +286,7 @@ SaveUpdateWithAccountStoreBubbleController::GetPrimaryAccountAvatar(
   base::Optional<AccountInfo> primary_account_info =
       identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
           identity_manager->GetPrimaryAccountInfo(
-              signin::ConsentLevel::kNotRequired));
+              signin::ConsentLevel::kSignin));
   DCHECK(primary_account_info.has_value());
   gfx::Image account_icon = primary_account_info->account_image;
   if (account_icon.IsEmpty()) {
@@ -305,7 +304,7 @@ bool SaveUpdateWithAccountStoreBubbleController::
   return delegate_->DidAuthForAccountStoreOptInFail();
 }
 
-base::string16 SaveUpdateWithAccountStoreBubbleController::GetTitle() const {
+std::u16string SaveUpdateWithAccountStoreBubbleController::GetTitle() const {
   PasswordTitleType type = IsCurrentStateUpdate()
                                ? PasswordTitleType::UPDATE_PASSWORD
                                : (pending_password_.federation_origin.opaque()

@@ -8,6 +8,7 @@
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "services/viz/public/cpp/compositing/compositor_render_pass_id_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/shared_quad_state_mojom_traits.h"
+#include "services/viz/public/cpp/compositing/subtree_capture_id_mojom_traits.h"
 #include "services/viz/public/cpp/crash_keys.h"
 #include "ui/gfx/mojom/display_color_spaces_mojom_traits.h"
 
@@ -25,6 +26,7 @@ bool StructTraits<viz::mojom::CompositorRenderPassDataView,
       !data.ReadFilters(&(*out)->filters) ||
       !data.ReadBackdropFilters(&(*out)->backdrop_filters) ||
       !data.ReadBackdropFilterBounds(&(*out)->backdrop_filter_bounds) ||
+      !data.ReadSubtreeCaptureId(&(*out)->subtree_capture_id) ||
       !data.ReadCopyRequests(&(*out)->copy_requests) ||
       !data.ReadId(&(*out)->id)) {
     return false;

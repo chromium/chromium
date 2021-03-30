@@ -14,13 +14,23 @@
       "transform": 1
     },
     {
-      "name": "LayoutFlexibleBox (relative positioned) DIV class='use-default-poster sizing-small test-mode phase-pre-ready state-no-source'",
+      "name": "LayoutVideo (positioned) VIDEO",
+      "bounds": [272, 153],
+      "drawsContent": false
+    },
+    {
+      "name": "LayoutNGFlexibleBox (relative positioned) DIV class='use-default-poster sizing-small test-mode phase-pre-ready state-no-source'",
       "bounds": [272, 153],
       "contentsOpaque": true,
       "backgroundColor": "#333333"
     },
     {
-      "name": "LayoutFlexibleBox DIV",
+      "name": "LayoutNGBlockFlow (positioned) DIV",
+      "bounds": [272, 153],
+      "drawsContent": false
+    },
+    {
+      "name": "LayoutNGFlexibleBox DIV",
       "bounds": [272, 153]
     }
   ],

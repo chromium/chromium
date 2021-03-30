@@ -36,8 +36,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/login/users/scoped_test_user_manager.h"
-#include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #endif
 
 namespace extensions {
@@ -61,7 +61,7 @@ struct MockExtensionRegistryObserver : public ExtensionRegistryObserver {
           base::TimeDelta::FromMilliseconds(100));
       quit_closure = run_loop.QuitClosure();
       run_loop.Run();
-      const std::vector<base::string16>* errors = error_reporter->GetErrors();
+      const std::vector<std::u16string>* errors = error_reporter->GetErrors();
       if (!errors->empty()) {
         if (!expect_error) {
           FAIL() << "Error(s) happened when unzipping extension: "
@@ -169,9 +169,9 @@ class ZipFileInstallerTest : public testing::Test {
   MockExtensionRegistryObserver observer_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   // ChromeOS needs a user manager to instantiate an extension service.
-  chromeos::ScopedTestUserManager test_user_manager_;
+  ash::ScopedTestUserManager test_user_manager_;
 #endif
 
  private:

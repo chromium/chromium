@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string>
 
 #include "base/bind.h"
 #include "base/check_op.h"
@@ -20,14 +21,15 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/shortcut.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/shell_integration_win.h"
+#include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_shortcuts_menu_win.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/installer/util/shell_util.h"
@@ -122,7 +124,7 @@ bool ShouldUpdateIcon(const base::FilePath& icon_file,
 // an --app-id flag.
 bool IsAppShortcutForProfile(const base::FilePath& shortcut_file_name,
                              const base::FilePath& profile_path) {
-  base::string16 cmd_line_string;
+  std::wstring cmd_line_string;
   if (base::win::ResolveShortcut(shortcut_file_name, nullptr,
                                  &cmd_line_string)) {
     cmd_line_string = L"program " + cmd_line_string;
@@ -147,6 +149,7 @@ bool CreateShortcutsInPaths(const base::FilePath& web_app_path,
                             const ShortcutInfo& shortcut_info,
                             const std::vector<base::FilePath>& shortcut_paths,
                             ShortcutCreationReason creation_reason,
+                            const std::string& run_on_os_login_mode,
                             std::vector<base::FilePath>* out_filenames) {
   // Generates file name to use with persisted ico and shortcut file.
   base::FilePath icon_file = GetIconFilePath(web_app_path, shortcut_info.title);
@@ -161,25 +164,25 @@ bool CreateShortcutsInPaths(const base::FilePath& web_app_path,
 
   base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
   cmd_line = shell_integration::CommandLineArgsForLauncher(
-      shortcut_info.url, shortcut_info.extension_id,
-      shortcut_info.profile_path);
+      shortcut_info.url, shortcut_info.extension_id, shortcut_info.profile_path,
+      run_on_os_login_mode);
 
   // TODO(evan): we rely on the fact that command_line_string() is
   // properly quoted for a Windows command line.  The method on
   // base::CommandLine should probably be renamed to better reflect that
   // fact.
-  base::string16 wide_switches(cmd_line.GetCommandLineString());
+  std::wstring wide_switches(cmd_line.GetCommandLineString());
 
   // Sanitize description.
-  base::string16 description = shortcut_info.description;
+  std::u16string description = shortcut_info.description;
   if (description.length() >= MAX_PATH)
     description.resize(MAX_PATH - 1);
 
   // Generates app id from the browser's appid, and the app's extension_id or
   // web app url, and the profile path.
   std::string app_name(GenerateApplicationNameFromInfo(shortcut_info));
-  base::string16 app_id(shell_integration::win::GetAppUserModelIdForApp(
-      base::UTF8ToUTF16(app_name), shortcut_info.profile_path));
+  std::wstring app_id(shell_integration::win::GetAppUserModelIdForApp(
+      base::UTF8ToWide(app_name), shortcut_info.profile_path));
 
   bool success = true;
   for (auto shortcut_path : shortcut_paths) {
@@ -207,7 +210,7 @@ bool CreateShortcutsInPaths(const base::FilePath& web_app_path,
     shortcut_properties.set_target(chrome_proxy_path);
     shortcut_properties.set_working_dir(working_dir);
     shortcut_properties.set_arguments(wide_switches);
-    shortcut_properties.set_description(description);
+    shortcut_properties.set_description(base::AsWString(description));
     shortcut_properties.set_icon(icon_file, 0);
     shortcut_properties.set_app_id(app_id);
     shortcut_properties.set_dual_mode(false);
@@ -242,7 +245,7 @@ bool CreateShortcutsInPaths(const base::FilePath& web_app_path,
 bool GetShortcutLocationsAndDeleteShortcuts(
     const base::FilePath& web_app_path,
     const base::FilePath& profile_path,
-    const base::string16& title,
+    const std::u16string& title,
     bool* was_pinned_to_taskbar,
     std::vector<base::FilePath>* shortcut_paths) {
   bool result = true;
@@ -298,30 +301,60 @@ void CreateIconAndSetRelaunchDetails(const base::FilePath& web_app_path,
                                      HWND hwnd,
                                      const ShortcutInfo& shortcut_info) {
   base::CommandLine command_line =
-      shell_integration::CommandLineArgsForLauncher(shortcut_info.url,
-                                                    shortcut_info.extension_id,
-                                                    shortcut_info.profile_path);
+      shell_integration::CommandLineArgsForLauncher(
+          shortcut_info.url, shortcut_info.extension_id,
+          shortcut_info.profile_path, "");
 
   command_line.SetProgram(GetChromeProxyPath());
   ui::win::SetRelaunchDetailsForWindow(command_line.GetCommandLineString(),
-                                       shortcut_info.title, hwnd);
+                                       base::AsWString(shortcut_info.title),
+                                       hwnd);
 
   ui::win::SetAppIconForWindow(icon_file, 0, hwnd);
   CheckAndSaveIcon(icon_file, shortcut_info.favicon, true);
 }
 
+// Looks for a shortcut at "|shortcut_path|/|sanitized_shortcut_name|.lnk", plus
+// any duplicates of it (i.e., ending in (1), (2), etc.). Appends any that are
+// app shortcuts for the profile at |profile_path| to |shortcut_paths|.
+void AppendShortcutsMatchingName(
+    std::vector<base::FilePath>& shortcut_paths,
+    const base::FilePath& shortcut_path,
+    const base::FilePath& profile_path,
+    const base::FilePath& sanitized_shortcut_name) {
+  const base::FilePath shortcut_filename =
+      sanitized_shortcut_name.AddExtension(FILE_PATH_LITERAL(".lnk"));
+  const base::FilePath shortcut_file_path =
+      shortcut_path.Append(shortcut_filename);
+  if (base::PathExists(shortcut_file_path) &&
+      IsAppShortcutForProfile(shortcut_file_path, profile_path)) {
+    shortcut_paths.push_back(shortcut_file_path);
+  }
+
+  base::FileEnumerator files(
+      shortcut_path, false, base::FileEnumerator::FILES,
+      shortcut_filename.InsertBeforeExtension(FILE_PATH_LITERAL(" (*)"))
+          .value());
+  base::FilePath shortcut_file = files.Next();
+  while (!shortcut_file.empty()) {
+    if (IsAppShortcutForProfile(shortcut_file, profile_path))
+      shortcut_paths.push_back(shortcut_file);
+    shortcut_file = files.Next();
+  }
+}
+
 }  // namespace
 
-base::FilePath GetSanitizedFileName(const base::string16& name) {
-  base::string16 file_name = name;
-  base::i18n::ReplaceIllegalCharactersInPath(&file_name, '_');
+base::FilePath GetSanitizedFileName(const std::u16string& name) {
+  std::wstring file_name = base::AsWString(name);
+  base::i18n::ReplaceIllegalCharactersInPath(&file_name, ' ');
   return base::FilePath(file_name);
 }
 
 std::vector<base::FilePath> FindAppShortcutsByProfileAndTitle(
     const base::FilePath& shortcut_path,
     const base::FilePath& profile_path,
-    const base::string16& shortcut_name) {
+    const std::u16string& shortcut_name) {
   std::vector<base::FilePath> shortcut_paths;
 
   if (shortcut_name.empty()) {
@@ -336,25 +369,22 @@ std::vector<base::FilePath> FindAppShortcutsByProfileAndTitle(
       shortcut_file = files.Next();
     }
   } else {
-    // Find all shortcuts matching |shortcut_name|.
-    base::FilePath base_path =
-        shortcut_path.Append(GetSanitizedFileName(shortcut_name))
-            .AddExtension(FILE_PATH_LITERAL(".lnk"));
+    // Find all shortcuts matching |shortcut_name|. Includes duplicates, if any
+    // exist (e.g., "|shortcut_name| (2).lnk").
+    AppendShortcutsMatchingName(shortcut_paths, shortcut_path, profile_path,
+                                GetSanitizedFileName(shortcut_name));
 
-    const int fileNamesToCheck = 10;
-    for (int i = 0; i < fileNamesToCheck; ++i) {
-      base::FilePath shortcut_file = base_path;
-      if (i > 0) {
-        shortcut_file = shortcut_file.InsertBeforeExtensionASCII(
-            base::StringPrintf(" (%d)", i));
-      }
-      if (base::PathExists(shortcut_file) &&
-          IsAppShortcutForProfile(shortcut_file, profile_path)) {
-        shortcut_paths.push_back(shortcut_file);
-      }
+    // Find all shortcuts matching the old syntax for shortcut names.
+    // TODO(crbug.com/1188959): remove this and its unit test in April 2022.
+    const base::FilePath::StringType shortcut_name_wide =
+        base::UTF16ToWide(shortcut_name);
+    base::FilePath::StringType shortcut_name_old_syntax = shortcut_name_wide;
+    base::i18n::ReplaceIllegalCharactersInPath(&shortcut_name_old_syntax, '_');
+    if (shortcut_name_old_syntax != shortcut_name_wide) {
+      AppendShortcutsMatchingName(shortcut_paths, shortcut_path, profile_path,
+                                  base::FilePath(shortcut_name_old_syntax));
     }
   }
-
   return shortcut_paths;
 }
 
@@ -423,8 +453,10 @@ bool CreatePlatformShortcuts(const base::FilePath& web_app_path,
   if (shortcut_paths.empty())
     return false;
 
-  if (!CreateShortcutsInPaths(web_app_path, shortcut_info, shortcut_paths,
-                              creation_reason, nullptr)) {
+  if (!CreateShortcutsInPaths(
+          web_app_path, shortcut_info, shortcut_paths, creation_reason,
+          creation_locations.in_startup ? kRunOnOsLoginModeWindowed : "",
+          nullptr)) {
     return false;
   }
 
@@ -442,7 +474,7 @@ bool CreatePlatformShortcuts(const base::FilePath& web_app_path,
 }
 
 void UpdatePlatformShortcuts(const base::FilePath& web_app_path,
-                             const base::string16& old_app_title,
+                             const std::u16string& old_app_title,
                              const ShortcutInfo& shortcut_info) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
@@ -457,7 +489,7 @@ void UpdatePlatformShortcuts(const base::FilePath& web_app_path,
         web_app_path, shortcut_info.profile_path, old_app_title,
         &was_pinned_to_taskbar, &shortcut_paths);
     CreateShortcutsInPaths(web_app_path, shortcut_info, shortcut_paths,
-                           SHORTCUT_CREATION_BY_USER, nullptr);
+                           SHORTCUT_CREATION_BY_USER, "", nullptr);
     // If the shortcut was pinned to the taskbar,
     // GetShortcutLocationsAndDeleteShortcuts will have deleted it. In that
     // case, re-pin it.
@@ -500,8 +532,8 @@ bool DeletePlatformShortcuts(const base::FilePath& web_app_path,
 void DeleteAllShortcutsForProfile(const base::FilePath& profile_path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  GetShortcutLocationsAndDeleteShortcuts(base::FilePath(), profile_path, L"",
-                                         nullptr, nullptr);
+  GetShortcutLocationsAndDeleteShortcuts(base::FilePath(), profile_path,
+                                         std::u16string(), nullptr, nullptr);
 
   // If there are no more shortcuts in the Chrome Apps subdirectory, remove it.
   base::FilePath chrome_apps_dir;
@@ -526,8 +558,8 @@ std::vector<base::FilePath> GetShortcutPaths(
       {creation_locations.applications_menu_location ==
            APP_MENU_LOCATION_SUBDIR_CHROMEAPPS,
        ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_APPS_DIR},
-      {// For Win7+, |in_quick_launch_bar| indicates that we are pinning to
-       // taskbar. This needs to be handled by callers.
+      {// For Windows 7 and 8, |in_quick_launch_bar| indicates that we are
+       // pinning to taskbar. This needs to be handled by callers.
        creation_locations.in_quick_launch_bar &&
            base::win::CanPinShortcutToTaskbar(),
        ShellUtil::SHORTCUT_LOCATION_QUICK_LAUNCH},
@@ -549,7 +581,7 @@ std::vector<base::FilePath> GetShortcutPaths(
 }
 
 base::FilePath GetIconFilePath(const base::FilePath& web_app_path,
-                               const base::string16& title) {
+                               const std::u16string& title) {
   return web_app_path.Append(GetSanitizedFileName(title))
       .AddExtension(FILE_PATH_LITERAL(".ico"));
 }

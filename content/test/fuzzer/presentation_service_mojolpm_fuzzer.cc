@@ -16,7 +16,6 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/test/test_switches.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
@@ -27,6 +26,7 @@
 #include "content/browser/presentation/presentation_test_utils.h"
 #include "content/browser/site_instance_impl.h"  // nogncheck
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/presentation_request.h"
 #include "content/public/browser/presentation_service_delegate.h"
 #include "content/public/browser/site_instance.h"
@@ -215,13 +215,13 @@ void PresentationServiceTestcase::NextAction() {
         case Action::kRunThread: {
           if (action.run_thread().id()) {
             base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-            base::PostTask(FROM_HERE, {content::BrowserThread::UI},
-                           run_loop.QuitClosure());
+            content::GetUIThreadTaskRunner({})->PostTask(
+                FROM_HERE, run_loop.QuitClosure());
             run_loop.Run();
           } else {
             base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-            base::PostTask(FROM_HERE, {content::BrowserThread::IO},
-                           run_loop.QuitClosure());
+            content::GetIOThreadTaskRunner({})->PostTask(
+                FROM_HERE, run_loop.QuitClosure());
             run_loop.Run();
           }
         } break;
@@ -260,8 +260,8 @@ void PresentationServiceTestcase::SetUp() {
   RenderViewHostTestHarness::SetUp();
 
   base::RunLoop run_loop;
-  base::PostTaskAndReply(
-      FROM_HERE, {content::BrowserThread::UI},
+  content::GetUIThreadTaskRunner({})->PostTaskAndReply(
+      FROM_HERE,
       base::BindOnce(&PresentationServiceTestcase::SetUpOnUIThread,
                      base::Unretained(this)),
       run_loop.QuitClosure());
@@ -284,8 +284,8 @@ void PresentationServiceTestcase::SetUpOnUIThread() {
 
 void PresentationServiceTestcase::TearDown() {
   base::RunLoop run_loop;
-  base::PostTaskAndReply(
-      FROM_HERE, {content::BrowserThread::UI},
+  content::GetUIThreadTaskRunner({})->PostTaskAndReply(
+      FROM_HERE,
       base::BindOnce(&PresentationServiceTestcase::TearDownOnUIThread,
                      base::Unretained(this)),
       run_loop.QuitClosure());
@@ -306,8 +306,8 @@ void PresentationServiceTestcase::AddPresentationService(uint32_t id) {
   // `Unretained` is safe here, as `run_loop.Run()` blocks until
   // `PostTaskAndReply` calls the quit closure.
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  base::PostTaskAndReply(
-      FROM_HERE, {content::BrowserThread::UI},
+  content::GetUIThreadTaskRunner({})->PostTaskAndReply(
+      FROM_HERE,
       base::BindOnce(&content::PresentationServiceImpl::Bind,
                      base::Unretained(presentation_service_.get()),
                      std::move(receiver)),

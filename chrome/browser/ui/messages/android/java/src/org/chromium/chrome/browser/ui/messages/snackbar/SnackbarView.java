@@ -206,9 +206,16 @@ public class SnackbarView {
      * the mMessageView content description is read aloud if accessibility is enabled.
      */
     public void announceforAccessibility() {
-        mMessageView.announceForAccessibility(mMessageView.getContentDescription() + ". "
-                + mActionButtonView.getContentDescription() + ". "
-                + mContainerView.getResources().getString(R.string.bottom_bar_screen_position));
+        StringBuilder accessibilityText = new StringBuilder(mMessageView.getContentDescription());
+        if (mActionButtonView.getContentDescription() != null) {
+            accessibilityText.append(". ")
+                    .append(mActionButtonView.getContentDescription())
+                    .append(". ")
+                    .append(mContainerView.getResources().getString(
+                            R.string.bottom_bar_screen_position));
+        }
+
+        mMessageView.announceForAccessibility(accessibilityText);
     }
 
     /**

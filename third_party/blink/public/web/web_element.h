@@ -38,6 +38,7 @@
 #include "v8/include/v8.h"
 
 namespace gfx {
+class Rect;
 class Size;
 }
 
@@ -45,7 +46,6 @@ namespace blink {
 
 class Element;
 class Image;
-struct WebRect;
 
 // Provides access to some properties of a DOM element node.
 class BLINK_EXPORT WebElement : public WebNode {
@@ -68,6 +68,8 @@ class BLINK_EXPORT WebElement : public WebNode {
   bool IsEditable() const;
   // Returns the qualified name, which may contain a prefix and a colon.
   WebString TagName() const;
+  // Returns the id attribute.
+  WebString GetIdAttribute() const;
   // Check if this element has the specified local tag name, and the HTML
   // namespace. Tag name matching is case-insensitive.
   bool HasHTMLTagName(const WebString&) const;
@@ -94,7 +96,7 @@ class BLINK_EXPORT WebElement : public WebNode {
   // Returns the bounds of the element in Visual Viewport. The bounds
   // have been adjusted to include any transformations, including page scale.
   // This function will update the layout if required.
-  WebRect BoundsInViewport() const;
+  gfx::Rect BoundsInViewport() const;
 
   // Returns the image contents of this element or a null SkBitmap
   // if there isn't any.

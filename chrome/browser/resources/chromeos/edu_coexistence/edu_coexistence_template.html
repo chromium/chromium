@@ -1,4 +1,4 @@
-<style>
+<style include="edu-coexistence-css">
   :host {
     overflow-y: hidden;
     --background-gradient-0: linear-gradient(0deg,
@@ -7,60 +7,6 @@
     --background-gradient-180: linear-gradient(180deg,
         rgba(var(--google-grey-refresh-100-rgb), 1) 0,
         rgba(var(--google-grey-refresh-100-rgb), 0) 8px);
-  }
-
-  .main {
-    height: calc(100% - 90px);
-    overflow-x: hidden;
-    overflow-y: auto;
-  }
-
-  .template-container {
-    align-items: center;
-    display: flex;
-    height: 100%;
-    justify-content: center;
-    width: 100%;
-  }
-
-  .content-container {
-      align-items: stretch;
-      height: 100%;
-      max-width: 768px;
-      width: 100%;
-  }
-
-  @media (orientation: landscape) {
-    .content-container {
-       max-height: 640px;
-    }
-  }
-
-  @media (orientation: portrait) {
-    .content-container {
-      max-height: 768px;
-    }
-  }
-
-
-  .main[scrollable].can-scroll:not(.is-scrolled):not(.scrolled-to-bottom) {
-    background: var(--background-gradient-0);
-  }
-
-  .main[scrollable].can-scroll.is-scrolled:not(.scrolled-to-bottom) {
-    background: var(--background-gradient-0), var(--background-gradient-180);
-  }
-
-  .main[scrollable].is-scrolled.scrolled-to-bottom {
-    background: var(--background-gradient-180);
-  }
-
-  .footer {
-    align-items: center;
-    display: flex;
-    height: 90px;
-    padding-inline-end: 32px;
-    padding-inline-start: 32px;
   }
 </style>
 <div class="template-container oobe-format">

@@ -68,7 +68,7 @@ public class PlayerFrameGestureDetectorDelegate {
      * @param y Y coordinate of the point clicked.
      */
     void onTap(int x, int y) {
-        mViewDelegate.onTap(x, y);
+        mViewDelegate.onTap(x, y, false);
     }
 
     /**

@@ -20,6 +20,7 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom-blink.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_url_loader_client.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
@@ -101,8 +102,8 @@ class FakeWebURLLoaderFactory final : public WebURLLoaderFactory {
       const WebURLRequest&,
       std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>,
       std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>,
-      CrossVariantMojoRemote<blink::mojom::KeepAliveHandleInterfaceBase>)
-      override {
+      CrossVariantMojoRemote<blink::mojom::KeepAliveHandleInterfaceBase>,
+      WebBackForwardCacheLoaderHelper) override {
     return std::make_unique<FakeWebURLLoader>();
   }
 };
@@ -218,11 +219,9 @@ class MockServiceWorkerContextClient final
         /*reporting_observer_receiver=*/mojo::NullReceiver());
 
     // To make the other side callable.
-    mojo::AssociateWithDisconnectedPipe(host_receiver.PassHandle());
-    mojo::AssociateWithDisconnectedPipe(
-        registration_object_host_receiver.PassHandle());
-    mojo::AssociateWithDisconnectedPipe(
-        service_worker_object_host_receiver.PassHandle());
+    host_receiver.EnableUnassociatedUsage();
+    registration_object_host_receiver.EnableUnassociatedUsage();
+    service_worker_object_host_receiver.EnableUnassociatedUsage();
   }
 
   void FailedToFetchClassicScript() override {

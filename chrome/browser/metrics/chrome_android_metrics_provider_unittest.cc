@@ -5,15 +5,19 @@
 #include "chrome/browser/metrics/chrome_android_metrics_provider.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class ChromeAndroidMetricsProviderTest : public testing::Test {
  public:
-  ChromeAndroidMetricsProviderTest() = default;
+  ChromeAndroidMetricsProviderTest() : metrics_provider_(&pref_service_) {
+    ChromeAndroidMetricsProvider::RegisterPrefs(pref_service_.registry());
+  }
   ~ChromeAndroidMetricsProviderTest() override = default;
 
  protected:
   base::HistogramTester histogram_tester_;
+  TestingPrefServiceSimple pref_service_;
   ChromeAndroidMetricsProvider metrics_provider_;
 };
 

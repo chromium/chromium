@@ -17,6 +17,7 @@ namespace blink {
 
 class KeyboardEvent;
 class LocalFrame;
+class Node;
 class ScrollManager;
 class WebKeyboardEvent;
 

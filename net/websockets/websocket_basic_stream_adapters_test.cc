@@ -577,6 +577,60 @@ TEST_F(WebSocketSpdyStreamAdapterTest,
   EXPECT_TRUE(data.AllWriteDataConsumed());
 }
 
+// Previously we failed to detect a half-close by the server that indicated the
+// stream should be closed. This test ensures a half-close is correctly
+// detected. See https://crbug.com/1151393.
+TEST_F(WebSocketSpdyStreamAdapterTest, OnHeadersReceivedThenStreamEnd) {
+  spdy::SpdySerializedFrame response_headers(
+      spdy_util_.ConstructSpdyResponseHeaders(1, ResponseHeaders(), false));
+  spdy::SpdySerializedFrame stream_end(
+      spdy_util_.ConstructSpdyDataFrame(1, "", true));
+  MockRead reads[] = {CreateMockRead(response_headers, 1),
+                      CreateMockRead(stream_end, 2),
+                      MockRead(ASYNC, ERR_IO_PENDING, 3),  // pause here
+                      MockRead(ASYNC, 0, 4)};
+  spdy::SpdySerializedFrame request_headers(spdy_util_.ConstructSpdyHeaders(
+      1, RequestHeaders(), DEFAULT_PRIORITY, /* fin = */ false));
+  MockWrite writes[] = {CreateMockWrite(request_headers, 0)};
+  SequencedSocketData data(reads, writes);
+  AddSocketData(&data);
+  AddSSLSocketData();
+
+  EXPECT_CALL(mock_delegate_, OnHeadersSent());
+  EXPECT_CALL(mock_delegate_, OnHeadersReceived(_));
+  EXPECT_CALL(mock_delegate_, OnClose(ERR_CONNECTION_CLOSED));
+
+  base::WeakPtr<SpdySession> session = CreateSpdySession();
+  base::WeakPtr<SpdyStream> stream = CreateSpdyStream(session);
+  WebSocketSpdyStreamAdapter adapter(stream, &mock_delegate_,
+                                     NetLogWithSource());
+  EXPECT_TRUE(adapter.is_initialized());
+
+  int rv = stream->SendRequestHeaders(RequestHeaders(), MORE_DATA_TO_SEND);
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  constexpr int kReadBufSize = 1024;
+  auto read_buf = base::MakeRefCounted<IOBuffer>(kReadBufSize);
+  TestCompletionCallback read_callback;
+  rv = adapter.Read(read_buf.get(), kReadBufSize, read_callback.callback());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  EXPECT_TRUE(session);
+  EXPECT_TRUE(stream);
+  rv = read_callback.WaitForResult();
+  EXPECT_EQ(ERR_CONNECTION_CLOSED, rv);
+  EXPECT_TRUE(session);
+  EXPECT_FALSE(stream);
+
+  // Close the session.
+  data.Resume();
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(data.AllReadDataConsumed());
+  EXPECT_TRUE(data.AllWriteDataConsumed());
+}
+
 TEST_F(WebSocketSpdyStreamAdapterTest, DetachDelegate) {
   spdy::SpdySerializedFrame response_headers(
       spdy_util_.ConstructSpdyResponseHeaders(1, ResponseHeaders(), false));

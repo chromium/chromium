@@ -250,13 +250,12 @@ void ClipboardProvider::AddCreatedMatchWithTracking(
   // If the omnibox is not empty, add a default match.
   // This match will be opened when the user presses "Enter".
   if (!input.text().empty()) {
-    const base::string16 description =
+    const std::u16string description =
         (base::FeatureList::IsEnabled(omnibox::kDisplayTitleForCurrentUrl))
             ? input.current_title()
-            : base::string16();
-    AutocompleteMatch verbatim_match =
-        VerbatimMatchForURL(client_, input, input.current_url(), description,
-                            history_url_provider_, -1);
+            : std::u16string();
+    AutocompleteMatch verbatim_match = VerbatimMatchForURL(
+        this, client_, input, input.current_url(), description, -1);
     matches_.push_back(verbatim_match);
   }
 
@@ -363,13 +362,13 @@ base::Optional<AutocompleteMatch> ClipboardProvider::CreateTextMatch(
     const AutocompleteInput& input,
     bool* read_clipboard_content) {
   *read_clipboard_content = false;
-  base::Optional<base::string16> optional_text =
+  base::Optional<std::u16string> optional_text =
       clipboard_content_->GetRecentTextFromClipboard();
   if (!optional_text)
     return base::nullopt;
 
   *read_clipboard_content = true;
-  base::string16 text = std::move(optional_text).value();
+  std::u16string text = std::move(optional_text).value();
 
   // The clipboard can contain the empty string, which shouldn't be suggested.
   if (text.empty())
@@ -476,7 +475,7 @@ AutocompleteMatch ClipboardProvider::NewBlankTextMatch() {
 }
 
 base::Optional<AutocompleteMatch> ClipboardProvider::NewClipboardTextMatch(
-    base::string16 text) {
+    std::u16string text) {
   // The text in the clipboard is a url. We don't want to prompt the user to
   // search for a url.
   if (GURL(text).is_valid())
@@ -571,7 +570,7 @@ void ClipboardProvider::ConstructImageMatchCallback(
   AutocompleteMatch match = NewBlankImageMatch();
 
   match.search_terms_args =
-      std::make_unique<TemplateURLRef::SearchTermsArgs>(base::ASCIIToUTF16(""));
+      std::make_unique<TemplateURLRef::SearchTermsArgs>(u"");
   match.search_terms_args->image_thumbnail_content.assign(
       image_bytes->front_as<char>(), image_bytes->size());
   TemplateURLRef::PostContent post_content;

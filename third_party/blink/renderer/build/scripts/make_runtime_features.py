@@ -138,7 +138,7 @@ class RuntimeFeatureWriter(BaseRuntimeFeatureWriter):
                 except Exception:
                     # If trouble unpickling, overwrite
                     pass
-        with open(os.path.abspath(file_name), 'w') as pickle_file:
+        with open(os.path.abspath(file_name), 'wb') as pickle_file:
             pickle.dump(features_map, pickle_file)
 
     def _template_inputs(self):

@@ -26,7 +26,7 @@ bool IsButtonVisible() {
          (ime_count > 1 || ime_controller->managed_by_policy());
 }
 
-base::string16 GetLabelString() {
+std::u16string GetLabelString() {
   DCHECK(Shell::Get());
   ImeControllerImpl* ime_controller = Shell::Get()->ime_controller();
   size_t ime_count = ime_controller->available_imes().size();
@@ -39,7 +39,7 @@ base::string16 GetLabelString() {
   }
 }
 
-base::string16 GetTooltipString() {
+std::u16string GetTooltipString() {
   DCHECK(Shell::Get());
   ImeControllerImpl* ime_controller = Shell::Get()->ime_controller();
   size_t ime_count = ime_controller->available_imes().size();

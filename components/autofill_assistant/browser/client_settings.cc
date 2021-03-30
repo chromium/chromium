@@ -105,7 +105,57 @@ void ClientSettings::UpdateFromProto(const ClientSettingsProto& proto) {
       back_button_settings.reset();
     }
   }
-
+  if (proto.has_slow_warning_settings()) {
+    if (proto.slow_warning_settings().has_enable_slow_connection_warnings()) {
+      enable_slow_connection_warnings =
+          proto.slow_warning_settings().enable_slow_connection_warnings();
+    }
+    if (proto.slow_warning_settings().has_enable_slow_website_warnings()) {
+      enable_slow_website_warnings =
+          proto.slow_warning_settings().enable_slow_website_warnings();
+    }
+    if (proto.slow_warning_settings().has_only_show_warning_once()) {
+      only_show_warning_once =
+          proto.slow_warning_settings().only_show_warning_once();
+    }
+    if (proto.slow_warning_settings().has_only_show_connection_warning_once()) {
+      only_show_connection_warning_once =
+          proto.slow_warning_settings().only_show_connection_warning_once();
+    }
+    if (proto.slow_warning_settings().has_only_show_website_warning_once()) {
+      only_show_website_warning_once =
+          proto.slow_warning_settings().only_show_website_warning_once();
+    }
+    if (proto.slow_warning_settings().has_warning_delay_ms()) {
+      warning_delay = base::TimeDelta::FromMilliseconds(
+          proto.slow_warning_settings().warning_delay_ms());
+    }
+    if (proto.slow_warning_settings().has_slow_roundtrip_threshold_ms()) {
+      slow_roundtrip_threshold = base::TimeDelta::FromMilliseconds(
+          proto.slow_warning_settings().slow_roundtrip_threshold_ms());
+    }
+    if (proto.slow_warning_settings().has_max_consecutive_slow_roundtrips()) {
+      max_consecutive_slow_roundtrips =
+          proto.slow_warning_settings().max_consecutive_slow_roundtrips();
+    }
+    if (proto.slow_warning_settings().has_slow_connection_message()) {
+      slow_connection_message =
+          proto.slow_warning_settings().slow_connection_message();
+    }
+    if (proto.slow_warning_settings().has_slow_website_message()) {
+      slow_website_message =
+          proto.slow_warning_settings().slow_website_message();
+    }
+    if (proto.slow_warning_settings()
+            .has_minimum_warning_message_duration_ms()) {
+      minimum_warning_duration = base::TimeDelta::FromMilliseconds(
+          proto.slow_warning_settings().minimum_warning_message_duration_ms());
+    }
+    if (proto.slow_warning_settings().message_mode() !=
+        ClientSettingsProto::SlowWarningSettings::UNKNOWN) {
+      message_mode = proto.slow_warning_settings().message_mode();
+    }
+  }
   // Test only settings.
   if (proto.has_integration_test_settings()) {
     integration_test_settings = proto.integration_test_settings();

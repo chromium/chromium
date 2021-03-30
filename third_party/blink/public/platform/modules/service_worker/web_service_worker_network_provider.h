@@ -43,6 +43,7 @@
 
 namespace blink {
 
+class WebBackForwardCacheLoaderHelper;
 class WebURLRequest;
 
 // This interface allows the Blink embedder to implement loading functionality
@@ -68,7 +69,8 @@ class WebServiceWorkerNetworkProvider {
       const WebURLRequest& request,
       std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>,
       std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>,
-      CrossVariantMojoRemote<blink::mojom::KeepAliveHandleInterfaceBase>) = 0;
+      CrossVariantMojoRemote<blink::mojom::KeepAliveHandleInterfaceBase>,
+      WebBackForwardCacheLoaderHelper) = 0;
 
   // For service worker clients.
   virtual blink::mojom::ControllerServiceWorkerMode

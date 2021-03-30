@@ -162,4 +162,9 @@ bool SearchInputType::SupportsInputModeAttribute() const {
   return true;
 }
 
+void SearchInputType::Trace(Visitor* visitor) const {
+  visitor->Trace(search_event_timer_);
+  BaseTextInputType::Trace(visitor);
+}
+
 }  // namespace blink

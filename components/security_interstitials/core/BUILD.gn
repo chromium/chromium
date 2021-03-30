@@ -76,6 +76,7 @@ static_library("unsafe_resource") {
     "//components/safe_browsing/core/db:hit_report",
     "//components/safe_browsing/core/db:util",
     "//net",
+    "//services/network/public/mojom",
   ]
 }
 

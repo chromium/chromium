@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.browserservices;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -16,9 +17,10 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Promise;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity.ClientPackageNameProvider;
+import org.chromium.chrome.browser.browserservices.verification.OriginVerifierStatics;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
@@ -30,6 +32,7 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.net.NetError;
 import org.chromium.ui.widget.Toast;
+import org.chromium.url.GURL;
 
 import javax.inject.Inject;
 
@@ -51,7 +54,7 @@ public class QualityEnforcer {
     @VisibleForTesting
     static final String KEY_SUCCESS = "success";
 
-    private final ChromeActivity<?> mActivity;
+    private final Activity mActivity;
     private final Verifier mVerifier;
     private final CustomTabsConnection mConnection;
     private final CustomTabsSessionToken mSessionToken;
@@ -81,18 +84,18 @@ public class QualityEnforcer {
                 });
             }
 
-            String newUrl = tab.getOriginalUrl();
+            GURL newUrl = tab.getOriginalUrl();
             if (isNavigationInScope(newUrl)) {
                 if (navigation.httpStatusCode() == 404) {
-                    trigger(tab, QualityEnforcementViolationType.HTTP_ERROR404, newUrl,
+                    trigger(tab, QualityEnforcementViolationType.HTTP_ERROR404, newUrl.getSpec(),
                             navigation.httpStatusCode());
                 } else if (navigation.httpStatusCode() >= 500
                         && navigation.httpStatusCode() <= 599) {
-                    trigger(tab, QualityEnforcementViolationType.HTTP_ERROR5XX, newUrl,
+                    trigger(tab, QualityEnforcementViolationType.HTTP_ERROR5XX, newUrl.getSpec(),
                             navigation.httpStatusCode());
                 } else if (navigation.errorCode() == NetError.ERR_INTERNET_DISCONNECTED) {
-                    trigger(tab, QualityEnforcementViolationType.UNAVAILABLE_OFFLINE, newUrl,
-                            navigation.httpStatusCode());
+                    trigger(tab, QualityEnforcementViolationType.UNAVAILABLE_OFFLINE,
+                            newUrl.getSpec(), navigation.httpStatusCode());
                 }
             }
         }
@@ -105,8 +108,7 @@ public class QualityEnforcer {
     };
 
     @Inject
-    public QualityEnforcer(ChromeActivity<?> activity,
-            ActivityLifecycleDispatcher lifecycleDispatcher,
+    public QualityEnforcer(Activity activity, ActivityLifecycleDispatcher lifecycleDispatcher,
             TabObserverRegistrar tabObserverRegistrar,
             BrowserServicesIntentDataProvider intentDataProvider, CustomTabsConnection connection,
             Verifier verifier, ClientPackageNameProvider clientPackageNameProvider,
@@ -130,9 +132,21 @@ public class QualityEnforcer {
         if (ChromeFeatureList.isEnabled(
                     ChromeFeatureList.TRUSTED_WEB_ACTIVITY_QUALITY_ENFORCEMENT_WARNING)) {
             showErrorToast(getToastMessage(type, url, httpStatusCode));
+
             if (tab.getWebContents() != null) {
-                QualityEnforcerJni.get().reportDevtoolsIssue(
-                        tab.getWebContents().getMainFrame(), type, url, httpStatusCode);
+                String packageName = null;
+                String signature = null;
+                // Only get the package name and signature when violation type is
+                // DIGITAL_ASSET_LINK. This is because computing the fingerprint is expensive.
+                // We should figure out how to reuse the existing one in OriginVerifier.
+                if (type == QualityEnforcementViolationType.DIGITAL_ASSET_LINK) {
+                    packageName = mClientPackageNameProvider.get();
+                    signature = OriginVerifierStatics.getCertificateSHA256FingerprintForPackage(
+                            packageName);
+                }
+
+                QualityEnforcerJni.get().reportDevtoolsIssue(tab.getWebContents().getMainFrame(),
+                        type, url, httpStatusCode, packageName, signature);
             }
         }
 
@@ -175,10 +189,11 @@ public class QualityEnforcer {
      * Updates whether the current url is verified and returns whether the source and destination
      * are both on the verified origin.
      */
-    private boolean isNavigationInScope(String newUrl) {
-        if (newUrl.equals("")) return false;
+    private boolean isNavigationInScope(GURL newUrl) {
+        if (newUrl.isEmpty()) return false;
         boolean wasVerified = mOriginVerified;
-        Promise<Boolean> result = mVerifier.verify(newUrl);
+        // TODO(crbug/783819): Migrate Verifier to GURL.
+        Promise<Boolean> result = mVerifier.verify(newUrl.getSpec());
         mOriginVerified = !result.isFulfilled() || result.getResult();
         return wasVerified && mOriginVerified;
     }
@@ -232,7 +247,7 @@ public class QualityEnforcer {
 
     @NativeMethods
     interface Natives {
-        void reportDevtoolsIssue(
-                RenderFrameHost renderFrameHost, int type, String url, int httpStatusCode);
+        void reportDevtoolsIssue(RenderFrameHost renderFrameHost, int type, String url,
+                int httpStatusCode, String packageName, String signature);
     }
 }

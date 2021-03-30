@@ -8,9 +8,9 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/ui/sad_tab.h"
+#include "content/common/content_navigation_policy.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/navigation_policy.h"
 
 namespace {
 

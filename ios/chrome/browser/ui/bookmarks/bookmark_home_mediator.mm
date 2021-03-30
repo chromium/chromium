@@ -109,15 +109,11 @@ const int kMaxBookmarksSearchResults = 50;
   _prefChangeRegistrar->Init(self.browserState->GetPrefs());
   _prefObserverBridge.reset(new PrefObserverBridge(self));
 
-  if (IsEditBookmarksIOSEnabled()) {
     _prefObserverBridge->ObserveChangesForPreference(
         bookmarks::prefs::kEditBookmarksEnabled, _prefChangeRegistrar.get());
-  }
 
-  if (IsManagedBookmarksEnabled()) {
     _prefObserverBridge->ObserveChangesForPreference(
         bookmarks::prefs::kManagedBookmarks, _prefChangeRegistrar.get());
-  }
 
   [self computePromoTableViewData];
   [self computeBookmarkTableViewData];
@@ -218,7 +214,6 @@ const int kMaxBookmarksSearchResults = 50;
         toSectionWithIdentifier:BookmarkHomeSectionIdentifierBookmarks];
   }
 
-  if (IsManagedBookmarksEnabled()) {
     // Add "Managed Bookmarks" to the table if it exists.
     bookmarks::ManagedBookmarkService* managedBookmarkService =
         ManagedBookmarkServiceFactory::GetForBrowserState(self.browserState);
@@ -231,7 +226,6 @@ const int kMaxBookmarksSearchResults = 50;
                           addItem:managedItem
           toSectionWithIdentifier:BookmarkHomeSectionIdentifierBookmarks];
     }
-  }
 }
 
 - (void)computeBookmarkTableViewDataMatching:(NSString*)searchText
@@ -243,7 +237,7 @@ const int kMaxBookmarksSearchResults = 50;
 
   std::vector<const BookmarkNode*> nodes;
   bookmarks::QueryFields query;
-  query.word_phrase_query.reset(new base::string16);
+  query.word_phrase_query.reset(new std::u16string);
   *query.word_phrase_query = base::SysNSStringToUTF16(searchText);
   GetBookmarksMatchingProperties(self.sharedState.bookmarkModel, query,
                                  kMaxBookmarksSearchResults, &nodes);

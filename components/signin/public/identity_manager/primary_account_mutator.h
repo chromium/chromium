@@ -60,9 +60,9 @@ class PrimaryAccountMutator {
 
   // Revokes sync consent from the primary account. We distinguish the following
   // cases:
-  // a. If transitioning from ConsentLevel::kSync to ConsentLevel::kNotRequired
+  // a. If transitioning from ConsentLevel::kSync to ConsentLevel::kSignin
   //    is supported (e.g. for DICE), then this method only revokes the sync
-  //    consent and the primary account is left at ConsentLevel::kNotRequired
+  //    consent and the primary account is left at ConsentLevel::kSignin
   //    level.
   // b. Otherwise this method revokes the sync consent and it also  clears the
   //    primary account and removes all other accounts via a call to

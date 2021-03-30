@@ -150,7 +150,7 @@ int CertificateTagMain(int argc, char** argv) {
     std::vector<uint8_t> tag_contents;
     if (base::StartsWith(args.set_superfluous_cert_tag, kPrefix,
                          base::CompareCase::INSENSITIVE_ASCII)) {
-      const base::StringPiece hex_chars(
+      const auto hex_chars = base::MakeStringPiece(
           std::begin(args.set_superfluous_cert_tag) + base::size(kPrefix) - 1,
           std::end(args.set_superfluous_cert_tag));
       if (!base::HexStringToBytes(hex_chars, &tag_contents)) {

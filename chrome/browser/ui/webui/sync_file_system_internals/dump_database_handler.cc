@@ -31,9 +31,9 @@ void DumpDatabaseHandler::HandleGetDatabaseDump(const base::ListValue* args) {
   sync_file_system::SyncFileSystemService* sync_service =
       SyncFileSystemServiceFactory::GetForProfile(profile_);
   if (sync_service) {
-    sync_service->DumpDatabase(base::AdaptCallbackForRepeating(base::BindOnce(
+    sync_service->DumpDatabase(base::BindOnce(
         &DumpDatabaseHandler::DidGetDatabaseDump, base::Unretained(this),
-        args->GetList()[0].GetString() /* callback_id */)));
+        args->GetList()[0].GetString() /* callback_id */));
   }
 }
 

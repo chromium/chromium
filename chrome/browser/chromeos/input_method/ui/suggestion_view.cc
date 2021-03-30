@@ -133,8 +133,8 @@ void SuggestionView::SetView(const SuggestionDetails& details) {
   annotation_label_->SetVisible(details.show_annotation);
 }
 
-void SuggestionView::SetViewWithIndex(const base::string16& index,
-                                      const base::string16& text) {
+void SuggestionView::SetViewWithIndex(const std::u16string& index,
+                                      const std::u16string& text) {
   index_label_->SetText(index);
   index_label_->SetVisible(true);
   index_width_ = index_label_->GetPreferredSize().width();
@@ -142,7 +142,7 @@ void SuggestionView::SetViewWithIndex(const base::string16& index,
   suggestion_width_ = suggestion_label_->GetPreferredSize().width();
 }
 
-void SuggestionView::SetSuggestionText(const base::string16& text,
+void SuggestionView::SetSuggestionText(const std::u16string& text,
                                        const size_t confirmed_length) {
   // SetText clears the existing style only if the text to set is different from
   // the previous one.

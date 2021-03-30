@@ -318,8 +318,8 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderSharedBitmap) {
 
   MockCanvasResourceDispatcherClient client;
   CanvasResourceDispatcher resource_dispatcher(
-      &client, 1 /* client_id */, 1 /* sink_id */,
-      1 /* placeholder_canvas_id */, kSize);
+      &client, base::ThreadTaskRunnerHandle::Get(), 1 /* client_id */,
+      1 /* sink_id */, 1 /* placeholder_canvas_id */, kSize);
 
   auto provider = CanvasResourceProvider::CreateSharedBitmapProvider(
       kSize, kLow_SkFilterQuality, kColorParams,
@@ -558,8 +558,7 @@ TEST_F(CanvasResourceProviderTest, FlushForImage) {
 
   EXPECT_FALSE(dst_canvas->IsCachingImage(src_content_id));
 
-  cc::PaintFlags flags;
-  dst_canvas->drawImage(paint_image, 0, 0, &flags);
+  dst_canvas->drawImage(paint_image, 0, 0, SkSamplingOptions(), nullptr);
 
   EXPECT_TRUE(dst_canvas->IsCachingImage(src_content_id));
 

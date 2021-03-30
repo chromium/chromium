@@ -4,10 +4,13 @@
 <translation id="1075622780330595106">しばらく使用していないタブが <ph name="NUMBER_OF_TABS" /> 個あります。これらのタブを閉じますか？</translation>
 <translation id="1181037720776840403">削除</translation>
 <translation id="125153950246128346">タップすると他のタブが表示されます</translation>
+<translation id="1302104331113804646">価格トラッキングの設定</translation>
+<translation id="1378979118429748177">値下げがあった場合に通知されます</translation>
 <translation id="1657719826150349398">タブを下に移動</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個のタブ}other{<ph name="TABS_COUNT_MANY" /> 個のタブ}}</translation>
 <translation id="2277224997687551299">グループ名を編集</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{選択した <ph name="TABS_COUNT_ONE" /> 個のタブをグループから削除します。}other{選択した <ph name="TABS_COUNT_MANY" /> 個のタブをグループから削除します。}}</translation>
+<translation id="2479148705183875116">設定に移動</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個のタブを折りたたみます。}other{タブグループの <ph name="TABS_COUNT_MANY" /> 個のタブを折りたたみます。}}</translation>
 <translation id="2569352796411618312">提案: しばらく使用していないタブが <ph name="NUMBER_OF_TABS" /> 個あります。これらのタブを閉じますか？</translation>
 <translation id="257674075312929031">グループ化</translation>
@@ -15,13 +18,16 @@
 <translation id="2671423594960767771">グループを共有</translation>
 <translation id="2759453070259087442"><ph name="TITLE_OF_GROUP" /> タブグループの <ph name="NUMBER_OF_TABS" /> 個のタブを展開します。</translation>
 <translation id="2977480621796371840">グループから削除</translation>
+<translation id="3291470810748040983">開いているタブの商品が値下げされた場合にアラートを受け取ることができます</translation>
 <translation id="3328308545011660196">おすすめ: <ph name="NUMBER_OF_TABS" /> 個のタブは関連しているようです。グループ化しますか？</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個のタブを折りたたみます。}other{<ph name="TITLE_OF_GROUP" /> タブグループの <ph name="TABS_COUNT_MANY" /> 個のタブを折りたたみます。}}</translation>
+<translation id="3882834874697329510">開いているタブの商品が値下げされた場合にアラートを受け取るには、[設定] で通知をオンにします。</translation>
+<translation id="3940195383040445971">タブで価格をトラッキング</translation>
+<translation id="3996880007329611795">通知を受け取る</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> 個のタブは関連しているようです。グループ化しますか？</translation>
 <translation id="4212246570487010370">引き続き閲覧</translation>
 <translation id="4450893287417543264">次回から表示しない</translation>
 <translation id="4648718555153979859">タブはここにグループ化されます</translation>
-<translation id="4922064041913095674">開いているタブに表示されているより安く買える商品を確認できます</translation>
 <translation id="492284538114688557">値下げ情報が見つかりました</translation>
 <translation id="5007392906805964215">内容を確認</translation>
 <translation id="5073204694187207510">全画面グリッドを非表示</translation>
@@ -30,6 +36,7 @@
 <translation id="5533021382642990449">後で表示</translation>
 <translation id="5558362125926932819">タブグループの <ph name="NUMBER_OF_TABS" /> 個のタブを閉じます</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> 個のタブがグループ化されました</translation>
+<translation id="575494663145460764">値下げアラートを受け取りますか？</translation>
 <translation id="58326064309361797">タブをグループ化するにはドラッグします</translation>
 <translation id="5846292395804797011"><ph name="TITLE_OF_GROUP" /> グループの <ph name="NUMBER_OF_TABS" /> 個のタブを閉じます</translation>
 <translation id="6040143037577758943">閉じる</translation>
@@ -41,6 +48,7 @@
 <translation id="6856809498882026482">複数選択モードを非表示にします</translation>
 <translation id="7151209024774799310">グループからタブを削除</translation>
 <translation id="7204204600596740190">複数選択モード</translation>
+<translation id="7352298686197644113">開いているタブに値下げされた商品があります</translation>
 <translation id="753732157349120914">タブ切り替え機能</translation>
 <translation id="7559245342362162951">グループのタブを全画面グリッドで表示</translation>
 <translation id="7792771145871471484">提案を確認します。</translation>
@@ -52,7 +60,10 @@
 <translation id="8304833501377495048">次回からタブバーを表示しないよう設定しますか？</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{選択した <ph name="TABS_COUNT_ONE" /> 個のタブを閉じます}other{選択した <ph name="TABS_COUNT_MANY" /> 個のタブを閉じます}}</translation>
 <translation id="8557923272772633250">タブグループの <ph name="NUMBER_OF_TABS" /> 個のタブを展開します。</translation>
+<translation id="860282621117673749">値下げアラート</translation>
+<translation id="8714939927607906138">値下げ</translation>
 <translation id="8749939518995770034">タブバーを閉じました</translation>
+<translation id="8820741577754260431">タブで値下げ情報を確認します</translation>
 <translation id="9150694013019234766">画面下部にあるタブグループのタブを切り替えます</translation>
 <translation id="9169594135889675189">グループに新しいタブを追加</translation>
 <translation id="959682366969460160">タブを整理</translation>

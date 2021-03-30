@@ -137,4 +137,12 @@ public interface ManualFillingComponent {
      * @return True iff the observer could be remove.
      */
     boolean removeObserver(Observer observer);
+
+    /**
+     * Show a confimation dialog.
+     * @param title A title of the confirmation dialog.
+     * @param message The message of the confirmation dialog.
+     * @param confirmedCallback A {@link Runnable} to trigger upon confirmation.
+     */
+    void confirmOperation(String title, String message, Runnable confirmedCallback);
 }

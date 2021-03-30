@@ -12,39 +12,17 @@
 #include "ui/accessibility/ax_role_properties.h"
 
 namespace ui {
+
 namespace {
-
-bool IsActiveLiveRegion(const AXTreeObserver::Change& change) {
-  return change.node->data().HasStringAttribute(
-             ax::mojom::StringAttribute::kLiveStatus) &&
-         change.node->data().GetStringAttribute(
-             ax::mojom::StringAttribute::kLiveStatus) != "off";
-}
-
-bool IsContainedInLiveRegion(const AXTreeObserver::Change& change) {
-  return change.node->data().HasStringAttribute(
-             ax::mojom::StringAttribute::kContainerLiveStatus) &&
-         change.node->data().HasStringAttribute(
-             ax::mojom::StringAttribute::kName);
-}
 
 bool HasEvent(const std::set<AXEventGenerator::EventParams>& node_events,
               AXEventGenerator::Event event) {
-  for (auto& iter : node_events) {
-    if (iter.event == event)
-      return true;
-  }
-  return false;
+  return node_events.count(AXEventGenerator::EventParams(event));
 }
 
 void RemoveEvent(std::set<AXEventGenerator::EventParams>* node_events,
                  AXEventGenerator::Event event) {
-  for (auto& iter : *node_events) {
-    if (iter.event == event) {
-      node_events->erase(iter);
-      return;
-    }
-  }
+  node_events->erase(AXEventGenerator::EventParams(event));
 }
 
 // If a node toggled its ignored state, don't also fire children-changed because
@@ -73,30 +51,43 @@ void RemoveEventsDueToIgnoredChanged(
 // Add a particular AXEventGenerator::IgnoredChangedState to
 // |ignored_changed_states|.
 void AddIgnoredChangedState(
-    AXEventGenerator::IgnoredChangedStatesBitset& ignored_changed_states,
-    AXEventGenerator::IgnoredChangedState state) {
-  ignored_changed_states.set(static_cast<size_t>(state));
+    const AXEventGenerator::IgnoredChangedState& state,
+    AXEventGenerator::IgnoredChangedStatesBitset* ignored_changed_states) {
+  ignored_changed_states->set(static_cast<size_t>(state));
 }
 
 // Returns true if |ignored_changed_states| contains a particular
 // AXEventGenerator::IgnoredChangedState.
 bool HasIgnoredChangedState(
-    AXEventGenerator::IgnoredChangedStatesBitset& ignored_changed_states,
-    AXEventGenerator::IgnoredChangedState state) {
+    const AXEventGenerator::IgnoredChangedStatesBitset& ignored_changed_states,
+    const AXEventGenerator::IgnoredChangedState& state) {
   return ignored_changed_states[static_cast<size_t>(state)];
 }
 
 }  // namespace
 
+//
+// AXEventGenerator::EventParams
+//
+
+AXEventGenerator::EventParams::EventParams(const Event event) : event(event) {}
+
 AXEventGenerator::EventParams::EventParams(
     const Event event,
     const ax::mojom::EventFrom event_from,
+    const ax::mojom::Action event_from_action,
     const std::vector<AXEventIntent>& event_intents)
-    : event(event), event_from(event_from), event_intents(event_intents) {}
+    : event(event),
+      event_from(event_from),
+      event_from_action(event_from_action),
+      event_intents(event_intents) {}
 
 AXEventGenerator::EventParams::EventParams(const EventParams& other) = default;
 
 AXEventGenerator::EventParams::~EventParams() = default;
+
+AXEventGenerator::EventParams& AXEventGenerator::EventParams::operator=(
+    const EventParams& other) = default;
 
 bool AXEventGenerator::EventParams::operator==(const EventParams& rhs) const {
   return rhs.event == event;
@@ -106,17 +97,27 @@ bool AXEventGenerator::EventParams::operator<(const EventParams& rhs) const {
   return event < rhs.event;
 }
 
+//
+// AXEventGenerator::TargetedEvent
+//
+
 AXEventGenerator::TargetedEvent::TargetedEvent(AXNode* node,
                                                const EventParams& event_params)
     : node(node), event_params(event_params) {
   DCHECK(node);
 }
 
+AXEventGenerator::TargetedEvent::~TargetedEvent() = default;
+
+//
+// AXEventGenerator::Iterator
+//
+
 AXEventGenerator::Iterator::Iterator(
-    const std::map<AXNode*, std::set<EventParams>>& map,
-    const std::map<AXNode*, std::set<EventParams>>::const_iterator& head)
-    : map_(map), map_iter_(head) {
-  if (map_iter_ != map.end())
+    std::map<AXNode*, std::set<EventParams>>::const_iterator map_start_iter,
+    std::map<AXNode*, std::set<EventParams>>::const_iterator map_end_iter)
+    : map_iter_(map_start_iter), map_end_iter_(map_end_iter) {
+  if (map_iter_ != map_end_iter_)
     set_iter_ = map_iter_->second.begin();
 }
 
@@ -125,55 +126,98 @@ AXEventGenerator::Iterator::Iterator(const AXEventGenerator::Iterator& other) =
 
 AXEventGenerator::Iterator::~Iterator() = default;
 
-bool AXEventGenerator::Iterator::operator!=(
-    const AXEventGenerator::Iterator& rhs) const {
-  return map_iter_ != rhs.map_iter_ ||
-         (map_iter_ != map_.end() && set_iter_ != rhs.set_iter_);
-}
+AXEventGenerator::Iterator& AXEventGenerator::Iterator::operator=(
+    const Iterator& other) = default;
 
 AXEventGenerator::Iterator& AXEventGenerator::Iterator::operator++() {
-  if (map_iter_ == map_.end())
+  if (map_iter_ == map_end_iter_)
     return *this;
 
   DCHECK(set_iter_ != map_iter_->second.end());
   set_iter_++;
 
-  // |map_| may contain empty sets of events in its entries (i.e. |set_iter_| is
-  // at the iterator's end). In this case, we want to increment |map_iter_| to
-  // point to the next entry of |map_| that contains non-empty set of events.
-  while (map_iter_ != map_.end() && set_iter_ == map_iter_->second.end()) {
+  // The map pointed to by |map_end_iter_| may contain empty sets of events in
+  // its entries (i.e. |set_iter_| is at the iterator's end). In this case, we
+  // want to increment |map_iter_| to point to the next entry of the map that
+  // contains a non-empty set of events.
+  while (map_iter_ != map_end_iter_ && set_iter_ == map_iter_->second.end()) {
     map_iter_++;
-    if (map_iter_ != map_.end())
+    if (map_iter_ != map_end_iter_)
       set_iter_ = map_iter_->second.begin();
   }
 
   return *this;
 }
 
+AXEventGenerator::Iterator AXEventGenerator::Iterator::operator++(int) {
+  if (map_iter_ == map_end_iter_)
+    return *this;
+  Iterator iter = *this;
+  ++(*this);
+  return iter;
+}
+
 AXEventGenerator::TargetedEvent AXEventGenerator::Iterator::operator*() const {
-  DCHECK(map_iter_ != map_.end() && set_iter_ != map_iter_->second.end());
+  DCHECK(map_iter_ != map_end_iter_);
+  DCHECK(set_iter_ != map_iter_->second.end());
   return AXEventGenerator::TargetedEvent(map_iter_->first, *set_iter_);
 }
+
+bool operator==(const AXEventGenerator::Iterator& lhs,
+                const AXEventGenerator::Iterator& rhs) {
+  if (lhs.map_iter_ == lhs.map_end_iter_ && rhs.map_iter_ == rhs.map_end_iter_)
+    return true;
+  return lhs.map_iter_ == rhs.map_iter_ && lhs.set_iter_ == rhs.set_iter_;
+}
+
+bool operator!=(const AXEventGenerator::Iterator& lhs,
+                const AXEventGenerator::Iterator& rhs) {
+  return !(lhs == rhs);
+}
+
+void swap(AXEventGenerator::Iterator& lhs, AXEventGenerator::Iterator& rhs) {
+  if (lhs == rhs)
+    return;
+
+  std::map<AXNode*, std::set<AXEventGenerator::EventParams>>::const_iterator
+      map_iter = lhs.map_iter_;
+  lhs.map_iter_ = rhs.map_iter_;
+  rhs.map_iter_ = map_iter;
+  std::map<AXNode*, std::set<AXEventGenerator::EventParams>>::const_iterator
+      map_end_iter = lhs.map_end_iter_;
+  lhs.map_end_iter_ = rhs.map_end_iter_;
+  rhs.map_end_iter_ = map_end_iter;
+  std::set<AXEventGenerator::EventParams>::const_iterator set_iter =
+      lhs.set_iter_;
+  lhs.set_iter_ = rhs.set_iter_;
+  rhs.set_iter_ = set_iter;
+}
+
+//
+// AXEventGenerator
+//
 
 AXEventGenerator::AXEventGenerator() = default;
 
 AXEventGenerator::AXEventGenerator(AXTree* tree) : tree_(tree) {
   if (tree_)
-    tree_event_observer_.Add(tree_);
+    tree_event_observation_.Observe(tree_);
 }
 
 AXEventGenerator::~AXEventGenerator() = default;
 
 void AXEventGenerator::SetTree(AXTree* new_tree) {
-  if (tree_)
-    tree_event_observer_.Remove(tree_);
+  if (tree_) {
+    DCHECK(tree_event_observation_.IsObservingSource(tree_));
+    tree_event_observation_.Reset();
+  }
   tree_ = new_tree;
   if (tree_)
-    tree_event_observer_.Add(tree_);
+    tree_event_observation_.Observe(tree_);
 }
 
 void AXEventGenerator::ReleaseTree() {
-  tree_event_observer_.RemoveAll();
+  tree_event_observation_.Reset();
   tree_ = nullptr;
 }
 
@@ -202,11 +246,11 @@ AXEventGenerator::Iterator AXEventGenerator::begin() const {
     }
   }
 
-  return AXEventGenerator::Iterator(tree_events_, map_iter);
+  return AXEventGenerator::Iterator(map_iter, tree_events_.end());
 }
 
 AXEventGenerator::Iterator AXEventGenerator::end() const {
-  return AXEventGenerator::Iterator(tree_events_, tree_events_.end());
+  return AXEventGenerator::Iterator(tree_events_.end(), tree_events_.end());
 }
 
 void AXEventGenerator::ClearEvents() {
@@ -221,7 +265,7 @@ void AXEventGenerator::AddEvent(AXNode* node, AXEventGenerator::Event event) {
 
   std::set<EventParams>& node_events = tree_events_[node];
   node_events.emplace(event, ax::mojom::EventFrom::kNone,
-                      tree_->event_intents());
+                      ax::mojom::Action::kNone, tree_->event_intents());
 }
 
 void AXEventGenerator::OnNodeDataChanged(AXTree* tree,
@@ -599,8 +643,8 @@ void AXEventGenerator::OnIntListAttributeChanged(
       AddEvent(node, Event::FLOW_TO_CHANGED);
 
       // Fire FLOW_FROM_CHANGED for all nodes added or removed
-      for (int32_t id : ComputeIntListDifference(old_value, new_value)) {
-        if (auto* target_node = tree->GetFromId(id))
+      for (AXNodeID id : ComputeIntListDifference(old_value, new_value)) {
+        if (AXNode* target_node = tree->GetFromId(id))
           AddEvent(target_node, Event::FLOW_FROM_CHANGED);
       }
       break;
@@ -716,9 +760,9 @@ void AXEventGenerator::OnAtomicUpdateFinished(
 
     if (IsAlert(change.node->data().role))
       AddEvent(change.node, Event::ALERT);
-    else if (IsActiveLiveRegion(change))
+    else if (change.node->data().IsActiveLiveRegionRoot())
       AddEvent(change.node, Event::LIVE_REGION_CREATED);
-    else if (IsContainedInLiveRegion(change))
+    else if (change.node->data().IsContainedInActiveLiveRegion())
       FireLiveRegionEvents(change.node);
   }
 
@@ -786,7 +830,7 @@ void AXEventGenerator::FireValueInTextFieldChangedEvent(AXTree* tree,
 
 void AXEventGenerator::FireRelationSourceEvents(AXTree* tree,
                                                 AXNode* target_node) {
-  int32_t target_id = target_node->id();
+  AXNodeID target_id = target_node->id();
   std::set<AXNode*> source_nodes;
   auto callback = [&](const auto& entry) {
     const auto& target_to_sources = entry.second;
@@ -795,7 +839,7 @@ void AXEventGenerator::FireRelationSourceEvents(AXTree* tree,
       return;
 
     auto sources = sources_it->second;
-    std::for_each(sources.begin(), sources.end(), [&](int32_t source_id) {
+    std::for_each(sources.begin(), sources.end(), [&](AXNodeID source_id) {
       AXNode* source_node = tree->GetFromId(source_id);
 
       if (!source_node || source_nodes.count(source_node) > 0)
@@ -873,13 +917,13 @@ void AXEventGenerator::TrimEventsDueToAncestorIgnoredChanged(
     // Propagate ancestor's show/hide states to |node|'s entry in the map.
     if (HasIgnoredChangedState(parent_map_iter->second,
                                IgnoredChangedState::kHide)) {
-      AddIgnoredChangedState(ancestor_ignored_changed_states,
-                             IgnoredChangedState::kHide);
+      AddIgnoredChangedState(IgnoredChangedState::kHide,
+                             &ancestor_ignored_changed_states);
     }
     if (HasIgnoredChangedState(parent_map_iter->second,
                                IgnoredChangedState::kShow)) {
-      AddIgnoredChangedState(ancestor_ignored_changed_states,
-                             IgnoredChangedState::kShow);
+      AddIgnoredChangedState(IgnoredChangedState::kShow,
+                             &ancestor_ignored_changed_states);
     }
 
     // If |node| has IGNORED changed with show/hide state that matches one of
@@ -898,11 +942,11 @@ void AXEventGenerator::TrimEventsDueToAncestorIgnoredChanged(
       }
 
       if (node->IsIgnored()) {
-        AddIgnoredChangedState(ancestor_ignored_changed_states,
-                               IgnoredChangedState::kHide);
+        AddIgnoredChangedState(IgnoredChangedState::kHide,
+                               &ancestor_ignored_changed_states);
       } else {
-        AddIgnoredChangedState(ancestor_ignored_changed_states,
-                               IgnoredChangedState::kShow);
+        AddIgnoredChangedState(IgnoredChangedState::kShow,
+                               &ancestor_ignored_changed_states);
       }
     }
 
@@ -915,11 +959,11 @@ void AXEventGenerator::TrimEventsDueToAncestorIgnoredChanged(
   if (curr_events_iter != tree_events_.end() &&
       HasEvent(curr_events_iter->second, Event::IGNORED_CHANGED)) {
     if (node->IsIgnored()) {
-      AddIgnoredChangedState(ancestor_ignored_changed_states,
-                             IgnoredChangedState::kHide);
+      AddIgnoredChangedState(IgnoredChangedState::kHide,
+                             &ancestor_ignored_changed_states);
     } else {
-      AddIgnoredChangedState(ancestor_ignored_changed_states,
-                             IgnoredChangedState::kShow);
+      AddIgnoredChangedState(IgnoredChangedState::kShow,
+                             &ancestor_ignored_changed_states);
     }
 
     return;

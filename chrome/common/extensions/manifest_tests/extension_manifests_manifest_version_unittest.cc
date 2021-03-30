@@ -45,12 +45,12 @@ TEST_F(ChromeManifestTest, ManifestVersionError) {
     if (entry.expect_error) {
       LoadAndExpectError(
           ManifestData(std::move(entry.manifest), entry.test_name),
-          errors::kInvalidManifestVersionOld, extensions::Manifest::UNPACKED,
-          create_flags);
+          errors::kInvalidManifestVersionOld,
+          extensions::mojom::ManifestLocation::kUnpacked, create_flags);
     } else {
       LoadAndExpectSuccess(
           ManifestData(std::move(entry.manifest), entry.test_name),
-          extensions::Manifest::UNPACKED, create_flags);
+          extensions::mojom::ManifestLocation::kUnpacked, create_flags);
     }
   }
 }

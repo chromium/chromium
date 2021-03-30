@@ -72,7 +72,7 @@ CreateMetricsHelperAndStartRecording(content::WebContents* web_contents,
 
 std::unique_ptr<security_interstitials::SettingsPageHelper>
 CreateSettingsPageHelper() {
-  // TODO(crbug.com/1080748): Set settings_page_helper once enhanced protection
+  // TODO(crbug.com/1078381): Set settings_page_helper once enhanced protection
   // is supported on weblayer.
   return nullptr;
 }
@@ -101,7 +101,9 @@ WebLayerSecurityBlockingPageFactory::CreateSSLPage(
   auto interstitial_page = std::make_unique<SSLBlockingPage>(
       web_contents, cert_error, ssl_info, request_url, options_mask,
       base::Time::NowFromSystemTime(), /*support_url=*/GURL(),
-      std::move(ssl_cert_reporter), overridable, std::move(controller_client));
+      std::move(ssl_cert_reporter), overridable,
+      /*can_show_enhanced_protection_message=*/false,
+      std::move(controller_client));
 
   return interstitial_page;
 }
@@ -122,8 +124,8 @@ WebLayerSecurityBlockingPageFactory::CreateCaptivePortalBlockingPage(
 
   auto interstitial_page = std::make_unique<CaptivePortalBlockingPage>(
       web_contents, request_url, login_url, std::move(ssl_cert_reporter),
-      ssl_info, std::move(controller_client),
-      base::BindRepeating(&OpenLoginPage));
+      /*can_show_enhanced_protection_message=*/false, ssl_info,
+      std::move(controller_client), base::BindRepeating(&OpenLoginPage));
 
   return interstitial_page;
 }
@@ -145,7 +147,8 @@ WebLayerSecurityBlockingPageFactory::CreateBadClockBlockingPage(
 
   auto interstitial_page = std::make_unique<BadClockBlockingPage>(
       web_contents, cert_error, ssl_info, request_url,
-      base::Time::NowFromSystemTime(), clock_state,
+      base::Time::NowFromSystemTime(),
+      /*can_show_enhanced_protection_message=*/false, clock_state,
       std::move(ssl_cert_reporter), std::move(controller_client));
 
   return interstitial_page;
@@ -166,7 +169,8 @@ WebLayerSecurityBlockingPageFactory::CreateLegacyTLSBlockingPage(
 
   auto interstitial_page = std::make_unique<LegacyTLSBlockingPage>(
       web_contents, cert_error, request_url, std::move(ssl_cert_reporter),
-      ssl_info, std::move(controller_client));
+      /*can_show_enhanced_protection_message=*/false, ssl_info,
+      std::move(controller_client));
 
   return interstitial_page;
 }
@@ -187,8 +191,9 @@ WebLayerSecurityBlockingPageFactory::CreateMITMSoftwareBlockingPage(
 
   auto interstitial_page = std::make_unique<MITMSoftwareBlockingPage>(
       web_contents, cert_error, request_url, std::move(ssl_cert_reporter),
-      ssl_info, mitm_software_name, /*is_enterprise_managed=*/false,
-      std::move(controller_client));
+      /*can_show_enhanced_protection_message=*/false, ssl_info,
+      mitm_software_name,
+      /*is_enterprise_managed=*/false, std::move(controller_client));
 
   return interstitial_page;
 }
@@ -208,7 +213,8 @@ WebLayerSecurityBlockingPageFactory::CreateBlockedInterceptionBlockingPage(
 
   auto interstitial_page = std::make_unique<BlockedInterceptionBlockingPage>(
       web_contents, cert_error, request_url, std::move(ssl_cert_reporter),
-      ssl_info, std::move(controller_client));
+      /*can_show_enhanced_protection_message=*/false, ssl_info,
+      std::move(controller_client));
 
   return interstitial_page;
 }

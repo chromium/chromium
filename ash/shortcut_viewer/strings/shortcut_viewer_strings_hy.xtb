@@ -23,11 +23,13 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Հասցեագոտում մուտքագրվածին ավելացնել www. և .com, ապա բացել էջը</translation>
+<translation id="1768987374400973299">Սքրինշոթ անել/տեսագրել</translation>
 <translation id="1872219238824176091">Հեռացնել ընթացիկ աշխատասեղանը</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, ապա <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> կամ <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">Անցնել հաջորդ ներդիր</translation>
 <translation id="2010818616644390445">Բացել պատուհանի վերջին ներդիրը</translation>
 <translation id="2040706009561734834">Բացել/փակել գործարկիչը</translation>
+<translation id="2086334242442703436">Բացել զմայլիկների ընտրիչը</translation>
 <translation id="2088054208777350526">Որոնեք ստեղնային դյուրանցումներ</translation>
 <translation id="2125211348069077981"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="E" /> կամ <ph name="F" /></translation>
 <translation id="2145908266289632567">Տեքստի խմբագրում</translation>
@@ -46,6 +48,7 @@
 <translation id="2480851840841871861">Բացել Google Օգնականը</translation>
 <translation id="2488661730534396940">Ակտիվացնել ձախ աշխատասեղանը</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516999188535378855">Բացել «Դիագնոստիկա» հավելվածը</translation>
 <translation id="2530339807289914946">Ոլորել կայքէջը ներքև</translation>
 <translation id="2530896289327917474">Միացրեք/անջատեք ստեղնային դիտարկումը</translation>
 <translation id="2574014812750545982">Վերակայել էջի մասշտաբը</translation>
@@ -110,6 +113,7 @@
 <translation id="4801989101741319327">Անցնել հաջորդ բառի վերջ</translation>
 <translation id="4866066940972151697">Ակտիվացնել աջ աշխատասեղանը</translation>
 <translation id="4916163929714267752">Հղումը բացել նոր պատուհանում</translation>
+<translation id="492453977506755176">Տեսագրման ռեժիմի ստեղն</translation>
 <translation id="5030659775136592441">Ցուցադրել էջանիշների կառավարիչը</translation>
 <translation id="5034421018520995080">Անցնել էջի սկիզբ</translation>
 <translation id="5042305953558921026">Համատեսքի ռեժիմի ստեղն</translation>
@@ -132,6 +136,7 @@
 <translation id="5899919361772749550">Ցուցադրել կամ թաքցնել Ծրագրավորողի գործիքների վահանակը</translation>
 <translation id="5919628958418675842">Միացրեք կամ անջատեք գաղտնիության էկրանը</translation>
 <translation id="5921745308587794300">Պտտել պատուհանը</translation>
+<translation id="5926306472221400972">Ամբողջ էկրանի պատկեր/տեսագրում</translation>
 <translation id="6022924867608035986">Մաքրել որոնման դաշտի տեքստը</translation>
 <translation id="6045998054441862242">Միացնել բարձր կոնտրաստի ռեժիմը</translation>
 <translation id="6052614013050385269">Բացել հղումը մկնիկի աջ կոճակով</translation>
@@ -149,6 +154,7 @@
 <translation id="6445033640292336367">Վերադարձնել ներդիրը սկզբնական դիրքի</translation>
 <translation id="6474744297082284761">Փոքրացնել մասշտաբը (երբ ամրացված կամ լիաէկրան խոշորացույցը միացված է)</translation>
 <translation id="649811797655257835">Ընտրեք ֆայլը, ապա սեղմեք <ph name="SPACE" /></translation>
+<translation id="6551886416582667425">Էկրանի մի մասի պատկեր/տեսագրություն</translation>
 <translation id="6556040137485212400">Բացել պատուհանը, որն ամենից երկար չի օգտագործվել</translation>
 <translation id="666343722268997814">Մկնիկի աջ կոճակով բացել նշված տարրի ընտրացանկը</translation>
 <translation id="6671538777808758331">Անցնել հաջորդ համընկնմանը որոնման արդյունքներում</translation>
@@ -175,6 +181,7 @@
 <translation id="7611271430932669992">Տեղափոխել ֆոկուսը ելնող և երկխոսության պատուհանների վրա</translation>
 <translation id="7635348532214572995">Տեղափոխել հավելվածի պատկերակը ցանցով</translation>
 <translation id="766326951329901120">Տեղադրել բովանդակությունը սեղմատախտակից որպես սովորական տեքստ</translation>
+<translation id="7673453620027697230">Լուսանկարել/տեսագրել պատուհանը</translation>
 <translation id="7703010453515335249">ձախ քառակուսի փակագիծ</translation>
 <translation id="7724603315864178912">Կտրել</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, ապա <ph name="SPACE" /> կամ <ph name="ENTER" /></translation>

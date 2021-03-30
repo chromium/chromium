@@ -13,9 +13,11 @@
 #include "base/logging.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/updater/app/server/win/updater_internal_idl.h"
+#include "chrome/updater/updater_scope.h"
 
 namespace updater {
 namespace {
@@ -109,7 +111,7 @@ void UpdaterInternalCallback::RunOnSTA() {
 
 }  // namespace
 
-UpdateServiceInternalProxy::UpdateServiceInternalProxy(ServiceScope /*scope*/)
+UpdateServiceInternalProxy::UpdateServiceInternalProxy(UpdaterScope /*scope*/)
     : STA_task_runner_(
           base::ThreadPool::CreateCOMSTATaskRunner(kComClientTraits)) {}
 

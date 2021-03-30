@@ -60,8 +60,8 @@ IsWeakPassword IsWeak(base::StringPiece16 password) {
   return IsWeakPassword(PasswordWeakCheck(password) <= kLowSeverityScore);
 }
 
-base::flat_set<base::string16> BulkWeakCheck(
-    base::flat_set<base::string16> passwords) {
+base::flat_set<std::u16string> BulkWeakCheck(
+    base::flat_set<std::u16string> passwords) {
   base::UmaHistogramCounts1000("PasswordManager.WeakCheck.CheckedPasswords",
                                passwords.size());
   base::EraseIf(passwords, base::not_fn(&IsWeak));

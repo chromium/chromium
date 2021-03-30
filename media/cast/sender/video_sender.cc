@@ -63,11 +63,10 @@ void LogVideoCaptureTimestamps(CastEnvironment* cast_environment,
   capture_end_event->width = video_frame.visible_rect().width();
   capture_end_event->height = video_frame.visible_rect().height();
 
-  if (video_frame.metadata()->capture_begin_time.has_value() &&
-      video_frame.metadata()->capture_end_time.has_value()) {
-    capture_begin_event->timestamp =
-        *video_frame.metadata()->capture_begin_time;
-    capture_end_event->timestamp = *video_frame.metadata()->capture_end_time;
+  if (video_frame.metadata().capture_begin_time.has_value() &&
+      video_frame.metadata().capture_end_time.has_value()) {
+    capture_begin_event->timestamp = *video_frame.metadata().capture_begin_time;
+    capture_end_event->timestamp = *video_frame.metadata().capture_end_time;
   } else {
     // The frame capture timestamps were not provided by the video capture
     // source.  Simply log the events as happening right now.
@@ -150,7 +149,7 @@ void VideoSender::InsertRawVideoFrame(
                        "rtp_timestamp", rtp_timestamp.lower_32_bits());
 
   {
-    bool new_low_latency_mode = video_frame->metadata()->interactive_content;
+    bool new_low_latency_mode = video_frame->metadata().interactive_content;
     if (new_low_latency_mode && !low_latency_mode_) {
       VLOG(1) << "Interactive mode playout time " << min_playout_delay_;
       playout_delay_change_cb_.Run(min_playout_delay_);

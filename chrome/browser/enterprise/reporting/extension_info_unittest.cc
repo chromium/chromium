@@ -11,6 +11,8 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/value_builder.h"
 
+using extensions::mojom::ManifestLocation;
+
 namespace em = enterprise_management;
 
 namespace enterprise_reporting {
@@ -39,7 +41,7 @@ class ExtensionInfoTest : public extensions::ExtensionServiceTestBase {
 
   scoped_refptr<const extensions::Extension> BuildExtension(
       const std::string& id = kId,
-      extensions::Manifest::Location location = extensions::Manifest::UNPACKED,
+      ManifestLocation location = ManifestLocation::kUnpacked,
       bool is_app = false,
       bool from_webstore = false) {
     extensions::ExtensionBuilder extensionBuilder(
@@ -155,9 +157,8 @@ TEST_F(ExtensionInfoTest, ExtensionBlacklisted) {
 }
 
 TEST_F(ExtensionInfoTest, ComponentExtension) {
-  auto extension1 = BuildExtension(kId, extensions::Manifest::COMPONENT);
-  auto extension2 =
-      BuildExtension(kId2, extensions::Manifest::EXTERNAL_COMPONENT);
+  auto extension1 = BuildExtension(kId, ManifestLocation::kComponent);
+  auto extension2 = BuildExtension(kId2, ManifestLocation::kExternalComponent);
 
   em::ChromeUserProfileInfo info;
   AppendExtensionInfoIntoProfileReport(profile(), &info);
@@ -166,9 +167,9 @@ TEST_F(ExtensionInfoTest, ComponentExtension) {
 }
 
 TEST_F(ExtensionInfoTest, FromWebstoreFlag) {
-  auto extension1 = BuildExtension(kId, extensions::Manifest::UNPACKED,
+  auto extension1 = BuildExtension(kId, ManifestLocation::kUnpacked,
                                    /*is_app=*/false, /*from_webstore=*/false);
-  auto extension2 = BuildExtension(kId2, extensions::Manifest::UNPACKED,
+  auto extension2 = BuildExtension(kId2, ManifestLocation::kUnpacked,
                                    /*is_app=*/false, /*from_webstore=*/true);
 
   em::ChromeUserProfileInfo info;

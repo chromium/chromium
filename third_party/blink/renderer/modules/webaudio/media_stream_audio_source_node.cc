@@ -103,8 +103,8 @@ void MediaStreamAudioSourceHandler::SetFormat(uint32_t number_of_channels,
 
 void MediaStreamAudioSourceHandler::Process(uint32_t number_of_frames) {
   TRACE_EVENT2(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
-               "MediaStreamAudioSourceHandler::Process", "this", this,
-               "number_of_frames", number_of_frames);
+               "MediaStreamAudioSourceHandler::Process", "this",
+               static_cast<void*>(this), "number_of_frames", number_of_frames);
 
   AudioBus* output_bus = Output(0).Bus();
 

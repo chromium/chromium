@@ -4,11 +4,11 @@
 
 #include "content/renderer/service_worker/service_worker_fetch_context_impl.h"
 
-#include "content/public/renderer/url_loader_throttle_provider.h"
-#include "content/public/renderer/websocket_handshake_throttle_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "third_party/blink/public/platform/url_loader_throttle_provider.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
+#include "third_party/blink/public/platform/websocket_handshake_throttle_provider.h"
 
 namespace content {
 
@@ -21,16 +21,17 @@ class ServiceWorkerFetchContextImplTest : public testing::Test {
     FakeURLLoaderThrottle() = default;
   };
 
-  class FakeURLLoaderThrottleProvider : public URLLoaderThrottleProvider {
-    std::unique_ptr<URLLoaderThrottleProvider> Clone() override {
+  class FakeURLLoaderThrottleProvider
+      : public blink::URLLoaderThrottleProvider {
+    std::unique_ptr<blink::URLLoaderThrottleProvider> Clone() override {
       NOTREACHED();
       return nullptr;
     }
 
-    std::vector<std::unique_ptr<blink::URLLoaderThrottle>> CreateThrottles(
+    blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> CreateThrottles(
         int render_frame_id,
         const blink::WebURLRequest& request) override {
-      std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
+      blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
       throttles.emplace_back(std::make_unique<FakeURLLoaderThrottle>());
       return throttles;
     }
@@ -49,7 +50,6 @@ TEST_F(ServiceWorkerFetchContextImplTest, SkipThrottling) {
       std::make_unique<FakeURLLoaderThrottleProvider>(),
       /*websocket_handshake_throttle_provider=*/nullptr, mojo::NullReceiver(),
       mojo::NullReceiver(),
-      /*service_worker_route_id=*/-1,
       /*cors_exempt_header_list=*/std::vector<std::string>());
 
   {

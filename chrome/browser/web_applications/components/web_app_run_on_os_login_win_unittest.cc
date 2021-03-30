@@ -9,11 +9,13 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/win/shortcut.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut_win.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/installer/util/shell_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_skia.h"
@@ -67,6 +69,18 @@ class WebAppRunOnOsLoginWinTest : public WebAppTest {
   void VerifyShortcutCreated() {
     std::vector<base::FilePath> shortcuts = GetShortcuts();
     EXPECT_GT(shortcuts.size(), 0u);
+
+    for (const base::FilePath& shortcut : shortcuts) {
+      std::wstring cmd_line_string;
+      EXPECT_TRUE(
+          base::win::ResolveShortcut(shortcut, nullptr, &cmd_line_string));
+      base::CommandLine shortcut_cmd_line =
+          base::CommandLine::FromString(L"program " + cmd_line_string);
+      EXPECT_TRUE(shortcut_cmd_line.HasSwitch(switches::kAppRunOnOsLoginMode));
+      EXPECT_EQ(
+          shortcut_cmd_line.GetSwitchValueASCII(switches::kAppRunOnOsLoginMode),
+          kRunOnOsLoginModeWindowed);
+    }
   }
 
   void VerifyShortcutDeleted() {

@@ -57,8 +57,9 @@ TEST_F(StaticCookiePolicyTest, BlockAllThirdPartyCookiesTest) {
   SetPolicyType(StaticCookiePolicy::BLOCK_ALL_THIRD_PARTY_COOKIES);
 
   EXPECT_THAT(CanAccessCookies(url_google_, url_google_), IsOk());
-  EXPECT_THAT(CanAccessCookies(url_google_, url_google_secure_), IsOk());
   EXPECT_THAT(CanAccessCookies(url_google_, url_google_mail_), IsOk());
+  EXPECT_NE(OK, CanAccessCookies(url_google_, url_google_secure_));
+  EXPECT_NE(OK, CanAccessCookies(url_google_secure_, url_google_));
   EXPECT_NE(OK, CanAccessCookies(url_google_, url_google_analytics_));
   EXPECT_NE(OK, CanAccessCookies(url_google_, GURL()));
 }

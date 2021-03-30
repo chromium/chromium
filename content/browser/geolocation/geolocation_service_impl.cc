@@ -13,7 +13,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
 namespace content {
 
@@ -28,7 +28,7 @@ GeolocationServiceImplContext::~GeolocationServiceImplContext() {
 void GeolocationServiceImplContext::RequestPermission(
     RenderFrameHost* render_frame_host,
     bool user_gesture,
-    base::OnceCallback<void(blink::mojom::PermissionStatus)> callback) {
+    PermissionCallback callback) {
   if (request_id_ != PermissionController::kNoPendingOperation) {
     mojo::ReportBadMessage(
         "GeolocationService client may only create one Geolocation at a "
@@ -44,7 +44,7 @@ void GeolocationServiceImplContext::RequestPermission(
 }
 
 void GeolocationServiceImplContext::HandlePermissionStatus(
-    base::OnceCallback<void(blink::mojom::PermissionStatus)> callback,
+    PermissionCallback callback,
     blink::mojom::PermissionStatus permission_status) {
   request_id_ = PermissionController::kNoPendingOperation;
   std::move(callback).Run(permission_status);
@@ -76,7 +76,7 @@ void GeolocationServiceImpl::CreateGeolocation(
     bool user_gesture,
     CreateGeolocationCallback callback) {
   if (!render_frame_host_->IsFeatureEnabled(
-          blink::mojom::FeaturePolicyFeature::kGeolocation)) {
+          blink::mojom::PermissionsPolicyFeature::kGeolocation)) {
     std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
     return;
   }

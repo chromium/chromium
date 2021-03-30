@@ -16,7 +16,10 @@ static_library("federated_learning") {
     "sim_hash.h",
   ]
 
-  public_deps = [ "//third_party/protobuf:protobuf_lite" ]
+  public_deps = [
+    "//content/public/common:common",
+    "//third_party/protobuf:protobuf_lite",
+  ]
 
   deps = [
     "//base",
@@ -31,6 +34,7 @@ source_set("unit_tests") {
     "floc_sorting_lsh_clusters_service_unittest.cc",
     "sim_hash_unittest.cc",
   ]
+
   deps = [
     ":federated_learning",
     "//base",

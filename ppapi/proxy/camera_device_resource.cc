@@ -40,8 +40,8 @@ int32_t CameraDeviceResource::Open(
 
   Call<PpapiPluginMsg_CameraDevice_OpenReply>(
       RENDERER, PpapiHostMsg_CameraDevice_Open(source_string_var->value()),
-      base::Bind(&CameraDeviceResource::OnPluginMsgOpenReply,
-                 base::Unretained(this)));
+      base::BindOnce(&CameraDeviceResource::OnPluginMsgOpenReply,
+                     base::Unretained(this)));
   return PP_OK_COMPLETIONPENDING;
 }
 
@@ -81,8 +81,9 @@ int32_t CameraDeviceResource::GetCameraCapabilities(
   get_capabilities_callback_ = callback;
   Call<PpapiPluginMsg_CameraDevice_GetSupportedVideoCaptureFormatsReply>(
       RENDERER, PpapiHostMsg_CameraDevice_GetSupportedVideoCaptureFormats(),
-      base::Bind(&CameraDeviceResource::OnPluginMsgGetVideoCaptureFormatsReply,
-                 base::Unretained(this), capabilities));
+      base::BindOnce(
+          &CameraDeviceResource::OnPluginMsgGetVideoCaptureFormatsReply,
+          base::Unretained(this), capabilities));
 
   return PP_OK_COMPLETIONPENDING;
 }

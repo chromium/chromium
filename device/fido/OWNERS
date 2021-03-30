@@ -18,6 +18,8 @@ kenrb@chromium.org
 # esp chrome/ UI and VirtualAuthenticator environment.
 nsatragno@chromium.org
 
+# For adding or removing languages.
+per-file *.grd=claudiomagni@chromium.org
 
 # Emeriti; for occasional reviews
 

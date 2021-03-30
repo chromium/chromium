@@ -76,10 +76,9 @@ void AssignValueAndQuit(base::RunLoop* run_loop,
 }
 
 // This is called on IO thread. Posts |callback| to be called on UI thread.
-void VerifyFileError(base::Closure callback,
-                     base::File::Error error) {
+void VerifyFileError(base::OnceClosure callback, base::File::Error error) {
   EXPECT_EQ(base::File::FILE_OK, error);
-  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, callback);
+  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(callback));
 }
 
 }  // namespace
@@ -105,14 +104,26 @@ ACTION_P(RecordState, states) {
   states->push_back(arg1);
 }
 
-ACTION_P2(MockSyncFileCallback, status, url) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(arg0, status, url));
-}
+struct PostSyncFileCallback {
+  PostSyncFileCallback(SyncStatusCode status, const storage::FileSystemURL& url)
+      : status_(status), url_(url) {}
+  void operator()(SyncFileCallback callback) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), status_, url_));
+  }
 
-ACTION(InvokeCompletionClosure) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, arg0);
-}
+ private:
+  SyncStatusCode status_;
+  storage::FileSystemURL url_;
+};
+
+struct PostOnceClosureFunctor {
+  PostOnceClosureFunctor() = default;
+  void operator()(base::OnceClosure callback) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                  std::move(callback));
+  }
+};
 
 class SyncFileSystemServiceTest : public testing::Test {
  protected:
@@ -346,11 +357,11 @@ TEST_F(SyncFileSystemServiceTest, SimpleLocalSyncFlow) {
             FROM_HERE, base::BindOnce(std::move(callback), SYNC_STATUS_OK));
       }));
   EXPECT_CALL(*mock_remote_service(), ProcessRemoteChange(_))
-      .WillRepeatedly(MockSyncFileCallback(SYNC_STATUS_NO_CHANGE_TO_SYNC,
-                                           FileSystemURL()));
+      .WillRepeatedly(
+          PostSyncFileCallback(SYNC_STATUS_NO_CHANGE_TO_SYNC, FileSystemURL()));
 
   EXPECT_CALL(*mock_remote_service(), PromoteDemotedChanges(_))
-      .WillRepeatedly(InvokeCompletionClosure());
+      .WillRepeatedly(PostOnceClosureFunctor());
 
   EXPECT_EQ(base::File::FILE_OK, file_system_->CreateFile(kFile));
 
@@ -392,8 +403,7 @@ TEST_F(SyncFileSystemServiceTest, SimpleSyncFlowWithFileBusy) {
 
     // Return with SYNC_STATUS_FILE_BUSY once.
     EXPECT_CALL(*mock_remote_service(), ProcessRemoteChange(_))
-        .WillOnce(MockSyncFileCallback(SYNC_STATUS_FILE_BUSY,
-                                       kFile));
+        .WillOnce(PostSyncFileCallback(SYNC_STATUS_FILE_BUSY, kFile));
 
     // ProcessRemoteChange should be called again when the becomes
     // not busy.
@@ -402,7 +412,7 @@ TEST_F(SyncFileSystemServiceTest, SimpleSyncFlowWithFileBusy) {
   }
 
   EXPECT_CALL(*mock_remote_service(), PromoteDemotedChanges(_))
-      .WillRepeatedly(InvokeCompletionClosure());
+      .WillRepeatedly(PostOnceClosureFunctor());
 
   // We might also see an activity for local sync as we're going to make
   // a local write operation on kFile.
@@ -419,8 +429,8 @@ TEST_F(SyncFileSystemServiceTest, SimpleSyncFlowWithFileBusy) {
       FROM_HERE,
       base::BindOnce(&CannedSyncableFileSystem::DoCreateFile,
                      base::Unretained(file_system_.get()), kFile,
-                     base::Bind(&VerifyFileError,
-                                verify_file_error_run_loop.QuitClosure())));
+                     base::BindOnce(&VerifyFileError,
+                                    verify_file_error_run_loop.QuitClosure())));
 
   run_loop.Run();
 
@@ -450,9 +460,8 @@ TEST_F(SyncFileSystemServiceTest, MAYBE_GetFileSyncStatus) {
     status = SYNC_STATUS_UNKNOWN;
     sync_file_status = SYNC_FILE_STATUS_UNKNOWN;
     sync_service_->GetFileSyncStatus(
-        kFile,
-        base::Bind(&AssignValueAndQuit<SyncFileStatus>,
-                   &run_loop, &status, &sync_file_status));
+        kFile, base::BindOnce(&AssignValueAndQuit<SyncFileStatus>, &run_loop,
+                              &status, &sync_file_status));
     run_loop.Run();
 
     EXPECT_EQ(SYNC_STATUS_OK, status);
@@ -467,9 +476,8 @@ TEST_F(SyncFileSystemServiceTest, MAYBE_GetFileSyncStatus) {
     status = SYNC_STATUS_UNKNOWN;
     sync_file_status = SYNC_FILE_STATUS_UNKNOWN;
     sync_service_->GetFileSyncStatus(
-        kFile,
-        base::Bind(&AssignValueAndQuit<SyncFileStatus>,
-                   &run_loop, &status, &sync_file_status));
+        kFile, base::BindOnce(&AssignValueAndQuit<SyncFileStatus>, &run_loop,
+                              &status, &sync_file_status));
     run_loop.Run();
 
     EXPECT_EQ(SYNC_STATUS_OK, status);

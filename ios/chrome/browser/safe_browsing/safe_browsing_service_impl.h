@@ -9,6 +9,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/network_context.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 class PrefChangeRegistrar;
@@ -40,10 +41,12 @@ class SafeBrowsingServiceImpl : public SafeBrowsingService {
                   const base::FilePath& user_data_path) override;
   void ShutDown() override;
   std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl> CreateUrlChecker(
-      safe_browsing::ResourceType resource_type,
+      network::mojom::RequestDestination request_destination,
       web::WebState* web_state) override;
   bool CanCheckUrl(const GURL& url) const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
+  scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> GetDatabaseManager()
+      override;
   void ClearCookies(const net::CookieDeletionInfo::TimeRange& creation_range,
                     base::OnceClosure callback) override;
 

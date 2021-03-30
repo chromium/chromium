@@ -12,13 +12,13 @@
 #include "build/chromeos_buildflags.h"
 #include "chromecast/browser/accessibility/accessibility_manager.h"
 #include "chromecast/browser/cast_browser_process.h"
+#include "extensions/browser/api/automation_internal/automation_event_router_interface.h"
 #include "ui/accessibility/aura/aura_window_properties.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_event.h"
-#include "ui/accessibility/ax_event_bundle_sink.h"
-#include "ui/accessibility/ax_tree_id_registry.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -213,8 +213,8 @@ void AutomationManagerAura::SendEvent(views::AXAuraObjWrapper* aura_obj,
     events.push_back(event);
   }
 
-  if (event_bundle_sink_) {
-    event_bundle_sink_->DispatchAccessibilityEvents(
+  if (automation_event_router_interface_) {
+    automation_event_router_interface_->DispatchAccessibilityEvents(
         ax_tree_id(), std::move(tree_updates),
         aura::Env::GetInstance()->last_mouse_location(), std::move(events));
   }

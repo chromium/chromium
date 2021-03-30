@@ -7,7 +7,7 @@
 
 #include "ash/highlighter/highlighter_controller.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace fast_ink {
@@ -51,14 +51,15 @@ class HighlighterControllerTestApi : public HighlighterController::Observer {
   const gfx::Rect& selection() const { return selection_; }
 
  private:
-  using ScopedObserver =
-      ScopedObserver<HighlighterController, HighlighterController::Observer>;
+  using ScopedObservation =
+      base::ScopedObservation<HighlighterController,
+                              HighlighterController::Observer>;
 
   // HighlighterSelectionObserver:
   void OnHighlighterSelectionRecognized(const gfx::Rect& rect) override;
   void OnHighlighterEnabledChanged(HighlighterEnabledState state) override;
 
-  std::unique_ptr<ScopedObserver> scoped_observer_;
+  std::unique_ptr<ScopedObservation> scoped_observation_;
   HighlighterController* instance_;
 
   bool handle_selection_called_ = false;

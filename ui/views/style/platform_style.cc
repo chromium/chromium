@@ -77,7 +77,7 @@ std::unique_ptr<ScrollBar> PlatformStyle::CreateScrollBar(bool is_horizontal) {
 void PlatformStyle::OnTextfieldEditFailed() {}
 
 // static
-gfx::Range PlatformStyle::RangeToDeleteBackwards(const base::string16& text,
+gfx::Range PlatformStyle::RangeToDeleteBackwards(const std::u16string& text,
                                                  size_t cursor_position) {
   // Delete one code point, which may be two UTF-16 words.
   size_t previous_grapheme_index =

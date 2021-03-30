@@ -14,7 +14,7 @@ namespace task_manager {
 // Defines a RendererTask that represents background |WebContents|.
 class BackgroundContentsTask : public RendererTask {
  public:
-  BackgroundContentsTask(const base::string16& title,
+  BackgroundContentsTask(const std::u16string& title,
                          BackgroundContents* background_contents);
   ~BackgroundContentsTask() override;
 

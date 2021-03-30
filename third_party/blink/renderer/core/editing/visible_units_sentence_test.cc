@@ -49,22 +49,6 @@ class VisibleUnitsSentenceTest : public EditingTestBase {
   }
 };
 
-class ParameterizedVisibleUnitsSentenceTest
-    : public ::testing::WithParamInterface<bool>,
-      private ScopedLayoutNGForTest,
-      public VisibleUnitsSentenceTest {
- protected:
-  ParameterizedVisibleUnitsSentenceTest() : ScopedLayoutNGForTest(GetParam()) {}
-
-  bool LayoutNGEnabled() const {
-    return RuntimeEnabledFeatures::LayoutNGEnabled();
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ParameterizedVisibleUnitsSentenceTest,
-                         ::testing::Bool());
-
 TEST_F(VisibleUnitsSentenceTest, startOfSentence) {
   const char* body_content =
       "<span id=host><b slot='#one' id=one>1</b><b slot='#two' "

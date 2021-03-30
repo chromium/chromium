@@ -48,6 +48,17 @@ class LegacyMetricsClient {
   explicit LegacyMetricsClient(const LegacyMetricsClient&) = delete;
   LegacyMetricsClient& operator=(const LegacyMetricsClient&) = delete;
 
+  // Disables automatic MetricsRecorder connection. Caller will have to supply
+  // MetricsRecorder by calling SetMetricsRecorder(). Must be called before
+  // Start().
+  void DisableAutoConnect();
+
+  // Sets |metrics_recorder| to use. Should be called only after
+  // DisableAutoConnect().
+  void SetMetricsRecorder(
+      fidl::InterfaceHandle<fuchsia::legacymetrics::MetricsRecorder>
+          metrics_recorder);
+
   // Starts buffering data and schedules metric reporting after every
   // |report_interval|.
   void Start(base::TimeDelta report_interval);
@@ -71,11 +82,15 @@ class LegacyMetricsClient {
   void FlushAndDisconnect(base::OnceClosure on_flush_complete);
 
  private:
-  void ConnectAndStartReporting();
+  void ConnectFromComponentContext();
+  void SetMetricsRecorderInternal(
+      fidl::InterfaceHandle<fuchsia::legacymetrics::MetricsRecorder>
+          metrics_recorder);
   void ScheduleNextReport();
   void StartReport();
   void Report(std::vector<fuchsia::legacymetrics::Event> additional_metrics);
   void OnMetricsRecorderDisconnected(zx_status_t status);
+  void ReconnectMetricsRecorder();
   void OnCloseSoon();
 
   // Incrementally sends the contents of |to_send_| to |metrics_recorder_|.
@@ -90,8 +105,10 @@ class LegacyMetricsClient {
   std::vector<fuchsia::legacymetrics::Event> to_send_;
   std::unique_ptr<LegacyMetricsUserActionRecorder> user_events_recorder_;
 
-  fuchsia::legacymetrics::MetricsRecorderPtr metrics_recorder_;
+  bool auto_connect_ = true;
   base::RetainingOneShotTimer reconnect_timer_;
+
+  fuchsia::legacymetrics::MetricsRecorderPtr metrics_recorder_;
   base::RetainingOneShotTimer report_timer_;
   SEQUENCE_CHECKER(sequence_checker_);
 

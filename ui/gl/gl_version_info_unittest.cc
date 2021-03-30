@@ -24,8 +24,6 @@ TEST(GLVersionInfoTest, ParseGLVersionStringTest) {
       {"4.3 (Core Profile) Mesa 11.2.0", 4, 3, false, false, false, "Mesa",
        "11.2.0"},
       {"4.5.0 NVIDIA 364.19", 4, 5, false, false, false, "NVIDIA", "364.19"},
-      {"OpenGL ES 2.0 (ANGLE 2.1.0.cd1b12260360)", 2, 0, true, true, false,
-       "ANGLE", "2.1.0.cd1b12260360"},
       {"2.1 INTEL-10.6.33", 2, 1, false, false, false, "INTEL", "10.6.33"},
       {"2.1", 2, 1, false, false, false, "", ""},
       {"OpenGL ES 3.0", 3, 0, true, false, true, "", ""},
@@ -47,6 +45,8 @@ TEST(GLVersionInfoTest, ParseGLVersionStringTest) {
        false, false, "", "21.19.137.514"},
       {"4.5.13497 Compatibility Profile/Debug Context 23.20.782.0", 4, 5, false,
        false, false, "", "23.20.782.0"},
+      {"OpenGL ES 3.0 SwiftShader 4.1.0.7", 3, 0, true, false, true, "",
+       "4.1.0.7"},
       // This is a non spec compliant string from Nexus6 on Android N.
       {"OpenGL ES 3.1V@104.0", 3, 1, true, false, true, "", "104.0"}};
 
@@ -78,26 +78,53 @@ TEST(GLVersionInfoTest, DriverVendorForANGLE) {
     const char* expected_driver_vendor;
     const char* expected_driver_version;
   } kTestData[] = {
-      {"OpenGL ES 2.0 (ANGLE 2.1.0.44063c804e4f)",
-       "ANGLE (NVIDIA Quadro P400 Direct3D11 vs_5_0 ps_5_0)",
-       2, 0, true, true, false, true,
-       "ANGLE (NVIDIA)", "2.1.0.44063c804e4f"},
-      {"OpenGL ES 2.0 (ANGLE 2.1.0.44063c804e4f)",
-       "ANGLE (Intel(R) HD Graphics 630 Direct3D11 vs_5_0 ps_5_0)",
-       2, 0, true, true, false, true,
-       "ANGLE (Intel)", "2.1.0.44063c804e4f"},
-      {"OpenGL ES 2.0 (ANGLE 2.1.0.44063c804e4f)",
-       "ANGLE (Radeon RX550/550 Series Direct3D11 vs_5_0 ps_5_0)",
-       2, 0, true, true, false, true,
-       "ANGLE (AMD)", "2.1.0.44063c804e4f"},
-      {"OpenGL ES 2.0 (ANGLE 2.1.0.44063c804e4f)",
-       "ANGLE (Vulkan 1.1.120(Intel(R) UHD Graphics 630 (0x00003E92)))",
-       2, 0, true, true, false, false,
-       "ANGLE (Intel)", "2.1.0.44063c804e4f"},
-      {"OpenGL ES 2.0 (ANGLE 2.1.0.44063c804e4f)",
-       "ANGLE (Intel, Intel(R) UHD Graphics 630, OpenGL 4.5 core)",
-       2, 0, true, true, false, false,
-       "ANGLE (Intel)", "2.1.0.44063c804e4f"},
+      {"OpenGL ES 2.0.0 (ANGLE 2.1.4875 git hash: 32e78475b1c0)",
+       "ANGLE (Intel Inc., Intel(R) UHD Graphics 630, OpenGL 4.1 "
+       "INTEL-14.7.11)",
+       2, 0, true, true, false, false, "INTEL", "14.7.11"},
+      {"OpenGL ES 2.0.0 (ANGLE 2.1.4875 git hash: 32e78475b1c0)",
+       "ANGLE (ATI Technologies Inc., AMD Radeon Pro 560X OpenGL Engine, "
+       "OpenGL 4.1 ATI-3.10.19)",
+       2, 0, true, true, false, false, "ATI", "3.10.19"},
+      {"OpenGL ES 2.0.0 (ANGLE 2.1.4875 git hash: 32e78475b1c0)",
+       "ANGLE (AMD, Metal Renderer: AMD Radeon Pro 560X, Version 10.15.7 "
+       "(Build 19H114))",
+       2, 0, true, true, false, false, "AMD", "10.15.7"},
+      {"OpenGL ES 2.0.0 (ANGLE 2.1.4875 git hash: 32e78475b1c0)",
+       "ANGLE (Mesa/X.org, llvmpipe (LLVM 11.0.0 256 bits), OpenGL 4.5 (Core "
+       "Profile) Mesa 20.2.4)",
+       2, 0, true, true, false, false, "Mesa", "20.2.4"},
+      {"OpenGL ES 2.0.0 (ANGLE 2.1.4875 git hash: 32e78475b1c0)",
+       "ANGLE (Apple, Apple A12Z, OpenGL 4.1 Metal - 70.12.7)", 2, 0, true,
+       true, false, false, "Apple", "70.12.7"},
+      {"OpenGL ES 2.0.0 (ANGLE 2.1.4875 git hash: 32e78475b1c0)",
+       "ANGLE (NVIDIA Corporation, Quadro P1000/PCIe/SSE2, OpenGL 4.5.0 NVIDIA "
+       "440.100)",
+       2, 0, true, true, false, false, "NVIDIA", "440.100"},
+      {"OpenGL ES 2.0.0 (ANGLE 2.1.4875 git hash: 32e78475b1c0)",
+       "ANGLE (NVIDIA, Vulkan 1.1.119 (NVIDIA Quadro P1000 (0x00001CB1)), "
+       "NVIDIA-440.400.0)",
+       2, 0, true, true, false, false, "NVIDIA", "440.400.0"},
+      {"OpenGL ES 2.0.0 (ANGLE 2.1.4875 git hash: 32e78475b1c0)",
+       "ANGLE (NVIDIA, NVIDIA Quadro P1000 Direct3D11 vs_5_0 ps_5_0, "
+       "D3D11-23.21.13.9077)",
+       2, 0, true, true, false, true, "NVIDIA", "23.21.13.9077"},
+      {"OpenGL ES 2.0.0 (ANGLE 2.1.4875 git hash: 32e78475b1c0)",
+       "ANGLE (NVIDIA, NVIDIA Quadro P1000 Direct3D9Ex vs_3_0 ps_3_0, "
+       "nvldumdx.dll-23.21.13.9077)",
+       2, 0, true, true, false, true, "NVIDIA", "23.21.13.9077"},
+      {"OpenGL ES 2.0.0 (ANGLE 2.1.4875 git hash: 32e78475b1c0)",
+       "ANGLE (NVIDIA Corporation, Quadro P1000/PCIe/SSE2, OpenGL 4.5.0 NVIDIA "
+       "390.77)",
+       2, 0, true, true, false, false, "NVIDIA", "390.77"},
+      {"OpenGL ES 2.0.0 (ANGLE 2.1.4875 git hash: 32e78475b1c0)",
+       "ANGLE (NVIDIA, Vulkan 1.0.65 (NVIDIA Quadro P1000 (0x00001CB1)), "
+       "NVIDIA-390.308.0)",
+       2, 0, true, true, false, false, "NVIDIA", "390.308.0"},
+      {"OpenGL ES 2.0.0 (ANGLE 2.1.4875 git hash: 32e78475b1c0)",
+       "ANGLE (Google, Vulkan 1.1.0 (SwiftShader Device (Subzero) "
+       "(0x0000C0DE)), SwiftShader driver-5.0.0)",
+       2, 0, true, true, false, false, "Google", "5.0.0"},
   };
 
   gfx::ExtensionSet extensions;

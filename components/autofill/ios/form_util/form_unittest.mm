@@ -164,7 +164,7 @@ TEST_F(FormJsTest, FormSameOriginIFrame) {
 // Tests that a new form triggers form_changed event.
 TEST_F(FormJsTest, AddForm) {
   LoadHtml(@"<body></body>");
-  ExecuteJavaScript(@"__gCrWeb.fill.setUpForUniqueIDs(0);");
+  ExecuteJavaScript(@"__gCrWeb.fill.setUpForUniqueIDs(1);");
   ExecuteJavaScript(
       @"__gCrWeb.formHandlers.trackFormMutations(10);"
       @"var form = document.createElement('form');"
@@ -243,7 +243,7 @@ TEST_F(FormJsTest, RemoveForm) {
             "<input type=\"password\" name=\"password\" id=\"id2\">"
             "<input type=\"submit\" id=\"submit_input\"/>"
             "</form>");
-  ExecuteJavaScript(@"__gCrWeb.fill.setUpForUniqueIDs(0);"
+  ExecuteJavaScript(@"__gCrWeb.fill.setUpForUniqueIDs(1);"
                     @"__gCrWeb.formHandlers.trackFormMutations(10);"
                     @"var form1 = document.getElementById('form1');"
                     @"__gCrWeb.fill.setUniqueIDIfNeeded(form1);"

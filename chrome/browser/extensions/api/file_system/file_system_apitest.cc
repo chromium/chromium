@@ -7,7 +7,7 @@
 #include "base/files/file_util.h"
 #include "base/macros.h"
 #include "base/path_service.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -37,7 +37,8 @@ class AppLoadObserver : public ExtensionRegistryObserver {
       content::BrowserContext* browser_context,
       const base::RepeatingCallback<void(const Extension*)>& callback)
       : callback_(callback) {
-    extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context));
+    extension_registry_observation_.Observe(
+        ExtensionRegistry::Get(browser_context));
   }
 
   void OnExtensionLoaded(content::BrowserContext* browser_context,
@@ -47,8 +48,8 @@ class AppLoadObserver : public ExtensionRegistryObserver {
 
  private:
   base::RepeatingCallback<void(const Extension*)> callback_;
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
   DISALLOW_COPY_AND_ASSIGN(AppLoadObserver);
 };
 
@@ -669,9 +670,10 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTest, FileSystemApiRestoreDirectoryEntry) {
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(FileSystemApiTest, RequestFileSystem_NotChromeOS) {
-  ASSERT_TRUE(RunPlatformAppTestWithFlags(
-      "api_test/file_system/request_file_system_not_chromeos",
-      kFlagIgnoreManifestWarnings, kFlagNone))
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "api_test/file_system/request_file_system_not_chromeos",
+       .launch_as_platform_app = true},
+      {.ignore_manifest_warnings = true}))
       << message_;
 }
 #endif

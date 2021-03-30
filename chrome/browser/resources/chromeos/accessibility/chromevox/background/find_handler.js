@@ -1,15 +1,14 @@
 // Copyright 2016 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 /**
  * @fileoverview Handles output for Chrome's built-in find.
  */
-goog.provide('FindHandler');
 
-goog.require('Output');
-
-goog.scope(function() {
 const TreeChangeObserverFilter = chrome.automation.TreeChangeObserverFilter;
+
+export class FindHandler {}
 
 /**
  * Initializes this module.
@@ -66,5 +65,3 @@ FindHandler.DROP_MATCH_WITHIN_TIME_MS = 50;
  * @type {!Date}
  */
 FindHandler.lastFindMarkerReceived = new Date();
-
-});  // goog.scope

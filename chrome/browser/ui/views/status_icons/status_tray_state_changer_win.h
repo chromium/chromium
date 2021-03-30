@@ -9,9 +9,9 @@
 #include <wrl/implements.h>
 
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/threading/thread_checker.h"
 
 // The known values for NOTIFYITEM's dwPreference member.
@@ -116,7 +116,7 @@ class StatusTrayStateChangerWin
   const HWND window_;
   // Executable name of the current program.  Along with |icon_id_| and
   // |window_|, this uniquely identifies a notification area entry to Explorer.
-  base::string16 file_name_;
+  std::wstring file_name_;
 
   // Temporary storage for the matched NOTIFYITEM.  This is necessary because
   // Notify doesn't return anything.  The call flow looks like this:

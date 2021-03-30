@@ -4,20 +4,22 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import android.content.Context;
 import android.text.TextWatcher;
 import android.view.ActionMode;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.WindowDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlTextChangeListener;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.WindowDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -50,6 +52,7 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFoc
     private WindowDelegate mWindowDelegate;
     private Runnable mKeyboardResizeModeTask = NO_OP_RUNNABLE;
     private Runnable mKeyboardHideTask = NO_OP_RUNNABLE;
+    private Callback<Boolean> mFocusChangeCallback;
 
     /**
      * Constructs a coordinator for the given UrlBar view.
@@ -71,6 +74,7 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFoc
         mUrlBar = urlBar;
         mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
         mWindowDelegate = windowDelegate;
+        mFocusChangeCallback = focusChangeCallback;
 
         PropertyModel model =
                 new PropertyModel.Builder(UrlBarProperties.ALL_KEYS)
@@ -80,7 +84,7 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFoc
                         .build();
         PropertyModelChangeProcessor.create(model, urlBar, UrlBarViewBinder::bind);
 
-        mMediator = new UrlBarMediator(model, focusChangeCallback);
+        mMediator = new UrlBarMediator(model, this::onUrlFocusChangeInternal);
     }
 
     public void destroy() {
@@ -90,6 +94,7 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFoc
         mUrlBar.removeCallbacks(mKeyboardHideTask);
         mUrlBar.destroy();
         mUrlBar = null;
+        mFocusChangeCallback = null;
     }
 
     /** @see UrlBarMediator#addUrlTextChangeListener(UrlTextChangeListener) */
@@ -169,6 +174,18 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFoc
         mUrlBar.removeCallbacks(mKeyboardResizeModeTask);
     }
 
+    /* package */ boolean hasFocus() {
+        return mUrlBar.hasFocus();
+    }
+
+    /* package */ void requestFocus() {
+        mUrlBar.requestFocus();
+    }
+
+    /* package */ void clearFocus() {
+        mUrlBar.clearFocus();
+    }
+
     /**
      * Controls keyboard visibility.
      *
@@ -176,7 +193,7 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFoc
      * @param shouldDelayHiding When true, keyboard hide operation will be delayed slightly to
      *         improve the animation smoothness.
      */
-    /* package */ void setKeyboardVisibility(boolean showKeyboard, boolean shouldDelayHiding) {
+    public void setKeyboardVisibility(boolean showKeyboard, boolean shouldDelayHiding) {
         // Cancel pending jobs to prevent any possibility of keyboard flicker.
         mUrlBar.removeCallbacks(mKeyboardHideTask);
 
@@ -222,5 +239,26 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFoc
         } else {
             mWindowDelegate.setWindowSoftInputMode(softInputMode);
         }
+    }
+
+    private void onUrlFocusChangeInternal(boolean hasFocus) {
+        InputMethodManager imm = (InputMethodManager) mUrlBar.getContext().getSystemService(
+                Context.INPUT_METHOD_SERVICE);
+        if (hasFocus) {
+            // Explicitly tell InputMethodManager that the url bar is focused before any callbacks
+            // so that it updates the active view accordingly. Otherwise, it may fail to update
+            // the correct active view if ViewGroup.addView() or ViewGroup.removeView() is called
+            // to update a view that accepts text input.
+            imm.viewClicked(mUrlBar);
+        } else {
+            // Moving focus away from UrlBar(EditText) to a non-editable focus holder, such as
+            // ToolbarPhone, won't automatically hide keyboard app, but restart it with TYPE_NULL,
+            // which will result in a visual glitch. Also, currently, we do not allow moving focus
+            // directly from omnibox to web content's form field. Therefore, we hide keyboard on
+            // focus blur indiscriminately here. Note that hiding keyboard may lower FPS of other
+            // animation effects, but we found it tolerable in an experiment.
+            if (imm.isActive(mUrlBar)) setKeyboardVisibility(false, false);
+        }
+        mFocusChangeCallback.onResult(hasFocus);
     }
 }

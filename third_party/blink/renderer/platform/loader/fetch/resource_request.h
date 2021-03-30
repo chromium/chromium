@@ -30,11 +30,13 @@
 
 #include <memory>
 
+#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/filter/source_stream.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/chunked_data_pipe_getter.mojom-blink.h"
 #include "services/network/public/mojom/cors.mojom-blink-forward.h"
@@ -46,6 +48,7 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/resource_request_blocked_reason.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
+#include "third_party/blink/renderer/platform/loader/fetch/render_blocking_behavior.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_priority.h"
 #include "third_party/blink/renderer/platform/network/http_header_map.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
@@ -88,11 +91,13 @@ class PLATFORM_EXPORT ResourceRequestHead {
     WebBundleTokenParams& operator=(const WebBundleTokenParams& other);
 
     WebBundleTokenParams(
+        const KURL& bundle_url,
         const base::UnguessableToken& token,
         mojo::PendingRemote<network::mojom::WebBundleHandle> handle);
 
     mojo::PendingRemote<network::mojom::WebBundleHandle> CloneHandle() const;
 
+    KURL bundle_url;
     base::UnguessableToken token;
     mojo::PendingRemote<network::mojom::WebBundleHandle> handle;
   };
@@ -397,6 +402,18 @@ class PLATFORM_EXPORT ResourceRequestHead {
     devtools_token_ = devtools_token;
   }
 
+  const scoped_refptr<
+      base::RefCountedData<base::flat_set<net::SourceStream::SourceType>>>&
+  GetDevToolsAcceptedStreamTypes() const {
+    return devtools_accepted_stream_types_;
+  }
+  void SetDevToolsAcceptedStreamTypes(
+      const scoped_refptr<
+          base::RefCountedData<base::flat_set<net::SourceStream::SourceType>>>&
+          types) {
+    devtools_accepted_stream_types_ = types;
+  }
+
   const base::Optional<String>& GetDevToolsId() const { return devtools_id_; }
   void SetDevToolsId(const base::Optional<String>& devtools_id) {
     devtools_id_ = devtools_id;
@@ -474,6 +491,10 @@ class PLATFORM_EXPORT ResourceRequestHead {
 
   void SetFetchLikeAPI(bool enabled) { is_fetch_like_api_ = enabled; }
 
+  bool IsFavicon() const { return is_favicon_; }
+
+  void SetFavicon(bool enabled) { is_favicon_ = enabled; }
+
   bool PrefetchMaybeForTopLeveNavigation() const {
     return prefetch_maybe_for_top_level_navigation_;
   }
@@ -511,6 +532,13 @@ class PLATFORM_EXPORT ResourceRequestHead {
   void SetWebBundleTokenParams(
       ResourceRequestHead::WebBundleTokenParams params) {
     web_bundle_token_params_ = params;
+  }
+
+  void SetRenderBlockingBehavior(RenderBlockingBehavior behavior) {
+    render_blocking_behavior_ = behavior;
+  }
+  RenderBlockingBehavior GetRenderBlockingBehavior() const {
+    return render_blocking_behavior_;
   }
 
  private:
@@ -596,6 +624,8 @@ class PLATFORM_EXPORT ResourceRequestHead {
 
   bool is_fetch_like_api_ = false;
 
+  bool is_favicon_ = false;
+
   // Currently this is only used when a prefetch request has `as=document`
   // specified. If true, and the request is cross-origin, the browser will cache
   // the request under the cross-origin's partition. Furthermore, its reuse from
@@ -613,6 +643,21 @@ class PLATFORM_EXPORT ResourceRequestHead {
   // WebBundle. The network process uses this token to associate the request to
   // the bundle.
   base::Optional<WebBundleTokenParams> web_bundle_token_params_;
+
+  // Render blocking behavior of the resource. Used in maintaining correct
+  // reporting for redirects.
+  RenderBlockingBehavior render_blocking_behavior_ =
+      RenderBlockingBehavior::kUnset;
+
+  // If not null, the network service will not advertise any stream types
+  // (via Accept-Encoding) that are not listed. Also, it will not attempt
+  // decoding any non-listed stream types.
+  // Instead of using base::Optional, we use scoped_refptr to reduce
+  // blink memory footprint because the attribute is only used by DevTools
+  // and we should keep the footprint minimal when DevTools is closed.
+  scoped_refptr<
+      base::RefCountedData<base::flat_set<net::SourceStream::SourceType>>>
+      devtools_accepted_stream_types_;
 };
 
 class PLATFORM_EXPORT ResourceRequestBody {
@@ -676,13 +721,11 @@ class PLATFORM_EXPORT ResourceRequest final : public ResourceRequestHead {
 
   ResourceRequest(const ResourceRequest&) = delete;
   ResourceRequest(ResourceRequest&&);
+  ResourceRequest& operator=(const ResourceRequest&) = delete;
   ResourceRequest& operator=(ResourceRequest&&);
 
   ~ResourceRequest();
 
-  // TODO(yoichio): Use move semantics as much as possible.
-  // See crbug.com/787704.
-  void CopyFrom(const ResourceRequest&);
   void CopyHeadFrom(const ResourceRequestHead&);
 
   const scoped_refptr<EncodedFormData>& HttpBody() const;
@@ -691,8 +734,6 @@ class PLATFORM_EXPORT ResourceRequest final : public ResourceRequestHead {
   ResourceRequestBody& MutableBody() { return body_; }
 
  private:
-  ResourceRequest& operator=(const ResourceRequest&);
-
   ResourceRequestBody body_;
 };
 

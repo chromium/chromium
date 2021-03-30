@@ -9,6 +9,7 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
 #include "base/task/thread_pool.h"
 #include "net/base/load_flags.h"
@@ -95,6 +96,7 @@ TrustTokenRequestIssuanceHelper::TrustTokenRequestIssuanceHelper(
     std::unique_ptr<LocalTrustTokenOperationDelegate> local_operation_delegate,
     base::RepeatingCallback<bool(mojom::TrustTokenKeyCommitmentResult::Os)>
         is_current_os_callback,
+    MetricsDelegate* metrics_delegate,
     net::NetLogWithSource net_log)
     : top_level_origin_(std::move(top_level_origin)),
       token_store_(token_store),
@@ -102,6 +104,7 @@ TrustTokenRequestIssuanceHelper::TrustTokenRequestIssuanceHelper(
       cryptographer_(std::move(cryptographer)),
       local_operation_delegate_(std::move(local_operation_delegate)),
       is_current_os_callback_(std::move(is_current_os_callback)),
+      metrics_delegate_(metrics_delegate),
       net_log_(std::move(net_log)) {
   DCHECK(token_store_);
   DCHECK(key_commitment_getter_);
@@ -237,6 +240,7 @@ void TrustTokenRequestIssuanceHelper::OnDelegateBeginIssuanceCallComplete(
     auto fulfill_request = mojom::FulfillTrustTokenIssuanceRequest::New();
     fulfill_request->issuer = url::Origin::Create(request->url());
     fulfill_request->request = std::move(*maybe_blinded_tokens);
+    metrics_delegate_->WillExecutePlatformProvidedOperation();
     local_operation_delegate_->FulfillIssuance(
         std::move(fulfill_request),
         base::BindOnce(&TrustTokenRequestIssuanceHelper::
@@ -351,6 +355,8 @@ void TrustTokenRequestIssuanceHelper::OnDoneProcessingIssuanceResponse(
 void TrustTokenRequestIssuanceHelper::DoneRequestingLocallyFulfilledIssuance(
     base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done,
     mojom::FulfillTrustTokenIssuanceAnswerPtr answer) {
+  base::UmaHistogramEnumeration(
+      "Net.TrustTokens.IssuanceHelperLocalFulfillResult", answer->status);
   switch (answer->status) {
     case mojom::FulfillTrustTokenIssuanceAnswer::Status::kNotFound: {
       std::move(done).Run(mojom::TrustTokenOperationStatus::kUnavailable);

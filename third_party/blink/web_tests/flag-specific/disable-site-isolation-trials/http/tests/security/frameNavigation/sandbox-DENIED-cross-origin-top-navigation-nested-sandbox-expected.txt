@@ -1,0 +1,6 @@
+CONSOLE ERROR: line 8: Unsafe attempt to initiate navigation for frame with URL 'http://127.0.0.1:8000/security/frameNavigation/sandbox-DENIED-cross-origin-top-navigation-nested-sandbox.html' from frame with URL 'https://localhost:8443/security/frameNavigation/resources/failed-top-navigation.html'. The frame attempting navigation of the top-level window is sandboxed and is not allowed to navigate since its ancestor frame with URL 'http://localhost:8080/security/frameNavigation/resources/cross-iframe-that-performs-top-navigation-in-sandboxed-frame.html' is unable to navigate the top frame.
+
+
+This tests that an iframe in a nested sandbox with 'allow-top-navigation' can't navigate the top level page if its ancestor can't.
+
+DOMAIN

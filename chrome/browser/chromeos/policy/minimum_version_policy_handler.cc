@@ -8,12 +8,13 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/system_tray.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string16.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -26,8 +27,6 @@
 #include "chrome/browser/upgrade_detector/build_state.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state_handler.h"
@@ -63,8 +62,7 @@ MinimumVersionPolicyHandler::NetworkStatus GetCurrentNetworkStatus() {
 }
 
 void OpenNetworkSettings() {
-  ash::SystemTray::Get()->ShowNetworkDetailedViewBubble(
-      true /* show_by_click */);
+  ash::SystemTray::Get()->ShowNetworkDetailedViewBubble();
 }
 
 void OpenEnterpriseInfoPage() {
@@ -155,14 +153,14 @@ int MinimumVersionRequirement::Compare(
 
 MinimumVersionPolicyHandler::MinimumVersionPolicyHandler(
     Delegate* delegate,
-    chromeos::CrosSettings* cros_settings)
+    ash::CrosSettings* cros_settings)
     : delegate_(delegate),
       cros_settings_(cros_settings),
       clock_(base::DefaultClock::GetInstance()) {
   policy_subscription_ = cros_settings_->AddSettingsObserver(
       chromeos::kDeviceMinimumVersion,
-      base::Bind(&MinimumVersionPolicyHandler::OnPolicyChanged,
-                 weak_factory_.GetWeakPtr()));
+      base::BindRepeating(&MinimumVersionPolicyHandler::OnPolicyChanged,
+                          weak_factory_.GetWeakPtr()));
 
   // Fire it once so we're sure we get an invocation on startup.
   OnPolicyChanged();
@@ -492,7 +490,7 @@ void MinimumVersionPolicyHandler::MaybeShowNotification(
   NotificationType type = NotificationType::kNoConnection;
   base::OnceClosure button_click_callback;
   std::string manager = GetEnterpriseManager();
-  base::string16 device_type = ui::GetChromeOSDeviceName();
+  std::u16string device_type = ui::GetChromeOSDeviceName();
   auto close_callback =
       base::BindOnce(&MinimumVersionPolicyHandler::StopObservingNetwork,
                      weak_factory_.GetWeakPtr());

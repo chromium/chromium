@@ -23,11 +23,13 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Agregar www. y .com a la entrada en la barra de direcciones y, luego, abrir la página</translation>
+<translation id="1768987374400973299">Capturar o grabar pantalla</translation>
 <translation id="1872219238824176091">Quitar el escritorio actual</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, luego <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> o <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">Ir a la pestaña siguiente</translation>
 <translation id="2010818616644390445">Ir a la última pestaña de la ventana</translation>
 <translation id="2040706009561734834">Abrir y cerrar el Selector</translation>
+<translation id="2086334242442703436">Abrir el selector de emojis</translation>
 <translation id="2088054208777350526">Buscar combinaciones de teclas</translation>
 <translation id="2125211348069077981"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="E" /> o <ph name="F" /></translation>
 <translation id="2145908266289632567">Edición de texto</translation>
@@ -46,6 +48,7 @@
 <translation id="2480851840841871861">Abrir el Asistente de Google</translation>
 <translation id="2488661730534396940">Activar el escritorio de la izquierda</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516999188535378855">Abrir app de Diagnóstico</translation>
 <translation id="2530339807289914946">Desplazarse hacia abajo por la página web</translation>
 <translation id="2530896289327917474">Activar o desactivar la navegación por cursor de texto</translation>
 <translation id="2574014812750545982">Restablecer el nivel de zoom en la página</translation>
@@ -61,7 +64,7 @@
 <translation id="2872353916818027657">Intercambiar monitor principal</translation>
 <translation id="2914313326123580426">Mostrar u ocultar el panel Herramientas para programadores</translation>
 <translation id="292495055542441795">Activar o desactivar la pantalla completa</translation>
-<translation id="3020183492814296499">Combinación de teclas</translation>
+<translation id="3020183492814296499">Accesos directos</translation>
 <translation id="3084301071537457911">Destacar el elemento siguiente en la biblioteca</translation>
 <translation id="309173601632226815">Destacar el botón del Selector en la biblioteca</translation>
 <translation id="3105917916468784889">Tomar captura de pantalla</translation>
@@ -110,6 +113,7 @@
 <translation id="4801989101741319327">Ir al final de la palabra siguiente</translation>
 <translation id="4866066940972151697">Activar el escritorio de la derecha</translation>
 <translation id="4916163929714267752">Abrir el vínculo en una ventana nueva</translation>
+<translation id="492453977506755176">Tecla del modo de captura</translation>
 <translation id="5030659775136592441">Mostrar el Administrador de favoritos</translation>
 <translation id="5034421018520995080">Ir a la parte superior de la página</translation>
 <translation id="5042305953558921026">Tecla del modo de vista Recientes</translation>
@@ -132,6 +136,7 @@
 <translation id="5899919361772749550">Mostrar u ocultar el panel de herramientas para programadores</translation>
 <translation id="5919628958418675842">Enciende o apaga la pantalla de privacidad</translation>
 <translation id="5921745308587794300">Rotar la ventana</translation>
+<translation id="5926306472221400972">Capturar pantalla completa</translation>
 <translation id="6022924867608035986">Borrar el texto en el cuadro de búsqueda</translation>
 <translation id="6045998054441862242">Activar el modo de contraste alto</translation>
 <translation id="6052614013050385269">Hacer clic con el botón derecho en un vínculo</translation>
@@ -149,6 +154,7 @@
 <translation id="6445033640292336367">Volver a colocar la pestaña en su posición original</translation>
 <translation id="6474744297082284761">Alejar (cuando esté activada la lupa acoplada O de pantalla completa)</translation>
 <translation id="649811797655257835">Selecciona el archivo y, luego, presiona <ph name="SPACE" /></translation>
+<translation id="6551886416582667425">Capturar o grabar pantalla de forma parcial</translation>
 <translation id="6556040137485212400">Abrir la ventana que más tiempo estuvo sin usarse</translation>
 <translation id="666343722268997814">Abrir el menú contextual del elemento destacado</translation>
 <translation id="6671538777808758331">Ir a la siguiente coincidencia de búsqueda</translation>
@@ -175,6 +181,7 @@
 <translation id="7611271430932669992">Mover el foco a ventanas emergentes y diálogos</translation>
 <translation id="7635348532214572995">Mueve el ícono de una app en la grilla de apps</translation>
 <translation id="766326951329901120">Pegar el contenido del portapapeles como texto sin formato</translation>
+<translation id="7673453620027697230">Capturar o grabar pantalla de ventana</translation>
 <translation id="7703010453515335249">corchete de apertura</translation>
 <translation id="7724603315864178912">Cortar</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, luego <ph name="SPACE" /> o <ph name="ENTER" /></translation>

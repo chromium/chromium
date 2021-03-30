@@ -27,6 +27,7 @@
 #include "build/build_config.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/public/mojom/indexed_db_control.mojom-test-utils.h"
+#include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -58,7 +59,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-using base::ASCIIToUTF16;
 using storage::DatabaseUtil;
 using storage::QuotaManager;
 using storage::mojom::FailClass;
@@ -143,7 +143,7 @@ class IndexedDBBrowserTest : public ContentBrowserTest,
     if (hash)
       url = GURL(url.spec() + hash);
 
-    base::string16 expected_title16(ASCIIToUTF16(expected_string));
+    std::u16string expected_title16(base::ASCIIToUTF16(expected_string));
     TitleWatcher title_watcher(shell->web_contents(), expected_title16);
     EXPECT_TRUE(NavigateToURL(shell, url));
     EXPECT_EQ(expected_title16, title_watcher.WaitAndGetTitle());
@@ -211,9 +211,9 @@ class IndexedDBBrowserTest : public ContentBrowserTest,
     int64_t size = 0;
     auto& control = GetControl(browser);
     control.GetUsage(base::BindOnce(base::BindLambdaForTesting(
-        [&](std::vector<storage::mojom::IndexedDBStorageUsageInfoPtr> usages) {
+        [&](std::vector<storage::mojom::StorageUsageInfoPtr> usages) {
           for (auto& usage : usages)
-            size += usage->size_in_bytes;
+            size += usage->total_size_bytes;
           loop.Quit();
         })));
     loop.Run();
@@ -286,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, CursorTest) {
 
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, CursorTestIncognito) {
   SimpleTest(GetTestUrl("indexeddb", "cursor_test.html"),
-             true /* incognito */);
+             /*incognito=*/true);
 }
 
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, CursorPrefetch) {
@@ -780,8 +780,7 @@ std::unique_ptr<net::test_server::HttpResponse> ServePath(
     std::string request_path) {
   base::FilePath resource_path =
       content::GetTestFilePath("indexeddb", request_path.c_str());
-  std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
-      new net::test_server::BasicHttpResponse);
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(net::HTTP_OK);
 
   std::string file_contents;
@@ -876,8 +875,8 @@ std::unique_ptr<net::test_server::HttpResponse> CorruptDBRequestHandler(
         }));
     loop.Run();
 
-    std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
-        new net::test_server::BasicHttpResponse);
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
     http_response->set_code(net::HTTP_OK);
     return std::move(http_response);
   } else if (request_path == "fail" && !request_query.empty()) {
@@ -952,8 +951,8 @@ std::unique_ptr<net::test_server::HttpResponse> CorruptDBRequestHandler(
                        instance_num, call_num, loop.QuitClosure()));
     loop.Run();
 
-    std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
-        new net::test_server::BasicHttpResponse);
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
     http_response->set_code(net::HTTP_OK);
     return std::move(http_response);
   }
@@ -998,8 +997,8 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, OperationOnCorruptedOpenDatabase) {
       std::string(s_corrupt_db_test_prefix) + "corrupted_open_db_recovery.html";
   SimpleTest(embedded_test_server()->GetURL(test_file));
 }
-#endif
 
+// Only instantiate on platforms that run the parameterized test.
 INSTANTIATE_TEST_SUITE_P(IndexedDBBrowserTestInstantiation,
                          IndexedDBBrowserTest,
                          ::testing::Values("failGetBlobJournal",
@@ -1008,6 +1007,7 @@ INSTANTIATE_TEST_SUITE_P(IndexedDBBrowserTestInstantiation,
                                            "iterate",
                                            "failTransactionCommit",
                                            "clearObjectStore"));
+#endif  // !defined(OS_WIN)
 
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, DeleteCompactsBackingStore) {
   const GURL kTestUrl = GetTestUrl("indexeddb", "delete_compact.html");
@@ -1105,7 +1105,7 @@ IN_PROC_BROWSER_TEST_F(
   NavigateAndWaitForTitle(new_shell, "version_change_blocked.html", "#tab2",
                           "setVersion(3) blocked");
 
-  base::string16 expected_title16(ASCIIToUTF16("setVersion(3) complete"));
+  std::u16string expected_title16(u"setVersion(3) complete");
   TitleWatcher title_watcher(new_shell->web_contents(), expected_title16);
 
   shell()->web_contents()->GetMainFrame()->GetProcess()->Shutdown(0);
@@ -1120,9 +1120,9 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, ForceCloseEventTest) {
   constexpr char kFilename[] = "force_close_event.html";
   NavigateAndWaitForTitle(shell(), kFilename, nullptr, "connection ready");
   DeleteForOrigin(url::Origin::Create(GetTestUrl("indexeddb", kFilename)));
-  base::string16 expected_title16(ASCIIToUTF16("connection closed"));
+  std::u16string expected_title16(u"connection closed");
   TitleWatcher title_watcher(shell()->web_contents(), expected_title16);
-  title_watcher.AlsoWaitForTitle(ASCIIToUTF16("connection closed with error"));
+  title_watcher.AlsoWaitForTitle(u"connection closed with error");
   EXPECT_EQ(expected_title16, title_watcher.WaitAndGetTitle());
 }
 

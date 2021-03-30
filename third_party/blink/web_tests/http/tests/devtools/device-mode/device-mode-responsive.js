@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Test that device mode's responsive mode behaves correctly when adjusting inputs.\n`);
-  await TestRunner.loadModule('device_mode_test_runner');
+  await TestRunner.loadTestModule('device_mode_test_runner');
 
   var phone0 = DeviceModeTestRunner.buildFakePhone();
   var phone1 = DeviceModeTestRunner.buildFakePhone();

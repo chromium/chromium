@@ -11,6 +11,8 @@ component("arcore") {
   defines = [ "IS_VR_ARCORE_IMPL" ]
   sources = [
     "address_to_id_map.h",
+    "ar_compositor_frame_sink.cc",
+    "ar_compositor_frame_sink.h",
     "ar_image_transport.cc",
     "ar_image_transport.h",
     "ar_renderer.cc",
@@ -40,14 +42,19 @@ component("arcore") {
     "type_converters.h",
   ]
 
-  public_deps = [ "//device/vr/public/cpp" ]
+  public_deps = [
+    "//device/vr:vr_base",
+    "//device/vr/public/cpp",
+  ]
 
   deps = [
     "//base",
-    "//device/vr:vr",
-    "//device/vr:vr_base",
+    "//components/viz/host",
+    "//device/vr:vr_util",
     "//device/vr/android:vr_android",
     "//mojo/public/cpp/bindings",
+    "//services/viz/privileged/mojom",
+    "//ui/android",
     "//ui/gfx",
     "//ui/gl/init",
   ]

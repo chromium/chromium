@@ -18,7 +18,7 @@ js_type_check("closure_compile_module") {
 js_library("system_page") {
   deps = [
     ":system_page_browser_proxy",
-    "..:lifetime_browser_proxy.m",
+    "..:lifetime_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   externs_list = [ "$externs_path/settings_private.js" ]

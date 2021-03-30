@@ -109,23 +109,23 @@ PowerManagerClient::TabletMode GetTabletModeFromProtoEnum(
 }
 
 // Converts a ThermalState value from a power_manager::ThermalEvent proto to the
-// corresponding base::PowerObserver::DeviceThermalState value.
-base::PowerObserver::DeviceThermalState GetThermalStateFromProtoEnum(
+// corresponding base::PowerThermalObserver::DeviceThermalState value.
+base::PowerThermalObserver::DeviceThermalState GetThermalStateFromProtoEnum(
     power_manager::ThermalEvent::ThermalState state) {
   switch (state) {
     case power_manager::ThermalEvent_ThermalState_UNKNOWN:
-      return base::PowerObserver::DeviceThermalState::kUnknown;
+      return base::PowerThermalObserver::DeviceThermalState::kUnknown;
     case power_manager::ThermalEvent_ThermalState_NOMINAL:
-      return base::PowerObserver::DeviceThermalState::kNominal;
+      return base::PowerThermalObserver::DeviceThermalState::kNominal;
     case power_manager::ThermalEvent_ThermalState_FAIR:
-      return base::PowerObserver::DeviceThermalState::kFair;
+      return base::PowerThermalObserver::DeviceThermalState::kFair;
     case power_manager::ThermalEvent_ThermalState_SERIOUS:
-      return base::PowerObserver::DeviceThermalState::kSerious;
+      return base::PowerThermalObserver::DeviceThermalState::kSerious;
     case power_manager::ThermalEvent_ThermalState_CRITICAL:
-      return base::PowerObserver::DeviceThermalState::kCritical;
+      return base::PowerThermalObserver::DeviceThermalState::kCritical;
   }
   NOTREACHED() << "Unhandled thermal state " << state;
-  return base::PowerObserver::DeviceThermalState::kUnknown;
+  return base::PowerThermalObserver::DeviceThermalState::kUnknown;
 }
 
 // Callback for D-Bus call made in |CreateArcTimers|.
@@ -736,12 +736,17 @@ class PowerManagerClientImpl : public PowerManagerClient {
     std::string path = protobuf_status.path();
     std::string name = protobuf_status.name();
     int level = protobuf_status.has_level() ? protobuf_status.level() : -1;
-
-    POWER_LOG(DEBUG) << "Device battery status received " << level << " for "
-                     << name << " at " << path;
-
+    power_manager::PeripheralBatteryStatus_ChargeStatus status =
+        protobuf_status.has_charge_status()
+            ? protobuf_status.charge_status()
+            : power_manager::
+                  PeripheralBatteryStatus_ChargeStatus_CHARGE_STATUS_UNKNOWN;
+    bool active_update = protobuf_status.has_active_update()
+                             ? protobuf_status.active_update()
+                             : false;
     for (auto& observer : observers_)
-      observer.PeripheralBatteryStatusReceived(path, name, level);
+      observer.PeripheralBatteryStatusReceived(path, name, level, status,
+                                               active_update);
   }
 
   void PowerSupplyPollReceived(dbus::Signal* signal) {

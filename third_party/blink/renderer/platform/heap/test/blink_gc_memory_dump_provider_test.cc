@@ -11,6 +11,10 @@
 #include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 
+#if BUILDFLAG(USE_V8_OILPAN)
+#include "third_party/blink/renderer/platform/heap/v8_wrapper/custom_spaces.h"
+#endif  // !USE_V8_OILPAN
+
 namespace blink {
 
 namespace {
@@ -29,6 +33,41 @@ void CheckBasicHeapDumpStructure(base::trace_event::MemoryAllocatorDump* dump) {
   }
   EXPECT_TRUE(found_allocated_object_size);
   EXPECT_TRUE(found_size);
+}
+
+template <typename Callback>
+void IterateMemoryDumps(base::trace_event::ProcessMemoryDump& dump,
+                        const std::string dump_prefix,
+                        Callback callback) {
+  int dump_prefix_depth =
+      std::count(dump_prefix.begin(), dump_prefix.end(), '/');
+  for (auto& it : dump.allocator_dumps()) {
+    const std::string& key = it.first;
+    if ((key.compare(0, dump_prefix.size(), dump_prefix) == 0) &&
+        (std::count(key.begin(), key.end(), '/') == dump_prefix_depth)) {
+      callback(it.second.get());
+    }
+  }
+}
+
+void CheckSpacesInDump(base::trace_event::ProcessMemoryDump& dump,
+                       const std::string dump_prefix) {
+#if BUILDFLAG(USE_V8_OILPAN)
+  size_t custom_space_count = 0;
+  IterateMemoryDumps(
+      dump, dump_prefix + "CustomSpace",
+      [&custom_space_count](base::trace_event::MemoryAllocatorDump*) {
+        custom_space_count++;
+      });
+  EXPECT_EQ(CustomSpaces::CreateCustomSpaces().size(), custom_space_count);
+#else  // !USE_V8_OILPAN
+#define CheckArena(name)                  \
+  EXPECT_NE(dump.allocator_dumps().end(), \
+            dump.allocator_dumps().find(dump_prefix + #name "Arena"));
+
+  FOR_EACH_ARENA(CheckArena)
+#undef CheckArena
+#endif  // !USE_V8_OILPAN
 }
 
 }  // namespace
@@ -59,13 +98,8 @@ TEST_F(BlinkGCMemoryDumpProviderTest, MainThreadDetailedDump) {
           BlinkGCMemoryDumpProvider::HeapType::kBlinkMainThread));
   dump_provider->OnMemoryDump(args, dump.get());
 
-  // All arenas should be present in the dump.
-#define CheckArena(name)       \
-  CheckBasicHeapDumpStructure( \
-      dump->GetAllocatorDump("blink_gc/main/heap/" #name "Arena"));
-
-  FOR_EACH_ARENA(CheckArena)
-#undef CheckArena
+  IterateMemoryDumps(*dump, "blink_gc/main/heap/", CheckBasicHeapDumpStructure);
+  CheckSpacesInDump(*dump, "blink_gc/main/heap/");
 }
 
 TEST_F(BlinkGCMemoryDumpProviderTest, WorkerLightDump) {
@@ -120,12 +154,9 @@ TEST_F(BlinkGCMemoryDumpProviderTest, WorkerDetailedDump) {
       "blink_gc/workers/heap/worker_" + worker_suffix;
   CheckBasicHeapDumpStructure(dump->GetAllocatorDump(worker_base_path));
 
-#define CheckArena(name)       \
-  CheckBasicHeapDumpStructure( \
-      dump->GetAllocatorDump(worker_base_path + "/" #name "Arena"));
-
-  FOR_EACH_ARENA(CheckArena)
-#undef CheckArena
+  IterateMemoryDumps(*dump, worker_base_path + "/",
+                     CheckBasicHeapDumpStructure);
+  CheckSpacesInDump(*dump, worker_base_path + "/");
 }
 
 }  // namespace blink

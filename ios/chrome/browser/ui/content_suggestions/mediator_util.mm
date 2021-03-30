@@ -120,6 +120,10 @@ ContentSuggestionsSectionInformation* LogoSectionInformation() {
   return sectionInfo;
 }
 
+ContentSuggestionsSectionInformation* ReturnToRecentTabSectionInformation() {
+  return EmptySectionInfo(ContentSuggestionsSectionReturnToRecentTab);
+}
+
 ContentSuggestionsSectionInformation* PromoSectionInformation() {
   return EmptySectionInfo(ContentSuggestionsSectionPromo);
 }

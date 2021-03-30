@@ -29,6 +29,7 @@ ExistingWindowSubMenuModel::ExistingWindowSubMenuModel(
 
   for (auto& window_title : window_titles) {
     menu_item_infos.emplace_back(MenuItemInfo{window_title});
+    menu_item_infos.back().may_have_mnemonics = false;
   }
   Build(IDS_TAB_CXMENU_MOVETOANOTHERNEWWINDOW, menu_item_infos);
 }
@@ -72,5 +73,5 @@ void ExistingWindowSubMenuModel::ExecuteNewCommand(int event_flags) {
 }
 
 void ExistingWindowSubMenuModel::ExecuteExistingCommand(int command_index) {
-  model()->ExecuteAddToExistingWindowCommand(context_index(), command_index);
+  model()->ExecuteAddToExistingWindowCommand(GetContextIndex(), command_index);
 }

@@ -5,25 +5,25 @@
 #include <memory>
 #include <ostream>
 
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/chromeos/login/test/device_state_mixin.h"
 #include "chrome/browser/chromeos/policy/affiliation_mixin.h"
 #include "chrome/browser/chromeos/policy/affiliation_test_helper.h"
 #include "chrome/browser/net/nss_context.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/authpolicy/fake_authpolicy_client.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/upstart/upstart_client.h"
+#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -75,18 +75,17 @@ void CheckIsSystemSlotAvailableOnIOThreadWithCertDb(
   std::move(done_closure).Run();
 }
 
-void CheckIsSystemSlotAvailableOnIOThread(
-    content::ResourceContext* resource_context,
-    bool* out_system_slot_available,
-    base::OnceClosure done_closure) {
+void CheckIsSystemSlotAvailableOnIOThread(NssCertDatabaseGetter database_getter,
+                                          bool* out_system_slot_available,
+                                          base::OnceClosure done_closure) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   auto did_get_cert_db_callback = base::BindRepeating(
       &CheckIsSystemSlotAvailableOnIOThreadWithCertDb,
       out_system_slot_available,
       base::AdaptCallbackForRepeating(std::move(done_closure)));
 
-  net::NSSCertDatabase* cert_db = GetNSSCertDatabaseForResourceContext(
-      resource_context, did_get_cert_db_callback);
+  net::NSSCertDatabase* cert_db =
+      std::move(database_getter).Run(did_get_cert_db_callback);
   if (cert_db)
     did_get_cert_db_callback.Run(cert_db);
 }
@@ -102,8 +101,8 @@ bool IsSystemSlotAvailable(Profile* profile) {
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(CheckIsSystemSlotAvailableOnIOThread,
-                     profile->GetResourceContext(), &system_slot_available,
-                     run_loop.QuitClosure()));
+                     CreateNSSCertDatabaseGetter(profile),
+                     &system_slot_available, run_loop.QuitClosure()));
   run_loop.Run();
   return system_slot_available;
 }
@@ -135,7 +134,8 @@ class UserAffiliationBrowserTest
                                       cryptohome_id.account_id());
       command_line->AppendSwitchASCII(
           chromeos::switches::kLoginProfile,
-          chromeos::CryptohomeClient::GetStubSanitizedUsername(cryptohome_id));
+          chromeos::UserDataAuthClient::GetStubSanitizedUsername(
+              cryptohome_id));
     }
   }
 

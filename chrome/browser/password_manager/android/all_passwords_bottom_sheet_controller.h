@@ -57,8 +57,8 @@ class AllPasswordsBottomSheetController
   void Show();
 
   // Informs the controller that the user has made a selection.
-  void OnCredentialSelected(const base::string16 username,
-                            const base::string16 password);
+  void OnCredentialSelected(const std::u16string username,
+                            const std::u16string password);
 
   // The web page view containing the focused field.
   gfx::NativeView GetNativeView();

@@ -23,7 +23,8 @@
     TestRunner.evaluateInPage('document.querySelector("form").submit();');
     await snifferPromise;
 
-    var request = NetworkTestRunner.networkRequests().peekLast();
+    const networkRequests = NetworkTestRunner.networkRequests();
+    var request = networkRequests[networkRequests.length - 1];
     if (request.url().endsWith('/')) {
       await TestRunner.addSnifferPromise(SDK.NetworkDispatcher.prototype, 'requestWillBeSent');
       request = NetworkTestRunner.networkRequests().pop();
@@ -54,7 +55,7 @@
   ];
 
   TestRunner.addResult('Tests that form submissions appear and are parsed in the network panel');
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   await runFormTest(formValues);

@@ -15,7 +15,16 @@
       // Watch for the testing trigger_id for HaTS Next, defined on the browser
       // side in hats_service.cc.
       if (params.get('trigger_id') == 'zishSVViB0kPN8UwQ150VGjBKuBP') {
-        history.pushState('', '', '#loaded');
+        // Check that the provided product specific data matches the values
+        // defined in hats_browsertest.cc, if it does provide a loaded response
+        // before closing.
+        const productSpecificData = JSON.parse(
+                  decodeURIComponent(params.get('product_specific_data')));
+        if (productSpecificData['Test Field 1'] === 'true' &&
+            productSpecificData['Test Field 2'] === 'false' &&
+            productSpecificData['Test Field 3'] === 'true') {
+          history.pushState('', '', '#loaded');
+        }
         history.pushState('', '', '#close');
       }
 

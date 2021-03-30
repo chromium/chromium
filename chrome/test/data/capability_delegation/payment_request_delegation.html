@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<!--
+Copyright 2021 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Payment request delegation top frame</title>
+</head>
+<script>
+  let resolve_promise = null;
+  window.addEventListener("message", e => resolve_promise(e.data));
+
+  async function sendRequestToSubframe(delegate) {
+      const promise = new Promise(resolve => { resolve_promise = resolve; });
+
+      let post_message_options = {};
+      post_message_options["targetOrigin"] = "*";
+      if (delegate) {
+          post_message_options["createToken"] = "paymentrequest";
+      }
+      frames[0].postMessage("try", post_message_options);
+      return promise;
+  }
+</script>
+<iframe src="about:blank" id="iframe" allowpaymentrequest></iframe>
+</html>

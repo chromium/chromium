@@ -1,0 +1,7 @@
+include_rules = [
+  "+components/history/core",
+  "+components/keyed_service/core",
+  "+services/data_decoder/public/cpp",
+  "+services/network/public/cpp",
+  "+services/network/test",
+]

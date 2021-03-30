@@ -30,7 +30,6 @@
 #include "chrome/test/base/testing_browser_process_platform_part.h"
 #include "components/federated_learning/floc_sorting_lsh_clusters_service.h"
 #include "components/network_time/network_time_tracker.h"
-#include "components/optimization_guide/optimization_guide_service.h"
 #include "components/permissions/permissions_client.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/prefs/pref_service.h"
@@ -156,10 +155,6 @@ metrics::MetricsService* TestingBrowserProcess::metrics_service() {
   return nullptr;
 }
 
-rappor::RapporServiceImpl* TestingBrowserProcess::rappor_service() {
-  return rappor_service_;
-}
-
 SystemNetworkContextManager*
 TestingBrowserProcess::system_network_context_manager() {
   return nullptr;
@@ -262,10 +257,12 @@ BackgroundModeManager* TestingBrowserProcess::background_mode_manager() {
   return nullptr;
 }
 
+#if BUILDFLAG(ENABLE_BACKGROUND_MODE)
 void TestingBrowserProcess::set_background_mode_manager_for_test(
     std::unique_ptr<BackgroundModeManager> manager) {
   NOTREACHED();
 }
+#endif
 
 StatusTray* TestingBrowserProcess::status_tray() {
   return nullptr;
@@ -284,11 +281,6 @@ TestingBrowserProcess::subresource_filter_ruleset_service() {
 federated_learning::FlocSortingLshClustersService*
 TestingBrowserProcess::floc_sorting_lsh_clusters_service() {
   return floc_sorting_lsh_clusters_service_.get();
-}
-
-optimization_guide::OptimizationGuideService*
-TestingBrowserProcess::optimization_guide_service() {
-  return optimization_guide_service_.get();
 }
 
 BrowserProcessPlatformPart* TestingBrowserProcess::platform_part() {
@@ -512,17 +504,6 @@ void TestingBrowserProcess::SetFlocSortingLshClustersService(
     std::unique_ptr<federated_learning::FlocSortingLshClustersService>
         service) {
   floc_sorting_lsh_clusters_service_.swap(service);
-}
-
-void TestingBrowserProcess::SetOptimizationGuideService(
-    std::unique_ptr<optimization_guide::OptimizationGuideService>
-        optimization_guide_service) {
-  optimization_guide_service_.swap(optimization_guide_service);
-}
-
-void TestingBrowserProcess::SetRapporServiceImpl(
-    rappor::RapporServiceImpl* rappor_service) {
-  rappor_service_ = rappor_service;
 }
 
 void TestingBrowserProcess::SetShuttingDown(bool is_shutting_down) {

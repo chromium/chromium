@@ -26,7 +26,7 @@ instructions on performing a roll.
     1. Run `third_party/blink/web_tests/webgpu/regenerate_internal_cts_html.sh`.
     1. In `third_party/blink/web_tests/WebGPUExpectations`,
         delete any expectations that caused regeneration errors
-        (or rename them if you can figure out what the name change was).
+        (or try to update them if there was a rename).
 1. Commit changes, upload patch (ignore line-length warnings in generated files).
 1. Run these tryjobs: `dawn-.*-deps-rel`.
 1. Make sure there isn't anything terribly wrong

@@ -4,7 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Tests that resources with JSON MIME types are previewed with the JSON viewer.\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
+  await TestRunner.loadLegacyModule('source_frame');
   await TestRunner.showPanel('network');
 
   function createNetworkRequestWithJSONMIMEType(type) {

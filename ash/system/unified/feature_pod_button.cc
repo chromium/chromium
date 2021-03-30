@@ -64,7 +64,8 @@ FeaturePodIconButton::FeaturePodIconButton(PressedCallback callback,
   // the same size as the content.
   TrayPopupUtils::ConfigureTrayPopupButton(this);
   focus_ring()->SetPathGenerator(
-      std::make_unique<views::CircleHighlightPathGenerator>(gfx::Insets()));
+      std::make_unique<views::CircleHighlightPathGenerator>(
+          kUnifiedFeaturePodHoverPadding));
   views::InstallCircleHighlightPathGenerator(this,
                                              kUnifiedFeaturePodIconPadding);
 }
@@ -92,14 +93,20 @@ void FeaturePodIconButton::PaintButtonContents(gfx::Canvas* canvas) {
   const AshColorProvider* color_provider = AshColorProvider::Get();
   SkColor color = color_provider->GetControlsLayerColor(
       ControlsLayerType::kControlBackgroundColorInactive);
-  if (GetEnabled()) {
-    if (toggled_) {
-      color = color_provider->GetControlsLayerColor(
-          ControlsLayerType::kControlBackgroundColorActive);
-    }
-  } else {
-    color = AshColorProvider::GetDisabledColor(color);
+
+  bool should_show_button_toggled_on =
+      toggled_ && (GetEnabled() ||
+                   button_behavior_ ==
+                       DisabledButtonBehavior::kCanDisplayDisabledToggleValue);
+  if (should_show_button_toggled_on) {
+    color = color_provider->GetControlsLayerColor(
+        ControlsLayerType::kControlBackgroundColorActive);
   }
+
+  // If the button is disabled, apply opacity filter to the color.
+  if (!GetEnabled())
+    color = AshColorProvider::GetDisabledColor(color);
+
   flags.setColor(color);
 
   flags.setStyle(cc::PaintFlags::kFill_Style);
@@ -266,22 +273,22 @@ void FeaturePodLabelButton::OnThemeChanged() {
   OnEnabledChanged();
 }
 
-void FeaturePodLabelButton::SetLabel(const base::string16& label) {
+void FeaturePodLabelButton::SetLabel(const std::u16string& label) {
   label_->SetText(label);
   InvalidateLayout();
 }
 
-const base::string16& FeaturePodLabelButton::GetLabelText() const {
+const std::u16string& FeaturePodLabelButton::GetLabelText() const {
   return label_->GetText();
 }
 
-void FeaturePodLabelButton::SetSubLabel(const base::string16& sub_label) {
+void FeaturePodLabelButton::SetSubLabel(const std::u16string& sub_label) {
   sub_label_->SetText(sub_label);
   sub_label_->SetVisible(true);
   InvalidateLayout();
 }
 
-const base::string16& FeaturePodLabelButton::GetSubLabelText() const {
+const std::u16string& FeaturePodLabelButton::GetSubLabelText() const {
   return sub_label_->GetText();
 }
 
@@ -354,7 +361,7 @@ void FeaturePodButton::SetVectorIcon(const gfx::VectorIcon& icon) {
   icon_button_->SetVectorIcon(icon);
 }
 
-void FeaturePodButton::SetLabel(const base::string16& label) {
+void FeaturePodButton::SetLabel(const std::u16string& label) {
   if (label_button_->GetLabelText() == label)
     return;
 
@@ -363,7 +370,7 @@ void FeaturePodButton::SetLabel(const base::string16& label) {
   label_button_->SchedulePaint();
 }
 
-void FeaturePodButton::SetSubLabel(const base::string16& sub_label) {
+void FeaturePodButton::SetSubLabel(const std::u16string& sub_label) {
   if (label_button_->GetSubLabelText() == sub_label)
     return;
 
@@ -372,15 +379,15 @@ void FeaturePodButton::SetSubLabel(const base::string16& sub_label) {
   label_button_->SchedulePaint();
 }
 
-void FeaturePodButton::SetIconTooltip(const base::string16& text) {
+void FeaturePodButton::SetIconTooltip(const std::u16string& text) {
   icon_button_->SetTooltipText(text);
 }
 
-void FeaturePodButton::SetLabelTooltip(const base::string16& text) {
+void FeaturePodButton::SetLabelTooltip(const std::u16string& text) {
   label_button_->SetTooltipText(text);
 }
 
-void FeaturePodButton::SetIconAndLabelTooltips(const base::string16& text) {
+void FeaturePodButton::SetIconAndLabelTooltips(const std::u16string& text) {
   SetIconTooltip(text);
   SetLabelTooltip(text);
 }

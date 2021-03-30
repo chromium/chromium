@@ -10,7 +10,10 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
+#include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache.h"
@@ -21,6 +24,18 @@
 namespace net {
 
 namespace {
+
+base::debug::CrashKeyString* GetCacheKeyCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "http_cache_key", base::debug::CrashKeySize::Size256);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetTransactionFlagsCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "http_cache_transaction", base::debug::CrashKeySize::Size256);
+  return crash_key;
+}
 
 bool IsValidResponseForWriter(bool is_partial,
                               const HttpResponseInfo* response_info) {
@@ -379,6 +394,35 @@ int HttpCache::Writers::DoLoop(int result) {
 int HttpCache::Writers::DoNetworkRead() {
   DCHECK(network_transaction_);
   next_state_ = State::NETWORK_READ_COMPLETE;
+
+  // TODO(https://crbug.com/778641): This is a partial mitigation and an attempt
+  // to gather more info)
+  if (!network_transaction_) {
+    static bool reported = false;
+    if (!reported) {
+      reported = true;
+      base::debug::ScopedCrashKeyString key_info(
+          GetCacheKeyCrashKey(), active_transaction_
+                                     ? active_transaction_->key()
+                                     : "(no transaction)");
+      base::debug::ScopedCrashKeyString flags_info(
+          GetTransactionFlagsCrashKey(),
+          active_transaction_
+              ? base::StringPrintf(
+                    "mth=%s/m=%d/p=%d/t=%d/ex=%d/tc=%d/par=%d/pri=%d/nw=%zu",
+                    active_transaction_->method().c_str(),
+                    static_cast<int>(active_transaction_->mode()),
+                    static_cast<int>(active_transaction_->partial() != nullptr),
+                    static_cast<int>(active_transaction_->is_truncated()),
+                    static_cast<int>(IsExclusive()), GetTransactionsCount(),
+                    static_cast<int>(parallel_writing_pattern_),
+                    static_cast<int>(priority_), all_writers_.size())
+              : "(no transaction)");
+      base::debug::DumpWithoutCrashing();
+    }
+    return ERR_FAILED;
+  }
+
   CompletionOnceCallback io_callback = base::BindOnce(
       &HttpCache::Writers::OnIOComplete, weak_factory_.GetWeakPtr());
   return network_transaction_->Read(read_buf_.get(), io_buf_len_,

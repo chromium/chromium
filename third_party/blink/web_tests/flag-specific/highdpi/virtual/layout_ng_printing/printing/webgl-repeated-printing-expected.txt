@@ -1,0 +1,19 @@
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+Snapshot width: 1200 height: 900
+Test 0: canvas should be green
+PASS pixel[0] is within 1 of 0
+PASS pixel[1] is within 1 of 255
+PASS pixel[2] is within 1 of 0
+Snapshot width: 1200 height: 900
+Test 1: canvas should be red
+PASS pixel[0] is within 1 of 255
+PASS pixel[1] is within 1 of 0
+PASS pixel[2] is within 1 of 0
+Snapshot width: 1200 height: 900
+Test 2: canvas should be blue
+PASS pixel[0] is within 1 of 0
+PASS pixel[1] is within 1 of 0
+PASS pixel[2] is within 1 of 255

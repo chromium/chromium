@@ -14,7 +14,7 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, SafetyCheckInteractions} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
-import {Router} from '../router.m.js';
+import {Router} from '../router.js';
 
 import {SafetyCheckCallbackConstants, SafetyCheckSafeBrowsingStatus} from './safety_check_browser_proxy.js';
 import {SafetyCheckIconStatus} from './safety_check_child.js';
@@ -134,7 +134,7 @@ Polymer({
   onButtonClick_: function() {
     // Log click both in action and histogram.
     this.metricsBrowserProxy_.recordSafetyCheckInteractionHistogram(
-        SafetyCheckInteractions.SAFETY_CHECK_SAFE_BROWSING_MANAGE);
+        SafetyCheckInteractions.SAFE_BROWSING_MANAGE);
     this.metricsBrowserProxy_.recordAction(
         'Settings.SafetyCheck.ManageSafeBrowsing');
     this.openSecurityPage_();
@@ -168,8 +168,7 @@ Polymer({
     if (this.isRowClickable_()) {
       // Log click both in action and histogram.
       this.metricsBrowserProxy_.recordSafetyCheckInteractionHistogram(
-          SafetyCheckInteractions
-              .SAFETY_CHECK_SAFE_BROWSING_MANAGE_THROUGH_CARET_NAVIGATION);
+          SafetyCheckInteractions.SAFE_BROWSING_CARET_NAVIGATION);
       this.metricsBrowserProxy_.recordAction(
           'Settings.SafetyCheck.ManageSafeBrowsingThroughCaretNavigation');
       this.openSecurityPage_();

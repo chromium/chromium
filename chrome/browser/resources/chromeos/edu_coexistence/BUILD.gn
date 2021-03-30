@@ -19,12 +19,11 @@ js_type_check("closure_compile") {
     ":edu_coexistence_ui",
   ]
 
-  closure_flags = default_closure_args + [
-                    "js_module_root=../../chrome/browser/resources/gaia_auth_host/",
-                    "js_module_root=./gen/chrome/browser/resources/gaia_auth_host/",
-                    "js_module_root=../../chrome/browser/resources/chromeos/add_supervision/",
-                    "js_module_root=./gen/chrome/browser/resources/chromeos/add_supervision/",
-                  ]
+  closure_flags =
+      default_closure_args + [
+        "js_module_root=../../chrome/browser/resources/gaia_auth_host/",
+        "js_module_root=./gen/chrome/browser/resources/gaia_auth_host/",
+      ]
 }
 
 js_library("edu_coexistence_app") {
@@ -95,7 +94,7 @@ polymer_modulizer("edu_coexistence_css") {
 js_library("edu_coexistence_controller") {
   deps = [
     ":edu_coexistence_browser_proxy",
-    "//chrome/browser/resources/chromeos/add_supervision:post_message_api.m",
+    "//chrome/browser/resources/chromeos/add_supervision:post_message_api",
     "//chrome/browser/resources/gaia_auth_host:authenticator.m",
   ]
   externs_list = [

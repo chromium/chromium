@@ -130,17 +130,12 @@ class CHROMEOS_EXPORT Printer {
     description_ = description;
   }
 
-  // Returns the |manufacturer| of the printer.
-  // DEPRECATED(skau@chromium.org): Use make_and_model() instead.
-  const std::string& manufacturer() const { return manufacturer_; }
-  void set_manufacturer(const std::string& manufacturer) {
-    manufacturer_ = manufacturer;
+  const std::string& usb_printer_manufacturer() const {
+    return usb_printer_manufacturer_;
   }
-
-  // Returns the |model| of the printer.
-  // DEPRECATED(skau@chromium.org): Use make_and_model() instead.
-  const std::string& model() const { return model_; }
-  void set_model(const std::string& model) { model_ = model; }
+  void set_usb_printer_manufacturer(const std::string& manufacturer) {
+    usb_printer_manufacturer_ = manufacturer;
+  }
 
   const std::string& make_and_model() const { return make_and_model_; }
   void set_make_and_model(const std::string& make_and_model) {
@@ -226,15 +221,8 @@ class CHROMEOS_EXPORT Printer {
   // User defined string for additional printer information.
   std::string description_;
 
-  // The manufacturer of the printer, e.g. HP
-  // DEPRECATED(skau@chromium.org): Migrating to make_and_model.  This is kept
-  // for backward compatibility until migration is complete.
-  std::string manufacturer_;
-
-  // The model of the printer, e.g. OfficeJet 415
-  // DEPRECATED(skau@chromium.org): Migrating to make_and_model.  This is kept
-  // for backward compatibility until migration is complete.
-  std::string model_;
+  // Holds manufacturer name read from USB printer.
+  std::string usb_printer_manufacturer_;
 
   // The manufactuer and model of the printer in one string. e.g. HP OfficeJet
   // 415. This is either read from or derived from printer information and is

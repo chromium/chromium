@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="or">
+<translation id="1175958423215084756">ଲିଙ୍କଟି ଚିହ୍ନଟ କରାଯାଇଛି। <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">ଗ୍ୟାଲେରୀ ଛବିଗୁଡ଼ିକ</translation>
 <translation id="1430915738399379752">ପ୍ରିଣ୍ଟ କରନ୍ତୁ</translation>
 <translation id="1473110567575736769">3 ସେକେଣ୍ଡର ଟାଇମର୍</translation>
@@ -14,6 +15,7 @@
 <translation id="2036868001356139588">ଟାଇମ୍‍ର ଅବଧି</translation>
 <translation id="2050339315714019657">ପୋଟ୍ରେଟ୍‌</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> ସକ୍ରିୟ ଅଛି</translation>
+<translation id="2144806332417375165">କଷ୍ଟମ୍ ଭିଡିଓ ପାରାମିଟରଗୁଡ଼ିକ</translation>
 <translation id="229579744168541441">ଡିସ୍କକୁ ଏକ୍ସପୋର୍ଟ କରନ୍ତୁ</translation>
 <translation id="2501278716633472235">ଫେରନ୍ତୁ</translation>
 <translation id="2501853267655415902">ରେକର୍ଡିଂ ବନ୍ଦ ହୋଇଗଲା।</translation>
@@ -32,7 +34,6 @@
 <translation id="3259149966178251584">କ୍ୟାମେରା ରିଜୋଲ୍ୟୁଶନ୍</translation>
 <translation id="3517926952904427380">ପୋଟ୍ରେଟ୍ ଫଟୋ ଉଠାଇବା ପାଇଁ ଅକ୍ଷମ</translation>
 <translation id="3569311554794739032">ଆପଣ କ'ଣ ପ୍ରକୃତରେ <ph name="FILE" />କୁ କାଢ଼ି ଦେବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
-<translation id="3750315947605636967">ଆପଣଙ୍କ କ୍ୟାମେରା ଅନ୍ୟ ଏକ ଆପ୍ ଦ୍ୱାରା ବ୍ୟବହୃତ ହେଉଛି</translation>
 <translation id="3810838688059735925">ଭିଡିଓ</translation>
 <translation id="3838931309141338733">ବାରକୋଡ୍ ସ୍କାନ୍ କରନ୍ତୁ</translation>
 <translation id="3892148308691398805">ଟେକ୍ସଟ୍ କପି କରନ୍ତୁ</translation>
@@ -75,10 +76,13 @@
 <translation id="7337660886763914220">ଫାଇଲ୍ ସିଷ୍ଟମ୍‌ର ତ୍ରୁଟିଗୁଡ଼ିକ।</translation>
 <translation id="7450541714075000668">ଟେକ୍ସଟ୍ କପି କରାଯାଇଛି</translation>
 <translation id="7557677699350329807">ପରବର୍ତ୍ତୀ କ୍ୟାମେରାକୁ ସ୍ୱିଚ୍ କରନ୍ତୁ</translation>
+<translation id="7607002721634913082">ଅଚଳିତ</translation>
 <translation id="7608223098072244877">4 ଗୁଣନ 4</translation>
 <translation id="7649070708921625228">ସହାୟତା</translation>
 <translation id="7658239707568436148">ବାତିଲ୍</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7974782136796202581">ପ୍ୟାନ୍ ଟିଲ୍ଟ ଜୁମ୍ ବିକଳ୍ପ ଦେଖାନ୍ତୁ</translation>
+<translation id="7983668134180549431">ଟେକ୍ସଟ୍ ଚିହ୍ନଟ କରାଯାଇଛି।</translation>
 <translation id="8067883171444229417">ଭିଡିଓ ଚଲାନ୍ତୁ</translation>
 <translation id="8131740175452115882">ନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="8145038249676204903">ଫଟୋ ଉଠାଇବା ପାଇଁ ସ୍ୱିଚ୍ କରନ୍ତୁ</translation>

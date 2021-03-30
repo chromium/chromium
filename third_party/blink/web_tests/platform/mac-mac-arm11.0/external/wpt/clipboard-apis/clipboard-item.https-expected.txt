@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+PASS ClipboardItem({string, Blob}) succeeds with different types
+PASS ClipboardItem() succeeds with empty options
+PASS ClipboardItem({}) fails with empty dictionary input
+PASS ClipboardItem(Blob) fails
+PASS ClipboardItem() fails with null input
+PASS ClipboardItem() fails with no input
+PASS types() returns correct values
+FAIL raw() returns correct values, defaulting to false assert_equals: expected (boolean) false but got (undefined) undefined
+PASS getType(DOMString valid type) succeeds with correct output
+PASS getType(DOMString invalid type) succeeds with correct output
+PASS getType(DOMString type) rejects correctly when querying for missing type
+Harness: the test ran to completion.
+

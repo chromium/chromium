@@ -13,7 +13,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
-NewBadgeLabel::NewBadgeLabel(const base::string16& text,
+NewBadgeLabel::NewBadgeLabel(const std::u16string& text,
                              int text_context,
                              int text_style,
                              gfx::DirectionalityMode directionality_mode)
@@ -21,7 +21,7 @@ NewBadgeLabel::NewBadgeLabel(const base::string16& text,
   UpdatePaddingForNewBadge();
 }
 
-NewBadgeLabel::NewBadgeLabel(const base::string16& text, const CustomFont& font)
+NewBadgeLabel::NewBadgeLabel(const std::u16string& text, const CustomFont& font)
     : Label(text, font) {
   UpdatePaddingForNewBadge();
 }
@@ -48,7 +48,7 @@ void NewBadgeLabel::SetBadgePlacement(BadgePlacement badge_placement) {
 
 void NewBadgeLabel::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   Label::GetAccessibleNodeData(node_data);
-  base::string16 accessible_name = GetText();
+  std::u16string accessible_name = GetText();
   accessible_name.push_back(' ');
   accessible_name.append(views::NewBadge::GetNewBadgeAccessibleDescription());
   node_data->SetName(accessible_name);
@@ -131,9 +131,9 @@ void NewBadgeLabel::UpdatePaddingForNewBadge() {
 
 DEFINE_ENUM_CONVERTERS(NewBadgeLabel::BadgePlacement,
                        {NewBadgeLabel::BadgePlacement::kImmediatelyAfterText,
-                        base::ASCIIToUTF16("kImmediatelyAfterText")},
+                        u"kImmediatelyAfterText"},
                        {NewBadgeLabel::BadgePlacement::kTrailingEdge,
-                        base::ASCIIToUTF16("kTrailingEdge")})
+                        u"kTrailingEdge"})
 
 BEGIN_METADATA(NewBadgeLabel, views::Label)
 ADD_PROPERTY_METADATA(NewBadgeLabel::BadgePlacement, BadgePlacement)

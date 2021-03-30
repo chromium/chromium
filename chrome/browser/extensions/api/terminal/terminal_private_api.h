@@ -79,13 +79,13 @@ class TerminalPrivateOpenTerminalProcessFunction : public ExtensionFunction {
                    base::CommandLine cmdline);
 
   using ProcessOutputCallback =
-      base::Callback<void(const std::string& terminal_id,
-                          const std::string& output_type,
-                          const std::string& output)>;
+      base::RepeatingCallback<void(const std::string& terminal_id,
+                                   const std::string& output_type,
+                                   const std::string& output)>;
   using OpenProcessCallback =
-      base::Callback<void(bool success, const std::string& terminal_id)>;
-  void OpenOnRegistryTaskRunner(const ProcessOutputCallback& output_callback,
-                                const OpenProcessCallback& callback,
+      base::OnceCallback<void(bool success, const std::string& terminal_id)>;
+  void OpenOnRegistryTaskRunner(ProcessOutputCallback output_callback,
+                                OpenProcessCallback callback,
                                 base::CommandLine cmdline,
                                 const std::string& user_id_hash);
   void RespondOnUIThread(bool success, const std::string& terminal_id);

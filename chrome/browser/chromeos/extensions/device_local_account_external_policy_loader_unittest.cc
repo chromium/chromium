@@ -49,16 +49,17 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+using extensions::ExternalInstallInfoFile;
+using extensions::ExternalInstallInfoUpdateUrl;
+using extensions::mojom::ManifestLocation;
+using ::testing::_;
 using ::testing::Field;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Mock;
 using ::testing::StrEq;
-using ::testing::_;
-using extensions::ExternalInstallInfoFile;
-using extensions::ExternalInstallInfoUpdateUrl;
 
 namespace chromeos {
 
@@ -185,7 +186,7 @@ class DeviceLocalAccountExternalPolicyLoaderTest : public testing::Test {
   content::InProcessUtilityThreadHelper in_process_utility_thread_helper_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
@@ -211,8 +212,8 @@ void DeviceLocalAccountExternalPolicyLoaderTest::SetUp() {
 
   loader_ = new DeviceLocalAccountExternalPolicyLoader(&store_, cache_dir_);
   provider_.reset(new extensions::ExternalProviderImpl(
-      &visitor_, loader_, profile_.get(), extensions::Manifest::EXTERNAL_POLICY,
-      extensions::Manifest::EXTERNAL_POLICY_DOWNLOAD,
+      &visitor_, loader_, profile_.get(), ManifestLocation::kExternalPolicy,
+      ManifestLocation::kExternalPolicyDownload,
       extensions::Extension::NO_FLAGS));
 
   VerifyAndResetVisitorCallExpectations();
@@ -340,7 +341,7 @@ TEST_F(DeviceLocalAccountExternalPolicyLoaderTest, ForceInstallListSet) {
                 StrEq(kExtensionId)),
           Field(&extensions::ExternalInstallInfoFile::path, cached_crx_path),
           Field(&extensions::ExternalInstallInfoFile::crx_location,
-                extensions::Manifest::EXTERNAL_POLICY))));
+                ManifestLocation::kExternalPolicy))));
   EXPECT_CALL(visitor_, OnExternalProviderReady(provider_.get()))
       .Times(1)
       .WillOnce(InvokeWithoutArgs(&cache_run_loop, &base::RunLoop::Quit));

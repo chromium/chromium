@@ -7,8 +7,9 @@
 #include <stdarg.h>
 #include <stdio.h>
 
+#include <string>
+
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 
 #if !defined(NDEBUG)
 // Sends string |format| to the debugger for display.
@@ -25,7 +26,7 @@ void TraceImpl(const wchar_t* format, ...) {
   if (vswprintf(buffer, base::size(buffer), format, args) > 0) {
     OutputDebugString(buffer);
   } else {
-    base::string16 error_string(L"Format error for string: ");
+    std::wstring error_string(L"Format error for string: ");
     OutputDebugString(error_string.append(format).c_str());
   }
   va_end(args);

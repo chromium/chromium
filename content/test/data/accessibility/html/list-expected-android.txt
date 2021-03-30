@@ -1,13 +1,13 @@
 android.webkit.WebView focusable focused scrollable
 ++android.widget.ListView collection item_count=3 row_count=3
 ++++android.view.View collection_item
-++++++android.view.View name='• '
+++++++android.view.View name='%E2%80%A2 '
 ++++++android.widget.TextView name='tic'
 ++++android.view.View collection_item item_index=1 row_index=1
-++++++android.view.View name='• '
+++++++android.view.View name='%E2%80%A2 '
 ++++++android.widget.TextView name='tac'
 ++++android.view.View collection_item item_index=2 row_index=2
-++++++android.view.View name='• '
+++++++android.view.View name='%E2%80%A2 '
 ++++++android.widget.TextView name='toe'
 ++android.widget.ListView collection item_count=3 row_count=3
 ++++android.view.View collection_item name='tic'

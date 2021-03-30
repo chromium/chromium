@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/find_bar/find_bar_state.h"
@@ -27,7 +28,7 @@ class FindBackendTest : public ChromeRenderViewHostTestHarness {
 
 namespace {
 
-base::string16 FindPrepopulateText(WebContents* contents) {
+std::u16string FindPrepopulateText(WebContents* contents) {
   return FindBarStateFactory::GetForBrowserContext(
              contents->GetBrowserContext())
       ->GetSearchPrepopulateText();
@@ -41,8 +42,8 @@ TEST_F(FindBackendTest, InternalState) {
   find_in_page::FindTabHelper* find_tab_helper =
       find_in_page::FindTabHelper::FromWebContents(web_contents());
   // Initial state for the WebContents is blank strings.
-  EXPECT_EQ(base::string16(), FindPrepopulateText(web_contents()));
-  EXPECT_EQ(base::string16(), find_tab_helper->find_text());
+  EXPECT_EQ(std::u16string(), FindPrepopulateText(web_contents()));
+  EXPECT_EQ(std::u16string(), find_tab_helper->find_text());
 
   // Get another WebContents object ready.
   std::unique_ptr<WebContents> contents2(
@@ -52,14 +53,14 @@ TEST_F(FindBackendTest, InternalState) {
       find_in_page::FindTabHelper::FromWebContents(contents2.get());
 
   // No search has still been issued, strings should be blank.
-  EXPECT_EQ(base::string16(), FindPrepopulateText(web_contents()));
-  EXPECT_EQ(base::string16(), find_tab_helper->find_text());
-  EXPECT_EQ(base::string16(), FindPrepopulateText(contents2.get()));
-  EXPECT_EQ(base::string16(), find_tab_helper2->find_text());
+  EXPECT_EQ(std::u16string(), FindPrepopulateText(web_contents()));
+  EXPECT_EQ(std::u16string(), find_tab_helper->find_text());
+  EXPECT_EQ(std::u16string(), FindPrepopulateText(contents2.get()));
+  EXPECT_EQ(std::u16string(), find_tab_helper2->find_text());
 
-  base::string16 search_term1 = base::ASCIIToUTF16(" I had a 401K    ");
-  base::string16 search_term2 = base::ASCIIToUTF16(" but the economy ");
-  base::string16 search_term3 = base::ASCIIToUTF16(" eated it.       ");
+  std::u16string search_term1 = u" I had a 401K    ";
+  std::u16string search_term2 = u" but the economy ";
+  std::u16string search_term3 = u" eated it.       ";
 
   // Start searching in the first WebContents.
   find_tab_helper->StartFinding(search_term1, true /* forward_direction */,
@@ -71,7 +72,7 @@ TEST_F(FindBackendTest, InternalState) {
   EXPECT_EQ(search_term1, FindPrepopulateText(web_contents()));
   EXPECT_EQ(search_term1, find_tab_helper->find_text());
   EXPECT_EQ(search_term1, FindPrepopulateText(contents2.get()));
-  EXPECT_EQ(base::string16(), find_tab_helper2->find_text());
+  EXPECT_EQ(std::u16string(), find_tab_helper2->find_text());
 
   // Now search in the other WebContents.
   find_tab_helper2->StartFinding(search_term2, true /* forward_direction */,

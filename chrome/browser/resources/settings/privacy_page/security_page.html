@@ -13,17 +13,8 @@
         min-height: var(--settings-row-min-height);
       }
 
-      .bullet-line.three-line {
-        min-height: var(--settings-row-three-line-min-height);
-      }
-
       .bullet-line > div {
         padding-inline-start: var(--cr-radio-button-size);
-      }
-
-      settings-collapse-radio-button {
-        --settings-collapse-toggle-min-height:
-            var(--settings-row-three-line-min-height);
       }
 
       settings-collapse-radio-button:not(:first-of-type) {
@@ -54,7 +45,7 @@
     <picture>
       <source
           srcset="chrome://settings/images/safe_browsing_banner_dark.svg"
-          media="(prefers-color-scheme: dark">
+          media="(prefers-color-scheme: dark)">
       <img id="banner" alt=""
           src="chrome://settings/images/safe_browsing_banner.svg">
     </picture>
@@ -69,7 +60,8 @@
             pref="[[prefs.generated.safe_browsing]]"
             label="$i18n{safeBrowsingEnhanced}"
             sub-label="$i18n{safeBrowsingEnhancedDesc}"
-            hidden="[[!safeBrowsingEnhancedEnabled_]]"
+            indicator-aria-label="$i18n{controlledSettingPolicy}"
+            expand-aria-label="$i18n{safeBrowsingEnhancedExpandA11yLabel}"
             on-expand-clicked="onEnhancedProtectionExpandButtonClicked_"
             no-automatic-collapse>
           <div slot="collapse">
@@ -97,9 +89,9 @@
                 $i18n{safeBrowsingEnhancedBulFour}
               </div>
             </div>
-            <div class="bullet-line three-line last-collapse-item">
+            <div class="bullet-line last-collapse-item">
               <iron-icon icon="settings20:data"></iron-icon>
-              <div class="secondary">
+              <div class="secondary cr-padded-text">
                 $i18n{safeBrowsingEnhancedBulFive}
               </div>
             </div>
@@ -110,6 +102,8 @@
             pref="[[prefs.generated.safe_browsing]]"
             label="$i18n{safeBrowsingStandard}"
             sub-label="$i18n{safeBrowsingStandardDesc}"
+            indicator-aria-label="$i18n{controlledSettingPolicy}"
+            expand-aria-label="$i18n{safeBrowsingStandardExpandA11yLabel}"
             info-opened="{{infoOpened_}}"
             on-expand-clicked="onStandardProtectionExpandButtonClicked_"
             no-automatic-collapse>
@@ -120,9 +114,9 @@
                   $i18n{safeBrowsingStandardBulOne}
               </div>
             </div>
-            <div class="bullet-line three-line">
+            <div class="bullet-line">
               <iron-icon icon="settings20:data"></iron-icon>
-              <div class="secondary">
+              <div class="secondary cr-padded-text">
                   $i18n{safeBrowsingStandardBulTwo}
               </div>
             </div>
@@ -141,7 +135,7 @@
                 pref="{{prefs.generated.password_leak_detection}}"
                 sub-label="[[getPasswordsLeakToggleSubLabel_(
                               prefs.profile.password_manager_leak_detection.*,
-                              syncStatus.*)]]">
+                              prefs.generated.password_leak_detection.*)]]">
             </settings-toggle-button>
           </div>
         </settings-collapse-radio-button>
@@ -149,7 +143,8 @@
             name="[[safeBrowsingSettingEnum_.DISABLED]]"
             pref="[[prefs.generated.safe_browsing]]"
             label="$i18n{safeBrowsingNone}"
-            sub-label="$i18n{safeBrowsingNoneDesc}">
+            sub-label="$i18n{safeBrowsingNoneDesc}"
+            indicator-aria-label="$i18n{controlledSettingPolicy}">
         </settings-collapse-radio-button>
       </settings-radio-group>
     </div>

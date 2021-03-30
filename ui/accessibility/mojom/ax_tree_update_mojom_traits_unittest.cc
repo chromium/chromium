@@ -21,6 +21,7 @@ TEST(AXTreeUpdateMojomTraitsTest, TestSerializeAndDeserializeAXTreeUpdate) {
   input.nodes[0].role = ax::mojom::Role::kButton;
   input.nodes[1].id = 4;
   input.event_from = ax::mojom::EventFrom::kUser;
+  input.event_from_action = ax::mojom::Action::kDoDefault;
   EXPECT_TRUE(SerializeAndDeserialize<ax::mojom::AXTreeUpdate>(input, output));
   EXPECT_EQ(true, output.has_tree_data);
   EXPECT_EQ(1, output.tree_data.focus_id);
@@ -30,4 +31,5 @@ TEST(AXTreeUpdateMojomTraitsTest, TestSerializeAndDeserializeAXTreeUpdate) {
   EXPECT_EQ(ax::mojom::Role::kButton, output.nodes[0].role);
   EXPECT_EQ(4, output.nodes[1].id);
   EXPECT_EQ(ax::mojom::EventFrom::kUser, output.event_from);
+  EXPECT_EQ(ax::mojom::Action::kDoDefault, output.event_from_action);
 }

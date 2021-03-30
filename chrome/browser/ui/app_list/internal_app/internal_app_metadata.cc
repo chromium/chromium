@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/app_list/internal_app/internal_app_metadata.h"
 
 #include <memory>
+#include <string>
 
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/public/cpp/keyboard_shortcut_viewer.h"
@@ -14,12 +15,10 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/chromeos/release_notes/release_notes_storage.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
@@ -30,7 +29,6 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "components/crx_file/id_util.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/sync/driver/sync_service.h"
@@ -69,24 +67,7 @@ const std::vector<InternalApp>& GetInternalAppListImpl(bool get_all,
             /*searchable=*/false,
             /*show_in_launcher=*/false, apps::BuiltInAppName::kContinueReading,
             /*searchable_string_resource_id=*/0}});
-
-  static base::NoDestructor<std::vector<InternalApp>> internal_app_list;
-  internal_app_list->clear();
-  internal_app_list->insert(internal_app_list->begin(),
-                            internal_app_list_static->begin(),
-                            internal_app_list_static->end());
-
-  if (chrome::SettingsWindowManager::UseDeprecatedSettingsWindow(profile)) {
-    internal_app_list->push_back(
-        {ash::kInternalAppIdSettings, IDS_INTERNAL_APP_SETTINGS,
-         IDR_SETTINGS_LOGO_192,
-         /*recommendable=*/true,
-         /*searchable=*/true,
-         /*show_in_launcher=*/true, apps::BuiltInAppName::kSettings,
-         /*searchable_string_resource_id=*/0});
-  }
-
-  return *internal_app_list;
+  return *internal_app_list_static;
 }
 
 }  // namespace
@@ -113,7 +94,7 @@ bool IsInternalApp(const std::string& app_id) {
 
 bool HasRecommendableForeignTab(
     Profile* profile,
-    base::string16* title,
+    std::u16string* title,
     GURL* url,
     sync_sessions::OpenTabsUIDelegate* test_delegate) {
   sync_sessions::SessionSyncService* service =

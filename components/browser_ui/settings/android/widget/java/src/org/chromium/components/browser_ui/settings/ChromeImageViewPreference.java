@@ -35,22 +35,27 @@ public class ChromeImageViewPreference extends Preference {
     @Nullable
     private ManagedPreferenceDelegate mManagedPrefDelegate;
 
-    // The onClick listener to handle click events for the ImageView widget.
+    /** The onClick listener to handle click events for the ImageView widget. */
     @Nullable
     private View.OnClickListener mListener;
-    // The image resource ID to use for the ImageView widget source.
+    /** The image resource ID to use for the ImageView widget source. */
     @DrawableRes
     private int mImageRes;
-    // The color resource ID for tinting of ImageView widget.
+    /** The color resource ID for tinting of ImageView widget. */
     @ColorRes
     private int mColorRes;
-    // The string resource ID to use for the ImageView widget content description.
+    /** The color resource ID for tinting of the view's background. */
+    @ColorRes
+    private int mBackgroundColorRes;
+    /** The string resource ID to use for the ImageView widget content description. */
     @StringRes
     private int mContentDescriptionRes;
-    // Whether the ImageView should be enabled.
+    /** Whether the ImageView should be enabled. */
     private boolean mImageViewEnabled = true;
-    // The ImageView Button.
+    /** The ImageView Button. */
     private ImageView mButton;
+    /** The View for this preference. */
+    private View mView;
 
     /**
      * Constructor for use in Java.
@@ -86,9 +91,10 @@ public class ChromeImageViewPreference extends Preference {
         mButton.setBackgroundColor(Color.TRANSPARENT);
         mButton.setVisibility(View.VISIBLE);
 
+        mView = holder.itemView;
+        updateBackground();
         configureImageView();
-        ManagedPreferencesUtils.onBindViewToImageViewPreference(
-                mManagedPrefDelegate, this, holder.itemView);
+        ManagedPreferencesUtils.onBindViewToImageViewPreference(mManagedPrefDelegate, this, mView);
     }
 
     @Override
@@ -119,6 +125,16 @@ public class ChromeImageViewPreference extends Preference {
 
         mColorRes = colorRes;
         configureImageView();
+    }
+
+    /**
+     * Sets the Color resource ID which will be used to set the color of the view.
+     * @param colorRes
+     */
+    public void setBackgroundColor(@ColorRes int colorRes) {
+        if (mBackgroundColorRes == colorRes) return;
+        mBackgroundColorRes = colorRes;
+        updateBackground();
     }
 
     /**
@@ -154,5 +170,10 @@ public class ChromeImageViewPreference extends Preference {
         if (mContentDescriptionRes != 0) {
             mButton.setContentDescription(mButton.getResources().getString(mContentDescriptionRes));
         }
+    }
+
+    private void updateBackground() {
+        if (mView == null) return;
+        mView.setBackgroundColor(mBackgroundColorRes);
     }
 }

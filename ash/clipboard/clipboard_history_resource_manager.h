@@ -5,6 +5,7 @@
 #ifndef ASH_CLIPBOARD_CLIPBOARD_HISTORY_RESOURCE_MANAGER_H_
 #define ASH_CLIPBOARD_CLIPBOARD_HISTORY_RESOURCE_MANAGER_H_
 
+#include <string>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -12,7 +13,6 @@
 #include "ash/clipboard/clipboard_history_item.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/strings/string16.h"
 #include "base/unguessable_token.h"
 #include "ui/base/models/image_model.h"
 
@@ -41,7 +41,7 @@ class ASH_EXPORT ClipboardHistoryResourceManager
   ui::ImageModel GetImageModel(const ClipboardHistoryItem& item) const;
 
   // Returns the label to display for the specified clipboard history |item|.
-  base::string16 GetLabel(const ClipboardHistoryItem& item) const;
+  std::u16string GetLabel(const ClipboardHistoryItem& item) const;
 
   void AddObserver(Observer* observer) const;
   void RemoveObserver(Observer* observer) const;

@@ -8,6 +8,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/common/chrome_features.h"
 #include "components/country_codes/country_codes.h"
 #include "components/embedder_support/pref_names.h"
@@ -22,35 +23,13 @@ using testing::ElementsAre;
 
 namespace chrome_browser_net {
 
-namespace {
-
-const char kAlternateErrorPagesBackup[] = "alternate_error_pages.backup";
-
-}  // namespace
-
 namespace secure_dns {
 
-class SecureDnsUtilTest : public testing::Test {
- public:
-  void SetUp() override { DisableRedesign(); }
+class SecureDnsUtilTest : public testing::Test {};
 
-  void EnableRedesign() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kPrivacySettingsRedesign, base::FieldTrialParams());
-  }
-
-  void DisableRedesign() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kPrivacySettingsRedesign);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
+#if !defined(OS_ANDROID)
 TEST_F(SecureDnsUtilTest, MigrateProbesPref) {
+  const char kAlternateErrorPagesBackup[] = "alternate_error_pages.backup";
   TestingPrefServiceSimple prefs;
   prefs.registry()->RegisterBooleanPref(
       embedder_support::kAlternateErrorPagesEnabled, true);
@@ -61,101 +40,12 @@ TEST_F(SecureDnsUtilTest, MigrateProbesPref) {
   const PrefService::Preference* backup_pref =
       prefs.FindPreference(kAlternateErrorPagesBackup);
 
-  // No migration happens if the privacy settings redesign is not enabled.
-  MigrateProbesSettingToOrFromBackup(&prefs);
-  EXPECT_FALSE(backup_pref->HasUserSetting());
-
-  // The hardcoded default value of TRUE gets correctly migrated.
-  EnableRedesign();
   MigrateProbesSettingToOrFromBackup(&prefs);
   EXPECT_FALSE(current_pref->HasUserSetting());
   EXPECT_TRUE(backup_pref->HasUserSetting());
   EXPECT_TRUE(prefs.GetBoolean(kAlternateErrorPagesBackup));
-
-  // And correctly restored.
-  DisableRedesign();
-  MigrateProbesSettingToOrFromBackup(&prefs);
-  EXPECT_TRUE(current_pref->HasUserSetting());
-  EXPECT_TRUE(prefs.GetBoolean(embedder_support::kAlternateErrorPagesEnabled));
-  EXPECT_FALSE(backup_pref->HasUserSetting());
-
-  // An explicit user value of TRUE will be correctly migrated.
-  EnableRedesign();
-  prefs.SetBoolean(embedder_support::kAlternateErrorPagesEnabled, true);
-  MigrateProbesSettingToOrFromBackup(&prefs);
-  EXPECT_FALSE(current_pref->HasUserSetting());
-  EXPECT_TRUE(backup_pref->HasUserSetting());
-  EXPECT_TRUE(prefs.GetBoolean(kAlternateErrorPagesBackup));
-
-  // And correctly restored.
-  DisableRedesign();
-  MigrateProbesSettingToOrFromBackup(&prefs);
-  EXPECT_TRUE(current_pref->HasUserSetting());
-  EXPECT_TRUE(prefs.GetBoolean(embedder_support::kAlternateErrorPagesEnabled));
-  EXPECT_FALSE(backup_pref->HasUserSetting());
-
-  // An explicit user value of FALSE will also be correctly migrated.
-  EnableRedesign();
-  prefs.SetBoolean(embedder_support::kAlternateErrorPagesEnabled, false);
-  MigrateProbesSettingToOrFromBackup(&prefs);
-  EXPECT_FALSE(current_pref->HasUserSetting());
-  EXPECT_TRUE(backup_pref->HasUserSetting());
-  EXPECT_FALSE(prefs.GetBoolean(kAlternateErrorPagesBackup));
-
-  // And correctly restored.
-  DisableRedesign();
-  MigrateProbesSettingToOrFromBackup(&prefs);
-  EXPECT_TRUE(current_pref->HasUserSetting());
-  EXPECT_FALSE(prefs.GetBoolean(embedder_support::kAlternateErrorPagesEnabled));
-  EXPECT_FALSE(backup_pref->HasUserSetting());
-
-  // A policy-sourced value of TRUE takes precedence over the user-sourced value
-  // of FALSE when the preference is evaluated. However, it will still be the
-  // user-sourced value of FALSE that will be migrated.
-  prefs.SetManagedPref(embedder_support::kAlternateErrorPagesEnabled,
-                       std::make_unique<base::Value>(true));
-  EnableRedesign();
-  MigrateProbesSettingToOrFromBackup(&prefs);
-  EXPECT_FALSE(current_pref->HasUserSetting());
-  EXPECT_TRUE(backup_pref->HasUserSetting());
-  EXPECT_FALSE(prefs.GetBoolean(kAlternateErrorPagesBackup));
-
-  // And correctly restored.
-  DisableRedesign();
-  MigrateProbesSettingToOrFromBackup(&prefs);
-  EXPECT_TRUE(current_pref->HasUserSetting());
-  {
-    const base::Value* user_pref =
-        prefs.GetUserPref(embedder_support::kAlternateErrorPagesEnabled);
-    ASSERT_TRUE(user_pref->is_bool());
-    EXPECT_FALSE(user_pref->GetBool());
-  }
-  EXPECT_FALSE(backup_pref->HasUserSetting());
-
-  // After clearing the user-sourced value, the hardcoded value of TRUE should
-  // be the value which is migrated, even if it is overridden by
-  // a policy-sourced value of FALSE.
-  prefs.ClearPref(embedder_support::kAlternateErrorPagesEnabled);
-  prefs.SetManagedPref(embedder_support::kAlternateErrorPagesEnabled,
-                       std::make_unique<base::Value>(false));
-  EnableRedesign();
-  MigrateProbesSettingToOrFromBackup(&prefs);
-  EXPECT_FALSE(current_pref->HasUserSetting());
-  EXPECT_TRUE(backup_pref->HasUserSetting());
-  EXPECT_TRUE(prefs.GetBoolean(kAlternateErrorPagesBackup));
-
-  // And correctly restored.
-  DisableRedesign();
-  MigrateProbesSettingToOrFromBackup(&prefs);
-  EXPECT_TRUE(current_pref->HasUserSetting());
-  {
-    const base::Value* user_pref =
-        prefs.GetUserPref(embedder_support::kAlternateErrorPagesEnabled);
-    ASSERT_TRUE(user_pref->is_bool());
-    EXPECT_TRUE(user_pref->GetBool());
-  }
-  EXPECT_FALSE(backup_pref->HasUserSetting());
 }
+#endif  // !defined(OS_ANDROID)
 
 TEST(SecureDnsUtil, SplitGroup) {
   EXPECT_THAT(SplitGroup("a"), ElementsAre("a"));

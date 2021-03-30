@@ -1,0 +1,47 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/node/node.gni")
+
+template("ts_definitions") {
+  node(target_name) {
+    script = "//tools/typescript/ts_definitions.py"
+
+    forward_variables_from(invoker,
+                           [
+                             "extra_deps",
+                             "js_files",
+                           ])
+
+    inputs = []
+    outputs = []
+
+    root_dir = "."
+    if (defined(invoker.root_dir)) {
+      root_dir = invoker.root_dir
+    }
+
+    foreach(_js_file, js_files) {
+      inputs += [ "$root_dir/$_js_file" ]
+      _dirname = get_path_info(_js_file, "gen_dir")
+      _filename = get_path_info(_js_file, "name")
+      outputs += [ "$_dirname/$_filename.d.ts" ]
+    }
+
+    args = [
+             "--root_dir",
+             rebase_path(root_dir, root_build_dir),
+             "--gen_dir",
+             rebase_path(target_gen_dir, root_build_dir),
+             "--js_files",
+           ] + js_files
+
+    if (defined(extra_deps)) {
+      if (!defined(deps)) {
+        deps = []
+      }
+      deps += extra_deps
+    }
+  }
+}

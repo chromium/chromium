@@ -353,19 +353,18 @@ class CallbackMockResource : public Resource {
         PP_MakeCompletionCallback(&TestCallback,
                                   &info_did_run_with_completion_task_));
     callback_did_run_with_completion_task_->set_completion_task(
-        Bind(&CallbackMockResource::CompletionTask,
-             this,
-             &info_did_run_with_completion_task_));
+        base::BindOnce(&CallbackMockResource::CompletionTask, this,
+                       &info_did_run_with_completion_task_));
 
     callback_did_abort_ = new TrackedCallback(
         this, PP_MakeCompletionCallback(&TestCallback, &info_did_abort_));
-    callback_did_abort_->set_completion_task(
-        Bind(&CallbackMockResource::CompletionTask, this, &info_did_abort_));
+    callback_did_abort_->set_completion_task(base::BindOnce(
+        &CallbackMockResource::CompletionTask, this, &info_did_abort_));
 
     callback_didnt_run_ = new TrackedCallback(
         this, PP_MakeCompletionCallback(&TestCallback, &info_didnt_run_));
-    callback_didnt_run_->set_completion_task(
-        Bind(&CallbackMockResource::CompletionTask, this, &info_didnt_run_));
+    callback_didnt_run_->set_completion_task(base::BindOnce(
+        &CallbackMockResource::CompletionTask, this, &info_didnt_run_));
 
     callbacks_created_event_.Signal();
   }

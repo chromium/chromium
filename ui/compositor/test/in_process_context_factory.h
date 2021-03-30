@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "components/viz/common/surfaces/frame_sink_id_allocator.h"
+#include "components/viz/common/surfaces/subtree_capture_id_allocator.h"
 #include "components/viz/service/display/display.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/test/test_gpu_memory_buffer_manager.h"
@@ -69,6 +70,7 @@ class InProcessContextFactory : public ContextFactory {
   gpu::GpuMemoryBufferManager* GetGpuMemoryBufferManager() override;
   cc::TaskGraphRunner* GetTaskGraphRunner() override;
   viz::FrameSinkId AllocateFrameSinkId() override;
+  viz::SubtreeCaptureId AllocateSubtreeCaptureId() override;
   viz::HostFrameSinkManager* GetHostFrameSinkManager() override;
 
   SkMatrix44 GetOutputColorMatrix(Compositor* compositor) const;
@@ -90,6 +92,7 @@ class InProcessContextFactory : public ContextFactory {
   viz::TestImageFactory image_factory_;
   cc::TestTaskGraphRunner task_graph_runner_;
   viz::FrameSinkIdAllocator frame_sink_id_allocator_;
+  viz::SubtreeCaptureIdAllocator subtree_capture_id_allocator_;
   bool use_test_surface_;
   bool disable_vsync_ = false;
   double refresh_rate_ = 60.0;

@@ -7,15 +7,11 @@
 
 #include <memory>
 
+#include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/service/shared_image_backing_android.h"
 #include "gpu/gpu_gles2_export.h"
-
-namespace base {
-namespace android {
-class ScopedHardwareBufferFenceSync;
-}  // namespace android
-}  // namespace base
+#include "ui/gfx/gpu_fence_handle.h"
 
 namespace gpu {
 class SharedImageRepresentationGLTextureScopedHardwareBufferFenceSync;
@@ -48,6 +44,9 @@ class GPU_GLES2_EXPORT SharedImageBackingScopedHardwareBufferFenceSync
   bool ProduceLegacyMailbox(MailboxManager* mailbox_manager) override;
   size_t EstimatedSizeForMemTracking() const override;
 
+  AHardwareBuffer* BeginOverlayAccess(gfx::GpuFenceHandle& begin_read_fence);
+  void EndOverlayAccess(gfx::GpuFenceHandle release_fence);
+
  protected:
   std::unique_ptr<SharedImageRepresentationGLTexture> ProduceGLTexture(
       SharedImageManager* manager,
@@ -61,6 +60,10 @@ class GPU_GLES2_EXPORT SharedImageBackingScopedHardwareBufferFenceSync
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
+
+  std::unique_ptr<SharedImageRepresentationOverlay> ProduceOverlay(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker) override;
 
  private:
   friend class SharedImageRepresentationGLTextureScopedHardwareBufferFenceSync;

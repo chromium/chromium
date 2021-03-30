@@ -24,6 +24,8 @@ RankingItemType RankingItemTypeFromSearchResult(
     case ash::AppListSearchResultType::kOmnibox:
       return RankingItemType::kOmniboxGeneric;
     case ash::AppListSearchResultType::kLauncher:
+    case ash::AppListSearchResultType::kFileSearch:
+    case ash::AppListSearchResultType::kDriveSearch:
       return RankingItemType::kFile;
     case ash::AppListSearchResultType::kUnknown:
     case ash::AppListSearchResultType::kPlayStoreApp:
@@ -42,11 +44,11 @@ RankingItemType RankingItemTypeFromSearchResult(
       return RankingItemType::kArcAppShortcut;
     case ash::AppListSearchResultType::kZeroStateFile:
       return RankingItemType::kZeroStateFile;
-    case ash::AppListSearchResultType::kDriveQuickAccess:
+    case ash::AppListSearchResultType::kZeroStateDrive:
       return RankingItemType::kDriveQuickAccess;
     case ash::AppListSearchResultType::kFileChip:
       return RankingItemType::kZeroStateFileChip;
-    case ash::AppListSearchResultType::kDriveQuickAccessChip:
+    case ash::AppListSearchResultType::kDriveChip:
       return RankingItemType::kDriveQuickAccessChip;
   }
 }

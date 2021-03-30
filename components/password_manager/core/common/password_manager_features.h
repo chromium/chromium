@@ -21,21 +21,24 @@ extern const base::Feature kBiometricTouchToFill;
 extern const base::Feature kChangePasswordAffiliationInfo;
 extern const base::Feature kEditPasswordsInSettings;
 extern const base::Feature kDetectFormSubmissionOnFormClear;
+extern const base::Feature kEnableManualPasswordGeneration;
 extern const base::Feature kEnableMovingMultiplePasswordsToAccount;
 extern const base::Feature kEnableOverwritingPlaceholderUsernames;
 extern const base::Feature kEnablePasswordsAccountStorage;
 extern const base::Feature KEnablePasswordGenerationForClearTextFields;
+extern const base::Feature kFillingAcrossAffiliatedWebsites;
 extern const base::Feature kFillingPasswordsFromAnyOrigin;
 extern const base::Feature kFillOnAccountSelect;
+extern const base::Feature kInferConfirmationPasswordField;
 extern const base::Feature kPasswordChange;
 extern const base::Feature kPasswordChangeInSettings;
 extern const base::Feature kPasswordImport;
 extern const base::Feature kPasswordReuseDetectionEnabled;
 extern const base::Feature kPasswordScriptsFetching;
-extern const base::Feature kPasswordsWeaknessCheck;
 extern const base::Feature kRecoverFromNeverSaveAndroid;
 extern const base::Feature kReparseServerPredictionsFollowingFormChange;
 extern const base::Feature kSecondaryServerFieldPredictions;
+extern const base::Feature kSyncingCompromisedCredentials;
 extern const base::Feature kTreatNewPasswordHeuristicsAsReliable;
 extern const base::Feature kUseOfHashAffiliationFetcher;
 extern const base::Feature kUsernameFirstFlow;
@@ -57,9 +60,13 @@ extern const char
     kPasswordChangeWithForcedDialogAfterEverySuccessfulSubmission[];
 extern const char kPasswordChangeInSettingsWithForcedWarningForEverySite[];
 
-// |kEnablePasswordAccountStorage| variations.
+// |kEnablePasswordsAccountStorage| variations.
 extern const char kMaxMoveToAccountOffersForNonOptedInUser[];
 extern const int kMaxMoveToAccountOffersForNonOptedInUserDefaultValue;
+extern const char kSaveToProfileStoreByDefault[];
+extern const bool kSaveToProfileStoreByDefaultDefaultValue;
+extern const char kSaveToAccountStoreOnOptIn[];
+extern const bool kSaveToAccountStoreOnOptInDefaultValue;
 
 }  // namespace features
 

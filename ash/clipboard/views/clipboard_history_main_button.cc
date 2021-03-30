@@ -30,6 +30,7 @@ ClipboardHistoryMainButton::ClipboardHistoryMainButton(
       container_(container) {
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   SetInkDropMode(views::InkDropHostView::InkDropMode::ON);
+  SetID(ClipboardHistoryUtil::kMainButtonViewID);
 
   // Let the parent handle accessibility features.
   GetViewAccessibility().OverrideIsIgnored(/*value=*/true);
@@ -66,6 +67,13 @@ std::unique_ptr<views::InkDrop> ClipboardHistoryMainButton::CreateInkDrop() {
   ink_drop->SetShowHighlightOnHover(false);
 
   return ink_drop;
+}
+
+void ClipboardHistoryMainButton::OnClickCanceled(const ui::Event& event) {
+  DCHECK(event.IsMouseEvent());
+
+  container_->OnMouseClickOnDescendantCanceled();
+  views::Button::OnClickCanceled(event);
 }
 
 void ClipboardHistoryMainButton::OnThemeChanged() {

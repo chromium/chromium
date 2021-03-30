@@ -5,121 +5,30 @@
 #ifndef MEDIA_BASE_BIND_TO_CURRENT_LOOP_H_
 #define MEDIA_BASE_BIND_TO_CURRENT_LOOP_H_
 
-#include <memory>
-
-#include "base/bind.h"
+#include "base/bind_post_task.h"
+#include "base/callback.h"
 #include "base/location.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 
-// This is a helper utility for binding a OnceCallback or RepeatingCallback to a
-// given TaskRunner. The typical use is when |a| (of class |A|) wants to hand a
-// callback such as base::BindOnce(&A::AMethod, a) to |b|, but needs to ensure
-// that when |b| executes the callback, it does so on |a|'s task_runner's
-// MessageLoop.
-//
-// Typical usage: request to be called back on the current thread:
-// other->StartAsyncProcessAndCallMeBack(
-//    media::BindToLoop(task_runner, base::BindOnce(&MyClass::MyMethod, this)));
-//
-// media::BindToLoop returns the same type of callback to the given
-// callback. I.e. it returns a RepeatingCallback for a given RepeatingCallback,
-// and returns OnceCallback for a given OnceCallback.
-//
-// The function BindToCurrentLoop is shorthand to bind to the calling function's
-// current MessageLoop.
+// Helpers for using base::BindPostTask() with the TaskRunner for the current
+// sequence, ie. base::SequencedTaskRunnerHandle::Get().
 
 namespace media {
-namespace internal {
-
-template <typename Signature, typename... Args>
-base::OnceClosure MakeClosure(base::RepeatingCallback<Signature>* callback,
-                              Args&&... args) {
-  return base::BindOnce(*callback, std::forward<Args>(args)...);
-}
-
-template <typename Signature, typename... Args>
-base::OnceClosure MakeClosure(base::OnceCallback<Signature>* callback,
-                              Args&&... args) {
-  return base::BindOnce(std::move(*callback), std::forward<Args>(args)...);
-}
-
-template <typename CallbackType>
-class TrampolineHelper {
- public:
-  TrampolineHelper(const base::Location& posted_from,
-                   scoped_refptr<base::SequencedTaskRunner> task_runner,
-                   CallbackType callback)
-      : posted_from_(posted_from),
-        task_runner_(std::move(task_runner)),
-        callback_(std::move(callback)) {
-    DCHECK(task_runner_);
-    DCHECK(callback_);
-  }
-
-  template <typename... Args>
-  void Run(Args... args) {
-    // MakeClosure consumes |callback_| if it's OnceCallback.
-    task_runner_->PostTask(
-        posted_from_, MakeClosure(&callback_, std::forward<Args>(args)...));
-  }
-
-  ~TrampolineHelper() {
-    if (callback_) {
-      task_runner_->PostTask(
-          posted_from_,
-          base::BindOnce(&TrampolineHelper::ClearCallbackOnTargetTaskRunner,
-                         std::move(callback_)));
-    }
-  }
-
- private:
-  static void ClearCallbackOnTargetTaskRunner(CallbackType) {}
-
-  base::Location posted_from_;
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  CallbackType callback_;
-};
-
-}  // namespace internal
-
-template <typename... Args>
-inline base::RepeatingCallback<void(Args...)> BindToLoop(
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
-    base::RepeatingCallback<void(Args...)> cb) {
-  using CallbackType = base::RepeatingCallback<void(Args...)>;
-  using Helper = internal::TrampolineHelper<CallbackType>;
-  using RunnerType = void (Helper::*)(Args...);
-  RunnerType run = &Helper::Run;
-  // TODO(tzik): Propagate FROM_HERE from the caller.
-  return base::BindRepeating(
-      run, std::make_unique<Helper>(FROM_HERE, task_runner, std::move(cb)));
-}
-
-template <typename... Args>
-inline base::OnceCallback<void(Args...)> BindToLoop(
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
-    base::OnceCallback<void(Args...)> cb) {
-  using CallbackType = base::OnceCallback<void(Args...)>;
-  using Helper = internal::TrampolineHelper<CallbackType>;
-  using RunnerType = void (Helper::*)(Args...);
-  RunnerType run = &Helper::Run;
-  // TODO(tzik): Propagate FROM_HERE from the caller.
-  return base::BindOnce(
-      run, std::make_unique<Helper>(FROM_HERE, task_runner, std::move(cb)));
-}
 
 template <typename... Args>
 inline base::RepeatingCallback<void(Args...)> BindToCurrentLoop(
-    base::RepeatingCallback<void(Args...)> cb) {
-  return BindToLoop(base::SequencedTaskRunnerHandle::Get(), std::move(cb));
+    base::RepeatingCallback<void(Args...)> cb,
+    const base::Location& location = FROM_HERE) {
+  return base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+                            std::move(cb), location);
 }
 
 template <typename... Args>
 inline base::OnceCallback<void(Args...)> BindToCurrentLoop(
-    base::OnceCallback<void(Args...)> cb) {
-  return BindToLoop(base::SequencedTaskRunnerHandle::Get(), std::move(cb));
+    base::OnceCallback<void(Args...)> cb,
+    const base::Location& location = FROM_HERE) {
+  return base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+                            std::move(cb), location);
 }
 
 }  // namespace media

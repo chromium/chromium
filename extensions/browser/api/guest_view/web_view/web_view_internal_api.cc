@@ -27,6 +27,7 @@
 #include "extensions/common/api/web_view_internal.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/script_constants.h"
 #include "extensions/common/user_script.h"
@@ -84,17 +85,21 @@ uint32_t MaskForKey(const char* key) {
   return 0;
 }
 
-HostID GenerateHostIDFromEmbedder(const extensions::Extension* extension,
-                                  content::WebContents* web_contents) {
-  if (extension)
-    return HostID(HostID::EXTENSIONS, extension->id());
+extensions::mojom::HostID GenerateHostIDFromEmbedder(
+    const extensions::Extension* extension,
+    content::WebContents* web_contents) {
+  if (extension) {
+    return extensions::mojom::HostID(
+        extensions::mojom::HostID::HostType::kExtensions, extension->id());
+  }
 
   if (web_contents && web_contents->GetWebUI()) {
     const GURL& url = web_contents->GetSiteInstance()->GetSiteURL();
-    return HostID(HostID::WEBUI, url.spec());
+    return extensions::mojom::HostID(
+        extensions::mojom::HostID::HostType::kWebUi, url.spec());
   }
   NOTREACHED();
-  return HostID();
+  return extensions::mojom::HostID();
 }
 
 // Creates content script files when parsing InjectionItems of "js" or "css"
@@ -176,17 +181,18 @@ std::unique_ptr<extensions::UserScript> ParseContentScript(
   }
   // run_at:
   if (script_value.run_at) {
-    UserScript::RunLocation run_at = UserScript::UNDEFINED;
+    extensions::mojom::RunLocation run_at =
+        extensions::mojom::RunLocation::kUndefined;
     switch (script_value.run_at) {
       case extensions::api::extension_types::RUN_AT_NONE:
       case extensions::api::extension_types::RUN_AT_DOCUMENT_IDLE:
-        run_at = UserScript::DOCUMENT_IDLE;
+        run_at = extensions::mojom::RunLocation::kDocumentIdle;
         break;
       case extensions::api::extension_types::RUN_AT_DOCUMENT_START:
-        run_at = UserScript::DOCUMENT_START;
+        run_at = extensions::mojom::RunLocation::kDocumentStart;
         break;
       case extensions::api::extension_types::RUN_AT_DOCUMENT_END:
-        run_at = UserScript::DOCUMENT_END;
+        run_at = extensions::mojom::RunLocation::kDocumentEnd;
         break;
     }
     // The default for run_at is RUN_AT_DOCUMENT_IDLE.
@@ -236,7 +242,7 @@ std::unique_ptr<extensions::UserScript> ParseContentScript(
 std::unique_ptr<extensions::UserScriptList> ParseContentScripts(
     const std::vector<ContentScriptDetails>& content_script_list,
     const extensions::Extension* extension,
-    const HostID& host_id,
+    const extensions::mojom::HostID& host_id,
     bool incognito_enabled,
     const GURL& owner_base_url,
     std::string* error) {
@@ -413,14 +419,16 @@ ExecuteCodeFunction::InitResult WebViewInternalExecuteCodeFunction::Init() {
   details_ = std::move(details);
 
   if (extension()) {
-    set_host_id(HostID(HostID::EXTENSIONS, extension()->id()));
+    set_host_id(extensions::mojom::HostID(
+        extensions::mojom::HostID::HostType::kExtensions, extension()->id()));
     return set_init_result(SUCCESS);
   }
 
   WebContents* web_contents = GetSenderWebContents();
   if (web_contents && web_contents->GetWebUI()) {
     const GURL& url = render_frame_host()->GetSiteInstance()->GetSiteURL();
-    set_host_id(HostID(HostID::WEBUI, url.spec()));
+    set_host_id(extensions::mojom::HostID(
+        extensions::mojom::HostID::HostType::kWebUi, url.spec()));
     return set_init_result(SUCCESS);
   }
   return set_init_result_error("");  // TODO(lazyboy): error?
@@ -462,7 +470,7 @@ bool WebViewInternalExecuteCodeFunction::LoadFileForWebUI(
     WebUIURLFetcher::WebUILoadFileCallback callback) {
   WebViewGuest* guest =
       WebViewGuest::From(source_process_id(), guest_instance_id_);
-  if (!guest || host_id().type() != HostID::WEBUI)
+  if (!guest || host_id().type != mojom::HostID::HostType::kWebUi)
     return false;
 
   GURL owner_base_url(guest->GetOwnerSiteURL().GetWithEmptyPath());
@@ -521,7 +529,8 @@ WebViewInternalAddContentScriptsFunction::Run() {
   GURL owner_base_url(
       render_frame_host()->GetSiteInstance()->GetSiteURL().GetWithEmptyPath());
   content::WebContents* sender_web_contents = GetSenderWebContents();
-  HostID host_id = GenerateHostIDFromEmbedder(extension(), sender_web_contents);
+  extensions::mojom::HostID host_id =
+      GenerateHostIDFromEmbedder(extension(), sender_web_contents);
   bool incognito_enabled = browser_context()->IsOffTheRecord();
 
   std::string error;
@@ -563,7 +572,8 @@ WebViewInternalRemoveContentScriptsFunction::Run() {
   DCHECK(manager);
 
   content::WebContents* sender_web_contents = GetSenderWebContents();
-  HostID host_id = GenerateHostIDFromEmbedder(extension(), sender_web_contents);
+  extensions::mojom::HostID host_id =
+      GenerateHostIDFromEmbedder(extension(), sender_web_contents);
 
   std::vector<std::string> script_name_list;
   if (params->script_name_list)
@@ -727,7 +737,7 @@ ExtensionFunction::ResponseAction WebViewInternalFindFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   // Convert the std::string search_text to string16.
-  base::string16 search_text;
+  std::u16string search_text;
   base::UTF8ToUTF16(
       params->search_text.c_str(), params->search_text.length(), &search_text);
 
@@ -861,7 +871,7 @@ ExtensionFunction::ResponseAction WebViewInternalSetPermissionFunction::Run() {
     user_input = *params->user_input;
 
   WebViewPermissionHelper* web_view_permission_helper =
-      WebViewPermissionHelper::FromWebContents(guest_->web_contents());
+      guest_->web_view_permission_helper();
 
   WebViewPermissionHelper::SetPermissionResult result =
       web_view_permission_helper->SetPermission(

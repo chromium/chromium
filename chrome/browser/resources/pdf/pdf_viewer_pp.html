@@ -4,12 +4,24 @@
     visibility: hidden;
     z-index: 2;
   }
+
+  @media(max-height: 200px) {
+    viewer-zoom-toolbar {
+      display: none;
+    }
+  }
+
+  @media(max-width: 300px) {
+    viewer-zoom-toolbar {
+      display: none;
+    }
+  }
 </style>
 
 <div id="sizer"></div>
 
 <viewer-zoom-toolbar id="zoom-toolbar"
-    on-fit-to-changed="onFitToChanged" is-print-preview
+    on-fit-to-changed="onFitToChanged"
     on-zoom-in="onZoomIn" on-zoom-out="onZoomOut">
 </viewer-zoom-toolbar>
 

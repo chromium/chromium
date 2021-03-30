@@ -43,6 +43,7 @@ UtilitySandboxedProcessLauncherDelegate::
       sandbox_type_ == sandbox::policy::SandboxType::kUtility ||
       sandbox_type_ == sandbox::policy::SandboxType::kNetwork ||
       sandbox_type_ == sandbox::policy::SandboxType::kCdm ||
+      sandbox_type_ == sandbox::policy::SandboxType::kPrintBackend ||
       sandbox_type_ == sandbox::policy::SandboxType::kPrintCompositor ||
       sandbox_type_ == sandbox::policy::SandboxType::kPpapi ||
       sandbox_type_ == sandbox::policy::SandboxType::kVideoCapture ||
@@ -73,12 +74,6 @@ base::EnvironmentMap UtilitySandboxedProcessLauncherDelegate::GetEnvironment() {
 }
 #endif  // OS_POSIX
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
-bool UtilitySandboxedProcessLauncherDelegate::LaunchX86_64() {
-  return launch_x86_64_;
-}
-#endif  // OS_MAC && ARCH_CPU_ARM64
-
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
 ZygoteHandle UtilitySandboxedProcessLauncherDelegate::GetZygote() {
   // If the sandbox has been disabled for a given type, don't use a zygote.
@@ -94,6 +89,7 @@ ZygoteHandle UtilitySandboxedProcessLauncherDelegate::GetZygote() {
       sandbox_type_ == sandbox::policy::SandboxType::kTts ||
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       sandbox_type_ == sandbox::policy::SandboxType::kAudio ||
+      sandbox_type_ == sandbox::policy::SandboxType::kPrintBackend ||
       sandbox_type_ == sandbox::policy::SandboxType::kSpeechRecognition) {
     return GetUnsandboxedZygote();
   }

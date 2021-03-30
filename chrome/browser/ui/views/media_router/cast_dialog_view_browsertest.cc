@@ -16,7 +16,7 @@ namespace {
 media_router::UIMediaSink CreateAvailableSink() {
   media_router::UIMediaSink sink;
   sink.id = "sink_available";
-  sink.friendly_name = base::UTF8ToUTF16("TestAvailableSink");
+  sink.friendly_name = u"TestAvailableSink";
   sink.state = media_router::UIMediaSinkState::AVAILABLE;
   sink.cast_modes = {media_router::TAB_MIRROR, media_router::DESKTOP_MIRROR};
   return sink;
@@ -25,7 +25,7 @@ media_router::UIMediaSink CreateAvailableSink() {
 media_router::UIMediaSink CreateConnectedSink() {
   media_router::UIMediaSink sink;
   sink.id = "sink_connected";
-  sink.friendly_name = base::UTF8ToUTF16("TestConnectedSink");
+  sink.friendly_name = u"TestConnectedSink";
   sink.state = media_router::UIMediaSinkState::CONNECTED;
   sink.cast_modes = {media_router::TAB_MIRROR, media_router::DESKTOP_MIRROR};
   sink.route = media_router::MediaRoute(
@@ -37,7 +37,7 @@ media_router::UIMediaSink CreateConnectedSink() {
 media_router::UIMediaSink CreateUnavailableSink() {
   media_router::UIMediaSink sink;
   sink.id = "sink_unavailable";
-  sink.friendly_name = base::UTF8ToUTF16("TestUnavailableSink");
+  sink.friendly_name = u"TestUnavailableSink";
   sink.state = media_router::UIMediaSinkState::UNAVAILABLE;
   sink.cast_modes = {media_router::TAB_MIRROR, media_router::DESKTOP_MIRROR};
   return sink;
@@ -46,7 +46,7 @@ media_router::UIMediaSink CreateUnavailableSink() {
 media_router::CastDialogModel CreateModelWithSinks(
     std::vector<media_router::UIMediaSink> sinks) {
   media_router::CastDialogModel model;
-  model.set_dialog_header(base::UTF8ToUTF16("Dialog header"));
+  model.set_dialog_header(u"Dialog header");
   model.set_media_sinks(std::move(sinks));
   return model;
 }

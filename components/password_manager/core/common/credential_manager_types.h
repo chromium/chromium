@@ -13,7 +13,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -45,10 +44,10 @@ std::ostream& operator<<(std::ostream& os, CredentialType value);
 struct CredentialInfo {
   CredentialInfo();
   CredentialInfo(CredentialType type,
-                 base::Optional<base::string16> id,
-                 base::Optional<base::string16> name,
+                 base::Optional<std::u16string> id,
+                 base::Optional<std::u16string> name,
                  GURL icon,
-                 base::Optional<base::string16> password,
+                 base::Optional<std::u16string> password,
                  url::Origin federation);
 
   CredentialInfo(const CredentialInfo& other);
@@ -60,18 +59,18 @@ struct CredentialInfo {
 
   // An identifier (username, email address, etc). Corresponds to
   // WebCredential's id property.
-  base::Optional<base::string16> id;
+  base::Optional<std::u16string> id;
 
   // An user-friendly name ("Jane Doe"). Corresponds to WebCredential's name
   // property.
-  base::Optional<base::string16> name;
+  base::Optional<std::u16string> name;
 
   // The address of this credential's icon (e.g. the user's avatar).
   // Corresponds to WebCredential's icon property.
   GURL icon;
 
   // Corresponds to WebPasswordCredential's password property.
-  base::Optional<base::string16> password;
+  base::Optional<std::u16string> password;
 
   // Corresponds to WebFederatedCredential's provider property.
   url::Origin federation;

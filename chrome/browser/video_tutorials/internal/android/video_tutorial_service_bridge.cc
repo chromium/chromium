@@ -98,6 +98,16 @@ VideoTutorialServiceBridge::GetSupportedLanguages(
       env, video_tutorial_service_->GetSupportedLanguages());
 }
 
+ScopedJavaLocalRef<jobjectArray>
+VideoTutorialServiceBridge::GetAvailableLanguagesForTutorial(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jcaller,
+    jint j_feature) {
+  return base::android::ToJavaArrayOfStrings(
+      env, video_tutorial_service_->GetAvailableLanguagesForTutorial(
+               static_cast<FeatureType>(j_feature)));
+}
+
 ScopedJavaLocalRef<jstring> VideoTutorialServiceBridge::GetPreferredLocale(
     JNIEnv* env,
     const JavaParamRef<jobject>& jcaller) {

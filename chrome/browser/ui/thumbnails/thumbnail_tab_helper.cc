@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
 
+#include <stdint.h>
 #include <algorithm>
 #include <set>
 #include <utility>
@@ -12,6 +13,7 @@
 #include "base/check_op.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/optional.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -138,7 +140,7 @@ class ThumbnailTabHelper::TabStateTracker
   }
 
  private:
-  using PageReadiness = ThumbnailReadinessTracker::Readiness;
+  using CaptureReadinesss = ThumbnailImage::CaptureReadiness;
 
   // ThumbnailCaptureDriver::Client:
   void RequestCapture() override {
@@ -164,7 +166,7 @@ class ThumbnailTabHelper::TabStateTracker
 
     visible_ = new_visible;
     capture_driver_.UpdatePageVisibility(visible_);
-    if (!visible_ && page_readiness_ != PageReadiness::kNotReady)
+    if (!visible_ && page_readiness_ != CaptureReadinesss::kNotReady)
       thumbnail_tab_helper_->CaptureThumbnailOnTabHidden();
   }
 
@@ -183,12 +185,16 @@ class ThumbnailTabHelper::TabStateTracker
       web_contents()->GetController().LoadIfNecessary();
   }
 
-  void PageReadinessChanged(PageReadiness readiness) {
+  ThumbnailImage::CaptureReadiness GetCaptureReadiness() const override {
+    return page_readiness_;
+  }
+
+  void PageReadinessChanged(CaptureReadinesss readiness) {
     if (page_readiness_ == readiness)
       return;
     // If we transition back to a kNotReady state, clear any existing thumbnail,
     // as it will contain an old snapshot, possibly from a different domain.
-    if (readiness == PageReadiness::kNotReady)
+    if (readiness == CaptureReadinesss::kNotReady)
       thumbnail_tab_helper_->ClearData();
     page_readiness_ = readiness;
     capture_driver_.UpdatePageReadiness(readiness);
@@ -204,7 +210,7 @@ class ThumbnailTabHelper::TabStateTracker
   bool visible_ = false;
 
   // Where we are in the page lifecycle.
-  PageReadiness page_readiness_ = PageReadiness::kNotReady;
+  CaptureReadinesss page_readiness_ = CaptureReadinesss::kNotReady;
 
   // Scoped request for video capture. Ensures we always decrement the counter
   // once per increment.
@@ -217,9 +223,9 @@ ThumbnailTabHelper::ThumbnailTabHelper(content::WebContents* contents)
     : state_(std::make_unique<TabStateTracker>(this, contents)),
       background_capturer_(std::make_unique<BackgroundThumbnailVideoCapturer>(
           contents,
-          base::BindRepeating(&ThumbnailTabHelper::StoreThumbnail,
-                              base::Unretained(this),
-                              CaptureType::kVideoFrame))),
+          base::BindRepeating(
+              &ThumbnailTabHelper::StoreThumbnailForBackgroundCapture,
+              base::Unretained(this)))),
       thumbnail_(base::MakeRefCounted<ThumbnailImage>(state_.get())) {}
 
 ThumbnailTabHelper::~ThumbnailTabHelper() {
@@ -274,11 +280,18 @@ void ThumbnailTabHelper::StoreThumbnailForTabSwitch(base::TimeTicks start_time,
                              base::TimeTicks::Now() - start_time,
                              base::TimeDelta::FromMilliseconds(1),
                              base::TimeDelta::FromSeconds(1), 50);
-  StoreThumbnail(CaptureType::kCopyFromView, bitmap);
+  StoreThumbnail(CaptureType::kCopyFromView, bitmap, base::nullopt);
+}
+
+void ThumbnailTabHelper::StoreThumbnailForBackgroundCapture(
+    const SkBitmap& bitmap,
+    uint64_t frame_id) {
+  StoreThumbnail(CaptureType::kVideoFrame, bitmap, frame_id);
 }
 
 void ThumbnailTabHelper::StoreThumbnail(CaptureType type,
-                                        const SkBitmap& bitmap) {
+                                        const SkBitmap& bitmap,
+                                        base::Optional<uint64_t> frame_id) {
   // Failed requests will return an empty bitmap. In tests this can be triggered
   // on threads other than the UI thread.
   if (bitmap.drawsNothing())
@@ -288,7 +301,7 @@ void ThumbnailTabHelper::StoreThumbnail(CaptureType type,
 
   RecordCaptureType(type);
   state_->OnFrameCaptured(type);
-  thumbnail_->AssignSkBitmap(bitmap);
+  thumbnail_->AssignSkBitmap(bitmap, frame_id);
 }
 
 void ThumbnailTabHelper::ClearData() {

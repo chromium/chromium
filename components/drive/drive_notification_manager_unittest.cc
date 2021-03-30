@@ -16,7 +16,7 @@ namespace drive {
 
 namespace {
 
-const syncer::Topic kDefaultCorpusTopic = "Drive";
+const invalidation::Topic kDefaultCorpusTopic = "Drive";
 
 struct ShutdownHelper {
   template <typename T>
@@ -30,7 +30,7 @@ struct ShutdownHelper {
 
 class FakeDriveNotificationObserver : public DriveNotificationObserver {
  public:
-  ~FakeDriveNotificationObserver() override {}
+  ~FakeDriveNotificationObserver() override = default;
 
   // DriveNotificationObserver overrides
   void OnNotificationReceived(
@@ -50,7 +50,7 @@ class FakeDriveNotificationObserver : public DriveNotificationObserver {
   std::map<std::string, int64_t> notification_ids_;
 };
 
-syncer::Topic CreateTeamDriveInvalidationTopic(
+invalidation::Topic CreateTeamDriveInvalidationTopic(
     const std::string& team_drive_id) {
   return base::StrCat({"team-drive-", team_drive_id});
 }
@@ -94,12 +94,12 @@ TEST_F(DriveNotificationManagerTest, RegisterTeamDrives) {
   auto subscribed_topics = fake_invalidation_service_->invalidator_registrar()
                                .GetAllSubscribedTopics();
 
-  // TODO(crbug.com/1029698): replace syncer::Topics with syncer::TopicSet once
-  // |is_public| become the part of dedicated syncer::Topic struct. This should
-  // simplify this test.
-  syncer::Topics expected_topics;
+  // TODO(crbug.com/1029698): replace invalidation::Topics with
+  // invalidation::TopicSet once |is_public| become the part of dedicated
+  // invalidation::Topic struct. This should simplify this test.
+  invalidation::Topics expected_topics;
   expected_topics.emplace(kDefaultCorpusTopic,
-                          syncer::TopicMetadata{/*is_public=*/false});
+                          invalidation::TopicMetadata{/*is_public=*/false});
   EXPECT_EQ(expected_topics, subscribed_topics);
 
   const std::string team_drive_id_1 = "td_id_1";
@@ -112,7 +112,7 @@ TEST_F(DriveNotificationManagerTest, RegisterTeamDrives) {
                           .GetAllSubscribedTopics();
 
   expected_topics.emplace(team_drive_1_topic,
-                          syncer::TopicMetadata{/*is_public=*/true});
+                          invalidation::TopicMetadata{/*is_public=*/true});
   EXPECT_EQ(expected_topics, subscribed_topics);
 
   // Remove the team drive.
@@ -134,9 +134,9 @@ TEST_F(DriveNotificationManagerTest, RegisterTeamDrives) {
                           .GetAllSubscribedTopics();
 
   expected_topics.emplace(team_drive_1_topic,
-                          syncer::TopicMetadata{/*is_public=*/true});
+                          invalidation::TopicMetadata{/*is_public=*/true});
   expected_topics.emplace(team_drive_2_topic,
-                          syncer::TopicMetadata{/*is_public=*/true});
+                          invalidation::TopicMetadata{/*is_public=*/true});
   EXPECT_EQ(expected_topics, subscribed_topics);
 
   // Remove the first team drive.
@@ -162,7 +162,7 @@ TEST_F(DriveNotificationManagerTest, TestBatchInvalidation) {
   // Emitting an invalidation should not call our observer until the timer
   // expires.
   fake_invalidation_service_->EmitInvalidationForTest(
-      syncer::Invalidation::InitUnknownVersion(kDefaultCorpusTopic));
+      invalidation::Invalidation::InitUnknownVersion(kDefaultCorpusTopic));
   EXPECT_TRUE(drive_notification_observer_->GetNotificationIds().empty());
 
   task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(30));
@@ -181,7 +181,7 @@ TEST_F(DriveNotificationManagerTest, TestBatchInvalidation) {
   // Emit invalidation for default corpus, should not emit a team drive
   // invalidation.
   fake_invalidation_service_->EmitInvalidationForTest(
-      syncer::Invalidation::Init(kDefaultCorpusTopic, 1, ""));
+      invalidation::Invalidation::Init(kDefaultCorpusTopic, 1, ""));
   EXPECT_TRUE(drive_notification_observer_->GetNotificationIds().empty());
 
   task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(30));
@@ -193,7 +193,7 @@ TEST_F(DriveNotificationManagerTest, TestBatchInvalidation) {
 
   // Emit team drive invalidation
   fake_invalidation_service_->EmitInvalidationForTest(
-      syncer::Invalidation::Init(team_drive_1_topic, 2, ""));
+      invalidation::Invalidation::Init(team_drive_1_topic, 2, ""));
   EXPECT_TRUE(drive_notification_observer_->GetNotificationIds().empty());
 
   task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(30));
@@ -203,17 +203,17 @@ TEST_F(DriveNotificationManagerTest, TestBatchInvalidation) {
 
   // Emit both default corpus and team drive.
   fake_invalidation_service_->EmitInvalidationForTest(
-      syncer::Invalidation::Init(kDefaultCorpusTopic, 1, ""));
+      invalidation::Invalidation::Init(kDefaultCorpusTopic, 1, ""));
   fake_invalidation_service_->EmitInvalidationForTest(
-      syncer::Invalidation::Init(team_drive_1_topic, 2, ""));
+      invalidation::Invalidation::Init(team_drive_1_topic, 2, ""));
 
   // Emit with an earlier version. This should be ignored.
   fake_invalidation_service_->EmitInvalidationForTest(
-      syncer::Invalidation::Init(kDefaultCorpusTopic, 0, ""));
+      invalidation::Invalidation::Init(kDefaultCorpusTopic, 0, ""));
 
   // Emit without a version. This should be ignored too.
   fake_invalidation_service_->EmitInvalidationForTest(
-      syncer::Invalidation::InitUnknownVersion(kDefaultCorpusTopic));
+      invalidation::Invalidation::InitUnknownVersion(kDefaultCorpusTopic));
 
   EXPECT_TRUE(drive_notification_observer_->GetNotificationIds().empty());
 
@@ -228,11 +228,12 @@ TEST_F(DriveNotificationManagerTest, UnregisterOnNoObservers) {
   auto subscribed_topics = fake_invalidation_service_->invalidator_registrar()
                                .GetAllSubscribedTopics();
 
-  // TODO(crbug.com/1029698): replace syncer::Topics with syncer::TopicSet once
-  // |is_public| become the part of dedicated syncer::Topic struct.
-  syncer::Topics expected_topics;
+  // TODO(crbug.com/1029698): replace invalidation::Topics with
+  // invalidation::TopicSet once |is_public| become the part of dedicated
+  // invalidation::Topic struct.
+  invalidation::Topics expected_topics;
   expected_topics.emplace(kDefaultCorpusTopic,
-                          syncer::TopicMetadata{/*is_public=*/false});
+                          invalidation::TopicMetadata{/*is_public=*/false});
   EXPECT_EQ(expected_topics, subscribed_topics);
 
   // Stop observing drive notification manager.
@@ -241,7 +242,7 @@ TEST_F(DriveNotificationManagerTest, UnregisterOnNoObservers) {
 
   subscribed_topics = fake_invalidation_service_->invalidator_registrar()
                           .GetAllSubscribedTopics();
-  EXPECT_EQ(syncer::Topics(), subscribed_topics);
+  EXPECT_EQ(invalidation::Topics(), subscribed_topics);
 
   // Start observing drive notification manager again. It should subscribe to
   // the previously subscried topics.

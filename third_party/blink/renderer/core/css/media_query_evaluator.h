@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+
 class LocalFrame;
 class MediaQuery;
 class MediaQueryExp;
@@ -40,7 +41,6 @@ class MediaQueryResult;
 class MediaQuerySet;
 class MediaQuerySetResult;
 class MediaValues;
-class MediaValuesInitialViewport;
 
 using MediaQueryResultList = Vector<MediaQueryResult>;
 
@@ -74,7 +74,6 @@ class CORE_EXPORT MediaQueryEvaluator final
   // values.
   explicit MediaQueryEvaluator(const MediaValues&);
 
-  explicit MediaQueryEvaluator(MediaValuesInitialViewport*);
   MediaQueryEvaluator(const MediaQueryEvaluator&) = delete;
   MediaQueryEvaluator& operator=(const MediaQueryEvaluator&) = delete;
 

@@ -12,21 +12,12 @@
 
 namespace leveldb_proto {
 
-namespace {
-const char kTestClientName[] = "TestDatabase1";
-}
 
 class SharedProtoDatabaseClientListTest : public testing::Test {
  public:
-  void SetUpExperimentParam(std::string key, std::string value) {
-    std::map<std::string, std::string> params = {
-        {"migrate_TestDatabase0", "true"},
-        {"migrate_" + key, value},
-        {"migrate_TestDatabase2", "false"},
-    };
-
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        kProtoDBSharedMigration, params);
+  void SetUpExperiment(bool isExperimentOn) {
+    scoped_feature_list_.InitWithFeatureState(kProtoDBSharedMigration,
+                                              isExperimentOn);
   }
 
  private:
@@ -34,8 +25,8 @@ class SharedProtoDatabaseClientListTest : public testing::Test {
 };
 
 TEST_F(SharedProtoDatabaseClientListTest, ShouldUseSharedDBTest) {
-  // Parameter value is case sensitive
-  SetUpExperimentParam(kTestClientName, "true");
+  // Set experiment to use Shared DB.
+  SetUpExperiment(true);
 
   bool use_shared = SharedProtoDatabaseClientList::ShouldUseSharedDB(
       ProtoDbType::TEST_DATABASE1);
@@ -44,8 +35,9 @@ TEST_F(SharedProtoDatabaseClientListTest, ShouldUseSharedDBTest) {
 }
 
 TEST_F(SharedProtoDatabaseClientListTest,
-       ShouldUseSharedDBTest_OnlyWhenParamMatchesName) {
-  SetUpExperimentParam("TestDatabase10", "true");
+       ShouldUseSharedDBTest_OnlyWhenExperimentIsOn) {
+  // Set experiment to use Unique DB.
+  SetUpExperiment(false);
 
   bool use_shared = SharedProtoDatabaseClientList::ShouldUseSharedDB(
       ProtoDbType::TEST_DATABASE1);
@@ -54,11 +46,13 @@ TEST_F(SharedProtoDatabaseClientListTest,
 }
 
 TEST_F(SharedProtoDatabaseClientListTest,
-       ShouldUseSharedDBTest_OnlyWhenParamValueIsTrue) {
-  SetUpExperimentParam(kTestClientName, "false");
+       ShouldUseSharedDBTest_ExceptIfDbIsBlocklisted) {
+  SetUpExperiment(true);
 
+  // GCM_KEY_STORE is blocklisted, it won't use a shared DB, regardless of
+  // experiment state.
   bool use_shared = SharedProtoDatabaseClientList::ShouldUseSharedDB(
-      ProtoDbType::TEST_DATABASE1);
+      ProtoDbType::GCM_KEY_STORE);
 
   ASSERT_FALSE(use_shared);
 }

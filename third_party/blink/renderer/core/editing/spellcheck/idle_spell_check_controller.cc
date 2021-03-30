@@ -228,8 +228,14 @@ void IdleSpellCheckController::ForceInvocationForTesting() {
   if (!IsSpellCheckingEnabled())
     return;
 
+  bool cross_origin_isolated_capability =
+      GetExecutionContext()
+          ? GetExecutionContext()->CrossOriginIsolatedCapability()
+          : false;
+
   auto* deadline = MakeGarbageCollected<IdleDeadline>(
       base::TimeTicks::Now() + kIdleSpellcheckTestTimeout,
+      cross_origin_isolated_capability,
       IdleDeadline::CallbackType::kCalledWhenIdle);
 
   switch (state_) {

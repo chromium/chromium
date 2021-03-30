@@ -75,6 +75,9 @@ class FakeSensorProvider : public mojom::SensorProvider {
     linear_acceleration_sensor_is_available_ =
         linear_acceleration_sensor_is_available;
   }
+  void set_gravity_sensor_is_available(bool gravity_sensor_is_available) {
+    gravity_sensor_is_available_ = gravity_sensor_is_available;
+  }
   void set_gyroscope_is_available(bool gyroscope_is_available) {
     gyroscope_is_available_ = gyroscope_is_available;
   }
@@ -92,6 +95,7 @@ class FakeSensorProvider : public mojom::SensorProvider {
   void SetAmbientLightSensorData(double value);
   void SetAccelerometerData(double x, double y, double z);
   void SetLinearAccelerationSensorData(double x, double y, double z);
+  void SetGravitySensorData(double x, double y, double z);
   void SetGyroscopeData(double x, double y, double z);
   void SetRelativeOrientationSensorData(double alpha,
                                         double beta,
@@ -107,6 +111,7 @@ class FakeSensorProvider : public mojom::SensorProvider {
   void UpdateAmbientLightSensorData(double value);
   void UpdateAccelerometerData(double x, double y, double z);
   void UpdateLinearAccelerationSensorData(double x, double y, double z);
+  void UpdateGravitySensorData(double x, double y, double z);
   void UpdateGyroscopeData(double x, double y, double z);
   void UpdateRelativeOrientationSensorData(double alpha,
                                            double beta,
@@ -125,6 +130,7 @@ class FakeSensorProvider : public mojom::SensorProvider {
   FakeSensor* ambient_light_sensor_ = nullptr;
   FakeSensor* accelerometer_ = nullptr;
   FakeSensor* linear_acceleration_sensor_ = nullptr;
+  FakeSensor* gravity_sensor_ = nullptr;
   FakeSensor* gyroscope_ = nullptr;
   FakeSensor* relative_orientation_sensor_ = nullptr;
   FakeSensor* absolute_orientation_sensor_ = nullptr;
@@ -132,12 +138,14 @@ class FakeSensorProvider : public mojom::SensorProvider {
   SensorReading ambient_light_sensor_reading_;
   SensorReading accelerometer_reading_;
   SensorReading linear_acceleration_sensor_reading_;
+  SensorReading gravity_sensor_reading_;
   SensorReading gyroscope_reading_;
   SensorReading relative_orientation_sensor_reading_;
   SensorReading absolute_orientation_sensor_reading_;
   bool ambient_light_sensor_is_available_ = true;
   bool accelerometer_is_available_ = true;
   bool linear_acceleration_sensor_is_available_ = true;
+  bool gravity_sensor_is_available_ = true;
   bool gyroscope_is_available_ = true;
   bool relative_orientation_sensor_is_available_ = true;
   bool absolute_orientation_sensor_is_available_ = true;

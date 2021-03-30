@@ -60,6 +60,7 @@
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_test_data.h"
 #include "device/fido/fido_types.h"
+#include "device/fido/filter.h"
 #include "device/fido/hid/fake_hid_impl_for_testing.h"
 #include "device/fido/large_blob.h"
 #include "device/fido/mock_fido_device.h"
@@ -88,6 +89,10 @@
 
 #if defined(OS_WIN)
 #include "device/fido/win/fake_webauthn_api.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/dbus/u2f/u2f_client.h"
 #endif
 
 namespace content {
@@ -419,7 +424,7 @@ url::Origin GetTestOrigin() {
 }
 
 std::string GetTestClientDataJSON(std::string type) {
-  return device::SerializeCollectedClientDataToJson(
+  return SerializeWebAuthnCollectedClientDataToJson(
       std::move(type), GetTestOrigin().Serialize(), GetTestChallengeBytes(),
       /*is_cross_origin=*/false);
 }
@@ -453,7 +458,20 @@ class AuthenticatorTestBase : public content::RenderViewHostTestHarness {
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    chromeos::U2FClient::InitializeFake();
+#endif
+
     ResetVirtualDevice();
+  }
+
+  void TearDown() override {
+    content::RenderViewHostTestHarness::TearDown();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    chromeos::U2FClient::Shutdown();
+#endif
   }
 
   void ResetVirtualDevice() {
@@ -636,7 +654,7 @@ TEST_F(AuthenticatorImplTest, ClientDataJSONSerialization) {
   // the returned value.
   std::vector<uint8_t> challenge_bytes = {1, 2, 3};
   EXPECT_TRUE(
-      device::SerializeCollectedClientDataToJson("t\x05ype", "ori\"gin",
+      SerializeWebAuthnCollectedClientDataToJson("t\x05ype", "ori\"gin",
                                                  challenge_bytes, false)
           .find("{\"type\":\"t\\u0005ype\",\"challenge\":\"AQID\",\"origin\":"
                 "\"ori\\\"gin\",\"crossOrigin\":false") == 0);
@@ -672,7 +690,7 @@ TEST_F(AuthenticatorImplTest, ClientDataJSONSerialization) {
   for (const auto& test : kTestCases) {
     SCOPED_TRACE(num++);
 
-    const std::string json = device::SerializeCollectedClientDataToJson(
+    const std::string json = SerializeWebAuthnCollectedClientDataToJson(
         test.type, test.origin, test.challenge, test.is_cross_origin);
 
     const auto parsed = base::JSONReader::Read(json);
@@ -839,11 +857,10 @@ TEST(ClientDataSerializationTest, Sign) {
 }
 
 TEST_F(AuthenticatorImplTest, TestMakeCredentialTimeout) {
-  // The VirtualFidoAuthenticator simulates a tap immediately after it gets the
-  // request. Replace by the real discovery that will wait until timeout.
-  AuthenticatorEnvironmentImpl::GetInstance()
-      ->ReplaceDefaultDiscoveryFactoryForTesting(
-          std::make_unique<device::FidoDiscoveryFactory>());
+  // Don't provide an authenticator tap so the request times out.
+  virtual_device_factory_->mutable_state()->simulate_press_callback =
+      base::BindLambdaForTesting(
+          [&](device::VirtualFidoDevice* device) { return false; });
   NavigateAndCommit(GURL(kTestOrigin1));
 
   PublicKeyCredentialCreationOptionsPtr options =
@@ -1571,7 +1588,6 @@ TEST_F(AuthenticatorImplTest, IsUVPAA) {
 #endif  // defined(OS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(crbug/1150681): Better testing, e.g. use a mock/fake u2fd proxy here.
 TEST_F(AuthenticatorImplTest, IsUVPAA) {
   NavigateAndCommit(GURL(kTestOrigin1));
   mojo::Remote<blink::mojom::Authenticator> authenticator =
@@ -1579,7 +1595,6 @@ TEST_F(AuthenticatorImplTest, IsUVPAA) {
   TestIsUvpaaCallback cb;
   authenticator->IsUserVerifyingPlatformAuthenticatorAvailable(cb.callback());
   cb.WaitForCallback();
-  // There's no u2fd DBus proxy in tests so not available.
   EXPECT_FALSE(cb.value());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -2320,6 +2335,7 @@ TEST_F(AuthenticatorContentBrowserClientTest,
 // behavior of the Touch ID platform authenticator.
 TEST_F(AuthenticatorContentBrowserClientTest,
        PlatformAuthenticatorAttestation) {
+  test_client_.is_uvpaa = true;
   virtual_device_factory_->SetSupportedProtocol(
       device::ProtocolVersion::kCtap2);
   virtual_device_factory_->SetTransport(
@@ -2343,22 +2359,11 @@ TEST_F(AuthenticatorContentBrowserClientTest,
           "",
       },
       {
-          // If attestation is requested, but denied, we'll return none
-          // attestation. But because the transport is kInternal, the AAGUID
-          // will be preserved.
+          // Attestation is always returned if requested because it is privacy
+          // preserving. The AttestationConsent value is irrelevant.
           AttestationConveyancePreference::DIRECT,
           EnterprisePolicy::NOT_LISTED,
-          AttestationConsent::DENIED,
-          AuthenticatorStatus::SUCCESS,
-          AttestationType::NONE_WITH_NONZERO_AAGUID,
-          "",
-      },
-      {
-          // If attestation is requested and granted, the self attestation
-          // will be returned.
-          AttestationConveyancePreference::DIRECT,
-          EnterprisePolicy::NOT_LISTED,
-          AttestationConsent::GRANTED,
+          AttestationConsent::NOT_USED,
           AuthenticatorStatus::SUCCESS,
           AttestationType::SELF_WITH_NONZERO_AAGUID,
           "",
@@ -2440,12 +2445,12 @@ TEST_F(AuthenticatorContentBrowserClientTest, BlockedAttestation) {
   NavigateAndCommit(GURL("https://foo.example.com"));
 
   static constexpr struct {
-    const char* domains;
+    const char* filter_json;
     AttestationConveyancePreference attestation;
     EnterprisePolicy enterprise_policy;
     AttestationType result;
   } kTests[] = {
-      // Empty or nonsense parameter doesn't block anything.
+      // Empty or nonsense filter doesn't block anything.
       {
           "",
           AttestationConveyancePreference::DIRECT,
@@ -2453,66 +2458,77 @@ TEST_F(AuthenticatorContentBrowserClientTest, BlockedAttestation) {
           AttestationType::U2F,
       },
       {
-          " ,,   ,, ",
+          R"({"filters": []})",
           AttestationConveyancePreference::DIRECT,
           EnterprisePolicy::NOT_LISTED,
           AttestationType::U2F,
       },
       // Direct listing of domain blocks...
       {
-          "foo.example.com",
+          R"({"filters": [{
+            "operation": "mc",
+            "rp_id": "example.com",
+            "action": "no-attestation"
+          }]})",
           AttestationConveyancePreference::DIRECT,
           EnterprisePolicy::NOT_LISTED,
           AttestationType::NONE,
       },
       // ... unless attestation is permitted by policy.
       {
-          "foo.example.com",
+          R"({"filters": [{
+            "operation": "mc",
+            "rp_id": "example.com",
+            "action": "no-attestation"
+          }]})",
           AttestationConveyancePreference::DIRECT,
           EnterprisePolicy::LISTED,
           AttestationType::U2F,
       },
-      // Additional stuff in the string doesn't break the blocking.
+      // The whole domain can be blocked. (Note, blocking a domain would
+      // normally want to list both the base domain and a pattern for
+      // subdomains because the below also matches fooexample.com.)
       {
-          "other,foo.example.com,,nonsenseXYZ123",
-          AttestationConveyancePreference::DIRECT,
-          EnterprisePolicy::NOT_LISTED,
-          AttestationType::NONE,
-      },
-      // The whole domain can be blocked.
-      {
-          "(*.)example.com",
+          R"({"filters": [{
+            "operation": "mc",
+            "rp_id": "*example.com",
+            "action": "no-attestation"
+          }]})",
           AttestationConveyancePreference::DIRECT,
           EnterprisePolicy::NOT_LISTED,
           AttestationType::NONE,
       },
       // Policy again overrides
       {
-          "(*.)example.com",
+          R"({"filters": [{
+            "operation": "mc",
+            "rp_id": "*example.com",
+            "action": "no-attestation"
+          }]})",
           AttestationConveyancePreference::DIRECT,
           EnterprisePolicy::LISTED,
           AttestationType::U2F,
       },
-      // Trying to block everything doesn't work.
+      // An explicit wildcard will match everything, be careful. (Omitting
+      // both RP ID and device is a parse error, however.)
       {
-          "(*.)",
+          R"({"filters": [{
+            "operation": "mc",
+            "rp_id": "*",
+            "action": "no-attestation"
+          }]})",
           AttestationConveyancePreference::DIRECT,
           EnterprisePolicy::NOT_LISTED,
-          AttestationType::U2F,
+          AttestationType::NONE,
       },
   };
 
   int test_num = 0;
   for (const auto& test : kTests) {
     SCOPED_TRACE(test_num++);
-    SCOPED_TRACE(test.domains);
+    SCOPED_TRACE(test.filter_json);
 
-    std::map<std::string, std::string> params;
-    params.emplace("domains", test.domains);
-
-    base::test::ScopedFeatureList scoped_feature_list_;
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        device::kWebAuthAttestationBlockList, params);
+    device::fido_filter::ScopedFilterForTesting filter(test.filter_json);
 
     const std::vector<TestCase> kTestCase = {
         {
@@ -2528,6 +2544,293 @@ TEST_F(AuthenticatorContentBrowserClientTest, BlockedAttestation) {
 
     RunTestCases(kTestCase);
   }
+}
+
+TEST_F(AuthenticatorContentBrowserClientTest, FilteringMakeCredential) {
+  static const struct {
+    const char* filter_json;
+    bool expect_make_credential_success;
+  } kTests[] = {
+      {
+          R"()",
+          true,
+      },
+      // Block by device.
+      {
+          R"({"filters": [{
+          "operation": "mc",
+          "device": "VirtualFidoDevice-*",
+          "action": "block",
+          }]})",
+          false,
+      },
+      // Shouldn't block when the device is unrelated.
+      {
+          R"({"filters": [{
+          "operation": "mc",
+          "device": "OtherDevice-*",
+          "action": "block",
+          }]})",
+          true,
+      },
+      // Block by RP ID.
+      {
+          R"({"filters": [{
+          "operation": "mc",
+          "rp_id": "google.com",
+          "action": "block",
+          }]})",
+          false,
+      },
+      // Unrelated RP ID.
+      {
+          R"({"filters": [{
+          "operation": "mc",
+          "rp_id": "other.com",
+          "action": "block",
+          }]})",
+          true,
+      },
+      // Block specific user ID.
+      {
+          R"({"filters": [{
+          "operation": "mc",
+          "rp_id": "*",
+          "id_type": "user",
+          "id": "0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A",
+          "action": "block",
+          }]})",
+          false,
+      },
+      // Different user ID.
+      {
+          R"({"filters": [{
+          "operation": "mc",
+          "rp_id": "*",
+          "id_type": "user",
+          "id": "FF0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A",
+          "action": "block",
+          }]})",
+          true,
+      },
+      // Block by user ID length.
+      {
+          R"({"filters": [{
+          "operation": "mc",
+          "rp_id": "*",
+          "id_type": "user",
+          "id_min_size": 32,
+          "id_max_size": 32,
+          "action": "block",
+          }]})",
+          false,
+      },
+      // Block user IDs that are longer than specified by
+      // |GetTestPublicKeyCredentialUserEntity|.
+      {
+          R"({"filters": [{
+          "operation": "mc",
+          "rp_id": "*",
+          "id_type": "user",
+          "id_min_size": 33,
+          "action": "block",
+          }]})",
+          true,
+      },
+      // Block excluded credential ID.
+      {
+          R"({"filters": [{
+          "operation": "mc",
+          "rp_id": "*",
+          "id_type": "cred",
+          "id": "0000000000000000000000000000000000000000000000000000000000000000",
+          "action": "block",
+          }]})",
+          false,
+      },
+      // Block different credential ID.
+      {
+          R"({"filters": [{
+          "operation": "mc",
+          "rp_id": "*",
+          "id_type": "cred",
+          "id": "FF00000000000000000000000000000000000000000000000000000000000000",
+          "action": "block",
+          }]})",
+          true,
+      },
+      // Block by excluded credential ID length.
+      {
+          R"({"filters": [{
+          "operation": "mc",
+          "rp_id": "*",
+          "id_type": "cred",
+          "id_min_size": 32,
+          "id_max_size": 32,
+          "action": "block",
+          }]})",
+          false,
+      },
+      // Block longer credentials IDs than are used.
+      {
+          R"({"filters": [{
+          "operation": "mc",
+          "rp_id": "*",
+          "id_type": "cred",
+          "id_min_size": 33,
+          "action": "block",
+          }]})",
+          true,
+      },
+  };
+
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  int test_num = 0;
+  for (const auto& test : kTests) {
+    SCOPED_TRACE(test_num++);
+    SCOPED_TRACE(test.filter_json);
+    device::fido_filter::ScopedFilterForTesting filter(test.filter_json);
+
+    PublicKeyCredentialCreationOptionsPtr options =
+        GetTestPublicKeyCredentialCreationOptions();
+    options->exclude_credentials = GetTestCredentials();
+    EXPECT_EQ(AuthenticatorMakeCredentialAndWaitForTimeout(std::move(options))
+                      .status == AuthenticatorStatus::SUCCESS,
+              test.expect_make_credential_success);
+  }
+}
+
+TEST_F(AuthenticatorContentBrowserClientTest, FilteringGetAssertion) {
+  static const struct {
+    const char* filter_json;
+    bool expect_get_assertion_success;
+  } kTests[] = {
+      {
+          R"()",
+          true,
+      },
+      // Block by device.
+      {
+          R"({"filters": [{
+          "operation": "ga",
+          "device": "VirtualFidoDevice-*",
+          "action": "block",
+          }]})",
+          false,
+      },
+      // Shouldn't block when the device is unrelated.
+      {
+          R"({"filters": [{
+          "operation": "ga",
+          "device": "OtherDevice-*",
+          "action": "block",
+          }]})",
+          true,
+      },
+      // Block by RP ID.
+      {
+          R"({"filters": [{
+          "operation": "ga",
+          "rp_id": "google.com",
+          "action": "block",
+          }]})",
+          false,
+      },
+      // Unrelated RP ID.
+      {
+          R"({"filters": [{
+          "operation": "ga",
+          "rp_id": "other.com",
+          "action": "block",
+          }]})",
+          true,
+      },
+      // Block allowList credential ID.
+      {
+          R"({"filters": [{
+          "operation": "ga",
+          "rp_id": "*",
+          "id_type": "cred",
+          "id": "0000000000000000000000000000000000000000000000000000000000000000",
+          "action": "block",
+          }]})",
+          false,
+      },
+      // Block different credential ID.
+      {
+          R"({"filters": [{
+          "operation": "ga",
+          "rp_id": "*",
+          "id_type": "cred",
+          "id": "FF00000000000000000000000000000000000000000000000000000000000000",
+          "action": "block",
+          }]})",
+          true,
+      },
+      // Block by allowList credential ID length for credentials returned by
+      // |GetTestCredentials|.
+      {
+          R"({"filters": [{
+          "operation": "ga",
+          "rp_id": "*",
+          "id_type": "cred",
+          "id_min_size": 32,
+          "id_max_size": 32,
+          "action": "block",
+          }]})",
+          false,
+      },
+      // Block longer credentials IDs than are used.
+      {
+          R"({"filters": [{
+          "operation": "ga",
+          "rp_id": "*",
+          "id_type": "cred",
+          "id_min_size": 33,
+          "action": "block",
+          }]})",
+          true,
+      },
+  };
+
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  int test_num = 0;
+  bool credential_added = false;
+  for (const auto& test : kTests) {
+    SCOPED_TRACE(test_num++);
+    SCOPED_TRACE(test.filter_json);
+    device::fido_filter::ScopedFilterForTesting filter(test.filter_json);
+
+    PublicKeyCredentialRequestOptionsPtr options =
+        GetTestPublicKeyCredentialRequestOptions();
+    if (!credential_added) {
+      ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
+          options->allow_credentials[0].id(), kTestRelyingPartyId));
+      credential_added = true;
+    }
+
+    EXPECT_EQ(
+        AuthenticatorGetAssertionAndWaitForTimeout(std::move(options)).status ==
+            AuthenticatorStatus::SUCCESS,
+        test.expect_get_assertion_success);
+  }
+}
+
+TEST_F(AuthenticatorContentBrowserClientTest, FilteringFailsOpen) {
+  // Setting the filter to invalid JSON should not filter anything.
+  device::fido_filter::ScopedFilterForTesting filter(
+      "nonsense",
+      device::fido_filter::ScopedFilterForTesting::PermitInvalidJSON::kYes);
+
+  NavigateAndCommit(GURL(kTestOrigin1));
+  PublicKeyCredentialCreationOptionsPtr options =
+      GetTestPublicKeyCredentialCreationOptions();
+  options->exclude_credentials = GetTestCredentials();
+  EXPECT_EQ(
+      AuthenticatorMakeCredentialAndWaitForTimeout(std::move(options)).status,
+      AuthenticatorStatus::SUCCESS);
 }
 
 TEST_F(AuthenticatorContentBrowserClientTest,
@@ -3280,45 +3583,6 @@ TEST_F(AuthenticatorImplTest, NoUnexpectedClientExtensions) {
             AuthenticatorStatus::SUCCESS);
 }
 
-TEST_F(AuthenticatorImplTest, AndroidClientDataExtension) {
-  EnableFeature(device::kWebAuthPhoneSupport);
-  NavigateAndCommit(GURL(kTestOrigin1));
-
-  device::VirtualCtap2Device::Config config;
-  config.support_android_client_data_extension = true;
-  virtual_device_factory_->SetCtap2Config(config);
-
-  EXPECT_EQ(AuthenticatorMakeCredential().status, AuthenticatorStatus::SUCCESS);
-
-  PublicKeyCredentialRequestOptionsPtr assertion_options =
-      GetTestPublicKeyCredentialRequestOptions();
-  ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
-      assertion_options->allow_credentials.back().id(), kTestRelyingPartyId));
-  EXPECT_EQ(AuthenticatorGetAssertion(std::move(assertion_options)).status,
-            AuthenticatorStatus::SUCCESS);
-}
-
-TEST_F(AuthenticatorImplTest, UnsolicitedAndroidClientDataExtensionReponse) {
-  EnableFeature(device::kWebAuthPhoneSupport);
-  NavigateAndCommit(GURL(kTestOrigin1));
-
-  device::VirtualCtap2Device::Config config;
-  config.send_unsolicited_android_client_data_extension = true;
-  virtual_device_factory_->SetCtap2Config(config);
-
-  // An unsolicited androidClientData extension response results in an error.
-  EXPECT_EQ(AuthenticatorMakeCredential().status,
-            AuthenticatorStatus::NOT_ALLOWED_ERROR);
-
-  // The same goes for getAssertion.
-  PublicKeyCredentialRequestOptionsPtr assertion_options =
-      GetTestPublicKeyCredentialRequestOptions();
-  ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
-      assertion_options->allow_credentials.back().id(), kTestRelyingPartyId));
-  EXPECT_EQ(AuthenticatorGetAssertion(std::move(assertion_options)).status,
-            AuthenticatorStatus::NOT_ALLOWED_ERROR);
-}
-
 // Tests that on an authenticator that supports batching, exclude lists that fit
 // into a single batch are sent without probing.
 TEST_F(AuthenticatorImplTest, ExcludeListBatching) {
@@ -3495,6 +3759,33 @@ TEST_F(AuthenticatorImplTest, ResetDiscoveryFactoryOverride) {
       AuthenticatorStatus::NOT_ALLOWED_ERROR);
 }
 
+TEST_F(AuthenticatorImplTest, InvalidU2FPublicKey) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+  virtual_device_factory_->SetSupportedProtocol(device::ProtocolVersion::kU2f);
+  virtual_device_factory_->mutable_state()->u2f_invalid_public_key = true;
+
+  PublicKeyCredentialCreationOptionsPtr options =
+      GetTestPublicKeyCredentialCreationOptions();
+  EXPECT_EQ(AuthenticatorMakeCredential(std::move(options)).status,
+            AuthenticatorStatus::NOT_ALLOWED_ERROR);
+}
+
+TEST_F(AuthenticatorImplTest, InvalidU2FSignature) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+  virtual_device_factory_->SetSupportedProtocol(device::ProtocolVersion::kU2f);
+  virtual_device_factory_->mutable_state()->u2f_invalid_signature = true;
+
+  PublicKeyCredentialRequestOptionsPtr options =
+      GetTestPublicKeyCredentialRequestOptions();
+  ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
+      options->allow_credentials[0].id(), kTestOrigin1));
+  options->appid = kTestOrigin1;
+
+  EXPECT_EQ(
+      AuthenticatorGetAssertionAndWaitForTimeout(std::move(options)).status,
+      AuthenticatorStatus::NOT_ALLOWED_ERROR);
+}
+
 static constexpr char kTestPIN[] = "1234";
 
 class UVTestAuthenticatorClientDelegate
@@ -3516,7 +3807,7 @@ class UVTestAuthenticatorClientDelegate
 
   void CollectPIN(
       CollectPINOptions options,
-      base::OnceCallback<void(base::string16)> provide_pin_cb) override {
+      base::OnceCallback<void(std::u16string)> provide_pin_cb) override {
     *collected_pin_ = true;
     *min_pin_length_ = options.min_pin_length;
     base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -3672,7 +3963,7 @@ class PINTestAuthenticatorRequestDelegate
 
   void CollectPIN(
       CollectPINOptions options,
-      base::OnceCallback<void(base::string16)> provide_pin_cb) override {
+      base::OnceCallback<void(std::u16string)> provide_pin_cb) override {
     DCHECK(supports_pin_);
     DCHECK(!expected_.empty());
     if (expected_.front().reason == PINReason::kChallenge) {
@@ -4475,6 +4766,48 @@ TEST_F(PINAuthenticatorImplTest, PRFCreatedOnCTAP2) {
   }
 }
 
+// Test that pinUvAuthToken gets sent with every single batch of an exclude
+// list. If it wasn't, any batch after the first would be unable to match
+// credProtect=uvRequired credentials.
+TEST_F(PINAuthenticatorImplTest, ExcludeListBatchesIncludePinToken) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  // Set up a CTAP 2.1 authenticator with pinUvAuthToken and exclude list
+  // batching.
+  device::VirtualCtap2Device::Config config;
+  config.max_credential_id_length = kTestCredentialIdLength;
+  constexpr size_t kBatchSize = 10;
+  config.max_credential_count_in_list = kBatchSize;
+  config.pin_support = true;
+  config.pin_uv_auth_token_support = true;
+  config.ctap2_versions = {device::Ctap2Version::kCtap2_0,
+                           device::Ctap2Version::kCtap2_1};
+  virtual_device_factory_->SetCtap2Config(config);
+  virtual_device_factory_->mutable_state()->pin = kTestPIN;
+  virtual_device_factory_->mutable_state()->pin_retries =
+      device::kMaxPinRetries;
+
+  test_client_.expected = {
+      {PINReason::kChallenge, kTestPIN, device::kMaxPinRetries}};
+
+  // Craft an exclude list that is large enough to trigger batched probing and
+  // includes one match for a credProtect=uvRequired credential.
+  auto test_credentials = GetTestCredentials(kBatchSize + 1);
+
+  device::VirtualFidoDevice::RegistrationData cred_protect_credential(
+      kTestRelyingPartyId);
+  cred_protect_credential.protection = device::CredProtect::kUVRequired;
+  ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
+      test_credentials.back().id(), std::move(cred_protect_credential)));
+
+  // The request should fail because the exclude list matches.
+  PublicKeyCredentialCreationOptionsPtr options =
+      GetTestPublicKeyCredentialCreationOptions();
+  options->exclude_credentials = std::move(test_credentials);
+  EXPECT_EQ(AuthenticatorMakeCredential(std::move(options)).status,
+            AuthenticatorStatus::CREDENTIAL_EXCLUDED);
+}
+
 class InternalUVAuthenticatorImplTest : public UVAuthenticatorImplTest {
  public:
   struct TestCase {
@@ -5001,18 +5334,23 @@ class ResidentKeyTestAuthenticatorRequestDelegate
   ResidentKeyTestAuthenticatorRequestDelegate(
       std::string expected_accounts,
       std::vector<uint8_t> selected_user_id,
-      bool* might_create_resident_credential,
-      base::Optional<InterestingFailureReason>* failure_reason)
+      base::Optional<InterestingFailureReason>* failure_reason,
+      bool* is_conditional)
       : expected_accounts_(expected_accounts),
         selected_user_id_(selected_user_id),
-        might_create_resident_credential_(might_create_resident_credential),
-        failure_reason_(failure_reason) {}
+        failure_reason_(failure_reason),
+        is_conditional_(is_conditional) {}
+
+  ResidentKeyTestAuthenticatorRequestDelegate(
+      const ResidentKeyTestAuthenticatorRequestDelegate&) = delete;
+  ResidentKeyTestAuthenticatorRequestDelegate& operator=(
+      const ResidentKeyTestAuthenticatorRequestDelegate&) = delete;
 
   bool SupportsPIN() const override { return true; }
 
   void CollectPIN(
       CollectPINOptions options,
-      base::OnceCallback<void(base::string16)> provide_pin_cb) override {
+      base::OnceCallback<void(std::u16string)> provide_pin_cb) override {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(provide_pin_cb), base::UTF8ToUTF16(kTestPIN)));
@@ -5029,7 +5367,7 @@ class ResidentKeyTestAuthenticatorRequestDelegate
     std::sort(responses.begin(), responses.end(),
               [](const device::AuthenticatorGetAssertionResponse& a,
                  const device::AuthenticatorGetAssertionResponse& b) {
-                return a.user_entity()->id < b.user_entity()->id;
+                return a.user_entity->id < b.user_entity->id;
               });
 
     std::vector<std::string> string_reps;
@@ -5037,7 +5375,7 @@ class ResidentKeyTestAuthenticatorRequestDelegate
         responses.begin(), responses.end(), std::back_inserter(string_reps),
         [](const device::AuthenticatorGetAssertionResponse& response) {
           const device::PublicKeyCredentialUserEntity& user =
-              response.user_entity().value();
+              response.user_entity.value();
           return base::HexEncode(user.id.data(), user.id.size()) + ":" +
                  user.name.value_or("") + ":" + user.display_name.value_or("");
         });
@@ -5047,16 +5385,12 @@ class ResidentKeyTestAuthenticatorRequestDelegate
     const auto selected = std::find_if(
         responses.begin(), responses.end(),
         [this](const device::AuthenticatorGetAssertionResponse& response) {
-          return response.user_entity()->id == selected_user_id_;
+          return response.user_entity->id == selected_user_id_;
         });
     ASSERT_TRUE(selected != responses.end());
 
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(*selected)));
-  }
-
-  void SetMightCreateResidentCredential(bool v) override {
-    *might_create_resident_credential_ = v;
   }
 
   bool DoesBlockRequestOnFailure(InterestingFailureReason reason) override {
@@ -5065,12 +5399,15 @@ class ResidentKeyTestAuthenticatorRequestDelegate
         reason);
   }
 
+  void SetConditionalRequest(bool is_conditional) override {
+    *is_conditional_ = is_conditional;
+  }
+
  private:
   const std::string expected_accounts_;
   const std::vector<uint8_t> selected_user_id_;
-  bool* const might_create_resident_credential_;
   base::Optional<InterestingFailureReason>* const failure_reason_;
-  DISALLOW_COPY_AND_ASSIGN(ResidentKeyTestAuthenticatorRequestDelegate);
+  bool* const is_conditional_;
 };
 
 class ResidentKeyTestAuthenticatorContentBrowserClient
@@ -5080,13 +5417,12 @@ class ResidentKeyTestAuthenticatorContentBrowserClient
   GetWebAuthenticationRequestDelegate(
       RenderFrameHost* render_frame_host) override {
     return std::make_unique<ResidentKeyTestAuthenticatorRequestDelegate>(
-        expected_accounts, selected_user_id, &might_create_resident_credential,
-        &failure_reason);
+        expected_accounts, selected_user_id, &failure_reason, &is_conditional);
   }
 
   std::string expected_accounts;
   std::vector<uint8_t> selected_user_id;
-  bool might_create_resident_credential = false;
+  bool is_conditional = false;
   base::Optional<AuthenticatorRequestClientDelegate::InterestingFailureReason>
       failure_reason;
 };
@@ -5142,7 +5478,6 @@ class ResidentKeyAuthenticatorImplTest : public UVAuthenticatorImplTest {
 TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialRkRequired) {
   for (const bool internal_uv : {false, true}) {
     SCOPED_TRACE(::testing::Message() << "internal_uv=" << internal_uv);
-    test_client_.might_create_resident_credential = false;
 
     if (internal_uv) {
       device::VirtualCtap2Device::Config config;
@@ -5156,7 +5491,6 @@ TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialRkRequired) {
         AuthenticatorMakeCredential(make_credential_options());
 
     EXPECT_EQ(AuthenticatorStatus::SUCCESS, result.status);
-    EXPECT_TRUE(test_client_.might_create_resident_credential);
     EXPECT_TRUE(HasUV(result.response));
     ASSERT_EQ(1u,
               virtual_device_factory_->mutable_state()->registrations.size());
@@ -5176,7 +5510,6 @@ TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialRkPreferred) {
   for (const bool supports_rk : {false, true}) {
     SCOPED_TRACE(::testing::Message() << "supports_rk=" << supports_rk);
     ResetVirtualDevice();
-    test_client_.might_create_resident_credential = false;
 
     device::VirtualCtap2Device::Config config;
     config.internal_uv_support = true;
@@ -5188,7 +5521,6 @@ TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialRkPreferred) {
         make_credential_options(device::ResidentKeyRequirement::kPreferred));
 
     ASSERT_EQ(AuthenticatorStatus::SUCCESS, result.status);
-    EXPECT_TRUE(test_client_.might_create_resident_credential);
     EXPECT_TRUE(HasUV(result.response));
     ASSERT_EQ(1u,
               virtual_device_factory_->mutable_state()->registrations.size());
@@ -5203,7 +5535,6 @@ TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialRkPreferredStorageFull) {
   // making a non-resident key.
   for (bool is_ctap_2_1 : {false, true}) {
     ResetVirtualDevice();
-    test_client_.might_create_resident_credential = false;
 
     size_t num_taps = 0;
     virtual_device_factory_->mutable_state()->simulate_press_callback =
@@ -5229,7 +5560,6 @@ TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialRkPreferredStorageFull) {
         make_credential_options(device::ResidentKeyRequirement::kPreferred));
 
     ASSERT_EQ(AuthenticatorStatus::SUCCESS, result.status);
-    EXPECT_TRUE(test_client_.might_create_resident_credential);
     EXPECT_TRUE(HasUV(result.response));
     ASSERT_EQ(1u,
               virtual_device_factory_->mutable_state()->registrations.size());
@@ -5256,7 +5586,6 @@ TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialRkPreferredSetsPIN) {
       make_credential_options(device::ResidentKeyRequirement::kPreferred));
 
   EXPECT_EQ(AuthenticatorStatus::SUCCESS, result.status);
-  EXPECT_TRUE(test_client_.might_create_resident_credential);
   EXPECT_TRUE(HasUV(result.response));
   ASSERT_EQ(1u, virtual_device_factory_->mutable_state()->registrations.size());
   const device::VirtualFidoDevice::RegistrationData& registration =
@@ -6161,6 +6490,27 @@ TEST_F(ResidentKeyAuthenticatorImplTest, PRFExtension) {
     ASSERT_EQ(result->first, salt1_eval);
     ASSERT_FALSE(result->second);
   }
+}
+
+TEST_F(ResidentKeyAuthenticatorImplTest, ConditionalUI) {
+  device::VirtualCtap2Device::Config config;
+  config.resident_key_support = true;
+  config.internal_uv_support = true;
+  virtual_device_factory_->SetCtap2Config(config);
+  virtual_device_factory_->mutable_state()->fingerprints_enrolled = true;
+
+  ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectResidentKey(
+      /*credential_id=*/{{4, 3, 2, 1}}, kTestRelyingPartyId,
+      /*user_id=*/{{1, 2, 3, 4}}, base::nullopt, base::nullopt));
+
+  // |SelectAccount| should not be called when there's only a single response
+  // without identifying information.
+  test_client_.expected_accounts = "<invalid>";
+  PublicKeyCredentialRequestOptionsPtr options(get_credential_options());
+  options->is_conditional = true;
+  GetAssertionResult result = AuthenticatorGetAssertion(std::move(options));
+  EXPECT_EQ(AuthenticatorStatus::SUCCESS, result.status);
+  EXPECT_TRUE(test_client_.is_conditional);
 }
 
 class InternalAuthenticatorImplTest : public AuthenticatorTestBase {

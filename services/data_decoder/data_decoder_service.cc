@@ -98,12 +98,12 @@ void DataDecoderService::BindGzipper(
   mojo::MakeSelfOwnedReceiver(std::make_unique<Gzipper>(), std::move(receiver));
 }
 
-#ifdef OS_CHROMEOS
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void DataDecoderService::BindBleScanParser(
     mojo::PendingReceiver<mojom::BleScanParser> receiver) {
   mojo::MakeSelfOwnedReceiver(std::make_unique<BleScanParserImpl>(),
                               std::move(receiver));
 }
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace data_decoder

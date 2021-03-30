@@ -32,10 +32,10 @@ class ExtensionInstallBlockedDialogViewTest : public DialogBrowserTest {
     return gfx::ImageSkia::CreateFrom1xBitmap(icon);
   }
 
-  void set_message(const base::string16& message) { message_ = message; }
+  void set_message(const std::u16string& message) { message_ = message; }
 
  private:
-  base::string16 message_;
+  std::u16string message_;
 };
 
 IN_PROC_BROWSER_TEST_F(ExtensionInstallBlockedDialogViewTest,
@@ -45,13 +45,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallBlockedDialogViewTest,
 
 IN_PROC_BROWSER_TEST_F(ExtensionInstallBlockedDialogViewTest,
                        InvokeUi_WithCustomMessage) {
-  set_message(base::ASCIIToUTF16("message"));
+  set_message(u"message");
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionInstallBlockedDialogViewTest,
                        InvokeUi_WithLongCustomMessage) {
-  set_message(
-      base::ASCIIToUTF16("long\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nmessage"));
+  set_message(u"long\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nmessage");
   ShowAndVerifyUi();
 }

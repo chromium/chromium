@@ -36,6 +36,13 @@ generate_grd("build_grdp") {
     "throbber_small.svg",
   ]
 
+  if (!is_android) {
+    input_files += [
+      "icon_copy_content.svg",
+      "open_in_new.svg",
+    ]
+  }
+
   if (!is_android && !is_ios) {
     input_files += [
       "200-logo_googleg.png",
@@ -46,9 +53,9 @@ generate_grd("build_grdp") {
       "dark/icon_search.svg",
       "icon_arrow_back.svg",
       "icon_arrow_dropdown.svg",
+      "icon_bookmark.svg",
       "icon_cancel.svg",
       "icon_clear.svg",
-      "icon_copy_content.svg",
       "icon_delete_gray.svg",
       "icon_edit.svg",
       "icon_expand_less.svg",
@@ -58,19 +65,6 @@ generate_grd("build_grdp") {
       "icon_settings.svg",
       "icon_visibility_off.svg",
       "icon_visibility.svg",
-      "open_in_new.svg",
-    ]
-  }
-
-  if (is_chromeos_ash) {
-    input_files += [
-      # Similar to error.svg except that it is white-filled instead of
-      # transparent-filled. Useful for badging images where the background may
-      # be red.
-      # TODO(dpapad) Move to
-      # chrome/browser/resources/settings/chromeos/os_people_page/, only used
-      # there.
-      "error_badge.svg",
     ]
   }
   resource_path_prefix = "images"

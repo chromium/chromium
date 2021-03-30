@@ -14,12 +14,14 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/feed/core/common/pref_names.h"
-#include "components/feed/core/proto/v2/wire/discover_actions_service.pb.h"
 #include "components/feed/core/proto/v2/wire/feed_query.pb.h"
 #include "components/feed/core/proto/v2/wire/request.pb.h"
 #include "components/feed/core/proto/v2/wire/response.pb.h"
+#include "components/feed/core/proto/v2/wire/upload_actions_request.pb.h"
+#include "components/feed/core/proto/v2/wire/upload_actions_response.pb.h"
 #include "components/feed/core/v2/metrics_reporter.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -47,8 +49,7 @@ namespace feed {
 namespace {
 constexpr char kApplicationXProtobuf[] = "application/x-protobuf";
 constexpr base::TimeDelta kNetworkTimeout = base::TimeDelta::FromSeconds(30);
-constexpr char kUploadActionUrl[] =
-    "https://discover-pa.googleapis.com/v1/actions:upload";
+constexpr char kDiscoverHost[] = "https://discover-pa.googleapis.com/";
 
 signin::ScopeSet GetAuthScopes() {
   return {"https://www.googleapis.com/auth/googlenow"};
@@ -58,7 +59,6 @@ GURL GetFeedQueryURL(feedwire::FeedQuery::RequestReason reason) {
   // Add URLs for Bling when it is supported.
   switch (reason) {
     case feedwire::FeedQuery::SCHEDULED_REFRESH:
-    case feedwire::FeedQuery::IN_PLACE_UPDATE:
       return GURL(
           "https://www.google.com/httpservice/noretry/TrellisClankService/"
           "FeedQuery");
@@ -81,22 +81,17 @@ GURL GetUrlWithoutQuery(const GURL& url) {
   return url.ReplaceComponents(replacements);
 }
 
-using RawResponse = FeedNetworkImpl::RawResponse;
+using RawResponse = FeedNetwork::RawResponse;
 }  // namespace
-
-struct FeedNetworkImpl::RawResponse {
-  // HTTP response body.
-  std::string response_bytes;
-  NetworkResponseInfo response_info;
-};
 
 namespace {
 
 void ParseAndForwardQueryResponse(
+    NetworkRequestType request_type,
     base::OnceCallback<void(FeedNetwork::QueryRequestResult)> result_callback,
     RawResponse raw_response) {
   MetricsReporter::NetworkRequestComplete(
-      NetworkRequestType::kFeedQuery, raw_response.response_info.status_code);
+      request_type, raw_response.response_info.status_code);
   FeedNetwork::QueryRequestResult result;
   result.response_info = raw_response.response_info;
   if (result.response_info.status_code == 200) {
@@ -111,23 +106,6 @@ void ParseAndForwardQueryResponse(
 
     auto response_message = std::make_unique<feedwire::Response>();
     if (response_message->ParseFromCodedStream(&input_stream)) {
-      result.response_body = std::move(response_message);
-    }
-  }
-  std::move(result_callback).Run(std::move(result));
-}
-
-void ParseAndForwardUploadResponse(
-    base::OnceCallback<void(FeedNetwork::ActionRequestResult)> result_callback,
-    RawResponse raw_response) {
-  MetricsReporter::NetworkRequestComplete(
-      NetworkRequestType::kUploadActions,
-      raw_response.response_info.status_code);
-  FeedNetwork::ActionRequestResult result;
-  result.response_info = raw_response.response_info;
-  if (result.response_info.status_code == 200) {
-    auto response_message = std::make_unique<feedwire::UploadActionsResponse>();
-    if (response_message->ParseFromString(raw_response.response_bytes)) {
       result.response_body = std::move(response_message);
     }
   }
@@ -155,6 +133,15 @@ int PopulateRequestBody(const std::string& request_body,
   return compressed_request_body.size();
 }
 
+GURL OverrideUrlSchemeHostPort(const GURL& url,
+                               const GURL& override_scheme_host_port) {
+  GURL::Replacements replacements;
+  replacements.SetSchemeStr(override_scheme_host_port.scheme_piece());
+  replacements.SetHostStr(override_scheme_host_port.host_piece());
+  replacements.SetPortStr(override_scheme_host_port.port_piece());
+  return url.ReplaceComponents(replacements);
+}
+
 }  // namespace
 
 // Each NetworkFetch instance represents a single "logical" fetch that ends by
@@ -164,7 +151,7 @@ int PopulateRequestBody(const std::string& request_body,
 class FeedNetworkImpl::NetworkFetch {
  public:
   NetworkFetch(const GURL& url,
-               const std::string& request_type,
+               base::StringPiece request_method,
                std::string request_body,
                bool force_signed_out_request,
                signin::IdentityManager* identity_manager,
@@ -172,7 +159,7 @@ class FeedNetworkImpl::NetworkFetch {
                const std::string& api_key,
                bool allow_bless_auth)
       : url_(url),
-        request_type_(request_type),
+        request_method_(request_method),
         request_body_(std::move(request_body)),
         force_signed_out_request_(force_signed_out_request),
         identity_manager_(identity_manager),
@@ -187,7 +174,8 @@ class FeedNetworkImpl::NetworkFetch {
   void Start(base::OnceCallback<void(RawResponse)> done_callback) {
     done_callback_ = std::move(done_callback);
 
-    if (force_signed_out_request_ || !identity_manager_->HasPrimaryAccount()) {
+    if (force_signed_out_request_ ||
+        !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
       StartLoader();
       return;
     }
@@ -230,8 +218,6 @@ class FeedNetworkImpl::NetworkFetch {
   }
 
   std::unique_ptr<network::SimpleURLLoader> MakeLoader() {
-    // TODO(pnoland): Add data use measurement once it's supported for simple
-    // url loader.
     net::NetworkTrafficAnnotationTag traffic_annotation =
         net::DefineNetworkTrafficAnnotation("interest_feedv2_send", R"(
         semantics {
@@ -258,6 +244,7 @@ class FeedNetworkImpl::NetworkFetch {
             }
           }
         })");
+
     GURL url(url_);
     if (access_token_.empty() && !api_key_.empty())
       url = net::AppendQueryParameter(url_, "key", api_key_);
@@ -267,7 +254,7 @@ class FeedNetworkImpl::NetworkFetch {
 
     resource_request->load_flags = net::LOAD_BYPASS_CACHE;
     resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-    resource_request->method = request_type_;
+    resource_request->method = request_method_;
 
     if (allow_bless_auth_) {
       // Include credentials ONLY if the user has overridden the feed host
@@ -363,7 +350,8 @@ class FeedNetworkImpl::NetworkFetch {
       response_body = std::move(*response);
 
       if (response_info.status_code == net::HTTP_UNAUTHORIZED) {
-        CoreAccountId account_id = identity_manager_->GetPrimaryAccountId();
+        CoreAccountId account_id =
+            identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync);
         if (!account_id.empty()) {
           identity_manager_->RemoveAccessTokenFromCache(
               account_id, GetAuthScopes(), access_token_);
@@ -395,7 +383,7 @@ class FeedNetworkImpl::NetworkFetch {
 
  private:
   GURL url_;
-  const std::string request_type_;
+  const std::string request_method_;
   std::string access_token_;
   const std::string request_body_;
   bool force_signed_out_request_;
@@ -430,6 +418,7 @@ FeedNetworkImpl::FeedNetworkImpl(
 FeedNetworkImpl::~FeedNetworkImpl() = default;
 
 void FeedNetworkImpl::SendQueryRequest(
+    NetworkRequestType request_type,
     const feedwire::Request& request,
     bool force_signed_out_request,
     base::OnceCallback<void(QueryRequestResult)> callback) {
@@ -460,6 +449,16 @@ void FeedNetworkImpl::SendQueryRequest(
       replacements.SetSchemeStr(override_host_url.scheme_piece());
       replacements.SetHostStr(override_host_url.host_piece());
       replacements.SetPortStr(override_host_url.port_piece());
+      // Allow the host override to also add a prefix for the path. Ignore
+      // trailing slashes if they are provided, as the path part of |url| will
+      // always include "/".
+      base::StringPiece trimmed_path_prefix = base::TrimString(
+          override_host_url.path_piece(), "/", base::TRIM_TRAILING);
+      std::string replacement_path =
+          base::StrCat({trimmed_path_prefix, url.path_piece()});
+
+      replacements.SetPathStr(replacement_path);
+
       url = url.ReplaceComponents(replacements);
       host_overridden = true;
     }
@@ -469,30 +468,8 @@ void FeedNetworkImpl::SendQueryRequest(
                                   url);
   Send(url, "GET", /*request_body=*/{}, force_signed_out_request,
        /*allow_bless_auth=*/host_overridden,
-       base::BindOnce(&ParseAndForwardQueryResponse, std::move(callback)));
-}
-
-void FeedNetworkImpl::SendActionRequest(
-    const feedwire::UploadActionsRequest& request,
-    base::OnceCallback<void(ActionRequestResult)> callback) {
-  std::string binary_proto;
-  request.SerializeToString(&binary_proto);
-
-  GURL url(kUploadActionUrl);
-
-  // Override url if requested.
-  std::string host_override =
-      pref_service_->GetString(feed::prefs::kActionsEndpointOverride);
-  if (!host_override.empty()) {
-    GURL override_url(host_override);
-    if (override_url.is_valid())
-      url = override_url;
-  }
-
-  Send(url, "POST", std::move(binary_proto),
-       /*force_signed_out_request=*/false,
-       /*allow_bless_auth=*/false,
-       base::BindOnce(&ParseAndForwardUploadResponse, std::move(callback)));
+       base::BindOnce(&ParseAndForwardQueryResponse, request_type,
+                      std::move(callback)));
 }
 
 void FeedNetworkImpl::CancelRequests() {
@@ -500,13 +477,13 @@ void FeedNetworkImpl::CancelRequests() {
 }
 
 void FeedNetworkImpl::Send(const GURL& url,
-                           const std::string& request_type,
+                           base::StringPiece request_method,
                            std::string request_body,
                            bool force_signed_out_request,
                            bool allow_bless_auth,
                            base::OnceCallback<void(RawResponse)> callback) {
   auto fetch = std::make_unique<NetworkFetch>(
-      url, request_type, std::move(request_body), force_signed_out_request,
+      url, request_method, std::move(request_body), force_signed_out_request,
       identity_manager_, loader_factory_.get(), api_key_, allow_bless_auth);
   NetworkFetch* fetch_unowned = fetch.get();
   pending_requests_.emplace(std::move(fetch));
@@ -516,6 +493,27 @@ void FeedNetworkImpl::Send(const GURL& url,
   fetch_unowned->Start(base::BindOnce(&FeedNetworkImpl::SendComplete,
                                       base::Unretained(this), fetch_unowned,
                                       std::move(callback)));
+}
+
+void FeedNetworkImpl::SendDiscoverApiRequest(
+    base::StringPiece request_path,
+    base::StringPiece method,
+    std::string request_body,
+    base::OnceCallback<void(RawResponse)> callback) {
+  GURL url(base::StrCat({kDiscoverHost, request_path}));
+  // Override url if requested.
+  std::string host_override =
+      pref_service_->GetString(feed::prefs::kDiscoverAPIEndpointOverride);
+  if (!host_override.empty()) {
+    GURL override_url(host_override);
+    if (override_url.is_valid()) {
+      url = OverrideUrlSchemeHostPort(url, override_url);
+    }
+  }
+
+  Send(url, method, std::move(request_body),
+       /*force_signed_out_request=*/false,
+       /*allow_bless_auth=*/false, std::move(callback));
 }
 
 void FeedNetworkImpl::SendComplete(

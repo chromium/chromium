@@ -10,31 +10,24 @@
 #include <set>
 #include <string>
 
-#include "ash/public/cpp/tablet_mode_observer.h"
-#include "ash/public/cpp/wallpaper_controller_observer.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
-#include "chrome/browser/chromeos/login/screens/error_screen.h"
-#include "chrome/browser/chromeos/login/signin_specifics.h"
-#include "chrome/browser/chromeos/login/ui/login_display.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
-#include "chrome/browser/chromeos/system/system_clock.h"
+#include "chrome/browser/ash/login/screens/error_screen.h"
+#include "chrome/browser/ash/login/signin_specifics.h"
+#include "chrome/browser/ash/login/ui/login_display.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_webui_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chromeos/components/proximity_auth/screenlock_bridge.h"
-#include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/network/portal_detector/network_portal_detector.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/web_ui.h"
 #include "net/base/net_errors.h"
-#include "ui/base/ime/chromeos/ime_keyboard.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
 #include "ui/events/event_handler.h"
 
@@ -55,23 +48,18 @@ namespace chromeos {
 class CoreOobeView;
 class ErrorScreensHistogramHelper;
 class GaiaScreenHandler;
-class User;
 class UserContext;
 
 // An interface for WebUILoginDisplay to call SigninScreenHandler.
 class LoginDisplayWebUIHandler {
  public:
   virtual void ClearAndEnablePassword() = 0;
-  virtual void ClearUserPodPassword() = 0;
-  virtual void OnUserImageChanged(const user_manager::User& user) = 0;
   virtual void OnPreferencesChanged() = 0;
   virtual void ShowError(int login_attempts,
                          const std::string& error_text,
                          const std::string& help_link_text,
                          HelpAppLauncher::HelpTopic help_topic_id) = 0;
   virtual void ShowAllowlistCheckFailedError() = 0;
-  virtual void LoadUsers(const user_manager::UserList& users,
-                         const base::ListValue& users_list) = 0;
 
  protected:
   virtual ~LoginDisplayWebUIHandler() {}
@@ -109,24 +97,11 @@ class SigninScreenHandlerDelegate {
   // Let the delegate know about the handler it is supposed to be using.
   virtual void SetWebUIHandler(LoginDisplayWebUIHandler* webui_handler) = 0;
 
-  // Whether to show the user pods or only GAIA sign in.
-  // Public sessions are always shown.
-  virtual bool IsShowUsers() const = 0;
-
-  // Whether the show user pods setting has changed.
-  virtual bool ShowUsersHasChanged() const = 0;
-
   // Whether the allow new user setting has changed.
   virtual bool AllowNewUserChanged() const = 0;
 
   // Whether user sign in has completed.
   virtual bool IsUserSigninCompleted() const = 0;
-
-  // Request to (re)load user list.
-  virtual void HandleGetUsers() = 0;
-
-  // Runs an OAuth token validation check for user.
-  virtual void CheckUserStatus(const AccountId& account_id) = 0;
 
  protected:
   virtual ~SigninScreenHandlerDelegate() {}
@@ -138,12 +113,7 @@ class SigninScreenHandler
     : public BaseWebUIHandler,
       public LoginDisplayWebUIHandler,
       public content::NotificationObserver,
-      public NetworkStateInformer::NetworkStateInformerObserver,
-      public PowerManagerClient::Observer,
-      public input_method::ImeKeyboard::Observer,
-      public ash::TabletModeObserver,
-      public OobeUI::Observer,
-      public ash::WallpaperControllerObserver {
+      public NetworkStateInformer::NetworkStateInformerObserver {
  public:
   SigninScreenHandler(
       JSCallsContainer* js_calls_container,
@@ -168,15 +138,6 @@ class SigninScreenHandler
   // Required Local State preferences.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  // OobeUI::Observer implementation:
-  void OnCurrentScreenChanged(OobeScreenId current_screen,
-                              OobeScreenId new_screen) override;
-  void OnDestroyingOobeUI() override {}
-
-  // ash::WallpaperControllerObserver implementation:
-  void OnWallpaperColorsChanged() override;
-  void OnWallpaperBlurChanged() override;
-
   // To avoid spurious error messages on flaky networks, the offline message is
   // only shown if the network is offline for a threshold number of seconds.
   // This method provides an ability to reduce the threshold to zero, allowing
@@ -190,10 +151,11 @@ class SigninScreenHandler
   bool GetKeyboardRemappedPrefValue(const std::string& pref_name, int* value);
 
  private:
+  // TODO (crbug.com/1168114): check if it makes sense anymore, as we're always
+  // showing GAIA
   enum UIState {
     UI_STATE_UNKNOWN = 0,
     UI_STATE_GAIA_SIGNIN,
-    UI_STATE_ACCOUNT_PICKER,
   };
 
   friend class GaiaScreenHandler;
@@ -223,40 +185,17 @@ class SigninScreenHandler
 
   // LoginDisplayWebUIHandler implementation:
   void ClearAndEnablePassword() override;
-  void ClearUserPodPassword() override;
-  void OnUserImageChanged(const user_manager::User& user) override;
   void OnPreferencesChanged() override;
   void ShowError(int login_attempts,
                  const std::string& error_text,
                  const std::string& help_link_text,
                  HelpAppLauncher::HelpTopic help_topic_id) override;
   void ShowAllowlistCheckFailedError() override;
-  void LoadUsers(const user_manager::UserList& users,
-                 const base::ListValue& users_list) override;
 
   // content::NotificationObserver implementation:
   void Observe(int type,
                const content::NotificationSource& source,
                const content::NotificationDetails& details) override;
-
-  // PowerManagerClient::Observer implementation:
-  void SuspendDone(base::TimeDelta sleep_duration) override;
-
-  // ash::TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
-
-  void OnTabletModeToggled(bool enabled);
-
-  // Restore input focus to current user pod.
-  void RefocusCurrentPod();
-
-  // Enable or disable the pin keyboard for the given account.
-  void UpdatePinKeyboardState(const AccountId& account_id);
-  void SetPinEnabledForUser(const AccountId& account_id, bool is_enabled);
-  // Callback run by PinBackend. If `should_preload` is true the PIN keyboard is
-  // preloaded.
-  void PreloadPinKeyboard(bool should_preload);
 
   // WebUI message handlers.
   void HandleAuthenticateUser(const AccountId& account_id,
@@ -269,43 +208,21 @@ class SigninScreenHandler
   void HandleToggleResetScreen();
   void HandleToggleKioskAutolaunchScreen();
 
-  // TODO(crbug.com/943720): Change to views account-picker screen in post-OOBE
-  // flow.
-  // WebUI account-picker screen is shown:
-  // * After OOBE enrollment when policy contains device local accounts.
-  // * On multiple sign-in account selection.
-  void HandleAccountPickerReady();
   void HandleOpenInternetDetailDialog();
   void HandleLoginVisible(const std::string& source);
-  void HandleCancelUserAdding();
   void HandleLoginUIStateChanged(const std::string& source, bool active);
   void HandleLoginScreenUpdate();
   void HandleShowLoadingTimeoutError();
-  void HandleFocusPod(const AccountId& account_id, bool is_large_pod);
   void HandleNoPodFocused();
   void HandleHardlockPod(const std::string& user_id);
   void HandleLaunchKioskApp(const AccountId& app_account_id,
                             bool diagnostic_mode);
   void HandleLaunchArcKioskApp(const AccountId& app_account_id);
-  void HandleGetPublicSessionKeyboardLayouts(const AccountId& account_id,
-                                             const std::string& locale);
-  void HandleGetTabletModeState();
-  void HandleGetDemoModeState();
-  void HandleLogRemoveUserWarningShown();
-  void HandleFirstIncorrectPasswordAttempt(const AccountId& account_id);
-  void HandleMaxIncorrectPasswordAttempts(const AccountId& account_id);
 
   // Implements user sign-in.
   void AuthenticateExistingUser(const AccountId& account_id,
                                 const std::string& password,
                                 bool authenticated_by_pin);
-
-  // Sends the list of `keyboard_layouts` available for the `locale` that is
-  // currently selected for the public session identified by `user_id`.
-  void SendPublicSessionKeyboardLayouts(
-      const AccountId& account_id,
-      const std::string& locale,
-      std::unique_ptr<base::ListValue> keyboard_layouts);
 
   // Returns true iff
   // (i)   log in is restricted to some user list,
@@ -325,9 +242,6 @@ class SigninScreenHandler
 
   net::Error FrameError() const;
 
-  // input_method::ImeKeyboard::Observer implementation:
-  void OnCapsLockChanged(bool enabled) override;
-  void OnLayoutChanging(const std::string& layout_name) override {}
 
   // After proxy auth information has been supplied, this function re-enables
   // responding to network state notifications.
@@ -389,17 +303,14 @@ class SigninScreenHandler
   // Input Method Engine state used at signin screen.
   scoped_refptr<input_method::InputMethodManager::State> ime_state_;
 
-  // True if SigninScreenHandler has already been added to OobeUI observers.
-  bool oobe_ui_observer_added_ = false;
-
   bool is_offline_timeout_for_test_set_ = false;
   base::TimeDelta offline_timeout_for_test_;
 
   std::unique_ptr<ErrorScreensHistogramHelper> histogram_helper_;
 
+  // TODO (crbug.com/1168114): Only needed for GetKeyboardRemappedPrefValue that
+  // should be migrated.
   std::unique_ptr<AccountId> focused_pod_account_id_;
-  base::Optional<system::SystemClock::ScopedHourClockType>
-      focused_user_clock_type_;
 
   base::WeakPtrFactory<SigninScreenHandler> weak_factory_{this};
 
@@ -407,5 +318,10 @@ class SigninScreenHandler
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::SigninScreenHandler;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_SIGNIN_SCREEN_HANDLER_H_

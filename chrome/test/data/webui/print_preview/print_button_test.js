@@ -142,8 +142,7 @@ suite(print_button_test.suiteName, function() {
 
   // Tests that hidePreview() is not called if Save to Drive is selected on
   // Chrome OS and the user clicks print while the preview is loading because
-  // when the flag |kPrintSaveToDrive| is enabled, Save to Drive needs to be
-  // treated like Save as PDF.
+  // Save to Drive needs to be treated like Save as PDF.
   test(
       assert(print_button_test.TestNames.SaveToDriveVisiblePreviewCros),
       function() {

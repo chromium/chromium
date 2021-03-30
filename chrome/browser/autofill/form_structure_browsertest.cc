@@ -31,7 +31,8 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/pattern_provider/pattern_configuration_parser.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "net/http/http_status_code.h"
@@ -94,9 +95,9 @@ std::vector<base::FilePath> GetTestFiles() {
 }
 
 std::string FormStructuresToString(
-    const std::map<FormRendererId, std::unique_ptr<FormStructure>>& forms) {
+    const std::map<FormGlobalId, std::unique_ptr<FormStructure>>& forms) {
   std::string forms_string;
-  // The forms are sorted by renderer ID, which should make the order
+  // The forms are sorted by their global ID, which should make the order
   // deterministic.
   for (const auto& kv : forms) {
     const auto* form = kv.second.get();
@@ -106,15 +107,17 @@ std::string FormStructuresToString(
       // integers in |field->section| with consecutive unique integers.
       std::string section = field->section;
       size_t last_underscore = section.find_last_of('_');
-      size_t next_dash = section.find_first_of('-', last_underscore);
+      size_t second_last_underscore =
+          section.find_last_of('_', last_underscore - 1);
+      size_t next_dash = section.find_first_of('-', second_last_underscore);
       int new_section_index = static_cast<int>(section_to_index.size() + 1);
       int section_index =
           section_to_index.insert(std::make_pair(section, new_section_index))
               .first->second;
-      if (last_underscore != std::string::npos &&
+      if (second_last_underscore != std::string::npos &&
           next_dash != std::string::npos) {
         section = base::StringPrintf(
-            "%s%d%s", section.substr(0, last_underscore + 1).c_str(),
+            "%s%d%s", section.substr(0, second_last_underscore + 1).c_str(),
             section_index, section.substr(next_dash).c_str());
       }
 
@@ -169,17 +172,25 @@ FormStructureBrowserTest::FormStructureBrowserTest()
   feature_list_.InitWithFeatures(
       // Enabled
       {// TODO(crbug.com/1098943): Remove once experiment is over.
-       autofill::features::kAutofillEnableSupportForMoreStructureInNames,
+       features::kAutofillEnableSupportForMoreStructureInNames,
        // TODO(crbug.com/1125978): Remove once launched.
-       autofill::features::kAutofillEnableSupportForMoreStructureInAddresses,
+       features::kAutofillEnableSupportForMoreStructureInAddresses,
        // TODO(crbug.com/896689): Remove once launched.
-       autofill::features::kAutofillNameSectionsWithRendererIds,
+       features::kAutofillNameSectionsWithRendererIds,
        // TODO(crbug.com/1076175) Remove once launched.
-       autofill::features::kAutofillUseNewSectioningMethod,
+       features::kAutofillUseNewSectioningMethod,
        // Remove once launched
-       autofill::features::kAutofillEnableAugmentedPhoneCountryCode},
+       features::kAutofillEnableAugmentedPhoneCountryCode,
+       // TODO(crbug.com/1157405) Remove once launched.
+       features::kAutofillEnableDependentLocalityParsing,
+       // TODO(crbug.com/1150895) Remove once launched.
+       features::kAutofillParsingPatternsLanguageDetection,
+       // TODO(crbug/1165780): Remove once shared labels are launched.
+       features::kAutofillEnableSupportForParsingWithSharedLabels,
+       // TODO(crbug/1190334): Remove once launched.
+       features::kAutofillParseMerchantPromoCodeFields},
       // Disabled
-      {autofill::features::kAutofillRestrictUnownedFieldsToFormlessCheckout});
+      {});
 }
 
 FormStructureBrowserTest::~FormStructureBrowserTest() {}

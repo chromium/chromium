@@ -6,7 +6,7 @@
 <translation id="1122869341872663659"><ph name="QUERY" /> के लिए <ph name="N" /> खोज नतीजे दिखाए जा रहे हैं</translation>
 <translation id="1195667586424773550">लिंक को टैब के पता बार में खींचें और छोड़ें</translation>
 <translation id="1204450209689312104">गुप्त मोड में नई विंडो खोलें</translation>
-<translation id="1251638888133819822">फ़ुलस्क्रीन पर सामग्री को बड़ा दिखाने की सुविधा चालू या बंद करें</translation>
+<translation id="1251638888133819822">फ़ुलस्क्रीन मैग्निफ़ायर चालू या बंद करें</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1299858300159559687">अपना अभी वाला पेज प्रिंट करें</translation>
@@ -23,11 +23,13 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">पता बार में अपने इनपुट में www. और .com जोड़ें, फिर पेज खोलें</translation>
+<translation id="1768987374400973299">स्क्रीनशॉट लें/रिकॉर्डिंग करें</translation>
 <translation id="1872219238824176091">मौजूदा डेस्क को हटाएं</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, फिर <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> या <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">अगले टैब पर जाएं</translation>
 <translation id="2010818616644390445">विंडो में आखिरी टैब पर जाएंं</translation>
 <translation id="2040706009561734834">लॉन्चर खोलें/बंद करें</translation>
+<translation id="2086334242442703436">इमोजी पिकर खोलें</translation>
 <translation id="2088054208777350526">कीबोर्ड शॉर्टकट खोजें</translation>
 <translation id="2125211348069077981"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="E" /> या <ph name="F" /></translation>
 <translation id="2145908266289632567">लेख में बदलाव करना</translation>
@@ -46,6 +48,7 @@
 <translation id="2480851840841871861">Google Assistant खोलें</translation>
 <translation id="2488661730534396940">बाईं ओर मौजूद डेस्क को चालू करें</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516999188535378855">Diagnostics ऐप्लिकेशन खोलें</translation>
 <translation id="2530339807289914946">वेबपेज में नीचे स्क्रोल करें</translation>
 <translation id="2530896289327917474">कैरेट ब्राउज़िंग को चालू या बंद करने के लिए</translation>
 <translation id="2574014812750545982">पेज पर ज़ूम लेवल को रीसेट करें</translation>
@@ -69,11 +72,11 @@
 <translation id="3140353188828248647">पता बार को फ़ोकस करें</translation>
 <translation id="3256109297135787951">अपने शेल्फ़ पर मौजूद किसी आइटम से हाइलाइट हटाएं</translation>
 <translation id="3288816184963444640">अभी वाली विंडो बंद करें</translation>
-<translation id="3407560819924487926">काम का प्रबंधक सामने लाएं</translation>
+<translation id="3407560819924487926">काम का मैनेजर सामने लाएं</translation>
 <translation id="3422679037938588196">अपनी खोज के पिछले मिलान पर जाएं</translation>
 <translation id="353037708190149633">अपनी मौजूदा विंडो में खुले सभी पेजों को नए फ़ोल्डर में बुकमार्क के रूप में सेव करें</translation>
 <translation id="355103131818127604">लिंक को बैकग्राउंड में नए टैब में खोलें</translation>
-<translation id="3622741593887335780">ज़ूम इन करें (डॉक किए जाने या फ़ुलस्क्रीन पर सामग्री को बड़ा दिखाने की सुविधा चालू किए जाने पर)</translation>
+<translation id="3622741593887335780">ज़ूम इन करें (डॉक किए जाने या फ़ुलस्क्रीन मैग्निफ़ायर चालू किए जाने पर)</translation>
 <translation id="3633851487917460983">क्लिपबोर्ड खोलें</translation>
 <translation id="3649256019230929621">विंडो को छोटा करें</translation>
 <translation id="3655154169297074232">टैब और विंडो</translation>
@@ -110,6 +113,7 @@
 <translation id="4801989101741319327">अगले शब्द के आखिर में ले जाएं</translation>
 <translation id="4866066940972151697">दाईं ओर मौजूद डेस्क को चालू करें</translation>
 <translation id="4916163929714267752">लिंक को नई विंडो में खोलें</translation>
+<translation id="492453977506755176">कैप्चर मोड वाला बटन</translation>
 <translation id="5030659775136592441">बुकमार्क मैनेजर दिखाएं</translation>
 <translation id="5034421018520995080">पेज के सबसे ऊपर जाएं</translation>
 <translation id="5042305953558921026">खास जानकारी मोड कुंजी</translation>
@@ -132,6 +136,7 @@
 <translation id="5899919361772749550">डेवलपर टूल कंसोल दिखाएं या छिपाएं</translation>
 <translation id="5919628958418675842">निजता स्क्रीन चालू या बंद करें</translation>
 <translation id="5921745308587794300">विंडो घुमाएं</translation>
+<translation id="5926306472221400972">फ़ुलस्क्रीन का स्क्रीनशॉट लें</translation>
 <translation id="6022924867608035986">खोज बॉक्स का लेख मिटाएं</translation>
 <translation id="6045998054441862242">उच्च कंट्रास्ट मोड चालू करें</translation>
 <translation id="6052614013050385269">लिंक पर राइट-क्‍लिक करें</translation>
@@ -147,8 +152,9 @@
 <translation id="6425378783626925378">अपनी शेल्फ़ पर 1 से 8 तक आइकॉन पर क्लिक करें</translation>
 <translation id="6435207348963613811">अपनी शेल्‍फ़ पर पिछला आइटम हाइलाइट करें</translation>
 <translation id="6445033640292336367">टैब को उसकी मूल जगह पर वापस ले जाएं</translation>
-<translation id="6474744297082284761">ज़ूम घटाएं (डॉक किए जाने या फ़ुलस्क्रीन पर सामग्री को बड़ा दिखाने की सुविधा चालू किए जाने पर)</translation>
+<translation id="6474744297082284761">ज़ूम घटाएं (डॉक किए जाने या फ़ुलस्क्रीन मैग्निफ़ायर चालू किए जाने पर)</translation>
 <translation id="649811797655257835">फ़ाइल चुनें, फिर <ph name="SPACE" /> दबाएं</translation>
+<translation id="6551886416582667425">पार्शियल (कुछ हिस्सों का) स्क्रीनशॉट लें/पार्शियल (कुछ हिस्सों की) रिकॉर्डिंग करें</translation>
 <translation id="6556040137485212400">उस विंडो को खोलें जिसका सबसे लंबे समय से इस्तेमाल नहीं किया गया है</translation>
 <translation id="666343722268997814">हाइलाइट किए गए आइटम के लिए राइट-क्लिक मेन्यू खोलें</translation>
 <translation id="6671538777808758331">अपनी खोज के अगले मिलान पर जाएं</translation>
@@ -175,6 +181,7 @@
 <translation id="7611271430932669992">फ़ोकस को पॉपअप और संवाद पर ले जाएं</translation>
 <translation id="7635348532214572995">ऐप्लिकेशन के ग्रिड में किसी ऐप्लिकेशन आइकॉन को एक जगह से दूसरी जगह पर ले जाएं</translation>
 <translation id="766326951329901120">क्लिपबोर्ड की सामग्री सादे पाठ की तरह चिपकाएं</translation>
+<translation id="7673453620027697230">विंडो स्क्रीनशॉट लें/विंडो रिकॉर्डिंग करें</translation>
 <translation id="7703010453515335249">दायां ब्रैकेट</translation>
 <translation id="7724603315864178912">काटें</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, फिर <ph name="SPACE" /> या <ph name="ENTER" /></translation>

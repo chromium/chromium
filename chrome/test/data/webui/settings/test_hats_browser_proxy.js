@@ -11,11 +11,17 @@ export class TestHatsBrowserProxy extends TestBrowserProxy {
   constructor() {
     super([
       'tryShowSurvey',
+      'tryShowPrivacySandboxSurvey',
     ]);
   }
 
   /** @override*/
   tryShowSurvey() {
     this.methodCalled('tryShowSurvey');
+  }
+
+  /** @override*/
+  tryShowPrivacySandboxSurvey() {
+    this.methodCalled('tryShowPrivacySandboxSurvey');
   }
 }

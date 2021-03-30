@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/values.h"
-#include "chrome/browser/chromeos/login/screens/signin_fatal_error_screen.h"
+#include "chrome/browser/ash/login/screens/signin_fatal_error_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
 namespace chromeos {

@@ -80,9 +80,9 @@
             clear-label="$i18n{clearSearch}" on-keydown="onKeydown_" autofocus>
         </cr-search-field>
         <iron-list scroll-target="[[$$('[slot=body]')]]"
-            items="[[getPossibleDeviceLanguages_(languages.supported,
-                languages.enabled.*, lowercaseQueryString_)]]"
-            selection-enabled selected-item="{{selectedLanguage_}}">
+            items="[[displayedLanguages_]]" selection-enabled
+            selected-item="{{selectedLanguage_}}"
+            hidden$="[[displayedLanguagesEmpty_]]">
           <template>
             <!-- |selected| is a property of iron-list -->
             <div class$="list-item [[getItemClass_(selected)]]"
@@ -97,6 +97,10 @@
             </div>
           </template>
         </iron-list>
+        <div id="no-search-results" class="centered-message"
+            hidden$="[[!displayedLanguagesEmpty_]]">
+          $i18n{noSearchResults}
+        </div>
       </div>
       <div slot="button-container">
         <cr-button class="cancel-button" on-click="onCancelButtonTap_">

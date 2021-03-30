@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_coordinator.h"
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -161,10 +162,6 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
 
 - (void)interruptWithAction:(SigninCoordinatorInterruptAction)action
                  completion:(ProceduralBlock)completion {
-  // Chrome should never start before the first run is fully finished. Therefore
-  // we do not expect the sign-in to be interrupted for first run.
-  DCHECK(self.signinIntent != UserSigninIntentFirstRun);
-
   if (self.mediator.isAuthenticationInProgress) {
     [self.logger
         logSigninCompletedWithResult:SigninCoordinatorResultInterrupted
@@ -196,6 +193,7 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
     // be sent to |self.advancedSettingsSigninCoordinator|.
     DCHECK(!self.viewController);
     DCHECK(!self.mediator);
+    DCHECK(!self.unifiedConsentCoordinator);
     [self.advancedSettingsSigninCoordinator
         interruptWithAction:action
                  completion:^{
@@ -211,6 +209,15 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
     return;
   }
   [self interruptUserSigninUIWithAction:action completion:completion];
+}
+
+- (void)stop {
+  DCHECK(!self.viewController);
+  DCHECK(!self.mediator);
+  DCHECK(!self.unifiedConsentCoordinator);
+  DCHECK(!self.addAccountSigninCoordinator);
+  DCHECK(!self.advancedSettingsSigninCoordinator);
+  [super stop];
 }
 
 #pragma mark - UnifiedConsentCoordinatorDelegate
@@ -325,8 +332,9 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
     case UserSigninIntentSignin:
     case UserSigninIntentUpgrade: {
       if (self.viewController.presentingViewController) {
-        [self.viewController dismissViewControllerAnimated:YES
-                                                completion:completion];
+        [self.viewController.presentingViewController
+            dismissViewControllerAnimated:YES
+                               completion:completion];
       } else {
         // When the user swipes to dismiss the view controller. The sequence is:
         //  * The user swipe the view controller
@@ -376,18 +384,36 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
   DCHECK(self.unifiedConsentCoordinator);
   DCHECK(self.mediator);
   DCHECK(self.viewController);
+
   [self.unifiedConsentCoordinator stop];
   self.unifiedConsentCoordinator = nil;
   self.mediator = nil;
   self.viewController = nil;
-  if (!settingsWasTapped || self.signinIntent == UserSigninIntentFirstRun) {
-    // For first run intent, the UserSigninCoordinator owner is reponsible to
-    // open the advanced settings sign-in.
-    [self runCompletionCallbackWithSigninResult:signinResult
-                                       identity:identity
-                     showAdvancedSettingsSignin:settingsWasTapped];
-    return;
+
+  switch (self.signinIntent) {
+    case UserSigninIntentFirstRun: {
+      // The UserSigninCoordinator owner is responsible for dismissing views and
+      // opening the advanced Settings for the first-run experience.
+      break;
+    }
+    case UserSigninIntentUpgrade:
+    case UserSigninIntentSignin: {
+      DCHECK(!self.viewController.presentingViewController);
+      if (settingsWasTapped) {
+        [self displayAdvancedSettings];
+        return;
+      }
+      break;
+    }
   }
+
+  [self runCompletionCallbackWithSigninResult:signinResult
+                                     identity:identity
+                   showAdvancedSettingsSignin:settingsWasTapped];
+}
+
+// Displays the Advanced Settings screen of the sign-in flow.
+- (void)displayAdvancedSettings {
   self.advancedSettingsSigninCoordinator = [SigninCoordinator
       advancedSettingsSigninCoordinatorWithBaseViewController:
           self.baseViewController
@@ -432,8 +458,7 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
       // Avoid presenting the promo if the current device orientation is not
       // supported. The promo will be presented at a later moment, when the
       // device orientation is supported.
-      UIInterfaceOrientation orientation =
-          [UIApplication sharedApplication].statusBarOrientation;
+      UIInterfaceOrientation orientation = GetInterfaceOrientation();
       NSUInteger supportedOrientationsMask =
           [self.viewController supportedInterfaceOrientations];
       if (!((1 << orientation) & supportedOrientationsMask)) {
@@ -505,10 +530,10 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
   __weak UserSigninCoordinator* weakSelf = self;
   ProceduralBlock runCompletionCallback = ^{
     [weakSelf
-        runCompletionCallbackWithSigninResult:SigninCoordinatorResultInterrupted
-                                     identity:self.unifiedConsentCoordinator
-                                                  .selectedIdentity
-                   showAdvancedSettingsSignin:NO];
+        viewControllerDismissedWithResult:SigninCoordinatorResultInterrupted
+                                 identity:weakSelf.unifiedConsentCoordinator
+                                              .selectedIdentity
+                    settingsLinkWasTapped:NO];
     if (completion) {
       completion();
     }
@@ -520,15 +545,21 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
       break;
     }
     case SigninCoordinatorInterruptActionDismissWithAnimation: {
+      // The first run is in charge to dismiss the sign-in view controller.
+      DCHECK_NE(UserSigninIntentFirstRun, self.signinIntent);
       [self.mediator cancelAndDismissAuthenticationFlowAnimated:YES];
-      [self.viewController dismissViewControllerAnimated:YES
-                                              completion:runCompletionCallback];
+      [self.viewController.presentingViewController
+          dismissViewControllerAnimated:YES
+                             completion:runCompletionCallback];
       break;
     }
     case SigninCoordinatorInterruptActionDismissWithoutAnimation: {
+      // The first run is in charge to dismiss the sign-in view controller.
+      DCHECK_NE(UserSigninIntentFirstRun, self.signinIntent);
       [self.mediator cancelAndDismissAuthenticationFlowAnimated:NO];
-      [self.viewController dismissViewControllerAnimated:NO
-                                              completion:runCompletionCallback];
+      [self.viewController.presentingViewController
+          dismissViewControllerAnimated:NO
+                             completion:runCompletionCallback];
       break;
     }
   }

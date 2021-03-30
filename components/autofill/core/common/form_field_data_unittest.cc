@@ -15,9 +15,9 @@ namespace autofill {
 namespace {
 
 void FillCommonFields(FormFieldData* data) {
-  data->label = base::ASCIIToUTF16("label");
-  data->name = base::ASCIIToUTF16("name");
-  data->value = base::ASCIIToUTF16("value");
+  data->label = u"label";
+  data->name = u"name";
+  data->value = u"value";
   data->form_control_type = "password";
   data->autocomplete_attribute = "off";
   data->max_length = 200;
@@ -26,10 +26,10 @@ void FillCommonFields(FormFieldData* data) {
   data->is_focusable = true;
   data->should_autocomplete = false;
   data->text_direction = base::i18n::RIGHT_TO_LEFT;
-  data->option_values.push_back(base::ASCIIToUTF16("First"));
-  data->option_values.push_back(base::ASCIIToUTF16("Second"));
-  data->option_contents.push_back(base::ASCIIToUTF16("First"));
-  data->option_contents.push_back(base::ASCIIToUTF16("Second"));
+  data->option_values.push_back(u"First");
+  data->option_values.push_back(u"Second");
+  data->option_contents.push_back(u"First");
+  data->option_contents.push_back(u"Second");
 }
 
 void FillVersion2Fields(FormFieldData* data) {
@@ -37,11 +37,11 @@ void FillVersion2Fields(FormFieldData* data) {
 }
 
 void FillVersion3Fields(FormFieldData* data) {
-  data->placeholder = base::ASCIIToUTF16("placeholder");
+  data->placeholder = u"placeholder";
 }
 
 void FillVersion5Fields(FormFieldData* data) {
-  data->css_classes = base::ASCIIToUTF16("class1 class2");
+  data->css_classes = u"class1 class2";
 }
 
 void FillVersion6Fields(FormFieldData* data) {
@@ -50,11 +50,11 @@ void FillVersion6Fields(FormFieldData* data) {
 }
 
 void FillVersion7Fields(FormFieldData* data) {
-  data->id_attribute = base::ASCIIToUTF16("id");
+  data->id_attribute = u"id";
 }
 
 void FillVersion8Fields(FormFieldData* data) {
-  data->name_attribute = base::ASCIIToUTF16("name");
+  data->name_attribute = u"name";
 }
 
 void WriteSection1(const FormFieldData& data, base::Pickle* pickle) {
@@ -372,8 +372,8 @@ TEST(FormFieldDataTest, DeserializeVersion8) {
 TEST(FormFieldDataTest, DeserializeBadData) {
   base::Pickle pickle;
   pickle.WriteInt(255);
-  pickle.WriteString16(base::ASCIIToUTF16("random"));
-  pickle.WriteString16(base::ASCIIToUTF16("data"));
+  pickle.WriteString16(u"random");
+  pickle.WriteString16(u"data");
 
   base::PickleIterator iter(pickle);
   FormFieldData actual;

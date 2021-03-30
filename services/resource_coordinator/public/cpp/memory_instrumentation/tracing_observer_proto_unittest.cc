@@ -37,7 +37,7 @@ namespace {
 class TracingObserverProtoTest : public testing::Test {
  public:
   void SetUp() override {
-    auto perfetto_wrapper = std::make_unique<PerfettoTaskRunner>(
+    auto perfetto_wrapper = std::make_unique<base::tracing::PerfettoTaskRunner>(
         task_environment_.GetMainThreadTaskRunner());
     producer_client_ =
         std::make_unique<TestProducerClient>(std::move(perfetto_wrapper));

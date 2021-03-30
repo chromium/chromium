@@ -87,9 +87,6 @@ class IdentityProvider {
       const OAuth2AccessTokenManager::ScopeSet& scopes,
       const std::string& access_token) = 0;
 
-  // Set the account id that should be registered for invalidations.
-  virtual void SetActiveAccountId(const CoreAccountId& account_id) = 0;
-
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 

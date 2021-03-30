@@ -18,6 +18,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <atomic>
 #include <cmath>
 #include <new>
 #include <string>
@@ -26,6 +27,7 @@
 
 #include "gtest/gtest.h"
 #include "absl/base/attributes.h"
+#include "absl/base/macros.h"
 #include "absl/flags/config.h"
 #include "absl/flags/declare.h"
 #include "absl/flags/internal/flag.h"
@@ -108,16 +110,16 @@ TEST_F(FlagTest, Traits) {
   EXPECT_EQ(flags::StorageKind<int64_t>(),
             flags::FlagValueStorageKind::kOneWordAtomic);
 
-#if defined(ABSL_FLAGS_INTERNAL_ATOMIC_DOUBLE_WORD)
   EXPECT_EQ(flags::StorageKind<S1>(),
-            flags::FlagValueStorageKind::kTwoWordsAtomic);
+            flags::FlagValueStorageKind::kSequenceLocked);
   EXPECT_EQ(flags::StorageKind<S2>(),
-            flags::FlagValueStorageKind::kTwoWordsAtomic);
-#else
-  EXPECT_EQ(flags::StorageKind<S1>(),
-            flags::FlagValueStorageKind::kAlignedBuffer);
-  EXPECT_EQ(flags::StorageKind<S2>(),
-            flags::FlagValueStorageKind::kAlignedBuffer);
+            flags::FlagValueStorageKind::kSequenceLocked);
+// Make sure absl::Duration uses the sequence-locked code path. MSVC 2015
+// doesn't consider absl::Duration to be trivially-copyable so we just
+// restrict this to clang as it seems to be a well-behaved compiler.
+#ifdef __clang__
+  EXPECT_EQ(flags::StorageKind<absl::Duration>(),
+            flags::FlagValueStorageKind::kSequenceLocked);
 #endif
 
   EXPECT_EQ(flags::StorageKind<std::string>(),
@@ -175,7 +177,7 @@ bool TestConstructionFor(const absl::Flag<T>& f1, absl::Flag<T>& f2) {
   EXPECT_EQ(absl::GetFlagReflectionHandle(f1).Help(), "literal help");
   EXPECT_EQ(absl::GetFlagReflectionHandle(f1).Filename(), "file");
 
-  flags::FlagRegistrar<T, false>(ABSL_FLAG_IMPL_FLAG_PTR(f2))
+  flags::FlagRegistrar<T, false>(ABSL_FLAG_IMPL_FLAG_PTR(f2), nullptr)
       .OnUpdate(TestCallback);
 
   EXPECT_EQ(absl::GetFlagReflectionHandle(f2).Name(), "f2");
@@ -579,6 +581,43 @@ TEST_F(FlagTest, TestGetViaReflection) {
   EXPECT_EQ(*handle->TryGet<std::string>(), "");
   handle = absl::FindCommandLineFlag("test_flag_12");
   EXPECT_EQ(*handle->TryGet<absl::Duration>(), absl::Minutes(10));
+}
+
+// --------------------------------------------------------------------
+
+TEST_F(FlagTest, ConcurrentSetAndGet) {
+  static constexpr int kNumThreads = 8;
+  // Two arbitrary durations. One thread will concurrently flip the flag
+  // between these two values, while the other threads read it and verify
+  // that no other value is seen.
+  static const absl::Duration kValidDurations[] = {
+      absl::Seconds(int64_t{0x6cebf47a9b68c802}) + absl::Nanoseconds(229702057),
+      absl::Seconds(int64_t{0x23fec0307e4e9d3}) + absl::Nanoseconds(44555374)};
+  absl::SetFlag(&FLAGS_test_flag_12, kValidDurations[0]);
+
+  std::atomic<bool> stop{false};
+  std::vector<std::thread> threads;
+  auto* handle = absl::FindCommandLineFlag("test_flag_12");
+  for (int i = 0; i < kNumThreads; i++) {
+    threads.emplace_back([&]() {
+      while (!stop.load(std::memory_order_relaxed)) {
+        // Try loading the flag both directly and via a reflection
+        // handle.
+        absl::Duration v = absl::GetFlag(FLAGS_test_flag_12);
+        EXPECT_TRUE(v == kValidDurations[0] || v == kValidDurations[1]);
+        v = *handle->TryGet<absl::Duration>();
+        EXPECT_TRUE(v == kValidDurations[0] || v == kValidDurations[1]);
+      }
+    });
+  }
+  absl::Time end_time = absl::Now() + absl::Seconds(1);
+  int i = 0;
+  while (absl::Now() < end_time) {
+    absl::SetFlag(&FLAGS_test_flag_12,
+                  kValidDurations[i++ % ABSL_ARRAYSIZE(kValidDurations)]);
+  }
+  stop.store(true, std::memory_order_relaxed);
+  for (auto& t : threads) t.join();
 }
 
 // --------------------------------------------------------------------

@@ -6,15 +6,20 @@
 #define CHROME_UPDATER_DEVICE_MANAGEMENT_DM_MESSAGE_H_
 
 #include <string>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 
 namespace updater {
 
 class CachedPolicyInfo;
+struct PolicyValidationResult;
 
 // DM policy map: policy_type --> serialized policy data of PolicyFetchResponse.
 using DMPolicyMap = base::flat_map<std::string, std::string>;
+
+// The policy type for Omaha policy settings.
+extern const char kGoogleUpdatePolicyType[];
 
 // Returns the serialized data from a DeviceManagementRequest, which wraps
 // a RegisterBrowserRequest, to register the current device.
@@ -27,19 +32,28 @@ std::string GetRegisterBrowserRequestData(const std::string& machine_name,
 std::string GetPolicyFetchRequestData(const std::string& policy_type,
                                       const CachedPolicyInfo& policy_info);
 
+// Returns the serialized data from a DeviceManagementRequest, which wraps
+// a PolicyValidationReportRequest, to report possible policy validation errors.
+std::string GetPolicyValidationReportRequestData(
+    const PolicyValidationResult& validation_result);
+
 // Parses the DeviceManagementResponse for a device registration request, and
 // returns the DM token. Returns empty string if parsing failed or the response
 // is unexpected.
 std::string ParseDeviceRegistrationResponse(const std::string& response_data);
 
-// Parses the DeviceManagementResponse for a policy fetch request, and returns
-// DMPolicyMap. |policy_info|, |expected_dm_token|, |expected_device_id| are
-// used to verify the response and check whether the response is intended for
-// current device.
-DMPolicyMap ParsePolicyFetchResponse(const std::string& response_data,
-                                     const CachedPolicyInfo& policy_info,
-                                     const std::string& expected_dm_token,
-                                     const std::string& expected_device_id);
+// Parses and validates the DeviceManagementResponse for a policy fetch request,
+// and returns valid policies in the DMPolicyMap. All validation issues will be
+// put into the `validation_results`, if there's any. `policy_info`,
+// `expected_dm_token`, `expected_device_id` are used for validation, to check
+// response's the signatures and whether it is intended for current device.
+DMPolicyMap ParsePolicyFetchResponse(
+    const std::string& response_data,
+    const CachedPolicyInfo& policy_info,
+    const std::string& expected_dm_token,
+    const std::string& expected_device_id,
+    std::vector<PolicyValidationResult>& validation_results);
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_DEVICE_MANAGEMENT_DM_MESSAGE_H_

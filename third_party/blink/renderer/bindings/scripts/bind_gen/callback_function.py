@@ -49,13 +49,12 @@ def bind_local_vars(code_node, cg_context, is_construct_call=False):
     local_vars = []
 
     local_vars.extend([
-        S("argument_creation_context",
-          ("v8::Local<v8::Object> ${argument_creation_context} = "
-           "CallbackRelevantScriptState()->GetContext()->Global();")),
         S("exception_state", ("ExceptionState ${exception_state}("
                               "${isolate}, ExceptionState::kExecutionContext,"
                               "${class_like_name}, ${property_name});")),
         S("isolate", "v8::Isolate* ${isolate} = GetIsolate();"),
+        S("script_state",
+          "ScriptState* ${script_state} = CallbackRelevantScriptState();"),
     ])
 
     if cg_context.callback_function:
@@ -311,9 +310,13 @@ bindings::CallbackInvokeHelper<{template_params}> helper(
             v8_arg_name = name_style.local_var_f("v8_arg{}_{}", index + 1,
                                                  arguments[index].identifier)
             body.register_code_symbol(
-                make_blink_to_v8_value(v8_arg_name, arg_name,
-                                       arguments[index].idl_type,
-                                       "${argument_creation_context}"))
+                make_blink_to_v8_value(
+                    v8_arg_name,
+                    arg_name,
+                    arguments[index].idl_type,
+                    argument=arguments[index],
+                    error_exit_return_statement=(
+                        "return ${return_value_on_failure};")))
             body.append(
                 F("argv[{index}] = ${{{v8_arg}}};",
                   index=index,
@@ -322,10 +325,13 @@ bindings::CallbackInvokeHelper<{template_params}> helper(
             v8_arg_name = name_style.local_var_f("v8_arg{}_{}", len(arguments),
                                                  arguments[-1].identifier)
             body.register_code_symbol(
-                make_blink_to_v8_value(v8_arg_name,
-                                       "{}[i]".format(variadic_arg_name),
-                                       arguments[-1].idl_type,
-                                       "${argument_creation_context}"))
+                make_blink_to_v8_value(
+                    v8_arg_name,
+                    "{}[i]".format(variadic_arg_name),
+                    arguments[-1].idl_type.unwrap(variadic=True),
+                    argument=arguments[-1],
+                    error_exit_return_statement=(
+                        "return ${return_value_on_failure};")))
             body.append(
                 CxxForLoopNode(
                     cond=F("wtf_size_t i = 0; i < {var_arg}.size(); ++i",
@@ -335,7 +341,7 @@ bindings::CallbackInvokeHelper<{template_params}> helper(
                           non_var_arg_size=len(arguments) - 1,
                           v8_arg=v8_arg_name),
                     ],
-                    weak_dep_syms=["argument_creation_context", "isolate"]))
+                    weak_dep_syms=["isolate", "script_state"]))
 
     body.extend([
         CxxUnlikelyIfNode(cond="!helper.Call(argc, argv)",
@@ -589,11 +595,13 @@ def generate_callback_function(callback_function_identifier):
     source_node.accumulator.add_include_headers([
         "third_party/blink/renderer/bindings/core/v8/callback_invoke_helper.h",
         "third_party/blink/renderer/bindings/core/v8/generated_code_helper.h",
+        "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h",
     ])
     (header_forward_decls, header_include_headers, source_forward_decls,
      source_include_headers) = collect_forward_decls_and_include_headers(
-         [callback_function.return_type] +
-         map(lambda argument: argument.idl_type, callback_function.arguments))
+         [callback_function.return_type] + list(
+             map(lambda argument: argument.idl_type,
+                 callback_function.arguments)))
     header_node.accumulator.add_class_decls(header_forward_decls)
     header_node.accumulator.add_include_headers(header_include_headers)
     source_node.accumulator.add_class_decls(source_forward_decls)

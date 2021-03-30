@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.profiles;
 
 import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -150,6 +151,26 @@ public class OTRProfileIDTest {
 
             OTRProfileID deserializedEmptyValue = OTRProfileID.deserialize("");
             assert deserializedEmptyValue == null;
+        });
+    }
+
+    @Test
+    @SmallTest
+    public void testOTRProfileIDsAreEqualOnJavaAndNative() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            OTRProfileID otrProfileIDJava = OTRProfileID.getPrimaryOTRProfileID();
+            OTRProfileID otrProfileIDNative = OTRProfileIDJni.get().getPrimaryID();
+            assert otrProfileIDJava.equals(otrProfileIDNative);
+
+            Profile profileJava =
+                    Profile.getLastUsedRegularProfile().getOffTheRecordProfile(otrProfileIDJava);
+            Profile profileNative =
+                    Profile.getLastUsedRegularProfile().getOffTheRecordProfile(otrProfileIDNative);
+            assert profileJava.equals(profileNative);
+
+            ProfileKey profileKeyJava = profileJava.getProfileKey();
+            ProfileKey profileKeyNative = profileNative.getProfileKey();
+            assert profileKeyJava.equals(profileKeyNative);
         });
     }
 }

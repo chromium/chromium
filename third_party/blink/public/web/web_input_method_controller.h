@@ -9,13 +9,16 @@
 #include "third_party/blink/public/web/web_widget.h"
 #include "ui/base/ime/ime_text_span.h"
 
+namespace gfx {
+class Rect;
+}  // namespace gfx
+
 namespace blink {
 
 class WebRange;
 class WebString;
 template <typename T>
 class WebVector;
-struct WebRect;
 
 class WebInputMethodController {
  public:
@@ -77,15 +80,15 @@ class WebInputMethodController {
   // Populate |bounds| with the composition character bounds for the ongoing
   // composition. Returns false if there is no focused input or any ongoing
   // composition.
-  virtual bool GetCompositionCharacterBounds(WebVector<WebRect>& bounds) {
+  virtual bool GetCompositionCharacterBounds(WebVector<gfx::Rect>& bounds) {
     return false;
   }
 
   // Populate |control_bounds| and |selection_bounds| with the bounds fetched
   // from the active EditContext. If there isn't any active |EditContext|, then
   // these bounds are empty.
-  virtual void GetLayoutBounds(WebRect* control_bounds,
-                               WebRect* selection_bounds) = 0;
+  virtual void GetLayoutBounds(gfx::Rect* control_bounds,
+                               gfx::Rect* selection_bounds) = 0;
   // Returns true if the inputPanelPolicy flag is set as manual in
   // |EditContext|, which indicates that the software input panel(Virtual
   // Keyboard) shouldn't come up on focus of the EditControl.

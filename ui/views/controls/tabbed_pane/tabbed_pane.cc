@@ -5,6 +5,7 @@
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
 
 #include <algorithm>
+#include <string>
 #include <utility>
 
 #include "base/check_op.h"
@@ -38,7 +39,7 @@
 
 namespace views {
 
-Tab::Tab(TabbedPane* tabbed_pane, const base::string16& title, View* contents)
+Tab::Tab(TabbedPane* tabbed_pane, const std::u16string& title, View* contents)
     : tabbed_pane_(tabbed_pane), contents_(contents) {
   // Calculate the size while the font list is bold.
   auto title_label = std::make_unique<Label>(title, style::CONTEXT_LABEL,
@@ -85,11 +86,11 @@ void Tab::SetSelected(bool selected) {
 #endif
 }
 
-const base::string16& Tab::GetTitleText() const {
+const std::u16string& Tab::GetTitleText() const {
   return title_->GetText();
 }
 
-void Tab::SetTitleText(const base::string16& text) {
+void Tab::SetTitleText(const std::u16string& text) {
   title_->SetText(text);
   UpdatePreferredTitleWidth();
   PreferredSizeChanged();
@@ -229,8 +230,8 @@ void Tab::OnStateChanged() {
   }
 
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-  title_->SetFontList(
-      rb.GetFontListWithDelta(font_size_delta, gfx::Font::NORMAL, font_weight));
+  title_->SetFontList(rb.GetFontListForDetails(ui::ResourceBundle::FontDetails(
+      std::string(), font_size_delta, font_weight)));
 }
 
 void Tab::OnPaint(gfx::Canvas* canvas) {
@@ -476,16 +477,12 @@ void TabStrip::OnPaintBorder(gfx::Canvas* canvas) {
 }
 
 DEFINE_ENUM_CONVERTERS(TabbedPane::Orientation,
-                       {TabbedPane::Orientation::kHorizontal,
-                        base::ASCIIToUTF16("HORIZONTAL")},
-                       {TabbedPane::Orientation::kVertical,
-                        base::ASCIIToUTF16("VERTICAL")})
+                       {TabbedPane::Orientation::kHorizontal, u"HORIZONTAL"},
+                       {TabbedPane::Orientation::kVertical, u"VERTICAL"})
 
 DEFINE_ENUM_CONVERTERS(TabbedPane::TabStripStyle,
-                       {TabbedPane::TabStripStyle::kBorder,
-                        base::ASCIIToUTF16("BORDER")},
-                       {TabbedPane::TabStripStyle::kHighlight,
-                        base::ASCIIToUTF16("HIGHLIGHT")})
+                       {TabbedPane::TabStripStyle::kBorder, u"BORDER"},
+                       {TabbedPane::TabStripStyle::kHighlight, u"HIGHLIGHT"})
 
 BEGIN_METADATA(TabStrip, View)
 ADD_READONLY_PROPERTY_METADATA(int, SelectedTabIndex)
@@ -526,7 +523,7 @@ size_t TabbedPane::GetTabCount() {
 }
 
 void TabbedPane::AddTabInternal(size_t index,
-                                const base::string16& title,
+                                const std::u16string& title,
                                 std::unique_ptr<View> contents) {
   DCHECK_LE(index, GetTabCount());
   contents->SetVisible(false);

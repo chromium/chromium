@@ -14,11 +14,13 @@ namespace content {
 SyntheticTapGesture::SyntheticTapGesture(
     const SyntheticTapGestureParams& params)
     : params_(params),
-      gesture_source_type_(SyntheticGestureParams::DEFAULT_INPUT),
+      gesture_source_type_(content::mojom::GestureSourceType::kDefaultInput),
       state_(SETUP) {
   DCHECK_GE(params_.duration_ms, 0);
-  if (params_.gesture_source_type == SyntheticGestureParams::DEFAULT_INPUT)
-    params_.gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
+  if (params_.gesture_source_type ==
+      content::mojom::GestureSourceType::kDefaultInput)
+    params_.gesture_source_type =
+        content::mojom::GestureSourceType::kTouchInput;
 }
 
 SyntheticTapGesture::~SyntheticTapGesture() {}
@@ -27,20 +29,22 @@ SyntheticGesture::Result SyntheticTapGesture::ForwardInputEvents(
     const base::TimeTicks& timestamp, SyntheticGestureTarget* target) {
   if (state_ == SETUP) {
     gesture_source_type_ = params_.gesture_source_type;
-    if (gesture_source_type_ == SyntheticGestureParams::DEFAULT_INPUT)
+    if (gesture_source_type_ ==
+        content::mojom::GestureSourceType::kDefaultInput)
       gesture_source_type_ = target->GetDefaultSyntheticGestureSourceType();
 
     state_ = PRESS;
   }
 
-  DCHECK_NE(gesture_source_type_, SyntheticGestureParams::DEFAULT_INPUT);
+  DCHECK_NE(gesture_source_type_,
+            content::mojom::GestureSourceType::kDefaultInput);
 
   if (!synthetic_pointer_driver_)
     synthetic_pointer_driver_ =
         SyntheticPointerDriver::Create(gesture_source_type_);
 
-  if (gesture_source_type_ == SyntheticGestureParams::TOUCH_INPUT ||
-      gesture_source_type_ == SyntheticGestureParams::MOUSE_INPUT)
+  if (gesture_source_type_ == content::mojom::GestureSourceType::kTouchInput ||
+      gesture_source_type_ == content::mojom::GestureSourceType::kMouseInput)
     ForwardTouchOrMouseInputEvents(timestamp, target);
   else
     return SyntheticGesture::GESTURE_SOURCE_TYPE_NOT_IMPLEMENTED;

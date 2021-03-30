@@ -142,7 +142,7 @@ std::string TokenServiceLoadCredentialsStateToLabel(
   return std::string();
 }
 
-#if !defined (OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 std::string SigninStatusFieldToLabel(
     signin_internals_util::TimedSigninStatusField field) {
   switch (field) {
@@ -157,7 +157,7 @@ std::string SigninStatusFieldToLabel(
   NOTREACHED();
   return "Error";
 }
-#endif  // !defined (OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // It's quite unfortunate that |time| is saved in prefs as a string instead of
 // base::Time because any change of the format would create inconsistency.
@@ -340,7 +340,7 @@ void AboutSigninInternals::OnContentSettingChanged(
 }
 
 void AboutSigninInternals::NotifyObservers() {
-  if (!signin_observers_.might_have_observers())
+  if (signin_observers_.empty())
     return;
 
   std::unique_ptr<base::DictionaryValue> signin_status_value =
@@ -462,13 +462,8 @@ void AboutSigninInternals::OnUnblockReconcile() {
   NotifyObservers();
 }
 
-void AboutSigninInternals::OnPrimaryAccountSet(
-    const CoreAccountInfo& primary_account_info) {
-  NotifyObservers();
-}
-
-void AboutSigninInternals::OnPrimaryAccountCleared(
-    const CoreAccountInfo& primary_account_info) {
+void AboutSigninInternals::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
   NotifyObservers();
 }
 
@@ -622,7 +617,9 @@ AboutSigninInternals::SigninStatus::ToValue(
                   GetAccountConsistencyDescription(account_consistency));
   AddSectionEntry(
       basic_info, "Signin Status",
-      identity_manager->HasPrimaryAccount() ? "Signed In" : "Not Signed In");
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)
+          ? "Signed In"
+          : "Not Signed In");
   signin::LoadCredentialsState load_tokens_state =
       identity_manager->GetDiagnosticsProvider()
           ->GetDetailedStateOfLoadingOfRefreshTokens();
@@ -632,8 +629,9 @@ AboutSigninInternals::SigninStatus::ToValue(
       basic_info, "Gaia cookies state",
       GetGaiaCookiesStateAsString(GetGaiaCookiesState(signin_client)));
 
-  if (identity_manager->HasPrimaryAccount()) {
-    CoreAccountInfo account_info = identity_manager->GetPrimaryAccountInfo();
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    CoreAccountInfo account_info =
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
     AddSectionEntry(basic_info,
                     SigninStatusFieldToLabel(signin_internals_util::ACCOUNT_ID),
                     account_info.account_id.ToString());

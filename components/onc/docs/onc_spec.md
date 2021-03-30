@@ -238,7 +238,6 @@ Field **NetworkConfigurations** is an array of
     * Whether the network should be considered metered. This may affect auto
       update frequency, and may be used as a hint for apps to conserve data.
       When not specified, the system will set this to the detected value.
-      See also **WiFi.TetheringState**.
 
 * **NameServersConfigType**
     * (optional if **Remove** is *false*, otherwise ignored. Defaults to *DHCP*
@@ -526,10 +525,7 @@ field **WiFi** must be set to an object of type [WiFi](#WiFi-type).
       be set to '0' or not present.
 
 * **TetheringState**
-    * (optional, read-only, defaults to "NotDetected") - **string**
-    * The tethering state of the WiFi connection. If the connection is
-      tethered the value is "Confirmed". If the connection is suspected to be
-      tethered the value is "Suspected". In all other cases it's "NotDetected".
+    * DEPRECATED, see **Metered**.<br/>
 
 ---
   * At least one of the fields **HexSSID** or **SSID** must be present.
@@ -1671,7 +1667,7 @@ objects of [Certificate](#Certificate-type) type.
     * (required if **Type** is
         *Client*, otherwise ignored) - **string**
     * For certificates with
-      private keys, this is the base64 encoding of the a PKCS#12 file.
+      private keys, this is the base64 encoding of a PKCS#12 file.
 
 * **Remove**
     * (optional, defaults to *false*) - **boolean**
@@ -2085,11 +2081,186 @@ they can be edited by the user. All other values are mandatory.
 }
 ```
 
+## Chrome internal format
 
-## Standalone editor
+Internally, Chrome uses a base::Value dictionary format to represent ONC
+configurations. We refer to two types of dictionaries within the code:
 
-The source code for a Chrome packaged app to generate ONC configuration can
-be found here: https://chromium.googlesource.com/chromiumos/platform/spigots/
+* **ONC Dictionary** A dictionary of key-value pairs similar to the
+    dictionaries under "NetworkConfigurations" described above.
+
+* **Managed ONC Dictionary** A dictionary of key-value pairs where the values
+    are dictionaries containing values from policies and settings described
+    below.
+
+Configurations may combine policy and settings configurations.
+
+### Merge rules
+
+If a policy configuration exists, the following rules apply:
+
+* **Enforced** (default): The policy value is always the effective value.
+    * *Note*: User policy supersedes Device policy.
+    * *Note*: If a property is not provided by policy it is treated as enforced
+      and the default value is applied.
+* **Recommended**: If a property appears in the [Recommended](#Recommended-Values) section,
+    it is considered 'Recommended'. If a UserSetting or SharedSetting value
+    exists, it can be selected as the Effective value.
+
+### Dictionary format
+
+Managed ONC dictionaries contain the keys described under
+[Network Configuration](#Network-Configuration), however the values are
+dictionaries that may include the following properties:
+
+* **Active**: For properties that are translated from the configuration
+    manager (e.g. Shill), the 'active' value currently in use by the
+    configuration manager.
+* **Effective**: The effective source for the property: UserPolicy, DevicePolicy,
+    UserSetting or SharedSetting.
+* **UserPolicy**: The value provided by the user policy if any.
+* **DevicePolicy**: The value provided by the device policy if any.
+* **UserSetting**: The value set by the logged in user. Only provided if
+    UserEditable is true (i.e. no policy affects the property or the
+    policy provided value is recommended only).
+* **SharedSetting**: The value set for all users of the device. Only provided if
+    DeviceEditiable is true (i.e. no policy affects the property or the
+    policy provided value is recommended only).
+* **UserEditable**: True if a UserPolicy exists and allows the property to be
+    edited (i.e. is a recommended value). Defaults to False.
+* **DeviceEditable**: True if a DevicePolicy exists and allows the property to be
+    edited (i.e. is a recommended value). Defaults to False.
+
+### Examples
+
+Property with User policy enforced value.
+```
+  "Priority": {
+    "Active": 3,
+    "Effective": "UserPolicy",
+    "UserEditable": false,
+    "UserPolicy": 3,
+  },
+```
+
+Property with Device policy recommended value and no setting value.
+```
+  "Priority": {
+    "Active": 2,
+    "DeviceEditable": true,
+    "DevicePolicy": 2,
+    "Effective": "DevicePolicy",
+  },
+```
+
+Property with Device policy recommended value and a shared setting value.
+```
+  "Priority": {
+    "Active": 1,
+    "DeviceEditable": true,
+    "DevicePolicy": 2,
+    "Effective": "SharedSetting",
+    "SharedSetting": 1,
+  },
+```
+
+Property with Device policy and User policy recommended values and a user
+setting selected as the effective setting.
+```
+  "Priority": {
+    "Active": 1
+    "DeviceEditable": true,
+    "DevicePolicy": 2,
+    "Effective": "UserSetting",
+    "UserEditable": true,
+    "UserPolicy": 3,
+    "UserSetting": 1
+  },
+```
+
+## Mojo format
+
+Chrome provides a mojo API for ONC properties:
+https://source.chromium.org/chromium/chromium/src/+/master:chromeos/services/network_config/public/mojom/cros_network_config.mojom
+
+The mojo API uses a simplified structure for managed properties based on the
+following assumptions:
+
+* Settings UI and other clients are only interested in the active value and
+  the source of the active / effective value.
+* Preserving non policy settings is only interesting if they are the active
+  value. i.e. if a policy value is enforced or a recommended value is used, it
+  is not necessary to preserve any other settings values.
+
+In this simplified format, a descriptive enum is used to describe the effective
+policy source and whether it is enforced or recommended.
+
+The conversion code can be found in cros_network_config.cc:GetManagedDictionary
+https://source.chromium.org/chromium/chromium/src/+/master:chromeos/services/network_config/cros_network_config.cc
+
+```
+enum PolicySource {
+  // The property is not controlled by policy.
+  kNone,
+  // The property value came from a user policy and is enforced.
+  kUserPolicyEnforced,
+  // The property value came from a device policy and is enforced.
+  kDevicePolicyEnforced,
+  // The property value came from a user policy and is recommended.
+  kUserPolicyRecommended,
+  // The property value came from a device policy and is recommended.
+  kDevicePolicyRecommended,
+  // The property value came from an extension.
+  kActiveExtension,
+};
+
+struct ManagedString {
+  string active_value;
+  PolicySource policy_source = kNone;
+  string? policy_value;
+};
+```
+
+### Examples
+
+Property with User policy enforced value.
+```
+  Priority: {
+    activeValue: 3,
+    policySource: kUserPolicyEnforced,
+    policyValue: 3
+  },
+```
+
+Property with Device policy recommended value and no setting value.
+```
+  Priority: {
+    activeValue: 2,
+    policySource: kDevicePolicyRecommended,
+    policyValue: 2
+  },
+```
+
+Property with Device policy recommended value and a setting value.
+```
+  Priority: {
+    activeValue: 1,
+    policySource: DevicePolicyRecommended,
+    policyValue: 2
+  },
+```
+
+Property with Device policy and User policy recommended values and a user
+setting selected as the effective setting. *Note*: The User policy overrides
+the Device policy and is all that is represented here. The device configuration
+is persisted in the device policy itself.
+```
+  Priority: {
+    activeValue: 1,
+    policySource: kUserPolicyRecommended,
+    policyValue: 3
+  },
+```
 
 ## Internationalization and Localization
 
@@ -2114,8 +2285,3 @@ user names for connections that are user-specific are persisted to disk,
 they should be stored in a location that is encrypted. Users can also opt in
 these cases to not save their user credentials in the config file and will
 instead be prompted when they are needed.
-
-## Authors
-
-* pneubeck@chromium.org
-* stevenjb@chromium.org

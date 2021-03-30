@@ -5,10 +5,10 @@
 #include <memory>
 #include <string>
 
+#include "chrome/browser/ash/login/ui/login_screen_extension_ui/dialog_delegate.h"
+#include "chrome/browser/ash/login/ui/login_screen_extension_ui/window.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login_screen_apitest_base.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login_screen_ui/ui_handler.h"
-#include "chrome/browser/chromeos/login/ui/login_screen_extension_ui/dialog_delegate.h"
-#include "chrome/browser/chromeos/login/ui/login_screen_extension_ui/window.h"
 #include "chrome/browser/chromeos/policy/signin_profile_extensions_policy_test_base.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"

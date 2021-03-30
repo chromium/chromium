@@ -41,7 +41,7 @@ void DisplayErrorObserver::OnDisplayModeChangeFailed(
     return;
   }
 
-  base::string16 message =
+  std::u16string message =
       (new_state == display::MULTIPLE_DISPLAY_STATE_MULTI_MIRROR)
           ? l10n_util::GetStringUTF16(IDS_ASH_DISPLAY_FAILURE_ON_MIRRORING)
           : ui::SubstituteChromeOSDeviceType(

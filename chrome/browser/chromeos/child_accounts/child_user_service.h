@@ -6,8 +6,10 @@
 #define CHROME_BROWSER_CHROMEOS_CHILD_ACCOUNTS_CHILD_USER_SERVICE_H_
 
 #include <memory>
+#include <set>
 #include <string>
 
+#include "chrome/browser/chromeos/child_accounts/family_user_parental_control_metrics.h"
 #include "chrome/browser/chromeos/child_accounts/time_limits/app_activity_report_interface.h"
 #include "chrome/browser/chromeos/child_accounts/time_limits/app_time_limit_interface.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -93,6 +95,12 @@ class ChildUserService : public KeyedService,
   // Should only be called if |features::kPerAppTimeLimits| and
   // |features::kWebTimeLimits| features are enabled.
   base::TimeDelta GetWebTimeLimit() const;
+
+  // Checks whether app time limit and chrome app time limit are enabled and
+  // inserts the enabled types to `enabled_policies`.
+  void GetEnabledAppTimeLimitPolicies(
+      std::set<FamilyUserParentalControlMetrics::TimeLimitPolicyType>*
+          enabled_policies);
 
  private:
   // KeyedService:

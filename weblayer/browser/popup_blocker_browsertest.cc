@@ -4,6 +4,7 @@
 
 #include "build/build_config.h"
 #include "components/blocked_content/popup_blocker_tab_helper.h"
+#include "third_party/blink/public/common/switches.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "weblayer/browser/browser_impl.h"
@@ -40,6 +41,13 @@ class PopupBlockerBrowserTest : public WebLayerBrowserTest,
   }
   void TearDownOnMainThread() override {
     shell()->browser()->RemoveObserver(this);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WebLayerBrowserTest::SetUpCommandLine(command_line);
+    // Some bots are flaky due to slower loading interacting with
+    // deferred commits.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
   // NewTabDelegate:

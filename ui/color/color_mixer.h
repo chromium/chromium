@@ -8,6 +8,8 @@
 #include <forward_list>
 #include <map>
 
+#include "base/callback_forward.h"
+#include "base/callback_helpers.h"
 #include "base/component_export.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
@@ -28,11 +30,16 @@ class ColorRecipe;
 // mixers in the pipeline.
 class COMPONENT_EXPORT(COLOR) ColorMixer {
  public:
-  // Having each ColorMixer know about the |previous_mixer| in the pipeline
+  using MixerGetter = base::RepeatingCallback<const ColorMixer*(void)>;
+
+  // Having each ColorMixer know about the |previous mixer| in the pipeline
   // allows mixers to implement the pipeline directly and simplifies the API,
   // compared to having each mixer report results (via e.g. Optional<SkColor>)
   // to the ColorProvider, which would need to query different mixers in order.
-  explicit ColorMixer(const ColorMixer* previous_mixer = nullptr);
+  // |input_mixer_getter| can be .Run() to obtain the appropriate mixer to
+  // query for transform inputs.
+  explicit ColorMixer(const ColorMixer* previous_mixer = nullptr,
+                      MixerGetter input_mixer_getter = base::NullCallback());
   // ColorMixer is movable since it holds both sets and recipes, each of which
   // might be expensive to copy.
   ColorMixer(ColorMixer&&) noexcept;
@@ -68,6 +75,7 @@ class COMPONENT_EXPORT(COLOR) ColorMixer {
   ColorSets::const_iterator FindSetWithId(ColorSetId id) const;
 
   const ColorMixer* previous_mixer_;
+  MixerGetter input_mixer_getter_;
   ColorSets sets_;
 
   // This uses std::map instead of base::flat_map since the recipes are inserted

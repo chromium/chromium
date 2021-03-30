@@ -11,17 +11,8 @@
 // Feature to open tab switcher after sliding down the toolbar.
 extern const base::Feature kExpandedTabStrip;
 
-// Feature to take snapshots using |-drawViewHierarchy:|.
-extern const base::Feature kSnapshotDrawView;
-
 // Feature to apply UI Refresh theme to the settings.
 extern const base::Feature kSettingsRefresh;
-
-// Feature flag for embedders to block restore urls.
-extern const base::Feature kEmbedderBlockRestoreUrl;
-
-// Feature flag disabling progress bar animation.
-extern const base::Feature kDisableProgressBarAnimation;
 
 // Feature flag to use the unstacked tabstrip when voiceover is enabled.
 extern const base::Feature kVoiceOverUnstackedTabstrip;
@@ -34,15 +25,9 @@ extern const base::Feature kForceUnstackedTabstrip;
 // features in tests works.
 extern const base::Feature kTestFeature;
 
-// Feature flag that enables the native UI Context Menus (not for Web content).
-extern const base::Feature kEnableNativeContextMenus;
-
 // Feature flag to enable showing a different UI when the setting is managed by
 // an enterprise policy.
 extern const base::Feature kEnableIOSManagedSettingsUI;
-
-// Enables the safety check in settings on iOS.
-extern const base::Feature kSafetyCheckIOS;
 
 // Feature flag to enable new illustrations and UI on empty states.
 extern const base::Feature kIllustratedEmptyStates;
@@ -71,8 +56,17 @@ extern const base::Feature kLocationPermissionsPrompt;
 // Feature flag that experiments with the default browser fullscreen promo UI.
 extern const base::Feature kDefaultBrowserFullscreenPromoExperiment;
 
-// Feature flag that enable Shared Highlighting color change in iOS.
-extern const base::Feature kIOSSharedHighlightingColorChange;
+// Feature flag that experiments with the default browser fullscreen promo UI.
+extern const base::Feature kDefaultBrowserFullscreenPromoCTAExperiment;
+
+// Feature flag that enables non-modal default browser promos.
+extern const base::Feature kDefaultPromoNonModal;
+
+// Feature flag that enables tailored fullscreen browser promos.
+extern const base::Feature kDefaultPromoTailored;
+
+// Feature flag that swaps the omnibox textfield implementation.
+extern const base::Feature kIOSNewOmniboxImplementation;
 
 // Feature flag that enables persisting the Crash Restore Infobar across
 // navigations.

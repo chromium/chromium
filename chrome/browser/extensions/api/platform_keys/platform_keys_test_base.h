@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "chrome/browser/chromeos/login/test/https_forwarder.h"
+#include "chrome/browser/ash/login/test/https_forwarder.h"
 #include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
 #include "chrome/browser/extensions/mixin_based_extension_apitest.h"
 #include "chromeos/tpm/stub_install_attributes.h"

@@ -19,7 +19,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/common/chrome_features.h"
@@ -91,16 +91,15 @@ class MockUserCloudPolicyManagerChromeOS
 
 class UserCloudPolicyTokenForwarderTest : public testing::Test {
  protected:
-  static chromeos::FakeChromeUserManager* GetFakeUserManager() {
-    return static_cast<chromeos::FakeChromeUserManager*>(
+  static ash::FakeChromeUserManager* GetFakeUserManager() {
+    return static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
 
   UserCloudPolicyTokenForwarderTest()
       : mock_time_task_runner_(
             base::MakeRefCounted<base::TestMockTimeTaskRunner>()),
-        user_manager_enabler_(
-            std::make_unique<chromeos::FakeChromeUserManager>()),
+        user_manager_enabler_(std::make_unique<ash::FakeChromeUserManager>()),
         profile_manager_(std::make_unique<TestingProfileManager>(
             TestingBrowserProcess::GetGlobal())),
         store_(std::make_unique<MockCloudPolicyStore>()) {}
@@ -140,7 +139,7 @@ class UserCloudPolicyTokenForwarderTest : public testing::Test {
     identity_test_env_profile_adaptor_->identity_test_env()
         ->MakeUnconsentedPrimaryAccountAvailable(kEmail);
 
-    chromeos::FakeChromeUserManager* user_manager = GetFakeUserManager();
+    auto* user_manager = GetFakeUserManager();
     user_manager->AddUser(account_id);
     user_manager->AddUserWithAffiliationAndTypeAndProfile(
         account_id, false /* is_affiliated */, user_type, profile);
@@ -175,7 +174,7 @@ class UserCloudPolicyTokenForwarderTest : public testing::Test {
   void IssueOAuthToken(const std::string& token, base::Time expiration) {
     signin::ScopeSet scopes;
     scopes.insert(GaiaConstants::kDeviceManagementServiceOAuth);
-    scopes.insert(GaiaConstants::kOAuthWrapBridgeUserInfoScope);
+    scopes.insert(GaiaConstants::kGoogleUserInfoEmail);
     identity_test_env_profile_adaptor_->identity_test_env()
         ->WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
             token, expiration, std::string() /*id_token*/, scopes);

@@ -187,6 +187,7 @@ class InProcessContextFactory::PerCompositorData
   void UpdateRefreshRate(float refresh_rate) override {}
   void SetSupportedRefreshRates(
       const std::vector<float>& refresh_rates) override {}
+  void PreserveChildSurfaceControls() override {}
 #endif
 
   void SetDelegatedInkPointRenderer(
@@ -435,6 +436,10 @@ cc::TaskGraphRunner* InProcessContextFactory::GetTaskGraphRunner() {
 
 viz::FrameSinkId InProcessContextFactory::AllocateFrameSinkId() {
   return frame_sink_id_allocator_.NextFrameSinkId();
+}
+
+viz::SubtreeCaptureId InProcessContextFactory::AllocateSubtreeCaptureId() {
+  return subtree_capture_id_allocator_.NextSubtreeCaptureId();
 }
 
 viz::HostFrameSinkManager* InProcessContextFactory::GetHostFrameSinkManager() {

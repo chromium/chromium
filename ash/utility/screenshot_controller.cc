@@ -7,10 +7,8 @@
 #include <cmath>
 #include <memory>
 
-#include "ash/accelerators/accelerator_controller_impl.h"
+#include "ash/accessibility/magnifier/magnifier_glass.h"
 #include "ash/display/mouse_cursor_event_filter.h"
-#include "ash/magnifier/magnifier_glass.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/screenshot_delegate.h"
 #include "ash/shell.h"
@@ -21,7 +19,6 @@
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
-#include "ui/base/hit_test.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
@@ -30,11 +27,7 @@
 #include "ui/events/pointer_details.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/color_palette.h"
-#include "ui/gfx/geometry/point_conversions.h"
-#include "ui/gfx/scoped_canvas.h"
 #include "ui/views/widget/widget.h"
-#include "ui/wm/core/accelerator_filter.h"
 #include "ui/wm/core/cursor_manager.h"
 
 namespace ash {
@@ -86,48 +79,6 @@ bool IsTopLevelWindow(aura::Window* window) {
     return false;
   }
   return true;
-}
-
-// Returns the hit test component for |point| on |rect|.
-int GetHTComponentForRect(const gfx::Point& point,
-                          const gfx::Rect& rect,
-                          int border_size) {
-  gfx::Rect corner(rect.origin(), gfx::Size());
-  corner.Inset(-border_size, -border_size);
-  if (corner.Contains(point))
-    return HTTOPLEFT;
-
-  corner.Offset(rect.width(), 0);
-  if (corner.Contains(point))
-    return HTTOPRIGHT;
-
-  corner.Offset(0, rect.height());
-  if (corner.Contains(point))
-    return HTBOTTOMRIGHT;
-
-  corner.Offset(-rect.width(), 0);
-  if (corner.Contains(point))
-    return HTBOTTOMLEFT;
-
-  gfx::Rect horizontal_border(rect.origin(), gfx::Size(rect.width(), 0));
-  horizontal_border.Inset(0, -border_size);
-  if (horizontal_border.Contains(point))
-    return HTTOP;
-
-  horizontal_border.Offset(0, rect.height());
-  if (horizontal_border.Contains(point))
-    return HTBOTTOM;
-
-  gfx::Rect vertical_border(rect.origin(), gfx::Size(0, rect.height()));
-  vertical_border.Inset(-border_size, 0);
-  if (vertical_border.Contains(point))
-    return HTLEFT;
-
-  vertical_border.Offset(rect.width(), 0);
-  if (vertical_border.Contains(point))
-    return HTRIGHT;
-
-  return HTNOWHERE;
 }
 
 }  // namespace
@@ -352,266 +303,6 @@ class ScreenshotController::ScreenshotLayer : public ui::LayerOwner,
   DISALLOW_COPY_AND_ASSIGN(ScreenshotLayer);
 };
 
-class ScreenshotController::MovableScreenshotLayer
-    : public ScreenshotLayer::ScreenshotLayer {
- public:
-  MovableScreenshotLayer(ScreenshotController* controller,
-                         ui::Layer* parent,
-                         bool immediate_overlay)
-      : ScreenshotLayer(controller, parent, immediate_overlay) {}
-  ~MovableScreenshotLayer() override = default;
-
- private:
-  static constexpr SkColor kBorderColor = gfx::kGoogleBlue300;
-  static constexpr int kBorderStrokePx = 2;
-  static constexpr int kBorderShadowPx = 1;
-  static constexpr SkColor kCursorColor = SK_ColorWHITE;
-  static constexpr SkColor kIconTextBorderColor =
-      SkColorSetA(gfx::kGoogleGrey900, 0x80);  // 0.5 grey900
-  static constexpr int kDragHandleSize = 8;
-
-  struct PointerInfo {
-    static PointerInfo ForEvent(const ui::Event& event) {
-      if (event.IsMouseEvent()) {
-        const auto& pointer_details = event.AsMouseEvent()->pointer_details();
-        return {pointer_details.pointer_type, pointer_details.id};
-      }
-
-      if (event.IsTouchEvent()) {
-        const auto& pointer_details = event.AsTouchEvent()->pointer_details();
-        return {pointer_details.pointer_type, pointer_details.id};
-      }
-
-      return PointerInfo();
-    }
-
-    bool operator==(const PointerInfo& other) const {
-      return type == other.type && id == other.id;
-    }
-    bool operator!=(const PointerInfo& other) const {
-      return !(*this == other);
-    }
-
-    ui::EventPointerType type = ui::EventPointerType::kUnknown;
-    ui::PointerId id = ui::kPointerIdUnknown;
-  };
-
-  void StartDrag(const ui::LocatedEvent& event) {
-    DCHECK(!drag_pointer_.has_value());
-
-    gfx::Rect start_region = region();
-
-    if (start_region.IsEmpty()) {
-      start_region = gfx::Rect(event.root_location(), gfx::Size());
-      start_hit_ = HTBOTTOMRIGHT;
-    } else {
-      start_hit_ = GetHTComponentForRect(event.root_location(), start_region,
-                                         kDragHandleSize);
-    }
-
-    if (start_hit_ == HTNOWHERE) {
-      // TODO(crbug.com/1076605): Complete via confirming bubble.
-      if (!region().IsEmpty())
-        controller()->CompletePartialScreenshot();
-      return;
-    }
-
-    drag_pointer_ = PointerInfo::ForEvent(event);
-    start_region_ = start_region;
-    MaybeChangeCursor(ui::mojom::CursorType::kNone);
-
-    ContinueDrag(event);
-  }
-
-  void ContinueDrag(const ui::LocatedEvent& event) {
-    if (!drag_pointer_.has_value() ||
-        drag_pointer_.value() != PointerInfo::ForEvent(event)) {
-      return;
-    }
-
-    set_cursor_location_in_root(event.root_location());
-
-    gfx::Point anchor = start_region_.origin();
-    gfx::Point ref = event.root_location();
-
-    if (start_hit_ == HTTOPLEFT) {
-      anchor = start_region_.bottom_right();
-    }
-    if (start_hit_ == HTTOPRIGHT) {
-      anchor = start_region_.bottom_left();
-    }
-    if (start_hit_ == HTBOTTOMLEFT) {
-      anchor = start_region_.top_right();
-    }
-    if (start_hit_ == HTTOP) {
-      anchor = start_region_.bottom_left();
-      ref.set_x(start_region_.right());
-    }
-    if (start_hit_ == HTBOTTOM) {
-      ref.set_x(start_region_.right());
-    }
-    if (start_hit_ == HTLEFT) {
-      anchor = start_region_.top_right();
-      ref.set_y(start_region_.bottom());
-    }
-    if (start_hit_ == HTRIGHT) {
-      ref.set_y(start_region_.bottom());
-    }
-
-    SetRegion(
-        gfx::Rect(std::min(anchor.x(), ref.x()), std::min(anchor.y(), ref.y()),
-                  ::abs(anchor.x() - ref.x()), ::abs(anchor.y() - ref.y())));
-
-    if (!magnifier_glass_) {
-      MagnifierGlass::Params params{2.0f, 64};
-      magnifier_glass_ = std::make_unique<MagnifierGlass>(std::move(params));
-    }
-    aura::Window* event_root =
-        static_cast<aura::Window*>(event.target())->GetRootWindow();
-    magnifier_glass_->ShowFor(event_root, event.root_location());
-
-    // TODO(crbug.com/1076605): Create/update a magnifier glass to allow
-    // better alignment for selected region.
-  }
-
-  void EndDrag(const ui::LocatedEvent& event) {
-    if (!drag_pointer_.has_value() ||
-        drag_pointer_.value() != PointerInfo::ForEvent(event)) {
-      return;
-    }
-
-    ContinueDrag(event);
-
-    drag_pointer_.reset();
-    start_region_ = gfx::Rect();
-    start_hit_ = HTNOWHERE;
-    magnifier_glass_->Close();
-
-    MaybeChangeCursor(ui::mojom::CursorType::kCross);
-  }
-
-  // ScreenshotLayer::ScreenshotLayer:
-  void OnPointerPressed(const ui::LocatedEvent& event) override {
-    if (drag_pointer_.has_value())
-      return;
-
-    StartDrag(event);
-  }
-
-  void OnPointerMoved(const ui::LocatedEvent& event) override {
-    // TODO(crbug.com/1076605): Change cursor when on resizing border.
-  }
-
-  void OnPointerDragged(const ui::LocatedEvent& event) override {
-    ContinueDrag(event);
-  }
-
-  void OnPointerReleased(const ui::LocatedEvent& event) override {
-    EndDrag(event);
-  }
-
-  void OnPaintLayer(const ui::PaintContext& context) override {
-    ui::PaintRecorder recorder(context, layer()->size());
-    auto* canvas = recorder.canvas();
-
-    // 0.6 grey900
-    const SkColor kOverlayColor = SkColorSetA(gfx::kGoogleGrey900, 0x99);
-    if (draw_inactive_overlay())
-      canvas->DrawColor(kOverlayColor);
-
-    if (!region().IsEmpty())
-      DrawRegion(canvas);
-
-    DrawPseudoCursor(canvas);
-  }
-
-  void DrawRegion(gfx::Canvas* canvas) {
-    gfx::ScopedCanvas scoped_canvas(canvas);
-    float scale = canvas->UndoDeviceScaleFactor();
-
-    gfx::RectF rect(region());
-    rect.Scale(scale);
-
-    gfx::Rect fill_rect(gfx::ToEnclosingRect(rect));
-    canvas->FillRect(fill_rect, SK_ColorBLACK, SkBlendMode::kClear);
-
-    // Add space of border stroke px + shadow so that the border and its shadow
-    // are drawn outside |fill_rect| and would not be captured as part of the
-    // screenshot.
-    rect = gfx::RectF(fill_rect);
-    rect.Inset(-kBorderStrokePx / 2 - kBorderShadowPx,
-               -kBorderStrokePx / 2 - kBorderShadowPx);
-
-    cc::PaintFlags flags;
-    flags.setAntiAlias(true);
-    flags.setStyle(cc::PaintFlags::kStroke_Style);
-
-    flags.setColor(kIconTextBorderColor);
-    flags.setStrokeWidth(SkIntToScalar(kBorderStrokePx + 2 * kBorderShadowPx));
-    canvas->DrawRect(rect, flags);
-
-    flags.setColor(kBorderColor);
-    flags.setStrokeWidth(SkIntToScalar(kBorderStrokePx));
-    canvas->DrawRect(rect, flags);
-
-    // TODO(crbug.com/1076605): Draw drag handles.
-  }
-
-  void DrawPseudoCursor(gfx::Canvas* canvas) {
-    if (!drag_pointer_.has_value())
-      return;
-
-    gfx::PointF pseudo_cursor_point(cursor_location_in_root());
-    gfx::Vector2dF width(kCursorSize / 2, 0);
-    gfx::Vector2dF height(0, kCursorSize / 2);
-
-    // If the cursor is above/before region, use negative offset to move
-    // towards outside of the region.
-    const int x_dir = pseudo_cursor_point.x() == region().x() ? -1 : 1;
-    const int y_dir = pseudo_cursor_point.y() == region().y() ? -1 : 1;
-
-    gfx::ScopedCanvas scoped_canvas(canvas);
-    float scale = canvas->UndoDeviceScaleFactor();
-
-    pseudo_cursor_point.Scale(scale);
-    pseudo_cursor_point = gfx::PointF(gfx::ToCeiledPoint(pseudo_cursor_point));
-    pseudo_cursor_point.Offset(x_dir * (kBorderStrokePx / 2 + kBorderShadowPx),
-                               y_dir * (kBorderStrokePx / 2 + kBorderShadowPx));
-
-    width.Scale(scale);
-    height.Scale(scale);
-
-    cc::PaintFlags flags;
-    flags.setAntiAlias(true);
-    flags.setStyle(cc::PaintFlags::kStroke_Style);
-    flags.setStrokeCap(cc::PaintFlags::kRound_Cap);
-
-    flags.setColor(kIconTextBorderColor);
-    flags.setStrokeWidth(SkIntToScalar(kBorderStrokePx + 2 * kBorderShadowPx));
-    canvas->DrawLine(pseudo_cursor_point - width, pseudo_cursor_point + width,
-                     flags);
-    canvas->DrawLine(pseudo_cursor_point - height, pseudo_cursor_point + height,
-                     flags);
-
-    flags.setColor(kCursorColor);
-    flags.setStrokeWidth(SkIntToScalar(kBorderStrokePx));
-    canvas->DrawLine(pseudo_cursor_point - width, pseudo_cursor_point + width,
-                     flags);
-    canvas->DrawLine(pseudo_cursor_point - height, pseudo_cursor_point + height,
-                     flags);
-
-    // TODO(crbug.com/1076605): Draw cursor coordinates.
-  }
-
-  base::Optional<PointerInfo> drag_pointer_;
-  gfx::Rect start_region_;
-  int start_hit_ = HTNOWHERE;
-
-  // Shows a magnifier glass centered at mouse/touch location when changing
-  // the screenshot region.
-  std::unique_ptr<MagnifierGlass> magnifier_glass_;
-};
-
 class ScreenshotController::ScopedCursorSetter {
  public:
   explicit ScopedCursorSetter(ui::mojom::CursorType cursor) {
@@ -720,17 +411,10 @@ void ScreenshotController::StartPartialScreenshotSession(
   mode_ = PARTIAL;
   display::Screen::GetScreen()->AddObserver(this);
   for (aura::Window* root : Shell::GetAllRootWindows()) {
-    if (features::IsMovablePartialScreenshotEnabled()) {
-      layers_[root] = std::make_unique<MovableScreenshotLayer>(
-          this,
-          Shell::GetContainer(root, kShellWindowId_OverlayContainer)->layer(),
-          draw_overlay_immediately);
-    } else {
-      layers_[root] = std::make_unique<ScreenshotLayer>(
-          this,
-          Shell::GetContainer(root, kShellWindowId_OverlayContainer)->layer(),
-          draw_overlay_immediately);
-    }
+    layers_[root] = std::make_unique<ScreenshotLayer>(
+        this,
+        Shell::GetContainer(root, kShellWindowId_OverlayContainer)->layer(),
+        draw_overlay_immediately);
   }
 
   if (!pen_events_only_) {
@@ -870,18 +554,6 @@ void ScreenshotController::OnKeyEvent(ui::KeyEvent* event) {
   // they should be able to continue manipulating the screen.
   if (!pen_events_only_)
     event->StopPropagation();
-
-  // Key event is blocked. So have to record current accelerator here.
-  if (event->stopped_propagation()) {
-    if (::wm::AcceleratorFilter::ShouldFilter(event))
-      return;
-
-    ui::Accelerator accelerator(*event);
-    Shell::Get()
-        ->accelerator_controller()
-        ->accelerator_history()
-        ->StoreCurrentAccelerator(accelerator);
-  }
 }
 
 void ScreenshotController::OnMouseEvent(ui::MouseEvent* event) {

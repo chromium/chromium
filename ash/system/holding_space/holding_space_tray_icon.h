@@ -11,9 +11,10 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
+#include "ash/public/cpp/shelf_config.h"
 #include "ash/shell.h"
 #include "ash/shell_observer.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -24,7 +25,8 @@ class Shelf;
 
 // The icon used to represent holding space in its tray in the shelf.
 class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
-                                        public ShellObserver {
+                                        public ShellObserver,
+                                        public ShelfConfig::Observer {
  public:
   METADATA_HEADER(HoldingSpaceTrayIcon);
 
@@ -43,9 +45,6 @@ class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
   // 4. Animate new items in.
   void UpdatePreviews(const std::vector<const HoldingSpaceItem*> items);
 
-  // Invoked when the system locale has changed.
-  void OnLocaleChanged();
-
   // Clears the icon.
   void Clear();
 
@@ -63,13 +62,16 @@ class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
   class ResizeAnimation;
 
   // views::View:
-  base::string16 GetTooltipText(const gfx::Point& point) const override;
   int GetHeightForWidth(int width) const override;
   gfx::Size CalculatePreferredSize() const override;
 
   // ShellObserver:
+  void OnShellDestroying() override;
   void OnShelfAlignmentChanged(aura::Window* root_window,
                                ShelfAlignment old_alignment) override;
+
+  // ShelfConfigObserver:
+  void OnShelfConfigUpdated() override;
 
   void InitLayout();
 
@@ -113,11 +115,14 @@ class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
   // Helper to run icon resize animation.
   std::unique_ptr<ResizeAnimation> resize_animation_;
 
-  ScopedObserver<Shell,
-                 ShellObserver,
-                 &Shell::AddShellObserver,
-                 &Shell::RemoveShellObserver>
+  base::ScopedObservation<Shell,
+                          ShellObserver,
+                          &Shell::AddShellObserver,
+                          &Shell::RemoveShellObserver>
       shell_observer_{this};
+
+  base::ScopedObservation<ShelfConfig, ShelfConfig::Observer>
+      shelf_config_observer_{this};
 
   // The factory to which callbacks for stages of the previews list update are
   // bound to. The goal is to easily cancel in-progress updates if the list of

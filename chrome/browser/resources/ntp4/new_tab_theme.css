@@ -6,12 +6,8 @@ html {
   background-attachment: fixed;
   background-color: $i18n{colorBackground};
   background-image: url(chrome://theme/IDR_THEME_NTP_BACKGROUND?$i18n{themeId});
-  background-position: $i18n{backgroundBarDetached};
+  background-position: $i18n{backgroundPosition};
   background-repeat: $i18n{backgroundTiling};
-}
-
-html[bookmarkbarattached='true'] {
-  background-position: $i18n{backgroundBarAttached};
 }
 
 body {

@@ -73,6 +73,7 @@ public class SmsVerificationReceiver extends BroadcastReceiver {
     }
 
     public void destroy() {
+        if (mDestroyed) return;
         if (DEBUG) Log.d(TAG, "Destroying SmsVerificationReceiver.");
         mDestroyed = true;
         mContext.unregisterReceiver(this);
@@ -116,12 +117,12 @@ public class SmsVerificationReceiver extends BroadcastReceiver {
         }
     }
 
-    public void onPermissionDone(WindowAndroid window, int resultCode) {
+    public void onPermissionDone(WindowAndroid window, int resultCode, boolean isLocalRequest) {
         if (resultCode == Activity.RESULT_OK) {
             // We have been granted permission to use the SmsCoderetriever so
             // restart the process.
             if (DEBUG) Log.d(TAG, "The one-time permission was granted");
-            listen(window);
+            listen(window, isLocalRequest);
         } else {
             mProvider.onCancel();
             if (DEBUG) Log.d(TAG, "The one-time permission was rejected");
@@ -132,21 +133,21 @@ public class SmsVerificationReceiver extends BroadcastReceiver {
      * Handles failure for the `SmsCodeBrowserClient.startSmsCodeRetriever()`
      * task.
      */
-    public void onRetrieverTaskFailure(WindowAndroid window, Exception e) {
+    public void onRetrieverTaskFailure(WindowAndroid window, boolean isLocalRequest, Exception e) {
         if (DEBUG) Log.d(TAG, "Task failed. Attempting recovery.", e);
         BackendAvailability availability = BackendAvailability.AVAILABLE;
         ApiException exception = (ApiException) e;
         if (exception.getStatusCode() == SmsRetrieverStatusCodes.API_NOT_CONNECTED) {
             availability = BackendAvailability.API_NOT_CONNECTED;
-            mProvider.onMethodNotAvailable();
+            mProvider.onMethodNotAvailable(isLocalRequest);
             Log.d(TAG, "update GMS services.");
         } else if (exception.getStatusCode() == SmsRetrieverStatusCodes.PLATFORM_NOT_SUPPORTED) {
             availability = BackendAvailability.PLATFORM_NOT_SUPPORTED;
-            mProvider.onMethodNotAvailable();
+            mProvider.onMethodNotAvailable(isLocalRequest);
             Log.d(TAG, "old android platform.");
         } else if (exception.getStatusCode() == SmsRetrieverStatusCodes.API_NOT_AVAILABLE) {
             availability = BackendAvailability.API_NOT_AVAILABLE;
-            mProvider.onMethodNotAvailable();
+            mProvider.onMethodNotAvailable(isLocalRequest);
             Log.d(TAG, "not the default browser.");
         } else if (exception.getStatusCode() == SmsRetrieverStatusCodes.USER_PERMISSION_REQUIRED) {
             mProvider.onCancel();
@@ -165,7 +166,7 @@ public class SmsVerificationReceiver extends BroadcastReceiver {
                         @Override
                         public void onIntentCompleted(
                                 WindowAndroid w, int resultCode, Intent data) {
-                            onPermissionDone(w, resultCode);
+                            onPermissionDone(w, resultCode, isLocalRequest);
                         }
                     }, null);
                 } catch (Exception ex) {
@@ -178,13 +179,18 @@ public class SmsVerificationReceiver extends BroadcastReceiver {
         reportBackendAvailability(availability);
     }
 
-    public void listen(WindowAndroid window) {
+    public void listen(WindowAndroid window, boolean isLocalRequest) {
         Wrappers.SmsRetrieverClientWrapper client = mProvider.getClient();
         Task<Void> task = client.startSmsCodeBrowserRetriever();
 
-        task.addOnSuccessListener(
-                unused -> { this.reportBackendAvailability(BackendAvailability.AVAILABLE); });
-        task.addOnFailureListener((Exception e) -> { this.onRetrieverTaskFailure(window, e); });
+        task.addOnSuccessListener(unused -> {
+            this.reportBackendAvailability(BackendAvailability.AVAILABLE);
+            mProvider.destoryUserConsentReceiver();
+        });
+        task.addOnFailureListener((Exception e) -> {
+            this.onRetrieverTaskFailure(window, isLocalRequest, e);
+            mProvider.destoryVerificationReceiver();
+        });
 
         if (DEBUG) Log.d(TAG, "Installed task");
     }

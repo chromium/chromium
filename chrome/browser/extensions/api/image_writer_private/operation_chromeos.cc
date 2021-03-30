@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <stdint.h>
+#include <utility>
 
 #include "base/bind.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
@@ -37,7 +38,7 @@ void ClearImageBurner() {
 
 }  // namespace
 
-void Operation::Write(const base::Closure& continuation) {
+void Operation::Write(base::OnceClosure continuation) {
   DCHECK(IsRunningInCorrectSequence());
   SetStage(image_writer_api::STAGE_WRITE);
 
@@ -45,25 +46,25 @@ void Operation::Write(const base::Closure& continuation) {
   AddCleanUpFunction(base::BindOnce(&ClearImageBurner));
 
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&Operation::UnmountVolumes, this, continuation));
+      FROM_HERE, base::BindOnce(&Operation::UnmountVolumes, this,
+                                std::move(continuation)));
 }
 
-void Operation::VerifyWrite(const base::Closure& continuation) {
+void Operation::VerifyWrite(base::OnceClosure continuation) {
   DCHECK(IsRunningInCorrectSequence());
 
   // No verification is available in Chrome OS currently.
-  continuation.Run();
+  std::move(continuation).Run();
 }
 
-void Operation::UnmountVolumes(const base::Closure& continuation) {
+void Operation::UnmountVolumes(base::OnceClosure continuation) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DiskMountManager::GetInstance()->UnmountDeviceRecursively(
-      device_path_.value(),
-      base::BindOnce(&Operation::UnmountVolumesCallback, this, continuation));
+      device_path_.value(), base::BindOnce(&Operation::UnmountVolumesCallback,
+                                           this, std::move(continuation)));
 }
 
-void Operation::UnmountVolumesCallback(const base::Closure& continuation,
+void Operation::UnmountVolumesCallback(base::OnceClosure continuation,
                                        chromeos::MountError error_code) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -86,32 +87,41 @@ void Operation::UnmountVolumesCallback(const base::Closure& continuation,
     return;
   }
 
-  StartWriteOnUIThread(iter->second->file_path(), continuation);
+  StartWriteOnUIThread(iter->second->file_path(), std::move(continuation));
 }
 
 void Operation::StartWriteOnUIThread(const std::string& target_path,
-                                     const base::Closure& continuation) {
+                                     base::OnceClosure continuation) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // TODO(haven): Image Burner cannot handle multiple burns. crbug.com/373575
   ImageBurnerClient* burner =
       chromeos::DBusThreadManager::Get()->GetImageBurnerClient();
 
+  // AdaptCallbackForRepeating() is safe for OnBurnFinished, because Chrome OS
+  // supports only one operation at a time and handlers are reset on every new
+  // operation and at the end of the current one.
+  // TODO(crbug.com/730593): AdaptCallbackForRepeating() is being deprecated.
+  // Adapting approach similar to ImageWriterUtilityClient (binding
+  // RepeatingCallback here, calling |continuation| only once inside it) might
+  // resolve this issue. Alternatively ImageBurnerClient API might be changed
+  // to receive OnceCallback (depending on the solution for crbug.com/373575).
   burner->SetEventHandlers(
-      base::Bind(&Operation::OnBurnFinished, this, continuation),
-      base::Bind(&Operation::OnBurnProgress, this));
+      base::AdaptCallbackForRepeating(base::BindOnce(
+          &Operation::OnBurnFinished, this, std::move(continuation))),
+      base::BindRepeating(&Operation::OnBurnProgress, this));
 
   burner->BurnImage(image_path_.value(), target_path,
                     base::BindOnce(&Operation::OnBurnError, this));
 }
 
-void Operation::OnBurnFinished(const base::Closure& continuation,
+void Operation::OnBurnFinished(base::OnceClosure continuation,
                                const std::string& target_path,
                                bool success,
                                const std::string& error) {
   if (success) {
     PostTask(base::BindOnce(&Operation::SetProgress, this, kProgressComplete));
-    PostTask(continuation);
+    PostTask(std::move(continuation));
   } else {
     DLOG(ERROR) << "Error encountered while burning: " << error;
     PostTask(base::BindOnce(&Operation::Error, this,

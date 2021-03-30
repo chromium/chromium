@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/public/cpp/app_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/window_properties.h"
@@ -18,6 +19,8 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "components/full_restore/full_restore_info.h"
+#include "components/full_restore/full_restore_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -83,6 +86,9 @@ void BrowserFrameAsh::OnWidgetInitDone() {
   // like brightness, volume, etc. Otherwise these keys are handled by the
   // Ash window manager.
   window_state->SetCanConsumeSystemKeys(browser->deprecated_is_app());
+
+  full_restore::FullRestoreInfo::GetInstance()->OnWidgetInitialized(
+      GetWidget());
 }
 
 void BrowserFrameAsh::OnWindowTargetVisibilityChanged(bool visible) {
@@ -140,6 +146,22 @@ views::Widget::InitParams BrowserFrameAsh::GetWidgetParams() {
   views::Widget::InitParams params;
   params.native_widget = this;
   params.context = ash::Shell::GetPrimaryRootWindow();
+
+  Browser* browser = browser_view_->browser();
+  const int32_t restore_id = browser->create_params().restore_id;
+  params.init_properties_container.SetProperty(full_restore::kWindowIdKey,
+                                               browser->session_id().id());
+  params.init_properties_container.SetProperty(
+      full_restore::kRestoreWindowIdKey, restore_id);
+
+  // This is only needed for ash. For lacros, Exo tags the associated
+  // ShellSurface as being of AppType::LACROS.
+  params.init_properties_container.SetProperty(
+      aura::client::kAppType,
+      static_cast<int>(browser->deprecated_is_app() ? ash::AppType::CHROME_APP
+                                                    : ash::AppType::BROWSER));
+
+  full_restore::ModifyWidgetParams(restore_id, &params);
   return params;
 }
 
@@ -153,6 +175,14 @@ bool BrowserFrameAsh::UsesNativeSystemMenu() const {
 
 int BrowserFrameAsh::GetMinimizeButtonOffset() const {
   return 0;
+}
+
+bool BrowserFrameAsh::ShouldRestorePreviousBrowserWidgetState() const {
+  // If there is no window info from full restore, maybe use the session
+  // restore.
+  const int32_t restore_id =
+      browser_view_->browser()->create_params().restore_id;
+  return !full_restore::HasWindowInfo(restore_id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

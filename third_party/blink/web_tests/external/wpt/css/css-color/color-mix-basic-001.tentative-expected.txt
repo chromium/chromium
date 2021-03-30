@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+FAIL From blue to red at 0.5 assert_not_equals: Should parse color-mix(in srgb, blue, red  50%) got disallowed value ""
+FAIL From blue to green at 0.5 assert_not_equals: Should parse color-mix(in srgb, blue, green  50%) got disallowed value ""
+FAIL From rgb(255, 0, 0, .2) to red at 0.5 assert_not_equals: Should parse color-mix(in srgb, rgb(255, 0, 0, .2), red  50%) got disallowed value ""
+FAIL From blue to red at 0.9 assert_not_equals: Should parse color-mix(in srgb, blue, red  90%) got disallowed value ""
+FAIL From blue to red at 0 assert_not_equals: Should parse color-mix(in srgb, blue, red  0%) got disallowed value ""
+FAIL From currentColor to white at 0.5 assert_not_equals: Should parse color-mix(in srgb, currentColor, white  50%) got disallowed value ""
+FAIL From currentColor to rgba(0, 0, 0, .5) at 0.5 assert_not_equals: Should parse color-mix(in srgb, currentColor, rgba(0, 0, 0, .5)  50%) got disallowed value ""
+Harness: the test ran to completion.
+

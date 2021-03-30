@@ -10,6 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
+#include "components/viz/common/resources/resource_id.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "ui/views/widget/root_view.h"
 
@@ -41,6 +42,9 @@ class ViewTreeHostRootView : public views::internal::RootView {
 
   void SchedulePaintInRect(const gfx::Rect& rect);
 
+  bool GetIsOverlayCandidate();
+  void SetIsOverlayCandidate(bool is_overlay_candidate);
+
  private:
   struct Resource;
   class LayerTreeViewTreeFrameSinkHolder;
@@ -71,11 +75,14 @@ class ViewTreeHostRootView : public views::internal::RootView {
   gfx::Rect damaged_paint_rect_;
   bool pending_paint_ = false;
 
+  // overlay candidate in submitted frame data.
+  bool is_overlay_candidate_ = true;
+
   // The resource to be submitted.
   std::unique_ptr<Resource> pending_resource_;
 
   int resource_group_id_ = 1;
-  int next_resource_id_ = 1;
+  viz::ResourceIdGenerator id_generator_;
   // Total damaged rect in surface.
   gfx::Rect damage_rect_;
   bool pending_compositor_frame_ack_ = false;

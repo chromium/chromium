@@ -60,7 +60,7 @@ TEST_F(FormActivityTabHelperTest, TestObserverDocumentSubmitted) {
       @"<form name='form-name'>"
        "<input type='submit' id='submit'/>"
        "</form>");
-  ExecuteJavaScript(@"__gCrWeb.fill.setUpForUniqueIDs(0);");
+  ExecuteJavaScript(@"__gCrWeb.fill.setUpForUniqueIDs(1);");
   ASSERT_FALSE(observer_->submit_document_info());
   const std::string kTestFormName("form-name");
 
@@ -70,7 +70,7 @@ TEST_F(FormActivityTabHelperTest, TestObserverDocumentSubmitted) {
       std::string("[{\"name\":\"form-name\",\"origin\":\"https://chromium.test/"
                   "\",\"action\":\"https://chromium.test/\","
                   "\"name_attribute\":\"form-name\",\"id_attribute\":\"\","
-                  "\"unique_renderer_id\":\"0\",\"frame_id\":\"") +
+                  "\"unique_renderer_id\":\"1\",\"frame_id\":\"") +
       mainFrameID + std::string("\"}]");
 
   bool has_user_gesture = false;
@@ -98,7 +98,7 @@ TEST_F(FormActivityTabHelperTest, TestFormSubmittedHook) {
       @"<form name='form-name' id='form'>"
        "<input type='submit'/>"
        "</form>");
-  ExecuteJavaScript(@"__gCrWeb.fill.setUpForUniqueIDs(0);");
+  ExecuteJavaScript(@"__gCrWeb.fill.setUpForUniqueIDs(1);");
   ASSERT_FALSE(observer_->submit_document_info());
   const std::string kTestFormName("form-name");
 
@@ -108,7 +108,7 @@ TEST_F(FormActivityTabHelperTest, TestFormSubmittedHook) {
       std::string("[{\"name\":\"form-name\",\"origin\":\"https://chromium.test/"
                   "\",\"action\":\"https://chromium.test/\","
                   "\"name_attribute\":\"form-name\",\"id_attribute\":\"form\","
-                  "\"unique_renderer_id\":\"0\",\"frame_id\":\"") +
+                  "\"unique_renderer_id\":\"1\",\"frame_id\":\"") +
       mainFrameID + std::string("\"}]");
 
   bool has_user_gesture = false;
@@ -136,7 +136,7 @@ TEST_F(FormActivityTabHelperTest, TestObserverFormActivityFrameMessaging) {
       @"<form name='form-name'>"
        "<input type='input' name='field-name' id='fieldid'/>"
        "</form>");
-  ExecuteJavaScript(@"__gCrWeb.fill.setUpForUniqueIDs(0);");
+  ExecuteJavaScript(@"__gCrWeb.fill.setUpForUniqueIDs(1);");
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForJSCompletionTimeout, ^bool {
         return web_state()->GetWebFramesManager()->GetMainWebFrame() != nullptr;

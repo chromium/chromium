@@ -233,7 +233,7 @@ ui::EventDispatchDetails InputMethodWinBase::DispatchKeyEvent(
   // If only 1 WM_CHAR per the key event, set it as the character of it.
   if (char_msgs.size() == 1 &&
       !std::iswcntrl(static_cast<wint_t>(char_msgs[0].wParam)))
-    event->set_character(static_cast<base::char16>(char_msgs[0].wParam));
+    event->set_character(char16_t{char_msgs[0].wParam});
 
   return ProcessUnhandledKeyEvent(event, &char_msgs);
 }
@@ -261,8 +261,8 @@ LRESULT InputMethodWinBase::OnChar(HWND window_handle,
   // We need to send character events to the focused text input client event if
   // its text input type is ui::TEXT_INPUT_TYPE_NONE.
   if (GetTextInputClient()) {
-    const base::char16 kCarriageReturn = L'\r';
-    const base::char16 ch = static_cast<base::char16>(wparam);
+    const char16_t kCarriageReturn = L'\r';
+    const char16_t ch{wparam};
     // A mask to determine the previous key state from |lparam|. The value is 1
     // if the key is down before the message is sent, or it is 0 if the key is
     // up.
@@ -347,7 +347,7 @@ LRESULT InputMethodWinBase::OnDocumentFeed(RECONVERTSTRING* reconv) {
   if (reconv->dwSize < need_size)
     return 0;
 
-  base::string16 text;
+  std::u16string text;
   if (!GetTextInputClient()->GetTextFromRange(text_range, &text))
     return 0;
   DCHECK_EQ(text_range.length(), text.length());
@@ -403,7 +403,7 @@ LRESULT InputMethodWinBase::OnReconvertString(RECONVERTSTRING* reconv) {
 
   // TODO(penghuang): Return some extra context to help improve IME's
   // reconversion accuracy.
-  base::string16 text;
+  std::u16string text;
   if (!GetTextInputClient()->GetTextFromRange(selection_range, &text))
     return 0;
   DCHECK_EQ(selection_range.length(), text.length());

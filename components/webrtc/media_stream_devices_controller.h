@@ -34,7 +34,7 @@ class MediaStreamDevicesController {
  public:
   typedef base::OnceCallback<void(const blink::MediaStreamDevices& devices,
                                   blink::mojom::MediaStreamRequestResult result,
-                                  bool blocked_by_feature_policy,
+                                  bool blocked_by_permissions_policy,
                                   ContentSetting audio_setting,
                                   ContentSetting video_setting)>
       ResultCallback;
@@ -84,7 +84,7 @@ class MediaStreamDevicesController {
                                        ContentSetting video_setting);
 
   // Runs |callback_| with the current audio/video permission settings.
-  void RunCallback(bool blocked_by_feature_policy);
+  void RunCallback(bool blocked_by_permissions_policy);
 
   // Returns the content settings for the given content type and request.
   ContentSetting GetContentSetting(

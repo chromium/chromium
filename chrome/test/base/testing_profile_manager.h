@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-#include "base/strings/string16.h"
 #include "base/test/scoped_path_override.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_profile.h"
@@ -64,11 +63,11 @@ class TestingProfileManager {
   TestingProfile* CreateTestingProfile(
       const std::string& profile_name,
       std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs,
-      const base::string16& user_name,
+      const std::u16string& user_name,
       int avatar_id,
       const std::string& supervised_user_id,
       TestingProfile::TestingFactories testing_factories,
-      base::Optional<bool> override_new_profile = base::nullopt,
+      base::Optional<bool> is_new_profile = base::nullopt,
       base::Optional<std::unique_ptr<policy::PolicyService>> policy_service =
           base::nullopt);
 

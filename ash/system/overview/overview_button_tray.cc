@@ -178,7 +178,7 @@ void OverviewButtonTray::OnOverviewModeEnded() {
 
 void OverviewButtonTray::ClickedOutsideBubble() {}
 
-base::string16 OverviewButtonTray::GetAccessibleNameForTray() {
+std::u16string OverviewButtonTray::GetAccessibleNameForTray() {
   return l10n_util::GetStringUTF16(IDS_ASH_OVERVIEW_BUTTON_ACCESSIBLE_NAME);
 }
 

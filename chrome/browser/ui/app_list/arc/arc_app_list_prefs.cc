@@ -9,7 +9,11 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/ash_features.h"
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
@@ -20,11 +24,11 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/arc/arc_util.h"
-#include "chrome/browser/chromeos/arc/policy/arc_policy_util.h"
-#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
-#include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
-#include "chrome/browser/chromeos/login/session/user_session_manager.h"
+#include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/arc/policy/arc_policy_util.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
@@ -36,11 +40,10 @@
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "components/arc/arc_prefs.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
+#include "components/arc/mojom/compatibility_mode.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/connection_holder.h"
 #include "components/crx_file/id_util.h"
@@ -57,6 +60,7 @@ namespace {
 
 constexpr char kActivity[] = "activity";
 constexpr char kFrameworkPackageName[] = "android";
+constexpr char kResizeLockState[] = "resize_lock_state";
 constexpr char kIconResourceId[] = "icon_resource_id";
 constexpr char kIconVersion[] = "icon_version";
 constexpr char kInstallTime[] = "install_time";
@@ -235,6 +239,7 @@ bool AreAppStatesChanged(const ArcAppListPrefs::AppInfo& info1,
                          const ArcAppListPrefs::AppInfo& info2) {
   return info1.sticky != info2.sticky ||
          info1.notifications_enabled != info2.notifications_enabled ||
+         info1.resize_lock_state != info2.resize_lock_state ||
          info1.ready != info2.ready || info1.suspended != info2.suspended ||
          info1.show_in_launcher != info2.show_in_launcher ||
          info1.launchable != info2.launchable;
@@ -610,6 +615,55 @@ void ArcAppListPrefs::SetNotificationsEnabled(const std::string& app_id,
   app_instance->SetNotificationsEnabled(app_info->package_name, enabled);
 }
 
+arc::mojom::ArcResizeLockState ArcAppListPrefs::GetResizeLockState(
+    const std::string& app_id) const {
+  if (!ash::features::IsArcResizeLockEnabled())
+    return arc::mojom::ArcResizeLockState::UNDEFINED;
+
+  std::unique_ptr<AppInfo> app_info = GetApp(app_id);
+  if (!app_info) {
+    VLOG(2) << "Failed to get app info: " << app_id << ".";
+    return arc::mojom::ArcResizeLockState::UNDEFINED;
+  }
+
+  return app_info->resize_lock_state;
+}
+
+void ArcAppListPrefs::SetResizeLockState(const std::string& app_id,
+                                         arc::mojom::ArcResizeLockState state) {
+  if (!ash::features::IsArcResizeLockEnabled())
+    return;
+
+  if (!IsRegistered(app_id)) {
+    VLOG(2) << "Request to set ret resize lock for non-registered app:"
+            << app_id << ".";
+    return;
+  }
+
+  std::unique_ptr<AppInfo> app_info = GetApp(app_id);
+  if (!app_info) {
+    VLOG(2) << "Failed to get app info: " << app_id << ".";
+    return;
+  }
+
+  auto* arc_service_manager = arc::ArcServiceManager::Get();
+  if (!arc_service_manager)
+    return;
+  auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_service_manager->arc_bridge_service()->compatibility_mode(),
+      SetResizeLockState);
+  if (!instance)
+    return;
+
+  instance->SetResizeLockState(app_info->package_name, state);
+
+  arc::ArcAppScopedPrefUpdate update(prefs_, app_id, arc::prefs::kArcApps);
+  base::DictionaryValue* app_dict = update.Get();
+  app_dict->SetInteger(kResizeLockState, static_cast<int32_t>(state));
+
+  NotifyAppStatesChanged(app_id);
+}
+
 void ArcAppListPrefs::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
 }
@@ -766,6 +820,10 @@ std::unique_ptr<ArcAppListPrefs::AppInfo> ArcAppListPrefs::GetAppFromPrefs(
   std::string icon_resource_id;
   bool notifications_enabled =
       app->FindBoolKey(kNotificationsEnabled).value_or(true);
+  auto resize_lock_state = static_cast<arc::mojom::ArcResizeLockState>(
+      app->FindIntKey(kResizeLockState)
+          .value_or(
+              static_cast<int32_t>(arc::mojom::ArcResizeLockState::UNDEFINED)));
   const bool shortcut = app->FindBoolKey(kShortcut).value_or(false);
   const bool launchable = app->FindBoolKey(kLaunchable).value_or(true);
 
@@ -793,7 +851,7 @@ std::unique_ptr<ArcAppListPrefs::AppInfo> ArcAppListPrefs::GetAppFromPrefs(
       name, package_name, activity, intent_uri, icon_resource_id,
       last_launch_time, GetInstallTime(app_id),
       app->FindBoolKey(kSticky).value_or(false), notifications_enabled,
-      ready_apps_.count(app_id) > 0 /* ready */,
+      resize_lock_state, ready_apps_.count(app_id) > 0 /* ready */,
       app->FindBoolKey(kSuspended).value_or(false),
       launchable && arc::ShouldShowInLauncher(app_id), shortcut, launchable);
 }
@@ -1122,17 +1180,18 @@ void ArcAppListPrefs::HandleTaskCreated(const base::Optional<std::string>& name,
   }
 }
 
-void ArcAppListPrefs::AddAppAndShortcut(const std::string& name,
-                                        const std::string& package_name,
-                                        const std::string& activity,
-                                        const std::string& intent_uri,
-                                        const std::string& icon_resource_id,
-                                        const bool sticky,
-                                        const bool notifications_enabled,
-                                        const bool app_ready,
-                                        const bool suspended,
-                                        const bool shortcut,
-                                        const bool launchable) {
+void ArcAppListPrefs::AddAppAndShortcut(
+    const std::string& name,
+    const std::string& package_name,
+    const std::string& activity,
+    const std::string& intent_uri,
+    const std::string& icon_resource_id,
+    const bool sticky,
+    const bool notifications_enabled,
+    const bool app_ready,
+    const bool suspended,
+    const bool shortcut,
+    const bool launchable) {
   const std::string app_id = shortcut ? GetAppId(package_name, intent_uri)
                                       : GetAppId(package_name, activity);
 
@@ -1169,6 +1228,10 @@ void ArcAppListPrefs::AddAppAndShortcut(const std::string& name,
     }
   }
 
+  // Ensure to query the resize lock state from the prefs as we don't want the
+  // default resize lock value (UNDEFINED) to override the existing value.
+  const auto resize_lock_state = GetResizeLockState(app_id);
+
   arc::ArcAppScopedPrefUpdate update(prefs_, app_id, arc::prefs::kArcApps);
   base::DictionaryValue* app_dict = update.Get();
   app_dict->SetString(kName, updated_name);
@@ -1179,6 +1242,8 @@ void ArcAppListPrefs::AddAppAndShortcut(const std::string& name,
   app_dict->SetBoolean(kSuspended, suspended);
   app_dict->SetBoolean(kSticky, sticky);
   app_dict->SetBoolean(kNotificationsEnabled, notifications_enabled);
+  app_dict->SetInteger(kResizeLockState,
+                       static_cast<int32_t>(resize_lock_state));
   app_dict->SetBoolean(kShortcut, shortcut);
   app_dict->SetBoolean(kLaunchable, launchable);
 
@@ -1197,9 +1262,9 @@ void ArcAppListPrefs::AddAppAndShortcut(const std::string& name,
 
   AppInfo app_info(updated_name, package_name, activity, intent_uri,
                    icon_resource_id, last_launch_time, GetInstallTime(app_id),
-                   sticky, notifications_enabled, app_ready, suspended,
-                   launchable && arc::ShouldShowInLauncher(app_id), shortcut,
-                   launchable);
+                   sticky, notifications_enabled, resize_lock_state, app_ready,
+                   suspended, launchable && arc::ShouldShowInLauncher(app_id),
+                   shortcut, launchable);
 
   if (was_tracked) {
     if (AreAppStatesChanged(*app_old_info, app_info)) {
@@ -1211,6 +1276,10 @@ void ArcAppListPrefs::AddAppAndShortcut(const std::string& name,
       observer.OnAppRegistered(app_id, app_info);
     default_apps_->SetAppHidden(app_id, false);
     tracked_apps_.insert(app_id);
+
+    // Newly installed apps are subject to ARC++ resize lock. Set the state to
+    // READY so the lock will be turned on next time they are launched.
+    SetResizeLockState(app_id, arc::mojom::ArcResizeLockState::READY);
   }
 
   // Send pending requests in case app becomes visible.
@@ -1714,13 +1783,12 @@ void ArcAppListPrefs::OnTaskCreated(int32_t task_id,
                                     const std::string& package_name,
                                     const std::string& activity,
                                     const base::Optional<std::string>& name,
-                                    const base::Optional<std::string>& intent) {
+                                    const base::Optional<std::string>& intent,
+                                    int32_t session_id) {
   HandleTaskCreated(name, package_name, activity);
   for (auto& observer : observer_list_) {
-    observer.OnTaskCreated(task_id,
-                           package_name,
-                           activity,
-                           intent.value_or(std::string()));
+    observer.OnTaskCreated(task_id, package_name, activity,
+                           intent.value_or(std::string()), session_id);
   }
 }
 
@@ -1979,20 +2047,22 @@ void ArcAppListPrefs::AppInfo::SetIgnoreCompareInstallTimeForTesting(
   ignore_compare_app_info_install_time = ignore;
 }
 
-ArcAppListPrefs::AppInfo::AppInfo(const std::string& name,
-                                  const std::string& package_name,
-                                  const std::string& activity,
-                                  const std::string& intent_uri,
-                                  const std::string& icon_resource_id,
-                                  const base::Time& last_launch_time,
-                                  const base::Time& install_time,
-                                  bool sticky,
-                                  bool notifications_enabled,
-                                  bool ready,
-                                  bool suspended,
-                                  bool show_in_launcher,
-                                  bool shortcut,
-                                  bool launchable)
+ArcAppListPrefs::AppInfo::AppInfo(
+    const std::string& name,
+    const std::string& package_name,
+    const std::string& activity,
+    const std::string& intent_uri,
+    const std::string& icon_resource_id,
+    const base::Time& last_launch_time,
+    const base::Time& install_time,
+    bool sticky,
+    bool notifications_enabled,
+    arc::mojom::ArcResizeLockState resize_lock_state,
+    bool ready,
+    bool suspended,
+    bool show_in_launcher,
+    bool shortcut,
+    bool launchable)
     : name(name),
       package_name(package_name),
       activity(activity),
@@ -2002,6 +2072,7 @@ ArcAppListPrefs::AppInfo::AppInfo(const std::string& name,
       install_time(install_time),
       sticky(sticky),
       notifications_enabled(notifications_enabled),
+      resize_lock_state(resize_lock_state),
       ready(ready),
       suspended(suspended),
       show_in_launcher(show_in_launcher),
@@ -2026,7 +2097,8 @@ bool ArcAppListPrefs::AppInfo::operator==(const AppInfo& other) const {
           install_time == other.install_time) &&
          sticky == other.sticky &&
          notifications_enabled == other.notifications_enabled &&
-         ready == other.ready && suspended == other.suspended &&
+         resize_lock_state == other.resize_lock_state && ready == other.ready &&
+         suspended == other.suspended &&
          show_in_launcher == other.show_in_launcher &&
          shortcut == other.shortcut && launchable == other.launchable;
 }
@@ -2053,3 +2125,7 @@ ArcAppListPrefs::PackageInfo::PackageInfo(
 // Need to add explicit destructor for chromium style checker error:
 // Complex class/struct needs an explicit out-of-line destructor
 ArcAppListPrefs::PackageInfo::~PackageInfo() = default;
+
+ArcAppListPrefs::Observer::~Observer() {
+  CHECK(!IsInObserverList());
+}

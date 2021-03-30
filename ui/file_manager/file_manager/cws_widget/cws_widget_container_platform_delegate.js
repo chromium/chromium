@@ -23,7 +23,7 @@ let CWSWidgetContainerStrings;
  *   recordInterval: function(string)
  * }}
  */
-let CWSWidgetContainerMetricsImpl;
+/* #export */ let CWSWidgetContainerMetricsImpl;
 
 /**
  * Type for delegate used by CWSWidgetContainer component to access Chrome
@@ -36,4 +36,4 @@ let CWSWidgetContainerMetricsImpl;
  *   requestWebstoreAccessToken: function(function(?string))
  * }}
  */
-let CWSWidgetContainerPlatformDelegate;
+/* #export */ let CWSWidgetContainerPlatformDelegate;

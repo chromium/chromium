@@ -114,7 +114,7 @@ class MockSyntheticPointerActionTarget : public SyntheticGestureTarget {
   }
 
   void WaitForTargetAck(SyntheticGestureParams::GestureType type,
-                        SyntheticGestureParams::GestureSourceType source,
+                        content::mojom::GestureSourceType source,
                         base::OnceClosure callback) const override {
     std::move(callback).Run();
   }
@@ -235,9 +235,9 @@ class MockSyntheticPointerTouchActionTarget
     return testing::AssertionSuccess();
   }
 
-  SyntheticGestureParams::GestureSourceType
-  GetDefaultSyntheticGestureSourceType() const override {
-    return SyntheticGestureParams::TOUCH_INPUT;
+  content::mojom::GestureSourceType GetDefaultSyntheticGestureSourceType()
+      const override {
+    return content::mojom::GestureSourceType::kTouchInput;
   }
 
  private:
@@ -275,8 +275,8 @@ class MockSyntheticPointerMouseActionTarget
       std::vector<SyntheticPointerActionParams::Button> buttons,
       SyntheticPointerActionParams::Button button =
           SyntheticPointerActionParams::Button::NO_BUTTON,
-      SyntheticGestureParams::GestureSourceType source_type =
-          SyntheticGestureParams::MOUSE_INPUT) {
+      content::mojom::GestureSourceType source_type =
+          content::mojom::GestureSourceType::kMouseInput) {
     if (GetDefaultSyntheticGestureSourceType() != source_type) {
       return testing::AssertionFailure()
              << "Pointer source type was "
@@ -355,9 +355,9 @@ class MockSyntheticPointerMouseActionTarget
     return testing::AssertionSuccess();
   }
 
-  SyntheticGestureParams::GestureSourceType
-  GetDefaultSyntheticGestureSourceType() const override {
-    return SyntheticGestureParams::MOUSE_INPUT;
+  content::mojom::GestureSourceType GetDefaultSyntheticGestureSourceType()
+      const override {
+    return content::mojom::GestureSourceType::kMouseInput;
   }
 
  private:
@@ -374,9 +374,9 @@ class MockSyntheticPointerPenActionTarget
   MockSyntheticPointerPenActionTarget() {}
   ~MockSyntheticPointerPenActionTarget() override {}
 
-  SyntheticGestureParams::GestureSourceType
-  GetDefaultSyntheticGestureSourceType() const override {
-    return SyntheticGestureParams::PEN_INPUT;
+  content::mojom::GestureSourceType GetDefaultSyntheticGestureSourceType()
+      const override {
+    return content::mojom::GestureSourceType::kPenInput;
   }
 };
 
@@ -1008,7 +1008,7 @@ TEST_F(SyntheticPointerActionTest, PointerPenAction) {
   std::vector<SyntheticPointerActionParams::Button> buttons;
   EXPECT_TRUE(pointer_pen_target->SyntheticMouseActionDispatchedCorrectly(
       param1, 0, buttons, SyntheticPointerActionParams::Button::NO_BUTTON,
-      SyntheticGestureParams::PEN_INPUT));
+      content::mojom::GestureSourceType::kPenInput));
 
   ForwardSyntheticPointerAction();
   EXPECT_EQ(2, num_success_);
@@ -1016,14 +1016,14 @@ TEST_F(SyntheticPointerActionTest, PointerPenAction) {
   buttons.push_back(SyntheticPointerActionParams::Button::LEFT);
   EXPECT_TRUE(pointer_pen_target->SyntheticMouseActionDispatchedCorrectly(
       param2, 1, buttons, SyntheticPointerActionParams::Button::LEFT,
-      SyntheticGestureParams::PEN_INPUT));
+      content::mojom::GestureSourceType::kPenInput));
 
   ForwardSyntheticPointerAction();
   EXPECT_EQ(3, num_success_);
   EXPECT_EQ(0, num_failure_);
   EXPECT_TRUE(pointer_pen_target->SyntheticMouseActionDispatchedCorrectly(
       param3, 1, buttons, SyntheticPointerActionParams::Button::LEFT,
-      SyntheticGestureParams::PEN_INPUT));
+      content::mojom::GestureSourceType::kPenInput));
 
   ForwardSyntheticPointerAction();
   EXPECT_EQ(4, num_success_);
@@ -1031,7 +1031,7 @@ TEST_F(SyntheticPointerActionTest, PointerPenAction) {
   buttons.pop_back();
   EXPECT_TRUE(pointer_pen_target->SyntheticMouseActionDispatchedCorrectly(
       param4, 0, buttons, SyntheticPointerActionParams::Button::NO_BUTTON,
-      SyntheticGestureParams::PEN_INPUT));
+      content::mojom::GestureSourceType::kPenInput));
 }
 
 TEST_F(SyntheticPointerActionTest, EmptyParams) {

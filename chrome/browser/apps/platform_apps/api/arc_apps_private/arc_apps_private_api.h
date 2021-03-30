@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_APPS_PLATFORM_APPS_API_ARC_APPS_PRIVATE_ARC_APPS_PRIVATE_API_H_
 #define CHROME_BROWSER_APPS_PLATFORM_APPS_API_ARC_APPS_PRIVATE_ARC_APPS_PRIVATE_API_H_
 
-#include "base/macros.h"
+#include <string>
+
 #include "base/scoped_observer.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
@@ -24,6 +25,8 @@ class ArcAppsPrivateAPI : public extensions::BrowserContextKeyedAPI,
   GetFactoryInstance();
 
   explicit ArcAppsPrivateAPI(content::BrowserContext* context);
+  ArcAppsPrivateAPI(const ArcAppsPrivateAPI&) = delete;
+  ArcAppsPrivateAPI& operator=(const ArcAppsPrivateAPI&) = delete;
   ~ArcAppsPrivateAPI() override;
 
   // extensions::BrowserContextKeyedAPI:
@@ -49,8 +52,6 @@ class ArcAppsPrivateAPI : public extensions::BrowserContextKeyedAPI,
 
   ScopedObserver<ArcAppListPrefs, ArcAppListPrefs::Observer>
       scoped_prefs_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppsPrivateAPI);
 };
 
 class ArcAppsPrivateGetLaunchableAppsFunction : public ExtensionFunction {
@@ -59,15 +60,16 @@ class ArcAppsPrivateGetLaunchableAppsFunction : public ExtensionFunction {
                              ARCAPPSPRIVATE_GETLAUNCHABLEAPPS)
 
   ArcAppsPrivateGetLaunchableAppsFunction();
+  ArcAppsPrivateGetLaunchableAppsFunction(
+      const ArcAppsPrivateGetLaunchableAppsFunction&) = delete;
+  ArcAppsPrivateGetLaunchableAppsFunction& operator=(
+      const ArcAppsPrivateGetLaunchableAppsFunction&) = delete;
 
  protected:
   ~ArcAppsPrivateGetLaunchableAppsFunction() override;
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcAppsPrivateGetLaunchableAppsFunction);
 };
 
 class ArcAppsPrivateLaunchAppFunction : public ExtensionFunction {
@@ -76,15 +78,16 @@ class ArcAppsPrivateLaunchAppFunction : public ExtensionFunction {
                              ARCAPPSPRIVATE_LAUNCHAPP)
 
   ArcAppsPrivateLaunchAppFunction();
+  ArcAppsPrivateLaunchAppFunction(const ArcAppsPrivateLaunchAppFunction&) =
+      delete;
+  ArcAppsPrivateLaunchAppFunction& operator=(
+      const ArcAppsPrivateLaunchAppFunction&) = delete;
 
  protected:
   ~ArcAppsPrivateLaunchAppFunction() override;
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcAppsPrivateLaunchAppFunction);
 };
 
 }  // namespace api

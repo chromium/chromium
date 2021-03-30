@@ -19,11 +19,13 @@
 #include "url/gurl.h"
 
 using content::BrowserThread;
+using extensions::mojom::ManifestLocation;
 
 namespace {
 
 // Install predicate used by AddFromExternalUpdateUrl().
-bool AlwaysInstall(const extensions::Extension* extension) {
+bool AlwaysInstall(const extensions::Extension* extension,
+                   content::BrowserContext* context) {
   return true;
 }
 
@@ -96,13 +98,14 @@ bool PendingExtensionManager::HasPendingExtensionFromSync() const {
 }
 
 bool PendingExtensionManager::HasHighPriorityPendingExtension() const {
-  return std::find_if(
-             pending_extension_list_.begin(), pending_extension_list_.end(),
-             [](const PendingExtensionInfo& info) {
-               return info.install_source() ==
-                          Manifest::EXTERNAL_POLICY_DOWNLOAD ||
-                      info.install_source() == Manifest::EXTERNAL_COMPONENT;
-             }) != pending_extension_list_.end();
+  return std::find_if(pending_extension_list_.begin(),
+                      pending_extension_list_.end(),
+                      [](const PendingExtensionInfo& info) {
+                        return info.install_source() ==
+                                   ManifestLocation::kExternalPolicyDownload ||
+                               info.install_source() ==
+                                   ManifestLocation::kExternalComponent;
+                      }) != pending_extension_list_.end();
 }
 
 void PendingExtensionManager::RecordPolicyReinstallReason(
@@ -153,7 +156,8 @@ bool PendingExtensionManager::AddFromSync(
   }
 
   static const bool kIsFromSync = true;
-  static const Manifest::Location kSyncLocation = Manifest::INTERNAL;
+  static const mojom::ManifestLocation kSyncLocation =
+      mojom::ManifestLocation::kInternal;
   static const bool kMarkAcknowledged = false;
 
   return AddExtensionImpl(id,
@@ -182,7 +186,8 @@ bool PendingExtensionManager::AddFromExtensionImport(
   }
 
   static const bool kIsFromSync = false;
-  static const Manifest::Location kManifestLocation = Manifest::INTERNAL;
+  static const mojom::ManifestLocation kManifestLocation =
+      mojom::ManifestLocation::kInternal;
   static const bool kMarkAcknowledged = false;
   static const bool kRemoteInstall = false;
 
@@ -202,7 +207,7 @@ bool PendingExtensionManager::AddFromExternalUpdateUrl(
     const std::string& id,
     const std::string& install_parameter,
     const GURL& update_url,
-    Manifest::Location location,
+    ManifestLocation location,
     int creation_flags,
     bool mark_acknowledged) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
@@ -231,22 +236,14 @@ bool PendingExtensionManager::AddFromExternalUpdateUrl(
     }
   }
 
-  return AddExtensionImpl(id,
-                          install_parameter,
-                          update_url,
-                          base::Version(),
-                          &AlwaysInstall,
-                          kIsFromSync,
-                          location,
-                          creation_flags,
-                          mark_acknowledged,
-                          kRemoteInstall);
+  return AddExtensionImpl(id, install_parameter, update_url, base::Version(),
+                          &AlwaysInstall, kIsFromSync, location, creation_flags,
+                          mark_acknowledged, kRemoteInstall);
 }
-
 
 bool PendingExtensionManager::AddFromExternalFile(
     const std::string& id,
-    Manifest::Location install_source,
+    mojom::ManifestLocation install_source,
     const base::Version& version,
     int creation_flags,
     bool mark_acknowledged) {
@@ -276,14 +273,14 @@ void PendingExtensionManager::GetPendingIdsForUpdateCheck(
   for (iter = pending_extension_list_.begin();
        iter != pending_extension_list_.end();
        ++iter) {
-    Manifest::Location install_source = iter->install_source();
+    ManifestLocation install_source = iter->install_source();
 
     // Some install sources read a CRX from the filesystem.  They can
     // not be fetched from an update URL, so don't include them in the
     // set of ids.
-    if (install_source == Manifest::EXTERNAL_PREF ||
-        install_source == Manifest::EXTERNAL_REGISTRY ||
-        install_source == Manifest::EXTERNAL_POLICY) {
+    if (install_source == ManifestLocation::kExternalPref ||
+        install_source == ManifestLocation::kExternalRegistry ||
+        install_source == ManifestLocation::kExternalPolicy) {
       continue;
     }
 
@@ -298,22 +295,15 @@ bool PendingExtensionManager::AddExtensionImpl(
     const base::Version& version,
     PendingExtensionInfo::ShouldAllowInstallPredicate should_allow_install,
     bool is_from_sync,
-    Manifest::Location install_source,
+    mojom::ManifestLocation install_source,
     int creation_flags,
     bool mark_acknowledged,
     bool remote_install) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
 
-  PendingExtensionInfo info(id,
-                            install_parameter,
-                            update_url,
-                            version,
-                            should_allow_install,
-                            is_from_sync,
-                            install_source,
-                            creation_flags,
-                            mark_acknowledged,
-                            remote_install);
+  PendingExtensionInfo info(id, install_parameter, update_url, version,
+                            should_allow_install, is_from_sync, install_source,
+                            creation_flags, mark_acknowledged, remote_install);
 
   if (const PendingExtensionInfo* pending = GetById(id)) {
     // Bugs in this code will manifest as sporadic incorrect extension

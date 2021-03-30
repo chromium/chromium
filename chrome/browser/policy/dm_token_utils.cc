@@ -9,8 +9,8 @@
 #include "chrome/browser/profiles/profile.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/user_manager/user.h"
 #else

@@ -178,6 +178,23 @@ enum class FloatingMenuPosition {
   kSystemDefault,
 };
 
+// Mouse following mode for magnifier. This indicates the way the magnified
+// viewport follows the mouse as it moves across the screen. These values are
+// written to prefs so they should not be changed. New values should be added at
+// the end.
+enum class MagnifierMouseFollowingMode {
+  // Continuous following mode.
+  kContinuous = 0,
+
+  // Centered following mode.
+  kCentered = 1,
+
+  // Edge following mode.
+  kEdge = 2,
+
+  kMaxValue = kEdge
+};
+
 }  // namespace ash
 
 #endif  // ASH_PUBLIC_CPP_ACCESSIBILITY_CONTROLLER_ENUMS_H_

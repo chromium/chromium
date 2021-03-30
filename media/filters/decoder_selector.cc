@@ -33,9 +33,25 @@ namespace {
 
 const char kSelectDecoderTrace[] = "DecoderSelector::SelectDecoder";
 
+bool SkipDecoderForRTC(const AudioDecoderConfig& /*config*/,
+                       const AudioDecoder& /*decoder*/) {
+  return false;
+}
+
+bool SkipDecoderForRTC(const VideoDecoderConfig& config,
+                       const VideoDecoder& decoder) {
+  // For now, we assume that RTC decoders are able to decode non-RTC streams,
+  // presumably by configuring themselves based on the config's rtc bit.  Since
+  // no decoders take any action at all based on it, this is as good as any.
+  return config.is_rtc() && !decoder.IsOptimizedForRTC();
+}
+
 template <typename ConfigT, typename DecoderT>
-DecoderPriority NormalDecoderPriority(const ConfigT& /*config*/,
-                                      const DecoderT& /*decoder*/) {
+DecoderPriority NormalDecoderPriority(const ConfigT& config,
+                                      const DecoderT& decoder) {
+  if (SkipDecoderForRTC(config, decoder))
+    return DecoderPriority::kSkipped;
+
   return DecoderPriority::kNormal;
 }
 
@@ -48,6 +64,9 @@ DecoderPriority ResolutionBasedDecoderPriority(const VideoDecoderConfig& config,
 #else
   constexpr auto kSoftwareDecoderHeightCutoff = 720;
 #endif
+
+  if (SkipDecoderForRTC(config, decoder))
+    return DecoderPriority::kSkipped;
 
   // We only do a height check to err on the side of prioritizing platform
   // decoders.
@@ -62,8 +81,11 @@ DecoderPriority ResolutionBasedDecoderPriority(const VideoDecoderConfig& config,
 }
 
 template <typename ConfigT, typename DecoderT>
-DecoderPriority SkipNonPlatformDecoders(const ConfigT& /*config*/,
+DecoderPriority SkipNonPlatformDecoders(const ConfigT& config,
                                         const DecoderT& decoder) {
+  if (SkipDecoderForRTC(config, decoder))
+    return DecoderPriority::kSkipped;
+
   return decoder.IsPlatformDecoder() ? DecoderPriority::kNormal
                                      : DecoderPriority::kSkipped;
 }
@@ -264,9 +286,9 @@ void DecoderSelector<StreamType>::InitializeDecoder() {
   decoders_.erase(decoders_.begin());
   is_platform_decoder_ = decoder_->IsPlatformDecoder();
   TRACE_EVENT_ASYNC_STEP_INTO0("media", kSelectDecoderTrace, this,
-                               decoder_->GetDisplayName());
+                               GetDecoderName(decoder_->GetDecoderType()));
 
-  DVLOG(2) << __func__ << ": initializing " << decoder_->GetDisplayName();
+  DVLOG(2) << __func__ << ": initializing " << decoder_->GetDecoderType();
   const bool is_live = stream_->liveness() == DemuxerStream::LIVENESS_LIVE;
   traits_->InitializeDecoder(
       decoder_.get(), config_, is_live, cdm_context_,
@@ -277,7 +299,7 @@ void DecoderSelector<StreamType>::InitializeDecoder() {
 
 template <DemuxerStream::Type StreamType>
 void DecoderSelector<StreamType>::OnDecoderInitializeDone(Status status) {
-  DVLOG(2) << __func__ << ": " << decoder_->GetDisplayName()
+  DVLOG(2) << __func__ << ": " << decoder_->GetDecoderType()
            << " success=" << std::hex << status.code();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -286,7 +308,7 @@ void DecoderSelector<StreamType>::OnDecoderInitializeDone(Status status) {
     // together and then send them as an informational notice instead of
     // using NotifyError.
     MEDIA_LOG(INFO, media_log_)
-        << "Failed to initialize " << decoder_->GetDisplayName();
+        << "Failed to initialize " << decoder_->GetDecoderType();
 
     // Try the next decoder on the list.
     decoder_.reset();
@@ -359,7 +381,9 @@ void DecoderSelector<StreamType>::RunSelectDecoderCB() {
       "media", kSelectDecoderTrace, this, "type",
       DemuxerStream::GetTypeName(StreamType), "decoder",
       base::StringPrintf(
-          "%s (%s)", decoder_ ? decoder_->GetDisplayName().c_str() : "null",
+          "%s (%s)",
+          decoder_ ? GetDecoderName(decoder_->GetDecoderType()).c_str()
+                   : "null",
           decrypting_demuxer_stream_ ? "encrypted" : "unencrypted"));
 
   task_runner_->PostTask(

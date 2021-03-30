@@ -21,7 +21,7 @@ class StructTraits<content_capture::mojom::ContentCaptureDataDataView,
   static int64_t id(const content_capture::ContentCaptureData& r) {
     return r.id;
   }
-  static const base::string16& value(
+  static const std::u16string& value(
       const content_capture::ContentCaptureData& r) {
     return r.value;
   }

@@ -38,7 +38,7 @@ bool AutomationInfoBarDelegate::ShouldAnimate() const {
   return false;
 }
 
-base::string16 AutomationInfoBarDelegate::GetMessageText() const {
+std::u16string AutomationInfoBarDelegate::GetMessageText() const {
   return l10n_util::GetStringUTF16(IDS_CONTROLLED_BY_AUTOMATION);
 }
 

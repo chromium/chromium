@@ -9,16 +9,18 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/model/app_list_item.h"
+#include "ash/app_list/model/app_list_item_list.h"
 #include "ash/app_list/model/app_list_model.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/login/test/local_policy_test_server_mixin.h"
-#include "chrome/browser/chromeos/login/test/session_manager_state_waiter.h"
-#include "chrome/browser/chromeos/login/wizard_controller.h"
+#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
+#include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/remote_apps/id_generator.h"
 #include "chrome/browser/chromeos/remote_apps/remote_apps_manager.h"
 #include "chrome/browser/chromeos/remote_apps/remote_apps_manager_factory.h"
@@ -28,7 +30,6 @@
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/common/chrome_paths.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -120,7 +121,7 @@ class RemoteAppsImplBrowsertest : public policy::DevicePolicyCrosBrowserTest {
         ->SetIdGeneratorForTesting(std::move(id_generator));
 
     extensions::ChromeTestExtensionLoader loader(profile);
-    loader.set_location(extensions::Manifest::EXTERNAL_POLICY);
+    loader.set_location(extensions::mojom::ManifestLocation::kExternalPolicy);
     loader.set_pack_extension(true);
     loader.set_pem_path(pem_path);
     // When |set_pack_extension_| is true, the |loader| first packs and then
@@ -137,6 +138,19 @@ class RemoteAppsImplBrowsertest : public policy::DevicePolicyCrosBrowserTest {
     return model->FindItem(id);
   }
 
+  bool IsAppListItemInFront(const std::string& id) {
+    ash::AppListControllerImpl* controller =
+        ash::Shell::Get()->app_list_controller();
+    ash::AppListModel* model = controller->GetModel();
+    ash::AppListItemList* item_list = model->top_level_item_list();
+
+    size_t index;
+    if (!item_list->FindItemIndex(id, &index))
+      return false;
+
+    return index == 0;
+  }
+
  private:
   base::DictionaryValue config_;
   chromeos::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
@@ -150,6 +164,15 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, AddApp) {
   ash::AppListItem* app = GetAppListItem(kId1);
   EXPECT_FALSE(app->is_folder());
   EXPECT_EQ("App 1", app->name());
+}
+
+IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, AddAppToFront) {
+  extensions::ResultCatcher catcher;
+  LoadExtensionAndRunTest("AddAppToFront");
+  ASSERT_TRUE(catcher.GetNextResult());
+
+  // Check that App 2 is in front.
+  EXPECT_TRUE(IsAppListItemInFront(kId2));
 }
 
 IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, AddFolderAndApps) {
@@ -169,6 +192,15 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, AddFolderAndApps) {
 
   ash::AppListItem* app2 = GetAppListItem(kId3);
   EXPECT_EQ(kId1, app2->folder_id());
+}
+
+IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, AddFolderToFront) {
+  extensions::ResultCatcher catcher;
+  LoadExtensionAndRunTest("AddFolderToFront");
+  ASSERT_TRUE(catcher.GetNextResult());
+
+  // Check that folder is in front.
+  EXPECT_TRUE(IsAppListItemInFront(kId2));
 }
 
 IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, OnRemoteAppLaunched) {

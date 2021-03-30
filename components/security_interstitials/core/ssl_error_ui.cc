@@ -115,7 +115,7 @@ void SSLErrorUI::PopulateOverridableStrings(
     base::DictionaryValue* load_time_data) {
   DCHECK(soft_override_enabled_);
 
-  base::string16 url(common_string_util::GetFormattedHostName(request_url_));
+  std::u16string url(common_string_util::GetFormattedHostName(request_url_));
   ssl_errors::ErrorInfo error_info = ssl_errors::ErrorInfo::CreateError(
       ssl_errors::ErrorInfo::NetErrorToErrorType(cert_error_),
       ssl_info_.cert.get(), request_url_);
@@ -147,7 +147,7 @@ void SSLErrorUI::PopulateNonOverridableStrings(
     base::DictionaryValue* load_time_data) {
   DCHECK(!soft_override_enabled_);
 
-  base::string16 url(common_string_util::GetFormattedHostName(request_url_));
+  std::u16string url(common_string_util::GetFormattedHostName(request_url_));
   ssl_errors::ErrorInfo::ErrorType type =
       ssl_errors::ErrorInfo::NetErrorToErrorType(cert_error_);
 

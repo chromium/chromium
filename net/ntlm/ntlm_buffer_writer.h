@@ -12,7 +12,6 @@
 #include <string>
 
 #include "base/containers/span.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 #include "net/ntlm/ntlm_constants.h"
@@ -129,7 +128,7 @@ class NET_EXPORT_PRIVATE NtlmBufferWriter {
   // input to hash the encoding doesn't matter. In practice, only a very old or
   // non-Windows server might trigger this code path since we always attempt
   // to negotiate Unicode and servers are supposed to honor that request.
-  bool WriteUtf16AsUtf8String(const base::string16& str) WARN_UNUSED_RESULT;
+  bool WriteUtf16AsUtf8String(const std::u16string& str) WARN_UNUSED_RESULT;
 
   // Treats |str| as UTF8, converts to UTF-16 and writes it with little-endian
   // byte order to the buffer.
@@ -148,7 +147,7 @@ class NET_EXPORT_PRIVATE NtlmBufferWriter {
   // Writes UTF-16 LE characters to the buffer. For these strings, such as
   // username and the domain the actual encoding isn't important; they are just
   // treated as additional bytes of input to the hash.
-  bool WriteUtf16String(const base::string16& str) WARN_UNUSED_RESULT;
+  bool WriteUtf16String(const std::u16string& str) WARN_UNUSED_RESULT;
 
   // Writes the 8 byte NTLM signature "NTLMSSP\0" into the buffer.
   bool WriteSignature() WARN_UNUSED_RESULT;

@@ -63,7 +63,17 @@
     [CrossOrigin, Custom=Setter] attribute Window opener;
     [Replaceable, CrossOrigin] readonly attribute Window? parent;
     [CheckSecurity=ReturnValue, Custom=Getter] readonly attribute Element? frameElement;
-    [CallWith=Isolate, RaisesException] Window? open(optional USVString url="", optional DOMString target = "_blank", optional [TreatNullAs=EmptyString] DOMString features = "");
+
+    // The usage of |impression_params| is gated on a runtime enabled feature
+    // in the implementation rather than in this definition, because the
+    // RuntimeEnabled extended attribute cannot be used with an operation
+    // overload.
+    [CallWith=Isolate, RaisesException] Window? open(optional USVString url="", optional DOMString target = "_blank", optional [TreatNullAs=EmptyString] DOMString features = "", optional ImpressionParams impression_params);
+
+    // Overload which prevents exceptions caused by trying to convert a boolean
+    // to ImpressionParams when a boolean is passed as the fourth parameter.
+    // See https://crbug.com/1164959.
+    [CallWith=Isolate, RaisesException] Window? open(optional USVString url="", optional DOMString target = "_blank", optional [TreatNullAs=EmptyString] DOMString features = "", boolean unused);
 
     // indexed properties
     // https://html.spec.whatwg.org/C/browsers.html#windowproxy-getownproperty
@@ -76,10 +86,7 @@
     [Affects=Nothing, LogActivity=GetterOnly] readonly attribute Navigator navigator;
     [LogActivity=GetterOnly, SecureContext, RuntimeEnabled=AppCache] readonly attribute ApplicationCache applicationCache;
 
-    // TODO(https://crbug.com/1157917): we implement the change at
-    // https://github.com/whatwg/html/pull/6214 but should also rename the
-    // backing implementation.
-    [RuntimeEnabled=OriginIsolationHeader, ImplementedAs=originIsolated] readonly attribute boolean originAgentCluster;
+    [RuntimeEnabled=OriginIsolationHeader] readonly attribute boolean originAgentCluster;
 
     // user prompts
     [Measure, CallWith=ScriptState] void alert();

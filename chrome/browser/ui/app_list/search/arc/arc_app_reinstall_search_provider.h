@@ -15,6 +15,8 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/search/arc/arc_app_reinstall_app_result.h"
+#include "chrome/browser/ui/app_list/search/arc/recommend_apps_fetcher.h"
+#include "chrome/browser/ui/app_list/search/arc/recommend_apps_fetcher_delegate.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -38,10 +40,10 @@ namespace app_list {
 //
 // For users who do not have ARC++ enabled, we do not make a call through to the
 // Play Store, but rather populate with empty results.
-class ArcAppReinstallSearchProvider
-    : public SearchProvider,
-      public ArcAppListPrefs::Observer,
-      public ArcAppReinstallAppResult::Observer {
+class ArcAppReinstallSearchProvider : public SearchProvider,
+                                      public ArcAppListPrefs::Observer,
+                                      public ArcAppReinstallAppResult::Observer,
+                                      public RecommendAppsFetcherDelegate {
  public:
   // Fields for working with pref syncable state.
   // constants used for prefs.
@@ -74,7 +76,7 @@ class ArcAppReinstallSearchProvider
   ~ArcAppReinstallSearchProvider() override;
 
   // SearchProvider:
-  void Start(const base::string16& query) override;
+  void Start(const std::u16string& query) override;
   ash::AppListSearchResultType ResultType() override;
 
   // Used by unit tests. SearchProvider takes ownership of pointer.
@@ -85,6 +87,11 @@ class ArcAppReinstallSearchProvider
 
   void OnVisibilityChanged(const std::string& package_name,
                            bool visibility) override;
+
+  // RecommendAppsFetcherDelegate:
+  void OnLoadSuccess(const base::Value& app_list) override;
+  void OnLoadError() override;
+  void OnParseResponseError() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
  private:
@@ -106,6 +113,9 @@ class ArcAppReinstallSearchProvider
 
   // Based on any change in results or query, updates the results appropriately.
   void UpdateResults();
+
+  // Update the dictionary to reset old impression counts.
+  void MaybeyResetOldImpressionCounts();
 
   // If start_time is UnixEpoch, indicates a manual call.
   void OnGetAppReinstallCandidates(
@@ -160,6 +170,8 @@ class ArcAppReinstallSearchProvider
 
   // Url to imageskia. This list is for icons that have been fully loaded.
   std::unordered_map<std::string, gfx::ImageSkia> icon_urls_;
+
+  std::unique_ptr<RecommendAppsFetcher> recommend_apps_fetcher_;
 
   // url to imageskia of icons being loaded.
   std::unordered_map<std::string, gfx::ImageSkia> loading_icon_urls_;

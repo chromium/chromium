@@ -5,7 +5,7 @@
 #ifndef ASH_APP_LIST_APP_LIST_METRICS_H_
 #define ASH_APP_LIST_APP_LIST_METRICS_H_
 
-#include "ash/app_list/app_list_export.h"
+#include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/time/time.h"
 #include "ui/events/event.h"
@@ -63,16 +63,6 @@ constexpr char kAppListPeekingToFullscreenHistogram[] =
 
 // The UMA histogram that logs how the app list is shown.
 constexpr char kAppListToggleMethodHistogram[] = "Apps.AppListShowSource";
-
-// The UMA histogram that logs the index launched item in the results list and
-// the query length.
-constexpr char kAppListResultLaunchIndexAndQueryLength[] =
-    "Apps.AppListResultLaunchIndexAndQueryLength";
-
-// The UMA histogram that logs if the query that introduces a launch of an item
-// in the results list is empty or not.
-constexpr char kAppListResultLaunchIsEmptyQuery[] =
-    "Apps.AppListResultLaunchIsEmptyQuery";
 
 // The UMA histogram that logs the presence or absence of Drive QuickAccess
 // search results in the zero-state results list. Differentiates between results
@@ -305,31 +295,26 @@ void RecordZeroStateSearchResultUserActionHistogram(
 void RecordZeroStateSearchResultRemovalHistogram(
     ZeroStateSearchResutRemovalConfirmation removal_decision);
 
-APP_LIST_EXPORT void RecordSearchAbandonWithQueryLengthHistogram(
-    int query_length);
+ASH_EXPORT void RecordSearchResultOpenSource(const SearchResult* result,
+                                             const AppListModel* model,
+                                             const SearchModel* search_model);
 
-APP_LIST_EXPORT void RecordSearchResultOpenSource(
-    const SearchResult* result,
-    const AppListModel* model,
-    const SearchModel* search_model);
-
-APP_LIST_EXPORT void RecordSearchLaunchIndexAndQueryLength(
+ASH_EXPORT void RecordSearchLaunchIndexAndQueryLength(
     SearchResultLaunchLocation launch_location,
     int query_length,
     int suggestion_index);
 
-APP_LIST_EXPORT void RecordAppListAppLaunched(AppListLaunchedFrom launched_from,
-                                              AppListViewState app_list_state,
-                                              bool is_tablet_mode,
-                                              bool home_launcher_shown);
+ASH_EXPORT void RecordAppListAppLaunched(AppListLaunchedFrom launched_from,
+                                         AppListViewState app_list_state,
+                                         bool is_tablet_mode,
+                                         bool home_launcher_shown);
 
-APP_LIST_EXPORT bool IsCommandIdAnAppLaunch(int command_id);
+ASH_EXPORT bool IsCommandIdAnAppLaunch(int command_id);
 
-APP_LIST_EXPORT void ReportPaginationSmoothness(bool is_tablet_mode,
-                                                int smoothness);
+ASH_EXPORT void ReportPaginationSmoothness(bool is_tablet_mode, int smoothness);
 
-APP_LIST_EXPORT void ReportCardifiedSmoothness(bool is_entering_cardified,
-                                               int smoothness);
+ASH_EXPORT void ReportCardifiedSmoothness(bool is_entering_cardified,
+                                          int smoothness);
 
 }  // namespace ash
 

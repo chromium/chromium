@@ -17,12 +17,6 @@
     <item name="custom_tab_bottom_bar_wrapper" type="id"/>
     <item name="default_search_engine_dialog_options" type="id"/>
 
-    <!-- Tab Actions -->
-    <item type="id" name="close_tab" />
-    <item type="id" name="ungroup_tab" />
-    <item type="id" name="share_tab_group" />
-    <item type="id" name="edit_group_name" />
-
     <!-- Media playback notification -->
     <item type="id" name="media_playback_notification" />
 
@@ -102,11 +96,9 @@
     <!-- NTP-->
     <item type="id" name="ntp_feed_header_menu_item_activity" />
     <item type="id" name="ntp_feed_header_menu_item_interest" />
+    <item type="id" name="ntp_feed_header_menu_item_reactions" />
     <item type="id" name="ntp_feed_header_menu_item_learn" />
     <item type="id" name="ntp_feed_header_menu_item_toggle_switch" />
-
-    <!-- Homepage Promo -->
-    <item type="id" name="homepage_promo" />
 
     <!-- Enhanced Protection Promo -->
     <item type="id" name="enhanced_protection_promo" />

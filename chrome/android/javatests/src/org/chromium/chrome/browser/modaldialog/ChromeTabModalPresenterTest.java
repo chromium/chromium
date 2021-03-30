@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.modaldialog;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -119,7 +120,7 @@ public class ChromeTabModalPresenterTest {
         mActivity.getToolbarManager()
                 .getToolbarLayoutForTesting()
                 .getLocationBar()
-                .getFakeboxDelegate()
+                .getOmniboxStub()
                 .addUrlFocusChangeListener(mTestObserver);
         mTabModalPresenter =
                 (ChromeTabModalPresenter) mManager.getPresenterForTest(ModalDialogType.TAB);
@@ -225,7 +226,7 @@ public class ChromeTabModalPresenterTest {
 
         // Exit overview mode. The first dialog should be showing again.
         int callCount = mTestObserver.onTabInteractabilityChangedCallback.getCallCount();
-        onView(withId(R.id.tab_switcher_mode_tab_switcher_button)).perform(click());
+        pressBack();
         mTestObserver.onTabInteractabilityChangedCallback.waitForCallback(callCount);
 
         checkPendingSize(mManager, ModalDialogType.TAB, 1);

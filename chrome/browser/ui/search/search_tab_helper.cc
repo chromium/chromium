@@ -30,7 +30,6 @@
 #include "chrome/browser/search/chrome_colors/chrome_colors_factory.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
-#include "chrome/browser/search/local_ntp_source.h"
 #include "chrome/browser/search/promos/promo_service.h"
 #include "chrome/browser/search/promos/promo_service_factory.h"
 #include "chrome/browser/search/search.h"
@@ -112,8 +111,7 @@ std::string GetBitmapDataUrl(const char* data, size_t size) {
 bool IsCacheableNTP(content::WebContents* contents) {
   content::NavigationEntry* entry =
       contents->GetController().GetLastCommittedEntry();
-  return search::NavEntryIsInstantNTP(contents, entry) &&
-         entry->GetURL() != chrome::kChromeSearchLocalNtpUrl;
+  return search::NavEntryIsInstantNTP(contents, entry);
 }
 
 // Returns true if |contents| are rendered inside an Instant process.
@@ -396,7 +394,7 @@ void SearchTabHelper::OnLogMostVisitedNavigation(
     logger_->LogMostVisitedNavigation(impression);
 }
 
-void SearchTabHelper::PasteIntoOmnibox(const base::string16& text) {
+void SearchTabHelper::PasteIntoOmnibox(const std::u16string& text) {
   search::PasteIntoOmnibox(text, web_contents_);
 }
 
@@ -550,7 +548,7 @@ void SearchTabHelper::OnSelectLocalBackgroundImage() {
       l10n_util::GetStringUTF16(IDS_UPLOAD_IMAGE_FORMAT));
 
   select_file_dialog_->SelectFile(
-      ui::SelectFileDialog::SELECT_OPEN_FILE, base::string16(), directory,
+      ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string(), directory,
       &file_types, 0, base::FilePath::StringType(), parent_window, nullptr);
 }
 
@@ -610,7 +608,7 @@ void SearchTabHelper::OnConfirmThemeChanges() {
   }
 }
 
-void SearchTabHelper::QueryAutocomplete(const base::string16& input,
+void SearchTabHelper::QueryAutocomplete(const std::u16string& input,
                                         bool prevent_inline_autocomplete) {
   if (!search::DefaultSearchProviderIsGoogle(profile()))
     return;
@@ -655,7 +653,7 @@ class DeleteAutocompleteMatchConfirmDelegate
  public:
   DeleteAutocompleteMatchConfirmDelegate(
       content::WebContents* contents,
-      base::string16 search_provider_name,
+      std::u16string search_provider_name,
       base::OnceCallback<void(bool)> dialog_callback)
       : TabModalConfirmDialogDelegate(contents),
         search_provider_name_(search_provider_name),
@@ -667,18 +665,18 @@ class DeleteAutocompleteMatchConfirmDelegate
     DCHECK(!dialog_callback_);
   }
 
-  base::string16 GetTitle() override {
+  std::u16string GetTitle() override {
     return l10n_util::GetStringUTF16(
         IDS_OMNIBOX_REMOVE_SUGGESTION_BUBBLE_TITLE);
   }
 
-  base::string16 GetDialogMessage() override {
+  std::u16string GetDialogMessage() override {
     return l10n_util::GetStringFUTF16(
         IDS_OMNIBOX_REMOVE_SUGGESTION_BUBBLE_DESCRIPTION,
         search_provider_name_);
   }
 
-  base::string16 GetAcceptButtonTitle() override {
+  std::u16string GetAcceptButtonTitle() override {
     return l10n_util::GetStringUTF16(IDS_REMOVE);
   }
 
@@ -692,7 +690,7 @@ class DeleteAutocompleteMatchConfirmDelegate
   }
 
  private:
-  base::string16 search_provider_name_;
+  std::u16string search_provider_name_;
   base::OnceCallback<void(bool)> dialog_callback_;
 };
 
@@ -721,7 +719,7 @@ void SearchTabHelper::DeleteAutocompleteMatch(uint8_t line) {
       TemplateURLServiceFactory::GetForProfile(profile);
   const auto& match = autocomplete_controller_->result().match_at(line);
 
-  base::string16 search_provider_name;
+  std::u16string search_provider_name;
   const TemplateURL* template_url =
       match.GetTemplateURL(template_url_service, false);
   if (!template_url)
@@ -906,7 +904,7 @@ void SearchTabHelper::OpenAutocompleteMatch(
 
   OmniboxLog log(
       /*text=*/input.focus_type() != OmniboxFocusType::DEFAULT
-          ? base::string16()
+          ? std::u16string()
           : input.text(),
       /*just_deleted_text=*/input.prevent_inline_autocomplete(),
       /*input_type=*/input.type(),
@@ -922,7 +920,7 @@ void SearchTabHelper::OpenAutocompleteMatch(
       elapsed_time_since_first_autocomplete_query,
       /*completed_length=*/match.allowed_to_be_default_match
           ? match.inline_autocompletion.length()
-          : base::string16::npos,
+          : std::u16string::npos,
       /*elapsed_time_since_last_change_to_default_match=*/
       elapsed_time_since_last_change_to_default_match,
       /*result=*/autocomplete_controller_->result());

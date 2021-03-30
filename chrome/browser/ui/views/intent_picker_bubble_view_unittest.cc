@@ -18,6 +18,7 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/image/image.h"
@@ -30,7 +31,6 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/arc/intent_helper/arc_intent_picker_app_fetcher.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #endif
 
@@ -75,13 +75,13 @@ class IntentPickerBubbleViewTest : public BrowserWithTestWindowTest {
     anchor_view_ = std::make_unique<views::View>();
 
     // Pushing a couple of fake apps just to check they are created on the UI.
-    app_info_.emplace_back(apps::PickerEntryType::kArc, gfx::Image(),
+    app_info_.emplace_back(apps::PickerEntryType::kArc, ui::ImageModel(),
                            "package_1", "dank app 1");
-    app_info_.emplace_back(apps::PickerEntryType::kArc, gfx::Image(),
+    app_info_.emplace_back(apps::PickerEntryType::kArc, ui::ImageModel(),
                            "package_2", "dank_app_2");
     // Also adding the corresponding Chrome's package name on ARC, even if this
     // is given to the picker UI as input it should be ignored.
-    app_info_.emplace_back(apps::PickerEntryType::kArc, gfx::Image(),
+    app_info_.emplace_back(apps::PickerEntryType::kArc, ui::ImageModel(),
                            kArcIntentHelperPackageName, "legit_chrome");
 
     if (use_icons)
@@ -100,7 +100,7 @@ class IntentPickerBubbleViewTest : public BrowserWithTestWindowTest {
     // AppInfo is move only. Manually create a new app_info array to pass into
     // the bubble constructor.
     for (const auto& app : app_info_) {
-      app_info.emplace_back(app.type, app.icon, app.launch_name,
+      app_info.emplace_back(app.type, app.icon_model, app.launch_name,
                             app.display_name);
     }
 
@@ -115,9 +115,10 @@ class IntentPickerBubbleViewTest : public BrowserWithTestWindowTest {
 
   void FillAppListWithDummyIcons() {
     ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-    gfx::Image dummy_icon = rb.GetImageNamed(IDR_CLOSE);
+    ui::ImageModel dummy_icon_model =
+        ui::ImageModel::FromImage(rb.GetImageNamed(IDR_CLOSE));
     for (auto& app : app_info_)
-      app.icon = dummy_icon;
+      app.icon_model = dummy_icon_model;
   }
 
   // Dummy method to be called upon bubble closing.

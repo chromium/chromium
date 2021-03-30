@@ -28,10 +28,6 @@ JavaService::JavaService(
 
 JavaService::~JavaService() {}
 
-bool JavaService::IsLiteService() const {
-  return false;
-}
-
 void JavaService::GetScriptsForUrl(const GURL& url,
                                    const TriggerContext& trigger_context,
                                    ResponseCallback callback) {

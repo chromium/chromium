@@ -75,7 +75,8 @@ class CastDeviceCountMetrics : public DeviceCountMetrics {
  public:
   // Indicates the discovery source that led to the creation of a cast sink.
   // This is tied to the UMA histogram MediaRouter.Cast.Discovery.SinkSource, so
-  // new entries should only be added to the end, but before kTotalCount.
+  // new entries should only be added to the end, but before kTotalCount. When
+  // adding entries, also update the UMA enum MediaRouterCastSinkSource.
   enum SinkSource {
     kNetworkCache = 0,
     kMdns = 1,
@@ -83,8 +84,9 @@ class CastDeviceCountMetrics : public DeviceCountMetrics {
     kConnectionRetry = 3,
     kMdnsDial = 4,  // Device was first discovered via mDNS, then by DIAL.
     kDialMdns = 5,  // Device was first discovered via DIAL, then by mDNS.
+    kConnectionRetryOnError = 6,
 
-    kTotalCount = 6,
+    kTotalCount = 7,
   };
 
   static const char kHistogramCastKnownDeviceCount[];

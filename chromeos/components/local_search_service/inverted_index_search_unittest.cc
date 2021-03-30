@@ -151,14 +151,13 @@ TEST_F(InvertedIndexSearchTest, Add) {
   {
     // "network" does not exist in the index.
     const TermOccurrence doc_with_freq =
-        search_->FindTermForTesting(base::UTF8ToUTF16("network"));
+        search_->FindTermForTesting(u"network");
     EXPECT_TRUE(doc_with_freq.empty());
   }
 
   {
     // "help" exists in the index.
-    const TermOccurrence doc_with_freq =
-        search_->FindTermForTesting(base::UTF8ToUTF16("help"));
+    const TermOccurrence doc_with_freq = search_->FindTermForTesting(u"help");
     EXPECT_EQ(doc_with_freq.size(), 2u);
     EXPECT_EQ(doc_with_freq[0].first, "id1");
     EXPECT_EQ(doc_with_freq[0].second, 3u);
@@ -168,26 +167,24 @@ TEST_F(InvertedIndexSearchTest, Add) {
 
   {
     // "wifi" exists in the index but "wi-fi" doesn't because of normalization.
-    TermOccurrence doc_with_freq =
-        search_->FindTermForTesting(base::UTF8ToUTF16("wifi"));
+    TermOccurrence doc_with_freq = search_->FindTermForTesting(u"wifi");
     EXPECT_EQ(doc_with_freq.size(), 2u);
     EXPECT_EQ(doc_with_freq[0].first, "id1");
     EXPECT_EQ(doc_with_freq[0].second, 2u);
     EXPECT_EQ(doc_with_freq[1].first, "id2");
     EXPECT_EQ(doc_with_freq[1].second, 1u);
 
-    doc_with_freq = search_->FindTermForTesting(base::UTF8ToUTF16("wi-fi"));
+    doc_with_freq = search_->FindTermForTesting(u"wi-fi");
     EXPECT_TRUE(doc_with_freq.empty());
 
     // "WiFi" doesn't exist because the index stores normalized word.
-    doc_with_freq = search_->FindTermForTesting(base::UTF8ToUTF16("WiFi"));
+    doc_with_freq = search_->FindTermForTesting(u"WiFi");
     EXPECT_TRUE(doc_with_freq.empty());
   }
 
   {
     // "this" does not exist in the index because it's a stopword
-    const TermOccurrence doc_with_freq =
-        search_->FindTermForTesting(base::UTF8ToUTF16("this"));
+    const TermOccurrence doc_with_freq = search_->FindTermForTesting(u"this");
     EXPECT_TRUE(doc_with_freq.empty());
   }
 }
@@ -215,23 +212,21 @@ TEST_F(InvertedIndexSearchTest, Update) {
 
   {
     const TermOccurrence doc_with_freq =
-        search_->FindTermForTesting(base::UTF8ToUTF16("bluetooth"));
+        search_->FindTermForTesting(u"bluetooth");
     EXPECT_EQ(doc_with_freq.size(), 1u);
     EXPECT_EQ(doc_with_freq[0].first, "id1");
     EXPECT_EQ(doc_with_freq[0].second, 1u);
   }
 
   {
-    const TermOccurrence doc_with_freq =
-        search_->FindTermForTesting(base::UTF8ToUTF16("wifi"));
+    const TermOccurrence doc_with_freq = search_->FindTermForTesting(u"wifi");
     EXPECT_EQ(doc_with_freq.size(), 1u);
     EXPECT_EQ(doc_with_freq[0].first, "id2");
     EXPECT_EQ(doc_with_freq[0].second, 1u);
   }
 
   {
-    const TermOccurrence doc_with_freq =
-        search_->FindTermForTesting(base::UTF8ToUTF16("google"));
+    const TermOccurrence doc_with_freq = search_->FindTermForTesting(u"google");
     EXPECT_EQ(doc_with_freq.size(), 2u);
     EXPECT_EQ(doc_with_freq[0].first, "id1");
     EXPECT_EQ(doc_with_freq[0].second, 2u);
@@ -254,8 +249,7 @@ TEST_F(InvertedIndexSearchTest, Delete) {
   Delete(search_.get(), &task_environment_, {"id1"}, 1u);
 
   {
-    const TermOccurrence doc_with_freq =
-        search_->FindTermForTesting(base::UTF8ToUTF16("wifi"));
+    const TermOccurrence doc_with_freq = search_->FindTermForTesting(u"wifi");
     EXPECT_EQ(doc_with_freq.size(), 1u);
     EXPECT_EQ(doc_with_freq[0].first, "id2");
     EXPECT_EQ(doc_with_freq[0].second, 1u);

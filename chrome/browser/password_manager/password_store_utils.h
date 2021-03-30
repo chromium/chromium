@@ -7,10 +7,11 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_STORE_UTILS_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_STORE_UTILS_H_
 
+#include <string>
+
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 
 namespace password_manager {
 class PasswordStore;
@@ -28,8 +29,8 @@ void EditSavedPasswords(
     Profile* profile,
     base::span<const std::unique_ptr<password_manager::PasswordForm>>
         forms_to_change,
-    const base::string16& new_username,
-    const base::Optional<base::string16>& new_password);
+    const std::u16string& new_username,
+    const base::Optional<std::u16string>& new_password);
 
 // Returns the password store associated with the currently active profile.
 scoped_refptr<password_manager::PasswordStore> GetPasswordStore(

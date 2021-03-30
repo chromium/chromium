@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.customtabs;
 
 import android.os.Build;
 
-import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashscreenObserver;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;

@@ -101,6 +101,13 @@ public class NfcSystemLevelSetting {
         sNfcSupportForTesting = enabled;
     }
 
+    /** Reset Android NFC support for testing use only. */
+    @VisibleForTesting
+    public static void resetNfcForTesting() {
+        sSystemNfcSettingForTesting = null;
+        sNfcSupportForTesting = null;
+    }
+
     @NativeMethods
     interface Natives {
         void onNfcSystemLevelPromptCompleted(long callback);

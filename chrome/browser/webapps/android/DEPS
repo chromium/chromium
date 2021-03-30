@@ -1,0 +1,6 @@
+# External directories and/or files that can be included from this module:
+include_rules = [
+  "+components/browser_ui/bottomsheet/android",
+  "+components/webapk/android",
+  "+content/public/android/java/src/org/chromium/content_public/browser",
+]

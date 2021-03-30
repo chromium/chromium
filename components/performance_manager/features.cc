@@ -7,6 +7,7 @@
 
 #include "components/performance_manager/public/features.h"
 
+#include "base/dcheck_is_on.h"
 #include "base/metrics/field_trial_params.h"
 
 namespace performance_manager {
@@ -46,8 +47,8 @@ TabLoadingFrameNavigationThrottlesParams::GetParams() {
   return params;
 }
 
-const base::Feature kServiceWorkerRelationshipsInGraph{
-    "ServiceWorkerRelationshipsInGraph", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kRunOnMainThread{"RunOnMainThread",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace features
 }  // namespace performance_manager

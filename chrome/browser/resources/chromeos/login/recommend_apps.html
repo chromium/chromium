@@ -6,42 +6,73 @@
 <link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 
-<link rel="import" href="/components/oobe_dialog.html">
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
 <link rel="import" href="/components/throbber_notice.html">
+<link rel="import" href="/components/oobe_dialog_host_behavior.html">
+<link rel="import" href="/components/login_screen_behavior.html">
+<link rel="import" href="/components/multi_step_behavior.html">
 
 <dom-module id="recommend-apps-element">
   <template>
-    <style include="oobe-dialog-host"></style>
-    <link rel="stylesheet" href="recommend_apps.css">
-    <oobe-dialog id="loadingDialog" role="dialog" no-header for-step="loading"
-        no-footer-padding>
-      <div slot="footer" class="flex layout vertical center center-justified">
-        <throbber-notice text-key="recommendAppsLoading">
-        </throbber-notice>
-      </div>
-    </oobe-dialog>
-    <oobe-dialog id="appsDialog" role="dialog" has-buttons
-        title-key="recommendAppsScreenTitle"
+    <style include="oobe-dialog-host action-link">
+      #skipButton {
+        color: rgba(0, 0, 0, 0.54);
+        padding-inline-end: 6px;
+      }
+
+      :host-context(html:not([new-layout])) #app-list-view-container {
+        height: 308px;
+        margin-top: 23px;
+      }
+
+      :host-context(html[new-layout]) #app-list-view-container {
+        display: flex;
+        flex-direction: column;
+      }
+
+      #selectAllButton {
+        display: none;
+      }
+
+      :host-context(html[new-layout]) #selectAllButton {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 16px;
+      }
+    </style>
+    <oobe-loading-dialog id="loadingDialog" for-step="loading"
+        text-key="recommendAppsLoading">
+    </oobe-loading-dialog>
+    <oobe-adaptive-dialog id="appsDialog" role="dialog"
         aria-label$="[[i18nDynamic(locale, 'recommendAppsScreenTitle')]]"
         no-footer-padding footer-shrinkable for-step="list">
-      <iron-icon src="chrome://oobe/playstore.svg" slot="oobe-icon">
+      <iron-icon src="chrome://oobe/playstore.svg" slot="icon">
       </iron-icon>
-      <div id="subtitle" slot="subtitle">
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'recommendAppsScreenTitle')]]
+      </h1>
+      <div slot="subtitle">
         [[i18nDynamic(locale, 'recommendAppsScreenDescription', appCount_)]]
       </div>
-      <div id="app-list-view-container" slot="footer">
+      <div id="app-list-view-container" slot="content">
+        <div id="selectAllButton">
+          <a class="oobe-local-link focus-on-show" is="action-link"
+              on-click="onSelectAll_">
+            [[i18nDynamic(locale, 'recommendAppsSelectAll')]]
+          </a>
+        </div>
         <webview id="appView" on-message="onMessage_"></webview>
       </div>
-      <div slot="bottom-buttons" class="layout horizontal end-justified">
+      <div slot="bottom-buttons">
         <oobe-text-button id="skipButton"
             text-key="recommendAppsSkip" on-click="onSkip_" border>
         </oobe-text-button>
-        <oobe-next-button id="installButton" on-click="onInstall_" inverse
+        <oobe-text-button id="installButton" on-click="onInstall_" inverse
             text-key="recommendAppsInstall"
             disabled="[[!canProceed_(appsSelected_)]]">
-        </oobe-next-button>
+        </oobe-text-button>
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
   </template>
 </dom-module>

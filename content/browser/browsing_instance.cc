@@ -189,8 +189,8 @@ BrowsingInstance::~BrowsingInstance() {
 
 SiteInfo BrowsingInstance::ComputeSiteInfoForURL(
     const UrlInfo& url_info) const {
-  return SiteInstanceImpl::ComputeSiteInfo(isolation_context_, url_info,
-                                           cross_origin_isolated_info_);
+  return SiteInfo::Create(isolation_context_, url_info,
+                          cross_origin_isolated_info_);
 }
 
 }  // namespace content

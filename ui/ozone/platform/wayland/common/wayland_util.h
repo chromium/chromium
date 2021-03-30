@@ -17,6 +17,7 @@
 #include "ui/platform_window/platform_window_init_properties.h"
 
 class SkBitmap;
+class SkPath;
 
 namespace ui {
 class WaylandConnection;
@@ -86,6 +87,12 @@ ui::WaylandWindow* RootWindowFromWlSurface(wl_surface* surface);
 // and in DIP.
 gfx::Rect TranslateWindowBoundsToParentDIP(ui::WaylandWindow* window,
                                            ui::WaylandWindow* parent_window);
+
+// Returns rectangles dictated by SkPath.
+std::vector<gfx::Rect> CreateRectsFromSkPath(const SkPath& path);
+
+// Returns converted SkPath in DIPs from the one in pixels.
+SkPath ConvertPathToDIP(const SkPath& path_in_pixels, const int32_t scale);
 
 }  // namespace wl
 

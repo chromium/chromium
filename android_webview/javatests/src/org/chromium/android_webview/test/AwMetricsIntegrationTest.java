@@ -6,6 +6,7 @@ package org.chromium.android_webview.test;
 
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.MULTI_PROCESS;
 
+import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.MediumTest;
@@ -22,6 +23,7 @@ import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.metrics.AwMetricsServiceClient;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -167,6 +169,15 @@ public class AwMetricsIntegrationTest {
         // some reason).
         Assert.assertTrue(
                 "Should have some application_locale", systemProfile.hasApplicationLocale());
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Assert.assertEquals(
+                    ApiHelperForM.isProcess64Bit(), systemProfile.getAppVersion().contains("-64"));
+        }
+        Assert.assertTrue(
+                "Should have some low_entropy_source", systemProfile.hasLowEntropySource());
+        Assert.assertTrue(
+                "Should have some old_low_entropy_source", systemProfile.hasOldLowEntropySource());
     }
 
     @Test
@@ -284,6 +295,33 @@ public class AwMetricsIntegrationTest {
 
         Assert.assertEquals(
                 1, RecordHistogram.getHistogramTotalCountForTesting("MemoryAndroid.LowRamDevice"));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testMetadata_samplingRate() throws Throwable {
+        // Wait for a metrics log, since SamplingMetricsProvider only logs this histogram during log
+        // collection. Do not assert anything about this histogram before this point (ex. do not
+        // assert total count == 0), because this would race with the initial metrics log.
+        mPlatformServiceBridge.waitForNextMetricsLog();
+
+        Assert.assertEquals(
+                1, RecordHistogram.getHistogramTotalCountForTesting("UMA.SamplingRatePerMille"));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testMetadata_accessibility() throws Throwable {
+        // Wait for a metrics log, since AccessibilityMetricsProvider only logs this histogram
+        // during log collection. Do not assert anything about this histogram before this point (ex.
+        // do not assert total count == 0), because this would race with the initial metrics log.
+        mPlatformServiceBridge.waitForNextMetricsLog();
+
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Accessibility.Android.ScreenReader.EveryReport"));
     }
 
     @Test

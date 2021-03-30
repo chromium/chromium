@@ -1,3 +1,4 @@
 monorail: {
-  component: "Blink>Image"
+  component: "Internals>Images>Codecs"
 }
+team_email: "webp-discuss@webmproject.org"

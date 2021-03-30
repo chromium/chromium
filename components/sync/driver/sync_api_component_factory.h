@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/weak_ptr.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/weak_handle.h"
 #include "components/sync/driver/data_type_controller.h"
@@ -25,7 +24,6 @@ class DataTypeManager;
 class DataTypeManagerObserver;
 class SyncEngine;
 class SyncInvalidationsService;
-class SyncPrefs;
 
 // This factory provides sync driver code with the model type specific sync/api
 // service (like SyncableService) implementations.
@@ -50,16 +48,12 @@ class SyncApiComponentFactory {
   virtual std::unique_ptr<SyncEngine> CreateSyncEngine(
       const std::string& name,
       invalidation::InvalidationService* invalidator,
-      syncer::SyncInvalidationsService* sync_invalidation_service,
-      const base::WeakPtr<SyncPrefs>& sync_prefs) = 0;
+      syncer::SyncInvalidationsService* sync_invalidation_service) = 0;
 
-  // Deletes the directory database files from the sync data folder to cleanup
-  // all files. The main purpose is to delete the legacy Directory files
-  // (sqlite) but it also currently deletes the files corresponding to the
-  // modern NigoriStorageImpl.
+  // Clears all local transport data except the encryption bootstrap token.
   // Upon calling this, the deletion is guaranteed to finish before a new engine
   // returned by |CreateSyncEngine()| can do any proper work.
-  virtual void DeleteLegacyDirectoryFilesAndNigoriStorage() = 0;
+  virtual void ClearAllTransportDataExceptEncryptionBootstrapToken() = 0;
 };
 
 }  // namespace syncer

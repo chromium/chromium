@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
@@ -34,10 +35,6 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_util.h"
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_constants.h"
-#endif
 
 namespace {
 
@@ -71,22 +68,8 @@ ProfileInfoCache::ProfileInfoCache(PrefService* prefs,
        !it.IsAtEnd(); it.Advance()) {
     base::DictionaryValue* info = nullptr;
     cache->GetDictionaryWithoutPathExpansion(it.key(), &info);
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS) && !defined(OS_ANDROID) && \
-    !BUILDFLAG(IS_CHROMEOS_ASH)
-    std::string supervised_user_id;
-    info->GetString(ProfileAttributesEntry::kSupervisedUserId,
-                    &supervised_user_id);
-    // Silently ignore legacy supervised user profiles.
-    if (!supervised_user_id.empty() &&
-        supervised_user_id != supervised_users::kChildAccountSUID) {
-      continue;
-    }
-#endif
-    base::string16 name;
+    std::u16string name;
     info->GetString(ProfileAttributesEntry::kNameKey, &name);
-    keys_.push_back(it.key());
-    profile_attributes_entries_[user_data_dir_.AppendASCII(it.key()).value()] =
-        std::unique_ptr<ProfileAttributesEntry>(nullptr);
 
     bool using_default_name;
     if (!info->GetBoolean(ProfileAttributesEntry::kIsUsingDefaultNameKey,
@@ -106,6 +89,9 @@ ProfileInfoCache::ProfileInfoCache(PrefService* prefs,
     if (!info->HasKey(kIsUsingDefaultAvatarKey)) {
       info->SetBoolean(kIsUsingDefaultAvatarKey, using_default_name);
     }
+
+    // `info` may become invalid after this call.
+    InitEntryWithKey(it.key());
   }
 
   // If needed, start downloading the high-res avatars and migrate any legacy
@@ -136,21 +122,13 @@ ProfileInfoCache::ProfileInfoCache(PrefService* prefs,
 ProfileInfoCache::~ProfileInfoCache() = default;
 
 void ProfileInfoCache::AddProfileToCache(const base::FilePath& profile_path,
-                                         const base::string16& name,
+                                         const std::u16string& name,
                                          const std::string& gaia_id,
-                                         const base::string16& user_name,
+                                         const std::u16string& user_name,
                                          bool is_consented_primary_account,
                                          size_t icon_index,
                                          const std::string& supervised_user_id,
                                          const AccountId& account_id) {
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS) && !defined(OS_ANDROID) && \
-    !BUILDFLAG(IS_CHROMEOS_ASH)
-  // Silently ignore legacy supervised user profiles.
-  if (!supervised_user_id.empty() &&
-      supervised_user_id != supervised_users::kChildAccountSUID) {
-    return;
-  }
-#endif
   std::string key = CacheKeyFromProfilePath(profile_path);
   DictionaryPrefUpdate update(prefs_, prefs::kProfileInfoCache);
   base::DictionaryValue* cache = update.Get();
@@ -169,8 +147,6 @@ void ProfileInfoCache::AddProfileToCache(const base::FilePath& profile_path,
   info->SetBoolean(ProfileAttributesEntry::kBackgroundAppsKey, false);
   info->SetString(ProfileAttributesEntry::kSupervisedUserId,
                   supervised_user_id);
-  info->SetBoolean(ProfileAttributesEntry::kIsOmittedFromProfileListKey,
-                   !supervised_user_id.empty());
   info->SetBoolean(ProfileAttributesEntry::kProfileIsEphemeral, false);
   info->SetBoolean(ProfileAttributesEntry::kProfileIsGuest, false);
   // Either the user has provided a name manually on purpose, and in this case
@@ -184,9 +160,7 @@ void ProfileInfoCache::AddProfileToCache(const base::FilePath& profile_path,
   if (account_id.HasAccountIdKey())
     info->SetString(kAccountIdKey, account_id.GetAccountIdKey());
   cache->SetWithoutPathExpansion(key, std::move(info));
-  keys_.push_back(key);
-  profile_attributes_entries_[user_data_dir_.AppendASCII(key).value()] =
-      std::unique_ptr<ProfileAttributesEntry>();
+  InitEntryWithKey(key);
 
   if (!disable_avatar_download_for_testing_)
     DownloadHighResAvatarIfNeeded(icon_index, profile_path);
@@ -205,7 +179,7 @@ void ProfileInfoCache::DisableProfileMetricsForTesting() {
 void ProfileInfoCache::NotifyIfProfileNamesHaveChanged() {
   std::vector<ProfileAttributesEntry*> entries = GetAllProfilesAttributes();
   for (ProfileAttributesEntry* entry : entries) {
-    base::string16 old_display_name = entry->GetLastNameToDisplay();
+    std::u16string old_display_name = entry->GetLastNameToDisplay();
     if (entry->HasProfileNameChanged()) {
       for (auto& observer : observer_list_)
         observer.OnProfileNameChanged(entry->GetPath(), old_display_name);
@@ -239,13 +213,13 @@ void ProfileInfoCache::NotifyProfileHostedDomainChanged(
 
 void ProfileInfoCache::DeleteProfileFromCache(
     const base::FilePath& profile_path) {
-  ProfileAttributesEntry* entry;
-  if (!GetProfileAttributesWithPath(profile_path, &entry)) {
+  ProfileAttributesEntry* entry = GetProfileAttributesWithPath(profile_path);
+  if (!entry) {
     NOTREACHED();
     return;
   }
 
-  base::string16 name = entry->GetName();
+  std::u16string name = entry->GetName();
 
   for (auto& observer : observer_list_)
     observer.OnProfileWillBeRemoved(profile_path);
@@ -263,8 +237,15 @@ void ProfileInfoCache::DeleteProfileFromCache(
   }
 }
 
-size_t ProfileInfoCache::GetNumberOfProfiles() const {
-  return keys_.size();
+size_t ProfileInfoCache::GetNumberOfProfiles(bool include_guest_profile) const {
+  // Ephemeral Guest profile is registered in profile attributes storage,
+  // because if Chrome crashes we need the registry to find and delete it.
+  // But it should not be counted as a regular profile.
+  return std::count_if(
+      profile_attributes_entries_.begin(), profile_attributes_entries_.end(),
+      [include_guest_profile](const auto& key_value) {
+        return !key_value.second->IsGuest() || include_guest_profile;
+      });
 }
 
 size_t ProfileInfoCache::GetIndexOfProfileWithPath(
@@ -508,7 +489,7 @@ void ProfileInfoCache::RegisterPrefs(PrefRegistrySimple* registry) {
 
 const base::DictionaryValue* ProfileInfoCache::GetInfoForProfileAtIndex(
     size_t index) const {
-  DCHECK_LT(index, GetNumberOfProfiles());
+  DCHECK_LT(index, GetNumberOfProfiles(true));
   const base::DictionaryValue* cache =
       prefs_->GetDictionary(prefs::kProfileInfoCache);
   const base::DictionaryValue* info = nullptr;
@@ -566,11 +547,21 @@ void ProfileInfoCache::LoadGAIAPictureIfNeeded() {
 }
 #endif
 
+void ProfileInfoCache::InitEntryWithKey(const std::string& key) {
+  DCHECK(!base::Contains(keys_, key));
+  keys_.push_back(key);
+  base::FilePath path = user_data_dir_.AppendASCII(key);
+  DCHECK(!base::Contains(profile_attributes_entries_, path.value()));
+  auto new_entry = std::make_unique<ProfileAttributesEntry>();
+  new_entry->Initialize(this, path, prefs_);
+  profile_attributes_entries_[path.value()] = std::move(new_entry);
+}
+
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 void ProfileInfoCache::MigrateLegacyProfileNamesAndRecomputeIfNeeded() {
   std::vector<ProfileAttributesEntry*> entries = GetAllProfilesAttributes();
   for (size_t i = 0; i < entries.size(); i++) {
-    base::string16 profile_name = entries[i]->GetLocalProfileName();
+    std::u16string profile_name = entries[i]->GetLocalProfileName();
     if (!entries[i]->IsUsingDefaultName())
       continue;
 
@@ -579,7 +570,8 @@ void ProfileInfoCache::MigrateLegacyProfileNamesAndRecomputeIfNeeded() {
     if (!IsDefaultProfileName(
             profile_name, /*include_check_for_legacy_profile_name=*/false)) {
       entries[i]->SetLocalProfileName(
-          ChooseNameForNewProfile(entries[i]->GetAvatarIconIndex()));
+          ChooseNameForNewProfile(entries[i]->GetAvatarIconIndex()),
+          /*is_default_name=*/true);
       continue;
     }
 
@@ -592,7 +584,8 @@ void ProfileInfoCache::MigrateLegacyProfileNamesAndRecomputeIfNeeded() {
     for (size_t j = i + 1; j < entries.size(); j++) {
       if (profile_name == entries[j]->GetLocalProfileName()) {
         entries[j]->SetLocalProfileName(
-            ChooseNameForNewProfile(entries[j]->GetAvatarIconIndex()));
+            ChooseNameForNewProfile(entries[j]->GetAvatarIconIndex()),
+            /*is_default_name=*/true);
       }
     }
   }
@@ -615,9 +608,9 @@ void ProfileInfoCache::DownloadAvatars() {
 }
 
 void ProfileInfoCache::AddProfile(const base::FilePath& profile_path,
-                                  const base::string16& name,
+                                  const std::u16string& name,
                                   const std::string& gaia_id,
-                                  const base::string16& user_name,
+                                  const std::u16string& user_name,
                                   bool is_consented_primary_account,
                                   size_t icon_index,
                                   const std::string& supervised_user_id,
@@ -628,7 +621,7 @@ void ProfileInfoCache::AddProfile(const base::FilePath& profile_path,
 }
 
 void ProfileInfoCache::RemoveProfileByAccountId(const AccountId& account_id) {
-  for (size_t i = 0; i < GetNumberOfProfiles(); i++) {
+  for (size_t i = 0; i < GetNumberOfProfiles(true); i++) {
     std::string account_id_key;
     std::string gaia_id;
     std::string user_name;
@@ -653,20 +646,13 @@ void ProfileInfoCache::RemoveProfile(const base::FilePath& profile_path) {
   DeleteProfileFromCache(profile_path);
 }
 
-bool ProfileInfoCache::GetProfileAttributesWithPath(
-    const base::FilePath& path, ProfileAttributesEntry** entry) {
+ProfileAttributesEntry* ProfileInfoCache::GetProfileAttributesWithPath(
+    const base::FilePath& path) {
   const auto entry_iter = profile_attributes_entries_.find(path.value());
   if (entry_iter == profile_attributes_entries_.end())
-    return false;
+    return nullptr;
 
-  std::unique_ptr<ProfileAttributesEntry>& current_entry = entry_iter->second;
-  if (!current_entry) {
-    // The profile info is in the cache but its entry isn't created yet, insert
-    // it in the map.
-    current_entry.reset(new ProfileAttributesEntry());
-    current_entry->Initialize(this, path, prefs_);
-  }
-
-  *entry = current_entry.get();
-  return true;
+  ProfileAttributesEntry* entry = entry_iter->second.get();
+  DCHECK(entry);
+  return entry;
 }

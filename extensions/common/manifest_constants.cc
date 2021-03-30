@@ -48,7 +48,6 @@ const char kDifferentialFingerprint[] = "differential_fingerprint";
 const char kDisplayInLauncher[] = "display_in_launcher";
 const char kDisplayInNewTabPage[] = "display_in_new_tab_page";
 const char kEventName[] = "event_name";
-const char kExport[] = "export";
 const char kExternallyConnectable[] = "externally_connectable";
 const char kEventRules[] = "event_rules";
 const char kFileAccessList[] = "file_access";
@@ -67,7 +66,6 @@ const char kHostPermissions[] = "host_permissions";
 const char kIcons[] = "icons";
 const char kId[] = "id";
 const char kImeOptionsPage[] = "options_page";
-const char kImport[] = "import";
 const char kIndicator[] = "indicator";
 const char kInputComponents[] = "input_components";
 const char kInputView[] = "input_view";
@@ -94,7 +92,6 @@ const char kLinkedAppIconSize[] = "size";
 const char kManifestVersion[] = "manifest_version";
 const char kMatches[] = "matches";
 const char kMinimumChromeVersion[] = "minimum_chrome_version";
-const char kMinimumVersion[] = "minimum_version";
 const char kMIMETypes[] = "mime_types";
 const char kMimeTypesHandler[] = "mime_types_handler";
 const char kName[] = "name";
@@ -107,7 +104,6 @@ const char kOAuth2AutoApprove[] = "oauth2.auto_approve";
 const char kOAuth2ClientId[] = "oauth2.client_id";
 const char kOAuth2Scopes[] = "oauth2.scopes";
 const char kOfflineEnabled[] = "offline_enabled";
-const char kOmnibox[] = "omnibox";
 const char kOmniboxKeyword[] = "omnibox.keyword";
 const char kOptionalPermissions[] = "optional_permissions";
 const char kOptionsPage[] = "options_page";
@@ -132,16 +128,8 @@ const char kSandboxedPagesCSP[] = "sandbox.content_security_policy";
 const char kSettingsOverride[] = "chrome_settings_overrides";
 const char kSettingsOverrideAlternateUrls[] =
     "chrome_settings_overrides.search_provider.alternate_urls";
-const char kSharedModuleAllowlist[] = "allowlist";
-const char kSharedModuleLegacyAllowlist[] = "whitelist";
 const char kShortName[] = "short_name";
-const char kSignature[] = "signature";
 const char kSockets[] = "sockets";
-const char kSpellcheck[] = "spellcheck";
-const char kSpellcheckDictionaryFormat[] = "dictionary_format";
-const char kSpellcheckDictionaryLanguage[] = "dictionary_language";
-const char kSpellcheckDictionaryLocale[] = "dictionary_locale";
-const char kSpellcheckDictionaryPath[] = "dictionary_path";
 const char kStorageManagedSchema[] = "storage.managed_schema";
 const char kSuggestedKey[] = "suggested_key";
 const char kSystemIndicator[] = "system_indicator";
@@ -169,11 +157,6 @@ const char kUrlHandlerTitle[] = "title";
 const char kUsbPrinters[] = "usb_printers";
 const char kVersion[] = "version";
 const char kVersionName[] = "version_name";
-const char kWebAccessibleResources[] = "web_accessible_resources";
-const char kWebAccessibleResourcesExtensionIds[] = "extension_ids";
-const char kWebAccessibleResourcesMatches[] = "matches";
-const char kWebAccessibleResourcesResources[] = "resources";
-const char kWebAccessibleResourcesUseDynamicUrl[] = "use_dynamic_url";
 const char kWebAppFileHandlers[] = "web_app_file_handlers";
 const char kWebAppFileHandlerAccept[] = "accept";
 const char kWebAppFileHandlerAction[] = "action";
@@ -261,8 +244,6 @@ const char kAppsNotEnabled[] =
 const char kBackgroundPermissionNeeded[] =
     "Hosted apps that use 'background_page' must have the 'background' "
     "permission.";
-const char kBackgroundPersistentInvalidForPlatformApps[] =
-    "The key 'background.persistent' is not supported for packaged apps.";
 const char kBackgroundRequiredForPlatformApps[] =
     "Packaged apps must have a background page or background scripts.";
 const char kBackgroundSpecificationInvalidForManifestV3[] =
@@ -383,11 +364,8 @@ const char kInvalidExcludeMatch[] =
     "Invalid value for 'content_scripts[*].exclude_matches[*]': *";
 const char kInvalidExcludeMatches[] =
     "Invalid value for 'content_scripts[*].exclude_matches'.";
-const char kInvalidExport[] =
-    "Invalid value for 'export'.";
 const char kInvalidExportPermissions[] =
     "Permissions are not allowed for extensions that export resources.";
-const char kInvalidExportAllowlist[] = "Invalid value for 'export.allowlist'.";
 const char kInvalidExportAllowlistString[] =
     "Invalid value for 'export.allowlist[*]'.";
 const char kInvalidFileAccessList[] =
@@ -438,8 +416,6 @@ const char kInvalidIconPath[] =
     "Invalid value for 'icons[\"*\"]'.";
 const char kInvalidIcons[] =
     "Invalid value for 'icons'.";
-const char kInvalidImport[] =
-    "Invalid value for 'import'.";
 const char kInvalidImportAndExport[] =
     "Simultaneous 'import' and 'export' are not allowed.";
 const char kInvalidImportId[] =
@@ -549,8 +525,8 @@ const char kInvalidOAuth2Scopes[] =
     "Invalid value for 'oauth2.scopes'.";
 const char kInvalidOfflineEnabled[] =
     "Invalid value for 'offline_enabled'.";
-const char kInvalidOmniboxKeyword[] =
-    "Invalid value for 'omnibox.keyword'.";
+const char kEmptyOmniboxKeyword[] =
+    "Invalid value for 'omnibox.keyword'. It must be non-empty.";
 const char kInvalidOptionsPage[] = "Invalid value for '*'.";
 const char kInvalidOptionsPageExpectUrlInPackage[] =
     "Invalid value for 'options_page'.  Value must be a relative path.";
@@ -592,18 +568,6 @@ const char kInvalidSearchEngineURL[] =
     "Invalid URL [*] for 'chrome_settings_overrides.search_provider'.";
 const char kInvalidShortName[] =
     "Invalid value for 'short_name'.";
-const char kInvalidSignature[] =
-    "Value 'signature' is missing or invalid.";
-const char kInvalidSpellcheck[] =
-    "Invalid value for 'spellcheck'.";
-const char kInvalidSpellcheckDictionaryFormat[] =
-    "Invalid value for spellcheck dictionary format.";
-const char kInvalidSpellcheckDictionaryLanguage[] =
-    "Invalid value for spellcheck dictionary language.";
-const char kInvalidSpellcheckDictionaryLocale[] =
-    "Invalid value for spellcheck dictionary locale.";
-const char kInvalidSpellcheckDictionaryPath[] =
-    "Invalid value for spellcheck dictionary path.";
 const char kInvalidStartupOverrideURL[] =
     "Invalid value for overriding startup URL: '[*]'.";
 const char kInvalidSystemIndicator[] =

@@ -79,4 +79,31 @@ suite('NetworkChooseMobileTest', function() {
       assertTrue(scanButton.disabled);
     }
   });
+
+  test('Disabled UI state', function() {
+    chooseMobile.managedProperties = {
+      connectionState: mojom.ConnectionStateType.kNotConnected,
+      typeProperties: {
+        cellular: {
+          foundNetworks: [{
+            networkId: '1',
+            longName: 'network_name',
+          }]
+        }
+      }
+    };
+    chooseMobile.deviceState = {scanning: false};
+    Polymer.dom.flush();
+
+    const scanButton = chooseMobile.$$('cr-button');
+    const select = chooseMobile.$$('select');
+
+    assertFalse(scanButton.disabled);
+    assertFalse(select.disabled);
+
+    chooseMobile.disabled = true;
+
+    assertTrue(scanButton.disabled);
+    assertTrue(select.disabled);
+  });
 });

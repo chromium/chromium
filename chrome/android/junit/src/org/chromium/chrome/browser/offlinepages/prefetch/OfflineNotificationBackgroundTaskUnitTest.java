@@ -87,6 +87,11 @@ public class OfflineNotificationBackgroundTaskUnitTest {
         }
 
         @Override
+        public boolean isScheduled(Context context, int taskId) {
+            return (mTaskInfos.get(taskId) != null);
+        }
+
+        @Override
         public void checkForOSUpgrade(Context context) {}
 
         @Override
@@ -125,7 +130,9 @@ public class OfflineNotificationBackgroundTaskUnitTest {
         MockitoAnnotations.initMocks(this);
         mOfflineNotificationBackgroundTask.setDelegate(new ChromeNativeBackgroundTaskDelegate());
         // Set up the context.
-        doNothing().when(mChromeBrowserInitializer).handlePreNativeStartup(any(BrowserParts.class));
+        doNothing()
+                .when(mChromeBrowserInitializer)
+                .handlePreNativeStartupAndLoadLibraries(any(BrowserParts.class));
         doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) {
@@ -236,12 +243,13 @@ public class OfflineNotificationBackgroundTaskUnitTest {
     }
 
     private void assertNativeDidNotStart() {
-        verify(mChromeBrowserInitializer, never()).handlePreNativeStartup(any(BrowserParts.class));
+        verify(mChromeBrowserInitializer, never())
+                .handlePreNativeStartupAndLoadLibraries(any(BrowserParts.class));
     }
 
     private void assertNativeStarted() {
         verify(mChromeBrowserInitializer, atLeastOnce())
-                .handlePreNativeStartup(any(BrowserParts.class));
+                .handlePreNativeStartupAndLoadLibraries(any(BrowserParts.class));
     }
 
     private void assertNotificationNotShown() {

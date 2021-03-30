@@ -39,7 +39,7 @@ AudioNodeInput::AudioNodeInput(AudioHandler& handler)
       handler_(handler) {
   // Set to mono by default.
   internal_summing_bus_ =
-      AudioBus::Create(1, audio_utilities::kRenderQuantumFrames);
+      AudioBus::Create(1, GetDeferredTaskHandler().RenderQuantumFrames());
 }
 
 AudioNodeInput::~AudioNodeInput() {
@@ -60,7 +60,7 @@ void AudioNodeInput::UpdateInternalBus() {
     return;
 
   internal_summing_bus_ = AudioBus::Create(
-      number_of_input_channels, audio_utilities::kRenderQuantumFrames);
+      number_of_input_channels, GetDeferredTaskHandler().RenderQuantumFrames());
 }
 
 unsigned AudioNodeInput::NumberOfChannels() const {

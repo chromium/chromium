@@ -23,6 +23,8 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/permissions/permission_set.h"
 
+using extensions::mojom::APIPermissionID;
+
 namespace extensions {
 namespace {
 constexpr char kExtensionId[] = "abcdefghijklmnopabcdefghijklmnop";
@@ -356,13 +358,13 @@ TEST_F(ExtensionInstallStatusTest, ExtensionBlockedByPermissions) {
 
   // Extension with audio permission is still installable but not with storage.
   APIPermissionSet api_permissions;
-  api_permissions.insert(APIPermission::kAudio);
+  api_permissions.insert(APIPermissionID::kAudio);
   EXPECT_EQ(ExtensionInstallStatus::kInstallable,
             GetWebstoreExtensionInstallStatus(
                 kExtensionId, profile(), Manifest::Type::TYPE_EXTENSION,
                 PermissionSet(api_permissions.Clone(), ManifestPermissionSet(),
                               URLPatternSet(), URLPatternSet())));
-  api_permissions.insert(APIPermission::kStorage);
+  api_permissions.insert(APIPermissionID::kStorage);
   EXPECT_EQ(ExtensionInstallStatus::kBlockedByPolicy,
             GetWebstoreExtensionInstallStatus(
                 kExtensionId, profile(), Manifest::Type::TYPE_EXTENSION,
@@ -431,13 +433,13 @@ TEST_F(ExtensionInstallStatusTest, ExtensionBlockedByPermissionsWithUpdateUrl) {
   })");
 
   APIPermissionSet api_permissions;
-  api_permissions.insert(APIPermission::kAudio);
+  api_permissions.insert(APIPermissionID::kAudio);
   EXPECT_EQ(ExtensionInstallStatus::kInstallable,
             GetWebstoreExtensionInstallStatus(
                 kExtensionId, profile(), Manifest::Type::TYPE_EXTENSION,
                 PermissionSet(api_permissions.Clone(), ManifestPermissionSet(),
                               URLPatternSet(), URLPatternSet())));
-  api_permissions.insert(APIPermission::kDownloads);
+  api_permissions.insert(APIPermissionID::kDownloads);
   EXPECT_EQ(ExtensionInstallStatus::kBlockedByPolicy,
             GetWebstoreExtensionInstallStatus(
                 kExtensionId, profile(), Manifest::Type::TYPE_EXTENSION,
@@ -508,7 +510,7 @@ TEST_F(ExtensionInstallStatusTest,
 
   // Per-id allowlisted has higher priority than blocked permissions.
   APIPermissionSet api_permissions;
-  api_permissions.insert(APIPermission::kStorage);
+  api_permissions.insert(APIPermissionID::kStorage);
   EXPECT_EQ(ExtensionInstallStatus::kInstallable,
             GetWebstoreExtensionInstallStatus(
                 kExtensionId, profile(), Manifest::Type::TYPE_EXTENSION,
@@ -533,7 +535,7 @@ TEST_F(ExtensionInstallStatusTest, NonWebstoreUpdateUrlPolicy) {
     }
   })");
   APIPermissionSet api_permissions;
-  api_permissions.insert(APIPermission::kDownloads);
+  api_permissions.insert(APIPermissionID::kDownloads);
   EXPECT_EQ(ExtensionInstallStatus::kInstallable,
             GetWebstoreExtensionInstallStatus(
                 kExtensionId, profile(), Manifest::Type::TYPE_EXTENSION,

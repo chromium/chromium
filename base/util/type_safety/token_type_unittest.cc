@@ -4,6 +4,7 @@
 
 #include "base/util/type_safety/token_type.h"
 
+#include "base/unguessable_token.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace util {

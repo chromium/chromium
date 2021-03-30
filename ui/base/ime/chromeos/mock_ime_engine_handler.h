@@ -33,7 +33,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) MockIMEEngineHandler
   ui::VirtualKeyboardController* GetVirtualKeyboardController() const override;
   void PropertyActivate(const std::string& property_name) override;
   void CandidateClicked(uint32_t index) override;
-  void SetSurroundingText(const base::string16& text,
+  void SetSurroundingText(const std::u16string& text,
                           uint32_t cursor_pos,
                           uint32_t anchor_pos,
                           uint32_t offset_pos) override;
@@ -60,7 +60,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) MockIMEEngineHandler
     return last_activated_property_;
   }
 
-  base::string16 last_set_surrounding_text() const {
+  std::u16string last_set_surrounding_text() const {
     return last_set_surrounding_text_;
   }
 
@@ -88,7 +88,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) MockIMEEngineHandler
   int reset_call_count_;
   InputContext last_text_input_context_;
   std::string last_activated_property_;
-  base::string16 last_set_surrounding_text_;
+  std::u16string last_set_surrounding_text_;
   uint32_t last_set_surrounding_cursor_pos_;
   uint32_t last_set_surrounding_anchor_pos_;
   std::unique_ptr<ui::KeyEvent> last_processed_key_event_;

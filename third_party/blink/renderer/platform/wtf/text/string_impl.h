@@ -95,8 +95,8 @@ class WTF_EXPORT StringImpl {
   enum ConstructEmptyStringTag { kConstructEmptyString };
   explicit StringImpl(ConstructEmptyStringTag)
       : length_(0),
-        hash_and_flags_(kAsciiCheckDone | kContainsOnlyAscii | kIs8Bit |
-                        kIsStatic) {
+        hash_and_flags_(kAsciiPropertyCheckDone | kContainsOnlyAscii |
+                        kIsLowerAscii | kIs8Bit | kIsStatic) {
     // Ensure that the hash is computed so that AtomicStringHash can call
     // existingHash() with impunity. The empty string is special because it
     // is never entered into AtomicString's HashKey, but still needs to
@@ -107,7 +107,8 @@ class WTF_EXPORT StringImpl {
   enum ConstructEmptyString16BitTag { kConstructEmptyString16Bit };
   explicit StringImpl(ConstructEmptyString16BitTag)
       : length_(0),
-        hash_and_flags_(kAsciiCheckDone | kContainsOnlyAscii | kIsStatic) {
+        hash_and_flags_(kAsciiPropertyCheckDone | kContainsOnlyAscii |
+                        kIsLowerAscii | kIsStatic) {
     GetHash();
   }
 
@@ -150,6 +151,10 @@ class WTF_EXPORT StringImpl {
 
   static scoped_refptr<StringImpl> Create(const UChar*, wtf_size_t length);
   static scoped_refptr<StringImpl> Create(const LChar*, wtf_size_t length);
+  static scoped_refptr<StringImpl> Create(
+      const LChar*,
+      wtf_size_t length,
+      ASCIIStringAttributes ascii_attributes);
   static scoped_refptr<StringImpl> Create8BitIfPossible(const UChar*,
                                                         wtf_size_t length);
   template <wtf_size_t inlineCapacity>
@@ -221,6 +226,8 @@ class WTF_EXPORT StringImpl {
   }
 
   bool ContainsOnlyASCIIOrEmpty() const;
+
+  bool IsLowerASCII() const;
 
   bool IsSafeToSendToAnotherThread() const;
 
@@ -457,13 +464,17 @@ class WTF_EXPORT StringImpl {
     // (post-unification). Thus these accesses can also be relaxed.
     kIsAtomic = 1 << 2,
 
-    // These two bits are set atomically together. They are initially both
+    // These bits are set atomically together. They are initially all
     // zero, and like the hash computation below, become non-zero only as part
     // of a single atomic bitwise or. Thus concurrent loads will always observe
-    // either a state where the ASCII check has not been completed and both
-    // bits are zero, or a state where the state is fully populated.
-    kAsciiCheckDone = 1 << 3,
+    // either a state where the ASCII property check has not been completed and
+    // all bits are zero, or a state where the state is fully populated.
+    //
+    // The reason kIsLowerAscii is cached but upper ascii is not is that
+    // DOM attributes APIs require a lowercasing check making it fairly hot.
+    kAsciiPropertyCheckDone = 1 << 3,
     kContainsOnlyAscii = 1 << 4,
+    kIsLowerAscii = 1 << 5,
 
     // The last 24 bits (past kHashShift) are reserved for the hash.
     // These bits are all zero if the hash is uncomputed, and the hash is
@@ -480,7 +491,19 @@ class WTF_EXPORT StringImpl {
   constexpr static int kHashShift = (sizeof(unsigned) * 8) - 24;
 
   static inline constexpr uint32_t LengthToAsciiFlags(int length) {
-    return length ? 0 : kAsciiCheckDone | kContainsOnlyAscii;
+    return length
+               ? 0
+               : kAsciiPropertyCheckDone | kContainsOnlyAscii | kIsLowerAscii;
+  }
+
+  static inline uint32_t ASCIIStringAttributesToFlags(
+      ASCIIStringAttributes ascii_attributes) {
+    uint32_t flags = kAsciiPropertyCheckDone;
+    if (ascii_attributes.contains_only_ascii)
+      flags |= kContainsOnlyAscii;
+    if (ascii_attributes.is_lower_ascii)
+      flags |= kIsLowerAscii;
+    return flags;
   }
 
   void SetHashRaw(unsigned hash_val) const {
@@ -522,7 +545,10 @@ class WTF_EXPORT StringImpl {
   NOINLINE wtf_size_t HashSlowCase() const;
 
   void DestroyIfNotStatic() const;
-  bool ContainsOnlyASCIIOrEmptySlowCase() const;
+
+  // Calculates the kContainsOnlyAscii and kIsLowerAscii flags. Returns
+  // a bitfield with those 2 values.
+  unsigned ComputeASCIIFlags() const;
 
 #if DCHECK_IS_ON()
   std::string AsciiForDebugging() const;
@@ -586,9 +612,16 @@ WTF_EXPORT bool EqualNonNull(const StringImpl* a, const StringImpl* b);
 
 ALWAYS_INLINE bool StringImpl::ContainsOnlyASCIIOrEmpty() const {
   uint32_t flags = hash_and_flags_.load(std::memory_order_relaxed);
-  if (flags & kAsciiCheckDone)
+  if (flags & kAsciiPropertyCheckDone)
     return flags & kContainsOnlyAscii;
-  return ContainsOnlyASCIIOrEmptySlowCase();
+  return ComputeASCIIFlags() & kContainsOnlyAscii;
+}
+
+ALWAYS_INLINE bool StringImpl::IsLowerASCII() const {
+  uint32_t flags = hash_and_flags_.load(std::memory_order_relaxed);
+  if (flags & kAsciiPropertyCheckDone)
+    return flags & kIsLowerAscii;
+  return ComputeASCIIFlags() & kIsLowerAscii;
 }
 
 template <typename CharType>

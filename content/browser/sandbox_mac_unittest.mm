@@ -91,6 +91,7 @@ class SandboxMacTest : public base::MultiProcessTest {
         sandbox::policy::SandboxType::kGpu,
         sandbox::policy::SandboxType::kNaClLoader,
         sandbox::policy::SandboxType::kPpapi,
+        sandbox::policy::SandboxType::kPrintBackend,
         sandbox::policy::SandboxType::kPrintCompositor,
         sandbox::policy::SandboxType::kRenderer,
         sandbox::policy::SandboxType::kUtility,
@@ -239,7 +240,7 @@ TEST_F(SandboxMacTest, FontLoadingTest) {
   ASSERT_TRUE(temp_file);
 
   std::unique_ptr<FontLoader::ResultInternal> result =
-      FontLoader::LoadFontForTesting(base::ASCIIToUTF16("Geeza Pro"), 16);
+      FontLoader::LoadFontForTesting(u"Geeza Pro", 16);
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->font_data.is_valid());
   uint64_t font_data_size = result->font_data->GetSize();

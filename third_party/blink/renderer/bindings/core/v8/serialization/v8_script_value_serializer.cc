@@ -345,10 +345,14 @@ bool V8ScriptValueSerializer::WriteDOMObject(ScriptWrappable* wrappable,
     WriteUint32Enum(ImageSerializationTag::kEndTag);
     WriteUint32(image_data->width());
     WriteUint32(image_data->height());
-    SkPixmap image_data_pixmap = image_data->GetSkPixmap();
-    size_t pixel_buffer_length = image_data_pixmap.computeByteSize();
-    WriteUint64(base::strict_cast<uint64_t>(pixel_buffer_length));
-    WriteRawBytes(image_data_pixmap.addr(), pixel_buffer_length);
+    if (image_data->IsBufferBaseDetached()) {
+      WriteUint64(0u);
+    } else {
+      SkPixmap image_data_pixmap = image_data->GetSkPixmap();
+      size_t pixel_buffer_length = image_data_pixmap.computeByteSize();
+      WriteUint64(base::strict_cast<uint64_t>(pixel_buffer_length));
+      WriteRawBytes(image_data_pixmap.addr(), pixel_buffer_length);
+    }
     return true;
   }
   if (wrapper_type_info == V8DOMPoint::GetWrapperTypeInfo()) {
@@ -764,6 +768,13 @@ v8::Maybe<uint32_t> V8ScriptValueSerializer::GetWasmModuleTransferId(
       // simple and should perform sufficiently well under these expectations.
       serialized_script_value_->WasmModules().push_back(
           module->GetCompiledModule());
+      if (!serialized_script_value_->origin()) {
+        // Store the |SecurityOrigin| of the current |ExecutionContext| to count
+        // during deserialization if the WebAssembly module got transferred
+        // cross-origin.
+        serialized_script_value_->set_origin(
+            ExecutionContext::From(script_state_)->GetSecurityOrigin());
+      }
       uint32_t size =
           static_cast<uint32_t>(serialized_script_value_->WasmModules().size());
       DCHECK_GE(size, 1u);
@@ -779,7 +790,7 @@ v8::Maybe<uint32_t> V8ScriptValueSerializer::GetWasmModuleTransferId(
 void* V8ScriptValueSerializer::ReallocateBufferMemory(void* old_buffer,
                                                       size_t size,
                                                       size_t* actual_size) {
-  *actual_size = WTF::Partitions::BufferActualSize(size);
+  *actual_size = WTF::Partitions::BufferPotentialCapacity(size);
   return WTF::Partitions::BufferTryRealloc(old_buffer, *actual_size,
                                            "SerializedScriptValue buffer");
 }

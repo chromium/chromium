@@ -15,6 +15,7 @@
 #include "base/rand_util.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -250,7 +251,7 @@ static base::FilePath::StringType StringToFilePathStringType(
 #if defined(OS_WIN)
   return base::UTF8ToWide(string_piece);
 #else
-  return string_piece.as_string();
+  return std::string(string_piece);
 #endif
 }
 
@@ -451,10 +452,10 @@ bool MimeUtil::MatchesMimeType(const std::string& mime_type_pattern,
   return MatchesMimeTypeParameters(mime_type_pattern, mime_type);
 }
 
-// See http://www.iana.org/assignments/media-types/media-types.xhtml
+// See https://www.iana.org/assignments/media-types/media-types.xhtml
 static const char* const kLegalTopLevelTypes[] = {
-    "application", "audio",     "example", "image", "message",
-    "model",       "multipart", "text",    "video",
+    "application", "audio", "example",   "font", "image",
+    "message",     "model", "multipart", "text", "video",
 };
 
 bool MimeUtil::ParseMimeTypeWithoutParameter(
@@ -578,6 +579,11 @@ static const char* const kStandardAudioTypes[] = {
   "audio/vnd.rn-realaudio",
   "audio/vnd.wave"
 };
+// https://tools.ietf.org/html/rfc8081
+static const char* const kStandardFontTypes[] = {
+    "font/collection", "font/otf",  "font/sfnt",
+    "font/ttf",        "font/woff", "font/woff2",
+};
 static const char* const kStandardVideoTypes[] = {
   "video/avi",
   "video/divx",
@@ -601,6 +607,7 @@ struct StandardType {
 };
 static const StandardType kStandardTypes[] = {{"image/", kStandardImageTypes},
                                               {"audio/", kStandardAudioTypes},
+                                              {"font/", kStandardFontTypes},
                                               {"video/", kStandardVideoTypes},
                                               {nullptr, {}}};
 

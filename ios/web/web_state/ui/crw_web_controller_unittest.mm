@@ -20,6 +20,7 @@
 #import "ios/web/common/crw_content_view.h"
 #import "ios/web/common/crw_web_view_content_view.h"
 #include "ios/web/common/features.h"
+#import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/js_messaging/crw_js_injector.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
 #include "ios/web/navigation/block_universal_links_buildflags.h"
@@ -167,10 +168,14 @@ class CRWWebControllerTest : public WebTestWithWebController {
 
   // The value for web view OCMock objects to expect for |-setFrame:|.
   CGRect GetExpectedWebViewFrame() const {
-    CGSize container_view_size =
-        UIApplication.sharedApplication.keyWindow.bounds.size;
+    CGSize container_view_size = GetAnyKeyWindow().bounds.size;
+#if !defined(__IPHONE_13_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_13_0
     container_view_size.height -=
         CGRectGetHeight([UIApplication sharedApplication].statusBarFrame);
+#else
+    container_view_size.height -= CGRectGetHeight(
+        GetAnyKeyWindow().windowScene.statusBarManager.statusBarFrame);
+#endif
     return {CGPointZero, container_view_size};
   }
 
@@ -283,31 +288,6 @@ TEST_F(CRWWebControllerTest, SetAllowsBackForwardNavigationGestures) {
   EXPECT_FALSE(web_controller().allowsBackForwardNavigationGestures);
 }
 
-// Tests that the navigation state is reset to FINISHED when a back/forward
-// navigation occurs during a pending navigation.
-TEST_F(CRWWebControllerTest, BackForwardWithPendingNavigation) {
-  ASSERT_FALSE([web_controller() lastPendingItemForNewNavigation]);
-  ASSERT_FALSE(web_controller().webStateImpl->GetPendingItem());
-
-  // Commit a navigation so that there is a back NavigationItem.
-  SetWebViewURL(@"about:blank");
-  [navigation_delegate_ webView:mock_web_view_
-      didStartProvisionalNavigation:nil];
-  [navigation_delegate_ webView:mock_web_view_ didCommitNavigation:nil];
-  [navigation_delegate_ webView:mock_web_view_ didFinishNavigation:nil];
-
-  // Create pending item by simulating a renderer-initiated navigation.
-  [navigation_delegate_ webView:mock_web_view_
-      didStartProvisionalNavigation:nil];
-  ASSERT_EQ(web::WKNavigationState::REQUESTED,
-            web_controller().navigationState);
-
-  [web_controller() didFinishGoToIndexSameDocumentNavigationWithType:
-                        web::NavigationInitiationType::BROWSER_INITIATED
-                                                      hasUserGesture:YES];
-  EXPECT_EQ(web::WKNavigationState::FINISHED, web_controller().navigationState);
-}
-
 // Tests that a web view is created after calling -[ensureWebViewCreated] and
 // check its user agent.
 TEST_F(CRWWebControllerTest, WebViewCreatedAfterEnsureWebViewCreated) {
@@ -339,7 +319,7 @@ TEST_F(CRWWebControllerTest, WebViewCreatedAfterEnsureWebViewCreated) {
 TEST_F(CRWWebControllerTest, RemoveWebViewFromViewHierarchy) {
   // Make sure that the WebController view has a window to avoid stashing the
   // WebView once created.
-  [UIApplication.sharedApplication.keyWindow addSubview:web_controller().view];
+  [GetAnyKeyWindow() addSubview:web_controller().view];
 
   // Get the web view.
   [web_controller() removeWebView];

@@ -81,7 +81,7 @@ source_set("startup") {
     "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/net:net",
     "//ios/chrome/browser/ntp_snippets",
-    "//ios/chrome/browser/ui/whats_new:utils",
+    "//ios/chrome/browser/ui/default_promo:utils",
     "//ios/chrome/browser/web:web_internal",
     "//ios/chrome/common",
     "//ios/chrome/common/app_group",

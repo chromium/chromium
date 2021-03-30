@@ -39,7 +39,7 @@
 
 namespace content {
 class PageNavigator;
-struct NativeFileSystemWriteItem;
+struct FileSystemAccessWriteItem;
 }  // namespace content
 
 namespace download {
@@ -56,8 +56,9 @@ namespace safe_browsing {
 class BinaryFeatureExtractor;
 class CheckClientDownloadRequest;
 class CheckClientDownloadRequestBase;
-class CheckNativeFileSystemWriteRequest;
+class CheckFileSystemAccessWriteRequest;
 class ClientDownloadRequest;
+class DownloadRequestMaker;
 class DownloadFeedbackService;
 class PPAPIDownloadRequest;
 
@@ -71,12 +72,12 @@ class DownloadProtectionService {
 
   virtual ~DownloadProtectionService();
 
-  // Parse a flag of blacklisted sha256 hashes to check at each download.
+  // Parse a flag of blocklisted sha256 hashes to check at each download.
   // This is used for testing, to hunt for safe-browsing by-pass bugs.
-  virtual void ParseManualBlacklistFlag();
+  virtual void ParseManualBlocklistFlag();
 
-  // Return true if this hash value is blacklisted via flag (for testing).
-  virtual bool IsHashManuallyBlacklisted(const std::string& sha256_hash) const;
+  // Return true if this hash value is blocklisted via flag (for testing).
+  virtual bool IsHashManuallyBlocklisted(const std::string& sha256_hash) const;
 
   // Checks whether the given client download is likely to be malicious or not.
   // The result is delivered asynchronously via the given callback.  This
@@ -118,13 +119,13 @@ class DownloadProtectionService {
       Profile* profile,
       CheckDownloadCallback callback);
 
-  // Checks whether the given Native File System write operation is likely to be
+  // Checks whether the given File System Access write operation is likely to be
   // malicious or not. The result is delivered asynchronously via the given
   // callback.  This method must be called on the UI thread, and the callback
   // will also be invoked on the UI thread.  This method must be called once the
   // write is finished and data has been written to disk.
-  virtual void CheckNativeFileSystemWrite(
-      std::unique_ptr<content::NativeFileSystemWriteItem> item,
+  virtual void CheckFileSystemAccessWrite(
+      std::unique_ptr<content::FileSystemAccessWriteItem> item,
       CheckDownloadCallback callback);
 
   // Display more information to the user regarding the download specified by
@@ -158,17 +159,17 @@ class DownloadProtectionService {
   base::CallbackListSubscription RegisterClientDownloadRequestCallback(
       const ClientDownloadRequestCallback& callback);
 
-  // Registers a callback that will be run when a NativeFileSystemWriteRequest
+  // Registers a callback that will be run when a FileSystemAccessWriteRequest
   // has been formed.
-  base::CallbackListSubscription RegisterNativeFileSystemWriteRequestCallback(
-      const NativeFileSystemWriteRequestCallback& callback);
+  base::CallbackListSubscription RegisterFileSystemAccessWriteRequestCallback(
+      const FileSystemAccessWriteRequestCallback& callback);
 
   // Registers a callback that will be run when a PPAPI ClientDownloadRequest
   // has been formed.
   base::CallbackListSubscription RegisterPPAPIDownloadRequestCallback(
       const PPAPIDownloadRequestCallback& callback);
 
-  double whitelist_sample_rate() const { return whitelist_sample_rate_; }
+  double allowlist_sample_rate() const { return allowlist_sample_rate_; }
 
   scoped_refptr<SafeBrowsingNavigationObserverManager>
   navigation_observer_manager() {
@@ -211,8 +212,9 @@ class DownloadProtectionService {
   friend class DownloadDangerPromptTest;
   friend class CheckClientDownloadRequestBase;
   friend class CheckClientDownloadRequest;
-  friend class CheckNativeFileSystemWriteRequest;
+  friend class CheckFileSystemAccessWriteRequest;
   friend class DeepScanningRequest;
+  friend class DownloadRequestMaker;
 
   FRIEND_TEST_ALL_PREFIXES(DownloadProtectionServiceTest,
                            TestDownloadRequestTimeout);
@@ -260,10 +262,10 @@ class DownloadProtectionService {
   std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
       const download::DownloadItem& item);
 
-  // Identify referrer chain info of a native file system write. This function
+  // Identify referrer chain info of a File System Access write. This function
   // also records UMA stats of download attribution result.
   std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
-      const content::NativeFileSystemWriteItem& item);
+      const content::FileSystemAccessWriteItem& item);
 
   // Identify referrer chain of the PPAPI download based on the frame URL where
   // the download is initiated. Then add referrer chain info to
@@ -318,20 +320,20 @@ class DownloadProtectionService {
   ClientDownloadRequestCallbackList client_download_request_callbacks_;
 
   // A list of callbacks to be run on the main thread when a
-  // NativeFileSystemWriteRequest has been formed.
-  NativeFileSystemWriteRequestCallbackList
-      native_file_system_write_request_callbacks_;
+  // FileSystemAccessWriteRequest has been formed.
+  FileSystemAccessWriteRequestCallbackList
+      file_system_access_write_request_callbacks_;
 
   // A list of callbacks to be run on the main thread when a
   // PPAPIDownloadRequest has been formed.
   PPAPIDownloadRequestCallbackList ppapi_download_request_callbacks_;
 
-  // List of 8-byte hashes that are blacklisted manually by flag.
+  // List of 8-byte hashes that are blocklisted manually by flag.
   // Normally empty.
-  std::set<std::string> manual_blacklist_hashes_;
+  std::set<std::string> manual_blocklist_hashes_;
 
-  // Rate of whitelisted downloads we sample to send out download ping.
-  double whitelist_sample_rate_;
+  // Rate of allowlisted downloads we sample to send out download ping.
+  double allowlist_sample_rate_;
 
   // DownloadReporter to send real time reports for dangerous download events.
   DownloadReporter download_reporter_;

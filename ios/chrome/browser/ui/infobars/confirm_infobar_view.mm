@@ -831,11 +831,9 @@ UIImage* InfoBarCloseImage() {
   [_closeButton setAccessibilityLabel:l10n_util::GetNSString(IDS_CLOSE)];
   _closeButton.tintColor = [UIColor colorNamed:kToolbarButtonColor];
 
-#if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
       _closeButton.pointerInteractionEnabled = YES;
   }
-#endif  // defined(__IPHONE_13_4)
   [self addSubview:_closeButton];
 }
 
@@ -1039,12 +1037,10 @@ UIImage* InfoBarCloseImage() {
                 action:action
       forControlEvents:UIControlEventTouchUpInside];
 
-#if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
       button.pointerInteractionEnabled = YES;
       button.pointerStyleProvider = CreateOpaqueButtonPointerStyleProvider();
   }
-#endif  // defined(__IPHONE_13_4)
   // Without the call to layoutIfNeeded, |button| returns an incorrect
   // titleLabel the first time it is accessed in |narrowestWidthOfButton|.
   [button layoutIfNeeded];

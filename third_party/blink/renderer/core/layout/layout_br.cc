@@ -62,6 +62,11 @@ int LayoutBR::CaretMaxOffset() const {
 
 PositionWithAffinity LayoutBR::PositionForPoint(const PhysicalOffset&) const {
   NOT_DESTROYED();
+  // NG codepath requires |kPrePaintClean|.
+  // |SelectionModifier| calls this only in legacy codepath.
+  DCHECK(!IsInLayoutNGInlineFormattingContext() ||
+         GetDocument().Lifecycle().GetState() >=
+             DocumentLifecycle::kPrePaintClean);
   return PositionBeforeThis();
 }
 

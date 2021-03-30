@@ -14,12 +14,14 @@
 // <include src="../../common/js/file_type.js">
 // <include src="../../common/js/metrics_base.js">
 // <include src="../../common/js/files_app_entry_types.js">
-// <include src="../../../base/js/app_util.js">
+// <include src="../../common/js/storage_adapter.js">
+// <include src="../../common/js/xfm.js">
+// <include src="../../../file_manager/common/js/app_util.js">
 
 /* TODO(tapted): Remove this when it is specific to the files app */
 // <include src="../../common/js/util.js">
 
-// <include src="../../../base/js/volume_manager_types.js">
+// <include src="../../../file_manager/common/js/volume_manager_types.js">
 // <include src="app_window_wrapper.js">
 // <include src="app_windows.js">
 // <include src="background_base.js">

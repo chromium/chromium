@@ -1,0 +1,30 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.android_library_factory;
+
+import static org.junit.Assert.assertNotNull;
+
+import androidx.test.filters.SmallTest;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
+
+import org.chromium.testing.local.LocalRobolectricTestRunner;
+
+/**
+ * Test that javatests can access package private methods when android_library_factory() is
+ * involved. The test succeeds if the compile succeeds.
+ */
+@RunWith(LocalRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
+public final class AndroidLibraryFactoryTest {
+    @Test
+    @SmallTest
+    public void testAll() {
+        assertNotNull(new Factory1().packagePrivateMethod());
+        assertNotNull(new Factory2().packagePrivateMethod());
+    }
+}

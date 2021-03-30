@@ -660,7 +660,6 @@ component("net") {
       "filter/gzip_source_stream.h",
       "filter/source_stream.cc",
       "filter/source_stream.h",
-      "filter/source_stream_type_list.h",
       "http/alternative_service.cc",
       "http/alternative_service.h",
       "http/bidirectional_stream.cc",
@@ -861,14 +860,12 @@ component("net") {
       "quic/network_connection.cc",
       "quic/network_connection.h",
       "quic/platform/impl/quic_bug_tracker_impl.h",
-      "quic/platform/impl/quic_cert_utils_impl.h",
       "quic/platform/impl/quic_chromium_clock.cc",
       "quic/platform/impl/quic_chromium_clock.h",
       "quic/platform/impl/quic_client_stats_impl.h",
       "quic/platform/impl/quic_containers_impl.h",
       "quic/platform/impl/quic_error_code_wrappers_impl.h",
       "quic/platform/impl/quic_estimate_memory_usage_impl.h",
-      "quic/platform/impl/quic_export_impl.h",
       "quic/platform/impl/quic_file_utils_impl.h",
       "quic/platform/impl/quic_flag_utils_impl.h",
       "quic/platform/impl/quic_flags_impl.cc",
@@ -883,9 +880,6 @@ component("net") {
       "quic/platform/impl/quic_mem_slice_span_impl.h",
       "quic/platform/impl/quic_mem_slice_storage_impl.cc",
       "quic/platform/impl/quic_mem_slice_storage_impl.h",
-      "quic/platform/impl/quic_mutex_impl.cc",
-      "quic/platform/impl/quic_mutex_impl.h",
-      "quic/platform/impl/quic_pcc_sender_impl.h",
       "quic/platform/impl/quic_prefetch_impl.h",
       "quic/platform/impl/quic_ptr_util_impl.h",
       "quic/platform/impl/quic_reference_counted_impl.h",
@@ -947,17 +941,12 @@ component("net") {
       "quic/quic_transport_client.h",
       "quic/quic_transport_error.cc",
       "quic/quic_transport_error.h",
-      "quiche/common/platform/impl/quiche_export_impl.h",
       "quiche/common/platform/impl/quiche_flag_utils_impl.h",
       "quiche/common/platform/impl/quiche_flags_impl.cc",
       "quiche/common/platform/impl/quiche_flags_impl.h",
-      "quiche/common/platform/impl/quiche_logging_impl.h",
       "quiche/common/platform/impl/quiche_map_util_impl.h",
-      "quiche/common/platform/impl/quiche_str_cat_impl.h",
       "quiche/common/platform/impl/quiche_string_piece_impl.h",
       "quiche/common/platform/impl/quiche_text_utils_impl.h",
-      "quiche/common/platform/impl/quiche_time_utils_impl.cc",
-      "quiche/common/platform/impl/quiche_time_utils_impl.h",
       "quiche/common/platform/impl/quiche_unordered_containers_impl.h",
       "socket/client_socket_factory.cc",
       "socket/client_socket_factory.h",
@@ -1020,6 +1009,8 @@ component("net") {
       "socket/websocket_transport_connect_job.h",
       "socket/websocket_transport_connect_sub_job.cc",
       "socket/websocket_transport_connect_sub_job.h",
+      "spdy/alps_decoder.cc",
+      "spdy/alps_decoder.h",
       "spdy/bidirectional_stream_spdy_impl.cc",
       "spdy/bidirectional_stream_spdy_impl.h",
       "spdy/buffered_spdy_framer.cc",
@@ -4168,6 +4159,7 @@ test("net_unittests") {
     "cert/ev_root_ca_metadata_unittest.cc",
     "cert/internal/cert_issuer_source_aia_unittest.cc",
     "cert/internal/cert_issuer_source_static_unittest.cc",
+    "cert/internal/cert_issuer_source_sync_unittest.cc",
     "cert/internal/cert_issuer_source_sync_unittest.h",
     "cert/internal/certificate_policies_unittest.cc",
     "cert/internal/crl_unittest.cc",
@@ -4213,6 +4205,7 @@ test("net_unittests") {
     "cookies/cookie_deletion_info_unittest.cc",
     "cookies/cookie_inclusion_status_unittest.cc",
     "cookies/cookie_monster_unittest.cc",
+    "cookies/cookie_options_unittest.cc",
     "cookies/cookie_util_unittest.cc",
     "cookies/parsed_cookie_unittest.cc",
     "cookies/site_for_cookies_unittest.cc",
@@ -4382,6 +4375,7 @@ test("net_unittests") {
     "socket/udp_socket_unittest.cc",
     "socket/websocket_endpoint_lock_manager_unittest.cc",
     "socket/websocket_transport_client_socket_pool_unittest.cc",
+    "spdy/alps_decoder_test.cc",
     "spdy/bidirectional_stream_spdy_impl_unittest.cc",
     "spdy/buffered_spdy_framer_unittest.cc",
     "spdy/fuzzing/hpack_fuzz_util_test.cc",
@@ -5034,6 +5028,18 @@ fuzzer_test("net_lookup_string_in_fixed_set_fuzzer") {
     "//net/base/registry_controlled_domains:lookup_strings_test_sets",
   ]
   dict = "data/fuzzer_dictionaries/net_get_domain_and_registry_fuzzer.dict"
+}
+
+fuzzer_test("net_base_schemeful_site_fuzzer") {
+  sources = [ "base/schemeful_site_fuzzer.cc" ]
+  deps = [
+    ":net_fuzzer_test_support",
+    "//base",
+    "//net",
+    "//testing/libfuzzer/proto:url_proto",
+    "//testing/libfuzzer/proto:url_proto_converter",
+    "//third_party/libprotobuf-mutator",
+  ]
 }
 
 fuzzer_test("net_cert_ct_decode_signed_certificate_timestamp_fuzzer") {

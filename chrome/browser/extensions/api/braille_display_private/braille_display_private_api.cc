@@ -14,9 +14,8 @@
 #include "chrome/browser/profiles/profile_manager.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
-#include "chrome/browser/chromeos/login/lock/screen_locker.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/login/lock/screen_locker.h"
 #endif
 
 namespace OnDisplayStateChanged =
@@ -46,7 +45,6 @@ class BrailleDisplayPrivateAPI::DefaultEventDelegate
 BrailleDisplayPrivateAPI::BrailleDisplayPrivateAPI(
     content::BrowserContext* context)
     : profile_(Profile::FromBrowserContext(context)),
-      scoped_observer_(this),
       event_delegate_(new DefaultEventDelegate(this, profile_)) {}
 
 BrailleDisplayPrivateAPI::~BrailleDisplayPrivateAPI() {
@@ -104,16 +102,16 @@ void BrailleDisplayPrivateAPI::SetEventDelegateForTest(
 void BrailleDisplayPrivateAPI::OnListenerAdded(
     const EventListenerInfo& details) {
   BrailleController* braille_controller = BrailleController::GetInstance();
-  if (!scoped_observer_.IsObserving(braille_controller))
-    scoped_observer_.Add(braille_controller);
+  if (!scoped_observation_.IsObservingSource(braille_controller))
+    scoped_observation_.Observe(braille_controller);
 }
 
 void BrailleDisplayPrivateAPI::OnListenerRemoved(
     const EventListenerInfo& details) {
   BrailleController* braille_controller = BrailleController::GetInstance();
   if (!event_delegate_->HasListener() &&
-      scoped_observer_.IsObserving(braille_controller)) {
-    scoped_observer_.Remove(braille_controller);
+      scoped_observation_.IsObservingSource(braille_controller)) {
+    scoped_observation_.Reset();
   }
 }
 
@@ -187,7 +185,7 @@ BrailleDisplayPrivateUpdateBluetoothBrailleDisplayAddressFunction::Run() {
 #else
   std::string address;
   EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &address));
-  chromeos::AccessibilityManager::Get()->UpdateBluetoothBrailleDisplayAddress(
+  ash::AccessibilityManager::Get()->UpdateBluetoothBrailleDisplayAddress(
       address);
   return RespondNow(NoArguments());
 #endif

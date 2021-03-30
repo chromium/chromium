@@ -1,0 +1,97 @@
+<!doctype html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+<head>
+  <title>$i18n{appTitle} </title>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+  <link rel="stylesheet" href="chrome://resources/css/apps/common.css"></link>
+  </link>
+  <link rel="stylesheet" href="../css/feedback.css">
+
+  <script type="module" src="../js/feedback.js"></script>
+</head>
+<body>
+  <div id="content-pane" class="content">
+    <p id="free-form-text">$i18n{freeFormText}</p>
+    <textarea id="description-text" aria-labelledby="free-form-text"
+      aria-required="true">
+    </textarea>
+    <p id="description-empty-error" class="description-empty-notification"
+       aria-hidden="true" hidden>$i18n{noDescription}</p>
+    <div>
+      <p id="additional-info-label">$i18n{additionalInfo}<p>
+    </div>
+    <div id="page-url" class="text-field-container">
+      <label id="page-url-label">$i18n{pageUrl}</label>
+      <input id="page-url-text" aria-labelledby="page-url-label" type="text">
+    </div>
+    <!-- User e-mail -->
+    <div id="user-email" class="text-field-container" hidden>
+      <label id="user-email-label">$i18n{userEmail}</label>
+      <select id="user-email-drop-down" aria-labelledby="user-email-label">
+        <option id="anonymous-user-option"
+                value="">$i18n{anonymousUser}</option>
+      </select>
+    </div>
+    <!-- Attach a file -->
+    <div id="attach-file-container" class="text-field-container">
+      <label id="attach-file-label">$i18n{attachFileLabel}</label>
+      <input id="attach-file" type="file" aria-describedby="attach-file-note">
+      <div id="custom-file-container" hidden>
+        <label id="attached-filename-text"></label>
+        <button id="remove-attached-file" class="remove-file-button"></button>
+      </div>
+      <div id="attach-error" class="attach-file-notification"
+           role="alert" hidden>$i18n{attachFileToBig}</div>
+    </div>
+    <div id="attach-file-note" aria-hidden="true">$i18n{attachFileNote}</div>
+    <!-- Screenshot -->
+    <div id="screenshot-container" class="checkbox-field-container">
+      <input id="screenshot-checkbox" type="checkbox"
+             aria-labelledby="screenshot-chk-label">
+      <label id="screenshot-chk-label">$i18n{screenshot}</label>
+      <img id="screenshot-image" aria-label="$i18n{screenshotA11y}">
+    </div>
+    <!-- System Information -->
+    <div id="sys-info-container" class="checkbox-field-container">
+      <input id="sys-info-checkbox" type="checkbox"
+             aria-labelledby="sys-info-label" checked>
+      <label id="sys-info-label">$i18nRaw{sysInfo}</label>
+    </div>
+<if expr="chromeos">
+    <!-- Assistant Debug Logs (Googler Internal Only) -->
+    <div id="assistant-checkbox-container" class="checkbox-field-container"
+         hidden>
+      <input id="assistant-info-checkbox" type="checkbox"
+             checked aria-labelledby="assistant-info-label">
+      <label id="assistant-info-label">$i18nRaw{assistantInfo}</label>
+    </div>
+    <!-- Bluetooth Logs (Googler Internal Only) -->
+    <div id="bluetooth-checkbox-container" class="checkbox-field-container"
+      hidden>
+      <input id="bluetooth-logs-checkbox" type="checkbox" checked>
+      <label id="bluetooth-info-label">$i18nRaw{bluetoothLogsInfo}</label>
+    </div>
+    <!-- Performance Feedback -->
+    <div id="performance-info-area" hidden>
+      <input id="performance-info-checkbox" type="checkbox">
+      <a id="performance-info-link" href="#">$i18n{performanceTrace}
+      </a>
+    </div>
+</if>
+    <!-- Privacy note -->
+    <div id="privacy-note">$i18nRaw{privacyNote}</div>
+  </div>
+  <!-- Buttons -->
+  <div id="bottom-buttons-container" class="content">
+    <div class="buttons-pane bottom-buttons">
+      <button id="cancel-button" type="submit"
+          class="white-button">$i18n{cancel}
+      </button>
+      <button id="send-report-button" type="submit"
+          class="blue-button">$i18n{sendReport}
+      </button>
+    </div>
+  </div>
+</body>
+</html>

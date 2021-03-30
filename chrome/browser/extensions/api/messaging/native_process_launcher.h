@@ -35,10 +35,10 @@ class NativeProcessLauncher {
   // Callback that's called after the process has been launched. |result| is set
   // to false in case of a failure. Handler must take ownership of the IO
   // handles.
-  typedef base::Callback<void(LaunchResult result,
-                              base::Process process,
-                              base::File read_file,
-                              base::File write_file)> LaunchedCallback;
+  using LaunchedCallback = base::OnceCallback<void(LaunchResult result,
+                                                   base::Process process,
+                                                   base::File read_file,
+                                                   base::File write_file)>;
 
   // Creates default launcher for the current OS. |native_view| refers to the
   // window that contains calling page. Can be nullptr, e.g. for background
@@ -57,8 +57,8 @@ class NativeProcessLauncher {
       const std::string& connect_id,
       const std::string& error_arg);
 
-  NativeProcessLauncher() {}
-  virtual ~NativeProcessLauncher() {}
+  NativeProcessLauncher() = default;
+  virtual ~NativeProcessLauncher() = default;
 
   // Finds native messaging host with the specified name and launches it
   // asynchronously. Also checks that the specified |origin| is permitted to
@@ -68,7 +68,7 @@ class NativeProcessLauncher {
   // closing IO pipes).
   virtual void Launch(const GURL& origin,
                       const std::string& native_host_name,
-                      const LaunchedCallback& callback) const = 0;
+                      LaunchedCallback callback) const = 0;
 
  protected:
   // The following two methods are platform specific and are implemented in

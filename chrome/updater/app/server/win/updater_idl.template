@@ -31,6 +31,17 @@ interface IUpdateState : IUnknown {
 [
   object,
   dual,
+  uuid(PLACEHOLDER-GUID-3FDEC4CB-8501-4ECD-A4CF-BF70326218D0),
+  helpstring("IUpdaterRegisterAppCallback Interface"),
+  pointer_default(unique)
+]
+interface IUpdaterRegisterAppCallback : IUnknown {
+  HRESULT Run([in] LONG status_code);
+};
+
+[
+  object,
+  dual,
   uuid(PLACEHOLDER-GUID-2FCD14AF-B645-4351-8359-E80A0E202A0B),
   helpstring("ICompleteStatus Interface"),
   pointer_default(unique)
@@ -55,6 +66,17 @@ interface IUpdaterObserver : IUnknown {
 [
   object,
   dual,
+  uuid(PLACEHOLDER-GUID-8BAB6F84-AD67-4819-B846-CC890880FD3B),
+  helpstring("IUpdaterCallback Interface"),
+  pointer_default(unique)
+]
+interface IUpdaterCallback : IUnknown {
+  HRESULT Run([in] LONG result);
+};
+
+[
+  object,
+  dual,
   uuid(PLACEHOLDER-GUID-63B8FFB1-5314-48C9-9C57-93EC8BC6184B),
   helpstring("IUpdater Interface"),
   pointer_default(unique)
@@ -62,11 +84,13 @@ interface IUpdaterObserver : IUnknown {
 interface IUpdater : IUnknown {
   HRESULT GetVersion([out, retval] BSTR* version);
   HRESULT CheckForUpdate([in, string] const WCHAR* app_id);
-  HRESULT Register([in, string] const WCHAR* app_id,
-                   [in, string] const WCHAR* brand_code,
-                   [in, string] const WCHAR* tag,
-                   [in, string] const WCHAR* version,
-                   [in, string] const WCHAR* existence_checker_path);
+  HRESULT RegisterApp([in, string] const WCHAR* app_id,
+                      [in, string] const WCHAR* brand_code,
+                      [in, string] const WCHAR* tag,
+                      [in, string] const WCHAR* version,
+                      [in, string] const WCHAR* existence_checker_path,
+                      [in] IUpdaterRegisterAppCallback* callback);
+  HRESULT RunPeriodicTasks([in] IUpdaterCallback* callback);
   HRESULT Update([ in, string ] const WCHAR* app_id,
                  [in] IUpdaterObserver* observer);
   HRESULT UpdateAll([in] IUpdaterObserver * observer);

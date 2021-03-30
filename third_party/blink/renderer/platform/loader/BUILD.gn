@@ -24,6 +24,7 @@ blink_platform_sources("loader") {
     "cors/cors.h",
     "cors/cors_error_string.cc",
     "cors/cors_error_string.h",
+    "fetch/back_forward_cache_loader_helper.h",
     "fetch/buffering_bytes_consumer.cc",
     "fetch/buffering_bytes_consumer.h",
     "fetch/bytes_consumer.cc",
@@ -64,6 +65,7 @@ blink_platform_sources("loader") {
     "fetch/preload_key.h",
     "fetch/raw_resource.cc",
     "fetch/raw_resource.h",
+    "fetch/render_blocking_behavior.h",
     "fetch/resource.cc",
     "fetch/resource.h",
     "fetch/resource_client.cc",
@@ -116,9 +118,17 @@ blink_platform_sources("loader") {
     "fetch/trust_token_params_conversion.h",
     "fetch/unique_identifier.cc",
     "fetch/unique_identifier.h",
+    "fetch/url_loader/mojo_url_loader_client.cc",
+    "fetch/url_loader/mojo_url_loader_client.h",
     "fetch/url_loader/request_conversion.cc",
     "fetch/url_loader/request_conversion.h",
-    "fetch/url_loader/web_mojo_url_loader_client.cc",
+    "fetch/url_loader/sync_load_context.cc",
+    "fetch/url_loader/sync_load_context.h",
+    "fetch/url_loader/sync_load_response.cc",
+    "fetch/url_loader/sync_load_response.h",
+    "fetch/url_loader/web_resource_request_sender.cc",
+    "fetch/url_loader/web_url_loader.cc",
+    "fetch/url_loader/web_url_loader_factory.cc",
     "fetch/url_loader/worker_main_script_loader.cc",
     "fetch/url_loader/worker_main_script_loader.h",
     "fetch/url_loader/worker_main_script_loader_client.h",
@@ -130,6 +140,8 @@ blink_platform_sources("loader") {
     "internet_disconnected_web_url_loader.cc",
     "link_header.cc",
     "link_header.h",
+    "mixed_content.cc",
+    "mixed_content.h",
     "mixed_content_autoupgrade_status.h",
     "static_data_navigation_body_loader.cc",
     "static_data_navigation_body_loader.h",
@@ -146,16 +158,21 @@ blink_platform_sources("loader") {
   deps = [
     ":make_platform_loader_generated_fetch_initiator_type_names",
     "//components/link_header_util",
+    "//components/variations/net:net",
     "//net",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp",
     "//services/network/public/mojom:mojom_blink",
+    "//third_party/blink/public/mojom:mojom_platform_blink",
     "//third_party/blink/renderer/platform/blob:blob",
     "//third_party/blink/renderer/platform/instrumentation:instrumentation",
     "//third_party/blink/renderer/platform/network:network",
     "//third_party/blink/renderer/platform/scheduler:scheduler",
   ]
-  public_deps = [ "//third_party/blink/renderer/platform/heap:heap" ]
+  public_deps = [
+    "//third_party/blink/public/mojom:mojom_platform_headers",
+    "//third_party/blink/renderer/platform/heap:heap",
+  ]
   allow_circular_includes_from =
       [ "//third_party/blink/renderer/platform/network:network" ]
 }
@@ -191,12 +208,15 @@ source_set("unit_tests") {
     "fetch/response_body_loader_test.cc",
     "fetch/shared_buffer_bytes_consumer_test.cc",
     "fetch/source_keyed_cached_metadata_handler_test.cc",
+    "fetch/url_loader/mojo_url_loader_client_unittest.cc",
+    "fetch/url_loader/sync_load_context_unittest.cc",
+    "fetch/url_loader/web_resource_request_sender_unittest.cc",
+    "fetch/url_loader/web_url_loader_unittest.cc",
     "fetch/url_loader/worker_main_script_loader_unittest.cc",
     "ftp_directory_listing_test.cc",
     "link_header_test.cc",
     "static_data_navigation_body_loader_test.cc",
     "subresource_integrity_test.cc",
-    "web_mojo_url_loader_client_unittest.cc",
   ]
 
   configs += [ "//third_party/blink/renderer/platform:blink_platform_config" ]
@@ -204,6 +224,7 @@ source_set("unit_tests") {
   deps = [
     "//base/test:test_support",
     "//mojo/public/cpp/test_support:test_utils",
+    "//net:test_support",
     "//net/traffic_annotation:test_support",
     "//services/network:test_support",
     "//testing/gmock",

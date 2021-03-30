@@ -4,11 +4,11 @@
 
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 
+#include <string>
 #include <utility>
 
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_file_util.h"
@@ -74,8 +74,8 @@ class NavigationEntryTest : public testing::Test {
     entry2_.reset(new NavigationEntryImpl(
         instance_, GURL("test:url"),
         Referrer(GURL("from"), network::mojom::ReferrerPolicy::kDefault),
-        kInitiatorOrigin, ASCIIToUTF16("title"), ui::PAGE_TRANSITION_TYPED,
-        false, nullptr /* blob_url_loader_factory */));
+        kInitiatorOrigin, u"title", ui::PAGE_TRANSITION_TYPED, false,
+        nullptr /* blob_url_loader_factory */));
   }
 
   void TearDown() override {}
@@ -117,54 +117,51 @@ TEST_F(NavigationEntryTest, NavigationEntryURLs) {
   entry1_->SetURL(GURL("http://www.google.com"));
   EXPECT_EQ(GURL("http://www.google.com"), entry1_->GetURL());
   EXPECT_EQ(GURL("http://www.google.com"), entry1_->GetVirtualURL());
-  EXPECT_EQ(ASCIIToUTF16("www.google.com"), entry1_->GetTitleForDisplay());
+  EXPECT_EQ(u"www.google.com", entry1_->GetTitleForDisplay());
 
   // Setting URL with RTL characters causes it to be wrapped in an LTR
   // embedding.
   entry1_->SetURL(GURL("http://www.xn--rgba6eo.com"));
-  EXPECT_EQ(base::WideToUTF16(L"\x202a"
-                              L"www.\x062c\x0648\x062c\x0644"
-                              L".com\x202c"),
-            entry1_->GetTitleForDisplay());
+  EXPECT_EQ(
+      u"\x202a"
+      u"www.\x062c\x0648\x062c\x0644"
+      u".com\x202c",
+      entry1_->GetTitleForDisplay());
 
   // file:/// URLs should only show the filename.
   entry1_->SetURL(GURL("file:///foo/bar baz.txt"));
-  EXPECT_EQ(ASCIIToUTF16("bar baz.txt"), entry1_->GetTitleForDisplay());
+  EXPECT_EQ(u"bar baz.txt", entry1_->GetTitleForDisplay());
 
   // file:/// URLs should *not* be wrapped in an LTR embedding.
   entry1_->SetURL(GURL("file:///foo/%D8%A7%D8%A8 %D8%AC%D8%AF.txt"));
-  EXPECT_EQ(base::WideToUTF16(L"\x0627\x0628"
-                              L" \x062c\x062f"
-                              L".txt"),
-            entry1_->GetTitleForDisplay());
+  EXPECT_EQ(
+      u"\x0627\x0628"
+      u" \x062c\x062f"
+      u".txt",
+      entry1_->GetTitleForDisplay());
 
   // For file:/// URLs, make sure that slashes after the filename are ignored.
   // Regression test for https://crbug.com/503003.
   entry1_->SetURL(GURL("file:///foo/bar baz.txt#foo/bar"));
-  EXPECT_EQ(ASCIIToUTF16("bar baz.txt#foo/bar"), entry1_->GetTitleForDisplay());
+  EXPECT_EQ(u"bar baz.txt#foo/bar", entry1_->GetTitleForDisplay());
   entry1_->SetURL(GURL("file:///foo/bar baz.txt?x=foo/bar"));
-  EXPECT_EQ(ASCIIToUTF16("bar baz.txt?x=foo/bar"),
-            entry1_->GetTitleForDisplay());
+  EXPECT_EQ(u"bar baz.txt?x=foo/bar", entry1_->GetTitleForDisplay());
   entry1_->SetURL(GURL("file:///foo/bar baz.txt#baz/boo?x=foo/bar"));
-  EXPECT_EQ(ASCIIToUTF16("bar baz.txt#baz/boo?x=foo/bar"),
-            entry1_->GetTitleForDisplay());
+  EXPECT_EQ(u"bar baz.txt#baz/boo?x=foo/bar", entry1_->GetTitleForDisplay());
   entry1_->SetURL(GURL("file:///foo/bar baz.txt?x=foo/bar#baz/boo"));
-  EXPECT_EQ(ASCIIToUTF16("bar baz.txt?x=foo/bar#baz/boo"),
-            entry1_->GetTitleForDisplay());
+  EXPECT_EQ(u"bar baz.txt?x=foo/bar#baz/boo", entry1_->GetTitleForDisplay());
   entry1_->SetURL(GURL("file:///foo/bar baz.txt#foo/bar#baz/boo"));
-  EXPECT_EQ(ASCIIToUTF16("bar baz.txt#foo/bar#baz/boo"),
-            entry1_->GetTitleForDisplay());
+  EXPECT_EQ(u"bar baz.txt#foo/bar#baz/boo", entry1_->GetTitleForDisplay());
   entry1_->SetURL(GURL("file:///foo/bar baz.txt?x=foo/bar?y=baz/boo"));
-  EXPECT_EQ(ASCIIToUTF16("bar baz.txt?x=foo/bar?y=baz/boo"),
-            entry1_->GetTitleForDisplay());
+  EXPECT_EQ(u"bar baz.txt?x=foo/bar?y=baz/boo", entry1_->GetTitleForDisplay());
 
   // For chrome-untrusted:// URLs, title is blank.
   entry1_->SetURL(GURL("chrome-untrusted://terminal/html/terminal.html"));
-  EXPECT_EQ(base::string16(), entry1_->GetTitleForDisplay());
+  EXPECT_EQ(std::u16string(), entry1_->GetTitleForDisplay());
 
   // Title affects GetTitleForDisplay
-  entry1_->SetTitle(ASCIIToUTF16("Google"));
-  EXPECT_EQ(ASCIIToUTF16("Google"), entry1_->GetTitleForDisplay());
+  entry1_->SetTitle(u"Google");
+  EXPECT_EQ(u"Google", entry1_->GetTitleForDisplay());
 
   // Setting virtual_url doesn't affect URL
   entry2_->SetVirtualURL(GURL("display:url"));
@@ -173,7 +170,7 @@ TEST_F(NavigationEntryTest, NavigationEntryURLs) {
   EXPECT_EQ(GURL("display:url"), entry2_->GetVirtualURL());
 
   // Having a title set in constructor overrides virtual URL
-  EXPECT_EQ(ASCIIToUTF16("title"), entry2_->GetTitleForDisplay());
+  EXPECT_EQ(u"title", entry2_->GetTitleForDisplay());
 
   // User typed URL is independent of the others
   EXPECT_EQ(GURL(), entry1_->GetUserTypedURL());
@@ -241,10 +238,10 @@ TEST_F(NavigationEntryTest, NavigationEntryAccessors) {
   EXPECT_EQ(GURL("from2"), entry2_->GetReferrer().url);
 
   // Title
-  EXPECT_EQ(base::string16(), entry1_->GetTitle());
-  EXPECT_EQ(ASCIIToUTF16("title"), entry2_->GetTitle());
-  entry2_->SetTitle(ASCIIToUTF16("title2"));
-  EXPECT_EQ(ASCIIToUTF16("title2"), entry2_->GetTitle());
+  EXPECT_EQ(std::u16string(), entry1_->GetTitle());
+  EXPECT_EQ(u"title", entry2_->GetTitle());
+  entry2_->SetTitle(u"title2");
+  EXPECT_EQ(u"title2", entry2_->GetTitle());
 
   // Transition type
   EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
@@ -365,7 +362,7 @@ TEST_F(NavigationEntryTest, DISABLED_NavigationEntryContentUri) {
   base::FilePath content_uri = base::InsertImageIntoMediaStore(image_path);
 
   entry1_->SetURL(GURL(content_uri.value()));
-  EXPECT_EQ(ASCIIToUTF16("blank.jpg"), entry1_->GetTitleForDisplay());
+  EXPECT_EQ(u"blank.jpg", entry1_->GetTitleForDisplay());
 }
 #endif
 

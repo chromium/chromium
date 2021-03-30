@@ -629,15 +629,13 @@ SimpleEntryImpl::~SimpleEntryImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(0U, pending_operations_.size());
 
-  // STATE_IO_PENDING is possible here in one corner case: the entry had
-  // dispatched the final Close() operation to SimpleSynchronousEntry, and the
-  // only thing keeping |this| alive were the callbacks for that
-  // PostTaskAndReply. If at that point the message loop is shut down, all
-  // outstanding tasks get destroyed, dropping the last reference without
-  // CloseOperationComplete ever getting to run to exit from IO_PENDING.
-  DCHECK(state_ == STATE_UNINITIALIZED || state_ == STATE_FAILURE ||
-         state_ == STATE_IO_PENDING);
-  DCHECK(!synchronous_entry_);
+  // This used to DCHECK on `state_`, but it turns out that destruction
+  // happening on thread shutdown, when closures holding `this` get deleted
+  // can happen in circumstances not possible during normal use, such as when
+  // I/O for Close operation is keeping the entry alive in STATE_IO_PENDING, or
+  // an entry that's STATE_READY has callbacks pending to hand it over to the
+  // user right as the thread is shutdown (this would also have a non-null
+  // `synchronous_entry_`).
   net_log_.EndEvent(net::NetLogEventType::SIMPLE_CACHE_ENTRY);
 }
 

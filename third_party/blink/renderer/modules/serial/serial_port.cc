@@ -576,7 +576,7 @@ bool SerialPort::CreateDataPipe(mojo::ScopedDataPipeProducerHandle* producer,
   options.element_num_bytes = 1;
   options.capacity_num_bytes = buffer_size_;
 
-  MojoResult result = mojo::CreateDataPipe(&options, producer, consumer);
+  MojoResult result = mojo::CreateDataPipe(&options, *producer, *consumer);
   if (result == MOJO_RESULT_OK)
     return true;
 

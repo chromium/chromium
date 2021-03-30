@@ -104,7 +104,7 @@ void UserCloudPolicyTokenForwarder::StartRequest() {
   // recurring token fetch for child user check and bail out here.
   signin::ScopeSet scopes;
   scopes.insert(GaiaConstants::kDeviceManagementServiceOAuth);
-  scopes.insert(GaiaConstants::kOAuthWrapBridgeUserInfoScope);
+  scopes.insert(GaiaConstants::kGoogleUserInfoEmail);
 
   // NOTE: The primary account may not be available yet.
   access_token_fetcher_ =
@@ -114,7 +114,7 @@ void UserCloudPolicyTokenForwarder::StartRequest() {
               &UserCloudPolicyTokenForwarder::OnAccessTokenFetchCompleted,
               base::Unretained(this)),
           signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
-          signin::ConsentLevel::kNotRequired);
+          signin::ConsentLevel::kSignin);
 }
 
 void UserCloudPolicyTokenForwarder::OnAccessTokenFetchCompleted(

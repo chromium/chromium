@@ -55,9 +55,9 @@ class FakeDelegate : public ServiceAdaptor::Delegate {
   int connect_count = 0;
   int disconnect_count = 0;
   int bind_request_count = 0;
-  base::Closure connect_callback_;
-  base::Closure disconnect_callback_;
-  base::Closure bind_service_callback_;
+  base::RepeatingClosure connect_callback_;
+  base::RepeatingClosure disconnect_callback_;
+  base::RepeatingClosure bind_service_callback_;
 };
 
 class CfmServiceAdaptorTest : public testing::Test {

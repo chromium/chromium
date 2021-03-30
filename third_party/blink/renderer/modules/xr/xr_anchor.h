@@ -37,6 +37,8 @@ class XRAnchor : public ScriptWrappable {
 
   void Update(const device::mojom::blink::XRAnchorData& anchor_data);
 
+  bool IsStationary() const { return true; }
+
   void Trace(Visitor* visitor) const override;
 
  private:

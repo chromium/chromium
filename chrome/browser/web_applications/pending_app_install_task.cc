@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
@@ -20,9 +21,9 @@
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
-#include "components/webapps/installable/installable_manager.h"
-#include "components/webapps/installable/installable_metrics.h"
-#include "components/webapps/installable/installable_params.h"
+#include "components/webapps/browser/installable/installable_manager.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/installable/installable_params.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace web_app {
@@ -58,6 +59,12 @@ PendingAppInstallTask::~PendingAppInstallTask() = default;
 
 void PendingAppInstallTask::Install(content::WebContents* web_contents,
                                     ResultCallback result_callback) {
+  if (install_options_.only_use_app_info_factory) {
+    DCHECK(install_options_.app_info_factory);
+    InstallFromInfo(std::move(result_callback));
+    return;
+  }
+
   url_loader_->PrepareForLoad(
       web_contents, base::BindOnce(&PendingAppInstallTask::OnWebContentsReady,
                                    weak_ptr_factory_.GetWeakPtr(), web_contents,
@@ -226,7 +233,10 @@ void PendingAppInstallTask::InstallPlaceholder(ResultCallback callback) {
   }
 
   WebApplicationInfo web_app_info;
-  web_app_info.title = base::UTF8ToUTF16(install_options_.install_url.spec());
+  web_app_info.title =
+      install_options_.fallback_app_name
+          ? base::UTF8ToUTF16(install_options_.fallback_app_name.value())
+          : base::UTF8ToUTF16(install_options_.install_url.spec());
   web_app_info.start_url = install_options_.install_url;
 
   switch (install_options_.user_display_mode) {
@@ -299,6 +309,12 @@ void PendingAppInstallTask::OnWebAppInstalled(bool is_placeholder,
   options.os_hooks[OsHookType::kFileHandlers] = true;
   options.os_hooks[OsHookType::kProtocolHandlers] = true;
   options.os_hooks[OsHookType::kUninstallationViaOsSettings] = true;
+#if defined(OS_WIN) || defined(OS_MAC) || \
+    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+  options.os_hooks[OsHookType::kUrlHandlers] = true;
+#else
+  options.os_hooks[OsHookType::kUrlHandlers] = false;
+#endif
 
   os_integration_manager_->InstallOsHooks(
       app_id,

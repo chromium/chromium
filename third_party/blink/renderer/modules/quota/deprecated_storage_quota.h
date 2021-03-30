@@ -79,9 +79,7 @@ class DeprecatedStorageQuota final : public ScriptWrappable {
   mojom::blink::QuotaManagerHost* GetQuotaHost(ExecutionContext*);
 
   Type type_;
-  HeapMojoRemote<mojom::blink::QuotaManagerHost,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      quota_host_;
+  HeapMojoRemote<mojom::blink::QuotaManagerHost> quota_host_;
 };
 
 }  // namespace blink

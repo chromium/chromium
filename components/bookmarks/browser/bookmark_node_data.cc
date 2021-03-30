@@ -160,7 +160,7 @@ bool BookmarkNodeData::ReadFromVector(
 }
 
 bool BookmarkNodeData::ReadFromTuple(const GURL& url,
-                                     const base::string16& title) {
+                                     const std::u16string& title) {
   Clear();
 
   if (!url.is_valid())
@@ -181,15 +181,15 @@ void BookmarkNodeData::WriteToClipboard() {
   ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
 
 #if defined(OS_WIN)
-  const base::string16 kEOL(L"\r\n");
+  const std::u16string kEOL(u"\r\n");
 #else
-  const base::string16 kEOL = base::ASCIIToUTF16("\n");
+  const std::u16string kEOL = u"\n";
 #endif
 
   // If there is only one element and it is a URL, write the URL to the
   // clipboard.
   if (has_single_url()) {
-    const base::string16& title = elements[0].title;
+    const std::u16string& title = elements[0].title;
     const std::string url = elements[0].url.spec();
 
     scw.WriteBookmark(title, url);
@@ -198,15 +198,15 @@ void BookmarkNodeData::WriteToClipboard() {
   } else {
     // We have either more than one URL, a folder, or a combination of URLs
     // and folders.
-    base::string16 text;
+    std::u16string text;
     for (size_t i = 0; i < size(); i++) {
-      text += i == 0 ? base::ASCIIToUTF16("") : kEOL;
+      text += i == 0 ? u"" : kEOL;
       if (!elements[i].is_url) {
         // Then it's a folder. Only copy the name of the folder.
-        const base::string16 title = elements[i].title;
+        const std::u16string title = elements[i].title;
         text += title;
       } else {
-        const base::string16 url = base::UTF8ToUTF16(elements[i].url.spec());
+        const std::u16string url = base::UTF8ToUTF16(elements[i].url.spec());
         text += url;
       }
     }
@@ -232,7 +232,7 @@ bool BookmarkNodeData::ReadFromClipboard(ui::ClipboardBuffer buffer) {
       return true;
   }
 
-  base::string16 title;
+  std::u16string title;
   std::string url;
   clipboard->ReadBookmark(/* data_dst = */ nullptr, &title, &url);
   if (!url.empty()) {

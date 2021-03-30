@@ -9,7 +9,6 @@
 #include "base/memory/weak_ptr.h"
 #include "content/browser/service_worker/service_worker_accessed_callback.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
-#include "content/browser/service_worker/service_worker_controllee_request_handler.h"
 #include "content/common/content_export.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -115,15 +114,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceHandle {
     return parent_container_host_;
   }
 
-  void set_interceptor(
-      std::unique_ptr<ServiceWorkerControlleeRequestHandler> interceptor) {
-    interceptor_ = std::move(interceptor);
-  }
-
-  ServiceWorkerControlleeRequestHandler* interceptor() {
-    return interceptor_.get();
-  }
-
   const ServiceWorkerAccessedCallback& service_worker_accessed_callback() {
     return service_worker_accessed_callback_;
   }
@@ -143,8 +133,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceHandle {
 
   // Only used for workers with a blob URL.
   base::WeakPtr<ServiceWorkerContainerHost> parent_container_host_;
-
-  std::unique_ptr<ServiceWorkerControlleeRequestHandler> interceptor_;
 
   ServiceWorkerAccessedCallback service_worker_accessed_callback_;
 

@@ -233,7 +233,8 @@ bool BleMedium::StopAcceptingConnections(const std::string& service_id) {
 
 std::unique_ptr<api::BleSocket> BleMedium::Connect(
     api::BlePeripheral& ble_peripheral,
-    const std::string& service_id) {
+    const std::string& service_id,
+    CancellationFlag* cancellation_flag) {
   // Do nothing. BLE connections are not yet supported in Chrome Nearby.
   return nullptr;
 }

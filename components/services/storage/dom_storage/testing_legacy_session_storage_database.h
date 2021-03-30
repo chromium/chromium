@@ -76,8 +76,8 @@ class TestingLegacySessionStorageDatabase
 
   // Updates the data for |namespace_id| and |origin|. Will remove all keys
   // before updating the database if |clear_all_first| is set. Then all entries
-  // in |changes| will be examined - keys mapped to a null NullableString16 will
-  // be removed and all others will be inserted/updated as appropriate. It is
+  // in |changes| will be examined - keys mapped to a nullopt value will be
+  // removed and all others will be inserted/updated as appropriate. It is
   // allowed to write data into a shallow copy created by CloneNamespace, and in
   // that case the copy will be made deep before writing the values.
   bool CommitAreaChanges(const std::string& namespace_id,

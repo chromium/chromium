@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/scripting/scripting_api.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/check.h"
@@ -17,6 +18,10 @@
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/mojom/action_type.mojom-shared.h"
+#include "extensions/common/mojom/css_origin.mojom-shared.h"
+#include "extensions/common/mojom/host_id.mojom.h"
+#include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
 
@@ -25,6 +30,54 @@ namespace extensions {
 namespace {
 
 constexpr char kCouldNotLoadFileError[] = "Could not load file: '*'.";
+constexpr char kExactlyOneOfCssAndFilesError[] =
+    "Exactly one of 'css' and 'files' must be specified.";
+
+// Note: CSS always injects as soon as possible, so we default to
+// document_start. Because of tab loading, there's no guarantee this will
+// *actually* inject before page load, but it will at least inject "soon".
+constexpr mojom::RunLocation kCSSRunLocation =
+    mojom::RunLocation::kDocumentStart;
+
+// Converts the given `style_origin` to a CSSOrigin.
+mojom::CSSOrigin ConvertStyleOriginToCSSOrigin(
+    api::scripting::StyleOrigin style_origin) {
+  mojom::CSSOrigin css_origin = mojom::CSSOrigin::kAuthor;
+  switch (style_origin) {
+    case api::scripting::STYLE_ORIGIN_NONE:
+    case api::scripting::STYLE_ORIGIN_AUTHOR:
+      css_origin = mojom::CSSOrigin::kAuthor;
+      break;
+    case api::scripting::STYLE_ORIGIN_USER:
+      css_origin = mojom::CSSOrigin::kUser;
+      break;
+  }
+
+  return css_origin;
+}
+
+// Checks `files` and populates `resource_out` with the appropriate extension
+// resource. Returns true on success; on failure, populates `error_out`.
+bool GetFileResource(const std::vector<std::string>& files,
+                     const Extension& extension,
+                     ExtensionResource* resource_out,
+                     std::string* error_out) {
+  if (files.size() != 1) {
+    constexpr char kExactlyOneFileError[] =
+        "Exactly one file must be specified.";
+    *error_out = kExactlyOneFileError;
+    return false;
+  }
+  ExtensionResource resource = extension.GetResource(files[0]);
+  if (resource.extension_root().empty() || resource.relative_path().empty()) {
+    *error_out =
+        ErrorUtils::FormatErrorMessage(kCouldNotLoadFileError, files[0]);
+    return false;
+  }
+
+  *resource_out = std::move(resource);
+  return true;
+}
 
 // Returns true if the `permissions` allow for injection into the given `frame`.
 // If false, populates `error`.
@@ -66,7 +119,7 @@ bool CanAccessTarget(const PermissionsData& permissions,
                      bool include_incognito_information,
                      ScriptExecutor** script_executor_out,
                      ScriptExecutor::FrameScope* frame_scope_out,
-                     std::vector<int>* frame_ids_out,
+                     std::set<int>* frame_ids_out,
                      std::string* error_out) {
   content::WebContents* tab = nullptr;
   TabHelper* tab_helper = nullptr;
@@ -91,19 +144,17 @@ bool CanAccessTarget(const PermissionsData& permissions,
           ? ScriptExecutor::INCLUDE_SUB_FRAMES
           : ScriptExecutor::SPECIFIED_FRAMES;
 
-  std::vector<int> frame_ids;
+  std::set<int> frame_ids;
   if (target.frame_ids) {
-    // NOTE: This creates a copy, but it's should always be very cheap, and it
-    // lets us keep |target| const.
-    frame_ids = *target.frame_ids;
+    frame_ids.insert(target.frame_ids->begin(), target.frame_ids->end());
   } else {
-    frame_ids.push_back(ExtensionApiFrameIdMap::kTopFrameId);
+    frame_ids.insert(ExtensionApiFrameIdMap::kTopFrameId);
   }
 
-  // TODO(devlin): We error out if the extension doesn't have access to the top
-  // frame, even if it may inject in child frames if allFrames is true. This is
-  // inconsistent with content scripts (which can execute on child frames), but
-  // consistent with the old tabs.executeScript() API.
+  // TODO(devlin): If `allFrames` is true, we error out if the extension
+  // doesn't have access to the top frame (even if it may inject in child
+  // frames). This is inconsistent with content scripts (which can execute on
+  // child frames), but consistent with the old tabs.executeScript() API.
   for (int frame_id : frame_ids) {
     content::RenderFrameHost* frame =
         ExtensionApiFrameIdMap::GetRenderFrameHostById(tab, frame_id);
@@ -157,17 +208,9 @@ bool CheckAndLoadFiles(const std::vector<std::string>& files,
                        bool requires_localization,
                        LoadAndLocalizeResourceCallback callback,
                        std::string* error) {
-  if (files.size() != 1) {
-    constexpr char kExactlyOneFileError[] =
-        "Exactly one file must be specified.";
-    *error = kExactlyOneFileError;
+  ExtensionResource resource;
+  if (!GetFileResource(files, extension, &resource, error))
     return false;
-  }
-  ExtensionResource resource = extension.GetResource(files[0]);
-  if (resource.extension_root().empty() || resource.relative_path().empty()) {
-    *error = ErrorUtils::FormatErrorMessage(kCouldNotLoadFileError, files[0]);
-    return false;
-  }
 
   LoadAndLocalizeResource(extension, resource, requires_localization,
                           std::move(callback));
@@ -243,7 +286,7 @@ bool ScriptingExecuteScriptFunction::Execute(std::string code_to_execute,
                                              std::string* error) {
   ScriptExecutor* script_executor = nullptr;
   ScriptExecutor::FrameScope frame_scope = ScriptExecutor::SPECIFIED_FRAMES;
-  std::vector<int> frame_ids;
+  std::set<int> frame_ids;
   if (!CanAccessTarget(*extension()->permissions_data(), injection_.target,
                        browser_context(), include_incognito_information(),
                        &script_executor, &frame_scope, &frame_ids, error)) {
@@ -251,34 +294,45 @@ bool ScriptingExecuteScriptFunction::Execute(std::string code_to_execute,
   }
 
   script_executor->ExecuteScript(
-      HostID(HostID::EXTENSIONS, extension()->id()), UserScript::ADD_JAVASCRIPT,
-      std::move(code_to_execute), frame_scope, frame_ids,
-      ScriptExecutor::MATCH_ABOUT_BLANK, UserScript::DOCUMENT_IDLE,
-      ScriptExecutor::DEFAULT_PROCESS,
+      mojom::HostID(mojom::HostID::HostType::kExtensions, extension()->id()),
+      mojom::ActionType::kAddJavascript, std::move(code_to_execute),
+      frame_scope, frame_ids, ScriptExecutor::MATCH_ABOUT_BLANK,
+      mojom::RunLocation::kDocumentIdle, ScriptExecutor::DEFAULT_PROCESS,
       /* webview_src */ GURL(), std::move(script_url), user_gesture(),
-      base::nullopt, ScriptExecutor::JSON_SERIALIZED_RESULT,
+      mojom::CSSOrigin::kAuthor, ScriptExecutor::JSON_SERIALIZED_RESULT,
       base::BindOnce(&ScriptingExecuteScriptFunction::OnScriptExecuted, this));
 
   return true;
 }
 
 void ScriptingExecuteScriptFunction::OnScriptExecuted(
-    const std::string& error,
-    const GURL& frame_url,
-    const base::ListValue& result) {
-  if (!error.empty()) {
-    Respond(Error(error));
+    std::vector<ScriptExecutor::FrameResult> frame_results) {
+  // If only a single frame was included and the injection failed, respond with
+  // an error.
+  if (frame_results.size() == 1 && !frame_results[0].error.empty()) {
+    Respond(Error(std::move(frame_results[0].error)));
     return;
   }
 
+  // Otherwise, respond successfully. We currently just skip over individual
+  // frames that failed. In the future, we can bubble up these error messages
+  // to the extension.
   std::vector<api::scripting::InjectionResult> injection_results;
-
-  // TODO(devlin): This results in a few copies of values. It'd be better if our
-  // auto-generated code supported moved-in parameters for result construction.
-  for (const auto& value : result.GetList()) {
+  for (auto& result : frame_results) {
+    if (!result.error.empty())
+      continue;
     api::scripting::InjectionResult injection_result;
-    injection_result.result = std::make_unique<base::Value>(value.Clone());
-    injection_results.push_back(std::move(injection_result));
+    injection_result.result =
+        base::Value::ToUniquePtrValue(std::move(result.value));
+    injection_result.frame_id = result.frame_id;
+
+    // Put the top frame first; otherwise, any order.
+    if (result.frame_id == ExtensionApiFrameIdMap::kTopFrameId) {
+      injection_results.insert(injection_results.begin(),
+                               std::move(injection_result));
+    } else {
+      injection_results.push_back(std::move(injection_result));
+    }
   }
 
   Respond(ArgumentList(
@@ -297,8 +351,7 @@ ExtensionFunction::ResponseAction ScriptingInsertCSSFunction::Run() {
 
   if ((injection_.files && injection_.css) ||
       (!injection_.files && !injection_.css)) {
-    return RespondNow(
-        Error("Exactly one of 'css' and 'files' must be specified"));
+    return RespondNow(Error(kExactlyOneOfCssAndFilesError));
   }
 
   if (injection_.files) {
@@ -347,7 +400,7 @@ bool ScriptingInsertCSSFunction::Execute(std::string code_to_execute,
                                          std::string* error) {
   ScriptExecutor* script_executor = nullptr;
   ScriptExecutor::FrameScope frame_scope = ScriptExecutor::SPECIFIED_FRAMES;
-  std::vector<int> frame_ids;
+  std::set<int> frame_ids;
   if (!CanAccessTarget(*extension()->permissions_data(), injection_.target,
                        browser_context(), include_incognito_information(),
                        &script_executor, &frame_scope, &frame_ids, error)) {
@@ -355,45 +408,96 @@ bool ScriptingInsertCSSFunction::Execute(std::string code_to_execute,
   }
   DCHECK(script_executor);
 
-  // TODO(devlin): Pull the default argument for CSSOrigin up to here, and
-  // pass it through ScriptExecutor and friends, rather than having it
-  // defined in the renderer.
-  base::Optional<CSSOrigin> origin;
-  switch (injection_.origin) {
-    case api::scripting::STYLE_ORIGIN_USER:
-      origin = CSS_ORIGIN_USER;
-      break;
-    case api::scripting::STYLE_ORIGIN_AUTHOR:
-      origin = CSS_ORIGIN_AUTHOR;
-      break;
-    case api::scripting::STYLE_ORIGIN_NONE:
-      break;
-  }
-
-  // Note: CSS always injects as soon as possible, so we default to
-  // document_start. Because of tab loading, there's no guarantee this will
-  // *actually* inject before page load, but it will at least inject "soon".
-  constexpr UserScript::RunLocation kRunLocation = UserScript::DOCUMENT_START;
   script_executor->ExecuteScript(
-      HostID(HostID::EXTENSIONS, extension()->id()), UserScript::ADD_CSS,
-      std::move(code_to_execute), frame_scope, frame_ids,
-      ScriptExecutor::MATCH_ABOUT_BLANK, kRunLocation,
+      mojom::HostID(mojom::HostID::HostType::kExtensions, extension()->id()),
+      mojom::ActionType::kAddCss, std::move(code_to_execute), frame_scope,
+      frame_ids, ScriptExecutor::MATCH_ABOUT_BLANK, kCSSRunLocation,
       ScriptExecutor::DEFAULT_PROCESS,
-      /* webview_src */ GURL(), std::move(script_url), user_gesture(), origin,
+      /* webview_src */ GURL(), std::move(script_url), user_gesture(),
+      ConvertStyleOriginToCSSOrigin(injection_.origin),
       ScriptExecutor::NO_RESULT,
       base::BindOnce(&ScriptingInsertCSSFunction::OnCSSInserted, this));
 
   return true;
 }
 
-void ScriptingInsertCSSFunction::OnCSSInserted(const std::string& error,
-                                               const GURL& frame_url,
-                                               const base::ListValue& result) {
-  DCHECK(result.GetList().empty());
-  if (!error.empty()) {
-    Respond(Error(error));
+void ScriptingInsertCSSFunction::OnCSSInserted(
+    std::vector<ScriptExecutor::FrameResult> results) {
+  // If only a single frame was included and the injection failed, respond with
+  // an error.
+  if (results.size() == 1 && !results[0].error.empty()) {
+    Respond(Error(std::move(results[0].error)));
     return;
   }
+
+  Respond(NoArguments());
+}
+
+ScriptingRemoveCSSFunction::ScriptingRemoveCSSFunction() = default;
+ScriptingRemoveCSSFunction::~ScriptingRemoveCSSFunction() = default;
+
+ExtensionFunction::ResponseAction ScriptingRemoveCSSFunction::Run() {
+  std::unique_ptr<api::scripting::RemoveCSS::Params> params(
+      api::scripting::RemoveCSS::Params::Create(*args_));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  api::scripting::CSSInjection& injection = params->injection;
+
+  if ((injection.files && injection.css) ||
+      (!injection.files && !injection.css)) {
+    return RespondNow(Error(kExactlyOneOfCssAndFilesError));
+  }
+
+  GURL script_url;
+  std::string error;
+  std::string code;
+  if (injection.files) {
+    // Note: Since we're just removing the CSS, we don't actually need to load
+    // the file here. It's okay for `code` to be empty in this case.
+    ExtensionResource resource;
+    if (!GetFileResource(*injection.files, *extension(), &resource, &error))
+      return RespondNow(Error(std::move(error)));
+
+    script_url = extension()->GetResourceURL(injection.files->at(0));
+  } else {
+    DCHECK(injection.css);
+    code = std::move(*injection.css);
+  }
+
+  ScriptExecutor* script_executor = nullptr;
+  ScriptExecutor::FrameScope frame_scope = ScriptExecutor::SPECIFIED_FRAMES;
+  std::set<int> frame_ids;
+  if (!CanAccessTarget(*extension()->permissions_data(), injection.target,
+                       browser_context(), include_incognito_information(),
+                       &script_executor, &frame_scope, &frame_ids, &error)) {
+    return RespondNow(Error(std::move(error)));
+  }
+  DCHECK(script_executor);
+
+  DCHECK(code.empty() || !script_url.is_valid());
+
+  script_executor->ExecuteScript(
+      mojom::HostID(mojom::HostID::HostType::kExtensions, extension()->id()),
+      mojom::ActionType::kRemoveCss, std::move(code), frame_scope, frame_ids,
+      ScriptExecutor::MATCH_ABOUT_BLANK, kCSSRunLocation,
+      ScriptExecutor::DEFAULT_PROCESS,
+      /* webview_src */ GURL(), std::move(script_url), user_gesture(),
+      ConvertStyleOriginToCSSOrigin(injection.origin),
+      ScriptExecutor::NO_RESULT,
+      base::BindOnce(&ScriptingRemoveCSSFunction::OnCSSRemoved, this));
+
+  return RespondLater();
+}
+
+void ScriptingRemoveCSSFunction::OnCSSRemoved(
+    std::vector<ScriptExecutor::FrameResult> results) {
+  // If only a single frame was included and the injection failed, respond with
+  // an error.
+  if (results.size() == 1 && !results[0].error.empty()) {
+    Respond(Error(std::move(results[0].error)));
+    return;
+  }
+
   Respond(NoArguments());
 }
 

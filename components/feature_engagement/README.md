@@ -239,10 +239,10 @@ To enable UMA tracking, you need to make the following changes to the metrics
 configuration:
 
 1.  Add feature to the histogram suffix `IPHFeatures` in:
-    `//tools/metrics/histograms/histograms.xml`.
+    `//tools/metrics/histograms/histograms_xml/histogram_suffixes_list.xml`.
     *   The suffix must match the `base::Feature` `name` member of your feature.
 1.  Add feature to the actions file at: `//tools/metrics/actions/actions.xml`.
-    *   The suffix must match the `base::Feature` `name` member.
+    *   The suffix must match the `base::Feature` `name` member with `IPH_` stripped.
     *   Find the `<action-suffix>` entry at the end of the file, where the
         following `<affected-action>`s are listed:
         *   `InProductHelp.NotifyEvent.IPH`
@@ -626,3 +626,7 @@ When adding new test suites, also remember to add the suite to the filter file:
 `//components/feature_engagement/components_unittests.filter`.
 
 [field-trial-testing-configuration]: https://chromium.googlesource.com/chromium/src/+/master/testing/variations/README.md
+
+## IPH Analysis Guideline
+
+See [this doc](https://docs.google.com/document/d/1EhQe3G9juBiw-otuRnGf5gzTsfHZVZiSKrgF6r7Sz4E/edit#heading=h.la5fs7q2klme)

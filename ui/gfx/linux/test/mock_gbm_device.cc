@@ -4,13 +4,14 @@
 
 #include "ui/gfx/linux/test/mock_gbm_device.h"
 
-#include <drm_fourcc.h>
 #include <xf86drm.h>
 #include <memory>
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_math.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,7 +47,7 @@ class MockGbmBuffer final : public ui::GbmBuffer {
         planes_(std::move(planes)),
         handles_(std::move(handles)) {}
 
-  ~MockGbmBuffer() override {}
+  ~MockGbmBuffer() override = default;
 
   uint32_t GetFormat() const override { return format_; }
   uint64_t GetFormatModifier() const override { return format_modifier_; }
@@ -106,12 +107,16 @@ class MockGbmBuffer final : public ui::GbmBuffer {
 
 }  // namespace
 
-MockGbmDevice::MockGbmDevice() {}
+MockGbmDevice::MockGbmDevice() = default;
 
-MockGbmDevice::~MockGbmDevice() {}
+MockGbmDevice::~MockGbmDevice() = default;
 
 void MockGbmDevice::set_allocation_failure(bool should_fail_allocations) {
   should_fail_allocations_ = should_fail_allocations;
+}
+
+std::vector<uint64_t> MockGbmDevice::GetSupportedModifiers() const {
+  return supported_modifiers_;
 }
 
 std::unique_ptr<GbmBuffer> MockGbmDevice::CreateBuffer(uint32_t format,
@@ -147,18 +152,13 @@ std::unique_ptr<GbmBuffer> MockGbmDevice::CreateBufferWithModifiers(
       return nullptr;
   }
 
-  if (modifiers.size() > 1)
-    return nullptr;
-
   uint64_t format_modifier =
-      modifiers.size() ? modifiers[0] : DRM_FORMAT_MOD_NONE;
-  switch (format_modifier) {
-    case DRM_FORMAT_MOD_NONE:
-    case I915_FORMAT_MOD_X_TILED:
-      break;
-    default:
-      NOTREACHED() << "Unsupported format modifier: " << format_modifier;
-      return nullptr;
+      modifiers.empty() ? DRM_FORMAT_MOD_NONE : modifiers.back();
+
+  if (!base::Contains(supported_modifiers_, format_modifier)) {
+    PLOG(ERROR) << "Unsupported format modifier: " << std::hex
+                << format_modifier;
+    return nullptr;
   }
 
   uint32_t width = base::checked_cast<uint32_t>(size.width());
@@ -168,8 +168,7 @@ std::unique_ptr<GbmBuffer> MockGbmDevice::CreateBufferWithModifiers(
   uint32_t plane_offset = 0;
 
   std::vector<gfx::NativePixmapPlane> planes;
-  planes.push_back(
-      gfx::NativePixmapPlane(plane_stride, plane_offset, plane_size, MakeFD()));
+  planes.emplace_back(plane_stride, plane_offset, plane_size, MakeFD());
   std::vector<uint32_t> handles;
   handles.push_back(next_handle_++);
 

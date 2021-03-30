@@ -15,13 +15,15 @@
     {
       "name": "LayoutNGBlockFlow BODY",
       "bounds": [284, 84],
+      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 1
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV",
       "position": [151, 0],
-      "bounds": [300, 100]
+      "bounds": [300, 100],
+      "contentsOpaqueForText": true
     }
   ],
   "transforms": [

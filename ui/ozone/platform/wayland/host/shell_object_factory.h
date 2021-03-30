@@ -13,7 +13,7 @@ class Rect;
 
 namespace ui {
 
-class ShellSurfaceWrapper;
+class ShellToplevelWrapper;
 class ShellPopupWrapper;
 class WaylandConnection;
 class WaylandWindow;
@@ -27,8 +27,8 @@ class ShellObjectFactory {
   ShellObjectFactory();
   ~ShellObjectFactory();
 
-  // Creates and initializes a ShellSurfaceWrapper.
-  std::unique_ptr<ShellSurfaceWrapper> CreateShellSurfaceWrapper(
+  // Creates and initializes a ShellToplevelWrapper.
+  std::unique_ptr<ShellToplevelWrapper> CreateShellToplevelWrapper(
       WaylandConnection* connection,
       WaylandWindow* wayland_window);
 

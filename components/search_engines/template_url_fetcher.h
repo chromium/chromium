@@ -6,12 +6,12 @@
 #define COMPONENTS_SEARCH_ENGINES_TEMPLATE_URL_FETCHER_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class GURL;
@@ -46,13 +46,12 @@ class TemplateURLFetcher : public KeyedService {
   // TemplateURL in the model for |keyword|, or we're already downloading an
   // OSDD for this keyword, no download is started.
   //
-  void ScheduleDownload(const base::string16& keyword,
+  void ScheduleDownload(const std::u16string& keyword,
                         const GURL& osdd_url,
                         const GURL& favicon_url,
                         const url::Origin& initiator,
                         network::mojom::URLLoaderFactory* url_loader_factory,
                         int render_frame_id,
-                        int resource_type,
                         int32_t request_id);
 
   // The current number of outstanding requests.

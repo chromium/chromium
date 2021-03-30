@@ -11,8 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "url/gurl.h"
 
 namespace autofill {
@@ -22,7 +21,7 @@ struct PasswordFormFillData;
 namespace password_manager {
 
 struct UsernameAndRealm {
-  base::string16 username;
+  std::u16string username;
   std::string realm;
 };
 
@@ -38,12 +37,12 @@ struct FormInfo {
 };
 
 struct Credential {
-  Credential(const base::string16& username,
-             const base::string16& password,
+  Credential(const std::u16string& username,
+             const std::u16string& password,
              const std::string& realm);
   ~Credential();
-  base::string16 username;
-  base::string16 password;
+  std::u16string username;
+  std::u16string password;
   std::string realm;
 };
 
@@ -57,9 +56,9 @@ struct FillData {
   GURL origin;
   autofill::FormRendererId form_id;
   autofill::FieldRendererId username_element_id;
-  base::string16 username_value;
+  std::u16string username_value;
   autofill::FieldRendererId password_element_id;
-  base::string16 password_value;
+  std::u16string password_value;
 };
 
 // Handles data and logic for filling on account select. This class stores 2
@@ -96,7 +95,7 @@ class AccountSelectFillData {
   // user.
   // RetrieveSuggestions should be called before in order to specify on which
   // field the user clicked.
-  std::unique_ptr<FillData> GetFillData(const base::string16& username) const;
+  std::unique_ptr<FillData> GetFillData(const std::u16string& username) const;
 
  private:
   // Keeps data about all known forms. The key is the pair (form_id, username

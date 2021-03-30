@@ -206,7 +206,7 @@ void CustomScrollbarTheme::PaintIntoRect(
     const LayoutCustomScrollbarPart& layout_custom_scrollbar_part,
     GraphicsContext& graphics_context,
     const PhysicalRect& rect) {
-  PaintInfo paint_info(graphics_context, PixelSnappedIntRect(rect),
+  PaintInfo paint_info(graphics_context, CullRect(PixelSnappedIntRect(rect)),
                        PaintPhase::kForeground, kGlobalPaintNormalPhase,
                        kPaintLayerNoFlag);
   ObjectPainter(layout_custom_scrollbar_part)

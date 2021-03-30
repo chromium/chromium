@@ -13,8 +13,8 @@
 class FakeInfobarDelegate : public ConfirmInfoBarDelegate {
  public:
   FakeInfobarDelegate();
-  FakeInfobarDelegate(base::string16 message_text);
-  FakeInfobarDelegate(base::string16 title_text, base::string16 message_text);
+  FakeInfobarDelegate(std::u16string message_text);
+  FakeInfobarDelegate(std::u16string title_text, std::u16string message_text);
   FakeInfobarDelegate(infobars::InfoBarDelegate::InfoBarIdentifier identifier);
   ~FakeInfobarDelegate() override;
 
@@ -22,18 +22,18 @@ class FakeInfobarDelegate : public ConfirmInfoBarDelegate {
   InfoBarIdentifier GetIdentifier() const override;
 
   // Returns the message string to be displayed for the Infobar.
-  base::string16 GetTitleText() const override;
+  std::u16string GetTitleText() const override;
 
   // Returns the message string to be displayed for the Infobar.
-  base::string16 GetMessageText() const override;
+  std::u16string GetMessageText() const override;
 
  private:
   FakeInfobarDelegate(infobars::InfoBarDelegate::InfoBarIdentifier identifier,
-                      base::string16 title_text,
-                      base::string16 message_text);
+                      std::u16string title_text,
+                      std::u16string message_text);
   infobars::InfoBarDelegate::InfoBarIdentifier identifier_;
-  base::string16 title_text_;
-  base::string16 message_text_;
+  std::u16string title_text_;
+  std::u16string message_text_;
 };
 
 #endif  // IOS_CHROME_BROWSER_INFOBARS_TEST_FAKE_INFOBAR_DELEGATE_H_

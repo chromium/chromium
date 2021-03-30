@@ -101,6 +101,10 @@ class PLATFORM_EXPORT PaintController {
 
   void EnsureChunk();
 
+  void SetShouldComputeContentsOpaque(bool should_compute) {
+    paint_chunker_.SetShouldComputeContentsOpaque(should_compute);
+  }
+
   void RecordHitTestData(const DisplayItemClient&,
                          const IntRect&,
                          TouchAction,
@@ -376,7 +380,7 @@ class PLATFORM_EXPORT PaintController {
 
   SubsequenceMarkers* GetSubsequenceMarkers(const DisplayItemClient&);
 
-  void CheckDuplicatePaintChunkId(const PaintChunk::Id&);
+  void ValidateNewChunkId(const PaintChunk::Id&);
 
 #if DCHECK_IS_ON()
   void ShowDebugDataInternal(DisplayItemList::JsonFlags) const;

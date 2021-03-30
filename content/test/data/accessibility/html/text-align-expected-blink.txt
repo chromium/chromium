@@ -1,6 +1,6 @@
 rootWebArea text-align=left
-++genericContainer ignored text-align=left
-++++genericContainer ignored text-align=left
+++genericContainer ignored
+++++genericContainer ignored
 ++++++genericContainer text-align=left
 ++++++++staticText name='Left-aligned text'
 ++++++++++inlineTextBox name='Left-aligned text'

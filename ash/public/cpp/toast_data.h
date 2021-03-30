@@ -9,7 +9,6 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 
 namespace ash {
 
@@ -19,17 +18,17 @@ struct ASH_PUBLIC_EXPORT ToastData {
   static const int32_t kInfiniteDuration = -1;
 
   ToastData(std::string id,
-            const base::string16& text,
+            const std::u16string& text,
             int32_t duration_ms,
-            const base::Optional<base::string16>& dismiss_text,
+            const base::Optional<std::u16string>& dismiss_text,
             bool visible_on_lock_screen = false);
   ToastData(const ToastData& other);
   ~ToastData();
 
   std::string id;
-  base::string16 text;
+  std::u16string text;
   int32_t duration_ms;
-  base::Optional<base::string16> dismiss_text;
+  base::Optional<std::u16string> dismiss_text;
   bool visible_on_lock_screen;
   bool is_managed = false;
 };

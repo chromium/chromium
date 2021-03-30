@@ -16,7 +16,6 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/debug/rendering_stats_instrumentation.h"
 #include "cc/metrics/compositor_frame_reporting_controller.h"
-#include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_compositor_scheduler_state.pbzero.h"
 
 namespace cc {
 
@@ -34,9 +33,7 @@ class CompositorTimingHistory::UMAReporter {
   virtual void AddInvalidationToReadyToActivateDuration(
       base::TimeDelta duration,
       TreePriority priority) = 0;
-  virtual void AddPrepareTilesDuration(base::TimeDelta duration) = 0;
   virtual void AddDrawDuration(base::TimeDelta duration) = 0;
-  virtual void AddSubmitToAckLatency(base::TimeDelta duration) = 0;
 
   // crbug.com/758439: the following functions are used to report timing in
   // certain conditions targeting blink / compositor animations.
@@ -323,18 +320,8 @@ class RendererUMAReporter : public CompositorTimingHistory::UMAReporter {
         priority);
   }
 
-  void AddPrepareTilesDuration(base::TimeDelta duration) override {
-    UMA_HISTOGRAM_CUSTOM_TIMES_DURATION(
-        "Scheduling.Renderer.PrepareTilesDuration", duration);
-  }
-
   void AddDrawDuration(base::TimeDelta duration) override {
     UMA_HISTOGRAM_CUSTOM_TIMES_DURATION("Scheduling.Renderer.DrawDuration",
-                                        duration);
-  }
-
-  void AddSubmitToAckLatency(base::TimeDelta duration) override {
-    UMA_HISTOGRAM_CUSTOM_TIMES_DURATION("Scheduling.Renderer.SwapToAckLatency",
                                         duration);
   }
 };
@@ -370,18 +357,8 @@ class BrowserUMAReporter : public CompositorTimingHistory::UMAReporter {
         priority);
   }
 
-  void AddPrepareTilesDuration(base::TimeDelta duration) override {
-    UMA_HISTOGRAM_CUSTOM_TIMES_DURATION(
-        "Scheduling.Browser.PrepareTilesDuration", duration);
-  }
-
   void AddDrawDuration(base::TimeDelta duration) override {
     UMA_HISTOGRAM_CUSTOM_TIMES_DURATION("Scheduling.Browser.DrawDuration",
-                                        duration);
-  }
-
-  void AddSubmitToAckLatency(base::TimeDelta duration) override {
-    UMA_HISTOGRAM_CUSTOM_TIMES_DURATION("Scheduling.Browser.SwapToAckLatency",
                                         duration);
   }
 };
@@ -398,9 +375,7 @@ class NullUMAReporter : public CompositorTimingHistory::UMAReporter {
   void AddInvalidationToReadyToActivateDuration(
       base::TimeDelta duration,
       TreePriority priority) override {}
-  void AddPrepareTilesDuration(base::TimeDelta duration) override {}
   void AddDrawDuration(base::TimeDelta duration) override {}
-  void AddSubmitToAckLatency(base::TimeDelta duration) override {}
 };
 
 }  // namespace
@@ -446,23 +421,6 @@ CompositorTimingHistory::CreateUMAReporter(UMACategory category) {
   }
   NOTREACHED();
   return base::WrapUnique<CompositorTimingHistory::UMAReporter>(nullptr);
-}
-
-void CompositorTimingHistory::AsProtozeroInto(
-    perfetto::protos::pbzero::CompositorTimingHistory* state) const {
-  state->set_begin_main_frame_queue_critical_estimate_delta_us(
-      BeginMainFrameQueueDurationCriticalEstimate().InMicroseconds());
-  state->set_begin_main_frame_queue_not_critical_estimate_delta_us(
-      BeginMainFrameQueueDurationNotCriticalEstimate().InMicroseconds());
-  state->set_begin_main_frame_start_to_ready_to_commit_estimate_delta_us(
-      BeginMainFrameStartToReadyToCommitDurationEstimate().InMicroseconds());
-  state->set_commit_to_ready_to_activate_estimate_delta_us(
-      CommitToReadyToActivateDurationEstimate().InMicroseconds());
-  state->set_prepare_tiles_estimate_delta_us(
-      PrepareTilesDurationEstimate().InMicroseconds());
-  state->set_activate_estimate_delta_us(
-      ActivateDurationEstimate().InMicroseconds());
-  state->set_draw_estimate_delta_us(DrawDurationEstimate().InMicroseconds());
 }
 
 base::TimeTicks CompositorTimingHistory::Now() const {
@@ -535,10 +493,35 @@ base::TimeDelta CompositorTimingHistory::DrawDurationEstimate() const {
   return draw_duration_history_.Percentile(kDrawEstimationPercentile);
 }
 
-void CompositorTimingHistory::DidCreateAndInitializeLayerTreeFrameSink() {
-  // After we get a new output surface, we won't get a spurious
-  // CompositorFrameAck from the old output surface.
-  submit_start_time_ = base::TimeTicks();
+base::TimeDelta
+CompositorTimingHistory::BeginMainFrameStartToReadyToCommitCriticalEstimate()
+    const {
+  return BeginMainFrameStartToReadyToCommitDurationEstimate() +
+         BeginMainFrameQueueDurationCriticalEstimate();
+}
+
+base::TimeDelta
+CompositorTimingHistory::BeginMainFrameStartToReadyToCommitNotCriticalEstimate()
+    const {
+  return BeginMainFrameStartToReadyToCommitDurationEstimate() +
+         BeginMainFrameQueueDurationNotCriticalEstimate();
+}
+
+base::TimeDelta
+CompositorTimingHistory::BeginMainFrameQueueToActivateCriticalEstimate() const {
+  return BeginMainFrameStartToReadyToCommitDurationEstimate() +
+         CommitDurationEstimate() + CommitToReadyToActivateDurationEstimate() +
+         ActivateDurationEstimate() +
+         BeginMainFrameQueueDurationCriticalEstimate();
+}
+
+base::TimeDelta
+CompositorTimingHistory::BeginMainFrameQueueToActivateNotCriticalEstimate()
+    const {
+  return BeginMainFrameStartToReadyToCommitDurationEstimate() +
+         CommitDurationEstimate() + CommitToReadyToActivateDurationEstimate() +
+         ActivateDurationEstimate() +
+         BeginMainFrameQueueDurationNotCriticalEstimate();
 }
 
 void CompositorTimingHistory::WillBeginImplFrame(
@@ -690,7 +673,6 @@ void CompositorTimingHistory::DidPrepareTiles() {
   DCHECK_NE(base::TimeTicks(), prepare_tiles_start_time_);
 
   base::TimeDelta prepare_tiles_duration = Now() - prepare_tiles_start_time_;
-  uma_reporter_->AddPrepareTilesDuration(prepare_tiles_duration);
   if (enabled_)
     prepare_tiles_duration_history_.InsertSample(prepare_tiles_duration);
 
@@ -807,25 +789,17 @@ void CompositorTimingHistory::DidSubmitCompositorFrame(
     uint32_t frame_token,
     const viz::BeginFrameId& current_frame_id,
     const viz::BeginFrameId& last_activated_frame_id,
-    EventMetricsSet events_metrics) {
-  DCHECK_EQ(base::TimeTicks(), submit_start_time_);
+    EventMetricsSet events_metrics,
+    bool has_missing_content) {
   compositor_frame_reporting_controller_->DidSubmitCompositorFrame(
       frame_token, current_frame_id, last_activated_frame_id,
-      std::move(events_metrics));
-  submit_start_time_ = Now();
+      std::move(events_metrics), has_missing_content);
 }
 
 void CompositorTimingHistory::DidNotProduceFrame(
     const viz::BeginFrameId& id,
     FrameSkippedReason skip_reason) {
   compositor_frame_reporting_controller_->DidNotProduceFrame(id, skip_reason);
-}
-
-void CompositorTimingHistory::DidReceiveCompositorFrameAck() {
-  DCHECK_NE(base::TimeTicks(), submit_start_time_);
-  base::TimeDelta submit_to_ack_duration = Now() - submit_start_time_;
-  uma_reporter_->AddSubmitToAckLatency(submit_to_ack_duration);
-  submit_start_time_ = base::TimeTicks();
 }
 
 void CompositorTimingHistory::DidPresentCompositorFrame(

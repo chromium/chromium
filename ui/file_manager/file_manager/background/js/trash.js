@@ -7,10 +7,18 @@
  * https://specifications.freedesktop.org/trash-spec/trashspec-1.0.html
  */
 
+// clang-format off
+// #import {VolumeManager} from '../../externs/volume_manager.m.js';
+// #import {fileOperationUtil} from './file_operation_util.m.js';
+// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {TrashConfig, TrashDirs, TrashEntry} from '../../common/js/trash.m.js';
+// clang-format on
+
 /**
  * Implementation of trash.
  */
-class Trash {
+/* #export */ class Trash {
   constructor() {
     /**
      * Store TrashDirs to avoid repeated lookup, keyed by TrashConfig.id.

@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_METRICS_H_
 
 #include <ostream>
+#include "components/autofill_assistant/browser/service.pb.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
@@ -52,11 +53,14 @@ class Metrics {
     NAVIGATION_WHILE_RUNNING = 24,
     UI_CLOSED_UNEXPECTEDLY = 25,  // This is a "should never happen" entry.
     ONBOARDING_NAVIGATION = 26,
+    ONBOARDING_DIALOG_DISMISSED = 27,
 
-    kMaxValue = ONBOARDING_NAVIGATION
+    kMaxValue = ONBOARDING_DIALOG_DISMISSED
   };
 
-  // The different ways that autofill assistant can stop.
+  // The different ways that autofill assistant can stop. Note that this only
+  // covers regular onboarding. Trigger script onboarding is covered by
+  // LiteScriptOnboarding.
   //
   // GENERATED_JAVA_ENUM_PACKAGE: (
   // org.chromium.chrome.browser.autofill_assistant.metrics)
@@ -267,6 +271,8 @@ class Metrics {
     // Since Chrome M-88. The client failed to base64-decode the trigger script
     // specified in the script parameters.
     LITE_SCRIPT_BASE64_DECODING_ERROR = 24,
+    // The user rejected the bottom sheet onboarding
+    LITE_SCRIPT_BOTTOMSHEET_ONBOARDING_REJECTED = 25,
 
     // NOTE: All values in this block are DEPRECATED and will only be sent by
     // Chrome M-86 and M-87.
@@ -297,7 +303,7 @@ class Metrics {
     // Since Chrome M-88. The bottom sheet was swipe-dismissed by the user.
     LITE_SCRIPT_PROMPT_SWIPE_DISMISSED = 16,
 
-    kMaxValue = LITE_SCRIPT_BASE64_DECODING_ERROR
+    kMaxValue = LITE_SCRIPT_BOTTOMSHEET_ONBOARDING_REJECTED
   };
 
   // The different ways a user who has successfully completed a light script may
@@ -319,11 +325,15 @@ class Metrics {
     LITE_SCRIPT_ONBOARDING_SEEN_AND_REJECTED = 1,
     // The user has already accepted the onboarding in the past.
     LITE_SCRIPT_ONBOARDING_ALREADY_ACCEPTED = 2,
+    // The user has seen and dismissed the onboarding.
+    LITE_SCRIPT_ONBOARDING_SEEN_AND_DISMISSED = 3,
+    // The onboarding was interrupted by a website navigation.
+    LITE_SCRIPT_ONBOARDING_SEEN_AND_INTERRUPTED_BY_NAVIGATION = 4,
 
-    kMaxValue = LITE_SCRIPT_ONBOARDING_ALREADY_ACCEPTED
+    kMaxValue = LITE_SCRIPT_ONBOARDING_SEEN_AND_INTERRUPTED_BY_NAVIGATION
   };
 
-  static void RecordDropOut(DropOutReason reason);
+  static void RecordDropOut(DropOutReason reason, const std::string& intent);
   static void RecordPaymentRequestPrefilledSuccess(bool initially_complete,
                                                    bool success);
   static void RecordPaymentRequestAutofillChanged(bool changed, bool success);
@@ -333,10 +343,16 @@ class Metrics {
                                                       bool success);
   static void RecordLiteScriptFinished(ukm::UkmRecorder* ukm_recorder,
                                        content::WebContents* web_contents,
+                                       TriggerUIType trigger_ui_type,
                                        LiteScriptFinishedState event);
   static void RecordLiteScriptShownToUser(ukm::UkmRecorder* ukm_recorder,
                                           content::WebContents* web_contents,
+                                          TriggerUIType trigger_ui_type,
                                           LiteScriptShownToUser event);
+  static void RecordLiteScriptOnboarding(ukm::UkmRecorder* ukm_recorder,
+                                         content::WebContents* web_contents,
+                                         TriggerUIType trigger_ui_type,
+                                         LiteScriptOnboarding event);
 
   // Intended for debugging: writes string representation of |reason| to |out|.
   friend std::ostream& operator<<(std::ostream& out,
@@ -429,6 +445,9 @@ class Metrics {
       case DropOutReason::ONBOARDING_NAVIGATION:
         out << "ONBOARDING_NAVIGATION";
         break;
+      case DropOutReason::ONBOARDING_DIALOG_DISMISSED:
+        out << "ONBOARDING_DIALOG_DISMISSED";
+        break;
         // Do not add default case to force compilation error for new values.
     }
     return out;
@@ -459,6 +478,101 @@ class Metrics {
       case OnBoarding::OB_NO_ANSWER:
         out << "OB_NO_ANSWER";
         break;
+        // Do not add default case to force compilation error for new values.
+    }
+    return out;
+#endif  // NDEBUG
+  }
+
+  friend std::ostream& operator<<(std::ostream& out,
+                                  const LiteScriptFinishedState& state) {
+#ifdef NDEBUG
+    // Non-debugging builds write the enum number.
+    out << static_cast<int>(state);
+    return out;
+#else
+    // Debugging builds write a string representation of |state|.
+    switch (state) {
+      case LiteScriptFinishedState::LITE_SCRIPT_GET_ACTIONS_FAILED:
+        out << "LITE_SCRIPT_GET_ACTIONS_FAILED";
+        break;
+      case LiteScriptFinishedState::LITE_SCRIPT_GET_ACTIONS_PARSE_ERROR:
+        out << "LITE_SCRIPT_GET_ACTIONS_PARSE_ERROR";
+        break;
+      case LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_NAVIGATE:
+        out << "LITE_SCRIPT_PROMPT_FAILED_NAVIGATE";
+        break;
+      case LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED:
+        out << "LITE_SCRIPT_PROMPT_SUCCEEDED";
+        break;
+      case LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_CANCEL_SESSION:
+        out << "LITE_SCRIPT_PROMPT_FAILED_CANCEL_SESSION";
+        break;
+      case LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_CANCEL_FOREVER:
+        out << "LITE_SCRIPT_PROMPT_FAILED_CANCEL_FOREVER";
+        break;
+      case LiteScriptFinishedState::LITE_SCRIPT_TRIGGER_CONDITION_TIMEOUT:
+        out << "LITE_SCRIPT_TRIGGER_CONDITION_TIMEOUT";
+        break;
+      case LiteScriptFinishedState::LITE_SCRIPT_NAVIGATION_ERROR:
+        out << "LITE_SCRIPT_NAVIGATION_ERROR";
+        break;
+      case LiteScriptFinishedState::
+          LITE_SCRIPT_WEB_CONTENTS_DESTROYED_WHILE_VISIBLE:
+        out << "LITE_SCRIPT_WEB_CONTENTS_DESTROYED_WHILE_VISIBLE";
+        break;
+      case LiteScriptFinishedState::
+          LITE_SCRIPT_WEB_CONTENTS_DESTROYED_WHILE_INVISIBLE:
+        out << "LITE_SCRIPT_WEB_CONTENTS_DESTROYED_WHILE_INVISIBLE";
+        break;
+      case LiteScriptFinishedState::LITE_SCRIPT_NO_TRIGGER_SCRIPT_AVAILABLE:
+        out << "LITE_SCRIPT_NO_TRIGGER_SCRIPT_AVAILABLE";
+        break;
+      case LiteScriptFinishedState::LITE_SCRIPT_FAILED_TO_SHOW:
+        out << "LITE_SCRIPT_FAILED_TO_SHOW";
+        break;
+      case LiteScriptFinishedState::LITE_SCRIPT_DISABLED_PROACTIVE_HELP_SETTING:
+        out << "LITE_SCRIPT_DISABLED_PROACTIVE_HELP_SETTING";
+        break;
+      case LiteScriptFinishedState::LITE_SCRIPT_BASE64_DECODING_ERROR:
+        out << "LITE_SCRIPT_BASE64_DECODING_ERROR";
+        break;
+      case LiteScriptFinishedState::LITE_SCRIPT_BOTTOMSHEET_ONBOARDING_REJECTED:
+        out << "LITE_SCRIPT_BOTTOMSHEET_ONBOARDING_REJECTED";
+        break;
+      case LiteScriptFinishedState::LITE_SCRIPT_UNKNOWN_FAILURE:
+        out << "LITE_SCRIPT_UNKNOWN_FAILURE";
+        break;
+      case LiteScriptFinishedState::LITE_SCRIPT_SERVICE_DELETED:
+        out << "LITE_SCRIPT_SERVICE_DELETED";
+        break;
+      case LiteScriptFinishedState::LITE_SCRIPT_PATH_MISMATCH:
+        out << "LITE_SCRIPT_PATH_MISMATCH";
+        break;
+      case LiteScriptFinishedState::LITE_SCRIPT_UNSAFE_ACTIONS:
+        out << "LITE_SCRIPT_UNSAFE_ACTIONS";
+        break;
+      case LiteScriptFinishedState::LITE_SCRIPT_INVALID_SCRIPT:
+        out << "LITE_SCRIPT_INVALID_SCRIPT";
+        break;
+      case LiteScriptFinishedState::LITE_SCRIPT_BROWSE_FAILED_NAVIGATE:
+        out << "LITE_SCRIPT_BROWSE_FAILED_NAVIGATE";
+        break;
+      case LiteScriptFinishedState::LITE_SCRIPT_BROWSE_FAILED_OTHER:
+        out << "LITE_SCRIPT_BROWSE_FAILED_OTHER";
+        break;
+      case LiteScriptFinishedState::
+          LITE_SCRIPT_PROMPT_FAILED_CONDITION_NO_LONGER_TRUE:
+        out << "LITE_SCRIPT_PROMPT_FAILED_CONDITION_NO_LONGER_TRUE";
+        break;
+      case LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_CLOSE:
+        out << "LITE_SCRIPT_PROMPT_FAILED_CLOSE";
+        break;
+      case LiteScriptFinishedState::LITE_SCRIPT_PROMPT_FAILED_OTHER:
+        out << "LITE_SCRIPT_PROMPT_FAILED_OTHER";
+        break;
+      case LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SWIPE_DISMISSED:
+        out << "LITE_SCRIPT_PROMPT_SWIPE_DISMISSED";
         // Do not add default case to force compilation error for new values.
     }
     return out;

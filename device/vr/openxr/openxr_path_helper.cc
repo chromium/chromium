@@ -14,8 +14,15 @@ OpenXRPathHelper::OpenXRPathHelper() {}
 
 OpenXRPathHelper::~OpenXRPathHelper() = default;
 
-XrResult OpenXRPathHelper::Initialize(XrInstance instance) {
+XrResult OpenXRPathHelper::Initialize(XrInstance instance, XrSystemId system) {
   DCHECK(!initialized_);
+
+  // Get the system properties, which is needed to determine the name of the
+  // hardware being used. This helps disambiguate certain sets of controllers.
+  XrSystemProperties system_properties = {XR_TYPE_SYSTEM_PROPERTIES};
+  RETURN_IF_XR_FAILED(
+      xrGetSystemProperties(instance, system, &system_properties));
+  system_name_ = std::string(system_properties.systemName);
 
   // Create path declarations
   for (const auto& profile : kOpenXrControllerInteractionProfiles) {
@@ -45,9 +52,25 @@ std::vector<std::string> OpenXRPathHelper::GetInputProfiles(
 
   for (auto& it : kOpenXrControllerInteractionProfiles) {
     if (it.type == interaction_profile) {
-      const char* const* const input_profiles = it.input_profiles;
-      return std::vector<std::string>(input_profiles,
-                                      input_profiles + it.profile_size);
+      const OpenXrSystemInputProfiles* active_system = nullptr;
+      for (size_t system_index = 0; system_index < it.input_profile_size;
+           system_index++) {
+        const OpenXrSystemInputProfiles& system =
+            it.system_input_profiles[system_index];
+        if (system.system_name == nullptr) {
+          active_system = &system;
+        } else if (system_name_ == system.system_name) {
+          active_system = &system;
+          break;
+        }
+      }
+
+      // Each interaction profile should always at least have a null system_name
+      // entry.
+      DCHECK(active_system);
+      return std::vector<std::string>(
+          active_system->input_profiles,
+          active_system->input_profiles + active_system->profile_size);
     }
   }
 

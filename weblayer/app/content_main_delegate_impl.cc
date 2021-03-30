@@ -14,6 +14,8 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+#include "components/content_capture/common/content_capture_features.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/common/content_features.h"
@@ -21,9 +23,11 @@
 #include "content/public/common/url_constants.h"
 #include "media/base/media_switches.h"
 #include "services/network/public/cpp/features.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_paths.h"
+#include "weblayer/browser/background_fetch/background_fetch_delegate_factory.h"
 #include "weblayer/browser/content_browser_client_impl.h"
 #include "weblayer/common/content_client_impl.h"
 #include "weblayer/common/weblayer_paths.h"
@@ -149,14 +153,10 @@ bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
   std::vector<base::Feature> disabled_features = {
     // TODO(crbug.com/1025627): make webauth work with WebLayer.
     ::features::kWebAuth,
-    // TODO(crbug.com/1057106): make web-xr work with WebLayer.
+    // TODO(crbug.com/1177948): enable WebAR.
     ::features::kWebXr,
     ::features::kWebXrArModule,
     ::features::kWebXrHitTest,
-    // TODO(crbug.com/1057770): make Background Fetch work with WebLayer.
-    ::features::kBackgroundFetch,
-    // TODO(crbug.com/1130989): Support GetInstalledRelatedApps on WebLayer.
-    ::features::kInstalledApp,
     // TODO(crbug.com/1091212): make Notification triggers work with
     // WebLayer.
     ::features::kNotificationTriggers,
@@ -164,6 +164,11 @@ bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
     ::features::kPeriodicBackgroundSync,
     // TODO(crbug.com/1131017): Support SurfaceViews on WebLayer.
     media::kOverlayFullscreenVideo,
+    // TODO(crbug.com/1174856): Support Portals.
+    blink::features::kPortals,
+    // TODO(crbug.com/1174566): Enable by default after experiment.
+    content_capture::features::kContentCapture,
+
 #if defined(OS_ANDROID)
     // TODO(crbug.com/1131016): Support Picture in Picture API on WebLayer.
     media::kPictureInPictureAPI,
@@ -176,6 +181,10 @@ bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
 #endif
   };
 
+  // TODO(crbug.com/1057770): make Background Fetch work with WebLayer.
+  if (!BackgroundFetchDelegateFactory::IsEnabled())
+    disabled_features.push_back(::features::kBackgroundFetch);
+
 #if defined(OS_ANDROID)
   if (base::android::BuildInfo::GetInstance()->sdk_int() >=
       base::android::SDK_VERSION_OREO) {
@@ -183,8 +192,6 @@ bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
         autofill::features::kAutofillExtractAllDatalists);
     enabled_features.push_back(
         autofill::features::kAutofillSkipComparingInferredLabels);
-    disabled_features.push_back(
-        autofill::features::kAutofillRestrictUnownedFieldsToFormlessCheckout);
   }
 #endif
 
@@ -192,9 +199,6 @@ bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
 
   // TODO(crbug.com/1097105): Support Web GPU on WebLayer.
   blink::WebRuntimeFeatures::EnableWebGPU(false);
-
-  // TODO(crbug.com/1097107): Add support for Content Indexing on WebLayer.
-  blink::WebRuntimeFeatures::EnableContentIndex(false);
 
 #if defined(OS_ANDROID)
   content::Compositor::Initialize();
@@ -218,7 +222,11 @@ bool ContentMainDelegateImpl::ShouldCreateFeatureList() {
 }
 
 void ContentMainDelegateImpl::PreSandboxStartup() {
-#if defined(ARCH_CPU_ARM_FAMILY) && (defined(OS_ANDROID) || defined(OS_LINUX))
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if defined(ARCH_CPU_ARM_FAMILY) &&              \
+    (defined(OS_ANDROID) || defined(OS_LINUX) || \
+     BUILDFLAG(IS_CHROMEOS_LACROS))
   // Create an instance of the CPU class to parse /proc/cpuinfo and cache
   // cpu_brand info.
   base::CPU cpu_info;

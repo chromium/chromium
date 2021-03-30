@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1143,36 +1142,29 @@ TEST_F(DesktopWidgetObserverTest, OnWidgetMovedWhenOriginChangesNative) {
 
   const int moves_during_init = delegate.move_count();
 
-#if defined(OS_WIN)
-  // Windows reliably notifies twice per origin change. https://crbug.com/864938
-  constexpr int kDeltaPerMove = 2;
-#else
-  constexpr int kDeltaPerMove = 1;
-#endif
-
   // Resize without changing origin. No move.
   widget->SetBounds(gfx::Rect(100, 100, 310, 210));
   EXPECT_EQ(moves_during_init, delegate.move_count());
 
   // Move without changing size. Moves.
   widget->SetBounds(gfx::Rect(110, 110, 310, 210));
-  EXPECT_EQ(moves_during_init + kDeltaPerMove, delegate.move_count());
+  EXPECT_EQ(moves_during_init + 1, delegate.move_count());
 
   // Changing both moves.
   widget->SetBounds(gfx::Rect(90, 90, 330, 230));
-  EXPECT_EQ(moves_during_init + 2 * kDeltaPerMove, delegate.move_count());
+  EXPECT_EQ(moves_during_init + 2, delegate.move_count());
 
   // Just grow vertically. On Mac, this changes the AppKit origin since it is
   // from the bottom left of the screen, but there is no move as far as views is
   // concerned.
   widget->SetBounds(gfx::Rect(90, 90, 330, 240));
   // No change.
-  EXPECT_EQ(moves_during_init + 2 * kDeltaPerMove, delegate.move_count());
+  EXPECT_EQ(moves_during_init + 2, delegate.move_count());
 
   // For a similar reason, move the widget down by the same amount that it grows
   // vertically. The AppKit origin does not change, but it is a move.
   widget->SetBounds(gfx::Rect(90, 100, 330, 250));
-  EXPECT_EQ(moves_during_init + 3 * kDeltaPerMove, delegate.move_count());
+  EXPECT_EQ(moves_during_init + 3, delegate.move_count());
 }
 
 // Test correct behavior when widgets close themselves in response to visibility
@@ -1435,7 +1427,7 @@ TEST_F(WidgetTest, KeyboardInputEvent) {
   View* container = toplevel->client_view();
 
   Textfield* textfield = new Textfield();
-  textfield->SetText(base::ASCIIToUTF16("some text"));
+  textfield->SetText(u"some text");
   container->AddChildView(textfield);
   toplevel->Show();
   textfield->RequestFocus();
@@ -1493,7 +1485,7 @@ class DesktopAuraTestValidPaintWidget : public Widget, public WidgetObserver {
  public:
   explicit DesktopAuraTestValidPaintWidget(Widget::InitParams init_params)
       : Widget(std::move(init_params)) {
-    observer_.Add(this);
+    observation_.Observe(this);
   }
   ~DesktopAuraTestValidPaintWidget() override = default;
 
@@ -1536,7 +1528,7 @@ class DesktopAuraTestValidPaintWidget : public Widget, public WidgetObserver {
   bool expect_paint_ = true;
   bool received_paint_while_hidden_ = false;
   base::OnceClosure quit_closure_;
-  ScopedObserver<Widget, WidgetObserver> observer_{this};
+  base::ScopedObservation<Widget, WidgetObserver> observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DesktopAuraTestValidPaintWidget);
 };
@@ -2185,10 +2177,10 @@ class WidgetWindowTitleTest : public DesktopWidgetTest {
     internal::NativeWidgetPrivate* native_widget =
         widget->native_widget_private();
 
-    base::string16 empty;
-    base::string16 s1(base::UTF8ToUTF16("Title1"));
-    base::string16 s2(base::UTF8ToUTF16("Title2"));
-    base::string16 s3(base::UTF8ToUTF16("TitleLong"));
+    std::u16string empty;
+    std::u16string s1(u"Title1");
+    std::u16string s2(u"Title2");
+    std::u16string s3(u"TitleLong");
 
     // The widget starts with no title, setting empty should not change
     // anything.

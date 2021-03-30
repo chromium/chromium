@@ -10,7 +10,7 @@
 
 #include "base/macros.h"
 #include "base/memory/singleton.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -18,7 +18,6 @@
 #include "extensions/common/api/automation_internal.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_messages.h"
-#include "ui/accessibility/ax_event_bundle_sink.h"
 #include "ui/accessibility/ax_tree_id.h"
 
 namespace content {
@@ -35,8 +34,12 @@ struct ExtensionMsg_AccessibilityLocationChangeParams;
 namespace extensions {
 struct AutomationListener;
 
-class AutomationEventRouter : public ui::AXEventBundleSink,
-                              public content::RenderProcessHostObserver,
+class AutomationEventRouterObserver {
+ public:
+  virtual void AllAutomationExtensionsGone() = 0;
+};
+
+class AutomationEventRouter : public content::RenderProcessHostObserver,
                               public AutomationEventRouterInterface {
  public:
   static AutomationEventRouter* GetInstance();
@@ -55,28 +58,31 @@ class AutomationEventRouter : public ui::AXEventBundleSink,
   void RegisterListenerWithDesktopPermission(const ExtensionId& extension_id,
                                              int listener_process_id);
 
-  void DispatchAccessibilityEvents(
-      const ExtensionMsg_AccessibilityEventBundleParams& events) override;
+  void AddObserver(AutomationEventRouterObserver* observer);
+  void RemoveObserver(AutomationEventRouterObserver* observer);
 
+  // AutomationEventRouterInterface:
+  void DispatchAccessibilityEvents(const ui::AXTreeID& tree_id,
+                                   std::vector<ui::AXTreeUpdate> updates,
+                                   const gfx::Point& mouse_location,
+                                   std::vector<ui::AXEvent> events) override;
   void DispatchAccessibilityLocationChange(
       const ExtensionMsg_AccessibilityLocationChangeParams& params) override;
-
-  // Notify all automation extensions that an accessibility tree was
-  // destroyed. If |browser_context| is null, use the currently active context.
   void DispatchTreeDestroyedEvent(
       ui::AXTreeID tree_id,
       content::BrowserContext* browser_context) override;
-
-  // Notify the source extension of the action of an action result.
   void DispatchActionResult(
       const ui::AXActionData& data,
       bool result,
       content::BrowserContext* browser_context = nullptr) override;
-
-  // Notify the source extension of the result to getTextLocation.
   void DispatchGetTextLocationDataResult(
       const ui::AXActionData& data,
       const base::Optional<gfx::Rect>& rect) override;
+
+  // If a remote router is registered, then all events are directly forwarded to
+  // it. The caller of this method is responsible for calling it again with
+  // |nullptr| before the remote router is destroyed to prevent UaF.
+  void RegisterRemoteRouter(AutomationEventRouterInterface* router);
 
  private:
   struct AutomationListener {
@@ -99,11 +105,8 @@ class AutomationEventRouter : public ui::AXEventBundleSink,
                 ui::AXTreeID source_ax_tree_id,
                 bool desktop);
 
-  // ui::AXEventBundleSink:
-  void DispatchAccessibilityEvents(const ui::AXTreeID& tree_id,
-                                   std::vector<ui::AXTreeUpdate> updates,
-                                   const gfx::Point& mouse_location,
-                                   std::vector<ui::AXEvent> events) override;
+  void DispatchAccessibilityEventsInternal(
+      const ExtensionMsg_AccessibilityEventBundleParams& events);
 
   // RenderProcessHostObserver:
   void RenderProcessExited(
@@ -128,8 +131,16 @@ class AutomationEventRouter : public ui::AXEventBundleSink,
 
   content::BrowserContext* active_context_;
 
-  ScopedObserver<content::RenderProcessHost, content::RenderProcessHostObserver>
+  // The caller of RegisterRemoteRouter is responsible for ensuring that this
+  // pointer is valid. The remote router must be unregistered with
+  // RegisterRemoteRouter(nullptr) before it is destroyed.
+  AutomationEventRouterInterface* remote_router_ = nullptr;
+
+  base::ScopedMultiSourceObservation<content::RenderProcessHost,
+                                     content::RenderProcessHostObserver>
       rph_observers_{this};
+
+  base::ObserverList<AutomationEventRouterObserver>::Unchecked observers_;
 
   friend struct base::DefaultSingletonTraits<AutomationEventRouter>;
 

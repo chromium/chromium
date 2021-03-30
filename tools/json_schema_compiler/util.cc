@@ -15,7 +15,7 @@ namespace {
 
 bool ReportError(const base::Value& from,
                  base::Value::Type expected,
-                 base::string16* error) {
+                 std::u16string* error) {
   DCHECK(error->empty());
   *error = base::ASCIIToUTF16(base::StringPrintf(
       "expected %s, got %s", base::Value::GetTypeName(expected),
@@ -29,7 +29,7 @@ bool PopulateItem(const base::Value& from, int* out) {
   return from.GetAsInteger(out);
 }
 
-bool PopulateItem(const base::Value& from, int* out, base::string16* error) {
+bool PopulateItem(const base::Value& from, int* out, std::u16string* error) {
   if (!from.GetAsInteger(out))
     return ReportError(from, base::Value::Type::INTEGER, error);
   return true;
@@ -39,7 +39,7 @@ bool PopulateItem(const base::Value& from, bool* out) {
   return from.GetAsBoolean(out);
 }
 
-bool PopulateItem(const base::Value& from, bool* out, base::string16* error) {
+bool PopulateItem(const base::Value& from, bool* out, std::u16string* error) {
   if (!from.GetAsBoolean(out))
     return ReportError(from, base::Value::Type::BOOLEAN, error);
   return true;
@@ -49,7 +49,7 @@ bool PopulateItem(const base::Value& from, double* out) {
   return from.GetAsDouble(out);
 }
 
-bool PopulateItem(const base::Value& from, double* out, base::string16* error) {
+bool PopulateItem(const base::Value& from, double* out, std::u16string* error) {
   if (!from.GetAsDouble(out))
     return ReportError(from, base::Value::Type::DOUBLE, error);
   return true;
@@ -61,7 +61,7 @@ bool PopulateItem(const base::Value& from, std::string* out) {
 
 bool PopulateItem(const base::Value& from,
                   std::string* out,
-                  base::string16* error) {
+                  std::u16string* error) {
   if (!from.GetAsString(out))
     return ReportError(from, base::Value::Type::STRING, error);
   return true;
@@ -76,7 +76,7 @@ bool PopulateItem(const base::Value& from, std::vector<uint8_t>* out) {
 
 bool PopulateItem(const base::Value& from,
                   std::vector<uint8_t>* out,
-                  base::string16* error) {
+                  std::u16string* error) {
   if (!from.is_blob())
     return ReportError(from, base::Value::Type::BINARY, error);
   *out = from.GetBlob();
@@ -90,7 +90,7 @@ bool PopulateItem(const base::Value& from, std::unique_ptr<base::Value>* out) {
 
 bool PopulateItem(const base::Value& from,
                   std::unique_ptr<base::Value>* out,
-                  base::string16* error) {
+                  std::u16string* error) {
   *out = from.CreateDeepCopy();
   return true;
 }
@@ -106,7 +106,7 @@ bool PopulateItem(const base::Value& from,
 
 bool PopulateItem(const base::Value& from,
                   std::unique_ptr<base::DictionaryValue>* out,
-                  base::string16* error) {
+                  std::u16string* error) {
   const base::DictionaryValue* dict = nullptr;
   if (!from.GetAsDictionary(&dict))
     return ReportError(from, base::Value::Type::DICTIONARY, error);

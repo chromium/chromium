@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ui/webui/signin/profile_customization_handler.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
@@ -85,12 +85,13 @@ void ProfileCustomizationHandler::HandleInitialized(
 
 void ProfileCustomizationHandler::HandleDone(const base::ListValue* args) {
   CHECK_EQ(1u, args->GetSize());
-  base::string16 profile_name =
+  std::u16string profile_name =
       base::UTF8ToUTF16(args->GetList()[0].GetString());
 
   base::TrimWhitespace(profile_name, base::TRIM_ALL, &profile_name);
   DCHECK(!profile_name.empty());
-  GetProfileEntry()->SetLocalProfileName(profile_name);
+  GetProfileEntry()->SetLocalProfileName(profile_name,
+                                         /*is_default_name=*/false);
 
   if (done_closure_)
     std::move(done_closure_).Run();
@@ -127,10 +128,10 @@ base::Value ProfileCustomizationHandler::GetProfileInfoValue() {
 }
 
 ProfileAttributesEntry* ProfileCustomizationHandler::GetProfileEntry() const {
-  ProfileAttributesEntry* entry = nullptr;
-  g_browser_process->profile_manager()
-      ->GetProfileAttributesStorage()
-      .GetProfileAttributesWithPath(profile_path_, &entry);
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_path_);
   DCHECK(entry);
   return entry;
 }

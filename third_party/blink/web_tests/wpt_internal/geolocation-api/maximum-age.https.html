@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/testharness-adapter.js"></script>
+</head>
+<body>
+<script type="module">
+import {GeolocationMock} from './resources/geolocation-mock.js';
+
+description("Tests that the PositionOptions.maximumAge parameter is correctly applied.");
+
+let mockLatitude = 51.478;
+let mockLongitude = -0.166;
+let mockAccuracy = 100.0;
+
+const mockMessage = 'test';
+
+let position;
+let error;
+
+function checkPosition(p) {
+    position = p;
+    assert_equals(position.coords.latitude, mockLatitude);
+    assert_equals(position.coords.longitude, mockLongitude);
+    assert_equals(position.coords.accuracy, mockAccuracy);
+}
+
+function checkError(e) {
+    error = e;
+    assert_equals(error.code, error.POSITION_UNAVAILABLE);
+    assert_equals(error.message, mockMessage);
+}
+
+const mock = new GeolocationMock();
+mock.setGeolocationPermission(true);
+mock.setGeolocationPosition(mockLatitude, mockLongitude, mockAccuracy);
+
+// Initialize the cached Position
+navigator.geolocation.getCurrentPosition(function(p) {
+    checkPosition(p);
+    testZeroMaximumAge();
+}, function(e) {
+    testFailed('Error callback invoked unexpectedly');
+    finishJSTest();
+});
+
+function testZeroMaximumAge() {
+    // Update the position provided by the mock service.
+    mock.setGeolocationPosition(++mockLatitude, ++mockLongitude, ++mockAccuracy);
+    // The default maximumAge is zero, so we expect the updated position from the service.
+    navigator.geolocation.getCurrentPosition(function(p) {
+        checkPosition(p);
+        testNonZeroMaximumAge();
+    }, function(e) {
+        testFailed('Error callback invoked unexpectedly');
+        finishJSTest();
+    });
+}
+
+function testNonZeroMaximumAge() {
+    // Update the mock service to report an error.
+    mock.setGeolocationPositionUnavailableError(mockMessage);
+    // The maximumAge is non-zero, so we expect the cached position, not the error from the service.
+    navigator.geolocation.getCurrentPosition(function(p) {
+        checkPosition(p);
+        testNegativeValueMaximumAge();
+    }, function(e) {
+        testFailed('Error callback invoked unexpectedly');
+        finishJSTest();
+    }, {maximumAge: 1000});
+}
+
+function testNegativeValueMaximumAge() {
+    // Update the position provided by the mock service.
+    mock.setGeolocationPosition(++mockLatitude, ++mockLongitude, ++mockAccuracy);
+    // The maximumAge is same as zero, so we expect the updated position from the service.
+    navigator.geolocation.getCurrentPosition(function(p) {
+        checkPosition(p);
+        testOverSignedIntMaximumAge();
+    }, function(e) {
+        testFailed('Error callback invoked unexpectedly');
+        finishJSTest();
+    }, {maximumAge: -1000});
+}
+
+function testOverSignedIntMaximumAge() {
+    // Update the mock service to report an error.
+    mock.setGeolocationPositionUnavailableError(mockMessage);
+    // The maximumAge is non-zero, so we expect the cached position, not the error from the service.
+    navigator.geolocation.getCurrentPosition(function(p) {
+        checkPosition(p);
+        testOverUnsignedIntMaximumAge();
+    }, function(e) {
+        testFailed('Error callback invoked unexpectedly');
+        finishJSTest();
+    }, {maximumAge: 2147483648});
+}
+
+function testOverUnsignedIntMaximumAge() {
+    // Update the mock service to report an error.
+    mock.setGeolocationPositionUnavailableError(mockMessage);
+    // The maximumAge is max-value of unsigned, so we expect the cached position, not the error from the service.
+    navigator.geolocation.getCurrentPosition(function(p) {
+        checkPosition(p);
+        testZeroMaximumAgeError();
+    }, function(e) {
+        testFailed('Error callback invoked unexpectedly');
+        finishJSTest();
+    }, {maximumAge: 4294967296});
+}
+
+function testZeroMaximumAgeError() {
+    // The default maximumAge is zero, so we expect the error from the service.
+    navigator.geolocation.getCurrentPosition(function(p) {
+        testFailed('Success callback invoked unexpectedly');
+        finishJSTest();
+    }, function(e) {
+        checkError(e);
+        finishJSTest();
+    });
+}
+</script>
+</body>
+</html>

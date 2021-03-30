@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_UI_PASSWORDS_PASSWORD_GENERATION_POPUP_CONTROLLER_H_
 #define CHROME_BROWSER_UI_PASSWORDS_PASSWORD_GENERATION_POPUP_CONTROLLER_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
 
 class PasswordGenerationPopupController
@@ -27,11 +28,11 @@ class PasswordGenerationPopupController
   // Accessors
   virtual GenerationUIState state() const = 0;
   virtual bool password_selected() const = 0;
-  virtual const base::string16& password() const = 0;
+  virtual const std::u16string& password() const = 0;
 
   // Translated strings
-  virtual base::string16 SuggestedText() = 0;
-  virtual const base::string16& HelpText() = 0;
+  virtual std::u16string SuggestedText() = 0;
+  virtual const std::u16string& HelpText() = 0;
 
  protected:
   ~PasswordGenerationPopupController() override = default;

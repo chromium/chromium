@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+<p>Note that this test will only pass if we stitch together composited fragments
+  (i.e. pre-CompositeAfterPaint). Once we handle fragmentation correctly for
+  composited objects, this test is invalid, and should be deleted.</p>
+<div style="width:100px; height:100px; background:red;">
+  <div style="margin-left:90px; writing-mode:vertical-rl; height:300px; width:60px; columns:3; column-fill:auto; column-gap:0;">
+    <div style="will-change:transform;">
+      <div style="block-size:50px;"></div>
+      <div style="position:relative; block-size:20px; background:green;"></div>
+      <div style="position:relative; block-size:60px; background:green;"></div>
+      <div style="position:relative; block-size:20px; background:green;"></div>
+    </div>
+  </div>
+</div>

@@ -48,9 +48,9 @@ constexpr int kVersion = 1;
 
 #define EXPECT_VISIBLE_NOTIFICATIONS_BY_PREFIXED_ID(prefix_)                  \
   {                                                                           \
-    if (!FindVisibleNotificationsByPrefixedId(prefix_).empty())               \
+    if (!FindVisibleNotificationsByPrefixedId(prefix_).empty()) {             \
       return;                                                                 \
-                                                                              \
+    }                                                                         \
     MockMessageCenterObserver mock;                                           \
     ScopedObserver<MessageCenter, MessageCenterObserver> observer_{&mock};    \
     observer_.Add(MessageCenter::Get());                                      \
@@ -188,9 +188,7 @@ class MockMessageCenterObserver
 
 class AssistantTimersBrowserTest : public MixinBasedInProcessBrowserTest {
  public:
-  AssistantTimersBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kAssistantTimersV2);
-  }
+  AssistantTimersBrowserTest() = default;
 
   AssistantTimersBrowserTest(const AssistantTimersBrowserTest&) = delete;
   AssistantTimersBrowserTest& operator=(const AssistantTimersBrowserTest&) =
@@ -206,7 +204,6 @@ class AssistantTimersBrowserTest : public MixinBasedInProcessBrowserTest {
   AssistantTestMixin* tester() { return &tester_; }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   base::test::ScopedRestoreICUDefaultLocale locale_{"en_US"};
   AssistantTestMixin tester_{&mixin_host_, this, embedded_test_server(), kMode,
                              kVersion};
@@ -256,13 +253,7 @@ IN_PROC_BROWSER_TEST_F(AssistantTimersBrowserTest,
 
   // Start a timer for five minutes.
   tester()->SendTextQuery("Set a timer for 5 minutes");
-  tester()->ExpectAnyOfTheseTextResponses({
-      "Alright, 5 min. Starting… now.",
-      "OK, 5 min. And we're starting… now.",
-      "OK, 5 min. Starting… now.",
-      "Sure, 5 min. And that's starting… now.",
-      "Sure, 5 min. Starting now.",
-  });
+  tester()->ExpectTextResponse("5 min.");
 
   // Tap status area widget (to show notifications in the Message Center).
   TapOnAndWait(FindStatusAreaWidget());
@@ -277,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(AssistantTimersBrowserTest,
   EXPECT_EQ(2u, action_buttons.size());
 
   // Tap the "CANCEL" action button in the notification.
-  EXPECT_EQ(base::UTF8ToUTF16("CANCEL"), action_buttons.at(1)->GetText());
+  EXPECT_EQ(u"CANCEL", action_buttons.at(1)->GetText());
   TapOnAndWait(action_buttons.at(1));
 
   ShowAssistantUi();

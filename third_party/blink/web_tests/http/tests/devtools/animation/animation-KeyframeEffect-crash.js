@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that animations can be created with KeyframeEffect without crashing.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="node" style="background-color: red; height: 100px"></div>
@@ -20,7 +20,7 @@
   `);
 
   await UI.viewManager.showView('animations');
-  var timeline = self.runtime.sharedInstance(Animation.AnimationTimeline);
+  var timeline = Animation.AnimationTimeline.instance();
   TestRunner.evaluateInPage('startAnimationWithKeyframeEffect()');
   ElementsTestRunner.waitForAnimationAdded(step2);
 

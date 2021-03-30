@@ -41,6 +41,8 @@
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "url/gurl.h"
+#include "url/gurl_abstract_tests.h"
 #include "url/url_util.h"
 
 namespace blink {
@@ -772,10 +774,12 @@ TEST(KURLTest, DeepCopyInnerURL) {
 
 TEST(KURLTest, LastPathComponent) {
   const KURL url1("http://host/path/to/file.txt");
+  EXPECT_TRUE(url1.IsValid());
   EXPECT_EQ("file.txt", url1.LastPathComponent());
 
   const KURL invalid_utf8("http://a@9%aa%:/path/to/file.txt");
-  EXPECT_EQ(String(), invalid_utf8.LastPathComponent());
+  EXPECT_FALSE(invalid_utf8.IsValid());
+  EXPECT_EQ("", invalid_utf8.LastPathComponent());
 }
 
 TEST(KURLTest, IsHierarchical) {
@@ -784,6 +788,7 @@ TEST(KURLTest, IsHierarchical) {
   // url never has a valid hostname (the inner URL does)."
   const char* standard_urls[] = {
       "http://host/path/to/file.txt",
+      "http://a@9%aa%:/path/to/file.txt",  // Invalid, but hierarchical.
       "ftp://andrew.cmu.edu/foo",
       "file:///path/to/resource",
       "file://hostname/etc/",
@@ -802,7 +807,6 @@ TEST(KURLTest, IsHierarchical) {
   const char* nonstandard_urls[] = {
       "blob:null/guid-goes-here",
       "blob:http://example.com/guid-goes-here",
-      "http://a@9%aa%:/path/to/file.txt",
       "about:blank://hostname",
       "about:blank",
       "javascript:void(0);",
@@ -823,7 +827,7 @@ TEST(KURLTest, PathAfterLastSlash) {
   EXPECT_EQ(20u, url1.PathAfterLastSlash());
 
   KURL invalid_utf8("http://a@9%aa%:/path/to/file.txt");
-  EXPECT_EQ(0u, invalid_utf8.PathAfterLastSlash());
+  EXPECT_EQ(22u, invalid_utf8.PathAfterLastSlash());
 }
 
 TEST(KURLTest, ProtocolIsInHTTPFamily) {
@@ -948,6 +952,141 @@ TEST(KURLTest, ThreadSafesStaticKurlGetters) {
 #endif
 }
 
+// Setting protocol to "file" should not work if the URL has credentials or a
+// port.
+TEST(KURLTest, FailToSetProtocolToFile) {
+  constexpr const char* kShouldNotChange[] = {
+      "http://foo@localhost/",
+      "http://:bar@localhost/",
+      "http://localhost:8000/",
+  };
+
+  for (const char* url_string : kShouldNotChange) {
+    KURL url(url_string);
+    auto port_before = url.Port();
+    auto user_before = url.User();
+    auto pass_before = url.Pass();
+    EXPECT_TRUE(url.SetProtocol("file")) << "with url " << url_string;
+    EXPECT_EQ(url.Protocol(), "http") << "with url " << url_string;
+
+    EXPECT_EQ(url.Port(), port_before) << "with url " << url_string;
+    EXPECT_EQ(url.User(), user_before) << "with url " << url_string;
+    EXPECT_EQ(url.Pass(), pass_before) << "with url " << url_string;
+  }
+}
+
+// If the source URL is invalid, then it behaves like it has an empty
+// protocol, so the conversion to a file URL can go ahead.
+TEST(KURL, SetProtocolToFileFromInvalidURL) {
+  enum ValidAfterwards {
+    kValid,
+    kInvalid,
+  };
+  struct URLAndExpectedValidity {
+    const char* const url;
+    const ValidAfterwards validity;
+  };
+
+  // The URLs are reparsed when the protocol is changed, and most of
+  // them are converted to a form which is valid. The second argument
+  // reflects the validity after the transformation. All the URLs are
+  // invalid before it.
+  constexpr URLAndExpectedValidity kInvalidURLs[] = {
+      {"http://@/", kValid},          {"http://@@/", kValid},
+      {"http://::/", kInvalid},       {"http://:/", kValid},
+      {"http://:@/", kValid},         {"http://@:/", kValid},
+      {"http://:@:/", kValid},        {"http://foo@/", kValid},
+      {"http://localhost:/", kValid},
+  };
+
+  for (const auto& invalid_url : kInvalidURLs) {
+    KURL url(invalid_url.url);
+
+    EXPECT_TRUE(url.SetProtocol("file")) << "with url " << invalid_url.url;
+
+    EXPECT_EQ(url.Protocol(), invalid_url.validity == kValid ? "file" : "")
+        << "with url " << invalid_url.url;
+
+    EXPECT_EQ(url.IsValid() ? kValid : kInvalid, invalid_url.validity)
+        << "with url " << invalid_url.url;
+  }
+}
+
+TEST(KURLTest, SetProtocolToFromFile) {
+  struct Case {
+    const char* const url;
+    const char* const new_protocol;
+  };
+  constexpr Case kCases[] = {
+      {"http://localhost/path", "file"},
+      {"file://example.com/path", "http"},
+  };
+
+  for (const auto& test_case : kCases) {
+    KURL url(test_case.url);
+    EXPECT_TRUE(url.SetProtocol(test_case.new_protocol));
+    EXPECT_EQ(url.Protocol(), test_case.new_protocol);
+
+    EXPECT_EQ(url.GetPath(), "/path");
+  }
+}
+
+TEST(KURLTest, FailToSetProtocolFromFile) {
+  KURL url("file:///path");
+  EXPECT_TRUE(url.SetProtocol("http"));
+  EXPECT_EQ(url.Protocol(), "file");
+
+  EXPECT_EQ(url.GetPath(), "/path");
+}
+
+// According to the URL standard https://url.spec.whatwg.org/#scheme-state
+// switching between special and non-special schemes shouldn't work, but for now
+// we are retaining it for backwards-compatibility.
+// TODO(ricea): Change these tests if we change the behaviour.
+TEST(KURLTest, SetFileProtocolFromNonSpecial) {
+  KURL url("non-special-scheme://foo:bar@example.com:8000/path");
+  EXPECT_TRUE(url.SetProtocol("file"));
+
+  // The URL is now invalid, so the protocol is empty. This is different from
+  // what happens in the case with special schemes.
+  EXPECT_EQ(url.Protocol(), "");
+  EXPECT_EQ(url.User(), "");
+  EXPECT_TRUE(url.Pass().IsNull());
+  EXPECT_EQ(url.Host(), "");
+  EXPECT_EQ(url.Port(), 0);
+  EXPECT_EQ(url.GetPath(), "");
+}
+
+TEST(KURLTest, SetFileProtocolToNonSpecial) {
+  KURL url("file:///path");
+  EXPECT_TRUE(url.SetProtocol("non-special-scheme"));
+  EXPECT_EQ(url.Protocol(), "non-special-scheme");
+  EXPECT_EQ(url.GetPath(), "///path");
+}
+
+TEST(KURLTest, InvalidKURLToGURL) {
+  // This contains an invalid percent escape (%T%) and also a valid
+  // percent escape that's not 7-bit ascii (%ae), so that the unescaped
+  // host contains both an invalid percent escape and invalid UTF-8.
+  KURL kurl("http://%T%Ae");
+  EXPECT_FALSE(kurl.IsValid());
+
+  // KURL returns empty strings for components on invalid urls.
+  EXPECT_EQ(kurl.Protocol(), "");
+  EXPECT_EQ(kurl.Host(), "");
+
+  // This passes the original internal url to GURL, check that it arrives
+  // in an internally self-consistent state.
+  GURL gurl = kurl;
+  EXPECT_FALSE(gurl.is_valid());
+  EXPECT_TRUE(gurl.SchemeIs(url::kHttpScheme));
+
+  // GURL exposes host for invalid hosts. The invalid percent escape
+  // becomes an escaped percent sign (%25), and the invalid UTF-8
+  // character becomes REPLACEMENT CHARACTER' (U+FFFD) encoded as UTF-8.
+  EXPECT_EQ(gurl.host_piece(), "%25t%EF%BF%BD");
+}
+
 enum class PortIsValid {
   // The constructor does strict checking. Ports which are considered valid by
   // the constructor are kAlways valid.
@@ -1067,3 +1206,29 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::ValuesIn(port_test_cases));
 
 }  // namespace blink
+
+// Apparently INSTANTIATE_TYPED_TEST_SUITE_P needs to be used in the same
+// namespace as where the typed test suite was defined.
+namespace url {
+
+class KURLTestTraits {
+ public:
+  using UrlType = blink::KURL;
+
+  static UrlType CreateUrlFromString(base::StringPiece s) {
+    return blink::KURL(String::FromUTF8(s));
+  }
+
+  static bool IsAboutBlank(const UrlType& url) { return url.IsAboutBlankURL(); }
+
+  static bool IsAboutSrcdoc(const UrlType& url) {
+    return url.IsAboutSrcdocURL();
+  }
+
+  // Only static members.
+  KURLTestTraits() = delete;
+};
+
+INSTANTIATE_TYPED_TEST_SUITE_P(KURL, AbstractUrlTest, KURLTestTraits);
+
+}  // namespace url

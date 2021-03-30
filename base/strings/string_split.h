@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
@@ -51,11 +50,11 @@ BASE_EXPORT std::vector<std::string> SplitString(StringPiece input,
                                                  WhitespaceHandling whitespace,
                                                  SplitResult result_type)
     WARN_UNUSED_RESULT;
-BASE_EXPORT std::vector<string16> SplitString(StringPiece16 input,
-                                              StringPiece16 separators,
-                                              WhitespaceHandling whitespace,
-                                              SplitResult result_type)
-    WARN_UNUSED_RESULT;
+BASE_EXPORT std::vector<std::u16string> SplitString(
+    StringPiece16 input,
+    StringPiece16 separators,
+    WhitespaceHandling whitespace,
+    SplitResult result_type) WARN_UNUSED_RESULT;
 
 // Like SplitString above except it returns a vector of StringPieces which
 // reference the original buffer without copying. Although you have to be
@@ -103,7 +102,7 @@ BASE_EXPORT bool SplitStringIntoKeyValuePairsUsingSubstr(
 
 // Similar to SplitString, but use a substring delimiter instead of a list of
 // characters that are all possible delimiters.
-BASE_EXPORT std::vector<string16> SplitStringUsingSubstr(
+BASE_EXPORT std::vector<std::u16string> SplitStringUsingSubstr(
     StringPiece16 input,
     StringPiece16 delimiter,
     WhitespaceHandling whitespace,

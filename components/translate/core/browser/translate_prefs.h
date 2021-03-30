@@ -131,7 +131,6 @@ class TranslatePrefs {
   // 3 milestones (M74).
   static const char kPrefNeverPromptSitesDeprecated[];
   static const char kPrefNeverPromptSitesWithTime[];
-  static const char kPrefAlwaysTranslateLists[];
   static const char kPrefTranslateDeniedCount[];
   static const char kPrefTranslateIgnoredCount[];
   static const char kPrefTranslateAcceptedCount[];
@@ -222,6 +221,16 @@ class TranslatePrefs {
       bool translate_allowed,
       std::vector<TranslateLanguageInfo>* languages);
 
+  // Returns a list of language codes representing content language set by the
+  // user that are translatable for given app_language. The list returned in
+  // |codes| is ordered based on the user's ordering. In case user has
+  // country variants for a specific language set, the language main
+  // translatable language is returned, e.g. if a user has "de" and "de-CH", the
+  // result is "de", if a user only has "de-CH" content language set, "de" is
+  // returned.
+  void GetTranslatableContentLanguages(const std::string& app_locale,
+                                       std::vector<std::string>* codes);
+
   bool IsSiteOnNeverPromptList(base::StringPiece site) const;
   void AddSiteToNeverPromptList(base::StringPiece site);
   void RemoveSiteFromNeverPromptList(base::StringPiece site);
@@ -239,6 +248,21 @@ class TranslatePrefs {
   void RemoveLanguagePairFromAlwaysTranslateList(
       base::StringPiece original_language,
       base::StringPiece target_language);
+
+  // Sets the always translate state for a language.
+  // The always translate language list is actually a dict mapping
+  // source_language -> target_language.  We use the current target language
+  // when adding |language| to the dict.
+  void SetLanguageAlwaysTranslateState(base::StringPiece original_language,
+                                       bool always_translate);
+
+  // Gets the languages that are set to always translate formatted as Chrome
+  // language codes.
+  std::vector<std::string> GetAlwaysTranslateLanguages() const;
+
+  // Get the languages that for which translation should never be prompted
+  // formatted as Chrome language codes.
+  std::vector<std::string> GetNeverTranslateLanguages() const;
 
   // These methods are used to track how many times the user has denied the
   // translation for a specific language. (So we can present a UI to blocklist
@@ -290,8 +314,12 @@ class TranslatePrefs {
   // Resets the prefs of denial state. Only used internally for diagnostics.
   void ResetDenialState();
 
-  // Gets the language list of the language settings.
+  // Gets the full (policy-forced and user selected) language list from language
+  // settings.
   void GetLanguageList(std::vector<std::string>* languages) const;
+
+  // Gets the user selected language list from language settings.
+  void GetUserSelectedLanguageList(std::vector<std::string>* languages) const;
 
   bool CanTranslateLanguage(TranslateAcceptLanguages* accept_languages,
                             base::StringPiece language);

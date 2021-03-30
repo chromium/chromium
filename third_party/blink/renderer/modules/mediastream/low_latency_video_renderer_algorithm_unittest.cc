@@ -25,7 +25,7 @@ class LowLatencyVideoRendererAlgorithmTest : public testing::Test {
     scoped_refptr<media::VideoFrame> frame = frame_pool_.CreateFrame(
         media::PIXEL_FORMAT_I420, natural_size, gfx::Rect(natural_size),
         natural_size, base::TimeDelta());
-    frame->metadata()->maximum_composition_delay_in_frames =
+    frame->metadata().maximum_composition_delay_in_frames =
         maximum_composition_delay_in_frames;
     return frame;
   }

@@ -10,8 +10,9 @@
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/tracing/perfetto_task_runner.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_tracing_backend.h"
-#include "services/tracing/public/cpp/perfetto/task_runner.h"
+#include "services/tracing/public/mojom/perfetto_service.mojom.h"
 
 namespace base {
 namespace trace_event {
@@ -118,7 +119,7 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
 
   // Returns the task runner used by any Perfetto service. Can be called on any
   // thread.
-  static PerfettoTaskRunner* GetTaskRunner();
+  static base::tracing::PerfettoTaskRunner* GetTaskRunner();
 
   // Add a new data source to the PerfettoTracedProcess; the caller retains
   // ownership and is responsible for making sure the data source outlives the
@@ -135,10 +136,6 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
   bool SetupStartupTracing(PerfettoProducer*,
                            const base::trace_event::TraceConfig&,
                            bool privacy_filtering_enabled);
-
-  // Initialize the Perfetto client library (i.e., perfetto::Tracing) for this
-  // process. Should be called early during startup.
-  void SetupClientLibrary();
 
   // Called on the process's main thread once the thread pool is ready.
   void OnThreadPoolAvailable();
@@ -196,6 +193,10 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
 
  private:
   friend class base::NoDestructor<PerfettoTracedProcess>;
+
+  // Initialize the Perfetto client library (i.e., perfetto::Tracing) for this
+  // process.
+  void SetupClientLibrary();
 
   base::Lock data_sources_lock_;
   // The canonical set of DataSourceBases alive in this process. These will be

@@ -9,6 +9,7 @@
 
 #include "chrome/common/caption.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace content {
@@ -42,19 +43,22 @@ class CaptionHostImpl : public chrome::mojom::CaptionHost,
   void OnTranscription(
       chrome::mojom::TranscriptionResultPtr transcription_result,
       OnTranscriptionCallback reply) override;
+  void OnLanguageIdentificationEvent(
+      media::mojom::LanguageIdentificationEventPtr event) override;
   void OnError() override;
 
-  // content::WebContentsObserver:
-  void RenderFrameDeleted(content::RenderFrameHost* frame_host) override;
-
- private:
   // Returns the WebContents if it exists. If it does not exist, sets the
   // RenderFrameHost reference to nullptr and returns nullptr.
   content::WebContents* GetWebContents();
 
-  // Returns the CaptionController for this WebContents. Returns nullptr if
-  // it does not exist.
-  CaptionController* GetCaptionController(content::WebContents*);
+ protected:
+  // content::WebContentsObserver:
+  void RenderFrameDeleted(content::RenderFrameHost* frame_host) override;
+
+ private:
+  // Returns the CaptionController for frame_host_. Returns nullptr if it does
+  // not exist.
+  CaptionController* GetCaptionController();
 
   content::RenderFrameHost* frame_host_;
 };

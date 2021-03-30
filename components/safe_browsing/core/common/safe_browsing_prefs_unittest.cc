@@ -35,7 +35,7 @@ class SafeBrowsingPrefsTest : public ::testing::Test {
     prefs_.registry()->RegisterListPref(prefs::kPasswordProtectionLoginURLs);
     prefs_.registry()->RegisterBooleanPref(
         prefs::kSafeBrowsingExtendedReportingOptInAllowed, true);
-    prefs_.registry()->RegisterListPref(prefs::kSafeBrowsingWhitelistDomains);
+    prefs_.registry()->RegisterListPref(prefs::kSafeBrowsingAllowlistDomains);
   }
 
   void ResetPrefs(bool scout_reporting) {
@@ -129,12 +129,10 @@ TEST_F(SafeBrowsingPrefsTest, EnhancedProtection) {
   SetEnhancedProtectionPrefForTests(&prefs_, true);
   {
     base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(kEnhancedProtection);
     EXPECT_TRUE(IsEnhancedProtectionEnabled(prefs_));
   }
   {
     base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(kEnhancedProtection);
     prefs_.SetBoolean(prefs::kSafeBrowsingEnabled, false);
     EXPECT_FALSE(IsEnhancedProtectionEnabled(prefs_));
   }
@@ -175,23 +173,23 @@ TEST_F(SafeBrowsingPrefsTest, IsExtendedReportingPolicyManaged) {
   EXPECT_TRUE(IsExtendedReportingOptInAllowed(prefs_));
 }
 
-TEST_F(SafeBrowsingPrefsTest, VerifyIsURLWhitelistedByPolicy) {
+TEST_F(SafeBrowsingPrefsTest, VerifyIsURLAllowlistedByPolicy) {
   GURL target_url("https://www.foo.com");
-  // When PrefMember is null, URL is not whitelisted.
-  EXPECT_FALSE(IsURLWhitelistedByPolicy(target_url, nullptr));
+  // When PrefMember is null, URL is not allowlisted.
+  EXPECT_FALSE(IsURLAllowlistedByPolicy(target_url, nullptr));
 
-  EXPECT_FALSE(prefs_.HasPrefPath(prefs::kSafeBrowsingWhitelistDomains));
-  base::ListValue whitelisted_domains;
-  whitelisted_domains.AppendString("foo.com");
-  prefs_.Set(prefs::kSafeBrowsingWhitelistDomains, whitelisted_domains);
+  EXPECT_FALSE(prefs_.HasPrefPath(prefs::kSafeBrowsingAllowlistDomains));
+  base::ListValue allowlisted_domains;
+  allowlisted_domains.AppendString("foo.com");
+  prefs_.Set(prefs::kSafeBrowsingAllowlistDomains, allowlisted_domains);
   StringListPrefMember string_list_pref;
-  string_list_pref.Init(prefs::kSafeBrowsingWhitelistDomains, &prefs_);
-  EXPECT_TRUE(IsURLWhitelistedByPolicy(target_url, prefs_));
-  EXPECT_TRUE(IsURLWhitelistedByPolicy(target_url, &string_list_pref));
+  string_list_pref.Init(prefs::kSafeBrowsingAllowlistDomains, &prefs_);
+  EXPECT_TRUE(IsURLAllowlistedByPolicy(target_url, prefs_));
+  EXPECT_TRUE(IsURLAllowlistedByPolicy(target_url, &string_list_pref));
 
-  GURL not_whitelisted_url("https://www.bar.com");
-  EXPECT_FALSE(IsURLWhitelistedByPolicy(not_whitelisted_url, prefs_));
+  GURL not_allowlisted_url("https://www.bar.com");
+  EXPECT_FALSE(IsURLAllowlistedByPolicy(not_allowlisted_url, prefs_));
   EXPECT_FALSE(
-      IsURLWhitelistedByPolicy(not_whitelisted_url, &string_list_pref));
+      IsURLAllowlistedByPolicy(not_allowlisted_url, &string_list_pref));
 }
 }  // namespace safe_browsing

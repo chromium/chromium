@@ -24,9 +24,9 @@ class LocationBarModelDelegateIOS : public LocationBarModelDelegate {
   ~LocationBarModelDelegateIOS() override;
 
   // LocationBarModelDelegate implementation:
-  base::string16 FormattedStringWithEquivalentMeaning(
+  std::u16string FormattedStringWithEquivalentMeaning(
       const GURL& url,
-      const base::string16& formatted_url) const override;
+      const std::u16string& formatted_url) const override;
   bool GetURL(GURL* url) const override;
   bool ShouldDisplayURL() const override;
   security_state::SecurityLevel GetSecurityLevel() const override;

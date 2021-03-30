@@ -50,7 +50,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.DiscardableReferencePool;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.download.DownloadLaterPromptStatus;
@@ -227,10 +226,8 @@ public class DownloadActivityV2Test extends DummyUiActivityTestCase {
         TestThreadUtils.runOnUiThreadBlocking(() -> { setUpUi(); });
         checkItemsDisplayed(true, true, true, true);
 
-        Matcher filesTabMatcher = allOf(
-                withText(equalToIgnoringCase("My Files")), isDescendantOfA(withId(R.id.tabs)));
-        Matcher prefetchTabMatcher = allOf(withText(equalToIgnoringCase("Explore Offline")),
-                isDescendantOfA(withId(R.id.tabs)));
+        Matcher filesTabMatcher = withText(equalToIgnoringCase("My Files"));
+        Matcher prefetchTabMatcher = withText(equalToIgnoringCase("Explore Offline"));
         onView(filesTabMatcher).check(matches(isDisplayed()));
         onView(prefetchTabMatcher).check(matches(isDisplayed()));
 
@@ -239,7 +236,7 @@ public class DownloadActivityV2Test extends DummyUiActivityTestCase {
         checkItemsDisplayed(false, false, false, false);
 
         // Select My files tab, and verify the contents.
-        onView(filesTabMatcher).perform(ViewActions.click());
+        onView(filesTabMatcher).perform(ViewActions.scrollTo(), ViewActions.click());
         checkItemsDisplayed(true, true, true, true);
     }
 
@@ -416,7 +413,6 @@ public class DownloadActivityV2Test extends DummyUiActivityTestCase {
 
     @Test
     @MediumTest
-    @FlakyTest(message = "crbug.com/1075804")
     public void testRenameItem() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> { setUpUi(); });
 
@@ -500,18 +496,15 @@ public class DownloadActivityV2Test extends DummyUiActivityTestCase {
 
     private void renameFileAndVerifyErrorMessage(String name, int expectErrorMsgId) {
         onView(withId(R.id.file_name))
-                .inRoot(isDialog())
                 .perform(ViewActions.clearText())
                 .perform(ViewActions.typeText(name));
 
-        onView(withText("OK"))
-                .inRoot(isDialog())
+        onView(withId(R.id.positive_button))
                 .check(matches(isDisplayed()))
                 .perform(ViewActions.click());
 
         if (expectErrorMsgId != -1) {
             onView(withText(getActivity().getResources().getString(expectErrorMsgId)))
-                    .inRoot(isDialog())
                     .check(matches(isDisplayed()));
         }
     }

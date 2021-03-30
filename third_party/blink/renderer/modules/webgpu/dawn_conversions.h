@@ -21,11 +21,12 @@ namespace blink {
 
 class DoubleSequenceOrGPUColorDict;
 class GPUColorDict;
-class GPUProgrammableStageDescriptor;
-class GPUTextureCopyView;
-class GPUTextureDataLayout;
+class GPUProgrammableStage;
+class GPUImageCopyTexture;
+class GPUImageDataLayout;
 class UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict;
 class UnsignedLongEnforceRangeSequenceOrGPUOrigin3DDict;
+class V8GPUIndexFormat;
 
 // Convert WebGPU bitfield values to Dawn enums. These have the same value.
 template <typename DawnEnum>
@@ -36,6 +37,7 @@ DawnEnum AsDawnEnum(uint32_t webgpu_enum) {
 // Convert WebGPU string enums to Dawn enums.
 template <typename DawnEnum>
 DawnEnum AsDawnEnum(const WTF::String& webgpu_enum);
+WGPUIndexFormat AsDawnEnum(const V8GPUIndexFormat& webgpu_enum);
 
 // These conversions are used multiple times and are declared here. Conversions
 // used only once, for example for object construction, are defined
@@ -44,17 +46,17 @@ WGPUColor AsDawnColor(const Vector<double>&);
 WGPUColor AsDawnType(const GPUColorDict*);
 WGPUColor AsDawnType(const DoubleSequenceOrGPUColorDict*);
 WGPUExtent3D AsDawnType(
-    const UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict*);
+    const UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict*,
+    GPUDevice* device);
 WGPUOrigin3D AsDawnType(
     const UnsignedLongEnforceRangeSequenceOrGPUOrigin3DDict*);
-WGPUTextureCopyView AsDawnType(const GPUTextureCopyView* webgpu_view,
+WGPUTextureCopyView AsDawnType(const GPUImageCopyTexture* webgpu_view,
                                GPUDevice* device);
-const char* ValidateTextureDataLayout(const GPUTextureDataLayout* webgpu_layout,
+const char* ValidateTextureDataLayout(const GPUImageDataLayout* webgpu_layout,
                                       WGPUTextureDataLayout* layout);
 using OwnedProgrammableStageDescriptor =
     std::tuple<WGPUProgrammableStageDescriptor, std::unique_ptr<char[]>>;
-OwnedProgrammableStageDescriptor AsDawnType(
-    const GPUProgrammableStageDescriptor*);
+OwnedProgrammableStageDescriptor AsDawnType(const GPUProgrammableStage*);
 
 // WebGPU objects are converted to Dawn objects by getting the opaque handle
 // which can be passed to Dawn.

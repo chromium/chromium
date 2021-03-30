@@ -22,6 +22,8 @@ source_set("policy") {
     "device_management_service_configuration_ios.mm",
     "policy_conversions_client_ios.h",
     "policy_conversions_client_ios.mm",
+    "policy_watcher_browser_agent.h",
+    "policy_watcher_browser_agent.mm",
     "reporting/browser_report_generator_ios.h",
     "reporting/browser_report_generator_ios.mm",
     "reporting/profile_report_generator_ios.h",
@@ -53,13 +55,16 @@ source_set("policy") {
     "//components/signin/public/base",
     "//components/strings:components_strings_grit",
     "//components/translate/core/browser:translate_pref_names",
+    "//components/unified_consent:unified_consent",
     "//components/variations",
     "//components/variations/service",
     "//components/version_info:version_info",
     "//ios/chrome/browser",
     "//ios/chrome/browser:pref_names",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/common",
     "//ios/public/provider/chrome/browser/signin",
     "//services/network/public/cpp",
@@ -71,6 +76,20 @@ source_set("policy") {
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("policy_util") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "policy_util.h",
+    "policy_util.mm",
+  ]
+  deps = [
+    ":feature_flags",
+    "//base",
+    "//components/prefs",
+    "//ios/chrome/browser:pref_names",
+  ]
 }
 
 source_set("feature_flags") {
@@ -139,6 +158,7 @@ source_set("unit_tests") {
   sources = [
     "browser_dm_token_storage_ios_unittest.mm",
     "policy_unittest.mm",
+    "policy_watcher_browser_agent_unittest.mm",
     "reporting/browser_report_generator_ios_unittest.mm",
     "reporting/profile_report_generator_ios_unittest.mm",
     "reporting/report_generator_ios_unittest.mm",
@@ -153,17 +173,26 @@ source_set("unit_tests") {
     "//components/enterprise",
     "//components/enterprise:test_support",
     "//components/policy/core/browser:test_support",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/signin/public/base",
+    "//components/sync_preferences",
+    "//components/sync_preferences:test_support",
     "//ios/chrome/browser:chrome_paths",
     "//ios/chrome/browser:pref_names",
     "//ios/chrome/browser:utils",
     "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/prefs",
+    "//ios/chrome/browser/prefs:browser_prefs",
     "//ios/chrome/browser/signin:signin",
     "//ios/chrome/browser/signin:test_support",
+    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/test:test_support",
     "//ios/public/provider/chrome/browser/signin:test_support",
     "//ios/web/public/test:test",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }
 
@@ -177,6 +206,7 @@ source_set("eg2_tests") {
 
   sources = [
     "policy_egtest.mm",
+    "policy_incognito_mode_availability_egtest.mm",
     "policy_platform_provider_egtest.mm",
   ]
 
@@ -191,6 +221,7 @@ source_set("eg2_tests") {
     "//components/policy/core/common:common_constants",
     "//components/strings",
     "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser:chrome_url_constants",
     "//ios/chrome/browser:pref_names",
     "//ios/chrome/browser:utils",
     "//ios/chrome/browser/translate:eg_test_support+eg2",
@@ -201,6 +232,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/settings/language:language_ui_constants",
     "//ios/chrome/browser/ui/settings/password:password_constants",
     "//ios/chrome/browser/ui/table_view/cells:cells_constants",
+    "//ios/chrome/browser/ui/toolbar/public:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",

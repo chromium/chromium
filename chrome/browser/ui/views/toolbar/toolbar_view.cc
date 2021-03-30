@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/i18n/number_formatting.h"
 #include "base/metrics/user_metrics.h"
@@ -33,6 +34,7 @@
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/toolbar/chrome_labs_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
@@ -52,8 +54,10 @@
 #include "chrome/browser/ui/views/toolbar/back_forward_button.h"
 #include "chrome/browser/ui/views/toolbar/browser_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
 #include "chrome/browser/ui/views/toolbar/home_button.h"
+#include "chrome/browser/ui/views/toolbar/read_later_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_account_icon_container_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
@@ -67,6 +71,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/prefs/pref_service.h"
+#include "components/reading_list/features/reading_list_switches.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
@@ -83,6 +88,7 @@
 #include "ui/native_theme/native_theme_aura.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget.h"
@@ -97,7 +103,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/constants/chromeos_features.h"
+#include "ash/constants/ash_features.h"
 #else
 #include "chrome/browser/signin/signin_global_error_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bubble_sign_in_delegate.h"
@@ -107,6 +113,10 @@
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 #include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
+
+#if defined(USE_AURA)
+#include "ui/aura/window_occlusion_tracker.h"
+#endif
 
 using base::UserMetricsAction;
 using content::WebContents;
@@ -131,20 +141,17 @@ ToolbarView::DisplayMode GetDisplayMode(Browser* browser) {
   return ToolbarView::DisplayMode::LOCATION;
 }
 
-const base::flat_map<int, int>& GetViewCommandMap() {
-  static const base::NoDestructor<base::flat_map<int, int>> kViewCommandMap(
+auto& GetViewCommandMap() {
+  static constexpr auto kViewCommandMap = base::MakeFixedFlatMap<int, int>(
       {{VIEW_ID_BACK_BUTTON, IDC_BACK},
        {VIEW_ID_FORWARD_BUTTON, IDC_FORWARD},
        {VIEW_ID_HOME_BUTTON, IDC_HOME},
        {VIEW_ID_RELOAD_BUTTON, IDC_RELOAD},
        {VIEW_ID_AVATAR_BUTTON, IDC_SHOW_AVATAR_MENU}});
-  return *kViewCommandMap;
+  return kViewCommandMap;
 }
 
 }  // namespace
-
-// static
-const char ToolbarView::kViewClassName[] = "ToolbarView";
 
 ////////////////////////////////////////////////////////////////////////////////
 // ToolbarView, public:
@@ -178,6 +185,13 @@ ToolbarView::~ToolbarView() {
 }
 
 void ToolbarView::Init() {
+#if defined(USE_AURA)
+  // Avoid generating too many occlusion tracking calculation events before this
+  // function returns. The occlusion status will be computed only once once this
+  // function returns.
+  // See crbug.com/1183894#c2
+  aura::WindowOcclusionTracker::ScopedPause pause_occlusion;
+#endif
   auto location_bar = std::make_unique<LocationBarView>(
       browser_, browser_->profile(), browser_->command_controller(), this,
       display_mode_ != DisplayMode::NORMAL);
@@ -259,12 +273,22 @@ void ToolbarView::Init() {
         std::make_unique<ToolbarAccountIconContainerView>(browser_);
   }
 
+  std::unique_ptr<ReadLaterToolbarButton> read_later_button;
+  if (browser_view_->side_panel() &&
+      base::FeatureList::IsEnabled(reading_list::switches::kReadLater)) {
+    read_later_button = std::make_unique<ReadLaterToolbarButton>(browser_);
+  }
+
   // Always add children in order from left to right, for accessibility.
   back_ = AddChildView(std::move(back));
   forward_ = AddChildView(std::move(forward));
   reload_ = AddChildView(std::move(reload));
   home_ = AddChildView(std::move(home));
   location_bar_ = AddChildView(std::move(location_bar));
+
+  if (read_later_button)
+    read_later_button_ = AddChildView(std::move(read_later_button));
+
   if (browser_actions)
     browser_actions_ = AddChildView(std::move(browser_actions));
 
@@ -272,7 +296,19 @@ void ToolbarView::Init() {
     extensions_container_ = AddChildView(std::move(extensions_container));
 
   if (base::FeatureList::IsEnabled(features::kChromeLabs)) {
-    chrome_labs_button_ = AddChildView(std::make_unique<ChromeLabsButton>());
+    chrome_labs_model_ = std::make_unique<ChromeLabsBubbleViewModel>();
+    if (ChromeLabsButton::ShouldShowButton(chrome_labs_model_.get())) {
+      chrome_labs_button_ = AddChildView(std::make_unique<ChromeLabsButton>(
+          browser_, chrome_labs_model_.get()));
+      profile_pref_service_ = browser_->profile()->GetPrefs();
+      profile_registrar_ = std::make_unique<PrefChangeRegistrar>();
+      profile_registrar_->Init(profile_pref_service_);
+      profile_registrar_->Add(
+          chrome_labs_prefs::kBrowserLabsEnabled,
+          base::BindRepeating(&ToolbarView::OnChromeLabsPrefChanged,
+                              base::Unretained(this)));
+      OnChromeLabsPrefChanged();
+    }
   }
 
   if (cast)
@@ -413,7 +449,7 @@ void ToolbarView::SetPaneFocusAndFocusAppMenu() {
     SetPaneFocus(app_menu_button_);
 }
 
-bool ToolbarView::IsAppMenuFocused() {
+bool ToolbarView::GetAppMenuFocused() const {
   return app_menu_button_ && app_menu_button_->HasFocus();
 }
 
@@ -635,10 +671,6 @@ void ToolbarView::OnThemeChanged() {
   SchedulePaint();
 }
 
-const char* ToolbarView::GetClassName() const {
-  return kViewClassName;
-}
-
 bool ToolbarView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   const views::View* focused_view = focus_manager()->GetFocusedView();
   if (focused_view && (focused_view->GetID() == VIEW_ID_OMNIBOX))
@@ -664,7 +696,6 @@ views::View* ToolbarView::GetDefaultFocusableChild() {
 
 void ToolbarView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kToolbar;
-  node_data->SetName(l10n_util::GetStringUTF16(IDS_ACCNAME_TOOLBAR));
 }
 
 void ToolbarView::InitLayout() {
@@ -705,7 +736,7 @@ void ToolbarView::InitLayout() {
   } else if (extensions_container_) {
     const views::FlexSpecification extensions_flex_rule =
         views::FlexSpecification(
-            extensions_container_->animating_layout_manager()
+            extensions_container_->GetAnimatingLayoutManager()
                 ->GetDefaultFlexRule())
             .WithOrder(kExtensionsFlexOrder);
 
@@ -747,7 +778,7 @@ void ToolbarView::UpdateTypeAndSeverity(
   if (!app_menu_button_)
     return;
 
-  base::string16 accname_app = l10n_util::GetStringUTF16(IDS_ACCNAME_APP);
+  std::u16string accname_app = l10n_util::GetStringUTF16(IDS_ACCNAME_APP);
   if (type_and_severity.type ==
       AppMenuIconController::IconType::UPGRADE_NOTIFICATION) {
     accname_app = l10n_util::GetStringFUTF16(
@@ -886,6 +917,11 @@ views::View* ToolbarView::GetViewForDrop() {
   return this;
 }
 
+void ToolbarView::OnChromeLabsPrefChanged() {
+  chrome_labs_button_->SetVisible(profile_pref_service_->GetBoolean(
+      chrome_labs_prefs::kBrowserLabsEnabled));
+}
+
 void ToolbarView::LoadImages() {
   DCHECK_EQ(display_mode_, DisplayMode::NORMAL);
 
@@ -951,3 +987,7 @@ void ToolbarView::AppMenuButtonPressed(const ui::Event& event) {
                                  ? views::MenuRunner::SHOULD_SHOW_MNEMONICS
                                  : views::MenuRunner::NO_FLAGS);
 }
+
+BEGIN_METADATA(ToolbarView, views::AccessiblePaneView)
+ADD_READONLY_PROPERTY_METADATA(bool, AppMenuFocused)
+END_METADATA

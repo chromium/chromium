@@ -7,9 +7,9 @@
 #include <windows.h>
 
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #include "chrome/installer/util/work_item.h"
@@ -46,7 +46,7 @@ TEST_F(DeleteRegValueWorkItemTest, DeleteExistingValue) {
   RegKey key;
   ASSERT_EQ(ERROR_SUCCESS,
             key.Create(HKEY_CURRENT_USER, kTestKey, KEY_READ | KEY_WRITE));
-  const base::string16 data_str(L"data_111");
+  const std::wstring data_str(L"data_111");
   ASSERT_EQ(ERROR_SUCCESS, key.WriteValue(kNameStr, data_str.c_str()));
   const DWORD data_dword = 100;
   ASSERT_EQ(ERROR_SUCCESS, key.WriteValue(kNameDword, data_dword));
@@ -85,7 +85,7 @@ TEST_F(DeleteRegValueWorkItemTest, DeleteExistingValue) {
   EXPECT_TRUE(key.HasValue(kNameDword));
   EXPECT_TRUE(key.HasValue(kNameEmpty));
 
-  base::string16 read_str;
+  std::wstring read_str;
   DWORD read_dword;
   EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(kNameStr, &read_str));
   EXPECT_EQ(ERROR_SUCCESS, key.ReadValueDW(kNameDword, &read_dword));

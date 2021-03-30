@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+bluetooth_test(() => {
+  // The iframe we create will subscribe to notifications and will ensure
+  // that the browser keeps receiving notifications even after this frame's
+  // device disconnects.
+  let iframe_connected = new Promise((resolve, reject) => {
+    window.onmessage = messageEvent => {
+      if (messageEvent.data === 'Ready') {
+        let iframe = document.querySelector('iframe');
+        callWithTrustedClick(() => {
+          iframe.contentWindow.postMessage('RequestAndConnect', '*');
+        });
+      } else if (messageEvent.data === 'Connected') {
+        let iframe = document.querySelector('iframe');
+        iframe.contentWindow.postMessage('StartNotifications', '*');
+      } else if (messageEvent.data === 'NotificationsStarted') {
+        resolve();
+      } else {
+        reject();
+      }
+    }
+  });
+
+  return setBluetoothFakeAdapter('HeartRateAdapter')
+    .then(() => {
+      let iframe = document.createElement('iframe');
+      iframe.src = 'resources/heart-rate-iframe.html';
+      document.body.appendChild(iframe);
+
+      return iframe_connected
+        .then(() => requestDeviceWithTrustedClick(
+          {filters: [{services: ['heart_rate']}]}))
+        .then(device => device.gatt.connect())
+        .then(gatt => gatt.getPrimaryService('heart_rate'))
+        .then(service => service.getCharacteristic('heart_rate_measurement'))
+        .then(characteristic => characteristic.startNotifications())
+        .then(characteristic => new Promise(resolve => {
+          // Make sure we are receiving events.
+          let event_listener = () => {
+            characteristic.removeEventListener(
+              'characteristicvaluechanged', event_listener);
+            resolve(characteristic);
+          };
+          characteristic.addEventListener(
+            'characteristicvaluechanged', event_listener);
+        }))
+        .then(characteristic => {
+          characteristic.service.device.gatt.disconnect()
+          // The browser still receives notifications because of the iframe but
+          // no events should be dispatched on this characteristic because
+          // the characteristic's device disconnected.
+          return assert_no_events(characteristic,
+                                  'characteristicvaluechanged');
+        });
+    });
+}, 'Characteristic sends notification after disconnection. Should not ' +
+   'fire an event.');
+</script>

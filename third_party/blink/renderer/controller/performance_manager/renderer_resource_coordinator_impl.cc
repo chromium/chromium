@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 using performance_manager::mojom::blink::IframeAttributionData;
 using performance_manager::mojom::blink::IframeAttributionDataPtr;
@@ -228,9 +229,10 @@ void RendererResourceCoordinatorImpl::OnBeforeContentFrameAttached(
   LocalFrame* parent = GetLocalParentOfRemoteFrame(frame);
   if (!parent)
     return;
-  service_->OnRemoteIframeAttached(LocalFrameToken(parent->GetFrameToken()),
-                                   RemoteFrameToken(frame.GetFrameToken()),
-                                   AttributionDataForOwner(owner));
+  service_->OnRemoteIframeAttached(
+      parent->GetLocalFrameToken(),
+      frame.GetFrameToken().GetAs<RemoteFrameToken>(),
+      AttributionDataForOwner(owner));
 }
 
 void RendererResourceCoordinatorImpl::OnBeforeContentFrameDetached(
@@ -242,8 +244,14 @@ void RendererResourceCoordinatorImpl::OnBeforeContentFrameDetached(
   LocalFrame* parent = GetLocalParentOfRemoteFrame(frame);
   if (!parent)
     return;
-  service_->OnRemoteIframeDetached(LocalFrameToken(parent->GetFrameToken()),
-                                   RemoteFrameToken(frame.GetFrameToken()));
+  service_->OnRemoteIframeDetached(
+      parent->GetLocalFrameToken(),
+      frame.GetFrameToken().GetAs<RemoteFrameToken>());
+}
+
+void RendererResourceCoordinatorImpl::FireBackgroundTracingTrigger(
+    const String& trigger_name) {
+  DispatchFireBackgroundTracingTrigger(trigger_name);
 }
 
 RendererResourceCoordinatorImpl::RendererResourceCoordinatorImpl(
@@ -299,6 +307,21 @@ void RendererResourceCoordinatorImpl::DispatchOnV8ContextDestroyed(
             WTF::CrossThreadUnretained(this), token));
   } else {
     service_->OnV8ContextDestroyed(token);
+  }
+}
+
+void RendererResourceCoordinatorImpl::DispatchFireBackgroundTracingTrigger(
+    const String& trigger_name) {
+  DCHECK(service_);
+  if (!IsMainThread()) {
+    blink::PostCrossThreadTask(
+        *Thread::MainThread()->GetTaskRunner(), FROM_HERE,
+        WTF::CrossThreadBindOnce(&RendererResourceCoordinatorImpl::
+                                     DispatchFireBackgroundTracingTrigger,
+                                 WTF::CrossThreadUnretained(this),
+                                 trigger_name));
+  } else {
+    service_->FireBackgroundTracingTrigger(trigger_name);
   }
 }
 

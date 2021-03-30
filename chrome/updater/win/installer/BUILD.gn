@@ -106,6 +106,7 @@ template("generate_installer") {
       packed_files_rc_file,
     ]
 
+    configs -= [ "//build/config/compiler:cet_shadow_stack" ]
     configs += [ "//build/config/win:windowed" ]
 
     libs = [ "setupapi.lib" ]

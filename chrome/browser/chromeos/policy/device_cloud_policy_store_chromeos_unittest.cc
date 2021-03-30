@@ -13,12 +13,12 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/chromeos/settings/device_settings_test_helper.h"
+#include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
-#include "chromeos/dbus/cryptohome/tpm_util.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/userdataauth/fake_install_attributes_client.h"
+#include "chromeos/dbus/userdataauth/install_attributes_util.h"
 #include "chromeos/network/onc/onc_test_utils.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -45,8 +45,7 @@ void CopyLockResult(base::RunLoop* loop,
 
 }  // namespace
 
-class DeviceCloudPolicyStoreChromeOSTest
-    : public chromeos::DeviceSettingsTestBase {
+class DeviceCloudPolicyStoreChromeOSTest : public ash::DeviceSettingsTestBase {
  protected:
   DeviceCloudPolicyStoreChromeOSTest()
       : local_state_(TestingBrowserProcess::GetGlobal()) {}
@@ -56,8 +55,9 @@ class DeviceCloudPolicyStoreChromeOSTest
   void SetUp() override {
     DeviceSettingsTestBase::SetUp();
 
+    chromeos::InstallAttributesClient::InitializeFake();
     install_attributes_ = std::make_unique<chromeos::InstallAttributes>(
-        chromeos::FakeCryptohomeClient::Get());
+        chromeos::InstallAttributesClient::Get());
     store_ = std::make_unique<DeviceCloudPolicyStoreChromeOS>(
         device_settings_service_.get(), install_attributes_.get(),
         base::ThreadTaskRunnerHandle::Get());
@@ -78,6 +78,7 @@ class DeviceCloudPolicyStoreChromeOSTest
     store_->RemoveObserver(&observer_);
     store_.reset();
     install_attributes_.reset();
+    chromeos::InstallAttributesClient::Shutdown();
     DeviceSettingsTestBase::TearDown();
   }
 
@@ -120,9 +121,10 @@ class DeviceCloudPolicyStoreChromeOSTest
   void ResetToNonEnterprise() {
     store_->RemoveObserver(&observer_);
     store_.reset();
-    chromeos::tpm_util::InstallAttributesSet("enterprise.owned", std::string());
-    install_attributes_.reset(
-        new chromeos::InstallAttributes(chromeos::FakeCryptohomeClient::Get()));
+    chromeos::install_attributes_util::InstallAttributesSet("enterprise.owned",
+                                                            std::string());
+    install_attributes_.reset(new chromeos::InstallAttributes(
+        chromeos::FakeInstallAttributesClient::Get()));
     store_.reset(new DeviceCloudPolicyStoreChromeOS(
         device_settings_service_.get(), install_attributes_.get(),
         base::ThreadTaskRunnerHandle::Get()));

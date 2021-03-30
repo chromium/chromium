@@ -11,6 +11,7 @@
 
 #include "components/safe_browsing/core/db/database_manager.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 
 namespace safe_browsing {
 
@@ -22,14 +23,14 @@ class TestSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
  public:
   // SafeBrowsingDatabaseManager implementation:
   void CancelCheck(Client* client) override;
-  bool CanCheckResourceType(
-      blink::mojom::ResourceType resource_type) const override;
+  bool CanCheckRequestDestination(
+      network::mojom::RequestDestination request_destination) const override;
   bool CanCheckUrl(const GURL& url) const override;
   bool ChecksAreAlwaysAsync() const override;
   bool CheckBrowseUrl(const GURL& url,
                       const SBThreatTypeSet& threat_types,
                       Client* client) override;
-  AsyncMatch CheckCsdWhitelistUrl(const GURL& url, Client* client) override;
+  AsyncMatch CheckCsdAllowlistUrl(const GURL& url, Client* client) override;
   bool CheckDownloadUrl(const std::vector<GURL>& url_chain,
                         Client* client) override;
   bool CheckExtensionIDs(const std::set<std::string>& extension_ids,
@@ -38,8 +39,8 @@ class TestSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
   AsyncMatch CheckUrlForHighConfidenceAllowlist(const GURL& url,
                                                 Client* client) override;
   bool CheckUrlForSubresourceFilter(const GURL& url, Client* client) override;
-  bool MatchDownloadWhitelistString(const std::string& str) override;
-  bool MatchDownloadWhitelistUrl(const GURL& url) override;
+  bool MatchDownloadAllowlistString(const std::string& str) override;
+  bool MatchDownloadAllowlistUrl(const GURL& url) override;
   bool MatchMalwareIP(const std::string& ip_address) override;
   safe_browsing::ThreatSource GetThreatSource() const override;
   bool IsDownloadProtectionEnabled() const override;
@@ -50,7 +51,7 @@ class TestSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
   void StopOnIOThread(bool shutdown) override;
 
  protected:
-  ~TestSafeBrowsingDatabaseManager() override {}
+  ~TestSafeBrowsingDatabaseManager() override = default;
 };
 
 }  // namespace safe_browsing

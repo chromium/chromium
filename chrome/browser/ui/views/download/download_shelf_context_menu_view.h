@@ -25,7 +25,9 @@ class Widget;
 
 class DownloadShelfContextMenuView : public DownloadShelfContextMenu {
  public:
+  // TODO(crbug.com/1191555): Remove dependency on DownloadItemView.
   explicit DownloadShelfContextMenuView(DownloadItemView* download_item_view);
+  explicit DownloadShelfContextMenuView(DownloadUIModel* download_ui_model);
   DownloadShelfContextMenuView(const DownloadShelfContextMenuView&) = delete;
   DownloadShelfContextMenuView& operator=(const DownloadShelfContextMenuView&) =
       delete;
@@ -47,7 +49,8 @@ class DownloadShelfContextMenuView : public DownloadShelfContextMenu {
   void ExecuteCommand(int command_id, int event_flags) override;
 
   // Parent download item view.
-  DownloadItemView* download_item_view_;
+  // TODO(crbug.com/1191555): Remove dependency on DownloadItemView.
+  DownloadItemView* download_item_view_ = nullptr;
 
   std::unique_ptr<views::MenuRunner> menu_runner_;
 

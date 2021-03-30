@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<org.chromium.components.messages.MessageBannerView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/message_banner"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:minHeight="@dimen/message_banner_height"
+    android:layout_gravity="center_horizontal"
+    android:orientation="horizontal"
+    android:layout_marginTop="@dimen/message_shadow_top_margin"
+    android:layout_marginBottom="@dimen/message_shadow_bottom_margin"
+    android:layout_marginStart="@dimen/message_shadow_lateral_margin"
+    android:layout_marginEnd="@dimen/message_shadow_lateral_margin"
+    android:elevation="@dimen/message_banner_elevation"
+    android:paddingTop="@dimen/message_banner_vertical_padding"
+    android:paddingBottom="@dimen/message_banner_vertical_padding"
+    app:maxWidthPortrait="@dimen/message_max_width"
+    app:maxWidthLandscape="@dimen/message_max_width"
+    android:background="@drawable/message_bg_tinted">
+
+    <ImageView
+        android:id="@+id/message_icon"
+        android:paddingStart="@dimen/message_icon_padding"
+        android:paddingEnd="@dimen/message_icon_padding"
+        app:tint="@color/default_icon_color_blue"
+        android:layout_weight="0"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:importantForAccessibility="no" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_weight="3"
+        android:gravity="center_vertical"
+        android:layout_gravity="center_vertical"
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/message_title"
+            style="@style/TextAppearance.TextLarge.Primary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/message_description"
+            style="@style/TextAppearance.TextSmall.Secondary"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <!--  Content description is set programmatically according to secondary button icon. -->
+    <org.chromium.components.browser_ui.widget.listmenu.ListMenuButton
+        android:id="@+id/message_secondary_button"
+        app:tint="@color/default_icon_color_secondary"
+        android:layout_weight="0"
+        android:paddingStart="@dimen/message_icon_padding"
+        android:paddingEnd="@dimen/message_icon_padding"
+        android:visibility="gone"
+        android:contentDescription="@null"
+        android:minWidth="@dimen/message_banner_button_min_width"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@null" />
+
+    <ImageView
+        android:id="@+id/message_divider"
+        android:layout_marginTop="@dimen/message_divider_margin"
+        android:layout_marginBottom="@dimen/message_divider_margin"
+        android:background="@color/divider_line_bg_color"
+        android:visibility="gone"
+        android:importantForAccessibility="no"
+        android:layout_width="1dp"
+        android:layout_height="match_parent" />
+
+    <org.chromium.ui.widget.ButtonCompat
+        style="@style/TextButton"
+        android:id="@+id/message_primary_button"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:visibility="gone" />
+</org.chromium.components.messages.MessageBannerView>

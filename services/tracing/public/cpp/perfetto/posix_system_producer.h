@@ -17,8 +17,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
+#include "base/tracing/perfetto_task_runner.h"
+#include "build/build_config.h"
 #include "services/tracing/public/cpp/perfetto/system_producer.h"
-#include "services/tracing/public/cpp/perfetto/task_runner.h"
 
 namespace perfetto {
 class SharedMemoryArbiter;
@@ -37,7 +38,8 @@ class COMPONENT_EXPORT(TRACING_CPP) PosixSystemProducer
     kUnregistered = 2,
     kConnected = 3,
   };
-  PosixSystemProducer(const char* socket, PerfettoTaskRunner* task_runner);
+  PosixSystemProducer(const char* socket,
+                      base::tracing::PerfettoTaskRunner* task_runner);
   ~PosixSystemProducer() override;
 
   // Functions needed for PosixSystemProducer only.
@@ -99,6 +101,10 @@ class COMPONENT_EXPORT(TRACING_CPP) PosixSystemProducer
   // constructor. If we succeed OnConnect() will be called, if we fail
   // OnDisconnect() will be called.
   void Connect();
+
+  // Returns whether the security sandbox forbids opening the producer socket
+  // connection directly from within the current process.
+  virtual bool SandboxForbidsSocketConnection();
 
  private:
   // This sets |service_| by connecting over Perfetto's IPC connection.

@@ -43,7 +43,7 @@ void UpdateMappingImpl(Connection* connection,
   int count = max_keycode - min_keycode + 1;
   auto keyboard_future =
       connection->GetKeyboardMapping({connection->setup().min_keycode, count});
-  auto modifier_future = connection->GetModifierMapping({});
+  auto modifier_future = connection->GetModifierMapping();
   GetModifierMappingReply modifier_mapping;
   connection->Flush();
   if (auto reply = keyboard_future.Sync())
@@ -89,7 +89,7 @@ void UpdateMappingImpl(Connection* connection,
 void ConvertCaseImpl(uint32_t sym, uint32_t* lower, uint32_t* upper) {
   // Unicode keysym
   if ((sym & 0xff000000) == 0x01000000) {
-    base::string16 string({sym & 0x00ffffff});
+    std::u16string string({sym & 0x00ffffff});
     auto lower_string = base::i18n::ToLower(string);
     auto upper_string = base::i18n::ToUpper(string);
     *lower = lower_string[0] | 0x01000000;

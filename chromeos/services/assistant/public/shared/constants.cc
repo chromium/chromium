@@ -14,12 +14,5 @@ const char kServiceIdEndpoint[] = "";
 const char kSampleServiceIdRequest[] = "";
 const char kServiceIdRequestPayload[] = "";
 
-const char kBloomScope[] = "https://fake/bloom/scope";
-const char kBloomServiceUrl[] = "https://fake.bloom.service.url";
-const char kBloomCreateImagePath[] = "/fake/create/image/path";
-const char kBloomOcrImagePath[] = "/fake/ocr/image/path&image_id=";
-const char kBloomSearchProblemPath[] =
-    "/fake/search/problem/path&metadata_blob=";
-
 }  // namespace assistant
 }  // namespace chromeos

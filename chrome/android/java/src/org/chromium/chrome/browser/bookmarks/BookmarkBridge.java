@@ -176,7 +176,7 @@ public class BookmarkBridge {
      */
     public static class BookmarkItem {
         private final String mTitle;
-        private final String mUrl;
+        private final GURL mUrl;
         private final BookmarkId mId;
         private final boolean mIsFolder;
         private final BookmarkId mParentId;
@@ -187,7 +187,7 @@ public class BookmarkBridge {
         private boolean mRead;
 
         @VisibleForTesting
-        public BookmarkItem(BookmarkId id, String title, String url, boolean isFolder,
+        public BookmarkItem(BookmarkId id, String title, GURL url, boolean isFolder,
                 BookmarkId parentId, boolean isEditable, boolean isManaged, long dateAdded,
                 boolean read) {
             mId = id;
@@ -207,7 +207,7 @@ public class BookmarkBridge {
         }
 
         /** @return Url of the bookmark item. */
-        public String getUrl() {
+        public GURL getUrl() {
             return mUrl;
         }
 
@@ -613,7 +613,7 @@ public class BookmarkBridge {
     /**
      * Set URL of the given bookmark.
      */
-    public void setBookmarkUrl(BookmarkId id, String url) {
+    public void setBookmarkUrl(BookmarkId id, GURL url) {
         ThreadUtils.assertOnUiThread();
         assert mIsNativeBookmarkModelLoaded;
         assert id.getType() == BookmarkType.NORMAL;
@@ -760,16 +760,21 @@ public class BookmarkBridge {
      * @return Id of the added node. If adding failed (index is invalid, string is null, parent is
      *         not editable), returns null.
      */
-    public BookmarkId addBookmark(BookmarkId parent, int index, String title, String url) {
+    public BookmarkId addBookmark(BookmarkId parent, int index, String title, GURL url) {
         ThreadUtils.assertOnUiThread();
         assert parent.getType() == BookmarkType.NORMAL;
         assert index >= 0;
         assert title != null;
         assert url != null;
 
-        if (TextUtils.isEmpty(title)) title = url;
+        if (TextUtils.isEmpty(title)) title = url.getSpec();
         return BookmarkBridgeJni.get().addBookmark(
                 mNativeBookmarkBridge, BookmarkBridge.this, parent, index, title, url);
+    }
+
+    @Deprecated // Only included until internal repository is updated.
+    public BookmarkId addBookmark(BookmarkId parent, int index, String title, String url) {
+        return addBookmark(parent, index, title, new GURL(url));
     }
 
     /**
@@ -840,9 +845,10 @@ public class BookmarkBridge {
      * bookmark ID will be returned.
      * @param title The title to be used for the reading list item.
      * @param url The URL of the reading list item.
-     * @return The bookmark ID created after saving the article to the reading list.
+     * @return The bookmark ID created after saving the article to the reading list, or null on
+     *         error.
      */
-    public BookmarkId addToReadingList(String title, String url) {
+    public @Nullable BookmarkId addToReadingList(String title, GURL url) {
         ThreadUtils.assertOnUiThread();
         assert title != null;
         assert url != null;
@@ -856,7 +862,7 @@ public class BookmarkBridge {
      * @param url The URL of the reading list item.
      * @return The reading list item with the URL, or null if no such reading list item.
      */
-    public BookmarkItem getReadingListItem(String url) {
+    public BookmarkItem getReadingListItem(GURL url) {
         ThreadUtils.assertOnUiThread();
         assert url != null;
         assert mIsNativeBookmarkModelLoaded;
@@ -870,7 +876,7 @@ public class BookmarkBridge {
      * @param url The URL of the reading list item.
      * @param read Whether the article should be marked as read.
      */
-    public void setReadStatusForReadingList(String url, boolean read) {
+    public void setReadStatusForReadingList(GURL url, boolean read) {
         BookmarkBridgeJni.get().setReadStatus(
                 mNativeBookmarkBridge, BookmarkBridge.this, url, read);
     }
@@ -991,7 +997,7 @@ public class BookmarkBridge {
     }
 
     @CalledByNative
-    private static BookmarkItem createBookmarkItem(long id, int type, String title, String url,
+    private static BookmarkItem createBookmarkItem(long id, int type, String title, GURL url,
             boolean isFolder, long parentId, int parentIdType, boolean isEditable,
             boolean isManaged, long dateAdded, boolean read) {
         return new BookmarkItem(new BookmarkId(id, type), title, url, isFolder,
@@ -1089,7 +1095,7 @@ public class BookmarkBridge {
         void setBookmarkTitle(
                 long nativeBookmarkBridge, BookmarkBridge caller, long id, int type, String title);
         void setBookmarkUrl(
-                long nativeBookmarkBridge, BookmarkBridge caller, long id, int type, String url);
+                long nativeBookmarkBridge, BookmarkBridge caller, long id, int type, GURL url);
         boolean doesBookmarkExist(
                 long nativeBookmarkBridge, BookmarkBridge caller, long id, int type);
         void getBookmarksForFolder(long nativeBookmarkBridge, BookmarkBridge caller,
@@ -1106,13 +1112,12 @@ public class BookmarkBridge {
         void moveBookmark(long nativeBookmarkBridge, BookmarkBridge caller, BookmarkId bookmarkId,
                 BookmarkId newParentId, int index);
         BookmarkId addBookmark(long nativeBookmarkBridge, BookmarkBridge caller, BookmarkId parent,
-                int index, String title, String url);
+                int index, String title, GURL url);
         BookmarkId addToReadingList(
-                long nativeBookmarkBridge, BookmarkBridge caller, String title, String url);
-        BookmarkItem getReadingListItem(
-                long nativeBookmarkBridge, BookmarkBridge caller, String url);
+                long nativeBookmarkBridge, BookmarkBridge caller, String title, GURL url);
+        BookmarkItem getReadingListItem(long nativeBookmarkBridge, BookmarkBridge caller, GURL url);
         void setReadStatus(
-                long nativeBookmarkBridge, BookmarkBridge caller, String url, boolean read);
+                long nativeBookmarkBridge, BookmarkBridge caller, GURL url, boolean read);
         void undo(long nativeBookmarkBridge, BookmarkBridge caller);
         void startGroupingUndos(long nativeBookmarkBridge, BookmarkBridge caller);
         void endGroupingUndos(long nativeBookmarkBridge, BookmarkBridge caller);

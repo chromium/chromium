@@ -6,61 +6,29 @@ syntax = "proto2";
 
 package feedwire;
 
-option optimize_for = LITE_RUNTIME;
-
 import "components/feed/core/proto/v2/wire/chrome_client_info.proto";
+import "components/feed/core/proto/v2/wire/device.proto";
 import "components/feed/core/proto/v2/wire/display_info.proto";
 import "components/feed/core/proto/v2/wire/version.proto";
 
-// Information about the client performing the request similar to a user-agent
-// string in HTTP.
-// Next ID: 10.
+option optimize_for = LITE_RUNTIME;
+
 message ClientInfo {
   enum PlatformType {
     UNKNOWN_PLATFORM = 0;
-    ANDROID_ID = 1;  // ANDROID collides with a C++ preprocessor macro.
+    ANDROID_ID = 1;
     IOS = 2;
   }
-
-  enum AppType { CLANK = 3; }
-
-  // The type of OS that the client is running.
+  enum AppType { CHROME_ANDROID = 3; }
   optional PlatformType platform_type = 1;
-
-  // The version of the OS that the client is running.
   optional Version platform_version = 2;
-
-  // The type of client app.
   optional AppType app_type = 3;
-
-  // The version of the client app.
   optional Version app_version = 4;
-
-  // A string identifying the language and region preferences of the client.
-  // Follows the BCP 47 format such as "en-US" or "fr-CA"
   optional string locale = 5;
-
-  // The information about the screen of the client. This is repeated because
-  // there are some devices that might have multiple display screens.
-  // (Ex fold-able phones)
   repeated DisplayInfo display_info = 6;
-
-  // Identifier of the user's device. For Android devices, contains a hash of
-  // the gaia email and android_id, which uniquely identifies the device for
-  // the user. Currently set by Android clients version 4.1 and later.
   optional string client_instance_id = 7;
-
-  // An Android device level identifier used for advertising, required for
-  // conversion tracking, see more at:
-  // https://support.google.com/googleplay/android-developer/answer/6048248
   optional string advertising_id = 8;
-
-  // Two-letter country code as detected by the device. On Android devices,
-  // this comes from GServices check-in which uses the SIM card MCC (mobile
-  // country code), with fallback to IP geo lookup.
   optional string device_country = 9;
-
-  // Information about the client performing the request, relevant only to
-  // Chrome surfaces.
+  optional Device device = 10;
   optional ChromeClientInfo chrome_client_info = 338478298;
 }

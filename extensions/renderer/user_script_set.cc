@@ -16,6 +16,7 @@
 #include "content/public/renderer/render_thread.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extensions_client.h"
+#include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/renderer/extension_injection_host.h"
 #include "extensions/renderer/extensions_renderer_client.h"
@@ -71,7 +72,7 @@ void UserScriptSet::RemoveObserver(Observer* observer) {
 void UserScriptSet::GetActiveExtensionIds(
     std::set<std::string>* ids) const {
   for (const std::unique_ptr<UserScript>& script : scripts_) {
-    if (script->host_id().type() != HostID::EXTENSIONS)
+    if (script->host_id().type != mojom::HostID::HostType::kExtensions)
       continue;
     DCHECK(!script->extension_id().empty());
     ids->insert(script->extension_id());
@@ -82,7 +83,7 @@ void UserScriptSet::GetInjections(
     std::vector<std::unique_ptr<ScriptInjection>>* injections,
     content::RenderFrame* render_frame,
     int tab_id,
-    UserScript::RunLocation run_location,
+    mojom::RunLocation run_location,
     bool log_activity) {
   GURL document_url = GetDocumentUrlForFrame(render_frame->GetWebFrame());
   for (const std::unique_ptr<UserScript>& script : scripts_) {
@@ -96,8 +97,8 @@ void UserScriptSet::GetInjections(
 
 bool UserScriptSet::UpdateUserScripts(
     base::ReadOnlySharedMemoryRegion shared_memory,
-    const std::set<HostID>& changed_hosts,
-    bool whitelisted_only) {
+    const std::set<mojom::HostID>& changed_hosts,
+    bool allowlisted_only) {
   bool only_inject_incognito =
       ExtensionsRendererClient::Get()->IsIncognitoProcess();
 
@@ -162,7 +163,7 @@ bool UserScriptSet::UpdateUserScripts(
 
     const Extension* extension =
         RendererExtensionRegistry::Get()->GetByID(script->extension_id());
-    if (whitelisted_only &&
+    if (allowlisted_only &&
         (!extension || !PermissionsData::CanExecuteScriptEverywhere(
                            extension->id(), extension->location()))) {
       continue;
@@ -180,7 +181,7 @@ std::unique_ptr<ScriptInjection> UserScriptSet::GetDeclarativeScriptInjection(
     const std::string& script_id,
     content::RenderFrame* render_frame,
     int tab_id,
-    UserScript::RunLocation run_location,
+    mojom::RunLocation run_location,
     const GURL& document_url,
     bool log_activity) {
   for (const std::unique_ptr<UserScript>& script : scripts_) {
@@ -197,7 +198,7 @@ std::unique_ptr<ScriptInjection> UserScriptSet::GetInjectionForScript(
     const UserScript* script,
     content::RenderFrame* render_frame,
     int tab_id,
-    UserScript::RunLocation run_location,
+    mojom::RunLocation run_location,
     const GURL& document_url,
     bool is_declarative,
     bool log_activity) {
@@ -205,13 +206,13 @@ std::unique_ptr<ScriptInjection> UserScriptSet::GetInjectionForScript(
   std::unique_ptr<const InjectionHost> injection_host;
   blink::WebLocalFrame* web_frame = render_frame->GetWebFrame();
 
-  const HostID& host_id = script->host_id();
-  if (host_id.type() == HostID::EXTENSIONS) {
-    injection_host = ExtensionInjectionHost::Create(host_id.id());
+  const mojom::HostID& host_id = script->host_id();
+  if (host_id.type == mojom::HostID::HostType::kExtensions) {
+    injection_host = ExtensionInjectionHost::Create(host_id.id);
     if (!injection_host)
       return injection;
   } else {
-    DCHECK_EQ(host_id.type(), HostID::WEBUI);
+    DCHECK_EQ(host_id.type, mojom::HostID::HostType::kWebUi);
     injection_host.reset(new WebUIInjectionHost(host_id));
   }
 
@@ -232,7 +233,7 @@ std::unique_ptr<ScriptInjection> UserScriptSet::GetInjectionForScript(
   }
 
   bool inject_css = !script->css_scripts().empty() &&
-                    run_location == UserScript::DOCUMENT_START;
+                    run_location == mojom::RunLocation::kDocumentStart;
   bool inject_js =
       !script->js_scripts().empty() && script->run_location() == run_location;
   if (inject_css || inject_js) {

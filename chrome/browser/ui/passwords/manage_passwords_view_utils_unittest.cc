@@ -6,8 +6,9 @@
 
 #include <stddef.h>
 
+#include <string>
+
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
@@ -41,7 +42,7 @@ class ScopedResourceOverride {
     }
   }
 
-  void OverrideLocaleStringResource(int string_id, const base::string16& str) {
+  void OverrideLocaleStringResource(int string_id, const std::u16string& str) {
     bundle_.OverrideLocaleStringResource(string_id, str);
   }
 
@@ -138,22 +139,20 @@ TEST(ManagePasswordsViewUtilTest, GetSavePasswordDialogTitleText) {
                                     << ", form_origin_url = "
                                     << kDomainsTestCases[i].form_origin_url);
 
-    base::string16 title = GetSavePasswordDialogTitleText(
+    std::u16string title = GetSavePasswordDialogTitleText(
         GURL(kDomainsTestCases[i].user_visible_url),
         url::Origin::Create(GURL(kDomainsTestCases[i].form_origin_url)),
         kDomainsTestCases[i].bubble_type);
 
     // Verify against expectations.
-    base::string16 domain =
+    std::u16string domain =
         base::ASCIIToUTF16(kDomainsTestCases[i].expected_domain_placeholder);
-    EXPECT_TRUE(title.find(domain) != base::string16::npos);
+    EXPECT_TRUE(title.find(domain) != std::u16string::npos);
     if (kDomainsTestCases[i].bubble_type ==
         PasswordTitleType::UPDATE_PASSWORD) {
-      EXPECT_TRUE(title.find(base::ASCIIToUTF16("Update")) !=
-                  base::string16::npos);
+      EXPECT_TRUE(title.find(u"Update") != std::u16string::npos);
     } else {
-      EXPECT_TRUE(title.find(base::ASCIIToUTF16("Save")) !=
-                  base::string16::npos);
+      EXPECT_TRUE(title.find(u"Save") != std::u16string::npos);
     }
   }
 }
@@ -164,7 +163,7 @@ TEST(ManagePasswordsViewUtilTest, GetSavePasswordDialogTitleText_EmptyStrings) {
 
   // Ensure that the resource bundle returns an empty string for the UI.
   resource_override.OverrideLocaleStringResource(IDS_SAVE_PASSWORD,
-                                                 base::string16());
+                                                 std::u16string());
 
   const GURL kExample("http://example.org");
   // The arguments passed below have this importance for the codepath:
@@ -176,7 +175,7 @@ TEST(ManagePasswordsViewUtilTest, GetSavePasswordDialogTitleText_EmptyStrings) {
   //   triggers the crash in http://crbug.com/658902.
   // * SAVE_PASSWORD dialog type needs to be passed to match the
   //   IDS_SAVE_PASSWORD overridden above.
-  base::string16 title =
+  std::u16string title =
       GetSavePasswordDialogTitleText(kExample, url::Origin::Create(kExample),
                                      PasswordTitleType::SAVE_PASSWORD);
   // Verify that the test did not pass just because
@@ -193,13 +192,13 @@ TEST(ManagePasswordsViewUtilTest, GetManagePasswordsDialogTitleText) {
                                     << ", password_origin_url = "
                                     << kDomainsTestCases[i].form_origin_url);
 
-    base::string16 title = GetManagePasswordsDialogTitleText(
+    std::u16string title = GetManagePasswordsDialogTitleText(
         GURL(kDomainsTestCases[i].user_visible_url),
         url::Origin::Create(GURL(kDomainsTestCases[i].form_origin_url)), true);
 
     // Verify against expectations.
-    base::string16 domain =
+    std::u16string domain =
         base::ASCIIToUTF16(kDomainsTestCases[i].expected_domain_placeholder);
-    EXPECT_TRUE(title.find(domain) != base::string16::npos);
+    EXPECT_TRUE(title.find(domain) != std::u16string::npos);
   }
 }

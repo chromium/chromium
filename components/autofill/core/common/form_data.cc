@@ -18,7 +18,7 @@ namespace autofill {
 
 namespace {
 
-const int kFormDataPickleVersion = 6;
+const int kFormDataPickleVersion = 7;
 
 bool ReadGURL(base::PickleIterator* iter, GURL* url) {
   std::string spec;
@@ -85,7 +85,6 @@ bool FormData::SameFormAs(const FormData& form) const {
   if (name != form.name || id_attribute != form.id_attribute ||
       name_attribute != form.name_attribute || url != form.url ||
       action != form.action || is_form_tag != form.is_form_tag ||
-      is_formless_checkout != form.is_formless_checkout ||
       fields.size() != form.fields.size())
     return false;
   for (size_t i = 0; i < fields.size(); ++i) {
@@ -100,7 +99,6 @@ bool FormData::SimilarFormAs(const FormData& form) const {
       name_attribute != form.name_attribute || url != form.url ||
       action != form.action || is_action_empty != form.is_action_empty ||
       is_form_tag != form.is_form_tag ||
-      is_formless_checkout != form.is_formless_checkout ||
       fields.size() != form.fields.size()) {
     return false;
   }
@@ -130,8 +128,7 @@ bool FormData::IdentityComparator::operator()(const FormData& a,
   // as well.
   auto tie = [](const FormData& f) {
     return std::tie(f.unique_renderer_id, f.name, f.id_attribute,
-                    f.name_attribute, f.url, f.action, f.is_form_tag,
-                    f.is_formless_checkout);
+                    f.name_attribute, f.url, f.action, f.is_form_tag);
   };
   if (tie(a) < tie(b))
     return true;
@@ -145,7 +142,7 @@ bool FormData::IdentityComparator::operator()(const FormData& a,
 bool FormHasNonEmptyPasswordField(const FormData& form) {
   for (const auto& field : form.fields) {
     if (field.IsPasswordInputElement()) {
-      if (!field.value.empty() || !field.typed_value.empty())
+      if (!field.value.empty() || !field.user_input.empty())
         return true;
     }
   }
@@ -155,7 +152,6 @@ bool FormHasNonEmptyPasswordField(const FormData& form) {
 std::ostream& operator<<(std::ostream& os, const FormData& form) {
   os << base::UTF16ToUTF8(form.name) << " " << form.url << " " << form.action
      << " " << form.main_frame_origin << " " << form.is_form_tag << " "
-     << form.is_formless_checkout << " "
      << "Fields:";
   for (size_t i = 0; i < form.fields.size(); ++i) {
     os << form.fields[i] << ",";
@@ -170,7 +166,6 @@ void SerializeFormData(const FormData& form_data, base::Pickle* pickle) {
   pickle->WriteString(form_data.action.spec());
   SerializeFormFieldDataVector(form_data.fields, pickle);
   pickle->WriteBool(form_data.is_form_tag);
-  pickle->WriteBool(form_data.is_formless_checkout);
   pickle->WriteString(form_data.main_frame_origin.Serialize());
 }
 
@@ -193,7 +188,7 @@ bool DeserializeFormData(base::PickleIterator* iter, FormData* form_data) {
   }
 
   if (version == 1) {
-    base::string16 method;
+    std::u16string method;
     if (!iter->ReadString16(&method)) {
       LogDeserializationError(version);
       return false;
@@ -219,8 +214,9 @@ bool DeserializeFormData(base::PickleIterator* iter, FormData* form_data) {
     form_data->is_form_tag = true;
   }
 
-  if (version >= 5) {
-    if (!iter->ReadBool(&temp_form_data.is_formless_checkout)) {
+  if (version >= 5 && version <= 6) {
+    bool is_formless_checkout;
+    if (!iter->ReadBool(&is_formless_checkout)) {
       LogDeserializationError(version);
       return false;
     }

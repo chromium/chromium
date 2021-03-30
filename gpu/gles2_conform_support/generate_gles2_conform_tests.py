@@ -30,17 +30,17 @@ def GenerateTests(out_file):
   out_file.write("""
 #include "gpu/gles2_conform_support/gles2_conform_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-""")
+""".encode("utf8"))
 
   for test in tests:
-    out_file.write("""
+    out_file.write(("""
 TEST(GLES2ConformTest, %(name)s) {
   EXPECT_TRUE(RunGLES2ConformTest("%(path)s"));
 }
 """ % {
         "name": re.sub(r'[^A-Za-z0-9]', '_', test),
         "path": test,
-      })
+      }).encode("utf8"))
 
 
 def main(argv):

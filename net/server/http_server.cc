@@ -278,7 +278,8 @@ int HttpServer::HandleReadResult(HttpConnection* connection, int rv) {
     // Sets peer address if exists.
     connection->socket()->GetPeerAddress(&request.peer);
 
-    if (request.HasHeaderValue("connection", "upgrade")) {
+    if (request.HasHeaderValue("connection", "upgrade") &&
+        request.HasHeaderValue("upgrade", "websocket")) {
       connection->SetWebSocket(std::make_unique<WebSocket>(this, connection));
       read_buf->DidConsume(pos);
       delegate_->OnWebSocketRequest(connection->id(), request);

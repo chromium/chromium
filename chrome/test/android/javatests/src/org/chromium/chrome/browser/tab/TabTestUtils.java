@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab;
 
+import android.content.Context;
 import android.view.View;
 
 import org.chromium.base.ObserverList;
@@ -70,14 +71,14 @@ public class TabTestUtils {
         } else if (show && !isShowing) {
             SadTab sadTab = new SadTab(tab) {
                 @Override
-                public View createView(Runnable suggestionAction, Runnable buttonAction,
-                        boolean showSendFeedbackView, boolean isIncognito) {
-                    return new View(((TabImpl) tab).getThemedApplicationContext());
+                public View createView(Context context, Runnable suggestionAction,
+                        Runnable buttonAction, boolean showSendFeedbackView, boolean isIncognito) {
+                    return new View(context);
                 }
             };
             TestThreadUtils.runOnUiThreadBlocking(() -> {
                 SadTab.initForTesting(tab, sadTab);
-                sadTab.show();
+                sadTab.show(((TabImpl) tab).getThemedApplicationContext(), () -> {}, () -> {});
             });
         }
     }

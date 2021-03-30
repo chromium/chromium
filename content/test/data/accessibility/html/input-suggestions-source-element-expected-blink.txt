@@ -2,5 +2,10 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer
 ++++++textFieldWithComboBox autoComplete='list' inputType='text' haspopup=listbox
-++++++++genericContainer
+++++++++genericContainer ignored
+++++++++++genericContainer ignored
+++++++++++++genericContainer
+++++++++++genericContainer ignored invisible
+++++++++++++listMarker ignored invisible
+++++++++++++++staticText ignored invisible name='%E2%96%BE'
 ++++++genericContainer ignored invisible

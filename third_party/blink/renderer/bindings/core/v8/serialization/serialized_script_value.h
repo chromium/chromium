@@ -38,7 +38,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/messaging/message_port_descriptor.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_transfer_token.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/transferables.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/streams/readable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -102,8 +103,8 @@ class CORE_EXPORT SerializedScriptValue
   using TransferredWasmModulesArray = WTF::Vector<v8::CompiledWasmModule>;
   using MessagePortChannelArray = Vector<MessagePortChannel>;
   using StreamArray = Vector<Stream>;
-  using NativeFileSystemTokensArray =
-      Vector<mojo::PendingRemote<mojom::blink::NativeFileSystemTransferToken>>;
+  using FileSystemAccessTokensArray =
+      Vector<mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken>>;
 
   // Increment this for each incompatible change to the wire format.
   // Version 2: Added StringUCharTag for UChar v8 strings.
@@ -271,12 +272,19 @@ class CORE_EXPORT SerializedScriptValue
   size_t DataLengthInBytes() const { return data_buffer_size_; }
 
   TransferredWasmModulesArray& WasmModules() { return wasm_modules_; }
+
+  const SecurityOrigin* origin() { return origin_.get(); }
+
+  void set_origin(const SecurityOrigin* origin) {
+    origin_ = origin->IsolatedCopy();
+  }
+
   SharedArrayBufferContentsArray& SharedArrayBuffersContents() {
     return shared_array_buffers_contents_;
   }
   BlobDataHandleMap& BlobDataHandles() { return blob_data_handles_; }
-  NativeFileSystemTokensArray& NativeFileSystemTokens() {
-    return native_file_system_tokens_;
+  FileSystemAccessTokensArray& FileSystemAccessTokens() {
+    return file_system_access_tokens_;
   }
   MojoScopedHandleArray& MojoHandles() { return mojo_handles_; }
   ArrayBufferContentsArray& GetArrayBufferContentsArray() {
@@ -393,10 +401,14 @@ class CORE_EXPORT SerializedScriptValue
 
   // These do not have one-use transferred contents, like the above.
   TransferredWasmModulesArray wasm_modules_;
+  // To count how often WebAssembly modules get transferred cross-origin, we
+  // allow to store the |SecurityOrigin| in the |V8SerializedScriptValue|. The
+  // |SecurityOrigin| has to be set explicitly with |set_origin()|.
+  scoped_refptr<SecurityOrigin> origin_;
   BlobDataHandleMap blob_data_handles_;
   MojoScopedHandleArray mojo_handles_;
   SharedArrayBufferContentsArray shared_array_buffers_contents_;
-  NativeFileSystemTokensArray native_file_system_tokens_;
+  FileSystemAccessTokensArray file_system_access_tokens_;
   HashMap<const void* const*, std::unique_ptr<Attachment>> attachments_;
 
   bool has_registered_external_allocation_;

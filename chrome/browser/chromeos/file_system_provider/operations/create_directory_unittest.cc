@@ -63,8 +63,8 @@ TEST_F(FileSystemProviderOperationsCreateDirectoryTest, Execute) {
       true /* recursive */,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   create_directory.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(create_directory.Execute(kRequestId));
 
@@ -97,8 +97,8 @@ TEST_F(FileSystemProviderOperationsCreateDirectoryTest, Execute_NoListener) {
       true /* recursive */,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   create_directory.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_FALSE(create_directory.Execute(kRequestId));
 }
@@ -117,8 +117,8 @@ TEST_F(FileSystemProviderOperationsCreateDirectoryTest, Execute_ReadOnly) {
       true /* recursive */,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   create_directory.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_FALSE(create_directory.Execute(kRequestId));
 }
@@ -132,8 +132,8 @@ TEST_F(FileSystemProviderOperationsCreateDirectoryTest, OnSuccess) {
       true /* recursive */,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   create_directory.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(create_directory.Execute(kRequestId));
 
@@ -153,8 +153,8 @@ TEST_F(FileSystemProviderOperationsCreateDirectoryTest, OnError) {
       true /* recursive */,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   create_directory.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(create_directory.Execute(kRequestId));
 

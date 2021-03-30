@@ -241,11 +241,15 @@ void OutputPresenterGL::InitializeCapabilities(
   capabilities->supports_post_sub_buffer = gl_surface_->SupportsPostSubBuffer();
   capabilities->supports_commit_overlay_planes =
       gl_surface_->SupportsCommitOverlayPlanes();
+  capabilities->supports_viewporter = gl_surface_->SupportsViewporter();
 
   // Set supports_surfaceless to enable overlays.
   capabilities->supports_surfaceless = true;
   // We expect origin of buffers is at top left.
   capabilities->output_surface_origin = gfx::SurfaceOrigin::kTopLeft;
+  // Set resize_based_on_root_surface to omit platform proposed size.
+  capabilities->resize_based_on_root_surface =
+      gl_surface_->SupportsOverridePlatformSize();
 
   // TODO(https://crbug.com/1108406): only add supported formats base on
   // platform, driver, etc.
@@ -355,11 +359,10 @@ void OutputPresenterGL::SchedulePrimaryPlane(
 
   // Output surface is also z-order 0.
   constexpr int kPlaneZOrder = 0;
-  // Output surface always uses the full texture.
-  constexpr gfx::RectF kUVRect(0.f, 0.f, 1.0f, 1.0f);
   gl_surface_->ScheduleOverlayPlane(kPlaneZOrder, plane.transform, gl_image,
-                                    ToNearestRect(plane.display_rect), kUVRect,
-                                    plane.enable_blending, std::move(fence));
+                                    ToNearestRect(plane.display_rect),
+                                    plane.uv_rect, plane.enable_blending,
+                                    std::move(fence));
 }
 
 void OutputPresenterGL::ScheduleBackground(Image* image) {
@@ -412,6 +415,9 @@ void OutputPresenterGL::ScheduleOverlays(
           !overlay.is_opaque, TakeGpuFence(accesses[i]->TakeAcquireFences()));
     }
 #elif defined(OS_APPLE)
+    // For RenderPassDrawQuad the ddl is not nullptr, and the opacity is applied
+    // when the ddl is recorded, so the content already is with opacity applied.
+    float opacity = overlay.ddl ? 1.0 : overlay.shared_state->opacity;
     gl_surface_->ScheduleCALayer(ui::CARendererLayerParams(
         overlay.shared_state->is_clipped,
         gfx::ToEnclosingRect(overlay.shared_state->clip_rect),
@@ -419,8 +425,8 @@ void OutputPresenterGL::ScheduleOverlays(
         overlay.shared_state->sorting_context_id,
         gfx::Transform(overlay.shared_state->transform), gl_image,
         overlay.contents_rect, gfx::ToEnclosingRect(overlay.bounds_rect),
-        overlay.background_color, overlay.edge_aa_mask,
-        overlay.shared_state->opacity, overlay.filter));
+        overlay.background_color, overlay.edge_aa_mask, opacity,
+        overlay.filter));
 #endif
   }
 #endif  //  defined(OS_ANDROID) || defined(OS_APPLE) || defined(USE_OZONE)

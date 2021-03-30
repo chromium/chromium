@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -14,11 +15,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/constants.h"
-#include "chrome/browser/nearby_sharing/mock_nearby_process_manager.h"
 #include "chrome/browser/nearby_sharing/nearby_connection_impl.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
 #include "chromeos/services/nearby/public/cpp/mock_nearby_connections.h"
+#include "chromeos/services/nearby/public/cpp/mock_nearby_process_manager.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -134,9 +134,19 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kNearbySharingWebRtc);
 
-    EXPECT_CALL(nearby_process_manager_,
-                GetOrStartNearbyConnections(testing::Eq(&profile_)))
-        .WillRepeatedly(testing::Return(&nearby_connections_));
+    EXPECT_CALL(nearby_process_manager_, GetNearbyProcessReference)
+        .WillRepeatedly([&](chromeos::nearby::NearbyProcessManager::
+                                NearbyProcessStoppedCallback) {
+          auto mock_reference_ptr =
+              std::make_unique<chromeos::nearby::MockNearbyProcessManager::
+                                   MockNearbyProcessReference>();
+
+          EXPECT_CALL(*(mock_reference_ptr.get()), GetNearbyConnections)
+              .WillRepeatedly(
+                  testing::ReturnRef(nearby_connections_.shared_remote()));
+
+          return mock_reference_ptr;
+        });
   }
 
  protected:
@@ -168,10 +178,18 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
           listener_remote.Bind(std::move(listener));
           std::move(callback).Run(Status::kSuccess);
         });
-    base::MockCallback<NearbyConnectionsManager::ConnectionsCallback> callback;
-    EXPECT_CALL(callback, Run(testing::Eq(Status::kSuccess)));
+
+    base::RunLoop run_loop;
+    NearbyConnectionsManager::ConnectionsCallback callback =
+        base::BindLambdaForTesting([&run_loop](Status status) {
+          EXPECT_EQ(status, Status::kSuccess);
+          run_loop.Quit();
+        });
+
     nearby_connections_manager_.StartDiscovery(&discovery_listener, data_usage,
-                                               callback.Get());
+                                               std::move(callback));
+
+    run_loop.Run();
   }
 
   void StartAdvertising(
@@ -195,11 +213,16 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
               listener_remote.Bind(std::move(listener));
               std::move(callback).Run(Status::kSuccess);
             });
-    base::MockCallback<NearbyConnectionsManager::ConnectionsCallback> callback;
-    EXPECT_CALL(callback, Run(testing::Eq(Status::kSuccess)));
+    base::RunLoop run_loop;
+    NearbyConnectionsManager::ConnectionsCallback callback =
+        base::BindLambdaForTesting([&run_loop](Status status) {
+          EXPECT_EQ(status, Status::kSuccess);
+          run_loop.Quit();
+        });
     nearby_connections_manager_.StartAdvertising(
         local_endpoint_info, &incoming_connection_listener,
-        PowerLevel::kHighPower, DataUsage::kOnline, callback.Get());
+        PowerLevel::kHighPower, DataUsage::kOnline, std::move(callback));
+    run_loop.Run();
   }
 
   enum class ConnectionResponse { kAccepted, kRejceted, kDisconnected };
@@ -215,6 +238,7 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
     const std::vector<uint8_t> raw_authentication_token(
         std::begin(kRawAuthenticationToken), std::end(kRawAuthenticationToken));
 
+    base::RunLoop request_connection_run_loop;
     EXPECT_CALL(nearby_connections_, RequestConnection)
         .WillOnce(
             [&](const std::string& service_id,
@@ -228,6 +252,7 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
 
               connection_listener_remote.Bind(std::move(listener));
               std::move(callback).Run(Status::kSuccess);
+              request_connection_run_loop.Quit();
             });
 
     base::RunLoop run_loop;
@@ -237,10 +262,10 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
         /*bluetooth_mac_address=*/base::nullopt, DataUsage::kOffline,
         base::BindLambdaForTesting([&](NearbyConnection* connection) {
           nearby_connection = connection;
-          run_loop.Quit();
         }));
 
-    base::RunLoop accept_run_loop;
+    request_connection_run_loop.Run();
+
     EXPECT_CALL(nearby_connections_, AcceptConnection)
         .WillOnce(
             [&](const std::string& service_id, const std::string& endpoint_id,
@@ -251,7 +276,7 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
 
               payload_listener_remote.Bind(std::move(listener));
               std::move(callback).Run(Status::kSuccess);
-              accept_run_loop.Quit();
+              run_loop.Quit();
             });
 
     connection_listener_remote->OnConnectionInitiated(
@@ -259,7 +284,6 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
         ConnectionInfo::New(kAuthenticationToken, raw_authentication_token,
                             remote_endpoint_info,
                             /*is_incoming_connection=*/false));
-    accept_run_loop.Run();
 
     switch (connection_response) {
       case ConnectionResponse::kAccepted:
@@ -373,15 +397,15 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   bool should_use_web_rtc_ = true;
   DataUsage default_data_usage_ = DataUsage::kWifiOnly;
-  TestingProfile profile_;
   std::unique_ptr<net::test::MockNetworkChangeNotifier> network_notifier_ =
       net::test::MockNetworkChangeNotifier::Create();
   base::ScopedDisallowBlocking disallow_blocking_;
   testing::NiceMock<chromeos::nearby::MockNearbyConnections>
       nearby_connections_;
-  testing::NiceMock<MockNearbyProcessManager> nearby_process_manager_;
+  testing::NiceMock<chromeos::nearby::MockNearbyProcessManager>
+      nearby_process_manager_;
   NearbyConnectionsManagerImpl nearby_connections_manager_{
-      &nearby_process_manager_, &profile_};
+      &nearby_process_manager_};
 };
 
 TEST_F(NearbyConnectionsManagerImplTest, DiscoveryFlow) {
@@ -420,7 +444,7 @@ TEST_F(NearbyConnectionsManagerImplTest, DiscoveryFlow) {
   EXPECT_CALL(discovery_listener, OnEndpointLost(testing::_)).Times(0);
   listener_remote->OnEndpointLost(kEndpointId);
 
-  // After OnEndpointLost the same endpotinId can be discovered again.
+  // After OnEndpointLost the same endpointId can be discovered again.
   base::RunLoop discovered_run_loop_2;
   EXPECT_CALL(discovery_listener,
               OnEndpointDiscovered(testing::Eq(kEndpointId),
@@ -431,14 +455,23 @@ TEST_F(NearbyConnectionsManagerImplTest, DiscoveryFlow) {
   discovered_run_loop_2.Run();
 
   // Stop discvoery will call through mojo.
-  EXPECT_CALL(nearby_connections_, StopDiscovery).Times(1);
+  base::RunLoop stop_discovery_run_loop;
+  EXPECT_CALL(nearby_connections_, StopDiscovery)
+      .WillOnce([&stop_discovery_run_loop](
+                    const std::string& service_id,
+                    NearbyConnectionsMojom::StopDiscoveryCallback callback) {
+        EXPECT_EQ(kServiceId, service_id);
+        std::move(callback).Run(Status::kSuccess);
+        stop_discovery_run_loop.Quit();
+      });
   nearby_connections_manager_.StopDiscovery();
+  stop_discovery_run_loop.Run();
 
   // StartDiscovery again will succeed.
   listener_remote.reset();
   StartDiscovery(listener_remote, discovery_listener);
 
-  // Same endpotinId can be discovered again.
+  // Same endpointId can be discovered again.
   base::RunLoop discovered_run_loop_3;
   EXPECT_CALL(discovery_listener,
               OnEndpointDiscovered(testing::Eq(kEndpointId),
@@ -459,7 +492,9 @@ TEST_F(NearbyConnectionsManagerImplTest, DiscoveryProcessStopped) {
   StartDiscovery(listener_remote, discovery_listener);
 
   EXPECT_CALL(nearby_connections_, StopAllEndpoints).Times(0);
-  nearby_connections_manager_.OnNearbyProcessStopped();
+  nearby_connections_manager_.OnNearbyProcessStopped(
+      chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason::
+          kNormal);
 
   // Invoking OnEndpointFound will do nothing.
   EXPECT_CALL(discovery_listener, OnEndpointDiscovered(testing::_, testing::_))
@@ -494,11 +529,13 @@ TEST_P(NearbyConnectionsManagerImplTestConnectionMediums,
                                             is_webrtc_enabled);
 
   network_notifier_->SetConnectionType(connection_type);
+  network_notifier_->SetUseDefaultConnectionCostImplementation(true);
   should_use_web_rtc_ =
       is_webrtc_enabled && data_usage != DataUsage::kOffline &&
       connection_type != net::NetworkChangeNotifier::CONNECTION_NONE &&
       (data_usage != DataUsage::kWifiOnly ||
-       !net::NetworkChangeNotifier::IsConnectionCellular(connection_type));
+       (net::NetworkChangeNotifier::GetConnectionCost() !=
+        net::NetworkChangeNotifier::CONNECTION_COST_METERED));
 
   // TODO(crbug.com/1129069): Update when WiFi LAN is supported.
   auto expected_mediums = MediumSelection::New(
@@ -512,6 +549,7 @@ TEST_P(NearbyConnectionsManagerImplTestConnectionMediums,
   testing::NiceMock<MockDiscoveryListener> discovery_listener;
   StartDiscovery(discovery_listener_remote, data_usage, discovery_listener);
 
+  base::RunLoop run_loop;
   const std::vector<uint8_t> local_endpoint_info(std::begin(kEndpointInfo),
                                                  std::end(kEndpointInfo));
   EXPECT_CALL(nearby_connections_, RequestConnection)
@@ -526,11 +564,14 @@ TEST_P(NearbyConnectionsManagerImplTestConnectionMediums,
             EXPECT_EQ(kRemoteEndpointId, endpoint_id);
             EXPECT_EQ(expected_mediums, options->allowed_mediums);
             std::move(callback).Run(Status::kSuccess);
+            run_loop.Quit();
           });
 
   nearby_connections_manager_.Connect(local_endpoint_info, kRemoteEndpointId,
                                       /*bluetooth_mac_address=*/base::nullopt,
                                       data_usage, base::DoNothing());
+
+  run_loop.Run();
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -577,6 +618,7 @@ TEST_P(NearbyConnectionsManagerImplTestConnectionBluetoothMacAddress,
   testing::NiceMock<MockDiscoveryListener> discovery_listener;
   StartDiscovery(discovery_listener_remote, discovery_listener);
 
+  base::RunLoop run_loop;
   const std::vector<uint8_t> local_endpoint_info(std::begin(kEndpointInfo),
                                                  std::end(kEndpointInfo));
   EXPECT_CALL(nearby_connections_, RequestConnection)
@@ -592,11 +634,14 @@ TEST_P(NearbyConnectionsManagerImplTestConnectionBluetoothMacAddress,
             EXPECT_EQ(GetParam().expected_bluetooth_mac_address,
                       options->remote_bluetooth_mac_address);
             std::move(callback).Run(Status::kSuccess);
+            run_loop.Quit();
           });
 
   nearby_connections_manager_.Connect(local_endpoint_info, kRemoteEndpointId,
                                       GetParam().bluetooth_mac_address,
                                       DataUsage::kOffline, base::DoNothing());
+
+  run_loop.Run();
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -814,6 +859,7 @@ TEST_F(NearbyConnectionsManagerImplTest, ConnectClosed) {
         read_run_loop_3.Quit();
       }));
 
+  base::RunLoop disconnect_run_loop;
   EXPECT_CALL(nearby_connections_, DisconnectFromEndpoint)
       .WillOnce(
           [&](const std::string& service_id, const std::string& endpoint_id,
@@ -821,10 +867,12 @@ TEST_F(NearbyConnectionsManagerImplTest, ConnectClosed) {
             EXPECT_EQ(kServiceId, service_id);
             EXPECT_EQ(kRemoteEndpointId, endpoint_id);
             std::move(callback).Run(Status::kSuccess);
+            disconnect_run_loop.Quit();
           });
   nearby_connection->Close();
   close_run_loop.Run();
   read_run_loop_3.Run();
+  disconnect_run_loop.Run();
 
   EXPECT_FALSE(
       nearby_connections_manager_.GetRawAuthenticationToken(kRemoteEndpointId));
@@ -888,6 +936,7 @@ TEST_F(NearbyConnectionsManagerImplTest, ConnectClosedByClient) {
         read_run_loop.Quit();
       }));
 
+  base::RunLoop disconnect_run_loop;
   EXPECT_CALL(nearby_connections_, DisconnectFromEndpoint)
       .WillOnce(
           [&](const std::string& service_id, const std::string& endpoint_id,
@@ -895,10 +944,12 @@ TEST_F(NearbyConnectionsManagerImplTest, ConnectClosedByClient) {
             EXPECT_EQ(kServiceId, service_id);
             EXPECT_EQ(kRemoteEndpointId, endpoint_id);
             std::move(callback).Run(Status::kSuccess);
+            disconnect_run_loop.Quit();
           });
   nearby_connections_manager_.Disconnect(kRemoteEndpointId);
   close_run_loop.Run();
   read_run_loop.Run();
+  disconnect_run_loop.Run();
 
   EXPECT_FALSE(
       nearby_connections_manager_.GetRawAuthenticationToken(kRemoteEndpointId));
@@ -1130,7 +1181,6 @@ TEST_F(NearbyConnectionsManagerImplTest, IncomingRegisterPayloadPath) {
             VerifyFileReadWrite(input_file, output_file);
 
             std::move(callback).Run(Status::kSuccess);
-            register_payload_run_loop.Quit();
           });
 
   base::FilePath path;
@@ -1139,10 +1189,15 @@ TEST_F(NearbyConnectionsManagerImplTest, IncomingRegisterPayloadPath) {
     ASSERT_TRUE(base::CreateTemporaryFile(&path));
   }
 
-  base::MockCallback<NearbyConnectionsManager::ConnectionsCallback> callback;
-  EXPECT_CALL(callback, Run(testing::Eq(Status::kSuccess)));
+  NearbyConnectionsManager::ConnectionsCallback callback =
+      base::BindLambdaForTesting([&register_payload_run_loop](Status status) {
+        EXPECT_EQ(status, Status::kSuccess);
+        register_payload_run_loop.Quit();
+      });
+
   nearby_connections_manager_.RegisterPayloadPath(kPayloadId, path,
-                                                  callback.Get());
+                                                  std::move(callback));
+
   register_payload_run_loop.Run();
 }
 
@@ -1298,12 +1353,14 @@ TEST_P(NearbyConnectionsManagerImplTestMediums, StartAdvertising_Options) {
                                             is_webrtc_enabled);
 
   network_notifier_->SetConnectionType(connection_type);
+  network_notifier_->SetUseDefaultConnectionCostImplementation(true);
   should_use_web_rtc_ =
       is_webrtc_enabled && data_usage != DataUsage::kOffline &&
       power_level != PowerLevel::kLowPower &&
       connection_type != net::NetworkChangeNotifier::CONNECTION_NONE &&
       (data_usage != DataUsage::kWifiOnly ||
-       !net::NetworkChangeNotifier::IsConnectionCellular(connection_type));
+       (net::NetworkChangeNotifier::GetConnectionCost() !=
+        net::NetworkChangeNotifier::CONNECTION_COST_METERED));
 
   bool is_high_power = power_level == PowerLevel::kHighPower;
 
@@ -1314,11 +1371,17 @@ TEST_P(NearbyConnectionsManagerImplTestMediums, StartAdvertising_Options) {
       /*web_rtc=*/should_use_web_rtc_,
       /*wifi_lan=*/false);
 
+  base::RunLoop run_loop;
   const std::vector<uint8_t> local_endpoint_info(std::begin(kEndpointInfo),
                                                  std::end(kEndpointInfo));
-  base::MockCallback<NearbyConnectionsManager::ConnectionsCallback> callback;
   testing::NiceMock<MockIncomingConnectionListener>
       incoming_connection_listener;
+
+  NearbyConnectionsManager::ConnectionsCallback callback =
+      base::BindLambdaForTesting([&run_loop](Status status) {
+        EXPECT_EQ(Status::kSuccess, status);
+        run_loop.Quit();
+      });
 
   EXPECT_CALL(nearby_connections_, StartAdvertising)
       .WillOnce([&](const std::string& service_id,
@@ -1331,11 +1394,12 @@ TEST_P(NearbyConnectionsManagerImplTestMediums, StartAdvertising_Options) {
         EXPECT_EQ(!is_high_power, options->enable_bluetooth_listening);
         std::move(callback).Run(Status::kSuccess);
       });
-  EXPECT_CALL(callback, Run(testing::Eq(Status::kSuccess)));
 
   nearby_connections_manager_.StartAdvertising(
       local_endpoint_info, &incoming_connection_listener, power_level,
-      data_usage, callback.Get());
+      data_usage, std::move(callback));
+
+  run_loop.Run();
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1365,8 +1429,16 @@ TEST_F(NearbyConnectionsManagerImplTest, StopAdvertising) {
       incoming_connection_listener;
   StartAdvertising(listener_remote, incoming_connection_listener);
 
-  EXPECT_CALL(nearby_connections_, StopAdvertising);
+  base::RunLoop run_loop;
+  EXPECT_CALL(nearby_connections_, StopAdvertising)
+      .WillOnce([&](const std::string& service_id,
+                    NearbyConnectionsMojom::StopAdvertisingCallback callback) {
+        EXPECT_EQ(kServiceId, service_id);
+        std::move(callback).Run(Status::kSuccess);
+        run_loop.Quit();
+      });
   nearby_connections_manager_.StopAdvertising();
+  run_loop.Run();
 }
 
 TEST_F(NearbyConnectionsManagerImplTest, ShutdownAdvertising) {
@@ -1375,8 +1447,17 @@ TEST_F(NearbyConnectionsManagerImplTest, ShutdownAdvertising) {
       incoming_connection_listener;
   StartAdvertising(listener_remote, incoming_connection_listener);
 
-  EXPECT_CALL(nearby_connections_, StopAllEndpoints);
+  base::RunLoop run_loop;
+  EXPECT_CALL(nearby_connections_, StopAllEndpoints)
+      .WillOnce(
+          [&](const std::string& service_id,
+              NearbyConnectionsMojom::DisconnectFromEndpointCallback callback) {
+            EXPECT_EQ(kServiceId, service_id);
+            std::move(callback).Run(Status::kSuccess);
+            run_loop.Quit();
+          });
   nearby_connections_manager_.Shutdown();
+  run_loop.Run();
 }
 
 TEST_F(NearbyConnectionsManagerImplTest, ShutdownDiscoveryConnectionFails) {
@@ -1384,22 +1465,32 @@ TEST_F(NearbyConnectionsManagerImplTest, ShutdownDiscoveryConnectionFails) {
   testing::NiceMock<MockDiscoveryListener> discovery_listener;
   StartDiscovery(discovery_listener_remote, discovery_listener);
 
-  EXPECT_CALL(nearby_connections_, StopAllEndpoints);
+  base::RunLoop shutdown_run_loop;
+  EXPECT_CALL(nearby_connections_, StopAllEndpoints)
+      .WillOnce(
+          [&](const std::string& service_id,
+              NearbyConnectionsMojom::DisconnectFromEndpointCallback callback) {
+            EXPECT_EQ(kServiceId, service_id);
+            std::move(callback).Run(Status::kSuccess);
+            shutdown_run_loop.Quit();
+          });
+
   nearby_connections_manager_.Shutdown();
+  shutdown_run_loop.Run();
 
   // RequestConnection will fail.
   const std::vector<uint8_t> local_endpoint_info(std::begin(kEndpointInfo),
                                                  std::end(kEndpointInfo));
-  base::RunLoop run_loop;
+  base::RunLoop connect_run_loop;
   NearbyConnection* nearby_connection;
   nearby_connections_manager_.Connect(
       local_endpoint_info, kRemoteEndpointId,
       /*bluetooth_mac_address=*/base::nullopt, DataUsage::kOffline,
       base::BindLambdaForTesting([&](NearbyConnection* connection) {
         nearby_connection = connection;
-        run_loop.Quit();
+        connect_run_loop.Quit();
       }));
-  run_loop.Run();
+  connect_run_loop.Run();
 
   EXPECT_FALSE(nearby_connection);
 }
@@ -1418,6 +1509,7 @@ TEST_F(NearbyConnectionsManagerImplTest,
   StartAdvertising(listener_remote, incoming_connection_listener);
 
   // Upgrading bandwidth will succeed.
+  base::RunLoop run_loop;
   EXPECT_CALL(nearby_connections_, InitiateBandwidthUpgrade)
       .WillOnce([&](const std::string& service_id,
                     const std::string& endpoint_id,
@@ -1426,8 +1518,10 @@ TEST_F(NearbyConnectionsManagerImplTest,
         EXPECT_EQ(kServiceId, service_id);
         EXPECT_EQ(kRemoteEndpointId, endpoint_id);
         std::move(callback).Run(Status::kSuccess);
+        run_loop.Quit();
       });
   nearby_connections_manager_.UpgradeBandwidth(kRemoteEndpointId);
+  run_loop.Run();
 }
 
 TEST_F(NearbyConnectionsManagerImplTest,
@@ -1446,6 +1540,7 @@ TEST_F(NearbyConnectionsManagerImplTest,
   EXPECT_TRUE(nearby_connection);
 
   // Upgrading bandwidth will succeed.
+  base::RunLoop run_loop;
   EXPECT_CALL(nearby_connections_, InitiateBandwidthUpgrade)
       .WillOnce([&](const std::string& service_id,
                     const std::string& endpoint_id,
@@ -1454,8 +1549,10 @@ TEST_F(NearbyConnectionsManagerImplTest,
         EXPECT_EQ(kServiceId, service_id);
         EXPECT_EQ(kRemoteEndpointId, endpoint_id);
         std::move(callback).Run(Status::kSuccess);
+        run_loop.Quit();
       });
   nearby_connections_manager_.UpgradeBandwidth(kRemoteEndpointId);
+  run_loop.Run();
 }
 
 TEST_F(NearbyConnectionsManagerImplTest,

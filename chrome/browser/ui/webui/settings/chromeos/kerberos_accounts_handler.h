@@ -11,7 +11,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/chromeos/kerberos/kerberos_credentials_manager.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chromeos/dbus/kerberos/kerberos_service.pb.h"
@@ -92,9 +92,9 @@ class KerberosAccountsHandler : public ::settings::SettingsPageUIHandler,
 
   // This instance can be added as observer to KerberosCredentialsManager.
   // This class keeps track of that and removes this instance on destruction.
-  ScopedObserver<KerberosCredentialsManager,
-                 KerberosCredentialsManager::Observer>
-      credentials_manager_observer_{this};
+  base::ScopedObservation<KerberosCredentialsManager,
+                          KerberosCredentialsManager::Observer>
+      credentials_manager_observation_{this};
 
   // Not owned.
   KerberosCredentialsManager* kerberos_credentials_manager_;

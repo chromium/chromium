@@ -12,7 +12,7 @@ UnsafeResource::UnsafeResource()
     : is_subresource(false),
       is_subframe(false),
       threat_type(safe_browsing::SB_THREAT_TYPE_SAFE),
-      resource_type(safe_browsing::ResourceType::kMainFrame),
+      request_destination(network::mojom::RequestDestination::kDocument),
       threat_source(safe_browsing::ThreatSource::UNKNOWN),
       is_delayed_warning(false) {}
 
@@ -56,6 +56,17 @@ bool UnsafeResource::IsMainPageLoadBlocked() const {
   }
 
   return true;
+}
+
+void UnsafeResource::DispatchCallback(const base::Location& from_here,
+                                      bool proceed,
+                                      bool showed_interstitial) const {
+  if (callback.is_null())
+    return;
+
+  DCHECK(callback_thread);
+  callback_thread->PostTask(
+      from_here, base::BindOnce(callback, proceed, showed_interstitial));
 }
 
 }  // namespace security_interstitials

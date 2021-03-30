@@ -148,7 +148,7 @@ HRESULT CoGetClassObjectAsAdmin(gfx::AcceleratedWidget hwnd,
   // moniker. This ensures that the UAC dialog shows up.
   auto class_id_as_string = base::win::WStringFromGUID(class_id);
 
-  base::string16 elevation_moniker_name = base::StringPrintf(
+  std::wstring elevation_moniker_name = base::StringPrintf(
       L"Elevation:Administrator!clsid:%ls", class_id_as_string.c_str());
 
   BIND_OPTS3 bind_opts;
@@ -271,7 +271,7 @@ class UpdateCheckDriver {
   // and 100 (inclusive), is an estimation as to what percentage of the upgrade
   // has completed. |new_version| indicates the version that is being download
   // and installed.
-  void NotifyUpgradeProgress(int progress, const base::string16& new_version);
+  void NotifyUpgradeProgress(int progress, const std::u16string& new_version);
 
   // Starts an update check.
   void BeginUpdateCheck();
@@ -289,7 +289,7 @@ class UpdateCheckDriver {
   // will result in callers being notified via their delegates.
   void OnUpgradeError(UpdateCheckResult check_result,
                       base::Optional<int> installer_exit_code,
-                      const base::string16& error_string);
+                      const std::u16string& error_string);
 
   // Returns true if |current_state| and |state_value| can be obtained from the
   // ongoing update check. Otherwise, populates |hresult| with the reason they
@@ -313,7 +313,7 @@ class UpdateCheckDriver {
                     GoogleUpdateErrorCode* error_code,
                     HRESULT* hresult,
                     base::Optional<int>* installer_exit_code,
-                    base::string16* error_string) const;
+                    std::u16string* error_string) const;
 
   // Returns true if |current_state| and |state_value| constitute a final state
   // for the ongoing update check, in which case |upgrade_status| is populated
@@ -325,7 +325,7 @@ class UpdateCheckDriver {
   bool IsFinalState(const Microsoft::WRL::ComPtr<ICurrentState>& current_state,
                     CurrentState state_value,
                     GoogleUpdateUpgradeStatus* upgrade_status,
-                    base::string16* new_version) const;
+                    std::u16string* new_version) const;
 
   // Returns true if |current_state| and |state_value| constitute an
   // intermediate state for the ongoing update check. |new_version| will be
@@ -336,7 +336,7 @@ class UpdateCheckDriver {
   bool IsIntermediateState(
       const Microsoft::WRL::ComPtr<ICurrentState>& current_state,
       CurrentState state_value,
-      base::string16* new_version,
+      std::u16string* new_version,
       int* progress) const;
 
   // Polls Google Update to determine the state of the ongoing check or
@@ -391,7 +391,7 @@ class UpdateCheckDriver {
   // caller.
   GoogleUpdateUpgradeStatus status_;
   UpdateState update_state_;
-  base::string16 html_error_message_;
+  std::u16string html_error_message_;
 
   DISALLOW_COPY_AND_ASSIGN(UpdateCheckDriver);
 };
@@ -486,7 +486,7 @@ void UpdateCheckDriver::AddDelegate(
 
 void UpdateCheckDriver::NotifyUpgradeProgress(
     int progress,
-    const base::string16& new_version) {
+    const std::u16string& new_version) {
   DCHECK(result_runner_->RunsTasksInCurrentSequence());
 
   for (const auto& delegate : delegates_) {
@@ -518,7 +518,7 @@ void UpdateCheckDriver::BeginUpdateCheck() {
   }
 
   DCHECK(FAILED(result.hresult));
-  OnUpgradeError(result, base::nullopt, base::string16());
+  OnUpgradeError(result, base::nullopt, std::u16string());
   result_runner_->DeleteSoon(FROM_HERE, this);
 }
 
@@ -577,7 +577,7 @@ UpdateCheckResult UpdateCheckDriver::BeginUpdateCheckInternal() {
       // nice to have, a failure to do so does not affect the likelihood that
       // the update check and/or install will succeed.
       app_bundle->put_displayLanguage(
-          base::win::ScopedBstr(base::UTF8ToUTF16(locale_)).Get());
+          base::win::ScopedBstr(base::UTF8ToWide(locale_)).Get());
     }
 
     hresult = app_bundle->initialize();
@@ -653,7 +653,7 @@ bool UpdateCheckDriver::IsErrorState(
     GoogleUpdateErrorCode* error_code,
     HRESULT* hresult,
     base::Optional<int>* installer_exit_code,
-    base::string16* error_string) const {
+    std::u16string* error_string) const {
   if (state_value == STATE_ERROR) {
     // In general, errors reported by Google Update fall under this category
     // (see special case below).
@@ -687,7 +687,7 @@ bool UpdateCheckDriver::IsErrorState(
 
     base::win::ScopedBstr message;
     if (SUCCEEDED(current_state->get_completionMessage(message.Receive())))
-      error_string->assign(message.Get(), message.Length());
+      error_string->assign(base::as_u16cstr(message.Get()), message.Length());
 
     return true;
   }
@@ -709,12 +709,12 @@ bool UpdateCheckDriver::IsFinalState(
     const Microsoft::WRL::ComPtr<ICurrentState>& current_state,
     CurrentState state_value,
     GoogleUpdateUpgradeStatus* upgrade_status,
-    base::string16* new_version) const {
+    std::u16string* new_version) const {
   if (state_value == STATE_UPDATE_AVAILABLE && !install_update_if_possible_) {
     base::win::ScopedBstr version;
     *upgrade_status = UPGRADE_IS_AVAILABLE;
     if (SUCCEEDED(current_state->get_availableVersion(version.Receive())))
-      new_version->assign(version.Get(), version.Length());
+      new_version->assign(base::as_u16cstr(version.Get()), version.Length());
     return true;
   }
   if (state_value == STATE_INSTALL_COMPLETE) {
@@ -732,7 +732,7 @@ bool UpdateCheckDriver::IsFinalState(
 bool UpdateCheckDriver::IsIntermediateState(
     const Microsoft::WRL::ComPtr<ICurrentState>& current_state,
     CurrentState state_value,
-    base::string16* new_version,
+    std::u16string* new_version,
     int* progress) const {
   // ERROR will have been handled in IsErrorState. UPDATE_AVAILABLE, and
   // NO_UPDATE will have been handled in IsFinalState if not doing an install,
@@ -751,7 +751,7 @@ bool UpdateCheckDriver::IsIntermediateState(
     case STATE_UPDATE_AVAILABLE: {
       base::win::ScopedBstr version;
       if (SUCCEEDED(current_state->get_availableVersion(version.Receive())))
-        new_version->assign(version.Get(), version.Length());
+        new_version->assign(base::as_u16cstr(version.Get()), version.Length());
       break;
     }
 
@@ -809,14 +809,14 @@ void UpdateCheckDriver::PollGoogleUpdate() {
   HRESULT hresult = S_OK;
   GoogleUpdateErrorCode error_code = GOOGLE_UPDATE_NO_ERROR;
   base::Optional<int> installer_exit_code;
-  base::string16 error_string;
+  std::u16string error_string;
   GoogleUpdateUpgradeStatus upgrade_status = UPGRADE_ERROR;
-  base::string16 new_version;
+  std::u16string new_version;
   int progress = 0;
 
   if (!GetCurrentState(&state, &state_value, &hresult)) {
     OnUpgradeError({GOOGLE_UPDATE_ONDEMAND_CLASS_REPORTED_ERROR, hresult},
-                   base::nullopt, base::string16());
+                   base::nullopt, std::u16string());
   } else if (IsErrorState(state, state_value, &error_code, &hresult,
                           &installer_exit_code, &error_string)) {
     OnUpgradeError({error_code, hresult}, installer_exit_code, error_string);
@@ -868,7 +868,7 @@ void UpdateCheckDriver::PollGoogleUpdate() {
 
 void UpdateCheckDriver::OnUpgradeError(UpdateCheckResult check_result,
                                        base::Optional<int> installer_exit_code,
-                                       const base::string16& error_string) {
+                                       const std::u16string& error_string) {
   status_ = UPGRADE_ERROR;
   update_state_.error_code = check_result.error_code;
   update_state_.hresult = check_result.hresult;
@@ -881,16 +881,16 @@ void UpdateCheckDriver::OnUpgradeError(UpdateCheckResult check_result,
     return;
   }
 
-  base::string16 html_error_msg = base::StringPrintf(
-      L"%d: <a href='%ls0x%X' target=_blank>0x%X</a>", update_state_.error_code,
-      base::UTF8ToUTF16(chrome::kUpgradeHelpCenterBaseURL).c_str(),
+  std::u16string html_error_msg = base::StringPrintf(
+      u"%d: <a href='%ls0x%X' target=_blank>0x%X</a>", update_state_.error_code,
+      base::UTF8ToWide(chrome::kUpgradeHelpCenterBaseURL).c_str(),
       update_state_.hresult, update_state_.hresult);
   if (update_state_.installer_exit_code) {
     html_error_msg +=
-        L": " + base::NumberToString16(*update_state_.installer_exit_code);
+        u": " + base::NumberToString16(*update_state_.installer_exit_code);
   }
   if (system_level_install_)
-    html_error_msg += L" -- system level";
+    html_error_msg += u" -- system level";
   if (error_string.empty()) {
     html_error_message_ = l10n_util::GetStringFUTF16(
         IDS_ABOUT_BOX_ERROR_UPDATE_CHECK_FAILED, html_error_msg);

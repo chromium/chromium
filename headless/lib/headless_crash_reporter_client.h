@@ -5,9 +5,10 @@
 #ifndef HEADLESS_LIB_HEADLESS_CRASH_REPORTER_CLIENT_H_
 #define HEADLESS_LIB_HEADLESS_CRASH_REPORTER_CLIENT_H_
 
+#include <string>
+
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "components/crash/core/app/crash_reporter_client.h"
 
@@ -37,7 +38,7 @@ class HeadlessCrashReporterClient : public crash_reporter::CrashReporterClient {
 #endif  // defined(OS_POSIX) && !defined(OS_MAC)
 
 #if defined(OS_WIN)
-  bool GetCrashDumpLocation(base::string16* crash_dir) override;
+  bool GetCrashDumpLocation(std::wstring* crash_dir) override;
 #else
   bool GetCrashDumpLocation(base::FilePath* crash_dir) override;
 #endif

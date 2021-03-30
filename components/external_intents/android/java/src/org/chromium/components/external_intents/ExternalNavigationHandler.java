@@ -32,6 +32,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
@@ -54,14 +55,13 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.network.mojom.ReferrerPolicy;
-import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.PermissionCallback;
+import org.chromium.url.GURL;
 import org.chromium.url.URI;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -125,47 +125,6 @@ public class ExternalNavigationHandler {
         int NUM_ENTRIES = 3;
     }
 
-    // Standard Activity Actions, as defined by:
-    // https://developer.android.com/reference/android/content/Intent.html#standard-activity-actions
-    // These values are persisted in histograms. Please do not renumber.
-    @IntDef({StandardActions.MAIN, StandardActions.VIEW, StandardActions.ATTACH_DATA,
-            StandardActions.EDIT, StandardActions.PICK, StandardActions.CHOOSER,
-            StandardActions.GET_CONTENT, StandardActions.DIAL, StandardActions.CALL,
-            StandardActions.SEND, StandardActions.SENDTO, StandardActions.ANSWER,
-            StandardActions.INSERT, StandardActions.DELETE, StandardActions.RUN,
-            StandardActions.SYNC, StandardActions.PICK_ACTIVITY, StandardActions.SEARCH,
-            StandardActions.WEB_SEARCH, StandardActions.FACTORY_TEST, StandardActions.OTHER})
-    @Retention(RetentionPolicy.SOURCE)
-    @VisibleForTesting
-    @interface StandardActions {
-        int MAIN = 0;
-        int VIEW = 1;
-        int ATTACH_DATA = 2;
-        int EDIT = 3;
-        int PICK = 4;
-        int CHOOSER = 5;
-        int GET_CONTENT = 6;
-        int DIAL = 7;
-        int CALL = 8;
-        int SEND = 9;
-        int SENDTO = 10;
-        int ANSWER = 11;
-        int INSERT = 12;
-        int DELETE = 13;
-        int RUN = 14;
-        int SYNC = 15;
-        int PICK_ACTIVITY = 16;
-        int SEARCH = 17;
-        int WEB_SEARCH = 18;
-        int FACTORY_TEST = 19;
-        int OTHER = 20;
-
-        int NUM_ENTRIES = 21;
-    }
-
-    @VisibleForTesting
-    static final String INTENT_ACTION_HISTOGRAM = "Android.Intent.OverrideUrlLoadingIntentAction";
-
     // Helper class to return a boolean by reference.
     private static class MutableBoolean {
         private Boolean mValue;
@@ -220,7 +179,7 @@ public class ExternalNavigationHandler {
 
         int NUM_ENTRIES = 3;
     }
-  
+
     /**
      * Packages information about the result of a check of whether we should override URL loading.
      */
@@ -454,7 +413,8 @@ public class ExternalNavigationHandler {
 
     /** http://crbug.com/464669 : Disallow firing external intent from background tab. */
     private boolean blockExternalNavFromBackgroundTab(ExternalNavigationParams params) {
-        if (params.isBackgroundTabNavigation()) {
+        if (params.isBackgroundTabNavigation()
+                && !params.areIntentLaunchesAllowedInBackgroundTabs()) {
             if (DEBUG) Log.i(TAG, "Navigation in background tab");
             return true;
         }
@@ -938,9 +898,9 @@ public class ExternalNavigationHandler {
 
         // TODO(https://crbug.com/1009539): Replace this host parsing with a UrlUtilities or GURL
         //   function call.
-        String lastCommittedUrl = getLastCommittedUrl();
+        GURL lastCommittedUrl = getLastCommittedUrl();
         String previousUriString =
-                lastCommittedUrl != null ? lastCommittedUrl : params.getReferrerUrl();
+                lastCommittedUrl != null ? lastCommittedUrl.getSpec() : params.getReferrerUrl();
         if (previousUriString == null || (!isLink && !isFormSubmit)) return false;
 
         URI currentUri;
@@ -1070,7 +1030,7 @@ public class ExternalNavigationHandler {
         Context context = mDelegate.getContext();
         if (ContextUtils.activityFromContext(context) == null) return false;
 
-        new UiUtils.CompatibleAlertDialogBuilder(context, R.style.Theme_Chromium_AlertDialog)
+        new AlertDialog.Builder(context, R.style.Theme_Chromium_AlertDialog)
                 .setTitle(R.string.external_app_leave_incognito_warning_title)
                 .setMessage(R.string.external_app_leave_incognito_warning)
                 .setPositiveButton(R.string.external_app_leave_incognito_leave,
@@ -1291,8 +1251,6 @@ public class ExternalNavigationHandler {
 
         if (!maybeSetSmsPackage(targetIntent)) maybeRecordPhoneIntentMetrics(targetIntent);
 
-        if (hasIntentScheme) recordIntentActionMetrics(targetIntent);
-
         // From this point on, we have determined it is safe to launch an External App from a
         // fallback URL, provided the user isn't in incognito.
         if (!params.isIncognito()) canLaunchExternalFallbackResult.set(true);
@@ -1444,12 +1402,12 @@ public class ExternalNavigationHandler {
      * @return Whether the |url| could be handled by an external application on the system.
      */
     @VisibleForTesting
-    boolean canExternalAppHandleUrl(String url) {
-        if (url.startsWith(WTAI_MC_URL_PREFIX)) return true;
+    boolean canExternalAppHandleUrl(GURL url) {
+        if (url.getSpec().startsWith(WTAI_MC_URL_PREFIX)) return true;
         Intent intent;
         try {
-            intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME);
-        } catch (URISyntaxException ex) {
+            intent = Intent.parseUri(url.getSpec(), Intent.URI_INTENT_SCHEME);
+        } catch (Exception ex) {
             // Ignore the error.
             Log.w(TAG, "Bad URI %s", url, ex);
             return false;
@@ -1793,22 +1751,9 @@ public class ExternalNavigationHandler {
      * @return The last committed URL from the WebContents.
      */
     @VisibleForTesting
-    protected String getLastCommittedUrl() {
+    protected GURL getLastCommittedUrl() {
         if (mDelegate.getWebContents() == null) return null;
         return mDelegate.getWebContents().getLastCommittedUrl();
-    }
-
-    private void recordIntentActionMetrics(Intent intent) {
-        String action = intent.getAction();
-        @StandardActions
-        int standardAction;
-        if (TextUtils.isEmpty(action)) {
-            standardAction = StandardActions.VIEW;
-        } else {
-            standardAction = getStandardAction(action);
-        }
-        RecordHistogram.recordEnumeratedHistogram(
-                INTENT_ACTION_HISTOGRAM, standardAction, StandardActions.NUM_ENTRIES);
     }
 
     /**
@@ -1863,52 +1808,5 @@ public class ExternalNavigationHandler {
         if (referrerUrl == null) return false;
 
         return UrlUtilitiesJni.get().isGoogleSubDomainUrl(referrerUrl);
-    }
-
-    private @StandardActions int getStandardAction(String action) {
-        switch (action) {
-            case Intent.ACTION_MAIN:
-                return StandardActions.MAIN;
-            case Intent.ACTION_VIEW:
-                return StandardActions.VIEW;
-            case Intent.ACTION_ATTACH_DATA:
-                return StandardActions.ATTACH_DATA;
-            case Intent.ACTION_EDIT:
-                return StandardActions.EDIT;
-            case Intent.ACTION_PICK:
-                return StandardActions.PICK;
-            case Intent.ACTION_CHOOSER:
-                return StandardActions.CHOOSER;
-            case Intent.ACTION_GET_CONTENT:
-                return StandardActions.GET_CONTENT;
-            case Intent.ACTION_DIAL:
-                return StandardActions.DIAL;
-            case Intent.ACTION_CALL:
-                return StandardActions.CALL;
-            case Intent.ACTION_SEND:
-                return StandardActions.SEND;
-            case Intent.ACTION_SENDTO:
-                return StandardActions.SENDTO;
-            case Intent.ACTION_ANSWER:
-                return StandardActions.ANSWER;
-            case Intent.ACTION_INSERT:
-                return StandardActions.INSERT;
-            case Intent.ACTION_DELETE:
-                return StandardActions.DELETE;
-            case Intent.ACTION_RUN:
-                return StandardActions.RUN;
-            case Intent.ACTION_SYNC:
-                return StandardActions.SYNC;
-            case Intent.ACTION_PICK_ACTIVITY:
-                return StandardActions.PICK_ACTIVITY;
-            case Intent.ACTION_SEARCH:
-                return StandardActions.SEARCH;
-            case Intent.ACTION_WEB_SEARCH:
-                return StandardActions.WEB_SEARCH;
-            case Intent.ACTION_FACTORY_TEST:
-                return StandardActions.FACTORY_TEST;
-            default:
-                return StandardActions.OTHER;
-        }
     }
 }

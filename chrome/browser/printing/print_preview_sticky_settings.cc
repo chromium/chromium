@@ -57,10 +57,12 @@ void PrintPreviewStickySettings::RestoreFromPrefs(PrefService* prefs) {
 
 base::flat_map<std::string, int>
 PrintPreviewStickySettings::GetPrinterRecentlyUsedRanks() {
+  auto recently_used_printers = GetRecentlyUsedPrinters();
   int current_rank = 0;
-  base::flat_map<std::string, int> recently_used_ranks;
-  for (const std::string& printer_id : GetRecentlyUsedPrinters())
-    recently_used_ranks[printer_id] = current_rank++;
+  std::vector<std::pair<std::string, int>> recently_used_ranks;
+  recently_used_ranks.reserve(recently_used_printers.size());
+  for (std::string& printer_id : recently_used_printers)
+    recently_used_ranks.emplace_back(std::move(printer_id), current_rank++);
   return recently_used_ranks;
 }
 

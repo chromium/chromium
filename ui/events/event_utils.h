@@ -8,9 +8,9 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "ui/display/display.h"
@@ -33,6 +33,7 @@ class Vector2d;
 }  // namespace gfx
 
 namespace base {
+class TickClock;
 class TimeTicks;
 }
 
@@ -161,6 +162,26 @@ EVENTS_EXPORT display::Display::TouchSupport GetInternalDisplayTouchSupport();
 EVENTS_EXPORT void ComputeEventLatencyOS(const PlatformEvent& native_event);
 
 #if defined(OS_WIN)
+// Makes ComputeEventLatencyOSWinFromTickCount call the given |clock| to find
+// the current time ticks to compare to an MSG timestamp. If |clock| is nullptr,
+// it will call ::GetTickCount, which is the default.
+EVENTS_EXPORT void SetEventLatencyTickClockForTesting(
+    const base::TickClock* clock);
+
+// Records Event.Latency.OS_WIN.* metrics for events whose timestamp comes from
+// ::GetTickCount (such as an MSG).
+EVENTS_EXPORT void ComputeEventLatencyOSWinFromTickCount(
+    ui::EventType event_type,
+    DWORD event_time,
+    base::TimeTicks current_time);
+
+// Records Event.Latency.OS_WIN.* metrics for events whose timestamp comes from
+// a Performance Counter (such as POINTER_INFO).
+EVENTS_EXPORT void ComputeEventLatencyOSWinFromPerformanceCounter(
+    ui::EventType event_type,
+    UINT64 event_time,
+    base::TimeTicks current_time);
+
 EVENTS_EXPORT int GetModifiersFromKeyState();
 
 // Returns true if |message| identifies a mouse event that was generated as the

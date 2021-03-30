@@ -6,6 +6,7 @@
 #define COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_CONTROLLER_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/compiler_specific.h"
@@ -13,7 +14,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -277,7 +277,7 @@ class AutocompleteController : public AutocompleteProviderListener,
   // Helper for UpdateKeywordDescriptions(). Returns whether curbing the keyword
   // descriptions is enabled, and whether there is enough input to guarantee
   // that the Omnibox is in keyword mode.
-  bool ShouldCurbKeywordDescriptions(const base::string16& keyword);
+  bool ShouldCurbKeywordDescriptions(const std::u16string& keyword);
 
   // MemoryDumpProvider:
   bool OnMemoryDump(
@@ -346,9 +346,6 @@ class AutocompleteController : public AutocompleteProviderListener,
   // notifications until Start() has been invoked on all providers. When this
   // boolean is true, we are definitely within the synchronous pass.
   bool in_start_;
-
-  // Indicate whether it is the first query since startup.
-  bool first_query_;
 
   // True if the signal predicting a likely search has already been sent to the
   // service worker context during the current input session. False on

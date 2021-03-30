@@ -21,11 +21,10 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/sequenced_task_runner.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
-#include "storage/common/database/database_connections.h"
+#include "storage/browser/database/database_connections.h"
 #include "url/origin.h"
 
 namespace sql {
@@ -55,24 +54,16 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) OriginInfo {
   const std::string& GetOriginIdentifier() const { return origin_identifier_; }
   int64_t TotalSize() const { return total_size_; }
   base::Time LastModified() const { return last_modified_; }
-  void GetAllDatabaseNames(std::vector<base::string16>* databases) const;
-  int64_t GetDatabaseSize(const base::string16& database_name) const;
-  base::string16 GetDatabaseDescription(
-      const base::string16& database_name) const;
-  base::Time GetDatabaseLastModified(const base::string16& database_name) const;
+  void GetAllDatabaseNames(std::vector<std::u16string>* databases) const;
+  int64_t GetDatabaseSize(const std::u16string& database_name) const;
 
  protected:
-  struct DBInfo {
-    base::string16 description;
-    int64_t size;
-    base::Time last_modified;
-  };
   OriginInfo(const std::string& origin_identifier, int64_t total_size);
 
   std::string origin_identifier_;
   int64_t total_size_;
   base::Time last_modified_;
-  std::map<base::string16, DBInfo> database_info_;
+  std::map<std::u16string, int64_t> database_sizes_;
 };
 
 // This class manages the main database and keeps track of open databases.
@@ -87,32 +78,31 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseTracker
   class Observer {
    public:
     virtual void OnDatabaseSizeChanged(const std::string& origin_identifier,
-                                       const base::string16& database_name,
+                                       const std::u16string& database_name,
                                        int64_t database_size) = 0;
     virtual void OnDatabaseScheduledForDeletion(
         const std::string& origin_identifier,
-        const base::string16& database_name) = 0;
+        const std::u16string& database_name) = 0;
 
    protected:
     virtual ~Observer() = default;
   };
 
   DatabaseTracker(const base::FilePath& profile_path,
-                  bool is_off_the_record,
+                  bool is_incognito,
                   SpecialStoragePolicy* special_storage_policy,
                   QuotaManagerProxy* quota_manager_proxy);
 
   void DatabaseOpened(const std::string& origin_identifier,
-                      const base::string16& database_name,
-                      const base::string16& database_details,
-                      int64_t estimated_size,
+                      const std::u16string& database_name,
+                      const std::u16string& database_details,
                       int64_t* database_size);
   void DatabaseModified(const std::string& origin_identifier,
-                        const base::string16& database_name);
+                        const std::u16string& database_name);
   void DatabaseClosed(const std::string& origin_identifier,
-                      const base::string16& database_name);
+                      const std::u16string& database_name);
   void HandleSqliteError(const std::string& origin_identifier,
-                         const base::string16& database_name,
+                         const std::u16string& database_name,
                          int error);
 
   void CloseDatabases(const DatabaseConnections& connections);
@@ -126,7 +116,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseTracker
   const base::FilePath& database_directory() const { return db_dir_; }
 
   base::FilePath GetFullDBFilePath(const std::string& origin_identifier,
-                                   const base::string16& database_name);
+                                   const std::u16string& database_name);
 
   // virtual for unit-testing only
   virtual bool GetOriginInfo(const std::string& origin_id, OriginInfo* info);
@@ -139,43 +129,48 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseTracker
   }
 
   bool IsDatabaseScheduledForDeletion(const std::string& origin_identifier,
-                                      const base::string16& database_name);
+                                      const std::u16string& database_name);
 
-  // Deletes a single database. Returns net::OK on success, net::FAILED on
-  // failure, or net::ERR_IO_PENDING and |callback| is invoked upon completion,
-  // if non-null.
-  int DeleteDatabase(const std::string& origin_identifier,
-                     const base::string16& database_name,
-                     net::CompletionOnceCallback callback);
+  // Deletes a single database.
+  //
+  // `callback` must be non-null, and is invoked upon completion with a
+  // net::Error, which will most likely be net::OK or net::FAILED. `callback`
+  // may be called before this method returns.
+  void DeleteDatabase(const std::string& origin_identifier,
+                      const std::u16string& database_name,
+                      net::CompletionOnceCallback callback);
 
-  // Delete any databases that have been touched since the cutoff date that's
-  // supplied, omitting any that match IDs within |protected_origins|.
-  // Returns net::OK on success, net::FAILED if not all databases could be
-  // deleted, and net::ERR_IO_PENDING and |callback| is invoked upon completion,
-  // if non-null. Protected origins, according the the SpecialStoragePolicy,
-  // are not deleted by this method.
-  int DeleteDataModifiedSince(const base::Time& cutoff,
-                              net::CompletionOnceCallback callback);
+  // Deletes databases touched since `cutoff`.
+  //
+  // Does not delete databases belonging to origins designated as protected by
+  // the SpecialStoragePolicy passed to the DatabaseTracker constructor.
+  //
+  // `callback` must must be non-null, and is invoked upon completion with a
+  // net::Error. The status will be net::OK on success, or net::FAILED if not
+  // all databases could be deleted. `callback` may be called before this method
+  // returns.
+  void DeleteDataModifiedSince(const base::Time& cutoff,
+                               net::CompletionOnceCallback callback);
 
-  // Delete all databases that belong to the given origin. Returns net::OK on
-  // success, net::FAILED if not all databases could be deleted, and
-  // net::ERR_IO_PENDING and |callback| is invoked upon completion, if non-null.
-  // virtual for unit testing only
-  virtual int DeleteDataForOrigin(const url::Origin& origin,
-                                  net::CompletionOnceCallback callback);
+  // Deletes all databases that belong to the given origin.
+  //
+  // `callback` must must be non-null, and is invoked upon completion with a
+  // net::Error. The status will be net::OK on success, or net::FAILED if not
+  // all databases could be deleted. `callback` may be called before this method
+  // returns.
+  virtual void DeleteDataForOrigin(const url::Origin& origin,
+                                   net::CompletionOnceCallback callback);
 
-  bool IsOffTheRecordProfile() const { return is_off_the_record_; }
+  bool IsIncognitoProfile() const { return is_incognito_; }
 
-  const base::File* GetOffTheRecordFile(
-      const base::string16& vfs_file_path) const;
-  const base::File* SaveOffTheRecordFile(const base::string16& vfs_file_path,
-                                         base::File file);
-  void CloseOffTheRecordFileHandle(const base::string16& vfs_file_path);
-  bool HasSavedOffTheRecordFileHandle(
-      const base::string16& vfs_file_path) const;
+  const base::File* GetIncognitoFile(const std::u16string& vfs_file_path) const;
+  const base::File* SaveIncognitoFile(const std::u16string& vfs_file_path,
+                                      base::File file);
+  void CloseIncognitoFileHandle(const std::u16string& vfs_file_path);
+  bool HasSavedIncognitoFileHandle(const std::u16string& vfs_file_path) const;
 
   // Shutdown the database tracker, deleting database files if the tracker is
-  // used for an OffTheRecord profile.
+  // used for an Incognito profile.
   void Shutdown();
   // Disables the exit-time deletion of session-only data.
   void SetForceKeepSessionState();
@@ -187,7 +182,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseTracker
   friend class DatabaseTracker_TestHelper_Test;
   friend class MockDatabaseTracker;  // for testing
 
-  using DatabaseSet = std::map<std::string, std::set<base::string16>>;
+  using DatabaseSet = std::map<std::string, std::set<std::u16string>>;
 
   class CachedOriginInfo : public OriginInfo {
    public:
@@ -195,22 +190,20 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseTracker
     void SetOriginIdentifier(const std::string& origin_identifier) {
       origin_identifier_ = origin_identifier;
     }
-    void SetDatabaseSize(const base::string16& database_name,
+    void SetDatabaseSize(const std::u16string& database_name,
                          int64_t new_size) {
-      int64_t old_size = 0;
-      if (database_info_.find(database_name) != database_info_.end())
-        old_size = database_info_[database_name].size;
-      database_info_[database_name].size = new_size;
+      // If the name does not exist in the map, operator[] creates a new entry
+      // with a default-constructed value. The default-constructed value for
+      // int64_t is zero (0), which is exactly what we want `old_size` to be set
+      // to in this case.
+      int64_t& database_size = database_sizes_[database_name];
+      int64_t old_size = database_size;
+
+      database_size = new_size;
       if (new_size != old_size)
         total_size_ += new_size - old_size;
     }
-    void SetDatabaseDescription(const base::string16& database_name,
-                                const base::string16& description) {
-      database_info_[database_name].description = description;
-    }
-    void SetDatabaseLastModified(const base::string16& database_name,
-                                 const base::Time& last_modified) {
-      database_info_[database_name].last_modified = last_modified;
+    void UpdateLastModified(base::Time last_modified) {
       if (last_modified > last_modified_)
         last_modified_ = last_modified;
     }
@@ -219,29 +212,28 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseTracker
   // virtual for unit-testing only.
   virtual ~DatabaseTracker();
 
-  // Deletes the directory that stores all DBs in OffTheRecord mode, if it
+  // Deletes the directory that stores all DBs in Incognito mode, if it
   // exists.
-  void DeleteOffTheRecordDBDirectory();
+  void DeleteIncognitoDBDirectory();
 
   // Deletes session-only databases. Blocks databases from being created/opened.
   void ClearSessionOnlyOrigins();
 
   bool DeleteClosedDatabase(const std::string& origin_identifier,
-                            const base::string16& database_name);
+                            const std::u16string& database_name);
 
   // Delete all files belonging to the given origin given that no database
   // connections within this origin are open, or if |force| is true, delete
   // the meta data and rename the associated directory.
   bool DeleteOrigin(const std::string& origin_identifier, bool force);
   void DeleteDatabaseIfNeeded(const std::string& origin_identifier,
-                              const base::string16& database_name);
+                              const std::u16string& database_name);
 
   bool LazyInit();
   bool UpgradeToCurrentVersion();
   void InsertOrUpdateDatabaseDetails(const std::string& origin_identifier,
-                                     const base::string16& database_name,
-                                     const base::string16& database_details,
-                                     int64_t estimated_size);
+                                     const std::u16string& database_name,
+                                     const std::u16string& database_details);
 
   void ClearAllCachedOriginInfo();
   CachedOriginInfo* MaybeGetCachedOriginInfo(
@@ -253,23 +245,22 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseTracker
   }
 
   int64_t GetDBFileSize(const std::string& origin_identifier,
-                        const base::string16& database_name);
+                        const std::u16string& database_name);
   int64_t SeedOpenDatabaseInfo(const std::string& origin_identifier,
-                               const base::string16& database_name,
-                               const base::string16& description);
+                               const std::u16string& database_name,
+                               const std::u16string& description);
   int64_t UpdateOpenDatabaseInfoAndNotify(
       const std::string& origin_identifier,
-      const base::string16& database_name,
-      const base::string16* opt_description);
+      const std::u16string& database_name,
+      const std::u16string* opt_description);
   int64_t UpdateOpenDatabaseSizeAndNotify(const std::string& origin_identifier,
-                                          const base::string16& database_name) {
+                                          const std::u16string& database_name) {
     return UpdateOpenDatabaseInfoAndNotify(origin_identifier, database_name,
                                            nullptr);
   }
 
-
   void ScheduleDatabaseForDeletion(const std::string& origin_identifier,
-                                   const base::string16& database_name);
+                                   const std::u16string& database_name);
   // Schedule a set of open databases for deletion. If non-null, callback is
   // invoked upon completion.
   void ScheduleDatabasesForDeletion(const DatabaseSet& databases,
@@ -279,7 +270,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseTracker
   base::FilePath GetOriginDirectory(const std::string& origin_identifier);
 
   bool is_initialized_ = false;
-  const bool is_off_the_record_;
+  const bool is_incognito_;
   bool force_keep_session_state_ = false;
   bool shutting_down_ = false;
   const base::FilePath profile_path_;
@@ -312,20 +303,20 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseTracker
   // The database tracker thread we're supposed to run file IO on.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  // When in OffTheRecord mode, store a DELETE_ON_CLOSE handle to each
-  // main DB and journal file that was accessed. When the OffTheRecord profile
+  // When in Incognito mode, store a DELETE_ON_CLOSE handle to each
+  // main DB and journal file that was accessed. When the Incognito profile
   // goes away (or when the browser crashes), all these handles will be
   // closed, and the files will be deleted.
-  std::map<base::string16, base::File*> off_the_record_file_handles_;
+  std::map<std::u16string, base::File*> incognito_file_handles_;
 
-  // In a non-OffTheRecord profile, all DBs in an origin are stored in a
-  // directory named after the origin. In an OffTheRecord profile though, we do
+  // In a non-Incognito profile, all DBs in an origin are stored in a
+  // directory named after the origin. In an Incognito profile though, we do
   // not want the directory structure to reveal the origins visited by the user
   // (in case the browser process crashes and those directories are not
   // deleted). So we use this map to assign directory names that do not reveal
   // this information.
-  std::map<std::string, base::string16> off_the_record_origin_directories_;
-  int off_the_record_origin_directories_generator_ = 0;
+  std::map<std::string, std::u16string> incognito_origin_directories_;
+  int incognito_origin_directories_generator_ = 0;
 
   FRIEND_TEST_ALL_PREFIXES(DatabaseTracker, TestHelper);
 };

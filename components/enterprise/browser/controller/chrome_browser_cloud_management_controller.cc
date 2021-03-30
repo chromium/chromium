@@ -135,7 +135,7 @@ ChromeBrowserCloudManagementController::CreatePolicyManager(
   base::FilePath policy_dir =
       user_data_dir.Append(ChromeBrowserCloudManagementController::kPolicyDir);
 
-  base::FilePath external_policy_path = delegate_->GetExternalPolicyPath();
+  base::FilePath external_policy_path = delegate_->GetExternalPolicyDir();
 
   std::unique_ptr<MachineLevelUserCloudPolicyStore> policy_store =
       MachineLevelUserCloudPolicyStore::Create(
@@ -163,13 +163,13 @@ void ChromeBrowserCloudManagementController::Init(
     delegate_->InitializeOAuthTokenFactory(url_loader_factory, local_state);
   }
 
-  base::ThreadPool::PostTask(
+  // Post the task of CreateReportScheduler to run on best effort after launch
+  // is completed.
+  delegate_->GetBestEffortTaskRunner()->PostTask(
       FROM_HERE,
-      {base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(
-          &ChromeBrowserCloudManagementController::CreateReportSchedulerAsync,
-          base::Unretained(this), base::ThreadTaskRunnerHandle::Get()));
+          &ChromeBrowserCloudManagementController::CreateReportScheduler,
+          weak_factory_.GetWeakPtr()));
 
   MachineLevelUserCloudPolicyManager* policy_manager =
       delegate_->GetMachineLevelUserCloudPolicyManager();
@@ -223,9 +223,10 @@ void ChromeBrowserCloudManagementController::Init(
     // Not registered already, so do it now.
     cloud_management_registrar_->RegisterForCloudManagementWithEnrollmentToken(
         enrollment_token, client_id,
-        base::Bind(&ChromeBrowserCloudManagementController::
-                       RegisterForCloudManagementWithEnrollmentTokenCallback,
-                   base::Unretained(this)));
+        base::BindRepeating(
+            &ChromeBrowserCloudManagementController::
+                RegisterForCloudManagementWithEnrollmentTokenCallback,
+            weak_factory_.GetWeakPtr()));
     // On Windows, if Chrome is installed on the user level, we can't store the
     // DM token in the registry at the end of enrollment. Hence Chrome needs to
     // re-enroll every launch.
@@ -261,7 +262,7 @@ void ChromeBrowserCloudManagementController::UnenrollBrowser() {
   // Invalidate DM token in storage.
   BrowserDMTokenStorage::Get()->InvalidateDMToken(base::BindOnce(
       &ChromeBrowserCloudManagementController::InvalidateDMTokenCallback,
-      base::Unretained(this)));
+      weak_factory_.GetWeakPtr()));
 }
 
 void ChromeBrowserCloudManagementController::InvalidatePolicies() {
@@ -402,15 +403,6 @@ void ChromeBrowserCloudManagementController::
   }
 
   NotifyPolicyRegisterFinished(true);
-}
-
-void ChromeBrowserCloudManagementController::CreateReportSchedulerAsync(
-    scoped_refptr<base::SequencedTaskRunner> task_runner) {
-  task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &ChromeBrowserCloudManagementController::CreateReportScheduler,
-          base::Unretained(this)));
 }
 
 void ChromeBrowserCloudManagementController::CreateReportScheduler() {

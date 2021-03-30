@@ -119,6 +119,10 @@ const base::Feature kTLS13KeyUpdate{"TLS13KeyUpdate",
 
 const base::Feature kPostQuantumCECPQ2{"PostQuantumCECPQ2",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kPostQuantumCECPQ2SomeDomains{
+    "PostQuantumCECPQ2SomeDomains", base::FEATURE_ENABLED_BY_DEFAULT};
+const base::FeatureParam<std::string>
+    kPostQuantumCECPQ2Prefix(&kPostQuantumCECPQ2SomeDomains, "prefix", "aa");
 
 const base::Feature kNetUnusedIdleSocketTimeout{
     "NetUnusedIdleSocketTimeout", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -138,10 +142,26 @@ const base::Feature kSameSiteDefaultChecksMethodRigorously{
 #if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
 const base::Feature kCertVerifierBuiltinFeature{
     "CertVerifierBuiltin", base::FEATURE_DISABLED_BY_DEFAULT};
+#if defined(OS_MAC)
+const base::FeatureParam<int> kCertVerifierBuiltinImpl{
+    &kCertVerifierBuiltinFeature, "impl", 0};
+const base::FeatureParam<int> kCertVerifierBuiltinCacheSize{
+    &kCertVerifierBuiltinFeature, "cachesize", 0};
+#endif /* defined(OS_MAC) */
 #endif
 
-const base::Feature kAppendFrameOriginToNetworkIsolationKey{
-    "AppendFrameOriginToNetworkIsolationKey", base::FEATURE_ENABLED_BY_DEFAULT};
+#if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
+// Enables the dual certificate verification trial feature.
+// https://crbug.com/649026
+const base::Feature kCertDualVerificationTrialFeature{
+    "CertDualVerificationTrial", base::FEATURE_DISABLED_BY_DEFAULT};
+#if defined(OS_MAC)
+const base::FeatureParam<int> kCertDualVerificationTrialImpl{
+    &kCertDualVerificationTrialFeature, "impl", 0};
+const base::FeatureParam<int> kCertDualVerificationTrialCacheSize{
+    &kCertDualVerificationTrialFeature, "cachesize", 0};
+#endif /* defined(OS_MAC) */
+#endif
 
 const base::Feature kTurnOffStreamingMediaCachingOnBattery{
     "TurnOffStreamingMediaCachingOnBattery", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -153,7 +173,7 @@ const base::Feature kLegacyTLSEnforced{"LegacyTLSEnforced",
                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kSchemefulSameSite{"SchemefulSameSite",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
+                                       base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kTLSLegacyCryptoFallbackForMetrics{
     "TLSLegacyCryptoFallbackForMetrics", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -195,5 +215,20 @@ extern const base::FeatureParam<base::TimeDelta> kTimeoutTcpConnectAttemptMax(
 
 constexpr base::Feature kFirstPartySets{"FirstPartySets",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::FeatureParam<bool> kFirstPartySetsIsDogfooder{
+    &kFirstPartySets, "FirstPartySetsIsDogfooder", false};
+
+const base::Feature kSameSiteCookiesBugfix1166211{
+    "SameSiteCookiesBugfix1166211", base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kNoCookieChangeNotificationOnLoad{
+    "NoCookieChangeNotificationOnLoad", base::FEATURE_DISABLED_BY_DEFAULT};
+
+#if BUILDFLAG(ENABLE_REPORTING)
+const base::Feature kDocumentReporting{"DocumentReporting",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+#endif  // BUILDFLAG(ENABLE_REPORTING)
+
 }  // namespace features
 }  // namespace net

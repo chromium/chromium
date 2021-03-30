@@ -1,4 +1,5 @@
-# If these reviewers are unavailable, please send CLs to
-# <chromium-metrics-reviews@google.com>. See tools/metrics/histograms/OWNERS
-# for details.
+per-file OWNERS=file://tools/metrics/histograms/histograms_xml/METRIC_REVIEWER_OWNERS
+
+# Prefer sending CLs to the owners listed below.
+# Use chromium-metrics-reviews@google.com as a backup.
 tbansal@chromium.org

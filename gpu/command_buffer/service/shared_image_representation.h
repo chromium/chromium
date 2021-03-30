@@ -415,23 +415,32 @@ class GPU_GLES2_EXPORT SharedImageRepresentationOverlay
     ScopedReadAccess(base::PassKey<SharedImageRepresentationOverlay> pass_key,
                      SharedImageRepresentationOverlay* representation,
                      gl::GLImage* gl_image,
-                     std::vector<gfx::GpuFence> acquire_fences,
-                     std::vector<gfx::GpuFence> release_fences);
+                     std::vector<gfx::GpuFence> acquire_fences);
     ~ScopedReadAccess();
 
     gl::GLImage* gl_image() const { return gl_image_; }
 
+#if defined(OS_ANDROID)
+    AHardwareBuffer* GetAHardwareBuffer() {
+      return representation()->GetAHardwareBuffer();
+    }
+#endif
+
     std::vector<gfx::GpuFence> TakeAcquireFences() {
       return std::move(acquire_fences_);
     }
-    std::vector<gfx::GpuFence> TakeReleaseFences() {
-      return std::move(release_fences_);
+    void SetReleaseFence(gfx::GpuFenceHandle release_fence) {
+      // Note: We overwrite previous fence. In case if window manager uses fence
+      // for each frame we schedule overlay and the same image is scheduled for
+      // multiple frames this will be updated after each frame. It's safe to
+      // wait only for the last frame's fence.
+      release_fence_ = std::move(release_fence);
     }
 
    private:
     gl::GLImage* const gl_image_;
     std::vector<gfx::GpuFence> acquire_fences_;
-    std::vector<gfx::GpuFence> release_fences_;
+    gfx::GpuFenceHandle release_fence_;
   };
 
 #if defined(OS_ANDROID)
@@ -450,17 +459,49 @@ class GPU_GLES2_EXPORT SharedImageRepresentationOverlay
   // - Adds gpu fences to |acquire_fences| that should be waited on before the
   // SharedImage is ready to be displayed. These fences are fired when the gpu
   // has finished writing.
-  // - Adds gpu fences to |release_fences| that are signalled by the display
-  // after pixmap has been displayed and is ready for reuse.
-  virtual bool BeginReadAccess(std::vector<gfx::GpuFence>* acquire_fences,
-                               std::vector<gfx::GpuFence>* release_fences) = 0;
-  virtual void EndReadAccess() = 0;
+  virtual bool BeginReadAccess(std::vector<gfx::GpuFence>* acquire_fences) = 0;
 
-  // TODO(weiliangc): Add API to backing AHardwareBuffer.
+  // |release_fence| is a fence that will be signaled when the image can be
+  // safely re-used. Note, on some platforms window manager doesn't support
+  // release fences and return image when it's already safe to re-use.
+  // |release_fence| will be null in that case.
+  virtual void EndReadAccess(gfx::GpuFenceHandle release_fence) = 0;
+
+#if defined(OS_ANDROID)
+  virtual AHardwareBuffer* GetAHardwareBuffer();
+#endif
 
   // TODO(penghuang): Refactor it to not depend on GL.
   // Get the backing as GLImage for GLSurface::ScheduleOverlayPlane.
   virtual gl::GLImage* GetGLImage() = 0;
+};
+
+class GPU_GLES2_EXPORT SharedImageRepresentationMemory
+    : public SharedImageRepresentation {
+ public:
+  class GPU_GLES2_EXPORT ScopedReadAccess
+      : public ScopedAccessBase<SharedImageRepresentationMemory> {
+   public:
+    ScopedReadAccess(base::PassKey<SharedImageRepresentationMemory> pass_key,
+                     SharedImageRepresentationMemory* representation,
+                     SkPixmap pixmap);
+    ~ScopedReadAccess();
+
+    SkPixmap pixmap() { return pixmap_; }
+
+   private:
+    SkPixmap pixmap_;
+  };
+
+  SharedImageRepresentationMemory(SharedImageManager* manager,
+                                  SharedImageBacking* backing,
+                                  MemoryTypeTracker* tracker)
+      : SharedImageRepresentation(manager, backing, tracker) {}
+
+  std::unique_ptr<ScopedReadAccess> BeginScopedReadAccess();
+
+ protected:
+  virtual SkPixmap BeginReadAccess() = 0;
 };
 
 // An interface that allows a SharedImageBacking to hold a reference to VA-API

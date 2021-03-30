@@ -32,7 +32,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PrintPreview.InitialDisplayTime" units="ms"
-    expires_after="2021-05-10">
+    expires_after="2021-07-27">
   <owner>thestig@chromium.org</owner>
   <owner>dhoss@chromium.org</owner>
   <summary>
@@ -62,7 +62,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PrintPreview.NumberOfPrinters" units="units"
-    expires_after="2021-04-30">
+    expires_after="2021-09-05">
   <owner>thestig@chromium.org</owner>
   <owner>dhoss@chromium.org</owner>
   <summary>
@@ -89,8 +89,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PrintPreview.PrintDocumentType"
-    enum="PrintPreviewPrintDocumentTypeBuckets" expires_after="2021-03-21">
+    enum="PrintPreviewPrintDocumentTypeBuckets" expires_after="2021-07-11">
   <owner>rbpotter@chromium.org</owner>
+  <owner>awscreen@chromium.org</owner>
   <summary>
     Track type of documents printed (HTML vs PDF). Recorded immediately after a
     user requests that a document be printed.
@@ -128,8 +129,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PrintPreview.PrintSettings" enum="PrintSettings"
-    expires_after="2021-05-09">
+    expires_after="2021-09-12">
   <owner>thestig@chromium.org</owner>
+  <owner>awscreen@chromium.org</owner>
   <summary>
     Track the popularity of print settings. (Settings when printing to PDF are
     excluded from this statistic.)
@@ -200,7 +202,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PrintPreview.RendererError" enum="PrintPreviewFailureType"
-    expires_after="2021-05-10">
+    expires_after="2021-07-27">
   <owner>thestig@chromium.org</owner>
   <owner>dhoss@chromium.org</owner>
   <summary>
@@ -209,20 +211,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PrintPreview.RenderPDFPageTime" units="ms"
-    expires_after="2021-02-21">
+    expires_after="2021-05-10">
   <owner>thestig@chromium.org</owner>
+  <owner>awscreen@chromium.org</owner>
   <summary>Time taken to render each PDF page for print preview.</summary>
 </histogram>
 
 <histogram name="PrintPreview.RenderToPDFTime" units="ms"
-    expires_after="2021-01-24">
+    expires_after="2021-07-27">
   <owner>thestig@chromium.org</owner>
+  <owner>awscreen@chromium.org</owner>
   <summary>Time taken to render to PDF for print preview.</summary>
 </histogram>
 
 <histogram name="PrintPreview.UserAction" enum="PrintPreviewUserActionType"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>thestig@chromium.org</owner>
+  <owner>awscreen@chromium.org</owner>
   <summary>
     Action taken by the user in the preview tab such as print, cancel, print to
     pdf and show advanced print settings dialog.

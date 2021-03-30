@@ -16,6 +16,7 @@
 #include "ui/views/controls/button/radio_button.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -23,7 +24,7 @@ namespace {
 
 class TrayRadioButton : public views::RadioButton {
  public:
-  TrayRadioButton(PressedCallback callback, const base::string16& button_label)
+  TrayRadioButton(PressedCallback callback, const std::u16string& button_label)
       : views::RadioButton(button_label) {
     SetCallback(std::move(callback));
     SetBorder(views::CreateEmptyBorder(kTrayRadioButtonPadding));
@@ -115,10 +116,6 @@ void DarkModeDetailedView::CreateItems() {
   Layout();
 }
 
-const char* DarkModeDetailedView::GetClassName() const {
-  return "DarkModeDetailedView";
-}
-
 void DarkModeDetailedView::OnThemeChanged() {
   TrayDetailedView::OnThemeChanged();
   TrayPopupUtils::SetLabelFontList(themed_label_,
@@ -137,5 +134,8 @@ void DarkModeDetailedView::UpdateCheckedButton(bool is_themed) {
   is_themed ? themed_mode_button_->SetChecked(true)
             : neutral_mode_button_->SetChecked(true);
 }
+
+BEGIN_METADATA(DarkModeDetailedView, TrayDetailedView)
+END_METADATA
 
 }  // namespace ash

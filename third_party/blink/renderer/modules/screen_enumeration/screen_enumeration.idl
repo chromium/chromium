@@ -2,17 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Permission-gated access to multi-screen information.
 // https://github.com/webscreens/window-placement
+// TODO(crbug.com/897300): Remove this in favor of new API access points.
 [
     SecureContext,
     RuntimeEnabled=WindowPlacement,
     ImplementedAs=GlobalScreenEnumeration
 ] partial interface Window {
-  [CallWith=ScriptState, Measure, RaisesException]
-  Promise<sequence<Screen>> getScreens();
+  // TODO(crbug.com/897300): Remove this; use the new WindowScreens supplement.
+  [CallWith=ScriptState, RaisesException]
+  Promise<sequence<Screen>> getScreensDeprecated();
 
+  // TODO(crbug.com/897300): Remove this; use Screen.isExtended.
   [CallWith=ScriptState, Measure, RaisesException]
   Promise<boolean> isMultiScreen();
 
+  // TODO(crbug.com/897300): Remove this; use Screens.onchange.
   [Measure] attribute EventHandler onscreenschange;
 };

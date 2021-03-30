@@ -14,9 +14,10 @@
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/browser/sessions/session_restore_test_utils.h"
 #include "chrome/browser/sessions/tab_loader_tester.h"
-#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/browser_with_test_window_test.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
@@ -27,8 +28,9 @@ using resource_coordinator::TabLoadTracker;
 using resource_coordinator::ResourceCoordinatorTabHelper;
 using LoadingState = TabLoadTracker::LoadingState;
 
-class TabLoaderTest : public testing::Test {
+class TabLoaderTest : public BrowserWithTestWindowTest {
  protected:
+  using Super = BrowserWithTestWindowTest;
   using RestoredTab = SessionRestoreDelegate::RestoredTab;
 
   TabLoaderTest() : max_simultaneous_loads_(1) {}
@@ -42,11 +44,12 @@ class TabLoaderTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
+    Super::SetUp();
     construction_callback_ = base::BindRepeating(
         &TabLoaderTest::OnTabLoaderCreated, base::Unretained(this));
     TabLoaderTester::SetConstructionCallbackForTesting(&construction_callback_);
-    test_web_contents_factory_.reset(new content::TestWebContentsFactory);
-    test_policy_.reset(new testing::ScopedAlwaysLoadSessionRestoreTestPolicy());
+    test_policy_ =
+        std::make_unique<testing::ScopedAlwaysLoadSessionRestoreTestPolicy>();
   }
 
   void TearDown() override {
@@ -57,9 +60,9 @@ class TabLoaderTest : public testing::Test {
     }
 
     TabLoaderTester::SetConstructionCallbackForTesting(nullptr);
-    test_web_contents_factory_.reset();
-    task_environment_.RunUntilIdle();
+    task_environment()->RunUntilIdle();
     test_policy_.reset();
+    Super::TearDown();
   }
 
   void SimulateLoadTimeout() {
@@ -95,29 +98,38 @@ class TabLoaderTest : public testing::Test {
   }
 
   content::WebContents* CreateRestoredWebContents(bool is_active) {
-    content::WebContents* test_contents =
-        test_web_contents_factory_->CreateWebContents(&testing_profile_);
+    std::unique_ptr<content::WebContents> test_contents =
+        content::WebContentsTester::CreateTestWebContents(
+            profile(), content::SiteInstance::Create(profile()));
+    auto* raw_contents = test_contents.get();
     std::vector<std::unique_ptr<content::NavigationEntry>> entries;
     entries.push_back(content::NavigationEntry::Create());
     test_contents->GetController().Restore(0, content::RestoreType::kRestored,
                                            &entries);
     // TabLoadTracker needs the resource_coordinator WebContentsData to be
     // initialized.
-    ResourceCoordinatorTabHelper::CreateForWebContents(test_contents);
-    restored_tabs_.push_back(RestoredTab(
-        test_contents, is_active /* is_active */, false /* is_app */,
-        false /* is_pinned */, base::nullopt /* group */));
+    ResourceCoordinatorTabHelper::CreateForWebContents(raw_contents);
+    restored_tabs_.push_back(
+        RestoredTab(raw_contents, is_active /* is_active */, false /* is_app */,
+                    false /* is_pinned */, base::nullopt /* group */));
 
-    // If the tab is active start "loading" it right away for consistency with
-    // session restore code.
-    if (is_active)
-      test_contents->GetController().LoadIfNecessary();
+    // Add the contents to the tab strip model, which becomes the owner.
+    auto* tab_strip_model = browser()->tab_strip_model();
+    tab_strip_model->AppendWebContents(std::move(test_contents), is_active);
 
-    return test_contents;
+    if (is_active) {
+      // If the tab is active start "loading" it right away for consistency with
+      // session restore code.
+      raw_contents->GetController().LoadIfNecessary();
+    }
+
+    return raw_contents;
   }
 
   void CreateMultipleRestoredWebContents(size_t num_active,
                                          size_t num_inactive) {
+    // At least one active tab must be created.
+    DCHECK_LT(0u, num_active);
     for (size_t i = 0; i < num_active; ++i)
       CreateRestoredWebContents(true);
     for (size_t i = 0; i < num_inactive; ++i)
@@ -148,9 +160,6 @@ class TabLoaderTest : public testing::Test {
   // The post-construction testing seam that is invoked by TabLoader.
   base::RepeatingCallback<void(TabLoader*)> construction_callback_;
 
-  std::unique_ptr<content::TestWebContentsFactory> test_web_contents_factory_;
-  content::BrowserTaskEnvironment task_environment_;
-  TestingProfile testing_profile_;
   std::unique_ptr<testing::ScopedAlwaysLoadSessionRestoreTestPolicy>
       test_policy_;
 
@@ -255,7 +264,7 @@ TEST_F(TabLoaderTest, LoadsAreStaggered) {
 TEST_F(TabLoaderTest, OnMemoryPressure) {
   // Multiple contents are necessary to make sure that the tab loader
   // doesn't immediately kick off loading of all tabs and detach.
-  CreateMultipleRestoredWebContents(0, 2);
+  CreateMultipleRestoredWebContents(1, 2);
 
   max_simultaneous_loads_ = 1;
   StartTabLoader();
@@ -391,4 +400,41 @@ TEST_F(TabLoaderTest, ObservesExternallyInitiatedLoads) {
   EXPECT_EQ(1u, tab_loader_.tabs_to_load().size());
   EXPECT_EQ(2u, tab_loader_.scheduled_to_load_count());
   EXPECT_TRUE(tab_loader_.IsSharedTabLoader());
+}
+
+TEST_F(TabLoaderTest, CloseAllTabs) {
+  CreateMultipleRestoredWebContents(1, 2);
+
+  // Create the tab loader with 1 loading slots. This should initially start
+  // loading 1 tab, due to exclusive initial loading of active tabs.
+  max_simultaneous_loads_ = 1;
+  StartTabLoader();
+  EXPECT_EQ(2u, tab_loader_.tabs_to_load().size());
+  EXPECT_EQ(1u, tab_loader_.scheduled_to_load_count());
+
+  // The loader should entirely disconnect when all tabs are closed.
+  browser()->tab_strip_model()->CloseAllTabs();
+  EXPECT_TRUE(TabLoaderTester::shared_tab_loader() == nullptr);
+}
+
+TEST_F(TabLoaderTest, RemoveFromTabStrip) {
+  CreateMultipleRestoredWebContents(1, 1);
+
+  // Create the tab loader with 1 loading slots. This should initially start
+  // loading 1 tab, due to exclusive initial loading of active tabs.
+  max_simultaneous_loads_ = 1;
+  StartTabLoader();
+  EXPECT_EQ(1u, tab_loader_.tabs_to_load().size());
+  EXPECT_EQ(1u, tab_loader_.scheduled_to_load_count());
+
+  // Remove the second tab from the tab strip model.
+  std::unique_ptr<content::WebContents> contents =
+      browser()->tab_strip_model()->DetachWebContentsAt(1);
+
+  // The tab being removed won't be noticed by the loader until some state
+  // change it cares about occurs. Simulate the first tab finishing loading, at
+  // which point the loader should realize the other tab is no longer attached
+  // to a tab strip, and destroy itself because it has no work left to do.
+  SimulateLoaded(0);
+  EXPECT_TRUE(TabLoaderTester::shared_tab_loader() == nullptr);
 }

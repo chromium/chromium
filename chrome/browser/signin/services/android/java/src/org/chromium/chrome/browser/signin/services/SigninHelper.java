@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.signin.services;
 
 import android.accounts.Account;
 import android.content.Context;
-import android.util.Pair;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.android.gms.auth.AccountChangeEvent;
@@ -29,7 +29,6 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,34 +42,34 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
     /**
      * Retrieve more detailed information from account changed intents.
      */
-    public interface AccountChangeEventChecker {
-        List<String> getAccountChangeEvents(Context context, int index, String accountName);
+    interface AccountChangeEventChecker {
+        /**
+         * Gets the new account name of the renamed account.
+         */
+        @Nullable
+        String getNewNameOfRenamedAccount(Context context, String accountEmail);
     }
 
     /**
      * Uses GoogleAuthUtil.getAccountChangeEvents to detect if account
      * renaming has occurred.
      */
-    public static final class SystemAccountChangeEventChecker
-            implements SigninHelper.AccountChangeEventChecker {
+    private static final class SystemAccountChangeEventChecker
+            implements AccountChangeEventChecker {
         @Override
-        public List<String> getAccountChangeEvents(Context context, int index, String accountName) {
+        public @Nullable String getNewNameOfRenamedAccount(Context context, String accountEmail) {
             try {
-                List<AccountChangeEvent> accountChangeEvents =
-                        GoogleAuthUtil.getAccountChangeEvents(context, index, accountName);
-                List<String> changedNames = new ArrayList<>(accountChangeEvents.size());
+                final List<AccountChangeEvent> accountChangeEvents =
+                        GoogleAuthUtil.getAccountChangeEvents(context, 0, accountEmail);
                 for (AccountChangeEvent event : accountChangeEvents) {
                     if (event.getChangeType() == GoogleAuthUtil.CHANGE_TYPE_ACCOUNT_RENAMED_TO) {
-                        changedNames.add(event.getChangeData());
-                    } else {
-                        changedNames.add(null);
+                        return event.getChangeData();
                     }
                 }
-                return changedNames;
             } catch (IOException | GoogleAuthException e) {
                 Log.w(TAG, "Failed to get change events", e);
             }
-            return new ArrayList<>(0);
+            return null;
         }
     }
 
@@ -78,171 +77,85 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
 
     private final AccountTrackerService mAccountTrackerService;
 
-    private final SigninPreferencesManager mPrefsManager;
-
     /**
      * Please use SigninHelperProvider to get SigninHelper instance instead of creating it
      * manually.
+     *
+     * TODO(crbug/1152460): Add integration tests for the rename flow to check that if
+     * a signed-in account A is renamed to the account B, the signed-in account will be
+     * account B.
      */
-    public SigninHelper(SigninManager signinManager, AccountTrackerService accountTrackerService,
-            SigninPreferencesManager signinPreferencesManager) {
+    public SigninHelper(SigninManager signinManager, AccountTrackerService accountTrackerService) {
         mSigninManager = signinManager;
         mAccountTrackerService = accountTrackerService;
-        mPrefsManager = signinPreferencesManager;
         ApplicationStatus.registerApplicationStateListener(this);
     }
 
-    public void validateAccountSettings(boolean accountsChanged) {
-        // validateAccountsInternal accesses account list (to check whether account exists), so
-        // postpone the call until account list cache in AccountManagerFacade is ready.
-        AccountManagerFacadeProvider.getInstance().runAfterCacheIsPopulated(
-                () -> validateAccountsInternal(accountsChanged));
+    public void validateAccountSettings() {
+        AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts(accounts -> {
+            mAccountTrackerService.seedAccountsIfNeeded(
+                    () -> { validateSignedInAccountExists(accounts); });
+        });
     }
 
-    private void validateAccountsInternal(boolean accountsChanged) {
-        // Ensure System accounts have been seeded.
-        mAccountTrackerService.checkAndSeedSystemAccounts();
-        if (!accountsChanged) {
-            mAccountTrackerService.validateSystemAccounts();
-        }
+    private void validateSignedInAccountExists(List<Account> accounts) {
         if (mSigninManager.isOperationInProgress()) {
             // Wait for ongoing sign-in/sign-out operation to finish before validating accounts.
             mSigninManager.runAfterOperationInProgress(
-                    () -> validateAccountsInternal(accountsChanged));
+                    () -> validateSignedInAccountExists(accounts));
             return;
         }
 
-        final CoreAccountInfo syncAccount =
+        final CoreAccountInfo oldAccount =
                 mSigninManager.getIdentityManager().getPrimaryAccountInfo(ConsentLevel.SYNC);
-        if (syncAccount == null) {
+        if (oldAccount == null) {
             return;
         }
 
-        String renamedAccount = mPrefsManager.getNewSignedInAccountName();
-        if (accountsChanged && renamedAccount != null) {
-            Log.i(TAG,
-                    "handleAccountRename from: " + syncAccount.getEmail() + " to "
-                            + renamedAccount);
-            handleAccountRename(renamedAccount);
+        if (AccountUtils.findAccountByName(accounts, oldAccount.getEmail()) != null) {
+            // Do nothing if the signed-in account is still on device
             return;
         }
 
-        final List<Account> accounts =
-                AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts();
-        // Always check for account deleted.
-        if (AccountUtils.findAccountByName(accounts, syncAccount.getEmail()) == null) {
-            // It is possible that Chrome got to this point without account
-            // rename notification. Let us signout before doing a rename.
-            AsyncTask<Void> task = new AsyncTask<Void>() {
-                @Override
-                protected Void doInBackground() {
-                    updateAccountRenameData(
-                            new SystemAccountChangeEventChecker(), syncAccount.getEmail());
-                    return null;
-                }
+        // If the signed-in account is no longer on device, check if it is renamed to
+        // another account existing on device.
+        new AsyncTask<String>() {
+            @Override
+            protected String doInBackground() {
+                return getNewNameOfRenamedAccount(
+                        new SystemAccountChangeEventChecker(), oldAccount.getEmail(), accounts);
+            }
 
-                @Override
-                protected void onPostExecute(Void result) {
-                    String renamedAccount = mPrefsManager.getNewSignedInAccountName();
-                    if (renamedAccount != null || mSigninManager.isOperationInProgress()) {
-                        // Found account rename event or there's a sign-in/sign-out operation in
-                        // progress. Restart validation process.
-                        validateAccountsInternal(true);
-                        return;
-                    }
+            @Override
+            protected void onPostExecute(String newAccountName) {
+                if (newAccountName != null) {
+                    // Sign in to the new account if the current account is renamed
+                    // to a new account
+                    mSigninManager.signOut(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS, () -> {
+                        mSigninManager.signinAndEnableSync(SigninAccessPoint.ACCOUNT_RENAMED,
+                                AccountUtils.createAccountFromName(newAccountName), null);
+                    }, false);
+                } else {
                     mSigninManager.signOut(SignoutReason.ACCOUNT_REMOVED_FROM_DEVICE);
                 }
-            };
-            task.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
-            return;
-        }
-
-        if (accountsChanged) {
-            // Account details have changed so inform the token service that credentials
-            // should now be available.
-            mSigninManager.reloadAllAccountsFromSystem();
-        }
-    }
-
-    /**
-     * Deal with account rename. The current approach is to sign out and then sign back in.
-     * In the (near) future, we should just be clearing all the cached email address here
-     * and have the UI re-fetch the emailing address based on the ID.
-     */
-    private void handleAccountRename(final String newName) {
-        // TODO(acleung): I think most of the operations need to run on the main
-        // thread. May be we should have a progress Dialog?
-
-        // TODO(acleung): Deal with passphrase or just prompt user to re-enter it?
-        // Perform a sign-out with a callback to sign-in again.
-        mSigninManager.signOut(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS, () -> {
-            // Clear the shared perf only after signOut is successful.
-            // If Chrome dies, we can try it again on next run.
-            // Otherwise, if re-sign-in fails, we'll just leave chrome
-            // signed-out.
-            mPrefsManager.clearNewSignedInAccountName();
-            performResignin(newName);
-        }, false);
-    }
-
-    private void performResignin(String newName) {
-        // This is the correct account now.
-        final Account account = AccountUtils.createAccountFromName(newName);
-
-        mSigninManager.signinAndEnableSync(
-                SigninAccessPoint.ACCOUNT_RENAMED, account, new SigninManager.SignInCallback() {
-                    @Override
-                    public void onSignInComplete() {
-                        validateAccountsInternal(true);
-                    }
-
-                    @Override
-                    public void onSignInAborted() {}
-                });
+            }
+        }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
 
     @VisibleForTesting
-    public static void updateAccountRenameData(
-            AccountChangeEventChecker checker, String currentAccountName) {
-        final SigninPreferencesManager prefsManager = SigninPreferencesManager.getInstance();
-        final int currentEventIndex = prefsManager.getLastAccountChangedEventIndex();
-        final Pair<Integer, String> newEventIndexAndAccountName =
-                findAccountRenameEvent(checker, currentEventIndex, currentAccountName);
-        if (currentEventIndex != newEventIndexAndAccountName.first) {
-            prefsManager.setLastAccountChangedEventIndex(newEventIndexAndAccountName.first);
-        }
-        if (!currentAccountName.equals(newEventIndexAndAccountName.second)) {
-            prefsManager.setNewSignedInAccountName(newEventIndexAndAccountName.second);
-        }
-    }
-
-    /**
-     * Finds the account rename event.
-     * @return A pair including the account change event index and the changed account name.
-     *         When there's no pending rename event, the event index is still updated to the
-     *         last read index to avoid reading the same data again in the future.
-     */
-    private static Pair<Integer, String> findAccountRenameEvent(
-            AccountChangeEventChecker checker, int eventIndex, String accountName) {
-        final List<Account> accounts =
-                AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts();
-        final List<String> changedNames = checker.getAccountChangeEvents(
-                ContextUtils.getApplicationContext(), eventIndex, accountName);
-        final int newEventIndex = changedNames.size();
-        for (String changedName : changedNames) {
-            if (changedName != null) {
-                // We have found a rename event of the current account.
-                // We need to check if that account is further renamed.
-                if (AccountUtils.findAccountByName(accounts, changedName) == null) {
-                    // Start from the beginning of the new account if account does not exist on
-                    // device
-                    return findAccountRenameEvent(checker, 0, changedName);
-                } else {
-                    return new Pair<>(newEventIndex, changedName);
-                }
+    static @Nullable String getNewNameOfRenamedAccount(
+            AccountChangeEventChecker checker, String oldAccountName, List<Account> accounts) {
+        final Context context = ContextUtils.getApplicationContext();
+        String newAccountName = checker.getNewNameOfRenamedAccount(context, oldAccountName);
+        while (newAccountName != null) {
+            if (AccountUtils.findAccountByName(accounts, newAccountName) != null) {
+                break;
             }
+            // When the new name does not exist on device, continue to search if it is
+            // renamed to another account existing on device.
+            newAccountName = checker.getNewNameOfRenamedAccount(context, newAccountName);
         }
-        return new Pair<>(newEventIndex, accountName);
+        return newAccountName;
     }
 
     /**
@@ -252,9 +165,7 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
      */
     public void onMainActivityStart() {
         try (TraceEvent ignored = TraceEvent.scoped("SigninHelper.onMainActivityStart")) {
-            boolean accountsChanged =
-                    SigninPreferencesManager.getInstance().checkAndClearAccountsChangedPref();
-            validateAccountSettings(accountsChanged);
+            validateAccountSettings();
         }
     }
 

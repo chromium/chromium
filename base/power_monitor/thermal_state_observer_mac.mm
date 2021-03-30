@@ -12,21 +12,21 @@
 
 namespace {
 
-base::PowerObserver::DeviceThermalState
+base::PowerThermalObserver::DeviceThermalState
 NSProcessInfoThermalStateToDeviceThermalState(
     NSProcessInfoThermalState nsinfo_state) NS_AVAILABLE_MAC(10_10_3) {
   switch (nsinfo_state) {
     case NSProcessInfoThermalStateNominal:
-      return base::PowerObserver::DeviceThermalState::kNominal;
+      return base::PowerThermalObserver::DeviceThermalState::kNominal;
     case NSProcessInfoThermalStateFair:
-      return base::PowerObserver::DeviceThermalState::kFair;
+      return base::PowerThermalObserver::DeviceThermalState::kFair;
     case NSProcessInfoThermalStateSerious:
-      return base::PowerObserver::DeviceThermalState::kSerious;
+      return base::PowerThermalObserver::DeviceThermalState::kSerious;
     case NSProcessInfoThermalStateCritical:
-      return base::PowerObserver::DeviceThermalState::kCritical;
+      return base::PowerThermalObserver::DeviceThermalState::kCritical;
   }
   NOTREACHED();
-  return base::PowerObserver::DeviceThermalState::kUnknown;
+  return base::PowerThermalObserver::DeviceThermalState::kUnknown;
 }
 }
 
@@ -35,14 +35,15 @@ namespace base {
 ThermalStateObserverMac::ThermalStateObserverMac(
     StateUpdateCallback state_update_callback) NS_AVAILABLE_MAC(10_10_3) {
   auto on_state_change_block = ^(NSNotification* notification) {
-    auto state = PowerObserver::DeviceThermalState::kUnknown;
+    auto state = PowerThermalObserver::DeviceThermalState::kUnknown;
     // |thermalState| is basically a scale of power usage and its associated
     // thermal dissipation increase, from Nominal upwards, see:
     // https://developer.apple.com/library/archive/documentation/Performance/Conceptual/power_efficiency_guidelines_osx/RespondToThermalStateChanges.html
     NSProcessInfoThermalState nsinfo_state =
         [[NSProcessInfo processInfo] thermalState];
     state = NSProcessInfoThermalStateToDeviceThermalState(nsinfo_state);
-    if (state_for_testing_ != PowerObserver::DeviceThermalState::kUnknown)
+    if (state_for_testing_ !=
+        PowerThermalObserver::DeviceThermalState::kUnknown)
       state = state_for_testing_;
     DVLOG(1) << __func__ << ": "
              << PowerMonitorSource::DeviceThermalStateToString(state);
@@ -64,9 +65,9 @@ ThermalStateObserverMac::~ThermalStateObserverMac() {
       removeObserver:thermal_state_update_observer_];
 }
 
-PowerObserver::DeviceThermalState
+PowerThermalObserver::DeviceThermalState
 ThermalStateObserverMac::GetCurrentThermalState() NS_AVAILABLE_MAC(10_10_3) {
-  if (state_for_testing_ != PowerObserver::DeviceThermalState::kUnknown)
+  if (state_for_testing_ != PowerThermalObserver::DeviceThermalState::kUnknown)
     return state_for_testing_;
   NSProcessInfoThermalState nsinfo_state =
       [[NSProcessInfo processInfo] thermalState];

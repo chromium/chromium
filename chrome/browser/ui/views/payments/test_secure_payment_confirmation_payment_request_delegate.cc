@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/payments/test_secure_payment_confirmation_payment_request_delegate.h"
 
+#include "base/callback_helpers.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -20,8 +21,10 @@ TestSecurePaymentConfirmationPaymentRequestDelegate::
           render_frame_host->GetProcess()->GetID(),
           render_frame_host->GetRoutingID())),
       model_(model),
-      dialog_view_(
-          (new SecurePaymentConfirmationDialogView(observer))->GetWeakPtr()) {}
+      dialog_view_((new SecurePaymentConfirmationDialogView(
+                        observer,
+                        /*ui_observer_for_test=*/nullptr))
+                       ->GetWeakPtr()) {}
 
 TestSecurePaymentConfirmationPaymentRequestDelegate::
     ~TestSecurePaymentConfirmationPaymentRequestDelegate() = default;

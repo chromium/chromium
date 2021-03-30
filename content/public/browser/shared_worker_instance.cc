@@ -16,8 +16,6 @@ SharedWorkerInstance::SharedWorkerInstance(
     network::mojom::CredentialsMode credentials_mode,
     const std::string& name,
     const url::Origin& constructor_origin,
-    const std::string& content_security_policy,
-    network::mojom::ContentSecurityPolicyType security_policy_type,
     network::mojom::IPAddressSpace creation_address_space,
     blink::mojom::SharedWorkerCreationContextType creation_context_type)
     : url_(url),
@@ -25,8 +23,6 @@ SharedWorkerInstance::SharedWorkerInstance(
       credentials_mode_(credentials_mode),
       name_(name),
       constructor_origin_(constructor_origin),
-      content_security_policy_(content_security_policy),
-      content_security_policy_type_(security_policy_type),
       creation_address_space_(creation_address_space),
       creation_context_type_(creation_context_type) {
   // Ensure the same-origin policy is enforced correctly.

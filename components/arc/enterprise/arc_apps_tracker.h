@@ -11,17 +11,20 @@ namespace data_snapshotd {
 // This class tracks installation of the list of ARC apps.
 class ArcAppsTracker {
  public:
+  // The destruction of the instance stops tracking installation of the list of
+  // ARC apps and compliance with policy.
   virtual ~ArcAppsTracker() = default;
 
   // Starts tracking installation of the list of ARC apps.
   // Invokes a repeating callback |update_callback| when the number of installed
   // tracked apps changes. |update_callback| is invoked with the percent of
   // installed tracked apps in a range of 0..100.
-  virtual void StartTracking(
-      base::RepeatingCallback<void(int)> update_callback) = 0;
-
-  // Stops tracking installation of the list of ARC apps.
-  virtual void StopTracking() = 0;
+  // Invokes a |finish_callback| once ARC is compliant with policy and the
+  // apps tracking is finished.
+  // |update_callback| is guaranteed to be never invoked after
+  // |finish_callback|.
+  virtual void StartTracking(base::RepeatingCallback<void(int)> update_callback,
+                             base::OnceClosure finish_callback) = 0;
 };
 
 }  // namespace data_snapshotd

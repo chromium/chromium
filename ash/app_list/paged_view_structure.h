@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "ash/app_list/app_list_export.h"
+#include "ash/ash_export.h"
 #include "base/check_op.h"
 #include "base/macros.h"
 
@@ -18,7 +18,7 @@ class AppListItemView;
 struct GridIndex;
 
 // The structure of app list item views in root apps grid view.
-class APP_LIST_EXPORT PagedViewStructure {
+class ASH_EXPORT PagedViewStructure {
  public:
   using Page = std::vector<AppListItemView*>;
   using Pages = std::vector<Page>;

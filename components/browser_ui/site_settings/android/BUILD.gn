@@ -62,13 +62,11 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/site_settings/SiteDataCleaner.java",
     "java/src/org/chromium/components/browser_ui/site_settings/SiteSettings.java",
     "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsCategory.java",
-    "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsClient.java",
+    "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsDelegate.java",
     "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsFeatureList.java",
-    "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsHelpClient.java",
     "java/src/org/chromium/components/browser_ui/site_settings/SiteSettingsPreferenceFragment.java",
     "java/src/org/chromium/components/browser_ui/site_settings/StorageInfo.java",
     "java/src/org/chromium/components/browser_ui/site_settings/TriStateSiteSettingsPreference.java",
-    "java/src/org/chromium/components/browser_ui/site_settings/WebappSettingsClient.java",
     "java/src/org/chromium/components/browser_ui/site_settings/Website.java",
     "java/src/org/chromium/components/browser_ui/site_settings/WebsiteAddress.java",
     "java/src/org/chromium/components/browser_ui/site_settings/WebsitePermissionsFetcher.java",
@@ -80,7 +78,6 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
-    "//base:jni_java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/content_settings/android:content_settings_enums_java",
@@ -96,8 +93,8 @@ android_library("java") {
     "//content/public/android:content_java",
     "//services/device/public/java:device_feature_list_java",
     "//third_party/android_deps:android_support_v7_appcompat_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//third_party/android_deps:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_preference_preference_java",
     "//ui/android:ui_full_java",
     "//ui/android:ui_utils_java",
   ]
@@ -112,7 +109,7 @@ android_library("javatests") {
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//third_party/android_deps:androidx_test_runner_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
   ]
 }

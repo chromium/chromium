@@ -85,7 +85,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return FillLayersEqual<CSSPropertyID::kBackgroundSize>(
           a.BackgroundLayers(), b.BackgroundLayers());
     case CSSPropertyID::kBaselineShift:
-      return a.BaselineShiftValue() == b.BaselineShiftValue();
+      return a.BaselineShift() == b.BaselineShift();
     case CSSPropertyID::kBorderBottomColor:
       return a.BorderBottomColor() == b.BorderBottomColor() &&
              a.InternalVisitedBorderBottomColor() ==
@@ -138,13 +138,10 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kColor:
       return a.GetColor() == b.GetColor() &&
              a.InternalVisitedColor() == b.InternalVisitedColor();
-    case CSSPropertyID::kFill: {
-      const SVGComputedStyle& a_svg = a.SvgStyle();
-      const SVGComputedStyle& b_svg = b.SvgStyle();
-      return a_svg.FillPaint().EqualTypeOrColor(b_svg.FillPaint()) &&
-             a_svg.InternalVisitedFillPaint().EqualTypeOrColor(
-                 b_svg.InternalVisitedFillPaint());
-    }
+    case CSSPropertyID::kFill:
+      return a.FillPaint().EqualTypeOrColor(b.FillPaint()) &&
+             a.InternalVisitedFillPaint().EqualTypeOrColor(
+                 b.InternalVisitedFillPaint());
     case CSSPropertyID::kFillOpacity:
       return a.FillOpacity() == b.FillOpacity();
     case CSSPropertyID::kFlexBasis:
@@ -249,13 +246,10 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.StopColor() == b.StopColor();
     case CSSPropertyID::kStopOpacity:
       return a.StopOpacity() == b.StopOpacity();
-    case CSSPropertyID::kStroke: {
-      const SVGComputedStyle& a_svg = a.SvgStyle();
-      const SVGComputedStyle& b_svg = b.SvgStyle();
-      return a_svg.StrokePaint().EqualTypeOrColor(b_svg.StrokePaint()) &&
-             a_svg.InternalVisitedStrokePaint().EqualTypeOrColor(
-                 b_svg.InternalVisitedStrokePaint());
-    }
+    case CSSPropertyID::kStroke:
+      return a.StrokePaint().EqualTypeOrColor(b.StrokePaint()) &&
+             a.InternalVisitedStrokePaint().EqualTypeOrColor(
+                 b.InternalVisitedStrokePaint());
     case CSSPropertyID::kStrokeDasharray:
       return a.StrokeDashArray() == b.StrokeDashArray();
     case CSSPropertyID::kStrokeDashoffset:
@@ -367,21 +361,21 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kWordSpacing:
       return a.WordSpacing() == b.WordSpacing();
     case CSSPropertyID::kD:
-      return DataEquivalent(a.SvgStyle().D(), b.SvgStyle().D());
+      return DataEquivalent(a.D(), b.D());
     case CSSPropertyID::kCx:
-      return a.SvgStyle().Cx() == b.SvgStyle().Cx();
+      return a.Cx() == b.Cx();
     case CSSPropertyID::kCy:
-      return a.SvgStyle().Cy() == b.SvgStyle().Cy();
+      return a.Cy() == b.Cy();
     case CSSPropertyID::kX:
-      return a.SvgStyle().X() == b.SvgStyle().X();
+      return a.X() == b.X();
     case CSSPropertyID::kY:
-      return a.SvgStyle().Y() == b.SvgStyle().Y();
+      return a.Y() == b.Y();
     case CSSPropertyID::kR:
-      return a.SvgStyle().R() == b.SvgStyle().R();
+      return a.R() == b.R();
     case CSSPropertyID::kRx:
-      return a.SvgStyle().Rx() == b.SvgStyle().Rx();
+      return a.Rx() == b.Rx();
     case CSSPropertyID::kRy:
-      return a.SvgStyle().Ry() == b.SvgStyle().Ry();
+      return a.Ry() == b.Ry();
     case CSSPropertyID::kZIndex:
       return a.HasAutoZIndex() == b.HasAutoZIndex() &&
              (a.HasAutoZIndex() || a.ZIndex() == b.ZIndex());
@@ -391,6 +385,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.AspectRatio() == b.AspectRatio();
     case CSSPropertyID::kMathDepth:
       return a.MathDepth() == b.MathDepth();
+    case CSSPropertyID::kAccentColor:
+      return a.AccentColor() == b.AccentColor();
     default:
       NOTREACHED();
       return true;

@@ -11,7 +11,6 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -79,7 +78,7 @@ class ParentPermissionDialog {
       Profile* profile,
       gfx::NativeWindow window,
       const gfx::ImageSkia& icon,
-      const base::string16& message,
+      const std::u16string& message,
       ParentPermissionDialog::DoneCallback done_callback);
 
   // Creates a ParentPermissionDialog customized for the installation of the

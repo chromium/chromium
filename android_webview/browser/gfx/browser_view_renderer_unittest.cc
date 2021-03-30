@@ -50,8 +50,8 @@ class ActiveCompositorSwitchBeforeConstructionTest : public RenderingTest {
       case 1:
         EXPECT_TRUE(success);
         // Change compositor here. And do another ondraw.
-        // The previous active compositor id is 0, 0, now change it to 0, 1.
-        browser_view_renderer_->SetActiveFrameSinkId(viz::FrameSinkId(0, 1));
+        // The previous active compositor id is 1, 0, now change it to 1, 1.
+        browser_view_renderer_->SetActiveFrameSinkId(viz::FrameSinkId(1, 1));
         browser_view_renderer_->PostInvalidate(ActiveCompositor());
         break;
       case 2:
@@ -59,7 +59,7 @@ class ActiveCompositorSwitchBeforeConstructionTest : public RenderingTest {
         // the moment.
         EXPECT_FALSE(success);
         new_compositor_.reset(
-            new content::TestSynchronousCompositor(viz::FrameSinkId(0, 1)));
+            new content::TestSynchronousCompositor(viz::FrameSinkId(1, 1)));
         new_compositor_->SetClient(browser_view_renderer_.get());
         EXPECT_EQ(ActiveCompositor(), new_compositor_.get());
         browser_view_renderer_->PostInvalidate(ActiveCompositor());
@@ -102,9 +102,9 @@ class ActiveCompositorSwitchAfterConstructionTest : public RenderingTest {
         // Create a new compositor here. And switch it to be active.  And then
         // do another ondraw.
         new_compositor_.reset(
-            new content::TestSynchronousCompositor(viz::FrameSinkId(0, 1)));
+            new content::TestSynchronousCompositor(viz::FrameSinkId(1, 1)));
         new_compositor_->SetClient(browser_view_renderer_.get());
-        browser_view_renderer_->SetActiveFrameSinkId(viz::FrameSinkId(0, 1));
+        browser_view_renderer_->SetActiveFrameSinkId(viz::FrameSinkId(1, 1));
 
         EXPECT_EQ(ActiveCompositor(), new_compositor_.get());
         browser_view_renderer_->PostInvalidate(ActiveCompositor());
@@ -466,6 +466,9 @@ class ResourceRenderingTest : public RenderingTest {
 
 class SwitchLayerTreeFrameSinkIdTest : public ResourceRenderingTest {
   struct FrameInfo {
+    FrameInfo(uint32_t frame_sink_id, viz::ResourceId id)
+        : layer_tree_frame_sink_id(frame_sink_id), resource_id(id) {}
+
     uint32_t layer_tree_frame_sink_id;
     viz::ResourceId resource_id;  // Each frame contains a single resource.
   };
@@ -474,9 +477,21 @@ class SwitchLayerTreeFrameSinkIdTest : public ResourceRenderingTest {
       int frame_number) override {
     static const FrameInfo infos[] = {
         // First output surface.
-        {0u, 1u}, {0u, 1u}, {0u, 2u}, {0u, 2u}, {0u, 3u}, {0u, 3u}, {0u, 4u},
+        {0u, viz::ResourceId(1u)},
+        {0u, viz::ResourceId(1u)},
+        {0u, viz::ResourceId(2u)},
+        {0u, viz::ResourceId(2u)},
+        {0u, viz::ResourceId(3u)},
+        {0u, viz::ResourceId(3u)},
+        {0u, viz::ResourceId(4u)},
         // Second output surface.
-        {1u, 1u}, {1u, 1u}, {1u, 2u}, {1u, 2u}, {1u, 3u}, {1u, 3u}, {1u, 4u},
+        {1u, viz::ResourceId(1u)},
+        {1u, viz::ResourceId(1u)},
+        {1u, viz::ResourceId(2u)},
+        {1u, viz::ResourceId(2u)},
+        {1u, viz::ResourceId(3u)},
+        {1u, viz::ResourceId(3u)},
+        {1u, viz::ResourceId(4u)},
     };
     if (frame_number >= static_cast<int>(base::size(infos))) {
       return nullptr;

@@ -16,16 +16,22 @@ import {
 export const State = {
   CAMERA_CONFIGURING: 'camera-configuring',
   CAMERA_SWITCHING: 'camera-switching',
+  CUSTOM_VIDEO_PARAMETERS: 'custom-video-parameters',
   EXPERT: 'expert',
-  FPS_30: '_30fps',
-  FPS_60: '_60fps',
-  GRID_3x3: '_3x3',
-  GRID_4x4: '_4x4',
-  GRID_GOLDEN: 'golden',
+  FPS_30: 'fps-30',
+  FPS_60: 'fps-60',
+  GRID_3x3: 'grid-3x3',
+  GRID_4x4: 'grid-4x4',
+  GRID_GOLDEN: 'grid-golden',
   GRID: 'grid',
   HAS_BACK_CAMERA: 'has-back-camera',
   HAS_EXTERNAL_SCREEN: 'has-external-screen',
   HAS_FRONT_CAMERA: 'has-front-camera',
+  HAS_PTZ_SUPPORT: 'has-ptz-support',
+  HAS_PAN_SUPPORT: 'has-pan-support',
+  HAS_TILT_SUPPORT: 'has-tilt-support',
+  HAS_ZOOM_SUPPORT: 'has-zoom-support',
+  INTENT: 'intent',
   MAX_WND: 'max-wnd',
   MIC: 'mic',
   MIRROR: 'mirror',
@@ -56,8 +62,8 @@ export const State = {
   TAB_NAVIGATION: 'tab-navigation',
   TAKING: 'taking',
   TALL: 'tall',
-  TIMER_10SEC: '_10sec',
-  TIMER_3SEC: '_3sec',
+  TIMER_10SEC: 'timer-10s',
+  TIMER_3SEC: 'timer-3s',
   TIMER: 'timer',
 };
 
@@ -80,7 +86,7 @@ export function assertState(s) {
 }
 
 /**
- * @typedef {function(boolean, !PerfInformation=)}
+ * @typedef {function(boolean, !PerfInformation=): void}
  */
 let StateObserver;  // eslint-disable-line no-unused-vars
 

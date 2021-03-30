@@ -390,10 +390,10 @@ void ShowJavaInfoPopup(JNIEnv* env,
 
 std::string SafeConvertJavaStringToNative(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jstring) {
+    const base::android::JavaRef<jstring>& jstring) {
   std::string native_string;
   if (jstring) {
-    base::android::ConvertJavaStringToUTF8(env, jstring, &native_string);
+    native_string = base::android::ConvertJavaStringToUTF8(env, jstring);
   }
   return native_string;
 }
@@ -445,6 +445,7 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaAssistantChip(
     case NORMAL_ACTION:
     case CANCEL_ACTION:
     case CLOSE_ACTION:
+    case FEEDBACK_ACTION:
       return Java_AssistantChip_createHairlineAssistantChip(
           env, chip.icon(),
           base::android::ConvertUTF8ToJavaString(env, chip.text()),
@@ -468,6 +469,40 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaAssistantChipList(
     Java_AssistantChip_addChipToList(env, jlist, jchip);
   }
   return jlist;
+}
+
+std::map<std::string, std::string> CreateStringMapFromJava(
+    JNIEnv* env,
+    const base::android::JavaRef<jobjectArray>& names,
+    const base::android::JavaRef<jobjectArray>& values) {
+  std::vector<std::string> names_vector;
+  base::android::AppendJavaStringArrayToStringVector(env, names, &names_vector);
+  std::vector<std::string> values_vector;
+  base::android::AppendJavaStringArrayToStringVector(env, values,
+                                                     &values_vector);
+  std::map<std::string, std::string> result;
+  DCHECK_EQ(names_vector.size(), values_vector.size());
+  for (size_t i = 0; i < names_vector.size(); ++i) {
+    result.insert(std::make_pair(names_vector[i], values_vector[i]));
+  }
+  return result;
+}
+
+std::unique_ptr<TriggerContext> CreateTriggerContext(
+    JNIEnv* env,
+    const base::android::JavaRef<jstring>& jexperiment_ids,
+    const base::android::JavaRef<jobjectArray>& jparameter_names,
+    const base::android::JavaRef<jobjectArray>& jparameter_values,
+    jboolean is_cct,
+    jboolean onboarding_shown,
+    jboolean is_direct_action,
+    const base::android::JavaRef<jstring>& jinitial_url) {
+  return std::make_unique<TriggerContext>(
+      std::make_unique<ScriptParameters>(
+          CreateStringMapFromJava(env, jparameter_names, jparameter_values)),
+      SafeConvertJavaStringToNative(env, jexperiment_ids), is_cct,
+      onboarding_shown, is_direct_action,
+      SafeConvertJavaStringToNative(env, jinitial_url));
 }
 
 }  // namespace ui_controller_android_utils

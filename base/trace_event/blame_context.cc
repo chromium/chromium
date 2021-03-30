@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace base {
 namespace trace_event {
@@ -87,6 +88,13 @@ void BlameContext::AsValueInto(trace_event::TracedValue* state) {
   state->SetString("id_ref", StringPrintf("0x%" PRIx64, parent_id_));
   state->SetString("scope", parent_scope_);
   state->EndDictionary();
+}
+
+void BlameContext::WriteIntoTracedValue(perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("id", id_);
+  dict.Add("parent_id", parent_id_);
+  dict.Add("scope", scope_);
 }
 
 void BlameContext::Initialize() {

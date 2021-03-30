@@ -1,6 +1,6 @@
 rootWebArea fontSize=16.00
-++genericContainer ignored fontSize=16.00
-++++genericContainer ignored fontSize=16.00
+++genericContainer ignored
+++++genericContainer ignored
 ++++++paragraph fontSize=10.23
 ++++++++staticText name='10.2340920823px' fontSize=10.23
 ++++++++++inlineTextBox name='10.2340920823px'

@@ -40,7 +40,7 @@ void MockAffiliatedMatchHelper::
       .WillOnce(testing::Return(results_to_inject));
 }
 
-void MockAffiliatedMatchHelper::GetAffiliatedAndroidRealms(
+void MockAffiliatedMatchHelper::GetAffiliatedAndroidAndWebRealms(
     const PasswordStore::FormDigest& observed_form,
     AffiliatedRealmsCallback result_callback) {
   std::vector<std::string> affiliated_android_realms =

@@ -9,7 +9,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
@@ -19,7 +18,6 @@
 #include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/chrome/browser/policy/policy_features.h"
 #import "ios/chrome/browser/ui/toolbar/test/toolbar_test_navigation_manager.h"
 #import "ios/chrome/browser/ui/toolbar/test/toolbar_test_web_state.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_consumer.h"
@@ -320,9 +318,6 @@ TEST_F(ToolbarMediatorTest, TestToolbarNotBookmarked) {
 // Tests that the bookmark button is disabled when the EditBookmarksEnabled pref
 // is false.
 TEST_F(ToolbarMediatorTest, TestBookmarkDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kEditBookmarksIOS);
-
   OCMExpect([consumer_ setBookmarkEnabled:YES]);
   SetUpBookmarks();
   mediator_.consumer = consumer_;

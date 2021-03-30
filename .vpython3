@@ -23,10 +23,182 @@
 #   https://chromium.googlesource.com/infra/infra/+/master/doc/users/vpython.md
 
 python_version: "3.8"
+# Used by:
+#   build/android/pylib/local/emulator/avd.py
+#   components/policy/test_support/policy_testserver.py
+wheel: <
+  name: "infra/python/wheels/protobuf-py2_py3"
+  version: "version:3.6.1"
+>
 
 # TODO(https://crbug.com/898348): Add in necessary wheels as Python3 versions
 # become available.
 wheel: <
   name: "infra/python/wheels/six-py2_py3"
   version: "version:1.15.0"
+>
+
+# Common utilities.
+wheel: <
+  name: "infra/python/wheels/psutil/${vpython_platform}"
+  version: "version:5.7.2"
+>
+wheel: <
+  name: "infra/python/wheels/requests-py2_py3"
+  version: "version:2.13.0"
+>
+
+# Used by various python unit tests.
+wheel: <
+  name: "infra/python/wheels/mock-py2_py3"
+  version: "version:2.0.0"
+>
+wheel: <
+  name: "infra/python/wheels/parameterized-py2_py3"
+  version: "version:0.7.1"
+>
+wheel: <
+  name: "infra/python/wheels/pbr-py2_py3"
+  version: "version:3.0.0"
+>
+
+# Used by:
+#   build/chromeos/test_runner.py
+wheel: <
+  name: "infra/python/wheels/jsonlines-py2_py3"
+  version: "version:1.2.0"
+>
+wheel: <
+  name: "infra/python/wheels/python-dateutil-py2_py3"
+  version: "version:2.7.3"
+>
+
+# Used by Web Platform Tests (WPT) codebase in
+# //third_party/blink/web_tests/external/wpt/tools/
+wheel: <
+  name: "infra/python/wheels/html5lib-py2_py3"
+  version: "version:1.0.1"
+>
+wheel: <
+  name: "infra/python/wheels/mozdebug-py2_py3"
+  version: "version:0.2"
+>
+wheel: <
+  name: "infra/python/wheels/mozinfo-py2_py3"
+  version: "version:1.2.2"
+>
+wheel: <
+  name: "infra/python/wheels/mozlog-py2_py3"
+  version: "version:7.1.0"
+>
+wheel: <
+  name: "infra/python/wheels/mozprocess-py2_py3"
+  version: "version:1.2.1"
+>
+wheel: <
+  name: "infra/python/wheels/urllib3-py2_py3"
+  version: "version:1.24.3"
+>
+wheel: <
+  name: "infra/python/wheels/blessings-py2_py3"
+  version: "version:1.7"
+>
+wheel: <
+  name: "infra/python/wheels/mozfile-py2_py3"
+  version: "version:2.0.0"
+>
+wheel: <
+  name: "infra/python/wheels/mozterm-py2_py3"
+  version: "version:1.0.0"
+>
+wheel: <
+  name: "infra/python/wheels/webencodings-py2_py3"
+  version: "version:0.5.1"
+>
+wheel: <
+  name: "infra/python/wheels/certifi-py2_py3"
+  version: "version:2020.11.8"
+>
+wheel: <
+  name: "infra/python/wheels/chardet-py2_py3"
+  version: "version:3.0.4"
+>
+wheel: <
+  name: "infra/python/wheels/idna-py2_py3"
+  version: "version:2.8"
+>
+wheel: <
+  name: "infra/python/wheels/distro-py2_py3"
+  version: "version:1.4.0"
+>
+wheel: <
+  name: "infra/python/wheels/pillow/linux-amd64_cp38_cp38"
+  version: "version:8.1.2"
+>
+
+# Used by:
+#   chrome/test/chromedriver/test/run_webdriver_tests.py
+wheel: <
+  name: "infra/python/wheels/iniconfig-py3"
+  version: "version:1.1.1"
+>
+
+wheel: <
+  name: "infra/python/wheels/packaging-py2_py3"
+  version: "version:16.8"
+>
+
+wheel: <
+  name: "infra/python/wheels/pyparsing-py2_py3"
+  version: "version:2.2.0"
+>
+
+wheel: <
+  name: "infra/python/wheels/toml-py3"
+  version: "version:0.10.1"
+>
+
+wheel <
+  name: "infra/python/wheels/pytest-py3"
+  version: "version:6.2.2"
+>
+
+wheel <
+  name: "infra/python/wheels/pytest-asyncio-py3"
+  version: "version:0.14.0"
+>
+
+wheel <
+  name: "infra/python/wheels/attrs-py2_py3"
+  version: "version:20.3.0"
+>
+
+wheel <
+  name: "infra/python/wheels/six-py2_py3"
+  version: "version:1.15.0"
+>
+
+wheel <
+  name: "infra/python/wheels/more-itertools-py2_py3"
+  version: "version:4.1.0"
+>
+
+wheel <
+  name: "infra/python/wheels/pluggy-py3"
+  version: "version:0.13.1"
+>
+
+wheel <
+  name: "infra/python/wheels/py-py2_py3"
+  version: "version:1.5.3"
+>
+
+wheel <
+  name: "infra/python/wheels/funcsigs-py2_py3"
+  version: "version:1.0.2"
+>
+
+wheel: <
+  name: "infra/python/wheels/atomicwrites-py2_py3"
+  version: "version:1.3.0"
 >

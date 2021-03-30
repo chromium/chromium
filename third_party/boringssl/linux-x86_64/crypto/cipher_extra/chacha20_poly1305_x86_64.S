@@ -2104,6 +2104,9 @@ chacha20_poly1305_open:
 
 
 
+
+
+
 .globl	chacha20_poly1305_seal
 .hidden chacha20_poly1305_seal
 .type	chacha20_poly1305_seal,@function

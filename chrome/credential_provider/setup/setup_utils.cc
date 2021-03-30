@@ -123,7 +123,7 @@ void StandaloneInstallerConfigurator::ConfigureInstallationType(
     LOGFN(ERROR) << "SetGlobalFlag failed" << putHR(hr);
 }
 
-base::string16 StandaloneInstallerConfigurator::GetCurrentDate() {
+std::wstring StandaloneInstallerConfigurator::GetCurrentDate() {
   static const wchar_t kDateFormat[] = L"yyyyMMdd";
   wchar_t date_str[base::size(kDateFormat)] = {0};
   int len = GetDateFormatW(LOCALE_INVARIANT, 0, nullptr, kDateFormat, date_str,
@@ -135,7 +135,7 @@ base::string16 StandaloneInstallerConfigurator::GetCurrentDate() {
     return L"";
   }
 
-  return base::string16(date_str, len);
+  return std::wstring(date_str, len);
 }
 
 bool StandaloneInstallerConfigurator::IsStandaloneInstallation() const {
@@ -236,7 +236,7 @@ HRESULT StandaloneInstallerConfigurator::AddUninstallKey(
   base::Version version(CHROME_VERSION_STRING);
 
   status = key.WriteValue(kRegVersion,
-                          base::ASCIIToUTF16(version.GetString()).c_str());
+                          base::ASCIIToWide(version.GetString()).c_str());
   if (status != ERROR_SUCCESS) {
     HRESULT hr = HRESULT_FROM_WIN32(status);
     LOGFN(ERROR) << "Unable to write " << kRegVersion << " hr=" << putHR(hr);
@@ -244,7 +244,7 @@ HRESULT StandaloneInstallerConfigurator::AddUninstallKey(
   }
 
   status = key.WriteValue(kRegDisplayVersion,
-                          base::ASCIIToUTF16(version.GetString()).c_str());
+                          base::ASCIIToWide(version.GetString()).c_str());
   if (status != ERROR_SUCCESS) {
     HRESULT hr = HRESULT_FROM_WIN32(status);
     LOGFN(ERROR) << "Unable to write " << kRegDisplayVersion

@@ -36,7 +36,7 @@ GPUShaderModule* GPUShaderModule::Create(
     NotShared<DOMUint32Array> code = wgsl_or_spirv.GetAsUint32Array();
 
     uint32_t length_words = 0;
-    if (!base::CheckedNumeric<uint32_t>(code.View()->length())
+    if (!base::CheckedNumeric<uint32_t>(code->length())
              .AssignIfValid(&length_words)) {
       exception_state.ThrowRangeError(
           "The provided ArrayBuffer exceeds the maximum supported size "
@@ -45,7 +45,7 @@ GPUShaderModule* GPUShaderModule::Create(
     }
 
     spirv_desc.chain.sType = WGPUSType_ShaderModuleSPIRVDescriptor;
-    spirv_desc.code = code.View()->Data();
+    spirv_desc.code = code->Data();
     spirv_desc.codeSize = length_words;
     dawn_desc.nextInChain = reinterpret_cast<WGPUChainedStruct*>(&spirv_desc);
   }
@@ -55,20 +55,15 @@ GPUShaderModule* GPUShaderModule::Create(
     dawn_desc.label = label.c_str();
   }
 
-  return MakeGarbageCollected<GPUShaderModule>(
+  GPUShaderModule* shader = MakeGarbageCollected<GPUShaderModule>(
       device, device->GetProcs().deviceCreateShaderModule(device->GetHandle(),
                                                           &dawn_desc));
+  shader->setLabel(webgpu_desc->label());
+  return shader;
 }
 
 GPUShaderModule::GPUShaderModule(GPUDevice* device,
                                  WGPUShaderModule shader_module)
     : DawnObject<WGPUShaderModule>(device, shader_module) {}
-
-GPUShaderModule::~GPUShaderModule() {
-  if (IsDawnControlClientDestroyed()) {
-    return;
-  }
-  GetProcs().shaderModuleRelease(GetHandle());
-}
 
 }  // namespace blink

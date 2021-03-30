@@ -30,11 +30,11 @@ executable("updater") {
     "updater.rc",
   ]
 
+  configs -= [ "//build/config/compiler:cet_shadow_stack" ]
   configs += [ "//build/config/win:windowed" ]
 
   deps = [
     ":app_install_controller",
-    ":lib",
     ":version_resources",
     "//build/win:default_exe_manifest",
     "//chrome/updater:lib",
@@ -69,15 +69,21 @@ source_set("constants") {
 
   deps = [
     "//base",
-    "//chrome/updater:version_header",
+    "//chrome/updater:branding_header",
   ]
 }
 
 source_set("lib") {
+  # This build target and "//chrome/updater:lib" act as a unit. Depending
+  # targets must use "//chrome/updater:lib" as a dependency.
+  visibility = [ "//chrome/updater:lib" ]
+
   sources = [
     "action_handler.cc",
     "group_policy_manager.cc",
     "group_policy_manager.h",
+    "installer.cc",
+    "installer.h",
     "net/net_util.cc",
     "net/net_util.h",
     "net/network.h",
@@ -128,6 +134,7 @@ source_set("lib") {
     "//base",
     "//chrome/installer/util:with_no_strings",
     "//chrome/updater:base",
+    "//chrome/updater:branding_header",
     "//chrome/updater:version_header",
     "//chrome/updater/app/server/win:updater_idl_idl",
     "//chrome/updater/app/server/win:updater_internal_idl_idl",
@@ -152,25 +159,25 @@ source_set("install_progress_observer") {
 # compilation units outside the UI itself.
 # TODO(sorin): https://crbug.com/1014311
 source_set("app_install_controller") {
-  if (is_win) {
-    visibility = [ "//chrome/updater/win/*" ]
-    allow_circular_includes_from = [ "//chrome/updater:lib" ]
+  visibility = [
+    "//chrome/updater/test/test_app:app_sources",
+    "//chrome/updater/win/*",
+  ]
 
-    cflags_cc = [ "-Wno-missing-braces" ]
+  cflags_cc = [ "-Wno-missing-braces" ]
 
-    sources = [ "app_install_controller.cc" ]
+  sources = [ "app_install_controller.cc" ]
 
-    deps = [
-      ":install_progress_observer",
-      ":lib",
-      "//base",
-      "//base:i18n",
-      "//chrome/updater:base",
-      "//chrome/updater:lib",
-      "//chrome/updater:version_header",
-      "//chrome/updater/win/ui",
-    ]
-  }
+  allow_circular_includes_from = [ "//chrome/updater:lib" ]
+  deps = [
+    ":install_progress_observer",
+    "//base",
+    "//base:i18n",
+    "//chrome/updater:base",
+    "//chrome/updater:lib",
+    "//chrome/updater:version_header",
+    "//chrome/updater/win/ui",
+  ]
 }
 
 source_set("tag_extractor") {
@@ -197,6 +204,7 @@ source_set("updater_tests") {
 
   sources = [
     "group_policy_manager_unittest.cc",
+    "installer_unittest.cc",
     "net/network_unittest.cc",
     "net/proxy_configuration_unittest.cc",
     "net/proxy_info_unittest.cc",
@@ -207,9 +215,9 @@ source_set("updater_tests") {
   deps = [
     ":app_install_controller",
     ":constants",
-    ":lib",
     ":tag_extractor",
     "//base/test:test_support",
+    "//chrome/updater:lib",
     "//testing/gtest",
     "//url:url",
   ]
@@ -240,10 +248,10 @@ test("updater_unittests") {
 
   deps = [
     ":app_install_controller",
-    ":lib",
     "//base",
     "//base/test:test_support",
-    "//chrome/updater:version_header",
+    "//chrome/updater:branding_header",
+    "//chrome/updater:lib",
     "//chrome/updater/win/test:test_executables",
     "//chrome/updater/win/test:test_strings",
     "//testing/gtest",

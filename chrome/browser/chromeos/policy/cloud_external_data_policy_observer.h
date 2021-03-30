@@ -13,12 +13,14 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/chromeos/policy/device_local_account_policy_service.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "components/policy/core/common/policy_map.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
 
+class AccountId;
 namespace policy {
 
 // Helper for implementing policies referencing external data: This class
@@ -31,7 +33,7 @@ namespace policy {
 // be emitted that an external data reference has been set and the referenced
 // external data to be fetched.
 class CloudExternalDataPolicyObserver
-    : public content::NotificationObserver,
+    : public session_manager::SessionManagerObserver,
       public DeviceLocalAccountPolicyService::Observer {
  public:
   class Delegate {
@@ -61,7 +63,7 @@ class CloudExternalDataPolicyObserver
   // |device_local_account_policy_service| may be nullptr if unavailable (e.g.
   // Active Directory management mode).
   CloudExternalDataPolicyObserver(
-      chromeos::CrosSettings* cros_settings,
+      ash::CrosSettings* cros_settings,
       DeviceLocalAccountPolicyService* device_local_account_policy_service,
       const std::string& policy,
       Delegate* delegate);
@@ -69,10 +71,8 @@ class CloudExternalDataPolicyObserver
 
   void Init();
 
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // session_manager::SessionManagerObserver:
+  void OnUserProfileLoaded(const AccountId& account_id) override;
 
   // DeviceLocalAccountPolicyService::Observer:
   void OnPolicyUpdated(const std::string& user_id) override;
@@ -106,7 +106,7 @@ class CloudExternalDataPolicyObserver
       std::map<std::string, std::unique_ptr<PolicyServiceObserver>>;
   LoggedInUserObserverMap logged_in_user_observers_;
 
-  chromeos::CrosSettings* cros_settings_;
+  ash::CrosSettings* cros_settings_;
   DeviceLocalAccountPolicyService* device_local_account_policy_service_;
 
   // The policy that |this| observes.
@@ -114,7 +114,9 @@ class CloudExternalDataPolicyObserver
 
   Delegate* delegate_;
 
-  content::NotificationRegistrar notification_registrar_;
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_observation_{this};
   base::CallbackListSubscription device_local_accounts_subscription_;
 
   // A map from user ID to a base::WeakPtr for each external data fetch

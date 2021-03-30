@@ -45,7 +45,7 @@ void DisplaySettingsHandler::Start() {
   // Register observers for all settings
   for (const auto& handler : handlers_) {
     settings_subscriptions_.push_back(
-        chromeos::CrosSettings::Get()->AddSettingsObserver(
+        ash::CrosSettings::Get()->AddSettingsObserver(
             handler->SettingName(),
             base::BindRepeating(&DisplaySettingsHandler::OnSettingUpdate,
                                 base::Unretained(this),

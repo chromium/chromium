@@ -5,7 +5,9 @@
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
 
 #include <climits>
+#include <utility>
 
+#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -21,17 +23,17 @@ namespace password_manager {
 
 namespace {
 
-template <typename StringT>
-StringT CanonicalizeUsernameT(base::BasicStringPiece<StringT> username) {
-  // String literal containing a single period (i.e. "."). Spelt out explicitly,
-  // because there is no short-form syntax for base::string16.
-  static constexpr typename StringT::value_type kPeriod[] = {'.', '\0'};
+template <typename CharT>
+std::basic_string<CharT> CanonicalizeUsernameT(
+    base::BasicStringPiece<CharT> username) {
+  static constexpr CharT kPeriod = '.';
 
-  StringT email_lower = base::ToLowerASCII(username);
+  std::basic_string<CharT> email_lower = base::ToLowerASCII(username);
   // |email_lower| might be an email address. Strip off the mail-address host,
   // remove periods from the username and return the result.
-  StringT user_lower = email_lower.substr(0, email_lower.find_last_of('@'));
-  base::RemoveChars(user_lower, kPeriod, &user_lower);
+  std::basic_string<CharT> user_lower =
+      email_lower.substr(0, email_lower.find_last_of('@'));
+  base::RemoveChars(user_lower, {&kPeriod, 1}, &user_lower);
   return user_lower;
 }
 
@@ -41,7 +43,7 @@ std::string CanonicalizeUsername(base::StringPiece username) {
   return CanonicalizeUsernameT(username);
 }
 
-base::string16 CanonicalizeUsername(base::StringPiece16 username) {
+std::u16string CanonicalizeUsername(base::StringPiece16 username) {
   return CanonicalizeUsernameT(username);
 }
 
@@ -83,7 +85,7 @@ std::string BucketizeUsername(base::StringPiece canonicalized_username) {
   return prefix;
 }
 
-std::string ScryptHashUsernameAndPassword(
+base::Optional<std::string> ScryptHashUsernameAndPassword(
     base::StringPiece canonicalized_username,
     base::StringPiece password) {
   // Constant salt added to the password hash on top of canonicalized_username.
@@ -118,57 +120,74 @@ std::string ScryptHashUsernameAndPassword(
                      reinterpret_cast<const uint8_t*>(salt.data()), salt.size(),
                      kScryptCost, kScryptBlockSize, kScryptParallelization,
                      kScryptMaxMemory, key_data, kHashKeyLength);
-  return scrypt_ok == 1 ? std::move(result) : std::string();
+  return scrypt_ok == 1 ? base::make_optional(std::move(result))
+                        : base::nullopt;
 }
 
-std::string CipherEncrypt(const std::string& plaintext, std::string* key) {
+base::Optional<std::string> CipherEncrypt(const std::string& plaintext,
+                                          std::string* key) {
   using ::private_join_and_compute::ECCommutativeCipher;
   auto cipher = ECCommutativeCipher::CreateWithNewKey(
       NID_X9_62_prime256v1, ECCommutativeCipher::SHA256);
-  *key = cipher.ValueOrDie()->GetPrivateKeyBytes();
-  auto result = cipher.ValueOrDie()->Encrypt(plaintext);
-  if (result.ok())
-    return result.ValueOrDie();
-  return std::string();
+  if (cipher.ok()) {
+    auto result = cipher.ValueOrDie()->Encrypt(plaintext);
+    if (result.ok()) {
+      *key = cipher.ValueOrDie()->GetPrivateKeyBytes();
+      return std::move(result).ValueOrDie();
+    }
+  }
+  return base::nullopt;
 }
 
-std::string CipherEncryptWithKey(const std::string& plaintext,
-                                 const std::string& key) {
+base::Optional<std::string> CipherEncryptWithKey(const std::string& plaintext,
+                                                 const std::string& key) {
   using ::private_join_and_compute::ECCommutativeCipher;
   auto cipher = ECCommutativeCipher::CreateFromKey(NID_X9_62_prime256v1, key,
                                                    ECCommutativeCipher::SHA256);
-  auto result = cipher.ValueOrDie()->Encrypt(plaintext);
-  if (result.ok())
-    return result.ValueOrDie();
-  return std::string();
+  if (cipher.ok()) {
+    auto result = cipher.ValueOrDie()->Encrypt(plaintext);
+    if (result.ok())
+      return std::move(result).ValueOrDie();
+  }
+  return base::nullopt;
 }
 
-std::string CipherReEncrypt(const std::string& already_encrypted,
-                            std::string* key) {
+base::Optional<std::string> CipherReEncrypt(
+    const std::string& already_encrypted,
+    std::string* key) {
   using ::private_join_and_compute::ECCommutativeCipher;
   auto cipher = ECCommutativeCipher::CreateWithNewKey(
       NID_X9_62_prime256v1, ECCommutativeCipher::SHA256);
-  *key = cipher.ValueOrDie()->GetPrivateKeyBytes();
-  auto result = cipher.ValueOrDie()->ReEncrypt(already_encrypted);
-  return result.ValueOrDie();
+  if (cipher.ok()) {
+    auto result = cipher.ValueOrDie()->ReEncrypt(already_encrypted);
+    if (result.ok()) {
+      *key = cipher.ValueOrDie()->GetPrivateKeyBytes();
+      return std::move(result).ValueOrDie();
+    }
+  }
+  return base::nullopt;
 }
 
-std::string CipherDecrypt(const std::string& ciphertext,
-                          const std::string& key) {
+base::Optional<std::string> CipherDecrypt(const std::string& ciphertext,
+                                          const std::string& key) {
   using ::private_join_and_compute::ECCommutativeCipher;
   auto cipher = ECCommutativeCipher::CreateFromKey(NID_X9_62_prime256v1, key,
                                                    ECCommutativeCipher::SHA256);
-  auto result = cipher.ValueOrDie()->Decrypt(ciphertext);
-  if (result.ok())
-    return result.ValueOrDie();
-  return std::string();
+  if (cipher.ok()) {
+    auto result = cipher.ValueOrDie()->Decrypt(ciphertext);
+    if (result.ok())
+      return std::move(result).ValueOrDie();
+  }
+  return base::nullopt;
 }
 
-std::string CreateNewKey() {
+base::Optional<std::string> CreateNewKey() {
   using ::private_join_and_compute::ECCommutativeCipher;
   auto cipher = ECCommutativeCipher::CreateWithNewKey(
       NID_X9_62_prime256v1, ECCommutativeCipher::SHA256);
-  return cipher.ValueOrDie()->GetPrivateKeyBytes();
+  if (cipher.ok())
+    return cipher.ValueOrDie()->GetPrivateKeyBytes();
+  return base::nullopt;
 }
 
 }  // namespace password_manager

@@ -3,6 +3,13 @@
 // found in the LICENSE file.
 
 /**
+ * @fileoverview
+ * @suppress {uselessCode} Temporary suppress because of the line exporting.
+ */
+
+// #import {constants} from './constants.m.js';
+
+/**
  * Namespace for web store utility functions.
  * @namespace
  */
@@ -53,3 +60,6 @@ webStoreUtils.createWebStoreLink = (extension, mimeType) => {
   }
   return url;
 };
+
+// eslint-disable-next-line semi,no-extra-semi
+/* #export */ {webStoreUtils};

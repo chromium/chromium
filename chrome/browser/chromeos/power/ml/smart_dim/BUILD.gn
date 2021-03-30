@@ -23,6 +23,7 @@ source_set("smart_dim") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chrome/browser:resources",
     "//chrome/browser/chromeos:user_activity_event_proto",

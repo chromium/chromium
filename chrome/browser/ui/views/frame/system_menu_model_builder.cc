@@ -28,11 +28,12 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/toolbar/assign_to_desks_menu_model.h"
+#include "chrome/browser/ui/toolbar/move_to_desks_menu_model.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_info.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/widget/widget.h"
 #endif
 
 SystemMenuModelBuilder::SystemMenuModelBuilder(
@@ -94,7 +95,7 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
   model->AddItemWithStringId(IDC_CLOSE_WINDOW, IDS_CLOSE_WINDOW_MENU);
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  AppendAssignToDesksMenu(model);
+  AppendMoveToDesksMenu(model);
 #endif
   AppendTeleportMenu(model);
   // If it's a regular browser window with tabs, we don't add any more items,
@@ -133,6 +134,9 @@ void SystemMenuModelBuilder::BuildSystemMenuForAppOrPopupWindow(
   model->AddSeparator(ui::NORMAL_SEPARATOR);
   model->AddItemWithStringId(IDC_CLOSE_WINDOW, IDS_CLOSE);
 #endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  AppendMoveToDesksMenu(model);
+#endif
   AppendTeleportMenu(model);
 }
 
@@ -140,21 +144,24 @@ void SystemMenuModelBuilder::AddFrameToggleItems(ui::SimpleMenuModel* model) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDebugEnableFrameToggle)) {
     model->AddSeparator(ui::NORMAL_SEPARATOR);
-    model->AddItem(IDC_DEBUG_FRAME_TOGGLE,
-                   base::ASCIIToUTF16("Toggle Frame Type"));
+    model->AddItem(IDC_DEBUG_FRAME_TOGGLE, u"Toggle Frame Type");
   }
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-void SystemMenuModelBuilder::AppendAssignToDesksMenu(
-    ui::SimpleMenuModel* model) {
+void SystemMenuModelBuilder::AppendMoveToDesksMenu(ui::SimpleMenuModel* model) {
   if (ash::features::IsBentoEnabled()) {
-    model->AddSeparator(ui::NORMAL_SEPARATOR);
-    assign_to_desks_model_ =
-        std::make_unique<AssignToDesksMenuModel>(&menu_delegate_);
-    model->AddSubMenuWithStringId(IDC_ASSIGN_TO_DESKS_MENU,
-                                  IDS_ASSIGN_TO_DESKS_MENU,
-                                  assign_to_desks_model_.get());
+    auto* desks_helper = ash::DesksHelper::Get();
+    if (desks_helper && desks_helper->GetNumberOfDesks() > 1) {
+      model->AddSeparator(ui::NORMAL_SEPARATOR);
+      move_to_desks_model_ = std::make_unique<MoveToDesksMenuModel>(
+          &menu_delegate_,
+          views::Widget::GetWidgetForNativeWindow(
+              menu_delegate_.browser()->window()->GetNativeWindow()));
+      model->AddSubMenuWithStringId(IDC_MOVE_TO_DESKS_MENU,
+                                    IDS_MOVE_TO_DESKS_MENU,
+                                    move_to_desks_model_.get());
+    }
   }
 }
 #endif

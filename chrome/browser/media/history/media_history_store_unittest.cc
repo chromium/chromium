@@ -4,6 +4,7 @@
 
 #include "chrome/browser/media/history/media_history_store.h"
 
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -139,7 +140,10 @@ class MediaHistoryStoreUnitTest
         profile_->GetPrimaryOTRProfile());
   }
 
-  void TearDown() override { WaitForDB(); }
+  void TearDown() override {
+    otr_service_->Shutdown();
+    WaitForDB();
+  }
 
   void WaitForDB() {
     base::RunLoop run_loop;
@@ -174,23 +178,6 @@ class MediaHistoryStoreUnitTest
           out = std::move(rows);
           run_loop.Quit();
         }));
-
-    run_loop.Run();
-    return out;
-  }
-
-  media::mojom::GetCollectionsResponsePtr GetKaleidoscopeDataSync(
-      MediaHistoryKeyedService* service,
-      const std::string& gaia_id) {
-    base::RunLoop run_loop;
-    media::mojom::GetCollectionsResponsePtr out;
-
-    service->GetKaleidoscopeData(
-        gaia_id, base::BindLambdaForTesting(
-                     [&](media::mojom::GetCollectionsResponsePtr data) {
-                       out = std::move(data);
-                       run_loop.Quit();
-                     }));
 
     run_loop.Run();
     return out;
@@ -284,13 +271,6 @@ class MediaHistoryStoreUnitTest
   bool IsReadOnly() const { return GetParam() != TestState::kNormal; }
 
   Profile* GetProfile() { return profile_.get(); }
-
-  media::mojom::GetCollectionsResponsePtr GetExpectedKaleidoscopeData() {
-    auto data = media::mojom::GetCollectionsResponse::New();
-    data->response = "abcd";
-    data->result = media::mojom::GetCollectionsResult::kFailed;
-    return data;
-  }
 
  private:
   base::ScopedTempDir temp_dir_;
@@ -636,64 +616,6 @@ TEST_P(MediaHistoryStoreUnitTest, SavePlayback_IncrementAggregateWatchtime) {
   EXPECT_EQ(origins, GetOriginRowsSync(otr_service()));
 }
 
-TEST_P(MediaHistoryStoreUnitTest, KaleidoscopeData) {
-  {
-    // The data should be empty at the start.
-    auto data = GetKaleidoscopeDataSync(service(), "123");
-    EXPECT_TRUE(data.is_null());
-  }
-
-  service()->SetKaleidoscopeData(GetExpectedKaleidoscopeData(), "123");
-  WaitForDB();
-
-  {
-    // We should be able to get the data.
-    auto data = GetKaleidoscopeDataSync(service(), "123");
-
-    if (IsReadOnly()) {
-      EXPECT_TRUE(data.is_null());
-    } else {
-      EXPECT_EQ(GetExpectedKaleidoscopeData(), data);
-    }
-  }
-
-  {
-    // Getting with a different GAIA ID should wipe the data and return an
-    // empty string.
-    auto data = GetKaleidoscopeDataSync(service(), "1234");
-    EXPECT_TRUE(data.is_null());
-  }
-
-  {
-    // The data should be empty for the other GAIA ID too.
-    auto data = GetKaleidoscopeDataSync(service(), "123");
-    EXPECT_TRUE(data.is_null());
-  }
-
-  service()->SetKaleidoscopeData(GetExpectedKaleidoscopeData(), "123");
-  WaitForDB();
-
-  {
-    // We should be able to get the data.
-    auto data = GetKaleidoscopeDataSync(service(), "123");
-
-    if (IsReadOnly()) {
-      EXPECT_TRUE(data.is_null());
-    } else {
-      EXPECT_EQ(GetExpectedKaleidoscopeData(), data);
-    }
-  }
-
-  service()->DeleteKaleidoscopeData();
-  WaitForDB();
-
-  {
-    // The data should have been deleted.
-    auto data = GetKaleidoscopeDataSync(service(), "123");
-    EXPECT_TRUE(data.is_null());
-  }
-}
-
 TEST_P(MediaHistoryStoreUnitTest, GetOriginsWithHighWatchTime) {
   const GURL url("http://google.com/test");
   const GURL url_alt("http://example.org/test");
@@ -829,7 +751,7 @@ class MediaHistoryStoreFeedsTest : public MediaHistoryStoreUnitTest {
     {
       auto item = media_feeds::mojom::MediaFeedItem::New();
       item->id = ++id_start;
-      item->name = base::ASCIIToUTF16("The Movie");
+      item->name = u"The Movie";
       item->type = media_feeds::mojom::MediaFeedItemType::kMovie;
       item->date_published = base::Time::FromDeltaSinceWindowsEpoch(
           base::TimeDelta::FromMinutes(10));
@@ -924,7 +846,7 @@ class MediaHistoryStoreFeedsTest : public MediaHistoryStoreUnitTest {
       auto item = media_feeds::mojom::MediaFeedItem::New();
       item->id = ++id_start;
       item->type = media_feeds::mojom::MediaFeedItemType::kTVSeries;
-      item->name = base::ASCIIToUTF16("The TV Series");
+      item->name = u"The TV Series";
       item->action_status =
           media_feeds::mojom::MediaFeedItemActionStatus::kActive;
       item->action = media_feeds::mojom::Action::New();
@@ -939,7 +861,7 @@ class MediaHistoryStoreFeedsTest : public MediaHistoryStoreUnitTest {
       auto item = media_feeds::mojom::MediaFeedItem::New();
       item->id = ++id_start;
       item->type = media_feeds::mojom::MediaFeedItemType::kTVSeries;
-      item->name = base::ASCIIToUTF16("The Live TV Series");
+      item->name = u"The Live TV Series";
       item->action_status =
           media_feeds::mojom::MediaFeedItemActionStatus::kPotential;
       item->live = media_feeds::mojom::LiveDetails::New();
@@ -960,7 +882,7 @@ class MediaHistoryStoreFeedsTest : public MediaHistoryStoreUnitTest {
       auto item = media_feeds::mojom::MediaFeedItem::New();
       item->id = ++id_start;
       item->type = media_feeds::mojom::MediaFeedItemType::kVideo;
-      item->name = base::ASCIIToUTF16("The Video");
+      item->name = u"The Video";
       item->date_published = base::Time::FromDeltaSinceWindowsEpoch(
           base::TimeDelta::FromMinutes(20));
       item->is_family_friendly = media_feeds::mojom::IsFamilyFriendly::kNo;
@@ -1648,7 +1570,7 @@ TEST_P(MediaHistoryStoreFeedsTest, StoreMediaFeedFetchResult_CheckImageMax) {
   const int feed_id = IsReadOnly() ? -1 : GetMediaFeedsSync(service())[0]->id;
 
   auto item = media_feeds::mojom::MediaFeedItem::New();
-  item->name = base::ASCIIToUTF16("The Movie");
+  item->name = u"The Movie";
   item->type = media_feeds::mojom::MediaFeedItemType::kMovie;
   item->safe_search_result = media_feeds::mojom::SafeSearchResult::kUnknown;
 
@@ -1729,7 +1651,7 @@ TEST_P(MediaHistoryStoreFeedsTest,
   const int feed_id = IsReadOnly() ? -1 : GetMediaFeedsSync(service())[0]->id;
 
   auto item = media_feeds::mojom::MediaFeedItem::New();
-  item->name = base::ASCIIToUTF16("The Movie");
+  item->name = u"The Movie";
   item->type = media_feeds::mojom::MediaFeedItemType::kMovie;
 
   std::vector<media_feeds::mojom::MediaFeedItemPtr> items;

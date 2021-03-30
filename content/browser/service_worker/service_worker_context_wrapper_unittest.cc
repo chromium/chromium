@@ -10,6 +10,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "components/services/storage/service_worker/service_worker_storage_control_impl.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
@@ -47,9 +48,17 @@ class ServiceWorkerContextWrapperTest : public testing::Test {
     wrapper_ = base::MakeRefCounted<ServiceWorkerContextWrapper>(
         browser_context_.get());
     url_loader_factory_getter_ = base::MakeRefCounted<URLLoaderFactoryGetter>();
+    // Set up a mojo connection binder which binds a connection to a
+    // ServiceWorkerStorageControlImpl instance owned by `this`. This is needed
+    // to work around strange situations (e.g. nested
+    // ServiceWorkerContextWrapper::Init() calls) caused by overwriting
+    // StoragePartitionImpl the below.
+    wrapper_->SetStorageControlBinderForTest(base::BindRepeating(
+        &ServiceWorkerContextWrapperTest::BindStorageControl,
+        base::Unretained(this)));
     StoragePartitionImpl* storage_partition =
         static_cast<StoragePartitionImpl*>(
-            BrowserContext::GetStoragePartitionForSite(
+            BrowserContext::GetStoragePartitionForUrl(
                 browser_context_.get(), GURL("https://example.com")));
     wrapper_->set_storage_partition(storage_partition);
     wrapper_->Init(user_data_directory_.GetPath(), nullptr, nullptr, nullptr,
@@ -89,26 +98,23 @@ class ServiceWorkerContextWrapperTest : public testing::Test {
     return result;
   }
 
-  std::vector<url::Origin> GetInstalledRegistrationOrigins(
-      base::Optional<std::string> host_filter) {
-    std::vector<url::Origin> result;
-    base::RunLoop loop;
-    wrapper_->GetInstalledRegistrationOrigins(
-        host_filter, base::BindLambdaForTesting(
-                         [&](const std::vector<url::Origin>& origins) {
-                           result = origins;
-                           loop.Quit();
-                         }));
-    loop.Run();
-    return result;
+ protected:
+  void BindStorageControl(
+      mojo::PendingReceiver<storage::mojom::ServiceWorkerStorageControl>
+          receiver) {
+    storage_control_ =
+        std::make_unique<storage::ServiceWorkerStorageControlImpl>(
+            user_data_directory_.GetPath(),
+            /*database_task_runner=*/base::ThreadTaskRunnerHandle::Get(),
+            std::move(receiver));
   }
 
- protected:
   BrowserTaskEnvironment task_environment_{BrowserTaskEnvironment::IO_MAINLOOP};
   base::ScopedTempDir user_data_directory_;
   std::unique_ptr<TestBrowserContext> browser_context_;
   scoped_refptr<URLLoaderFactoryGetter> url_loader_factory_getter_;
   scoped_refptr<ServiceWorkerContextWrapper> wrapper_;
+  std::unique_ptr<storage::ServiceWorkerStorageControlImpl> storage_control_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerContextWrapperTest);
@@ -237,185 +243,6 @@ TEST_F(ServiceWorkerContextWrapperTest, DeleteRegistration) {
   // been deleted from storage.
   EXPECT_FALSE(wrapper_->MaybeHasRegistrationForOrigin(
       url::Origin::Create(GURL("https://example2.com"))));
-}
-
-// GetInstalledRegistrationOrigins tests:
-
-// No registration.
-TEST_F(ServiceWorkerContextWrapperTest, GetInstalledRegistrationOrigins_Empty) {
-  wrapper_->WaitForRegistrationsInitializedForTest();
-
-  // No registration stored yet.
-  std::vector<url::Origin> registered_origins =
-      GetInstalledRegistrationOrigins(base::nullopt);
-  EXPECT_EQ(registered_origins.size(), 0UL);
-}
-
-// On registration.
-TEST_F(ServiceWorkerContextWrapperTest, GetInstalledRegistrationOrigins_One) {
-  const GURL scope("https://example.com/");
-  const GURL script("https://example.com/sw.js");
-  const url::Origin origin = url::Origin::Create(scope);
-
-  wrapper_->WaitForRegistrationsInitializedForTest();
-  scoped_refptr<ServiceWorkerRegistration> registration =
-      CreateServiceWorkerRegistrationAndVersion(context(), scope, script,
-                                                /*resource_id=*/1);
-  ASSERT_EQ(StoreRegistration(registration),
-            blink::ServiceWorkerStatusCode::kOk);
-  base::RunLoop().RunUntilIdle();
-
-  std::vector<url::Origin> installed_origins =
-      GetInstalledRegistrationOrigins(base::nullopt);
-  ASSERT_EQ(installed_origins.size(), 1UL);
-  EXPECT_EQ(*installed_origins.begin(), origin);
-}
-
-// Two registrations from the same origin.
-TEST_F(ServiceWorkerContextWrapperTest,
-       GetInstalledRegistrationOrigins_SameOrigin) {
-  const GURL scope1("https://example.com/foo");
-  const GURL script1("https://example.com/foo/sw.js");
-  const url::Origin origin = url::Origin::Create(scope1);
-  const GURL scope2("https://example.com/bar");
-  const GURL script2("https://example.com/bar/sw.js");
-
-  wrapper_->WaitForRegistrationsInitializedForTest();
-
-  scoped_refptr<ServiceWorkerRegistration> registration1 =
-      CreateServiceWorkerRegistrationAndVersion(context(), scope1, script1,
-                                                /*resource_id=*/1);
-  ASSERT_EQ(StoreRegistration(registration1),
-            blink::ServiceWorkerStatusCode::kOk);
-  scoped_refptr<ServiceWorkerRegistration> registration2 =
-      CreateServiceWorkerRegistrationAndVersion(context(), scope2, script2,
-                                                /*resource_id=*/2);
-  ASSERT_EQ(StoreRegistration(registration2),
-            blink::ServiceWorkerStatusCode::kOk);
-  base::RunLoop().RunUntilIdle();
-
-  std::vector<url::Origin> installed_origins =
-      GetInstalledRegistrationOrigins(base::nullopt);
-  ASSERT_EQ(installed_origins.size(), 1UL);
-  EXPECT_EQ(*installed_origins.begin(), origin);
-}
-
-// Two registrations from different origins.
-TEST_F(ServiceWorkerContextWrapperTest,
-       GetInstalledRegistrationOrigins_DifferentOrigin) {
-  const GURL scope1("https://example1.com/foo");
-  const GURL script1("https://example1.com/foo/sw.js");
-  const url::Origin origin1 = url::Origin::Create(scope1);
-  const GURL scope2("https://example2.com/bar");
-  const GURL script2("https://example2.com/bar/sw.js");
-  const url::Origin origin2 = url::Origin::Create(scope2);
-
-  wrapper_->WaitForRegistrationsInitializedForTest();
-
-  scoped_refptr<ServiceWorkerRegistration> registration1 =
-      CreateServiceWorkerRegistrationAndVersion(context(), scope1, script1,
-                                                /*resource_id=*/1);
-  ASSERT_EQ(StoreRegistration(registration1),
-            blink::ServiceWorkerStatusCode::kOk);
-  scoped_refptr<ServiceWorkerRegistration> registration2 =
-      CreateServiceWorkerRegistrationAndVersion(context(), scope2, script2,
-                                                /*resource_id=*/2);
-  ASSERT_EQ(StoreRegistration(registration2),
-            blink::ServiceWorkerStatusCode::kOk);
-  base::RunLoop().RunUntilIdle();
-
-  std::vector<url::Origin> installed_origins =
-      GetInstalledRegistrationOrigins(base::nullopt);
-  ASSERT_EQ(installed_origins.size(), 2UL);
-  EXPECT_TRUE(base::Contains(installed_origins, origin1));
-  EXPECT_TRUE(base::Contains(installed_origins, origin2));
-}
-
-// One registration, host filter matches it.
-TEST_F(ServiceWorkerContextWrapperTest,
-       GetInstalledRegistrationOrigins_HostFilterMatch) {
-  const GURL scope("https://example.com/");
-  const GURL script("https://example.com/sw.js");
-  const url::Origin origin = url::Origin::Create(scope);
-
-  wrapper_->WaitForRegistrationsInitializedForTest();
-  scoped_refptr<ServiceWorkerRegistration> registration =
-      CreateServiceWorkerRegistrationAndVersion(context(), scope, script,
-                                                /*resource_id=*/1);
-  ASSERT_EQ(StoreRegistration(registration),
-            blink::ServiceWorkerStatusCode::kOk);
-  base::RunLoop().RunUntilIdle();
-
-  std::vector<url::Origin> installed_origins =
-      GetInstalledRegistrationOrigins("example.com");
-  ASSERT_EQ(installed_origins.size(), 1UL);
-  EXPECT_EQ(*installed_origins.begin(), origin);
-}
-
-// One registration, host filter does not match it.
-TEST_F(ServiceWorkerContextWrapperTest,
-       GetInstalledRegistrationOrigins_HostFilterNoMatch) {
-  const GURL scope("https://example.com/");
-  const GURL script("https://example.com/sw.js");
-  const url::Origin origin = url::Origin::Create(scope);
-
-  wrapper_->WaitForRegistrationsInitializedForTest();
-  scoped_refptr<ServiceWorkerRegistration> registration =
-      CreateServiceWorkerRegistrationAndVersion(context(), scope, script,
-                                                /*resource_id=*/1);
-  ASSERT_EQ(StoreRegistration(registration),
-            blink::ServiceWorkerStatusCode::kOk);
-  base::RunLoop().RunUntilIdle();
-
-  std::vector<url::Origin> installed_origins =
-      GetInstalledRegistrationOrigins("example.test");
-  EXPECT_EQ(installed_origins.size(), 0UL);
-}
-
-// Two registrations, one is deleted, only the other one is returned.
-TEST_F(ServiceWorkerContextWrapperTest,
-       GetInstalledRegistrationOrigins_DeletedRegistration) {
-  const GURL scope1("https://example1.com/foo");
-  const GURL script1("https://example1.com/foo/sw.js");
-  const url::Origin origin1 = url::Origin::Create(scope1);
-  const GURL scope2("https://example2.com/bar");
-  const GURL script2("https://example2.com/bar/sw.js");
-  const url::Origin origin2 = url::Origin::Create(scope2);
-
-  wrapper_->WaitForRegistrationsInitializedForTest();
-
-  scoped_refptr<ServiceWorkerRegistration> registration1 =
-      CreateServiceWorkerRegistrationAndVersion(context(), scope1, script1,
-                                                /*resource_id=*/1);
-  ASSERT_EQ(StoreRegistration(registration1),
-            blink::ServiceWorkerStatusCode::kOk);
-  scoped_refptr<ServiceWorkerRegistration> registration2 =
-      CreateServiceWorkerRegistrationAndVersion(context(), scope2, script2,
-                                                /*resource_id=*/2);
-  ASSERT_EQ(StoreRegistration(registration2),
-            blink::ServiceWorkerStatusCode::kOk);
-  base::RunLoop().RunUntilIdle();
-
-  {
-    std::vector<url::Origin> installed_origins =
-        GetInstalledRegistrationOrigins(base::nullopt);
-    ASSERT_EQ(installed_origins.size(), 2UL);
-    EXPECT_TRUE(base::Contains(installed_origins, origin1));
-    EXPECT_TRUE(base::Contains(installed_origins, origin2));
-  }
-
-  // Delete |registration2|.
-  ASSERT_EQ(DeleteRegistration(registration2),
-            blink::ServiceWorkerStatusCode::kOk);
-  base::RunLoop().RunUntilIdle();
-
-  // After |registration2| is deleted, only |origin1| should be returned.
-  {
-    std::vector<url::Origin> installed_origins =
-        GetInstalledRegistrationOrigins(base::nullopt);
-    ASSERT_EQ(installed_origins.size(), 1UL);
-    EXPECT_EQ(installed_origins[0], origin1);
-  }
 }
 
 }  // namespace content

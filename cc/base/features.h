@@ -11,16 +11,17 @@
 
 namespace features {
 
+CC_BASE_EXPORT extern const base::Feature kAnimatedImageResume;
 CC_BASE_EXPORT extern const base::Feature kImpulseScrollAnimations;
 CC_BASE_EXPORT extern const base::Feature kSynchronizedScrolling;
 
-#if !defined(OS_ANDROID)
-CC_BASE_EXPORT extern const base::Feature kImplLatencyRecovery;
-CC_BASE_EXPORT extern const base::Feature kMainLatencyRecovery;
-#endif  // !defined(OS_ANDROID)
-
 CC_BASE_EXPORT bool IsImplLatencyRecoveryEnabled();
 CC_BASE_EXPORT bool IsMainLatencyRecoveryEnabled();
+
+// When enabled, the double tap to zoom will be disabled when the viewport
+// meta tag is properly set for mobile using content=width=device-width
+// or content=initial-scale=1.0
+CC_BASE_EXPORT extern const base::Feature kRemoveMobileViewportDoubleTap;
 
 // When enabled, all scrolling is performed on the compositor thread -
 // delegating only the hit test to Blink. This causes Blink to send additional
@@ -45,6 +46,16 @@ CC_BASE_EXPORT extern const base::Feature kWheelEventRegions;
 // When enabled, cc will show blink's Web-Vital metrics inside its heads up
 // display.
 CC_BASE_EXPORT extern const base::Feature kHudDisplayForPerformanceMetrics;
+
+// When enabled, some jank is injected to the animation/scrolling pipeline.
+CC_BASE_EXPORT extern const base::Feature kJankInjectionAblationFeature;
+
+// Controls the DocumentTransition feature. More information at
+// third_party/blink/renderer/core/document_transition/README.md
+CC_BASE_EXPORT extern const base::Feature kDocumentTransition;
+
+// Helper for DocumentTransition feature.
+CC_BASE_EXPORT bool IsDocumentTransitionEnabled();
 
 }  // namespace features
 

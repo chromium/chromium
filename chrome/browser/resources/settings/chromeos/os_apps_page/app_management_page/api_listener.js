@@ -1,6 +1,16 @@
 // Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+// clang-format off
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {Action} from 'chrome://resources/js/cr/ui/store.m.js';
+// #import {BrowserProxy} from './browser_proxy.m.js';
+// #import {createInitialState} from './util.m.js';
+// #import {AppManagementStore} from './store.m.js';
+// #import {addApp, changeApp, removeApp, updateArcSupported} from './actions.m.js';
+// clang-format on
+
 cr.define('app_management.apiListener', function() {
   let initialized = false;
 
@@ -10,7 +20,7 @@ cr.define('app_management.apiListener', function() {
     const {apps: initialApps} =
         await app_management.BrowserProxy.getInstance().handler.getApps();
     const initialState = app_management.util.createInitialState(initialApps);
-    app_management.Store.getInstance().init(initialState);
+    app_management.AppManagementStore.getInstance().init(initialState);
 
     const callbackRouter =
         app_management.BrowserProxy.getInstance().callbackRouter;
@@ -27,7 +37,7 @@ cr.define('app_management.apiListener', function() {
    * @param {cr.ui.Action} action
    */
   function dispatch(action) {
-    app_management.Store.getInstance().dispatch(action);
+    app_management.AppManagementStore.getInstance().dispatch(action);
   }
 
   /**

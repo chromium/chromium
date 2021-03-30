@@ -1,0 +1,27 @@
+Name: libzip
+Short Name: libzip
+URL: https://github.com/nih-at/libzip
+Version: 66e496489bdae81bfda8b0088172871d8fda0032
+Date: 2021/01/05
+License: Custom
+License File: LICENSE
+Security Critical: Yes
+CPEPrefix: cpe:/a:nih:libzip:1.7.3
+
+Description:
+This is libzip, a C library for reading, creating, and modifying zip and zip64 archives.
+Files can be added from data buffers, files, or compressed data copied directly from
+other zip archives. Changes made without closing the archive can be reverted. Decryption
+and encryption of Winzip AES and legacy PKware encrypted files is supported.
+
+Modifications:
+- Add static file config.h that is generated normally by the build system (patches/0001-add-built-config.h.patch)
+- Add static file zipconfig.h that is generated normally by the build system (patches/0001-add-built-zip_err_str.c.patch)
+- Add static file zip_err_str.c that is generated normally by the build system (patches/0001-add-built-zipconf.h.patch)
+- Modify config.h and zipconfig.h to handle multi-platform build (patches/0001-patch-configs.patch)
+
+Update Process:
+1) Clone the libzip github repo at the desired commit into src/
+2) Generate the static files by running make in the src/ directory
+3) Apply each patch listed above residing in patches/ using `git apply patches/$PATCHFILE`, this
+   should add the three files listed in the modifications section above

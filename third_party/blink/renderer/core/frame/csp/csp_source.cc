@@ -170,15 +170,14 @@ bool CSPSourceMatches(const network::mojom::blink::CSPSource& source,
 }
 
 bool CSPSourceMatchesAsSelf(const network::mojom::blink::CSPSource& source,
-                            const String& self_protocol,
                             const KURL& url) {
   // https://w3c.github.io/webappsec-csp/#match-url-to-source-expression
   // Step 4.
   SchemeMatchingResult schemes_match =
-      SchemeMatches(source, url.Protocol(), self_protocol);
+      SchemeMatches(source, url.Protocol(), source.scheme);
   bool hosts_match = HostMatches(source, url.Host());
   PortMatchingResult ports_match = PortMatches(
-      source, self_protocol, url.HasPort() ? url.Port() : url::PORT_UNSPECIFIED,
+      source, source.scheme, url.HasPort() ? url.Port() : url::PORT_UNSPECIFIED,
       url.Protocol());
 
   // check if the origin is exactly matching
@@ -188,19 +187,16 @@ bool CSPSourceMatchesAsSelf(const network::mojom::blink::CSPSource& source,
     return true;
   }
 
-  String self_scheme =
-      (source.scheme.IsEmpty() ? self_protocol : source.scheme);
-
   bool ports_match_or_defaults =
       (ports_match == PortMatchingResult::kMatchingExact ||
-       ((IsDefaultPortForProtocol(source.port, self_scheme) ||
+       ((IsDefaultPortForProtocol(source.port, source.scheme) ||
          source.port == url::PORT_UNSPECIFIED) &&
         (!url.HasPort() ||
          IsDefaultPortForProtocol(url.Port(), url.Protocol()))));
 
   return hosts_match && ports_match_or_defaults &&
          (url.Protocol() == "https" || url.Protocol() == "wss" ||
-          self_scheme == "http");
+          source.scheme == "http");
 }
 
 bool CSPSourceIsSchemeOnly(const network::mojom::blink::CSPSource& source) {

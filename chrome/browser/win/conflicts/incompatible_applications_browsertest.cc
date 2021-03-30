@@ -144,7 +144,7 @@ class IncompatibleApplicationsBrowserTest : public InProcessBrowserTest {
         L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\%ls";
 
     // Note: Using the application name for the product id.
-    const base::string16 registry_key_path =
+    const std::wstring registry_key_path =
         base::StringPrintf(kRegistryKeyPathFormat, kApplicationName);
     base::win::RegKey registry_key(HKEY_CURRENT_USER, registry_key_path.c_str(),
                                    KEY_WRITE);

@@ -4,6 +4,7 @@
 
 import("//build/config/python.gni")
 import("//testing/test.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 # Structured metrics is subcomponent of UMA that gathers and reports structured
 # events with several attached metrics.
@@ -11,12 +12,18 @@ static_library("structured") {
   sources = [
     "event_base.cc",
     "event_base.h",
+    "external_metrics.cc",
+    "external_metrics.h",
     "histogram_util.cc",
     "histogram_util.h",
     "key_data.cc",
     "key_data.h",
+    "persistent_proto.cc",
+    "persistent_proto.h",
     "recorder.cc",
     "recorder.h",
+    "structured_metrics_features.cc",
+    "structured_metrics_features.h",
     "structured_metrics_provider.cc",
     "structured_metrics_provider.h",
   ]
@@ -24,6 +31,7 @@ static_library("structured") {
   public_deps = [ "//third_party/metrics_proto" ]
 
   deps = [
+    ":storage",
     ":structured_events",
     "//base",
     "//components/metrics",
@@ -32,16 +40,32 @@ static_library("structured") {
   ]
 }
 
-# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-python2_action("gen_structured_events") {
+proto_library("storage") {
+  # These protos are only used internally, so make them visible only to
+  # subdirectories.
+  visibility = [ "./*" ]
+  proto_in_dir = "//"
+  generate_python = false
+  sources = [ "storage.proto" ]
+
+  # This is required because metrics_proto/BUILD.gn sets proto_in_dir as ".",
+  # which means protos can't be referred to by absolute paths from within other
+  # protos.
+  import_dirs = [ "//third_party/metrics_proto" ]
+  proto_deps = [ "//third_party/metrics_proto" ]
+  link_deps = [ "//third_party/metrics_proto" ]
+}
+
+action("gen_structured_events") {
   script = "//tools/metrics/structured/gen_events.py"
 
   # Re-generate the outputs if the codegen code changes:
   inputs = [
     "//tools/metrics/structured/codegen.py",
-    "//tools/metrics/structured/compile_time_validation.py",
-    "//tools/metrics/structured/events_template.py",
     "//tools/metrics/structured/gen_events.py",
+    "//tools/metrics/structured/model.py",
+    "//tools/metrics/structured/model_util.py",
+    "//tools/metrics/structured/templates.py",
   ]
   sources = [ "//tools/metrics/structured/structured.xml" ]
 
@@ -72,11 +96,14 @@ static_library("structured_events") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "external_metrics_unittest.cc",
     "key_data_unittest.cc",
+    "persistent_proto_unittest.cc",
     "structured_metrics_provider_unittest.cc",
   ]
 
   deps = [
+    ":storage",
     ":structured",
     ":structured_events",
     "//base",

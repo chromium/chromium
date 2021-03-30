@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that the name of the function invoked as object constructor will be displayed as its type in the front-end. Bug 50063.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`

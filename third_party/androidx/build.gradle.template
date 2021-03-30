@@ -20,8 +20,10 @@ dependencies {
     compile "androidx.lifecycle:lifecycle-runtime:{{androidx_dependency_version}}"
     compile "androidx.lifecycle:lifecycle-common:{{androidx_dependency_version}}"
     compile "androidx.lifecycle:lifecycle-common-java8:{{androidx_dependency_version}}"
+    compile "androidx.lifecycle:lifecycle-livedata:{{androidx_dependency_version}}"
     compile "androidx.lifecycle:lifecycle-livedata-core:{{androidx_dependency_version}}"
     compile "androidx.lifecycle:lifecycle-viewmodel:{{androidx_dependency_version}}"
+    compile "androidx.lifecycle:lifecycle-viewmodel-savedstate:{{androidx_dependency_version}}"
 
     compile "androidx.core:core:{{androidx_dependency_version}}"
     compile "androidx.core:core-animation:{{androidx_dependency_version}}"
@@ -30,6 +32,7 @@ dependencies {
     compile "androidx.appcompat:appcompat:{{androidx_dependency_version}}"
     compile "androidx.appcompat:appcompat-resources:{{androidx_dependency_version}}"
     compile "androidx.asynclayoutinflater:asynclayoutinflater:{{androidx_dependency_version}}"
+    compile "androidx.browser:browser:{{androidx_dependency_version}}"
     compile "androidx.cardview:cardview:{{androidx_dependency_version}}"
     compile "androidx.concurrent:concurrent-futures:{{androidx_dependency_version}}"
     compile "androidx.collection:collection:{{androidx_dependency_version}}"
@@ -54,13 +57,15 @@ dependencies {
     compile "androidx.vectordrawable:vectordrawable-animated:{{androidx_dependency_version}}"
     compile "androidx.tvprovider:tvprovider:{{androidx_dependency_version}}"
     compile "androidx.viewpager:viewpager:{{androidx_dependency_version}}"
-    compile "androidx.window:window:{{androidx_dependency_version}}"
     compile "androidx.exifinterface:exifinterface:{{androidx_dependency_version}}"
+    compile "androidx.window:window:{{androidx_dependency_version}}"
 
     // Those are for use by doubledown libraries.
     compile "androidx.arch.core:core-common:{{androidx_dependency_version}}"
     compile "androidx.annotation:annotation-experimental:{{androidx_dependency_version}}"
     compile "androidx.annotation:annotation:{{androidx_dependency_version}}"
+    compile "androidx.emoji:emoji:{{androidx_dependency_version}}"
+    compile "androidx.legacy:legacy-support-core-utils:{{androidx_dependency_version}}"
     compile "androidx.lifecycle:lifecycle-runtime:{{androidx_dependency_version}}"
     compile "androidx.transition:transition:{{androidx_dependency_version}}"
     compile "androidx.viewpager2:viewpager2:{{androidx_dependency_version}}"
@@ -91,4 +96,5 @@ task setUpRepository(type: BuildConfigGenerator) {
     cipdBucket 'chromium'
     internalTargetVisibility = [ '//third_party/android_deps:*', ':*' ]
     skipLicenses false
+    ignoreDEPS true
 }

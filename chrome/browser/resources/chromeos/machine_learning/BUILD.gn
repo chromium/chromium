@@ -3,9 +3,9 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("../../optimize_webui.gni")
 
 js_type_check("closure_compile") {
+  uses_legacy_modules = true
   deps = [
     ":machine_learning_internals",
     ":machine_learning_internals_utils",

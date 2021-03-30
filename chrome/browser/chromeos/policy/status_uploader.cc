@@ -55,10 +55,10 @@ StatusUploader::StatusUploader(
   // Listen for changes to the upload delay, and start sending updates to the
   // server.
   upload_frequency_subscription_ =
-      chromeos::CrosSettings::Get()->AddSettingsObserver(
+      ash::CrosSettings::Get()->AddSettingsObserver(
           chromeos::kReportUploadFrequency,
-          base::Bind(&StatusUploader::RefreshUploadFrequency,
-                     base::Unretained(this)));
+          base::BindRepeating(&StatusUploader::RefreshUploadFrequency,
+                              base::Unretained(this)));
 
   // Update the upload frequency from settings.
   RefreshUploadFrequency();
@@ -96,8 +96,8 @@ bool StatusUploader::ScheduleNextStatusUpload(bool immediately) {
     delay = std::max((last_upload_ + kMinImmediateUploadInterval) - now,
                      base::TimeDelta());
 
-  upload_callback_.Reset(base::Bind(&StatusUploader::UploadStatus,
-                                    base::Unretained(this)));
+  upload_callback_.Reset(
+      base::BindOnce(&StatusUploader::UploadStatus, base::Unretained(this)));
   task_runner_->PostDelayedTask(FROM_HERE, upload_callback_.callback(), delay);
   return true;
 }
@@ -106,7 +106,7 @@ void StatusUploader::RefreshUploadFrequency() {
   // Attempt to fetch the current value of the reporting settings.
   // If trusted values are not available, register this function to be called
   // back when they are available.
-  chromeos::CrosSettings* settings = chromeos::CrosSettings::Get();
+  ash::CrosSettings* settings = ash::CrosSettings::Get();
   if (chromeos::CrosSettingsProvider::TRUSTED !=
       settings->PrepareTrustedValues(
           base::BindOnce(&StatusUploader::RefreshUploadFrequency,
@@ -186,8 +186,8 @@ bool StatusUploader::ScheduleNextStatusUploadImmediately() {
 void StatusUploader::UploadStatus() {
   status_upload_in_progress_ = true;
   // Gather status in the background.
-  collector_->GetStatusAsync(base::Bind(&StatusUploader::OnStatusReceived,
-                                        weak_factory_.GetWeakPtr()));
+  collector_->GetStatusAsync(base::BindOnce(&StatusUploader::OnStatusReceived,
+                                            weak_factory_.GetWeakPtr()));
 }
 
 void StatusUploader::OnStatusReceived(StatusCollectorParams callback_params) {

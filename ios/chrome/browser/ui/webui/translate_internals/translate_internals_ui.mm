@@ -29,6 +29,8 @@ web::WebUIIOSDataSource* CreateTranslateInternalsHTMLSource() {
 
   source->SetDefaultResource(IDR_IOS_TRANSLATE_INTERNALS_HTML);
   source->UseStringsJs();
+  source->AddResourcePath("translate_internals.css",
+                          IDR_IOS_TRANSLATE_INTERNALS_CSS);
   source->AddResourcePath("translate_internals.js",
                           IDR_IOS_TRANSLATE_INTERNALS_JS);
 
@@ -41,7 +43,8 @@ web::WebUIIOSDataSource* CreateTranslateInternalsHTMLSource() {
     source->AddString(key, value);
   }
 
-  source->AddString("cld-version", "3");
+  // Current language detection model is "CLD3".
+  source->AddString("model-version", "CLD3");
 
   return source;
 }

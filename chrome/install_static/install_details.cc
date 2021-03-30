@@ -87,4 +87,6 @@ PrimaryInstallDetails::PrimaryInstallDetails() : InstallDetails(&payload_) {
   payload_.product_version = &kProductVersion[0];
 }
 
+PrimaryInstallDetails::~PrimaryInstallDetails() = default;
+
 }  // namespace install_static

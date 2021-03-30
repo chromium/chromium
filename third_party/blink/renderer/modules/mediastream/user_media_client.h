@@ -115,8 +115,7 @@ class MODULES_EXPORT UserMediaClient
   // problems in builds that do not include WebRTC.
   Member<ApplyConstraintsProcessor> apply_constraints_processor_;
 
-  HeapMojoRemote<blink::mojom::blink::MediaDevicesDispatcherHost,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
+  HeapMojoRemote<blink::mojom::blink::MediaDevicesDispatcherHost>
       media_devices_dispatcher_;
 
   // UserMedia requests are processed sequentially. |is_processing_request_|

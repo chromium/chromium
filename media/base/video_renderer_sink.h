@@ -19,6 +19,12 @@ class MEDIA_EXPORT VideoRendererSink {
  public:
   class RenderCallback {
    public:
+    enum class RenderingMode {
+      kNormal,      // Normal operation.
+      kStartup,     // Render() is requested during Start().
+      kBackground,  // Render() is being driven by background timer.
+    };
+
     // Returns a VideoFrame for rendering which should be displayed within the
     // presentation interval [|deadline_min|, |deadline_max|].  Returns NULL if
     // no frame or no new frame (since the last Render() call) is available for
@@ -31,7 +37,7 @@ class MEDIA_EXPORT VideoRendererSink {
     // Render() call may not be used.
     virtual scoped_refptr<VideoFrame> Render(base::TimeTicks deadline_min,
                                              base::TimeTicks deadline_max,
-                                             bool background_rendering) = 0;
+                                             RenderingMode rendering_mode) = 0;
 
     // Called by the sink when a VideoFrame previously returned via Render() was
     // not actually rendered.  Must be called before the next Render() call.

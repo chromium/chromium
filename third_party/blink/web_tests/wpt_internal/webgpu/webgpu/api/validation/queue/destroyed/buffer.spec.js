@@ -10,8 +10,18 @@ Tests using a destroyed buffer on a queue.
 - x= {destroyed, not destroyed (control case)}
 
 TODO: implement. (Search for other places some of these cases may have already been tested.)
+Consider whether these tests should be distributed throughout the suite, instead of centralized.
 `;
 import { makeTestGroup } from '../../../../../common/framework/test_group.js';
 import { ValidationTest } from '../../validation_test.js';
 
 export const g = makeTestGroup(ValidationTest);
+
+g.test('resolveQuerySet')
+  .desc(
+    `
+Tests that use a destroyed buffer in resolveQuerySet.
+- x= {destroyed, not destroyed (control case)}
+  `
+  )
+  .unimplemented();

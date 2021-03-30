@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 
 namespace autofill {
 
@@ -19,13 +18,13 @@ class CardUnmaskDelegate {
     ~UserProvidedUnmaskDetails();
 
     // User input data.
-    base::string16 cvc;
+    std::u16string cvc;
 
     // Two digit month.
-    base::string16 exp_month;
+    std::u16string exp_month;
 
     // Four digit year.
-    base::string16 exp_year;
+    std::u16string exp_year;
 
     // State of "copy to this device" checkbox.
     bool should_store_pan;

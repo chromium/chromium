@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/testharness-adapter.js"></script>
+</head>
+<body>
+<script type="module">
+import {GeolocationMock} from './resources/geolocation-mock.js';
+
+description("Tests that when a request is made on a Geolocation object, permission is denied and its Frame is disconnected before a callback is made, no callbacks are made.");
+
+let error;
+const iframe = document.createElement('iframe');
+let iframeGeolocation;
+
+window.onIframeLoaded = function() {
+    iframeGeolocation = iframe.contentWindow.navigator.geolocation;
+    iframeGeolocation.getCurrentPosition(function() {
+        testFailed('Success callback invoked unexpectedly');
+        finishJSTest();
+    }, function(e) {
+        error = e;
+        assert_equals(error.code, error.PERMISSION_DENIED);
+        assert_equals(error.message, "User denied Geolocation");
+        iframe.src = 'data:text/html,This frame should be visible when the test completes';
+    });
+}
+
+window.onIframeUnloaded = function() {
+    // Make another request, with permission already denied.
+    iframeGeolocation.getCurrentPosition(function () {
+        testFailed('Success callback invoked unexpectedly');
+        finishJSTest();
+    }, function(e) {
+        testFailed('Error callback invoked unexpectedly');
+        finishJSTest();
+    });
+    setTimeout(function() {
+        testPassed('No callbacks invoked');
+        finishJSTest();
+    }, 100);
+}
+
+
+// Prime the Geolocation instance by denying permission. This makes sure that we execute the
+// same code path for both preemptive and non-preemptive permissions policies.
+const mock = new GeolocationMock();
+mock.setGeolocationPermission(false);
+mock.setGeolocationPosition(51.478, -0.166, 100);
+
+iframe.src = 'resources/disconnected-frame-inner.html';
+document.body.appendChild(iframe);
+</script>
+</body>
+</html>

@@ -7,10 +7,11 @@
 
 #include <stdint.h>
 
+#include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "base/time/time.h"
+#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/query_parser/snippet.h"
 #include "url/gurl.h"
 
@@ -48,10 +49,8 @@ class URLRow {
   void set_url(const GURL& url) { url_ = url; }
   const GURL& url() const { return url_; }
 
-  const base::string16& title() const {
-    return title_;
-  }
-  void set_title(const base::string16& title) {
+  const std::u16string& title() const { return title_; }
+  void set_title(const std::u16string& title) {
     // The title is frequently set to the same thing, so we don't bother
     // updating unless the string has changed.
     if (title != title_) {
@@ -130,7 +129,7 @@ class URLRow {
   // the constructor to make a new one.
   GURL url_;
 
-  base::string16 title_;
+  std::u16string title_;
 
   // Total number of times this URL has been visited.
   int visit_count_ = 0;
@@ -146,10 +145,43 @@ class URLRow {
   // is usually for subframes.
   bool hidden_ = false;
 
-  // We support the implicit copy constuctor and operator=.
+  // We support the implicit copy constructor and operator=.
 };
 typedef std::vector<URLRow> URLRows;
 
+// Annotations -----------------------------------------------------------------
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+// A structure containing the annotations made to page content for a visit.
+struct VisitContentAnnotations {
+  struct Category {
+    Category();
+    Category(int id, int weight);
+    bool operator==(const Category& other) const;
+    bool operator!=(const Category& other) const;
+
+    int id = 0;
+    int weight = 0;
+  };
+
+  VisitContentAnnotations();
+  VisitContentAnnotations(float floc_protected_score,
+                          const std::vector<Category>& categories,
+                          int64_t page_topics_model_version);
+  VisitContentAnnotations(const VisitContentAnnotations& other);
+  ~VisitContentAnnotations();
+
+  // A value from 0 to 1 that represents whether the page content is
+  // FLoC-protected.
+  float floc_protected_score = -1.0;
+  // A vector that contains category IDs and their weights. It is guaranteed
+  // that there will not be duplicates in the category IDs contained in this
+  // field.
+  std::vector<Category> categories;
+  // The version of the page topics model that was used to annotate content.
+  int64_t page_topics_model_version = -1;
+};
+#endif
 
 class URLResult : public URLRow {
  public:
@@ -167,6 +199,16 @@ class URLResult : public URLRow {
 
   bool floc_allowed() const { return floc_allowed_; }
   void set_floc_allowed(bool floc_allowed) { floc_allowed_ = floc_allowed; }
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  const base::Optional<VisitContentAnnotations>& content_annotations() const {
+    return content_annotations_;
+  }
+  void set_content_annotations(
+      const base::Optional<VisitContentAnnotations>& content_annotations) {
+    content_annotations_ = content_annotations;
+  }
+#endif
 
   const query_parser::Snippet& snippet() const { return snippet_; }
 
@@ -195,6 +237,11 @@ class URLResult : public URLRow {
   // Indicates whether this URL visit can be included in FLoC computation. See
   // VisitRow::floc_allowed for details.
   bool floc_allowed_ = false;
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  // The annotations made to the page content for this visit.
+  base::Optional<VisitContentAnnotations> content_annotations_;
+#endif
 
   // These values are typically set by HistoryBackend.
   query_parser::Snippet snippet_;

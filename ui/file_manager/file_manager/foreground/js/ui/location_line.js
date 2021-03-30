@@ -2,10 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {FakeEntry} from '../../../externs/files_app_entry_interfaces.m.js';
+// #import {FilesTooltip} from '../../elements/files_tooltip.m.js';
+// #import {ListContainer} from './list_container.m.js';
+// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
+// #import {util} from '../../../common/js/util.m.js';
+// #import {PathComponent} from '../path_component.m.js';
+// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+// #import {metrics} from '../../../common/js/metrics.m.js';
+// #import {BreadCrumb} from './breadcrumb.m.js';
+// clang-format on
+
 /**
  * Location line.
  */
-class LocationLine extends cr.EventTarget {
+/* #export */ class LocationLine extends cr.EventTarget {
   /**
    * @param {!Element} breadcrumbs Container element for breadcrumbs.
    * @param {!VolumeManager} volumeManager Volume manager.
@@ -78,7 +90,8 @@ class LocationLine extends cr.EventTarget {
   updateNg_(components) {
     this.components_ = Array.from(components);
 
-    let breadcrumbs = document.querySelector('bread-crumb');
+    let breadcrumbs =
+        /** @type {!BreadCrumb} */ (document.querySelector('bread-crumb'));
     if (!breadcrumbs) {
       breadcrumbs = document.createElement('bread-crumb');
       breadcrumbs.id = 'breadcrumbs';

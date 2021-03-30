@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/base_switches.h"
@@ -19,7 +20,6 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -118,7 +118,7 @@ std::unique_ptr<base::CommandLine> CreateServiceProcessCommandLine() {
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   if (crash_reporter::IsCrashpadEnabled()) {
-    command_line->AppendSwitch(crash_reporter::kEnableCrashpad);
+    command_line->AppendSwitch(switches::kEnableCrashpad);
 
     pid_t pid;
     if (crash_reporter::GetHandlerSocket(nullptr, &pid)) {

@@ -72,7 +72,7 @@ class AsynchronousShutdownObjectContainerImpl
   ~AsynchronousShutdownObjectContainerImpl() override;
 
   // AsynchronousShutdownObjectContainer:
-  void Shutdown(const base::Closure& shutdown_complete_callback) override;
+  void Shutdown(base::OnceClosure shutdown_complete_callback) override;
   TetherHostFetcher* tether_host_fetcher() override;
   DisconnectTetheringRequestSender* disconnect_tethering_request_sender()
       override;
@@ -109,7 +109,7 @@ class AsynchronousShutdownObjectContainerImpl
   std::unique_ptr<WifiHotspotDisconnector> wifi_hotspot_disconnector_;
 
   // Not set until Shutdown() is invoked.
-  base::Closure shutdown_complete_callback_;
+  base::OnceClosure shutdown_complete_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(AsynchronousShutdownObjectContainerImpl);
 };

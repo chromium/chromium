@@ -23,6 +23,7 @@
 
 #include "base/mac/mach_logging.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/build_config.h"
 
@@ -84,17 +85,21 @@ IOSSystemDataCollector::IOSSystemDataCollector()
   // TODO(justincohen): Consider adding board and model information to
   // |machine_description| as well (similar to MacModelAndBoard in
   // util/mac/mac_util.cc).
-  switch (UI_USER_INTERFACE_IDIOM()) {
-    case UIUserInterfaceIdiomPhone:
-      machine_description_ = "iOS Simulator (iPhone)";
-      break;
-    case UIUserInterfaceIdiomPad:
-      machine_description_ = "iOS Simulator (iPad)";
-      break;
-    default:
-      machine_description_ = "iOS Simulator (Unknown)";
-      break;
+  const char* model = getenv("SIMULATOR_MODEL_IDENTIFIER");
+  if (model == nullptr) {
+    switch (UI_USER_INTERFACE_IDIOM()) {
+      case UIUserInterfaceIdiomPhone:
+        model = "iPhone";
+        break;
+      case UIUserInterfaceIdiomPad:
+        model = "iPad";
+        break;
+      default:
+        model = "Unknown";
+        break;
+    }
   }
+  machine_description_ = base::StringPrintf("iOS Simulator (%s)", model);
 #elif TARGET_OS_IPHONE
   utsname uts;
   if (uname(&uts) == 0) {

@@ -34,7 +34,6 @@
 #endif
 
 #if defined(OS_WIN)
-#include "ui/base/cursor/cursor_loader_win.h"
 #include "ui/platform_window/win/win_window.h"
 #endif
 
@@ -57,7 +56,8 @@ WindowTreeHostPlatform::WindowTreeHostPlatform(
     std::unique_ptr<Window> window)
     : WindowTreeHost(std::move(window)) {
   bounds_in_pixels_ = properties.bounds;
-  CreateCompositor();
+  CreateCompositor(viz::FrameSinkId(), false, false,
+                   properties.enable_compositing_based_throttling);
   CreateAndSetPlatformWindow(std::move(properties));
 }
 
@@ -190,11 +190,6 @@ void WindowTreeHostPlatform::SetCursorNative(gfx::NativeCursor cursor) {
     return;
   current_cursor_ = cursor;
 
-#if defined(OS_WIN)
-  ui::CursorLoaderWin cursor_loader;
-  cursor_loader.SetPlatformCursor(&cursor);
-#endif
-
   platform_window_->SetCursor(cursor.platform());
 }
 
@@ -207,7 +202,7 @@ void WindowTreeHostPlatform::OnCursorVisibilityChangedNative(bool show) {
   NOTIMPLEMENTED();
 }
 
-void WindowTreeHostPlatform::OnBoundsChanged(const gfx::Rect& new_bounds) {
+void WindowTreeHostPlatform::OnBoundsChanged(const BoundsChange& change) {
   // It's possible this function may be called recursively. Only notify
   // observers on initial entry. This way observers can safely assume that
   // OnHostDidProcessBoundsChange() is called when all bounds changes have
@@ -219,13 +214,21 @@ void WindowTreeHostPlatform::OnBoundsChanged(const gfx::Rect& new_bounds) {
   float current_scale = compositor()->device_scale_factor();
   float new_scale = ui::GetScaleFactorForNativeView(window());
   gfx::Rect old_bounds = bounds_in_pixels_;
-  bounds_in_pixels_ = new_bounds;
-  if (bounds_in_pixels_.origin() != old_bounds.origin())
+  auto weak_ref = GetWeakPtr();
+  bounds_in_pixels_ = change.bounds;
+  if (bounds_in_pixels_.origin() != old_bounds.origin()) {
     OnHostMovedInPixels(bounds_in_pixels_.origin());
+    // Changing the bounds may destroy this.
+    if (!weak_ref)
+      return;
+  }
   if (bounds_in_pixels_.size() != old_bounds.size() ||
       current_scale != new_scale) {
     pending_size_ = gfx::Size();
     OnHostResizedInPixels(bounds_in_pixels_.size());
+    // Changing the size may destroy this.
+    if (!weak_ref)
+      return;
   }
   DCHECK_GT(on_bounds_changed_recursion_depth_, 0);
   if (--on_bounds_changed_recursion_depth_ == 0) {

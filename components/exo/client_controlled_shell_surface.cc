@@ -326,9 +326,11 @@ ClientControlledShellSurface::ClientControlledShellSurface(
     bool can_minimize,
     int container,
     bool default_scale_cancellation)
-    : ShellSurfaceBase(surface, gfx::Point(), true, can_minimize, container),
+    : ShellSurfaceBase(surface, gfx::Point(), can_minimize, container),
       current_pin_(chromeos::WindowPinType::kNone),
-      use_default_scale_cancellation_(default_scale_cancellation) {}
+      use_default_scale_cancellation_(default_scale_cancellation) {
+  server_side_resize_ = true;
+}
 
 ClientControlledShellSurface::~ClientControlledShellSurface() {
   // Reset the window delegate here so that we won't try to do any dragging
@@ -506,20 +508,13 @@ void ClientControlledShellSurface::SetTopInset(int height) {
   pending_top_inset_height_ = height;
 }
 
-void ClientControlledShellSurface::SetResizeOutset(int outset) {
-  TRACE_EVENT1("exo", "ClientControlledShellSurface::SetResizeOutset", "outset",
-               outset);
-  // Deprecated.
-  NOTREACHED();
-}
-
 void ClientControlledShellSurface::OnWindowStateChangeEvent(
     chromeos::WindowStateType current_state,
     chromeos::WindowStateType next_state) {
   // Android already knows this state change. Don't send state change to Android
   // that it is about to do anyway.
-  if (state_changed_callback_ && pending_window_state_ != next_state)
-    state_changed_callback_.Run(current_state, next_state);
+  if (delegate_ && pending_window_state_ != next_state)
+    delegate_->OnStateChanged(current_state, next_state);
 }
 
 void ClientControlledShellSurface::StartDrag(int component,
@@ -546,7 +541,12 @@ void ClientControlledShellSurface::AttemptToStartDrag(
   if (toplevel_handler->gesture_target() ||
       (mouse_pressed_handler && target->Contains(mouse_pressed_handler))) {
     gfx::PointF point_in_root(location);
-    wm::ConvertPointFromScreen(target->GetRootWindow(), &point_in_root);
+    if (use_default_scale_cancellation_) {
+      // When default scale cancellation is enabled, the client sends the
+      // location in screen coordinates. Otherwise, the location should already
+      // be in the display's coordinates.
+      wm::ConvertPointFromScreen(target->GetRootWindow(), &point_in_root);
+    }
     toplevel_handler->AttemptToStartDrag(
         target, point_in_root, component,
         ash::ToplevelWindowEventHandler::EndClosure());
@@ -589,7 +589,7 @@ void ClientControlledShellSurface::SetFrameButtons(
 }
 
 void ClientControlledShellSurface::SetExtraTitle(
-    const base::string16& extra_title) {
+    const std::u16string& extra_title) {
   TRACE_EVENT1("exo", "ClientControlledShellSurface::SetExtraTitle",
                "extra_title", base::UTF16ToUTF8(extra_title));
 
@@ -659,7 +659,7 @@ void ClientControlledShellSurface::OnBoundsChangeEvent(
   if (geometry().IsEmpty() || window_bounds.IsEmpty() ||
       (widget_->IsMinimized() &&
        requested_state == chromeos::WindowStateType::kMinimized) ||
-      !bounds_changed_callback_) {
+      !delegate_) {
     return;
   }
 
@@ -675,8 +675,8 @@ void ClientControlledShellSurface::OnBoundsChangeEvent(
   const float scale = 1.f / GetClientToDpScale();
   const gfx::Rect scaled_client_bounds =
       gfx::ScaleToRoundedRect(client_bounds, scale);
-  bounds_changed_callback_.Run(current_state, requested_state, display_id,
-                               scaled_client_bounds, is_resize, bounds_change);
+  delegate_->OnBoundsChanged(current_state, requested_state, display_id,
+                             scaled_client_bounds, is_resize, bounds_change);
 
   auto* window_state = GetWindowState();
   if (server_reparent_window_ &&
@@ -691,25 +691,25 @@ void ClientControlledShellSurface::OnBoundsChangeEvent(
 }
 
 void ClientControlledShellSurface::ChangeZoomLevel(ZoomChange change) {
-  if (change_zoom_level_callback_)
-    change_zoom_level_callback_.Run(change);
+  if (delegate_)
+    delegate_->OnZoomLevelChanged(change);
 }
 
 void ClientControlledShellSurface::OnDragStarted(int component) {
   in_drag_ = true;
-  if (drag_started_callback_)
-    drag_started_callback_.Run(component);
+  if (delegate_)
+    delegate_->OnDragStarted(component);
 }
 
 void ClientControlledShellSurface::OnDragFinished(bool canceled,
                                                   const gfx::PointF& location) {
   in_drag_ = false;
-  if (!drag_finished_callback_)
+  if (!delegate_)
     return;
 
   const float scale = 1.f / GetClientToDpScale();
   const gfx::PointF scaled = gfx::ScalePoint(location, scale);
-  drag_finished_callback_.Run(scaled.x(), scaled.y(), canceled);
+  delegate_->OnDragFinished(scaled.x(), scaled.y(), canceled);
 }
 
 float ClientControlledShellSurface::GetClientToDpScale() const {
@@ -718,6 +718,25 @@ float ClientControlledShellSurface::GetClientToDpScale() const {
   if (use_default_scale_cancellation_)
     return 1.f;
   return 1.f / scale_;
+}
+
+void ClientControlledShellSurface::SetResizeLock(bool resize_lock) {
+  TRACE_EVENT1("exo", "ClientControlledShellSurface::SetResizeLock",
+               "resize_lock", resize_lock);
+  pending_resize_lock_ = resize_lock;
+}
+
+void ClientControlledShellSurface::UpdateCanResize() {
+  TRACE_EVENT0("exo", "ClientControlledShellSurface::updateCanResize");
+  widget_->GetNativeWindow()->SetProperty(ash::kArcResizeLockKey,
+                                          pending_resize_lock_);
+  // If resize lock is enabled, the window is explicitly marded as unresizable.
+  // Otherwise, the decision is deferred to the parent class.
+  if (pending_resize_lock_) {
+    SetCanResize(false);
+    return;
+  }
+  ShellSurfaceBase::UpdateCanResize();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -789,8 +808,7 @@ ClientControlledShellSurface::CreateNonClientFrameView(views::Widget* widget) {
   client_controlled_state_ = state.get();
   window_state->SetStateObject(std::move(state));
   window_state->SetDelegate(std::move(window_delegate));
-  auto frame_view =
-      CreateNonClientFrameViewInternal(widget, /*client_controlled=*/true);
+  auto frame_view = CreateNonClientFrameViewInternal(widget);
   immersive_fullscreen_controller_ =
       std::make_unique<chromeos::ImmersiveFullscreenController>();
   static_cast<ash::NonClientFrameViewAsh*>(frame_view.get())
@@ -1036,7 +1054,7 @@ void ClientControlledShellSurface::InitializeWindowState(
   UpdateFrameWidth();
   if (initial_orientation_lock_ != ash::OrientationLockType::kAny)
     SetOrientationLock(initial_orientation_lock_);
-  if (initial_extra_title_ != base::string16())
+  if (initial_extra_title_ != std::u16string())
     SetExtraTitle(initial_extra_title_);
 
   // Register Client controlled accelerators.
@@ -1182,13 +1200,13 @@ void ClientControlledShellSurface::OnPostWidgetCommit() {
   UpdateFrame();
   UpdateBackdrop();
 
-  if (geometry_changed_callback_) {
+  if (delegate_) {
     // Since the visible bounds are in screen coordinates, do not scale these
     // bounds with the display's scale before sending them.
     // TODO(b/167286795): Instead of sending bounds in screen coordinates, send
     // the bounds in the display along with the display information, similar to
     // the bounds_changed_callback_.
-    geometry_changed_callback_.Run(GetVisibleBounds());
+    delegate_->OnGeometryChanged(GetVisibleBounds());
   }
 
   // Apply new top inset height.
@@ -1206,6 +1224,8 @@ void ClientControlledShellSurface::OnPostWidgetCommit() {
                                           pending_always_on_top_
                                               ? ui::ZOrderLevel::kFloatingWindow
                                               : ui::ZOrderLevel::kNormal);
+
+  UpdateCanResize();
 
   ash::WindowState* window_state = GetWindowState();
   // For PIP, the snap fraction is used to specify the ideal position. Usually

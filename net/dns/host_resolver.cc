@@ -238,12 +238,12 @@ AddressFamily HostResolver::DnsQueryTypeToAddressFamily(
 HostResolverFlags HostResolver::ParametersToHostResolverFlags(
     const ResolveHostParameters& parameters) {
   HostResolverFlags flags = 0;
-  if (parameters.source == HostResolverSource::SYSTEM)
-    flags |= HOST_RESOLVER_SYSTEM_ONLY;
   if (parameters.include_canonical_name)
     flags |= HOST_RESOLVER_CANONNAME;
   if (parameters.loopback_only)
     flags |= HOST_RESOLVER_LOOPBACK_ONLY;
+  if (parameters.avoid_multicast_resolution)
+    flags |= HOST_RESOLVER_AVOID_MULTICAST;
   return flags;
 }
 

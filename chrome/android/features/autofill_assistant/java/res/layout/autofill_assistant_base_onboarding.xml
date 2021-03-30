@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2018 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:id="@+id/onboarding_layout_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="18dp"
+        android:paddingBottom="14dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+
+      <!-- "Try Google Assistant in Chrome" -->
+      <LinearLayout
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:orientation="horizontal"
+          android:gravity="center_horizontal"
+          android:layout_marginTop="16dp">
+        <ImageView
+          android:id="@+id/onboarding_title_poodle"
+          tools:ignore="contentDescription"
+            android:layout_width="24dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+          app:srcCompat="@drawable/ic_logo_assistant_24dp" />
+      </LinearLayout>
+      <LinearLayout
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:orientation="horizontal"
+          android:gravity="center_horizontal"
+          android:layout_marginTop="12dp">
+        <TextView
+            android:id="@+id/onboarding_try_assistant"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.Headline.Primary"
+            android:gravity="center"
+            android:text="@string/autofill_assistant_init_title" />
+      </LinearLayout>
+
+        <!-- Subtitle (e.g., 'Google Assistant saves you time...')-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1"/>
+            <!-- The subtitle takes 3/4 of the screen width. -->
+            <TextView
+                android:id="@+id/onboarding_subtitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="6"
+                android:layout_marginTop="20dp"
+                android:textAppearance="@style/TextAppearance.AssistantBlackBody"
+                android:gravity="center_horizontal"
+                android:text="@string/autofill_assistant_init_message" />
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1"/>
+        </LinearLayout>
+
+        <!-- Separator -->
+        <LinearLayout
+            android:id="@+id/onboarding_separator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:weightSum="1.0">
+            <View style="@style/HorizontalDivider"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="0.33"/>
+        </LinearLayout>
+        <Space android:layout_width="0dp" android:layout_height="20dp"/>
+
+        <!-- Terms and Conditions message and link -->
+        <LinearLayout
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:paddingBottom="9dp">
+            <TextView
+                android:id="@+id/google_terms_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="0dp"
+                android:layout_gravity="center"
+                android:textAppearance="@style/TextAppearance.AssistantBlackCaption"
+                android:text="@string/autofill_assistant_google_terms_description" />
+        </LinearLayout>
+        <Space android:layout_width="0dp" android:layout_height="18dp"/>
+    </LinearLayout>
+</ScrollView>

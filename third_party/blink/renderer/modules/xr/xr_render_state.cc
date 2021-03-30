@@ -63,7 +63,6 @@ base::Optional<double> XRRenderState::inlineVerticalFieldOfView() const {
 
 void XRRenderState::Trace(Visitor* visitor) const {
   visitor->Trace(base_layer_);
-  visitor->Trace(inline_vertical_fov_);
   ScriptWrappable::Trace(visitor);
 }
 

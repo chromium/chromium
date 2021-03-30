@@ -19,7 +19,6 @@
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 
 using content::BrowserThread;
 
@@ -100,11 +99,15 @@ RemoteSafeBrowsingDatabaseManager::RemoteSafeBrowsingDatabaseManager() {
   // Avoid memory allocations growing the underlying vector. Although this
   // usually wastes a bit of memory, it will still be less than the default
   // vector allocation strategy.
-  resource_types_to_check_.reserve(
-      static_cast<int>(blink::mojom::ResourceType::kMaxValue) + 1);
-  // Decide which resource types to check. These two are the minimum.
-  resource_types_to_check_.insert(blink::mojom::ResourceType::kMainFrame);
-  resource_types_to_check_.insert(blink::mojom::ResourceType::kSubFrame);
+  request_destinations_to_check_.reserve(
+      static_cast<int>(network::mojom::RequestDestination::kMaxValue) + 1);
+  // Decide which request destinations to check. These three are the minimum.
+  request_destinations_to_check_.insert(
+      network::mojom::RequestDestination::kDocument);
+  request_destinations_to_check_.insert(
+      network::mojom::RequestDestination::kIframe);
+  request_destinations_to_check_.insert(
+      network::mojom::RequestDestination::kFrame);
 
   // The param is expected to be a comma-separated list of ints
   // corresponding to the enum types.  We're keeping this finch
@@ -113,22 +116,23 @@ RemoteSafeBrowsingDatabaseManager::RemoteSafeBrowsingDatabaseManager() {
       kAndroidFieldExperiment, kAndroidTypesToCheckParam);
   if (ints_str.empty()) {
     // By default, we check all types except a few.
-    static_assert(blink::mojom::ResourceType::kMaxValue ==
-                      blink::mojom::ResourceType::kNavigationPreloadSubFrame,
-                  "Decide if new resource type should be skipped on mobile.");
+    static_assert(
+        network::mojom::RequestDestination::kMaxValue ==
+            network::mojom::RequestDestination::kXslt,
+        "Decide if new request destination should be skipped on mobile.");
     for (int t_int = 0;
-         t_int <= static_cast<int>(blink::mojom::ResourceType::kMaxValue);
+         t_int <=
+         static_cast<int>(network::mojom::RequestDestination::kMaxValue);
          t_int++) {
-      blink::mojom::ResourceType t =
-          static_cast<blink::mojom::ResourceType>(t_int);
+      network::mojom::RequestDestination t =
+          static_cast<network::mojom::RequestDestination>(t_int);
       switch (t) {
-        case blink::mojom::ResourceType::kStylesheet:
-        case blink::mojom::ResourceType::kImage:
-        case blink::mojom::ResourceType::kFontResource:
-        case blink::mojom::ResourceType::kFavicon:
+        case network::mojom::RequestDestination::kStyle:
+        case network::mojom::RequestDestination::kImage:
+        case network::mojom::RequestDestination::kFont:
           break;
         default:
-          resource_types_to_check_.insert(t);
+          request_destinations_to_check_.insert(t);
       }
     }
   } else {
@@ -137,9 +141,10 @@ RemoteSafeBrowsingDatabaseManager::RemoteSafeBrowsingDatabaseManager() {
              ints_str, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
       int i;
       if (base::StringToInt(val_str, &i) && i >= 0 &&
-          i <= static_cast<int>(blink::mojom::ResourceType::kMaxValue)) {
-        resource_types_to_check_.insert(
-            static_cast<blink::mojom::ResourceType>(i));
+          i <=
+              static_cast<int>(network::mojom::RequestDestination::kMaxValue)) {
+        request_destinations_to_check_.insert(
+            static_cast<network::mojom::RequestDestination>(i));
       }
     }
   }
@@ -163,9 +168,9 @@ void RemoteSafeBrowsingDatabaseManager::CancelCheck(Client* client) {
   }
 }
 
-bool RemoteSafeBrowsingDatabaseManager::CanCheckResourceType(
-    blink::mojom::ResourceType resource_type) const {
-  return resource_types_to_check_.count(resource_type) > 0;
+bool RemoteSafeBrowsingDatabaseManager::CanCheckRequestDestination(
+    network::mojom::RequestDestination request_destination) const {
+  return request_destinations_to_check_.count(request_destination) > 0;
 }
 
 bool RemoteSafeBrowsingDatabaseManager::CanCheckUrl(const GURL& url) const {
@@ -277,7 +282,7 @@ bool RemoteSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(
   return false;
 }
 
-AsyncMatch RemoteSafeBrowsingDatabaseManager::CheckCsdWhitelistUrl(
+AsyncMatch RemoteSafeBrowsingDatabaseManager::CheckCsdAllowlistUrl(
     const GURL& url,
     Client* client) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -293,13 +298,13 @@ AsyncMatch RemoteSafeBrowsingDatabaseManager::CheckCsdWhitelistUrl(
   return is_match ? AsyncMatch::MATCH : AsyncMatch::NO_MATCH;
 }
 
-bool RemoteSafeBrowsingDatabaseManager::MatchDownloadWhitelistString(
+bool RemoteSafeBrowsingDatabaseManager::MatchDownloadAllowlistString(
     const std::string& str) {
   NOTREACHED();
   return true;
 }
 
-bool RemoteSafeBrowsingDatabaseManager::MatchDownloadWhitelistUrl(
+bool RemoteSafeBrowsingDatabaseManager::MatchDownloadAllowlistUrl(
     const GURL& url) {
   NOTREACHED();
   return true;

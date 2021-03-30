@@ -8,12 +8,13 @@
 #include <unordered_set>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,8 +23,6 @@
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/common/url_icon_source.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "chromeos/constants/chromeos_pref_names.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -78,6 +77,10 @@ constexpr base::FeatureParam<int> kInteractionGrace(
     &app_list_features::kEnableAppReinstallZeroState,
     "interaction_grace_hours",
     0);
+
+// TODO(thanhdng): This is used to guard the new http endpoint before it's
+// launched. Remove this when it happens.
+constexpr bool kUseHttpEndpoint = false;
 
 void SetStateInt64(Profile* profile,
                    const std::string& package_name,
@@ -216,10 +219,13 @@ ArcAppReinstallSearchProvider::ArcAppReinstallSearchProvider(
     unsigned int max_result_count)
     : profile_(profile),
       max_result_count_(max_result_count),
-      icon_dimension_(ash::AppListConfig::instance().GetPreferredIconDimension(
-          ash::SearchResultDisplayType::kTile)),
+      icon_dimension_(
+          ash::SharedAppListConfig::instance().GetPreferredIconDimension(
+              ash::SearchResultDisplayType::kTile)),
       app_fetch_timer_(std::make_unique<base::RepeatingTimer>()) {
   DCHECK(profile_);
+  if (kUseHttpEndpoint)
+    recommend_apps_fetcher_ = RecommendAppsFetcher::Create(this);
   ArcAppListPrefs::Get(profile_)->AddObserver(this);
   MaybeUpdateFetching();
 }
@@ -251,7 +257,7 @@ ash::AppListSearchResultType ArcAppReinstallSearchProvider::ResultType() {
   return ash::AppListSearchResultType::kPlayStoreReinstallApp;
 }
 
-void ArcAppReinstallSearchProvider::Start(const base::string16& query) {
+void ArcAppReinstallSearchProvider::Start(const std::u16string& query) {
   query_is_empty_ = query.empty();
   if (!query_is_empty_) {
     ClearResults();
@@ -265,9 +271,6 @@ void ArcAppReinstallSearchProvider::Start(const base::string16& query) {
   if (pref_service &&
       !pref_service->GetBoolean(chromeos::prefs::kSuggestedContentEnabled))
     should_show_arc_app_reinstall_result = false;
-  if (!base::FeatureList::IsEnabled(
-          chromeos::features::kSuggestedContentToggle))
-    should_show_arc_app_reinstall_result = false;
 
   if (!should_show_arc_app_reinstall_result) {
     ClearResults();
@@ -278,15 +281,6 @@ void ArcAppReinstallSearchProvider::Start(const base::string16& query) {
 }
 
 void ArcAppReinstallSearchProvider::StartFetch() {
-  arc::mojom::AppInstance* app_instance =
-      arc::ArcServiceManager::Get()
-          ? ARC_GET_INSTANCE_FOR_METHOD(
-                arc::ArcServiceManager::Get()->arc_bridge_service()->app(),
-                GetAppReinstallCandidates)
-          : nullptr;
-  if (app_instance == nullptr)
-    return;
-
   if (profile_->GetPrefs()->IsManagedPreference(
           prefs::kAppReinstallRecommendationEnabled) &&
       !profile_->GetPrefs()->GetBoolean(
@@ -299,6 +293,20 @@ void ArcAppReinstallSearchProvider::StartFetch() {
                                 {});
     return;
   }
+
+  if (kUseHttpEndpoint) {
+    recommend_apps_fetcher_->StartDownload();
+    return;
+  }
+
+  arc::mojom::AppInstance* app_instance =
+      arc::ArcServiceManager::Get()
+          ? ARC_GET_INSTANCE_FOR_METHOD(
+                arc::ArcServiceManager::Get()->arc_bridge_service()->app(),
+                GetAppReinstallCandidates)
+          : nullptr;
+  if (app_instance == nullptr)
+    return;
 
   app_instance->GetAppReinstallCandidates(base::BindOnce(
       &ArcAppReinstallSearchProvider::OnGetAppReinstallCandidates,
@@ -329,24 +337,7 @@ void ArcAppReinstallSearchProvider::OnGetAppReinstallCandidates(
     }
   }
 
-  // Update the dictionary to reset old impression counts.
-  const base::TimeDelta now = base::Time::Now().ToDeltaSinceWindowsEpoch();
-  // Remove stale impressions from state.
-  std::unordered_set<std::string> package_names;
-  GetKnownPackageNames(profile_, &package_names);
-  for (const std::string& package_name : package_names) {
-    base::TimeDelta latest_impression;
-    if (!GetStateTime(profile_, package_name, kImpressionTime,
-                      &latest_impression)) {
-      continue;
-    }
-    if (now - latest_impression >
-        base::TimeDelta::FromHours(kResetImpressionGrace.Get())) {
-      SetStateInt64(profile_, package_name, kImpressionCount, 0);
-      UpdateStateRemoveKey(profile_, package_name, kImpressionTime);
-    }
-  }
-
+  MaybeyResetOldImpressionCounts();
   UpdateResults();
 }
 
@@ -426,6 +417,25 @@ void ArcAppReinstallSearchProvider::UpdateResults() {
   // screen?
   if (!ResultsIdentical(results(), new_results)) {
     SwapResults(&new_results);
+  }
+}
+
+void ArcAppReinstallSearchProvider::MaybeyResetOldImpressionCounts() {
+  const base::TimeDelta now = base::Time::Now().ToDeltaSinceWindowsEpoch();
+  // Remove stale impressions from state.
+  std::unordered_set<std::string> package_names;
+  GetKnownPackageNames(profile_, &package_names);
+  for (const std::string& package_name : package_names) {
+    base::TimeDelta latest_impression;
+    if (!GetStateTime(profile_, package_name, kImpressionTime,
+                      &latest_impression)) {
+      continue;
+    }
+    if (now - latest_impression >
+        base::TimeDelta::FromHours(kResetImpressionGrace.Get())) {
+      SetStateInt64(profile_, package_name, kImpressionCount, 0);
+      UpdateStateRemoveKey(profile_, package_name, kImpressionTime);
+    }
   }
 }
 
@@ -661,6 +671,39 @@ bool ArcAppReinstallSearchProvider::ResultsIdentical(
     }
   }
   return true;
+}
+
+void ArcAppReinstallSearchProvider::OnLoadSuccess(const base::Value& app_list) {
+  // TODO(thanhdng): add a UMA histogram here.
+  loaded_value_.clear();
+
+  for (const auto& item : app_list.GetList()) {
+    base::Value app_info = item.Clone();
+    const auto package_name = app_info.ExtractPath("package_name");
+    const auto name = app_info.ExtractPath("name");
+    const auto icon = app_info.ExtractPath("icon");
+    if (icon.has_value() && package_name.has_value() && name.has_value()) {
+      if (icon.value().is_string() && package_name.value().is_string() &&
+          name.value().is_string()) {
+        // TODO(thanhdng): currently rating count and average rating is
+        // unavailable. Set them to appropriate value when available.
+        loaded_value_.push_back(arc::mojom::AppReinstallCandidate::New(
+            package_name.value().GetString(), name.value().GetString(),
+            icon.value().GetString(), 0, 0));
+      }
+    }
+  }
+
+  MaybeyResetOldImpressionCounts();
+  UpdateResults();
+}
+
+void ArcAppReinstallSearchProvider::OnLoadError() {
+  // TODO(thanhdng): add a UMA histogram here.
+}
+
+void ArcAppReinstallSearchProvider::OnParseResponseError() {
+  // TODO(thanhdng): add a UMA histogram here.
 }
 
 }  // namespace app_list

@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
-#include "third_party/blink/renderer/core/layout/layout_geometry_map.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_clipper.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_masker.h"
@@ -194,31 +193,6 @@ void SVGLayoutSupport::MapAncestorToLocal(const LayoutObject& object,
   transform_state.ApplyTransform(local_to_svg_root);
 }
 
-const LayoutObject* SVGLayoutSupport::PushMappingToContainer(
-    const LayoutObject* object,
-    const LayoutBoxModelObject* ancestor_to_stop_at,
-    LayoutGeometryMap& geometry_map) {
-  DCHECK_NE(ancestor_to_stop_at, object);
-
-  LayoutObject* parent = object->Parent();
-
-  // At the SVG/HTML boundary (aka LayoutSVGRoot), we apply the
-  // localToBorderBoxTransform to map an element from SVG viewport coordinates
-  // to CSS box coordinates.
-  // LayoutSVGRoot's mapLocalToAncestor method expects CSS box coordinates.
-  if (parent->IsSVGRoot()) {
-    TransformationMatrix matrix(
-        To<LayoutSVGRoot>(parent)->LocalToBorderBoxTransform());
-    matrix.Multiply(TransformationMatrix(object->LocalToSVGParentTransform()));
-    geometry_map.Push(object, matrix);
-  } else {
-    geometry_map.Push(
-        object, TransformationMatrix(object->LocalToSVGParentTransform()));
-  }
-
-  return parent;
-}
-
 bool SVGLayoutSupport::LayoutSizeOfNearestViewportChanged(
     const LayoutObject* start) {
   for (; start; start = start->Parent()) {
@@ -269,9 +243,8 @@ void SVGLayoutSupport::AdjustWithClipPathAndMask(
   if (LayoutSVGResourceClipper* clipper =
           GetSVGResourceAsType(*client, style.ClipPath()))
     visual_rect.Intersect(clipper->ResourceBoundingBox(object_bounding_box));
-  const SVGComputedStyle& svg_style = style.SvgStyle();
   if (auto* masker = GetSVGResourceAsType<LayoutSVGResourceMasker>(
-          *client, svg_style.MaskerResource()))
+          *client, style.MaskerResource()))
     visual_rect.Intersect(masker->ResourceBoundingBox(object_bounding_box, 1));
 }
 
@@ -280,13 +253,13 @@ FloatRect SVGLayoutSupport::ExtendTextBBoxWithStroke(
     const FloatRect& text_bounds) {
   DCHECK(layout_object.IsSVGText() || layout_object.IsSVGInline());
   FloatRect bounds = text_bounds;
-  const SVGComputedStyle& svg_style = layout_object.StyleRef().SvgStyle();
-  if (svg_style.HasStroke()) {
+  const ComputedStyle& style = layout_object.StyleRef();
+  if (style.HasStroke()) {
     SVGLengthContext length_context(To<SVGElement>(layout_object.GetNode()));
     // TODO(fs): This approximation doesn't appear to be conservative enough
     // since while text (usually?) won't have caps it could have joins and thus
     // miters.
-    bounds.Inflate(length_context.ValueForLength(svg_style.StrokeWidth()));
+    bounds.Inflate(length_context.ValueForLength(style.StrokeWidth()));
   }
   return bounds;
 }
@@ -337,19 +310,16 @@ void SVGLayoutSupport::ApplyStrokeStyleToStrokeData(StrokeData& stroke_data,
   DCHECK(object.GetNode());
   DCHECK(object.GetNode()->IsSVGElement());
 
-  const SVGComputedStyle& svg_style = style.SvgStyle();
-
   SVGLengthContext length_context(To<SVGElement>(object.GetNode()));
-  stroke_data.SetThickness(
-      length_context.ValueForLength(svg_style.StrokeWidth()));
-  stroke_data.SetLineCap(svg_style.CapStyle());
-  stroke_data.SetLineJoin(svg_style.JoinStyle());
-  stroke_data.SetMiterLimit(svg_style.StrokeMiterLimit());
+  stroke_data.SetThickness(length_context.ValueForLength(style.StrokeWidth()));
+  stroke_data.SetLineCap(style.CapStyle());
+  stroke_data.SetLineJoin(style.JoinStyle());
+  stroke_data.SetMiterLimit(style.StrokeMiterLimit());
 
   DashArray dash_array =
-      ResolveSVGDashArray(*svg_style.StrokeDashArray(), style, length_context);
+      ResolveSVGDashArray(*style.StrokeDashArray(), style, length_context);
   float dash_offset =
-      length_context.ValueForLength(svg_style.StrokeDashOffset(), style);
+      length_context.ValueForLength(style.StrokeDashOffset(), style);
   // Apply scaling from 'pathLength'.
   if (dash_scale_factor != 1) {
     DCHECK_GE(dash_scale_factor, 0);
@@ -370,7 +340,7 @@ bool SVGLayoutSupport::IsLayoutableTextNode(const LayoutObject* object) {
 bool SVGLayoutSupport::WillIsolateBlendingDescendantsForStyle(
     const ComputedStyle& style) {
   return style.HasGroupingProperty(style.BoxReflect()) ||
-         style.SvgStyle().HasMasker();
+         style.MaskerResource();
 }
 
 bool SVGLayoutSupport::WillIsolateBlendingDescendantsForObject(
@@ -383,7 +353,7 @@ bool SVGLayoutSupport::WillIsolateBlendingDescendantsForObject(
 }
 
 bool SVGLayoutSupport::IsIsolationRequired(const LayoutObject* object) {
-  if (object->StyleRef().SvgStyle().HasMasker())
+  if (object->StyleRef().MaskerResource())
     return true;
   return WillIsolateBlendingDescendantsForObject(object) &&
          object->HasNonIsolatedBlendingDescendants();

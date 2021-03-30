@@ -109,7 +109,7 @@ base::Optional<bool> ParseBool(base::StringPiece str) {
 }
 
 // A custom comparator functor class for the parse tables.
-using ParseTableCompare = CaseInsensitiveASCIICompare<std::string>;
+using ParseTableCompare = CaseInsensitiveASCIICompare;
 
 namespace global_attributes {
 

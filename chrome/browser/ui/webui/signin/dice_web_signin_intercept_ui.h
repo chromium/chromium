@@ -23,9 +23,10 @@ class DiceWebSigninInterceptUI : public content::WebUIController {
   DiceWebSigninInterceptUI& operator=(const DiceWebSigninInterceptUI&) = delete;
 
   // Initializes the DiceWebSigninInterceptUI.
-  void Initialize(const DiceWebSigninInterceptor::Delegate::BubbleParameters&
-                      bubble_parameters,
-                  base::OnceCallback<void(bool)> callback);
+  void Initialize(
+      const DiceWebSigninInterceptor::Delegate::BubbleParameters&
+          bubble_parameters,
+      base::OnceCallback<void(SigninInterceptionUserChoice)> callback);
 
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();

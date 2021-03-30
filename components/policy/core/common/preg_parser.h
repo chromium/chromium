@@ -11,9 +11,9 @@
 #define COMPONENTS_POLICY_CORE_COMMON_PREG_PARSER_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "components/policy/core/common/policy_load_status.h"
 #include "components/policy/policy_export.h"
 
@@ -35,7 +35,7 @@ POLICY_EXPORT extern const char kPRegFileHeader[8];
 // else gets ignored. It may be empty if all keys should be returned, but it
 // must NOT end with a backslash.
 POLICY_EXPORT bool ReadFile(const base::FilePath& file_path,
-                            const base::string16& root,
+                            const std::u16string& root,
                             RegistryDict* dict,
                             PolicyLoadStatusSampler* status);
 
@@ -45,7 +45,7 @@ POLICY_EXPORT bool ReadFile(const base::FilePath& file_path,
 // instead.
 POLICY_EXPORT bool ReadDataInternal(const uint8_t* preg_data,
                                     size_t preg_data_size,
-                                    const base::string16& root,
+                                    const std::u16string& root,
                                     RegistryDict* dict,
                                     PolicyLoadStatusSampler* status,
                                     const std::string& debug_name);

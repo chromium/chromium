@@ -123,7 +123,7 @@ To run a Tast test the same way it's ran on Chrome's builders:
 [tests/ui.WindowControl/messages]: https://isolateserver.appspot.com/browse?namespace=default-gzip&digest=baefbcfd24c02b3ada4617d259dc6b4220b413b9&as=messages
 [system_logs/chrome/chrome_20201029-195153]: https://isolateserver.appspot.com/browse?namespace=default-gzip&digest=272166c85f190c336a9885f0267cbdea912e31da&as=chrome_20201029-195153
 [Tast attributes]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/test_attributes.md
-[this list]: https://codesearch.chromium.org/chromium/src/chromeos/BUILD.gn?rcl=7b0393a9091fd02edc9ae773739124f7be5a0782&l=242
+[this list]: https://codesearch.chromium.org/chromium/src/chromeos/tast_control.gni
 [Simple Chrome]: https://chromium.googlesource.com/chromiumos/docs/+/master/simple_chrome_workflow.md
 [deploy_chrome.py]: https://chromium.googlesource.com/chromiumos/docs/+/master/simple_chrome_workflow.md#Deploying-Chrome-to-the-device
 [here]: https://chromium.googlesource.com/chromiumos/docs/+/master/cros_vm.md#in-simple-chrome

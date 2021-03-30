@@ -42,6 +42,7 @@
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/switches.h"
 
 using content::WebContents;
 
@@ -247,6 +248,14 @@ class CommandsApiTest : public ExtensionApiTest {
 #endif
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ExtensionApiTest::SetUpCommandLine(command_line);
+    // Some builders are flaky due to slower loading interacting with
+    // deferred commits. This primarily impacts chromeos for the test
+    // CommandsApiTest.ContinuePropagation.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
+  }
+
  protected:
   bool IsGrantedForTab(const Extension* extension,
                        const content::WebContents* web_contents) {
@@ -279,7 +288,7 @@ class CommandsApiTest : public ExtensionApiTest {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  void RunChromeOSConversionTest(const std::string& extension_path) {
+  void RunChromeOSConversionTest(const char* extension_path) {
     // Setup the environment.
     ASSERT_TRUE(embedded_test_server()->Start());
     ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
@@ -532,8 +541,7 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest,
 
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
 
-  ASSERT_TRUE(RunExtensionTest("keybinding/basics"))
-      << message_;
+  ASSERT_TRUE(RunExtensionTest("keybinding/basics")) << message_;
 
   CommandService* command_service = CommandService::Get(browser()->profile());
 
@@ -990,14 +998,18 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, MAYBE_ChromeOSConversions) {
 // re-adding.
 IN_PROC_BROWSER_TEST_F(CommandsApiTest, AddRemoveAddComponentExtension) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  ASSERT_TRUE(RunComponentExtensionTest("keybinding/component")) << message_;
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "keybinding/component", .load_as_component = true}))
+      << message_;
 
   extensions::ExtensionSystem::Get(browser()->profile())
       ->extension_service()
       ->component_loader()
       ->Remove("pkplfbidichfdicaijlchgnapepdginl");
 
-  ASSERT_TRUE(RunComponentExtensionTest("keybinding/component")) << message_;
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "keybinding/component", .load_as_component = true}))
+      << message_;
 }
 
 // Validate parameters sent along with an extension event, in response to
@@ -1029,10 +1041,9 @@ IN_PROC_BROWSER_TEST_P(IncognitoCommandsApiTest, MAYBE_IncognitoMode) {
 
   bool is_incognito_enabled = GetParam();
 
-  if (is_incognito_enabled)
-    ASSERT_TRUE(RunExtensionTestIncognito("keybinding/basics")) << message_;
-  else
-    ASSERT_TRUE(RunExtensionTest("keybinding/basics")) << message_;
+  ASSERT_TRUE(RunExtensionTest({.name = "keybinding/basics"},
+                               {.allow_in_incognito = is_incognito_enabled}))
+      << message_;
 
   // Open incognito window and navigate to test page.
   Browser* incognito_browser = OpenURLOffTheRecord(
@@ -1076,7 +1087,7 @@ IN_PROC_BROWSER_TEST_P(ActionCommandsApiTest,
   constexpr char kManifestTemplate[] = R"(
     {
       "name": "Extension Action Listener Test",
-      "manifest_version": 2,
+      "manifest_version": %d,
       "version": "0.1",
       "commands": {
         "%s": {
@@ -1086,25 +1097,33 @@ IN_PROC_BROWSER_TEST_P(ActionCommandsApiTest,
         }
       },
       "%s": {},
-      "background": {"scripts": ["background.js"]}
+      "background": { %s }
     }
   )";
   constexpr char kBackgroundScriptTemplate[] = R"(
       chrome.%s.onClicked.addListener(() => {
         chrome.test.sendMessage('clicked');
       });
+      chrome.test.sendMessage('ready');
   )";
+  const char* background_specification =
+      action_type == ActionInfo::TYPE_ACTION
+          ? R"("service_worker": "background.js")"
+          : R"("scripts": ["background.js"])";
 
   TestExtensionDir test_dir;
   test_dir.WriteManifest(base::StringPrintf(
-      kManifestTemplate, GetCommandKeyForActionType(action_type),
-      GetManifestKeyForActionType(action_type)));
+      kManifestTemplate, GetManifestVersionForActionType(action_type),
+      GetCommandKeyForActionType(action_type),
+      GetManifestKeyForActionType(action_type), background_specification));
   test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
                      base::StringPrintf(kBackgroundScriptTemplate,
                                         GetAPINameForActionType(action_type)));
 
+  ExtensionTestMessageListener listener("ready", /*will_reply=*/false);
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
   ASSERT_TRUE(HasActiveActionCommand(extension->id(), action_type));
 
   const int tab_id = NavigateToTestURLAndReturnTabId();
@@ -1115,12 +1134,10 @@ IN_PROC_BROWSER_TEST_P(ActionCommandsApiTest,
     ASSERT_TRUE(WaitForPageActionVisibilityChangeTo(1));
   }
 
-  bool expect_dispatch = true;
-  std::string event_name =
-      base::StrCat({GetAPINameForActionType(action_type), ".onClicked"});
-  // Send a keypress, and expect the action to be invoked.
-  SendKeyPressToAction(browser(), *extension, ui::VKEY_U, event_name.c_str(),
-                       expect_dispatch);
+  ExtensionTestMessageListener click_listener("clicked", /*will_reply=*/false);
+  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_U, false,
+                                              true, true, false));
+  EXPECT_TRUE(click_listener.WaitUntilSatisfied());
 }
 
 // Tests that triggering a command associated with an action opens an
@@ -1135,7 +1152,7 @@ IN_PROC_BROWSER_TEST_P(ActionCommandsApiTest, TriggeringCommandTriggersPopup) {
   constexpr char kManifestTemplate[] = R"(
     {
       "name": "Extension Action Listener Test",
-      "manifest_version": 2,
+      "manifest_version": %d,
       "version": "0.1",
       "commands": {
         "%s": {
@@ -1157,7 +1174,8 @@ IN_PROC_BROWSER_TEST_P(ActionCommandsApiTest, TriggeringCommandTriggersPopup) {
 
   TestExtensionDir test_dir;
   test_dir.WriteManifest(base::StringPrintf(
-      kManifestTemplate, GetCommandKeyForActionType(action_type),
+      kManifestTemplate, GetManifestVersionForActionType(action_type),
+      GetCommandKeyForActionType(action_type),
       GetManifestKeyForActionType(action_type)));
   test_dir.WriteFile(FILE_PATH_LITERAL("popup.html"), kPopupHtml);
   test_dir.WriteFile(FILE_PATH_LITERAL("popup.js"), kPopupJs);

@@ -104,12 +104,11 @@ ChromeVox.position = {};
 /**
  * @type {string}
  */
-ChromeVox.modKeyStr = 'Shift+Search';
+ChromeVox.modKeyStr = 'Search';
 /**
  * If any of these keys is pressed with the modifier key, we go in sequence mode
  * where the subsequent independent key downs (while modifier keys are down)
- * are a part of the same shortcut. This array is populated in
- * ChromeVoxKbHandler.loadKeyToFunctionsTable().
+ * are a part of the same shortcut.
  * @type {!Array<KeySequence>}
  */
 ChromeVox.sequenceSwitchKeyCodes = [];

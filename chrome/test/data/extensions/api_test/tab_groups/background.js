@@ -27,4 +27,18 @@ chrome.test.runTests([
       });
     });
   },
+  function testCreateEventDispatched() {
+    let createdGroupId = -1;
+
+    chrome.tabGroups.onCreated.addListener((group) => {
+      chrome.test.assertEq(group.id, createdGroupId);
+      chrome.test.succeed();
+    });
+
+    chrome.tabs.create({}, (tab) => {
+      chrome.tabs.group({tabIds: tab.id}, (groupId) => {
+        createdGroupId = groupId;
+      });
+    });
+  }
 ]);

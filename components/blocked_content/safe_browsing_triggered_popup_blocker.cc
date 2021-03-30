@@ -8,6 +8,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/blocked_content/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -138,7 +139,9 @@ void SafeBrowsingTriggeredPopupBlocker::DidFinishNavigation(
     // cache.
     content::BackForwardCache::DisableForRenderFrameHost(
         navigation_handle->GetRenderFrameHost(),
-        "SafeBrowsingTriggeredPopupBlocker");
+        back_forward_cache::DisabledReason(
+            back_forward_cache::DisabledReasonId::
+                kSafeBrowsingTriggeredPopupBlocker));
   } else if (level == SubresourceFilterLevel::WARN) {
     web_contents()->GetMainFrame()->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kWarning, kAbusiveWarnMessage);

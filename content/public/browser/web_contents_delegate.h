@@ -14,7 +14,6 @@
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/eye_dropper.h"
@@ -112,7 +111,11 @@ enum class PictureInPictureResult {
 };
 
 // Objects implement this interface to get notified about changes in the
-// WebContents and to provide necessary functionality.
+// WebContents and to provide necessary functionality. If a method doesn't
+// change state, e.g. has no return value, then it can move to
+// WebContentsObserver if many places want to observe the change. If the
+// implementation of one of the methods below would be shared by many or all of
+// WebContentsDelegate implementations then it can go on ContentBrowserClient.
 class CONTENT_EXPORT WebContentsDelegate {
  public:
   WebContentsDelegate();
@@ -218,9 +221,9 @@ class CONTENT_EXPORT WebContentsDelegate {
   virtual bool DidAddMessageToConsole(
       WebContents* source,
       blink::mojom::ConsoleMessageLevel log_level,
-      const base::string16& message,
+      const std::u16string& message,
       int32_t line_no,
-      const base::string16& source_id);
+      const std::u16string& source_id);
 
   // Tells us that we've finished firing this tab's beforeunload event.
   // The proceed bool tells us whether the user chose to proceed closing the
@@ -334,7 +337,7 @@ class CONTENT_EXPORT WebContentsDelegate {
       const GURL& opener_url,
       const std::string& frame_name,
       const GURL& target_url,
-      const std::string& partition_id,
+      const StoragePartitionId& partition_id,
       SessionStorageNamespace* session_storage_namespace);
 
   // Notifies the delegate about the creation of a new WebContents. This
@@ -430,7 +433,7 @@ class CONTENT_EXPORT WebContentsDelegate {
 
   // Creates an info bar for the user to control the receiving of the SMS.
   virtual void CreateSmsPrompt(RenderFrameHost*,
-                               const url::Origin&,
+                               const std::vector<url::Origin>&,
                                const std::string& one_time_code,
                                base::OnceCallback<void()> on_confirm,
                                base::OnceCallback<void()> on_cancel);
@@ -510,7 +513,7 @@ class CONTENT_EXPORT WebContentsDelegate {
   // contents.
   virtual void RequestToLockMouse(WebContents* web_contents,
                                   bool user_gesture,
-                                  bool last_unlocked_by_target) {}
+                                  bool last_unlocked_by_target);
 
   // Notification that the page has lost the mouse lock.
   virtual void LostMouseLock() {}
@@ -518,7 +521,7 @@ class CONTENT_EXPORT WebContentsDelegate {
   // Requests keyboard lock. Once the request is approved or rejected,
   // GotResponseToKeyboardLockRequest() will be called on |web_contents|.
   virtual void RequestKeyboardLock(WebContents* web_contents,
-                                   bool esc_key_locked) {}
+                                   bool esc_key_locked);
 
   // Notification that the keyboard lock request has been canceled.
   virtual void CancelKeyboardLockRequest(WebContents* web_contents) {}
@@ -558,15 +561,6 @@ class CONTENT_EXPORT WebContentsDelegate {
   virtual void SetOverlayMode(bool use_overlay_mode) {}
 #endif
 
-  // Requests permission to access the PPAPI broker. The delegate must either
-  // call the passed in |callback| with the result, or call it with false
-  // to indicate that it does not support asking for permission.
-  virtual void RequestPpapiBrokerPermission(
-      WebContents* web_contents,
-      const GURL& url,
-      const base::FilePath& plugin_path,
-      base::OnceCallback<void(bool)> callback);
-
   // Returns the size for the new render view created for the pending entry in
   // |web_contents|; if there's no size, returns an empty size.
   // This is optional for implementations of WebContentsDelegate; if the
@@ -584,7 +578,9 @@ class CONTENT_EXPORT WebContentsDelegate {
 
   // Called in response to a request to save a frame. If this returns true, the
   // default behavior is suppressed.
-  virtual bool SaveFrame(const GURL& url, const Referrer& referrer);
+  virtual bool SaveFrame(const GURL& url,
+                         const Referrer& referrer,
+                         content::RenderFrameHost* rfh);
 
   // Can be overridden by a delegate to return the security style of the
   // given |web_contents|, populating |security_style_explanations| to
@@ -648,9 +644,8 @@ class CONTENT_EXPORT WebContentsDelegate {
   // Requests to print an out-of-process subframe for the specified WebContents.
   // |rect| is the rectangular area where its content resides in its parent
   // frame. |document_cookie| is a unique id for a printed document associated
-  // with
-  //                   a print job.
-  // |subframe_host| is the render frame host of the subframe to be printed.
+  // with a print job. |subframe_host| is the render frame host of the subframe
+  // to be printed.
   virtual void PrintCrossProcessSubframe(WebContents* web_contents,
                                          const gfx::Rect& rect,
                                          int document_cookie,
@@ -713,10 +708,6 @@ class CONTENT_EXPORT WebContentsDelegate {
   // eviction and displayed until a new frame is generated. If false, a white
   // solid color is displayed instead.
   virtual bool ShouldShowStaleContentOnEviction(WebContents* source);
-
-  // Determine if the frame is of a low priority.
-  virtual bool IsFrameLowPriority(WebContents* web_contents,
-                                  RenderFrameHost* render_frame_host);
 
   // Returns the user-visible WebContents that is responsible for the activity
   // in the provided WebContents. For example, this delegate may be aware that

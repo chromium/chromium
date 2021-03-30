@@ -6,6 +6,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("../../tools/js_modulizer.gni")
 
 js_type_check("closure_compile") {
+  uses_legacy_modules = true
   deps = [
     ":event_target",
     ":ui",
@@ -13,7 +14,6 @@ js_type_check("closure_compile") {
 }
 
 js_type_check("closure_compile_modules") {
-  uses_js_modules = true
   deps = [
     ":event_target.m",
     ":ui.m",

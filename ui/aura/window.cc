@@ -217,12 +217,12 @@ void Window::SetName(const std::string& name) {
     UpdateLayerName();
 }
 
-const base::string16& Window::GetTitle() const {
-  base::string16* title = GetProperty(client::kTitleKey);
+const std::u16string& Window::GetTitle() const {
+  std::u16string* title = GetProperty(client::kTitleKey);
   return title ? *title : base::EmptyString16();
 }
 
-void Window::SetTitle(const base::string16& title) {
+void Window::SetTitle(const std::u16string& title) {
   if (title == GetTitle())
     return;
   SetProperty(client::kTitleKey, title);
@@ -281,6 +281,13 @@ bool Window::IsVisible() const {
   // after, even though the client may decide to animate the hide effect (and
   // so the layer will be visible for some time after Hide() is called).
   return visible_ ? layer()->IsDrawn() : false;
+}
+
+ScopedWindowCaptureRequest Window::MakeWindowCapturable() {
+  DCHECK(!IsRootWindow()) << "Root windows can already be captured using their "
+                             "FrameSinkId; no need to call this.";
+
+  return ScopedWindowCaptureRequest(this);
 }
 
 gfx::Rect Window::GetBoundsInRootWindow() const {
@@ -1413,6 +1420,18 @@ gfx::PointF Window::GetScreenLocationF(const ui::LocatedEvent& event) const {
   return screen_location;
 }
 
+std::unique_ptr<ui::Layer> Window::ReleaseLayer() {
+  if (number_of_capture_requests_) {
+    // Before we release our own layer, if this window was marked for capture,
+    // we need to reset the SubtreeCaptureId on that layer as it will no longer
+    // be associated with us.
+    DCHECK(subtree_capture_id_.is_valid());
+    if (layer())
+      layer()->SetSubtreeCaptureId(viz::SubtreeCaptureId());
+  }
+  return LayerOwner::ReleaseLayer();
+}
+
 std::unique_ptr<ui::Layer> Window::RecreateLayer() {
   WindowOcclusionTracker::ScopedPause pause_occlusion_tracking;
 
@@ -1429,6 +1448,12 @@ std::unique_ptr<ui::Layer> Window::RecreateLayer() {
   // by a frame sent to the frame sink.
   if (GetFrameSinkId().is_valid() && old_layer)
     AllocateLocalSurfaceId();
+
+  // The old layer subtree must no longer be capturable.
+  // Note that we don't need to worry about the newly recreated layer since
+  // Window::SetLayer() will have taken care of it already.
+  if (number_of_capture_requests_ && old_layer)
+    old_layer->SetSubtreeCaptureId(viz::SubtreeCaptureId());
 
   // Observers are guaranteed to be notified when an opacity or transform
   // animation ends.
@@ -1451,6 +1476,17 @@ std::unique_ptr<ui::Layer> Window::RecreateLayer() {
   return old_layer;
 }
 
+void Window::SetLayer(std::unique_ptr<ui::Layer> alayer) {
+  LayerOwner::SetLayer(std::move(alayer));
+  if (number_of_capture_requests_) {
+    // If this window was marked for capture before, then the new layer that we
+    // own now should be given the current SubtreeCaptureId that we have.
+    DCHECK(subtree_capture_id_.is_valid());
+    if (layer())
+      layer()->SetSubtreeCaptureId(subtree_capture_id_);
+  }
+}
+
 void Window::OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) {
   DCHECK_EQ(surface_info.id().frame_sink_id(), GetFrameSinkId());
   layer()->SetShowSurface(surface_info.id(), bounds().size(), SK_ColorWHITE,
@@ -1458,7 +1494,8 @@ void Window::OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) {
                           false /* stretch_content_to_fill_bounds */);
 }
 
-void Window::OnFrameTokenChanged(uint32_t frame_token) {}
+void Window::OnFrameTokenChanged(uint32_t frame_token,
+                                 base::TimeTicks activation_time) {}
 
 void Window::UpdateLayerName() {
 #if DCHECK_IS_ON()
@@ -1506,6 +1543,34 @@ const viz::LocalSurfaceId& Window::GetCurrentLocalSurfaceId() const {
 
 bool Window::IsEmbeddingExternalContent() const {
   return parent_local_surface_id_allocator_.get() != nullptr;
+}
+
+void Window::OnScopedWindowCaptureRequestAdded() {
+  if (++number_of_capture_requests_ == 1) {
+    DCHECK(!subtree_capture_id_.is_valid());
+    DCHECK(!layer() || !layer()->GetSubtreeCaptureId().is_valid());
+
+    subtree_capture_id_ =
+        Env::GetInstance()->context_factory()->AllocateSubtreeCaptureId();
+    if (layer())
+      layer()->SetSubtreeCaptureId(subtree_capture_id_);
+  }
+
+  DCHECK(subtree_capture_id_.is_valid());
+}
+
+void Window::OnScopedWindowCaptureRequestRemoved() {
+  DCHECK(subtree_capture_id_.is_valid());
+  DCHECK(number_of_capture_requests_);
+
+  --number_of_capture_requests_;
+  DCHECK_GE(number_of_capture_requests_, 0);
+
+  if (number_of_capture_requests_ == 0) {
+    subtree_capture_id_ = viz::SubtreeCaptureId();
+    if (layer())
+      layer()->SetSubtreeCaptureId(subtree_capture_id_);
+  }
 }
 
 }  // namespace aura

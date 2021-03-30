@@ -1,0 +1,19 @@
+<html>
+<head>
+<template id="my-link-template">
+  <a href="#" id="inner-link" onclick="clickCount++"><slot></slot></a>
+</template>
+<script>
+window.clickCount = 0;
+
+function addShadowDOM() {
+  const host = document.querySelector('my-link').attachShadow({mode: 'open'});
+  const template = document.getElementById('my-link-template');
+  host.appendChild(template.content.cloneNode(true));
+}
+</script>
+</head>
+<body onload="addShadowDOM()">
+<my-link>Sign up</my-link>
+</body>
+</html>

@@ -45,17 +45,6 @@
 #define ABSL_FLAGS_STRIP_HELP ABSL_FLAGS_STRIP_NAMES
 #endif
 
-// ABSL_FLAGS_INTERNAL_ATOMIC_DOUBLE_WORD macro is used for using atomics with
-// double words, e.g. absl::Duration.
-// For reasons in bug https://gcc.gnu.org/bugzilla/show_bug.cgi?id=80878, modern
-// versions of GCC do not support cmpxchg16b instruction in standard atomics.
-#ifdef ABSL_FLAGS_INTERNAL_ATOMIC_DOUBLE_WORD
-#error "ABSL_FLAGS_INTERNAL_ATOMIC_DOUBLE_WORD should not be defined."
-#elif defined(__clang__) && defined(__x86_64__) && \
-    defined(__GCC_HAVE_SYNC_COMPARE_AND_SWAP_16)
-#define ABSL_FLAGS_INTERNAL_ATOMIC_DOUBLE_WORD 1
-#endif
-
 // ABSL_FLAGS_INTERNAL_HAS_RTTI macro is used for selecting if we can use RTTI
 // for flag type identification.
 #ifdef ABSL_FLAGS_INTERNAL_HAS_RTTI

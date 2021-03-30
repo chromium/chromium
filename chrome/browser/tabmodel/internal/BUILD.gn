@@ -20,6 +20,6 @@ android_library("java") {
     "//base:base_java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }

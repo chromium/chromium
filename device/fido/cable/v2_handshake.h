@@ -27,55 +27,21 @@ namespace cablev2 {
 
 namespace tunnelserver {
 
-// Base32Ord converts |c| into its base32 value, as defined in
-// https://tools.ietf.org/html/rfc4648#section-6.
-constexpr uint32_t Base32Ord(char c) {
-  if (c >= 'a' && c <= 'z') {
-    return c - 'a';
-  } else if (c >= '2' && c <= '7') {
-    return 26 + c - '2';
-  } else {
-    __builtin_unreachable();
-  }
-}
-
-// TLD enumerates the set of possible top-level domains that a tunnel server can
-// use.
-enum class TLD {
-  COM = 0,
-  ORG = 1,
-  NET = 2,
-  INFO = 3,
-};
-
-// EncodeDomain converts a domain name, in the form of a four-letter, base32
-// domain plus a TLD, into a 22-bit value.
-constexpr uint32_t EncodeDomain(const char label[5], TLD tld) {
-  const uint32_t tld_value = static_cast<uint32_t>(tld);
-  if (tld_value > 3 || label[4] != 0) {
-    __builtin_unreachable();
-  }
-  return ((Base32Ord(label[0]) << 15 | Base32Ord(label[1]) << 10 |
-           Base32Ord(label[2]) << 5 | Base32Ord(label[3]))
-          << 2) |
-         tld_value;
-}
-
 // DecodeDomain converts a 22-bit tunnel server domain (as encoded by
 // |EncodeDomain|) into a string in dotted form.
-COMPONENT_EXPORT(DEVICE_FIDO) std::string DecodeDomain(uint32_t domain);
+COMPONENT_EXPORT(DEVICE_FIDO) std::string DecodeDomain(uint16_t domain);
 
 // GetNewTunnelURL converts a 22-bit tunnel server domain (as encoded by
 // |EncodeDomain|), and a tunnel ID, into a WebSockets-based URL for creating a
 // new tunnel.
 COMPONENT_EXPORT(DEVICE_FIDO)
-GURL GetNewTunnelURL(uint32_t domain, base::span<const uint8_t, 16> id);
+GURL GetNewTunnelURL(uint16_t domain, base::span<const uint8_t, 16> id);
 
 // GetConnectURL converts a 22-bit tunnel server domain (as encoded by
 // |EncodeDomain|), a routing-ID, and a tunnel ID, into a WebSockets-based URL
 // for connecting to an existing tunnel.
 COMPONENT_EXPORT(DEVICE_FIDO)
-GURL GetConnectURL(uint32_t domain,
+GURL GetConnectURL(uint16_t domain,
                    std::array<uint8_t, kRoutingIdSize> routing_id,
                    base::span<const uint8_t, 16> id);
 
@@ -108,7 +74,7 @@ base::Optional<CableEidArray> Decrypt(
 
 // Components contains the parts of a decrypted EID.
 struct Components {
-  uint32_t tunnel_server_domain;
+  uint16_t tunnel_server_domain;
   std::array<uint8_t, kRoutingIdSize> routing_id;
   std::array<uint8_t, kNonceSize> nonce;
 };
@@ -226,40 +192,40 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Crypter {
 // http://www.noiseprotocol.org/noise.html#channel-binding.
 using HandshakeHash = std::array<uint8_t, 32>;
 
+// HandshakeResult is the output of the handshaking process on both sides: a
+// |Crypter| that can encrypt and decrypt future messages on the connection, and
+// the handshake hash that can be used to tie signatures to the connection.
+using HandshakeResult =
+    base::Optional<std::pair<std::unique_ptr<Crypter>, HandshakeHash>>;
+
 // HandshakeInitiator starts a caBLE v2 handshake and processes the single
 // response message from the other party. The handshake is always initiated from
-// the phone.
+// the desktop.
 class COMPONENT_EXPORT(DEVICE_FIDO) HandshakeInitiator {
  public:
   HandshakeInitiator(
       // psk is derived from the connection nonce and either QR-code secrets
       // pairing secrets.
       base::span<const uint8_t, 32> psk,
-      // peer_identity, if not nullopt, specifies that this is a QR handshake
-      // and then contains a P-256 public key for the peer. Otherwise this is a
-      // paired handshake.
+      // peer_identity, if not nullopt, specifies that this is a paired
+      // handshake and then contains a P-256 public key for the peer. Otherwise
+      // this is a QR handshake.
       base::Optional<base::span<const uint8_t, kP256X962Length>> peer_identity,
-      // local_identity must be provided iff |peer_identity| is not. It contains
-      // the local identity key.
-      bssl::UniquePtr<EC_KEY> local_identity);
+      // identity_seed, if not nullopt, specifies that this is a QR handshake
+      // and contains the seed for QR key for this client. identity_seed must be
+      // provided iff |peer_identity| is not.
+      base::Optional<base::span<const uint8_t, kQRSeedSize>> identity_seed);
 
   ~HandshakeInitiator();
 
   // BuildInitialMessage returns the handshake message to send to the peer to
   // start a handshake.
-  std::vector<uint8_t> BuildInitialMessage(
-      // getinfo contains the CBOR-serialised getInfo response for this
-      // authenticator. This is assumed not to contain highly-sensitive
-      // information and is included to avoid an extra round-trip. (It is
-      // encrypted but an attacker who could eavesdrop on the tunnel connection
-      // and observe the QR code could obtain it.)
-      base::span<const uint8_t> get_info_bytes);
+  std::vector<uint8_t> BuildInitialMessage();
 
   // ProcessResponse processes the handshake response from the peer. If
   // successful it returns a |Crypter| for protecting future messages on the
   // connection and a handshake transcript for signing over if needed.
-  base::Optional<std::pair<std::unique_ptr<Crypter>, HandshakeHash>>
-  ProcessResponse(base::span<const uint8_t> response);
+  HandshakeResult ProcessResponse(base::span<const uint8_t> response);
 
  private:
   Noise noise_;
@@ -270,35 +236,18 @@ class COMPONENT_EXPORT(DEVICE_FIDO) HandshakeInitiator {
   bssl::UniquePtr<EC_KEY> ephemeral_key_;
 };
 
-// ResponderResult is the result of a successful handshake from the responder's
-// side. It contains a Crypter for protecting future messages, the contents of
-// the getInfo response given by the peer, and a hash of the handshake
-// transcript.
-struct COMPONENT_EXPORT(DEVICE_FIDO) ResponderResult {
-  ResponderResult(std::unique_ptr<Crypter>,
-                  std::vector<uint8_t> getinfo_bytes,
-                  HandshakeHash);
-  ~ResponderResult();
-  ResponderResult(const ResponderResult&) = delete;
-  ResponderResult(ResponderResult&&);
-  ResponderResult& operator=(const ResponderResult&) = delete;
-
-  std::unique_ptr<Crypter> crypter;
-  std::vector<uint8_t> getinfo_bytes;
-  const HandshakeHash handshake_hash;
-};
-
-// RespondToHandshake responds to a caBLE v2 handshake started by a peer.
+// RespondToHandshake responds to a caBLE v2 handshake started by a peer. Since
+// the desktop speaks first in caBLE, this is called by the phone.
 COMPONENT_EXPORT(DEVICE_FIDO)
-base::Optional<ResponderResult> RespondToHandshake(
+HandshakeResult RespondToHandshake(
     // psk is derived from the connection nonce and either QR-code secrets or
     // pairing secrets.
     base::span<const uint8_t, 32> psk,
-    // identity_seed, if not nullopt, specifies that this is a QR handshake and
-    // contains the seed for QR key for this client.
-    base::Optional<base::span<const uint8_t, kQRSeedSize>> identity_seed,
-    // peer_identity, which must be non-nullopt iff |identity| is nullopt,
-    // contains the peer's public key as taken from the pairing data.
+    // identity, if not nullptr, specifies that this is a paired handshake and
+    // contains the phone's private key.
+    bssl::UniquePtr<EC_KEY> identity,
+    // peer_identity, which must be non-nullopt iff |identity| is nullptr,
+    // contains the peer's public key as taken from the QR code.
     base::Optional<base::span<const uint8_t, kP256X962Length>> peer_identity,
     // in contains the initial handshake message from the peer.
     base::span<const uint8_t> in,

@@ -4,8 +4,10 @@
 
 #include <stddef.h>
 
+#include <cstring>
 #include <memory>
 
+#include "base/containers/flat_set.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/i18n/case_conversion.h"
@@ -39,11 +41,11 @@ namespace {
 
 class StringWrapper {
  public:
-  explicit StringWrapper(const base::string16& string) : string_(string) {}
-  const base::string16& string() const { return string_; }
+  explicit StringWrapper(const std::u16string& string) : string_(string) {}
+  const std::u16string& string() const { return string_; }
 
  private:
-  base::string16 string_;
+  std::u16string string_;
 
   DISALLOW_COPY_AND_ASSIGN(StringWrapper);
 };
@@ -57,16 +59,14 @@ TEST_F(L10nUtilTest, GetString) {
   std::string s = l10n_util::GetStringUTF8(IDS_SIMPLE);
   EXPECT_EQ(std::string("Hello World!"), s);
 
-  s = l10n_util::GetStringFUTF8(IDS_PLACEHOLDERS,
-                                UTF8ToUTF16("chrome"),
-                                UTF8ToUTF16("10"));
+  s = l10n_util::GetStringFUTF8(IDS_PLACEHOLDERS, u"chrome", u"10");
   EXPECT_EQ(std::string("Hello, chrome. Your number is 10."), s);
 
-  base::string16 s16 = l10n_util::GetStringFUTF16Int(IDS_PLACEHOLDERS_2, 20);
+  std::u16string s16 = l10n_util::GetStringFUTF16Int(IDS_PLACEHOLDERS_2, 20);
 
   // Consecutive '$' characters override any placeholder functionality.
   // See //base/strings/string_util.h ReplaceStringPlaceholders().
-  EXPECT_EQ(UTF8ToUTF16("You owe me $$1."), s16);
+  EXPECT_EQ(u"You owe me $$1.", s16);
 }
 
 #if !defined(OS_APPLE) && !defined(OS_ANDROID)
@@ -385,17 +385,17 @@ TEST_F(L10nUtilTest, GetAppLocale) {
 
 TEST_F(L10nUtilTest, SortStringsUsingFunction) {
   std::vector<std::unique_ptr<StringWrapper>> strings;
-  strings.push_back(std::make_unique<StringWrapper>(UTF8ToUTF16("C")));
-  strings.push_back(std::make_unique<StringWrapper>(UTF8ToUTF16("d")));
-  strings.push_back(std::make_unique<StringWrapper>(UTF8ToUTF16("b")));
-  strings.push_back(std::make_unique<StringWrapper>(UTF8ToUTF16("a")));
+  strings.push_back(std::make_unique<StringWrapper>(u"C"));
+  strings.push_back(std::make_unique<StringWrapper>(u"d"));
+  strings.push_back(std::make_unique<StringWrapper>(u"b"));
+  strings.push_back(std::make_unique<StringWrapper>(u"a"));
   l10n_util::SortStringsUsingMethod("en-US",
                                     &strings,
                                     &StringWrapper::string);
-  ASSERT_TRUE(UTF8ToUTF16("a") == strings[0]->string());
-  ASSERT_TRUE(UTF8ToUTF16("b") == strings[1]->string());
-  ASSERT_TRUE(UTF8ToUTF16("C") == strings[2]->string());
-  ASSERT_TRUE(UTF8ToUTF16("d") == strings[3]->string());
+  ASSERT_TRUE(u"a" == strings[0]->string());
+  ASSERT_TRUE(u"b" == strings[1]->string());
+  ASSERT_TRUE(u"C" == strings[2]->string());
+  ASSERT_TRUE(u"d" == strings[3]->string());
 }
 
 /**
@@ -406,13 +406,13 @@ void CheckUiDisplayNameForLocale(const std::string& locale,
                                  const std::string& display_locale,
                                  bool is_rtl) {
   EXPECT_EQ(true, base::i18n::IsRTL());
-  base::string16 result = l10n_util::GetDisplayNameForLocale(locale,
-                                                       display_locale,
-                                                       /* is_for_ui */ true);
+  std::u16string result =
+      l10n_util::GetDisplayNameForLocale(locale, display_locale,
+                                         /* is_for_ui */ true);
 
   bool rtl_direction = true;
   for (size_t i = 0; i < result.length() - 1; i++) {
-    base::char16 ch = result.at(i);
+    char16_t ch = result.at(i);
     switch (ch) {
     case base::i18n::kLeftToRightMark:
     case base::i18n::kLeftToRightEmbeddingMark:
@@ -434,7 +434,7 @@ TEST_F(L10nUtilTest, GetDisplayNameForLocale) {
   // Test zh-CN and zh-TW are treated as zh-Hans and zh-Hant.
   // Displays as "Chinese, Simplified" on iOS 13+ and as "Chinese (Simplified)"
   // on other platforms.
-  base::string16 result =
+  std::u16string result =
       l10n_util::GetDisplayNameForLocale("zh-CN", "en", false);
   EXPECT_TRUE(
       base::MatchPattern(base::UTF16ToUTF8(result), "Chinese*Simplified*"));
@@ -451,25 +451,25 @@ TEST_F(L10nUtilTest, GetDisplayNameForLocale) {
   EXPECT_EQ(l10n_util::GetDisplayNameForLocale("fil", "en", false), result);
 
   result = l10n_util::GetDisplayNameForLocale("pt-BR", "en", false);
-  EXPECT_EQ(ASCIIToUTF16("Portuguese (Brazil)"), result);
+  EXPECT_EQ(u"Portuguese (Brazil)", result);
 
   result = l10n_util::GetDisplayNameForLocale("es-419", "en", false);
-  EXPECT_EQ(ASCIIToUTF16("Spanish (Latin America)"), result);
+  EXPECT_EQ(u"Spanish (Latin America)", result);
 
   result = l10n_util::GetDisplayNameForLocale("mo", "en", false);
   EXPECT_EQ(l10n_util::GetDisplayNameForLocale("ro-MD", "en", false), result);
 
   result = l10n_util::GetDisplayNameForLocale("-BR", "en", false);
-  EXPECT_EQ(ASCIIToUTF16("Brazil"), result);
+  EXPECT_EQ(u"Brazil", result);
 
   result = l10n_util::GetDisplayNameForLocale("xyz-xyz", "en", false);
-  EXPECT_EQ(ASCIIToUTF16("xyz (XYZ)"), result);
+  EXPECT_EQ(u"xyz (XYZ)", result);
 
   // Make sure that en-GB locale has the corect display names.
   result = l10n_util::GetDisplayNameForLocale("en", "en-GB", false);
-  EXPECT_EQ(ASCIIToUTF16("English"), result);
+  EXPECT_EQ(u"English", result);
   result = l10n_util::GetDisplayNameForLocale("es-419", "en-GB", false);
-  EXPECT_EQ(ASCIIToUTF16("Spanish (Latin America)"), result);
+  EXPECT_EQ(u"Spanish (Latin America)", result);
 
   // Check for directional markers when using RTL languages to ensure that
   // direction neutral characters such as parentheses are properly formatted.
@@ -486,29 +486,29 @@ TEST_F(L10nUtilTest, GetDisplayNameForLocale) {
 
   // ToUpper and ToLower should work with embedded NULLs.
   const size_t length_with_null = 4;
-  base::char16 buf_with_null[length_with_null] = { 0, 'a', 0, 'b' };
-  base::string16 string16_with_null(buf_with_null, length_with_null);
+  char16_t buf_with_null[length_with_null] = {0, 'a', 0, 'b'};
+  std::u16string string16_with_null(buf_with_null, length_with_null);
 
-  base::string16 upper_with_null = base::i18n::ToUpper(string16_with_null);
+  std::u16string upper_with_null = base::i18n::ToUpper(string16_with_null);
   ASSERT_EQ(length_with_null, upper_with_null.size());
   EXPECT_TRUE(upper_with_null[0] == 0 && upper_with_null[1] == 'A' &&
               upper_with_null[2] == 0 && upper_with_null[3] == 'B');
 
-  base::string16 lower_with_null = base::i18n::ToLower(upper_with_null);
+  std::u16string lower_with_null = base::i18n::ToLower(upper_with_null);
   ASSERT_EQ(length_with_null, upper_with_null.size());
   EXPECT_TRUE(lower_with_null[0] == 0 && lower_with_null[1] == 'a' &&
               lower_with_null[2] == 0 && lower_with_null[3] == 'b');
 }
 
 TEST_F(L10nUtilTest, GetDisplayNameForCountry) {
-  base::string16 result = l10n_util::GetDisplayNameForCountry("BR", "en");
-  EXPECT_EQ(ASCIIToUTF16("Brazil"), result);
+  std::u16string result = l10n_util::GetDisplayNameForCountry("BR", "en");
+  EXPECT_EQ(u"Brazil", result);
 
   result = l10n_util::GetDisplayNameForCountry("419", "en");
-  EXPECT_EQ(ASCIIToUTF16("Latin America"), result);
+  EXPECT_EQ(u"Latin America", result);
 
   result = l10n_util::GetDisplayNameForCountry("xyz", "en");
-  EXPECT_EQ(ASCIIToUTF16("XYZ"), result);
+  EXPECT_EQ(u"XYZ", result);
 }
 
 TEST_F(L10nUtilTest, GetParentLocales) {
@@ -583,13 +583,60 @@ TEST_F(L10nUtilTest, TimeDurationFormatAllLocales) {
   // Verify that base::TimeDurationFormat() works for all available locales:
   // http://crbug.com/707515
   base::TimeDelta kDelta = base::TimeDelta::FromMinutes(15 * 60 + 42);
-  for (const std::string& locale : l10n_util::GetAvailableLocales()) {
+  for (const std::string& locale : l10n_util::GetAvailableICULocales()) {
     base::i18n::SetICUDefaultLocale(locale);
-    base::string16 str;
+    std::u16string str;
     const bool result =
         base::TimeDurationFormat(kDelta, base::DURATION_WIDTH_NUMERIC, &str);
     EXPECT_TRUE(result) << "Failed to format duration for " << locale;
     if (result)
       EXPECT_FALSE(str.empty()) << "Got empty string for " << locale;
+  }
+}
+
+TEST_F(L10nUtilTest, GetLocalesWithStrings) {
+  // Convert the vector to a set for easy lookup.
+  const base::flat_set<std::string> locales =
+      l10n_util::GetLocalesWithStrings();
+
+  // Common locales which should be available on all platforms.
+  EXPECT_TRUE(locales.contains("en") || locales.contains("en-US"));
+  EXPECT_TRUE(locales.contains("en-GB"));
+  EXPECT_TRUE(locales.contains("es") || locales.contains("es-ES"));
+  EXPECT_TRUE(locales.contains("fr") || locales.contains("fr-FR"));
+
+  // Locales that we should have valid fallbacks for.
+  EXPECT_TRUE(locales.contains("en-CA"));
+  EXPECT_TRUE(locales.contains("es-AR"));
+  EXPECT_TRUE(locales.contains("fr-CA"));
+
+  // Locales that should not be included:
+  // English (Germany). A valid locale and in ICU's list of locales, but not in
+  // our list of Accept-Language locales.
+  EXPECT_FALSE(locales.contains("en-DE"));
+  // Esperanto. Unlikely to be localised and historically included in
+  // GetAvailableICULocales.
+  EXPECT_FALSE(locales.contains("eo"));
+}
+
+TEST_F(L10nUtilTest, PlatformLocalesIsSorted) {
+  const char* const* locales = l10n_util::GetPlatformLocalesForTesting();
+  const size_t locales_size = l10n_util::GetPlatformLocalesSizeForTesting();
+
+  // Check adjacent pairs and ensure they are in sorted order without
+  // duplicates.
+
+  // All 0-length and 1-length lists are sorted.
+  if (locales_size <= 1) {
+    return;
+  }
+
+  const char* last_locale = locales[0];
+  for (size_t i = 1; i < locales_size; i++) {
+    const char* cur_locale = locales[i];
+    EXPECT_LT(strcmp(last_locale, cur_locale), 0)
+        << "Incorrect ordering in kPlatformLocales: " << last_locale
+        << " >= " << cur_locale;
+    last_locale = cur_locale;
   }
 }

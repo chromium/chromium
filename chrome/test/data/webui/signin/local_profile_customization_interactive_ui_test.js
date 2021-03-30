@@ -21,7 +21,7 @@ var LocalProfileCustomizationFocusTest =
   get featureList() {
     return {
       enabled: [
-        'features::kProfilesUIRevamp',
+        'features::kSignInProfileCreation',
         'features::kNewProfilePicker',
       ]
     };

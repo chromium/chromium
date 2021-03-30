@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/dcheck_is_on.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/singleton.h"
@@ -23,17 +24,22 @@
 #include "content/public/browser/notification_source.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/bad_message.h"
+#include "extensions/browser/blob_holder.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_function_registry.h"
 #include "extensions/browser/extension_message_filter.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_messages.h"
+#include "extensions/common/mojom/renderer.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom-forward.h"
 
 using content::BrowserThread;
@@ -388,14 +394,30 @@ ExtensionFunction::~ExtensionFunction() {
         extension(), is_from_service_worker(), name());
   }
 
-  // The extension function should always respond to avoid leaks in the
-  // renderer, dangling callbacks, etc. The exception is if the system is
-  // shutting down.
-  extensions::ExtensionsBrowserClient* browser_client =
-      extensions::ExtensionsBrowserClient::Get();
-  DCHECK(!browser_client || browser_client->IsShuttingDown() || did_respond() ||
-         ignore_all_did_respond_for_testing_do_not_use)
-      << name();
+// The extension function should always respond to avoid leaks in the
+// renderer, dangling callbacks, etc. The exception is if the system is
+// shutting down or if the extension has been unloaded.
+#if DCHECK_IS_ON()
+  auto can_be_destroyed_before_responding = [this]() {
+    extensions::ExtensionsBrowserClient* browser_client =
+        extensions::ExtensionsBrowserClient::Get();
+    if (!browser_client || browser_client->IsShuttingDown())
+      return true;
+
+    if (ignore_all_did_respond_for_testing_do_not_use)
+      return true;
+
+    auto* registry = extensions::ExtensionRegistry::Get(browser_context());
+    if (registry && extension() &&
+        !registry->enabled_extensions().Contains(extension_id())) {
+      return true;
+    }
+
+    return false;
+  };
+
+  DCHECK(did_respond() || can_be_destroyed_before_responding()) << name();
+#endif  // DCHECK_IS_ON()
 }
 
 void ExtensionFunction::AddWorkerResponseTarget() {
@@ -624,8 +646,15 @@ void ExtensionFunction::Respond(ResponseValue result) {
 
 void ExtensionFunction::OnResponded() {
   if (!transferred_blob_uuids_.empty()) {
-    render_frame_host_->Send(
-        new ExtensionMsg_TransferBlobs(transferred_blob_uuids_));
+    extensions::mojom::Renderer* renderer =
+        extensions::RendererStartupHelperFactory::GetForBrowserContext(
+            browser_context())
+            ->GetRenderer(render_frame_host_->GetProcess());
+    if (renderer) {
+      renderer->TransferBlobs(base::BindOnce(
+          &ExtensionFunction::OnTransferBlobsAck, this,
+          render_frame_host_->GetProcess()->GetID(), transferred_blob_uuids_));
+    }
   }
 }
 
@@ -668,10 +697,21 @@ void ExtensionFunction::SendResponseImpl(bool success) {
   if (!results_)
     results_.reset(new base::ListValue());
 
-  response_callback_.Run(response, *results_, GetError());
+  std::move(response_callback_).Run(response, *results_, GetError());
   LogUma(success, timer_.Elapsed(), histogram_value_);
 
   OnResponded();
+}
+
+void ExtensionFunction::OnTransferBlobsAck(
+    int process_id,
+    const std::vector<std::string>& blob_uuids) {
+  content::RenderProcessHost* process =
+      content::RenderProcessHost::FromID(process_id);
+  if (!process)
+    return;
+
+  extensions::BlobHolder::FromRenderProcessHost(process)->DropBlobs(blob_uuids);
 }
 
 ExtensionFunction::ScopedUserGestureForTests::ScopedUserGestureForTests() {

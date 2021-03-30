@@ -11,11 +11,11 @@ GEN_INCLUDE(['../testing/mock_feedback.js']);
  */
 ChromeVoxTutorialTest = class extends ChromeVoxPanelTestBase {
   assertActiveLessonIndex(expectedIndex) {
-    assertEquals(expectedIndex, this.getPanel().iTutorial.activeLessonIndex);
+    assertEquals(expectedIndex, this.getTutorial().activeLessonIndex);
   }
 
   assertActiveScreen(expectedScreen) {
-    assertEquals(expectedScreen, this.getPanel().iTutorial.activeScreen);
+    assertEquals(expectedScreen, this.getTutorial().activeScreen);
   }
 
   async launchAndWaitForTutorial() {
@@ -26,13 +26,11 @@ ChromeVoxTutorialTest = class extends ChromeVoxPanelTestBase {
     });
   }
 
-  /**
-   * Waits for the interactive tutorial to load.
-   */
+  /** Waits for the tutorial to load. */
   async waitForTutorial() {
     return new Promise(resolve => {
       const doc = this.getPanelWindow().document;
-      if (doc.getElementById('i-tutorial-container')) {
+      if (doc.getElementById('chromevox-tutorial-container')) {
         resolve();
       } else {
         /**
@@ -43,14 +41,14 @@ ChromeVoxTutorialTest = class extends ChromeVoxPanelTestBase {
           for (const mutation of mutationsList) {
             if (mutation.type === 'childList') {
               for (const node of mutation.addedNodes) {
-                if (node.id === 'i-tutorial-container') {
+                if (node.id === 'chromevox-tutorial-container') {
                   // Once the tutorial has been added to the document, we need
                   // to wait for the lesson templates to load.
                   const panel = this.getPanel();
-                  if (panel.iTutorialReadyForTesting_) {
+                  if (panel.tutorialReadyForTesting_) {
                     resolve();
                   } else {
-                    panel.iTutorial.addEventListener('readyfortesting', () => {
+                    panel.tutorial.addEventListener('readyfortesting', () => {
                       resolve();
                     });
                   }
@@ -68,6 +66,16 @@ ChromeVoxTutorialTest = class extends ChromeVoxPanelTestBase {
     });
   }
 
+  doGesture(gesture, opt_x, opt_y) {
+    return () => {
+      GestureCommandHandler.onAccessibilityGesture_(gesture, opt_x, opt_y);
+    };
+  }
+
+  getTutorial() {
+    return this.getPanel().tutorial;
+  }
+
   get simpleDoc() {
     return `
       <p>Some web content</p>
@@ -82,8 +90,8 @@ TEST_F('ChromeVoxTutorialTest', 'BasicTest', function() {
     mockFeedback
         .expectSpeech(
             'ChromeVox tutorial', 'Heading 1',
-            ' Press Search + Right Arrow, or Search + Left Arrow to browse' +
-                ' topics ')
+            'Press Search + Right Arrow, or Search + Left Arrow to browse' +
+                ' topics')
         .call(doCmd('nextObject'))
         .expectSpeech('Quick orientation', 'Link')
         .call(doCmd('nextObject'))
@@ -108,21 +116,21 @@ TEST_F('ChromeVoxTutorialTest', 'LessonSetTest', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(this.simpleDoc, async function(root) {
     await this.launchAndWaitForTutorial();
-    const tutorial = this.getPanel().iTutorial;
+    const tutorial = this.getTutorial();
     mockFeedback.expectSpeech('ChromeVox tutorial')
         .call(doCmd('nextObject'))
         .expectSpeech('Quick orientation')
         .call(doCmd('forceClickOnCurrentItem'))
         .expectSpeech(/Quick Orientation Tutorial, [0-9]+ Lessons/)
         .expectSpeech(
-            ' Press Search + Right Arrow, or Search + Left Arrow to browse ' +
-            'lessons for this topic ')
+            'Press Search + Right Arrow, or Search + Left Arrow to browse ' +
+            'lessons for this topic')
         .call(doCmd('nextObject'))
         .expectSpeech('Welcome to ChromeVox!')
         .call(() => {
           // Call from the tutorial directly, instead of navigating to and
           // clicking on the main menu button.
-          tutorial.showMainMenu();
+          tutorial.showMainMenu_();
         })
         .expectSpeech('ChromeVox tutorial')
         .call(doCmd('nextObject'))
@@ -142,7 +150,7 @@ TEST_F('ChromeVoxTutorialTest', 'NoPracticeAreaTest', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(this.simpleDoc, async function(root) {
     await this.launchAndWaitForTutorial();
-    const tutorial = this.getPanel().iTutorial;
+    const tutorial = this.getTutorial();
     mockFeedback.expectSpeech('ChromeVox tutorial')
         .call(doCmd('nextObject'))
         .expectSpeech('Quick orientation')
@@ -151,7 +159,7 @@ TEST_F('ChromeVoxTutorialTest', 'NoPracticeAreaTest', function() {
         .call(doCmd('forceClickOnCurrentItem'))
         .expectSpeech(/Essential Keys Tutorial, [0-9]+ Lessons/)
         .call(() => {
-          tutorial.showLesson(0);
+          tutorial.showLesson_(0);
         })
         .expectSpeech(
             'On, Off, and Stop', 'Heading 1',
@@ -168,7 +176,7 @@ TEST_F('ChromeVoxTutorialTest', 'HasPracticeAreaTest', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(this.simpleDoc, async function(root) {
     await this.launchAndWaitForTutorial();
-    const tutorial = this.getPanel().iTutorial;
+    const tutorial = this.getTutorial();
     mockFeedback.expectSpeech('ChromeVox tutorial')
         .call(doCmd('nextObject'))
         .expectSpeech('Quick orientation')
@@ -179,7 +187,7 @@ TEST_F('ChromeVoxTutorialTest', 'HasPracticeAreaTest', function() {
         .call(doCmd('forceClickOnCurrentItem'))
         .expectSpeech(/Navigation Tutorial, [0-9]+ Lessons/)
         .call(() => {
-          tutorial.showLesson(1);
+          tutorial.showLesson_(1);
         })
         .expectSpeech('Jump Commands', 'Heading 1')
         .call(doCmd('nextButton'))
@@ -196,7 +204,7 @@ TEST_F('ChromeVoxTutorialTest', 'GeneralNudgesTest', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(this.simpleDoc, async function(root) {
     await this.launchAndWaitForTutorial();
-    const tutorial = this.getPanel().iTutorial;
+    const tutorial = this.getTutorial();
     const giveNudge = () => {
       tutorial.giveNudge();
     };
@@ -224,7 +232,7 @@ TEST_F('ChromeVoxTutorialTest', 'DISABLED_PracticeAreaNudgesTest', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(this.simpleDoc, async function(root) {
     await this.launchAndWaitForTutorial();
-    const tutorial = this.getPanel().iTutorial;
+    const tutorial = this.getTutorial();
     const giveNudge = () => {
       tutorial.giveNudge();
     };
@@ -238,7 +246,7 @@ TEST_F('ChromeVoxTutorialTest', 'DISABLED_PracticeAreaNudgesTest', function() {
         .call(doCmd('forceClickOnCurrentItem'))
         .expectSpeech(/Navigation Tutorial, [0-9]+ Lessons/)
         .call(() => {
-          tutorial.showLesson(0);
+          tutorial.showLesson_(0);
         })
         .expectSpeech('Basic Navigation', 'Heading 1')
         .call(doCmd('nextButton'))
@@ -260,7 +268,7 @@ TEST_F('ChromeVoxTutorialTest', 'ExitButtonTest', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(this.simpleDoc, async function(root) {
     await this.launchAndWaitForTutorial();
-    const tutorial = this.getPanel().iTutorial;
+    const tutorial = this.getTutorial();
     mockFeedback.expectSpeech('ChromeVox tutorial')
         .call(doCmd('previousButton'))
         .expectSpeech('Exit tutorial')
@@ -275,7 +283,7 @@ TEST_F('ChromeVoxTutorialTest', 'EscapeTest', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(this.simpleDoc, async function(root) {
     await this.launchAndWaitForTutorial();
-    const tutorial = this.getPanel().iTutorial;
+    const tutorial = this.getTutorial();
     mockFeedback.expectSpeech('ChromeVox tutorial')
         .call(() => {
           // Press Escape.
@@ -295,7 +303,7 @@ TEST_F('ChromeVoxTutorialTest', 'MainMenuButton', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(this.simpleDoc, async function(root) {
     await this.launchAndWaitForTutorial();
-    const tutorial = this.getPanel().iTutorial;
+    const tutorial = this.getTutorial();
     mockFeedback.expectSpeech('ChromeVox tutorial')
         .call(this.assertActiveScreen.bind(this, 'main_menu'))
         .call(doCmd('nextObject'))
@@ -322,7 +330,7 @@ TEST_F('ChromeVoxTutorialTest', 'AllLessonsButton', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(this.simpleDoc, async function(root) {
     await this.launchAndWaitForTutorial();
-    const tutorial = this.getPanel().iTutorial;
+    const tutorial = this.getTutorial();
     mockFeedback.expectSpeech('ChromeVox tutorial')
         .call(this.assertActiveScreen.bind(this, 'main_menu'))
         .call(doCmd('nextObject'))
@@ -353,11 +361,11 @@ TEST_F('ChromeVoxTutorialTest', 'NextPreviousButtons', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(this.simpleDoc, async function(root) {
     await this.launchAndWaitForTutorial();
-    const tutorial = this.getPanel().iTutorial;
+    const tutorial = this.getTutorial();
     mockFeedback.expectSpeech('ChromeVox tutorial')
         .call(() => {
           tutorial.curriculum = 'essential_keys';
-          tutorial.showLesson(0);
+          tutorial.showLesson_(0);
           this.assertActiveLessonIndex(0);
           this.assertActiveScreen('lesson');
         })
@@ -381,7 +389,7 @@ TEST_F('ChromeVoxTutorialTest', 'AutoReadTitle', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(this.simpleDoc, async function(root) {
     await this.launchAndWaitForTutorial();
-    const tutorial = this.getPanel().iTutorial;
+    const tutorial = this.getTutorial();
     mockFeedback.expectSpeech('ChromeVox tutorial')
         .call(doCmd('nextObject'))
         .expectSpeech('Quick orientation')
@@ -406,7 +414,7 @@ TEST_F('ChromeVoxTutorialTest', 'LessonHint', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(this.simpleDoc, async function(root) {
     await this.launchAndWaitForTutorial();
-    const tutorial = this.getPanel().iTutorial;
+    const tutorial = this.getTutorial();
     mockFeedback.expectSpeech('ChromeVox tutorial')
         .call(doCmd('nextObject'))
         .expectSpeech('Quick orientation')
@@ -415,7 +423,7 @@ TEST_F('ChromeVoxTutorialTest', 'LessonHint', function() {
         .call(doCmd('forceClickOnCurrentItem'))
         .expectSpeech(/Essential Keys Tutorial, [0-9]+ Lessons/)
         .call(() => {
-          tutorial.showLesson(0);
+          tutorial.showLesson_(0);
         })
         .expectSpeech('On, Off, and Stop', 'Heading 1')
         .expectSpeech(
@@ -430,7 +438,7 @@ TEST_F('ChromeVoxTutorialTest', 'EarconLesson', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(this.simpleDoc, async function(root) {
     await this.launchAndWaitForTutorial();
-    const tutorial = this.getPanel().iTutorial;
+    const tutorial = this.getTutorial();
     const nextObjectAndExpectSpeechAndEarcon = (speech, earcon) => {
       mockFeedback.call(doCmd('nextObject'))
           .expectSpeech(speech)
@@ -440,7 +448,7 @@ TEST_F('ChromeVoxTutorialTest', 'EarconLesson', function() {
         .call(() => {
           // Show the lesson.
           tutorial.curriculum = 'sounds_and_settings';
-          tutorial.showLesson(0);
+          tutorial.showLesson_(0);
         })
         .expectSpeech('Sounds')
         .call(doCmd('nextObject'))
@@ -461,7 +469,7 @@ TEST_F('ChromeVoxTutorialTest', 'QuickOrientationLessonTest', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(this.simpleDoc, async function(root) {
     await this.launchAndWaitForTutorial();
-    const tutorial = this.getPanel().iTutorial;
+    const tutorial = this.getTutorial();
     const keyboardHandler = ChromeVoxState.instance.keyboardHandler_;
 
     // Helper functions. For this test, activate commands by hooking into the
@@ -488,18 +496,18 @@ TEST_F('ChromeVoxTutorialTest', 'QuickOrientationLessonTest', function() {
         .call(doCmd('forceClickOnCurrentItem'))
         .expectSpeech(/Welcome to the ChromeVox tutorial./)
         .call(() => {
-          assertEquals(0, tutorial.activeLessonNum);
+          assertEquals(0, tutorial.activeLessonId);
           firstLessonNode = getRangeStartNode();
         })
         .call(simulateKeyPress.bind(this, KeyCode.RIGHT, {searchKeyHeld: true}))
         .call(() => {
           assertEquals(firstLessonNode, getRangeStartNode());
-          assertEquals(0, tutorial.activeLessonNum);
+          assertEquals(0, tutorial.activeLessonId);
         })
         .call(simulateKeyPress.bind(this, KeyCode.LEFT, {searchKeyHeld: true}))
         .call(() => {
           assertEquals(firstLessonNode, getRangeStartNode());
-          assertEquals(0, tutorial.activeLessonNum);
+          assertEquals(0, tutorial.activeLessonId);
         })
         // Pressing space, which is the desired key sequence, should move us to
         // the next lesson.
@@ -507,7 +515,7 @@ TEST_F('ChromeVoxTutorialTest', 'QuickOrientationLessonTest', function() {
         .expectSpeech('Essential Keys: Control')
         .expectSpeech(/Let's start with a few keys you'll use regularly./)
         .call(() => {
-          assertEquals(1, tutorial.activeLessonNum);
+          assertEquals(1, tutorial.activeLessonId);
           assertNotEquals(firstLessonNode, getRangeStartNode());
         })
         // Pressing control, which is the desired key sequence, should move us
@@ -515,7 +523,7 @@ TEST_F('ChromeVoxTutorialTest', 'QuickOrientationLessonTest', function() {
         .call(simulateKeyPress.bind(this, KeyCode.CONTROL, {}))
         .expectSpeech('Essential Keys: Shift')
         .call(() => {
-          assertEquals(2, tutorial.activeLessonNum);
+          assertEquals(2, tutorial.activeLessonId);
         })
         .replay();
   });
@@ -525,7 +533,7 @@ TEST_F('ChromeVoxTutorialTest', 'QuickOrientationLessonTest', function() {
 TEST_F('ChromeVoxTutorialTest', 'RestartNudges', function() {
   this.runWithLoadedTree(this.simpleDoc, async function(root) {
     await this.launchAndWaitForTutorial();
-    const tutorial = this.getPanel().iTutorial;
+    const tutorial = this.getTutorial();
     let restart = false;
     // Swap in below function to track when nudges get restarted.
     tutorial.restartNudges = () => {
@@ -554,7 +562,7 @@ TEST_F('ChromeVoxTutorialTest', 'RestartNudges', function() {
     await waitForRestartNudges();
     // Show a lesson.
     tutorial.curriculum = 'essential_keys';
-    tutorial.showLesson(0);
+    tutorial.showLesson_(0);
     restart = false;
     CommandHandler.onCommand('nextObject');
     await waitForRestartNudges();
@@ -569,11 +577,11 @@ TEST_F('ChromeVoxTutorialTest', 'ResourcesTest', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(this.simpleDoc, async function(root) {
     await this.launchAndWaitForTutorial();
-    const tutorial = this.getPanel().iTutorial;
+    const tutorial = this.getTutorial();
     mockFeedback.expectSpeech('ChromeVox tutorial')
         .call(() => {
           tutorial.curriculum = 'resources';
-          tutorial.showLesson(0);
+          tutorial.showLesson_(0);
         })
         .expectSpeech('Learn More')
         .call(doCmd('nextObject'))
@@ -593,7 +601,7 @@ TEST_F('ChromeVoxTutorialTest', 'OnlyLessonTest', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(this.simpleDoc, async function(root) {
     await this.launchAndWaitForTutorial();
-    const tutorial = this.getPanel().iTutorial;
+    const tutorial = this.getTutorial();
     mockFeedback.expectSpeech('ChromeVox tutorial')
         .call(doCmd('nextObject'))
         .expectSpeech('Quick orientation')
@@ -627,7 +635,7 @@ TEST_F('ChromeVoxTutorialTest', 'OnlyLessonTest', function() {
 TEST_F('ChromeVoxTutorialTest', 'StartStopInteractiveMode', function() {
   this.runWithLoadedTree(this.simpleDoc, async function(root) {
     await this.launchAndWaitForTutorial();
-    const tutorial = this.getPanel().iTutorial;
+    const tutorial = this.getTutorial();
     let userActionMonitorCreatedCount = 0;
     let userActionMonitorDestroyedCount = 0;
     let isUserActionMonitorActive = false;
@@ -648,7 +656,7 @@ TEST_F('ChromeVoxTutorialTest', 'StartStopInteractiveMode', function() {
       assertEquals(expectedVars.createdCount, userActionMonitorCreatedCount);
       assertEquals(
           expectedVars.destroyedCount, userActionMonitorDestroyedCount);
-      assertEquals(expectedVars.interactiveMode, tutorial.interactiveMode);
+      assertEquals(expectedVars.interactiveMode, tutorial.interactiveMode_);
       // Note: Interactive mode and UserActionMonitor should always be in
       // sync in the context of the tutorial.
       assertEquals(expectedVars.interactiveMode, isUserActionMonitorActive);
@@ -658,7 +666,7 @@ TEST_F('ChromeVoxTutorialTest', 'StartStopInteractiveMode', function() {
         {createdCount: 0, destroyedCount: 0, interactiveMode: false});
     // Show the first lesson of the quick orientation, which is interactive.
     tutorial.curriculum = 'quick_orientation';
-    tutorial.showLesson(0);
+    tutorial.showLesson_(0);
     makeAssertions({createdCount: 1, destroyedCount: 0, interactiveMode: true});
 
     // Move to the next lesson in the quick orientation. This lesson is also
@@ -668,8 +676,25 @@ TEST_F('ChromeVoxTutorialTest', 'StartStopInteractiveMode', function() {
 
     // Leave the quick orientation by navigating to the lesson menu. This should
     // stop interactive mode and destroy UserActionMonitor.
-    tutorial.showLessonMenu();
+    tutorial.showLessonMenu_();
     makeAssertions(
         {createdCount: 2, destroyedCount: 2, interactiveMode: false});
+  });
+});
+
+// Tests that gestures can be used in the tutorial to navigate.
+TEST_F('ChromeVoxTutorialTest', 'Gestures', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(this.simpleDoc, async function(root) {
+    await this.launchAndWaitForTutorial();
+    const tutorial = this.getTutorial();
+    mockFeedback.expectSpeech('ChromeVox tutorial')
+        .call(this.doGesture('swipeRight1'))
+        .expectSpeech('Quick orientation', 'Link')
+        .call(this.doGesture('swipeRight1'))
+        .expectSpeech('Essential keys', 'Link')
+        .call(this.doGesture('swipeLeft1'))
+        .expectSpeech('Quick orientation', 'Link')
+        .replay();
   });
 });

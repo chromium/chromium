@@ -41,6 +41,7 @@ source_set("unit_tests") {
   deps = [
     ":lib",
     "//base",
+    "//base/test:test_support",
     "//components/variations",
     "//testing/gtest",
   ]

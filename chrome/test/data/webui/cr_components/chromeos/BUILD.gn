@@ -7,6 +7,7 @@ import("//ui/webui/resources/tools/js_modulizer.gni")
 group("modulize") {
   deps = [
     "cellular_setup:modulize",
+    "multidevice_setup:modulize",
     "network:modulize",
     "network_health:modulize",
     "//chrome/test/data/webui/chromeos:modulize",

@@ -26,6 +26,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/switches.h"
 
 using ::testing::_;
 using ::testing::Invoke;
@@ -99,6 +100,13 @@ class AutofillProviderBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
+  // Necessary to avoid flakiness or failure due to input arriving
+  // before the first compositor commit.
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
+  }
+
   void CreateContentAutofillDriverFactoryForSubFrame() {
     content::WebContents* web_contents = WebContents();
     ASSERT_TRUE(web_contents != NULL);
@@ -121,7 +129,8 @@ class AutofillProviderBrowserTest : public InProcessBrowserTest {
         ContentAutofillDriverFactory::FromWebContents(web_contents);
     ContentAutofillDriver* driver =
         factory->DriverForFrame(web_contents->GetMainFrame());
-    driver->SetAutofillProviderForTesting(autofill_provider_.get());
+    driver->SetAutofillProviderForTesting(autofill_provider_.get(),
+                                          autofill_client_.get());
   }
 
   void TearDownOnMainThread() override {

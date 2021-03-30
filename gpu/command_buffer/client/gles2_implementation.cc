@@ -880,7 +880,9 @@ bool GLES2Implementation::GetHelper(GLenum pname, GLint* params) {
     case GL_GPU_DISJOINT_EXT:
       *params = static_cast<GLint>(query_tracker_->CheckAndResetDisjoint());
       return true;
-
+    case GL_UNPACK_ALIGNMENT:
+      *params = unpack_alignment_;
+      return true;
     case GL_VIEWPORT:
       if (state_.viewport_width > 0 && state_.viewport_height > 0 &&
           capabilities_.max_viewport_width > 0 &&
@@ -962,7 +964,6 @@ bool GLES2Implementation::GetHelper(GLenum pname, GLint* params) {
     case GL_STENCIL_VALUE_MASK:
     case GL_STENCIL_WRITEMASK:
     case GL_SUBPIXEL_BITS:
-    case GL_UNPACK_ALIGNMENT:
       return false;
     default:
       break;

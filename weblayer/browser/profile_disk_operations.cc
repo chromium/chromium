@@ -109,7 +109,7 @@ base::FilePath ComputeBrowserPersisterDataBaseDir(const ProfileInfo& info) {
     CHECK(base::PathService::Get(DIR_USER_DATA, &base_path));
     if (info.name.empty()) {
       // Originally the Android side of WebLayer only supported a single
-      // incognitoofile with an empty name.
+      // incognito file with an empty name.
       std::string file_name = "Incognito Restore Data";
       base_path = base_path.AppendASCII(file_name);
     } else {

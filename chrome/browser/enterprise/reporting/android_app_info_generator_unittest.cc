@@ -112,12 +112,12 @@ TEST_F(AndroidAppInfoGeneratorTest, GenerateAppInfo) {
   EXPECT_EQ(app_info->permissions_size(), 2);
 
   em::AndroidAppPermission permission0 = app_info->permissions(0);
-  EXPECT_EQ(permission0.name(), "AppPermission::CAMERA");
+  EXPECT_EQ(permission0.name(), "CAMERA");
   EXPECT_FALSE(permission0.granted());
   EXPECT_FALSE(permission0.managed());
 
   em::AndroidAppPermission permission1 = app_info->permissions(1);
-  EXPECT_EQ(permission1.name(), "AppPermission::LOCATION");
+  EXPECT_EQ(permission1.name(), "LOCATION");
   EXPECT_TRUE(permission1.granted());
   EXPECT_TRUE(permission1.managed());
 }

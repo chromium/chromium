@@ -34,6 +34,15 @@ viz_test("viz_unittests") {
     # The top level test target must depend on the java library directly.
     deps += [ "//components/viz/service:service_java" ]
   }
+
+  if (is_fuchsia) {
+    additional_manifest_fragments = [
+      # TODO(crbug.com/1185811): Figure out why jit_capabilities is needed.
+      "//build/config/fuchsia/test/jit_capabilities.test-cmx",
+
+      "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
+    ]
+  }
 }
 
 viz_test("viz_perftests") {

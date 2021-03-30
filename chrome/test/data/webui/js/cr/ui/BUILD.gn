@@ -157,8 +157,6 @@ js_library("splitter_test.m") {
 }
 
 js_type_check("closure_compile") {
-  uses_js_modules = true
-
   deps = [
     ":array_data_model_test.m",
     ":command_test.m",

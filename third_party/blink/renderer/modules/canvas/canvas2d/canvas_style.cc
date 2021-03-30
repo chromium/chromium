@@ -77,7 +77,7 @@ static mojom::blink::ColorScheme ColorScheme(HTMLCanvasElement* canvas) {
     if (auto* style = canvas->GetComputedStyle())
       return style->UsedColorScheme();
   }
-  return ComputedStyle::InitialStyle().UsedColorScheme();
+  return mojom::blink::ColorScheme::kLight;
 }
 
 bool ParseColorOrCurrentColor(Color& parsed_color,
@@ -91,7 +91,7 @@ bool ParseColorOrCurrentColor(Color& parsed_color,
     case kParsedSystemColor:
       return true;
     case kParsedCurrentColor:
-      parsed_color = canvas ? CurrentColor(canvas) : Color::kBlack;
+      parsed_color = CurrentColor(canvas);
       return true;
     case kParseFailed:
       return false;

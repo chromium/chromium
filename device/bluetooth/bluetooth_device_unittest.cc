@@ -1163,9 +1163,8 @@ TEST_F(BluetoothTest, MAYBE_GetName_NullName) {
   // TODO(https://crbug.com/588083): Enable the check below when GetAppearance()
   // is implemented for Android and Mac.
 #if !defined(OS_ANDROID) && !defined(OS_MAC)
-  EXPECT_EQ(
-      device->GetNameForDisplay(),
-      base::UTF8ToUTF16("Unknown or Unsupported Device (01:00:00:90:1E:BE)"));
+  EXPECT_EQ(device->GetNameForDisplay(),
+            u"Unknown or Unsupported Device (01:00:00:90:1E:BE)");
 #endif
 }
 

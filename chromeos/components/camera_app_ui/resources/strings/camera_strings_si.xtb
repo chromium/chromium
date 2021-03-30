@@ -15,6 +15,7 @@
 <translation id="2036868001356139588">මුහූර්තක කාල සීමාව</translation>
 <translation id="2050339315714019657">සිරස්</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> ක්‍රියාත්මකයි</translation>
+<translation id="2144806332417375165">අභිරුචි වීඩියෝ පරාමිති</translation>
 <translation id="229579744168541441">තැටියට නිර්යාත කරන්න</translation>
 <translation id="2501278716633472235">ආපසු යන්න</translation>
 <translation id="2501853267655415902">පටිගත කිරීම නැවතුණි</translation>
@@ -33,7 +34,6 @@
 <translation id="3259149966178251584">කැමරා විභේදනය</translation>
 <translation id="3517926952904427380">ප්‍රතිමූර්ති ඡායාරූප ගත නොහැක</translation>
 <translation id="3569311554794739032">ඔබට සැබැවින්ම <ph name="FILE" /> ඉවත් කිරීමට අවශ්‍යද?</translation>
-<translation id="3750315947605636967">ඔබගේ කැමරාව වෙනත් යෙදුමක් විසින් භාවිත කරමින් පවතියි</translation>
 <translation id="3810838688059735925">වීඩියෝ</translation>
 <translation id="3838931309141338733">තීරු කේතය ස්කෑන් කරන්න</translation>
 <translation id="3892148308691398805">පෙළ පිටපත් කරන්න</translation>
@@ -76,10 +76,12 @@
 <translation id="7337660886763914220">ගොනු පද්ධති දෝෂ.</translation>
 <translation id="7450541714075000668">පෙළ පිටපත් කරන ලදී</translation>
 <translation id="7557677699350329807">මීළඟ කැමරාවට මාරු වන්න</translation>
+<translation id="7607002721634913082">අත්හිටුවන ලදි</translation>
 <translation id="7608223098072244877">4 න් 4</translation>
 <translation id="7649070708921625228">උදවු</translation>
 <translation id="7658239707568436148">අවලංගු කරන්න</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7974782136796202581">තිරස් සිරස් විශාලන විකල්ප පෙන්වන්න</translation>
 <translation id="7983668134180549431">පෙළ අනාවරණය කර ගන්නා ලදි.</translation>
 <translation id="8067883171444229417">වීඩියෝව ධාවන කරන්න</translation>
 <translation id="8131740175452115882">තහවුරු කරන්න</translation>

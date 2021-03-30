@@ -4,7 +4,8 @@
 
 package org.chromium.chrome.browser.share.send_tab_to_self;
 
-import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.tab.Tab;
 
@@ -13,7 +14,8 @@ import org.chromium.chrome.browser.tab.Tab;
  * to the user if the user does not have notifications enabled.
  */
 public class SendTabToSelfInfoBarController implements Destroyable {
-    private ChromeActivity mActivity;
+    private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    private final Supplier<Tab> mTabSupplier;
 
     /**
      * Creates a SendTabToSelfInfoBarController for the activity passed in.
@@ -26,20 +28,21 @@ public class SendTabToSelfInfoBarController implements Destroyable {
      *     - If an infobar is already being displayed and the user pushes another tab, replace
      *       the existing infobar with a new one.
      *
-     * @param activity A {@link ChromeActivity} instance the infobars will be
-     *            shown in.
+     * @param activityLifecycleDispatcher Allows observation of the activity lifecycle.
+     * @param tabSupplier Supplies the current activity {@link Tab}.
      * @return A new instance of {@link SendTabToSelfInfoBarController}.
      */
-    public SendTabToSelfInfoBarController(ChromeActivity activity) {
-        mActivity = activity;
-        mActivity.getLifecycleDispatcher().register(this);
+    public SendTabToSelfInfoBarController(
+            ActivityLifecycleDispatcher activityLifecycleDispatcher, Supplier<Tab> tabSupplier) {
+        mActivityLifecycleDispatcher = activityLifecycleDispatcher;
+        mActivityLifecycleDispatcher.register(this);
+        mTabSupplier = tabSupplier;
     }
 
     // Destroyable implementation.
     @Override
     public void destroy() {
-        mActivity.getLifecycleDispatcher().unregister(this);
-        mActivity = null;
+        mActivityLifecycleDispatcher.unregister(this);
     }
 
     /**
@@ -47,10 +50,8 @@ public class SendTabToSelfInfoBarController implements Destroyable {
      * @param entry The entry to display the infobar for.
      */
     public void showInfobarForEntry(SendTabToSelfEntry entry) {
-        if (mActivity == null) {
-            return;
-        }
-        Tab tab = mActivity.getActivityTabProvider().get();
+        if (!mTabSupplier.hasValue()) return;
+        Tab tab = mTabSupplier.get();
 
         // TODO(crbug.com/949233): Listen for when the user opens a tab next and show
         // an infobar then.

@@ -135,10 +135,18 @@ std::unique_ptr<ChromotingHostContext> ChromotingHostContext::Create(
   network_task_runner->PostTask(FROM_HERE,
                                 base::BindOnce(&DisallowBlockingOperations));
 
-  return base::WrapUnique(new ChromotingHostContext(
-      ui_task_runner, audio_task_runner, file_task_runner,
+  // InputInjectorX11 requires an X11EventSource, which can only be created
+  // on a UI thread.
+  scoped_refptr<AutoThreadTaskRunner> input_task_runner =
       AutoThread::CreateWithType("ChromotingInputThread", ui_task_runner,
-                                 base::MessagePumpType::IO),
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+                                 base::MessagePumpType::UI);
+#else
+                                 base::MessagePumpType::IO);
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+
+  return base::WrapUnique(new ChromotingHostContext(
+      ui_task_runner, audio_task_runner, file_task_runner, input_task_runner,
       network_task_runner,
 #if defined(OS_APPLE)
       // Mac requires a UI thread for the capturer.

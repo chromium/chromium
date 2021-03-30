@@ -14,6 +14,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_checker_impl.h"
 #include "base/time/time.h"
+#include "base/trace_event/base_tracing.h"
 
 namespace base {
 namespace sequence_manager {
@@ -323,6 +324,11 @@ bool TaskQueue::BlockedByFence() const {
 
 const char* TaskQueue::GetName() const {
   return name_;
+}
+
+void TaskQueue::WriteIntoTracedValue(perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("name", name_);
 }
 
 void TaskQueue::SetObserver(Observer* observer) {

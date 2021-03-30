@@ -6,8 +6,15 @@
 #define CONTENT_BROWSER_NET_TRUST_TOKEN_BROWSERTEST_H_
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
+#include "content/public/common/trust_tokens.mojom.h"
 #include "content/public/test/content_browser_test.h"
 #include "services/network/trust_tokens/test/trust_token_request_handler.h"
+
+#if defined(OS_ANDROID)
+#include "content/public/browser/android/java_interfaces.h"
+#include "services/service_manager/public/cpp/interface_provider.h"
+#endif  // defined(OS_ANDROID)
 
 namespace content {
 
@@ -58,6 +65,38 @@ class TrustTokenBrowsertest : virtual public ContentBrowserTest {
 
   net::EmbeddedTestServer server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
+
+#if defined(OS_ANDROID)
+// HandlerWrappingLocalTrustTokenFulfiller serves two purposes:
+//
+// 1. Its lifetime scopes an override to content::GetGlobalJavaInterfaces()'s
+// interface provider, forwarding requests to bind a
+// content::mojom::LocalTrustTokenFulfiller to this object;
+//
+// 2. It forwards the requests it receives to the TrustTokenRequestHandler
+// passed to its constructor (this will likely be
+// TrustTokenBrowsertest::request_handler_). This arrangement means that the
+// calls to FulfillTrustTokenIssuance receive well-formed issuance responses
+// signed using the request handler's issuance keys.
+class HandlerWrappingLocalTrustTokenFulfiller final
+    : public content::mojom::LocalTrustTokenFulfiller {
+ public:
+  HandlerWrappingLocalTrustTokenFulfiller(TrustTokenRequestHandler& handler);
+  ~HandlerWrappingLocalTrustTokenFulfiller() override;
+
+  void FulfillTrustTokenIssuance(
+      network::mojom::FulfillTrustTokenIssuanceRequestPtr request,
+      FulfillTrustTokenIssuanceCallback callback) override;
+
+ private:
+  void Bind(mojo::ScopedMessagePipeHandle handle);
+
+  TrustTokenRequestHandler& handler_;
+  service_manager::InterfaceProvider::TestApi interface_overrider_{
+      content::GetGlobalJavaInterfaces()};
+  mojo::Receiver<content::mojom::LocalTrustTokenFulfiller> receiver_{this};
+};
+#endif
 
 }  // namespace content
 

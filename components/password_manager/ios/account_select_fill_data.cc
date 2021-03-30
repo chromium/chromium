@@ -19,8 +19,8 @@ FormInfo::FormInfo() = default;
 FormInfo::~FormInfo() = default;
 FormInfo::FormInfo(const FormInfo&) = default;
 
-Credential::Credential(const base::string16& username,
-                       const base::string16& password,
+Credential::Credential(const std::u16string& username,
+                       const std::u16string& password,
                        const std::string& realm)
     : username(username), password(password), realm(realm) {}
 Credential::~Credential() = default;
@@ -47,8 +47,8 @@ void AccountSelectFillData::Add(
                           form_data.preferred_realm});
 
   for (const auto& username_password_and_realm : form_data.additional_logins) {
-    const base::string16& username = username_password_and_realm.username;
-    const base::string16& password = username_password_and_realm.password;
+    const std::u16string& username = username_password_and_realm.username;
+    const std::u16string& password = username_password_and_realm.password;
     const std::string& realm = username_password_and_realm.realm;
     credentials_.push_back({username, password, realm});
   }
@@ -89,7 +89,7 @@ std::vector<UsernameAndRealm> AccountSelectFillData::RetrieveSuggestions(
 }
 
 std::unique_ptr<FillData> AccountSelectFillData::GetFillData(
-    const base::string16& username) const {
+    const std::u16string& username) const {
   if (!last_requested_form_) {
     NOTREACHED();
     return nullptr;

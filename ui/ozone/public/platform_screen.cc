@@ -43,4 +43,15 @@ base::Value PlatformScreen::GetGpuExtraInfoAsListValue(
   return base::Value(base::Value::Type::LIST);
 }
 
+void PlatformScreen::SetDeviceScaleFactor(float scale) {}
+
+void PlatformScreen::StorePlatformNameIntoListValue(
+    base::Value& list_value,
+    const std::string& platform_name) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetKey("description", base::Value("Ozone platform"));
+  dict.SetKey("value", base::Value(platform_name));
+  list_value.Append(std::move(dict));
+}
+
 }  // namespace ui

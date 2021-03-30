@@ -15,6 +15,7 @@ source_set("mime_handler_private") {
 
   deps = [
     "//content/public/browser",
+    "//extensions/common:common_constants",
     "//extensions/common/api",
   ]
 

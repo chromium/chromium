@@ -8,31 +8,47 @@
 namespace liburlpattern {
 
 namespace {
-constexpr absl::string_view kSpecialCharacters(".+*?=^!:${}()[]|/\\");
-}  // namespace
 
-size_t EscapedLength(absl::string_view input) {
-  size_t count = input.size();
-  for (auto& c : input) {
-    if (kSpecialCharacters.find(c) != std::string::npos)
-      count += 1;
-  }
-  return count;
-}
+constexpr absl::string_view kRegexpSpecialCharacters(".+*?^${}()[]|/\\");
+constexpr absl::string_view kPatternSpecialCharacters("+*?:{}()\\");
 
-void EscapeStringAndAppend(absl::string_view input,
-                           std::string& append_target) {
+void EscapeStringAndAppendInternal(absl::string_view input,
+                                   std::string& append_target,
+                                   absl::string_view special_chars) {
   for (auto& c : input) {
-    if (kSpecialCharacters.find(c) != std::string::npos)
+    if (special_chars.find(c) != std::string::npos)
       append_target += '\\';
     append_target += c;
   }
 }
 
-std::string EscapeString(absl::string_view input) {
+}  // namespace
+
+size_t EscapedRegexpStringLength(absl::string_view input) {
+  size_t count = input.size();
+  for (auto& c : input) {
+    if (kRegexpSpecialCharacters.find(c) != std::string::npos)
+      count += 1;
+  }
+  return count;
+}
+
+void EscapeRegexpStringAndAppend(absl::string_view input,
+                                 std::string& append_target) {
+  return EscapeStringAndAppendInternal(input, append_target,
+                                       kRegexpSpecialCharacters);
+}
+
+void EscapePatternStringAndAppend(absl::string_view input,
+                                  std::string& append_target) {
+  return EscapeStringAndAppendInternal(input, append_target,
+                                       kPatternSpecialCharacters);
+}
+
+std::string EscapeRegexpString(absl::string_view input) {
   std::string result;
-  result.reserve(EscapedLength(input));
-  EscapeStringAndAppend(input, result);
+  result.reserve(EscapedRegexpStringLength(input));
+  EscapeRegexpStringAndAppend(input, result);
   return result;
 }
 

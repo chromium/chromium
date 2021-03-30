@@ -19,6 +19,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_text_utils.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
+#include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/layout.h"
@@ -35,7 +36,9 @@ namespace views {
 
 // static
 std::unique_ptr<ViewAccessibility> ViewAccessibility::Create(View* view) {
-  return std::make_unique<ViewAXPlatformNodeDelegateWin>(view);
+  auto result = std::make_unique<ViewAXPlatformNodeDelegateWin>(view);
+  result->Init();
+  return result;
 }
 
 ViewAXPlatformNodeDelegateWin::ViewAXPlatformNodeDelegateWin(View* view)

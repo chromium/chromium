@@ -19,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
+#include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/signatures.h"
@@ -50,6 +51,8 @@ class AutofillDownloadManager {
     REQUEST_QUERY,
     REQUEST_UPLOAD,
   };
+  using IsRawMetadataUploadingEnabled =
+      base::StrongAlias<class IsRawMetadataUploadingEnabledTag, bool>;
 
   // An interface used to notify clients of AutofillDownloadManager.
   class Observer {
@@ -79,16 +82,18 @@ class AutofillDownloadManager {
 
   // |driver| must outlive this instance.
   // |observer| - observer to notify on successful completion or error.
-  // Uses an API callback function that gives an empty string.
-  AutofillDownloadManager(AutofillDriver* driver, Observer* observer);
-  // |driver| must outlive this instance.
-  // |observer| - observer to notify on successful completion or error.
   // |api_key| - API key to add to API request query parameters. Will only take
   //   effect if using API.
-  AutofillDownloadManager(AutofillDriver* driver,
-                          Observer* observer,
-                          const std::string& api_key,
-                          LogManager* log_manager);
+  AutofillDownloadManager(
+      AutofillDriver* driver,
+      Observer* observer,
+      const std::string& api_key,
+      IsRawMetadataUploadingEnabled is_raw_metadata_uploading_enabled,
+      LogManager* log_manager);
+  // |driver| must outlive this instance.
+  // |observer| - observer to notify on successful completion or error.
+  // Uses an API callback function that gives an empty string.
+  AutofillDownloadManager(AutofillDriver* driver, Observer* observer);
   virtual ~AutofillDownloadManager();
 
   // Starts a query request to Autofill servers. The observer is called with the
@@ -224,6 +229,10 @@ class AutofillDownloadManager {
 
   // Used for exponential backoff of requests.
   net::BackoffEntry loader_backoff_;
+
+  // Whether form data (e.g. form and field names) can be uploaded in clear
+  // text.
+  bool is_raw_metadata_uploading_enabled_ = false;
 
   base::WeakPtrFactory<AutofillDownloadManager> weak_factory_{this};
 };

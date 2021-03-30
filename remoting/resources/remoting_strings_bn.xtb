@@ -24,6 +24,7 @@
 '<ph name="SERVICE_SCRIPT_NAME" />' বিকল্পে আগে থেকেই টিক চিহ্ন দেওয়া থাকলে, সেটি সরিয়ে আবার টিক দিন।</translation>
 <translation id="225614027745146050">স্বাগতম</translation>
 <translation id="2320166752086256636">কীবোর্ড লুকান</translation>
+<translation id="2333212046079545895">কপিরাইট ২০২১ Google LLC. সর্বস্বত্ব সংরক্ষিত।</translation>
 <translation id="2359808026110333948">চালিয়ে যান</translation>
 <translation id="2366718077645204424">হোস্টে পৌঁছাতে পারেনি৷ আপনার ব্যবহার করা নেটওয়ার্কের কনফিগারেশনের কারণে সম্ভবত এটি হয়েছে৷</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> অনলাইনে সর্বশেষ <ph name="RELATIVE_TIMESTAMP" /> দেখা গেছে।</translation>
@@ -71,6 +72,7 @@
 <translation id="4405930547258349619">কোর লাইব্রেরি</translation>
 <translation id="443560535555262820">অ্যাক্সেসিবিলিটি অভিরুচির প্যানেল খুলুন</translation>
 <translation id="4450893287417543264">আর দেখতে চাই না</translation>
+<translation id="4512952200932940229">কপিরাইট ২০২১ The Chromium Authors. সর্বস্বত্ত্ব সংরক্ষিত।</translation>
 <translation id="4513946894732546136">প্রতিক্রিয়া</translation>
 <translation id="4563926062592110512">ক্লায়েন্ট বিচ্ছিন্ন হয়েছে: <ph name="CLIENT_USERNAME" />৷</translation>
 <translation id="4635770493235256822">দূরবর্তী ডিভাইস</translation>
@@ -129,7 +131,6 @@
 <translation id="7067321367069083429">স্ক্রিন একটি টাচ স্ক্রিনের মত কাজ করে</translation>
 <translation id="7116737094673640201">Chrome রিমোট ডেস্কটপে স্বাগত</translation>
 <translation id="7144878232160441200">আবার চেষ্টা করুন</translation>
-<translation id="724402108658370587">কপিরাইট ২০২০ Google LLC. সর্বস্বত্ব সংরক্ষিত।</translation>
 <translation id="7312846573060934304">হোস্ট এখন অফলাইনে।</translation>
 <translation id="7319983568955948908">শেয়ার করা বন্ধ করুন</translation>
 <translation id="7401733114166276557">Chrome রিমোট ডেস্কটপ</translation>
@@ -155,7 +156,6 @@
 <translation id="8073845705237259513">Chrome রিমোট ডেস্কটপ ব্যবহার করার জন্য, আপনাকে আপনার ডিভাইসে একটি Google অ্যাকাউন্ট যোগ করতে হবে৷</translation>
 <translation id="809687642899217504">আমার কম্পিউটারগুলি</translation>
 <translation id="8116630183974937060">একটি নেটওয়ার্ক ত্রুটি ঘটেছে৷ আপনার ডিভাইস অন-লাইন আছে কিনা তা পরীক্ষা করে আবার চেষ্টা করুন৷</translation>
-<translation id="8187079423890319756">কপিরাইট ২০১৩ Chromium রচয়িতা৷ সর্বস্বত্ত্ব সংরক্ষিত৷</translation>
 <translation id="8295077433896346116"><ph name="PRODUCT_NAME" /> ব্যবহার করতে, রিমোট মেশিন থেকে পাঠানো ইনপুট যাতে এই Mac-এ ইনজেক্ট করা যায়, সেই জন্য আপনাকে 'অ্যাক্সেসিবিলিটি'-র অনুমতি দিতে হবে।
 
 এই অনুমতি দিতে, নিচে '<ph name="BUTTON_NAME" />' বোতামে ক্লিক করুন। 'অ্যাক্সেসিবিলিটি' অভিরুচির প্যানেল খুলুন এবং '<ph name="SERVICE_SCRIPT_NAME" />'-এর পাশের বক্সে টিকচিহ্ন দিন।
@@ -174,6 +174,7 @@
 <translation id="8743328882720071828">আপনি কি <ph name="CLIENT_USERNAME" /> কে আপনার কম্পিউটার দেখার ও নিয়ন্ত্রণ করার অনুমতি দিতে চান?</translation>
 <translation id="8747048596626351634">সেশন ক্র্যাশ করেছে বা শুরু হয়নি। রিমোট কম্পিউটারে যদি ~/.chrome-remote-desktop-session থাকে, তাহলে নিশ্চিত করুন যে এটি ডেস্কটপ এনভায়রনমেন্ট বা উইন্ডো ম্যানেজারের মতো একটি দীর্ঘসময় ধরে চলা ফোরগ্রাউন্ড প্রক্রিয়া শুরু করে।</translation>
 <translation id="8804164990146287819">গোপনীয়তা নীতি</translation>
+<translation id="8906511416443321782">অডিও ক্যাপচার করতে ও সেটি Chrome রিমোট ডেস্কটপ ক্লায়েন্টের জন্য স্ট্রিম করতে মাইক্রোফোন অ্যাক্সেস করার অনুমতি দিতে হবে।</translation>
 <translation id="9111855907838866522">আপনার দূরবর্তী ডিভাইসের সাথে আপনি সংযুক্ত আছেন। মেনুটি খুলতে, চারটি আঙ্গুল ব্যবহার করে স্ক্রিনটি ট্যাপ করুন।</translation>
 <translation id="9126115402994542723">এই কম্পিউটার থেকে এই হোস্টে সংযুক্ত হওয়ার সময় আবার পিন দিতে হবে না৷</translation>
 <translation id="916856682307586697">ডিফল্ট XSession লঞ্চ করুন</translation>

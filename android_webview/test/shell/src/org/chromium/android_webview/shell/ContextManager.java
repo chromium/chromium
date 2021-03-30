@@ -11,22 +11,31 @@ import org.chromium.base.annotations.JNINamespace;
 /** draw_fn framework side implementation for tests. */
 @JNINamespace("draw_fn")
 public class ContextManager {
+    private static boolean sUseVulkan;
     private Surface mCurrentSurface;
 
-    public static long getDrawFnFunctionTable() {
-        return nativeGetDrawFnFunctionTable();
+    public static long getDrawFnFunctionTable(boolean useVulkan) {
+        sUseVulkan = useVulkan;
+        return nativeGetDrawFnFunctionTable(useVulkan);
     }
 
     private final long mNativeContextManager;
 
     public ContextManager() {
-        mNativeContextManager = nativeInit();
+        mNativeContextManager = nativeInit(sUseVulkan);
     }
 
-    public void setSurface(Surface surface) {
-        if (mCurrentSurface == surface) return;
+    public void setSurface(Surface surface, int width, int height) {
+        if (mCurrentSurface == surface) {
+            if (surface != null) nativeResizeSurface(mNativeContextManager, width, height);
+            return;
+        }
         mCurrentSurface = surface;
-        nativeSetSurface(mNativeContextManager, surface);
+        nativeSetSurface(mNativeContextManager, surface, width, height);
+    }
+
+    public void setOverlaysSurface(Surface surface) {
+        nativeSetOverlaysSurface(mNativeContextManager, surface);
     }
 
     public void sync(int functor, boolean applyForceDark) {
@@ -39,9 +48,13 @@ public class ContextManager {
                 mNativeContextManager, width, height, scrollX, scrollY, readbackQuadrants);
     }
 
-    private static native long nativeGetDrawFnFunctionTable();
-    private static native long nativeInit();
-    private static native void nativeSetSurface(long nativeContextManager, Surface surface);
+    private static native long nativeGetDrawFnFunctionTable(boolean useVulkan);
+    private static native long nativeInit(boolean useVulkan);
+    private static native void nativeSetSurface(
+            long nativeContextManager, Surface surface, int width, int height);
+    private static native void nativeResizeSurface(
+            long nativeContextManager, int width, int height);
+    private static native void nativeSetOverlaysSurface(long nativeContextManager, Surface surface);
     private static native void nativeSync(
             long nativeContextManager, int functor, boolean applyForceDark);
     private static native int[] nativeDraw(long nativeContextManager, int width, int height,

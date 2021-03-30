@@ -7,20 +7,21 @@
 #include "base/check.h"
 #include "base/no_destructor.h"
 #include "base/stl_util.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/win/ui/constants.h"
 #include "chrome/updater/win/util.h"
 
 namespace updater {
 namespace ui {
 
-HRESULT UIDisplayedEventManager::CreateEvent(bool is_machine) {
+HRESULT UIDisplayedEventManager::CreateEvent(UpdaterScope scope) {
   DCHECK(!IsEventHandleInitialized());
   return CreateUniqueEventInEnvironment(
-      kLegacyUiDisplayedEventEnvironmentVariableName, is_machine,
+      kLegacyUiDisplayedEventEnvironmentVariableName, scope,
       ScopedKernelHANDLE::Receiver(GetUIDisplayedEvent()).get());
 }
 
-HRESULT UIDisplayedEventManager::GetEvent(bool is_machine,
+HRESULT UIDisplayedEventManager::GetEvent(UpdaterScope scope,
                                           HANDLE* ui_displayed_event) {
   DCHECK(ui_displayed_event);
   *ui_displayed_event = nullptr;
@@ -30,7 +31,7 @@ HRESULT UIDisplayedEventManager::GetEvent(bool is_machine,
   }
 
   HRESULT hr = OpenUniqueEventFromEnvironment(
-      kLegacyUiDisplayedEventEnvironmentVariableName, is_machine,
+      kLegacyUiDisplayedEventEnvironmentVariableName, scope,
       ScopedKernelHANDLE::Receiver(GetUIDisplayedEvent()).get());
   if (FAILED(hr))
     return hr;
@@ -39,12 +40,12 @@ HRESULT UIDisplayedEventManager::GetEvent(bool is_machine,
   return S_OK;
 }
 
-void UIDisplayedEventManager::SignalEvent(bool is_machine) {
+void UIDisplayedEventManager::SignalEvent(UpdaterScope scope) {
   if (!IsEventHandleInitialized()) {
     HRESULT hr = GetEvent(
-        is_machine, ScopedKernelHANDLE::Receiver(GetUIDisplayedEvent()).get());
+        scope, ScopedKernelHANDLE::Receiver(GetUIDisplayedEvent()).get());
     if (HRESULT_FROM_WIN32(ERROR_ENVVAR_NOT_FOUND) == hr)
-      hr = CreateEvent(is_machine);
+      hr = CreateEvent(scope);
     if (FAILED(hr)) {
       // We may display two UIs in this case.
       GetUIDisplayedEvent().reset();

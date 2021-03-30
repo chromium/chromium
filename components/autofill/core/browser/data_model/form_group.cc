@@ -15,7 +15,7 @@ namespace autofill {
 
 using structured_address::VerificationStatus;
 
-void FormGroup::GetMatchingTypes(const base::string16& text,
+void FormGroup::GetMatchingTypes(const std::u16string& text,
                                  const std::string& app_locale,
                                  ServerFieldTypeSet* matching_types) const {
   if (text.empty()) {
@@ -28,7 +28,7 @@ void FormGroup::GetMatchingTypes(const base::string16& text,
     return;
   }
 
-  base::string16 canonicalized_text = comparator.NormalizeForComparison(text);
+  std::u16string canonicalized_text = comparator.NormalizeForComparison(text);
   ServerFieldTypeSet types;
   GetSupportedTypes(&types);
   for (const auto& type : types) {
@@ -53,12 +53,12 @@ bool FormGroup::HasRawInfo(ServerFieldType type) const {
   return !GetRawInfo(type).empty();
 }
 
-base::string16 FormGroup::GetInfo(ServerFieldType type,
+std::u16string FormGroup::GetInfo(ServerFieldType type,
                                   const std::string& app_locale) const {
   return GetInfoImpl(AutofillType(type), app_locale);
 }
 
-base::string16 FormGroup::GetInfo(const AutofillType& type,
+std::u16string FormGroup::GetInfo(const AutofillType& type,
                                   const std::string& app_locale) const {
   return GetInfoImpl(type, app_locale);
 }
@@ -82,21 +82,21 @@ int FormGroup::GetVerificationStatusInt(const AutofillType& type) const {
 }
 
 bool FormGroup::SetInfo(ServerFieldType type,
-                        const base::string16& value,
+                        const std::u16string& value,
                         const std::string& app_locale) {
   return SetInfoWithVerificationStatus(type, value, app_locale,
                                        VerificationStatus::kNoStatus);
 }
 
 bool FormGroup::SetInfo(const AutofillType& type,
-                        const base::string16& value,
+                        const std::u16string& value,
                         const std::string& app_locale) {
   return SetInfoWithVerificationStatus(type, value, app_locale,
                                        VerificationStatus::kNoStatus);
 }
 
 bool FormGroup::SetInfoWithVerificationStatus(ServerFieldType type,
-                                              const base::string16& value,
+                                              const std::u16string& value,
                                               const std::string& app_locale,
                                               const VerificationStatus status) {
   return SetInfoWithVerificationStatusImpl(AutofillType(type), value,
@@ -104,7 +104,7 @@ bool FormGroup::SetInfoWithVerificationStatus(ServerFieldType type,
 }
 
 bool FormGroup::SetInfoWithVerificationStatus(const AutofillType& type,
-                                              const base::string16& value,
+                                              const std::u16string& value,
                                               const std::string& app_locale,
                                               VerificationStatus status) {
   return SetInfoWithVerificationStatusImpl(type, value, app_locale, status);
@@ -120,25 +120,25 @@ bool FormGroup::HasInfo(const AutofillType& type) const {
   return !GetInfo(type, "en-US").empty();
 }
 
-base::string16 FormGroup::GetInfoImpl(const AutofillType& type,
+std::u16string FormGroup::GetInfoImpl(const AutofillType& type,
                                       const std::string& app_locale) const {
   return GetRawInfo(type.GetStorableType());
 }
 
 bool FormGroup::SetInfoWithVerificationStatusImpl(const AutofillType& type,
-                                                  const base::string16& value,
+                                                  const std::u16string& value,
                                                   const std::string& app_locale,
                                                   VerificationStatus status) {
   SetRawInfoWithVerificationStatus(type.GetStorableType(), value, status);
   return true;
 }
 
-void FormGroup::SetRawInfo(ServerFieldType type, const base::string16& value) {
+void FormGroup::SetRawInfo(ServerFieldType type, const std::u16string& value) {
   SetRawInfoWithVerificationStatus(type, value, VerificationStatus::kNoStatus);
 }
 
 void FormGroup::SetRawInfoWithVerificationStatusInt(ServerFieldType type,
-                                                    const base::string16& value,
+                                                    const std::u16string& value,
                                                     int status) {
   SetRawInfoWithVerificationStatus(type, value,
                                    static_cast<VerificationStatus>(status));

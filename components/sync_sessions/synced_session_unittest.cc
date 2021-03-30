@@ -233,7 +233,7 @@ TEST(SyncedSessionTest, SetSessionTabFromSyncData) {
   for (int i = 0; i < 5; ++i) {
     EXPECT_EQ(i, tab.navigations[i].index());
     EXPECT_EQ(GURL("referrer"), tab.navigations[i].referrer_url());
-    EXPECT_EQ(base::ASCIIToUTF16("title"), tab.navigations[i].title());
+    EXPECT_EQ(u"title", tab.navigations[i].title());
     EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
         tab.navigations[i].transition_type(), ui::PAGE_TRANSITION_TYPED));
     EXPECT_EQ(GURL("http://foo/" + base::NumberToString(i)),
@@ -261,7 +261,8 @@ TEST(SyncedSessionTest, SessionTabToSyncData) {
   }
   tab.session_storage_persistent_id = "fake";
 
-  const sync_pb::SessionTab sync_data = SessionTabToSyncData(tab);
+  const sync_pb::SessionTab sync_data =
+      SessionTabToSyncData(tab, /*browser_type=*/base::nullopt);
   EXPECT_EQ(5, sync_data.tab_id());
   EXPECT_EQ(10, sync_data.window_id());
   EXPECT_EQ(13, sync_data.tab_visual_index());
@@ -278,6 +279,18 @@ TEST(SyncedSessionTest, SessionTabToSyncData) {
   EXPECT_FALSE(sync_data.has_favicon());
   EXPECT_FALSE(sync_data.has_favicon_type());
   EXPECT_FALSE(sync_data.has_favicon_source());
+  EXPECT_FALSE(sync_data.has_browser_type());
+}
+
+TEST(SyncedSessionTest, SessionTabToSyncDataWithBrowserType) {
+  EXPECT_EQ(sync_pb::SessionWindow_BrowserType_TYPE_TABBED,
+            SessionTabToSyncData(sessions::SessionTab(),
+                                 sync_pb::SessionWindow_BrowserType_TYPE_TABBED)
+                .browser_type());
+  EXPECT_EQ(sync_pb::SessionWindow_BrowserType_TYPE_POPUP,
+            SessionTabToSyncData(sessions::SessionTab(),
+                                 sync_pb::SessionWindow_BrowserType_TYPE_POPUP)
+                .browser_type());
 }
 
 }  // namespace

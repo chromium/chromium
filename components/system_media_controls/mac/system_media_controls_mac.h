@@ -19,15 +19,13 @@ namespace internal {
 
 // Interfaces with Mac OS's MPNowPlayingInfoCenter and related MediaPlayer API.
 // The combination of those two form the full SystemMediaControls API.
-class API_AVAILABLE(macos(10.12.2)) SystemMediaControlsMac
+class API_AVAILABLE(macos(10.13.1)) SystemMediaControlsMac
     : public SystemMediaControls {
  public:
   SystemMediaControlsMac();
   SystemMediaControlsMac(const SystemMediaControlsMac&) = delete;
   SystemMediaControlsMac& operator=(const SystemMediaControlsMac&) = delete;
   ~SystemMediaControlsMac() override;
-
-  static SystemMediaControlsMac* GetInstance();
 
   // SystemMediaControls implementation.
   void AddObserver(SystemMediaControlsObserver* observer) override;
@@ -37,11 +35,13 @@ class API_AVAILABLE(macos(10.12.2)) SystemMediaControlsMac
   void SetIsPreviousEnabled(bool value) override;
   void SetIsPlayPauseEnabled(bool value) override;
   void SetIsStopEnabled(bool value) override;
+  void SetIsSeekToEnabled(bool value) override;
   void SetPlaybackStatus(PlaybackStatus status) override;
-  void SetTitle(const base::string16& title) override;
-  void SetArtist(const base::string16& artist) override;
-  void SetAlbum(const base::string16& album) override;
-  void SetThumbnail(const SkBitmap& bitmap) override {}
+  void SetTitle(const std::u16string& title) override;
+  void SetArtist(const std::u16string& artist) override;
+  void SetAlbum(const std::u16string& album) override;
+  void SetThumbnail(const SkBitmap& bitmap) override;
+  void SetPosition(const media_session::MediaPosition& position) override;
   void ClearThumbnail() override {}
   void ClearMetadata() override;
   void UpdateDisplay() override {}

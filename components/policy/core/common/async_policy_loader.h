@@ -25,8 +25,9 @@ class PolicyBundle;
 
 // Base implementation for platform-specific policy loaders. Together with the
 // AsyncPolicyProvider, this base implementation takes care of the initial load,
-// periodic reloads, watching file changes, refreshing policies and object
-// lifetime.
+// refreshing policies and object lifetime. Also if the object has
+// |period_updates_| set to true it takes care of periodic reloads and watching
+// file changes.
 //
 // All methods are invoked on the background |task_runner_|, including the
 // destructor. The only exceptions are the constructor (which may be called on
@@ -37,7 +38,8 @@ class PolicyBundle;
 class POLICY_EXPORT AsyncPolicyLoader {
  public:
   explicit AsyncPolicyLoader(
-      const scoped_refptr<base::SequencedTaskRunner>& task_runner);
+      const scoped_refptr<base::SequencedTaskRunner>& task_runner,
+      bool periodic_updates);
   virtual ~AsyncPolicyLoader();
 
   // Gets a SequencedTaskRunner backed by the background thread.
@@ -69,8 +71,9 @@ class POLICY_EXPORT AsyncPolicyLoader {
   // reschedules the reload until the LastModificationTime() is a couple of
   // seconds in the past. This mitigates the problem of reading files that are
   // currently being written to, and whose contents are incomplete.
-  // A reload is posted periodically, if it hasn't been triggered recently. This
-  // makes sure the policies are reloaded if the update events aren't triggered.
+  // When |periodic_updates_| is true a reload is posted periodically, if it
+  // hasn't been triggered recently. This makes sure the policies are reloaded
+  // if the update events aren't triggered.
   void Reload(bool force);
 
   const scoped_refptr<SchemaMap>& schema_map() const { return schema_map_; }
@@ -100,6 +103,9 @@ class POLICY_EXPORT AsyncPolicyLoader {
 
   // Task runner for running background jobs.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  // Whether the loader will schedule periodic updates for policy data.
+  const bool periodic_updates_;
 
   // Callback for updates, passed in Init().
   UpdateCallback update_callback_;

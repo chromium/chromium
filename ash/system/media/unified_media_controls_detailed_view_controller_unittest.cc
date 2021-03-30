@@ -67,7 +67,7 @@ class UnifiedMediaControlsDetailedViewControllerTest : public AshTestBase {
 
     StatusAreaWidgetTestHelper::GetStatusAreaWidget()
         ->unified_system_tray()
-        ->ShowBubble(false /* show_by_click */);
+        ->ShowBubble();
   }
 
   void TearDown() override {

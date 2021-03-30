@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_MAC_KEYSTONE_GLUE_H_
 #define CHROME_BROWSER_MAC_KEYSTONE_GLUE_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 
 #if defined(__OBJC__)
 
@@ -210,7 +211,7 @@ std::string BrandCode();
 bool KeystoneEnabled();
 
 // The version of the application currently installed on disk.
-base::string16 CurrentlyInstalledVersion();
+std::u16string CurrentlyInstalledVersion();
 
 }  // namespace keystone_glue
 

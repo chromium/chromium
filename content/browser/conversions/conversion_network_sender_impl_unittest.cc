@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
@@ -128,6 +129,64 @@ TEST_F(ConversionNetworkSenderTest, ReportRequestHangs_TimesOut) {
   EXPECT_EQ(1u, num_reports_sent_);
 }
 
+TEST_F(ConversionNetworkSenderTest,
+       ReportRequesFailsDueToNetworkChange_Retries) {
+  // Retry fails
+  {
+    base::HistogramTester histograms;
+
+    auto report = GetReport(/*conversion_id=*/1);
+    network_sender_->SendReport(&report, GetSentCallback());
+    EXPECT_EQ(1, test_url_loader_factory_.NumPending());
+
+    // Simulate the request failing due to network change.
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GURL(GetReportUrl("1")),
+        network::URLLoaderCompletionStatus(net::ERR_NETWORK_CHANGED),
+        network::mojom::URLResponseHead::New(), std::string());
+
+    // The sender should automatically retry.
+    EXPECT_EQ(1, test_url_loader_factory_.NumPending());
+
+    // Simulate a second request failure due to network change.
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GURL(GetReportUrl("1")),
+        network::URLLoaderCompletionStatus(net::ERR_NETWORK_CHANGED),
+        network::mojom::URLResponseHead::New(), std::string());
+
+    // We should not retry again. Verify the report sent callback only gets
+    // fired once.
+    EXPECT_EQ(0, test_url_loader_factory_.NumPending());
+    EXPECT_EQ(1u, num_reports_sent_);
+
+    histograms.ExpectUniqueSample("Conversions.ReportRetrySucceed", false, 1);
+  }
+
+  // Retry succeeds
+  {
+    base::HistogramTester histograms;
+
+    auto report = GetReport(/*conversion_id=*/2);
+    network_sender_->SendReport(&report, GetSentCallback());
+    EXPECT_EQ(1, test_url_loader_factory_.NumPending());
+
+    // Simulate the request failing due to network change.
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GURL(GetReportUrl("2")),
+        network::URLLoaderCompletionStatus(net::ERR_NETWORK_CHANGED),
+        network::mojom::URLResponseHead::New(), std::string());
+
+    // The sender should automatically retry.
+    EXPECT_EQ(1, test_url_loader_factory_.NumPending());
+
+    // Simulate a second request failure due to network change.
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetReportUrl("2"), "");
+
+    histograms.ExpectUniqueSample("Conversions.ReportRetrySucceed", true, 1);
+  }
+}
+
 TEST_F(ConversionNetworkSenderTest, ReportSent_QueryParamsSetCorrectly) {
   auto impression =
       ImpressionBuilder(base::Time())
@@ -155,7 +214,7 @@ TEST_F(ConversionNetworkSenderTest, ReportSent_RequestAttributesSet) {
       ImpressionBuilder(base::Time())
           .SetData("1")
           .SetReportingOrigin(url::Origin::Create(GURL("https://a.com")))
-          .SetConversionOrigin(url::Origin::Create(GURL("https://b.com")))
+          .SetConversionOrigin(url::Origin::Create(GURL("https://sub.b.com")))
           .Build();
   ConversionReport report(impression,
                           /*conversion_data=*/"1",
@@ -175,6 +234,8 @@ TEST_F(ConversionNetworkSenderTest, ReportSent_RequestAttributesSet) {
   EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
             pending_request->credentials_mode);
   EXPECT_EQ("POST", pending_request->method);
+
+  // Make sure the domain is used as the referrer.
   EXPECT_EQ(GURL("https://b.com"), pending_request->referrer);
 }
 

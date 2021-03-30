@@ -39,16 +39,17 @@
 #include "ui/base/resource/resource_bundle.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/system/sys_info.h"
-#include "chrome/browser/chromeos/login/session/user_session_manager.h"
-#include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos.h"
-#include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos_factory.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
-#include "chrome/browser/chromeos/settings/owner_flags_storage.h"
+#include "chrome/browser/ash/login/session/user_session_manager.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/owner_flags_storage.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "components/account_id/account_id.h"
 #include "components/infobars/core/simple_alert_infobar_delegate.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -77,12 +78,12 @@ content::WebUIDataSource* CreateFlagsUIHTMLSource() {
       base::SysInfo::IsRunningOnChromeOS()) {
     // Set the string to show which user can actually change the flags.
     std::string owner;
-    chromeos::CrosSettings::Get()->GetString(chromeos::kDeviceOwner, &owner);
+    ash::CrosSettings::Get()->GetString(chromeos::kDeviceOwner, &owner);
     source->AddString("owner-warning",
                       l10n_util::GetStringFUTF16(IDS_FLAGS_UI_OWNER_WARNING,
                                                  base::UTF8ToUTF16(owner)));
   } else {
-    source->AddString("owner-warning", base::string16());
+    source->AddString("owner-warning", std::u16string());
   }
 #endif
 
@@ -113,9 +114,8 @@ void FinishInitialization(base::WeakPtr<T> flags_ui,
   // Note that |dom_handler| is owned by the web ui that owns |flags_ui|, so
   // it is still alive if |flags_ui| is.
   if (current_user_is_owner) {
-    chromeos::OwnerSettingsServiceChromeOS* service =
-        chromeos::OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(
-            profile);
+    ash::OwnerSettingsServiceAsh* service =
+        ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(profile);
     dom_handler->Init(new chromeos::about_flags::OwnerFlagsStorage(
                           profile->GetPrefs(), service),
                       flags_ui::kOwnerAccessToFlags);
@@ -133,6 +133,16 @@ void FinishInitialization(base::WeakPtr<T> flags_ui,
         infobars::InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE,
         &vector_icons::kWarningIcon,
         l10n_util::GetStringUTF16(IDS_FLAGS_IGNORED_DUE_TO_CRASHY_CHROME),
+        /*auto_expire=*/false, /*should_animate=*/true);
+  }
+
+  // Show a warning info bar for secondary users.
+  if (!chromeos::ProfileHelper::IsPrimaryProfile(profile)) {
+    SimpleAlertInfoBarDelegate::Create(
+        InfoBarService::FromWebContents(flags_ui->web_ui()->GetWebContents()),
+        infobars::InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE,
+        &vector_icons::kWarningIcon,
+        l10n_util::GetStringUTF16(IDS_FLAGS_IGNORED_SECONDARY_USERS),
         /*auto_expire=*/false, /*should_animate=*/true);
   }
 }
@@ -222,10 +232,10 @@ FlagsUIHandler* InitializeHandler(content::WebUI* web_ui,
   // Bypass possible incognito profile.
   Profile* original_profile = profile->GetOriginalProfile();
   if (base::SysInfo::IsRunningOnChromeOS() &&
-      chromeos::OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(
+      ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(
           original_profile)) {
-    chromeos::OwnerSettingsServiceChromeOS* service =
-        chromeos::OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(
+    ash::OwnerSettingsServiceAsh* service =
+        ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(
             original_profile);
     service->IsOwnerAsync(base::BindOnce(&FinishInitialization<T>,
                                          weak_factory.GetWeakPtr(),

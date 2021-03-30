@@ -115,4 +115,9 @@ class COMPONENT_EXPORT(CHROMEOS_TIMEZONE) TimeZoneResolver {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::TimeZoneResolver;
+}
+
 #endif  // CHROMEOS_TIMEZONE_TIMEZONE_RESOLVER_H_

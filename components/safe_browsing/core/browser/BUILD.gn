@@ -24,6 +24,7 @@ source_set("browser") {
     "//components/security_interstitials/core:unsafe_resource",
     "//net:extras",
     "//services/network/public/cpp",
+    "//services/network/public/mojom",
   ]
   if (is_ios) {
     sources += [ "//components/safe_browsing/ios/browser/safe_browsing_url_checker_impl_ios.cc" ]
@@ -58,12 +59,14 @@ source_set("safe_browsing_url_checker_unittest") {
     ":browser",
     "//base/test:test_support",
     "//components/safe_browsing/core:csd_proto",
+    "//components/safe_browsing/core/browser:token_fetcher",
     "//components/safe_browsing/core/common:test_support",
     "//components/safe_browsing/core/common:thread_utils",
     "//components/safe_browsing/core/db:test_database_manager",
     "//components/safe_browsing/core/db:util",
     "//components/safe_browsing/core/realtime:url_lookup_service",
     "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//testing/gtest",
   ]
 }
@@ -78,27 +81,25 @@ source_set("referrer_chain_provider") {
 
 source_set("token_fetcher") {
   sources = [
-    "safe_browsing_token_fetcher.cc",
+    "safe_browsing_token_fetch_tracker.cc",
+    "safe_browsing_token_fetch_tracker.h",
     "safe_browsing_token_fetcher.h",
   ]
 
   deps = [
     "//base",
     "//components/safe_browsing/core/common:thread_utils",
-    "//components/signin/public/identity_manager",
-    "//google_apis",
   ]
 }
 
-source_set("token_fetcher_unittest") {
+source_set("token_fetcher_unit_tests") {
   testonly = true
-  sources = [ "safe_browsing_token_fetcher_unittest.cc" ]
+  sources = [ "safe_browsing_token_fetch_tracker_unittest.cc" ]
 
   deps = [
     ":token_fetcher",
     "//base/test:test_support",
     "//components/safe_browsing/core/common:test_support",
-    "//components/signin/public/identity_manager:test_support",
     "//testing/gtest",
   ]
 }

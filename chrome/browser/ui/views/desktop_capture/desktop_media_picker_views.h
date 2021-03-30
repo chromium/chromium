@@ -5,12 +5,13 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_PICKER_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_PICKER_VIEWS_H_
 
-#include "base/macros.h"
+#include "base/callback_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_controller.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane_listener.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
@@ -26,10 +27,17 @@ class DesktopMediaPickerViews;
 class DesktopMediaPickerDialogView : public views::DialogDelegateView,
                                      public views::TabbedPaneListener {
  public:
+  // Used for UMA. Visible to this class's .cc file, but opaque beyond.
+  enum class DialogSource : int;
+
+  METADATA_HEADER(DesktopMediaPickerDialogView);
   DesktopMediaPickerDialogView(
       const DesktopMediaPicker::Params& params,
       DesktopMediaPickerViews* parent,
       std::vector<std::unique_ptr<DesktopMediaList>> source_lists);
+  DesktopMediaPickerDialogView(const DesktopMediaPickerDialogView&) = delete;
+  DesktopMediaPickerDialogView& operator=(const DesktopMediaPickerDialogView&) =
+      delete;
   ~DesktopMediaPickerDialogView() override;
 
   // Called by parent (DesktopMediaPickerViews) when it's destroyed.
@@ -39,20 +47,23 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   void OnSelectionChanged();
   void AcceptSource();
   void AcceptSpecificSource(content::DesktopMediaID source);
+  void Reject();
   void OnSourceListLayoutChanged();
-  void SelectTab(content::DesktopMediaID::Type source_type);
+
+  // Relevant for UMA. (E.g. for DesktopMediaPickerViews to report
+  // when the dialog gets dismissed.)
+  DialogSource GetDialogSource() const;
 
   // views::TabbedPaneListener:
   void TabSelectedAt(int index) override;
 
   // views::DialogDelegateView:
   gfx::Size CalculatePreferredSize() const override;
-  const char* GetClassName() const override;
-  ui::ModalType GetModalType() const override;
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
   views::View* GetInitiallyFocusedView() override;
   bool Accept() override;
+  bool Cancel() override;
   bool ShouldShowCloseButton() const override;
   void DeleteDelegate() override;
 
@@ -61,23 +72,36 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
 
   void OnSourceTypeSwitched(int index);
 
+  int GetSelectedTabIndex() const;
+
   const DesktopMediaListController* GetSelectedController() const;
   DesktopMediaListController* GetSelectedController();
 
+  DesktopMediaList::Type GetSelectedSourceListType() const;
+
+  content::WebContents* const web_contents_;
+
   DesktopMediaPickerViews* parent_;
-  ui::ModalType modality_;
 
   views::Label* description_label_ = nullptr;
 
+  views::Checkbox* presenter_tools_checkbox_ = nullptr;
+
+  base::CallbackListSubscription presenter_tools_checked_subscription_;
+
   views::Checkbox* audio_share_checkbox_ = nullptr;
+
+  // Contains |presenter_tools_checkbox_| and |audio_share_checkbox_| if
+  // present.
+  views::View* extra_views_container_ = nullptr;
 
   views::TabbedPane* tabbed_pane_ = nullptr;
   std::vector<std::unique_ptr<DesktopMediaListController>> list_controllers_;
-  std::vector<content::DesktopMediaID::Type> source_types_;
+  std::vector<DesktopMediaList::Type> source_types_;
+
+  DialogSource dialog_source_;
 
   base::Optional<content::DesktopMediaID> accepted_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopMediaPickerDialogView);
 };
 
 // Implementation of DesktopMediaPicker for Views.
@@ -94,6 +118,8 @@ class DesktopMediaPickerViews : public DesktopMediaPicker {
 #endif
 
   DesktopMediaPickerViews();
+  DesktopMediaPickerViews(const DesktopMediaPickerViews&) = delete;
+  DesktopMediaPickerViews& operator=(const DesktopMediaPickerViews&) = delete;
   ~DesktopMediaPickerViews() override;
 
   void NotifyDialogResult(content::DesktopMediaID source);
@@ -116,8 +142,6 @@ class DesktopMediaPickerViews : public DesktopMediaPicker {
   // When DesktopMediaPickerViews is destroyed the |dialog_| is destroyed
   // asynchronously by closing the widget.
   DesktopMediaPickerDialogView* dialog_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopMediaPickerViews);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_PICKER_VIEWS_H_

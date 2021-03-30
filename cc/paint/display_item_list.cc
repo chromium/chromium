@@ -401,31 +401,15 @@ DisplayItemList::GetDirectlyCompositedImageResult(
             return base::nullopt;
 
           const ConcatOp* concat_op = static_cast<const ConcatOp*>(op);
-          if (concat_op->matrix.hasPerspective() ||
-              !concat_op->matrix.preservesAxisAlignment())
+          if (!MathUtil::SkM44Preserves2DAxisAlignment(concat_op->matrix))
             return base::nullopt;
 
           // If the image has been rotated +/-90 degrees we'll need to transpose
           // the width and height dimensions to account for the same transform
           // applying when the layer bounds were calculated. Since we already
           // know that the transformation preserves axis alignment, we only
-          // need to test the main diagonal
-          transpose_image_size = (concat_op->matrix.getScaleX() == 0 &&
-                                  concat_op->matrix.getScaleY() == 0);
-          break;
-        }
-        case PaintOpType::Concat44: {
-          // TODO(aaronhk) this replace Concact with Concat44 everywhere
-          // This function only needs to exist temporarily
-          if (transpose_image_size)
-            return base::nullopt;
-
-          const Concat44Op* concat_op = static_cast<const Concat44Op*>(op);
-          if (!MathUtil::SkM44Preserves2DAxisAlignment(concat_op->matrix))
-            return base::nullopt;
-
-          transpose_image_size = (concat_op->matrix.rc(0, 0) == 0 &&
-                                  concat_op->matrix.rc(1, 1) == 0);
+          // need to confirm that this is not a scaling operation.
+          transpose_image_size = (concat_op->matrix.rc(0, 0) == 0);
           break;
         }
         case PaintOpType::DrawImageRect:

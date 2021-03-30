@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_SAVE_UPI_BUBBLE_CONTROLLER_H_
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_SAVE_UPI_BUBBLE_CONTROLLER_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 
 namespace autofill {
 
@@ -16,7 +17,7 @@ class SaveUPIBubbleController {
   virtual ~SaveUPIBubbleController() = default;
 
   // Returns the UPI ID being stored.
-  virtual base::string16 GetUpiId() const = 0;
+  virtual std::u16string GetUpiId() const = 0;
 
   // The user accepted the prompt to save the UPI ID.
   virtual void OnAccept() = 0;

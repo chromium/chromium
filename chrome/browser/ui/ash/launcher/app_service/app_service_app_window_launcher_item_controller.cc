@@ -6,7 +6,7 @@
 
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/chromeos/arc/pip/arc_pip_bridge.h"
+#include "chrome/browser/ash/arc/pip/arc_pip_bridge.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_launcher_controller.h"
@@ -154,7 +154,7 @@ void AppServiceAppWindowLauncherItemController::OnWindowTitleChanged(
       continue;
 
     if (app_window->show_in_shelf()) {
-      const base::string16 title = window->GetTitle();
+      const std::u16string title = window->GetTitle();
       if (!title.empty())
         ChromeLauncherController::instance()->SetItemTitle(shelf_id(), title);
     }

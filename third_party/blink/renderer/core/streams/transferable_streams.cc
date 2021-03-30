@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_controller.h"
+#include "third_party/blink/renderer/core/streams/writable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
@@ -1018,9 +1019,29 @@ void CrossRealmTransformReadable::HandleError(v8::Local<v8::Value> error) {
 CORE_EXPORT WritableStream* CreateCrossRealmTransformWritable(
     ScriptState* script_state,
     MessagePort* port,
+    std::unique_ptr<WritableStreamTransferringOptimizer> optimizer,
     ExceptionState& exception_state) {
-  return MakeGarbageCollected<CrossRealmTransformWritable>(script_state, port)
-      ->CreateWritableStream(exception_state);
+  WritableStream* stream =
+      MakeGarbageCollected<CrossRealmTransformWritable>(script_state, port)
+          ->CreateWritableStream(exception_state);
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
+  if (!optimizer) {
+    return stream;
+  }
+  UnderlyingSinkBase* sink =
+      optimizer->PerformInProcessOptimization(script_state);
+  if (!sink) {
+    return stream;
+  }
+  stream->close(script_state, exception_state);
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
+
+  return WritableStream::CreateWithCountQueueingStrategy(script_state, sink,
+                                                         /*high_water_mark=*/1);
 }
 
 CORE_EXPORT ReadableStream* CreateCrossRealmTransformReadable(

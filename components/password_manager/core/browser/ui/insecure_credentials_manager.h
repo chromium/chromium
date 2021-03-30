@@ -18,12 +18,11 @@
 #include "base/scoped_observation.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/strong_alias.h"
-#include "components/password_manager/core/browser/compromised_credentials_consumer.h"
 #include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #include "components/password_manager/core/browser/password_store.h"
-#include "components/password_manager/core/browser/ui/compromised_credentials_reader.h"
 #include "components/password_manager/core/browser/ui/credential_utils.h"
+#include "components/password_manager/core/browser/ui/insecure_credentials_reader.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "url/gurl.h"
 
@@ -72,8 +71,8 @@ constexpr InsecureCredentialTypeFlags UnsetWeakCredentialTypeFlag(
       ~(static_cast<int>(InsecureCredentialTypeFlags::kWeakCredential)));
 }
 
-// Checks that |flag| contains at least one of compromised types.
-constexpr bool IsCompromised(const InsecureCredentialTypeFlags& flag) {
+// Checks that |flag| contains at least one of insecure types.
+constexpr bool IsInsecure(const InsecureCredentialTypeFlags& flag) {
   return (flag & (InsecureCredentialTypeFlags::kCredentialLeaked |
                   InsecureCredentialTypeFlags::kCredentialPhished)) !=
          InsecureCredentialTypeFlags::kSecure;
@@ -85,12 +84,12 @@ constexpr bool IsWeak(const InsecureCredentialTypeFlags& flag) {
          InsecureCredentialTypeFlags::kSecure;
 }
 
-// Simple struct that augments key values of InsecureCredentials and a password.
+// Simple struct that augments key values of InsecureCredential and a password.
 struct CredentialView {
   CredentialView(std::string signon_realm,
                  GURL url,
-                 base::string16 username,
-                 base::string16 password);
+                 std::u16string username,
+                 std::u16string password);
   // Enable explicit construction from PasswordForm for convenience.
   explicit CredentialView(const PasswordForm& form);
   CredentialView(const CredentialView& credential);
@@ -101,18 +100,18 @@ struct CredentialView {
 
   std::string signon_realm;
   GURL url;
-  base::string16 username;
-  base::string16 password;
+  std::u16string username;
+  std::u16string password;
 };
 
 // All information needed by UI to represent InsecureCredential. It's a result
-// of deduplicating InsecureCredentials to have single entity for phished,
+// of deduplicating InsecureCredential to have single entity for phished,
 // leaked and weak credentials with latest |create_time|, and after that joining
 // with autofill::PasswordForms to get passwords. If the credential is only
 // weak, |create_time| will be unset.
 struct CredentialWithPassword : CredentialView {
   explicit CredentialWithPassword(const CredentialView& credential);
-  explicit CredentialWithPassword(const CompromisedCredentials& credential);
+  explicit CredentialWithPassword(const InsecureCredential& credential);
 
   CredentialWithPassword(const CredentialWithPassword& other);
   CredentialWithPassword(CredentialWithPassword&& other);
@@ -133,7 +132,7 @@ struct PasswordCredentialLess {
   }
 };
 
-// Extra information about InsecureCredentials which is required by UI.
+// Extra information about InsecureCredential which is required by UI.
 struct CredentialMetadata;
 
 // This class provides clients with saved insecure credentials and possibility
@@ -141,20 +140,18 @@ struct CredentialMetadata;
 // insecure credentials with corresponding autofill::PasswordForms. It supports
 // an observer interface, and clients can register themselves to get notified
 // about changes to the list.
-class InsecureCredentialsManager
-    : public CompromisedCredentialsReader::Observer,
-      public SavedPasswordsPresenter::Observer {
+class InsecureCredentialsManager : public InsecureCredentialsReader::Observer,
+                                   public SavedPasswordsPresenter::Observer {
  public:
   using CredentialsView = base::span<const CredentialWithPassword>;
 
   // Observer interface. Clients can implement this to get notified about
-  // changes to the list of compromised and weak credentials. Clients can
-  // register and de-register themselves, and are expected to do so before the
-  // provider gets out of scope.
+  // changes to the list of insecure and weak credentials. Clients can register
+  // and de-register themselves, and are expected to do so before the provider
+  // gets out of scope.
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnCompromisedCredentialsChanged(
-        CredentialsView credentials) = 0;
+    virtual void OnInsecureCredentialsChanged(CredentialsView credentials) = 0;
     virtual void OnWeakCredentialsChanged() {}
   };
 
@@ -171,8 +168,8 @@ class InsecureCredentialsManager
   void StartWeakCheck(base::OnceClosure on_check_done = base::DoNothing());
 
   // Marks all saved credentials which have same username & password as
-  // compromised.
-  void SaveCompromisedCredential(const LeakCheckCredential& credential);
+  // insecure.
+  void SaveInsecureCredential(const LeakCheckCredential& credential);
 
   // Attempts to change the stored password of |credential| to |new_password|.
   // Returns whether the change succeeded.
@@ -183,8 +180,8 @@ class InsecureCredentialsManager
   // the remove succeeded.
   bool RemoveCredential(const CredentialView& credential);
 
-  // Returns a vector of currently compromised credentials.
-  std::vector<CredentialWithPassword> GetCompromisedCredentials() const;
+  // Returns a vector of currently insecure credentials.
+  std::vector<CredentialWithPassword> GetInsecureCredentials() const;
 
   // Returns a vector of currently weak credentials.
   std::vector<CredentialWithPassword> GetWeakCredentials() const;
@@ -203,28 +200,27 @@ class InsecureCredentialsManager
       std::map<CredentialView, CredentialMetadata, PasswordCredentialLess>;
 
   // Recomputes the insecure credentials by making use of information stored in
-  // `compromised_credentials_`, `weak_passwords_` and `presenter_`.
-  // This does not invoke either `NotifyCompromisedCredentialsChanged` or
+  // `insecure_credentials_`, `weak_passwords_` and `presenter_`.
+  // This does not invoke either `NotifyInsecureCredentialsChanged` or
   // `NotifyWeakCredentialsChanged`, so that it can be used more generally.
   void UpdateInsecureCredentials();
 
   // Updates |weak_passwords| set and notifies observers that weak credentials
   // were changed.
   void OnWeakCheckDone(base::ElapsedTimer timer_since_weak_check_start,
-                       base::flat_set<base::string16> weak_passwords);
+                       base::flat_set<std::u16string> weak_passwords);
 
-  // CompromisedCredentialsReader::Observer:
-  void OnCompromisedCredentialsChanged(
-      const std::vector<CompromisedCredentials>& compromised_credentials)
-      override;
+  // InsecureCredentialsReader::Observer:
+  void OnInsecureCredentialsChanged(
+      const std::vector<InsecureCredential>& insecure_credentials) override;
 
   // SavedPasswordsPresenter::Observer:
   void OnEdited(const PasswordForm& form) override;
   void OnSavedPasswordsChanged(
       SavedPasswordsPresenter::SavedPasswordsView passwords) override;
 
-  // Notifies observers when compromised credentials have changed.
-  void NotifyCompromisedCredentialsChanged();
+  // Notifies observers when insecure credentials have changed.
+  void NotifyInsecureCredentialsChanged();
 
   // Notifies observers when weak credentials have changed.
   void NotifyWeakCredentialsChanged();
@@ -241,25 +237,25 @@ class InsecureCredentialsManager
   scoped_refptr<PasswordStore> profile_store_;
   scoped_refptr<PasswordStore> account_store_;
 
-  // The reader used to read the compromised credentials from the password
+  // The reader used to read the insecure credentials from the password
   // stores.
-  CompromisedCredentialsReader compromised_credentials_reader_;
+  InsecureCredentialsReader insecure_credentials_reader_;
 
-  // Cache of the most recently obtained compromised credentials.
-  std::vector<CompromisedCredentials> compromised_credentials_;
+  // Cache of the most recently obtained insecure credentials.
+  std::vector<InsecureCredential> insecure_credentials_;
 
   // Cache of the most recently obtained weak passwords.
-  base::flat_set<base::string16> weak_passwords_;
+  base::flat_set<std::u16string> weak_passwords_;
 
   // A map that matches CredentialView to corresponding PasswordForms, latest
   // create_type and combined insecure type.
   CredentialPasswordsMap credentials_to_forms_;
 
-  // A scoped observer for |compromised_credentials_reader_| to listen changes
-  // related to CompromisedCredentials only.
-  base::ScopedObservation<CompromisedCredentialsReader,
-                          CompromisedCredentialsReader::Observer>
-      observed_compromised_credentials_reader_{this};
+  // A scoped observer for |insecure_credentials_reader_| to listen changes
+  // related to InsecureCredential only.
+  base::ScopedObservation<InsecureCredentialsReader,
+                          InsecureCredentialsReader::Observer>
+      observed_insecure_credentials_reader_{this};
 
   // A scoped observer for |presenter_|.
   base::ScopedObservation<SavedPasswordsPresenter,

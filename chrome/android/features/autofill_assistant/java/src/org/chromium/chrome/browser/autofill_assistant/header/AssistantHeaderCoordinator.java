@@ -27,8 +27,6 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-import java.util.Collections;
-
 /**
  * Coordinator for the header of the Autofill Assistant.
  */
@@ -53,9 +51,8 @@ public class AssistantHeaderCoordinator implements ProfileDataCache.Observer {
                         R.dimen.autofill_assistant_poodle_size));
         addPoodle(mView, poodle.getView());
 
-        int imageSize = context.getResources().getDimensionPixelSize(
-                R.dimen.autofill_assistant_profile_size);
-        mProfileCache = new ProfileDataCache(context, imageSize);
+        mProfileCache = ProfileDataCache.createWithoutBadge(
+                context, R.dimen.autofill_assistant_profile_size);
         mProfileView = mView.findViewById(R.id.profile_image);
         IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
                 AutofillAssistantUiController.getProfile());
@@ -150,7 +147,6 @@ public class AssistantHeaderCoordinator implements ProfileDataCache.Observer {
     private void setupProfileImage() {
         if (mSignedInAccountEmail != null) {
             mProfileCache.addObserver(this);
-            mProfileCache.update(Collections.singletonList(mSignedInAccountEmail));
         }
     }
     private void setProfileImageFor(String signedInAccountName) {

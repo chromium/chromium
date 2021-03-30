@@ -45,7 +45,7 @@ class VIEWS_EXPORT TouchSelectionMenuViews : public BubbleDialogDelegateView {
   virtual void CreateButtons();
 
   // Helper method to create a single button.
-  LabelButton* CreateButton(const base::string16& title,
+  LabelButton* CreateButton(const std::u16string& title,
                             Button::PressedCallback callback);
 
  private:

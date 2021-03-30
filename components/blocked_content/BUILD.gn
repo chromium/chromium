@@ -25,6 +25,7 @@ source_set("blocked_content") {
   deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//components/back_forward_cache",
     "//components/content_settings/browser",
     "//components/content_settings/core/browser",
     "//components/embedder_support",
@@ -41,12 +42,18 @@ source_set("blocked_content") {
   ]
   if (is_android) {
     sources += [
+      "android/popup_blocked_helper.cc",
+      "android/popup_blocked_helper.h",
       "android/popup_blocked_infobar_delegate.cc",
       "android/popup_blocked_infobar_delegate.h",
+      "android/popup_blocked_message_delegate.cc",
+      "android/popup_blocked_message_delegate.h",
     ]
     deps += [
       "//components/infobars/content",
       "//components/infobars/core",
+      "//components/messages/android",
+      "//components/messages/android:feature_flags",
       "//components/resources:android_resources",
       "//components/strings:components_strings_grit",
     ]
@@ -71,6 +78,7 @@ source_set("unit_tests") {
   sources = [
     "popup_blocker_tab_helper_unittest.cc",
     "safe_browsing_triggered_popup_blocker_unittest.cc",
+    "subresource_filter_abusive_unittest.cc",
   ]
   deps = [
     ":blocked_content",
@@ -83,6 +91,7 @@ source_set("unit_tests") {
     "//components/subresource_filter/content/browser",
     "//components/subresource_filter/content/browser:test_support",
     "//components/subresource_filter/core/browser",
+    "//components/subresource_filter/core/browser:test_support",
     "//components/sync_preferences:test_support",
     "//components/user_prefs",
     "//content/test:test_support",
@@ -90,7 +99,14 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
   if (is_android) {
-    sources += [ "android/popup_blocked_infobar_delegate_unittest.cc" ]
-    deps += [ "//components/infobars/content" ]
+    sources += [
+      "android/popup_blocked_infobar_delegate_unittest.cc",
+      "android/popup_blocked_message_delegate_unittest.cc",
+    ]
+    deps += [
+      "//components/infobars/content",
+      "//components/messages/android:test_support",
+      "//components/strings:components_strings_grit",
+    ]
   }
 }

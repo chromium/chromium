@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/widevine/cdm/widevine.gni")
+
 static_library("common") {
   sources = [
     "cdm_message_generator.cc",
@@ -22,4 +24,25 @@ static_library("common") {
     "//ipc",
     "//media",
   ]
+
+  if (enable_library_cdms) {
+    sources += [
+      "cdm_manifest.cc",
+      "cdm_manifest.h",
+    ]
+  }
+}
+
+if (enable_library_cdms) {
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "cdm_manifest_unittest.cc" ]
+    deps = [
+      ":common",
+      "//content/public/common",
+      "//media",
+      "//media/cdm:cdm_api",
+      "//testing/gtest",
+    ]
+  }
 }

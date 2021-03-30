@@ -11,10 +11,6 @@ if (is_android) {
 source_set("feed_core_v2") {
   sources = [
     "algorithm.h",
-    "config.cc",
-    "config.h",
-    "enums.cc",
-    "enums.h",
     "feed_network.cc",
     "feed_network.h",
     "feed_network_impl.cc",
@@ -23,30 +19,35 @@ source_set("feed_core_v2") {
     "feed_store.h",
     "feed_stream.cc",
     "feed_stream.h",
+    "feedstore_util.cc",
+    "feedstore_util.h",
     "image_fetcher.cc",
     "image_fetcher.h",
     "metrics_reporter.cc",
     "metrics_reporter.h",
-    "notice_card_tracker.cc",
-    "notice_card_tracker.h",
     "offline_page_spy.cc",
     "offline_page_spy.h",
-    "prefs.cc",
-    "prefs.h",
+    "persistent_key_value_store_impl.cc",
+    "persistent_key_value_store_impl.h",
     "proto_util.cc",
     "proto_util.h",
     "protocol_translator.cc",
     "protocol_translator.h",
+    "public/feed_api.cc",
+    "public/feed_api.h",
     "public/feed_service.cc",
     "public/feed_service.h",
-    "public/feed_stream_api.cc",
-    "public/feed_stream_api.h",
-    "public/types.h",
-    "refresh_task_scheduler.h",
+    "public/persistent_key_value_store.cc",
+    "public/persistent_key_value_store.h",
+    "public/refresh_task_scheduler.h",
+    "public/types.cc",
+    "public/web_feed_subscriptions.h",
     "request_throttler.cc",
     "request_throttler.h",
-    "scheduling.cc",
-    "scheduling.h",
+    "stream/unread_content_notifier.cc",
+    "stream/unread_content_notifier.h",
+    "stream/upload_criteria.cc",
+    "stream/upload_criteria.h",
     "stream_model.cc",
     "stream_model.h",
     "stream_model/ephemeral_change.cc",
@@ -71,14 +72,23 @@ source_set("feed_core_v2") {
     "tasks/upload_actions_task.h",
     "tasks/wait_for_store_initialize_task.cc",
     "tasks/wait_for_store_initialize_task.h",
-    "types.cc",
-    "types.h",
+    "web_feed_subscription_coordinator.cc",
+    "web_feed_subscription_coordinator.h",
+    "web_feed_subscriptions/subscribe_to_web_feed_task.cc",
+    "web_feed_subscriptions/subscribe_to_web_feed_task.h",
+    "web_feed_subscriptions/unsubscribe_from_web_feed_task.cc",
+    "web_feed_subscriptions/unsubscribe_from_web_feed_task.h",
+    "web_feed_subscriptions/web_feed_index.cc",
+    "web_feed_subscriptions/web_feed_index.h",
+    "wire_response_translator.cc",
+    "wire_response_translator.h",
   ]
   deps = [
     ":common",
-    "//components/feed/core:feed_core",
-    "//components/feed/core/common:feed_core_common",
+    "//components/feed:feature_list",
+    "//components/feed/core/shared_prefs:feed_shared_prefs",
     "//components/history/core/browser",
+    "//components/leveldb_proto:leveldb_proto",
     "//components/offline_pages/core:core",
     "//components/offline_pages/core/prefetch",
     "//components/offline_pages/task:task",
@@ -95,10 +105,41 @@ source_set("feed_core_v2") {
   ]
 
   public_deps = [
+    ":feed_core_base",
     "//base",
     "//base/util/values:values_util",
     "//components/feed/core/common:feed_core_common",
     "//components/feed/core/proto:proto_v2",
+  ]
+}
+
+# This smaller source set is used by Chrome for iOS.
+source_set("feed_core_base") {
+  sources = [
+    "config.cc",
+    "config.h",
+    "enums.cc",
+    "enums.h",
+    "notice_card_tracker.cc",
+    "notice_card_tracker.h",
+    "prefs.cc",
+    "prefs.h",
+    "public/types.h",
+    "scheduling.cc",
+    "scheduling.h",
+    "types.cc",
+    "types.h",
+  ]
+  deps = [
+    "//base",
+    "//base/util/type_safety",
+    "//base/util/values:values_util",
+    "//components/feed:feature_list",
+    "//components/feed/core/common:feed_core_common",
+    "//components/feed/core/proto:proto_v2",
+    "//components/prefs",
+    "//components/version_info:channel",
+    "//url",
   ]
 }
 
@@ -111,36 +152,45 @@ source_set("core_unit_tests") {
   testonly = true
   sources = [
     "algorithm_unittest.cc",
+    "api_test/feed_api_notice_card_unittest.cc",
+    "api_test/feed_api_offline_pages_unittest.cc",
+    "api_test/feed_api_stream_unittest.cc",
+    "api_test/feed_api_subscriptions_unittest.cc",
+    "api_test/feed_api_test.cc",
+    "api_test/feed_api_test.h",
     "feed_network_impl_unittest.cc",
     "feed_store_unittest.cc",
-    "feed_stream_unittest.cc",
+    "feedstore_util_unittest.cc",
     "image_fetcher_unittest.cc",
     "metrics_reporter_unittest.cc",
-    "notice_card_tracker_unittest.cc",
+    "persistent_key_value_store_impl_unittest.cc",
     "proto_util_unittest.cc",
     "protocol_translator_unittest.cc",
     "public/feed_service_unittest.cc",
     "request_throttler_unittest.cc",
-    "scheduling_unittest.cc",
     "stream_model_unittest.cc",
+    "test/callback_receiver.cc",
     "test/callback_receiver.h",
     "test/callback_receiver_unittest.cc",
     "test/proto_printer.cc",
     "test/proto_printer.h",
     "test/stream_builder.cc",
     "test/stream_builder.h",
-    "types_unittest.cc",
+    "test/test_util.h",
+    "web_feed_subscriptions/web_feed_index_unittest.cc",
   ]
 
   deps = [
     ":common",
+    ":feed_core_base_unit_tests",
     ":feed_core_v2",
     ":unit_tests_bundle_data",
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
-    "//components/feed/core:feed_core",
+    "//components/feed:feature_list",
     "//components/feed/core/common:feed_core_common",
+    "//components/feed/core/shared_prefs:feed_shared_prefs",
     "//components/history/core/browser",
     "//components/leveldb_proto:test_support",
     "//components/offline_pages/core:core",
@@ -160,10 +210,50 @@ source_set("core_unit_tests") {
   ]
 }
 
+# Tests for :feed_core_base that can be compiled in iOS.
+# This source set is added as a dep of :core_unit_tests.
+source_set("feed_core_base_unit_tests") {
+  testonly = true
+  sources = [
+    "notice_card_tracker_unittest.cc",
+    "scheduling_unittest.cc",
+    "types_unittest.cc",
+  ]
+  deps = [
+    ":feed_core_base",
+    "//base",
+    "//base/test:test_support",
+    "//components/feed:feature_list",
+    "//components/feed/core/common:feed_core_common",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
 bundle_data("unit_tests_bundle_data") {
   visibility = [ ":core_unit_tests" ]
   testonly = true
   sources = [ "//components/test/data/feed/response.binarypb" ]
   outputs = [ "{{bundle_resources_dir}}/" +
               "{{source_root_relative_dir}}/{{source_file_part}}" ]
+}
+
+if (is_android) {
+  java_cpp_enum("feedv2_enums_java") {
+    sources = [
+      "common_enums.h",
+      "enums.h",
+      "public/types.h",
+    ]
+  }
+
+  # Wrap feedv2_enums_java in an android_library so that only one
+  # android_library needs to depend on feedv2_enums_java. Otherwise, we will get
+  # classes define multiple times.
+  android_library("feedv2_core_java") {
+    srcjar_deps = [ ":feedv2_enums_java" ]
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  }
 }

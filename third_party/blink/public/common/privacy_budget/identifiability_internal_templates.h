@@ -9,13 +9,11 @@
 #include <cstring>
 #include <type_traits>
 
+#include "base/template_util.h"
+
 namespace blink {
 
 namespace internal {
-
-// Handroll a remove_cv_t until we get to C++20.
-template <typename T>
-using remove_cvref_t = typename std::remove_cv_t<std::remove_reference_t<T>>;
 
 // Kinda conservative implementation of
 // std::has_unique_object_representations<>. Perhaps not as conservative as we'd
@@ -51,7 +49,7 @@ using has_unique_object_representations = std::is_arithmetic<T>;
 // and will not contribute a stable digest.
 template <
     typename T,
-    typename std::enable_if_t<std::is_same<T, remove_cvref_t<T>>::value &&
+    typename std::enable_if_t<std::is_same<T, base::remove_cvref_t<T>>::value &&
                               std::is_trivially_copyable<T>::value &&
                               has_unique_object_representations<T>::value &&
                               sizeof(T) <= sizeof(int64_t)>* = nullptr>

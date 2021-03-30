@@ -20,6 +20,7 @@
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -151,16 +152,21 @@ class MockProxyResolvingSocket : public network::mojom::ProxyResolvingSocket {
   void Connect(mojo::PendingRemote<network::mojom::SocketObserver> observer,
                network::mojom::ProxyResolvingSocketFactory::
                    CreateProxyResolvingSocketCallback callback) {
-    mojo::DataPipe send_pipe;
-    mojo::DataPipe receive_pipe;
+    mojo::ScopedDataPipeProducerHandle send_producer_handle;
+    ASSERT_EQ(
+        mojo::CreateDataPipe(nullptr, send_producer_handle, send_pipe_handle_),
+        MOJO_RESULT_OK);
+
+    mojo::ScopedDataPipeConsumerHandle receive_consumer_handle;
+    ASSERT_EQ(mojo::CreateDataPipe(nullptr, receive_pipe_handle_,
+                                   receive_consumer_handle),
+              MOJO_RESULT_OK);
 
     observer_.Bind(std::move(observer));
-    receive_pipe_handle_ = std::move(receive_pipe.producer_handle);
-    send_pipe_handle_ = std::move(send_pipe.consumer_handle);
 
     std::move(callback).Run(net::OK, base::nullopt, base::nullopt,
-                            std::move(receive_pipe.consumer_handle),
-                            std::move(send_pipe.producer_handle));
+                            std::move(receive_consumer_handle),
+                            std::move(send_producer_handle));
   }
 
   void RunEvents(std::vector<Event>&& events);
@@ -634,7 +640,7 @@ TEST_F(NetworkServiceAsyncSocketTest, ZeroPortConnect) {
 }
 
 TEST_F(NetworkServiceAsyncSocketTest, DoubleConnect) {
-  EXPECT_DEBUG_DEATH(
+  EXPECT_DCHECK_DEATH_WITH(
       {
         DoOpenClosed();
 
@@ -732,7 +738,7 @@ TEST_F(NetworkServiceAsyncSocketTest, EmptyRead) {
 }
 
 TEST_F(NetworkServiceAsyncSocketTest, WrongRead) {
-  EXPECT_DEBUG_DEATH(
+  EXPECT_DCHECK_DEATH_WITH(
       {
         async_socket_data_provider_.set_connect_data(
             net::MockConnect(net::ASYNC, net::OK));
@@ -894,7 +900,7 @@ TEST_F(NetworkServiceAsyncSocketTest, PendingReadError) {
 // After this we can assume non-SSL Read() works as expected.
 
 TEST_F(NetworkServiceAsyncSocketTest, WrongWrite) {
-  EXPECT_DEBUG_DEATH(
+  EXPECT_DCHECK_DEATH_WITH(
       {
         std::string data("foo");
         EXPECT_FALSE(ns_async_socket_->Write(data.data(), data.size()));
@@ -976,7 +982,7 @@ TEST_F(NetworkServiceAsyncSocketTest, AsyncWriteError) {
 }
 
 TEST_F(NetworkServiceAsyncSocketTest, LargeWrite) {
-  EXPECT_DEBUG_DEATH(
+  EXPECT_DCHECK_DEATH_WITH(
       {
         DoOpenClosed();
 
@@ -995,7 +1001,7 @@ TEST_F(NetworkServiceAsyncSocketTest, LargeWrite) {
 }
 
 TEST_F(NetworkServiceAsyncSocketTest, LargeAccumulatedWrite) {
-  EXPECT_DEBUG_DEATH(
+  EXPECT_DCHECK_DEATH_WITH(
       {
         DoOpenClosed();
 
@@ -1045,7 +1051,7 @@ TEST_F(NetworkServiceAsyncSocketTest, ImmediateSSLConnect) {
 }
 
 TEST_F(NetworkServiceAsyncSocketTest, DoubleSSLConnect) {
-  EXPECT_DEBUG_DEATH(
+  EXPECT_DCHECK_DEATH_WITH(
       {
         async_socket_data_provider_.AddRead(net::MockRead(kReadData));
         DoOpenClosed();

@@ -71,6 +71,30 @@ class PLATFORM_EXPORT RTCRtpTransceiverPlatform {
       Vector<webrtc::RtpCodecCapability>) {
     return {};
   }
+  virtual webrtc::RTCError SetOfferedRtpHeaderExtensions(
+      Vector<webrtc::RtpHeaderExtensionCapability> header_extensions) = 0;
+  virtual Vector<webrtc::RtpHeaderExtensionCapability>
+  HeaderExtensionsNegotiated() const = 0;
+  virtual Vector<webrtc::RtpHeaderExtensionCapability> HeaderExtensionsToOffer()
+      const = 0;
+};
+
+// This class contains dummy implementations for functions that are not
+// supported in Plan B mode.
+class RTCRtpPlanBTransceiverPlatform : public RTCRtpTransceiverPlatform {
+ public:
+  webrtc::RTCError SetOfferedRtpHeaderExtensions(
+      Vector<webrtc::RtpHeaderExtensionCapability> header_extensions) override {
+    return webrtc::RTCError(webrtc::RTCErrorType::UNSUPPORTED_OPERATION);
+  }
+  Vector<webrtc::RtpHeaderExtensionCapability> HeaderExtensionsNegotiated()
+      const override {
+    return {};
+  }
+  Vector<webrtc::RtpHeaderExtensionCapability> HeaderExtensionsToOffer()
+      const override {
+    return {};
+  }
 };
 
 }  // namespace blink

@@ -17,13 +17,12 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPreferenceFragment;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.base.WindowAndroid;
@@ -37,25 +36,42 @@ import java.lang.annotation.RetentionPolicy;
  */
 class AssistantVoiceSearchConsentUi
         implements BottomSheetContent, WindowAndroid.ActivityStateObserver {
-    private static final String CONSENT_OUTCOME_HISTOGRAM = "Assistant.VoiceSearch.ConsentOutcome";
+    @VisibleForTesting
+    static final String CONSENT_OUTCOME_HISTOGRAM = "Assistant.VoiceSearch.ConsentOutcome";
 
     /**
      * Show the consent ui to the user.
      * @param windowAndroid The current {@link WindowAndroid} for the app.
      * @param sharedPreferencesManager The {@link SharedPreferencesManager} to read/write prefs.
-     * @param settingsLauncher The {@link SettingsLauncher}, used to launch settings.
+     * @param launchAssistanceSettingsAction Runnable launching settings activity.
+     * @param bottomSheetController The {@link BottomSheetController} used to show the consent ui.
+     *                              This can be null when starting the consent flow from
+     *                              SearchActivity.
      * @param completionCallback A callback to be invoked if the user is continuing with the
      *                           requested voice search.
      */
-    static void show(WindowAndroid windowAndroid, SharedPreferencesManager sharedPreferencesManager,
-            SettingsLauncher settingsLauncher, Callback<Boolean> completionCallback) {
-        // TODO(wylieb): Inject BottomSheetController into this class properly.
+    static void show(@NonNull WindowAndroid windowAndroid,
+            @NonNull SharedPreferencesManager sharedPreferencesManager,
+            @NonNull Runnable launchAssistanceSettingsAction,
+            @Nullable BottomSheetController bottomSheetController,
+            @NonNull Callback<Boolean> completionCallback) {
+        // When attempting voice search through the search widget, the bottom sheet isn't
+        // available. When this happens, bail out of the consent flow and fallback to system-ui.
+        // Consent will be retried the next time.
+
+        if (bottomSheetController == null) {
+            PostTask.postTask(TaskTraits.USER_VISIBLE,
+                    () -> { completionCallback.onResult(/* useAssistant= */ false); });
+            return;
+        }
         AssistantVoiceSearchConsentUi consentUi = new AssistantVoiceSearchConsentUi(windowAndroid,
-                windowAndroid.getContext().get(), sharedPreferencesManager, settingsLauncher,
-                BottomSheetControllerProvider.from(windowAndroid));
+                windowAndroid.getContext().get(), sharedPreferencesManager,
+                launchAssistanceSettingsAction, bottomSheetController);
         consentUi.show(completionCallback);
     }
 
+    // AssistantConsentOutcome defined in tools/metrics/histograms/enums.xml. Do not reorder or
+    // remove items, only add new items before HISTOGRAM_BOUNDARY.
     @IntDef({ConsentOutcome.ACCEPTED_VIA_BUTTON, ConsentOutcome.ACCEPTED_VIA_SETTINGS,
             ConsentOutcome.REJECTED_VIA_BUTTON, ConsentOutcome.REJECTED_VIA_SETTINGS,
             ConsentOutcome.REJECTED_VIA_DISMISS, ConsentOutcome.MAX_VALUE})
@@ -74,7 +90,6 @@ class AssistantVoiceSearchConsentUi
     private final WindowAndroid mWindowAndroid;
     private final Context mContext;
     private final SharedPreferencesManager mSharedPreferencesManager;
-    private final SettingsLauncher mSettingsLauncher;
     private final BottomSheetController mBottomSheetController;
     private final BottomSheetObserver mBottomSheetObserver;
     private View mContentView;
@@ -82,12 +97,12 @@ class AssistantVoiceSearchConsentUi
     private @Nullable Callback<Boolean> mCompletionCallback;
 
     @VisibleForTesting
-    AssistantVoiceSearchConsentUi(WindowAndroid windowAndroid, Context context,
-            SharedPreferencesManager sharedPreferencesManager, SettingsLauncher settingsLauncher,
-            BottomSheetController bottomSheetController) {
+    AssistantVoiceSearchConsentUi(@NonNull WindowAndroid windowAndroid, @NonNull Context context,
+            @NonNull SharedPreferencesManager sharedPreferencesManager,
+            @NonNull Runnable launchAssistanceSettingsAction,
+            @NonNull BottomSheetController bottomSheetController) {
         mContext = context;
         mSharedPreferencesManager = sharedPreferencesManager;
-        mSettingsLauncher = settingsLauncher;
         mBottomSheetController = bottomSheetController;
         mWindowAndroid = windowAndroid;
         mWindowAndroid.addActivityStateObserver(this);
@@ -101,9 +116,7 @@ class AssistantVoiceSearchConsentUi
                 if (reason == BottomSheetController.StateChangeReason.TAP_SCRIM
                         || reason == BottomSheetController.StateChangeReason.BACK_PRESS) {
                     // The user dismissed the dialog without pressing a button.
-                    onConsentRejected();
-                    RecordHistogram.recordEnumeratedHistogram(CONSENT_OUTCOME_HISTOGRAM,
-                            ConsentOutcome.REJECTED_VIA_DISMISS, ConsentOutcome.MAX_VALUE);
+                    onConsentRejected(ConsentOutcome.REJECTED_VIA_DISMISS);
                 }
                 mCompletionCallback.onResult(mSharedPreferencesManager.readBoolean(
                         ASSISTANT_VOICE_SEARCH_ENABLED, /* default= */ false));
@@ -112,20 +125,20 @@ class AssistantVoiceSearchConsentUi
 
         View acceptButton = mContentView.findViewById(R.id.button_primary);
         acceptButton.setOnClickListener((v) -> {
-            onConsentAccepted();
+            onConsentAccepted(ConsentOutcome.ACCEPTED_VIA_BUTTON);
             mBottomSheetController.hideContent(this, /* animate= */ true,
                     BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
         });
 
         View cancelButton = mContentView.findViewById(R.id.button_secondary);
         cancelButton.setOnClickListener((v) -> {
-            onConsentRejected();
+            onConsentRejected(ConsentOutcome.REJECTED_VIA_BUTTON);
             mBottomSheetController.hideContent(this, /* animate= */ true,
                     BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
         });
 
         View learnMore = mContentView.findViewById(R.id.avs_consent_ui_learn_more);
-        learnMore.setOnClickListener((v) -> openLearnMore());
+        learnMore.setOnClickListener((v) -> launchAssistanceSettingsAction.run());
     }
 
     /**
@@ -150,22 +163,16 @@ class AssistantVoiceSearchConsentUi
         }
     }
 
-    private void onConsentAccepted() {
+    private void onConsentAccepted(@ConsentOutcome int consentOutcome) {
         mSharedPreferencesManager.writeBoolean(ASSISTANT_VOICE_SEARCH_ENABLED, true);
-        RecordHistogram.recordEnumeratedHistogram(CONSENT_OUTCOME_HISTOGRAM,
-                ConsentOutcome.ACCEPTED_VIA_BUTTON, ConsentOutcome.MAX_VALUE);
+        RecordHistogram.recordEnumeratedHistogram(
+                CONSENT_OUTCOME_HISTOGRAM, consentOutcome, ConsentOutcome.MAX_VALUE);
     }
 
-    private void onConsentRejected() {
+    private void onConsentRejected(@ConsentOutcome int consentOutcome) {
         mSharedPreferencesManager.writeBoolean(ASSISTANT_VOICE_SEARCH_ENABLED, false);
-        RecordHistogram.recordEnumeratedHistogram(CONSENT_OUTCOME_HISTOGRAM,
-                ConsentOutcome.REJECTED_VIA_BUTTON, ConsentOutcome.MAX_VALUE);
-    }
-
-    /** Open a page to learn more about the consent dialog. */
-    private void openLearnMore() {
-        mSettingsLauncher.launchSettingsActivity(
-                mContext, AutofillAssistantPreferenceFragment.class, /* fragmentArgs= */ null);
+        RecordHistogram.recordEnumeratedHistogram(
+                CONSENT_OUTCOME_HISTOGRAM, consentOutcome, ConsentOutcome.MAX_VALUE);
     }
 
     // WindowAndroid.ActivityStateObserver implementation.
@@ -174,18 +181,21 @@ class AssistantVoiceSearchConsentUi
     public void onActivityResumed() {
         // It's possible the user clicked through "learn more" and enabled/disabled it via settings.
         if (!mSharedPreferencesManager.contains(ASSISTANT_VOICE_SEARCH_ENABLED)) return;
-        RecordHistogram.recordEnumeratedHistogram(CONSENT_OUTCOME_HISTOGRAM,
-                mSharedPreferencesManager.readBoolean(
-                        ASSISTANT_VOICE_SEARCH_ENABLED, /* default= */ false)
-                        ? ConsentOutcome.ACCEPTED_VIA_SETTINGS
-                        : ConsentOutcome.REJECTED_VIA_SETTINGS,
-                ConsentOutcome.MAX_VALUE);
+        if (mSharedPreferencesManager.readBoolean(
+                    ASSISTANT_VOICE_SEARCH_ENABLED, /* default= */ false)) {
+            onConsentAccepted(ConsentOutcome.ACCEPTED_VIA_SETTINGS);
+        } else {
+            onConsentRejected(ConsentOutcome.REJECTED_VIA_SETTINGS);
+        }
         mBottomSheetController.hideContent(this, /* animate= */ true,
                 BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
     }
 
     @Override
     public void onActivityPaused() {}
+
+    @Override
+    public void onActivityDestroyed() {}
 
     // BottomSheetContent implementation.
 

@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 
 namespace chromeos {
 namespace phonehub {
@@ -28,7 +27,7 @@ class FakeMessageSender : public MessageSender {
   void SendDismissNotificationRequest(int64_t notification_id) override;
   void SendNotificationInlineReplyRequest(
       int64_t notification_id,
-      const base::string16& reply_text) override;
+      const std::u16string& reply_text) override;
   void SendShowNotificationAccessSetupRequest() override;
   void SendRingDeviceRequest(bool device_ringing_enabled) override;
 
@@ -36,7 +35,7 @@ class FakeMessageSender : public MessageSender {
   bool GetRecentUpdateNotificationModeRequest() const;
   bool GetRecentUpdateBatteryModeRequest() const;
   int64_t GetRecentDismissNotificationRequest() const;
-  const std::pair<int64_t, base::string16>
+  const std::pair<int64_t, std::u16string>
   GetRecentNotificationInlineReplyRequest() const;
   bool GetRecentRingDeviceRequest() const;
 
@@ -61,7 +60,7 @@ class FakeMessageSender : public MessageSender {
   std::vector<bool> update_notification_mode_requests_;
   std::vector<bool> update_battery_mode_requests_;
   std::vector<int64_t> dismiss_notification_requests_;
-  std::vector<std::pair<int64_t, base::string16>>
+  std::vector<std::pair<int64_t, std::u16string>>
       notification_inline_reply_requests_;
   std::vector<bool> ring_device_requests_;
   size_t show_notification_access_setup_count_ = 0;

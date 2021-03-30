@@ -13,7 +13,7 @@
 
 import './passwords_list_handler.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
-import '../settings_shared_css.m.js';
+import '../settings_shared_css.js';
 import './avatar_icon.js';
 import './passwords_shared_css.js';
 import './password_list_item.js';
@@ -29,12 +29,12 @@ import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behav
 import {IronA11yKeysBehavior} from 'chrome://resources/polymer/v3_0/iron-a11y-keys-behavior/iron-a11y-keys-behavior.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {GlobalScrollTargetBehavior} from '../global_scroll_target_behavior.m.js';
+import {GlobalScrollTargetBehavior} from '../global_scroll_target_behavior.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {OpenWindowProxyImpl} from '../open_window_proxy.js';
-import {StoredAccount, SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.m.js';
+import {StoredAccount, SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverBehavior, Router} from '../router.m.js';
+import {Route, RouteObserverBehavior, Router} from '../router.js';
 
 import {MergePasswordsStoreCopiesBehavior} from './merge_passwords_store_copies_behavior.js';
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
@@ -124,6 +124,20 @@ Polymer({
       observer: 'onAllDevicePasswordsChanged_',
     },
 
+    /**
+     * Whether the entry point leading to the dialog to move multiple passwords
+     * to the Google Account should be shown. It's shown only where there is at
+     * least one password store on device.
+     * @private
+     */
+    shouldShowMoveMultiplePasswordsBanner_: {
+      type: Boolean,
+      value: false,
+      computed: 'computeShouldShowMoveMultiplePasswordsBanner_(' +
+          'savedPasswords, savedPasswords.splices)',
+    },
+
+
     /** @private {!MultiStorePasswordUiEntry} */
     lastFocused_: Object,
 
@@ -183,14 +197,6 @@ Polymer({
       value: '',
     },
 
-    /** @private */
-    movingMultiplePasswordsToAccountFeatureEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean(
-            'enableMovingMultiplePasswordsToAccount');
-      }
-    },
   },
 
   keyBindings: {
@@ -267,6 +273,34 @@ Polymer({
         (this.syncDisabled_ === null || !!this.syncDisabled_) &&
         (this.optedInForAccountStorage_ === null ||
          !!this.optedInForAccountStorage_);
+  },
+
+  /**
+   * @private
+   * @return {boolean}
+   */
+  computeShouldShowMoveMultiplePasswordsBanner_() {
+    if (!loadTimeData.getBoolean('enableMovingMultiplePasswordsToAccount')) {
+      return false;
+    }
+
+    if (this.allDevicePasswords_.length === 0) {
+      return false;
+    }
+
+    // Check if all username, and urls are unique. The existence of two entries
+    // with the same url and username indicate that they must have conflicting
+    // passwords, otherwise, they would have been deduped in
+    // MergePasswordsStoreCopiesBehavior. This however may mistakenly exclude
+    // users who have conflicting duplicates within the same store, which is an
+    // acceptable compromise.
+    return this.savedPasswords.every(
+        p1 =>
+            (this.savedPasswords
+                 .filter(
+                     p2 => p1.username === p2.username &&
+                         p1.urls.origin === p2.urls.origin)
+                 .length === 1));
   },
 
   /**

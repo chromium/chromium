@@ -31,7 +31,7 @@ class UnifiedMediaControlsContainerTest : public AshTestBase {
 
     StatusAreaWidgetTestHelper::GetStatusAreaWidget()
         ->unified_system_tray()
-        ->ShowBubble(false /* show_by_click */);
+        ->ShowBubble();
   }
 
   UnifiedSystemTrayView* system_tray_view() {

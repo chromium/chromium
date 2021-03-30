@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/views/accessibility/caption_bubble.h"
 #include "chrome/browser/ui/views/accessibility/caption_bubble_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "content/public/browser/web_contents.h"
 
 namespace captions {
 
@@ -39,45 +38,34 @@ views::View* CaptionBubbleControllerViews::GetCaptionBubbleAccessiblePane(
 }
 
 CaptionBubbleControllerViews::CaptionBubbleControllerViews(Browser* browser)
-    : CaptionBubbleController(browser), browser_(browser) {
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
+    : CaptionBubbleController(browser) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   caption_bubble_ = new CaptionBubble(
       browser_view->GetContentsView(), browser_view,
       base::BindOnce(&CaptionBubbleControllerViews::OnCaptionBubbleDestroyed,
                      base::Unretained(this)));
   caption_widget_ =
       views::BubbleDialogDelegateView::CreateBubble(caption_bubble_);
-  browser_->tab_strip_model()->AddObserver(this);
-  SetActiveContents(browser_->tab_strip_model()->GetActiveWebContents());
 }
 
 CaptionBubbleControllerViews::~CaptionBubbleControllerViews() {
   if (caption_widget_)
     caption_widget_->CloseNow();
-  if (browser_) {
-    DCHECK(browser_->tab_strip_model());
-    browser_->tab_strip_model()->RemoveObserver(this);
-  }
 }
 
 void CaptionBubbleControllerViews::OnCaptionBubbleDestroyed() {
   caption_bubble_ = nullptr;
   caption_widget_ = nullptr;
-
-  // The caption bubble is destroyed when the browser is destroyed. So if the
-  // caption bubble was destroyed, then browser_ must also be nullptr.
-  browser_ = nullptr;
 }
 
 bool CaptionBubbleControllerViews::OnTranscription(
-    const chrome::mojom::TranscriptionResultPtr& transcription_result,
-    content::WebContents* web_contents) {
-  if (!caption_bubble_ || !caption_bubble_models_.count(web_contents) ||
-      caption_bubble_models_[web_contents]->IsClosed())
+    CaptionHostImpl* caption_host_impl,
+    const chrome::mojom::TranscriptionResultPtr& transcription_result) {
+  if (!caption_bubble_)
     return false;
-
-  CaptionBubbleModel* caption_bubble_model =
-      caption_bubble_models_[web_contents].get();
+  SetActiveModel(caption_host_impl);
+  if (active_model_->IsClosed())
+    return false;
 
   // If the caption bubble has no activity and it receives a final
   // transcription, don't set text. The speech service sends a final
@@ -87,34 +75,34 @@ bool CaptionBubbleControllerViews::OnTranscription(
   if (!caption_bubble_->HasActivity() && transcription_result->is_final)
     return true;
 
-  caption_bubble_model->SetPartialText(transcription_result->transcription);
+  active_model_->SetPartialText(transcription_result->transcription);
   if (transcription_result->is_final)
-    caption_bubble_model->CommitPartialText();
+    active_model_->CommitPartialText();
 
   return true;
 }
 
-void CaptionBubbleControllerViews::OnError(content::WebContents* web_contents) {
-  if (!caption_bubble_ || !caption_bubble_models_.count(web_contents) ||
-      caption_bubble_models_[web_contents]->IsClosed())
+void CaptionBubbleControllerViews::OnError(CaptionHostImpl* caption_host_impl) {
+  if (!caption_bubble_)
+    return;
+  SetActiveModel(caption_host_impl);
+  if (active_model_->IsClosed())
+    return;
+  active_model_->OnError();
+}
+
+void CaptionBubbleControllerViews::OnAudioStreamEnd(
+    CaptionHostImpl* caption_host_impl) {
+  if (!caption_bubble_)
     return;
 
   CaptionBubbleModel* caption_bubble_model =
-      caption_bubble_models_[web_contents].get();
-  caption_bubble_model->OnError();
-}
-
-void CaptionBubbleControllerViews::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  if (!caption_bubble_ || !caption_widget_)
-    return;
-  if (!selection.active_tab_changed())
-    return;
-  if (selection.selected_tabs_were_removed)
-    caption_bubble_models_.erase(selection.old_contents);
-  SetActiveContents(selection.new_contents);
+      caption_bubble_models_[caption_host_impl].get();
+  if (active_model_ == caption_bubble_model) {
+    active_model_ = nullptr;
+    caption_bubble_->SetModel(nullptr);
+  }
+  caption_bubble_models_.erase(caption_host_impl);
 }
 
 void CaptionBubbleControllerViews::UpdateCaptionStyle(
@@ -128,19 +116,19 @@ views::View* CaptionBubbleControllerViews::GetFocusableCaptionBubble() {
   return nullptr;
 }
 
-void CaptionBubbleControllerViews::SetActiveContents(
-    content::WebContents* contents) {
-  active_contents_ = contents;
-  if (!active_contents_) {
-    caption_bubble_->SetModel(nullptr);
-    return;
+void CaptionBubbleControllerViews::SetActiveModel(
+    CaptionHostImpl* caption_host_impl) {
+  if (!caption_bubble_models_.count(caption_host_impl)) {
+    caption_bubble_models_.emplace(caption_host_impl,
+                                   std::make_unique<CaptionBubbleModel>());
   }
-  if (!caption_bubble_models_.count(active_contents_)) {
-    caption_bubble_models_.emplace(
-        active_contents_,
-        std::make_unique<CaptionBubbleModel>(active_contents_));
+
+  CaptionBubbleModel* caption_bubble_model =
+      caption_bubble_models_[caption_host_impl].get();
+  if (active_model_ != caption_bubble_model) {
+    active_model_ = caption_bubble_model;
+    caption_bubble_->SetModel(active_model_);
   }
-  caption_bubble_->SetModel(caption_bubble_models_[active_contents_].get());
 }
 
 bool CaptionBubbleControllerViews::IsWidgetVisibleForTesting() {

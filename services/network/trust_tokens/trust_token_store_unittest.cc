@@ -284,6 +284,32 @@ TEST(TrustTokenStore, CountsTokens) {
   EXPECT_EQ(my_store->CountTokens(issuer), 3);
 }
 
+TEST(TrustTokenStore, GetsAllStoredTokens) {
+  auto my_store = TrustTokenStore::CreateForTesting(
+      std::make_unique<InMemoryTrustTokenPersister>());
+
+  // A freshly initialized store should be storing zero tokens.
+  EXPECT_TRUE(my_store->GetStoredTrustTokenCounts().empty());
+
+  // Add a token; the count should increase.
+  SuitableTrustTokenOrigin issuer_a =
+      *SuitableTrustTokenOrigin::Create(GURL("https://issuer-a.com"));
+  my_store->AddTokens(issuer_a, std::vector<std::string>(1),
+                      /*issuing_key=*/"");
+  auto result = my_store->GetStoredTrustTokenCounts();
+  EXPECT_TRUE(result.contains(issuer_a));
+  EXPECT_EQ(result.find(issuer_a)->second, 1);
+
+  // Add two tokens for a different issuer.
+  SuitableTrustTokenOrigin issuer_b =
+      *SuitableTrustTokenOrigin::Create(GURL("https://issuer-b.com"));
+  my_store->AddTokens(issuer_b, std::vector<std::string>(2),
+                      /*issuing_key=*/"");
+  result = my_store->GetStoredTrustTokenCounts();
+  EXPECT_TRUE(result.contains(issuer_b));
+  EXPECT_EQ(result.find(issuer_b)->second, 2);
+}
+
 TEST(TrustTokenStore, PrunesDataAssociatedWithRemovedKeyCommitments) {
   // Test that providing PruneStaleIssuerState a set of key commitments
   // correctly evicts all tokens except those associated with keys in the
@@ -671,6 +697,44 @@ TEST(TrustTokenStore, RemovesDataForNullFilter) {
   EXPECT_FALSE(store->CountTokens(issuer));
   EXPECT_FALSE(store->IsAssociated(issuer, toplevel));
   EXPECT_FALSE(store->RetrieveNonstaleRedemptionRecord(issuer, toplevel));
+}
+
+TEST(TrustTokenStore, RemovesTrustTokensByIssuer) {
+  auto store = TrustTokenStore::CreateForTesting();
+  auto issuer =
+      *SuitableTrustTokenOrigin::Create(GURL("https://www.issuer.com"));
+
+  // Add token for issuer.
+  store->AddTokens(issuer, std::vector<std::string>{"token"}, "key");
+
+  EXPECT_TRUE(store->CountTokens(issuer));
+  EXPECT_TRUE(store->DeleteStoredTrustTokens(issuer));
+  EXPECT_FALSE(store->CountTokens(issuer));
+}
+
+TEST(TrustTokenStore, RemoveReturnsFalseWhenNoTrustTokensAreDeleted) {
+  auto store = TrustTokenStore::CreateForTesting();
+  auto issuer =
+      *SuitableTrustTokenOrigin::Create(GURL("https://www.issuer.com"));
+
+  EXPECT_FALSE(store->CountTokens(issuer));
+  EXPECT_FALSE(store->DeleteStoredTrustTokens(issuer));
+}
+
+TEST(TrustTokenStore, RemovesTrustTokensByIssuerAndKeepsOthers) {
+  auto store = TrustTokenStore::CreateForTesting();
+  auto issuer_foo =
+      *SuitableTrustTokenOrigin::Create(GURL("https://www.issuer-foo.com"));
+  auto issuer_bar =
+      *SuitableTrustTokenOrigin::Create(GURL("https://www.issuer-bar.com"));
+
+  // Add tokens for both issuers.
+  store->AddTokens(issuer_foo, std::vector<std::string>{"token"}, "key");
+  store->AddTokens(issuer_bar, std::vector<std::string>{"token"}, "key");
+
+  EXPECT_TRUE(store->DeleteStoredTrustTokens(issuer_foo));
+  EXPECT_FALSE(store->CountTokens(issuer_foo));
+  EXPECT_TRUE(store->CountTokens(issuer_bar));
 }
 
 }  // namespace trust_tokens

@@ -5,6 +5,8 @@
 #ifndef SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_COPY_OUTPUT_RESULT_MOJOM_TRAITS_H_
 #define SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_COPY_OUTPUT_RESULT_MOJOM_TRAITS_H_
 
+#include <memory>
+
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "gpu/ipc/common/mailbox_mojom_traits.h"
 #include "gpu/ipc/common/sync_token_mojom_traits.h"
@@ -37,7 +39,7 @@ struct StructTraits<viz::mojom::CopyOutputResultDataView,
   static const gfx::Rect& rect(
       const std::unique_ptr<viz::CopyOutputResult>& result);
 
-  static base::Optional<SkBitmap> bitmap(
+  static base::Optional<viz::CopyOutputResult::ScopedSkBitmap> bitmap(
       const std::unique_ptr<viz::CopyOutputResult>& result);
 
   static base::Optional<gpu::Mailbox> mailbox(

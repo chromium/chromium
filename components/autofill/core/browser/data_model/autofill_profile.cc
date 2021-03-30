@@ -68,10 +68,10 @@ namespace {
 // similarly.
 ServerFieldType GetStorableTypeCollapsingGroups(ServerFieldType type) {
   ServerFieldType storable_type = AutofillType(type).GetStorableType();
-  if (AutofillType(storable_type).group() == NAME)
+  if (AutofillType(storable_type).group() == FieldTypeGroup::kName)
     return NAME_FULL;
 
-  if (AutofillType(storable_type).group() == PHONE_HOME)
+  if (AutofillType(storable_type).group() == FieldTypeGroup::kPhoneHome)
     return PHONE_HOME_WHOLE_NUMBER;
 
   return storable_type;
@@ -168,7 +168,7 @@ void GetFieldsForDistinguishingProfiles(
 
   // Keep track of which fields we've seen so that we avoid duplicate entries.
   // Always ignore fields of unknown type and the excluded field.
-  std::set<ServerFieldType> seen_fields;
+  ServerFieldTypeSet seen_fields;
   seen_fields.insert(UNKNOWN_TYPE);
   seen_fields.insert(GetStorableTypeCollapsingGroups(excluded_field));
 
@@ -223,7 +223,8 @@ static_assert(kNumSupportedTypesForValidation * kValidityBitsPerType <= 64,
 // main stored type for used to mark field validity .
 ServerFieldType NormalizeTypeForValidityCheck(ServerFieldType type) {
   auto field_type_group = AutofillType(type).group();
-  if (field_type_group == PHONE_HOME || field_type_group == PHONE_BILLING)
+  if (field_type_group == FieldTypeGroup::kPhoneHome ||
+      field_type_group == FieldTypeGroup::kPhoneBilling)
     return PHONE_HOME_WHOLE_NUMBER;
   return type;
 }
@@ -322,12 +323,11 @@ bool AutofillProfile::IsDeletable() const {
 }
 
 void AutofillProfile::GetMatchingTypes(
-    const base::string16& text,
+    const std::u16string& text,
     const std::string& app_locale,
     ServerFieldTypeSet* matching_types) const {
   ServerFieldTypeSet matching_types_in_this_profile;
-  FormGroupList info = FormGroups();
-  for (const auto* form_group : info) {
+  for (const auto* form_group : FormGroups()) {
     form_group->GetMatchingTypes(text, app_locale,
                                  &matching_types_in_this_profile);
   }
@@ -338,7 +338,7 @@ void AutofillProfile::GetMatchingTypes(
 }
 
 void AutofillProfile::GetMatchingTypesAndValidities(
-    const base::string16& text,
+    const std::u16string& text,
     const std::string& app_locale,
     ServerFieldTypeSet* matching_types,
     ServerFieldTypeValidityStateMap* matching_types_validities) const {
@@ -346,8 +346,7 @@ void AutofillProfile::GetMatchingTypesAndValidities(
     return;
 
   ServerFieldTypeSet matching_types_in_this_profile;
-  FormGroupList info = FormGroups();
-  for (const auto* form_group : info) {
+  for (const auto* form_group : FormGroups()) {
     form_group->GetMatchingTypes(text, app_locale,
                                  &matching_types_in_this_profile);
   }
@@ -363,17 +362,17 @@ void AutofillProfile::GetMatchingTypesAndValidities(
   }
 }
 
-base::string16 AutofillProfile::GetRawInfo(ServerFieldType type) const {
+std::u16string AutofillProfile::GetRawInfo(ServerFieldType type) const {
   const FormGroup* form_group = FormGroupForType(AutofillType(type));
   if (!form_group)
-    return base::string16();
+    return std::u16string();
 
   return form_group->GetRawInfo(type);
 }
 
 void AutofillProfile::SetRawInfoWithVerificationStatus(
     ServerFieldType type,
-    const base::string16& value,
+    const std::u16string& value,
     VerificationStatus status) {
   FormGroup* form_group = MutableFormGroupForType(AutofillType(type));
   if (form_group) {
@@ -385,8 +384,7 @@ void AutofillProfile::SetRawInfoWithVerificationStatus(
 
 void AutofillProfile::GetSupportedTypes(
     ServerFieldTypeSet* supported_types) const {
-  FormGroupList info = FormGroups();
-  for (const auto* form_group : info) {
+  for (const auto* form_group : FormGroups()) {
     form_group->GetSupportedTypes(supported_types);
   }
 }
@@ -399,7 +397,7 @@ bool AutofillProfile::IsEmpty(const std::string& app_locale) const {
 
 bool AutofillProfile::IsPresentButInvalid(ServerFieldType type) const {
   std::string country = UTF16ToUTF8(GetRawInfo(ADDRESS_HOME_COUNTRY));
-  base::string16 data = GetRawInfo(type);
+  std::u16string data = GetRawInfo(type);
   if (data.empty())
     return false;
 
@@ -549,7 +547,7 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
     // profile's first and last names are set but its full name is not set.
     // GetInfo for the NAME_FULL type returns the constituent name parts;
     // however, GetRawInfo returns an empty string.
-    const base::string16 value = GetInfo(type, app_locale);
+    const std::u16string value = GetInfo(type, app_locale);
 
     if (value.empty() || type == ADDRESS_HOME_STREET_ADDRESS ||
         type == ADDRESS_HOME_LINE1 || type == ADDRESS_HOME_LINE2 ||
@@ -577,7 +575,7 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
         // conditions that follow.
         return false;
       }
-    } else if (AutofillType(type).group() == PHONE_HOME) {
+    } else if (AutofillType(type).group() == FieldTypeGroup::kPhoneHome) {
       // Phone numbers should be canonicalized before comparing.
       if (type != PHONE_HOME_WHOLE_NUMBER &&
           type != PHONE_HOME_CITY_AND_NUMBER) {
@@ -812,7 +810,7 @@ bool AutofillProfile::SaveAdditionalInfo(const AutofillProfile& profile,
 void AutofillProfile::CreateDifferentiatingLabels(
     const std::vector<AutofillProfile*>& profiles,
     const std::string& app_locale,
-    std::vector<base::string16>* labels) {
+    std::vector<std::u16string>* labels) {
   const size_t kMinimalFieldsShown = 2;
   CreateInferredLabels(profiles, nullptr, UNKNOWN_TYPE, kMinimalFieldsShown,
                        app_locale, labels);
@@ -826,7 +824,7 @@ void AutofillProfile::CreateInferredLabels(
     ServerFieldType excluded_field,
     size_t minimal_fields_shown,
     const std::string& app_locale,
-    std::vector<base::string16>* labels) {
+    std::vector<std::u16string>* labels) {
   std::vector<ServerFieldType> fields_to_use;
   GetFieldsForDistinguishingProfiles(suggested_fields, excluded_field,
                                      &fields_to_use);
@@ -834,9 +832,9 @@ void AutofillProfile::CreateInferredLabels(
   // Construct the default label for each profile. Also construct a map that
   // associates each label with the profiles that have this label. This map is
   // then used to detect which labels need further differentiating fields.
-  std::map<base::string16, std::list<size_t>> labels_to_profiles;
+  std::map<std::u16string, std::list<size_t>> labels_to_profiles;
   for (size_t i = 0; i < profiles.size(); ++i) {
-    base::string16 label = profiles[i]->ConstructInferredLabel(
+    std::u16string label = profiles[i]->ConstructInferredLabel(
         fields_to_use.data(), fields_to_use.size(), minimal_fields_shown,
         app_locale);
     labels_to_profiles[label].push_back(i);
@@ -846,7 +844,7 @@ void AutofillProfile::CreateInferredLabels(
   for (auto& it : labels_to_profiles) {
     if (it.second.size() == 1) {
       // This label is unique, so use it without any further ado.
-      base::string16 label = it.first;
+      std::u16string label = it.first;
       size_t profile_index = it.second.front();
       (*labels)[profile_index] = label;
     } else {
@@ -858,17 +856,17 @@ void AutofillProfile::CreateInferredLabels(
   }
 }
 
-base::string16 AutofillProfile::ConstructInferredLabel(
+std::u16string AutofillProfile::ConstructInferredLabel(
     const ServerFieldType* included_fields,
     const size_t included_fields_size,
     size_t num_fields_to_use,
     const std::string& app_locale) const {
   // TODO(estade): use libaddressinput?
-  base::string16 separator =
+  std::u16string separator =
       l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR);
 
   AutofillType region_code_type(HTML_TYPE_COUNTRY_CODE, HTML_MODE_NONE);
-  const base::string16& profile_region_code =
+  const std::u16string& profile_region_code =
       GetInfo(region_code_type, app_locale);
   std::string address_region_code = UTF16ToUTF8(profile_region_code);
 
@@ -890,7 +888,7 @@ base::string16 AutofillProfile::ConstructInferredLabel(
     }
 
     AutofillType autofill_type(included_fields[i]);
-    base::string16 field_value = GetInfo(autofill_type, app_locale);
+    std::u16string field_value = GetInfo(autofill_type, app_locale);
     if (field_value.empty())
       continue;
 
@@ -903,12 +901,12 @@ base::string16 AutofillProfile::ConstructInferredLabel(
   std::string address_line;
   ::i18n::addressinput::GetFormattedNationalAddressLine(*address_data,
                                                         &address_line);
-  base::string16 label = base::UTF8ToUTF16(address_line);
+  std::u16string label = base::UTF8ToUTF16(address_line);
 
   for (std::vector<ServerFieldType>::const_iterator it =
            remaining_fields.begin();
        it != remaining_fields.end() && num_fields_to_use > 0; ++it) {
-    base::string16 field_value;
+    std::u16string field_value;
     // Special case whole numbers: we want the user-formatted (raw) version, not
     // the canonicalized version we'll fill into the page.
     if (*it == PHONE_HOME_WHOLE_NUMBER)
@@ -928,14 +926,14 @@ base::string16 AutofillProfile::ConstructInferredLabel(
   // If country code is missing, libaddressinput won't be used to format the
   // address. In this case the suggestion might include a multi-line street
   // address which needs to be flattened.
-  base::ReplaceChars(label, base::ASCIIToUTF16("\n"), separator, &label);
+  base::ReplaceChars(label, u"\n", separator, &label);
 
   return label;
 }
 
 void AutofillProfile::GenerateServerProfileIdentifier() {
   DCHECK_EQ(SERVER_PROFILE, record_type());
-  base::string16 contents = GetRawInfo(NAME_FIRST);
+  std::u16string contents = GetRawInfo(NAME_FIRST);
   contents.append(GetRawInfo(NAME_MIDDLE));
   contents.append(GetRawInfo(NAME_LAST));
   contents.append(GetRawInfo(EMAIL_ADDRESS));
@@ -1013,14 +1011,15 @@ bool AutofillProfile::IsAnInvalidPhoneNumber(ServerFieldType type) const {
     return true;
 
   ServerFieldTypeSet types;
-  if (GroupTypeOfServerFieldType(type) == PHONE_HOME) {
+  if (GroupTypeOfServerFieldType(type) == FieldTypeGroup::kPhoneHome) {
     types = {PHONE_HOME_NUMBER, PHONE_HOME_CITY_CODE,
              PHONE_HOME_CITY_AND_NUMBER};
     if (type == PHONE_HOME_WHOLE_NUMBER) {
       types.insert(PHONE_HOME_WHOLE_NUMBER);
       types.insert(PHONE_HOME_COUNTRY_CODE);
     }
-  } else if (GroupTypeOfServerFieldType(type) == PHONE_BILLING) {
+  } else if (GroupTypeOfServerFieldType(type) ==
+             FieldTypeGroup::kPhoneBilling) {
     types = {PHONE_BILLING_NUMBER, PHONE_BILLING_CITY_CODE,
              PHONE_BILLING_CITY_AND_NUMBER};
     if (type == PHONE_BILLING_WHOLE_NUMBER) {
@@ -1142,7 +1141,7 @@ bool AutofillProfile::ShouldSkipFillingOrSuggesting(
           autofill::features::kAutofillProfileClientValidation) &&
       GetValidityState(type, AutofillProfile::CLIENT) ==
           AutofillProfile::INVALID &&
-      (GroupTypeOfServerFieldType(type) != ADDRESS_HOME ||
+      (GroupTypeOfServerFieldType(type) != FieldTypeGroup::kAddressHome ||
        !GetRawInfo(ADDRESS_HOME_COUNTRY).empty())) {
     return true;
   }
@@ -1159,14 +1158,14 @@ VerificationStatus AutofillProfile::GetVerificationStatusImpl(
   return form_group->GetVerificationStatus(type);
 }
 
-base::string16 AutofillProfile::GetInfoImpl(
+std::u16string AutofillProfile::GetInfoImpl(
     const AutofillType& type,
     const std::string& app_locale) const {
   if (type.html_type() == HTML_TYPE_FULL_ADDRESS) {
     std::unique_ptr<AddressData> address_data =
         i18n::CreateAddressDataFromAutofillProfile(*this, app_locale);
     if (!addressinput::HasAllRequiredFields(*address_data))
-      return base::string16();
+      return std::u16string();
 
     std::vector<std::string> lines;
     ::i18n::addressinput::GetFormattedNationalAddress(*address_data, &lines);
@@ -1175,14 +1174,14 @@ base::string16 AutofillProfile::GetInfoImpl(
 
   const FormGroup* form_group = FormGroupForType(type);
   if (!form_group)
-    return base::string16();
+    return std::u16string();
 
   return form_group->GetInfoImpl(type, app_locale);
 }
 
 bool AutofillProfile::SetInfoWithVerificationStatusImpl(
     const AutofillType& type,
-    const base::string16& value,
+    const std::u16string& value,
     const std::string& app_locale,
     VerificationStatus status) {
   FormGroup* form_group = MutableFormGroupForType(type);
@@ -1192,7 +1191,7 @@ bool AutofillProfile::SetInfoWithVerificationStatusImpl(
   is_client_validity_states_updated_ &=
       !IsClientValidationSupportedForType(type.GetStorableType());
 
-  base::string16 trimmed_value;
+  std::u16string trimmed_value;
   base::TrimWhitespace(value, base::TRIM_ALL, &trimmed_value);
 
   return form_group->SetInfoWithVerificationStatusImpl(type, trimmed_value,
@@ -1206,18 +1205,18 @@ void AutofillProfile::CreateInferredLabelsHelper(
     const std::vector<ServerFieldType>& fields,
     size_t num_fields_to_include,
     const std::string& app_locale,
-    std::vector<base::string16>* labels) {
+    std::vector<std::u16string>* labels) {
   // For efficiency, we first construct a map of fields to their text values and
   // each value's frequency.
-  std::map<ServerFieldType, std::map<base::string16, size_t>>
+  std::map<ServerFieldType, std::map<std::u16string, size_t>>
       field_text_frequencies_by_field;
   for (const ServerFieldType& field : fields) {
-    std::map<base::string16, size_t>& field_text_frequencies =
+    std::map<std::u16string, size_t>& field_text_frequencies =
         field_text_frequencies_by_field[field];
 
     for (const auto& it : indices) {
       const AutofillProfile* profile = profiles[it];
-      base::string16 field_text =
+      std::u16string field_text =
           profile->GetInfo(AutofillType(field), app_locale);
 
       // If this label is not already in the map, add it with frequency 0.
@@ -1243,15 +1242,15 @@ void AutofillProfile::CreateInferredLabelsHelper(
     bool found_differentiating_field = false;
     for (auto field = fields.begin(); field != fields.end(); ++field) {
       // Skip over empty fields.
-      base::string16 field_text =
+      std::u16string field_text =
           profile->GetInfo(AutofillType(*field), app_locale);
       if (field_text.empty())
         continue;
 
-      std::map<base::string16, size_t>& field_text_frequencies =
+      std::map<std::u16string, size_t>& field_text_frequencies =
           field_text_frequencies_by_field[*field];
       found_differentiating_field |=
-          !field_text_frequencies.count(base::string16()) &&
+          !field_text_frequencies.count(std::u16string()) &&
           (field_text_frequencies[field_text] == 1);
 
       // Once we've found enough non-empty fields, skip over any remaining
@@ -1275,16 +1274,6 @@ void AutofillProfile::CreateInferredLabelsHelper(
   }
 }
 
-AutofillProfile::FormGroupList AutofillProfile::FormGroups() const {
-  FormGroupList v(5);
-  v[0] = &name_;
-  v[1] = &email_;
-  v[2] = &company_;
-  v[3] = &phone_number_;
-  v[4] = &address_;
-  return v;
-}
-
 const FormGroup* AutofillProfile::FormGroupForType(
     const AutofillType& type) const {
   return const_cast<AutofillProfile*>(this)->MutableFormGroupForType(type);
@@ -1292,30 +1281,30 @@ const FormGroup* AutofillProfile::FormGroupForType(
 
 FormGroup* AutofillProfile::MutableFormGroupForType(const AutofillType& type) {
   switch (type.group()) {
-    case NAME:
-    case NAME_BILLING:
+    case FieldTypeGroup::kName:
+    case FieldTypeGroup::kNameBilling:
       return &name_;
 
-    case EMAIL:
+    case FieldTypeGroup::kEmail:
       return &email_;
 
-    case COMPANY:
+    case FieldTypeGroup::kCompany:
       return &company_;
 
-    case PHONE_HOME:
-    case PHONE_BILLING:
+    case FieldTypeGroup::kPhoneHome:
+    case FieldTypeGroup::kPhoneBilling:
       return &phone_number_;
 
-    case ADDRESS_HOME:
-    case ADDRESS_BILLING:
+    case FieldTypeGroup::kAddressHome:
+    case FieldTypeGroup::kAddressBilling:
       return &address_;
 
-    case NO_GROUP:
-    case CREDIT_CARD:
-    case PASSWORD_FIELD:
-    case USERNAME_FIELD:
-    case TRANSACTION:
-    case UNFILLABLE:
+    case FieldTypeGroup::kNoGroup:
+    case FieldTypeGroup::kCreditCard:
+    case FieldTypeGroup::kPasswordField:
+    case FieldTypeGroup::kUsernameField:
+    case FieldTypeGroup::kTransaction:
+    case FieldTypeGroup::kUnfillable:
       return nullptr;
   }
 
@@ -1357,11 +1346,13 @@ std::ostream& operator<<(std::ostream& os, const AutofillProfile& profile) {
       NAME_LAST_SECOND,
       EMAIL_ADDRESS,
       COMPANY_NAME,
+      ADDRESS_HOME_ADDRESS,
       ADDRESS_HOME_LINE1,
       ADDRESS_HOME_LINE2,
       ADDRESS_HOME_LINE3,
       ADDRESS_HOME_STREET_ADDRESS,
       ADDRESS_HOME_STREET_NAME,
+      ADDRESS_HOME_DEPENDENT_STREET_NAME,
       ADDRESS_HOME_HOUSE_NUMBER,
       ADDRESS_HOME_APT_NUM,
       ADDRESS_HOME_FLOOR,

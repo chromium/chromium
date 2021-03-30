@@ -37,7 +37,7 @@ AppId WebAppControllerBrowserTestBase::InstallPWA(const GURL& start_url) {
   web_app_info->start_url = start_url;
   web_app_info->scope = start_url.GetWithoutFilename();
   web_app_info->open_as_window = true;
-  web_app_info->title = base::ASCIIToUTF16("A Web App");
+  web_app_info->title = u"A Web App";
   return web_app::InstallWebApp(profile(), std::move(web_app_info));
 }
 

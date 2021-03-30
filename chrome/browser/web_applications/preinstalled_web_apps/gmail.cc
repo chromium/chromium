@@ -17,21 +17,26 @@ ExternalInstallOptions GetConfigForGmail() {
   ExternalInstallOptions options(
       /*install_url=*/GURL(
           "https://mail.google.com/mail/installwebapp?usp=chrome_default"),
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      /*user_display_mode=*/DisplayMode::kStandalone,
+#else
       /*user_display_mode=*/DisplayMode::kBrowser,
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       /*install_source=*/ExternalInstallSource::kExternalDefault);
 
   options.user_type_allowlist = {"unmanaged", "managed", "child"};
   options.gate_on_feature = kMigrateDefaultChromeAppToWebAppsGSuite.name;
   options.uninstall_and_replace.push_back("pjkljhegncpnkpknbcohdijeoejaedia");
+  options.disable_if_tablet_form_factor = true;
   options.load_and_await_service_worker_registration = false;
   options.only_use_app_info_factory = true;
   options.app_info_factory = base::BindRepeating([]() {
     auto info = std::make_unique<WebApplicationInfo>();
-    info->title = base::UTF8ToUTF16("Gmail");
+    info->title = u"Gmail";
     info->start_url = GURL("https://mail.google.com/?usp=installed_webapp");
     info->scope = GURL("https://mail.google.com/");
     info->display_mode = DisplayMode::kBrowser;
-    info->icon_bitmaps_any =
+    info->icon_bitmaps.any =
         LoadBundledIcons({IDR_PREINSTALLED_WEB_APPS_GMAIL_ICON_192_PNG});
     return info;
   });

@@ -8,6 +8,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/mojom/storage_service.mojom.h"
+#include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "components/services/storage/public/mojom/test_api.test-mojom.h"
 #include "content/browser/dom_storage/dom_storage_context_wrapper.h"
 #include "content/browser/storage_partition_impl.h"
@@ -42,7 +43,7 @@ class StorageServiceSandboxBrowserTest : public ContentBrowserTest {
   void WaitForAnyLocalStorageDataAsync(base::OnceClosure callback) {
     dom_storage()->GetLocalStorageControl()->GetUsage(base::BindOnce(
         [](StorageServiceSandboxBrowserTest* test, base::OnceClosure callback,
-           std::vector<storage::mojom::LocalStorageUsageInfoPtr> usage) {
+           std::vector<storage::mojom::StorageUsageInfoPtr> usage) {
           if (!usage.empty()) {
             std::move(callback).Run();
             return;

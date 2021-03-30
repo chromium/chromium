@@ -41,6 +41,7 @@ std::unique_ptr<TileService> CreateTileService(
     const std::string& country_code,
     const std::string& api_key,
     const std::string& client_version,
+    const std::string& default_server_url,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     PrefService* pref_service);
 

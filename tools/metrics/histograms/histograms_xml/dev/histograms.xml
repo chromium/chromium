@@ -30,7 +30,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DevTools.BackgroundService.ClearEvents"
-    enum="ServiceWorkerStatusCode" expires_after="M87">
+    enum="ServiceWorkerStatusCode" expires_after="M92">
   <owner>yangguo@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <owner>bmeurer@chromium.org</owner>
@@ -42,7 +42,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DevTools.BackgroundService.GetEvents"
-    enum="ServiceWorkerStatusCode" expires_after="M87">
+    enum="ServiceWorkerStatusCode" expires_after="M92">
   <owner>rayankans@chromium.org</owner>
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@chromium.org</owner>
@@ -53,7 +53,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DevTools.BackgroundService.LogEvent"
-    enum="ServiceWorkerStatusCode" expires_after="M87">
+    enum="ServiceWorkerStatusCode" expires_after="M92">
   <owner>rayankans@chromium.org</owner>
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@chromium.org</owner>
@@ -65,7 +65,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DevTools.BackgroundService.StartRecording"
-    enum="DevToolsBackgroundService" expires_after="M87">
+    enum="DevToolsBackgroundService" expires_after="2021-08-09">
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
@@ -77,7 +77,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DevTools.ColorPicker.FixedColor"
-    enum="DevToolsColorPickerFixedColor" expires_after="2021-05-16">
+    enum="DevToolsColorPickerFixedColor" expires_after="2021-07-27">
   <owner>yangguo@chromium.org</owner>
   <owner>mathias@chromium.org</owner>
   <owner>alexrudenko@chromium.org</owner>
@@ -123,6 +123,59 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>leo.lee@microsoft.com</owner>
   <summary>
     DevTools settings for CSS grid recorded on launch of the DevTools.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.DeveloperResourceLoaded"
+    enum="DevToolsDeveloperResourceLoaded" expires_after="2021-12-31">
+  <owner>yangguo@chromium.org</owner>
+  <owner>sigurds@chromium.org</owner>
+  <summary>
+    Records for each developer resource load that the DevTools front-end issues
+    (e.g. to load a source map) several enum values encoding which load method
+    was used, whether a fallback was used (and why), and whether the method
+    succeeded or not.
+
+    Some explanations to make sense of the enum values:
+
+    LoadsThroughPage = LoadThroughPageViaTarget + LoadThroughPageViaFrame
+
+    SuccessfulLoadsThroughPage = LoadsThroughPage - LoadThroughPageFailure
+
+    LoadThroughPageFallback is the number of loads that can in principle be
+    loaded through the page, but had to use the fallback because either loading
+    through the page failed (LoadThroughPageFailure), or there was insufficient
+    information to dispatch the load through the page; the number of such loads
+    can be computed as LoadThroughPageFallback - LoadThroughPageFailure.
+
+    The number of loads not eligible for loading through the page can be
+    computed as FallbackPerOverride + FallbackPerProtocol, where
+    FallbackPerOverride indicates loads where the DevTools user disabled loading
+    through the page via an override, and FallbackPerProtocol indicates loads
+    where DevTools could not load the resource via the page due to the
+    resource's protocol scheme.
+
+    The total number of loads that used the fallback can be computed as
+    LoadThroughPageFallback + FallbackPerOverride + FallbackPerProtocol. Adding
+    SuccessfulLoadsThroughPage to that number gives the total number of loads.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.DeveloperResourceScheme"
+    enum="DevToolsDeveloperResourceScheme" expires_after="2021-12-31">
+  <owner>yangguo@chromium.org</owner>
+  <owner>sigurds@chromium.org</owner>
+  <summary>
+    Records for each developer resource load that the DevTools front-end issues
+    (e.g. to load a source map) one enum value that records the scheme of the
+    resource's URL. For HTTP and HTTPS schemes, there are two enums each: One
+    that signifies that the host was localhost, and one that signifies that it
+    wasn't, i.e. to get the total number of resource loads using a HTTP scheme
+    one must add the numbers of SchemeHttp and SchemeHttpLocalhost.
+
+    The value SchemeUnknown signifies that parsing the scheme from the URL
+    failed (note that at the point the enum is recorded, only absolute URLs
+    arrive).
   </summary>
 </histogram>
 
@@ -205,7 +258,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="DevTools.IssueCreated" enum="DevToolsIssuesPanelOpenedFrom"
+<histogram name="DevTools.IssueCreated" enum="DevToolsIssueCreated"
     expires_after="2021-10-31">
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@chromium.org</owner>
@@ -224,7 +277,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DevTools.IssuesPanelOpenedFrom"
-    enum="DevToolsIssuesPanelOpenedFrom" expires_after="2021-05-30">
+    enum="DevToolsIssuesPanelOpenedFrom" expires_after="2021-08-01">
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@chromium.org</owner>
   <summary>
@@ -272,6 +325,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Measures the time until a given tool is interactive during a cold start of
     the DevTools.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.LinearMemoryInspector.RevealedFrom"
+    enum="DevToolsLinearMemoryInspectorRevealedFrom" expires_after="M96">
+  <owner>sawallner@chromium.org</owner>
+  <owner>kimanh@chromium.org</owner>
+  <summary>
+    Records the ways in which the Memory Inspector panel was opened.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.LinearMemoryInspector.Target"
+    enum="DevToolsLinearMemoryInspectorTarget" expires_after="M96">
+  <owner>sawallner@chromium.org</owner>
+  <owner>kimanh@chromium.org</owner>
+  <summary>
+    Records the inspection target via which the Memory Inspector was opened.
   </summary>
 </histogram>
 

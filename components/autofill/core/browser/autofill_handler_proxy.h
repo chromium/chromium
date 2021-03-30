@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autofill_handler.h"
+#include "components/autofill/core/common/dense_set.h"
 
 namespace autofill {
 
@@ -17,7 +18,7 @@ class AutofillHandlerProxy : public AutofillHandler {
  public:
   AutofillHandlerProxy(
       AutofillDriver* driver,
-      LogManager* log_manager,
+      AutofillClient* client,
       AutofillProvider* provider,
       AutofillHandler::AutofillDownloadManagerState enable_download_manager);
   ~AutofillHandlerProxy() override;
@@ -76,7 +77,7 @@ class AutofillHandlerProxy : public AutofillHandler {
                        const FormStructure& form_structure) override {}
 
   void OnAfterProcessParsedForms(
-      const std::set<FormType>& form_types) override {}
+      const DenseSet<FormType>& form_types) override {}
 
   void PropagateAutofillPredictions(
       content::RenderFrameHost* rfh,

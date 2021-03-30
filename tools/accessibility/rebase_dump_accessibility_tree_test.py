@@ -43,17 +43,15 @@ completed_files = set()
 
 def Fix(line):
   if line[:3] == '@@@':
-    try:
-      line = re.search('[^@]@([^@]*)@@@', line).group(1)
-    except:
-      pass
+    result = re.search('[^@]@([^@]*)@@@', line)
+    if result:
+      line = result.group(1)
   # For Android tests:
   if line[:2] == 'I ':
-    try:
-      line = re.search('I  \d+\.\d+s run_tests_on_device\([0-9a-f]+\)  (.*)',
-                       line).group(1)
-    except:
-      pass
+    result = re.search('I  \d+\.\d+s run_tests_on_device\([0-9a-f]+\)  (.*)',
+                       line)
+    if result:
+      line = group(1)
   return line
 
 def ParseLog(logdata):
@@ -66,13 +64,15 @@ def ParseLog(logdata):
   for i in range(len(lines)):
     line = Fix(lines[i])
     if line.find('Testing:') >= 0:
-      test_file = re.search(
-          'content.test.*accessibility.([^@]*)', line).group(1)
+      result = re.search('content.test.*accessibility.([^@]*)', line)
+      if result:
+        test_file = result.group(1)
       expected_file = None
       start = None
     if line.find('Expected output:') >= 0:
-      expected_file = re.search(
-          'content.test.*accessibility.([^@]*)', line).group(1)
+      result = re.search('content.test.*accessibility.([^@]*)', line)
+      if result:
+        expected_file = result.group(1)
     if line == 'Actual':
       start = i + 2
     if start and test_file and expected_file and line.find('End-of-file') >= 0:
@@ -137,7 +137,7 @@ def Run():
             step.find('Upload') == -1):
 
           a11y_step = step.rstrip()
-          logdog_cat = 'cit logdog cat -raw "chromium%s"' % a11y_step
+          logdog_cat = 'cit logdog cat -raw "%s"' % a11y_step
           # A bit noisy but useful for debugging.
           # print((BRIGHT_COLOR + '=> %s' + NORMAL_COLOR) % logdog_cat)
           output = os.popen(logdog_cat).read()

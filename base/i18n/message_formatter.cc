@@ -36,7 +36,7 @@ MessageArg::MessageArg(StringPiece s)
 MessageArg::MessageArg(const std::string& s)
     : formattable(new icu::Formattable(UnicodeString::fromUTF8(s))) {}
 
-MessageArg::MessageArg(const string16& s)
+MessageArg::MessageArg(const std::u16string& s)
     : formattable(new icu::Formattable(UnicodeString(s.data(), s.size()))) {}
 
 MessageArg::MessageArg(int i) : formattable(new icu::Formattable(i)) {}
@@ -61,7 +61,7 @@ bool MessageArg::has_value(int *count) const {
 
 }  // namespace internal
 
-string16 MessageFormatter::FormatWithNumberedArgs(
+std::u16string MessageFormatter::FormatWithNumberedArgs(
     StringPiece16 msg,
     const internal::MessageArg& arg0,
     const internal::MessageArg& arg1,
@@ -90,20 +90,27 @@ string16 MessageFormatter::FormatWithNumberedArgs(
   if (U_FAILURE(error)) {
     LOG(ERROR) << "MessageFormat(" << msg << ") failed with "
                << u_errorName(error);
-    return string16();
+    return std::u16string();
   }
   return i18n::UnicodeStringToString16(formatted);
 }
 
-string16 MessageFormatter::FormatWithNamedArgs(
+std::u16string MessageFormatter::FormatWithNamedArgs(
     StringPiece16 msg,
-    StringPiece name0, const internal::MessageArg& arg0,
-    StringPiece name1, const internal::MessageArg& arg1,
-    StringPiece name2, const internal::MessageArg& arg2,
-    StringPiece name3, const internal::MessageArg& arg3,
-    StringPiece name4, const internal::MessageArg& arg4,
-    StringPiece name5, const internal::MessageArg& arg5,
-    StringPiece name6, const internal::MessageArg& arg6) {
+    StringPiece name0,
+    const internal::MessageArg& arg0,
+    StringPiece name1,
+    const internal::MessageArg& arg1,
+    StringPiece name2,
+    const internal::MessageArg& arg2,
+    StringPiece name3,
+    const internal::MessageArg& arg3,
+    StringPiece name4,
+    const internal::MessageArg& arg4,
+    StringPiece name5,
+    const internal::MessageArg& arg5,
+    StringPiece name6,
+    const internal::MessageArg& arg6) {
   icu::UnicodeString names[] = {
       UnicodeStringFromStringPiece(name0),
       UnicodeStringFromStringPiece(name1),
@@ -133,7 +140,7 @@ string16 MessageFormatter::FormatWithNamedArgs(
   if (U_FAILURE(error)) {
     LOG(ERROR) << "MessageFormat(" << msg << ") failed with "
                << u_errorName(error);
-    return string16();
+    return std::u16string();
   }
   return i18n::UnicodeStringToString16(formatted);
 }

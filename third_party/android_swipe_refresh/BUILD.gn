@@ -14,7 +14,7 @@ android_library("android_swipe_refresh_java") {
     "java/src/org/chromium/third_party/android/swiperefresh/SwipeRefreshLayout.java",
   ]
   deps = [
-    "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//third_party/android_deps:androidx_interpolator_interpolator_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_interpolator_interpolator_java",
   ]
 }

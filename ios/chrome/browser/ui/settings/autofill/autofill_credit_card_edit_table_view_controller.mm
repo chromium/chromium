@@ -159,23 +159,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   BOOL isEditing = self.tableView.editing;
 
-  NSArray<AutofillEditItem*>* editItems;
-  if ([self isCardNicknameManagementEnabled]) {
-    editItems = @[
-      [self cardNumberItem:isEditing],
-      [self expirationMonthItem:isEditing],
-      [self expirationYearItem:isEditing],
-      [self cardholderNameItem:isEditing],
-      [self nicknameItem:isEditing],
-    ];
-  } else {
-    editItems = @[
-      [self cardholderNameItem:isEditing],
-      [self cardNumberItem:isEditing],
-      [self expirationMonthItem:isEditing],
-      [self expirationYearItem:isEditing],
-    ];
-  }
+  NSArray<AutofillEditItem*>* editItems = @[
+    [self cardNumberItem:isEditing],
+    [self expirationMonthItem:isEditing],
+    [self expirationYearItem:isEditing],
+    [self cardholderNameItem:isEditing],
+    [self nicknameItem:isEditing],
+  ];
 
   [model addSectionWithIdentifier:SectionIdentifierFields];
   for (AutofillEditItem* item in editItems) {
@@ -404,12 +394,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   nicknameItem.hideIcon = !isEditing;
   nicknameItem.delegate = self;
   return nicknameItem;
-}
-
-// Returns whether card nickname managment feature is enabled.
-- (BOOL)isCardNicknameManagementEnabled {
-  return base::FeatureList::IsEnabled(
-      autofill::features::kAutofillEnableCardNicknameManagement);
 }
 
 @end

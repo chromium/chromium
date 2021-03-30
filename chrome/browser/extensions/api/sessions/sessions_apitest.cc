@@ -41,7 +41,7 @@
 #include "extensions/common/extension_builder.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/constants/chromeos_switches.h"
+#include "ash/constants/ash_switches.h"
 #endif
 
 namespace utils = extension_function_test_utils;
@@ -188,7 +188,7 @@ void ExtensionSessionsTest::SetUpOnMainThread() {
 void ExtensionSessionsTest::CreateTestExtension() {
   extension_ = ExtensionBuilder("Test")
                    .AddPermissions({"sessions", "tabs"})
-                   .SetLocation(Manifest::INTERNAL)
+                   .SetLocation(mojom::ManifestLocation::kInternal)
                    .Build();
 }
 

@@ -38,6 +38,19 @@ static_library("skia_image_filter_converter") {
     all_dependent_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
   }
 }
+
+source_set("url_proto_converter") {
+  sources = [
+    "url_proto_converter.cc",
+    "url_proto_converter.h",
+  ]
+  deps = [ ":url_proto" ]
+}
+
 proto_library("skia_image_filter_proto") {
   sources = [ "skia_image_filter.proto" ]
+}
+
+proto_library("url_proto") {
+  sources = [ "url.proto" ]
 }

@@ -24,7 +24,7 @@
 #include "components/blocked_content/popup_tracker.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
-#include "components/embedder_support/android/util/user_agent_utils.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/find_in_page/find_types.h"
 #include "components/js_injection/browser/js_communication_host.h"
@@ -37,6 +37,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/ukm/content/source_url_recorder.h"
+#include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webrtc/media_stream_devices_controller.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -79,7 +80,6 @@
 #include "weblayer/browser/profile_impl.h"
 #include "weblayer/browser/subresource_filter_client_impl.h"
 #include "weblayer/browser/translate_client_impl.h"
-#include "weblayer/browser/user_agent.h"
 #include "weblayer/browser/weblayer_features.h"
 #include "weblayer/common/isolated_world_ids.h"
 #include "weblayer/public/fullscreen_delegate.h"
@@ -375,6 +375,8 @@ TabImpl::TabImpl(ProfileImpl* profile,
 
   // PrerenderTabHelper adds a WebContentsObserver.
   PrerenderTabHelper::CreateForWebContents(web_contents_.get());
+
+  webapps::InstallableManager::CreateForWebContents(web_contents_.get());
 }
 
 TabImpl::~TabImpl() {
@@ -479,7 +481,7 @@ NavigationController* TabImpl::GetNavigationController() {
   return navigation_controller_.get();
 }
 
-void TabImpl::ExecuteScript(const base::string16& script,
+void TabImpl::ExecuteScript(const std::u16string& script,
                             bool use_separate_isolate,
                             JavaScriptResultCallback callback) {
   if (use_separate_isolate) {
@@ -505,9 +507,9 @@ const std::map<std::string, std::string>& TabImpl::GetData() {
   return data_;
 }
 
-base::string16 TabImpl::AddWebMessageHostFactory(
+std::u16string TabImpl::AddWebMessageHostFactory(
     std::unique_ptr<WebMessageHostFactory> factory,
-    const base::string16& js_object_name,
+    const std::u16string& js_object_name,
     const std::vector<std::string>& allowed_origin_rules) {
   if (!js_communication_host_) {
     js_communication_host_ =
@@ -520,13 +522,13 @@ base::string16 TabImpl::AddWebMessageHostFactory(
 }
 
 void TabImpl::RemoveWebMessageHostFactory(
-    const base::string16& js_object_name) {
+    const std::u16string& js_object_name) {
   if (js_communication_host_)
     js_communication_host_->RemoveWebMessageHostFactory(js_object_name);
 }
 
 void TabImpl::ExecuteScriptWithUserGestureForTests(
-    const base::string16& script) {
+    const std::u16string& script) {
   web_contents_->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
       script);
 }
@@ -553,6 +555,12 @@ void TabImpl::SetWebPreferences(blink::web_pref::WebPreferences* prefs) {
   if (!browser_)
     return;
   browser_->SetWebPreferences(prefs);
+}
+
+void TabImpl::OnGainedActive() {
+  web_contents()->GetController().LoadIfNecessary();
+  if (enter_fullscreen_on_gained_active_)
+    EnterFullscreenImpl();
 }
 
 void TabImpl::OnLosingActive() {
@@ -781,7 +789,7 @@ base::android::ScopedJavaLocalRef<jstring> TabImpl::RegisterWebMessageCallback(
   auto proxy = std::make_unique<WebMessageHostFactoryProxy>(client);
   std::vector<std::string> origins;
   base::android::AppendJavaStringArrayToStringVector(env, js_origins, &origins);
-  base::string16 result = AddWebMessageHostFactory(
+  std::u16string result = AddWebMessageHostFactory(
       std::move(proxy),
       base::android::ConvertJavaStringToUTF16(env, js_object_name), origins);
   return base::android::ConvertUTF16ToJavaString(env, result);
@@ -790,7 +798,7 @@ base::android::ScopedJavaLocalRef<jstring> TabImpl::RegisterWebMessageCallback(
 void TabImpl::UnregisterWebMessageCallback(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& js_object_name) {
-  base::string16 name;
+  std::u16string name;
   base::android::ConvertJavaStringToUTF16(env, js_object_name, &name);
   RemoveWebMessageHostFactory(name);
 }
@@ -829,8 +837,9 @@ void TabImpl::SetDesktopUserAgentEnabled(JNIEnv* env, jboolean enable) {
 
   // Reset state that an earlier call to Navigation::SetUserAgentString()
   // could have modified.
-  embedder_support::SetDesktopUserAgentOverride(web_contents_.get(),
-                                                GetUserAgentMetadata());
+  embedder_support::SetDesktopUserAgentOverride(
+      web_contents_.get(), embedder_support::GetUserAgentMetadata(),
+      /* override_in_new_tabs= */ false);
   web_contents_->SetRendererInitiatedUserAgentOverrideOption(
       content::NavigationController::UA_OVERRIDE_INHERIT);
 
@@ -934,7 +943,7 @@ void TabImpl::NavigationStateChanged(content::WebContents* source,
   // be fixed and INVALIDATE_TYPE_LOAD should be removed.
   if (changed_flags &
       (content::INVALIDATE_TYPE_TITLE | content::INVALIDATE_TYPE_LOAD)) {
-    base::string16 title = web_contents_->GetTitle();
+    std::u16string title = web_contents_->GetTitle();
     if (title_ != title) {
       title_ = title;
       for (auto& observer : observers_)
@@ -966,7 +975,7 @@ content::ColorChooser* TabImpl::OpenColorChooser(
 }
 
 void TabImpl::CreateSmsPrompt(content::RenderFrameHost* render_frame_host,
-                              const url::Origin& origin,
+                              const std::vector<url::Origin>& origin_list,
                               const std::string& one_time_code,
                               base::OnceClosure on_confirm,
                               base::OnceClosure on_cancel) {
@@ -974,7 +983,7 @@ void TabImpl::CreateSmsPrompt(content::RenderFrameHost* render_frame_host,
   auto* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
   sms::SmsInfoBar::Create(
-      web_contents, InfoBarService::FromWebContents(web_contents), origin,
+      web_contents, InfoBarService::FromWebContents(web_contents), origin_list,
       one_time_code, std::move(on_confirm), std::move(on_cancel));
 #else
   NOTREACHED();
@@ -1086,21 +1095,28 @@ void TabImpl::EnterFullscreenModeForTab(
     content::RenderFrameHost* requesting_frame,
     const blink::mojom::FullscreenOptions& options) {
   // TODO: support |options|.
+  if (is_fullscreen_) {
+    // Typically EnterFullscreenModeForTab() should not be called consecutively,
+    // but there may be corner cases with oopif that lead to multiple
+    // consecutive calls. Avoid notifying the delegate in this case.
+    return;
+  }
   is_fullscreen_ = true;
-  auto exit_fullscreen_closure = base::BindOnce(&TabImpl::OnExitFullscreen,
-                                                weak_ptr_factory_.GetWeakPtr());
-  base::AutoReset<bool> reset(&processing_enter_fullscreen_, true);
-  fullscreen_delegate_->EnterFullscreen(std::move(exit_fullscreen_closure));
-#if defined(OS_ANDROID)
-  // Make sure browser controls cannot show when the tab is fullscreen.
-  SetBrowserControlsConstraint(ControlsVisibilityReason::kFullscreen,
-                               cc::BrowserControlsState::kHidden);
-#endif
+  if (!IsActive()) {
+    // Process the request the tab is made active.
+    enter_fullscreen_on_gained_active_ = true;
+    return;
+  }
+  EnterFullscreenImpl();
 }
 
 void TabImpl::ExitFullscreenModeForTab(content::WebContents* web_contents) {
+  weak_ptr_factory_for_fullscreen_exit_.InvalidateWeakPtrs();
   is_fullscreen_ = false;
-  fullscreen_delegate_->ExitFullscreen();
+  if (enter_fullscreen_on_gained_active_)
+    enter_fullscreen_on_gained_active_ = false;
+  else
+    fullscreen_delegate_->ExitFullscreen();
 #if defined(OS_ANDROID)
   // Attempt to show browser controls when exiting fullscreen.
   SetBrowserControlsConstraint(ControlsVisibilityReason::kFullscreen,
@@ -1334,7 +1350,9 @@ void TabImpl::InitializeAutofill() {
           autofill::AutofillHandler::DISABLE_AUTOFILL_DOWNLOAD_MANAGER;
 #if defined(OS_ANDROID)
   if (base::FeatureList::IsEnabled(
-          autofill::features::kAndroidAutofillQueryServerFieldTypes)) {
+          autofill::features::kAndroidAutofillQueryServerFieldTypes) &&
+      (!autofill::AutofillProvider::
+           is_download_manager_disabled_for_testing())) {
     enable_autofill_download_manager =
         autofill::AutofillHandler::ENABLE_AUTOFILL_DOWNLOAD_MANAGER;
   }
@@ -1367,6 +1385,22 @@ bool TabImpl::SetDataInternal(const std::map<std::string, std::string>& data) {
   for (auto& observer : data_observers_)
     observer.OnDataChanged(this, data_);
   return true;
+}
+
+void TabImpl::EnterFullscreenImpl() {
+  // This ensures the existing callback is ignored.
+  weak_ptr_factory_for_fullscreen_exit_.InvalidateWeakPtrs();
+
+  auto exit_fullscreen_closure =
+      base::BindOnce(&TabImpl::OnExitFullscreen,
+                     weak_ptr_factory_for_fullscreen_exit_.GetWeakPtr());
+  base::AutoReset<bool> reset(&processing_enter_fullscreen_, true);
+  fullscreen_delegate_->EnterFullscreen(std::move(exit_fullscreen_closure));
+#if defined(OS_ANDROID)
+  // Make sure browser controls cannot show when the tab is fullscreen.
+  SetBrowserControlsConstraint(ControlsVisibilityReason::kFullscreen,
+                               cc::BrowserControlsState::kHidden);
+#endif
 }
 
 }  // namespace weblayer

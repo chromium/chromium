@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<base href="https://www.example.com/some/path.html">
+<script type="module">
+import {callWithKeyDown, share_test} from 'https://{{host}}:{{ports[https][0]}}/wpt_internal/web-share/resources/share-test.js';
+import {ShareError} from 'https://{{host}}:{{ports[https][0]}}/gen/third_party/blink/public/mojom/webshare/share_error.mojom.m.js';
+
+share_test(mock => {
+  const url = 'foo';
+  mock.pushShareResult('', '', 'https://www.example.com/some/foo',
+                       ShareError.OK);
+  return callWithKeyDown(() => navigator.share({url: url}));
+}, 'successful share with a URL relative to document base URL');
+
+</script>

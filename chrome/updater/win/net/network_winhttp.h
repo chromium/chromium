@@ -133,7 +133,7 @@ class NetworkFetcherWinHTTP
   int port_ = 0;
   std::string path_for_request_;
 
-  base::StringPiece16 verb_;
+  base::WStringPiece verb_;
   // The value of Content-Type header, e.g. "application/json".
   std::string content_type_;
   WriteDataCallback write_data_callback_;

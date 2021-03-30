@@ -40,6 +40,9 @@ class AccountConsistencyModeManager : public KeyedService {
   void SetDiceMigrationCompleted();
   // Returns true if migration to Dice is completed.
   static bool IsDiceMigrationCompleted(Profile* profile);
+  // This is a pre-requisite of IsDiceEnabledForProfile(), independent of
+  // particular profile type or profile prefs.
+  static bool IsDiceSignInAllowed();
 #endif
 
   // If true, then account management is done through Gaia webpages.

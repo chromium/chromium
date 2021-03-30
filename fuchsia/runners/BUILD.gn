@@ -137,10 +137,10 @@ fuchsia_package_runner("cast_runner") {
 source_set("cast_runner_test_core") {
   testonly = true
   sources = [
+    "cast/fake_api_bindings.cc",
+    "cast/fake_api_bindings.h",
     "cast/fake_application_config_manager.cc",
     "cast/fake_application_config_manager.h",
-    "cast/test_api_bindings.cc",
-    "cast/test_api_bindings.h",
   ]
   deps = [ ":cast_runner_core" ]
   public_deps = [
@@ -175,9 +175,9 @@ test("cast_runner_integration_tests") {
   deps = [
     ":cast_runner_core",
     ":cast_runner_test_core",
-    "//base/test:run_all_unittests",
     "//base/test:test_support",
     "//components/cast/message_port",
+    "//fuchsia/base:run_all_integration_tests",
     "//fuchsia/base:test_support",
     "//net:test_support",
     "//testing/gtest",
@@ -198,7 +198,11 @@ test("cast_runner_integration_tests") {
       "web_engine",
     ],
   ]
-  manifest = "runners_integration_tests.test-cmx"
+  additional_manifest_fragments = [
+    "//build/config/fuchsia/test/network_capabilities.test-cmx",
+    "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
+    "//build/config/fuchsia/test/web_engine_required_capabilities.test-cmx",
+  ]
 }
 
 test("cast_runner_browsertests") {
@@ -222,6 +226,11 @@ test("cast_runner_browsertests") {
     "//testing/gmock",
     "//testing/gtest",
     "//ui/ozone",
+  ]
+  additional_manifest_fragments = [
+    "//build/config/fuchsia/test/jit_capabilities.test-cmx",
+    "//build/config/fuchsia/test/network_capabilities.test-cmx",
+    "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
   ]
 }
 
@@ -256,10 +265,10 @@ test("web_runner_integration_tests") {
   sources = [ "web/web_runner_smoke_test.cc" ]
   deps = [
     "//base",
-    "//base/test:run_all_unittests",
     "//base/test:test_support",
     "//components/cast/message_port",
     "//fuchsia/base:modular",
+    "//fuchsia/base:run_all_integration_tests",
     "//net:test_support",
     "//testing/gtest",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys",
@@ -274,7 +283,11 @@ test("web_runner_integration_tests") {
       "web_runner",
     ],
   ]
-  manifest = "runners_integration_tests.test-cmx"
+  additional_manifest_fragments = [
+    "//build/config/fuchsia/test/network_capabilities.test-cmx",
+    "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
+    "//build/config/fuchsia/test/web_engine_required_capabilities.test-cmx",
+  ]
 }
 
 if (is_official_build) {

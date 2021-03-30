@@ -49,8 +49,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AndroidAccessoryDiscovery
     std::string guid;
   };
 
-  explicit AndroidAccessoryDiscovery(
-      mojo::Remote<device::mojom::UsbDeviceManager>);
+  // The |request_description| is a string that is sent to the device to
+  // describe the type of request and may appears in permissions UI on the
+  // device.
+  AndroidAccessoryDiscovery(mojo::Remote<device::mojom::UsbDeviceManager>,
+                            std::string request_description);
   ~AndroidAccessoryDiscovery() override;
 
  private:
@@ -98,9 +101,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AndroidAccessoryDiscovery
   void OnAccessoryInterfaceClaimed(
       mojo::Remote<device::mojom::UsbDevice> device,
       InterfaceInfo interface_info,
-      bool success);
+      mojom::UsbClaimInterfaceResult result);
 
   mojo::Remote<device::mojom::UsbDeviceManager> device_manager_;
+  const std::string request_description_;
   mojo::AssociatedReceiver<device::mojom::UsbDeviceManagerClient> receiver_{
       this};
   base::WeakPtrFactory<AndroidAccessoryDiscovery> weak_factory_{this};

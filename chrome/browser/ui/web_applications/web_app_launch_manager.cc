@@ -10,13 +10,13 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
-#include "chrome/browser/banners/app_banner_settings_helper.h"
-#include "chrome/browser/engagement/site_engagement_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -33,7 +33,7 @@
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
-#include "chrome/browser/web_applications/system_web_app_manager.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -41,6 +41,8 @@
 #include "chrome/browser/web_launch/web_launch_files_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/site_engagement/content/site_engagement_service.h"
+#include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
@@ -86,11 +88,39 @@ content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
   return web_contents;
 }
 
+base::Optional<GURL> GetUrlHandlingLaunchUrl(
+    WebAppProvider& provider,
+    const apps::AppLaunchParams& params) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kWebAppEnableUrlHandlers) ||
+      !params.url_handler_launch_url.has_value()) {
+    return base::nullopt;
+  }
+
+  GURL url = params.url_handler_launch_url.value();
+  DCHECK(url.is_valid());
+
+  // If URL is not in scope, default to launch URL for now.
+  // TODO(crbug.com/1072058): Allow developers to handle out-of-scope URL
+  // launch.
+  const std::string app_scope =
+      provider.registrar().GetAppScope(params.app_id).spec();
+  DCHECK(!app_scope.empty());
+  return base::StartsWith(url.spec(), app_scope, base::CompareCase::SENSITIVE)
+             ? url
+             : provider.registrar().GetAppLaunchUrl(params.app_id);
+}
+
 GURL GetLaunchUrl(WebAppProvider& provider,
                   const apps::AppLaunchParams& params,
                   const apps::ShareTarget* share_target) {
   if (!params.override_url.is_empty())
     return params.override_url;
+
+  base::Optional<GURL> url_handler_launch_url =
+      GetUrlHandlingLaunchUrl(provider, params);
+  if (url_handler_launch_url.has_value())
+    return url_handler_launch_url.value();
 
   const GURL app_url =
       share_target ? share_target->action
@@ -100,11 +130,32 @@ GURL GetLaunchUrl(WebAppProvider& provider,
       .value_or(app_url);
 }
 
+bool IsProtocolHandlerCommandLineArg(const base::CommandLine::StringType& arg) {
+#if defined(OS_WIN)
+  GURL url(base::WideToUTF16(arg));
+#else
+  GURL url(arg);
+#endif
+  return url.is_valid();
+}
+
+bool DoesCommandLineContainProtocolUrl(const base::CommandLine& command_line) {
+  for (const auto& arg : command_line.GetArgs()) {
+    if (IsProtocolHandlerCommandLineArg(arg)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 Browser* CreateWebApplicationWindow(Profile* profile,
                                     const std::string& app_id,
-                                    WindowOpenDisposition disposition) {
+                                    WindowOpenDisposition disposition,
+                                    int32_t restore_id,
+                                    bool can_resize,
+                                    bool can_maximize) {
   std::string app_name = GenerateApplicationNameFromAppId(app_id);
   gfx::Rect initial_bounds;
   Browser::CreateParams browser_params =
@@ -116,6 +167,11 @@ Browser* CreateWebApplicationWindow(Profile* profile,
                 app_name, /*trusted_source=*/true, initial_bounds, profile,
                 /*user_gesture=*/true);
   browser_params.initial_show_state = DetermineWindowShowState();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  browser_params.restore_id = restore_id;
+#endif
+  browser_params.can_resize = can_resize;
+  browser_params.can_maximize = can_maximize;
   return Browser::Create(browser_params);
 }
 
@@ -136,8 +192,11 @@ WebAppLaunchManager::~WebAppLaunchManager() = default;
 
 content::WebContents* WebAppLaunchManager::OpenApplication(
     apps::AppLaunchParams&& params) {
-  if (!provider_->registrar().IsInstalled(params.app_id))
+  if (Browser::GetCreationStatusForProfile(profile_) !=
+          Browser::CreationStatus::kOk ||
+      !provider_->registrar().IsInstalled(params.app_id)) {
     return nullptr;
+  }
 
   if (params.container == apps::mojom::LaunchContainer::kLaunchContainerWindow)
     RecordAppWindowLaunch(profile_, params.app_id);
@@ -149,6 +208,7 @@ content::WebContents* WebAppLaunchManager::OpenApplication(
       params.intent ? provider_->registrar().GetAppShareTarget(params.app_id)
                     : nullptr;
   const GURL url = GetLaunchUrl(*provider_, params, share_target);
+  DCHECK(url.is_valid());
 
   // Place new windows on the specified display.
   display::ScopedDisplayForNewWindows scoped_display(params.display_id);
@@ -158,7 +218,7 @@ content::WebContents* WebAppLaunchManager::OpenApplication(
       GetSystemWebAppTypeForAppId(profile_, params.app_id);
   if (system_app_type) {
     Browser* browser =
-        LaunchSystemWebApp(profile_, *system_app_type, url, std::move(params));
+        LaunchSystemWebAppImpl(profile_, *system_app_type, url, params);
     return browser->tab_strip_model()->GetActiveWebContents();
   }
 
@@ -188,8 +248,8 @@ content::WebContents* WebAppLaunchManager::OpenApplication(
       }
     }
     if (!browser) {
-      browser = CreateWebApplicationWindow(profile_, params.app_id,
-                                           params.disposition);
+      browser = CreateWebApplicationWindow(
+          profile_, params.app_id, params.disposition, params.restore_id);
     }
   }
 
@@ -232,9 +292,6 @@ content::WebContents* WebAppLaunchManager::OpenApplication(
   browser->window()->Show();
 
   // TODO(crbug.com/1014328): Populate WebApp metrics instead of Extensions.
-
-  UMA_HISTOGRAM_ENUMERATION("Extensions.HostedAppLaunchContainer",
-                            params.container);
   if (params.container == apps::mojom::LaunchContainer::kLaunchContainerTab) {
     UMA_HISTOGRAM_ENUMERATION("Extensions.AppTabLaunchType",
                               extensions::LAUNCH_TYPE_REGULAR, 100);
@@ -262,18 +319,29 @@ void WebAppLaunchManager::LaunchApplication(
     const std::string& app_id,
     const base::CommandLine& command_line,
     const base::FilePath& current_directory,
+    const base::Optional<GURL>& url_handler_launch_url,
     base::OnceCallback<void(Browser* browser,
                             apps::mojom::LaunchContainer container)> callback) {
   if (!provider_)
     return;
 
+  apps::mojom::AppLaunchSource launch_source =
+      apps::mojom::AppLaunchSource::kSourceCommandLine;
+  if (base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin) &&
+      command_line.HasSwitch(switches::kAppRunOnOsLoginMode)) {
+    launch_source = apps::mojom::AppLaunchSource::kSourceRunOnOsLogin;
+  }
+
   apps::AppLaunchParams params(
       app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::NEW_WINDOW,
-      apps::mojom::AppLaunchSource::kSourceCommandLine);
+      WindowOpenDisposition::NEW_WINDOW, launch_source);
   params.command_line = command_line;
   params.current_directory = current_directory;
-  params.launch_files = apps::GetLaunchFilesFromCommandLine(command_line);
+  if (!DoesCommandLineContainProtocolUrl(command_line)) {
+    params.launch_files = apps::GetLaunchFilesFromCommandLine(command_line);
+  }
+  params.url_handler_launch_url = url_handler_launch_url;
+
   if (base::FeatureList::IsEnabled(
           features::kDesktopPWAsAppIconShortcutsMenu)) {
     params.override_url = GURL(command_line.GetSwitchValueASCII(

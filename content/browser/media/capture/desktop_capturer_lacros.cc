@@ -5,6 +5,7 @@
 #include "content/browser/media/capture/desktop_capturer_lacros.h"
 
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 

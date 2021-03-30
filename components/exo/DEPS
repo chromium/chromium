@@ -1,8 +1,6 @@
 include_rules = [
   "+ash",
   "+cc",
-  "+chromeos/audio/chromeos_sounds.h",
-  "+chromeos/constants/chromeos_features.h",
   "+chromeos/crosapi/cpp/crosapi_constants.h",
   "+chromeos/ui/base",
   "+chromeos/ui/frame",

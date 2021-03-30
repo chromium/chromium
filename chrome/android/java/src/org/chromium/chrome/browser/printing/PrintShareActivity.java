@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.printing;
 
+import android.app.Activity;
+
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeAccessorActivity;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.printing.PrintingController;
 import org.chromium.printing.PrintingControllerImpl;
@@ -19,8 +21,9 @@ import org.chromium.printing.PrintingControllerImpl;
  */
 public class PrintShareActivity extends ChromeAccessorActivity {
     @Override
-    protected void handleAction(ChromeActivity triggeringActivity) {
-        triggeringActivity.onMenuOrKeyboardAction(R.id.print_id, true);
+    protected void handleAction(Activity triggeringActivity,
+            MenuOrKeyboardActionController menuOrKeyboardActionController) {
+        menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.print_id, true);
     }
 
     public static boolean featureIsAvailable(Tab currentTab) {

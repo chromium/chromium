@@ -4,7 +4,7 @@
 
 // https://wicg.github.io/js-self-profiling/#the-profiler-interface
 [Exposed=(Window,Worker), RuntimeEnabled=ExperimentalJSProfiler]
-interface Profiler {
+interface Profiler : EventTarget {
   readonly attribute DOMHighResTimeStamp sampleInterval;
   readonly attribute boolean stopped;
   [CallWith=ScriptState] Promise<ProfilerTrace> stop();

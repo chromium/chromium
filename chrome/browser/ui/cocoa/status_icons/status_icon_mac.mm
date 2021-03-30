@@ -72,7 +72,7 @@ void StatusIconMac::SetImage(const gfx::ImageSkia& image) {
   }
 }
 
-void StatusIconMac::SetToolTip(const base::string16& tool_tip) {
+void StatusIconMac::SetToolTip(const std::u16string& tool_tip) {
   // If we have a status icon menu, make the tool tip part of the menu instead
   // of a pop-up tool tip when hovering the mouse over the image.
   toolTip_.reset([base::SysUTF16ToNSString(tool_tip) retain]);
@@ -86,8 +86,8 @@ void StatusIconMac::SetToolTip(const base::string16& tool_tip) {
 
 void StatusIconMac::DisplayBalloon(
     const gfx::ImageSkia& icon,
-    const base::string16& title,
-    const base::string16& contents,
+    const std::u16string& title,
+    const std::u16string& contents,
     const message_center::NotifierId& notifier_id) {
   notification_.DisplayBalloon(icon, title, contents, notifier_id);
 }

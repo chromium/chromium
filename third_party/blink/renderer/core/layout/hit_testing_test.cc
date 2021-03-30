@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
@@ -31,46 +35,6 @@ class HitTestingTest : public RenderingTest {
     return layout_object->PositionForPoint(hit_result.LocalPoint());
   }
 };
-
-// http://crbug.com/1043471
-TEST_F(HitTestingTest, PseudoElementAfter) {
-  LoadAhem();
-  InsertStyleElement(
-      "body { margin: 0px; font: 10px/10px Ahem; }"
-      "#cd::after { content: 'XYZ'; margin-left: 100px; }");
-  SetBodyInnerHTML("<div id=ab>ab<span id=cd>cd</span></div>");
-  const auto& text_ab = *To<Text>(GetElementById("ab")->firstChild());
-  const auto& text_cd = *To<Text>(GetElementById("cd")->lastChild());
-
-  EXPECT_EQ(PositionWithAffinity(Position(text_ab, 0)),
-            HitTest(PhysicalOffset(5, 5)));
-  // Because of hit testing at "b", position should be |kDownstream|.
-  EXPECT_EQ(PositionWithAffinity(Position(text_ab, 1),
-                                 LayoutNGEnabled() ? TextAffinity::kDownstream
-                                                   : TextAffinity::kUpstream),
-            HitTest(PhysicalOffset(15, 5)));
-  EXPECT_EQ(PositionWithAffinity(Position(text_cd, 0)),
-            HitTest(PhysicalOffset(25, 5)));
-  // Because of hit testing at "d", position should be |kDownstream|.
-  EXPECT_EQ(PositionWithAffinity(Position(text_cd, 1),
-                                 LayoutNGEnabled() ? TextAffinity::kDownstream
-                                                   : TextAffinity::kUpstream),
-            HitTest(PhysicalOffset(35, 5)));
-  // Because of hit testing at right of <span cd>, result position should be
-  // |kUpstream|.
-  EXPECT_EQ(PositionWithAffinity(Position(text_cd, 2),
-                                 LayoutNGEnabled() ? TextAffinity::kUpstream
-                                                   : TextAffinity::kDownstream),
-            HitTest(PhysicalOffset(45, 5)));
-  EXPECT_EQ(PositionWithAffinity(Position(text_cd, 2),
-                                 LayoutNGEnabled() ? TextAffinity::kUpstream
-                                                   : TextAffinity::kDownstream),
-            HitTest(PhysicalOffset(55, 5)));
-  EXPECT_EQ(PositionWithAffinity(Position(text_cd, 2),
-                                 LayoutNGEnabled() ? TextAffinity::kUpstream
-                                                   : TextAffinity::kDownstream),
-            HitTest(PhysicalOffset(65, 5)));
-}
 
 TEST_F(HitTestingTest, OcclusionHitTest) {
   SetBodyInnerHTML(R"HTML(
@@ -170,7 +134,43 @@ TEST_F(HitTestingTest, LegacyInputElementInFragmentTraversal) {
 
   ASSERT_EQ(layout_object->Parent()->GetNode(),
             GetDocument().getElementById("target"));
-  EXPECT_FALSE(hit_result.BoxFragment());
+}
+
+TEST_F(HitTestingTest, ScrolledInline) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    body {
+      margin: 0;
+      font-size: 50px;
+      line-height: 1;
+    }
+    #scroller {
+      width: 400px;
+      height: 5em;
+      overflow: scroll;
+      white-space: pre;
+    }
+    </style>
+    <div id="scroller">line1
+line2
+line3
+line4
+line5
+line6
+line7
+line8
+line9</div>
+  )HTML");
+
+  // Scroll #scroller by 2 lines. "line3" should be at the top.
+  Element* scroller = GetElementById("scroller");
+  scroller->setScrollTop(100);
+
+  const auto& text = *To<Text>(GetElementById("scroller")->firstChild());
+
+  // Expect to hit test position 12 (beginning of line3).
+  EXPECT_EQ(PositionWithAffinity(Position(text, 12)),
+            HitTest(PhysicalOffset(5, 5)));
 }
 
 }  // namespace blink

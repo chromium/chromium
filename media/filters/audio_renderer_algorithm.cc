@@ -17,7 +17,6 @@
 
 namespace media {
 
-
 // Waveform Similarity Overlap-and-add (WSOLA).
 //
 // One WSOLA iteration
@@ -43,8 +42,8 @@ namespace media {
 // 6) Update:
 //    |target_block_| = |optimal_index| + |ola_window_size_| / 2.
 //    |output_index_| = |output_index_| + |ola_window_size_| / 2,
-//    |search_block_center_offset_| = |output_index_| * |playback_rate|, and
-//    |search_block_index_| = |search_block_center_offset_| -
+//    |search_block_center_index| = |output_index_| * |playback_rate|, and
+//    |search_block_index_| = |search_block_center_index| -
 //        |search_block_center_offset_|.
 
 // Overlap-and-add window size in milliseconds.
@@ -123,7 +122,7 @@ void AudioRendererAlgorithm::Initialize(const AudioParameters& params,
   ola_window_size_ =
       AudioTimestampHelper::TimeToFrames(kOlaWindowSize, samples_per_second_);
 
-  // Make sure window size in an even number.
+  // Make sure window size is an even number.
   ola_window_size_ += ola_window_size_ & 1;
   ola_hop_size_ = ola_window_size_ / 2;
 
@@ -185,6 +184,7 @@ int AudioRendererAlgorithm::ResampleAndFill(AudioBus* dest,
                                             int dest_offset,
                                             int requested_frames,
                                             double playback_rate) {
+  SetFillBufferMode(FillBufferMode::kResampler);
   if (!resampler_) {
     resampler_ = std::make_unique<MultiChannelResampler>(
         channels_, playback_rate, SincResampler::kDefaultRequestSize,
@@ -254,6 +254,8 @@ int AudioRendererAlgorithm::FillBuffer(AudioBus* dest,
   // Optimize the most common |playback_rate| ~= 1 case to use a single copy
   // instead of copying frame by frame.
   if (ola_window_size_ <= faster_step && slower_step >= ola_window_size_) {
+    SetFillBufferMode(FillBufferMode::kPassthrough);
+
     const int frames_to_copy =
         std::min(audio_buffer_.frames(), requested_frames);
     const int frames_read =
@@ -266,11 +268,7 @@ int AudioRendererAlgorithm::FillBuffer(AudioBus* dest,
   if (!preserves_pitch_)
     return ResampleAndFill(dest, dest_offset, requested_frames, playback_rate);
 
-  // Destroy the resampler if it was used before, but it's no longer needed
-  // (e.g. before playback rate has changed). This ensures that we don't try to
-  // play later any samples still buffered in the resampler.
-  if (resampler_)
-    resampler_.reset();
+  SetFillBufferMode(FillBufferMode::kWSOLA);
 
   // Allocate structures on first non-1.0 playback rate; these can eat a fair
   // chunk of memory. ~56kB for stereo 48kHz, up to ~765kB for 7.1 192kHz.
@@ -310,6 +308,25 @@ int AudioRendererAlgorithm::FillBuffer(AudioBus* dest,
   } while (rendered_frames < requested_frames &&
            RunOneWsolaIteration(playback_rate));
   return rendered_frames;
+}
+
+void AudioRendererAlgorithm::SetFillBufferMode(FillBufferMode mode) {
+  if (last_mode_ == mode)
+    return;
+
+  // Clear any state from other fill modes so that we don't produce outdated
+  // audio later.
+  if (last_mode_ == FillBufferMode::kWSOLA) {
+    output_time_ = 0.0;
+    search_block_index_ = 0;
+    target_block_index_ = 0;
+    if (wsola_output_)
+      wsola_output_->Zero();
+    num_complete_frames_ = 0;
+  }
+  resampler_.reset();
+
+  last_mode_ = mode;
 }
 
 void AudioRendererAlgorithm::FlushBuffers() {
@@ -413,6 +430,19 @@ int64_t AudioRendererAlgorithm::GetMemoryUsage() const {
 int AudioRendererAlgorithm::BufferedFrames() const {
   return audio_buffer_.frames() +
          (resampler_ ? static_cast<int>(resampler_->BufferedFrames()) : 0);
+}
+
+double AudioRendererAlgorithm::DelayInFrames(double playback_rate) const {
+  int slower_step = std::ceil(ola_window_size_ * playback_rate);
+  int faster_step = std::ceil(ola_window_size_ / playback_rate);
+
+  // When |playback_rate| ~= 1, we read directly from |audio_buffer_|.
+  if (ola_window_size_ <= faster_step && slower_step >= ola_window_size_)
+    return audio_buffer_.frames();
+
+  const float buffered_output_frames = BufferedFrames() / playback_rate;
+  const float unconverted_output_frames = buffered_output_frames - output_time_;
+  return unconverted_output_frames + num_complete_frames_;
 }
 
 bool AudioRendererAlgorithm::CanPerformWsola() const {

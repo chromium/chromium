@@ -27,6 +27,7 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/strings/grit/ui_strings.h"  // Accessibility names
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/frame_caption_button.h"
@@ -116,6 +117,9 @@ std::unique_ptr<views::BoxLayout> MakeBoxLayoutManager(
 class DefaultCaptionButtonModel : public CaptionButtonModel {
  public:
   explicit DefaultCaptionButtonModel(views::Widget* frame) : frame_(frame) {}
+  DefaultCaptionButtonModel(const DefaultCaptionButtonModel&) = delete;
+  DefaultCaptionButtonModel& operator=(const DefaultCaptionButtonModel&) =
+      delete;
   ~DefaultCaptionButtonModel() override {}
 
   // CaptionButtonModel:
@@ -151,14 +155,9 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
 
  private:
   views::Widget* frame_;
-  DISALLOW_COPY_AND_ASSIGN(DefaultCaptionButtonModel);
 };
 
 }  // namespace
-
-// static
-const char FrameCaptionButtonContainerView::kViewClassName[] =
-    "FrameCaptionButtonContainerView";
 
 FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
     views::Widget* frame)
@@ -225,17 +224,17 @@ void FrameCaptionButtonContainerView::SetButtonImage(
   views::FrameCaptionButton* buttons[] = {menu_button_, minimize_button_,
                                           size_button_, close_button_};
   for (size_t i = 0; i < base::size(buttons); ++i) {
-    if (buttons[i]->icon() == icon)
+    if (buttons[i]->GetIcon() == icon)
       buttons[i]->SetImage(icon, views::FrameCaptionButton::ANIMATE_NO,
                            icon_definition);
   }
 }
 
 void FrameCaptionButtonContainerView::SetPaintAsActive(bool paint_as_active) {
-  menu_button_->set_paint_as_active(paint_as_active);
-  minimize_button_->set_paint_as_active(paint_as_active);
-  size_button_->set_paint_as_active(paint_as_active);
-  close_button_->set_paint_as_active(paint_as_active);
+  menu_button_->SetPaintAsActive(paint_as_active);
+  minimize_button_->SetPaintAsActive(paint_as_active);
+  size_button_->SetPaintAsActive(paint_as_active);
+  close_button_->SetPaintAsActive(paint_as_active);
   SchedulePaint();
 }
 
@@ -321,10 +320,6 @@ void FrameCaptionButtonContainerView::Layout() {
 #endif  // DCHECK_IS_ON()
 }
 
-const char* FrameCaptionButtonContainerView::GetClassName() const {
-  return kViewClassName;
-}
-
 void FrameCaptionButtonContainerView::ChildPreferredSizeChanged(View* child) {
   PreferredSizeChanged();
 }
@@ -394,7 +389,7 @@ void FrameCaptionButtonContainerView::SetButtonIcon(
   // The early return is dependent on |animate| because callers use
   // SetButtonIcon() with ANIMATE_NO to progress |button|'s crossfade animation
   // to the end.
-  if (button->icon() == icon &&
+  if (button->GetIcon() == icon &&
       (animate == ANIMATE_YES || !button->IsAnimatingImageSwap())) {
     return;
   }
@@ -451,11 +446,11 @@ void FrameCaptionButtonContainerView::MenuButtonPressed() {
   // Send up event as well as down event as ARC++ clients expect this sequence.
   aura::Window* root_window = GetWidget()->GetNativeWindow()->GetRootWindow();
   ui::KeyEvent press_key_event(ui::ET_KEY_PRESSED, ui::VKEY_APPS, ui::EF_NONE);
-  ignore_result(root_window->GetHost()->event_sink()->OnEventFromSource(
+  ignore_result(root_window->GetHost()->GetEventSink()->OnEventFromSource(
       &press_key_event));
   ui::KeyEvent release_key_event(ui::ET_KEY_RELEASED, ui::VKEY_APPS,
                                  ui::EF_NONE);
-  ignore_result(root_window->GetHost()->event_sink()->OnEventFromSource(
+  ignore_result(root_window->GetHost()->GetEventSink()->OnEventFromSource(
       &release_key_event));
   // TODO(oshima): Add metrics
 }
@@ -539,5 +534,8 @@ void FrameCaptionButtonContainerView::ShowSnapPreview(SnapDirection snap) {
 void FrameCaptionButtonContainerView::CommitSnap(SnapDirection snap) {
   SnapController::Get()->CommitSnap(frame_->GetNativeWindow(), snap);
 }
+
+BEGIN_METADATA(FrameCaptionButtonContainerView, views::View)
+END_METADATA
 
 }  // namespace chromeos

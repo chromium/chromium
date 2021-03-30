@@ -312,7 +312,7 @@ TEST_F(ButtonTest, HoverStatePreservedOnDescendantViewHierarchyChange) {
   event_generator()->MoveMouseTo(button()->GetBoundsInScreen().CenterPoint());
 
   EXPECT_EQ(Button::STATE_HOVERED, button()->GetState());
-  Label* child = new Label(base::string16());
+  Label* child = new Label(std::u16string());
   button()->AddChildView(child);
   delete child;
   EXPECT_EQ(Button::STATE_HOVERED, button()->GetState());
@@ -433,7 +433,7 @@ TEST_F(ButtonTest, GestureEventsRespectDisabledState) {
 
 // Ensure subclasses of Button are correctly recognized as Button.
 TEST_F(ButtonTest, AsButton) {
-  base::string16 text;
+  std::u16string text;
 
   LabelButton label_button(Button::PressedCallback(), text);
   EXPECT_TRUE(Button::AsButton(&label_button));
@@ -927,7 +927,7 @@ TEST_F(ButtonTest, SetStateNotifiesObserver) {
 
 // Verifies setting the tooltip text will call NotifyAccessibilityEvent.
 TEST_F(ButtonTest, SetTooltipTextNotifiesAccessibilityEvent) {
-  base::string16 test_tooltip_text = base::ASCIIToUTF16("Test Tooltip Text");
+  std::u16string test_tooltip_text = u"Test Tooltip Text";
   test::AXEventCounter counter(views::AXEventManager::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged));
   button()->SetTooltipText(test_tooltip_text);

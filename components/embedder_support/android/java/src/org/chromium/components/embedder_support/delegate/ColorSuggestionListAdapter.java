@@ -11,6 +11,7 @@ import android.graphics.drawable.LayerDrawable;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
@@ -77,6 +78,14 @@ public class ColorSuggestionListAdapter extends BaseAdapter implements View.OnCl
         }
         button.setContentDescription(description);
         button.setOnClickListener(this);
+        button.setAccessibilityDelegate(new View.AccessibilityDelegate() {
+            @Override
+            public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfo info) {
+                super.onInitializeAccessibilityNodeInfo(host, info);
+                info.setCollectionItemInfo(
+                        AccessibilityNodeInfo.CollectionItemInfo.obtain(index, 1, 1, 1, false));
+            }
+        });
     }
 
     @Override

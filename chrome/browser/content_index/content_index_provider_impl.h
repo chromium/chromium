@@ -9,7 +9,6 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
 #include "base/optional.h"
 #include "chrome/browser/content_index/content_index_metrics.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -36,6 +35,8 @@ class ContentIndexProviderImpl
       public offline_items_collection::OfflineContentProvider,
       public content::ContentIndexProvider {
  public:
+  static const char kProviderNamespace[];
+
   explicit ContentIndexProviderImpl(Profile* profile);
   ~ContentIndexProviderImpl() override;
 
@@ -73,8 +74,6 @@ class ContentIndexProviderImpl
       const offline_items_collection::ContentId& id,
       base::Optional<offline_items_collection::OfflineItemSchedule> schedule)
       override;
-  void AddObserver(Observer* observer) override;
-  void RemoveObserver(Observer* observer) override;
 
   void SetIconSizesForTesting(std::vector<gfx::Size> icon_sizes) {
     icon_sizes_for_testing_ = std::move(icon_sizes);
@@ -103,7 +102,6 @@ class ContentIndexProviderImpl
   ContentIndexMetrics metrics_;
   offline_items_collection::OfflineContentAggregator* aggregator_;
   site_engagement::SiteEngagementService* site_engagement_service_;
-  base::ObserverList<Observer>::Unchecked observers_;
   base::Optional<std::vector<gfx::Size>> icon_sizes_for_testing_;
   base::WeakPtrFactory<ContentIndexProviderImpl> weak_ptr_factory_{this};
 

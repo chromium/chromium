@@ -13,6 +13,7 @@ namespace printing {
 // static
 void PolicySettings::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterBooleanPref(prefs::kForceEnablePrivetPrinting, false);
   registry->RegisterListPref(prefs::kPrinterTypeDenyList);
   registry->RegisterBooleanPref(prefs::kPrintHeaderFooter, true);
   registry->RegisterIntegerPref(prefs::kPrintingAllowedBackgroundGraphicsModes,

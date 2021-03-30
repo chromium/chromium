@@ -61,10 +61,9 @@ class MutatorHostClient {
       const PropertyAnimationState& mask,
       const PropertyAnimationState& state) = 0;
 
-  virtual void AnimationScalesChanged(ElementId element_id,
-                                      ElementListType list_type,
-                                      float maximum_scale,
-                                      float starting_scale) = 0;
+  virtual void MaximumScaleChanged(ElementId element_id,
+                                   ElementListType list_type,
+                                   float maximum_scale) = 0;
 
   virtual void ScrollOffsetAnimationFinished() = 0;
   virtual gfx::ScrollOffset GetScrollOffsetForAnimation(

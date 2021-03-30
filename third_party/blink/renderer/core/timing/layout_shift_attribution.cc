@@ -31,6 +31,10 @@ Node* LayoutShiftAttribution::node() const {
   return Performance::CanExposeNode(node_) ? node_ : nullptr;
 }
 
+Node* LayoutShiftAttribution::rawNodeForInspector() const {
+  return node_;
+}
+
 DOMRectReadOnly* LayoutShiftAttribution::previousRect() const {
   return previous_rect_;
 }

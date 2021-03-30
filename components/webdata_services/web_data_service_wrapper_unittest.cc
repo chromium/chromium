@@ -58,8 +58,8 @@ class WebDataServiceWrapperTest : public testing::Test {
 // (the task that closes database should be the last one).
 TEST_F(WebDataServiceWrapperTest, ShutdownKeywordWebDataService) {
   TemplateURLData test_keyword;
-  test_keyword.SetShortName(base::ASCIIToUTF16("Foo Bar"));
-  test_keyword.SetKeyword(base::ASCIIToUTF16("foo"));
+  test_keyword.SetShortName(u"Foo Bar");
+  test_keyword.SetKeyword(u"foo");
   test_keyword.SetURL("http://foo.bar");
   test_keyword.id = 1234;
 

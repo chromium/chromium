@@ -39,6 +39,8 @@
 #include "extensions/common/extension_set.h"
 #include "url/gurl.h"
 
+using extensions::mojom::ManifestLocation;
+
 namespace extensions {
 
 BookmarkAppInstallFinalizer::BookmarkAppInstallFinalizer(Profile* profile)
@@ -71,30 +73,33 @@ void BookmarkAppInstallFinalizer::FinalizeInstall(
 
   switch (options.install_source) {
       // TODO(nigeltao/ortuno): should these two cases lead to different
-      // Manifest::Location values: INTERNAL vs EXTERNAL_PREF_DOWNLOAD?
+      // mojom::ManifestLocation values: kInternal vs kExternalPrefDownload?
     case webapps::WebappInstallSource::INTERNAL_DEFAULT:
     case webapps::WebappInstallSource::EXTERNAL_DEFAULT:
-      crx_installer->set_install_source(Manifest::EXTERNAL_PREF_DOWNLOAD);
+      crx_installer->set_install_source(
+          ManifestLocation::kExternalPrefDownload);
       // CrxInstaller::InstallWebApp will OR the creation flags with
       // FROM_BOOKMARK.
       crx_installer->set_creation_flags(Extension::WAS_INSTALLED_BY_DEFAULT);
       break;
     case webapps::WebappInstallSource::EXTERNAL_POLICY:
-      crx_installer->set_install_source(Manifest::EXTERNAL_POLICY_DOWNLOAD);
+      crx_installer->set_install_source(
+          ManifestLocation::kExternalPolicyDownload);
       break;
     case webapps::WebappInstallSource::SYSTEM_DEFAULT:
       // System Apps are considered EXTERNAL_COMPONENT as they are downloaded
       // from the WebUI they point to. COMPONENT seems like the more correct
       // value, but usages (icon loading, filesystem cleanup), are tightly
       // coupled to this value, making it unsuitable.
-      crx_installer->set_install_source(Manifest::EXTERNAL_COMPONENT);
+      crx_installer->set_install_source(ManifestLocation::kExternalComponent);
       // InstallWebApp will OR the creation flags with FROM_BOOKMARK.
       crx_installer->set_creation_flags(Extension::WAS_INSTALLED_BY_DEFAULT);
       break;
     case webapps::WebappInstallSource::ARC:
       // Ensure that WebApk is not synced. There is some mechanism to propagate
       // the local source of data in place of usual extension sync.
-      crx_installer->set_install_source(Manifest::EXTERNAL_PREF_DOWNLOAD);
+      crx_installer->set_install_source(
+          ManifestLocation::kExternalPrefDownload);
       break;
     case webapps::WebappInstallSource::COUNT:
       NOTREACHED();
@@ -189,7 +194,7 @@ void BookmarkAppInstallFinalizer::UninstallExtension(
     return;
   }
 
-  base::string16 error;
+  std::u16string error;
   bool uninstalled =
       ExtensionSystem::Get(profile_)->extension_service()->UninstallExtension(
           app_id, UNINSTALL_REASON_ORPHANED_EXTERNAL_EXTENSION, &error);
@@ -283,8 +288,12 @@ void BookmarkAppInstallFinalizer::OnExtensionUpdated(
   }
 
   if (!is_legacy_finalizer()) {
-    os_integration_manager().UpdateOsHooks(extension->id(), old_name,
-                                           web_app_info);
+    // Using an empty ShortcutInfo here because BookmarkApp* is deprecated.
+    // Note that this code may not correctly update File Handlers on Linux, if
+    // un-deprecated.
+    std::unique_ptr<web_app::ShortcutInfo> old_shortcut = nullptr;
+    os_integration_manager().UpdateOsHooks(
+        extension->id(), old_name, std::move(old_shortcut), web_app_info);
     registrar().NotifyWebAppManifestUpdated(extension->id(), old_name);
   }
   std::move(callback).Run(extension->id(),

@@ -10,6 +10,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.content_public.browser.GlobalFrameRoutingId;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
@@ -64,19 +65,27 @@ class WebContentsObserverProxy extends WebContentsObserver {
         return !mObservers.isEmpty();
     }
 
-    @Override
     @CalledByNative
     public void renderFrameCreated(int renderProcessId, int renderFrameId) {
-        for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
-            mObserversIterator.next().renderFrameCreated(renderProcessId, renderFrameId);
-        }
+        renderFrameCreated(new GlobalFrameRoutingId(renderProcessId, renderFrameId));
     }
 
     @Override
+    public void renderFrameCreated(GlobalFrameRoutingId id) {
+        for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
+            mObserversIterator.next().renderFrameCreated(id);
+        }
+    }
+
     @CalledByNative
     public void renderFrameDeleted(int renderProcessId, int renderFrameId) {
+        renderFrameDeleted(new GlobalFrameRoutingId(renderProcessId, renderFrameId));
+    }
+
+    @Override
+    public void renderFrameDeleted(GlobalFrameRoutingId id) {
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
-            mObserversIterator.next().renderFrameDeleted(renderProcessId, renderFrameId);
+            mObserversIterator.next().renderFrameDeleted(id);
         }
     }
 

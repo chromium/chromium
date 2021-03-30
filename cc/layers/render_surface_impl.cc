@@ -157,8 +157,17 @@ bool RenderSurfaceImpl::HasCopyRequest() const {
   return OwningEffectNode()->has_copy_request;
 }
 
+viz::SubtreeCaptureId RenderSurfaceImpl::SubtreeCaptureId() const {
+  return OwningEffectNode()->subtree_capture_id;
+}
+
 bool RenderSurfaceImpl::ShouldCacheRenderSurface() const {
   return OwningEffectNode()->cache_render_surface;
+}
+
+bool RenderSurfaceImpl::CopyOfOutputRequired() const {
+  return HasCopyRequest() || ShouldCacheRenderSurface() ||
+         SubtreeCaptureId().is_valid();
 }
 
 int RenderSurfaceImpl::TransformTreeIndex() const {
@@ -176,6 +185,11 @@ int RenderSurfaceImpl::EffectTreeIndex() const {
 const EffectNode* RenderSurfaceImpl::OwningEffectNode() const {
   return layer_tree_impl_->property_trees()->effect_tree.Node(
       EffectTreeIndex());
+}
+
+const DocumentTransitionSharedElementId&
+RenderSurfaceImpl::GetDocumentTransitionSharedElementId() const {
+  return OwningEffectNode()->document_transition_shared_element_id;
 }
 
 void RenderSurfaceImpl::SetClipRect(const gfx::Rect& clip_rect) {
@@ -210,7 +224,7 @@ gfx::Rect RenderSurfaceImpl::CalculateExpandedClipForFilters(
 }
 
 gfx::Rect RenderSurfaceImpl::CalculateClippedAccumulatedContentRect() {
-  if (ShouldCacheRenderSurface() || HasCopyRequest() || !is_clipped())
+  if (CopyOfOutputRequired() || !is_clipped())
     return accumulated_content_rect();
 
   if (accumulated_content_rect().IsEmpty())
@@ -377,6 +391,7 @@ RenderSurfaceImpl::CreateRenderPass() {
   pass->backdrop_filters = BackdropFilters();
   pass->backdrop_filter_bounds = BackdropFilterBounds();
   pass->generate_mipmap = TrilinearFiltering();
+  pass->subtree_capture_id = SubtreeCaptureId();
   pass->cache_render_pass = ShouldCacheRenderSurface();
   pass->has_damage_from_contributing_content =
       HasDamageFromeContributingContent();
@@ -413,7 +428,7 @@ void RenderSurfaceImpl::AppendQuads(DrawMode draw_mode,
   }
 
   LayerImpl* mask_layer = BackdropMaskLayer();
-  viz::ResourceId mask_resource_id = 0;
+  viz::ResourceId mask_resource_id = viz::kInvalidResourceId;
   gfx::Size mask_texture_size;
   gfx::RectF mask_uv_rect;
   gfx::Vector2dF surface_contents_scale =

@@ -1,0 +1,16 @@
+Name: Unicode Common Locale Data Repository
+Short Name: cldr
+URL: http://cldr.unicode.org/index/downloads
+Version: 38.1
+License: MIT-like
+License File: LICENSE
+Security Critical: yes
+
+Description:
+The Unicode CLDR provides data files to support internationalisation.
+Currently, this is used to provide emoji keywords and names to facilitate
+search in the Chrome OS emoji picker.
+
+Local Modifications:
+Only the files relevant to English emoji keywords are currently checked out.
+See ./update.sh for details and how to update.

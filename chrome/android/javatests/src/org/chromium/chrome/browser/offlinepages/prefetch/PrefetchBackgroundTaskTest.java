@@ -131,6 +131,11 @@ public class PrefetchBackgroundTaskTest {
         }
 
         @Override
+        public boolean isScheduled(Context context, int taskId) {
+            return (mTasks.get(taskId) != null);
+        }
+
+        @Override
         public void checkForOSUpgrade(Context context) {}
 
         @Override

@@ -252,4 +252,19 @@ FakeRTCRtpTransceiverImpl::FiredDirection() const {
   return base::nullopt;
 }
 
+webrtc::RTCError FakeRTCRtpTransceiverImpl::SetOfferedRtpHeaderExtensions(
+    Vector<webrtc::RtpHeaderExtensionCapability> header_extensions) {
+  return webrtc::RTCError(webrtc::RTCErrorType::UNSUPPORTED_OPERATION);
+}
+
+Vector<webrtc::RtpHeaderExtensionCapability>
+FakeRTCRtpTransceiverImpl::HeaderExtensionsNegotiated() const {
+  return {};
+}
+
+Vector<webrtc::RtpHeaderExtensionCapability>
+FakeRTCRtpTransceiverImpl::HeaderExtensionsToOffer() const {
+  return {};
+}
+
 }  // namespace blink

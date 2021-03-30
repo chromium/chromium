@@ -209,6 +209,21 @@ class BuilderTest(LoggingTestCase):
             {'passed': True})
         self.assertLog([])
 
+    def test_get_full_builder_url(self):
+        fetcher = TestResultsFetcher()
+        self.assertEqual(
+            fetcher.get_full_builder_url('https://storage.googleapis.com',
+                                         'foo bar'),
+            'https://storage.googleapis.com/foo_bar')
+        self.assertEqual(
+            fetcher.get_full_builder_url('https://storage.googleapis.com',
+                                         'foo.bar'),
+            'https://storage.googleapis.com/foo_bar')
+        self.assertEqual(
+            fetcher.get_full_builder_url('https://storage.googleapis.com',
+                                         'foo(bar)'),
+            'https://storage.googleapis.com/foo_bar_')
+
 
 class TestResultsFetcherHelperFunctionTest(unittest.TestCase):
     def test_filter_latest_jobs_empty(self):

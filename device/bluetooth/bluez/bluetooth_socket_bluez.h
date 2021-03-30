@@ -68,7 +68,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothSocketBlueZ
       ErrorCompletionCallback error_callback);
 
   // BluetoothSocket:
-  void Close() override;
   void Disconnect(base::OnceClosure callback) override;
   void Accept(AcceptCompletionCallback success_callback,
               ErrorCompletionCallback error_callback) override;
@@ -134,9 +133,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothSocketBlueZ
   void OnNewConnection(scoped_refptr<BluetoothSocket> socket,
                        ConfirmationCallback callback,
                        Status status);
-
-  // Method run to clean-up a listening socket.
-  void DoCloseListening();
 
   // Unregisters this socket's usage of the Bluetooth profile which cleans up
   // the profile if no one is using it.

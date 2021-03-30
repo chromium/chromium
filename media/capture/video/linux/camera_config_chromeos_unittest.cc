@@ -4,11 +4,10 @@
 
 #include <string>
 
+#include "base/files/file.h"
+#include "base/files/file_util.h"
 #include "media/capture/video/linux/camera_config_chromeos.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#include <base/files/file_util.h>
-#include <base/files/file.h>
 
 namespace media {
 

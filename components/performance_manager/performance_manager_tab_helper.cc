@@ -22,6 +22,7 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace performance_manager {
@@ -185,14 +186,6 @@ void PerformanceManagerTabHelper::RenderFrameCreated(
 void PerformanceManagerTabHelper::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
   auto it = frames_.find(render_frame_host);
-  if (it == frames_.end()) {
-    // https://crbug.com/948088.
-    // At the present time (May 2019), it's possible for speculative render
-    // frame hosts to exist at the time this TabHelper is attached to a
-    // WebContents. These speculative render frame hosts are not exposed in
-    // enumeration, and so may be first observed at deletion time.
-    return;
-  }
   DCHECK(it != frames_.end());
 
   std::unique_ptr<FrameNodeImpl> frame_node = std::move(it->second);
@@ -235,14 +228,10 @@ void PerformanceManagerTabHelper::RenderFrameHostChanged(
   auto it = frames_.find(new_host);
   if (it != frames_.end()) {
     new_frame = it->second.get();
-  } else if (new_host->IsRenderFrameCreated()) {
-    // https://crbug.com/948088.
-    // In the case of speculative frames already existent and created at attach
-    // time, fake the creation event at this point.
-    RenderFrameCreated(new_host);
-
-    new_frame = frames_[new_host].get();
-    DCHECK_NE(nullptr, new_frame);
+  } else {
+    DCHECK(!new_host->IsRenderFrameCreated())
+        << "There shouldn't be a case where RenderFrameHostChanged is "
+           "dispatched before RenderFrameCreated with a live RenderFrame\n";
   }
   // If neither frame could be looked up there's nothing to do.
   if (!old_frame && !new_frame)
@@ -253,7 +242,14 @@ void PerformanceManagerTabHelper::RenderFrameHostChanged(
       FROM_HERE, base::BindOnce(
                      [](FrameNodeImpl* old_frame, FrameNodeImpl* new_frame) {
                        if (old_frame) {
-                         DCHECK(old_frame->is_current());
+                         // Prerendering is a special case where,
+                         // old_frame->is_current() would be set to false.
+                         // Ignore this check when Prerender2 is enabled.
+                         // TODO(https://crbug.com/1177859): Remove this check
+                         // once PerformanceManagerTabHelper is supported with
+                         // Prerender2.
+                         DCHECK(blink::features::IsPrerender2Enabled() ||
+                                old_frame->is_current());
                          old_frame->SetIsCurrent(false);
                        }
                        if (new_frame) {
@@ -263,7 +259,10 @@ void PerformanceManagerTabHelper::RenderFrameHostChanged(
                            // The very first frame to be created is already
                            // current by default. In which case the swap must be
                            // from no frame to a frame.
-                           DCHECK(!old_frame);
+                           // TODO(https://crbug.com/1179682): Make this
+                           // compatible with MPArch.
+                           DCHECK(!old_frame ||
+                                  blink::features::IsPrerender2Enabled());
                          }
                        }
                      },

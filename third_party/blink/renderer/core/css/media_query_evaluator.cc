@@ -47,7 +47,6 @@
 #include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/css/media_query.h"
 #include "third_party/blink/renderer/core/css/media_values_dynamic.h"
-#include "third_party/blink/renderer/core/css/media_values_initial_viewport.h"
 #include "third_party/blink/renderer/core/css/resolver/media_query_result.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -102,12 +101,6 @@ MediaQueryEvaluator::MediaQueryEvaluator(LocalFrame* frame)
 
 MediaQueryEvaluator::MediaQueryEvaluator(const MediaValues& media_values)
     : media_values_(media_values.Copy()) {}
-
-MediaQueryEvaluator::MediaQueryEvaluator(
-    MediaValuesInitialViewport* media_values)
-    : media_values_(media_values) {
-  DCHECK(media_values);
-}
 
 MediaQueryEvaluator::~MediaQueryEvaluator() = default;
 
@@ -987,31 +980,31 @@ static bool ScreenSpanningMediaFeatureEval(const MediaQueryExpValue& value,
           value.id == CSSValueID::kSingleFoldHorizontal);
 }
 
-static bool ScreenFoldPostureMediaFeatureEval(const MediaQueryExpValue& value,
-                                              MediaFeaturePrefix,
-                                              const MediaValues& media_values) {
+static bool DevicePostureMediaFeatureEval(const MediaQueryExpValue& value,
+                                          MediaFeaturePrefix,
+                                          const MediaValues& media_values) {
   // isValid() is false if there is no parameter. Without parameter we should
-  // return true to indicate that screenFoldPosture is enabled in the
+  // return true to indicate that device posture is enabled in the
   // browser.
   if (!value.IsValid())
     return true;
 
   DCHECK(value.is_id);
 
-  ScreenFoldPosture screen_fold_posture = media_values.GetScreenFoldPosture();
+  DevicePosture device_posture = media_values.GetDevicePosture();
   switch (value.id) {
     case CSSValueID::kNoFold:
-      return screen_fold_posture == ScreenFoldPosture::kNoFold;
+      return device_posture == DevicePosture::kNoFold;
     case CSSValueID::kLaptop:
-      return screen_fold_posture == ScreenFoldPosture::kLaptop;
+      return device_posture == DevicePosture::kLaptop;
     case CSSValueID::kFlat:
-      return screen_fold_posture == ScreenFoldPosture::kFlat;
+      return device_posture == DevicePosture::kFlat;
     case CSSValueID::kTent:
-      return screen_fold_posture == ScreenFoldPosture::kTent;
+      return device_posture == DevicePosture::kTent;
     case CSSValueID::kTablet:
-      return screen_fold_posture == ScreenFoldPosture::kTablet;
+      return device_posture == DevicePosture::kTablet;
     case CSSValueID::kBook:
-      return screen_fold_posture == ScreenFoldPosture::kBook;
+      return device_posture == DevicePosture::kBook;
     default:
       NOTREACHED();
       return false;

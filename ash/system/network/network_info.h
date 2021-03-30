@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom-forward.h"
 #include "ui/gfx/image/image_skia.h"
@@ -29,16 +28,20 @@ struct NetworkInfo {
   bool operator!=(const NetworkInfo& other) const { return !(*this == other); }
 
   std::string guid;
-  base::string16 label;
-  base::string16 tooltip;
+  std::u16string label;
+  std::u16string tooltip;
   gfx::ImageSkia image;
   bool disable = false;
   bool secured = false;
   bool connectable = false;
+  bool inhibited = false;
   // Initialized in .cc file because full (non-forward) mojom headers are large.
   chromeos::network_config::mojom::ConnectionStateType connection_state;
   chromeos::network_config::mojom::NetworkType type;
   chromeos::network_config::mojom::OncSource source;
+  // Used by cellular networks, for other network types, activation_status is
+  // set to a default value of kUnknown.
+  chromeos::network_config::mojom::ActivationStateType activation_state;
   int battery_percentage = 0;
   int signal_strength = 0;
 };

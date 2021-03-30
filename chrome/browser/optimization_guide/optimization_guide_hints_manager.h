@@ -22,10 +22,10 @@
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
-#include "components/optimization_guide/hints_component_info.h"
-#include "components/optimization_guide/hints_fetcher.h"
-#include "components/optimization_guide/optimization_guide_decider.h"
-#include "components/optimization_guide/optimization_guide_service_observer.h"
+#include "components/optimization_guide/content/browser/optimization_guide_decider.h"
+#include "components/optimization_guide/core/hints_component_info.h"
+#include "components/optimization_guide/core/hints_fetcher.h"
+#include "components/optimization_guide/core/optimization_hints_component_observer.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "net/nqe/effective_connection_type.h"
@@ -44,11 +44,11 @@ class HintCache;
 class HintsFetcherFactory;
 class OptimizationFilter;
 class OptimizationMetadata;
-class OptimizationGuideService;
 class OptimizationGuideStore;
 enum class OptimizationTargetDecision;
 enum class OptimizationTypeDecision;
 class StoreUpdateData;
+class TabUrlProvider;
 class TopHostProvider;
 }  // namespace optimization_guide
 
@@ -57,16 +57,16 @@ class PrefService;
 class Profile;
 
 class OptimizationGuideHintsManager
-    : public optimization_guide::OptimizationGuideServiceObserver,
+    : public optimization_guide::OptimizationHintsComponentObserver,
       public network::NetworkQualityTracker::EffectiveConnectionTypeObserver,
       public NavigationPredictorKeyedService::Observer {
  public:
   OptimizationGuideHintsManager(
-      optimization_guide::OptimizationGuideService* optimization_guide_service,
       Profile* profile,
       PrefService* pref_service,
       optimization_guide::OptimizationGuideStore* hint_store,
       optimization_guide::TopHostProvider* top_host_provider,
+      optimization_guide::TabUrlProvider* tab_url_provider,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   ~OptimizationGuideHintsManager() override;
@@ -74,7 +74,12 @@ class OptimizationGuideHintsManager
   // Unhooks the observer to |optimization_guide_service_|.
   void Shutdown();
 
-  // optimization_guide::OptimizationGuideServiceObserver implementation:
+  // Returns the OptimizationGuideDecision from |optimization_type_decision|.
+  static optimization_guide::OptimizationGuideDecision
+  GetOptimizationGuideDecisionFromOptimizationTypeDecision(
+      optimization_guide::OptimizationTypeDecision optimization_type_decision);
+
+  // optimization_guide::OptimizationHintsComponentObserver implementation:
   void OnHintsComponentAvailable(
       const optimization_guide::HintsComponentInfo& info) override;
 
@@ -248,24 +253,29 @@ class OptimizationGuideHintsManager
   void OnComponentHintsUpdated(base::OnceClosure update_closure,
                                bool hints_updated);
 
-  // Method to decide whether to fetch new hints for user's top sites and
-  // proceeds to schedule the fetch.
-  void MaybeScheduleTopHostsHintsFetch();
+  // Returns the URLs that are currently in the active tab model that do not
+  // have a hint available in |hint_cache_|.
+  const std::vector<GURL> GetActiveTabURLsToRefresh();
 
-  // Schedules |hints_fetch_timer_| to fire based on:
-  // 1. The update time for the fetched hints in the store and
-  // 2. The last time a fetch attempt was made.
-  void ScheduleTopHostsHintsFetch();
+  // Method to decide whether to fetch new hints for tab URLs and proceeds to
+  // schedule the fetch if so.
+  void MaybeScheduleActiveTabsHintsFetch();
+
+  // Schedules |active_tabs_hints_fetch_timer_| to fire based on the last time a
+  // fetch attempt was made.
+  void ScheduleActiveTabsHintsFetch();
 
   // Called to make a request to fetch hints from the remote Optimization Guide
-  // Service. Used to fetch hints for origins frequently visited by the user.
-  void FetchTopHostsHints();
+  // Service. Used to fetch hints for origins frequently visited by the user and
+  // URLs open in the active tab model.
+  void FetchHintsForActiveTabs();
 
-  // Called when the hints for the top hosts have been fetched from the remote
+  // Called when the hints for active tabs have been fetched from the remote
   // Optimization Guide Service and are ready for parsing. This is used when
   // fetching hints in batch mode.
-  void OnTopHostsHintsFetched(
+  void OnHintsForActiveTabsFetched(
       const base::flat_set<std::string>& hosts_fetched,
+      const base::flat_set<GURL>& urls_fetched,
       base::Optional<
           std::unique_ptr<optimization_guide::proto::GetHintsResponse>>
           get_hints_response);
@@ -288,7 +298,7 @@ class OptimizationGuideHintsManager
 
   // Called when the fetched hints have been stored in |hint_cache| and are
   // ready to be used. This is used when hints were fetched in batch mode.
-  void OnFetchedTopHostsHintsStored();
+  void OnFetchedActiveTabsHintsStored();
 
   // Called when the fetched hints have been stored in |hint_cache| and are
   // ready to be used. This is used when hints were fetched in real-time.
@@ -372,10 +382,6 @@ class OptimizationGuideHintsManager
       const GURL& navigation_url,
       optimization_guide::proto::OptimizationType optimization_type);
 
-  // The OptimizationGuideService that this guide is listening to. Not owned.
-  optimization_guide::OptimizationGuideService* const
-      optimization_guide_service_;
-
   // The information of the latest component delivered by
   // |optimization_guide_service_|.
   base::Optional<optimization_guide::HintsComponentInfo> hints_component_info_;
@@ -457,9 +463,12 @@ class OptimizationGuideHintsManager
   // The top host provider that can be queried. Not owned.
   optimization_guide::TopHostProvider* top_host_provider_ = nullptr;
 
+  // The tab URL provider that can be queried. Not owned.
+  optimization_guide::TabUrlProvider* tab_url_provider_ = nullptr;
+
   // The timer used to schedule fetching hints from the remote Optimization
   // Guide Service.
-  base::OneShotTimer top_hosts_hints_fetch_timer_;
+  base::OneShotTimer active_tabs_hints_fetch_timer_;
 
   // The clock used to schedule fetching from the remote Optimization Guide
   // Service.

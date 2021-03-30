@@ -23,23 +23,17 @@ namespace printing {
 namespace printing_manager {
 namespace {
 
-constexpr char kGeneratedPath[] =
-    "@out_folder@/gen/chromeos/components/print_management/resources/";
-
 void SetUpWebUIDataSource(content::WebUIDataSource* source,
-                          base::span<const GritResourceMap> resources,
-                          const std::string& generated_path,
+                          base::span<const webui::ResourcePath> resources,
                           int default_resource) {
   for (const auto& resource : resources) {
-    std::string path = resource.name;
-    if (path.rfind(generated_path, 0) == 0) {
-      path = path.substr(generated_path.size());
-    }
-    source->AddResourcePath(path, resource.value);
+    source->AddResourcePath(resource.path, resource.id);
   }
   source->SetDefaultResource(default_resource);
   source->AddResourcePath("test_loader.html", IDR_WEBUI_HTML_TEST_LOADER_HTML);
   source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
+  source->AddResourcePath("test_loader_util.js",
+                          IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
 }
 
 void AddPrintManagementStrings(content::WebUIDataSource* html_source) {
@@ -106,9 +100,7 @@ void AddPrintManagementStrings(content::WebUIDataSource* html_source) {
        IDS_PRINT_MANAGEMENT_CANCELED_PRINT_JOB_ARIA_ANNOUNCEMENT},
       {"collapsedPrintingText", IDS_PRINT_MANAGEMENT_COLLAPSE_PRINTING_STATUS}};
 
-  for (const auto& str : kLocalizedStrings) {
-    html_source->AddLocalizedString(str.name, str.id);
-  }
+  html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->UseStringsJs();
 }
 }  // namespace
@@ -127,7 +119,7 @@ PrintManagementUI::PrintManagementUI(
 
   const auto resources = base::make_span(kChromeosPrintManagementResources,
                                          kChromeosPrintManagementResourcesSize);
-  SetUpWebUIDataSource(html_source.get(), resources, kGeneratedPath,
+  SetUpWebUIDataSource(html_source.get(), resources,
                        IDR_PRINT_MANAGEMENT_INDEX_HTML);
 
   html_source->AddResourcePath("printing_manager.mojom-lite.js",

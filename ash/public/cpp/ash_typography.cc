@@ -8,41 +8,39 @@ namespace ash {
 
 void ApplyAshFontStyles(int context,
                         int style,
-                        int* size_delta,
-                        gfx::Font::Weight* font_weight,
-                        std::string* typeface) {
+                        ui::ResourceBundle::FontDetails& details) {
   switch (context) {
     case CONTEXT_SHARESHEET_BUBBLE_BODY_SECONDARY:
-      *size_delta = 1;
+      details.size_delta = 1;
       break;
     case CONTEXT_LAUNCHER_BUTTON:
     case CONTEXT_SHARESHEET_BUBBLE_BODY:
-      *size_delta = 2;
+      details.size_delta = 2;
       break;
     case CONTEXT_TOAST_OVERLAY:
-      *size_delta = 3;
+      details.size_delta = 3;
       break;
     case CONTEXT_SHARESHEET_BUBBLE_TITLE:
-      *size_delta = 4;
-      *typeface = "Google Sans";
+      details.typeface = "Google Sans";
+      details.size_delta = 4;
       break;
     case CONTEXT_TRAY_POPUP_BUTTON:
-      *font_weight = gfx::Font::Weight::MEDIUM;
+      details.weight = gfx::Font::Weight::MEDIUM;
       break;
     case CONTEXT_HEADLINE_OVERSIZED:
-      *size_delta = 15;
+      details.size_delta = 15;
       break;
   }
 
   switch (style) {
     case STYLE_EMPHASIZED:
-      *font_weight = gfx::Font::Weight::SEMIBOLD;
+      details.weight = gfx::Font::Weight::SEMIBOLD;
       break;
     case STYLE_SHARESHEET:
       DCHECK(context == CONTEXT_SHARESHEET_BUBBLE_TITLE ||
              context == CONTEXT_SHARESHEET_BUBBLE_BODY ||
              context == CONTEXT_SHARESHEET_BUBBLE_BODY_SECONDARY);
-      *font_weight = gfx::Font::Weight::MEDIUM;
+      details.weight = gfx::Font::Weight::MEDIUM;
       break;
   }
 }

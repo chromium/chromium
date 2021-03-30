@@ -7,13 +7,13 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/time/default_tick_clock.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "chromeos/dbus/power_manager/policy.pb.h"
@@ -117,14 +117,13 @@ PowerPrefs::PowerPrefs(chromeos::PowerPolicyController* power_policy_controller,
                        chromeos::PowerManagerClient* power_manager_client,
                        PrefService* local_state)
     : power_policy_controller_(power_policy_controller),
-      power_manager_client_observer_(this),
       tick_clock_(base::DefaultTickClock::GetInstance()),
       local_state_(local_state) {
   DCHECK(power_manager_client);
   DCHECK(power_policy_controller_);
   DCHECK(tick_clock_);
 
-  power_manager_client_observer_.Add(power_manager_client);
+  power_manager_client_observation_.Observe(power_manager_client);
   Shell::Get()->session_controller()->AddObserver(this);
 
   // |local_state_| could be null in tests.

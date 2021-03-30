@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <sstream>
+#include <string>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -15,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/sanitizer_buildflags.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_logging_settings.h"
 #include "base/test/task_environment.h"
@@ -122,12 +124,6 @@ TEST_F(LoggingTest, BasicLogging) {
 }
 
 TEST_F(LoggingTest, LogIsOn) {
-#if defined(NDEBUG)
-  const bool kDfatalIsFatal = false;
-#else  // defined(NDEBUG)
-  const bool kDfatalIsFatal = true;
-#endif  // defined(NDEBUG)
-
   SetMinLogLevel(LOGGING_INFO);
   EXPECT_TRUE(LOG_IS_ON(INFO));
   EXPECT_TRUE(LOG_IS_ON(WARNING));
@@ -149,13 +145,14 @@ TEST_F(LoggingTest, LogIsOn) {
   EXPECT_TRUE(LOG_IS_ON(FATAL));
   EXPECT_TRUE(LOG_IS_ON(DFATAL));
 
-  // LOG_IS_ON(FATAL) should always be true.
   SetMinLogLevel(LOGGING_FATAL + 1);
   EXPECT_FALSE(LOG_IS_ON(INFO));
   EXPECT_FALSE(LOG_IS_ON(WARNING));
   EXPECT_FALSE(LOG_IS_ON(ERROR));
+  // LOG_IS_ON(FATAL) should always be true.
   EXPECT_TRUE(LOG_IS_ON(FATAL));
-  EXPECT_EQ(kDfatalIsFatal, LOG_IS_ON(DFATAL));
+  // If DCHECK_IS_ON() then DFATAL is FATAL.
+  EXPECT_EQ(DCHECK_IS_ON(), LOG_IS_ON(DFATAL));
 }
 
 TEST_F(LoggingTest, LoggingIsLazyBySeverity) {
@@ -862,6 +859,45 @@ TEST_F(LoggingTest, LogCrosSyslogFormat) {
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// We define a custom operator<< for std::u16string so we can use it with
+// logging. This tests that conversion.
+TEST_F(LoggingTest, String16) {
+  // Basic stream test.
+  {
+    std::ostringstream stream;
+    stream << "Empty '" << std::u16string() << "' standard '"
+           << std::u16string(u"Hello, world") << "'";
+    EXPECT_STREQ("Empty '' standard 'Hello, world'", stream.str().c_str());
+  }
+
+  // Interesting edge cases.
+  {
+    // These should each get converted to the invalid character: EF BF BD.
+    std::u16string initial_surrogate;
+    initial_surrogate.push_back(0xd800);
+    std::u16string final_surrogate;
+    final_surrogate.push_back(0xdc00);
+
+    // Old italic A = U+10300, will get converted to: F0 90 8C 80 'z'.
+    std::u16string surrogate_pair;
+    surrogate_pair.push_back(0xd800);
+    surrogate_pair.push_back(0xdf00);
+    surrogate_pair.push_back('z');
+
+    // Will get converted to the invalid char + 's': EF BF BD 's'.
+    std::u16string unterminated_surrogate;
+    unterminated_surrogate.push_back(0xd800);
+    unterminated_surrogate.push_back('s');
+
+    std::ostringstream stream;
+    stream << initial_surrogate << "," << final_surrogate << ","
+           << surrogate_pair << "," << unterminated_surrogate;
+
+    EXPECT_STREQ("\xef\xbf\xbd,\xef\xbf\xbd,\xf0\x90\x8c\x80z,\xef\xbf\xbds",
+                 stream.str().c_str());
+  }
+}
 
 }  // namespace
 

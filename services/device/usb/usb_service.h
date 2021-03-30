@@ -40,14 +40,11 @@ class UsbService {
 
     // These events are delivered from the thread on which the UsbService object
     // was created.
-    virtual void OnDeviceAdded(scoped_refptr<UsbDevice> device,
-                               bool is_restricted_device);
-    virtual void OnDeviceRemoved(scoped_refptr<UsbDevice> device,
-                                 bool is_restricted_device);
+    virtual void OnDeviceAdded(scoped_refptr<UsbDevice> device);
+    virtual void OnDeviceRemoved(scoped_refptr<UsbDevice> device);
     // For observers that need to process device removal after others have run.
     // Should not depend on any other service's knowledge of connected devices.
-    virtual void OnDeviceRemovedCleanup(scoped_refptr<UsbDevice> device,
-                                        bool is_restricted_device);
+    virtual void OnDeviceRemovedCleanup(scoped_refptr<UsbDevice> device);
 
     // Notifies the observer that the UsbService it depends on is shutting down.
     virtual void WillDestroyUsbService();
@@ -69,11 +66,8 @@ class UsbService {
 
   scoped_refptr<UsbDevice> GetDevice(const std::string& guid);
 
-  // Enumerates available devices. This base class implementation ignores
-  // |allow_restricted_devices|, but on Chrome OS it controls whether mass
-  // storage devices are returned.
-  virtual void GetDevices(bool allow_restricted_devices,
-                          GetDevicesCallback callback);
+  // Enumerates available devices.
+  virtual void GetDevices(GetDevicesCallback callback);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -87,10 +81,8 @@ class UsbService {
  protected:
   UsbService();
 
-  void NotifyDeviceAdded(scoped_refptr<UsbDevice> device,
-                         bool is_restricted_device);
-  void NotifyDeviceRemoved(scoped_refptr<UsbDevice> device,
-                           bool is_restricted_device);
+  void NotifyDeviceAdded(scoped_refptr<UsbDevice> device);
+  void NotifyDeviceRemoved(scoped_refptr<UsbDevice> device);
 
   // Subclasses must call this method as the first line of their destructor so
   // that observers can clean up before any fields are destroyed.

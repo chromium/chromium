@@ -16,7 +16,7 @@
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/common/autofill_util.h"
-#include "components/sync/model/entity_data.h"
+#include "components/sync/engine/entity_data.h"
 
 using autofill::data_util::TruncateUTF8;
 using sync_pb::AutofillWalletSpecifics;

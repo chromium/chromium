@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 
@@ -44,30 +43,28 @@ bool IsTouchToFillEnabled();
 // starting at token boundaries. |field_contents| can span multiple |suggestion|
 // tokens.
 bool FieldIsSuggestionSubstringStartingOnTokenBoundary(
-    const base::string16& suggestion,
-    const base::string16& field_contents,
+    const std::u16string& suggestion,
+    const std::u16string& field_contents,
     bool case_sensitive);
 
 // Currently, a token for the purposes of this method is defined as {'@'}.
 // Returns true if the |full_string| has a |prefix| as a prefix and the prefix
 // ends on a token.
-bool IsPrefixOfEmailEndingWithAtSign(const base::string16& full_string,
-                                     const base::string16& prefix);
+bool IsPrefixOfEmailEndingWithAtSign(const std::u16string& full_string,
+                                     const std::u16string& prefix);
 
 // Finds the first occurrence of a searched substring |field_contents| within
 // the string |suggestion| starting at token boundaries and returns the index to
-// the end of the located substring, or base::string16::npos if the substring is
+// the end of the located substring, or std::u16string::npos if the substring is
 // not found. "preview-on-hover" feature is one such use case where the
 // substring |field_contents| may not be found within the string |suggestion|.
-size_t GetTextSelectionStart(const base::string16& suggestion,
-                             const base::string16& field_contents,
+size_t GetTextSelectionStart(const std::u16string& suggestion,
+                             const std::u16string& field_contents,
                              bool case_sensitive);
 
 // Returns true if running on a desktop platform. Any platform that is not
 // Android or iOS is considered desktop.
 bool IsDesktopPlatform();
-
-bool ShouldSkipField(const FormFieldData& field);
 
 bool IsCheckable(const FormFieldData::CheckStatus& check_status);
 bool IsChecked(const FormFieldData::CheckStatus& check_status);
@@ -84,7 +81,7 @@ std::vector<std::string> LowercaseAndTokenizeAttributeString(
 // Returns true if and only if the field value has no character except the
 // formatting characters. This means that the field value is a formatting string
 // entered by the website and not a real value entered by the user.
-bool SanitizedFieldIsEmpty(const base::string16& value);
+bool SanitizedFieldIsEmpty(const std::u16string& value);
 
 // Returns true if the first suggestion should be autoselected when the autofill
 // dropdown is shown due to an arrow down event. Enabled on desktop only.

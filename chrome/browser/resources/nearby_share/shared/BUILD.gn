@@ -12,16 +12,7 @@ import("./nearby_shared.gni")
 assert(is_chromeos, "Nearby Share is CrOS only")
 
 os_settings_dir = "$root_gen_dir/chrome/browser/resources/settings/chromeos"
-preprocess_v2_manifest = "preprocessed_v2_manifest.json"
 preprocess_v3_manifest = "preprocessed_v3_manifest.json"
-
-generate_grd("build_v2_grdp") {
-  grd_prefix = "nearby_share"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources_v2.grdp"
-  deps = [ ":preprocess_v2" ]
-  manifest_files = [ "$target_gen_dir/$preprocess_v2_manifest" ]
-  resource_path_prefix = "shared"
-}
 
 generate_grd("build_v3_grdp") {
   grd_prefix = "nearby_share"
@@ -29,38 +20,6 @@ generate_grd("build_v3_grdp") {
   deps = [ ":preprocess_v3" ]
   manifest_files = [ "$target_gen_dir/$preprocess_v3_manifest" ]
   resource_path_prefix = "shared"
-}
-
-preprocess_if_expr("preprocess_v2") {
-  in_folder = "./"
-  out_folder = "$os_settings_dir/preprocess_v2/shared"
-  out_manifest = "$target_gen_dir/$preprocess_v2_manifest"
-  in_files = [
-    "nearby_contact_manager.html",
-    "nearby_contact_manager.js",
-    "nearby_contact_visibility.html",
-    "nearby_contact_visibility.js",
-    "nearby_device_icon.html",
-    "nearby_device_icon.js",
-    "nearby_device.html",
-    "nearby_device.js",
-    "nearby_onboarding_page.html",
-    "nearby_onboarding_page.js",
-    "nearby_page_template.html",
-    "nearby_page_template.js",
-    "nearby_preview.html",
-    "nearby_preview.js",
-    "nearby_progress.html",
-    "nearby_progress.js",
-    "nearby_share_settings.html",
-    "nearby_share_settings.js",
-    "nearby_share_settings_behavior.html",
-    "nearby_share_settings_behavior.js",
-    "nearby_shared_share_type_icons.html",
-    "nearby_shared_icons.html",
-    "nearby_visibility_page.html",
-    "nearby_visibility_page.js",
-  ]
 }
 
 preprocess_if_expr("preprocess_v3") {
@@ -73,6 +32,7 @@ preprocess_if_expr("preprocess_v3") {
     "nearby_contact_visibility.m.js",
     "nearby_device_icon.m.js",
     "nearby_device.m.js",
+    "nearby_metrics_logger.m.js",
     "nearby_onboarding_page.m.js",
     "nearby_page_template.m.js",
     "nearby_preview.m.js",
@@ -86,11 +46,13 @@ preprocess_if_expr("preprocess_v3") {
 }
 
 js_type_check("closure_compile") {
+  uses_legacy_modules = true
   deps = [
     ":nearby_contact_manager",
     ":nearby_contact_visibility",
     ":nearby_device",
     ":nearby_device_icon",
+    ":nearby_metrics_logger",
     ":nearby_onboarding_page",
     ":nearby_page_template",
     ":nearby_preview",
@@ -143,6 +105,9 @@ js_library("nearby_device") {
   ]
 }
 
+js_library("nearby_metrics_logger") {
+}
+
 js_library("nearby_page_template") {
 }
 
@@ -166,6 +131,7 @@ js_library("nearby_progress") {
 
 js_library("nearby_onboarding_page") {
   deps = [
+    ":nearby_metrics_logger",
     ":nearby_page_template",
     ":nearby_share_settings_behavior",
     "//third_party/polymer/v1_0/components-chromium/iron-icon:iron-icon-extracted",
@@ -211,6 +177,7 @@ js_type_check("closure_compile_module") {
     ":nearby_contact_visibility.m",
     ":nearby_device.m",
     ":nearby_device_icon.m",
+    ":nearby_metrics_logger.m",
     ":nearby_onboarding_page.m",
     ":nearby_page_template.m",
     ":nearby_preview.m",
@@ -289,10 +256,11 @@ js_library("nearby_device.m") {
 js_library("nearby_onboarding_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/nearby_share/shared/nearby_onboarding_page.m.js" ]
   deps = [
+    ":nearby_metrics_logger.m",
     ":nearby_page_template.m",
     ":nearby_share_settings_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_link_row:cr_link_row.m",
+    "//ui/webui/resources/cr_elements/cr_link_row:cr_link_row",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
   extra_deps = [ ":nearby_onboarding_page_module" ]
@@ -354,6 +322,12 @@ js_library("nearby_visibility_page.m") {
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
   extra_deps = [ ":nearby_visibility_page_module" ]
+}
+
+js_library("nearby_metrics_logger.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/nearby_share/shared/nearby_metrics_logger.m.js" ]
+  deps = []
+  extra_deps = [ ":modulize" ]
 }
 
 polymer_modulizer("nearby_contact_visibility") {
@@ -435,6 +409,7 @@ polymer_modulizer("nearby_visibility_page") {
 js_modulizer("modulize") {
   input_files = [
     "nearby_contact_manager.js",
+    "nearby_metrics_logger.js",
     "nearby_share_settings.js",
     "nearby_share_settings_behavior.js",
   ]

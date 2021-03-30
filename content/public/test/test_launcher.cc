@@ -35,6 +35,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/tracing/common/tracing_switches.h"
 #include "content/common/url_schemes.h"
 #include "content/public/app/content_main.h"
 #include "content/public/app/content_main_delegate.h"
@@ -213,6 +214,25 @@ base::CommandLine WrapperTestLauncherDelegate::GetCommandLine(
 
   new_cmd_line.AppendSwitchPath(switches::kTestLauncherOutput, *output_file);
 
+  // Selecting sample tests to enable switches::kEnableTracing.
+  if (switches.find(switches::kEnableTracingFraction) != switches.end()) {
+    double enable_tracing_fraction = 0;
+    if (!base::StringToDouble(switches[switches::kEnableTracingFraction],
+                              &enable_tracing_fraction) ||
+        enable_tracing_fraction > 1 || enable_tracing_fraction <= 0) {
+      LOG(ERROR) << switches::kEnableTracingFraction
+                 << " should have range (0,1].";
+    } else {
+      // Assuming the hash of all tests are uniformly distributed across the
+      // domain of the hash result.
+      if (base::PersistentHash(test_name) <=
+          UINT32_MAX * enable_tracing_fraction) {
+        new_cmd_line.AppendSwitch(switches::kEnableTracing);
+      }
+    }
+    switches.erase(switches::kEnableTracingFraction);
+  }
+
   for (base::CommandLine::SwitchMap::const_iterator iter = switches.begin();
        iter != switches.end(); ++iter) {
     new_cmd_line.AppendSwitchNative(iter->first, iter->second);
@@ -345,6 +365,10 @@ int LaunchTests(TestLauncherDelegate* launcher_delegate,
   // end up being launched as a test, which leads to rerunning the test.
   if (command_line->HasSwitch(switches::kProcessType) ||
       command_line->HasSwitch(switches::kLaunchAsBrowser)) {
+    // The main test process has this initialized by the base::TestSuite. But
+    // child processes don't have a TestSuite, and must initialize this
+    // explicitly before ContentMain.
+    TestTimeouts::Initialize();
     return ContentMain(params);
   }
 #endif
@@ -374,6 +398,11 @@ int LaunchTests(TestLauncherDelegate* launcher_delegate,
 
   base::AtExitManager at_exit;
   testing::InitGoogleTest(&argc, argv);
+
+  // The main test process has this initialized by the base::TestSuite. But
+  // this process is just sharding the test off to each main test process, and
+  // doesn't have a TestSuite, so must initialize this explicitly as the
+  // timeouts are used in the TestLauncher.
   TestTimeouts::Initialize();
 
   fprintf(stdout,

@@ -32,6 +32,9 @@ source_set("display") {
 
   public_deps = [ "//remoting/proto" ]
   deps = [
+    "//base",
+    "//remoting/base",
+    "//remoting/client/ui:ui_manipulation",
     "//third_party/libyuv",
     "//third_party/protobuf:protobuf_lite",
     "//third_party/webrtc_overrides:webrtc_component",
@@ -89,6 +92,8 @@ if (is_win) {
 
     deps = [
       ":display",
+      "//base",
+      "//base/test:test_support",
       "//remoting/proto",
       "//testing/gmock",
       "//testing/gtest",

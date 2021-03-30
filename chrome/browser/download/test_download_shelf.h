@@ -21,6 +21,8 @@ class TestDownloadShelf : public DownloadShelf {
   bool IsShowing() const override;
   bool IsClosing() const override;
 
+  views::View* GetView() override;
+
   bool did_add_download() const { return did_add_download_; }
 
  protected:

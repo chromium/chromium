@@ -7,11 +7,9 @@
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/chromeos/policy/device_policy_builder.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
-#include "chrome/browser/chromeos/settings/device_settings_service.h"
-#include "chrome/browser/chromeos/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/chromeos/settings/token_encryptor.h"
 #include "chrome/browser/device_identity/chromeos/device_oauth2_token_store_chromeos.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -79,13 +77,13 @@ class DeviceOAuth2TokenStoreChromeOSTest : public testing::Test {
         new ownership::MockOwnerKeyUtil());
     owner_key_util_->SetPublicKeyFromPrivateKey(
         *device_policy_.GetSigningKey());
-    chromeos::DeviceSettingsService::Get()->SetSessionManager(
+    ash::DeviceSettingsService::Get()->SetSessionManager(
         &session_manager_client_, owner_key_util_);
   }
 
   void TearDown() override {
     base::ThreadPoolInstance::Get()->FlushForTesting();
-    chromeos::DeviceSettingsService::Get()->UnsetSessionManager();
+    ash::DeviceSettingsService::Get()->UnsetSessionManager();
     chromeos::SystemSaltGetter::Shutdown();
     chromeos::CryptohomeClient::Shutdown();
   }
@@ -124,7 +122,7 @@ class DeviceOAuth2TokenStoreChromeOSTest : public testing::Test {
     device_policy_.policy_data().set_service_account_identity(account_id);
     device_policy_.Build();
     session_manager_client_.set_device_policy(device_policy_.GetBlob());
-    chromeos::DeviceSettingsService::Get()->Load();
+    ash::DeviceSettingsService::Get()->Load();
     content::RunAllTasksUntilIdle();
   }
 
@@ -137,8 +135,8 @@ class DeviceOAuth2TokenStoreChromeOSTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState scoped_testing_local_state_;
   chromeos::ScopedStubInstallAttributes scoped_stub_install_attributes_;
-  chromeos::ScopedTestDeviceSettingsService scoped_device_settings_service_;
-  chromeos::ScopedTestCrosSettings scoped_test_cros_settings_{
+  ash::ScopedTestDeviceSettingsService scoped_device_settings_service_;
+  ash::ScopedTestCrosSettings scoped_test_cros_settings_{
       scoped_testing_local_state_.Get()};
   chromeos::FakeSessionManagerClient session_manager_client_;
   policy::DevicePolicyBuilder device_policy_;

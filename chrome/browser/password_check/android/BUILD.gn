@@ -11,7 +11,7 @@ java_cpp_enum("password_check_enums_srcjar") {
 # Wrap the java_cpp_enum in android_library so it can be used by both
 # chrome_java and modules.
 android_library("password_check_java_enums") {
-  deps = [ "//third_party/android_deps:androidx_annotation_annotation_java" ]
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
   srcjar_deps = [ ":password_check_enums_srcjar" ]
 }
 
@@ -41,12 +41,12 @@ android_library("public_java") {
     "//chrome/browser/password_manager/android:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/widget/android:java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//third_party/android_deps:androidx_fragment_fragment_java",
-    "//third_party/android_deps:androidx_preference_preference_java",
-    "//third_party/android_deps:androidx_recyclerview_recyclerview_java",
-    "//third_party/android_deps:androidx_vectordrawable_vectordrawable_java",
     "//third_party/android_deps:material_design_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
   ]
   sources = [
     "java/src/org/chromium/chrome/browser/password_check/PasswordCheck.java",
@@ -87,9 +87,11 @@ junit_binary("password_check_junit_tests") {
     "//chrome/browser/flags:java",
     "//chrome/browser/password_check/android:password_check_java_enums",
     "//chrome/browser/password_check/android:public_java",
+    "//chrome/browser/password_manager/android:java",
     "//chrome/browser/settings:java",
     "//chrome/test/android:chrome_java_test_support",
-    "//third_party/android_deps:androidx_appcompat_appcompat_java",
+    "//components/browser_ui/settings/android:java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
     "//ui/android:ui_full_java",
@@ -127,15 +129,15 @@ android_library("test_java") {
     "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:util_java",
     "//content/public/test/android:content_java_test_support",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//third_party/android_deps:androidx_appcompat_appcompat_java",
-    "//third_party/android_deps:androidx_appcompat_appcompat_resources_java",
-    "//third_party/android_deps:androidx_fragment_fragment_java",
-    "//third_party/android_deps:androidx_recyclerview_recyclerview_java",
-    "//third_party/android_deps:androidx_test_runner_java",
     "//third_party/android_deps:espresso_java",
     "//third_party/android_deps:material_design_java",
     "//third_party/android_sdk:android_test_base_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",

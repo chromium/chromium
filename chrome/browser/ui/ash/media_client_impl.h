@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/chromeos/camera_mic/vm_camera_mic_manager.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -98,6 +99,10 @@ class MediaClientImpl : public ash::MediaClient,
   // delegate. Otherwise, we will forward the action to the extensions API.
   void HandleMediaAction(ui::KeyboardCode code);
 
+  // Shows a notification informing the user that an app is trying to use the
+  // camera while the camera privacy switch is turned on.
+  void ShowCameraOffNotification();
+
   ash::MediaController* media_controller_ = nullptr;
 
   base::flat_map<content::BrowserContext*, ui::MediaKeysListener::Delegate*>
@@ -115,6 +120,12 @@ class MediaClientImpl : public ash::MediaClient,
   // The most recent observed camera privacy switch state.
   cros::mojom::CameraPrivacySwitchState camera_privacy_switch_state_ =
       cros::mojom::CameraPrivacySwitchState::UNKNOWN;
+
+  bool is_camera_active_ = false;
+
+  // Most recent time the notification that the camera privacy switch is on was
+  // shown.
+  base::TimeTicks camera_switch_notification_shown_timestamp_;
 
   base::WeakPtrFactory<MediaClientImpl> weak_ptr_factory_{this};
 

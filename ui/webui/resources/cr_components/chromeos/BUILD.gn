@@ -8,18 +8,15 @@ assert(is_chromeos, "Only ChromeOS components belong here.")
 
 group("closure_compile") {
   deps = [
-    "bluetooth:closure_compile",
     "bluetooth:closure_compile_module",
-    "cellular_setup:closure_compile",
     "cellular_setup:closure_compile_module",
     "multidevice_setup:closure_compile",
+    "multidevice_setup:closure_compile_module",
     "network:closure_compile",
     "network:closure_compile_module",
-    "network_health:closure_compile",
     "network_health:closure_compile_module",
     "quick_unlock:closure_compile",
     "quick_unlock:closure_compile_module",
-    "smb_shares:closure_compile",
     "smb_shares:closure_compile_module",
   ]
 }
@@ -28,6 +25,7 @@ group("polymer3_elements") {
   public_deps = [
     "bluetooth:polymer3_elements",
     "cellular_setup:polymer3_elements",
+    "multidevice_setup:polymer3_elements",
     "network:polymer3_elements",
     "network_health:polymer3_elements",
     "quick_unlock:polymer3_elements",

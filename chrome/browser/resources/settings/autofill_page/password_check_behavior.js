@@ -69,17 +69,6 @@ export const PasswordCheckBehavior = {
       type: Boolean,
       value: true,
     },
-
-    /**
-     * Returns true if passwords weakness check is enabled.
-     * @type {boolean}
-     */
-    passwordsWeaknessCheckEnabled: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('passwordsWeaknessCheck');
-      }
-    },
   },
 
   /**

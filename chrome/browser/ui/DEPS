@@ -8,7 +8,9 @@ include_rules = [
   "+components/enterprise",
   "+components/infobars/android",
   "+components/page_load_metrics/browser",
+  "+components/qr_code_generator",
   "+components/safety_check",
+  "+components/soda",
   "+components/translate/content/android",
   "+services/content/public",
   "+services/device/public/mojom",
@@ -26,4 +28,7 @@ specific_include_rules = {
   "fullscreen_controller_interactive_browsertest\.cc": [
     "+ash/shell.h",
   ],
+  "sad_tab_helper.cc": [
+    "+content/common/content_navigation_policy.h",
+  ]
 }

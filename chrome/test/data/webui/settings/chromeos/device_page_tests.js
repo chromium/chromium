@@ -2,6 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import 'chrome://os-settings/chromeos/os_settings.js';
+// #import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+
+// #import {setDisplayApiForTesting, Router, routes, DevicePageBrowserProxyImpl, IdleBehavior, NoteAppLockScreenSupport, LidClosedBehavior, StorageSpaceState} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {FakeSystemDisplay} from './fake_system_display.m.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
+// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+// #import {flushTasks} from 'chrome://test/test_util.m.js';
+// clang-format on
+
 cr.define('device_page_tests', function() {
   /** @enum {string} */
   const TestNames = {
@@ -14,7 +29,7 @@ cr.define('device_page_tests', function() {
     Power: 'power',
     Storage: 'storage',
     Stylus: 'stylus',
-    KeyboardArrangementDisabled: 'arrow key arrangement disabled',
+    KeyboardArrangementDisabled: 'arrow_key_arrangement_disabled',
   };
 
   /**
@@ -444,7 +459,7 @@ cr.define('device_page_tests', function() {
 
     setup(function(done) {
       fakeSystemDisplay = new settings.FakeSystemDisplay();
-      settings.display.systemDisplayApi = fakeSystemDisplay;
+      settings.setDisplayApiForTesting(fakeSystemDisplay);
 
       PolymerTest.clearBody();
       settings.Router.getInstance().navigateTo(settings.routes.BASIC);
@@ -673,6 +688,8 @@ cr.define('device_page_tests', function() {
             settings.Router.getInstance().getCurrentRoute());
         assertTrue(isVisible(pointersPage.$$('#mouse')));
         assertTrue(isVisible(pointersPage.$$('#mouse h2')));
+        assertTrue(isVisible(pointersPage.$$('#pointingStick')));
+        assertTrue(isVisible(pointersPage.$$('#pointingStick h2')));
         assertTrue(isVisible(pointersPage.$$('#touchpad')));
         assertTrue(isVisible(pointersPage.$$('#touchpad h2')));
 
@@ -681,7 +698,9 @@ cr.define('device_page_tests', function() {
             settings.routes.POINTERS,
             settings.Router.getInstance().getCurrentRoute());
         assertTrue(isVisible(pointersPage.$$('#mouse')));
-        assertFalse(isVisible(pointersPage.$$('#mouse h2')));
+        assertTrue(isVisible(pointersPage.$$('#mouse h2')));
+        assertTrue(isVisible(pointersPage.$$('#pointingStick')));
+        assertTrue(isVisible(pointersPage.$$('#pointingStick h2')));
         assertFalse(isVisible(pointersPage.$$('#touchpad')));
         assertFalse(isVisible(pointersPage.$$('#touchpad h2')));
 
@@ -691,6 +710,8 @@ cr.define('device_page_tests', function() {
             settings.Router.getInstance().getCurrentRoute());
         assertTrue(isVisible(pointersPage.$$('#mouse')));
         assertFalse(isVisible(pointersPage.$$('#mouse h2')));
+        assertFalse(isVisible(pointersPage.$$('#pointingStick')));
+        assertFalse(isVisible(pointersPage.$$('#pointingStick h2')));
         assertFalse(isVisible(pointersPage.$$('#touchpad')));
         assertFalse(isVisible(pointersPage.$$('#touchpad h2')));
 
@@ -707,6 +728,8 @@ cr.define('device_page_tests', function() {
             .then(function(page) {
               assertFalse(isVisible(pointersPage.$$('#mouse')));
               assertFalse(isVisible(pointersPage.$$('#mouse h2')));
+              assertFalse(isVisible(pointersPage.$$('#pointingStick')));
+              assertFalse(isVisible(pointersPage.$$('#pointingStick h2')));
               assertTrue(isVisible(pointersPage.$$('#touchpad')));
               assertFalse(isVisible(pointersPage.$$('#touchpad h2')));
 
@@ -716,6 +739,8 @@ cr.define('device_page_tests', function() {
                   settings.Router.getInstance().getCurrentRoute());
               assertTrue(isVisible(pointersPage.$$('#mouse')));
               assertTrue(isVisible(pointersPage.$$('#mouse h2')));
+              assertFalse(isVisible(pointersPage.$$('#pointingStick')));
+              assertFalse(isVisible(pointersPage.$$('#pointingStick h2')));
               assertTrue(isVisible(pointersPage.$$('#touchpad')));
               assertTrue(isVisible(pointersPage.$$('#touchpad h2')));
             });
@@ -732,47 +757,6 @@ cr.define('device_page_tests', function() {
 
         pointersPage.set('prefs.settings.mouse.sensitivity2.value', 5);
         expectEquals(5, slider.pref.value);
-      });
-
-      test('mouse primary button also sets pointing stick', function() {
-        // TODO(crbug.com/1114828): remove once the feature is launched.
-        const dropdown = assert(pointersPage.$$('#mouseSwapButtonDropdown'));
-        function simulateChangeEvent(value) {
-          // TODO(crbug.com/1045266): This code should be deduplicated from
-          // dropdown_menu_tests.js once there's a good place to put it (i.e.
-          // once this test uses Polymer3 so ../test_util.js can be used).
-          const selectElement = dropdown.$$('select');
-          selectElement.value = value;
-          selectElement.dispatchEvent(new CustomEvent('change'));
-          return new Promise(function(resolve) {
-            dropdown.async(resolve);
-          });
-        }
-        expectEquals(false, dropdown.pref.value);
-        return simulateChangeEvent('true').then(function() {
-          expectEquals(
-              true,
-              devicePage.prefs.settings.pointing_stick.primary_right.value);
-        });
-      });
-
-      test('mouse acceleration also sets pointing stick', function() {
-        // TODO(crbug.com/1114828): remove once the feature is launched.
-        const toggle = assert(pointersPage.$$('#mouseAcceleration'));
-        expectEquals(true, toggle.pref.value);
-        toggle.click();
-        expectEquals(
-            false, devicePage.prefs.settings.pointing_stick.acceleration.value);
-      });
-
-      test('mouse speed also sets pointing stick speed', function() {
-        // TODO(crbug.com/1114828): remove once the feature is launched.
-        const slider = assert(pointersPage.$$('#mouse settings-slider'));
-        expectEquals(4, slider.pref.value);
-        MockInteractions.pressAndReleaseKeyOn(
-            slider.$$('cr-slider'), 37, [], 'ArrowLeft');
-        expectEquals(
-            3, devicePage.prefs.settings.pointing_stick.sensitivity.value);
       });
 
       test('touchpad', function() {
@@ -820,93 +804,7 @@ cr.define('device_page_tests', function() {
         expectReverseScrollValue(pointersPage, false);
       });
 
-      test('Deep link to touchpad speed', async () => {
-        return checkDeepLink(
-            settings.routes.POINTERS, '405',
-            pointersPage.$$('#touchpadSensitivity').$$('cr-slider'),
-            'Touchpad speed slider');
-      });
-    });
-
-    suite(assert(TestNames.PointingStick), function() {
-      // TODO(crbug.com/1114828): merge this suite into the Pointers one when
-      // the flag is removed.
-      let pointersPage;
-
-      setup(function() {
-        // We have to set separatePointingStickSettings here so it's in effect
-        // when the template is rendered.
-        loadTimeData.overrideValues({separatePointingStickSettings: true});
-        return showAndGetDeviceSubpage('pointers', settings.routes.POINTERS)
-            .then(function(page) {
-              pointersPage = page;
-            });
-      });
-
-      test('subpage responds to pointer attach/detach', function() {
-        assertEquals(
-            settings.routes.POINTERS,
-            settings.Router.getInstance().getCurrentRoute());
-        assertTrue(isVisible(pointersPage.$$('#mouse')));
-        assertTrue(isVisible(pointersPage.$$('#mouse h2')));
-        assertTrue(isVisible(pointersPage.$$('#pointingStick')));
-        assertTrue(isVisible(pointersPage.$$('#pointingStick h2')));
-        assertTrue(isVisible(pointersPage.$$('#touchpad')));
-        assertTrue(isVisible(pointersPage.$$('#touchpad h2')));
-
-        cr.webUIListenerCallback('has-touchpad-changed', false);
-        assertEquals(
-            settings.routes.POINTERS,
-            settings.Router.getInstance().getCurrentRoute());
-        assertTrue(isVisible(pointersPage.$$('#mouse')));
-        assertTrue(isVisible(pointersPage.$$('#mouse h2')));
-        assertTrue(isVisible(pointersPage.$$('#pointingStick')));
-        assertTrue(isVisible(pointersPage.$$('#pointingStick h2')));
-        assertFalse(isVisible(pointersPage.$$('#touchpad')));
-        assertFalse(isVisible(pointersPage.$$('#touchpad h2')));
-
-        cr.webUIListenerCallback('has-pointing-stick-changed', false);
-        assertEquals(
-            settings.routes.POINTERS,
-            settings.Router.getInstance().getCurrentRoute());
-        assertTrue(isVisible(pointersPage.$$('#mouse')));
-        assertFalse(isVisible(pointersPage.$$('#mouse h2')));
-        assertFalse(isVisible(pointersPage.$$('#pointingStick')));
-        assertFalse(isVisible(pointersPage.$$('#pointingStick h2')));
-        assertFalse(isVisible(pointersPage.$$('#touchpad')));
-        assertFalse(isVisible(pointersPage.$$('#touchpad h2')));
-
-        cr.webUIListenerCallback('has-mouse-changed', false);
-        assertEquals(
-            settings.routes.DEVICE,
-            settings.Router.getInstance().getCurrentRoute());
-        assertFalse(isVisible(devicePage.$$('#main #pointersRow')));
-
-        cr.webUIListenerCallback('has-touchpad-changed', true);
-        assertTrue(isVisible(devicePage.$$('#main #pointersRow')));
-        return showAndGetDeviceSubpage('pointers', settings.routes.POINTERS)
-            .then(function(page) {
-              assertFalse(isVisible(page.$$('#mouse')));
-              assertFalse(isVisible(page.$$('#mouse h2')));
-              assertFalse(isVisible(page.$$('#pointingStick')));
-              assertFalse(isVisible(page.$$('#pointingStick h2')));
-              assertTrue(isVisible(page.$$('#touchpad')));
-              assertFalse(isVisible(page.$$('#touchpad h2')));
-
-              cr.webUIListenerCallback('has-mouse-changed', true);
-              assertEquals(
-                  settings.routes.POINTERS,
-                  settings.Router.getInstance().getCurrentRoute());
-              assertTrue(isVisible(page.$$('#mouse')));
-              assertTrue(isVisible(page.$$('#mouse h2')));
-              assertFalse(isVisible(page.$$('#pointingStick')));
-              assertFalse(isVisible(page.$$('#pointingStick h2')));
-              assertTrue(isVisible(page.$$('#touchpad')));
-              assertTrue(isVisible(page.$$('#touchpad h2')));
-            });
-      });
-
-      test('acceleration toggle sets and responds to preference', function() {
+      test('pointing stick acceleration toggle', function() {
         const toggle = assert(pointersPage.$$('#pointingStickAcceleration'));
         expectEquals(true, toggle.pref.value);
         toggle.click();
@@ -918,7 +816,7 @@ cr.define('device_page_tests', function() {
         expectEquals(true, toggle.pref.value);
       });
 
-      test('speed slider sets and responds to preference', function() {
+      test('pointing stick speed slider', function() {
         const slider =
             assert(pointersPage.$$('#pointingStick settings-slider'));
         expectEquals(4, slider.pref.value);
@@ -931,25 +829,32 @@ cr.define('device_page_tests', function() {
         expectEquals(5, slider.pref.value);
       });
 
-      test('deep link to primary button setting', async () => {
+      test('Deep link to pointing stick primary button setting', async () => {
         return checkDeepLink(
             settings.routes.POINTERS, '437',
             pointersPage.$$('#pointingStickSwapButtonDropdown').$$('select'),
             'Pointing stick primary button dropdown');
       });
 
-      test('deep link to acceleration setting', async () => {
+      test('Deep link to pointing stick acceleration setting', async () => {
         return checkDeepLink(
             settings.routes.POINTERS, '436',
             pointersPage.$$('#pointingStickAcceleration').$$('cr-toggle'),
             'Pointing stick acceleration slider');
       });
 
-      test('deep link to speed setting', async () => {
+      test('Deep link to pointing stick speed setting', async () => {
         return checkDeepLink(
             settings.routes.POINTERS, '435',
             pointersPage.$$('#pointingStickSpeedSlider').$$('cr-slider'),
             'Pointing stick speed slider');
+      });
+
+      test('Deep link to touchpad speed', async () => {
+        return checkDeepLink(
+            settings.routes.POINTERS, '405',
+            pointersPage.$$('#touchpadSensitivity').$$('cr-slider'),
+            'Touchpad speed slider');
       });
     });
 
@@ -1048,6 +953,7 @@ cr.define('device_page_tests', function() {
         MockInteractions.pressAndReleaseKeyOn(
             keyboardPage.$$('#repeatRateSlider').$$('cr-slider'), 39, [],
             'ArrowRight');
+        await test_util.flushTasks();
         expectEquals(1000, get('xkb_auto_repeat_delay_r2'));
         expectEquals(300, get('xkb_auto_repeat_interval_r2'));
 
@@ -1547,7 +1453,6 @@ cr.define('device_page_tests', function() {
                     settings.DevicePageBrowserProxyImpl.getInstance()
                         .updatePowerStatusCalled_);
 
-                acIdleSelect = assert(powerPage.$$('#acIdleSelect'));
                 lidClosedToggle = assert(powerPage.$$('#lidClosedToggle'));
 
                 assertEquals(
@@ -1587,9 +1492,21 @@ cr.define('device_page_tests', function() {
 
           // Power source row is hidden since there's no battery.
           assertTrue(powerSourceRow.hidden);
-          // Idle settings while on battery should not be visible if the
-          // battery is not present.
+          // Idle settings while on battery and while charging should not be
+          // visible if the battery is not present.
           assertEquals(null, powerPage.$$('#batteryIdleSettingBox'));
+          assertEquals(null, powerPage.$$('#acIdleSettingBox'));
+
+          const acIdleSelect = assert(powerPage.$$('#noBatteryAcIdleSelect'));
+          // Expect the "When idle" dropdown options to appear instead.
+          assert(acIdleSelect);
+
+          // Select a "When idle" selection and expect it to be set.
+          selectValue(acIdleSelect, settings.IdleBehavior.DISPLAY_ON);
+          expectEquals(
+              settings.IdleBehavior.DISPLAY_ON,
+              settings.DevicePageBrowserProxyImpl.getInstance()
+                  .acIdleBehavior_);
         });
 
         test('power sources', function() {
@@ -1666,6 +1583,19 @@ cr.define('device_page_tests', function() {
         });
 
         test('set AC idle behavior', function() {
+          const batteryStatus = {
+            present: true,
+            charging: false,
+            calculating: false,
+            percent: 50,
+            statusText: '5 hours left',
+          };
+          cr.webUIListenerCallback(
+              'battery-status-changed', Object.assign({}, batteryStatus));
+          setPowerSources([], '', false);
+          Polymer.dom.flush();
+
+          acIdleSelect = assert(powerPage.$$('#acIdleSelect'));
           selectValue(acIdleSelect, settings.IdleBehavior.DISPLAY_ON);
           expectEquals(
               settings.IdleBehavior.DISPLAY_ON,
@@ -1885,6 +1815,7 @@ cr.define('device_page_tests', function() {
                 });
               })
               .then(function() {
+                acIdleSelect = assert(powerPage.$$('#acIdleSelect'));
                 const batteryIdleSelect =
                     assert(powerPage.$$('#batteryIdleSelect'));
                 expectEquals(
@@ -1971,6 +1902,7 @@ cr.define('device_page_tests', function() {
                    powerPage.async(resolve);
                  })
               .then(function() {
+                acIdleSelect = assert(powerPage.$$('#acIdleSelect'));
                 const batteryIdleSelect =
                     assert(powerPage.$$('#batteryIdleSelect'));
                 expectEquals(
@@ -2794,5 +2726,6 @@ cr.define('device_page_tests', function() {
     });
   });
 
+  // #cr_define_end
   return {TestNames: TestNames};
 });

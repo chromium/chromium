@@ -7,13 +7,13 @@
 
 #include <stdint.h>
 
+#include <string>
 #include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "chrome/utility/importer/importer.h"
 #include "components/favicon_base/favicon_usage_data.h"
 
@@ -34,7 +34,7 @@ class IEImporter : public Importer {
   // A struct that hosts the information of IE Favorite folder.
   struct FavoritesInfo {
     base::FilePath path;
-    base::string16 links_folder;
+    std::u16string links_folder;
   };
 
   // IE PStore subkey GUID: AutoComplete password & form data.

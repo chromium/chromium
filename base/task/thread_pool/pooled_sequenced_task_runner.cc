@@ -23,8 +23,10 @@ PooledSequencedTaskRunner::~PooledSequencedTaskRunner() = default;
 bool PooledSequencedTaskRunner::PostDelayedTask(const Location& from_here,
                                                 OnceClosure closure,
                                                 TimeDelta delay) {
-  if (!PooledTaskRunnerDelegate::Exists())
+  if (!PooledTaskRunnerDelegate::MatchesCurrentDelegate(
+          pooled_task_runner_delegate_)) {
     return false;
+  }
 
   Task task(from_here, std::move(closure), delay);
 

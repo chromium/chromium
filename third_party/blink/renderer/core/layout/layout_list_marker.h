@@ -51,6 +51,7 @@ class CORE_EXPORT LayoutListMarker final : public LayoutBox {
   String TextAlternative() const;
 
   ListMarker::ListStyleCategory GetListStyleCategory() const;
+  const CounterStyle& GetCounterStyle() const;
 
   bool IsInside() const;
 
@@ -116,6 +117,7 @@ class CORE_EXPORT LayoutListMarker final : public LayoutBox {
 
   void UpdateMarkerImageIfNeeded(StyleImage* image);
   void ListStyleTypeChanged();
+  void CounterStyleChanged();
 
   String text_;
   Persistent<StyleImage> image_;

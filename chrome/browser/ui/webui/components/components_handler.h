@@ -8,8 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/scoped_observer.h"
-#include "base/strings/string16.h"
+#include "base/scoped_observation.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/update_client/update_client.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -43,8 +42,8 @@ class ComponentsHandler : public content::WebUIMessageHandler,
   void OnEvent(Events event, const std::string& id) override;
 
  private:
-  static base::string16 ComponentEventToString(Events event);
-  static base::string16 ServiceStatusToString(
+  static std::u16string ComponentEventToString(Events event);
+  static std::u16string ServiceStatusToString(
       update_client::ComponentState state);
 
   std::unique_ptr<base::ListValue> LoadComponents();
@@ -53,9 +52,9 @@ class ComponentsHandler : public content::WebUIMessageHandler,
   // Weak pointer; injected for testing.
   component_updater::ComponentUpdateService* const component_updater_;
 
-  ScopedObserver<component_updater::ComponentUpdateService,
-                 component_updater::ComponentUpdateService::Observer>
-      observer_{this};
+  base::ScopedObservation<component_updater::ComponentUpdateService,
+                          component_updater::ComponentUpdateService::Observer>
+      observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_COMPONENTS_COMPONENTS_HANDLER_H_

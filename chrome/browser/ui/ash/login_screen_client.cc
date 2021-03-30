@@ -10,21 +10,21 @@
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/login_screen_model.h"
 #include "base/bind.h"
+#include "chrome/browser/ash/login/existing_user_controller.h"
+#include "chrome/browser/ash/login/help_app_launcher.h"
+#include "chrome/browser/ash/login/lock/screen_locker.h"
+#include "chrome/browser/ash/login/login_auth_recorder.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
+#include "chrome/browser/ash/login/reauth_stats.h"
+#include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
+#include "chrome/browser/ash/login/saml/in_session_password_sync_manager_factory.h"
+#include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/ui/user_adding_screen.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/child_accounts/parent_access_code/parent_access_service.h"
-#include "chrome/browser/chromeos/login/existing_user_controller.h"
-#include "chrome/browser/chromeos/login/help_app_launcher.h"
-#include "chrome/browser/chromeos/login/lock/screen_locker.h"
-#include "chrome/browser/chromeos/login/login_auth_recorder.h"
-#include "chrome/browser/chromeos/login/login_pref_names.h"
-#include "chrome/browser/chromeos/login/reauth_stats.h"
-#include "chrome/browser/chromeos/login/saml/in_session_password_sync_manager.h"
-#include "chrome/browser/chromeos/login/saml/in_session_password_sync_manager_factory.h"
-#include "chrome/browser/chromeos/login/ui/login_display_host.h"
-#include "chrome/browser/chromeos/login/ui/user_adding_screen.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client.h"
+#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_reauth_dialogs.h"
 #include "chrome/browser/ui/webui/chromeos/login/l10n_util.h"
@@ -137,9 +137,10 @@ void LoginScreenClient::AuthenticateUserWithChallengeResponse(
   }
 }
 
-bool LoginScreenClient::ValidateParentAccessCode(const AccountId& account_id,
-                                                 const std::string& access_code,
-                                                 base::Time validation_time) {
+ash::ParentCodeValidationResult LoginScreenClient::ValidateParentAccessCode(
+    const AccountId& account_id,
+    const std::string& access_code,
+    base::Time validation_time) {
   return chromeos::parent_access::ParentAccessService::Get()
       .ValidateParentAccessCode(account_id, access_code, validation_time);
 }
@@ -261,7 +262,7 @@ void LoginScreenClient::OnLoginScreenShown() {
 }
 
 void LoginScreenClient::LoadWallpaper(const AccountId& account_id) {
-  WallpaperControllerClient::Get()->ShowUserWallpaper(account_id);
+  WallpaperControllerClientImpl::Get()->ShowUserWallpaper(account_id);
 }
 
 void LoginScreenClient::SignOutUser() {
@@ -342,17 +343,11 @@ void LoginScreenClient::ShowGaiaSigninInternal(
     const user_manager::User* user =
         user_manager::UserManager::Get()->FindUser(prefilled_account);
     Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
-    if (profile->GetPrefs()->GetBoolean(
-            chromeos::prefs::kSamlLockScreenReauthenticationEnabled)) {
-      DCHECK(session_manager::SessionManager::Get()->IsScreenLocked());
-      chromeos::InSessionPasswordSyncManager* password_sync_manager =
-          chromeos::InSessionPasswordSyncManagerFactory::GetForProfile(profile);
-      if (!password_sync_manager->lock_screen_start_reauth_dialog) {
-        password_sync_manager->lock_screen_start_reauth_dialog =
-            std::unique_ptr<chromeos::LockScreenStartReauthDialog>(
-                new chromeos::LockScreenStartReauthDialog());
-      }
-      password_sync_manager->lock_screen_start_reauth_dialog->Show();
+    DCHECK(session_manager::SessionManager::Get()->IsScreenLocked());
+    chromeos::InSessionPasswordSyncManager* password_sync_manager =
+        chromeos::InSessionPasswordSyncManagerFactory::GetForProfile(profile);
+    if (password_sync_manager) {
+      password_sync_manager->CreateAndShowDialog();
     }
   }
-}
+  }

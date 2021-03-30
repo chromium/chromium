@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/printing/cups_print_job_manager.h"
 #include "chrome/browser/chromeos/printing/cups_print_job_manager_factory.h"
@@ -22,7 +23,7 @@
 #include "chrome/browser/chromeos/printing/cups_printers_manager_factory.h"
 #include "chrome/browser/chromeos/printing/ppd_provider_factory.h"
 #include "chrome/browser/chromeos/printing/printer_configurer.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/printing/print_backend_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_utils.h"
 #include "chrome/common/pref_names.h"
@@ -36,6 +37,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "printing/backend/print_backend_consts.h"
 #include "printing/backend/printing_restrictions.h"
+#include "printing/printing_features.h"
 #include "url/gurl.h"
 
 namespace printing {
@@ -63,10 +65,9 @@ PrinterBasicInfo ToBasicInfo(const chromeos::Printer& printer) {
 }
 
 void AddPrintersToList(const std::vector<chromeos::Printer>& printers,
-                       PrinterList* list) {
-  for (const auto& printer : printers) {
-    list->push_back(ToBasicInfo(printer));
-  }
+                       PrinterList& list) {
+  for (const auto& printer : printers)
+    list.push_back(ToBasicInfo(printer));
 }
 
 base::Value FetchCapabilitiesAsync(const std::string& device_name,
@@ -86,6 +87,30 @@ void CapabilitiesFetched(base::Value policies,
   std::move(cb).Run(std::move(printer_info));
 }
 
+void CapabilitiesFetchedFromService(
+    const std::string& device_name,
+    const PrinterBasicInfo& basic_info,
+    bool has_secure_protocol,
+    base::Value policies,
+    LocalPrinterHandlerChromeos::GetCapabilityCallback cb,
+    const base::Optional<PrinterSemanticCapsAndDefaults>& printer_caps) {
+  std::unique_ptr<PrinterSemanticCapsAndDefaults> caps;
+  if (printer_caps.has_value()) {
+    VLOG(1) << "Successfully received printer capabilities from service for "
+            << device_name;
+    caps =
+        std::make_unique<PrinterSemanticCapsAndDefaults>(printer_caps.value());
+  } else {
+    LOG(WARNING) << "Failure fetching printer capabilities from service for "
+                 << device_name;
+  }
+  CapabilitiesFetched(
+      std::move(policies), std::move(cb),
+      AssemblePrinterSettings(device_name, basic_info,
+                              PrinterSemanticCapsAndDefaults::Papers(),
+                              has_secure_protocol, caps.get()));
+}
+
 void FetchCapabilities(const chromeos::Printer& printer,
                        base::Value policies,
                        LocalPrinterHandlerChromeos::GetCapabilityCallback cb) {
@@ -93,13 +118,26 @@ void FetchCapabilities(const chromeos::Printer& printer,
 
   PrinterBasicInfo basic_info = ToBasicInfo(printer);
 
-  // USER_VISIBLE because the result is displayed in the print preview dialog.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&FetchCapabilitiesAsync, printer.id(), basic_info,
-                     printer.HasSecureProtocol(),
-                     g_browser_process->GetApplicationLocale()),
-      base::BindOnce(&CapabilitiesFetched, std::move(policies), std::move(cb)));
+  if (base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers)) {
+    VLOG(1) << "Fetching printer capabilities via service";
+    GetPrintBackendService(g_browser_process->GetApplicationLocale(),
+                           printer.id())
+        ->GetPrinterSemanticCapsAndDefaults(
+            printer.id(),
+            base::BindOnce(&CapabilitiesFetchedFromService, printer.id(),
+                           std::move(basic_info), printer.HasSecureProtocol(),
+                           std::move(policies), std::move(cb)));
+  } else {
+    VLOG(1) << "Fetching printer capabilities in-process";
+    // USER_VISIBLE because the result is displayed in the print preview dialog.
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(&FetchCapabilitiesAsync, printer.id(), basic_info,
+                       printer.HasSecureProtocol(),
+                       g_browser_process->GetApplicationLocale()),
+        base::BindOnce(&CapabilitiesFetched, std::move(policies),
+                       std::move(cb)));
+  }
 }
 
 }  // namespace
@@ -115,7 +153,7 @@ LocalPrinterHandlerChromeos::LocalPrinterHandlerChromeos(
       printers_manager_(printers_manager),
       printer_configurer_(std::move(printer_configurer)),
       ppd_provider_(std::move(ppd_provider)) {
-  // Construct the CupsPrintJobManager to listen for printing events.
+  // Construct the `CupsPrintJobManager` to listen for printing events.
   chromeos::CupsPrintJobManagerFactory::GetForBrowserContext(profile);
 }
 
@@ -168,7 +206,7 @@ void LocalPrinterHandlerChromeos::GetDefaultPrinter(DefaultPrinterCallback cb) {
 void LocalPrinterHandlerChromeos::StartGetPrinters(
     AddedPrintersCallback added_printers_callback,
     GetPrintersDoneCallback done_callback) {
-  // SyncedPrintersManager is not thread safe and must be called from the UI
+  // `SyncedPrintersManager` is not thread safe and must be called from the UI
   // thread.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -177,11 +215,11 @@ void LocalPrinterHandlerChromeos::StartGetPrinters(
 
   PrinterList printer_list;
   AddPrintersToList(printers_manager_->GetPrinters(PrinterClass::kSaved),
-                    &printer_list);
+                    printer_list);
   AddPrintersToList(printers_manager_->GetPrinters(PrinterClass::kEnterprise),
-                    &printer_list);
+                    printer_list);
   AddPrintersToList(printers_manager_->GetPrinters(PrinterClass::kAutomatic),
-                    &printer_list);
+                    printer_list);
 
   ConvertPrinterListForCallback(std::move(added_printers_callback),
                                 std::move(done_callback), printer_list);
@@ -298,7 +336,7 @@ void LocalPrinterHandlerChromeos::HandlePrinterSetup(
         chromeos::PrinterConfigurer::RecordUsbPrinterSetupSource(
             chromeos::UsbPrinterSetupSource::kPrintPreview);
       }
-      // fetch settings on the blocking pool and invoke callback.
+      // Fetch settings off of the UI thread and invoke callback.
       FetchCapabilities(printer, GetNativePrinterPolicies(), std::move(cb));
       return;
     }
@@ -337,7 +375,7 @@ void LocalPrinterHandlerChromeos::HandlePrinterSetup(
 }
 
 void LocalPrinterHandlerChromeos::StartPrint(
-    const base::string16& job_title,
+    const std::u16string& job_title,
     base::Value settings,
     scoped_refptr<base::RefCountedMemory> print_data,
     PrintCallback callback) {

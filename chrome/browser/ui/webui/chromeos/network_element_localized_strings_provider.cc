@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/network_element_localized_strings_provider.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -82,14 +83,25 @@ constexpr webui::LocalizedString kElementLocalizedStrings[] = {
      IDS_NETWORK_LIST_ITEM_LABEL_ESIM_PENDING_PROFILE},
     {"networkListItemLabelESimPendingProfileWithProviderName",
      IDS_NETWORK_LIST_ITEM_LABEL_ESIM_PENDING_PROFILE_WITH_PROVIDER_NAME},
+    {"networkListItemLabelESimPendingProfileInstalling",
+     IDS_NETWORK_LIST_ITEM_LABEL_ESIM_PENDING_PROFILE_INSTALLING},
+    {"networkListItemLabelESimPendingProfileWithProviderNameInstalling",
+     IDS_NETWORK_LIST_ITEM_LABEL_ESIM_PENDING_PROFILE_WITH_PROVIDER_NAME_INSTALLING},
     {"wifiNetworkStatusSecured", IDS_WIFI_NETWORK_STATUS_SECURED},
     {"wifiNetworkStatusUnsecured", IDS_WIFI_NETWORK_STATUS_UNSECURED},
     {"networkListItemNotAvailable", IDS_NETWORK_LIST_NOT_AVAILABLE},
     {"networkListItemScanning", IDS_SETTINGS_INTERNET_MOBILE_SEARCH},
     {"networkListItemSimCardLocked", IDS_NETWORK_LIST_SIM_CARD_LOCKED},
+    {"networkListItemUpdatedCellularSimCardLocked",
+     IDS_NETWORK_LIST_UPDATED_CELLULAR_SIM_CARD_LOCKED},
     {"networkListItemNotConnected", IDS_NETWORK_LIST_NOT_CONNECTED},
     {"networkListItemNoNetwork", IDS_NETWORK_LIST_NO_NETWORK},
     {"networkListItemDownload", IDS_NETWORK_LIST_ITEM_DOWNLOAD},
+    {"networkListItemDownloadA11yLabel",
+     IDS_NETWORK_LIST_ITEM_DOWNLOAD_A11Y_LABEL},
+    {"networkListItemUnlock", IDS_NETWORK_LIST_ITEM_UNLOCK},
+    {"networkListItemUnlockA11YLabel", IDS_NETWORK_LIST_ITEM_UNLOCK_A11Y_LABEL},
+    {"networkListItemAddingProfile", IDS_NETWORK_LIST_ITEM_ADDING_PROFILE},
     {"vpnNameTemplate", IDS_NETWORK_LIST_THIRD_PARTY_VPN_NAME_TEMPLATE},
     {"networkIconLabelEthernet", IDS_NETWORK_ICON_LABEL_ETHERNET},
     {"networkIconLabelVpn", IDS_NETWORK_ICON_LABEL_VPN},
@@ -103,7 +115,7 @@ constexpr webui::LocalizedString kElementLocalizedStrings[] = {
 }  //  namespace
 
 void AddLocalizedStrings(content::WebUIDataSource* html_source) {
-  AddLocalizedStringsBulk(html_source, kElementLocalizedStrings);
+  html_source->AddLocalizedStrings(kElementLocalizedStrings);
 }
 
 void AddLocalizedValuesToBuilder(::login::LocalizedValuesBuilder* builder) {
@@ -123,6 +135,9 @@ void AddOncLocalizedStrings(content::WebUIDataSource* html_source) {
       {"OncCellular-APN-Authentication", IDS_ONC_CELLULAR_APN_AUTHENTICATION},
       {"OncCellular-APN-Password", IDS_ONC_CELLULAR_APN_PASSWORD},
       {"OncCellular-APN-Username", IDS_ONC_CELLULAR_APN_USERNAME},
+      {"OncCellular-APN-Attach", IDS_ONC_CELLULAR_APN_ATTACH},
+      {"OncCellular-APN-Attach_TooltipText",
+       IDS_ONC_CELLULAR_APN_ATTACH_TOOLTIP_TEXT},
       {"OncCellular-ActivationState", IDS_ONC_CELLULAR_ACTIVATION_STATE},
       {"OncCellular-ActivationState_Activated",
        IDS_ONC_CELLULAR_ACTIVATION_STATE_ACTIVATED},
@@ -227,7 +242,7 @@ void AddOncLocalizedStrings(content::WebUIDataSource* html_source) {
       {"Oncipv4-Netmask", IDS_ONC_IPV4_NETMASK},
       {"Oncipv6-IPAddress", IDS_ONC_IPV6_ADDRESS},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
 void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
@@ -279,6 +294,8 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
       {"networkSimChangePin", IDS_SETTINGS_INTERNET_NETWORK_SIM_CHANGE_PIN},
       {"networkSimChangePinTitle",
        IDS_SETTINGS_INTERNET_NETWORK_SIM_CHANGE_PIN_TITLE},
+      {"networkSimLockedTooltip",
+       IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCKED_TOOLTIP},
       {"networkSimEnter", IDS_SETTINGS_INTERNET_NETWORK_SIM_BUTTON_ENTER},
       {"networkSimEnterNewPin",
        IDS_SETTINGS_INTERNET_NETWORK_SIM_ENTER_NEW_PIN},
@@ -290,6 +307,8 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
       {"networkSimEnterPuk", IDS_SETTINGS_INTERNET_NETWORK_SIM_ENTER_PUK},
       {"networkSimLockEnable", IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCK_ENABLE},
       {"networkSimLockedTitle", IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCKED_TITLE},
+      {"networkSimPukDialogSubtitle",
+       IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCKED_PUK_SUBTITLE},
       {"networkSimLockedWarning",
        IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCKED_WARNING},
       {"networkSimReEnterNewPin",
@@ -339,7 +358,11 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
       {"networkProxyWpadNone", IDS_SETTINGS_INTERNET_NETWORK_PROXY_WPAD_NONE},
       {"remove", IDS_REMOVE},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  html_source->AddBoolean(
+      "useAttachApn",
+      base::FeatureList::IsEnabled(chromeos::features::kCellularUseAttachApn));
 }
 
 void AddConfigLocalizedStrings(content::WebUIDataSource* html_source) {
@@ -361,11 +384,11 @@ void AddConfigLocalizedStrings(content::WebUIDataSource* html_source) {
       {"hidePassword", IDS_SETTINGS_PASSWORD_HIDE},
       {"showPassword", IDS_SETTINGS_PASSWORD_SHOW},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddBoolean(
       "showHiddenNetworkWarning",
-      base::FeatureList::IsEnabled(features::kHiddenNetworkWarning));
+      base::FeatureList::IsEnabled(::features::kHiddenNetworkWarning));
 
   // Login screen and public account users can only create shared network
   // configurations. Other users default to unshared network configurations.
@@ -387,10 +410,10 @@ void AddErrorLocalizedStrings(content::WebUIDataSource* html_source) {
       {NetworkConnectionHandler::kErrorPassphraseRequired,
        IDS_NETWORK_ERROR_PASSPHRASE_REQUIRED},
       {"networkErrorUnknown", IDS_NETWORK_ERROR_UNKNOWN},
-      {"networkErrorNotHardwareBacked",
-       IDS_SETTINGS_INTERNET_NETWORK_REQUIRE_HARDWARE_BACKED},
+      {"networkErrorNotAvailableForNetworkAuth",
+       IDS_SETTINGS_INTERNET_NETWORK_NOT_AVAILABLE_FOR_NETWORK_AUTH},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   // Include Shill errors.
   const char* const shill_errors[] = {

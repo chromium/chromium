@@ -60,6 +60,7 @@
     {
       "name": "LayoutNGFlexibleBox (relative positioned) DIV class='sizing-small phase-ready state-stopped'",
       "bounds": [150, 60],
+      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 1
     },

@@ -201,7 +201,7 @@ std::string WrapPrefixUnit(const std::string& re_unit) {
 // can match the expanded prefix regexp. e.g. "abca".
 std::string Prefixalize(const std::string& re_str) {
   // Using UTF16 string for iteration in character basis.
-  base::string16 restr16 = base::UTF8ToUTF16(re_str);
+  std::u16string restr16 = base::UTF8ToUTF16(re_str);
   std::string ret;
   bool escape = false;
   int bracket = -1;

@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
+#include "base/types/pass_key.h"
 #include "content/browser/android/java/gin_java_bound_object.h"
 #include "content/common/android/gin_java_bridge_errors.h"
 #include "content/public/browser/browser_message_filter.h"
@@ -28,6 +29,7 @@ class Message;
 
 namespace content {
 
+class AgentSchedulingGroupHost;
 class GinJavaBridgeDispatcherHost;
 class RenderFrameHost;
 
@@ -50,7 +52,11 @@ class GinJavaBridgeMessageFilter : public BrowserMessageFilter,
   void RemoveHost(GinJavaBridgeDispatcherHost* host);
 
   static scoped_refptr<GinJavaBridgeMessageFilter> FromHost(
-      GinJavaBridgeDispatcherHost* host, bool create_if_not_exists);
+      AgentSchedulingGroupHost& agent_scheduling_group,
+      bool create_if_not_exists);
+
+  GinJavaBridgeMessageFilter(base::PassKey<GinJavaBridgeMessageFilter> pass_key,
+                             AgentSchedulingGroupHost& agent_scheduling_group);
 
  private:
   friend class BrowserThread;
@@ -65,7 +71,6 @@ class GinJavaBridgeMessageFilter : public BrowserMessageFilter,
   //     removed from the WebContents' routing table.
   typedef std::map<int32_t, scoped_refptr<GinJavaBridgeDispatcherHost>> HostMap;
 
-  GinJavaBridgeMessageFilter();
   ~GinJavaBridgeMessageFilter() override;
 
   // Called on the background thread.
@@ -85,6 +90,10 @@ class GinJavaBridgeMessageFilter : public BrowserMessageFilter,
   // Accessed both from UI and background threads.
   HostMap hosts_ GUARDED_BY(hosts_lock_);
   base::Lock hosts_lock_;
+
+  // The `AgentSchedulingGroupHost` that this object is associated with. This
+  // filter is installed on the host's channel.
+  AgentSchedulingGroupHost& agent_scheduling_group_;
 
   // The routing id of the RenderFrameHost whose request we are processing.
   // Used on the background thread.

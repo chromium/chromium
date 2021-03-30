@@ -80,6 +80,7 @@ class CORE_EXPORT SVGImageForContainer final : public Image {
             const cc::PaintFlags&,
             const FloatRect&,
             const FloatRect&,
+            const SkSamplingOptions&,
             RespectImageOrientationEnum,
             ImageClampingMode,
             ImageDecodingMode) override;

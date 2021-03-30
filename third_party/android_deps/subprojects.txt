@@ -1,0 +1,22 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This file contains a list of paths to gradle files for projects which have
+# dependencies on libraries defined in this gradle project. The paths should be
+# relative to --android-deps-dir .
+
+# RATIONALE
+# In order to pick a version of a library which is compatible with all of the
+# targets which depend on it (including targets in other gradle projects) the
+# 'setupRepository' task needs to be aware of all gradle projects with targets
+# which depend on libraries defined in this gradle project.
+#
+# This file is also useful in the situation:
+# - Another gradle project forwards internal dependencies to this project
+#   (e.g. androidx project forwards internal non-androidx dependencies to
+#    android_deps project).
+# - No target in this project depends on forwarded internal dependencies.
+
+# *** START OF LIST ***
+../androidx/build.gradle

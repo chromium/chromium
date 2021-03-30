@@ -40,7 +40,7 @@ class AppModalDialogManager : public content::JavaScriptDialogManager {
   void SetExtensionsClient(std::unique_ptr<ExtensionsClient> extensions_client);
 
   // Gets the title for a dialog.
-  base::string16 GetTitle(content::WebContents* web_contents,
+  std::u16string GetTitle(content::WebContents* web_contents,
                           const GURL& alerting_frame_url);
 
   // Displays a dialog asking the user if they want to leave a page. Displays
@@ -56,8 +56,8 @@ class AppModalDialogManager : public content::JavaScriptDialogManager {
   void RunJavaScriptDialog(content::WebContents* web_contents,
                            content::RenderFrameHost* render_frame_host,
                            content::JavaScriptDialogType dialog_type,
-                           const base::string16& message_text,
-                           const base::string16& default_prompt_text,
+                           const std::u16string& message_text,
+                           const std::u16string& default_prompt_text,
                            DialogClosedCallback callback,
                            bool* did_suppress_message) override;
   void RunBeforeUnloadDialog(content::WebContents* web_contents,
@@ -66,7 +66,7 @@ class AppModalDialogManager : public content::JavaScriptDialogManager {
                              DialogClosedCallback callback) override;
   bool HandleJavaScriptDialog(content::WebContents* web_contents,
                               bool accept,
-                              const base::string16* prompt_override) override;
+                              const std::u16string* prompt_override) override;
   void CancelDialogs(content::WebContents* web_contents,
                      bool reset_state) override;
 
@@ -82,9 +82,9 @@ class AppModalDialogManager : public content::JavaScriptDialogManager {
   void OnDialogClosed(content::WebContents* web_contents,
                       DialogClosedCallback callback,
                       bool success,
-                      const base::string16& user_input);
+                      const std::u16string& user_input);
 
-  static base::string16 GetTitleImpl(const GURL& parent_frame_url,
+  static std::u16string GetTitleImpl(const GURL& parent_frame_url,
                                      const GURL& alerting_frame_url);
 
   // Mapping between the WebContents and their extra data. The key

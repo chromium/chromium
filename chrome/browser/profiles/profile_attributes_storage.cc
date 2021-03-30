@@ -145,7 +145,7 @@ class ProfileAttributesSortComparator {
   }
 
  private:
-  base::string16 GetValue(const ProfileAttributesEntry* const entry) const {
+  std::u16string GetValue(const ProfileAttributesEntry* const entry) const {
     if (use_local_name_)
       return entry->GetLocalProfileName();
 
@@ -245,15 +245,13 @@ ProfileAttributesStorage::~ProfileAttributesStorage() {
 }
 
 std::vector<ProfileAttributesEntry*>
-ProfileAttributesStorage::GetAllProfilesAttributes() {
+ProfileAttributesStorage::GetAllProfilesAttributes(bool include_guest_profile) {
   std::vector<ProfileAttributesEntry*> ret;
   for (const auto& path_and_entry : profile_attributes_entries_) {
-    ProfileAttributesEntry* entry;
-    // Initialize any entries that are not yet initialized.
-    bool success = GetProfileAttributesWithPath(
-        base::FilePath(path_and_entry.first), &entry);
-    DCHECK(success);
-    ret.push_back(entry);
+    ProfileAttributesEntry* entry = path_and_entry.second.get();
+    DCHECK(entry);
+    if (!entry->IsGuest() || include_guest_profile)
+      ret.push_back(entry);
   }
   return ret;
 }
@@ -261,7 +259,8 @@ ProfileAttributesStorage::GetAllProfilesAttributes() {
 std::vector<ProfileAttributesEntry*>
 ProfileAttributesStorage::GetAllProfilesAttributesSorted(
     bool use_local_profile_name) {
-  std::vector<ProfileAttributesEntry*> ret = GetAllProfilesAttributes();
+  std::vector<ProfileAttributesEntry*> ret =
+      GetAllProfilesAttributes(/*include_guest_profile=*/false);
   // Do not allocate the collator and sort if it is not necessary.
   if (ret.size() < 2)
     return ret;
@@ -289,9 +288,9 @@ ProfileAttributesStorage::GetAllProfilesAttributesSortedByLocalProfilName() {
   return GetAllProfilesAttributesSorted(true);
 }
 
-base::string16 ProfileAttributesStorage::ChooseNameForNewProfile(
+std::u16string ProfileAttributesStorage::ChooseNameForNewProfile(
     size_t icon_index) const {
-  base::string16 name;
+  std::u16string name;
   for (int name_index = 1; ; ++name_index) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
     // Using native digits will break IsDefaultProfileName() below because
@@ -317,7 +316,8 @@ base::string16 ProfileAttributesStorage::ChooseNameForNewProfile(
 
     // Loop through previously named profiles to ensure we're not duplicating.
     std::vector<ProfileAttributesEntry*> entries =
-        const_cast<ProfileAttributesStorage*>(this)->GetAllProfilesAttributes();
+        const_cast<ProfileAttributesStorage*>(this)->GetAllProfilesAttributes(
+            /*include_guest_profile=*/false);
 
     if (std::none_of(entries.begin(), entries.end(),
                      [name](ProfileAttributesEntry* entry) {
@@ -330,11 +330,11 @@ base::string16 ProfileAttributesStorage::ChooseNameForNewProfile(
 }
 
 bool ProfileAttributesStorage::IsDefaultProfileName(
-    const base::string16& name,
+    const std::u16string& name,
     bool include_check_for_legacy_profile_name) const {
   // Check whether it's one of the "Person %d" style names.
-  std::string default_name_format = l10n_util::GetStringFUTF8(
-      IDS_NEW_NUMBERED_PROFILE_NAME, base::ASCIIToUTF16("%d"));
+  std::string default_name_format =
+      l10n_util::GetStringFUTF8(IDS_NEW_NUMBERED_PROFILE_NAME, u"%d");
   int generic_profile_number;  // Unused. Just a placeholder for sscanf.
   int assignments =
       sscanf(base::UTF16ToUTF8(name).c_str(), default_name_format.c_str(),
@@ -364,7 +364,8 @@ size_t ProfileAttributesStorage::ChooseAvatarIconIndexForNewProfile() const {
   std::unordered_set<size_t> used_icon_indices;
 
   std::vector<ProfileAttributesEntry*> entries =
-      const_cast<ProfileAttributesStorage*>(this)->GetAllProfilesAttributes();
+      const_cast<ProfileAttributesStorage*>(this)->GetAllProfilesAttributes(
+          /*include_guest_profile=*/false);
   for (const ProfileAttributesEntry* entry : entries)
     used_icon_indices.insert(entry->GetAvatarIconIndex());
 
@@ -423,15 +424,14 @@ void ProfileAttributesStorage::RecordDeletedProfileState(
 #endif
 
 void ProfileAttributesStorage::RecordProfilesState() {
-  std::vector<ProfileAttributesEntry*> entries = GetAllProfilesAttributes();
+  std::vector<ProfileAttributesEntry*> entries =
+      GetAllProfilesAttributes(/*include_guest_profile=*/false);
   if (entries.size() == 0)
     return;
 
   MultiProfileUserType type = GetMultiProfileUserType(entries);
 
   for (ProfileAttributesEntry* entry : entries) {
-    if (entry->IsGuest())
-      continue;
     RecordProfileState(entry, profile_metrics::StateSuffix::kAll);
 
     switch (type) {

@@ -50,8 +50,7 @@ inline const ComputedStyle* Node::GetComputedStyle() const {
 }
 
 inline const ComputedStyle* Node::ParentComputedStyle() const {
-  if (!CanParticipateInFlatTree())
-    return nullptr;
+  DCHECK(IsElementNode() || IsTextNode());
   ContainerNode* parent = LayoutTreeBuilderTraversal::Parent(*this);
   if (parent && parent->ChildrenCanHaveStyle()) {
     const ComputedStyle* parent_style = parent->GetComputedStyle();

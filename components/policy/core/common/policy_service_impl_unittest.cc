@@ -408,8 +408,10 @@ TEST_F(PolicyServiceTest, Priorities) {
                POLICY_SOURCE_PLATFORM, base::Value(15), nullptr);
   expected.Set("aaa", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                POLICY_SOURCE_CLOUD, base::Value(0), nullptr);
-  expected.GetMutable("aaa")->AddWarning(IDS_POLICY_CONFLICT_DIFF_VALUE);
-  expected.GetMutable("aaa")->AddWarning(IDS_POLICY_CONFLICT_DIFF_VALUE);
+  expected.GetMutable("aaa")->AddMessage(PolicyMap::MessageType::kWarning,
+                                         IDS_POLICY_CONFLICT_DIFF_VALUE);
+  expected.GetMutable("aaa")->AddMessage(PolicyMap::MessageType::kWarning,
+                                         IDS_POLICY_CONFLICT_DIFF_VALUE);
   policy0_.Set("aaa", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                POLICY_SOURCE_CLOUD, base::Value(0), nullptr);
   policy1_.Set("aaa", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
@@ -429,7 +431,8 @@ TEST_F(PolicyServiceTest, Priorities) {
 
   expected.Set("aaa", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                POLICY_SOURCE_CLOUD, base::Value(1), nullptr);
-  expected.GetMutable("aaa")->AddWarning(IDS_POLICY_CONFLICT_DIFF_VALUE);
+  expected.GetMutable("aaa")->AddMessage(PolicyMap::MessageType::kWarning,
+                                         IDS_POLICY_CONFLICT_DIFF_VALUE);
   policy0_.Erase("aaa");
   provider0_.UpdateChromePolicy(policy0_);
   expected.GetMutable("aaa")->AddConflictingPolicy(
@@ -439,7 +442,8 @@ TEST_F(PolicyServiceTest, Priorities) {
 
   expected.Set("aaa", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                POLICY_SOURCE_CLOUD, base::Value(2), nullptr);
-  expected.GetMutable("aaa")->AddWarning(IDS_POLICY_CONFLICT_SAME_VALUE);
+  expected.GetMutable("aaa")->AddMessage(PolicyMap::MessageType::kInfo,
+                                         IDS_POLICY_CONFLICT_SAME_VALUE);
   policy1_.Set("aaa", POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_USER,
                POLICY_SOURCE_CLOUD, base::Value(1), nullptr);
   expected.GetMutable("aaa")->AddConflictingPolicy(
@@ -591,9 +595,11 @@ TEST_F(PolicyServiceTest, NamespaceMerge) {
   expected.Set("migrated", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                POLICY_SOURCE_PLATFORM, base::Value(15), nullptr);
   expected.GetMutable(kSameLevelPolicy)
-      ->AddWarning(IDS_POLICY_CONFLICT_DIFF_VALUE);
+      ->AddMessage(PolicyMap::MessageType::kWarning,
+                   IDS_POLICY_CONFLICT_DIFF_VALUE);
   expected.GetMutable(kSameLevelPolicy)
-      ->AddWarning(IDS_POLICY_CONFLICT_DIFF_VALUE);
+      ->AddMessage(PolicyMap::MessageType::kWarning,
+                   IDS_POLICY_CONFLICT_DIFF_VALUE);
   expected.GetMutable(kSameLevelPolicy)
       ->AddConflictingPolicy(
           bundle1->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
@@ -609,7 +615,8 @@ TEST_F(PolicyServiceTest, NamespaceMerge) {
   expected.Set(kDiffLevelPolicy, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
                POLICY_SOURCE_PLATFORM, base::Value("bundle2"), nullptr);
   expected.GetMutable(kDiffLevelPolicy)
-      ->AddWarning(IDS_POLICY_CONFLICT_DIFF_VALUE);
+      ->AddMessage(PolicyMap::MessageType::kWarning,
+                   IDS_POLICY_CONFLICT_DIFF_VALUE);
   expected.GetMutable(kDiffLevelPolicy)
       ->AddConflictingPolicy(
           bundle0->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
@@ -1156,7 +1163,6 @@ TEST_F(PolicyServiceTest, DictionaryPoliciesMerging) {
                           POLICY_SOURCE_MERGED, std::move(result), nullptr);
   merged.AddConflictingPolicy(entry_dict_1.DeepCopy());
   merged.AddConflictingPolicy(entry_dict_2.DeepCopy());
-  merged.AddWarning(IDS_POLICY_CONFLICT_DIFF_VALUE);
   expected_chrome.Set(key::kExtensionSettings, std::move(merged));
 
   provider0_.UpdatePolicy(std::move(policy_bundle1));
@@ -1210,7 +1216,6 @@ TEST_F(PolicyServiceTest, ListsPoliciesMerging) {
                           POLICY_SOURCE_MERGED, std::move(result), nullptr);
   merged.AddConflictingPolicy(entry_list_2.DeepCopy());
   merged.AddConflictingPolicy(entry_list_1.DeepCopy());
-  merged.AddWarning(IDS_POLICY_CONFLICT_DIFF_VALUE);
   expected_chrome.Set(key::kExtensionInstallForcelist, std::move(merged));
 
   provider0_.UpdatePolicy(std::move(policy_bundle1));
@@ -1274,7 +1279,6 @@ TEST_F(PolicyServiceTest, GroupPoliciesMergingDisabledForCloudUsers) {
                           POLICY_SOURCE_MERGED, std::move(result), nullptr);
   merged.AddConflictingPolicy(entry_list_2.DeepCopy());
   merged.AddConflictingPolicy(entry_list_1.DeepCopy());
-  merged.AddWarning(IDS_POLICY_CONFLICT_DIFF_VALUE);
   expected_chrome.Set(key::kExtensionInstallForcelist, merged.DeepCopy());
   expected_chrome.Set(key::kExtensionInstallBlocklist, std::move(merged));
   expected_chrome.Set(key::kExtensionInstallAllowlist, std::move(entry_list_3));
@@ -1342,7 +1346,6 @@ TEST_F(PolicyServiceTest, GroupPoliciesMergingEnabled) {
                           POLICY_SOURCE_MERGED, std::move(result), nullptr);
   merged.AddConflictingPolicy(entry_list_2.DeepCopy());
   merged.AddConflictingPolicy(entry_list_1.DeepCopy());
-  merged.AddWarning(IDS_POLICY_CONFLICT_DIFF_VALUE);
   entry_list_3.SetIgnoredByPolicyAtomicGroup();
   expected_chrome.Set(key::kExtensionInstallForcelist, merged.DeepCopy());
   expected_chrome.Set(key::kExtensionInstallBlocklist, std::move(merged));

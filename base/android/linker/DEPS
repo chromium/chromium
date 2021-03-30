@@ -4,3 +4,11 @@ include_rules = [
   "-base",
   "+base/android/linker",
 ]
+
+# Allow using //base in unittests. These unittests are included in targets that
+# already depend on //base.
+specific_include_rules = {
+  ".*_unittest\.cc": [
+    "+base",
+  ],
+}

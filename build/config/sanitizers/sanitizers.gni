@@ -37,9 +37,6 @@ declare_args() {
   # Compile for Undefined Behaviour Sanitizer's null pointer checks.
   is_ubsan_null = false
 
-  # Compile for Undefined Behaviour Sanitizer's vptr checks.
-  is_ubsan_vptr = false
-
   # Track where uninitialized memory originates from. From fastest to slowest:
   # 0 - no tracking, 1 - track only the initial allocation site, 2 - track the
   # chain of stores leading from allocation site to use site.
@@ -124,6 +121,9 @@ declare_args() {
   # TODO(krasin): remove this, when we're ready to add these checks by default.
   # https://crbug.com/626794
   use_cfi_cast = is_cfi && (is_chromeos_ash || is_chromeos_lacros)
+
+  # Compile for Undefined Behaviour Sanitizer's vptr checks.
+  is_ubsan_vptr = is_ubsan_security
 }
 
 # Disable sanitizers for non-target toolchains.

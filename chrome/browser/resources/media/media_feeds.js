@@ -2,38 +2,51 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js';
+import 'chrome://resources/mojo/url/mojom/origin.mojom-lite.js';
+import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
+import './ui/gfx/geometry/mojom/geometry.mojom-lite.js';
+import './media_session.mojom-lite.js';
+import './media_feeds_store.mojom-lite.js';
+
+import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
+
+import {MediaDataTable, MediaDataTableDelegate} from './media_data_table.js';
 
 // Allow a function to be provided by tests, which will be called when
 // the page has been populated with media feeds details.
 const mediaFeedsPageIsPopulatedResolver = new PromiseResolver();
-function whenPageIsPopulatedForTest() {
+window.whenPageIsPopulatedForTest = function() {
   return mediaFeedsPageIsPopulatedResolver.promise;
-}
+};
 
 const mediaFeedItemsPageIsPopulatedResolver = new PromiseResolver();
-function whenFeedTableIsPopulatedForTest() {
+window.whenFeedTableIsPopulatedForTest = function() {
   return mediaFeedItemsPageIsPopulatedResolver.promise;
-}
+};
 
 const mediaFeedsConfigTableIsPopulatedResolver = new PromiseResolver();
-function whenConfigTableIsPopulatedForTest() {
+window.whenConfigTableIsPopulatedForTest = function() {
   return mediaFeedsConfigTableIsPopulatedResolver.promise;
-}
+};
 
 const mediaFeedsConfigTableSafeSearchPrefIsUpdatedResolver =
     new PromiseResolver();
-function whenConfigTableSafeSearchPrefIsUpdatedForTest() {
+window.whenConfigTableSafeSearchPrefIsUpdatedForTest = function() {
   return mediaFeedsConfigTableSafeSearchPrefIsUpdatedResolver.promise;
-}
+};
 
 const mediaFeedsConfigTableBackgroundFetchingPrefIsUpdatedResolver =
     new PromiseResolver();
-function whenConfigTableBackgroundFetchingPrefIsUpdatedForTest() {
+window.whenConfigTableBackgroundFetchingPrefIsUpdatedForTest = function() {
   return mediaFeedsConfigTableBackgroundFetchingPrefIsUpdatedResolver.promise;
-}
-
-(function() {
+};
 
 let delegate = null;
 let feedsTable = null;
@@ -41,7 +54,7 @@ let feedItemsTable = null;
 let store = null;
 let configTableBody = null;
 
-/** @implements {cr.ui.MediaDataTableDelegate} */
+/** @implements {MediaDataTableDelegate} */
 class MediaFeedsTableDelegate {
   /**
    * Formats a field to be displayed in the data table and inserts it into the
@@ -647,8 +660,8 @@ document.addEventListener('DOMContentLoaded', () => {
   updateConfigTable();
 
   delegate = new MediaFeedsTableDelegate();
-  feedsTable = new cr.ui.MediaDataTable($('feeds-table'), delegate);
-  feedItemsTable = new cr.ui.MediaDataTable($('feed-items-table'), delegate);
+  feedsTable = new MediaDataTable($('feeds-table'), delegate);
+  feedItemsTable = new MediaDataTable($('feed-items-table'), delegate);
 
   updateFeedsTable();
 
@@ -665,4 +678,3 @@ document.addEventListener('DOMContentLoaded', () => {
     window.getSelection().removeAllRanges();
   });
 });
-})();

@@ -30,8 +30,9 @@ constexpr TimeDelta kReloadInterval = TimeDelta::FromMinutes(15);
 }  // namespace
 
 AsyncPolicyLoader::AsyncPolicyLoader(
-    const scoped_refptr<base::SequencedTaskRunner>& task_runner)
-    : task_runner_(task_runner) {}
+    const scoped_refptr<base::SequencedTaskRunner>& task_runner,
+    bool periodic_updates)
+    : task_runner_(task_runner), periodic_updates_(periodic_updates) {}
 
 AsyncPolicyLoader::~AsyncPolicyLoader() {}
 
@@ -63,7 +64,9 @@ void AsyncPolicyLoader::Reload(bool force) {
                             /*drop_invalid_component_policies=*/true);
 
   update_callback_.Run(std::move(bundle));
-  ScheduleNextReload(kReloadInterval);
+  if (periodic_updates_) {
+    ScheduleNextReload(kReloadInterval);
+  }
 }
 
 std::unique_ptr<PolicyBundle> AsyncPolicyLoader::InitialLoad(
@@ -94,7 +97,9 @@ void AsyncPolicyLoader::Init(const UpdateCallback& update_callback) {
     Reload(false);
 
   // Start periodic refreshes.
-  ScheduleNextReload(kReloadInterval);
+  if (periodic_updates_) {
+    ScheduleNextReload(kReloadInterval);
+  }
 }
 
 void AsyncPolicyLoader::RefreshPolicies(scoped_refptr<SchemaMap> schema_map) {

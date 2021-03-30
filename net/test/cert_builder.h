@@ -99,6 +99,25 @@ class CertBuilder {
 
   void SetValidity(base::Time not_before, base::Time not_after);
 
+  // Sets the Subject Key Identifier (SKI) extension to the specified string.
+  // By default, a unique SKI will be generated for each CertBuilder; however,
+  // this may be overridden to force multiple certificates to be considered
+  // during path building on systems that prioritize matching SKI to the
+  // Authority Key Identifier (AKI) extension, rather than using the
+  // Subject/Issuer name. Empty SKIs are not supported; use EraseExtension()
+  // for that.
+  void SetSubjectKeyIdentifier(const std::string& subject_key_identifier);
+
+  // Sets the Authority Key Identifier (AKI) extension to the specified
+  // string.
+  // Note: Only the keyIdentifier option is supported, and the value
+  // is the raw identifier (i.e. without DER encoding). Empty strings will
+  // result in the extension, if present, being erased. This ensures that it
+  // is safe to use SetAuthorityKeyIdentifier() with the result of the
+  // issuing CertBuilder's (if any) GetSubjectKeyIdentifier() without
+  // introducing AKI/SKI chain building issues.
+  void SetAuthorityKeyIdentifier(const std::string& authority_key_identifier);
+
   // Sets the signature algorithm for the certificate to either
   // sha256WithRSAEncryption or sha1WithRSAEncryption.
   void SetSignatureAlgorithmRsaPkca1(DigestAlgorithm digest);
@@ -122,6 +141,13 @@ class CertBuilder {
   // Returns the serial number for the generated certificate.
   uint64_t GetSerialNumber();
 
+  // Returns the subject key identifier for the generated certificate. If
+  // none is present, a random value will be generated.
+  // Note: The returned value will be the contents of the OCTET
+  // STRING/KeyIdentifier, without DER encoding, ensuring it's suitable for
+  // SetSubjectKeyIdentifier().
+  std::string GetSubjectKeyIdentifier();
+
   // Parses and returns validity period for the generated certificate in
   // |not_before| and |not_after|, returning true on success.
   bool GetValidity(base::Time* not_before, base::Time* not_after) const;
@@ -140,12 +166,36 @@ class CertBuilder {
   std::string GetDER();
 
  private:
+  // Initializes the CertBuilder, if |orig_cert| is non-null it will be used as
+  // a template. If |issuer| is null then the generated certificate will be
+  // self-signed. Otherwise, it will be signed using |issuer|.
+  // |unique_subject_key_identifier| controls whether an ephemeral SKI will
+  // be generated for this certificate. In general, any manipulation of the
+  // certificate at all should result in a new SKI, to avoid issues on
+  // Windows CryptoAPI, but generating a unique SKI can create issues for
+  // macOS Security.framework if |orig_cert| has already issued certificates
+  // (including self-signed certs). The only time this is safe is thus
+  // when used in conjunction with FromStaticCert() and re-using the
+  // same key, thus this constructor is private.
+  CertBuilder(CRYPTO_BUFFER* orig_cert,
+              CertBuilder* issuer,
+              bool unique_subject_key_identifier);
+
   // Marks the generated certificate DER as invalid, so it will need to
   // be re-generated next time the DER is accessed.
   void Invalidate();
 
   // Sets the |key_| to a 2048-bit RSA key.
   void GenerateKey();
+
+  // Generates a random Subject Key Identifier for the certificate. This is
+  // necessary for Windows, which otherwises uses SKI/AKI matching for lookups
+  // with greater precedence than subject/issuer name matching, and on newer
+  // versions of Windows, limits the number of lookups+signature failures that
+  // can be performed. Rather than deriving from |key_|, generating a unique
+  // value is useful for signalling this is a "unique" and otherwise
+  // independent CA.
+  void GenerateSubjectKeyIdentifier();
 
   // Generates a random subject for the certificate, comprised of just a CN.
   void GenerateSubject();

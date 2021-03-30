@@ -19,7 +19,6 @@
 #include "chrome/browser/safe_browsing/certificate_reporting_service.h"
 #include "chrome/browser/safe_browsing/certificate_reporting_service_factory.h"
 #include "chrome/common/channel_info.h"
-#include "chrome/common/chrome_features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/security_interstitials/content/certificate_error_report.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -71,15 +70,16 @@ bool TrialComparisonCertVerifierController::MaybeAllowedForProfile(
 
   return is_official_build &&
          base::FeatureList::IsEnabled(
-             features::kCertDualVerificationTrialFeature) &&
+             net::features::kCertDualVerificationTrialFeature) &&
          !profile->IsOffTheRecord();
 }
 
 void TrialComparisonCertVerifierController::AddClient(
-    mojo::PendingRemote<network::mojom::TrialComparisonCertVerifierConfigClient>
+    mojo::PendingRemote<
+        cert_verifier::mojom::TrialComparisonCertVerifierConfigClient>
         config_client,
     mojo::PendingReceiver<
-        network::mojom::TrialComparisonCertVerifierReportClient>
+        cert_verifier::mojom::TrialComparisonCertVerifierReportClient>
         report_client_receiver) {
   receiver_set_.Add(this, std::move(report_client_receiver));
   config_client_set_.Add(std::move(config_client));
@@ -110,10 +110,10 @@ void TrialComparisonCertVerifierController::SendTrialReport(
     const std::vector<uint8_t>& sct_list,
     const net::CertVerifyResult& primary_result,
     const net::CertVerifyResult& trial_result,
-    network::mojom::CertVerifierDebugInfoPtr debug_info) {
-  if (!IsAllowed() ||
-      base::GetFieldTrialParamByFeatureAsBool(
-          features::kCertDualVerificationTrialFeature, "uma_only", false)) {
+    cert_verifier::mojom::CertVerifierDebugInfoPtr debug_info) {
+  if (!IsAllowed() || base::GetFieldTrialParamByFeatureAsBool(
+                          net::features::kCertDualVerificationTrialFeature,
+                          "uma_only", false)) {
     return;
   }
 

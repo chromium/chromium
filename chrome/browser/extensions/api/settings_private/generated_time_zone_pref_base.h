@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
-#include "chrome/browser/chromeos/system/timezone_resolver_manager.h"
+#include "chrome/browser/ash/system/timezone_resolver_manager.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref.h"
 
 class Profile;
@@ -19,7 +19,7 @@ namespace settings_private {
 // Base class for several generated Time Zone preferences.
 class GeneratedTimeZonePrefBase
     : public GeneratedPref,
-      public chromeos::system::TimeZoneResolverManager::Observer {
+      public ash::system::TimeZoneResolverManager::Observer {
  public:
   ~GeneratedTimeZonePrefBase() override;
 

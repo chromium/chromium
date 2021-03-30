@@ -10,7 +10,7 @@
 
 namespace base {
 class ListValue;
-}
+}  // namespace base
 
 namespace chromeos {
 namespace settings {

@@ -50,7 +50,7 @@ class OmniboxClient {
   // Returns an OmniboxNavigationObserver specific to the embedder context. May
   // return null if the embedder has no need to observe omnibox navigations.
   virtual std::unique_ptr<OmniboxNavigationObserver>
-  CreateOmniboxNavigationObserver(const base::string16& text,
+  CreateOmniboxNavigationObserver(const std::u16string& text,
                                   const AutocompleteMatch& match,
                                   const AutocompleteMatch& alternate_nav_match);
 
@@ -62,7 +62,7 @@ class OmniboxClient {
   virtual const GURL& GetURL() const;
 
   // Returns the title of the current page.
-  virtual const base::string16& GetTitle() const;
+  virtual const std::u16string& GetTitle() const;
 
   // Returns the favicon of the current page.
   virtual gfx::Image GetFavicon() const;
@@ -84,6 +84,14 @@ class OmniboxClient {
   virtual TemplateURLService* GetTemplateURLService();
   virtual const AutocompleteSchemeClassifier& GetSchemeClassifier() const = 0;
   virtual AutocompleteClassifier* GetAutocompleteClassifier();
+  virtual bool ShouldDefaultTypedNavigationsToHttps() const = 0;
+  // Returns the port used by the embedded https server in tests. This is used
+  // to determine the correct port while upgrading typed URLs to https if the
+  // original URL has a non-default port. Only meaningful if
+  // ShouldDefaultTypedNavigationsToHttps() returns true.
+  // TODO(crbug.com/1168371): Remove when URLLoaderInterceptor can simulate
+  // redirects.
+  virtual int GetHttpsPortForTesting() const = 0;
 
   // Returns the icon corresponding to |match| if match is an extension match
   // and an empty icon otherwise.
@@ -140,7 +148,7 @@ class OmniboxClient {
   // Called when the text may have changed in the edit.
   virtual void OnTextChanged(const AutocompleteMatch& current_match,
                              bool user_input_in_progress,
-                             const base::string16& user_text,
+                             const std::u16string& user_text,
                              const AutocompleteResult& result,
                              bool has_focus) {}
 

@@ -7,6 +7,7 @@ import("//testing/test.gni")
 
 test("gcp_unittests") {
   sources = [
+    "../extension/app_inventory_manager_unittests.cc",
     "../extension/service_unittests.cc",
     "../extension/task_manager_unittests.cc",
     "../gaiacp/associated_user_validator_unittests.cc",
@@ -35,11 +36,13 @@ test("gcp_unittests") {
   ]
 
   deps = [
+    "../extension:app_inventory",
     "../extension:common",
     "../extension:extension_lib",
     "../gaiacp:common",
     "../gaiacp:gaia_credential_provider_idl",
     "../gaiacp:gaiacp_lib",
+    "../gaiacp:mdm_utils",
     "../gaiacp:policies",
     "../gaiacp:string_resources",
     "../gaiacp:util",

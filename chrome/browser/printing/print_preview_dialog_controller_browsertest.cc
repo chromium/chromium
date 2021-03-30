@@ -31,7 +31,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/printing/common/print.mojom.h"
-#include "components/printing/common/print_messages.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/plugin_service.h"
 #include "content/public/browser/render_frame_host.h"
@@ -51,60 +50,61 @@ using content::WebContentsObserver;
 
 namespace {
 
-class RequestPrintPreviewObserver : public WebContentsObserver {
+class TestPrintViewManager : public printing::PrintViewManager {
  public:
-  explicit RequestPrintPreviewObserver(WebContents* dialog)
-      : WebContentsObserver(dialog) {}
-  ~RequestPrintPreviewObserver() override = default;
+  explicit TestPrintViewManager(content::WebContents* web_contents)
+      : PrintViewManager(web_contents) {}
+  TestPrintViewManager(const TestPrintViewManager&) = delete;
+  TestPrintViewManager& operator=(const TestPrintViewManager&) = delete;
+  ~TestPrintViewManager() override = default;
+
+  static TestPrintViewManager* FromWebContents(WebContents* web_contents) {
+    return static_cast<TestPrintViewManager*>(
+        printing::PrintViewManager::FromWebContents(web_contents));
+  }
+
+  // Create TestPrintViewManager with PrintViewManager::UserDataKey() so that
+  // PrintViewManager::FromWebContents() in printing path returns
+  // TestPrintViewManager*.
+  static void CreateForWebContents(WebContents* web_contents) {
+    TestPrintViewManager* print_manager =
+        new TestPrintViewManager(web_contents);
+    web_contents->SetUserData(printing::PrintViewManager::UserDataKey(),
+                              base::WrapUnique(print_manager));
+  }
 
   void set_quit_closure(base::OnceClosure quit_closure) {
     quit_closure_ = std::move(quit_closure);
   }
 
  private:
-  // content::WebContentsObserver implementation.
-  bool OnMessageReceived(const IPC::Message& message,
-                         content::RenderFrameHost* render_frame_host) override {
-    IPC_BEGIN_MESSAGE_MAP(RequestPrintPreviewObserver, message)
-      IPC_MESSAGE_HANDLER(PrintHostMsg_RequestPrintPreview,
-                          OnRequestPrintPreview)
-      IPC_MESSAGE_UNHANDLED(break)
-    IPC_END_MESSAGE_MAP()
-    return false;  // Report not handled so the real handler receives it.
-  }
-
-  void OnRequestPrintPreview(
-      const printing::mojom::RequestPrintPreviewParams& /* params */) {
+  // printing::mojom::PrintManagerHost:
+  void RequestPrintPreview(
+      printing::mojom::RequestPrintPreviewParamsPtr params) override {
     base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                   std::move(quit_closure_));
+    printing::PrintViewManager::RequestPrintPreview(std::move(params));
   }
 
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(RequestPrintPreviewObserver);
 };
 
 class PrintPreviewDialogClonedObserver : public WebContentsObserver {
  public:
   explicit PrintPreviewDialogClonedObserver(WebContents* dialog)
       : WebContentsObserver(dialog) {}
+  PrintPreviewDialogClonedObserver(const PrintPreviewDialogClonedObserver&) =
+      delete;
+  PrintPreviewDialogClonedObserver& operator=(
+      const PrintPreviewDialogClonedObserver&) = delete;
   ~PrintPreviewDialogClonedObserver() override = default;
-
-  RequestPrintPreviewObserver* request_preview_dialog_observer() {
-    return request_preview_dialog_observer_.get();
-  }
 
  private:
   // content::WebContentsObserver implementation.
   void DidCloneToNewWebContents(WebContents* old_web_contents,
                                 WebContents* new_web_contents) override {
-    request_preview_dialog_observer_ =
-        std::make_unique<RequestPrintPreviewObserver>(new_web_contents);
+    TestPrintViewManager::CreateForWebContents(new_web_contents);
   }
-
-  std::unique_ptr<RequestPrintPreviewObserver> request_preview_dialog_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintPreviewDialogClonedObserver);
 };
 
 void PluginsLoadedCallback(
@@ -142,6 +142,10 @@ void CheckPdfPluginForRenderFrame(content::RenderFrameHost* frame) {
 class PrintPreviewDialogControllerBrowserTest : public InProcessBrowserTest {
  public:
   PrintPreviewDialogControllerBrowserTest() = default;
+  PrintPreviewDialogControllerBrowserTest(
+      const PrintPreviewDialogControllerBrowserTest&) = delete;
+  PrintPreviewDialogControllerBrowserTest& operator=(
+      const PrintPreviewDialogControllerBrowserTest&) = delete;
   ~PrintPreviewDialogControllerBrowserTest() override = default;
 
   WebContents* initiator() {
@@ -150,7 +154,7 @@ class PrintPreviewDialogControllerBrowserTest : public InProcessBrowserTest {
 
   void PrintPreview() {
     base::RunLoop run_loop;
-    request_preview_dialog_observer()->set_quit_closure(run_loop.QuitClosure());
+    test_print_view_manager_->set_quit_closure(run_loop.QuitClosure());
     chrome::Print(browser());
     run_loop.Run();
   }
@@ -161,11 +165,7 @@ class PrintPreviewDialogControllerBrowserTest : public InProcessBrowserTest {
     return dialog_controller->GetPrintPreviewForContents(initiator_);
   }
 
-  void PrintPreviewDone() {
-    auto* print_view_manager =
-        printing::PrintViewManager::FromWebContents(initiator());
-    print_view_manager->PrintPreviewDone();
-  }
+  void PrintPreviewDone() { test_print_view_manager_->PrintPreviewDone(); }
 
   void SetAlwaysOpenPdfExternallyForTests() {
     PluginPrefs::GetForProfile(browser()->profile())
@@ -183,11 +183,12 @@ class PrintPreviewDialogControllerBrowserTest : public InProcessBrowserTest {
         browser()->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(first_tab);
 
-    // Open a new tab so |cloned_tab_observer_| can see it first and attach a
-    // RequestPrintPreviewObserver to it before the real
-    // PrintPreviewMessageHandler gets created. Thus enabling
-    // RequestPrintPreviewObserver to get messages first for the purposes of
-    // this test.
+    // Open a new tab so |cloned_tab_observer_| can see it and create a
+    // TestPrintViewManager for it before the real PrintViewManager gets
+    // created. Since TestPrintViewManager is created with
+    // PrintViewManager::UserDataKey(), the real PrintViewManager is not
+    // created and TestPrintViewManager gets mojo messages for the
+    // purposes of this test.
     cloned_tab_observer_ =
         std::make_unique<PrintPreviewDialogClonedObserver>(first_tab);
     chrome::DuplicateTab(browser());
@@ -196,6 +197,8 @@ class PrintPreviewDialogControllerBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(initiator_);
     ASSERT_NE(first_tab, initiator_);
 
+    test_print_view_manager_ =
+        TestPrintViewManager::FromWebContents(initiator_);
     content::PluginService::GetInstance()->Init();
   }
 
@@ -204,14 +207,10 @@ class PrintPreviewDialogControllerBrowserTest : public InProcessBrowserTest {
     initiator_ = nullptr;
   }
 
-  RequestPrintPreviewObserver* request_preview_dialog_observer() {
-    return cloned_tab_observer_->request_preview_dialog_observer();
-  }
 
   std::unique_ptr<PrintPreviewDialogClonedObserver> cloned_tab_observer_;
+  TestPrintViewManager* test_print_view_manager_;
   WebContents* initiator_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintPreviewDialogControllerBrowserTest);
 };
 
 // Test to verify that when a initiator navigates, we can create a new preview
@@ -344,9 +343,9 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
 
 namespace {
 
-base::string16 GetExpectedPrefix() {
+std::u16string GetExpectedPrefix() {
   return l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_PRINT_PREFIX,
-                                    base::string16());
+                                    std::u16string());
 }
 
 const std::vector<task_manager::WebContentsTag*>& GetTrackedTags() {
@@ -371,8 +370,8 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
   ASSERT_EQ(3U, task_manager.tasks().size());
   const task_manager::Task* pre_existing_task = task_manager.tasks().back();
   EXPECT_EQ(task_manager::Task::RENDERER, pre_existing_task->GetType());
-  const base::string16 pre_existing_title = pre_existing_task->title();
-  const base::string16 expected_prefix = GetExpectedPrefix();
+  const std::u16string pre_existing_title = pre_existing_task->title();
+  const std::u16string expected_prefix = GetExpectedPrefix();
   EXPECT_TRUE(base::StartsWith(pre_existing_title,
                                expected_prefix,
                                base::CompareCase::INSENSITIVE_ASCII));
@@ -393,7 +392,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
   ASSERT_EQ(3U, task_manager.tasks().size());
   const task_manager::Task* task = task_manager.tasks().back();
   EXPECT_EQ(task_manager::Task::RENDERER, task->GetType());
-  const base::string16 title = task->title();
+  const std::u16string title = task->title();
   EXPECT_TRUE(base::StartsWith(title,
                                expected_prefix,
                                base::CompareCase::INSENSITIVE_ASCII));

@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ui/webui/settings/reset_settings_handler.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -33,7 +33,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/reset/metrics.h"
+#include "chrome/browser/ash/reset/metrics.h"
 #include "chrome/common/pref_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -276,7 +276,7 @@ void ResetSettingsHandler::HandleGetTriggeredResetToolName(
 
   // Set up the localized strings for the triggered profile reset dialog.
   // Custom reset tool names are supported on Windows only.
-  base::string16 reset_tool_name;
+  std::u16string reset_tool_name;
 #if defined(OS_WIN)
   Profile* profile = Profile::FromWebUI(web_ui());
   TriggeredProfileResetter* triggered_profile_resetter =
@@ -304,8 +304,8 @@ void ResetSettingsHandler::OnShowPowerwashDialog(
      const base::ListValue* args) {
   UMA_HISTOGRAM_ENUMERATION(
       "Reset.ChromeOS.PowerwashDialogShown",
-      chromeos::reset::DIALOG_FROM_OPTIONS,
-      chromeos::reset::DIALOG_VIEW_TYPE_SIZE);
+      ash::reset::DialogViewType::kFromOptions,
+      ash::reset::DialogViewType::kCount);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

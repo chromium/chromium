@@ -12,6 +12,11 @@
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "chromecast/chromecast_buildflags.h"
+#include "third_party/widevine/cdm/buildflags.h"
+
+#if BUILDFLAG(BUNDLE_WIDEVINE_CDM)
+#include "third_party/widevine/cdm/widevine_cdm_common.h"  // nogncheck
+#endif
 
 namespace chromecast {
 
@@ -77,6 +82,14 @@ bool PathProvider(int key, base::FilePath* result) {
 #endif  // defined(OS_ANDROID)
       return true;
     }
+#if BUILDFLAG(BUNDLE_WIDEVINE_CDM)
+    case DIR_BUNDLED_WIDEVINE_CDM: {
+      base::FilePath base_dir;
+      CHECK(base::PathService::Get(base::DIR_MODULE, &base_dir));
+      *result = base_dir.AppendASCII(kWidevineCdmBaseDirectory);
+      return true;
+    }
+#endif  // BUILDFLAG(BUNDLE_WIDEVINE_CDM)
   }
   return false;
 }

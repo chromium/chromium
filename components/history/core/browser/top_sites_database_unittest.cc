@@ -294,7 +294,7 @@ TEST_F(TopSitesDatabaseTest, Recovery3) {
       // throw SQLITE_CORRUPT.  The corruption handler will recover the database
       // and poison the handle, so the outer call fails.
       EXPECT_EQ(TopSitesDatabase::kRankOfNonExistingURL,
-                db.GetURLRank(MostVisitedURL(Url1(), base::string16())));
+                db.GetURLRank(MostVisitedURL(Url1(), std::u16string())));
 
       ASSERT_TRUE(expecter.SawExpectedErrors());
     }
@@ -315,7 +315,7 @@ TEST_F(TopSitesDatabaseTest, Recovery3) {
     VerifyTablesAndColumns(db.db_.get());
 
     EXPECT_EQ(TopSitesDatabase::kRankOfNonExistingURL,
-              db.GetURLRank(MostVisitedURL(Url1(), base::string16())));
+              db.GetURLRank(MostVisitedURL(Url1(), std::u16string())));
 
     MostVisitedURLList urls;
     db.GetSites(&urls);
@@ -397,7 +397,7 @@ TEST_F(TopSitesDatabaseTest, Recovery4) {
       // throw SQLITE_CORRUPT.  The corruption handler will recover the database
       // and poison the handle, so the outer call fails.
       EXPECT_EQ(TopSitesDatabase::kRankOfNonExistingURL,
-                db.GetURLRank(MostVisitedURL(Url1(), base::string16())));
+                db.GetURLRank(MostVisitedURL(Url1(), std::u16string())));
 
       ASSERT_TRUE(expecter.SawExpectedErrors());
     }
@@ -418,7 +418,7 @@ TEST_F(TopSitesDatabaseTest, Recovery4) {
     VerifyTablesAndColumns(db.db_.get());
 
     EXPECT_EQ(TopSitesDatabase::kRankOfNonExistingURL,
-              db.GetURLRank(MostVisitedURL(Url1(), base::string16())));
+              db.GetURLRank(MostVisitedURL(Url1(), std::u16string())));
 
     MostVisitedURLList urls;
     db.GetSites(&urls);
@@ -436,7 +436,7 @@ TEST_F(TopSitesDatabaseTest, ApplyDelta_Delete) {
 
   TopSitesDelta delta;
   // Delete Url0(). Now db has Url1() and Url2().
-  MostVisitedURL url_to_delete(Url0(), base::ASCIIToUTF16("Google"));
+  MostVisitedURL url_to_delete(Url0(), u"Google");
   delta.deleted.push_back(url_to_delete);
 
   // Update db.
@@ -459,7 +459,7 @@ TEST_F(TopSitesDatabaseTest, ApplyDelta_Add) {
   // Add a new URL, rank = 0. Now db has mapsUrl, Url0(), Url1(), and Url2().
   TopSitesDelta delta;
   MostVisitedURLWithRank url_to_add;
-  url_to_add.url = MostVisitedURL(mapsUrl, base::ASCIIToUTF16("Google Maps"));
+  url_to_add.url = MostVisitedURL(mapsUrl, u"Google Maps");
   url_to_add.rank = 0;
   delta.added.push_back(url_to_add);
 
@@ -482,7 +482,7 @@ TEST_F(TopSitesDatabaseTest, ApplyDelta_Move) {
   // Url1().
   TopSitesDelta delta;
   MostVisitedURLWithRank url_to_move;
-  url_to_move.url = MostVisitedURL(Url1(), base::ASCIIToUTF16("Google Chrome"));
+  url_to_move.url = MostVisitedURL(Url1(), u"Google Chrome");
   url_to_move.rank = 2;
   delta.moved.push_back(url_to_move);
 
@@ -505,19 +505,19 @@ TEST_F(TopSitesDatabaseTest, ApplyDelta_All) {
 
   TopSitesDelta delta;
   // Delete Url0(). Now db has Url1() and Url2().
-  MostVisitedURL url_to_delete(Url0(), base::ASCIIToUTF16("Google"));
+  MostVisitedURL url_to_delete(Url0(), u"Google");
   delta.deleted.push_back(url_to_delete);
 
   // Add a new URL, not forced, rank = 0. Now db has mapsUrl, Url1() and Url2().
   MostVisitedURLWithRank url_to_add;
-  url_to_add.url = MostVisitedURL(mapsUrl, base::ASCIIToUTF16("Google Maps"));
+  url_to_add.url = MostVisitedURL(mapsUrl, u"Google Maps");
   url_to_add.rank = 0;
   delta.added.push_back(url_to_add);
 
   // Move Url1() by updating its rank to 2. Now db has mapsUrl, Url2() and
   // Url1().
   MostVisitedURLWithRank url_to_move;
-  url_to_move.url = MostVisitedURL(Url1(), base::ASCIIToUTF16("Google Chrome"));
+  url_to_move.url = MostVisitedURL(Url1(), u"Google Chrome");
   url_to_move.rank = 2;
   delta.moved.push_back(url_to_move);
 

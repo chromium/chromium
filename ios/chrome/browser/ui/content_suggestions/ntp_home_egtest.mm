@@ -337,6 +337,58 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
                      @"The collection width has not changed.");
 }
 
+// Tests that the fake omnibox remains visible when scrolling, by pinning itself
+// to the top of the NTP. Also ensures that NTP minimum height is respected.
+- (void)testOmniboxPinsToTop {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(
+        @"Disabled for iPad since it does not pin the omnibox.");
+  }
+
+  UIView* fakeOmnibox = [ContentSuggestionsAppInterface fakeOmnibox];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  GREYAssertTrue(fakeOmnibox.frame.origin.x > 1,
+                 @"The omnibox is pinned to top before scrolling down.");
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          ContentSuggestionCollectionView()]
+      performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
+
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // After scrolling down, the omnibox should be pinned and visible.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  GREYAssertTrue(fakeOmnibox.frame.origin.x < 1,
+                 @"The omnibox is not pinned to top when scrolling down, or "
+                 @"the NTP cannot scroll.");
+}
+
+// Tests that the fake omnibox animation works, increasing the width of the
+// omnibox.
+- (void)testOmniboxWidthChangesWithScroll {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(
+        @"Disabled for iPad since the width does not change for it.");
+  }
+
+  CGFloat omniboxWidthBeforeScrolling =
+      [ContentSuggestionsAppInterface fakeOmnibox].frame.size.width;
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          ContentSuggestionCollectionView()]
+      performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
+
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  CGFloat omniboxWidthAfterScrolling =
+      [ContentSuggestionsAppInterface fakeOmnibox].frame.size.width;
+
+  GREYAssertTrue(
+      omniboxWidthAfterScrolling > omniboxWidthBeforeScrolling,
+      @"Fake omnibox width did not animate properly when scrolling.");
+}
+
 // Tests that the app doesn't crash when opening multiple tabs.
 - (void)testOpenMultipleTabs {
   NSInteger numberOfTabs = 10;

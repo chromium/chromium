@@ -10,6 +10,13 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+
+// Initial scale for items being inserted in the collection view.
+CGFloat InsertedItemInitialScale = 0.01;
+
+}  // namespace
+
 @implementation HorizontalLayout
 
 - (instancetype)init {
@@ -36,6 +43,31 @@
   self.sectionInset = UIEdgeInsets{
       topInset, spacing, height - self.itemSize.height - topInset, spacing};
   self.minimumLineSpacing = kGridLayoutLineSpacingRegularRegular;
+}
+
+- (UICollectionViewLayoutAttributes*)
+    initialLayoutAttributesForAppearingItemAtIndexPath:
+        (NSIndexPath*)itemIndexPath {
+  if (!self.animatesItemUpdates) {
+    return [self layoutAttributesForItemAtIndexPath:itemIndexPath];
+  }
+  // Note that this method is called for any item whose index path is becoming
+  // |itemIndexPath|, which includes any items that were in the layout but whose
+  // index path is changing. For an item whose index path is changing, this
+  // method is called after
+  // -finalLayoutAttributesForDisappearingItemAtIndexPath:
+  UICollectionViewLayoutAttributes* attributes = [[super
+      initialLayoutAttributesForAppearingItemAtIndexPath:itemIndexPath] copy];
+  // Appearing items that aren't being inserted just use the default
+  // attributes.
+  if (![self.indexPathsOfInsertingItems containsObject:itemIndexPath]) {
+    return attributes;
+  }
+
+  attributes.alpha = 0.0;
+  attributes.transform = CGAffineTransformScale(
+      attributes.transform, InsertedItemInitialScale, InsertedItemInitialScale);
+  return attributes;
 }
 
 @end

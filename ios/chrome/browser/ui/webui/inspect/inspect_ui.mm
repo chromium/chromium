@@ -8,15 +8,17 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#import "base/strings/sys_string_conversions.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/main/browser.h"
 #include "ios/chrome/browser/main/browser_list.h"
 #include "ios/chrome/browser/main/browser_list_factory.h"
 #include "ios/chrome/browser/main/browser_list_observer.h"
+#include "ios/chrome/browser/web/java_script_console/java_script_console_feature.h"
+#include "ios/chrome/browser/web/java_script_console/java_script_console_feature_delegate.h"
+#include "ios/chrome/browser/web/java_script_console/java_script_console_feature_factory.h"
 #include "ios/chrome/browser/web/java_script_console/java_script_console_message.h"
-#include "ios/chrome/browser/web/java_script_console/java_script_console_tab_helper.h"
-#include "ios/chrome/browser/web/java_script_console/java_script_console_tab_helper_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
 #include "ios/chrome/grit/ios_resources.h"
@@ -56,9 +58,7 @@ web::WebUIIOSDataSource* CreateInspectUIHTMLSource() {
 
 // The handler for Javascript messages for the chrome://inspect/ page.
 class InspectDOMHandler : public web::WebUIIOSMessageHandler,
-                          public JavaScriptConsoleTabHelperDelegate,
-                          public BrowserListObserver,
-                          public WebStateListObserver {
+                          public JavaScriptConsoleFeatureDelegate {
  public:
   InspectDOMHandler();
   ~InspectDOMHandler() override;
@@ -66,31 +66,11 @@ class InspectDOMHandler : public web::WebUIIOSMessageHandler,
   // WebUIIOSMessageHandler implementation
   void RegisterMessages() override;
 
-  // JavaScriptConsoleTabHelperDelegate
+  // JavaScriptConsoleFeatureDelegate
   void DidReceiveConsoleMessage(
       web::WebState* web_state,
       web::WebFrame* sender_frame,
       const JavaScriptConsoleMessage& message) override;
-
-  // BrowserListObserver
-  void OnBrowserAdded(const BrowserList* browser_list,
-                      Browser* browser) override;
-  void OnIncognitoBrowserAdded(const BrowserList* browser_list,
-                               Browser* browser) override;
-  void OnBrowserRemoved(const BrowserList* browser_list,
-                        Browser* browser) override;
-  void OnIncognitoBrowserRemoved(const BrowserList* browser_list,
-                                 Browser* browser) override;
-
-  // WebStateListObserver
-  void WebStateInsertedAt(WebStateList* web_state_list,
-                          web::WebState* web_state,
-                          int index,
-                          bool activating) override;
-  void WillCloseWebStateAt(WebStateList* web_state_list,
-                           web::WebState* web_state,
-                           int index,
-                           bool user_action) override;
 
  private:
   // Handles the message from JavaScript to enable or disable console logging.
@@ -99,17 +79,8 @@ class InspectDOMHandler : public web::WebUIIOSMessageHandler,
   // Enables or disables console logging.
   void SetLoggingEnabled(bool enabled);
 
-  // Sets the logging state for |web_state_list|.
-  // If |enable| is true, starts observing |web_state_list| and adds |this| as
-  // the JS console delegate for all existing webstates.
-  // If |enable| is false, removes the JS console delegate and stops observing.
-  void SetLoggingStateForWebStateList(WebStateList* web_state_list,
-                                      bool enable);
-
   // Whether or not logging is enabled.
   bool logging_enabled_ = false;
-  // Whether the browser state is off the record or not.
-  bool is_incognito_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(InspectDOMHandler);
 };
@@ -140,29 +111,12 @@ void InspectDOMHandler::SetLoggingEnabled(bool enabled) {
   logging_enabled_ = enabled;
 
   web::BrowserState* browser_state = web_ui()->GetWebState()->GetBrowserState();
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(browser_state);
-  is_incognito_ = chrome_browser_state->IsOffTheRecord();
-  BrowserList* browser_list =
-      BrowserListFactory::GetForBrowserState(chrome_browser_state);
-  std::set<Browser*> browsers = is_incognito_
-                                    ? browser_list->AllIncognitoBrowsers()
-                                    : browser_list->AllRegularBrowsers();
 
-  for (Browser* browser : browsers) {
-    WebStateList* web_state_list = browser->GetWebStateList();
-    if (enabled) {
-      SetLoggingStateForWebStateList(web_state_list, /*enable=*/true);
-    } else {
-      SetLoggingStateForWebStateList(web_state_list, /*enable=*/false);
-    }
-  }
+  JavaScriptConsoleFeature* feature =
+      JavaScriptConsoleFeatureFactory::GetInstance()->GetForBrowserState(
+          browser_state);
 
-  if (enabled) {
-    browser_list->AddObserver(this);
-  } else {
-    browser_list->RemoveObserver(this);
-  }
+  feature->SetDelegate(enabled ? this : nullptr);
 }
 
 void InspectDOMHandler::RegisterMessages() {
@@ -179,7 +133,7 @@ void InspectDOMHandler::DidReceiveConsoleMessage(
   web::WebFrame* inspect_ui_main_frame =
       web_ui()->GetWebState()->GetWebFramesManager()->GetMainWebFrame();
   if (!inspect_ui_main_frame) {
-    // Disable logging and drop this message because the main frame no longer
+    // Disable logging and drop this message because the inspect page no longer
     // exists.
     SetLoggingEnabled(false);
     return;
@@ -191,78 +145,11 @@ void InspectDOMHandler::DidReceiveConsoleMessage(
   params.push_back(base::Value(main_web_frame->GetFrameId()));
   params.push_back(base::Value(sender_frame->GetFrameId()));
   params.push_back(base::Value(message.url.spec()));
-  params.push_back(base::Value(message.level));
-  params.push_back(message.message->Clone());
+  params.push_back(base::Value(base::SysNSStringToUTF8(message.level)));
+  params.push_back(base::Value(base::SysNSStringToUTF8(message.message)));
 
   inspect_ui_main_frame->CallJavaScriptFunction(
       "inspectWebUI.logMessageReceived", params);
-}
-
-void InspectDOMHandler::SetLoggingStateForWebStateList(
-    WebStateList* web_state_list,
-    bool enabled) {
-  JavaScriptConsoleTabHelperDelegate* delegate = this;
-  if (enabled) {
-    web_state_list->AddObserver(this);
-  } else {
-    web_state_list->RemoveObserver(this);
-    delegate = nullptr;
-  }
-  for (int index = 0; index < web_state_list->count(); ++index) {
-    web::WebState* web_state = web_state_list->GetWebStateAt(index);
-    JavaScriptConsoleTabHelper::FromWebState(web_state)->SetDelegate(delegate);
-  }
-}
-
-void InspectDOMHandler::OnBrowserAdded(const BrowserList* browser_list,
-                                       Browser* browser) {
-  if (is_incognito_)
-    return;
-  SetLoggingStateForWebStateList(browser->GetWebStateList(), /*enable=*/true);
-}
-
-void InspectDOMHandler::OnIncognitoBrowserAdded(const BrowserList* browser_list,
-                                                Browser* browser) {
-  if (!is_incognito_)
-    return;
-  SetLoggingStateForWebStateList(browser->GetWebStateList(), /*enable=*/true);
-}
-
-void InspectDOMHandler::OnBrowserRemoved(const BrowserList* browser_list,
-                                         Browser* browser) {
-  if (is_incognito_)
-    return;
-  SetLoggingStateForWebStateList(browser->GetWebStateList(), /*enable=*/false);
-}
-
-void InspectDOMHandler::OnIncognitoBrowserRemoved(
-    const BrowserList* browser_list,
-    Browser* browser) {
-  if (!is_incognito_)
-    return;
-  SetLoggingStateForWebStateList(browser->GetWebStateList(), /*enable=*/false);
-}
-
-// WebStateListObserver
-void InspectDOMHandler::WebStateInsertedAt(WebStateList* web_state_list,
-                                           web::WebState* web_state,
-                                           int index,
-                                           bool activating) {
-  JavaScriptConsoleTabHelper::FromWebState(web_state)->SetDelegate(this);
-}
-
-void InspectDOMHandler::WillCloseWebStateAt(WebStateList* web_state_list,
-                                            web::WebState* web_state,
-                                            int index,
-                                            bool user_action) {
-  std::vector<base::Value> params;
-  params.push_back(base::Value(web::GetMainWebFrameId(web_state)));
-
-  web_ui()
-      ->GetWebState()
-      ->GetWebFramesManager()
-      ->GetMainWebFrame()
-      ->CallJavaScriptFunction("inspectWebUI.tabClosed", params);
 }
 
 }  // namespace

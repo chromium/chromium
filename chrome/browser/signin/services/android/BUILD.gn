@@ -7,7 +7,6 @@ import("//build/config/android/rules.gni")
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/signin/services/IdentityServicesProvider.java",
-    "java/src/org/chromium/chrome/browser/signin/services/ProfileDownloader.java",
     "java/src/org/chromium/chrome/browser/signin/services/SigninMetricsUtils.java",
     "java/src/org/chromium/chrome/browser/signin/services/UnifiedConsentServiceBridge.java",
     "java/src/org/chromium/chrome/browser/signin/services/WebSigninBridge.java",
@@ -16,10 +15,10 @@ generate_jni("jni_headers") {
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/signin/services/AccountInfoService.java",
     "java/src/org/chromium/chrome/browser/signin/services/DisplayableProfileData.java",
     "java/src/org/chromium/chrome/browser/signin/services/IdentityServicesProvider.java",
     "java/src/org/chromium/chrome/browser/signin/services/ProfileDataCache.java",
-    "java/src/org/chromium/chrome/browser/signin/services/ProfileDownloader.java",
     "java/src/org/chromium/chrome/browser/signin/services/SigninHelper.java",
     "java/src/org/chromium/chrome/browser/signin/services/SigninManager.java",
     "java/src/org/chromium/chrome/browser/signin/services/SigninMetricsUtils.java",
@@ -31,15 +30,14 @@ android_library("java") {
     ":java_resources",
     "$google_play_services_package:google_play_services_auth_base_java",
     "//base:base_java",
-    "//base:jni_java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//components/browser_ui/util/android:java",
     "//components/signin/core/browser:signin_enums_java",
-    "//components/signin/core/browser/android:java",
     "//components/signin/public/android:java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//third_party/android_deps:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
   ]
   srcjar_deps = [ "//chrome/browser/profiles:profile_metrics_enum_java" ]
   resources_package = "org.chromium.chrome.browser.signin.services"
@@ -62,14 +60,14 @@ android_library("javatests") {
   deps = [
     ":java",
     "//base:base_java_test_support",
+    "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/test/android:chrome_java_test_support",
-    "//components/signin/core/browser/android:java",
-    "//components/signin/core/browser/android:signin_java_test_support",
     "//components/signin/public/android:java",
+    "//components/signin/public/android:signin_java_test_support",
     "//content/public/test/android:content_java_test_support",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//third_party/android_deps:androidx_test_runner_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",
@@ -78,20 +76,25 @@ android_library("javatests") {
 }
 
 android_library("junit") {
+  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
   bypass_platform_checks = true
   testonly = true
   sources = [
+    "junit/src/org/chromium/chrome/browser/signin/services/AccountInfoServiceTest.java",
     "junit/src/org/chromium/chrome/browser/signin/services/SigninHelperTest.java",
-    "junit/src/org/chromium/chrome/browser/signin/services/SigninPreferencesManagerTest.java",
+    "junit/src/org/chromium/chrome/browser/signin/services/SigninMetricsUtilsTest.java",
     "junit/src/org/chromium/chrome/browser/signin/services/WebSigninBridgeTest.java",
   ]
   deps = [
     ":java",
+    "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/browser/profiles/android:java",
     "//chrome/test/android:chrome_java_test_support",
     "//components/signin/public/android:java",
+    "//third_party/android_deps:robolectric_all_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]

@@ -21,7 +21,19 @@ component("embedder") {
   public_deps = [ "//base" ]
 
   deps = [
+    ":features",
     "//mojo/core:embedder_internal",
     "//mojo/public/c/system",
   ]
+}
+
+component("features") {
+  output_name = "mojo_core_embedder_features"
+
+  defines = [ "IS_MOJO_CORE_EMBEDDER_FEATURES_IMPL" ]
+
+  public = [ "features.h" ]
+  sources = [ "features.cc" ]
+
+  public_deps = [ "//base" ]
 }

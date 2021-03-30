@@ -10,6 +10,7 @@
 namespace chromeos {
 namespace diagnostics {
 
+class SessionLogHandler;
 class SystemDataProvider;
 class SystemRoutineController;
 
@@ -17,7 +18,7 @@ class SystemRoutineController;
 // used by the Diagnostics SWA.
 class DiagnosticsManager {
  public:
-  DiagnosticsManager();
+  explicit DiagnosticsManager(SessionLogHandler* session_log_handler);
   ~DiagnosticsManager();
 
   DiagnosticsManager(const DiagnosticsManager&) = delete;

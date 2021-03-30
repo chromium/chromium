@@ -61,11 +61,6 @@ void StabilityMetricsProvider::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kStabilityIncompleteSessionEndCount, 0);
   registry->RegisterBooleanPref(prefs::kStabilitySessionEndCompleted, true);
   registry->RegisterIntegerPref(prefs::kStabilityLaunchCount, 0);
-  registry->RegisterIntegerPref(prefs::kStabilityBreakpadRegistrationFail, 0);
-  registry->RegisterIntegerPref(prefs::kStabilityBreakpadRegistrationSuccess,
-                                0);
-  registry->RegisterIntegerPref(prefs::kStabilityDebuggerPresent, 0);
-  registry->RegisterIntegerPref(prefs::kStabilityDebuggerNotPresent, 0);
   registry->RegisterIntegerPref(prefs::kStabilityFileMetricsUnsentFilesCount,
                                 0);
   registry->RegisterIntegerPref(prefs::kStabilityFileMetricsUnsentSamplesCount,
@@ -92,10 +87,6 @@ void StabilityMetricsProvider::Init() {
 void StabilityMetricsProvider::ClearSavedStabilityMetrics() {
   local_state_->SetInteger(prefs::kStabilityCrashCount, 0);
   local_state_->SetInteger(prefs::kStabilityIncompleteSessionEndCount, 0);
-  local_state_->SetInteger(prefs::kStabilityBreakpadRegistrationSuccess, 0);
-  local_state_->SetInteger(prefs::kStabilityBreakpadRegistrationFail, 0);
-  local_state_->SetInteger(prefs::kStabilityDebuggerPresent, 0);
-  local_state_->SetInteger(prefs::kStabilityDebuggerNotPresent, 0);
   local_state_->SetInteger(prefs::kStabilityLaunchCount, 0);
   local_state_->SetBoolean(prefs::kStabilitySessionEndCompleted, true);
 
@@ -133,19 +124,6 @@ void StabilityMetricsProvider::ProvideStabilityMetrics(
                            &pref_value))
     stability->set_incomplete_shutdown_count(pref_value);
 
-  if (GetAndClearPrefValue(prefs::kStabilityBreakpadRegistrationSuccess,
-                           &pref_value))
-    stability->set_breakpad_registration_success_count(pref_value);
-
-  if (GetAndClearPrefValue(prefs::kStabilityBreakpadRegistrationFail,
-                           &pref_value))
-    stability->set_breakpad_registration_failure_count(pref_value);
-
-  if (GetAndClearPrefValue(prefs::kStabilityDebuggerPresent, &pref_value))
-    stability->set_debugger_present_count(pref_value);
-
-  if (GetAndClearPrefValue(prefs::kStabilityDebuggerNotPresent, &pref_value))
-    stability->set_debugger_not_present_count(pref_value);
 
   if (local_state_->HasPrefPath(prefs::kStabilityFileMetricsUnsentFilesCount)) {
     UMA_STABILITY_HISTOGRAM_COUNTS_100(
@@ -174,23 +152,12 @@ void StabilityMetricsProvider::ProvideStabilityMetrics(
 #endif
 }
 
-void StabilityMetricsProvider::RecordBreakpadRegistration(bool success) {
-  if (!success)
-    IncrementPrefValue(prefs::kStabilityBreakpadRegistrationFail);
-  else
-    IncrementPrefValue(prefs::kStabilityBreakpadRegistrationSuccess);
-}
-
-void StabilityMetricsProvider::RecordBreakpadHasDebugger(bool has_debugger) {
-  if (!has_debugger)
-    IncrementPrefValue(prefs::kStabilityDebuggerNotPresent);
-  else
-    IncrementPrefValue(prefs::kStabilityDebuggerPresent);
-}
 
 void StabilityMetricsProvider::CheckLastSessionEndCompleted() {
   if (!local_state_->GetBoolean(prefs::kStabilitySessionEndCompleted)) {
     IncrementPrefValue(prefs::kStabilityIncompleteSessionEndCount);
+    StabilityMetricsHelper::RecordStabilityEvent(
+        StabilityEventType::kIncompleteShutdown);
     // This is marked false when we get a WM_ENDSESSION.
     MarkSessionEndCompleted(true);
   }
@@ -222,6 +189,7 @@ void StabilityMetricsProvider::LogCrash(base::Time last_live_timestamp) {
 
 void StabilityMetricsProvider::LogLaunch() {
   IncrementPrefValue(prefs::kStabilityLaunchCount);
+  StabilityMetricsHelper::RecordStabilityEvent(StabilityEventType::kLaunch);
 }
 
 #if defined(OS_WIN)

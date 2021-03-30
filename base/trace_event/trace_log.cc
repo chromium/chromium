@@ -400,15 +400,6 @@ TraceLog::TraceLog()
   SetProcessID(static_cast<int>(GetCurrentProcId()));
 #endif
 
-// Linux renderer processes and Android O processes are not allowed to read
-// "proc/stat" file, crbug.com/788870.
-#if defined(OS_WIN) || defined(OS_MAC)
-  process_creation_time_ = Process::Current().CreationTime();
-#else
-  // Use approximate time when creation time is not available.
-  process_creation_time_ = TRACE_TIME_NOW();
-#endif
-
   logged_events_.reset(CreateTraceBuffer());
 
   MemoryDumpManager::GetInstance()->RegisterDumpProvider(this, "TraceLog",
@@ -1579,15 +1570,6 @@ void TraceLog::AddMetadataEventsWhileLocked() {
                                 "sort_index", process_sort_index_);
   }
 
-  if (!process_name_.empty()) {
-    AddMetadataEventWhileLocked(current_thread_id, "process_name", "name",
-                                process_name_);
-  }
-
-  TimeDelta process_uptime = TRACE_TIME_NOW() - process_creation_time_;
-  AddMetadataEventWhileLocked(current_thread_id, "process_uptime_seconds",
-                              "uptime", process_uptime.InSeconds());
-
 #if defined(OS_ANDROID)
   AddMetadataEventWhileLocked(current_thread_id, "chrome_library_address",
                               "start_address",
@@ -1615,16 +1597,6 @@ void TraceLog::AddMetadataEventsWhileLocked() {
       continue;
     AddMetadataEventWhileLocked(it.first, "thread_sort_index", "sort_index",
                                 it.second);
-  }
-
-  // TODO(ssid): Stop emitting and tracking thread names when perfetto is
-  // enabled and after crbug/978093 if fixed. The JSON exporter will emit thread
-  // names from thread descriptors.
-  AutoLock thread_info_lock(thread_info_lock_);
-  for (const auto& it : thread_names_) {
-    if (it.second.empty())
-      continue;
-    AddMetadataEventWhileLocked(it.first, "thread_name", "name", it.second);
   }
 
   // If buffer is full, add a metadata record to report this.
@@ -1900,6 +1872,7 @@ void UpdateTraceEventDurationExplicit(
                                          thread_now, thread_instruction_now);
 }
 
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 ScopedTraceBinaryEfficient::ScopedTraceBinaryEfficient(
     const char* category_group,
     const char* name) {
@@ -1926,5 +1899,6 @@ ScopedTraceBinaryEfficient::~ScopedTraceBinaryEfficient() {
                                                 event_handle_);
   }
 }
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 }  // namespace trace_event_internal

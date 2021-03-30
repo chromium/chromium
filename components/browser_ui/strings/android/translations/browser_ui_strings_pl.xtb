@@ -13,15 +13,17 @@
 <translation id="1272079795634619415">Zatrzymaj</translation>
 <translation id="1289742167380433257">Aby zaoszczędzić dane, obrazy z tej strony zostały zoptymalizowane przez Google.</translation>
 <translation id="129382876167171263">W tym miejscu pojawiają się pliki zapisane przez witryny</translation>
+<translation id="1317194122196776028">Zapomnij tę stronę</translation>
 <translation id="1364532808393826295"><ph name="APP_NAME" />–<ph name="NOTIFICATION_MESSAGE" /></translation>
 <translation id="1369915414381695676">Strona <ph name="SITE_NAME" /> została dodana</translation>
 <translation id="1383876407941801731">Szukaj</translation>
 <translation id="1384959399684842514">Pobieranie wstrzymane</translation>
 <translation id="1415402041810619267">URL obcięty</translation>
-<translation id="1431402976894535801">Nie pozwalaj stronom sprawdzać, czy aktualnie używasz urządzenia</translation>
 <translation id="1446450296470737166">Pełne sterowanie urządzeniami MIDI</translation>
 <translation id="1509960214886564027">Funkcje wielu stron mogą nie działać prawidłowo</translation>
-<translation id="1620510694547887537">Kamera</translation>
+<translation id="1620510694547887537">Aparat</translation>
+<translation id="1644574205037202324">Historia</translation>
+<translation id="1647582022260550163">Czy na pewno chcesz zresetować uprawnienia oraz wyczyścić pliki cookie i dane witryn?</translation>
 <translation id="1660204651932907780">Zezwalaj na odtwarzanie dźwięku na stronach internetowych (zalecane)</translation>
 <translation id="1677097821151855053">Plików cookie i innych danych stron używamy, żeby Cię zapamiętać, na przykład w celu logowania czy personalizowania reklam. Plikami cookie wszystkich stron możesz zarządzać w <ph name="BEGIN_LINK" />Ustawieniach<ph name="END_LINK" />.</translation>
 <translation id="1688867105868176567">Wyczyścić dane witryn?</translation>
@@ -29,7 +31,7 @@
 <translation id="1717218214683051432">Czujniki ruchu</translation>
 <translation id="1743802530341753419">Pytaj, zanim zezwolisz stronom na połączenie z urządzeniem (zalecane)</translation>
 <translation id="1779089405699405702">Dekoder obrazów</translation>
-<translation id="1818308510395330587">Aby w aplikacji <ph name="APP_NAME" /> można było korzystać z AR, włącz też aparat w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
+<translation id="1818308510395330587">Aby w aplikacji <ph name="APP_NAME" /> można było korzystać z rzeczywistości rozszerzonej, włącz też aparat w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Dostęp do lokalizacji jest wyłączony na tym urządzeniu. Włącz go w <ph name="BEGIN_LINK" />Ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="1919345977826869612">Reklamy</translation>
 <translation id="1919950603503897840">Wybierz kontakty</translation>
@@ -39,7 +41,6 @@
 <translation id="1994173015038366702">URL strony</translation>
 <translation id="2025115093177348061">Rzeczywistość rozszerzona</translation>
 <translation id="2030769033451695672">Kliknij, by wrócić na <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
-<translation id="2054665754582400095">Twoja obecność</translation>
 <translation id="2079545284768500474">Cofnij</translation>
 <translation id="2091887806945687916">Dźwięk</translation>
 <translation id="2107397443965016585">Pytaj, zanim pozwolisz stronom na odtwarzanie treści chronionej (zalecane)</translation>
@@ -82,7 +83,6 @@
 <translation id="3114012059975132928">Odtwarzacz</translation>
 <translation id="3115898365077584848">Pokaż informacje</translation>
 <translation id="3123473560110926937">Blokowane na niektórych stronach</translation>
-<translation id="3165371858310906303">Pytaj, gdy strona chce wiedzieć, kiedy używasz urządzenia</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> zapisanych danych</translation>
 <translation id="321187648315454507">Aby zezwolić aplikacji <ph name="APP_NAME" /> na wysyłanie do Ciebie powiadomień, musisz je też włączyć w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -93,7 +93,6 @@
 <translation id="3386292677130313581">Pytaj, zanim udostępnisz stronom swoją lokalizację (zalecane)</translation>
 <translation id="3538390592868664640">Nie zezwalaj stronom na tworzenie mapy 3D Twojego otoczenia ani na śledzenie pozycji kamery</translation>
 <translation id="3586500876634962664">Korzystanie z kamery i mikrofonu</translation>
-<translation id="3587482841069643663">Wszystkie</translation>
 <translation id="358794129225322306">Zezwól stronie na automatyczne pobieranie wielu plików.</translation>
 <translation id="3594780231884063836">Wycisz film</translation>
 <translation id="3596414637720633074">Blokuj pliki cookie innych firm w trybie incognito</translation>
@@ -101,9 +100,11 @@
 <translation id="3744111561329211289">Synchronizacja w tle</translation>
 <translation id="3763247130972274048">Kliknij dwukrotnie z lewej lub prawej strony filmu, by przewinąć o 10 s</translation>
 <translation id="381841723434055211">Numery telefonów</translation>
+<translation id="3835233591525155343">Korzystanie z urządzenia</translation>
 <translation id="385051799172605136">Wstecz</translation>
 <translation id="3859306556332390985">Przewiń do przodu</translation>
-<translation id="3955193568934677022">Zezwalaj witrynom na odtwarzanie treści chronionej (zalecane)</translation>
+<translation id="3955193568934677022">Zezwalaj stronom na odtwarzanie treści chronionej (zalecane)</translation>
+<translation id="3967822245660637423">Pobieranie zakończone</translation>
 <translation id="3987993985790029246">Kopiuj link</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="4002066346123236978">Tytuł</translation>
@@ -117,11 +118,12 @@
 <translation id="429312253194641664">Strona odtwarza multimedia</translation>
 <translation id="42981349822642051">Rozwiń</translation>
 <translation id="4336434711095810371">Wyczyść wszystkie dane</translation>
+<translation id="4402755511846832236">Nie pozwalaj stronom sprawdzać, czy aktualnie używasz urządzenia</translation>
 <translation id="4433925000917964731">Lżejsza wersja strony dostarczona przez Google</translation>
 <translation id="4434045419905280838">Pop-upy i przekierowania</translation>
 <translation id="445467742685312942">Zezwalaj stronom na odtwarzanie treści chronionych</translation>
 <translation id="4468959413250150279">Wycisz dźwięk na konkretnej stronie.</translation>
-<translation id="4479647676395637221">Pytaj, zanim zezwolisz stronom na korzystanie z kamery (zalecane)</translation>
+<translation id="4479647676395637221">Pytaj, zanim zezwolisz stronom na korzystanie z aparatu (zalecane)</translation>
 <translation id="4505788138578415521">URL pokazany w całości</translation>
 <translation id="4534723447064627427">Aby zezwolić aplikacji <ph name="APP_NAME" /> na dostęp do mikrofonu, musisz go też włączyć w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="4570913071927164677">Szczegóły</translation>
@@ -129,6 +131,7 @@
 <translation id="4670064810192446073">Rzeczywistość wirtualna</translation>
 <translation id="4708011789095599544">Czy na pewno chcesz wyczyścić pliki cookie i inne dane tej witryny?</translation>
 <translation id="4751476147751820511">Czujniki ruchu lub światła</translation>
+<translation id="4836046166855586901">Pytaj, gdy strona chce wiedzieć, kiedy aktywnie korzystasz z urządzenia</translation>
 <translation id="4883854917563148705">Ustawień zarządzanych nie można zresetować</translation>
 <translation id="4887024562049524730">Pytaj, zanim zezwolisz stronom na korzystanie z urządzenia i danych rzeczywistości wirtualnej (zalecane)</translation>
 <translation id="4962975101802056554">Anuluj wszystkie uprawnienia urządzenia</translation>
@@ -279,6 +282,7 @@
 <translation id="8447861592752582886">Cofnij zgodę na dostęp do urządzenia</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 plik cookie w użyciu}few{# pliki cookie w użyciu}many{# plików cookie w użyciu}other{# pliku cookie w użyciu}}</translation>
 <translation id="8463851957836045671">Strona jest szybka</translation>
+<translation id="8487700953926739672">Dostępny offline</translation>
 <translation id="851751545965956758">Nie zezwalaj stronom na łączenie się z urządzeniami</translation>
 <translation id="8525306231823319788">Pełny ekran</translation>
 <translation id="857943718398505171">Dozwolone (zalecane)</translation>
@@ -301,10 +305,12 @@
 <translation id="894871326938397531">Zamknąć tryb incognito?</translation>
 <translation id="8958424370300090006">Blokuj pliki cookie z określonej strony internetowej.</translation>
 <translation id="8959122750345127698">Adres nieosiągalny: <ph name="URL" /></translation>
+<translation id="8986362086234534611">Zapomnij</translation>
 <translation id="9019902583201351841">Zarządzany przez Twoich rodziców</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Przyznaj aplikacji <ph name="APP_NAME" /> uprawnienia w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
+<translation id="930525582205581608">Zapomnieć tę stronę?</translation>
 <translation id="965817943346481315">Zablokuj, jeśli na stronie wyświetlają się uciążliwe lub wprowadzające w błąd reklamy (zalecane)</translation>
 <translation id="967624055006145463">Zapisane dane</translation>
 </translationbundle>

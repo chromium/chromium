@@ -84,6 +84,19 @@ inline void AdvanceStringAndASSERT(SegmentedString& source,
     goto stateName;                                       \
   } while (false)
 
+// Similar to ADVANCE_TO, but we use this macro when the next input character is
+// known not to be a newline character. |AdvancePastNonNewline| will DCHECK this
+// property.
+#define ADVANCE_PAST_NON_NEWLINE_TO(prefix, stateName)             \
+  do {                                                             \
+    DCHECK_NE(state_, prefix::stateName);                          \
+    state_ = prefix::stateName;                                    \
+    if (!input_stream_preprocessor_.AdvancePastNonNewline(source)) \
+      return HaveBufferedCharacterToken();                         \
+    cc = input_stream_preprocessor_.NextInputCharacter();          \
+    goto stateName;                                                \
+  } while (false)
+
 // We use this macro when the HTML5 spec says "consume the next input
 // character" and it doesn't say "switch to ... state".
 #define CONSUME(prefix, stateName)                        \
@@ -93,6 +106,18 @@ inline void AdvanceStringAndASSERT(SegmentedString& source,
       return HaveBufferedCharacterToken();                \
     cc = input_stream_preprocessor_.NextInputCharacter(); \
     goto stateName;                                       \
+  } while (false)
+
+// Similar to CONSUME, but we use this macro when the next input character is
+// known not to be a newline character. |AdvancePastNonNewline| will DCHECK this
+// property.
+#define CONSUME_NON_NEWLINE(prefix, stateName)                     \
+  do {                                                             \
+    DCHECK_EQ(state_, prefix::stateName);                          \
+    if (!input_stream_preprocessor_.AdvancePastNonNewline(source)) \
+      return HaveBufferedCharacterToken();                         \
+    cc = input_stream_preprocessor_.NextInputCharacter();          \
+    goto stateName;                                                \
   } while (false)
 
 // Sometimes there's more complicated logic in the spec that separates when

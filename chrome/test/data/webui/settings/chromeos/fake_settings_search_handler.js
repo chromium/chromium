@@ -11,7 +11,7 @@ cr.define('settings', function() {
    *
    * @implements {chromeos.settings.mojom.SearchHandlerInterface}
    */
-  class FakeSettingsSearchHandler {
+  /* #export */ class FakeSettingsSearchHandler {
     constructor() {
       /** @private {!Array<chromeos.settings.mojom.SearchResult>} */
       this.fakeResults_ = [];

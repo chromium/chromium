@@ -218,14 +218,17 @@ void OnSnapshotFileCreatedRunTask(
                               base::File::FILE_ERROR_NOT_FOUND);
     return;
   }
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+
+  // Only one of the success or error callbacks will be called here.
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   delegate->CreateSnapshotFile(
       url.path(),  // device file path
       snapshot_file_path,
-      base::BindRepeating(&OnDidCreateSnapshotFile, copyable_callback,
-                          base::RetainedRef(context->task_runner()),
-                          validate_media_files),
-      base::BindRepeating(&OnCreateSnapshotFileError, copyable_callback));
+      base::BindOnce(&OnDidCreateSnapshotFile, std::move(split_callback.first),
+                     base::RetainedRef(context->task_runner()),
+                     validate_media_files),
+      base::BindOnce(&OnCreateSnapshotFileError,
+                     std::move(split_callback.second)));
 }
 
 }  // namespace
@@ -313,7 +316,7 @@ void DeviceMediaAsyncFileUtil::CreateOrOpen(
                      base::File::FLAG_READ |
                      base::File::FLAG_WRITE_ATTRIBUTES)) {
     std::move(callback).Run(base::File(base::File::FILE_ERROR_SECURITY),
-                            base::Closure());
+                            base::OnceClosure());
     return;
   }
   auto* task_runner = context->task_runner();
@@ -352,12 +355,16 @@ void DeviceMediaAsyncFileUtil::CreateDirectory(
                            base::File::FILE_ERROR_SECURITY);
     return;
   }
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+
+  // Only one of the success or error callbacks will be called here.
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   delegate->CreateDirectory(
       url.path(), exclusive, recursive,
       base::BindRepeating(&DeviceMediaAsyncFileUtil::OnDidCreateDirectory,
-                          weak_ptr_factory_.GetWeakPtr(), copyable_callback),
-      base::BindRepeating(&OnCreateDirectoryError, copyable_callback));
+                          weak_ptr_factory_.GetWeakPtr(),
+                          base::Passed(&split_callback.first)),
+      base::BindOnce(&OnCreateDirectoryError,
+                     std::move(split_callback.second)));
 }
 
 void DeviceMediaAsyncFileUtil::GetFileInfo(
@@ -372,14 +379,16 @@ void DeviceMediaAsyncFileUtil::GetFileInfo(
     OnGetFileInfoError(std::move(callback), base::File::FILE_ERROR_NOT_FOUND);
     return;
   }
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+
+  // Only one of the success or error callbacks will be called here.
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   delegate->GetFileInfo(
       url.path(),
       base::BindOnce(&DeviceMediaAsyncFileUtil::OnDidGetFileInfo,
                      weak_ptr_factory_.GetWeakPtr(),
                      base::RetainedRef(context->task_runner()), url.path(),
-                     copyable_callback),
-      base::BindRepeating(&OnGetFileInfoError, copyable_callback));
+                     std::move(split_callback.first)),
+      base::BindOnce(&OnGetFileInfoError, std::move(split_callback.second)));
 }
 
 void DeviceMediaAsyncFileUtil::ReadDirectory(
@@ -396,10 +405,10 @@ void DeviceMediaAsyncFileUtil::ReadDirectory(
 
   delegate->ReadDirectory(
       url.path(),
-      base::Bind(&DeviceMediaAsyncFileUtil::OnDidReadDirectory,
-                 weak_ptr_factory_.GetWeakPtr(),
-                 base::RetainedRef(context->task_runner()), callback),
-      base::BindRepeating(&OnReadDirectoryError, callback));
+      base::BindRepeating(&DeviceMediaAsyncFileUtil::OnDidReadDirectory,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          base::RetainedRef(context->task_runner()), callback),
+      base::BindOnce(&OnReadDirectoryError, callback));
 }
 
 void DeviceMediaAsyncFileUtil::Touch(
@@ -443,14 +452,16 @@ void DeviceMediaAsyncFileUtil::CopyFileLocal(
     return;
   }
 
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  // Only one of the success or error callbacks will be called here.
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   delegate->CopyFileLocal(
       src_url.path(), dest_url.path(),
-      base::Bind(&CreateSnapshotFileOnBlockingPool, profile_path_),
+      base::BindOnce(&CreateSnapshotFileOnBlockingPool, profile_path_),
       progress_callback,
-      base::Bind(&DeviceMediaAsyncFileUtil::OnDidCopyFileLocal,
-                 weak_ptr_factory_.GetWeakPtr(), copyable_callback),
-      base::BindRepeating(&OnCopyFileLocalError, copyable_callback));
+      base::BindOnce(&DeviceMediaAsyncFileUtil::OnDidCopyFileLocal,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.first)),
+      base::BindOnce(&OnCopyFileLocalError, std::move(split_callback.second)));
 }
 
 void DeviceMediaAsyncFileUtil::MoveFileLocal(
@@ -472,13 +483,15 @@ void DeviceMediaAsyncFileUtil::MoveFileLocal(
     return;
   }
 
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  // Only one of the success or error callbacks will be called here.
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   delegate->MoveFileLocal(
       src_url.path(), dest_url.path(),
-      base::Bind(&CreateSnapshotFileOnBlockingPool, profile_path_),
-      base::Bind(&DeviceMediaAsyncFileUtil::OnDidMoveFileLocal,
-                 weak_ptr_factory_.GetWeakPtr(), copyable_callback),
-      base::BindRepeating(&OnMoveFileLocalError, copyable_callback));
+      base::BindOnce(&CreateSnapshotFileOnBlockingPool, profile_path_),
+      base::BindOnce(&DeviceMediaAsyncFileUtil::OnDidMoveFileLocal,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.first)),
+      base::BindOnce(&OnMoveFileLocalError, std::move(split_callback.second)));
 }
 
 void DeviceMediaAsyncFileUtil::CopyInForeignFile(
@@ -501,12 +514,15 @@ void DeviceMediaAsyncFileUtil::CopyInForeignFile(
     return;
   }
 
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  // Only one of the success or error callbacks will be called here.
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   delegate->CopyFileFromLocal(
       src_file_path, dest_url.path(),
-      base::Bind(&DeviceMediaAsyncFileUtil::OnDidCopyInForeignFile,
-                 weak_ptr_factory_.GetWeakPtr(), copyable_callback),
-      base::BindRepeating(&OnCopyInForeignFileError, copyable_callback));
+      base::BindOnce(&DeviceMediaAsyncFileUtil::OnDidCopyInForeignFile,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.first)),
+      base::BindOnce(&OnCopyInForeignFileError,
+                     std::move(split_callback.second)));
 }
 
 void DeviceMediaAsyncFileUtil::DeleteFile(
@@ -526,12 +542,14 @@ void DeviceMediaAsyncFileUtil::DeleteFile(
     return;
   }
 
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  // Only one of the success or error callbacks will be called here.
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   delegate->DeleteFile(
       url.path(),
-      base::Bind(&DeviceMediaAsyncFileUtil::OnDidDeleteFile,
-                 weak_ptr_factory_.GetWeakPtr(), copyable_callback),
-      base::BindRepeating(&OnDeleteFileError, copyable_callback));
+      base::BindOnce(&DeviceMediaAsyncFileUtil::OnDidDeleteFile,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.first)),
+      base::BindOnce(&OnDeleteFileError, std::move(split_callback.second)));
 }
 
 void DeviceMediaAsyncFileUtil::DeleteDirectory(
@@ -553,12 +571,15 @@ void DeviceMediaAsyncFileUtil::DeleteDirectory(
     return;
   }
 
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  // Only one of the success or error callbacks will be called here.
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   delegate->DeleteDirectory(
       url.path(),
-      base::Bind(&DeviceMediaAsyncFileUtil::OnDidDeleteDirectory,
-                 weak_ptr_factory_.GetWeakPtr(), copyable_callback),
-      base::BindRepeating(&OnDeleteDirectoryError, copyable_callback));
+      base::BindOnce(&DeviceMediaAsyncFileUtil::OnDidDeleteDirectory,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.first)),
+      base::BindOnce(&OnDeleteDirectoryError,
+                     std::move(split_callback.second)));
 }
 
 void DeviceMediaAsyncFileUtil::DeleteRecursively(

@@ -15,6 +15,7 @@
 <translation id="2036868001356139588">Tími niðurteljara</translation>
 <translation id="2050339315714019657">Skammsnið</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> er virk</translation>
+<translation id="2144806332417375165">Sérstilltar færibreytur myndskeiðs</translation>
 <translation id="229579744168541441">Flytja út á disk</translation>
 <translation id="2501278716633472235">Fara til baka</translation>
 <translation id="2501853267655415902">Upptaka var stöðvuð</translation>
@@ -33,7 +34,6 @@
 <translation id="3259149966178251584">Upplausn myndavélar</translation>
 <translation id="3517926952904427380">Ekki tókst að taka andlitsmynd</translation>
 <translation id="3569311554794739032">Viltu örugglega fjarlægja <ph name="FILE" />?</translation>
-<translation id="3750315947605636967">Annað forrit er að nota myndavélina þína</translation>
 <translation id="3810838688059735925">Myndskeið</translation>
 <translation id="3838931309141338733">Skanna strikamerki</translation>
 <translation id="3892148308691398805">Afrita texta</translation>
@@ -76,10 +76,12 @@ Ef ábendingin þín snýr að gæðum mynda eða myndskeiða máttu hengja við
 <translation id="7337660886763914220">Villur eru í skráakerfi.</translation>
 <translation id="7450541714075000668">Texti afritaður</translation>
 <translation id="7557677699350329807">Skipta yfir í næstu myndavél</translation>
+<translation id="7607002721634913082">Hlé</translation>
 <translation id="7608223098072244877">4 sinnum 4</translation>
 <translation id="7649070708921625228">Hjálp</translation>
 <translation id="7658239707568436148">Hætta við</translation>
 <translation id="7670511624014457267">60 rammar/sek.</translation>
+<translation id="7974782136796202581">Sýna hliðrunar-, halla- og aðdráttarvalkosti</translation>
 <translation id="7983668134180549431">Texti greindist.</translation>
 <translation id="8067883171444229417">Spila myndskeið</translation>
 <translation id="8131740175452115882">Staðfesta</translation>

@@ -32,57 +32,68 @@ class DumpAccessibilityTestHelper {
   // Returns a path to an expectation file for the current platform. If no
   // suitable expectation file can be found, logs an error message and returns
   // an empty path.
-  base::FilePath GetExpectationFilePath(const base::FilePath& test_file_path);
+  base::FilePath GetExpectationFilePath(
+      const base::FilePath& test_file_path,
+      const base::FilePath::StringType& expectations_qualifier =
+          FILE_PATH_LITERAL(""));
 
   // Sets up a command line for the test.
   void SetUpCommandLine(base::CommandLine*) const;
 
-  // Parses property filter directive, if the line is a valid property filter
-  // directive, then a new property filter is created and appneded to the list,
-  // true is returned, otherwise false.
-  bool ParsePropertyFilter(const std::string& line,
-                           std::vector<ui::AXPropertyFilter>* filters) const;
+  // Describes the test execution flow, which is determined by a sequence of
+  // testing directives (instructions).
+  struct Scenario {
+    explicit Scenario(
+        const std::vector<ui::AXPropertyFilter>& default_filters = {});
+    Scenario(Scenario&&);
+    ~Scenario();
 
-  // Parses node filter directive, if the line is a valid node filter directive
-  // then a new node filter is created and appneded to the list, true is
-  // returned, otherwise false.
-  bool ParseNodeFilter(const std::string& line,
-                       std::vector<ui::AXNodeFilter>* filters) const;
+    Scenario& operator=(Scenario&&);
 
-  struct Directive {
-    enum Type {
-      // No directive.
-      kNone,
+    // A list of URLs of resources that are never expected to load. For example,
+    // a broken image url, which otherwise would make a test failing.
+    std::vector<std::string> no_load_expected;
 
-      // Instructs to not wait for document load for url defined by the
-      // directive.
-      kNoLoadExpected,
+    // A list of strings must be present in the formatted tree before the test
+    // starts
+    std::vector<std::string> wait_for;
 
-      // Delays a test unitl a string defined by the directive is present
-      // in the dump.
-      kWaitFor,
+    // A list of string indicating an element the default accessible action
+    // should be performed at before the test starts.
+    std::vector<std::string> default_action_on;
 
-      // Delays a test until a string returned by a script defined by the
-      // directive is present in the dump.
-      kExecuteAndWaitFor,
+    // A list of JavaScripts functions to be executed consequently. Function
+    // may return a value, which has to be present in a formatter tree before
+    // the next function evaluated.
+    std::vector<std::string> execute;
 
-      // Indicates event recording should continue at least until a specific
-      // event has been received.
-      kRunUntil,
+    // A list of strings indicating that event recording should be terminated
+    // when one of them is present in a formatted tree.
+    std::vector<std::string> run_until;
 
-      // Invokes default action on an accessible object defined by the
-      // directive.
-      kDefaultActionOn,
-    } type;
+    // A list of property filters which defines generated output of a formatted
+    // tree.
+    std::vector<ui::AXPropertyFilter> property_filters;
 
-    std::string value;
+    // The node filters indicating subtrees that should be not included into
+    // a formatted tree.
+    std::vector<ui::AXNodeFilter> node_filters;
   };
 
-  // Parses directives from the given line.
-  Directive ParseDirective(const std::string& line) const;
+  // Parses a given testing scenario. Prepends default property filters if any
+  // so the test file filters will take precedence over default filters in case
+  // of conflict.
+  Scenario ParseScenario(
+      const std::vector<std::string>& lines,
+      const std::vector<ui::AXPropertyFilter>& default_filters = {});
 
-  // Returns a platform-dependent list of inspect types used in dump testing.
-  static std::vector<AXInspectFactory::Type> TestPasses();
+  // Returns a platform-dependent list of inspect types used in dump tree
+  // testing.
+  static std::vector<AXInspectFactory::Type> TreeTestPasses();
+
+  // Returns a platform-dependent list of inspect types used in dump events
+  // testing.
+  static std::vector<AXInspectFactory::Type> EventTestPasses();
 
   // Loads the given expectation file and returns the contents. An expectation
   // file may be empty, in which case an empty vector is returned.
@@ -100,17 +111,72 @@ class DumpAccessibilityTestHelper {
       const std::vector<std::string>& expected_lines);
 
  private:
+  enum Directive {
+    // No directive.
+    kNone,
+
+    // Instructs to not wait for document load for url defined by the
+    // directive.
+    kNoLoadExpected,
+
+    // Delays a test unitl a string defined by the directive is present
+    // in the dump.
+    kWaitFor,
+
+    // Delays a test until a string returned by a script defined by the
+    // directive is present in the dump.
+    kExecuteAndWaitFor,
+
+    // Indicates event recording should continue at least until a specific
+    // event has been received.
+    kRunUntil,
+
+    // Invokes default action on an accessible object defined by the
+    // directive.
+    kDefaultActionOn,
+
+    // Property filter directives, see AXPropertyFilter.
+    kPropertyFilterAllow,
+    kPropertyFilterAllowEmpty,
+    kPropertyFilterDeny,
+
+    // Scripting instruction.
+    kScript,
+
+    // Node filter directives, see AXNodeFilter.
+    kNodeFilter,
+  };
+
+  // Parses directives from the given line.
+  Directive ParseDirective(const std::string& directive) const;
+
+  // Adds a given directive into a scenario.
+  void ProcessDirective(Directive directive,
+                        const std::string& value,
+                        Scenario* scenario) const;
+
   // Suffix of the expectation file corresponding to html file.
   // Overridden by each platform subclass.
   // Example:
   // HTML test:      test-file.html
   // Expected:       test-file-expected-mac.txt.
-  base::FilePath::StringType GetExpectedFileSuffix() const;
+  //
+  // In order to support multiple tests for the same html file, an
+  // optional expectations_qualifier string may be specified. For
+  // example, we could have both dump-tree and dump-node tests:
+  // HTML test:      test-file.html
+  // Expected:       test-file-node-expected-mac.txt
+  // Expected:       test-file-tree-expected-mac.txt
+  base::FilePath::StringType GetExpectedFileSuffix(
+      const base::FilePath::StringType& expectations_qualifier =
+          FILE_PATH_LITERAL("")) const;
 
   // Some Platforms expect different outputs depending on the version.
   // Most test outputs are identical but this allows a version specific
   // expected file to be used.
-  base::FilePath::StringType GetVersionSpecificExpectedFileSuffix() const;
+  base::FilePath::StringType GetVersionSpecificExpectedFileSuffix(
+      const base::FilePath::StringType& expectations_qualifier =
+          FILE_PATH_LITERAL("")) const;
 
   FRIEND_TEST_ALL_PREFIXES(DumpAccessibilityTestHelperTest, TestDiffLines);
 

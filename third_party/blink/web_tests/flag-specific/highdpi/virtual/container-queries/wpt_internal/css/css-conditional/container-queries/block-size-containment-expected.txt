@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL block-size containment only assert_equals: expected 50 but got 20
+Harness: the test ran to completion.
+

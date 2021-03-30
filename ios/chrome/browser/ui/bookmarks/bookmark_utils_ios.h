@@ -9,10 +9,10 @@
 
 #include <memory>
 #include <set>
+#include <string>
 #include <vector>
 
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 
 class ChromeBrowserState;
@@ -49,9 +49,6 @@ NSString* TitleForBookmarkNode(const bookmarks::BookmarkNode* node);
 
 // Returns the subtitle relevant to the bookmark navigation ui.
 NSString* subtitleForBookmarkNode(const bookmarks::BookmarkNode* node);
-
-// Returns the current status bar height.
-CGFloat StatusBarHeight();
 
 #pragma mark - Updating Bookmarks
 

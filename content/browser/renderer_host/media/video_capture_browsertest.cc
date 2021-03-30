@@ -52,8 +52,8 @@ class MockVideoCaptureControllerEventHandler
                void(const VideoCaptureControllerID&, int buffer_id));
   MOCK_METHOD3(OnBufferReady,
                void(const VideoCaptureControllerID& id,
-                    int buffer_id,
-                    const media::mojom::VideoFrameInfoPtr& frame_info));
+                    const ReadyBuffer& fullsized_buffer,
+                    const std::vector<ReadyBuffer>& downscaled_buffers));
   MOCK_METHOD1(OnStarted, void(const VideoCaptureControllerID&));
   MOCK_METHOD1(OnEnded, void(const VideoCaptureControllerID&));
   MOCK_METHOD2(OnError,
@@ -320,19 +320,20 @@ IN_PROC_BROWSER_TEST_P(VideoCaptureBrowserTest,
   EXPECT_CALL(mock_controller_event_handler_, OnBufferReady(_, _, _))
       .WillRepeatedly(Invoke(
           [this, &received_frame_infos, &must_wait_for_gpu_decode_to_start,
-           &finish_test_cb](VideoCaptureControllerID id, int buffer_id,
-                            const media::mojom::VideoFrameInfoPtr& frame_info) {
+           &finish_test_cb](const VideoCaptureControllerID& id,
+                            const ReadyBuffer& buffer,
+                            const std::vector<ReadyBuffer>& scaled_buffers) {
             FrameInfo received_frame_info;
-            received_frame_info.pixel_format = frame_info->pixel_format;
-            received_frame_info.size = frame_info->coded_size;
-            received_frame_info.timestamp = frame_info->timestamp;
+            received_frame_info.pixel_format = buffer.frame_info->pixel_format;
+            received_frame_info.size = buffer.frame_info->coded_size;
+            received_frame_info.timestamp = buffer.frame_info->timestamp;
             received_frame_infos.emplace_back(received_frame_info);
 
             const media::VideoFrameFeedback kArbitraryFeedback =
                 media::VideoFrameFeedback(0.5, 60.0,
                                           std::numeric_limits<int>::max());
             controller_->ReturnBuffer(id, &mock_controller_event_handler_,
-                                      buffer_id, kArbitraryFeedback);
+                                      buffer.buffer_id, kArbitraryFeedback);
 
             if ((received_frame_infos.size() >= kMinFramesToReceive &&
                  !must_wait_for_gpu_decode_to_start) ||

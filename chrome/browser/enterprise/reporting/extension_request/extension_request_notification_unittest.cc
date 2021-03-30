@@ -71,19 +71,16 @@ INSTANTIATE_TEST_SUITE_P(
                       ExtensionRequestNotification::kRejected,
                       ExtensionRequestNotification::kForceInstalled));
 
+#if !DCHECK_IS_ON()
+// EXPECT_DEATH doesn't work well with BrowserWithTestWindowTest. Hence only run
+// the test when DCHECK is off.
 TEST_P(ExtensionRequestNotificationTest, NoExtension) {
   ExtensionRequestNotification request_notification(
       profile(), GetNotifyType(), ExtensionRequestNotification::ExtensionIds());
-#if DCHECK_IS_ON()
-  EXPECT_DEATH_IF_SUPPORTED(
-      request_notification.Show(base::BindOnce(&OnNotificationClosed, false)),
-      "");
-#else
   request_notification.Show(base::BindOnce(&OnNotificationClosed, false));
-#endif
-  task_environment()->RunUntilIdle();
   EXPECT_FALSE(GetNotification().has_value());
 }
+#endif  //! DCHECK_IS_ON()
 
 TEST_P(ExtensionRequestNotificationTest, HasExtensionAndClickedByUser) {
   ExtensionRequestNotification request_notification(
@@ -108,7 +105,7 @@ TEST_P(ExtensionRequestNotificationTest, HasExtensionAndClickedByUser) {
       close_run_loop.QuitClosure());
   display_service_tester_->SimulateClick(
       NotificationHandler::Type::TRANSIENT, kNotificationIds[GetNotifyType()],
-      base::Optional<int>(), base::Optional<base::string16>());
+      base::Optional<int>(), base::Optional<std::u16string>());
   close_run_loop.Run();
 
   EXPECT_FALSE(GetNotification().has_value());

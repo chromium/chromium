@@ -83,6 +83,9 @@ class SQLiteTrustTokenPersister : public TrustTokenPersister {
       base::RepeatingCallback<bool(const SuitableTrustTokenOrigin&)> matcher)
       override;
 
+  base::flat_map<SuitableTrustTokenOrigin, int> GetStoredTrustTokenCounts()
+      override;
+
  private:
   // Manages the underlying database.
   std::unique_ptr<TrustTokenDatabaseOwner> database_owner_;

@@ -58,9 +58,6 @@ class ManagePasswordsTest : public InProcessBrowserTest {
   // Put the controller, icon, and bubble into the "More problems to fix" state.
   void SetupMoreToFixState();
 
-  // Put the controller, icon, and bubble into the "Some problems to fix" state.
-  void SetupUnsafeState();
-
   // Put the controller, icon, and bubble into a moving-password state.
   void SetupMovingPasswords();
 

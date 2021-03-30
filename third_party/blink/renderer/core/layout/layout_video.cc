@@ -25,7 +25,6 @@
 
 #include "third_party/blink/renderer/core/layout/layout_video.h"
 
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/paint/video_painter.h"
@@ -80,7 +79,7 @@ LayoutSize LayoutVideo::CalculateIntrinsicSize(float scale) {
   HTMLVideoElement* video = VideoElement();
   DCHECK(video);
 
-  if (RuntimeEnabledFeatures::ExperimentalProductivityFeaturesEnabled()) {
+  if (RuntimeEnabledFeatures::ExperimentalPoliciesEnabled()) {
     if (video->IsDefaultIntrinsicSize()) {
       LayoutSize size = DefaultSize();
       size.Scale(scale);
@@ -88,31 +87,38 @@ LayoutSize LayoutVideo::CalculateIntrinsicSize(float scale) {
     }
   }
 
-  // Spec text from 4.8.6
-  //
-  // The intrinsic width of a video element's playback area is the intrinsic
-  // width of the video resource, if that is available; otherwise it is the
-  // intrinsic width of the poster frame, if that is available; otherwise it is
-  // 300 CSS pixels.
-  //
-  // The intrinsic height of a video element's playback area is the intrinsic
-  // height of the video resource, if that is available; otherwise it is the
-  // intrinsic height of the poster frame, if that is available; otherwise it is
-  // 150 CSS pixels.
-  WebMediaPlayer* web_media_player = MediaElement()->GetWebMediaPlayer();
-  if (web_media_player &&
-      video->getReadyState() >= HTMLVideoElement::kHaveMetadata) {
-    IntSize size(web_media_player->NaturalSize());
-    if (!size.IsEmpty()) {
-      LayoutSize layoutSize = LayoutSize(size);
-      layoutSize.Scale(scale);
-      return layoutSize;
-    }
+  auto display_mode = GetDisplayMode();
+
+  // Special case: If the poster image is the "default poster image", we should
+  // NOT use that for calculating intrinsic size.
+  // TODO(1190335): Remove this once default poster image is removed
+  if (display_mode == kPoster && video->IsDefaultPosterImageURL()) {
+    display_mode = kVideo;
   }
 
-  if (video->IsShowPosterFlagSet() && !cached_image_size_.IsEmpty() &&
-      !ImageResource()->ErrorOccurred())
-    return cached_image_size_;
+  switch (display_mode) {
+    // This implements the intrinsic width/height calculation from:
+    // https://html.spec.whatwg.org/#the-video-element:dimension-attributes:~:text=The%20intrinsic%20width%20of%20a%20video%20element's%20playback%20area
+    // If the video playback area is currently represented by the poster image,
+    // the intrinsic width and height are that of the poster image.
+    case kPoster:
+      if (!cached_image_size_.IsEmpty() && !ImageResource()->ErrorOccurred()) {
+        return cached_image_size_;
+      }
+      break;
+
+    // Otherwise, the intrinsic width is that of the video.
+    case kVideo:
+      if (const auto* player = MediaElement()->GetWebMediaPlayer()) {
+        IntSize size(player->NaturalSize());
+        if (!size.IsEmpty()) {
+          LayoutSize layout_size = LayoutSize(size);
+          layout_size.Scale(scale);
+          return layout_size;
+        }
+      }
+      break;
+  }
 
   LayoutSize size = DefaultSize();
   size.Scale(scale);
@@ -139,11 +145,17 @@ void LayoutVideo::ImageChanged(WrappedImagePtr new_image,
 
 LayoutVideo::DisplayMode LayoutVideo::GetDisplayMode() const {
   NOT_DESTROYED();
-  if (!VideoElement()->IsShowPosterFlagSet() ||
-      VideoElement()->PosterImageURL().IsEmpty()) {
-    return kVideo;
-  } else {
+
+  const auto* video = VideoElement();
+  // If the show-poster-flag is set (or there is no video frame to display) AND
+  // there is a poster image, display that.
+  if ((video->IsShowPosterFlagSet() || !video->HasAvailableVideoFrame()) &&
+      !video->PosterImageURL().IsEmpty()) {
     return kPoster;
+  }
+  // Otherwise, try displaying a video frame.
+  else {
+    return kVideo;
   }
 }
 

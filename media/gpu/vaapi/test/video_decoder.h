@@ -14,7 +14,6 @@ class VideoDecoder {
  public:
   // Result of decoding the current frame.
   enum Result {
-    kFailed,
     kOk,
     kEOStream,
   };
@@ -24,7 +23,7 @@ class VideoDecoder {
   VideoDecoder& operator=(const VideoDecoder&) = delete;
   virtual ~VideoDecoder() = default;
 
-  // Decodes the next frame in this decoder.
+  // Decodes the next frame in this decoder. Errors are fatal.
   virtual Result DecodeNextFrame() = 0;
 
   // Outputs the last decoded frame to a PNG at the given |path|.
@@ -33,6 +32,13 @@ class VideoDecoder {
   // It is therefore possible that the images outputted do not exactly match
   // what is displayed by playing the video stream directly.
   virtual void LastDecodedFrameToPNG(const std::string& path) = 0;
+
+  // Computes the MD5 sum of the last decoded frame and returns a human-readable
+  // representation.
+  virtual std::string LastDecodedFrameMD5Sum() = 0;
+
+  // Returns whether the last decoded frame was visible.
+  virtual bool LastDecodedFrameVisible() = 0;
 };
 
 }  // namespace vaapi_test

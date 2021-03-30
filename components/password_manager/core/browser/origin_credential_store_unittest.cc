@@ -35,7 +35,7 @@ UiCredential MakeUiCredential(
         IsAffiliationBasedMatch(false)) {
   return UiCredential(base::UTF8ToUTF16(username), base::UTF8ToUTF16(password),
                       url::Origin::Create(GURL(origin)), is_public_suffix_match,
-                      is_affiliation_based_match);
+                      is_affiliation_based_match, base::Time());
 }
 
 }  // namespace

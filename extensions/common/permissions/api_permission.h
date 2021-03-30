@@ -70,7 +70,7 @@ class APIPermission {
     kChromeosInfoPrivate = 26,
     kClipboardRead = 27,
     kClipboardWrite = 28,
-    kCloudPrintPrivate = 29,
+    kDeleted_CloudPrintPrivate = 29,  // API removed.
     kCommandLinePrivate = 30,
     kCommandsAccessibility = 31,
     kContentSettings = 32,
@@ -79,7 +79,7 @@ class APIPermission {
     kDeleted_Copresence = 35,
     kDeleted_CopresencePrivate = 36,
     kCryptotokenPrivate = 37,
-    kDataReductionProxy = 38,
+    kDeleted_DataReductionProxy = 38,  // API removed.
     kDiagnostics = 39,
     kDeleted_Dial = 40,  // API removed.
     kDebugger = 41,
@@ -240,7 +240,7 @@ class APIPermission {
     kEnterpriseDeviceAttributes = 196,
     kCertificateProvider = 197,
     kResourcesPrivate = 198,
-    kDisplaySource = 199,
+    kDeleted_DisplaySource = 199,
     kClipboard = 200,
     kNetworkingOnc = 201,
     kVirtualKeyboard = 202,

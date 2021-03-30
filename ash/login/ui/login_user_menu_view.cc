@@ -22,9 +22,6 @@
 
 namespace ash {
 namespace {
-constexpr char kLegacySupervisedUserManagementDisplayURL[] =
-    "www.chrome.com/manage";
-
 // Vertical margin between username and mail.
 constexpr int kUserMenuVerticalMarginUsernameMailDp = 8;
 
@@ -143,16 +140,15 @@ LoginUserMenuView::LoginUserMenuView(
       bubble_opener_(bubble_opener),
       on_remove_user_warning_shown_(on_remove_user_warning_shown),
       on_remove_user_requested_(on_remove_user_requested) {
-
-  const base::string16& email =
+  const std::u16string& email =
       base::UTF8ToUTF16(user.basic_user_info.display_email);
   bool is_owner = user.is_device_owner;
 
   // User information.
   {
-    const base::string16& username =
+    const std::u16string& username =
         base::UTF8ToUTF16(user.basic_user_info.display_name);
-    base::string16 display_username =
+    std::u16string display_username =
         is_owner
             ? l10n_util::GetStringFUTF16(IDS_ASH_LOGIN_POD_OWNER_USER, username)
             : username;
@@ -163,19 +159,16 @@ LoginUserMenuView::LoginUserMenuView(
         views::BoxLayout::Orientation::kVertical, gfx::Insets(),
         kUserMenuVerticalMarginUsernameMailDp));
     AddChildView(container);
-    username_label_ = login_views_utils::CreateBubbleLabel(
-        display_username, nullptr,
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kTextColorPrimary),
-        gfx::FontList({kUserMenuFontNameUsername}, gfx::Font::FontStyle::NORMAL,
-                      kUserMenuFontSizeUsername, gfx::Font::Weight::MEDIUM),
-        kUserMenuLineHeightUsername);
-    container->AddChildView(username_label_);
-    email_label_ = login_views_utils::CreateBubbleLabel(
-        email, nullptr,
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kTextColorSecondary));
-    container->AddChildView(email_label_);
+    // Colors should be updated in OnThemeChanged.
+    username_label_ =
+        container->AddChildView(login_views_utils::CreateBubbleLabel(
+            display_username, nullptr, SK_ColorGREEN,
+            gfx::FontList({kUserMenuFontNameUsername},
+                          gfx::Font::FontStyle::NORMAL,
+                          kUserMenuFontSizeUsername, gfx::Font::Weight::MEDIUM),
+            kUserMenuLineHeightUsername));
+    email_label_ =
+        container->AddChildView(login_views_utils::CreateBubbleLabel(email));
   }
 
   // User is managed.
@@ -183,7 +176,7 @@ LoginUserMenuView::LoginUserMenuView(
     managed_user_data_ = new views::View();
     managed_user_data_->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
-    base::string16 managed_text = l10n_util::GetStringFUTF16(
+    std::u16string managed_text = l10n_util::GetStringFUTF16(
         IDS_ASH_LOGIN_MANAGED_SESSION_MONITORING_USER_WARNING,
         base::UTF8ToUTF16(user.user_account_manager.value()));
     management_disclosure_label_ =
@@ -201,26 +194,20 @@ LoginUserMenuView::LoginUserMenuView(
   if (user.can_remove) {
     DCHECK(!is_owner);
     user_manager::UserType type = user.basic_user_info.type;
-    base::string16 part1 = l10n_util::GetStringUTF16(
+    std::u16string part1 = l10n_util::GetStringUTF16(
         IDS_ASH_LOGIN_POD_NON_OWNER_USER_REMOVE_WARNING_PART_1);
-    if (type == user_manager::UserType::USER_TYPE_SUPERVISED) {
-      part1 = l10n_util::GetStringFUTF16(
-          IDS_ASH_LOGIN_POD_LEGACY_SUPERVISED_USER_REMOVE_WARNING,
-          base::UTF8ToUTF16(kLegacySupervisedUserManagementDisplayURL));
-    }
-    base::string16 part2 = l10n_util::GetStringFUTF16(
+    std::u16string part2 = l10n_util::GetStringFUTF16(
         type == user_manager::UserType::USER_TYPE_CHILD
             ? IDS_ASH_LOGIN_POD_NON_OWNER_USER_REMOVE_WARNING_PART_2_SUPERVISED_USER
             : IDS_ASH_LOGIN_POD_NON_OWNER_USER_REMOVE_WARNING_PART_2,
         email);
-    warning_message_ = base::StrCat({part1, base::ASCIIToUTF16(" "), part2});
+    warning_message_ = base::StrCat({part1, u" ", part2});
 
-    remove_user_confirm_data_ = new views::View();
+    remove_user_confirm_data_ = AddChildView(std::make_unique<views::View>());
     remove_user_confirm_data_->SetLayoutManager(
         std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kVertical, gfx::Insets(),
             kUserMenuVerticalMarginBetweenLabelsDp));
-    AddChildView(remove_user_confirm_data_);
     remove_user_confirm_data_->SetVisible(false);
 
     remove_user_confirm_data_->AddChildView(
@@ -256,7 +243,7 @@ void LoginUserMenuView::ResetState() {
         SystemLabelButton::DisplayType::DEFAULT);
     // Reset button's description to none.
     remove_user_button_->GetViewAccessibility().OverrideDescription(
-        base::string16());
+        std::u16string());
   }
 }
 
@@ -289,7 +276,7 @@ void LoginUserMenuView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     node_data->SetName(username_label_->GetText());
     if (management_disclosure_label_) {
       node_data->SetDescription(
-          base::StrCat({email_label_->GetText(), base::ASCIIToUTF16(" "),
+          base::StrCat({email_label_->GetText(), u" ",
                         management_disclosure_label_->GetText()}));
     } else {
       node_data->SetDescription(email_label_->GetText());
@@ -297,6 +284,23 @@ void LoginUserMenuView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
   node_data->role = ax::mojom::Role::kDialog;
   node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kModal, true);
+}
+
+void LoginUserMenuView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  username_label_->SetEnabledColor(
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kTextColorPrimary));
+  email_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorSecondary));
+  if (remove_user_confirm_data_) {
+    DCHECK_EQ(2u, remove_user_confirm_data_->children().size());
+    for (views::View* label : remove_user_confirm_data_->children()) {
+      static_cast<views::Label*>(label)->SetEnabledColor(
+          AshColorProvider::Get()->GetContentLayerColor(
+              AshColorProvider::ContentLayerType::kTextColorPrimary));
+    }
+  }
 }
 
 views::FocusTraversable* LoginUserMenuView::GetPaneFocusTraversable() {

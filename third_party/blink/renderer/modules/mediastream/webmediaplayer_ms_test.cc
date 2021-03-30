@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/layers/layer.h"
+#include "media/base/media_content_type.h"
 #include "media/base/media_util.h"
 #include "media/base/test_helpers.h"
 #include "media/base/video_frame.h"
@@ -110,17 +111,13 @@ class FakeWebMediaPlayerDelegate
 
   void DidPlay(int delegate_id) override {
     EXPECT_EQ(delegate_id_, delegate_id);
-    EXPECT_FALSE(playing_);
-    playing_ = true;
     is_gone_ = false;
   }
 
   void DidPause(int delegate_id, bool reached_end_of_stream) override {
     EXPECT_EQ(delegate_id_, delegate_id);
     EXPECT_FALSE(reached_end_of_stream);
-    EXPECT_TRUE(playing_);
     EXPECT_FALSE(is_gone_);
-    playing_ = false;
   }
 
   void PlayerGone(int delegate_id) override {
@@ -147,28 +144,15 @@ class FakeWebMediaPlayerDelegate
     return false;
   }
 
-  void SetIsEffectivelyFullscreen(
-      int delegate_id,
-      WebFullscreenVideoStatus fullscreen_video_status) override {
-    EXPECT_EQ(delegate_id_, delegate_id);
-  }
-
   bool IsFrameHidden() override { return is_hidden_; }
-  bool IsFrameClosed() override { return false; }
 
   void set_hidden(bool is_hidden) { is_hidden_ = is_hidden; }
 
   int delegate_id() { return delegate_id_; }
 
-  void DidAudioOutputSinkChange(int delegate_id,
-                                const std::string& hashed_device_id) override {
-    EXPECT_EQ(delegate_id_, delegate_id);
-  }
-
  private:
   int delegate_id_ = 1234;
   Observer* observer_ = nullptr;
-  bool playing_ = false;
   bool is_hidden_ = false;
   bool is_gone_ = true;
   bool is_idle_ = false;
@@ -344,9 +328,9 @@ void MockMediaStreamVideoRenderer::QueueFrames(
       // MediaStreamRemoteVideoSource does not explicitly set the rotation
       // for unrotated frames, so that is not done here either.
       if (rotation != media::VIDEO_ROTATION_0)
-        frame->metadata()->rotation = rotation;
+        frame->metadata().transformation = rotation;
 
-      frame->metadata()->reference_time =
+      frame->metadata().reference_time =
           base::TimeTicks::Now() + base::TimeDelta::FromMilliseconds(token);
 
       AddFrame(FrameType::NORMAL_FRAME, frame);
@@ -571,7 +555,6 @@ class WebMediaPlayerMSTest
   void MediaSourceOpened(WebMediaSource*) override {}
   void RemotePlaybackCompatibilityChanged(const WebURL& url,
                                           bool is_compatible) override {}
-  void OnBecamePersistentVideo(bool) override {}
   bool WasAlwaysMuted() override { return false; }
   bool HasSelectedVideoTrack() override { return false; }
   WebMediaPlayer::TrackId GetSelectedVideoTrackId() override {
@@ -585,7 +568,13 @@ class WebMediaPlayerMSTest
   void MediaRemotingStopped(int error_code) override {}
   void ResumePlayback() override {}
   void PausePlayback() override {}
+  void DidPlayerStartPlaying() override {}
+  void DidPlayerPaused(bool) override {}
   void DidPlayerMutedStatusChange(bool muted) override {}
+  void DidMediaMetadataChange(
+      bool has_audio,
+      bool has_video,
+      media::MediaContentType media_content_type) override {}
   void DidPlayerMediaPositionStateChange(double playback_rate,
                                          base::TimeDelta duration,
                                          base::TimeDelta position) override {}
@@ -1353,7 +1342,7 @@ TEST_P(WebMediaPlayerMSTest, HiddenPlayerTests) {
   EXPECT_FALSE(player_->Paused());
 
   // An OnSuspendRequested() with forced suspension should pause playback.
-  player_->OnFrameClosed();
+  player_->SuspendForFrameClosed();
   EXPECT_TRUE(player_->Paused());
 
   // OnShown() should restart after a forced suspension.
@@ -1374,7 +1363,7 @@ TEST_P(WebMediaPlayerMSTest, RequestVideoFrameCallback) {
   Vector<int> timestamps({0, 33, kTestBrake, 66, 100, 133, 166});
   provider->QueueFrames(timestamps);
 
-  // Verify a basic call to RAF.
+  // Verify a basic call to rVFC
   player_->RequestVideoFrameCallback();
   EXPECT_CALL(*this, OnRequestVideoFrameCallback()).Times(1);
   message_loop_controller_.RunAndWaitForStatus(
@@ -1386,7 +1375,8 @@ TEST_P(WebMediaPlayerMSTest, RequestVideoFrameCallback) {
   EXPECT_GE(metadata->expected_display_time, metadata->presentation_time);
   testing::Mock::VerifyAndClearExpectations(this);
 
-  // Make sure multiple calls to RAF only result in one call per frame to OnRAF.
+  // Make sure multiple calls to rVFC only result in one call per frame to
+  // OnRVFC.
   player_->RequestVideoFrameCallback();
   player_->RequestVideoFrameCallback();
   player_->RequestVideoFrameCallback();
@@ -1429,12 +1419,12 @@ TEST_P(WebMediaPlayerMSTest, GetVideoFramePresentationMetadata) {
   Vector<int> timestamps({0, kTestBrake, 33, kTestBrake, 66, kTestBrake});
   provider->QueueFrames(timestamps);
 
-  // Chain calls to video.rAF.
+  // Chain calls to video.rVFC.
   int num_frames = 3;
   player_->RequestVideoFrameCallback();
 
   // Verify that the presentation frame counter is monotonically increasing.
-  // Queue up a rAF call immediately after each frame.
+  // Queue up a rVFC call immediately after each frame.
   int last_frame_counter = -1;
   EXPECT_CALL(*this, OnRequestVideoFrameCallback())
       .Times(num_frames)

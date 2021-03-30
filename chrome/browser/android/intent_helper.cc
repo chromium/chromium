@@ -18,11 +18,11 @@ using base::android::ScopedJavaLocalRef;
 namespace chrome {
 namespace android {
 
-void SendEmail(const base::string16& d_email,
-               const base::string16& d_subject,
-               const base::string16& d_body,
-               const base::string16& d_chooser_title,
-               const base::string16& d_file_to_attach) {
+void SendEmail(const std::u16string& d_email,
+               const std::u16string& d_subject,
+               const std::u16string& d_body,
+               const std::u16string& d_chooser_title,
+               const std::u16string& d_file_to_attach) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jstring> j_email = ConvertUTF16ToJavaString(env, d_email);
   ScopedJavaLocalRef<jstring> j_subject =

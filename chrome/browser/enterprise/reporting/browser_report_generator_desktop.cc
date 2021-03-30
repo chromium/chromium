@@ -24,7 +24,7 @@
 #include "ppapi/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -48,6 +48,10 @@ std::string BrowserReportGeneratorDesktop::GetExecutablePath() {
 
 version_info::Channel BrowserReportGeneratorDesktop::GetChannel() {
   return chrome::GetChannel();
+}
+
+bool BrowserReportGeneratorDesktop::IsExtendedStableChannel() {
+  return chrome::IsExtendedStableChannel();
 }
 
 void BrowserReportGeneratorDesktop::GenerateBuildStateInfo(
@@ -76,12 +80,10 @@ void BrowserReportGeneratorDesktop::GenerateProfileInfo(
   base::flat_set<base::FilePath> extension_request_profile_paths =
       throttler->GetProfiles();
 
-  for (const auto* entry : g_browser_process->profile_manager()
-                               ->GetProfileAttributesStorage()
-                               .GetAllProfilesAttributes()) {
-    // Exclude Guest profiles.
-    if (entry->IsGuest())
-      continue;
+  for (const auto* entry :
+       g_browser_process->profile_manager()
+           ->GetProfileAttributesStorage()
+           .GetAllProfilesAttributes(/*include_guest_profile=*/false)) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Skip sign-in and lock screen app profile on Chrome OS.
     if (!chromeos::ProfileHelper::IsRegularProfilePath(

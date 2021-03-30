@@ -11,7 +11,7 @@
 #include "ash/system/power/backlights_forced_off_setter.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 
 namespace ash {
@@ -81,8 +81,8 @@ class LockScreenNoteDisplayStateHandler : public ScreenBacklightObserver {
   // Timer used to set up timeout for lock screen note launch.
   base::OneShotTimer launch_timer_;
 
-  ScopedObserver<BacklightsForcedOffSetter, ScreenBacklightObserver>
-      backlights_forced_off_observer_;
+  base::ScopedObservation<BacklightsForcedOffSetter, ScreenBacklightObserver>
+      backlights_forced_off_observation_;
 
   base::WeakPtrFactory<LockScreenNoteDisplayStateHandler> weak_ptr_factory_{
       this};

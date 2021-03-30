@@ -26,6 +26,10 @@ class GamepadPlatformDataFetcherAndroid : public GamepadDataFetcher {
       Factory;
 
   GamepadPlatformDataFetcherAndroid();
+  GamepadPlatformDataFetcherAndroid(GamepadPlatformDataFetcherAndroid&&) =
+      delete;
+  GamepadPlatformDataFetcherAndroid& operator=(
+      GamepadPlatformDataFetcherAndroid&&) = delete;
   ~GamepadPlatformDataFetcherAndroid() override;
 
   GamepadSource source() override;
@@ -36,8 +40,6 @@ class GamepadPlatformDataFetcherAndroid : public GamepadDataFetcher {
 
  private:
   void OnAddedToProvider() override;
-
-  DISALLOW_COPY_AND_ASSIGN(GamepadPlatformDataFetcherAndroid);
 };
 
 }  // namespace device

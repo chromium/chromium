@@ -73,7 +73,9 @@ class OmniboxSuggestionsDropdownAdapter extends SimpleRecyclerViewAdapter {
      */
     boolean setSelectedViewIndex(int index) {
         if (mLayoutManager == null) return false;
-        if (index < 0 || index >= getItemCount()) return false;
+        if (index != RecyclerView.NO_POSITION && (index < 0 || index >= getItemCount())) {
+            return false;
+        }
 
         View previousSelectedView = mLayoutManager.findViewByPosition(mSelectedItem);
         if (previousSelectedView != null) {

@@ -18,11 +18,9 @@ namespace content {
 InternalAuthenticatorImpl::InternalAuthenticatorImpl(
     RenderFrameHost* render_frame_host)
     : WebContentsObserver(WebContents::FromRenderFrameHost(render_frame_host)),
-      render_frame_host_(render_frame_host),
       effective_origin_(render_frame_host->GetLastCommittedOrigin()),
       authenticator_common_(
           std::make_unique<AuthenticatorCommon>(render_frame_host)) {
-  DCHECK(render_frame_host_);
   // Disabling WebAuthn modal dialogs to avoid conflict with Autofill's own
   // modal dialogs. Since WebAuthn is designed for websites, rather than browser
   // components, the UI can be confusing for users in the case for Autofill.
@@ -31,11 +29,7 @@ InternalAuthenticatorImpl::InternalAuthenticatorImpl(
   authenticator_common_->DisableUI();
 }
 
-InternalAuthenticatorImpl::~InternalAuthenticatorImpl() {
-  // This call exists to assert that |render_frame_host_| outlives this object.
-  // If this is violated, ASAN should notice.
-  render_frame_host_->GetRoutingID();
-}
+InternalAuthenticatorImpl::~InternalAuthenticatorImpl() = default;
 
 void InternalAuthenticatorImpl::SetEffectiveOrigin(const url::Origin& origin) {
   effective_origin_ = url::Origin(origin);
@@ -68,7 +62,7 @@ void InternalAuthenticatorImpl::Cancel() {
 }
 
 content::RenderFrameHost* InternalAuthenticatorImpl::GetRenderFrameHost() {
-  return render_frame_host_;
+  return authenticator_common_->GetRenderFrameHost();
 }
 
 void InternalAuthenticatorImpl::DidFinishNavigation(
@@ -80,7 +74,7 @@ void InternalAuthenticatorImpl::DidFinishNavigation(
   // focus checks to fail if any Mojo requests are made in that state.
   if (!navigation_handle->HasCommitted() ||
       navigation_handle->IsSameDocument() ||
-      navigation_handle->GetRenderFrameHost() != render_frame_host_) {
+      navigation_handle->GetRenderFrameHost() != GetRenderFrameHost()) {
     return;
   }
 

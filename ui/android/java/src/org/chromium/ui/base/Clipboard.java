@@ -26,6 +26,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
@@ -34,10 +35,12 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.compat.ApiHelperForO;
+import org.chromium.base.compat.ApiHelperForS;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.ui.R;
 import org.chromium.ui.widget.Toast;
+import org.chromium.url.GURL;
 
 import java.io.IOException;
 import java.util.List;
@@ -267,7 +270,8 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
      * @param text  Plain-text representation of the HTML content.
      */
     @CalledByNative
-    private void setHTMLText(final String html, final String text) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void setHTMLText(final String html, final String text) {
         setPrimaryClipNoException(ClipData.newHtmlText("html", text, html));
     }
 
@@ -327,7 +331,8 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
         setPrimaryClipNoException(ClipData.newPlainText(null, null));
     }
 
-    private boolean setPrimaryClipNoException(ClipData clip) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    boolean setPrimaryClipNoException(ClipData clip) {
         final String manufacturer = Build.MANUFACTURER.toLowerCase(Locale.US);
         // See crbug.com/1123727, there are OEM devices having strict mode violations in their
         // Android framework code. Disabling strict mode for non-google devices.
@@ -379,8 +384,8 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
      * Copy the specified URL to the clipboard and show a toast indicating the action occurred.
      * @param url The URL to copy to the clipboard.
      */
-    public void copyUrlToClipboard(String url) {
-        ClipData clip = ClipData.newPlainText("url", url);
+    public void copyUrlToClipboard(GURL url) {
+        ClipData clip = ClipData.newPlainText("url", url.getSpec());
         if (setPrimaryClipNoException(clip)) {
             Toast.makeText(mContext, R.string.link_copied, Toast.LENGTH_SHORT).show();
         }
@@ -496,6 +501,64 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
         ClipboardManager oldManager = mClipboardManager;
         mClipboardManager = manager;
         return oldManager;
+    }
+
+    /**
+     * Check if the system clipboard has content to be pasted.
+     * @return True if the system clipboard contains anything, otherwise, return false.
+     */
+    public boolean canPaste() {
+        return mClipboardManager.hasPrimaryClip();
+    }
+
+    /**
+     * Check if need to show "paste as plain text" option.
+     * Don't show "paste as plain text" when "paste" and "paste as plain text" would do exactly the
+     * same.
+     * @return True if the system clipboard contains a styled text, or html text.
+     */
+    @VisibleForTesting
+    public boolean canPasteAsPlainText() {
+        ClipDescription description = mClipboardManager.getPrimaryClipDescription();
+        if (description == null) return false;
+
+        boolean isPlainType = description.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN);
+        // On Android, Spanned could be copied to Clipboard as plain_text MIME type, but in some
+        // cases, Spanned could have text format, we need to show "paste as plain text" when
+        // that happens.
+        return (isPlainType && hasStyledText(description))
+                || description.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML);
+    }
+
+    /**
+     * Check Whether the ClipDescription has stypled text.
+     * @param description The {@link ClipDescription} to check if it has stytled text.
+     * @return True if the system clipboard contain a styled text, otherwise, false.
+     */
+    private boolean hasStyledText(ClipDescription description) {
+        if (BuildInfo.isAtLeastS()) {
+            return ApiHelperForS.isStyleText(description);
+        } else {
+            return hasStyledTextOnPreS();
+        }
+    }
+
+    private boolean hasStyledTextOnPreS() {
+        CharSequence text;
+        try {
+            // getPrimaryClip() has been observed to throw unexpected exceptions for some devices
+            // (see crbug.com/654802 and b/31501780)
+            text = mClipboardManager.getPrimaryClip().getItemAt(0).getText();
+        } catch (Exception e) {
+            return false;
+        }
+
+        if (text instanceof Spanned) {
+            Spanned spanned = (Spanned) text;
+            return hasStyleSpan(spanned);
+        }
+
+        return false;
     }
 
     @NativeMethods

@@ -198,7 +198,7 @@ The `--profile-process` and `--profile-thread` arguments support most of the com
 
 ## Profiling on ChromeOS
 
-Follow the [simple chrome instructions](../simple_chrome_workflow.md), to build
+Follow the [simple chrome instructions](https://chromium.googlesource.com/chromiumos/docs/+/HEAD/simple_chrome_workflow.md), to build
 and deploy chrome to your chromeos device.  These instructions will set up a
 build directory for you, so be sure to `gn args out_${SDK_BOARD}/Release` to
 edit them and add the gn args listed above.

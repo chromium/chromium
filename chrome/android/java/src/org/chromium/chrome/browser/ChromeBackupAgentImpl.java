@@ -20,6 +20,7 @@ import org.chromium.base.PathUtils;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
+import org.chromium.chrome.browser.base.SplitCompatApplication;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.init.AsyncInitTaskRunner;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -325,7 +326,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         PostTask.runSynchronously(UiThreadTaskTraits.DEFAULT, () -> {
             // Chrome library loading depends on PathUtils.
             PathUtils.setPrivateDataDirectorySuffix(
-                    ChromeApplication.PRIVATE_DATA_DIRECTORY_SUFFIX);
+                    SplitCompatApplication.PRIVATE_DATA_DIRECTORY_SUFFIX);
             createAsyncInitTaskRunner(latch).startBackgroundTasks(
                     false /* allocateChildConnection */, true /* initVariationSeed */);
         });

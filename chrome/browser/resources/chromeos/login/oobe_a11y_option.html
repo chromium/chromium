@@ -7,8 +7,29 @@
 <dom-module id="oobe-a11y-option">
   <template>
     <style include="oobe-common">
+      :host {
+        display: flex;
+        min-height: 0;
+        width: 100%;
+      }
+
+      #elementBox {
+        width: inherit;
+      }
+
+      cr-toggle {
+        align-self: center;
+        margin-inline-end: 12px;
+      }
+
+      #titleContainer ::slotted(*) {
+        color: var(--google-grey-900);
+      }
+
+      .display-value ::slotted(*) {
+        color: var(--google-grey-700);
+      }
     </style>
-    <link rel="stylesheet" href="oobe_a11y_option.css">
     <div id="elementBox" class="layout horizontal">
       <div class="flex layout vertical center-justified">
         <div id="titleContainer" aria-hidden="true">

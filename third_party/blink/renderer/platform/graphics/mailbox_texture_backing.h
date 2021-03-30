@@ -8,6 +8,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_MAILBOX_TEXTURE_BACKING_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/threading/thread_checker.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
 
@@ -47,6 +48,7 @@ class MailboxTextureBacking : public TextureBacking {
   scoped_refptr<MailboxRef> mailbox_ref_;
   const SkImageInfo sk_image_info_;
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
+  THREAD_CHECKER(thread_checker_);
 };
 
 }  // namespace blink

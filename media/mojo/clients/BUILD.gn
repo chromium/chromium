@@ -88,6 +88,14 @@ source_set("clients") {
       "//ui/gl:gl",
     ]
   }
+  if (is_win) {
+    sources += [
+      "win/media_foundation_renderer_client.cc",
+      "win/media_foundation_renderer_client.h",
+      "win/media_foundation_renderer_client_factory.cc",
+      "win/media_foundation_renderer_client_factory.h",
+    ]
+  }
 }
 
 source_set("unit_tests") {

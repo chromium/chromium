@@ -9,11 +9,20 @@
 
 #include "ash/ash_export.h"
 #include "ash/fast_ink/fast_ink_pointer_controller.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace ash {
 
 class LaserPointerView;
+
+// A checked observer which receives notification of changes to the Laser
+// Pointer activation state.
+class ASH_EXPORT LaserPointerObserver : public base::CheckedObserver {
+ public:
+  virtual void OnLaserPointerStateChanged(bool enabled) {}
+};
 
 // Controller for the laser pointer functionality. Enables/disables laser
 // pointer as well as receives points and passes them off to be rendered.
@@ -23,19 +32,28 @@ class ASH_EXPORT LaserPointerController
   LaserPointerController();
   ~LaserPointerController() override;
 
+  // Adds/removes the specified |observer|.
+  void AddObserver(LaserPointerObserver* observer);
+  void RemoveObserver(LaserPointerObserver* observer);
+
   // fast_ink::FastInkPointerController:
   void SetEnabled(bool enabled) override;
 
  private:
   friend class LaserPointerControllerTestApi;
+  class ScopedLockedHiddenCursor;
 
   // fast_ink::FastInkPointerController:
   views::View* GetPointerView() const override;
   void CreatePointerView(base::TimeDelta presentation_delay,
                          aura::Window* root_window) override;
   void UpdatePointerView(ui::TouchEvent* event) override;
+  void UpdatePointerView(ui::MouseEvent* event) override;
   void DestroyPointerView() override;
-  bool CanStartNewGesture(ui::TouchEvent* event) override;
+  bool CanStartNewGesture(ui::LocatedEvent* event) override;
+  bool ShouldProcessEvent(ui::LocatedEvent* event) override;
+
+  void NotifyStateChanged(bool enabled);
 
   // Returns the content view of the |laser_pointer_view_widget_| as a
   // LaserPointerView*.
@@ -44,6 +62,9 @@ class ASH_EXPORT LaserPointerController
   // |laser_pointer_view_widget_| will only hold an instance when the laser
   // pointer is enabled and activated (pressed or dragged).
   views::UniqueWidgetPtr laser_pointer_view_widget_;
+  base::ObserverList<LaserPointerObserver> observers_;
+
+  std::unique_ptr<ScopedLockedHiddenCursor> scoped_locked_hidden_cursor_;
 
   DISALLOW_COPY_AND_ASSIGN(LaserPointerController);
 };

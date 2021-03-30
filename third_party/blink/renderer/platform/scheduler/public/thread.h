@@ -126,7 +126,6 @@ class PLATFORM_EXPORT Thread {
   }
 
   bool IsCurrentThread() const;
-  virtual PlatformThreadId ThreadId() const { return 0; }
 
   // TaskObserver is an object that receives task notifications from the
   // MessageLoop.

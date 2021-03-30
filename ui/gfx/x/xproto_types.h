@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/files/scoped_file.h"
 #include "base/memory/free_deleter.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
@@ -37,7 +36,8 @@ void VerifyAlignment(T* t, size_t offset) {
 
 // Wraps data read from the connection.
 struct COMPONENT_EXPORT(X11) ReadBuffer {
-  explicit ReadBuffer(scoped_refptr<base::RefCountedMemory> data);
+  explicit ReadBuffer(scoped_refptr<base::RefCountedMemory> data,
+                      bool setup_message = false);
 
   ReadBuffer(const ReadBuffer&) = delete;
   ReadBuffer(ReadBuffer&&);

@@ -8,6 +8,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/files/file_util.h"
+#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/stl_util.h"
@@ -38,8 +39,6 @@
 #endif
 
 namespace net {
-
-#if !defined(OS_ANDROID)
 
 namespace {
 
@@ -144,20 +143,29 @@ void InitializeExpectedConfig(DnsConfig* config) {
 #endif
 }
 
+TEST(DnsConfigServicePosixTest, CreateAndDestroy) {
+  // Regression test to verify crash does not occur if DnsConfigServicePosix
+  // instance is destroyed without calling WatchConfig()
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
+
+  auto service = std::make_unique<internal::DnsConfigServicePosix>();
+  service.reset();
+  task_environment.RunUntilIdle();
+}
+
 TEST(DnsConfigServicePosixTest, ConvertResStateToDnsConfig) {
   struct __res_state res;
-  DnsConfig config;
-  EXPECT_FALSE(config.IsValid());
   InitializeResState(&res);
-  ASSERT_EQ(internal::CONFIG_PARSE_POSIX_OK,
-            internal::ConvertResStateToDnsConfig(res, &config));
+  base::Optional<DnsConfig> config = internal::ConvertResStateToDnsConfig(res);
   CloseResState(&res);
-  EXPECT_TRUE(config.IsValid());
+  ASSERT_TRUE(config.has_value());
+  EXPECT_TRUE(config->IsValid());
 
   DnsConfig expected_config;
-  EXPECT_FALSE(expected_config.EqualsIgnoreHosts(config));
+  EXPECT_FALSE(expected_config.EqualsIgnoreHosts(config.value()));
   InitializeExpectedConfig(&expected_config);
-  EXPECT_TRUE(expected_config.EqualsIgnoreHosts(config));
+  EXPECT_TRUE(expected_config.EqualsIgnoreHosts(config.value()));
 }
 
 TEST(DnsConfigServicePosixTest, RejectEmptyNameserver) {
@@ -176,14 +184,11 @@ TEST(DnsConfigServicePosixTest, RejectEmptyNameserver) {
   res.nsaddr_list[1] = sa;
   res.nscount = 2;
 
-  DnsConfig config;
-  EXPECT_EQ(internal::CONFIG_PARSE_POSIX_NULL_ADDRESS,
-            internal::ConvertResStateToDnsConfig(res, &config));
+  EXPECT_FALSE(internal::ConvertResStateToDnsConfig(res));
 
   sa.sin_addr.s_addr = 0xDEADBEEF;
   res.nsaddr_list[0] = sa;
-  EXPECT_EQ(internal::CONFIG_PARSE_POSIX_OK,
-            internal::ConvertResStateToDnsConfig(res, &config));
+  EXPECT_TRUE(internal::ConvertResStateToDnsConfig(res));
 }
 
 TEST(DnsConfigServicePosixTest, DestroyWhileJobsWorking) {
@@ -222,55 +227,5 @@ TEST(DnsConfigServicePosixTest, DestroyOnDifferentThread) {
 
 }  // namespace
 
-#else  // OS_ANDROID
-
-namespace internal {
-
-class DnsConfigServicePosixTest : public testing::Test {
- public:
-  DnsConfigServicePosixTest() : seen_config_(false) {}
-  ~DnsConfigServicePosixTest() override {}
-
-  void OnConfigChanged(const DnsConfig& config) {
-    EXPECT_TRUE(config.IsValid());
-    seen_config_ = true;
-    real_config_ = config;
-  }
-
-  void SetUp() override {
-    service_.reset(new DnsConfigServicePosix());
-  }
-
-  void TearDown() override { ASSERT_TRUE(base::DeleteFile(temp_file_)); }
-
-  base::test::TaskEnvironment task_environment_;
-  bool seen_config_;
-  base::FilePath temp_file_;
-  std::unique_ptr<DnsConfigServicePosix> service_;
-  DnsConfig real_config_;
-};
-
-// Regression test for https://crbug.com/704662.
-TEST_F(DnsConfigServicePosixTest, ChangeConfigMultipleTimes) {
-  service_->WatchConfig(base::BindRepeating(
-      &DnsConfigServicePosixTest::OnConfigChanged, base::Unretained(this)));
-  task_environment_.RunUntilIdle();
-
-  for (int i = 0; i < 5; i++) {
-    service_->RefreshConfig();
-    // Wait for config read after the change. OnConfigChanged() will only be
-    // called if the new config is different from the old one, so this can't be
-    // ExpectChange().
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(50));
-    task_environment_.RunUntilIdle();
-  }
-
-  // There should never be more than 4 nameservers in a real config.
-  EXPECT_GT(5u, real_config_.nameservers.size());
-}
-
-}  // namespace internal
-
-#endif  // OS_ANDROID
 
 }  // namespace net

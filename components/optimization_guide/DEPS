@@ -1,11 +1,19 @@
 include_rules = [
+  "+components/data_reduction_proxy/core/browser",
+  "+components/data_reduction_proxy/core/common",
   "+components/leveldb_proto",
   "+components/prefs",
+  "+components/sync_preferences",
+  "+components/unified_consent",
   "+components/variations",
-  "+content/public/browser",
   "+google_apis",
   "+net",
   "+services/network",
   "+third_party/re2",
   "+third_party/smhasher",
+  "+third_party/tflite",
+
+  # Optimization Guide is a layered component; subdirectories must explicitly
+  # introduce the ability to use the content layer as appropriate.
+  "-components/optimization_guide/content",
 ]

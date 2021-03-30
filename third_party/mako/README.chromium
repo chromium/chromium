@@ -1,8 +1,8 @@
 Name: Mako Templates for Python
 Short Name: python-mako
 URL: https://www.makotemplates.org
-Version: 1.0.14
-Date: July 21, 2019
+Version: 1.1.4
+Date: Junuary 15, 2021
 License: MIT
 License File: NOT_SHIPPED
 Security Critical: no
@@ -10,9 +10,9 @@ Security Critical: no
 Description:
 Template engine in Python, used for code generation in Blink.
 
-Source: https://files.pythonhosted.org/packages/1b/a5/023aba3d69aacef6bfc13797bdc3dd03c6fb4ae2dcd2fde7dffc37233924/Mako-1.0.14.tar.gz
-SHA-512: e9a4840f4dddd77d55ad6d3b8724f0326937c04aa9c8c578ec385c70f897419b13ffc234cc673a316de2fa8cd7060fc837cf12f2317658181f8d2eb7dd4ac88f
-SHA-256: f5a642d8c5699269ab62a68b296ff990767eb120f51e2e8f3d6afb16bdb57f4b
+Source: https://files.pythonhosted.org/packages/5c/db/2d2d88b924aa4674a080aae83b59ea19d593250bfe5ed789947c21736785/Mako-1.1.4.tar.gz
+SHA-512: 4844c1d6c8d0d474b4ca4e1b31d3557747fc7e30f70a1976163a26b46b1b45c4c96ca6101fbef252b4e3bb4a61635d2a2c6d1c2933fde5b82bb1a1306f31ff84
+SHA-256: 17831f0b7087c313c0ffae2bcbbd3c1d5ba9eeac9c38f2eb7b50e8c99fe9d5ab
 
 Local Modifications:
-There is no modification except for adding OWNERS, README.chromium, and .gitattributes files.
+There is no modification except for adding DIR_METADATA, OWNERS, README.chromium, and .gitattributes files.

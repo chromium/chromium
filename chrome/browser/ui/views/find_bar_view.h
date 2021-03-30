@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_UI_VIEWS_FIND_BAR_VIEW_H_
 
 #include <memory>
+#include <string>
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/views/chrome_views_export.h"
 #include "chrome/browser/ui/views/dropdown_bar_host_delegate.h"
 #include "ui/views/controls/button/button.h"
@@ -54,21 +54,21 @@ class FindBarView : public views::BoxLayoutView,
   void SetHost(FindBarHost* host);
 
   // Accessors for the text and selection displayed in the text box.
-  void SetFindTextAndSelectedRange(const base::string16& find_text,
+  void SetFindTextAndSelectedRange(const std::u16string& find_text,
                                    const gfx::Range& selected_range);
-  base::string16 GetFindText() const;
+  std::u16string GetFindText() const;
   gfx::Range GetSelectedRange() const;
 
   // Gets the selected text in the text box.
-  base::string16 GetFindSelectedText() const;
+  std::u16string GetFindSelectedText() const;
 
   // Gets the match count text displayed in the text box.
-  base::string16 GetMatchCountText() const;
+  std::u16string GetMatchCountText() const;
 
   // Updates the label inside the Find text box that shows the ordinal of the
   // active item and how many matches were found.
   void UpdateForResult(const find_in_page::FindNotificationDetails& result,
-                       const base::string16& find_text);
+                       const std::u16string& find_text);
 
   // Clears the current Match Count value in the Find text box.
   void ClearMatchCount();
@@ -89,7 +89,7 @@ class FindBarView : public views::BoxLayoutView,
 
  private:
   // Starts finding |search_text|.  If the text is empty, stops finding.
-  void Find(const base::string16& search_text);
+  void Find(const std::u16string& search_text);
 
   // Find the next/previous occurrence of search text when clicking the
   // next/previous button.
@@ -109,7 +109,7 @@ class FindBarView : public views::BoxLayoutView,
 
   // Used to detect if the input text, not including the IME composition text,
   // has changed or not.
-  base::string16 last_searched_text_;
+  std::u16string last_searched_text_;
 
   // The controls in the window.
   views::Textfield* find_text_;

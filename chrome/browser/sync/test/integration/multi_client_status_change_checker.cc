@@ -17,3 +17,7 @@ MultiClientStatusChangeChecker::~MultiClientStatusChangeChecker() = default;
 void MultiClientStatusChangeChecker::OnStateChanged(syncer::SyncService* sync) {
   CheckExitCondition();
 }
+
+void MultiClientStatusChangeChecker::OnSyncShutdown(syncer::SyncService* sync) {
+  scoped_observer_.Remove(sync);
+}

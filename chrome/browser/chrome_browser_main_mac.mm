@@ -32,7 +32,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/chromium_strings.h"
-#include "components/crash/core/app/crashpad.h"
 #include "components/metrics/metrics_service.h"
 #include "components/os_crypt/os_crypt.h"
 #include "components/version_info/channel.h"
@@ -139,8 +138,7 @@ void ChromeBrowserMainPartsMac::PostMainMessageLoopStart() {
       MacStartupProfiler::POST_MAIN_MESSAGE_LOOP_START);
   ChromeBrowserMainPartsPosix::PostMainMessageLoopStart();
 
-  if (base::FeatureList::IsEnabled(network::features::kCertVerifierService) &&
-      base::FeatureList::IsEnabled(
+  if (base::FeatureList::IsEnabled(
           net::features::kCertVerifierBuiltinFeature)) {
     net::InitializeTrustStoreMacCache();
   }
@@ -160,9 +158,6 @@ void ChromeBrowserMainPartsMac::PostProfileInit() {
   MacStartupProfiler::GetInstance()->Profile(
       MacStartupProfiler::POST_PROFILE_INIT);
   ChromeBrowserMainPartsPosix::PostProfileInit();
-
-  g_browser_process->metrics_service()->RecordBreakpadRegistration(
-      crash_reporter::GetUploadsEnabled());
 
   // Activation of Keystone is not automatic but done in response to the
   // counting and reporting of profiles.

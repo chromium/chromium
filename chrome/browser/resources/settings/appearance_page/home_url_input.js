@@ -14,7 +14,7 @@ import {CrPolicyPrefBehavior} from 'chrome://resources/cr_elements/policy/cr_pol
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrefControlBehavior} from '../controls/pref_control_behavior.m.js';
+import {PrefControlBehavior} from '../controls/pref_control_behavior.js';
 
 import {AppearanceBrowserProxy, AppearanceBrowserProxyImpl} from './appearance_browser_proxy.js';
 

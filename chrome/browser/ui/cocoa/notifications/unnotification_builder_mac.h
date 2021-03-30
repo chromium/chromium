@@ -39,10 +39,6 @@ API_AVAILABLE(macosx(10.14))
 // Sets the icon path that is used to display it in the notification if present
 - (void)setIconPath:(NSString*)iconPath;
 
-// Returns a UNNotificationCategory with the specified buttons. Needs to be
-// called after setNotificationId is.
-- (UNNotificationCategory*)buildCategory;
-
 // Returns a notification ready to be displayed out of the provided
 // |notificationData|.
 - (UNMutableNotificationContent*)buildUserNotification;

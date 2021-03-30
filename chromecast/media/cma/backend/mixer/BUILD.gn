@@ -87,6 +87,7 @@ cast_source_set("mixer") {
     "//chromecast/media/audio:audio_log",
     "//chromecast/media/audio:interleaved_channel_mixer",
     "//chromecast/media/audio:libcast_external_audio_pipeline_1.0",
+    "//chromecast/media/audio:playback_rate_shifter",
     "//chromecast/media/audio:processing",
     "//chromecast/media/audio/mixer_service:common",
     "//chromecast/media/audio/mixer_service:proto",

@@ -12,16 +12,12 @@ namespace security_token_pin {
 
 // Type of the information asked from the user during a security token PIN
 // request.
-// Must be kept in sync with
-// chrome/browser/resources/chromeos/login/components/oobe_types.js.
 enum class CodeType {
   kPin = 0,
   kPuk = 1,
 };
 
 // Error to be displayed in the security token PIN request.
-// Must be kept in sync with
-// chrome/browser/resources/chromeos/login/components/oobe_types.js.
 enum class ErrorLabel {
   kNone = 0,
   kUnknown = 1,
@@ -32,5 +28,13 @@ enum class ErrorLabel {
 
 }  // namespace security_token_pin
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+namespace security_token_pin {
+using ::chromeos::security_token_pin::CodeType;
+using ::chromeos::security_token_pin::ErrorLabel;
+}  // namespace security_token_pin
+}  // namespace ash
 
 #endif  // CHROMEOS_COMPONENTS_SECURITY_TOKEN_PIN_CONSTANTS_H_

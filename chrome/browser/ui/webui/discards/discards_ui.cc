@@ -14,7 +14,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/engagement/site_engagement_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
@@ -32,6 +31,7 @@
 #include "chrome/grit/browser_resources.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/performance_manager/public/performance_manager.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/url_data_source.h"
@@ -218,7 +218,7 @@ DiscardsUI::DiscardsUI(content::WebUI* web_ui)
       "script-src chrome://resources chrome://test 'self';");
   source->DisableTrustedTypesCSP();
 
-  const GritResourceMap kResources[] = {
+  const webui::ResourcePath kResources[] = {
       {"discards.js", IDR_DISCARDS_JS},
       {"discards_main.js", IDR_DISCARDS_DISCARDS_MAIN_JS},
       {"database_tab.js", IDR_DISCARDS_DATABASE_TAB_JS},

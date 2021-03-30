@@ -41,6 +41,9 @@ class Node(object):  # pylint: disable=useless-object-inheritance
     def __hash__(self):  # pylint: disable=missing-function-docstring
         return hash(self._unique_key)
 
+    def __str__(self) -> str:
+        return self.name
+
     @property
     def name(self):
         """A unique string representation of the node."""
@@ -92,12 +95,12 @@ class Graph(object):  # pylint: disable=useless-object-inheritance
         return len(self.edges)
 
     @property
-    def nodes(self) -> List:
+    def nodes(self) -> List[Node]:
         """A list of Nodes in the graph."""
         return list(self._key_to_node.values())
 
     @property
-    def edges(self) -> List[Tuple]:
+    def edges(self) -> List[Tuple[Node, Node]]:
         """A list of tuples (begin, end) representing directed edges."""
         return self._edges
 

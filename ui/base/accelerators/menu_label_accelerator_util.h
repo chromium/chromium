@@ -8,16 +8,15 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/strings/string16.h"
 
 namespace ui {
 
-COMPONENT_EXPORT(UI_BASE) base::char16 GetMnemonic(const base::string16& label);
+COMPONENT_EXPORT(UI_BASE) char16_t GetMnemonic(const std::u16string& label);
 
 // This function escapes every '&' in label by replacing it with '&&', to avoid
 // having single ampersands in user-provided strings treated as accelerators.
 COMPONENT_EXPORT(UI_BASE)
-base::string16 EscapeMenuLabelAmpersands(const base::string16& label);
+std::u16string EscapeMenuLabelAmpersands(const std::u16string& label);
 
 }  // namespace ui
 

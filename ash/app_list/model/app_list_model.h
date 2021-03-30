@@ -13,11 +13,11 @@
 
 #include "ash/app_list/model/app_list_item_list.h"
 #include "ash/app_list/model/app_list_item_list_observer.h"
-#include "ash/app_list/model/app_list_model_export.h"
+#include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 
 namespace ash {
 
@@ -31,7 +31,7 @@ class AppListModelObserver;
 // NOTE: Currently this class observes |top_level_item_list_|. The View code may
 // move entries in the item list directly (but can not add or remove them) and
 // the model needs to notify its observers when this occurs.
-class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
+class ASH_EXPORT AppListModel : public AppListItemListObserver {
  public:
   AppListModel();
   ~AppListModel() override;
@@ -164,9 +164,9 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
   AppListState state_ = AppListState::kInvalidState;
   // The AppListView state. Controlled by the AppListView.
   AppListViewState state_fullscreen_ = AppListViewState::kClosed;
-  base::ObserverList<AppListModelObserver, true>::Unchecked observers_;
-  ScopedObserver<AppListItemList, AppListItemListObserver>
-      item_list_scoped_observer_{this};
+  base::ObserverList<AppListModelObserver, true> observers_;
+  base::ScopedMultiSourceObservation<AppListItemList, AppListItemListObserver>
+      item_list_scoped_observations_{this};
   DISALLOW_COPY_AND_ASSIGN(AppListModel);
 };
 

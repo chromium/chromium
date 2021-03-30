@@ -1,0 +1,71 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/webapps/launchpad/AppListCoordinator.java",
+    "java/src/org/chromium/chrome/browser/webapps/launchpad/AppListMediator.java",
+    "java/src/org/chromium/chrome/browser/webapps/launchpad/AppManagementMenuCoordinator.java",
+    "java/src/org/chromium/chrome/browser/webapps/launchpad/AppManagementMenuHeaderProperties.java",
+    "java/src/org/chromium/chrome/browser/webapps/launchpad/AppManagementMenuHeaderViewBinder.java",
+    "java/src/org/chromium/chrome/browser/webapps/launchpad/LaunchpadCoordinator.java",
+    "java/src/org/chromium/chrome/browser/webapps/launchpad/LaunchpadItem.java",
+    "java/src/org/chromium/chrome/browser/webapps/launchpad/LaunchpadPage.java",
+  ]
+
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//chrome/android/webapk/libs/client:client_java",
+    "//chrome/browser/ui/android/native_page:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/embedder_support/android:util_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//ui/android:ui_full_java",
+  ]
+  resources_package = "org.chromium.chrome.browser.webapps.launchpad"
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/layout/launchpad_app_menu_header.xml",
+    "java/res/layout/launchpad_menu_dialog_layout.xml",
+    "java/res/layout/launchpad_menu_dialog_layout.xml",
+    "java/res/layout/launchpad_page_layout.xml",
+    "java/res/layout/launchpad_tile_view.xml",
+    "java/res/values/dimens.xml",
+  ]
+
+  deps = [
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/widget/android:java_resources",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+  sources = [ "java/src/org/chromium/chrome/browser/webapps/launchpad/LaunchpadPageTest.java" ]
+
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/ui/messages/android:java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//components/browser_ui/widget/android:java",
+    "//components/embedder_support/android:util_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_java",
+    "//third_party/junit",
+    "//ui/android:ui_full_java",
+  ]
+}

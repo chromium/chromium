@@ -75,8 +75,8 @@ suite(preview_generation_test.suiteName, function() {
    */
   function initialize() {
     nativeLayer.setInitialSettings(initialSettings);
-    nativeLayer.setLocalDestinationCapabilities(
-        getCddTemplate(initialSettings.printerName));
+    nativeLayer.setLocalDestinations(
+        [{deviceName: initialSettings.printerName, printerName: 'FooName'}]);
     nativeLayer.setPageCount(3);
     const pluginProxy = new TestPluginProxy();
     PluginProxyImpl.instance_ = pluginProxy;

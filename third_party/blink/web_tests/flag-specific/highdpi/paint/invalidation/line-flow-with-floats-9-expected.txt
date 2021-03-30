@@ -1,0 +1,26 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "invalidations": [
+        [12, 27, 660, 828]
+      ]
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [728, 906],
+      "invalidations": [
+        [0, 0, 728, 906]
+      ]
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [728, 0],
+      "bounds": [22, 900]
+    }
+  ]
+}
+

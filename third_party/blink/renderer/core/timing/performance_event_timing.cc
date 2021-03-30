@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 
 namespace blink {
 
@@ -85,12 +86,22 @@ void PerformanceEventTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   builder.AddNumber("processingStart", processingStart());
   builder.AddNumber("processingEnd", processingEnd());
   builder.AddBoolean("cancelable", cancelable_);
-  builder.Add("target", target());
 }
 
 void PerformanceEventTiming::Trace(Visitor* visitor) const {
   PerformanceEntry::Trace(visitor);
   visitor->Trace(target_);
+}
+
+std::unique_ptr<TracedValue> PerformanceEventTiming::ToTracedValue() const {
+  auto traced_value = std::make_unique<TracedValue>();
+  traced_value->SetString("type", name());
+  traced_value->SetInteger("timeStamp", startTime());
+  traced_value->SetInteger("processingStart", processingStart());
+  traced_value->SetInteger("processingEnd", processingEnd());
+  traced_value->SetInteger("duration", duration());
+  traced_value->SetBoolean("cancelable", cancelable());
+  return traced_value;
 }
 
 }  // namespace blink

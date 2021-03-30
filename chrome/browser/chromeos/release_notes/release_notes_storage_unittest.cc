@@ -6,14 +6,13 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/version.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -30,7 +29,7 @@ class ReleaseNotesStorageTest : public testing::Test,
   ReleaseNotesStorageTest()
       : user_manager_(new FakeChromeUserManager()),
         scoped_user_manager_(
-            std::unique_ptr<chromeos::FakeChromeUserManager>(user_manager_)) {}
+            std::unique_ptr<FakeChromeUserManager>(user_manager_)) {}
   ~ReleaseNotesStorageTest() override {}
 
   std::unique_ptr<Profile> CreateProfile(std::string email) {
@@ -100,6 +99,19 @@ TEST_F(ReleaseNotesStorageTest, ShouldShowReleaseNotes) {
                                         20);
 
   EXPECT_EQ(true, release_notes_storage->ShouldNotify());
+}
+
+// We have previously seen another notification on M89, there have been no
+// new release notes since then so notification should not be shown.
+TEST_F(ReleaseNotesStorageTest, ShouldNotShowReleaseNotesIf89Seen) {
+  std::unique_ptr<Profile> profile =
+      SetupStandardEnvironmentAndProfile("test@gmail.com", false);
+  std::unique_ptr<ReleaseNotesStorage> release_notes_storage =
+      std::make_unique<ReleaseNotesStorage>(profile.get());
+  profile.get()->GetPrefs()->SetInteger(prefs::kReleaseNotesLastShownMilestone,
+                                        89);
+
+  EXPECT_EQ(false, release_notes_storage->ShouldNotify());
 }
 
 // Release notes ShouldNotify is false after being shown once.

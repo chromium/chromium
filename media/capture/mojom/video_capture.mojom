@@ -4,6 +4,7 @@
 
 module media.mojom;
 
+import "media/capture/mojom/video_capture_buffer.mojom";
 import "media/capture/mojom/video_capture_types.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
@@ -69,9 +70,8 @@ interface VideoCaptureObserver {
   // video frames via calls to OnBufferReady().
   OnNewBuffer(int32 buffer_id, media.mojom.VideoBufferHandle buffer_handle);
 
-  // |buffer_id| has video capture data with |info| containing the associated
-  // VideoFrame constituent parts.
-  OnBufferReady(int32 buffer_id, VideoFrameInfo info);
+  // |buffer| and |scaled_buffers| have capture data ready for consumption.
+  OnBufferReady(ReadyBuffer buffer, array<ReadyBuffer> scaled_buffers);
 
   // The buffer handle previously registered for |buffer_id| via OnNewBuffer(),
   // is no longer going to be used by the Browser/Host.

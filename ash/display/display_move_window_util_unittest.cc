@@ -12,6 +12,7 @@
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_window_builder.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -216,9 +217,12 @@ TEST_F(DisplayMoveWindowUtilTest, NoMovementIfNotInCycleWindowList) {
   UpdateDisplay("400x300,400x300");
   // Create a window in app list container, which would be excluded in cycle
   // window list.
-  std::unique_ptr<aura::Window> window = CreateChildWindow(
-      Shell::GetPrimaryRootWindow(), gfx::Rect(10, 20, 200, 100),
-      kShellWindowId_AppListContainer);
+  std::unique_ptr<aura::Window> window =
+      ChildTestWindowBuilder(Shell::GetPrimaryRootWindow(),
+                             gfx::Rect(10, 20, 200, 100),
+                             kShellWindowId_AppListContainer)
+          .Build();
+
   wm::ActivateWindow(window.get());
   display::Screen* screen = display::Screen::GetScreen();
   EXPECT_EQ(display_manager()->GetDisplayAt(0).id(),
@@ -333,7 +337,7 @@ TEST_F(DisplayMoveWindowUtilTest, WindowWithTransientChild) {
 
   // Create a |child| window and make it a transient child of |window|.
   std::unique_ptr<aura::Window> child =
-      CreateChildWindow(window, gfx::Rect(20, 30, 40, 50));
+      ChildTestWindowBuilder(window, gfx::Rect(20, 30, 40, 50)).Build();
   ::wm::AddTransientChild(window, child.get());
   display::Screen* screen = display::Screen::GetScreen();
   EXPECT_EQ(display_manager()->GetDisplayAt(0).id(),
@@ -397,8 +401,10 @@ TEST_F(DisplayMoveWindowUtilTest, TransientParentNotInCycleWindowList) {
   aura::Window* setting_bubble_container =
       Shell::GetPrimaryRootWindowController()->GetContainer(
           kShellWindowId_SettingBubbleContainer);
-  std::unique_ptr<aura::Window> w2 = CreateChildWindow(
-      setting_bubble_container, gfx::Rect(10, 20, 200, 100), -1);
+  std::unique_ptr<aura::Window> w2 =
+      ChildTestWindowBuilder(setting_bubble_container,
+                             gfx::Rect(10, 20, 200, 100))
+          .Build();
   wm::ActivateWindow(w2.get());
 
   // Create a |child| transient widget of |w2|. When |child| is shown, it is

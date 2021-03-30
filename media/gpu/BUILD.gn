@@ -45,6 +45,9 @@ component("gpu") {
     "//media/gpu/vaapi/*",
     "//media/mojo/*",
     "//remoting/codec:encoder",
+
+    # TODO(crbug.com/1184041): Remove //remoting/host:common when the usage is removed.
+    "//remoting/host:common",
   ]
 
   if (is_mac) {
@@ -311,8 +314,7 @@ source_set("common") {
     "//ui/gfx/geometry",
   ]
 
-  if ((is_chromeos_ash && use_vaapi) || is_win) {
-    assert(use_libgav1_parser)
+  if (use_libgav1_parser) {
     sources += [
       "av1_decoder.cc",
       "av1_decoder.h",
@@ -456,42 +458,6 @@ source_set("android_video_decode_accelerator_unittests") {
   }
 }
 
-if (use_v4l2_codec || use_vaapi || is_mac || is_win) {
-  test("video_encode_accelerator_unittest") {
-    testonly = true
-    deps = [
-      "test:helpers",
-      "//base",
-      "//base/test:test_support",
-      "//build:chromeos_buildflags",
-      "//media:test_support",
-      "//media/gpu",
-      "//media/gpu/test:test_helpers",
-      "//media/mojo/common:mojo_shared_buffer_video_frame",
-      "//media/parsers",
-      "//mojo/core/embedder",
-      "//testing/gtest",
-      "//third_party/ffmpeg",
-      "//third_party/libyuv",
-      "//ui/base",
-      "//ui/gfx",
-      "//ui/gfx:test_support",
-      "//ui/gfx/geometry",
-      "//ui/gl",
-      "//ui/gl:test_support",
-    ]
-    configs += [ "//third_party/libyuv:libyuv_config" ]
-    sources = [ "video_encode_accelerator_unittest.cc" ]
-    if (use_x11) {
-      deps += [ "//ui/gfx/x" ]
-      public_configs = [ "//build/config/linux/libva" ]
-    }
-    if (use_ozone) {
-      deps += [ "//ui/ozone" ]
-    }
-  }
-}
-
 static_library("test_support") {
   visibility = [ "//media/gpu/*" ]
   testonly = true
@@ -539,15 +505,19 @@ source_set("unit_tests") {
     sources += [ "vp8_decoder_unittest.cc" ]
   }
 
-  if ((is_chromeos_ash && use_vaapi) || is_win) {
+  if (use_libgav1_parser) {
     sources += [ "av1_decoder_unittest.cc" ]
-    deps += [ "//third_party/ffmpeg" ]
+    deps += [
+      "//build:chromeos_buildflags",
+      "//third_party/ffmpeg",
+    ]
   }
 
   if (is_win && enable_library_cdms) {
     sources += [
       "windows/d3d11_copying_texture_wrapper_unittest.cc",
       "windows/d3d11_decoder_configurator_unittest.cc",
+      "windows/d3d11_picture_buffer_unittest.cc",
       "windows/d3d11_texture_selector_unittest.cc",
       "windows/d3d11_texture_wrapper_unittest.cc",
       "windows/d3d11_video_decoder_unittest.cc",
@@ -566,6 +536,7 @@ source_set("unit_tests") {
 # TODO(crbug.com/1006266): consider using |use_chromeos_video_acceleration|.
 if (use_v4l2_codec || use_vaapi) {
   test("video_decode_accelerator_tests") {
+    assert(enable_av1_decoder)
     testonly = true
     sources = [ "video_decode_accelerator_tests.cc" ]
     data = [ "//media/test/data/" ]
@@ -574,6 +545,7 @@ if (use_v4l2_codec || use_vaapi) {
       "test:frame_file_writer",
       "test:frame_validator",
       "test:helpers",
+      "test:test_helpers",
       "test:video_player",
       "test:video_player_test_environment",
       "test:video_player_thumbnail_renderer",
@@ -636,6 +608,17 @@ if (proprietary_codecs && enable_platform_hevc) {
     sources = [ "h265_decoder_fuzzertest.cc" ]
     deps = [
       ":gpu",
+      "//base",
+      "//media",
+    ]
+  }
+}
+
+if (use_libgav1_parser) {
+  fuzzer_test("media_av1_decoder_fuzzer") {
+    sources = [ "av1_decoder_fuzzertest.cc" ]
+    deps = [
+      ":common",
       "//base",
       "//media",
     ]

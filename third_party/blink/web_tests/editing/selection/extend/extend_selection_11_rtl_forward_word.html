@@ -48,7 +48,7 @@ selection_test(
   selection => selection.modify('extend', 'forward', 'word'),
   behavior === 'mac'
       ? '<div contenteditable dir="rtl">\n\u05D0\u05D1\u05D2^ xyz| \u05D3\u05D4\u05D5 def \u05D6\u05D7\u05D8\n</div>'
-      : '<div contenteditable dir="rtl">\n\u05D0\u05D1\u05D2^ xyz |\u05D3\u05D4\u05D5 def \u05D6\u05D7\u05D8\n</div>',
+      : '<div contenteditable dir="rtl">\n\u05D0\u05D1\u05D2^ |xyz \u05D3\u05D4\u05D5 def \u05D6\u05D7\u05D8\n</div>',
   `${behavior} 11-4 rtl forward word`);
 
 selection_test(
@@ -80,7 +80,7 @@ selection_test(
   selection => selection.modify('extend', 'forward', 'word'),
   behavior === 'mac'
       ? '<div contenteditable dir="rtl">\n\u05D0\u05D1\u05D2 xyz^ \u05D3\u05D4\u05D5| def \u05D6\u05D7\u05D8\n</div>'
-      : '<div contenteditable dir="rtl">\n\u05D0\u05D1\u05D2 xyz^ \u05D3\u05D4\u05D5 |def \u05D6\u05D7\u05D8\n</div>',
+      : '<div contenteditable dir="rtl">\n\u05D0\u05D1\u05D2 xyz^ |\u05D3\u05D4\u05D5 def \u05D6\u05D7\u05D8\n</div>',
   `${behavior} 11-8 rtl forward word`);
 
 selection_test(
@@ -112,7 +112,7 @@ selection_test(
   selection => selection.modify('extend', 'forward', 'word'),
   behavior === 'mac'
       ? '<div contenteditable dir="rtl">\n\u05D0\u05D1\u05D2 xyz \u05D3\u05D4\u05D5^ def| \u05D6\u05D7\u05D8\n</div>'
-      : '<div contenteditable dir="rtl">\n\u05D0\u05D1\u05D2 xyz \u05D3\u05D4\u05D5^ def |\u05D6\u05D7\u05D8\n</div>',
+      : '<div contenteditable dir="rtl">\n\u05D0\u05D1\u05D2 xyz \u05D3\u05D4\u05D5^ |def \u05D6\u05D7\u05D8\n</div>',
   `${behavior} 11-12 rtl forward word`);
 
 selection_test(
@@ -142,7 +142,9 @@ selection_test(
 selection_test(
   '<div contenteditable dir="rtl">\n\u05D0\u05D1\u05D2 xyz \u05D3\u05D4\u05D5 def| \u05D6\u05D7\u05D8\n</div>',
   selection => selection.modify('extend', 'forward', 'word'),
-  '<div contenteditable dir="rtl">\n\u05D0\u05D1\u05D2 xyz \u05D3\u05D4\u05D5 def^ \u05D6\u05D7\u05D8|\n</div>',
+  behavior === 'mac'
+      ? '<div contenteditable dir="rtl">\n\u05D0\u05D1\u05D2 xyz \u05D3\u05D4\u05D5 def^ \u05D6\u05D7\u05D8|\n</div>'
+      : '<div contenteditable dir="rtl">\n\u05D0\u05D1\u05D2 xyz \u05D3\u05D4\u05D5 def^ |\u05D6\u05D7\u05D8\n</div>',
   `${behavior} 11-16 rtl forward word`);
 
 selection_test(

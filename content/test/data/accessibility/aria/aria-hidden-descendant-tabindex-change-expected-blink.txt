@@ -4,7 +4,7 @@ rootWebArea
 ++++++genericContainer ignored invisible
 ++++++++group ignored invisible
 ++++++++++group ignored invisible
-++++++++++++slider horizontal ignored invisible name='Slider#1 now unfocusable'
+++++++++++++slider ignored invisible
 ++++++genericContainer ignored invisible
 ++++++++group ignored invisible
 ++++++++++group ignored invisible

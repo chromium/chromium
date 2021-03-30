@@ -40,8 +40,13 @@ using HashMap =
     ClosedHashMap<KeyType_, ValueType_, DefaultProber<KeyType_, Hasher_>>;
 
 // An insert-only map implemented as a hash-table with open addressing (also
-// called closed hashing). The table can contain up to 2^30 distinct keys (or up
-// to 2^32 - 1 on 64bit systems).
+// called closed hashing). The table can contain up to 2^30 distinct keys. It is
+// a 32-bit table independent of the process being 32-bit or 64-bit to ensure
+// that tables can be read in processes of different bitness from those in which
+// they were generated. This is a requirement of consumers of this data
+// structure. In particular, the subresource_filter component in Weblayer
+// generates tables in the 64-bit browser process but also accesses them the
+// 32-bit renderer process.
 //
 // On normal operation load factor varies within range (1/4, 1/2]. The real load
 // factor can be less or equal to 1/4 if rehashing is requested explicitly to
@@ -66,9 +71,9 @@ using HashMap =
 //
 //  Public method(s):
 //   template <typename SlotCompare>
-//   size_t FindSlot(const KeyType& key,
-//                   size_t table_size,
-//                   const SlotCompare& compare) const;
+//   uint32_t FindSlot(const KeyType& key,
+//                     uint32_t table_size,
+//                     const SlotCompare& compare) const;
 //
 //   Walks the probe sequence for the given |key| starting from some initial
 //   slot calculated deterministically from the |key|, e.g. by computing its
@@ -101,17 +106,17 @@ class ClosedHashMap {
   // Creates an empty hash-map with the specified |capacity|, so that this many
   // distinct keys can be inserted with no rehashing or reallocation taking
   // place. The |prober| is a strategy used for finding slots for the keys.
-  explicit ClosedHashMap(size_t capacity, const Prober& prober = Prober())
+  explicit ClosedHashMap(uint32_t capacity, const Prober& prober = Prober())
       : hash_table_(CalculateHashTableSizeFor(capacity), EmptySlot()),
         prober_(prober) {
     entries_.reserve(capacity);
   }
 
   // Returns the number of distinct keys.
-  size_t size() const { return entries_.size(); }
+  uint32_t size() const { return entries_.size(); }
 
   // Returns the number of slots in the |hash_table|.
-  size_t table_size() const { return hash_table_.size(); }
+  uint32_t table_size() const { return hash_table_.size(); }
 
   const std::vector<uint32_t>& hash_table() const { return hash_table_; }
   const std::vector<EntryType>& entries() const { return entries_; }
@@ -121,7 +126,7 @@ class ClosedHashMap {
   // be valid as long as no new keys get added to the map (more strictly
   // speaking, as long as no reallocations happen for the |entries| vector).
   const ValueType* Get(const KeyType& key) const {
-    const size_t entry_index = hash_table_[FindSlotForKey(key)];
+    const uint32_t entry_index = hash_table_[FindSlotForKey(key)];
     if (entry_index == EmptySlot())
       return nullptr;
     DCHECK_LT(entry_index, entries_.size());
@@ -131,7 +136,7 @@ class ClosedHashMap {
   // Associates |value| with the given |key| if the |key| is not yet present in
   // the map, and returns true. Otherwise does nothing and returns false.
   bool Insert(const KeyType& key, ValueType value) {
-    const size_t slot = FindSlotForKey(key);
+    const uint32_t slot = FindSlotForKey(key);
     if (hash_table_[slot] != EmptySlot())
       return false;
 
@@ -143,8 +148,8 @@ class ClosedHashMap {
   // is not present in the map, it's inserted and value-initialized. The same
   // guarantee on reference validity applies as for the result of Get(key).
   ValueType& operator[](const KeyType& key) {
-    const size_t slot = FindSlotForKey(key);
-    size_t entry_index = hash_table_[slot];
+    const uint32_t slot = FindSlotForKey(key);
+    uint32_t entry_index = hash_table_[slot];
     if (entry_index == EmptySlot()) {
       entry_index = EmplaceKeyValue(slot, key, ValueType());
     }
@@ -155,22 +160,22 @@ class ClosedHashMap {
 
   // Resizes the |hash_table|, if necessary, so that at least |capacity|
   // distinct keys can be stored with the load factor being no higher than 1/2.
-  void Rehash(size_t capacity) {
+  void Rehash(uint32_t capacity) {
     if (capacity <= hash_table_.size() / 2)
       return;
-    DCHECK_LE(entries_.size(), static_cast<size_t>(EmptySlot()));
+    DCHECK_LE(static_cast<uint32_t>(entries_.size()), EmptySlot());
 
     hash_table_.assign(CalculateHashTableSizeFor(capacity), EmptySlot());
-    for (size_t index = 0; index != entries_.size(); ++index) {
-      const size_t slot = FindSlotForKey(entries_[index].first);
+    for (uint32_t index = 0; index != entries_.size(); ++index) {
+      const uint32_t slot = FindSlotForKey(entries_[index].first);
       DCHECK_EQ(hash_table_[slot], EmptySlot());
-      hash_table_[slot] = static_cast<uint32_t>(index);
+      hash_table_[slot] = index;
     }
   }
 
   // Reserves enough space so that |capacity| distinct keys can be stored with
   // the load factor being no higher than 1/2.
-  void Reserve(size_t capacity) {
+  void Reserve(uint32_t capacity) {
     Rehash(capacity);
     entries_.reserve(capacity);
   }
@@ -184,21 +189,21 @@ class ClosedHashMap {
   // Returns the number of |hash_table| slots necessary to maintain a load
   // factor between 1/4 and 1/2 for the number of distinct keys given by
   // |capacity|.
-  static size_t CalculateHashTableSizeFor(size_t capacity) {
+  static uint32_t CalculateHashTableSizeFor(uint32_t capacity) {
     // TODO(pkalinnikov): Implement base::bits::Log2Ceiling for arbitrary types.
     const uint32_t capacity_32 = base::checked_cast<uint32_t>(capacity);
     const int power_of_two = base::bits::Log2Ceiling(capacity_32) + 1;
-    CHECK_LT(power_of_two, std::numeric_limits<size_t>::digits);
-    return static_cast<size_t>(1) << power_of_two;
+    CHECK_LT(power_of_two, std::numeric_limits<uint32_t>::digits);
+    return static_cast<uint32_t>(1) << power_of_two;
   }
 
   // Adds a new |key|-|value| pair to the structure. Returns the index of the
   // newly created entry. The table is rehashed if the newly created entry
   // bursts the load factor above 1/2. Otherwise the new entry is associated
   // with a specific |slot| of the table.
-  size_t EmplaceKeyValue(size_t slot, KeyType key, ValueType value) {
-    const size_t entry_index = entries_.size();
-    CHECK_LT(entry_index, static_cast<size_t>(EmptySlot()));
+  uint32_t EmplaceKeyValue(uint32_t slot, KeyType key, ValueType value) {
+    const uint32_t entry_index = entries_.size();
+    CHECK_LT(entry_index, EmptySlot());
     entries_.emplace_back(std::move(key), std::move(value));
 
     if (entry_index >= hash_table_.size() / 2) {
@@ -206,7 +211,7 @@ class ClosedHashMap {
     } else {
       DCHECK_LT(slot, hash_table_.size());
       DCHECK_EQ(hash_table_[slot], EmptySlot());
-      hash_table_[slot] = static_cast<uint32_t>(entry_index);
+      hash_table_[slot] = entry_index;
     }
 
     return entry_index;
@@ -214,9 +219,10 @@ class ClosedHashMap {
 
   // Finds a slot such that it's either empty (indicating that the |key| is not
   // stored) or contains the |key|.
-  size_t FindSlotForKey(const KeyType& key) const {
+  uint32_t FindSlotForKey(const KeyType& key) const {
     return prober_.FindSlot(
-        key, hash_table_.size(), [this](const KeyType& key, size_t slot_index) {
+        key, hash_table_.size(),
+        [this](const KeyType& key, uint32_t slot_index) {
           DCHECK_LT(slot_index, hash_table_.size());
           const uint32_t entry_index = hash_table_[slot_index];
           DCHECK(entry_index == EmptySlot() || entry_index < entries_.size());
@@ -265,17 +271,17 @@ class SimpleQuadraticProber {
   // Returns the slot index for the |key|. Requires that |compare| returns true
   // for at least one slot index between 0 and |table_size| - 1.
   template <typename SlotCompare>
-  size_t FindSlot(const KeyType& key,
-                  size_t table_size,
-                  const SlotCompare& compare) const {
+  uint32_t FindSlot(const KeyType& key,
+                    uint32_t table_size,
+                    const SlotCompare& compare) const {
     DCHECK_GT(table_size, 0u);
     DCHECK_EQ(table_size & (table_size - 1), 0u);
-    const size_t kMask = table_size - 1;
+    const uint32_t kMask = table_size - 1;
 
-    size_t slot_index = hasher_(key) & kMask;
+    uint32_t slot_index = hasher_(key) & kMask;
     // The loop will always be finite, since |compare| is guaranteed to return
     // true for at least 1 slot index, and the probe sequence visits all slots.
-    for (size_t step_size = 1; !compare(key, slot_index); ++step_size) {
+    for (uint32_t step_size = 1; !compare(key, slot_index); ++step_size) {
       DCHECK_LT(step_size, table_size);
       slot_index = (slot_index + step_size) & kMask;
     }

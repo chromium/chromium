@@ -17,6 +17,7 @@ namespace content {
 class TestRenderWidgetHost : public RenderWidgetHostImpl {
  public:
   static std::unique_ptr<RenderWidgetHostImpl> Create(
+      FrameTree* frame_tree,
       RenderWidgetHostDelegate* delegate,
       AgentSchedulingGroupHost& agent_scheduling_group,
       int32_t routing_id,
@@ -34,7 +35,8 @@ class TestRenderWidgetHost : public RenderWidgetHostImpl {
   CreateStubFrameWidgetRemote();
 
  private:
-  TestRenderWidgetHost(RenderWidgetHostDelegate* delegate,
+  TestRenderWidgetHost(FrameTree* frame_tree,
+                       RenderWidgetHostDelegate* delegate,
                        AgentSchedulingGroupHost& agent_scheduling_group,
                        int32_t routing_id,
                        bool hidden);

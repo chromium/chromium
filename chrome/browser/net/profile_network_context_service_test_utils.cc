@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -38,7 +39,8 @@ bool AmbientAuthenticationTestHelper::IsAmbientAuthAllowedForProfile(
       ProfileNetworkContextServiceFactory::GetForContext(profile);
   base::FilePath empty_relative_partition_path;
   network::mojom::NetworkContextParams network_context_params;
-  network::mojom::CertVerifierCreationParams cert_verifier_creation_params;
+  cert_verifier::mojom::CertVerifierCreationParams
+      cert_verifier_creation_params;
   profile_network_context_service->ConfigureNetworkContextParams(
       /*in_memory=*/false, empty_relative_partition_path,
       &network_context_params, &cert_verifier_creation_params);

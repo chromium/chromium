@@ -5,7 +5,8 @@
 // clang-format off
 // #import 'chrome://os-settings/chromeos/os_settings.js';
 
-// #import {Router, Route, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {TestKerberosAccountsBrowserProxy} from './test_kerberos_accounts_browser_proxy.m.js';
+// #import {Router, Route, routes, KerberosAccountsBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -13,26 +14,30 @@
 
 cr.define('settings_kerberos_page', function() {
   suite('KerberosPageTests', function() {
+    let browserProxy = null;
+
     /** @type {SettingsKerberosPageElement} */
     let kerberosPage = null;
 
     setup(function() {
-      settings.routes.KERBEROS = settings.routes.BASIC.createSection(
-          '/' + chromeos.settings.mojom.KERBEROS_SECTION_PATH,
-          chromeos.settings.mojom.KERBEROS_SECTION_PATH);
+      settings.routes.BASIC = new settings.Route('/'),
+      settings.routes.KERBEROS =
+          settings.routes.BASIC.createSection('/kerberos', 'kerberos');
       settings.routes.KERBEROS_ACCOUNTS_V2 =
-          settings.routes.KERBEROS.createChild(
-              '/' + chromeos.settings.mojom.KERBEROS_ACCOUNTS_V2_SUBPAGE_PATH);
+          settings.routes.KERBEROS.createChild('/kerberos/kerberosAccounts');
 
       settings.Router.resetInstanceForTesting(
           new settings.Router(settings.routes));
 
+      browserProxy = new TestKerberosAccountsBrowserProxy();
+      settings.KerberosAccountsBrowserProxyImpl.instance_ = browserProxy;
       PolymerTest.clearBody();
     });
 
     teardown(function() {
       kerberosPage.remove();
       settings.Router.getInstance().resetRouteForTesting();
+      settings.KerberosAccountsBrowserProxyImpl.instance_ = undefined;
     });
 
     test('Kerberos Section contains a link to Kerberos Accounts', () => {
@@ -42,7 +47,7 @@ cr.define('settings_kerberos_page', function() {
 
       // Sub-page trigger is shown.
       const subpageTrigger = kerberosPage.shadowRoot.querySelector(
-          '#kerberos-accounts-v2-subpage-trigger');
+          '#kerberos-accounts-subpage-trigger');
       assertFalse(subpageTrigger.hidden);
 
       // Sub-page trigger navigates to Kerberos Accounts V2.

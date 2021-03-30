@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_CHROMEOS_CROSTINI_CROSTINI_INSTALLER_UI_DELEGATE_H_
 #define CHROME_BROWSER_CHROMEOS_CROSTINI_CROSTINI_INSTALLER_UI_DELEGATE_H_
 
+#include <string>
+
 #include "base/callback_forward.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"
 #include "chrome/browser/chromeos/crostini/crostini_types.mojom-forward.h"
 

@@ -7,15 +7,15 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/render_frame_host.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
 WindowPlacementPermissionContext::WindowPlacementPermissionContext(
     content::BrowserContext* browser_context)
     : permissions::PermissionContextBase(
           browser_context,
           ContentSettingsType::WINDOW_PLACEMENT,
-          blink::mojom::FeaturePolicyFeature::kNotFound) {}
+          blink::mojom::PermissionsPolicyFeature::kNotFound) {}
 
 WindowPlacementPermissionContext::~WindowPlacementPermissionContext() = default;
 

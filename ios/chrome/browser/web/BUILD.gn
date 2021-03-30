@@ -13,8 +13,6 @@ source_set("web") {
     "error_page_controller_bridge.mm",
     "error_page_util.h",
     "error_page_util.mm",
-    "font_size_tab_helper.h",
-    "font_size_tab_helper.mm",
     "image_fetch_tab_helper.h",
     "image_fetch_tab_helper.mm",
     "invalid_url_tab_helper.h",
@@ -118,8 +116,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "error_page_util_unittest.mm",
-    "font_size_js_unittest.mm",
-    "font_size_tab_helper_unittest.mm",
     "image_fetch_js_unittest.mm",
     "image_fetch_tab_helper_unittest.mm",
     "invalid_url_tab_helper_unittest.mm",
@@ -133,7 +129,6 @@ source_set("unit_tests") {
     "web_state_delegate_tab_helper_unittest.mm",
   ]
   deps = [
-    ":accessibility",
     ":image_fetch",
     ":page_placeholder",
     ":tab_helper_delegates",
@@ -183,10 +178,7 @@ js_compile_bundle("chrome_bundle_all_frames") {
     "//components/autofill/ios/form_util/resources/fill.js",
     "//components/autofill/ios/form_util/resources/form.js",
     "//components/autofill/ios/form_util/resources/form_handlers.js",
-    "resources/accessibility.js",
     "resources/chrome_bundle_all_frames.js",
-    "resources/console.js",
-    "resources/print.js",
   ]
 }
 
@@ -204,12 +196,6 @@ js_compile_bundle("chrome_bundle_main_frame") {
   ]
 }
 
-js_compile_checked("accessibility") {
-  sources = [ "resources/accessibility.js" ]
-
-  js_modules = [ "//ios/web/web_state/js/resources/base.js" ]
-}
-
 js_compile_checked("image_fetch") {
   sources = [ "resources/image_fetch.js" ]
 
@@ -220,23 +206,6 @@ js_compile_checked("image_fetch") {
   ]
 }
 
-source_set("java_script_console") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "java_script_console/java_script_console_message.cc",
-    "java_script_console/java_script_console_message.h",
-    "java_script_console/java_script_console_tab_helper.h",
-    "java_script_console/java_script_console_tab_helper.mm",
-    "java_script_console/java_script_console_tab_helper_delegate.h",
-  ]
-  deps = [
-    "//base",
-    "//ios/web/public",
-    "//ios/web/public/js_messaging",
-  ]
-  frameworks = [ "Foundation.framework" ]
-}
-
 source_set("web_internal") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -244,9 +213,6 @@ source_set("web_internal") {
     "blocked_popup_tab_helper.mm",
     "chrome_web_client.h",
     "chrome_web_client.mm",
-    "print_tab_helper.h",
-    "print_tab_helper.mm",
-    "web_state_printer.h",
   ]
   deps = [
     ":chrome_bundle_all_frames",
@@ -257,6 +223,7 @@ source_set("web_internal") {
     "//components/dom_distiller/core",
     "//components/google/core/common",
     "//components/infobars/core",
+    "//components/password_manager/core/common",
     "//components/payments/core",
     "//components/prefs",
     "//components/resources",
@@ -279,6 +246,8 @@ source_set("web_internal") {
     "//ios/chrome/browser/ui/infobars/coordinators",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/web:feature_flags",
+    "//ios/chrome/browser/web/java_script_console",
+    "//ios/chrome/browser/web/print",
     "//ios/components/security_interstitials",
     "//ios/components/security_interstitials/legacy_tls",
     "//ios/components/security_interstitials/lookalikes",
@@ -297,7 +266,6 @@ source_set("web_internal") {
     "//ui/gfx",
     "//url",
   ]
-  public_deps = [ ":java_script_console" ]
   frameworks = [
     "UIKit.framework",
     "Foundation.framework",
@@ -327,7 +295,6 @@ source_set("unit_tests_internal") {
   sources = [
     "blocked_popup_tab_helper_unittest.mm",
     "chrome_web_client_unittest.mm",
-    "java_script_console/java_script_console_tab_helper_unittest.mm",
   ]
   deps = [
     ":feature_flags",
@@ -365,6 +332,7 @@ source_set("unit_tests_internal") {
     "//net",
     "//net:test_support",
     "//services/network:test_support",
+    "//services/network/public/mojom",
     "//testing/gtest",
     "//third_party/ocmock",
     "//ui/base",

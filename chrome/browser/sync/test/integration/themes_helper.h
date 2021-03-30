@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "chrome/browser/themes/theme_service_observer.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 
@@ -50,18 +51,12 @@ void UseSystemTheme(Profile* profile);
 
 }  // namespace themes_helper
 
-// Waits until |profile| is using the system theme.
-// Returns false in case of timeout.
-
-// Waits until |profile| is using the default theme.
-// Returns false in case of timeout.
-
 // Helper to wait until a given condition is met, checking every time the
 // current theme changes.
 //
 // The |exit_condition_| closure may be invoked zero or more times.
 class ThemeConditionChecker : public StatusChangeChecker,
-                              public content::NotificationObserver {
+                              public ThemeServiceObserver {
  public:
   ThemeConditionChecker(
       Profile* profile,
@@ -72,17 +67,13 @@ class ThemeConditionChecker : public StatusChangeChecker,
   // Implementation of StatusChangeChecker.
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
-  // Implementation of content::NotificationObserver.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // Implementation of ThemeServiceObserver.
+  void OnThemeChanged() override;
 
  private:
   Profile* profile_;
   const std::string debug_message_;
   base::RepeatingCallback<bool(ThemeService*)> exit_condition_;
-
-  content::NotificationRegistrar registrar_;
 };
 
 // Waits until |theme| is pending for install on |profile|.
@@ -115,11 +106,15 @@ class ThemePendingInstallChecker : public StatusChangeChecker,
   content::NotificationRegistrar registrar_;
 };
 
+// Waits until |profile| is using the system theme.
+// Returns false in case of timeout.
 class SystemThemeChecker : public ThemeConditionChecker {
  public:
   explicit SystemThemeChecker(Profile* profile);
 };
 
+// Waits until |profile| is using the default theme.
+// Returns false in case of timeout.
 class DefaultThemeChecker : public ThemeConditionChecker {
  public:
   explicit DefaultThemeChecker(Profile* profile);

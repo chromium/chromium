@@ -11,7 +11,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/cursor/cursor_theme_manager.h"
 #include "ui/base/cursor/cursor_theme_manager_observer.h"
@@ -40,7 +40,7 @@ class COMPONENT_EXPORT(UI_BASE_X) X11CursorFactory
   PlatformCursor CreateAnimatedCursor(mojom::CursorType type,
                                       const std::vector<SkBitmap>& bitmaps,
                                       const gfx::Point& hotspot,
-                                      int frame_delay_ms) override;
+                                      base::TimeDelta frame_delay) override;
   void RefImageCursor(PlatformCursor cursor) override;
   void UnrefImageCursor(PlatformCursor cursor) override;
   void ObserveThemeChanges() override;
@@ -63,8 +63,8 @@ class COMPONENT_EXPORT(UI_BASE_X) X11CursorFactory
 
   std::map<mojom::CursorType, scoped_refptr<X11Cursor>> default_cursors_;
 
-  ScopedObserver<CursorThemeManager, CursorThemeManagerObserver>
-      cursor_theme_observer_{this};
+  base::ScopedObservation<CursorThemeManager, CursorThemeManagerObserver>
+      cursor_theme_observation_{this};
 };
 
 }  // namespace ui

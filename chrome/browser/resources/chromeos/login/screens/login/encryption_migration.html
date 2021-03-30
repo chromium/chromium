@@ -1,0 +1,172 @@
+<!-- Copyright 2017 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-progress/paper-progress.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
+<link rel="import" href="chrome://oobe/custom_elements.html">
+
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
+<link rel="import" href="/components/oobe_dialog_host_behavior.html">
+<link rel="import" href="/components/oobe_i18n_behavior.html">
+<link rel="import" href="/components/login_screen_behavior.html">
+<link rel="import" href="/components/multi_step_behavior.html">
+
+<dom-module id="encryption-migration-element">
+  <template>
+    <style include="oobe-dialog-host">
+      paper-progress {
+        --paper-progress-active-color: var(--google-blue-500);
+        height: 3px;
+        margin-bottom: 28px;
+        width: 100%;
+      }
+
+      [slot='content'] div {
+        color: var(--oobe-text-color);
+      }
+
+      div.warning {
+        color: var(--google-red-600);
+        font-family: var(--oobe-header-font-family);
+        font-size: var(--oobe-modal-dialog-header-font-size);
+        font-weight: var(--oobe-modal-dialog-header-font-weight);
+        line-height: 22px;
+        padding-bottom: 8px;
+      }
+
+      .message-container {
+        border: 1px solid var(--google-grey-200);
+        border-radius: 8px;
+        padding: 24px;
+      }
+    </style>
+    <oobe-adaptive-dialog for-step="initial"></oobe-adaptive-dialog>
+    <oobe-adaptive-dialog id="ready-dialog" role="dialog" for-step="ready"
+        aria-label$="[[i18nDynamic(locale, 'migrationReadyTitle')]]">
+      <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'migrationReadyTitle')]]
+      </h1>
+      <div slot="subtitle">
+        [[i18nDynamic(locale, 'migrationReadyDescription')]]
+      </div>
+      <div slot="content" class="content-centered"
+          hidden="[[!isEnoughBattery]]">
+        <img src="../../images/encryption_migration.svg"
+             class="oobe-illustration">
+      </div>
+      <div slot="content" class="landscape-header-aligned"
+          aria-live="polite" hidden="[[isEnoughBattery]]">
+        <div class="message-container">
+          <div class="warning">
+            [[computeBatteryWarningLabel_(locale, batteryPercent)]]
+          </div>
+          <template is="dom-if" if="[[isCharging]]">
+            <div>[[i18nDynamic(locale,'migrationChargingLabel')]]</div>
+          </template>
+          <template is="dom-if" if="[[!isCharging]]">
+            <div>[[i18nDynamic(locale,'migrationAskChargeMessage')]]</div>
+          </template>
+          <div>
+            [[computeNecessaryBatteryLevelLabel_(locale,
+                                                necessaryBatteryPercent)]]
+          </div>
+        </div>
+      </div>
+      <div slot="bottom-buttons" hidden="[[isResuming]]">
+        <oobe-text-button border id="skip-button" on-click="onSkip_"
+            hidden="[[isSkipHidden_()]]" text-key="migrationButtonSkip">
+        </oobe-text-button>
+        <oobe-text-button inverse id="upgrade-button" on-click="onUpgrade_"
+            disabled="[[isUpdateDisabled_(isEnoughBattery, isSkipped)]]"
+            text-key="migrationButtonUpdate"></oobe-text-button>
+      </div>
+    </oobe-adaptive-dialog>
+    <oobe-adaptive-dialog id="migrating-dialog" role="dialog"
+        for-step="migrating"
+        aria-label$="[[i18nDynamic(locale, 'migrationMigratingTitle')]]">
+      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'migrationMigratingTitle')]]
+      </h1>
+      <div slot="subtitle">
+        [[i18nDynamic(locale, 'migrationMigratingDescription')]]
+      </div>
+      <div slot="content" class="flex layout vertical center-justified">
+        <paper-progress id="migration-progress"
+            value="[[progress]]" max="1" step="0.001"
+            indeterminate="[[isProgressIndeterminate_(progress)]]">
+        </paper-progress>
+        <template is="dom-if" if="[[!isProgressIndeterminate_(progress)]]">
+          <div aria-live="polite">
+            [[computeProgressLabel_(locale, progress)]]
+          </div>
+        </template>
+      </div>
+    </oobe-adaptive-dialog>
+    <oobe-adaptive-dialog id="error-dialog" role="dialog"
+        for-step="migration-failed"
+        aria-label$="[[i18nDynamic(locale, 'migrationFailedTitle')]]">
+      <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'migrationFailedTitle')]]
+      </h1>
+      <div slot="subtitle">
+        [[i18nDynamic(locale, 'migrationFailedSubtitle')]]
+      </div>
+      <div slot="content" class="landscape-header-aligned">
+        <div>[[i18nDynamic(locale,'migrationFailedMessage')]]</div>
+      </div>
+      <div slot="bottom-buttons">
+<if expr="_google_chrome">
+        <oobe-text-button border on-click="onReportAnIssue_"
+            text-key="migrationButtonReportAnIssue"></oobe-text-button>
+</if>
+        <oobe-text-button inverse id="restart-button"
+            on-click="onRestartOnFailure_" text-key="migrationButtonRestart">
+        </oobe-text-button>
+      </div>
+    </oobe-adaptive-dialog>
+    <oobe-adaptive-dialog id="insufficient-space-dialog" role="dialog"
+        for-step="not-enough-space"
+        aria-label$="[[i18nDynamic(locale, 'migrationReadyTitle')]]">
+      <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'migrationReadyTitle')]]
+      </h1>
+      <div slot="subtitle">
+        [[i18nDynamic(locale, 'migrationReadyDescription')]]
+      </div>
+      <div slot="content" class="landscape-header-aligned"
+          aria-live="polite">
+        <div class="message-container">
+          <div class="warning">
+            [[i18nDynamic(locale,'migrationNospaceWarningLabel')]]
+          </div>
+          <div>[[i18nDynamic(locale,'migrationAskFreeSpaceMessage')]]</div>
+          <div>
+            [[computeAvailableSpaceLabel_(locale, availableSpaceInString)]]
+          </div>
+          <div>
+            [[computeNecessarySpaceLabel_(locale, necessarySpaceInString)]]
+          </div>
+        </div>
+      </div>
+      <div slot="bottom-buttons">
+        <oobe-text-button inverse id="insufficient-space-skip-button"
+            hidden="[[isResuming]]"
+            on-click="onSkip_" text-key="migrationButtonContinue">
+        </oobe-text-button>
+        <oobe-text-button inverse id="insufficient-space-restart-button"
+            hidden="[[!isResuming]]"
+            on-click="onRestartOnLowStorage_"
+            text-key="migrationButtonRestart">
+        </oobe-text-button>
+      </div>
+    </oobe-adaptive-dialog>
+  </template>
+</dom-module>

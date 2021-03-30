@@ -99,9 +99,10 @@ class FakeLauncher : public NativeProcessLauncher {
 
   void Launch(const GURL& origin,
               const std::string& native_host_name,
-              const LaunchedCallback& callback) const override {
-    callback.Run(NativeProcessLauncher::RESULT_SUCCESS, base::Process(),
-                 std::move(read_file_), std::move(write_file_));
+              LaunchedCallback callback) const override {
+    std::move(callback).Run(NativeProcessLauncher::RESULT_SUCCESS,
+                            base::Process(), std::move(read_file_),
+                            std::move(write_file_));
   }
 
  private:
@@ -222,7 +223,7 @@ TEST_F(NativeMessagingTest, SingleSendMessageWrite) {
 
   base::File read_file;
 #if defined(OS_WIN)
-  base::string16 pipe_name = base::StringPrintf(
+  std::wstring pipe_name = base::StringPrintf(
       L"\\\\.\\pipe\\chrome.nativeMessaging.out.%llx", base::RandUint64());
   base::File write_handle =
       base::File(base::ScopedPlatformFile(CreateNamedPipeW(
@@ -357,7 +358,7 @@ TEST_F(NativeMessagingTest, MAYBE_ReconnectArgs) {
   for (auto& arg : args_value->GetList()) {
     ASSERT_TRUE(arg.is_string());
 #if defined(OS_WIN)
-    args.push_back(base::UTF8ToUTF16(arg.GetString()));
+    args.push_back(base::UTF8ToWide(arg.GetString()));
 #else
     args.push_back(arg.GetString());
 #endif

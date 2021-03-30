@@ -40,7 +40,8 @@
 
   _suggestionViewController = [[ContentSuggestionsViewController alloc]
       initWithStyle:CollectionViewControllerStyleDefault
-             offset:0];
+             offset:0
+        feedVisible:NO];
   [_suggestionViewController setDataSource:_dataSource];
 
   _suggestionViewController.suggestionCommandHandler =

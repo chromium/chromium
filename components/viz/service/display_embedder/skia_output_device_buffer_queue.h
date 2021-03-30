@@ -42,12 +42,12 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
   // SkiaOutputDevice overrides.
   void Submit(bool sync_cpu, base::OnceClosure callback) override;
   void SwapBuffers(BufferPresentedCallback feedback,
-                   std::vector<ui::LatencyInfo> latency_info) override;
+                   OutputSurfaceFrame frame) override;
   void PostSubBuffer(const gfx::Rect& rect,
                      BufferPresentedCallback feedback,
-                     std::vector<ui::LatencyInfo> latency_info) override;
+                     OutputSurfaceFrame frame) override;
   void CommitOverlayPlanes(BufferPresentedCallback feedback,
-                           std::vector<ui::LatencyInfo> latency_info) override;
+                           OutputSurfaceFrame frame) override;
   bool Reshape(const gfx::Size& size,
                float device_scale_factor,
                const gfx::ColorSpace& color_space,
@@ -76,7 +76,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
   // Used as callback for SwapBuffersAsync and PostSubBufferAsync to finish
   // operation
   void DoFinishSwapBuffers(const gfx::Size& size,
-                           std::vector<ui::LatencyInfo> latency_info,
+                           OutputSurfaceFrame frame,
                            const base::WeakPtr<OutputPresenter::Image>& image,
                            std::vector<gpu::Mailbox> overlay_mailboxes,
                            gfx::SwapCompletionResult result);
@@ -135,6 +135,9 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
   std::unique_ptr<OutputPresenter::Image> background_image_ = nullptr;
   // Set to true if background has been scheduled in a frame.
   bool background_image_is_scheduled_ = false;
+  // Whether |SchedulePrimaryPlane| needs to wait for a paint before scheduling
+  // This works around an edge case for unpromoting fullscreen quads.
+  bool primary_plane_waiting_on_paint_ = false;
 };
 
 }  // namespace viz

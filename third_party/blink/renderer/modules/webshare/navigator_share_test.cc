@@ -107,8 +107,8 @@ class NavigatorShareTest : public testing::Test {
  protected:
   void SetUp() override {
     GetFrame().Loader().CommitNavigation(
-        WebNavigationParams::CreateWithHTMLBuffer(SharedBuffer::Create(),
-                                                  KURL("https://example.com")),
+        WebNavigationParams::CreateWithHTMLBufferForTesting(
+            SharedBuffer::Create(), KURL("https://example.com")),
         nullptr /* extra_data */);
     test::RunPendingTasks();
 

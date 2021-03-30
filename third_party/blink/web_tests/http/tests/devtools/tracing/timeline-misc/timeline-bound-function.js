@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests extracting information about original functions from bound ones\n`);
-  await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
   await TestRunner.loadHTML(`
       <button id="btn"></button>

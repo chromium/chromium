@@ -18,6 +18,7 @@ source_set("external_mojo_broker") {
   deps = [
     ":common",
     "//base",
+    "//chromecast:chromecast_buildflags",
     "//chromecast/external_mojo/public/mojom",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/platform",

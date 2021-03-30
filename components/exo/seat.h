@@ -122,6 +122,8 @@ class Seat : public aura::client::FocusChangeObserver,
   // Overridden from ash::ImeControllerImpl::Observer:
   void OnCapsLockChanged(bool enabled) override;
   void OnKeyboardLayoutNameChanged(const std::string& layout_name) override;
+
+  UILockController* GetUILockControllerForTesting();
 #endif
 
   void set_physical_code_for_currently_processing_event_for_testing(
@@ -143,7 +145,7 @@ class Seat : public aura::client::FocusChangeObserver,
   void OnTextRead(scoped_refptr<RefCountedScopedClipboardWriter> writer,
                   base::OnceClosure callback,
                   const std::string& mime_type,
-                  base::string16 data);
+                  std::u16string data);
   void OnRTFRead(scoped_refptr<RefCountedScopedClipboardWriter> writer,
                  base::OnceClosure callback,
                  const std::string& mime_type,
@@ -151,7 +153,7 @@ class Seat : public aura::client::FocusChangeObserver,
   void OnHTMLRead(scoped_refptr<RefCountedScopedClipboardWriter> writer,
                   base::OnceClosure callback,
                   const std::string& mime_type,
-                  base::string16 data);
+                  std::u16string data);
   void OnImageRead(scoped_refptr<RefCountedScopedClipboardWriter> writer,
                    base::OnceClosure callback,
                    const std::string& mime_type,
@@ -161,7 +163,8 @@ class Seat : public aura::client::FocusChangeObserver,
                       scoped_refptr<RefCountedScopedClipboardWriter> writer,
                       const SkBitmap& bitmap);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  void OnFilenamesRead(scoped_refptr<RefCountedScopedClipboardWriter> writer,
+  void OnFilenamesRead(ui::EndpointType source,
+                       scoped_refptr<RefCountedScopedClipboardWriter> writer,
                        base::OnceClosure callback,
                        const std::string& mime_type,
                        const std::vector<uint8_t>& data);

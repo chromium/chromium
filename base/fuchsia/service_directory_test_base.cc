@@ -13,7 +13,6 @@
 #include "base/test/test_timeouts.h"
 
 namespace base {
-namespace fuchsia {
 
 ServiceDirectoryTestBase::ServiceDirectoryTestBase()
     : run_timeout_(FROM_HERE, TestTimeouts::action_timeout()) {
@@ -78,5 +77,4 @@ void ServiceDirectoryTestBase::VerifyTestInterface(
   stub->set_error_handler(nullptr);
 }
 
-}  // namespace fuchsia
 }  // namespace base

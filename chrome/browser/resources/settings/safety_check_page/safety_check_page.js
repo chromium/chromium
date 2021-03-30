@@ -15,7 +15,7 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '../settings_shared_css.m.js';
+import '../settings_shared_css.js';
 import './safety_check_extensions_child.js';
 import './safety_check_passwords_child.js';
 import './safety_check_safe_browsing_child.js';
@@ -105,7 +105,7 @@ Polymer({
   runSafetyCheck_: function() {
     // Log click both in action and histogram.
     this.metricsBrowserProxy_.recordSafetyCheckInteractionHistogram(
-        SafetyCheckInteractions.SAFETY_CHECK_START);
+        SafetyCheckInteractions.RUN_SAFETY_CHECK);
     this.metricsBrowserProxy_.recordAction('Settings.SafetyCheck.Start');
 
     // Trigger safety check.

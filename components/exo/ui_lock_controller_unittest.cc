@@ -4,8 +4,11 @@
 
 #include "components/exo/ui_lock_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/wm/window_state.h"
+#include "base/feature_list.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/exo/buffer.h"
 #include "components/exo/display.h"
@@ -13,16 +16,35 @@
 #include "components/exo/surface.h"
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_helper.h"
+#include "components/exo/ui_lock_bubble.h"
+#include "components/exo/wm_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/class_property.h"
 #include "ui/wm/core/window_util.h"
 
 namespace exo {
+
 namespace {
+
+constexpr char kNoEscHoldAppId[] = "no-esc-hold";
 
 struct SurfaceTriplet {
   std::unique_ptr<Surface> surface;
   std::unique_ptr<ShellSurface> shell_surface;
   std::unique_ptr<Buffer> buffer;
+
+  aura::Window* GetAlwaysOnTopContainer() {
+    aura::Window* native_window = GetTopLevelWidget()->GetNativeWindow();
+    return ash::Shell::GetContainer(native_window->GetRootWindow(),
+                                    ash::kShellWindowId_AlwaysOnTopContainer);
+  }
+
+  views::Widget* GetTopLevelWidget() {
+    views::Widget* top_level_widget =
+        views::Widget::GetTopLevelWidgetForNativeView(surface->window());
+    assert(top_level_widget);
+    return top_level_widget;
+  }
 
   aura::Window* GetTopLevelWindow() {
     auto* top_level_widget = views::Widget::GetTopLevelWidgetForNativeView(
@@ -46,10 +68,28 @@ class UILockControllerTest : public test::ExoTestBase {
   UILockControllerTest& operator=(const UILockControllerTest&) = delete;
 
  protected:
+  class TestPropertyResolver : public exo::WMHelper::AppPropertyResolver {
+   public:
+    TestPropertyResolver() = default;
+    ~TestPropertyResolver() override = default;
+    void PopulateProperties(
+        const std::string& app_id,
+        const std::string& startup_id,
+        bool for_creation,
+        ui::PropertyHandler& out_properties_container) override {
+      out_properties_container.SetProperty(chromeos::kEscHoldToExitFullscreen,
+                                           app_id != kNoEscHoldAppId);
+    }
+  };
+
   // test::ExoTestBase:
   void SetUp() override {
     test::ExoTestBase::SetUp();
     seat_ = std::make_unique<Seat>();
+    scoped_feature_list_.InitAndEnableFeature(
+        chromeos::features::kExoLockNotification);
+    WMHelper::GetInstance()->RegisterAppPropertyResolver(
+        std::make_unique<TestPropertyResolver>());
   }
 
   void TearDown() override {
@@ -61,7 +101,6 @@ class UILockControllerTest : public test::ExoTestBase {
     auto surface = std::make_unique<Surface>();
     auto shell_surface = std::make_unique<ShellSurface>(
         surface.get(), gfx::Point{0, 0},
-        /*activatable=*/true,
         /*can_minimize=*/true, ash::desks_util::GetActiveDeskContainerId());
     auto buffer = std::make_unique<Buffer>(
         exo_test_helper()->CreateGpuMemoryBuffer({w, h}));
@@ -71,6 +110,7 @@ class UILockControllerTest : public test::ExoTestBase {
   }
 
   std::unique_ptr<Seat> seat_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(UILockControllerTest, HoldingEscapeExitsFullscreen) {
@@ -78,8 +118,6 @@ TEST_F(UILockControllerTest, HoldingEscapeExitsFullscreen) {
   test_surface.shell_surface->SetUseImmersiveForFullscreen(false);
   test_surface.shell_surface->SetFullscreen(true);
   test_surface.surface->Commit();
-  test_surface.GetTopLevelWindow()->SetProperty(
-      chromeos::kEscHoldToExitFullscreen, true);
   auto* window_state = test_surface.GetTopLevelWindowState();
   EXPECT_TRUE(window_state->IsFullscreen());
 
@@ -97,8 +135,6 @@ TEST_F(UILockControllerTest, HoldingCtrlEscapeDoesNotExitFullscreen) {
   test_surface.shell_surface->SetUseImmersiveForFullscreen(false);
   test_surface.shell_surface->SetFullscreen(true);
   test_surface.surface->Commit();
-  test_surface.GetTopLevelWindow()->SetProperty(
-      chromeos::kEscHoldToExitFullscreen, true);
   auto* window_state = test_surface.GetTopLevelWindowState();
   EXPECT_TRUE(window_state->IsFullscreen());
 
@@ -109,11 +145,12 @@ TEST_F(UILockControllerTest, HoldingCtrlEscapeDoesNotExitFullscreen) {
 
 TEST_F(UILockControllerTest,
        HoldingEscapeOnlyExitsFullscreenIfWindowPropertySet) {
+  // Do not set chromeos::kEscHoldToExitFullscreen on TopLevelWindow.
   SurfaceTriplet test_surface = BuildSurface(1024, 768);
+  test_surface.shell_surface->SetApplicationId(kNoEscHoldAppId);
   test_surface.shell_surface->SetUseImmersiveForFullscreen(false);
   test_surface.shell_surface->SetFullscreen(true);
   test_surface.surface->Commit();
-  // Do not set chromeos::kEscHoldToExitFullscreen on TopLevelWindow.
   auto* window_state = test_surface.GetTopLevelWindowState();
   EXPECT_TRUE(window_state->IsFullscreen());
 
@@ -127,15 +164,11 @@ TEST_F(UILockControllerTest, HoldingEscapeOnlyExitsFocusedFullscreen) {
   test_surface1.shell_surface->SetUseImmersiveForFullscreen(false);
   test_surface1.shell_surface->SetFullscreen(true);
   test_surface1.surface->Commit();
-  test_surface1.GetTopLevelWindow()->SetProperty(
-      chromeos::kEscHoldToExitFullscreen, true);
 
   SurfaceTriplet test_surface2 = BuildSurface(1024, 768);
   test_surface2.shell_surface->SetUseImmersiveForFullscreen(false);
   test_surface2.shell_surface->SetFullscreen(true);
   test_surface2.surface->Commit();
-  test_surface2.GetTopLevelWindow()->SetProperty(
-      chromeos::kEscHoldToExitFullscreen, true);
 
   GetEventGenerator()->PressKey(ui::VKEY_ESCAPE, ui::EF_NONE);
   task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(2));
@@ -150,8 +183,6 @@ TEST_F(UILockControllerTest, DestroyingWindowCancels) {
   test_surface->shell_surface->SetUseImmersiveForFullscreen(false);
   test_surface->shell_surface->SetFullscreen(true);
   test_surface->surface->Commit();
-  test_surface->GetTopLevelWindow()->SetProperty(
-      chromeos::kEscHoldToExitFullscreen, true);
   auto* window_state = test_surface->GetTopLevelWindowState();
   EXPECT_TRUE(window_state->IsFullscreen());
 
@@ -174,8 +205,6 @@ TEST_F(UILockControllerTest, FocusChangeCancels) {
   fullscreen_surface.shell_surface->SetUseImmersiveForFullscreen(false);
   fullscreen_surface.shell_surface->SetFullscreen(true);
   fullscreen_surface.surface->Commit();
-  fullscreen_surface.GetTopLevelWindow()->SetProperty(
-      chromeos::kEscHoldToExitFullscreen, true);
 
   EXPECT_EQ(fullscreen_surface.surface.get(), seat_->GetFocusedSurface());
   EXPECT_FALSE(fullscreen_surface.GetTopLevelWindowState()->IsMinimized());
@@ -199,8 +228,6 @@ TEST_F(UILockControllerTest, ShortHoldEscapeDoesNotExitFullscreen) {
   test_surface.shell_surface->SetUseImmersiveForFullscreen(false);
   test_surface.shell_surface->SetFullscreen(true);
   test_surface.surface->Commit();
-  test_surface.GetTopLevelWindow()->SetProperty(
-      chromeos::kEscHoldToExitFullscreen, true);
   auto* window_state = test_surface.GetTopLevelWindowState();
 
   GetEventGenerator()->PressKey(ui::VKEY_ESCAPE, ui::EF_NONE);
@@ -216,8 +243,6 @@ TEST_F(UILockControllerTest, HoldingEscapeMinimizesIfPropertySet) {
   test_surface.shell_surface->SetUseImmersiveForFullscreen(false);
   test_surface.shell_surface->SetFullscreen(true);
   test_surface.surface->Commit();
-  test_surface.GetTopLevelWindow()->SetProperty(
-      chromeos::kEscHoldToExitFullscreen, true);
   test_surface.GetTopLevelWindow()->SetProperty(
       chromeos::kEscHoldExitFullscreenToMinimized, true);
   auto* window_state = test_surface.GetTopLevelWindowState();
@@ -238,14 +263,111 @@ TEST_F(UILockControllerTest, HoldingEscapeDoesNotMinimizeIfWindowed) {
   test_surface.surface->Commit();
   auto* window_state = test_surface.GetTopLevelWindowState();
   test_surface.GetTopLevelWindow()->SetProperty(
-      chromeos::kEscHoldToExitFullscreen, true);
-  test_surface.GetTopLevelWindow()->SetProperty(
       chromeos::kEscHoldExitFullscreenToMinimized, true);
 
   GetEventGenerator()->PressKey(ui::VKEY_ESCAPE, ui::EF_NONE);
   task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(2));
 
   EXPECT_FALSE(window_state->IsMinimized());
+}
+
+TEST_F(UILockControllerTest, FullScreenShowsBubble) {
+  SurfaceTriplet test_surface = BuildSurface(1024, 768);
+  test_surface.shell_surface->SetUseImmersiveForFullscreen(false);
+  test_surface.shell_surface->SetFullscreen(true);
+  test_surface.surface->Commit();
+
+  EXPECT_TRUE(test_surface.GetTopLevelWindowState()->IsFullscreen());
+  EXPECT_TRUE(seat_->GetUILockControllerForTesting()->IsBubbleVisibleForTesting(
+      test_surface.GetTopLevelWindow()));
+}
+
+TEST_F(UILockControllerTest, BubbleClosesAfterDuration) {
+  SurfaceTriplet test_surface = BuildSurface(1024, 768);
+  test_surface.shell_surface->SetUseImmersiveForFullscreen(false);
+  test_surface.shell_surface->SetFullscreen(true);
+  test_surface.surface->Commit();
+
+  EXPECT_TRUE(seat_->GetUILockControllerForTesting()->IsBubbleVisibleForTesting(
+      test_surface.GetTopLevelWindow()));
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  EXPECT_FALSE(
+      seat_->GetUILockControllerForTesting()->IsBubbleVisibleForTesting(
+          test_surface.GetTopLevelWindow()));
+}
+
+TEST_F(UILockControllerTest, HoldingEscapeHidesBubble) {
+  SurfaceTriplet test_surface = BuildSurface(1024, 768);
+  test_surface.shell_surface->SetUseImmersiveForFullscreen(false);
+  test_surface.shell_surface->SetFullscreen(true);
+  test_surface.surface->Commit();
+
+  EXPECT_TRUE(test_surface.GetTopLevelWindowState()->IsFullscreen());
+  EXPECT_TRUE(seat_->GetUILockControllerForTesting()->IsBubbleVisibleForTesting(
+      test_surface.GetTopLevelWindow()));
+
+  GetEventGenerator()->PressKey(ui::VKEY_ESCAPE, ui::EF_NONE);
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(3));
+
+  EXPECT_FALSE(test_surface.GetTopLevelWindowState()->IsFullscreen());
+  EXPECT_FALSE(
+      seat_->GetUILockControllerForTesting()->IsBubbleVisibleForTesting(
+          test_surface.GetTopLevelWindow()));
+}
+
+TEST_F(UILockControllerTest, LosingFullscreenHidesBubble) {
+  SurfaceTriplet test_surface = BuildSurface(1024, 768);
+  test_surface.shell_surface->SetUseImmersiveForFullscreen(false);
+  test_surface.shell_surface->SetFullscreen(true);
+  test_surface.surface->Commit();
+
+  EXPECT_TRUE(test_surface.GetTopLevelWindowState()->IsFullscreen());
+  EXPECT_TRUE(seat_->GetUILockControllerForTesting()->IsBubbleVisibleForTesting(
+      test_surface.GetTopLevelWindow()));
+
+  // Have surface loose fullscreen, bubble should now be hidden.
+  test_surface.shell_surface->Minimize();
+  test_surface.shell_surface->SetFullscreen(false);
+  test_surface.surface->Commit();
+
+  EXPECT_FALSE(test_surface.GetTopLevelWindowState()->IsFullscreen());
+  EXPECT_FALSE(
+      seat_->GetUILockControllerForTesting()->IsBubbleVisibleForTesting(
+          test_surface.GetTopLevelWindow()));
+}
+
+TEST_F(UILockControllerTest, BubbleIsReshown) {
+  SurfaceTriplet test_surface = BuildSurface(1024, 768);
+  test_surface.shell_surface->SetUseImmersiveForFullscreen(false);
+  test_surface.shell_surface->SetFullscreen(true);
+  test_surface.surface->Commit();
+
+  EXPECT_TRUE(seat_->GetUILockControllerForTesting()->IsBubbleVisibleForTesting(
+      test_surface.GetTopLevelWindow()));
+
+  // Stop fullscreen.
+  test_surface.shell_surface->SetFullscreen(false);
+  EXPECT_FALSE(
+      seat_->GetUILockControllerForTesting()->IsBubbleVisibleForTesting(
+          test_surface.GetTopLevelWindow()));
+
+  // Fullscreen should show bubble since it did not stay visible for duration.
+  test_surface.shell_surface->SetFullscreen(true);
+  EXPECT_TRUE(seat_->GetUILockControllerForTesting()->IsBubbleVisibleForTesting(
+      test_surface.GetTopLevelWindow()));
+
+  // After duration, bubble should be removed.
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  EXPECT_FALSE(
+      seat_->GetUILockControllerForTesting()->IsBubbleVisibleForTesting(
+          test_surface.GetTopLevelWindow()));
+
+  // Bubble is not shown after fullscreen toggle.
+  test_surface.shell_surface->SetFullscreen(false);
+  test_surface.shell_surface->SetFullscreen(true);
+  EXPECT_FALSE(
+      seat_->GetUILockControllerForTesting()->IsBubbleVisibleForTesting(
+          test_surface.GetTopLevelWindow()));
 }
 
 }  // namespace

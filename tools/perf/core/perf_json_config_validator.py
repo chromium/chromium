@@ -11,8 +11,8 @@ from core import bot_platforms
 
 _VALID_SWARMING_DIMENSIONS = {
     'gpu', 'device_ids', 'os', 'pool', 'perf_tests', 'perf_tests_with_args',
-    'cpu', 'device_os', 'device_type', 'device_os_flavor', 'id', 'mac_model',
-    'synthetic_product_name'
+    'cpu', 'device_os', 'device_status', 'device_type', 'device_os_flavor',
+    'id', 'mac_model', 'synthetic_product_name'
 }
 _DEFAULT_VALID_PERF_POOLS = {
     'chrome.tests.perf',
@@ -25,9 +25,21 @@ _VALID_PERF_POOLS = {
     'android-builder-perf': {'chrome.tests'},
     'android_arm64-builder-perf': {'chrome.tests'},
     'android-pixel4a_power-perf': {'chrome.tests.pinpoint'},
+    'chromecast-linux-builder-perf': {'chrome.tests'},
     'chromeos-kevin-perf-fyi': {'chrome.tests'},
     'chromeos-amd64-generic-lacros-builder-perf': {'chrome.tests'},
     'fuchsia-perf-fyi': {'chrome.tests'},
+    'lacros-eve-perf': {'chrome.tests'},
+    'linux-builder-perf': {'chrome.tests'},
+    'mac-arm-builder-perf': {'chrome.tests'},
+    'mac-builder-perf': {'chrome.tests'},
+    'win32-builder-perf': {'chrome.tests'},
+    'win64-builder-perf': {'chrome.tests'},
+}
+_VALID_WEBVIEW_BROWSERS = {
+    'android-webview',
+    'android-webview-google',
+    'android-webview-trichrome-google-bundle',
 }
 
 
@@ -95,15 +107,13 @@ def _ValidateShardingData(builder_name, test_config):
 def _ValidateBrowserType(builder_name, test_config):
   browser_options = _ParseBrowserFlags(test_config['args'])
   if 'WebView' in builder_name or 'webview' in builder_name:
-    if browser_options.browser not in (
-        'android-webview', 'android-webview-google'):
-      raise ValueError(
-          "%s must use 'android-webview' or 'android-webview-google' "
-          "browser" % builder_name)
+    if browser_options.browser not in _VALID_WEBVIEW_BROWSERS:
+      raise ValueError('%s must use one of the following browsers: %s' %
+                       (builder_name, ', '.join(_VALID_WEBVIEW_BROWSERS)))
   elif 'Android' in builder_name or 'android' in builder_name:
     android_browsers = ('android-chromium', 'android-chrome',
                         'android-chrome-bundle', 'android-chrome-64-bundle',
-                        'exact')
+                        'android-trichrome-bundle', 'exact')
     if browser_options.browser not in android_browsers:
       raise ValueError( 'The browser type for %s must be one of %s' % (
           builder_name, ', '.join(android_browsers)))
@@ -111,9 +121,13 @@ def _ValidateBrowserType(builder_name, test_config):
     if browser_options.browser != 'cros-chrome':
       raise ValueError("%s must use 'cros-chrome' browser type" %
                        builder_name)
+  elif 'lacros' in builder_name:
+    if browser_options.browser != 'lacros-chrome':
+      raise ValueError("%s must use 'lacros-chrome' browser type" %
+                       builder_name)
   elif builder_name in ('win-10-perf', 'Win 7 Nvidia GPU Perf',
                         'win-10_laptop_low_end-perf_HP-Candidate',
-                        'win-10_laptop_low_end-perf'):
+                        'win-10_laptop_low_end-perf', 'win-10_amd-perf'):
     if browser_options.browser != 'release_x64':
       raise ValueError("%s must use 'release_x64' browser type" %
                        builder_name)
@@ -131,8 +145,9 @@ def ValidateTestingBuilder(builder_name, builder_data):
     _ValidateSwarmingDimension(
         builder_name,
         swarming_dimensions=test_config['swarming'].get('dimension_sets', {}))
-    if (test_config['isolate_name'] in
-        ('performance_test_suite', 'performance_webview_test_suite')):
+    if (test_config['isolate_name'] in ('performance_test_suite',
+                                        'performance_test_suite_eve',
+                                        'performance_webview_test_suite')):
       _ValidateShardingData(builder_name, test_config)
       _ValidateBrowserType(builder_name, test_config)
 
@@ -191,10 +206,15 @@ def main(args):
   fyi_waterfall_file = os.path.join(
       path_util.GetChromiumSrcDir(), 'testing', 'buildbot',
       'chromium.perf.fyi.json')
-
+  calibration_waterfall_file = os.path.join(path_util.GetChromiumSrcDir(),
+                                            'testing', 'buildbot',
+                                            'chromium.perf.calibration.json')
 
   with open(fyi_waterfall_file) as f:
     ValidatePerfConfigFile(f, False)
 
   with open(waterfall_file) as f:
     ValidatePerfConfigFile(f, True)
+
+  with open(calibration_waterfall_file) as f:
+    ValidatePerfConfigFile(f, False)

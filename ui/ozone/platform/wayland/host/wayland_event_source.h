@@ -81,18 +81,15 @@ class WaylandEventSource : public PlatformEventSource,
 
  protected:
   // WaylandKeyboard::Delegate
-  void OnKeyboardCreated(WaylandKeyboard* keyboard) override;
-  void OnKeyboardDestroyed(WaylandKeyboard* keyboard) override;
   void OnKeyboardFocusChanged(WaylandWindow* window, bool focused) override;
   void OnKeyboardModifiersChanged(int modifiers) override;
   uint32_t OnKeyboardKeyEvent(EventType type,
                               DomCode dom_code,
                               bool repeat,
-                              base::TimeTicks timestamp) override;
+                              base::TimeTicks timestamp,
+                              int device_id) override;
 
   // WaylandPointer::Delegate
-  void OnPointerCreated(WaylandPointer* pointer) override;
-  void OnPointerDestroyed(WaylandPointer* pointer) override;
   void OnPointerFocusChanged(WaylandWindow* window,
                              const gfx::PointF& location) override;
   void OnPointerButtonEvent(EventType evtype,
@@ -103,10 +100,9 @@ class WaylandEventSource : public PlatformEventSource,
   void OnPointerFrameEvent() override;
   void OnPointerAxisSourceEvent(uint32_t axis_source) override;
   void OnPointerAxisStopEvent(uint32_t axis) override;
+  void OnResetPointerFlags() override;
 
   // WaylandTouch::Delegate
-  void OnTouchCreated(WaylandTouch* touch) override;
-  void OnTouchDestroyed(WaylandTouch* touch) override;
   void OnTouchPressEvent(WaylandWindow* window,
                          const gfx::PointF& location,
                          base::TimeTicks timestamp,
@@ -145,11 +141,6 @@ class WaylandEventSource : public PlatformEventSource,
   gfx::Vector2dF ComputeFlingVelocity();
 
   WaylandWindowManager* const window_manager_;
-
-  // Input device objects. Owned by WaylandConnection.
-  WaylandKeyboard* keyboard_ = nullptr;
-  WaylandPointer* pointer_ = nullptr;
-  WaylandTouch* touch_ = nullptr;
 
   // Bitmask of EventFlags used to keep track of the the pointer state.
   int pointer_flags_ = 0;

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/single_thread_task_runner.h"
@@ -77,13 +78,17 @@ class MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter
   // destroyed.
   void ReleaseSourceOnMainThread();
 
-  void OnVideoFrameOnIO(scoped_refptr<media::VideoFrame> frame,
-                        base::TimeTicks estimated_capture_time);
+  void OnVideoFrameOnIO(
+      scoped_refptr<media::VideoFrame> frame,
+      std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
+      base::TimeTicks estimated_capture_time);
 
  private:
   friend class WTF::ThreadSafeRefCounted<WebRtcVideoSourceAdapter>;
 
-  void OnVideoFrameOnWorkerThread(scoped_refptr<media::VideoFrame> frame);
+  void OnVideoFrameOnWorkerThread(
+      scoped_refptr<media::VideoFrame> frame,
+      std::vector<scoped_refptr<media::VideoFrame>> scaled_frames);
 
   virtual ~WebRtcVideoSourceAdapter();
 
@@ -141,20 +146,24 @@ void MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter::
 
 void MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter::OnVideoFrameOnIO(
     scoped_refptr<media::VideoFrame> frame,
+    std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
     base::TimeTicks estimated_capture_time) {
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
   PostCrossThreadTask(
       *libjingle_worker_thread_.get(), FROM_HERE,
       CrossThreadBindOnce(&WebRtcVideoSourceAdapter::OnVideoFrameOnWorkerThread,
-                          WrapRefCounted(this), std::move(frame)));
+                          WrapRefCounted(this), std::move(frame),
+                          std::move(scaled_frames)));
 }
 
 void MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter::
-    OnVideoFrameOnWorkerThread(scoped_refptr<media::VideoFrame> frame) {
+    OnVideoFrameOnWorkerThread(
+        scoped_refptr<media::VideoFrame> frame,
+        std::vector<scoped_refptr<media::VideoFrame>> scaled_frames) {
   DCHECK(libjingle_worker_thread_->BelongsToCurrentThread());
   base::AutoLock auto_lock(video_source_stop_lock_);
   if (video_source_)
-    video_source_->OnFrameCaptured(std::move(frame));
+    video_source_->OnFrameCaptured(std::move(frame), std::move(scaled_frames));
 }
 
 MediaStreamVideoWebRtcSink::MediaStreamVideoWebRtcSink(
@@ -176,7 +185,8 @@ MediaStreamVideoWebRtcSink::MediaStreamVideoWebRtcSink(
   // by removing the need for and dependency on a cricket::VideoCapturer.
   video_source_ = scoped_refptr<WebRtcVideoTrackSource>(
       new rtc::RefCountedObject<WebRtcVideoTrackSource>(
-          is_screencast, needs_denoising, feedback_cb));
+          is_screencast, needs_denoising, feedback_cb,
+          factory->GetGpuFactories()));
 
   // TODO(pbos): Consolidate the local video track with the source proxy and
   // move into PeerConnectionDependencyFactory. This now separately holds on a

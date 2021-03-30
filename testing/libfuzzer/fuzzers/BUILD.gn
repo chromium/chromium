@@ -63,16 +63,12 @@ fuzzer_test("template_url_parser_fuzzer") {
 fuzzer_test("url_parse_proto_fuzzer") {
   sources = [ "url_parse_proto_fuzzer.cc" ]
   deps = [
-    ":url_proto",
     "//base",
     "//base:i18n",
+    "//testing/libfuzzer/proto:url_proto",
     "//third_party/libprotobuf-mutator",
     "//url:url",
   ]
-}
-
-proto_library("url_proto") {
-  sources = [ "url.proto" ]
 }
 
 fuzzer_test("usrsctp_fuzzer") {

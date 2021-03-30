@@ -363,7 +363,7 @@ void FrameSequenceTrackerCollection::RecreateTrackers(
 }
 
 ActiveFrameSequenceTrackers
-FrameSequenceTrackerCollection::FrameSequenceTrackerActiveTypes() {
+FrameSequenceTrackerCollection::FrameSequenceTrackerActiveTypes() const {
   ActiveFrameSequenceTrackers encoded_types = 0;
   for (const auto& key : frame_trackers_) {
     auto thread_type = key.first.first;

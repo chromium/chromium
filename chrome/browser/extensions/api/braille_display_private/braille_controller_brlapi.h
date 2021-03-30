@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/memory/singleton.h"
@@ -42,13 +43,13 @@ class BrailleControllerImpl : public BrailleController {
   ~BrailleControllerImpl() override;
   void TryLoadLibBrlApi();
 
-  typedef base::Callback<std::unique_ptr<BrlapiConnection>()>
-      CreateBrlapiConnectionFunction;
+  using CreateBrlapiConnectionFunction =
+      base::OnceCallback<std::unique_ptr<BrlapiConnection>()>;
 
   // For dependency injection in tests.  Sets the function used to create
   // brlapi connections.
   void SetCreateBrlapiConnectionForTesting(
-      const CreateBrlapiConnectionFunction& callback);
+      CreateBrlapiConnectionFunction callback);
 
   // Makes the controller try to reconnect (if disconnected) as if the brlapi
   // socket directory had changed.

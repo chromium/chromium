@@ -14,10 +14,9 @@
 #include "base/time/default_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/login/users/chrome_user_manager_util.h"
+#include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/chromeos/policy/off_hours/off_hours_proto_parser.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
-#include "chrome/browser/chromeos/settings/device_settings_service.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/policy/weekly_time/time_utils.h"
 #include "components/prefs/pref_value_map.h"
@@ -73,7 +72,7 @@ bool DeviceOffHoursController::IsCurrentSessionAllowedOnlyForOffHours() const {
   for (auto* user : logged_in_users) {
     if (user->GetType() == user_manager::USER_TYPE_REGULAR ||
         user->GetType() == user_manager::USER_TYPE_GUEST ||
-        user->GetType() == user_manager::USER_TYPE_SUPERVISED ||
+        user->GetType() == user_manager::USER_TYPE_SUPERVISED_DEPRECATED ||
         user->GetType() == user_manager::USER_TYPE_CHILD) {
       users_to_check.push_back(user);
     }
@@ -84,7 +83,7 @@ bool DeviceOffHoursController::IsCurrentSessionAllowedOnlyForOffHours() const {
 
   // If at least one logged in user won't be allowed after OffHours,
   // the session will be terminated.
-  return !chromeos::chrome_user_manager_util::AreAllUsersAllowed(
+  return !ash::chrome_user_manager_util::AreAllUsersAllowed(
       users_to_check, device_settings_proto_);
 }
 
@@ -113,7 +112,7 @@ void DeviceOffHoursController::NotifyOffHoursEndTimeChanged() const {
 
 void DeviceOffHoursController::OffHoursModeIsChanged() const {
   VLOG(1) << "OffHours mode is changed to " << off_hours_mode_;
-  chromeos::DeviceSettingsService::Get()->Load();
+  ash::DeviceSettingsService::Get()->Load();
 }
 
 void DeviceOffHoursController::UpdateOffHoursMode() {

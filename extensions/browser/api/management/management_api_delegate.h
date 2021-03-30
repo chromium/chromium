@@ -113,7 +113,7 @@ class ManagementAPIDelegate {
   virtual bool UninstallExtension(content::BrowserContext* context,
                                   const std::string& transient_extension_id,
                                   UninstallReason reason,
-                                  base::string16* error) const = 0;
+                                  std::u16string* error) const = 0;
 
   // Creates an app shortcut.
   virtual bool CreateAppShortcutFunctionDelegate(
@@ -163,6 +163,11 @@ class ManagementAPIDelegate {
                           int icon_size,
                           ExtensionIconSet::MatchType match,
                           bool grayscale) const = 0;
+
+  // Returns effective update URL from ExtensionManagement.
+  virtual GURL GetEffectiveUpdateURL(
+      const Extension& extension,
+      content::BrowserContext* context) const = 0;
 };
 
 }  // namespace extensions

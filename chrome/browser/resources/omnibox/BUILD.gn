@@ -59,7 +59,6 @@ generate_grd("build_mojo_grdp") {
 }
 
 js_type_check("closure_compile") {
-  uses_js_modules = true
   closure_flags = default_closure_args + mojom_js_args +
                   [ "js_module_root=" + rebase_path(".", root_build_dir) ]
   deps = [

@@ -3,6 +3,8 @@ include_rules = [
   "+components/keyed_service/core",
   "+components/on_load_script_injector/browser",
   "+components/policy/content",
+  "+components/site_isolation",
+  "+components/strings",
   "+content/public/common",
   "+content/public/browser",
   "+media/base",

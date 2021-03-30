@@ -5,10 +5,10 @@
 #include "chrome/browser/ui/views/passwords/password_save_unsynced_credentials_locally_view.h"
 
 #include <numeric>
+#include <string>
 #include <utility>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -81,7 +81,7 @@ void PasswordSaveUnsyncedCredentialsLocallyView::CreateLayout() {
        controller_.unsynced_credentials()) {
     auto* row_view = AddChildView(std::make_unique<views::View>());
     auto* checkbox = row_view->AddChildView(std::make_unique<views::Checkbox>(
-        base::string16(), views::Button::PressedCallback()));
+        std::u16string(), views::Button::PressedCallback()));
     checkbox->SetCallback(base::BindRepeating(
         &PasswordSaveUnsyncedCredentialsLocallyView::ButtonPressed,
         base::Unretained(this), base::Unretained(checkbox)));

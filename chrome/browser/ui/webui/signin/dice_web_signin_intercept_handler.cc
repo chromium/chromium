@@ -5,17 +5,22 @@
 #include "chrome/browser/ui/webui/signin/dice_web_signin_intercept_handler.h"
 
 #include "base/bind.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/browser_management/browser_management_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/signin/profile_colors_util.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/policy/core/common/management/management_service.h"
+#include "components/policy/core/common/management/platform_management_service.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -35,7 +40,7 @@ bool IsManaged(const AccountInfo& info) {
 DiceWebSigninInterceptHandler::DiceWebSigninInterceptHandler(
     const DiceWebSigninInterceptor::Delegate::BubbleParameters&
         bubble_parameters,
-    base::OnceCallback<void(bool)> callback)
+    base::OnceCallback<void(SigninInterceptionUserChoice)> callback)
     : bubble_parameters_(bubble_parameters), callback_(std::move(callback)) {
   DCHECK(callback_);
 }
@@ -52,6 +57,9 @@ void DiceWebSigninInterceptHandler::RegisterMessages() {
       base::BindRepeating(&DiceWebSigninInterceptHandler::HandleCancel,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
+      "guest", base::BindRepeating(&DiceWebSigninInterceptHandler::HandleGuest,
+                                   base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
       "pageLoaded",
       base::BindRepeating(&DiceWebSigninInterceptHandler::HandlePageLoaded,
                           base::Unretained(this)));
@@ -60,11 +68,11 @@ void DiceWebSigninInterceptHandler::RegisterMessages() {
 void DiceWebSigninInterceptHandler::OnJavascriptAllowed() {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()));
-  identity_observer_.Add(identity_manager);
+  identity_observation_.Observe(identity_manager);
 }
 
 void DiceWebSigninInterceptHandler::OnJavascriptDisallowed() {
-  identity_observer_.RemoveAll();
+  identity_observation_.Reset();
 }
 
 void DiceWebSigninInterceptHandler::OnExtendedAccountInfoUpdated(
@@ -97,12 +105,17 @@ const AccountInfo& DiceWebSigninInterceptHandler::intercepted_account() {
 
 void DiceWebSigninInterceptHandler::HandleAccept(const base::ListValue* args) {
   if (callback_)
-    std::move(callback_).Run(true);
+    std::move(callback_).Run(SigninInterceptionUserChoice::kAccept);
 }
 
 void DiceWebSigninInterceptHandler::HandleCancel(const base::ListValue* args) {
   if (callback_)
-    std::move(callback_).Run(false);
+    std::move(callback_).Run(SigninInterceptionUserChoice::kDecline);
+}
+
+void DiceWebSigninInterceptHandler::HandleGuest(const base::ListValue* args) {
+  if (callback_)
+    std::move(callback_).Run(SigninInterceptionUserChoice::kGuest);
 }
 
 void DiceWebSigninInterceptHandler::HandlePageLoaded(
@@ -128,14 +141,8 @@ void DiceWebSigninInterceptHandler::HandlePageLoaded(
   // reasonable defaults.
   if (primary_account().hosted_domain.empty())
     bubble_parameters_.primary_account.hosted_domain = kNoHostedDomainFound;
-  if (primary_account().given_name.empty()) {
-    ProfileAttributesEntry* entry = nullptr;
-    g_browser_process->profile_manager()
-        ->GetProfileAttributesStorage()
-        .GetProfileAttributesWithPath(profile->GetPath(), &entry);
-    bubble_parameters_.primary_account.given_name =
-        base::UTF16ToUTF8(entry->GetName());
-  }
+  if (primary_account().given_name.empty())
+    bubble_parameters_.primary_account.given_name = primary_account().email;
 
   const base::Value& callback_id = args->GetList()[0];
   ResolveJavascriptCallback(callback_id, GetInterceptionParametersValue());
@@ -173,6 +180,8 @@ base::Value DiceWebSigninInterceptHandler::GetInterceptionParametersValue() {
                           l10n_util::GetStringUTF8(confirmButtonStringID));
   parameters.SetStringKey("cancelButtonLabel",
                           l10n_util::GetStringUTF8(cancelButtonStringID));
+  parameters.SetBoolKey("showGuestOption",
+                        bubble_parameters_.show_guest_option);
   parameters.SetKey("interceptedAccount",
                     GetAccountInfoValue(intercepted_account()));
   parameters.SetStringKey("headerBackgroundColor",
@@ -183,6 +192,25 @@ base::Value DiceWebSigninInterceptHandler::GetInterceptionParametersValue() {
       color_utils::SkColorToRgbaString(GetProfileForegroundTextColor(
           bubble_parameters_.profile_highlight_color)));
   return parameters;
+}
+
+bool DiceWebSigninInterceptHandler::ShouldShowManagedDeviceVersion() const {
+  // This checks if the current profile is managed, which is a conservative
+  // approximation of whether the new profile will be managed (this is because
+  // the current profile may have policies coming from Sync, but the new profile
+  // won't have Sync enabled, at least initially).
+  // There are two possible improvements of this approximation:
+  // - checking the browser policies that are not specific to this profile (e.g.
+  //   by supporting the nullptr profile in BrowserManagementService)
+  // - or anticipating that the user may enable Sync in the new profile and
+  //   check the cloud policies attached to the intercepted account (requires
+  //   network requests).
+  return policy::PlatformManagementService::GetInstance()
+                 .GetManagementAuthorityTrustworthiness() >
+             policy::ManagementAuthorityTrustworthiness::NONE ||
+         policy::BrowserManagementService(Profile::FromWebUI(web_ui()))
+                 .GetManagementAuthorityTrustworthiness() >
+             policy::ManagementAuthorityTrustworthiness::NONE;
 }
 
 std::string DiceWebSigninInterceptHandler::GetHeaderText() {
@@ -198,48 +226,61 @@ std::string DiceWebSigninInterceptHandler::GetHeaderText() {
 }
 
 std::string DiceWebSigninInterceptHandler::GetBodyTitle() {
-  switch (bubble_parameters_.interception_type) {
-    case DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise:
-      if (!IsManaged(primary_account())) {
-        return l10n_util::GetStringUTF8(
-            IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_BUBBLE_TITLE);
-      }
-      FALLTHROUGH;
-    case DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser:
-      return l10n_util::GetStringUTF8(
-          IDS_SIGNIN_DICE_WEB_INTERCEPT_CONSUMER_BUBBLE_TITLE);
-    case DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch:
-      return l10n_util::GetStringUTF8(
-          IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_TITLE);
+  if (bubble_parameters_.interception_type ==
+      DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch) {
+    return l10n_util::GetStringUTF8(
+        IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_TITLE);
   }
+
+  // For profile creations, the title is controlled by an experiment. Expected
+  // values for the parameter are 1, 2 or 3.
+  // The version 3 is specific to the "consumer" bubble and is not supported by
+  // the enterprise bubble (which defaults to version 1 in that case).
+  int string_version = base::GetFieldTrialParamByFeatureAsInt(
+      kDiceWebSigninInterceptionFeature, "title_version",
+      /*default_value=*/1);
+
+  int string_id = IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE_V1;
+  switch (string_version) {
+    case 2:
+      string_id = IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE_V2;
+      break;
+    case 3:
+      // Only use version 3 for consumer bubble.
+      if (bubble_parameters_.interception_type ==
+          DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser) {
+        string_id = IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE_V3;
+      }
+      break;
+    default:
+      // For default or invalid parameters, there is nothing to do.
+      break;
+  }
+
+  return l10n_util::GetStringUTF8(string_id);
 }
 
 std::string DiceWebSigninInterceptHandler::GetBodyText() {
   switch (bubble_parameters_.interception_type) {
     case DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise:
-      if (IsManaged(intercepted_account()) && IsManaged(primary_account())) {
-        return l10n_util::GetStringFUTF8(
-            IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_ENTERPRISE_BUBBLE_DESC,
-            base::UTF8ToUTF16(intercepted_account().hosted_domain),
-            base::UTF8ToUTF16(primary_account().hosted_domain));
-      } else if (IsManaged(intercepted_account())) {
-        return l10n_util::GetStringFUTF8(
-            IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_CONSUMER_BUBBLE_DESC,
-            base::UTF8ToUTF16(intercepted_account().hosted_domain));
-      } else {
-        return l10n_util::GetStringFUTF8(
-            IDS_SIGNIN_DICE_WEB_INTERCEPT_CONSUMER_ENTERPRISE_BUBBLE_DESC,
-            base::UTF8ToUTF16(intercepted_account().given_name),
-            base::UTF8ToUTF16(primary_account().hosted_domain));
-      }
+      return ShouldShowManagedDeviceVersion()
+                 ? l10n_util::GetStringFUTF8(
+                       IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_BUBBLE_DESC_MANAGED_DEVICE,
+                       base::UTF8ToUTF16(intercepted_account().email))
+                 : l10n_util::GetStringFUTF8(
+                       IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_BUBBLE_DESC,
+                       base::UTF8ToUTF16(primary_account().email));
     case DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser:
-      return l10n_util::GetStringFUTF8(
-          IDS_SIGNIN_DICE_WEB_INTERCEPT_CONSUMER_BUBBLE_DESC,
-          base::UTF8ToUTF16(intercepted_account().given_name));
+      return ShouldShowManagedDeviceVersion()
+                 ? l10n_util::GetStringFUTF8(
+                       IDS_SIGNIN_DICE_WEB_INTERCEPT_CONSUMER_BUBBLE_DESC_MANAGED_DEVICE,
+                       base::UTF8ToUTF16(primary_account().given_name),
+                       base::UTF8ToUTF16(intercepted_account().email))
+                 : l10n_util::GetStringFUTF8(
+                       IDS_SIGNIN_DICE_WEB_INTERCEPT_CONSUMER_BUBBLE_DESC,
+                       base::UTF8ToUTF16(primary_account().given_name));
     case DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch:
-      return l10n_util::GetStringFUTF8(
-          IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_DESC,
-          base::UTF8ToUTF16(intercepted_account().email),
-          base::UTF8ToUTF16(intercepted_account().given_name));
+      return l10n_util::GetStringUTF8(
+          IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_DESC);
   }
 }

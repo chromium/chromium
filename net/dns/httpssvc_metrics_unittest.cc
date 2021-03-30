@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -62,8 +63,8 @@ struct HttpssvcFeatureConfig {
   explicit HttpssvcFeatureConfig(const HttpssvcFeatureTuple& feature_tuple,
                                  base::StringPiece experiment_domains,
                                  base::StringPiece control_domains)
-      : experiment_domains(experiment_domains.as_string()),
-        control_domains(control_domains.as_string()) {
+      : experiment_domains(experiment_domains),
+        control_domains(control_domains) {
     std::tie(enabled, use_integrity, use_httpssvc, control_domain_wildcard) =
         feature_tuple;
   }

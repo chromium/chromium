@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://crbug.com/1178302">
+<meta name="assert" content="The renderer should not crash.">
+
+<div>This test passes if the renderer does not crash.</div>
+
+<script>
+if (window.testRunner)
+  testRunner.dumpAsText();
+</script>
+
+<iframe srcdoc="
+  <style>
+    #div1 {
+      clip-path: url(#div2);
+    }
+  </style>
+  <script>
+  function moveElement() {
+    marquee.appendChild(moveme);
+    audio.addEventListener('DOMSubtreeModified', changeId);
+  }
+  var iterations = 0;
+  function changeSource() {
+    if (iterations>10)
+      return;
+    ++iterations;
+    audio.src = 'x';
+  }
+  function changeId() {
+    var range = document.caretRangeFromPoint();
+    canvas.querySelector('#div2');
+    range.startContainer.id = 'div2';
+  }
+  </script>
+  <canvas id='canvas' contenteditable='true'>
+    <audio id='audio' onloadstart='moveElement()' onerror='changeSource()'>
+      <source id='moveme'>
+      <div id='div1'>
+        <div id='div2'>
+          <marquee id=marquee></marquee>
+        </div>
+      </div>
+    </audio>
+  </canvas>
+  <script>
+    changeSource();
+  </script>
+"></iframe>

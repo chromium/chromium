@@ -8,10 +8,10 @@
 #include <jni.h>
 
 #include <memory>
+#include <string>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/spellcheck/common/spellcheck.mojom.h"
 
 // A class used to interface between the Java class of the same name and the
@@ -27,7 +27,7 @@ class SpellCheckerSessionBridge {
       spellcheck::mojom::SpellCheckHost::RequestTextCheckCallback;
 
   // Receives text to be checked and sends it to Java to be spellchecked.
-  void RequestTextCheck(const base::string16& text,
+  void RequestTextCheck(const std::u16string& text,
                         RequestTextCheckCallback callback);
 
   // Receives information from Java side about the typos in a given string
@@ -46,11 +46,11 @@ class SpellCheckerSessionBridge {
  private:
   class SpellingRequest {
    public:
-    SpellingRequest(const base::string16& text,
+    SpellingRequest(const std::u16string& text,
                     RequestTextCheckCallback callback);
     ~SpellingRequest();
 
-    base::string16 text_;
+    std::u16string text_;
     RequestTextCheckCallback callback_;
 
    private:

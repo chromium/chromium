@@ -60,7 +60,7 @@ static bool HandledOnCompositorThread(
   return (disposition != InputHandlerProxy::DID_NOT_HANDLE &&
           disposition !=
               InputHandlerProxy::DID_NOT_HANDLE_NON_BLOCKING_DUE_TO_FLING &&
-          disposition != InputHandlerProxy::DID_HANDLE_NON_BLOCKING);
+          disposition != InputHandlerProxy::DID_NOT_HANDLE_NON_BLOCKING);
 }
 
 void EventWithCallback::RunCallbacks(

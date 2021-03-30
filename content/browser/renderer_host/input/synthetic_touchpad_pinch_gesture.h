@@ -42,7 +42,7 @@ class CONTENT_EXPORT SyntheticTouchpadPinchGesture : public SyntheticGesture {
   bool HasReachedTarget(const base::TimeTicks& timestamp) const;
 
   SyntheticPinchGestureParams params_;
-  SyntheticGestureParams::GestureSourceType gesture_source_type_;
+  content::mojom::GestureSourceType gesture_source_type_;
   GestureState state_;
   base::TimeTicks start_time_;
   base::TimeTicks stop_time_;

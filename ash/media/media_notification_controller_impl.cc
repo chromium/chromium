@@ -175,7 +175,7 @@ void MediaNotificationControllerImpl::ShowNotification(const std::string& id) {
   std::unique_ptr<message_center::Notification> notification =
       CreateSystemNotification(
           message_center::NotificationType::NOTIFICATION_TYPE_CUSTOM, id,
-          base::string16(), base::string16(), base::string16(), GURL(),
+          std::u16string(), std::u16string(), std::u16string(), GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kMediaSessionNotifierId),

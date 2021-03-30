@@ -87,8 +87,8 @@ std::unique_ptr<base::Value> CastAudioJsonProviderImpl::GetCastAudioConfig() {
 void CastAudioJsonProviderImpl::SetTuningChangedCallback(
     TuningChangedCallback callback) {
   if (cast_audio_watcher_) {
-    cast_audio_watcher_.Post(FROM_HERE, &FileWatcher::SetTuningChangedCallback,
-                             std::move(callback));
+    cast_audio_watcher_.AsyncCall(&FileWatcher::SetTuningChangedCallback)
+        .WithArgs(std::move(callback));
   }
 }
 

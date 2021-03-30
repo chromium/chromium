@@ -110,13 +110,13 @@ class SnapshotBrowserTest : public ContentBrowserTest {
   }
 
   void WaitForAllWindowsToBeReady() {
-    const base::string16 expected_title = base::UTF8ToUTF16("Ready");
+    const std::u16string expected_title = u"Ready";
     // The subordinate windows may load asynchronously. Wait for all of
     // them to execute their script before proceeding.
     auto browser_list = Shell::windows();
     for (Shell* browser : browser_list) {
       TitleWatcher watcher(GetWebContents(browser), expected_title);
-      const base::string16& actual_title = watcher.WaitAndGetTitle();
+      const std::u16string& actual_title = watcher.WaitAndGetTitle();
       EXPECT_EQ(expected_title, actual_title);
     }
   }

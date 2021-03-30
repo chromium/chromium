@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
@@ -65,7 +66,6 @@ class URLLoaderInterceptor {
     int process_id;
     // The following are the parameters to CreateLoaderAndStart.
     mojo::PendingReceiver<network::mojom::URLLoader> receiver;
-    int32_t routing_id;
     int32_t request_id;
     uint32_t options;
     network::ResourceRequest url_request;

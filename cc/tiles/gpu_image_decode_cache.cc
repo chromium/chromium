@@ -304,7 +304,8 @@ bool DrawAndScaleImage(
 
   const SkFilterQuality filter_quality =
       CalculateDesiredFilterQuality(draw_image);
-  const SkSamplingOptions sampling(filter_quality);
+  const SkSamplingOptions sampling(filter_quality,
+                                   SkSamplingOptions::kMedium_asMipmapLinear);
 
   bool decode_to_f16_using_n32_intermediate =
       decode_info.colorType() == kRGBA_F16_SkColorType &&
@@ -452,11 +453,6 @@ sk_sp<SkImage> MakeTextureImage(viz::RasterContextProvider* context,
   return uploaded_image;
 }
 
-size_t GetUploadedTextureSizeFromSkImage(const sk_sp<SkImage>& plane,
-                                         const GrMipMapped mipped) {
-  const size_t plane_size = GrDirectContext::ComputeImageSize(plane, mipped);
-  return plane_size;
-}
 }  // namespace
 
 // Extract the information to uniquely identify a DrawImage for the purposes of
@@ -989,7 +985,7 @@ GpuImageDecodeCache::GpuImageDecodeCache(
 
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "GpuImageDecodeCache::DarkModeFilter", "dark_mode_filter",
-               dark_mode_filter_);
+               static_cast<void*>(dark_mode_filter_));
 }
 
 GpuImageDecodeCache::~GpuImageDecodeCache() {
@@ -1190,7 +1186,8 @@ DecodedDrawImage GpuImageDecodeCache::GetDecodedImageForDraw(
         draw_image, image_data->upload_scale_mip_level);
     DecodedDrawImage decoded_draw_image(
         id, std::move(dark_mode_color_filter), SkSize(), scale_factor,
-        CalculateDesiredFilterQuality(draw_image), image_data->needs_mips);
+        CalculateDesiredFilterQuality(draw_image), image_data->needs_mips,
+        image_data->is_budgeted);
     return decoded_draw_image;
   } else {
     DCHECK(!use_transfer_cache_);
@@ -1203,7 +1200,8 @@ DecodedDrawImage GpuImageDecodeCache::GetDecodedImageForDraw(
         draw_image, image_data->upload_scale_mip_level);
     DecodedDrawImage decoded_draw_image(
         std::move(image), std::move(dark_mode_color_filter), SkSize(),
-        scale_factor, CalculateDesiredFilterQuality(draw_image));
+        scale_factor, CalculateDesiredFilterQuality(draw_image),
+        image_data->is_budgeted);
     return decoded_draw_image;
   }
 }
@@ -1383,18 +1381,13 @@ void GpuImageDecodeCache::MemoryDumpYUVImage(
     GrGLuint gl_id;
   };
   std::vector<PlaneMemoryDumpInfo> plane_dump_infos;
-  const GrMipMapped mipped =
-      image_data->needs_mips ? GrMipMapped::kYes : GrMipMapped::kNo;
   // TODO(crbug.com/910276): Also include alpha plane if applicable.
-  plane_dump_infos.push_back(
-      {GetUploadedTextureSizeFromSkImage(image_data->upload.y_image(), mipped),
-       image_data->upload.gl_y_id()});
-  plane_dump_infos.push_back(
-      {GetUploadedTextureSizeFromSkImage(image_data->upload.u_image(), mipped),
-       image_data->upload.gl_u_id()});
-  plane_dump_infos.push_back(
-      {GetUploadedTextureSizeFromSkImage(image_data->upload.v_image(), mipped),
-       image_data->upload.gl_v_id()});
+  plane_dump_infos.push_back({image_data->upload.y_image()->textureSize(),
+                              image_data->upload.gl_y_id()});
+  plane_dump_infos.push_back({image_data->upload.u_image()->textureSize(),
+                              image_data->upload.gl_u_id()});
+  plane_dump_infos.push_back({image_data->upload.v_image()->textureSize(),
+                              image_data->upload.gl_v_id()});
 
   for (size_t i = 0u; i < plane_dump_infos.size(); ++i) {
     auto plane_dump_info = plane_dump_infos.at(i);

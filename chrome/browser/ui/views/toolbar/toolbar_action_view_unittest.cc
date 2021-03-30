@@ -5,9 +5,9 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
 
 #include <memory>
+#include <string>
 
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
@@ -18,6 +18,7 @@
 #include "content/public/test/test_web_contents_factory.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/menu_button.h"
 
@@ -200,9 +201,9 @@ TEST_F(ToolbarActionViewUnitTest, MAYBE_BasicToolbarActionViewTest) {
   TestToolbarActionViewDelegate* view_delegate = action_view_delegate();
 
   // Configure the test controller and delegate.
-  base::string16 name = base::ASCIIToUTF16("name");
+  std::u16string name = u"name";
   view_controller->SetAccessibleName(name);
-  base::string16 tooltip = base::ASCIIToUTF16("tooltip");
+  std::u16string tooltip = u"tooltip";
   view_controller->SetTooltip(tooltip);
   content::WebContents* web_contents =
       web_contents_factory.CreateWebContents(&profile);

@@ -6,9 +6,10 @@
 import fnmatch
 import json
 import logging
-import multiprocessing
 import os
 import subprocess
+
+from unexpected_passes import multiprocessing_utils
 
 TESTING_BUILDBOT_DIR = os.path.realpath(
     os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', 'testing',
@@ -41,11 +42,6 @@ FAKE_TRY_BUILDERS = {
         'Optional Linux Release (Intel HD 630)',
         'Optional Linux Release (NVIDIA)',
     ],
-    'mac-angle-rel': [
-        'ANGLE GPU Mac Release (Intel)',
-        'ANGLE GPU Mac Retina Release (AMD)',
-        'ANGLE GPU Mac Retina Release (NVIDIA)',
-    ],
     'mac_optional_gpu_tests_rel': [
         'Optional Mac Release (Intel)',
         'Optional Mac Retina Release (AMD)',
@@ -53,10 +49,6 @@ FAKE_TRY_BUILDERS = {
     ],
     'win-angle-rel-32': [
         'Win7 ANGLE Tryserver (AMD)',
-    ],
-    'win-angle-rel-64': [
-        'ANGLE GPU Win10 x64 Release (Intel HD 630)',
-        'ANGLE GPU Win10 x64 Release (NVIDIA)',
     ],
     'win_optional_gpu_tests_rel': [
         'Optional Win10 x64 Release (Intel HD 630)',
@@ -154,7 +146,7 @@ def GetTryBuilders(ci_builders):
   mirrored_builders = set()
   no_output_builders = set()
 
-  pool = _GetPool()
+  pool = multiprocessing_utils.GetProcessPool()
   results = pool.map(_GetMirroredBuildersForCiBuilder, ci_builders)
   for (builders, found_mirror) in results:
     if found_mirror:
@@ -214,12 +206,6 @@ def _GetMirroredBuildersForCiBuilder(ci_builder):
     logging.debug('Got mirrored builder for %s: %s', ci_builder, split[1])
     mirrored_builders.add(split[1])
   return mirrored_builders, True
-
-
-def _GetPool():
-  # Split out for testing - multiprocessing very much dislikes mocking/monkey
-  # patching functions that it's trying to use.
-  return multiprocessing.Pool()
 
 
 def _GetBuildbucketOutputForCiBuilder(ci_builder):

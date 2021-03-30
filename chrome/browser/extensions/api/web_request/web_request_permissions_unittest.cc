@@ -34,6 +34,7 @@ using extensions::Manifest;
 using extensions::PermissionsData;
 using extensions::WebRequestInfo;
 using extensions::WebRequestInfoInitParams;
+using extensions::mojom::ManifestLocation;
 
 class ExtensionWebRequestHelpersTestWithThreadsTest
     : public extensions::ExtensionServiceTestBase {
@@ -46,7 +47,7 @@ class ExtensionWebRequestHelpersTestWithThreadsTest
   // This extension has Web Request permissions, and *.com a host permission.
   scoped_refptr<Extension> com_extension_;
   // This extension is the same as com_extension, except it's installed from
-  // Manifest::EXTERNAL_POLICY_DOWNLOAD.
+  // ManifestLocation::kExternalPolicyDownload.
   scoped_refptr<Extension> com_policy_extension_;
 };
 
@@ -56,28 +57,20 @@ void ExtensionWebRequestHelpersTestWithThreadsTest::SetUp() {
   permission_helper_ = extensions::PermissionHelper::Get(browser_context());
 
   std::string error;
-  permissionless_extension_ = LoadManifestUnchecked("permissions",
-                                                    "web_request_no_host.json",
-                                                    Manifest::INVALID_LOCATION,
-                                                    Extension::NO_FLAGS,
-                                                    "ext_id_1",
-                                                    &error);
+  permissionless_extension_ =
+      LoadManifestUnchecked("permissions", "web_request_no_host.json",
+                            ManifestLocation::kInvalidLocation,
+                            Extension::NO_FLAGS, "ext_id_1", &error);
   ASSERT_TRUE(permissionless_extension_.get()) << error;
-  com_extension_ =
-      LoadManifestUnchecked("permissions",
-                            "web_request_com_host_permissions.json",
-                            Manifest::INVALID_LOCATION,
-                            Extension::NO_FLAGS,
-                            "ext_id_2",
-                            &error);
+  com_extension_ = LoadManifestUnchecked(
+      "permissions", "web_request_com_host_permissions.json",
+      ManifestLocation::kInvalidLocation, Extension::NO_FLAGS, "ext_id_2",
+      &error);
   ASSERT_TRUE(com_extension_.get()) << error;
-  com_policy_extension_ =
-      LoadManifestUnchecked("permissions",
-                            "web_request_com_host_permissions.json",
-                            Manifest::EXTERNAL_POLICY_DOWNLOAD,
-                            Extension::NO_FLAGS,
-                            "ext_id_3",
-                            &error);
+  com_policy_extension_ = LoadManifestUnchecked(
+      "permissions", "web_request_com_host_permissions.json",
+      ManifestLocation::kExternalPolicyDownload, Extension::NO_FLAGS,
+      "ext_id_3", &error);
   ASSERT_TRUE(com_policy_extension_.get()) << error;
   ExtensionRegistry::Get(browser_context())
       ->AddEnabled(permissionless_extension_);
@@ -108,9 +101,9 @@ TEST_F(ExtensionWebRequestHelpersTestWithThreadsTest,
       WebRequestPermissions::HideRequest(permission_helper_, request_2));
 }
 
-// Ensure requests made by the local NTP are hidden from extensions. Regression
-// test for crbug.com/931013.
-TEST_F(ExtensionWebRequestHelpersTestWithThreadsTest, LocalNTPRequests) {
+// Ensure requests made by the local WebUINTP are hidden from extensions.
+// Regression test for crbug.com/931013.
+TEST_F(ExtensionWebRequestHelpersTestWithThreadsTest, LocalWebUINTPRequests) {
   const GURL example_com("http://example.com");
 
   auto create_request_params =
@@ -127,7 +120,7 @@ TEST_F(ExtensionWebRequestHelpersTestWithThreadsTest, LocalNTPRequests) {
       };
 
   url::Origin ntp_origin =
-      url::Origin::Create(GURL(chrome::kChromeSearchLocalNtpUrl));
+      url::Origin::Create(GURL(chrome::kChromeUINewTabPageURL));
 
   // Sub-resource browser initiated requests are hidden from extensions.
   WebRequestInfoInitParams info_params_1 = create_request_params(

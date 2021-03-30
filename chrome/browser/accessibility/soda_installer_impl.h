@@ -8,6 +8,8 @@
 #include <map>
 #include <string>
 
+#include "base/files/file_path.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/accessibility/soda_installer.h"
 #include "components/component_updater/component_updater_service.h"
@@ -22,28 +24,42 @@ namespace speech {
 
 // Installer of SODA (Speech On-Device API) for the Live Caption feature on
 // non-ChromeOS desktop versions of Chrome browser.
-class SODAInstallerImpl : public SODAInstaller,
+class SodaInstallerImpl : public SodaInstaller,
                           public component_updater::ServiceObserver {
  public:
-  SODAInstallerImpl();
-  ~SODAInstallerImpl() override;
-  SODAInstallerImpl(const SODAInstallerImpl&) = delete;
-  SODAInstallerImpl& operator=(const SODAInstallerImpl&) = delete;
+  SodaInstallerImpl();
+  ~SodaInstallerImpl() override;
+  SodaInstallerImpl(const SodaInstallerImpl&) = delete;
+  SodaInstallerImpl& operator=(const SodaInstallerImpl&) = delete;
 
-  // SODAInstaller:
-  void InstallSODA(PrefService* prefs) override;
+  // Currently only implemented in the chromeos-specific subclass.
+  base::FilePath GetSodaBinaryPath() const override;
+
+  // Currently only implemented in the chromeos-specific subclass.
+  base::FilePath GetLanguagePath() const override;
+
+  // SodaInstaller:
+  void InstallSoda(PrefService* prefs) override;
   void InstallLanguage(PrefService* prefs) override;
-  bool IsSODARegistered() override;
+  bool IsSodaInstalled() const override;
 
  private:
+  // SodaInstaller:
+  void UninstallSoda(PrefService* global_prefs) override;
+
   // component_updater::ServiceObserver:
   void OnEvent(Events event, const std::string& id) override;
+
+  void OnSodaBinaryInstalled();
+  void OnSodaLanguagePackInstalled();
 
   std::map<std::string, update_client::CrxUpdateItem> downloading_components_;
 
   ScopedObserver<component_updater::ComponentUpdateService,
                  component_updater::ComponentUpdateService::Observer>
       component_updater_observer_{this};
+
+  base::WeakPtrFactory<SodaInstallerImpl> weak_factory_{this};
 };
 
 }  // namespace speech

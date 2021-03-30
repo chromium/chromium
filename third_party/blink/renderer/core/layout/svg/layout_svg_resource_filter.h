@@ -57,7 +57,7 @@ class LayoutSVGResourceFilter final : public LayoutSVGResourceContainer {
   }
 
  private:
-  bool FindCycleFromSelf(SVGResourcesCycleSolver&) const override;
+  bool FindCycleFromSelf() const override;
 };
 
 template <>

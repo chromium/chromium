@@ -53,7 +53,7 @@ for std in ${ABSL_CMAKE_CXX_STANDARDS}; do
         /bin/sh -c "
           cmake /abseil-cpp \
             -DABSL_GOOGLETEST_DOWNLOAD_URL=${ABSL_GOOGLETEST_DOWNLOAD_URL} \
-            -DABSL_RUN_TESTS=ON \
+            -DBUILD_TESTING=ON \
             -DCMAKE_BUILD_TYPE=${compilation_mode} \
             -DCMAKE_CXX_STANDARD=${std} \
             -DCMAKE_MODULE_LINKER_FLAGS=\"-Wl,--no-undefined\" && \

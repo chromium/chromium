@@ -104,7 +104,11 @@ ExternalInstallOptions GetConfigForGoogleDrive() {
   ExternalInstallOptions options(
       /*install_url=*/GURL(
           "https://drive.google.com/drive/installwebapp?usp=chrome_default"),
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      /*user_display_mode=*/DisplayMode::kStandalone,
+#else
       /*user_display_mode=*/DisplayMode::kBrowser,
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       /*install_source=*/ExternalInstallSource::kExternalDefault);
 
   options.user_type_allowlist = {"unmanaged", "managed", "child"};
@@ -121,7 +125,7 @@ ExternalInstallOptions GetConfigForGoogleDrive() {
     info->start_url = GURL("https://drive.google.com/?lfhs=2");
     info->scope = GURL("https://drive.google.com/");
     info->display_mode = DisplayMode::kStandalone;
-    info->icon_bitmaps_any =
+    info->icon_bitmaps.any =
         LoadBundledIcons({IDR_PREINSTALLED_WEB_APPS_GOOGLE_DRIVE_ICON_192_PNG});
     return info;
   });

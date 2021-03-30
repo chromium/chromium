@@ -11,7 +11,7 @@
 namespace permissions {
 class PredictionService;
 struct PredictionRequestFeatures;
-class GetSuggestionsResponse;
+class GeneratePredictionsResponse;
 }  // namespace permissions
 
 // Represents a singular request to the prediction service.
@@ -31,7 +31,7 @@ class PredictionServiceRequest {
   void LookupReponseReceived(
       bool lookup_succesful,
       bool response_from_cache,
-      std::unique_ptr<permissions::GetSuggestionsResponse> response);
+      std::unique_ptr<permissions::GeneratePredictionsResponse> response);
 
   permissions::PredictionServiceBase::LookupResponseCallback callback_;
 

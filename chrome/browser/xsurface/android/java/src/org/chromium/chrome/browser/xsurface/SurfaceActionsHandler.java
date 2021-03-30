@@ -59,9 +59,4 @@ public interface SurfaceActionsHandler {
      * Dismiss the open bottom sheet (or do nothing if there isn't one).
      */
     default void dismissBottomSheet() {}
-
-    /**
-     * Indicates that the "Manage Interests" action was taken. Has no effect other than to log UMA.
-     */
-    default void recordActionManageInterests() {}
 }

@@ -11,6 +11,7 @@
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/wm/screen_pinning_controller.h"
+#include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_delegate.h"
@@ -152,9 +153,13 @@ void DefaultState::HandleWorkspaceEvents(WindowState* window_state,
       gfx::Rect bounds = window->bounds();
       // When window is added to a workspace, |bounds| may be not the original
       // not-changed-by-user bounds, for example a resized bounds truncated by
-      // available workarea.
-      if (window_state->pre_added_to_workspace_window_bounds())
+      // available workarea. If the window is visible on all desks, its
+      // bounds are global across workspaces so don't restore to pre-added
+      // bounds.
+      if (window_state->pre_added_to_workspace_window_bounds() &&
+          !window->GetProperty(aura::client::kVisibleOnAllWorkspacesKey)) {
         bounds = *window_state->pre_added_to_workspace_window_bounds();
+      }
 
       // Don't adjust window bounds if the bounds are empty as this
       // happens when a new views::Widget is created.
@@ -344,6 +349,10 @@ void DefaultState::HandleTransitionEvents(WindowState* window_state,
     }
   }
 
+  const WMEventType type = event->type();
+  if (type == WM_EVENT_SNAP_LEFT || type == WM_EVENT_SNAP_RIGHT)
+    HandleWindowSnapping(window_state, type);
+
   if (next_state_type == current_state_type && window_state->IsSnapped()) {
     gfx::Rect snapped_bounds = GetSnappedWindowBoundsInParent(
         window_state->window(), event->type() == WM_EVENT_SNAP_LEFT
@@ -351,11 +360,6 @@ void DefaultState::HandleTransitionEvents(WindowState* window_state,
                                     : WindowStateType::kRightSnapped);
     window_state->SetBoundsDirectAnimated(snapped_bounds);
     return;
-  }
-
-  if (event->type() == WM_EVENT_SNAP_LEFT ||
-      event->type() == WM_EVENT_SNAP_RIGHT) {
-    window_state->set_bounds_changed_by_user(true);
   }
 
   EnterToNextState(window_state, next_state_type);

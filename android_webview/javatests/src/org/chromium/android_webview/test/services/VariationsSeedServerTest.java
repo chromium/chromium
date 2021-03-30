@@ -93,8 +93,6 @@ public class VariationsSeedServerTest {
         Context context = ContextUtils.getApplicationContext();
         VariationsServiceMetricsHelper initialMetrics =
                 VariationsServiceMetricsHelper.fromBundle(new Bundle());
-        initialMetrics.setSeedFetchResult(200); // HTTP_OK
-        initialMetrics.setSeedFetchTime(50);
         initialMetrics.setJobInterval(6000);
         initialMetrics.setJobQueueTime(1000);
         initialMetrics.setLastEnqueueTime(4);
@@ -113,8 +111,6 @@ public class VariationsSeedServerTest {
                 "Timed out waiting for reportSeedMetrics() to be called", 0);
         VariationsServiceMetricsHelper metrics =
                 VariationsServiceMetricsHelper.fromBundle(callback.metrics);
-        Assert.assertEquals(200, metrics.getSeedFetchResult());
-        Assert.assertEquals(50, metrics.getSeedFetchTime());
         Assert.assertEquals(6000, metrics.getJobInterval());
         Assert.assertEquals(1000, metrics.getJobQueueTime());
     }

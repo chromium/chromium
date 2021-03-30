@@ -9,11 +9,11 @@
 #include "base/memory/singleton.h"
 #include "components/crx_file/id_util.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
+#include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/api/messaging/channel_endpoint.h"
 #include "extensions/browser/api/messaging/message_service.h"
 #include "extensions/browser/bad_message.h"
-#include "extensions/browser/blob_holder.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_registry.h"
@@ -67,8 +67,8 @@ ExtensionMessageFilter::ExtensionMessageFilter(int render_process_id,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   shutdown_notifier_subscription_ =
       ShutdownNotifierFactory::GetInstance()->Get(context)->Subscribe(
-          base::Bind(&ExtensionMessageFilter::ShutdownOnUIThread,
-                     base::Unretained(this)));
+          base::BindRepeating(&ExtensionMessageFilter::ShutdownOnUIThread,
+                              base::Unretained(this)));
 }
 
 void ExtensionMessageFilter::EnsureShutdownNotifierFactoryBuilt() {
@@ -101,9 +101,6 @@ void ExtensionMessageFilter::OverrideThreadForMessage(
     case ExtensionHostMsg_RemoveLazyServiceWorkerListener::ID:
     case ExtensionHostMsg_AddFilteredListener::ID:
     case ExtensionHostMsg_RemoveFilteredListener::ID:
-    case ExtensionHostMsg_ShouldSuspendAck::ID:
-    case ExtensionHostMsg_SuspendAck::ID:
-    case ExtensionHostMsg_TransferBlobsAck::ID:
     case ExtensionHostMsg_WakeEventPage::ID:
     case ExtensionHostMsg_OpenChannelToExtension::ID:
     case ExtensionHostMsg_OpenChannelToTab::ID:
@@ -141,12 +138,6 @@ bool ExtensionMessageFilter::OnMessageReceived(const IPC::Message& message) {
                         OnExtensionAddFilteredListener)
     IPC_MESSAGE_HANDLER(ExtensionHostMsg_RemoveFilteredListener,
                         OnExtensionRemoveFilteredListener)
-    IPC_MESSAGE_HANDLER(ExtensionHostMsg_ShouldSuspendAck,
-                        OnExtensionShouldSuspendAck)
-    IPC_MESSAGE_HANDLER(ExtensionHostMsg_SuspendAck,
-                        OnExtensionSuspendAck)
-    IPC_MESSAGE_HANDLER(ExtensionHostMsg_TransferBlobsAck,
-                        OnExtensionTransferBlobsAck)
     IPC_MESSAGE_HANDLER(ExtensionHostMsg_WakeEventPage,
                         OnExtensionWakeEventPage)
     IPC_MESSAGE_HANDLER(ExtensionHostMsg_OpenChannelToExtension,
@@ -306,38 +297,6 @@ void ExtensionMessageFilter::OnExtensionRemoveFilteredListener(
 
   GetEventRouter()->RemoveFilteredEventListener(
       event_name, process, extension_id, sw_identifier, filter, lazy);
-}
-
-void ExtensionMessageFilter::OnExtensionShouldSuspendAck(
-     const std::string& extension_id, int sequence_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!browser_context_)
-    return;
-
-  ProcessManager::Get(browser_context_)
-      ->OnShouldSuspendAck(extension_id, sequence_id);
-}
-
-void ExtensionMessageFilter::OnExtensionSuspendAck(
-     const std::string& extension_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!browser_context_)
-    return;
-
-  ProcessManager::Get(browser_context_)->OnSuspendAck(extension_id);
-}
-
-void ExtensionMessageFilter::OnExtensionTransferBlobsAck(
-    const std::vector<std::string>& blob_uuids) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!browser_context_)
-    return;
-
-  RenderProcessHost* process = RenderProcessHost::FromID(render_process_id_);
-  if (!process)
-    return;
-
-  BlobHolder::FromRenderProcessHost(process)->DropBlobs(blob_uuids);
 }
 
 void ExtensionMessageFilter::OnExtensionWakeEventPage(

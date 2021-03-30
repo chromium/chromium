@@ -80,6 +80,7 @@ Scrollbar::~Scrollbar() = default;
 
 void Scrollbar::Trace(Visitor* visitor) const {
   visitor->Trace(scrollable_area_);
+  visitor->Trace(scroll_timer_);
   visitor->Trace(style_source_);
 }
 
@@ -523,10 +524,6 @@ void Scrollbar::MouseUp(const WebMouseEvent& mouse_event) {
   if (scrollable_area_) {
     if (is_captured)
       scrollable_area_->MouseReleasedScrollbar();
-
-    ScrollableArea* scrollable_area_for_scrolling =
-        ScrollableArea::GetForScrolling(scrollable_area_->GetLayoutBox());
-    scrollable_area_for_scrolling->SnapAfterScrollbarScrolling(orientation_);
 
     ScrollbarPart part = GetTheme().HitTestRootFramePosition(
         *this, FlooredIntPoint(mouse_event.PositionInRootFrame()));

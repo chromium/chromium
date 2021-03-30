@@ -29,7 +29,6 @@
 #include "chrome/browser/chromeos/printing/synced_printers_manager.h"
 #include "chrome/browser/chromeos/printing/synced_printers_manager_factory.h"
 #include "chrome/browser/chromeos/printing/usb_printer_notification_controller.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/printing/cups_printer_status.h"
@@ -101,6 +100,15 @@ class PrintServersManagerImpl : public PrintServersManager {
     fetching_mode_ = fetching_mode;
     if (!is_complete) {
       return;
+    }
+    // Create an entry in the device log.
+    if (is_complete) {
+      PRINTER_LOG(EVENT) << "The list of print servers has been completed. "
+                         << "Number of print servers: " << print_servers.size();
+      if (!print_servers.empty()) {
+        base::UmaHistogramCounts1000("Printing.PrintServers.ServersToQuery",
+                                     print_servers.size());
+      }
     }
 
     print_servers_ = std::map<std::string, PrintServer>();

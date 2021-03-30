@@ -5,6 +5,6 @@
 // https://github.com/WICG/web-codecs
 
 dictionary VideoFrameInit {
-  required unsigned long long timestamp;  // microseconds
-  unsigned long long duration;  // microseconds
+  unsigned long long timestamp;  // microseconds
+  unsigned long long duration;   // microseconds
 };

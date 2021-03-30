@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_OBSOLETE_SYSTEM_OBSOLETE_SYSTEM_H_
 #define CHROME_BROWSER_OBSOLETE_SYSTEM_OBSOLETE_SYSTEM_H_
 
+#include <string>
+
 #include "base/macros.h"
-#include "base/strings/string16.h"
 
 class ObsoleteSystem {
  public:
@@ -20,7 +21,7 @@ class ObsoleteSystem {
   // are already using the last version of the application that supports their
   // system. Do not use the returned string unless IsObsoleteNowOrSoon() returns
   // true.
-  static base::string16 LocalizedObsoleteString();
+  static std::u16string LocalizedObsoleteString();
 
   // true if this is the final release. This is only valid when
   // IsObsoleteNowOrSoon() returns true.

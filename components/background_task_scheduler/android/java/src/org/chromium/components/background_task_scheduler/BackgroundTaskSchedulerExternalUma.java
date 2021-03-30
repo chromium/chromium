@@ -38,8 +38,10 @@ public abstract class BackgroundTaskSchedulerExternalUma {
     public static final int BACKGROUND_TASK_QUERY_TILE = 23;
     public static final int BACKGROUND_TASK_FEEDV2_REFRESH = 24;
     public static final int BACKGROUND_TASK_DOWNLOAD_LATER = 25;
+    public static final int BACKGROUND_TASK_OFFLINE_MEASUREMENTS = 26;
+    public static final int BACKGROUND_TASK_WEBVIEW_COMPONENT_UPDATE = 27;
     // Keep this one at the end and increment appropriately when adding new tasks.
-    public static final int BACKGROUND_TASK_COUNT = 26;
+    public static final int BACKGROUND_TASK_COUNT = 28;
 
     protected BackgroundTaskSchedulerExternalUma() {}
 
@@ -77,23 +79,6 @@ public abstract class BackgroundTaskSchedulerExternalUma {
      * @param startupMode Chrome's startup mode.
      */
     public abstract void reportStartupMode(int startupMode);
-
-    /**
-     * Returns an affix identifying a given task type in names of memory histograms specific to that
-     * task type. Adding an affix here causes Memory.BackgroundTask.[affix].* histograms to be
-     * emitted. They still need to be added to histograms.xml.
-     * @param taskId The task type.
-     * @return A string with the affix, without separators added, or null if there is no affix
-     * defined for that task type.
-     */
-    public static String toMemoryHistogramAffixFromTaskId(int taskId) {
-        switch (taskId) {
-            case TaskIds.OFFLINE_PAGES_PREFETCH_JOB_ID:
-                return "OfflinePrefetch";
-            default:
-                return null;
-        }
-    }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public static int toUmaEnumValueFromTaskId(int taskId) {
@@ -150,6 +135,10 @@ public abstract class BackgroundTaskSchedulerExternalUma {
                 return BACKGROUND_TASK_QUERY_TILE;
             case TaskIds.FEEDV2_REFRESH_JOB_ID:
                 return BACKGROUND_TASK_FEEDV2_REFRESH;
+            case TaskIds.OFFLINE_MEASUREMENT_JOB_ID:
+                return BACKGROUND_TASK_OFFLINE_MEASUREMENTS;
+            case TaskIds.WEBVIEW_COMPONENT_UPDATE_JOB_ID:
+                return BACKGROUND_TASK_WEBVIEW_COMPONENT_UPDATE;
             default:
                 assert false;
         }

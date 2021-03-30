@@ -12,7 +12,7 @@ namespace vr {
 
 class InputEvent;
 
-typedef typename base::OnceCallback<void(const base::string16&)>
+typedef typename base::OnceCallback<void(const std::u16string&)>
     TextStateUpdateCallback;
 
 // This class defines input related interfaces which each platform should

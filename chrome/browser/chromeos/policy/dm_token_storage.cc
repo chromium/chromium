@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/chromeos/settings/token_encryptor.h"
+#include "chrome/browser/ash/settings/token_encryptor.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -18,19 +18,21 @@ namespace {
 
 std::string EncryptToken(const std::string& system_salt,
                          const std::string& dm_token) {
-  chromeos::CryptohomeTokenEncryptor encryptor(system_salt);
+  ash::CryptohomeTokenEncryptor encryptor(system_salt);
   return encryptor.EncryptWithSystemSalt(dm_token);
 }
 
 std::string DecryptToken(const std::string& system_salt,
                          const std::string encrypted_dm_token) {
-  chromeos::CryptohomeTokenEncryptor encryptor(system_salt);
+  ash::CryptohomeTokenEncryptor encryptor(system_salt);
   return encryptor.DecryptWithSystemSalt(encrypted_dm_token);
 }
 
 }  // namespace
 
 namespace policy {
+
+DMTokenStorageBase::~DMTokenStorageBase() = default;
 
 DMTokenStorage::DMTokenStorage(PrefService* local_state)
     : local_state_(local_state) {

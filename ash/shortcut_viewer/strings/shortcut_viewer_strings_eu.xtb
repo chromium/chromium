@@ -23,11 +23,13 @@
 <translation id="169515659049020177">Maius</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Gehitu www. eta .com helbide-barran idatzi duzunari eta, gero, ireki orria</translation>
+<translation id="1768987374400973299">Egin pantaila-argazki edo grabaketa bat</translation>
 <translation id="1872219238824176091">Kendu uneko lan-eremua</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> eta, gero, <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> edo <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">Joan hurrengo fitxara</translation>
 <translation id="2010818616644390445">Joan leihoko azken fitxara</translation>
 <translation id="2040706009561734834">Ireki/Itxi abiarazlea</translation>
+<translation id="2086334242442703436">Ireki emoji-hautatzailea</translation>
 <translation id="2088054208777350526">Bilatu lasterbideak</translation>
 <translation id="2125211348069077981"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="E" /> edo <ph name="F" /></translation>
 <translation id="2145908266289632567">Testua editatzea</translation>
@@ -46,6 +48,7 @@
 <translation id="2480851840841871861">Ireki Google-ren Laguntzailea</translation>
 <translation id="2488661730534396940">Aktibatu ezkerreko lan-eremua</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516999188535378855">Ireki Diagnostikoak aplikazioa</translation>
 <translation id="2530339807289914946">Egin web-orrian behera</translation>
 <translation id="2530896289327917474">Aktibatu edo desaktibatu testu-kurtsorearen bidez arakatzeko eginbidea</translation>
 <translation id="2574014812750545982">Berrezarri orriko zoom-maila</translation>
@@ -62,12 +65,12 @@
 <translation id="2914313326123580426">Erakutsi edo ezkutatu garatzaileen tresnen panela</translation>
 <translation id="292495055542441795">Aktibatu/Desaktibatu pantaila osoko modua</translation>
 <translation id="3020183492814296499">Lasterbideak</translation>
-<translation id="3084301071537457911">Nabarmendu biltegiko hurrengo elementua</translation>
-<translation id="309173601632226815">Nabarmendu biltegiko abiarazte-botoia</translation>
+<translation id="3084301071537457911">Nabarmendu apaleko hurrengo elementua</translation>
+<translation id="309173601632226815">Nabarmendu apaleko abiarazte-botoia</translation>
 <translation id="3105917916468784889">Atera pantaila-argazkia</translation>
 <translation id="3126026824346185272">Ktrl</translation>
 <translation id="3140353188828248647">Fokuratu helbide-barra</translation>
-<translation id="3256109297135787951">Utzi biltegiko elementu bat nabarmentzeari</translation>
+<translation id="3256109297135787951">Utzi apaleko elementu bat nabarmentzeari</translation>
 <translation id="3288816184963444640">Itxi uneko leihoa</translation>
 <translation id="3407560819924487926">Erakutsi ataza-kudeatzailea</translation>
 <translation id="3422679037938588196">Itzuli bilaketaren aurreko emaitzara</translation>
@@ -82,11 +85,11 @@
 <translation id="3720939646656082033">Ireki esteka beste fitxa batean eta joan fitxa horretara</translation>
 <translation id="3725795051337497754">Itxi uneko fitxa</translation>
 <translation id="3751033133896282964">Desegin azken ekintza</translation>
-<translation id="3792178297143798024">Ireki biltegiko elementu nabarmendua</translation>
+<translation id="3792178297143798024">Ireki apaleko elementu nabarmendua</translation>
 <translation id="379295446891231126"><ph name="CTRL" /> <ph name="SEPARATOR" /> 1-8</translation>
 <translation id="3837047332182291558">Handitu teklatuaren distira (hondoko argia duten teklatuetan bakarrik)</translation>
 <translation id="3949671998904569433">koma</translation>
-<translation id="3976863468609830880">Egin klik biltegiko azken ikonoan</translation>
+<translation id="3976863468609830880">Egin klik apaleko azken ikonoan</translation>
 <translation id="3994783594793697310">Berrezarri bistaratzearen zoom-maila</translation>
 <translation id="4026843240379844265">Eraman leiho aktiboa pantaila batetik bestera</translation>
 <translation id="4035482366624727273">Hautatu orrian dagoen guztia</translation>
@@ -110,6 +113,7 @@
 <translation id="4801989101741319327">Eraman hurrengo hitzaren amaierara</translation>
 <translation id="4866066940972151697">Aktibatu eskuineko lan-eremua</translation>
 <translation id="4916163929714267752">Ireki esteka beste leiho batean</translation>
+<translation id="492453977506755176">Edukia kapturatzeko moduaren tekla</translation>
 <translation id="5030659775136592441">Erakutsi laster-marken kudeatzailea</translation>
 <translation id="5034421018520995080">Joan orriaren goialdera</translation>
 <translation id="5042305953558921026">Ikuspegi orokorreko moduaren tekla</translation>
@@ -132,6 +136,7 @@
 <translation id="5899919361772749550">Erakutsi edo ezkutatu garatzaileen tresnen kontsola</translation>
 <translation id="5919628958418675842">Aktibatu edo desaktibatu pribatutasun-pantaila</translation>
 <translation id="5921745308587794300">Biratu leihoa</translation>
+<translation id="5926306472221400972">Atera pantaila osoaren argazkia</translation>
 <translation id="6022924867608035986">Garbitu bilaketa-koadroko testua</translation>
 <translation id="6045998054441862242">Aktibatu kontraste handiko modua</translation>
 <translation id="6052614013050385269">Egin klik esteka batean eskuineko botoiarekin</translation>
@@ -144,11 +149,12 @@
 <translation id="6340769215862220182">Bistaratzea handitzea</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
 <translation id="6395172954772765143">Hautatu lerroaren amaierako testua</translation>
-<translation id="6425378783626925378">Egin klik biltegiko 1-8 ikonoetan</translation>
-<translation id="6435207348963613811">Nabarmendu biltegiko aurreko elementua</translation>
+<translation id="6425378783626925378">Egin klik apaleko 1-8 ikonoetan</translation>
+<translation id="6435207348963613811">Nabarmendu apaleko aurreko elementua</translation>
 <translation id="6445033640292336367">Leheneratu fitxa jatorrizko posiziora</translation>
 <translation id="6474744297082284761">Txikitu (lupa ainguratua EDO pantaila osoko lupa gaituta daudenean)</translation>
 <translation id="649811797655257835">Hautatu fitxategia eta, gero, sakatu <ph name="SPACE" /></translation>
+<translation id="6551886416582667425">Egin pantaila-argazki edo grabaketa partzial bat</translation>
 <translation id="6556040137485212400">Ireki erabili gabe denbora gehien igaro duen leihoa</translation>
 <translation id="666343722268997814">Ireki nabarmendutako elementuaren eskuineko botoiaren menua</translation>
 <translation id="6671538777808758331">Joan bilaketaren hurrengo emaitzara</translation>
@@ -175,6 +181,7 @@
 <translation id="7611271430932669992">Eraman fokua leiho gainerakorretara eta arruntetara</translation>
 <translation id="7635348532214572995">Mugitu aplikazioaren ikonoa aplikazioen saretan</translation>
 <translation id="766326951329901120">Itsatsi arbeleko edukia testu arrunt gisa</translation>
+<translation id="7673453620027697230">Egin leihoaren pantaila-argazki edo grabaketa bat</translation>
 <translation id="7703010453515335249">ezkerreko kako zuzena</translation>
 <translation id="7724603315864178912">Ebaki</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> eta, gero, <ph name="SPACE" /> edo <ph name="ENTER" /></translation>

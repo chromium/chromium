@@ -42,6 +42,7 @@ class CORE_EXPORT HTMLTableElement final : public HTMLElement {
 
  public:
   explicit HTMLTableElement(Document&);
+  ~HTMLTableElement() override;
 
   HTMLTableCaptionElement* caption() const;
   void setCaption(HTMLTableCaptionElement*, ExceptionState&);
@@ -76,8 +77,6 @@ class CORE_EXPORT HTMLTableElement final : public HTMLElement {
   void Trace(Visitor*) const override;
 
  private:
-  ~HTMLTableElement() override;
-
   void ParseAttribute(const AttributeModificationParams&) override;
   bool IsPresentationAttribute(const QualifiedName&) const override;
   void CollectStyleForPresentationAttribute(

@@ -16,7 +16,9 @@
 #include "base/task/post_task.h"
 #include "content/browser/appcache/appcache_navigation_handle.h"
 #include "content/browser/data_url_loader_factory.h"
+#include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/file_system/file_system_url_loader_factory.h"
 #include "content/browser/loader/browser_initiated_resource_request.h"
 #include "content/browser/loader/file_url_loader_factory.h"
@@ -35,13 +37,13 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/resource_context.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
 #include "content/public/browser/url_loader_throttles.h"
 #include "content/public/browser/web_ui_url_loader_factory.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/referrer.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/isolation_info.h"
@@ -89,9 +91,7 @@ void WorkerScriptFetchInitiator::Start(
       << static_cast<int>(request_destination);
 
   BrowserContext* browser_context = storage_partition->browser_context();
-  ResourceContext* resource_context =
-      browser_context ? browser_context->GetResourceContext() : nullptr;
-  if (!browser_context || !resource_context) {
+  if (!browser_context || browser_context->ShutdownStarted()) {
     // The browser is shutting down. Just drop this request.
     return;
   }
@@ -139,10 +139,6 @@ void WorkerScriptFetchInitiator::Start(
       outside_fetch_client_settings_object->referrer_policy);
   resource_request->destination = request_destination;
   resource_request->credentials_mode = credentials_mode;
-  if (creator_render_frame_host) {
-    resource_request->render_frame_id =
-        creator_render_frame_host->GetRoutingID();
-  }
 
   // For a classic worker script request:
   // https://html.spec.whatwg.org/C/#fetch-a-classic-worker-script
@@ -188,6 +184,22 @@ void WorkerScriptFetchInitiator::Start(
       devtools_agent_host, devtools_worker_token, std::move(callback));
 }
 
+bool ShouldCreateWebUILoader(RenderFrameHost* creator_render_frame_host) {
+  if (!creator_render_frame_host)
+    return false;
+
+  if (creator_render_frame_host->GetWebUI() == nullptr)
+    return false;
+
+  auto requesting_scheme =
+      creator_render_frame_host->GetLastCommittedOrigin().scheme();
+  if (requesting_scheme == kChromeUIScheme)
+    return true;
+  if (requesting_scheme == kChromeUIUntrustedScheme)
+    return true;
+  return false;
+}
+
 std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
 WorkerScriptFetchInitiator::CreateFactoryBundle(
     LoaderType loader_type,
@@ -218,8 +230,8 @@ WorkerScriptFetchInitiator::CreateFactoryBundle(
     non_network_factories.emplace(
         url::kFileScheme, FileURLLoaderFactory::Create(
                               storage_partition->browser_context()->GetPath(),
-                              storage_partition->browser_context()
-                                  ->GetSharedCorsOriginAccessList(),
+                              BrowserContext::GetSharedCorsOriginAccessList(
+                                  storage_partition->browser_context()),
                               file_factory_priority));
   }
 
@@ -238,20 +250,16 @@ WorkerScriptFetchInitiator::CreateFactoryBundle(
       break;
   }
 
-  // Create WebUI loader for chrome:// workers from WebUI frames.
-  // TODO(crbug.com/1128243): Enable shared worker on "chrome-untrusted://" as
-  // well.
-  if (creator_render_frame_host) {
+  // Create WebUI loader for chrome:// or chrome-untrusted:// workers from WebUI
+  // frames of the same scheme.
+  if (ShouldCreateWebUILoader(creator_render_frame_host)) {
     auto requesting_scheme =
         creator_render_frame_host->GetLastCommittedOrigin().scheme();
-    if (requesting_scheme == kChromeUIScheme &&
-        creator_render_frame_host->GetWebUI() != nullptr) {
-      non_network_factories.emplace(
-          kChromeUIScheme,
-          CreateWebUIURLLoaderFactory(
-              creator_render_frame_host, kChromeUIScheme,
-              /*allowed_webui_hosts=*/base::flat_set<std::string>()));
-    }
+    non_network_factories.emplace(
+        requesting_scheme,
+        CreateWebUIURLLoaderFactory(
+            creator_render_frame_host, requesting_scheme,
+            /*allowed_hosts=*/base::flat_set<std::string>()));
   }
 
   auto factory_bundle =
@@ -333,6 +341,21 @@ void WorkerScriptFetchInitiator::CreateScriptLoader(
   } else {
     // Add the default factory to the bundle for browser.
     DCHECK(factory_bundle_for_browser_info);
+    mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
+        url_loader_network_observer;
+    mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer;
+    // If we have a |creator_render_frame_host| associate the load with that
+    // RenderFrameHost. Note that |factory_process| may be different than the
+    // |creator_render_frame_host|'s RenderProcessHost.
+    if (creator_render_frame_host) {
+      url_loader_network_observer =
+          factory_process->GetStoragePartition()
+              ->CreateURLLoaderNetworkObserverForFrame(
+                  creator_render_frame_host->GetProcess()->GetID(),
+                  creator_render_frame_host->GetRoutingID());
+      devtools_observer = NetworkServiceDevToolsObserver::MakeSelfOwned(
+          creator_render_frame_host->GetDevToolsFrameToken().ToString());
+    }
 
     const url::Origin& request_initiator = *resource_request->request_initiator;
     // TODO(https://crbug.com/1060837): Pass the Mojo remote which is connected
@@ -341,6 +364,8 @@ void WorkerScriptFetchInitiator::CreateScriptLoader(
         URLLoaderFactoryParamsHelper::CreateForWorker(
             factory_process, request_initiator, trusted_isolation_info,
             /*coep_reporter=*/mojo::NullRemote(),
+            std::move(url_loader_network_observer),
+            std::move(devtools_observer),
             /*debug_tag=*/"WorkerScriptFetchInitiator::CreateScriptLoader");
 
     mojo::PendingReceiver<network::mojom::URLLoaderFactory>

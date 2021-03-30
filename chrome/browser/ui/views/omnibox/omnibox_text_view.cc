@@ -23,6 +23,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/render_text.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -125,10 +126,6 @@ bool OmniboxTextView::GetCanProcessEventsWithinSubtree() const {
   return false;
 }
 
-const char* OmniboxTextView::GetClassName() const {
-  return "OmniboxTextView";
-}
-
 int OmniboxTextView::GetHeightForWidth(int width) const {
   if (!render_text_)
     return 0;
@@ -150,36 +147,36 @@ void OmniboxTextView::OnPaint(gfx::Canvas* canvas) {
 }
 
 void OmniboxTextView::ApplyTextColor(OmniboxPart part) {
-  if (text().empty())
+  if (GetText().empty())
     return;
   render_text_->SetColor(result_view_->GetColor(part));
   SchedulePaint();
 }
 
-const base::string16& OmniboxTextView::text() const {
+const std::u16string& OmniboxTextView::GetText() const {
   return render_text_ ? render_text_->text() : base::EmptyString16();
 }
 
-void OmniboxTextView::SetText(const base::string16& new_text,
-                              bool deemphasize) {
+void OmniboxTextView::SetText(const std::u16string& new_text) {
   if (cached_classifications_) {
     cached_classifications_.reset();
-  } else if (text() == new_text && deemphasize == use_deemphasized_font_) {
+  } else if (GetText() == new_text && !use_deemphasized_font_) {
     // Only exit early if |cached_classifications_| was empty,
     // i.e. the last time text was set was through this method.
     return;
   }
 
-  use_deemphasized_font_ = deemphasize;
+  use_deemphasized_font_ = false;
   render_text_ = CreateRenderText(new_text);
 
   OnStyleChanged();
 }
 
-void OmniboxTextView::SetText(const base::string16& new_text,
-                              const ACMatchClassifications& classifications,
-                              bool deemphasize) {
-  if (text() == new_text && cached_classifications_ &&
+void OmniboxTextView::SetTextWithStyling(
+    const std::u16string& new_text,
+    const ACMatchClassifications& classifications,
+    bool deemphasize) {
+  if (GetText() == new_text && cached_classifications_ &&
       classifications == *cached_classifications_ &&
       deemphasize == use_deemphasized_font_)
     return;
@@ -194,15 +191,16 @@ void OmniboxTextView::SetText(const base::string16& new_text,
   ReapplyStyling();
 }
 
-void OmniboxTextView::SetText(const SuggestionAnswer::ImageLine& line,
-                              bool deemphasize) {
+void OmniboxTextView::SetTextWithStyling(
+    const SuggestionAnswer::ImageLine& line,
+    bool deemphasize) {
   use_deemphasized_font_ = deemphasize;
   cached_classifications_.reset();
   wrap_text_lines_ = line.num_text_lines() > 1;
-  render_text_ = CreateRenderText(base::string16());
+  render_text_ = CreateRenderText(std::u16string());
 
   for (const SuggestionAnswer::TextField& text_field : line.text_fields())
-    AppendText(text_field, base::string16());
+    AppendText(text_field, std::u16string());
   if (!line.text_fields().empty()) {
     constexpr int kMaxDisplayLines = 3;
     const SuggestionAnswer::TextField& first_field = line.text_fields().front();
@@ -220,7 +218,7 @@ void OmniboxTextView::SetText(const SuggestionAnswer::ImageLine& line,
 }
 
 void OmniboxTextView::AppendExtraText(const SuggestionAnswer::ImageLine& line) {
-  const base::string16 space(1, base::char16(' '));
+  const std::u16string space = u" ";
   const auto* text_field = line.additional_text();
   if (text_field) {
     AppendText(*text_field, space);
@@ -241,7 +239,7 @@ void OmniboxTextView::ReapplyStyling() {
   if (!cached_classifications_)
     return;
 
-  const size_t text_length = text().length();
+  const size_t text_length = GetText().length();
   for (size_t i = 0; i < cached_classifications_->size(); ++i) {
     const size_t text_start = (*cached_classifications_)[i].offset;
     if (text_start >= text_length)
@@ -272,7 +270,7 @@ void OmniboxTextView::ReapplyStyling() {
 }
 
 std::unique_ptr<gfx::RenderText> OmniboxTextView::CreateRenderText(
-    const base::string16& text) const {
+    const std::u16string& text) const {
   std::unique_ptr<gfx::RenderText> render_text =
       gfx::RenderText::CreateRenderText();
   render_text->SetDisplayRect(gfx::Rect(gfx::Size(INT_MAX, 0)));
@@ -288,12 +286,12 @@ std::unique_ptr<gfx::RenderText> OmniboxTextView::CreateRenderText(
 }
 
 void OmniboxTextView::AppendText(const SuggestionAnswer::TextField& field,
-                                 const base::string16& prefix) {
-  const base::string16& append_text =
+                                 const std::u16string& prefix) {
+  const std::u16string& append_text =
       prefix.empty() ? field.text() : (prefix + field.text());
   if (append_text.empty())
     return;
-  int offset = text().length();
+  int offset = GetText().length();
   gfx::Range range(offset, offset + append_text.length());
   render_text_->AppendText(append_text);
   ApplyTextStyleForType(field.style(), result_view_, render_text_.get(), range);
@@ -301,11 +299,12 @@ void OmniboxTextView::AppendText(const SuggestionAnswer::TextField& field,
 
 void OmniboxTextView::OnStyleChanged() {
   const int height_normal = render_text_->font_list().GetHeight();
+  const int size_delta =
+      render_text_->font_list().GetFontSize() - gfx::FontList().GetFontSize();
   const int height_bold =
       ui::ResourceBundle::GetSharedInstance()
-          .GetFontListWithDelta(render_text_->font_list().GetFontSize() -
-                                    gfx::FontList().GetFontSize(),
-                                gfx::Font::NORMAL, gfx::Font::Weight::BOLD)
+          .GetFontListForDetails(ui::ResourceBundle::FontDetails(
+              std::string(), size_delta, gfx::Font::Weight::BOLD))
           .GetHeight();
   font_height_ = std::max(height_normal, height_bold);
   font_height_ += kVerticalPadding;
@@ -313,3 +312,8 @@ void OmniboxTextView::OnStyleChanged() {
   SetPreferredSize(CalculatePreferredSize());
   SchedulePaint();
 }
+
+BEGIN_METADATA(OmniboxTextView, views::View)
+ADD_PROPERTY_METADATA(std::u16string, Text)
+ADD_READONLY_PROPERTY_METADATA(int, LineHeight)
+END_METADATA

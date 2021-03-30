@@ -16,7 +16,6 @@
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/common/input_messages.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_switches.h"
@@ -32,8 +31,6 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_switches.h"
 #include "ui/latency/latency_info.h"
-
-using blink::WebInputEvent;
 
 namespace {
 
@@ -116,8 +113,9 @@ class CompositorEventAckBrowserTest : public ContentBrowserTest {
   ~CompositorEventAckBrowserTest() override {}
 
   RenderWidgetHostImpl* GetWidgetHost() {
+    auto* main_frame = shell()->web_contents()->GetMainFrame();
     return RenderWidgetHostImpl::From(
-        shell()->web_contents()->GetRenderViewHost()->GetWidget());
+        main_frame->GetRenderViewHost()->GetWidget());
   }
 
   void OnSyntheticGestureCompleted(SyntheticGesture::Result result) {
@@ -132,7 +130,7 @@ class CompositorEventAckBrowserTest : public ContentBrowserTest {
     RenderWidgetHostImpl* host = GetWidgetHost();
     host->GetView()->SetSize(gfx::Size(400, 400));
 
-    base::string16 ready_title(base::ASCIIToUTF16("ready"));
+    std::u16string ready_title(u"ready");
     TitleWatcher watcher(shell()->web_contents(), ready_title);
     ignore_result(watcher.WaitAndGetTitle());
 
@@ -197,7 +195,7 @@ class CompositorEventAckBrowserTest : public ContentBrowserTest {
         GetWidgetHost()->render_frame_metadata_provider());
 
     SyntheticSmoothScrollGestureParams params;
-    params.gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
+    params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
     params.anchor = gfx::PointF(50, 50);
     params.distances.push_back(gfx::Vector2d(0, -45));
 
@@ -303,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(CompositorEventAckBrowserTest,
   // test will timeout if the touch start event is cancelable since there is a
   // busy loop in the blocking touch start event listener.
   InputEventAckWaiter touch_start_ack_observer(
-      GetWidgetHost(), WebInputEvent::Type::kTouchStart);
+      GetWidgetHost(), blink::WebInputEvent::Type::kTouchStart);
   touch_event.PressPoint(50, 50);
   touch_event.SetTimeStamp(ui::EventTimeForNow());
   input_event_router->RouteTouchEvent(root_view, &touch_event,

@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS AbortController abort() should fire event synchronously
+PASS controller.signal should always return the same object
+PASS controller.abort() should do nothing the second time it is called
+PASS event handler should not be called if added after controller.abort()
+PASS the abort event should have the right properties
+FAIL the AbortSignal.abort() static returns an already aborted signal AbortSignal.abort is not a function
+Harness: the test ran to completion.
+

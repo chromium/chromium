@@ -41,6 +41,9 @@ CONTENT_EXPORT extern const int kTraceEventRendererMainThreadSortIndex;
 // HTTP header set in requests to indicate they should be marked DoNotTrack.
 extern const char kDoNotTrackHeader[];
 
+// Accept header used for frame requests.
+CONTENT_EXPORT extern const char kFrameAcceptHeaderValue[];
+
 // Constants for attaching message pipes to the mojo invitation used to
 // initialize child processes.
 extern const int kChildProcessReceiverAttachmentName;

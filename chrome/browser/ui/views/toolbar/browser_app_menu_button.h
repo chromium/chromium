@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/user_education/feature_promo_controller.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 class ToolbarView;
@@ -23,6 +24,7 @@ enum class InProductHelpFeature;
 // windows, which is implemented in WebAppMenuButton).
 class BrowserAppMenuButton : public AppMenuButton {
  public:
+  METADATA_HEADER(BrowserAppMenuButton);
   BrowserAppMenuButton(PressedCallback callback, ToolbarView* toolbar_view);
   BrowserAppMenuButton(const BrowserAppMenuButton&) = delete;
   BrowserAppMenuButton& operator=(const BrowserAppMenuButton&) = delete;
@@ -30,10 +32,6 @@ class BrowserAppMenuButton : public AppMenuButton {
 
   void SetTypeAndSeverity(
       AppMenuIconController::TypeAndSeverity type_and_severity);
-
-  AppMenuIconController::Severity severity() {
-    return type_and_severity_.severity;
-  }
 
   // Shows the app menu. |run_types| denotes the MenuRunner::RunTypes associated
   // with the menu.
@@ -44,15 +42,6 @@ class BrowserAppMenuButton : public AppMenuButton {
   static bool g_open_app_immediately_for_testing;
 
   // AppMenuButton:
-  const char* GetClassName() const override;
-  bool GetDropFormats(int* formats,
-                      std::set<ui::ClipboardFormatType>* format_types) override;
-  bool AreDropTypesRequired() override;
-  bool CanDrop(const ui::OSExchangeData& data) override;
-  void OnDragEntered(const ui::DropTargetEvent& event) override;
-  int OnDragUpdated(const ui::DropTargetEvent& event) override;
-  void OnDragExited() override;
-  int OnPerformDrop(const ui::DropTargetEvent& event) override;
   std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
       const override;
   void OnThemeChanged() override;

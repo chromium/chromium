@@ -169,6 +169,8 @@ class CC_EXPORT ThreadedInputHandler : public InputHandler,
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ScrollUnifiedLayerTreeHostImplTest,
+                           AbortAnimatedScrollBeforeStartingAutoscroll);
+  FRIEND_TEST_ALL_PREFIXES(ScrollUnifiedLayerTreeHostImplTest,
                            AnimatedScrollYielding);
   FRIEND_TEST_ALL_PREFIXES(ScrollUnifiedLayerTreeHostImplTest,
                            AutoscrollOnDeletedScrollbar);
@@ -337,6 +339,8 @@ class CC_EXPORT ThreadedInputHandler : public InputHandler,
   // |overflow-x: hidden|).
   gfx::Vector2dF UserScrollableDelta(const ScrollNode& node,
                                      const gfx::Vector2dF& delta) const;
+
+  void AdjustScrollDeltaForScrollbarSnap(ScrollState* scroll_state);
 
   FrameSequenceTrackerType GetTrackerTypeForScroll(
       ui::ScrollInputType input_type) const;

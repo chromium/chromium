@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
+#include "chrome/browser/chromeos/hats/hats_config.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/common/pref_names.h"
@@ -59,7 +60,7 @@ class HatsNotificationControllerTest : public BrowserWithTestWindowTest {
     // The initialization will fail since the function IsNewDevice() will return
     // true.
     scoped_refptr<HatsNotificationController> hats_notification_controller =
-        new HatsNotificationController(profile());
+        new HatsNotificationController(profile(), kHatsGeneralSurvey);
 
     // HatsController::IsNewDevice() is run on a blocking thread.
     content::RunAllTasksUntilIdle();
@@ -68,13 +69,12 @@ class HatsNotificationControllerTest : public BrowserWithTestWindowTest {
     // present on device.
     ON_CALL(mock_network_portal_detector_,
             AddAndFireObserver(hats_notification_controller.get()))
-        .WillByDefault(Invoke(
-            [&hats_notification_controller](NetworkPortalDetector::Observer*) {
-              NetworkState network_state("");
-              hats_notification_controller->OnPortalDetectionCompleted(
-                  &network_state,
-                  NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
-            }));
+        .WillByDefault(Invoke([](NetworkPortalDetector::Observer* observer) {
+          NetworkState network_state("");
+          observer->OnPortalDetectionCompleted(
+              &network_state,
+              NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+        }));
 
     return hats_notification_controller;
   }

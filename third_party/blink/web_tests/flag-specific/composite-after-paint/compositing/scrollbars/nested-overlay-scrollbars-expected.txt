@@ -16,6 +16,7 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='inner'",
       "bounds": [204, 204],
+      "contentsOpaqueForText": true,
       "transform": 3
     },
     {
@@ -29,6 +30,7 @@
       "name": "LayoutNGBlockFlow (positioned) DIV id='inner'",
       "position": [2, 2],
       "bounds": [5000, 9000],
+      "contentsOpaqueForText": true,
       "transform": 3
     },
     {

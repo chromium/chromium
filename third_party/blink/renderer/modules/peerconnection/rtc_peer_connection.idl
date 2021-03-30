@@ -70,8 +70,8 @@ enum RTCPeerConnectionState {
 ] interface RTCPeerConnection : EventTarget {
     // TODO(guidou): There should only be one constructor argument.
     [CallWith=ExecutionContext, RaisesException] constructor(optional RTCConfiguration configuration = {}, optional any mediaConstraints);
-    [CallWith=ScriptState, RaisesException] Promise<RTCSessionDescription> createOffer(optional RTCOfferOptions options = {});
-    [CallWith=ScriptState, RaisesException] Promise<RTCSessionDescription> createAnswer(optional RTCAnswerOptions options = {});
+    [CallWith=ScriptState, RaisesException] Promise<RTCSessionDescriptionInit> createOffer(optional RTCOfferOptions options = {});
+    [CallWith=ScriptState, RaisesException] Promise<RTCSessionDescriptionInit> createAnswer(optional RTCAnswerOptions options = {});
     [CallWith=ScriptState, RaisesException] Promise<void> setLocalDescription(optional RTCSessionDescriptionInit description = {});
     readonly attribute RTCSessionDescription? localDescription;
     readonly attribute RTCSessionDescription? currentLocalDescription;
@@ -80,7 +80,7 @@ enum RTCPeerConnectionState {
     readonly attribute RTCSessionDescription? remoteDescription;
     readonly attribute RTCSessionDescription? currentRemoteDescription;
     readonly attribute RTCSessionDescription? pendingRemoteDescription;
-    [CallWith=ScriptState, RaisesException, MeasureAs=RTCPeerConnectionAddIceCandidatePromise] Promise<void> addIceCandidate((RTCIceCandidateInit or RTCIceCandidate) candidate);
+    [CallWith=ScriptState, RaisesException, MeasureAs=RTCPeerConnectionAddIceCandidatePromise] Promise<void> addIceCandidate(optional RTCIceCandidateInit candidate = {});
     readonly attribute RTCSignalingState signalingState;
     readonly attribute RTCIceGatheringState iceGatheringState;
     readonly attribute RTCIceConnectionState iceConnectionState;
@@ -109,7 +109,7 @@ enum RTCPeerConnectionState {
     // TODO(guidou): The failureCallback argument should be non-optional.
     // TODO(crbug.com/841185): |failureCallback| is not nullable in the spec.
     [CallWith=ScriptState] Promise<void> setRemoteDescription(RTCSessionDescriptionInit description, VoidFunction successCallback, optional RTCPeerConnectionErrorCallback? failureCallback);
-    [CallWith=ScriptState, RaisesException, MeasureAs=RTCPeerConnectionAddIceCandidateLegacy] Promise<void> addIceCandidate((RTCIceCandidateInit or RTCIceCandidate) candidate, VoidFunction successCallback, RTCPeerConnectionErrorCallback failureCallback);
+    [CallWith=ScriptState, RaisesException, MeasureAs=RTCPeerConnectionAddIceCandidateLegacy] Promise<void> addIceCandidate(RTCIceCandidateInit candidate, VoidFunction successCallback, RTCPeerConnectionErrorCallback failureCallback);
 
     // getStats() has a standardized version and a legacy non-standard version.
     //
@@ -182,9 +182,7 @@ enum RTCPeerConnectionState {
 callback RTCPeerConnectionErrorCallback = void (DOMException error);
 
 // https://w3c.github.io/webrtc-pc/#dom-rtcsessiondescriptioncallback
-// TODO(yukishiino): The argument type must be RTCSessionDescriptionInit instead
-// of RTCSessionDescription.
-callback RTCSessionDescriptionCallback = void (RTCSessionDescription description);
+callback RTCSessionDescriptionCallback = void (RTCSessionDescriptionInit description);
 
 // No spec.  Blink specific definition.
 callback RTCStatsCallback = void (RTCStatsResponse response);

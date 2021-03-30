@@ -37,7 +37,7 @@ class SandboxFileSystemBackendDelegateTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
     quota_manager_proxy_ = base::MakeRefCounted<MockQuotaManagerProxy>(
-        nullptr, base::ThreadTaskRunnerHandle::Get().get());
+        nullptr, base::ThreadTaskRunnerHandle::Get());
     delegate_ = std::make_unique<SandboxFileSystemBackendDelegate>(
         quota_manager_proxy_.get(), base::ThreadTaskRunnerHandle::Get().get(),
         data_dir_.GetPath(), /*special_storage_policy=*/nullptr,

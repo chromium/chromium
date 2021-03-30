@@ -35,18 +35,18 @@ class OutdatedPluginInfoBarDelegate : public ConfirmInfoBarDelegate,
   OutdatedPluginInfoBarDelegate(
       PluginInstaller* installer,
       std::unique_ptr<PluginMetadata> metadata,
-      const base::string16& message_override = base::string16());
+      const std::u16string& message_override = std::u16string());
   ~OutdatedPluginInfoBarDelegate() override;
 
   // ConfirmInfoBarDelegate:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-  base::string16 GetLinkText() const override;
+  std::u16string GetLinkText() const override;
   GURL GetLinkURL() const override;
   void InfoBarDismissed() override;
-  base::string16 GetMessageText() const override;
+  std::u16string GetMessageText() const override;
   int GetButtons() const override;
-  base::string16 GetButtonLabel(InfoBarButton button) const override;
+  std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool Accept() override;
   bool Cancel() override;
 
@@ -58,13 +58,13 @@ class OutdatedPluginInfoBarDelegate : public ConfirmInfoBarDelegate,
 
   // Replaces this infobar with one showing |message|. The new infobar will
   // not have any buttons (and not call the callback).
-  void ReplaceWithInfoBar(const base::string16& message);
+  void ReplaceWithInfoBar(const std::u16string& message);
 
   std::string identifier_;
 
   std::unique_ptr<PluginMetadata> plugin_metadata_;
 
-  base::string16 message_;
+  std::u16string message_;
 
   DISALLOW_COPY_AND_ASSIGN(OutdatedPluginInfoBarDelegate);
 };

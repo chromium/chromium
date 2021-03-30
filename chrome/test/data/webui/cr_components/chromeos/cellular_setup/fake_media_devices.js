@@ -12,38 +12,41 @@ cr.define('cellular_setup', function() {
       this.devices_ = [];
     }
 
-    /** override */
+    /** @override */
     addEventListener(type, listener) {
       this.deviceChangeListener_ = listener;
     }
 
-    /** override */
+    /** @override */
     enumerateDevices() {
       return new Promise((res, rej) => {
         res(this.devices_);
       });
     }
 
-    /** override */
+    /** @override */
     getSupportedConstraints() {
       return null;
     }
 
-    /** override */
+    /** @override */
     getDisplayMedia() {
       return new Promise((res, rej) => {
         res(null);
       });
     }
 
-    /** override */
+    /** @override */
     getUserMedia(constraints) {
       this.isStreamingUserFacingCamera =
           constraints.video.facingMode === 'user';
       return new Promise((res, rej) => {
-        res(null);
+        res(new MediaStream());
       });
     }
+
+    /** @override */
+    removeEventListener(event, fn) {}
 
     /**
      * Adds a video input device to the list of media devices.

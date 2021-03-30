@@ -76,7 +76,7 @@ AccountInfo MakePrimaryAccountAvailable(IdentityManager* identity_manager,
                                         const std::string& email);
 
 // Revokes sync consent from the primary account: the primary account is left
-// at ConsentLevel::kNotRequired.
+// at ConsentLevel::kSignin.
 // NOTE: See disclaimer at top of file re: direct usage.
 void RevokeSyncConsent(IdentityManager* identity_manager);
 
@@ -164,9 +164,9 @@ void UpdatePersistentErrorOfRefreshTokenForAccount(
 void DisableAccessTokenFetchRetries(IdentityManager* identity_manager);
 
 #if defined(OS_ANDROID)
-// Disables interaction with system accounts, which requires special
-// initialization of the java subsystems (AccountManagerFacade).
-void DisableInteractionWithSystemAccounts();
+// Stubs AccountManagerFacade, which requires special initialization of the java
+// subsystems.
+void SetUpMockAccountManagerFacade();
 #endif
 
 // Cancels all ongoing operations related to the accounts in the Gaia cookie.

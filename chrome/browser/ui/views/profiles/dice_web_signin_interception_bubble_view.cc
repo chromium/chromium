@@ -29,10 +29,13 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
-constexpr int kInterceptionBubbleHeight = 342;
+constexpr int kInterceptionBubbleWithoutGuestHeight = 326;
+constexpr int kInterceptionBubbleGuestFooterHeight = 36;
+constexpr int kInterceptionBubbleExtraTextHeight = 30;
 constexpr int kInterceptionBubbleWidth = 290;
 
 }  // namespace
@@ -78,7 +81,7 @@ DiceWebSigninInterceptionBubbleView::ScopedHandle::~ScopedHandle() {
   if (!widget)
     return;
   widget->CloseWithReason(
-      bubble_->HasAccepted() ? views::Widget::ClosedReason::kAcceptButtonClicked
+      bubble_->GetAccepted() ? views::Widget::ClosedReason::kAcceptButtonClicked
                              : views::Widget::ClosedReason::kUnspecified);
 }
 
@@ -131,8 +134,8 @@ void DiceWebSigninInterceptionBubbleView::RecordInterceptionResult(
   }
 }
 
-bool DiceWebSigninInterceptionBubbleView::HasAccepted() const {
-  return has_accepted_;
+bool DiceWebSigninInterceptionBubbleView::GetAccepted() const {
+  return accepted_;
 }
 
 DiceWebSigninInterceptionBubbleView::DiceWebSigninInterceptionBubbleView(
@@ -154,8 +157,16 @@ DiceWebSigninInterceptionBubbleView::DiceWebSigninInterceptionBubbleView(
   std::unique_ptr<views::WebView> web_view =
       std::make_unique<views::WebView>(profile);
   web_view->LoadInitialURL(GURL(chrome::kChromeUIDiceWebSigninInterceptURL));
-  web_view->SetPreferredSize(
-      gfx::Size(kInterceptionBubbleWidth, kInterceptionBubbleHeight));
+  int height = kInterceptionBubbleWithoutGuestHeight;
+  if (bubble_parameters.show_guest_option)
+    height += kInterceptionBubbleGuestFooterHeight;
+  if (bubble_parameters.interception_type ==
+      DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser) {
+    // The kMultiUser bubble has a longer text, increase the height a bit.
+    // TODO: Dynamically compute the right size based on the text length.
+    height += kInterceptionBubbleExtraTextHeight;
+  }
+  web_view->SetPreferredSize(gfx::Size(kInterceptionBubbleWidth, height));
   DiceWebSigninInterceptUI* web_ui = web_view->GetWebContents()
                                          ->GetWebUI()
                                          ->GetController()
@@ -179,14 +190,26 @@ DiceWebSigninInterceptionBubbleView::GetHandle() const {
   return std::make_unique<ScopedHandle>(weak_factory_.GetWeakPtr());
 }
 
-void DiceWebSigninInterceptionBubbleView::OnWebUIUserChoice(bool accept) {
-  has_accepted_ = accept;
-  SigninInterceptionResult result = accept
-                                        ? SigninInterceptionResult::kAccepted
-                                        : SigninInterceptionResult::kDeclined;
+void DiceWebSigninInterceptionBubbleView::OnWebUIUserChoice(
+    SigninInterceptionUserChoice user_choice) {
+  SigninInterceptionResult result;
+  switch (user_choice) {
+    case SigninInterceptionUserChoice::kAccept:
+      result = SigninInterceptionResult::kAccepted;
+      accepted_ = true;
+      break;
+    case SigninInterceptionUserChoice::kDecline:
+      result = SigninInterceptionResult::kDeclined;
+      accepted_ = false;
+      break;
+    case SigninInterceptionUserChoice::kGuest:
+      result = SigninInterceptionResult::kAcceptedWithGuest;
+      accepted_ = true;
+  }
+
   RecordInterceptionResult(bubble_parameters_, profile_, result);
   std::move(callback_).Run(result);
-  if (!accept) {
+  if (!accepted_) {
     // Only close the dialog when the user declined. If the user accepted the
     // dialog displays a spinner until the handle is released.
     GetWidget()->CloseWithReason(
@@ -211,3 +234,8 @@ DiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubbleInternal(
   return DiceWebSigninInterceptionBubbleView::CreateBubble(
       browser->profile(), anchor_view, bubble_parameters, std::move(callback));
 }
+
+BEGIN_METADATA(DiceWebSigninInterceptionBubbleView,
+               views::BubbleDialogDelegateView)
+ADD_READONLY_PROPERTY_METADATA(bool, Accepted)
+END_METADATA

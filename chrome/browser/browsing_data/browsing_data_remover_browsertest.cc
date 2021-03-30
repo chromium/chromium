@@ -395,7 +395,6 @@ class BrowsingDataRemoverBrowserTest
     ExpectCookieTreeModelCount(0);
   }
 
-
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   int GetMediaLicenseCount() {
     base::RunLoop run_loop;
@@ -463,10 +462,10 @@ class BrowsingDataRemoverBrowserTest
         content::BrowserContext::GetDefaultStoragePartition(profile);
     content::ServiceWorkerContext* service_worker_context =
         storage_partition->GetServiceWorkerContext();
-    content::CacheStorageContext* cache_storage_context =
-        storage_partition->GetCacheStorageContext();
     storage::FileSystemContext* file_system_context =
         storage_partition->GetFileSystemContext();
+    content::NativeIOContext* native_io_context =
+        storage_partition->GetNativeIOContext();
     auto container = std::make_unique<LocalDataContainer>(
         new browsing_data::CookieHelper(
             storage_partition,
@@ -479,12 +478,12 @@ class BrowsingDataRemoverBrowserTest
         new browsing_data::IndexedDBHelper(storage_partition),
         browsing_data::FileSystemHelper::Create(
             file_system_context,
-            browsing_data_file_system_util::GetAdditionalFileSystemTypes()),
+            browsing_data_file_system_util::GetAdditionalFileSystemTypes(),
+            native_io_context),
         BrowsingDataQuotaHelper::Create(profile),
         new browsing_data::ServiceWorkerHelper(service_worker_context),
-        new browsing_data::SharedWorkerHelper(storage_partition,
-                                              profile->GetResourceContext()),
-        new browsing_data::CacheStorageHelper(cache_storage_context),
+        new browsing_data::SharedWorkerHelper(storage_partition),
+        new browsing_data::CacheStorageHelper(storage_partition),
         BrowsingDataMediaLicenseHelper::Create(file_system_context));
     base::RunLoop run_loop;
     CookiesTreeObserver observer(run_loop.QuitClosure());
@@ -502,6 +501,8 @@ class BrowsingDataRemoverBrowserTest
     // it uses the External Clear Key CDM.
     RegisterClearKeyCdm(command_line);
 #endif
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "StorageFoundationAPI");
   }
 };
 
@@ -515,7 +516,7 @@ class DiceBrowsingDataRemoverBrowserTest
                                   bool is_primary) {
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
     if (is_primary) {
-      DCHECK(!identity_manager->HasPrimaryAccount());
+      DCHECK(!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
       return signin::MakePrimaryAccountAvailable(identity_manager,
                                                  account_id + "@gmail.com");
     }
@@ -1100,6 +1101,10 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
   TestEmptySiteData("FileSystem", GetParam());
 }
 
+IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP, NativeIODeletion) {
+  TestSiteData("StorageFoundation", GetParam());
+}
+
 IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP, WebSqlDeletion) {
   TestSiteData("WebSql", GetParam());
 }
@@ -1303,9 +1308,8 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
 const std::vector<std::string> kStorageTypes{
-    "Cookie",    "LocalStorage", "FileSystem",    "SessionStorage",
-    "IndexedDb", "WebSql",       "ServiceWorker", "CacheStorage",
-};
+    "Cookie", "LocalStorage",  "FileSystem",   "SessionStorage",   "IndexedDb",
+    "WebSql", "ServiceWorker", "CacheStorage", "StorageFoundation"};
 
 // Test that storage doesn't leave any traces on disk.
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
@@ -1347,9 +1351,10 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
                        MAYBE_PRE_StorageRemovedFromDisk) {
   EXPECT_EQ(1, GetSiteDataCount());
-  // Expect all datatypes from above except SessionStorage. SessionStorage is
-  // not supported by the CookieTreeModel yet.
-  ExpectCookieTreeModelCount(kStorageTypes.size() - 1);
+  // Expect all datatypes from above except SessionStorage and NativeIO.
+  // SessionStorage is not supported by the CookieTreeModel yet. NativeIO is
+  // shown as FileSystem in the CookieTree model.
+  ExpectCookieTreeModelCount(kStorageTypes.size() - 2);
   RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA |
                 content::BrowsingDataRemover::DATA_TYPE_CACHE |
                 chrome_browsing_data_remover::DATA_TYPE_HISTORY |

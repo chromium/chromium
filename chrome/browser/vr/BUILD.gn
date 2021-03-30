@@ -24,8 +24,6 @@ buildflag_header("vr_buildflags") {
 
 component("vr_ui") {
   sources = [
-    "animation.cc",
-    "animation.h",
     "databinding/binding.h",
     "databinding/binding_base.h",
     "databinding/vector_binding.h",
@@ -143,8 +141,6 @@ component("vr_ui") {
     "skia_surface_provider_factory.h",
     "target_property.cc",
     "target_property.h",
-    "transition.cc",
-    "transition.h",
     "ui.cc",
     "ui.h",
     "ui_element_renderer.cc",
@@ -168,7 +164,6 @@ component("vr_ui") {
   deps = [
     ":vr_base",
     "//base",
-    "//cc/animation",
     "//chrome/app:generated_resources",
     "//chrome/app/vector_icons",
     "//chrome/browser/vr/vector_icons",
@@ -182,6 +177,7 @@ component("vr_ui") {
     "//media",
     "//net",
     "//skia",
+    "//ui/gfx/animation/keyframe",
   ]
 
   if (use_native_partitions) {
@@ -254,16 +250,14 @@ component("vr_common") {
 
   deps = [
     "//base",
-    "//cc/animation",
     "//cc/paint",
     "//chrome/common:constants",
     "//components/omnibox/browser",
     "//components/omnibox/browser",
-    "//components/rappor/public:public",
     "//components/ukm/content",
     "//content/public/browser",
     "//device/base",
-    "//device/vr",
+    "//device/vr:vr_util",
     "//device/vr/buildflags:buildflags",
     "//device/vr/public/mojom:isolated_xr_service",
     "//media",
@@ -386,7 +380,6 @@ component("vr_base") {
   deps = [
     "//base",
     "//chrome/app:generated_resources",
-    "//components/rappor:rappor",
     "//components/security_state/core",
     "//components/ukm/content",
     "//components/url_formatter",
@@ -405,7 +398,6 @@ component("vr_base") {
 
 test("vr_common_unittests") {
   sources = [
-    "animation_unittest.cc",
     "base_scheduler_delegate_unittest.cc",
     "browser_renderer_unittest.cc",
     "databinding/binding_unittest.cc",
@@ -457,6 +449,8 @@ test("vr_common_unittests") {
     "//mojo/public/cpp/bindings",
     "//services/network:test_support",
     "//testing/gmock",
+    "//ui/gfx:test_support",
+    "//ui/gfx/animation/keyframe",
     "//ui/gfx/geometry",
   ]
   if (is_android) {

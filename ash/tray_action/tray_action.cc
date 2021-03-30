@@ -17,7 +17,7 @@ namespace ash {
 
 TrayAction::TrayAction(BacklightsForcedOffSetter* backlights_forced_off_setter)
     : backlights_forced_off_setter_(backlights_forced_off_setter) {
-  stylus_observer_.Add(ui::DeviceDataManager::GetInstance());
+  stylus_observation_.Observe(ui::DeviceDataManager::GetInstance());
 }
 
 TrayAction::~TrayAction() = default;

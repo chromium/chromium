@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "base/rand_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
@@ -15,29 +16,29 @@ namespace mojo_base {
 namespace string16_unittest {
 
 TEST(String16Test, Empty) {
-  base::string16 in;
-  base::string16 out;
+  std::u16string in;
+  std::u16string out;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::String16>(in, out));
   EXPECT_EQ(in, out);
 }
 
 TEST(String16Test, NonEmpty) {
-  base::string16 in = base::ASCIIToUTF16("hello world");
-  base::string16 out;
+  std::u16string in = u"hello world";
+  std::u16string out;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::String16>(in, out));
   EXPECT_EQ(in, out);
 }
 
 TEST(BigString16Test, Empty) {
-  base::string16 in;
-  base::string16 out;
+  std::u16string in;
+  std::u16string out;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::BigString16>(in, out));
   EXPECT_EQ(in, out);
 }
 
 TEST(BigString16Test, Short) {
-  base::string16 in = base::ASCIIToUTF16("hello world");
-  base::string16 out;
+  std::u16string in = u"hello world";
+  std::u16string out;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::BigString16>(in, out));
   EXPECT_EQ(in, out);
 }
@@ -45,10 +46,10 @@ TEST(BigString16Test, Short) {
 TEST(BigString16Test, Long) {
   constexpr size_t kLargeStringSize = 1024 * 1024;
 
-  base::string16 in(kLargeStringSize, 0);
+  std::u16string in(kLargeStringSize, 0);
   base::RandBytes(&in[0], kLargeStringSize);
 
-  base::string16 out;
+  std::u16string out;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::BigString16>(in, out));
   EXPECT_EQ(in, out);
 }

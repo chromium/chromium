@@ -46,7 +46,7 @@ std::vector<uint8_t> StringPieceToUint8Vector(base::StringPiece s) {
   return std::vector<uint8_t>(s.begin(), s.end());
 }
 
-std::vector<uint8_t> String16ToUint8Vector(const base::string16& s) {
+std::vector<uint8_t> String16ToUint8Vector(const std::u16string& s) {
   auto bytes = base::as_bytes(base::make_span(s));
   return std::vector<uint8_t>(bytes.begin(), bytes.end());
 }
@@ -171,9 +171,9 @@ TEST_F(SessionStorageImplTest, MigrationV0ToV1) {
   std::string namespace_id2 = base::GenerateGUID();
   url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com"));
   url::Origin origin2 = url::Origin::Create(GURL("http://example.com"));
-  base::string16 key = base::ASCIIToUTF16("key");
-  base::string16 value = base::ASCIIToUTF16("value");
-  base::string16 key2 = base::ASCIIToUTF16("key2");
+  std::u16string key = u"key";
+  std::u16string value = u"value";
+  std::u16string key2 = u"key2";
   key2.push_back(0xd83d);
   key2.push_back(0xde00);
 
@@ -183,8 +183,8 @@ TEST_F(SessionStorageImplTest, MigrationV0ToV1) {
     auto db = base::MakeRefCounted<TestingLegacySessionStorageDatabase>(
         old_db_path, base::ThreadTaskRunnerHandle::Get().get());
     LegacyDomStorageValuesMap data;
-    data[key] = base::NullableString16(value, false);
-    data[key2] = base::NullableString16(value, false);
+    data[key] = value;
+    data[key2] = value;
     EXPECT_TRUE(db->CommitAreaChanges(namespace_id1, origin1, false, data));
     EXPECT_TRUE(db->CloneNamespace(namespace_id1, namespace_id2));
   }
@@ -788,8 +788,8 @@ TEST_F(SessionStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
         open_loop->Quit();
 
         // Ensure that this database also always fails to write data.
-        session_storage_impl()->GetDatabaseForTesting().Post(
-            FROM_HERE, &DomStorageDatabase::MakeAllCommitsFailForTesting);
+        session_storage_impl()->GetDatabaseForTesting().AsyncCall(
+            &DomStorageDatabase::MakeAllCommitsFailForTesting);
       }));
 
   // Repeatedly write data to the database, to trigger enough commit errors.

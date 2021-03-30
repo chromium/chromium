@@ -4,7 +4,10 @@
 
 #import "ios/chrome/browser/ui/omnibox/omnibox_container_view.h"
 
+#import "ios/chrome/browser/ui/omnibox/omnibox_text_field_experimental.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_text_field_legacy.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/animation_util.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
@@ -63,9 +66,16 @@ const CGFloat kTextFieldClearButtonTrailingOffset = 4;
                      iconTint:(UIColor*)iconTint {
   self = [super initWithFrame:frame];
   if (self) {
-    _textField = [[OmniboxTextFieldIOS alloc] initWithFrame:frame
-                                                  textColor:textColor
-                                                  tintColor:textFieldTint];
+    if (base::FeatureList::IsEnabled(kIOSNewOmniboxImplementation)) {
+      _textField =
+          [[OmniboxTextFieldExperimental alloc] initWithFrame:frame
+                                                    textColor:textColor
+                                                    tintColor:textFieldTint];
+    } else {
+      _textField = [[OmniboxTextFieldLegacy alloc] initWithFrame:frame
+                                                       textColor:textColor
+                                                       tintColor:textFieldTint];
+    }
     [self addSubview:_textField];
 
     _leadingTextfieldConstraint = [_textField.leadingAnchor

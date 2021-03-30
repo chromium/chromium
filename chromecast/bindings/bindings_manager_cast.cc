@@ -42,9 +42,6 @@ void BindingsManagerCast::OnPageStateChanged(
   auto page_state = cast_web_contents->page_state();
 
   switch (page_state) {
-    case CastWebContents::PageState::LOADING:
-      cast_web_contents_->InjectScriptsIntoMainFrame();
-      break;
     case CastWebContents::PageState::DESTROYED:
     case CastWebContents::PageState::ERROR:
       CastWebContents::Observer::Observe(nullptr);
@@ -55,6 +52,7 @@ void BindingsManagerCast::OnPageStateChanged(
       port_connector_->OnPageLoaded();
       break;
     case CastWebContents::PageState::IDLE:
+    case CastWebContents::PageState::LOADING:
     case CastWebContents::PageState::CLOSED:
       break;
   }

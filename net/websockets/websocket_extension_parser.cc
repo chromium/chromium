@@ -5,6 +5,7 @@
 #include "net/websockets/websocket_extension_parser.h"
 
 #include "base/check_op.h"
+#include "base/strings/string_piece.h"
 #include "net/http/http_util.h"
 
 namespace net {
@@ -50,7 +51,7 @@ bool WebSocketExtensionParser::ConsumeExtension(WebSocketExtension* extension) {
   base::StringPiece name;
   if (!ConsumeToken(&name))
     return false;
-  *extension = WebSocketExtension(name.as_string());
+  *extension = WebSocketExtension(std::string(name));
 
   while (ConsumeIfMatch(';')) {
     WebSocketExtension::Parameter parameter((std::string()));
@@ -71,7 +72,7 @@ bool WebSocketExtensionParser::ConsumeExtensionParameter(
     return false;
 
   if (!ConsumeIfMatch('=')) {
-    *parameter = WebSocketExtension::Parameter(name.as_string());
+    *parameter = WebSocketExtension::Parameter(std::string(name));
     return true;
   }
 
@@ -81,9 +82,9 @@ bool WebSocketExtensionParser::ConsumeExtensionParameter(
   } else {
     if (!ConsumeToken(&value))
       return false;
-    value_string = value.as_string();
+    value_string = std::string(value);
   }
-  *parameter = WebSocketExtension::Parameter(name.as_string(), value_string);
+  *parameter = WebSocketExtension::Parameter(std::string(name), value_string);
   return true;
 }
 

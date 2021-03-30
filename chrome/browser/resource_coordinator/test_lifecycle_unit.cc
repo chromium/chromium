@@ -33,7 +33,7 @@ TabLifecycleUnitExternal* TestLifecycleUnit::AsTabLifecycleUnitExternal() {
   return nullptr;
 }
 
-base::string16 TestLifecycleUnit::GetTitle() const {
+std::u16string TestLifecycleUnit::GetTitle() const {
   return title_;
 }
 

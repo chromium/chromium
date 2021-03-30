@@ -4,10 +4,11 @@
 
 #include "components/autofill/core/common/autofill_features.h"
 
+#include <string>
+
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -20,6 +21,12 @@
 
 namespace autofill {
 namespace features {
+
+// Controls if Autocomplete suggestions are only shown/stored for meaningful
+// field names.
+// TODO(crbug.com/1181759): Remove once launched.
+const base::Feature kAutocompleteFilterForMeaningfulNames{
+    "AutocompleteFilterForMeaningfulNames", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls if Autofill sends votes for the new address types.
 const base::Feature kAutofillAddressEnhancementVotes{
@@ -54,6 +61,20 @@ const base::Feature kAutofillCacheQueryResponses{
 const base::Feature kAutofillCreateDataForTest{
     "AutofillCreateDataForTest", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls if the heuristic field parsing utilizes shared labels.
+// TODO(crbug/1165780): Remove once shared labels are launched.
+const base::Feature kAutofillEnableSupportForParsingWithSharedLabels{
+    "AutofillEnableSupportForParsingWithSharedLabels",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Kill switch for Autofill filling.
+const base::Feature kAutofillDisableFilling{"AutofillDisableFilling",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Kill switch for Autofill address import.
+const base::Feature kAutofillDisableAddressImport{
+    "AutofillDisableAddressImport", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls if Chrome support filling and importing apartment numbers.
 // TODO(crbug.com/1153715): Remove once launched.
 const base::Feature kAutofillEnableSupportForApartmentNumbers{
@@ -64,8 +85,8 @@ const base::Feature kAutofillEnableSupportForApartmentNumbers{
 // account-based storage when sync the transport is enabled.
 const base::Feature kAutofillEnableAccountWalletStorage {
   "AutofillEnableAccountWalletStorage",
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID) || defined(OS_IOS)
-      // Wallet transport is only currently available on Win/Mac/Linux.
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_IOS)
+      // Wallet transport is only currently available on Win/Mac/Linux/Android.
       // (Somehow, swapping this check makes iOS unhappy?)
       base::FEATURE_DISABLED_BY_DEFAULT
 #else
@@ -89,6 +110,13 @@ const base::Feature kAutofillEnableDependentLocalityParsing{
 // Controls whether we show "Hide suggestions" item in the suggestions menu.
 const base::Feature kAutofillEnableHideSuggestionsUI{
     "AutofillEnableHideSuggestionsUI", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Controls whether to save the first number in a form with multiple phone
+// numbers instead of aborting the import.
+// TODO(crbug.com/1167484) Remove once launched
+const base::Feature kAutofillEnableImportWhenMultiplePhoneNumbers{
+    "AutofillEnableImportWhenMultiplePhoneNumbers",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // When enabled and user has single account, a footer indicating user's e-mail
 // address and profile picture will appear at the bottom of InfoBars which has
@@ -120,6 +148,11 @@ const base::Feature kAutofillEnablePasswordInfoBarAccountIndicationFooter{
     "AutofillEnablePasswordInfoBarAccountIndicationFooter",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// When enabled, the address profile deduplication logic runs after the browser
+// startup, once per chrome version.
+const base::Feature kAutofillEnableProfileDeduplication{
+    "AutofillEnableProfileDeduplication", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls if Autofill supports new structure in names.
 // TODO(crbug.com/1098943): Remove once launched.
 const base::Feature kAutofillEnableSupportForMoreStructureInNames{
@@ -141,9 +174,9 @@ const base::Feature kAutofillEnableSupportForMergingSubsetNames{
 // Controls whether honorific prefix is shown and editable in Autofill Settings
 // on Android, iOS and Desktop.
 // TODO(crbug.com/1141460): Remove once launched.
-const base::Feature kAutofillEnableUIForHonorificPrefixesInSettings{
-   "AutofillEnableUIForHonorificPrefixesInSettings",
-   base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kAutofillEnableSupportForHonorificPrefixes{
+    "AutofillEnableSupportForHonorificPrefixes",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls whether or not all datalist shall be extracted into FormFieldData.
 // This feature is enabled in both WebView and WebLayer where all datalists
@@ -159,6 +192,12 @@ const base::Feature kAutofillExtractAllDatalists{
 // counter, effectively reducing the threshold for some forms.
 const base::Feature kAutofillFixFillableFieldTypes{
     "AutofillFixFillableFieldTypes", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Controls if a server prediction with a prediction source |OVERRIDE| is
+// granted precedence over html type attributes.
+// TODO(crbug.com/1170384) Remove once launched
+const base::Feature kAutofillServerTypeTakesPrecedence{
+    "AutofillServerTypeTakesPrecedence", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // When enabled, Autofill will use FormRendererIds instead of
 // GetIdentifierForRefill() to identify forms during refills.
@@ -186,15 +225,18 @@ const base::Feature kAutofillPruneSuggestions{
     "AutofillPruneSuggestions", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kAutofillMetadataUploads{"AutofillMetadataUploads",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kAutofillOffNoServerData{"AutofillOffNoServerData",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
 // When enabled, Autofill will load remote patterns via the component updater.
 // TODO(crbug/1121990): Remove once launched.
 extern const base::Feature kAutofillParsingPatternsFromRemote{
     "AutofillParsingPatternsFromRemote", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables detection of language from Translate.
+// TODO(crbug/1150895): Cleanup when launched.
+const base::Feature kAutofillParsingPatternsLanguageDetection{
+    "AutofillParsingPatternsLanguageDetection",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls whether negative patterns are used to parse the field type.
 // TODO(crbug.com/1132831): Remove once launched.
@@ -232,13 +274,6 @@ const base::Feature kAutofillProfileImportFromUnfocusableFields{
 // with invalid data are not suggested.
 const base::Feature kAutofillProfileServerValidation{
     "AutofillProfileServerValidation", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Controls whether or not a group of fields not enclosed in a form can be
-// considered a form. If this is enabled, unowned fields will only constitute
-// a form if there are signals to suggest that this might a checkout page.
-const base::Feature kAutofillRestrictUnownedFieldsToFormlessCheckout{
-    "AutofillRestrictUnownedFieldsToFormlessCheckout",
-    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls whether or not overall prediction are retrieved from the cache.
 const base::Feature kAutofillRetrieveOverallPredictionsFromCache{
@@ -279,6 +314,13 @@ const base::Feature kAutofillShowTypePredictions{
 // FormFieldData.SimilarFieldAs.
 const base::Feature kAutofillSkipComparingInferredLabels{
     "AutofillSkipComparingInferredLabels", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Controls whether we require an expiration date or verification field when a
+// name field is detected for a credit card, but we aren't confident it's not
+// a non-credit card specific name field.
+const base::Feature kAutofillStrictContextualCardNameConditions{
+    "AutofillStrictContextualCardNameConditions",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls whether Autofill should search prefixes of all words/tokens when
 // filtering profiles, or only on prefixes of the whole string.
@@ -333,6 +375,13 @@ const char kAutofillUseMobileLabelDisambiguationParameterShowOne[] = "show-one";
 // TODO(crbug/1131038): Remove once it's launched.
 const base::Feature kAutofillUseUniqueRendererIDsOnIOS{
     "AutofillUseUniqueRendererIDsOnIOS", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Controls whether the creation of new address profiles is enabled in settings
+// on IOS.
+// TODO(crbug/1167105): Remove once it's launched.
+const base::Feature kAutofillEnableNewAddressProfileCreationInSettingsOnIOS{
+    "AutofillEnableNewAddressProfileCreationInSettingsOnIOS",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 #if defined(OS_ANDROID)

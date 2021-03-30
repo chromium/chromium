@@ -12,7 +12,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
-#include "chrome/browser/chromeos/arc/icon_decode_request.h"
+#include "chrome/browser/ash/arc/icon_decode_request.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/arc/arc_playstore_app_context_menu.h"
@@ -21,6 +21,7 @@
 #include "components/arc/mojom/app.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/crx_file/id_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/canvas_image_source.h"
@@ -114,10 +115,12 @@ ArcPlayStoreSearchResult::ArcPlayStoreSearchResult(
   set_id(kPlayAppPrefix +
          crx_file::id_util::GenerateId(install_intent_uri().value()));
   SetDisplayType(ash::SearchResultDisplayType::kTile);
-  SetBadgeIcon(CreateBadgeIcon(
+  // TODO: The badge icon should be updated to pass through a vector icon and
+  // color id rather than hardcoding the colors here.
+  SetBadgeIcon(ui::ImageModel::FromImageSkia(CreateBadgeIcon(
       is_instant_app() ? ash::kBadgeInstantIcon : ash::kBadgePlayIcon,
-      ash::AppListConfig::instance().search_tile_badge_icon_dimension(),
-      kBadgePadding, kBadgeIconSize, kBadgeColor));
+      ash::SharedAppListConfig::instance().search_tile_badge_icon_dimension(),
+      kBadgePadding, kBadgeIconSize, kBadgeColor)));
   SetFormattedPrice(base::UTF8ToUTF16(formatted_price().value()));
   SetRating(review_score());
   SetResultType(is_instant_app() ? ash::AppListSearchResultType::kInstantApp
@@ -128,7 +131,7 @@ ArcPlayStoreSearchResult::ArcPlayStoreSearchResult(
   if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
     apps::ArcRawIconPngDataToImageSkia(
         std::move(data_->icon),
-        ash::AppListConfig::instance().search_tile_icon_dimension(),
+        ash::SharedAppListConfig::instance().search_tile_icon_dimension(),
         base::BindOnce(&ArcPlayStoreSearchResult::SetIcon,
                        weak_ptr_factory_.GetWeakPtr()));
     return;
@@ -141,7 +144,7 @@ ArcPlayStoreSearchResult::ArcPlayStoreSearchResult(
     icon_decode_request_ = std::make_unique<arc::IconDecodeRequest>(
         base::BindOnce(&ArcPlayStoreSearchResult::SetIcon,
                        weak_ptr_factory_.GetWeakPtr()),
-        ash::AppListConfig::instance().search_tile_icon_dimension());
+        ash::SharedAppListConfig::instance().search_tile_icon_dimension());
     icon_decode_request_->set_normalized(true);
     icon_decode_request_->StartWithOptions(data_->icon_png_data);
     return;
@@ -150,7 +153,7 @@ ArcPlayStoreSearchResult::ArcPlayStoreSearchResult(
   icon_decode_request_ = std::make_unique<arc::IconDecodeRequest>(
       base::BindOnce(&ArcPlayStoreSearchResult::SetIcon,
                      weak_ptr_factory_.GetWeakPtr()),
-      ash::AppListConfig::instance().search_tile_icon_dimension());
+      ash::SharedAppListConfig::instance().search_tile_icon_dimension());
   icon_decode_request_->set_normalized(true);
   icon_decode_request_->StartWithOptions(icon_png_data());
 }

@@ -41,7 +41,7 @@ void CookieSettingsPolicyHandler::ApplyPolicySettings(
   // privacy sandbox if it is set to BLOCK.
   const base::Value* default_cookie_setting =
       policies.GetValue(policy::key::kDefaultCookiesSetting);
-  if (default_cookie_setting &&
+  if (default_cookie_setting && default_cookie_setting->is_int() &&
       static_cast<ContentSetting>(default_cookie_setting->GetInt()) ==
           CONTENT_SETTING_BLOCK) {
     prefs->SetBoolean(prefs::kPrivacySandboxApisEnabled, false);

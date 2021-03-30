@@ -5,21 +5,20 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_TOPLEVEL_WINDOW_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_TOPLEVEL_WINDOW_H_
 
+#include "base/containers/circular_deque.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
-#include "ui/platform_window/wm/wm_drag_handler.h"
 #include "ui/platform_window/wm/wm_move_loop_handler.h"
 #include "ui/platform_window/wm/wm_move_resize_handler.h"
 
 namespace ui {
 
-class ShellSurfaceWrapper;
+class ShellToplevelWrapper;
 
 class WaylandToplevelWindow : public WaylandWindow,
                               public WmMoveResizeHandler,
-                              public WmDragHandler,
                               public WmMoveLoopHandler,
                               public WaylandExtension {
  public:
@@ -29,7 +28,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   WaylandToplevelWindow& operator=(const WaylandToplevelWindow&) = delete;
   ~WaylandToplevelWindow() override;
 
-  ShellSurfaceWrapper* shell_surface() const { return shell_surface_.get(); }
+  ShellToplevelWrapper* shell_toplevel() const { return shell_toplevel_.get(); }
 
   // Apply the bounds specified in the most recent configure event. This should
   // be called after processing all pending events in the wayland connection.
@@ -40,24 +39,17 @@ class WaylandToplevelWindow : public WaylandWindow,
       int hittest,
       const gfx::Point& pointer_location_in_px) override;
 
-  // WmDragHandler
-  bool StartDrag(const ui::OSExchangeData& data,
-                 int operation,
-                 gfx::NativeCursor cursor,
-                 bool can_grab_pointer,
-                 WmDragHandler::Delegate* delegate) override;
-  void CancelDrag() override;
-
-  // PlatformWindow
+  // PlatformWindow:
   void Show(bool inactive) override;
   void Hide() override;
   bool IsVisible() const override;
-  void SetTitle(const base::string16& title) override;
+  void SetTitle(const std::u16string& title) override;
   void ToggleFullscreen() override;
   void Maximize() override;
   void Minimize() override;
   void Restore() override;
   PlatformWindowState GetPlatformWindowState() const override;
+  void Activate() override;
   void SizeConstraintsChanged() override;
   std::string GetWindowUniqueId() const override;
   // SetUseNativeFrame and ShouldUseNativeFrame decide on
@@ -65,22 +57,30 @@ class WaylandToplevelWindow : public WaylandWindow,
   void SetUseNativeFrame(bool use_native_frame) override;
   bool ShouldUseNativeFrame() const override;
 
+  // WaylandWindow overrides:
+  base::Optional<std::vector<gfx::Rect>> GetWindowShape() const override;
+
  private:
   // WaylandWindow overrides:
-  void HandleSurfaceConfigure(int32_t widht,
-                              int32_t height,
-                              bool is_maximized,
-                              bool is_fullscreen,
-                              bool is_activated) override;
-  void OnDragEnter(const gfx::PointF& point,
-                   std::unique_ptr<OSExchangeData> data,
-                   int operation) override;
-  int OnDragMotion(const gfx::PointF& point, int operation) override;
-  void OnDragDrop() override;
-  void OnDragLeave() override;
-  void OnDragSessionClose(uint32_t dnd_action) override;
+  void HandleToplevelConfigure(int32_t width,
+                               int32_t height,
+                               bool is_maximized,
+                               bool is_fullscreen,
+                               bool is_activated) override;
+  void HandleSurfaceConfigure(uint32_t serial) override;
+  void UpdateVisualSize(const gfx::Size& size_px) override;
   bool OnInitialize(PlatformWindowInitProperties properties) override;
   bool IsActive() const override;
+
+  // zaura_surface listeners
+  static void LockFrame(void* data, zaura_surface* surface);
+  static void UnlockFrame(void* data, zaura_surface* surface);
+
+  // Calls UpdateWindowShape, set_input_region and set_opaque_region
+  // for this toplevel window.
+  void UpdateWindowMask() override;
+  // Update the window shape using the window mask of PlatformWindowDelegate.
+  void UpdateWindowShape() override;
 
   // WmMoveLoopHandler:
   bool RunMoveLoop(const gfx::Vector2d& drag_offset) override;
@@ -89,16 +89,18 @@ class WaylandToplevelWindow : public WaylandWindow,
   // WaylandExtension:
   void StartWindowDraggingSessionIfNeeded() override;
   void SetImmersiveFullscreenStatus(bool status) override;
+  void ShowSnapPreview(WaylandWindowSnapDirection snap) override;
+  void CommitSnap(WaylandWindowSnapDirection snap) override;
 
   void TriggerStateChanges();
   void SetWindowState(PlatformWindowState state);
 
   // Creates a surface window, which is visible as a main window.
-  bool CreateShellSurface();
+  bool CreateShellToplevel();
 
   WmMoveResizeHandler* AsWmMoveResizeHandler();
 
-  // Propagates the |min_size_| and |max_size_| to the ShellSurface.
+  // Propagates the |min_size_| and |max_size_| to the ShellToplevel.
   void SetSizeConstraints();
 
   void SetOrResetRestoredBounds();
@@ -107,13 +109,15 @@ class WaylandToplevelWindow : public WaylandWindow,
   // is available.
   void InitializeAuraShellSurface();
 
-  // Set decoration mode for a window.
-  void SetDecorationMode();
+  // Sets decoration mode for a window.
+  void OnDecorationModeChanged();
+
+  // Called when frame is locked to normal state or unlocked from
+  // previously locked state.
+  void OnFrameLockingChanged(bool lock);
 
   // Wrappers around shell surface.
-  std::unique_ptr<ShellSurfaceWrapper> shell_surface_;
-
-  WmDragHandler::Delegate* drag_handler_delegate_ = nullptr;
+  std::unique_ptr<ShellToplevelWrapper> shell_toplevel_;
 
   // These bounds attributes below have suffices that indicate units used.
   // Wayland operates in DIP but the platform operates in physical pixels so
@@ -146,14 +150,12 @@ class WaylandToplevelWindow : public WaylandWindow,
   std::string wm_class_class_;
 #endif
 
-  // Title of the ShellSurface.
-  base::string16 window_title_;
+  // Title of the ShellToplevel.
+  std::u16string window_title_;
 
   // Max and min sizes of the WaylandToplevelWindow window.
   base::Optional<gfx::Size> min_size_;
   base::Optional<gfx::Size> max_size_;
-
-  base::OnceClosure drag_loop_quit_closure_;
 
   wl::Object<zaura_surface> aura_surface_;
 
@@ -163,7 +165,25 @@ class WaylandToplevelWindow : public WaylandWindow,
   // e.g. lacros-taskmanager.
   bool use_native_frame_ = false;
 
-  base::WeakPtrFactory<WaylandToplevelWindow> weak_ptr_factory_{this};
+  base::Optional<std::vector<gfx::Rect>> window_shape_in_dips_;
+
+  // Pending xdg-shell configures, once this window is drawn to |bounds_dip|,
+  // ack_configure with |serial| will be sent to the Wayland compositor.
+  struct PendingConfigure {
+    gfx::Rect bounds_dip;
+    uint32_t serial;
+  };
+  base::circular_deque<PendingConfigure> pending_configures_;
+
+  // Tracks how many the window show state requests by made by the Browser
+  // are currently being processed by the Wayland Compositor. In practice,
+  // each individual increment corresponds to an explicit window show state
+  // change request, and gets a response by the Compositor.
+  //
+  // This mechanism allows Ozone/Wayland to filter out notifying the delegate
+  // (PlatformWindowDelegate) more than once, for the same window show state
+  // change.
+  uint32_t requested_window_show_state_count_ = 0;
 };
 
 }  // namespace ui

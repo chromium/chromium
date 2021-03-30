@@ -13,13 +13,13 @@
 #include "cc/trees/transform_node.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/widget/device_emulation_params.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/public/web/web_ax_context.h"
-#include "third_party/blink/public/web/web_context_menu_data.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_script_source.h"
@@ -71,7 +71,7 @@ using blink::url_test_helpers::ToKURL;
 
 namespace blink {
 
-::std::ostream& operator<<(::std::ostream& os, const WebContextMenuData& data) {
+::std::ostream& operator<<(::std::ostream& os, const ContextMenuData& data) {
   return os << "Context menu location: [" << data.mouse_position.x() << ", "
             << data.mouse_position.y() << "]";
 }
@@ -287,7 +287,7 @@ TEST_P(VisualViewportTest, TestVisibleContentRect) {
       WebView()->GetBrowserControls().Params());
 
   // Scroll layout viewport and verify visibleContentRect.
-  WebView()->MainFrameImpl()->SetScrollOffset(WebSize(0, 50));
+  WebView()->MainFrameImpl()->SetScrollOffset(gfx::ScrollOffset(0, 50));
 
   VisualViewport& visual_viewport = GetFrame()->GetPage()->GetVisualViewport();
   EXPECT_EQ(IntRect(IntPoint(0, 0), size - scrollbar_size),
@@ -392,7 +392,7 @@ TEST_P(VisualViewportTest, TestResizeAfterVerticalScroll) {
   WebView()->MainFrameViewWidget()->Resize(gfx::Size(100, 200));
 
   // Scroll main frame to the bottom of the document
-  WebView()->MainFrameImpl()->SetScrollOffset(WebSize(0, 400));
+  WebView()->MainFrameImpl()->SetScrollOffset(gfx::ScrollOffset(0, 400));
   EXPECT_EQ(ScrollOffset(0, 400),
             GetFrame()->View()->LayoutViewport()->GetScrollOffset());
 
@@ -1119,9 +1119,8 @@ TEST_P(VisualViewportTest, TestWebViewResizeCausesViewportConstrainedLayout) {
 class VisualViewportMockWebFrameClient
     : public frame_test_helpers::TestWebFrameClient {
  public:
-  MOCK_METHOD2(ShowContextMenu,
-               void(const WebContextMenuData&,
-                    const base::Optional<gfx::Point>&));
+  MOCK_METHOD2(UpdateContextMenuDataForTesting,
+               void(const ContextMenuData&, const base::Optional<gfx::Point>&));
   MOCK_METHOD0(DidChangeScrollOffset, void());
 };
 
@@ -1156,11 +1155,12 @@ TEST_P(VisualViewportTest, TestContextMenuShownInCorrectLocation) {
 
   WebLocalFrameClient* old_client = WebView()->MainFrameImpl()->Client();
   VisualViewportMockWebFrameClient mock_web_frame_client;
-  EXPECT_CALL(mock_web_frame_client,
-              ShowContextMenu(ContextMenuAtLocation(
-                                  mouse_down_event.PositionInWidget().x(),
-                                  mouse_down_event.PositionInWidget().y()),
-                              _));
+  EXPECT_CALL(
+      mock_web_frame_client,
+      UpdateContextMenuDataForTesting(
+          ContextMenuAtLocation(mouse_down_event.PositionInWidget().x(),
+                                mouse_down_event.PositionInWidget().y()),
+          _));
 
   // Do a sanity check with no scale applied.
   WebView()->MainFrameImpl()->SetClient(&mock_web_frame_client);
@@ -1180,11 +1180,12 @@ TEST_P(VisualViewportTest, TestContextMenuShownInCorrectLocation) {
   WebView()->SetPageScaleFactor(2);
   EXPECT_CALL(mock_web_frame_client, DidChangeScrollOffset());
   visual_viewport.SetLocation(FloatPoint(60, 80));
-  EXPECT_CALL(mock_web_frame_client,
-              ShowContextMenu(ContextMenuAtLocation(
-                                  mouse_down_event.PositionInWidget().x(),
-                                  mouse_down_event.PositionInWidget().y()),
-                              _));
+  EXPECT_CALL(
+      mock_web_frame_client,
+      UpdateContextMenuDataForTesting(
+          ContextMenuAtLocation(mouse_down_event.PositionInWidget().x(),
+                                mouse_down_event.PositionInWidget().y()),
+          _));
 
   mouse_down_event.button = WebMouseEvent::Button::kRight;
   WebView()->MainFrameViewWidget()->HandleInputEvent(
@@ -2402,6 +2403,48 @@ TEST_P(VisualViewportTest, AutoResizeNoHeightUsesMinimumHeight) {
                                      "</style>"
                                      "<div></div>",
                                      base_url);
+}
+
+// When a provisional frame is committed, it will get swapped in. At that
+// point, the VisualViewport will be reset but the Document is in a detached
+// state with no domWindow(). Ensure we correctly reset the viewport properties
+// but don't crash trying to enqueue resize and scroll events in the document.
+// https://crbug.com/1175916.
+TEST_P(VisualViewportTest, SwapMainFrame) {
+  InitializeWithDesktopSettings();
+
+  WebView()->SetPageScaleFactor(2.0f);
+  WebView()->SetVisualViewportOffset(gfx::PointF(10, 20));
+
+  WebLocalFrame* local_frame =
+      helper_.CreateProvisional(*helper_.LocalMainFrame());
+
+  // Commit the provisional frame so it gets swapped in.
+  RegisterMockedHttpURLLoad("200-by-300.html");
+  frame_test_helpers::LoadFrame(local_frame, base_url_ + "200-by-300.html");
+
+  EXPECT_EQ(WebView()->PageScaleFactor(), 1.0f);
+  EXPECT_EQ(WebView()->VisualViewportOffset().x(), 0.0f);
+  EXPECT_EQ(WebView()->VisualViewportOffset().y(), 0.0f);
+}
+
+// Similar to above but checks the case where a page is loaded such that it
+// will zoom out as a result of loading and layout (i.e. loading a desktop page
+// on Android).
+TEST_P(VisualViewportTest, SwapMainFrameLoadZoomedOut) {
+  InitializeWithAndroidSettings();
+  WebView()->MainFrameViewWidget()->Resize(gfx::Size(100, 150));
+
+  WebLocalFrame* local_frame =
+      helper_.CreateProvisional(*helper_.LocalMainFrame());
+
+  // Commit the provisional frame so it gets swapped in.
+  RegisterMockedHttpURLLoad("200-by-300.html");
+  frame_test_helpers::LoadFrame(local_frame, base_url_ + "200-by-300.html");
+
+  EXPECT_EQ(WebView()->PageScaleFactor(), 0.5f);
+  EXPECT_EQ(WebView()->VisualViewportOffset().x(), 0.0f);
+  EXPECT_EQ(WebView()->VisualViewportOffset().y(), 0.0f);
 }
 
 class VisualViewportSimTest : public SimTest {

@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+PASS Content Security Policy: Expects blocked for worklet-audio-import-data to cross-https origin and keep-origin redirection from https context.
+FAIL Content Security Policy: Expects blocked for worklet-audio-import-data to cross-https origin and keep-origin redirection from https context.: securitypolicyviolation assert_equals: One violation event should be fired expected 1 but got 0
+PASS Content Security Policy: Expects blocked for worklet-audio-import-data to cross-https origin and no-redirect redirection from https context.
+FAIL Content Security Policy: Expects blocked for worklet-audio-import-data to cross-https origin and no-redirect redirection from https context.: securitypolicyviolation assert_equals: One violation event should be fired expected 1 but got 0
+PASS Content Security Policy: Expects blocked for worklet-audio-import-data to cross-https origin and swap-origin redirection from https context.
+FAIL Content Security Policy: Expects blocked for worklet-audio-import-data to cross-https origin and swap-origin redirection from https context.: securitypolicyviolation assert_equals: One violation event should be fired expected 1 but got 0
+PASS Content Security Policy: Expects blocked for worklet-audio-import-data to same-https origin and keep-origin redirection from https context.
+FAIL Content Security Policy: Expects blocked for worklet-audio-import-data to same-https origin and keep-origin redirection from https context.: securitypolicyviolation assert_equals: One violation event should be fired expected 1 but got 0
+PASS Content Security Policy: Expects blocked for worklet-audio-import-data to same-https origin and no-redirect redirection from https context.
+FAIL Content Security Policy: Expects blocked for worklet-audio-import-data to same-https origin and no-redirect redirection from https context.: securitypolicyviolation assert_equals: One violation event should be fired expected 1 but got 0
+PASS Content Security Policy: Expects blocked for worklet-audio-import-data to same-https origin and swap-origin redirection from https context.
+FAIL Content Security Policy: Expects blocked for worklet-audio-import-data to same-https origin and swap-origin redirection from https context.: securitypolicyviolation assert_equals: One violation event should be fired expected 1 but got 0
+Harness: the test ran to completion.
+

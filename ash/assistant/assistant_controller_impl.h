@@ -23,6 +23,7 @@
 #include "ash/assistant/assistant_view_delegate_impl.h"
 #include "ash/assistant/assistant_web_ui_controller.h"
 #include "ash/assistant/ui/assistant_view_delegate.h"
+#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/public/cpp/assistant/assistant_interface_binder.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
@@ -31,7 +32,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "chromeos/audio/cras_audio_handler.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -50,7 +50,7 @@ class ASH_EXPORT AssistantControllerImpl
       public AssistantControllerObserver,
       public AssistantStateObserver,
       public mojom::AssistantVolumeControl,
-      public chromeos::CrasAudioHandler::AudioObserver,
+      public CrasAudioHandler::AudioObserver,
       public AccessibilityObserver,
       public AssistantInterfaceBinder {
  public:
@@ -91,7 +91,7 @@ class ASH_EXPORT AssistantControllerImpl
   void AddVolumeObserver(
       mojo::PendingRemote<mojom::VolumeObserver> observer) override;
 
-  // chromeos::CrasAudioHandler::AudioObserver:
+  // CrasAudioHandler::AudioObserver:
   void OnOutputMuteChanged(bool mute_on) override;
   void OnOutputNodeVolumeChanged(uint64_t node, int volume) override;
 

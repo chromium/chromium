@@ -12,6 +12,10 @@ namespace prefs {
 
 extern const char kAcceptLanguages[];
 
+extern const char kSelectedLanguages[];
+
+extern const char kForcedLanguages[];
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kPreferredLanguages[];
 extern const char kPreferredLanguagesSyncable[];

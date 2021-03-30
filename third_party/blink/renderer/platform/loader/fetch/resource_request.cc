@@ -44,6 +44,7 @@ namespace blink {
 ResourceRequestHead::WebBundleTokenParams&
 ResourceRequestHead::WebBundleTokenParams::operator=(
     const WebBundleTokenParams& other) {
+  bundle_url = other.bundle_url;
   token = other.token;
   handle = other.CloneHandle();
   return *this;
@@ -55,9 +56,12 @@ ResourceRequestHead::WebBundleTokenParams::WebBundleTokenParams(
 }
 
 ResourceRequestHead::WebBundleTokenParams::WebBundleTokenParams(
+    const KURL& bundle_url,
     const base::UnguessableToken& web_bundle_token,
     mojo::PendingRemote<network::mojom::WebBundleHandle> web_bundle_handle)
-    : token(web_bundle_token), handle(std::move(web_bundle_handle)) {}
+    : bundle_url(bundle_url),
+      token(web_bundle_token),
+      handle(std::move(web_bundle_handle)) {}
 
 mojo::PendingRemote<network::mojom::WebBundleHandle>
 ResourceRequestHead::WebBundleTokenParams::CloneHandle() const {
@@ -160,25 +164,11 @@ ResourceRequest::ResourceRequest(const KURL& url) : ResourceRequestHead(url) {}
 ResourceRequest::ResourceRequest(const ResourceRequestHead& head)
     : ResourceRequestHead(head) {}
 
-ResourceRequest& ResourceRequest::operator=(const ResourceRequest& src) {
-  DCHECK(!body_.StreamBody().is_valid());
-  DCHECK(!src.body_.StreamBody().is_valid());
-  this->ResourceRequestHead::operator=(src);
-  body_.SetFormBody(src.body_.FormBody());
-  return *this;
-}
-
 ResourceRequest::ResourceRequest(ResourceRequest&&) = default;
 
 ResourceRequest& ResourceRequest::operator=(ResourceRequest&&) = default;
 
 ResourceRequest::~ResourceRequest() = default;
-
-void ResourceRequest::CopyFrom(const ResourceRequest& src) {
-  DCHECK(!body_.StreamBody().is_valid());
-  DCHECK(!src.body_.StreamBody().is_valid());
-  *this = src;
-}
 
 void ResourceRequest::CopyHeadFrom(const ResourceRequestHead& src) {
   this->ResourceRequestHead::operator=(src);
@@ -230,6 +220,7 @@ std::unique_ptr<ResourceRequest> ResourceRequestHead::CreateRedirectRequest(
       IsSignedExchangePrefetchCacheEnabled());
   request->SetRecursivePrefetchToken(RecursivePrefetchToken());
   request->SetFetchLikeAPI(IsFetchLikeAPI());
+  request->SetFavicon(IsFavicon());
 
   return request;
 }

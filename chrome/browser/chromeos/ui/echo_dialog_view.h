@@ -8,6 +8,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
@@ -29,13 +30,17 @@ class EchoDialogListener;
 // about this.
 class EchoDialogView : public views::DialogDelegateView {
  public:
+  METADATA_HEADER(EchoDialogView);
+
   struct Params {
     bool echo_enabled = false;
-    base::string16 service_name;
-    base::string16 origin;
+    std::u16string service_name;
+    std::u16string origin;
   };
 
   EchoDialogView(EchoDialogListener* listener, const Params& params);
+  EchoDialogView(const EchoDialogView&) = delete;
+  EchoDialogView& operator=(const EchoDialogView&) = delete;
   ~EchoDialogView() override;
 
   // Shows the dialog.
@@ -50,8 +55,8 @@ class EchoDialogView : public views::DialogDelegateView {
   // url. Service name should be underlined in the dialog, and hovering over its
   // label should display tooltip containing |origin|.
   // The dialog will have both OK and Cancel buttons.
-  void InitForEnabledEcho(const base::string16& service_name,
-                          const base::string16& origin);
+  void InitForEnabledEcho(const std::u16string& service_name,
+                          const std::u16string& origin);
 
   // Initializes dialog layout that will be shown when echo extension is not
   // allowed to redeem offers. The dialog will be showing a message that the
@@ -62,8 +67,6 @@ class EchoDialogView : public views::DialogDelegateView {
   // Sets the border and label view.
   void SetBorderAndLabel(std::unique_ptr<views::View> label,
                          const gfx::FontList& label_font_list);
-
-  DISALLOW_COPY_AND_ASSIGN(EchoDialogView);
 };
 
 }  // namespace chromeos

@@ -5,19 +5,17 @@
 #ifndef COMPONENTS_PERMISSIONS_PERMISSION_REQUEST_H_
 #define COMPONENTS_PERMISSIONS_PERMISSION_REQUEST_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request_enums.h"
 #include "url/gurl.h"
 
-namespace gfx {
-struct VectorIcon;
-}
-
 namespace permissions {
+enum class RequestType;
 
 // Describes the interface a feature making permission requests should
 // implement. A class of this type is registered with the permission request
@@ -29,45 +27,37 @@ namespace permissions {
 // requests, or depending on the situation, not shown at all.
 class PermissionRequest {
  public:
-#if defined(OS_ANDROID)
-  // On Android, icons are represented with an IDR_ identifier.
-  typedef int IconId;
-#else
-  // On desktop, we use a vector icon.
-  typedef const gfx::VectorIcon& IconId;
-#endif
-
   PermissionRequest();
   virtual ~PermissionRequest() {}
 
-  // The icon to use next to the message text fragment in the permission bubble.
-  virtual IconId GetIconId() const = 0;
+  // The type of this request.
+  virtual RequestType GetRequestType() const = 0;
 
 #if defined(OS_ANDROID)
   // Returns the full prompt text for this permission. This is currently only
   // used on Android.
-  virtual base::string16 GetMessageText() const = 0;
+  virtual std::u16string GetMessageText() const = 0;
 
   // Returns the title of this permission as text when the permission request is
   // displayed as a quiet prompt. Only used on Android. By default it returns
   // the same value as |GetTitleText| unless overridden.
-  virtual base::string16 GetQuietTitleText() const;
+  virtual std::u16string GetQuietTitleText() const;
 
   // Returns the full prompt text for this permission as text when the
   // permission request is displayed as a quiet prompt. Only used on Android. By
   // default it returns the same value as |GetMessageText| unless overridden.
-  virtual base::string16 GetQuietMessageText() const;
+  virtual std::u16string GetQuietMessageText() const;
 #endif
 
 #if !defined(OS_ANDROID)
   // Returns the short text for the chip button related to this permission.
-  virtual base::Optional<base::string16> GetChipText() const;
+  virtual base::Optional<std::u16string> GetChipText() const;
 #endif
 
   // Returns the shortened prompt text for this permission. The permission
   // bubble may coalesce different requests, and if it does, this text will
   // be displayed next to an image and indicate the user grants the permission.
-  virtual base::string16 GetMessageTextFragment() const = 0;
+  virtual std::u16string GetMessageTextFragment() const = 0;
 
   // Get the origin on whose behalf this permission request is being made.
   virtual GURL GetOrigin() const = 0;
@@ -94,9 +84,6 @@ class PermissionRequest {
   // PermissionGranted(), PermissionDenied() or Canceled(). However, it will not
   // resolve the javascript promise from the requesting origin.
   virtual void RequestFinished() = 0;
-
-  // Used to record UMA metrics for permission requests.
-  virtual PermissionRequestType GetPermissionRequestType() const = 0;
 
   // Used to record UMA for whether requests are associated with a user gesture.
   // To keep things simple this metric is only recorded for the most popular

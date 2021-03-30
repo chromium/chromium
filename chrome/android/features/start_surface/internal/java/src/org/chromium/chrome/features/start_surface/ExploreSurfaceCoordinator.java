@@ -12,11 +12,11 @@ import android.view.ViewGroup;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
-import org.chromium.chrome.browser.feed.FeedV1ActionOptions;
 import org.chromium.chrome.browser.feed.StreamLifecycleManager;
-import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceDelegate;
 import org.chromium.chrome.browser.feed.shared.stream.Stream;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ntp.ScrollableContainerDelegate;
 import org.chromium.chrome.browser.ntp.snippets.SectionHeaderView;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -50,7 +50,8 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
 
     ExploreSurfaceCoordinator(ChromeActivity activity, ViewGroup parentView,
             PropertyModel containerPropertyModel, boolean hasHeader,
-            BottomSheetController bottomSheetController, Supplier<Tab> parentTabSupplier) {
+            BottomSheetController bottomSheetController, Supplier<Tab> parentTabSupplier,
+            ScrollableContainerDelegate scrollableContainerDelegate) {
         mActivity = activity;
         mHasHeader = hasHeader;
         mParentTabSupplier = parentTabSupplier;
@@ -61,8 +62,8 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
             @Override
             public FeedSurfaceCoordinator createFeedSurfaceCoordinator(
                     boolean isInNightMode, boolean isPlaceholderShown) {
-                return internalCreateFeedSurfaceCoordinator(
-                        mHasHeader, isInNightMode, isPlaceholderShown, bottomSheetController);
+                return internalCreateFeedSurfaceCoordinator(mHasHeader, isInNightMode,
+                        isPlaceholderShown, bottomSheetController, scrollableContainerDelegate);
             }
         };
     }
@@ -88,7 +89,8 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
 
     private FeedSurfaceCoordinator internalCreateFeedSurfaceCoordinator(boolean hasHeader,
             boolean isInNightMode, boolean isPlaceholderShown,
-            BottomSheetController bottomSheetController) {
+            BottomSheetController bottomSheetController,
+            ScrollableContainerDelegate scrollableContainerDelegate) {
         if (mExploreSurfaceNavigationDelegate == null) {
             mExploreSurfaceNavigationDelegate =
                     new ExploreSurfaceNavigationDelegate(mParentTabSupplier);
@@ -98,26 +100,21 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
         SectionHeaderView sectionHeaderView = null;
         if (hasHeader) {
             LayoutInflater inflater = LayoutInflater.from(mActivity);
-            if (FeedFeatures.isReportingUserActions()) {
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)) {
                 sectionHeaderView = (SectionHeaderView) inflater.inflate(
-                        R.layout.new_tab_page_snippets_expandable_header_with_menu, null, false);
+                        org.chromium.chrome.R.layout.new_tab_page_multi_feed_header, null, false);
             } else {
-                sectionHeaderView =
-                        (SectionHeaderView) inflater.inflate(R.layout.ss_feed_header, null, false);
+                sectionHeaderView = (SectionHeaderView) inflater.inflate(
+                        org.chromium.chrome.R.layout.new_tab_page_feed_v2_expandable_header, null,
+                        false);
             }
         }
 
-        FeedV1ActionOptions feedActionOptions = new FeedV1ActionOptions();
-        feedActionOptions.inhibitDownload = true;
-        feedActionOptions.inhibitOpenInIncognito = true;
-        feedActionOptions.inhibitOpenInNewTab = true;
-        feedActionOptions.inhibitLearnMore = true;
-
         FeedSurfaceCoordinator feedSurfaceCoordinator = new FeedSurfaceCoordinator(mActivity,
-                mActivity.getSnackbarManager(), mActivity.getTabModelSelector(),
-                mActivity.getActivityTabProvider(), null, null, sectionHeaderView,
-                feedActionOptions, isInNightMode, this, mExploreSurfaceNavigationDelegate, profile,
-                isPlaceholderShown, bottomSheetController);
+                mActivity.getSnackbarManager(), mActivity.getWindowAndroid(), null, null,
+                sectionHeaderView, isInNightMode, this, mExploreSurfaceNavigationDelegate, profile,
+                isPlaceholderShown, bottomSheetController, mActivity.getShareDelegateSupplier(),
+                scrollableContainerDelegate);
         feedSurfaceCoordinator.getView().setId(R.id.start_surface_explore_view);
         return feedSurfaceCoordinator;
         // TODO(crbug.com/982018): Customize surface background for incognito and dark mode.

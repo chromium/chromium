@@ -4,6 +4,7 @@
 
 #include "ppapi/proxy/file_system_resource.h"
 
+#include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/stl_util.h"
 #include "ipc/ipc_message.h"
@@ -79,16 +80,12 @@ int32_t FileSystemResource::Open(int64_t expected_size,
     return PP_ERROR_FAILED;
   called_open_ = true;
 
-  Call<PpapiPluginMsg_FileSystem_OpenReply>(RENDERER,
-      PpapiHostMsg_FileSystem_Open(expected_size),
-      base::Bind(&FileSystemResource::OpenComplete,
-                 this,
-                 callback));
-  Call<PpapiPluginMsg_FileSystem_OpenReply>(BROWSER,
-      PpapiHostMsg_FileSystem_Open(expected_size),
-      base::Bind(&FileSystemResource::OpenComplete,
-                 this,
-                 callback));
+  Call<PpapiPluginMsg_FileSystem_OpenReply>(
+      RENDERER, PpapiHostMsg_FileSystem_Open(expected_size),
+      base::BindOnce(&FileSystemResource::OpenComplete, this, callback));
+  Call<PpapiPluginMsg_FileSystem_OpenReply>(
+      BROWSER, PpapiHostMsg_FileSystem_Open(expected_size),
+      base::BindOnce(&FileSystemResource::OpenComplete, this, callback));
   return PP_OK_COMPLETIONPENDING;
 }
 
@@ -127,7 +124,7 @@ int64_t FileSystemResource::RequestQuota(int64_t amount,
 int32_t FileSystemResource::InitIsolatedFileSystem(
     const std::string& fsid,
     PP_IsolatedFileSystemType_Private type,
-    const base::Callback<void(int32_t)>& callback) {
+    base::OnceCallback<void(int32_t)> callback) {
   // This call is mutually exclusive with Open() above, so we can reuse the
   // called_open state.
   DCHECK(type_ == PP_FILESYSTEMTYPE_ISOLATED);
@@ -135,16 +132,18 @@ int32_t FileSystemResource::InitIsolatedFileSystem(
     return PP_ERROR_FAILED;
   called_open_ = true;
 
-  Call<PpapiPluginMsg_FileSystem_InitIsolatedFileSystemReply>(RENDERER,
-      PpapiHostMsg_FileSystem_InitIsolatedFileSystem(fsid, type),
-      base::Bind(&FileSystemResource::InitIsolatedFileSystemComplete,
-      this,
-      callback));
-  Call<PpapiPluginMsg_FileSystem_InitIsolatedFileSystemReply>(BROWSER,
-      PpapiHostMsg_FileSystem_InitIsolatedFileSystem(fsid, type),
-      base::Bind(&FileSystemResource::InitIsolatedFileSystemComplete,
-      this,
-      callback));
+  base::RepeatingClosure ipc_callback = base::BarrierClosure(
+      2, base::BindOnce(&FileSystemResource::InitIsolatedFileSystemComplete,
+                        this, std::move(callback)));
+
+  Call<PpapiPluginMsg_FileSystem_InitIsolatedFileSystemReply>(
+      RENDERER, PpapiHostMsg_FileSystem_InitIsolatedFileSystem(fsid, type),
+      base::BindOnce(&FileSystemResource::InitIsolatedFileSystemReply, this,
+                     ipc_callback));
+  Call<PpapiPluginMsg_FileSystem_InitIsolatedFileSystemReply>(
+      BROWSER, PpapiHostMsg_FileSystem_InitIsolatedFileSystem(fsid, type),
+      base::BindOnce(&FileSystemResource::InitIsolatedFileSystemReply, this,
+                     ipc_callback));
   return PP_OK_COMPLETIONPENDING;
 }
 
@@ -160,16 +159,19 @@ void FileSystemResource::OpenComplete(
     callback->Run(callback_result_);
 }
 
-void FileSystemResource::InitIsolatedFileSystemComplete(
-    const base::Callback<void(int32_t)>& callback,
+void FileSystemResource::InitIsolatedFileSystemReply(
+    base::OnceClosure callback,
     const ResourceMessageReplyParams& params) {
-  ++callback_count_;
   // Prioritize worse result since only one status can be returned.
   if (params.result() != PP_OK)
     callback_result_ = params.result();
   // Received callback from browser and renderer.
-  if (callback_count_ == 2)
-    callback.Run(callback_result_);
+  std::move(callback).Run();
+}
+
+void FileSystemResource::InitIsolatedFileSystemComplete(
+    base::OnceCallback<void(int32_t)> callback) {
+  std::move(callback).Run(callback_result_);
 }
 
 void FileSystemResource::ReserveQuota(int64_t amount) {
@@ -189,10 +191,9 @@ void FileSystemResource::ReserveQuota(int64_t amount) {
         file_io_api->GetMaxWrittenOffset(),
         file_io_api->GetAppendModeWriteAmount());
   }
-  Call<PpapiPluginMsg_FileSystem_ReserveQuotaReply>(BROWSER,
-      PpapiHostMsg_FileSystem_ReserveQuota(amount, file_growths),
-      base::Bind(&FileSystemResource::ReserveQuotaComplete,
-                 this));
+  Call<PpapiPluginMsg_FileSystem_ReserveQuotaReply>(
+      BROWSER, PpapiHostMsg_FileSystem_ReserveQuota(amount, file_growths),
+      base::BindOnce(&FileSystemResource::ReserveQuotaComplete, this));
 }
 
 void FileSystemResource::ReserveQuotaComplete(

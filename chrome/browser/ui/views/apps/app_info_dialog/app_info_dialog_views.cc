@@ -24,7 +24,7 @@
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_permissions_panel.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_summary_panel.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/web_applications/system_web_app_manager.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_switches.h"
@@ -46,7 +46,7 @@
 #include "ui/views/window/dialog_delegate.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/arc/arc_util.h"
+#include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/arc_app_info_links_panel.h"
@@ -95,28 +95,13 @@ bool CanShowAppInfoDialog(Profile* profile, const std::string& extension_id) {
   return CanPlatformShowAppInfoDialog();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void ShowAppInfoInAppList(gfx::NativeWindow parent,
-                          const gfx::Rect& app_info_bounds,
-                          Profile* profile,
-                          const extensions::Extension* app) {
-  views::DialogDelegate* dialog = CreateAppListContainerForView(
-      std::make_unique<AppInfoDialog>(profile, app));
-
-  views::Widget* dialog_widget =
-      constrained_window::CreateBrowserModalDialogViews(dialog, parent);
-  dialog_widget->SetBounds(app_info_bounds);
-  dialog_widget->Show();
-}
-#endif
-
 void ShowAppInfoInNativeDialog(content::WebContents* web_contents,
                                Profile* profile,
                                const extensions::Extension* app,
-                               base::RepeatingClosure close_callback) {
+                               base::OnceClosure close_callback) {
   views::DialogDelegate* dialog = CreateDialogContainerForView(
       std::make_unique<AppInfoDialog>(profile, app), kDialogSize,
-      close_callback);
+      std::move(close_callback));
   views::Widget* dialog_widget;
   if (dialog->GetModalType() == ui::MODAL_TYPE_CHILD) {
     dialog_widget =

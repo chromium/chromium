@@ -13,7 +13,6 @@
 
 #include "base/strings/abseil_string_conversions.h"
 #include "net/base/hex_utils.h"
-#include "net/third_party/quiche/src/common/platform/api/quiche_string_piece.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "third_party/abseil-cpp/absl/strings/escaping.h"
 #include "third_party/abseil-cpp/absl/strings/match.h"

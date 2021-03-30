@@ -237,10 +237,13 @@ Polymer({
     return idleOptions.length === 1;
   },
 
-  /** @private */
-  onAcIdleSelectChange_() {
+  /**
+   * @param {!Event} event
+   * @private
+   */
+  onAcIdleSelectChange_(event) {
     const behavior = /** @type {settings.IdleBehavior} */
-        (parseInt(this.$$('#acIdleSelect').value, 10));
+        (parseInt(event.target.value, 10));
     this.browserProxy_.setIdleBehavior(behavior, true /* whenOnAc */);
     settings.recordSettingChange();
   },

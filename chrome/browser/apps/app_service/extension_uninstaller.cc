@@ -47,7 +47,7 @@ void ExtensionUninstaller::Run() {
 
 void ExtensionUninstaller::OnExtensionUninstallDialogClosed(
     bool did_start_uninstall,
-    const base::string16& error) {
+    const std::u16string& error) {
   delete this;
 }
 

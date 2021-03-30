@@ -11,10 +11,13 @@ Browser initiated navigation blocked cookies:[
             name : name
             path : /inspector-protocol/network/resources
             priority : Medium
+            sameParty : false
             sameSite : Strict
             secure : false
             session : true
             size : 9
+            sourcePort : 8443
+            sourceScheme : Secure
             value : value
         }
     }
@@ -31,10 +34,13 @@ Javascript initiated navigation blocked cookies:n[
             name : name
             path : /inspector-protocol/network/resources
             priority : Medium
+            sameParty : false
             sameSite : Strict
             secure : false
             session : true
             size : 9
+            sourcePort : 8443
+            sourceScheme : Secure
             value : value
         }
     }
@@ -51,10 +57,13 @@ Javascript initiated subresource blocked cookies:}[
             name : name
             path : /inspector-protocol/network/resources
             priority : Medium
+            sameParty : false
             sameSite : Strict
             secure : false
             session : true
             size : 9
+            sourcePort : 8443
+            sourceScheme : Secure
             value : value
         }
     }

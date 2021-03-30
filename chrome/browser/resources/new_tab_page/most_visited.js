@@ -21,7 +21,8 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {Debouncer, html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BrowserProxy} from './browser_proxy.js';
+import {NewTabPageProxy} from './new_tab_page_proxy.js';
+import {WindowProxy} from './window_proxy.js';
 
 /**
  * @enum {number}
@@ -227,7 +228,7 @@ class MostVisitedElement extends PolymerElement {
     super();
     /** @private {boolean} */
     this.adding_ = false;
-    const {callbackRouter, handler} = BrowserProxy.getInstance();
+    const {callbackRouter, handler} = NewTabPageProxy.getInstance();
     /** @private {!newTabPage.mojom.PageCallbackRouter} */
     this.callbackRouter_ = callbackRouter;
     /** @private {newTabPage.mojom.PageHandlerRemote} */
@@ -294,12 +295,13 @@ class MostVisitedElement extends PolymerElement {
 
     /** @private {!Function} */
     this.boundOnWidthChange_ = this.updateScreenWidth_.bind(this);
-    const {matchMedia} = BrowserProxy.getInstance();
     /** @private {!MediaQueryList} */
-    this.mediaListenerWideWidth_ = matchMedia('(min-width: 672px)');
+    this.mediaListenerWideWidth_ =
+        WindowProxy.getInstance().matchMedia('(min-width: 672px)');
     this.mediaListenerWideWidth_.addListener(this.boundOnWidthChange_);
     /** @private {!MediaQueryList} */
-    this.mediaListenerMediumWidth_ = matchMedia('(min-width: 560px)');
+    this.mediaListenerMediumWidth_ =
+        WindowProxy.getInstance().matchMedia('(min-width: 560px)');
     this.mediaListenerMediumWidth_.addListener(this.boundOnWidthChange_);
     this.updateScreenWidth_();
     /** @private {!function(Event)} */
@@ -384,7 +386,8 @@ class MostVisitedElement extends PolymerElement {
    * @private
    */
   computeDialogSaveDisabled_() {
-    return !this.dialogTileUrl_ || normalizeUrl(this.dialogTileUrl_) === null ||
+    return !this.dialogTileUrl_.trim() ||
+        normalizeUrl(this.dialogTileUrl_) === null ||
         this.dialogShortcutAlreadyExists_;
   }
 
@@ -627,6 +630,7 @@ class MostVisitedElement extends PolymerElement {
 
   /** @private */
   onDialogClose_() {
+    this.dialogTileUrl_ = '';
     if (this.adding_) {
       this.$.addShortcut.focus();
     }
@@ -668,6 +672,9 @@ class MostVisitedElement extends PolymerElement {
    * @private
    */
   onDragStart_(e) {
+    if (!this.customLinksEnabled_) {
+      return;
+    }
     // |dataTransfer| is null in tests.
     if (e.dataTransfer) {
       // Remove the ghost image that appears when dragging.
@@ -828,7 +835,7 @@ class MostVisitedElement extends PolymerElement {
    * @private
    */
   onTouchStart_(e) {
-    if (this.reordering_) {
+    if (this.reordering_ || !this.customLinksEnabled_) {
       return;
     }
     const tileElement = /** @type {HTMLElement} */ (e.composedPath().find(
@@ -836,18 +843,18 @@ class MostVisitedElement extends PolymerElement {
     if (!tileElement) {
       return;
     }
-    const {pageX, pageY} = e.changedTouches[0];
-    this.dragStart_(tileElement, pageX, pageY);
+    const {clientX, clientY} = e.changedTouches[0];
+    this.dragStart_(tileElement, clientX, clientY);
     const touchMove = e => {
-      const {pageX, pageY} = e.changedTouches[0];
-      this.dragOver_(pageX, pageY);
+      const {clientX, clientY} = e.changedTouches[0];
+      this.dragOver_(clientX, clientY);
     };
     const touchEnd = e => {
       this.ownerDocument.removeEventListener('touchmove', touchMove);
       tileElement.removeEventListener('touchend', touchEnd);
       tileElement.removeEventListener('touchcancel', touchEnd);
-      const {pageX, pageY} = e.changedTouches[0];
-      this.dragEnd_(pageX, pageY);
+      const {clientX, clientY} = e.changedTouches[0];
+      this.dragEnd_(clientX, clientY);
       this.reordering_ = false;
     };
     this.ownerDocument.addEventListener('touchmove', touchMove);
@@ -914,16 +921,7 @@ class MostVisitedElement extends PolymerElement {
     performance.measure('most-visited-rendered');
     this.pageHandler_.onMostVisitedTilesRendered(
         this.tiles_.slice(0, assert(this.maxVisibleTiles_)),
-        BrowserProxy.getInstance().now());
-  }
-
-  /**
-   * @param {boolean} value
-   * @return {string} String representing the given boolean.
-   * @private
-   */
-  booleanToString_(value) {
-    return Boolean(value).toString();
+        WindowProxy.getInstance().now());
   }
 }
 

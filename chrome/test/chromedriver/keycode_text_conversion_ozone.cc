@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
 
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/test/chromedriver/chrome/ui_events.h"
@@ -74,11 +74,11 @@ bool ConvertCharToKeyCodeOzone
 #else
 bool ConvertCharToKeyCode
 #endif
-    (base::char16 key,
+    (char16_t key,
      ui::KeyboardCode* key_code,
      int* necessary_modifiers,
      std::string* error_msg) {
-  base::string16 key_string;
+  std::u16string key_string;
   key_string.push_back(key);
   std::string key_string_utf8 = base::UTF16ToUTF8(key_string);
   bool found_code = false;

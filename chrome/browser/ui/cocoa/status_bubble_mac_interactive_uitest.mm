@@ -28,7 +28,7 @@ IN_PROC_BROWSER_TEST_F(StatusBubbleMacInteractiveUITest,
   EXPECT_FALSE(NSApp.hidden);
   [NSApp hide:nil];
   EXPECT_TRUE(NSApp.hidden);
-  status_bubble->SetStatus(base::UTF8ToUTF16("Testing"));
+  status_bubble->SetStatus(u"Testing");
   EXPECT_TRUE(NSApp.hidden);
   [NSApp unhide:nil];
   EXPECT_FALSE(NSApp.hidden);

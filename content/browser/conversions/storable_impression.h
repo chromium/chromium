@@ -11,6 +11,7 @@
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
+#include "net/base/schemeful_site.h"
 #include "url/origin.h"
 
 namespace content {
@@ -19,6 +20,15 @@ namespace content {
 // should be sanitized before creating this object.
 class CONTENT_EXPORT StorableImpression {
  public:
+  // Denotes the type of source for this impression. This allows different types
+  // of impressions to be processed differently by storage and attribution
+  // logic.
+  enum class SourceType {
+    // An impression which was associated with a top-level navigation.
+    kNavigation = 0,
+    kMaxValue = kNavigation,
+  };
+
   // If |impression_id| is not available, 0 should be provided.
   StorableImpression(const std::string& impression_data,
                      const url::Origin& impression_origin,
@@ -45,6 +55,14 @@ class CONTENT_EXPORT StorableImpression {
 
   base::Optional<int64_t> impression_id() const { return impression_id_; }
 
+  SourceType source_type() const { return source_type_; }
+
+  // Returns the schemeful site of |conversion_origin|.
+  //
+  // TODO(johnidel): Consider storing the SchemefulSite as a separate member so
+  // that we avoid unnecessary copies of |conversion_origin|.
+  net::SchemefulSite ConversionDestination() const;
+
  private:
   // String representing a valid hexadecimal number.
   std::string impression_data_;
@@ -53,6 +71,7 @@ class CONTENT_EXPORT StorableImpression {
   url::Origin reporting_origin_;
   base::Time impression_time_;
   base::Time expiry_time_;
+  SourceType source_type_ = SourceType::kNavigation;
 
   // If null, an ID has not been assigned yet.
   base::Optional<int64_t> impression_id_;

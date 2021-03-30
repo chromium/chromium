@@ -21,7 +21,7 @@
 #include "components/nacl/common/nacl_host_messages.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_instance.h"
 #include "ipc/ipc_platform_file.h"
 
@@ -208,7 +208,7 @@ bool PnaclCanOpenFile(const std::string& filename,
       pnacl_dir.empty())
     return false;
 
-  // Prepend the prefix to restrict files to a whitelisted set.
+  // Prepend the prefix to restrict files to an allowlist set.
   base::FilePath full_path = pnacl_dir.AppendASCII(
       std::string(kExpectedFilePrefix) + filename);
   *file_to_open = full_path;
@@ -217,31 +217,31 @@ bool PnaclCanOpenFile(const std::string& filename,
 
 void OpenNaClExecutable(
     scoped_refptr<nacl::NaClHostMessageFilter> nacl_host_message_filter,
-    int render_view_id,
+    int render_frame_id,
     const GURL& file_url,
     bool enable_validation_caching,
     IPC::Message* reply_msg) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&OpenNaClExecutable, nacl_host_message_filter,
-                                  render_view_id, file_url,
+                                  render_frame_id, file_url,
                                   enable_validation_caching, reply_msg));
     return;
   }
 
-  // Make sure render_view_id is valid and that the URL is a part of the
-  // render view's site. Without these checks, apps could probe the extension
+  // Make sure render_frame_id is valid and that the URL is a part of the
+  // render frame's site. Without these checks, apps could probe the extension
   // directory or run NaCl code from other extensions.
-  content::RenderViewHost* rvh = content::RenderViewHost::FromID(
-      nacl_host_message_filter->render_process_id(), render_view_id);
-  if (!rvh) {
+  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
+      nacl_host_message_filter->render_process_id(), render_frame_id);
+  if (!rfh) {
     nacl::bad_message::ReceivedBadMessage(
         nacl_host_message_filter.get(),
         nacl::bad_message::NFH_OPEN_EXECUTABLE_BAD_ROUTING_ID);
     delete reply_msg;
     return;
   }
-  content::SiteInstance* site_instance = rvh->GetSiteInstance();
+  content::SiteInstance* site_instance = rfh->GetSiteInstance();
   if (!site_instance->IsSameSiteWithURL(file_url)) {
     NotifyRendererOfError(nacl_host_message_filter.get(), reply_msg);
     return;

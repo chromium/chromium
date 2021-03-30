@@ -41,12 +41,14 @@ class GuestOsStabilityMonitorTest : public testing::Test {
     // task queue, so run all queued tasks here.
     FlushTaskQueue();
 
-    histogram_tester_.ExpectTotalCount(kCrostiniStabilityHistogram, 0);
+    histogram_tester_.ExpectTotalCount(crostini::kCrostiniStabilityHistogram,
+                                       0);
   }
 
   ~GuestOsStabilityMonitorTest() override {
     crostini::CrostiniTestHelper::DisableCrostini(profile_.get());
-    crostini_manager_->OnDBusShuttingDownForTesting();
+    crostini_manager_.reset();
+    profile_.reset();
     chromeos::DBusThreadManager::Shutdown();
   }
 
@@ -84,11 +86,11 @@ TEST_F(GuestOsStabilityMonitorTest, ConciergeFailure) {
       chromeos::DBusThreadManager::Get()->GetConciergeClient());
 
   concierge_client->NotifyConciergeStopped();
-  histogram_tester_.ExpectUniqueSample(kCrostiniStabilityHistogram,
+  histogram_tester_.ExpectUniqueSample(crostini::kCrostiniStabilityHistogram,
                                        FailureClasses::ConciergeStopped, 1);
 
   concierge_client->NotifyConciergeStarted();
-  histogram_tester_.ExpectUniqueSample(kCrostiniStabilityHistogram,
+  histogram_tester_.ExpectUniqueSample(crostini::kCrostiniStabilityHistogram,
                                        FailureClasses::ConciergeStopped, 1);
 }
 
@@ -97,11 +99,11 @@ TEST_F(GuestOsStabilityMonitorTest, CiceroneFailure) {
       chromeos::DBusThreadManager::Get()->GetCiceroneClient());
 
   cicerone_client->NotifyCiceroneStopped();
-  histogram_tester_.ExpectUniqueSample(kCrostiniStabilityHistogram,
+  histogram_tester_.ExpectUniqueSample(crostini::kCrostiniStabilityHistogram,
                                        FailureClasses::CiceroneStopped, 1);
 
   cicerone_client->NotifyCiceroneStarted();
-  histogram_tester_.ExpectUniqueSample(kCrostiniStabilityHistogram,
+  histogram_tester_.ExpectUniqueSample(crostini::kCrostiniStabilityHistogram,
                                        FailureClasses::CiceroneStopped, 1);
 }
 
@@ -110,11 +112,11 @@ TEST_F(GuestOsStabilityMonitorTest, SeneschalFailure) {
       chromeos::DBusThreadManager::Get()->GetSeneschalClient());
 
   seneschal_client->NotifySeneschalStopped();
-  histogram_tester_.ExpectUniqueSample(kCrostiniStabilityHistogram,
+  histogram_tester_.ExpectUniqueSample(crostini::kCrostiniStabilityHistogram,
                                        FailureClasses::SeneschalStopped, 1);
 
   seneschal_client->NotifySeneschalStarted();
-  histogram_tester_.ExpectUniqueSample(kCrostiniStabilityHistogram,
+  histogram_tester_.ExpectUniqueSample(crostini::kCrostiniStabilityHistogram,
                                        FailureClasses::SeneschalStopped, 1);
 }
 
@@ -123,17 +125,17 @@ TEST_F(GuestOsStabilityMonitorTest, ChunneldFailure) {
       chromeos::DBusThreadManager::Get()->GetChunneldClient());
 
   chunneld_client->NotifyChunneldStopped();
-  histogram_tester_.ExpectUniqueSample(kCrostiniStabilityHistogram,
+  histogram_tester_.ExpectUniqueSample(crostini::kCrostiniStabilityHistogram,
                                        FailureClasses::ChunneldStopped, 1);
 
   chunneld_client->NotifyChunneldStarted();
-  histogram_tester_.ExpectUniqueSample(kCrostiniStabilityHistogram,
+  histogram_tester_.ExpectUniqueSample(crostini::kCrostiniStabilityHistogram,
                                        FailureClasses::ChunneldStopped, 1);
 }
 
 TEST_F(GuestOsStabilityMonitorTest, UnknownVmStopped) {
   SendVmStoppedSignal();
-  histogram_tester_.ExpectUniqueSample(kCrostiniStabilityHistogram,
+  histogram_tester_.ExpectUniqueSample(crostini::kCrostiniStabilityHistogram,
                                        FailureClasses::VmStopped, 0);
 }
 
@@ -142,7 +144,7 @@ TEST_F(GuestOsStabilityMonitorTest, VmStoppedDuringStartup) {
   crostini_manager_->UpdateVmState("termina", crostini::VmState::STARTING);
 
   SendVmStoppedSignal();
-  histogram_tester_.ExpectUniqueSample(kCrostiniStabilityHistogram,
+  histogram_tester_.ExpectUniqueSample(crostini::kCrostiniStabilityHistogram,
                                        FailureClasses::VmStopped, 0);
 }
 
@@ -150,7 +152,7 @@ TEST_F(GuestOsStabilityMonitorTest, ExpectedVmStopped) {
   crostini_manager_->AddStoppingVmForTesting("termina");
 
   SendVmStoppedSignal();
-  histogram_tester_.ExpectUniqueSample(kCrostiniStabilityHistogram,
+  histogram_tester_.ExpectUniqueSample(crostini::kCrostiniStabilityHistogram,
                                        FailureClasses::VmStopped, 0);
 }
 
@@ -158,7 +160,7 @@ TEST_F(GuestOsStabilityMonitorTest, UnexpectedVmStopped) {
   crostini_manager_->AddRunningVmForTesting("termina");
 
   SendVmStoppedSignal();
-  histogram_tester_.ExpectUniqueSample(kCrostiniStabilityHistogram,
+  histogram_tester_.ExpectUniqueSample(crostini::kCrostiniStabilityHistogram,
                                        FailureClasses::VmStopped, 1);
 }
 

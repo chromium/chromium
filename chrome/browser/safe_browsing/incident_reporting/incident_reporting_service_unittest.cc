@@ -272,8 +272,7 @@ class IncidentReportingServiceTest : public testing::Test {
         profile_name, std::move(prefs), base::ASCIIToUTF16(profile_name),
         0,              // avatar_id (unused)
         std::string(),  // supervised_user_id (unused)
-        TestingProfile::TestingFactories(),
-        /*override_new_profile=*/base::Optional<bool>(false));
+        TestingProfile::TestingFactories());
     mock_time_task_runner_->FastForwardUntilNoTasksRemain();
 
     return profile;
@@ -1308,8 +1307,8 @@ TEST_F(IncidentReportingServiceTest, UploadsWithBothDownloadTypes) {
 // Test that a profile's prune state is properly cleaned upon load.
 TEST_F(IncidentReportingServiceTest, CleanLegacyPruneState) {
   CreateIncidentReportingService();
-  const std::string blacklist_load_type(base::NumberToString(
-      static_cast<int>(safe_browsing::IncidentType::OBSOLETE_BLACKLIST_LOAD)));
+  const std::string blocklist_load_type(base::NumberToString(
+      static_cast<int>(safe_browsing::IncidentType::OBSOLETE_BLOCKLIST_LOAD)));
   const std::string preference_type(base::NumberToString(
       static_cast<int>(safe_browsing::IncidentType::TRACKED_PREFERENCE)));
 
@@ -1318,7 +1317,7 @@ TEST_F(IncidentReportingServiceTest, CleanLegacyPruneState) {
       new base::DictionaryValue());
   auto type_dict = std::make_unique<base::DictionaryValue>();
   type_dict->SetKey("foo", base::Value("47"));
-  incidents_sent->SetWithoutPathExpansion(blacklist_load_type,
+  incidents_sent->SetWithoutPathExpansion(blocklist_load_type,
                                           std::move(type_dict));
   type_dict = std::make_unique<base::DictionaryValue>();
   type_dict->SetKey("bar", base::Value("43"));
@@ -1336,7 +1335,7 @@ TEST_F(IncidentReportingServiceTest, CleanLegacyPruneState) {
   const base::DictionaryValue* new_state =
       profile->GetPrefs()->GetDictionary(prefs::kSafeBrowsingIncidentsSent);
   // The legacy value must be gone.
-  ASSERT_FALSE(new_state->HasKey(blacklist_load_type));
+  ASSERT_FALSE(new_state->HasKey(blocklist_load_type));
   // But other data must be untouched.
   ASSERT_TRUE(new_state->HasKey(preference_type));
 }

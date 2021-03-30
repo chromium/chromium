@@ -17,52 +17,43 @@ class TracedValue;
 
 namespace cc {
 
-// Ensure this stays in sync with MainThreadScrollingReason in histograms.xml.
-// When adding a new MainThreadScrollingReason, make sure the corresponding
-// [MainThread/Compositor]CanSetScrollReasons function is also updated.
+// Ensure this stays in sync with MainThreadScrollingReason in
+// tools/metrics/enums.xml. When adding a new MainThreadScrollingReason, make
+// sure the corresponding [MainThread/Compositor]CanSetScrollReasons function
+// is also updated.
 struct CC_EXPORT MainThreadScrollingReason {
   enum : uint32_t {
     kNotScrollingOnMain = 0,
 
-    // Non-transient scrolling reasons.
-    kHasBackgroundAttachmentFixedObjects = 1 << 0,
-    kHasNonLayerViewportConstrainedObjects = 1 << 1,
-    kThreadedScrollingDisabled = 1 << 2,
-    kScrollbarScrolling = 1 << 3,
-    kFrameOverlay = 1 << 4,
+    // This enum simultaneously defines actual bitmask values and indices into
+    // the bitmask, but kNotScrollingMain is recorded in the histograms as
+    // value 0, so the 0th bit should never be used.
+    // See also blink::RecordScrollReasonsMetric().
 
-    // This bit is set when any of the other main thread scrolling reasons cause
-    // an input event to be handled on the main thread, and the main thread
-    // blink::ScrollAnimator is in the middle of running a scroll offset
-    // animation. Note that a scroll handled by the main thread can result in an
-    // animation running on the main thread or on the compositor thread.
-    kHandlingScrollFromMainThread = 1 << 13,
+    // Non-transient scrolling reasons.
+    kHasBackgroundAttachmentFixedObjects = 1 << 1,
+    kThreadedScrollingDisabled = 1 << 3,
 
     // Style-related scrolling on main reasons.
     // These *AndLCDText reasons are due to subpixel text rendering which can
     // only be applied by blending glyphs with the background at a specific
     // screen position; transparency and transforms break this.
-    kNonCompositedReasonsFirst = 17,
-    kNotOpaqueForTextAndLCDText = 1 << 18,
-    kCantPaintScrollingBackgroundAndLCDText = 1 << 19,
-    kNonCompositedReasonsLast = 22,
+    kNonCompositedReasonsFirst = 18,
+    kNotOpaqueForTextAndLCDText = 1 << 19,
+    kCantPaintScrollingBackgroundAndLCDText = 1 << 20,
+    kNonCompositedReasonsLast = 23,
 
     // Transient scrolling reasons. These are computed for each scroll begin.
-    kNonFastScrollableRegion = 1 << 5,
-    kFailedHitTest = 1 << 7,
-    kNoScrollingLayer = 1 << 8,
-    kNotScrollable = 1 << 9,
-    kContinuingMainThreadScroll = 1 << 10,
-    kNonInvertibleTransform = 1 << 11,
-    kPageBasedScrolling = 1 << 12,
-    kWheelEventHandlerRegion = 1 << 23,
-    kTouchEventHandlerRegion = 1 << 24,
+    kScrollbarScrolling = 1 << 4,
+    kNonFastScrollableRegion = 1 << 6,
+    kFailedHitTest = 1 << 8,
+    kNoScrollingLayer = 1 << 9,
+    kNotScrollable = 1 << 10,
+    kNonInvertibleTransform = 1 << 12,
+    kWheelEventHandlerRegion = 1 << 24,
+    kTouchEventHandlerRegion = 1 << 25,
 
-    // The maximum number of flags in this struct (excluding itself).
-    // New flags should increment this number but it should never be decremented
-    // because the values are used in UMA histograms. It should also be noted
-    // that it excludes the kNotScrollingOnMain value.
-    kMainThreadScrollingReasonCount = 25,
+    kMainThreadScrollingReasonLast = 25,
   };
 
   static const uint32_t kNonCompositedReasons =
@@ -71,20 +62,17 @@ struct CC_EXPORT MainThreadScrollingReason {
   // Returns true if the given MainThreadScrollingReason can be set by the main
   // thread.
   static bool MainThreadCanSetScrollReasons(uint32_t reasons) {
-    uint32_t reasons_set_by_main_thread =
-        kNotScrollingOnMain | kHasBackgroundAttachmentFixedObjects |
-        kHasNonLayerViewportConstrainedObjects | kThreadedScrollingDisabled |
-        kScrollbarScrolling | kFrameOverlay | kHandlingScrollFromMainThread;
+    constexpr uint32_t reasons_set_by_main_thread =
+        kHasBackgroundAttachmentFixedObjects | kThreadedScrollingDisabled;
     return (reasons & reasons_set_by_main_thread) == reasons;
   }
 
   // Returns true if the given MainThreadScrollingReason can be set by the
   // compositor.
   static bool CompositorCanSetScrollReasons(uint32_t reasons) {
-    uint32_t reasons_set_by_compositor =
+    constexpr uint32_t reasons_set_by_compositor =
         kNonFastScrollableRegion | kFailedHitTest | kNoScrollingLayer |
-        kNotScrollable | kContinuingMainThreadScroll | kNonInvertibleTransform |
-        kPageBasedScrolling | kWheelEventHandlerRegion |
+        kNotScrollable | kNonInvertibleTransform | kWheelEventHandlerRegion |
         kTouchEventHandlerRegion;
     return (reasons & reasons_set_by_compositor) == reasons;
   }

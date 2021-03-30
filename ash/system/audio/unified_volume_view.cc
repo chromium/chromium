@@ -35,8 +35,6 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 
-using chromeos::CrasAudioHandler;
-
 namespace ash {
 
 namespace {
@@ -161,7 +159,7 @@ class LiveCaptionButton
     views::SetToggledImageFromVectorIconWithColor(
         this, vector_icons::kLiveCaptionOnIcon, icon_size,
         GetToggledIconColor(), GetToggledIconColor());
-    toggled_background()->SetNativeControlColor(GetToggledBackgroundColor());
+    GetToggledBackground()->SetNativeControlColor(GetToggledBackgroundColor());
   }
 
   SkColor GetToggledIconColor() {
@@ -185,14 +183,10 @@ class MoreButton : public UnifiedVolumeViewButton<views::Button> {
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal,
         gfx::Insets((kTrayItemSize -
-                     GetDefaultSizeOfVectorIcon(vector_icons::kHeadsetIcon)) /
+                     GetDefaultSizeOfVectorIcon(kUnifiedMenuExpandIcon)) /
                     2),
         2));
 
-    if (!features::IsSystemTrayMicGainSettingEnabled()) {
-      headset_image_ = AddChildView(std::make_unique<views::ImageView>());
-      headset_image_->SetCanProcessEventsWithinSubtree(false);
-    }
     more_image_ = AddChildView(std::make_unique<views::ImageView>());
     more_image_->SetCanProcessEventsWithinSubtree(false);
     SetTooltipText(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_AUDIO));
@@ -205,10 +199,7 @@ class MoreButton : public UnifiedVolumeViewButton<views::Button> {
   void OnThemeChanged() override {
     UnifiedVolumeViewButton::OnThemeChanged();
     const SkColor icon_color = GetIconColor();
-    if (headset_image_) {
-      headset_image_->SetImage(
-          CreateVectorIcon(vector_icons::kHeadsetIcon, icon_color));
-    }
+
     DCHECK(more_image_);
     auto icon_rotation = base::i18n::IsRTL()
                              ? SkBitmapOperations::ROTATION_270_CW
@@ -218,7 +209,6 @@ class MoreButton : public UnifiedVolumeViewButton<views::Button> {
   }
 
  private:
-  views::ImageView* headset_image_ = nullptr;
   views::ImageView* more_image_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(MoreButton);
@@ -228,13 +218,15 @@ class MoreButton : public UnifiedVolumeViewButton<views::Button> {
 
 UnifiedVolumeView::UnifiedVolumeView(
     UnifiedVolumeSliderController* controller,
-    UnifiedVolumeSliderController::Delegate* delegate)
+    UnifiedVolumeSliderController::Delegate* delegate,
+    bool in_bubble)
     : UnifiedSliderView(base::BindRepeating(
                             &UnifiedVolumeSliderController::SliderButtonPressed,
                             base::Unretained(controller)),
                         controller,
                         kSystemMenuVolumeHighIcon,
                         IDS_ASH_STATUS_TRAY_VOLUME_SLIDER_LABEL),
+      in_bubble_(in_bubble),
       live_caption_button_(new LiveCaptionButton(
           base::BindRepeating(&UnifiedVolumeView::OnLiveCaptionButtonPressed,
                               base::Unretained(this)))),
@@ -270,21 +262,18 @@ void UnifiedVolumeView::Update(bool by_user) {
   button()->SetToggled(!is_muted);
   button()->SetVectorIcon(is_muted ? kUnifiedMenuVolumeMuteIcon
                                    : GetVolumeIconForLevel(level));
-  base::string16 state_tooltip_text = l10n_util::GetStringUTF16(
+  std::u16string state_tooltip_text = l10n_util::GetStringUTF16(
       is_muted ? IDS_ASH_STATUS_TRAY_VOLUME_STATE_MUTED
                : IDS_ASH_STATUS_TRAY_VOLUME_STATE_ON);
   button()->SetTooltipText(l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_VOLUME, state_tooltip_text));
 
   live_caption_button_->SetVisible(
-      base::FeatureList::IsEnabled(media::kLiveCaption));
+      in_bubble_ &&
+      base::FeatureList::IsEnabled(media::kLiveCaptionSystemWideOnChromeOS));
   live_caption_button_->SetToggled(
       Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
           prefs::kLiveCaptionEnabled));
-
-  more_button_->SetVisible(CrasAudioHandler::Get()->has_alternative_input() ||
-                           CrasAudioHandler::Get()->has_alternative_output() ||
-                           features::IsSystemTrayMicGainSettingEnabled());
 
   // Slider's value is in finer granularity than audio volume level(0.01),
   // there will be a small discrepancy between slider's value and volume level

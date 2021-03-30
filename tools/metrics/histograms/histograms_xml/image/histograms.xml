@@ -42,7 +42,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ImageAnnotationService.AccessibilityV1.ClientResult"
-    enum="ImageAnnotationServiceClientResult" expires_after="2021-05-30">
+    enum="ImageAnnotationServiceClientResult" expires_after="2021-08-09">
   <owner>dmazzoni@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>martis@chromium.org</owner>
@@ -248,7 +248,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ImageFetcher.Events" enum="ImageFetcherEvent"
-    expires_after="2021-06-01">
+    expires_after="2021-08-01">
   <owner>fgorski@chromium.org</owner>
   <owner>wylieb@chromium.org</owner>
   <summary>

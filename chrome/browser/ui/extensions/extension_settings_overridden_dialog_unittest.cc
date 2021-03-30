@@ -8,9 +8,11 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
+#include "content/public/browser/storage_partition.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest.h"
@@ -28,8 +30,8 @@ ExtensionSettingsOverriddenDialog::Params CreateTestDialogParams(
   return {controlling_id,
           kTestAcknowledgedPreference,
           kTestDialogResultHistogramName,
-          base::ASCIIToUTF16("Test Dialog Title"),
-          base::ASCIIToUTF16("Test Dialog Body"),
+          u"Test Dialog Title",
+          u"Test Dialog Body",
           nullptr};
 }
 
@@ -46,11 +48,18 @@ class ExtensionSettingsOverriddenDialogUnitTest
   // Adds a new extension with the given |name| and |location| to the profile.
   const extensions::Extension* AddExtension(
       const char* name = "alpha",
-      extensions::Manifest::Location location =
-          extensions::Manifest::INTERNAL) {
+      extensions::mojom::ManifestLocation location =
+          extensions::mojom::ManifestLocation::kInternal) {
     scoped_refptr<const extensions::Extension> extension =
         extensions::ExtensionBuilder(name).SetLocation(location).Build();
     service()->AddExtension(extension.get());
+
+    // Make sure RegisterClient calls for storage are finished to avoid flaky
+    // crashes in QuotaManagerImpl::RegisterClient.
+    // TODO(crbug.com/1182630) : Remove this when 1182630 is fixed.
+    extensions::util::GetStoragePartitionForExtensionId(extension->id(),
+                                                        profile());
+    task_environment()->RunUntilIdle();
     return extension.get();
   }
 
@@ -97,7 +106,8 @@ TEST_F(ExtensionSettingsOverriddenDialogUnitTest,
 TEST_F(ExtensionSettingsOverriddenDialogUnitTest,
        WontShowForAnExtensionThatCantBeDisabled) {
   const extensions::Extension* policy_extension = AddExtension(
-      "policy installed", extensions::Manifest::EXTERNAL_POLICY_DOWNLOAD);
+      "policy installed",
+      extensions::mojom::ManifestLocation::kExternalPolicyDownload);
 
   ExtensionSettingsOverriddenDialog controller(
       CreateTestDialogParams(policy_extension->id()), profile());

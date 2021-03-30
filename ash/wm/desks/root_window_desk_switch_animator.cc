@@ -7,7 +7,9 @@
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/screen_util.h"
+#include "ash/utility/layer_util.h"
 #include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/auto_reset.h"
@@ -15,8 +17,6 @@
 #include "base/numerics/ranges.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
-#include "components/viz/common/frame_sinks/copy_output_result.h"
-#include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
@@ -50,6 +50,11 @@ constexpr int kRemovedDeskWindowYTranslation = 20;
 constexpr base::TimeDelta kRemovedDeskWindowTranslationDuration =
     base::TimeDelta::FromMilliseconds(100);
 
+// When ending a swipe that is deemed fast, the target desk only needs to be
+// 10% shown for us to animate to that desk, compared to 50% shown for a non
+// fast swipe.
+constexpr float kFastSwipeVisibilityRatio = 0.1f;
+
 // Create the layer that will be the parent of the screenshot layer, with a
 // solid black color to act as the background showing behind the two
 // screenshot layers in the |kDesksSpacing| region between them. It will get
@@ -80,35 +85,6 @@ void TakeScreenshot(
   screenshot_layer->RequestCopyOfOutput(std::move(screenshot_request));
 }
 
-// Given a screenshot |copy_result|, creates a texture layer that contains the
-// content of that screenshot. The result layer will be size |layer_size|, which
-// is in dips.
-std::unique_ptr<ui::Layer> CreateLayerFromScreenshotResult(
-    const gfx::Size& layer_size,
-    std::unique_ptr<viz::CopyOutputResult> copy_result) {
-  DCHECK(copy_result);
-  DCHECK(!copy_result->IsEmpty());
-  DCHECK_EQ(copy_result->format(), viz::CopyOutputResult::Format::RGBA_TEXTURE);
-
-  // |texture_size| is in pixels and is not used to size the layer otherwise we
-  // may lose some quality. See https://crbug.com/1134451.
-  const gfx::Size texture_size = copy_result->size();
-  viz::TransferableResource transferable_resource =
-      viz::TransferableResource::MakeGL(
-          copy_result->GetTextureResult()->mailbox, GL_LINEAR, GL_TEXTURE_2D,
-          copy_result->GetTextureResult()->sync_token, texture_size,
-          /*is_overlay_candidate=*/false);
-  std::unique_ptr<viz::SingleReleaseCallback> take_texture_ownership_callback =
-      copy_result->TakeTextureOwnership();
-  auto screenshot_layer = std::make_unique<ui::Layer>();
-  screenshot_layer->SetBounds(gfx::Rect(layer_size));
-  screenshot_layer->SetTransferableResource(
-      transferable_resource, std::move(take_texture_ownership_callback),
-      layer_size);
-
-  return screenshot_layer;
-}
-
 std::string GetScreenshotLayerName(int index) {
   return "Desk " + base::NumberToString(index) + " screenshot layer";
 }
@@ -117,8 +93,7 @@ std::string GetScreenshotLayerName(int index) {
 // units. Convert these units so that what is considered a full touchpad swipe
 // shifts the animation layer one entire desk length.
 float TouchpadToXTranslation(float touchpad_x, int desk_length) {
-  return desk_length * touchpad_x /
-         RootWindowDeskSwitchAnimator::kTouchpadSwipeLengthForDeskChange;
+  return desk_length * touchpad_x / kTouchpadSwipeLengthForDeskChange;
 }
 
 }  // namespace
@@ -327,7 +302,7 @@ void RootWindowDeskSwitchAnimator::PrepareForEndingDeskScreenshot(
   ending_desk_screenshot_taken_ = false;
 }
 
-int RootWindowDeskSwitchAnimator::EndSwipeAnimation() {
+int RootWindowDeskSwitchAnimator::EndSwipeAnimation(bool is_fast_swipe) {
   // If the starting screenshot has not finished, just let our delegate know
   // that the desk animation is finished (and |this| will soon be deleted), and
   // go back to the starting desk.
@@ -350,10 +325,35 @@ int RootWindowDeskSwitchAnimator::EndSwipeAnimation() {
   // In tests, StartAnimation() may trigger OnDeskSwitchAnimationFinished()
   // right away which may delete |this|. Store the target index in a
   // local so we do not try to access a member of a deleted object.
-  const int ending_desk_index = GetIndexOfMostVisibleDeskScreenshot();
-  ending_desk_index_ = ending_desk_index;
+  int local_ending_desk_index = -1;
+
+  // If the swipe we are ending with is deemed a fast swipe, we animate to
+  // |ending_desk_index_| if more than 10% of it is currently visible.
+  // Otherwise, we animate to the most visible desk.
+  if (is_fast_swipe) {
+    ui::Layer* layer = screenshot_layers_[ending_desk_index_];
+    if (layer) {
+      const gfx::Transform transform =
+          animation_layer_owner_->root()->transform();
+      gfx::RectF screenshot_bounds(layer->bounds());
+      transform.TransformRect(&screenshot_bounds);
+
+      const gfx::RectF root_window_bounds(root_window_->bounds());
+      const gfx::RectF intersection_rect =
+          gfx::IntersectRects(screenshot_bounds, root_window_bounds);
+      if (intersection_rect.width() >
+          root_window_bounds.width() * kFastSwipeVisibilityRatio) {
+        local_ending_desk_index = ending_desk_index_;
+      }
+    }
+  }
+
+  if (local_ending_desk_index == -1)
+    local_ending_desk_index = GetIndexOfMostVisibleDeskScreenshot();
+
+  ending_desk_index_ = local_ending_desk_index;
   StartAnimation();
-  return ending_desk_index;
+  return local_ending_desk_index;
 }
 
 int RootWindowDeskSwitchAnimator::GetIndexOfMostVisibleDeskScreenshot() const {
@@ -460,8 +460,8 @@ void RootWindowDeskSwitchAnimator::OnStartingDeskScreenshotTaken(
     return;
   }
 
-  CompleteAnimationPhase1WithLayer(CreateLayerFromScreenshotResult(
-      root_window_size_, std::move(copy_result)));
+  CompleteAnimationPhase1WithLayer(CreateLayerFromCopyOutputResult(
+      std::move(copy_result), root_window_size_));
 }
 
 void RootWindowDeskSwitchAnimator::OnEndingDeskScreenshotTaken(
@@ -483,7 +483,7 @@ void RootWindowDeskSwitchAnimator::OnEndingDeskScreenshotTaken(
   }
 
   ui::Layer* ending_desk_screenshot_layer =
-      CreateLayerFromScreenshotResult(root_window_size_, std::move(copy_result))
+      CreateLayerFromCopyOutputResult(std::move(copy_result), root_window_size_)
           .release();
   screenshot_layers_[ending_desk_index_] = ending_desk_screenshot_layer;
   ending_desk_screenshot_layer->SetName(

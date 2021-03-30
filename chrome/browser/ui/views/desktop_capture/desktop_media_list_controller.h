@@ -42,6 +42,8 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   // controller.
   class ListView : public views::View {
    public:
+    METADATA_HEADER(ListView);
+
     // Returns the DesktopMediaID of the selected element of this list, or
     // nullopt if no element is selected.
     virtual base::Optional<content::DesktopMediaID> GetSelection() = 0;
@@ -65,10 +67,10 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   std::unique_ptr<views::View> CreateView(
       DesktopMediaSourceViewStyle generic_style,
       DesktopMediaSourceViewStyle single_style,
-      const base::string16& accessible_name);
+      const std::u16string& accessible_name);
 
   std::unique_ptr<views::View> CreateTabListView(
-      const base::string16& accessible_name);
+      const std::u16string& accessible_name);
 
   // Starts observing the DesktopMediaList given earlier, ignoring any entries
   // whose id matches dialog_window_id.
@@ -104,6 +106,10 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   // dialog.
   void AcceptSpecificSource(content::DesktopMediaID source);
 
+  // Analogous to AcceptSpecificSource, but rejects rather than accepts.
+  // Used in tests.
+  void Reject();
+
   // DesktopMediaListObserver:
   void OnSourceAdded(DesktopMediaList* list, int index) override;
   void OnSourceRemoved(DesktopMediaList* list, int index) override;
@@ -116,11 +122,19 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   // ViewObserver:
   void OnViewIsDeleting(views::View* view) override;
 
+  bool ShouldAutoAccept(const DesktopMediaList::Source& source) const;
+  bool ShouldAutoReject(const DesktopMediaList::Source& source) const;
+
   DesktopMediaPickerDialogView* dialog_;
   std::unique_ptr<DesktopMediaList> media_list_;
   ListView* view_ = nullptr;
   base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
       view_observations_{this};
+
+  // Auto-selection. Used only in tests.
+  const std::string auto_select_source_;
+  const bool auto_accept_tab_capture_;
+  const bool auto_reject_tab_capture_;
 
   base::WeakPtrFactory<DesktopMediaListController> weak_factory_{this};
 };

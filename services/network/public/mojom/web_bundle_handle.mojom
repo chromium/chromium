@@ -8,6 +8,8 @@ enum WebBundleErrorType {
   kMetadataParseError,
   kResponseParseError,
   kResourceNotFound,
+  kMemoryQuotaExceeded,
+  kServingConstraintsNotMet,
 };
 
 // A handle to a WebBundle instance in the Network Service. Created by a
@@ -20,4 +22,7 @@ interface WebBundleHandle {
 
   // Report errors to the renderer.
   OnWebBundleError(WebBundleErrorType type, string message);
+
+  // Report to the renderer whether successfully loaded the data or failed.
+  OnWebBundleLoadFinished(bool success);
 };

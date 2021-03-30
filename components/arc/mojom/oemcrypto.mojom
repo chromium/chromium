@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 3
+// Next MinVersion: 4
 
 // The original version of this file lives in the Chromium repository at:
 // src/components/arc/mojom/oemcrypto.mojom
@@ -12,8 +12,10 @@
 // This file matches what's in Widevine's OEMCryptoCENC.h file closely and all
 // methods are documented there.
 
-// Version 1 of this interface supported OEMCrypto v11. Version 2 maintains
-// backwards compatibility and supports OEMCrypto v14 as the current version.
+// Version 1 of this interface supported OEMCrypto v11 and is now deprecated.
+// Version 2 supports OEMCrypto v14.
+// Version 3 maintains backwards compatibility with version 2 and supports
+// OEMCrypto v15.
 
 module arc.mojom;
 
@@ -72,6 +74,10 @@ enum OemCryptoResult {
   [MinVersion=2] ERROR_USAGE_TABLE_UNRECOVERABLE = 50,  // Reserved. Do not use.
   [MinVersion=2] KEY_NOT_LOADED = 51,
   [MinVersion=2] KEY_NOT_ENTITLED = 52,
+  [MinVersion=3] ERROR_BAD_HASH = 53,
+  [MinVersion=3] ERROR_OUTPUT_TOO_LARGE = 54,
+  [MinVersion=3] ERROR_SESSION_LOST_STATE = 55,
+  [MinVersion=3] ERROR_SYSTEM_INVALIDATED = 56,
 };
 
 struct OemCryptoSecureBuffer {
@@ -96,7 +102,13 @@ enum OemCryptoLicenseType {
   ENTITLEMENT_LICENSE = 1,
 };
 
-struct OemCryptoKeyObject {
+[MinVersion=3]
+struct OemCryptoSubstring {
+  uint32 offset;
+  uint32 length;
+};
+
+struct OemCryptoKeyObjectV14 {
   uint32 key_id_offset;
   uint32 key_id_length;
   uint32 key_data_iv_offset;
@@ -107,20 +119,44 @@ struct OemCryptoKeyObject {
   OemCryptoCipherMode cipher_mode;
 };
 
+[MinVersion=3]
+struct OemCryptoKeyObject {
+  OemCryptoSubstring key_id;
+  OemCryptoSubstring key_data_iv;
+  OemCryptoSubstring key_data;
+  OemCryptoSubstring key_control_iv;
+  OemCryptoSubstring key_control;
+};
+
 [MinVersion=2]
-struct OemCryptoEntitledContentKeyObject {
+struct OemCryptoEntitledContentKeyObjectV14 {
   array<uint8> entitlement_key_id;
   array<uint8> content_key_id;
   array<uint8, 16> content_key_data_iv;
   array<uint8> content_key_data;
 };
 
-struct OemCryptoKeyRefreshObject {
+[MinVersion=3]
+struct OemCryptoEntitledContentKeyObject {
+  OemCryptoSubstring entitlement_key_id;
+  OemCryptoSubstring content_key_id;
+  OemCryptoSubstring content_key_data_iv;
+  OemCryptoSubstring content_key_data;
+};
+
+struct OemCryptoKeyRefreshObjectV14 {
   uint32 key_id_offset;
   uint32 key_id_length;
   bool has_key_control_iv;
   uint32 key_control_iv_offset;
   uint32 key_control_offset;
+};
+
+[MinVersion=3]
+struct OemCryptoKeyRefreshObject {
+  OemCryptoSubstring key_id;
+  OemCryptoSubstring key_control_iv;
+  OemCryptoSubstring key_control;
 };
 
 [Extensible]
@@ -166,6 +202,7 @@ enum OemCryptoHdcpCapability {
   HDCP_V2   = 2,
   HDCP_V2_1 = 3,
   HDCP_V2_2 = 4,
+  HDCP_V2_3 = 5,
   HDCP_NO_DIGITAL_OUTPUT = 0xFF,
 };
 
@@ -179,7 +216,7 @@ enum OemCryptoProvisioningMethod {
 
 // This is the interface that implements all the calls that map to the
 // OEMCrypto API itself.
-// Next method ID: 58
+// Next method ID: 63
 interface OemCryptoService {
   InitializeDeprecated@0() => (OemCryptoResult result);
   [MinVersion=2] Initialize@36(uint32 oemcrypto_version)
@@ -200,11 +237,12 @@ interface OemCryptoService {
                      array<uint8> signature, bool has_enc_mac_keys,
                      uint32 enc_mac_keys_iv_offset,
                      uint32 enc_mac_keys_offset,
-                     array<OemCryptoKeyObject> key_array,
+                     array<OemCryptoKeyObjectV14> key_array,
                      uint32 pst_offset, uint32 pst_length)
       => (OemCryptoResult result);
-  RefreshKeys@8(uint32 session, array<uint8> message, array<uint8> signature,
-                array<OemCryptoKeyRefreshObject> key_array)
+  RefreshKeysV14@8(uint32 session, array<uint8> message,
+                   array<uint8> signature,
+                   array<OemCryptoKeyRefreshObjectV14> key_array)
       => (OemCryptoResult result);
   QueryKeyControl@9(uint32 session, array<uint8> key_id)
       => (OemCryptoResult result, array<uint8>? key_control_block);
@@ -319,21 +357,40 @@ interface OemCryptoService {
   [MinVersion=2] LoadTestKeybox@54(array<uint8> buffer) =>
                                    (OemCryptoResult result);
   [MinVersion=2]
-  LoadEntitledContentKeys@55(uint32 session,
-                             array<OemCryptoEntitledContentKeyObject> key_array)
+  LoadEntitledContentKeysV14@55(
+      uint32 session, array<OemCryptoEntitledContentKeyObjectV14> key_array)
       => (OemCryptoResult result);
   [MinVersion=2] SelectKey@56(uint32 session, array<uint8> content_key_id,
                               OemCryptoCipherMode cipher_mode) =>
                               (OemCryptoResult result);
-  [MinVersion=2] LoadKeys@57(uint32 session, array<uint8> message,
-                             array<uint8> signature, bool has_enc_mac_keys,
-                             uint32 enc_mac_keys_iv_offset,
-                             uint32 enc_mac_keys_offset,
-                             array<OemCryptoKeyObject> key_array,
-                             uint32 pst_offset, uint32 pst_length,
-                             array<uint8> srm_requirement,
-                             OemCryptoLicenseType license_type) =>
+  [MinVersion=2] LoadKeysV14@57(uint32 session, array<uint8> message,
+                                 array<uint8> signature, bool has_enc_mac_keys,
+                                 uint32 enc_mac_keys_iv_offset,
+                                 uint32 enc_mac_keys_offset,
+                                 array<OemCryptoKeyObjectV14> key_array,
+                                 uint32 pst_offset, uint32 pst_length,
+                                 array<uint8> srm_requirement,
+                                 OemCryptoLicenseType license_type) =>
                              (OemCryptoResult result);
+  [MinVersion=3] LoadKeys@58(uint32 session, array<uint8> message,
+                             array<uint8> signature,
+                             OemCryptoSubstring enc_mac_keys_iv,
+                             OemCryptoSubstring enc_mac_keys,
+                             array<OemCryptoKeyObject> key_array,
+                             OemCryptoSubstring pst,
+                             OemCryptoSubstring srm_restriction_data,
+                             OemCryptoLicenseType license_type) =>
+                         (OemCryptoResult result);
+  [MinVersion=3] ResourceRatingTier@59() => (uint32 rating_tier);
+  [MinVersion=3] BuildInformation@60() => (string build_information);
+  [MinVersion=3] RefreshKeys@61(uint32 session, array<uint8> message,
+                                array<uint8> signature,
+                                array<OemCryptoKeyRefreshObject> key_array)
+                         => (OemCryptoResult result);
+  [MinVersion=3] LoadEntitledContentKeys@62(
+      uint32 session, array<uint8> message,
+      array<OemCryptoEntitledContentKeyObject> key_array)
+      => (OemCryptoResult result);
 };
 
 // OemCryptoService is implemented as another service outside of the Browser

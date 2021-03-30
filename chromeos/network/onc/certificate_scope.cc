@@ -4,9 +4,9 @@
 
 #include "chromeos/network/onc/certificate_scope.h"
 
-#include <base/values.h>
 #include <tuple>
 
+#include "base/values.h"
 #include "components/onc/onc_constants.h"
 
 namespace chromeos {

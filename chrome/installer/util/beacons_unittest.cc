@@ -32,7 +32,7 @@ namespace installer_util {
 class BeaconTest : public ::testing::TestWithParam<
                        ::testing::tuple<BeaconType, BeaconScope, bool>> {
  protected:
-  static const base::char16 kBeaconName[];
+  static const wchar_t kBeaconName[];
 
   BeaconTest()
       : beacon_type_(::testing::get<0>(GetParam())),
@@ -64,7 +64,7 @@ class BeaconTest : public ::testing::TestWithParam<
 };
 
 // static
-const base::char16 BeaconTest::kBeaconName[] = L"TestBeacon";
+const wchar_t BeaconTest::kBeaconName[] = L"TestBeacon";
 
 // Nothing in the regsitry, so the beacon should not exist.
 TEST_P(BeaconTest, GetNonExistent) {
@@ -106,9 +106,9 @@ TEST_P(BeaconTest, Location) {
       install_static::InstallDetails::Get();
   HKEY right_root = system_install() ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
   HKEY wrong_root = system_install() ? HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE;
-  base::string16 right_key;
-  base::string16 wrong_key;
-  base::string16 value_name;
+  std::wstring right_key;
+  std::wstring wrong_key;
+  std::wstring value_name;
 
   if (beacon_scope() == BeaconScope::PER_INSTALL || !system_install()) {
     value_name = kBeaconName;

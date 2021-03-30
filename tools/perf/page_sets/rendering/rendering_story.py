@@ -40,7 +40,8 @@ class RenderingStory(page.Page):
                name_suffix='',
                extra_browser_args=None,
                make_javascript_deterministic=True,
-               base_dir=None):
+               base_dir=None,
+               perform_final_navigation=True):
     tags = []
     for t in self.TAGS:
       assert t in story_tags.ALL_TAGS
@@ -58,4 +59,4 @@ class RenderingStory(page.Page):
         extra_browser_args=extra_browser_args,
         make_javascript_deterministic=make_javascript_deterministic,
         base_dir=base_dir,
-        perform_final_navigation=True)
+        perform_final_navigation=perform_final_navigation)

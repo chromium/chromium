@@ -32,6 +32,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/notifications/notification_resources.h"
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
+#include "third_party/blink/public/mojom/notifications/notification.mojom.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -128,8 +129,8 @@ class PlatformNotificationServiceTest : public testing::Test {
 
 TEST_F(PlatformNotificationServiceTest, DisplayNonPersistentThenClose) {
   PlatformNotificationData data;
-  data.title = base::ASCIIToUTF16("My Notification");
-  data.body = base::ASCIIToUTF16("Hello, world!");
+  data.title = u"My Notification";
+  data.body = u"Hello, world!";
 
   service()->DisplayNotification(kNotificationId, GURL("https://chrome.com/"),
                                  data, NotificationResources());
@@ -145,8 +146,8 @@ TEST_F(PlatformNotificationServiceTest, DisplayNonPersistentThenClose) {
 
 TEST_F(PlatformNotificationServiceTest, DisplayPersistentThenClose) {
   PlatformNotificationData data;
-  data.title = base::ASCIIToUTF16("My notification's title");
-  data.body = base::ASCIIToUTF16("Hello, world!");
+  data.title = u"My notification's title";
+  data.body = u"Hello, world!";
 
   EXPECT_CALL(*mock_logger_, LogPersistentNotificationShown());
   service()->DisplayPersistentNotification(
@@ -176,8 +177,8 @@ TEST_F(PlatformNotificationServiceTest, DisplayNonPersistentPropertiesMatch) {
           base::size(kNotificationVibrationPattern));
 
   PlatformNotificationData data;
-  data.title = base::ASCIIToUTF16("My notification's title");
-  data.body = base::ASCIIToUTF16("Hello, world!");
+  data.title = u"My notification's title";
+  data.body = u"Hello, world!";
   data.vibration_pattern = vibration_pattern;
   data.silent = true;
 
@@ -208,15 +209,17 @@ TEST_F(PlatformNotificationServiceTest, DisplayPersistentPropertiesMatch) {
           base::size(kNotificationVibrationPattern));
 
   PlatformNotificationData data;
-  data.title = base::ASCIIToUTF16("My notification's title");
-  data.body = base::ASCIIToUTF16("Hello, world!");
+  data.title = u"My notification's title";
+  data.body = u"Hello, world!";
   data.vibration_pattern = vibration_pattern;
   data.silent = true;
   data.actions.resize(2);
-  data.actions[0].type = blink::mojom::NotificationActionType::BUTTON;
-  data.actions[0].title = base::ASCIIToUTF16("Button 1");
-  data.actions[1].type = blink::mojom::NotificationActionType::TEXT;
-  data.actions[1].title = base::ASCIIToUTF16("Button 2");
+  data.actions[0] = blink::mojom::NotificationAction::New();
+  data.actions[0]->type = blink::mojom::NotificationActionType::BUTTON;
+  data.actions[0]->title = u"Button 1";
+  data.actions[1] = blink::mojom::NotificationAction::New();
+  data.actions[1]->type = blink::mojom::NotificationActionType::TEXT;
+  data.actions[1]->title = u"Button 2";
 
   NotificationResources notification_resources;
   notification_resources.action_icons.resize(data.actions.size());
@@ -266,10 +269,12 @@ TEST_F(PlatformNotificationServiceTest, RecordNotificationUkmEvent) {
   data.notification_data.renotify = false;
   data.notification_data.tag = "tag";
   data.notification_data.silent = true;
-  blink::PlatformNotificationAction action1, action2, action3;
-  data.notification_data.actions.push_back(action1);
-  data.notification_data.actions.push_back(action2);
-  data.notification_data.actions.push_back(action3);
+  auto action1 = blink::mojom::NotificationAction::New();
+  data.notification_data.actions.push_back(std::move(action1));
+  auto action2 = blink::mojom::NotificationAction::New();
+  data.notification_data.actions.push_back(std::move(action2));
+  auto action3 = blink::mojom::NotificationAction::New();
+  data.notification_data.actions.push_back(std::move(action3));
   data.notification_data.require_interaction = false;
   data.num_clicks = 3;
   data.num_action_button_clicks = 1;
@@ -323,7 +328,7 @@ TEST_F(PlatformNotificationServiceTest, NextPersistentNotificationId) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
 TEST_F(PlatformNotificationServiceTest, DisplayNameForContextMessage) {
-  base::string16 display_name =
+  std::u16string display_name =
       service()->DisplayNameForContextMessage(GURL("https://chrome.com/"));
 
   EXPECT_TRUE(display_name.empty());
@@ -351,8 +356,8 @@ TEST_F(PlatformNotificationServiceTest, DisplayNameForContextMessage) {
 
 TEST_F(PlatformNotificationServiceTest, CreateNotificationFromData) {
   PlatformNotificationData notification_data;
-  notification_data.title = base::ASCIIToUTF16("My Notification");
-  notification_data.body = base::ASCIIToUTF16("Hello, world!");
+  notification_data.title = u"My Notification";
+  notification_data.body = u"Hello, world!";
   GURL origin("https://chrome.com/");
 
   Notification notification = service()->CreateNotificationFromData(

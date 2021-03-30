@@ -5,77 +5,47 @@
 #include "chrome/browser/policy/messaging_layer/public/report_client.h"
 
 #include "base/memory/singleton.h"
-#include "base/synchronization/waitable_event.h"
 #include "base/task/post_task.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/policy/messaging_layer/public/report_queue.h"
-#include "chrome/browser/policy/messaging_layer/public/report_queue_configuration.h"
-#include "chrome/browser/policy/messaging_layer/util/status.h"
-#include "chrome/browser/policy/messaging_layer/util/status_macros.h"
-#include "chrome/browser/policy/messaging_layer/util/statusor.h"
-#include "components/policy/core/common/cloud/dm_token.h"
+#include "base/values.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
-#include "components/policy/proto/record_constants.pb.h"
+#include "components/reporting/client/report_queue_configuration.h"
+#include "components/reporting/client/report_queue_provider.h"
+#include "components/reporting/proto/record_constants.pb.h"
+#include "components/reporting/util/status.h"
+#include "components/reporting/util/status_macros.h"
+#include "components/reporting/util/statusor.h"
+#include "components/reporting/util/test_support_callbacks.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#ifdef OS_CHROMEOS
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/user_manager/scoped_user_manager.h"
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+using ::testing::_;
+using ::testing::Invoke;
+using ::testing::Ne;
+using ::testing::SizeIs;
+using ::testing::WithArgs;
 
 namespace reporting {
 namespace {
 
-using policy::DMToken;
-using reporting::Destination;
-
-// Usage (in tests only):
-//
-//   TestEvent<ResType> e;
-//   ... Do some async work passing e.cb() as a completion callback of
-//   base::OnceCallback<void(ResType* res)> type which also may perform some
-//   other action specified by |done| callback provided by the caller.
-//   ... = e.result();  // Will wait for e.cb() to be called and return the
-//   collected result.
-//
-template <typename ResType>
-class TestEvent {
- public:
-  TestEvent() : run_loop_(std::make_unique<base::RunLoop>()) {}
-  ~TestEvent() = default;
-  TestEvent(const TestEvent& other) = delete;
-  TestEvent& operator=(const TestEvent& other) = delete;
-  ResType result() {
-    run_loop_->Run();
-    return std::forward<ResType>(result_);
-  }
-
-  // Completion callback to hand over to the processing method.
-  base::OnceCallback<void(ResType res)> cb() {
-    return base::BindOnce(
-        [](base::RunLoop* run_loop, ResType* result, ResType res) {
-          *result = std::forward<ResType>(res);
-          run_loop->Quit();
-        },
-        base::Unretained(run_loop_.get()), base::Unretained(&result_));
-  }
-
- private:
-  std::unique_ptr<base::RunLoop> run_loop_;
-  ResType result_;
-};
-
 class ReportClientTest : public testing::Test {
  public:
   void SetUp() override {
-#ifdef OS_CHROMEOS
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // Set up fake primary profile.
     auto mock_user_manager =
-        std::make_unique<testing::NiceMock<chromeos::FakeChromeUserManager>>();
+        std::make_unique<testing::NiceMock<ash::FakeChromeUserManager>>();
     profile_ = std::make_unique<TestingProfile>(
         base::FilePath(FILE_PATH_LITERAL("/home/chronos/u-0123456789abcdef")));
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
@@ -87,31 +57,38 @@ class ReportClientTest : public testing::Test {
                                     /*is_child=*/false);
     user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(mock_user_manager));
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     // Provide a mock cloud policy client.
     client_ = std::make_unique<policy::MockCloudPolicyClient>();
-    client_->SetDMToken(
-        policy::DMToken::CreateValidTokenForTesting("FAKE_DM_TOKEN").value());
+    client_->SetDMToken("FAKE_DM_TOKEN");
     test_reporting_ =
         std::make_unique<ReportingClient::TestEnvironment>(client_.get());
+
+    scoped_feature_list_.InitAndEnableFeature(
+        ReportQueueProvider::kEncryptedReportingPipeline);
   }
 
   void TearDown() override {
-#ifdef OS_CHROMEOS
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     user_manager_.reset();
     profile_.reset();
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
  protected:
-  content::BrowserTaskEnvironment task_envrionment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ReportingClient::TestEnvironment> test_reporting_;
-#ifdef OS_CHROMEOS
+  // BrowserTaskEnvironment needs to be destroyed before TestEnvironment
+  // and ScopedFeatureList, so that tasks on other threads don't run after
+  // they are destroyed.
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_;
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
-  const DMToken dm_token_ = DMToken::CreateValidTokenForTesting("TOKEN");
+  const std::string dm_token_ = "TOKEN";
   const Destination destination_ = Destination::UPLOAD_EVENTS;
   ReportQueueConfiguration::PolicyCheckCallback policy_checker_callback_ =
       base::BindRepeating([]() { return Status::StatusOK(); });
@@ -123,9 +100,9 @@ TEST_F(ReportClientTest, CreatesReportQueue) {
       dm_token_, destination_, policy_checker_callback_);
   ASSERT_OK(config_result);
 
-  TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> a;
-  ReportingClient::CreateReportQueue(std::move(config_result.ValueOrDie()),
-                                     a.cb());
+  test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> a;
+  ReportQueueProvider::CreateQueue(std::move(config_result.ValueOrDie()),
+                                   a.cb());
   ASSERT_OK(a.result());
 }
 
@@ -135,18 +112,18 @@ TEST_F(ReportClientTest, CreatesTwoDifferentReportQueues) {
       dm_token_, destination_, policy_checker_callback_);
   EXPECT_TRUE(config_result.ok());
 
-  TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> a1;
-  ReportingClient::CreateReportQueue(std::move(config_result.ValueOrDie()),
-                                     a1.cb());
+  test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> a1;
+  ReportQueueProvider::CreateQueue(std::move(config_result.ValueOrDie()),
+                                   a1.cb());
   auto result = a1.result();
   ASSERT_OK(result);
   auto report_queue_1 = std::move(result.ValueOrDie());
 
-  TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> a2;
+  test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> a2;
   config_result = ReportQueueConfiguration::Create(dm_token_, destination_,
                                                    policy_checker_callback_);
-  ReportingClient::CreateReportQueue(std::move(config_result.ValueOrDie()),
-                                     a2.cb());
+  ReportQueueProvider::CreateQueue(std::move(config_result.ValueOrDie()),
+                                   a2.cb());
   result = a2.result();
   ASSERT_OK(result);
   auto report_queue_2 = std::move(result.ValueOrDie());
@@ -154,5 +131,40 @@ TEST_F(ReportClientTest, CreatesTwoDifferentReportQueues) {
   EXPECT_NE(report_queue_1.get(), report_queue_2.get());
 }
 
+// Creates queue, enqueues messages and verifies they are uploaded.
+TEST_F(ReportClientTest, EnqueueMessageAndUpload) {
+  auto config_result = ReportQueueConfiguration::Create(
+      dm_token_, destination_, policy_checker_callback_);
+  EXPECT_TRUE(config_result.ok());
+
+  test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> create_queue_event;
+  ReportQueueProvider::CreateQueue(std::move(config_result.ValueOrDie()),
+                                   create_queue_event.cb());
+  auto result = create_queue_event.result();
+  ASSERT_OK(result);
+  auto report_queue = std::move(result.ValueOrDie());
+
+  test::TestEvent<Status> enqueue_record_event;
+  report_queue->Enqueue("Record", FAST_BATCH, enqueue_record_event.cb());
+  ASSERT_OK(enqueue_record_event.result());
+
+  EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
+      .WillOnce(WithArgs<0, 2>(
+          Invoke([](base::Value payload,
+                    policy::CloudPolicyClient::ResponseCallback done_cb) {
+            base::Value* const records = payload.FindListKey("encryptedRecord");
+            ASSERT_THAT(records, Ne(nullptr));
+            base::Value::ListView records_list = records->GetList();
+            ASSERT_THAT(records_list, SizeIs(1));
+            base::Value* const seq_info =
+                records_list[0].FindDictKey("sequenceInformation");
+            ASSERT_THAT(seq_info, Ne(nullptr));
+            base::Value response{base::Value::Type::DICTIONARY};
+            response.SetPath("lastSucceedUploadedRecord", std::move(*seq_info));
+            std::move(done_cb).Run(std::move(response));
+          })));
+  // Trigger upload.
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+}
 }  // namespace
 }  // namespace reporting

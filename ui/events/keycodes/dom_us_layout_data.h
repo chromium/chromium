@@ -14,7 +14,7 @@ namespace ui {
 // interpretation when there is no other way to map a physical key.
 const struct PrintableCodeEntry {
   DomCode dom_code;
-  base::char16 character[2];  // normal, shift
+  char16_t character[2];  // normal, shift
 } kPrintableCodeMap[] = {
     {DomCode::US_A, {'a', 'A'}},
     {DomCode::US_B, {'b', 'B'}},

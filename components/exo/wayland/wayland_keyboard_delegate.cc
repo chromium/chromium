@@ -48,7 +48,7 @@ void WaylandKeyboardDelegate::OnKeyboardEnter(
     uint32_t* value =
         static_cast<uint32_t*>(wl_array_add(&keys, sizeof(uint32_t)));
     DCHECK(value);
-    *value = DomCodeToKey(entry.second);
+    *value = ui::KeycodeConverter::DomCodeToEvdevCode(entry.second);
   }
   wl_keyboard_send_enter(
       keyboard_resource_,
@@ -69,20 +69,20 @@ void WaylandKeyboardDelegate::OnKeyboardLeave(Surface* surface) {
 }
 
 uint32_t WaylandKeyboardDelegate::OnKeyboardKey(base::TimeTicks time_stamp,
-                                                ui::DomCode key,
+                                                ui::DomCode code,
                                                 bool pressed) {
   uint32_t serial =
       serial_tracker_->GetNextSerial(SerialTracker::EventType::OTHER_EVENT);
   SendTimestamp(time_stamp);
   wl_keyboard_send_key(
       keyboard_resource_, serial, TimeTicksToMilliseconds(time_stamp),
-      DomCodeToKey(key),
+      ui::KeycodeConverter::DomCodeToEvdevCode(code),
       pressed ? WL_KEYBOARD_KEY_STATE_PRESSED : WL_KEYBOARD_KEY_STATE_RELEASED);
   // Unlike normal wayland clients, the X11 server tries to maintain its own
   // modifier state, which it updates based on key events. To prevent numlock
   // presses from allowing numpad keys to be interpreted as directions, we
   // re-send the modifier state after a numlock press.
-  if (key == ui::DomCode::NUM_LOCK)
+  if (code == ui::DomCode::NUM_LOCK)
     SendKeyboardModifiers();
   wl_client_flush(client());
   return serial;
@@ -115,16 +115,6 @@ void WaylandKeyboardDelegate::OnKeyboardLayoutUpdated(
                           platform_shared_keymap.GetPlatformHandle().fd,
                           keymap.size() + 1);
   wl_client_flush(client());
-}
-
-uint32_t WaylandKeyboardDelegate::DomCodeToKey(ui::DomCode code) const {
-  // This assumes KeycodeConverter has been built with evdev/xkb codes.
-  xkb_keycode_t xkb_keycode = static_cast<xkb_keycode_t>(
-      ui::KeycodeConverter::DomCodeToNativeKeycode(code));
-
-  // Keycodes are offset by 8 in Xkb.
-  DCHECK_GE(xkb_keycode, 8u);
-  return xkb_keycode - 8;
 }
 
 void WaylandKeyboardDelegate::SendKeyboardModifiers() {

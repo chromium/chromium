@@ -9,6 +9,7 @@ import androidx.annotation.StringRes;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.signin.base.CoreAccountId;
 
 import java.util.List;
 
@@ -21,11 +22,12 @@ public final class ConsentAuditorBridge {
 
     /**
      * Records that the user consented to a feature.
+     * @param accountId The account Id for which to record the consent.
      * @param feature The {@link ConsentAuditorFeature} for which to record the consent.
      * @param consentDescription The resource IDs of the text the user read before consenting.
      * @param consentConfirmation The resource ID of the text the user clicked when consenting.
      */
-    public void recordConsent(String accountId, @ConsentAuditorFeature int feature,
+    public void recordConsent(CoreAccountId accountId, @ConsentAuditorFeature int feature,
             List<Integer> consentDescription, @StringRes int consentConfirmation) {
         int[] consentDescriptionArray = new int[consentDescription.size()];
         for (int i = 0; i < consentDescription.size(); ++i) {
@@ -49,7 +51,7 @@ public final class ConsentAuditorBridge {
 
     @NativeMethods
     interface Natives {
-        void recordConsent(ConsentAuditorBridge caller, Profile profile, String accountId,
+        void recordConsent(ConsentAuditorBridge caller, Profile profile, CoreAccountId accountId,
                 int feature, int[] consentDescription, int consentConfirmation);
     }
 }

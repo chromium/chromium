@@ -70,3 +70,17 @@ BarcodeDetector.getSupportedFormats = function() {};
  * @return {!Promise<!Array<!DetectedBarcode>>}
  */
 BarcodeDetector.prototype.detect = function(image) {};
+
+// TODO(b/172881094): Upstream the externs of PTZ fields to Closure Compiler.
+
+/** @type {!MediaSettingsRange} */
+MediaTrackCapabilities.prototype.pan;
+
+/** @type {!MediaSettingsRange} */
+MediaTrackCapabilities.prototype.tilt;
+
+/** @type {number} */
+MediaTrackSettings.prototype.pan;
+
+/** @type {number} */
+MediaTrackSettings.prototype.tilt;

@@ -79,7 +79,9 @@ std::string URLDataSource::GetContentSecurityPolicy(
     case network::mojom::CSPDirectiveName::ScriptSrc:
       // Note: Do not add 'unsafe-eval' here. Instead override CSP for the
       // specific pages that need it, see context http://crbug.com/525224.
-      return "script-src chrome://resources 'self';";
+      return IsChromeUntrustedDataSource(this)
+                 ? "script-src chrome-untrusted://resources 'self';"
+                 : "script-src chrome://resources 'self';";
     case network::mojom::CSPDirectiveName::FrameAncestors:
       return "frame-ancestors 'none';";
     case network::mojom::CSPDirectiveName::RequireTrustedTypesFor:
@@ -87,15 +89,18 @@ std::string URLDataSource::GetContentSecurityPolicy(
     case network::mojom::CSPDirectiveName::TrustedTypes:
       return "trusted-types;";
     case network::mojom::CSPDirectiveName::BaseURI:
+      return IsChromeUntrustedDataSource(this) ? "base-uri 'none';"
+                                               : std::string();
+    case network::mojom::CSPDirectiveName::FormAction:
+      return IsChromeUntrustedDataSource(this) ? "form-action 'none';"
+                                               : std::string();
     case network::mojom::CSPDirectiveName::BlockAllMixedContent:
     case network::mojom::CSPDirectiveName::ConnectSrc:
     case network::mojom::CSPDirectiveName::FrameSrc:
     case network::mojom::CSPDirectiveName::FontSrc:
-    case network::mojom::CSPDirectiveName::FormAction:
     case network::mojom::CSPDirectiveName::ImgSrc:
     case network::mojom::CSPDirectiveName::ManifestSrc:
     case network::mojom::CSPDirectiveName::MediaSrc:
-    case network::mojom::CSPDirectiveName::PluginTypes:
     case network::mojom::CSPDirectiveName::PrefetchSrc:
     case network::mojom::CSPDirectiveName::ReportURI:
     case network::mojom::CSPDirectiveName::Sandbox:

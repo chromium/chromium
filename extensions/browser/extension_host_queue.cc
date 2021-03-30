@@ -54,7 +54,7 @@ void ExtensionHostQueue::ProcessOneHost() {
   if (queue_.empty())
     return;  // can happen on shutdown
 
-  queue_.front()->CreateRenderViewNow();
+  queue_.front()->CreateRendererNow();
   queue_.pop_front();
 
   if (!queue_.empty())

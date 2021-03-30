@@ -3,52 +3,16 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../os_settings.gni")
 
-js_type_check("closure_compile") {
-  deps = [
-    ":main_page_behavior",
-    ":os_settings_page",
-    ":settings_idle_load",
-  ]
-}
-
-js_library("os_settings_page") {
-  deps = [
-    ":main_page_behavior",
-    "..:os_page_visibility",
-    "..:os_route",
-    "../..:router",
-    "../..:search_settings",
-    "../os_apps_page:android_apps_browser_proxy",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-  externs_list = [ "$externs_path/pending.js" ]
-}
-
-js_library("main_page_behavior") {
-  deps = [
-    "../..:router",
-    "../../settings_page:settings_section",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:util",
-  ]
-  externs_list = [ "$externs_path/pending.js" ]
-}
-
-js_library("settings_idle_load") {
-  deps = [ "//ui/webui/resources/js:assert" ]
-  externs_list = [ "$externs_path/pending_polymer.js" ]
-}
-
-# TODO: Uncomment as the Polymer3 migration makes progress.
 js_type_check("closure_compile_module") {
+  closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
-    #    ":os_settings_page.m",
     ":main_page_behavior.m",
+    ":os_settings_page.m",
     ":settings_idle_load.m",
   ]
 }
@@ -56,7 +20,32 @@ js_type_check("closure_compile_module") {
 js_library("os_settings_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_settings_page/os_settings_page.m.js" ]
   deps = [
-    # TODO: Fill those in.
+    ":main_page_behavior.m",
+    ":settings_idle_load.m",
+    "..:os_page_visibility.m",
+    "..:os_route.m",
+    "../..:router",
+    "../..:search_settings",
+    "../../settings_page:settings_section",
+    "../bluetooth_page:bluetooth_page.m",
+    "../crostini_page:crostini_page.m",
+    "../device_page:device_page.m",
+    "../kerberos_page:kerberos_page.m",
+    "../multidevice_page:multidevice_page.m",
+    "../on_startup_page:on_startup_page.m",
+    "../os_a11y_page:os_a11y_page.m",
+    "../os_apps_page:android_apps_browser_proxy.m",
+    "../os_apps_page:android_apps_browser_proxy.m",
+    "../os_apps_page:os_apps_page.m",
+    "../os_people_page:os_people_page.m",
+    "../os_printing_page:os_printing_page.m",
+    "../os_privacy_page:os_privacy_page.m",
+    "../os_search_page:os_search_page.m",
+    "../personalization_page:personalization_page.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
   extra_deps = [ ":os_settings_page_module" ]
 }
@@ -64,8 +53,8 @@ js_library("os_settings_page.m") {
 js_library("main_page_behavior.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_settings_page/main_page_behavior.m.js" ]
   deps = [
-    "../..:router.m",
-    "../../settings_page:settings_section.m",
+    "../..:router",
+    "../../settings_page:settings_section",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:util.m",
@@ -82,8 +71,6 @@ js_library("settings_idle_load.m") {
   extra_deps = [ ":settings_idle_load_module" ]
 }
 
-import("//tools/polymer/polymer.gni")
-
 group("polymer3_elements") {
   public_deps = [
     ":modulize",
@@ -96,6 +83,13 @@ polymer_modulizer("os_settings_page") {
   js_file = "os_settings_page.js"
   html_file = "os_settings_page.html"
   html_type = "dom-module"
+  auto_imports =
+      os_settings_auto_imports + [
+        "ui/webui/resources/html/polymer.html|Polymer,html,beforeNextRender",
+        "ui/webui/resources/html/assert.html|assert",
+      ]
+  namespace_rewrites = os_settings_namespace_rewrites
+  migrated_imports = os_settings_migrated_imports
 }
 
 polymer_modulizer("settings_idle_load") {

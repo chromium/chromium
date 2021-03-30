@@ -28,6 +28,8 @@ class AuthenticationServiceFake : public AuthenticationService {
 
   void SignIn(ChromeIdentity* identity) override;
 
+  void GrantSyncConsent(ChromeIdentity* identity) override;
+
   void SignOut(signin_metrics::ProfileSignout signout_source,
                bool force_clear_browsing_data,
                ProceduralBlock completion) override;

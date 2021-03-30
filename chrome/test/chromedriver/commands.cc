@@ -87,7 +87,7 @@ void ExecuteCreateSession(SessionThreadMap* session_thread_map,
 namespace {
 
 void OnGetSession(const base::WeakPtr<size_t>& session_remaining_count,
-                  const base::Closure& all_get_session_func,
+                  const base::RepeatingClosure& all_get_session_func,
                   base::ListValue* session_list,
                   const Status& status,
                   std::unique_ptr<base::Value> value,
@@ -98,11 +98,13 @@ void OnGetSession(const base::WeakPtr<size_t>& session_remaining_count,
 
   (*session_remaining_count)--;
 
-  std::unique_ptr<base::DictionaryValue> session(new base::DictionaryValue());
-  session->SetString("id", session_id);
-  session->SetKey("capabilities",
-                  base::Value::FromUniquePtrValue(std::move(value)));
-  session_list->Append(std::move(session));
+  if (value) {
+    std::unique_ptr<base::DictionaryValue> session(new base::DictionaryValue());
+    session->SetString("id", session_id);
+    session->SetKey("capabilities",
+                    base::Value::FromUniquePtrValue(std::move(value)));
+    session_list->Append(std::move(session));
+  }
 
   if (!*session_remaining_count) {
     all_get_session_func.Run();
@@ -144,7 +146,7 @@ void ExecuteGetSessions(const Command& session_capabilities_command,
 namespace {
 
 void OnSessionQuit(const base::WeakPtr<size_t>& quit_remaining_count,
-                   const base::Closure& all_quit_func,
+                   const base::RepeatingClosure& all_quit_func,
                    const Status& status,
                    std::unique_ptr<base::Value> value,
                    const std::string& session_id,
@@ -205,7 +207,7 @@ void ExecuteSessionCommandOnSessionThread(
     std::unique_ptr<base::DictionaryValue> params,
     scoped_refptr<base::SingleThreadTaskRunner> cmd_task_runner,
     const CommandCallback& callback_on_cmd,
-    const base::Closure& terminate_on_cmd) {
+    const base::RepeatingClosure& terminate_on_cmd) {
   Session* session = GetThreadLocalSession();
 
   if (!session) {

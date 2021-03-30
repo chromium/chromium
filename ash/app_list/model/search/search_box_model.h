@@ -6,11 +6,11 @@
 #define ASH_APP_LIST_MODEL_SEARCH_SEARCH_BOX_MODEL_H_
 
 #include <memory>
+#include <string>
 
-#include "ash/app_list/model/app_list_model_export.h"
+#include "ash/ash_export.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/selection_model.h"
 
@@ -20,7 +20,7 @@ class SearchBoxModelObserver;
 
 // SearchBoxModel provides the user entered text, and the system state that
 // influences the search box behavior.
-class APP_LIST_MODEL_EXPORT SearchBoxModel {
+class ASH_EXPORT SearchBoxModel {
  public:
   SearchBoxModel();
   ~SearchBoxModel();
@@ -36,20 +36,19 @@ class APP_LIST_MODEL_EXPORT SearchBoxModel {
 
   // Sets/gets the text for the search box's Textfield and the voice search
   // flag.
-  void Update(const base::string16& text,
-              bool initiated_by_user);
-  const base::string16& text() const { return text_; }
+  void Update(const std::u16string& text, bool initiated_by_user);
+  const std::u16string& text() const { return text_; }
 
   void AddObserver(SearchBoxModelObserver* observer);
   void RemoveObserver(SearchBoxModelObserver* observer);
 
  private:
-  base::string16 text_;
+  std::u16string text_;
   bool search_engine_is_google_ = false;
   bool is_tablet_mode_ = false;
   bool show_assistant_button_ = false;
 
-  base::ObserverList<SearchBoxModelObserver>::Unchecked observers_;
+  base::ObserverList<SearchBoxModelObserver> observers_;
 
   DISALLOW_COPY_AND_ASSIGN(SearchBoxModel);
 };

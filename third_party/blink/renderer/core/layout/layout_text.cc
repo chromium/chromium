@@ -188,6 +188,18 @@ LayoutText* LayoutText::CreateEmptyAnonymous(
   return text;
 }
 
+LayoutText* LayoutText::CreateAnonymous(
+    Document& doc,
+    scoped_refptr<const ComputedStyle> style,
+    scoped_refptr<StringImpl> text,
+    LegacyLayout legacy) {
+  LayoutText* layout_text =
+      LayoutObjectFactory::CreateText(nullptr, std::move(text), legacy);
+  layout_text->SetDocumentForAnonymous(&doc);
+  layout_text->SetStyle(std::move(style));
+  return layout_text;
+}
+
 bool LayoutText::IsWordBreak() const {
   NOT_DESTROYED();
   return false;
@@ -315,7 +327,6 @@ void LayoutText::DetachAbstractInlineTextBoxes() {
 void LayoutText::ClearFirstInlineFragmentItemIndex() {
   NOT_DESTROYED();
   CHECK(IsInLayoutNGInlineFormattingContext()) << *this;
-  DCHECK(RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled());
   DetachAbstractInlineTextBoxesIfNeeded();
   first_fragment_item_index_ = 0u;
 }
@@ -324,7 +335,6 @@ void LayoutText::SetFirstInlineFragmentItemIndex(wtf_size_t index) {
   NOT_DESTROYED();
   CHECK(IsInLayoutNGInlineFormattingContext());
   // TODO(yosin): Call |NGAbstractInlineTextBox::WillDestroy()|.
-  DCHECK(RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled());
   DCHECK_NE(index, 0u);
   DetachAbstractInlineTextBoxesIfNeeded();
   first_fragment_item_index_ = index;
@@ -440,8 +450,20 @@ scoped_refptr<StringImpl> LayoutText::OriginalText() const {
 
 String LayoutText::PlainText() const {
   NOT_DESTROYED();
-  if (GetNode())
+  if (GetNode()) {
+    if (const NGOffsetMapping* mapping = GetNGOffsetMapping()) {
+      StringBuilder result;
+      for (const NGOffsetMappingUnit& unit :
+           mapping->GetMappingUnitsForNode(*GetNode())) {
+        result.Append(
+            StringView(mapping->GetText(), unit.TextContentStart(),
+                       unit.TextContentEnd() - unit.TextContentStart()));
+      }
+      return result.ToString();
+    }
+    // TODO(crbug.com/591099): Remove this branch when legacy layout is removed.
     return blink::PlainText(EphemeralRange::RangeOfContents(*GetNode()));
+  }
 
   // FIXME: this is just a stopgap until TextIterator is adapted to support
   // generated text.
@@ -820,17 +842,39 @@ CreatePositionWithAffinityForBoxAfterAdjustingOffsetForBiDi(
 PositionWithAffinity LayoutText::PositionForPoint(
     const PhysicalOffset& point) const {
   NOT_DESTROYED();
+  // NG codepath requires |kPrePaintClean|.
+  // |SelectionModifier| calls this only in legacy codepath.
+  DCHECK(!IsLayoutNGObject() || GetDocument().Lifecycle().GetState() >=
+                                    DocumentLifecycle::kPrePaintClean);
+
   if (IsInLayoutNGInlineFormattingContext()) {
     // Because of Texts in "position:relative" can be outside of line box, we
     // attempt to find a fragment containing |point|.
     // See All/LayoutViewHitTestTest.HitTestHorizontal/* and
     // All/LayoutViewHitTestTest.HitTestVerticalRL/*
     NGInlineCursor cursor;
-    for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject()) {
+    cursor.MoveTo(*this);
+    const LayoutBlockFlow* containing_block_flow = cursor.GetLayoutBlockFlow();
+    DCHECK(containing_block_flow);
+    PhysicalOffset point_in_contents = point;
+    if (containing_block_flow->IsScrollContainer()) {
+      point_in_contents += PhysicalOffset(
+          containing_block_flow->PixelSnappedScrolledContentOffset());
+    }
+    const NGPhysicalBoxFragment* container_fragment = nullptr;
+    PhysicalOffset point_in_container_fragment;
+    for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
+      DCHECK(&cursor.ContainerFragment());
+      if (container_fragment != &cursor.ContainerFragment()) {
+        container_fragment = &cursor.ContainerFragment();
+        point_in_container_fragment =
+            point_in_contents - container_fragment->OffsetFromOwnerLayoutBox();
+      }
       if (!EnclosingIntRect(cursor.Current().RectInContainerFragment())
-               .Contains(FlooredIntPoint(point)))
+               .Contains(FlooredIntPoint(point_in_container_fragment)))
         continue;
-      if (auto position_with_affinity = cursor.PositionForPointInChild(point)) {
+      if (auto position_with_affinity =
+              cursor.PositionForPointInChild(point_in_container_fragment)) {
         // Note: Due by Bidi adjustment, |position| isn't relative to this.
         const Position& position = position_with_affinity.GetPosition();
         DCHECK(position.IsOffsetInAnchor()) << position;
@@ -841,7 +885,7 @@ PositionWithAffinity LayoutText::PositionForPoint(
       }
     }
     // Try for leading and trailing spaces between lines.
-    return ContainingNGBlockFlow()->PositionForPoint(point);
+    return containing_block_flow->PositionForPoint(point);
   }
 
   DCHECK(CanUseInlineBox(*this));
@@ -1767,6 +1811,28 @@ LayoutUnit LayoutText::PhysicalAreaSize() const {
   return LayoutUnit(0);
 }
 
+LayoutUnit LayoutText::PhysicalRightOffset() const {
+  NOT_DESTROYED();
+  // This is not accurate when |this| starts or ends at the middle of a line,
+  // but we prefer performance over accuracy.
+  if (IsInLayoutNGInlineFormattingContext()) {
+    NGInlineCursor cursor;
+    cursor.MoveTo(*this);
+    if (!cursor)
+      return LayoutUnit(0);
+    PhysicalRect rect = cursor.Current().RectInContainerFragment();
+    return rect.offset.left + rect.size.width;
+  }
+
+  if (const auto* first_text_box = FirstTextBox()) {
+    if (const auto* last_text_box = LastTextBox()) {
+      return std::max(first_text_box->FrameRect().MaxX(),
+                      last_text_box->FrameRect().MaxX());
+    }
+  }
+  return LayoutUnit(0);
+}
+
 bool LayoutText::CanOptimizeSetText() const {
   NOT_DESTROYED();
   // If we have only one line of text and "contain: layout size" we can avoid
@@ -2332,8 +2398,7 @@ PhysicalRect LayoutText::LocalSelectionVisualRect() const {
 }
 
 void LayoutText::InvalidateVisualOverflow() {
-  DCHECK(IsInLayoutNGInlineFormattingContext() &&
-         RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled());
+  DCHECK(IsInLayoutNGInlineFormattingContext());
   NGInlineCursor cursor;
   for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject())
     cursor.Current()->GetMutableForPainting().InvalidateInkOverflow();

@@ -32,13 +32,16 @@
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
+#include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/service/display/aggregated_frame.h"
-#include "components/viz/service/display/display_resource_provider.h"
+#include "components/viz/service/display/display_resource_provider_software.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
+#include "components/viz/service/surfaces/pending_copy_output_request.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
+#include "components/viz/test/begin_frame_args_test.h"
 #include "components/viz/test/compositor_frame_helpers.h"
 #include "components/viz/test/fake_compositor_frame_sink_client.h"
 #include "components/viz/test/fake_surface_observer.h"
@@ -112,6 +115,8 @@ class DisplayTimeSource {
   base::TimeTicks next_display_time_ =
       base::TimeTicks() + base::TimeDelta::FromSeconds(1);
 };
+
+}  // namespace
 
 class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
  public:
@@ -409,8 +414,9 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
                          SkBlendMode::kSrcOver, 0);
     auto* quad = pass->CreateAndAppendDrawQuad<CompositorRenderPassDrawQuad>();
     quad->SetAll(shared_state, output_rect, output_rect,
-                 /*needs_blending=*/true, render_pass_id, 0, gfx::RectF(),
-                 gfx::Size(), gfx::Vector2dF(), gfx::PointF(), gfx::RectF(),
+                 /*needs_blending=*/true, render_pass_id, kInvalidResourceId,
+                 gfx::RectF(), gfx::Size(), gfx::Vector2dF(), gfx::PointF(),
+                 gfx::RectF(),
                  /*force_anti_aliasing_off=*/false,
                  /*backdrop_filter_quality=*/1.0f, intersects_damage_under);
   }
@@ -424,8 +430,9 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
     auto* quad = pass->CreateAndAppendDrawQuad<YUVVideoDrawQuad>();
     quad->SetNew(shared_state, output_rect, output_rect, false,
                  gfx::RectF(output_rect), gfx::RectF(), output_rect.size(),
-                 gfx::Size(), 0, 0, 0, 0, gfx::ColorSpace::CreateREC709(), 0,
-                 1.0, 8);
+                 gfx::Size(), kInvalidResourceId, kInvalidResourceId,
+                 kInvalidResourceId, kInvalidResourceId,
+                 gfx::ColorSpace::CreateREC709(), 0, 1.0, 8);
   }
 
  protected:
@@ -917,8 +924,8 @@ class TestVizClient {
   CopyOutputRequest* RequestCopyOfOutput() {
     auto copy_request = CopyOutputRequest::CreateStubForTesting();
     auto* copy_request_ptr = copy_request.get();
-    root_sink_->RequestCopyOfOutput(local_surface_id(),
-                                    std::move(copy_request));
+    root_sink_->RequestCopyOfOutput(PendingCopyOutputRequest{
+        local_surface_id(), SubtreeCaptureId(), std::move(copy_request)});
     return copy_request_ptr;
   }
 
@@ -1590,8 +1597,8 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, CopyRequest) {
                         embedded_local_surface_id, device_scale_factor);
   auto copy_request = CopyOutputRequest::CreateStubForTesting();
   auto* copy_request_ptr = copy_request.get();
-  embedded_support->RequestCopyOfOutput(embedded_local_surface_id,
-                                        std::move(copy_request));
+  embedded_support->RequestCopyOfOutput(
+      {embedded_local_surface_id, SubtreeCaptureId(), std::move(copy_request)});
 
   std::vector<Quad> root_quads = {
       Quad::SolidColorQuad(SK_ColorWHITE, gfx::Rect(5, 5)),
@@ -1743,8 +1750,8 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, UnreferencedSurface) {
                         embedded_local_surface_id, device_scale_factor);
   auto copy_request(CopyOutputRequest::CreateStubForTesting());
   auto* copy_request_ptr = copy_request.get();
-  embedded_support->RequestCopyOfOutput(embedded_local_surface_id,
-                                        std::move(copy_request));
+  embedded_support->RequestCopyOfOutput(
+      {embedded_local_surface_id, SubtreeCaptureId(), std::move(copy_request)});
 
   ParentLocalSurfaceIdAllocator parent_allocator;
   parent_allocator.GenerateId();
@@ -5580,8 +5587,8 @@ class SurfaceAggregatorWithResourcesTest : public testing::Test,
   SurfaceAggregatorWithResourcesTest() : manager_(&shared_bitmap_manager_) {}
 
   void SetUp() override {
-    resource_provider_ = std::make_unique<DisplayResourceProvider>(
-        DisplayResourceProvider::kSoftware, nullptr, &shared_bitmap_manager_);
+    resource_provider_ = std::make_unique<DisplayResourceProviderSoftware>(
+        &shared_bitmap_manager_);
 
     aggregator_ = std::make_unique<SurfaceAggregator>(
         manager_.surface_manager(), resource_provider_.get(), false, false);
@@ -5593,6 +5600,16 @@ class SurfaceAggregatorWithResourcesTest : public testing::Test,
                                   gfx::OVERLAY_TRANSFORM_NONE);
   }
 
+  void SendBeginFrame(CompositorFrameSinkSupport* support, uint64_t id) {
+    BeginFrameArgs args =
+        CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 0, id);
+    support->OnBeginFrame(args);
+  }
+
+  void EnableDocumentTransitions(CompositorFrameSinkSupport* support) {
+    support->document_transitions_enabled_ = true;
+  }
+
  protected:
   ServerSharedBitmapManager shared_bitmap_manager_;
   FrameSinkManagerImpl manager_;
@@ -5600,12 +5617,10 @@ class SurfaceAggregatorWithResourcesTest : public testing::Test,
   std::unique_ptr<SurfaceAggregator> aggregator_;
 };
 
-void SubmitCompositorFrameWithResources(
+CompositorFrame BuildCompositorFrameWithResources(
     const std::vector<ResourceId>& resource_ids,
     bool valid,
-    SurfaceId child_id,
-    CompositorFrameSinkSupport* support,
-    SurfaceId surface_id) {
+    SurfaceId child_id) {
   CompositorFrame frame = MakeEmptyCompositorFrame();
   auto pass = CompositorRenderPass::Create();
   pass->SetNew(CompositorRenderPassId{1}, gfx::Rect(0, 0, 20, 20), gfx::Rect(),
@@ -5649,6 +5664,16 @@ void SubmitCompositorFrameWithResources(
                  secure_output_only, protected_video_type);
   }
   frame.render_pass_list.push_back(std::move(pass));
+  return frame;
+}
+
+void SubmitCompositorFrameWithResources(
+    const std::vector<ResourceId>& resource_ids,
+    bool valid,
+    SurfaceId child_id,
+    CompositorFrameSinkSupport* support,
+    SurfaceId surface_id) {
+  auto frame = BuildCompositorFrameWithResources(resource_ids, valid, child_id);
   support->SubmitCompositorFrame(surface_id.local_surface_id(),
                                  std::move(frame));
 }
@@ -5660,7 +5685,8 @@ TEST_F(SurfaceAggregatorWithResourcesTest, TakeResourcesOneSurface) {
   LocalSurfaceId local_surface_id(7u, base::UnguessableToken::Create());
   SurfaceId surface_id(support->frame_sink_id(), local_surface_id);
 
-  std::vector<ResourceId> ids = {11, 12, 13};
+  std::vector<ResourceId> ids = {ResourceId(11), ResourceId(12),
+                                 ResourceId(13)};
   SubmitCompositorFrameWithResources(ids, true, SurfaceId(), support.get(),
                                      surface_id);
 
@@ -5695,7 +5721,8 @@ TEST_F(SurfaceAggregatorWithResourcesTest, ReturnResourcesAsSurfacesChange) {
   SurfaceId surface_id1(support->frame_sink_id(), local_surface_id1);
   SurfaceId surface_id2(support->frame_sink_id(), local_surface_id2);
 
-  std::vector<ResourceId> ids = {11, 12, 13};
+  std::vector<ResourceId> ids = {ResourceId(11), ResourceId(12),
+                                 ResourceId(13)};
   SubmitCompositorFrameWithResources(ids, true, SurfaceId(), support.get(),
                                      surface_id1);
 
@@ -5729,7 +5756,7 @@ TEST_F(SurfaceAggregatorWithResourcesTest, TakeInvalidResources) {
   SurfaceId surface_id(support->frame_sink_id(), local_surface_id);
 
   TransferableResource resource;
-  resource.id = 11;
+  resource.id = ResourceId(11);
   // ResourceProvider is software but resource is not, so it should be
   // ignored.
   resource.is_software = false;
@@ -5748,7 +5775,7 @@ TEST_F(SurfaceAggregatorWithResourcesTest, TakeInvalidResources) {
   SubmitCompositorFrameWithResources({}, true, SurfaceId(), support.get(),
                                      surface_id);
   ASSERT_EQ(1u, client.returned_resources().size());
-  EXPECT_EQ(11u, client.returned_resources()[0].id);
+  EXPECT_EQ(ResourceId(11u), client.returned_resources()[0].id);
 }
 
 TEST_F(SurfaceAggregatorWithResourcesTest, TwoSurfaces) {
@@ -5763,10 +5790,12 @@ TEST_F(SurfaceAggregatorWithResourcesTest, TwoSurfaces) {
   LocalSurfaceId local_frame2_id(8u, base::UnguessableToken::Create());
   SurfaceId surface2_id(support2->frame_sink_id(), local_frame2_id);
 
-  std::vector<ResourceId> ids = {11, 12, 13};
+  std::vector<ResourceId> ids = {ResourceId(11), ResourceId(12),
+                                 ResourceId(13)};
   SubmitCompositorFrameWithResources(ids, true, SurfaceId(), support1.get(),
                                      surface1_id);
-  std::vector<ResourceId> ids2 = {14, 15, 16};
+  std::vector<ResourceId> ids2 = {ResourceId(14), ResourceId(15),
+                                  ResourceId(16)};
   SubmitCompositorFrameWithResources(ids2, true, SurfaceId(), support2.get(),
                                      surface2_id);
 
@@ -5810,15 +5839,18 @@ TEST_F(SurfaceAggregatorWithResourcesTest, InvalidChildSurface) {
   SurfaceId child_surface_id(child_support->frame_sink_id(),
                              child_local_surface_id);
 
-  std::vector<ResourceId> ids = {14, 15, 16};
+  std::vector<ResourceId> ids = {ResourceId(14), ResourceId(15),
+                                 ResourceId(16)};
   SubmitCompositorFrameWithResources(ids, true, SurfaceId(),
                                      child_support.get(), child_surface_id);
 
-  std::vector<ResourceId> ids2 = {17, 18, 19};
+  std::vector<ResourceId> ids2 = {ResourceId(17), ResourceId(18),
+                                  ResourceId(19)};
   SubmitCompositorFrameWithResources(ids2, false, child_surface_id,
                                      middle_support.get(), middle_surface_id);
 
-  std::vector<ResourceId> ids3 = {20, 21, 22};
+  std::vector<ResourceId> ids3 = {ResourceId(20), ResourceId(21),
+                                  ResourceId(22)};
   SubmitCompositorFrameWithResources(ids3, true, middle_surface_id,
                                      root_support.get(), root_surface_id);
 
@@ -5851,7 +5883,8 @@ TEST_F(SurfaceAggregatorWithResourcesTest, SecureOutputTexture) {
   LocalSurfaceId local_frame2_id(8u, base::UnguessableToken::Create());
   SurfaceId surface2_id(support2->frame_sink_id(), local_frame2_id);
 
-  std::vector<ResourceId> ids = {11, 12, 13};
+  std::vector<ResourceId> ids = {ResourceId(11), ResourceId(12),
+                                 ResourceId(13)};
   SubmitCompositorFrameWithResources(ids, true, SurfaceId(), support1.get(),
                                      surface1_id);
 
@@ -8281,8 +8314,8 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
             hit_test_region_index);
 }
 
-void ExpectDelegatedInkMetadataIsEqual(const DelegatedInkMetadata& lhs,
-                                       const DelegatedInkMetadata& rhs) {
+void ExpectDelegatedInkMetadataIsEqual(const gfx::DelegatedInkMetadata& lhs,
+                                       const gfx::DelegatedInkMetadata& rhs) {
   EXPECT_FLOAT_EQ(lhs.point().y(), rhs.point().y());
   EXPECT_FLOAT_EQ(lhs.point().x(), rhs.point().x());
   EXPECT_EQ(lhs.diameter(), rhs.diameter());
@@ -8295,6 +8328,7 @@ void ExpectDelegatedInkMetadataIsEqual(const DelegatedInkMetadata& lhs,
   EXPECT_FLOAT_EQ(lhs.presentation_area().height(),
                   rhs.presentation_area().height());
   EXPECT_EQ(lhs.frame_time(), rhs.frame_time());
+  EXPECT_EQ(lhs.is_hovering(), rhs.is_hovering());
 }
 
 // Basic test to confirm that ink metadata on a child surface will be
@@ -8306,11 +8340,11 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, DelegatedInkMetadataTest) {
       Pass(child_quads, CompositorRenderPassId{1}, gfx::Size(100, 100))};
 
   CompositorFrame child_frame = MakeEmptyCompositorFrame();
-  DelegatedInkMetadata metadata(
+  gfx::DelegatedInkMetadata metadata(
       gfx::PointF(100, 100), 1.5, SK_ColorRED, base::TimeTicks::Now(),
-      gfx::RectF(10, 10, 200, 200), base::TimeTicks::Now());
+      gfx::RectF(10, 10, 200, 200), base::TimeTicks::Now(), /*hovering*/ true);
   child_frame.metadata.delegated_ink_metadata =
-      std::make_unique<DelegatedInkMetadata>(metadata);
+      std::make_unique<gfx::DelegatedInkMetadata>(metadata);
   AddPasses(&child_frame.render_pass_list, child_passes,
             &child_frame.metadata.referenced_surfaces);
 
@@ -8351,9 +8385,9 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, DelegatedInkMetadataTest) {
   root_frame.render_pass_list[0]
       ->shared_quad_state_list.ElementAt(0)
       ->quad_to_target_transform.TransformRect(&area);
-  metadata =
-      DelegatedInkMetadata(pt, metadata.diameter(), metadata.color(),
-                           metadata.timestamp(), area, metadata.frame_time());
+  metadata = gfx::DelegatedInkMetadata(
+      pt, metadata.diameter(), metadata.color(), metadata.timestamp(), area,
+      metadata.frame_time(), metadata.is_hovering());
 
   root_sink_->SubmitCompositorFrame(root_local_surface_id_,
                                     std::move(root_frame));
@@ -8362,7 +8396,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, DelegatedInkMetadataTest) {
                             root_local_surface_id_);
   auto aggregated_frame = AggregateFrame(root_surface_id);
 
-  std::unique_ptr<DelegatedInkMetadata> actual_metadata =
+  std::unique_ptr<gfx::DelegatedInkMetadata> actual_metadata =
       std::move(aggregated_frame.delegated_ink_metadata);
   EXPECT_TRUE(actual_metadata);
   ExpectDelegatedInkMetadataIsEqual(*actual_metadata.get(), metadata);
@@ -8384,12 +8418,12 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   std::vector<Pass> greatgrandchild_passes = {Pass(
       greatgrandchild_quads, CompositorRenderPassId{1}, gfx::Size(100, 100))};
 
-  DelegatedInkMetadata metadata(
+  gfx::DelegatedInkMetadata metadata(
       gfx::PointF(100, 100), 1.5, SK_ColorRED, base::TimeTicks::Now(),
-      gfx::RectF(10, 10, 200, 200), base::TimeTicks::Now());
+      gfx::RectF(10, 10, 200, 200), base::TimeTicks::Now(), /*hovering*/ false);
   CompositorFrame greatgrandchild_frame = MakeEmptyCompositorFrame();
   greatgrandchild_frame.metadata.delegated_ink_metadata =
-      std::make_unique<DelegatedInkMetadata>(metadata);
+      std::make_unique<gfx::DelegatedInkMetadata>(metadata);
   AddPasses(&greatgrandchild_frame.render_pass_list, greatgrandchild_passes,
             &greatgrandchild_frame.metadata.referenced_surfaces);
 
@@ -8505,11 +8539,11 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
                             root_local_surface_id_);
   auto aggregated_frame = AggregateFrame(root_surface_id);
 
-  metadata =
-      DelegatedInkMetadata(pt, metadata.diameter(), metadata.color(),
-                           metadata.timestamp(), area, metadata.frame_time());
+  metadata = gfx::DelegatedInkMetadata(
+      pt, metadata.diameter(), metadata.color(), metadata.timestamp(), area,
+      metadata.frame_time(), metadata.is_hovering());
 
-  std::unique_ptr<DelegatedInkMetadata> actual_metadata =
+  std::unique_ptr<gfx::DelegatedInkMetadata> actual_metadata =
       std::move(aggregated_frame.delegated_ink_metadata);
   EXPECT_TRUE(actual_metadata);
   ExpectDelegatedInkMetadataIsEqual(*actual_metadata.get(), metadata);
@@ -8552,12 +8586,12 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   std::vector<Pass> child_2_passes = {
       Pass(child_2_quads, CompositorRenderPassId{1}, gfx::Size(100, 100))};
 
-  DelegatedInkMetadata metadata = DelegatedInkMetadata(
+  gfx::DelegatedInkMetadata metadata(
       gfx::PointF(88, 34), 1.8, SK_ColorBLACK, base::TimeTicks::Now(),
-      gfx::RectF(50, 50, 300, 300), base::TimeTicks::Now());
+      gfx::RectF(50, 50, 300, 300), base::TimeTicks::Now(), /*hovering*/ true);
   CompositorFrame child_2_frame = MakeEmptyCompositorFrame();
   child_2_frame.metadata.delegated_ink_metadata =
-      std::make_unique<DelegatedInkMetadata>(metadata);
+      std::make_unique<gfx::DelegatedInkMetadata>(metadata);
   AddPasses(&child_2_frame.render_pass_list, child_2_passes,
             &child_2_frame.metadata.referenced_surfaces);
 
@@ -8637,11 +8671,11 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
                             root_local_surface_id_);
   auto aggregated_frame = AggregateFrame(root_surface_id);
 
-  metadata =
-      DelegatedInkMetadata(pt, metadata.diameter(), metadata.color(),
-                           metadata.timestamp(), area, metadata.frame_time());
+  metadata = gfx::DelegatedInkMetadata(
+      pt, metadata.diameter(), metadata.color(), metadata.timestamp(), area,
+      metadata.frame_time(), metadata.is_hovering());
 
-  std::unique_ptr<DelegatedInkMetadata> actual_metadata =
+  std::unique_ptr<gfx::DelegatedInkMetadata> actual_metadata =
       std::move(aggregated_frame.delegated_ink_metadata);
   EXPECT_TRUE(actual_metadata);
   ExpectDelegatedInkMetadataIsEqual(*actual_metadata.get(), metadata);
@@ -8689,18 +8723,19 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   // the metadata with the later timestamp. Specifically setting the
   // later_metadata timestamp to be 50 microseconds later than Now() to avoid
   // issues with both metadatas sometimes having the same time in Release.
-  DelegatedInkMetadata early_metadata = DelegatedInkMetadata(
+  gfx::DelegatedInkMetadata early_metadata(
       gfx::PointF(88, 34), 1.8, SK_ColorBLACK, base::TimeTicks::Now(),
-      gfx::RectF(50, 50, 300, 300), base::TimeTicks::Now());
-  DelegatedInkMetadata later_metadata = DelegatedInkMetadata(
+      gfx::RectF(50, 50, 300, 300), base::TimeTicks::Now(), /*hovering*/ false);
+  gfx::DelegatedInkMetadata later_metadata(
       gfx::PointF(92, 35), 0.08, SK_ColorYELLOW,
       base::TimeTicks::Now() + base::TimeDelta::FromMicroseconds(50),
       gfx::RectF(35, 55, 128, 256),
-      base::TimeTicks::Now() + base::TimeDelta::FromMicroseconds(52));
+      base::TimeTicks::Now() + base::TimeDelta::FromMicroseconds(52),
+      /*hovering*/ true);
 
   CompositorFrame child_2_frame = MakeEmptyCompositorFrame();
   child_2_frame.metadata.delegated_ink_metadata =
-      std::make_unique<DelegatedInkMetadata>(later_metadata);
+      std::make_unique<gfx::DelegatedInkMetadata>(later_metadata);
   AddPasses(&child_2_frame.render_pass_list, child_2_passes,
             &child_2_frame.metadata.referenced_surfaces);
 
@@ -8720,7 +8755,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
 
   CompositorFrame child_3_frame = MakeEmptyCompositorFrame();
   child_3_frame.metadata.delegated_ink_metadata =
-      std::make_unique<DelegatedInkMetadata>(early_metadata);
+      std::make_unique<gfx::DelegatedInkMetadata>(early_metadata);
   AddPasses(&child_3_frame.render_pass_list, child_3_passes,
             &child_3_frame.metadata.referenced_surfaces);
 
@@ -8783,11 +8818,12 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
                             root_local_surface_id_);
   auto aggregated_frame = AggregateFrame(root_surface_id);
 
-  DelegatedInkMetadata expected_metadata = DelegatedInkMetadata(
+  gfx::DelegatedInkMetadata expected_metadata(
       pt, later_metadata.diameter(), later_metadata.color(),
-      later_metadata.timestamp(), area, later_metadata.frame_time());
+      later_metadata.timestamp(), area, later_metadata.frame_time(),
+      later_metadata.is_hovering());
 
-  std::unique_ptr<DelegatedInkMetadata> actual_metadata =
+  std::unique_ptr<gfx::DelegatedInkMetadata> actual_metadata =
       std::move(aggregated_frame.delegated_ink_metadata);
   EXPECT_TRUE(actual_metadata);
   ExpectDelegatedInkMetadataIsEqual(*actual_metadata.get(), expected_metadata);
@@ -8808,11 +8844,12 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
       Pass(child_quads, CompositorRenderPassId{1}, gfx::Size(100, 100))};
 
   CompositorFrame child_frame = MakeEmptyCompositorFrame();
-  DelegatedInkMetadata metadata(
+  gfx::DelegatedInkMetadata metadata(
       gfx::PointF(34, 89), 1.597, SK_ColorBLUE, base::TimeTicks::Now(),
-      gfx::RectF(2.3, 3.2, 177, 212), base::TimeTicks::Now());
+      gfx::RectF(2.3, 3.2, 177, 212), base::TimeTicks::Now(),
+      /*hovering*/ false);
   child_frame.metadata.delegated_ink_metadata =
-      std::make_unique<DelegatedInkMetadata>(metadata);
+      std::make_unique<gfx::DelegatedInkMetadata>(metadata);
   AddPasses(&child_frame.render_pass_list, child_passes,
             &child_frame.metadata.referenced_surfaces);
 
@@ -8858,12 +8895,12 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   // Now add a CopyOutputRequest on the child surface, so that the delegated
   // ink metadata does get populated on the aggregated frame.
   auto copy_request = CopyOutputRequest::CreateStubForTesting();
-  child_sink_->RequestCopyOfOutput(child_local_surface_id,
-                                   std::move(copy_request));
+  child_sink_->RequestCopyOfOutput(
+      {child_local_surface_id, SubtreeCaptureId(), std::move(copy_request)});
 
   aggregated_frame = AggregateFrame(root_surface_id);
 
-  std::unique_ptr<DelegatedInkMetadata> actual_metadata =
+  std::unique_ptr<gfx::DelegatedInkMetadata> actual_metadata =
       std::move(aggregated_frame.delegated_ink_metadata);
   EXPECT_TRUE(actual_metadata);
   ExpectDelegatedInkMetadataIsEqual(*actual_metadata.get(), metadata);
@@ -8931,8 +8968,93 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, ColorUsageChangeFullFrameDamage) {
   }
 }
 
+TEST_F(SurfaceAggregatorWithResourcesTest, TransitionDirectiveFrameBehind) {
+  FakeCompositorFrameSinkClient client;
+  auto support = std::make_unique<CompositorFrameSinkSupport>(
+      &client, &manager_, kArbitraryRootFrameSinkId, kRootIsRoot);
+  EnableDocumentTransitions(support.get());
+
+  LocalSurfaceId local_surface_id(7u, base::UnguessableToken::Create());
+  SurfaceId surface_id(support->frame_sink_id(), local_surface_id);
+
+  // Create and submit a 'save' frame.
+  SendBeginFrame(support.get(), 1);
+  {
+    auto frame = BuildCompositorFrameWithResources({}, true, SurfaceId());
+    frame.metadata.transition_directives.emplace_back(
+        1, CompositorFrameTransitionDirective::Type::kSave,
+        CompositorFrameTransitionDirective::Effect::kCoverLeft);
+
+    support->SubmitCompositorFrame(local_surface_id, std::move(frame));
+    auto* surface = support->GetLastCreatedSurfaceForTesting();
+    ASSERT_TRUE(surface);
+    surface->GetSurfaceSavedFrameStorage()->CompleteForTesting();
+  }
+  AggregateFrame(surface_id);
+
+  // Create and submit an 'animate' frame.
+  SendBeginFrame(support.get(), 2);
+  {
+    auto frame = BuildCompositorFrameWithResources({}, true, SurfaceId());
+    frame.metadata.transition_directives.emplace_back(
+        2, CompositorFrameTransitionDirective::Type::kAnimate);
+    support->SubmitCompositorFrame(local_surface_id, std::move(frame));
+  }
+  AggregateFrame(surface_id);
+
+  // Create and submit a frame with some resources.
+  SendBeginFrame(support.get(), 3);
+  {
+    std::vector<ResourceId> ids = {ResourceId(11), ResourceId(12),
+                                   ResourceId(13)};
+    SubmitCompositorFrameWithResources(ids, true, SurfaceId(), support.get(),
+                                       surface_id);
+  }
+  auto frame = AggregateFrame(surface_id);
+  auto count_textures = [](const AggregatedFrame& frame) {
+    size_t result = 0;
+    for (auto& render_pass : frame.render_pass_list) {
+      for (auto* quad : render_pass->quad_list) {
+        if (quad->material == DrawQuad::Material::kTextureContent)
+          ++result;
+      }
+    }
+    return result;
+  };
+  // We should have 4 referenced textures (1 from interpolation and 3 from the
+  // original frame).
+  EXPECT_EQ(count_textures(frame), 4u);
+
+  // At this point we will interpolate with the above frame (resources 11, 12,
+  // 13).
+  SendBeginFrame(support.get(), 4);
+  {
+    std::vector<ResourceId> ids = {ResourceId(15), ResourceId(16),
+                                   ResourceId(17)};
+    // This will cause an activation which will unref 11, 12, 13. So, the
+    // activation must also interpolate a new frame.
+    SubmitCompositorFrameWithResources(ids, true, SurfaceId(), support.get(),
+                                       surface_id);
+  }
+  // Ensure that the interpolated frame is not using unreffed resources
+  // (otherwise this would DCHECK).
+  frame = AggregateFrame(surface_id);
+  // We should have 4 referenced textures (1 from interpolation and 3 (different
+  // ones) from the original frame).
+  EXPECT_EQ(count_textures(frame), 4u);
+
+  ASSERT_EQ(3u, client.returned_resources().size());
+  ResourceId returned_ids[3];
+  for (size_t i = 0; i < 3; ++i) {
+    returned_ids[i] = client.returned_resources()[i].id;
+  }
+  // We expect that 11, 12, and 13 are now returned.
+  EXPECT_THAT(returned_ids,
+              testing::WhenSorted(testing::ElementsAreArray(
+                  {ResourceId(11), ResourceId(12), ResourceId(13)})));
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          SurfaceAggregatorValidSurfaceWithMergingPassesTest,
                          testing::Bool());
-}  // namespace
 }  // namespace viz

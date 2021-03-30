@@ -17,12 +17,13 @@
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "chrome/browser/sharesheet/sharesheet_service_factory.h"
 #include "chrome/browser/visibility_timer_tab_helper.h"
-#include "chrome/browser/webshare/chromeos/prepare_directory_task.h"
-#include "chrome/browser/webshare/chromeos/store_files_task.h"
+#include "chrome/browser/webshare/prepare_directory_task.h"
 #include "chrome/browser/webshare/share_service_impl.h"
+#include "chrome/browser/webshare/store_files_task.h"
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/browser_context.h"
@@ -59,6 +60,7 @@ blink::mojom::ShareError SharesheetResultToShareError(
     case sharesheet::SharesheetResult::kSuccess:
       return blink::mojom::ShareError::OK;
     case sharesheet::SharesheetResult::kCancel:
+    case sharesheet::SharesheetResult::kErrorAlreadyOpen:
       return blink::mojom::ShareError::CANCELED;
   }
 }
@@ -102,7 +104,7 @@ void SharesheetClient::Share(
   // To prevent sites from using that to detect whether incognito mode is
   // active, we deny after a random time delay, to simulate a user cancelling
   // the share.
-  if (profile->IsOffTheRecord() && !files.empty()) {
+  if (profile->IsIncognitoProfile() && !files.empty()) {
     // Random number of seconds in the range [1.0, 2.0).
     double delay_seconds = 1.0 + 1.0 * base::RandDouble();
     VisibilityTimerTabHelper::CreateForWebContents(web_contents());
@@ -234,10 +236,13 @@ void SharesheetClient::ShowSharesheet(
   sharesheet::SharesheetService* const sharesheet_service =
       sharesheet::SharesheetServiceFactory::GetForProfile(profile);
 
+  apps::mojom::IntentPtr intent =
+      file_paths.empty() ? apps_util::CreateShareIntentFromText(text, title)
+                         : apps_util::CreateShareIntentFromFiles(
+                               profile, file_paths, content_types, text, title);
   sharesheet_service->ShowBubble(
-      web_contents,
-      apps_util::CreateShareIntentFromFiles(profile, file_paths, content_types,
-                                            text, title),
+      web_contents, std::move(intent),
+      sharesheet::SharesheetMetrics::LaunchSource::kWebShare,
       std::move(close_callback));
 }
 

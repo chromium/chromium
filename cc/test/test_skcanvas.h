@@ -54,12 +54,17 @@ class MockCanvas : public SkNoDrawCanvas {
   MOCK_METHOD0(willRestore, void());
   MOCK_METHOD0(willSave, void());
   MOCK_METHOD2(onDrawPath, void(const SkPath&, const SkPaint&));
-  MOCK_METHOD4(onDrawImage,
-               void(const SkImage*, SkScalar, SkScalar, const SkPaint*));
-  MOCK_METHOD5(onDrawImageRect,
+  MOCK_METHOD5(onDrawImage2,
                void(const SkImage*,
-                    const SkRect*,
+                    SkScalar,
+                    SkScalar,
+                    const SkSamplingOptions&,
+                    const SkPaint*));
+  MOCK_METHOD6(onDrawImageRect2,
+               void(const SkImage*,
                     const SkRect&,
+                    const SkRect&,
+                    const SkSamplingOptions&,
                     const SkPaint*,
                     SrcRectConstraint));
   MOCK_METHOD5(onDrawArc,

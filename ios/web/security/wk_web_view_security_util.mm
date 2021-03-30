@@ -52,14 +52,16 @@ namespace web {
 scoped_refptr<net::X509Certificate> CreateCertFromChain(NSArray* certs) {
   if (certs.count == 0)
     return nullptr;
-  std::vector<SecCertificateRef> intermediates;
+  std::vector<base::ScopedCFTypeRef<SecCertificateRef>> intermediates;
   for (NSUInteger i = 1; i < certs.count; i++) {
-    SecCertificateRef cert = (__bridge SecCertificateRef)certs[i];
+    base::ScopedCFTypeRef<SecCertificateRef> cert(
+        (__bridge SecCertificateRef)certs[i], base::scoped_policy::RETAIN);
     intermediates.push_back(cert);
   }
-  SecCertificateRef root_cert = (__bridge SecCertificateRef)certs[0];
+  base::ScopedCFTypeRef<SecCertificateRef> root_cert(
+      (__bridge SecCertificateRef)certs[0], base::scoped_policy::RETAIN);
   return net::x509_util::CreateX509CertificateFromSecCertificate(
-      reinterpret_cast<SecCertificateRef>(root_cert), intermediates);
+      std::move(root_cert), intermediates);
 }
 
 scoped_refptr<net::X509Certificate> CreateCertFromTrust(SecTrustRef trust) {
@@ -72,12 +74,15 @@ scoped_refptr<net::X509Certificate> CreateCertFromTrust(SecTrustRef trust) {
     return nullptr;
   }
 
-  std::vector<SecCertificateRef> intermediates;
+  std::vector<base::ScopedCFTypeRef<SecCertificateRef>> intermediates;
   for (CFIndex i = 1; i < cert_count; i++) {
-    intermediates.push_back(SecTrustGetCertificateAtIndex(trust, i));
+    intermediates.emplace_back(SecTrustGetCertificateAtIndex(trust, i),
+                               base::scoped_policy::RETAIN);
   }
   return net::x509_util::CreateX509CertificateFromSecCertificate(
-      SecTrustGetCertificateAtIndex(trust, 0), intermediates);
+      base::ScopedCFTypeRef<SecCertificateRef>(
+          SecTrustGetCertificateAtIndex(trust, 0), base::scoped_policy::RETAIN),
+      intermediates);
 }
 
 base::ScopedCFTypeRef<SecTrustRef> CreateServerTrustFromChain(NSArray* certs,

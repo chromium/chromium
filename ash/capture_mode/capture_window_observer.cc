@@ -4,9 +4,8 @@
 
 #include "ash/capture_mode/capture_window_observer.h"
 
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/capture_mode/capture_mode_session.h"
-#include "ash/home_screen/home_screen_controller.h"
-#include "ash/home_screen/home_screen_delegate.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_finder.h"
 #include "ash/shell.h"
@@ -43,10 +42,8 @@ void CaptureWindowObserver::UpdateSelectedWindowAtPosition(
   }
 
   // Don't capture home screen window.
-  if (window && window == Shell::Get()
-                              ->home_screen_controller()
-                              ->delegate()
-                              ->GetHomeScreenWindow()) {
+  if (window &&
+      window == Shell::Get()->app_list_controller()->GetHomeScreenWindow()) {
     window = nullptr;
   }
 

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -76,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsReceiverSetBrowserTest, OverrideForTesting) {
 
   // Ensure that we can add a WebContentsFrameReceiverSet and then override its
   // request handler.
-  auto* web_contents = shell()->web_contents();
+  auto* web_contents = static_cast<WebContentsImpl*>(shell()->web_contents());
   WebContentsFrameReceiverSet<mojom::BrowserAssociatedInterfaceTestDriver>
       frame_receivers(web_contents, nullptr);
 
@@ -93,12 +94,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsReceiverSetBrowserTest, OverrideForTesting) {
   // to the overriding binder and allow the test to complete.
   mojo::AssociatedRemote<mojom::BrowserAssociatedInterfaceTestDriver>
       override_client;
-  static_cast<WebContentsImpl*>(web_contents)
-      ->OnAssociatedInterfaceRequest(
-          web_contents->GetMainFrame(),
-          mojom::BrowserAssociatedInterfaceTestDriver::Name_,
-          override_client.BindNewEndpointAndPassDedicatedReceiver()
-              .PassHandle());
+  web_contents->OnAssociatedInterfaceRequest(
+      web_contents->GetMainFrame(),
+      mojom::BrowserAssociatedInterfaceTestDriver::Name_,
+      override_client.BindNewEndpointAndPassDedicatedReceiver().PassHandle());
   run_loop.Run();
 
   receiver_set->SetBinder(nullptr);
@@ -111,16 +110,14 @@ IN_PROC_BROWSER_TEST_F(WebContentsReceiverSetBrowserTest,
       shell(), embedded_test_server()->GetURL(kTestHost1, "/hello.html")));
 
   // Simulate an inbound receiver on the navigated main frame.
-  auto* web_contents = shell()->web_contents();
+  auto* web_contents = static_cast<WebContentsImpl*>(shell()->web_contents());
   TestFrameInterfaceBinder binder(web_contents);
   mojo::AssociatedRemote<mojom::WebContentsFrameReceiverSetTest>
       override_client;
-  static_cast<WebContentsImpl*>(web_contents)
-      ->OnAssociatedInterfaceRequest(
-          web_contents->GetMainFrame(),
-          mojom::WebContentsFrameReceiverSetTest::Name_,
-          override_client.BindNewEndpointAndPassDedicatedReceiver()
-              .PassHandle());
+  web_contents->OnAssociatedInterfaceRequest(
+      web_contents->GetMainFrame(),
+      mojom::WebContentsFrameReceiverSetTest::Name_,
+      override_client.BindNewEndpointAndPassDedicatedReceiver().PassHandle());
 
   base::RunLoop run_loop;
   override_client.set_disconnect_handler(run_loop.QuitClosure());
@@ -141,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsReceiverSetBrowserTest,
   // Verify that this message never reaches the binding for the old frame. If it
   // does, the impl will hit a DCHECK. The RunLoop terminates when the client is
   // disconnected.
-  override_client->Ping(base::BindOnce([] {}));
+  override_client->Ping(base::DoNothing());
   run_loop.Run();
 }
 

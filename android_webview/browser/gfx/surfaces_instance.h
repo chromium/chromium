@@ -85,6 +85,8 @@ class SurfacesInstance : public base::RefCounted<SurfacesInstance>,
   void OnBeginFramePausedChanged(bool paused) override;
   void ReclaimResources(
       const std::vector<viz::ReturnedResource>& resources) override;
+  void OnCompositorFrameTransitionDirectiveProcessed(
+      uint32_t sequence_id) override {}
 
   void SetSolidColorRootFrame();
 
@@ -97,7 +99,7 @@ class SurfacesInstance : public base::RefCounted<SurfacesInstance>,
   viz::FrameSinkId frame_sink_id_;
 
   // Used to create viz::OutputSurface and gl::GLSurface
-  OutputSurfaceProviderWebview output_surface_provider_;
+  OutputSurfaceProviderWebView output_surface_provider_;
 
   std::unique_ptr<viz::FrameSinkManagerImpl> frame_sink_manager_;
   std::unique_ptr<viz::BeginFrameSource> begin_frame_source_;

@@ -1,0 +1,19 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer ignored
+++++++++heading name='Heading'
+++++++++++layoutTable
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored
+++++++++++++++++++staticText name='  '
+++++++++++staticText name='Heading'
+++++++++++++inlineTextBox name='Heading'
+++++++++++layoutTable
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored
+++++++++++++++++++staticText name='  '
+++++++++staticText name='\nParagraph'
+++++++++++inlineTextBox name='\nParagraph'

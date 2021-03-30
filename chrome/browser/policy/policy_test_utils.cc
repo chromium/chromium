@@ -71,7 +71,7 @@ void PolicyTest::CheckURLIsBlockedInWebContents(
     const GURL& url) {
   EXPECT_EQ(url, web_contents->GetURL());
 
-  base::string16 blocked_page_title;
+  std::u16string blocked_page_title;
   if (url.has_host()) {
     blocked_page_title = base::UTF8ToUTF16(url.host());
   } else {
@@ -208,11 +208,14 @@ void PolicyTest::PerformClick(int x, int y) {
   click_event.button = blink::WebMouseEvent::Button::kLeft;
   click_event.click_count = 1;
   click_event.SetPositionInWidget(x, y);
-  contents->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(click_event);
+  contents->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
+      click_event);
   click_event.SetType(blink::WebInputEvent::Type::kMouseUp);
-  contents->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(click_event);
+  contents->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
+      click_event);
 }
 
+// static
 void PolicyTest::SetPolicy(PolicyMap* policies,
                            const char* key,
                            base::Optional<base::Value> value) {
@@ -341,30 +344,6 @@ bool PolicyTest::IsShowingInterstitial(content::WebContents* tab) {
 void PolicyTest::WaitForInterstitial(content::WebContents* tab) {
   ASSERT_TRUE(IsShowingInterstitial(tab));
   ASSERT_TRUE(WaitForRenderFrameReady(tab->GetMainFrame()));
-}
-
-int PolicyTest::IsExtendedReportingCheckboxVisibleOnInterstitial() {
-  const std::string command = base::StringPrintf(
-      "var node = document.getElementById('extended-reporting-opt-in');"
-      "if (node) {"
-      "  window.domAutomationController.send(node.offsetWidth > 0 || "
-      "      node.offsetHeight > 0 ? %d : %d);"
-      "} else {"
-      // The node should be present but not visible, so trigger an error
-      // by sending false if it's not present.
-      "  window.domAutomationController.send(%d);"
-      "}",
-      security_interstitials::CMD_TEXT_FOUND,
-      security_interstitials::CMD_TEXT_NOT_FOUND,
-      security_interstitials::CMD_ERROR);
-
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  WaitForInterstitial(tab);
-  int result = 0;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(tab->GetMainFrame(), command,
-                                                  &result));
-  return result;
 }
 
 void PolicyTest::SendInterstitialCommand(

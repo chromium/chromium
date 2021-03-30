@@ -11,7 +11,6 @@
 #include "build/build_config.h"
 #include "ui/gfx/switches.h"
 #include "ui/gfx/x/connection.h"
-#include "ui/gl/buildflags.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_egl_api_implementation.h"
 #include "ui/gl/gl_gl_api_implementation.h"
@@ -20,6 +19,7 @@
 #include "ui/gl/gl_surface_glx.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/init/gl_display_egl_util_x11.h"
+#include "ui/gl/init/gl_initializer.h"
 
 namespace gl {
 namespace init {
@@ -34,9 +34,6 @@ const char kGLLibraryName[] = "libGL.so.1";
 
 const char kGLESv2LibraryName[] = "libGLESv2.so.2";
 const char kEGLLibraryName[] = "libEGL.so.1";
-
-const char kGLESv2ANGLELibraryName[] = "libGLESv2.so";
-const char kEGLANGLELibraryName[] = "libEGL.so";
 
 #if BUILDFLAG(ENABLE_SWIFTSHADER)
 const char kGLESv2SwiftShaderLibraryName[] = "libGLESv2.so";
@@ -79,10 +76,9 @@ bool InitializeStaticGLXInternal() {
   return true;
 }
 
-bool InitializeStaticEGLInternal(GLImplementation implementation) {
+bool InitializeStaticEGLInternalFromLibrary(GLImplementation implementation) {
   base::FilePath glesv2_path(kGLESv2LibraryName);
   base::FilePath egl_path(kEGLLibraryName);
-
   if (implementation == kGLImplementationSwiftShaderGL) {
 #if BUILDFLAG(ENABLE_SWIFTSHADER)
     base::FilePath module_path;
@@ -96,12 +92,19 @@ bool InitializeStaticEGLInternal(GLImplementation implementation) {
     return false;
 #endif
   } else if (implementation == kGLImplementationEGLANGLE) {
+#if !BUILDFLAG(USE_STATIC_ANGLE)
     base::FilePath module_path;
     if (!base::PathService::Get(base::DIR_MODULE, &module_path))
       return false;
 
+    const char kGLESv2ANGLELibraryName[] = "libGLESv2.so";
+    const char kEGLANGLELibraryName[] = "libEGL.so";
+
     glesv2_path = module_path.Append(kGLESv2ANGLELibraryName);
     egl_path = module_path.Append(kEGLANGLELibraryName);
+#else  // BUILDFLAG(USE_STATIC_ANGLE)
+    NOTREACHED();
+#endif
   }
 
   base::NativeLibrary gles_library = LoadLibraryAndPrintError(glesv2_path);
@@ -127,11 +130,26 @@ bool InitializeStaticEGLInternal(GLImplementation implementation) {
   SetGLGetProcAddressProc(get_proc_address);
   AddGLNativeLibrary(egl_library);
   AddGLNativeLibrary(gles_library);
-  if (implementation == kGLImplementationEGLANGLE) {
-    SetGLImplementation(kGLImplementationEGLANGLE);
-  } else {
-    SetGLImplementation(kGLImplementationEGLGLES2);
+
+  return true;
+}
+
+bool InitializeStaticEGLInternal(GLImplementationParts implementation) {
+#if BUILDFLAG(USE_STATIC_ANGLE)
+  if (implementation.gl == kGLImplementationEGLANGLE) {
+    // Use ANGLE if it is requested and it is statically linked
+    if (!InitializeStaticANGLEEGL())
+      return false;
+  } else if (!InitializeStaticEGLInternalFromLibrary(implementation.gl)) {
+    return false;
   }
+#else
+  if (!InitializeStaticEGLInternalFromLibrary(implementation.gl)) {
+    return false;
+  }
+#endif  // !BUILDFLAG(USE_STATIC_ANGLE)
+
+  SetGLImplementationParts(implementation);
 
   InitializeStaticGLBindingsGL();
   InitializeStaticGLBindingsEGL();
@@ -166,7 +184,7 @@ bool InitializeGLOneOffPlatformX11() {
   }
 }
 
-bool InitializeStaticGLBindingsX11(GLImplementation implementation) {
+bool InitializeStaticGLBindingsX11(GLImplementationParts implementation) {
   // Prevent reinitialization with a different implementation. Once the gpu
   // unit tests have initialized with kGLImplementationMock, we don't want to
   // later switch to another GL implementation.
@@ -178,7 +196,7 @@ bool InitializeStaticGLBindingsX11(GLImplementation implementation) {
   // one-time initialization cost is small, between 2 and 5 ms.
   base::ThreadRestrictions::ScopedAllowIO allow_io;
 
-  switch (implementation) {
+  switch (implementation.gl) {
     case kGLImplementationDesktopGL:
       return InitializeStaticGLXInternal();
     case kGLImplementationSwiftShaderGL:
@@ -187,7 +205,7 @@ bool InitializeStaticGLBindingsX11(GLImplementation implementation) {
       return InitializeStaticEGLInternal(implementation);
     case kGLImplementationMockGL:
     case kGLImplementationStubGL:
-      SetGLImplementation(implementation);
+      SetGLImplementation(implementation.gl);
       InitializeStaticGLBindingsGL();
       return true;
     default:

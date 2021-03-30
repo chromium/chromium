@@ -20,9 +20,10 @@
 // Functions for recording UMA histograms. These can be used for cases
 // when the histogram name is generated at runtime. The functionality is
 // equivalent to macros defined in histogram_macros.h but allowing non-constant
-// histogram names. These functions are slower compared to their macro
-// equivalent because the histogram objects are not cached between calls.
-// So, these shouldn't be used in performance critical code.
+// histogram names. These functions are slower but result in smaller code size
+// compared to their macro equivalent because the histogram objects are not
+// cached between calls. So, these should be used in non-performance-critical
+// code that is called rarely (not more than once per second).
 //
 // Every function is duplicated to take both std::string and char* for the
 // name. This avoids ctor/dtor instantiation for constant strigs to std::string
@@ -35,14 +36,19 @@ namespace base {
 // used when you want the exact value of some small numeric count, with a max of
 // 100 or less. If you need to capture a range of greater than 100, we recommend
 // the use of the COUNT histograms below.
+// Note that the |value_max| itself is included in the overflow bucket.
+// Therefore, if you want an accurate measure up to kMax itself, then
+// |exclusive_max| should be set to kMax + 1.
 // Sample usage:
-//   base::UmaHistogramExactLinear("Histogram.Linear", some_value, 10);
+//   base::UmaHistogramExactLinear("Histogram.Linear", sample, kMax + 1);
+// In this case, buckets are 1, 2, .., kMax, kMax+1, where the kMax+1 bucket
+// captures everything kMax+1 and above.
 BASE_EXPORT void UmaHistogramExactLinear(const std::string& name,
                                          int sample,
-                                         int value_max);
+                                         int exclusive_max);
 BASE_EXPORT void UmaHistogramExactLinear(const char* name,
                                          int sample,
-                                         int value_max);
+                                         int exclusive_max);
 
 // For adding a sample to an enumerated histogram.
 // Sample usage:
@@ -259,7 +265,7 @@ BASE_EXPORT void UmaHistogramMemoryLargeMB(const char* name, int sample);
 // many distinct values to the server (across all users). Concretely, keep the
 // number of distinct values <= 100 ideally, definitely <= 1000. If you have no
 // guarantees on the range of your data, use clamping, e.g.:
-//   UmaHistogramSparse("MyHistogram", ClampToRange(value, 0, 200));
+//   UmaHistogramSparse("My.Histogram", ClampToRange(value, 0, 200));
 BASE_EXPORT void UmaHistogramSparse(const std::string& name, int sample);
 BASE_EXPORT void UmaHistogramSparse(const char* name, int sample);
 

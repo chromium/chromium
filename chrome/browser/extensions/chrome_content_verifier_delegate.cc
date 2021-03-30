@@ -283,16 +283,20 @@ void ChromeContentVerifierDelegate::Shutdown() {
   policy_extension_reinstaller_.reset();
 }
 
-// static
-bool ChromeContentVerifierDelegate::IsFromWebstore(const Extension& extension) {
+bool ChromeContentVerifierDelegate::IsFromWebstore(
+    const Extension& extension) const {
   // Use the InstallVerifier's |IsFromStore| method to avoid discrepancies
   // between which extensions are considered in-store.
   // See https://crbug.com/766806 for details.
-  if (!InstallVerifier::IsFromStore(extension)) {
+  if (!InstallVerifier::IsFromStore(extension, context_)) {
     // It's possible that the webstore update url was overridden for testing
     // so also consider extensions with the default (production) update url
-    // to be from the store as well.
-    if (ManifestURL::GetUpdateURL(&extension) !=
+    // to be from the store as well. Therefore update URL is compared with
+    // |GetDefaultWebstoreUpdateUrl|, not the |GetWebstoreUpdateUrl| used by
+    // |IsWebstoreUpdateUrl|.
+    ExtensionManagement* extension_management =
+        ExtensionManagementFactory::GetForBrowserContext(context_);
+    if (extension_management->GetEffectiveUpdateURL(extension) !=
         extension_urls::GetDefaultWebstoreUpdateUrl()) {
       return false;
     }

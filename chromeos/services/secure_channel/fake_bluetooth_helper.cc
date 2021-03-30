@@ -68,6 +68,12 @@ std::string FakeBluetoothHelper::GetBluetoothPublicAddress(
   return device_id_to_bluetooth_public_address_map_[device_id];
 }
 
+std::string FakeBluetoothHelper::ExpectedServiceDataToString(
+    const DeviceIdPairSet& device_id_pair_set) {
+  // Stub implementation.
+  return std::string();
+}
+
 }  // namespace secure_channel
 
 }  // namespace chromeos

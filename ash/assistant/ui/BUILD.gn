@@ -98,6 +98,7 @@ component("ui") {
     "//chromeos/assistant:buildflags",
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/assistant/public/mojom",
+    "//chromeos/services/libassistant/public/cpp:structs",
     "//chromeos/ui/vector_icons",
     "//ui/aura",
     "//ui/compositor",

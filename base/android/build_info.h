@@ -118,8 +118,6 @@ class BASE_EXPORT BuildInfo {
 
   const char* abi_name() const { return abi_name_; }
 
-  std::string extracted_file_suffix() const { return extracted_file_suffix_; }
-
   int sdk_int() const {
     return sdk_int_;
   }
@@ -133,6 +131,8 @@ class BASE_EXPORT BuildInfo {
   int target_sdk_version() const { return target_sdk_version_; }
 
   bool is_debug_android() const { return is_debug_android_; }
+
+  bool is_tv() const { return is_tv_; }
 
  private:
   friend struct BuildInfoSingletonTraits;
@@ -165,9 +165,9 @@ class BASE_EXPORT BuildInfo {
   const char* const custom_themes_;
   const char* const resources_version_;
   // Not needed by breakpad.
-  const std::string extracted_file_suffix_;
   const int target_sdk_version_;
   const bool is_debug_android_;
+  const bool is_tv_;
 
   DISALLOW_COPY_AND_ASSIGN(BuildInfo);
 };

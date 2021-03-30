@@ -4,6 +4,7 @@
 
 #include "chrome/browser/lookalikes/lookalike_url_navigation_throttle.h"
 
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"

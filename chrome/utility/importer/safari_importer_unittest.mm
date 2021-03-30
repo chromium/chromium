@@ -7,12 +7,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -60,56 +61,24 @@ TEST_F(SafariImporterTest, BookmarkImport) {
     bool in_toolbar;
     GURL url;
     // We store the path with levels of nesting delimited by forward slashes.
-    base::string16 path;
-    base::string16 title;
+    std::u16string path;
+    std::u16string title;
   } kImportedBookmarksData[] = {
-    {
-      true,
-      GURL("http://www.apple.com/"),
-      ASCIIToUTF16("Toolbar/"),
-      ASCIIToUTF16("Apple")
-    },
-    {
-      true,
-      GURL("http://www.yahoo.com/"),
-      ASCIIToUTF16("Toolbar/"),
-      ASCIIToUTF16("Yahoo!")
-    },
-    {
-      true,
-      GURL("http://www.cnn.com/"),
-      ASCIIToUTF16("Toolbar/News"),
-      ASCIIToUTF16("CNN")
-    },
-    {
-      true,
-      GURL("http://www.nytimes.com/"),
-      ASCIIToUTF16("Toolbar/News"),
-      ASCIIToUTF16("The New York Times")
-    },
-    {
-      false,
-      GURL("http://www.reddit.com/"),
-      base::string16(),
-      ASCIIToUTF16("reddit.com: what's new online!")
-    },
-    {
-      false,
-      GURL(),
-      base::string16(),
-      ASCIIToUTF16("Empty Folder")
-    },
-    {
-      false,
-      GURL("http://www.webkit.org/blog/"),
-      base::string16(),
-      ASCIIToUTF16("Surfin' Safari - The WebKit Blog")
-    },
+      {true, GURL("http://www.apple.com/"), u"Toolbar/", u"Apple"},
+      {true, GURL("http://www.yahoo.com/"), u"Toolbar/", u"Yahoo!"},
+      {true, GURL("http://www.cnn.com/"), u"Toolbar/News", u"CNN"},
+      {true, GURL("http://www.nytimes.com/"), u"Toolbar/News",
+       u"The New York Times"},
+      {false, GURL("http://www.reddit.com/"), std::u16string(),
+       u"reddit.com: what's new online!"},
+      {false, GURL(), std::u16string(), u"Empty Folder"},
+      {false, GURL("http://www.webkit.org/blog/"), std::u16string(),
+       u"Surfin' Safari - The WebKit Blog"},
   };
 
   scoped_refptr<SafariImporter> importer(GetSafariImporter());
   std::vector<ImportedBookmarkEntry> bookmarks;
-  importer->ParseBookmarks(ASCIIToUTF16("Toolbar"), &bookmarks);
+  importer->ParseBookmarks(u"Toolbar", &bookmarks);
   size_t num_bookmarks = bookmarks.size();
   ASSERT_EQ(base::size(kImportedBookmarksData), num_bookmarks);
 
@@ -118,9 +87,9 @@ TEST_F(SafariImporterTest, BookmarkImport) {
     EXPECT_EQ(kImportedBookmarksData[i].in_toolbar, entry.in_toolbar);
     EXPECT_EQ(kImportedBookmarksData[i].url, entry.url);
 
-    std::vector<base::string16> path = base::SplitString(
-        kImportedBookmarksData[i].path, ASCIIToUTF16("/"),
-        base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    std::vector<std::u16string> path =
+        base::SplitString(kImportedBookmarksData[i].path, u"/",
+                          base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     ASSERT_EQ(path.size(), entry.path.size());
     for (size_t j = 0; j < path.size(); ++j) {
       EXPECT_EQ(path[j], entry.path[j]);
@@ -136,45 +105,22 @@ TEST_F(SafariImporterTest, BookmarkImportWithEmptyBookmarksMenu) {
     bool in_toolbar;
     GURL url;
     // We store the path with levels of nesting delimited by forward slashes.
-    base::string16 path;
-    base::string16 title;
+    std::u16string path;
+    std::u16string title;
   } kImportedBookmarksData[] = {
-    {
-      true,
-      GURL("http://www.apple.com/"),
-      ASCIIToUTF16("Toolbar/"),
-      ASCIIToUTF16("Apple")
-    },
-    {
-      true,
-      GURL("http://www.yahoo.com/"),
-      ASCIIToUTF16("Toolbar/"),
-      ASCIIToUTF16("Yahoo!")
-    },
-    {
-      true,
-      GURL("http://www.cnn.com/"),
-      ASCIIToUTF16("Toolbar/News"),
-      ASCIIToUTF16("CNN")
-    },
-    {
-      true,
-      GURL("http://www.nytimes.com/"),
-      ASCIIToUTF16("Toolbar/News"),
-      ASCIIToUTF16("The New York Times")
-    },
-    {
-      false,
-      GURL("http://www.webkit.org/blog/"),
-      base::string16(),
-      ASCIIToUTF16("Surfin' Safari - The WebKit Blog")
-    },
+      {true, GURL("http://www.apple.com/"), u"Toolbar/", u"Apple"},
+      {true, GURL("http://www.yahoo.com/"), u"Toolbar/", u"Yahoo!"},
+      {true, GURL("http://www.cnn.com/"), u"Toolbar/News", u"CNN"},
+      {true, GURL("http://www.nytimes.com/"), u"Toolbar/News",
+       u"The New York Times"},
+      {false, GURL("http://www.webkit.org/blog/"), std::u16string(),
+       u"Surfin' Safari - The WebKit Blog"},
   };
 
   scoped_refptr<SafariImporter> importer(
       GetSafariImporterWithPathSuffix("empty_bookmarks_menu"));
   std::vector<ImportedBookmarkEntry> bookmarks;
-  importer->ParseBookmarks(ASCIIToUTF16("Toolbar"), &bookmarks);
+  importer->ParseBookmarks(u"Toolbar", &bookmarks);
   size_t num_bookmarks = bookmarks.size();
   ASSERT_EQ(base::size(kImportedBookmarksData), num_bookmarks);
 
@@ -183,9 +129,9 @@ TEST_F(SafariImporterTest, BookmarkImportWithEmptyBookmarksMenu) {
     EXPECT_EQ(kImportedBookmarksData[i].in_toolbar, entry.in_toolbar);
     EXPECT_EQ(kImportedBookmarksData[i].url, entry.url);
 
-    std::vector<base::string16> path = base::SplitString(
-        kImportedBookmarksData[i].path, ASCIIToUTF16("/"),
-        base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    std::vector<std::u16string> path =
+        base::SplitString(kImportedBookmarksData[i].path, u"/",
+                          base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     ASSERT_EQ(path.size(), entry.path.size());
     for (size_t j = 0; j < path.size(); ++j) {
       EXPECT_EQ(path[j], entry.path[j]);

@@ -76,6 +76,8 @@
 #include "third_party/blink/renderer/modules/push_messaging/push_messaging_client.h"
 #include "third_party/blink/renderer/modules/remoteplayback/html_media_element_remote_playback.h"
 #include "third_party/blink/renderer/modules/remoteplayback/remote_playback.h"
+#include "third_party/blink/renderer/modules/screen_enumeration/screens.h"
+#include "third_party/blink/renderer/modules/screen_enumeration/window_screens.h"
 #include "third_party/blink/renderer/modules/screen_orientation/screen_orientation_controller.h"
 #include "third_party/blink/renderer/modules/service_worker/navigator_service_worker.h"
 #include "third_party/blink/renderer/modules/storage/dom_window_storage_controller.h"
@@ -93,6 +95,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_canvas_context.h"
 #include "third_party/blink/renderer/modules/worklet/animation_and_paint_worklet_thread.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_helper.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
@@ -151,6 +154,8 @@ void ModulesInitializer::Initialize() {
       std::make_unique<WebGL2RenderingContext::Factory>());
   OffscreenCanvas::RegisterRenderingContextFactory(
       std::make_unique<ImageBitmapRenderingContext::Factory>());
+  OffscreenCanvas::RegisterRenderingContextFactory(
+      std::make_unique<GPUCanvasContext::Factory>());
 }
 
 void ModulesInitializer::InitLocalFrame(LocalFrame& frame) const {
@@ -161,21 +166,25 @@ void ModulesInitializer::InitLocalFrame(LocalFrame& frame) const {
   frame.GetInterfaceRegistry()->AddAssociatedInterface(WTF::BindRepeating(
       &WebLaunchServiceImpl::Create, WrapWeakPersistent(&frame)));
   frame.GetInterfaceRegistry()->AddAssociatedInterface(WTF::BindRepeating(
-      &FileHandlingExpiryImpl::Create, WrapWeakPersistent(&frame)));
+      &FileHandlingExpiryImpl::BindReceiver, WrapWeakPersistent(&frame)));
 
   frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
-      &InstallationServiceImpl::Create, WrapWeakPersistent(&frame)));
+      &InstallationServiceImpl::BindReceiver, WrapWeakPersistent(&frame)));
   // TODO(dominickn): This interface should be document-scoped rather than
   // frame-scoped, as the resulting banner event is dispatched to
   // frame()->document().
   frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
       &AppBannerController::BindMojoRequest, WrapWeakPersistent(&frame)));
   frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
-      &TextSuggestionBackendImpl::Create, WrapWeakPersistent(&frame)));
+      &TextSuggestionBackendImpl::Bind, WrapWeakPersistent(&frame)));
 #if defined(OS_ANDROID)
   frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
-      &RemoteObjectGatewayFactoryImpl::Create, WrapWeakPersistent(&frame)));
+      &RemoteObjectGatewayFactoryImpl::Bind, WrapWeakPersistent(&frame)));
 #endif  // OS_ANDROID
+
+  frame.GetInterfaceRegistry()->AddInterface(
+      WTF::BindRepeating(&PeerConnectionTracker::BindToFrame,
+                         WrapCrossThreadWeakPersistent(&frame)));
 }
 
 void ModulesInitializer::InstallSupplements(LocalFrame& frame) const {
@@ -274,14 +283,15 @@ WebRemotePlaybackClient* ModulesInitializer::CreateWebRemotePlaybackClient(
   return &RemotePlayback::From(html_media_element);
 }
 
-void ModulesInitializer::ProvideModulesToPage(Page& page,
-                                              WebViewClient* client) const {
+void ModulesInitializer::ProvideModulesToPage(
+    Page& page,
+    const SessionStorageNamespaceId& namespace_id) const {
   MediaKeysController::ProvideMediaKeysTo(page);
   ::blink::ProvideContextFeaturesTo(
       page, std::make_unique<ContextFeaturesClientImpl>());
   ::blink::ProvideDatabaseClientTo(page,
                                    MakeGarbageCollected<DatabaseClient>());
-  StorageNamespace::ProvideSessionStorageNamespaceTo(page, client);
+  StorageNamespace::ProvideSessionStorageNamespaceTo(page, namespace_id);
   AudioGraphTracer::ProvideAudioGraphTracerTo(page);
 }
 
@@ -311,16 +321,20 @@ void ModulesInitializer::NotifyOrientationChanged(LocalFrame& frame) {
       ->NotifyOrientationChanged();
 }
 
+void ModulesInitializer::NotifyScreensChanged(LocalFrame& frame) {
+  if (auto* supplement =
+          Supplement<LocalDOMWindow>::From<WindowScreens>(*frame.DomWindow())) {
+    // screens() may be null if permission has not been granted.
+    if (auto* screens = supplement->screens())
+      screens->ScreenInfosChanged();
+  }
+}
+
 void ModulesInitializer::RegisterInterfaces(mojo::BinderMap& binders) {
   DCHECK(Platform::Current());
   binders.Add(ConvertToBaseRepeatingCallback(
-                  CrossThreadBindRepeating(&WebDatabaseImpl::Create)),
+                  CrossThreadBindRepeating(&WebDatabaseImpl::Bind)),
               Platform::Current()->GetIOTaskRunner());
-  binders.Add(
-      ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-          &PeerConnectionTracker::Bind,
-          WTF::CrossThreadUnretained(PeerConnectionTracker::GetInstance()))),
-      Thread::MainThread()->GetTaskRunner());
 }
 
 }  // namespace blink

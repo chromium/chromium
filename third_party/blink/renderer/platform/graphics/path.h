@@ -196,7 +196,8 @@ class PLATFORM_EXPORT Path {
                              const FloatSize& top_left_radius,
                              const FloatSize& top_right_radius,
                              const FloatSize& bottom_left_radius,
-                             const FloatSize& bottom_right_radius);
+                             const FloatSize& bottom_right_radius,
+                             bool clockwise);
 
   bool SubtractPath(const Path&);
 

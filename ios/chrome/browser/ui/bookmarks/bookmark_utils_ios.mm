@@ -121,19 +121,6 @@ NSString* subtitleForBookmarkNode(const BookmarkNode* node) {
   return subtitle;
 }
 
-CGFloat StatusBarHeight() {
-  CGRect statusBarFrame = [UIApplication sharedApplication].statusBarFrame;
-  CGRect statusBarWindowRect =
-      [[UIApplication sharedApplication].keyWindow convertRect:statusBarFrame
-                                                    fromWindow:nil];
-  if (UIInterfaceOrientationIsPortrait(
-          [UIApplication sharedApplication].statusBarOrientation)) {
-    return CGRectGetHeight(statusBarWindowRect);
-  } else {
-    return CGRectGetWidth(statusBarWindowRect);
-  }
-}
-
 #pragma mark - Updating Bookmarks
 
 // Deletes all subnodes of |node|, including |node|, that are in |bookmarks|.
@@ -179,7 +166,7 @@ MDCSnackbarMessage* CreateOrUpdateBookmarkWithUndoToast(
     bookmarks::BookmarkModel* bookmark_model,
     ChromeBrowserState* browser_state) {
   DCHECK(!node || node->is_url());
-  base::string16 titleString = base::SysNSStringToUTF16(title);
+  std::u16string titleString = base::SysNSStringToUTF16(title);
 
   // If the bookmark has no changes supporting Undo, just bail out.
   if (node && node->GetTitle() == titleString && node->url() == url &&
@@ -228,7 +215,7 @@ MDCSnackbarMessage* CreateBookmarkAtPositionWithUndoToast(
     int position,
     bookmarks::BookmarkModel* bookmark_model,
     ChromeBrowserState* browser_state) {
-  base::string16 titleString = base::SysNSStringToUTF16(title);
+  std::u16string titleString = base::SysNSStringToUTF16(title);
 
   UndoManagerWrapper* wrapper =
       [[UndoManagerWrapper alloc] initWithBrowserState:browser_state];

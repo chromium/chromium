@@ -8,10 +8,10 @@
 #include <windows.h>
 
 #include <stdint.h>
+#include <string>
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/strings/string16.h"
 
 namespace updater {
 namespace ui {
@@ -42,7 +42,7 @@ HRESULT SetWindowIcon(HWND hwnd, WORD icon_id, HICON* hicon);
 
 // Returns a localized installer name for a bundle. If |bundle_name| is empty,
 // the friendly company name is used.
-base::string16 GetInstallerDisplayName(const base::string16& bundle_name);
+std::wstring GetInstallerDisplayName(const std::u16string& bundle_name);
 
 // Returns the quotient of the two numbers (m/n) rounded upwards to the
 // nearest integer type. T should be unsigned integer type, such as unsigned
@@ -54,10 +54,10 @@ inline T CeilingDivide(T m, T n) {
 }
 
 // Loads a string from the resources.
-bool LoadString(int id, base::string16* s);
+bool LoadString(int id, std::wstring* s);
 
 // Gets the text corresponding to a control in a dialog box.
-bool GetDlgItemText(HWND dlg, int item_id, base::string16* text);
+bool GetDlgItemText(HWND dlg, int item_id, std::wstring* text);
 
 }  // namespace ui
 }  // namespace updater

@@ -1,0 +1,12 @@
+<!--
+@WAIT-FOR:done
+-->
+<div id="tablist">tab list</div>
+<script>
+setTimeout(() => {
+  document.querySelector('#tablist').setAttribute('role', 'tablist');
+  setTimeout(() => {
+    document.title = 'done';
+  }, 50);
+}, 50);
+</script>

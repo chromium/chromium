@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+
+<resources>
+    <!-- Tab Actions -->
+    <item type="id" name="close_tab" />
+    <item type="id" name="ungroup_tab" />
+    <item type="id" name="share_tab_group" />
+    <item type="id" name="edit_group_name" />
+</resources>

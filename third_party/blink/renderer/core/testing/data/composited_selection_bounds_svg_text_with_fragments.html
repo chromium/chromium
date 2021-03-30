@@ -1,0 +1,22 @@
+<style>
+    @font-face {
+        font-family: ahem;
+        src: url(Ahem.ttf);
+    }
+    * {
+        font-family: ahem;
+    }
+</style>
+<svg width="100%" height="100%">
+<text id="text" y="14, 30, 30, 30, 30, 45, 45, 60, 75" >Hello World!</text>
+</svg>
+<script>
+    var range = document.createRange();
+    var textNode = document.getElementById("text").firstChild;
+    range.setStart(textNode, 2);
+    range.setEnd(textNode, 10);
+    document.getSelection().addRange(range);
+
+    window.expectedResult = [document, 32, 28, 32, 40, document, 128, 73, 128, 85];
+</script>
+

@@ -40,8 +40,9 @@ class VP8Encoder : public AcceleratedVideoEncoder {
 
     // Quantization parameter. They are vp8 ac/dc indices and their ranges are
     // 0-127.
-    int initial_qp;
-    ScalingSettings scaling_settings;
+    uint8_t initial_qp;
+    uint8_t min_qp;
+    uint8_t max_qp;
 
     bool error_resilient_mode;
   };
@@ -81,7 +82,6 @@ class VP8Encoder : public AcceleratedVideoEncoder {
                    uint32_t framerate) override;
   gfx::Size GetCodedSize() const override;
   size_t GetMaxNumOfRefFrames() const override;
-  ScalingSettings GetScalingSettings() const override;
   bool PrepareEncodeJob(EncodeJob* encode_job) override;
 
  private:

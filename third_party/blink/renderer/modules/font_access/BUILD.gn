@@ -6,8 +6,6 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("font_access") {
   sources = [
-    "font_iterator.cc",
-    "font_iterator.h",
     "font_manager.cc",
     "font_manager.h",
     "font_metadata.cc",

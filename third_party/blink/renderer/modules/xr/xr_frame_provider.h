@@ -108,11 +108,9 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
   // Immersive session state
   Member<XRSession> immersive_session_;
   Member<XRFrameTransport> frame_transport_;
-  HeapMojoRemote<device::mojom::blink::XRFrameDataProvider,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
+  HeapMojoRemote<device::mojom::blink::XRFrameDataProvider>
       immersive_data_provider_;
-  HeapMojoRemote<device::mojom::blink::XRPresentationProvider,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
+  HeapMojoRemote<device::mojom::blink::XRPresentationProvider>
       immersive_presentation_provider_;
   device::mojom::blink::VRPosePtr immersive_frame_pose_;
   bool is_immersive_frame_position_emulated_ = false;
@@ -129,9 +127,8 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
 
   // Non-immersive session state
   HeapHashMap<Member<XRSession>,
-              Member<DisallowNewWrapper<HeapMojoRemote<
-                  device::mojom::blink::XRFrameDataProvider,
-                  HeapMojoWrapperMode::kWithoutContextObserver>>>>
+              Member<DisallowNewWrapper<
+                  HeapMojoRemote<device::mojom::blink::XRFrameDataProvider>>>>
       non_immersive_data_providers_;
   HeapHashMap<Member<XRSession>, device::mojom::blink::XRFrameDataPtr>
       requesting_sessions_;

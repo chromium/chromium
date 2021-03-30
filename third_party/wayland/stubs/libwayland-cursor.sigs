@@ -1,0 +1,8 @@
+// These signatures are obtained by hand from wayland-cursor.h.
+
+struct wl_cursor_theme *wl_cursor_theme_load(const char *name, int size, struct wl_shm *shm);
+void wl_cursor_theme_destroy(struct wl_cursor_theme *theme);
+struct wl_cursor *wl_cursor_theme_get_cursor(struct wl_cursor_theme *theme, const char *name);
+struct wl_buffer *wl_cursor_image_get_buffer(struct wl_cursor_image *image);
+int wl_cursor_frame(struct wl_cursor *cursor, uint32_t time);
+int wl_cursor_frame_and_duration(struct wl_cursor *cursor, uint32_t time, uint32_t *duration);

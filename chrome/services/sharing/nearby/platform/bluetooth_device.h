@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/optional.h"
+#include "base/time/time.h"
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
 #include "third_party/nearby/src/cpp/platform/api/bluetooth_classic.h"
 
@@ -17,7 +19,9 @@ namespace chrome {
 // Concrete BluetoothDevice implementation.
 class BluetoothDevice : public api::BluetoothDevice {
  public:
-  explicit BluetoothDevice(bluetooth::mojom::DeviceInfoPtr device_info);
+  BluetoothDevice(
+      bluetooth::mojom::DeviceInfoPtr device_info,
+      base::Optional<base::TimeTicks> last_discovered_time = base::nullopt);
   ~BluetoothDevice() override;
 
   BluetoothDevice(const BluetoothDevice&) = delete;
@@ -27,10 +31,19 @@ class BluetoothDevice : public api::BluetoothDevice {
   std::string GetName() const override;
   std::string GetMacAddress() const override;
 
-  void UpdateDeviceInfo(bluetooth::mojom::DeviceInfoPtr device_info);
+  base::Optional<base::TimeTicks> GetLastDiscoveredTime() {
+    return last_discovered_time_;
+  }
+
+  void UpdateDevice(bluetooth::mojom::DeviceInfoPtr device_info,
+                    base::Optional<base::TimeTicks> last_discovered_time);
 
  private:
   bluetooth::mojom::DeviceInfoPtr device_info_;
+
+  // Time when last the Bluetooth device was added/changed by the adapter.
+  // Used by BluetoothClassicMedium to remove stale devices during discovery.
+  base::Optional<base::TimeTicks> last_discovered_time_ = base::nullopt;
 };
 
 }  // namespace chrome

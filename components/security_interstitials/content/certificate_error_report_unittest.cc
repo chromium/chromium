@@ -344,23 +344,23 @@ TEST(ErrorReportTest, TrialDebugInfo) {
   net::CertVerifyResult trial_result;
   trial_result.verified_cert = chain2;
 
-  network::mojom::CertVerifierDebugInfoPtr debug_info =
-      network::mojom::CertVerifierDebugInfo::New();
+  cert_verifier::mojom::CertVerifierDebugInfoPtr debug_info =
+      cert_verifier::mojom::CertVerifierDebugInfo::New();
 #if defined(OS_APPLE)
   debug_info->mac_platform_debug_info =
-      network::mojom::MacPlatformVerifierDebugInfo::New();
+      cert_verifier::mojom::MacPlatformVerifierDebugInfo::New();
   debug_info->mac_platform_debug_info->trust_result = 1;
   debug_info->mac_platform_debug_info->result_code = 20;
-  network::mojom::MacCertEvidenceInfoPtr info =
-      network::mojom::MacCertEvidenceInfo::New();
+  cert_verifier::mojom::MacCertEvidenceInfoPtr info =
+      cert_verifier::mojom::MacCertEvidenceInfo::New();
   info->status_bits = 30;
   info->status_codes = {40, 41};
   debug_info->mac_platform_debug_info->status_chain.push_back(std::move(info));
-  info = network::mojom::MacCertEvidenceInfo::New();
+  info = cert_verifier::mojom::MacCertEvidenceInfo::New();
   info->status_bits = 50;
   info->status_codes = {};
   debug_info->mac_platform_debug_info->status_chain.push_back(std::move(info));
-  info = network::mojom::MacCertEvidenceInfo::New();
+  info = cert_verifier::mojom::MacCertEvidenceInfo::New();
   info->status_bits = 70;
   info->status_codes = {80, 81, 82};
   debug_info->mac_platform_debug_info->status_chain.push_back(std::move(info));
@@ -368,6 +368,8 @@ TEST(ErrorReportTest, TrialDebugInfo) {
   debug_info->mac_combined_trust_debug_info =
       net::TrustStoreMac::TRUST_SETTINGS_DICT_CONTAINS_APPLICATION |
       net::TrustStoreMac::TRUST_SETTINGS_DICT_CONTAINS_RESULT;
+  debug_info->mac_trust_impl =
+      cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::kMruCache;
 #endif
   base::Time time = base::Time::Now();
   debug_info->trial_verification_time = time;
@@ -427,8 +429,12 @@ TEST(ErrorReportTest, TrialDebugInfo) {
   EXPECT_EQ(chrome_browser_ssl::TrialVerificationInfo::
                 MAC_TRUST_SETTINGS_DICT_CONTAINS_RESULT,
             trial_info.mac_combined_trust_debug_info()[1]);
+  EXPECT_TRUE(trial_info.has_mac_trust_impl());
+  EXPECT_EQ(chrome_browser_ssl::TrialVerificationInfo::MAC_TRUST_IMPL_MRU_CACHE,
+            trial_info.mac_trust_impl());
 #else
   EXPECT_EQ(0, trial_info.mac_combined_trust_debug_info_size());
+  EXPECT_FALSE(trial_info.has_mac_trust_impl());
 #endif
   ASSERT_TRUE(trial_info.has_trial_verification_time_usec());
   EXPECT_EQ(time.ToDeltaSinceWindowsEpoch().InMicroseconds(),

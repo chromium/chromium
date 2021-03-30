@@ -23,11 +23,13 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Добавяне на www. и .com към въведеното в адресната лента и отваряне на съответната страница</translation>
+<translation id="1768987374400973299">Създаване на екранна снимка/запис</translation>
 <translation id="1872219238824176091">Премахване на текущия работен кът</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> и след това <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> или <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">Към следващия раздел</translation>
 <translation id="2010818616644390445">Преминаване към последния раздел в прозореца</translation>
 <translation id="2040706009561734834">Отваряне/затваряне на стартовия панел</translation>
+<translation id="2086334242442703436">Отваряне на инструмента за избор на емоджи</translation>
 <translation id="2088054208777350526">Търсене на клавишни комбинации</translation>
 <translation id="2125211348069077981"><ph name="ALT" /> <ph name="SEPARATOR" /> <ph name="E" /> или <ph name="F" /></translation>
 <translation id="2145908266289632567">Редактиране на текст</translation>
@@ -46,6 +48,7 @@
 <translation id="2480851840841871861">Отваряне на Google Асистент</translation>
 <translation id="2488661730534396940">Активиране на работния кът отляво</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516999188535378855">Отваряне на приложението за диагностика</translation>
 <translation id="2530339807289914946">Превъртане на уеб страницата надолу</translation>
 <translation id="2530896289327917474">Включване или изключване на Caret Browsing</translation>
 <translation id="2574014812750545982">Повторно задаване на мащаба на страницата</translation>
@@ -110,6 +113,7 @@
 <translation id="4801989101741319327">Преместване в края на следващата дума</translation>
 <translation id="4866066940972151697">Активиране на работния кът отдясно</translation>
 <translation id="4916163929714267752">Отваряне на връзката в нов прозорец</translation>
+<translation id="492453977506755176">Клавиш за режима на заснемане</translation>
 <translation id="5030659775136592441">Показване на диспечера на отметките</translation>
 <translation id="5034421018520995080">Преминаване в началото на страницата</translation>
 <translation id="5042305953558921026">Клавиш за режима за общ преглед</translation>
@@ -132,6 +136,7 @@
 <translation id="5899919361772749550">Показване или скриване на конзолата с инструменти за програмисти</translation>
 <translation id="5919628958418675842">Включване или изключване на екрана за поверителност</translation>
 <translation id="5921745308587794300">Завъртане на прозореца</translation>
+<translation id="5926306472221400972">Създаване на екранна снимка на целия екран</translation>
 <translation id="6022924867608035986">Изчистване на текста от полето за търсене</translation>
 <translation id="6045998054441862242">Включване на режима на висок контраст</translation>
 <translation id="6052614013050385269">Кликване с десния бутон на мишката върху връзка</translation>
@@ -149,6 +154,7 @@
 <translation id="6445033640292336367">Връщане на раздела на първоначалната му позиция</translation>
 <translation id="6474744297082284761">Намаляване на мащаба (при активирана лупа в прикрепен режим ИЛИ лупа за увеличаване на целия екран)</translation>
 <translation id="649811797655257835">Изберете файла и натиснете <ph name="SPACE" /></translation>
+<translation id="6551886416582667425">Създаване на частична екранна снимка/запис</translation>
 <translation id="6556040137485212400">Отваряне на прозореца, който не е използван най-дълго време</translation>
 <translation id="666343722268997814">Отваряне на контекстното меню за откроения елемент</translation>
 <translation id="6671538777808758331">Преминаване към следващото съответствие за търсенето ви</translation>
@@ -175,6 +181,7 @@
 <translation id="7611271430932669992">Преместване на фокуса към изскачащите и диалоговите прозорци</translation>
 <translation id="7635348532214572995">Преместване на икона на приложение на друго място в решетката с приложения</translation>
 <translation id="766326951329901120">Поставяне на съдържанието от буферната памет като неформатиран текст</translation>
+<translation id="7673453620027697230">Създаване на екранна снимка/запис на прозореца</translation>
 <translation id="7703010453515335249">лява квадратна скоба</translation>
 <translation id="7724603315864178912">Изрязване</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> и след това <ph name="SPACE" /> или <ph name="ENTER" /></translation>

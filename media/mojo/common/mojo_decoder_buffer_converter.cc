@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -20,6 +21,30 @@
 using media::mojo_pipe_read_write_util::IsPipeReadWriteError;
 
 namespace media {
+
+// Creates mojo::DataPipe and sets `producer_handle` and `consumer_handle`.
+// Returns true on success. Otherwise returns false and reset the handles.
+bool CreateDataPipe(uint32_t capacity,
+                    mojo::ScopedDataPipeProducerHandle* producer_handle,
+                    mojo::ScopedDataPipeConsumerHandle* consumer_handle) {
+  MojoCreateDataPipeOptions options;
+  options.struct_size = sizeof(MojoCreateDataPipeOptions);
+  options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
+  options.element_num_bytes = 1;
+  options.capacity_num_bytes = capacity;
+
+  auto result =
+      mojo::CreateDataPipe(&options, *producer_handle, *consumer_handle);
+
+  if (result != MOJO_RESULT_OK) {
+    DLOG(ERROR) << "DataPipe creation failed with " << result;
+    producer_handle->reset();
+    consumer_handle->reset();
+    return false;
+  }
+
+  return true;
+}
 
 uint32_t GetDefaultDecoderBufferConverterCapacity(DemuxerStream::Type type) {
   uint32_t capacity = 0;
@@ -50,10 +75,12 @@ std::unique_ptr<MojoDecoderBufferReader> MojoDecoderBufferReader::Create(
   DVLOG(1) << __func__;
   DCHECK_GT(capacity, 0u);
 
-  auto data_pipe = std::make_unique<mojo::DataPipe>(capacity);
-  *producer_handle = std::move(data_pipe->producer_handle);
-  return std::make_unique<MojoDecoderBufferReader>(
-      std::move(data_pipe->consumer_handle));
+  // Create a MojoDecoderBufferReader even on the failure case and
+  // `ReadDecoderBuffer()` below will fail.
+  // TODO(xhwang): Update callers to handle failure so we can return null.
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  ignore_result(CreateDataPipe(capacity, producer_handle, &consumer_handle));
+  return std::make_unique<MojoDecoderBufferReader>(std::move(consumer_handle));
 }
 
 MojoDecoderBufferReader::MojoDecoderBufferReader(
@@ -66,14 +93,19 @@ MojoDecoderBufferReader::MojoDecoderBufferReader(
       bytes_read_(0) {
   DVLOG(1) << __func__;
 
+  if (!consumer_handle_.is_valid()) {
+    DLOG(ERROR) << __func__ << ": Invalid consumer handle";
+    return;
+  }
+
   MojoResult result = pipe_watcher_.Watch(
       consumer_handle_.get(), MOJO_HANDLE_SIGNAL_READABLE,
       MOJO_WATCH_CONDITION_SATISFIED,
       base::BindRepeating(&MojoDecoderBufferReader::OnPipeReadable,
                           base::Unretained(this)));
   if (result != MOJO_RESULT_OK) {
-    DVLOG(1) << __func__
-             << ": Failed to start watching the pipe. result=" << result;
+    DLOG(ERROR) << __func__
+                << ": Failed to start watching the pipe. result=" << result;
     consumer_handle_.reset();
   }
 }
@@ -275,10 +307,12 @@ std::unique_ptr<MojoDecoderBufferWriter> MojoDecoderBufferWriter::Create(
   DVLOG(1) << __func__;
   DCHECK_GT(capacity, 0u);
 
-  auto data_pipe = std::make_unique<mojo::DataPipe>(capacity);
-  *consumer_handle = std::move(data_pipe->consumer_handle);
-  return std::make_unique<MojoDecoderBufferWriter>(
-      std::move(data_pipe->producer_handle));
+  // Create a MojoDecoderBufferWriter even on the failure case and
+  // `WriteDecoderBuffer()` below will fail.
+  // TODO(xhwang): Update callers to handle failure so we can return null.
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  ignore_result(CreateDataPipe(capacity, &producer_handle, consumer_handle));
+  return std::make_unique<MojoDecoderBufferWriter>(std::move(producer_handle));
 }
 
 MojoDecoderBufferWriter::MojoDecoderBufferWriter(
@@ -291,14 +325,19 @@ MojoDecoderBufferWriter::MojoDecoderBufferWriter(
       bytes_written_(0) {
   DVLOG(1) << __func__;
 
+  if (!producer_handle_.is_valid()) {
+    DLOG(ERROR) << __func__ << ": Invalid producer handle";
+    return;
+  }
+
   MojoResult result = pipe_watcher_.Watch(
       producer_handle_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
       MOJO_WATCH_CONDITION_SATISFIED,
       base::BindRepeating(&MojoDecoderBufferWriter::OnPipeWritable,
                           base::Unretained(this)));
   if (result != MOJO_RESULT_OK) {
-    DVLOG(1) << __func__
-             << ": Failed to start watching the pipe. result=" << result;
+    DLOG(ERROR) << __func__
+                << ": Failed to start watching the pipe. result=" << result;
     producer_handle_.reset();
   }
 }

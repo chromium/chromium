@@ -1,0 +1,7 @@
+rootWebArea name='done'
+++genericContainer ignored
+++++genericContainer ignored
+++++++heading ignored invisible
+++++++++staticText ignored invisible name='Stay hidden'
+++++++heading ignored invisible
+++++++++staticText ignored invisible name='To hidden'

@@ -29,6 +29,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
@@ -98,7 +99,7 @@ const char kEngineErrorCodeMetricName[] = "SoftwareReporter.EngineErrorCode";
 // SoftwareReporterLogsUploadResult enum defined in the histograms.xml file.
 const int kSwReporterLogsUploadResultMax = 30;
 
-// Reports metrics about the software reporter via UMA (and sometimes Rappor).
+// Reports metrics about the software reporter via UMA.
 class UMAHistogramReporter {
  public:
   UMAHistogramReporter() : UMAHistogramReporter(std::string()) {}
@@ -171,10 +172,10 @@ class UMAHistogramReporter {
     reporter_key.DeleteValue(chrome_cleaner::kEngineErrorCodeValueName);
   }
 
-  // Reports UwS found by the software reporter tool via UMA and RAPPOR.
+  // Reports UwS found by the software reporter tool via UMA.
   void ReportFoundUwS() const {
     base::win::RegKey reporter_key;
-    std::vector<base::string16> found_uws_strings;
+    std::vector<std::wstring> found_uws_strings;
     if (reporter_key.Open(HKEY_CURRENT_USER, registry_key_.c_str(),
                           KEY_QUERY_VALUE | KEY_SET_VALUE) != ERROR_SUCCESS ||
         reporter_key.ReadValues(chrome_cleaner::kFoundUwsValueName,
@@ -183,7 +184,7 @@ class UMAHistogramReporter {
     }
 
     bool parse_error = false;
-    for (const base::string16& uws_string : found_uws_strings) {
+    for (const auto& uws_string : found_uws_strings) {
       // All UwS ids are expected to be integers.
       uint32_t uws_id = 0;
       if (base::StringToUint(uws_string, &uws_id)) {
@@ -780,7 +781,7 @@ class ReporterRunner {
         chrome_cleaner::kChromeVersionSwitch, version_info::GetVersionNumber());
     invocation->mutable_command_line().AppendSwitchNative(
         chrome_cleaner::kChromeChannelSwitch,
-        base::NumberToString16(ChannelAsInt()));
+        base::NumberToWString(ChannelAsInt()));
   }
 
   void SendResultAndDeleteSelf(SwReporterInvocationResult result) {

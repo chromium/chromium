@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/internet_section.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "base/bind.h"
@@ -20,7 +21,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -648,10 +648,6 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"networkSharedNotOwner", IDS_SETTINGS_INTERNET_NETWORK_SHARED_NOT_OWNER},
       {"networkVpnBuiltin", IDS_NETWORK_TYPE_VPN_BUILTIN},
       {"networkOutOfRange", IDS_SETTINGS_INTERNET_WIFI_NETWORK_OUT_OF_RANGE},
-      {"cellularContactSpecificCarrier",
-       IDS_SETTINGS_INTERNET_CELLULAR_CONTACT_SPECIFIC_CARRIER},
-      {"cellularContactDefaultCarrier",
-       IDS_SETTINGS_INTERNET_CELLULAR_CONTACT_DEFAULT_CARRIER},
       {"cellularSetupDialogTitle",
        IDS_SETTINGS_INTERNET_CELLULAR_SETUP_DIALOG_TITLE},
       {"tetherPhoneOutOfRange",
@@ -702,12 +698,18 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"eSimNetworkNotSetup",
        IDS_SETTINGS_INTERNET_ESIM_NOT_SETUP_WITH_SETUP_LINK},
       {"cellularNetworkTetherLabel", IDS_SETTINGS_INTERNET_TETHER_LABEL},
-      {"eidPopupTitle", IDS_SETTINGS_INTERNET_EID_POPUP_TITLE},
       {"showEidPopupButtonLabel",
        IDS_SETTINGS_INTERNET_SHOW_EID_POPUP_BUTTON_LABEL},
-      {"eidPopupDescription", IDS_SETTINGS_INTERNET_EID_POPUP_DESCRIPTION},
-      {"closeEidPopupButtonLabel",
-       IDS_SETTINGS_INTERNET_CLOSE_EID_POPUP_BUTTON_LABEL},
+      {"eSimNoConnectionErrorToast",
+       IDS_SETTINGS_INTERNET_ESIM_NO_CONNECTION_ERROR_TOAST},
+      {"eSimInstallErrorDialogTitle",
+       IDS_SETTINGS_INTERNET_NETWORK_INSTALL_ERROR_DIALOG_TITLE},
+      {"eSimInstallErrorDialogConfirmationCodeMessage",
+       IDS_SETTINGS_INTERNET_NETWORK_INSTALL_ERROR_DIALOG_CONFIRMATION_CODE_MESSAGE},
+      {"eSimInstallErrorDialogConfirmationCodeError",
+       IDS_CELLULAR_SETUP_ESIM_PAGE_INSTALL_ERROR_DIALOG_CONFIRMATION_CODE_ERROR},
+      {"eSimInstallErrorDialogGenericErrorMessage",
+       IDS_SETTINGS_INTERNET_NETWORK_INSTALL_ERROR_DIALOG_GENERIC_ERROR_MESSAGE},
       {"eSimRenameProfileDialogLabel",
        IDS_SETTINGS_INTERNET_NETWORK_RENAME_DIALOG_RENAME_PROFILE},
       {"eSimRenameProfileDialogDone",
@@ -726,8 +728,20 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INTERNET_NETWORK_REMOVE_PROFILE_DIALOG_ERROR_MESSAGE},
       {"eSimRemoveProfileDialogOkay",
        IDS_SETTINGS_INTERNET_NETWORK_REMOVE_PROFILE_DIALOG_OKAY},
+      {"eSimDialogConnectionWarning",
+       IDS_SETTINGS_INTERNET_ESIM_DIALOG_CONNECTION_WARNING},
+      {"cellularNetworkInstallingProfile",
+       IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_INSTALLING_PROFILE},
+      {"cellularNetworkRemovingProfile",
+       IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_REMOVING_PROFILE},
+      {"cellularNetworkRenamingProfile",
+       IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_RENAMING_PROFILE},
+      {"cellularNetworkConnectingToProfile",
+       IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_CONNECTING_TO_PROFILE},
+      {"cellularNetworRefreshingProfileListProfile",
+       IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_REFRESHING_PROFILE_LIST},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   network_element::AddLocalizedStrings(html_source);
   network_element::AddOncLocalizedStrings(html_source);
@@ -735,8 +749,7 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   network_element::AddConfigLocalizedStrings(html_source);
   network_element::AddErrorLocalizedStrings(html_source);
   cellular_setup::AddNonStringLoadTimeData(html_source);
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kUpdatedCellularActivationUi)) {
+  if (features::IsCellularActivationUiEnabled()) {
     cellular_setup::AddLocalizedStrings(html_source);
   }
 
@@ -1053,10 +1066,8 @@ void InternetSection::OnNetworkList(
         if (base::FeatureList::IsEnabled(::features::kMeteredShowToggle))
           updater.AddSearchTags(GetCellularMeteredSearchConcepts());
 
-        if (base::FeatureList::IsEnabled(
-                chromeos::features::kUpdatedCellularActivationUi)) {
+        if (features::IsCellularActivationUiEnabled())
           updater.AddSearchTags(GetCellularSetupAndDetailMenuSearchConcepts());
-        }
         break;
 
       case NetworkType::kTether:

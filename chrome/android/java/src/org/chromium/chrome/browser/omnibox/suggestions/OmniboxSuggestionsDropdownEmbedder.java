@@ -9,7 +9,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.WindowDelegate;
+import org.chromium.ui.base.WindowDelegate;
 
 /** Provider of capabilities required to embed the omnibox suggestion list into the UI. */
 public interface OmniboxSuggestionsDropdownEmbedder {

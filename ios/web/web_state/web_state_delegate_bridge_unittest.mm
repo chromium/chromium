@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #import "ios/web/public/test/crw_fake_web_state_delegate.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"

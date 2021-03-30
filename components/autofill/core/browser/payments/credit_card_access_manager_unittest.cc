@@ -21,7 +21,6 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -109,7 +108,7 @@ class TestAccessor : public CreditCardAccessManager::Accessor {
 
   void OnCreditCardFetched(bool did_succeed,
                            const CreditCard* card,
-                           const base::string16& cvc) override {
+                           const std::u16string& cvc) override {
     did_succeed_ = did_succeed;
     if (did_succeed_) {
       DCHECK(card);
@@ -118,8 +117,8 @@ class TestAccessor : public CreditCardAccessManager::Accessor {
     }
   }
 
-  base::string16 number() { return number_; }
-  base::string16 cvc() { return cvc_; }
+  std::u16string number() { return number_; }
+  std::u16string cvc() { return cvc_; }
 
   bool did_succeed() { return did_succeed_; }
 
@@ -127,9 +126,9 @@ class TestAccessor : public CreditCardAccessManager::Accessor {
   // Is set to true if authentication was successful.
   bool did_succeed_ = false;
   // The card number returned from OnCreditCardFetched().
-  base::string16 number_;
+  std::u16string number_;
   // The returned CVC, if any.
-  base::string16 cvc_;
+  std::u16string cvc_;
   base::WeakPtrFactory<TestAccessor> weak_ptr_factory_{this};
 };
 
@@ -147,6 +146,7 @@ class CreditCardAccessManagerTest : public testing::Test {
     personal_data_manager_.Init(/*profile_database=*/database_,
                                 /*account_database=*/nullptr,
                                 /*pref_service=*/autofill_client_.GetPrefs(),
+                                /*local_state=*/autofill_client_.GetPrefs(),
                                 /*identity_manager=*/nullptr,
                                 /*client_profile_validator=*/nullptr,
                                 /*history_service=*/nullptr,
@@ -445,8 +445,8 @@ TEST_F(CreditCardAccessManagerTest, LocalCardGetDeletionConfirmationText) {
   CreateLocalCard(kTestGUID);
   CreditCard* card = credit_card_access_manager_->GetCreditCard(kTestGUID);
 
-  base::string16 title = base::string16();
-  base::string16 body = base::string16();
+  std::u16string title = std::u16string();
+  std::u16string body = std::u16string();
   EXPECT_TRUE(credit_card_access_manager_->GetDeletionConfirmationText(
       card, &title, &body));
 
@@ -462,14 +462,14 @@ TEST_F(CreditCardAccessManagerTest, ServerCardGetDeletionConfirmationText) {
   CreateServerCard(kTestGUID);
   CreditCard* card = credit_card_access_manager_->GetCreditCard(kTestGUID);
 
-  base::string16 title = base::string16();
-  base::string16 body = base::string16();
+  std::u16string title = std::u16string();
+  std::u16string body = std::u16string();
   EXPECT_FALSE(credit_card_access_manager_->GetDeletionConfirmationText(
       card, &title, &body));
 
   // |title| and |body| should remain unchanged.
-  EXPECT_EQ(title, base::string16());
-  EXPECT_EQ(body, base::string16());
+  EXPECT_EQ(title, std::u16string());
+  EXPECT_EQ(body, std::u16string());
 }
 
 // Tests retrieving local cards.
@@ -1095,8 +1095,8 @@ TEST_F(CreditCardAccessManagerTest, FIDONewCardAuthorization) {
                                    /*fido_opt_in=*/false,
                                    /*follow_with_fido_auth=*/false));
   // Ensure that form is not filled yet (OnCreditCardFetched is not called).
-  EXPECT_EQ(accessor_->number(), base::string16());
-  EXPECT_EQ(accessor_->cvc(), base::string16());
+  EXPECT_EQ(accessor_->number(), std::u16string());
+  EXPECT_EQ(accessor_->cvc(), std::u16string());
 
   // Mock user response.
   EXPECT_EQ(CreditCardFIDOAuthenticator::Flow::FOLLOWUP_AFTER_CVC_AUTH_FLOW,
@@ -1128,7 +1128,7 @@ TEST_F(CreditCardAccessManagerTest, FetchExpiredServerCardInvokesCvcPrompt) {
   // card.
   CreateServerCard(kTestGUID, kTestNumber);
   CreditCard* card = credit_card_access_manager_->GetCreditCard(kTestGUID);
-  card->SetExpirationYearFromString(base::UTF8ToUTF16("2010"));
+  card->SetExpirationYearFromString(u"2010");
   GetFIDOAuthenticator()->SetUserVerifiable(true);
   SetUserOptedIn(true);
   payments_client_->AddFidoEligibleCard(card->server_id(), kCredentialId,
@@ -1175,8 +1175,8 @@ TEST_F(CreditCardAccessManagerTest, FIDOOptInSuccess_Android) {
   EXPECT_EQ(CreditCardFIDOAuthenticator::Flow::OPT_IN_WITH_CHALLENGE_FLOW,
             GetFIDOAuthenticator()->current_flow());
   // Ensure that form is not filled yet (OnCreditCardFetched is not called).
-  EXPECT_EQ(accessor_->number(), base::string16());
-  EXPECT_EQ(accessor_->cvc(), base::string16());
+  EXPECT_EQ(accessor_->number(), std::u16string());
+  EXPECT_EQ(accessor_->cvc(), std::u16string());
 
   // Mock user response.
   TestCreditCardFIDOAuthenticator::GetAssertion(GetFIDOAuthenticator(),
@@ -1223,8 +1223,8 @@ TEST_F(CreditCardAccessManagerTest, FIDOOptInUserVerificationFailure) {
   EXPECT_EQ(CreditCardFIDOAuthenticator::Flow::OPT_IN_WITH_CHALLENGE_FLOW,
             GetFIDOAuthenticator()->current_flow());
   // Ensure that form is not filled yet (OnCreditCardFetched is not called).
-  EXPECT_EQ(accessor_->number(), base::string16());
-  EXPECT_EQ(accessor_->cvc(), base::string16());
+  EXPECT_EQ(accessor_->number(), std::u16string());
+  EXPECT_EQ(accessor_->cvc(), std::u16string());
 
   // Mock GetAssertion failure.
   TestCreditCardFIDOAuthenticator::GetAssertion(GetFIDOAuthenticator(),
@@ -1263,8 +1263,8 @@ TEST_F(CreditCardAccessManagerTest, FIDOOptInServerFailure) {
   EXPECT_EQ(CreditCardFIDOAuthenticator::Flow::OPT_IN_WITH_CHALLENGE_FLOW,
             GetFIDOAuthenticator()->current_flow());
   // Ensure that form is not filled yet (OnCreditCardFetched is not called).
-  EXPECT_EQ(accessor_->number(), base::string16());
-  EXPECT_EQ(accessor_->cvc(), base::string16());
+  EXPECT_EQ(accessor_->number(), std::u16string());
+  EXPECT_EQ(accessor_->cvc(), std::u16string());
 
   // Mock user response and OptChange payments call.
   TestCreditCardFIDOAuthenticator::GetAssertion(GetFIDOAuthenticator(),

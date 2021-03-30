@@ -6,9 +6,9 @@
 #define CHROME_CREDENTIAL_PROVIDER_GAIACP_REG_UTILS_H_
 
 #include <map>
+#include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "base/win/windows_types.h"
 
 namespace credential_provider {
@@ -92,99 +92,97 @@ extern const wchar_t kLastUserPolicyRefreshTimeRegKey[];
 extern const wchar_t kLastUserExperimentsRefreshTimeRegKey[];
 
 // Gets any HKLM registry key on the system.
-HRESULT GetMachineRegDWORD(const base::string16& key_name,
-                           const base::string16& name,
+HRESULT GetMachineRegDWORD(const std::wstring& key_name,
+                           const std::wstring& name,
                            DWORD* value);
-HRESULT GetMachineRegString(const base::string16& key_name,
-                            const base::string16& name,
+HRESULT GetMachineRegString(const std::wstring& key_name,
+                            const std::wstring& name,
                             wchar_t* value,
                             ULONG* length);
 
 // Gets global DWORD flag.
-HRESULT GetGlobalFlag(const base::string16& name, DWORD* value);
+HRESULT GetGlobalFlag(const std::wstring& name, DWORD* value);
 
 // Gets global string flag.  Upon calling |length| contains maximum size of
 // the |value| buffer in characters.  Upon return |length| contains the length
 // of string.  This function guarantees that the string is null terminated, so
 // the maximum number of non-null characters returned is |length-1|.
-HRESULT GetGlobalFlag(const base::string16& name,
-                      wchar_t* value,
-                      ULONG* length);
+HRESULT GetGlobalFlag(const std::wstring& name, wchar_t* value, ULONG* length);
 
 // Gets global string flag.  Returns |default_value| if no value is set or there
 // was an error fetching the flag.
-base::string16 GetGlobalFlagOrDefault(const base::string16& reg_key,
-                                      const base::string16& default_value);
+std::wstring GetGlobalFlagOrDefault(const std::wstring& reg_key,
+                                    const std::wstring& default_value);
 
 // Gets global DWORD flag.  Returns |default_value| if no value is set or there
 // was an error fetching the flag.
-DWORD GetGlobalFlagOrDefault(const base::string16& reg_key,
+DWORD GetGlobalFlagOrDefault(const std::wstring& reg_key,
                              const DWORD& default_value);
 
 // Sets global DWORD flag.
-HRESULT SetGlobalFlag(const base::string16& name, DWORD value);
+HRESULT SetGlobalFlag(const std::wstring& name, DWORD value);
 
 // Sets the client flag under |kRegUpdaterClientsAppPath|.
-HRESULT SetUpdaterClientsAppPathFlag(const base::string16&, DWORD value);
+HRESULT SetUpdaterClientsAppPathFlag(const std::wstring&, DWORD value);
 
 // Gets client DWORD flag from |kRegUpdaterClientsAppPath|.
-HRESULT GetUpdaterClientsAppPathFlag(const base::string16& name, DWORD* value);
+HRESULT GetUpdaterClientsAppPathFlag(const std::wstring& name, DWORD* value);
 
 // Gets client DWORD flag under |kRegUpdaterClientsAppPath|.  Returns
 // |default_value| if no value is set or there was an error fetching the flag.
-DWORD GetUpdaterClientsAppPathFlagOrDefault(const base::string16& reg_key,
+DWORD GetUpdaterClientsAppPathFlagOrDefault(const std::wstring& reg_key,
                                             const DWORD& default_value);
 
-// Sets global base::string16 flag.
-HRESULT SetGlobalFlag(const base::string16& name, const base::string16& value);
+// Sets global std::wstring flag.
+HRESULT SetGlobalFlag(const std::wstring& name, const std::wstring& value);
 
 // Sets global flag. Used for testing purposes only.
-HRESULT SetGlobalFlagForTesting(const base::string16& name,
-                                const base::string16& value);
-HRESULT SetGlobalFlagForTesting(const base::string16& name, DWORD value);
+HRESULT SetGlobalFlagForTesting(const std::wstring& name,
+                                const std::wstring& value);
+HRESULT SetGlobalFlagForTesting(const std::wstring& name, DWORD value);
 
 // Gets DWORD property set for the given user.
-HRESULT GetUserProperty(const base::string16& sid,
-                        const base::string16& name,
+HRESULT GetUserProperty(const std::wstring& sid,
+                        const std::wstring& name,
                         DWORD* value);
 
 // Gets a string user property.  Upon calling |length| contains maximum size of
 // the |value| buffer in characters.  Upon return |length| contains the length
 // of string.  This function guarantees that the string is null terminated, so
 // the maximum number of non-null characters returned is |length-1|.
-HRESULT GetUserProperty(const base::string16& sid,
-                        const base::string16& name,
+HRESULT GetUserProperty(const std::wstring& sid,
+                        const std::wstring& name,
                         wchar_t* value,
                         ULONG* length);
 
 // Sets a DWORD user property.
-HRESULT SetUserProperty(const base::string16& sid,
-                        const base::string16& name,
+HRESULT SetUserProperty(const std::wstring& sid,
+                        const std::wstring& name,
                         DWORD value);
 
 // Sets a string user property.
-HRESULT SetUserProperty(const base::string16& sid,
-                        const base::string16& name,
-                        const base::string16& value);
+HRESULT SetUserProperty(const std::wstring& sid,
+                        const std::wstring& name,
+                        const std::wstring& value);
 
 // Sets the value of a particular user name under the UserList key of WinLogon.
 // This value allows hiding the user from all credential provider related
 // operations including sign on, unlock, password change and cred ui. This
 // function will only set the registry value if visible == 0. Otherwise it will
 // delete the registry value so that the default behavior is possible.
-HRESULT SetUserWinlogonUserListEntry(const base::string16& username,
+HRESULT SetUserWinlogonUserListEntry(const std::wstring& username,
                                      DWORD visible);
 
 // Sets the default credential provider for a user tile.
-HRESULT SetLogonUiUserTileEntry(const base::string16& sid, CLSID cp_guid);
+HRESULT SetLogonUiUserTileEntry(const std::wstring& sid, CLSID cp_guid);
 
 // Removes all properties for the user.
-HRESULT RemoveAllUserProperties(const base::string16& sid);
+HRESULT RemoveAllUserProperties(const std::wstring& sid);
 
 struct UserTokenHandleInfo {
-  base::string16 gaia_id;
-  base::string16 email_address;
-  base::string16 token_handle;
+  std::wstring gaia_id;
+  std::wstring email_address;
+  std::wstring token_handle;
 };
 
 // Gets basic user association info as stored in the registry. For each found
@@ -194,49 +192,61 @@ struct UserTokenHandleInfo {
 // This function does not provide any guarantee as to the validity of the
 // information returned w.r.t. actual users that exist on the system.
 HRESULT GetUserTokenHandles(
-    std::map<base::string16, UserTokenHandleInfo>* sid_to_handle_info);
+    std::map<std::wstring, UserTokenHandleInfo>* sid_to_handle_info);
 
 // Gets the SID associated with the given gaia id.  If none exists, returns
 // HRESULT_FROM_WIN32(ERROR_NONE_MAPPED).
-HRESULT GetSidFromId(const base::string16& id, wchar_t* sid, ULONG length);
+HRESULT GetSidFromId(const std::wstring& id, wchar_t* sid, ULONG length);
 
 // Gets the SID associated with the given email.  If none exists, returns
 // HRESULT_FROM_WIN32(ERROR_NONE_MAPPED).
-HRESULT GetSidFromEmail(const base::string16& email,
-                        wchar_t* sid,
-                        ULONG length);
+HRESULT GetSidFromEmail(const std::wstring& email, wchar_t* sid, ULONG length);
 
 // Gets the SID associated with the given input key. If none exists, returns
 // HRESULT_FROM_WIN32(ERROR_NONE_MAPPED).
 HRESULT GetSidFromKey(const wchar_t* key,
-                      const base::string16& value,
+                      const std::wstring& value,
                       wchar_t* sid,
                       ULONG length);
 
 // Gets the gaia id associated with the given SID.  If none exists, returns
 // HRESULT_FROM_WIN32(ERROR_NONE_MAPPED).
-HRESULT GetIdFromSid(const wchar_t* sid, base::string16* id);
+HRESULT GetIdFromSid(const wchar_t* sid, std::wstring* id);
 
 // Get the email ID associated with the user with |sid|.
-std::string GetUserEmailFromSid(const base::string16& sid);
+std::string GetUserEmailFromSid(const std::wstring& sid);
+
+// Get children at a reg path.
+void GetChildrenAtPath(const wchar_t* path,
+                       std::vector<std::wstring>& children);
 
 // Gets a specific account picture registry key in HKEY_LOCAL_MACHINE
-HRESULT GetAccountPictureRegString(const base::string16& user_sid,
+HRESULT GetAccountPictureRegString(const std::wstring& user_sid,
                                    int image_size,
                                    wchar_t* value,
                                    ULONG* length);
 
 // Sets a specific account picture registry key in HKEY_LOCAL_MACHINE
-HRESULT SetAccountPictureRegString(const base::string16& user_sid,
+HRESULT SetAccountPictureRegString(const std::wstring& user_sid,
                                    int image_size,
-                                   const base::string16& value);
+                                   const std::wstring& value);
 
 // Retrieves an identifier that is stored under
 // HKLM\SOFTWARE\Microsoft\Cryptography\MachineGuid registry.
-HRESULT GetMachineGuid(base::string16* machine_guid);
+HRESULT GetMachineGuid(std::wstring* machine_guid);
 
 // Sets  HKLM\SOFTWARE\Microsoft\Cryptography\MachineGuid registry for testing.
-HRESULT SetMachineGuidForTesting(const base::string16& machine_guid);
+HRESULT SetMachineGuidForTesting(const std::wstring& machine_guid);
+
+// Sets String value at registry path key_name/name.
+HRESULT SetMachineRegString(const std::wstring& key_name,
+                            const std::wstring& name,
+                            const std::wstring& value);
+
+// Sets DWORD value at registry path key_name/name.
+HRESULT SetMachineRegDWORD(const std::wstring& key_name,
+                           const std::wstring& name,
+                           DWORD value);
 
 // Set corresponding registry entry that would make GCPW as the default
 // credential provider.
@@ -244,7 +254,7 @@ HRESULT MakeGcpwDefaultCP();
 
 // Get device resource ID for the user with given |sid|. Returns an empty string
 // if one has not been set for the user.
-base::string16 GetUserDeviceResourceId(const base::string16& sid);
+std::wstring GetUserDeviceResourceId(const std::wstring& sid);
 
 // The token which is written to Windows registry as a result of exchanging
 // enrollment token. The value returned here is the Base64 encoded version of

@@ -47,8 +47,8 @@ bool CursorManager::ShouldHideCursorOnKeyEvent(
     return false;
   }
 
-  // All alt and control key commands are ignored.
-  if (event.IsAltDown() || event.IsControlDown())
+  // All alt, control and command key commands are ignored.
+  if (event.IsAltDown() || event.IsControlDown() || event.IsCommandDown())
     return false;
 
   ui::KeyboardCode code = event.key_code();

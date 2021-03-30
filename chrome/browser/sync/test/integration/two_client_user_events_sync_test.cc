@@ -11,7 +11,6 @@
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "chrome/browser/sync/test/integration/user_events_helper.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
-#include "components/federated_learning/features/features.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
 #include "components/sync_user_events/user_event_service.h"
 #include "content/public/test/browser_test.h"
@@ -19,29 +18,20 @@
 
 namespace {
 
+using bookmarks_helper::BookmarksMatchChecker;
+using bookmarks_helper::CountBookmarksWithUrlsMatching;
 using sync_pb::UserEventSpecifics;
 
 const int kEncryptingClientId = 0;
 const int kDecryptingClientId = 1;
 
+const char kTestBookmarkURL[] = "https://google.com/synced-bookmark-1";
+
 class TwoClientUserEventsSyncTest : public SyncTest {
  public:
-  TwoClientUserEventsSyncTest() : SyncTest(TWO_CLIENT) {
-    // Disable the floc-event-logging for this test suite. This event could be
-    // logged right after sync gets enabled, and could mess up with the test
-    // expectations. The scenario when the floc-event-logging is enabled is
-    // tested separately.
-    feature_list_.InitAndDisableFeature(
-        federated_learning::kFlocIdComputedEventLogging);
-  }
+  TwoClientUserEventsSyncTest() : SyncTest(TWO_CLIENT) {}
 
   ~TwoClientUserEventsSyncTest() override = default;
-
-  bool UseVerifier() override {
-    // TODO(crbug.com/1137720): rewrite test to not use verifier (currently
-    // needed because of WaitForBookmarksToMatchVerifier()).
-    return true;
-  }
 
   bool ExpectNoUserEvent(int index) {
     return UserEventEqualityChecker(GetSyncService(index), GetFakeServer(),
@@ -54,14 +44,9 @@ class TwoClientUserEventsSyncTest : public SyncTest {
         .Wait();
   }
 
-  bool WaitForBookmarksToMatchVerifier() {
-    return bookmarks_helper::BookmarksMatchVerifierChecker().Wait();
-  }
-
   void AddTestBookmarksToClient(int index) {
-    ASSERT_TRUE(
-        bookmarks_helper::AddURL(index, 0, "What are you syncing about?",
-                                 GURL("https://google.com/synced-bookmark-1")));
+    ASSERT_TRUE(bookmarks_helper::AddURL(
+        index, 0, "What are you syncing about?", GURL(kTestBookmarkURL)));
   }
 };
 
@@ -111,7 +96,11 @@ IN_PROC_BROWSER_TEST_F(TwoClientUserEventsSyncTest,
   // let's send something else on the second client through the system that we
   // can wait on before checking. Bookmark data was picked fairly arbitrarily.
   AddTestBookmarksToClient(kDecryptingClientId);
-  ASSERT_TRUE(WaitForBookmarksToMatchVerifier());
+  ASSERT_TRUE(BookmarksMatchChecker().Wait());
+
+  // Double check that the encrypting client has the bookmark.
+  ASSERT_EQ(1u, CountBookmarksWithUrlsMatching(kEncryptingClientId,
+                                               GURL(kTestBookmarkURL)));
 
   // Finally, make sure no user event got sent to the server.
   EXPECT_TRUE(ExpectNoUserEvent(kDecryptingClientId));

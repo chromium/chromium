@@ -22,9 +22,9 @@ using base::i18n::UTF16CharIterator;
 
 namespace {
 
-constexpr base::char16 kAcceleratorChar = '&';
-constexpr base::char16 kOpenParenthesisChar = '(';
-constexpr base::char16 kCloseParenthesisChar = ')';
+constexpr char16_t kAcceleratorChar = '&';
+constexpr char16_t kOpenParenthesisChar = '(';
+constexpr char16_t kCloseParenthesisChar = ')';
 
 // Returns true if the specified character must be elided from a string.
 // Examples are combining marks and whitespace.
@@ -43,15 +43,15 @@ bool IsSpace(UChar32 c) {
          char_type == U_PARAGRAPH_SEPARATOR || char_type == U_CONTROL_CHAR;
 }
 
-base::string16 RemoveAcceleratorChar(bool full_removal,
-                                     const base::string16& s,
+std::u16string RemoveAcceleratorChar(bool full_removal,
+                                     const std::u16string& s,
                                      int* accelerated_char_pos,
                                      int* accelerated_char_span) {
   bool escaped = false;
   ptrdiff_t last_char_pos = -1;
   int last_char_span = 0;
   UTF16CharIterator chars(s);
-  base::string16 accelerator_removed;
+  std::u16string accelerator_removed;
 
   // The states of a state machine looking for a CJK-style accelerator (i.e.
   // "(&x)"). |cjk_state| proceeds up from |kFoundNothing| through these states,
@@ -115,18 +115,18 @@ base::string16 RemoveAcceleratorChar(bool full_removal,
 
 }  // namespace
 
-base::string16 LocateAndRemoveAcceleratorChar(const base::string16& s,
+std::u16string LocateAndRemoveAcceleratorChar(const std::u16string& s,
                                               int* accelerated_char_pos,
                                               int* accelerated_char_span) {
   return RemoveAcceleratorChar(false, s, accelerated_char_pos,
                                accelerated_char_span);
 }
 
-base::string16 RemoveAccelerator(const base::string16& s) {
+std::u16string RemoveAccelerator(const std::u16string& s) {
   return RemoveAcceleratorChar(true, s, nullptr, nullptr);
 }
 
-size_t FindValidBoundaryBefore(const base::string16& text,
+size_t FindValidBoundaryBefore(const std::u16string& text,
                                size_t index,
                                bool trim_whitespace) {
   UTF16CharIterator it = UTF16CharIterator::LowerBound(text, index);
@@ -145,7 +145,7 @@ size_t FindValidBoundaryBefore(const base::string16& text,
   return it.array_pos();
 }
 
-size_t FindValidBoundaryAfter(const base::string16& text,
+size_t FindValidBoundaryAfter(const std::u16string& text,
                               size_t index,
                               bool trim_whitespace) {
   UTF16CharIterator it = UTF16CharIterator::UpperBound(text, index);
@@ -177,7 +177,7 @@ HorizontalAlignment MaybeFlipForRTL(HorizontalAlignment alignment) {
   return alignment;
 }
 
-Size GetStringSize(const base::string16& text, const FontList& font_list) {
+Size GetStringSize(const std::u16string& text, const FontList& font_list) {
   return Size(GetStringWidth(text, font_list), font_list.GetHeight());
 }
 

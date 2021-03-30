@@ -4,8 +4,9 @@
 
 (async function() {
   TestRunner.addResult(`Tests that writing an ARIA attribute causes the accessibility node to be updated.\n`);
-  await TestRunner.loadModule('elements_test_runner');
-  await TestRunner.loadModule('accessibility_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadModule('panels/accessibility');
+  await TestRunner.loadTestModule('accessibility_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <button id="inspected" role="checkbox" aria-checked="true">ARIA checkbox</button>
@@ -22,7 +23,7 @@
     treeElement._startEditing();
     treeElement._prompt._element.textContent = 'false';
     treeElement._prompt._element.dispatchEvent(TestRunner.createKeyEvent('Enter'));
-    self.runtime.sharedInstance(Accessibility.AccessibilitySidebarView).doUpdate().then(() => {
+    Accessibility.AccessibilitySidebarView.instance().doUpdate().then(() => {
       editRole();
     });
   }
@@ -36,11 +37,9 @@
     treeElement._prompt._element.dispatchEvent(TestRunner.createKeyEvent('Enter'));
     // Give the document lifecycle a chance to run before updating the view.
     window.setTimeout(() => {
-      self.runtime.sharedInstance(Accessibility.AccessibilitySidebarView)
-          .doUpdate()
-          .then(() => {
-            postRoleChange();
-          });
+      Accessibility.AccessibilitySidebarView.instance().doUpdate().then(() => {
+        postRoleChange();
+      });
     }, 0);
   }
 

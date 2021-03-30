@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_SHARESHEET_SHARESHEET_TYPES_H_
 #define CHROME_BROWSER_SHARESHEET_SHARESHEET_TYPES_H_
 
+#include <string>
+
 #include "base/callback.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace sharesheet {
@@ -16,23 +17,25 @@ namespace sharesheet {
 constexpr int kIconSize = 40;
 
 enum class SharesheetResult {
-  kSuccess,  // Share was successful.
-  kCancel,   // Sharesheet closed without sharing complete.
+  kSuccess,           // Share was successful.
+  kCancel,            // Share was cancelled by the user or ShareAction.
+  kErrorAlreadyOpen,  // Share failed because the sharesheet is already open.
 };
 
 // The type of a target.
 enum class TargetType {
   kUnknown = 0,
-  kApp,
+  kArcApp,
+  kWebApp,
   kAction,
 };
 
 struct TargetInfo {
   TargetInfo(TargetType type,
              const base::Optional<gfx::ImageSkia> icon,
-             const base::string16& launch_name,
-             const base::string16& display_name,
-             const base::Optional<base::string16>& secondary_display_name,
+             const std::u16string& launch_name,
+             const std::u16string& display_name,
+             const base::Optional<std::u16string>& secondary_display_name,
              const base::Optional<std::string>& activity_name);
   ~TargetInfo();
 
@@ -54,16 +57,16 @@ struct TargetInfo {
 
   // The string used to launch this target. Represents an Android package name
   // when the app type is kArc.
-  base::string16 launch_name;
+  std::u16string launch_name;
 
   // The string shown to the user to identify this target in the sharesheet
   // bubble.
-  base::string16 display_name;
+  std::u16string display_name;
 
   // A secondary string below the |display_name| shown to the user to provide
   // additional information for this target. This will be populated by showing
   // the activity name in ARC apps.
-  base::Optional<base::string16> secondary_display_name;
+  base::Optional<std::u16string> secondary_display_name;
 
   // The activity of the app for the target. This only applies when the app type
   // is kArc.

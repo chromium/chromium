@@ -105,10 +105,18 @@ the code, including msysgit and python.
 * If you see strange errors with the file system on the first run of gclient,
   you may want to [disable Windows Indexing](http://tortoisesvn.tigris.org/faq.html#cantmove2).
 
+## Check python install
+
 After running gclient open a command prompt and type `where python` and
 confirm that the depot_tools `python.bat` comes ahead of any copies of
 python.exe. Failing to ensure this can lead to overbuilding when
 using gn - see [crbug.com/611087](https://crbug.com/611087).
+
+[App Execution Aliases](https://docs.microsoft.com/en-us/windows/apps/desktop/modernize/desktop-to-uwp-extensions#alias)
+can conflict with other installations of python on the system so disable
+these for 'python.exe' and 'python3.exe' by opening 'App execution aliases'
+section of Control Panel and unticking the boxes next to both of these
+that point to 'App Installer'.
 
 ## Get the code
 

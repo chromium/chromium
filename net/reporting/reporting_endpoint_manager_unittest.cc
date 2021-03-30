@@ -556,7 +556,7 @@ TEST_F(ReportingEndpointManagerTest, CacheEviction) {
 
   // Mark each endpoint as bad, one-at-a-time. Use FindEndpointForDelivery() to
   // pick which one to mark as bad, both to exercise the code walking through
-  // all endpoints, and as a sanity check.
+  // all endpoints, and as a consistency check.
   std::set<GURL> seen_endpoints;
   for (int i = 0; i < ReportingEndpointManager::kMaxEndpointBackoffCacheSize;
        ++i) {

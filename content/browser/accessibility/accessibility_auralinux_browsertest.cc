@@ -254,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   int character_count = atk_text_get_character_count(contenteditable_text);
   ASSERT_EQ(13, character_count);
 
-  const base::string16 embedded_character(
+  const std::u16string embedded_character(
       1, ui::AXPlatformNodeAuraLinux::kEmbeddedCharacter);
   const std::vector<const std::string> expected_hypertext = {
       "B", "e", "f", "o", "r", "e", base::UTF16ToUTF8(embedded_character),
@@ -429,7 +429,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   int n_characters = atk_text_get_character_count(atk_text);
   ASSERT_LT(newline_offset, n_characters);
 
-  const base::string16 embedded_character(
+  const std::u16string embedded_character(
       1, ui::AXPlatformNodeAuraLinux::kEmbeddedCharacter);
   std::string expected_string = "Game theory is \"the study of " +
                                 base::UTF16ToUTF8(embedded_character) +
@@ -1316,7 +1316,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest, TestAtkTextListItem) {
 
   EXPECT_TRUE(ATK_IS_TEXT(list_item_1));
 
-  const base::string16 string16_embed(
+  const std::u16string string16_embed(
       1, ui::AXPlatformNodeAuraLinux::kEmbeddedCharacter);
   std::string expected_string = base::UTF16ToUTF8(string16_embed) + "Text 1";
 
@@ -1507,18 +1507,15 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
       shell()->web_contents(), ui::kAXModeComplete,
       ax::mojom::Event::kTextSelectionChanged);
 
-  int length = atk_text_get_character_count(ATK_TEXT(heading));
-  for (int i = 0; i < length; i++) {
-    atk_text_set_caret_offset(ATK_TEXT(heading), i);
-
-    // We aren't getting kTextSelectionChanged or kDocumentSelectionChanged for
-    // the following offsets in the generated content. Recheck this after the
-    // crasher bug is fixed.
-    if (i == 1 || i == 6)
-      continue;
-
+  // Caret can't be set inside generated content, it will go to the closest
+  // allowed place. Ordered the targets so that the caret will always actually
+  // move somewhere between steps, and thus the waiter will always be satisfied.
+  std::vector<int> target_offset = {0, 3, 1, 4, 2, 4, 5, 4, 6};
+  std::vector<int> expect_offset = {2, 3, 2, 4, 2, 4, 2, 4, 2};
+  for (size_t i = 0; i < target_offset.size(); i++) {
+    atk_text_set_caret_offset(ATK_TEXT(heading), target_offset[i]);
     waiter.WaitForNotification();
-    ASSERT_EQ(i, atk_text_get_caret_offset(ATK_TEXT(heading)));
+    ASSERT_EQ(expect_offset[i], atk_text_get_caret_offset(ATK_TEXT(heading)));
   }
 
   g_object_unref(heading);

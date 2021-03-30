@@ -195,9 +195,11 @@ class CookieStoreTest : public testing::Test {
       const GURL& url,
       const std::string& cookie_line,
       const CookieOptions& options,
-      base::Optional<base::Time> server_time = base::nullopt) {
-    auto cookie = CanonicalCookie::Create(url, cookie_line, base::Time::Now(),
-                                          server_time);
+      base::Optional<base::Time> server_time = base::nullopt,
+      base::Optional<base::Time> system_time = base::nullopt) {
+    auto cookie = CanonicalCookie::Create(
+        url, cookie_line, system_time.value_or(base::Time::Now()), server_time);
+
     if (!cookie)
       return false;
     DCHECK(cs);
@@ -223,6 +225,19 @@ class CookieStoreTest : public testing::Test {
                                 callback.MakeCallback());
     callback.WaitUntilDone();
     return callback.result().status.IsInclude();
+  }
+
+  bool SetCookieWithSystemTime(CookieStore* cs,
+                               const GURL& url,
+                               const std::string& cookie_line,
+                               const base::Time& system_time) {
+    CookieOptions options;
+    if (!CookieStoreTestTraits::supports_http_only)
+      options.set_include_httponly();
+    options.set_same_site_cookie_context(
+        net::CookieOptions::SameSiteCookieContext::MakeInclusive());
+    return CreateAndSetCookie(cs, url, cookie_line, options, base::nullopt,
+                              base::make_optional(system_time));
   }
 
   bool SetCookieWithServerTime(CookieStore* cs,

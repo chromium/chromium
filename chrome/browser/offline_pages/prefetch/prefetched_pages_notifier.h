@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_OFFLINE_PAGES_PREFETCH_PREFETCHED_PAGES_NOTIFIER_H_
 #define CHROME_BROWSER_OFFLINE_PAGES_PREFETCH_PREFETCHED_PAGES_NOTIFIER_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "components/offline_pages/core/offline_page_types.h"
 #include "url/gurl.h"
 
@@ -22,7 +23,7 @@ void ShowPrefetchedContentNotification(const GURL& origin);
 // Finds the most recent hostname from a list of pages with the constraint that
 // the hostname corresponds to a page created after |pages_created_after|.
 // Returns the empty string if no matches are found.
-base::string16 ExtractRelevantHostFromOfflinePageItemList(
+std::u16string ExtractRelevantHostFromOfflinePageItemList(
     const base::Time& pages_created_after,
     const MultipleOfflinePageItemResult page_list);
 

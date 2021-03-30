@@ -96,7 +96,9 @@ class FamilyUserChromeActivityMetricsTest
 
     apps::AppServiceProxy* proxy =
         apps::AppServiceProxyFactory::GetForProfile(profile());
-    proxy->AppRegistryCache().OnApps(std::move(deltas));
+    proxy->AppRegistryCache().OnApps(std::move(deltas),
+                                     app_time::GetChromeAppId().app_type(),
+                                     false /* should_notify_initialized */);
   }
 
   void SetActiveSessionStartTime(base::Time time) {

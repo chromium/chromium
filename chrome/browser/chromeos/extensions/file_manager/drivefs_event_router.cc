@@ -39,6 +39,15 @@ bool IsItemEventCompleted(drivefs::mojom::ItemEvent::State state) {
   return false;
 }
 
+file_manager_private::DriveConfirmDialogType ConvertDialogReasonType(
+    drivefs::mojom::DialogReason::Type type) {
+  switch (type) {
+    case drivefs::mojom::DialogReason::Type::kEnableDocsOffline:
+      return file_manager_private::
+          DRIVE_CONFIRM_DIALOG_TYPE_ENABLE_DOCS_OFFLINE;
+  }
+}
+
 }  // namespace
 
 DriveFsEventRouter::DriveFsEventRouter() = default;
@@ -63,6 +72,8 @@ void DriveFsEventRouter::OnUnmounted() {
 
   DispatchOnFileTransfersUpdatedEvent(sync_status);
   DispatchOnPinTransfersUpdatedEvent(pin_status);
+
+  dialog_callback_.Reset();
 }
 
 file_manager_private::FileTransferStatus
@@ -224,6 +235,40 @@ void DriveFsEventRouter::OnError(const drivefs::mojom::DriveError& error) {
         extensions::events::FILE_MANAGER_PRIVATE_ON_DRIVE_SYNC_ERROR,
         file_manager_private::OnDriveSyncError::kEventName,
         file_manager_private::OnDriveSyncError::Create(event));
+  }
+}
+
+void DriveFsEventRouter::DisplayConfirmDialog(
+    const drivefs::mojom::DialogReason& reason,
+    base::OnceCallback<void(drivefs::mojom::DialogResult)> callback) {
+  if (dialog_callback_) {
+    std::move(callback).Run(drivefs::mojom::DialogResult::kNotDisplayed);
+    return;
+  }
+  auto extension_ids = GetEventListenerExtensionIds(
+      file_manager_private::OnDriveConfirmDialog::kEventName);
+  if (extension_ids.empty()) {
+    std::move(callback).Run(drivefs::mojom::DialogResult::kNotDisplayed);
+    return;
+  }
+  dialog_callback_ = std::move(callback);
+
+  file_manager_private::DriveConfirmDialogEvent event;
+  event.type = ConvertDialogReasonType(reason.type);
+  for (const auto& extension_id : extension_ids) {
+    event.file_url =
+        ConvertDrivePathToFileSystemUrl(reason.path, extension_id).spec();
+    DispatchEventToExtension(
+        extension_id,
+        extensions::events::FILE_MANAGER_PRIVATE_ON_DRIVE_CONFIRM_DIALOG,
+        file_manager_private::OnDriveConfirmDialog::kEventName,
+        file_manager_private::OnDriveConfirmDialog::Create(event));
+  }
+}
+
+void DriveFsEventRouter::OnDialogResult(drivefs::mojom::DialogResult result) {
+  if (dialog_callback_) {
+    std::move(dialog_callback_).Run(result);
   }
 }
 

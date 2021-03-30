@@ -5,15 +5,20 @@
 package org.chromium.weblayer.test;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.content.Context;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.view.View;
 
+import androidx.test.espresso.ViewInteraction;
 import androidx.test.filters.SmallTest;
 
+import org.hamcrest.Matcher;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +26,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.TestWebLayer;
 import org.chromium.weblayer.shell.InstrumentationActivity;
@@ -30,13 +36,25 @@ import org.chromium.weblayer.shell.InstrumentationActivity;
  */
 @RunWith(WebLayerJUnit4ClassRunner.class)
 public class PageInfoTest {
+    private static final String CONNECTION_IS_NOT_SECURE_TEXT = "Connection is not secure";
+
     @Rule
     public InstrumentationActivityTestRule mActivityTestRule =
             new InstrumentationActivityTestRule();
 
+    private ViewInteraction onViewWaiting(Matcher<View> matcher) {
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            try {
+                onView(matcher).check(matches(isDisplayed()));
+            } catch (Error e) {
+                throw new CriteriaNotSatisfiedException(e.toString());
+            }
+        });
+        return onView(matcher);
+    }
+
     @Test
     @SmallTest
-    @MinWebLayerVersion(84)
     public void testPageInfoLaunches() {
         Bundle extras = new Bundle();
         extras.putBoolean(InstrumentationActivity.EXTRA_URLBAR_TEXT_CLICKABLE, false);
@@ -52,19 +70,11 @@ public class PageInfoTest {
             StrictModeContext ignored = StrictModeContext.allowDiskReads();
             EventUtils.simulateTouchCenterOfView(activity.findViewById(buttonId));
         });
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            try {
-                onView(withText("Your connection to this site is not secure"))
-                        .check(matches(isDisplayed()));
-            } catch (Error e) {
-                throw new CriteriaNotSatisfiedException(e.toString());
-            }
-        });
+        onViewWaiting(withText(CONNECTION_IS_NOT_SECURE_TEXT));
     }
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(86)
     public void testSingleTappableContainer() {
         Bundle extras = new Bundle();
         extras.putBoolean(InstrumentationActivity.EXTRA_URLBAR_TEXT_CLICKABLE, true);
@@ -75,13 +85,41 @@ public class PageInfoTest {
             StrictModeContext ignored = StrictModeContext.allowDiskReads();
             EventUtils.simulateTouchCenterOfView(activity.getUrlBarView());
         });
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            try {
-                onView(withText("Your connection to this site is not secure"))
-                        .check(matches(isDisplayed()));
-            } catch (Error e) {
-                throw new CriteriaNotSatisfiedException(e.toString());
-            }
+        onViewWaiting(withText(CONNECTION_IS_NOT_SECURE_TEXT));
+    }
+
+    @Test
+    @SmallTest
+    public void testPageInfoConnectionSubPage() {
+        Bundle extras = new Bundle();
+        extras.putBoolean(InstrumentationActivity.EXTRA_URLBAR_TEXT_CLICKABLE, true);
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(
+                mActivityTestRule.getTestDataURL("simple_page.html"), extras);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            StrictModeContext ignored = StrictModeContext.allowDiskReads();
+            EventUtils.simulateTouchCenterOfView(activity.getUrlBarView());
         });
+        onViewWaiting(withText(CONNECTION_IS_NOT_SECURE_TEXT)).perform(click());
+        onViewWaiting(withText("The identity of this website has not been verified."));
+    }
+
+    @Test
+    @SmallTest
+    @DisableIf.Build(message = "Flaky on Android Marshmallow x86, see crbug.com/1188735",
+            sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N)
+    public void
+    testPageInfoCookiesSubPage() {
+        Bundle extras = new Bundle();
+        extras.putBoolean(InstrumentationActivity.EXTRA_URLBAR_TEXT_CLICKABLE, true);
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(
+                mActivityTestRule.getTestDataURL("simple_page.html"), extras);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            StrictModeContext ignored = StrictModeContext.allowDiskReads();
+            EventUtils.simulateTouchCenterOfView(activity.getUrlBarView());
+        });
+        onViewWaiting(withText("Cookies")).perform(click());
+        onViewWaiting(withText("0 cookies in use"));
     }
 }

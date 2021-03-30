@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "cc/test/fake_output_surface_client.h"
 #include "cc/test/pixel_test_utils.h"
@@ -119,7 +120,8 @@ void SkiaOutputSurfaceImplTest::CopyRequestCallbackOnGpuThread(
     const gfx::Rect& output_rect,
     const gfx::ColorSpace& color_space,
     std::unique_ptr<CopyOutputResult> result) {
-  SkBitmap result_bitmap(result->AsSkBitmap());
+  auto scoped_bitmap = result->ScopedAccessSkBitmap();
+  auto result_bitmap = scoped_bitmap.bitmap();
   EXPECT_EQ(result_bitmap.width(), output_rect.width());
   EXPECT_EQ(result_bitmap.height(), output_rect.height());
 
@@ -163,7 +165,7 @@ TEST_F(SkiaOutputSurfaceImplTest, EndPaint) {
 
   output_surface_->CopyOutput(AggregatedRenderPassId{0}, geometry, color_space,
                               std::move(request));
-  output_surface_->SwapBuffersSkipped();
+  output_surface_->SwapBuffersSkipped(kSurfaceRect);
   output_surface_->Flush();
   BlockMainThread();
 
@@ -230,7 +232,7 @@ TEST_F(SkiaOutputSurfaceImplTest, CopyOutputBitmapSupportedColorSpace) {
   PaintRootRenderPass(kSurfaceRect, base::DoNothing::Once());
   output_surface_->CopyOutput(AggregatedRenderPassId{0}, geometry, color_space,
                               std::move(request));
-  output_surface_->SwapBuffersSkipped();
+  output_surface_->SwapBuffersSkipped(kSurfaceRect);
   output_surface_->Flush();
   run_loop.Run();
 
@@ -269,7 +271,7 @@ TEST_F(SkiaOutputSurfaceImplTest, CopyOutputBitmapUnsupportedColorSpace) {
   PaintRootRenderPass(kSurfaceRect, base::DoNothing::Once());
   output_surface_->CopyOutput(AggregatedRenderPassId{0}, geometry, color_space,
                               std::move(request));
-  output_surface_->SwapBuffersSkipped();
+  output_surface_->SwapBuffersSkipped(kSurfaceRect);
   output_surface_->Flush();
   run_loop.Run();
 

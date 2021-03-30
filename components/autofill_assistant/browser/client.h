@@ -9,6 +9,7 @@
 
 #include "components/autofill_assistant/browser/device_context.h"
 #include "components/autofill_assistant/browser/metrics.h"
+#include "components/autofill_assistant/browser/service/service.h"
 #include "content/public/browser/web_contents.h"
 
 namespace autofill {
@@ -71,6 +72,13 @@ class Client {
   // Returns whether a11y (talkback and touch exploration) is enabled or not.
   virtual bool IsAccessibilityEnabled() const = 0;
 
+  // Returns the width and height of the window.
+  virtual base::Optional<std::pair<int, int>> GetWindowSize() const = 0;
+
+  // Returns the orientation of the screen.
+  virtual ClientContextProto::ScreenOrientation GetScreenOrientation()
+      const = 0;
+
   // Returns current WebContents.
   virtual content::WebContents* GetWebContents() const = 0;
 
@@ -85,9 +93,6 @@ class Client {
 
   // Whether this client has had an UI.
   virtual bool HasHadUI() const = 0;
-
-  // Returns whether the user has seen a trigger script before or not.
-  virtual bool IsFirstTimeTriggerScriptUser() const = 0;
 
  protected:
   Client() = default;

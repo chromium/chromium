@@ -143,10 +143,19 @@ void UsbDeviceHandleMac::Close() {
   if (!device_)
     return;
 
+  if (device_source_) {
+    CFRunLoopRemoveSource(CFRunLoopGetCurrent(), device_source_.get(),
+                          kCFRunLoopDefaultMode);
+  }
+
+  for (const auto& source : sources_) {
+    CFRunLoopRemoveSource(CFRunLoopGetCurrent(), source.second.get(),
+                          kCFRunLoopDefaultMode);
+  }
+
   IOReturn kr = (*device_interface_)->USBDeviceClose(device_interface_);
   if (kr != kIOReturnSuccess) {
-    USB_LOG(ERROR) << "Failed to close device: " << std::hex << kr;
-    return;
+    USB_LOG(DEBUG) << "Failed to close device: " << std::hex << kr;
   }
 
   Clear();
@@ -343,7 +352,8 @@ void UsbDeviceHandleMac::ResetDevice(ResultCallback callback) {
 
   // TODO(https://crbug.com/1096743): Figure out if open interfaces need to be
   // closed as well.
-  IOReturn kr = (*device_interface_)->ResetDevice(device_interface_);
+  IOReturn kr = (*device_interface_)
+                    ->USBDeviceReEnumerate(device_interface_, /*options=*/0);
   if (kr != kIOReturnSuccess) {
     std::move(callback).Run(false);
     return;
@@ -413,14 +423,20 @@ void UsbDeviceHandleMac::ControlTransfer(
     return;
   }
 
-  auto interface_it = interfaces_.find(index & 0xff);
-  if (interface_it == interfaces_.end()) {
-    std::move(callback).Run(mojom::UsbTransferStatus::TRANSFER_ERROR,
-                            std::move(buffer), 0);
-    return;
+  if (!device_source_) {
+    IOReturn kr = (*device_interface_)
+                      ->CreateDeviceAsyncEventSource(
+                          device_interface_, device_source_.InitializeInto());
+    if (kr != kIOReturnSuccess) {
+      USB_LOG(ERROR) << "Unable to create device async event source: "
+                     << std::hex << kr;
+      std::move(callback).Run(mojom::UsbTransferStatus::TRANSFER_ERROR,
+                              std::move(buffer), 0);
+    }
+    CFRunLoopAddSource(CFRunLoopGetCurrent(), device_source_.get(),
+                       kCFRunLoopDefaultMode);
   }
 
-  ScopedIOUSBInterfaceInterface interface = interface_it->second;
   IOUSBDevRequestTO device_request;
   device_request.bRequest = request;
   device_request.wValue = value;
@@ -439,11 +455,10 @@ void UsbDeviceHandleMac::ControlTransfer(
 
   Transfer* transfer_ptr = transfer.get();
   auto result = transfers_.insert(std::move(transfer));
-  IOReturn kr =
-      (*interface)
-          ->ControlRequestAsyncTO(interface, /*pipeRef=*/0, &device_request,
-                                  &AsyncIoCallback,
-                                  reinterpret_cast<void*>(transfer_ptr));
+  IOReturn kr = (*device_interface_)
+                    ->DeviceRequestAsyncTO(
+                        device_interface_, &device_request, &AsyncIoCallback,
+                        reinterpret_cast<void*>(transfer_ptr));
 
   if (kr != kIOReturnSuccess) {
     USB_LOG(ERROR) << "Failed to send control request: " << std::hex << kr;
@@ -513,15 +528,16 @@ void UsbDeviceHandleMac::IsochronousTransferIn(
   for (const auto& size : packet_lengths) {
     if (!base::IsValueInRangeForNumericType<uint16_t>(size)) {
       USB_LOG(ERROR) << "Transfer too long.";
-      ReportIsochronousTransferError(std::move(callback), packet_lengths,
-                                     mojom::UsbTransferStatus::TRANSFER_ERROR);
+      ReportIsochronousTransferError(
+          std::move(transfer_data->isochronous_callback), packet_lengths,
+          mojom::UsbTransferStatus::TRANSFER_ERROR);
       return;
     }
     IOUSBIsocFrame frame_entry;
     frame_entry.frReqCount = static_cast<uint16_t>(size);
     frame_list.push_back(frame_entry);
   }
-  transfer->frame_list = frame_list;
+  transfer_data->frame_list = frame_list;
 
   kr = (*interface_interface)
            ->ReadIsochPipeAsync(interface_interface,
@@ -597,15 +613,16 @@ void UsbDeviceHandleMac::IsochronousTransferOut(
   for (const auto& size : packet_lengths) {
     if (!base::IsValueInRangeForNumericType<uint16_t>(size)) {
       USB_LOG(ERROR) << "Transfer too long.";
-      ReportIsochronousTransferError(std::move(callback), packet_lengths,
-                                     mojom::UsbTransferStatus::TRANSFER_ERROR);
+      ReportIsochronousTransferError(
+          std::move(transfer_data->isochronous_callback), packet_lengths,
+          mojom::UsbTransferStatus::TRANSFER_ERROR);
       return;
     }
     IOUSBIsocFrame frame_entry;
     frame_entry.frReqCount = static_cast<uint16_t>(size);
     frame_list.push_back(frame_entry);
   }
-  transfer->frame_list = frame_list;
+  transfer_data->frame_list = frame_list;
 
   kr = (*interface_interface)
            ->WriteIsochPipeAsync(interface_interface,
@@ -774,7 +791,7 @@ void UsbDeviceHandleMac::InterruptIn(
                                     reinterpret_cast<void*>(transfer_data));
   if (kr != kIOReturnSuccess) {
     USB_LOG(ERROR) << "Failed to read from device: " << std::hex << kr;
-    std::move(transfer->generic_callback)
+    std::move(transfer_data->generic_callback)
         .Run(mojom::UsbTransferStatus::TRANSFER_ERROR, buffer, 0);
     transfers_.erase(result.first);
   }
@@ -795,7 +812,7 @@ void UsbDeviceHandleMac::InterruptOut(
                                      reinterpret_cast<void*>(transfer_data));
   if (kr != kIOReturnSuccess) {
     USB_LOG(ERROR) << "Failed to write to device: " << std::hex << kr;
-    std::move(transfer->generic_callback)
+    std::move(transfer_data->generic_callback)
         .Run(mojom::UsbTransferStatus::TRANSFER_ERROR, buffer, 0);
     transfers_.erase(result.first);
   }

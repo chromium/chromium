@@ -10,6 +10,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -109,7 +110,6 @@ class WindowedNetworkObserver {
         (resource_request.method == "GET")
             ? GetLookupContent(resource_request.url.path())
             : network::GetUploadData(resource_request);
-    EXPECT_EQ(data, expected_upload_data_);
 
     if (data == expected_upload_data_)
       message_loop_runner_->Quit();
@@ -146,10 +146,10 @@ class AutofillServerTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUp();
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Enable finch experiment for sending field metadata.
-    command_line->AppendSwitchASCII(::switches::kForceFieldTrials,
-                                    "AutofillFieldMetadata/Enabled/");
+  void SetUpOnMainThread() override {
+    // Wait for Personal Data Manager to be fully loaded as the events about
+    // being loaded may throw off the tests and cause flakiness.
+    WaitForPersonalDataManagerToBeLoaded(browser()->profile());
   }
 
  private:
@@ -188,10 +188,10 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
   auto* query_form = query.add_forms();
   query_form->set_signature(15916856893790176210U);
 
-  test::FillQueryField(query_form->add_fields(), 2594484045U, "one", "text");
-  test::FillQueryField(query_form->add_fields(), 2750915947U, "two", "text");
-  test::FillQueryField(query_form->add_fields(), 3494787134U, "three", "text");
-  test::FillQueryField(query_form->add_fields(), 1236501728U, "four", "text");
+  query_form->add_fields()->set_signature(2594484045U);
+  query_form->add_fields()->set_signature(2750915947U);
+  query_form->add_fields()->set_signature(3494787134U);
+  query_form->add_fields()->set_signature(1236501728U);
 
   std::string expected_query_string;
   ASSERT_TRUE(query.SerializeToString(&expected_query_string));
@@ -211,30 +211,56 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
   upload->set_client_version(GetProductNameAndVersionForUserAgent());
   upload->set_form_signature(15916856893790176210U);
   upload->set_autofill_used(false);
+
+  // The `data_present` fields is a bit mask of field types that are associated
+  // with non-empty profile values. Each bit in this mask corresponds to a
+  // specific type. For details on that mapping please consult
+  // |EncodeFieldTypes()| in components/autofill/core/browser/form_structure.cc.
+  // The resulting bit mask in this test is hard-coded to capture regressions in
+  // the calculation of the mask.
+
   // TODO(crbug.com/1103421): Clean legacy implementation once structured names
   // are fully launched.
-  // For structured names, there is additional data present.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForMoreStructureInNames)) {
+  // For structured names, there is additional data for new name types present.
+
+  const bool structured_names = base::FeatureList::IsEnabled(
+      features::kAutofillEnableSupportForMoreStructureInNames);
+  const bool structured_address = base::FeatureList::IsEnabled(
+      features::kAutofillEnableSupportForMoreStructureInAddresses);
+  const bool honorific_prefix = base::FeatureList::IsEnabled(
+      features::kAutofillEnableSupportForHonorificPrefixes);
+
+  // Combinations of honorific_prefix without structured_names are omitted
+  // because honorific_prefix can only be enabled ontop of structured_names.
+  if (structured_names && !structured_address && !honorific_prefix) {
     upload->set_data_present("1f7e000378000008000400000004");
+  } else if (structured_names && honorific_prefix && !structured_address) {
+    upload->set_data_present("1f7e00037800000800040000000404");
+  } else if (structured_names && !honorific_prefix && structured_address) {
+    upload->set_data_present("1f7e0003780000080004000001c4");
+  } else if (structured_names && honorific_prefix && structured_address) {
+    upload->set_data_present("1f7e0003780000080004000001c404");
+  } else if (!structured_names && !honorific_prefix && structured_address) {
+    upload->set_data_present("1f7e0003780000080004000001c");
   } else {
     upload->set_data_present("1f7e0003780000080004");
   }
-  upload->set_action_signature(15724779818122431245U);
-  upload->set_form_name("test_form");
+
   upload->set_passwords_revealed(false);
   upload->set_submission_event(
       AutofillUploadContents_SubmissionIndicatorEvent_HTML_FORM_SUBMISSION);
   upload->set_has_form_tag(true);
 
-  test::FillUploadField(upload->add_field(), 2594484045U, "one", "text",
+  // Enabling raw form data uploading (e.g., field name) is too complicated in
+  // this test. So, don't expect it in the upload.
+  test::FillUploadField(upload->add_field(), 2594484045U, nullptr, nullptr,
                         nullptr, 2U);
-  test::FillUploadField(upload->add_field(), 2750915947U, "two", "text", "off",
-                        2U);
-  test::FillUploadField(upload->add_field(), 3494787134U, "three", "text",
+  test::FillUploadField(upload->add_field(), 2750915947U, nullptr, nullptr,
                         nullptr, 2U);
-  test::FillUploadField(upload->add_field(), 1236501728U, "four", "text", "off",
-                        2U);
+  test::FillUploadField(upload->add_field(), 3494787134U, nullptr, nullptr,
+                        nullptr, 2U);
+  test::FillUploadField(upload->add_field(), 1236501728U, nullptr, nullptr,
+                        nullptr, 2U);
 
   std::string expected_upload_string;
   ASSERT_TRUE(request.SerializeToString(&expected_upload_string));
@@ -265,10 +291,9 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest, AlwaysQueryForPasswordFields) {
   auto* query_form = query.add_forms();
   query_form->set_signature(8900697631820480876U);
 
-  test::FillQueryField(query_form->add_fields(), 2594484045U, "one", "text");
-  test::FillQueryField(query_form->add_fields(), 2750915947U, "two", "text");
-  test::FillQueryField(query_form->add_fields(), 116843943U, "three",
-                       "password");
+  query_form->add_fields()->set_signature(2594484045U);
+  query_form->add_fields()->set_signature(2750915947U);
+  query_form->add_fields()->set_signature(116843943U);
 
   std::string expected_query_string;
   ASSERT_TRUE(query.SerializeToString(&expected_query_string));

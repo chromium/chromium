@@ -21,6 +21,10 @@ class BookmarkNode;
 struct BookmarkNodeData;
 }
 
+namespace content {
+class WebContents;
+}
+
 namespace ui {
 class OSExchangeData;
 }
@@ -39,7 +43,7 @@ using DoBookmarkDragCallback =
 struct BookmarkDragParams {
   BookmarkDragParams(std::vector<const bookmarks::BookmarkNode*> nodes,
                      int drag_node_index,
-                     gfx::NativeView view,
+                     content::WebContents* web_contents,
                      ui::mojom::DragEventSource source,
                      gfx::Point start_point);
   ~BookmarkDragParams();
@@ -50,8 +54,8 @@ struct BookmarkDragParams {
   // The index of the main dragged node.
   int drag_node_index;
 
-  // The native view that initiated the drag.
-  gfx::NativeView view;
+  // The web contents that initiated the drag.
+  content::WebContents* web_contents;
 
   // The source of the drag.
   ui::mojom::DragEventSource source;
@@ -71,11 +75,12 @@ void DragBookmarksForTest(Profile* profile,
 // |copy| indicates the source operation: if true then the bookmarks in |data|
 // are copied, otherwise they are moved if they belong to the same |profile|.
 // Returns the drop type used.
-int DropBookmarks(Profile* profile,
-                  const bookmarks::BookmarkNodeData& data,
-                  const bookmarks::BookmarkNode* parent_node,
-                  size_t index,
-                  bool copy);
+ui::mojom::DragOperation DropBookmarks(
+    Profile* profile,
+    const bookmarks::BookmarkNodeData& data,
+    const bookmarks::BookmarkNode* parent_node,
+    size_t index,
+    bool copy);
 
 }  // namespace chrome
 

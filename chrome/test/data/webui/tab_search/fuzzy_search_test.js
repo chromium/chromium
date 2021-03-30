@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {fuzzySearch, TabData} from 'chrome://tab-search/tab_search.js';
+import {fuzzySearch, TabData} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertDeepEquals, assertEquals} from '../../chai_assert.js';
 
 /**

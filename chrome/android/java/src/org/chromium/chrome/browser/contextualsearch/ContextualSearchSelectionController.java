@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
+import android.app.Activity;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
@@ -12,7 +13,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.TimeUtils;
-import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSetting;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSwitch;
@@ -64,10 +66,16 @@ public class ContextualSearchSelectionController {
     // A default tap duration value when we can't compute it.
     private static final int DEFAULT_DURATION = 0;
 
-    private final ChromeActivity mActivity;
+    private final Activity mActivity;
     private final ContextualSearchSelectionHandler mHandler;
     private final float mPxToDp;
     private final Pattern mContainsWordPattern;
+
+    /** A means of accessing the currently active tab. */
+    private final Supplier<Tab> mTabSupplier;
+
+    /** A means of interacting with the browser controls. */
+    private final BrowserControlsStateProvider mBrowserControlsStateProvider;
 
     private ContextualSearchPolicy mPolicy;
 
@@ -141,13 +149,18 @@ public class ContextualSearchSelectionController {
     /**
      * Constructs a new Selection controller for the given activity.  Callbacks will be issued
      * through the given selection handler.
-     * @param activity The {@link ChromeActivity} to control.
+     * @param activity The activity for resource and view access.
      * @param handler The handler for callbacks.
+     * @param tabSupplier Access to the currently active tab.
+     * @param browserControlsStateProvider Access to the browser controls system.
      */
-    public ContextualSearchSelectionController(ChromeActivity activity,
-            ContextualSearchSelectionHandler handler) {
+    public ContextualSearchSelectionController(Activity activity,
+            ContextualSearchSelectionHandler handler, Supplier<Tab> tabSupplier,
+            BrowserControlsStateProvider browserControlsStateProvider) {
         mActivity = activity;
         mHandler = handler;
+        mTabSupplier = tabSupplier;
+        mBrowserControlsStateProvider = browserControlsStateProvider;
         mPxToDp = 1.f / mActivity.getResources().getDisplayMetrics().density;
         mContainsWordPattern = Pattern.compile(CONTAINS_WORD_PATTERN);
         // TODO(donnd): remove when behind-the-flag bug fixed (crbug.com/786589).
@@ -197,12 +210,14 @@ public class ContextualSearchSelectionController {
         return new ContextualSearchGestureStateListener();
     }
 
-    /**
-     * @return the {@link ChromeActivity}.
-     */
-    ChromeActivity getActivity() {
-        // TODO(donnd): don't expose the activity.
-        return mActivity;
+    /** @return A supplier of the currently active tab. */
+    Supplier<Tab> getTabSupplier() {
+        return mTabSupplier;
+    }
+
+    /** @return A means of interacting with the browser controls system. */
+    BrowserControlsStateProvider getBrowserControlsStateProvider() {
+        return mBrowserControlsStateProvider;
     }
 
     /**
@@ -503,7 +518,7 @@ public class ContextualSearchSelectionController {
      */
     @Nullable
     WebContents getBaseWebContents() {
-        Tab currentTab = mActivity.getActivityTab();
+        Tab currentTab = mTabSupplier.get();
         if (currentTab == null) return null;
 
         return currentTab.getWebContents();

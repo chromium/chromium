@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/time/clock.h"
 #include "components/prefs/pref_service.h"
@@ -48,6 +49,12 @@ void ReadingListModelImpl::StoreLoaded(
   }
   DCHECK(read_entry_count_ + unread_entry_count_ == entries_->size());
   loaded_ = true;
+
+  base::UmaHistogramCounts1000("ReadingList.Unread.Count.OnModelLoaded",
+                               unread_entry_count_);
+  base::UmaHistogramCounts1000("ReadingList.Read.Count.OnModelLoaded",
+                               read_entry_count_);
+
   for (auto& observer : observers_)
     observer.ReadingListModelLoaded(this);
 }
@@ -508,6 +515,13 @@ ReadingListModelImpl::ScopedReadingListBatchUpdate::
 ReadingListModelImpl::ScopedReadingListBatchUpdate::
     ~ScopedReadingListBatchUpdate() {
   storage_token_.reset();
+}
+
+void ReadingListModelImpl::ScopedReadingListBatchUpdate::
+    ReadingListModelBeingShutdown(const ReadingListModel* model) {
+  storage_token_.reset();
+  ReadingListModel::ScopedReadingListBatchUpdate::ReadingListModelBeingShutdown(
+      model);
 }
 
 void ReadingListModelImpl::LeavingBatchUpdates() {

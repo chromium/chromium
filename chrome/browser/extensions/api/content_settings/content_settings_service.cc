@@ -71,11 +71,12 @@ void ContentSettingsService::OnExtensionStateChanged(
 
 void ContentSettingsService::OnExtensionPrefsWillBeDestroyed(
     ExtensionPrefs* prefs) {
-  scoped_observer_.Remove(prefs);
+  DCHECK(scoped_observation_.IsObservingSource(prefs));
+  scoped_observation_.Reset();
 }
 
 void ContentSettingsService::OnExtensionPrefsAvailable(ExtensionPrefs* prefs) {
-  scoped_observer_.Add(prefs);
+  scoped_observation_.Observe(prefs);
 }
 
 }  // namespace extensions

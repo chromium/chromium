@@ -33,8 +33,8 @@ class ASH_EXPORT UpdateNotificationController : public UpdateObserver {
   friend class UpdateNotificationControllerTest;
 
   bool ShouldShowUpdate() const;
-  base::string16 GetNotificationTitle() const;
-  base::string16 GetNotificationMessage() const;
+  std::u16string GetNotificationTitle() const;
+  std::u16string GetNotificationMessage() const;
   void HandleNotificationClick(base::Optional<int> index);
   void GenerateUpdateNotification(
       base::Optional<bool> slow_boot_file_path_exists);

@@ -17,6 +17,10 @@ class PasswordFormManagerForUI;
 class PasswordManager;
 }  // namespace password_manager
 
+namespace safe_browsing {
+enum class WarningAction;
+}  // namespace safe_browsing
+
 namespace web {
 class WebState;
 }  // namespace web
@@ -52,6 +56,12 @@ using password_manager::CredentialLeakType;
 // Shows Password Breach for |URL| and |leakType|.
 - (void)showPasswordBreachForLeakType:(CredentialLeakType)leakType
                                   URL:(const GURL&)URL;
+
+// Shows Password Protection warning with |warningText|. |completion| should be
+// called when the UI is dismissed with the user's |action|.
+- (void)showPasswordProtectionWarning:(NSString*)warningText
+                           completion:(void (^)(safe_browsing::WarningAction))
+                                          completion;
 
 @end
 

@@ -105,7 +105,7 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
     // For A11y.
     {"menu", IDS_MENU},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
 }  // namespace certificate_manager

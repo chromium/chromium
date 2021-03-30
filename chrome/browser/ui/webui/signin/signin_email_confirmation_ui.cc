@@ -14,6 +14,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/webui/resource_path.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
@@ -27,9 +28,14 @@ SigninEmailConfirmationUI::SigninEmailConfirmationUI(content::WebUI* web_ui)
   source->UseStringsJs();
   source->EnableReplaceI18nInJS();
   source->SetDefaultResource(IDR_SIGNIN_EMAIL_CONFIRMATION_HTML);
-  source->AddResourcePath("signin_email_confirmation_app.js",
-                          IDR_SIGNIN_EMAIL_CONFIRMATION_APP_JS);
-  source->AddResourcePath("signin_shared_css.js", IDR_SIGNIN_SHARED_CSS_JS);
+
+  static constexpr webui::ResourcePath kResources[] = {
+      {"signin_email_confirmation_app.js",
+       IDR_SIGNIN_EMAIL_CONFIRMATION_APP_JS},
+      {"signin_shared_css.js", IDR_SIGNIN_SHARED_CSS_JS},
+      {"signin_vars_css.js", IDR_SIGNIN_VARS_CSS_JS},
+  };
+  source->AddResourcePaths(kResources);
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"signinEmailConfirmationTitle", IDS_SIGNIN_EMAIL_CONFIRMATION_TITLE},
@@ -46,7 +52,7 @@ SigninEmailConfirmationUI::SigninEmailConfirmationUI(content::WebUI* web_ui)
       {"signinEmailConfirmationCloseLabel",
        IDS_SIGNIN_EMAIL_CONFIRMATION_CLOSE_BUTTON_LABEL},
   };
-  AddLocalizedStringsBulk(source, kStrings);
+  source->AddLocalizedStrings(kStrings);
 
   base::DictionaryValue strings;
   webui::SetLoadTimeDataDefaults(g_browser_process->GetApplicationLocale(),

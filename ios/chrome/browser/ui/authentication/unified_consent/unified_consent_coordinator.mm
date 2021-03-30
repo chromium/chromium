@@ -134,9 +134,9 @@
   [self.delegate unifiedConsentCoordinatorDidTapSettingsLink:self];
 }
 
-- (void)unifiedConsentViewControllerDidTapIdentityPickerView:
+- (void)unifiedConsentViewControllerDidTapIdentityButtonControl:
             (UnifiedConsentViewController*)controller
-                                                     atPoint:(CGPoint)point {
+                                                        atPoint:(CGPoint)point {
   if (self.isUIDisabled) {
     return;
   }

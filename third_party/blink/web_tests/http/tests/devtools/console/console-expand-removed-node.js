@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that removed Elements logged in the Console are properly formatted.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   TestRunner.addResult(`Adding element`);

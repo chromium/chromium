@@ -1,0 +1,68 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+sync_integration_tests_sources = [
+  "../browser/sync/test/integration/single_client_autofill_profile_sync_test.cc",
+  "../browser/sync/test/integration/single_client_custom_passphrase_sync_test.cc",
+  "../browser/sync/test/integration/single_client_device_info_sync_test.cc",
+  "../browser/sync/test/integration/single_client_history_delete_directives_sync_test.cc",
+  "../browser/sync/test/integration/single_client_offer_sync_test.cc",
+  "../browser/sync/test/integration/single_client_typed_urls_sync_test.cc",
+  "../browser/sync/test/integration/sync_exponential_backoff_test.cc",
+]
+
+if (!is_android) {
+  sync_integration_tests_sources += [
+    "../browser/sync/test/integration/enable_disable_test.cc",
+    "../browser/sync/test/integration/local_sync_test.cc",
+    "../browser/sync/test/integration/migration_test.cc",
+    "../browser/sync/test/integration/password_manager_sync_test.cc",
+    "../browser/sync/test/integration/single_client_app_settings_sync_test.cc",
+    "../browser/sync/test/integration/single_client_bookmarks_sync_test.cc",
+    "../browser/sync/test/integration/single_client_dictionary_sync_test.cc",
+    "../browser/sync/test/integration/single_client_extension_apps_sync_test.cc",
+    "../browser/sync/test/integration/single_client_extensions_sync_test.cc",
+    "../browser/sync/test/integration/single_client_nigori_sync_test.cc",
+    "../browser/sync/test/integration/single_client_passwords_sync_test.cc",
+    "../browser/sync/test/integration/single_client_polling_sync_test.cc",
+    "../browser/sync/test/integration/single_client_preferences_sync_test.cc",
+    "../browser/sync/test/integration/single_client_search_engines_sync_test.cc",
+    "../browser/sync/test/integration/single_client_secondary_account_sync_test.cc",
+    "../browser/sync/test/integration/single_client_send_tab_to_self_sync_test.cc",
+    "../browser/sync/test/integration/single_client_sessions_sync_test.cc",
+    "../browser/sync/test/integration/single_client_sharing_message_sync_test.cc",
+    "../browser/sync/test/integration/single_client_standalone_transport_sync_test.cc",
+    "../browser/sync/test/integration/single_client_sync_invalidations_test.cc",
+    "../browser/sync/test/integration/single_client_themes_sync_test.cc",
+    "../browser/sync/test/integration/single_client_user_consents_sync_test.cc",
+    "../browser/sync/test/integration/single_client_user_events_sync_test.cc",
+    "../browser/sync/test/integration/single_client_wallet_sync_test.cc",
+    "../browser/sync/test/integration/single_client_web_apps_sync_test.cc",
+    "../browser/sync/test/integration/sync_auth_test.cc",
+    "../browser/sync/test/integration/sync_errors_test.cc",
+
+    # Tests with two clients can't run on Android.
+    "../browser/sync/test/integration/two_client_autocomplete_sync_test.cc",
+    "../browser/sync/test/integration/two_client_autofill_sync_test.cc",
+    "../browser/sync/test/integration/two_client_bookmarks_sync_test.cc",
+    "../browser/sync/test/integration/two_client_custom_passphrase_sync_test.cc",
+    "../browser/sync/test/integration/two_client_dictionary_sync_test.cc",
+    "../browser/sync/test/integration/two_client_extension_apps_sync_test.cc",
+    "../browser/sync/test/integration/two_client_extension_settings_and_app_settings_sync_test.cc",
+    "../browser/sync/test/integration/two_client_extensions_sync_test.cc",
+    "../browser/sync/test/integration/two_client_passwords_sync_test.cc",
+    "../browser/sync/test/integration/two_client_polling_sync_test.cc",
+    "../browser/sync/test/integration/two_client_preferences_sync_test.cc",
+    "../browser/sync/test/integration/two_client_search_engines_sync_test.cc",
+    "../browser/sync/test/integration/two_client_send_tab_to_self_sync_test.cc",
+    "../browser/sync/test/integration/two_client_sessions_sync_test.cc",
+    "../browser/sync/test/integration/two_client_themes_sync_test.cc",
+    "../browser/sync/test/integration/two_client_typed_urls_sync_test.cc",
+    "../browser/sync/test/integration/two_client_user_events_sync_test.cc",
+    "../browser/sync/test/integration/two_client_wallet_sync_test.cc",
+    "../browser/sync/test/integration/two_client_web_apps_bmo_sync_test.cc",
+    "../browser/sync/test/integration/two_client_web_apps_integration_sync_test.cc",
+    "../browser/sync/test/integration/two_client_web_apps_sync_test.cc",
+  ]
+}

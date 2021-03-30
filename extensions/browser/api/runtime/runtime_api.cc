@@ -194,8 +194,9 @@ RuntimeAPI::RuntimeAPI(content::BrowserContext* context)
   ExtensionSystem::Get(context)->ready().Post(
       FROM_HERE, base::BindOnce(&RuntimeAPI::OnExtensionsReady,
                                 weak_ptr_factory_.GetWeakPtr()));
-  extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context_));
-  process_manager_observer_.Add(ProcessManager::Get(browser_context_));
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(browser_context_));
+  process_manager_observation_.Observe(ProcessManager::Get(browser_context_));
 
   delegate_ = ExtensionsBrowserClient::Get()->CreateRuntimeAPIDelegate(
       browser_context_);
@@ -259,8 +260,8 @@ void RuntimeAPI::ReloadExtension(const std::string& extension_id) {
 
 bool RuntimeAPI::CheckForUpdates(
     const std::string& extension_id,
-    const RuntimeAPIDelegate::UpdateCheckCallback& callback) {
-  return delegate_->CheckForUpdates(extension_id, callback);
+    RuntimeAPIDelegate::UpdateCheckCallback callback) {
+  return delegate_->CheckForUpdates(extension_id, std::move(callback));
 }
 
 void RuntimeAPI::OpenURL(const GURL& update_url) {
@@ -645,8 +646,8 @@ ExtensionFunction::ResponseAction RuntimeRequestUpdateCheckFunction::Run() {
            ->Get(browser_context())
            ->CheckForUpdates(
                extension_id(),
-               base::Bind(&RuntimeRequestUpdateCheckFunction::CheckComplete,
-                          this))) {
+               base::BindOnce(&RuntimeRequestUpdateCheckFunction::CheckComplete,
+                              this))) {
     return RespondNow(Error(kUpdatesDisabledError));
   }
   return RespondLater();
@@ -733,8 +734,7 @@ RuntimeGetPackageDirectoryEntryFunction::Run() {
   base::FilePath path = extension_->path();
   storage::IsolatedContext::ScopedFSHandle filesystem =
       isolated_context->RegisterFileSystemForPath(
-          storage::kFileSystemTypeNativeLocal, std::string(), path,
-          &relative_path);
+          storage::kFileSystemTypeLocal, std::string(), path, &relative_path);
 
   content::ChildProcessSecurityPolicy* policy =
       content::ChildProcessSecurityPolicy::GetInstance();

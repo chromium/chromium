@@ -18,22 +18,26 @@ namespace ash {
 
 class CaptureModeButton;
 class CaptureModeSourceView;
+class CaptureModeToggleButton;
 class CaptureModeTypeView;
 
 // A view that acts as the content view of the capture mode bar widget.
 // It has a set of buttons to toggle between image and video capture, and
 // another set of buttons to toggle between fullscreen, region, and window
-// capture sources. The structure looks like this:
+// capture sources. It also contains a settings button. The structure looks like
+// this:
 //
-//   +--------------------------------------------------------+
-//   |  +----------------+  |                       |         |
-//   |  |  +---+  +---+  |  |  +---+  +---+  +---+  |  +---+  |
-//   |  |  |   |  |   |  |  |  |   |  |   |  |   |  |  |   |  |
-//   |  |  +---+  +---+  |  |  +---+  +---+  +---+  |  +---+  |
-//   |  +----------------+  |  ^                 ^  |  ^      |
-//   +--^----------------------|-----------------|-----|------+
-//   ^  |                      +-----------------+     |
-//   |  |                      |                       CaptureModeButton
+//   +---------------------------------------------------------------+
+//   |  +----------------+  |                       |                |
+//   |  |  +---+  +---+  |  |  +---+  +---+  +---+  |  +---+  +---+  |
+//   |  |  |   |  |   |  |  |  |   |  |   |  |   |  |  |   |  |   |  |
+//   |  |  +---+  +---+  |  |  +---+  +---+  +---+  |  +---+  +---+  |
+//   |  +----------------+  |  ^                 ^  |  ^      ^      |
+//   +--^----------------------|-----------------|-----|------|------+
+//   ^  |                      +-----------------+     |      |
+//   |  |                      |                       |      CaptureModeButton
+//   |  |                      |                       |
+//   |  |                      |                       CaptureModeToggleButton
 //   |  |                      CaptureModeSourceView
 //   |  CaptureModeTypeView
 //   |
@@ -52,6 +56,8 @@ class ASH_EXPORT CaptureModeBarView : public views::View {
   CaptureModeSourceView* capture_source_view() const {
     return capture_source_view_;
   }
+  CaptureModeToggleButton* settings_button() const { return settings_button_; }
+  CaptureModeButton* close_button() const { return close_button_; }
 
   // Gets the ideal bounds in screen coordinates of the bar of widget on the
   // given |root| window.
@@ -61,22 +67,19 @@ class ASH_EXPORT CaptureModeBarView : public views::View {
   void OnCaptureSourceChanged(CaptureModeSource new_source);
   void OnCaptureTypeChanged(CaptureModeType new_type);
 
-  CaptureModeButton* feedback_button_for_testing() const {
-    return feedback_button_;
-  }
-  CaptureModeButton* close_button_for_testing() const { return close_button_; }
+  // Called when settings is toggled on or off.
+  void SetSettingsMenuShown(bool shown);
 
  private:
-  void OnFeedbackButtonPressed();
+  void OnSettingsButtonPressed();
   void OnCloseButtonPressed();
 
   // Owned by the views hierarchy.
-  CaptureModeButton* feedback_button_;
-  views::Separator* separator_0_;
   CaptureModeTypeView* capture_type_view_;
   views::Separator* separator_1_;
   CaptureModeSourceView* capture_source_view_;
   views::Separator* separator_2_;
+  CaptureModeToggleButton* settings_button_;
   CaptureModeButton* close_button_;
 };
 

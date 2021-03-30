@@ -26,7 +26,6 @@
 #include "base/process/launch.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -57,8 +56,6 @@ namespace policy {
 namespace {
 
 BrokerServices* g_broker_services = NULL;
-
-HANDLE g_job_object_handle = NULL;
 
 // The DLLs listed here are known (or under strong suspicion) of causing crashes
 // when they are loaded in the renderer. Note: at runtime we generate short
@@ -152,11 +149,6 @@ const wchar_t* const kTroublesomeDlls[] = {
 // This is for finch. See also crbug.com/464430 for details.
 const base::Feature kEnableCsrssLockdownFeature{
     "EnableCsrssLockdown", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// This allows IFEO to be used to enable for chrome.exe. We normally
-// disable for renderers but do not do so if this feature is set.
-const base::Feature kCetForRenderer{"CetForRenderer",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Helps emit trace events for sandbox policy. This mediates memory between
 // chrome.exe and chrome.dll.
@@ -289,7 +281,7 @@ void AddGenericDllEvictionPolicy(TargetPolicy* policy) {
 }
 
 // Returns the object path prepended with the current logon session.
-base::string16 PrependWindowsSessionPath(const base::char16* object) {
+std::wstring PrependWindowsSessionPath(const wchar_t* object) {
   // Cache this because it can't change after process creation.
   static DWORD s_session_id = 0;
   if (s_session_id == 0) {
@@ -626,8 +618,8 @@ ResultCode SetJobMemoryLimit(const base::CommandLine& cmd_line,
 // Generate a unique sandbox AC profile for the appcontainer based on the SHA1
 // hash of the appcontainer_id. This does not need to be secure so using SHA1
 // isn't a security concern.
-base::string16 GetAppContainerProfileName(const std::string& appcontainer_id,
-                                          SandboxType sandbox_type) {
+std::wstring GetAppContainerProfileName(const std::string& appcontainer_id,
+                                        SandboxType sandbox_type) {
   std::string sandbox_base_name;
   switch (sandbox_type) {
     case SandboxType::kXrCompositing:
@@ -638,6 +630,9 @@ base::string16 GetAppContainerProfileName(const std::string& appcontainer_id,
       break;
     case SandboxType::kMediaFoundationCdm:
       sandbox_base_name = std::string("cr.sb.cdm");
+      break;
+    case SandboxType::kNetwork:
+      sandbox_base_name = std::string("cr.sb.net");
       break;
     default:
       DCHECK(0);
@@ -659,8 +654,12 @@ ResultCode SetupAppContainerProfile(AppContainerProfile* profile,
                                     SandboxType sandbox_type) {
   if (sandbox_type != SandboxType::kMediaFoundationCdm &&
       sandbox_type != SandboxType::kGpu &&
-      sandbox_type != SandboxType::kXrCompositing)
+      sandbox_type != SandboxType::kXrCompositing &&
+      sandbox_type != SandboxType::kNetwork)
     return SBOX_ERROR_UNSUPPORTED;
+
+  DCHECK(sandbox_type != SandboxType::kNetwork ||
+         base::FeatureList::IsEnabled(features::kNetworkServiceSandboxLPAC));
 
   if (sandbox_type == SandboxType::kGpu &&
       !profile->AddImpersonationCapability(L"chromeInstallFiles")) {
@@ -714,7 +713,7 @@ ResultCode SetupAppContainerProfile(AppContainerProfile* profile,
     }
   }
 
-  std::vector<base::string16> base_caps = {
+  std::vector<std::wstring> base_caps = {
       L"lpacChromeInstallFiles",
       L"registryRead",
   };
@@ -746,9 +745,68 @@ ResultCode SetupAppContainerProfile(AppContainerProfile* profile,
     profile->SetEnableLowPrivilegeAppContainer(true);
   }
 
+  // Enable LPAC for Network service.
+  if (sandbox_type == SandboxType::kNetwork) {
+    profile->AddCapability(
+        sandbox::WellKnownCapabilities::kPrivateNetworkClientServer);
+    profile->AddCapability(sandbox::WellKnownCapabilities::kInternetClient);
+    profile->AddCapability(
+        sandbox::WellKnownCapabilities::kEnterpriseAuthentication);
+    profile->AddCapability(L"lpacIdentityServices");
+    profile->AddCapability(L"lpacCryptoServices");
+    profile->SetEnableLowPrivilegeAppContainer(true);
+  }
+
   if (sandbox_type == SandboxType::kMediaFoundationCdm)
     profile->SetEnableLowPrivilegeAppContainer(true);
 
+  return SBOX_ALL_OK;
+}
+
+// Launches outside of the sandbox - the process will not be associated with
+// a Policy or TargetProcess. This supports both kNoSandbox and the --no-sandbox
+// command line flag.
+ResultCode LaunchWithoutSandbox(
+    base::CommandLine* cmd_line,
+    const base::HandlesToInheritVector& handles_to_inherit,
+    SandboxDelegate* delegate,
+    base::Process* process) {
+  base::LaunchOptions options;
+  options.handles_to_inherit = handles_to_inherit;
+  // Network process runs in a job even when unsandboxed. This is to ensure it
+  // does not outlive the browser, which could happen if there is a lot of I/O
+  // on process shutdown, in which case TerminateProcess can fail. See
+  // https://crbug.com/820996.
+  if (delegate->ShouldUnsandboxedRunInJob()) {
+    BOOL in_job = true;
+    // Prior to Windows 8 nested jobs aren't possible.
+    if (base::win::GetVersion() >= base::win::Version::WIN8 ||
+        (::IsProcessInJob(::GetCurrentProcess(), nullptr, &in_job) &&
+         !in_job)) {
+      static HANDLE job_object_handle = nullptr;
+      if (!job_object_handle) {
+        Job job_obj;
+        DWORD result = job_obj.Init(JOB_UNPROTECTED, nullptr, 0, 0);
+        if (result != ERROR_SUCCESS)
+          return SBOX_ERROR_CANNOT_INIT_JOB;
+        job_object_handle = job_obj.Take().Take();
+      }
+      options.job_handle = job_object_handle;
+    }
+  }
+
+  // Chromium binaries are marked as CET Compatible but some processes
+  // are not. When --no-sandbox is specified we disable CET for all children.
+  // Otherwise we are here because the sandbox type is kNoSandbox, and allow
+  // the process delegate to indicate if it is compatible with CET.
+  if (cmd_line->HasSwitch(switches::kNoSandbox) ||
+      base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kNoSandbox)) {
+    options.disable_cetcompat = true;
+  } else if (!delegate->CetCompatible()) {
+    options.disable_cetcompat = true;
+  }
+
+  *process = base::LaunchProcess(*cmd_line, options);
   return SBOX_ALL_OK;
 }
 
@@ -782,7 +840,7 @@ ResultCode SandboxWin::AddBaseHandleClosePolicy(TargetPolicy* policy) {
   }
 
   // TODO(cpu): Add back the BaseNamedObjects policy.
-  base::string16 object_path = PrependWindowsSessionPath(
+  std::wstring object_path = PrependWindowsSessionPath(
       L"\\BaseNamedObjects\\windows_shell_global_counters");
   return policy->AddKernelObjectToClose(L"Section", object_path.data());
 }
@@ -826,7 +884,7 @@ ResultCode SandboxWin::AddAppContainerProfileToPolicy(
     TargetPolicy* policy) {
   if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
     return SBOX_ALL_OK;
-  base::string16 profile_name =
+  std::wstring profile_name =
       GetAppContainerProfileName(appcontainer_id, sandbox_type);
   ResultCode result =
       policy->AddAppContainerProfile(profile_name.c_str(), true);
@@ -861,9 +919,13 @@ bool SandboxWin::IsAppContainerEnabledForSandbox(
   if (sandbox_type == SandboxType::kMediaFoundationCdm)
     return true;
 
-  if (sandbox_type != SandboxType::kGpu)
-    return false;
-  return base::FeatureList::IsEnabled(features::kGpuAppContainer);
+  if (sandbox_type == SandboxType::kGpu)
+    return base::FeatureList::IsEnabled(features::kGpuAppContainer);
+
+  if (sandbox_type == SandboxType::kNetwork)
+    return base::FeatureList::IsEnabled(features::kNetworkServiceSandboxLPAC);
+
+  return false;
 }
 
 // static
@@ -928,32 +990,12 @@ ResultCode SandboxWin::StartSandboxedProcess(
   }
 
   SandboxType sandbox_type = delegate->GetSandboxType();
+  // --no-sandbox and kNoSandbox are launched without creating a Policy.
   if (IsUnsandboxedSandboxType(sandbox_type) ||
       cmd_line->HasSwitch(switches::kNoSandbox) ||
       launcher_process_command_line.HasSwitch(switches::kNoSandbox)) {
-    base::LaunchOptions options;
-    options.handles_to_inherit = handles_to_inherit;
-    BOOL in_job = true;
-    // Prior to Windows 8 nested jobs aren't possible.
-    if (sandbox_type == SandboxType::kNetwork &&
-        (base::win::GetVersion() >= base::win::Version::WIN8 ||
-         (::IsProcessInJob(::GetCurrentProcess(), nullptr, &in_job) &&
-          !in_job))) {
-      // Launch the process in a job to ensure that the network process doesn't
-      // outlive the browser. This could happen if there is a lot of I/O on
-      // process shutdown, in which case TerminateProcess would fail.
-      // https://crbug.com/820996
-      if (!g_job_object_handle) {
-        Job job_obj;
-        DWORD result = job_obj.Init(JOB_UNPROTECTED, nullptr, 0, 0);
-        if (result != ERROR_SUCCESS)
-          return SBOX_ERROR_CANNOT_INIT_JOB;
-        g_job_object_handle = job_obj.Take().Take();
-      }
-      options.job_handle = g_job_object_handle;
-    }
-    *process = base::LaunchProcess(*cmd_line, options);
-    return SBOX_ALL_OK;
+    return LaunchWithoutSandbox(cmd_line, handles_to_inherit, delegate,
+                                process);
   }
 
   scoped_refptr<TargetPolicy> policy = g_broker_services->CreatePolicy();
@@ -975,10 +1017,13 @@ ResultCode SandboxWin::StartSandboxedProcess(
       MITIGATION_IMAGE_LOAD_NO_LOW_LABEL |
       MITIGATION_RESTRICT_INDIRECT_BRANCH_PREDICTION;
 
-  if (sandbox_type == SandboxType::kRenderer &&
-      !base::FeatureList::IsEnabled(sandbox::policy::kCetForRenderer)) {
-    mitigations |= sandbox::MITIGATION_CET_DISABLED;
-  }
+  if (base::FeatureList::IsEnabled(features::kWinSboxDisableKtmComponent))
+    mitigations |= MITIGATION_KTM_COMPONENT;
+
+  // CET is enabled with the CETCOMPAT bit on chrome.exe so must be
+  // disabled for processes we know are not compatible.
+  if (!delegate->CetCompatible())
+    mitigations |= MITIGATION_CET_DISABLED;
 
   ResultCode result = policy->SetProcessMitigations(mitigations);
   if (result != SBOX_ALL_OK)
@@ -1002,10 +1047,6 @@ ResultCode SandboxWin::StartSandboxedProcess(
       sandbox_type == SandboxType::kIconReader) {
     mitigations |= MITIGATION_DYNAMIC_CODE_DISABLE;
   }
-  // TODO(wfh): Relax strict handle checks for network process until root cause
-  // for this crash can be resolved. See https://crbug.com/939590.
-  if (sandbox_type != SandboxType::kNetwork)
-    mitigations |= MITIGATION_STRICT_HANDLE_CHECKS;
 
   result = policy->SetDelayedProcessMitigations(mitigations);
   if (result != SBOX_ALL_OK)
@@ -1172,6 +1213,8 @@ std::string SandboxWin::GetSandboxTypeInEnglish(SandboxType sandbox_type) {
       return "CDM";
     case SandboxType::kPrintCompositor:
       return "Print Compositor";
+    case SandboxType::kPrintBackend:
+      return "Print Backend";
     case SandboxType::kAudio:
       return "Audio";
     case SandboxType::kSpeechRecognition:

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Test screen orientation override.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
 
   await TestRunner.navigatePromise('resources/screen-orientation-resource.html');
 
@@ -66,16 +66,16 @@
       testError(120, 'wrongType', next);
     },
 
-    function setPortraitPrimary(next) {
-      testOverride(0, 'portraitPrimary', next);
-    },
-
     function setPortraitSecondary(next) {
       testOverride(180, 'portraitSecondary', next);
     },
 
     function setLandscapePrimary(next) {
       testOverride(90, 'landscapePrimary', next);
+    },
+
+      function setPortraitPrimary(next) {
+      testOverride(0, 'portraitPrimary', next);
     },
 
     function restoresAfterReload(next) {
@@ -94,7 +94,7 @@
       }
 
       function dumpCallback(result) {
-        TestRunner.addResult('Equals to initial: ' + (original === result ? 'true' : 'false'));
+        TestRunner.addResult('Equals to initial: ' + (original === result ? 'true' : 'false' + '. Expected: ' + original + ', actual: ' + result));
         next();
       }
     }

@@ -888,6 +888,8 @@ void GpuDataManagerImplPrivate::UpdateGpuInfo(
       "GPU.GPUInitializationTime.V3", gpu_info_.initialization_time,
       base::TimeDelta::FromMilliseconds(5), base::TimeDelta::FromSeconds(5),
       50);
+  UMA_HISTOGRAM_EXACT_LINEAR("GPU.GpuCount", gpu_info_.GpuCount(), 10);
+  RecordDiscreteGpuHistograms(gpu_info_);
 #if defined(OS_WIN)
   if (!dx_diagnostics.IsEmpty()) {
     gpu_info_.dx_diagnostics = dx_diagnostics;
@@ -900,12 +902,44 @@ void GpuDataManagerImplPrivate::UpdateGpuInfo(
   }
 #endif  // OS_WIN
 
-  if (!gpu_info_for_hardware_gpu_.IsInitialized()) {
-    if (gpu_info_for_hardware_gpu) {
+  bool needs_to_update_gpu_info_for_hardware_gpu =
+      !gpu_info_for_hardware_gpu_.IsInitialized();
+  if (!needs_to_update_gpu_info_for_hardware_gpu &&
+      !gpu_info_.UsesSwiftShader()) {
+    // On multi-GPU system, when switching to a different GPU, we want to reset
+    // GPUInfo for hardware GPU, because we want to know on which GPU Chrome
+    // crashes multiple times and falls back to SwiftShader.
+    const gpu::GPUInfo::GPUDevice& active_gpu = gpu_info_.active_gpu();
+    const gpu::GPUInfo::GPUDevice& cached_active_gpu =
+        gpu_info_for_hardware_gpu_.active_gpu();
+#if defined(OS_WIN)
+    if (active_gpu.luid.HighPart != cached_active_gpu.luid.HighPart &&
+        active_gpu.luid.LowPart != cached_active_gpu.luid.LowPart) {
+      needs_to_update_gpu_info_for_hardware_gpu = true;
+    }
+#else
+    if (active_gpu.vendor_id != cached_active_gpu.vendor_id ||
+        active_gpu.device_id != cached_active_gpu.device_id) {
+      needs_to_update_gpu_info_for_hardware_gpu = true;
+    }
+#endif  // OS_WIN
+  }
+
+  if (needs_to_update_gpu_info_for_hardware_gpu) {
+    if (gpu_info_for_hardware_gpu.has_value()) {
       DCHECK(gpu_info_for_hardware_gpu->IsInitialized());
-      gpu_info_for_hardware_gpu_ = gpu_info_for_hardware_gpu.value();
+      bool valid_info = true;
+      if (gpu_info_for_hardware_gpu->UsesSwiftShader()) {
+        valid_info = false;
+      } else if (gpu_info_for_hardware_gpu->gl_renderer.empty() &&
+                 gpu_info_for_hardware_gpu->active_gpu().vendor_id == 0u) {
+        valid_info = false;
+      }
+      if (valid_info)
+        gpu_info_for_hardware_gpu_ = gpu_info_for_hardware_gpu.value();
     } else {
-      gpu_info_for_hardware_gpu_ = gpu_info_;
+      if (!gpu_info_.UsesSwiftShader())
+        gpu_info_for_hardware_gpu_ = gpu_info_;
     }
   }
 
@@ -992,7 +1026,7 @@ bool GpuDataManagerImplPrivate::VulkanRequested() const {
   return gpu_info_vulkan_requested_;
 }
 
-void GpuDataManagerImplPrivate::OnBrowserThreadsStarted() {
+void GpuDataManagerImplPrivate::PostCreateThreads() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kNoDelayForDX12VulkanInfoCollection)) {
     // This is for the info collection test of the gpu integration tests.

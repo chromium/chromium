@@ -408,15 +408,26 @@ void X11HotplugEventHandler::OnHotplugEvent() {
     if (id >= kMaxDeviceNum)
       continue;
 
+    // In XWayland, physical devices are not exposed to X Server, but
+    // rather X11 and Wayland uses wayland protocol to communicate
+    // devices.
+
+    // So, xinput that Chromium uses to enumerate devices prepends
+    // "xwayland-" to each device name. Though, Wayland doesn't expose TOUCHPAD
+    // directly. Instead, it's part of xwayland-pointer.
     x11::Atom type = device.device_type;
-    if (type == x11::GetAtom("KEYBOARD"))
+    if (type == x11::GetAtom("KEYBOARD") ||
+        type == x11::GetAtom("xwayland-keyboard")) {
       device_types[id] = DEVICE_TYPE_KEYBOARD;
-    else if (type == x11::GetAtom("MOUSE"))
+    } else if (type == x11::GetAtom("MOUSE") ||
+               type == x11::GetAtom("xwayland-pointer")) {
       device_types[id] = DEVICE_TYPE_MOUSE;
-    else if (type == x11::GetAtom("TOUCHPAD"))
+    } else if (type == x11::GetAtom("TOUCHPAD")) {
       device_types[id] = DEVICE_TYPE_TOUCHPAD;
-    else if (type == x11::GetAtom("TOUCHSCREEN"))
+    } else if (type == x11::GetAtom("TOUCHSCREEN") ||
+               type == x11::GetAtom("xwayland-touch")) {
       device_types[id] = DEVICE_TYPE_TOUCHSCREEN;
+    }
   }
 
   std::vector<DeviceInfo> device_infos;

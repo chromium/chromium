@@ -158,21 +158,13 @@ const UserSession* SessionControllerImpl::GetPrimaryUserSession() const {
   return (*it).get();
 }
 
-bool SessionControllerImpl::IsUserSupervised() const {
+bool SessionControllerImpl::IsUserChildOrDeprecatedSupervised() const {
   if (!IsActiveUserSessionStarted())
     return false;
 
   user_manager::UserType active_user_type = GetUserSession(0)->user_info.type;
-  return active_user_type == user_manager::USER_TYPE_SUPERVISED ||
+  return active_user_type == user_manager::USER_TYPE_SUPERVISED_DEPRECATED ||
          active_user_type == user_manager::USER_TYPE_CHILD;
-}
-
-bool SessionControllerImpl::IsUserLegacySupervised() const {
-  if (!IsActiveUserSessionStarted())
-    return false;
-
-  user_manager::UserType active_user_type = GetUserSession(0)->user_info.type;
-  return active_user_type == user_manager::USER_TYPE_SUPERVISED;
 }
 
 bool SessionControllerImpl::IsUserChild() const {
@@ -567,12 +559,10 @@ LoginStatus SessionControllerImpl::CalculateLoginStatusForActiveSession()
       return LoginStatus::GUEST;
     case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
       return LoginStatus::PUBLIC;
-    case user_manager::USER_TYPE_SUPERVISED:
-      return LoginStatus::SUPERVISED;
     case user_manager::USER_TYPE_KIOSK_APP:
       return LoginStatus::KIOSK_APP;
     case user_manager::USER_TYPE_CHILD:
-      return LoginStatus::SUPERVISED;
+      return LoginStatus::CHILD;
     case user_manager::USER_TYPE_ARC_KIOSK_APP:
       return LoginStatus::KIOSK_APP;
     case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
@@ -581,6 +571,7 @@ LoginStatus SessionControllerImpl::CalculateLoginStatusForActiveSession()
     case user_manager::USER_TYPE_WEB_KIOSK_APP:
       return LoginStatus::KIOSK_APP;
     case user_manager::NUM_USER_TYPES:
+    case user_manager::USER_TYPE_SUPERVISED_DEPRECATED:
       // Avoid having a "default" case so the compiler catches new enum values.
       NOTREACHED();
       return LoginStatus::USER;

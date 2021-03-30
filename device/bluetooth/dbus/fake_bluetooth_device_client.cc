@@ -445,6 +445,9 @@ void FakeBluetoothDeviceClient::Connect(const dbus::ObjectPath& object_path,
 
   // The device can be connected.
   properties->connected.ReplaceValue(true);
+  if (object_path == dbus::ObjectPath(kLowEnergyPath))
+    properties->connected_le.ReplaceValue(true);
+
   std::move(callback).Run();
 
   // Expose GATT services if connected to LE device.
@@ -457,6 +460,19 @@ void FakeBluetoothDeviceClient::Connect(const dbus::ObjectPath& object_path,
   }
 
   AddInputDeviceIfNeeded(object_path, properties);
+}
+
+void FakeBluetoothDeviceClient::ConnectLE(const dbus::ObjectPath& object_path,
+                                          base::OnceClosure callback,
+                                          ErrorCallback error_callback) {
+  Connect(object_path, std::move(callback), std::move(error_callback));
+}
+
+void FakeBluetoothDeviceClient::DisconnectLE(
+    const dbus::ObjectPath& object_path,
+    base::OnceClosure callback,
+    ErrorCallback error_callback) {
+  Disconnect(object_path, std::move(callback), std::move(error_callback));
 }
 
 void FakeBluetoothDeviceClient::Disconnect(const dbus::ObjectPath& object_path,
@@ -481,6 +497,7 @@ void FakeBluetoothDeviceClient::Disconnect(const dbus::ObjectPath& object_path,
 
   std::move(callback).Run();
   properties->connected.ReplaceValue(false);
+  properties->connected_le.ReplaceValue(false);
 }
 
 void FakeBluetoothDeviceClient::ConnectProfile(
@@ -835,6 +852,7 @@ void FakeBluetoothDeviceClient::CreateDevice(
         kConnectedTrustedNotPairedDeviceClass);
     properties->trusted.ReplaceValue(true);
     properties->connected.ReplaceValue(true);
+    properties->connected_le.ReplaceValue(true);
     properties->paired.ReplaceValue(false);
     properties->name.ReplaceValue(kConnectedTrustedNotPairedDeviceName);
     properties->name.set_valid(true);

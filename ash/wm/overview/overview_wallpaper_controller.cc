@@ -49,8 +49,9 @@ OverviewWallpaperController::~OverviewWallpaperController() {
 }
 
 // static
-void OverviewWallpaperController::SetDoNotChangeWallpaperForTests() {
-  g_disable_wallpaper_change_for_tests = true;
+void OverviewWallpaperController::SetDisableChangeWallpaperForTest(
+    bool disable) {
+  g_disable_wallpaper_change_for_tests = disable;
 }
 
 void OverviewWallpaperController::Blur(bool animate) {

@@ -112,6 +112,14 @@ BytesConsumer::Result ReadableStreamBytesConsumer::BeginRead(
     return Result::kDone;
 
   if (pending_buffer_) {
+    // The UInt8Array has become detached due to, for example, the site
+    // transferring it away via postMessage().  Since we were in the middle
+    // of reading the array we must error out.
+    if (pending_buffer_->IsDetached()) {
+      SetErrored();
+      return Result::kError;
+    }
+
     DCHECK_LE(pending_offset_, pending_buffer_->length());
     *buffer = reinterpret_cast<const char*>(pending_buffer_->Data()) +
               pending_offset_;
@@ -141,6 +149,15 @@ BytesConsumer::Result ReadableStreamBytesConsumer::BeginRead(
 
 BytesConsumer::Result ReadableStreamBytesConsumer::EndRead(size_t read_size) {
   DCHECK(pending_buffer_);
+
+  // While the buffer size is immutable once constructed, the buffer can be
+  // detached if the site does something like transfer it away using
+  // postMessage().  Since we were in the middle of a read we must error out.
+  if (pending_buffer_->IsDetached()) {
+    SetErrored();
+    return Result::kError;
+  }
+
   DCHECK_LE(pending_offset_ + read_size, pending_buffer_->length());
   pending_offset_ += read_size;
   if (pending_offset_ >= pending_buffer_->length()) {
@@ -220,12 +237,18 @@ void ReadableStreamBytesConsumer::OnRejected() {
   if (state_ == PublicState::kClosed)
     return;
   DCHECK_EQ(state_, PublicState::kReadableOrWaiting);
-  state_ = PublicState::kErrored;
-  reader_ = nullptr;
   Client* client = client_;
-  ClearClient();
+  SetErrored();
   if (client)
     client->OnStateChange();
+}
+
+void ReadableStreamBytesConsumer::SetErrored() {
+  DCHECK_NE(state_, PublicState::kClosed);
+  DCHECK_NE(state_, PublicState::kErrored);
+  state_ = PublicState::kErrored;
+  ClearClient();
+  reader_ = nullptr;
 }
 
 }  // namespace blink

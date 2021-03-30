@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
+import org.chromium.chrome.browser.feedback.ScreenshotMode;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -84,14 +85,13 @@ public class AssistantCoordinator {
     /**
      * Show the Chrome feedback form.
      */
-    public void showFeedback(String debugContext) {
+    public void showFeedback(String debugContext, @ScreenshotMode int screenshotMode) {
         Profile profile =
                 Profile.fromWebContents(mActivity.getActivityTabProvider().get().getWebContents());
 
         HelpAndFeedbackLauncherImpl.getInstance().showFeedback(mActivity, profile,
-                mActivity.getActivityTab().getUrlString(), FEEDBACK_CATEGORY_TAG,
-                null /* feed context */,
-                FeedbackContext.buildContextString(mActivity, debugContext, 4));
+                mActivity.getActivityTab().getUrlString(), FEEDBACK_CATEGORY_TAG, screenshotMode,
+                debugContext);
     }
 
     public void show() {

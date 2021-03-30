@@ -18,6 +18,10 @@
   {
     "name": "new-system-colors",
     "args": ["--enable-blink-features=NewSystemColors"]
+  },
+  {
+    "name": "highdpi",
+    "args": ["--force-device-scale-factor=1.5"]
   }
 ]
 

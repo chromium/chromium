@@ -39,6 +39,27 @@ namespace {
 const uint16_t kUsbVersion2_1 = 0x0210;
 
 const uint8_t kDeviceClassHub = 0x09;
+constexpr int kUsbClassMassStorage = 0x08;
+
+bool ShouldReadDescriptors(const UsbDeviceLinux& device) {
+  if (device.usb_version() < kUsbVersion2_1)
+    return false;
+
+  // Avoid detaching the usb-storage driver.
+  // TODO(crbug.com/1176107): We should read descriptors for composite mass
+  // storage devices.
+  auto* configuration = device.GetActiveConfiguration();
+  if (configuration) {
+    for (const auto& interface : configuration->interfaces) {
+      for (const auto& alternate : interface->alternates) {
+        if (alternate->class_code == kUsbClassMassStorage)
+          return false;
+      }
+    }
+  }
+
+  return true;
+}
 
 void OnReadDescriptors(base::OnceCallback<void(bool)> callback,
                        scoped_refptr<UsbDeviceHandle> device_handle,
@@ -63,14 +84,6 @@ void OnDeviceOpenedToReadDescriptors(
   } else {
     std::move(callback).Run(false /* failure */);
   }
-}
-
-bool IsRestrictedDevice(UsbDeviceLinux* device) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return device->AllowedInterfacesMask() == 0;
-#else
-  return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace
@@ -229,29 +242,12 @@ UsbServiceLinux::~UsbServiceLinux() {
   NotifyWillDestroyUsbService();
 }
 
-void UsbServiceLinux::GetDevices(bool allow_restricted_devices,
-                                 GetDevicesCallback callback) {
+void UsbServiceLinux::GetDevices(GetDevicesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (enumeration_ready()) {
-    // The base class implementation ignores |allow_restricted_devices| and
-    // adequately handles when it is set to true.
-    if (allow_restricted_devices) {
-      UsbService::GetDevices(allow_restricted_devices, std::move(callback));
-    } else {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), FilteredDevices()));
-    }
-    return;
-  }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (allow_restricted_devices) {
-    enumeration_callback_for_vm_sharing_ = std::move(callback);
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  enumeration_callbacks_.push_back(std::move(callback));
+  if (enumeration_ready())
+    UsbService::GetDevices(std::move(callback));
+  else
+    enumeration_callbacks_.push_back(std::move(callback));
 }
 
 void UsbServiceLinux::OnDeviceAdded(
@@ -274,9 +270,7 @@ void UsbServiceLinux::OnDeviceAdded(
       new UsbDeviceLinux(device_path, std::move(descriptor)));
   devices_by_path_[device->device_path()] = device;
 
-  // UsbDeviceLinux does not allow opening restricted devices.
-  if (device->usb_version() >= kUsbVersion2_1 &&
-      !IsRestrictedDevice(device.get())) {
+  if (ShouldReadDescriptors(*device)) {
     device->Open(
         base::BindOnce(&OnDeviceOpenedToReadDescriptors,
                        base::BindOnce(&UsbServiceLinux::DeviceReady,
@@ -318,9 +312,15 @@ void UsbServiceLinux::DeviceReady(scoped_refptr<UsbDeviceLinux> device,
   }
 
   if (enumeration_became_ready) {
-    OnEnumerationReady();
+    std::vector<scoped_refptr<UsbDevice>> result;
+    result.reserve(devices().size());
+    for (const auto& map_entry : devices())
+      result.push_back(map_entry.second);
+    for (auto& callback : enumeration_callbacks_)
+      std::move(callback).Run(result);
+    enumeration_callbacks_.clear();
   } else if (success && enumeration_ready()) {
-    NotifyDeviceAdded(device, IsRestrictedDevice(device.get()));
+    NotifyDeviceAdded(device);
   }
 }
 
@@ -340,43 +340,22 @@ void UsbServiceLinux::OnDeviceRemoved(const std::string& path) {
                   << " guid=" << device->guid();
 
     devices().erase(by_guid_it);
-
-    NotifyDeviceRemoved(device, IsRestrictedDevice(device.get()));
+    NotifyDeviceRemoved(device);
   }
 }
 
 void UsbServiceLinux::HelperStarted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   helper_started_ = true;
-  if (enumeration_ready())
-    OnEnumerationReady();
-}
-
-std::vector<scoped_refptr<UsbDevice>> UsbServiceLinux::FilteredDevices() {
-  std::vector<scoped_refptr<UsbDevice>> result;
-  result.reserve(devices().size());
-  for (const auto& map_entry : devices()) {
-    if (IsRestrictedDevice(
-            static_cast<UsbDeviceLinux*>(map_entry.second.get()))) {
-      continue;
-    }
-    result.push_back(map_entry.second);
+  if (enumeration_ready()) {
+    std::vector<scoped_refptr<UsbDevice>> result;
+    result.reserve(devices().size());
+    for (const auto& map_entry : devices())
+      result.push_back(map_entry.second);
+    for (auto& callback : enumeration_callbacks_)
+      std::move(callback).Run(result);
+    enumeration_callbacks_.clear();
   }
-  return result;
-}
-
-void UsbServiceLinux::OnEnumerationReady() {
-  std::vector<scoped_refptr<UsbDevice>> result = FilteredDevices();
-  for (auto& callback : enumeration_callbacks_)
-    std::move(callback).Run(result);
-  enumeration_callbacks_.clear();
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (enumeration_callback_for_vm_sharing_) {
-    UsbService::GetDevices(/*allow_restricted_devices=*/true,
-                           std::move(enumeration_callback_for_vm_sharing_));
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace device

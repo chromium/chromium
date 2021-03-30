@@ -11,7 +11,7 @@
 
 TEST(Windows10CaptionButtonTest, CheckFocusBehavior) {
   Windows10CaptionButton button(views::Button::PressedCallback(), nullptr,
-                                VIEW_ID_NONE, base::string16());
+                                VIEW_ID_NONE, std::u16string());
   EXPECT_EQ(views::View::FocusBehavior::ACCESSIBLE_ONLY,
             button.GetFocusBehavior());
 }

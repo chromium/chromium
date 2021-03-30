@@ -5,17 +5,21 @@
 #include "chrome/services/speech/soda/soda_client.h"
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
+#include "build/build_config.h"
 
 namespace soda {
 
 SodaClient::SodaClient(base::FilePath library_path)
     : lib_(library_path),
       create_soda_func_(reinterpret_cast<CreateSodaFunction>(
-          lib_.GetFunctionPointer("CreateSodaAsync"))),
+          lib_.GetFunctionPointer("CreateExtendedSodaAsync"))),
       delete_soda_func_(reinterpret_cast<DeleteSodaFunction>(
-          lib_.GetFunctionPointer("DeleteSodaAsync"))),
+          lib_.GetFunctionPointer("DeleteExtendedSodaAsync"))),
       add_audio_func_(reinterpret_cast<AddAudioFunction>(
-          lib_.GetFunctionPointer("AddAudio"))),
+          lib_.GetFunctionPointer("ExtendedAddAudio"))),
+      soda_start_func_(reinterpret_cast<SodaStartFunction>(
+          lib_.GetFunctionPointer("ExtendedSodaStart"))),
       is_initialized_(false),
       sample_rate_(0),
       channel_count_(0) {
@@ -29,16 +33,42 @@ SodaClient::SodaClient(base::FilePath library_path)
   DCHECK(create_soda_func_);
   DCHECK(delete_soda_func_);
   DCHECK(add_audio_func_);
+  DCHECK(soda_start_func_);
+
+  if (!lib_.is_valid()) {
+    load_soda_result_ = LoadSodaResultValue::kBinaryInvalid;
+  } else if (!(create_soda_func_ && delete_soda_func_ && add_audio_func_ &&
+               soda_start_func_)) {
+    load_soda_result_ = LoadSodaResultValue::kFunctionPointerInvalid;
+  } else {
+    load_soda_result_ = LoadSodaResultValue::kSuccess;
+  }
+
+  base::UmaHistogramEnumeration("Accessibility.LiveCaption.LoadSodaResult",
+                                load_soda_result_);
+
+#if defined(OS_WIN)
+  if (load_soda_result_ == LoadSodaResultValue::kBinaryInvalid) {
+    base::UmaHistogramSparse("Accessibility.LiveCaption.LoadSodaErrorCode",
+                             lib_.GetError()->code);
+  }
+#endif  // OS_WIN
 }
 
 NO_SANITIZE("cfi-icall")
 SodaClient::~SodaClient() {
+  if (load_soda_result_ != LoadSodaResultValue::kSuccess)
+    return;
+
   if (IsInitialized())
     delete_soda_func_(soda_async_handle_);
 }
 
 NO_SANITIZE("cfi-icall")
 void SodaClient::AddAudio(const char* audio_buffer, int audio_buffer_size) {
+  if (load_soda_result_ != LoadSodaResultValue::kSuccess)
+    return;
+
   add_audio_func_(soda_async_handle_, audio_buffer, audio_buffer_size);
 }
 
@@ -47,15 +77,21 @@ bool SodaClient::DidAudioPropertyChange(int sample_rate, int channel_count) {
 }
 
 NO_SANITIZE("cfi-icall")
-void SodaClient::Reset(const SodaConfig config) {
+void SodaClient::Reset(const SerializedSodaConfig config,
+                       int sample_rate,
+                       int channel_count) {
+  if (load_soda_result_ != LoadSodaResultValue::kSuccess)
+    return;
+
   if (IsInitialized()) {
     delete_soda_func_(soda_async_handle_);
   }
 
   soda_async_handle_ = create_soda_func_(config);
-  sample_rate_ = config.sample_rate;
-  channel_count_ = config.channel_count;
+  sample_rate_ = sample_rate;
+  channel_count_ = channel_count;
   is_initialized_ = true;
+  soda_start_func_(soda_async_handle_);
 }
 
 }  // namespace soda

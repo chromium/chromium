@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">פריט רשימה</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">החלקה ימינה עם שתי אצבעות</translation>
-<translation id="1016393160682012902">‏ניתן ללחוץ על מקש במקלדת QWERTY, על מקש בצג ברייל או על תנועת מגע כדי להבין מה תפקידם. אפשר ללחוץ על Control ו-W או על Escape כדי לצאת.</translation>
 <translation id="1022586497894531524">‏האם זה השימוש הראשון שלך בקורא המסך הקולי ChromeVox? המדריך הקצר הזה מסביר את עקרונות הבסיס של ChromeVox למתחילים.</translation>
 <translation id="1025074108959230262">מצב 'הקשה ביד אחת' מושבת</translation>
 <translation id="1031961866430398710">לאחר מכן</translation>
@@ -150,9 +149,10 @@
 <translation id="2045055672832940894">אין פקד קודם</translation>
 <translation id="2045606329038304310">פקד של שדה בטופס</translation>
 <translation id="2063539687800151747">רשומת</translation>
+<translation id="2074531330963286860">פעולות שאפשר לבצע. יש ללחוץ על חיפוש+נקודה כדי לצפות</translation>
 <translation id="2086961585857038472">המילה הבאה</translation>
 <translation id="2087981446621639008">פרטי רשימת תיאורים</translation>
-<translation id="2089387485033699258">en</translation>
+<translation id="2089387485033699258">iw</translation>
 <translation id="2091933974477985526">אזור טקסט קודם הניתן לעריכה</translation>
 <translation id="2100350898815792233">כל סימני הפיסוק</translation>
 <translation id="2110480898214777136">הגדרת גלישת טקסט מההתחלה לסוף או מהסוף להתחלה בתוך דף, תיבת דו-שיח או גורם מכיל אחר</translation>
@@ -976,6 +976,7 @@
 <translation id="827266600368092403">התחלת הבחירה או סיום הבחירה</translation>
 <translation id="827422111966801947">כחול כהה</translation>
 <translation id="8276439074553447000">דילוג לפריט הקודם הניתן למיקוד</translation>
+<translation id="8279039817939141096">‏ניתן ללחוץ על מקש במקלדת QWERTY, על מקש בצג ברייל או על תנועת מגע כדי להבין מה תפקידם. כדי לצאת, אפשר להקיש על Control ו-W, על רווח ו-Z או על Escape או להחליק שמאלה בעזרת שתי אצבעות.</translation>
 <translation id="8283603667300770666">השדה הבא בטופס</translation>
 <translation id="8310185481635255431">אין עוד קישורים</translation>
 <translation id="831207808878314375">הגדרה</translation>

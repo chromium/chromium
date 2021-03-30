@@ -112,6 +112,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Startup.Android.Cold.TimeToFirstNavigationCommit"/>
 </histogram_suffixes>
 
+<histogram_suffixes name="ActivityType" separator=".">
+  <suffix name="ChromeTabbedActivity" label="ChromeTabbedActivity"/>
+  <suffix name="CustomTabActivity" label="CustomTabActivity"/>
+  <suffix name="FirstRunActivity" label="FirstRunActivity"/>
+  <affected-histogram
+      name="Android.Fonts.TimeDownloadableFontsRetrievedAfterPostInflationStartup"/>
+  <affected-histogram
+      name="Android.Fonts.TimeDownloadableFontsRetrievedBeforePostInflationStartup"/>
+  <affected-histogram
+      name="Android.Fonts.TimeToRetrieveDownloadableFontsAfterOnCreate"/>
+</histogram_suffixes>
+
 <histogram_suffixes name="AdapterDecision" separator="." ordering="prefix,2">
   <suffix name="BrightnessChange" label=""/>
   <suffix name="NoBrightnessChange" label=""/>
@@ -599,6 +611,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       name="PageLoad.AdPaintTiming.NavigationToFirstContentfulPaint"/>
   <affected-histogram
       name="PageLoad.AdPaintTiming.NavigationToFirstContentfulPaint2"/>
+  <affected-histogram
+      name="PageLoad.AdPaintTiming.NavigationToFirstContentfulPaint3"/>
   <affected-histogram name="PageLoad.Bytes"/>
   <affected-histogram name="PageLoad.Cpu"/>
   <affected-histogram
@@ -775,6 +789,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="chrome" label="Chrome Module"/>
   <suffix name="dev_ui" label="Developer UI Module"/>
   <suffix name="extra_icu" label="Extra ICU Module"/>
+  <suffix name="feedv2" label="Feed V2 Module"/>
   <suffix name="image_editor" label="Image Editor Module"/>
   <suffix name="stack_unwinder" label="Stack Unwinder Module"/>
   <suffix name="tab_ui" label="Tab Management Module"/>
@@ -828,6 +843,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       name="Android.FeatureModules.UncachedInstallDuration.PendingDownload"/>
   <affected-histogram
       name="Android.FeatureModules.UncachedInstallDuration.PendingInstall"/>
+  <affected-histogram name="Android.IsolatedSplits.ClassLoaderReplaced"/>
   <affected-histogram name="Android.IsolatedSplits.ContextCreateTime"/>
   <affected-histogram name="Android.IsolatedSplits.PreloadWaitTime"/>
 </histogram_suffixes>
@@ -854,6 +870,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="GoogleAuthUtil" label="Using GoogleAuthUtil API"/>
   <affected-histogram name="Signin.AndroidGetAccountsTime"/>
   <affected-histogram name="Signin.AndroidGetAccountsTimeUiThread"/>
+</histogram_suffixes>
+
+<histogram_suffixes name="AndroidProcessExitReasons" separator=".">
+  <owner>boliu@google.com</owner>
+  <owner>ssid@chromium.org</owner>
+  <suffix name="Browser" label="Recorded for Browser crashes."/>
+  <suffix name="Browser.Background"
+      label="Recorded for background Browser crashes."/>
+  <suffix name="Browser.Foreground"
+      label="Recorded for foregound Browser crashes."/>
+  <suffix name="GpuForegroundOom"
+      label="Recorded for foreground GPU process OOM crashes."/>
+  <suffix name="UtilityForegroundOom"
+      label="Recorded for foreground utility process OOM crashes."/>
+  <suffix name="VisibleMainFrameOom"
+      label="Recorded for visible main frame renderer OOM crashes."/>
+  <suffix name="VisibleSubframeOom"
+      label="Recorded for visible subframe renderer OOM crashes."/>
+  <affected-histogram name="Stability.Android.SystemExitReason"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="AndroidProcessType" separator=".">
@@ -990,14 +1025,44 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       Replaced with CasualGame2 in 2020/09.
     </obsolete>
   </suffix>
-  <suffix name="CasualGame2" label="Casual game 2."/>
-  <suffix name="HeavyGame" label="Heavy Game."/>
-  <suffix name="OnlineGame" label="Online game."/>
-  <suffix name="ShooterGame" label="Shooter game."/>
-  <suffix name="Video" label="Video playback app."/>
+  <suffix name="CasualGame2" label="Casual game 2.">
+    <obsolete>
+      Replaced in M91 by GachaClub
+    </obsolete>
+  </suffix>
+  <suffix name="GachaClub" label="Casual game 2: Gacha Club"/>
+  <suffix name="GarenaFreeFire" label="Shooter game: Garena Free Fire"/>
+  <suffix name="HeavyGame" label="Heavy Game.">
+    <obsolete>
+      Replaced in M91 by PUBGMobile
+    </obsolete>
+  </suffix>
+  <suffix name="MinecraftEducationEdition"
+      label="Online game 2: Minecraft: Education Edition"/>
+  <suffix name="Netflix" label="Video playback app: Netflix"/>
+  <suffix name="OnlineGame" label="Online game.">
+    <obsolete>
+      Replaced in M91 by Roblox
+    </obsolete>
+  </suffix>
+  <suffix name="PUBGMobile" label="Heavy Game: PUBG Mobile"/>
+  <suffix name="Roblox" label="Online game: Roblox"/>
+  <suffix name="ShooterGame" label="Shooter game.">
+    <obsolete>
+      Replaced in M91 by GarenaFreeFire
+    </obsolete>
+  </suffix>
+  <suffix name="Video" label="Video playback app.">
+    <obsolete>
+      Replaced in M91 by Netflix
+    </obsolete>
+  </suffix>
   <affected-histogram name="Arc.Runtime.Performance.CommitDeviation"/>
+  <affected-histogram name="Arc.Runtime.Performance.CommitDeviation2"/>
   <affected-histogram name="Arc.Runtime.Performance.FPS"/>
+  <affected-histogram name="Arc.Runtime.Performance.FPS2"/>
   <affected-histogram name="Arc.Runtime.Performance.RenderQuality"/>
+  <affected-histogram name="Arc.Runtime.Performance.RenderQuality2"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="ArcThrottleObservers" separator=".">
@@ -1087,6 +1152,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="AsyncDNSPref" separator="_">
+  <obsolete>
+    All histograms removed unknown date before 2021-01.
+  </obsolete>
   <suffix name="Disabled" label=""/>
   <suffix name="Enabled" label=""/>
   <affected-histogram name="AsyncDNS.PrefDefaultSource"/>
@@ -1115,8 +1183,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="AttestationOps" separator=".">
+  <suffix name="ActivateAttestationKey" label=""/>
+  <suffix name="AttestationVerify" label=""/>
   <suffix name="DecryptDatabase" label=""/>
-  <suffix name="MigrateDatabase" label=""/>
+  <suffix name="EncryptDatabase" label=""/>
+  <suffix name="MigrateDatabase" label="">
+    <obsolete>
+      Removed 2021/03.
+    </obsolete>
+  </suffix>
   <suffix name="PrepareForEnrollment" label=""/>
   <affected-histogram name="Hwsec.Attestation.Status"/>
 </histogram_suffixes>
@@ -1289,7 +1364,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Reshows" label="Bubble was reopened after being closed"/>
   <affected-histogram name="Autofill.LocalCardMigrationBubbleOffer"/>
   <affected-histogram name="Autofill.LocalCardMigrationBubbleResult"/>
-  <affected-histogram name="Autofill.LocalCardMigrationBubbleUserInteraction"/>
 </histogram_suffixes>
 
 <histogram_suffixes
@@ -1339,7 +1413,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     separator=".">
   <suffix name="Local" label="to local storage"/>
   <suffix name="Upload" label="to upload"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt"/>
   <affected-histogram name="Autofill.SaveCreditCardPromptOffer"/>
   <affected-histogram name="Autofill.SaveCreditCardPromptResult"/>
 </histogram_suffixes>
@@ -1350,10 +1423,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="Prompt shown from dynamic change forms"/>
   <affected-histogram name="Autofill.CreditCardInfoBar.Local"/>
   <affected-histogram name="Autofill.CreditCardInfoBar.Server"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Local.FirstShow"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Local.Reshows"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Upload.FirstShow"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Upload.Reshows"/>
   <affected-histogram
       name="Autofill.SaveCreditCardPromptOffer.Local.FirstShow"/>
   <affected-histogram name="Autofill.SaveCreditCardPromptOffer.Local.Reshows"/>
@@ -1375,10 +1444,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="Prompt shown from non-focusable forms"/>
   <affected-histogram name="Autofill.CreditCardInfoBar.Local"/>
   <affected-histogram name="Autofill.CreditCardInfoBar.Server"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Local.FirstShow"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Local.Reshows"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Upload.FirstShow"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Upload.Reshows"/>
   <affected-histogram
       name="Autofill.SaveCreditCardPromptOffer.Local.FirstShow"/>
   <affected-histogram name="Autofill.SaveCreditCardPromptOffer.Local.Reshows"/>
@@ -1404,10 +1469,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="User had previously denied save credit card prompt"/>
   <affected-histogram name="Autofill.CreditCardInfoBar.Local"/>
   <affected-histogram name="Autofill.CreditCardInfoBar.Server"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Local.FirstShow"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Local.Reshows"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Upload.FirstShow"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Upload.Reshows"/>
   <affected-histogram
       name="Autofill.SaveCreditCardPromptOffer.Local.FirstShow"/>
   <affected-histogram name="Autofill.SaveCreditCardPromptOffer.Local.Reshows"/>
@@ -1429,8 +1490,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="Cardholder name was explicitly requested in prompt or infobar"/>
   <affected-histogram name="Autofill.CreditCardInfoBar.Local"/>
   <affected-histogram name="Autofill.CreditCardInfoBar.Server"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Upload.FirstShow"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Upload.Reshows"/>
   <affected-histogram
       name="Autofill.SaveCreditCardPromptOffer.Upload.FirstShow"/>
   <affected-histogram name="Autofill.SaveCreditCardPromptOffer.Upload.Reshows"/>
@@ -1446,8 +1505,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="Expiration date was explicitly requested in prompt or infobar"/>
   <affected-histogram name="Autofill.CreditCardInfoBar.Local"/>
   <affected-histogram name="Autofill.CreditCardInfoBar.Server"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Upload.FirstShow"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Upload.Reshows"/>
   <affected-histogram
       name="Autofill.SaveCreditCardPromptOffer.Upload.FirstShow"/>
   <affected-histogram name="Autofill.SaveCreditCardPromptOffer.Upload.Reshows"/>
@@ -1461,8 +1518,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="FirstShow"
       label="first time prompt is shown for a single credit card submit"/>
   <suffix name="Reshows" label="all shows after the first one, combined"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Local"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Upload"/>
   <affected-histogram name="Autofill.SaveCreditCardPromptOffer.Local"/>
   <affected-histogram name="Autofill.SaveCreditCardPromptOffer.Upload"/>
   <affected-histogram name="Autofill.SaveCreditCardPromptResult.Local"/>
@@ -1577,10 +1632,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Autofill.FormEvents.CreditCard.WithOnlyLocalData"/>
   <affected-histogram name="Autofill.FormEvents.CreditCard.WithOnlyServerData"/>
   <affected-histogram name="Autofill.IsEnabled.PageLoad"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Local.FirstShow"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Local.Reshows"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Upload.FirstShow"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Upload.Reshows"/>
   <affected-histogram
       name="Autofill.SaveCreditCardPromptOffer.Local.FirstShow"/>
   <affected-histogram name="Autofill.SaveCreditCardPromptOffer.Local.Reshows"/>
@@ -1990,12 +2041,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Blink.CompositingAssignments.UpdateTime"/>
   <affected-histogram name="Blink.CompositingCommit.UpdateTime"/>
   <affected-histogram name="Blink.CompositingInputs.UpdateTime"/>
+  <affected-histogram name="Blink.ContentDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.DisplayLockIntersectionObserver.UpdateTime"/>
   <affected-histogram name="Blink.ForcedStyleAndLayout.UpdateTime"/>
   <affected-histogram name="Blink.HandleInputEvents.UpdateTime"/>
   <affected-histogram name="Blink.HitTestDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.ImplCompositorCommit.UpdateTime"/>
   <affected-histogram name="Blink.IntersectionObservation.UpdateTime"/>
+  <affected-histogram name="Blink.JavascriptDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.JavascriptIntersectionObserver.UpdateTime"/>
   <affected-histogram name="Blink.Layout.UpdateTime"/>
   <affected-histogram name="Blink.LazyLoadIntersectionObserver.UpdateTime"/>
@@ -2004,9 +2057,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Blink.Paint.UpdateTime"/>
   <affected-histogram name="Blink.PrePaint.UpdateTime"/>
   <affected-histogram name="Blink.ProxyCommit.UpdateTime"/>
+  <affected-histogram name="Blink.ScrollDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.ScrollingCoordinator.UpdateTime"/>
+  <affected-histogram name="Blink.ServiceDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.Style.UpdateTime"/>
   <affected-histogram name="Blink.StyleAndLayout.UpdateTime"/>
+  <affected-histogram name="Blink.UpdateViewportIntersection.UpdateTime"/>
+  <affected-histogram name="Blink.UserDrivenDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.WaitForCommit.UpdateTime"/>
 </histogram_suffixes>
 
@@ -2017,12 +2074,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Blink.CompositingAssignments.UpdateTime"/>
   <affected-histogram name="Blink.CompositingCommit.UpdateTime"/>
   <affected-histogram name="Blink.CompositingInputs.UpdateTime"/>
+  <affected-histogram name="Blink.ContentDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.DisplayLockIntersectionObserver.UpdateTime"/>
   <affected-histogram name="Blink.ForcedStyleAndLayout.UpdateTime"/>
   <affected-histogram name="Blink.HandleInputEvents.UpdateTime"/>
   <affected-histogram name="Blink.HitTestDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.ImplCompositorCommit.UpdateTime"/>
   <affected-histogram name="Blink.IntersectionObservation.UpdateTime"/>
+  <affected-histogram name="Blink.JavascriptDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.JavascriptIntersectionObserver.UpdateTime"/>
   <affected-histogram name="Blink.Layout.UpdateTime"/>
   <affected-histogram name="Blink.LazyLoadIntersectionObserver.UpdateTime"/>
@@ -2031,9 +2090,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Blink.Paint.UpdateTime"/>
   <affected-histogram name="Blink.PrePaint.UpdateTime"/>
   <affected-histogram name="Blink.ProxyCommit.UpdateTime"/>
+  <affected-histogram name="Blink.ScrollDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.ScrollingCoordinator.UpdateTime"/>
+  <affected-histogram name="Blink.ServiceDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.Style.UpdateTime"/>
   <affected-histogram name="Blink.StyleAndLayout.UpdateTime"/>
+  <affected-histogram name="Blink.UpdateViewportIntersection.UpdateTime"/>
+  <affected-histogram name="Blink.UserDrivenDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.WaitForCommit.UpdateTime"/>
 </histogram_suffixes>
 
@@ -2044,12 +2107,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Blink.CompositingAssignments.UpdateTime"/>
   <affected-histogram name="Blink.CompositingCommit.UpdateTime"/>
   <affected-histogram name="Blink.CompositingInputs.UpdateTime"/>
+  <affected-histogram name="Blink.ContentDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.DisplayLockIntersectionObserver.UpdateTime"/>
   <affected-histogram name="Blink.ForcedStyleAndLayout.UpdateTime"/>
   <affected-histogram name="Blink.HandleInputEvents.UpdateTime"/>
   <affected-histogram name="Blink.HitTestDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.ImplCompositorCommit.UpdateTime"/>
   <affected-histogram name="Blink.IntersectionObservation.UpdateTime"/>
+  <affected-histogram name="Blink.JavascriptDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.JavascriptIntersectionObserver.UpdateTime"/>
   <affected-histogram name="Blink.Layout.UpdateTime"/>
   <affected-histogram name="Blink.LazyLoadIntersectionObserver.UpdateTime"/>
@@ -2058,9 +2123,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Blink.Paint.UpdateTime"/>
   <affected-histogram name="Blink.PrePaint.UpdateTime"/>
   <affected-histogram name="Blink.ProxyCommit.UpdateTime"/>
+  <affected-histogram name="Blink.ScrollDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.ScrollingCoordinator.UpdateTime"/>
+  <affected-histogram name="Blink.ServiceDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.Style.UpdateTime"/>
   <affected-histogram name="Blink.StyleAndLayout.UpdateTime"/>
+  <affected-histogram name="Blink.UpdateViewportIntersection.UpdateTime"/>
+  <affected-histogram name="Blink.UserDrivenDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.WaitForCommit.UpdateTime"/>
 </histogram_suffixes>
 
@@ -2126,6 +2195,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="BrowserRunningMode" separator=".">
+  <obsolete>
+    Removed in M91.
+  </obsolete>
   <suffix name="FullBrowser" label=""/>
   <suffix name="ReducedMode" label=""/>
   <affected-histogram
@@ -2809,10 +2881,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
              starting main thread work."/>
   <suffix name="SendBeginMainFrameToCommit.Composite"
       label="The time portion of SendBeginMainFrameToCommit spent on
-             compositing."/>
+             compositing.">
+    <obsolete>
+      Obsolete as of https://crrev.com/794384 and M86.
+    </obsolete>
+  </suffix>
   <suffix name="SendBeginMainFrameToCommit.CompositeCommit"
       label="The time portion of SendBeginMainFrameToCommit spent on
              composite commit."/>
+  <suffix name="SendBeginMainFrameToCommit.CompositingAssignments"
+      label="The time portion of SendBeginMainFrameToCommit spent on updating
+             compositing assignments."/>
+  <suffix name="SendBeginMainFrameToCommit.CompositingInputs"
+      label="The time portion of SendBeginMainFrameToCommit spent on updating
+             compositing inputs."/>
   <suffix name="SendBeginMainFrameToCommit.HandleInputEvents"
       label="The time portion of SendBeginMainFrameToCommit spent on handling
              imput events."/>
@@ -2825,8 +2907,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="The time portion of SendBeginMainFrameToCommit spent on
              prepaint."/>
   <suffix name="SendBeginMainFrameToCommit.ScrollingCoordinator"
-      label="The time portion of SendBeginMainFrameToCommit spent on
-             scrolling coordinator."/>
+      label="The time portion of SendBeginMainFrameToCommit spent on scrolling
+             coordinator.">
+    <obsolete>
+      Merged into SendBeginMainFrameToCommit.CompositeCommit in
+      https://crrev.com/815947 in M88.
+    </obsolete>
+  </suffix>
   <suffix name="SendBeginMainFrameToCommit.StyleUpdate"
       label="The time portion of SendBeginMainFrameToCommit spent on style
              update."/>
@@ -3354,6 +3441,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Net.QuicSession.ConnectionMigrationProbeSuccess"/>
   <affected-histogram
       name="Net.QuicSession.HandshakeStatusOnConnectionMigration"/>
+  <affected-histogram name="Net.QuicSession.PathValidationSuccess"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="ConnectivityDetectorProbe" separator=".">
@@ -3732,11 +3820,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Chrome" label="A client created by Chrome."/>
   <suffix name="CrOSVM" label="A client created by ChromeOS VM."/>
   <suffix name="InvalidType" label="Invalid client."/>
+  <suffix name="LaCrOS" label="A client created by LaCrOS."/>
   <suffix name="Legacy" label="A client using an old CRAS lib."/>
   <suffix name="PCM" label="A client created by PCM."/>
   <suffix name="ServerStream" label="A client created by CRAS server."/>
   <suffix name="Test" label="A client created by cras_test_client."/>
   <suffix name="Unknown" label="Unknown client."/>
+  <affected-histogram name="Cras.FetchDelayMilliSeconds"/>
   <affected-histogram name="Cras.InputStreamRuntime"/>
   <affected-histogram name="Cras.OutputStreamRuntime"/>
   <affected-histogram name="Cras.StreamCallbackThreshold.Input"/>
@@ -3745,10 +3835,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Cras.StreamEffects.Output"/>
   <affected-histogram name="Cras.StreamFlags.Input"/>
   <affected-histogram name="Cras.StreamFlags.Output"/>
+  <affected-histogram name="Cras.StreamRuntime.Input"/>
+  <affected-histogram name="Cras.StreamRuntime.Output"/>
   <affected-histogram name="Cras.StreamSamplingFormat.Input"/>
   <affected-histogram name="Cras.StreamSamplingFormat.Output"/>
   <affected-histogram name="Cras.StreamSamplingRate.Input"/>
   <affected-histogram name="Cras.StreamSamplingRate.Output"/>
+  <affected-histogram name="Cras.StreamTimeoutMilliSeconds"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="Cras_DeviceType" separator=".">
@@ -3789,8 +3882,38 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Cras.StreamCallbackThreshold"/>
   <affected-histogram name="Cras.StreamEffects"/>
   <affected-histogram name="Cras.StreamFlags"/>
+  <affected-histogram name="Cras.StreamRuntime"/>
   <affected-histogram name="Cras.StreamSamplingFormat"/>
   <affected-histogram name="Cras.StreamSamplingRate"/>
+</histogram_suffixes>
+
+<histogram_suffixes name="Cras_StreamType" separator=".">
+  <suffix name="Default" label="Default"/>
+  <suffix name="VoiceCommunication" label="WebRTC"/>
+  <affected-histogram name="Cras.FetchDelayMilliSeconds.ARC"/>
+  <affected-histogram name="Cras.FetchDelayMilliSeconds.Chrome"/>
+  <affected-histogram name="Cras.FetchDelayMilliSeconds.CrOSVM"/>
+  <affected-histogram name="Cras.FetchDelayMilliSeconds.LaCrOS"/>
+  <affected-histogram name="Cras.InputStreamRuntime.ARC"/>
+  <affected-histogram name="Cras.InputStreamRuntime.Chrome"/>
+  <affected-histogram name="Cras.InputStreamRuntime.CrOSVM"/>
+  <affected-histogram name="Cras.InputStreamRuntime.LaCrOS"/>
+  <affected-histogram name="Cras.OutputStreamRuntime.ARC"/>
+  <affected-histogram name="Cras.OutputStreamRuntime.Chrome"/>
+  <affected-histogram name="Cras.OutputStreamRuntime.CrOSVM"/>
+  <affected-histogram name="Cras.OutputStreamRuntime.LaCrOS"/>
+  <affected-histogram name="Cras.StreamRuntime.Input.ARC"/>
+  <affected-histogram name="Cras.StreamRuntime.Input.Chrome"/>
+  <affected-histogram name="Cras.StreamRuntime.Input.CrOSVM"/>
+  <affected-histogram name="Cras.StreamRuntime.Input.LaCrOS"/>
+  <affected-histogram name="Cras.StreamRuntime.Output.ARC"/>
+  <affected-histogram name="Cras.StreamRuntime.Output.Chrome"/>
+  <affected-histogram name="Cras.StreamRuntime.Output.CrOSVM"/>
+  <affected-histogram name="Cras.StreamRuntime.Output.LaCrOS"/>
+  <affected-histogram name="Cras.StreamTimeoutMilliSeconds.ARC"/>
+  <affected-histogram name="Cras.StreamTimeoutMilliSeconds.Chrome"/>
+  <affected-histogram name="Cras.StreamTimeoutMilliSeconds.CrOSVM"/>
+  <affected-histogram name="Cras.StreamTimeoutMilliSeconds.LaCrOS"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="Cras_TimePeriod" separator=".">
@@ -4747,6 +4870,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="FromArc" label="From ARC."/>
   <suffix name="FromChromeInternal" label="From Chrome Internal."/>
   <suffix name="FromFileManager" label="From FileManager."/>
+  <suffix name="FromFullRestore" label="From full restore."/>
   <suffix name="FromInstalledNotification"
       label="From installed notification."/>
   <suffix name="FromKeyboard" label="From keyboard shortcut."/>
@@ -4756,6 +4880,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="FromOtherApp" label="From another app."/>
   <suffix name="FromSharesheet" label="From sharesheet."/>
   <suffix name="FromShelf" label="From shelf."/>
+  <suffix name="FromSmartTextContextMenu"
+      label="From Smart text selection context menu."/>
   <affected-histogram name="Apps.DefaultAppLaunch"/>
 </histogram_suffixes>
 
@@ -5893,6 +6019,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="EnterpriseDevicePolicyDeviceIdValidity" separator=".">
+  <obsolete>
+    Removed in M91 since the data is no longer required.
+  </obsolete>
   <suffix name="InitialStore"
       label="the initial device policy stored during enrollment"/>
   <suffix name="Update"
@@ -5936,6 +6065,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="EnterpriseRetrievePolicyResponse" separator=".">
+  <obsolete>
+    Removed in M91 since the data is no longer monitored.
+  </obsolete>
   <owner>emaxx@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
   <suffix name="Device" label="Device policy fetch response."/>
@@ -5948,78 +6080,188 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="EventLatencyBreakdowns" separator=".">
-  <suffix name="Activation" label="The duration of the activation stage."/>
+  <suffix name="Activation" label="The duration of the activation stage.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix name="BeginImplFrameToSendBeginMainFrame"
       label="The time from when the compositor impl frame is started to when
-             BeginMainFrame is sent."/>
+             BeginMainFrame is sent.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix name="BrowserToRendererCompositor"
       label="The time from when the event is generated until the first
-             compositor stage after the event arrives in the renderer."/>
-  <suffix name="Commit" label="The duration of the commit stage."/>
+             compositor stage after the event arrives in the renderer.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
+  <suffix name="Commit" label="The duration of the commit stage.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix name="EndActivateToSubmitCompositorFrame"
       label="The time from when an activation is complete to the next
-             SubmitCompositorFrame."/>
+             SubmitCompositorFrame.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix name="EndCommitToActivation"
       label="The time from when a commit is complete to the beginning of the
-             next activation."/>
+             next activation.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix name="SendBeginMainFrameToCommit"
-      label="The time from when the BeginMainFrame is sent to the beginning
-             of the commit."/>
+      label="The time from when the BeginMainFrame is sent to the beginning of
+             the commit.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix name="SendBeginMainFrameToCommit.Animate"
       label="The time portion of SendBeginMainFrameToCommit spent on
-             animations."/>
+             animations.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix name="SendBeginMainFrameToCommit.BeginMainSentToStarted"
       label="The time portion of SendBeginMainFrameToCommit spent before
-             starting main thread work."/>
+             starting main thread work.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix name="SendBeginMainFrameToCommit.Composite"
       label="The time portion of SendBeginMainFrameToCommit spent on
-             compositing."/>
+             compositing.">
+    <obsolete>
+      Obsolete as of https://crrev.com/794384 and M86.
+    </obsolete>
+  </suffix>
   <suffix name="SendBeginMainFrameToCommit.CompositeCommit"
-      label="The time portion of SendBeginMainFrameToCommit spent on
-             composite commit."/>
+      label="The time portion of SendBeginMainFrameToCommit spent on composite
+             commit.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
+  <suffix name="SendBeginMainFrameToCommit.CompositingAssignments"
+      label="The time portion of SendBeginMainFrameToCommit spent on updating
+             compositing assignments.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
+  <suffix name="SendBeginMainFrameToCommit.CompositingInputs"
+      label="The time portion of SendBeginMainFrameToCommit spent on updating
+             compositing inputs.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix name="SendBeginMainFrameToCommit.HandleInputEvents"
       label="The time portion of SendBeginMainFrameToCommit spent on handling
-             imput events."/>
+             imput events.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix name="SendBeginMainFrameToCommit.LayoutUpdate"
       label="The time portion of SendBeginMainFrameToCommit spent on layout
-             update."/>
+             update.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix name="SendBeginMainFrameToCommit.Paint"
-      label="The time portion of SendBeginMainFrameToCommit spent on paint."/>
+      label="The time portion of SendBeginMainFrameToCommit spent on paint.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix name="SendBeginMainFrameToCommit.Prepaint"
-      label="The time portion of SendBeginMainFrameToCommit spent on
-             prepaint."/>
+      label="The time portion of SendBeginMainFrameToCommit spent on prepaint.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix name="SendBeginMainFrameToCommit.ScrollingCoordinator"
-      label="The time portion of SendBeginMainFrameToCommit spent on
-             scrolling coordinator."/>
+      label="The time portion of SendBeginMainFrameToCommit spent on scrolling
+             coordinator.">
+    <obsolete>
+      Merged into SendBeginMainFrameToCommit.CompositeCommit in
+      https://crrev.com/815947 in M88.
+    </obsolete>
+  </suffix>
   <suffix name="SendBeginMainFrameToCommit.StyleUpdate"
       label="The time portion of SendBeginMainFrameToCommit spent on style
-             update."/>
+             update.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix name="SendBeginMainFrameToCommit.UpdateLayers"
       label="The time portion of SendBeginMainFrameToCommit spent on updating
-             layers."/>
+             layers.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix name="SubmitCompositorFrameToPresentationCompositorFrame"
       label="The time from when the compositor frame is submitted to the
-             display compositor to when it is presented."/>
+             display compositor to when it is presented.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix
       name="SubmitCompositorFrameToPresentationCompositorFrame.ReceivedCompositorFrameToStartDraw"
       label="The time from when the compositor frame is received to when it
-             starts to draw."/>
+             starts to draw.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix
       name="SubmitCompositorFrameToPresentationCompositorFrame.StartDrawToSwapStart"
       label="The time from when the compositor frame is started to draw to
-             when it starts swap."/>
+             when it starts swap.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix
       name="SubmitCompositorFrameToPresentationCompositorFrame.SubmitToReceiveCompositorFrame"
       label="The time from when the compositor frame is submitted to when it
-             is received."/>
+             is received.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix
       name="SubmitCompositorFrameToPresentationCompositorFrame.SwapEndToPresentationCompositorFrame"
       label="The time from when the compositor frame ends swap to when it is
-             presented."/>
+             presented.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix
       name="SubmitCompositorFrameToPresentationCompositorFrame.SwapStartToSwapEnd"
-      label="The time from when the compositor frame starts to swap to when
-             it ends swap."/>
+      label="The time from when the compositor frame starts to swap to when it
+             ends swap.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix name="TotalLatency"
       label="Total latency from when the event is generated until the frame
              is presented on screen."/>
@@ -6030,6 +6272,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="EventLatency.GestureDoubleTap"/>
   <affected-histogram name="EventLatency.GestureLongPress"/>
   <affected-histogram name="EventLatency.GestureLongTap"/>
+  <affected-histogram name="EventLatency.GesturePinchBegin.Touchscreen"/>
+  <affected-histogram name="EventLatency.GesturePinchBegin.Wheel"/>
+  <affected-histogram name="EventLatency.GesturePinchEnd.Touchscreen"/>
+  <affected-histogram name="EventLatency.GesturePinchEnd.Wheel"/>
+  <affected-histogram name="EventLatency.GesturePinchUpdate.Touchscreen"/>
+  <affected-histogram name="EventLatency.GesturePinchUpdate.Wheel"/>
   <affected-histogram name="EventLatency.GestureScrollBegin.Autoscroll"/>
   <affected-histogram name="EventLatency.GestureScrollBegin.Scrollbar"/>
   <affected-histogram name="EventLatency.GestureScrollBegin.Touchscreen"/>
@@ -6069,6 +6317,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Event.Latency.OS"/>
   <affected-histogram name="Event.Latency.OS_NO_VALIDATION.NEGATIVE"/>
   <affected-histogram name="Event.Latency.OS_NO_VALIDATION.POSITIVE"/>
+  <affected-histogram name="Event.Latency.OS_WIN.HIGH_RES"/>
+  <affected-histogram name="Event.Latency.OS_WIN.LOW_RES"/>
+  <affected-histogram name="Event.Latency.OS_WIN_IS_VALID"/>
+</histogram_suffixes>
+
+<histogram_suffixes name="EventLatencyPinchTypes" separator=".">
+  <suffix base="true" name="Touchscreen"
+      label="Event latency for touchscreen pinch events."/>
+  <suffix base="true" name="Wheel"
+      label="Event latency for touchpad pinch events."/>
+  <affected-histogram name="EventLatency.GesturePinchBegin"/>
+  <affected-histogram name="EventLatency.GesturePinchEnd"/>
+  <affected-histogram name="EventLatency.GesturePinchUpdate"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="EventLatencyScrollBreakdowns" separator=".">
@@ -6133,6 +6394,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="Event latency for gesture-long-press event."/>
   <suffix base="true" name="GestureLongTap"
       label="Event latency for gesture-long-tap event."/>
+  <suffix base="true" name="GesturePinchBegin"
+      label="Event latency for gesture-ping-begin event."/>
+  <suffix base="true" name="GesturePinchEnd"
+      label="Event latency for gesture-ping-end event."/>
+  <suffix base="true" name="GesturePinchUpdate"
+      label="Event latency for gesture-ping-update event."/>
   <suffix base="true" name="GestureScrollBegin"
       label="Event latency for gesture-scroll-begin event."/>
   <suffix base="true" name="GestureScrollEnd"
@@ -6340,6 +6607,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="WebStore" label="Extension from the Chrome Web Store"/>
   <affected-histogram name="Extensions.ForceInstalledFailureReason2"/>
   <affected-histogram name="Extensions.ForceInstalledFailureReason3"/>
+  <affected-histogram name="Extensions.ForceInstalledHttpErrorCode2"/>
+  <affected-histogram
+      name="Extensions.ForceInstalledManifestFetchFailedHttpErrorCode2"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="ExtensionWebUiPageType" separator=".">
@@ -6434,6 +6704,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram_suffixes name="FeedNetworkRequestType" separator=".">
   <suffix name="FeedQuery" label="Requests to fetch new feed content"/>
+  <suffix name="FollowWebFeed" label="Requests to follow a web feed"/>
+  <suffix name="ListFollowedWebFeeds"
+      label="Requests to list followed web feeds"/>
+  <suffix name="NextPage" label="Requests to fetch the next page of the feed"/>
+  <suffix name="UnfollowWebFeed" label="Requests to unfollow a web feed"/>
   <suffix name="UploadActions" label="Requests to upload user action data"/>
   <affected-histogram name="ContentSuggestions.Feed.Network.ResponseStatus"/>
 </histogram_suffixes>
@@ -6942,6 +7217,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram_suffixes name="GpuChannelManagerPressureHandlerDurationDetails"
     separator=".">
+  <obsolete>
+    Removed 03/2021.
+  </obsolete>
   <suffix name="DiscardableManagerHandleMemoryPressureDuration"
       label="The time taken by the call to
              |ServiceDiscardableManager::HandleMemoryPressure|."/>
@@ -7264,7 +7542,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram_suffixes name="HighDownloadBandwidth" separator=".">
   <suffix name="HighDownloadBandwidth" label="download with high bandwidth."/>
-  <affected-histogram name="Download.Parallelizable.DownloadTime"/>
   <affected-histogram name="Download.Parallelizable.FileSize"/>
 </histogram_suffixes>
 
@@ -7535,6 +7812,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Local_State" label="Local State file"/>
   <suffix name="Preferences" label="Preferences file"/>
   <suffix name="Secure_Preferences" label="Secure Preferences file"/>
+  <suffix name="StructuredMetricsPersistentProto"
+      label="Structured metrics persistent proto"/>
   <affected-histogram name="ImportantFile.DeleteOnCloseError"/>
   <affected-histogram name="ImportantFile.FileCreateError"/>
   <affected-histogram name="ImportantFile.FileDeleteError"/>
@@ -7590,10 +7869,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram_suffixes name="IndexId" separator="." ordering="prefix,1">
   <suffix name="CrosSettings" label="Cros Settings"/>
   <suffix name="HelpApp" label="Help App"/>
+  <suffix name="HelpAppLauncher" label="Help App Launcher"/>
   <affected-histogram name="LocalSearchService.Backend"/>
   <affected-histogram name="LocalSearchService.DailySearch"/>
   <affected-histogram name="LocalSearchService.NumberDocuments"/>
   <affected-histogram name="LocalSearchService.NumberResults"/>
+  <affected-histogram name="LocalSearchService.NumberSearchPerformedDone"/>
   <affected-histogram name="LocalSearchService.ResponseStatus"/>
   <affected-histogram name="LocalSearchService.SearchLatency"/>
 </histogram_suffixes>
@@ -7789,6 +8070,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       Replaced with IPH_ContextualSearchWebSearch.
     </obsolete>
   </suffix>
+  <suffix name="IPH_ContextualSearchInPanelHelp"
+      label="Promote Longpress from within the Panel."/>
   <suffix name="IPH_ContextualSearchOptIn"
       label="In product help for opting-in for contextual search."/>
   <suffix name="IPH_ContextualSearchPanel" label="">
@@ -7808,6 +8091,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="IPH_ContextualSearchTappedButShouldLongpress"
       label="In product help for contextual search to help users that try to
              trigger the feature with a tap to long-press instead."/>
+  <suffix name="IPH_ContextualSearchTranslationEnable"
+      label="In product help for contextual search to help users enable our
+             privacy policy in order to get better translations."/>
   <suffix name="IPH_ContextualSearchWebSearch"
       label="In product help for contextual search for users who use web
              search."/>
@@ -7854,7 +8140,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     </obsolete>
   </suffix>
   <suffix name="IPH_HomepagePromoCard"
-      label="In product help homepage promo card displayed on new tab page."/>
+      label="In product help homepage promo card displayed on new tab page.">
+    <obsolete>
+      Feature was deprecated in January 2021.
+    </obsolete>
+  </suffix>
   <suffix name="IPH_HomepageTile" label="In product help homepage tile.">
     <obsolete>
       This feature was deprecated in M79
@@ -7868,25 +8158,36 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="In-product help for password autofill suggestions."/>
   <suffix name="IPH_KeyboardAccessoryPaymentFilling"
       label="In-product help for payments autofill suggestions."/>
+  <suffix name="IPH_KeyboardAccessoryPaymentOffer"
+      label="In-product help for payments autofill suggestions."/>
   <suffix name="IPH_LiveCaption" label="In product help for Live Caption."/>
   <suffix name="IPH_LongPressToolbarTip"
       label="In product help LongPress toolbar."/>
+  <suffix name="IPH_MicToolbar"
+      label="In product help for the mic button in the toolbar."/>
   <suffix name="IPH_NewIncognitoTabTip"
       label="In product help new incognito tab tip."/>
   <suffix name="IPH_NewTab" label="In product help new tab."/>
-  <suffix name="IPH_NewTabPageButton"
-      label="In product help new tab page button.">
+  <suffix name="IPH_NewTabPageButton" label="For NewTabPageButton feature.">
     <obsolete>
       This feature was deprecated in M79
     </obsolete>
   </suffix>
+  <suffix name="IPH_NewTabPageHomeButton"
+      label="In product help for new tab page button."/>
   <suffix name="IPH_NewTabTip" label="In product help new tab tip."/>
+  <suffix name="IPH_PageInfo" label="In product help for opening PageInfo."/>
   <suffix name="IPH_PasswordsAccountStorage"
       label="In product help for passwords account storage."/>
   <suffix name="IPH_PreviewsOmniboxUI"
       label="In product help for the Previews UI in the Android Omnibox."/>
   <suffix name="IPH_QuietNotificationPrompts"
       label="For the quiet notification prompts feature."/>
+  <suffix name="IPH_ReadingListDiscovery"
+      label="In product help for first time a tab is added to reading list."/>
+  <suffix name="IPH_ReadingListEntryPoint"
+      label="In product help to educate users to click the star icon to add a
+             tab to reading list."/>
   <suffix name="IPH_ReopenTab"
       label="In product help for reopening closed tabs."/>
   <suffix name="IPH_TabGroupsDragAndDrop"
@@ -7899,8 +8200,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="IPH_TabGroupsYourTabsTogether"
       label="In product help for tab switcher cards with multiple tab
              thumbnails."/>
+  <suffix name="IPH_TabSwitcherButton"
+      label="In product help for tab swticher button."/>
   <suffix name="IPH_TranslateMenuButton"
       label="In product help translate menu button."/>
+  <suffix name="IPH_VideoTutorial_NTP_ChromeIntro"
+      label="Video tutorial card on NTP about introduction to chrome."/>
+  <suffix name="IPH_VideoTutorial_NTP_Download"
+      label="Video tutorial card on NTP about downloading in chrome."/>
+  <suffix name="IPH_VideoTutorial_NTP_Search"
+      label="Video tutorial card on NTP about search in chrome."/>
+  <suffix name="IPH_VideoTutorial_NTP_Summary"
+      label="Video tutorial summary card on NTP."/>
+  <suffix name="IPH_VideoTutorial_NTP_VoiceSearch"
+      label="Video tutorial card on NTP about voice search in chrome."/>
   <suffix name="IPH_WebUITabStrip"
       label="In product help for opening the WebUI tab strip."/>
   <affected-histogram name="InProductHelp.NotifyEventReadyState"/>
@@ -8014,6 +8327,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Media.EME.cancelKeyRequest"/>
   <affected-histogram name="Media.EME.CreateCdm"/>
   <affected-histogram name="Media.EME.CreateCdmTime"/>
+  <affected-histogram name="Media.EME.CreateSession.SessionType"/>
   <affected-histogram name="Media.EME.generateKeyRequest"/>
   <affected-histogram name="Media.EME.KeyAdded"/>
   <affected-histogram name="Media.EME.KeyError"/>
@@ -8180,6 +8494,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="Database for storing budget information for origins."/>
   <suffix name="CachedImageFetcherDatabase"
       label="Database for CachedImageFetcher metadata."/>
+  <suffix name="CartDatabase" label="Database for chrome cart."/>
+  <suffix name="CommerceSubscriptionDatabase"
+      label="Database for Chrome commerce subscriptions."/>
   <suffix name="DomDistillerStore" label="Databases for DomDistillerStore">
     <obsolete>
       Deprecated since 2019-10.
@@ -8200,6 +8517,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </suffix>
   <suffix name="FeedJournalDatabase"
       label="Database for Feed journal storage."/>
+  <suffix name="FeedKeyValueDatabase"
+      label="Database for key value cache used in feed rendering."/>
   <suffix name="FeedStorageDatabase" label="Databases for Feed Storage.">
     <obsolete>
       Deprecated since 08/18.
@@ -8382,12 +8701,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="Recorded with between 5 and 7 live tabs open in the browser."/>
   <suffix name="ByLiveTabCount.8To19Tabs"
       label="Recorded with between 8 and 19 live tabs open in the browser."/>
-  <suffix name="ByLiveTabCount.8To19Tabs"
+  <suffix name="ByLiveTabCount.20To39Tabs"
       label="Recorded with between 20 and 39 live tabs open in the browser."/>
   <suffix name="ByLiveTabCount.40OrMoreTabs"
       label="Recorded with 40 or more live tabs open in the browser."/>
   <affected-histogram
-      name="PageLoad.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint"/>
+      name="PageLoad.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint">
+    <obsolete>
+      Deprecated 03/2021. FMP is being deprecated in favor of LCP.
+    </obsolete>
+  </affected-histogram>
   <affected-histogram name="PageLoad.InteractiveTiming.FirstInputDelay"/>
   <affected-histogram name="PageLoad.InteractiveTiming.FirstInputDelay2"/>
   <affected-histogram name="PageLoad.InteractiveTiming.FirstInputDelay3">
@@ -8590,8 +8913,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram_suffixes name="MachineLearningServiceModels" separator="."
     ordering="prefix">
   <suffix name="smart_dim_model_20190521_v3"
-      label="Predict whether to cancel screen dims, temporarily added for
-             downloadable smart dim models, will remove after M84."/>
+      label="Obsolete smart dim model identifier.">
+    <obsolete>
+      This model identifier deprecated after M84, use SmartDimModel instead.
+    </obsolete>
+  </suffix>
   <suffix name="SmartDimModel" label="Predict whether to cancel screen dims."/>
   <suffix name="TestModel" label="A simple model for testing purpose."/>
   <suffix name="TopCatModel" label="Predict the next app to be launched.">
@@ -8676,11 +9002,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="ManifestProperties" separator=".">
+  <suffix name="description" label=""/>
   <suffix name="display" label=""/>
   <suffix name="gcm_sender_id" label=""/>
   <suffix name="icons" label=""/>
   <suffix name="name" label=""/>
   <suffix name="orientation" label=""/>
+  <suffix name="protocol_handlers" label=""/>
+  <suffix name="screenshots" label=""/>
   <suffix name="short_name" label=""/>
   <suffix name="start_url" label=""/>
   <affected-histogram name="Manifest.HasProperty"/>
@@ -9561,7 +9890,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="NewPagePendingEntryMatches"
       label="new page navigation which found a pending entry"/>
   <suffix name="NewSubFrame" label="new subframe navigation"/>
-  <suffix name="SamePage" label="same page navigation"/>
+  <suffix name="SamePage" label="same page navigation">
+    <obsolete>
+      Deprecated 01/2021 in favor of ExistingPageSameDocumentIntendedAsNew and
+      ExistingPageDifferentDocumentIntendedAsNew.
+    </obsolete>
+  </suffix>
   <affected-histogram name="Navigation.SecureSchemeHasSSLStatus"/>
 </histogram_suffixes>
 
@@ -11085,7 +11419,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram
       name="NewTabPage.BackgroundService.Images.RequestLatency"/>
   <affected-histogram
-      name="NewTabPage.BackgroundService.NextImage.RequestLatency"/>
+      name="NewTabPage.BackgroundService.NextImage.RequestLatency">
+    <obsolete>
+      Never recorded. Marked obsolete 01/2021.
+    </obsolete>
+  </affected-histogram>
 </histogram_suffixes>
 
 <histogram_suffixes name="NewTabPage_OneGoogleBar_RequestLatency" separator=".">
@@ -11156,11 +11494,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="drive" label="Module ID for Google Drive module"/>
   <suffix name="dummy" label="Module ID for a dummy module"/>
   <suffix name="dummy2" label="Module ID for another dummy module"/>
-  <suffix name="kaleidoscope" label="Module ID for Kaleidoscope"/>
+  <suffix name="kaleidoscope" label="Module ID for Kaleidoscope">
+    <obsolete>
+      Kaleidoscope has been turned down.
+    </obsolete>
+  </suffix>
   <suffix name="recipe_tasks" label="Module ID for Recipe Tasks"/>
   <suffix name="shopping_tasks" label="Module ID for Shopping Tasks"/>
   <affected-histogram name="NewTabPage.Modules.Dismissed"/>
+  <affected-histogram name="NewTabPage.Modules.EnabledOnNTPLoad"/>
   <affected-histogram name="NewTabPage.Modules.Impression"/>
+  <affected-histogram name="NewTabPage.Modules.ImpressionRatio"/>
+  <affected-histogram name="NewTabPage.Modules.LoadDuration"/>
   <affected-histogram name="NewTabPage.Modules.Loaded"/>
   <affected-histogram name="NewTabPage.Modules.Restored"/>
   <affected-histogram name="NewTabPage.Modules.Usage"/>
@@ -11233,7 +11578,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="NewTabPageTimings" separator=".">
-  <suffix name="LocalNTP" label="Loaded local NTP."/>
+  <suffix name="LocalNTP" label="Loaded local NTP.">
+    <obsolete>
+      Deprecated NTP replaced by WebUI NTP M91.
+    </obsolete>
+  </suffix>
   <suffix name="MostLikely" label="Loaded server-side suggestions."/>
   <suffix name="MostVisited" label="Loaded client-side suggestions."/>
   <suffix name="NewTab" label="NTP loaded on a new tab."/>
@@ -11251,7 +11600,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram_suffixes name="NewTabPageTimingsIsGoogle" separator=".">
   <suffix name="Google" label="Default search provider is Google."/>
   <suffix name="Other" label="Default search provider is not Google."/>
-  <affected-histogram name="NewTabPage.LoadTime.LocalNTP"/>
+  <affected-histogram name="NewTabPage.LoadTime.LocalNTP">
+    <obsolete>
+      Deprecated NTP replaced by WebUI NTP M91.
+    </obsolete>
+  </affected-histogram>
   <affected-histogram name="NewTabPage.LoadTime.Web"/>
 </histogram_suffixes>
 
@@ -11927,7 +12280,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Demo-preferences" label=""/>
   <suffix name="Demo-setup" label=""/>
   <suffix name="Device-disabled" label=""/>
-  <suffix name="Discover" label=""/>
+  <suffix name="Discover" label="">
+    <obsolete>
+      Replaced by Pin-setup in M90.
+    </obsolete>
+  </suffix>
   <suffix name="Edu-coexistence-login" label=""/>
   <suffix name="Encryption-migration" label=""/>
   <suffix name="Enroll" label=""/>
@@ -11953,6 +12310,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Offline-login" label=""/>
   <suffix name="Packaged-license" label=""/>
   <suffix name="Parental-handoff" label=""/>
+  <suffix name="Pin-setup" label=""/>
   <suffix name="Recommend-apps" label=""/>
   <suffix name="Reset" label=""/>
   <suffix name="Supervision-transition" label=""/>
@@ -11961,9 +12319,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Update" label=""/>
   <suffix name="Update-required" label=""/>
   <suffix name="User-creation" label=""/>
-  <suffix name="UserBoard" label=""/>
+  <suffix name="UserBoard" label="">
+    <obsolete>
+      Was never actually used. Not an OOBE screen.
+    </obsolete>
+  </suffix>
   <suffix name="Wrong-hwid" label=""/>
   <affected-histogram name="OOBE.StepCompletionTime"/>
+  <affected-histogram name="OOBE.StepShownStatus"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="OobeScreenName_ExitReason" separator=".">
@@ -11985,15 +12348,30 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Demo-preferences.Completed" label=""/>
   <suffix name="Demo-setup.Completed" label=""/>
   <suffix name="Device-disabled.Canceled" label=""/>
-  <suffix name="Discover.Next" label=""/>
+  <suffix name="Discover.Next" label="">
+    <obsolete>
+      Replaced by Pin-setup.Done in M90.
+    </obsolete>
+  </suffix>
   <suffix name="Edu-coexistence-login.Done" label=""/>
   <suffix name="Eula.AcceptedWithoutStats" label=""/>
   <suffix name="Eula.AcceptedWithStats" label=""/>
   <suffix name="Eula.Back" label=""/>
   <suffix name="Family-link-notice.Done" label=""/>
-  <suffix name="Fingerprint-setup.Next" label=""/>
+  <suffix name="Fingerprint-setup.Done" label=""/>
+  <suffix name="Fingerprint-setup.Next" label="">
+    <obsolete>
+      Split into Fingerprint-setup.Done and Fingerprint-setup.Skipped in M90.
+    </obsolete>
+  </suffix>
+  <suffix name="Fingerprint-setup.Skipped" label=""/>
   <suffix name="Gaia-signin.Back" label=""/>
-  <suffix name="Gaia-signin.CloseDialog" label=""/>
+  <suffix name="Gaia-signin.Cancel" label=""/>
+  <suffix name="Gaia-signin.CloseDialog" label="">
+    <obsolete>
+      Removed in M89.
+    </obsolete>
+  </suffix>
   <suffix name="Gaia-signin.EnterpriseEnroll" label=""/>
   <suffix name="Gaia-signin.StartConsumerKiosk" label=""/>
   <suffix name="Gesture-navigation.Next" label=""/>
@@ -12022,6 +12400,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Packaged-license.DontEnroll" label=""/>
   <suffix name="Packaged-license.Enroll" label=""/>
   <suffix name="Parental-Handoff.Done" label=""/>
+  <suffix name="Pin-setup.Done" label=""/>
+  <suffix name="Pin-setup.Skipped" label=""/>
+  <suffix name="Pin-setup.TimedOut" label=""/>
   <suffix name="Recommend-apps.Selected" label=""/>
   <suffix name="Recommend-apps.Skipped" label=""/>
   <suffix name="Reset.Cancel" label=""/>
@@ -12042,6 +12423,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram_suffixes name="OptimizationGuide_OptimizationTargets" separator=".">
   <suffix name="LanguageDetection" label="Language detection"/>
+  <suffix name="PageTopics" label="Page topics"/>
   <suffix name="PainfulPageLoad" label="Painful page load"/>
   <affected-histogram name="OptimizationGuide.IsPredictionModelValid"/>
   <affected-histogram
@@ -12091,13 +12473,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="LoadingPredictor"
       label="Provides information about subresources predicted to be on the
              page"/>
+  <suffix name="LoginDetection"
+      label="Provides information about hosts that are identified as commonly
+             logged-in"/>
   <suffix name="None" label="No optimization type"/>
   <suffix name="NoScript"
-      label="Disables the fetching and execution of JavaScript"/>
+      label="Disables the fetching and execution of JavaScript">
+    <obsolete>
+      Removed in M89.
+    </obsolete>
+  </suffix>
   <suffix name="PerformanceHints"
       label="Provides aggregated performance information about the page"/>
   <suffix name="ResourceLoading"
-      label="Applies a set of resource loading hints to load the page"/>
+      label="Applies a set of resource loading hints to load the page">
+    <obsolete>
+      Removed in M89.
+    </obsolete>
+  </suffix>
+  <suffix name="ShoppingPagePredictor"
+      label="Determines if a page is shopping related or not"/>
   <affected-histogram name="OptimizationGuide.ApplyDecision"/>
   <affected-histogram name="OptimizationGuide.ApplyDecisionAsync"/>
   <affected-histogram name="OptimizationGuide.OptimizationFilterStatus"/>
@@ -12961,7 +13356,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram_suffixes name="PageLoadMetricsClientsServiceWorkerSpecialApps"
     separator=".">
   <suffix name="docs" label="Custom histogram for the Google Docs page"/>
-  <suffix name="inbox" label="Custom histogram for Inbox"/>
+  <suffix name="inbox" label="Custom histogram for Inbox">
+    <obsolete>
+      Removed December 2020.
+    </obsolete>
+  </suffix>
   <suffix name="search"
       label="Custom histogram for the Google Search results page"/>
   <affected-histogram
@@ -13454,12 +13853,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="PasswordManager.TotalAccountsHiRes.ByType"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="PasswordGenerationType" separator=".">
-  <suffix name="Automatic" label=""/>
-  <suffix name="Manual" label=""/>
-  <affected-histogram name="KeyboardAccessory.GenerationDialogChoice"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="PasswordManagerMonitor" separator="_">
   <obsolete>
     Removed as of 03/2016.
@@ -13675,6 +14068,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="Request is completed using Google payment instrument."/>
   <suffix name="Other"
       label="Request is completed using other payment instruments."/>
+  <suffix name="PlayBilling"
+      label="Request is completed using Google Play Billing instrument."/>
   <suffix name="SecurePaymentConfirmation"
       label="Request is completed using secure payment confirmation
              instrument."/>
@@ -13762,14 +14157,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram_suffixes name="PerformanceMonitor" separator=".">
   <suffix name="BrowserProcess" label=""/>
   <suffix name="GPUProcess" label=""/>
+  <suffix name="NetworkProcess" label=""/>
   <suffix name="PluginProcess" label=""/>
-  <suffix name="PPAPIFlashProcess" label=""/>
+  <suffix name="PPAPIFlashProcess" label="">
+    <obsolete>
+      Removed 2021-03 now that support for Flash has been removed.
+    </obsolete>
+  </suffix>
   <suffix name="PPAPIProcess" label=""/>
   <suffix name="RendererExtensionEventProcess" label=""/>
   <suffix name="RendererExtensionPersistentProcess" label=""/>
   <suffix name="RendererProcess" label=""/>
+  <suffix name="Total" label=""/>
+  <suffix name="UtilityProcess" label=""/>
   <suffix name="WorkerProcess" label=""/>
   <affected-histogram name="PerformanceMonitor.AverageCPU"/>
+  <affected-histogram name="PerformanceMonitor.AverageCPU2"/>
   <affected-histogram name="PerformanceMonitor.AverageDisk"/>
   <affected-histogram name="PerformanceMonitor.EnergyImpact"/>
   <affected-histogram name="PerformanceMonitor.HighCPU"/>
@@ -14163,6 +14566,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="GPU" label=""/>
   <suffix name="Other" label=""/>
   <suffix name="Renderer" label=""/>
+  <affected-histogram name="Power.CpuTimeSecondsPerPowerMode"/>
   <affected-histogram name="Power.CpuTimeSecondsPerThreadType"/>
 </histogram_suffixes>
 
@@ -14499,6 +14903,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     </obsolete>
   </suffix>
   <suffix name="DeferAllScript" label="Defers execution of script"/>
+  <suffix name="HttpsImageCompression"
+      label="Page Info opened when https image compression was enabled"/>
   <suffix name="LitePage" label="Lite page previews">
     <obsolete>
       Functionality removed in M86.
@@ -14515,14 +14921,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     </obsolete>
   </suffix>
   <suffix name="None" label="No preview was served"/>
-  <suffix name="NoScript" label="NoScript previews"/>
+  <suffix name="NoScript" label="NoScript previews">
+    <obsolete>
+      Removed in M89.
+    </obsolete>
+  </suffix>
   <suffix name="Offline" label="Offline previews">
     <obsolete>
       Functionality removed in M86.
     </obsolete>
   </suffix>
   <suffix name="ResourceLoadingHints"
-      label="Resource loading hints based previews"/>
+      label="Resource loading hints based previews">
+    <obsolete>
+      Removed in M89.
+    </obsolete>
+  </suffix>
   <affected-histogram name="Previews.EligibilityReason"/>
   <affected-histogram name="Previews.InfoBarAction"/>
   <affected-histogram name="Previews.OmniboxAction"/>
@@ -14562,6 +14976,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Malloc.AllocatedObjects"
       label="Only counting objects allocated using the malloc allocator. The
              measurement is only accurate on Linux and MacOS."/>
+  <suffix name="ManualFillingCache"
+      label="Only counting memory used by the password manager fallbacks."/>
   <suffix name="PartitionAlloc"
       label="Only counting memory used by Partition allocator."/>
   <suffix name="PartitionAlloc.AllocatedObjects"
@@ -14604,7 +15020,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="V8.AllocatedObjects"
       label="Only counting objects allocated by V8 javascript engine."/>
   <suffix name="V8.Main.GlobalHandles"
-      label="Memory used by V8 global handles in the main isolate."/>
+      label="Total memory used by V8 global handles in the main isolate."/>
+  <suffix name="V8.Main.GlobalHandles.AllocatedObjects"
+      label="Allocated memory used by V8 global handles in the main isolate."/>
   <suffix name="V8.Main.Heap" label="Only counting memory used by V8 heap"/>
   <suffix name="V8.Main.Heap.AllocatedObjects"
       label="Only counting objects allocated in V8 heap"/>
@@ -15175,6 +15593,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="RecurrenceRankerModel" separator=".">
+  <obsolete>
+    Removed January 2021, all affected histograms have been deprecated.
+  </obsolete>
   <suffix name="QueryBasedMixedTypes" label=""/>
   <suffix name="QueryBasedMixedTypesGroup" label=""/>
   <suffix name="ZeroStateMixedTypes" label=""/>
@@ -15186,6 +15607,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram_suffixes name="ReferrerAttribution" separator=".">
   <suffix name="ApkDownloadTelemetry"
       label="APK downloads referrer attribution."/>
+  <suffix name="CSDAttribution"
+      label="Client side detection referrer attribution."/>
   <suffix name="DownloadAttribution" label="Download referrer attribution."/>
   <suffix name="MalwareInterstitialAttribution"
       label="Malware interstitial referrer attribution."/>
@@ -15213,6 +15636,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="RelaunchNotificationStyle" separator=".">
+  <obsolete>
+    Removed in M90.
+  </obsolete>
   <suffix name="Recommended" label="The relaunch recommended bubble."/>
   <suffix name="Required" label="The relaunch required dialog."/>
   <affected-histogram name="RelaunchNotification.ShowResult"/>
@@ -15983,6 +16409,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="SafeBrowsing.RT.IsLookupSuccessful"/>
   <affected-histogram name="SafeBrowsing.RT.Network.Result"/>
   <affected-histogram name="SafeBrowsing.RT.Network.Time"/>
+  <affected-histogram name="SafeBrowsing.RT.Request.Size"/>
   <affected-histogram name="SafeBrowsing.RT.Request.UserPopulation"/>
   <affected-histogram name="SafeBrowsing.RT.ThreatInfoSize"/>
 </histogram_suffixes>
@@ -16007,11 +16434,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="SafeBrowsing_V4Store_Metrics" separator=".">
+  <suffix name="CertCsdDownloadAllowlist" label=""/>
   <suffix name="CertCsdDownloadWhitelist" label=""/>
   <suffix name="ChromeExtMalware" label=""/>
   <suffix name="ChromeUrlClientIncident" label=""/>
   <suffix name="IpMalware" label=""/>
   <suffix name="UrlBilling" label=""/>
+  <suffix name="UrlCsdAllowlist" label=""/>
+  <suffix name="UrlCsdDownloadAllowlist" label=""/>
   <suffix name="UrlCsdDownloadWhitelist" label=""/>
   <suffix name="UrlCsdWhitelist" label=""/>
   <suffix name="UrlHighConfidenceAllowlist" label=""/>
@@ -16259,6 +16689,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Startup.TimeSinceLastStartup"/>
 </histogram_suffixes>
 
+<histogram_suffixes name="SB2RequestDestinations" separator=".">
+  <suffix name="Checked"
+      label="Resources that were checked. Logged before the resource starts
+             loading and again for each redirect."/>
+  <suffix name="Skipped"
+      label="Resources that were not checked because they are not active-ish
+             content types. Only used on mobile. Logged before the resource
+             request starts."/>
+  <suffix name="Unsafe"
+      label="Resources that were checked and classified as unsafe. Logged
+             when the URL check is completed."/>
+  <affected-histogram name="SB2.RequestDestination"/>
+</histogram_suffixes>
+
 <histogram_suffixes name="SB2ResourceTypes" separator=".">
   <suffix name="Checked"
       label="Resources that were checked. Logged before the resource starts
@@ -16405,10 +16849,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="origin_policy" label=""/>
   <suffix name="phishing" label=""/>
   <suffix name="phishing_subresource" label=""/>
-  <suffix name="social_engineering_ads" label=""/>
-  <suffix name="social_engineering_ads_subresource" label=""/>
-  <suffix name="social_engineering_landing" label=""/>
-  <suffix name="social_engineering_landing_subresource" label=""/>
+  <suffix name="social_engineering_ads" label="">
+    <obsolete>
+      Removed as of 2021-1. Doesn't trigger interstitials.
+    </obsolete>
+  </suffix>
+  <suffix name="social_engineering_ads_subresource" label="">
+    <obsolete>
+      Removed as of 2021-1. Doesn't trigger interstitials.
+    </obsolete>
+  </suffix>
+  <suffix name="social_engineering_landing" label="">
+    <obsolete>
+      Removed as of 2021-1. Doesn't trigger interstitials.
+    </obsolete>
+  </suffix>
+  <suffix name="social_engineering_landing_subresource" label="">
+    <obsolete>
+      Removed as of 2021-1. Doesn't trigger interstitials.
+    </obsolete>
+  </suffix>
   <affected-histogram name="interstitial.decision"/>
   <affected-histogram name="interstitial.decision.repeat_visit"/>
   <affected-histogram name="interstitial.interaction"/>
@@ -16420,7 +16880,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
              side detection."/>
   <suffix name="from_data_saver"
       label="Interstitial for a resource classified as unsafe by the Data
-             Saver service."/>
+             Saver service.">
+    <obsolete>
+      Deprecated as of 2021-1. Data saver has been completely turned down.
+    </obsolete>
+  </suffix>
   <suffix name="from_device"
       label="Interstitial for a resource classified as unsafe by the Safe
              Browsing database via either
@@ -16456,27 +16920,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram
       name="interstitial.phishing_subresource.decision.repeat_visit"/>
   <affected-histogram name="interstitial.phishing_subresource.interaction"/>
-  <affected-histogram name="interstitial.social_engineering_ads.decision"/>
-  <affected-histogram
-      name="interstitial.social_engineering_ads.decision.repeat_visit"/>
-  <affected-histogram name="interstitial.social_engineering_ads.interaction"/>
-  <affected-histogram
-      name="interstitial.social_engineering_ads_subresource.decision"/>
-  <affected-histogram
-      name="interstitial.social_engineering_ads_subresource.decision.repeat_visit"/>
-  <affected-histogram
-      name="interstitial.social_engineering_ads_subresource.interaction"/>
-  <affected-histogram name="interstitial.social_engineering_landing.decision"/>
-  <affected-histogram
-      name="interstitial.social_engineering_landing.decision.repeat_visit"/>
-  <affected-histogram
-      name="interstitial.social_engineering_landing.interaction"/>
-  <affected-histogram
-      name="interstitial.social_engineering_landing_subresource.decision"/>
-  <affected-histogram
-      name="interstitial.social_engineering_landing_subresource.decision.repeat_visit"/>
-  <affected-histogram
-      name="interstitial.social_engineering_landing_subresource.interaction"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="SecurityInterstitialSSLType" separator="."
@@ -16511,8 +16954,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="SECURE_WITH_POLICY_INSTALLED_CERT"
       label="SecurityLevel is SECURE_WITH_POLICY_INSTALLED_CERT."/>
   <suffix name="WARNING" label="SecurityLevel is WARNING."/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Local"/>
-  <affected-histogram name="Autofill.SaveCreditCardPrompt.Upload"/>
   <affected-histogram name="Autofill.SaveCreditCardPromptOffer.Local"/>
   <affected-histogram name="Autofill.SaveCreditCardPromptOffer.Upload"/>
   <affected-histogram name="Autofill.SaveCreditCardPromptResult.Local"/>
@@ -16534,8 +16975,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram_suffixes name="SendTabToSelfEntryPoint" separator="."
     ordering="prefix">
   <owner>jeffreycohen@chromium.org</owner>
-  <owner>sebsg@chromium.org</owner>
   <owner>tgupta@chromium.org</owner>
+  <owner>chrome-sharing-core@google.com</owner>
   <suffix name="ContentMenu" label="Option shown in the content context menu"/>
   <suffix name="LinkMenu" label="Option shown in the link context menu"/>
   <suffix name="OmniboxIcon" label="Icon shown in the omnibox"/>
@@ -16550,9 +16991,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <obsolete>
     The affected histogram is obsolete (5/20).
   </obsolete>
-  <owner>jeffreycohen@chromium.org</owner>
-  <owner>sebsg@chromium.org</owner>
-  <owner>tgupta@chromium.org</owner>
   <suffix name="ContentMenu"
       label="The count of devices shown in the content submenu"/>
   <suffix name="LinkMenu"
@@ -17317,8 +17755,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="SIGNALLING_MESSAGE" label="Signalling Message"/>
   <suffix name="SMS_FETCH_REQUEST" label="SMS Fetch Request"/>
   <suffix name="UNKNOWN_MESSAGE" label="Unknown Message"/>
-  <affected-histogram name="Sharing.DeviceLastUpdatedAge"/>
-  <affected-histogram name="Sharing.MajorVersionComparison"/>
+  <affected-histogram name="Sharing.DeviceLastUpdatedAge">
+    <obsolete>
+      Removed in M89.
+    </obsolete>
+  </affected-histogram>
+  <affected-histogram name="Sharing.MajorVersionComparison">
+    <obsolete>
+      Removed in M89.
+    </obsolete>
+  </affected-histogram>
   <affected-histogram name="Sharing.MessageAckTime"/>
   <affected-histogram name="Sharing.MessageAckTime.Android"/>
   <affected-histogram name="Sharing.MessageAckTime.ChromeOS"/>
@@ -17377,8 +17823,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="NetworkError" label="Network error"/>
   <suffix name="PayloadTooLarge" label="Payload is too large"/>
   <suffix name="Successful" label="Successful"/>
-  <affected-histogram name="Sharing.DeviceLastUpdatedAgeWithResult"/>
-  <affected-histogram name="Sharing.SharedClipboardRetries"/>
+  <affected-histogram name="Sharing.DeviceLastUpdatedAgeWithResult">
+    <obsolete>
+      Removed in M89.
+    </obsolete>
+  </affected-histogram>
+  <affected-histogram name="Sharing.SharedClipboardRetries">
+    <obsolete>
+      Removed in M89.
+    </obsolete>
+  </affected-histogram>
 </histogram_suffixes>
 
 <histogram_suffixes name="SharingWebRtcTimingEvent" separator=".">
@@ -18031,6 +18485,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="WarmStartup" label="Startup was warm (almost no hard faults)."/>
   <affected-histogram
       name="LibraryLoader.PercentageOfResidentCodeBeforePrefetch"/>
+  <affected-histogram
+      name="ProfilePicker.StartupTime.FirstPaint.FromApplicationStart"/>
   <affected-histogram name="Startup.BrowserMainToRendererMain"/>
   <affected-histogram
       name="Startup.BrowserMessageLoopStart.To.MainNavigationStart"/>
@@ -18045,7 +18501,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Startup.BrowserMessageLoopStartTimeFromMainEntry3"/>
   <affected-histogram name="Startup.BrowserOpenTabs"/>
   <affected-histogram name="Startup.BrowserWindow.FirstPaint"/>
-  <affected-histogram name="Startup.BrowserWindow.FirstPaint.CompositingEnded"/>
+  <affected-histogram name="Startup.BrowserWindow.FirstPaint.CompositingEnded">
+    <obsolete>
+      Obsolete as of Feb 2021.
+    </obsolete>
+  </affected-histogram>
   <affected-histogram name="Startup.BrowserWindowDisplay"/>
   <affected-histogram name="Startup.FirstWebContents.MainFrameLoad"/>
   <affected-histogram name="Startup.FirstWebContents.MainFrameLoad2"/>
@@ -18302,14 +18762,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="APP_LIST" label="APP_LIST"/>
   <suffix name="APP_NOTIFICATION" label="APP_NOTIFICATION">
     <obsolete>
-      Deprecated 2/2017.
+      Removed on 2/2017.
     </obsolete>
   </suffix>
   <suffix name="APP_SETTING" label="APP_SETTING"/>
   <suffix name="ARC_PACKAGE" label="ARC_PACKAGE"/>
   <suffix name="ARTICLE" label="ARTICLE">
     <obsolete>
-      Deprecated 7/2018.
+      Removed on 7/2018.
     </obsolete>
   </suffix>
   <suffix name="AUTOFILL" label="AUTOFILL"/>
@@ -18321,24 +18781,32 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="DICTIONARY" label="DICTIONARY"/>
   <suffix name="EXPERIMENTS" label="EXPERIMENTS">
     <obsolete>
-      Deprecated 4/2020.
+      Removed on 4/2020.
     </obsolete>
   </suffix>
   <suffix name="EXTENSION" label="EXTENSION"/>
   <suffix name="EXTENSION_SETTING" label="EXTENSION_SETTING"/>
-  <suffix name="FAVICON_IMAGE" label="FAVICON_IMAGE"/>
-  <suffix name="FAVICON_TRACKING" label="FAVICON_TRACKING"/>
+  <suffix name="FAVICON_IMAGE" label="FAVICON_IMAGE">
+    <obsolete>
+      Removed on 01/2021 (M90).
+    </obsolete>
+  </suffix>
+  <suffix name="FAVICON_TRACKING" label="FAVICON_TRACKING">
+    <obsolete>
+      Removed on 01/2021 (M90).
+    </obsolete>
+  </suffix>
   <suffix name="HISTORY_DELETE_DIRECTIVE" label="HISTORY_DELETE_DIRECTIVE"/>
   <suffix name="MANAGED_USER" label="MANAGED_USER">
     <obsolete>
-      Deprecated 4/2018.
+      Removed on 4/2018.
     </obsolete>
   </suffix>
   <suffix name="MANAGED_USER_SETTING" label="MANAGED_USER_SETTING"/>
   <suffix name="MANAGED_USER_SHARED_SETTING"
       label="MANAGED_USER_SHARED_SETTING">
     <obsolete>
-      Deprecated 4/2018.
+      Removed on 4/2018.
     </obsolete>
   </suffix>
   <suffix name="MANAGED_USER_WHITELIST" label="MANAGED_USER_WHITELIST"/>
@@ -18363,13 +18831,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="SHARING_MESSAGE" label="SHARING_MESSAGE"/>
   <suffix name="SYNCED_NOTIFICATION" label="SYNCED_NOTIFICATION">
     <obsolete>
-      Deprecated in M53.
+      Removed in M53.
     </obsolete>
   </suffix>
   <suffix name="SYNCED_NOTIFICATION_APP_INFO"
       label="SYNCED_NOTIFICATION_APP_INFO">
     <obsolete>
-      Deprecated in M53.
+      Removed in M53.
     </obsolete>
   </suffix>
   <suffix name="THEME" label="THEME"/>
@@ -18685,8 +19153,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Apps.StateTransition.Drag.PresentationTime"/>
   <affected-histogram
       name="Apps.StateTransition.Drag.PresentationTime.MaxLatency"/>
+  <affected-histogram name="Ash.LoginAnimation.Duration"/>
+  <affected-histogram name="Ash.LoginAnimation.Jank"/>
+  <affected-histogram name="Ash.LoginAnimation.Smoothness"/>
   <affected-histogram name="Ash.Overview.AnimationSmoothness.Close"/>
   <affected-histogram name="Ash.Overview.WindowDrag.PresentationTime"/>
+  <affected-histogram name="Ash.UnlockAnimation.Jank"/>
+  <affected-histogram name="Ash.UnlockAnimation.Smoothness"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="TabSwitchingType" separator=".">
@@ -19225,10 +19698,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Success" label="The operation or partial operation succeeded."/>
   <affected-histogram name="Net.TrustTokens.NetErrorForTrustTokenOperation"/>
   <affected-histogram name="Net.TrustTokens.NetErrorForTrustTokenOperation"/>
-  <affected-histogram name="Net.TrustTokens.OperationBeginTime"/>
-  <affected-histogram name="Net.TrustTokens.OperationFinalizeTime"/>
-  <affected-histogram name="Net.TrustTokens.OperationServerTime"/>
-  <affected-histogram name="Net.TrustTokens.OperationTotalTime"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="TrustTokenOperationType" separator=".">
@@ -19241,14 +19710,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       name="Net.TrustTokens.NetErrorForTrustTokenOperation.Failure"/>
   <affected-histogram
       name="Net.TrustTokens.NetErrorForTrustTokenOperation.Success"/>
-  <affected-histogram name="Net.TrustTokens.OperationBeginTime.Failure"/>
-  <affected-histogram name="Net.TrustTokens.OperationBeginTime.Success"/>
-  <affected-histogram name="Net.TrustTokens.OperationFinalizeTime.Failure"/>
-  <affected-histogram name="Net.TrustTokens.OperationFinalizeTime.Success"/>
-  <affected-histogram name="Net.TrustTokens.OperationServerTime.Failure"/>
-  <affected-histogram name="Net.TrustTokens.OperationServerTime.Success"/>
-  <affected-histogram name="Net.TrustTokens.OperationTotalTime.Failure"/>
-  <affected-histogram name="Net.TrustTokens.OperationTotalTime.Success"/>
   <affected-histogram name="Net.TrustTokens.RequestHelperFactoryOutcome"/>
 </histogram_suffixes>
 
@@ -19497,15 +19958,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </suffix>
   <suffix name="Camera" label="Camera"/>
   <suffix name="ConnectivityDiagnostics" label="Connectivity Diagnostics"/>
+  <suffix name="Crosh" label="Crosh"/>
   <suffix name="Diagnostics" label="Diagnostics"/>
   <suffix name="Discover" label="Discovery">
     <obsolete>
       Deprecated as of 2020-10-21.
     </obsolete>
   </suffix>
+  <suffix name="Eche" label="Eche"/>
   <suffix name="Help" label="Help"/>
   <suffix name="Media" label="Media"/>
   <suffix name="OSSettings" label="OS Settings"/>
+  <suffix name="Personalization" label="Personalization"/>
   <suffix name="PrintManagement" label="PrintManagement"/>
   <suffix name="Sample" label="Sample"/>
   <suffix name="Scanning" label="Scanning"/>
@@ -19589,7 +20053,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram_suffixes name="WebFontMissedCache" separator="." ordering="prefix">
   <owner>toyoshim@chromium.org</owner>
-  <suffix name="MissedCache" label="On missed cache"/>
+  <suffix name="MissedCache" label="On missed cache">
+    <obsolete>
+      Removed Dec 2020.
+    </obsolete>
+  </suffix>
   <affected-histogram name="WebFont.DownloadTime.0.Under10KB"/>
   <affected-histogram name="WebFont.DownloadTime.1.10KBTo50KB"/>
   <affected-histogram name="WebFont.DownloadTime.2.50KBTo100KB"/>
@@ -19738,6 +20206,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="BookmarkPage" label=""/>
   <suffix name="Cast" label=""/>
   <suffix name="ChromeOSRestart" label=""/>
+  <suffix name="ChromeTips" label=""/>
   <suffix name="ClearBrowsingData" label=""/>
   <suffix name="Copy" label=""/>
   <suffix name="CopyUrl" label=""/>

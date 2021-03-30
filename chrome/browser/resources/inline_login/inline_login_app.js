@@ -90,6 +90,15 @@ Polymer({
       },
       readOnly: true,
     },
+
+    /*
+     * True if the dialog is open for reauthentication.
+     * @private
+     */
+    isReauthentication_: {
+      type: Boolean,
+      value: false,
+    },
     // </if>
 
     /**
@@ -111,7 +120,10 @@ Polymer({
    */
   isLoginPrimaryAccount_: false,
 
-  /** @private {boolean} */
+  /**
+   * TODO(crbug.com/1164862): cleanup this flag, since it's enabled by default.
+   * @private {boolean}
+   */
   enableGaiaActionButtons_: false,
 
   /** @override */
@@ -121,7 +133,6 @@ Polymer({
 
   /** @override */
   ready() {
-    this.switchView_(this.getDefaultView_());
     this.authExtHost_ = new Authenticator(
         /** @type {!WebView} */ (this.$.signinFrame));
     this.addAuthExtHostListeners_();
@@ -235,6 +246,11 @@ Polymer({
     this.loading_ = true;
     this.isLoginPrimaryAccount_ = data.isLoginPrimaryAccount;
     this.enableGaiaActionButtons_ = data.enableGaiaActionButtons;
+    // Skip welcome page for reauthentication.
+    if (data.email) {
+      this.isReauthentication_ = true;
+    }
+    this.switchView_(this.getDefaultView_());
   },
 
   /**
@@ -333,7 +349,7 @@ Polymer({
       return false;
     }
     return this.isAccountManagementFlowsV2Enabled_ &&
-        !this.shouldSkipWelcomePage_;
+        !this.shouldSkipWelcomePage_ && !this.isReauthentication_;
   },
 
   // <if expr="chromeos">
@@ -344,6 +360,12 @@ Polymer({
         /** @type {WelcomePageAppElement} */ (this.$$('welcome-page-app'))
             .isSkipCheckboxChecked();
     this.browserProxy_.skipWelcomePage(skipChecked);
+    this.setFocusToWebview_();
+  },
+
+  /** @private */
+  setFocusToWebview_() {
+    this.$.signinFrame.focus();
   },
   // </if>
 

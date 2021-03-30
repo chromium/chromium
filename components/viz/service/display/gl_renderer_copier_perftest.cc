@@ -223,7 +223,8 @@ class GLRendererCopierPerfTest : public testing::Test {
         ASSERT_EQ(kRequestArea, result->rect());
 
       if (result_format == CopyOutputResult::Format::RGBA_BITMAP) {
-        const SkBitmap& result_bitmap = result->AsSkBitmap();
+        auto scoped_bitmap = result->ScopedAccessSkBitmap();
+        const SkBitmap& result_bitmap = scoped_bitmap.bitmap();
         ASSERT_TRUE(result_bitmap.readyToDraw());
       } else if (result_format == CopyOutputResult::Format::I420_PLANES) {
         const int result_width = result->rect().width();

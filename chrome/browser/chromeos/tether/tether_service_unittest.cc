@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
@@ -14,7 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/ui/ash/network/tether_notification_presenter.h"
 #include "chrome/common/pref_names.h"
@@ -27,8 +28,6 @@
 #include "chromeos/components/tether/fake_tether_host_fetcher.h"
 #include "chromeos/components/tether/tether_component_impl.h"
 #include "chromeos/components/tether/tether_host_fetcher_impl.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -124,16 +123,16 @@ class FakeTetherComponentWithDestructorCallback
     : public chromeos::tether::FakeTetherComponent {
  public:
   FakeTetherComponentWithDestructorCallback(
-      const base::Closure& destructor_callback)
-      : FakeTetherComponent(false /* has_asynchronous_shutdown */),
-        destructor_callback_(destructor_callback) {}
+      base::OnceClosure destructor_callback)
+      : FakeTetherComponent(/*has_asynchronous_shutdown=*/false),
+        destructor_callback_(std::move(destructor_callback)) {}
 
   ~FakeTetherComponentWithDestructorCallback() override {
-    destructor_callback_.Run();
+    std::move(destructor_callback_).Run();
   }
 
  private:
-  base::Closure destructor_callback_;
+  base::OnceClosure destructor_callback_;
 };
 
 class TestTetherComponentFactory final
@@ -163,9 +162,10 @@ class TestTetherComponentFactory final
       chromeos::NetworkConnectionHandler* network_connection_handler,
       scoped_refptr<device::BluetoothAdapter> adapter,
       session_manager::SessionManager* session_manager) override {
-    active_tether_component_ = new FakeTetherComponentWithDestructorCallback(
-        base::Bind(&TestTetherComponentFactory::OnActiveTetherComponentDeleted,
-                   base::Unretained(this)));
+    active_tether_component_ =
+        new FakeTetherComponentWithDestructorCallback(base::BindOnce(
+            &TestTetherComponentFactory::OnActiveTetherComponentDeleted,
+            base::Unretained(this)));
     was_tether_component_active_ = true;
     return base::WrapUnique(active_tether_component_);
   }
@@ -317,7 +317,7 @@ class TetherServiceTest : public testing::Test {
     TestingProfile::Builder builder;
     profile_ = builder.Build();
 
-    fake_chrome_user_manager_ = new chromeos::FakeChromeUserManager();
+    fake_chrome_user_manager_ = new ash::FakeChromeUserManager();
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(fake_chrome_user_manager_));
 
@@ -540,7 +540,7 @@ class TetherServiceTest : public testing::Test {
   const content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<TestingProfile> profile_;
-  chromeos::FakeChromeUserManager* fake_chrome_user_manager_;
+  ash::FakeChromeUserManager* fake_chrome_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable>
       test_pref_service_;

@@ -29,11 +29,11 @@ void AdsBlockedInfobarDelegate::Create(
 
 AdsBlockedInfobarDelegate::~AdsBlockedInfobarDelegate() = default;
 
-base::string16 AdsBlockedInfobarDelegate::GetExplanationText() const {
+std::u16string AdsBlockedInfobarDelegate::GetExplanationText() const {
   return l10n_util::GetStringUTF16(IDS_BLOCKED_ADS_PROMPT_EXPLANATION);
 }
 
-base::string16 AdsBlockedInfobarDelegate::GetToggleText() const {
+std::u16string AdsBlockedInfobarDelegate::GetToggleText() const {
   return l10n_util::GetStringUTF16(IDS_ALWAYS_ALLOW_ADS);
 }
 
@@ -64,7 +64,7 @@ bool AdsBlockedInfobarDelegate::LinkClicked(WindowOpenDisposition disposition) {
   return false;
 }
 
-base::string16 AdsBlockedInfobarDelegate::GetMessageText() const {
+std::u16string AdsBlockedInfobarDelegate::GetMessageText() const {
   return l10n_util::GetStringUTF16(IDS_BLOCKED_ADS_INFOBAR_MESSAGE);
 }
 
@@ -72,7 +72,7 @@ int AdsBlockedInfobarDelegate::GetButtons() const {
   return BUTTON_OK | BUTTON_CANCEL;
 }
 
-base::string16 AdsBlockedInfobarDelegate::GetButtonLabel(
+std::u16string AdsBlockedInfobarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   return l10n_util::GetStringUTF16((button == BUTTON_OK) ? IDS_OK : IDS_RELOAD);
 }

@@ -56,7 +56,7 @@ float TestWebUI::GetDeviceScaleFactor() {
   return 1.0f;
 }
 
-const base::string16& TestWebUI::GetOverriddenTitle() {
+const std::u16string& TestWebUI::GetOverriddenTitle() {
   return temp_string_;
 }
 

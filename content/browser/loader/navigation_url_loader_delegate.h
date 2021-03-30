@@ -12,9 +12,9 @@
 #include "base/optional.h"
 #include "content/common/content_export.h"
 #include "content/common/navigation_params.h"
-#include "content/public/common/navigation_policy.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/common/navigation/navigation_policy.h"
 
 namespace net {
 class NetworkIsolationKey;
@@ -66,7 +66,7 @@ class CONTENT_EXPORT NavigationURLLoaderDelegate {
       mojo::ScopedDataPipeConsumerHandle response_body,
       GlobalRequestID request_id,
       bool is_download,
-      NavigationDownloadPolicy download_policy,
+      blink::NavigationDownloadPolicy download_policy,
       net::NetworkIsolationKey network_isolation_key,
       base::Optional<SubresourceLoaderParams> subresource_loader_params) = 0;
 

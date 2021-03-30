@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that inspect() command line api works.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.loadHTML(`
       <p id="p1">
       </p>

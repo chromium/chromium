@@ -42,9 +42,15 @@ typename std::enable_if<sizeof(T) == 8, T>::type Uint64Hash(uint64_t v) {
   return static_cast<T>(v);
 }
 
-class Uint64Hasher {
+// Note: A Uint64ToUint64Hasher variant is currently not needed.
+// Note: Be careful about a variant that hashes differently in 32-bit vs. 64-bit
+// processes (i.e., using |size_t| where the below uses |uint32_t|). Such a
+// variant will break compatibility for tables that are built and accessed in
+// processes of differing bitness, which is a real-world concern for users of
+// this component (see crbug.com/1174797 for details).
+class Uint64ToUint32Hasher {
  public:
-  size_t operator()(uint64_t v) const { return Uint64Hash<size_t>(v); }
+  uint32_t operator()(uint64_t v) const { return Uint64Hash<uint32_t>(v); }
 };
 
 }  // namespace url_pattern_index

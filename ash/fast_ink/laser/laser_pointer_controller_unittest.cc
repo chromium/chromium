@@ -6,6 +6,7 @@
 
 #include "ash/fast_ink/laser/laser_pointer_controller_test_api.h"
 #include "ash/fast_ink/laser/laser_pointer_view.h"
+#include "ash/public/cpp/stylus_utils.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ui/events/test/event_generator.h"
@@ -13,13 +14,33 @@
 namespace ash {
 namespace {
 
+class TestLaserPointerObserver : public LaserPointerObserver {
+ public:
+  TestLaserPointerObserver() = default;
+  ~TestLaserPointerObserver() override = default;
+
+  // LaserPointerObserver:
+  void OnLaserPointerStateChanged(bool enabled) override {
+    laser_pointer_enabled_ = enabled;
+  }
+
+  bool laser_pointer_enabled() { return laser_pointer_enabled_; }
+
+ private:
+  bool laser_pointer_enabled_ = false;
+};
+
 class LaserPointerControllerTest : public AshTestBase {
  public:
   LaserPointerControllerTest() = default;
+  LaserPointerControllerTest(const LaserPointerControllerTest&) = delete;
+  LaserPointerControllerTest& operator=(const LaserPointerControllerTest&) =
+      delete;
   ~LaserPointerControllerTest() override = default;
 
   void SetUp() override {
     AshTestBase::SetUp();
+    observer_ = std::make_unique<TestLaserPointerObserver>();
     controller_ = std::make_unique<LaserPointerController>();
     controller_test_api_ =
         std::make_unique<LaserPointerControllerTestApi>(controller_.get());
@@ -34,11 +55,115 @@ class LaserPointerControllerTest : public AshTestBase {
   }
 
  protected:
+  void VerifyLaserPointerRendererTouchEvent() {
+    ui::test::EventGenerator* event_generator = GetEventGenerator();
+
+    // When disabled the laser pointer should not be showing.
+    event_generator->MoveTouch(gfx::Point(1, 1));
+    EXPECT_FALSE(controller_test_api_->IsShowingLaserPointer());
+
+    // Verify that by enabling the mode, the laser pointer should still not be
+    // showing.
+    controller_test_api_->SetEnabled(true);
+    EXPECT_FALSE(controller_test_api_->IsShowingLaserPointer());
+
+    // Verify moving the finger 4 times will not display the laser pointer.
+    event_generator->MoveTouch(gfx::Point(2, 2));
+    event_generator->MoveTouch(gfx::Point(3, 3));
+    event_generator->MoveTouch(gfx::Point(4, 4));
+    event_generator->MoveTouch(gfx::Point(5, 5));
+    EXPECT_FALSE(controller_test_api_->IsShowingLaserPointer());
+
+    // Verify pressing the finger will show the laser pointer and add a point
+    // but will not activate fading out.
+    event_generator->PressTouch();
+    EXPECT_TRUE(controller_test_api_->IsShowingLaserPointer());
+    EXPECT_FALSE(controller_test_api_->IsFadingAway());
+    EXPECT_EQ(1, controller_test_api_->laser_points().GetNumberOfPoints());
+
+    // Verify dragging the finger 2 times will add 2 more points.
+    event_generator->MoveTouch(gfx::Point(6, 6));
+    event_generator->MoveTouch(gfx::Point(7, 7));
+    EXPECT_EQ(3, controller_test_api_->laser_points().GetNumberOfPoints());
+
+    // Verify releasing the finger still shows the laser pointer, which is
+    // fading away.
+    event_generator->ReleaseTouch();
+    EXPECT_TRUE(controller_test_api_->IsShowingLaserPointer());
+    EXPECT_TRUE(controller_test_api_->IsFadingAway());
+
+    // Verify that disabling the mode does not display the laser pointer.
+    controller_test_api_->SetEnabled(false);
+    EXPECT_FALSE(controller_test_api_->IsShowingLaserPointer());
+    EXPECT_FALSE(controller_test_api_->IsFadingAway());
+
+    // Verify that disabling the mode while laser pointer is displayed does not
+    // display the laser pointer.
+    controller_test_api_->SetEnabled(true);
+    event_generator->PressTouch();
+    event_generator->MoveTouch(gfx::Point(6, 6));
+    EXPECT_TRUE(controller_test_api_->IsShowingLaserPointer());
+    controller_test_api_->SetEnabled(false);
+    EXPECT_FALSE(controller_test_api_->IsShowingLaserPointer());
+
+    // Verify that the laser pointer does not add points while disabled.
+    event_generator->PressTouch();
+    event_generator->MoveTouch(gfx::Point(8, 8));
+    event_generator->ReleaseTouch();
+    event_generator->MoveTouch(gfx::Point(9, 9));
+    EXPECT_FALSE(controller_test_api_->IsShowingLaserPointer());
+  }
+
+  void VerifyLaserPointerRendererMouseEvent() {
+    ui::test::EventGenerator* event_generator = GetEventGenerator();
+
+    // When disabled the laser pointer should not be showing.
+    event_generator->MoveMouseTo(gfx::Point(1, 1));
+    EXPECT_FALSE(controller_test_api_->IsShowingLaserPointer());
+
+    // Verify that by enabling the mode, the laser pointer should still not be
+    // showing.
+    controller_test_api_->SetEnabled(true);
+    EXPECT_FALSE(controller_test_api_->IsShowingLaserPointer());
+
+    // Verify moving the cursor 4 times will display the laser pointer.
+    event_generator->MoveMouseTo(gfx::Point(2, 2));
+    event_generator->MoveMouseTo(gfx::Point(3, 3));
+    event_generator->MoveMouseTo(gfx::Point(4, 4));
+    event_generator->MoveMouseTo(gfx::Point(5, 5));
+    EXPECT_TRUE(controller_test_api_->IsShowingLaserPointer());
+    EXPECT_FALSE(controller_test_api_->IsFadingAway());
+    EXPECT_EQ(4, controller_test_api_->laser_points().GetNumberOfPoints());
+
+    // Verify moving the cursor 2 times will add 2 more points.
+    event_generator->MoveMouseTo(gfx::Point(6, 6));
+    event_generator->MoveMouseTo(gfx::Point(7, 7));
+    EXPECT_EQ(6, controller_test_api_->laser_points().GetNumberOfPoints());
+
+    // Verify that disabling the mode does not display the laser pointer.
+    controller_test_api_->SetEnabled(false);
+    EXPECT_FALSE(controller_test_api_->IsShowingLaserPointer());
+    EXPECT_FALSE(controller_test_api_->IsFadingAway());
+
+    // Verify that disabling the mode while laser pointer is displayed does not
+    // display the laser pointer.
+    controller_test_api_->SetEnabled(true);
+    event_generator->MoveMouseTo(gfx::Point(6, 6));
+    EXPECT_TRUE(controller_test_api_->IsShowingLaserPointer());
+    controller_test_api_->SetEnabled(false);
+    EXPECT_FALSE(controller_test_api_->IsShowingLaserPointer());
+
+    // Verify that the laser pointer does not add points while disabled.
+    event_generator->MoveMouseTo(gfx::Point(8, 8));
+    event_generator->MoveMouseTo(gfx::Point(9, 9));
+    EXPECT_FALSE(controller_test_api_->IsShowingLaserPointer());
+  }
+
+  TestLaserPointerObserver* observer() { return observer_.get(); }
+
   std::unique_ptr<LaserPointerController> controller_;
   std::unique_ptr<LaserPointerControllerTestApi> controller_test_api_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LaserPointerControllerTest);
+  std::unique_ptr<TestLaserPointerObserver> observer_;
 };
 
 }  // namespace
@@ -46,64 +171,10 @@ class LaserPointerControllerTest : public AshTestBase {
 // Test to ensure the class responsible for drawing the laser pointer receives
 // points from stylus movements as expected.
 TEST_F(LaserPointerControllerTest, LaserPointerRenderer) {
-  // The laser pointer mode only works with stylus.
+  stylus_utils::SetHasStylusInputForTesting();
   ui::test::EventGenerator* event_generator = GetEventGenerator();
   event_generator->EnterPenPointerMode();
-
-  // When disabled the laser pointer should not be showing.
-  event_generator->MoveTouch(gfx::Point(1, 1));
-  EXPECT_FALSE(controller_test_api_->IsShowingLaserPointer());
-
-  // Verify that by enabling the mode, the laser pointer should still not be
-  // showing.
-  controller_test_api_->SetEnabled(true);
-  EXPECT_FALSE(controller_test_api_->IsShowingLaserPointer());
-
-  // Verify moving the stylus 4 times will not display the laser pointer.
-  event_generator->MoveTouch(gfx::Point(2, 2));
-  event_generator->MoveTouch(gfx::Point(3, 3));
-  event_generator->MoveTouch(gfx::Point(4, 4));
-  event_generator->MoveTouch(gfx::Point(5, 5));
-  EXPECT_FALSE(controller_test_api_->IsShowingLaserPointer());
-
-  // Verify pressing the stylus will show the laser pointer and add a point but
-  // will not activate fading out.
-  event_generator->PressTouch();
-  EXPECT_TRUE(controller_test_api_->IsShowingLaserPointer());
-  EXPECT_FALSE(controller_test_api_->IsFadingAway());
-  EXPECT_EQ(1, controller_test_api_->laser_points().GetNumberOfPoints());
-
-  // Verify dragging the stylus 2 times will add 2 more points.
-  event_generator->MoveTouch(gfx::Point(6, 6));
-  event_generator->MoveTouch(gfx::Point(7, 7));
-  EXPECT_EQ(3, controller_test_api_->laser_points().GetNumberOfPoints());
-
-  // Verify releasing the stylus still shows the laser pointer, which is fading
-  // away.
-  event_generator->ReleaseTouch();
-  EXPECT_TRUE(controller_test_api_->IsShowingLaserPointer());
-  EXPECT_TRUE(controller_test_api_->IsFadingAway());
-
-  // Verify that disabling the mode does not display the laser pointer.
-  controller_test_api_->SetEnabled(false);
-  EXPECT_FALSE(controller_test_api_->IsShowingLaserPointer());
-  EXPECT_FALSE(controller_test_api_->IsFadingAway());
-
-  // Verify that disabling the mode while laser pointer is displayed does not
-  // display the laser pointer.
-  controller_test_api_->SetEnabled(true);
-  event_generator->PressTouch();
-  event_generator->MoveTouch(gfx::Point(6, 6));
-  EXPECT_TRUE(controller_test_api_->IsShowingLaserPointer());
-  controller_test_api_->SetEnabled(false);
-  EXPECT_FALSE(controller_test_api_->IsShowingLaserPointer());
-
-  // Verify that the laser pointer does not add points while disabled.
-  event_generator->PressTouch();
-  event_generator->MoveTouch(gfx::Point(8, 8));
-  event_generator->ReleaseTouch();
-  event_generator->MoveTouch(gfx::Point(9, 9));
-  EXPECT_FALSE(controller_test_api_->IsShowingLaserPointer());
+  VerifyLaserPointerRendererTouchEvent();
 
   // Verify that the laser pointer does not get shown if points are not coming
   // from the stylus, even when enabled.
@@ -126,6 +197,52 @@ TEST_F(LaserPointerControllerTest, LaserPointerRenderer) {
   ui::Event::DispatcherApi api(&touch);
   api.set_target(Shell::GetPrimaryRootWindow());
   static_cast<ui::EventHandler*>(controller_.get())->OnTouchEvent(&touch);
+}
+
+// Test to ensure the class responsible for drawing the laser pointer receives
+// points from mouse movements as expected.
+TEST_F(LaserPointerControllerTest, LaserPointerRendererTouchEvent) {
+  stylus_utils::SetNoStylusInputForTesting();
+  VerifyLaserPointerRendererTouchEvent();
+
+  // Make sure that event can be sent after the pointer widget is destroyed
+  // by release. This can happen if the touch event causes the deletion of
+  // the pointer event in an earlier event handler.
+  ui::PointerDetails pointer_details;
+
+  ui::TouchEvent touch(ui::ET_TOUCH_MOVED, gfx::PointF(), gfx::PointF(),
+                       base::TimeTicks(), pointer_details, 0);
+  ui::Event::DispatcherApi api(&touch);
+  api.set_target(Shell::GetPrimaryRootWindow());
+  static_cast<ui::EventHandler*>(controller_.get())->OnTouchEvent(&touch);
+}
+
+// Test to ensure the class responsible for drawing the laser pointer receives
+// points from mouse movements as expected when stylus input is not available.
+TEST_F(LaserPointerControllerTest, LaserPointerRendererMouseEventNoStylus) {
+  stylus_utils::SetNoStylusInputForTesting();
+
+  VerifyLaserPointerRendererMouseEvent();
+}
+
+// Test to ensure the class responsible for drawing the laser pointer receives
+// points from mouse movements as expected when stylus input is available but
+// hasn't been seen before.
+TEST_F(LaserPointerControllerTest, LaserPointerRendererMouseEventHasStylus) {
+  stylus_utils::SetHasStylusInputForTesting();
+
+  VerifyLaserPointerRendererMouseEvent();
+
+  // Verify that the laser pointer does not get shown if points are coming from
+  // mouse event if a stylus interaction has been seen.
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  event_generator->EnterPenPointerMode();
+  event_generator->PressTouch();
+  event_generator->MoveMouseTo(gfx::Point(2, 2));
+  event_generator->MoveMouseTo(gfx::Point(3, 3));
+  event_generator->MoveMouseTo(gfx::Point(4, 4));
+  event_generator->MoveMouseTo(gfx::Point(5, 5));
+  EXPECT_FALSE(controller_test_api_->IsShowingLaserPointer());
 }
 
 // Test to ensure the class responsible for drawing the laser pointer handles
@@ -163,6 +280,56 @@ TEST_F(LaserPointerControllerTest, LaserPointerPrediction) {
   EXPECT_TRUE(controller_test_api_->IsFadingAway());
   EXPECT_EQ(0,
             controller_test_api_->predicted_laser_points().GetNumberOfPoints());
+}
+
+TEST_F(LaserPointerControllerTest, NotifyLaserPointerStateChanged) {
+  controller_->AddObserver(observer());
+  controller_test_api_->SetEnabled(true);
+  EXPECT_TRUE(observer()->laser_pointer_enabled());
+  controller_test_api_->SetEnabled(false);
+  EXPECT_FALSE(observer()->laser_pointer_enabled());
+  controller_->RemoveObserver(observer());
+}
+
+// Test to ensure the class responsible for update cursor visibility state when
+// it handles mouse and touch events.
+TEST_F(LaserPointerControllerTest, MouseCursorState) {
+  ash::stylus_utils::SetNoStylusInputForTesting();
+
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  auto* cursor_manager = Shell::Get()->cursor_manager();
+
+  // Verify that when disabled the cursor should be visible.
+  event_generator->MoveMouseTo(gfx::Point(1, 1));
+  EXPECT_FALSE(controller_test_api_->IsShowingLaserPointer());
+  EXPECT_TRUE(cursor_manager->IsCursorVisible());
+
+  // Verify that by enabling the mode, mouse cursor should be hidden.
+  controller_test_api_->SetEnabled(true);
+  event_generator->MoveMouseTo(gfx::Point(2, 2));
+  EXPECT_FALSE(cursor_manager->IsCursorVisible());
+  EXPECT_TRUE(cursor_manager->IsCursorLocked());
+
+  // Verify that after moving with touch, mouse cursor should be still hidden
+  // but unlocked.
+  event_generator->PressTouch();
+  event_generator->MoveTouch(gfx::Point(2, 2));
+  EXPECT_FALSE(cursor_manager->IsCursorVisible());
+  EXPECT_FALSE(cursor_manager->IsCursorLocked());
+  EXPECT_EQ(1, controller_test_api_->laser_points().GetNumberOfPoints());
+
+  // Verify that moving the mouse cursor shows the cursor.
+  event_generator->MoveMouseTo(gfx::Point(6, 6));
+  EXPECT_FALSE(cursor_manager->IsCursorVisible());
+  EXPECT_TRUE(cursor_manager->IsCursorLocked());
+  EXPECT_EQ(2, controller_test_api_->laser_points().GetNumberOfPoints());
+
+  // Verify that by disabling the mode, mouse cursor should be visible.
+  controller_test_api_->SetEnabled(false);
+  EXPECT_FALSE(controller_test_api_->IsShowingLaserPointer());
+  event_generator->MoveMouseTo(gfx::Point(7, 7));
+  EXPECT_TRUE(cursor_manager->IsCursorVisible());
+  EXPECT_FALSE(cursor_manager->IsCursorLocked());
 }
 
 }  // namespace ash

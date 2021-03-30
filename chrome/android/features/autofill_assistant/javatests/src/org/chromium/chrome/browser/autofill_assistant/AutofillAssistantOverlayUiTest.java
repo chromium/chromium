@@ -37,6 +37,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayImage;
@@ -154,6 +155,7 @@ public class AutofillAssistantOverlayUiTest {
     /** Tests assumptions about the partial overlay. */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1172616")
     public void testPartialOverlay() throws Exception {
         AssistantOverlayModel model = new AssistantOverlayModel();
         AssistantOverlayCoordinator coordinator = createCoordinator(model);

@@ -81,13 +81,14 @@ SessionLengthLimiter::SessionLengthLimiter(Delegate* delegate,
 
   PrefService* local_state = g_browser_process->local_state();
   pref_change_registrar_.Init(local_state);
-  pref_change_registrar_.Add(prefs::kSessionLengthLimit,
-                             base::Bind(&SessionLengthLimiter::UpdateLimit,
-                                        base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kSessionLengthLimit,
+      base::BindRepeating(&SessionLengthLimiter::UpdateLimit,
+                          base::Unretained(this)));
   pref_change_registrar_.Add(
       prefs::kSessionWaitForInitialUserActivity,
-      base::Bind(&SessionLengthLimiter::UpdateSessionStartTime,
-                 base::Unretained(this)));
+      base::BindRepeating(&SessionLengthLimiter::UpdateSessionStartTime,
+                          base::Unretained(this)));
 
   // If this is a browser restart after a crash, try to restore the session
   // start time and the boolean indicating user activity from local state. If

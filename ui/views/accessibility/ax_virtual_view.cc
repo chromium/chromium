@@ -508,7 +508,8 @@ ViewAXPlatformNodeDelegate* AXVirtualView::GetDelegate() const {
 AXVirtualViewWrapper* AXVirtualView::GetOrCreateWrapper(
     views::AXAuraObjCache* cache) {
 #if defined(USE_AURA)
-  if (!wrapper_)
+  // cache might be recreated, and if cache is new, recreate the wrapper.
+  if (!wrapper_ || wrapper_->cache() != cache)
     wrapper_ = std::make_unique<AXVirtualViewWrapper>(this, cache);
 #endif
   return wrapper_.get();

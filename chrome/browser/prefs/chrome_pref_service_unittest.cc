@@ -92,7 +92,7 @@ TEST_F(ChromePrefServiceWebKitPrefs, PrefsCopied) {
   // These should still be the default values.
 #if defined(OS_MAC)
   const char kDefaultFont[] = "Times";
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   const char kDefaultFont[] = "Tinos";
 #else
   const char kDefaultFont[] = "Times New Roman";

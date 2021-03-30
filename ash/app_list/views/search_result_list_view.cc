@@ -24,7 +24,6 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
@@ -41,8 +40,6 @@ namespace {
 
 constexpr base::TimeDelta kImpressionThreshold =
     base::TimeDelta::FromSeconds(3);
-constexpr base::TimeDelta kZeroStateImpressionThreshold =
-    base::TimeDelta::FromSeconds(1);
 
 SearchResultIdWithPositionIndices GetSearchResultsForLogging(
     std::vector<SearchResultView*> search_result_views) {
@@ -54,19 +51,6 @@ SearchResultIdWithPositionIndices GetSearchResultsForLogging(
     }
   }
   return results;
-}
-
-bool IsZeroStateFile(const SearchResult& result) {
-  return result.result_type() == AppListSearchResultType::kZeroStateFile;
-}
-
-bool IsDriveQuickAccess(const SearchResult& result) {
-  return result.result_type() == AppListSearchResultType::kDriveQuickAccess;
-}
-
-void LogFileImpressions(SearchResultType result_type) {
-  UMA_HISTOGRAM_ENUMERATION("Apps.AppList.ZeroStateResultsList.FileImpressions",
-                            result_type, SEARCH_RESULT_TYPE_BOUNDARY);
 }
 
 }  // namespace
@@ -81,8 +65,8 @@ SearchResultListView::SearchResultListView(AppListMainView* main_view,
       views::BoxLayout::Orientation::kVertical));
 
   size_t result_count =
-      AppListConfig::instance().max_search_result_list_items() +
-      AppListConfig::instance().max_assistant_search_result_list_items();
+      SharedAppListConfig::instance().max_search_result_list_items() +
+      SharedAppListConfig::instance().max_assistant_search_result_list_items();
 
   for (size_t i = 0; i < result_count; ++i) {
     search_result_views_.emplace_back(
@@ -120,21 +104,9 @@ int SearchResultListView::DoUpdate() {
 
   std::vector<SearchResult*> display_results = GetSearchResults();
 
-  // TODO(crbug.com/1076270): The logic for zero state and Drive quick access
-  // files below exists only for metrics, and can be folded into the
-  // AppListNotifier and done in chrome.
-  bool found_zero_state_file = false;
-  bool found_drive_quick_access = false;
-
   for (size_t i = 0; i < search_result_views_.size(); ++i) {
     SearchResultView* result_view = GetResultViewAt(i);
     if (i < display_results.size()) {
-      if (IsZeroStateFile(*display_results[i])) {
-        found_zero_state_file = true;
-      } else if (IsDriveQuickAccess(*display_results[i])) {
-        found_drive_quick_access = true;
-      }
-
       result_view->SetResult(display_results[i]);
       result_view->SetVisible(true);
     } else {
@@ -161,32 +133,6 @@ int SearchResultListView::DoUpdate() {
     impression_timer_.Stop();
   impression_timer_.Start(FROM_HERE, kImpressionThreshold, this,
                           &SearchResultListView::LogImpressions);
-
-  // Log impressions for local zero state files.
-  if (!found_zero_state_file)
-    zero_state_file_impression_timer_.Stop();
-  if (found_zero_state_file && !previous_found_zero_state_file_) {
-    zero_state_file_impression_timer_.Start(
-        FROM_HERE, kZeroStateImpressionThreshold,
-        base::BindOnce(&LogFileImpressions, ZERO_STATE_FILE));
-  }
-  previous_found_zero_state_file_ = found_zero_state_file;
-
-  // Log impressions for Drive Quick Access files.
-  if (!found_drive_quick_access)
-    drive_quick_access_impression_timer_.Stop();
-  if (found_drive_quick_access && !previous_found_drive_quick_access_) {
-    drive_quick_access_impression_timer_.Start(
-        FROM_HERE, kZeroStateImpressionThreshold,
-        base::BindOnce(&LogFileImpressions, DRIVE_QUICK_ACCESS));
-  }
-  previous_found_drive_quick_access_ = found_drive_quick_access;
-
-  set_container_score(
-      display_results.empty()
-          ? -1.0
-          : AppListConfig::instance().results_list_container_score());
-
   return display_results.size();
 }
 
@@ -227,8 +173,6 @@ void SearchResultListView::SearchResultActivated(SearchResultView* view,
 
   RecordSearchResultOpenSource(result, view_delegate_->GetModel(),
                                view_delegate_->GetSearchModel());
-  view_delegate_->LogResultLaunchHistogram(
-      SearchResultLaunchLocation::kResultList, view->index_in_container());
   view_delegate_->NotifySearchResultsForLogging(
       view_delegate_->GetSearchModel()->search_box()->text(),
       GetSearchResultsForLogging(search_result_views_),
@@ -264,11 +208,6 @@ void SearchResultListView::VisibilityChanged(View* starting_from,
   // We only do this work when is_visible is false.
   if (is_visible)
     return;
-
-  zero_state_file_impression_timer_.Stop();
-  drive_quick_access_impression_timer_.Stop();
-  previous_found_zero_state_file_ = false;
-  previous_found_drive_quick_access_ = false;
 }
 
 std::vector<SearchResult*> SearchResultListView::GetAssistantResults() {
@@ -289,7 +228,7 @@ std::vector<SearchResult*> SearchResultListView::GetAssistantResults() {
                    AppListSearchResultType::kAssistantText;
       }),
       /*max_results=*/
-      AppListConfig::instance().max_assistant_search_result_list_items());
+      SharedAppListConfig::instance().max_assistant_search_result_list_items());
 }
 
 std::vector<SearchResult*> SearchResultListView::GetSearchResults() {
@@ -301,7 +240,7 @@ std::vector<SearchResult*> SearchResultListView::GetSearchResults() {
                        AppListSearchResultType::kAssistantText;
           }),
           /*max_results=*/
-          AppListConfig::instance().max_search_result_list_items());
+          SharedAppListConfig::instance().max_search_result_list_items());
 
   std::vector<SearchResult*> assistant_results = GetAssistantResults();
 

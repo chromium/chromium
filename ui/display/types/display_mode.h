@@ -27,6 +27,8 @@ class DISPLAY_TYPES_EXPORT DisplayMode {
   bool is_interlaced() const { return is_interlaced_; }
   float refresh_rate() const { return refresh_rate_; }
 
+  bool operator<(const DisplayMode& other) const;
+
   std::string ToString() const;
 
  private:

@@ -136,12 +136,29 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
 
 #if HAS_NATIVE_THREAD_POOL()
   if (FeatureList::IsEnabled(kUseNativeThreadPool)) {
-    std::unique_ptr<ThreadGroup> pool = std::move(foreground_thread_group_);
+    std::unique_ptr<ThreadGroup> old_group =
+        std::move(foreground_thread_group_);
     foreground_thread_group_ = std::make_unique<ThreadGroupNativeImpl>(
+#if defined(OS_APPLE)
+        ThreadPriority::NORMAL,
+#endif
         task_tracker_->GetTrackedRef(), tracked_ref_factory_.GetTrackedRef(),
-        pool.get());
-    pool->InvalidateAndHandoffAllTaskSourcesToOtherThreadGroup(
+        old_group.get());
+    old_group->InvalidateAndHandoffAllTaskSourcesToOtherThreadGroup(
         foreground_thread_group_.get());
+  }
+
+  if (FeatureList::IsEnabled(kUseBackgroundNativeThreadPool)) {
+    std::unique_ptr<ThreadGroup> old_group =
+        std::move(background_thread_group_);
+    background_thread_group_ = std::make_unique<ThreadGroupNativeImpl>(
+#if defined(OS_APPLE)
+        ThreadPriority::BACKGROUND,
+#endif
+        task_tracker_->GetTrackedRef(), tracked_ref_factory_.GetTrackedRef(),
+        old_group.get());
+    old_group->InvalidateAndHandoffAllTaskSourcesToOtherThreadGroup(
+        background_thread_group_.get());
   }
 #endif
 
@@ -216,18 +233,27 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
   }
 
   if (background_thread_group_) {
-    background_thread_group_->Start(
-        max_best_effort_tasks, max_best_effort_tasks, suggested_reclaim_time,
-        service_thread_task_runner, worker_thread_observer,
-#if defined(OS_WIN)
-        // COM STA is a backward-compatibility feature for the foreground thread
-        // group only.
-        worker_environment == ThreadGroup::WorkerEnvironment::COM_STA
-            ? ThreadGroup::WorkerEnvironment::NONE
-            :
+#if HAS_NATIVE_THREAD_POOL()
+    if (FeatureList::IsEnabled(kUseBackgroundNativeThreadPool)) {
+      static_cast<ThreadGroupNative*>(background_thread_group_.get())
+          ->Start(worker_environment);
+    } else
 #endif
-            worker_environment,
-        g_synchronous_thread_start_for_testing);
+    {
+      static_cast<ThreadGroupImpl*>(background_thread_group_.get())
+          ->Start(max_best_effort_tasks, max_best_effort_tasks,
+                  suggested_reclaim_time, service_thread_task_runner,
+                  worker_thread_observer,
+#if defined(OS_WIN)
+                  // COM STA is a backward-compatibility feature for the
+                  // foreground thread group only.
+                  worker_environment == ThreadGroup::WorkerEnvironment::COM_STA
+                      ? ThreadGroup::WorkerEnvironment::NONE
+                      :
+#endif
+                      worker_environment,
+                  g_synchronous_thread_start_for_testing);
+    }
   }
 
   started_ = true;

@@ -14,6 +14,7 @@
 #include "chromeos/network/network_metadata_store.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_test_helper.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -47,6 +48,16 @@ class SyncedNetworkMetricsLoggerTest : public testing::Test {
     testing::Test::TearDown();
   }
 
+  void SimulateConnectionFailure(std::string error) {
+    const NetworkState* network = CreateNetwork(/*from_sync=*/true);
+    SetNetworkProperty(network->path(), shill::kStateProperty,
+                       shill::kStateConfiguration);
+
+    SetNetworkProperty(network->path(), shill::kErrorProperty, error);
+    SetNetworkProperty(network->path(), shill::kStateProperty,
+                       shill::kStateFailure);
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_;
 
@@ -63,6 +74,7 @@ class SyncedNetworkMetricsLoggerTest : public testing::Test {
                           const std::string& value) {
     network_test_helper_->network_state_test_helper()->SetServiceProperty(
         service_path, key, base::Value(value));
+    base::RunLoop().RunUntilIdle();
   }
 
   const NetworkState* CreateNetwork(bool from_sync) {
@@ -142,26 +154,35 @@ TEST_F(SyncedNetworkMetricsLoggerTest,
   histogram_tester.ExpectTotalCount(kConnectionFailureReasonManualHistogram, 0);
 }
 
-TEST_F(SyncedNetworkMetricsLoggerTest, FailedConnection_SyncedNetwork) {
+TEST_F(SyncedNetworkMetricsLoggerTest,
+       FailedConnection_SyncedNetwork_UnknownFailure) {
   base::HistogramTester histogram_tester;
-  const NetworkState* network = CreateNetwork(/*from_sync=*/true);
-
-  SetNetworkProperty(network->path(), shill::kStateProperty,
-                     shill::kStateConfiguration);
-  synced_network_metrics_logger()->NetworkConnectionStateChanged(network);
-
-  SetNetworkProperty(network->path(), shill::kStateProperty,
-                     shill::kStateFailure);
-  SetNetworkProperty(network->path(), shill::kErrorProperty,
-                     shill::kErrorUnknownFailure);
-  base::RunLoop().RunUntilIdle();
-
-  synced_network_metrics_logger()->NetworkConnectionStateChanged(network);
-  base::RunLoop().RunUntilIdle();
+  SimulateConnectionFailure(shill::kErrorUnknownFailure);
 
   histogram_tester.ExpectBucketCount(kConnectionResultAllHistogram, false, 1);
   histogram_tester.ExpectBucketCount(kConnectionFailureReasonAllHistogram,
                                      ConnectionFailureReason::kUnknown, 1);
+}
+
+TEST_F(SyncedNetworkMetricsLoggerTest,
+       FailedConnection_SyncedNetwork_BadPassphrase) {
+  base::HistogramTester histogram_tester;
+  SimulateConnectionFailure(shill::kErrorBadPassphrase);
+
+  histogram_tester.ExpectBucketCount(kConnectionResultAllHistogram, false, 1);
+  histogram_tester.ExpectBucketCount(kConnectionFailureReasonAllHistogram,
+                                     ConnectionFailureReason::kBadPassphrase,
+                                     1);
+}
+
+TEST_F(SyncedNetworkMetricsLoggerTest,
+       FailedConnection_SyncedNetwork_OutOfRange) {
+  base::HistogramTester histogram_tester;
+  SimulateConnectionFailure(shill::kErrorOutOfRange);
+
+  histogram_tester.ExpectTotalCount(kConnectionResultAllHistogram, 0);
+  histogram_tester.ExpectBucketCount(kConnectionFailureReasonAllHistogram,
+                                     ConnectionFailureReason::kOutOfRange, 1);
 }
 
 TEST_F(SyncedNetworkMetricsLoggerTest,
@@ -245,6 +266,45 @@ TEST_F(SyncedNetworkMetricsLoggerTest, NetworkStatusChange_DuringLogout) {
   // Expect that there is no crash, and no Wi-Fi sync histograms recorded.
   EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("Network.Wifi.Synced"),
               testing::ContainerEq(base::HistogramTester::CountsMap()));
+}
+
+TEST_F(SyncedNetworkMetricsLoggerTest, RecordZeroNetworksEligibleForSync) {
+  base::HistogramTester histogram_tester;
+
+  base::flat_set<NetworkEligibilityStatus>
+      network_eligible_for_sync_status_codes;
+  network_eligible_for_sync_status_codes.insert(
+      NetworkEligibilityStatus::kNoWifiNetworksAvailable);
+  synced_network_metrics_logger()->RecordZeroNetworksEligibleForSync(
+      network_eligible_for_sync_status_codes);
+  histogram_tester.ExpectBucketCount(
+      kZeroNetworksSyncedReasonHistogram,
+      NetworkEligibilityStatus::kNoWifiNetworksAvailable, 1);
+  histogram_tester.ExpectTotalCount(kZeroNetworksSyncedReasonHistogram, 1);
+
+  network_eligible_for_sync_status_codes.insert(
+      NetworkEligibilityStatus::kNotConnectable);
+  synced_network_metrics_logger()->RecordZeroNetworksEligibleForSync(
+      network_eligible_for_sync_status_codes);
+  histogram_tester.ExpectBucketCount(kZeroNetworksSyncedReasonHistogram,
+                                     NetworkEligibilityStatus::kNotConnectable,
+                                     1);
+  histogram_tester.ExpectTotalCount(kZeroNetworksSyncedReasonHistogram, 3);
+
+  network_eligible_for_sync_status_codes.insert(
+      NetworkEligibilityStatus::kNetworkIsEligible);
+  synced_network_metrics_logger()->RecordZeroNetworksEligibleForSync(
+      network_eligible_for_sync_status_codes);
+  histogram_tester.ExpectBucketCount(
+      kZeroNetworksSyncedReasonHistogram,
+      NetworkEligibilityStatus::kNetworkIsEligible, 1);
+  histogram_tester.ExpectBucketCount(kZeroNetworksSyncedReasonHistogram,
+                                     NetworkEligibilityStatus::kNotConnectable,
+                                     1);
+  histogram_tester.ExpectBucketCount(
+      kZeroNetworksSyncedReasonHistogram,
+      NetworkEligibilityStatus::kNoWifiNetworksAvailable, 2);
+  histogram_tester.ExpectTotalCount(kZeroNetworksSyncedReasonHistogram, 4);
 }
 
 }  // namespace sync_wifi

@@ -64,6 +64,12 @@ enum class StartServiceWorkerForNavigationHintResult {
 // See service_worker_context_wrapper.cc for the implementation
 // of ServiceWorkerContext and ServiceWorkerContextWrapper (the
 // primary implementation of this abstract class).
+//
+// All methods are basically expected to be called on the UI thread.
+// Currently, only two methods are allowed to be called on any threads but it's
+// discouraged.
+// TODO(https://crbug.com/1161153): Disallow methods to be called on any
+// threads.
 class CONTENT_EXPORT ServiceWorkerContext {
  public:
   using ResultCallback = base::OnceCallback<void(bool success)>;
@@ -81,8 +87,8 @@ class CONTENT_EXPORT ServiceWorkerContext {
       base::OnceCallback<void(OfflineCapability capability,
                               int64_t registration_id)>;
 
-  using CountExternalRequestsCallback =
-      base::OnceCallback<void(size_t external_request_count)>;
+  using StatusCodeCallback =
+      base::OnceCallback<void(blink::ServiceWorkerStatusCode status_code)>;
 
   using StartServiceWorkerForNavigationHintCallback = base::OnceCallback<void(
       StartServiceWorkerForNavigationHintResult result)>;
@@ -90,9 +96,8 @@ class CONTENT_EXPORT ServiceWorkerContext {
   using StartWorkerCallback = base::OnceCallback<
       void(int64_t version_id, int process_id, int thread_id)>;
 
-  using StartWorkerFailureCallback =
-      base::OnceCallback<void(blink::ServiceWorkerStatusCode status_code)>;
-
+  // Returns BrowserThread::UI always.
+  // TODO(https://crbug.com/1138155): Remove this.
   static content::BrowserThread::ID GetCoreThreadId();
 
   // Returns true if |url| is within the service worker |scope|.
@@ -105,7 +110,6 @@ class CONTENT_EXPORT ServiceWorkerContext {
                       ServiceWorkerContext* service_worker_context,
                       base::OnceClosure task);
 
-  // Observer methods are always dispatched on the UI thread.
   virtual void AddObserver(ServiceWorkerContextObserver* observer) = 0;
   virtual void RemoveObserver(ServiceWorkerContextObserver* observer) = 0;
 
@@ -118,13 +122,10 @@ class CONTENT_EXPORT ServiceWorkerContext {
   //  * Fetching |script_url| fails.
   //  * |script_url| fails to parse or its top-level execution fails.
   //  * Something unexpected goes wrong, like a renderer crash or a full disk.
-  //
-  // This function can be called from any thread, but the callback will always
-  // be called on the UI thread.
   virtual void RegisterServiceWorker(
       const GURL& script_url,
       const blink::mojom::ServiceWorkerRegistrationOptions& options,
-      ResultCallback callback) = 0;
+      StatusCodeCallback callback) = 0;
 
   // Equivalent to calling ServiceWorkerRegistration#unregister on the
   // registration for |scope|. |callback| is passed true when the JS promise is
@@ -133,9 +134,6 @@ class CONTENT_EXPORT ServiceWorkerContext {
   // Unregistration can fail if:
   //  * No registration exists for |scope|.
   //  * Something unexpected goes wrong, like a renderer crash.
-  //
-  // This function can be called from any thread, but the callback will always
-  // be called on the UI thread.
   virtual void UnregisterServiceWorker(const GURL& scope,
                                        ResultCallback callback) = 0;
 
@@ -147,8 +145,6 @@ class CONTENT_EXPORT ServiceWorkerContext {
   // calls FinishedExternalRequest(). This ensures that content/ does not
   // shut the worker down while embedder is expecting the worker to be kept
   // alive.
-  //
-  // Must be called from the core thread.
   virtual ServiceWorkerExternalRequestResult StartingExternalRequest(
       int64_t service_worker_version_id,
       const std::string& request_uuid) = 0;
@@ -157,55 +153,30 @@ class CONTENT_EXPORT ServiceWorkerContext {
       const std::string& request_uuid) = 0;
 
   // Returns the pending external request count for the worker with the
-  // specified |origin| via |callback|. Must be called from the UI thread. The
-  // callback is called on the UI thread.
-  virtual void CountExternalRequestsForTest(
-      const url::Origin& origin,
-      CountExternalRequestsCallback callback) = 0;
+  // specified |origin|.
+  virtual size_t CountExternalRequestsForTest(const url::Origin& origin) = 0;
 
   // Whether |origin| has any registrations. Uninstalling and uninstalled
   // registrations do not cause this to return true, that is, only registrations
   // with status ServiceWorkerRegistration::Status::kIntact are considered, such
   // as even if the corresponding live registrations may still exist. Also,
   // returns true if it doesn't know (registrations are not yet initialized).
-  // Must be called on the UI thread.
   virtual bool MaybeHasRegistrationForOrigin(const url::Origin& origin) = 0;
 
-  // Returns a set of origins which have at least one stored registration.
-  // The set doesn't include installing/uninstalling/uninstalled registrations.
-  // When |host_filter| is specified the set only includes origins whose host
-  // matches |host_filter|.
-  // This function can be called from any thread and the callback is called on
-  // that thread.
-  virtual void GetInstalledRegistrationOrigins(
-      base::Optional<std::string> host_filter,
-      GetInstalledRegistrationOriginsCallback callback) = 0;
-
-  // May be called from any thread, and the callback is called on that thread.
   virtual void GetAllOriginsInfo(GetUsageInfoCallback callback) = 0;
 
-  // This function can be called from any thread, and the callback is called
-  // on that thread.  Deletes all registrations in the origin and clears all
-  // service workers belonging to the registrations. All clients controlled by
-  // those service workers will lose their controllers immediately after this
-  // operation.
+  // Deletes all registrations in the origin and clears all service workers
+  // belonging to the registrations. All clients controlled by those service
+  // workers will lose their controllers immediately after this operation.
+  // This function can be called from any thread, and the callback is called on
+  // that thread.
   virtual void DeleteForOrigin(const url::Origin& origin_url,
                                ResultCallback callback) = 0;
-
-  // Performs internal storage cleanup. Operations to the storage in the past
-  // (e.g. deletion) are usually recorded in disk for a certain period until
-  // compaction happens. This method wipes them out to ensure that the deleted
-  // entries and other traces like log files are removed.
-  // May be called on any thread, and the callback is called on that thread.
-  virtual void PerformStorageCleanup(base::OnceClosure callback) = 0;
 
   // Returns ServiceWorkerCapability describing existence and properties of a
   // Service Worker registration matching |url|. In case the service
   // worker is being installed as of calling this method, it will wait for the
   // installation to finish before coming back with the result.
-  //
-  // This function can be called from any thread, but the callback will always
-  // be called on the UI thread.
   virtual void CheckHasServiceWorker(
       const GURL& url,
       CheckHasServiceWorkerCallback callback) = 0;
@@ -213,9 +184,6 @@ class CONTENT_EXPORT ServiceWorkerContext {
   // Simulates a navigation request in the offline state and dispatches a fetch
   // event. Returns OfflineCapability::kSupported and the registration id if
   // the response's status code is 200.
-  //
-  // This function can be called from any thread, but the callback will always
-  // be called on the UI thread.
   //
   // TODO(hayato): Re-visit to integrate this function with
   // |ServiceWorkerContext::CheckHasServiceWorker|.
@@ -226,9 +194,6 @@ class CONTENT_EXPORT ServiceWorkerContext {
   // Stops all running service workers and unregisters all service worker
   // registrations. This method is used in web tests to make sure that the
   // existing service worker will not affect the succeeding tests.
-  //
-  // This function can be called from any thread, but the callback will always
-  // be called on the UI thread.
   virtual void ClearAllServiceWorkersForTest(base::OnceClosure callback) = 0;
 
   // Starts the active worker of the registration for the given |scope|. If
@@ -237,13 +202,11 @@ class CONTENT_EXPORT ServiceWorkerContext {
   // successful, otherwise |failure_callback| is passed information about the
   // error.
   //
-  // Must be called on the core thread, and the callback is called on that
-  // thread. There is no guarantee about whether the callback is called
-  // synchronously or asynchronously.
-  virtual void StartWorkerForScope(
-      const GURL& scope,
-      StartWorkerCallback info_callback,
-      StartWorkerFailureCallback failure_callback) = 0;
+  // There is no guarantee about whether the callback is called synchronously or
+  // asynchronously.
+  virtual void StartWorkerForScope(const GURL& scope,
+                                   StartWorkerCallback info_callback,
+                                   StatusCodeCallback failure_callback) = 0;
 
   // Starts the active worker of the registration for the given |scope| and
   // dispatches the given |message| to the service worker. |result_callback|
@@ -257,26 +220,18 @@ class CONTENT_EXPORT ServiceWorkerContext {
       ResultCallback result_callback) = 0;
 
   // Starts the service worker for |document_url|. Called when a navigation to
-  // that URL is predicted to occur soon. Must be called from the UI thread. The
-  // |callback| will always be called on the UI thread.
+  // that URL is predicted to occur soon.
   virtual void StartServiceWorkerForNavigationHint(
       const GURL& document_url,
       StartServiceWorkerForNavigationHintCallback callback) = 0;
 
   // Stops all running workers on the given |origin|.
-  //
-  // This function can be called from any thread.
   virtual void StopAllServiceWorkersForOrigin(const url::Origin& origin) = 0;
 
   // Stops all running service workers.
-  //
-  // This function can be called from any thread.
-  // |callback| is called on the caller's thread.
   virtual void StopAllServiceWorkers(base::OnceClosure callback) = 0;
 
   // Gets info about all running workers.
-  //
-  // Must be called on the UI thread. The callback is called on the UI thread.
   virtual const base::flat_map<int64_t /* version_id */,
                                ServiceWorkerRunningInfo>&
   GetRunningServiceWorkerInfos() = 0;

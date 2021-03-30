@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/run_loop.h"
@@ -43,6 +44,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
+#include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
@@ -353,9 +355,9 @@ class RemoveCodeCacheTester {
 
   bool ContainsEntry(Cache cache, GURL url, GURL origin_lock) {
     entry_exists_ = false;
-    GeneratedCodeCache::ReadDataCallback callback = base::BindRepeating(
+    GeneratedCodeCache::ReadDataCallback callback = base::BindOnce(
         &RemoveCodeCacheTester::FetchEntryCallback, base::Unretained(this));
-    GetCache(cache)->FetchEntry(url, origin_lock, callback);
+    GetCache(cache)->FetchEntry(url, origin_lock, std::move(callback));
     await_completion_.BlockUntilNotified();
     return entry_exists_;
   }
@@ -752,8 +754,10 @@ void ClearPluginPrivateData(content::StoragePartition* partition,
 bool FilterMatchesCookie(const CookieDeletionFilterPtr& filter,
                          const net::CanonicalCookie& cookie) {
   return network::DeletionFilterToInfo(filter.Clone())
-      .Matches(cookie, net::CookieAccessParams{
-                           net::CookieAccessSemantics::NONLEGACY, false});
+      .Matches(cookie,
+               net::CookieAccessParams{
+                   net::CookieAccessSemantics::NONLEGACY, false,
+                   net::CookieSamePartyStatus::kNoSamePartyEnforcement});
 }
 
 }  // namespace
@@ -775,9 +779,13 @@ class StoragePartitionImplTest : public testing::Test {
           browser_context_->IsOffTheRecord(), browser_context_->GetPath(),
           GetIOThreadTaskRunner({}).get(),
           browser_context_->GetSpecialStoragePolicy());
-      auto quota_client = base::MakeRefCounted<storage::MockQuotaClient>(
-          quota_manager_->proxy(), base::span<const storage::MockOriginData>(),
-          storage::QuotaClientType::kFileSystem);
+      mojo::PendingRemote<storage::mojom::QuotaClient> quota_client;
+      mojo::MakeSelfOwnedReceiver(
+          std::make_unique<storage::MockQuotaClient>(
+              quota_manager_->proxy(),
+              base::span<const storage::MockOriginData>(),
+              storage::QuotaClientType::kFileSystem),
+          quota_client.InitWithNewPipeAndPassReceiver());
       quota_manager_->proxy()->RegisterClient(
           std::move(quota_client), storage::QuotaClientType::kFileSystem,
           {blink::mojom::StorageType::kTemporary,
@@ -1817,7 +1825,7 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForFilter) {
             .SetExpiry(base::TimeDelta::FromDays(2))
             .Build());
     conversion_manager->HandleConversion(
-        StorableConversion("123", conv, reporter));
+        StorableConversion("123", net::SchemefulSite(conv), reporter));
   }
 
   EXPECT_EQ(5u, GetConversionsToReportForTesting(conversion_manager,

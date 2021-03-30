@@ -17,7 +17,6 @@
 #include "components/page_info/page_info_ui.h"
 
 class PermissionIcon;
-class Profile;
 
 namespace internal {
 class ComboboxModelAdapter;
@@ -42,8 +41,7 @@ class Combobox;
 class PermissionSelectorRow {
  public:
   // The |PermissionSelectorRow|'s constituent views are added to |layout|.
-  PermissionSelectorRow(Profile* profile,
-                        const GURL& url,
+  PermissionSelectorRow(PageInfoUiDelegate* delegate,
                         const PageInfo::PermissionInfo& permission,
                         views::GridLayout* layout);
   virtual ~PermissionSelectorRow();
@@ -71,8 +69,6 @@ class PermissionSelectorRow {
 
   void InitializeComboboxView(views::GridLayout* layout,
                               const PageInfo::PermissionInfo& permission);
-
-  Profile* profile_;
 
   // Model for the permission's menu.
   std::unique_ptr<PermissionMenuModel> menu_model_;

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+PASS await a stable state and sync event handlers
+Harness: the test ran to completion.
+

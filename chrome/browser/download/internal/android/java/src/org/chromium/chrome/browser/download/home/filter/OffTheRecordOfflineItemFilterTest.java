@@ -31,8 +31,6 @@ import java.util.Collection;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class OffTheRecordOfflineItemFilterTest {
-    public static final String PRIMARY_OTR_PROFILE_ID = "profile::primary_otr";
-
     @Rule
     public JniMocker mMocker = new JniMocker();
 
@@ -56,14 +54,12 @@ public class OffTheRecordOfflineItemFilterTest {
         Profile.setLastUsedProfileForTesting(mRegularProfile);
         mMocker.mock(OTRProfileIDJni.TEST_HOOKS, mOTRProfileIDNatives);
         when(mRegularProfile.hasOffTheRecordProfile(any())).thenReturn(true);
-        when(OTRProfileIDJni.get().getPrimaryID())
-                .thenReturn(new OTRProfileID(PRIMARY_OTR_PROFILE_ID));
     }
 
     @Test
     public void testPassthrough() {
-        OfflineItem item1 = buildItem(true);
-        OfflineItem item2 = buildItem(false);
+        OfflineItem item1 = buildItem(OTRProfileID.getPrimaryOTRProfileID());
+        OfflineItem item2 = buildItem(null);
         Collection<OfflineItem> sourceItems = CollectionUtil.newHashSet(item1, item2);
         when(mSource.getItems()).thenReturn(sourceItems);
 
@@ -73,8 +69,8 @@ public class OffTheRecordOfflineItemFilterTest {
 
     @Test
     public void testFiltersOutItems() {
-        OfflineItem item1 = buildItem(true);
-        OfflineItem item2 = buildItem(false);
+        OfflineItem item1 = buildItem(OTRProfileID.getPrimaryOTRProfileID());
+        OfflineItem item2 = buildItem(null);
         Collection<OfflineItem> sourceItems = CollectionUtil.newHashSet(item1, item2);
         when(mSource.getItems()).thenReturn(sourceItems);
 
@@ -84,9 +80,9 @@ public class OffTheRecordOfflineItemFilterTest {
 
     @Test
     public void testFiltersOutItemsForNonPrimaryOTRProfiles() {
-        OfflineItem item1 = buildItem(true);
-        OfflineItem item2 = buildItem(false);
-        OfflineItem item3 = buildItemWithOTRProfileId(true, "profile::CCT-Test");
+        OfflineItem item1 = buildItem(OTRProfileID.getPrimaryOTRProfileID());
+        OfflineItem item2 = buildItem(null);
+        OfflineItem item3 = buildItem(new OTRProfileID("profile::CCT-Test"));
         Collection<OfflineItem> sourceItems = CollectionUtil.newHashSet(item1, item2, item3);
         when(mSource.getItems()).thenReturn(sourceItems);
 
@@ -94,18 +90,10 @@ public class OffTheRecordOfflineItemFilterTest {
         Assert.assertEquals(CollectionUtil.newHashSet(item1, item2), filter.getItems());
     }
 
-    private static OfflineItem buildItem(boolean isOffTheRecord) {
-        return buildItemWithOTRProfileId(isOffTheRecord, null);
-    }
-
-    private static OfflineItem buildItemWithOTRProfileId(
-            boolean isOffTheRecord, String otrProfileID) {
+    private static OfflineItem buildItem(OTRProfileID otrProfileID) {
         OfflineItem item = new OfflineItem();
-        item.isOffTheRecord = isOffTheRecord;
-        if (isOffTheRecord) {
-            if (otrProfileID == null) otrProfileID = PRIMARY_OTR_PROFILE_ID;
-            item.otrProfileId = OTRProfileID.serialize(new OTRProfileID(otrProfileID));
-        }
+        item.isOffTheRecord = OTRProfileID.isOffTheRecord(otrProfileID);
+        item.otrProfileId = OTRProfileID.serialize(otrProfileID);
         return item;
     }
 }

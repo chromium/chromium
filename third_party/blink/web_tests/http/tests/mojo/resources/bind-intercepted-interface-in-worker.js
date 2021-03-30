@@ -1,30 +1,41 @@
 importScripts('/resources/testharness.js');
-importScripts('/gen/layout_test_data/mojo/public/js/mojo_bindings.js');
-importScripts('/gen/content/test/data/mojo_web_test_helper_test.mojom.js');
-importScripts('helpers.js');
+
+async function importModuleDeps() {
+  const {kTestReply, TestHelperImpl} = await import('./helpers.js');
+  const {MojoWebTestHelper, MojoWebTestHelperRemote} = await import(
+      '/gen/content/test/data/mojo_web_test_helper_test.mojom.m.js');
+  Object.assign(
+      self,
+      {kTestReply, TestHelperImpl, MojoWebTestHelper, MojoWebTestHelperRemote});
+}
+
+const imports = importModuleDeps();
 
 promise_test(async () => {
-  let helperImpl = new TestHelperImpl;
+  await imports;
+
+  let helperImpl = new TestHelperImpl();
   let interceptor =
-      new MojoInterfaceInterceptor(content.mojom.MojoWebTestHelper.name);
+      new MojoInterfaceInterceptor(MojoWebTestHelper.$interfaceName);
   interceptor.oninterfacerequest = e => {
     helperImpl.bindRequest(e.handle);
   };
   interceptor.start();
 
-  let helper = new content.mojom.MojoWebTestHelperPtr;
-  Mojo.bindInterface(
-      content.mojom.MojoWebTestHelper.name, mojo.makeRequest(helper).handle);
+  let helper = new MojoWebTestHelperRemote();
+  helper.$.bindNewPipeAndPassReceiver().bindInBrowser();
 
-  let response = await helper.reverse('the string');
-  assert_equals(response.reversed, kTestReply);
+  const {reversed} = await helper.reverse('the string');
+  assert_equals(reversed, kTestReply);
   assert_equals(helperImpl.getLastString(), 'the string');
 }, 'Can implement a Mojo service and intercept it from a worker');
 
-test(t => {
+promise_test(async () => {
+  await imports;
+
   assert_throws_dom('NotSupportedError', () => {
     new MojoInterfaceInterceptor(
-        content.mojom.MojoWebTestHelper.name, 'process');
+        MojoWebTestHelper.$interfaceName, 'process');
   });
 }, 'Cannot create a MojoInterfaceInterceptor with process scope');
 

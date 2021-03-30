@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_OPAQUE_BROWSER_FRAME_VIEW_LAYOUT_DELEGATE_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_OPAQUE_BROWSER_FRAME_VIEW_LAYOUT_DELEGATE_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 
 namespace gfx {
 class Size;
@@ -27,7 +28,7 @@ class OpaqueBrowserFrameViewLayoutDelegate {
   // mode.
   virtual bool ShouldShowWindowIcon() const = 0;
   virtual bool ShouldShowWindowTitle() const = 0;
-  virtual base::string16 GetWindowTitle() const = 0;
+  virtual std::u16string GetWindowTitle() const = 0;
 
   // Returns the size of the window icon. This can be platform dependent
   // because of differences in fonts, so its part of the interface.

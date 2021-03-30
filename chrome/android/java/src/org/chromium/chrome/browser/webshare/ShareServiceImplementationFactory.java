@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.webshare;
 
-import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
+import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegateImpl.ShareOrigin;
+import org.chromium.chrome.browser.share.ShareDelegateSupplier;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.webshare.ShareServiceImpl;
 import org.chromium.content_public.browser.WebContents;
@@ -18,9 +20,12 @@ import org.chromium.webshare.mojom.ShareService;
  */
 public class ShareServiceImplementationFactory implements InterfaceFactory<ShareService> {
     private final WebContents mWebContents;
+    private Supplier<ShareDelegate> mShareDelegateSupplier;
 
     public ShareServiceImplementationFactory(WebContents webContents) {
         mWebContents = webContents;
+        mShareDelegateSupplier = ShareDelegateSupplier.from(webContents.getTopLevelNativeWindow());
+        assert mShareDelegateSupplier != null;
     }
 
     @Override
@@ -28,14 +33,13 @@ public class ShareServiceImplementationFactory implements InterfaceFactory<Share
         ShareServiceImpl.WebShareDelegate delegate = new ShareServiceImpl.WebShareDelegate() {
             @Override
             public boolean canShare() {
-                return mWebContents.getTopLevelNativeWindow().getActivity() != null;
+                return mShareDelegateSupplier.get() != null;
             }
 
             @Override
             public void share(ShareParams params) {
-                ChromeActivity<?> activity =
-                        (ChromeActivity<?>) params.getWindow().getActivity().get();
-                activity.getShareDelegateSupplier().get().share(
+                assert mShareDelegateSupplier.get() != null;
+                mShareDelegateSupplier.get().share(
                         params, new ChromeShareExtras.Builder().build(), ShareOrigin.WEBSHARE_API);
             }
         };

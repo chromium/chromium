@@ -31,6 +31,7 @@
 #include "cc/trees/effect_node.h"
 #include "cc/trees/property_tree.h"
 #include "cc/trees/target_property.h"
+#include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/rect.h"
@@ -472,6 +473,27 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   void SetDidScrollCallback(base::RepeatingCallback<
                             void(const gfx::ScrollOffset&, const ElementId&)>);
 
+  // For layer tree mode only.
+  // Sets the given |subtree_id| on this layer, so that the layer subtree rooted
+  // at this layer can be uniquely identified by a FrameSinkVideoCapturer.
+  // The existence of a valid SubtreeCaptureId on this layer will force it to be
+  // drawn into a separate CompositorRenderPass.
+  // Setting a non-valid (i.e. default-constructed SubtreeCaptureId) will clear
+  // this property.
+  // It is not allowed to change this ID from a valid ID to another valid ID,
+  // since a client might already using the existing valid ID to make this layer
+  // subtree identifiable by a capturer.
+  //
+  // Note that this is useful when it's desired to video record a layer subtree
+  // of a non-root layer using a FrameSinkVideoCapturer, since non-root layers
+  // are usually not drawn into their own CompositorRenderPass.
+  void SetSubtreeCaptureId(viz::SubtreeCaptureId subtree_id);
+  viz::SubtreeCaptureId subtree_capture_id() const {
+    if (layer_tree_inputs())
+      return layer_tree_inputs()->subtree_capture_id;
+    return viz::SubtreeCaptureId();
+  }
+
   // Set or get if the layer and its subtree should be cached as a texture in
   // the display compositor. This is used as an optimization when it is known
   // that the layer will be animated without changing its content, or any of its
@@ -889,6 +911,12 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
     gfx::Transform transform;
     gfx::Point3F transform_origin;
 
+    // A unique ID that identifies the layer subtree rooted at this layer, so
+    // that it can be independently captured by the FrameSinkVideoCapturer. If
+    // this ID is set (i.e. valid), it would force this subtree into a render
+    // surface that darws in a render pass.
+    viz::SubtreeCaptureId subtree_capture_id;
+
     SkColor safe_opaque_background_color = SK_ColorTRANSPARENT;
 
     FilterOperations filters;
@@ -927,6 +955,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   int clip_tree_index_;
   int scroll_tree_index_;
   int property_tree_sequence_number_;
+
   gfx::Vector2dF offset_to_transform_parent_;
 
   // When true, the layer is about to perform an update. Any commit requests

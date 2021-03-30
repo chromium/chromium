@@ -34,19 +34,19 @@ class CrosNetworkConfigTestHelper {
   ~CrosNetworkConfigTestHelper();
 
   NetworkStateTestHelper& network_state_helper() {
-    return *network_state_helper_;
+    return network_state_helper_;
   }
 
   NetworkDeviceHandler* network_device_handler() {
-    return network_device_handler_.get();
+    return network_state_helper_.network_device_handler();
   }
 
   void Initialize(
       ManagedNetworkConfigurationHandler* network_configuration_handler);
 
  protected:
-  std::unique_ptr<NetworkStateTestHelper> network_state_helper_;
-  std::unique_ptr<NetworkDeviceHandler> network_device_handler_;
+  NetworkStateTestHelper network_state_helper_{
+      /*use_default_devices_and_services=*/false};
   std::unique_ptr<CrosNetworkConfig> cros_network_config_impl_;
 
  private:

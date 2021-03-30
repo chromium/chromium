@@ -13,7 +13,7 @@ import("//build/config/chromeos/ui_mode.gni")
 # Explicitly define what we use to avoid confusion.
 if (is_chromeos_ash) {
   component_os = "cros"
-} else if (is_linux) {
+} else if (is_linux || is_chromeos_lacros) {
   component_os = "linux"
 } else if (is_win) {
   component_os = "win"
@@ -31,7 +31,7 @@ component_arch = "$current_cpu"
 # - |cdm_platform_specific_path| is exported as a BUILDFLAG to cdm_paths.cc.
 # - When updating the condition here, also update the condition on the define
 #   of CDM_USE_PLATFORM_SPECIFIC_PATH in cdm_paths_unittest.cc.
-if (is_win || is_mac || is_linux) {
+if (is_win || is_mac || is_linux || is_chromeos_lacros) {
   cdm_platform_specific_path =
       "_platform_specific/$component_os" + "_" + "$component_arch"
 

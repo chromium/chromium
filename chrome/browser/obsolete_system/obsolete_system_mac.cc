@@ -27,37 +27,24 @@ bool IsObsoleteOsVersion() {
          base::FeatureList::IsEnabled(features::kShow10_10ObsoleteInfobar);
 }
 
-bool IsObsoleteCpu() {
-#if defined(ARCH_CPU_X86_FAMILY)
-  return !base::CPU().has_sse3();
-#else
-  return false;
-#endif
-}
-
 }  // namespace
 
 // static
 bool ObsoleteSystem::IsObsoleteNowOrSoon() {
-  return IsObsoleteCpu() || IsObsoleteOsVersion();
+  return IsObsoleteOsVersion();
 }
 
 // static
-base::string16 ObsoleteSystem::LocalizedObsoleteString() {
-  // We check for an obsolete CPU first so that we don't nudge users through
-  // an OS upgrade, only to find out that they need a new computer anyway.
-  return IsObsoleteCpu()
-             ? l10n_util::GetStringUTF16(IDS_CPU_X86_SSE2_OBSOLETE_SOON)
-             : l10n_util::GetStringUTF16(IDS_MAC_10_10_OBSOLETE_SOON);
+std::u16string ObsoleteSystem::LocalizedObsoleteString() {
+  return l10n_util::GetStringUTF16(IDS_MAC_10_10_OBSOLETE_SOON);
 }
 
 // static
 bool ObsoleteSystem::IsEndOfTheLine() {
-  return IsObsoleteCpu() ? CHROME_VERSION_MAJOR >= 88 : true;
+  return true;
 }
 
 // static
 const char* ObsoleteSystem::GetLinkURL() {
-  return IsObsoleteCpu() ? chrome::kCpuX86Sse2ObsoleteURL
-                         : chrome::kMac10_10_ObsoleteURL;
+  return chrome::kMac10_10_ObsoleteURL;
 }

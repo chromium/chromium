@@ -40,7 +40,6 @@
           {
             "type": "function",
             "name": "callback",
-            "optional": false,
             "description": "Returns id of the launched process. If no process was launched returns -1.",
             "parameters": [
               {
@@ -69,7 +68,6 @@
           {
             "type": "function",
             "name": "callback",
-            "optional": false,
             "description": "Returns id of the launched vmshell process. If no process was launched returns -1.",
             "parameters": [
               {

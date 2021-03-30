@@ -95,6 +95,11 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
     }
 
     @Override
+    public boolean areIntentLaunchesAllowedInHiddenTabsForNavigation(NavigationParams params) {
+        return false;
+    }
+
+    @Override
     public Activity getActivity() {
         return mTab.getActivity();
     }

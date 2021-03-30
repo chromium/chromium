@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -75,10 +74,10 @@ const std::vector<SearchConcept>& GetPrintingSearchConcepts() {
 // Creates a result with some default values.
 mojom::SearchResultPtr CreateDummyResult() {
   return mojom::SearchResult::New(
-      /*result_text=*/base::string16(),
-      /*canonical_result_text=*/base::string16(), /*url=*/"",
+      /*result_text=*/std::u16string(),
+      /*canonical_result_text=*/std::u16string(), /*url=*/"",
       mojom::SearchResultIcon::kPrinter, /*relevance_score=*/0.5,
-      /*hierarchy_strings=*/std::vector<base::string16>(),
+      /*hierarchy_strings=*/std::vector<std::u16string>(),
       mojom::SearchResultDefaultRank::kMedium,
       /*was_generated_from_text_match=*/false,
       mojom::SearchResultType::kSection,
@@ -152,7 +151,7 @@ TEST_F(SearchHandlerTest, AddAndRemove) {
 
   // 3 results should be available for a "Print" query.
   mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(base::ASCIIToUTF16("Print"),
+      .Search(u"Print",
               /*max_num_results=*/3u,
               mojom::ParentResultBehavior::kDoNotIncludeParentResults,
               &search_results);
@@ -160,7 +159,7 @@ TEST_F(SearchHandlerTest, AddAndRemove) {
 
   // Limit results to 1 max and ensure that only 1 result is returned.
   mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(base::ASCIIToUTF16("Print"),
+      .Search(u"Print",
               /*max_num_results=*/1u,
               mojom::ParentResultBehavior::kDoNotIncludeParentResults,
               &search_results);
@@ -168,7 +167,7 @@ TEST_F(SearchHandlerTest, AddAndRemove) {
 
   // Search for a query which should return no results.
   mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(base::ASCIIToUTF16("QueryWithNoResults"),
+      .Search(u"QueryWithNoResults",
               /*max_num_results=*/3u,
               mojom::ParentResultBehavior::kDoNotIncludeParentResults,
               &search_results);
@@ -178,7 +177,7 @@ TEST_F(SearchHandlerTest, AddAndRemove) {
   // returned for "Printing".
   RemoveSearchTags(GetPrintingSearchConcepts());
   mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(base::ASCIIToUTF16("Print"),
+      .Search(u"Print",
               /*max_num_results=*/3u,
               mojom::ParentResultBehavior::kDoNotIncludeParentResults,
               &search_results);
@@ -191,7 +190,7 @@ TEST_F(SearchHandlerTest, UrlModification) {
   AddSearchTags(GetPrintingSearchConcepts());
   std::vector<mojom::SearchResultPtr> search_results;
   mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(base::ASCIIToUTF16("Saved"),
+      .Search(u"Saved",
               /*max_num_results=*/3u,
               mojom::ParentResultBehavior::kDoNotIncludeParentResults,
               &search_results);
@@ -201,9 +200,8 @@ TEST_F(SearchHandlerTest, UrlModification) {
 
   // The URL should have bee modified according to the FakeOsSettingSection
   // scheme.
-  EXPECT_EQ(
-      std::string("Section::kPrinting::") + mojom::kPrintingDetailsSubpagePath,
-      search_results[0]->url_path_with_parameters);
+  EXPECT_EQ(std::string("kPrinting::") + mojom::kPrintingDetailsSubpagePath,
+            search_results[0]->url_path_with_parameters);
 }
 
 TEST_F(SearchHandlerTest, AltTagMatch) {
@@ -215,7 +213,7 @@ TEST_F(SearchHandlerTest, AltTagMatch) {
   // tag "CUPS" (referring to the Unix printing protocol), so we should receive
   // one match.
   mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(base::ASCIIToUTF16("CUPS"),
+      .Search(u"CUPS",
               /*max_num_results=*/3u,
               mojom::ParentResultBehavior::kDoNotIncludeParentResults,
               &search_results);
@@ -237,7 +235,7 @@ TEST_F(SearchHandlerTest, AllowParentResult) {
   // Pass the kAllowParentResults flag, which should also cause its parent
   // subpage item to be returned.
   mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(base::ASCIIToUTF16("Saved"),
+      .Search(u"Saved",
               /*max_num_results=*/3u,
               mojom::ParentResultBehavior::kAllowParentResults,
               &search_results);
@@ -254,7 +252,7 @@ TEST_F(SearchHandlerTest, DefaultRank) {
   // contains the word "Printing", but the other results have the similar word
   // "Printer". Thus, "Printing" has a higher relevance score.
   mojom::SearchHandlerAsyncWaiter(handler_remote_.get())
-      .Search(base::ASCIIToUTF16("Print"),
+      .Search(u"Print",
               /*max_num_results=*/3u,
               mojom::ParentResultBehavior::kAllowParentResults,
               &search_results);

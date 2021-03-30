@@ -67,27 +67,6 @@ class Data : public RenderDocumentHostUserData<Data> {
 
 RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(Data)
 
-// Observer class to track the creation of RenderFrameHost objects. It is used
-// in subsequent tests.
-class RenderFrameHostCreatedObserver : public WebContentsObserver {
- public:
-  using OnRenderFrameHostCreatedCallback =
-      base::RepeatingCallback<void(RenderFrameHost*)>;
-
-  RenderFrameHostCreatedObserver(
-      WebContents* web_contents,
-      OnRenderFrameHostCreatedCallback on_rfh_created)
-      : WebContentsObserver(web_contents),
-        on_rfh_created_(std::move(on_rfh_created)) {}
-
-  void RenderFrameCreated(RenderFrameHost* render_frame_host) override {
-    on_rfh_created_.Run(std::move(render_frame_host));
-  }
-
- private:
-  OnRenderFrameHostCreatedCallback on_rfh_created_;
-};
-
 // Observer class to track creation of new popups. It is used
 // in subsequent tests.
 class PopupCreatedObserver : public WebContentsDelegate {
@@ -587,9 +566,9 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
   // 5) Check RDHUD objects |data_a| and |data_b| are not cleared when rfh_a and
   // rfh_b are in pending deletion state.
   EXPECT_EQ(rfh_a->lifecycle_state(),
-            RenderFrameHostImpl::LifecycleState::kRunningUnloadHandlers);
+            RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers);
   EXPECT_EQ(rfh_b->lifecycle_state(),
-            RenderFrameHostImpl::LifecycleState::kRunningUnloadHandlers);
+            RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers);
   EXPECT_TRUE(data_a);
   EXPECT_TRUE(data_b);
 
@@ -938,14 +917,14 @@ class RenderDocumentHostUserDataWithBackForwardCacheTest
     : public RenderDocumentHostUserDataTest {
  public:
   RenderDocumentHostUserDataWithBackForwardCacheTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kBackForwardCache,
-        {
-            // Set a very long TTL before expiration (longer than the test
-            // timeout) so tests that are expecting deletion don't pass when
-            // they shouldn't.
-            {"TimeToLiveInBackForwardCacheInSeconds", "3600"},
-        });
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kBackForwardCache,
+          // Set a very long TTL before expiration (longer than the test
+          // timeout) so tests that are expecting deletion don't pass when
+          // they shouldn't.
+          {{"TimeToLiveInBackForwardCacheInSeconds", "3600"}}}},
+        // Allow BackForwardCache for all devices regardless of their memory.
+        {features::kBackForwardCacheMemoryControls});
   }
 
  private:

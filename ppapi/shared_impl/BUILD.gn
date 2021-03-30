@@ -167,6 +167,7 @@ component("shared_impl") {
 
   deps = [
     "//build:chromeos_buildflags",
+    "//device/gamepad/public/cpp:shared_with_blink",
     "//gpu/command_buffer/client",
     "//gpu/command_buffer/client:gles2_cmd_helper",
     "//gpu/command_buffer/client:gles2_implementation",

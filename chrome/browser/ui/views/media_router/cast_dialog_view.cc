@@ -39,6 +39,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 
 namespace media_router {
@@ -105,7 +106,7 @@ views::Widget* CastDialogView::GetCurrentDialogWidget() {
   return instance_ ? instance_->GetWidget() : nullptr;
 }
 
-base::string16 CastDialogView::GetWindowTitle() const {
+std::u16string CastDialogView::GetWindowTitle() const {
   switch (selected_source_) {
     case SourceType::kTab:
       return dialog_title_;
@@ -117,7 +118,7 @@ base::string16 CastDialogView::GetWindowTitle() const {
                                         local_file_name_.value());
     default:
       NOTREACHED();
-      return base::string16();
+      return std::u16string();
   }
 }
 
@@ -462,7 +463,7 @@ void CastDialogView::OnFilePickerClosed(const ui::SelectedFileInfo* file_info) {
   set_close_on_deactivate(!keep_shown_for_testing_);
   if (file_info) {
 #if defined(OS_WIN)
-    local_file_name_ = file_info->display_name;
+    local_file_name_ = base::WideToUTF16(file_info->display_name);
 #else
     local_file_name_ = base::UTF8ToUTF16(file_info->display_name);
 #endif  // defined(OS_WIN)
@@ -472,5 +473,8 @@ void CastDialogView::OnFilePickerClosed(const ui::SelectedFileInfo* file_info) {
 
 // static
 CastDialogView* CastDialogView::instance_ = nullptr;
+
+BEGIN_METADATA(CastDialogView, views::BubbleDialogDelegateView)
+END_METADATA
 
 }  // namespace media_router

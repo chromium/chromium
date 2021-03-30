@@ -178,9 +178,10 @@ class DownloadRequestLimiter
                                         DownloadStatus status,
                                         ContentSetting setting);
 
-    // Check if download is restricted (either requires prompting or is blocked)
-    // for the |navigation_handle|.
-    bool IsNavigationRestricted(content::NavigationHandle* navigation_handle);
+    // Check if the navigation should clear the download state. If an origin is
+    // in a limited state, history forward/backward shouldn't clear the download
+    // state.
+    bool shouldClearDownloadState(content::NavigationHandle* navigation_handle);
 
     content::WebContents* web_contents_;
 

@@ -66,8 +66,7 @@ TEST_F(LocaleFeaturePodControllerTest, ButtonVisibility) {
 
   // The button is visible if the locale list is non-empty.
   std::vector<LocaleInfo> locale_list;
-  locale_list.emplace_back(kDefaultLocaleIsoCode,
-                           base::UTF8ToUTF16("English (United States)"));
+  locale_list.emplace_back(kDefaultLocaleIsoCode, u"English (United States)");
   Shell::Get()->system_tray_model()->SetLocaleList(std::move(locale_list),
                                                    kDefaultLocaleIsoCode);
   button.reset(controller_->CreateButton());

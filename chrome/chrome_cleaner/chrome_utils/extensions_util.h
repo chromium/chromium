@@ -14,7 +14,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "base/synchronization/waitable_event.h"
-#include "chrome/chrome_cleaner/chrome_utils/force_installed_extension.h"
 #include "chrome/chrome_cleaner/os/registry_util.h"
 #include "chrome/chrome_cleaner/parsers/json_parser/json_parser_api.h"
 
@@ -91,32 +90,6 @@ void GetExtensionSettingsForceInstalledExtensions(
 void GetMasterPreferencesExtensions(JsonParserAPI* json_parser,
                                     std::vector<ExtensionPolicyFile>* policies,
                                     base::WaitableEvent* done);
-
-// Attempts to remove an |extension| installed through the whitelist.
-// The extension id will be removed from the |json_result| passed in, so that
-// the caller can build up the new JSON value before writing it to the disk.
-// On failure returns false and doesn't modify the |json_result|.
-bool RemoveDefaultExtension(const ForceInstalledExtension& extension,
-                            base::Value* json_result);
-
-// Attempts to remove an extension installed through the forcelist.
-// Return True on success.
-bool RemoveForcelistPolicyExtension(const ForceInstalledExtension& extension);
-
-// Attempts to remove an extension installed from the policy settings
-// The extension id will be removed from the |json_result| passed in so that
-// the caller can build up a new JSON value before writing it to the registry.
-// On failure returns false and does not modify the |json_result|.
-bool RemoveExtensionSettingsPoliciesExtension(
-    const ForceInstalledExtension& extension,
-    base::Value* json_result);
-
-// Attempts to remove an extension installed through the master preferences.
-// The extension id will be removed from the |json_result| passed in so that the
-// caller can build up the a new JSON value before writing it to the disk.
-// On failure returns false and does not modify the |json_result|.
-bool RemoveMasterPreferencesExtension(const ForceInstalledExtension& extension,
-                                      base::Value* json_result);
 
 }  // namespace chrome_cleaner
 

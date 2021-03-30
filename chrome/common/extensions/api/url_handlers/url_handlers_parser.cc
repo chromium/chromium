@@ -111,7 +111,7 @@ UrlHandlersParser::~UrlHandlersParser() {
 bool ParseUrlHandler(const std::string& handler_id,
                      const base::DictionaryValue& handler_info,
                      std::vector<UrlHandlerInfo>* url_handlers,
-                     base::string16* error,
+                     std::u16string* error,
                      Extension* extension) {
   DCHECK(error);
 
@@ -140,7 +140,7 @@ bool ParseUrlHandler(const std::string& handler_id,
     URLPattern pattern(URLPattern::SCHEME_HTTP | URLPattern::SCHEME_HTTPS);
     // System Web Apps are bookmark apps that point to chrome:// URLs.
     // TODO(calamity): Remove once Bookmark Apps are no longer on Extensions.
-    if (extension->location() == Manifest::EXTERNAL_COMPONENT &&
+    if (extension->location() == mojom::ManifestLocation::kExternalComponent &&
         extension->from_bookmark()) {
       pattern = URLPattern(URLPattern::SCHEME_CHROMEUI);
     }
@@ -158,7 +158,7 @@ bool ParseUrlHandler(const std::string& handler_id,
   return true;
 }
 
-bool UrlHandlersParser::Parse(Extension* extension, base::string16* error) {
+bool UrlHandlersParser::Parse(Extension* extension, std::u16string* error) {
   if (extension->GetType() == Manifest::TYPE_HOSTED_APP &&
       !extension->from_bookmark()) {
     *error = base::ASCIIToUTF16(merrors::kUrlHandlersInHostedApps);

@@ -122,45 +122,6 @@ class WeakContainersWorklist {
   std::unordered_set<const HeapObjectHeader*> objects_;
 };
 
-class PLATFORM_EXPORT HeapAllocHooks {
-  STATIC_ONLY(HeapAllocHooks);
-
- public:
-  // TODO(hajimehoshi): Pass a type name of the allocated object.
-  typedef void AllocationHook(Address, size_t, const char*);
-  typedef void FreeHook(Address);
-
-  // Sets allocation hook. Only one hook is supported.
-  static void SetAllocationHook(AllocationHook* hook) {
-    CHECK(!allocation_hook_ || !hook);
-    allocation_hook_ = hook;
-  }
-
-  // Sets free hook. Only one hook is supported.
-  static void SetFreeHook(FreeHook* hook) {
-    CHECK(!free_hook_ || !hook);
-    free_hook_ = hook;
-  }
-
-  static void AllocationHookIfEnabled(Address address,
-                                      size_t size,
-                                      const char* type_name) {
-    AllocationHook* allocation_hook = allocation_hook_;
-    if (UNLIKELY(!!allocation_hook))
-      allocation_hook(address, size, type_name);
-  }
-
-  static void FreeHookIfEnabled(Address address) {
-    FreeHook* free_hook = free_hook_;
-    if (UNLIKELY(!!free_hook))
-      free_hook(address);
-  }
-
- private:
-  static AllocationHook* allocation_hook_;
-  static FreeHook* free_hook_;
-};
-
 class HeapCompact;
 template <typename T>
 class Member;
@@ -657,7 +618,6 @@ inline Address ThreadHeap::AllocateOnArenaIndex(ThreadState* state,
   NormalPageArena* arena = static_cast<NormalPageArena*>(Arena(arena_index));
   Address address =
       arena->AllocateObject(AllocationSizeFromSize(size), gc_info_index);
-  HeapAllocHooks::AllocationHookIfEnabled(address, size, type_name);
   return address;
 }
 

@@ -60,8 +60,8 @@ class CORE_EXPORT DOMTokenList : public ScriptWrappable {
                const AtomicString& new_token,
                ExceptionState&);
   bool supports(const AtomicString&, ExceptionState&);
-  virtual AtomicString value() const;
-  virtual void setValue(const AtomicString&);
+  AtomicString value() const;
+  void setValue(const AtomicString&);
   AtomicString toString() const { return value(); }
 
   // This function should be called when the associated attribute value was

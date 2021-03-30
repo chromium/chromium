@@ -12,8 +12,8 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
@@ -95,7 +95,7 @@ public class AutofillPaymentInstrument
         mIsEditable = true;
         mMethodName = methodName;
 
-        Context context = ChromeActivity.fromWebContents(mWebContents);
+        Context context = ContextUtils.getApplicationContext();
         if (context == null) return;
 
         if (card.getIssuerIconDrawableId() != 0) {
@@ -111,11 +111,6 @@ public class AutofillPaymentInstrument
         Set<String> result = new HashSet<>();
         result.add(mMethodName);
         return result;
-    }
-
-    @Override
-    public boolean isAutofillInstrument() {
-        return true;
     }
 
     @Override
@@ -331,7 +326,7 @@ public class AutofillPaymentInstrument
         mMethodName = methodName;
         mBillingAddress = billingAddress;
 
-        Context context = ChromeActivity.fromWebContents(mWebContents);
+        Context context = ContextUtils.getApplicationContext();
         if (context == null) return;
 
         updateIdentifierLabelsAndIcon(card.getGUID(), card.getObfuscatedNumber(), card.getName(),

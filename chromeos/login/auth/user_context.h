@@ -12,6 +12,7 @@
 #include "chromeos/login/auth/challenge_response_key.h"
 #include "chromeos/login/auth/key.h"
 #include "chromeos/login/auth/saml_password_attributes.h"
+#include "chromeos/login/auth/sync_trusted_vault_keys.h"
 #include "components/account_id/account_id.h"
 #include "components/password_manager/core/browser/password_hash_data.h"
 #include "components/user_manager/user_type.h"
@@ -88,6 +89,7 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) UserContext {
   GetSyncPasswordData() const;
   const base::Optional<SamlPasswordAttributes>& GetSamlPasswordAttributes()
       const;
+  const base::Optional<SyncTrustedVaultKeys>& GetSyncTrustedVaultKeys() const;
   // True if |managed_guest_session_launch_extension_id_| is non-empty.
   bool IsLockableManagedGuestSession() const;
   std::string GetManagedGuestSessionLaunchExtensionId() const;
@@ -131,6 +133,8 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) UserContext {
       const password_manager::PasswordHashData& sync_password_data);
   void SetSamlPasswordAttributes(
       const SamlPasswordAttributes& saml_password_attributes);
+  void SetSyncTrustedVaultKeys(
+      const SyncTrustedVaultKeys& sync_trusted_vault_keys);
   void SetIsUnderAdvancedProtection(bool is_under_advanced_protection);
   // Sets |managed_guest_session_launch_extension_id_| which is used to set the
   // |kLoginExtensionApiLaunchExtensionId| pref when the user's profile is
@@ -175,8 +179,17 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) UserContext {
 
   // Info about the user's SAML password, such as when it will expire.
   base::Optional<SamlPasswordAttributes> saml_password_attributes_;
+
+  // Info about the user's sync encryption keys.
+  base::Optional<SyncTrustedVaultKeys> sync_trusted_vault_keys_;
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when the //chrome/browser/chromeos
+// source code migration is finished.
+namespace ash {
+using ::chromeos::UserContext;
+}
 
 #endif  // CHROMEOS_LOGIN_AUTH_USER_CONTEXT_H_

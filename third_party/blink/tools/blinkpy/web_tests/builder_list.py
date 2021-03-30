@@ -79,11 +79,18 @@ class BuilderList(object):
     def all_cq_try_builder_names(self):
         return self.filter_builders(is_cq=True)
 
+    def all_flag_specific_try_builder_names(self, flag_specific):
+        return self.filter_builders(is_try=True, flag_specific=flag_specific)
+
     def all_continuous_builder_names(self):
         return self.filter_builders(is_try=False)
 
-    def filter_builders(self, exclude_specifiers=None, include_specifiers=None,
-                        is_try=False, is_cq=False):
+    def filter_builders(self,
+                        exclude_specifiers=None,
+                        include_specifiers=None,
+                        is_try=False,
+                        is_cq=False,
+                        flag_specific=None):
         _lower_specifiers = lambda specifiers: {s.lower() for s in specifiers}
         exclude_specifiers = _lower_specifiers(exclude_specifiers or {})
         include_specifiers = _lower_specifiers(include_specifiers or {})
@@ -91,6 +98,9 @@ class BuilderList(object):
         for b in self._builders:
             builder_specifiers = _lower_specifiers(
                 self._builders[b].get('specifiers', {}))
+            if flag_specific and self._builders[b].get('flag_specific',
+                                                       None) != flag_specific:
+                continue
             if is_try and self._builders[b].get('is_try_builder', False) != is_try:
                 continue
             if is_cq and self._builders[b].get('is_cq_builder', False) != is_cq:
@@ -101,6 +111,11 @@ class BuilderList(object):
                 continue
             if  (include_specifiers and
                      not include_specifiers & builder_specifiers):
+                continue
+            # TODO(crbug.com/1178099): When this builder is stabilized remove this
+            # and make it part of default try builders.
+            if is_try and not flag_specific and self.is_flag_specific_builder(
+                    b):
                 continue
             builders.append(b)
         return sorted(builders)
@@ -128,6 +143,9 @@ class BuilderList(object):
 
     def is_wpt_builder(self, builder_name):
         return 'wpt' in builder_name
+
+    def is_flag_specific_builder(self, builder_name):
+        return self._builders[builder_name].get('flag_specific', None) != None
 
     def platform_specifier_for_builder(self, builder_name):
         return self.specifiers_for_builder(builder_name)[0]

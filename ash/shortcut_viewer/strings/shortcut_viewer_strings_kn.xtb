@@ -23,11 +23,13 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">ವಿಳಾಸ ಪಟ್ಟಿಯಲ್ಲಿ ನಿಮ್ಮ ಇನ್‌ಪುಟ್‌ಗೆ www. ಮತ್ತು .com ಅನ್ನು ಸೇರಿಸಿ, ನಂತರ ಪುಟವನ್ನು ತೆರೆಯಿರಿ</translation>
+<translation id="1768987374400973299">ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ತೆಗೆದುಕೊಳ್ಳಿ/ರೆಕಾರ್ಡಿಂಗ್ ಅನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="1872219238824176091">ಪ್ರಸ್ತುತ ಡೆಸ್ಕ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, ನಂತರ <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> ಅಥವಾ <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">ಮುಂದಿನ ಟ್ಯಾಬ್‌ಗೆ ಹೋಗಿ</translation>
 <translation id="2010818616644390445">ವಿಂಡೋದಲ್ಲಿ ಕೊನೆಯ ಟ್ಯಾಬ್‌ಗೆ ಹೋಗಿ</translation>
 <translation id="2040706009561734834">ಲಾಂಚರ್ ಅನ್ನು ತೆರೆಯಿರಿ/ಮುಚ್ಚಿ</translation>
+<translation id="2086334242442703436">ಎಮೋಜಿ ಪಿಕರ್ ತೆರೆಯಿರಿ</translation>
 <translation id="2088054208777350526">ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳಿಗಾಗಿ ಹುಡುಕಿ</translation>
 <translation id="2125211348069077981"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="E" /> ಅಥವಾ <ph name="F" /></translation>
 <translation id="2145908266289632567">ಪಠ್ಯ ಎಡಿಟ್ ಮಾಡುವಿಕೆ</translation>
@@ -46,6 +48,7 @@
 <translation id="2480851840841871861">Google ಅಸಿಸ್ಟೆಂಟ್‌ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="2488661730534396940">ಎಡಭಾಗದಲ್ಲಿರುವ ಡೆಸ್ಕ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516999188535378855">Diagnostics ಆ್ಯಪ್ ತೆರೆಯಿರಿ</translation>
 <translation id="2530339807289914946">ವೆಬ್‌ ಪುಟವನ್ನು ಸ್ಕ್ರಾಲ್ ಡೌನ್ ಮಾಡಿ</translation>
 <translation id="2530896289327917474">ಕೆರೆಟ್ ಬ್ರೌಸಿಂಗ್ ಆನ್ ಅಥವಾ ಆಫ್ ಮಾಡಿ</translation>
 <translation id="2574014812750545982">ಪುಟದಲ್ಲಿನ ಝೂಮ್ ಮಟ್ಟವನ್ನು ಮರುಹೊಂದಿಸಿ</translation>
@@ -110,6 +113,7 @@
 <translation id="4801989101741319327">ಮುಂದಿನ ಅಕ್ಷರದ ಕೊನೆಗೆ ಸರಿಸಿ</translation>
 <translation id="4866066940972151697">ಬಲಭಾಗದಲ್ಲಿರುವ ಡೆಸ್ಕ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="4916163929714267752">ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಲಿಂಕ್ ತೆರೆಯಿರಿ</translation>
+<translation id="492453977506755176">ಕ್ಯಾಪ್ಚರ್ ಮೋಡ್ ಕೀ</translation>
 <translation id="5030659775136592441">ಬುಕ್‌ಮಾರ್ಕ್ ನಿರ್ವಾಹಕವನ್ನು ತೋರಿಸಿ</translation>
 <translation id="5034421018520995080">ಪುಟದ ಮೇಲಿನ ಭಾಗಕ್ಕೆ ಹೋಗಿ</translation>
 <translation id="5042305953558921026">ಅವಲೋಕನ ಮೋಡ್‌ ಕೀ</translation>
@@ -132,6 +136,7 @@
 <translation id="5899919361772749550">ಡೆವಲಪರ್ ಪರಿಕರಗಳ ಕನ್ಸೋಲ್‌ ಅನ್ನು ತೋರಿಸಿ ಅಥವಾ ಮರೆಮಾಡಿ</translation>
 <translation id="5919628958418675842">ಗೌಪ್ಯತೆ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಆನ್ ಅಥವಾ ಆಫ್ ಮಾಡಿ</translation>
 <translation id="5921745308587794300">ವಿಂಡೋ ತಿರುಗಿಸಿ</translation>
+<translation id="5926306472221400972">ಪೂರ್ಣ ಸ್ಕ್ರೀನ್ ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಅನ್ನು ತೆಗೆದುಕೊಳ್ಳಿ</translation>
 <translation id="6022924867608035986">ಹುಡುಕಾಟ ಬಾಕ್ಸ್ ಪಠ್ಯವನ್ನು ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="6045998054441862242">ಅಧಿಕ ಕಾಂಟ್ರಾಸ್ಟ್ ಮೋಡ್ ಅನ್ನು ಆನ್‌ ಮಾಡಿ</translation>
 <translation id="6052614013050385269">ಲಿಂಕ್‌ ಅನ್ನು ರೈಟ್ ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
@@ -149,6 +154,7 @@
 <translation id="6445033640292336367">ಟ್ಯಾಬ್ ಅನ್ನು ಅದರ ಮೂಲ ಸ್ಥಿತಿಗೆ ಹಿಂತಿರುಗಿಸಿ</translation>
 <translation id="6474744297082284761">ಝೂಮ್ ಔಟ್ ಮಾಡಿ (ಡಾಕ್ ಆಗಿರುವಾಗ ಅಥವಾ ಪೂರ್ಣಪರದೆ ವರ್ಧಕಗಳು ಸಕ್ರಿಯಗೊಂಡಿರುವಾಗ)</translation>
 <translation id="649811797655257835">ಫೈಲ್‌ ಆಯ್ಕೆ ಮಾಡಿ, ನಂತರ <ph name="SPACE" /> ಅನ್ನು ಒತ್ತಿರಿ</translation>
+<translation id="6551886416582667425">ಭಾಗಶಃ ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ತೆಗೆದುಕೊಳ್ಳಿ/ರೆಕಾರ್ಡಿಂಗ್ ಅನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="6556040137485212400">ದೀರ್ಘಕಾಲದವರೆಗೆ ಬಳಕೆಯಾಗದ ವಿಂಡೋವನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="666343722268997814">ಹೈಲೈಟ್ ಮಾಡಿದ ಐಟಂಗಾಗಿ ಬಲ-ಕ್ಲಿಕ್ ಮೆನು ತೆರೆಯಿರಿ</translation>
 <translation id="6671538777808758331">ನಿಮ್ಮ ಹುಡುಕಾಟಕ್ಕಾಗಿ ಮುಂದಿನ ಹೊಂದಾಣಿಕೆಗೆ ಹೋಗಿ</translation>
@@ -175,6 +181,7 @@
 <translation id="7611271430932669992">ಫೋಕಸ್ ಅನ್ನು ಪಾಪ್‌ಅಪ್‌ಗಳಿಗೆ ಮತ್ತು ಸಂವಾದಗಳಿಗೆ ಸರಿಸಿ</translation>
 <translation id="7635348532214572995">ಒಂದು ಆ್ಯಪ್ ಐಕಾನ್ ಅನ್ನು ಆ್ಯಪ್ ಗ್ರಿಡ್‌ನ ಸುತ್ತ ಸರಿಸಿ</translation>
 <translation id="766326951329901120">ಖಾಲಿ ಪಠ್ಯದಂತೆ ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ನಿಂದ ವಿಷಯವನ್ನು ಅಂಟಿಸಿ</translation>
+<translation id="7673453620027697230">ವಿಂಡೋ ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ತೆಗೆದುಕೊಳ್ಳಿ/ರೆಕಾರ್ಡಿಂಗ್ ಅನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="7703010453515335249">ಎಡ ಆವರಣ</translation>
 <translation id="7724603315864178912">ಕತ್ತರಿಸು</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, ನಂತರ <ph name="SPACE" /> ಅಥವಾ <ph name="ENTER" /></translation>

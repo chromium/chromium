@@ -183,11 +183,13 @@ const char kMetricCBCMRemoteCommandExecutedTemplate[] =
 const char kMetricCBCMUnsignedRemoteCommandExecutedTemplate[] =
     "Enterprise.CBCMRemoteCommand.Executed.Unsigned.%s";
 
-const char kUMAPrivateSetMembershipHashDanceComparison[] =
+const char kUMAPsmHashDanceComparison[] =
     "Enterprise.AutoEnrollmentPrivateSetMembershipHashDanceComparison";
-const char kUMAPrivateSetMembershipSuccessTime[] =
+const char kUMAPsmHashDanceDifferentResultsComparison[] =
+    "Enterprise.AutoEnrollmentPsmHashDanceDifferentResultsComparison";
+const char kUMAPsmSuccessTime[] =
     "Enterprise.AutoEnrollmentPrivateSetMembershipSuccessTime";
-const char kUMAPrivateSetMembershipRequestStatus[] =
+const char kUMAPsmRequestStatus[] =
     "Enterprise.AutoEnrollmentPrivateSetMembershipRequestStatus";
 
 const char kUMAHashDanceSuccessTime[] =

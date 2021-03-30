@@ -16,21 +16,23 @@ namespace autofill {
 // autofill::FormFieldData available in Java.
 class FormFieldDataAndroid {
  public:
-  FormFieldDataAndroid(FormFieldData* field);
-  virtual ~FormFieldDataAndroid() {}
+  explicit FormFieldDataAndroid(FormFieldData* field);
+  virtual ~FormFieldDataAndroid();
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaPeer();
   void GetValue();
-  void OnFormFieldDidChange(const base::string16& value);
+  void OnFormFieldDidChange(const std::u16string& value);
   bool SimilarFieldAs(const FormFieldData& field) const;
   void UpdateAutofillTypes(const AutofillType& heuristic_type,
                            const AutofillType& server_type,
-                           const AutofillType& computed_type);
+                           const AutofillType& computed_type,
+                           const std::vector<AutofillType>& server_predictions);
 
  private:
   AutofillType heuristic_type_;
   AutofillType server_type_;
   AutofillType computed_type_;
+  std::vector<AutofillType> server_predictions_;
 
   // Not owned.
   FormFieldData* field_ptr_;

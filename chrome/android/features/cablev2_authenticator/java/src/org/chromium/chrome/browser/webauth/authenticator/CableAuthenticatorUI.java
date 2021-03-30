@@ -32,6 +32,7 @@ import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils;
 import org.chromium.ui.base.ActivityAndroidPermissionDelegate;
 import org.chromium.ui.base.AndroidPermissionDelegate;
 import org.chromium.ui.widget.Toast;
@@ -48,6 +49,10 @@ public class CableAuthenticatorUI
     // ENABLE_BLUETOOTH_REQUEST_CODE is a random int used to identify responses
     // to a request to enable Bluetooth. (Request codes can only be 16-bit.)
     private static final int ENABLE_BLUETOOTH_REQUEST_CODE = 64907;
+
+    // USB_PROMPT_TIMEOUT_SECS is the number of seconds the spinner will show
+    // for before being replaced with a prompt to connect via USB cable.
+    private static final int USB_PROMPT_TIMEOUT_SECS = 20;
 
     private static final String ACTIVITY_CLASS_NAME_EXTRA =
             "org.chromium.chrome.modules.cablev2_authenticator.ActivityClassName";
@@ -72,6 +77,8 @@ public class CableAuthenticatorUI
     private LinearLayout mUnlinkButton;
     private ImageView mHeader;
     private TextView mStatusText;
+    private View mErrorView;
+    private View mErrorCloseButton;
 
     // The following two members store a pending QR-scan result while Bluetooth
     // is enabled.
@@ -110,20 +117,26 @@ public class CableAuthenticatorUI
     }
 
     @Override
-    @SuppressLint("SetTextI18n")
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        getActivity().setTitle("Security Key");
+        getActivity().setTitle(R.string.cablev2_activity_title);
+        ViewGroup top = new LinearLayout(getContext());
 
+        // Inflate the error view in case it's needed later.
+        mErrorView = inflater.inflate(R.layout.cablev2_error, container, false);
+
+        View v = null;
         switch (mMode) {
             case USB:
-                return inflater.inflate(R.layout.cablev2_usb_attached, container, false);
+                v = inflater.inflate(R.layout.cablev2_usb_attached, container, false);
+                break;
 
             case FCM:
-                return inflater.inflate(R.layout.cablev2_fcm, container, false);
+                v = inflater.inflate(R.layout.cablev2_fcm, container, false);
+                break;
 
             case SERVER_LINK:
-                View v = inflater.inflate(R.layout.cablev2_serverlink, container, false);
+                v = inflater.inflate(R.layout.cablev2_serverlink, container, false);
                 mStatusText = v.findViewById(R.id.status_text);
 
                 ImageView spinner = (ImageView) v.findViewById(R.id.spinner);
@@ -141,8 +154,7 @@ public class CableAuthenticatorUI
                 });
                 spinner.setImageDrawable(anim);
                 anim.start();
-
-                return v;
+                break;
 
             case QR:
                 // TODO: should check FEATURE_BLUETOOTH with
@@ -159,12 +171,14 @@ public class CableAuthenticatorUI
 
                 mUnlinkButton = v.findViewById(R.id.unlink);
                 mUnlinkButton.setOnClickListener(this);
+                break;
 
-                return v;
+            default:
+                assert false;
         }
 
-        assert false;
-        return null;
+        top.addView(v);
+        return top;
     }
 
     /**
@@ -203,6 +217,9 @@ public class CableAuthenticatorUI
                             })
                     .setNegativeButton(android.R.string.cancel, null)
                     .show();
+            return;
+        } else if (v == mErrorCloseButton) {
+            getActivity().finish();
             return;
         }
 
@@ -249,7 +266,6 @@ public class CableAuthenticatorUI
         }
     }
 
-    @SuppressLint("SetTextI18n")
     void onStatus(int code) {
         switch (mMode) {
             case QR:
@@ -265,14 +281,18 @@ public class CableAuthenticatorUI
 
             case SERVER_LINK:
                 // These values must match up with the Status enum in v2_authenticator.h
-                // TODO(agl): translate
+                int id = -1;
                 if (code == 1) {
-                    mStatusText.setText("Waiting for other computer");
+                    id = R.string.cablev2_serverlink_status_connecting;
                 } else if (code == 2) {
-                    mStatusText.setText("Connected to other computer");
+                    id = R.string.cablev2_serverlink_status_connected;
                 } else if (code == 3) {
-                    mStatusText.setText("Processing request");
+                    id = R.string.cablev2_serverlink_status_processing;
+                } else {
+                    break;
                 }
+
+                mStatusText.setText(getResources().getString(id));
                 break;
 
             case FCM:
@@ -313,35 +333,66 @@ public class CableAuthenticatorUI
         mAuthenticator.onActivityResult(requestCode, resultCode, data);
     }
 
-    @SuppressLint("SetTextI18n")
     void onAuthenticatorConnected() {}
 
     void onAuthenticatorResult(CableAuthenticator.Result result) {
         getActivity().runOnUiThread(() -> {
-            // TODO: Temporary UI, needs i18n.
-            String toast = "An error occured. Please try again.";
+            int id = -1;
             switch (result) {
                 case REGISTER_OK:
-                    toast = "Registration succeeded";
+                    id = R.string.cablev2_registration_succeeded;
                     break;
                 case REGISTER_ERROR:
-                    toast = "Registration failed";
+                    id = R.string.cablev2_registration_failed;
                     break;
                 case SIGN_OK:
-                    toast = "Sign-in succeeded";
+                    id = R.string.cablev2_sign_in_succeeded;
                     break;
                 case SIGN_ERROR:
-                    toast = "Sign-in failed";
-                    break;
                 case OTHER:
+                    id = R.string.cablev2_sign_in_failed;
                     break;
             }
-            Toast.makeText(getActivity(), toast, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), getResources().getString(id), Toast.LENGTH_SHORT).show();
         });
     }
 
-    void onComplete() {
-        getActivity().runOnUiThread(() -> { getActivity().finish(); });
+    /**
+     * Called when a transaction has completed.
+     *
+     * @param ok true if the transaction completed successfully. Otherwise it
+     *           indicates some form of error that could include tunnel server
+     *           errors, handshake failures, etc.
+     * @param errorCode a value from cablev2::authenticator::Platform::Error.
+     */
+    void onComplete(boolean ok, int errorCode) {
+        ThreadUtils.assertOnUiThread();
+
+        if (ok) {
+            getActivity().finish();
+            return;
+        }
+
+        mErrorCloseButton = mErrorView.findViewById(R.id.error_close);
+        mErrorCloseButton.setOnClickListener(this);
+
+        String desc;
+        if (errorCode == 100 /* cablev2::authenticator::Platform::Error::UNEXPECTED_EOF */) {
+            desc = getResources().getString(R.string.cablev2_error_timeout);
+        } else {
+            TextView errorCodeTextView = (TextView) mErrorView.findViewById(R.id.error_code);
+            errorCodeTextView.setText(
+                    getResources().getString(R.string.cablev2_error_code, errorCode));
+
+            desc = getResources().getString(R.string.cablev2_error_generic);
+        }
+
+        TextView descriptionTextView = (TextView) mErrorView.findViewById(R.id.error_description);
+        descriptionTextView.setText(desc);
+
+        ViewGroup top = (ViewGroup) getView();
+        top.removeAllViews();
+        top.addView(mErrorView);
     }
 
     /**

@@ -11,11 +11,13 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/sequence_checker.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
-#include "components/site_engagement/core/mojom/site_engagement_details.mojom-forward.h"
-#include "components/url_formatter/url_formatter.h"
 
 class Profile;
 
@@ -37,11 +39,12 @@ class LookalikeUrlService : public KeyedService {
 
   static LookalikeUrlService* Get(Profile* profile);
 
-  // Returns whether the engaged site list is recently updated.
-  bool EngagedSitesNeedUpdating();
+  // Returns whether the engaged site list is recently updated. Returns true
+  // even when an update has already been queued or is in progress.
+  bool EngagedSitesNeedUpdating() const;
 
-  // Triggers an update to the engaged sites list and calls |callback| with the
-  // new list once available.
+  // Triggers an update to the engaged site list if one is not already inflight,
+  // then schedules |callback| to be called with the new list once available.
   void ForceUpdateEngagedSites(EngagedSitesCallback callback);
 
   // Returns the _current_ list of engaged sites, without updating them if
@@ -49,18 +52,26 @@ class LookalikeUrlService : public KeyedService {
   const std::vector<DomainInfo> GetLatestEngagedSites() const;
 
   void SetClockForTesting(base::Clock* clock);
+  base::Clock* clock() const { return clock_; }
+
+  static const base::FeatureParam<base::TimeDelta> kManifestFetchDelay;
 
  private:
-  void OnFetchEngagedSites(
-      EngagedSitesCallback callback,
-      std::vector<site_engagement::mojom::SiteEngagementDetails> details);
+  void OnUpdateEngagedSitesCompleted(std::vector<DomainInfo> new_engaged_sites);
 
   Profile* profile_;
   base::Clock* clock_;
   base::Time last_engagement_fetch_time_;
-  std::vector<DomainInfo> engaged_sites_;
-  base::WeakPtrFactory<LookalikeUrlService> weak_factory_{this};
+  std::vector<DomainInfo> engaged_sites_ GUARDED_BY_CONTEXT(sequence_checker_);
 
+  // Indicates that an update to the engaged sites list has been queued. Serves
+  // to prevent enqueuing excessive updates.
+  bool update_in_progress_ = false;
+  std::vector<EngagedSitesCallback> pending_update_complete_callbacks_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<LookalikeUrlService> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(LookalikeUrlService);
 };
 

@@ -4,6 +4,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "components/signin/ios/browser/features.h"
+#import "components/signin/public/base/account_consistency_method.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
@@ -16,7 +18,7 @@
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -61,6 +63,12 @@ id<GREYMatcher> NoBookmarksLabel() {
   GREYAssertEqual(
       [ChromeEarlGrey numberOfSyncEntitiesWithType:syncer::BOOKMARKS], 0,
       @"No bookmarks should exist before tests start.");
+}
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.features_disabled.push_back(signin::kSimplifySignOutIOS);
+  return config;
 }
 
 // Tests that the Sync and Account Settings screen are correctly popped if the
@@ -133,6 +141,36 @@ id<GREYMatcher> NoBookmarksLabel() {
 
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
+}
+
+// Tests opening the remove identity confirmation dialog once, and cancel the
+// dialog. Then we open the remove identity confirmation dialog to remove the
+// identity. And finally the remove identity confirmation dialog is opened a
+// third time to remove a second identity.
+// The goal of this test is to confirm the dialog can be opened several times.
+// Related to http://crbug.com/1180798
+- (void)testRemoveAccountSeveralTime {
+  FakeChromeIdentity* fakeIdentity1 = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity2 = [SigninEarlGrey fakeIdentity2];
+  FakeChromeIdentity* fakeIdentity3 = [SigninEarlGrey fakeManagedIdentity];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity2];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity3];
+
+  // Sign In |fakeIdentity|, then open the Account Settings.
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Open the remove identity confirmation dialog for the first time.
+  [SigninEarlGreyUI
+      openRemoveAccountConfirmationDialogWithFakeIdentity:fakeIdentity2];
+  // Cancel it.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::CancelButton()]
+      performAction:grey_tap()];
+  // Open it a second time, confirmal removal.
+  [SigninEarlGreyUI tapRemoveAccountFromDeviceWithFakeIdentity:fakeIdentity2];
+  // Open it a third time, confirmal removal.
+  [SigninEarlGreyUI tapRemoveAccountFromDeviceWithFakeIdentity:fakeIdentity3];
 }
 
 // Tests that the Account Settings screen is popped and the user signed out

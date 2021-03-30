@@ -9,7 +9,7 @@ namespace blink {
 class NGLayoutOverflowCalculatorTest : public RenderingTest {};
 
 TEST_F(NGLayoutOverflowCalculatorTest,
-       NewLayoutOverflowDifferentAndAlreadyScrollsFlex) {
+       DISABLED_NewLayoutOverflowDifferentAndAlreadyScrollsFlex) {
   if (!RuntimeEnabledFeatures::LayoutNGEnabled())
     return;
   SetBodyInnerHTML(R"HTML(
@@ -40,7 +40,8 @@ TEST_F(NGLayoutOverflowCalculatorTest,
       WebFeature::kNewLayoutOverflowDifferentAndAlreadyScrollsBlock));
 }
 
-TEST_F(NGLayoutOverflowCalculatorTest, NewLayoutOverflowDifferentFlex) {
+TEST_F(NGLayoutOverflowCalculatorTest,
+       DISABLED_NewLayoutOverflowDifferentFlex) {
   if (!RuntimeEnabledFeatures::LayoutNGEnabled())
     return;
   SetBodyInnerHTML(R"HTML(

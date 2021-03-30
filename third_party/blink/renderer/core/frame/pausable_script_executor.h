@@ -53,7 +53,7 @@ class CORE_EXPORT PausableScriptExecutor final
                          ScriptState*,
                          WebScriptExecutionCallback*,
                          Executor*);
-  virtual ~PausableScriptExecutor();
+  ~PausableScriptExecutor() override;
 
   void Run();
   void RunAsync(BlockingOption);

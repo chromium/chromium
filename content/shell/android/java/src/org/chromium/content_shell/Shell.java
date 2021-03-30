@@ -196,7 +196,7 @@ public class Shell extends LinearLayout {
     public void loadUrl(String url) {
         if (url == null) return;
 
-        if (TextUtils.equals(url, mWebContents.getLastCommittedUrl())) {
+        if (TextUtils.equals(url, mWebContents.getLastCommittedUrl().getSpec())) {
             mNavigationController.reload(true);
         } else {
             mNavigationController.loadUrl(new LoadUrlParams(sanitizeUrl(url)));

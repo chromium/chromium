@@ -24,7 +24,7 @@ class MessagingClient {
       base::RepeatingCallback<void(const ftl::Id& sender_id,
                                    const std::string& sender_registration_id,
                                    const ftl::ChromotingMessage& message)>;
-  using MessageCallbackList = base::CallbackList<
+  using MessageCallbackList = base::RepeatingCallbackList<
       void(const ftl::Id&, const std::string&, const ftl::ChromotingMessage&)>;
   using DoneCallback =
       base::OnceCallback<void(const ProtobufHttpStatus& status)>;

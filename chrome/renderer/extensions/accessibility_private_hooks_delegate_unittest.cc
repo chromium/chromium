@@ -31,7 +31,7 @@ TEST_F(AccessibilityPrivateHooksDelegateTest, TestGetDisplayNameForLocale) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("testExtension")
           .AddPermission("accessibilityPrivate")
-          .SetLocation(Manifest::COMPONENT)
+          .SetLocation(mojom::ManifestLocation::kComponent)
           .Build();
   RegisterExtension(extension);
   v8::HandleScope handle_scope(isolate());

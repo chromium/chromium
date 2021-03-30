@@ -43,6 +43,8 @@ class AppLoadService : public KeyedService,
   };
 
   explicit AppLoadService(content::BrowserContext* context);
+  AppLoadService(const AppLoadService&) = delete;
+  AppLoadService& operator=(const AppLoadService&) = delete;
   ~AppLoadService() override;
 
   // KeyedService support:
@@ -89,8 +91,6 @@ class AppLoadService : public KeyedService,
   std::map<std::string, PostReloadAction> post_reload_actions_;
   content::NotificationRegistrar registrar_;
   content::BrowserContext* context_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppLoadService);
 };
 
 }  // namespace apps

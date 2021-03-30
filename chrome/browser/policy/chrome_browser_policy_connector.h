@@ -10,11 +10,16 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
+
+#if defined(OS_ANDROID)
+#include "components/policy/core/browser/android/policy_cache_updater_android.h"
+#endif
 
 class PrefService;
 
@@ -74,6 +79,8 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
 
   static void EnableCommandLineSupportForTesting();
 
+  virtual base::flat_set<std::string> device_affiliation_ids() const;
+
  protected:
   // BrowserPolicyConnectorBase::
   std::vector<std::unique_ptr<policy::ConfigurationPolicyProvider>>
@@ -94,6 +101,10 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
 #endif
 
   ConfigurationPolicyProvider* command_line_provider_ = nullptr;
+
+#if defined(OS_ANDROID)
+  std::unique_ptr<android::PolicyCacheUpdater> pollicy_cache_updater_;
+#endif
 
   DISALLOW_COPY_AND_ASSIGN(ChromeBrowserPolicyConnector);
 };

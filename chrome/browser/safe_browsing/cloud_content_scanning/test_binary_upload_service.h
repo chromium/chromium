@@ -9,6 +9,7 @@
 
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/services_delegate.h"
+#include "components/enterprise/common/proto/connectors.pb.h"
 
 namespace safe_browsing {
 
@@ -22,9 +23,13 @@ class TestBinaryUploadService : public BinaryUploadService {
                    enterprise_connectors::ContentAnalysisResponse response);
 
   bool was_called() { return was_called_; }
+  const enterprise_connectors::ContentAnalysisRequest& last_request() {
+    return last_request_;
+  }
   void ClearWasCalled();
 
  private:
+  enterprise_connectors::ContentAnalysisRequest last_request_;
   Result saved_result_ = Result::UNKNOWN;
   enterprise_connectors::ContentAnalysisResponse saved_response_;
   bool was_called_ = false;

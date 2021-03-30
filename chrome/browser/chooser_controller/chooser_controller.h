@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_CHOOSER_CONTROLLER_CHOOSER_CONTROLLER_H_
 #define CHROME_BROWSER_CHOOSER_CONTROLLER_CHOOSER_CONTROLLER_H_
 
+#include <string>
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 
 namespace content {
 class RenderFrameHost;
@@ -54,6 +54,10 @@ class ChooserController {
     // Called when the device adapter is turned on or off.
     virtual void OnAdapterEnabledChanged(bool enabled) = 0;
 
+    // Called when the platform level device permission is changed.
+    // Currently only needed on macOS.
+    virtual void OnAdapterAuthorizationChanged(bool authorized);
+
     // Called when refreshing options is in progress or complete.
     virtual void OnRefreshStateChanged(bool refreshing) = 0;
 
@@ -64,7 +68,7 @@ class ChooserController {
   // Returns the text to be displayed in the chooser title.
   // Note that this is only called once, and there is no way to update the title
   // for a given instance of ChooserController.
-  base::string16 GetTitle() const;
+  std::u16string GetTitle() const;
 
   // Returns whether the chooser needs to show an icon before the text.
   // For WebBluetooth, it is a signal strength icon.
@@ -83,16 +87,21 @@ class ChooserController {
   virtual bool ShouldShowSelectAllCheckbox() const;
 
   // Returns the text to be displayed in the chooser when there are no options.
-  virtual base::string16 GetNoOptionsText() const = 0;
+  virtual std::u16string GetNoOptionsText() const = 0;
 
   // Returns the label for OK button.
-  virtual base::string16 GetOkButtonLabel() const = 0;
+  virtual std::u16string GetOkButtonLabel() const = 0;
 
   // Returns the label for Cancel button.
-  virtual base::string16 GetCancelButtonLabel() const;
+  virtual std::u16string GetCancelButtonLabel() const;
 
   // Returns the label for SelectAll checkbox.
-  virtual base::string16 GetSelectAllCheckboxLabel() const;
+  virtual std::u16string GetSelectAllCheckboxLabel() const;
+
+  // Returns the label for the throbber shown while options are initializing or
+  // a re-scan is in progress.
+  virtual std::pair<std::u16string, std::u16string> GetThrobberLabelAndTooltip()
+      const = 0;
 
   // Returns whether both OK and Cancel buttons are enabled.
   //
@@ -124,7 +133,7 @@ class ChooserController {
   virtual int GetSignalStrengthLevel(size_t index) const;
 
   // The |index|th option string which is listed in the chooser.
-  virtual base::string16 GetOption(size_t index) const = 0;
+  virtual std::u16string GetOption(size_t index) const = 0;
 
   // Returns if the |index|th option is connected.
   // This function returns false by default.
@@ -136,9 +145,6 @@ class ChooserController {
 
   // Refresh the list of options.
   virtual void RefreshOptions();
-
-  // Returns the status text to be shown in the chooser.
-  virtual base::string16 GetStatus() const;
 
   // These three functions are called just before this object is destroyed:
 
@@ -159,15 +165,18 @@ class ChooserController {
   // Provide help information when the adapter is off.
   virtual void OpenAdapterOffHelpUrl() const;
 
+  // Navigate user to preferences in order to acquire Bluetooth permission.
+  virtual void OpenPermissionPreferences() const;
+
   // Only one view may be registered at a time.
   void set_view(View* view) { view_ = view; }
   View* view() const { return view_; }
 
  protected:
-  void set_title_for_testing(const base::string16& title) { title_ = title; }
+  void set_title_for_testing(const std::u16string& title) { title_ = title; }
 
  private:
-  base::string16 title_;
+  std::u16string title_;
   View* view_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ChooserController);

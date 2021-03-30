@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -103,6 +103,19 @@ chrome.languageSettingsPrivate.setEnableTranslationForLanguage = function(langua
 chrome.languageSettingsPrivate.moveLanguage = function(languageCode, moveType) {};
 
 /**
+ * Gets languages that should always be automatically translated.
+ * @param {function(!Array<string>): void} callback
+ */
+chrome.languageSettingsPrivate.getAlwaysTranslateLanguages = function(callback) {};
+
+/**
+ * Sets whether a given language should always be automatically translated.
+ * @param {string} languageCode
+ * @param {boolean} alwaysTranslate
+*/
+chrome.languageSettingsPrivate.setLanguageAlwaysTranslateState = function(languageCode, alwaysTranslate) {};
+
+/**
  * Gets the current status of the chosen spell check dictionaries.
  * @param {function(!Array<!chrome.languageSettingsPrivate.SpellcheckDictionaryStatus>): void}
  *     callback
@@ -132,6 +145,12 @@ chrome.languageSettingsPrivate.removeSpellcheckWord = function(word) {};
  * @param {function(string): void} callback
  */
 chrome.languageSettingsPrivate.getTranslateTargetLanguage = function(callback) {};
+
+/**
+ * Sets the translate target language given a language code.
+ * @param {string} languageCode
+ */
+chrome.languageSettingsPrivate.setTranslateTargetLanguage = function(languageCode) {};
 
 /**
  * Gets all supported input methods, including third-party IMEs. Chrome OS only.

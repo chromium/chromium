@@ -8,7 +8,9 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/feature_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
@@ -27,8 +29,16 @@ class View;
 class WebView;
 }  // namespace views
 
+// Kill switch to disable showing the picker on startup. Has no effect if
+// features::kNewProfilePicker is disabled.
+extern const base::Feature kEnableProfilePickerOnStartupFeature;
+
 class ProfilePicker {
  public:
+  // Only work when passed as the argument 'on_select_profile_target_url' to
+  // ProfilePicker::Show.
+  static const char kTaskManagerUrl[];
+
   // An entry point that triggers the profile picker window to open.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -40,7 +50,10 @@ class ProfilePicker {
     // A new session was sarted while Chrome was already running (e.g. by
     // clicking on the tray icon on Windows).
     kNewSessionOnExistingProcess = 4,
-    kMaxValue = kNewSessionOnExistingProcess,
+    kProfileLocked = 5,
+    kUnableToCreateBrowser = 6,
+    kBackgroundModeManager = 7,
+    kMaxValue = kBackgroundModeManager,
   };
 
   // Values for the ProfilePickerOnStartupAvailability policy. Should not be
@@ -54,8 +67,10 @@ class ProfilePicker {
   };
 
   // Shows the Profile picker for the given `entry_point` or re-activates an
-  // existing one. In the latter case, the displayed page is not updated.
-  static void Show(EntryPoint entry_point);
+  // existing one. In the latter case, the displayed page and the target url
+  // on profile selection is not updated.
+  static void Show(EntryPoint entry_point,
+                   const GURL& on_select_profile_target_url = GURL());
 
   // Starts the sign-in flow. The layout of the window gets updated for the
   // sign-in flow. At the same time, the new profile is created (with
@@ -66,9 +81,26 @@ class ProfilePicker {
       SkColor profile_color,
       base::OnceCallback<void(bool)> switch_finished_callback);
 
+  // Cancel the sign-in flow and returns back to the main picker screen (if the
+  // original EntryPoint was to open the picker). Must only be called from
+  // within the sign-in flow. This will delete the profile previously created
+  // for the sign-in flow.
+  static void CancelSignIn();
+
   // Finishes the sign-in flow by moving to the sync confirmation screen. It
   // uses the same new profile created by `SwitchToSignIn()`.
   static void SwitchToSyncConfirmation();
+
+  // Finishes the sign-in flow by moving to the enterprise profile welcome
+  // screen. It uses the same new profile created by `SwitchToSignIn()`.
+  static void SwitchToEnterpriseProfileWelcome(
+      EnterpriseProfileWelcomeUI::ScreenType type,
+      base::OnceCallback<void(bool)> proceed_callback);
+
+  // When the sign-in flow cannot be completed because another profile at
+  // `profile_path` is already syncing with a chosen account, shows the profile
+  // switch screen. It uses the system profile.
+  static void SwitchToProfileSwitch(const base::FilePath& profile_path);
 
   // Shows a dialog where the user can auth the profile or see the
   // auth error message. If a dialog is already shown, this destroys the current
@@ -80,20 +112,26 @@ class ProfilePicker {
   // Hides the dialog if it is showing.
   static void HideDialog();
 
-  // Displays sign in error message that is created by Chrome but not GAIA
-  // without browser window. If the dialog is not currently shown, this does
-  // nothing.
-  static void DisplayErrorMessage();
-
   // Getter of the path of profile which is selected in profile picker for force
   // signin.
   static base::FilePath GetForceSigninProfilePath();
+
+  // Getter of the target page  url. If not empty and is valid, it opens on
+  // profile selection instead of the new tab page.
+  static GURL GetOnSelectProfileTargetUrl();
+
+  // Getter of the path of profile which is displayed on the profile switch
+  // screen.
+  static base::FilePath GetSwitchProfilePath();
 
   // Hides the profile picker.
   static void Hide();
 
   // Returns whether the profile picker is currently open.
   static bool IsOpen();
+
+  // Returns whether the Profile picker is showing and active.
+  static bool IsActive();
 
   // Returns the global profile picker view for testing.
   static views::View* GetViewForTesting();
@@ -104,8 +142,16 @@ class ProfilePicker {
   // Returns the simple toolbar (embedded in the picker) for testing.
   static views::View* GetToolbarForTesting();
 
+  // Add a callback that will be called the next time the picker is opened.
+  static void AddOnProfilePickerOpenedCallbackForTesting(
+      base::OnceClosure callback);
+
   // Overrides the timeout delay for waiting for extended account info.
   static void SetExtendedAccountInfoTimeoutForTesting(base::TimeDelta timeout);
+
+  // Returns a pref value indicating whether the profile picker has ever been
+  // shown to the user.
+  static bool Shown();
 
   // Returns whether to show profile picker at launch. This can be called on
   // startup or when Chrome is re-opened, e.g. when clicking on the dock icon on
@@ -115,6 +161,31 @@ class ProfilePicker {
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ProfilePicker);
+};
+
+// Dialog that will be displayed when a locked profile is selected in the
+// ProfilePicker when force-signin is enabled.
+class ProfilePickerForceSigninDialog {
+ public:
+  // Dimensions of the reauth dialog displaying the password-separated signin
+  // flow.
+  static constexpr int kDialogHeight = 512;
+  static constexpr int kDialogWidth = 448;
+
+  // Shows a dialog where the user logs into their profile for the first time
+  // via the profile picker, when force signin is enabled.
+  static void ShowForceSigninDialog(content::BrowserContext* browser_context,
+                                    const base::FilePath& profile_path);
+
+  // Show the dialog and display local sign in error message without browser.
+  static void ShowDialogAndDisplayErrorMessage(
+      content::BrowserContext* browser_context);
+
+  // Display local sign in error message without browser.
+  static void DisplayErrorMessage();
+
+  // Hides the dialog if it is showing.
+  static void HideDialog();
 };
 
 #endif  // CHROME_BROWSER_UI_PROFILE_PICKER_H_

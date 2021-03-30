@@ -34,9 +34,9 @@ using content::WebContents;
 
 namespace {
 
-base::string16 FormatUsbDeviceName(
+std::u16string FormatUsbDeviceName(
     const device::mojom::UsbDeviceInfo& device_info) {
-  base::string16 device_name;
+  std::u16string device_name;
   if (device_info.product_name)
     device_name = *device_info.product_name;
 
@@ -65,8 +65,7 @@ base::string16 FormatUsbDeviceName(
 
 void OnDeviceInfoRefreshed(
     base::WeakPtr<UsbChooserContext> chooser_context,
-    const url::Origin& requesting_origin,
-    const url::Origin& embedding_origin,
+    const url::Origin& origin,
     blink::mojom::WebUsbService::GetPermissionCallback callback,
     device::mojom::UsbDeviceInfoPtr device_info) {
   if (!chooser_context || !device_info) {
@@ -79,8 +78,7 @@ void OnDeviceInfoRefreshed(
           ? WEBUSB_CHOOSER_CLOSED_EPHEMERAL_PERMISSION_GRANTED
           : WEBUSB_CHOOSER_CLOSED_PERMISSION_GRANTED);
 
-  chooser_context->GrantDevicePermission(requesting_origin, embedding_origin,
-                                         *device_info);
+  chooser_context->GrantDevicePermission(origin, *device_info);
   std::move(callback).Run(std::move(device_info));
 }
 
@@ -98,8 +96,7 @@ UsbChooserController::UsbChooserController(
       web_contents_(WebContents::FromRenderFrameHost(render_frame_host)),
       observer_(this) {
   RenderFrameHost* main_frame = web_contents_->GetMainFrame();
-  requesting_origin_ = render_frame_host->GetLastCommittedOrigin();
-  embedding_origin_ = main_frame->GetLastCommittedOrigin();
+  origin_ = main_frame->GetLastCommittedOrigin();
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
   chooser_context_ =
@@ -114,21 +111,28 @@ UsbChooserController::~UsbChooserController() {
     std::move(callback_).Run(nullptr);
 }
 
-base::string16 UsbChooserController::GetNoOptionsText() const {
+std::u16string UsbChooserController::GetNoOptionsText() const {
   return l10n_util::GetStringUTF16(IDS_DEVICE_CHOOSER_NO_DEVICES_FOUND_PROMPT);
 }
 
-base::string16 UsbChooserController::GetOkButtonLabel() const {
+std::u16string UsbChooserController::GetOkButtonLabel() const {
   return l10n_util::GetStringUTF16(IDS_USB_DEVICE_CHOOSER_CONNECT_BUTTON_TEXT);
+}
+
+std::pair<std::u16string, std::u16string>
+UsbChooserController::GetThrobberLabelAndTooltip() const {
+  return {
+      l10n_util::GetStringUTF16(IDS_USB_DEVICE_CHOOSER_LOADING_LABEL),
+      l10n_util::GetStringUTF16(IDS_USB_DEVICE_CHOOSER_LOADING_LABEL_TOOLTIP)};
 }
 
 size_t UsbChooserController::NumOptions() const {
   return devices_.size();
 }
 
-base::string16 UsbChooserController::GetOption(size_t index) const {
+std::u16string UsbChooserController::GetOption(size_t index) const {
   DCHECK_LT(index, devices_.size());
-  const base::string16& device_name = devices_[index].second;
+  const std::u16string& device_name = devices_[index].second;
   const auto& it = device_name_map_.find(device_name);
   DCHECK(it != device_name_map_.end());
 
@@ -154,8 +158,7 @@ bool UsbChooserController::IsPaired(size_t index) const {
   if (!device_info)
     return false;
 
-  return chooser_context_->HasDevicePermission(requesting_origin_,
-                                               embedding_origin_, *device_info);
+  return chooser_context_->HasDevicePermission(origin_, *device_info);
 }
 
 void UsbChooserController::Select(const std::vector<size_t>& indices) {
@@ -174,8 +177,7 @@ void UsbChooserController::Select(const std::vector<size_t>& indices) {
   // necessary to grant permission to access the device need to be bound to
   // this callback.
   auto on_device_info_refreshed = base::BindOnce(
-      &OnDeviceInfoRefreshed, chooser_context_, requesting_origin_,
-      embedding_origin_, std::move(callback_));
+      &OnDeviceInfoRefreshed, chooser_context_, origin_, std::move(callback_));
 #if defined(OS_ANDROID)
   chooser_context_->RefreshDeviceInfo(guid,
                                       std::move(on_device_info_refreshed));
@@ -204,7 +206,7 @@ void UsbChooserController::OpenHelpCenterUrl() const {
 void UsbChooserController::OnDeviceAdded(
     const device::mojom::UsbDeviceInfo& device_info) {
   if (DisplayDevice(device_info)) {
-    base::string16 device_name = FormatUsbDeviceName(device_info);
+    std::u16string device_name = FormatUsbDeviceName(device_info);
     devices_.push_back(std::make_pair(device_info.guid, device_name));
     ++device_name_map_[device_name];
     if (view())
@@ -239,7 +241,7 @@ void UsbChooserController::GotUsbDeviceList(
   for (auto& device_info : devices) {
     DCHECK(device_info);
     if (DisplayDevice(*device_info)) {
-      base::string16 device_name = FormatUsbDeviceName(*device_info);
+      std::u16string device_name = FormatUsbDeviceName(*device_info);
       devices_.push_back(std::make_pair(device_info->guid, device_name));
       ++device_name_map_[device_name];
     }

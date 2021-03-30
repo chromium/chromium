@@ -60,7 +60,7 @@ void CSSAnimation::setTimeline(AnimationTimeline* timeline) {
   ignore_css_timeline_ = true;
 }
 
-void CSSAnimation::setStartTime(base::Optional<double> start_time_ms,
+void CSSAnimation::setStartTime(CSSNumberish start_time_ms,
                                 ExceptionState& exception_state) {
   PlayStateTransitionScope scope(*this);
   Animation::setStartTime(start_time_ms, exception_state);

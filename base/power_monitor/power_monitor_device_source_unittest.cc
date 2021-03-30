@@ -10,7 +10,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using DeviceThermalState = base::PowerObserver::DeviceThermalState;
+using DeviceThermalState = base::PowerThermalObserver::DeviceThermalState;
 
 namespace base {
 

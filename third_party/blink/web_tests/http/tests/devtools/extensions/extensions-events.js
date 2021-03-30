@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Tests WebInspector extension API\n`);
-  await TestRunner.loadModule('extensions_test_runner');
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadTestModule('extensions_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.navigatePromise(TestRunner.url('./resources/extensions-events.html'));
 

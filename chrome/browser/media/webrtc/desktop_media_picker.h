@@ -13,7 +13,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -53,11 +52,11 @@ class DesktopMediaPicker {
     ui::ModalType modality = ui::ModalType::MODAL_TYPE_CHILD;
     // The name used in the dialog for what is requesting the picker to be
     // shown.
-    base::string16 app_name;
+    std::u16string app_name;
     // Can be the same as target_name. If it is not then this is used in the
     // dialog for what is specific target within the app_name is requesting the
     // picker.
-    base::string16 target_name;
+    std::u16string target_name;
     // Whether audio capture should be shown as an option in the picker.
     bool request_audio = false;
     // Whether audio capture option should be approved by default if shown.

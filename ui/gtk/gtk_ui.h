@@ -24,15 +24,17 @@ typedef struct _GParamSpec GParamSpec;
 typedef struct _GtkParamSpec GtkParamSpec;
 typedef struct _GtkSettings GtkSettings;
 typedef struct _GtkStyle GtkStyle;
-typedef struct _GtkWidget GtkWidget;
 
 namespace gtk {
 using ColorMap = std::map<int, SkColor>;
 
-class GtkKeyBindingsHandler;
 class DeviceScaleFactorObserver;
 class NativeThemeGtk;
 class SettingsProvider;
+
+#if BUILDFLAG(GTK_VERSION) <= 3
+class GtkKeyBindingsHandler;
+#endif
 
 // Interface to GTK desktop features.
 class GtkUi : public views::LinuxUI {
@@ -153,9 +155,6 @@ class GtkUi : public views::LinuxUI {
 
   NativeThemeGtk* native_theme_;
 
-  // A regular GtkWindow.
-  GtkWidget* fake_window_;
-
   // Colors calculated by LoadGtkValues() that are given to the
   // caller while |use_gtk_| is true.
   ColorMap colors_;
@@ -192,7 +191,9 @@ class GtkUi : public views::LinuxUI {
   std::vector<views::FrameButton> leading_buttons_;
   std::vector<views::FrameButton> trailing_buttons_;
 
+#if BUILDFLAG(GTK_VERSION) <= 3
   std::unique_ptr<GtkKeyBindingsHandler> key_bindings_handler_;
+#endif
 
   // Objects to notify when the window frame button order changes.
   base::ObserverList<views::WindowButtonOrderObserver>::Unchecked

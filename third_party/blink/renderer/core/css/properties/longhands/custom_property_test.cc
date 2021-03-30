@@ -87,38 +87,6 @@ TEST_F(CustomPropertyTest, GetPropertyNameAtomicString) {
   EXPECT_EQ(AtomicString("--x"), property.GetPropertyNameAtomicString());
 }
 
-TEST_F(CustomPropertyTest, ComputedValuesEqual) {
-  RegisterProperty(GetDocument(), "--y", "<length>", "100px", false);
-
-  CustomProperty x("--x", GetDocument());
-  CustomProperty y("--y", GetDocument());
-
-  SetElementWithStyle("--x:foo;--y:10px");
-  auto style1 = ComputedStyle::Clone(GetComputedStyle());
-
-  SetElementWithStyle("--x:foo;--y:10px");
-  auto style2 = ComputedStyle::Clone(GetComputedStyle());
-
-  SetElementWithStyle("--x:bar;--y:30px");
-  auto style3 = ComputedStyle::Clone(GetComputedStyle());
-
-  ASSERT_TRUE(x.IsComputedValueComparable());
-  EXPECT_TRUE(x.ComputedValuesEqual(*style1, *style1));
-  EXPECT_TRUE(x.ComputedValuesEqual(*style2, *style2));
-  EXPECT_TRUE(x.ComputedValuesEqual(*style1, *style2));
-  EXPECT_TRUE(x.ComputedValuesEqual(*style2, *style1));
-  EXPECT_FALSE(x.ComputedValuesEqual(*style1, *style3));
-  EXPECT_FALSE(x.ComputedValuesEqual(*style2, *style3));
-
-  ASSERT_TRUE(y.IsComputedValueComparable());
-  EXPECT_TRUE(y.ComputedValuesEqual(*style1, *style1));
-  EXPECT_TRUE(y.ComputedValuesEqual(*style2, *style2));
-  EXPECT_TRUE(y.ComputedValuesEqual(*style1, *style2));
-  EXPECT_TRUE(y.ComputedValuesEqual(*style2, *style1));
-  EXPECT_FALSE(y.ComputedValuesEqual(*style1, *style3));
-  EXPECT_FALSE(y.ComputedValuesEqual(*style2, *style3));
-}
-
 TEST_F(CustomPropertyTest, ComputedCSSValueUnregistered) {
   CustomProperty property("--x", GetDocument());
   SetElementWithStyle("--x:foo");

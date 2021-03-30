@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/accessibility_controller.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "base/bind.h"
@@ -16,15 +17,14 @@
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
-#include "chrome/browser/chromeos/accessibility/magnification_manager.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/magnification_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/policy/device_policy_builder.h"
 #include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -32,11 +32,12 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace em = enterprise_management;
-
 namespace policy {
-
 namespace {
+
+namespace em = ::enterprise_management;
+using ::ash::AccessibilityManager;
+using ::ash::MagnificationManager;
 
 const int kDisabledScreenMagnifier = 0;
 const int kFullScreenMagnifier = 1;
@@ -116,14 +117,12 @@ void LoginScreenAccessibilityPolicyBrowsertest::SetUpOnMainThread() {
   login_profile_ = chromeos::ProfileHelper::GetSigninProfile();
   ASSERT_TRUE(login_profile_);
   // Set the login screen profile.
-  chromeos::AccessibilityManager* accessibility_manager =
-      chromeos::AccessibilityManager::Get();
+  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   ASSERT_TRUE(accessibility_manager);
   accessibility_manager->SetProfileForTest(
       chromeos::ProfileHelper::GetSigninProfile());
 
-  chromeos::MagnificationManager* magnification_manager =
-      chromeos::MagnificationManager::Get();
+  MagnificationManager* magnification_manager = MagnificationManager::Get();
   ASSERT_TRUE(magnification_manager);
   magnification_manager->SetProfileForTest(
       chromeos::ProfileHelper::GetSigninProfile());
@@ -169,8 +168,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenAccessibilityPolicyBrowsertest,
                        DeviceLoginScreenLargeCursorEnabled) {
   // Verifies that the state of the large cursor accessibility feature on the
   // login screen can be controlled through device policy.
-  chromeos::AccessibilityManager* accessibility_manager =
-      chromeos::AccessibilityManager::Get();
+  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   ASSERT_TRUE(accessibility_manager);
   EXPECT_FALSE(accessibility_manager->IsLargeCursorEnabled());
 
@@ -204,8 +202,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenAccessibilityPolicyBrowsertest,
   // DeviceLoginScreenLargeCursorEnabled device policy if both of
   // DeviceLoginScreenLargeCursorEnabled and
   // DeviceLoginScreenDefaultLargeCursorEnabled have been set.
-  chromeos::AccessibilityManager* accessibility_manager =
-      chromeos::AccessibilityManager::Get();
+  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   ASSERT_TRUE(accessibility_manager);
   EXPECT_FALSE(accessibility_manager->IsLargeCursorEnabled());
 
@@ -253,8 +250,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenAccessibilityPolicyBrowsertest,
                        DeviceLoginScreenSpokenFeedbackEnabled) {
   // Verifies that the state of the spoken feedback accessibility feature on the
   // login screen can be controlled through device policy.
-  chromeos::AccessibilityManager* accessibility_manager =
-      chromeos::AccessibilityManager::Get();
+  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   ASSERT_TRUE(accessibility_manager);
   EXPECT_FALSE(accessibility_manager->IsSpokenFeedbackEnabled());
 
@@ -288,8 +284,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenAccessibilityPolicyBrowsertest,
   // DeviceLoginScreenSpokenFeedbackEnabled device policy if both of
   // DeviceLoginScreenSpokenFeedbackEnabled and
   // DeviceLoginScreenDefaultSpokenFeedbackEnabled have been set.
-  chromeos::AccessibilityManager* accessibility_manager =
-      chromeos::AccessibilityManager::Get();
+  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   ASSERT_TRUE(accessibility_manager);
   EXPECT_FALSE(accessibility_manager->IsSpokenFeedbackEnabled());
 
@@ -339,8 +334,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenAccessibilityPolicyBrowsertest,
                        DeviceLoginScreenHighContrastEnabled) {
   // Verifies that the state of the high contrast accessibility feature on the
   // login screen can be controlled through device policy.
-  chromeos::AccessibilityManager* accessibility_manager =
-      chromeos::AccessibilityManager::Get();
+  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   ASSERT_TRUE(accessibility_manager);
   EXPECT_FALSE(accessibility_manager->IsHighContrastEnabled());
 
@@ -374,8 +368,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenAccessibilityPolicyBrowsertest,
   // DeviceLoginScreenHighContrastEnabled device policy if both of
   // DeviceLoginScreenHighContrastEnabled and
   // DeviceLoginScreenDefaultHighContrastEnabled have been set.
-  chromeos::AccessibilityManager* accessibility_manager =
-      chromeos::AccessibilityManager::Get();
+  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   ASSERT_TRUE(accessibility_manager);
   EXPECT_FALSE(accessibility_manager->IsHighContrastEnabled());
 
@@ -425,8 +418,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenAccessibilityPolicyBrowsertest,
                        DeviceLoginScreenVirtualKeyboardEnabled) {
   // Verifies that the state of the virtual keyboard accessibility feature on
   // the login screen can be controlled through device policy.
-  chromeos::AccessibilityManager* accessibility_manager =
-      chromeos::AccessibilityManager::Get();
+  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   ASSERT_TRUE(accessibility_manager);
   EXPECT_FALSE(accessibility_manager->IsVirtualKeyboardEnabled());
 
@@ -460,8 +452,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenAccessibilityPolicyBrowsertest,
   // DeviceLoginScreenVirtualKeyboardEnabled device policy if both of
   // DeviceLoginScreenVirtualKeyboardEnabled and
   // DeviceLoginScreenDefaultVirtualKeyboardEnabled have been set.
-  chromeos::AccessibilityManager* accessibility_manager =
-      chromeos::AccessibilityManager::Get();
+  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   ASSERT_TRUE(accessibility_manager);
   EXPECT_FALSE(accessibility_manager->IsVirtualKeyboardEnabled());
 
@@ -511,8 +502,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenAccessibilityPolicyBrowsertest,
                        DeviceLoginScreenDictationEnabled) {
   // Verifies that the state of the dictation accessibility feature on the
   // login screen can be controlled through device policy.
-  chromeos::AccessibilityManager* accessibility_manager =
-      chromeos::AccessibilityManager::Get();
+  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   ASSERT_TRUE(accessibility_manager);
   EXPECT_FALSE(accessibility_manager->IsDictationEnabled());
 
@@ -565,8 +555,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenAccessibilityPolicyBrowsertest,
                        DeviceLoginScreenSelectToSpeakEnabled) {
   // Verifies that the state of the select to speak accessibility feature on the
   // login screen can be controlled through device policy.
-  chromeos::AccessibilityManager* accessibility_manager =
-      chromeos::AccessibilityManager::Get();
+  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   ASSERT_TRUE(accessibility_manager);
   EXPECT_FALSE(accessibility_manager->IsSelectToSpeakEnabled());
 
@@ -617,8 +606,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenAccessibilityPolicyBrowsertest,
                        DeviceLoginScreenCursorHighlightEnabled) {
   // Verifies that the state of the cursor highlight accessibility feature on
   // the login screen can be controlled through device policy.
-  chromeos::AccessibilityManager* accessibility_manager =
-      chromeos::AccessibilityManager::Get();
+  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   ASSERT_TRUE(accessibility_manager);
   EXPECT_FALSE(accessibility_manager->IsCursorHighlightEnabled());
 
@@ -669,8 +657,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenAccessibilityPolicyBrowsertest,
                        DeviceLoginScreenCaretHighlightEnabled) {
   // Verifies that the state of the caret highlight accessibility feature on
   // the login screen can be controlled through device policy.
-  chromeos::AccessibilityManager* accessibility_manager =
-      chromeos::AccessibilityManager::Get();
+  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   ASSERT_TRUE(accessibility_manager);
   EXPECT_FALSE(accessibility_manager->IsCaretHighlightEnabled());
 
@@ -721,8 +708,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenAccessibilityPolicyBrowsertest,
                        DeviceLoginScreenMonoAudioEnabled) {
   // Verifies that the state of the mono audio accessibility feature on
   // the login screen can be controlled through device policy.
-  chromeos::AccessibilityManager* accessibility_manager =
-      chromeos::AccessibilityManager::Get();
+  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   ASSERT_TRUE(accessibility_manager);
   EXPECT_FALSE(accessibility_manager->IsMonoAudioEnabled());
 
@@ -773,8 +759,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenAccessibilityPolicyBrowsertest,
                        DeviceLoginScreenAutoclickEnabled) {
   // Verifies that the state of the autoclick accessibility feature on
   // the login screen can be controlled through device policy.
-  chromeos::AccessibilityManager* accessibility_manager =
-      chromeos::AccessibilityManager::Get();
+  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   ASSERT_TRUE(accessibility_manager);
   EXPECT_FALSE(accessibility_manager->IsAutoclickEnabled());
 
@@ -825,8 +810,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenAccessibilityPolicyBrowsertest,
                        DeviceLoginScreenStickyKeysEnabled) {
   // Verifies that the state of the sticky keys accessibility feature on
   // the login screen can be controlled through device policy.
-  chromeos::AccessibilityManager* accessibility_manager =
-      chromeos::AccessibilityManager::Get();
+  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   ASSERT_TRUE(accessibility_manager);
   EXPECT_FALSE(accessibility_manager->IsStickyKeysEnabled());
 
@@ -877,8 +861,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenAccessibilityPolicyBrowsertest,
                        DeviceLoginScreenKeyboardFocusHighlightEnabled) {
   // Verifies that the state of the keyboard focus highlight accessibility
   // feature on the login screen can be controlled through device policy.
-  chromeos::AccessibilityManager* accessibility_manager =
-      chromeos::AccessibilityManager::Get();
+  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   ASSERT_TRUE(accessibility_manager);
   EXPECT_FALSE(accessibility_manager->IsFocusHighlightEnabled());
 
@@ -930,8 +913,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenAccessibilityPolicyBrowsertest,
                        DeviceLoginScreenFullScreenMagnifier) {
   // Verifies that the state of the full-screen magnifier accessibility
   // feature on the login screen can be controlled through device policy.
-  chromeos::MagnificationManager* magnification_manager =
-      chromeos::MagnificationManager::Get();
+  MagnificationManager* magnification_manager = MagnificationManager::Get();
   PrefService* prefs = login_profile_->GetPrefs();
   ASSERT_TRUE(prefs);
   ASSERT_TRUE(magnification_manager);
@@ -989,8 +971,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenAccessibilityPolicyBrowsertest,
                        DeviceLoginScreenDockedMagnifier) {
   // Verifies that the state of the docked magnifier accessibility
   // feature on the login screen can be controlled through device policy.
-  chromeos::MagnificationManager* magnification_manager =
-      chromeos::MagnificationManager::Get();
+  MagnificationManager* magnification_manager = MagnificationManager::Get();
   ASSERT_TRUE(magnification_manager);
   EXPECT_FALSE(magnification_manager->IsDockedMagnifierEnabled());
 

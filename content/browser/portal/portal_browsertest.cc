@@ -217,41 +217,6 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, CreatePortal) {
   EXPECT_NE(nullptr, portal);
 }
 
-// This fixture enables CompositeCrossOriginIframes for the following regression
-// test. Since we're testing stability and not behaviour specific to this flag,
-// this fixture and its test may be removed upon removal of the
-// CompositeCrossOriginIframes flag.
-class PortalCompositeCrossOriginIframesBrowserTest : public PortalBrowserTest {
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    PortalBrowserTest::SetUpCommandLine(command_line);
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kCompositeCrossOriginIframes);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Regression test for https://crbug.com/1028269
-// Tests that the renderer can create a portal without crashing when
-// CompositeCrossOriginIframes is enabled.
-IN_PROC_BROWSER_TEST_F(PortalCompositeCrossOriginIframesBrowserTest,
-                       CreatePortal) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
-  WebContentsImpl* web_contents_impl =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
-
-  GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  Portal* portal = CreatePortalToUrl(web_contents_impl, a_url);
-  EXPECT_NE(nullptr, portal);
-
-  // Ensure that the renderer is still alive.
-  EXPECT_EQ(true, EvalJs(main_frame, "true"));
-}
-
 // Tests the the renderer can navigate a Portal.
 IN_PROC_BROWSER_TEST_F(PortalBrowserTest, NavigatePortal) {
   EXPECT_TRUE(NavigateToURL(
@@ -416,11 +381,11 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, AdoptPredecessor) {
   {
     PortalActivatedObserver activated_observer(portal);
     PortalCreatedObserver adoption_observer(portal_frame);
-    EXPECT_TRUE(ExecJs(main_frame,
+    ExecuteScriptAsync(main_frame,
                        "let portal = document.querySelector('portal');"
                        "portal.activate().then(() => { "
                        "  document.body.removeChild(portal); "
-                       "});"));
+                       "});");
     EXPECT_EQ(blink::mojom::PortalActivateResult::kPredecessorWasAdopted,
               activated_observer.WaitForActivateResult());
     adoption_observer.WaitUntilPortalCreated();
@@ -710,11 +675,11 @@ IN_PROC_BROWSER_TEST_F(PortalHitTestBrowserTest,
   // Activate the portal.
   {
     PortalActivatedObserver activated_observer(portal);
-    EXPECT_TRUE(ExecJs(main_frame,
+    ExecuteScriptAsync(main_frame,
                        "let portal = document.querySelector('portal');"
                        "portal.activate().then(() => { "
                        "  document.body.removeChild(portal); "
-                       "});"));
+                       "});");
     activated_observer.WaitForActivate();
 
     RenderWidgetHostViewBase* view =
@@ -864,7 +829,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TouchAckAfterActivate) {
   WaitForHitTestData(portal_frame);
 
   SyntheticTapGestureParams params;
-  params.gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
+  params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
   params.position =
       portal_view->TransformPointToRootCoordSpaceF(gfx::PointF(5, 5));
 
@@ -917,7 +882,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TouchAckAfterActivateAndAdopt) {
   SyntheticTapGestureParams params;
   RenderWidgetHostViewChildFrame* portal_view =
       static_cast<RenderWidgetHostViewChildFrame*>(portal_frame->GetView());
-  params.gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
+  params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
   params.position =
       portal_view->TransformPointToRootCoordSpaceF(gfx::PointF(5, 5));
 
@@ -974,7 +939,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TouchAckAfterActivateAndReactivate) {
       render_widget_host, blink::WebInputEvent::Type::kTouchStart);
 
   SyntheticTapGestureParams params;
-  params.gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
+  params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
   params.position = gfx::PointF(20, 20);
 
   std::unique_ptr<SyntheticTapGesture> gesture =
@@ -1004,8 +969,10 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TouchAckAfterActivateAndReactivate) {
 }
 
 // TODO(crbug.com/985078): Fix on Mac.
+// TODO(crbug.com/1191782): Test is flaky.
 #if !defined(OS_MAC)
-IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TouchStateClearedBeforeActivation) {
+IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
+                       DISABLED_TouchStateClearedBeforeActivation) {
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
   WebContentsImpl* web_contents_impl =
@@ -1033,7 +1000,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TouchStateClearedBeforeActivation) {
   RenderWidgetHostImpl* render_widget_host = main_frame->GetRenderWidgetHost();
 
   SyntheticTapGestureParams params;
-  params.gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
+  params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
   params.position = gfx::PointF(20, 20);
 
   // Activate the portal, and then wait for the predecessor to be reactivated.
@@ -1102,7 +1069,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, GestureCleanedUpBeforeActivation) {
   RenderWidgetHostImpl* render_widget_host = main_frame->GetRenderWidgetHost();
 
   SyntheticTapGestureParams params;
-  params.gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
+  params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
   params.position = gfx::PointF(20, 20);
   params.duration_ms = 1;
 
@@ -1160,7 +1127,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TouchInputTransferAcrossActivation) {
 
   // Create and dispatch a synthetic scroll to trigger activation.
   SyntheticSmoothScrollGestureParams params;
-  params.gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
+  params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
   params.anchor =
       gfx::PointF(50, main_frame->GetView()->GetViewBounds().height() - 100);
   params.distances.push_back(-gfx::Vector2d(0, 100));
@@ -1204,7 +1171,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
 
   // Create and dispatch a synthetic scroll to trigger activation.
   SyntheticSmoothScrollGestureParams params;
-  params.gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
+  params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
   params.anchor =
       gfx::PointF(50, main_frame->GetView()->GetViewBounds().height() - 100);
   params.distances.push_back(-gfx::Vector2d(0, 250));
@@ -1573,13 +1540,14 @@ class RenderFrameHostFactoryForLocalMainFrameInterceptor
       FrameTree* frame_tree,
       FrameTreeNode* frame_tree_node,
       int32_t routing_id,
-      const base::UnguessableToken& frame_token,
+      mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
+      const blink::LocalFrameToken& frame_token,
       bool renderer_initiated_creation,
-      RenderFrameHostImpl::LifecycleState lifecycle_state) override {
+      RenderFrameHostImpl::LifecycleStateImpl lifecycle_state) override {
     return base::WrapUnique(new RenderFrameHostImplForLocalMainFrameInterceptor(
         site_instance, std::move(render_view_host), delegate, frame_tree,
-        frame_tree_node, routing_id, frame_token, renderer_initiated_creation,
-        lifecycle_state));
+        frame_tree_node, routing_id, std::move(frame_remote), frame_token,
+        renderer_initiated_creation, lifecycle_state));
   }
 };
 
@@ -1653,8 +1621,8 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, PortalHistoryWithActivation) {
   EXPECT_EQ(portal_url, portal_controller.GetLastCommittedEntry()->GetURL());
 
   PortalActivatedObserver activated_observer(portal);
-  ASSERT_TRUE(
-      ExecJs(main_frame, "document.querySelector('portal').activate();"));
+  ExecuteScriptAsync(main_frame,
+                     "document.querySelector('portal').activate();");
   activated_observer.WaitForActivate();
 
   NavigationControllerImpl& activated_controller = portal_controller;
@@ -1681,8 +1649,8 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
   Portal* portal = CreatePortalToUrl(web_contents_impl, portal_url);
 
   PortalActivatedObserver activated_observer(portal);
-  ASSERT_TRUE(
-      ExecJs(main_frame, "document.querySelector('portal').activate();"));
+  ExecuteScriptAsync(main_frame,
+                     "document.querySelector('portal').activate();");
   activated_observer.WaitForActivate();
 
   web_contents_impl = static_cast<WebContentsImpl*>(shell()->web_contents());
@@ -1745,8 +1713,8 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
   ASSERT_TRUE(navigation_request);
 
   PortalActivatedObserver activated_observer(portal);
-  ASSERT_TRUE(
-      ExecJs(main_frame, "document.querySelector('portal').activate();"));
+  ExecuteScriptAsync(main_frame,
+                     "document.querySelector('portal').activate();");
   activated_observer.WaitForActivate();
 
   NavigationControllerImpl& activated_controller = portal_controller;
@@ -1770,8 +1738,49 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, DidFocusIPCFromFrameInsidePortal) {
   WebContentsImpl* portal_contents = portal->GetPortalContents();
   RenderFrameHostImpl* portal_main_frame = portal_contents->GetMainFrame();
 
-  GURL b_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
   TestNavigationObserver iframe_navigation_observer(portal_contents);
+  EXPECT_TRUE(ExecJs(portal_main_frame,
+                     JsReplace("var iframe = document.createElement('iframe');"
+                               "iframe.src = $1;"
+                               "document.body.appendChild(iframe);",
+                               url)));
+  iframe_navigation_observer.Wait();
+  EXPECT_EQ(url, iframe_navigation_observer.last_navigation_url());
+
+  EXPECT_EQ(web_contents_impl->GetFocusedWebContents(), web_contents_impl);
+  EXPECT_EQ(web_contents_impl->GetFocusedFrame(), main_frame);
+  EXPECT_EQ(portal_contents->GetFocusedFrame(), nullptr);
+
+  // Simulate renderer sending LocalFrameHost::DidFocusFrame IPC.
+  RenderFrameHostImpl* iframe =
+      portal_main_frame->child_at(0)->current_frame_host();
+  iframe->DidFocusFrame();
+
+  // WebContents focus should not have changed, but portal's frame tree's
+  // focused frame should have updated.
+  EXPECT_EQ(web_contents_impl->GetFocusedWebContents(), web_contents_impl);
+  EXPECT_EQ(web_contents_impl->GetFocusedFrame(), main_frame);
+  EXPECT_EQ(portal_contents->GetFocusedFrame(), iframe);
+}
+
+IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
+                       DidFocusIPCFromCrossProcessFrameInsidePortal) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
+  WebContentsImpl* web_contents_impl =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+
+  GURL a_url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  Portal* portal = CreatePortalToUrl(web_contents_impl, a_url);
+  WebContentsImpl* portal_contents = portal->GetPortalContents();
+
+  // Ensures b.com is isolated from a.com (even on Android).
+  IsolateOriginsForTesting(embedded_test_server(), portal_contents, {"b.com"});
+  RenderFrameHostImpl* portal_main_frame = portal_contents->GetMainFrame();
+
+  TestNavigationObserver iframe_navigation_observer(portal_contents);
+  GURL b_url = embedded_test_server()->GetURL("b.com", "/title1.html");
   EXPECT_TRUE(ExecJs(portal_main_frame,
                      JsReplace("var iframe = document.createElement('iframe');"
                                "iframe.src = $1;"
@@ -1780,31 +1789,91 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, DidFocusIPCFromFrameInsidePortal) {
   iframe_navigation_observer.Wait();
   EXPECT_EQ(b_url, iframe_navigation_observer.last_navigation_url());
 
-  web_contents_impl->SetAsFocusedWebContentsIfNecessary();
   EXPECT_EQ(web_contents_impl->GetFocusedWebContents(), web_contents_impl);
   EXPECT_EQ(web_contents_impl->GetFocusedFrame(), main_frame);
+  EXPECT_EQ(portal_contents->GetFocusedFrame(), nullptr);
 
-  // Simulate renderer sending LocalFrameHost::DidFocusFrame IPC.
-  RenderFrameHostImpl* iframe_rfhi =
-      portal_main_frame->child_at(0)->current_frame_host();
-  iframe_rfhi->DidFocusFrame();
-
-  // Focus should not have changed.
-  EXPECT_EQ(web_contents_impl->GetFocusedWebContents(), web_contents_impl);
-  EXPECT_EQ(web_contents_impl->GetFocusedFrame(), main_frame);
-
-  if (!SiteIsolationPolicy::UseDedicatedProcessesForAllSites())
-    return;
+  FrameTreeNode* iframe_ftn = portal_main_frame->child_at(0);
+  RenderFrameHostImpl* rfhi = iframe_ftn->current_frame_host();
+  RenderFrameProxyHost* rfph =
+      iframe_ftn->render_manager()->GetRenderFrameProxyHost(
+          portal_main_frame->GetSiteInstance());
 
   // Simulate renderer sending RemoteFrameHost::DidFocusFrame IPC.
-  RenderFrameProxyHost* iframe_rfph =
-      portal_main_frame->child_at(0)->render_manager()->GetRenderFrameProxyHost(
-          portal_main_frame->GetSiteInstance());
-  iframe_rfph->DidFocusFrame();
+  rfph->DidFocusFrame();
 
-  // Focus should not have changed.
+  // WebContents focus should not have changed, but portal's frame tree's
+  // focused frame should have updated.
   EXPECT_EQ(web_contents_impl->GetFocusedWebContents(), web_contents_impl);
   EXPECT_EQ(web_contents_impl->GetFocusedFrame(), main_frame);
+  EXPECT_EQ(portal_contents->GetFocusedFrame(), rfhi);
+}
+
+IN_PROC_BROWSER_TEST_F(PortalBrowserTest, DidFocusIPCFromOrphanedPortal) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
+  WebContentsImpl* web_contents_impl =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+
+  GURL a_url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  Portal* portal = CreatePortalToUrl(web_contents_impl, a_url);
+  WebContentsImpl* portal_contents = portal->GetPortalContents();
+  RenderFrameHostImpl* portal_main_frame = portal_contents->GetMainFrame();
+
+  EXPECT_EQ(web_contents_impl->GetFocusedWebContents(), web_contents_impl);
+  EXPECT_EQ(web_contents_impl->GetFocusedFrame(), main_frame);
+  EXPECT_EQ(portal_contents->GetFocusedFrame(), nullptr);
+  EXPECT_TRUE(main_frame->GetRenderWidgetHost()->is_focused());
+
+  // Activate portal, keep in orphaned state for a while, and then adopt and
+  // insert predecessor.
+  // TODO(mcnee): Ideally, we would have a test interceptor to precisely
+  // control when to proceed with adoption.
+  const int time_in_orphaned_state =
+      TestTimeouts::tiny_timeout().InMilliseconds();
+  EXPECT_TRUE(
+      ExecJs(portal_main_frame,
+             JsReplace("window.addEventListener('portalactivate', e => { "
+                       "  var stop = performance.now() + $1;"
+                       "  while (performance.now() < stop) {}"
+                       "  var portal = e.adoptPredecessor(); "
+                       "  document.body.appendChild(portal);"
+                       "});",
+                       time_in_orphaned_state)));
+  {
+    PortalActivatedObserver activated_observer(portal);
+    PortalCreatedObserver adoption_observer(portal_main_frame);
+    ExecuteScriptAsync(main_frame,
+                       "document.querySelector('portal').activate();");
+    activated_observer.WaitForActivate();
+
+    // |web_contents_impl| should be owned by an orphaned portal.
+    EXPECT_TRUE(web_contents_impl->IsPortal());
+    EXPECT_EQ(web_contents_impl->GetOuterWebContents(), nullptr);
+
+    // |web_contents_impl| is orphaned and therefore still points to itself
+    // as the focused WebContents node in its tree. It shouldn't have a view
+    // and it shouldn't have page focus.
+    EXPECT_EQ(web_contents_impl->GetFocusedWebContents(), web_contents_impl);
+    EXPECT_EQ(web_contents_impl->GetRenderWidgetHostView(), nullptr);
+    EXPECT_FALSE(main_frame->GetRenderWidgetHost()->is_focused());
+
+    // Simulate DidFocusFrame IPC being sent from the renderer while orphaned.
+    main_frame->DidFocusFrame();
+    EXPECT_EQ(web_contents_impl->GetFocusedFrame(), main_frame);
+    EXPECT_FALSE(main_frame->GetRenderWidgetHost()->is_focused());
+
+    EXPECT_EQ(blink::mojom::PortalActivateResult::kPredecessorWasAdopted,
+              activated_observer.WaitForActivateResult());
+    adoption_observer.WaitUntilPortalCreated();
+  }
+
+  // Adoption is complete, so |web_contents_impl_| is no longer orphaned and is
+  // an inner WebContents.
+  EXPECT_EQ(web_contents_impl->GetFocusedWebContents(), portal_contents);
+  EXPECT_EQ(web_contents_impl->GetFocusedFrame(), main_frame);
+  EXPECT_FALSE(main_frame->GetRenderWidgetHost()->is_focused());
 }
 
 // Test that a renderer process is killed if it sends an AdvanceFocus IPC to
@@ -1873,11 +1942,11 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
   {
     PortalActivatedObserver activated_observer(portal);
     PortalCreatedObserver adoption_observer(portal_frame);
-    EXPECT_TRUE(ExecJs(main_frame,
+    ExecuteScriptAsync(main_frame,
                        "let portal = document.querySelector('portal');"
                        "portal.activate().then(() => { "
                        "  document.body.removeChild(portal); "
-                       "});"));
+                       "});");
     EXPECT_EQ(blink::mojom::PortalActivateResult::kPredecessorWasAdopted,
               activated_observer.WaitForActivateResult());
     adoption_observer.WaitUntilPortalCreated();
@@ -1916,9 +1985,10 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, OrphanedPortalAccessibilityReset) {
                        TIME_IN_ORPHANED_STATE_MILLISECONDS)));
   {
     PortalActivatedObserver activated_observer(portal);
-    EXPECT_TRUE(ExecJs(main_frame,
-                       "let portal = document.querySelector('portal');"
-                       "portal.activate();"));
+    ExecuteScriptAsync(main_frame, R"(
+      let portal = document.querySelector('portal');
+      portal.activate();
+    )");
     activated_observer.WaitForActivate();
     // Forces an AXTree update to be sent while portal is orphaned.
     AccessibilityNotificationWaiter waiter(web_contents_impl,
@@ -1962,14 +2032,16 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
   {
     PortalActivatedObserver activated_observer(portal);
     PortalCreatedObserver adoption_observer(main_frame);
-    EXPECT_TRUE(ExecJs(main_frame,
-                       "window.addEventListener('portalactivate',  e => {"
-                       "  document.body.appendChild(e.adoptPredecessor());"
-                       "});"
-                       "let portal = document.querySelector('portal');"
-                       "portal.activate().then(() => { "
-                       "  document.body.removeChild(portal); "
-                       "});"));
+    ExecuteScriptAsync(main_frame, R"(
+      window.addEventListener('portalactivate',  e => {
+        document.body.appendChild(e.adoptPredecessor());
+      });
+
+      let portal = document.querySelector('portal');
+      portal.activate().then(() => {
+        document.body.removeChild(portal);
+      });
+    )");
     activated_observer.WaitForActivate();
     // Forces an AXTree update to be sent while portal is orphaned.
     AccessibilityNotificationWaiter waiter(web_contents_impl,
@@ -2137,8 +2209,8 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, RejectActivationOfCrashedPages) {
   CrashTab(portal_contents);
 
   PortalActivatedObserver activated_observer(portal);
-  EXPECT_TRUE(
-      ExecJs(main_frame, "document.querySelector('portal').activate();"));
+  ExecuteScriptAsync(main_frame,
+                     "document.querySelector('portal').activate();");
   EXPECT_EQ(blink::mojom::PortalActivateResult::kRejectedDueToErrorInPortal,
             activated_observer.WaitForActivateResult());
 }
@@ -2162,8 +2234,8 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, ActivatePreviouslyCrashedPortal) {
   navigation_observer.Wait();
 
   PortalActivatedObserver activated_observer(portal);
-  EXPECT_TRUE(
-      ExecJs(main_frame, "document.querySelector('portal').activate();"));
+  ExecuteScriptAsync(main_frame,
+                     "document.querySelector('portal').activate();");
   EXPECT_EQ(blink::mojom::PortalActivateResult::kPredecessorWillUnload,
             activated_observer.WaitForActivateResult());
 }
@@ -2702,7 +2774,7 @@ IN_PROC_BROWSER_TEST_F(PortalPixelBrowserTest, MAYBE_PageScaleRaster) {
 
     content::SyntheticPinchGestureParams params;
     params.gesture_source_type =
-        content::SyntheticGestureParams::TOUCHPAD_INPUT;
+        content::mojom::GestureSourceType::kTouchpadInput;
     params.scale_factor = 4.f;
     params.anchor = gfx::PointF();
     params.relative_pointer_speed_in_pixels_s = 40000;

@@ -30,8 +30,8 @@ TEST(NotificationPlatformBridgeChromeOsTest, Update) {
               [](int* clicks, base::Optional<int> button_index) { ++*clicks; },
               &initial_delegate_clicks));
   message_center::Notification initial_notification(
-      message_center::NOTIFICATION_TYPE_SIMPLE, id, base::string16(),
-      base::string16(), gfx::Image(), base::string16(), GURL(),
+      message_center::NOTIFICATION_TYPE_SIMPLE, id, std::u16string(),
+      std::u16string(), gfx::Image(), std::u16string(), GURL(),
       message_center::NotifierId(), {}, initial_delegate);
   bridge.Display(NotificationHandler::Type::TRANSIENT, &profile,
                  initial_notification, nullptr);
@@ -49,8 +49,8 @@ TEST(NotificationPlatformBridgeChromeOsTest, Update) {
               [](int* clicks, base::Optional<int> button_index) { ++*clicks; },
               &updated_delegate_clicks));
   message_center::Notification updated_notification(
-      message_center::NOTIFICATION_TYPE_SIMPLE, id, base::string16(),
-      base::string16(), gfx::Image(), base::string16(), GURL(),
+      message_center::NOTIFICATION_TYPE_SIMPLE, id, std::u16string(),
+      std::u16string(), gfx::Image(), std::u16string(), GURL(),
       message_center::NotifierId(), {}, updated_delegate);
   bridge.Display(NotificationHandler::Type::TRANSIENT, &profile,
                  updated_notification, nullptr);

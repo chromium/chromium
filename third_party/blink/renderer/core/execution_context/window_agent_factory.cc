@@ -16,10 +16,14 @@ namespace blink {
 WindowAgentFactory::WindowAgentFactory() = default;
 
 WindowAgent* WindowAgentFactory::GetAgentForOrigin(
-    bool has_potential_universal_access_privilege,
     v8::Isolate* isolate,
-    const SecurityOrigin* origin) {
-  if (has_potential_universal_access_privilege) {
+    const SecurityOrigin* origin,
+    bool is_origin_agent_cluster) {
+  if (origin->IsGrantedUniversalAccess()) {
+    // We shouldn't have OAC turned on in this case, since we're sharing a
+    // WindowAgent for all file access. This code block must be kept in sync
+    // with DocumentLoader::InitializeWindow().
+    DCHECK(!is_origin_agent_cluster);
     if (!universal_access_agent_) {
       universal_access_agent_ = MakeGarbageCollected<WindowAgent>(isolate);
     }
@@ -28,6 +32,10 @@ WindowAgent* WindowAgentFactory::GetAgentForOrigin(
 
   // For `file:` scheme origins.
   if (origin->IsLocal()) {
+    // We shouldn't have OAC turned on for files, since we're sharing a
+    // WindowAgent for all file access. This code block must be kept in sync
+    // with DocumentLoader::InitializeWindow().
+    DCHECK(!is_origin_agent_cluster);
     if (!file_url_agent_)
       file_url_agent_ = MakeGarbageCollected<WindowAgent>(isolate);
     return file_url_agent_;
@@ -38,6 +46,18 @@ WindowAgent* WindowAgentFactory::GetAgentForOrigin(
     auto inserted = opaque_origin_agents_.insert(origin, nullptr);
     if (inserted.is_new_entry)
       inserted.stored_value->value = MakeGarbageCollected<WindowAgent>(isolate);
+    return inserted.stored_value->value;
+  }
+
+  // For origin-keyed agent cluster origins.
+  // Note: this map is specific to OAC, and does not represent origin-keyed
+  // agents specified via Coop/Coep.
+  if (is_origin_agent_cluster) {
+    auto inserted = origin_keyed_agent_cluster_agents_.insert(origin, nullptr);
+    if (inserted.is_new_entry) {
+      inserted.stored_value->value = MakeGarbageCollected<WindowAgent>(isolate);
+      inserted.stored_value->value->SetIsExplicitlyOriginKeyed(true);
+    }
     return inserted.stored_value->value;
   }
 
@@ -67,6 +87,7 @@ void WindowAgentFactory::Trace(Visitor* visitor) const {
   visitor->Trace(universal_access_agent_);
   visitor->Trace(file_url_agent_);
   visitor->Trace(opaque_origin_agents_);
+  visitor->Trace(origin_keyed_agent_cluster_agents_);
   visitor->Trace(tuple_origin_agents_);
 }
 

@@ -29,7 +29,7 @@ class ExampleTreeViewDrawingProvider : public views::TreeViewDrawingProvider {
   ExampleTreeViewDrawingProvider() = default;
   ~ExampleTreeViewDrawingProvider() override = default;
 
-  base::string16 GetAuxiliaryTextForNode(views::TreeView* tree_view,
+  std::u16string GetAuxiliaryTextForNode(views::TreeView* tree_view,
                                          ui::TreeModelNode* node) override {
     if (tree_view->GetSelectedNode() == node)
       return GetStringUTF16(IDS_TREE_VIEW_SELECTED_LABEL);

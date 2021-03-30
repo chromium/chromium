@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMediator.INITIAL_SCROLL_INDEX_OFFSET;
+import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMediator.INITIAL_SCROLL_INDEX_OFFSET_GTS;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
-import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
@@ -75,6 +74,11 @@ public class TabGridDialogMediator implements SnackbarManager.SnackbarController
          * @return Whether or not the TabGridDialog consumed the event.
          */
         boolean handleBackPressed();
+
+        /**
+         * @return Whether the TabGridDialog is visible.
+         */
+        boolean isVisible();
     }
 
     /**
@@ -191,7 +195,7 @@ public class TabGridDialogMediator implements SnackbarManager.SnackbarController
             }
         };
 
-        mTabModelSelectorObserver = new EmptyTabModelSelectorObserver() {
+        mTabModelSelectorObserver = new TabModelSelectorObserver() {
             @Override
             public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
                 boolean isIncognito = newModel.isIncognito();
@@ -420,7 +424,7 @@ public class TabGridDialogMediator implements SnackbarManager.SnackbarController
         List<Tab> relatedTabs = getRelatedTabs(mCurrentTabId);
         Tab currentTab = mTabModelSelector.getTabById(mCurrentTabId);
         int initialPosition =
-                Math.max(relatedTabs.indexOf(currentTab) - INITIAL_SCROLL_INDEX_OFFSET, 0);
+                Math.max(relatedTabs.indexOf(currentTab) - INITIAL_SCROLL_INDEX_OFFSET_GTS, 0);
         mModel.set(TabGridPanelProperties.INITIAL_SCROLL_INDEX, initialPosition);
     }
 

@@ -42,7 +42,9 @@ ExtensionFunction::ResponseAction ExtensionSetUpdateUrlDataFunction::Run() {
   std::string data;
   EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &data));
 
-  if (ManifestURL::UpdatesFromGallery(extension())) {
+  ExtensionManagement* extension_management =
+      ExtensionManagementFactory::GetForBrowserContext(browser_context());
+  if (extension_management->UpdatesFromWebstore(*extension())) {
     return RespondNow(Error(kUnknownErrorDoNotUse));
   }
 

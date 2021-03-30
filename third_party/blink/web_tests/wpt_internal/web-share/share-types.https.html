@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="module">
+import {callWithKeyDown, share_test} from './resources/share-test.js';
+import {ShareError} from '/gen/third_party/blink/public/mojom/webshare/share_error.mojom.m.js';
+
+function getAbsoluteUrl(url) {
+  return new URL(url, document.baseURI).toString();
+}
+
+share_test(mock => {
+  mock.pushShareResult('true', 'the object', 'http://example.com/',
+                       ShareError.OK);
+
+  const textWithToString = {toString() { return 'the object'; }};
+  const urlWithToString = {toString() { return 'http://example.com/'; }};
+  return callWithKeyDown(() => navigator.share(
+        {title: true, text: textWithToString, url: urlWithToString}));
+}, 'share of types other than string (expect implicitly converted to string)');
+
+share_test(mock => {
+  // null fields should convert into the string 'null' (because the field is
+  // not nullable, it just converts to a string like any other type).
+  mock.pushShareResult('null', '', '', ShareError.OK);
+  return callWithKeyDown(() => navigator.share(
+        {title: null, text: undefined}));
+}, 'share of null/undefined dict values');
+
+</script>

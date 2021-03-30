@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_switches.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/ash_switches.h"
@@ -46,7 +47,6 @@
 #include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
 #include "base/values.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -492,6 +492,7 @@ WallpaperControllerImpl::WallpaperControllerImpl(PrefService* local_state)
       std::vector<SkColor>(color_profiles_.size(), kInvalidWallpaperColor);
   Shell::Get()->window_tree_host_manager()->AddObserver(this);
   Shell::Get()->AddShellObserver(this);
+  theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
 }
 
 WallpaperControllerImpl::~WallpaperControllerImpl() {
@@ -629,7 +630,9 @@ void WallpaperControllerImpl::MaybeClosePreviewWallpaper() {
     DCHECK(!reload_preview_wallpaper_callback_);
     return;
   }
-  wallpaper_controller_client_->MaybeClosePreviewWallpaper();
+  // May be null in tests.
+  if (wallpaper_controller_client_)
+    wallpaper_controller_client_->MaybeClosePreviewWallpaper();
   CancelPreviewWallpaper();
 }
 
@@ -1350,7 +1353,7 @@ bool WallpaperControllerImpl::ShouldShowWallpaperSetting() {
   // everything resets.
   user_manager::UserType active_user_type = active_user_session->user_info.type;
   return active_user_type == user_manager::USER_TYPE_REGULAR ||
-         active_user_type == user_manager::USER_TYPE_SUPERVISED ||
+         active_user_type == user_manager::USER_TYPE_SUPERVISED_DEPRECATED ||
          active_user_type == user_manager::USER_TYPE_CHILD;
 }
 
@@ -1445,6 +1448,11 @@ void WallpaperControllerImpl::OnTabletModeStarted() {
 }
 
 void WallpaperControllerImpl::OnTabletModeEnded() {
+  RepaintWallpaper();
+}
+
+void WallpaperControllerImpl::OnNativeThemeUpdated(
+    ui::NativeTheme* observed_theme) {
   RepaintWallpaper();
 }
 

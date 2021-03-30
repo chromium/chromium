@@ -91,8 +91,8 @@ const char* SavePaymentIconView::GetClassName() const {
   return "SavePaymentIconView";
 }
 
-base::string16 SavePaymentIconView::GetTextForTooltipAndAccessibleName() const {
-  base::string16 text;
+std::u16string SavePaymentIconView::GetTextForTooltipAndAccessibleName() const {
+  std::u16string text;
 
   SavePaymentIconController* const controller = GetController();
   if (controller)

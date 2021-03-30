@@ -86,152 +86,100 @@ void ExtensionApiTest::TearDownOnMainThread() {
   test_config_.reset(NULL);
 }
 
-bool ExtensionApiTest::RunExtensionTest(const std::string& extension_name) {
-  return RunExtensionTestImpl(extension_name, std::string(), nullptr,
-                              kFlagEnableFileAccess, kFlagNone);
+bool ExtensionApiTest::RunExtensionTest(const RunOptions& run_options) {
+  return RunExtensionTest(run_options, {});
 }
 
-bool ExtensionApiTest::RunExtensionTestWithFlags(
-    const std::string& extension_name,
-    int browser_test_flags,
-    int api_test_flags) {
-  return RunExtensionTestImpl(extension_name, std::string(), nullptr,
-                              browser_test_flags, api_test_flags);
+bool ExtensionApiTest::RunExtensionTest(const char* extension_name) {
+  return RunExtensionTest({.name = extension_name}, {});
 }
 
-bool ExtensionApiTest::RunExtensionTestWithArg(
-    const std::string& extension_name,
-    const char* custom_arg) {
-  return RunExtensionTestImpl(extension_name, std::string(), custom_arg,
-                              kFlagEnableFileAccess, kFlagNone);
-}
+bool ExtensionApiTest::RunExtensionTest(const RunOptions& run_options,
+                                        const LoadOptions& load_options) {
+  // Do some sanity checks for options that are mutually exclusive or
+  // only valid with other options.
+  CHECK(run_options.name || run_options.page_url)
+      << "Must specify either 'name' or 'page_url'";
+  CHECK(!(run_options.extension_url && run_options.page_url))
+      << "'extension_url' and 'page_url' are mutually exclusive.";
+  CHECK(!run_options.open_in_incognito || run_options.page_url)
+      << "'open_in_incognito' is only allowed if specifiying 'page_url'";
+  CHECK(!(run_options.launch_as_platform_app && run_options.page_url))
+      << "'launch_as_platform_app' and 'page_url' are mutually exclusive.";
 
-bool ExtensionApiTest::RunExtensionTestWithFlagsAndArg(
-    const std::string& extension_name,
-    const char* custom_arg,
-    int browser_test_flags,
-    int api_test_flags) {
-  return RunExtensionTestImpl(extension_name, std::string(), custom_arg,
-                              browser_test_flags, api_test_flags);
-}
+  if (run_options.custom_arg)
+    SetCustomArg(run_options.custom_arg);
 
-bool ExtensionApiTest::RunExtensionTestIncognito(
-    const std::string& extension_name) {
-  return RunExtensionTestImpl(extension_name, std::string(), nullptr,
-                              kFlagEnableIncognito | kFlagEnableFileAccess,
-                              kFlagNone);
-}
+  ResultCatcher catcher;
 
-bool ExtensionApiTest::RunExtensionTestIgnoreManifestWarnings(
-    const std::string& extension_name) {
-  return RunExtensionTestImpl(extension_name, std::string(), nullptr,
-                              kFlagIgnoreManifestWarnings, kFlagNone);
-}
+  const Extension* extension = nullptr;
+  if (run_options.name) {
+    const base::FilePath& root_path = run_options.use_extensions_root_dir
+                                          ? shared_test_data_dir_
+                                          : test_data_dir_;
+    base::FilePath extension_path = root_path.AppendASCII(run_options.name);
+    // TODO(https://crbug.com/1171429): Move load_as_component into LoadOptions
+    // and unify LoadExtension and LoadExtensionAsComponent.
+    // As it stands today, all LoadOptions will be ignored when loading the
+    // extension as a component extension.
+    if (run_options.load_as_component) {
+      extension = LoadExtensionAsComponent(extension_path);
+    } else {
+      extension = LoadExtension(extension_path, load_options);
+    }
+    if (!extension) {
+      message_ = "Failed to load extension.";
+      return false;
+    }
+  }
 
-bool ExtensionApiTest::RunExtensionTestAllowOldManifestVersion(
-    const std::string& extension_name) {
-  return RunExtensionTestImpl(
-      extension_name, std::string(), nullptr,
-      kFlagEnableFileAccess | kFlagAllowOldManifestVersions, kFlagNone);
-}
+  // If there is a page_url to load, navigate it.
+  // TODO(https://crbug.com/1171429): Separate page_url into page_url and
+  // extension_url.
+  if (run_options.page_url) {
+    GURL url(run_options.page_url);
 
-bool ExtensionApiTest::RunComponentExtensionTest(
-    const std::string& extension_name) {
-  return RunExtensionTestImpl(extension_name, std::string(), nullptr,
-                              kFlagEnableFileAccess, kFlagLoadAsComponent);
-}
+    // Note: We use is_valid() here in the expectation that the provided url
+    // may lack a scheme & host and thus be a relative url within the loaded
+    // extension.
+    if (!url.is_valid()) {
+      DCHECK(run_options.name) << "Relative page_url given with no name";
 
-bool ExtensionApiTest::RunComponentExtensionTestWithArg(
-    const std::string& extension_name,
-    const char* custom_arg) {
-  return RunExtensionTestImpl(extension_name, std::string(), custom_arg,
-                              kFlagEnableFileAccess, kFlagLoadAsComponent);
-}
+      url = extension->GetResourceURL(run_options.page_url);
+    }
 
-bool ExtensionApiTest::RunExtensionTestNoFileAccess(
-    const std::string& extension_name) {
-  return RunExtensionTestImpl(extension_name, std::string(), nullptr, kFlagNone,
-                              kFlagNone);
-}
+    if (run_options.open_in_incognito)
+      OpenURLOffTheRecord(browser()->profile(), url);
+    else
+      ui_test_utils::NavigateToURL(browser(), url);
+  } else if (run_options.launch_as_platform_app) {
+    apps::AppLaunchParams params(
+        extension->id(), LaunchContainer::kLaunchContainerNone,
+        WindowOpenDisposition::NEW_WINDOW, AppLaunchSource::kSourceTest);
+    params.command_line = *base::CommandLine::ForCurrentProcess();
+    apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
+        ->BrowserAppLauncher()
+        ->LaunchAppWithParams(std::move(params));
+  }
 
-bool ExtensionApiTest::RunExtensionTestIncognitoNoFileAccess(
-    const std::string& extension_name) {
-  return RunExtensionTestImpl(extension_name, std::string(), nullptr,
-                              kFlagEnableIncognito, kFlagNone);
+  if (!catcher.GetNextResult()) {
+    message_ = catcher.message();
+    return false;
+  }
+
+  return true;
 }
 
 bool ExtensionApiTest::RunExtensionSubtest(const std::string& extension_name,
                                            const std::string& page_url) {
-  return RunExtensionSubtestWithArgAndFlags(extension_name, page_url, nullptr,
-                                            kFlagEnableFileAccess, kFlagNone);
-}
-
-bool ExtensionApiTest::RunExtensionSubtest(const std::string& extension_name,
-                                           const std::string& page_url,
-                                           int browser_test_flags,
-                                           int api_test_flags) {
-  return RunExtensionSubtestWithArgAndFlags(extension_name, page_url, nullptr,
-                                            browser_test_flags, api_test_flags);
-}
-
-bool ExtensionApiTest::RunExtensionSubtestWithArg(
-    const std::string& extension_name,
-    const std::string& page_url,
-    const char* custom_arg) {
-  return RunExtensionSubtestWithArgAndFlags(
-      extension_name, page_url, custom_arg, kFlagEnableFileAccess, kFlagNone);
-}
-
-bool ExtensionApiTest::RunExtensionSubtestWithArgAndFlags(
-    const std::string& extension_name,
-    const std::string& page_url,
-    const char* custom_arg,
-    int browser_test_flags,
-    int api_test_flags) {
   DCHECK(!page_url.empty()) << "Argument page_url is required.";
-  return RunExtensionTestImpl(extension_name, page_url, custom_arg,
-                              browser_test_flags, api_test_flags);
-}
-
-bool ExtensionApiTest::RunPageTest(const std::string& page_url) {
-  return RunExtensionSubtest(std::string(), page_url);
-}
-
-bool ExtensionApiTest::RunPageTest(const std::string& page_url,
-                                   int browser_test_flags,
-                                   int api_test_flags) {
-  return RunExtensionSubtest(std::string(), page_url, browser_test_flags,
-                             api_test_flags);
+  return RunExtensionTestImpl(extension_name, page_url, nullptr, kFlagNone,
+                              kFlagNone);
 }
 
 bool ExtensionApiTest::RunPlatformAppTest(const std::string& extension_name) {
   return RunExtensionTestImpl(extension_name, std::string(), nullptr, kFlagNone,
                               kFlagLaunchPlatformApp);
-}
-
-bool ExtensionApiTest::RunPlatformAppTestWithArg(
-    const std::string& extension_name, const char* custom_arg) {
-  return RunPlatformAppTestWithFlags(extension_name, custom_arg, kFlagNone,
-                                     kFlagNone);
-}
-
-bool ExtensionApiTest::RunPlatformAppTestWithFlags(
-    const std::string& extension_name,
-    int browser_test_flags,
-    int api_test_flags) {
-  return RunExtensionTestImpl(extension_name, std::string(), nullptr,
-                              browser_test_flags,
-                              api_test_flags | kFlagLaunchPlatformApp);
-}
-
-bool ExtensionApiTest::RunPlatformAppTestWithFlags(
-    const std::string& extension_name,
-    const char* custom_arg,
-    int browser_test_flags,
-    int api_test_flags) {
-  return RunExtensionTestImpl(extension_name, std::string(), custom_arg,
-                              browser_test_flags,
-                              api_test_flags | kFlagLaunchPlatformApp);
 }
 
 bool ExtensionApiTest::RunExtensionTestImpl(const std::string& extension_name,
@@ -269,7 +217,11 @@ bool ExtensionApiTest::RunExtensionTestImpl(const std::string& extension_name,
     if (load_as_component) {
       extension = LoadExtensionAsComponent(extension_path);
     } else {
-      extension = LoadExtensionWithFlags(extension_path, browser_test_flags);
+      // TODO(crbug.com/1171429): This call needs to be removed when this
+      // bug is addressed for the ExtensionApiTest "RunExtensionTest"
+      // overloads.
+      extension = LoadExtensionWithInstallParam(
+          extension_path, browser_test_flags, std::string());
     }
     if (!extension) {
       message_ = "Failed to load extension.";
@@ -322,7 +274,7 @@ const Extension* ExtensionApiTest::GetSingleLoadedExtension() {
        registry->enabled_extensions()) {
     // Ignore any component extensions. They are automatically loaded into all
     // profiles and aren't the extension we're looking for here.
-    if (extension->location() == Manifest::COMPONENT)
+    if (extension->location() == mojom::ManifestLocation::kComponent)
       continue;
 
     if (result != NULL) {

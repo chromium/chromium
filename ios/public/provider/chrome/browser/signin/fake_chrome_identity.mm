@@ -14,6 +14,7 @@ namespace {
 NSString* const kCoderUserEmailKey = @"UserEmail";
 NSString* const kCoderGaiaIDKey = @"GaiaID";
 NSString* const kCoderUserFullNameKey = @"UserFullName";
+NSString* const kCoderUserGivenNameKey = @"UserGivenName";
 NSString* const kCoderHashedGaiaIDKey = @"HashedGaiaID";
 }  // namespace
 
@@ -21,6 +22,7 @@ NSString* const kCoderHashedGaiaIDKey = @"HashedGaiaID";
   NSString* _userEmail;
   NSString* _gaiaID;
   NSString* _userFullName;
+  NSString* _userGivenName;
   NSString* _hashedGaiaID;
 }
 
@@ -40,6 +42,7 @@ NSString* const kCoderHashedGaiaIDKey = @"HashedGaiaID";
     _userEmail = [email copy];
     _gaiaID = [gaiaID copy];
     _userFullName = [name copy];
+    _userGivenName = [name copy];
     _hashedGaiaID = [NSString stringWithFormat:@"%@_hashID", name];
   }
   return self;
@@ -55,6 +58,10 @@ NSString* const kCoderHashedGaiaIDKey = @"HashedGaiaID";
 
 - (NSString*)userFullName {
   return _userFullName;
+}
+
+- (NSString*)userGivenName {
+  return _userGivenName;
 }
 
 - (NSString*)hashedGaiaID {
@@ -79,6 +86,7 @@ NSString* const kCoderHashedGaiaIDKey = @"HashedGaiaID";
     return [_userEmail isEqualToString:other.userEmail] &&
            [_gaiaID isEqualToString:other.gaiaID] &&
            [_userFullName isEqualToString:other.userFullName] &&
+           [_userGivenName isEqualToString:other.userGivenName] &&
            [_hashedGaiaID isEqualToString:other.hashedGaiaID];
   }
   return NO;
@@ -94,6 +102,7 @@ NSString* const kCoderHashedGaiaIDKey = @"HashedGaiaID";
   [coder encodeObject:_userEmail forKey:kCoderUserEmailKey];
   [coder encodeObject:_gaiaID forKey:kCoderGaiaIDKey];
   [coder encodeObject:_userFullName forKey:kCoderUserFullNameKey];
+  [coder encodeObject:_userGivenName forKey:kCoderUserGivenNameKey];
   [coder encodeObject:_hashedGaiaID forKey:kCoderHashedGaiaIDKey];
 }
 
@@ -105,6 +114,8 @@ NSString* const kCoderHashedGaiaIDKey = @"HashedGaiaID";
                                   forKey:kCoderGaiaIDKey];
     _userFullName = [coder decodeObjectOfClass:[NSString class]
                                         forKey:kCoderUserFullNameKey];
+    _userGivenName = [coder decodeObjectOfClass:[NSString class]
+                                         forKey:kCoderUserGivenNameKey];
     _hashedGaiaID = [coder decodeObjectOfClass:[NSString class]
                                         forKey:kCoderHashedGaiaIDKey];
   }

@@ -50,7 +50,7 @@ class InputComponentsHandler : public ManifestHandler {
   InputComponentsHandler();
   ~InputComponentsHandler() override;
 
-  bool Parse(Extension* extension, base::string16* error) override;
+  bool Parse(Extension* extension, std::u16string* error) override;
 
   // Requires kOptionsPage is already parsed.
   const std::vector<std::string> PrerequisiteKeys() const override;

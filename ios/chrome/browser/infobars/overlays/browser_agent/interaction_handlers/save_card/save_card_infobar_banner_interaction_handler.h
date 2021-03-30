@@ -27,9 +27,9 @@ class SaveCardInfobarBannerInteractionHandler
   // |expiration_date_month|, and |expiration_date_year|. This replaces
   // MainButtonTapped.
   virtual void SaveCredentials(InfoBarIOS* infobar,
-                               base::string16 cardholder_name,
-                               base::string16 expiration_date_month,
-                               base::string16 expiration_date_year);
+                               std::u16string cardholder_name,
+                               std::u16string expiration_date_month,
+                               std::u16string expiration_date_year);
 
   // Overrides InfobarBannerInteractionHandler implementation because a banner
   // dismissal should not call InfoBarDismissed();

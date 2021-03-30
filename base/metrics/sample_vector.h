@@ -120,9 +120,29 @@ class BASE_EXPORT SampleVector : public SampleVectorBase {
   ~SampleVector() override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(SampleVectorTest, GetPeakBucketSize);
+
+  // HistogramSamples:
+  std::string GetAsciiBody() const override;
+  std::string GetAsciiHeader(StringPiece histogram_name,
+                             int32_t flags) const override;
+
   // SampleVectorBase:
   bool MountExistingCountsStorage() const override;
   HistogramBase::Count* CreateCountsStorageWhileLocked() override;
+
+  // Writes cumulative percentage information based on the number
+  // of past, current, and remaining bucket samples.
+  void WriteAsciiBucketContext(int64_t past,
+                               HistogramBase::Count current,
+                               int64_t remaining,
+                               uint32_t current_bucket_index,
+                               std::string* output) const;
+
+  // Finds out how large (graphically) the largest bucket will appear to be.
+  double GetPeakBucketSize() const;
+
+  size_t bucket_count() const { return bucket_ranges()->bucket_count(); }
 
   // Simple local storage for counts.
   mutable std::vector<HistogramBase::AtomicCount> local_counts_;

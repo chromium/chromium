@@ -8,33 +8,125 @@
 
 #include "base/logging.h"
 #include "base/time/time.h"
+#include "media/base/video_frame.h"
+#include "media/base/video_util.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_image_decode_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_image_decode_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_decoder_init.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_image_frame.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_image_track.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/fetch/readable_stream_bytes_consumer.h"
-#include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
+#include "third_party/blink/renderer/modules/webcodecs/image_track.h"
+#include "third_party/blink/renderer/modules/webcodecs/image_track_list.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
+#include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/skia/include/core/SkYUVAPixmaps.h"
 
 namespace blink {
+
+namespace {
+
+media::VideoPixelFormat YUVSubsamplingToMediaPixelFormat(
+    cc::YUVSubsampling sampling,
+    int depth) {
+  // TODO(crbug.com/1073995): Add support for high bit depth format.
+  if (depth != 8)
+    return media::PIXEL_FORMAT_UNKNOWN;
+
+  switch (sampling) {
+    case cc::YUVSubsampling::k420:
+      return media::PIXEL_FORMAT_I420;
+    case cc::YUVSubsampling::k422:
+      return media::PIXEL_FORMAT_I422;
+    case cc::YUVSubsampling::k444:
+      return media::PIXEL_FORMAT_I444;
+    default:
+      return media::PIXEL_FORMAT_UNKNOWN;
+  }
+}
+
+gfx::ColorSpace YUVColorSpaceToGfxColorSpace(SkYUVColorSpace yuv_cs,
+                                             const gfx::ColorSpace& rgb_cs) {
+  switch (yuv_cs) {
+    case kJPEG_Full_SkYUVColorSpace:
+      return rgb_cs.GetWithMatrixAndRange(gfx::ColorSpace::MatrixID::SMPTE170M,
+                                          gfx::ColorSpace::RangeID::FULL);
+    case kRec601_Limited_SkYUVColorSpace:
+      return rgb_cs.GetWithMatrixAndRange(gfx::ColorSpace::MatrixID::SMPTE170M,
+                                          gfx::ColorSpace::RangeID::LIMITED);
+    case kRec709_Full_SkYUVColorSpace:
+      return rgb_cs.GetWithMatrixAndRange(gfx::ColorSpace::MatrixID::BT709,
+                                          gfx::ColorSpace::RangeID::FULL);
+    case kRec709_Limited_SkYUVColorSpace:
+      return rgb_cs.GetWithMatrixAndRange(gfx::ColorSpace::MatrixID::BT709,
+                                          gfx::ColorSpace::RangeID::LIMITED);
+    case kBT2020_8bit_Full_SkYUVColorSpace:
+    case kBT2020_10bit_Full_SkYUVColorSpace:
+    case kBT2020_12bit_Full_SkYUVColorSpace:
+      return rgb_cs.GetWithMatrixAndRange(gfx::ColorSpace::MatrixID::BT2020_NCL,
+                                          gfx::ColorSpace::RangeID::FULL);
+    case kBT2020_8bit_Limited_SkYUVColorSpace:
+    case kBT2020_10bit_Limited_SkYUVColorSpace:
+    case kBT2020_12bit_Limited_SkYUVColorSpace:
+      return rgb_cs.GetWithMatrixAndRange(gfx::ColorSpace::MatrixID::BT2020_NCL,
+                                          gfx::ColorSpace::RangeID::LIMITED);
+    case kIdentity_SkYUVColorSpace:
+      return rgb_cs.GetWithMatrixAndRange(gfx::ColorSpace::MatrixID::GBR,
+                                          gfx::ColorSpace::RangeID::FULL);
+  };
+}
+
+bool IsTypeSupportedInternal(String type) {
+  return type.ContainsOnlyASCIIOrEmpty() &&
+         IsSupportedImageMimeType(type.Ascii());
+}
+
+ImageDecoder::AnimationOption AnimationOptionFromIsAnimated(bool is_animated) {
+  return is_animated ? ImageDecoder::AnimationOption::kPreferAnimation
+                     : ImageDecoder::AnimationOption::kPreferStillImage;
+}
+
+DOMException* CreateUnsupportedImageTypeException(String type) {
+  return MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kNotSupportedError,
+      String::Format("The provided image type (%s) is not supported",
+                     type.Ascii().c_str()));
+}
+
+DOMException* CreateClosedException() {
+  return MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kInvalidStateError, "The decoder has been closed.");
+}
+
+DOMException* CreateNoSelectedTracksException() {
+  return MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kInvalidStateError, "No selected track.");
+}
+
+DOMException* CreateDecodeFailure(uint32_t index) {
+  return MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kEncodingError,
+      String::Format("Failed to decode frame at index %d", index));
+}
+
+}  // namespace
 
 // static
 ImageDecoderExternal* ImageDecoderExternal::Create(
     ScriptState* script_state,
     const ImageDecoderInit* init,
     ExceptionState& exception_state) {
-  return MakeGarbageCollected<ImageDecoderExternal>(script_state, init,
-                                                    exception_state);
+  auto* result = MakeGarbageCollected<ImageDecoderExternal>(script_state, init,
+                                                            exception_state);
+  return exception_state.HadException() ? nullptr : result;
 }
 
 ImageDecoderExternal::DecodeRequest::DecodeRequest(
@@ -52,16 +144,20 @@ void ImageDecoderExternal::DecodeRequest::Trace(Visitor* visitor) const {
 }
 
 // static
-bool ImageDecoderExternal::canDecodeType(String type) {
-  return type.ContainsOnlyASCIIOrEmpty() &&
-         IsSupportedImageMimeType(type.Ascii());
+ScriptPromise ImageDecoderExternal::isTypeSupported(ScriptState* script_state,
+                                                    String type) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto promise = resolver->Promise();
+  resolver->Resolve(IsTypeSupportedInternal(type));
+  return promise;
 }
 
 ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
                                            const ImageDecoderInit* init,
                                            ExceptionState& exception_state)
     : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
-      script_state_(script_state) {
+      script_state_(script_state),
+      tracks_(MakeGarbageCollected<ImageTrackList>(this)) {
   UseCounter::Count(ExecutionContext::From(script_state),
                     WebFeature::kWebCodecs);
 
@@ -69,31 +165,36 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
   DCHECK(init->hasData());
   DCHECK(!init->data().IsNull());
 
-  options_ =
-      init->hasOptions() ? init->options() : ImageBitmapOptions::Create();
+  constexpr char kNoneOption[] = "none";
+  if (init->colorSpaceConversion() == kNoneOption)
+    color_behavior_ = ColorBehavior::Ignore();
+  if (init->premultiplyAlpha() == kNoneOption)
+    alpha_option_ = ImageDecoder::kAlphaNotPremultiplied;
+  if (init->hasDesiredWidth() && init->hasDesiredHeight())
+    desired_size_ = SkISize::Make(init->desiredWidth(), init->desiredHeight());
 
-  mime_type_ = init->type();
-  if (!canDecodeType(mime_type_)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      "Unsupported image format");
+  mime_type_ = init->type().LowerASCII();
+  if (!IsTypeSupportedInternal(mime_type_))
     return;
+
+  if (init->hasPreferAnimation()) {
+    prefer_animation_ = init->preferAnimation();
+    animation_option_ = AnimationOptionFromIsAnimated(*prefer_animation_);
   }
 
-  if (init->hasPreferAnimation())
-    prefer_animation_ = init->preferAnimation();
-
   if (init->data().IsReadableStream()) {
-    if (init->data().GetAsReadableStream()->IsLocked()) {
+    if (init->data().GetAsReadableStream()->IsLocked() ||
+        init->data().GetAsReadableStream()->IsDisturbed()) {
       exception_state.ThrowTypeError(
           "ImageDecoder can only accept readable streams that are not yet "
           "locked to a reader");
       return;
     }
-    consumer_ = MakeGarbageCollected<ReadableStreamBytesConsumer>(
-        script_state, init->data().GetAsReadableStream());
-
     stream_buffer_ = WTF::SharedBuffer::Create();
     CreateImageDecoder();
+
+    consumer_ = MakeGarbageCollected<ReadableStreamBytesConsumer>(
+        script_state, init->data().GetAsReadableStream());
 
     // We need one initial call to OnStateChange() to start reading, but
     // thereafter calls will be driven by the ReadableStreamBytesConsumer.
@@ -109,7 +210,7 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
   if (init->data().IsArrayBuffer()) {
     buffer = DOMArrayPiece(init->data().GetAsArrayBuffer());
   } else if (init->data().IsArrayBufferView()) {
-    buffer = DOMArrayPiece(init->data().GetAsArrayBufferView().View());
+    buffer = DOMArrayPiece(init->data().GetAsArrayBufferView().Get());
   } else {
     NOTREACHED();
     return;
@@ -146,14 +247,26 @@ ImageDecoderExternal::~ImageDecoderExternal() {
   DVLOG(1) << __func__;
 }
 
-ScriptPromise ImageDecoderExternal::decode(uint32_t frame_index,
-                                           bool complete_frames_only) {
+ScriptPromise ImageDecoderExternal::decode(const ImageDecodeOptions* options) {
   DVLOG(1) << __func__;
-
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state_);
   auto promise = resolver->Promise();
+
+  if (closed_) {
+    resolver->Reject(CreateClosedException());
+    return promise;
+  }
+
+  if (!decoder_) {
+    resolver->Reject(IsTypeSupportedInternal(mime_type_)
+                         ? CreateNoSelectedTracksException()
+                         : CreateUnsupportedImageTypeException(mime_type_));
+    return promise;
+  }
+
   pending_decodes_.push_back(MakeGarbageCollected<DecodeRequest>(
-      resolver, frame_index, complete_frames_only));
+      resolver, options ? options->frameIndex() : 0,
+      options ? options->completeFramesOnly() : true));
   MaybeSatisfyPendingDecodes();
   return promise;
 }
@@ -163,66 +276,95 @@ ScriptPromise ImageDecoderExternal::decodeMetadata() {
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state_);
   auto promise = resolver->Promise();
+
+  if (closed_) {
+    resolver->Reject(CreateClosedException());
+    return promise;
+  }
+
+  if (!decoder_) {
+    // We may have no selected tracks at this point.
+    if (IsTypeSupportedInternal(mime_type_)) {
+      DCHECK(pending_metadata_decodes_.IsEmpty());
+      resolver->Resolve();
+      return promise;
+    }
+
+    resolver->Reject(CreateUnsupportedImageTypeException(mime_type_));
+    return promise;
+  }
+
   pending_metadata_decodes_.push_back(resolver);
   MaybeSatisfyPendingMetadataDecodes();
   return promise;
 }
 
-void ImageDecoderExternal::selectTrack(uint32_t track_id,
-                                       ExceptionState& exception_state) {
-  if (track_id >= tracks_.size()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kConstraintError,
-                                      "Track index out of range");
-    return;
-  }
+void ImageDecoderExternal::UpdateSelectedTrack() {
+  DCHECK(!closed_);
 
-  // Returning early allows us to avoid churn from unnecessarily destructing the
-  // underlying ImageDecoder interface.
-  if (tracks_.size() == 1 || selected_track_id_ == track_id)
-    return;
-
-  for (auto& request : pending_decodes_) {
-    request->resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kAbortError, "Aborted by track change"));
-  }
-
-  pending_decodes_.clear();
-  incomplete_frames_.clear();
+  reset(MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
+                                           "Aborted by track change"));
 
   // TODO(crbug.com/1073995): We eventually need a formal track selection
   // mechanism. For now we can only select between the still and animated images
   // and must destruct the decoder for changes.
   decoder_.reset();
-  selected_track_id_ = track_id;
-  prefer_animation_ = tracks_[track_id]->animated();
+  if (!tracks_->selectedTrack())
+    return;
+
+  animation_option_ = AnimationOptionFromIsAnimated(
+      tracks_->selectedTrack().value()->animated());
 
   CreateImageDecoder();
   MaybeUpdateMetadata();
   MaybeSatisfyPendingDecodes();
 }
 
-uint32_t ImageDecoderExternal::frameCount() const {
-  return frame_count_;
-}
-
 String ImageDecoderExternal::type() const {
   return mime_type_;
-}
-
-uint32_t ImageDecoderExternal::repetitionCount() const {
-  return repetition_count_;
 }
 
 bool ImageDecoderExternal::complete() const {
   return data_complete_;
 }
 
-const ImageDecoderExternal::ImageTrackList ImageDecoderExternal::tracks()
-    const {
-  return tracks_;
+ImageTrackList& ImageDecoderExternal::tracks() const {
+  return *tracks_;
+}
+
+void ImageDecoderExternal::reset(DOMException* exception) {
+  if (!exception) {
+    exception = MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kAbortError, "Aborted by reset.");
+  }
+
+  // Move all state to local variables since promise resolution is reentrant.
+  HeapVector<Member<ScriptPromiseResolver>> local_pending_metadata_decodes;
+  local_pending_metadata_decodes.swap(pending_metadata_decodes_);
+
+  AbortPendingDecodes(exception);
+  for (auto& resolver : local_pending_metadata_decodes)
+    resolver->Reject(exception);
+}
+
+void ImageDecoderExternal::close() {
+  reset(MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
+                                           "Aborted by close."));
+  if (consumer_)
+    consumer_->Cancel();
+  consumer_ = nullptr;
+  decoder_.reset();
+  tracks_->Disconnect();
+  mime_type_ = "";
+  stream_buffer_ = nullptr;
+  segment_reader_ = nullptr;
+  closed_ = true;
 }
 
 void ImageDecoderExternal::OnStateChange() {
+  DCHECK(!closed_);
+  DCHECK(consumer_);
+
   const char* buffer;
   size_t available;
   while (!data_complete_) {
@@ -236,14 +378,9 @@ void ImageDecoderExternal::OnStateChange() {
       result = consumer_->EndRead(available);
     }
 
-    if (result == BytesConsumer::Result::kError) {
-      data_complete_ = true;
-      return;
-    }
-
-    data_complete_ = result == BytesConsumer::Result::kDone;
+    data_complete_ = result == BytesConsumer::Result::kDone ||
+                     result == BytesConsumer::Result::kError;
     decoder_->SetData(stream_buffer_, data_complete_);
-
     MaybeUpdateMetadata();
     MaybeSatisfyPendingDecodes();
   }
@@ -260,7 +397,6 @@ void ImageDecoderExternal::Trace(Visitor* visitor) const {
   visitor->Trace(pending_decodes_);
   visitor->Trace(pending_metadata_decodes_);
   visitor->Trace(init_data_);
-  visitor->Trace(options_);
   ScriptWrappable::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
@@ -279,23 +415,6 @@ void ImageDecoderExternal::CreateImageDecoder() {
   // ImageDecoder::SetMemoryAllocator() so that we can recycle frame buffers for
   // decoded images.
 
-  constexpr char kNoneOption[] = "none";
-
-  auto color_behavior = ColorBehavior::Tag();
-  if (options_->colorSpaceConversion() == kNoneOption)
-    color_behavior = ColorBehavior::Ignore();
-
-  auto premultiply_alpha = ImageDecoder::kAlphaPremultiplied;
-  if (options_->premultiplyAlpha() == kNoneOption)
-    premultiply_alpha = ImageDecoder::kAlphaNotPremultiplied;
-
-  // TODO(crbug.com/1073995): Is it okay to use resize size like this?
-  auto desired_size = SkISize::MakeEmpty();
-  if (options_->hasResizeWidth() && options_->hasResizeHeight()) {
-    desired_size =
-        SkISize::Make(options_->resizeWidth(), options_->resizeHeight());
-  }
-
   if (stream_buffer_) {
     if (!segment_reader_)
       segment_reader_ = SegmentReader::CreateFromSharedBuffer(stream_buffer_);
@@ -303,27 +422,42 @@ void ImageDecoderExternal::CreateImageDecoder() {
     DCHECK(data_complete_);
   }
 
-  DCHECK(canDecodeType(mime_type_));
+  DCHECK(IsTypeSupportedInternal(mime_type_));
   decoder_ = ImageDecoder::CreateByMimeType(
-      mime_type_, segment_reader_, data_complete_, premultiply_alpha,
-      ImageDecoder::kHighBitDepthToHalfFloat, color_behavior, desired_size);
+      mime_type_, segment_reader_, data_complete_, alpha_option_,
+      ImageDecoder::kDefaultBitDepth, color_behavior_, desired_size_,
+      animation_option_);
 
   // CreateByImageType() can't fail if we use a supported image type. Which we
-  // DCHECK above via canDecodeType().
-  DCHECK(decoder_);
+  // DCHECK above via isTypeSupported().
+  DCHECK(decoder_) << mime_type_;
 }
 
 void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
+  DCHECK(!closed_);
   DCHECK(decoder_);
+
   for (auto& request : pending_decodes_) {
+    if (decoder_->Failed()) {
+      request->exception = CreateDecodeFailure(request->frame_index);
+      continue;
+    }
     if (!data_complete_) {
       // We can't fulfill this promise at this time.
-      if (request->frame_index >= frame_count_)
+      if (tracks_->IsEmpty() ||
+          request->frame_index >=
+              tracks_->selectedTrack().value()->frameCount()) {
         continue;
-    } else if (request->frame_index >= frame_count_) {
-      // TODO(crbug.com/1073995): Include frameIndex in rejection?
+      }
+    } else if (request->frame_index >=
+               tracks_->selectedTrack().value()->frameCount()) {
       request->exception = MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kConstraintError, "Frame index out of range");
+          DOMExceptionCode::kIndexSizeError,
+          ExceptionMessages::IndexOutsideRange<uint32_t>(
+              "frame index", request->frame_index, 0,
+              ExceptionMessages::kInclusiveBound,
+              tracks_->selectedTrack().value()->frameCount(),
+              ExceptionMessages::kExclusiveBound));
       continue;
     }
 
@@ -334,60 +468,91 @@ void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
       continue;
     }
 
-    auto* image = decoder_->DecodeFrameBufferAtIndex(request->frame_index);
-    if (decoder_->Failed() || !image) {
-      // TODO(crbug.com/1073995): Include frameIndex in rejection?
-      request->exception = MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kConstraintError, "Failed to decode frame");
-      continue;
-    }
+    bool is_complete = true;
+    sk_sp<SkImage> sk_image;
+    scoped_refptr<media::VideoFrame> frame;
 
-    // Only satisfy fully complete decode requests.
-    const bool is_complete = image->GetStatus() == ImageFrame::kFrameComplete;
-    if (!is_complete && request->complete_frames_only)
-      continue;
-
-    if (!is_complete && image->GetStatus() != ImageFrame::kFramePartial)
-      continue;
-
-    // Prefer FinalizePixelsAndGetImage() since that will mark the underlying
-    // bitmap as immutable, which allows copies to be avoided.
-    auto sk_image = is_complete ? image->FinalizePixelsAndGetImage()
-                                : SkImage::MakeFromBitmap(image->Bitmap());
-    if (!sk_image) {
-      // TODO(crbug.com/1073995): Include frameIndex in rejection?
-      request->exception = MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kOperationError, "Failed to decode frame");
-      continue;
-    }
-
-    if (!is_complete) {
-      auto generation_id = image->Bitmap().getGenerationID();
-      auto it = incomplete_frames_.find(request->frame_index);
-      if (it == incomplete_frames_.end()) {
-        incomplete_frames_.Set(request->frame_index, generation_id);
-      } else {
-        // Don't fulfill the promise until a new bitmap is seen.
-        if (it->value == generation_id)
-          continue;
-
-        it->value = generation_id;
+    // Due to implementation limitations YUV support for some formats is only
+    // known once all data is received. Animated images are never supported.
+    if (decoder_->CanDecodeToYUV()) {
+      DCHECK(!tracks_->selectedTrack().value()->animated());
+      DCHECK_EQ(request->frame_index, 0u);
+      frame = MaybeDecodeToYuv();
+      if (decoder_->Failed()) {
+        request->exception = CreateDecodeFailure(request->frame_index);
+        continue;
       }
-    } else {
-      incomplete_frames_.erase(request->frame_index);
     }
 
-    auto* result = ImageFrameExternal::Create();
-    result->setImage(MakeGarbageCollected<ImageBitmap>(
-        UnacceleratedStaticBitmapImage::Create(std::move(sk_image),
-                                               decoder_->Orientation()),
-        base::nullopt, options_));
-    result->setDuration(
-        decoder_->FrameDurationAtIndex(request->frame_index).InMicroseconds());
-    result->setOrientation(
-        static_cast<uint32_t>(decoder_->Orientation().Orientation()));
-    result->setComplete(is_complete);
-    request->result = result;
+    if (!frame) {
+      auto* image = decoder_->DecodeFrameBufferAtIndex(request->frame_index);
+      if (decoder_->Failed() || !image) {
+        request->exception = CreateDecodeFailure(request->frame_index);
+        continue;
+      }
+
+      // Only satisfy fully complete decode requests.
+      is_complete = image->GetStatus() == ImageFrame::kFrameComplete;
+      if (!is_complete && request->complete_frames_only)
+        continue;
+
+      if (!is_complete && image->GetStatus() != ImageFrame::kFramePartial)
+        continue;
+
+      // Prefer FinalizePixelsAndGetImage() since that will mark the underlying
+      // bitmap as immutable, which allows copies to be avoided.
+      sk_image = is_complete ? image->FinalizePixelsAndGetImage()
+                             : SkImage::MakeFromBitmap(image->Bitmap());
+      if (!sk_image) {
+        request->exception = MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kOperationError, "Failed to access frame");
+        continue;
+      }
+
+      if (!is_complete) {
+        auto generation_id = image->Bitmap().getGenerationID();
+        auto it = incomplete_frames_.find(request->frame_index);
+        if (it == incomplete_frames_.end()) {
+          incomplete_frames_.Set(request->frame_index, generation_id);
+        } else {
+          // Don't fulfill the promise until a new bitmap is seen.
+          if (it->value == generation_id)
+            continue;
+
+          it->value = generation_id;
+        }
+      } else {
+        incomplete_frames_.erase(request->frame_index);
+      }
+
+      // TODO(crbug.com/1073995): Add timestamp support to ImageDecoder if we
+      // end up encountering a lot of variable duration images.
+      const auto timestamp =
+          decoder_->FrameDurationAtIndex(request->frame_index) *
+          request->frame_index;
+
+      // This is zero copy; the VideoFrame points into the SkBitmap.
+      const gfx::Size coded_size(sk_image->width(), sk_image->height());
+      frame = media::CreateFromSkImage(sk_image, gfx::Rect(coded_size),
+                                       coded_size, timestamp);
+    }
+
+    if (!frame) {
+      request->exception = MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kOperationError, "Failed to create frame");
+      continue;
+    }
+
+    frame->metadata().transformation = ImageOrientationToVideoTransformation(
+        decoder_->Orientation().Orientation());
+    frame->metadata().frame_duration =
+        decoder_->FrameDurationAtIndex(request->frame_index);
+
+    request->result = ImageDecodeResult::Create();
+    request->result->setImage(
+        MakeGarbageCollected<VideoFrame>(base::MakeRefCounted<VideoFrameHandle>(
+            std::move(frame), std::move(sk_image))));
+    request->result->setComplete(is_complete);
   }
 
   auto* new_end =
@@ -413,18 +578,26 @@ void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
 }
 
 void ImageDecoderExternal::MaybeSatisfyPendingMetadataDecodes() {
-  DCHECK(HasValidEncodedData());
   DCHECK(decoder_);
+  DCHECK(!closed_);
+  DCHECK(HasValidEncodedData());
   if (!decoder_->IsSizeAvailable() && !decoder_->Failed())
     return;
 
   DCHECK(decoder_->Failed() || decoder_->IsDecodedSizeAvailable());
-  for (auto& resolver : pending_metadata_decodes_)
-    resolver->Resolve();
+  for (auto& resolver : pending_metadata_decodes_) {
+    if (decoder_->Failed())
+      resolver->Reject();
+    else
+      resolver->Resolve();
+  }
   pending_metadata_decodes_.clear();
 }
 
 void ImageDecoderExternal::MaybeUpdateMetadata() {
+  DCHECK(decoder_);
+  DCHECK(!closed_);
+
   if (!HasValidEncodedData())
     return;
 
@@ -436,45 +609,47 @@ void ImageDecoderExternal::MaybeUpdateMetadata() {
     return;
   }
 
-  const size_t decoded_frame_count = decoder_->FrameCount();
+  uint32_t frame_count = static_cast<uint32_t>(decoder_->FrameCount());
   if (decoder_->Failed()) {
     MaybeSatisfyPendingMetadataDecodes();
     return;
   }
 
-  frame_count_ = static_cast<uint32_t>(decoded_frame_count);
+  int repetition_count = decoder_->RepetitionCount();
+  if (decoder_->Failed()) {
+    MaybeSatisfyPendingMetadataDecodes();
+    return;
+  }
 
-  // The internal value has some magic negative numbers; for external purposes
-  // we want to only surface positive repetition counts. The rest is up to the
-  // client.
-  const int decoded_repetition_count = decoder_->RepetitionCount();
-  if (decoded_repetition_count > 0)
-    repetition_count_ = decoded_repetition_count;
-
-  // TODO(crbug.com/1073995): None of the underlying ImageDecoders actually
-  // expose tracks yet. So for now just assume a still and animated track for
-  // images which declare to be multi-image and have animations.
-  if (tracks_.IsEmpty()) {
-    auto* track = ImageTrackExternal::Create();
-    track->setId(0);
-    tracks_.push_back(track);
+  if (tracks_->IsEmpty()) {
+    // TODO(crbug.com/1073995): None of the underlying ImageDecoders actually
+    // expose tracks yet. So for now just assume a still and animated track for
+    // images which declare to be multi-image and have animations.
 
     if (decoder_->ImageHasBothStillAndAnimatedSubImages()) {
-      track->setAnimated(false);
+      int selected_track_id = 1;  // Currently animation is always default.
+      if (prefer_animation_.has_value()) {
+        selected_track_id = prefer_animation_.value() ? 1 : 0;
+
+        // Sadly there's currently no way to get the frame count information for
+        // unselected tracks, so for now just leave frame count as unknown but
+        // force repetition count to be animated.
+        if (!prefer_animation_.value()) {
+          frame_count = 0;
+          repetition_count = kAnimationLoopOnce;
+        }
+      }
 
       // All multi-track images have a still image track. Even if it's just the
       // first frame of the animation.
-      track = ImageTrackExternal::Create();
-      track->setId(1);
-      track->setAnimated(true);
-      tracks_.push_back(track);
-
-      if (prefer_animation_.has_value())
-        selected_track_id_ = prefer_animation_.value() ? 1 : 0;
+      tracks_->AddTrack(1, kAnimationNone, selected_track_id == 0);
+      tracks_->AddTrack(frame_count, repetition_count, selected_track_id == 1);
     } else {
-      track->setAnimated(frame_count_ > 1);
-      selected_track_id_ = 0;
+      tracks_->AddTrack(frame_count, repetition_count, true);
     }
+  } else {
+    tracks_->selectedTrack().value()->UpdateTrack(frame_count,
+                                                  repetition_count);
   }
 
   MaybeSatisfyPendingMetadataDecodes();
@@ -496,6 +671,62 @@ bool ImageDecoderExternal::HasValidEncodedData() const {
   }
 
   return true;
+}
+
+void ImageDecoderExternal::AbortPendingDecodes(DOMException* exception) {
+  // Swap to a local variable since promise handling may be reentrant.
+  HeapVector<Member<DecodeRequest>> local_pending_decodes;
+  local_pending_decodes.swap(pending_decodes_);
+  for (auto& request : local_pending_decodes)
+    request->resolver->Reject(exception);
+  incomplete_frames_.clear();
+}
+
+scoped_refptr<media::VideoFrame> ImageDecoderExternal::MaybeDecodeToYuv() {
+  const auto format = YUVSubsamplingToMediaPixelFormat(
+      decoder_->GetYUVSubsampling(), decoder_->GetYUVBitDepth());
+  if (format == media::PIXEL_FORMAT_UNKNOWN)
+    return nullptr;
+
+  const auto coded_size = gfx::Size(decoder_->DecodedYUVSize(cc::YUVIndex::kY));
+
+  // Plane sizes are guaranteed to fit in an int32_t by ImageDecoder::SetSize();
+  // since YUV is 1 byte-per-channel, we can just check width * height.
+  DCHECK(coded_size.GetCheckedArea().IsValid());
+  auto layout = media::VideoFrameLayout::CreateWithStrides(
+      format, coded_size,
+      {static_cast<int32_t>(decoder_->DecodedYUVWidthBytes(cc::YUVIndex::kY)),
+       static_cast<int32_t>(decoder_->DecodedYUVWidthBytes(cc::YUVIndex::kU)),
+       static_cast<int32_t>(decoder_->DecodedYUVWidthBytes(cc::YUVIndex::kV))});
+  if (!layout)
+    return nullptr;
+
+  auto frame = media::VideoFrame::CreateFrameWithLayout(
+      *layout, gfx::Rect(coded_size), coded_size, base::TimeDelta(),
+      /*zero_initialize_memory=*/false);
+  if (!frame)
+    return nullptr;
+
+  void* planes[cc::kNumYUVPlanes] = {frame->data(0), frame->data(1),
+                                     frame->data(2)};
+  size_t row_bytes[cc::kNumYUVPlanes] = {frame->stride(0), frame->stride(1),
+                                         frame->stride(2)};
+
+  // TODO(crbug.com/1073995): Add support for high bit depth format.
+  const auto color_type = kGray_8_SkColorType;
+
+  auto image_planes =
+      std::make_unique<ImagePlanes>(planes, row_bytes, color_type);
+  decoder_->SetImagePlanes(std::move(image_planes));
+  decoder_->DecodeToYUV();
+  if (decoder_->Failed() || !decoder_->HasDisplayableYUVData())
+    return nullptr;
+
+  frame->set_color_space(YUVColorSpaceToGfxColorSpace(
+      decoder_->GetYUVColorSpace(),
+      gfx::ColorSpace(*decoder_->ColorSpaceForSkImages())));
+
+  return frame;
 }
 
 }  // namespace blink

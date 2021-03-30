@@ -11,7 +11,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {MultiStoreExceptionEntry, MultiStorePasswordUiEntry, PasswordManagerImpl, PasswordManagerProxy, Router, routes, SettingsPluralStringProxyImpl} from 'chrome://settings/settings.js';
 import {createExceptionEntry, createMultiStoreExceptionEntry, createMultiStorePasswordEntry, createPasswordEntry, makeCompromisedCredential, makePasswordCheckStatus, PasswordSectionElementFactory} from 'chrome://test/settings/passwords_and_autofill_fake_data.js';
 import {runCancelExportTest, runExportFlowErrorRetryTest, runExportFlowErrorTest, runExportFlowFastTest, runExportFlowSlowTest, runFireCloseEventAfterExportCompleteTest,runStartExportTest} from 'chrome://test/settings/passwords_export_test.js';
-import {getSyncAllPrefs, simulateStoredAccounts, simulateSyncStatus} from 'chrome://test/settings/sync_test_util.m.js';
+import {getSyncAllPrefs, simulateStoredAccounts, simulateSyncStatus} from 'chrome://test/settings/sync_test_util.js';
 import {TestPasswordManagerProxy} from 'chrome://test/settings/test_password_manager_proxy.js';
 import {TestPluralStringProxy} from 'chrome://test/test_plural_string_proxy.js';
 import {eventToPromise} from 'chrome://test/test_util.m.js';
@@ -29,7 +29,12 @@ const PasswordCheckState = chrome.passwordsPrivate.PasswordCheckState;
  * @private
  */
 function validateMultiStorePasswordList(passwordsSection, expectedPasswords) {
-  assertDeepEquals(expectedPasswords, passwordsSection.$.passwordList.items);
+  // `passwordList.items` will always contain all items, even when there is a
+  // filter to be applied. Thus apply `passwordList.filter` to obtain the list
+  // of items that are user visible.
+  const passwordList = passwordsSection.$.passwordList;
+  assertDeepEquals(
+      expectedPasswords, passwordList.items.filter(passwordList.filter));
   const listItems =
       passwordsSection.shadowRoot.querySelectorAll('password-list-item');
   for (let index = 0; index < expectedPasswords.length; ++index) {
@@ -220,12 +225,10 @@ async function changeSavedPasswordTestHelper(
 
 /**
  * Helper function to check password visibility when open password-edit-dialog.
- * @param {Boolean} isEditDialog
  * @param {TestPasswordManagerProxy} passwordManager
  * @param {PasswordSectionElementFactory} elementFactory
  */
-async function openPasswordEditDialogHelper(
-    isEditDialog, passwordManager, elementFactory) {
+async function openPasswordEditDialogHelper(passwordManager, elementFactory) {
   const PASSWORD = 'p4ssw0rd';
   const passwordList = [
     createPasswordEntry({username: 'user0', id: 0}),
@@ -239,6 +242,7 @@ async function openPasswordEditDialogHelper(
   passwordListItem.$$('#showPasswordButton').click();
   flush();
   await passwordManager.whenCalled('requestPlaintextPassword');
+  passwordManager.resetResolver('requestPlaintextPassword');
   flush();
 
   assertEquals('text', passwordListItem.$$('#password').type);
@@ -250,15 +254,11 @@ async function openPasswordEditDialogHelper(
   passwordListItem.$.moreActionsButton.click();
   passwordsSection.$.passwordsListHandler.$.menuEditPassword.click();
   flush();
-  if (isEditDialog) {
-    await passwordManager.whenCalled('requestPlaintextPassword');
-    flush();
-  }
 
-  // Verify that list item password is hidden.
-  if (!isEditDialog) {
-    assertEquals('', passwordListItem.entry.password);
-  }
+  await passwordManager.whenCalled('requestPlaintextPassword');
+  passwordManager.resetResolver('requestPlaintextPassword');
+  flush();
+
   assertEquals('password', passwordListItem.$$('#password').type);
   assertTrue(passwordListItem.$$('#password').disabled);
   assertTrue(passwordListItem.$$('#showPasswordButton')
@@ -273,10 +273,6 @@ async function openPasswordEditDialogHelper(
 
   passwordEditDialog.$$('#showPasswordButton').click();
   flush();
-  if (!isEditDialog) {
-    await passwordManager.whenCalled('requestPlaintextPassword');
-    flush();
-  }
 
   assertEquals('text', passwordEditDialog.$.passwordInput.type);
   assertTrue(passwordEditDialog.$.showPasswordButton.classList.contains(
@@ -467,6 +463,7 @@ suite('PasswordsSection', function() {
     passwordListItems[0].$$('#showPasswordButton').click();
     flush();
     await passwordManager.whenCalled('requestPlaintextPassword');
+    passwordManager.resetResolver('requestPlaintextPassword');
     flush();
 
     passwordListItems[1].$$('#showPasswordButton').click();
@@ -490,13 +487,7 @@ suite('PasswordsSection', function() {
   });
 
   test('listItemEditDialogShowAndHideInterplay', async function() {
-    loadTimeData.overrideValues({editPasswordsInSettings: false});
-    openPasswordEditDialogHelper(false, passwordManager, elementFactory);
-  });
-
-  test('listItemEditDialogShowAndHideInterplay', async function() {
-    loadTimeData.overrideValues({editPasswordsInSettings: true});
-    openPasswordEditDialogHelper(true, passwordManager, elementFactory);
+    openPasswordEditDialogHelper(passwordManager, elementFactory);
   });
 
   // Test verifies that removing the account copy of a duplicated password will
@@ -753,15 +744,13 @@ suite('PasswordsSection', function() {
   });
 
   // Test verifies that 'Edit' button is replaced to 'Details' for Federated
-  // (passwordless) credentials when EditPasswordsInSettings flag is enabled.
+  // (passwordless) credentials.
   // Does not test Details and Edit button.
   test(
-      'verifyDetailsForFederatedPasswordInMenuEnabledEditPasswordsInSettings',
-      function() {
+      'verifyDetailsForFederatedPasswordInMenu', function() {
         const passwordList = [
           createPasswordEntry({federationText: 'with chromium.org'}),
         ];
-        loadTimeData.overrideValues({editPasswordsInSettings: true});
         const passwordsSection = elementFactory.createPasswordsSection(
             passwordManager, passwordList, []);
 
@@ -774,13 +763,12 @@ suite('PasswordsSection', function() {
       });
 
   // Test verifies that 'Edit' button is shown instead of 'Details' for
-  // common credentials when the flag editPasswordsInSettings is enabled.
+  // common credentials.
   // Does not test Details and Edit button.
-  test('verifyEditButtonInMenuEnabledEditPasswordsInSettings', function() {
+  test('verifyEditButtonInMenu', function() {
     const passwordList = [
       createPasswordEntry({url: 'one.com', username: 'hey'}),
     ];
-    loadTimeData.overrideValues({editPasswordsInSettings: true});
     const passwordsSection = elementFactory.createPasswordsSection(
         passwordManager, passwordList, []);
 
@@ -788,25 +776,6 @@ suite('PasswordsSection', function() {
     flush();
     assertEquals(
         passwordsSection.i18n('editPassword'),
-        passwordsSection.$.passwordsListHandler.$$('#menuEditPassword')
-            .textContent.trim());
-  });
-
-  // Test verifies that 'Details' button is shown instead of 'Edit' for
-  // non-federated credentials when the flag editPasswordsInSettings is
-  // disabled. Does not test Details and Edit button.
-  test('verifyDetailsButtonInMenuDisabledEditPasswordsInSettings', function() {
-    const passwordList = [
-      createPasswordEntry({url: 'one.com', username: 'hey'}),
-    ];
-    loadTimeData.overrideValues({editPasswordsInSettings: false});
-    const passwordsSection = elementFactory.createPasswordsSection(
-        passwordManager, passwordList, []);
-
-    getFirstPasswordListItem(passwordsSection).$.moreActionsButton.click();
-    flush();
-    assertEquals(
-        passwordsSection.i18n('passwordViewDetails'),
         passwordsSection.$.passwordsListHandler.$$('#menuEditPassword')
             .textContent.trim());
   });
@@ -1094,10 +1063,9 @@ suite('PasswordsSection', function() {
     detailsDialogPartsAreShownCorrectly(passwordDialog);
   });
 
-  test('verifyDetailsDialogDisabledEditPasswordsInSettings', function() {
+  test('verifyEditOrDetailsDialog', function() {
     const federationEntry = createMultiStorePasswordEntry(
         {federationText: 'with chromium.org', username: 'bart', deviceId: 42});
-    loadTimeData.overrideValues({editPasswordsInSettings: false});
     const passwordDialogFederation =
         elementFactory.createPasswordEditDialog(federationEntry);
     detailsDialogPartsAreShownCorrectly(passwordDialogFederation);
@@ -1106,28 +1074,11 @@ suite('PasswordsSection', function() {
         {url: 'goo.gl', username: 'bart', accountId: 42});
     const passwordDialogCommon =
         elementFactory.createPasswordEditDialog(commonEntry);
-    detailsDialogPartsAreShownCorrectly(passwordDialogCommon);
-  });
-
-  test('verifyEditOrDetailsDialogEnabledEditPasswordsInSettings', function() {
-    const federationEntry = createMultiStorePasswordEntry(
-        {federationText: 'with chromium.org', username: 'bart', deviceId: 42});
-    loadTimeData.overrideValues({editPasswordsInSettings: true});
-    const passwordDialogFederation =
-        elementFactory.createPasswordEditDialog(federationEntry);
-    detailsDialogPartsAreShownCorrectly(passwordDialogFederation);
-
-    const commonEntry = createMultiStorePasswordEntry(
-        {url: 'goo.gl', username: 'bart', accountId: 42});
-    const passwordDialogCommon =
-        elementFactory.createPasswordEditDialog(commonEntry);
-    // Should show edit dialog for common credetial when editPasswordsInSettings
-    // flag is enabled.
+    // Should show edit dialog for common credential.
     editDialogPartsAreShownCorrectly(passwordDialogCommon);
   });
 
   test('editDialogChangePasswordAccountId', async function() {
-    loadTimeData.overrideValues({editPasswordsInSettings: true});
 
     const accountEntry = createMultiStorePasswordEntry(
         {url: 'goo.gl', username: 'bart', accountId: 42});
@@ -1138,7 +1089,6 @@ suite('PasswordsSection', function() {
   });
 
   test('editDialogChangePasswordDeviceId', async function() {
-    loadTimeData.overrideValues({editPasswordsInSettings: true});
 
     const deviceEntry = createMultiStorePasswordEntry(
         {url: 'goo.gl', username: 'bart', deviceId: 42});
@@ -1149,7 +1099,6 @@ suite('PasswordsSection', function() {
   });
 
   test('editDialogChangePasswordBothId', async function() {
-    loadTimeData.overrideValues({editPasswordsInSettings: true});
 
     const multiEntry = createMultiStorePasswordEntry(
         {url: 'goo.gl', username: 'bart', accountId: 41, deviceId: 42});
@@ -1161,7 +1110,6 @@ suite('PasswordsSection', function() {
   });
 
   test('editDialogChangeUsernameFailsWhenReused', async function() {
-    loadTimeData.overrideValues({editPasswordsInSettings: true});
 
     const accountEntry = createMultiStorePasswordEntry(
         {url: 'goo.gl', username: 'bart', accountId: 0});
@@ -1181,8 +1129,6 @@ suite('PasswordsSection', function() {
   });
 
   test('editDialogChangeUsernameWhenReusedForDifferentStore', async function() {
-    loadTimeData.overrideValues({editPasswordsInSettings: true});
-
     const passwords = [
       createMultiStorePasswordEntry(
           {url: 'goo.gl', username: 'bart', accountId: 0}),
@@ -1298,50 +1244,8 @@ suite('PasswordsSection', function() {
                    .classList.contains('icon-visibility'));
   });
 
-  // Tests that pressing 'Show password' inside 'Details' dialog sets the
-  // corresponding password.
-  test('requestPlaintextPasswordInDetailsDialog', async function() {
-    loadTimeData.overrideValues({editPasswordsInSettings: false});
-
-    const PASSWORD = 'password';
-    const entry = createPasswordEntry({url: 'goo.gl', username: 'bart', id: 1});
-    passwordManager.setPlaintextPassword(PASSWORD);
-
-    const passwordSection =
-        elementFactory.createPasswordsSection(passwordManager, [entry], []);
-
-    getFirstPasswordListItem(passwordSection).$.moreActionsButton.click();
-    passwordSection.$.passwordsListHandler.$.menuEditPassword.click();
-    flush();
-
-    const passwordEditDialog =
-        passwordSection.$.passwordsListHandler.$$('#passwordEditDialog');
-
-    assertEquals('password', passwordEditDialog.$.passwordInput.type);
-    const NUM_PLACEHOLDERS = 10;
-    assertEquals(
-        ' '.repeat(NUM_PLACEHOLDERS), passwordEditDialog.$.passwordInput.value);
-    assertTrue(passwordEditDialog.$.showPasswordButton.classList.contains(
-        'icon-visibility'));
-
-    passwordEditDialog.$.showPasswordButton.click();
-
-    const {id, reason} =
-        await passwordManager.whenCalled('requestPlaintextPassword');
-    flush();
-    assertEquals(1, id);
-    assertEquals('VIEW', reason);
-
-    assertEquals('text', passwordEditDialog.$.passwordInput.type);
-    assertEquals(PASSWORD, passwordEditDialog.$.passwordInput.value);
-    assertTrue(passwordEditDialog.$.showPasswordButton.classList.contains(
-        'icon-visibility-off'));
-  });
-
   // Tests that pressing 'Edit password' sets the corresponding password.
   test('requestPlaintextPasswordInPasswordEditDialog', async function() {
-    loadTimeData.overrideValues({editPasswordsInSettings: true});
-
     const PASSWORD = 'password';
     const entry = createPasswordEntry({url: 'goo.gl', username: 'bart', id: 1});
     passwordManager.setPlaintextPassword(PASSWORD);
@@ -1401,7 +1305,6 @@ suite('PasswordsSection', function() {
   });
 
   test('onEditPasswordListItem', function() {
-    loadTimeData.overrideValues({editPasswordsInSettings: true});
     const expectedItem =
         createPasswordEntry({url: 'goo.gl', username: 'bart', id: 1});
     const passwordsSection = elementFactory.createPasswordsSection(

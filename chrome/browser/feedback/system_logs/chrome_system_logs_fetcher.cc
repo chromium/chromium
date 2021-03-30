@@ -15,27 +15,27 @@
 #include "components/feedback/system_logs/system_logs_fetcher.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/crosapi/browser_manager.h"
-#include "chrome/browser/chromeos/crosapi/browser_util.h"
-#include "chrome/browser/chromeos/system_logs/command_line_log_source.h"
-#include "chrome/browser/chromeos/system_logs/crosapi_system_log_source.h"
-#include "chrome/browser/chromeos/system_logs/dbus_log_source.h"
-#include "chrome/browser/chromeos/system_logs/debug_daemon_log_source.h"
-#include "chrome/browser/chromeos/system_logs/device_event_log_source.h"
-#include "chrome/browser/chromeos/system_logs/iwlwifi_dump_log_source.h"
-#include "chrome/browser/chromeos/system_logs/network_health_source.h"
-#include "chrome/browser/chromeos/system_logs/shill_log_source.h"
-#include "chrome/browser/chromeos/system_logs/touch_log_source.h"
-#include "chrome/browser/chromeos/system_logs/ui_hierarchy_log_source.h"
+#include "chrome/browser/ash/crosapi/browser_manager.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/system_logs/command_line_log_source.h"
+#include "chrome/browser/ash/system_logs/crosapi_system_log_source.h"
+#include "chrome/browser/ash/system_logs/dbus_log_source.h"
+#include "chrome/browser/ash/system_logs/debug_daemon_log_source.h"
+#include "chrome/browser/ash/system_logs/device_event_log_source.h"
+#include "chrome/browser/ash/system_logs/iwlwifi_dump_log_source.h"
+#include "chrome/browser/ash/system_logs/network_health_source.h"
+#include "chrome/browser/ash/system_logs/shill_log_source.h"
+#include "chrome/browser/ash/system_logs/touch_log_source.h"
+#include "chrome/browser/ash/system_logs/ui_hierarchy_log_source.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/feedback/system_logs/log_sources/user_log_files_log_source.h"
 #endif
 
 namespace system_logs {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace {
 
 constexpr char kDefaultLogPath[] = "/home/chronos/user/lacros/lacros.log";
@@ -73,11 +73,6 @@ SystemLogsFetcher* BuildChromeSystemLogsFetcher(bool scrub_data) {
       crosapi::BrowserManager::Get()->GetFeedbackDataSupported()) {
     fetcher->AddSource(std::make_unique<CrosapiSystemLogSource>());
   }
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  fetcher->AddSource(std::make_unique<UserLogFilesLogSource>(
-      base::FilePath(kDefaultLogPath), kLacrosUserLogKey));
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

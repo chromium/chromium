@@ -673,7 +673,7 @@ TEST_F(BlobReaderTest, ReadableDataHandleSingle) {
 
   mojo::ScopedDataPipeProducerHandle producer;
   mojo::ScopedDataPipeConsumerHandle consumer;
-  MojoResult pipe_result = mojo::CreateDataPipe(nullptr, &producer, &consumer);
+  MojoResult pipe_result = mojo::CreateDataPipe(nullptr, producer, consumer);
   ASSERT_EQ(MOJO_RESULT_OK, pipe_result);
 
   int bytes_read = net::ERR_UNEXPECTED;
@@ -720,7 +720,7 @@ TEST_F(BlobReaderTest, ReadableDataHandleSingleRange) {
 
   mojo::ScopedDataPipeProducerHandle producer;
   mojo::ScopedDataPipeConsumerHandle consumer;
-  MojoResult pipe_result = mojo::CreateDataPipe(nullptr, &producer, &consumer);
+  MojoResult pipe_result = mojo::CreateDataPipe(nullptr, producer, consumer);
   ASSERT_EQ(MOJO_RESULT_OK, pipe_result);
 
   int bytes_read = net::ERR_UNEXPECTED;

@@ -186,7 +186,7 @@ class CaptivePortalService : public KeyedService {
   // The result of the most recent captive portal check.
   CaptivePortalResult last_detection_result_;
 
-  base::CallbackList<void(const Results&)> callback_list_;
+  base::RepeatingCallbackList<void(const Results&)> callback_list_;
 
   // Time the last captive portal check completed.
   base::TimeTicks last_check_time_;

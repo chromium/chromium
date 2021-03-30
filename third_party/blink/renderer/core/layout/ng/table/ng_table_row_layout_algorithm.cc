@@ -18,12 +18,6 @@ NGTableRowLayoutAlgorithm::NGTableRowLayoutAlgorithm(
     const NGLayoutAlgorithmParams& params)
     : NGLayoutAlgorithm(params) {}
 
-MinMaxSizesResult NGTableRowLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesInput&) const {
-  NOTREACHED();  // Table layout does not compute minmax for table row.
-  return MinMaxSizesResult();
-}
-
 scoped_refptr<const NGLayoutResult> NGTableRowLayoutAlgorithm::Layout() {
   const NGTableConstraintSpaceData& table_data = *ConstraintSpace().TableData();
   wtf_size_t row_index = ConstraintSpace().TableRowIndex();

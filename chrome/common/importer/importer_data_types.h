@@ -12,7 +12,6 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/common/importer/importer_type.h"
@@ -40,7 +39,7 @@ struct SourceProfile {
   SourceProfile(const SourceProfile& other);
   ~SourceProfile();
 
-  base::string16 importer_name;
+  std::u16string importer_name;
   ImporterType importer_type;
   base::FilePath source_path;
   base::FilePath app_path;
@@ -48,16 +47,16 @@ struct SourceProfile {
   // The application locale. Stored because we can only access it from the UI
   // thread on the browser process. This is only used by the Firefox importer.
   std::string locale;
-  base::string16 profile;
+  std::u16string profile;
 };
 
 // Contains information needed for importing search engine urls.
 struct SearchEngineInfo {
   // |url| is a string instead of a GURL since it may not actually be a valid
   // GURL directly (e.g. for "http://%s.com").
-  base::string16 url;
-  base::string16 keyword;
-  base::string16 display_name;
+  std::u16string url;
+  std::u16string keyword;
+  std::u16string display_name;
 };
 
 // Contains the information read from the IE7/IE8 Storage2 key in the registry.
@@ -68,7 +67,7 @@ struct ImporterIE7PasswordInfo {
   ImporterIE7PasswordInfo& operator=(const ImporterIE7PasswordInfo& other);
 
   // Hash of the url.
-  base::string16 url_hash;
+  std::u16string url_hash;
 
   // Encrypted data containing the username, password and some more
   // undocumented fields.
@@ -98,10 +97,10 @@ struct ImportedPasswordForm {
   std::string signon_realm;
   GURL url;
   GURL action;
-  base::string16 username_element;
-  base::string16 username_value;
-  base::string16 password_element;
-  base::string16 password_value;
+  std::u16string username_element;
+  std::u16string username_value;
+  std::u16string password_element;
+  std::u16string password_value;
   bool blocked_by_user = false;
 };
 

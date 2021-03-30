@@ -27,7 +27,7 @@ PrefService* GetActivePrefService() {
 
 BackGestureContextualNudgeControllerImpl::
     BackGestureContextualNudgeControllerImpl() {
-  tablet_mode_observer_.Add(Shell::Get()->tablet_mode_controller());
+  tablet_mode_observation_.Observe(Shell::Get()->tablet_mode_controller());
   shelf_control_visible_ = ShelfConfig::Get()->shelf_controls_shown();
   ShelfConfig::Get()->AddObserver(this);
 }
@@ -248,7 +248,7 @@ void BackGestureContextualNudgeControllerImpl::OnNudgeAnimationFinished(
 }
 
 void BackGestureContextualNudgeControllerImpl::DoCleanUp() {
-  tablet_mode_observer_.RemoveAll();
+  tablet_mode_observation_.Reset();
 
   if (is_monitoring_windows_) {
     Shell::Get()->activation_client()->RemoveObserver(this);

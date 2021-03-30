@@ -12,7 +12,6 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/engagement/site_engagement_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -28,6 +27,8 @@
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/site_engagement/content/engagement_type.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/web_contents.h"
@@ -77,11 +78,10 @@ const char* HistogramEnumIndexToStr(int histogram_index) {
 
 using Histograms = std::bitset<kHistogramMaxValue>;
 
-void ExpectUniqueSamples(
-    const base::HistogramTester& tester,
-    const Histograms& histograms_mask,
-    site_engagement::SiteEngagementService::EngagementType type,
-    base::HistogramBase::Count count) {
+void ExpectUniqueSamples(const base::HistogramTester& tester,
+                         const Histograms& histograms_mask,
+                         site_engagement::EngagementType type,
+                         base::HistogramBase::Count count) {
   for (int h = 0; h < kHistogramMaxValue; ++h) {
     if (histograms_mask[h]) {
       const char* histogram_name = HistogramEnumIndexToStr(h);
@@ -90,11 +90,10 @@ void ExpectUniqueSamples(
   }
 }
 
-void ExpectBucketCounts(
-    const base::HistogramTester& tester,
-    const Histograms& histograms_mask,
-    site_engagement::SiteEngagementService::EngagementType type,
-    base::HistogramBase::Count count) {
+void ExpectBucketCounts(const base::HistogramTester& tester,
+                        const Histograms& histograms_mask,
+                        site_engagement::EngagementType type,
+                        base::HistogramBase::Count count) {
   for (int h = 0; h < kHistogramMaxValue; ++h) {
     if (histograms_mask[h]) {
       const char* histogram_name = HistogramEnumIndexToStr(h);
@@ -117,13 +116,13 @@ void ExpectTotalCounts(const base::HistogramTester& tester,
 void ExpectLaunchCounts(const base::HistogramTester& tester,
                         base::HistogramBase::Count windowLaunches,
                         base::HistogramBase::Count tabLaunches) {
-  tester.ExpectBucketCount("Extensions.HostedAppLaunchContainer",
+  tester.ExpectBucketCount("Extensions.BookmarkAppLaunchContainer",
                            apps::mojom::LaunchContainer::kLaunchContainerWindow,
                            windowLaunches);
-  tester.ExpectBucketCount("Extensions.HostedAppLaunchContainer",
+  tester.ExpectBucketCount("Extensions.BookmarkAppLaunchContainer",
                            apps::mojom::LaunchContainer::kLaunchContainerTab,
                            tabLaunches);
-  tester.ExpectTotalCount("Extensions.HostedAppLaunchContainer",
+  tester.ExpectTotalCount("Extensions.BookmarkAppLaunchContainer",
                           windowLaunches + tabLaunches);
 
   if (tabLaunches > 0) {
@@ -169,8 +168,7 @@ class WebAppEngagementBrowserTest : public WebAppControllerBrowserTestBase {
   void TestEngagementEventWebAppLaunch(const base::HistogramTester& tester,
                                        const Histograms& histograms) {
     ExpectUniqueSamples(tester, histograms,
-                        site_engagement::SiteEngagementService::
-                            ENGAGEMENT_WEBAPP_SHORTCUT_LAUNCH,
+                        site_engagement::EngagementType::kWebappShortcutLaunch,
                         1);
     ExpectTotalCounts(tester, ~histograms, 0);
   }
@@ -192,23 +190,19 @@ class WebAppEngagementBrowserTest : public WebAppControllerBrowserTestBase {
     site_engagement_service->HandleNavigation(web_contents,
                                               ui::PAGE_TRANSITION_TYPED);
     site_engagement_service->HandleUserInput(
-        web_contents, site_engagement::SiteEngagementService::ENGAGEMENT_MOUSE);
+        web_contents, site_engagement::EngagementType::kMouse);
 
     ExpectTotalCounts(tester, histograms, 4);
     ExpectTotalCounts(tester, ~histograms, 0);
 
-    ExpectBucketCounts(
-        tester, histograms,
-        site_engagement::SiteEngagementService::ENGAGEMENT_MEDIA_VISIBLE, 1);
-    ExpectBucketCounts(
-        tester, histograms,
-        site_engagement::SiteEngagementService::ENGAGEMENT_MEDIA_HIDDEN, 1);
-    ExpectBucketCounts(
-        tester, histograms,
-        site_engagement::SiteEngagementService::ENGAGEMENT_NAVIGATION, 1);
     ExpectBucketCounts(tester, histograms,
-                       site_engagement::SiteEngagementService::ENGAGEMENT_MOUSE,
-                       1);
+                       site_engagement::EngagementType::kMediaVisible, 1);
+    ExpectBucketCounts(tester, histograms,
+                       site_engagement::EngagementType::kMediaHidden, 1);
+    ExpectBucketCounts(tester, histograms,
+                       site_engagement::EngagementType::kNavigation, 1);
+    ExpectBucketCounts(tester, histograms,
+                       site_engagement::EngagementType::kMouse, 1);
   }
 
  protected:
@@ -354,10 +348,9 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, TwoApps) {
   histograms[kHistogramUserInstalled_InWindow] = true;
   histograms[kHistogramUpToThreeUserInstalledApps] = true;
 
-  ExpectUniqueSamples(
-      tester, histograms,
-      site_engagement::SiteEngagementService::ENGAGEMENT_WEBAPP_SHORTCUT_LAUNCH,
-      3);
+  ExpectUniqueSamples(tester, histograms,
+                      site_engagement::EngagementType::kWebappShortcutLaunch,
+                      3);
   ExpectTotalCounts(tester, ~histograms, 0);
   ExpectLaunchCounts(tester, /*windowLaunches=*/3, /*tabLaunches=*/0);
 }
@@ -399,10 +392,9 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, ManyUserApps) {
   histograms[kHistogramUserInstalled_InWindow] = true;
   histograms[kHistogramMoreThanThreeUserInstalledApps] = true;
 
-  ExpectUniqueSamples(
-      tester, histograms,
-      site_engagement::SiteEngagementService::ENGAGEMENT_WEBAPP_SHORTCUT_LAUNCH,
-      num_launches);
+  ExpectUniqueSamples(tester, histograms,
+                      site_engagement::EngagementType::kWebappShortcutLaunch,
+                      num_launches);
   ExpectTotalCounts(tester, ~histograms, 0);
   ExpectLaunchCounts(tester, /*windowLaunches=*/num_launches,
                      /*tabLaunches=*/0);

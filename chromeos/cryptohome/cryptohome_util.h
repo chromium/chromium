@@ -35,6 +35,13 @@ COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME)
 std::vector<KeyDefinition> GetKeyDataReplyToKeyDefinitions(
     const base::Optional<BaseReply>& reply);
 
+// Converts the key metadata in a RepeatedPtrField<cryptohome::KeyData> into
+// cryptohome::KeyDefinition format. Note that this is temporarily extracted
+// from GetKeyDataReplyToKeyDefinitions() to facilitate the transition from
+// cryptohome_util.cc to userdataauth_util.cc.
+std::vector<KeyDefinition> RepeatedKeyDataToKeyDefinitions(
+    const google::protobuf::RepeatedPtrField<KeyData>& key_data);
+
 // Extracts the account's disk usage size from |reply|.
 // If |reply| is malformed, returns -1.
 COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME)

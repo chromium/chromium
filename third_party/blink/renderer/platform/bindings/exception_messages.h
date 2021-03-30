@@ -158,6 +158,8 @@ class PLATFORM_EXPORT ExceptionMessages {
 
   static String ReadOnly(const char* detail = nullptr);
 
+  static String ValueNotOfType(const char* expected_type);
+
  private:
   template <typename NumType>
   static String FormatFiniteNumber(NumType number) {

@@ -41,16 +41,12 @@ class WindowAgentFactory final : public GarbageCollected<WindowAgentFactory> {
   //  - |has_potential_universal_access_privilege| is true,
   //  - both A and B have `file:` scheme,
   //  - or, they have the same scheme and the same registrable origin.
-  //
-  // Set |has_potential_universal_access_privilege| if an agent may be able to
-  // access all other agents synchronously.
-  // I.e. pass true to if either:
-  //   * --disable-web-security is set,
-  //   * --run-web-tests is set,
-  //   * or, the Blink instance is running for Android WebView.
-  WindowAgent* GetAgentForOrigin(bool has_potential_universal_access_privilege,
-                                 v8::Isolate* isolate,
-                                 const SecurityOrigin* origin);
+  // If |is_origin_agent_cluster| is true though, then the same instance will
+  // only return the same instance for an exact match (scheme, host, port) to
+  // |origin|.
+  WindowAgent* GetAgentForOrigin(v8::Isolate* isolate,
+                                 const SecurityOrigin* origin,
+                                 bool is_origin_agent_cluster);
 
   void Trace(Visitor*) const;
 
@@ -97,6 +93,15 @@ class WindowAgentFactory final : public GarbageCollected<WindowAgentFactory> {
               WeakMember<WindowAgent>,
               SecurityOriginHash>
       opaque_origin_agents_;
+
+  // Use the SecurityOrigin itself as the key for origin-keyed origins.
+  // TODO(wjmaclean,domenic): In future when logical cross-origin-isolation
+  // (COI) is implemented, we should unify it with logical-OAC so that all the
+  // origin-keyed isolation relies on a single mechanism.
+  HeapHashMap<scoped_refptr<const SecurityOrigin>,
+              WeakMember<WindowAgent>,
+              SecurityOriginHash>
+      origin_keyed_agent_cluster_agents_;
 
   // Use registerable domain as the key for general tuple origins.
   using TupleOriginAgents = HeapHashMap<SchemeAndRegistrableDomain,

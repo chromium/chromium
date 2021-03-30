@@ -117,15 +117,12 @@ crbug.com/856601 [ Linux ] external/wpt/IndexedDB/nested-cloning-large.any.share
 crbug.com/856601 [ Linux ] external/wpt/IndexedDB/nested-cloning-large.any.worker.html [ Pass Timeout ]
 crbug.com/856601 [ Linux ] external/wpt/IndexedDB/nested-cloning-small.any.serviceworker.html [ Pass Timeout ]
 crbug.com/856601 [ Linux ] http/tests/devtools/a11y-axe-core/console/console-a11y-test.js [ Pass Timeout ]
-crbug.com/856601 [ Linux ] http/tests/devtools/a11y-axe-core/network/network-condition-a11y-test.js [ Pass Timeout ]
 
 # Sheriff 2019-06-28
-crbug.com/856601 [ Linux ] http/tests/devtools/a11y-axe-core/security/security-origin-a11y-test.js [ Pass Timeout ]
 crbug.com/856601 [ Linux ] http/tests/devtools/indexeddb/live-update-indexeddb-content.js [ Pass Timeout ]
 crbug.com/856601 [ Linux ] http/tests/devtools/indexeddb/live-update-indexeddb-list.js [ Pass Timeout ]
 
 # Time out on MSAN
-crbug.com/856601 [ Linux ] http/tests/devtools/a11y-axe-core/elements/main-tool-test.js [ Pass Timeout ]
 crbug.com/856601 [ Linux ] webaudio/Analyser/realtimeanalyser-freq-data.html [ Pass Timeout ]
 crbug.com/993953 [ Linux ] http/tests/devtools/wasm-isolated-code-cache/wasm-cache-test.js [ Pass Timeout ]
 
@@ -149,7 +146,35 @@ crbug.com/1066647 [ Linux ] http/tests/devtools/sources/debugger-breakpoints/bre
 crbug.com/1095518 [ Linux ] crbug.com/840659 external/wpt/webrtc/simulcast/h264.https.html [ Crash ]
 
 # Sheriff 2020-10-05
-crbug.com/1134580 [ Linux ] virtual/eye-dropper/color-picker-show-eye-dropper.html [ Pass Timeout ]
+crbug.com/1134580 [ Linux ] virtual/eye-dropper/http/tests/eye-dropper/color-picker-show-eye-dropper.html [ Pass Timeout ]
 
 # Sheriff 2020-11-25
 crbug.com/1152088 [ Linux ] fast/dom/cssTarget-crash.html [ Pass Timeout ]
+
+# Flaky timeouts on MSan.
+crbug.com/1174822 [ Linux ] http/tests/mojo/bindings-lite-sw.https.html [ Pass Timeout ]
+
+# Sheriff 2021-02-11
+crbug.com/1177358 [ Linux ] fast/forms/form-invalid-url.html [ Pass Crash ]
+crbug.com/1177358 [ Linux ] http/tests/devtools/console/console-viewport-indices.js [ Pass Timeout ]
+crbug.com/1177358 [ Linux ] http/tests/devtools/console/console-search-reveals-messages.js [ Pass Timeout ]
+crbug.com/1177358 [ Linux ] http/tests/devtools/console/console-viewport-stick-to-bottom.js [ Pass Timeout ]
+
+# Sheriff 2021-02-18
+crbug.com/1179829 [ Linux ] http/tests/devtools/a11y-axe-core/sources/scope-pane-a11y-test.js [ Pass Timeout ]
+crbug.com/1179829 [ Linux ] http/tests/devtools/console/console-log-linkify-stack-in-errors.js [ Pass Timeout ]
+crbug.com/1179829 [ Linux ] http/tests/devtools/sources/debugger-pause/pause-on-elements-panel.js [ Pass Timeout ]
+
+# Sheriff 2021-03-05
+crbug.com/1179829 [ Linux ] http/tests/devtools/console/console-viewport-control.js [ Pass Timeout ]
+crbug.com/1179829 [ Linux ] http/tests/devtools/console/viewport-testing/console-stick-to-bottom-expand-object.js [ Pass Timeout ]
+crbug.com/1179829 [ Linux ] http/tests/devtools/console/console-viewport-selection.js [ Pass Timeout ]
+
+# Sheriff 2021-03-22
+crbug.com/1179829 [ Linux ] http/tests/devtools/console/console-format.js [ Pass Timeout ]
+crbug.com/1179829 [ Linux ] http/tests/devtools/tracing/console-timeline.js [ Pass Timeout ]
+crbug.com/1179829 [ Linux ] http/tests/devtools/console/console-viewport-stick-to-bottom-onload.js [ Pass Timeout ]
+crbug.com/1179829 [ Linux ] http/tests/devtools/isolated-code-cache/stale-revalidation-test.js [ Pass Timeout ]
+
+# Sheriff 2021-03-23
+crbug.com/1179829 [ Linux ] http/tests/devtools/console/viewport-testing/console-stick-to-bottom-with-large-prompt.js [ Pass Timeout ]

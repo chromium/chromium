@@ -66,8 +66,8 @@ TEST_F(FileSystemProviderOperationsWriteFileTest, Execute) {
                        kOffset, io_buffer_->size(),
                        base::BindOnce(&util::LogStatusCallback, &callback_log));
   write_file.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(write_file.Execute(kRequestId));
 
@@ -101,8 +101,8 @@ TEST_F(FileSystemProviderOperationsWriteFileTest, Execute_NoListener) {
                        kOffset, io_buffer_->size(),
                        base::BindOnce(&util::LogStatusCallback, &callback_log));
   write_file.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_FALSE(write_file.Execute(kRequestId));
 }
@@ -120,8 +120,8 @@ TEST_F(FileSystemProviderOperationsWriteFileTest, Execute_ReadOnly) {
                        io_buffer_.get(), kOffset, io_buffer_->size(),
                        base::BindOnce(&util::LogStatusCallback, &callback_log));
   write_file.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_FALSE(write_file.Execute(kRequestId));
 }
@@ -134,8 +134,8 @@ TEST_F(FileSystemProviderOperationsWriteFileTest, OnSuccess) {
                        kOffset, io_buffer_->size(),
                        base::BindOnce(&util::LogStatusCallback, &callback_log));
   write_file.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(write_file.Execute(kRequestId));
 
@@ -154,8 +154,8 @@ TEST_F(FileSystemProviderOperationsWriteFileTest, OnError) {
                        kOffset, io_buffer_->size(),
                        base::BindOnce(&util::LogStatusCallback, &callback_log));
   write_file.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(write_file.Execute(kRequestId));
 

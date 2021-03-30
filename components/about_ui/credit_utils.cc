@@ -18,7 +18,6 @@ std::string GetCredits(bool include_scripts) {
           IDR_ABOUT_UI_CREDITS_HTML);
   if (include_scripts) {
     response +=
-        "\n<script src=\"chrome://resources/js/cr.js\"></script>\n"
         "<script src=\"chrome://credits/credits.js\"></script>\n";
   }
   response += "</body>\n</html>";

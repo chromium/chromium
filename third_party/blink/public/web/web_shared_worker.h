@@ -47,6 +47,7 @@
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_common.h"
+#include "third_party/blink/public/platform/web_content_security_policy_struct.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 
 namespace blink {
@@ -75,8 +76,7 @@ class BLINK_EXPORT WebSharedWorker {
       WebSecurityOrigin constructor_origin,
       const WebString& user_agent,
       const UserAgentMetadata& ua_metadata,
-      const WebString& content_security_policy,
-      network::mojom::ContentSecurityPolicyType,
+      const WebVector<WebContentSecurityPolicy>& content_security_policies,
       network::mojom::IPAddressSpace,
       const WebFetchClientSettingsObject& outside_fetch_client_settings_object,
       const base::UnguessableToken& appcache_host_id,

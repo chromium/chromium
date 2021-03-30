@@ -17,6 +17,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/safe_browsing/core/db/database_manager.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "url/gurl.h"
 
 namespace safe_browsing {
@@ -36,8 +37,8 @@ class RemoteSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
   //
 
   void CancelCheck(Client* client) override;
-  bool CanCheckResourceType(
-      blink::mojom::ResourceType resource_type) const override;
+  bool CanCheckRequestDestination(
+      network::mojom::RequestDestination request_destination) const override;
   bool CanCheckUrl(const GURL& url) const override;
   bool ChecksAreAlwaysAsync() const override;
   bool CheckBrowseUrl(const GURL& url,
@@ -47,13 +48,13 @@ class RemoteSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
                         Client* client) override;
   bool CheckExtensionIDs(const std::set<std::string>& extension_ids,
                          Client* client) override;
-  AsyncMatch CheckCsdWhitelistUrl(const GURL& url, Client* client) override;
+  AsyncMatch CheckCsdAllowlistUrl(const GURL& url, Client* client) override;
   bool CheckResourceUrl(const GURL& url, Client* client) override;
   AsyncMatch CheckUrlForHighConfidenceAllowlist(const GURL& url,
                                                 Client* client) override;
   bool CheckUrlForSubresourceFilter(const GURL& url, Client* client) override;
-  bool MatchDownloadWhitelistString(const std::string& str) override;
-  bool MatchDownloadWhitelistUrl(const GURL& url) override;
+  bool MatchDownloadAllowlistString(const std::string& str) override;
+  bool MatchDownloadAllowlistUrl(const GURL& url) override;
   bool MatchMalwareIP(const std::string& ip_address) override;
   safe_browsing::ThreatSource GetThreatSource() const override;
   bool IsDownloadProtectionEnabled() const override;
@@ -74,7 +75,8 @@ class RemoteSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
   // Requests currently outstanding.  This owns the ptrs.
   std::vector<ClientRequest*> current_requests_;
 
-  base::flat_set<blink::mojom::ResourceType> resource_types_to_check_;
+  base::flat_set<network::mojom::RequestDestination>
+      request_destinations_to_check_;
 
   friend class base::RefCountedThreadSafe<RemoteSafeBrowsingDatabaseManager>;
   DISALLOW_COPY_AND_ASSIGN(RemoteSafeBrowsingDatabaseManager);

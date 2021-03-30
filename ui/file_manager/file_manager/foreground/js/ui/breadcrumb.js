@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
+
 /**
  * @const {string} breadCrumbTemplate
  */
@@ -180,7 +182,7 @@ const breadCrumbTemplate = `
 /**
  * Class BreadCrumb.
  */
-class BreadCrumb extends HTMLElement {
+/* #export */ class BreadCrumb extends HTMLElement {
   constructor() {
     /**
      * Create element content.
@@ -449,12 +451,13 @@ class BreadCrumb extends HTMLElement {
     }
 
     // Show drop-down below the elider button.
-    const menu = this.shadowRoot.querySelector('cr-action-menu');
+    const menu = /** @type {!CrActionMenuElement} */ (
+        this.shadowRoot.querySelector('cr-action-menu'));
     const top = elider.offsetTop + elider.offsetHeight + 8;
-    !window.UNIT_TEST && menu.showAt(elider, {top: top});
+    menu.showAt(elider, {top: top});
 
     // Style drop-down and horizontal position.
-    const dialog = !window.UNIT_TEST ? menu.getDialog() : {style: {}};
+    const dialog = menu.getDialog();
     dialog.style['left'] = position + 'px';
     dialog.style['right'] = position + 'px';
     dialog.style['overflow'] = 'hidden auto';
@@ -483,7 +486,7 @@ class BreadCrumb extends HTMLElement {
 
     // Close the drop-down <dialog> if needed.
     const menu = this.shadowRoot.querySelector('cr-action-menu');
-    if (!window.UNIT_TEST && menu.getDialog().hasAttribute('open')) {
+    if (menu.getDialog().hasAttribute('open')) {
       menu.close();
     }
   }

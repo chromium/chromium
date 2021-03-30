@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/policy/device_local_account.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -103,7 +102,7 @@ class StatusUploader : public MediaCaptureDevicesDispatcher::Observer {
   base::Time last_upload_;
 
   // Callback invoked via a delay to upload device status.
-  base::CancelableClosure upload_callback_;
+  base::CancelableOnceClosure upload_callback_;
 
   // True if there has been any captured media in this session.
   bool has_captured_media_;

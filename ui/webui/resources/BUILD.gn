@@ -18,6 +18,7 @@ generate_grd("build_grd") {
     "images:build_grdp",
     "js:build_grdp",
     "js/cr/ui:build_grdp",
+    "//third_party/jstemplate:build_grdp",
   ]
   grdp_files = [
     "$target_gen_dir/css/resources.grdp",
@@ -25,9 +26,10 @@ generate_grd("build_grd") {
     "$target_gen_dir/images/resources.grdp",
     "$target_gen_dir/js/cr/ui/resources.grdp",
     "$target_gen_dir/js/resources.grdp",
+    "$root_gen_dir/third_party/jstemplate/resources.grdp",
   ]
 
-  if (!is_chromeos && !is_android) {
+  if (!is_chromeos_ash && !is_android) {
     # Roboto Font. Roboto-Regular and Roboto-Light is already available on
     # Android, and Roboto-Medium is not used on Android. All 6 weights of
     # Roboto are available on Chrome OS.
@@ -57,6 +59,11 @@ generate_grd("build_grd") {
   if (is_chromeos_ash) {
     deps += [ "//third_party/web-animations-js:build_grdp" ]
     grdp_files += [ "$root_gen_dir/third_party/web-animations-js/web_animations_resources.grdp" ]
+  }
+
+  if (!is_android && !is_ios) {
+    deps += [ "//third_party/lottie:build_grdp" ]
+    grdp_files += [ "$root_gen_dir/third_party/lottie/resources.grdp" ]
   }
 }
 

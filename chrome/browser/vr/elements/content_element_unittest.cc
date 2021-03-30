@@ -65,7 +65,7 @@ class TestPlatformInputHandler : public PlatformInputHandler {
     web_input_text_requests.emplace(std::move(callback));
   }
 
-  void report_text_state(const base::string16& text) {
+  void report_text_state(const std::u16string& text) {
     while (!web_input_text_requests.empty()) {
       auto callback = std::move(web_input_text_requests.front());
       web_input_text_requests.pop();
@@ -148,7 +148,7 @@ TEST_F(ContentElementSceneTest, WebInputFocus) {
   EXPECT_FALSE(AdvanceFrame());
 
   // Updates from the browser should update keyboard state.
-  TextInputInfo info(base::ASCIIToUTF16("asdfg"));
+  TextInputInfo info(u"asdfg");
   static_cast<TestContentInputDelegate*>(content_input_delegate_)
       ->SetTextInputInfo(info);
   info.selection_start = 1;
@@ -186,7 +186,7 @@ TEST_F(ContentElementSceneTest, ClearWebInputInfoModel) {
       static_cast<ContentElement*>(scene_->GetUiElementByName(kContentQuad));
   // Initial state.
   EditedText info = model_->web_input_text_field_info;
-  info.current = TextInputInfo(base::ASCIIToUTF16("asdfg"));
+  info.current = TextInputInfo(u"asdfg");
   model_->set_web_input_text_field_info(info);
   EXPECT_TRUE(AdvanceFrame());
 
@@ -260,7 +260,7 @@ TEST_F(ContentElementInputEditingTest, IndicesUpdated) {
   // given callback is triggered right away.
   SetInput(GetInputInfo("asdf", 4, 4), GetInputInfo("", 0, 0));
   TextInputInfo model_actual;
-  TextInputInfo model_exp(base::UTF8ToUTF16("asdf"));
+  TextInputInfo model_exp(u"asdf");
   content_delegate_->OnWebInputIndicesChanged(
       4, 4, -1, -1,
       base::BindOnce([](TextInputInfo* model,
@@ -278,7 +278,7 @@ TEST_F(ContentElementInputEditingTest, IndicesUpdated) {
                         const TextInputInfo& info) { *model = info; },
                      base::Unretained(&model_actual)));
   EXPECT_TRUE(input_forwarder_->text_state_requested());
-  input_forwarder_->report_text_state(base::UTF8ToUTF16("asdf"));
+  input_forwarder_->report_text_state(u"asdf");
   model_exp.selection_start = 2;
   model_exp.selection_end = 2;
   EXPECT_EQ(model_actual, model_exp);

@@ -1,0 +1,15 @@
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<div id="atomic">
+
+<script>
+test(function() {
+    var parent = document.getElementById("atomic");
+    var accessibleNode = new AccessibleNode();
+    parent.accessibleNode.appendChild(accessibleNode);
+    var axParent = accessibilityController.accessibleElementById("atomic");
+    var axNode = axParent.childAtIndex(0);
+    accessibleNode.atomic = true;
+});
+</script>

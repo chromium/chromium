@@ -6,6 +6,7 @@
 
 #include <limits>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "android_webview/browser/aw_autofill_client.h"
@@ -23,7 +24,7 @@
 #include "android_webview/browser/gfx/aw_picture.h"
 #include "android_webview/browser/gfx/browser_view_renderer.h"
 #include "android_webview/browser/gfx/child_frame.h"
-#include "android_webview/browser/gfx/gpu_service_web_view.h"
+#include "android_webview/browser/gfx/gpu_service_webview.h"
 #include "android_webview/browser/gfx/java_browser_view_renderer_helper.h"
 #include "android_webview/browser/gfx/render_thread_manager.h"
 #include "android_webview/browser/gfx/scoped_app_gl_state_restore.h"
@@ -57,7 +58,6 @@
 #include "base/no_destructor.h"
 #include "base/pickle.h"
 #include "base/single_thread_task_runner.h"
-#include "base/strings/string16.h"
 #include "base/supports_user_data.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -320,7 +320,9 @@ void AwContents::InitAutofillIfNecessary(bool autocomplete_enabled) {
       web_contents, AwAutofillClient::FromWebContents(web_contents),
       base::android::GetDefaultLocaleString(),
       base::FeatureList::IsEnabled(
-          autofill::features::kAndroidAutofillQueryServerFieldTypes)
+          autofill::features::kAndroidAutofillQueryServerFieldTypes) &&
+              (!autofill::AutofillProvider::
+                   is_download_manager_disabled_for_testing())
           ? autofill::AutofillHandler::ENABLE_AUTOFILL_DOWNLOAD_MANAGER
           : autofill::AutofillHandler::DISABLE_AUTOFILL_DOWNLOAD_MANAGER,
       autofill_provider_.get());
@@ -532,12 +534,12 @@ void AwContents::AddVisitedLinks(
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobjectArray>& jvisited_links) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::vector<base::string16> visited_link_strings;
+  std::vector<std::u16string> visited_link_strings;
   base::android::AppendJavaStringArrayToStringVector(env, jvisited_links,
                                                      &visited_link_strings);
 
   std::vector<GURL> visited_link_gurls;
-  std::vector<base::string16>::const_iterator itr;
+  std::vector<std::u16string>::const_iterator itr;
   for (itr = visited_link_strings.begin(); itr != visited_link_strings.end();
        ++itr) {
     visited_link_gurls.push_back(GURL(*itr));
@@ -574,9 +576,8 @@ void ShowGeolocationPromptHelper(const JavaObjectWeakGlobalRef& java_ref,
 
 }  // anonymous namespace
 
-void AwContents::ShowGeolocationPrompt(
-    const GURL& requesting_frame,
-    base::OnceCallback<void(bool)> callback) {
+void AwContents::ShowGeolocationPrompt(const GURL& requesting_frame,
+                                       PermissionCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   GURL origin = requesting_frame.GetOrigin();
@@ -676,7 +677,7 @@ void AwContents::PreauthorizePermission(JNIEnv* env,
 
 void AwContents::RequestProtectedMediaIdentifierPermission(
     const GURL& origin,
-    base::OnceCallback<void(bool)> callback) {
+    PermissionCallback callback) {
   permission_request_handler_->SendRequest(
       std::make_unique<SimplePermissionRequest>(
           origin, AwPermissionRequest::ProtectedMediaId, std::move(callback)));
@@ -688,9 +689,8 @@ void AwContents::CancelProtectedMediaIdentifierPermissionRequests(
       origin, AwPermissionRequest::ProtectedMediaId);
 }
 
-void AwContents::RequestGeolocationPermission(
-    const GURL& origin,
-    base::OnceCallback<void(bool)> callback) {
+void AwContents::RequestGeolocationPermission(const GURL& origin,
+                                              PermissionCallback callback) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
   if (!obj)
@@ -719,9 +719,8 @@ void AwContents::CancelGeolocationPermissionRequests(const GURL& origin) {
                                              AwPermissionRequest::Geolocation);
 }
 
-void AwContents::RequestMIDISysexPermission(
-    const GURL& origin,
-    base::OnceCallback<void(bool)> callback) {
+void AwContents::RequestMIDISysexPermission(const GURL& origin,
+                                            PermissionCallback callback) {
   permission_request_handler_->SendRequest(
       std::make_unique<SimplePermissionRequest>(
           origin, AwPermissionRequest::MIDISysex, std::move(callback)));
@@ -1381,12 +1380,12 @@ base::android::ScopedJavaLocalRef<jstring> AwContents::AddWebMessageListener(
     const base::android::JavaParamRef<jobject>& listener,
     const base::android::JavaParamRef<jstring>& js_object_name,
     const base::android::JavaParamRef<jobjectArray>& allowed_origin_rules) {
-  base::string16 native_js_object_name =
+  std::u16string native_js_object_name =
       base::android::ConvertJavaStringToUTF16(env, js_object_name);
   std::vector<std::string> native_allowed_origin_rule_strings;
   AppendJavaStringArrayToStringVector(env, allowed_origin_rules,
                                       &native_allowed_origin_rule_strings);
-  const base::string16 error_message =
+  const std::u16string error_message =
       GetJsCommunicationHost()->AddWebMessageHostFactory(
           std::make_unique<AwWebMessageHostFactory>(listener),
           native_js_object_name, native_allowed_origin_rule_strings);

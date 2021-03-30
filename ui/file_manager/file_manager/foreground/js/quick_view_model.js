@@ -2,10 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+// #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+// clang-format on
+
 /**
  * Quick view model that doesn't fit into properties of quick view element.
  */
-class QuickViewModel extends cr.EventTarget {
+/* #export */ class QuickViewModel extends cr.EventTarget {
   constructor() {
     super();
 

@@ -90,6 +90,15 @@ template("chrome_cleaner_executable") {
     if (defined(invoker.deps)) {
       deps += invoker.deps
     }
+
+    data_deps = []
+    if (is_internal_chrome_cleaner_build) {
+      # Official and devel builders need to upload symbols to the crash server.
+      data_deps += [ "//third_party/breakpad:symupload" ]
+    }
+    if (defined(invoker.data_deps)) {
+      data_deps += invoker.data_deps
+    }
   }
 }
 
@@ -111,8 +120,6 @@ chrome_cleaner_executable("chrome_cleanup_tool") {
     "//chrome/chrome_cleaner/logging:cleaner_logging_definitions",
     "//chrome/chrome_cleaner/os:cleaner_os",
     "//chrome/chrome_cleaner/parsers/json_parser",
-    "//chrome/chrome_cleaner/scanner:force_installed_extension_scanner",
-    "//chrome/chrome_cleaner/scanner:force_installed_extension_scanner_api",
     "//chrome/chrome_cleaner/settings:cleaner_settings_definitions",
     "//chrome/chrome_cleaner/zip_archiver/target:common",
   ]

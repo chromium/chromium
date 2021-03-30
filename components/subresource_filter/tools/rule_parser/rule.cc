@@ -81,8 +81,8 @@ url_pattern_index::proto::UrlRule UrlRule::ToProtobuf() const {
   url_pattern_index::proto::UrlRule result;
 
   result.set_semantics(
-      is_allowlist ? url_pattern_index::proto::RULE_SEMANTICS_WHITELIST
-                   : url_pattern_index::proto::RULE_SEMANTICS_BLACKLIST);
+      is_allowlist ? url_pattern_index::proto::RULE_SEMANTICS_ALLOWLIST
+                   : url_pattern_index::proto::RULE_SEMANTICS_BLOCKLIST);
   switch (is_third_party) {
     case TriState::DONT_CARE:
       result.set_source_type(url_pattern_index::proto::SOURCE_TYPE_ANY);
@@ -151,8 +151,8 @@ url_pattern_index::proto::CssRule CssRule::ToProtobuf() const {
   url_pattern_index::proto::CssRule result;
 
   result.set_semantics(
-      is_allowlist ? url_pattern_index::proto::RULE_SEMANTICS_WHITELIST
-                   : url_pattern_index::proto::RULE_SEMANTICS_BLACKLIST);
+      is_allowlist ? url_pattern_index::proto::RULE_SEMANTICS_ALLOWLIST
+                   : url_pattern_index::proto::RULE_SEMANTICS_BLOCKLIST);
 
   for (const std::string& domain : domains) {
     url_pattern_index::proto::DomainListItem* list_item = result.add_domains();
@@ -206,9 +206,9 @@ std::string ToString(const url_pattern_index::proto::UrlRule& rule) {
   std::string result;
 
   switch (rule.semantics()) {
-    case url_pattern_index::proto::RULE_SEMANTICS_BLACKLIST:
+    case url_pattern_index::proto::RULE_SEMANTICS_BLOCKLIST:
       break;
-    case url_pattern_index::proto::RULE_SEMANTICS_WHITELIST:
+    case url_pattern_index::proto::RULE_SEMANTICS_ALLOWLIST:
       result += "@@";
       break;
     default:
@@ -327,10 +327,10 @@ std::string ToString(const url_pattern_index::proto::CssRule& rule) {
     DomainListJoin(rule.domains(), ',', &result);
 
   switch (rule.semantics()) {
-    case url_pattern_index::proto::RULE_SEMANTICS_BLACKLIST:
+    case url_pattern_index::proto::RULE_SEMANTICS_BLOCKLIST:
       result += "##";
       break;
-    case url_pattern_index::proto::RULE_SEMANTICS_WHITELIST:
+    case url_pattern_index::proto::RULE_SEMANTICS_ALLOWLIST:
       result += "#@#";
       break;
     default:

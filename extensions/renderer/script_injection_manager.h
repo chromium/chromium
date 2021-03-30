@@ -14,12 +14,13 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
+#include "extensions/common/mojom/frame.mojom.h"
+#include "extensions/common/mojom/host_id.mojom-forward.h"
+#include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
 #include "extensions/renderer/script_injection.h"
 #include "extensions/renderer/user_script_set_manager.h"
-
-struct ExtensionMsg_ExecuteCode_Params;
 
 namespace content {
 class RenderFrame;
@@ -43,6 +44,17 @@ class ScriptInjectionManager : public UserScriptSetManager::Observer {
   // Removes pending injections of the unloaded extension.
   void OnExtensionUnloaded(const std::string& extension_id);
 
+  // Handle the ExecuteCode extension message.
+  void HandleExecuteCode(mojom::ExecuteCodeParamsPtr params,
+                         mojom::LocalFrame::ExecuteCodeCallback callback,
+                         content::RenderFrame* render_frame);
+
+  void ExecuteDeclarativeScript(content::RenderFrame* render_frame,
+                                int tab_id,
+                                const ExtensionId& extension_id,
+                                const std::string& script_id,
+                                const GURL& url);
+
   void set_activity_logging_enabled(bool enabled) {
     activity_logging_enabled_ = enabled;
   }
@@ -53,16 +65,24 @@ class ScriptInjectionManager : public UserScriptSetManager::Observer {
   // document load states and IPCs.
   class RFOHelper;
 
-  using FrameStatusMap =
-      std::map<content::RenderFrame*, UserScript::RunLocation>;
+  using FrameStatusMap = std::map<content::RenderFrame*, mojom::RunLocation>;
 
   using ScriptInjectionVector = std::vector<std::unique_ptr<ScriptInjection>>;
+
+  // Notifies that an injection has been finished or permission has been
+  // handled.
+  void OnInjectionStatusUpdated(ScriptInjection::InjectionStatus status,
+                                ScriptInjection* injection);
 
   // Notifies that an injection has been finished.
   void OnInjectionFinished(ScriptInjection* injection);
 
+  // Handle the GrantInjectionPermission extension message.
+  void OnPermitScriptInjectionHandled(ScriptInjection* injection);
+
   // UserScriptSetManager::Observer implementation.
-  void OnUserScriptsUpdated(const std::set<HostID>& changed_hosts) override;
+  void OnUserScriptsUpdated(
+      const std::set<mojom::HostID>& changed_hosts) override;
 
   // Notifies that an RFOHelper should be removed.
   void RemoveObserver(RFOHelper* helper);
@@ -72,30 +92,16 @@ class ScriptInjectionManager : public UserScriptSetManager::Observer {
 
   // Starts the process to inject appropriate scripts into |frame|.
   void StartInjectScripts(content::RenderFrame* frame,
-                          UserScript::RunLocation run_location);
+                          mojom::RunLocation run_location);
 
   // Actually injects the scripts into |frame|.
   void InjectScripts(content::RenderFrame* frame,
-                     UserScript::RunLocation run_location);
+                     mojom::RunLocation run_location);
 
   // Try to inject and store injection if it has not finished.
   void TryToInject(std::unique_ptr<ScriptInjection> injection,
-                   UserScript::RunLocation run_location,
+                   mojom::RunLocation run_location,
                    ScriptsRunInfo* scripts_run_info);
-
-  // Handle the ExecuteCode extension message.
-  void HandleExecuteCode(const ExtensionMsg_ExecuteCode_Params& params,
-                         content::RenderFrame* render_frame);
-
-  // Handle the ExecuteDeclarativeScript extension message.
-  void HandleExecuteDeclarativeScript(content::RenderFrame* web_frame,
-                                      int tab_id,
-                                      const ExtensionId& extension_id,
-                                      const std::string& script_id,
-                                      const GURL& url);
-
-  // Handle the GrantInjectionPermission extension message.
-  void HandlePermitScriptInjection(int64_t request_id);
 
   // The map of active web frames to their corresponding statuses. The
   // RunLocation of the frame corresponds to the last location that has ran.
@@ -120,8 +126,8 @@ class ScriptInjectionManager : public UserScriptSetManager::Observer {
   // Whether or not dom activity should be logged for scripts injected.
   bool activity_logging_enabled_ = false;
 
-  ScopedObserver<UserScriptSetManager, UserScriptSetManager::Observer>
-      user_script_set_manager_observer_;
+  base::ScopedObservation<UserScriptSetManager, UserScriptSetManager::Observer>
+      user_script_set_manager_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ScriptInjectionManager);
 };

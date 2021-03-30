@@ -1,8 +1,14 @@
 include_rules = [
   "+components/autofill/core/browser",
+  "+components/heavy_ad_intervention",
   "+components/security_interstitials",
+  "+components/subresource_filter/content/browser",
+  "+components/subresource_filter/core/browser",
+  "+components/subresource_filter/core/common",
+  "+components/url_pattern_index/proto",
   "+content/public/common",
   "+content/public/browser",
   "+content/public/test",
+  "+net/dns/mock_host_resolver.h",
   "+net/test",
 ]

@@ -8,8 +8,6 @@ static_library("test_support") {
   sources = [
     "mock_printer.cc",
     "mock_printer.h",
-    "print_mock_render_thread.cc",
-    "print_mock_render_thread.h",
     "print_test_content_renderer_client.cc",
     "print_test_content_renderer_client.h",
   ]

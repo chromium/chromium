@@ -33,7 +33,8 @@ ClientGpuMemoryBufferManager::ClientGpuMemoryBufferManager(
     mojo::PendingRemote<mojom::GpuMemoryBufferFactory> gpu)
     : thread_("GpuMemoryThread"),
       gpu_memory_buffer_support_(
-          std::make_unique<gpu::GpuMemoryBufferSupport>()) {
+          std::make_unique<gpu::GpuMemoryBufferSupport>()),
+      pool_(base::MakeRefCounted<base::UnsafeSharedMemoryPool>()) {
   CHECK(thread_.Start());
   // The thread is owned by this object. Which means the task will not run if
   // the object has been destroyed. So Unretained() is safe.
@@ -155,7 +156,8 @@ ClientGpuMemoryBufferManager::CreateGpuMemoryBuffer(
       gpu_memory_buffer_support_->CreateGpuMemoryBufferImplFromHandle(
           std::move(gmb_handle), size, format, usage,
           base::BindOnce(&NotifyDestructionOnCorrectThread,
-                         thread_.task_runner(), std::move(callback)));
+                         thread_.task_runner(), std::move(callback)),
+          this, pool_);
   if (!buffer) {
     DeletedGpuMemoryBuffer(gmb_handle_id, gpu::SyncToken());
     return nullptr;
@@ -168,6 +170,31 @@ void ClientGpuMemoryBufferManager::SetDestructionSyncToken(
     const gpu::SyncToken& sync_token) {
   static_cast<gpu::GpuMemoryBufferImpl*>(buffer)->set_destruction_sync_token(
       sync_token);
+}
+
+void ClientGpuMemoryBufferManager::CopyGpuMemoryBufferAsync(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion memory_region,
+    base::OnceCallback<void(bool)> callback) {
+  gpu_->CopyGpuMemoryBuffer(std::move(buffer_handle), std::move(memory_region),
+                            std::move(callback));
+}
+
+bool ClientGpuMemoryBufferManager::CopyGpuMemoryBufferSync(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion memory_region) {
+  base::WaitableEvent event;
+  bool mapping_result = false;
+  CopyGpuMemoryBufferAsync(
+      std::move(buffer_handle), std::move(memory_region),
+      base::BindOnce(
+          [](base::WaitableEvent* event, bool* result_ptr, bool result) {
+            *result_ptr = result;
+            event->Signal();
+          },
+          &event, &mapping_result));
+  event.Wait();
+  return mapping_result;
 }
 
 }  // namespace viz

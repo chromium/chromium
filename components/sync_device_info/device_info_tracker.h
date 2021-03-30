@@ -21,6 +21,17 @@ class DeviceInfoTracker {
   // Observer class for listening to device info changes.
   class Observer {
    public:
+    // Called on any change in the device info list. If sync is enabled, it is
+    // guaranteed that the method will be called at least once after browser
+    // startup. There are several possible cases:
+    // 1. The list has been changed during remote update (initial merge or
+    // incremental).
+    // 2. The list has been cleaned up when sync is stopped.
+    // 3. The local device info has been changed and committed to the server.
+    // 4. The list has been just loaded after browser startup from the
+    // persistent storage. If the list is empty (e.g. due to mismatching cache
+    // GUID or this is the first browser startup), it will be updated later
+    // during the initial merge.
     virtual void OnDeviceInfoChange() = 0;
   };
 

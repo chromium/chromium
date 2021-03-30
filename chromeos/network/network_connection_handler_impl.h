@@ -41,10 +41,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandlerImpl
   // NetworkCertLoader::Observer
   void OnCertificatesLoaded() override;
 
-  void Init(NetworkStateHandler* network_state_handler,
-            NetworkConfigurationHandler* network_configuration_handler,
-            ManagedNetworkConfigurationHandler*
-                managed_network_configuration_handler) override;
+  void Init(
+      NetworkStateHandler* network_state_handler,
+      NetworkConfigurationHandler* network_configuration_handler,
+      ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
+      CellularESimConnectionHandler* cellular_esim_connection_handler) override;
 
  private:
   struct ConnectRequest {
@@ -73,6 +74,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandlerImpl
   bool HasConnectingNetwork(const std::string& service_path);
 
   ConnectRequest* GetPendingRequest(const std::string& service_path);
+
+  void OnEnableESimProfileFailure(
+      const std::string& service_path,
+      const std::string& error_name,
+      std::unique_ptr<base::DictionaryValue> error_data);
 
   // Callback from Shill.Service.GetProperties. Parses |properties| to verify
   // whether or not the network appears to be configured. If configured,
@@ -132,10 +138,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandlerImpl
                                     base::OnceClosure success_callback);
 
   // Local references to the associated handler instances.
-  NetworkCertLoader* network_cert_loader_;
-  NetworkStateHandler* network_state_handler_;
-  NetworkConfigurationHandler* configuration_handler_;
-  ManagedNetworkConfigurationHandler* managed_configuration_handler_;
+  NetworkCertLoader* network_cert_loader_ = nullptr;
+  NetworkStateHandler* network_state_handler_ = nullptr;
+  NetworkConfigurationHandler* configuration_handler_ = nullptr;
+  ManagedNetworkConfigurationHandler* managed_configuration_handler_ = nullptr;
+  CellularESimConnectionHandler* cellular_esim_connection_handler_ = nullptr;
 
   // Map of pending connect requests, used to prevent repeated attempts while
   // waiting for Shill and to trigger callbacks on eventual success or failure.

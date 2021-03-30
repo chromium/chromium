@@ -8,11 +8,10 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "components/bookmarks/browser/bookmark_expanded_state_tracker.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
@@ -22,6 +21,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/controls/tree/tree_view_controller.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
@@ -52,6 +52,8 @@ class BookmarkEditorView : public BookmarkEditor,
                            public ui::SimpleMenuModel::Delegate,
                            public bookmarks::BookmarkModelObserver {
  public:
+  METADATA_HEADER(BookmarkEditorView);
+
   // Type of node in the tree. Public purely for testing.
   typedef ui::TreeNodeWithValue<int64_t> EditorNode;
 
@@ -63,7 +65,7 @@ class BookmarkEditorView : public BookmarkEditor,
         : ui::TreeNodeModel<EditorNode>(std::move(root)) {}
 
     void SetTitle(ui::TreeModelNode* node,
-                  const base::string16& title) override;
+                  const std::u16string& title) override;
 
    private:
     DISALLOW_COPY_AND_ASSIGN(EditorTreeModel);
@@ -73,7 +75,8 @@ class BookmarkEditorView : public BookmarkEditor,
                      const bookmarks::BookmarkNode* parent,
                      const EditDetails& details,
                      BookmarkEditor::Configuration configuration);
-
+  BookmarkEditorView(const BookmarkEditorView&) = delete;
+  BookmarkEditorView& operator=(const BookmarkEditorView&) = delete;
   ~BookmarkEditorView() override;
 
   // views::DialogDelegateView:
@@ -89,7 +92,7 @@ class BookmarkEditorView : public BookmarkEditor,
 
   // views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,
-                       const base::string16& new_contents) override;
+                       const std::u16string& new_contents) override;
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override;
 
@@ -111,9 +114,6 @@ class BookmarkEditorView : public BookmarkEditor,
 
  private:
   friend class BookmarkEditorViewTest;
-
-  // views::DialogDelegateView:
-  const char* GetClassName() const override;
 
   // bookmarks::BookmarkModelObserver:
   // Any structural change results in resetting the tree model.
@@ -252,8 +252,6 @@ class BookmarkEditorView : public BookmarkEditor,
 
   // List of deleted bookmark folders.
   std::vector<int64_t> deletes_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkEditorView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_EDITOR_VIEW_H_

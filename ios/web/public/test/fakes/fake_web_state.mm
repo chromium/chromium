@@ -196,11 +196,11 @@ void FakeWebState::LoadData(NSData* data,
   OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
 }
 
-void FakeWebState::ExecuteJavaScript(const base::string16& javascript) {
+void FakeWebState::ExecuteJavaScript(const std::u16string& javascript) {
   last_executed_javascript_ = javascript;
 }
 
-void FakeWebState::ExecuteJavaScript(const base::string16& javascript,
+void FakeWebState::ExecuteJavaScript(const std::u16string& javascript,
                                      JavaScriptResultCallback callback) {
   last_executed_javascript_ = javascript;
   std::move(callback).Run(nullptr);
@@ -262,11 +262,11 @@ void FakeWebState::SetContentsMimeType(const std::string& mime_type) {
   mime_type_ = mime_type;
 }
 
-void FakeWebState::SetTitle(const base::string16& title) {
+void FakeWebState::SetTitle(const std::u16string& title) {
   title_ = title;
 }
 
-const base::string16& FakeWebState::GetTitle() const {
+const std::u16string& FakeWebState::GetTitle() const {
   return title_;
 }
 
@@ -397,7 +397,7 @@ void FakeWebState::ShouldAllowResponse(
       num_decisions_requested);
 }
 
-base::string16 FakeWebState::GetLastExecutedJavascript() const {
+std::u16string FakeWebState::GetLastExecutedJavascript() const {
   return last_executed_javascript_;
 }
 

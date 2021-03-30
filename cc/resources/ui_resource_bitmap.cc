@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkMallocPixelRef.h"
 #include "third_party/skia/include/core/SkPixelRef.h"
@@ -55,7 +56,7 @@ void UIResourceBitmap::DrawToCanvas(SkCanvas* canvas, SkPaint* paint) {
   SkBitmap bitmap;
   bitmap.setInfo(info_, pixel_ref_.get()->rowBytes());
   bitmap.setPixelRef(pixel_ref_, 0, 0);
-  canvas->drawBitmap(bitmap, 0, 0, paint);
+  canvas->drawImage(bitmap.asImage(), 0, 0, SkSamplingOptions(), paint);
   canvas->flush();
 }
 

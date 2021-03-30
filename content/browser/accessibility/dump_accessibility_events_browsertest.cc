@@ -12,12 +12,11 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "content/browser/accessibility/accessibility_event_recorder.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
@@ -30,8 +29,12 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "net/base/escape.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter.h"
+#if defined(OS_WIN)
+#include "content/browser/accessibility/browser_accessibility_manager_win.h"
+#endif
 
 namespace content {
 
@@ -72,17 +75,18 @@ using ui::AXTreeFormatter;
 // the end of the test; anything received after that is too late.
 class DumpAccessibilityEventsTest : public DumpAccessibilityTestBase {
  public:
-  void AddDefaultFilters(
-      std::vector<AXPropertyFilter>* property_filters) override {
+  std::vector<ui::AXPropertyFilter> DefaultFilters() const override {
+    std::vector<ui::AXPropertyFilter> property_filters;
     // Suppress spurious focus events on the document object.
-    property_filters->push_back(AXPropertyFilter("EVENT_OBJECT_FOCUS*DOCUMENT*",
-                                                 AXPropertyFilter::DENY));
-    property_filters->push_back(AXPropertyFilter(
-        "AutomationFocusChanged*document*", AXPropertyFilter::DENY));
+    property_filters.emplace_back("EVENT_OBJECT_FOCUS*DOCUMENT*",
+                                  AXPropertyFilter::DENY);
+    property_filters.emplace_back("AutomationFocusChanged*document*",
+                                  AXPropertyFilter::DENY);
     // Implementing IRawElementProviderAdviseEvents causes Win7 to fire
     // spurious focus events (regardless of what the implementation does).
-    property_filters->push_back(AXPropertyFilter(
-        "AutomationFocusChanged on role=region", AXPropertyFilter::DENY));
+    property_filters.emplace_back("AutomationFocusChanged on role=region",
+                                  AXPropertyFilter::DENY);
+    return property_filters;
   }
 
   std::vector<std::string> Dump(std::vector<std::string>& run_until) override;
@@ -100,14 +104,14 @@ class DumpAccessibilityEventsTest : public DumpAccessibilityTestBase {
   std::string final_tree_;
 };
 
-bool IsRecordingComplete(AccessibilityEventRecorder& event_recorder,
+bool IsRecordingComplete(ui::AXEventRecorder& event_recorder,
                          std::vector<std::string>& run_until) {
   // If no @*-RUN-UNTIL-EVENT directives, then having any events is enough.
   LOG(ERROR) << "=== IsRecordingComplete#1 run_until size=" << run_until.size();
   if (run_until.empty())
     return true;
 
-  std::vector<std::string> event_logs = event_recorder.event_logs();
+  std::vector<std::string> event_logs = event_recorder.EventLogs();
   LOG(ERROR) << "=== IsRecordingComplete#2 Logs size=" << event_logs.size();
 
   for (size_t i = 0; i < event_logs.size(); ++i)
@@ -138,11 +142,12 @@ std::vector<std::string> DumpAccessibilityEventsTest::Dump(
   bool run_go_again = false;
   std::vector<std::string> result;
   do {
-    // Create a new Event Recorder for the run
-    std::unique_ptr<AccessibilityEventRecorder> event_recorder =
-        event_recorder_factory_(
-            web_contents->GetRootBrowserAccessibilityManager(), pid, {});
-    event_recorder->set_only_web_events(true);
+    // Create a new Event Recorder for the run.
+    std::unique_ptr<ui::AXEventRecorder> event_recorder =
+        AXInspectFactory::CreateRecorder(
+            GetParam(), web_contents->GetRootBrowserAccessibilityManager(), pid,
+            {});
+    event_recorder->SetOnlyWebEvents(true);
 
     waiter.reset(new AccessibilityNotificationWaiter(
         shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kNone));
@@ -187,7 +192,7 @@ std::vector<std::string> DumpAccessibilityEventsTest::Dump(
     // Dump the event logs, running them through any filters specified
     // in the HTML file.
     event_recorder->FlushAsyncEvents();
-    std::vector<std::string> event_logs = event_recorder->event_logs();
+    std::vector<std::string> event_logs = event_recorder->EventLogs();
 
     // Sort the logs so that results are predictable. There are too many
     // nondeterministic things that affect the exact order of events fired,
@@ -195,9 +200,9 @@ std::vector<std::string> DumpAccessibilityEventsTest::Dump(
     std::sort(event_logs.begin(), event_logs.end());
 
     for (auto& event_log : event_logs) {
-      if (AXTreeFormatter::MatchesPropertyFilters(property_filters_, event_log,
-                                                  true)) {
-        result.push_back(event_log);
+      if (AXTreeFormatter::MatchesPropertyFilters(scenario_.property_filters,
+                                                  event_log, true)) {
+        result.push_back(net::EscapeNonASCII(event_log));
       }
     }
 
@@ -235,19 +240,20 @@ void DumpAccessibilityEventsTest::RunEventTest(
 
 // Parameterize the tests so that each test-pass is run independently.
 struct DumpAccessibilityEventsTestPassToString {
-  std::string operator()(const ::testing::TestParamInfo<size_t>& i) const {
-    auto passes = AccessibilityEventRecorder::GetTestPasses();
-    CHECK_LT(i.param, passes.size());
-    return passes[i.param].name;
+  std::string operator()(
+      const ::testing::TestParamInfo<AXInspectFactory::Type>& i) const {
+    return std::string(i.param);
   }
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     DumpAccessibilityEventsTest,
-    ::testing::Range(size_t{0},
-                     AccessibilityEventRecorder::GetTestPasses().size()),
+    ::testing::ValuesIn(DumpAccessibilityTestHelper::EventTestPasses()),
     DumpAccessibilityEventsTestPassToString());
+
+// This test suite is empty on some OSes.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(DumpAccessibilityEventsTest);
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsAriaAtomicChanged) {
@@ -259,7 +265,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("aria-busy-changed.html"));
 }
 
-#if defined(OS_LINUX)
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define DISABLED_ON_LINUX_TSAN_MSAN(name) DISABLED_##name
 #else
 #define DISABLED_ON_LINUX_TSAN_MSAN(name) name
@@ -471,6 +479,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsAddAlertWithRoleChange) {
+  RunEventTest(FILE_PATH_LITERAL("add-alert-with-role-change.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsAddChild) {
   RunEventTest(FILE_PATH_LITERAL("add-child.html"));
 }
@@ -522,8 +535,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("caret-move.html"));
 }
 
+// Flaky on Windows: https://crbug.com/1186887
+#if defined(OS_WIN)
+#define MAYBE_AccessibilityEventsCaretMoveHiddenInput \
+  DISABLED_AccessibilityEventsCaretMoveHiddenInput
+#else
+#define MAYBE_AccessibilityEventsCaretMoveHiddenInput \
+  AccessibilityEventsCaretMoveHiddenInput
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       AccessibilityEventsCaretMoveHiddenInput) {
+                       MAYBE_AccessibilityEventsCaretMoveHiddenInput) {
   RunEventTest(FILE_PATH_LITERAL("caret-move-hidden-input.html"));
 }
 
@@ -569,6 +590,26 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsAriaHiddenDescendants) {
   RunEventTest(FILE_PATH_LITERAL("aria-hidden-descendants.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsAriaHiddenSingleDescendant) {
+  RunEventTest(FILE_PATH_LITERAL("aria-hidden-single-descendant.html"));
+}
+
+// crbug.com/1181414.
+IN_PROC_BROWSER_TEST_P(
+    DumpAccessibilityEventsTest,
+    DISABLED_AccessibilityEventsAriaHiddenSingleDescendantDisplayNone) {
+  RunEventTest(
+      FILE_PATH_LITERAL("aria-hidden-single-descendant-display-none.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    DumpAccessibilityEventsTest,
+    AccessibilityEventsAriaHiddenSingleDescendantVisibilityHidden) {
+  RunEventTest(FILE_PATH_LITERAL(
+      "aria-hidden-single-descendant-visibility-hidden.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
@@ -823,6 +864,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsRemoveHiddenAttributeSubtree) {
   RunEventTest(FILE_PATH_LITERAL("remove-hidden-attribute-subtree.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsSamePageLinkNavigation) {
+#if defined(OS_WIN)
+  if (!BrowserAccessibilityManagerWin::
+          IsUiaActiveTextPositionChangedEventSupported())
+    return;
+#endif
+  RunEventTest(FILE_PATH_LITERAL("same-page-link-navigation.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,

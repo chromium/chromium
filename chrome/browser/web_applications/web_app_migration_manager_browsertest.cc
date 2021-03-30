@@ -35,7 +35,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/webapps/installable/installable_metrics.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -81,11 +81,14 @@ class WebAppMigrationManagerBrowserTest : public InProcessBrowserTest {
  public:
   WebAppMigrationManagerBrowserTest() {
     if (content::IsPreTest()) {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kDesktopPWAsWithoutExtensions);
+      scoped_feature_list_.InitWithFeatures(
+          {features::kSyncBookmarkApps},
+          {features::kDesktopPWAsWithoutExtensions});
     } else {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kDesktopPWAsWithoutExtensions);
+      scoped_feature_list_.InitWithFeatures(
+          {features::kDesktopPWAsWithoutExtensions,
+           features::kSyncBookmarkApps},
+          {});
     }
   }
 
@@ -331,16 +334,15 @@ class WebAppMigrationManagerBrowserTestWithShortcutsMenu
     provider().icon_manager().ReadAllShortcutsMenuIcons(
         app_id,
         base::BindLambdaForTesting(
-            [&](ShortcutsMenuIconsBitmaps shortcuts_menu_icons_bitmaps) {
-              EXPECT_EQ(2u, shortcuts_menu_icons_bitmaps.size());
-              for (size_t i = 0; i < shortcuts_menu_icons_bitmaps.size(); ++i) {
+            [&](ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps) {
+              EXPECT_EQ(2u, shortcuts_menu_icon_bitmaps.size());
+              for (size_t i = 0; i < shortcuts_menu_icon_bitmaps.size(); ++i) {
                 EXPECT_EQ(shortcuts_menu_icons_sizes[i].size(),
-                          shortcuts_menu_icons_bitmaps[i].size());
+                          shortcuts_menu_icon_bitmaps[i].any.size());
                 const std::vector<SquareSizePx>& icon_sizes =
                     shortcuts_menu_icons_sizes[i];
-                const std::map<SquareSizePx, SkBitmap>& icon_maps =
-                    shortcuts_menu_icons_bitmaps[i];
-                for (const auto& icon_map : icon_maps) {
+                const IconBitmaps& icon_maps = shortcuts_menu_icon_bitmaps[i];
+                for (const auto& icon_map : icon_maps.any) {
                   const SquareSizePx& size_px = icon_map.first;
                   EXPECT_TRUE(base::Contains(icon_sizes, size_px));
 
@@ -375,9 +377,9 @@ IN_PROC_BROWSER_TEST_F(WebAppMigrationManagerBrowserTestWithShortcutsMenu,
   std::vector<WebApplicationShortcutsMenuItemInfo> shortcuts_menu_item_infos =
       provider().registrar().GetAppShortcutsMenuItemInfos(app_id);
   EXPECT_EQ(shortcuts_menu_item_infos.size(), 2u);
-  EXPECT_EQ(shortcuts_menu_item_infos[0].name, base::UTF8ToUTF16("shortcut1"));
+  EXPECT_EQ(shortcuts_menu_item_infos[0].name, u"shortcut1");
   EXPECT_EQ(shortcuts_menu_item_infos[0].shortcut_icon_infos.size(), 1u);
-  EXPECT_EQ(shortcuts_menu_item_infos[1].name, base::UTF8ToUTF16("shortcut2"));
+  EXPECT_EQ(shortcuts_menu_item_infos[1].name, u"shortcut2");
   EXPECT_EQ(shortcuts_menu_item_infos[1].shortcut_icon_infos.size(), 2u);
 
   const std::vector<std::vector<SquareSizePx>> shortcuts_menu_icons_sizes = {
@@ -403,12 +405,10 @@ IN_PROC_BROWSER_TEST_F(WebAppMigrationManagerBrowserTestWithShortcutsMenu,
   EXPECT_EQ(DisplayMode::kStandalone, web_app->display_mode());
 
   EXPECT_EQ(web_app->shortcuts_menu_item_infos().size(), 2u);
-  EXPECT_EQ(web_app->shortcuts_menu_item_infos()[0].name,
-            base::UTF8ToUTF16("shortcut1"));
+  EXPECT_EQ(web_app->shortcuts_menu_item_infos()[0].name, u"shortcut1");
   EXPECT_EQ(web_app->shortcuts_menu_item_infos()[0].shortcut_icon_infos.size(),
             1u);
-  EXPECT_EQ(web_app->shortcuts_menu_item_infos()[1].name,
-            base::UTF8ToUTF16("shortcut2"));
+  EXPECT_EQ(web_app->shortcuts_menu_item_infos()[1].name, u"shortcut2");
   EXPECT_EQ(web_app->shortcuts_menu_item_infos()[1].shortcut_icon_infos.size(),
             2u);
 

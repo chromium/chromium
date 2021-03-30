@@ -101,15 +101,7 @@ class PassthroughAnimationDecoder
 
 class IconRoundedView : public views::View {
  public:
-  IconRoundedView(int size) : radius_(size / 2) {
-    icon_ = gfx::ImageSkiaOperations::CreateResizedImage(
-        gfx::CreateVectorIcon(
-            chromeos::kEnterpriseIcon,
-            AshColorProvider::Get()->GetContentLayerColor(
-                AshColorProvider::ContentLayerType::kIconColorSecondary)),
-        skia::ImageOperations::RESIZE_BEST,
-        gfx::Size(size * kIconProportion, size * kIconProportion));
-  }
+  IconRoundedView(int size) : size_(size) {}
   ~IconRoundedView() override = default;
 
   IconRoundedView(const IconRoundedView&) = delete;
@@ -117,12 +109,14 @@ class IconRoundedView : public views::View {
 
   void OnPaint(gfx::Canvas* canvas) override {
     View::OnPaint(canvas);
+
+    const int radius = size_ / 2;
     const gfx::Rect content_bounds(GetContentsBounds());
-    const gfx::Point center_circle(content_bounds.width() - radius_,
-                                   content_bounds.height() - radius_);
+    const gfx::Point center_circle(content_bounds.width() - radius,
+                                   content_bounds.height() - radius);
     const gfx::Point left_corner_icon(
-        std::round(content_bounds.width() - radius_ * (1 + kIconProportion)),
-        std::round(content_bounds.height() - radius_ * (1 + kIconProportion)));
+        std::round(content_bounds.width() - radius * (1 + kIconProportion)),
+        std::round(content_bounds.height() - radius * (1 + kIconProportion)));
     gfx::Rect image_bounds(left_corner_icon, icon_.size());
     SkPath path;
     path.addRect(gfx::RectToSkRect(image_bounds));
@@ -132,14 +126,27 @@ class IconRoundedView : public views::View {
         AshColorProvider::ContentLayerType::kIconColorSecondaryBackground));
     flags.setStyle(cc::PaintFlags::kFill_Style);
     // The colored circle on which we paint the icon.
-    canvas->DrawCircle(center_circle, radius_, flags);
+    canvas->DrawCircle(center_circle, radius, flags);
     canvas->DrawImageInPath(icon_, image_bounds.x(), image_bounds.y(), path,
                             flags);
   }
 
+  // views::View:
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+    icon_ = gfx::ImageSkiaOperations::CreateResizedImage(
+        gfx::CreateVectorIcon(
+            chromeos::kEnterpriseIcon,
+            AshColorProvider::Get()->GetContentLayerColor(
+                AshColorProvider::ContentLayerType::kIconColorSecondary)),
+        skia::ImageOperations::RESIZE_BEST,
+        gfx::Size(size_ * kIconProportion, size_ * kIconProportion));
+    SchedulePaint();
+  }
+
  private:
+  const int size_;
   gfx::ImageSkia icon_;
-  int radius_;
 };
 
 }  // namespace
@@ -258,8 +265,6 @@ class LoginUserView::UserLabel : public NonAccessibleView {
     SetLayoutManager(std::make_unique<views::FillLayout>());
 
     user_name_ = new views::Label();
-    user_name_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary));
     user_name_->SetSubpixelRenderingEnabled(false);
     user_name_->SetAutoColorReadabilityEnabled(false);
 
@@ -299,7 +304,14 @@ class LoginUserView::UserLabel : public NonAccessibleView {
                                        gfx::ElideBehavior::ELIDE_TAIL));
   }
 
-  const base::string16& displayed_name() const { return user_name_->GetText(); }
+  // views::View:
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+    user_name_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary));
+  }
+
+  const std::u16string& displayed_name() const { return user_name_->GetText(); }
 
  private:
   views::Label* user_name_ = nullptr;
@@ -350,7 +362,7 @@ LoginDisplayStyle LoginUserView::TestApi::display_style() const {
   return view_->display_style_;
 }
 
-const base::string16& LoginUserView::TestApi::displayed_name() const {
+const std::u16string& LoginUserView::TestApi::displayed_name() const {
   return view_->user_label_->displayed_name();
 }
 
@@ -424,12 +436,6 @@ LoginUserView::LoginUserView(
     dropdown_->SetHasInkDropActionOnClick(false);
     dropdown_->SetPreferredSize(
         gfx::Size(kDropdownIconSizeDp, kDropdownIconSizeDp));
-    dropdown_->SetImage(
-        views::Button::STATE_NORMAL,
-        gfx::CreateVectorIcon(
-            kLockScreenDropdownIcon,
-            AshColorProvider::Get()->GetContentLayerColor(
-                AshColorProvider::ContentLayerType::kIconColorPrimary)));
     dropdown_->SetFocusBehavior(FocusBehavior::ALWAYS);
   }
   tap_button_ = new TapButton(on_tap_, this);
@@ -573,6 +579,18 @@ void LoginUserView::RequestFocus() {
   tap_button_->RequestFocus();
 }
 
+void LoginUserView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  if (dropdown_) {
+    dropdown_->SetImage(
+        views::Button::STATE_NORMAL,
+        gfx::CreateVectorIcon(
+            kLockScreenDropdownIcon,
+            AshColorProvider::Get()->GetContentLayerColor(
+                AshColorProvider::ContentLayerType::kIconColorPrimary)));
+  }
+}
+
 void LoginUserView::OnHover(bool has_hover) {
   UpdateOpacity();
 }
@@ -605,7 +623,7 @@ void LoginUserView::DropdownButtonPressed() {
 }
 
 void LoginUserView::UpdateCurrentUserState() {
-  base::string16 accessible_name;
+  std::u16string accessible_name;
   auto email = base::UTF8ToUTF16(current_user_.basic_user_info.display_email);
   if (current_user_.user_account_manager) {
     accessible_name = l10n_util::GetStringFUTF16(

@@ -469,18 +469,21 @@ static bool WasmCodeGenerationCheckCallbackInMainThread(
                             static_cast<size_t>(source_str.length()));
       memcpy(snippet, *source_str, len * sizeof(UChar));
       snippet[len] = 0;
-      // Wasm code generation is allowed if we have either the wasm-eval
-      // directive or the unsafe-eval directive. However, we only recognize
-      // wasm-eval for certain schemes
-      return policy->AllowWasmEval(ReportingDisposition::kReport,
-                                   ContentSecurityPolicy::kWillThrowException,
-                                   snippet) ||
-             policy->AllowEval(ReportingDisposition::kReport,
-                               ContentSecurityPolicy::kWillThrowException,
-                               snippet);
+      return policy->AllowWasmCodeGeneration(
+          ReportingDisposition::kReport,
+          ContentSecurityPolicy::kWillThrowException, snippet);
     }
   }
   return false;
+}
+
+static bool WasmExceptionsEnabledCallback(v8::Local<v8::Context> context) {
+  ExecutionContext* execution_context = ToExecutionContext(context);
+  if (!execution_context)
+    return false;
+
+  return RuntimeEnabledFeatures::WebAssemblyExceptionsEnabled(
+      execution_context);
 }
 
 static bool WasmSimdEnabledCallback(v8::Local<v8::Context> context) {
@@ -489,14 +492,6 @@ static bool WasmSimdEnabledCallback(v8::Local<v8::Context> context) {
     return false;
 
   return RuntimeEnabledFeatures::WebAssemblySimdEnabled(execution_context);
-}
-
-static bool WasmThreadsEnabledCallback(v8::Local<v8::Context> context) {
-  ExecutionContext* execution_context = ToExecutionContext(context);
-  if (!execution_context)
-    return false;
-
-  return RuntimeEnabledFeatures::WebAssemblyThreadsEnabled(execution_context);
 }
 
 v8::Local<v8::Value> NewRangeException(v8::Isolate* isolate,
@@ -560,7 +555,8 @@ static bool WasmInstanceOverride(
 static v8::MaybeLocal<v8::Promise> HostImportModuleDynamically(
     v8::Local<v8::Context> context,
     v8::Local<v8::ScriptOrModule> v8_referrer,
-    v8::Local<v8::String> v8_specifier) {
+    v8::Local<v8::String> v8_specifier,
+    v8::Local<v8::FixedArray> v8_import_assertions) {
   ScriptState* script_state = ScriptState::From(context);
 
   Modulator* modulator = Modulator::From(script_state);
@@ -605,14 +601,20 @@ static v8::MaybeLocal<v8::Promise> HostImportModuleDynamically(
       referrer_resource_url = KURL(NullURL(), referrer_resource_url_str);
   }
 
+  ModuleRequest module_request(
+      specifier, TextPosition::MinimumPosition(),
+      ModuleRecord::ToBlinkImportAssertions(
+          script_state->GetContext(), v8::Local<v8::Module>(),
+          v8_import_assertions, /*v8_import_assertions_has_positions=*/false));
+
   ReferrerScriptInfo referrer_info =
       ReferrerScriptInfo::FromV8HostDefinedOptions(
           context, v8_referrer->GetHostDefinedOptions());
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
-  modulator->ResolveDynamically(specifier, referrer_resource_url, referrer_info,
-                                resolver);
+  modulator->ResolveDynamically(module_request, referrer_resource_url,
+                                referrer_info, resolver);
   return v8::Local<v8::Promise>::Cast(promise.V8Value());
 }
 
@@ -650,8 +652,8 @@ static void InitializeV8Common(v8::Isolate* isolate) {
   isolate->SetUseCounterCallback(&UseCounterCallback);
   isolate->SetWasmModuleCallback(WasmModuleOverride);
   isolate->SetWasmInstanceCallback(WasmInstanceOverride);
+  isolate->SetWasmExceptionsEnabledCallback(WasmExceptionsEnabledCallback);
   isolate->SetWasmSimdEnabledCallback(WasmSimdEnabledCallback);
-  isolate->SetWasmThreadsEnabledCallback(WasmThreadsEnabledCallback);
   isolate->SetHostImportModuleDynamicallyCallback(HostImportModuleDynamically);
   isolate->SetHostInitializeImportMetaObjectCallback(
       HostGetImportMetaProperties);

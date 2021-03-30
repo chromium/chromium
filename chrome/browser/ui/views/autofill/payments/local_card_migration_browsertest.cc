@@ -179,7 +179,7 @@ class LocalCardMigrationBrowserTest
     // stub account |user_manager::kStubUserEmail|.
     CoreAccountInfo info =
         IdentityManagerFactory::GetForProfile(browser()->profile())
-            ->GetPrimaryAccountInfo();
+            ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
     username = info.email;
 #endif
     if (username.empty())
@@ -213,6 +213,10 @@ class LocalCardMigrationBrowserTest
     local_card_migration_manager_->SetEventObserverForTesting(this);
     personal_data_ =
         PersonalDataManagerFactory::GetForProfile(browser()->profile());
+
+    // Wait for Personal Data Manager to be fully loaded to prevent that
+    // spurious notifications deceive the tests.
+    WaitForPersonalDataManagerToBeLoaded(browser()->profile());
 
     // Set up the fake geolocation data.
     geolocation_overrider_ =
@@ -305,7 +309,7 @@ class LocalCardMigrationBrowserTest
     local_card.set_guid("00000000-0000-0000-0000-" + card_number.substr(0, 12));
     local_card.set_record_type(CreditCard::LOCAL_CARD);
     if (set_nickname)
-      local_card.SetNickname(base::ASCIIToUTF16("card nickname"));
+      local_card.SetNickname(u"card nickname");
 
     AddTestCreditCard(browser()->profile(), local_card);
     return local_card;
@@ -767,8 +771,8 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
                   Bucket(AutofillMetrics::INTERMEDIATE_BUBBLE_ACCEPTED, 1),
                   Bucket(AutofillMetrics::MAIN_DIALOG_SHOWN, 1)));
   histogram_tester.ExpectUniqueSample(
-      "Autofill.LocalCardMigrationBubbleUserInteraction.FirstShow",
-      AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_CLOSED_ACCEPTED, 1);
+      "Autofill.LocalCardMigrationBubbleResult.FirstShow",
+      AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_ACCEPTED, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.LocalCardMigrationDialogOffer",
       AutofillMetrics::LOCAL_CARD_MIGRATION_DIALOG_SHOWN, 1);
@@ -1126,7 +1130,7 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTestForStatusChip,
   EXPECT_TRUE(GetLocalCardMigrationIconView()->GetVisible());
   EXPECT_FALSE(GetLocalCardMigrationIconView()
                    ->loading_indicator_for_testing()
-                   ->IsAnimating());
+                   ->GetAnimating());
 
   // Click the [Save] button in the dialog.
   ResetEventWaiterForSequence({DialogEvent::SENT_MIGRATE_CARDS_REQUEST});
@@ -1138,7 +1142,7 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTestForStatusChip,
   EXPECT_TRUE(GetLocalCardMigrationIconView()->GetVisible());
   EXPECT_TRUE(GetLocalCardMigrationIconView()
                   ->loading_indicator_for_testing()
-                  ->IsAnimating());
+                  ->GetAnimating());
 
   SetUpMigrateCardsRpcPaymentsAccepts();
   ResetEventWaiterForSequence({DialogEvent::RECEIVED_MIGRATE_CARDS_RESPONSE});
@@ -1148,26 +1152,12 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTestForStatusChip,
   EXPECT_TRUE(GetLocalCardMigrationIconView()->GetVisible());
   EXPECT_FALSE(GetLocalCardMigrationIconView()
                    ->loading_indicator_for_testing()
-                   ->IsAnimating());
+                   ->GetAnimating());
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-class LocalCardMigrationBrowserTestForFixedLogging
-    : public LocalCardMigrationBrowserTest {
- protected:
-  LocalCardMigrationBrowserTestForFixedLogging() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAutofillEnableFixedPaymentsBubbleLogging);
-  }
-
-  ~LocalCardMigrationBrowserTestForFixedLogging() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTestForFixedLogging,
+IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
                        ClosedReason_BubbleAccepted) {
   base::HistogramTester histogram_tester;
 
@@ -1181,7 +1171,7 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTestForFixedLogging,
       AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_ACCEPTED, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTestForFixedLogging,
+IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
                        ClosedReason_BubbleClosed) {
   base::HistogramTester histogram_tester;
 
@@ -1196,7 +1186,7 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTestForFixedLogging,
       AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_CLOSED, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTestForFixedLogging,
+IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
                        ClosedReason_BubbleNotInteracted) {
   base::HistogramTester histogram_tester;
 
@@ -1213,7 +1203,7 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTestForFixedLogging,
       AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_NOT_INTERACTED, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTestForFixedLogging,
+IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
                        ClosedReason_BubbleLostFocus) {
   base::HistogramTester histogram_tester;
 

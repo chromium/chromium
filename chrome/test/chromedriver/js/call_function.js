@@ -110,34 +110,16 @@ CacheWithUUID.prototype = {
    */
   retrieveItem: function(id) {
     var item = this.cache_[id];
-    if (item)
+    if (item && this.isNodeReachable_(item))
       return item;
     throw newError('element is not attached to the page document',
                    StatusCode.STALE_ELEMENT_REFERENCE);
   },
 
-  /**
-   * Clears stale items from the cache.
-   */
-  clearStale: function() {
-    for (var id in this.cache_) {
-      var node = this.cache_[id];
-      if (!this.isNodeReachable_(node))
-        delete this.cache_[id];
-    }
-  },
-
-  /**
-    * @private
-    * @param {!Node} node The node to check.
-    * @return {boolean} If the nodes is reachable.
-    */
   isNodeReachable_: function(node) {
     var nodeRoot = getNodeRootThroughAnyShadows(node);
     return (nodeRoot == document.documentElement.parentNode);
   }
-
-
 };
 
 /**
@@ -178,28 +160,12 @@ Cache.prototype = {
    */
   retrieveItem: function(id) {
     var item = this.cache_[id];
-    if (item)
+    if (item && this.isNodeReachable_(item))
       return item;
     throw newError('element is not attached to the page document',
                    StatusCode.STALE_ELEMENT_REFERENCE);
   },
 
-  /**
-   * Clears stale items from the cache.
-   */
-  clearStale: function() {
-    for (var id in this.cache_) {
-      var node = this.cache_[id];
-      if (!this.isNodeReachable_(node))
-        delete this.cache_[id];
-    }
-  },
-
-  /**
-    * @private
-    * @param {!Node} node The node to check.
-    * @return {boolean} If the nodes is reachable.
-    */
   isNodeReachable_: function(node) {
     var nodeRoot = getNodeRootThroughAnyShadows(node);
     return (nodeRoot == document.documentElement.parentNode);
@@ -433,7 +399,6 @@ function callFunction(func, args, w3c, opt_unwrappedReturn) {
 
   }
   const cache = getPageCache(null, w3cEnabled);
-  cache.clearStale();
 
   function buildError(error) {
     return {

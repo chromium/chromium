@@ -26,8 +26,7 @@ class GAIAInfoUpdateService : public KeyedService,
  public:
   GAIAInfoUpdateService(signin::IdentityManager* identity_manager,
                         ProfileAttributesStorage* profile_attributes_storage,
-                        const base::FilePath& profile_path,
-                        PrefService* prefs);
+                        const base::FilePath& profile_path);
 
   ~GAIAInfoUpdateService() override;
 
@@ -48,8 +47,8 @@ class GAIAInfoUpdateService : public KeyedService,
   void UpdateAnyAccount(const AccountInfo& info);
 
   // Overridden from signin::IdentityManager::Observer:
-  void OnUnconsentedPrimaryAccountChanged(
-      const CoreAccountInfo& unconsented_primary_account_info) override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
   void OnAccountsInCookieUpdated(
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
@@ -58,7 +57,6 @@ class GAIAInfoUpdateService : public KeyedService,
   signin::IdentityManager* identity_manager_;
   ProfileAttributesStorage* profile_attributes_storage_;
   const base::FilePath profile_path_;
-  PrefService* profile_prefs_;
   // TODO(msalama): remove when |SigninProfileAttributesUpdater| is folded into
   // |GAIAInfoUpdateService|.
   std::string gaia_id_of_profile_attribute_entry_;

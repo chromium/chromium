@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/input_method/personal_info_suggester.h"
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -17,8 +19,6 @@
 #include "chrome/browser/extensions/api/input_ime/input_ime_api.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "chromeos/constants/chromeos_pref_names.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/label_formatter_utils.h"
@@ -99,7 +99,7 @@ void RecordAssistiveInsufficientData(AssistiveType type) {
 
 }  // namespace
 
-AssistiveType ProposePersonalInfoAssistiveAction(const base::string16& text) {
+AssistiveType ProposePersonalInfoAssistiveAction(const std::u16string& text) {
   std::string lower_case_utf8_text =
       base::ToLowerASCII(base::UTF16ToUTF8(text));
   if (!(RE2::FullMatch(lower_case_utf8_text, ".* $"))) {
@@ -236,7 +236,7 @@ SuggestionStatus PersonalInfoSuggester::HandleKeyEvent(
   return SuggestionStatus::kNotHandled;
 }
 
-bool PersonalInfoSuggester::Suggest(const base::string16& text) {
+bool PersonalInfoSuggester::Suggest(const std::u16string& text) {
   if (suggestion_shown_) {
     size_t text_length = text.length();
     bool matched = false;
@@ -244,8 +244,8 @@ bool PersonalInfoSuggester::Suggest(const base::string16& text) {
          offset < suggestion_.length() && offset < text_length &&
          offset < kMaxConfirmedTextLength;
          offset++) {
-      base::string16 text_before = text.substr(0, text_length - offset);
-      base::string16 confirmed_text = text.substr(text_length - offset);
+      std::u16string text_before = text.substr(0, text_length - offset);
+      std::u16string confirmed_text = text.substr(text_length - offset);
       if (base::StartsWith(suggestion_, confirmed_text,
                            base::CompareCase::INSENSITIVE_ASCII) &&
           suggestion_ == GetSuggestion(text_before)) {
@@ -267,8 +267,8 @@ bool PersonalInfoSuggester::Suggest(const base::string16& text) {
   }
 }
 
-base::string16 PersonalInfoSuggester::GetSuggestion(
-    const base::string16& text) {
+std::u16string PersonalInfoSuggester::GetSuggestion(
+    const std::u16string& text) {
   proposed_action_type_ = ProposePersonalInfoAssistiveAction(text);
 
   if (proposed_action_type_ == AssistiveType::kGenericAction)
@@ -289,7 +289,7 @@ base::string16 PersonalInfoSuggester::GetSuggestion(
   // Currently, we are just picking the first candidate, will improve the
   // strategy in the future.
   auto* profile = autofill_profiles[0];
-  base::string16 suggestion;
+  std::u16string suggestion;
   const std::string app_locale = g_browser_process->GetApplicationLocale();
   switch (proposed_action_type_) {
     case AssistiveType::kPersonalName:
@@ -316,7 +316,7 @@ base::string16 PersonalInfoSuggester::GetSuggestion(
   return suggestion;
 }
 
-void PersonalInfoSuggester::ShowSuggestion(const base::string16& text,
+void PersonalInfoSuggester::ShowSuggestion(const std::u16string& text,
                                            const size_t confirmed_length) {
   if (ChromeKeyboardControllerClient::Get()->is_keyboard_visible()) {
     const std::vector<std::string> args{base::UTF16ToUTF8(text)};

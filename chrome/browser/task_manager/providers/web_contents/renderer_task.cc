@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -40,7 +41,7 @@ ProcessResourceUsage* CreateRendererResourcesSampler(
 
 // Gets the profile name associated with the browser context of the given
 // |render_process_host| from the profile info cache.
-base::string16 GetRendererProfileName(
+std::u16string GetRendererProfileName(
     content::RenderProcessHost* render_process_host) {
   Profile* profile =
       Profile::FromBrowserContext(render_process_host->GetBrowserContext());
@@ -53,7 +54,7 @@ bool IsRendererResourceSamplingDisabled(int64_t flags) {
 
 }  // namespace
 
-RendererTask::RendererTask(const base::string16& title,
+RendererTask::RendererTask(const std::u16string& title,
                            const gfx::ImageSkia* icon,
                            content::WebContents* web_contents)
     : RendererTask(title,
@@ -61,7 +62,7 @@ RendererTask::RendererTask(const base::string16& title,
                    web_contents,
                    web_contents->GetMainFrame()->GetProcess()) {}
 
-RendererTask::RendererTask(const base::string16& title,
+RendererTask::RendererTask(const std::u16string& title,
                            const gfx::ImageSkia* icon,
                            content::RenderFrameHost* subframe)
     : RendererTask(title,
@@ -69,13 +70,11 @@ RendererTask::RendererTask(const base::string16& title,
                    content::WebContents::FromRenderFrameHost(subframe),
                    subframe->GetProcess()) {}
 
-RendererTask::RendererTask(const base::string16& title,
+RendererTask::RendererTask(const std::u16string& title,
                            const gfx::ImageSkia* icon,
                            content::WebContents* web_contents,
                            content::RenderProcessHost* render_process_host)
-    : Task(title,
-           icon,
-           render_process_host->GetProcess().Handle()),
+    : Task(title, icon, render_process_host->GetProcess().Handle()),
       web_contents_(web_contents),
       render_process_host_(render_process_host),
       renderer_resources_sampler_(
@@ -145,7 +144,7 @@ void RendererTask::GetTerminationStatus(base::TerminationStatus* out_status,
   *out_error_code = termination_error_code_;
 }
 
-base::string16 RendererTask::GetProfileName() const {
+std::u16string RendererTask::GetProfileName() const {
   return profile_name_;
 }
 
@@ -179,10 +178,10 @@ void RendererTask::OnFaviconUpdated(favicon::FaviconDriver* favicon_driver,
 }
 
 // static
-base::string16 RendererTask::GetTitleFromWebContents(
+std::u16string RendererTask::GetTitleFromWebContents(
     content::WebContents* web_contents) {
   DCHECK(web_contents);
-  base::string16 title = web_contents->GetTitle();
+  std::u16string title = web_contents->GetTitle();
   if (title.empty()) {
     GURL url = web_contents->GetURL();
     title = base::UTF8ToUTF16(url.spec());
@@ -221,8 +220,8 @@ const gfx::ImageSkia* RendererTask::GetFaviconFromWebContents(
 }
 
 // static
-const base::string16 RendererTask::PrefixRendererTitle(
-    const base::string16& title,
+const std::u16string RendererTask::PrefixRendererTitle(
+    const std::u16string& title,
     bool is_app,
     bool is_extension,
     bool is_incognito,

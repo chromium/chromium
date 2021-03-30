@@ -13,6 +13,7 @@
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "components/services/app_service/app_service_impl.h"
+#include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list.h"
@@ -48,6 +49,29 @@ class FakePublisher : public apps::PublisherBase {
     }
   }
 
+  void ModifyCapabilityAccess(const std::string& app_id,
+                              base::Optional<bool> accessing_camera,
+                              base::Optional<bool> accessing_microphone) {
+    if (accessing_camera.has_value()) {
+      if (accessing_camera.value()) {
+        apps_accessing_camera_.insert(app_id);
+      } else {
+        apps_accessing_camera_.erase(app_id);
+      }
+    }
+
+    if (accessing_microphone.has_value()) {
+      if (accessing_microphone.value()) {
+        apps_accessing_microphone_.insert(app_id);
+      } else {
+        apps_accessing_microphone_.erase(app_id);
+      }
+    }
+
+    PublisherBase::ModifyCapabilityAccess(
+        subscribers_, app_id, accessing_camera, accessing_microphone);
+  }
+
   void UninstallApps(std::vector<std::string> app_ids, AppServiceImpl* impl) {
     for (auto& subscriber : subscribers_) {
       CallOnApps(subscriber.get(), app_ids, /*uninstall=*/true);
@@ -66,6 +90,7 @@ class FakePublisher : public apps::PublisherBase {
     mojo::Remote<apps::mojom::Subscriber> subscriber(
         std::move(subscriber_remote));
     CallOnApps(subscriber.get(), known_app_ids_, /*uninstall=*/false);
+    CallOnCapabilityAccesses(subscriber.get(), known_app_ids_);
     subscribers_.Add(std::move(subscriber));
   }
 
@@ -82,7 +107,7 @@ class FakePublisher : public apps::PublisherBase {
   void Launch(const std::string& app_id,
               int32_t event_flags,
               apps::mojom::LaunchSource launch_source,
-              int64_t display_id) override {}
+              apps::mojom::WindowInfoPtr window_info) override {}
 
   void CallOnApps(apps::mojom::Subscriber* subscriber,
                   std::vector<std::string>& app_ids,
@@ -97,11 +122,32 @@ class FakePublisher : public apps::PublisherBase {
       }
       apps.push_back(std::move(app));
     }
-    subscriber->OnApps(std::move(apps));
+    subscriber->OnApps(std::move(apps), app_type_,
+                       false /* should_notify_initialized */);
+  }
+
+  void CallOnCapabilityAccesses(apps::mojom::Subscriber* subscriber,
+                                std::vector<std::string>& app_ids) {
+    std::vector<apps::mojom::CapabilityAccessPtr> capability_accesses;
+    for (const auto& app_id : app_ids) {
+      auto capability_access = apps::mojom::CapabilityAccess::New();
+      capability_access->app_id = app_id;
+      if (apps_accessing_camera_.find(app_id) != apps_accessing_camera_.end()) {
+        capability_access->camera = apps::mojom::OptionalBool::kTrue;
+      }
+      if (apps_accessing_microphone_.find(app_id) !=
+          apps_accessing_microphone_.end()) {
+        capability_access->microphone = apps::mojom::OptionalBool::kTrue;
+      }
+      capability_accesses.push_back(std::move(capability_access));
+    }
+    subscriber->OnCapabilityAccesses(std::move(capability_accesses));
   }
 
   apps::mojom::AppType app_type_;
   std::vector<std::string> known_app_ids_;
+  std::set<std::string> apps_accessing_camera_;
+  std::set<std::string> apps_accessing_microphone_;
   mojo::ReceiverSet<apps::mojom::Publisher> receivers_;
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
 };
@@ -122,16 +168,39 @@ class FakeSubscriber : public apps::mojom::Subscriber {
     return ss.str();
   }
 
+  std::string AppIdsAccessingCamera() {
+    std::stringstream ss;
+    for (const auto& app_id : cache_.GetAppsAccessingCamera()) {
+      ss << app_id;
+    }
+    return ss.str();
+  }
+
+  std::string AppIdsAccessingMicrophone() {
+    std::stringstream ss;
+    for (const auto& app_id : cache_.GetAppsAccessingMicrophone()) {
+      ss << app_id;
+    }
+    return ss.str();
+  }
+
   PreferredAppsList& PreferredApps() { return preferred_apps_; }
 
  private:
-  void OnApps(std::vector<apps::mojom::AppPtr> deltas) override {
+  void OnApps(std::vector<apps::mojom::AppPtr> deltas,
+              apps::mojom::AppType app_type,
+              bool should_notify_initialized) override {
     for (const auto& delta : deltas) {
       app_ids_seen_.insert(delta->app_id);
       if (delta->readiness == apps::mojom::Readiness::kUninstalledByUser) {
         preferred_apps_.DeleteAppId(delta->app_id);
       }
     }
+  }
+
+  void OnCapabilityAccesses(
+      std::vector<apps::mojom::CapabilityAccessPtr> deltas) override {
+    cache_.OnCapabilityAccesses(std::move(deltas));
   }
 
   void Clone(mojo::PendingReceiver<apps::mojom::Subscriber> receiver) override {
@@ -156,6 +225,7 @@ class FakeSubscriber : public apps::mojom::Subscriber {
 
   mojo::ReceiverSet<apps::mojom::Subscriber> receivers_;
   std::set<std::string> app_ids_seen_;
+  AppCapabilityAccessCache cache_;
   apps::PreferredAppsList preferred_apps_;
 };
 
@@ -177,17 +247,36 @@ TEST_F(AppServiceImplTest, PubSub) {
   FakeSubscriber sub0(&impl);
   impl.FlushMojoCallsForTesting();
   EXPECT_EQ("", sub0.AppIdsSeen());
+  EXPECT_EQ("", sub0.AppIdsAccessingCamera());
+  EXPECT_EQ("", sub0.AppIdsAccessingMicrophone());
 
   // Add one publisher.
   FakePublisher pub0(&impl, apps::mojom::AppType::kArc,
                      std::vector<std::string>{"A", "B"});
   impl.FlushMojoCallsForTesting();
   EXPECT_EQ("AB", sub0.AppIdsSeen());
+  EXPECT_EQ("", sub0.AppIdsAccessingCamera());
+  EXPECT_EQ("", sub0.AppIdsAccessingMicrophone());
+
+  pub0.ModifyCapabilityAccess("B", base::nullopt, base::nullopt);
+  impl.FlushMojoCallsForTesting();
+  EXPECT_EQ("", sub0.AppIdsAccessingCamera());
+  EXPECT_EQ("", sub0.AppIdsAccessingMicrophone());
+
+  pub0.ModifyCapabilityAccess("B", true, base::nullopt);
+  impl.FlushMojoCallsForTesting();
+  EXPECT_EQ("B", sub0.AppIdsAccessingCamera());
+  EXPECT_EQ("", sub0.AppIdsAccessingMicrophone());
 
   // Have that publisher publish more apps.
   pub0.PublishMoreApps(std::vector<std::string>{"C", "D", "E"});
   impl.FlushMojoCallsForTesting();
   EXPECT_EQ("ABCDE", sub0.AppIdsSeen());
+
+  pub0.ModifyCapabilityAccess("D", true, true);
+  impl.FlushMojoCallsForTesting();
+  EXPECT_EQ("BD", sub0.AppIdsAccessingCamera());
+  EXPECT_EQ("D", sub0.AppIdsAccessingMicrophone());
 
   // Add a second publisher.
   FakePublisher pub1(&impl, apps::mojom::AppType::kBuiltIn,
@@ -198,20 +287,34 @@ TEST_F(AppServiceImplTest, PubSub) {
   // Have both publishers publish more apps.
   pub0.PublishMoreApps(std::vector<std::string>{"F"});
   pub1.PublishMoreApps(std::vector<std::string>{"n"});
+  pub0.ModifyCapabilityAccess("B", false, base::nullopt);
+  pub1.ModifyCapabilityAccess("n", base::nullopt, true);
   impl.FlushMojoCallsForTesting();
   EXPECT_EQ("ABCDEFmn", sub0.AppIdsSeen());
+  EXPECT_EQ("D", sub0.AppIdsAccessingCamera());
+  EXPECT_EQ("Dn", sub0.AppIdsAccessingMicrophone());
 
   // Add a second subscriber.
   FakeSubscriber sub1(&impl);
   impl.FlushMojoCallsForTesting();
   EXPECT_EQ("ABCDEFmn", sub0.AppIdsSeen());
   EXPECT_EQ("ABCDEFmn", sub1.AppIdsSeen());
+  EXPECT_EQ("D", sub0.AppIdsAccessingCamera());
+  EXPECT_EQ("Dn", sub0.AppIdsAccessingMicrophone());
+  EXPECT_EQ("D", sub1.AppIdsAccessingCamera());
+  EXPECT_EQ("Dn", sub1.AppIdsAccessingMicrophone());
 
   // Publish more apps.
+  pub0.ModifyCapabilityAccess("D", false, false);
   pub1.PublishMoreApps(std::vector<std::string>{"o", "p", "q"});
+  pub1.ModifyCapabilityAccess("n", true, base::nullopt);
   impl.FlushMojoCallsForTesting();
   EXPECT_EQ("ABCDEFmnopq", sub0.AppIdsSeen());
   EXPECT_EQ("ABCDEFmnopq", sub1.AppIdsSeen());
+  EXPECT_EQ("n", sub0.AppIdsAccessingCamera());
+  EXPECT_EQ("n", sub0.AppIdsAccessingMicrophone());
+  EXPECT_EQ("n", sub1.AppIdsAccessingCamera());
+  EXPECT_EQ("n", sub1.AppIdsAccessingMicrophone());
 
   // Add a third publisher.
   FakePublisher pub2(&impl, apps::mojom::AppType::kCrostini,
@@ -224,9 +327,15 @@ TEST_F(AppServiceImplTest, PubSub) {
   pub2.PublishMoreApps(std::vector<std::string>{"&"});
   pub1.PublishMoreApps(std::vector<std::string>{"r"});
   pub0.PublishMoreApps(std::vector<std::string>{"G"});
+  pub1.ModifyCapabilityAccess("n", false, false);
+  pub2.ModifyCapabilityAccess("&", true, false);
   impl.FlushMojoCallsForTesting();
   EXPECT_EQ("$&ABCDEFGmnopqr", sub0.AppIdsSeen());
   EXPECT_EQ("$&ABCDEFGmnopqr", sub1.AppIdsSeen());
+  EXPECT_EQ("&", sub0.AppIdsAccessingCamera());
+  EXPECT_EQ("", sub0.AppIdsAccessingMicrophone());
+  EXPECT_EQ("&", sub1.AppIdsAccessingCamera());
+  EXPECT_EQ("", sub1.AppIdsAccessingMicrophone());
 
   // Call LoadIcon on the impl twice.
   //

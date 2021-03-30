@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body></body>
+<script>
+  test(function() {
+    const iframe = document.createElement('iframe');
+    document.body.appendChild(iframe);
+    const element = iframe.contentDocument.createElement("div");
+    const keyframes = [];
+    keyframes.__defineGetter__(0,()=>{
+      document.body.removeChild(iframe);
+      return { transform: 'translate3D(0, -300px, 0)' };
+    });
+    const animation = element.animate(keyframes, {
+      duration: 3000,
+      iterations: Infinity,
+      timeline: null
+    });
+    assert_equals(animation, null);
+  }, "Check that removing a parent iframe during keyframe parsing " +
+     "doesn't crash when calling animate with options");
+
+  test(function() {
+    const iframe = document.createElement('iframe');
+    document.body.appendChild(iframe);
+    const element = iframe.contentDocument.createElement("div");
+    const options = {
+      iterations: Infinity,
+      timeline: null
+    };
+    let getterCalled = false;
+    options.__defineGetter__('duration', () => {
+      document.body.removeChild(iframe);
+      getterCalled = true;
+      return 3000;
+    });
+    assert_false(getterCalled);
+    const animation = element.animate(
+      { transform: 'translate3D(0, -300px, 0)' }, options);
+    assert_true(getterCalled);
+    assert_equals(animation, null);
+  }, "Check that removing a parent iframe during options parsing " +
+     "doesn't crash");
+
+  test(function() {
+    const iframe = document.createElement('iframe');
+    document.body.appendChild(iframe);
+    const element = iframe.contentDocument.createElement("div");
+    const keyframes = [];
+    keyframes.__defineGetter__(0,()=>{
+      document.body.removeChild(iframe);
+      return { transform: 'translate3D(0, -300px, 0)' };
+    });
+    const animation = element.animate(keyframes);
+    assert_equals(animation, null);
+  }, "Check that removing a parent iframe during keyframe parsing " +
+     "doesn't crash when calling animate without options");
+
+</script>

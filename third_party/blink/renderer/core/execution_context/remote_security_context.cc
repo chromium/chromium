@@ -17,9 +17,6 @@ RemoteSecurityContext::RemoteSecurityContext() : SecurityContext(nullptr) {
   // we set it using replicated origin data from the browser process.
   DCHECK(!GetSecurityOrigin());
 
-  // Start with a clean slate.
-  SetContentSecurityPolicy(MakeGarbageCollected<ContentSecurityPolicy>());
-
   // FIXME: Document::initSecurityContext has a few other things we may
   // eventually want here, such as enforcing a setting to
   // grantUniversalAccess().
@@ -29,13 +26,6 @@ void RemoteSecurityContext::SetReplicatedOrigin(
     scoped_refptr<SecurityOrigin> origin) {
   DCHECK(origin);
   SetSecurityOrigin(std::move(origin));
-  GetContentSecurityPolicy()->SetupSelf(*GetSecurityOrigin());
-}
-
-void RemoteSecurityContext::ResetReplicatedContentSecurityPolicy() {
-  DCHECK(GetSecurityOrigin());
-  SetContentSecurityPolicy(MakeGarbageCollected<ContentSecurityPolicy>());
-  GetContentSecurityPolicy()->SetupSelf(*GetSecurityOrigin());
 }
 
 void RemoteSecurityContext::ResetAndEnforceSandboxFlags(
@@ -48,14 +38,15 @@ void RemoteSecurityContext::ResetAndEnforceSandboxFlags(
   }
 }
 
-void RemoteSecurityContext::InitializeFeaturePolicy(
-    const ParsedFeaturePolicy& parsed_header,
-    const ParsedFeaturePolicy& container_policy,
-    const FeaturePolicy* parent_feature_policy) {
-  report_only_feature_policy_ = nullptr;
-  feature_policy_ = FeaturePolicy::CreateFromParentPolicy(
-      parent_feature_policy, container_policy, security_origin_->ToUrlOrigin());
-  feature_policy_->SetHeaderPolicy(parsed_header);
+void RemoteSecurityContext::InitializePermissionsPolicy(
+    const ParsedPermissionsPolicy& parsed_header,
+    const ParsedPermissionsPolicy& container_policy,
+    const PermissionsPolicy* parent_permissions_policy) {
+  report_only_permissions_policy_ = nullptr;
+  permissions_policy_ = PermissionsPolicy::CreateFromParentPolicy(
+      parent_permissions_policy, container_policy,
+      security_origin_->ToUrlOrigin());
+  permissions_policy_->SetHeaderPolicy(parsed_header);
 }
 
 }  // namespace blink

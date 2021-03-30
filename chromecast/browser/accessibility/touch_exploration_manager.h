@@ -61,6 +61,10 @@ class TouchExplorationManager : public ui::EventRewriter,
   // events are anchored at this point.
   void SetTouchAccessibilityAnchorPoint(const gfx::Point& anchor_point);
 
+  // Sets the bounds for virtual keyboard. Update the touch exploration
+  // controller so that it knows the bounds of the virtual keyboard.
+  void SetVirtualKeyboardBounds(const gfx::Rect& rect);
+
  private:
   void UpdateTouchExplorationState();
 

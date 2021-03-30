@@ -363,10 +363,9 @@ void FrameSelection::SetSelectionForAccessibility(
 void FrameSelection::NodeChildrenWillBeRemoved(ContainerNode& container) {
   if (!container.InActiveDocument())
     return;
-  // TODO(yosin): We should move to call |TypingCommand::closeTyping()| to
-  // |Editor| class.
-  if (!GetDocument().IsRunningExecCommand())
-    TypingCommand::CloseTyping(frame_);
+  // TODO(yosin): We should move to call |TypingCommand::CloseTypingIfNeeded()|
+  // to |Editor| class.
+  TypingCommand::CloseTypingIfNeeded(frame_);
 }
 
 void FrameSelection::NodeWillBeRemoved(Node& node) {
@@ -375,10 +374,9 @@ void FrameSelection::NodeWillBeRemoved(Node& node) {
   // needs no adjustment.
   if (!node.InActiveDocument())
     return;
-  // TODO(yosin): We should move to call |TypingCommand::closeTyping()| to
-  // |Editor| class.
-  if (!GetDocument().IsRunningExecCommand())
-    TypingCommand::CloseTyping(frame_);
+  // TODO(yosin): We should move to call |TypingCommand::CloseTypingIfNeeded()|
+  // to |Editor| class.
+  TypingCommand::CloseTypingIfNeeded(frame_);
 }
 
 void FrameSelection::DidChangeFocus() {
@@ -1291,6 +1289,11 @@ LayoutSelectionStatus FrameSelection::ComputeLayoutSelectionStatus(
 SelectionState FrameSelection::ComputeLayoutSelectionStateForCursor(
     const NGInlineCursorPosition& position) const {
   return layout_selection_->ComputeSelectionStateForCursor(position);
+}
+
+SelectionState FrameSelection::ComputeLayoutSelectionStateForInlineTextBox(
+    const InlineTextBox& text_box) const {
+  return layout_selection_->ComputeSelectionStateForInlineTextBox(text_box);
 }
 
 bool FrameSelection::IsDirectional() const {

@@ -23,6 +23,7 @@
 #include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher.h"
 #include "components/password_manager/core/browser/change_password_url_service_impl.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_service_impl.h"
+#include "components/password_manager/core/browser/site_affiliation/hash_affiliation_fetcher.h"
 #include "components/password_manager/core/browser/well_known_change_password_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/sync/driver/test_sync_service.h"
@@ -142,6 +143,7 @@ class ChangePasswordNavigationThrottleBrowserTestBase
   base::flat_map<std::string, ServerResponse> path_response_map_;
   std::unique_ptr<EmbeddedTestServer> test_server_ =
       std::make_unique<EmbeddedTestServer>(EmbeddedTestServer::TYPE_HTTPS);
+  base::test::ScopedFeatureList feature_list_;
 
  private:
   // Returns a response for the given request. Uses |path_response_map_| to
@@ -191,6 +193,11 @@ void ChangePasswordNavigationThrottleBrowserTestBase::TestNavigationThrottle(
 class WellKnownChangePasswordNavigationThrottleBrowserTest
     : public ChangePasswordNavigationThrottleBrowserTestBase {
  public:
+  WellKnownChangePasswordNavigationThrottleBrowserTest() {
+    feature_list_.InitAndDisableFeature(
+        password_manager::features::kChangePasswordAffiliationInfo);
+  }
+
   void SetUpOnMainThread() override;
   void TestNavigationThrottleForLocalhost(const std::string& expected_path);
 
@@ -498,9 +505,6 @@ class AffiliationChangePasswordNavigationThrottleBrowserTest
 
   syncer::TestSyncService sync_service_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 void AffiliationChangePasswordNavigationThrottleBrowserTest::
@@ -553,9 +557,12 @@ IN_PROC_BROWSER_TEST_P(AffiliationChangePasswordNavigationThrottleBrowserTest,
   std::string fake_response =
       CreateResponse(requested_origin, requested_change_password_url,
                      other_origin, other_change_password_url);
-  test_url_loader_factory_.AddResponse(
-      password_manager::AffiliationFetcher::BuildQueryURL().spec(),
-      fake_response);
+  std::string spec =
+      base::FeatureList::IsEnabled(
+          password_manager::features::kUseOfHashAffiliationFetcher)
+          ? password_manager::HashAffiliationFetcher::BuildQueryURL().spec()
+          : password_manager::AffiliationFetcher::BuildQueryURL().spec();
+  test_url_loader_factory_.AddResponse(spec, fake_response);
 
   path_response_map_[kWellKnownChangePasswordPath] = {
       net::HTTP_NOT_FOUND, {}, response_delays().change_password_delay};
@@ -578,9 +585,12 @@ IN_PROC_BROWSER_TEST_P(AffiliationChangePasswordNavigationThrottleBrowserTest,
 
   std::string fake_response = CreateResponse(
       requested_origin, GURL(), other_origin, other_change_password_url);
-  test_url_loader_factory_.AddResponse(
-      password_manager::AffiliationFetcher::BuildQueryURL().spec(),
-      fake_response);
+  std::string spec =
+      base::FeatureList::IsEnabled(
+          password_manager::features::kUseOfHashAffiliationFetcher)
+          ? password_manager::HashAffiliationFetcher::BuildQueryURL().spec()
+          : password_manager::AffiliationFetcher::BuildQueryURL().spec();
+  test_url_loader_factory_.AddResponse(spec, fake_response);
 
   path_response_map_[kWellKnownChangePasswordPath] = {
       net::HTTP_NOT_FOUND, {}, response_delays().change_password_delay};

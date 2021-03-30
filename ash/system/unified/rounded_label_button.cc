@@ -25,7 +25,7 @@ SkColor GetBackgroundColor() {
 }  // namespace
 
 RoundedLabelButton::RoundedLabelButton(PressedCallback callback,
-                                       const base::string16& text)
+                                       const std::u16string& text)
     : views::LabelButton(std::move(callback), text) {
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   SetBorder(views::CreateEmptyBorder(gfx::Insets()));

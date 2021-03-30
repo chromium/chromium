@@ -5,9 +5,10 @@
 #ifndef COMPONENTS_HISTORY_CORE_TEST_HISTORY_CLIENT_FAKE_BOOKMARKS_H_
 #define COMPONENTS_HISTORY_CORE_TEST_HISTORY_CLIENT_FAKE_BOOKMARKS_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "components/history/core/browser/history_client.h"
 
 class GURL;
@@ -26,7 +27,7 @@ class HistoryClientFakeBookmarks : public HistoryClient {
 
   void ClearAllBookmarks();
   void AddBookmark(const GURL& url);
-  void AddBookmarkWithTitle(const GURL& url, const base::string16& title);
+  void AddBookmarkWithTitle(const GURL& url, const std::u16string& title);
   void DelBookmark(const GURL& url);
   bool IsBookmarked(const GURL& url);
 

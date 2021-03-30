@@ -57,7 +57,7 @@ TEST_F(PrefetchProxyOriginDeciderTest, MaxCap) {
   decider->ReportOriginRetryAfter(url, base::TimeDelta::FromSeconds(15));
   EXPECT_FALSE(decider->IsOriginOutsideRetryAfterWindow(url));
   histogram_tester()->ExpectUniqueTimeSample(
-      "IsolatedPrerender.Prefetch.Mainframe.RetryAfter",
+      "PrefetchProxy.Prefetch.Mainframe.RetryAfter",
       base::TimeDelta::FromSeconds(15), 1);
 
   clock()->Advance(base::TimeDelta::FromSeconds(11));
@@ -71,7 +71,7 @@ TEST_F(PrefetchProxyOriginDeciderTest, WaitsForDelta) {
 
   decider->ReportOriginRetryAfter(url, base::TimeDelta::FromSeconds(15));
   histogram_tester()->ExpectUniqueTimeSample(
-      "IsolatedPrerender.Prefetch.Mainframe.RetryAfter",
+      "PrefetchProxy.Prefetch.Mainframe.RetryAfter",
       base::TimeDelta::FromSeconds(15), 1);
 
   for (size_t i = 0; i <= 15; i++) {
@@ -88,7 +88,7 @@ TEST_F(PrefetchProxyOriginDeciderTest, ByOrigin) {
   decider->ReportOriginRetryAfter(GURL("http://foo.com"),
                                   base::TimeDelta::FromSeconds(1));
   histogram_tester()->ExpectUniqueTimeSample(
-      "IsolatedPrerender.Prefetch.Mainframe.RetryAfter",
+      "PrefetchProxy.Prefetch.Mainframe.RetryAfter",
       base::TimeDelta::FromSeconds(1), 1);
 
   // Any url for the origin should be ineligible.
@@ -119,7 +119,7 @@ TEST_F(PrefetchProxyOriginDeciderTest, Clear) {
 
   decider->ReportOriginRetryAfter(url, base::TimeDelta::FromSeconds(1));
   histogram_tester()->ExpectUniqueTimeSample(
-      "IsolatedPrerender.Prefetch.Mainframe.RetryAfter",
+      "PrefetchProxy.Prefetch.Mainframe.RetryAfter",
       base::TimeDelta::FromSeconds(1), 1);
   EXPECT_FALSE(decider->IsOriginOutsideRetryAfterWindow(url));
 
@@ -136,13 +136,13 @@ TEST_F(PrefetchProxyOriginDeciderTest, PersistentPrefs) {
     decider->ReportOriginRetryAfter(GURL("http://foo.com"),
                                     base::TimeDelta::FromSeconds(3));
     histogram_tester()->ExpectTimeBucketCount(
-        "IsolatedPrerender.Prefetch.Mainframe.RetryAfter",
+        "PrefetchProxy.Prefetch.Mainframe.RetryAfter",
         base::TimeDelta::FromSeconds(1), 1);
     histogram_tester()->ExpectTimeBucketCount(
-        "IsolatedPrerender.Prefetch.Mainframe.RetryAfter",
+        "PrefetchProxy.Prefetch.Mainframe.RetryAfter",
         base::TimeDelta::FromSeconds(3), 1);
     histogram_tester()->ExpectTotalCount(
-        "IsolatedPrerender.Prefetch.Mainframe.RetryAfter", 2);
+        "PrefetchProxy.Prefetch.Mainframe.RetryAfter", 2);
   }
 
   clock()->Advance(base::TimeDelta::FromSeconds(2));

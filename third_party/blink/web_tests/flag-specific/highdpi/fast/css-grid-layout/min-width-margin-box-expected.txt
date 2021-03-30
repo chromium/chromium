@@ -1,0 +1,101 @@
+This is a testharness.js-based test.
+FAIL .grid 1 assert_equals: 
+<div class="container">
+    <div class="grid" data-expected-width="150" data-expected-height="50">
+        <div class="item" data-expected-width="0" data-expected-height="25">XXXX</div>
+        <div class="stretchedItem" data-expected-width="0" data-expected-height="15"></div>
+    </div>
+</div>
+height expected 50 but got 49
+FAIL .grid 2 assert_equals: 
+<div class="container">
+    <div class="grid" data-expected-width="150" data-expected-height="92">
+        <div class="item borderPaddingMargin" data-expected-width="41" data-expected-height="48">XXXX</div>
+        <div class="stretchedItem" data-expected-width="65" data-expected-height="15"></div>
+    </div>
+</div>
+height expected 92 but got 91
+FAIL .grid 3 assert_equals: 
+<div class="container">
+    <div class="grid" data-expected-width="150" data-expected-height="50">
+        <div class="item" style="min-width: 0px;" data-expected-width="0" data-expected-height="25">XXXX</div>
+        <div class="stretchedItem" data-expected-width="0" data-expected-height="15"></div>
+    </div>
+</div>
+height expected 50 but got 49
+FAIL .grid 4 assert_equals: 
+<div class="container">
+    <div class="grid" data-expected-width="150" data-expected-height="92">
+        <div class="item borderPaddingMargin" style="min-width: 0px;" data-expected-width="41" data-expected-height="48">XXXX</div>
+        <div class="stretchedItem" data-expected-width="65" data-expected-height="15"></div>
+    </div>
+</div>
+height expected 92 but got 91
+PASS .grid 5
+PASS .grid 6
+FAIL .grid 7 assert_equals: 
+<div class="container">
+    <div class="grid" data-expected-width="150" data-expected-height="50">
+        <div class="item" style="min-width: 125px;" data-expected-width="125" data-expected-height="25">XXXX</div>
+        <div class="stretchedItem" data-expected-width="125" data-expected-height="15"></div>
+    </div>
+</div>
+height expected 50 but got 49
+FAIL .grid 8 assert_equals: 
+<div class="container">
+    <div class="grid" data-expected-width="150" data-expected-height="92">
+        <div class="item borderPaddingMargin" style="min-width: 125px;" data-expected-width="166" data-expected-height="48">XXXX</div>
+        <div class="stretchedItem" data-expected-width="190" data-expected-height="15"></div>
+    </div>
+</div>
+height expected 92 but got 91
+FAIL .grid 9 assert_equals: 
+<div class="container">
+    <div class="grid" data-expected-width="150" data-expected-height="75">
+        <div class="item" style="min-width: 50%;" data-expected-width="0" data-expected-height="50">XXX XX</div>
+        <div class="stretchedItem" data-expected-width="0" data-expected-height="15"></div>
+    </div>
+</div>
+height expected 75 but got 74
+FAIL .grid 10 assert_equals: 
+<div class="container">
+    <div class="grid" data-expected-width="150" data-expected-height="117">
+        <div class="item borderPaddingMargin" style="min-width: 50%;" data-expected-width="74" data-expected-height="73">XXX XX</div>
+        <div class="stretchedItem" data-expected-width="65" data-expected-height="15"></div>
+    </div>
+</div>
+height expected 117 but got 116
+FAIL .grid 11 assert_equals: 
+<div class="container">
+    <div class="grid" data-expected-width="150" data-expected-height="75">
+        <div class="item min-width-min-content" data-expected-width="75" data-expected-height="50">XXX XX</div>
+        <div class="stretchedItem" data-expected-width="75" data-expected-height="15"></div>
+    </div>
+</div>
+height expected 75 but got 74
+FAIL .grid 12 assert_equals: 
+<div class="container">
+    <div class="grid" data-expected-width="150" data-expected-height="117">
+        <div class="item borderPaddingMargin min-width-min-content" data-expected-width="116" data-expected-height="73">XXX XX</div>
+        <div class="stretchedItem" data-expected-width="140" data-expected-height="15"></div>
+    </div>
+</div>
+height expected 117 but got 116
+FAIL .grid 13 assert_equals: 
+<div class="container">
+    <div class="grid" data-expected-width="150" data-expected-height="50">
+        <div class="item alignSelfStart min-width-max-content" data-expected-width="150" data-expected-height="25">XXX XX</div>
+        <div class="stretchedItem" data-expected-width="150" data-expected-height="15"></div>
+    </div>
+</div>
+height expected 50 but got 49
+FAIL .grid 14 assert_equals: 
+<div class="container">
+    <div class="grid" data-expected-width="150" data-expected-height="92">
+        <div class="item alignSelfStart borderPaddingMargin min-width-max-content" data-expected-width="191" data-expected-height="48">XXX XX</div>
+        <div class="stretchedItem" data-expected-width="215" data-expected-height="15"></div>
+    </div>
+</div>
+height expected 92 but got 91
+Harness: the test ran to completion.
+

@@ -61,6 +61,10 @@ class WebContentRunner : public fuchsia::sys::Runner,
   // Sets a callback to invoke when |components_| next becomes empty.
   void SetOnEmptyCallback(base::OnceClosure on_empty);
 
+  // Tears down the Context, if any. This will trigger any active WebComponents
+  // to be asynchronously torn-down.
+  void DestroyWebContext();
+
   // TODO(https://crbug.com/1065707): Remove this once capability routing for
   // the fuchsia.legacymetrics.Provider service is properly set up.
   // Returns a pointer to any currently running component, or nullptr if no

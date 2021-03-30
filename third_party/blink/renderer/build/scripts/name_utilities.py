@@ -44,6 +44,10 @@ def cpp_name(entry):
 
 
 def enum_key_for_css_keyword(keyword):
+    # To make sure different enum keys are generated for infinity and -infinity.
+    # Design doc : https://bit.ly/349gXjq
+    if (not isinstance(keyword, str)) and keyword.original == '-infinity':
+        return 'kNegative' + _upper_camel_case(keyword)
     return 'k' + _upper_camel_case(keyword)
 
 

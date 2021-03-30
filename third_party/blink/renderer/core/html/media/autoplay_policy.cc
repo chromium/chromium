@@ -6,7 +6,7 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom-blink.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -89,9 +89,9 @@ bool AutoplayPolicy::IsDocumentAllowedToPlay(const Document& document) {
   if (!document.GetFrame())
     return false;
 
-  bool feature_policy_enabled =
+  bool permissions_policy_enabled =
       document.GetExecutionContext()->IsFeatureEnabled(
-          mojom::blink::FeaturePolicyFeature::kAutoplay);
+          mojom::blink::PermissionsPolicyFeature::kAutoplay);
 
   for (Frame* frame = document.GetFrame(); frame;
        frame = frame->Tree().Parent()) {
@@ -106,7 +106,7 @@ bool AutoplayPolicy::IsDocumentAllowedToPlay(const Document& document) {
       return true;
     }
 
-    if (!feature_policy_enabled)
+    if (!permissions_policy_enabled)
       return false;
   }
 
@@ -323,7 +323,9 @@ String AutoplayPolicy::GetPlayErrorMessage() const {
 }
 
 bool AutoplayPolicy::WasAutoplayInitiated() const {
-  DCHECK(autoplay_initiated_.has_value());
+  if (!autoplay_initiated_.has_value())
+    return false;
+
   return *autoplay_initiated_;
 }
 
@@ -365,10 +367,10 @@ void AutoplayPolicy::MaybeSetAutoplayInitiated() {
 
   autoplay_initiated_ = true;
 
-  bool feature_policy_enabled =
+  bool permissions_policy_enabled =
       element_->GetExecutionContext() &&
       element_->GetExecutionContext()->IsFeatureEnabled(
-          mojom::blink::FeaturePolicyFeature::kAutoplay);
+          mojom::blink::PermissionsPolicyFeature::kAutoplay);
 
   for (Frame* frame = element_->GetDocument().GetFrame(); frame;
        frame = frame->Tree().Parent()) {
@@ -377,7 +379,7 @@ void AutoplayPolicy::MaybeSetAutoplayInitiated() {
       autoplay_initiated_ = false;
       break;
     }
-    if (!feature_policy_enabled)
+    if (!permissions_policy_enabled)
       break;
   }
 }

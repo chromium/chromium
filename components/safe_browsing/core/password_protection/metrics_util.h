@@ -75,8 +75,8 @@ enum class RequestOutcome {
   CANCELED = 2,
   // Request timeout.
   TIMEDOUT = 3,
-  // No request sent because URL matches whitelist.
-  MATCHED_WHITELIST = 4,
+  // No request sent because URL matches allowlist.
+  MATCHED_ALLOWLIST = 4,
   // No request sent because response already cached.
   RESPONSE_ALREADY_CACHED = 5,
   DEPRECATED_NO_EXTENDED_REPORTING = 6,
@@ -97,8 +97,8 @@ enum class RequestOutcome {
   DISABLED_DUE_TO_USER_POPULATION = 13,
   // No request sent because the reputation of the URL is not computable.
   URL_NOT_VALID_FOR_REPUTATION_COMPUTING = 14,
-  // No request sent because URL matches enterprise whitelist.
-  MATCHED_ENTERPRISE_WHITELIST = 15,
+  // No request sent because URL matches enterprise allowlist.
+  MATCHED_ENTERPRISE_ALLOWLIST = 15,
   // No request sent because URL matches enterprise change password URL.
   MATCHED_ENTERPRISE_CHANGE_PASSWORD_URL = 16,
   // No request sent because URL matches enterprise login URL.

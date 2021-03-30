@@ -117,13 +117,14 @@ void JsCommunication::RunScriptsAtDocumentStart() {
 
 void JsCommunication::BindPendingReceiver(
     mojo::PendingAssociatedReceiver<mojom::JsCommunication> pending_receiver) {
+  receiver_.reset();
   receiver_.Bind(std::move(pending_receiver),
                  render_frame()->GetTaskRunner(
                      blink::TaskType::kInternalNavigationAssociated));
 }
 
 mojom::JsToBrowserMessaging* JsCommunication::GetJsToJavaMessage(
-    const base::string16& js_object_name) {
+    const std::u16string& js_object_name) {
   auto iterator = js_objects_.find(js_object_name);
   if (iterator == js_objects_.end())
     return nullptr;

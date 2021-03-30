@@ -12,15 +12,12 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/common/caption.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "ui/native_theme/caption_style.h"
 
 class Browser;
 class Profile;
 class PrefChangeRegistrar;
-
-namespace content {
-class WebContents;
-}
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -29,6 +26,7 @@ class PrefRegistrySyncable;
 namespace captions {
 
 class CaptionBubbleController;
+class CaptionHostImpl;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Caption Controller
@@ -41,7 +39,7 @@ class CaptionBubbleController;
 //
 class CaptionController : public BrowserListObserver,
                           public KeyedService,
-                          public speech::SODAInstaller::Observer {
+                          public speech::SodaInstaller::Observer {
  public:
   explicit CaptionController(Profile* profile);
   ~CaptionController() override;
@@ -56,12 +54,19 @@ class CaptionController : public BrowserListObserver,
   // appropriate browser. Returns whether the transcription result was routed
   // successfully. Transcriptions will halt if this returns false.
   bool DispatchTranscription(
-      content::WebContents* web_contents,
+      CaptionHostImpl* caption_host_impl,
       const chrome::mojom::TranscriptionResultPtr& transcription_result);
+
+  void OnLanguageIdentificationEvent(
+      const media::mojom::LanguageIdentificationEventPtr& event);
 
   // Alerts the CaptionBubbleController that belongs to the appropriate browser
   // that there is an error in the speech recognition service.
-  void OnError(content::WebContents* web_contents);
+  void OnError(CaptionHostImpl* caption_host_impl);
+
+  // Alerts the CaptionBubbleController that belongs to the appropriate browser
+  // that the audio stream has ended.
+  void OnAudioStreamEnd(CaptionHostImpl* caption_host_impl);
 
   CaptionBubbleController* GetCaptionBubbleControllerForBrowser(
       Browser* browser);
@@ -74,15 +79,18 @@ class CaptionController : public BrowserListObserver,
   void OnBrowserAdded(Browser* browser) override;
   void OnBrowserRemoved(Browser* browser) override;
 
-  // SODAInstaller::Observer:
-  void OnSODAInstalled() override;
-  void OnSODAProgress(int progress) override {}
-  void OnSODAError() override {}
+  // SodaInstaller::Observer:
+  void OnSodaInstalled() override;
+  void OnSodaProgress(int progress) override {}
+  void OnSodaError() override {}
 
   void OnLiveCaptionEnabledChanged();
   void OnLiveCaptionLanguageChanged();
   bool IsLiveCaptionEnabled();
-  void UpdateUIEnabled();
+  void StartLiveCaption();
+  void StopLiveCaption();
+  void CreateUI();
+  void DestroyUI();
   void UpdateCaptionStyle();
 
   void UpdateAccessibilityCaptionHistograms();

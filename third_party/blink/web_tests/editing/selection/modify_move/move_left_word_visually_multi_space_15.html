@@ -51,7 +51,7 @@ selection_test(
 selection_test(
   '<div contenteditable dir="rtl">    abc|    אבצ    def    </div>',
   selection => selection.modify('move', 'left', 'word'),
-  '<div contenteditable dir="rtl">    abc    \u05D0\u05D1\u05E6 |   def    </div>',
+  '<div contenteditable dir="rtl">    abc |   \u05D0\u05D1\u05E6    def    </div>',
   '15-7 left word');
 
 selection_test(
@@ -93,7 +93,7 @@ selection_test(
 selection_test(
   '<div contenteditable dir="rtl">    abc    אבצ|    def    </div>',
   selection => selection.modify('move', 'left', 'word'),
-  '<div contenteditable dir="rtl">    abc    \u05D0\u05D1\u05E6    def|    </div>',
+  '<div contenteditable dir="rtl">    abc    \u05D0\u05D1\u05E6 |   def    </div>',
   '15-14 left word');
 
 selection_test(

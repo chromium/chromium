@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
+#include "third_party/blink/renderer/core/html/html_popup_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
@@ -234,10 +235,8 @@ SelectorChecker::MatchStatus SelectorChecker::MatchSelector(
   if (sub_result.dynamic_pseudo != kPseudoIdNone)
     result.dynamic_pseudo = sub_result.dynamic_pseudo;
 
-  if (context.selector->IsLastInTagHistory()) {
-    result.specificity += sub_result.specificity;
+  if (context.selector->IsLastInTagHistory())
     return kSelectorMatches;
-  }
 
   MatchStatus match;
   if (context.selector->Relation() != CSSSelector::kSubSelector) {
@@ -254,8 +253,6 @@ SelectorChecker::MatchStatus SelectorChecker::MatchSelector(
   } else {
     match = MatchForSubSelector(context, result);
   }
-  if (match == kSelectorMatches)
-    result.specificity += sub_result.specificity;
   return match;
 }
 
@@ -550,6 +547,14 @@ static bool AnyAttributeMatches(Element& element,
     if (legacy_case_insensitive &&
         AttributeValueMatches(attribute_item, match, selector_value,
                               kTextCaseASCIIInsensitive)) {
+      // If the `s` modifier is in the attribute selector, return false
+      // despite of legacy_case_insensitive.
+      if (selector.AttributeMatch() ==
+          CSSSelector::AttributeMatchType::kCaseSensitiveAlways) {
+        DCHECK(RuntimeEnabledFeatures::CSSCaseSensitiveSelectorEnabled());
+        return false;
+      }
+
       UseCounter::Count(element.GetDocument(),
                         WebFeature::kCaseInsensitiveAttrSelectorMatch);
       return true;
@@ -937,10 +942,14 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         break;
 
       if (auto* html_element = DynamicTo<HTMLElement>(element)) {
-        return html_element->ComputeInheritedDirectionality() == direction;
+        return html_element->CachedDirectionality() == direction;
       }
       break;
     }
+    case CSSSelector::kPseudoPopupOpen:
+      if (auto* popup_element = DynamicTo<HTMLPopupElement>(element))
+        return popup_element->open();
+      break;
     case CSSSelector::kPseudoFullscreen:
     // fall through
     case CSSSelector::kPseudoFullScreen:
@@ -1027,7 +1036,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       return !element.GetDocument().GetPage()->GetFocusController().IsActive();
     case CSSSelector::kPseudoState: {
       return element.DidAttachInternals() &&
-             element.EnsureElementInternals().HasState(selector.Argument());
+             element.EnsureElementInternals().HasState(selector.Value());
     }
     case CSSSelector::kPseudoHorizontal:
     case CSSSelector::kPseudoVertical:
@@ -1112,6 +1121,12 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
         return false;
       return true;
     }
+    case CSSSelector::kPseudoTargetText:
+      if (!is_ua_rule_) {
+        UseCounter::Count(context.element->GetDocument(),
+                          WebFeature::kCSSSelectorTargetText);
+      }
+      FALLTHROUGH;
     default:
       DCHECK_NE(mode_, kQueryingRules);
       result.dynamic_pseudo =
@@ -1137,61 +1152,34 @@ bool SelectorChecker::CheckPseudoHost(const SelectorCheckingContext& context,
   DCHECK(element.GetShadowRoot());
 
   // For the case with no parameters, i.e. just :host.
-  if (!selector.SelectorList()) {
-    result.specificity += CSSSelector::kClassLikeSpecificity;
+  if (!selector.SelectorList())
     return true;
-  }
+
+  DCHECK(selector.SelectorList()->HasOneSelector());
 
   SelectorCheckingContext sub_context(context);
   sub_context.is_sub_selector = true;
+  sub_context.selector = selector.SelectorList()->First();
+  sub_context.treat_shadow_host_as_normal_scope = true;
+  sub_context.scope = context.scope;
+  // Use FlatTreeTraversal to traverse a composed ancestor list of a given
+  // element.
+  Element* next_element = &element;
+  SelectorCheckingContext host_context(sub_context);
+  do {
+    MatchResult sub_result;
+    host_context.element = next_element;
+    if (MatchSelector(host_context, sub_result) == kSelectorMatches)
+      return true;
+    host_context.treat_shadow_host_as_normal_scope = false;
+    host_context.scope = nullptr;
 
-  bool matched = false;
-  unsigned max_specificity = 0;
+    if (selector.GetPseudoType() == CSSSelector::kPseudoHost)
+      break;
 
-  // If one of simple selectors matches an element, returns SelectorMatches.
-  // Just "OR".
-  for (sub_context.selector = selector.SelectorList()->First();
-       sub_context.selector;
-       sub_context.selector = CSSSelectorList::Next(*sub_context.selector)) {
-    sub_context.treat_shadow_host_as_normal_scope = true;
-    sub_context.scope = context.scope;
-    // Use FlatTreeTraversal to traverse a composed ancestor list of a given
-    // element.
-    Element* next_element = &element;
-    SelectorCheckingContext host_context(sub_context);
-    do {
-      MatchResult sub_result;
-      host_context.element = next_element;
-      if (MatchSelector(host_context, sub_result) == kSelectorMatches) {
-        matched = true;
-        // Consider div:host(div:host(div:host(div:host...))).
-        max_specificity =
-            std::max(max_specificity, host_context.selector->Specificity() +
-                                          sub_result.specificity);
-        break;
-      }
-      host_context.treat_shadow_host_as_normal_scope = false;
-      host_context.scope = nullptr;
-
-      if (selector.GetPseudoType() == CSSSelector::kPseudoHost)
-        break;
-
-      host_context.in_rightmost_compound = false;
-      next_element = FlatTreeTraversal::ParentElement(*next_element);
-    } while (next_element);
-  }
-  if (matched) {
-    result.specificity += max_specificity + CSSSelector::kClassLikeSpecificity;
-
-    if (result.specificity !=
-        selector.Specificity(
-            CSSSelector::SpecificityMode::kIncludeHostPseudos)) {
-      UseCounter::Count(context.element->GetDocument(),
-                        WebFeature::kCSSPseudoHostDynamicSpecificity);
-    }
-
-    return true;
-  }
+    host_context.in_rightmost_compound = false;
+    next_element = FlatTreeTraversal::ParentElement(*next_element);
+  } while (next_element);
 
   // FIXME: this was a fallthrough condition.
   return false;

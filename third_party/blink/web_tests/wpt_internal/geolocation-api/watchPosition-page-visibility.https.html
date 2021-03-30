@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/testharness-adapter.js"></script>
+</head>
+<body>
+<script type="module">
+import {GeolocationMock} from './resources/geolocation-mock.js';
+
+description("Tests that watchPosition does not report position changes when the page is not visible.");
+
+let position;
+let error;
+let isPageVisible = true;
+
+const mock = new GeolocationMock();
+mock.setGeolocationPermission(true);
+
+let mockLatitude = 51.478;
+let mockLongitude = -0.166;
+const mockAccuracy = 100.0;
+
+function generateNextPosition() {
+  ++mockLatitude;
+  ++mockLongitude;
+  return mock.makeGeoposition(mockLatitude, mockLongitude, mockAccuracy);
+}
+
+function updatePosition() {
+  const p = generateNextPosition();
+  mock.setGeolocationPosition(p.latitude, p.longitude, p.accuracy);
+}
+
+function setMainWindowHidden(hidden) {
+  return new Promise(resolve => {
+    document.addEventListener('visibilitychange', resolve, {once: true});
+    testRunner.setMainWindowHidden(hidden);
+  });
+}
+
+function roundTripToBrowser() {
+  return new Promise(resolve => {
+    // Use an OOPIF navigation to elicit a browser round-trip.
+    const frame = document.createElement('iframe');
+    frame.src = 'http://localhost:8080/resources/blank.html';
+    frame.addEventListener('load', () => {
+      document.body.removeChild(frame);
+      resolve();
+    });
+    document.body.appendChild(frame);
+  });
+}
+
+updatePosition();
+
+let state = 0;
+
+function checkPosition(p) {
+    position = p;
+    assert_equals(position.coords.latitude, mockLatitude);
+    assert_equals(position.coords.longitude, mockLongitude);
+}
+
+navigator.geolocation.watchPosition(async p => {
+    assert_true(isPageVisible);
+    state++;
+    checkPosition(p);
+    switch(state) {
+        case 1:
+            updatePosition();
+            break;
+        case 2: {
+            // Make sure we stall the next queryNextPosition() request so we
+            // can defer its reply until the window is hidden.
+            let interception = mock.interceptQueryNextPosition();
+            await setMainWindowHidden(true);
+            let respond = await interception;
+
+            isPageVisible = false;
+
+            // This should not be received. If it is, this enclosing function
+            // will run with `isPageVisible` still `false` and the assertion at
+            // the top of the function will fail.
+            respond(generateNextPosition());
+
+            // Wait for it to not be received, then continue. We also defer the
+            // next queryNextPosition() here to stall until we've shown the
+            // window again.
+            interception = mock.interceptQueryNextPosition();
+            await roundTripToBrowser();
+            await setMainWindowHidden(false);
+            isPageVisible = true;
+            respond = await interception;
+            respond(generateNextPosition());
+            break;
+        }
+        case 3:
+            updatePosition();
+            break;
+        case 4:
+            finishJSTest();
+            return;
+    }
+}, function(e) {
+    testFailed('Error callback invoked unexpectedly');
+    finishJSTest();
+});
+
+</script>
+</body>
+</html>

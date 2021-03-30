@@ -68,10 +68,6 @@ class POLICY_EXPORT UserCloudPolicyManager : public CloudPolicyManager {
   // provided by this object until the next time Initialize() is invoked.
   void DisconnectAndRemovePolicy();
 
-  // Returns true if the underlying CloudPolicyClient is already registered.
-  // Virtual for mocking.
-  virtual bool IsClientRegistered() const;
-
   // Creates a CloudPolicyClient for this client. Used in situations where
   // callers want to create a DMToken without actually initializing the
   // profile's policy infrastructure (for example, during signin when we

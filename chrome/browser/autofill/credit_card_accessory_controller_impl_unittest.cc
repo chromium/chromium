@@ -16,7 +16,7 @@
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,7 +27,7 @@ using testing::SaveArg;
 using testing::SaveArgPointee;
 
 constexpr char kExampleSite[] = "https://example.com";
-const base::string16 kFirstTwelveDigits = base::ASCIIToUTF16("411111111111");
+const std::u16string kFirstTwelveDigits = u"411111111111";
 
 namespace autofill {
 namespace {
@@ -100,7 +100,8 @@ class TestAccessManager : public CreditCardAccessManager {
 
 class MockAutofillDriver : public TestAutofillDriver {
  public:
-  MOCK_METHOD1(RendererShouldFillFieldWithValue, void(const base::string16&));
+  MOCK_METHOD2(RendererShouldFillFieldWithValue,
+               void(const FieldGlobalId& field, const std::u16string&));
 };
 
 class CreditCardAccessoryControllerTest
@@ -124,12 +125,13 @@ class CreditCardAccessoryControllerTest
     CreditCardAccessoryControllerImpl::CreateForWebContentsForTesting(
         web_contents(), mock_mf_controller_.AsWeakPtr(), &data_manager_,
         &af_manager_, &mock_af_driver_);
-    data_manager_.SetPrefService(profile_.GetPrefs());
+    data_manager_.SetPrefService(profile()->GetPrefs());
   }
 
   void TearDown() override {
     data_manager_.SetPrefService(nullptr);
     data_manager_.ClearCreditCards();
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   CreditCardAccessoryController* controller() {
@@ -152,14 +154,13 @@ class CreditCardAccessoryControllerTest
   MockAutocompleteHistoryManager history_;
   testing::NiceMock<MockManualFillingController> mock_mf_controller_;
   TestAutofillManager af_manager_;
-  TestingProfile profile_;
 };
 
 TEST_F(CreditCardAccessoryControllerTest, RefreshSuggestions) {
   autofill::CreditCard card = test::GetCreditCard();
   data_manager_.AddCreditCard(card);
   autofill::AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,
-                                      base::string16());
+                                      std::u16string());
 
   EXPECT_CALL(mock_mf_controller_, RefreshSuggestions(_))
       .WillOnce(SaveArg<0>(&result));
@@ -186,7 +187,7 @@ TEST_F(CreditCardAccessoryControllerTest, PreventsFillingInsecureContexts) {
   autofill::CreditCard card = test::GetCreditCard();
   data_manager_.AddCreditCard(card);
   autofill::AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,
-                                      base::string16());
+                                      std::u16string());
   SetFormOrigin(GURL("http://insecure.http-site.com"));
 
   EXPECT_CALL(mock_mf_controller_, RefreshSuggestions(_))
@@ -233,12 +234,18 @@ TEST_F(CreditCardAccessoryControllerTest, ServerCardUnmask) {
 
   autofill::CreditCard card_to_unmask;
 
-  base::string16 expected_number = kFirstTwelveDigits + card.number();
+  std::u16string expected_number = kFirstTwelveDigits + card.number();
+
+  // TODO(crbug/1187858): Fill in correct renderer ID here.
+  content::RenderFrameHost* rfh = web_contents()->GetFocusedFrame();
+  ASSERT_TRUE(rfh);
+  FieldGlobalId field_id{.frame_token = LocalFrameToken(*rfh->GetFrameToken()),
+                         .renderer_id = FieldRendererId(123)};
 
   EXPECT_CALL(mock_af_driver_,
-              RendererShouldFillFieldWithValue(expected_number));
+              RendererShouldFillFieldWithValue(field_id, expected_number));
 
-  cc_controller->OnFillingTriggered(field);
+  cc_controller->OnFillingTriggered(field_id, field);
 }
 
 }  // namespace autofill

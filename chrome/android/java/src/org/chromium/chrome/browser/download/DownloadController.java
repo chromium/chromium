@@ -15,18 +15,15 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabUtils;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.download.DownloadCollectionBridge;
 import org.chromium.components.permissions.AndroidPermissionRequester;
 import org.chromium.content_public.browser.BrowserStartupController;
-import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.ActivityAndroidPermissionDelegate;
 import org.chromium.ui.base.AndroidPermissionDelegate;
 import org.chromium.ui.base.PermissionCallback;
-import org.chromium.ui.base.WindowAndroid;
+
+import java.lang.ref.WeakReference;
 
 /**
  * Java counterpart of android DownloadController. Owned by native.
@@ -63,6 +60,7 @@ public class DownloadController {
     }
 
     private static Observer sObserver;
+    private static AndroidPermissionDelegate sAndroidPermissionDelegateForTesting;
 
     public static void setDownloadNotificationService(Observer observer) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER)) {
@@ -125,12 +123,10 @@ public class DownloadController {
     private static boolean hasFileAccess() {
         if (DownloadCollectionBridge.supportsDownloadCollection()) return true;
         Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
-        if (activity instanceof ChromeActivity) {
-            return ((ChromeActivity) activity)
-                    .getWindowAndroid()
-                    .hasPermission(permission.WRITE_EXTERNAL_STORAGE);
-        }
-        return false;
+        AndroidPermissionDelegate permissionDelegate = sAndroidPermissionDelegateForTesting == null
+                ? new ActivityAndroidPermissionDelegate(new WeakReference<>(activity))
+                : sAndroidPermissionDelegateForTesting;
+        return permissionDelegate.hasPermission(permission.WRITE_EXTERNAL_STORAGE);
     }
 
     /**
@@ -167,21 +163,10 @@ public class DownloadController {
 
     private static void requestFileAccessPermissionHelper(
             final Callback<Pair<Boolean, String>> callback) {
-        AndroidPermissionDelegate delegate = null;
         Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
-        if (activity instanceof ChromeActivity) {
-            WindowAndroid windowAndroid = ((ChromeActivity) activity).getWindowAndroid();
-            if (windowAndroid != null) {
-                delegate = windowAndroid;
-            }
-        } else if (activity instanceof DownloadActivity) {
-            delegate = ((DownloadActivity) activity).getAndroidPermissionDelegate();
-        }
-
-        if (delegate == null) {
-            callback.onResult(Pair.create(false, null));
-            return;
-        }
+        AndroidPermissionDelegate delegate = sAndroidPermissionDelegateForTesting == null
+                ? new ActivityAndroidPermissionDelegate(new WeakReference<>(activity))
+                : sAndroidPermissionDelegateForTesting;
 
         if (delegate.hasPermission(permission.WRITE_EXTERNAL_STORAGE)) {
             callback.onResult(Pair.create(true, null));
@@ -209,6 +194,11 @@ public class DownloadController {
                                 new String[] {permission.WRITE_EXTERNAL_STORAGE},
                                 permissionCallback),
                 callback.bind(Pair.create(false, null)));
+    }
+
+    /** For testing only. */
+    public static void setAndroidPermissionDelegateForTesting(AndroidPermissionDelegate delegate) {
+        sAndroidPermissionDelegateForTesting = delegate;
     }
 
     /**
@@ -253,37 +243,6 @@ public class DownloadController {
         if (!BrowserStartupController.getInstance().isFullBrowserStarted()) return;
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_PROGRESS_INFOBAR)) return;
         DownloadUtils.showDownloadStartToast(ContextUtils.getApplicationContext());
-    }
-
-    private static TabModelSelector getTabModelSelector(Tab tab) {
-        Activity activity = TabUtils.getActivity(tab);
-        if (activity instanceof ChromeActivity) {
-            return ((ChromeActivity) activity).getTabModelSelector();
-        }
-        return null;
-    }
-
-    /**
-     * Close a tab if it is blank. Returns true if it is or already closed.
-     * @param Tab Tab to close.
-     * @return true iff the tab was (already) closed.
-     */
-    @CalledByNative
-    static boolean closeTabIfBlank(Tab tab) {
-        if (tab == null) return true;
-        WebContents contents = tab.getWebContents();
-        boolean isInitialNavigation = contents == null
-                || contents.getNavigationController().isInitialNavigation();
-        if (isInitialNavigation) {
-            // Tab is created just for download, close it.
-            TabModelSelector selector = getTabModelSelector(tab);
-            if (selector == null) return true;
-            if (selector.getModel(tab.isIncognito()).getCount() == 1) return false;
-            boolean closed = selector.closeTab(tab);
-            assert closed;
-            return true;
-        }
-        return false;
     }
 
     @NativeMethods

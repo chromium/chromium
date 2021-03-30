@@ -11,6 +11,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -132,3 +133,6 @@ void GlassBrowserCaptionButtonContainer::UpdateButtons() {
   maximize_button_->SetEnabled(!is_touch);
   InvalidateLayout();
 }
+
+BEGIN_METADATA(GlassBrowserCaptionButtonContainer, views::View)
+END_METADATA

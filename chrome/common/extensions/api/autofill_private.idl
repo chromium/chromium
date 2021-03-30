@@ -7,6 +7,7 @@
 namespace autofillPrivate {
   // Fields used as part of an address.
   enum AddressField {
+    HONORIFIC, // Honorific fields are not expected from getAddressComponents.
     FULL_NAME,
     COMPANY_NAME,
     ADDRESS_LINES,
@@ -21,19 +22,18 @@ namespace autofillPrivate {
   // Metadata about an autofill entry (address or credit card) which is used to
   // render a summary list of all entries.
   dictionary AutofillMetadata {
-    // Short summary of the address which is displayed in the UI; an
+    // Short summary of the address/credit card which is displayed in the UI; an
     // undefined value means that this entry has just been created on the client
     // and has not yet been given a summary.
     DOMString summaryLabel;
 
-    // Short, secondary summary of the address which is displalyed in the UI; an
-    // undefined value means that this entry has just been created on the client
-    // and has not yet been given a summary.
+    // Short, secondary summary of the address/credit card which is displayed
+    // in the UI; an undefined value means that this entry has just been created
+    // on the client and has not yet been given a summary.
     DOMString? summarySublabel;
 
-    // Whether the entry is locally owned by Chrome (as opposed to being a
-    // profile synced down from the server). Non-local entries may not be
-    // editable.
+    // For credit cards, whether the entry is locally owned by Chrome (as opposed to
+    // being synced down from the server). Non-local entries may not be editable.
     boolean? isLocal;
 
     // For credit cards, whether this is a full copy of the card
@@ -51,6 +51,10 @@ namespace autofillPrivate {
     DOMString? guid;
 
     DOMString[]? fullNames;
+
+    // A honorific title added to the name. E.g. "Mr.", "Dr.", "Her Royal
+    // Majesty".
+    DOMString? honorific;
 
     DOMString? companyName;
 

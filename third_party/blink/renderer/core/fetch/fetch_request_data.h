@@ -178,9 +178,7 @@ class CORE_EXPORT FetchRequestData final
   // the system would otherwise decide to use to load this request.
   // Currently used for blob: URLs, to ensure they can still be loaded even if
   // the URL got revoked after creating the request.
-  HeapMojoRemote<network::mojom::blink::URLLoaderFactory,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      url_loader_factory_;
+  HeapMojoRemote<network::mojom::blink::URLLoaderFactory> url_loader_factory_;
   base::UnguessableToken window_id_;
   Member<ExecutionContext> execution_context_;
   bool allow_http1_for_streaming_upload_ = false;

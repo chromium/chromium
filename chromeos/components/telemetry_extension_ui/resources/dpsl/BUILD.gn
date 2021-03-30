@@ -1,0 +1,43 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chromeos/components/web_applications/system_apps.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+
+assert(is_chromeos, "Telemetry Extension is Chrome OS only")
+assert(!is_official_build,
+       "Telemetry Extension is only built for unofficial builds")
+
+group("closure_compile") {
+  deps = [ ":dpsl_closure_compile" ]
+}
+
+js_type_check("dpsl_closure_compile") {
+  closure_flags = system_app_closure_flags_strict
+  deps = [ ":dpsl" ]
+}
+
+js_library("dpsl") {
+  sources = [
+    "diagnostics_manager.js",
+    "events_service.js",
+    "telemetry_requester.js",
+  ]
+  deps = [
+    ":dpsl_types",
+    ":namespace",
+    ":types",
+  ]
+}
+
+js_library("dpsl_types") {
+  deps = [ ":namespace" ]
+}
+
+js_library("namespace") {
+  deps = [ "//chromeos/components/system_apps/public/js:message_pipe" ]
+}
+
+js_library("types") {
+}

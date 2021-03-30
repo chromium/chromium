@@ -46,7 +46,8 @@ class SharingMessageBridgeImpl : public SharingMessageBridge,
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
   void OnCommitAttemptErrors(
       const syncer::FailedCommitResponseDataList& error_response_list) override;
-  void OnCommitAttemptFailed(syncer::SyncCommitError commit_error) override;
+  CommitAttemptFailedBehavior OnCommitAttemptFailed(
+      syncer::SyncCommitError commit_error) override;
   void ApplyStopSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
                                 metadata_change_list) override;
 

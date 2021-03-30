@@ -35,17 +35,6 @@ TEST_F(MediaCodecUtilTest, TestCodecAvailableIfNewerVersion) {
     const char* model;
     int last_bad_sdk;
   } devices[] = {{"LGMS330", SDK_VERSION_LOLLIPOP_MR1},
-
-                 {"GT-I9100", SDK_VERSION_KITKAT},
-                 {"GT-I9300", SDK_VERSION_KITKAT},
-                 {"GT-N7000", SDK_VERSION_KITKAT},
-                 {"GT-N7100", SDK_VERSION_KITKAT},
-                 {"A6600", SDK_VERSION_KITKAT},
-                 {"A6800", SDK_VERSION_KITKAT},
-                 {"GT-S7262", SDK_VERSION_KITKAT},
-                 {"GT-S5282", SDK_VERSION_KITKAT},
-                 {"GT-I8552", SDK_VERSION_KITKAT},
-
                  {"always_works", 0},  // Some codec that works everywhere.
                  {nullptr, 0}};
 

@@ -14,7 +14,6 @@
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/widget/screen_orientation.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/remoteplayback/web_remote_playback_client.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
@@ -67,13 +66,18 @@ namespace {
 
 class FakeChromeClient : public EmptyChromeClient {
  public:
-  // ChromeClient overrides.
-  ScreenInfo GetScreenInfo(LocalFrame&) const override {
-    ScreenInfo screen_info;
-    screen_info.orientation_type =
+  FakeChromeClient() {
+    screen_info_.orientation_type =
         mojom::blink::ScreenOrientation::kLandscapePrimary;
-    return screen_info;
   }
+
+  // ChromeClient overrides.
+  const ScreenInfo& GetScreenInfo(LocalFrame&) const override {
+    return screen_info_;
+  }
+
+ private:
+  ScreenInfo screen_info_;
 };
 
 class MockWebMediaPlayerForImpl : public EmptyWebMediaPlayer {
@@ -268,8 +272,7 @@ class MediaControlsImplTest : public PageTestBase,
   void ClickOverflowButton() {
     MediaControls()
         .download_button_->OverflowElementForTests()
-        ->DispatchSimulatedClick(nullptr, kSendNoEvents,
-                                 SimulatedClickCreationScope::kFromUserAgent);
+        ->DispatchSimulatedClick(nullptr);
   }
 
   void SetReady() {

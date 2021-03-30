@@ -122,6 +122,12 @@ std::vector<uint8_t> AuthenticatorGetInfoResponse::EncodeToCBOR(
     device_info_map.emplace(0x0a, std::move(algorithms_cbor));
   }
 
+  if (response.max_serialized_large_blob_array) {
+    device_info_map.emplace(
+        0x0b,
+        base::strict_cast<int64_t>(*response.max_serialized_large_blob_array));
+  }
+
   if (response.force_pin_change) {
     device_info_map.emplace(0x0c, cbor::Value(*response.force_pin_change));
   }

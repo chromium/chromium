@@ -82,6 +82,7 @@ struct DeviceActivityStatus {
   string device_id;
   mojo_base.mojom.Time last_activity_time;
   ConnectivityStatus connectivity_status;
+  mojo_base.mojom.Time last_update_time;
 };
 
 struct DebugInfo {

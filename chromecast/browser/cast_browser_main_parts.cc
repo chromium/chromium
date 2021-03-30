@@ -51,7 +51,7 @@
 #include "chromecast/graphics/cast_window_manager.h"
 #include "chromecast/media/base/key_systems_common.h"
 #include "chromecast/media/base/video_plane_controller.h"
-#include "chromecast/media/cma/backend/media_pipeline_backend_manager.h"
+#include "chromecast/media/common/media_pipeline_backend_manager.h"
 #include "chromecast/media/common/media_resource_tracker.h"
 #include "chromecast/metrics/cast_metrics_service_client.h"
 #include "chromecast/net/connectivity_checker.h"
@@ -67,6 +67,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
+#include "content/public/common/result_codes.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "media/base/media.h"
 #include "media/base/media_switches.h"
@@ -101,7 +102,7 @@
 // gn check ignored on OverlayManagerCast as it's not a public ozone
 // header, but is exported to allow injecting the overlay-composited
 // callback.
-#include "chromecast/browser/accessibility/accessibility_manager.h"
+#include "chromecast/browser/accessibility/accessibility_manager_impl.h"
 #include "chromecast/browser/cast_display_configurator.h"
 #include "chromecast/browser/devtools/cast_ui_devtools.h"
 #include "chromecast/graphics/cast_screen.h"
@@ -112,7 +113,6 @@
 #include "components/ui_devtools/devtools_server.h"  // nogncheck
 #include "components/ui_devtools/switches.h"         // nogncheck
 #endif
-#include "components/viz/service/display/overlay_strategy_underlay_cast.h"  // nogncheck
 #include "ui/display/screen.h"
 #include "ui/views/views_delegate.h"  // nogncheck
 #else
@@ -518,7 +518,7 @@ int CastBrowserMainParts::PreCreateThreads() {
   return 0;
 }
 
-void CastBrowserMainParts::PreMainMessageLoopRun() {
+int CastBrowserMainParts::PreMainMessageLoopRun() {
 #if !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
   memory_pressure_monitor_.reset(new util::MultiSourceMemoryPressureMonitor());
   auto cast_system_memory_pressure_evaluator =
@@ -578,11 +578,6 @@ void CastBrowserMainParts::PreMainMessageLoopRun() {
   video_plane_controller_.reset(new media::VideoPlaneController(
       Size(display_size.width(), display_size.height()),
       cast_content_browser_client_->GetMediaTaskRunner()));
-  // TODO(crbug.com/925450): Once compositor migrates to GPU process, We
-  // don't need to set the callback in viz::OverlayStrategyUnderlayCast.
-  viz::OverlayStrategyUnderlayCast::SetOverlayCompositedCallback(
-      base::BindRepeating(&media::VideoPlaneController::SetGeometry,
-                          base::Unretained(video_plane_controller_.get())));
   media::CastRenderer::SetOverlayCompositedCallback(BindToCurrentThread(
       base::BindRepeating(&media::VideoPlaneController::SetGeometry,
                           base::Unretained(video_plane_controller_.get()))));
@@ -616,7 +611,7 @@ void CastBrowserMainParts::PreMainMessageLoopRun() {
 
 #if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
   cast_browser_process_->SetAccessibilityManager(
-      std::make_unique<AccessibilityManager>(window_manager_.get()));
+      std::make_unique<AccessibilityManagerImpl>(window_manager_.get()));
 #endif  // BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
 
 #else   // defined(USE_AURA)
@@ -692,6 +687,8 @@ void CastBrowserMainParts::PreMainMessageLoopRun() {
     delete parameters_.ui_task;
     run_message_loop_ = false;
   }
+
+  return content::RESULT_CODE_NORMAL_EXIT;
 }
 
 #if defined(OS_ANDROID)
@@ -714,24 +711,25 @@ void CastBrowserMainParts::OnStartPeriodicCrashReportUpload() {
 }
 #endif  // defined(OS_ANDROID)
 
-bool CastBrowserMainParts::MainMessageLoopRun(int* result_code) {
+void CastBrowserMainParts::WillRunMainMessageLoop(
+    std::unique_ptr<base::RunLoop>& run_loop) {
 #if defined(OS_ANDROID)
   // Android does not use native main MessageLoop.
   NOTREACHED();
-  return true;
 #else
   if (run_message_loop_) {
-    base::RunLoop run_loop;
-
 #if !defined(OS_FUCHSIA)
     // Fuchsia doesn't have signals.
-    RegisterClosureOnSignal(run_loop.QuitClosure());
+    RegisterClosureOnSignal(run_loop->QuitClosure());
 #endif  // !defined(OS_FUCHSIA)
-
-    run_loop.Run();
+  } else {
+    run_loop.reset();
   }
+#endif
+}
 
-#if !defined(OS_FUCHSIA)
+void CastBrowserMainParts::PostMainMessageLoopRun() {
+#if !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
   // Once the main loop has stopped running, we give the browser process a few
   // seconds to stop cast service and finalize all resources. If a hang occurs
   // and cast services refuse to terminate successfully, then we SIGKILL the
@@ -740,14 +738,10 @@ bool CastBrowserMainParts::MainMessageLoopRun(int* result_code) {
   // TODO(sergeyu): Fuchsia doesn't implement POSIX signals. Implement a
   // different shutdown watchdog mechanism.
   RegisterKillOnAlarm(kKillOnAlarmTimeoutSec);
-#endif  // !defined(OS_FUCHSIA)
+#endif  // !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
 
   cast_browser_process_->cast_service()->Stop();
-  return true;
-#endif
-}
 
-void CastBrowserMainParts::PostMainMessageLoopRun() {
 #if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(USE_OZONE)
   wayland_server_controller_.reset();
 #endif

@@ -6,8 +6,8 @@
 
 [
   ImplementedAs=GlobalNativeIO,
-  RuntimeEnabled=NativeIO,
+  RuntimeEnabled=StorageFoundationAPI,
   SecureContext
 ] partial interface Window {
-  readonly attribute NativeIOFileManager nativeIO;
+  readonly attribute NativeIOFileManager storageFoundation;
 };

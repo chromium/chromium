@@ -11,7 +11,10 @@
     },
     {
       "name": "Scrolling Contents Layer",
-      "bounds": [485, 606]
+      "bounds": [485, 606],
+      "invalidations": [
+        [0, 0, 485, 606]
+      ]
     },
     {
       "name": "ContentsLayer for Vertical Scrollbar Layer",

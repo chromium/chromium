@@ -204,7 +204,8 @@ At this point you should make sure the appropriate VA driver backend is working
 correctly; try running `vainfo` from the command line and verify no errors show
 up.
 
-To run Chromium using VaAPI two arguments are necessary:
+To run Chromium using VaAPI three arguments are necessary:
+* `--enable-features=VaapiVideoDecoder`
 * `--ignore-gpu-blocklist`
 * `--use-gl=desktop` or `--use-gl=egl`
 

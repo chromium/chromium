@@ -6,14 +6,14 @@
 
 #include <map>
 
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_device_handler.h"
 #include "chromeos/network/onc/onc_parsed_certificates.h"
@@ -46,7 +46,7 @@ DeviceNetworkConfigurationUpdater::CreateForDevicePolicy(
     PolicyService* policy_service,
     chromeos::ManagedNetworkConfigurationHandler* network_config_handler,
     chromeos::NetworkDeviceHandler* network_device_handler,
-    chromeos::CrosSettings* cros_settings,
+    ash::CrosSettings* cros_settings,
     const DeviceNetworkConfigurationUpdater::DeviceAssetIDFetcher&
         device_asset_id_fetcher) {
   std::unique_ptr<DeviceNetworkConfigurationUpdater> updater(
@@ -61,7 +61,7 @@ DeviceNetworkConfigurationUpdater::DeviceNetworkConfigurationUpdater(
     PolicyService* policy_service,
     chromeos::ManagedNetworkConfigurationHandler* network_config_handler,
     chromeos::NetworkDeviceHandler* network_device_handler,
-    chromeos::CrosSettings* cros_settings,
+    ash::CrosSettings* cros_settings,
     const DeviceNetworkConfigurationUpdater::DeviceAssetIDFetcher&
         device_asset_id_fetcher)
     : NetworkConfigurationUpdater(onc::ONC_SOURCE_DEVICE_POLICY,
@@ -74,7 +74,7 @@ DeviceNetworkConfigurationUpdater::DeviceNetworkConfigurationUpdater(
   DCHECK(network_device_handler_);
   data_roaming_setting_subscription_ = cros_settings->AddSettingsObserver(
       chromeos::kSignedDataRoamingEnabled,
-      base::Bind(
+      base::BindRepeating(
           &DeviceNetworkConfigurationUpdater::OnDataRoamingSettingChanged,
           base::Unretained(this)));
   if (device_asset_id_fetcher_.is_null())

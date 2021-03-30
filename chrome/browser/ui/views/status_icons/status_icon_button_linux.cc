@@ -16,6 +16,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/transform.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -42,7 +43,7 @@ void StatusIconButtonLinux::SetIcon(const gfx::ImageSkia& image) {
   SchedulePaint();
 }
 
-void StatusIconButtonLinux::SetToolTip(const base::string16& tool_tip) {
+void StatusIconButtonLinux::SetToolTip(const std::u16string& tool_tip) {
   SetTooltipText(tool_tip);
 }
 
@@ -131,3 +132,6 @@ void StatusIconButtonLinux::PaintButtonContents(gfx::Canvas* canvas) {
   canvas->DrawImageInt(image, 0, 0, image.width(), image.height(), 0, 0,
                        image.width(), image.height(), true, flags);
 }
+
+BEGIN_METADATA(StatusIconButtonLinux, views::Button)
+END_METADATA

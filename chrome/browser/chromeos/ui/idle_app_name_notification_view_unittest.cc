@@ -42,25 +42,17 @@ class IdleAppNameNotificationViewTest : public BrowserWithTestWindowTest {
     manifest.SetString("author.email", "Someone");
 
     std::string error;
-    correct_extension_ =
-        extensions::Extension::Create(base::FilePath(),
-                                      extensions::Manifest::UNPACKED,
-                                      manifest,
-                                      extensions::Extension::NO_FLAGS,
-                                      kTestAppName,
-                                      &error);
+    correct_extension_ = extensions::Extension::Create(
+        base::FilePath(), extensions::mojom::ManifestLocation::kUnpacked,
+        manifest, extensions::Extension::NO_FLAGS, kTestAppName, &error);
     base::DictionaryValue manifest2;
     manifest2.SetString(extensions::manifest_keys::kName, "Test");
     manifest2.SetString(extensions::manifest_keys::kVersion, "1");
     manifest2.SetString(extensions::manifest_keys::kDescription, "Test app");
 
-    incorrect_extension_ =
-        extensions::Extension::Create(base::FilePath(),
-                                      extensions::Manifest::UNPACKED,
-                                      manifest2,
-                                      extensions::Extension::NO_FLAGS,
-                                      kTestAppName,
-                                      &error);
+    incorrect_extension_ = extensions::Extension::Create(
+        base::FilePath(), extensions::mojom::ManifestLocation::kUnpacked,
+        manifest2, extensions::Extension::NO_FLAGS, kTestAppName, &error);
   }
 
   void TearDown() override {
@@ -112,9 +104,9 @@ TEST_F(IdleAppNameNotificationViewTest, CheckCorrectApp) {
   // Create a message which is visible for 10ms and fades in/out for 5ms.
   std::unique_ptr<chromeos::IdleAppNameNotificationView> message(
       new chromeos::IdleAppNameNotificationView(10, 5, correct_extension()));
-  base::string16 text = message->GetShownTextForTest();
+  std::u16string text = message->GetShownTextForTest();
   // Check that the string is the application name.
-  base::string16 name = base::ASCIIToUTF16("Test");
+  std::u16string name = u"Test";
   EXPECT_EQ(name, text.substr(0, name.length()));
 }
 
@@ -123,8 +115,8 @@ TEST_F(IdleAppNameNotificationViewTest, CheckInvalidApp) {
   // Create a message which is visible for 10ms and fades in/out for 5ms.
   std::unique_ptr<chromeos::IdleAppNameNotificationView> message(
       new chromeos::IdleAppNameNotificationView(10, 5, NULL));
-  base::string16 text = message->GetShownTextForTest();
-  base::string16 error = l10n_util::GetStringUTF16(
+  std::u16string text = message->GetShownTextForTest();
+  std::u16string error = l10n_util::GetStringUTF16(
       IDS_IDLE_APP_NAME_UNKNOWN_APPLICATION_NOTIFICATION);
   EXPECT_EQ(error, text);
 }

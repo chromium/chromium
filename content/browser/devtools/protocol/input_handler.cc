@@ -49,21 +49,21 @@ gfx::Vector2dF CssPixelsToVector2dF(double x,
 }
 
 bool StringToGestureSourceType(Maybe<std::string> in,
-                               SyntheticGestureParams::GestureSourceType& out) {
+                               content::mojom::GestureSourceType& out) {
   if (!in.isJust()) {
-    out = SyntheticGestureParams::GestureSourceType::DEFAULT_INPUT;
+    out = content::mojom::GestureSourceType::kDefaultInput;
     return true;
   }
   if (in.fromJust() == Input::GestureSourceTypeEnum::Default) {
-    out = SyntheticGestureParams::GestureSourceType::DEFAULT_INPUT;
+    out = content::mojom::GestureSourceType::kDefaultInput;
     return true;
   }
   if (in.fromJust() == Input::GestureSourceTypeEnum::Touch) {
-    out = SyntheticGestureParams::GestureSourceType::TOUCH_INPUT;
+    out = content::mojom::GestureSourceType::kTouchInput;
     return true;
   }
   if (in.fromJust() == Input::GestureSourceTypeEnum::Mouse) {
-    out = SyntheticGestureParams::GestureSourceType::MOUSE_INPUT;
+    out = content::mojom::GestureSourceType::kMouseInput;
     return true;
   }
   return false;
@@ -116,11 +116,11 @@ base::TimeTicks GetEventTimeTicks(const Maybe<double>& timestamp) {
              : base::TimeTicks::Now();
 }
 
-bool SetKeyboardEventText(base::char16* to, Maybe<std::string> from) {
+bool SetKeyboardEventText(char16_t* to, Maybe<std::string> from) {
   if (!from.isJust())
     return true;
 
-  base::string16 text16 = base::UTF8ToUTF16(from.fromJust());
+  std::u16string text16 = base::UTF8ToUTF16(from.fromJust());
   if (text16.size() > blink::WebKeyboardEvent::kTextLengthCap)
     return false;
 
@@ -408,9 +408,13 @@ class InputHandler::InputInjector
       for (const std::string& command : *commands.fromJust())
         edit_commands.push_back(blink::mojom::EditCommand::New(command, ""));
     }
-
+    // This may close the target, for example, if pressing Ctrl+W.
+    base::WeakPtr<InputHandler::InputInjector> weak_this =
+        weak_ptr_factory_.GetWeakPtr();
     widget_host_->ForwardKeyboardEventWithCommands(keyboard_event, latency,
                                                    std::move(edit_commands));
+    if (!weak_this)
+      return;
     if (!input_queued_) {
       pending_key_callbacks_.back()->sendSuccess();
       pending_key_callbacks_.pop_back();
@@ -485,6 +489,7 @@ class InputHandler::InputInjector
       pending_key_callbacks_;
   base::circular_deque<std::unique_ptr<DispatchMouseEventCallback>>
       pending_mouse_callbacks_;
+  base::WeakPtrFactory<InputHandler::InputInjector> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(InputInjector);
 };
@@ -509,9 +514,6 @@ void InputHandler::SetRenderer(int process_host_id,
     return;
   ClearInputState();
 
-  WebContents* old_web_contents = WebContents::FromRenderFrameHost(host_);
-  WebContents* new_web_contents = WebContents::FromRenderFrameHost(frame_host);
-
   // When navigating, the new renderer might have a different page scale.
   // It emits a changed event iff the new page scale is not 1
   // (see crbug.com/929806)
@@ -520,13 +522,15 @@ void InputHandler::SetRenderer(int process_host_id,
   if (host_)
     page_scale_factor_ = 1.0;
 
+  WebContents* old_web_contents = WebContents::FromRenderFrameHost(host_);
   host_ = frame_host;
+  web_contents_ = WebContents::FromRenderFrameHost(host_);
 
-  if (ignore_input_events_ && old_web_contents != new_web_contents) {
+  if (ignore_input_events_ && old_web_contents != web_contents_) {
     if (old_web_contents)
       old_web_contents->SetIgnoreInputEvents(false);
-    if (new_web_contents)
-      new_web_contents->SetIgnoreInputEvents(true);
+    if (web_contents_)
+      web_contents_->SetIgnoreInputEvents(true);
   }
 }
 
@@ -540,9 +544,8 @@ void InputHandler::OnPageScaleFactorChanged(float page_scale_factor) {
 
 Response InputHandler::Disable() {
   ClearInputState();
-  WebContents* web_contents = WebContents::FromRenderFrameHost(host_);
-  if (web_contents && ignore_input_events_)
-    web_contents->SetIgnoreInputEvents(false);
+  if (web_contents_ && ignore_input_events_)
+    web_contents_->SetIgnoreInputEvents(false);
   ignore_input_events_ = false;
   pointer_ids_.clear();
   touch_points_.clear();
@@ -643,7 +646,7 @@ void InputHandler::DispatchKeyEvent(
 
 void InputHandler::InsertText(const std::string& text,
                               std::unique_ptr<InsertTextCallback> callback) {
-  base::string16 text16 = base::UTF8ToUTF16(text);
+  std::u16string text16 = base::UTF8ToUTF16(text);
   if (!host_ || !host_->GetRenderWidgetHost()) {
     callback->sendFailure(Response::InternalError());
     return;
@@ -753,11 +756,12 @@ void InputHandler::DispatchMouseEvent(
   }
 
   auto findWidgetAndDispatchEvent = base::BindOnce(
-      [](base::WeakPtr<InputHandler> self, RenderWidgetHostImpl* widget_host,
-         double x, double y, std::unique_ptr<blink::WebMouseEvent> mouse_event,
+      [](base::WeakPtr<InputHandler> self,
+         base::WeakPtr<RenderWidgetHostImpl> widget_host, double x, double y,
+         std::unique_ptr<blink::WebMouseEvent> mouse_event,
          blink::WebMouseWheelEvent* wheel_event,
          std::unique_ptr<DispatchMouseEventCallback> callback, bool success) {
-        if (!self.get())
+        if (!self || !widget_host)
           return;
         widget_host->delegate()
             ->GetInputEventRouter()
@@ -768,8 +772,8 @@ void InputHandler::DispatchMouseEvent(
                                self, std::move(callback),
                                std::move(mouse_event), wheel_event));
       },
-      weak_factory_.GetWeakPtr(), widget_host, x, y, std::move(mouse_event),
-      wheel_event, std::move(callback));
+      weak_factory_.GetWeakPtr(), widget_host->GetWeakPtr(), x, y,
+      std::move(mouse_event), wheel_event, std::move(callback));
   // We make sure the compositor is up to date before
   // sending a wheel event. Otherwise it wont be
   // picked up by newly added event listeners on the main thread.
@@ -957,9 +961,12 @@ void InputHandler::DispatchWebTouchEvent(
   // sending a touch event. Otherwise it wont be
   // picked up by newly added event listeners on the main thread.
   widget_host->InsertVisualStateCallback(base::BindOnce(
-      [](base::WeakPtr<InputHandler> self, RenderWidgetHostImpl* widget_host,
+      [](base::WeakPtr<InputHandler> self,
+         base::WeakPtr<RenderWidgetHostImpl> widget_host,
          std::vector<blink::WebTouchEvent> events,
          std::unique_ptr<DispatchTouchEventCallback> callback, bool success) {
+        if (!self || !widget_host)
+          return;
         gfx::PointF original(events[0].touches[0].PositionInWidget());
         widget_host->delegate()
             ->GetInputEventRouter()
@@ -968,7 +975,7 @@ void InputHandler::DispatchWebTouchEvent(
                 base::BindOnce(&InputHandler::OnWidgetForDispatchWebTouchEvent,
                                self, std::move(callback), std::move(events)));
       },
-      weak_factory_.GetWeakPtr(), widget_host, std::move(events),
+      weak_factory_.GetWeakPtr(), widget_host->GetWeakPtr(), std::move(events),
       std::move(callback)));
 }
 
@@ -1062,8 +1069,8 @@ void InputHandler::DispatchSyntheticPointerActionTouch(
     return;
   }
 
-  SyntheticGestureParams::GestureSourceType gesture_source_type =
-      SyntheticGestureParams::GestureSourceType::TOUCH_INPUT;
+  content::mojom::GestureSourceType gesture_source_type =
+      content::mojom::GestureSourceType::kTouchInput;
   SyntheticPointerActionListParams action_list_params;
   SyntheticPointerActionListParams::ParamList param_list;
   action_list_params.gesture_source_type = gesture_source_type;
@@ -1265,10 +1272,11 @@ Response InputHandler::EmulateTouchFromMouseEvent(const std::string& type,
 
   if (wheel_event) {
     forward_event_func = base::BindOnce(
-        [](base::WeakPtr<InputHandler> self, RenderWidgetHostImpl* widget_host,
+        [](base::WeakPtr<InputHandler> self,
+           base::WeakPtr<RenderWidgetHostImpl> widget_host,
            blink::WebMouseWheelEvent* event,
            ui::WebScopedInputEvent event_deleter, bool success) {
-          if (!self.get())
+          if (!self || !widget_host)
             return;
 
           widget_host->ForwardWheelEvent(*event);
@@ -1280,19 +1288,20 @@ Response InputHandler::EmulateTouchFromMouseEvent(const std::string& type,
               blink::WebInputEvent::DispatchType::kEventNonBlocking;
           widget_host->ForwardWheelEvent(*event);
         },
-        weak_factory_.GetWeakPtr(), host_->GetRenderWidgetHost(), wheel_event,
-        std::move(event));
+        weak_factory_.GetWeakPtr(), host_->GetRenderWidgetHost()->GetWeakPtr(),
+        wheel_event, std::move(event));
   } else {
     forward_event_func = base::BindOnce(
-        [](base::WeakPtr<InputHandler> self, RenderWidgetHostImpl* widget_host,
+        [](base::WeakPtr<InputHandler> self,
+           base::WeakPtr<RenderWidgetHostImpl> widget_host,
            blink::WebMouseEvent* event, ui::WebScopedInputEvent event_deleter,
            bool success) {
-          if (!self.get())
+          if (!self || !widget_host)
             return;
           widget_host->ForwardMouseEvent(*event);
         },
-        weak_factory_.GetWeakPtr(), host_->GetRenderWidgetHost(), mouse_event,
-        std::move(event));
+        weak_factory_.GetWeakPtr(), host_->GetRenderWidgetHost()->GetWeakPtr(),
+        mouse_event, std::move(event));
   }
   // We make sure the compositor is up to date before sending a mouse event.
   // Otherwise it wont be picked up by newly added event listeners on the main
@@ -1304,9 +1313,8 @@ Response InputHandler::EmulateTouchFromMouseEvent(const std::string& type,
 
 Response InputHandler::SetIgnoreInputEvents(bool ignore) {
   ignore_input_events_ = ignore;
-  WebContents* web_contents = WebContents::FromRenderFrameHost(host_);
-  if (web_contents)
-    web_contents->SetIgnoreInputEvents(ignore);
+  if (web_contents_)
+    web_contents_->SetIgnoreInputEvents(ignore);
   return Response::Success();
 }
 

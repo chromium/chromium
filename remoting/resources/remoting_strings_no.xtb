@@ -24,6 +24,7 @@ For å innvilge denne tillatelsen, klikk på «<ph name="BUTTON_NAME" />» under
 Hvis det allerede er merket av for «<ph name="SERVICE_SCRIPT_NAME" />», fjerner du avmerkingen og merker av på nytt.</translation>
 <translation id="225614027745146050">Velkommen</translation>
 <translation id="2320166752086256636">Skjul tastaturet</translation>
+<translation id="2333212046079545895">Copyright 2021 Google LLC. Med enerett.</translation>
 <translation id="2359808026110333948">Fortsett</translation>
 <translation id="2366718077645204424">Kunne ikke nå verten. Dette er sannsynligvis på grunn av innstillingene for nettverket du bruker.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> Sist pålogget <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -71,6 +72,7 @@ Hvis det allerede er merket av for «<ph name="SERVICE_SCRIPT_NAME" />», fjerne
 <translation id="4405930547258349619">Core-bibliotek</translation>
 <translation id="443560535555262820">Åpne innstillinger for tilgjengelighet</translation>
 <translation id="4450893287417543264">Ikke vis igjen</translation>
+<translation id="4512952200932940229">Copyright 2021 The Chromium Authors. Med enerett.</translation>
 <translation id="4513946894732546136">Google Feedback</translation>
 <translation id="4563926062592110512">Klienten koblet fra: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4635770493235256822">Eksterne enheter</translation>
@@ -129,7 +131,6 @@ Hvis det allerede er merket av for «<ph name="SERVICE_SCRIPT_NAME" />», fjerne
 <translation id="7067321367069083429">Skjermen fungerer som en berøringsskjerm</translation>
 <translation id="7116737094673640201">Velkommen til Chrome Eksternt skrivebord</translation>
 <translation id="7144878232160441200">Prøv på nytt</translation>
-<translation id="724402108658370587">Copyright 2020 Google LLC. Med enerett.</translation>
 <translation id="7312846573060934304">Verten er uten nett.</translation>
 <translation id="7319983568955948908">Stopp deling</translation>
 <translation id="7401733114166276557">Chrome Eksternt skrivebord</translation>
@@ -155,7 +156,6 @@ Hvis det allerede er merket av for «<ph name="SERVICE_SCRIPT_NAME" />», fjerne
 <translation id="8073845705237259513">Hvis du vil bruke Chrome Eksternt skrivebord, må du legge til en Google-konto på enheten din.</translation>
 <translation id="809687642899217504">Mine datamaskiner</translation>
 <translation id="8116630183974937060">Det oppsto en nettverksfeil. Kontrollér at enheten er tilkoblet nettet, og prøv på nytt.</translation>
-<translation id="8187079423890319756">Copyright 2013 – The Chromium Authors. Med enerett.</translation>
 <translation id="8295077433896346116">For å bruke <ph name="PRODUCT_NAME" /> må du innvilge «Tilgjengelighet»-tillatelsen, slik at inndata fra den eksterne maskinen kan sendes til denne Macen.
 
 For å innvilge denne tillatelsen, klikk på «<ph name="BUTTON_NAME" />» under. I innstillingsfeltet for «Tilgjengelighet» som åpnes, merker du av i boksen ved siden av «<ph name="SERVICE_SCRIPT_NAME" />».
@@ -174,6 +174,7 @@ Hvis det allerede er merket av for «<ph name="SERVICE_SCRIPT_NAME" />», fjerne
 <translation id="8743328882720071828">Vil du tillate at <ph name="CLIENT_USERNAME" /> kan se og kontrollere datamaskinen din?</translation>
 <translation id="8747048596626351634">Økten krasjet eller kunne ikke starte. Hvis ~/.chrome-remote-desktop-session eksisterer på den eksterne datamaskinen, må du sørge for at den starter en prosess i forgrunnen som kjører lenge – for eksempel et skrivebordsmiljø eller en vindusbehandler.</translation>
 <translation id="8804164990146287819">Personvernregler</translation>
+<translation id="8906511416443321782">Mikrofontilgang kreves for å ta opp lyd og strømme den til Chrome Eksternt skrivebord-klienten.</translation>
 <translation id="9111855907838866522">Du er koblet til den eksterne enheten. For å åpne menyen, trykk på skjermen med fire fingre.</translation>
 <translation id="9126115402994542723">Ikke be om PIN-kode igjen når du kobler til denne verten fra denne enheten.</translation>
 <translation id="916856682307586697">Start standard XSession</translation>

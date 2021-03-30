@@ -31,7 +31,8 @@ class ChromecastAutomationInternalApiDelegate
   bool EnableTree(const ui::AXTreeID& tree_id) override;
   void EnableDesktop() override;
   ui::AXTreeID GetAXTreeID() override;
-  void SetEventBundleSink(ui::AXEventBundleSink* sink) override;
+  void SetAutomationEventRouterInterface(
+      AutomationEventRouterInterface* router) override;
   content::BrowserContext* GetActiveUserContext() override;
 
   DISALLOW_COPY_AND_ASSIGN(ChromecastAutomationInternalApiDelegate);

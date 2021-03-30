@@ -8,7 +8,7 @@
 
 namespace ui {
 
-base::string16 WebDialogDelegate::GetAccessibleDialogTitle() const {
+std::u16string WebDialogDelegate::GetAccessibleDialogTitle() const {
   return GetDialogTitle();
 }
 
@@ -25,10 +25,6 @@ bool WebDialogDelegate::CanMaximizeDialog() const {
 }
 
 bool WebDialogDelegate::OnDialogCloseRequested() {
-  return true;
-}
-
-bool WebDialogDelegate::DeprecatedOnDialogCloseRequested() {
   return true;
 }
 

@@ -12,7 +12,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/apps/user_type_filter.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "ui/gfx/codec/png_codec.h"
 
@@ -147,6 +150,14 @@ constexpr char kOfflineManifestIconAnyPngs[] = "icon_any_pngs";
 // is equivalent to
 //   "theme_color": "red"
 constexpr char kOfflineManifestThemeColorArgbHex[] = "theme_color_argb_hex";
+
+// Contains numeric milestone number M like 89 (the Chrome version). The app
+// gets updated if browser's binary milestone number goes from <M to >=M.
+constexpr char kForceReinstallForMilestone[] = "force_reinstall_for_milestone";
+
+// Contains boolean indicating whether the app installation is requested by
+// the device OEM.
+constexpr char kOemInstalled[] = "oem_installed";
 
 }  // namespace
 
@@ -356,6 +367,26 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
                          " set with no ", kOfflineManifest, " available"});
   }
 
+  // force_reinstall_for_milestone
+  value = app_config.FindKey(kForceReinstallForMilestone);
+  if (value) {
+    if (!value->is_int()) {
+      return base::StrCat({file.AsUTF8Unsafe(), " had an invalid ",
+                           kForceReinstallForMilestone});
+    }
+    options.force_reinstall_for_milestone = value->GetInt();
+  }
+
+  // oem_installed
+  value = app_config.FindKey(kOemInstalled);
+  if (value) {
+    if (!value->is_bool()) {
+      return base::StrCat(
+          {file.AsUTF8Unsafe(), " had an invalid ", kOemInstalled});
+    }
+    options.oem_installed = value->GetBool();
+  }
+
   return options;
 }
 
@@ -469,9 +500,9 @@ WebApplicationInfoFactoryOrError ParseOfflineManifest(
            base::NumberToString(bitmap.height())});
     }
 
-    app_info.icon_bitmaps_any[bitmap.width()] = std::move(bitmap);
+    app_info.icon_bitmaps.any[bitmap.width()] = std::move(bitmap);
   }
-  DCHECK(!app_info.icon_bitmaps_any.empty());
+  DCHECK(!app_info.icon_bitmaps.any.empty());
 
   // theme_color_argb_hex (optional)
   const base::Value* theme_color_value =
@@ -495,4 +526,94 @@ WebApplicationInfoFactoryOrError ParseOfflineManifest(
       std::move(app_info));
 }
 
+bool IsReinstallPastMilestoneNeeded(
+    base::StringPiece last_preinstall_synchronize_milestone_str,
+    base::StringPiece current_milestone_str,
+    int force_reinstall_for_milestone) {
+  int last_preinstall_synchronize_milestone = 0;
+  if (!base::StringToInt(last_preinstall_synchronize_milestone_str,
+                         &last_preinstall_synchronize_milestone)) {
+    return false;
+  }
+
+  int current_milestone = 0;
+  if (!base::StringToInt(current_milestone_str, &current_milestone))
+    return false;
+
+  return last_preinstall_synchronize_milestone <
+             force_reinstall_for_milestone &&
+         current_milestone >= force_reinstall_for_milestone;
+}
+
+bool WasAppMigratedToWebApp(Profile* profile, const std::string& app_id) {
+  const base::ListValue* migrated_apps =
+      profile->GetPrefs()->GetList(prefs::kWebAppsMigratedDefaultApps);
+  if (!migrated_apps)
+    return false;
+
+  for (const auto& val : migrated_apps->GetList()) {
+    if (val.is_string() && val.GetString() == app_id)
+      return true;
+  }
+
+  return false;
+}
+
+void MarkAppAsMigratedToWebApp(Profile* profile,
+                               const std::string& app_id,
+                               bool was_migrated) {
+  ListPrefUpdate update(profile->GetPrefs(),
+                        prefs::kWebAppsMigratedDefaultApps);
+  if (was_migrated)
+    update->Append(app_id);
+  else
+    update->EraseListValue(base::Value(app_id));
+}
+
+bool WasMigrationRun(Profile* profile, base::StringPiece feature_name) {
+  const base::ListValue* migrated_features =
+      profile->GetPrefs()->GetList(prefs::kWebAppsDidMigrateDefaultChromeApps);
+  if (!migrated_features)
+    return false;
+
+  for (const auto& val : migrated_features->GetList()) {
+    if (val.is_string() && val.GetString() == feature_name)
+      return true;
+  }
+
+  return false;
+}
+
+void SetMigrationRun(Profile* profile,
+                     base::StringPiece feature_name,
+                     bool was_migrated) {
+  ListPrefUpdate update(profile->GetPrefs(),
+                        prefs::kWebAppsDidMigrateDefaultChromeApps);
+  if (was_migrated)
+    update->Append(feature_name);
+  else
+    update->EraseListValue(base::Value(feature_name));
+}
+
+bool WasDefaultAppUninstalled(Profile* profile, const std::string& app_id) {
+  const base::ListValue* uninstalled_apps =
+      profile->GetPrefs()->GetList(prefs::kWebAppsUninstalledDefaultChromeApps);
+  if (!uninstalled_apps)
+    return false;
+
+  for (const auto& val : uninstalled_apps->GetList()) {
+    if (val.is_string() && val.GetString() == app_id)
+      return true;
+  }
+
+  return false;
+}
+
+void MarkDefaultAppAsUninstalled(Profile* profile, const std::string& app_id) {
+  if (WasDefaultAppUninstalled(profile, app_id))
+    return;
+  ListPrefUpdate update(profile->GetPrefs(),
+                        prefs::kWebAppsUninstalledDefaultChromeApps);
+  update->Append(app_id);
+}
 }  // namespace web_app

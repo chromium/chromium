@@ -11,6 +11,7 @@
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/history/core/browser/history_backend.h"
@@ -67,7 +68,7 @@ StringPieces AllPrefixes(const std::string& str) {
   std::vector<base::StringPiece> res;
   res.reserve(str.size());
   for (auto char_it = str.begin(); char_it != str.end(); ++char_it)
-    res.push_back({str.begin(), char_it});
+    res.push_back(base::MakeStringPiece(str.begin(), char_it));
   return res;
 }
 
@@ -99,7 +100,7 @@ class HQPPerfTestOnePopularURL : public testing::Test {
   }
 
  private:
-  base::TimeDelta RunTest(const base::string16& text);
+  base::TimeDelta RunTest(const std::u16string& text);
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<FakeAutocompleteProviderClient> client_;
@@ -167,7 +168,7 @@ void HQPPerfTestOnePopularURL::PrintMeasurements(
   reporter.AddResultList(".duration", durations);
 }
 
-base::TimeDelta HQPPerfTestOnePopularURL::RunTest(const base::string16& text) {
+base::TimeDelta HQPPerfTestOnePopularURL::RunTest(const std::u16string& text) {
   base::RunLoop().RunUntilIdle();
   AutocompleteInput input(text, metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());

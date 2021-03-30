@@ -47,6 +47,7 @@ void StaticBitmapImage::DrawHelper(
     const PaintFlags& flags,
     const FloatRect& dst_rect,
     const FloatRect& src_rect,
+    const SkSamplingOptions& sampling,
     ImageClampingMode clamp_mode,
     RespectImageOrientationEnum respect_orientation,
     const PaintImage& image) {
@@ -75,7 +76,8 @@ void StaticBitmapImage::DrawHelper(
     }
   }
 
-  canvas->drawImageRect(image, adjusted_src_rect, adjusted_dst_rect, &flags,
+  canvas->drawImageRect(image, adjusted_src_rect, adjusted_dst_rect, sampling,
+                        &flags,
                         WebCoreClampingModeToSkiaRectConstraint(clamp_mode));
 }
 

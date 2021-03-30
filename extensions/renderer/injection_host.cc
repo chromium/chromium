@@ -4,9 +4,8 @@
 
 #include "extensions/renderer/injection_host.h"
 
-InjectionHost::InjectionHost(const HostID& host_id) :
-    id_(host_id) {
-}
+InjectionHost::InjectionHost(const extensions::mojom::HostID& host_id)
+    : id_(host_id) {}
 
 InjectionHost::~InjectionHost() {
 }

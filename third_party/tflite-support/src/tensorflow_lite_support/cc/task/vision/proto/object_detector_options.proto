@@ -1,0 +1,62 @@
+/* Copyright 2020 The TensorFlow Authors. All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+==============================================================================*/
+
+syntax = "proto2";
+
+package tflite.task.vision;
+
+import "tensorflow_lite_support/cc/task/core/proto/external_file.proto";
+
+// Options for setting up an ObjectDetector.
+// Next Id: 8.
+message ObjectDetectorOptions {
+  // The external model file, as a single standalone TFLite file packed with
+  // TFLite Model Metadata [1]. Those are mandatory, and used to populate e.g.
+  // the label map and recommended score threshold.
+  //
+  // [1]: https://www.tensorflow.org/lite/convert/metadata
+  optional core.ExternalFile model_file_with_metadata = 1;
+
+  // The locale to use for display names specified through the TFLite Model
+  // Metadata, if any. Defaults to English.
+  optional string display_names_locale = 2 [default = "en"];
+
+  // The maximum number of top-scored detection results to return. If < 0, all
+  // available results will be returned. If 0, an invalid argument error is
+  // returned. Note that models may intrinsically be limited to returning a
+  // maximum number of results N: if the provided value here is above N, only N
+  // results will be returned.
+  optional int32 max_results = 3 [default = -1];
+
+  // Score threshold to override the one provided in the model metadata (if
+  // any). Detection results with a score below this value are rejected.
+  optional float score_threshold = 4;
+
+  // Optional whitelist of class names. If non-empty, detection results whose
+  // class name is not in this set will be filtered out. Duplicate or unknown
+  // class names are ignored. Mutually exclusive with class_name_blacklist.
+  repeated string class_name_whitelist = 5;
+
+  // Optional blacklist of class names. If non-empty, detection results whose
+  // class name is in this set will be filtered out. Duplicate or unknown
+  // class names are ignored. Mutually exclusive with class_name_whitelist.
+  repeated string class_name_blacklist = 6;
+
+  // The number of threads to be used for TFLite ops that support
+  // multi-threading when running inference with CPU.
+  // num_threads should be greater than 0 or equal to -1. Setting num_threads to
+  // -1 has the effect to let TFLite runtime set the value.
+  optional int32 num_threads = 7 [default = -1];
+}

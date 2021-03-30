@@ -61,6 +61,13 @@ class SubSurface : public SurfaceDelegate, public SurfaceObserver {
   void SetUseImmersiveForFullscreen(bool value) override {}
   void OnActivationRequested() override {}
   void OnNewOutputAdded() override {}
+  void OnSetServerStartResize() override {}
+  void ShowSnapPreviewToLeft() override {}
+  void ShowSnapPreviewToRight() override {}
+  void HideSnapPreview() override {}
+  void SetSnappedToLeft() override {}
+  void SetSnappedToRight() override {}
+  void UnsetSnap() override {}
 
   // Overridden from SurfaceObserver:
   void OnSurfaceDestroying(Surface* surface) override;

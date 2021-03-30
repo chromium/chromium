@@ -70,12 +70,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method postMessage
 [Worker]     setter onmessage
 [Worker]     setter onmessageerror
-[Worker] interface BucketManager
-[Worker]     attribute @@toStringTag
-[Worker]     method constructor
-[Worker]     method delete
-[Worker]     method keys
-[Worker]     method openOrCreate
 [Worker] interface ByteLengthQueuingStrategy
 [Worker]     attribute @@toStringTag
 [Worker]     getter highWaterMark
@@ -109,6 +103,9 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method keys
 [Worker]     method match
 [Worker]     method open
+[Worker] interface CanvasFilter
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
 [Worker] interface CanvasGradient
 [Worker]     attribute @@toStringTag
 [Worker]     method addColorStop
@@ -493,7 +490,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method requestPermission
 [Worker] interface FileSystemWritableFileStream : WritableStream
 [Worker]     attribute @@toStringTag
-[Worker]     method close
 [Worker]     method constructor
 [Worker]     method seek
 [Worker]     method truncate
@@ -507,6 +503,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter featureSettings
 [Worker]     getter lineGapOverride
 [Worker]     getter loaded
+[Worker]     getter sizeAdjust
 [Worker]     getter status
 [Worker]     getter stretch
 [Worker]     getter style
@@ -521,6 +518,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter family
 [Worker]     setter featureSettings
 [Worker]     setter lineGapOverride
+[Worker]     setter sizeAdjust
 [Worker]     setter stretch
 [Worker]     setter style
 [Worker]     setter unicodeRange
@@ -647,23 +645,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method put
 [Worker]     method putAllValues
 [Worker]     setter name
-[Worker] interface IDBObservation
-[Worker]     attribute @@toStringTag
-[Worker]     getter key
-[Worker]     getter type
-[Worker]     getter value
-[Worker]     method constructor
-[Worker] interface IDBObserver
-[Worker]     attribute @@toStringTag
-[Worker]     method constructor
-[Worker]     method observe
-[Worker]     method unobserve
-[Worker] interface IDBObserverChanges
-[Worker]     attribute @@toStringTag
-[Worker]     getter database
-[Worker]     getter records
-[Worker]     getter transaction
-[Worker]     method constructor
 [Worker] interface IDBOpenDBRequest : IDBRequest
 [Worker]     attribute @@toStringTag
 [Worker]     getter onblocked
@@ -832,8 +813,11 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method delete
 [Worker]     method getAll
+[Worker]     method getRemainingCapacity
 [Worker]     method open
+[Worker]     method releaseCapacity
 [Worker]     method rename
+[Worker]     method requestCapacity
 [Worker] interface NavigationPreloadManager
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
@@ -955,6 +939,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method lineTo
 [Worker]     method measureText
 [Worker]     method moveTo
+[Worker]     method perspective
 [Worker]     method putImageData
 [Worker]     method quadraticCurveTo
 [Worker]     method rect
@@ -962,6 +947,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method resetTransform
 [Worker]     method restore
 [Worker]     method rotate
+[Worker]     method rotate3d
+[Worker]     method rotateAxis
 [Worker]     method roundRect
 [Worker]     method save
 [Worker]     method scale
@@ -1117,7 +1104,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method request
 [Worker]     method requestAll
 [Worker]     method revoke
-[Worker] interface Profiler
+[Worker] interface Profiler : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     getter sampleInterval
 [Worker]     getter stopped
@@ -1315,6 +1302,20 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute PERSISTENT
 [Worker]     attribute TEMPORARY
 [Worker]     method constructor
+[Worker] interface StorageBucket
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker]     method durability
+[Worker]     method estimate
+[Worker]     method expires
+[Worker]     method persisted
+[Worker]     method setExpires
+[Worker] interface StorageBucketManager
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker]     method delete
+[Worker]     method keys
+[Worker]     method open
 [Worker] interface StorageManager : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     getter onquotachange
@@ -1443,6 +1444,14 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter username
 [Worker] interface URLPattern
 [Worker]     attribute @@toStringTag
+[Worker]     getter hash
+[Worker]     getter hostname
+[Worker]     getter password
+[Worker]     getter pathname
+[Worker]     getter port
+[Worker]     getter protocol
+[Worker]     getter search
+[Worker]     getter username
 [Worker]     method constructor
 [Worker]     method exec
 [Worker]     method test
@@ -2800,7 +2809,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter indexedDB
 [Worker]     getter isSecureContext
 [Worker]     getter location
-[Worker]     getter nativeIO
 [Worker]     getter navigator
 [Worker]     getter onerror
 [Worker]     getter onlanguagechange
@@ -2810,6 +2818,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter origin
 [Worker]     getter performance
 [Worker]     getter self
+[Worker]     getter storageFoundation
 [Worker]     getter trustedTypes
 [Worker]     method atob
 [Worker]     method btoa

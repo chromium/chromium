@@ -15,7 +15,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
 #include "chrome/browser/ui/media_router/cast_dialog_model.h"
@@ -110,7 +109,7 @@ class MediaRouterUI
   std::vector<MediaSinkWithCastModes> GetEnabledSinks() const;
 
   // Returns a PresentationRequest source name that can be shown in the dialog.
-  base::string16 GetPresentationRequestSourceName() const;
+  std::u16string GetPresentationRequestSourceName() const;
 
   // Calls MediaRouter to add the given issue.
   void AddIssue(const IssueInfo& issue);
@@ -248,7 +247,7 @@ class MediaRouterUI
   void SendIssueForRouteTimeout(
       MediaCastMode cast_mode,
       const MediaSink::Id& sink_id,
-      const base::string16& presentation_request_source_name);
+      const std::u16string& presentation_request_source_name);
 
 // Creates and sends an issue if casting fails due to lack of screen
 // permissions.
@@ -288,7 +287,7 @@ class MediaRouterUI
       int route_request_id,
       const MediaSink::Id& sink_id,
       MediaCastMode cast_mode,
-      const base::string16& presentation_request_source_name,
+      const std::u16string& presentation_request_source_name,
       const RouteRequestResult& result);
 
   // Update the header text in the dialog model and notify observers.

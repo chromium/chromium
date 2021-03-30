@@ -605,8 +605,6 @@ namespace networking.onc {
     DOMString? Security;
     // The network signal strength.
     long? SignalStrength;
-    // The tethering state associated with the connection.
-    DOMString? TetheringState;
   };
 
   dictionary ManagedWiFiProperties {
@@ -632,8 +630,6 @@ namespace networking.onc {
     ManagedDOMString Security;
     // See $(ref:WiFiProperties.SignalStrength).
     long? SignalStrength;
-    // See $(ref:WiFiProperties.TetheringState).
-    DOMString? TetheringState;
   };
 
   dictionary WiFiStateProperties {
@@ -649,8 +645,6 @@ namespace networking.onc {
     long? SignalStrength;
     // See $(ref:WiFiProperties.SSID).
     DOMString? SSID;
-    // See $(ref:WiFiProperties.TetheringState).
-    DOMString? TetheringState;
   };
 
   // Deprecated

@@ -4,17 +4,16 @@
 
 #include "chrome/browser/chromeos/crostini/crostini_features.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/callback.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/crostini/crostini_pref_names.h"
 #include "chrome/browser/chromeos/crostini/fake_crostini_features.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -89,10 +88,69 @@ TEST(CrostiniFeaturesTest, TestRootAccessAllowed) {
   }
 }
 
+class CrostiniFeaturesAllowedTest : public testing::Test {
+ protected:
+  CrostiniFeaturesAllowedTest()
+      : user_manager_(new ash::FakeChromeUserManager()),
+        scoped_user_manager_(base::WrapUnique(user_manager_)) {}
+
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures({features::kCrostini}, {});
+  }
+
+  void AddUserWithAffiliation(bool is_affiliated) {
+    AccountId account_id =
+        AccountId::FromUserEmail(profile_.GetProfileUserName());
+    user_manager_->AddUserWithAffiliation(account_id, is_affiliated);
+    user_manager_->LoginUser(account_id);
+  }
+
+  content::BrowserTaskEnvironment task_environment_;
+
+  TestingProfile profile_;
+  FakeCrostiniFeatures crostini_features_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  ash::FakeChromeUserManager* user_manager_;
+  user_manager::ScopedUserManager scoped_user_manager_;
+};
+
+TEST_F(CrostiniFeaturesAllowedTest, TestDefaultUnmanagedBehaviour) {
+  AddUserWithAffiliation(false);
+
+  std::string reason;
+  bool crostini_is_allowed_now =
+      crostini_features_.IsAllowedNow(&profile_, &reason);
+  EXPECT_TRUE(crostini_is_allowed_now);
+}
+
+TEST_F(CrostiniFeaturesAllowedTest, TestDefaultAffiliatedUserBehaviour) {
+  AddUserWithAffiliation(true);
+
+  std::string reason;
+  bool crostini_is_allowed_now =
+      crostini_features_.IsAllowedNow(&profile_, &reason);
+  EXPECT_FALSE(crostini_is_allowed_now);
+  EXPECT_EQ(reason,
+            "Affiliated user is not allowed to run Crostini by default.");
+}
+
+TEST_F(CrostiniFeaturesAllowedTest, TestPolicyAffiliatedUserBehaviour) {
+  AddUserWithAffiliation(true);
+  profile_.GetTestingPrefService()->SetManagedPref(
+      crostini::prefs::kUserCrostiniAllowedByPolicy,
+      std::make_unique<base::Value>(true));
+
+  std::string reason;
+  bool crostini_is_allowed_now =
+      crostini_features_.IsAllowedNow(&profile_, &reason);
+  EXPECT_TRUE(crostini_is_allowed_now);
+}
+
 class CrostiniFeaturesAdbSideloadingTest : public testing::Test {
  protected:
   CrostiniFeaturesAdbSideloadingTest()
-      : user_manager_(new chromeos::FakeChromeUserManager()),
+      : user_manager_(new ash::FakeChromeUserManager()),
         scoped_user_manager_(base::WrapUnique(user_manager_)) {}
 
   void SetFeatureFlag(bool is_enabled) {
@@ -190,10 +248,10 @@ class CrostiniFeaturesAdbSideloadingTest : public testing::Test {
   TestingProfile profile_;
   FakeCrostiniFeatures crostini_features_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  chromeos::ScopedCrosSettingsTestHelper scoped_settings_helper_{
+  ash::ScopedCrosSettingsTestHelper scoped_settings_helper_{
       /* create_settings_service=*/false};
 
-  chromeos::FakeChromeUserManager* user_manager_;
+  ash::FakeChromeUserManager* user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
 };
 

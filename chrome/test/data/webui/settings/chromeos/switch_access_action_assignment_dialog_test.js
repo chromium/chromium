@@ -15,6 +15,7 @@ suite('SwitchAccessActionAssignmentDialogTest', function() {
 
   setup(function() {
     dialog = document.createElement('settings-switch-access-action-assignment-dialog');
+    dialog.action = 'select';
     document.body.appendChild(dialog);
     Polymer.dom.flush();
   });

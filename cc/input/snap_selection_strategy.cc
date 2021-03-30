@@ -124,18 +124,18 @@ bool DirectionStrategy::IsValidSnapPosition(SearchAxis axis,
                                             float position) const {
   // If not using fractional offsets then it is possible for the currently
   // snapped area's offset, which is fractional, to not be equal to the current
-  // scroll offset, which is not fractional. Therefore we round the offsets so
-  // that any position within 0.5 of the current position is ignored.
+  // scroll offset, which is not fractional. Therefore we truncate the offsets
+  // so that any position within 1 of the current position is ignored.
   if (axis == SearchAxis::kX) {
     float delta = position - current_position_.x();
     if (!use_fractional_offsets_)
-      delta = std::round(delta);
+      delta = delta > 0 ? std::floor(delta) : std::ceil(delta);
     return (step_.x() > 0 && delta > 0) ||  // "Right" arrow
            (step_.x() < 0 && delta < 0);    // "Left" arrow
   } else {
     float delta = position - current_position_.y();
     if (!use_fractional_offsets_)
-      delta = std::round(delta);
+      delta = delta > 0 ? std::floor(delta) : std::ceil(delta);
     return (step_.y() > 0 && delta > 0) ||  // "Down" arrow
            (step_.y() < 0 && delta < 0);    // "Up" arrow
   }

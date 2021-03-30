@@ -38,6 +38,16 @@ class ShowCastAction : public Action {
           action,
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> done);
+
+  void OnFindContainer(const Selector& selector,
+                       const TopPadding& top_padding,
+                       const ClientStatus& element_status,
+                       std::unique_ptr<ElementFinder::Result> container);
+
+  void ScrollToElement(const Selector& selector,
+                       const TopPadding& top_padding,
+                       std::unique_ptr<ElementFinder::Result> container);
+
   void OnScrollToElementPosition(const ClientStatus& status);
 
   void EndAction(const ClientStatus& status);

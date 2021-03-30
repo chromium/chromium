@@ -45,6 +45,11 @@ void NetworkHealthService::BindDiagnosticsReceiver(
   network_diagnostics_->BindReceiver(std::move(receiver));
 }
 
+void NetworkHealthService::AddObserver(
+    mojo::PendingRemote<mojom::NetworkEventsObserver> observer) {
+  network_health_->AddObserver(std::move(observer));
+}
+
 NetworkHealthService* NetworkHealthService::GetInstance() {
   static base::NoDestructor<NetworkHealthService> instance;
   return instance.get();

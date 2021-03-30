@@ -100,6 +100,11 @@
             "value": ["thirdPartyCookiesAllowed", {"type": "boolean"}],
             "description": "If disabled, Chrome blocks third-party sites from setting cookies. The value of this preference is of type boolean, and the default value is <code>true</code>."
           },
+          "privacySandboxEnabled": {
+            "$ref": "types.ChromeSetting",
+            "value": ["privacySandboxEnabled", {"type": "boolean"}],
+            "description": "If enabled, the experimental <a href=”https://www.chromium.org/Home/chromium-privacy/privacy-sandbox”>Privacy Sandbox</a> features are active. The value of this preference is of type boolean, and the default value is <code>true</code>. PLEASE NOTE: The schema of this API may change in the future as the Privacy Sandbox features crystallize. In that case, we will provide prior notice."
+          },
           "hyperlinkAuditingEnabled": {
             "$ref": "types.ChromeSetting",
             "value": ["hyperlinkAuditingEnabled", {"type":"boolean"}],

@@ -280,6 +280,8 @@ void Rankings::Insert(CacheRankingsBlock* node, bool modified, List list) {
 
   UpdateTimes(node, modified);
   node->Store();
+  // Make sure other aliased in-memory copies get synchronized.
+  UpdateIterators(node);
   GenerateCrash(ON_INSERT_3);
 
   // The last thing to do is move our head to point to a node already stored.
@@ -871,7 +873,8 @@ void Rankings::UpdateIterators(CacheRankingsBlock* node) {
   for (auto it = iterators_.begin(); it != iterators_.end(); ++it) {
     if (it->first == address && it->second->HasData()) {
       CacheRankingsBlock* other = it->second;
-      *other->Data() = *node->Data();
+      if (other != node)
+        *other->Data() = *node->Data();
     }
   }
 }

@@ -18,6 +18,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
@@ -30,6 +31,7 @@
 #include "base/supports_user_data.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/trace_event/typed_macros.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -63,6 +65,7 @@
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/database/database_tracker.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 using base::UserDataAdapter;
 
@@ -70,19 +73,8 @@ namespace content {
 
 namespace {
 
-class ContentServiceHolder : public base::SupportsUserData::Data {
- public:
-  explicit ContentServiceHolder(BrowserContext* browser_context) {}
-
-  ~ContentServiceHolder() override = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentServiceHolder);
-};
-
 // Key names on BrowserContext.
 const char kBrowsingDataRemoverKey[] = "browsing-data-remover";
-const char kContentServiceKey[] = "content-service";
 const char kDownloadManagerKeyName[] = "download_manager";
 const char kPermissionControllerKey[] = "permission-controller";
 const char kStoragePartitionMapKeyName[] = "content_storage_partition_map";
@@ -123,9 +115,8 @@ void ShutdownSharedWorkerContext(StoragePartition* partition) {
   partition->GetSharedWorkerService()->Shutdown();
 }
 
-void SetDownloadManager(
-    BrowserContext* context,
-    std::unique_ptr<content::DownloadManager> download_manager) {
+void SetDownloadManager(BrowserContext* context,
+                        std::unique_ptr<DownloadManager> download_manager) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(download_manager);
   context->SetUserData(kDownloadManagerKeyName, std::move(download_manager));
@@ -196,7 +187,7 @@ storage::ExternalMountPoints* BrowserContext::GetMountPoints(
 }
 
 // static
-content::BrowsingDataRemover* content::BrowserContext::GetBrowsingDataRemover(
+BrowsingDataRemover* BrowserContext::GetBrowsingDataRemover(
     BrowserContext* context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -212,7 +203,7 @@ content::BrowsingDataRemover* content::BrowserContext::GetBrowsingDataRemover(
 }
 
 // static
-content::PermissionController* content::BrowserContext::GetPermissionController(
+PermissionController* BrowserContext::GetPermissionController(
     BrowserContext* context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -229,13 +220,16 @@ StoragePartition* BrowserContext::GetStoragePartition(
     BrowserContext* browser_context,
     SiteInstance* site_instance,
     bool can_create) {
-  if (!site_instance) {
-    return GetStoragePartition(
-        browser_context, StoragePartitionConfig::CreateDefault(), can_create);
-  }
+  if (site_instance)
+    DCHECK_EQ(browser_context, site_instance->GetBrowserContext());
 
-  return GetStoragePartitionForSite(browser_context,
-                                    site_instance->GetSiteURL(), can_create);
+  auto* site_instance_impl = static_cast<SiteInstanceImpl*>(site_instance);
+  auto partition_config =
+      site_instance_impl
+          ? site_instance_impl->GetSiteInfo().GetStoragePartitionConfig(
+                browser_context)
+          : StoragePartitionConfig::CreateDefault(browser_context);
+  return GetStoragePartition(browser_context, partition_config, can_create);
 }
 
 StoragePartition* BrowserContext::GetStoragePartition(
@@ -245,20 +239,20 @@ StoragePartition* BrowserContext::GetStoragePartition(
   StoragePartitionImplMap* partition_map =
       GetStoragePartitionMap(browser_context);
 
-  auto config_to_use = storage_partition_config;
-  if (browser_context->IsOffTheRecord())
-    config_to_use = storage_partition_config.CopyWithInMemorySet();
+  if (browser_context->IsOffTheRecord()) {
+    // An off the record profile MUST only use in memory storage partitions.
+    CHECK(storage_partition_config.in_memory());
+  }
 
-  return partition_map->Get(config_to_use, can_create);
+  return partition_map->Get(storage_partition_config, can_create);
 }
 
-StoragePartition* BrowserContext::GetStoragePartitionForSite(
+StoragePartition* BrowserContext::GetStoragePartitionForUrl(
     BrowserContext* browser_context,
-    const GURL& site,
+    const GURL& url,
     bool can_create) {
-  auto storage_partition_config =
-      GetContentClient()->browser()->GetStoragePartitionConfigForSite(
-          browser_context, site);
+  auto storage_partition_config = SiteInfo::GetStoragePartitionConfigForUrl(
+      browser_context, url, /*is_site_url=*/false);
 
   return GetStoragePartition(browser_context, storage_partition_config,
                              can_create);
@@ -286,8 +280,8 @@ size_t BrowserContext::GetStoragePartitionCount(
 
 StoragePartition* BrowserContext::GetDefaultStoragePartition(
     BrowserContext* browser_context) {
-  return GetStoragePartition(browser_context,
-                             StoragePartitionConfig::CreateDefault());
+  return GetStoragePartition(
+      browser_context, StoragePartitionConfig::CreateDefault(browser_context));
 }
 
 // static
@@ -355,23 +349,22 @@ void BrowserContext::FirePushSubscriptionChangeEvent(
 
 // static
 void BrowserContext::NotifyWillBeDestroyed(BrowserContext* browser_context) {
-  TRACE_EVENT1("shutdown", "BrowserContext::NotifyWillBeDestroyed",
-               "browser_context", browser_context);
+  TRACE_EVENT("shutdown", "BrowserContext::NotifyWillBeDestroyed",
+              [&](perfetto::EventContext ctx) {
+                auto* event =
+                    ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+                event->set_chrome_browser_context()->set_ptr(
+                    reinterpret_cast<uint64_t>(browser_context));
+              });
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
       "shutdown", "BrowserContext::NotifyWillBeDestroyed() called.",
-      browser_context, "browser_context", browser_context);
+      browser_context, "browser_context", static_cast<void*>(browser_context));
   // Make sure NotifyWillBeDestroyed is idempotent.  This helps facilitate the
   // pattern where NotifyWillBeDestroyed is called from *both*
   // ShellBrowserContext and its derived classes (e.g. WebTestBrowserContext).
   if (browser_context->was_notify_will_be_destroyed_called_)
     return;
   browser_context->was_notify_will_be_destroyed_called_ = true;
-
-  // Subclasses of BrowserContext may expect there to be no more
-  // RenderProcessHosts using them by the time this function returns. We
-  // therefore explicitly tear down embedded Content Service instances now to
-  // ensure that all their WebContents (and therefore RPHs) are torn down too.
-  browser_context->RemoveUserData(kContentServiceKey);
 
   // Shut down service worker and shared worker machinery because these can keep
   // RenderProcessHosts and SiteInstances alive, and the codebase assumes these
@@ -442,7 +435,7 @@ void BrowserContext::SaveSessionState(BrowserContext* browser_context) {
 // static
 void BrowserContext::SetDownloadManagerForTesting(
     BrowserContext* browser_context,
-    std::unique_ptr<content::DownloadManager> download_manager) {
+    std::unique_ptr<DownloadManager> download_manager) {
   SetDownloadManager(browser_context, std::move(download_manager));
 }
 
@@ -456,17 +449,49 @@ void BrowserContext::SetPermissionControllerForTesting(
                                std::move(permission_controller));
 }
 
+// static
+SharedCorsOriginAccessList* BrowserContext::GetSharedCorsOriginAccessList(
+    BrowserContext* context) {
+  const char kSharedCorsOriginAccessListKeyName[] =
+      "BrowserContext -> SharedCorsOriginAccessList";
+  using UserDataAdapter = base::UserDataAdapter<SharedCorsOriginAccessList>;
+
+  // Return the existing UserData if possible.
+  if (SharedCorsOriginAccessList* result =
+          UserDataAdapter::Get(context, kSharedCorsOriginAccessListKeyName)) {
+    return result;
+  }
+
+  // Otherwise create and attach new UserData.
+  scoped_refptr<SharedCorsOriginAccessList> result =
+      SharedCorsOriginAccessList::Create();
+  context->SetUserData(kSharedCorsOriginAccessListKeyName,
+                       std::make_unique<UserDataAdapter>(result.get()));
+  return result.get();
+}
+
 BrowserContext::BrowserContext()
     : unique_id_(base::UnguessableToken::Create().ToString()) {
-  TRACE_EVENT1("shutdown", "BrowserContext::BrowserContext", "browser_context",
-               this);
+  TRACE_EVENT("shutdown", "BrowserContext::BrowserContext",
+              [&](perfetto::EventContext ctx) {
+                auto* event =
+                    ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+                event->set_chrome_browser_context()->set_ptr(
+                    reinterpret_cast<uint64_t>(this));
+              });
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("shutdown", "Browser.BrowserContext", this,
-                                    "browser_context", this);
+                                    "browser_context",
+                                    static_cast<void*>(this));
 }
 
 BrowserContext::~BrowserContext() {
-  TRACE_EVENT1("shutdown", "BrowserContext::~BrowserContext", "browser_context",
-               this);
+  TRACE_EVENT("shutdown", "BrowserContext::~BrowserContext",
+              [&](perfetto::EventContext ctx) {
+                auto* event =
+                    ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+                event->set_chrome_browser_context()->set_ptr(
+                    reinterpret_cast<uint64_t>(this));
+              });
   DCHECK(!GetUserData(kStoragePartitionMapKeyName))
       << "StoragePartitionMap is not shut down properly";
 
@@ -512,9 +537,9 @@ BrowserContext::~BrowserContext() {
 
   TRACE_EVENT_NESTABLE_ASYNC_END1(
       "shutdown", "BrowserContext::NotifyWillBeDestroyed() called.", this,
-      "browser_context", this);
+      "browser_context", static_cast<void*>(this));
   TRACE_EVENT_NESTABLE_ASYNC_END1("shutdown", "Browser.BrowserContext", this,
-                                  "browser_context", this);
+                                  "browser_context", static_cast<void*>(this));
 }
 
 void BrowserContext::ShutdownStoragePartitions() {
@@ -609,24 +634,8 @@ BrowserContext::RetriveInProgressDownloadManager() {
   return nullptr;
 }
 
-void BrowserContext::SetCorsOriginAccessListForOrigin(
-    const url::Origin& source_origin,
-    std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
-    std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
-    base::OnceClosure closure) {
-  NOTREACHED() << "Sub-classes should implement this method to communicate "
-                  "with NetworkService to bypass CORS checks.";
-}
-
-SharedCorsOriginAccessList* BrowserContext::GetSharedCorsOriginAccessList() {
-  // Need to return a valid instance regardless of CORS bypass supports.
-  static const base::NoDestructor<scoped_refptr<SharedCorsOriginAccessList>>
-      empty_list(SharedCorsOriginAccessList::Create());
-  return empty_list->get();
-}
-
-NativeFileSystemPermissionContext*
-BrowserContext::GetNativeFileSystemPermissionContext() {
+FileSystemAccessPermissionContext*
+BrowserContext::GetFileSystemAccessPermissionContext() {
   return nullptr;
 }
 
@@ -640,6 +649,11 @@ bool BrowserContext::CanUseDiskWhenOffTheRecord() {
 
 variations::VariationsClient* BrowserContext::GetVariationsClient() {
   return nullptr;
+}
+
+void BrowserContext::WriteIntoTracedValue(perfetto::TracedValue context) {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("id", unique_id_);
 }
 
 }  // namespace content

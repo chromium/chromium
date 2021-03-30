@@ -205,7 +205,7 @@ void RTCDataChannel::Observer::OnMessage(const webrtc::DataBuffer& buffer) {
       *main_thread_, FROM_HERE,
       CrossThreadBindOnce(&RTCDataChannel::Observer::OnMessageImpl,
                           scoped_refptr<Observer>(this),
-                          WTF::Passed(std::move(new_buffer))));
+                          std::move(new_buffer)));
 }
 
 void RTCDataChannel::Observer::OnStateChangeImpl(
@@ -417,15 +417,14 @@ void RTCDataChannel::send(DOMArrayBuffer* data,
 
 void RTCDataChannel::send(NotShared<DOMArrayBufferView> data,
                           ExceptionState& exception_state) {
-  if (!(base::CheckedNumeric<unsigned>(buffered_amount_) +
-        data.View()->byteLength())
+  if (!(base::CheckedNumeric<unsigned>(buffered_amount_) + data->byteLength())
            .IsValid()) {
     ThrowBufferOverflowException(&exception_state);
     return;
   }
-  buffered_amount_ += data.View()->byteLength();
-  if (!SendRawData(static_cast<const char*>(data.View()->BaseAddress()),
-                   data.View()->byteLength())) {
+  buffered_amount_ += data->byteLength();
+  if (!SendRawData(static_cast<const char*>(data->BaseAddress()),
+                   data->byteLength())) {
     // TODO(https://crbug.com/937848): Don't throw an exception if data is
     // queued.
     ThrowCouldNotSendDataException(&exception_state);
@@ -505,6 +504,7 @@ bool RTCDataChannel::HasPendingActivity() const {
 
 void RTCDataChannel::Trace(Visitor* visitor) const {
   visitor->Trace(scheduled_events_);
+  visitor->Trace(scheduled_event_timer_);
   EventTargetWithInlineData::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }

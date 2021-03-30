@@ -21,9 +21,10 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_resource.h"
-#include "extensions/common/host_id.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
+#include "extensions/common/mojom/host_id.mojom.h"
+#include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/script_constants.h"
 #include "extensions/common/url_pattern.h"
@@ -40,17 +41,17 @@ using ContentScriptsKeys = content_scripts_api::ManifestKeys;
 
 namespace {
 
-UserScript::RunLocation ConvertRunLocation(content_scripts_api::RunAt run_at) {
+mojom::RunLocation ConvertRunLocation(content_scripts_api::RunAt run_at) {
   switch (run_at) {
     case content_scripts_api::RUN_AT_DOCUMENT_END:
-      return UserScript::DOCUMENT_END;
+      return mojom::RunLocation::kDocumentEnd;
     case content_scripts_api::RUN_AT_DOCUMENT_IDLE:
-      return UserScript::DOCUMENT_IDLE;
+      return mojom::RunLocation::kDocumentIdle;
     case content_scripts_api::RUN_AT_DOCUMENT_START:
-      return UserScript::DOCUMENT_START;
+      return mojom::RunLocation::kDocumentStart;
     case content_scripts_api::RUN_AT_NONE:
       NOTREACHED();
-      return UserScript::DOCUMENT_IDLE;
+      return mojom::RunLocation::kDocumentIdle;
   }
 }
 
@@ -63,7 +64,7 @@ std::unique_ptr<UserScript> CreateUserScript(
     int valid_schemes,
     bool all_urls_includes_chrome_urls,
     Extension* extension,
-    base::string16* error) {
+    std::u16string* error) {
   auto result = std::make_unique<UserScript>();
 
   // run_at
@@ -277,10 +278,10 @@ base::span<const char* const> ContentScriptsHandler::Keys() const {
   return kKeys;
 }
 
-bool ContentScriptsHandler::Parse(Extension* extension, base::string16* error) {
+bool ContentScriptsHandler::Parse(Extension* extension, std::u16string* error) {
   ContentScriptsKeys manifest_keys;
-  if (!ContentScriptsKeys::ParseFromDictionary(*extension->manifest()->value(),
-                                               &manifest_keys, error)) {
+  if (!ContentScriptsKeys::ParseFromDictionary(
+          extension->manifest()->available_values(), &manifest_keys, error)) {
     return false;
   }
 
@@ -300,7 +301,8 @@ bool ContentScriptsHandler::Parse(Extension* extension, base::string16* error) {
     if (!user_script)
       return false;  // Failed to parse script context definition.
 
-    user_script->set_host_id(HostID(HostID::EXTENSIONS, extension->id()));
+    user_script->set_host_id(
+        mojom::HostID(mojom::HostID::HostType::kExtensions, extension->id()));
     if (extension->converted_from_user_script()) {
       user_script->set_emulate_greasemonkey(true);
       // Greasemonkey matches all frames.

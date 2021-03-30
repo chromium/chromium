@@ -61,21 +61,6 @@ void LiveTabCountPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
       bucket, timing.paint_timing->first_contentful_paint.value());
 }
 
-void LiveTabCountPageLoadMetricsObserver::
-    OnFirstMeaningfulPaintInMainFrameDocument(
-        const page_load_metrics::mojom::PageLoadTiming& timing) {
-  if (!page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
-          timing.paint_timing->first_meaningful_paint, GetDelegate())) {
-    return;
-  }
-
-  const size_t bucket = tab_count_metrics::BucketForTabCount(GetLiveTabCount());
-  LIVE_TAB_COUNT_PAINT_PAGE_LOAD_HISTOGRAM(
-      std::string(internal::kHistogramPrefixLiveTabCount)
-          .append(internal::kHistogramFirstMeaningfulPaintSuffix),
-      bucket, timing.paint_timing->first_meaningful_paint.value());
-}
-
 void LiveTabCountPageLoadMetricsObserver::OnFirstInputInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   if (!page_load_metrics::WasStartedInForegroundOptionalEventInForeground(

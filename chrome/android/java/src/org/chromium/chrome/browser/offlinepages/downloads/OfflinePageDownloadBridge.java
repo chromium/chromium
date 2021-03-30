@@ -23,7 +23,7 @@ import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
-import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider.CustomTabsUiType;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.download.DownloadActivity;
 import org.chromium.chrome.browser.download.DownloadInfo;
@@ -240,7 +240,7 @@ public class OfflinePageDownloadBridge {
     public static void showDownloadingToast() {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_PROGRESS_INFOBAR)) {
             DownloadManagerService.getDownloadManagerService()
-                    .getInfoBarController(false)
+                    .getInfoBarController(/*otrProfileID=*/null)
                     .onDownloadStarted();
         } else {
             Toast.makeText(ContextUtils.getApplicationContext(), R.string.download_started,

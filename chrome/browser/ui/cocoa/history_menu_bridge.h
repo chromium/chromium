@@ -69,7 +69,7 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
     ~HistoryItem();
 
     // The title for the menu item.
-    base::string16 title;
+    std::u16string title;
     // The URL that will be navigated to if the user selects this item.
     GURL url;
     // Favicon for the URL.
@@ -162,7 +162,7 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
   // index. This will add |item| and the newly created menu item to the
   // |menu_item_map_|, which takes ownership. Items are deleted in
   // ClearMenuSection(). This returns the new menu item that was just added.
-  NSMenuItem* AddItemToMenu(HistoryItem* item,
+  NSMenuItem* AddItemToMenu(std::unique_ptr<HistoryItem> item,
                             NSMenu* menu,
                             NSInteger tag,
                             NSInteger index);
@@ -182,9 +182,9 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
   // most recently-visited sites.
   void OnVisitedHistoryResults(history::QueryResults results);
 
-  // Creates a HistoryItem* for the given tab entry. Caller takes ownership of
-  // the result and must delete it when finished.
-  HistoryItem* HistoryItemForTab(const sessions::TabRestoreService::Tab& entry);
+  // Creates a HistoryItem* for the given tab entry.
+  std::unique_ptr<HistoryItem> HistoryItemForTab(
+      const sessions::TabRestoreService::Tab& entry);
 
   // Helper function that sends an async request to the FaviconService to get
   // an icon. The callback will update the NSMenuItem directly.
@@ -216,6 +216,7 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;
   void OnHistoryServiceLoaded(history::HistoryService* service) override;
+  void HistoryServiceBeingDeleted(history::HistoryService* service) override;
 
   base::scoped_nsobject<HistoryMenuCocoaController> controller_;  // strong
 
@@ -225,9 +226,8 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
 
   base::CancelableTaskTracker cancelable_task_tracker_;
 
-  // Mapping of NSMenuItems to HistoryItems. This owns the HistoryItems until
-  // they are removed and deleted via ClearMenuSection().
-  std::map<NSMenuItem*, HistoryItem*> menu_item_map_;
+  // Mapping of NSMenuItems to HistoryItems.
+  std::map<NSMenuItem*, std::unique_ptr<HistoryItem>> menu_item_map_;
 
   // Requests to re-create the menu are coalesced. |create_in_progress_| is true
   // when either waiting for the history service to return query results, or

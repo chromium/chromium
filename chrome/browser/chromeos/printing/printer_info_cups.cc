@@ -9,8 +9,6 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string_piece.h"
-#include "base/strings/string_util.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -24,11 +22,6 @@ namespace {
 
 const char kPdfMimeType[] = "application/pdf";
 const char kPwgRasterMimeType[] = "image/pwg-raster";
-
-// List of known multi-word printer manufacturers to help with make-and-model
-// string parsing.  Keep in UPPER CASE as that's how matches are performed.
-const std::array<const char* const, 4> kMultiWordManufacturers{
-    {"FUJI XEROX", "KODAK FUNAI", "KONICA MINOLTA", "TEXAS INSTRUMENTS"}};
 
 // Wraps several printing data structures so that we can use
 // PostTaskAndReplyWithResult().
@@ -52,24 +45,6 @@ enum class IppVersion {
   k22,
   kMaxValue = k22
 };
-
-// Returns the length of the portion of |make_and_model| representing the
-// manufacturer.  This is either a value from kMultiWordManufacaturers or the
-// first token.  If there is only one token or less, we assume that it does not
-// represent the manufacturer and return 0.
-size_t ManufacturerLength(base::StringPiece make_and_model) {
-  // TODO(crbug.com/729245): Update when better data is available.
-  for (base::StringPiece multi_word_manufacturer : kMultiWordManufacturers) {
-    if (base::StartsWith(make_and_model, multi_word_manufacturer,
-                         base::CompareCase::INSENSITIVE_ASCII)) {
-      return multi_word_manufacturer.size();
-    }
-  }
-
-  // The position of the first space is equal to the length of the first token.
-  size_t first_space = make_and_model.find(" ");
-  return first_space != base::StringPiece::npos ? first_space : 0;
-}
 
 using MajorMinor = std::pair<uint32_t, uint32_t>;
 using VersionEntry = std::pair<MajorMinor, IppVersion>;
@@ -160,21 +135,8 @@ void OnPrinterQueried(chromeos::PrinterInfoCallback callback,
   if (result != ::printing::PrinterQueryResult::kSuccess) {
     VLOG(1) << "Could not reach printer";
     std::move(callback).Run(result, ::printing::PrinterStatus(), std::string(),
-                            std::string(), std::string(), {}, false);
+                            {}, false);
     return;
-  }
-
-  base::StringPiece make_and_model(printer_info.make_and_model);
-  base::StringPiece make;
-  base::StringPiece model;
-
-  size_t split = ManufacturerLength(make_and_model);
-  if (split != 0) {
-    make = make_and_model.substr(0, split);
-    model = make_and_model.substr(split + 1);
-  } else {
-    // If there's only one word or an empty string, use it.
-    model = make_and_model;
   }
 
   DCHECK(!printer_info.ipp_versions.empty())
@@ -184,8 +146,7 @@ void OnPrinterQueried(chromeos::PrinterInfoCallback callback,
       ToIppVersion(*std::max_element(printer_info.ipp_versions.begin(),
                                      printer_info.ipp_versions.end())));
 
-  std::move(callback).Run(result, printer_status, make.as_string(),
-                          model.as_string(), printer_info.make_and_model,
+  std::move(callback).Run(result, printer_status, printer_info.make_and_model,
                           printer_info.document_formats,
                           IsAutoconf(printer_info));
 }

@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_FONT_FAMILY_CACHE_H_
 #define CHROME_BROWSER_FONT_FAMILY_CACHE_H_
 
+#include <string>
 #include <unordered_map>
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/font_pref_change_notifier.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -44,14 +44,14 @@ class FontFamilyCache : public base::SupportsUserData::Data {
  protected:
   // Exposed and virtual for testing.
   // Fetches the font without checking the cache.
-  virtual base::string16 FetchFont(const char* script, const char* map_name);
+  virtual std::u16string FetchFont(const char* script, const char* map_name);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(::FontFamilyCacheTest, Caching);
 
   // Map from script to font.
   // Key comparison uses pointer equality.
-  using ScriptFontMap = std::unordered_map<const char*, base::string16>;
+  using ScriptFontMap = std::unordered_map<const char*, std::u16string>;
 
   // Map from font family to ScriptFontMap.
   // Key comparison uses pointer equality.
@@ -66,7 +66,7 @@ class FontFamilyCache : public base::SupportsUserData::Data {
   // |script| and |map_name| must be compile time constants. Two behaviors rely
   // on this: key comparison uses pointer equality, and keys must outlive the
   // maps.
-  base::string16 FetchAndCacheFont(const char* script, const char* map_name);
+  std::u16string FetchAndCacheFont(const char* script, const char* map_name);
 
   // Called when font family preferences changed.
   // Invalidates the cached entry, and removes the relevant observer.

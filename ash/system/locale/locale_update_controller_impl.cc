@@ -5,6 +5,7 @@
 #include "ash/system/locale/locale_update_controller_impl.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "ash/public/cpp/notification_utils.h"
@@ -12,7 +13,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/tray/system_tray_notifier.h"
-#include "base/strings/string16.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -41,7 +41,7 @@ class LocaleNotificationDelegate : public message_center::NotificationDelegate {
   // message_center::NotificationDelegate overrides:
   void Close(bool by_user) override;
   void Click(const base::Optional<int>& button_index,
-             const base::Optional<base::string16>& reply) override;
+             const base::Optional<std::u16string>& reply) override;
 
  private:
   base::OnceCallback<void(LocaleNotificationResult)> callback_;
@@ -69,7 +69,7 @@ void LocaleNotificationDelegate::Close(bool by_user) {
 
 void LocaleNotificationDelegate::Click(
     const base::Optional<int>& button_index,
-    const base::Optional<base::string16>& reply) {
+    const base::Optional<std::u16string>& reply) {
   if (!callback_)
     return;
 
@@ -97,9 +97,9 @@ void LocaleUpdateControllerImpl::ConfirmLocaleChange(
     const std::string& to_locale,
     LocaleChangeConfirmationCallback callback) {
   DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
-  base::string16 from_locale_name =
+  std::u16string from_locale_name =
       l10n_util::GetDisplayNameForLocale(from_locale, current_locale, true);
-  base::string16 to_locale_name =
+  std::u16string to_locale_name =
       l10n_util::GetDisplayNameForLocale(to_locale, current_locale, true);
 
   message_center::RichNotificationData optional;
@@ -116,7 +116,7 @@ void LocaleUpdateControllerImpl::ConfirmLocaleChange(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LOCALE_CHANGE_TITLE),
       l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_LOCALE_CHANGE_MESSAGE,
                                  from_locale_name, to_locale_name),
-      base::string16() /* display_source */, GURL(),
+      std::u16string() /* display_source */, GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierLocale),
       optional, new LocaleNotificationDelegate(std::move(callback)),

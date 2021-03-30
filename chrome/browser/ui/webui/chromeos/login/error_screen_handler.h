@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_ERROR_SCREEN_HANDLER_H_
 
 #include "base/macros.h"
-#include "chrome/browser/chromeos/login/screens/error_screen.h"
+#include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
 namespace chromeos {
@@ -56,6 +56,12 @@ class ErrorScreenView {
 
   // Sets current UI state of the screen.
   virtual void SetUIState(NetworkError::UIState ui_state) = 0;
+
+  // Returns to user pods screen.
+  virtual void OnCancelButtonClicked() = 0;
+
+  // Reloads gaia.
+  virtual void OnReloadGaiaClicked() = 0;
 };
 
 // A class that handles the WebUI hooks in error screen.
@@ -80,9 +86,8 @@ class ErrorScreenHandler : public BaseScreenHandler, public ErrorScreenView {
   void SetShowConnectingIndicator(bool value) override;
   void SetIsPersistentError(bool is_persistent) override;
   void SetUIState(NetworkError::UIState ui_state) override;
-
-  // WebUIMessageHandler:
-  void RegisterMessages() override;
+  void OnCancelButtonClicked() override;
+  void OnReloadGaiaClicked() override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(

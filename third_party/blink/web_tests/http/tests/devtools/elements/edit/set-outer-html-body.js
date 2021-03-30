@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests DOMAgent.setOuterHTML invoked on body tag. See https://bugs.webkit.org/show_bug.cgi?id=62272. \n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <iframe src="../resources/set-outer-html-body-iframe.html" onload="runTest()"></iframe>

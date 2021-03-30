@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #include "base/mac/scoped_nsobject.h"
-#include "chrome/browser/ui/cocoa/notifications/notification_constants_mac.h"
+#include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
 
 @interface NotificationBuilderBase : NSObject {
   base::scoped_nsobject<NSMutableDictionary> _notificationData;
@@ -33,14 +33,19 @@
 - (void)setContextMessage:(NSString*)contextMessage;
 - (void)setButtons:(NSString*)primaryButton
     secondaryButton:(NSString*)secondaryButton;
-- (void)setTag:(NSString*)tag;
+- (void)setIdentifier:(NSString*)identifier;
 - (void)setOrigin:(NSString*)origin;
 - (void)setNotificationId:(NSString*)notificationId;
 - (void)setProfileId:(NSString*)profileId;
 - (void)setIncognito:(BOOL)incognito;
 - (void)setCreatorPid:(NSNumber*)pid;
 - (void)setNotificationType:(NSNumber*)notificationType;
+- (void)setRenotify:(BOOL)renotify;
 - (void)setShowSettingsButton:(BOOL)showSettingsButton;
+- (void)setIcon:(NSImage*)icon;
+
+// Treat this as a closed notification in ProcessMacNotificationResponse().
+- (void)setClosedFromAlert:(BOOL)fromAlert;
 
 // Returns a representation of a notification that can be serialized.
 // Another instance of NotificationBuilder can read this directly and generate

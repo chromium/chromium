@@ -6,8 +6,8 @@
 #define PRINTING_PRINT_DIALOG_GTK_INTERFACE_H_
 
 #include <memory>
+#include <string>
 
-#include "base/strings/string16.h"
 #include "printing/printing_context_linux.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -39,7 +39,7 @@ class PrintDialogGtkInterface {
   // Called from the print worker thread. Once called, the
   // PrintDialogGtkInterface instance should not be reused.
   virtual void PrintDocument(const MetafilePlayer& metafile,
-                             const base::string16& document_name) = 0;
+                             const std::u16string& document_name) = 0;
 
   // Same as AddRef/Release, but with different names since
   // PrintDialogGtkInterface does not inherit from RefCounted.

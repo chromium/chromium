@@ -50,12 +50,12 @@ void IOSCaptivePortalBlockingPage::PopulateInterstitialStrings(
       "primaryButtonText",
       l10n_util::GetStringUTF16(IDS_CAPTIVE_PORTAL_BUTTON_OPEN_LOGIN_PAGE));
 
-  base::string16 tab_title =
+  std::u16string tab_title =
       l10n_util::GetStringUTF16(IDS_CAPTIVE_PORTAL_HEADING_WIFI);
   load_time_data->SetString("tabTitle", tab_title);
   load_time_data->SetString("heading", tab_title);
 
-  base::string16 paragraph;
+  std::u16string paragraph;
   if (landing_url_.spec() ==
       captive_portal::CaptivePortalDetector::kDefaultURL) {
     // Captive portal may intercept requests without HTTP redirects, in which
@@ -66,7 +66,7 @@ void IOSCaptivePortalBlockingPage::PopulateInterstitialStrings(
   } else {
     // Portal redirection was done with HTTP redirects, so show the login URL.
     // If |languages| is empty, punycode in |login_host| will always be decoded.
-    base::string16 login_host =
+    std::u16string login_host =
         url_formatter::IDNToUnicode(landing_url_.host());
     if (base::i18n::IsRTL())
       base::i18n::WrapStringWithLTRFormatting(&login_host);
@@ -76,13 +76,13 @@ void IOSCaptivePortalBlockingPage::PopulateInterstitialStrings(
   }
   load_time_data->SetString("primaryParagraph", paragraph);
   // Explicitly specify other expected fields to empty.
-  load_time_data->SetString("openDetails", base::string16());
-  load_time_data->SetString("closeDetails", base::string16());
-  load_time_data->SetString("explanationParagraph", base::string16());
-  load_time_data->SetString("finalParagraph", base::string16());
-  load_time_data->SetString("recurrentErrorParagraph", base::string16());
-  load_time_data->SetString("optInLink", base::string16());
-  load_time_data->SetString("enhancedProtectionMessage", base::string16());
+  load_time_data->SetString("openDetails", std::u16string());
+  load_time_data->SetString("closeDetails", std::u16string());
+  load_time_data->SetString("explanationParagraph", std::u16string());
+  load_time_data->SetString("finalParagraph", std::u16string());
+  load_time_data->SetString("recurrentErrorParagraph", std::u16string());
+  load_time_data->SetString("optInLink", std::u16string());
+  load_time_data->SetString("enhancedProtectionMessage", std::u16string());
   load_time_data->SetBoolean("show_recurrent_error_paragraph", false);
 }
 

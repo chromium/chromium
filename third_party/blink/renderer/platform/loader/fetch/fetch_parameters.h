@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cross_origin_attribute_value.h"
 #include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
+#include "third_party/blink/renderer/platform/loader/fetch/render_blocking_behavior.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/text_resource_decoder_options.h"
@@ -68,6 +69,7 @@ class PLATFORM_EXPORT FetchParameters {
     kNonBlockingImage   // The image load may continue, but must be placed in
                         // ResourceFetcher::non_blocking_loaders_.
   };
+
   struct ResourceWidth {
     DISALLOW_NEW();
     float width;
@@ -210,6 +212,15 @@ class PLATFORM_EXPORT FetchParameters {
     resource_request_.SetSignedExchangePrefetchCacheEnabled(enabled);
   }
 
+  RenderBlockingBehavior GetRenderBlockingBehavior() const {
+    return render_blocking_behavior_;
+  }
+
+  void SetRenderBlockingBehavior(
+      RenderBlockingBehavior render_blocking_behavior) {
+    render_blocking_behavior_ = render_blocking_behavior;
+  }
+
  private:
   ResourceRequest resource_request_;
   // |decoder_options_|'s ContentType is set to |kPlainTextContent| in
@@ -225,6 +236,8 @@ class PLATFORM_EXPORT FetchParameters {
   mojom::blink::ScriptType script_type_ = mojom::blink::ScriptType::kClassic;
   bool is_stale_revalidation_ = false;
   bool is_from_origin_dirty_style_sheet_ = false;
+  RenderBlockingBehavior render_blocking_behavior_ =
+      RenderBlockingBehavior::kUnset;
 };
 
 }  // namespace blink

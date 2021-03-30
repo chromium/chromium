@@ -64,6 +64,7 @@ class CORE_EXPORT NGInkOverflow {
     kSelfAndContents
     // When adding values, make sure |NGFragmentItem| has enough storage.
   };
+  constexpr static int kTypeBits = 3;
 
   NGInkOverflow() = default;
 #if DCHECK_IS_ON()

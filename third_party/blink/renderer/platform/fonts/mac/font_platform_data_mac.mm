@@ -256,15 +256,16 @@ std::unique_ptr<FontPlatformData> FontPlatformDataFromNSFont(
   return make_typeface_fontplatformdata();
 }
 
-void FontPlatformData::SetupSkFont(SkFont* skfont,
-                                   float,
-                                   const Font* font) const {
+void FontPlatformData::SetupSkFont(
+    SkFont* skfont,
+    float,
+    const FontDescription* font_description) const {
   bool should_smooth_fonts = true;
   bool should_antialias = true;
   bool should_subpixel_position = true;
 
-  if (font) {
-    switch (font->GetFontDescription().FontSmoothing()) {
+  if (font_description) {
+    switch (font_description->FontSmoothing()) {
       case kAntialiased:
         should_smooth_fonts = false;
         break;
@@ -312,9 +313,9 @@ void FontPlatformData::SetupSkFont(SkFont* skfont,
   // When rendering using CoreGraphics, disable hinting when
   // webkit-font-smoothing:antialiased or text-rendering:geometricPrecision is
   // used.  See crbug.com/152304
-  if (font &&
-      (font->GetFontDescription().FontSmoothing() == kAntialiased ||
-       font->GetFontDescription().TextRendering() == kGeometricPrecision))
+  if (font_description &&
+      (font_description->FontSmoothing() == kAntialiased ||
+       font_description->TextRendering() == kGeometricPrecision))
     skfont->setHinting(SkFontHinting::kNone);
 }
 

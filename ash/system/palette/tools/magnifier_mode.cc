@@ -4,7 +4,7 @@
 
 #include "ash/system/palette/tools/magnifier_mode.h"
 
-#include "ash/magnifier/partial_magnification_controller.h"
+#include "ash/accessibility/magnifier/partial_magnification_controller.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"

@@ -53,6 +53,10 @@ void X11OzoneUIControlsTestHelper::RunClosureAfterAllPendingUIEvents(
       std::move(closure));
 }
 
+bool X11OzoneUIControlsTestHelper::MustUseUiControlsForMoveCursorTo() {
+  return false;
+}
+
 OzoneUIControlsTestHelper* CreateOzoneUIControlsTestHelperX11() {
   return new X11OzoneUIControlsTestHelper();
 }

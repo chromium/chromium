@@ -37,7 +37,8 @@ enum class SharingFeatureName {
   kUnknown,
   kClickToCall,
   kSharedClipboard,
-  kMaxValue = kSharedClipboard,
+  kSmsRemoteFetcher,
+  kMaxValue = kSmsRemoteFetcher,
 };
 
 // The device platform that the user is sharing from/with.

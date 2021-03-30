@@ -15,6 +15,7 @@
 <translation id="2036868001356139588">Thời lượng bộ hẹn giờ</translation>
 <translation id="2050339315714019657">Khổ dọc</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> đang hoạt động</translation>
+<translation id="2144806332417375165">Thông số video tùy chỉnh</translation>
 <translation id="229579744168541441">Xuất ra đĩa</translation>
 <translation id="2501278716633472235">Quay lại</translation>
 <translation id="2501853267655415902">Đã dừng quay</translation>
@@ -33,7 +34,6 @@
 <translation id="3259149966178251584">Độ phân giải của máy ảnh</translation>
 <translation id="3517926952904427380">Không thể chụp ảnh chân dung</translation>
 <translation id="3569311554794739032">Bạn có thực sự muốn xóa <ph name="FILE" /> không?</translation>
-<translation id="3750315947605636967">Máy ảnh đang được một ứng dụng khác sử dụng</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Quét mã vạch</translation>
 <translation id="3892148308691398805">Sao chép văn bản</translation>
@@ -76,10 +76,12 @@ Nếu ý kiến phản hồi của bạn là về chất lượng ảnh hoặc v
 <translation id="7337660886763914220">Lỗi hệ thống tệp.</translation>
 <translation id="7450541714075000668">Đã sao chép văn bản</translation>
 <translation id="7557677699350329807">Chuyển sang máy ảnh tiếp theo</translation>
+<translation id="7607002721634913082">Đã tạm dừng</translation>
 <translation id="7608223098072244877">4 x 4</translation>
 <translation id="7649070708921625228">Trợ giúp</translation>
 <translation id="7658239707568436148">Hủy</translation>
 <translation id="7670511624014457267">60 khung hình/giây</translation>
+<translation id="7974782136796202581">Hiện các tùy chọn xoay, nghiêng, thu phóng</translation>
 <translation id="7983668134180549431">Phát hiện thấy văn bản.</translation>
 <translation id="8067883171444229417">Phát video</translation>
 <translation id="8131740175452115882">Xác nhận</translation>

@@ -43,6 +43,8 @@ std::unique_ptr<TestingProfile> BuildTestingProfile(const base::FilePath& path,
     IdentityTestEnvironmentProfileAdaptor adaptor(profile.get());
     adaptor.identity_test_env()->ResetToAccountsNotYetLoadedFromDiskState();
   }
+  if (profile->GetPath() == ProfileManager::GetGuestProfilePath())
+    profile->SetGuestSession(true);
   return profile;
 }
 
@@ -79,11 +81,14 @@ class UnittestProfileManager : public ProfileManagerWithoutInit {
 
 }  // namespace
 
-class DiceSignedInProfileCreatorTest : public testing::Test,
-                                       public ProfileManagerObserver {
+class DiceSignedInProfileCreatorTest
+    : public testing::Test,
+      public ProfileManagerObserver,
+      public testing::WithParamInterface<bool> {
  public:
   DiceSignedInProfileCreatorTest()
-      : local_state_(TestingBrowserProcess::GetGlobal()) {
+      : local_state_(TestingBrowserProcess::GetGlobal()),
+        use_guest_profile_(GetParam()) {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     profile_manager_ = new UnittestProfileManager(temp_dir_.GetPath());
     TestingBrowserProcess::GetGlobal()->SetProfileManager(profile_manager_);
@@ -92,6 +97,10 @@ class DiceSignedInProfileCreatorTest : public testing::Test,
     identity_test_env_profile_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
     profile_manager()->AddObserver(this);
+    // Update |use_guest_profile_| if ephemeral Guest profiles is not supported.
+    use_guest_profile_ &=
+        TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
+            scoped_feature_list_, use_guest_profile_);
   }
 
   ~DiceSignedInProfileCreatorTest() override { DeleteProfiles(); }
@@ -118,6 +127,8 @@ class DiceSignedInProfileCreatorTest : public testing::Test,
   void set_profile_added_closure(base::OnceClosure closure) {
     profile_added_closure_ = std::move(closure);
   }
+
+  bool use_guest_profile() const { return use_guest_profile_; }
 
   void DeleteProfiles() {
     identity_test_env_profile_adaptor_.reset();
@@ -155,18 +166,21 @@ class DiceSignedInProfileCreatorTest : public testing::Test,
   Profile* added_profile_ = nullptr;
   base::OnceClosure profile_added_closure_;
   bool creator_callback_called_ = false;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  bool use_guest_profile_;
 };
 
-TEST_F(DiceSignedInProfileCreatorTest, CreateWithTokensLoaded) {
+TEST_P(DiceSignedInProfileCreatorTest, CreateWithTokensLoaded) {
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("bob@example.com");
   size_t kTestIcon = profiles::GetModernAvatarIconStartIndex();
-  base::string16 kProfileTestName16 = base::UTF8ToUTF16(kProfileTestName);
+  std::u16string kProfileTestName16 = base::UTF8ToUTF16(kProfileTestName);
 
   base::RunLoop loop;
   std::unique_ptr<DiceSignedInProfileCreator> creator =
       std::make_unique<DiceSignedInProfileCreator>(
           profile(), account_info.account_id, kProfileTestName16, kTestIcon,
+          use_guest_profile(),
           base::BindOnce(&DiceSignedInProfileCreatorTest::OnProfileCreated,
                          base::Unretained(this), loop.QuitClosure()));
   loop.Run();
@@ -184,18 +198,24 @@ TEST_F(DiceSignedInProfileCreatorTest, CreateWithTokensLoaded) {
   EXPECT_TRUE(IdentityManagerFactory::GetForProfile(signed_in_profile())
                   ->HasAccountWithRefreshToken(account_info.account_id));
 
+  // Check profile type
+  ASSERT_EQ(use_guest_profile(),
+            signed_in_profile()->IsEphemeralGuestProfile());
+
   // Check the profile name and icon.
-  ProfileAttributesEntry* entry = nullptr;
   ProfileAttributesStorage& storage =
       profile_manager()->GetProfileAttributesStorage();
-  ASSERT_TRUE(storage.GetProfileAttributesWithPath(
-      signed_in_profile()->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      storage.GetProfileAttributesWithPath(signed_in_profile()->GetPath());
   ASSERT_TRUE(entry);
-  EXPECT_EQ(kProfileTestName16, entry->GetLocalProfileName());
-  EXPECT_EQ(kTestIcon, entry->GetAvatarIconIndex());
+  ASSERT_EQ(entry->IsGuest(), use_guest_profile());
+  if (!use_guest_profile()) {
+    EXPECT_EQ(kProfileTestName16, entry->GetLocalProfileName());
+    EXPECT_EQ(kTestIcon, entry->GetAvatarIconIndex());
+  }
 }
 
-TEST_F(DiceSignedInProfileCreatorTest, CreateWithTokensNotLoaded) {
+TEST_P(DiceSignedInProfileCreatorTest, CreateWithTokensNotLoaded) {
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("bob@example.com");
   profile_manager()->set_tokens_loaded_at_creation(false);
@@ -205,7 +225,8 @@ TEST_F(DiceSignedInProfileCreatorTest, CreateWithTokensNotLoaded) {
   set_profile_added_closure(profile_added_loop.QuitClosure());
   std::unique_ptr<DiceSignedInProfileCreator> creator =
       std::make_unique<DiceSignedInProfileCreator>(
-          profile(), account_info.account_id, base::string16(), base::nullopt,
+          profile(), account_info.account_id, std::u16string(), base::nullopt,
+          use_guest_profile(),
           base::BindOnce(&DiceSignedInProfileCreatorTest::OnProfileCreated,
                          base::Unretained(this), creator_loop.QuitClosure()));
   profile_added_loop.Run();
@@ -235,12 +256,13 @@ TEST_F(DiceSignedInProfileCreatorTest, CreateWithTokensNotLoaded) {
 }
 
 // Deleting the creator while it is running does not crash.
-TEST_F(DiceSignedInProfileCreatorTest, DeleteWhileCreating) {
+TEST_P(DiceSignedInProfileCreatorTest, DeleteWhileCreating) {
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("bob@example.com");
   std::unique_ptr<DiceSignedInProfileCreator> creator =
       std::make_unique<DiceSignedInProfileCreator>(
-          profile(), account_info.account_id, base::string16(), base::nullopt,
+          profile(), account_info.account_id, std::u16string(), base::nullopt,
+          use_guest_profile(),
           base::BindOnce(&DiceSignedInProfileCreatorTest::OnProfileCreated,
                          base::Unretained(this), base::OnceClosure()));
   EXPECT_FALSE(creator_callback_called());
@@ -249,7 +271,7 @@ TEST_F(DiceSignedInProfileCreatorTest, DeleteWhileCreating) {
 }
 
 // Deleting the profile while waiting for the tokens.
-TEST_F(DiceSignedInProfileCreatorTest, DeleteProfile) {
+TEST_P(DiceSignedInProfileCreatorTest, DeleteProfile) {
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("bob@example.com");
   profile_manager()->set_tokens_loaded_at_creation(false);
@@ -259,7 +281,8 @@ TEST_F(DiceSignedInProfileCreatorTest, DeleteProfile) {
   set_profile_added_closure(profile_added_loop.QuitClosure());
   std::unique_ptr<DiceSignedInProfileCreator> creator =
       std::make_unique<DiceSignedInProfileCreator>(
-          profile(), account_info.account_id, base::string16(), base::nullopt,
+          profile(), account_info.account_id, std::u16string(), base::nullopt,
+          use_guest_profile(),
           base::BindOnce(&DiceSignedInProfileCreatorTest::OnProfileCreated,
                          base::Unretained(this), creator_loop.QuitClosure()));
   profile_added_loop.Run();
@@ -278,3 +301,7 @@ TEST_F(DiceSignedInProfileCreatorTest, DeleteProfile) {
   EXPECT_TRUE(creator_callback_called());
   EXPECT_FALSE(signed_in_profile());
 }
+
+INSTANTIATE_TEST_SUITE_P(AllGuestProfileTypes,
+                         DiceSignedInProfileCreatorTest,
+                         /*use_guest_profile=*/testing::Bool());

@@ -716,18 +716,17 @@ bool TestingLegacySessionStorageDatabase::ReadMap(
       break;
     }
     // Key is of the form "map-<mapid>-<key>".
-    base::string16 key16 =
+    std::u16string key16 =
         base::UTF8ToUTF16(key.substr(map_start_key.length()));
     if (only_keys) {
-      (*result)[key16] = base::NullableString16();
+      (*result)[key16] = base::nullopt;
     } else {
       // Convert the raw data stored in std::string (it->value()) to raw data
-      // stored in base::string16.
-      size_t len = it->value().size() / sizeof(base::char16);
-      const base::char16* data_ptr =
-          reinterpret_cast<const base::char16*>(it->value().data());
-      (*result)[key16] =
-          base::NullableString16(base::string16(data_ptr, len), false);
+      // stored in std::u16string.
+      size_t len = it->value().size() / sizeof(char16_t);
+      const char16_t* data_ptr =
+          reinterpret_cast<const char16_t*>(it->value().data());
+      (*result)[key16] = std::u16string(data_ptr, len);
     }
   }
   return true;
@@ -738,15 +737,15 @@ void TestingLegacySessionStorageDatabase::WriteValuesToMap(
     const LegacyDomStorageValuesMap& values,
     leveldb::WriteBatch* batch) {
   for (auto it = values.begin(); it != values.end(); ++it) {
-    base::NullableString16 value = it->second;
+    const base::Optional<std::u16string>& value = it->second;
     std::string key = MapKey(map_id, base::UTF16ToUTF8(it->first));
-    if (value.is_null()) {
+    if (!value.has_value()) {
       batch->Delete(key);
     } else {
-      // Convert the raw data stored in base::string16 to raw data stored in
+      // Convert the raw data stored in std::u16string to raw data stored in
       // std::string.
-      const char* data = reinterpret_cast<const char*>(value.string().data());
-      size_t size = value.string().size() * 2;
+      const char* data = reinterpret_cast<const char*>(value.value().data());
+      size_t size = value.value().size() * 2;
       batch->Put(key, leveldb::Slice(data, size));
     }
   }

@@ -30,6 +30,10 @@ class TabSearchUI : public ui::MojoBubbleWebUIController,
   void BindInterface(
       mojo::PendingReceiver<tab_search::mojom::PageHandlerFactory> receiver);
 
+  TabSearchPageHandler* page_handler_for_testing() {
+    return page_handler_.get();
+  }
+
  private:
   // tab_search::mojom::PageHandlerFactory
   void CreatePageHandler(

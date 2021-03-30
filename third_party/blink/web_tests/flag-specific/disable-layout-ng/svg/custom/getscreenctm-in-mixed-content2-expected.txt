@@ -1,0 +1,5 @@
+Expected matrix [1, 0, 0, 1, 350, 55.5]
+Got matrix [1, 0, 0, 1, 350, 55]
+
+This tests the behaviour of SVGLocatable::getScreenCTM() in mixed content
+

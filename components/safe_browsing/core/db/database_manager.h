@@ -21,13 +21,8 @@
 #include "components/safe_browsing/core/db/hit_report.h"
 #include "components/safe_browsing/core/db/util.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "url/gurl.h"
-
-namespace blink {
-namespace mojom {
-enum class ResourceType;
-}  // namespace mojom
-}  // namespace blink
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -69,9 +64,9 @@ class SafeBrowsingDatabaseManager
    public:
     virtual ~Client() {}
 
-    // Called when the result of checking the API blacklist is known.
+    // Called when the result of checking the API blocklist is known.
     // TODO(kcarattini): Consider if we need |url| passed here, remove if not.
-    virtual void OnCheckApiBlacklistUrlResult(const GURL& url,
+    virtual void OnCheckApiBlocklistUrlResult(const GURL& url,
                                               const ThreatMetadata& metadata) {}
 
     // Called when the result of checking a browse URL is known or the result of
@@ -88,14 +83,14 @@ class SafeBrowsingDatabaseManager
     virtual void OnCheckExtensionsResult(const std::set<std::string>& threats) {
     }
 
-    // Called when the result of checking the resource blacklist is known.
+    // Called when the result of checking the resource blocklist is known.
     virtual void OnCheckResourceUrlResult(const GURL& url,
                                           SBThreatType threat_type,
                                           const std::string& threat_hash) {}
 
-    // Called when the result of checking a whitelist is known.
-    // Currently only used for CSD whitelist.
-    virtual void OnCheckWhitelistUrlResult(bool did_match_allowlist) {}
+    // Called when the result of checking a allowlist is known.
+    // Currently only used for CSD allowlist.
+    virtual void OnCheckAllowlistUrlResult(bool did_match_allowlist) {}
 
     // Called when the result of checking the high-confidence allowlist is
     // known.
@@ -122,9 +117,9 @@ class SafeBrowsingDatabaseManager
   // Methods to check whether the database manager supports a certain feature.
   //
 
-  // Returns true if this resource type should be checked.
-  virtual bool CanCheckResourceType(
-      blink::mojom::ResourceType resource_type) const = 0;
+  // Returns true if this request destination should be checked.
+  virtual bool CanCheckRequestDestination(
+      network::mojom::RequestDestination request_destination) const = 0;
 
   // Returns true if the url's scheme can be checked.
   virtual bool CanCheckUrl(const GURL& url) const = 0;
@@ -140,7 +135,7 @@ class SafeBrowsingDatabaseManager
   // the resource is known.
   //
 
-  // Called on the IO thread to check if the given url has blacklisted APIs.
+  // Called on the IO thread to check if the given url has blocklisted APIs.
   // |client| is called asynchronously with the result when it is ready. Callers
   // should wait for results before calling this method a second time with the
   // same client. This method has the same implementation for both the local and
@@ -148,12 +143,12 @@ class SafeBrowsingDatabaseManager
   // without accessing the database at all.  Returns true if we can
   // synchronously determine that the url is safe. Otherwise it returns false,
   // and |client| is called asynchronously with the result when it is ready.
-  virtual bool CheckApiBlacklistUrl(const GURL& url, Client* client);
+  virtual bool CheckApiBlocklistUrl(const GURL& url, Client* client);
 
   // Check if the |url| matches any of the full-length hashes from the client-
-  // side phishing detection whitelist. The 3-state return value indicates
+  // side phishing detection allowlist. The 3-state return value indicates
   // the result or that |client| will get a callback later with the result.
-  virtual AsyncMatch CheckCsdWhitelistUrl(const GURL& url, Client* client) = 0;
+  virtual AsyncMatch CheckCsdAllowlistUrl(const GURL& url, Client* client) = 0;
 
   // Called on the IO thread to check if the given url is safe or not.  If we
   // can synchronously determine that the url is safe, CheckUrl returns true.
@@ -169,13 +164,13 @@ class SafeBrowsingDatabaseManager
   virtual bool CheckDownloadUrl(const std::vector<GURL>& url_chain,
                                 Client* client) = 0;
 
-  // Check which prefixes in |extension_ids| are in the safebrowsing blacklist.
+  // Check which prefixes in |extension_ids| are in the safebrowsing blocklist.
   // Returns true if not, false if further checks need to be made in which case
   // the result will be passed to |client|.
   virtual bool CheckExtensionIDs(const std::set<std::string>& extension_ids,
                                  Client* client) = 0;
 
-  // Check if |url| is in the resources blacklist. Returns true if not, false
+  // Check if |url| is in the resources blocklist. Returns true if not, false
   // if further checks need to be made in which case the result will be passed
   // to callback in |client|.
   virtual bool CheckResourceUrl(const GURL& url, Client* client) = 0;
@@ -202,19 +197,19 @@ class SafeBrowsingDatabaseManager
   //
 
   // Check if SHA-256 hash of |str| matches any of the full-length hashes from
-  // the download whitelist.  Returns true if there was a match and false
+  // the download allowlist.  Returns true if there was a match and false
   // otherwise. To make sure we are conservative we will return true if an error
   // occurs.  This method must be called on the IO thread.
-  virtual bool MatchDownloadWhitelistString(const std::string& str) = 0;
+  virtual bool MatchDownloadAllowlistString(const std::string& str) = 0;
 
   // Check if the |url| matches any of the full-length hashes from the download
-  // whitelist.  Returns true if there was a match and false otherwise. To make
+  // allowlist.  Returns true if there was a match and false otherwise. To make
   // sure we are conservative we will return true if an error occurs.  This
   // method must be called on the IO thread.
-  virtual bool MatchDownloadWhitelistUrl(const GURL& url) = 0;
+  virtual bool MatchDownloadAllowlistUrl(const GURL& url) = 0;
 
   // Check if the given IP address (either IPv4 or IPv6) matches the malware
-  // IP blacklist.
+  // IP blocklist.
   virtual bool MatchMalwareIP(const std::string& ip_address) = 0;
 
   //
@@ -296,7 +291,7 @@ class SafeBrowsingDatabaseManager
   friend class V4LocalDatabaseManager;
 
   FRIEND_TEST_ALL_PREFIXES(SafeBrowsingDatabaseManagerTest,
-                           CheckApiBlacklistUrlPrefixes);
+                           CheckApiBlocklistUrlPrefixes);
   FRIEND_TEST_ALL_PREFIXES(SafeBrowsingDatabaseManagerTest,
                            HandleGetHashesWithApisResults);
   FRIEND_TEST_ALL_PREFIXES(SafeBrowsingDatabaseManagerTest,
@@ -315,7 +310,7 @@ class SafeBrowsingDatabaseManager
 
   // Called on the IO thread when the SafeBrowsingProtocolManager has received
   // the full hash and api results for prefixes of the |url| argument in
-  // CheckApiBlacklistUrl.
+  // CheckApiBlocklistUrl.
   void OnThreatMetadataResponse(std::unique_ptr<SafeBrowsingApiCheck> check,
                                 const ThreatMetadata& md);
 
@@ -330,8 +325,8 @@ class SafeBrowsingDatabaseManager
   bool enabled_;
 
   // Make callbacks about the completion of database update process. This is
-  // currently used by the extension blacklist checker to disable any installed
-  // extensions that have been blacklisted since.
+  // currently used by the extension blocklist checker to disable any installed
+  // extensions that have been blocklisted since.
   void NotifyDatabaseUpdateFinished();
 
   // Created and destroyed via StartOnIOThread/StopOnIOThread.

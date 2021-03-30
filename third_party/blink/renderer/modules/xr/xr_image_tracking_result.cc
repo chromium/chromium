@@ -13,14 +13,6 @@
 
 namespace blink {
 
-class XRImageSpace : public XRObjectSpace<XRImageTrackingResult> {
- public:
-  XRImageSpace(XRSession* session, const XRImageTrackingResult* object)
-      : XRObjectSpace<XRImageTrackingResult>(session, object) {}
-
-  bool IsStationary() const override { return false; }
-};
-
 XRImageTrackingResult::XRImageTrackingResult(
     XRSession* session,
     const device::mojom::blink::XRTrackedImageData& result)
@@ -47,7 +39,8 @@ base::Optional<TransformationMatrix> XRImageTrackingResult::MojoFromObject()
 
 XRSpace* XRImageTrackingResult::imageSpace() const {
   if (!image_space_) {
-    image_space_ = MakeGarbageCollected<XRImageSpace>(session_, this);
+    image_space_ = MakeGarbageCollected<XRObjectSpace<XRImageTrackingResult>>(
+        session_, this);
   }
 
   return image_space_;

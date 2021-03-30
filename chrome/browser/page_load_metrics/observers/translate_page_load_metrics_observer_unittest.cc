@@ -34,10 +34,22 @@ class MockTranslateMetricsLoggerContainer
     mock_translate_metrics_logger_->RecordMetrics(is_final);
   }
 
+  void SetUkmSourceId(ukm::SourceId ukm_source_id) override {
+    mock_translate_metrics_logger_->SetUkmSourceId(ukm_source_id);
+  }
+
   void LogRankerMetrics(translate::RankerDecision ranker_decision,
                         uint32_t ranker_version) override {
     mock_translate_metrics_logger_->LogRankerMetrics(ranker_decision,
                                                      ranker_version);
+  }
+
+  void LogRankerStart() override {
+    mock_translate_metrics_logger_->LogRankerStart();
+  }
+
+  void LogRankerFinish() override {
+    mock_translate_metrics_logger_->LogRankerFinish();
   }
 
   void LogTriggerDecision(
@@ -54,13 +66,16 @@ class MockTranslateMetricsLoggerContainer
     mock_translate_metrics_logger_->LogInitialState();
   }
 
-  void LogTranslationStarted() override {
-    mock_translate_metrics_logger_->LogTranslationStarted();
+  void LogTranslationStarted(
+      translate::TranslationType translation_type) override {
+    mock_translate_metrics_logger_->LogTranslationStarted(translation_type);
   }
 
   void LogTranslationFinished(
+      bool was_successful,
       translate::TranslateErrors::Type error_type) override {
-    mock_translate_metrics_logger_->LogTranslationFinished(error_type);
+    mock_translate_metrics_logger_->LogTranslationFinished(was_successful,
+                                                           error_type);
   }
 
   void LogReversion() override {
@@ -85,8 +100,45 @@ class MockTranslateMetricsLoggerContainer
     mock_translate_metrics_logger_->LogSourceLanguage(source_language_code);
   }
 
-  void LogTargetLanguage(const std::string& target_language_code) override {
-    mock_translate_metrics_logger_->LogTargetLanguage(target_language_code);
+  void LogTargetLanguage(
+      const std::string& target_language_code,
+      translate::TranslateBrowserMetrics::TargetLanguageOrigin
+          target_language_origin) override {
+    mock_translate_metrics_logger_->LogTargetLanguage(target_language_code,
+                                                      target_language_origin);
+  }
+
+  void LogUIInteraction(translate::UIInteraction ui_interaction) override {
+    mock_translate_metrics_logger_->LogUIInteraction(ui_interaction);
+  }
+
+  translate::TranslationType GetNextManualTranslationType() override {
+    return mock_translate_metrics_logger_->GetNextManualTranslationType();
+  }
+
+  void SetHasHrefTranslateTarget(bool has_href_translate_target) override {
+    mock_translate_metrics_logger_->SetHasHrefTranslateTarget(
+        has_href_translate_target);
+  }
+
+  void LogHTMLDocumentLanguage(const std::string& html_doc_language) override {
+    mock_translate_metrics_logger_->LogHTMLDocumentLanguage(html_doc_language);
+  }
+
+  void LogHTMLContentLanguage(
+      const std::string& html_content_language) override {
+    mock_translate_metrics_logger_->LogHTMLDocumentLanguage(
+        html_content_language);
+  }
+
+  void LogDetectedLanguage(const std::string& detected_language) override {
+    mock_translate_metrics_logger_->LogDetectedLanguage(detected_language);
+  }
+
+  void LogDetectionReliabilityScore(
+      const float& model_detection_reliability_score) override {
+    mock_translate_metrics_logger_->LogDetectionReliabilityScore(
+        model_detection_reliability_score);
   }
 
  private:

@@ -580,127 +580,6 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
 }
 
 TEST_F(URLRequestHttpJobWithMockSocketsTest,
-       TestRawHeaderSizeSuccessfullRequest) {
-  MockWrite writes[] = {MockWrite(kSimpleGetMockWrite)};
-
-  const std::string& response_header =
-      "HTTP/1.1 200 OK\r\n"
-      "Content-Length: 12\r\n\r\n";
-  const std::string& content_data = "Test Content";
-
-  MockRead reads[] = {MockRead(response_header.c_str()),
-                      MockRead(content_data.c_str()),
-                      MockRead(net::SYNCHRONOUS, net::OK)};
-
-  StaticSocketDataProvider socket_data(reads, writes);
-  socket_factory_.AddSocketDataProvider(&socket_data);
-
-  TestDelegate delegate;
-  std::unique_ptr<URLRequest> request =
-      context_->CreateRequest(GURL("http://www.example.com"), DEFAULT_PRIORITY,
-                              &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
-
-  request->Start();
-  ASSERT_TRUE(request->is_pending());
-  delegate.RunUntilComplete();
-
-  EXPECT_EQ(OK, delegate.request_status());
-  EXPECT_EQ(static_cast<int>(content_data.size()),
-            request->received_response_content_length());
-  EXPECT_EQ(static_cast<int>(response_header.size()),
-            request->raw_header_size());
-  EXPECT_EQ(CountReadBytes(reads), request->GetTotalReceivedBytes());
-}
-
-TEST_F(URLRequestHttpJobWithMockSocketsTest,
-       TestRawHeaderSizeSuccessfull100ContinueRequest) {
-  MockWrite writes[] = {MockWrite(kSimpleGetMockWrite)};
-
-  const std::string& continue_header = "HTTP/1.1 100 Continue\r\n\r\n";
-  const std::string& response_header =
-      "HTTP/1.1 200 OK\r\n"
-      "Content-Length: 12\r\n\r\n";
-  const std::string& content_data = "Test Content";
-
-  MockRead reads[] = {
-      MockRead(continue_header.c_str()), MockRead(response_header.c_str()),
-      MockRead(content_data.c_str()), MockRead(net::SYNCHRONOUS, net::OK)};
-
-  StaticSocketDataProvider socket_data(reads, writes);
-  socket_factory_.AddSocketDataProvider(&socket_data);
-
-  TestDelegate delegate;
-  std::unique_ptr<URLRequest> request =
-      context_->CreateRequest(GURL("http://www.example.com"), DEFAULT_PRIORITY,
-                              &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
-
-  request->Start();
-  ASSERT_TRUE(request->is_pending());
-  delegate.RunUntilComplete();
-
-  EXPECT_EQ(OK, delegate.request_status());
-  EXPECT_EQ(static_cast<int>(content_data.size()),
-            request->received_response_content_length());
-  EXPECT_EQ(static_cast<int>(continue_header.size() + response_header.size()),
-            request->raw_header_size());
-  EXPECT_EQ(CountReadBytes(reads), request->GetTotalReceivedBytes());
-}
-
-TEST_F(URLRequestHttpJobWithMockSocketsTest,
-       TestRawHeaderSizeFailureTruncatedHeaders) {
-  MockWrite writes[] = {MockWrite(kSimpleGetMockWrite)};
-  MockRead reads[] = {MockRead("HTTP/1.0 200 OK\r\n"
-                               "Content-Len"),
-                      MockRead(net::SYNCHRONOUS, net::OK)};
-
-  StaticSocketDataProvider socket_data(reads, writes);
-  socket_factory_.AddSocketDataProvider(&socket_data);
-
-  TestDelegate delegate;
-  std::unique_ptr<URLRequest> request =
-      context_->CreateRequest(GURL("http://www.example.com"), DEFAULT_PRIORITY,
-                              &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
-
-  delegate.set_cancel_in_response_started(true);
-  request->Start();
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(ERR_ABORTED, delegate.request_status());
-  EXPECT_EQ(0, request->received_response_content_length());
-  EXPECT_EQ(28, request->raw_header_size());
-  EXPECT_EQ(CountReadBytes(reads), request->GetTotalReceivedBytes());
-}
-
-TEST_F(URLRequestHttpJobWithMockSocketsTest,
-       TestRawHeaderSizeSuccessfullContinuiousRead) {
-  MockWrite writes[] = {MockWrite(kSimpleGetMockWrite)};
-  const std::string& header_data =
-      "HTTP/1.1 200 OK\r\n"
-      "Content-Length: 12\r\n\r\n";
-  const std::string& content_data = "Test Content";
-  std::string single_read_content = header_data;
-  single_read_content.append(content_data);
-  MockRead reads[] = {MockRead(single_read_content.c_str())};
-
-  StaticSocketDataProvider socket_data(reads, writes);
-  socket_factory_.AddSocketDataProvider(&socket_data);
-
-  TestDelegate delegate;
-  std::unique_ptr<URLRequest> request =
-      context_->CreateRequest(GURL("http://www.example.com"), DEFAULT_PRIORITY,
-                              &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
-
-  request->Start();
-  delegate.RunUntilComplete();
-
-  EXPECT_EQ(OK, delegate.request_status());
-  EXPECT_EQ(static_cast<int>(content_data.size()),
-            request->received_response_content_length());
-  EXPECT_EQ(static_cast<int>(header_data.size()), request->raw_header_size());
-  EXPECT_EQ(CountReadBytes(reads), request->GetTotalReceivedBytes());
-}
-
-TEST_F(URLRequestHttpJobWithMockSocketsTest,
        TestNetworkBytesRedirectedRequest) {
   MockWrite redirect_writes[] = {
       MockWrite("GET / HTTP/1.1\r\n"
@@ -1559,6 +1438,82 @@ TEST_F(URLRequestHttpJobWithBrotliSupportTest, BrotliAdvertisement) {
   EXPECT_EQ(12, request->received_response_content_length());
   EXPECT_EQ(CountWriteBytes(writes), request->GetTotalSentBytes());
   EXPECT_EQ(CountReadBytes(reads), request->GetTotalReceivedBytes());
+}
+
+TEST_F(URLRequestHttpJobWithBrotliSupportTest, DefaultAcceptEncodingOverriden) {
+  struct {
+    base::flat_set<net::SourceStream::SourceType> accepted_types;
+    const char* expected_request_headers;
+  } kTestCases[] = {{{net::SourceStream::SourceType::TYPE_DEFLATE},
+                     "GET / HTTP/1.1\r\n"
+                     "Host: www.example.com\r\n"
+                     "Connection: keep-alive\r\n"
+                     "User-Agent: \r\n"
+                     "Accept-Encoding: deflate\r\n"
+                     "Accept-Language: en-us,fr\r\n\r\n"},
+                    {{},
+                     "GET / HTTP/1.1\r\n"
+                     "Host: www.example.com\r\n"
+                     "Connection: keep-alive\r\n"
+                     "User-Agent: \r\n"
+                     "Accept-Language: en-us,fr\r\n\r\n"},
+                    {{net::SourceStream::SourceType::TYPE_GZIP},
+                     "GET / HTTP/1.1\r\n"
+                     "Host: www.example.com\r\n"
+                     "Connection: keep-alive\r\n"
+                     "User-Agent: \r\n"
+                     "Accept-Encoding: gzip\r\n"
+                     "Accept-Language: en-us,fr\r\n\r\n"},
+                    {{net::SourceStream::SourceType::TYPE_GZIP,
+                      net::SourceStream::SourceType::TYPE_DEFLATE},
+                     "GET / HTTP/1.1\r\n"
+                     "Host: www.example.com\r\n"
+                     "Connection: keep-alive\r\n"
+                     "User-Agent: \r\n"
+                     "Accept-Encoding: gzip, deflate\r\n"
+                     "Accept-Language: en-us,fr\r\n\r\n"},
+                    {{net::SourceStream::SourceType::TYPE_BROTLI},
+                     "GET / HTTP/1.1\r\n"
+                     "Host: www.example.com\r\n"
+                     "Connection: keep-alive\r\n"
+                     "User-Agent: \r\n"
+                     "Accept-Encoding: br\r\n"
+                     "Accept-Language: en-us,fr\r\n\r\n"},
+                    {{net::SourceStream::SourceType::TYPE_BROTLI,
+                      net::SourceStream::SourceType::TYPE_GZIP,
+                      net::SourceStream::SourceType::TYPE_DEFLATE},
+                     "GET / HTTP/1.1\r\n"
+                     "Host: www.example.com\r\n"
+                     "Connection: keep-alive\r\n"
+                     "User-Agent: \r\n"
+                     "Accept-Encoding: gzip, deflate, br\r\n"
+                     "Accept-Language: en-us,fr\r\n\r\n"}};
+
+  for (auto test : kTestCases) {
+    net::SSLSocketDataProvider ssl_socket_data_provider(net::ASYNC, net::OK);
+    ssl_socket_data_provider.next_proto = kProtoHTTP11;
+    ssl_socket_data_provider.ssl_info.cert =
+        ImportCertFromFile(GetTestCertsDirectory(), "unittest.selfsigned.der");
+    ASSERT_TRUE(ssl_socket_data_provider.ssl_info.cert);
+    socket_factory_.AddSSLSocketDataProvider(&ssl_socket_data_provider);
+
+    MockWrite writes[] = {MockWrite(test.expected_request_headers)};
+    MockRead reads[] = {MockRead("HTTP/1.1 200 OK\r\n"
+                                 "Content-Length: 12\r\n\r\n"),
+                        MockRead("Test Content")};
+    StaticSocketDataProvider socket_data(reads, writes);
+    socket_factory_.AddSocketDataProvider(&socket_data);
+
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> request = context_->CreateRequest(
+        GURL("https://www.example.com"), DEFAULT_PRIORITY, &delegate,
+        TRAFFIC_ANNOTATION_FOR_TESTS);
+    request->set_accepted_stream_types(test.accepted_types);
+    request->Start();
+    delegate.RunUntilComplete();
+    EXPECT_THAT(delegate.request_status(), IsOk());
+    socket_factory_.ResetNextMockIndexes();
+  }
 }
 
 #if defined(OS_ANDROID)

@@ -86,14 +86,26 @@ class PortFactory(object):
         """Returns a Port subclass and its name for the given port_name."""
         if 'browser_test' in port_name:
             module_name, class_name = port_name.rsplit('.', 1)
-            module = __import__(module_name, globals(), locals(), [], -1)
+            try:
+                module = __import__(module_name, globals(), locals(), [], -1)
+            except ValueError:
+                # Python3 doesn't allow the level param to be -1. Setting it to
+                # 1 searches for modules in 1 parent directory.
+                module = __import__(module_name, globals(), locals(), [], 1)
             port_class_name = module.get_port_class_name(class_name)
             if port_class_name is not None:
                 return module.__dict__[port_class_name], class_name
         else:
             for port_class in cls.PORT_CLASSES:
                 module_name, class_name = port_class.rsplit('.', 1)
-                module = __import__(module_name, globals(), locals(), [], -1)
+                try:
+                    module = __import__(module_name, globals(), locals(), [],
+                                        -1)
+                except ValueError:
+                    # Python3 doesn't allow the level param to be -1. Setting it
+                    # to 1 searches for modules in 1 parent directory.
+                    module = __import__(module_name, globals(), locals(), [],
+                                        1)
                 port_class = module.__dict__[class_name]
                 if port_name.startswith(port_class.port_name):
                     return port_class, class_name

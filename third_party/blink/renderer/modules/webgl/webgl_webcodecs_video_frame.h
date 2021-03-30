@@ -10,6 +10,10 @@
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_extension.h"
 
+namespace media {
+class GpuMemoryBufferVideoFramePool;
+}  // namespace media
+
 namespace blink {
 
 class WebGLWebCodecsVideoFrameHandle;
@@ -18,6 +22,8 @@ class WebGLWebCodecsVideoFrame final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  ~WebGLWebCodecsVideoFrame() override;
+
   static bool Supported(WebGLRenderingContextBase*);
   static const char* ExtensionName();
 
@@ -36,9 +42,13 @@ class WebGLWebCodecsVideoFrame final : public WebGLExtension {
                          ExceptionState&);
 
  private:
+  void OnHardwareVideoFrameCreated(
+      base::WaitableEvent* waitable_event,
+      scoped_refptr<media::VideoFrame> video_frame);
+
+  void InitializeGpuMemoryBufferPool();
+
   std::bitset<media::PIXEL_FORMAT_MAX + 1> formats_supported;
-  std::string sampler_type_;
-  std::string sampler_func_;
   std::array<std::array<std::string, media::VideoFrame::kMaxPlanes>,
              media::PIXEL_FORMAT_MAX + 1>
       format_to_components_map_;
@@ -47,6 +57,11 @@ class WebGLWebCodecsVideoFrame final : public WebGLExtension {
   // This holds the reference for all video frames being imported, but not
   // yet released.
   VideoFrameHandleMap tex0_to_video_frame_map_;
+
+  std::unique_ptr<media::GpuMemoryBufferVideoFramePool> gpu_memory_buffer_pool_;
+  scoped_refptr<base::SequencedTaskRunner> worker_task_runner_;
+  scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
+  scoped_refptr<media::VideoFrame> hardware_video_frame_;
 };
 
 }  // namespace blink

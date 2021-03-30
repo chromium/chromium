@@ -12,7 +12,7 @@ namespace tracing {
 
 class COMPONENT_EXPORT(TRACING_CPP) DummyProducer : public SystemProducer {
  public:
-  DummyProducer(PerfettoTaskRunner* task_runner);
+  explicit DummyProducer(base::tracing::PerfettoTaskRunner*);
   ~DummyProducer() override;
 
   // perfetto::Producer implementation.

@@ -56,6 +56,7 @@ DeviceSensorEventPump::GetPumpStateForTesting() {
 
 void DeviceSensorEventPump::Trace(Visitor* visitor) const {
   visitor->Trace(sensor_provider_);
+  visitor->Trace(timer_);
 }
 
 DeviceSensorEventPump::DeviceSensorEventPump(LocalFrame& frame)

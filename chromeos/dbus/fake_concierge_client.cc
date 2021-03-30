@@ -335,7 +335,7 @@ void FakeConciergeClient::NotifyVmStopped(
 }
 
 bool FakeConciergeClient::HasVmObservers() const {
-  return vm_observer_list_.might_have_observers();
+  return !vm_observer_list_.empty();
 }
 
 void FakeConciergeClient::InitializeProtoResponses() {

@@ -17,7 +17,6 @@ import android.text.TextUtils;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageManagerUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -33,9 +32,7 @@ import java.util.concurrent.TimeUnit;
 public class DefaultBrowserPromoDeps {
     private static final int MAX_PROMO_COUNT = 1;
     private static final int MIN_TRIGGER_SESSION_COUNT = 3;
-    private static final String SESSION_COUNT_PARAM = "min_trigger_session_count";
-    private static final String PROMO_COUNT_PARAM = "max_promo_count";
-    private static final String PROMO_INTERVAL_PARAM = "promo_interval";
+    private static final int MIN_PROMO_INTERVAL = 0;
 
     static final String CHROME_STABLE_PACKAGE_NAME = "com.android.chrome";
 
@@ -52,9 +49,7 @@ public class DefaultBrowserPromoDeps {
     }
 
     boolean isFeatureEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_DEFAULT_BROWSER_PROMO)
-                && !CommandLine.getInstance().hasSwitch(
-                        ChromeSwitches.DISABLE_DEFAULT_BROWSER_PROMO);
+        return !CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_DEFAULT_BROWSER_PROMO);
     }
 
     int getPromoCount() {
@@ -68,9 +63,7 @@ public class DefaultBrowserPromoDeps {
     }
 
     int getMaxPromoCount() {
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                ChromeFeatureList.ANDROID_DEFAULT_BROWSER_PROMO, PROMO_COUNT_PARAM,
-                MAX_PROMO_COUNT);
+        return MAX_PROMO_COUNT;
     }
 
     int getSessionCount() {
@@ -85,9 +78,7 @@ public class DefaultBrowserPromoDeps {
     }
 
     int getMinSessionCount() {
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                ChromeFeatureList.ANDROID_DEFAULT_BROWSER_PROMO, SESSION_COUNT_PARAM,
-                MIN_TRIGGER_SESSION_COUNT);
+        return MIN_TRIGGER_SESSION_COUNT;
     }
 
     int getLastPromoInterval() {
@@ -101,8 +92,7 @@ public class DefaultBrowserPromoDeps {
     }
 
     int getMinPromoInterval() {
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                ChromeFeatureList.ANDROID_DEFAULT_BROWSER_PROMO, PROMO_INTERVAL_PARAM, 0);
+        return MIN_PROMO_INTERVAL;
     }
 
     boolean isCurrentDefaultBrowserChrome(ResolveInfo info) {

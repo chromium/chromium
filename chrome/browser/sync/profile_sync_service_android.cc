@@ -84,7 +84,7 @@ ProfileSyncServiceAndroid::ProfileSyncServiceAndroid(JNIEnv* env, jobject obj)
     return;
   }
 
-  profile_ = ProfileManager::GetActiveUserProfile();
+  profile_ = ProfileManager::GetLastUsedProfile();
   if (profile_ == nullptr) {
     NOTREACHED() << "Sync Init: Profile not found.";
     return;
@@ -141,17 +141,18 @@ void ProfileSyncServiceAndroid::SetSyncRequested(JNIEnv* env,
 jboolean ProfileSyncServiceAndroid::IsSyncAllowedByPlatform(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
-  return sync_service_->GetUserSettings()->IsSyncAllowedByPlatform();
+  return !sync_service_->HasDisableReason(
+      syncer::SyncService::DISABLE_REASON_PLATFORM_OVERRIDE);
 }
 
 void ProfileSyncServiceAndroid::SetSyncAllowedByPlatform(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     jboolean allowed) {
-  sync_service_->GetUserSettings()->SetSyncAllowedByPlatform(allowed);
+  sync_service_->SetSyncAllowedByPlatform(allowed);
 }
 
-jboolean ProfileSyncServiceAndroid::IsSyncActive(
+jboolean ProfileSyncServiceAndroid::IsSyncFeatureActive(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -401,28 +402,20 @@ jboolean ProfileSyncServiceAndroid::IsAuthenticatedAccountPrimary(
   return sync_service_->IsAuthenticatedAccountPrimary();
 }
 
-jboolean ProfileSyncServiceAndroid::IsPassphrasePrompted(
+jboolean
+ProfileSyncServiceAndroid::IsPassphrasePromptMutedForCurrentProductVersion(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
-  return sync_service_->IsPassphrasePrompted();
+  return sync_service_->GetUserSettings()
+      ->IsPassphrasePromptMutedForCurrentProductVersion();
 }
 
-void ProfileSyncServiceAndroid::SetPassphrasePrompted(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    jboolean prompted) {
-  sync_service_->SetPassphrasePrompted(prompted);
-}
-
-void ProfileSyncServiceAndroid::SetSyncSessionsId(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jstring>& tag) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(profile_);
-  std::string machine_tag = ConvertJavaStringToUTF8(env, tag);
-  SessionSyncServiceFactory::GetForProfile(profile_)->SetSyncSessionsGUID(
-      machine_tag);
+void ProfileSyncServiceAndroid::
+    MarkPassphrasePromptMutedForCurrentProductVersion(
+        JNIEnv* env,
+        const JavaParamRef<jobject>& obj) {
+  sync_service_->GetUserSettings()
+      ->MarkPassphrasePromptMutedForCurrentProductVersion();
 }
 
 jboolean ProfileSyncServiceAndroid::HasKeepEverythingSynced(
@@ -441,7 +434,7 @@ ProfileSyncServiceAndroid::GetSyncEnterGooglePassphraseBodyWithDateText(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::Time passphrase_time =
       sync_service_->GetUserSettings()->GetExplicitPassphraseTime();
-  base::string16 passphrase_time_str =
+  std::u16string passphrase_time_str =
       base::TimeFormatShortDate(passphrase_time);
   return base::android::ConvertUTF16ToJavaString(
       env, l10n_util::GetStringFUTF16(
@@ -456,7 +449,7 @@ ProfileSyncServiceAndroid::GetSyncEnterCustomPassphraseBodyWithDateText(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::Time passphrase_time =
       sync_service_->GetUserSettings()->GetExplicitPassphraseTime();
-  base::string16 passphrase_time_str =
+  std::u16string passphrase_time_str =
       base::TimeFormatShortDate(passphrase_time);
   return base::android::ConvertUTF16ToJavaString(
       env, l10n_util::GetStringFUTF16(

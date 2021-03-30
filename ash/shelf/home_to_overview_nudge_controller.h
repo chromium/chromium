@@ -9,7 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/timer/timer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -76,7 +76,8 @@ class ASH_EXPORT HomeToOverviewNudgeController : views::WidgetObserver {
 
   // Observes hotseat widget to detect the hotseat bounds changes, and the
   // nudge widget to detect that the widget is being destroyed.
-  ScopedObserver<views::Widget, views::WidgetObserver> widget_observer_{this};
+  base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
+      widget_observations_{this};
 
   base::WeakPtrFactory<HomeToOverviewNudgeController> weak_factory_{this};
 };

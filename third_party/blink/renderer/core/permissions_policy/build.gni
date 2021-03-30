@@ -1,0 +1,18 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+blink_core_sources_permissions_policy = [
+  "document_policy_parser.cc",
+  "document_policy_parser.h",
+  "dom_feature_policy.cc",
+  "dom_feature_policy.h",
+  "permissions_policy_parser.cc",
+  "permissions_policy_parser.h",
+  "permissions_policy_devtools_support.h",
+  "permissions_policy_devtools_support.cc",
+  "iframe_policy.h",
+  "layout_animations_policy.cc",
+  "layout_animations_policy.h",
+  "policy_helper.h",
+]

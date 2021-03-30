@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/arc/ime/arc_ime_bridge.h"
 #include "components/arc/mojom/ime.mojom.h"
 #include "ui/base/ime/text_input_type.h"
@@ -32,7 +31,7 @@ class ArcImeBridgeImpl : public ArcImeBridge, public mojom::ImeHost {
   // ArcImeBridge overrides:
   void SendSetCompositionText(const ui::CompositionText& composition) override;
   void SendConfirmCompositionText() override;
-  void SendInsertText(const base::string16& text) override;
+  void SendInsertText(const std::u16string& text) override;
   void SendExtendSelectionAndDelete(size_t before, size_t after) override;
   void SendOnKeyboardAppearanceChanging(const gfx::Rect& new_bounds,
                                         bool is_available) override;

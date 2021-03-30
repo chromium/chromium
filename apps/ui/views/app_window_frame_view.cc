@@ -24,6 +24,7 @@
 #include "ui/strings/grit/ui_strings.h"  // Accessibility names
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -34,9 +35,6 @@ const int kCaptionHeight = 25;
 }  // namespace
 
 namespace apps {
-
-const char AppWindowFrameView::kViewClassName[] =
-    "browser/ui/views/extensions/AppWindowFrameView";
 
 AppWindowFrameView::AppWindowFrameView(views::Widget* widget,
                                        extensions::NativeAppWindow* window,
@@ -325,8 +323,6 @@ void AppWindowFrameView::OnPaint(gfx::Canvas* canvas) {
   canvas->DrawPath(path, flags);
 }
 
-const char* AppWindowFrameView::GetClassName() const { return kViewClassName; }
-
 gfx::Size AppWindowFrameView::GetMinimumSize() const {
   gfx::Size min_size = widget_->client_view()->GetMinimumSize();
   if (!draw_frame_) {
@@ -391,5 +387,8 @@ void AppWindowFrameView::SetButtonImagesForFrame() {
         rb.GetNativeImageNamed(IDR_APP_WINDOW_MINIMIZE).ToImageSkia());
   }
 }
+
+BEGIN_METADATA(AppWindowFrameView, views::NonClientFrameView)
+END_METADATA
 
 }  // namespace apps

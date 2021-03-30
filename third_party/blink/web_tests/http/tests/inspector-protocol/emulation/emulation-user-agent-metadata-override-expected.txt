@@ -15,7 +15,13 @@ Testing with specifying userAgentMetadata
 navigator.userAgent == Ferrum Typewriter
 brands == [{"brand":"Ferrum","version":"42.0"},{"brand":"Iron","version":"3"}]
 is mobile?true
-{"architecture":"Electromechanical","model":"QWERTY","platform":"Typewriter","platformVersion":"1950","uaFullVersion":"42.0.3.14159"}
+{
+    architecture : Electromechanical
+    model : QWERTY
+    platform : Typewriter
+    platformVersion : 1950
+    uaFullVersion : 42.0.3.14159
+}
 sec-ch-ua: "Ferrum";v="42.0", "Iron";v="3"
 sec-ch-ua-full-version: "42.0.3.14159"
 sec-ch-ua-arch: "Electromechanical"
@@ -32,4 +38,23 @@ sec-ch-ua-platform: "Typewriter"
 sec-ch-ua-platform-version: "1950"
 sec-ch-ua-mobile: ?1
 sec-ch-ua-model: "QWERTY"
+
+Testing defaulting of brand and fullVersion
+navigator.userAgent == Electric Typewriter
+brands == [{"brand":"content_shell","version":"999"}]
+is mobile?true
+{
+    architecture : Electronic
+    model : With erase tape
+    platform : Electric Typewriter
+    platformVersion : 1970
+    uaFullVersion : 999.77.34.5
+}
+sec-ch-ua: "content_shell";v="999"
+sec-ch-ua-full-version: "999.77.34.5"
+sec-ch-ua-arch: "Electronic"
+sec-ch-ua-platform: "Electric Typewriter"
+sec-ch-ua-platform-version: "1970"
+sec-ch-ua-mobile: ?1
+sec-ch-ua-model: "With erase tape"
 

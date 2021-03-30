@@ -26,4 +26,13 @@ std::vector<std::string> RenderDocumentFeatureLevelValues() {
   };
 }
 
+std::string GetRenderDocumentLevelNameForTestParams(
+    std::string render_document_level) {
+  if (render_document_level ==
+      GetRenderDocumentLevelName(RenderDocumentLevel::kCrashedFrame)) {
+    return "RDCrashedFrame";
+  }
+  return "RDSubframe";
+}
+
 }  // namespace content

@@ -114,7 +114,7 @@ class PushMessagingServiceTest : public ::testing::Test {
                    base::Optional<base::Time>* expiration_time_out,
                    std::vector<uint8_t>* p256dh_out,
                    std::vector<uint8_t>* auth_out,
-                   base::Closure done_callback,
+                   base::OnceClosure done_callback,
                    const std::string& registration_id,
                    const GURL& endpoint,
                    const base::Optional<base::Time>& expiration_time,
@@ -130,7 +130,7 @@ class PushMessagingServiceTest : public ::testing::Test {
     *p256dh_out = p256dh;
     *auth_out = auth;
 
-    done_callback.Run();
+    std::move(done_callback).Run();
   }
 
   // Callback to use when observing messages dispatched by the push service.

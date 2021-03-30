@@ -348,7 +348,6 @@ class LineLayoutItem {
 
 #endif
 
- protected:
   LayoutObject* GetLayoutObject() { return layout_object_; }
   const LayoutObject* GetLayoutObject() const { return layout_object_; }
 

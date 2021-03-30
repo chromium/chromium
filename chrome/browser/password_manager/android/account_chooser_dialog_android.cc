@@ -122,7 +122,7 @@ bool AccountChooserDialogAndroid::ShowDialog() {
     return false;
   }
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::string16 title =
+  std::u16string title =
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_ACCOUNT_CHOOSER_TITLE);
   gfx::NativeWindow native_window = web_contents_->GetTopLevelNativeWindow();
   base::android::ScopedJavaLocalRef<jobjectArray> java_credentials_array =
@@ -131,7 +131,7 @@ bool AccountChooserDialogAndroid::ShowDialog() {
       env, java_credentials_array, local_credentials_forms());
   base::android::ScopedJavaGlobalRef<jobject> java_dialog_global;
   const std::string origin = password_manager::GetShownOrigin(origin_);
-  base::string16 signin_button;
+  std::u16string signin_button;
   if (local_credentials_forms().size() == 1) {
     signin_button =
         l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_ACCOUNT_CHOOSER_SIGN_IN);

@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "base/task/post_task.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/common/cloud/dm_token.h"
@@ -17,7 +18,6 @@
 #include "components/safe_browsing/core/realtime/policy_engine.h"
 #include "components/safe_browsing/core/realtime/url_lookup_service_base.h"
 #include "components/safe_browsing/core/verdict_cache_manager.h"
-#include "components/sync/driver/sync_service.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
@@ -29,27 +29,22 @@ ChromeEnterpriseRealTimeUrlLookupService::
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
         VerdictCacheManager* cache_manager,
         Profile* profile,
-        syncer::SyncService* sync_service,
-        PrefService* pref_service,
-        const ChromeUserPopulation::ProfileManagementStatus&
-            profile_management_status,
-        bool is_under_advanced_protection,
-        bool is_off_the_record)
+        base::RepeatingCallback<ChromeUserPopulation()>
+            get_user_population_callback,
+        enterprise_connectors::ConnectorsService* connectors_service)
     : RealTimeUrlLookupServiceBase(url_loader_factory,
                                    cache_manager,
-                                   sync_service,
-                                   pref_service,
-                                   profile_management_status,
-                                   is_under_advanced_protection,
-                                   is_off_the_record),
-      profile_(profile) {}
+                                   get_user_population_callback),
+      profile_(profile),
+      connectors_service_(connectors_service) {}
 
 ChromeEnterpriseRealTimeUrlLookupService::
     ~ChromeEnterpriseRealTimeUrlLookupService() = default;
 
 bool ChromeEnterpriseRealTimeUrlLookupService::CanPerformFullURLLookup() const {
   return RealTimePolicyEngine::CanPerformEnterpriseFullURLLookup(
-      profile_->GetPrefs(), GetDMToken().is_valid(),
+      profile_->GetPrefs(),
+      connectors_service_->GetDMTokenForRealTimeUrlCheck().has_value(),
       profile_->IsOffTheRecord());
 }
 
@@ -74,15 +69,21 @@ void ChromeEnterpriseRealTimeUrlLookupService::GetAccessToken(
   NOTREACHED() << "URL lookup with token is disabled for enterprise users.";
 }
 
-policy::DMToken ChromeEnterpriseRealTimeUrlLookupService::GetDMToken() const {
-  return policy::GetDMToken(profile_);
-}
-
 base::Optional<std::string>
 ChromeEnterpriseRealTimeUrlLookupService::GetDMTokenString() const {
-  DCHECK(GetDMToken().is_valid())
-      << "Get a dm token string only if the dm token is valid.";
-  return GetDMToken().value();
+  DCHECK(connectors_service_);
+  return connectors_service_->GetDMTokenForRealTimeUrlCheck();
+}
+
+GURL ChromeEnterpriseRealTimeUrlLookupService::GetRealTimeLookupUrl() const {
+  bool is_ga_endpoint_enabled =
+      base::FeatureList::IsEnabled(kRealTimeUrlLookupEnterpriseGaEndpoint);
+  std::string endpoint = is_ga_endpoint_enabled
+                             ? "https://enterprise-safebrowsing.googleapis.com/"
+                               "safebrowsing/clientreport/realtime"
+                             : "https://safebrowsing.google.com/safebrowsing/"
+                               "clientreport/realtime";
+  return GURL(endpoint);
 }
 
 net::NetworkTrafficAnnotationTag

@@ -40,10 +40,10 @@ float GetContextualSearchRankerThresholdFeatureParam() {
 
 // NOTE: This list needs to be kept in sync with tools/metrics/ukm/ukm.xml!
 // Only features within this list will be logged to UKM.
-// TODO(chrome-ranker-team) Deprecate the whitelist once it is available through
+// TODO(chrome-ranker-team) Deprecate the allowlist once it is available through
 // the UKM generated API.
-const base::flat_set<std::string>* GetContextualSearchFeatureWhitelist() {
-  static auto* kContextualSearchFeatureWhitelist =
+const base::flat_set<std::string>* GetContextualSearchFeatureAllowlist() {
+  static auto* kContextualSearchFeatureAllowlist =
       new base::flat_set<std::string>({"DidOptIn",
                                        "DurationAfterScrollMs",
                                        "EntityImpressionsCount",
@@ -78,7 +78,7 @@ const base::flat_set<std::string>* GetContextualSearchFeatureWhitelist() {
                                        "TapCount",
                                        "TapDurationMs",
                                        "WasScreenBottom"});
-  return kContextualSearchFeatureWhitelist;
+  return kContextualSearchFeatureAllowlist;
 }
 
 }  // namespace
@@ -87,7 +87,7 @@ const PredictorConfig GetContextualSearchPredictorConfig() {
   static auto kContextualSearchPredictorConfig = *(new PredictorConfig(
       kContextualSearchModelName, kContextualSearchLoggingName,
       kContextualSearchUmaPrefixName, LOG_UKM,
-      GetContextualSearchFeatureWhitelist(), &kContextualSearchRankerQuery,
+      GetContextualSearchFeatureAllowlist(), &kContextualSearchRankerQuery,
       GetContextualSearchRankerUrlFeatureParam(),
       GetContextualSearchRankerThresholdFeatureParam()));
   return kContextualSearchPredictorConfig;

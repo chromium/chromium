@@ -54,6 +54,7 @@ class DesktopBrowserFrameAura : public views::DesktopNativeWidgetAura,
       const content::NativeWebKeyboardEvent& event) override;
   bool HandleKeyboardEvent(
       const content::NativeWebKeyboardEvent& event) override;
+  bool ShouldRestorePreviousBrowserWidgetState() const override;
 
  private:
   // The BrowserView is our ClientView. This is a pointer to it.

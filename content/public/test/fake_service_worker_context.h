@@ -36,7 +36,7 @@ class FakeServiceWorkerContext : public ServiceWorkerContext {
   void RegisterServiceWorker(
       const GURL& script_url,
       const blink::mojom::ServiceWorkerRegistrationOptions& options,
-      ResultCallback callback) override;
+      StatusCodeCallback callback) override;
   void UnregisterServiceWorker(const GURL& scope,
                                ResultCallback callback) override;
   ServiceWorkerExternalRequestResult StartingExternalRequest(
@@ -45,17 +45,11 @@ class FakeServiceWorkerContext : public ServiceWorkerContext {
   ServiceWorkerExternalRequestResult FinishedExternalRequest(
       int64_t service_worker_version_id,
       const std::string& request_uuid) override;
-  void CountExternalRequestsForTest(
-      const url::Origin& origin,
-      CountExternalRequestsCallback callback) override;
+  size_t CountExternalRequestsForTest(const url::Origin& origin) override;
   bool MaybeHasRegistrationForOrigin(const url::Origin& origin) override;
-  void GetInstalledRegistrationOrigins(
-      base::Optional<std::string> host_filter,
-      GetInstalledRegistrationOriginsCallback callback) override;
   void GetAllOriginsInfo(GetUsageInfoCallback callback) override;
   void DeleteForOrigin(const url::Origin& origin,
                        ResultCallback callback) override;
-  void PerformStorageCleanup(base::OnceClosure callback) override;
   void CheckHasServiceWorker(const GURL& url,
                              CheckHasServiceWorkerCallback callback) override;
   void CheckOfflineCapability(
@@ -66,8 +60,7 @@ class FakeServiceWorkerContext : public ServiceWorkerContext {
   void StartWorkerForScope(
       const GURL& scope,
       ServiceWorkerContext::StartWorkerCallback info_callback,
-      ServiceWorkerContext::StartWorkerFailureCallback failure_callback)
-      override;
+      ServiceWorkerContext::StatusCodeCallback failure_callback) override;
   void StartServiceWorkerAndDispatchMessage(
       const GURL& scope,
       blink::TransferableMessage message,

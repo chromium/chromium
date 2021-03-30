@@ -94,19 +94,17 @@ void WorkletAnimationController::ScrollSourceCompositingStateChanged(
 
 base::WeakPtr<AnimationWorkletMutatorDispatcherImpl>
 WorkletAnimationController::EnsureMainThreadMutatorDispatcher(
-    scoped_refptr<base::SingleThreadTaskRunner>* mutator_task_runner) {
+    scoped_refptr<base::SingleThreadTaskRunner> mutator_task_runner) {
   base::WeakPtr<AnimationWorkletMutatorDispatcherImpl> mutator_dispatcher;
-  if (!mutator_task_runner_) {
+  if (!main_thread_mutator_client_) {
     main_thread_mutator_client_ =
         AnimationWorkletMutatorDispatcherImpl::CreateMainThreadClient(
-            &mutator_dispatcher, &mutator_task_runner_);
+            mutator_dispatcher, std::move(mutator_task_runner));
     main_thread_mutator_client_->SetDelegate(this);
   }
 
   DCHECK(main_thread_mutator_client_);
-  DCHECK(mutator_task_runner_);
   DCHECK(mutator_dispatcher);
-  *mutator_task_runner = mutator_task_runner_;
   return mutator_dispatcher;
 }
 

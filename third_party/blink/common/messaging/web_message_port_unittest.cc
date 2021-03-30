@@ -4,8 +4,9 @@
 
 #include "third_party/blink/public/common/messaging/web_message_port.h"
 
+#include <string>
+
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -85,7 +86,7 @@ TEST(WebMessagePortTest, EndToEnd) {
   EXPECT_TRUE(port1.CanPostMessage());
 
   // Send a simple string-only message one way from port 0 to port 1.
-  base::string16 message(base::UTF8ToUTF16("foo"));
+  std::u16string message(u"foo");
   {
     base::RunLoop run_loop;
     EXPECT_CALL(receiver1, OnMessage(_))

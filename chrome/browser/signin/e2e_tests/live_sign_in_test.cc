@@ -65,10 +65,12 @@ class SignInTestObserver : public IdentityManager::Observer,
   }
 
   // IdentityManager::Observer:
-  void OnPrimaryAccountSet(const CoreAccountInfo&) override {
-    QuitIfConditionIsSatisfied();
-  }
-  void OnPrimaryAccountCleared(const CoreAccountInfo&) override {
+  void OnPrimaryAccountChanged(
+      const PrimaryAccountChangeEvent& event) override {
+    if (event.GetEventTypeFor(ConsentLevel::kSync) ==
+        PrimaryAccountChangeEvent::Type::kNone) {
+      return;
+    }
     QuitIfConditionIsSatisfied();
   }
   void OnRefreshTokenUpdatedForAccount(const CoreAccountInfo&) override {
@@ -310,7 +312,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_WebSignOut) {
   TurnOnSync(test_account, 0);
 
   const CoreAccountInfo& primary_account =
-      identity_manager()->GetPrimaryAccountInfo();
+      identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
   EXPECT_FALSE(primary_account.IsEmpty());
   EXPECT_TRUE(gaia::AreEmailsSame(test_account.user, primary_account.email));
   EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
@@ -352,7 +354,8 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_WebSignInAndSignOut) {
       accounts_in_cookie_jar_1.signed_in_accounts[0];
   EXPECT_TRUE(gaia::AreEmailsSame(test_account_1.user, account_1.email));
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_1.id));
-  EXPECT_FALSE(identity_manager()->HasPrimaryAccount());
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
 
   TestAccount test_account_2;
   CHECK(GetTestAccountsUtil()->GetAccount("TEST_ACCOUNT_2", test_account_2));
@@ -368,7 +371,8 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_WebSignInAndSignOut) {
       accounts_in_cookie_jar_2.signed_in_accounts[1];
   EXPECT_TRUE(gaia::AreEmailsSame(test_account_2.user, account_2.email));
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_2.id));
-  EXPECT_FALSE(identity_manager()->HasPrimaryAccount());
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
 
   SignOutFromWeb();
 
@@ -396,7 +400,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_TurnOffSync) {
   SignInFromWeb(test_account_2, 1);
 
   const CoreAccountInfo& primary_account =
-      identity_manager()->GetPrimaryAccountInfo();
+      identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
   EXPECT_FALSE(primary_account.IsEmpty());
   EXPECT_TRUE(gaia::AreEmailsSame(test_account_1.user, primary_account.email));
   EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
@@ -408,7 +412,8 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_TurnOffSync) {
   EXPECT_TRUE(accounts_in_cookie_jar_2.accounts_are_fresh);
   ASSERT_TRUE(accounts_in_cookie_jar_2.signed_in_accounts.empty());
   EXPECT_TRUE(identity_manager()->GetAccountsWithRefreshTokens().empty());
-  EXPECT_FALSE(identity_manager()->HasPrimaryAccount());
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
 }
 
 // In "Sync paused" state, when the primary account is invalid, turns off sync
@@ -423,7 +428,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_TurnOffSyncWhenPaused) {
   SignOutFromWeb();
 
   const CoreAccountInfo& primary_account =
-      identity_manager()->GetPrimaryAccountInfo();
+      identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
   EXPECT_FALSE(primary_account.IsEmpty());
   EXPECT_TRUE(gaia::AreEmailsSame(test_account_1.user, primary_account.email));
   EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
@@ -433,7 +438,8 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_TurnOffSyncWhenPaused) {
 
   TurnOffSync();
   EXPECT_TRUE(identity_manager()->GetAccountsWithRefreshTokens().empty());
-  EXPECT_FALSE(identity_manager()->HasPrimaryAccount());
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
 }
 
 // This test can pass. Marked as manual because it TIMED_OUT on Win7.
@@ -469,7 +475,8 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CancelSyncWithWebAccount) {
       accounts_in_cookie_jar.signed_in_accounts[0];
   EXPECT_TRUE(gaia::AreEmailsSame(test_account.user, account.email));
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account.id));
-  EXPECT_FALSE(identity_manager()->HasPrimaryAccount());
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
 }
 
 // This test can pass. Marked as manual because it TIMED_OUT on Win7.
@@ -492,7 +499,8 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CancelSync) {
   EXPECT_TRUE(accounts_in_cookie_jar.accounts_are_fresh);
   EXPECT_TRUE(accounts_in_cookie_jar.signed_in_accounts.empty());
   EXPECT_TRUE(identity_manager()->GetAccountsWithRefreshTokens().empty());
-  EXPECT_FALSE(identity_manager()->HasPrimaryAccount());
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
 }
 
 // This test can pass. Marked as manual because it TIMED_OUT on Win7.
@@ -553,7 +561,8 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest,
 
   // Check the primary account in the new profile is set and syncing.
   const CoreAccountInfo& primary_account =
-      identity_manager(new_browser)->GetPrimaryAccountInfo();
+      identity_manager(new_browser)
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
   EXPECT_FALSE(primary_account.IsEmpty());
   EXPECT_TRUE(gaia::AreEmailsSame(test_account_2.user, primary_account.email));
   EXPECT_TRUE(identity_manager(new_browser)
@@ -568,7 +577,8 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest,
   EXPECT_TRUE(accounts_in_cookie_jar_2.accounts_are_fresh);
   ASSERT_TRUE(accounts_in_cookie_jar_2.signed_in_accounts.empty());
   EXPECT_TRUE(identity_manager()->GetAccountsWithRefreshTokens().empty());
-  EXPECT_FALSE(identity_manager()->HasPrimaryAccount());
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
 }
 
 // This test can pass. Marked as manual because it TIMED_OUT on Win7.
@@ -618,7 +628,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest,
 
   // Check the primary account is set and syncing.
   const CoreAccountInfo& primary_account =
-      identity_manager()->GetPrimaryAccountInfo();
+      identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
   EXPECT_FALSE(primary_account.IsEmpty());
   EXPECT_TRUE(gaia::AreEmailsSame(test_account_2.user, primary_account.email));
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(
@@ -666,7 +676,8 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest,
   EXPECT_TRUE(accounts_in_cookie_jar.accounts_are_fresh);
   EXPECT_TRUE(accounts_in_cookie_jar.signed_in_accounts.empty());
   EXPECT_TRUE(identity_manager()->GetAccountsWithRefreshTokens().empty());
-  EXPECT_FALSE(identity_manager()->HasPrimaryAccount());
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
 }
 
 }  // namespace test

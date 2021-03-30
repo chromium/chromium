@@ -1,4 +1,4 @@
 <?php
-header("Accept-CH: UA, UA-Full-Version, UA-Platform, UA-Platform-Version, UA-Arch, UA-Model, UA-Mobile");
+header("Accept-CH: Sec-CH-UA, Sec-CH-UA-Full-Version, Sec-CH-UA-Platform, Sec-CH-UA-Platform-Version, Sec-CH-UA-Arch, Sec-CH-UA-Model, Sec-CH-UA-Mobile");
 ?>
 Hello, test.

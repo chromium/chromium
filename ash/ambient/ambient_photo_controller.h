@@ -21,7 +21,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "net/base/backoff_entry.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -58,8 +58,6 @@ class ASH_EXPORT AmbientPhotoController : public AmbientBackendModelObserver {
   void StartScreenUpdate();
   void StopScreenUpdate();
 
-  void ScheduleFetchBackupImages();
-
   AmbientBackendModel* ambient_backend_model() {
     return &ambient_backend_model_;
   }
@@ -68,7 +66,7 @@ class ASH_EXPORT AmbientPhotoController : public AmbientBackendModelObserver {
     return photo_refresh_timer_;
   }
 
-  const base::OneShotTimer& backup_photo_refresh_timer_for_testing() const {
+  base::OneShotTimer& backup_photo_refresh_timer_for_testing() {
     return backup_photo_refresh_timer_;
   }
 
@@ -78,10 +76,9 @@ class ASH_EXPORT AmbientPhotoController : public AmbientBackendModelObserver {
   // Clear cache when Settings changes.
   void ClearCache();
 
-  void InitCache();
-
  private:
   friend class AmbientAshTestBase;
+  friend class AmbientPhotoControllerTest;
 
   void FetchTopics();
 
@@ -90,6 +87,8 @@ class ASH_EXPORT AmbientPhotoController : public AmbientBackendModelObserver {
   void ScheduleFetchTopics(bool backoff);
 
   void ScheduleRefreshImage();
+
+  void ScheduleFetchBackupImages();
 
   // Download backup cache images.
   void FetchBackupImages();
@@ -214,8 +213,8 @@ class ASH_EXPORT AmbientPhotoController : public AmbientBackendModelObserver {
   // Backoff to resume fetch images.
   net::BackoffEntry resume_fetch_image_backoff_;
 
-  ScopedObserver<AmbientBackendModel, AmbientBackendModelObserver>
-      ambient_backend_model_observer_{this};
+  base::ScopedObservation<AmbientBackendModel, AmbientBackendModelObserver>
+      ambient_backend_model_observation_{this};
 
   std::unique_ptr<AmbientPhotoCache> photo_cache_;
   std::unique_ptr<AmbientPhotoCache> backup_photo_cache_;

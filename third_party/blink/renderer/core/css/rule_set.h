@@ -58,6 +58,9 @@ enum class ValidPropertyFilter : unsigned {
   // Defined in a ::first-letter pseudo-element scope. Only properties listed in
   // https://drafts.csswg.org/css-pseudo-4/#first-letter-styling are valid.
   kFirstLetter,
+  // Defined in a ::first-line pseudo-element scope. Only properties listed in
+  // https://drafts.csswg.org/css-pseudo-4/#first-line-styling are valid.
+  kFirstLine,
   // Defined in a ::marker pseudo-element scope. Only properties listed in
   // https://drafts.csswg.org/css-pseudo-4/#marker-pseudo are valid.
   kMarker,
@@ -282,6 +285,11 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
     DCHECK(!pending_rules_);
     return &focus_pseudo_class_rules_;
   }
+  const HeapVector<Member<const RuleData>>* FocusVisiblePseudoClassRules()
+      const {
+    DCHECK(!pending_rules_);
+    return &focus_visible_pseudo_class_rules_;
+  }
   const HeapVector<Member<const RuleData>>*
   SpatialNavigationInterestPseudoClassRules() const {
     DCHECK(!pending_rules_);
@@ -313,7 +321,6 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   const HeapVector<Member<StyleRuleKeyframes>>& KeyframesRules() const {
     return keyframes_rules_;
   }
-  StyleRuleKeyframes* KeyframeStylesForAnimation(const AtomicString& name);
   const HeapVector<Member<StyleRuleProperty>>& PropertyRules() const {
     return property_rules_;
   }
@@ -406,6 +413,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   HeapVector<Member<const RuleData>> link_pseudo_class_rules_;
   HeapVector<Member<const RuleData>> cue_pseudo_rules_;
   HeapVector<Member<const RuleData>> focus_pseudo_class_rules_;
+  HeapVector<Member<const RuleData>> focus_visible_pseudo_class_rules_;
   HeapVector<Member<const RuleData>> spatial_navigation_interest_class_rules_;
   HeapVector<Member<const RuleData>> universal_rules_;
   HeapVector<Member<const RuleData>> shadow_host_rules_;
@@ -420,8 +428,6 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   HeapVector<Member<StyleRuleScrollTimeline>> scroll_timeline_rules_;
   HeapVector<MinimalRuleData> slotted_pseudo_element_rules_;
   Vector<MediaQuerySetResult> media_query_set_results_;
-
-  bool keyframes_rules_sorted_ = true;
 
   unsigned rule_count_;
   Member<PendingRuleMaps> pending_rules_;

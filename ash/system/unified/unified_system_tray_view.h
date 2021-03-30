@@ -21,7 +21,6 @@ class TopShortcutsView;
 class UnifiedMediaControlsContainer;
 class NotificationHiddenView;
 class PageIndicatorView;
-class UnifiedManagedDeviceView;
 class UnifiedSystemInfoView;
 class UnifiedSystemTrayController;
 
@@ -121,7 +120,7 @@ class ASH_EXPORT UnifiedSystemTrayView : public views::View,
   int GetVisibleFeaturePodCount() const;
 
   // Get the accessible name for the currently shown detailed view.
-  base::string16 GetDetailedViewAccessibleName() const;
+  std::u16string GetDetailedViewAccessibleName() const;
 
   // Returns true if a detailed view is being shown in the tray. (e.g Bluetooth
   // Settings).
@@ -193,9 +192,6 @@ class ASH_EXPORT UnifiedSystemTrayView : public views::View,
 
   // Null if media::kGlobalMediaControlsForChromeOS is disabled.
   UnifiedMediaControlsContainer* media_controls_container_ = nullptr;
-
-  // Null if kManagedDeviceUIRedesign is disabled.
-  UnifiedManagedDeviceView* managed_device_view_ = nullptr;
 
   // The maximum height available to the view.
   int max_height_ = 0;

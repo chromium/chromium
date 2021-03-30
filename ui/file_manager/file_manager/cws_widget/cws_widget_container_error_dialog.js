@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-class CWSWidgetContainerErrorDialog extends cr.ui.dialogs.BaseDialog {
+// #import {util} from '../common/js/util.m.js';
+// #import {BaseDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
+
+/* #export */ class CWSWidgetContainerErrorDialog extends
+    cr.ui.dialogs.BaseDialog {
   /**
    * @param {HTMLElement} parentNode Node to be parent for this dialog.
    */
   constructor(parentNode) {
     super(parentNode);
 
-    if (util.isFilesNg()) {
-      this.container.classList.add('files-ng');
-    }
+    this.container.classList.add('files-ng');
   }
 
   /**
@@ -29,6 +31,8 @@ class CWSWidgetContainerErrorDialog extends cr.ui.dialogs.BaseDialog {
    */
   initDom() {
     super.initDom();
+    super.hasModalContainer = true;
+
     this.frame.classList.add('cws-widget-error-dialog-frame');
     const img = this.document_.createElement('div');
     img.className = 'cws-widget-error-dialog-img';
@@ -56,5 +60,26 @@ class CWSWidgetContainerErrorDialog extends cr.ui.dialogs.BaseDialog {
     if (this.shown()) {
       this.okButton.focus();
     }
+  }
+
+  /**
+   * @override
+   * @suppress {accessControls}
+   */
+  show_(...args) {
+    this.parentNode_ = util.getFilesAppModalDialogInstance();
+
+    super.show_(...args);
+
+    this.parentNode_.showModal();
+  }
+
+  /**
+   * @override
+   */
+  hide(...args) {
+    this.parentNode_.close();
+
+    super.hide(...args);
   }
 }

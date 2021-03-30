@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <map>
 #include <memory>
-#include <vector>
 
+#include "ash/components/audio/cras_audio_handler.h"
+#include "ash/components/audio/sounds.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/macros.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/audio/chromeos_sounds.h"
-#include "chromeos/audio/cras_audio_handler.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "content/public/test/browser_test.h"
 #include "services/audio/public/cpp/sounds/sounds_manager.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -21,12 +21,11 @@
 
 namespace {
 
+using ::ash::AccessibilityManager;
+
 class SoundsManagerTestImpl : public audio::SoundsManager {
  public:
-  SoundsManagerTestImpl()
-      : is_sound_initialized_(chromeos::SOUND_COUNT),
-        num_play_requests_(chromeos::SOUND_COUNT) {}
-
+  SoundsManagerTestImpl() = default;
   ~SoundsManagerTestImpl() override {}
 
   bool Initialize(SoundKey key, const base::StringPiece& /* data */) override {
@@ -45,15 +44,13 @@ class SoundsManagerTestImpl : public audio::SoundsManager {
     return base::TimeDelta();
   }
 
-  bool is_sound_initialized(SoundKey key) const {
-    return is_sound_initialized_[key];
-  }
+  bool is_sound_initialized(SoundKey key) { return is_sound_initialized_[key]; }
 
-  int num_play_requests(SoundKey key) const { return num_play_requests_[key]; }
+  int num_play_requests(SoundKey key) { return num_play_requests_[key]; }
 
  private:
-  std::vector<bool> is_sound_initialized_;
-  std::vector<int> num_play_requests_;
+  std::map<SoundKey, bool> is_sound_initialized_;
+  std::map<SoundKey, int> num_play_requests_;
 
   DISALLOW_COPY_AND_ASSIGN(SoundsManagerTestImpl);
 };
@@ -64,7 +61,7 @@ class VolumeControllerTest : public InProcessBrowserTest {
   ~VolumeControllerTest() override {}
 
   void SetUpOnMainThread() override {
-    audio_handler_ = chromeos::CrasAudioHandler::Get();
+    audio_handler_ = ash::CrasAudioHandler::Get();
   }
 
   void VolumeUp() {
@@ -83,7 +80,7 @@ class VolumeControllerTest : public InProcessBrowserTest {
   }
 
  protected:
-  chromeos::CrasAudioHandler* audio_handler_;  // Not owned.
+  ash::CrasAudioHandler* audio_handler_;  // Not owned.
 
  private:
   DISALLOW_COPY_AND_ASSIGN(VolumeControllerTest);
@@ -168,11 +165,13 @@ class VolumeControllerSoundsTest : public VolumeControllerTest {
   }
 
   bool is_sound_initialized() const {
-    return sounds_manager_->is_sound_initialized(chromeos::SOUND_VOLUME_ADJUST);
+    return sounds_manager_->is_sound_initialized(
+        static_cast<int>(ash::Sound::kVolumeAdjust));
   }
 
   int num_play_requests() const {
-    return sounds_manager_->num_play_requests(chromeos::SOUND_VOLUME_ADJUST);
+    return sounds_manager_->num_play_requests(
+        static_cast<int>(ash::Sound::kVolumeAdjust));
   }
 
  private:
@@ -184,12 +183,12 @@ class VolumeControllerSoundsTest : public VolumeControllerTest {
 IN_PROC_BROWSER_TEST_F(VolumeControllerSoundsTest, Simple) {
   audio_handler_->SetOutputVolumePercent(50);
 
-  chromeos::AccessibilityManager::Get()->EnableSpokenFeedback(false);
+  AccessibilityManager::Get()->EnableSpokenFeedback(false);
   VolumeUp();
   VolumeDown();
   EXPECT_EQ(0, num_play_requests());
 
-  chromeos::AccessibilityManager::Get()->EnableSpokenFeedback(true);
+  AccessibilityManager::Get()->EnableSpokenFeedback(true);
   VolumeUp();
   VolumeDown();
   EXPECT_EQ(2, num_play_requests());
@@ -197,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(VolumeControllerSoundsTest, Simple) {
 
 IN_PROC_BROWSER_TEST_F(VolumeControllerSoundsTest, EdgeCases) {
   EXPECT_TRUE(is_sound_initialized());
-  chromeos::AccessibilityManager::Get()->EnableSpokenFeedback(true);
+  AccessibilityManager::Get()->EnableSpokenFeedback(true);
 
   // Check that sound is played on volume up and volume down.
   audio_handler_->SetOutputVolumePercent(50);

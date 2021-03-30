@@ -21,17 +21,17 @@ void JNI_ReadingListBridge_OnStartChromeForeground(JNIEnv* env) {
   service->OnStart();
 }
 
-base::string16 ReadingListBridge::getNotificationTitle() {
+std::u16string ReadingListBridge::getNotificationTitle() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::string16 title;
+  std::u16string title;
   base::android::ConvertJavaStringToUTF16(
       env, Java_ReadingListBridge_getNotificationTitle(env).obj(), &title);
   return title;
 }
 
-base::string16 ReadingListBridge::getNotificationSubTitle(int unread_size) {
+std::u16string ReadingListBridge::getNotificationSubTitle(int unread_size) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::string16 subtitle;
+  std::u16string subtitle;
   base::android::ConvertJavaStringToUTF16(
       env, Java_ReadingListBridge_getNotificationText(env, unread_size).obj(),
       &subtitle);

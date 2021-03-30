@@ -12,7 +12,7 @@ namespace blink {
 
 ServiceWorkerRegistrationPush::ServiceWorkerRegistrationPush(
     ServiceWorkerRegistration* registration)
-    : registration_(registration) {}
+    : Supplement(*registration) {}
 
 ServiceWorkerRegistrationPush::~ServiceWorkerRegistrationPush() = default;
 
@@ -39,12 +39,11 @@ PushManager* ServiceWorkerRegistrationPush::pushManager(
 
 PushManager* ServiceWorkerRegistrationPush::pushManager() {
   if (!push_manager_)
-    push_manager_ = MakeGarbageCollected<PushManager>(registration_);
+    push_manager_ = MakeGarbageCollected<PushManager>(GetSupplementable());
   return push_manager_.Get();
 }
 
 void ServiceWorkerRegistrationPush::Trace(Visitor* visitor) const {
-  visitor->Trace(registration_);
   visitor->Trace(push_manager_);
   Supplement<ServiceWorkerRegistration>::Trace(visitor);
 }

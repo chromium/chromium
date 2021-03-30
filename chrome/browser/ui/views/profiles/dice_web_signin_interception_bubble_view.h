@@ -12,6 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace views {
 class View;
@@ -24,12 +25,12 @@ class Profile;
 class DiceWebSigninInterceptionBubbleView
     : public views::BubbleDialogDelegateView {
  public:
-  ~DiceWebSigninInterceptionBubbleView() override;
-
+  METADATA_HEADER(DiceWebSigninInterceptionBubbleView);
   DiceWebSigninInterceptionBubbleView(
       const DiceWebSigninInterceptionBubbleView& other) = delete;
   DiceWebSigninInterceptionBubbleView& operator=(
       const DiceWebSigninInterceptionBubbleView& other) = delete;
+  ~DiceWebSigninInterceptionBubbleView() override;
 
   // Warning: the bubble is closed when the handle is destroyed ; it is the
   // responsibility of the caller to keep the handle alive until the bubble
@@ -50,7 +51,7 @@ class DiceWebSigninInterceptionBubbleView
       SigninInterceptionResult result);
 
   // Returns true if the user has accepted the interception.
-  bool HasAccepted() const;
+  bool GetAccepted() const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,
@@ -59,6 +60,10 @@ class DiceWebSigninInterceptionBubbleView
                            BubbleDeclined);
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,
                            BubbleAccepted);
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,
+                           BubbleAcceptedGuestMode);
+  FRIEND_TEST_ALL_PREFIXES(ProfileBubbleInteractiveUiTest,
+                           InterceptionBubbleFocus);
 
   // Closes the bubble when `ScopedHandle` is destroyed. Does nothing if the
   // bubble has been already closed.
@@ -88,12 +93,12 @@ class DiceWebSigninInterceptionBubbleView
   std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle> GetHandle()
       const;
 
-  // This bubble has no native buttons. The user accepts or cancels through this
-  // method, which is called by the inner web UI.
-  void OnWebUIUserChoice(bool accept);
+  // This bubble has no native buttons. The user accepts or cancels or selects
+  // Guest profile through this method, which is called by the inner web UI.
+  void OnWebUIUserChoice(SigninInterceptionUserChoice user_choice);
 
   Profile* profile_;
-  bool has_accepted_ = false;
+  bool accepted_ = false;
   DiceWebSigninInterceptor::Delegate::BubbleParameters bubble_parameters_;
   base::OnceCallback<void(SigninInterceptionResult)> callback_;
 

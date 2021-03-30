@@ -16,12 +16,12 @@ source_set("feature_flags") {
 source_set("breadcrumbs") {
   deps = [
     "//base",
+    "//components/breadcrumbs/core",
     "//components/infobars/core",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//ios/chrome/browser:chrome_url_constants",
     "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/crash_report:constants",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/overlays",
@@ -33,15 +33,12 @@ source_set("breadcrumbs") {
   ]
 
   sources = [
-    "breadcrumb_manager.cc",
-    "breadcrumb_manager.h",
     "breadcrumb_manager_browser_agent.h",
     "breadcrumb_manager_browser_agent.mm",
     "breadcrumb_manager_keyed_service.cc",
     "breadcrumb_manager_keyed_service.h",
     "breadcrumb_manager_keyed_service_factory.cc",
     "breadcrumb_manager_keyed_service_factory.h",
-    "breadcrumb_manager_observer.h",
     "breadcrumb_manager_observer_bridge.h",
     "breadcrumb_manager_observer_bridge.mm",
     "breadcrumb_manager_tab_helper.h",
@@ -67,6 +64,7 @@ source_set("application_breadcrumbs_logger") {
     ":breadcrumbs",
     ":generate_not_user_triggered_actions",
     "//base",
+    "//components/breadcrumbs/core",
     "//ios/chrome/browser/crash_report:crash_report_internal",
     "//ios/chrome/browser/crash_report/breadcrumbs",
   ]
@@ -80,10 +78,10 @@ source_set("unit_tests") {
     ":breadcrumbs",
     ":generate_not_user_triggered_actions",
     "//base/test:test_support",
+    "//components/breadcrumbs/core",
     "//ios/chrome/browser:chrome_url_constants",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/crash_report",
-    "//ios/chrome/browser/crash_report:constants",
     "//ios/chrome/browser/download",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars/test",

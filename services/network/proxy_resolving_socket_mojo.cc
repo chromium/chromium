@@ -94,6 +94,24 @@ void ProxyResolvingSocketMojo::OnConnectCompleted(int result) {
   bool get_peer_address_success =
       result == net::OK && (socket_->GetPeerAddress(&peer_addr) == net::OK);
 
+  mojo::ScopedDataPipeProducerHandle send_producer_handle;
+  mojo::ScopedDataPipeConsumerHandle send_consumer_handle;
+  if (result == net::OK) {
+    if (mojo::CreateDataPipe(nullptr, send_producer_handle,
+                             send_consumer_handle) != MOJO_RESULT_OK) {
+      result = net::ERR_FAILED;
+    }
+  }
+
+  mojo::ScopedDataPipeProducerHandle receive_producer_handle;
+  mojo::ScopedDataPipeConsumerHandle receive_consumer_handle;
+  if (result == net::OK) {
+    if (mojo::CreateDataPipe(nullptr, receive_producer_handle,
+                             receive_consumer_handle) != MOJO_RESULT_OK) {
+      result = net::ERR_FAILED;
+    }
+  }
+
   if (result != net::OK) {
     std::move(connect_callback_)
         .Run(result, base::nullopt, base::nullopt,
@@ -101,18 +119,15 @@ void ProxyResolvingSocketMojo::OnConnectCompleted(int result) {
              mojo::ScopedDataPipeProducerHandle());
     return;
   }
-  mojo::DataPipe send_pipe;
-  mojo::DataPipe receive_pipe;
   socket_data_pump_ = std::make_unique<SocketDataPump>(
-      socket_.get(), this /*delegate*/, std::move(receive_pipe.producer_handle),
-      std::move(send_pipe.consumer_handle), traffic_annotation_);
+      socket_.get(), this /*delegate*/, std::move(receive_producer_handle),
+      std::move(send_consumer_handle), traffic_annotation_);
   std::move(connect_callback_)
       .Run(net::OK, local_addr,
            get_peer_address_success
                ? base::make_optional<net::IPEndPoint>(peer_addr)
                : base::nullopt,
-           std::move(receive_pipe.consumer_handle),
-           std::move(send_pipe.producer_handle));
+           std::move(receive_consumer_handle), std::move(send_producer_handle));
 }
 
 void ProxyResolvingSocketMojo::OnNetworkReadError(int net_error) {

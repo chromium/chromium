@@ -85,8 +85,7 @@ void WideFrameView::SetCaptionButtonModel(
   header_view_->UpdateCaptionButtons();
 }
 
-WideFrameView::WideFrameView(views::Widget* target)
-    : target_(target), widget_(std::make_unique<views::Widget>()) {
+WideFrameView::WideFrameView(views::Widget* target) : target_(target) {
   // WideFrameView is owned by its client, not by Views.
   SetOwnedByWidget(false);
   display::Screen::GetScreen()->AddObserver(this);
@@ -109,8 +108,9 @@ WideFrameView::WideFrameView(views::Widget* target)
   // Setup Opacity Control.
   // WideFrame should be used only when the rounded corner is not necessary.
   params.opacity = views::Widget::InitParams::WindowOpacity::kOpaque;
-
-  widget_->Init(std::move(params));
+  auto widget = std::make_unique<views::Widget>();
+  widget->Init(std::move(params));
+  widget_ = std::move(widget);
 
   aura::Window* window = widget_->GetNativeWindow();
   // Overview normally clips the caption container which exists on the same
@@ -172,7 +172,8 @@ void WideFrameView::OnDisplayMetricsChanged(const display::Display& display,
                                             uint32_t changed_metrics) {
   display::Screen* screen = display::Screen::GetScreen();
   if (screen->GetDisplayNearestWindow(target_->GetNativeWindow()).id() !=
-      display.id()) {
+          display.id() ||
+      !widget_) {
     return;
   }
   DCHECK(target_);

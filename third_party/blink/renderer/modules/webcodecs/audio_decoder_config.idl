@@ -4,6 +4,9 @@
 
 // https://github.com/WICG/web-codecs
 
+// NOTE: Keep this strucutre in sync with CopyConfig() defined in
+// audio_decoder.cc.
+
 dictionary AudioDecoderConfig {
   // TODO(chcunningham): reference spec registry.
   required DOMString codec;

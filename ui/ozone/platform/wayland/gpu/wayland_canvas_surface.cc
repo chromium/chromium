@@ -58,6 +58,7 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
   // based wl_buffer, which can be attached to a surface and have its contents
   // shown on a screen.
   bool Initialize(const gfx::Size& size) {
+    size_ = size;
     base::CheckedNumeric<size_t> checked_length(size.width());
     checked_length *= size.height();
     checked_length *= 4;
@@ -92,7 +93,8 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
   }
 
   void CommitBuffer(const gfx::Rect& damage) {
-    buffer_manager_->CommitBuffer(widget_, buffer_id_, damage);
+    buffer_manager_->CommitBuffer(widget_, buffer_id_, gfx::Rect(size_),
+                                  damage);
   }
 
   void OnUse() {
@@ -134,6 +136,9 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
   }
 
  private:
+  // The size of the buffer.
+  gfx::Size size_;
+
   // The id of the buffer this surface is backed.
   const uint32_t buffer_id_;
 

@@ -82,6 +82,14 @@ public final class CrashReporterControllerImpl extends ICrashReporterController.
         AsyncTask.THREAD_POOL_EXECUTOR.execute(() -> {
             TraceEvent.instant(TAG, "CrashReporterController: Begin uploading crash");
             File minidumpFile = getCrashFileManager().getCrashFileWithLocalId(localId);
+            if (minidumpFile == null) {
+                try {
+                    mClient.onCrashUploadFailed(localId, "invalid crash id");
+                } catch (RemoteException e) {
+                    throw new AndroidRuntimeException(e);
+                }
+                return;
+            }
             MinidumpUploader.Result result = new MinidumpUploader().upload(minidumpFile);
             if (result.isSuccess()) {
                 CrashFileManager.markUploadSuccess(minidumpFile);

@@ -125,11 +125,6 @@ FileTypePoliciesComponentInstallerPolicy::GetInstallerAttributes() const {
   return update_client::InstallerAttributes();
 }
 
-std::vector<std::string>
-FileTypePoliciesComponentInstallerPolicy::GetMimeTypes() const {
-  return std::vector<std::string>();
-}
-
 void RegisterFileTypePoliciesComponent(ComponentUpdateService* cus) {
   VLOG(1) << "Registering File Type Policies component.";
   auto installer = base::MakeRefCounted<ComponentInstaller>(

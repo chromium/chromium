@@ -395,6 +395,10 @@ const std::vector<std::string>& WebSocketBasicHandshakeStream::GetDnsAliases()
   return state_.GetDnsAliases();
 }
 
+base::StringPiece WebSocketBasicHandshakeStream::GetAcceptChViaAlps() const {
+  return {};
+}
+
 std::unique_ptr<WebSocketStream> WebSocketBasicHandshakeStream::Upgrade() {
   // The HttpStreamParser object has a pointer to our ClientSocketHandle. Make
   // sure it does not touch it again before it is destroyed.

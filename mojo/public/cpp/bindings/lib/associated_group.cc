@@ -27,8 +27,9 @@ AssociatedGroup& AssociatedGroup::operator=(const AssociatedGroup& other) =
 AssociatedGroupController* AssociatedGroup::GetController() {
   if (controller_)
     return controller_.get();
-
-  return controller_getter_.Run();
+  if (controller_getter_)
+    return controller_getter_.Run();
+  return nullptr;
 }
 
 }  // namespace mojo

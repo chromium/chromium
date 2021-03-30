@@ -59,6 +59,8 @@ ExtensionFunction::ResponseAction CrashReportPrivateReportErrorFunction::Run() {
   JavaScriptErrorReport error_report;
   error_report.message = std::move(params->info.message);
   error_report.url = std::move(params->info.url);
+  error_report.source_system =
+      JavaScriptErrorReport::SourceSystem::kCrashReportApi;
   if (params->info.product) {
     error_report.product = std::move(*params->info.product);
   }

@@ -302,17 +302,6 @@ class ElementFinder : public WebControllerWorker {
   void OnResolveNode(const DevtoolsClient::ReplyStatus& reply_status,
                      std::unique_ptr<dom::ResolveNodeResult> result);
 
-  // Handle TaskType::PROXIMITY
-  void ApplyProximityFilter(int filter_index,
-                            const std::string& array_object_id);
-  void OnProximityFilterTarget(int filter_index,
-                               const std::string& array_object_id,
-                               const ClientStatus& status,
-                               std::unique_ptr<Result> result);
-  void OnProximityFilterJs(
-      const DevtoolsClient::ReplyStatus& reply_status,
-      std::unique_ptr<runtime::CallFunctionOnResult> result);
-
   // Fill |current_matches_js_array_| with the values in |current_matches_|
   // starting from |index|, then clear |current_matches_| and call
   // ExecuteNextTask().

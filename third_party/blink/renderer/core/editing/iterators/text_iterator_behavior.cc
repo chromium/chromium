@@ -77,12 +77,6 @@ TextIteratorBehavior::Builder::SetExcludeAutofilledValue(bool value) {
   return *this;
 }
 
-TextIteratorBehavior::Builder& TextIteratorBehavior::Builder::SetForInnerText(
-    bool value) {
-  behavior_.values_.bits.for_inner_text = value;
-  return *this;
-}
-
 TextIteratorBehavior::Builder&
 TextIteratorBehavior::Builder::SetForSelectionToString(bool value) {
   behavior_.values_.bits.for_selection_to_string = value;

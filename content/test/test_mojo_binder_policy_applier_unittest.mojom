@@ -4,14 +4,19 @@
 
 module content.mojom;
 
-// The interface is used in mojo_binder_policy_applier_unittest.cc, the
-// MojoBinderPolicy of this interface is kDefer.
-interface TestInterfaceForDefer {};
+// The interfaces used for testing the mojo binder policy applier.
 
-// The interface is used in mojo_binder_policy_applier_unittest.cc, the
-// MojoBinderPolicy of this interface is kGrant.
+// An interface whose MojoBinderPolicy is kDefer.
+interface TestInterfaceForDefer {
+  // Runs the given callback when the interface is granted.
+  Ping() => ();
+};
+
+// An interface whose MojoBinderPolicy is kGrant.
 interface TestInterfaceForGrant {};
 
-// The interface is used in mojo_binder_policy_applier_unittest.cc, the
-// MojoBinderPolicy of this interface is kCancel.
+// An interface whose MojoBinderPolicy is kCancel.
 interface TestInterfaceForCancel {};
+
+// An interface whose MojoBinderPolicy is kUnexpected.
+interface TestInterfaceForUnexpected {};

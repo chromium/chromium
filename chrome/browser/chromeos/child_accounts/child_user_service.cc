@@ -41,10 +41,8 @@ app_time::WebTimeLimitEnforcer* ChildUserService::TestApi::web_time_enforcer() {
 
 ChildUserService::ChildUserService(content::BrowserContext* context) {
   DCHECK(context);
-  if (app_time::AppTimeController::ArePerAppTimeLimitsEnabled()) {
-    app_time_controller_ = std::make_unique<app_time::AppTimeController>(
-        Profile::FromBrowserContext(context));
-  }
+  app_time_controller_ = std::make_unique<app_time::AppTimeController>(
+      Profile::FromBrowserContext(context));
 }
 
 ChildUserService::~ChildUserService() = default;
@@ -132,6 +130,23 @@ base::TimeDelta ChildUserService::GetWebTimeLimit() const {
   DCHECK(app_time_controller_);
   DCHECK(app_time_controller_->web_time_enforcer());
   return app_time_controller_->web_time_enforcer()->time_limit();
+}
+
+void ChildUserService::GetEnabledAppTimeLimitPolicies(
+    std::set<FamilyUserParentalControlMetrics::TimeLimitPolicyType>*
+        enabled_policies) {
+  if (!app_time_controller_ || !enabled_policies)
+    return;
+
+  if (app_time_controller_->HasWebTimeLimitRestriction()) {
+    enabled_policies->insert(
+        FamilyUserParentalControlMetrics::TimeLimitPolicyType::kWebTimeLimit);
+  }
+
+  if (app_time_controller_->HasAppTimeLimitRestriction()) {
+    enabled_policies->insert(
+        FamilyUserParentalControlMetrics::TimeLimitPolicyType::kAppTimeLimit);
+  }
 }
 
 void ChildUserService::Shutdown() {

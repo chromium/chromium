@@ -7,15 +7,20 @@
 #include <algorithm>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/no_destructor.h"
 #include "base/system/sys_info.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
+#include "base/trace_event/memory_pressure_level_proto.h"
+#include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "content/public/browser/navigation_controller.h"
@@ -56,6 +61,21 @@ struct ScoredTabComparator {
 // Testing seams.
 size_t g_max_loaded_tab_count_for_testing = 0;
 base::RepeatingCallback<void(TabLoader*)>* g_construction_callback = nullptr;
+
+// Determines if the given browser (can be null) is closing.
+bool IsBrowserClosing(Browser* browser) {
+  if (g_browser_process->IsShuttingDown())
+    return true;
+  if (!browser)
+    return true;
+  if (browser->tab_strip_model()->closing_all())
+    return true;
+  const auto& closing_browsers =
+      BrowserList::GetInstance()->currently_closing_browsers();
+  if (base::Contains(closing_browsers, browser))
+    return true;
+  return false;
+}
 
 }  // namespace
 
@@ -349,8 +369,14 @@ void TabLoader::OnStopTracking(WebContents* web_contents,
 void TabLoader::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
   ReentrancyHelper lifetime_helper(this);
-  TRACE_EVENT1("browser", "TabLoader::OnMemoryPressure", "level",
-               memory_pressure_level);
+  TRACE_EVENT_INSTANT(
+      "browser", "TabLoader::OnMemoryPressure",
+      [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_chrome_memory_pressure_notification();
+        data->set_level(base::trace_event::MemoryPressureLevelToTraceEnum(
+            memory_pressure_level));
+      });
 
   switch (memory_pressure_level) {
     case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
@@ -365,7 +391,10 @@ void TabLoader::OnMemoryPressure(
 bool TabLoader::ShouldStopLoadingTabs() const {
   DCHECK(reentry_depth_ > 0);  // This can only be called internally.
   if (g_max_loaded_tab_count_for_testing != 0 &&
-      scheduled_to_load_count_ >= g_max_loaded_tab_count_for_testing)
+      scheduled_to_load_count_ >= g_max_loaded_tab_count_for_testing) {
+    return true;
+  }
+  if (g_browser_process->IsShuttingDown())
     return true;
   if (base::MemoryPressureMonitor::Get()) {
     return base::MemoryPressureMonitor::Get()->GetCurrentPressureLevel() !=
@@ -632,15 +661,23 @@ void TabLoader::LoadNextTab(bool due_to_timeout) {
   if (!contents)
     return;
 
+  // Get the browser associated with this contents and determine if its in the
+  // process of being closed.
+  Browser* browser = chrome::FindBrowserWithWebContents(contents);
+  if (IsBrowserClosing(browser)) {
+    RemoveTab(contents);
+    StartTimerIfNeeded();
+    return;
+  }
+  DCHECK(browser);
+
   MarkTabAsLoadInitiated(contents);
   StartTimerIfNeeded();
 
   // This is done last as the calls out of us can be reentrant. To make life
   // easier we ensure the timer invariant is valid before calling out.
   contents->GetController().LoadIfNecessary();
-  Browser* browser = chrome::FindBrowserWithWebContents(contents);
-  if (browser &&
-      browser->tab_strip_model()->GetActiveWebContents() != contents) {
+  if (browser->tab_strip_model()->GetActiveWebContents() != contents) {
     // By default tabs are marked as visible. As only the active tab is
     // visible we need to explicitly tell non-active tabs they are hidden.
     // Without this call non-active tabs are not marked as backgrounded.

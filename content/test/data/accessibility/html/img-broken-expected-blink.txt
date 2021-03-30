@@ -1,0 +1,6 @@
+rootWebArea name='done'
+++genericContainer ignored
+++++genericContainer
+++++++image name='pipe'
+++++++image name='control'
+++++++image name='broken-control'

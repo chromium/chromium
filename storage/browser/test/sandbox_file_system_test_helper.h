@@ -77,7 +77,7 @@ class SandboxFileSystemTestHelper {
   int64_t ComputeCurrentDirectoryDatabaseUsage();
 
   FileSystemOperationRunner* operation_runner();
-  FileSystemOperationContext* NewOperationContext();
+  std::unique_ptr<FileSystemOperationContext> NewOperationContext();
 
   void AddFileChangeObserver(FileChangeObserver* observer);
   void AddFileUpdateObserver(FileUpdateObserver* observer);

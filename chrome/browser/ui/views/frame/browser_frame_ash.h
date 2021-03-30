@@ -38,6 +38,7 @@ class BrowserFrameAsh : public views::NativeWidgetAura,
       const content::NativeWebKeyboardEvent& event) override;
   bool HandleKeyboardEvent(
       const content::NativeWebKeyboardEvent& event) override;
+  bool ShouldRestorePreviousBrowserWidgetState() const override;
 
  private:
   // Set the window into the auto managed mode.

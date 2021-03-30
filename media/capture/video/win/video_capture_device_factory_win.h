@@ -17,9 +17,8 @@
 
 #include "base/macros.h"
 #include "base/threading/thread.h"
-#include "media/base/win/mf_initializer.h"
+#include "media/base/win/dxgi_device_manager.h"
 #include "media/capture/video/video_capture_device_factory.h"
-#include "media/capture/video/win/video_capture_dxgi_device_manager.h"
 
 namespace media {
 
@@ -77,8 +76,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryWin
     return use_d3d11_with_media_foundation_;
   }
 
-  scoped_refptr<VideoCaptureDXGIDeviceManager>
-  dxgi_device_manager_for_testing() {
+  scoped_refptr<DXGIDeviceManager> dxgi_device_manager_for_testing() {
     return dxgi_device_manager_;
   }
 
@@ -97,15 +95,14 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryWin
   std::vector<VideoCaptureDeviceInfo> GetDevicesInfoDirectShow();
 
   bool use_media_foundation_;
-  bool use_d3d11_with_media_foundation_ = false;
-  MFSessionLifetime session_;
+  bool use_d3d11_with_media_foundation_;
 
   // For calling WinRT methods on a COM initiated thread.
   base::Thread com_thread_;
   scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner_;
   std::unordered_set<IAsyncOperation<DeviceInformationCollection*>*> async_ops_;
   // For hardware acceleration in MediaFoundation capture engine
-  scoped_refptr<VideoCaptureDXGIDeviceManager> dxgi_device_manager_;
+  scoped_refptr<DXGIDeviceManager> dxgi_device_manager_;
   base::WeakPtrFactory<VideoCaptureDeviceFactoryWin> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(VideoCaptureDeviceFactoryWin);

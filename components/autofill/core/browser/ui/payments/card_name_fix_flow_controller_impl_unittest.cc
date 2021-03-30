@@ -29,31 +29,29 @@ class CardNameFixFlowControllerImplGenericTest {
   CardNameFixFlowControllerImplGenericTest() {}
 
   void ShowPromptWithInferredName() {
-    inferred_name_ = base::ASCIIToUTF16("John Doe");
+    inferred_name_ = u"John Doe";
     ShowPrompt();
   }
 
   void ShowPromptWithoutInferredName() {
-    inferred_name_ = base::ASCIIToUTF16("");
+    inferred_name_ = u"";
     ShowPrompt();
   }
 
   void AcceptWithInferredName() { controller_->OnNameAccepted(inferred_name_); }
 
-  void AcceptWithEditedName() {
-    controller_->OnNameAccepted(base::ASCIIToUTF16("Edited Name"));
-  }
+  void AcceptWithEditedName() { controller_->OnNameAccepted(u"Edited Name"); }
 
  protected:
   std::unique_ptr<TestCardNameFixFlowView> test_card_name_fix_flow_view_;
   std::unique_ptr<CardNameFixFlowControllerImpl> controller_;
-  base::string16 inferred_name_;
-  base::string16 accepted_name_;
+  std::u16string inferred_name_;
+  std::u16string accepted_name_;
   base::WeakPtrFactory<CardNameFixFlowControllerImplGenericTest>
       weak_ptr_factory_{this};
 
  private:
-  void OnNameAccepted(const base::string16& name) { accepted_name_ = name; }
+  void OnNameAccepted(const std::u16string& name) { accepted_name_ = name; }
 
   void ShowPrompt() {
     controller_->Show(

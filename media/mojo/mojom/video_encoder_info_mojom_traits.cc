@@ -7,16 +7,6 @@
 namespace mojo {
 
 // static
-bool StructTraits<
-    media::mojom::ScalingSettingsDataView,
-    media::ScalingSettings>::Read(media::mojom::ScalingSettingsDataView data,
-                                  media::ScalingSettings* out) {
-  out->min_qp = data.min_qp();
-  out->max_qp = data.max_qp();
-  return true;
-}
-
-// static
 bool StructTraits<media::mojom::ResolutionBitrateLimitDataView,
                   media::ResolutionBitrateLimit>::
     Read(media::mojom::ResolutionBitrateLimitDataView data,
@@ -40,9 +30,6 @@ bool StructTraits<
   out->supports_simulcast = data.supports_simulcast();
 
   if (!data.ReadImplementationName(&out->implementation_name))
-    return false;
-
-  if (!data.ReadScalingSettings(&out->scaling_settings))
     return false;
 
   base::span<std::vector<uint8_t>> fps_allocation(out->fps_allocation);

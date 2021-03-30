@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
@@ -170,8 +169,8 @@ void PrinterQuery::StopWorker() {
 
 bool PrinterQuery::PostTask(const base::Location& from_here,
                             base::OnceClosure task) {
-  return base::PostTask(from_here, {content::BrowserThread::IO},
-                        std::move(task));
+  return content::GetIOThreadTaskRunner({})->PostTask(from_here,
+                                                      std::move(task));
 }
 
 bool PrinterQuery::is_valid() const {

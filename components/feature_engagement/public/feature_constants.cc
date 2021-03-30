@@ -21,9 +21,13 @@ const base::Feature kIPHFocusModeFeature{"IPH_FocusMode",
 const base::Feature kIPHGlobalMediaControlsFeature{
     "IPH_GlobalMediaControls", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHLiveCaptionFeature{"IPH_LiveCaption",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHPasswordsAccountStorageFeature{
     "IPH_PasswordsAccountStorage", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kIPHReadingListDiscoveryFeature{
+    "IPH_ReadingListDiscovery", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kIPHReadingListEntryPointFeature{
+    "IPH_ReadingListEntryPoint", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHReopenTabFeature{"IPH_ReopenTab",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHWebUITabStripFeature{"IPH_WebUITabStrip",
@@ -36,6 +40,10 @@ const base::Feature kIPHDesktopPwaInstallFeature{
         // defined(OS_CHROMEOS)
 
 #if defined(OS_ANDROID)
+const base::Feature kIPHAddToHomescreenMessageFeature{
+    "IPH_AddToHomescreenMessage", base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kIPHAddToHomescreenTextBubbleFeature{
+    "IPH_AddToHomescreenTextBubble", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHDataSaverDetailFeature{
     "IPH_DataSaverDetail", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHDataSaverMilestonePromoFeature{
@@ -67,6 +75,8 @@ const base::Feature kIPHContextualSearchOptInFeature{
 const base::Feature kIPHContextualSearchTappedButShouldLongpressFeature{
     "IPH_ContextualSearchTappedButShouldLongpress",
     base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kIPHContextualSearchInPanelHelpFeature{
+    "IPH_ContextualSearchInPanelHelp", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHDownloadSettingsFeature{
     "IPH_DownloadSettings", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHDownloadInfoBarDownloadContinuingFeature{
@@ -81,6 +91,8 @@ const base::Feature kIPHReadLaterAppMenuBookmarkThisPageFeature{
     "IPH_ReadLaterAppMenuBookmarkThisPage", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHReadLaterAppMenuBookmarksFeature{
     "IPH_ReadLaterAppMenuBookmarks", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kIPHReadLaterBottomSheetFeature{
+    "IPH_ReadLaterBottomSheet", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHEphemeralTabFeature{"IPH_EphemeralTab",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHFeedCardMenuFeature{"IPH_FeedCardMenu",
@@ -97,8 +109,14 @@ const base::Feature kIPHKeyboardAccessoryPasswordFillingFeature{
     "IPH_KeyboardAccessoryPasswordFilling", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHKeyboardAccessoryPaymentFillingFeature{
     "IPH_KeyboardAccessoryPaymentFilling", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kIPHKeyboardAccessoryPaymentOfferFeature{
+    "IPH_KeyboardAccessoryPaymentOffer", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHNewTabPageHomeButtonFeature{
     "IPH_NewTabPageHomeButton", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kIPHMicToolbarFeature{"IPH_MicToolbar",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kIPHPageInfoFeature{"IPH_PageInfo",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHPreviewsOmniboxUIFeature{
     "IPH_PreviewsOmniboxUI", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHTabGroupsQuicklyComparePagesFeature{
@@ -125,8 +143,8 @@ const base::Feature kIPHVideoTutorialNTPSummaryFeature{
     "IPH_VideoTutorial_NTP_Summary", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHExploreSitesTileFeature{
     "IPH_ExploreSitesTile", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kIPHFeedHeaderMenuFeature{
-    "IPH_FeedHeaderMenu", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kIPHFeedHeaderMenuFeature{"IPH_FeedHeaderMenu",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHChromeReengagementNotification1Feature{
     "IPH_ChromeReengagementNotification1", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHChromeReengagementNotification2Feature{
@@ -135,6 +153,8 @@ const base::Feature kIPHChromeReengagementNotification3Feature{
     "IPH_ChromeReengagementNotification3", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHPwaInstallAvailableFeature{
     "IPH_PwaInstallAvailable", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kIPHShareScreenshotFeature{
+    "IPH_ShareScreenshot", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // defined(OS_ANDROID)
 
 #if defined(OS_IOS)

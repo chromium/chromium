@@ -48,9 +48,10 @@ def ReadFilteredData(path):
     data = ukm_model.UKM_XML_TYPE.Parse(ukm_file.read())
     event_tag = ukm_model._EVENT_TYPE.tag
     metric_tag = ukm_model._METRIC_TYPE.tag
-    data[event_tag] = filter(ukm_model.IsNotObsolete, data[event_tag])
+    data[event_tag] = list(filter(ukm_model.IsNotObsolete, data[event_tag]))
     for event in data[event_tag]:
-      event[metric_tag] = filter(ukm_model.IsNotObsolete, event[metric_tag])
+      event[metric_tag] = list(
+          filter(ukm_model.IsNotObsolete, event[metric_tag]))
     return data
 
 

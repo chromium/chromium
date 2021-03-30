@@ -7,9 +7,9 @@
 #include <stdint.h>
 
 #include <map>
+#include <string>
 
 #include "base/notreached.h"
-#include "base/strings/string16.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "content/child/child_thread_impl.h"

@@ -29,7 +29,9 @@
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/shared_bitmap.h"
-#include "components/viz/service/display/display_resource_provider.h"
+#include "components/viz/service/display/display_resource_provider_gl.h"
+#include "components/viz/service/display/display_resource_provider_skia.h"
+#include "components/viz/service/display/display_resource_provider_software.h"
 #include "components/viz/service/display/gl_renderer.h"
 #include "components/viz/service/display/output_surface_client.h"
 #include "components/viz/service/display/software_output_device.h"
@@ -202,7 +204,9 @@ void PixelTest::ReadbackResult(base::OnceClosure quit_run_loop,
                                std::unique_ptr<viz::CopyOutputResult> result) {
   ASSERT_FALSE(result->IsEmpty());
   EXPECT_EQ(result->format(), viz::CopyOutputResult::Format::RGBA_BITMAP);
-  result_bitmap_ = std::make_unique<SkBitmap>(result->AsSkBitmap());
+  auto scoped_sk_bitmap = result->ScopedAccessSkBitmap();
+  result_bitmap_ =
+      std::make_unique<SkBitmap>(scoped_sk_bitmap.GetOutScopedBitmap());
   EXPECT_TRUE(result_bitmap_->readyToDraw());
   std::move(quit_run_loop).Run();
 }
@@ -265,11 +269,6 @@ void PixelTest::SetUpGLWithoutRenderer(
       std::move(context_provider), output_surface_origin);
   output_surface_->BindToClient(output_surface_client_.get());
 
-  shared_bitmap_manager_ = std::make_unique<viz::TestSharedBitmapManager>();
-  resource_provider_ = std::make_unique<viz::DisplayResourceProvider>(
-      viz::DisplayResourceProvider::kGpu, output_surface_->context_provider(),
-      shared_bitmap_manager_.get());
-
   child_context_provider_ =
       base::MakeRefCounted<viz::TestInProcessContextProvider>(
           /*enable_gpu_rasterization=*/false,
@@ -281,9 +280,12 @@ void PixelTest::SetUpGLWithoutRenderer(
 
 void PixelTest::SetUpGLRenderer(gfx::SurfaceOrigin output_surface_origin) {
   SetUpGLWithoutRenderer(output_surface_origin);
+  auto resource_provider = std::make_unique<viz::DisplayResourceProviderGL>(
+      output_surface_->context_provider());
   renderer_ = std::make_unique<viz::GLRenderer>(
       &renderer_settings_, &debug_settings_, output_surface_.get(),
-      resource_provider_.get(), nullptr, base::ThreadTaskRunnerHandle::Get());
+      resource_provider.get(), nullptr, base::ThreadTaskRunnerHandle::Get());
+  resource_provider_ = std::move(resource_provider);
   renderer_->Initialize();
   renderer_->SetVisible(true);
 }
@@ -303,14 +305,12 @@ void PixelTest::SetUpSkiaRenderer(gfx::SurfaceOrigin output_surface_origin) {
   output_surface_->BindToClient(output_surface_client_.get());
   static_cast<viz::SkiaOutputSurfaceImpl*>(output_surface_.get())
       ->SetCapabilitiesForTesting(output_surface_origin);
-  resource_provider_ = std::make_unique<viz::DisplayResourceProvider>(
-      viz::DisplayResourceProvider::kGpu,
-      /*compositor_context_provider=*/nullptr,
-      /*shared_bitmap_manager=*/nullptr);
+  auto resource_provider = std::make_unique<viz::DisplayResourceProviderSkia>();
   renderer_ = std::make_unique<viz::SkiaRenderer>(
       &renderer_settings_, &debug_settings_, output_surface_.get(),
-      resource_provider_.get(), nullptr,
+      resource_provider.get(), nullptr,
       static_cast<viz::SkiaOutputSurface*>(output_surface_.get()));
+  resource_provider_ = std::move(resource_provider);
   renderer_->Initialize();
   renderer_->SetVisible(true);
 
@@ -346,14 +346,15 @@ void PixelTest::SetUpSoftwareRenderer() {
       std::make_unique<viz::SoftwareOutputDevice>()));
   output_surface_->BindToClient(output_surface_client_.get());
   shared_bitmap_manager_ = std::make_unique<viz::TestSharedBitmapManager>();
-  resource_provider_ = std::make_unique<viz::DisplayResourceProvider>(
-      viz::DisplayResourceProvider::kSoftware, nullptr,
-      shared_bitmap_manager_.get());
+  auto resource_provider =
+      std::make_unique<viz::DisplayResourceProviderSoftware>(
+          shared_bitmap_manager_.get());
   child_resource_provider_ = std::make_unique<viz::ClientResourceProvider>();
 
   auto renderer = std::make_unique<viz::SoftwareRenderer>(
       &renderer_settings_, &debug_settings_, output_surface_.get(),
-      resource_provider_.get(), nullptr);
+      resource_provider.get(), nullptr);
+  resource_provider_ = std::move(resource_provider);
   software_renderer_ = renderer.get();
   renderer_ = std::move(renderer);
   renderer_->Initialize();

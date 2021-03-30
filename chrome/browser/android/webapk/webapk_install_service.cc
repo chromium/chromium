@@ -14,7 +14,7 @@
 #include "chrome/browser/android/shortcut_helper.h"
 #include "chrome/browser/android/webapk/webapk_install_service_factory.h"
 #include "chrome/browser/android/webapk/webapk_installer.h"
-#include "components/webapps/android/shortcut_info.h"
+#include "components/webapps/browser/android/shortcut_info.h"
 #include "ui/gfx/android/java_bitmap.h"
 
 // static
@@ -57,7 +57,7 @@ void WebApkInstallService::InstallAsync(
   WebApkInstaller::InstallAsync(
       browser_context_, shortcut_info, primary_icon, is_primary_icon_maskable,
       base::BindOnce(&WebApkInstallService::OnFinishedInstall,
-                     weak_ptr_factory_.GetWeakPtr(), base::Passed(&observer),
+                     weak_ptr_factory_.GetWeakPtr(), std::move(observer),
                      shortcut_info, primary_icon, is_primary_icon_maskable));
 }
 

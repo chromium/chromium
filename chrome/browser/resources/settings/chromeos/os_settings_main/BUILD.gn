@@ -2,52 +2,40 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/browser/resources/settings/chromeos/os_settings.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
+import("../os_settings.gni")
 
-js_type_check("closure_compile") {
-  deps = [ ":os_settings_main" ]
+js_type_check("closure_compile_module") {
+  closure_flags = os_settings_closure_flags
+  is_polymer3 = true
+  deps = [ ":os_settings_main.m" ]
 }
-
-js_library("os_settings_main") {
-  deps = [
-    "..:os_page_visibility",
-    "../..:router",
-    "../..:search_settings",
-    "../os_settings_page:main_page_behavior",
-    "../os_settings_page:os_settings_page",
-    "//third_party/polymer/v1_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer-extracted",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:load_time_data",
-  ]
-}
-
-# TODO: Uncomment as the Polymer3 migration makes progress.
-#js_type_check("closure_compile_module") {
-#  is_polymer3 = true
-#  deps = [
-#    ":os_settings_main.m"
-#  ]
-#}
 
 js_library("os_settings_main.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_settings_main/os_settings_main.m.js" ]
   deps = [
-    # TODO: Fill those in.
+    "..:os_page_visibility.m",
+    "..:os_route.m",
+    "../..:router",
+    "../os_settings_page:os_settings_page.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
   ]
   extra_deps = [ ":os_settings_main_module" ]
 }
 
-import("//tools/polymer/polymer.gni")
-
 group("polymer3_elements") {
-  public_deps = [
-    # TODO: Fix and re-enable
-    #":os_settings_main_module"
-  ]
+  public_deps = [ ":os_settings_main_module" ]
 }
 
 polymer_modulizer("os_settings_main") {
   js_file = "os_settings_main.js"
   html_file = "os_settings_main.html"
   html_type = "dom-module"
+  migrated_imports = os_settings_migrated_imports
+  auto_imports = os_settings_auto_imports
+  namespace_rewrites = os_settings_namespace_rewrites
 }

@@ -91,6 +91,10 @@ template("fuchsia_package_runner") {
       data = []
     }
 
+    if (defined(invoker.data)) {
+      data += invoker.data
+    }
+
     wrapper_script = generated_run_pkg_script_path
 
     data_deps = [
@@ -128,7 +132,8 @@ template("fuchsia_package_runner") {
     }
 
     if (test_host_cpu == "x64") {
-      data += [ "//third_party/llvm-build/Release+Asserts/bin/llvm-symbolizer" ]
+      data_deps +=
+          [ "//build/config/clang:llvm-symbolizer_data($host_toolchain)" ]
     }
 
     data += [

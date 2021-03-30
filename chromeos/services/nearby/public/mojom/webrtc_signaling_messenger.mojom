@@ -8,6 +8,16 @@ module sharing.mojom;
 interface IncomingMessagesListener {
   // Called by the browser process when a new message is received.
   OnMessage(string message);
+  // Called by the browser process when message receiving is complete.
+  OnComplete(bool success);
+};
+
+// Runs in the browser process and called by the Nearby utility process.
+// Returned by |WebRtcSignalingMessenger| when StartReceivingMessages() is
+// called. This interface can be used to stop the receiving of messages.
+interface ReceiveMessagesSession {
+  // Stop receiving messages on this session.
+  StopReceivingMessages();
 };
 
 // NOTE: Keep in sync with:
@@ -51,8 +61,6 @@ interface WebRtcSignalingMessenger {
   // Registers |listener| to start receiving messages from other devices.
   [Sync]
   StartReceivingMessages(string self_id, LocationHint location_hint,
-    pending_remote<IncomingMessagesListener> listener) => (bool success);
-
-  // Unregisters listener and stops receiving messages from other devices.
-  StopReceivingMessages();
+    pending_remote<IncomingMessagesListener> listener) =>
+      (bool success, pending_remote<ReceiveMessagesSession>? session);
 };

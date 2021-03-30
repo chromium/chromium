@@ -9,8 +9,8 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/renderer/platform/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/mojo/features.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
+#include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
 
 namespace blink {
 
@@ -44,16 +44,6 @@ class HeapMojoReceiverSet {
   HeapMojoReceiverSet& operator=(const HeapMojoReceiverSet&) = delete;
 
   // Methods to redirect to mojo::ReceiverSet:
-  void set_disconnect_handler(base::RepeatingClosure handler) {
-    wrapper_->receiver_set().set_disconnect_handler(std::move(handler));
-  }
-
-  void set_disconnect_with_reason_handler(
-      mojo::RepeatingConnectionErrorWithReasonCallback handler) {
-    wrapper_->receiver_set().set_disconnect_with_reason_handler(
-        std::move(handler));
-  }
-
   mojo::ReceiverId Add(mojo::PendingReceiver<Interface> receiver,
                        scoped_refptr<base::SequencedTaskRunner> task_runner) {
     DCHECK(task_runner);
@@ -116,9 +106,7 @@ class HeapMojoReceiverSet {
 
     // ContextLifecycleObserver methods
     void ContextDestroyed() override {
-      if (Mode == HeapMojoWrapperMode::kWithContextObserver ||
-          (Mode == HeapMojoWrapperMode::kWithoutContextObserver &&
-           base::FeatureList::IsEnabled(kHeapMojoUseContextObserver)))
+      if (Mode == HeapMojoWrapperMode::kWithContextObserver)
         receiver_set_.Clear();
     }
 

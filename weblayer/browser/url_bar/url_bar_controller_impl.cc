@@ -83,7 +83,7 @@ jint UrlBarControllerImpl::GetConnectionSecurityLevel(JNIEnv* env) {
 }
 #endif
 
-base::string16 UrlBarControllerImpl::GetUrlForDisplay() {
+std::u16string UrlBarControllerImpl::GetUrlForDisplay() {
   return location_bar_model_->GetURLForDisplay();
 }
 
@@ -113,9 +113,9 @@ bool UrlBarControllerImpl::ShouldTrimDisplayUrlAfterHostName() const {
   return true;
 }
 
-base::string16 UrlBarControllerImpl::FormattedStringWithEquivalentMeaning(
+std::u16string UrlBarControllerImpl::FormattedStringWithEquivalentMeaning(
     const GURL& url,
-    const base::string16& formatted_url) const {
+    const std::u16string& formatted_url) const {
   return AutocompleteInput::FormattedStringWithEquivalentMeaning(
       url, formatted_url, AutocompleteSchemeClassifierImpl(), nullptr);
 }

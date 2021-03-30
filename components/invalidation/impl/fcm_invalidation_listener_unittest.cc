@@ -20,7 +20,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace syncer {
+namespace invalidation {
 
 namespace {
 
@@ -431,4 +431,4 @@ TEST_F(FCMInvalidationListenerTest, ReEnableNotifications) {
 
 }  // namespace
 
-}  // namespace syncer
+}  // namespace invalidation

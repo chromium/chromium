@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -14,88 +15,87 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
-#include "chrome/services/printing/print_backend_service_impl.h"
+#include "chrome/services/printing/print_backend_service_test_impl.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "printing/backend/print_backend.h"
 #include "printing/backend/test_print_backend.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace printing {
 
+using ::testing::UnorderedElementsAreArray;
+
 namespace {
 
 constexpr char kDefaultPrinterName[] = "default-test-printer";
+constexpr char kAnotherPrinterName[] = "another-test-printer";
 constexpr char kInvalidPrinterName[] = "invalid-test-printer";
+
+const PrinterBasicInfo kDefaultPrinterInfo(
+    /*printer_name=*/kDefaultPrinterName,
+    /*display_name=*/"default test printer",
+    /*printer_description=*/"Default printer for testing.",
+    /*printer_status=*/0,
+    /*is_default=*/true,
+    /*options=*/{});
+const PrinterBasicInfo kAnotherPrinterInfo(
+    /*printer_name=*/kAnotherPrinterName,
+    /*display_name=*/"another test printer",
+    /*printer_description=*/"Another printer for testing.",
+    /*printer_status=*/5,
+    /*is_default=*/false,
+    /*options=*/{});
 
 constexpr int32_t kCopiesMax = 123;
 
 }  // namespace
-
-// PrintBackendServiceTestImpl uses a TestPrintBackend to enable testing of the
-// PrintBackendService without relying upon the presence of real printer
-// drivers.
-class PrintBackendServiceTestImpl : public PrintBackendServiceImpl {
- public:
-  explicit PrintBackendServiceTestImpl(
-      mojo::PendingReceiver<mojom::PrintBackendService> receiver)
-      : PrintBackendServiceImpl(std::move(receiver)) {}
-  PrintBackendServiceTestImpl(const PrintBackendServiceTestImpl&) = delete;
-  PrintBackendServiceTestImpl& operator=(const PrintBackendServiceTestImpl&) =
-      delete;
-  ~PrintBackendServiceTestImpl() override = default;
-
-  // Overrides which need special handling for using `test_print_backend_`.
-  void Init(const std::string& locale) override {
-    test_print_backend_ = base::MakeRefCounted<TestPrintBackend>();
-    print_backend_ = test_print_backend_;
-  }
-
- private:
-  friend class PrintBackendBrowserTest;
-
-  scoped_refptr<TestPrintBackend> test_print_backend_;
-};
 
 class PrintBackendBrowserTest : public InProcessBrowserTest {
  public:
   PrintBackendBrowserTest() = default;
   ~PrintBackendBrowserTest() override = default;
 
-  void PreRunTestOnMainThread() override {
-    InProcessBrowserTest::PreRunTestOnMainThread();
-
-    // Launch the service, and bind the testing interface to it.
-    mojo::PendingReceiver<mojom::PrintBackendService> receiver =
-        mojo::PendingRemote<mojom::PrintBackendService>()
-            .InitWithNewPipeAndPassReceiver();
+  void LaunchUninitialized() {
     print_backend_service_ =
-        std::make_unique<PrintBackendServiceTestImpl>(std::move(receiver));
+        PrintBackendServiceTestImpl::LaunchUninitialized(remote_);
   }
 
   // Initialize and load the backend service with some test print drivers.
-  void DoInitAndSetupTestData() {
-    print_backend_service_->Init(/*locale=*/"");
+  void LaunchService() {
+    print_backend_service_ = PrintBackendServiceTestImpl::LaunchForTesting(
+        remote_, test_print_backend_);
+  }
 
-    auto printer_info = std::make_unique<PrinterBasicInfo>(
-        /*printer_name=*/kDefaultPrinterName,
-        /*display_name=*/"default test printer",
-        /*printer_description=*/"Default printer for testing.",
-        /*printer_status=*/0, /*is_default=*/true,
-        /*options=*/PrinterBasicInfoOptions{});
-
+  // Load the test backend with a default printer driver.
+  void AddDefaultPrinter() {
     // Only explicitly specify capabilities that we pay attention to in the
     // tests.
     auto default_caps = std::make_unique<PrinterSemanticCapsAndDefaults>();
     default_caps->copies_max = kCopiesMax;
-    print_backend_service_->test_print_backend_->AddValidPrinter(
-        kDefaultPrinterName, std::move(default_caps), std::move(printer_info));
+    test_print_backend_->AddValidPrinter(
+        kDefaultPrinterName, std::move(default_caps),
+        std::make_unique<PrinterBasicInfo>(kDefaultPrinterInfo));
+  }
+
+  // Load the test backend with another (non-default) printer.
+  void AddAnotherPrinter() {
+    test_print_backend_->AddValidPrinter(
+        kAnotherPrinterName, std::make_unique<PrinterSemanticCapsAndDefaults>(),
+        std::make_unique<PrinterBasicInfo>(kAnotherPrinterInfo));
   }
 
   // Public callbacks used by tests.
+  void OnDidEnumeratePrinters(base::Optional<PrinterList>* capture_printer_list,
+                              const base::Optional<PrinterList>& printer_list) {
+    *capture_printer_list = printer_list;
+    CheckForQuit();
+  }
+
   void OnDidGetDefaultPrinterName(
       base::Optional<std::string>* capture_printer_name,
       const base::Optional<std::string>& printer_name) {
@@ -106,6 +106,21 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
   void OnDidGetPrinterSemanticCapsAndDefaults(
       base::Optional<PrinterSemanticCapsAndDefaults>* capture_printer_caps,
       const base::Optional<PrinterSemanticCapsAndDefaults>& printer_caps) {
+    *capture_printer_caps = printer_caps;
+    CheckForQuit();
+  }
+
+  void OnDidFetchCapabilities(
+      base::Optional<PrinterBasicInfo>* capture_printer_info,
+      base::Optional<PrinterSemanticCapsAndDefaults::Papers>*
+          capture_user_defined_papers,
+      base::Optional<PrinterSemanticCapsAndDefaults>* capture_printer_caps,
+      const base::Optional<PrinterBasicInfo>& printer_info,
+      const base::Optional<PrinterSemanticCapsAndDefaults::Papers>&
+          user_defined_papers,
+      const base::Optional<PrinterSemanticCapsAndDefaults>& printer_caps) {
+    *capture_printer_info = printer_info;
+    *capture_user_defined_papers = user_defined_papers;
     *capture_printer_caps = printer_caps;
     CheckForQuit();
   }
@@ -140,6 +155,9 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
   bool received_message_ = false;
   base::OnceClosure quit_callback_;
 
+  mojo::Remote<mojom::PrintBackendService> remote_;
+  scoped_refptr<TestPrintBackend> test_print_backend_ =
+      base::MakeRefCounted<TestPrintBackend>();
   std::unique_ptr<PrintBackendServiceTestImpl> print_backend_service_;
 };
 
@@ -147,6 +165,9 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
 // query/command.  Verify that a query fails if one tries to use a new service
 // without having performed initialization.
 IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, FailWithoutInit) {
+  // Launch the service, but without initializing to desired locale.
+  LaunchUninitialized();
+
   base::Optional<std::string> default_printer_name;
   base::Optional<PrinterSemanticCapsAndDefaults> printer_caps;
 
@@ -167,10 +188,31 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, FailWithoutInit) {
   EXPECT_FALSE(printer_caps.has_value());
 }
 
-IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, GetDefaultPrinterName) {
-  base::Optional<std::string> default_printer_name;
+IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, EnumeratePrinters) {
+  LaunchService();
+  AddDefaultPrinter();
+  AddAnotherPrinter();
 
-  DoInitAndSetupTestData();
+  const PrinterList kPrinterListExpected = {kDefaultPrinterInfo,
+                                            kAnotherPrinterInfo};
+
+  // Safe to use base::Unretained(this) since waiting locally on the callback
+  // forces a shorter lifetime than `this`.
+  base::Optional<PrinterList> printer_list;
+  GetPrintBackendService()->EnumeratePrinters(
+      base::BindOnce(&PrintBackendBrowserTest::OnDidEnumeratePrinters,
+                     base::Unretained(this), &printer_list));
+  WaitUntilCallbackReceived();
+  ASSERT_TRUE(printer_list.has_value());
+  EXPECT_THAT(printer_list.value(),
+              UnorderedElementsAreArray(kPrinterListExpected));
+}
+
+IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, GetDefaultPrinterName) {
+  LaunchService();
+  AddDefaultPrinter();
+
+  base::Optional<std::string> default_printer_name;
 
   // Safe to use base::Unretained(this) since waiting locally on the callback
   // forces a shorter lifetime than `this`.
@@ -184,9 +226,10 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, GetDefaultPrinterName) {
 
 IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest,
                        GetPrinterSemanticCapsAndDefaults) {
-  base::Optional<PrinterSemanticCapsAndDefaults> printer_caps;
+  LaunchService();
+  AddDefaultPrinter();
 
-  DoInitAndSetupTestData();
+  base::Optional<PrinterSemanticCapsAndDefaults> printer_caps;
 
   // Safe to use base::Unretained(this) since waiting locally on the callback
   // forces a shorter lifetime than `this`.
@@ -206,6 +249,40 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest,
           &PrintBackendBrowserTest::OnDidGetPrinterSemanticCapsAndDefaults,
           base::Unretained(this), &printer_caps));
   WaitUntilCallbackReceived();
+  EXPECT_FALSE(printer_caps.has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, FetchCapabilities) {
+  LaunchService();
+  AddDefaultPrinter();
+
+  base::Optional<PrinterBasicInfo> printer_info;
+  base::Optional<PrinterSemanticCapsAndDefaults::Papers> user_defined_papers;
+  base::Optional<PrinterSemanticCapsAndDefaults> printer_caps;
+
+  // Safe to use base::Unretained(this) since waiting locally on the callback
+  // forces a shorter lifetime than `this`.
+  GetPrintBackendService()->FetchCapabilities(
+      kDefaultPrinterName,
+      base::BindOnce(&PrintBackendBrowserTest::OnDidFetchCapabilities,
+                     base::Unretained(this), &printer_info,
+                     &user_defined_papers, &printer_caps));
+  WaitUntilCallbackReceived();
+  EXPECT_TRUE(printer_info.has_value());
+  EXPECT_TRUE(user_defined_papers.has_value());
+  EXPECT_TRUE(printer_caps.has_value());
+  EXPECT_TRUE(printer_info->is_default);
+  EXPECT_EQ(printer_caps->copies_max, kCopiesMax);
+
+  // Requesting for an invalid printer should not return capabilities.
+  GetPrintBackendService()->FetchCapabilities(
+      kInvalidPrinterName,
+      base::BindOnce(&PrintBackendBrowserTest::OnDidFetchCapabilities,
+                     base::Unretained(this), &printer_info,
+                     &user_defined_papers, &printer_caps));
+  WaitUntilCallbackReceived();
+  EXPECT_FALSE(printer_info.has_value());
+  EXPECT_FALSE(user_defined_papers.has_value());
   EXPECT_FALSE(printer_caps.has_value());
 }
 

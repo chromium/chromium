@@ -63,40 +63,40 @@ TEST_F(PowerManagerClientConversionsTest, PowerSource) {
 TEST_F(PowerManagerClientConversionsTest, PowerTime) {
   // Full BatteryState returns an empty string
   auto props = ConstructPowerSupplyProperties(false, 125, 0);
-  EXPECT_EQ(base::string16(),
+  EXPECT_EQ(std::u16string(),
             ConstructPowerTime(mojom::BatteryState::kFull, props));
 
   // If the battery is charging but is_calculating_battery_time is true, expect
   // an empty string.
   props = ConstructPowerSupplyProperties(true, 125, 0);
-  EXPECT_EQ(base::string16(),
+  EXPECT_EQ(std::u16string(),
             ConstructPowerTime(mojom::BatteryState::kCharging, props));
 
   // If the battery is discharging but is_calculating_battery_time is true,
   // expect an empty string.
   props = ConstructPowerSupplyProperties(true, 0, 125);
-  EXPECT_EQ(base::string16(),
+  EXPECT_EQ(std::u16string(),
             ConstructPowerTime(mojom::BatteryState::kDischarging, props));
 
   // If the battery is charging but time_to_full is -1, expect an empty string.
   props = ConstructPowerSupplyProperties(false, -1, 0);
-  EXPECT_EQ(base::string16(),
+  EXPECT_EQ(std::u16string(),
             ConstructPowerTime(mojom::BatteryState::kCharging, props));
 
   // If the battery is discharging but time_to_empty is -1, expect an empty
   // string.
   props = ConstructPowerSupplyProperties(false, 0, -1);
-  EXPECT_EQ(base::string16(),
+  EXPECT_EQ(std::u16string(),
             ConstructPowerTime(mojom::BatteryState::kDischarging, props));
 
   // Battery charging with 11220 seconds (3h 7m) remaining.
   props = ConstructPowerSupplyProperties(false, 11220, 0);
-  EXPECT_EQ(base::UTF8ToUTF16("3 hours and 7 minutes"),
+  EXPECT_EQ(u"3 hours and 7 minutes",
             ConstructPowerTime(mojom::BatteryState::kCharging, props));
 
   // Battery discharging with 10380 seconds (2h 53m) remaining.
   props = ConstructPowerSupplyProperties(false, 0, 10380);
-  EXPECT_EQ(base::UTF8ToUTF16("2 hours and 53 minutes"),
+  EXPECT_EQ(u"2 hours and 53 minutes",
             ConstructPowerTime(mojom::BatteryState::kDischarging, props));
 }
 

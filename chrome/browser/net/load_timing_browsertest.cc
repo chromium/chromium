@@ -133,13 +133,8 @@ IN_PROC_BROWSER_TEST_F(LoadTimingBrowserTest, HTTP) {
   EXPECT_EQ(navigation_deltas.ssl_start, -1);
 }
 
-// TODO(crbug.com/1128033): Flaky on ChromeOS and Mac.
-#if defined(OS_CHROMEOS) || defined(OS_MAC)
-#define MAYBE_HTTPS DISABLED_HTTPS
-#else
-#define MAYBE_HTTPS HTTPS
-#endif
-IN_PROC_BROWSER_TEST_F(LoadTimingBrowserTest, MAYBE_HTTPS) {
+// TODO(crbug.com/1128033): Flaky on all platforms
+IN_PROC_BROWSER_TEST_F(LoadTimingBrowserTest, DISABLED_HTTPS) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.AddDefaultHandlers();
   ASSERT_TRUE(https_server.Start());

@@ -122,12 +122,11 @@ Vector<float> SepiaMatrix(double amount) {
 
 }  // namespace
 
-FilterEffectBuilder::FilterEffectBuilder(
-    const FloatRect& reference_box,
-    float zoom,
-    const PaintFlags* fill_flags,
-    const PaintFlags* stroke_flags,
-    SkBlurImageFilter::TileMode blur_tile_mode)
+FilterEffectBuilder::FilterEffectBuilder(const FloatRect& reference_box,
+                                         float zoom,
+                                         const PaintFlags* fill_flags,
+                                         const PaintFlags* stroke_flags,
+                                         SkTileMode blur_tile_mode)
     : reference_box_(reference_box),
       zoom_(zoom),
       shorthand_scale_(1),

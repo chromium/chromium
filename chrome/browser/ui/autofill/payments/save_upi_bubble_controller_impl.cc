@@ -32,7 +32,7 @@ void SaveUPIBubbleControllerImpl::OfferUpiIdLocalSave(
   ShowBubble();
 }
 
-base::string16 SaveUPIBubbleControllerImpl::GetUpiId() const {
+std::u16string SaveUPIBubbleControllerImpl::GetUpiId() const {
   return base::UTF8ToUTF16(upi_id_);
 }
 

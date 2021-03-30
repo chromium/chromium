@@ -276,6 +276,11 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // positioned, taking into account the availability of the Desks bar).
   gfx::Rect GetGridEffectiveBounds() const;
 
+  // Gets the insets of the grid. Either |bounds_| or GetGridEffectiveBounds
+  // does not exclude the insets from its bounds. But like PositionWindows needs
+  // to position the overview windows in the bounds exclude the insets.
+  gfx::Insets GetGridInsets() const;
+
   // Called when a window is being dragged in Overview Mode. If
   // |update_desks_bar_drag_details| is true, it will update the drag details
   // (screen_location, and whether that location intersects with the

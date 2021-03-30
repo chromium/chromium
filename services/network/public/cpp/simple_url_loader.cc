@@ -240,6 +240,7 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
   const GURL& GetFinalURL() const override;
   bool LoadedFromCache() const override;
   int64_t GetContentSize() const override;
+  int GetNumRetries() const override;
 
   // Called by BodyHandler when the BodyHandler body handler is done. If |error|
   // is not net::OK, some error occurred reading or consuming the body. If it is
@@ -301,6 +302,7 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
   void Retry();
 
   // mojom::URLLoaderClient implementation;
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
   void OnReceiveResponse(mojom::URLResponseHeadPtr response_head) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          mojom::URLResponseHeadPtr response_head) override;
@@ -348,6 +350,7 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
   int retry_mode_ = RETRY_NEVER;
   uint32_t url_loader_factory_options_ = 0;
   int32_t request_id_ = 0;
+  int num_retries_ = 0;
 
   // The next values contain all the information required to restart the
   // request.
@@ -1135,6 +1138,10 @@ class DownloadAsStreamBodyHandler : public BodyHandler,
                                     weak_ptr_factory_.GetWeakPtr()));
       return;
     }
+    if (!body_reader_) {
+      // If Resume was delayed, body_reader_ could have been deleted.
+      return;
+    }
     body_reader_->Resume();
   }
 
@@ -1168,8 +1175,8 @@ SimpleURLLoaderImpl::SimpleURLLoaderImpl(
 
       // Bytes should be attached with AttachStringForUpload to allow
       // streaming of large byte buffers to the network process when uploading.
-      DCHECK(element.type() != mojom::DataElementType::kFile &&
-             element.type() != mojom::DataElementType::kBytes);
+      DCHECK(element.type() != mojom::DataElementDataView::Tag::kFile &&
+             element.type() != mojom::DataElementDataView::Tag::kBytes);
     }
   }
 #endif  // DCHECK_IS_ON()
@@ -1357,7 +1364,7 @@ void SimpleURLLoaderImpl::SetRetryOptions(int max_retries, int retry_mode) {
       // pipe.
       // TODO(mmenke):  Data pipes can be Cloned(), though, so maybe update code
       // to do that?
-      DCHECK(element.type() != mojom::DataElementType::kDataPipe);
+      DCHECK(element.type() != mojom::DataElementDataView::Tag::kDataPipe);
     }
   }
 #endif  // DCHECK_IS_ON()
@@ -1404,6 +1411,10 @@ int64_t SimpleURLLoaderImpl::GetContentSize() const {
   // Should only be called once the request is complete.
   DCHECK(request_state_->finished);
   return request_state_->received_body_size;
+}
+
+int SimpleURLLoaderImpl::GetNumRetries() const {
+  return num_retries_;
 }
 
 const mojom::URLResponseHead* SimpleURLLoaderImpl::ResponseInfo() const {
@@ -1536,7 +1547,7 @@ void SimpleURLLoaderImpl::StartRequest(
         string_upload_data_pipe_getter_->GetRemoteForNewUpload());
   }
   url_loader_factory->CreateLoaderAndStart(
-      url_loader_.BindNewPipeAndPassReceiver(), 0 /* routing_id */, request_id_,
+      url_loader_.BindNewPipeAndPassReceiver(), request_id_,
       url_loader_factory_options_, *resource_request_,
       client_receiver_.BindNewPipeAndPassRemote(),
       net::MutableNetworkTrafficAnnotationTag(annotation_tag_));
@@ -1563,6 +1574,7 @@ void SimpleURLLoaderImpl::Retry() {
   DCHECK(url_loader_factory_remote_);
   DCHECK_GT(remaining_retries_, 0);
   --remaining_retries_;
+  ++num_retries_;
 
   client_receiver_.reset();
   url_loader_.reset();
@@ -1572,6 +1584,9 @@ void SimpleURLLoaderImpl::Retry() {
       &SimpleURLLoaderImpl::StartRequest, weak_ptr_factory_.GetWeakPtr(),
       url_loader_factory_remote_.get()));
 }
+
+void SimpleURLLoaderImpl::OnReceiveEarlyHints(
+    network::mojom::EarlyHintsPtr early_hints) {}
 
 void SimpleURLLoaderImpl::OnReceiveResponse(
     mojom::URLResponseHeadPtr response_head) {

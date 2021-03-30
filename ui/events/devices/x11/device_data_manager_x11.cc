@@ -656,7 +656,7 @@ int DeviceDataManagerX11::GetMappedButton(int button) {
 }
 
 void DeviceDataManagerX11::UpdateButtonMap() {
-  if (auto reply = x11::Connection::Get()->GetPointerMapping({}).Sync())
+  if (auto reply = x11::Connection::Get()->GetPointerMapping().Sync())
     button_map_ = std::move(reply->map);
 }
 

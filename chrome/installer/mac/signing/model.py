@@ -178,7 +178,8 @@ class Distribution(object):
                  creator_code=None,
                  channel_customize=False,
                  package_as_dmg=True,
-                 package_as_pkg=False):
+                 package_as_pkg=False,
+                 inflation_kilobytes=0):
         """Creates a new Distribution object. All arguments are optional.
 
         Args:
@@ -208,6 +209,8 @@ class Distribution(object):
                 the product.
             package_as_pkg: If True, then a .pkg file will be created containing
                 the product.
+            inflation_kilobytes: If non-zero, a blob of this size will be
+                inserted into the DMG. Incompatible with package_as_pkg = True.
         """
         if channel_customize:
             # Side-by-side channels must have a distinct names and creator
@@ -226,6 +229,10 @@ class Distribution(object):
         self.channel_customize = channel_customize
         self.package_as_dmg = package_as_dmg
         self.package_as_pkg = package_as_pkg
+        self.inflation_kilobytes = inflation_kilobytes
+
+        # inflation_kilobytes are only inserted into DMGs
+        assert not self.inflation_kilobytes or self.package_as_dmg
 
     def brandless_copy(self):
         """Derives and returns a copy of this Distribution object, identical

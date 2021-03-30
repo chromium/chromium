@@ -75,7 +75,6 @@ class OfflinePageURLLoader : public network::mojom::URLLoader,
   void NotifyHeadersComplete(int64_t file_size) override;
   void NotifyReadRawDataComplete(int bytes_read) override;
   void SetOfflinePageNavigationUIData(bool is_offline_page) override;
-  bool ShouldAllowPreview() const override;
   int GetPageTransition() const override;
   OfflinePageRequestHandler::Delegate::WebContentsGetter GetWebContentsGetter()
       const override;
@@ -117,7 +116,6 @@ class OfflinePageURLLoader : public network::mojom::URLLoader,
   std::unique_ptr<mojo::SimpleWatcher> handle_watcher_;
 
   OfflinePageRequestHandler::Delegate::TabIdGetter tab_id_getter_;
-  bool is_offline_preview_allowed_;
 
   base::WeakPtrFactory<OfflinePageURLLoader> weak_ptr_factory_{this};
 

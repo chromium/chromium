@@ -27,8 +27,8 @@ struct FrameOwnerProperties {
 
   // An experimental attribute to be used by a parent frame to enforce CSP on a
   // subframe. This is different from replicated CSP headers kept in
-  // FrameReplicationState that keep track of CSP headers currently in effect
-  // for a frame. See https://crbug.com/647588 and
+  // blink.mojom.FrameReplicationState that keep track of CSP headers currently
+  // in effect for a frame. See https://crbug.com/647588 and
   // https://www.w3.org/TR/csp-embedded-enforcement/#required-csp
   string required_csp;
 };

@@ -4,16 +4,16 @@
 
 #include "chrome/browser/ui/views/page_action/pwa_install_view.h"
 
+#include <string>
+
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/banners/app_banner_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/user_education/feature_promo_controller.h"
 #include "chrome/browser/ui/user_education/feature_promo_text_replacements.h"
@@ -27,13 +27,16 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/omnibox/browser/vector_icons.h"
-#include "components/webapps/installable/installable_metrics.h"
+#include "components/site_engagement/content/site_engagement_service.h"
+#include "components/webapps/browser/banners/app_banner_manager.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
 const base::Feature kInstallIconExperiment{"InstallIconExperiment",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
 enum class ExperimentIcon { kDownloadToDevice, kDownload };
 
@@ -90,31 +93,38 @@ void PwaInstallView::UpdateImpl() {
   else
     ResetSlideAnimation(false);
 
-  if (is_probably_promotable && ShouldShowIph(web_contents, manager)) {
+  SetVisible(is_probably_promotable || PWAConfirmationBubbleView::IsShowing());
+
+  // Only try to show IPH when |PwaInstallView.IsDrawn|. This catches the case
+  // that view is set to visible but not drawn in fullscreen mode.
+  if (is_probably_promotable && ShouldShowIph(web_contents, manager) &&
+      IsDrawn()) {
     FeaturePromoControllerViews* controller =
         FeaturePromoControllerViews::GetForView(this);
     if (controller) {
       // Reset the iph flag when it's shown again.
       install_icon_clicked_after_iph_shown_ = false;
-      controller->MaybeShowPromoWithTextReplacements(
+      bool iph_shown = controller->MaybeShowPromoWithTextReplacements(
           feature_engagement::kIPHDesktopPwaInstallFeature,
           FeaturePromoTextReplacements::WithString(
               webapps::AppBannerManager::GetInstallableWebAppName(
                   web_contents)),
           base::BindOnce(&PwaInstallView::OnIphClosed,
                          weak_ptr_factory_.GetWeakPtr()));
+      if (iph_shown)
+        SetHighlighted(true);
     }
   }
-  SetVisible(is_probably_promotable || PWAConfirmationBubbleView::IsShowing());
 }
 
 void PwaInstallView::OnIphClosed() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
   // IPH is also closed when the install button is clicked. This does not
-  // count as an 'ignore'.
+  // count as an 'ignore'. The button should remain highlighted and will
+  // eventually be un-highlighted when PWAConfirmationBubbleView is closed.
   if (install_icon_clicked_after_iph_shown_)
     return;
+  SetHighlighted(false);
   content::WebContents* web_contents = GetWebContents();
   if (!web_contents)
     return;
@@ -175,17 +185,13 @@ const gfx::VectorIcon& PwaInstallView::GetVectorIcon() const {
   return omnibox::kPlusIcon;
 }
 
-base::string16 PwaInstallView::GetTextForTooltipAndAccessibleName() const {
+std::u16string PwaInstallView::GetTextForTooltipAndAccessibleName() const {
   content::WebContents* web_contents = GetWebContents();
   if (!web_contents)
-    return base::string16();
+    return std::u16string();
   return l10n_util::GetStringFUTF16(
       IDS_OMNIBOX_PWA_INSTALL_ICON_TOOLTIP,
       webapps::AppBannerManager::GetInstallableWebAppName(web_contents));
-}
-
-const char* PwaInstallView::GetClassName() const {
-  return "PwaInstallView";
 }
 
 bool PwaInstallView::ShouldShowIph(content::WebContents* web_contents,
@@ -203,3 +209,6 @@ bool PwaInstallView::ShouldShowIph(content::WebContents* web_contents,
   return score > kIphSiteEngagementThresholdParam.Get() &&
          web_app::ShouldShowIph(profile->GetPrefs(), app_id);
 }
+
+BEGIN_METADATA(PwaInstallView, PageActionIconView)
+END_METADATA

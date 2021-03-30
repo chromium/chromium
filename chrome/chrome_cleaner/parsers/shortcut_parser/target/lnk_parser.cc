@@ -327,7 +327,8 @@ mojom::LnkParsingResult internal::ParseLnkBytes(
   }
 
   if (has_working_dir &&
-      !SkipUtf16StringStructure(file_buffer, &current_byte)) {
+      !ReadUtf16StringStructure(file_buffer, &current_byte,
+                                &parsed_shortcut->working_dir)) {
     return mojom::LnkParsingResult::BAD_FORMAT;
   }
 
@@ -354,6 +355,7 @@ mojom::LnkParsingResult internal::ParseLnkBytes(
 }
 
 ParsedLnkFile::ParsedLnkFile() {}
+ParsedLnkFile::~ParsedLnkFile() {}
 
 // Please note that the documentation used to write this parser was obtained
 // from the following link:

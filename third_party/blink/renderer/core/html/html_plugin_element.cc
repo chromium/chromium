@@ -22,10 +22,10 @@
 
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
-#include "third_party/blink/public/mojom/feature_policy/policy_value.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -282,15 +282,15 @@ bool HTMLPlugInElement::ShouldAccelerate() const {
   return plugin && plugin->CcLayer();
 }
 
-ParsedFeaturePolicy HTMLPlugInElement::ConstructContainerPolicy() const {
+ParsedPermissionsPolicy HTMLPlugInElement::ConstructContainerPolicy() const {
   // Plugin elements (<object> and <embed>) are not allowed to enable the
   // fullscreen feature. Add an empty allowlist for the fullscreen feature so
   // that the nested browsing context is unable to use the API, regardless of
   // origin.
   // https://fullscreen.spec.whatwg.org/#model
-  ParsedFeaturePolicy container_policy;
-  ParsedFeaturePolicyDeclaration allowlist(
-      mojom::blink::FeaturePolicyFeature::kFullscreen);
+  ParsedPermissionsPolicy container_policy;
+  ParsedPermissionsPolicyDeclaration allowlist(
+      mojom::blink::PermissionsPolicyFeature::kFullscreen);
   container_policy.push_back(allowlist);
   return container_policy;
 }
@@ -646,7 +646,7 @@ bool HTMLPlugInElement::LoadPlugin(const KURL& url,
     return false;
 
   LocalFrame* frame = GetDocument().GetFrame();
-  if (!frame->Loader().AllowPlugins(kAboutToInstantiatePlugin))
+  if (!frame->Loader().AllowPlugins())
     return false;
 
   auto* layout_object = GetLayoutEmbeddedObject();
@@ -712,8 +712,7 @@ bool HTMLPlugInElement::AllowedToLoadObject(const KURL& url,
 
   AtomicString declared_mime_type = FastGetAttribute(html_names::kTypeAttr);
   auto* csp = GetExecutionContext()->GetContentSecurityPolicy();
-  if (!csp->AllowObjectFromSource(url) ||
-      !csp->AllowPluginType(mime_type, declared_mime_type, url)) {
+  if (!csp->AllowObjectFromSource(url)) {
     if (auto* layout_object = GetLayoutEmbeddedObject()) {
       plugin_is_available_ = false;
       layout_object->SetPluginAvailability(
@@ -799,8 +798,10 @@ void HTMLPlugInElement::UpdateServiceTypeIfEmpty() {
   }
 }
 
-scoped_refptr<ComputedStyle> HTMLPlugInElement::CustomStyleForLayoutObject() {
-  scoped_refptr<ComputedStyle> style = OriginalStyleForLayoutObject();
+scoped_refptr<ComputedStyle> HTMLPlugInElement::CustomStyleForLayoutObject(
+    const StyleRecalcContext& style_recalc_context) {
+  scoped_refptr<ComputedStyle> style =
+      OriginalStyleForLayoutObject(style_recalc_context);
   if (IsImageType() && !GetLayoutObject() && style &&
       LayoutObjectIsNeeded(*style)) {
     if (!image_loader_)

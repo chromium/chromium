@@ -8,6 +8,7 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
 import("//chromecast/build/tests/cast_test.gni")
 import("//chromecast/chromecast.gni")
+import("//chromecast/resource_sizes/chromecast_resource_sizes.gni")
 import("//media/media_options.gni")
 import("//tools/grit/repack.gni")
 import("//v8/gni/v8.gni")
@@ -67,6 +68,14 @@ config("iot_service") {
   }
 }
 
+chromecast_resource_sizes_test("resource_sizes_chromecast") {
+  data_deps = [
+    ":cast_shell",
+    ":cast_shell_pak",
+    ":chromecast_locales_pak",
+  ]
+}
+
 # A list of all public test() binaries. This is an organizational target that
 # cannot be depended upon or built directly. Build cast_test_lists instead.
 cast_test_group("cast_tests") {
@@ -106,10 +115,6 @@ cast_test_group("cast_tests") {
     if (use_aura) {
       tests += [ "//chromecast/graphics:cast_graphics_unittests" ]
     }
-  }
-
-  if (use_v4l2_codec && enable_video_capture_service) {
-    tests += [ "//media/gpu:video_encode_accelerator_unittest" ]
   }
 
   if (use_v4l2_codec) {
@@ -329,15 +334,12 @@ cast_test_group("cast_tests") {
       gtest_excludes += [ "NavigationEntryTest.NavigationEntryURLs" ]
     }
     if (enable_assistant && !is_cast_desktop_build) {
-      # Temporarily disable InvalidUUID and DefaultConstructor on assistant
-      # device builds. Cause of failure is unclear, but it's highly likely it's
-      # related to them being DEATH tests. These were passing until the
-      # is_official_build flag was enabled. These tests are considered
-      # non-critical in this context. (b/62469368)
-      gtest_excludes += [
-        "BluetoothBlocklistTest.InvalidUUID",
-        "WebBluetoothDeviceIdTest.DefaultConstructor",
-      ]
+      # Temporarily disable DefaultConstructor on assistant device builds. Cause
+      # of failure is unclear, but it's highly likely it's related to them being
+      # DEATH tests. These were passing until the is_official_build flag was
+      # enabled. These tests are considered non-critical in this context.
+      # (b/62469368)
+      gtest_excludes += [ "WebBluetoothDeviceIdTest.DefaultConstructor" ]
     }
   }
   filters += [ content_unittests_filter ]
@@ -496,6 +498,7 @@ cast_executable("cast_shell") {
     ":chromecast_locales_pak",
     "//chromecast/app",
     "//content/public/app",
+    "//third_party/widevine/cdm",
   ]
 }
 
@@ -604,14 +607,12 @@ buildflag_header("chromecast_buildflags") {
     "ENABLE_EXTERNAL_MOJO_SERVICES=$enable_external_mojo_services",
     "ENABLE_PLAYREADY=$enable_playready",
     "ENABLE_VIDEO_CAPTURE_SERVICE=$enable_video_capture_service",
-    "ENABLE_VOLUME_TABLES_ACCESS=$enable_volume_tables_access",
     "IS_ANDROID_APPLIANCE=$is_android_appliance",
     "IS_ANDROID_THINGS=$is_android_things",
     "IS_ANDROID_THINGS_NON_PUBLIC=$is_android_things_non_public",
     "IS_CAST_AUDIO_ONLY=$is_cast_audio_only",
     "IS_CAST_DESKTOP_BUILD=$is_cast_desktop_build",
     "IS_SINGLE_VOLUME=$is_single_volume",
-    "SUPPORTS_MULTIZONE=$supports_multizone",
     "USE_ANDROID_USER_AGENT=$use_android_user_agent",
     "USE_CHROMECAST_CDMS=$use_chromecast_cdms",
     "ENABLE_CHROMIUM_RUNTIME_CAST_RENDERER=$enable_chromium_runtime_cast_renderer",

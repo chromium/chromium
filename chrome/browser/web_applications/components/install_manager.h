@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
 #include "chrome/browser/web_applications/components/web_app_url_loader.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 
 class Profile;
 struct WebApplicationInfo;
@@ -106,7 +107,7 @@ class InstallManager {
     GURL fallback_start_url;
 
     // App name to be used if manifest is unavailable.
-    base::Optional<base::string16> fallback_app_name;
+    base::Optional<std::u16string> fallback_app_name;
 
     bool locally_installed = true;
     // These OS shortcut fields can't be true if |locally_installed| is false.
@@ -126,6 +127,9 @@ class InstallManager {
     std::vector<std::string> additional_search_terms;
 
     base::Optional<std::string> launch_query_params;
+    base::Optional<SystemAppType> system_app_type;
+
+    bool oem_installed = false;
   };
   // Starts a background web app installation process for a given
   // |web_contents|.
@@ -161,11 +165,13 @@ class InstallManager {
       std::unique_ptr<WebApplicationInfo> web_application_info,
       OnceInstallCallback callback) = 0;
 
-  // Reinstall an existing web app, will redownload icons and update them on
-  // disk.
+  // Reinstall an existing web app. If |redownload_app_icons| is true, will
+  // redownload app icons and update them on disk. Otherwise, the icons in
+  // |web_application_info.bitmap_icons| will be used and saved to disk.
   virtual void UpdateWebAppFromInfo(
       const AppId& app_id,
       std::unique_ptr<WebApplicationInfo> web_application_info,
+      bool redownload_app_icons,
       OnceInstallCallback callback) = 0;
 
   explicit InstallManager(Profile* profile);
@@ -188,6 +194,7 @@ class InstallManager {
   void DisableWebAppSyncInstallForTesting() {
     disable_web_app_sync_install_for_testing_ = true;
   }
+  virtual std::set<AppId> GetEnqueuedInstallAppIdsForTesting() = 0;
 
  protected:
   Profile* profile() { return profile_; }

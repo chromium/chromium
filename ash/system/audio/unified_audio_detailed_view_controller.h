@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/system/unified/detailed_view_controller.h"
 #include "base/macros.h"
-#include "chromeos/audio/cras_audio_handler.h"
 
 namespace ash {
 
@@ -24,7 +24,7 @@ class UnifiedSystemTrayController;
 // Controller of Audio detailed view in UnifiedSystemTray.
 class ASH_EXPORT UnifiedAudioDetailedViewController
     : public DetailedViewController,
-      public chromeos::CrasAudioHandler::AudioObserver {
+      public CrasAudioHandler::AudioObserver {
  public:
   explicit UnifiedAudioDetailedViewController(
       UnifiedSystemTrayController* tray_controller);
@@ -32,7 +32,7 @@ class ASH_EXPORT UnifiedAudioDetailedViewController
 
   // DetailedViewControllerBase:
   views::View* CreateView() override;
-  base::string16 GetAccessibleName() const override;
+  std::u16string GetAccessibleName() const override;
 
   // CrasAudioHandler::AudioObserver.
   void OnAudioNodesChanged() override;

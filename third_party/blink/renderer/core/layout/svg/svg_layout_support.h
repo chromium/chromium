@@ -25,7 +25,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_SVG_LAYOUT_SUPPORT_H_
 
 #include "third_party/blink/renderer/core/layout/layout_object.h"
-#include "third_party/blink/renderer/core/style/svg_computed_style_defs.h"
 #include "third_party/blink/renderer/platform/graphics/dash_array.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -35,7 +34,6 @@ namespace blink {
 class AffineTransform;
 class FloatPoint;
 class FloatRect;
-class LayoutGeometryMap;
 class LayoutBoxModelObject;
 class LayoutObject;
 class ComputedStyle;
@@ -93,10 +91,6 @@ class CORE_EXPORT SVGLayoutSupport {
                                  const LayoutBoxModelObject* ancestor,
                                  TransformState&,
                                  MapCoordinatesFlags);
-  static const LayoutObject* PushMappingToContainer(
-      const LayoutObject*,
-      const LayoutBoxModelObject* ancestor_to_stop_at,
-      LayoutGeometryMap&);
 
   // Shared between SVG layoutObjects and resources.
   static void ApplyStrokeStyleToStrokeData(StrokeData&,

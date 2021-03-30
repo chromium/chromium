@@ -52,7 +52,7 @@ void NewBadge::DrawNewBadge(gfx::Canvas* canvas,
                             int text_top_y,
                             const gfx::FontList& primary_font) {
   gfx::FontList badge_font = DeriveNewBadgeFont(primary_font);
-  const base::string16 new_text = l10n_util::GetStringUTF16(IDS_NEW_BADGE);
+  const std::u16string new_text = l10n_util::GetStringUTF16(IDS_NEW_BADGE);
 
   // Calculate bounding box for badge text.
   unmirrored_badge_left_x += kNewBadgeInternalPadding;
@@ -80,7 +80,7 @@ void NewBadge::DrawNewBadge(gfx::Canvas* canvas,
 
 // static
 gfx::Size NewBadge::GetNewBadgeSize(const gfx::FontList& primary_font) {
-  const base::string16 new_text = l10n_util::GetStringUTF16(IDS_NEW_BADGE);
+  const std::u16string new_text = l10n_util::GetStringUTF16(IDS_NEW_BADGE);
   gfx::FontList badge_font = DeriveNewBadgeFont(primary_font);
   const gfx::Size text_size = gfx::GetStringSize(new_text, badge_font);
   return GetNewBadgeRectOutsetAroundText(badge_font, gfx::Rect(text_size))
@@ -88,7 +88,7 @@ gfx::Size NewBadge::GetNewBadgeSize(const gfx::FontList& primary_font) {
 }
 
 // static
-base::string16 NewBadge::GetNewBadgeAccessibleDescription() {
+std::u16string NewBadge::GetNewBadgeAccessibleDescription() {
   return l10n_util::GetStringUTF16(IDS_NEW_BADGE_SCREEN_READER_MESSAGE);
 }
 

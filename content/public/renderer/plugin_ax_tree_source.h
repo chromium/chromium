@@ -13,9 +13,7 @@
 
 namespace content {
 
-class PluginAXTreeSource : public ui::AXTreeSource<const ui::AXNode*,
-                                                   ui::AXNodeData,
-                                                   ui::AXTreeData> {
+class PluginAXTreeSource : public ui::AXTreeSource<const ui::AXNode*> {
  public:
   virtual std::unique_ptr<ui::AXActionTarget> CreateActionTarget(
       const ui::AXNode& target_node) = 0;

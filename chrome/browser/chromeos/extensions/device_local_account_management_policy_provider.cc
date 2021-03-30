@@ -15,9 +15,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/common/extensions/api/omnibox.h"
 #include "chrome/grit/generated_resources.h"
 #include "extensions/browser/device_local_account_util.h"
 #include "extensions/common/api/incognito.h"
+#include "extensions/common/api/shared_module.h"
+#include "extensions/common/api/web_accessible_resources.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
@@ -26,11 +29,14 @@
 #include "extensions/common/permissions/permissions_info.h"
 #include "ui/base/l10n/l10n_util.h"
 
+using extensions::mojom::ManifestLocation;
+
 namespace chromeos {
 
 namespace {
 
 namespace emk = extensions::manifest_keys;
+namespace ext_api = extensions::api;
 
 // List of manifest entries from https://developer.chrome.com/apps/manifest.
 // Unsafe entries are commented out and special cases too.
@@ -113,7 +119,7 @@ const char* const kSafeManifestEntries[] = {
     // emk::kEventRules,
 
     // Shared Modules configuration: Allow other extensions to access resources.
-    emk::kExport,
+    ext_api::shared_module::ManifestKeys::kExport,
 
     emk::kExternallyConnectable,
 
@@ -131,9 +137,9 @@ const char* const kSafeManifestEntries[] = {
     emk::kIcons,
 
     // Shared Modules configuration: Import resources from another extension.
-    emk::kImport,
+    ext_api::shared_module::ManifestKeys::kImport,
 
-    ::extensions::api::incognito::ManifestKeys::kIncognito,
+    ext_api::incognito::ManifestKeys::kIncognito,
 
     // Keylogging.
     // emk::kInputComponents,
@@ -185,7 +191,7 @@ const char* const kSafeManifestEntries[] = {
     // A bit risky as the extensions sees all keystrokes entered into the
     // omnibox after the search key matches, but generally we deem URLs fair
     // game.
-    emk::kOmnibox,
+    ext_api::omnibox::ManifestKeys::kOmnibox,
 
     // Special-cased in IsSafeForPublicSession(). Subject to permission
     // restrictions.
@@ -217,14 +223,14 @@ const char* const kSafeManifestEntries[] = {
     // Just a display string.
     emk::kShortName,
 
-    // Doc missing. Declared as a feature, but unused.
-    // emk::kSignature,
+    // Deprecated manifest key.
+    // "signature",
 
     // Network access.
     emk::kSockets,
 
-    // Just provides dictionaries, no access to content.
-    emk::kSpellcheck,
+    // Deprecated manifest key.
+    // "spellcheck",
 
     // (Note: Using string literal since extensions::manifest_keys only has
     // constants for sub-keys.)
@@ -258,7 +264,7 @@ const char* const kSafeManifestEntries[] = {
     // Just a display string.
     emk::kVersionName,
 
-    emk::kWebAccessibleResources,
+    ext_api::web_accessible_resources::ManifestKeys::kWebAccessibleResources,
 
     // Webview has no special privileges or capabilities.
     emk::kWebview,
@@ -825,12 +831,12 @@ std::string DeviceLocalAccountManagementPolicyProvider::
 
 bool DeviceLocalAccountManagementPolicyProvider::UserMayLoad(
     const extensions::Extension* extension,
-    base::string16* error) const {
+    std::u16string* error) const {
   if (account_type_ == policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION ||
       account_type_ == policy::DeviceLocalAccount::TYPE_SAML_PUBLIC_SESSION) {
     // Allow extension if it is a component of Chrome.
-    if (extension->location() == extensions::Manifest::EXTERNAL_COMPONENT ||
-        extension->location() == extensions::Manifest::COMPONENT) {
+    if (extension->location() == ManifestLocation::kExternalComponent ||
+        extension->location() == ManifestLocation::kComponent) {
       return true;
     }
 
@@ -847,9 +853,9 @@ bool DeviceLocalAccountManagementPolicyProvider::UserMayLoad(
     }
 
     // Allow force-installed extension if all manifest contents are whitelisted.
-    if ((extension->location() == extensions::Manifest::EXTERNAL_POLICY_DOWNLOAD
-         || extension->location() == extensions::Manifest::EXTERNAL_POLICY)
-        && IsSafeForPublicSession(extension)) {
+    if ((extension->location() == ManifestLocation::kExternalPolicyDownload ||
+         extension->location() == ManifestLocation::kExternalPolicy) &&
+        IsSafeForPublicSession(extension)) {
       return true;
     }
   } else if (account_type_ == policy::DeviceLocalAccount::TYPE_KIOSK_APP ||

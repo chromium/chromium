@@ -8,7 +8,8 @@
 #import <Foundation/Foundation.h>
 #include <stddef.h>
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "base/time/time.h"
 #include "ios/web/common/user_agent.h"
 #include "ios/web/public/navigation/referrer.h"
@@ -63,7 +64,7 @@ extern const char kNavigationItemSerializedRequestHeadersSizeHistogram[];
 @property(nonatomic, assign) GURL virtualURL;
 @property(nonatomic, assign) web::Referrer referrer;
 @property(nonatomic, assign) base::Time timestamp;
-@property(nonatomic, assign) base::string16 title;
+@property(nonatomic, assign) std::u16string title;
 @property(nonatomic, assign) web::PageDisplayState displayState;
 @property(nonatomic, assign) BOOL shouldSkipRepostFormConfirmation;
 @property(nonatomic, assign) web::UserAgentType userAgentType;

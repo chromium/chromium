@@ -56,7 +56,8 @@ class MODULES_EXPORT Gamepad final : public ScriptWrappable {
           base::TimeTicks time_floor);
   ~Gamepad() override;
 
-  void UpdateFromDeviceState(const device::Gamepad&);
+  void UpdateFromDeviceState(const device::Gamepad&,
+                             bool cross_origin_isolated_capability);
 
   typedef Vector<double> DoubleVector;
 
@@ -91,7 +92,8 @@ class MODULES_EXPORT Gamepad final : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  private:
-  void SetTimestamp(const device::Gamepad& device_gamepad);
+  void SetTimestamp(const device::Gamepad& device_gamepad,
+                    bool cross_origin_isolated_capability);
 
   Member<Client> client_;
 

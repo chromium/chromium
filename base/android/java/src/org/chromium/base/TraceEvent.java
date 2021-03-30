@@ -616,7 +616,7 @@ public class TraceEvent implements AutoCloseable {
             sEnabled = enabled;
             // Android M+ systrace logs this on its own. Only log it if not writing to Android
             // systrace.
-            if (sATrace != null && !sATrace.hasActiveSession()) {
+            if (sATrace == null || !sATrace.hasActiveSession()) {
                 ThreadUtils.getUiThreadLooper().setMessageLogging(
                         enabled ? LooperMonitorHolder.sInstance : null);
             }
@@ -635,7 +635,7 @@ public class TraceEvent implements AutoCloseable {
         // done for Chrome since WebView tracing isn't controlled with command
         // line flags.
         if (readCommandLine) {
-            EarlyTraceEvent.maybeEnable();
+            EarlyTraceEvent.maybeEnableInBrowserProcess();
         }
         if (traceTag != 0) {
             sATrace = new ATrace(traceTag);

@@ -19,6 +19,7 @@
 // Informational 1xx
 HTTP_STATUS(CONTINUE, 100, "Continue")
 HTTP_STATUS(SWITCHING_PROTOCOLS, 101, "Switching Protocols")
+HTTP_STATUS(EARLY_HINTS, 103, "Early Hints")
 
 // Successful 2xx
 HTTP_STATUS(OK, 200, "OK")

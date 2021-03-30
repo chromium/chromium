@@ -12,6 +12,16 @@ constexpr auto MAX_SHIFT_BUFFER_SIZE = 300;
 LayoutShiftNormalization::LayoutShiftNormalization() = default;
 LayoutShiftNormalization::~LayoutShiftNormalization() = default;
 
+void LayoutShiftNormalization::AddInputTimeStamps(
+    const std::vector<base::TimeTicks>& input_timestamps) {
+  recent_input_timestamps_.insert(recent_input_timestamps_.end(),
+                                  input_timestamps.begin(),
+                                  input_timestamps.end());
+  std::inplace_merge(recent_input_timestamps_.begin(),
+                     recent_input_timestamps_.end() - input_timestamps.size(),
+                     recent_input_timestamps_.end());
+}
+
 void LayoutShiftNormalization::AddNewLayoutShifts(
     const std::vector<page_load_metrics::mojom::LayoutShiftPtr>& new_shifts,
     base::TimeTicks current_time,
@@ -61,6 +71,18 @@ void LayoutShiftNormalization::AddNewLayoutShifts(
   recent_layout_shifts_.erase(recent_layout_shifts_.begin(), first_non_stale);
 }
 
+void LayoutShiftNormalization::ClearAllLayoutShifts() {
+  normalized_cls_data_ = NormalizedCLSData();
+  recent_layout_shifts_.clear();
+  recent_input_timestamps_.clear();
+  sliding_300ms_.clear();
+  sliding_1000ms_.clear();
+  session_gap1000ms_max5000ms_ = SessionWindow();
+  session_gap1000ms_ = SessionWindow();
+  session_gap5000ms_ = SessionWindow();
+  session_gap5000ms_count_ = 0;
+}
+
 void LayoutShiftNormalization::UpdateSlidingWindow(
     std::vector<SlidingWindow>* sliding_windows,
     base::TimeDelta duration,
@@ -85,20 +107,27 @@ void LayoutShiftNormalization::UpdateSlidingWindow(
       [](auto time, auto const& window) { return time < window.start_time; });
   sliding_windows->erase(sliding_windows->begin(), first_non_stale_window);
 }
+
 void LayoutShiftNormalization::UpdateSessionWindow(
     SessionWindow* session_window,
     base::TimeDelta gap,
     base::TimeDelta max_duration,
     std::vector<std::pair<base::TimeTicks, double>>::const_iterator begin,
     std::vector<std::pair<base::TimeTicks, double>>::const_iterator end,
+    std::vector<base::TimeTicks>& input_timestamps,
     double& max_score,
     uint32_t& count) {
   for (auto it = begin; it != end; ++it) {
     if ((it->first - session_window->last_time > gap) ||
-        (it->first - session_window->start_time > max_duration)) {
+        (it->first - session_window->start_time > max_duration) ||
+        (!input_timestamps.empty() && input_timestamps.front() <= it->first)) {
       session_window->start_time = it->first;
       session_window->layout_shift_score = 0;
       ++count;
+      while (!input_timestamps.empty() &&
+             input_timestamps.front() <= it->first) {
+        input_timestamps.erase(input_timestamps.begin());
+      }
     }
     session_window->last_time = it->first;
     session_window->layout_shift_score += it->second;
@@ -130,6 +159,7 @@ void LayoutShiftNormalization::UpdateWindowCLS(
     double cumulative_layout_shift_score) {
   double dummy_max = 0.0;
   uint32_t dummy_count = 0;
+  std::vector<base::TimeTicks> dummy_input_timestamps;
   // Update Sliding Windows.
   UpdateSlidingWindow(
       &sliding_300ms_, base::TimeDelta::FromMilliseconds(300), current_time,
@@ -146,21 +176,34 @@ void LayoutShiftNormalization::UpdateWindowCLS(
   UpdateSessionWindow(
       &session_gap1000ms_max5000ms_, base::TimeDelta::FromMilliseconds(1000),
       base::TimeDelta::FromMilliseconds(5000), first, first_non_stale,
+      dummy_input_timestamps,
       normalized_cls_data_.session_windows_gap1000ms_max5000ms_max_cls,
       dummy_count);
   UpdateSessionWindow(
       &session_gap1000ms_, base::TimeDelta::FromMilliseconds(1000),
-      base::TimeDelta::Max(), first, first_non_stale,
+      base::TimeDelta::Max(), first, first_non_stale, dummy_input_timestamps,
       normalized_cls_data_.session_windows_gap1000ms_maxMax_max_cls,
       dummy_count);
-  UpdateSessionWindow(&session_gap5000ms_,
-                      base::TimeDelta::FromMilliseconds(5000),
-                      base::TimeDelta::Max(), first, first_non_stale, dummy_max,
-                      session_gap5000ms_count_);
+  UpdateSessionWindow(&session_by_inputs_gap1000ms_max5000ms_,
+                      base::TimeDelta::FromMilliseconds(1000),
+                      base::TimeDelta::FromMilliseconds(5000), first,
+                      first_non_stale, recent_input_timestamps_,
+                      potential_max_cls_session_by_inputs_gap1000ms_max5000ms_,
+                      dummy_count);
+  normalized_cls_data_.session_windows_by_inputs_gap1000ms_max5000ms_max_cls =
+      potential_max_cls_session_by_inputs_gap1000ms_max5000ms_;
+  UpdateSessionWindow(
+      &session_gap5000ms_, base::TimeDelta::FromMilliseconds(5000),
+      base::TimeDelta::Max(), first, first_non_stale, dummy_input_timestamps,
+      dummy_max, session_gap5000ms_count_);
+
   auto tmp_session_gap1000ms_max5000ms = session_gap1000ms_max5000ms_;
   auto tmp_session_gap1000ms_ = session_gap1000ms_;
   auto tmp_session_gap5000ms_ = session_gap5000ms_;
   auto tmp_session_gap5000ms_count_ = session_gap5000ms_count_;
+  auto tmp_session_by_inputs_gap1000ms_max5000ms_ =
+      session_by_inputs_gap1000ms_max5000ms_;
+  auto tmp_recent_input_timestamps_ = recent_input_timestamps_;
 
   UpdateSlidingWindow(
       &tmp_sliding_300ms, base::TimeDelta::FromMilliseconds(300), current_time,
@@ -173,18 +216,26 @@ void LayoutShiftNormalization::UpdateWindowCLS(
   UpdateSessionWindow(
       &tmp_session_gap1000ms_max5000ms, base::TimeDelta::FromMilliseconds(1000),
       base::TimeDelta::FromMilliseconds(5000), first_non_stale, last,
+      dummy_input_timestamps,
       normalized_cls_data_.session_windows_gap1000ms_max5000ms_max_cls,
       dummy_count);
   UpdateSessionWindow(
       &tmp_session_gap1000ms_, base::TimeDelta::FromMilliseconds(1000),
-      base::TimeDelta::Max(), first_non_stale, last,
+      base::TimeDelta::Max(), first_non_stale, last, dummy_input_timestamps,
       normalized_cls_data_.session_windows_gap1000ms_maxMax_max_cls,
       dummy_count);
-  UpdateSessionWindow(&tmp_session_gap5000ms_,
-                      base::TimeDelta::FromMilliseconds(5000),
-                      base::TimeDelta::Max(), first_non_stale, last, dummy_max,
-                      tmp_session_gap5000ms_count_);
-
+  UpdateSessionWindow(
+      &tmp_session_by_inputs_gap1000ms_max5000ms_,
+      base::TimeDelta::FromMilliseconds(1000),
+      base::TimeDelta::FromMilliseconds(5000), first_non_stale, last,
+      tmp_recent_input_timestamps_,
+      normalized_cls_data_
+          .session_windows_by_inputs_gap1000ms_max5000ms_max_cls,
+      dummy_count);
+  UpdateSessionWindow(
+      &tmp_session_gap5000ms_, base::TimeDelta::FromMilliseconds(5000),
+      base::TimeDelta::Max(), first_non_stale, last, dummy_input_timestamps,
+      dummy_max, tmp_session_gap5000ms_count_);
   normalized_cls_data_.session_windows_gap5000ms_maxMax_average_cls =
       cumulative_layout_shift_score / tmp_session_gap5000ms_count_;
 }

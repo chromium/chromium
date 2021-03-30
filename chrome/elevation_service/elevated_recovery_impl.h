@@ -7,9 +7,9 @@
 
 #include <stdint.h>
 
+#include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "base/win/scoped_handle.h"
 #include "components/crx_file/crx_verifier.h"
 
@@ -32,9 +32,9 @@ HRESULT CleanupChromeRecoveryDirectory();
 // |caller_proc_id| is 0. Please read the doc comment in
 // elevation_service_idl.idl for the other parameters.
 HRESULT RunChromeRecoveryCRX(const base::FilePath& crx_path,
-                             const base::string16& browser_appid,
-                             const base::string16& browser_version,
-                             const base::string16& session_id,
+                             const std::wstring& browser_appid,
+                             const std::wstring& browser_version,
+                             const std::wstring& session_id,
                              uint32_t caller_proc_id,
                              base::win::ScopedHandle* proc_handle);
 

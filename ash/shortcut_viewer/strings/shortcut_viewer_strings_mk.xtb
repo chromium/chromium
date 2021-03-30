@@ -23,11 +23,13 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Додајте www. и .com на записот во лентата за адреси, а потоа отворете ја страницата</translation>
+<translation id="1768987374400973299">Направете слика/снимка од екранот</translation>
 <translation id="1872219238824176091">Отстранете го тековниот работен простор</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, а потоа <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> или <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">Одете на следната картичка</translation>
 <translation id="2010818616644390445">Одете на последната картичка во прозорецот</translation>
 <translation id="2040706009561734834">Го отвора или затвора стартерот</translation>
+<translation id="2086334242442703436">Отвори го избирачот на емоџија</translation>
 <translation id="2088054208777350526">Пребарувајте кратенки од тастатура</translation>
 <translation id="2125211348069077981"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="E" /> или <ph name="F" /></translation>
 <translation id="2145908266289632567">Уредување текст</translation>
@@ -46,6 +48,7 @@
 <translation id="2480851840841871861">Отворете го „Помошникот на Google“</translation>
 <translation id="2488661730534396940">Активирајте го работниот простор на левата страна</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516999188535378855">Отворете ја апликацијата Diagnostics</translation>
 <translation id="2530339807289914946">Одете надолу на веб-страницата</translation>
 <translation id="2530896289327917474">Вклучете или исклучете „Прелистување со курсор“</translation>
 <translation id="2574014812750545982">Ресетирајте го нивото на зумирање на страницата</translation>
@@ -110,6 +113,7 @@
 <translation id="4801989101741319327">Преместете се на крајот на следниот збор</translation>
 <translation id="4866066940972151697">Активирајте го работниот простор на десната страна</translation>
 <translation id="4916163929714267752">Отворете го линкот во нов прозорец</translation>
+<translation id="492453977506755176">Копче за режим на снимање</translation>
 <translation id="5030659775136592441">Го прикажува управникот со обележувачи</translation>
 <translation id="5034421018520995080">Одете најгоре на страницата</translation>
 <translation id="5042305953558921026">Клуч за режимот на преглед</translation>
@@ -132,6 +136,7 @@
 <translation id="5899919361772749550">Ја прикажува или ја сокрива конзолата со „Програмерски алатки“</translation>
 <translation id="5919628958418675842">Вклучете или исклучете екран за приватност</translation>
 <translation id="5921745308587794300">Заврти го прозорецот</translation>
+<translation id="5926306472221400972">Направете слика од целиот екран</translation>
 <translation id="6022924867608035986">Избриши го текстот во полето за пребарување</translation>
 <translation id="6045998054441862242">Вклучете го режимот со висок контраст</translation>
 <translation id="6052614013050385269">Десен клик на линк</translation>
@@ -149,6 +154,7 @@
 <translation id="6445033640292336367">Вратете ја картичката во нејзината првобитна позиција</translation>
 <translation id="6474744297082284761">Одзумирајте (кога е приклучено или кога се овозможени лупите за цел екран)</translation>
 <translation id="649811797655257835">Изберете ја датотеката, а потоа притиснете <ph name="SPACE" /></translation>
+<translation id="6551886416582667425">Направете делумна слика/снимка од екранот</translation>
 <translation id="6556040137485212400">Отворете го прозорецот што не се користи најдолго време</translation>
 <translation id="666343722268997814">Отворете го менито со десен клик за нагласената ставка</translation>
 <translation id="6671538777808758331">Одете на следното совпаѓање за пребарувањето</translation>
@@ -175,6 +181,7 @@
 <translation id="7611271430932669992">Го преместува фокусот на појавни програми и дијалози</translation>
 <translation id="7635348532214572995">Преместувајте икона на апликација околу решетката на апликацијата</translation>
 <translation id="766326951329901120">Залепете ја содржината од привремената меморија како обичен текст</translation>
+<translation id="7673453620027697230">Направете слика/снимка од прозорец на екранот</translation>
 <translation id="7703010453515335249">лева заграда</translation>
 <translation id="7724603315864178912">Исечи</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, а потоа <ph name="SPACE" /> или <ph name="ENTER" /></translation>

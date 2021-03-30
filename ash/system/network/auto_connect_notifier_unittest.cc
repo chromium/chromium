@@ -18,6 +18,7 @@
 #include "chromeos/network/auto_connect_handler.h"
 #include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/network_handler.h"
+#include "chromeos/network/system_token_cert_db_storage.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "dbus/object_path.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -40,8 +41,9 @@ class AutoConnectNotifierTest : public AshTestBase {
   ~AutoConnectNotifierTest() override = default;
 
   void SetUp() override {
+    chromeos::SystemTokenCertDbStorage::Initialize();
     chromeos::NetworkCertLoader::Initialize();
-    chromeos::NetworkCertLoader::ForceHardwareBackedForTesting();
+    chromeos::NetworkCertLoader::ForceAvailableForNetworkAuthForTesting();
     chromeos::shill_clients::InitializeFakes();
     chromeos::NetworkHandler::Initialize();
     CHECK(chromeos::NetworkHandler::Get()->auto_connect_handler());
@@ -69,6 +71,7 @@ class AutoConnectNotifierTest : public AshTestBase {
     chromeos::NetworkHandler::Shutdown();
     chromeos::shill_clients::Shutdown();
     chromeos::NetworkCertLoader::Shutdown();
+    chromeos::SystemTokenCertDbStorage::Shutdown();
   }
 
   void NotifyConnectToNetworkRequested() {

@@ -392,7 +392,7 @@ void PermissionWizard::Impl::OnPermissionCheckResult(bool result) {
 // updates the first-responder button, so it should only be called when the
 // state needs to change.
 - (void)updateUI {
-  base::string16 bundleName = base::UTF8ToUTF16(_impl->GetBundleName());
+  std::u16string bundleName = base::UTF8ToUTF16(_impl->GetBundleName());
   switch (_page) {
     case WizardPage::ACCESSIBILITY:
       _instructionText.stringValue = l10n_util::GetNSStringF(

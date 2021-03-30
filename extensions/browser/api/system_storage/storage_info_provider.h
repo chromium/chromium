@@ -13,20 +13,7 @@
 #include "extensions/browser/api/system_info/system_info_provider.h"
 #include "extensions/common/api/system_storage.h"
 
-namespace storage_monitor {
-class StorageInfo;
-}
-
 namespace extensions {
-
-namespace systeminfo {
-
-// Build StorageUnitInfo struct from StorageInfo instance. The |unit|
-// parameter is the output value.
-void BuildStorageUnitInfo(const storage_monitor::StorageInfo& info,
-                          api::system_storage::StorageUnitInfo* unit);
-
-}  // namespace systeminfo
 
 typedef std::vector<api::system_storage::StorageUnitInfo> StorageUnitInfoList;
 

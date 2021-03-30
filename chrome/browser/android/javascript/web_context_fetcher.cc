@@ -5,11 +5,9 @@
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/chrome_jni_headers/WebContextFetcher_jni.h"
-#include "chrome/browser/android/javascript/web_context_fetcher_util.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -33,16 +31,12 @@ static void OnContextFetchComplete(
     DVLOG(1) << "WebContextFetcher.JavaScriptRunner.ExecutionTime = "
              << javascript_time;
   }
-  std::string json;
-  base::JSONWriter::Write(result, &json);
-  base::android::RunStringCallbackAndroid(
-      scoped_jcallback,
-      WebContextFetcherUtil::ConvertJavascriptOutputToValidJson(json));
+  base::android::RunStringCallbackAndroid(scoped_jcallback, result.GetString());
 }
 
 // IMPORTANT: The output of this fetch should only be handled in memory safe
 //      languages (Java) and should not be parsed in C++.
-static void ExecuteFetch(const base::string16& script,
+static void ExecuteFetch(const std::u16string& script,
                          const ScopedJavaGlobalRef<jobject>& scoped_jcallback,
                          content::RenderFrameHost* render_frame_host) {
   DCHECK(render_frame_host);
@@ -61,7 +55,7 @@ static void JNI_WebContextFetcher_FetchContextWithJavascript(
     const JavaParamRef<jobject>& jrender_frame_host) {
   auto* render_frame_host =
       content::RenderFrameHost::FromJavaRenderFrameHost(jrender_frame_host);
-  base::string16 script = base::android::ConvertJavaStringToUTF16(env, jscript);
+  std::u16string script = base::android::ConvertJavaStringToUTF16(env, jscript);
   ScopedJavaGlobalRef<jobject> scoped_jcallback(env, jcallback);
   ExecuteFetch(script, scoped_jcallback, render_frame_host);
 }

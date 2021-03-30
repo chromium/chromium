@@ -31,12 +31,12 @@
 #include "media/audio/test_audio_thread.h"
 #include "media/base/audio_parameters.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
+#include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/public/cpp/fake_stream_factory.h"
-#include "services/audio/public/mojom/stream_factory.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -70,7 +70,7 @@ class MAYBE_RenderFrameAudioInputStreamFactoryTest
     RenderFrameHostTester::For(main_rfh())->InitializeRenderFrameIfNeeded();
 
     // Set up the ForwardingAudioStreamFactory.
-    ForwardingAudioStreamFactory::OverrideStreamFactoryBinderForTesting(
+    ForwardingAudioStreamFactory::OverrideAudioStreamFactoryBinderForTesting(
         base::BindRepeating(
             &MAYBE_RenderFrameAudioInputStreamFactoryTest::BindFactory,
             base::Unretained(this)));
@@ -79,14 +79,14 @@ class MAYBE_RenderFrameAudioInputStreamFactoryTest
   }
 
   void TearDown() override {
-    ForwardingAudioStreamFactory::OverrideStreamFactoryBinderForTesting(
+    ForwardingAudioStreamFactory::OverrideAudioStreamFactoryBinderForTesting(
         base::NullCallback());
     audio_manager_.Shutdown();
     RenderViewHostTestHarness::TearDown();
   }
 
   void BindFactory(
-      mojo::PendingReceiver<audio::mojom::StreamFactory> receiver) {
+      mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver) {
     audio_service_stream_factory_.receiver_.Bind(std::move(receiver));
   }
 
@@ -123,7 +123,7 @@ class MAYBE_RenderFrameAudioInputStreamFactoryTest
     CreateInputStreamCallback last_created_callback;
     CreateLoopbackStreamCallback last_created_loopback_callback;
 
-    mojo::Receiver<audio::mojom::StreamFactory> receiver_{this};
+    mojo::Receiver<media::mojom::AudioStreamFactory> receiver_{this};
   };
 
   class FakeRendererAudioInputStreamFactoryClient

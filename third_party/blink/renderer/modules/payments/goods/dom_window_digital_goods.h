@@ -8,19 +8,21 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/digital_goods/digital_goods.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
 class LocalDOMWindow;
 class ScriptState;
-class Visitor;
 
 class DOMWindowDigitalGoods final
     : public GarbageCollected<DOMWindowDigitalGoods>,
       public Supplement<LocalDOMWindow> {
  public:
   static const char kSupplementName[];
+
+  DOMWindowDigitalGoods();
 
   // IDL Interface:
   static ScriptPromise getDigitalGoodsService(ScriptState*,

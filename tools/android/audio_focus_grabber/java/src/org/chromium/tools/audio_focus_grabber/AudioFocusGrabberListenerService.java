@@ -16,6 +16,7 @@ import android.widget.RemoteViews;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 
 /**
@@ -65,7 +66,7 @@ public class AudioFocusGrabberListenerService extends Service {
         return START_NOT_STICKY;
     }
 
-    void processIntent(Intent intent) {
+    private void processIntent(Intent intent) {
         if (mMediaPlayer != null) {
             Log.i(TAG, "There's already a MediaPlayer playing,"
                     + " stopping the existing player and abandon focus");
@@ -87,8 +88,7 @@ public class AudioFocusGrabberListenerService extends Service {
         }
     }
 
-
-    void gainFocusAndPlay(int focusType) {
+    private void gainFocusAndPlay(int focusType) {
         int result = mAudioManager.requestAudioFocus(
                 mOnAudioFocusChangeListener,
                 AudioManager.STREAM_MUSIC,
@@ -100,13 +100,13 @@ public class AudioFocusGrabberListenerService extends Service {
         }
     }
 
-    void playSound() {
+    private void playSound() {
         mMediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.ping);
         mMediaPlayer.setOnCompletionListener(mOnCompletionListener);
         mMediaPlayer.start();
     }
 
-    void releaseAndAbandonAudioFocus() {
+    private void releaseAndAbandonAudioFocus() {
         mMediaPlayer.release();
         mMediaPlayer = null;
         mAudioManager.abandonAudioFocus(mOnAudioFocusChangeListener);
@@ -178,6 +178,8 @@ public class AudioFocusGrabberListenerService extends Service {
     private PendingIntent createPendingIntent(String action) {
         Intent i = new Intent(this, AudioFocusGrabberListenerService.class);
         i.setAction(action);
-        return PendingIntent.getService(this, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
+        return PendingIntent.getService(this, 0, i,
+                PendingIntent.FLAG_CANCEL_CURRENT
+                        | IntentUtils.getPendingIntentMutabilityFlag(false));
     }
 }

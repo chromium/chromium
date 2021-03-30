@@ -54,7 +54,7 @@ class ModulesConversionTest(unittest.TestCase):
             'empty_dependency_list_expected.gn')
         rule_first_line = 'js_unittest("importer_common_unittest.m") {'
         list_name = 'deps'
-        dependency_line = '    "//ui/file_manager/base/js:mock_chrome",'
+        dependency_line = '    "//ui/file_manager/file_manager/common/js:mock_chrome",'
 
         # Check: dependency list correctly updated with new dependency.
         modules.add_dependency(file_lines, rule_first_line, list_name,
@@ -74,7 +74,7 @@ class ModulesConversionTest(unittest.TestCase):
             'single_line_dependency_list_expected.gn')
         rule_first_line = 'js_unittest("importer_common_unittest.m") {'
         list_name = 'deps'
-        dependency_line = '    "//ui/file_manager/base/js:mock_chrome",'
+        dependency_line = '    "//ui/file_manager/file_manager/common/js:mock_chrome",'
 
         # Check: dependency list correctly formatted and updated with new
         # dependency.

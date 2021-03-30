@@ -14,7 +14,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.BuildConfig;
+import org.chromium.build.BuildConfig;
 
 import java.lang.ref.WeakReference;
 
@@ -95,7 +95,7 @@ public class ViewLookupCachingFrameLayout extends OptimizedFrameLayout {
         View view = null;
         if (ref != null) view = ref.get();
         if (view == null) view = findViewById(id);
-        if (BuildConfig.DCHECK_IS_ON) {
+        if (BuildConfig.ENABLE_ASSERTS) {
             assert view == findViewById(id) : "View caching logic is broken!";
             assert ref == null
                     || ref.get() != null : "Cache held reference to garbage collected view!";

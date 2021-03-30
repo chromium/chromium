@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_anchor_set.h"
 #include "third_party/blink/renderer/modules/xr/xr_bounded_reference_space.h"
 #include "third_party/blink/renderer/modules/xr/xr_canvas_input_provider.h"
+#include "third_party/blink/renderer/modules/xr/xr_cube_map.h"
 #include "third_party/blink/renderer/modules/xr/xr_depth_information.h"
 #include "third_party/blink/renderer/modules/xr/xr_depth_manager.h"
 #include "third_party/blink/renderer/modules/xr/xr_dom_overlay_state.h"
@@ -242,6 +243,7 @@ constexpr char XRSession::kUnableToRetrieveMatrix[];
 constexpr char XRSession::kNoSpaceSpecified[];
 constexpr char XRSession::kAnchorsFeatureNotSupported[];
 constexpr char XRSession::kPlanesFeatureNotSupported[];
+constexpr char XRSession::kDepthSensingFeatureNotSupported[];
 
 class XRSession::XRSessionResizeObserverDelegate final
     : public ResizeObserver::Delegate {
@@ -304,9 +306,29 @@ void XRSession::MetricsReporter::ReportFeatureUsed(
     case XRSessionFeature::PLANE_DETECTION:
     case XRSessionFeature::DEPTH:
     case XRSessionFeature::IMAGE_TRACKING:
+    case XRSessionFeature::HAND_INPUT:
       // Not recording metrics for these features currently.
       break;
   }
+}
+
+XRDepthManager* XRSession::CreateDepthManagerIfEnabled(
+    const XRSessionFeatureSet& feature_set,
+    const device::mojom::blink::XRSessionDeviceConfig& device_config) {
+  DVLOG(2) << __func__;
+
+  if (!base::Contains(feature_set, device::mojom::XRSessionFeature::DEPTH)) {
+    return nullptr;
+  }
+
+  if (!device_config.depth_configuration) {
+    DCHECK(false) << "The session reports that depth sensing is supported but "
+                     "did not report depth sensing API configuration!";
+    return nullptr;
+  }
+
+  return MakeGarbageCollected<XRDepthManager>(
+      base::PassKey<XRSession>{}, this, *device_config.depth_configuration);
 }
 
 XRSession::XRSession(
@@ -328,9 +350,7 @@ XRSession::XRSession(
           MakeGarbageCollected<XRPlaneManager>(base::PassKey<XRSession>{},
                                                this)),
       depth_manager_(
-          MakeGarbageCollected<XRDepthManager>(base::PassKey<XRSession>{},
-                                               this)),
-
+          CreateDepthManagerIfEnabled(enabled_features_, *device_config)),
       input_sources_(MakeGarbageCollected<XRInputSourceArray>()),
       client_receiver_(this, xr->GetExecutionContext()),
       input_receiver_(this, xr->GetExecutionContext()),
@@ -476,6 +496,26 @@ void XRSession::updateRenderState(XRRenderStateInit* init,
   MaybeRequestFrame();
 }
 
+const String& XRSession::depthUsage(ExceptionState& exception_state) {
+  if (!depth_manager_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kDepthSensingFeatureNotSupported);
+    return g_empty_string;
+  }
+
+  return depth_manager_->depthUsage();
+}
+
+const String& XRSession::depthDataFormat(ExceptionState& exception_state) {
+  if (!depth_manager_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kDepthSensingFeatureNotSupported);
+    return g_empty_string;
+  }
+
+  return depth_manager_->depthDataFormat();
+}
+
 void XRSession::UpdateEyeParameters(
     const device::mojom::blink::VREyeParametersPtr& left_eye,
     const device::mojom::blink::VREyeParametersPtr& right_eye) {
@@ -616,6 +656,7 @@ ScriptPromise XRSession::CreateAnchorHelper(
     const blink::TransformationMatrix& native_origin_from_anchor,
     const device::mojom::blink::XRNativeOriginInformation&
         native_origin_information,
+    base::Optional<uint64_t> maybe_plane_id,
     ExceptionState& exception_state) {
   DVLOG(2) << __func__;
 
@@ -650,61 +691,19 @@ ScriptPromise XRSession::CreateAnchorHelper(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  xr_->xrEnvironmentProviderRemote()->CreateAnchor(
-      native_origin_information.Clone(), *maybe_native_origin_from_anchor_pose,
-      WTF::Bind(&XRSession::OnCreateAnchorResult, WrapPersistent(this),
-                WrapPersistent(resolver)));
-
-  create_anchor_promises_.insert(resolver);
-
-  return promise;
-}
-
-ScriptPromise XRSession::CreatePlaneAnchorHelper(
-    ScriptState* script_state,
-    const blink::TransformationMatrix& native_origin_from_anchor,
-    const device::mojom::blink::XRNativeOriginInformation&
-        native_origin_information,
-    uint64_t plane_id,
-    ExceptionState& exception_state) {
-  DVLOG(2) << __func__ << ", plane_id=" << plane_id;
-
-  if (ended_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      kSessionEnded);
-    return ScriptPromise();
+  if (maybe_plane_id) {
+    xr_->xrEnvironmentProviderRemote()->CreatePlaneAnchor(
+        native_origin_information.Clone(),
+        *maybe_native_origin_from_anchor_pose, *maybe_plane_id,
+        WTF::Bind(&XRSession::OnCreateAnchorResult, WrapPersistent(this),
+                  WrapPersistent(resolver)));
+  } else {
+    xr_->xrEnvironmentProviderRemote()->CreateAnchor(
+        native_origin_information.Clone(),
+        *maybe_native_origin_from_anchor_pose,
+        WTF::Bind(&XRSession::OnCreateAnchorResult, WrapPersistent(this),
+                  WrapPersistent(resolver)));
   }
-
-  // Reject the promise if device doesn't support the anchors API.
-  if (!xr_->xrEnvironmentProviderRemote()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      kAnchorsNotSupportedByDevice);
-    return ScriptPromise();
-  }
-
-  auto maybe_native_origin_from_anchor_pose =
-      CreatePose(native_origin_from_anchor);
-
-  if (!maybe_native_origin_from_anchor_pose) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      kUnableToDecomposeMatrix);
-    return ScriptPromise();
-  }
-
-  DVLOG(3) << __func__
-           << ": maybe_native_origin_from_anchor_pose->orientation()= "
-           << maybe_native_origin_from_anchor_pose->orientation().ToString()
-           << ", maybe_native_origin_from_anchor_pose->position()= "
-           << maybe_native_origin_from_anchor_pose->position().ToString();
-
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
-
-  xr_->xrEnvironmentProviderRemote()->CreatePlaneAnchor(
-      native_origin_information.Clone(), *maybe_native_origin_from_anchor_pose,
-      plane_id,
-      WTF::Bind(&XRSession::OnCreateAnchorResult, WrapPersistent(this),
-                WrapPersistent(resolver)));
 
   create_anchor_promises_.insert(resolver);
 
@@ -1216,9 +1215,28 @@ void XRSession::ProcessHitTestData(
   }
 }
 
-XRDepthInformation* XRSession::GetDepthInformation(
-    const XRFrame* xr_frame) const {
-  return depth_manager_->GetDepthInformation(xr_frame);
+XRCPUDepthInformation* XRSession::GetCpuDepthInformation(
+    const XRFrame* xr_frame,
+    ExceptionState& exception_state) const {
+  if (!depth_manager_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kDepthSensingFeatureNotSupported);
+    return nullptr;
+  }
+
+  return depth_manager_->GetCpuDepthInformation(xr_frame, exception_state);
+}
+
+XRWebGLDepthInformation* XRSession::GetWebGLDepthInformation(
+    const XRFrame* xr_frame,
+    ExceptionState& exception_state) const {
+  if (!depth_manager_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kDepthSensingFeatureNotSupported);
+    return nullptr;
+  }
+
+  return depth_manager_->GetWebGLDepthInformation(xr_frame, exception_state);
 }
 
 ScriptPromise XRSession::requestLightProbe(ScriptState* script_state,
@@ -1729,7 +1747,12 @@ void XRSession::UpdateWorldUnderstandingStateForFrame(
         frame_data->detected_planes_data.get(), timestamp);
     ProcessAnchorsData(frame_data->anchors_data.get(), timestamp);
     ProcessHitTestData(frame_data->hit_test_subscription_results.get());
-    depth_manager_->ProcessDepthInformation(std::move(frame_data->depth_data));
+
+    if (depth_manager_) {
+      depth_manager_->ProcessDepthInformation(
+          std::move(frame_data->depth_data));
+    }
+
     ProcessTrackedImagesData(frame_data->tracked_images.get());
 
     const device::mojom::blink::XRLightEstimationData* light_data =
@@ -1741,7 +1764,11 @@ void XRSession::UpdateWorldUnderstandingStateForFrame(
     plane_manager_->ProcessPlaneInformation(nullptr, timestamp);
     ProcessAnchorsData(nullptr, timestamp);
     ProcessHitTestData(nullptr);
-    depth_manager_->ProcessDepthInformation(nullptr);
+
+    if (depth_manager_) {
+      depth_manager_->ProcessDepthInformation(nullptr);
+    }
+
     ProcessTrackedImagesData(nullptr);
 
     if (world_light_probe_) {

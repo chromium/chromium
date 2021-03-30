@@ -17,6 +17,8 @@ who're already familiar with it, and also keeps things consistent.
   static functions.
   - An exception is `//content/public/test`. We allow concrete classes that
     chrome test classes derive from or use in here.
+- Tests for files in `//content/public` should be inside implementation directories,
+e.g. `//content/browser`, `//content/renderer` etc...
 - While we don't allow old-style Chrome IPC `_messages.h` files in
   `//content/public`, we do allow `.mojom` files (see
   [discussion](https://groups.google.com/a/chromium.org/forum/#!searchin/chromium-mojo/cross-module/chromium-mojo/ZR2YlRV7Uxs/Ce-h_AaWCgAJ)).

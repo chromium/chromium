@@ -6,7 +6,9 @@
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
+#import "base/ios/ios_util.h"
 #include "base/mac/foundation_util.h"
+#import "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -19,6 +21,7 @@
 #import "components/prefs/ios/pref_observer_bridge.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -31,6 +34,7 @@
 #import "ios/chrome/browser/overlays/public/web_content_area/http_auth_overlay.h"
 #include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #include "ios/chrome/browser/policy/policy_features.h"
+#import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/search_engines/search_engines_util.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/activity_services/canonical_url_retriever.h"
@@ -48,10 +52,9 @@
 #import "ios/chrome/browser/ui/reading_list/reading_list_menu_notification_delegate.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_menu_notifier.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/browser/ui/util/multi_window_support.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/web/features.h"
-#import "ios/chrome/browser/web/font_size_tab_helper.h"
+#import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -531,7 +534,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
       bookmarks::prefs::kEditBookmarksEnabled, _prefChangeRegistrar.get());
 }
 
-#pragma mark - PopupMenuActionHandlerCommands
+#pragma mark - PopupMenuActionHandlerDelegate
 
 - (void)readPageLater {
   if (!self.webState)
@@ -562,6 +565,22 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
       self.webState->GetNavigationManager()->GetIndexOfItem(navigationItem);
   DCHECK_NE(index, -1);
   self.webState->GetNavigationManager()->GoToIndex(index);
+}
+
+- (void)recordSettingsMetricsPerProfile {
+  profile_metrics::BrowserProfileType type =
+      _isIncognito ? profile_metrics::BrowserProfileType::kIncognito
+                   : profile_metrics::BrowserProfileType::kRegular;
+  base::UmaHistogramEnumeration("Settings.OpenSettingsFromMenu.PerProfileType",
+                                type);
+}
+
+- (void)recordDownloadsMetricsPerProfile {
+  profile_metrics::BrowserProfileType type =
+      _isIncognito ? profile_metrics::BrowserProfileType::kIncognito
+                   : profile_metrics::BrowserProfileType::kRegular;
+  base::UmaHistogramEnumeration("Download.OpenDownloadsFromMenu.PerProfileType",
+                                type);
 }
 
 #pragma mark - IOSLanguageDetectionTabHelperObserving
@@ -868,12 +887,20 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
   PopupMenuToolsItem* voiceSearch = CreateTableViewItem(
       IDS_IOS_TOOLS_MENU_VOICE_SEARCH, PopupMenuActionVoiceSearch,
       @"popup_menu_voice_search", kToolsMenuVoiceSearch);
+
   PopupMenuToolsItem* newSearch =
       CreateTableViewItem(IDS_IOS_TOOLS_MENU_NEW_SEARCH, PopupMenuActionSearch,
                           @"popup_menu_search", kToolsMenuSearch);
+  // Disable the new search if the incognito mode is forced by enterprise
+  // policy.
+  newSearch.enabled = !IsIncognitoModeForced(self.prefService);
+
   PopupMenuToolsItem* newIncognitoSearch = CreateTableViewItem(
       IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_SEARCH, PopupMenuActionIncognitoSearch,
       @"popup_menu_new_incognito_tab", kToolsMenuIncognitoSearch);
+  // Disable the new incognito search if the incognito mode is disabled by
+  // enterprise policy.
+  newIncognitoSearch.enabled = !IsIncognitoModeDisabled(self.prefService);
 
   return @[ newSearch, newIncognitoSearch, voiceSearch, QRCodeSearch ];
 }
@@ -888,7 +915,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
   NSArray* tabActions = [@[ self.reloadStopItem ]
       arrayByAddingObjectsFromArray:[self itemsForNewTab]];
 
-  if (IsMultipleScenesSupported()) {
+  if (base::ios::IsMultipleScenesSupported()) {
     tabActions =
         [tabActions arrayByAddingObjectsFromArray:[self itemsForNewWindow]];
   }
@@ -912,20 +939,29 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 
 - (NSArray<TableViewItem*>*)itemsForNewTab {
   // Open New Tab.
-  TableViewItem* openNewTabItem =
+  PopupMenuToolsItem* openNewTabItem =
       CreateTableViewItem(IDS_IOS_TOOLS_MENU_NEW_TAB, PopupMenuActionOpenNewTab,
                           @"popup_menu_new_tab", kToolsMenuNewTabId);
+
+  // Disable the new tab menu item if the incognito mode is forced by enterprise
+  // policy.
+  openNewTabItem.enabled = !IsIncognitoModeForced(self.prefService);
 
   // Open New Incognito Tab.
   self.openNewIncognitoTabItem = CreateTableViewItem(
       IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB, PopupMenuActionOpenNewIncognitoTab,
       @"popup_menu_new_incognito_tab", kToolsMenuNewIncognitoTabId);
 
+  // Disable the new incognito tab menu item if the incognito mode is disabled
+  // by enterprise policy.
+  self.openNewIncognitoTabItem.enabled =
+      !IsIncognitoModeDisabled(self.prefService);
+
   return @[ openNewTabItem, self.openNewIncognitoTabItem ];
 }
 
 - (NSArray<TableViewItem*>*)itemsForNewWindow {
-  if (!IsMultipleScenesSupported())
+  if (!base::ios::IsMultipleScenesSupported())
     return @[];
 
   // Create the menu item -- hardcoded string and no accessibility ID.
@@ -1112,10 +1148,8 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 
 // Returns YES if user is allowed to edit any bookmarks.
 - (BOOL)isEditBookmarksEnabled {
-  if (IsEditBookmarksIOSEnabled())
     return self.prefService->GetBoolean(
         bookmarks::prefs::kEditBookmarksEnabled);
-  return YES;
 }
 
 @end

@@ -28,6 +28,8 @@ void SwitchAccessBackButtonBubbleController::ShowBackButton(
     const gfx::Rect& anchor,
     bool show_focus_ring,
     bool for_menu) {
+  for_menu_ = for_menu;
+
   if (!widget_) {
     back_button_view_ = new SwitchAccessBackButtonView(for_menu);
 
@@ -82,23 +84,36 @@ void SwitchAccessBackButtonBubbleController::BubbleViewDestroyed() {
   widget_ = nullptr;
 }
 
-// The back button should display above and to the right of the anchor rect
-// provided. Because the TrayBubbleView defaults to showing the right edges
-// lining up (rather than appearing off to the side) we'll add the width of the
-// button to the anchor rect's width.
+// The back button should display to the right of the anchor rect provided.
+// Because the TrayBubbleView defaults to showing the right edges lining up
+// (rather than the top edges lining up) we'll add the width of the button to
+// the anchor rect's width, and the height of the button to the y-coordinate.
 gfx::Rect SwitchAccessBackButtonBubbleController::AdjustAnchorRect(
     const gfx::Rect& anchor) {
   DCHECK(back_button_view_);
   gfx::Size button_size = back_button_view_->size();
+  gfx::Rect adjusted_anchor(anchor);
+
+  // The bubble aligns its right edge with the rect's right edge, so add the
+  // button width to have them adjacent only at the corner.
+  int width = adjusted_anchor.width() + button_size.width();
+  if (!for_menu_)
+    width += kFocusRingPaddingDp;
+  adjusted_anchor.set_width(width);
+
+  // To align the top edges, move the button down by its height.
+  int offset_height = button_size.height();
+  if (for_menu_)
+    offset_height -= back_button_view_->GetFocusRingWidthPerSide();
+  else
+    offset_height -= kFocusRingPaddingDp;
+  adjusted_anchor.Offset(0, offset_height);
 
   gfx::Rect display_bounds =
       display::Screen::GetScreen()->GetDisplayMatching(anchor).bounds();
-  // Ensure that the back button displays onscreen by leaving space for the
-  // button at the appropriate edges (the button displays at the top right
-  // corner).
-  display_bounds.Inset(0, button_size.height(), button_size.width(), 0);
+  // Ensure that the back button displays onscreen.
+  display_bounds.Inset(0, button_size.height(), 0, 0);
 
-  gfx::Rect adjusted_anchor(anchor);
   if (adjusted_anchor.Intersects(display_bounds)) {
     adjusted_anchor.Intersect(display_bounds);
   } else {
@@ -119,9 +134,6 @@ gfx::Rect SwitchAccessBackButtonBubbleController::AdjustAnchorRect(
     adjusted_anchor = gfx::Rect(x, y, 0, 0);
   }
 
-  // The bubble aligns its right edge with the rect's right edge, so add the
-  // button width to have them adjacent only at the corner.
-  adjusted_anchor.set_width(adjusted_anchor.width() + button_size.width());
   return adjusted_anchor;
 }
 

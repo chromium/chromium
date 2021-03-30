@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+PASS z-index can take a 4-digit integer
+PASS An unregistered custom prop can take a 4-digit integer
+PASS An <integer> custom prop can take a 4-digit integer
+PASS z-index can take a custom property set to a 4-digit integer
+PASS z-index can take a 6-digit integer
+PASS An unregistered custom prop can take a 6-digit integer
+PASS An <integer> custom prop can take a 6-digit integer
+PASS z-index can take a custom property set to a 6-digit integer
+PASS z-index can take a 8-digit integer
+FAIL An unregistered custom prop can take a 8-digit integer assert_equals: expected "11111111" but got "1.11111e+7"
+FAIL An <integer> custom prop can take a 8-digit integer assert_equals: expected "11111111" but got "1.11111e+7"
+PASS z-index can take a custom property set to a 8-digit integer
+PASS z-index can take a 12-digit integer
+FAIL An unregistered custom prop can take a 12-digit integer assert_equals: expected "111111111111" but got "1.11111e+11"
+FAIL An <integer> custom prop can take a 12-digit integer assert_equals: expected "111111111111" but got "1.11111e+11"
+PASS z-index can take a custom property set to a 12-digit integer
+PASS z-index can take a 25-digit integer
+FAIL An unregistered custom prop can take a 25-digit integer assert_equals: expected "1111111111111111111111111" but got "1.11111e+24"
+FAIL An <integer> custom prop can take a 25-digit integer assert_equals: expected "1111111111111111111111111" but got "1.11111e+24"
+PASS z-index can take a custom property set to a 25-digit integer
+Harness: the test ran to completion.
+

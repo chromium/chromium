@@ -2,12 +2,12 @@ include_rules = [
   "+content/public/browser",
   "+components/keyed_service/content",
   "+components/version_info",
+  "+components/profile_metrics",
   "+crypto/random.h",
   "+gpu/config/gpu_info.h",
   "+services/device/public",
   "+services/service_manager/public/mojom",
   "+third_party/blink/public/common",
-  "+third_party/blink/public/platform/web_rect.h",
 ]
 
 specific_include_rules = {

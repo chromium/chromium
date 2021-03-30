@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests the display of animations on the animation timeline.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -62,7 +62,7 @@
   };
 
   await UI.viewManager.showView('animations');
-  var timeline = self.runtime.sharedInstance(Animation.AnimationTimeline);
+  var timeline = Animation.AnimationTimeline.instance();
   TestRunner.evaluateInPage('startAnimationWithDelay()');
   ElementsTestRunner.waitForAnimationAdded(step2);
 

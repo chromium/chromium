@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
@@ -42,7 +43,8 @@ class MockDedicatedWorker
 
     mojo::MakeSelfOwnedReceiver(
         std::make_unique<DedicatedWorkerHostFactoryImpl>(
-            worker_process_id, render_frame_host_id, render_frame_host_id,
+            worker_process_id, render_frame_host_id,
+            /*creator_worker_token=*/base::nullopt, render_frame_host_id,
             url::Origin(), net::IsolationInfo::CreateTransient(),
             network::CrossOriginEmbedderPolicy(),
             std::move(coep_reporter_remote)),
@@ -57,9 +59,9 @@ class MockDedicatedWorker
           receiver_.BindNewPipeAndPassRemote());
     } else {
       factory_->CreateWorkerHost(
-          blink::DedicatedWorkerToken(),
+          blink::DedicatedWorkerToken(), /*script_url=*/GURL(),
           browser_interface_broker_.BindNewPipeAndPassReceiver(),
-          base::BindOnce([](const network::CrossOriginEmbedderPolicy&) {}));
+          remote_host_.BindNewPipeAndPassReceiver(), base::DoNothing());
     }
   }
 
@@ -71,7 +73,8 @@ class MockDedicatedWorker
   // blink::mojom::DedicatedWorkerHostFactoryClient:
   void OnWorkerHostCreated(
       mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
-          browser_interface_broker) override {
+          browser_interface_broker,
+      mojo::PendingRemote<blink::mojom::DedicatedWorkerHost>) override {
     browser_interface_broker_.Bind(std::move(browser_interface_broker));
   }
 
@@ -95,6 +98,7 @@ class MockDedicatedWorker
   mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> factory_;
 
   mojo::Remote<blink::mojom::BrowserInterfaceBroker> browser_interface_broker_;
+  mojo::Remote<blink::mojom::DedicatedWorkerHost> remote_host_;
 };
 
 class DedicatedWorkerServiceImplTest

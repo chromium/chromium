@@ -206,7 +206,9 @@ suite('route', function() {
     }
 
     assertFalse(routes.PRIVACY.isNavigableDialog);
+    // <if expr="not chromeos and not lacros">
     assertFalse(routes.DEFAULT_BROWSER.isNavigableDialog);
+    // </if>
   });
 
   test('pageVisibility affects route availability', function() {

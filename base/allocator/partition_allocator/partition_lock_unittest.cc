@@ -112,6 +112,38 @@ TEST(SpinLockTest, SlowThreads) {
   EXPECT_EQ(iterations_per_thread * num_threads, counter);
 }
 
+TEST(SpinLockTest, AssertAcquired) {
+  MaybeSpinLock<true> lock;
+  lock.Lock();
+  lock.AssertAcquired();
+  lock.Unlock();
+}
+
+// AssertAcquired() is only enforced with DCHECK()s.
+#if defined(GTEST_HAS_DEATH_TEST) && DCHECK_IS_ON()
+
+TEST(SpinLockTest, AssertAcquiredDeathTest) {
+  MaybeSpinLock<true> lock;
+  EXPECT_DEATH(lock.AssertAcquired(), "");
+}
+
+TEST(SpinLockTest, AssertAcquiredAnotherThreadHoldsTheLock) {
+  MaybeSpinLock<true> lock;
+  // NO_THREAD_SAFETY_ANALYSIS: The checker rightfully points out that the lock
+  // is still held at the end of the function, which is what we want here.
+  LambdaThreadDelegate delegate{
+      BindLambdaForTesting([&]() NO_THREAD_SAFETY_ANALYSIS { lock.Lock(); })};
+  PlatformThreadHandle handle;
+  PlatformThread::Create(0, &delegate, &handle);
+  // Join before the test, otherwise some platforms' gtest have trouble with
+  // EXPECT_DEATH() and multiple live threads.
+  PlatformThread::Join(handle);
+
+  EXPECT_DEATH(lock.AssertAcquired(), "");
+}
+
+#endif  // defined(GTEST_HAS_DEATH_TEST) && DCHECK_IS_ON()
+
 }  // namespace
 }  // namespace internal
 }  // namespace base

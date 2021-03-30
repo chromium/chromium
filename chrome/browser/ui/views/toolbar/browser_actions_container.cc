@@ -37,6 +37,8 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
@@ -46,6 +48,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/resize_area.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -121,6 +124,18 @@ BrowserActionsContainer::~BrowserActionsContainer() {
   CHECK(!IsInObserverList());
 }
 
+size_t BrowserActionsContainer::GetNumToolbarActions() const {
+  return toolbar_action_views_.size();
+}
+
+bool BrowserActionsContainer::GetAnimating() const {
+  return resize_animation_ && resize_animation_->is_animating();
+}
+
+bool BrowserActionsContainer::GetResizing() const {
+  return resize_starting_width_.has_value();
+}
+
 std::string BrowserActionsContainer::GetIdAt(size_t index) const {
   return toolbar_action_views_[index]->view_controller()->GetId();
 }
@@ -138,7 +153,7 @@ void BrowserActionsContainer::RefreshToolbarActionViews() {
   toolbar_actions_bar_->Update();
 }
 
-size_t BrowserActionsContainer::VisibleBrowserActions() const {
+size_t BrowserActionsContainer::GetVisibleBrowserActions() const {
   size_t visible_actions = 0;
   for (const auto& view : toolbar_action_views_) {
     if (view->GetVisible())
@@ -147,9 +162,9 @@ size_t BrowserActionsContainer::VisibleBrowserActions() const {
   return visible_actions;
 }
 
-size_t BrowserActionsContainer::VisibleBrowserActionsAfterAnimation() const {
-  if (!animating())
-    return VisibleBrowserActions();
+size_t BrowserActionsContainer::GetVisibleBrowserActionsAfterAnimation() const {
+  if (!GetAnimating())
+    return GetVisibleBrowserActions();
 
   return WidthToIconCount(animation_target_size_);
 }
@@ -273,7 +288,7 @@ int BrowserActionsContainer::GetWidth(GetWidthTime get_width_time) const {
   // This call originates from ToolbarActionsBar which wants to know how much
   // space is / will be used for action icons (excluding the separator).
   const int target_width =
-      get_width_time == GET_WIDTH_AFTER_ANIMATION && animating()
+      get_width_time == GET_WIDTH_AFTER_ANIMATION && GetAnimating()
           ? animation_target_size_
           : width();
   const int icon_area_width =
@@ -287,7 +302,7 @@ int BrowserActionsContainer::GetWidth(GetWidthTime get_width_time) const {
 }
 
 bool BrowserActionsContainer::IsAnimating() const {
-  return animating();
+  return GetAnimating();
 }
 
 void BrowserActionsContainer::StopAnimating() {
@@ -298,7 +313,7 @@ void BrowserActionsContainer::StopAnimating() {
 void BrowserActionsContainer::ShowToolbarActionBubble(
     std::unique_ptr<ToolbarActionsBarBubbleDelegate> controller) {
   // The container shouldn't be asked to show a bubble if it's animating.
-  DCHECK(!animating());
+  DCHECK(!GetAnimating());
   DCHECK(!active_bubble_);
 
   // Action view visibility is updated on layout. This happens
@@ -379,10 +394,11 @@ views::FlexRule BrowserActionsContainer::GetFlexRule() {
         gfx::Size preferred_size = browser_actions->GetPreferredSize();
         if (maximum_size.width().is_bounded()) {
           int width;
-          if (browser_actions->resizing() || browser_actions->animating()) {
+          if (browser_actions->GetResizing() ||
+              browser_actions->GetAnimating()) {
             // When there are actions present, the floor on the size of the
             // browser actions bar should be the resize handle.
-            const int min_width = browser_actions->num_toolbar_actions() == 0
+            const int min_width = browser_actions->GetNumToolbarActions() == 0
                                       ? 0
                                       : browser_actions->GetResizeAreaWidth();
             // If the provided maximum width is too small even for |min_width|,
@@ -543,7 +559,7 @@ int BrowserActionsContainer::OnDragUpdated(
   size_t before_icon_in_row = 0;
   // If there are no visible actions (such as when dragging an icon to an empty
   // overflow/main container), then 0, 0 for row, column is correct.
-  if (VisibleBrowserActions() != 0) {
+  if (GetVisibleBrowserActions() != 0) {
     // Figure out where to display the indicator.
 
     // First, since we want to switch from displaying the indicator before an
@@ -560,7 +576,7 @@ int BrowserActionsContainer::OnDragUpdated(
 
     // We need to figure out how many icons are visible on the relevant row.
     // In the main container, this will just be the visible actions.
-    int visible_icons_on_row = VisibleBrowserActionsAfterAnimation();
+    int visible_icons_on_row = GetVisibleBrowserActionsAfterAnimation();
     if (ShownInsideMenu()) {
       // Next, figure out what row we're on.
       const int element_padding = GetLayoutConstant(TOOLBAR_ELEMENT_PADDING);
@@ -600,11 +616,11 @@ void BrowserActionsContainer::OnDragExited() {
   SchedulePaint();
 }
 
-int BrowserActionsContainer::OnPerformDrop(
+ui::mojom::DragOperation BrowserActionsContainer::OnPerformDrop(
     const ui::DropTargetEvent& event) {
   BrowserActionDragData data;
   if (!data.Read(event.data()))
-    return ui::DragDropTypes::DRAG_NONE;
+    return ui::mojom::DragOperation::kNone;
 
   // Make sure we have the same view as we started with.
   DCHECK_EQ(GetIdAt(data.index()), data.id());
@@ -627,7 +643,7 @@ int BrowserActionsContainer::OnPerformDrop(
   toolbar_actions_bar_->OnDragDrop(data.index(), i, drag_type);
 
   OnDragExited();  // Perform clean up after dragging.
-  return ui::DragDropTypes::DRAG_MOVE;
+  return ui::mojom::DragOperation::kMove;
 }
 
 void BrowserActionsContainer::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -680,7 +696,7 @@ void BrowserActionsContainer::OnResize(int resize_amount, bool done_resizing) {
   // order to warn the user about potentially dangerous items.
   // We also don't allow resize when the bar is already animating, since we
   // don't want two competing size changes.
-  if (toolbar_actions_bar_->is_highlighting() || animating())
+  if (toolbar_actions_bar_->is_highlighting() || GetAnimating())
     return;
 
   // If this is the start of the resize gesture, initialize the starting
@@ -830,7 +846,7 @@ size_t BrowserActionsContainer::GetDropPositionIndex() const {
       drop_position_->row * platform_settings().icons_per_overflow_menu_row +
       drop_position_->icon_in_row;
   if (ShownInsideMenu())
-    i += main_container_->VisibleBrowserActionsAfterAnimation();
+    i += main_container_->GetVisibleBrowserActionsAfterAnimation();
   return i;
 }
 
@@ -858,3 +874,15 @@ void BrowserActionsContainer::UpdateResizeArea() {
       (!max_width || *max_width >= GetWidthForIconCount(1));
   resize_area_->SetEnabled(enable_resize_area);
 }
+
+BEGIN_METADATA(BrowserActionsContainer, views::View)
+ADD_READONLY_PROPERTY_METADATA(size_t, NumToolbarActions)
+ADD_READONLY_PROPERTY_METADATA(bool, Animating)
+ADD_READONLY_PROPERTY_METADATA(bool, Resizing)
+ADD_READONLY_PROPERTY_METADATA(size_t, VisibleBrowserActions)
+ADD_READONLY_PROPERTY_METADATA(size_t, VisibleBrowserActionsAfterAnimation)
+ADD_READONLY_PROPERTY_METADATA(int, WidthWithAllActionsVisible)
+ADD_READONLY_PROPERTY_METADATA(size_t, DropPositionIndex)
+ADD_READONLY_PROPERTY_METADATA(int, ResizeAreaWidth)
+ADD_READONLY_PROPERTY_METADATA(int, SeparatorAreaWidth)
+END_METADATA

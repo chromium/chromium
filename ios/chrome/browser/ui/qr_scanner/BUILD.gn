@@ -44,6 +44,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/scanner",
     "//ios/chrome/browser/ui/toolbar/public",
   ]
@@ -90,10 +91,12 @@ source_set("eg_app_support+eg2") {
   deps = [
     ":qr_scanner",
     "//base",
+    "//components/search_engines",
     "//components/version_info",
     "//ios/chrome/app:app_internal",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/main",
+    "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/ui/icons",
     "//ios/chrome/browser/ui/location_bar",
     "//ios/chrome/browser/ui/scanner",

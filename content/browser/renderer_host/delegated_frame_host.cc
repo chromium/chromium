@@ -131,7 +131,8 @@ void DelegatedFrameHost::CopyFromCompositingSurface(
       base::BindOnce(
           [](base::OnceCallback<void(const SkBitmap&)> callback,
              std::unique_ptr<viz::CopyOutputResult> result) {
-            std::move(callback).Run(result->AsSkBitmap());
+            auto scoped_bitmap = result->ScopedAccessSkBitmap();
+            std::move(callback).Run(scoped_bitmap.GetOutScopedBitmap());
           },
           std::move(callback)));
 }
@@ -293,8 +294,9 @@ void DelegatedFrameHost::OnFirstSurfaceActivation(
   NOTREACHED();
 }
 
-void DelegatedFrameHost::OnFrameTokenChanged(uint32_t frame_token) {
-  client_->OnFrameTokenChanged(frame_token);
+void DelegatedFrameHost::OnFrameTokenChanged(uint32_t frame_token,
+                                             base::TimeTicks activation_time) {
+  client_->OnFrameTokenChanged(frame_token, activation_time);
 }
 
 void DelegatedFrameHost::ResetFallbackToFirstNavigationSurface() {

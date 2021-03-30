@@ -21,7 +21,7 @@ GCCallback::GCCallback(ScriptContext* context,
     : GCCallback(context,
                  object,
                  callback,
-                 base::Closure(),
+                 base::OnceClosure(),
                  std::move(fallback)) {}
 
 GCCallback::GCCallback(ScriptContext* context,

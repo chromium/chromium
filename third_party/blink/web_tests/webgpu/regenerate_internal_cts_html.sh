@@ -24,12 +24,10 @@ expectations=$(mktemp)
 trap "{ rm -f $expectations; }" EXIT
 echo $expectations
 
-pushd third_party/blink > /dev/null
 
-  echo 'Extracting expectation names...'
-  tools/extract_expectation_names.py web_tests/WebGPUExpectations > $expectations
-
-popd > /dev/null
+echo 'Extracting expectation names...'
+third_party/webgpu-cts/scripts/extract_expectation_names_for_variant_generation.py \
+    third_party/blink/web_tests/WebGPUExpectations > $expectations
 
 pushd third_party/webgpu-cts/src > /dev/null
 

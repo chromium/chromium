@@ -10,6 +10,7 @@ import unittest
 
 import mock
 
+from telemetry import decorators
 from telemetry.testing import test_stories
 from telemetry.web_perf import timeline_based_measurement
 from tracing.value.diagnostics import all_diagnostics
@@ -96,6 +97,8 @@ class BenchmarkRunnerIntegrationTest(unittest.TestCase):
     histograms.ImportDicts(dicts)
     return histograms
 
+  # TODO(https://crbug.com/1098412): Fix the test.
+  @decorators.Disabled('chromeos')
   def testTimelineBasedEndToEnd(self):
     class TestTimelineBasedBenchmark(perf_benchmark.PerfBenchmark):
       """A dummy benchmark that records a trace and runs sampleMetric on it."""

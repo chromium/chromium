@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">பட்டியல் உருப்படி</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">இரண்டு விரல்களை வலதுபுறமாக ஸ்வைப் செய்யவும்</translation>
-<translation id="1016393160682012902">ஏதேனும் ஒரு qwerty விசை, பிரெய்ல் விசை அல்லது தொடும் சைகையை அழுத்தி அதன் செயல்பாட்டை அறிந்துகொள்ளலாம். வெளியேறுவதற்கு w அல்லது escape விசையுடன் சேர்த்து control விசையை அழுத்தலாம்.</translation>
 <translation id="1022586497894531524">ChromeVox பேச்சு வடிவக் கருத்தை முதல் முறையாகப் பயன்படுத்துகிறீர்களா? இந்த விரைவான பயிற்சியில், ChromeVoxஐப் பயன்படுத்தத் தொடங்குவதற்குத் தேவைப்படும் முக்கியமான விஷயங்களைத் தெரிந்துகொள்வீர்கள்.</translation>
 <translation id="1025074108959230262">ஸ்டிக்கி முறை முடக்கப்பட்டது</translation>
 <translation id="1031961866430398710">பின்னர்</translation>
@@ -150,6 +149,7 @@
 <translation id="2045055672832940894">முந்தைய கட்டுப்பாடு எதுவும் இல்லை</translation>
 <translation id="2045606329038304310">படிவப் புலக் கட்டுப்பாடு</translation>
 <translation id="2063539687800151747">கல்வெட்டு</translation>
+<translation id="2074531330963286860">செயல்கள் உள்ளன. பார்க்க Search+Period விசைகளை அழுத்தவும்</translation>
 <translation id="2086961585857038472">அடுத்த வார்த்தை</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">ta</translation>
@@ -500,7 +500,7 @@
 <translation id="4615592953348396470">அடுத்த விசை அழுத்தத்தைத் தவிர்க்கிறது</translation>
 <translation id="4623097797855662355">முத்திரை</translation>
 <translation id="463135993322337640">புதிய அம்சங்களைப் பார்க்க, ChromeVox o, n ஆகியவற்றை அழுத்தவும்</translation>
-<translation id="4660783501463101648">கிளாசிக் அகற்றப்பட்டது. ChromeVox கிளாசிக்கிற்கு மீண்டும் மாறுவதற்கான விசைப்பலகை நிலைமாற்றி அகற்றப்பட்டது.</translation>
+<translation id="4660783501463101648">கிளாசிக் அகற்றப்பட்டது. ChromeVox கிளாசிக்கிற்கு மீண்டும் மாறுவதற்கான கீபோர்டு நிலைமாற்றி அகற்றப்பட்டது.</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">அடுத்த நெடுவரிசைக்குச் செல்லும்</translation>
@@ -807,7 +807,7 @@
 <translation id="7039555289296502784">ஆலிவ் ட்ராப்</translation>
 <translation id="7041173719775863268">தேர்வின் இறுதி</translation>
 <translation id="7043850226734279132">டார்க் காக்கி</translation>
-<translation id="7051308646573997571">கோரல்</translation>
+<translation id="7051308646573997571">பவளம்</translation>
 <translation id="7062635574500127092">பசும் நீலம்</translation>
 <translation id="7086377898680121060">ஒளிர்வை அதிகரிக்கும்</translation>
 <translation id="7088743565397416204">ஃபோகஸ் செய்யப்பட்டுள்ளதைச் செயல்படுத்த இருமுறை தட்டவும்</translation>
@@ -915,7 +915,7 @@
 <translation id="7813616274030162878">ஸ்விட்ச் அணுகல் மெனு</translation>
 <translation id="7839679365527550018">முந்தைய வார்த்தை</translation>
 <translation id="7842115774595115751">வழிசெலுத்தல் கட்டுப்பாடுகளை இயக்கு</translation>
-<translation id="7846634333498149051">விசைப்பலகை</translation>
+<translation id="7846634333498149051">கீபோர்டு</translation>
 <translation id="7851816175263618915">சில நிறுத்தற்குறிகள் இருக்கலாம்</translation>
 <translation id="7871691770940645922">விர்ச்சுவல் பிரெய்ல் காட்சி</translation>
 <translation id="7882421473871500483">பழுப்பு</translation>
@@ -976,6 +976,7 @@
 <translation id="827266600368092403">தொடக்க அல்லது இறுதித் தேர்வு</translation>
 <translation id="827422111966801947">இண்டிகோ</translation>
 <translation id="8276439074553447000">முன்பு கவனிக்கப்பட்ட உருப்படிக்குத் தாவு</translation>
+<translation id="8279039817939141096">ஏதேனும் ஒரு qwerty விசை/பிரெய்ல் விசையை அழுத்தியோ விரல் சைகை மூலமோ அவற்றின் செயல்பாட்டை அறிந்துகொள்ளலாம். வெளியேறுவதற்கு: w விசையுடன் சேர்த்து Ctrl விசையை அழுத்தவும் அல்லது Space விசையுடன் சேர்த்து Z விசையை அழுத்தவும் அல்லது இரண்டு விரல்களால் இடதுபுறம் ஸ்வைப் செய்யவும் அல்லது Esc விசையை அழுத்தவும்.</translation>
 <translation id="8283603667300770666">அடுத்த வடிவப் புலம்</translation>
 <translation id="8310185481635255431">அடுத்த இணைப்பு எதுவும் இல்லை</translation>
 <translation id="831207808878314375">விளக்கம்</translation>

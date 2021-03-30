@@ -37,7 +37,7 @@ class PluralStringHandler : public content::WebUIMessageHandler {
   // |HandleGetPluralStringTuple*| methods above.
   void GetPluralStringTuple(const base::ListValue* args, int string_tuple_id);
 
-  base::string16 GetPluralizedStringForMessageName(std::string message_name,
+  std::u16string GetPluralizedStringForMessageName(std::string message_name,
                                                    int count);
 
   std::map<std::string, int> name_to_id_;

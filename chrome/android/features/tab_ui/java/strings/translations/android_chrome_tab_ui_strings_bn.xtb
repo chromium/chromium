@@ -4,10 +4,13 @@
 <translation id="1075622780330595106">সব ট্যাবের মধ্যে থেকে <ph name="NUMBER_OF_TABS" />টি ট্যাব সম্প্রতি ব্যবহার করা হয়নি। সেগুলি বন্ধ করে দিতে চান?</translation>
 <translation id="1181037720776840403">সরান</translation>
 <translation id="125153950246128346">অন্য ট্যাব দেখতে ট্যাপ করুন</translation>
+<translation id="1302104331113804646">দাম ট্র্যাক করার সেটিংস</translation>
+<translation id="1378979118429748177">দাম কমলে তার বিজ্ঞপ্তি পান</translation>
 <translation id="1657719826150349398">ট্যাব নিচে সরান</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব}one{<ph name="TABS_COUNT_MANY" />টি ট্যাব}other{<ph name="TABS_COUNT_MANY" />টি ট্যাব}}</translation>
 <translation id="2277224997687551299">গ্রুপের নাম এডিট করুন</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{গ্রুপ থেকে বেছে নেওয়া <ph name="TABS_COUNT_ONE" />টি ট্যাব সরিয়ে দিন।}one{গ্রুপ থেকে বেছে নেওয়া <ph name="TABS_COUNT_MANY" />টি ট্যাব সরিয়ে দিন।}other{গ্রুপ থেকে বেছে নেওয়া <ph name="TABS_COUNT_MANY" />টি ট্যাব সরিয়ে দিন।}}</translation>
+<translation id="2479148705183875116">সেটিংসে যান</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব ছোট করুন।}one{সেই ট্যাব গ্রুপকে ছোট করুন যাতে <ph name="TABS_COUNT_MANY" />টি ট্যাব আছে।}other{সেই ট্যাব গ্রুপকে ছোট করুন যাতে <ph name="TABS_COUNT_MANY" />টি ট্যাব আছে।}}</translation>
 <translation id="2569352796411618312">সাজেশন: সব ট্যাবের মধ্যে থেকে <ph name="NUMBER_OF_TABS" />টি ট্যাব সম্প্রতি ব্যবহার করা হয়নি। সেগুলি বন্ধ করে দিতে চান?</translation>
 <translation id="257674075312929031">গ্রুপ</translation>
@@ -15,13 +18,16 @@
 <translation id="2671423594960767771">গ্রুপ শেয়ার করুন</translation>
 <translation id="2759453070259087442"><ph name="TITLE_OF_GROUP" /> ট্যাবটি বড় করুন, যার মধ্যে <ph name="NUMBER_OF_TABS" />টি ট্যাব রয়েছে।</translation>
 <translation id="2977480621796371840">গ্রুপ থেকে সরান</translation>
+<translation id="3291470810748040983">খুলে রাখা কোনও ট্যাবে জিনিসের দাম কমলে আপনি তার বিজ্ঞপ্তি পাবেন</translation>
 <translation id="3328308545011660196">সাজেশন: মনে হচ্ছে <ph name="NUMBER_OF_TABS" />টি ট্যাব সম্পর্কযুক্ত। সেগুলি গ্রুপ করতে চান?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব ছোট করুন।}one{<ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপকে ছোট করুন যার মধ্যে <ph name="TABS_COUNT_MANY" />টি ট্যাব আছে।}other{<ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপকে ছোট করুন যার মধ্যে <ph name="TABS_COUNT_MANY" />টি ট্যাব আছে।}}</translation>
+<translation id="3882834874697329510">কোনও খোলা ট্যাবে কম দাম থাকলে বিজ্ঞপ্তি পেতে, 'সেটিংস' থেকে বিজ্ঞপ্তি চালু করুন।</translation>
+<translation id="3940195383040445971">ট্যাবে দাম ট্র্যাক করুন</translation>
+<translation id="3996880007329611795">বিজ্ঞপ্তি পান</translation>
 <translation id="4133493477912226187">মনে হচ্ছে <ph name="NUMBER_OF_TABS" />টি ট্যাব সম্পর্কযুক্ত। সেগুলি গ্রুপ করতে চান?</translation>
 <translation id="4212246570487010370">ব্রাউজ করা চালিয়ে যান</translation>
 <translation id="4450893287417543264">আর দেখতে চাই না</translation>
 <translation id="4648718555153979859">আপনার ট্যাবগুলি এখানে একসাথে গ্রুপ করা আছে</translation>
-<translation id="4922064041913095674">খোলা থাকা ট্যাবগুলিতে কোন আইটেমের দাম কম তা দেখুন</translation>
 <translation id="492284538114688557">দাম কমেছে বোঝা গেছে</translation>
 <translation id="5007392906805964215">পর্যালোচনা করুন</translation>
 <translation id="5073204694187207510">ফুলস্ক্রিন গ্রিড লুকান</translation>
@@ -30,6 +36,7 @@
 <translation id="5533021382642990449">পরে দেখুন</translation>
 <translation id="5558362125926932819">সেই ট্যাব গ্রুপ বন্ধ করুন যেটিতে <ph name="NUMBER_OF_TABS" />টি ট্যাব আছে</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" />টি ট্যাব গ্রুপ করা হয়েছে</translation>
+<translation id="575494663145460764">দাম কমার বিজ্ঞপ্তি পেয়েছেন?</translation>
 <translation id="58326064309361797">ট্যাবগুলি গ্রুপ করতে ড্র্যাগ করুন</translation>
 <translation id="5846292395804797011"><ph name="TITLE_OF_GROUP" /> গ্রুপ বন্ধ করে দিন যেটিতে <ph name="NUMBER_OF_TABS" />টি ট্যাব আছে</translation>
 <translation id="6040143037577758943">বন্ধ</translation>
@@ -41,6 +48,7 @@
 <translation id="6856809498882026482">একাধিক ট্যাব একসাথে বেছে নেওয়ার মোড লুকান</translation>
 <translation id="7151209024774799310">গ্রুপ থেকে ট্যাব সরান</translation>
 <translation id="7204204600596740190">একাধিক ট্যাব একসাথে বেছে নেওয়ার মোড</translation>
+<translation id="7352298686197644113">কোন আইটেমের দাম কম তা খোলা থাকা ট্যাবগুলিতে দেখুন</translation>
 <translation id="753732157349120914">ট্যাব পাল্টানোর ফিচার</translation>
 <translation id="7559245342362162951">ফুলস্ক্রিন গ্রিডে গ্রুপের ট্যাব দেখুন</translation>
 <translation id="7792771145871471484">সাজেশন পর্যালোচনা করুন।</translation>
@@ -52,7 +60,10 @@
 <translation id="8304833501377495048">ট্যাব বার আর দেখতে চান না?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{বেছে নেওয়া ট্যাবের মধ্যে <ph name="TABS_COUNT_ONE" />টি ট্যাব বন্ধ আছে}one{বেছে নেওয়া ট্যাবের মধ্যে <ph name="TABS_COUNT_MANY" />টি ট্যাব বন্ধ আছে}other{বেছে নেওয়া ট্যাবের মধ্যে <ph name="TABS_COUNT_MANY" />টি ট্যাব বন্ধ আছে}}</translation>
 <translation id="8557923272772633250">সেই গ্রুপকে বড় করে দেখুন যার মধ্যে <ph name="NUMBER_OF_TABS" />টি ট্যাব আছে</translation>
+<translation id="860282621117673749">দাম কমার বিজ্ঞপ্তি</translation>
+<translation id="8714939927607906138">খুব কম দামে</translation>
 <translation id="8749939518995770034">ট্যাব বার বন্ধ করুন</translation>
+<translation id="8820741577754260431">ট্যাবে দাম কমার তথ্য দেখুন</translation>
 <translation id="9150694013019234766">স্ক্রিনের নিচে থাকা ট্যাব গ্রুপের মধ্যে একটি ট্যাব থেকে অন্য ট্যাবে যান</translation>
 <translation id="9169594135889675189">গ্রুপে নতুন ট্যাব যোগ করুন</translation>
 <translation id="959682366969460160">সবকিছু গুছিয়ে রাখুন</translation>

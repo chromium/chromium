@@ -9,13 +9,15 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/built_in_chromeos_apps.h"
+#include "chrome/browser/apps/app_service/publishers/built_in_chromeos_apps.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
-#include "chrome/browser/web_applications/system_web_app_manager.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/web_app_uninstall_waiter.h"
+#include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -55,6 +57,11 @@ class WebAppUiManagerImplBrowserTest : public InProcessBrowserTest {
     return web_app::InstallWebApp(profile(), std::move(web_app_info));
   }
 
+  void UninstallWebApp(const AppId& app_id, UninstallWebAppCallback callback) {
+    return web_app::UninstallWebAppWithCallback(profile(), app_id,
+                                                std::move(callback));
+  }
+
   Browser* LaunchWebApp(const AppId& app_id) {
     return LaunchWebAppBrowser(profile(), app_id);
   }
@@ -75,6 +82,35 @@ IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest,
 
   LaunchWebApp(foo_app_id);
   EXPECT_EQ(2u, ui_manager().GetNumWindowsForApp(foo_app_id));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest,
+                       UninstallDuringLastBrowserWindow) {
+  // Zero apps on start:
+  EXPECT_EQ(0u, ui_manager().GetNumWindowsForApp(AppId()));
+  AppId foo_app_id = InstallWebApp(FooUrl());
+  LaunchWebApp(foo_app_id);
+  EXPECT_EQ(1u, ui_manager().GetNumWindowsForApp(foo_app_id));
+  // It has 2 browser window object.
+  EXPECT_EQ(2u, BrowserList::GetInstance()->size());
+  // Retrieve the provider before closing the browser, as this causes a crash.
+  WebAppProvider* provider = web_app::WebAppProvider::Get(profile());
+  web_app::CloseAndWait(browser());
+  EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+  Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
+  // Uninstalling should close the |app_browser|, but keep the browser
+  // object alive long enough to complete the uninstall.
+  base::RunLoop run_loop;
+  DCHECK(provider->install_finalizer().CanUserUninstallExternalApp(foo_app_id));
+  provider->install_finalizer().UninstallExternalAppByUser(
+      foo_app_id, base::BindLambdaForTesting([&](bool success) {
+        EXPECT_TRUE(success);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  web_app::WaitForBrowserToBeClosed(app_browser);
+
+  EXPECT_EQ(0u, BrowserList::GetInstance()->size());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest,

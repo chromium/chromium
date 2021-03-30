@@ -24,6 +24,7 @@
 اگر '<ph name="SERVICE_SCRIPT_NAME" />' پہلے ہی سے نشان زد ہے تو اسے غیر نشان زد کریں اور پھر اسے دوبارہ چیک کریں۔</translation>
 <translation id="225614027745146050">خوش آمدید</translation>
 <translation id="2320166752086256636">کی بورڈ چھپائیں</translation>
+<translation id="2333212046079545895">‏Copyright 2021 Google LLC.‎ جملہ حقوق محفوظ ہیں۔</translation>
 <translation id="2359808026110333948">جاری رکھیں</translation>
 <translation id="2366718077645204424">میزبان تک پہنچنے سے قاصر۔ یہ شاید نیٹ ورک کے اس کنفیگریشن کی وجہ سے ہے جو آپ استعمال کر رہے ہیں۔</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> آخری بار <ph name="RELATIVE_TIMESTAMP" /> آن لائن دیکھا گیا۔</translation>
@@ -71,6 +72,7 @@
 <translation id="4405930547258349619">بنیادی لائبریری</translation>
 <translation id="443560535555262820">ایکسیسبیلٹی کی ترجیحات کھولیں</translation>
 <translation id="4450893287417543264">دوبارہ نہ دکھائیں</translation>
+<translation id="4512952200932940229">‏کاپی رائٹ 2021 The Chromium Authors۔ جملہ حقوق محفوظ۔</translation>
 <translation id="4513946894732546136">تاثرات</translation>
 <translation id="4563926062592110512">کلائنٹ منقطع ہوگیا: <ph name="CLIENT_USERNAME" />۔</translation>
 <translation id="4635770493235256822">ریموٹ آلات</translation>
@@ -129,7 +131,6 @@
 <translation id="7067321367069083429">اسکرین ایک ٹچ اسکرین کی طرح کام کرتی ہے</translation>
 <translation id="7116737094673640201">‏Chrome ریموٹ ڈیسک ٹاپ میں خوش آمدید</translation>
 <translation id="7144878232160441200">دوبارہ کوشش کریں</translation>
-<translation id="724402108658370587">‏Copyright 2020 Google LLC.‎ جملہ حقوق محفوظ ہیں۔</translation>
 <translation id="7312846573060934304">میزبان آف لائن ہے۔</translation>
 <translation id="7319983568955948908">اشتراک بند کریں</translation>
 <translation id="7401733114166276557">‏Chrome ریموٹ ڈیسک ٹاپ</translation>
@@ -155,7 +156,6 @@
 <translation id="8073845705237259513">‏Chrome ریموٹ ڈیسک ٹاپ استعمال کرنے کیلئے، آپ کو Google اکاؤنٹ کو اپنے آلے میں شامل کرنے کی ضرورت ہوگی۔</translation>
 <translation id="809687642899217504">میرے کمپیوٹرز</translation>
 <translation id="8116630183974937060">نیٹ ورک کی ایک خرابی پیش آ گئی۔ براہ کرم چیک کریں کہ آپ کا آلہ آن لائن ہے اور دوبارہ کوشش کریں۔</translation>
-<translation id="8187079423890319756">‏کاپی رائٹ 2013 The Chromium Authors۔ جملہ حقوق محفوظ۔</translation>
 <translation id="8295077433896346116">‏<ph name="PRODUCT_NAME" /> کا استعمال کرنے کے لیے، آپ کو 'ایکسیسبیلٹی' کی اجازت دینی ہوگی تاکہ ریموٹ مشین سے حاصل ہونے والے ان پٹ کو اس Mac میں انجیکٹ کیا جا سکے۔
 
 یہ اجازت دینے کے لیے، نیچے '<ph name="BUTTON_NAME" />' پر کلک کریں۔ کھلنے والے 'ایکسیسبیلٹی' کی ترجیحات کے پین میں، '<ph name="SERVICE_SCRIPT_NAME" />' کے بغل میں موجود باکس کو نشان زد کریں۔
@@ -174,6 +174,7 @@
 <translation id="8743328882720071828">کیا آپ <ph name="CLIENT_USERNAME" /> کو اپنا کمپیوٹر دیکھنے اور کنٹرول کرنے کی اجازت دینا چاہیں گے؟</translation>
 <translation id="8747048596626351634">‏سیشن کریش ہو گیا یا آغاز نہیں ہو سکا۔ ریموٹ کمپیوٹر پر ‎~/.chrome-remote-desktop-session موجود ہونے پر، یقینی بنائیں کہ اس سے ڈیسک ٹاپ ماحول یا ونڈو مینیجر جیسی طویل مدت تک چلنے والی فور گراؤنڈ کارروائی کا آغاز ہوتا ہے۔</translation>
 <translation id="8804164990146287819">راز داری کی پالیسی</translation>
+<translation id="8906511416443321782">‏آڈیو کیپچر کرنے اور Chrome ریموٹ ڈیسک ٹاپ کلائنٹ پر اس کی سلسلہ بندی کرنے کیلئے، مائیکروفون تک رسائی درکار ہے۔</translation>
 <translation id="9111855907838866522">آپ اپنے ریموٹ آلہ سے منسلک ہیں۔ مینو کھولنے کیلئے، براہ کرم چار انگلیوں سے اسکرین پر تھپتھپائیں۔</translation>
 <translation id="9126115402994542723">‏اس آلہ سے اس میزبان سے منسلک ہوتے وقت دوبارہ PIN طلب نہ کریں۔</translation>
 <translation id="916856682307586697">‏ڈیفالٹ XSession شروع کریں</translation>

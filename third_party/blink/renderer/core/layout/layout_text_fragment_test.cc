@@ -424,8 +424,8 @@ TEST_P(ParameterizedLayoutTextFragmentTest, SetTextWithFirstLetter) {
                   ->IsRemainingTextLayoutObject());
   ASSERT_TRUE(letter_a.GetLayoutObject()->GetFirstLetterPart());
   EXPECT_EQ("a", letter_a.GetLayoutObject()->GetFirstLetterPart()->GetText());
-  EXPECT_TRUE(letter_x.GetLayoutObject()->IsTextFragment());
-  EXPECT_FALSE(letter_x.GetLayoutObject()->GetFirstLetterPart());
+  EXPECT_FALSE(letter_x.GetLayoutObject())
+      << "We don't have layout text for empty Text node.";
 
   // Make <div>"x" "a"</div>
   letter_x.setTextContent("x");

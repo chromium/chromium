@@ -39,10 +39,15 @@ import org.chromium.base.PathUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ShortcutHelper;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.background_task_scheduler.ChromeBackgroundTaskFactory;
-import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.WebApkDistributor;
+import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
+import org.chromium.chrome.browser.browserservices.intents.WebApkShareTarget;
+import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
+import org.chromium.chrome.browser.browserservices.intents.WebappIcon;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
@@ -136,7 +141,7 @@ public class WebApkUpdateManagerUnitTest {
                 boolean shareTargetParamIsEncTypeMultipart, String[] shareTargetParamFileNames,
                 Object[] shareTargetParamAccepts, String[][] shortcuts, String manifestUrl,
                 String webApkPackage, int webApkVersion, boolean isManifestStale,
-                @WebApkUpdateReason int updateReason, Callback<Boolean> callback) {}
+                int[] updateReasons, Callback<Boolean> callback) {}
 
         @Override
         public void updateWebApkFromFile(
@@ -152,19 +157,19 @@ public class WebApkUpdateManagerUnitTest {
         private boolean mDestroyedFetcher;
 
         public TestWebApkUpdateManager() {
-            this(buildMockActivity(), Mockito.mock(ActivityLifecycleDispatcher.class));
+            this(buildMockTabProvider(), Mockito.mock(ActivityLifecycleDispatcher.class));
         }
 
-        private static ChromeActivity buildMockActivity() {
+        private static ActivityTabProvider buildMockTabProvider() {
             Tab mockTab = Mockito.mock(Tab.class);
-            ChromeActivity mockActivity = Mockito.mock(ChromeActivity.class);
-            Mockito.when(mockActivity.getActivityTab()).thenReturn(mockTab);
-            return mockActivity;
+            ActivityTabProvider tabProvider = Mockito.mock(ActivityTabProvider.class);
+            Mockito.when(tabProvider.get()).thenReturn(mockTab);
+            return tabProvider;
         }
 
-        private TestWebApkUpdateManager(
-                ChromeActivity activity, ActivityLifecycleDispatcher activityLifecycleDispatcher) {
-            super(activity, activityLifecycleDispatcher);
+        private TestWebApkUpdateManager(ActivityTabProvider tabProvider,
+                ActivityLifecycleDispatcher activityLifecycleDispatcher) {
+            super(tabProvider, activityLifecycleDispatcher);
         }
 
         /**
@@ -205,7 +210,7 @@ public class WebApkUpdateManagerUnitTest {
         @Override
         protected void storeWebApkUpdateRequestToFile(String updateRequestPath, WebappInfo info,
                 String primaryIconUrl, String splashIconUrl, boolean isManifestStale,
-                @WebApkUpdateReason int updateReason, Callback<Boolean> callback) {
+                List<Integer> updateReasons, Callback<Boolean> callback) {
             mStoreUpdateRequestCallback = callback;
             mUpdateName = info.name();
             writeRandomTextToFile(updateRequestPath);

@@ -53,10 +53,10 @@ class OriginPolicyBrowserTest : public InProcessBrowserTest {
   // Most tests here are set up to use the page title to distinguish between
   // successful load or the error page. For those tests, this method implements
   // the bulk of the test logic.
-  base::string16 NavigateToAndReturnTitle(const char* url) {
+  std::u16string NavigateToAndReturnTitle(const char* url) {
     EXPECT_TRUE(server());
     ui_test_utils::NavigateToURL(browser(), GURL(server()->GetURL(url)));
-    base::string16 title;
+    std::u16string title;
     ui_test_utils::GetCurrentTabTitle(browser(), &title);
     return title;
   }
@@ -98,25 +98,25 @@ class OriginPolicyBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(OriginPolicyBrowserTest, PageWithoutPolicy) {
-  EXPECT_EQ(base::ASCIIToUTF16("Page Without Policy"),
+  EXPECT_EQ(u"Page Without Policy",
             NavigateToAndReturnTitle("/page-without-policy.html"));
 }
 
 IN_PROC_BROWSER_TEST_F(OriginPolicyBrowserTest, PageWithoutPolicyPolicy404s) {
   SetStatus(net::HTTP_NOT_FOUND);
-  EXPECT_EQ(base::ASCIIToUTF16("Page Without Policy"),
+  EXPECT_EQ(u"Page Without Policy",
             NavigateToAndReturnTitle("/page-without-policy.html"));
 }
 
 IN_PROC_BROWSER_TEST_F(OriginPolicyBrowserTest, PageWithoutPolicyPolicy301s) {
   SetStatus(net::HTTP_MOVED_PERMANENTLY);
   SetLocationHeader("/.well-known/origin-policy/example-policy");
-  EXPECT_EQ(base::ASCIIToUTF16("Page Without Policy"),
+  EXPECT_EQ(u"Page Without Policy",
             NavigateToAndReturnTitle("/page-without-policy.html"));
 }
 
 IN_PROC_BROWSER_TEST_F(OriginPolicyBrowserTest, ApplyPolicy) {
-  EXPECT_EQ(base::ASCIIToUTF16("Page With Policy"),
+  EXPECT_EQ(u"Page With Policy",
             NavigateToAndReturnTitle("/page-with-policy.html"));
 }
 

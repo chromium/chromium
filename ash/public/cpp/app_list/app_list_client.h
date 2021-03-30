@@ -14,8 +14,6 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback_forward.h"
-#include "base/strings/string16.h"
-#include "components/sync/model/string_ordinal.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/base/models/simple_menu_model.h"
 
@@ -43,7 +41,7 @@ class ASH_PUBLIC_EXPORT AppListClient {
   // Interfaces on searching:
   // Triggers a search query.
   // |trimmed_query|: the trimmed input texts from the search text field.
-  virtual void StartSearch(const base::string16& trimmed_query) = 0;
+  virtual void StartSearch(const std::u16string& trimmed_query) = 0;
   // Opens a search result and logs to metrics when its view is clicked or
   // pressed.
   // |result_id|: the id of the search result the user wants to open.
@@ -124,7 +122,7 @@ class ASH_PUBLIC_EXPORT AppListClient {
   // actions, and can be folded into the AppListNotifier once it is
   // complete.
   virtual void NotifySearchResultsForLogging(
-      const base::string16& trimmed_query,
+      const std::u16string& trimmed_query,
       const SearchResultIdWithPositionIndices& results,
       int position_index) = 0;
 

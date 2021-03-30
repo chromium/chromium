@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback.h"
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -29,10 +30,11 @@ class WinWebAuthnApi;
 class COMPONENT_EXPORT(DEVICE_FIDO) WinWebAuthnApiAuthenticator
     : public FidoAuthenticator {
  public:
-  // This method is safe to call without checking
-  // WinWebAuthnApi::IsAvailable().
-  static bool IsUserVerifyingPlatformAuthenticatorAvailable(
-      WinWebAuthnApi* api);
+  // This method is safe to call without checking WinWebAuthnApi::IsAvailable().
+  // Returns false if |api| is nullptr.
+  static void IsUserVerifyingPlatformAuthenticatorAvailable(
+      WinWebAuthnApi* api,
+      base::OnceCallback<void(bool is_available)>);
 
   // Instantiates an authenticator that uses the default WinWebAuthnApi.
   //

@@ -22,12 +22,14 @@ test(() => {
   assert_equals(axTableContainer.childrenCount, 1);
   var axSectionContainer = axTableContainer.childAtIndex(0);
   assert_equals(axSectionContainer.role, "AXRole: AXGenericContainer");
-  var axTextContainer1 = axSectionContainer.childAtIndex(0);
+  var axRowContainer = axSectionContainer.childAtIndex(0);
+  assert_equals(axRowContainer.role, "AXRole: AXGenericContainer");
+  var axTextContainer1 = axRowContainer.childAtIndex(0);
   assert_equals(axTextContainer1.role, "AXRole: AXGenericContainer");
   var axText1 = axTextContainer1.childAtIndex(0);
   assert_equals(axText1.role, "AXRole: AXStaticText");
   assert_equals(axText1.name, "A");
-  var axTextContainer2 = axSectionContainer.childAtIndex(1);
+  var axTextContainer2 = axRowContainer.childAtIndex(1);
   assert_equals(axTextContainer2.role, "AXRole: AXGenericContainer");
   var axText2 = axTextContainer2.childAtIndex(0);
   assert_equals(axText2.role, "AXRole: AXStaticText");

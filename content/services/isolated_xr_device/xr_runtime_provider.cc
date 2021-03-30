@@ -172,6 +172,14 @@ void IsolatedXRRuntimeProvider::SetOpenXrRuntimeStatus(RuntimeStatus status) {
                    &openxr_device_);
 }
 
+// A repeating callback to CreateContextProviderAsync is created in
+// SetOpenXrRuntimeStatus and passed to OpenXrDevice. OpenXrRenderLoop posts a
+// task with this callback onto the main thread's task runner while it is
+// running on the render loop thread's task runner. The context provider and its
+// supporting object, viz::Gpu, are required to be created on the main thread's
+// task runner. Upon creating the context provider, CreateContextProviderAsync
+// posts a callback back to the render loop's thread runner with the newly
+// created context provider.
 void IsolatedXRRuntimeProvider::CreateContextProviderAsync(
     VizContextProviderCallback viz_context_provider_callback,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {

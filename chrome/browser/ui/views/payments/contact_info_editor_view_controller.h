@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/views/payments/editor_view_controller.h"
 #include "chrome/browser/ui/views/payments/validation_delegate.h"
 
@@ -39,7 +38,7 @@ class ContactInfoEditorViewController : public EditorViewController {
   // EditorViewController:
   bool IsEditingExistingItem() override;
   std::vector<EditorField> GetFieldDefinitions() override;
-  base::string16 GetInitialValueForType(
+  std::u16string GetInitialValueForType(
       autofill::ServerFieldType type) override;
   bool ValidateModelAndSave() override;
   std::unique_ptr<ValidationDelegate> CreateValidationDelegate(
@@ -49,14 +48,14 @@ class ContactInfoEditorViewController : public EditorViewController {
 
  protected:
   // PaymentRequestSheetController:
-  base::string16 GetSheetTitle() override;
+  std::u16string GetSheetTitle() override;
 
  private:
   // Uses the values in the UI fields to populate the corresponding values in
   // |profile|.
   void PopulateProfile(autofill::AutofillProfile* profile);
   bool GetSheetId(DialogViewID* sheet_id) override;
-  base::string16 GetValueForType(const autofill::AutofillProfile& profile,
+  std::u16string GetValueForType(const autofill::AutofillProfile& profile,
                                  autofill::ServerFieldType type);
 
   autofill::AutofillProfile* profile_to_edit_;
@@ -76,11 +75,11 @@ class ContactInfoEditorViewController : public EditorViewController {
 
     // ValidationDelegate:
     bool ShouldFormat() override;
-    base::string16 Format(const base::string16& text) override;
+    std::u16string Format(const std::u16string& text) override;
     bool IsValidTextfield(views::Textfield* textfield,
-                          base::string16* error_message) override;
+                          std::u16string* error_message) override;
     bool IsValidCombobox(ValidatingCombobox* combobox,
-                         base::string16* error_message) override;
+                         std::u16string* error_message) override;
     bool TextfieldValueChanged(views::Textfield* textfield,
                                bool was_blurred) override;
     bool ComboboxValueChanged(ValidatingCombobox* combobox) override;
@@ -88,7 +87,7 @@ class ContactInfoEditorViewController : public EditorViewController {
 
    private:
     bool ValidateTextfield(views::Textfield* textfield,
-                           base::string16* error_message);
+                           std::u16string* error_message);
 
     EditorField field_;
     // Outlives this class. Never null.

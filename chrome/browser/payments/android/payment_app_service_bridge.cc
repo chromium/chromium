@@ -248,10 +248,10 @@ PaymentAppServiceBridge::GetMethodData() const {
 std::unique_ptr<autofill::InternalAuthenticator>
 PaymentAppServiceBridge::CreateInternalAuthenticator() const {
   // This authenticator can be used in a cross-origin iframe only if the
-  // top-level frame allowed it with Feature Policy, e.g., with allow="payment"
-  // iframe attribute. The secure payment confirmation dialog displays the
-  // top-level origin in its UI before the user can click on the [Verify] button
-  // to invoke this authenticator.
+  // top-level frame allowed it with Permissions Policy, e.g., with
+  // allow="payment" iframe attribute. The secure payment confirmation dialog
+  // displays the top-level origin in its UI before the user can click on the
+  // [Verify] button to invoke this authenticator.
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
   return rfh && rfh->IsCurrent()
              ? std::make_unique<InternalAuthenticatorAndroid>(

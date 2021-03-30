@@ -64,7 +64,6 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
 
   // LocalFrameClient ----------------------------------------------
   WebContentCaptureClient* GetWebContentCaptureClient() const override;
-  void DidCreateInitialEmptyDocument() override;
   void DidCommitDocumentReplacementNavigation(DocumentLoader*) override;
   // Notifies the WebView delegate that the JS window object has been cleared,
   // giving it a chance to bind native objects to the window before script
@@ -94,14 +93,14 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   void DidFinishSameDocumentNavigation(HistoryItem*,
                                        WebHistoryCommitType,
                                        bool content_initiated,
-                                       bool is_history_api_navigation) override;
+                                       bool is_history_api_navigation,
+                                       bool is_client_redirect) override;
   void DispatchDidReceiveTitle(const String&) override;
   void DispatchDidCommitLoad(
       HistoryItem*,
       WebHistoryCommitType,
       bool should_reset_browser_interface_broker,
-      network::mojom::WebSandboxFlags sandbox_flags,
-      const blink::ParsedFeaturePolicy& feature_policy_header,
+      const blink::ParsedPermissionsPolicy& permissions_policy_header,
       const blink::DocumentPolicyFeatureState& document_policy_header) override;
   void DispatchDidFailLoad(const ResourceError&, WebHistoryCommitType) override;
   void DispatchDidFinishDocumentLoad() override;
@@ -123,11 +122,10 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
       base::TimeTicks input_start_time,
       const String& href_translate,
       const base::Optional<WebImpression>& impression,
-      WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr>
-          initiator_csp,
       network::mojom::IPAddressSpace,
-      mojo::PendingRemote<mojom::blink::NavigationInitiator>,
-      const base::UnguessableToken* initiator_frame_token) override;
+      const LocalFrameToken* initiator_frame_token,
+      mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
+          initiator_policy_container_keep_alive_handle) override;
   void DispatchWillSendSubmitEvent(HTMLFormElement*) override;
   void DidStartLoading() override;
   void DidStopLoading() override;
@@ -140,6 +138,8 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   void DidObserveNewFeatureUsage(mojom::WebFeature) override;
   void DidObserveNewCssPropertyUsage(mojom::CSSSampleId, bool) override;
   void DidObserveLayoutShift(double score, bool after_input_or_scroll) override;
+  void DidObserveInputForLayoutShiftTracking(
+      base::TimeTicks timestamp) override;
   void DidObserveLayoutNg(uint32_t all_block_count,
                           uint32_t ng_block_count,
                           uint32_t all_call_count,
@@ -156,8 +156,8 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   DocumentLoader* CreateDocumentLoader(
       LocalFrame*,
       WebNavigationType,
-      ContentSecurityPolicy*,
       std::unique_ptr<WebNavigationParams> navigation_params,
+      std::unique_ptr<PolicyContainer> policy_container,
       std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) override;
 
   // Updates the underlying |WebDocumentLoaderImpl| of |DocumentLoader| with
@@ -235,8 +235,6 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   void DidChangeContents() override;
 
   Frame* FindFrame(const AtomicString& name) const override;
-
-  void FrameRectsChanged(const IntRect&) override;
 
   void FocusedElementChanged(Element* element) override;
 

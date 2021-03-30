@@ -27,6 +27,8 @@ namespace nix {
 
 const char kDotConfigDir[] = ".config";
 const char kXdgConfigHomeEnvVar[] = "XDG_CONFIG_HOME";
+const char kXdgCurrentDesktopEnvVar[] = "XDG_CURRENT_DESKTOP";
+const char kXdgSessionTypeEnvVar[] = "XDG_SESSION_TYPE";
 
 FilePath GetXDGDirectory(Environment* env, const char* env_name,
                          const char* fallback_dir) {
@@ -55,14 +57,14 @@ FilePath GetXDGUserDirectory(const char* dir_name, const char* fallback_dir) {
 }
 
 DesktopEnvironment GetDesktopEnvironment(Environment* env) {
-  // XDG_CURRENT_DESKTOP is the newest standard circa 2012.
+  // kXdgCurrentDesktopEnvVar is the newest standard circa 2012.
   std::string xdg_current_desktop;
-  if (env->GetVar("XDG_CURRENT_DESKTOP", &xdg_current_desktop)) {
+  if (env->GetVar(kXdgCurrentDesktopEnvVar, &xdg_current_desktop)) {
     // It could have multiple values separated by colon in priority order.
     for (const auto& value : SplitStringPiece(
              xdg_current_desktop, ":", TRIM_WHITESPACE, SPLIT_WANT_NONEMPTY)) {
       if (value == "Unity") {
-        // gnome-fallback sessions set XDG_CURRENT_DESKTOP to Unity
+        // gnome-fallback sessions set kXdgCurrentDesktopEnvVar to Unity
         // DESKTOP_SESSION can be gnome-fallback or gnome-fallback-compiz
         std::string desktop_session;
         if (env->GetVar("DESKTOP_SESSION", &desktop_session) &&

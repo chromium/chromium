@@ -18,7 +18,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -38,8 +37,10 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/sync_utils.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/signatures.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace gfx {
 class RectF;
@@ -47,7 +48,6 @@ class RectF;
 
 namespace autofill {
 
-class AutofillDataModel;
 class AutofillField;
 class AutofillClient;
 class AutofillManagerTestDelegate;
@@ -55,7 +55,6 @@ class AutofillProfile;
 class AutofillType;
 class CreditCard;
 class FormStructureBrowserTest;
-class LogManager;
 
 struct FormData;
 struct FormFieldData;
@@ -134,7 +133,7 @@ class AutofillManager : public AutofillHandler,
                                   const FormData& form,
                                   const FormFieldData& field,
                                   const CreditCard& credit_card,
-                                  const base::string16& cvc);
+                                  const std::u16string& cvc);
   void DidShowSuggestions(bool has_autofill_suggestions,
                           const FormData& form,
                           const FormFieldData& field);
@@ -146,21 +145,21 @@ class AutofillManager : public AutofillHandler,
 
   // Returns true if the value/identifier is deletable. Fills out
   // |title| and |body| with relevant user-facing text.
-  bool GetDeletionConfirmationText(const base::string16& value,
+  bool GetDeletionConfirmationText(const std::u16string& value,
                                    int identifier,
-                                   base::string16* title,
-                                   base::string16* body);
+                                   std::u16string* title,
+                                   std::u16string* body);
 
   // Remove the credit card or Autofill profile that matches |unique_id|
   // from the database. Returns true if deletion is allowed.
   bool RemoveAutofillProfileOrCreditCard(int unique_id);
 
   // Remove the specified Autocomplete entry.
-  void RemoveAutocompleteEntry(const base::string16& name,
-                               const base::string16& value);
+  void RemoveAutocompleteEntry(const std::u16string& name,
+                               const std::u16string& value);
 
   // Invoked when the user selected |value| in the Autocomplete drop-down.
-  void OnAutocompleteEntrySelected(const base::string16& value);
+  void OnAutocompleteEntrySelected(const std::u16string& value);
 
   // Invoked when the user selects the "Hide Suggestions" item in the
   // Autocomplete drop-down.
@@ -170,7 +169,7 @@ class AutofillManager : public AutofillHandler,
   // Returns true only if the previewed form should be cleared.
   bool ShouldClearPreviewedForm();
 
-  AutofillClient* client() { return client_; }
+  AutofillOfferManager* offer_manager() { return offer_manager_; }
 
   CreditCardAccessManager* credit_card_access_manager() {
     return credit_card_access_manager_.get();
@@ -266,7 +265,7 @@ class AutofillManager : public AutofillHandler,
   static void DeterminePossibleFieldTypesForUploadForTest(
       const std::vector<AutofillProfile>& profiles,
       const std::vector<CreditCard>& credit_cards,
-      const base::string16& last_unlocked_credit_card_cvc,
+      const std::u16string& last_unlocked_credit_card_cvc,
       const std::string& app_locale,
       FormStructure* submitted_form) {
     DeterminePossibleFieldTypesForUpload(profiles, credit_cards,
@@ -288,6 +287,14 @@ class AutofillManager : public AutofillHandler,
 
   // A public wrapper that calls |TriggerRefill| for testing purposes only.
   void TriggerRefillForTest(const FormData& form) { TriggerRefill(form); }
+
+  // A public wrapper that calls |PreProcessStateMatchingTypes| for testing
+  // purposes.
+  void PreProcessStateMatchingTypesForTest(
+      const std::vector<AutofillProfile>& profiles,
+      FormStructure* form_structure) {
+    PreProcessStateMatchingTypes(profiles, form_structure);
+  }
 #endif
 
  protected:
@@ -353,7 +360,7 @@ class AutofillManager : public AutofillHandler,
   void OnBeforeProcessParsedForms() override;
   void OnFormProcessed(const FormData& form,
                        const FormStructure& form_structure) override;
-  void OnAfterProcessParsedForms(const std::set<FormType>& form_types) override;
+  void OnAfterProcessParsedForms(const DenseSet<FormType>& form_types) override;
 
   // Exposed for testing.
   FormData* pending_form_data() { return pending_form_data_.get(); }
@@ -365,12 +372,14 @@ class AutofillManager : public AutofillHandler,
 
   // Keeps track of the filling context for a form, used to make refill attemps.
   struct FillingContext {
-    // |optional_profile| or |optional_credit_card| must be non-null.
-    // If |optional_credit_card| is non-null, |optional_cvc| may be non-null.
+    // |profile_or_credit_card| contains either AutofillProfile or CreditCard
+    // and must be non-null.
+    // If |profile_or_credit_card| contains a CreditCard, |optional_cvc| may be
+    // non-null.
     FillingContext(const AutofillField& field,
-                   const AutofillProfile* optional_profile,
-                   const CreditCard* optional_credit_card,
-                   const base::string16* optional_cvc);
+                   absl::variant<const AutofillProfile*, const CreditCard*>
+                       profile_or_credit_card,
+                   const std::u16string* optional_cvc);
     ~FillingContext();
 
     // Whether a refill attempt was made.
@@ -378,14 +387,16 @@ class AutofillManager : public AutofillHandler,
     // The profile or credit card that was used for the initial fill.
     // The std::string associated with the credit card is the CVC, which may be
     // empty.
-    const base::Optional<AutofillProfile> profile;
-    const base::Optional<std::pair<CreditCard, base::string16>> credit_card;
+    absl::variant<AutofillProfile, std::pair<CreditCard, std::u16string>>
+        profile_or_credit_card_with_cvc;
     // Possible identifiers of the field that was focused when the form was
     // initially filled. A refill shall be triggered from the same field.
     // TODO(crbug/896689): Remove |filled_field_unique_name|.
-    const FieldRendererId filled_field_renderer_id;
+    const FieldGlobalId filled_field_id;
     const FieldSignature filled_field_signature;
-    const base::string16 filled_field_unique_name;
+    const std::u16string filled_field_unique_name;
+    // The security origin from which the field was filled.
+    url::Origin filled_origin;
     // The time at which the initial fill occurred.
     const base::TimeTicks original_fill_time;
     // The timer used to trigger a refill.
@@ -426,7 +437,7 @@ class AutofillManager : public AutofillHandler,
   void OnCreditCardFetched(
       bool did_succeed,
       const CreditCard* credit_card = nullptr,
-      const base::string16& cvc = base::string16()) override;
+      const std::u16string& cvc = std::u16string()) override;
 
   // Returns false if Autofill is disabled or if no Autofill data is available.
   bool RefreshDataModels();
@@ -463,16 +474,17 @@ class AutofillManager : public AutofillHandler,
                                 const AutofillProfile& profile);
 
   // Fills or previews |data_model| in the |form|.
-  void FillOrPreviewDataModelForm(AutofillDriver::RendererFormDataAction action,
-                                  int query_id,
-                                  const FormData& form,
-                                  const FormFieldData& field,
-                                  const AutofillProfile* optional_profile,
-                                  const CreditCard* optional_credit_card,
-                                  const base::string16* optional_cvc,
-                                  FormStructure* form_structure,
-                                  AutofillField* autofill_field,
-                                  bool is_refill = false);
+  void FillOrPreviewDataModelForm(
+      AutofillDriver::RendererFormDataAction action,
+      int query_id,
+      const FormData& form,
+      const FormFieldData& field,
+      absl::variant<const AutofillProfile*, const CreditCard*>
+          profile_or_credit_card,
+      const std::u16string* optional_cvc,
+      FormStructure* form_structure,
+      AutofillField* autofill_field,
+      bool is_refill = false);
 
   // Creates a FormStructure using the FormData received from the renderer. Will
   // return an empty scoped_ptr if the data should not be processed for upload
@@ -525,7 +537,7 @@ class AutofillManager : public AutofillHandler,
   static void DeterminePossibleFieldTypesForUpload(
       const std::vector<AutofillProfile>& profiles,
       const std::vector<CreditCard>& credit_cards,
-      const base::string16& last_unlocked_credit_card_cvc,
+      const std::u16string& last_unlocked_credit_card_cvc,
       const std::string& app_locale,
       FormStructure* submitted_form);
 
@@ -547,13 +559,15 @@ class AutofillManager : public AutofillHandler,
       size_t current_index,
       const ServerFieldTypeSet& upload_types);
 
-  void FillFieldWithValue(AutofillField* autofill_field,
-                          const AutofillDataModel& data_model,
-                          FormFieldData* field_data,
-                          bool should_notify,
-                          const base::string16& cvc,
-                          uint32_t profile_form_bitmask,
-                          std::string* failure_to_fill);
+  void FillFieldWithValue(
+      AutofillField* autofill_field,
+      absl::variant<const AutofillProfile*, const CreditCard*>
+          profile_or_credit_card,
+      FormFieldData* field_data,
+      bool should_notify,
+      const std::u16string& cvc,
+      uint32_t profile_form_bitmask,
+      std::string* failure_to_fill);
 
   // TODO(crbug/896689): Remove code duplication once experiment is finished.
   void SetFillingContext(const FormStructure& form,
@@ -583,8 +597,13 @@ class AutofillManager : public AutofillHandler,
                                std::vector<Suggestion>* suggestions,
                                SuggestionsContext* context);
 
-  // Retrieves the page language from |client_|
-  LanguageCode GetPageLanguage() const override;
+  // For each submitted field in the |form_structure|, it determines whether
+  // |ADDRESS_HOME_STATE| is a possible matching type.
+  // This method is intended to run matching type detection on the browser UI
+  // thread.
+  void PreProcessStateMatchingTypes(
+      const std::vector<AutofillProfile>& profiles,
+      FormStructure* form_structure);
 
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
   // Whether to show the option to use virtual card in the autofill popup.
@@ -596,19 +615,12 @@ class AutofillManager : public AutofillHandler,
   FormEventLoggerBase* GetEventFormLogger(
       FieldTypeGroup field_type_group) const;
 
-  void SetDataList(const std::vector<base::string16>& values,
-                   const std::vector<base::string16>& labels);
-
-  std::unique_ptr<AutofillMetrics::FormInteractionsUkmLogger>
-  CreateFormInteractionsUkmLogger();
-
-  AutofillClient* const client_;
+  void SetDataList(const std::vector<std::u16string>& values,
+                   const std::vector<std::u16string>& labels);
 
   // Delegate to perform external processing (display, selection) on
   // our behalf.
   std::unique_ptr<AutofillExternalDelegate> external_delegate_;
-
-  LogManager* log_manager_;
 
   std::string app_locale_;
 
@@ -663,7 +675,8 @@ class AutofillManager : public AutofillHandler,
   std::unique_ptr<CreditCardAccessManager> credit_card_access_manager_;
 
   // The autofill offer manager, used to to retrieve offers for card
-  // suggestions.
+  // suggestions. Initialized when AutofillManager is created. |offer_manager_|
+  // is never null.
   AutofillOfferManager* offer_manager_;
 
   // Collected information about the autofill form where a credit card will be
@@ -673,7 +686,7 @@ class AutofillManager : public AutofillHandler,
   FormData credit_card_form_;
   FormFieldData credit_card_field_;
   CreditCard credit_card_;
-  base::string16 last_unlocked_credit_card_cvc_;
+  std::u16string last_unlocked_credit_card_cvc_;
 
   // Ablation experiment turns off autofill, but logging still has to be kept
   // for metrics analysis.
@@ -691,9 +704,9 @@ class AutofillManager : public AutofillHandler,
   // A map of form names to FillingContext instances used to make refill
   // attempts for dynamic forms.
   // TODO(crbug/896689): Remove code duplication once experiment is finished.
-  std::map<FormRendererId, std::unique_ptr<FillingContext>>
-      filling_context_by_renderer_id_;
-  std::map<base::string16, std::unique_ptr<FillingContext>>
+  std::map<FormGlobalId, std::unique_ptr<FillingContext>>
+      filling_context_by_global_id_;
+  std::map<std::u16string, std::unique_ptr<FillingContext>>
       filling_context_by_unique_name_;
 
   // Used to record metrics. This should be set at the beginning of the

@@ -25,8 +25,8 @@ NetworkPredictionStatus CanPrefetchAndPrerender(
     case NETWORK_PREDICTION_WIFI_ONLY:
       if (base::FeatureList::IsEnabled(
               features::kPredictivePrefetchingAllowedOnAllConnectionTypes) ||
-          !net::NetworkChangeNotifier::IsConnectionCellular(
-              net::NetworkChangeNotifier::GetConnectionType())) {
+          (net::NetworkChangeNotifier::GetConnectionCost() !=
+           net::NetworkChangeNotifier::CONNECTION_COST_METERED)) {
         return NetworkPredictionStatus::ENABLED;
       }
       return NetworkPredictionStatus::DISABLED_DUE_TO_NETWORK;

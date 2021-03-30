@@ -20,6 +20,9 @@
 // called multiple times.
 - (void)discoverFeedShown;
 
+// Notifies the audience of the UIKit viewDidDisappear: callback.
+- (void)viewDidDisappear;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_VIEW_CONTROLLER_AUDIENCE_H_

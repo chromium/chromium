@@ -164,6 +164,9 @@ class TetherControllerImpl
       ConnectDisconnectStatus::kIdle;
   Status status_ = Status::kIneligibleForFeature;
 
+  // Whether this class is attempting a tether connection.
+  bool is_attempting_connection_ = false;
+
   network_config::mojom::NetworkStatePropertiesPtr tether_network_;
 
   std::unique_ptr<TetherNetworkConnector> connector_;

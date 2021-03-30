@@ -17,23 +17,19 @@
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
-#endif
 
 namespace {
 
 NearbyNotificationDelegate* GetNotificationDelegate(
     Profile* profile,
     const std::string& notification_id) {
-  NearbySharingService* nearby_service =
-      NearbySharingServiceFactory::GetForBrowserContext(profile);
-  if (!nearby_service)
-    return nullptr;
+  DCHECK(NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
+      profile));
 
-  return nearby_service->GetNotificationDelegate(notification_id);
+  return NearbySharingServiceFactory::GetForBrowserContext(profile)
+      ->GetNotificationDelegate(notification_id);
 }
 
 void CloseNearbyNotification(Profile* profile,
@@ -54,7 +50,7 @@ void NearbyNotificationHandler::OnClick(
     const GURL& origin,
     const std::string& notification_id,
     const base::Optional<int>& action_index,
-    const base::Optional<base::string16>& reply,
+    const base::Optional<std::u16string>& reply,
     base::OnceClosure completed_closure) {
   NearbyNotificationDelegate* delegate =
       GetNotificationDelegate(profile, notification_id);
@@ -90,11 +86,8 @@ void NearbyNotificationHandler::OnClose(Profile* profile,
 
 void NearbyNotificationHandler::OpenSettings(Profile* profile,
                                              const GURL& origin) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+  DCHECK(NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
+      profile));
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
       profile, chromeos::settings::mojom::kNearbyShareSubpagePath);
-#else
-  // TODO(crbug.com/1102348): Open browser settings once there is a nearby page.
-  NOTREACHED();
-#endif
 }

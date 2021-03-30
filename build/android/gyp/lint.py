@@ -21,6 +21,7 @@ from xml.etree import ElementTree
 
 from util import build_utils
 from util import manifest_utils
+from util import server_utils
 
 _LINT_MD_URL = 'https://chromium.googlesource.com/chromium/src/+/master/build/android/docs/lint.md'  # pylint: disable=line-too-long
 
@@ -187,18 +188,7 @@ def _WriteXmlFile(root, path):
     # makes it a lot easier to read as a human (also on code search).
     f.write(
         minidom.parseString(ElementTree.tostring(
-            root, encoding='utf-8')).toprettyxml(indent='  '))
-
-
-def _CheckLintWarning(expected_warnings, lint_output):
-  for expected_warning in expected_warnings.split(','):
-    expected_str = '[{}]'.format(expected_warning)
-    if expected_str not in lint_output:
-      raise Exception('Expected {!r} warning in lint output:\n{}.'.format(
-          expected_str, lint_output))
-
-  # Do not print warning
-  return ''
+            root, encoding='utf-8')).toprettyxml(indent='  ').encode('utf-8'))
 
 
 def _RunLint(lint_binary_path,
@@ -218,7 +208,6 @@ def _RunLint(lint_binary_path,
              android_sdk_root,
              lint_gen_dir,
              baseline,
-             expected_warnings,
              testonly_target=False,
              warnings_as_errors=False):
   logging.info('Lint starting')
@@ -330,8 +319,6 @@ def _RunLint(lint_binary_path,
   # This filter is necessary for JDK11.
   stderr_filter = build_utils.FilterReflectiveAccessJavaWarnings
   stdout_filter = lambda x: build_utils.FilterLines(x, 'No issues found')
-  if expected_warnings:
-    stdout_filter = functools.partial(_CheckLintWarning, expected_warnings)
 
   start = time.time()
   logging.debug('Lint command %s', ' '.join(cmd))
@@ -370,6 +357,10 @@ def _RunLint(lint_binary_path,
 def _ParseArgs(argv):
   parser = argparse.ArgumentParser()
   build_utils.AddDepfileOption(parser)
+  parser.add_argument('--target-name', help='Fully qualified GN target name.')
+  parser.add_argument('--skip-build-server',
+                      action='store_true',
+                      help='Avoid using the build server.')
   parser.add_argument('--lint-binary-path',
                       required=True,
                       help='Path to lint executable.')
@@ -398,6 +389,9 @@ def _ParseArgs(argv):
                       help='If set, some checks like UnusedResources will be '
                       'disabled since they are not helpful for test '
                       'targets.')
+  parser.add_argument('--create-cache',
+                      action='store_true',
+                      help='Whether this invocation is just warming the cache.')
   parser.add_argument('--warnings-as-errors',
                       action='store_true',
                       help='Treat all warnings as errors.')
@@ -426,9 +420,6 @@ def _ParseArgs(argv):
   parser.add_argument('--baseline',
                       help='Baseline file to ignore existing errors and fail '
                       'on new errors.')
-  parser.add_argument('--expected-warnings',
-                      help='Comma separated list of warnings to test for in '
-                      'the output, failing if not found.')
 
   args = parser.parse_args(build_utils.ExpandFileArgs(argv))
   args.java_sources = build_utils.ParseGnList(args.java_sources)
@@ -444,6 +435,15 @@ def _ParseArgs(argv):
 def main():
   build_utils.InitLogging('LINT_DEBUG')
   args = _ParseArgs(sys.argv[1:])
+
+  # TODO(wnwen): Consider removing lint cache now that there are only two lint
+  #              invocations.
+  # Avoid parallelizing cache creation since lint runs without the cache defeat
+  # the purpose of creating the cache in the first place.
+  if (not args.create_cache and not args.skip_build_server
+      and server_utils.MaybeRunCommand(
+          name=args.target_name, argv=sys.argv, stamp_file=args.stamp)):
+    return
 
   sources = []
   for java_sources_file in args.java_sources:
@@ -476,7 +476,6 @@ def main():
            args.android_sdk_root,
            args.lint_gen_dir,
            args.baseline,
-           args.expected_warnings,
            testonly_target=args.testonly,
            warnings_as_errors=args.warnings_as_errors)
   logging.info('Creating stamp file')

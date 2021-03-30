@@ -36,7 +36,7 @@ class ResetShortcutsComponent : public ComponentAPI {
       const std::vector<base::FilePath>& fake_shortcut_location_paths_);
 
   void SetChromeExeFilePathSetForTesting(
-      const FilePathSet& fake_chrome_exe_file_path_set);
+      const FilePathSet& fake_chrome_exe_working_dirs);
 
  private:
   ShortcutParserAPI* shortcut_parser_;

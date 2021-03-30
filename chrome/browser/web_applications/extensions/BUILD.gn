@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions)
@@ -38,14 +39,16 @@ source_set("extensions") {
 
   deps = [
     "//base",
-    "//chrome/browser:browser_process",
     "//build:chromeos_buildflags",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_app_group",
     "//chrome/browser/web_applications/components",
     "//chrome/common",
     "//components/pref_registry",
-    "//components/sync:rest_of_sync",
+    "//components/services/app_service/public/mojom",
+    "//components/sync/model",
     "//content/public/browser",
     "//extensions/browser",
     "//skia",
@@ -70,7 +73,6 @@ source_set("unit_tests") {
     "//chrome/browser/web_applications:web_app_test_group",
     "//chrome/browser/web_applications:web_applications",
     "//chrome/browser/web_applications:web_applications_on_extensions",
-    "//chrome/browser/web_applications:web_applications_on_extensions_test_support",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/browser/web_applications/components",
     "//chrome/common",
@@ -83,4 +85,8 @@ source_set("unit_tests") {
     "//skia",
     "//testing/gtest",
   ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//chrome/browser/chromeos:chromeos" ]
+  }
 }

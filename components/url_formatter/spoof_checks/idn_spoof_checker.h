@@ -10,7 +10,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece_forward.h"
 #include "components/url_formatter/spoof_checks/skeleton_generator.h"
 #include "net/extras/preload_data/decoder.h"
@@ -204,7 +203,6 @@ class IDNSpoofChecker {
   icu::UnicodeSet combining_diacritics_exceptions_;
   icu::UnicodeSet digits_;
   icu::UnicodeSet digit_lookalikes_;
-  icu::UnicodeSet lgc_letters_n_ascii_;
   icu::UnicodeSet icelandic_characters_;
 
   std::unique_ptr<SkeletonGenerator> skeleton_generator_;

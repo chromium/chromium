@@ -94,7 +94,7 @@ export class Portrait extends Photo {
       } catch (e) {
         hasError = true;
         toast.show(
-            isPortrait ? 'error_msg_take_portrait_photo_failed' :
+            isPortrait ? 'error_msg_take_portrait_bokeh_photo_failed' :
                          'error_msg_take_photo_failed');
         throw e;
       }

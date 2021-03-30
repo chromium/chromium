@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_WEAK_CHECK_UTILITY_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_WEAK_CHECK_UTILITY_H_
 
+#include <string>
+
 #include "base/containers/flat_set.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/types/strong_alias.h"
 
@@ -19,8 +20,8 @@ IsWeakPassword IsWeak(base::StringPiece16 password);
 
 // Checks each password for weakness and removes strong passwords from the
 // |passwords|.
-base::flat_set<base::string16> BulkWeakCheck(
-    base::flat_set<base::string16> passwords);
+base::flat_set<std::u16string> BulkWeakCheck(
+    base::flat_set<std::u16string> passwords);
 
 }  // namespace password_manager
 

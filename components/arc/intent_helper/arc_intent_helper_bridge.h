@@ -32,7 +32,6 @@ namespace arc {
 class AdaptiveIconDelegate;
 class ArcBridgeService;
 class ControlCameraAppDelegate;
-class FactoryResetDelegate;
 class IntentFilter;
 class OpenUrlDelegate;
 
@@ -40,6 +39,14 @@ class OpenUrlDelegate;
 class ArcIntentHelperBridge : public KeyedService,
                               public mojom::IntentHelperHost {
  public:
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Resets ARC; this wipes all user data, stops ARC, then
+    // re-enables ARC.
+    virtual void ResetArc() = 0;
+  };
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.
   static ArcIntentHelperBridge* GetForBrowserContext(
@@ -56,10 +63,13 @@ class ArcIntentHelperBridge : public KeyedService,
 
   static void SetControlCameraAppDelegate(ControlCameraAppDelegate* delegate);
 
-  static void SetFactoryResetDelegate(FactoryResetDelegate* delegate);
+  // Sets the Delegate instance.
+  void SetDelegate(std::unique_ptr<Delegate> delegate);
 
   ArcIntentHelperBridge(content::BrowserContext* context,
                         ArcBridgeService* bridge_service);
+  ArcIntentHelperBridge(const ArcIntentHelperBridge&) = delete;
+  ArcIntentHelperBridge& operator=(const ArcIntentHelperBridge&) = delete;
   ~ArcIntentHelperBridge() override;
 
   // mojom::IntentHelperHost
@@ -68,10 +78,13 @@ class ArcIntentHelperBridge : public KeyedService,
       std::vector<IntentFilter> intent_filters) override;
   void OnOpenDownloads() override;
   void OnOpenUrl(const std::string& url) override;
+  void OnOpenCustomTabDeprecated(const std::string& url,
+                                 int32_t task_id,
+                                 int32_t surface_id,
+                                 int32_t top_margin,
+                                 OnOpenCustomTabCallback callback) override;
   void OnOpenCustomTab(const std::string& url,
                        int32_t task_id,
-                       int32_t surface_id,
-                       int32_t top_margin,
                        OnOpenCustomTabCallback callback) override;
   void OnOpenChromePage(mojom::ChromePage page) override;
   void FactoryResetArc() override;
@@ -172,7 +185,7 @@ class ArcIntentHelperBridge : public KeyedService,
   // The preferred app deleted in ARC.
   std::vector<IntentFilter> deleted_preferred_apps_;
 
-  DISALLOW_COPY_AND_ASSIGN(ArcIntentHelperBridge);
+  std::unique_ptr<Delegate> delegate_;
 };
 
 }  // namespace arc

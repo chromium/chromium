@@ -20,33 +20,33 @@ static const wchar_t kRegistryKeyPathFormat[] =
     L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\%ls";
 
 struct CommonInfo {
-  base::string16 product_id;
+  std::wstring product_id;
   bool is_system_component;
   bool is_microsoft_published;
-  base::string16 display_name;
-  base::string16 uninstall_string;
+  std::wstring display_name;
+  std::wstring uninstall_string;
 };
 
 struct InstallLocationApplicationInfo {
   CommonInfo common_info;
-  base::string16 install_location;
+  std::wstring install_location;
 };
 
 struct MsiApplicationInfo {
   CommonInfo common_info;
-  std::vector<base::string16> components;
+  std::vector<std::wstring> components;
 };
 
 class MockMsiUtil : public MsiUtil {
  public:
-  MockMsiUtil(const std::map<base::string16, std::vector<base::string16>>&
+  MockMsiUtil(const std::map<std::wstring, std::vector<std::wstring>>&
                   component_paths_map)
       : component_paths_map_(component_paths_map) {}
 
   bool GetMsiComponentPaths(
-      const base::string16& product_guid,
-      const base::string16& user_sid,
-      std::vector<base::string16>* component_paths) const override {
+      const std::wstring& product_guid,
+      const std::wstring& user_sid,
+      std::vector<std::wstring>* component_paths) const override {
     auto iter = component_paths_map_.find(product_guid);
     if (iter == component_paths_map_.end())
       return false;
@@ -56,8 +56,7 @@ class MockMsiUtil : public MsiUtil {
   }
 
  private:
-  const std::map<base::string16, std::vector<base::string16>>&
-      component_paths_map_;
+  const std::map<std::wstring, std::vector<std::wstring>>& component_paths_map_;
 };
 
 class TestInstalledApplications : public InstalledApplications {
@@ -91,7 +90,7 @@ class InstalledApplicationsTest : public testing::Test {
   }
 
   void AddFakeApplication(const MsiApplicationInfo& application_info) {
-    const base::string16 registry_key_path =
+    const std::wstring registry_key_path =
         base::StringPrintf(kRegistryKeyPathFormat,
                            application_info.common_info.product_id.c_str());
     base::win::RegKey registry_key(HKEY_CURRENT_USER, registry_key_path.c_str(),
@@ -105,7 +104,7 @@ class InstalledApplicationsTest : public testing::Test {
 
   void AddFakeApplication(
       const InstallLocationApplicationInfo& application_info) {
-    const base::string16 registry_key_path =
+    const std::wstring registry_key_path =
         base::StringPrintf(kRegistryKeyPathFormat,
                            application_info.common_info.product_id.c_str());
     base::win::RegKey registry_key(HKEY_CURRENT_USER, registry_key_path.c_str(),
@@ -131,7 +130,7 @@ class InstalledApplicationsTest : public testing::Test {
 
   std::unique_ptr<TestInstalledApplications> installed_applications_;
 
-  std::map<base::string16, std::vector<base::string16>> component_paths_map_;
+  std::map<std::wstring, std::vector<std::wstring>> component_paths_map_;
 
   DISALLOW_COPY_AND_ASSIGN(InstalledApplicationsTest);
 };

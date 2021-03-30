@@ -27,7 +27,8 @@ bool XboxHidController::IsXboxHid(GamepadId gamepad_id) {
   // https://www.usb.org/document-library/device-class-definition-pid-10
   return gamepad_id == GamepadId::kMicrosoftProduct02e0 ||
          gamepad_id == GamepadId::kMicrosoftProduct02fd ||
-         gamepad_id == GamepadId::kMicrosoftProduct0b05;
+         gamepad_id == GamepadId::kMicrosoftProduct0b05 ||
+         gamepad_id == GamepadId::kMicrosoftProduct0b13;
 }
 
 void XboxHidController::DoShutdown() {

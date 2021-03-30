@@ -242,30 +242,30 @@ public class RadioButtonWithEditTextTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> { mRadioButtonWithEditText.setChecked(true); });
         Assert.assertFalse("Edit text should not gain focus when radio button is checked",
                 mEditText.hasFocus());
-        Assert.assertFalse("Cursor in EditText should be hidden", mEditText.isCursorVisible());
+        waitForCursorVisibility(false);
 
         // Test requesting focus on the EditText
         TestThreadUtils.runOnUiThreadBlocking(() -> { mEditText.requestFocus(); });
-        Assert.assertTrue("Cursor in EditText should be visible", mEditText.isCursorVisible());
+        waitForCursorVisibility(true);
 
         // Requesting focus elsewhere
         TestThreadUtils.runOnUiThreadBlocking(() -> { mDummyButton.requestFocus(); });
-        Assert.assertFalse("Cursor in EditText should be visible", mEditText.isCursorVisible());
-        assertIsKeyboardShowing(false);
+        waitForCursorVisibility(false);
+        waitForKeyboardVisibility(false);
 
         // Click EditText to show keyboard and checked the radio button.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mRadioButtonWithEditText.setChecked(false); });
         TouchCommon.singleClickView(mEditText);
-        Assert.assertTrue("Cursor in EditText should be visible", mEditText.isCursorVisible());
-        assertIsKeyboardShowing(true);
+        waitForCursorVisibility(true);
+        waitForKeyboardVisibility(true);
         Assert.assertTrue("RadioButton should be checked after EditText gains focus.",
                 mRadioButtonWithEditText.isChecked());
 
         // Test editor action
         InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_ENTER);
-        Assert.assertFalse("Cursor in EditText should be visible", mEditText.isCursorVisible());
-        assertIsKeyboardShowing(false);
+        waitForCursorVisibility(false);
+        waitForKeyboardVisibility(false);
     }
 
     @Test
@@ -289,12 +289,19 @@ public class RadioButtonWithEditTextTest {
                 mRadioButtonWithEditText.getRadioButtonView().isEnabled());
     }
 
-    private void assertIsKeyboardShowing(boolean isShowing) {
+    private void waitForKeyboardVisibility(boolean isVisible) {
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat("Keyboard visibility does not consist with test setting.",
                     KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(
                             sActivity, mEditText),
-                    Matchers.is(isShowing));
+                    Matchers.is(isVisible));
         });
+    }
+
+    private void waitForCursorVisibility(boolean isVisible) {
+        CriteriaHelper.pollUiThread(
+                ()
+                        -> Criteria.checkThat("Cursor visibility is different.",
+                                mEditText.isCursorVisible(), Matchers.is(isVisible)));
     }
 }

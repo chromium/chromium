@@ -1,0 +1,173 @@
+/* Copyright 2014 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ *
+ * Css based bubble.
+ */
+
+.bubble {
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 2px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  color: rgba(255, 255, 255, 0.87);
+  font-size: 12px;
+  margin: 2px;
+  max-width: 240px;
+  padding: 8px;
+  position: absolute;
+  transition: opacity 200ms ease-in-out;
+}
+
+body.chromeos .bubble {
+  margin: unset;
+  padding: 14px;
+}
+
+/* --- oldstyle begin --- */
+
+.bubble[oldstyle] {
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  color: unset;
+}
+
+.bubble[oldstyle]::before {
+  border-style: solid;
+  border-width: 8px;
+  content: '';
+  display: block;
+  position: absolute;
+}
+
+.bubble-top::before {
+  border-color: rgba(0, 0, 0, 0.25) transparent transparent transparent;
+  bottom: -16px;
+}
+
+html[dir=ltr] .bubble-top::before {
+  left: 17px;
+}
+
+html[dir=rtl] .bubble-top::before {
+  right: 17px;
+}
+
+html[dir=ltr] .bubble-right::before,
+html[dir=rtl] .bubble-left::before {
+  border-color: transparent rgba(0, 0, 0, 0.25) transparent transparent;
+  left: -16px;
+  top: 17px;
+}
+
+.bubble-bottom::before {
+  border-color: transparent transparent rgba(0, 0, 0, 0.25) transparent;
+  top: -16px;
+}
+
+html[dir=ltr] .bubble-bottom::before {
+  left: 17px;
+}
+
+html[dir=rtl] .bubble-bottom::before {
+  right: 17px;
+}
+
+html[dir=ltr] .bubble-left::before,
+html[dir=rtl] .bubble-right::before {
+  border-color: transparent transparent transparent rgba(0, 0, 0, 0.25);
+  right: -16px;
+  top: 17px;
+}
+
+.bubble[oldstyle]::after {
+  border-style: solid;
+  border-width: 8px;
+  content: '';
+  display: block;
+  position: absolute;
+}
+
+.bubble-top::after {
+  border-color: white transparent transparent transparent;
+  bottom: -15px;
+}
+
+html[dir=ltr] .bubble-top::after {
+  left: 17px;
+}
+
+html[dir=rtl] .bubble-top::after {
+  right: 17px;
+}
+
+html[dir=ltr] .bubble-right::after,
+html[dir=rtl] .bubble-left::after {
+  border-color: transparent white transparent transparent;
+  left: -15px;
+  top: 17px;
+}
+
+.bubble-bottom::after {
+  border-color: transparent transparent white transparent;
+  top: -15px;
+}
+
+html[dir=ltr] .bubble-bottom::after {
+  left: 17px;
+}
+
+html[dir=rtl] .bubble-bottom::after {
+  right: 17px;
+}
+
+html[dir=ltr] .bubble-left::after,
+html[dir=rtl] .bubble-right::after {
+  border-color: transparent transparent transparent white;
+  right: -15px;
+  top: 17px;
+}
+
+/* --- oldstyle end --- */
+
+body.chromeos .error-message-bubble::before {
+  -webkit-mask-image: url(../../../../../ui/webui/resources/images/warning.svg);
+  -webkit-mask-position: left top;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 20px;
+  background-color: rgb(255,255,255);
+  content: '';
+  display: block;
+  height: 20px;
+  left: 14px;
+  position: absolute;
+  top: 10px;
+  width: 20px;
+}
+
+body:not(.chromeos) .error-message-bubble {
+  -webkit-padding-start: 30px;
+  background: url(chrome://theme/IDR_WARNING) left top no-repeat;
+  background-size: 24px;
+}
+
+body.chromeos .error-message-bubble {
+  padding-top: 19px;
+}
+
+.bubble[match-width] .error-message-bubble {
+  -webkit-padding-start: unset;
+  padding-top: 20px;
+}
+
+body.chromeos .bubble a {
+  color: #7baaf7;
+  text-decoration: none;
+}
+
+.error-message-bubble-padding {
+  margin-bottom: 10px;
+}
+
+html[dir=rtl] .error-message-bubble {
+  background-position: right top;
+}

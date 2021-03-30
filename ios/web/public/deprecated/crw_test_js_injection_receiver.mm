@@ -17,8 +17,6 @@
 @interface CRWTestWKWebViewEvaluator : NSObject <CRWJSInjectionEvaluator> {
   // Web view for JavaScript evaluation.
   WKWebView* _webView;
-  // Set to track injected script managers.
-  NSMutableSet* _injectedScriptManagers;
 }
 @end
 
@@ -27,7 +25,6 @@
 - (instancetype)init {
   if (self = [super init]) {
     _webView = [[WKWebView alloc] init];
-    _injectedScriptManagers = [[NSMutableSet alloc] init];
   }
   return self;
 }
@@ -40,18 +37,6 @@
 - (void)executeUserJavaScript:(NSString*)script
             completionHandler:(void (^)(id, NSError*))completionHandler {
   web::ExecuteJavaScript(_webView, script, completionHandler);
-}
-
-- (BOOL)scriptHasBeenInjectedForClass:(Class)injectionManagerClass {
-  return [_injectedScriptManagers containsObject:injectionManagerClass];
-}
-
-- (void)injectScript:(NSString*)script forClass:(Class)JSInjectionManagerClass {
-  // Web layer guarantees that __gCrWeb object is always injected first.
-  NSString* supplementedScript =
-      [@"window.__gCrWeb = {};" stringByAppendingString:script];
-  [_webView evaluateJavaScript:supplementedScript completionHandler:nil];
-  [_injectedScriptManagers addObject:JSInjectionManagerClass];
 }
 
 @end

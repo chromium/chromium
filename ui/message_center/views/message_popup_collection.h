@@ -15,6 +15,10 @@
 #include "ui/message_center/message_center_observer.h"
 #include "ui/views/widget/widget.h"
 
+namespace base {
+class OneShotTimer;
+}  // namespace base
+
 namespace gfx {
 class LinearAnimation;
 }  // namespace gfx
@@ -255,6 +259,10 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   // When |inverse_| is false, it's same as popup_items_[i].
   PopupItem* GetPopupItem(size_t index_from_top);
 
+  // Reset |recently_closed_by_user_| to false. Used by
+  // |recently_closed_by_user_timer_|
+  void ResetRecentlyClosedByUser();
+
   // Animation state. See the comment of State.
   State state_ = State::IDLE;
 
@@ -278,6 +286,14 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   bool resize_requested_ = false;
 
   // Hot mode related variables. See StartHotMode() and ResetHotMode().
+
+  // True if a notification is just closed by an user and hot mode should start.
+  // After a brief moment, this boolean will be set to false by the timer.
+  bool recently_closed_by_user_ = false;
+
+  // Timer that fires to reset |recently_closed_by_user_| to false, indicating
+  // that we should not start hot mode.
+  std::unique_ptr<base::OneShotTimer> recently_closed_by_user_timer_;
 
   // True if the close button of the popup at |hot_index_| is hot.
   bool is_hot_ = false;

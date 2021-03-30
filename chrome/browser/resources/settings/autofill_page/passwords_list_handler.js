@@ -24,7 +24,7 @@ import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behav
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.m.js';
+import {SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.js';
 
 // <if expr="chromeos">
 import {BlockingRequestManager} from './blocking_request_manager.js';
@@ -88,23 +88,13 @@ Polymer({
       value: null,
     },
 
-    /** @private */
-    editPasswordsInSettings_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('editPasswordsInSettings');
-      }
-    },
-
     /**
-     * Check if editPasswordsInSettings flag is true and entry isn't federation
-     * credential.
+     * Check if entry isn't federation credential.
      * @private
      */
     isEditDialog_: {
       type: Boolean,
-      computed:
-          'computeIsEditDialog_(editPasswordsInSettings_, activePassword_)'
+      computed: 'computeIsEditDialog_(activePassword_)',
     },
 
     /** @private */
@@ -202,14 +192,12 @@ Polymer({
   },
 
   /**
-   * Helper function that checks if editPasswordsInSettings flag is true and
-   * entry isn't federation credential.
+   * Helper function that checks if entry isn't federation credential.
    * @return {boolean}
    * @private
    */
   computeIsEditDialog_() {
-    return this.editPasswordsInSettings_ &&
-        (!this.activePassword_ || !this.activePassword_.entry.federationText);
+    return !this.activePassword_ || !this.activePassword_.entry.federationText;
   },
 
   /**

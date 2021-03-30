@@ -130,9 +130,9 @@ void SyntheticGestureTargetAndroid::DispatchWebMouseEventToPlatform(
   CHECK(false);
 }
 
-SyntheticGestureParams::GestureSourceType
+content::mojom::GestureSourceType
 SyntheticGestureTargetAndroid::GetDefaultSyntheticGestureSourceType() const {
-  return SyntheticGestureParams::TOUCH_INPUT;
+  return content::mojom::GestureSourceType::kTouchInput;
 }
 
 float SyntheticGestureTargetAndroid::GetTouchSlopInDips() const {

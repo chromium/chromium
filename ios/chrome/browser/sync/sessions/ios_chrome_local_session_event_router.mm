@@ -39,9 +39,7 @@ IOSChromeLocalSessionEventRouter::IOSChromeLocalSessionEventRouter(
     ChromeBrowserState* browser_state,
     sync_sessions::SyncSessionsClient* sessions_client,
     const syncer::SyncableService::StartSyncFlare& flare)
-    : handler_(NULL),
-      sessions_client_(sessions_client),
-      flare_(flare) {
+    : handler_(nullptr), sessions_client_(sessions_client), flare_(flare) {
   tab_parented_subscription_ =
       TabParentingGlobalObserver::GetInstance()->RegisterCallback(
           base::BindRepeating(&IOSChromeLocalSessionEventRouter::OnTabParented,

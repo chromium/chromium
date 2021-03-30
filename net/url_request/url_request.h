@@ -11,14 +11,15 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/supports_user_data.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "net/base/auth.h"
+#include "net/base/completion_repeating_callback.h"
 #include "net/base/idempotency.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/isolation_info.h"
@@ -33,6 +34,7 @@
 #include "net/base/upload_progress.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/filter/source_stream.h"
 #include "net/http/http_raw_request_headers.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
@@ -126,13 +128,12 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
     // several times per transaction, e.g. if the connection is retried, after
     // each HTTP auth challenge, or for split HTTP range requests.
     //
-    // If this returns an error, the request fails with the given error.
-    // Otherwise the request continues unimpeded.
-    // Must not return ERR_IO_PENDING.
-    //
-    // TODO(crbug.com/591068): Allow ERR_IO_PENDING for a potentially-slow
-    // CORS-RFC1918 preflight check.
-    virtual int OnConnected(URLRequest* request, const TransportInfo& info);
+    // If this returns an error, the transaction will stop. The transaction
+    // will continue when the |callback| is run. If run with an error, the
+    // transaction will fail.
+    virtual int OnConnected(URLRequest* request,
+                            const TransportInfo& info,
+                            CompletionOnceCallback callback);
 
     // Called upon receiving a redirect.  The delegate may call the request's
     // Cancel method to prevent the redirect from being followed.  Since there
@@ -675,12 +676,29 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // or after the response headers are received.
   void GetConnectionAttempts(ConnectionAttempts* out) const;
 
-  // Gets the over the wire raw header size of the response after https
-  // encryption, 0 for cached responses.
-  int raw_header_size() const { return raw_header_size_; }
-
   const NetworkTrafficAnnotationTag& traffic_annotation() const {
     return traffic_annotation_;
+  }
+
+  bool Supports(const net::SourceStream::SourceType& type) const {
+    if (!accepted_stream_types_)
+      return true;
+    return accepted_stream_types_->contains(type);
+  }
+
+  const base::Optional<base::flat_set<net::SourceStream::SourceType>>&
+  accepted_stream_types() const {
+    return accepted_stream_types_;
+  }
+
+  void set_accepted_stream_types(
+      const base::Optional<base::flat_set<net::SourceStream::SourceType>>&
+          types) {
+    if (types) {
+      DCHECK(!types->contains(net::SourceStream::SourceType::TYPE_NONE));
+      DCHECK(!types->contains(net::SourceStream::SourceType::TYPE_UNKNOWN));
+    }
+    accepted_stream_types_ = types;
   }
 
   // Sets a callback that will be invoked each time the request is about to
@@ -696,6 +714,10 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // request, the latter will return cached headers, while the callback will be
   // called with a response from the server.
   void SetResponseHeadersCallback(ResponseHeadersCallback callback);
+
+  // Sets a callback that will be invoked each time a 103 Early Hints response
+  // is received from the remote party.
+  void SetEarlyResponseHeadersCallback(ResponseHeadersCallback callback);
 
   // Sets socket tag to be applied to all sockets used to execute this request.
   // Must be set before Start() is called.  Only currently supported for HTTP
@@ -809,7 +831,8 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
 
   // These functions delegate to |delegate_|.  See URLRequest::Delegate for the
   // meaning of these functions.
-  int NotifyConnected(const TransportInfo& info);
+  int NotifyConnected(const TransportInfo& info,
+                      CompletionOnceCallback callback);
   void NotifyAuthRequired(std::unique_ptr<AuthChallengeInfo> auth_info);
   void NotifyCertificateRequested(SSLCertRequestInfo* cert_request_info);
   void NotifySSLCertificateError(int net_error,
@@ -955,15 +978,19 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // The proxy server used for this request, if any.
   ProxyServer proxy_server_;
 
-  // The raw header size of the response.
-  int raw_header_size_;
+  // If not null, the network service will not advertise any stream types
+  // (via Accept-Encoding) that are not listed. Also, it will not attempt
+  // decoding any non-listed stream types.
+  base::Optional<base::flat_set<net::SourceStream::SourceType>>
+      accepted_stream_types_;
 
   const NetworkTrafficAnnotationTag traffic_annotation_;
 
   SocketTag socket_tag_;
 
-  // See Set{Request|Response}HeadersCallback() above for details.
+  // See Set{Request|Response,EarlyResponse}HeadersCallback() above for details.
   RequestHeadersCallback request_headers_callback_;
+  ResponseHeadersCallback early_response_headers_callback_;
   ResponseHeadersCallback response_headers_callback_;
 
   bool upgrade_if_insecure_;

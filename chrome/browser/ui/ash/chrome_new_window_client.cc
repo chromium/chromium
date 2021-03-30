@@ -7,26 +7,28 @@
 #include <utility>
 
 #include "apps/launcher.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/keyboard_shortcut_viewer.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "base/feature_list.h"
 #include "base/macros.h"
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
-#include "chrome/browser/chromeos/apps/apk_web_app_service.h"
-#include "chrome/browser/chromeos/apps/metrics/intent_handling_metrics.h"
-#include "chrome/browser/chromeos/arc/arc_util.h"
-#include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
-#include "chrome/browser/chromeos/arc/fileapi/arc_content_file_system_url_util.h"
-#include "chrome/browser/chromeos/arc/intent_helper/custom_tab_session_impl.h"
+#include "chrome/browser/ash/apps/apk_web_app_service.h"
+#include "chrome/browser/ash/apps/metrics/intent_handling_metrics.h"
+#include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/arc/arc_web_contents_data.h"
+#include "chrome/browser/ash/arc/fileapi/arc_content_file_system_url_util.h"
+#include "chrome/browser/ash/arc/intent_helper/custom_tab_session_impl.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/web_applications/chrome_camera_app_ui_delegate.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/web_applications/chrome_camera_app_ui_delegate.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -46,12 +48,13 @@
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/chrome_web_contents_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
-#include "chrome/browser/web_applications/system_web_app_manager.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -71,7 +74,6 @@
 #include "ui/aura/window.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
-#include "ui/display/types/display_constants.h"
 #include "url/url_constants.h"
 
 using arc::mojom::ChromePage;
@@ -372,7 +374,7 @@ void ChromeNewWindowClient::OpenFileManager() {
         apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerNone,
                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
                             /*preferred_containner=*/true),
-        apps::mojom::LaunchSource::kFromKeyboard, display::kInvalidDisplayId);
+        apps::mojom::LaunchSource::kFromKeyboard);
   };
 
   bool result = proxy->AppRegistryCache().ForOneApp(
@@ -415,15 +417,19 @@ void ChromeNewWindowClient::OpenDownloadsFolder() {
 
 void ChromeNewWindowClient::OpenCrosh() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  chrome::ScopedTabbedBrowserDisplayer displayer(profile);
-  Browser* browser = displayer.browser();
-  content::WebContents* page = browser->OpenURL(content::OpenURLParams(
-      GURL(chrome::kChromeUIUntrustedCroshURL), content::Referrer(),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_GENERATED,
-      false));
-  browser->window()->Show();
-  browser->window()->Activate();
-  page->Focus();
+  if (base::FeatureList::IsEnabled(chromeos::features::kCroshSWA)) {
+    web_app::LaunchSystemWebAppAsync(profile, web_app::SystemAppType::CROSH);
+  } else {
+    chrome::ScopedTabbedBrowserDisplayer displayer(profile);
+    Browser* browser = displayer.browser();
+    content::WebContents* page = browser->OpenURL(content::OpenURLParams(
+        GURL(chrome::kChromeUIUntrustedCroshURL), content::Referrer(),
+        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui::PAGE_TRANSITION_GENERATED, false));
+    browser->window()->Show();
+    browser->window()->Activate();
+    page->Focus();
+  }
 }
 
 void ChromeNewWindowClient::OpenGetHelp() {
@@ -463,6 +469,11 @@ void ChromeNewWindowClient::ShowKeyboardShortcutViewer() {
 
 void ChromeNewWindowClient::ShowTaskManager() {
   chrome::OpenTaskManager(nullptr);
+}
+
+void ChromeNewWindowClient::OpenDiagnostics() {
+  if (base::FeatureList::IsEnabled(chromeos::features::kDiagnosticsApp))
+    chrome::ShowDiagnosticsApp(ProfileManager::GetActiveUserProfile());
 }
 
 void ChromeNewWindowClient::OpenFeedbackPage(bool from_assistant) {
@@ -531,11 +542,10 @@ void ChromeNewWindowClient::OpenWebAppFromArc(const GURL& url) {
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
   proxy->LaunchAppWithUrl(*app_id, event_flags, url,
-                          apps::mojom::LaunchSource::kFromArc,
-                          display::kInvalidDisplayId);
+                          apps::mojom::LaunchSource::kFromArc);
 
-  chromeos::ApkWebAppService* apk_web_app_service =
-      chromeos::ApkWebAppService::Get(profile);
+  ash::ApkWebAppService* apk_web_app_service =
+      ash::ApkWebAppService::Get(profile);
   if (!apk_web_app_service ||
       !apk_web_app_service->IsWebAppInstalledFromArc(app_id.value())) {
     return;
@@ -660,7 +670,8 @@ void ChromeNewWindowClient::LaunchCameraApp(const std::string& queries,
 
   if (web_app::SystemWebAppManager::IsAppEnabled(
           web_app::SystemAppType::CAMERA)) {
-    ChromeCameraAppUIDelegate::ShowIntent(queries, arc::GetArcWindow(task_id));
+    ChromeCameraAppUIDelegate::CameraAppDialog::ShowIntent(
+        queries, arc::GetArcWindow(task_id));
     return;
   }
 

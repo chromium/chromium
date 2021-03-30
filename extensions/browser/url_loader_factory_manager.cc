@@ -20,6 +20,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
+#include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/script_constants.h"
 #include "extensions/common/user_script.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -95,28 +96,8 @@ bool ShouldCreateSeparateFactoryForContentScripts(const Extension& extension) {
 void OverrideFactoryParams(const Extension& extension,
                            FactoryUser factory_user,
                            network::mojom::URLLoaderFactoryParams* params) {
-  if (ShouldDisableCorb(extension, factory_user)) {
-    // TODO(lukasza): https://crbug.com/1016904: Use more granular CORB
-    // enforcement based on the specific |extension|'s permissions reflected
-    // in the |factory_bound_access_patterns| above.
+  if (ShouldDisableCorb(extension, factory_user))
     params->is_corb_enabled = false;
-
-    // Setup factory bound allow list that overwrites per-profile common list to
-    // allow tab specific permissions only for this newly created factory.
-    //
-    // TODO(lukasza): Setting |factory_bound_access_patterns| together with
-    // |is_corb_enabled| seems accidental.
-    params->factory_bound_access_patterns =
-        network::mojom::CorsOriginAccessPatterns::New();
-    params->factory_bound_access_patterns->source_origin =
-        url::Origin::Create(extension.url());
-    params->factory_bound_access_patterns->allow_patterns =
-        CreateCorsOriginAccessAllowList(
-            extension,
-            PermissionsData::EffectiveHostPermissionsMode::kIncludeTabSpecific);
-    params->factory_bound_access_patterns->block_patterns =
-        CreateCorsOriginAccessBlockList(extension);
-  }
 
   if (ShouldInspectIsolatedWorldOrigin(extension, factory_user))
     params->ignore_isolated_world_origin = false;
@@ -284,15 +265,15 @@ void URLLoaderFactoryManager::ReadyToCommitNavigation(
 
 // static
 void URLLoaderFactoryManager::WillExecuteCode(content::RenderFrameHost* frame,
-                                              const HostID& host_id) {
-  if (host_id.type() != HostID::EXTENSIONS)
+                                              const mojom::HostID& host_id) {
+  if (host_id.type != mojom::HostID::HostType::kExtensions)
     return;
 
   const ExtensionRegistry* registry =
       ExtensionRegistry::Get(frame->GetProcess()->GetBrowserContext());
   DCHECK(registry);  // WillExecuteCode shouldn't happen during shutdown.
   const Extension* extension =
-      registry->enabled_extensions().GetByID(host_id.id());
+      registry->enabled_extensions().GetByID(host_id.id);
   DCHECK(extension);  // Guaranteed by the caller - see the doc comment.
 
   if (!ShouldCreateSeparateFactoryForContentScripts(*extension))
@@ -300,10 +281,11 @@ void URLLoaderFactoryManager::WillExecuteCode(content::RenderFrameHost* frame,
 
   // When WillExecuteCode runs, the frame already received the initial
   // URLLoaderFactoryBundle - therefore we need to request a separate push
-  // below.  This doesn't race with the ExtensionMsg_ExecuteCode message,
+  // below.  This doesn't race with the ExecuteCode mojo message,
   // because the URLLoaderFactoryBundle is sent to the renderer over
-  // content.mojom.FrameNavigationControl interface which is associated with the
-  // legacy IPC pipe (raciness will be introduced if that ever changes).
+  // content.mojom.Frame interface which is associated with the
+  // extensions.mojom.LocalFrame (raciness will be introduced if that ever
+  // changes).
   constexpr bool kPushToRendererNow = true;
 
   MarkIsolatedWorldsAsRequiringSeparateURLLoaderFactory(

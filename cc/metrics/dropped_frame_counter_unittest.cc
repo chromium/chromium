@@ -263,7 +263,7 @@ class DroppedFrameCounterTest : public testing::Test {
     for (int i = 0; i < repeat; i++) {
       for (auto is_dropped : frame_states) {
         viz::BeginFrameArgs args_ = SimulateBeginFrameArgs();
-        dropped_frame_counter_.OnBeginFrame(args_);
+        dropped_frame_counter_.OnBeginFrame(args_, /*is_scroll_active=*/false);
         dropped_frame_counter_.OnEndFrame(args_, is_dropped);
         sequence_number_++;
         frame_time_ += interval_;
@@ -283,10 +283,18 @@ class DroppedFrameCounterTest : public testing::Test {
     return dropped_frame_counter_.SlidingWindow95PercentilePercentDropped();
   }
 
+  double GetTotalFramesInWindow() {
+    return base::TimeDelta::FromSeconds(1) / interval_;
+  }
+
   void SetInterval(base::TimeDelta interval) { interval_ = interval; }
 
- private:
+  base::TimeTicks GetNextFrameTime() const { return frame_time_ + interval_; }
+
+ public:
   DroppedFrameCounter dropped_frame_counter_;
+
+ private:
   TotalFrameCounter total_frame_counter_;
   uint64_t sequence_number_ = 1;
   uint64_t source_id_ = 1;
@@ -308,7 +316,11 @@ class DroppedFrameCounterTest : public testing::Test {
 TEST_F(DroppedFrameCounterTest, SimplePattern1) {
   // 2 out of every 3 frames are dropped (In total 80 frames out of 120).
   SimulateFrameSequence({true, true, true, false, true, false}, 20);
-  EXPECT_EQ(MaxPercentDroppedFrame(), 200.0 / 3);
+
+  // The max is the following window:
+  //    16 * <sequence> + {true, true, true, false
+  // Which means a max of 67 dropped frames.
+  EXPECT_EQ(std::round(MaxPercentDroppedFrame()), 67);
   EXPECT_EQ(PercentDroppedFrame95Percentile(), 67);  // all values are in the
   // 67th bucket, and as a result 95th percentile is also 67.
 }
@@ -316,7 +328,9 @@ TEST_F(DroppedFrameCounterTest, SimplePattern1) {
 TEST_F(DroppedFrameCounterTest, SimplePattern2) {
   // 1 out of every 5 frames are dropped (In total 24 frames out of 120).
   SimulateFrameSequence({false, false, false, false, true}, 24);
-  EXPECT_EQ(MaxPercentDroppedFrame(), 20.0);
+
+  double expected_percent_dropped_frame = (12 / GetTotalFramesInWindow()) * 100;
+  EXPECT_FLOAT_EQ(MaxPercentDroppedFrame(), expected_percent_dropped_frame);
   EXPECT_EQ(PercentDroppedFrame95Percentile(), 20);  // all values are in the
   // 20th bucket, and as a result 95th percentile is also 20.
 }
@@ -332,22 +346,28 @@ TEST_F(DroppedFrameCounterTest, IncompleteWindow) {
 TEST_F(DroppedFrameCounterTest, MaxPercentDroppedChanges) {
   // First 60 frames have 20% dropped.
   SimulateFrameSequence({false, false, false, false, true}, 12);
-  EXPECT_EQ(MaxPercentDroppedFrame(), 20.0);
 
-  EXPECT_EQ(PercentDroppedFrame95Percentile(), 20);  // There is only one
+  double expected_percent_dropped_frame1 =
+      (12 / GetTotalFramesInWindow()) * 100;
+  EXPECT_EQ(MaxPercentDroppedFrame(), expected_percent_dropped_frame1);
+  EXPECT_FLOAT_EQ(PercentDroppedFrame95Percentile(), 20);  // There is only one
   // element in the histogram and that is 20.
 
   // 30 new frames are added that have 18 dropped frames.
   // and the 30 frame before that had 6 dropped frames.
   // So in total in the window has 24 frames dropped out of 60 frames.
   SimulateFrameSequence({false, false, true, true, true}, 6);
-  EXPECT_EQ(MaxPercentDroppedFrame(), 40.0);
+  double expected_percent_dropped_frame2 =
+      (24 / GetTotalFramesInWindow()) * 100;
+  EXPECT_FLOAT_EQ(MaxPercentDroppedFrame(), expected_percent_dropped_frame2);
 
   // 30 new frames are added that have 24 dropped frames.
   // and the 30 frame before that had 18 dropped frames.
   // So in total in the window has 42 frames dropped out of 60 frames.
   SimulateFrameSequence({false, true, true, true, true}, 6);
-  EXPECT_EQ(MaxPercentDroppedFrame(), 70.0);
+  double expected_percent_dropped_frame3 =
+      (42 / GetTotalFramesInWindow()) * 100;
+  EXPECT_FLOAT_EQ(MaxPercentDroppedFrame(), expected_percent_dropped_frame3);
 
   // Percent dropped frame of window increases gradually to 70%.
   // 1 value exist when we reach 60 frames and 1 value thereafter for each
@@ -368,12 +388,112 @@ TEST_F(DroppedFrameCounterTest, MaxPercentDroppedWithIdleFrames) {
 
   // So in total, there are 40 frames in the 1 second window with 16 dropped
   // frames (40% in total).
-  EXPECT_EQ(MaxPercentDroppedFrame(), 40.0);
+  double expected_percent_dropped_frame = (16 / GetTotalFramesInWindow()) * 100;
+  EXPECT_FLOAT_EQ(MaxPercentDroppedFrame(), expected_percent_dropped_frame);
 }
 
 TEST_F(DroppedFrameCounterTest, NoCrashForIntervalLargerThanWindow) {
   SetInterval(base::TimeDelta::FromMilliseconds(1000));
   SimulateFrameSequence({false, false}, 1);
+}
+
+TEST_F(DroppedFrameCounterTest, Percentile95WithIdleFrames) {
+  // Test scenario:
+  //  . 4s of 20% dropped frames.
+  //  . 96s of idle time.
+  // The 96%ile dropped-frame metric should be 0.
+
+  // Set an interval that rounds up nicely with 1 second.
+  constexpr auto kInterval = base::TimeDelta::FromMilliseconds(10);
+  constexpr size_t kFps = base::TimeDelta::FromSeconds(1) / kInterval;
+  static_assert(
+      kFps % 5 == 0,
+      "kFps must be a multiple of 5 because this test depends on it.");
+  SetInterval(kInterval);
+
+  const auto* histogram = dropped_frame_counter_.GetSlidingWindowHistogram();
+
+  // First 4 seconds with 20% dropped frames.
+  SimulateFrameSequence({false, false, false, false, true}, (kFps / 5) * 4);
+  EXPECT_EQ(histogram->GetPercentDroppedFramePercentile(0.95), 20u);
+
+  // Then no frames are added for 97s. Note that this 1s more than 96 seconds,
+  // because the last second remains in the sliding window.
+  AdvancetimeByIntervals(kFps * 97);
+
+  // A single frame to flush the pipeline.
+  SimulateFrameSequence({false}, 1);
+
+  EXPECT_EQ(histogram->total_count(), 100u * kFps);
+  EXPECT_EQ(histogram->GetPercentDroppedFramePercentile(0.96), 0u);
+  EXPECT_GT(histogram->GetPercentDroppedFramePercentile(0.97), 0u);
+}
+
+TEST_F(DroppedFrameCounterTest, Percentile95WithIdleFramesWhileHidden) {
+  // The test scenario is the same as |Percentile95WithIdleFrames| test:
+  //  . 4s of 20% dropped frames.
+  //  . 96s of idle time.
+  // However, the 96s of idle time happens *after* the page becomes invisible
+  // (e.g. after a tab-switch). In this case, the idle time *should not*
+  // contribute to the sliding window.
+
+  // Set an interval that rounds up nicely with 1 second.
+  constexpr auto kInterval = base::TimeDelta::FromMilliseconds(10);
+  constexpr size_t kFps = base::TimeDelta::FromSeconds(1) / kInterval;
+  static_assert(
+      kFps % 5 == 0,
+      "kFps must be a multiple of 5 because this test depends on it.");
+  SetInterval(kInterval);
+
+  const auto* histogram = dropped_frame_counter_.GetSlidingWindowHistogram();
+
+  // First 4 seconds with 20% dropped frames.
+  SimulateFrameSequence({false, false, false, false, true}, (kFps / 5) * 4);
+  EXPECT_EQ(histogram->GetPercentDroppedFramePercentile(0.95), 20u);
+
+  // Hide the page (thus resetting the pending frames), then idle for 96s before
+  // producing a single frame.
+  dropped_frame_counter_.ResetPendingFrames(GetNextFrameTime());
+  AdvancetimeByIntervals(kFps * 97);
+
+  // A single frame to flush the pipeline.
+  SimulateFrameSequence({false}, 1);
+
+  EXPECT_EQ(histogram->GetPercentDroppedFramePercentile(0.95), 20u);
+}
+
+TEST_F(DroppedFrameCounterTest, Percentile95WithIdleFramesThenHide) {
+  // The test scenario is the same as |Percentile95WithIdleFramesWhileHidden|:
+  //  . 4s of 20% dropped frames.
+  //  . 96s of idle time.
+  // However, the 96s of idle time happens *before* the page becomes invisible
+  // (e.g. after a tab-switch). In this case, the idle time *should*
+  // contribute to the sliding window.
+
+  // Set an interval that rounds up nicely with 1 second.
+  constexpr auto kInterval = base::TimeDelta::FromMilliseconds(10);
+  constexpr size_t kFps = base::TimeDelta::FromSeconds(1) / kInterval;
+  static_assert(
+      kFps % 5 == 0,
+      "kFps must be a multiple of 5 because this test depends on it.");
+  SetInterval(kInterval);
+
+  const auto* histogram = dropped_frame_counter_.GetSlidingWindowHistogram();
+
+  // First 4 seconds with 20% dropped frames.
+  SimulateFrameSequence({false, false, false, false, true}, (kFps / 5) * 4);
+  EXPECT_EQ(histogram->GetPercentDroppedFramePercentile(0.95), 20u);
+
+  // Idle for 96s before hiding the page.
+  AdvancetimeByIntervals(kFps * 97);
+  dropped_frame_counter_.ResetPendingFrames(GetNextFrameTime());
+  AdvancetimeByIntervals(kFps * 97);
+
+  // A single frame to flush the pipeline.
+  SimulateFrameSequence({false}, 1);
+
+  EXPECT_EQ(histogram->GetPercentDroppedFramePercentile(0.96), 0u);
+  EXPECT_GT(histogram->GetPercentDroppedFramePercentile(0.97), 0u);
 }
 
 }  // namespace

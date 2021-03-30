@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.JniMocker;
@@ -42,6 +43,7 @@ import java.util.concurrent.TimeoutException;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class TrustedWebActivityShareTargetTest {
     // We are not actually navigating to POST target, so ok not to use test pages here.
     private static final ShareTarget POST_SHARE_TARGET =
@@ -79,6 +81,7 @@ public class TrustedWebActivityShareTargetTest {
     @Before
     public void setUp() throws Exception {
         mJniMocker.mock(WebApkPostShareTargetNavigatorJni.TEST_HOOKS, mPostNavigatorNatives);
+        mCustomTabActivityTestRule.setFinishActivity(true);
 
         LibraryLoader.getInstance().ensureInitialized();
         mEmbeddedTestServerRule.setServerUsesHttps(true);

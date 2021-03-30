@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS Checking intermediate min-content height for span 1 (1)
+FAIL Checking intermediate min-content height for span 1 (2) assert_equals: expected 10 but got 1
+PASS Checking intermediate min-content height for span 1 (3)
+FAIL Checking intermediate min-content height for span 1 (4) assert_equals: expected 10 but got 1
+Harness: the test ran to completion.
+

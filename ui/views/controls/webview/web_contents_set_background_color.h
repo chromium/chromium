@@ -32,10 +32,7 @@ class WebContentsSetBackgroundColor
                                 SkColor color);
 
   // content::WebContentsObserver:
-  void RenderViewReady() override;
-  void RenderViewCreated(content::RenderViewHost* render_view_host) override;
-  void RenderViewHostChanged(content::RenderViewHost* old_host,
-                             content::RenderViewHost* new_host) override;
+  void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
 
   SkColor color_;
 

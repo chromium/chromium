@@ -16,8 +16,7 @@
 using blink::WebAXContext;
 using blink::WebAXObject;
 using blink::WebDocument;
-using BlinkAXTreeSerializer =
-    ui::AXTreeSerializer<blink::WebAXObject, ui::AXNodeData, ui::AXTreeData>;
+using BlinkAXTreeSerializer = ui::AXTreeSerializer<blink::WebAXObject>;
 
 namespace content {
 
@@ -31,7 +30,9 @@ AXTreeSnapshotterImpl::AXTreeSnapshotterImpl(RenderFrameImpl* render_frame)
 AXTreeSnapshotterImpl::~AXTreeSnapshotterImpl() = default;
 
 void AXTreeSnapshotterImpl::Snapshot(ui::AXMode ax_mode,
+                                     bool exclude_offscreen,
                                      size_t max_node_count,
+                                     base::TimeDelta timeout,
                                      ui::AXTreeUpdate* response) {
   if (!render_frame_->GetWebFrame())
     return;
@@ -42,6 +43,7 @@ void AXTreeSnapshotterImpl::Snapshot(ui::AXMode ax_mode,
 
   BlinkAXTreeSource tree_source(render_frame_, ax_mode);
   tree_source.SetRoot(root);
+  tree_source.set_exclude_offscreen(exclude_offscreen);
   ScopedFreezeBlinkAXTreeSource freeze(&tree_source);
 
   // The serializer returns an ui::AXTreeUpdate, which can store a complete
@@ -51,6 +53,8 @@ void AXTreeSnapshotterImpl::Snapshot(ui::AXMode ax_mode,
   BlinkAXTreeSerializer serializer(&tree_source);
   if (max_node_count)
     serializer.set_max_node_count(max_node_count);
+  if (!timeout.is_zero())
+    serializer.set_timeout(timeout);
   if (serializer.SerializeChanges(root, response))
     return;
 
@@ -70,6 +74,7 @@ void AXTreeSnapshotterImpl::Snapshot(ui::AXMode ax_mode,
   // this was indeed a partial update to the tree (which we don't want).
   DCHECK_EQ(0, response->node_id_to_clear);
   DCHECK_EQ(ax::mojom::EventFrom::kNone, response->event_from);
+  DCHECK_EQ(ax::mojom::Action::kNone, response->event_from_action);
 }
 
 }  // namespace content

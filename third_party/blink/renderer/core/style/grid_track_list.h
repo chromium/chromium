@@ -43,6 +43,7 @@ class CORE_EXPORT NGGridTrackList {
  public:
   NGGridTrackList() = default;
   NGGridTrackList(const NGGridTrackList& other) = default;
+
   // Returns the repeat count of the repeater at |index|, or |auto_value|
   // if the repeater is auto.
   wtf_size_t RepeatCount(const wtf_size_t index,
@@ -54,10 +55,13 @@ class CORE_EXPORT NGGridTrackList {
   // Returns the size of the |n|-th specified track of the repeater at |index|.
   const GridTrackSize& RepeatTrackSize(const wtf_size_t index,
                                        const wtf_size_t n) const;
+
   // Returns the count of repeaters.
   wtf_size_t RepeaterCount() const;
   // Returns the total count of all the tracks in this list.
   wtf_size_t TotalTrackCount() const;
+  // Returns the number of tracks in the auto repeater, or 0 if there is none.
+  wtf_size_t AutoRepeatSize() const;
 
   // Adds a non-auto repeater.
   bool AddRepeater(const Vector<GridTrackSize>& repeater_track_sizes,

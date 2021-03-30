@@ -23,11 +23,13 @@
 <translation id="169515659049020177">ÜstKrktr</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Adres çubuğuna yazdığınız metnin başına www. ve sonuna .com ifadelerini ekleyip sayfayı açar</translation>
+<translation id="1768987374400973299">Ekran görüntüsü/ekran kaydı al</translation>
 <translation id="1872219238824176091">Geçerli masayı kaldır</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, daha sonra <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> veya <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">Sonraki sekmeye gider</translation>
 <translation id="2010818616644390445">Penceredeki son sekmeye gider</translation>
 <translation id="2040706009561734834">Başlatıcıyı açar/kapatır</translation>
+<translation id="2086334242442703436">Emoji Seçiciyi Aç</translation>
 <translation id="2088054208777350526">Klavye kısayollarını arama</translation>
 <translation id="2125211348069077981"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="E" /> veya <ph name="F" /></translation>
 <translation id="2145908266289632567">Metin Düzenleme</translation>
@@ -46,6 +48,7 @@
 <translation id="2480851840841871861">Google Asistan'ı aç</translation>
 <translation id="2488661730534396940">Soldaki masayı etkinleştir</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516999188535378855">Teşhis Aracı Uygulamasını aç</translation>
 <translation id="2530339807289914946">Web sayfasını aşağı doğru kaydırır</translation>
 <translation id="2530896289327917474">Metin imleciyle göz atmayı açma veya kapatma</translation>
 <translation id="2574014812750545982">Sayfadaki yakınlaştırma düzeyini sıfırla</translation>
@@ -110,6 +113,7 @@
 <translation id="4801989101741319327">Sonraki kelimenin sonuna gider</translation>
 <translation id="4866066940972151697">Sağdaki masayı etkinleştir</translation>
 <translation id="4916163929714267752">Bağlantıyı yeni bir pencerede açar</translation>
+<translation id="492453977506755176">Ekran görüntüsü alma modu tuşu</translation>
 <translation id="5030659775136592441">Yer işareti yöneticisini görüntüler</translation>
 <translation id="5034421018520995080">Sayfanın başına gider</translation>
 <translation id="5042305953558921026">Genel bakış modu tuşu</translation>
@@ -132,6 +136,7 @@
 <translation id="5899919361772749550">Geliştirici Araçları konsolunu görüntüler veya gizler</translation>
 <translation id="5919628958418675842">Gizli ekranı kapatın veya açın</translation>
 <translation id="5921745308587794300">Pencereyi döndür</translation>
+<translation id="5926306472221400972">Tam ekran görüntüsü al</translation>
 <translation id="6022924867608035986">Arama kutusu metnini temizle</translation>
 <translation id="6045998054441862242">Yüksek kontrast modunu etkinleştirir</translation>
 <translation id="6052614013050385269">Bağlantıyı sağ tıklar</translation>
@@ -149,6 +154,7 @@
 <translation id="6445033640292336367">Sekmeyi orijinal konumuna döndürür</translation>
 <translation id="6474744297082284761">Uzaklaştır (yuvaya yerleştirildiğinde VEYA tam ekran büyüteçler etkin olduğunda)</translation>
 <translation id="649811797655257835">Dosyayı seçip <ph name="SPACE" /> tuşuna basın</translation>
+<translation id="6551886416582667425">Kısmi ekran görüntüsü/ekran kaydı al</translation>
 <translation id="6556040137485212400">En uzun süre kullanılmayan pencereyi açar</translation>
 <translation id="666343722268997814">Vurgulanan öğe için sağ tıklama menüsünü açar</translation>
 <translation id="6671538777808758331">Aramanızdaki sonraki eşleşmeye gider</translation>
@@ -175,6 +181,7 @@
 <translation id="7611271430932669992">Odağı pop-up'lara ve iletişim kutularına taşır</translation>
 <translation id="7635348532214572995">Uygulama simgesini uygulama ızgarası üzerinde taşıma</translation>
 <translation id="766326951329901120">Panodaki içeriği düz metin olarak yapıştırır</translation>
+<translation id="7673453620027697230">Pencerenin ekran görüntüsünü/ekran kaydını al</translation>
 <translation id="7703010453515335249">sol parantez</translation>
 <translation id="7724603315864178912">Kes</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, daha sonra <ph name="SPACE" /> veya <ph name="ENTER" /></translation>

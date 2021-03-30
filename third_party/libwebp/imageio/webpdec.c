@@ -65,7 +65,7 @@ int LoadWebP(const char* const in_file,
 
   status = WebPGetFeatures(*data, *data_size, bitstream);
   if (status != VP8_STATUS_OK) {
-    free((void*)*data);
+    WebPFree((void*)*data);
     *data = NULL;
     *data_size = 0;
     PrintWebPError(in_file, status);

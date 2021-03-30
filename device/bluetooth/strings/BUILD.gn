@@ -10,7 +10,7 @@ grit("strings") {
   source = "../bluetooth_strings.grd"
   outputs =
       [ "grit/bluetooth_strings.h" ] +
-      process_file_template(locales_with_fake_bidi,
+      process_file_template(locales_with_pseudolocales,
                             [ "bluetooth_strings_{{source_name_part}}.pak" ])
 }
 

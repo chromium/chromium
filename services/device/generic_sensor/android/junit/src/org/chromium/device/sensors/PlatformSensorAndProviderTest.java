@@ -158,6 +158,8 @@ public class PlatformSensorAndProviderTest {
         verify(mSensorManager).getSensorList(Sensor.TYPE_ACCELEROMETER);
         provider.createSensor(SensorType.LINEAR_ACCELERATION);
         verify(mSensorManager).getSensorList(Sensor.TYPE_LINEAR_ACCELERATION);
+        provider.createSensor(SensorType.GRAVITY);
+        verify(mSensorManager).getSensorList(Sensor.TYPE_GRAVITY);
         provider.createSensor(SensorType.GYROSCOPE);
         verify(mSensorManager).getSensorList(Sensor.TYPE_GYROSCOPE);
         provider.createSensor(SensorType.MAGNETOMETER);

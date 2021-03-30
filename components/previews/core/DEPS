@@ -1,6 +1,0 @@
-include_rules = [
-  "+components/blocklist/opt_out_blocklist",
-  "+components/variations",
-  "+net",
-  "+third_party/re2",
-]

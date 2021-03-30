@@ -74,15 +74,16 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
   // TrayBackgroundView:
   void ClickedOutsideBubble() override;
   void OnThemeChanged() override;
-  base::string16 GetAccessibleNameForTray() override;
+  std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void AnchorUpdated() override;
   void Initialize() override;
   bool PerformAction(const ui::Event& event) override;
   void CloseBubble() override;
-  void ShowBubble(bool show_by_click) override;
+  void ShowBubble() override;
   TrayBubbleView* GetBubbleView() override;
+  views::Widget* GetBubbleWidget() const override;
   const char* GetClassName() const override;
 
   // PaletteToolManager::Delegate:
@@ -91,10 +92,6 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
   void RecordPaletteOptionsUsage(PaletteTrayOptions option,
                                  PaletteInvocationMethod method) override;
   void RecordPaletteModeCancellation(PaletteModeCancelType type) override;
-
-  StylusBatteryDelegate* stylus_battery_delegate() {
-    return &stylus_battery_delegate_;
-  }
 
  private:
   friend class PaletteTrayTestApi;
@@ -105,7 +102,7 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
 
   // TrayBubbleView::Delegate:
   void BubbleViewDestroyed() override;
-  base::string16 GetAccessibleNameForBubble() override;
+  std::u16string GetAccessibleNameForBubble() override;
   bool ShouldEnableExtraKeyboardAccessibility() override;
   void HideBubble(const TrayBubbleView* bubble_view) override;
 
@@ -159,8 +156,6 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
 
   // Number of actions in pen palette bubble.
   int num_actions_in_bubble_ = 0;
-
-  StylusBatteryDelegate stylus_battery_delegate_;
 
   ScopedSessionObserver scoped_session_observer_;
 

@@ -8,11 +8,13 @@
 # the old stories are removed: https://crbug.com/878390.
 # pylint: disable=too-many-lines
 
+import re
 
 from page_sets.system_health import platforms
 from page_sets.system_health import story_tags
 from page_sets.system_health import system_health_story
 
+from page_sets.login_helpers import autocad_login
 from page_sets.login_helpers import facebook_login
 from page_sets.login_helpers import google_login
 from page_sets.login_helpers import pinterest_login
@@ -20,6 +22,9 @@ from page_sets.login_helpers import tumblr_login
 
 from page_sets.helpers import override_online
 
+from py_utils import TimeoutException
+
+from telemetry.core import exceptions
 from telemetry.util import js_template
 
 
@@ -95,30 +100,45 @@ class _ArticleBrowsingStory(_BrowsingStory):
   # On some pages (for ex: facebook) articles appear only after we start
   # scrolling. This specifies if we need scroll main page.
   SCROLL_BEFORE_BROWSE = False
+  # In some cases we want to measure performance while we're loading. This
+  # introduces a lot of variability and should be used cautiously.
+  SCROLL_DURING_LOADING = False
 
   def _DidLoadDocument(self, action_runner):
+    self._AfterNavigate(action_runner)
     # Scroll main page if needed before we start browsing articles.
     if self.SCROLL_BEFORE_BROWSE:
       self._ScrollMainPage(action_runner)
     for i in xrange(self.ITEMS_TO_VISIT):
       self._NavigateToItem(action_runner, i)
+      self._AfterNavigate(action_runner)
       self._ReadNextArticle(action_runner)
       self._NavigateBack(action_runner)
+      self._AfterNavigate(action_runner)
       self._ScrollMainPage(action_runner)
 
+  def _AfterNavigate(self, action_runner):
+    pass
+
   def _ReadNextArticle(self, action_runner):
-    if self.COMPLETE_STATE_WAIT_TIMEOUT is not None:
-      action_runner.tab.WaitForDocumentReadyStateToBeComplete(
-          timeout=self.COMPLETE_STATE_WAIT_TIMEOUT)
+    if not self.SCROLL_DURING_LOADING:
+      if self.COMPLETE_STATE_WAIT_TIMEOUT is not None:
+        action_runner.tab.WaitForDocumentReadyStateToBeComplete(
+            timeout=self.COMPLETE_STATE_WAIT_TIMEOUT)
+      else:
+        action_runner.tab.WaitForDocumentReadyStateToBeComplete()
+      action_runner.Wait(self.ITEM_READ_TIME_IN_SECONDS / 2.0)
     else:
-      action_runner.tab.WaitForDocumentReadyStateToBeComplete()
-    action_runner.Wait(self.ITEM_READ_TIME_IN_SECONDS/2.0)
+      action_runner.tab.WaitForDocumentReadyStateToBeInteractiveOrBetter()
     action_runner.RepeatableBrowserDrivenScroll(
         repeat_count=self.ITEM_SCROLL_REPEAT)
     action_runner.Wait(self.ITEM_READ_TIME_IN_SECONDS/2.0)
 
   def _ScrollMainPage(self, action_runner):
-    action_runner.tab.WaitForDocumentReadyStateToBeComplete()
+    if not self.SCROLL_DURING_LOADING:
+      action_runner.tab.WaitForDocumentReadyStateToBeComplete()
+    else:
+      action_runner.tab.WaitForDocumentReadyStateToBeInteractiveOrBetter()
     action_runner.RepeatableBrowserDrivenScroll(
         repeat_count=self.MAIN_PAGE_SCROLL_REPEAT)
 
@@ -128,15 +148,83 @@ class _ArticleBrowsingStory(_BrowsingStory):
 ##############################################################################
 
 
-class CnnStory2020(_ArticleBrowsingStory):
+class CnnStory2021(_ArticleBrowsingStory):
   """The second top website in http://www.alexa.com/topsites/category/News"""
-  NAME = 'browse:news:cnn:2020'
+  NAME = 'browse:news:cnn:2021'
   URL = 'http://edition.cnn.com/'
   ITEM_SELECTOR = '.cd__content > h3 > a'
   ITEMS_TO_VISIT = 2
   TAGS = [
-      story_tags.HEALTH_CHECK, story_tags.JAVASCRIPT_HEAVY, story_tags.YEAR_2020
+      story_tags.HEALTH_CHECK, story_tags.JAVASCRIPT_HEAVY, story_tags.YEAR_2021
   ]
+
+
+class BusinessInsiderMobile2021(_ArticleBrowsingStory):
+  """A newsite where we've seen janky performance in bug reports"""
+  NAME = 'browse:news:businessinsider:2021'
+  URL = 'https://www.businessinsider.com/'
+  SUPPORTED_PLATFORMS = platforms.MOBILE_ONLY
+  ITEM_SELECTOR = '.three-column > .tout-title-link'
+  ITEMS_TO_VISIT = 3
+  MAIN_PAGE_SCROLL_REPEAT = 2
+  ITEM_SCROLL_REPEAT = 4
+  TAGS = [story_tags.JAVASCRIPT_HEAVY, story_tags.YEAR_2021]
+  SCROLL_BEFORE_BROWSE = True
+  SCROLL_DURING_LOADING = False
+  _ACCEPTED_COOKIE = {
+      'businessinsider': '#sp_message_iframe_364841',
+      'insider': '#sp_message_iframe_364844'
+  }
+
+  def _GetCookieContextId(self, tab):
+    contexts = tab.EnableAllContexts().copy()
+    for context in contexts:
+      try:
+        result = tab.EvaluateJavaScript(
+            'document.querySelector(".message-button") != null;',
+            context_id=context)
+      except exceptions.EvaluateException:
+        continue
+      if result:
+        return context
+    return None
+
+  def _AfterNavigate(self, action_runner):
+    if self.SCROLL_DURING_LOADING:
+      action_runner.tab.WaitForDocumentReadyStateToBeInteractiveOrBetter()
+    else:
+      action_runner.tab.WaitForDocumentReadyStateToBeComplete()
+    # We want to clear any cookie.
+    url = re.search(r'https://(www\.)?([^.]+\.)?([^.]+)\.com.*',
+                    action_runner.tab.GetUrl())
+    if url is None:
+      raise RuntimeError("no matching for " + action_runner.tab.GetUrl() +
+                         " using " + url.group(2))
+    iframe = self._ACCEPTED_COOKIE[url.group(3)]
+    if iframe != '':
+      try:
+        action_runner.WaitForElement(iframe, timeout_in_seconds=1)
+      except TimeoutException:
+        # Sometimes the cookie pop up doesn't appear.
+        return
+      cookie_context = self._GetCookieContextId(action_runner.tab)
+      if cookie_context is not None:
+        self._ACCEPTED_COOKIE[url.group(3)] = ''
+        action_runner.ExecuteJavaScript(
+            ('document.querySelectorAll(".message-button")[0].dispatchEvent('
+             'new MouseEvent("click", {bubbles: true, cancellable: true}));'),
+            context_id=cookie_context,
+            user_gesture=True)
+
+
+class BusinessInsiderScrollWhileLoadingMobile2021(BusinessInsiderMobile2021):
+  """A newsite where we've seen janky performance in bug reports"""
+  NAME = 'browse:news:businessinsider:loading:2021'
+  SCROLL_DURING_LOADING = True
+  # This is only used in system_health.scroll_jank at the moment. So to avoid
+  # running it on all bots we say no platform and explicitly add it in
+  # janky_story_set.py.
+  SUPPORTED_PLATFORMS = platforms.NO_PLATFORMS
 
 
 class FacebookMobileStory2019(_ArticleBrowsingStory):
@@ -194,13 +282,13 @@ class InstagramMobileStory2019(_ArticleBrowsingStory):
     action_runner.NavigateBack()
 
 
-class FlipboardDesktopStory2018(_ArticleBrowsingStory):
-  NAME = 'browse:news:flipboard:2018'
+class FlipboardDesktopStory2020(_ArticleBrowsingStory):
+  NAME = 'browse:news:flipboard:2020'
   URL = 'https://flipboard.com/explore'
   IS_SINGLE_PAGE_APP = True
   ITEM_SELECTOR = '.cover-image'
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
-  TAGS = [story_tags.YEAR_2018]
+  TAGS = [story_tags.YEAR_2020]
 
 
 class HackerNewsDesktopStory2020(_ArticleBrowsingStory):
@@ -436,7 +524,7 @@ class GoogleDesktopStory2018(_ArticleBrowsingStory):
     action_runner.ScrollPage()
 
 
-class GoogleIndiaDesktopStory2018(_ArticleBrowsingStory):
+class GoogleIndiaDesktopStory2021(_ArticleBrowsingStory):
   """
   A typical google search story in India:
     1. Start at self.URL
@@ -447,13 +535,13 @@ class GoogleIndiaDesktopStory2018(_ArticleBrowsingStory):
     6. Scroll the search result page.
 
   """
-  NAME = 'browse:search:google_india:2018'
+  NAME = 'browse:search:google_india:2021'
   URL = 'https://www.google.co.in/search?q=%E0%A4%AB%E0%A5%82%E0%A4%B2&hl=hi'
   _SEARCH_BOX_SELECTOR = 'input[name="q"]'
-  _SEARCH_BUTTON_SELECTOR = 'button[name="btnG"]'
+  _SEARCH_BUTTON_SELECTOR = 'button[aria-label="Google Search"]'
   _SEARCH_PAGE_2_SELECTOR = 'a[aria-label="Page 2"]'
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
-  TAGS = [story_tags.INTERNATIONAL, story_tags.YEAR_2018]
+  TAGS = [story_tags.INTERNATIONAL, story_tags.YEAR_2021]
 
   def _DidLoadDocument(self, action_runner):
     # Refine search query in the search box.
@@ -561,6 +649,32 @@ class ImgurDesktopStory(_MediaBrowsingStory):
   TAGS = [story_tags.YEAR_2016]
 
 
+class TikTokMobileStory2021(_BrowsingStory):
+  NAME = 'browse:media:tiktok_infinite_scroll:2021'
+  URL = 'https://tiktok.com/'
+  TAGS = [story_tags.INFINITE_SCROLL, story_tags.YEAR_2021]
+  SUPPORTED_PLATFORMS = platforms.MOBILE_ONLY
+
+  _TIME_TO_WAIT_BEFORE_STARTING_IN_SECONDS = 2
+  _TIME_TO_WAIT_BETWEEN_VIDEOS = 1
+  _ACCEPT_ALL_SELECTOR = 'div[class$=" cookie-banner"]>div[class$=" button-wrapper"]>button'
+
+  def _DidLoadDocument(self, action_runner):
+    # Accept all cookies
+    action_runner.WaitForElement(selector=self._ACCEPT_ALL_SELECTOR)
+    action_runner.ClickElement(selector=self._ACCEPT_ALL_SELECTOR)
+    action_runner.Wait(self._TIME_TO_WAIT_BEFORE_STARTING_IN_SECONDS)
+
+    # TikTok doesn't scroll like a traditional page but responds to vertical
+    # swipe gestures.
+    for direction in ['down', 'up', 'down']:
+      for _ in range(0, 3):
+        scroll_dist = action_runner.EvaluateJavaScript(
+            'window.innerHeight') * 0.8
+        action_runner.ScrollPage(distance=scroll_dist, direction=direction)
+        action_runner.Wait(self._TIME_TO_WAIT_BETWEEN_VIDEOS)
+
+
 class YouTubeMobileStory2019(_MediaBrowsingStory):
   """Load a typical YouTube video then navigate to a next few videos. Stop and
   watch each video for few seconds.
@@ -593,6 +707,50 @@ class YouTubeDesktopStory2019(_MediaBrowsingStory):
   ITEM_SELECTOR_INDEX = 3
   PLATFORM_SPECIFIC = True
   TAGS = [story_tags.JAVASCRIPT_HEAVY, story_tags.YEAR_2019]
+
+
+class AutoCADDesktopStory2021(_MediaBrowsingStory):
+  """AutoCAD desktop story,
+  TODO: add a description here.
+  """
+  NAME = 'browse:tools:autocad:2021'
+  URL = 'https://web.autocad.com'
+  SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
+  TAGS = [
+      story_tags.YEAR_2021, story_tags.WEBASSEMBLY, story_tags.WEBGL,
+      story_tags.KEYBOARD_INPUT
+  ]
+
+  def __init__(self, story_set, take_memory_measurement):
+    super(AutoCADDesktopStory2021, self).__init__(story_set,
+                                                  take_memory_measurement)
+
+  def _Login(self, action_runner):
+    autocad_login.LoginWithDesktopSite(action_runner, 'autocad')
+
+  def _DidLoadDocument(self, action_runner):
+    action_runner.WaitForElement(text="Sign in")
+    action_runner.ClickElement(text="Sign in")
+    # Now we are done with the login.
+    action_runner.WaitForElement(text="OK")
+    action_runner.ClickElement(text="OK")
+
+    action_runner.WaitForElement(text="Samples")
+    action_runner.ClickElement(text="Samples")
+
+    action_runner.WaitForElement(text="Dog House Plan Sample.dwg")
+    action_runner.ClickElement(text="Dog House Plan Sample.dwg")
+
+    # We cannot wait for an element, because the result of the loading
+    # action is just a drawing on the canvas.
+    action_runner.Wait(10)
+    action_runner.EnterText('MEASURE')
+    action_runner.PressKey('Return')
+    action_runner.Wait(1)
+    action_runner.EnterText('-3,1')
+    action_runner.PressKey('Return')
+
+    action_runner.Wait(5)
 
 
 class EarthDesktopStory2020(_MediaBrowsingStory):
@@ -912,22 +1070,17 @@ class GooglePlayStoreDesktopStory(_MediaBrowsingStory):
   """ Navigate to the movies page of Google Play Store, scroll to the bottom,
   and click "see more" of a middle category (last before second scroll).
   """
-  NAME = 'browse:media:googleplaystore:2018'
+  NAME = 'browse:media:googleplaystore:2021'
   URL = 'https://play.google.com/store/movies'
   ITEM_SELECTOR = ''
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
   IS_SINGLE_PAGE_APP = True
   TAGS = [story_tags.YEAR_2018, story_tags.IMAGES]
-  # intends to select the last category of movies and its "see more" button
-  _SEE_MORE_SELECTOR = ('div[class*="cluster-container"]:last-of-type '
-                        'a[class*="see-more"]')
 
   def _DidLoadDocument(self, action_runner):
     action_runner.ScrollPage()
     action_runner.Wait(2)
     action_runner.ScrollPage()
-    action_runner.Wait(2)
-    action_runner.MouseClick(self._SEE_MORE_SELECTOR)
     action_runner.Wait(2)
     action_runner.ScrollPage()
 
@@ -1232,6 +1385,7 @@ class _GmailBrowsingStory(system_health_story.SystemHealthStory):
   Adds common functionality for re-mapping + waiting on performance
   mark + measure data.
   """
+  SKIP_LOGIN = False
 
   # Patch performance.mark and measure to get notified about page events.
   PERFOMANCE_MARK_AND_MEASURE = '''
@@ -1294,9 +1448,8 @@ class GmailLabelClickStory2020(_GmailBrowsingStory):
   URL = 'http://mail.google.com/'
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
   TAGS = [story_tags.YEAR_2020]
-  SKIP_LOGIN = False
 
-  _UPDATES_SELECTOR = 'div[data-tooltip="Updates"]'
+  _IMPORTANT_SELECTOR = 'div[data-tooltip="Important"]'
 
   # Page event queries.
   LABEL_CLICK_BEGIN_EVENT = '''
@@ -1334,8 +1487,8 @@ class GmailLabelClickStory2020(_GmailBrowsingStory):
         "document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)"
         ".singleNodeValue.click();"
     )
-    action_runner.WaitForElement(selector=self._UPDATES_SELECTOR)
-    action_runner.ClickElement(selector=self._UPDATES_SELECTOR)
+    action_runner.WaitForElement(selector=self._IMPORTANT_SELECTOR)
+    action_runner.ClickElement(selector=self._IMPORTANT_SELECTOR)
     action_runner.WaitForJavaScriptCondition(self.LABEL_CLICK_BEGIN_EVENT)
     action_runner.WaitForJavaScriptCondition(self.LABEL_CLICK_END_EVENT)
 
@@ -1346,7 +1499,6 @@ class GmailOpenConversationStory2020(_GmailBrowsingStory):
   URL = 'http://mail.google.com/'
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
   TAGS = [story_tags.YEAR_2020]
-  SKIP_LOGIN = False
 
   _CONV_SELECTOR = 'span[data-thread-id]'
 
@@ -1391,9 +1543,8 @@ class GmailSearchStory2020(_GmailBrowsingStory):
   URL = 'http://mail.google.com/'
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
   TAGS = [story_tags.YEAR_2020]
-  SKIP_LOGIN = False
 
-  _SEARCH_SELECTOR = 'input[aria-label="Search mail"]'
+  _SEARCH_SELECTOR = 'input[aria-label="Search mail and chat"]'
 
   # Page event queries.
   SEARCH_BEGIN_EVENT = '''
@@ -1440,7 +1591,6 @@ class GmailComposeStory2020(_GmailBrowsingStory):
   URL = 'http://mail.google.com/'
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
   TAGS = [story_tags.YEAR_2020]
-  SKIP_LOGIN = False
 
   # Page event queries.
   COMPOSE_BEGIN_EVENT = '''
@@ -1785,12 +1935,12 @@ class FlickrMobileStory2019(_InfiniteScrollStory):
   TAGS = [story_tags.INFINITE_SCROLL, story_tags.YEAR_2019]
 
 
-class PinterestMobileStory2019(_InfiniteScrollStory):
-  NAME = 'browse:social:pinterest_infinite_scroll:2019'
+class PinterestMobileStory2021(_InfiniteScrollStory):
+  NAME = 'browse:social:pinterest_infinite_scroll:2021'
   URL = 'https://www.pinterest.co.uk'
   SUPPORTED_PLATFORMS = platforms.MOBILE_ONLY
   TAGS = [
-      story_tags.HEALTH_CHECK, story_tags.INFINITE_SCROLL, story_tags.YEAR_2019
+      story_tags.HEALTH_CHECK, story_tags.INFINITE_SCROLL, story_tags.YEAR_2021
   ]
   # TODO(crbug.com/862077): Story breaks if login is skipped during replay.
   SKIP_LOGIN = False

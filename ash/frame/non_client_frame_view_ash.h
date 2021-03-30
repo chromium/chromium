@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
 
@@ -38,14 +39,15 @@ class NonClientFrameViewAshImmersiveHelper;
 // BrowserNonClientFrameViewAsh.
 class ASH_EXPORT NonClientFrameViewAsh : public views::NonClientFrameView {
  public:
-  // Internal class name.
-  static const char kViewClassName[];
+  METADATA_HEADER(NonClientFrameViewAsh);
 
   // |control_immersive| controls whether ImmersiveFullscreenController is
   // created for the NonClientFrameViewAsh; if true and a WindowStateDelegate
   // has not been set on the WindowState associated with |frame|, then an
   // ImmersiveFullscreenController is created.
   explicit NonClientFrameViewAsh(views::Widget* frame);
+  NonClientFrameViewAsh(const NonClientFrameViewAsh&) = delete;
+  NonClientFrameViewAsh& operator=(const NonClientFrameViewAsh&) = delete;
   ~NonClientFrameViewAsh() override;
 
   static NonClientFrameViewAsh* Get(aura::Window* window);
@@ -86,7 +88,6 @@ class ASH_EXPORT NonClientFrameViewAsh : public views::NonClientFrameView {
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
   void Layout() override;
-  const char* GetClassName() const override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
   void SetVisible(bool visible) override;
@@ -148,8 +149,6 @@ class ASH_EXPORT NonClientFrameViewAsh : public views::NonClientFrameView {
                               base::Unretained(this)));
 
   base::WeakPtrFactory<NonClientFrameViewAsh> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NonClientFrameViewAsh);
 };
 
 }  // namespace ash

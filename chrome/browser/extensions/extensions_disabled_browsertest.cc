@@ -46,12 +46,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionsDisabledBrowserTest,
   const Extension* unpacked_extension =
       LoadExtension(test_data_dir_.AppendASCII("simple_with_key"));
   ASSERT_TRUE(unpacked_extension);
-  EXPECT_EQ(Manifest::UNPACKED, unpacked_extension->location());
+  EXPECT_EQ(mojom::ManifestLocation::kUnpacked, unpacked_extension->location());
 
   const Extension* internal_extension =
       LoadExtension(test_data_dir_.AppendASCII("good.crx"));
   ASSERT_TRUE(internal_extension);
-  EXPECT_EQ(Manifest::INTERNAL, internal_extension->location());
+  EXPECT_EQ(mojom::ManifestLocation::kInternal, internal_extension->location());
 
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
   EXPECT_TRUE(registry->enabled_extensions().GetByID(kGoodExtensionId));

@@ -10,11 +10,13 @@
       "name": "LayoutNGBlockFlow (positioned) DIV id='composited-parent'",
       "position": [-100, -100],
       "bounds": [200, 200],
+      "contentsOpaqueForText": true,
       "transform": 1
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='software-parent'",
-      "bounds": [225, 225]
+      "bounds": [225, 225],
+      "contentsOpaqueForText": true
     }
   ],
   "transforms": [

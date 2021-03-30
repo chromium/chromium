@@ -136,16 +136,11 @@ void HostDrmDevice::GpuConfigureNativeDisplays(
   if (IsConnected()) {
     drm_device_->ConfigureNativeDisplays(config_requests, std::move(callback));
   } else {
-    // If not connected, report failure to config.
-    base::flat_map<int64_t, bool> dummy_statuses;
-    for (const auto& config : config_requests)
-      dummy_statuses.insert(std::make_pair(config.id, false));
-
     // Post this task to protect the callstack from accumulating too many
     // recursive calls to ConfigureDisplaysTask::Run() in cases in which the GPU
     // process crashes repeatedly.
     base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), dummy_statuses));
+        FROM_HERE, base::BindOnce(std::move(callback), false));
   }
 }
 

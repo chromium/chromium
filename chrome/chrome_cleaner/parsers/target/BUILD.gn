@@ -40,7 +40,6 @@ source_set("unittest_sources") {
     "//chrome/chrome_cleaner/mojom:parser_interface",
     "//chrome/chrome_cleaner/os:common_os",
     "//chrome/chrome_cleaner/parsers/json_parser",
-    "//chrome/chrome_cleaner/parsers/json_parser:json_splicer",
     "//chrome/chrome_cleaner/parsers/shortcut_parser:sandboxed_lnk_parser_test_util",
     "//chrome/chrome_cleaner/parsers/shortcut_parser/broker:sandboxed_shortcut_parser",
     "//chrome/chrome_cleaner/parsers/shortcut_parser/target:lnk_parser",

@@ -31,14 +31,14 @@ const AXTreeData& AXPlatformNodeDelegateBase::GetTreeData() const {
   return *empty_data;
 }
 
-base::string16 AXPlatformNodeDelegateBase::GetInnerText() const {
+std::u16string AXPlatformNodeDelegateBase::GetInnerText() const {
   // Unlike in web content The "kValue" attribute always takes precedence,
   // because we assume that users of this base class, such as Views controls,
   // are carefully crafted by hand, in contrast to HTML pages, where any content
   // that might be present in the shadow DOM (AKA in the internal accessibility
   // tree) is actually used by the renderer when assigning the "kValue"
   // attribute, including any redundant white space.
-  base::string16 value =
+  std::u16string value =
       GetData().GetString16Attribute(ax::mojom::StringAttribute::kValue);
   if (!value.empty())
     return value;
@@ -50,7 +50,7 @@ base::string16 AXPlatformNodeDelegateBase::GetInnerText() const {
   if (IsLeaf() && !GetData().IsInvisibleOrIgnored())
     return GetData().GetString16Attribute(ax::mojom::StringAttribute::kName);
 
-  base::string16 inner_text;
+  std::u16string inner_text;
   for (int i = 0; i < GetChildCount(); ++i) {
     // TODO(nektar): Add const to all tree traversal methods and remove
     // const_cast.
@@ -63,11 +63,11 @@ base::string16 AXPlatformNodeDelegateBase::GetInnerText() const {
   return inner_text;
 }
 
-base::string16 AXPlatformNodeDelegateBase::GetValueForControl() const {
+std::u16string AXPlatformNodeDelegateBase::GetValueForControl() const {
   if (!IsControl(GetData().role) && !GetData().IsRangeValueSupported())
-    return base::string16();
+    return std::u16string();
 
-  base::string16 value =
+  std::u16string value =
       GetData().GetString16Attribute(ax::mojom::StringAttribute::kValue);
   float numeric_value;
   if (GetData().IsRangeValueSupported() && value.empty() &&
@@ -176,9 +176,38 @@ bool AXPlatformNodeDelegateBase::IsDescendantOfPlainTextField() const {
   return false;
 }
 
-gfx::NativeViewAccessible AXPlatformNodeDelegateBase::GetClosestPlatformObject()
-    const {
-  return nullptr;
+gfx::NativeViewAccessible
+AXPlatformNodeDelegateBase::GetLowestPlatformAncestor() const {
+  AXPlatformNodeDelegateBase* current_delegate =
+      const_cast<AXPlatformNodeDelegateBase*>(this);
+  AXPlatformNodeDelegateBase* lowest_unignored_delegate = current_delegate;
+  if (lowest_unignored_delegate->IsInvisibleOrIgnored()) {
+    lowest_unignored_delegate = static_cast<AXPlatformNodeDelegateBase*>(
+        lowest_unignored_delegate->GetParentDelegate());
+  }
+  DCHECK(!lowest_unignored_delegate ||
+         !lowest_unignored_delegate->IsInvisibleOrIgnored())
+      << "`AXPlatformNodeDelegateBase::GetParentDelegate()` should return "
+         "either an unignored object or nullptr.";
+
+  // `highest_leaf_delegate` could be nullptr.
+  AXPlatformNodeDelegateBase* highest_leaf_delegate = lowest_unignored_delegate;
+  // For the purposes of this method, a leaf node does not include leaves in the
+  // internal accessibility tree, only in the platform exposed tree.
+  for (AXPlatformNodeDelegateBase* ancestor_delegate =
+           lowest_unignored_delegate;
+       ancestor_delegate;
+       ancestor_delegate = static_cast<AXPlatformNodeDelegateBase*>(
+           ancestor_delegate->GetParentDelegate())) {
+    if (ancestor_delegate->IsLeaf())
+      highest_leaf_delegate = ancestor_delegate;
+  }
+  if (highest_leaf_delegate)
+    return highest_leaf_delegate->GetNativeViewAccessible();
+
+  if (lowest_unignored_delegate)
+    return lowest_unignored_delegate->GetNativeViewAccessible();
+  return current_delegate->GetNativeViewAccessible();
 }
 
 AXPlatformNodeDelegateBase::ChildIteratorBase::ChildIteratorBase(
@@ -264,8 +293,8 @@ std::string AXPlatformNodeDelegateBase::GetName() const {
   return GetData().GetStringAttribute(ax::mojom::StringAttribute::kName);
 }
 
-base::string16 AXPlatformNodeDelegateBase::GetHypertext() const {
-  return base::string16();
+std::u16string AXPlatformNodeDelegateBase::GetHypertext() const {
+  return std::u16string();
 }
 
 bool AXPlatformNodeDelegateBase::SetHypertextSelection(int start_offset,
@@ -505,36 +534,44 @@ base::Optional<int> AXPlatformNodeDelegateBase::GetSetSize() const {
   return base::nullopt;
 }
 
+SkColor AXPlatformNodeDelegateBase::GetColor() const {
+  return SK_ColorBLACK;
+}
+
+SkColor AXPlatformNodeDelegateBase::GetBackgroundColor() const {
+  return SK_ColorWHITE;
+}
+
 bool AXPlatformNodeDelegateBase::AccessibilityPerformAction(
     const ui::AXActionData& data) {
   return false;
 }
 
-base::string16
+std::u16string
 AXPlatformNodeDelegateBase::GetLocalizedStringForImageAnnotationStatus(
     ax::mojom::ImageAnnotationStatus status) const {
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16
+std::u16string
 AXPlatformNodeDelegateBase::GetLocalizedRoleDescriptionForUnlabeledImage()
     const {
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16 AXPlatformNodeDelegateBase::GetLocalizedStringForLandmarkType()
+std::u16string AXPlatformNodeDelegateBase::GetLocalizedStringForLandmarkType()
     const {
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16
+std::u16string
 AXPlatformNodeDelegateBase::GetLocalizedStringForRoleDescription() const {
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16
+std::u16string
 AXPlatformNodeDelegateBase::GetStyleNameAttributeAsLocalizedString() const {
-  return base::string16();
+  return std::u16string();
 }
 
 TextAttributeMap AXPlatformNodeDelegateBase::ComputeTextAttributeMap(
@@ -634,8 +671,8 @@ std::set<AXPlatformNode*> AXPlatformNodeDelegateBase::GetReverseRelations(
   return std::set<AXPlatformNode*>();
 }
 
-base::string16 AXPlatformNodeDelegateBase::GetAuthorUniqueId() const {
-  return base::string16();
+std::u16string AXPlatformNodeDelegateBase::GetAuthorUniqueId() const {
+  return std::u16string();
 }
 
 const AXUniqueId& AXPlatformNodeDelegateBase::GetUniqueId() const {

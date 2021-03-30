@@ -36,7 +36,8 @@ void MediaSessionControllersManager::RenderFrameDeleted(
   base::EraseIf(
       controllers_map_,
       [render_frame_host](const ControllersMap::value_type& id_and_controller) {
-        return render_frame_host == id_and_controller.first.render_frame_host;
+        return render_frame_host->GetGlobalFrameRoutingId() ==
+               id_and_controller.first.frame_routing_id;
       });
 }
 

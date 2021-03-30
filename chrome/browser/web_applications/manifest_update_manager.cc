@@ -10,8 +10,9 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
+#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
-#include "chrome/browser/web_applications/system_web_app_manager.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -30,12 +31,14 @@ void ManifestUpdateManager::SetSubsystems(
     AppIconManager* icon_manager,
     WebAppUiManager* ui_manager,
     InstallManager* install_manager,
-    SystemWebAppManager* system_web_app_manager) {
+    SystemWebAppManager* system_web_app_manager,
+    OsIntegrationManager* os_integration_manager) {
   registrar_ = registrar;
   icon_manager_ = icon_manager;
   ui_manager_ = ui_manager;
   install_manager_ = install_manager;
   system_web_app_manager_ = system_web_app_manager;
+  os_integration_manager_ = os_integration_manager;
 }
 
 void ManifestUpdateManager::Start() {
@@ -85,14 +88,14 @@ void ManifestUpdateManager::MaybeUpdate(const GURL& url,
   tasks_.insert_or_assign(
       app_id, std::make_unique<ManifestUpdateTask>(
                   url, app_id, web_contents,
-                  base::Bind(&ManifestUpdateManager::OnUpdateStopped,
-                             base::Unretained(this)),
+                  base::BindOnce(&ManifestUpdateManager::OnUpdateStopped,
+                                 base::Unretained(this)),
                   hang_update_checks_for_testing_, *registrar_, *icon_manager_,
-                  ui_manager_, install_manager_));
+                  ui_manager_, install_manager_, *os_integration_manager_));
 }
 
 // AppRegistrarObserver:
-void ManifestUpdateManager::OnWebAppUninstalled(const AppId& app_id) {
+void ManifestUpdateManager::OnWebAppWillBeUninstalled(const AppId& app_id) {
   DCHECK(started_);
 
   auto it = tasks_.find(app_id);

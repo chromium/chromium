@@ -208,6 +208,12 @@ source_set("test_test") {
     "../util",
   ]
 
+  if (crashpad_is_in_chromium && !crashpad_is_ios) {
+    # TODO(crbug.com/1153544): Disabling MultiprocessExec.MultiprocessExec if
+    # PartitionAlloc is used for malloc.
+    deps += [ "//base/allocator:buildflags" ]
+  }
+
   data_deps = [ ":crashpad_test_test_multiprocess_exec_test_child" ]
 
   if (crashpad_is_ios) {

@@ -4,13 +4,19 @@
 
 #include "chrome/browser/chromeos/browser_context_keyed_service_factories.h"
 
-#include "chrome/browser/chromeos/account_manager/account_manager_migrator.h"
+#include "chrome/browser/ash/account_manager/account_manager_migrator.h"
+#include "chrome/browser/ash/arc/accessibility/arc_accessibility_helper_bridge.h"
+#include "chrome/browser/ash/authpolicy/authpolicy_credentials_manager.h"
+#include "chrome/browser/ash/borealis/borealis_service_factory.h"
+#include "chrome/browser/ash/cert_provisioning/cert_provisioning_scheduler_user_service.h"
+#include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_factory.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_engagement_metrics_service.h"
+#include "chrome/browser/ash/web_applications/crosh_loader_factory.h"
 #include "chrome/browser/chromeos/android_sms/android_sms_service_factory.h"
-#include "chrome/browser/chromeos/arc/accessibility/arc_accessibility_helper_bridge.h"
-#include "chrome/browser/chromeos/authpolicy/authpolicy_credentials_manager.h"
 #include "chrome/browser/chromeos/bluetooth/debug_logs_manager_factory.h"
-#include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_scheduler_user_service.h"
 #include "chrome/browser/chromeos/crostini/crostini_engagement_metrics_service.h"
+#include "chrome/browser/chromeos/eche_app/eche_app_manager_factory.h"
 #include "chrome/browser/chromeos/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/chromeos/extensions/input_method_api.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login_state/session_state_changed_event_dispatcher.h"
@@ -23,14 +29,11 @@
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/chromeos/kerberos/kerberos_credentials_manager_factory.h"
 #include "chrome/browser/chromeos/launcher_search_provider/launcher_search_provider_service_factory.h"
-#include "chrome/browser/chromeos/login/easy_unlock/easy_unlock_service_factory.h"
 #include "chrome/browser/chromeos/nearby/nearby_connections_dependencies_provider_factory.h"
 #include "chrome/browser/chromeos/nearby/nearby_process_manager_factory.h"
-#include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos_factory.h"
 #include "chrome/browser/chromeos/phonehub/phone_hub_manager_factory.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_service_factory.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/user_private_token_kpm_service_factory.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_engagement_metrics_service.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/policy_cert_service_factory.h"
 #include "chrome/browser/chromeos/policy/user_cloud_policy_token_forwarder_factory.h"
@@ -43,7 +46,6 @@
 #include "chrome/browser/chromeos/secure_channel/nearby_connector_factory.h"
 #include "chrome/browser/chromeos/smb_client/smb_service_factory.h"
 #include "chrome/browser/chromeos/tether/tether_service_factory.h"
-#include "chrome/browser/chromeos/web_applications/crosh_loader_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 
 #if defined(USE_CUPS)
@@ -53,12 +55,16 @@
 
 namespace chromeos {
 
+using ::ash::AccountManagerMigratorFactory;
+using ::ash::AuthPolicyCredentialsManagerFactory;
+
 void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   AccountManagerMigratorFactory::GetInstance();
   android_sms::AndroidSmsServiceFactory::GetInstance();
   arc::ArcAccessibilityHelperBridge::CreateFactory();
   AuthPolicyCredentialsManagerFactory::GetInstance();
   bluetooth::DebugLogsManagerFactory::GetInstance();
+  borealis::BorealisServiceFactory::GetInstance();
   cert_provisioning::CertProvisioningSchedulerUserServiceFactory::GetInstance();
   chromeos::full_restore::FullRestoreServiceFactory::GetInstance();
   CroshLoaderFactory::GetInstance();
@@ -69,6 +75,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   CupsPrintersManagerFactory::GetInstance();
   CupsPrintJobManagerFactory::GetInstance();
   EasyUnlockServiceFactory::GetInstance();
+  eche_app::EcheAppManagerFactory::GetInstance();
   extensions::InputMethodAPI::GetFactoryInstance();
   extensions::MediaPlayerAPI::GetFactoryInstance();
 #if defined(USE_CUPS)
@@ -86,7 +93,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   launcher_search_provider::ServiceFactory::GetInstance();
   nearby::NearbyConnectionsDependenciesProviderFactory::GetInstance();
   nearby::NearbyProcessManagerFactory::GetInstance();
-  OwnerSettingsServiceChromeOSFactory::GetInstance();
+  OwnerSettingsServiceAshFactory::GetInstance();
   phonehub::PhoneHubManagerFactory::GetInstance();
   platform_keys::KeyPermissionsServiceFactory::GetInstance();
   platform_keys::UserPrivateTokenKeyPermissionsManagerServiceFactory::

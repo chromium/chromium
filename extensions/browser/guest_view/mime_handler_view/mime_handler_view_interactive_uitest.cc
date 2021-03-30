@@ -30,6 +30,7 @@
 #include "extensions/browser/guest_view/extensions_guest_view_manager_delegate.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/browser/guest_view/mime_handler_view/test_mime_handler_view_guest.h"
+#include "extensions/common/constants.h"
 #include "extensions/test/result_catcher.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
@@ -40,9 +41,6 @@ using guest_view::TestGuestViewManager;
 using guest_view::TestGuestViewManagerFactory;
 
 namespace extensions {
-
-// The test extension id is set by the key value in the manifest.
-const char kExtensionId[] = "oickdpebdnfbgkcaoklfcdhjniefkcji";
 
 // Counts the number of URL requests made for a given URL.
 class MimeHandlerViewTest : public ExtensionApiTest {
@@ -88,7 +86,8 @@ class MimeHandlerViewTest : public ExtensionApiTest {
     if (!extension)
       return nullptr;
 
-    CHECK_EQ(std::string(kExtensionId), extension->id());
+    EXPECT_EQ(std::string(extension_misc::kMimeHandlerPrivateTestExtensionId),
+              extension->id());
 
     return extension;
   }

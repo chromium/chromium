@@ -42,6 +42,7 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -115,6 +116,10 @@ bool DownloadShelfView::IsShowing() const {
 
 bool DownloadShelfView::IsClosing() const {
   return shelf_animation_.IsClosing();
+}
+
+views::View* DownloadShelfView::GetView() {
+  return this;
 }
 
 gfx::Size DownloadShelfView::CalculatePreferredSize() const {
@@ -355,3 +360,6 @@ views::View* DownloadShelfView::GetDefaultFocusableChild() {
   return download_views_.empty() ? static_cast<views::View*>(show_all_view_)
                                  : download_views_.back();
 }
+
+BEGIN_METADATA(DownloadShelfView, views::AccessiblePaneView)
+END_METADATA

@@ -27,14 +27,15 @@ WaylandPointer::WaylandPointer(wl_pointer* pointer,
       &WaylandPointer::AxisSource,  &WaylandPointer::AxisStop,
       &WaylandPointer::AxisDiscrete};
 
-  DCHECK(delegate_);
-  delegate_->OnPointerCreated(this);
-
   wl_pointer_add_listener(obj_.get(), &listener, this);
 }
 
 WaylandPointer::~WaylandPointer() {
-  delegate_->OnPointerDestroyed(this);
+  // Even though, WaylandPointer::Leave is always called when Wayland destroys
+  // wl_pointer, it's better to be explicit as some Wayland compositors may have
+  // bugs.
+  delegate_->OnPointerFocusChanged(nullptr, {});
+  delegate_->OnResetPointerFlags();
 }
 
 // static

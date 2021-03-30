@@ -91,19 +91,19 @@ class FakeImageWriterClient : public ImageWriterUtilityClient {
  public:
   FakeImageWriterClient();
 
-  void Write(const ProgressCallback& progress_callback,
-             const SuccessCallback& success_callback,
-             const ErrorCallback& error_callback,
+  void Write(ProgressCallback progress_callback,
+             SuccessCallback success_callback,
+             ErrorCallback error_callback,
              const base::FilePath& source,
              const base::FilePath& target) override;
 
-  void Verify(const ProgressCallback& progress_callback,
-              const SuccessCallback& success_callback,
-              const ErrorCallback& error_callback,
+  void Verify(ProgressCallback progress_callback,
+              SuccessCallback success_callback,
+              ErrorCallback error_callback,
               const base::FilePath& source,
               const base::FilePath& target) override;
 
-  void Cancel(const CancelCallback& cancel_callback) override;
+  void Cancel(CancelCallback cancel_callback) override;
 
   void Shutdown() override;
 
@@ -207,6 +207,8 @@ class ImageWriterUnitTestBase : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
 };
+
+bool GetTestDataDirectory(base::FilePath* path);
 
 }  // namespace image_writer
 }  // namespace extensions

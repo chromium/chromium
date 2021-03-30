@@ -13,6 +13,7 @@
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/common/url_constants.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/navigation_controller.h"
@@ -62,7 +63,8 @@ ProcessDiceHeaderDelegateImpl::ProcessDiceHeaderDelegateImpl(
 ProcessDiceHeaderDelegateImpl::~ProcessDiceHeaderDelegateImpl() = default;
 
 bool ProcessDiceHeaderDelegateImpl::ShouldEnableSync() {
-  if (IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount()) {
+  if (IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
+          signin::ConsentLevel::kSync)) {
     VLOG(1) << "Do not start sync after web sign-in [already authenticated].";
     return false;
   }
@@ -138,5 +140,6 @@ void ProcessDiceHeaderDelegateImpl::HandleTokenExchangeFailure(
   // Show the error even if the WebContents was closed, because the user may be
   // signed out of the web.
   std::move(show_signin_error_callback_)
-      .Run(profile_, web_contents, error.ToString(), email);
+      .Run(profile_, web_contents,
+           SigninUIError::FromGoogleServiceAuthError(email, error));
 }

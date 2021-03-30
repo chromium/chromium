@@ -1,0 +1,12 @@
+<style>
+ol li::before { content: counter(l1) ":"; counter-increment: l1;}
+ol li { list-style-type: decimial; display: block; }
+</style>
+
+<div id="container" style="counter-reset:l1;">
+<ol style="list-style-type:decimal">
+<li id="line1">line1
+<li id="line2">line2
+<li>line3
+</ol>
+</div>

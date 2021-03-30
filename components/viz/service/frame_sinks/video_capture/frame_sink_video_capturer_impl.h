@@ -9,7 +9,9 @@
 
 #include <memory>
 #include <queue>
+#include <string>
 #include <vector>
+
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
@@ -22,6 +24,7 @@
 #include "base/unguessable_token.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
+#include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/service/frame_sinks/video_capture/capturable_frame_sink.h"
 #include "components/viz/service/frame_sinks/video_capture/in_flight_frame_delivery.h"
 #include "components/viz/service/frame_sinks/video_capture/interprocess_frame_pool.h"
@@ -110,7 +113,8 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
                                 const gfx::Size& max_size,
                                 bool use_fixed_aspect_ratio) final;
   void SetAutoThrottlingEnabled(bool enabled) final;
-  void ChangeTarget(const base::Optional<FrameSinkId>& frame_sink_id) final;
+  void ChangeTarget(const base::Optional<FrameSinkId>& frame_sink_id,
+                    const SubtreeCaptureId& subtree_capture_id) final;
   void Start(mojo::PendingRemote<mojom::FrameSinkVideoConsumer> consumer) final;
   void Stop() final;
   void RequestRefreshFrame() final;
@@ -174,6 +178,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
                       const gfx::Rect& damage_rect,
                       base::TimeTicks target_display_time,
                       const CompositorFrameMetadata& frame_metadata) final;
+  bool IsVideoCaptureStarted() final;
 
   // VideoCaptureOverlay::FrameSource implementation:
   gfx::Size GetSourceSize() final;
@@ -258,6 +263,12 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // ChangeTarget().
   FrameSinkId requested_target_;
 
+  // If valid, this is the ID of a layer subtree within the requested frame
+  // sink, whose associated render pass should be captured by this capturer.
+  // If not valid, then this capturer capturer the root render pass of the
+  // target frame sink.
+  SubtreeCaptureId request_subtree_id_;
+
   // The resolved target of video capture, or null if the requested target does
   // not yet exist (or no longer exists).
   CapturableFrameSink* resolved_target_ = nullptr;
@@ -273,6 +284,9 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // Allows determining whether or not the frame size has changed since the last
   // captured frame.
   gfx::Rect last_frame_visible_rect_;
+
+  // True after Start() and false after Stop().
+  bool video_capture_started_ = false;
 
   // These are sequence counters used to ensure that the frames are being
   // delivered in the same order they are captured.

@@ -12,7 +12,6 @@
 #include <string>
 
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -32,10 +31,10 @@ const float testfloat = 3.1415926935f;
 const double testdouble = 2.71828182845904523;
 const std::string teststring("Hello world");  // note non-aligned string length
 const std::wstring testwstring(L"Hello, world");
-const string16 teststring16(ASCIIToUTF16("Hello, world"));
+const std::u16string teststring16(u"Hello, world");
 const char testrawstring[] = "Hello new world"; // Test raw string writing
-// Test raw char16 writing, assumes UTF16 encoding is ANSI for alpha chars.
-const char16 testrawstring16[] = {'A', 'l', 'o', 'h', 'a', 0};
+// Test raw char16_t writing, assumes UTF16 encoding is ANSI for alpha chars.
+const char16_t testrawstring16[] = {'A', 'l', 'o', 'h', 'a', 0};
 const char testdata[] = "AAA\0BBB\0";
 const int testdatalen = base::size(testdata) - 1;
 
@@ -85,7 +84,7 @@ void VerifyResult(const Pickle& pickle) {
   EXPECT_TRUE(iter.ReadString(&outstring));
   EXPECT_EQ(teststring, outstring);
 
-  string16 outstring16;
+  std::u16string outstring16;
   EXPECT_TRUE(iter.ReadString16(&outstring16));
   EXPECT_EQ(teststring16, outstring16);
 
@@ -207,7 +206,7 @@ TEST(PickleTest, ZeroLenStr) {
 
 TEST(PickleTest, ZeroLenStr16) {
   Pickle pickle;
-  pickle.WriteString16(string16());
+  pickle.WriteString16(std::u16string());
 
   PickleIterator iter(pickle);
   std::string outstr;
@@ -229,7 +228,7 @@ TEST(PickleTest, BadLenStr16) {
   pickle.WriteInt(-1);
 
   PickleIterator iter(pickle);
-  string16 outstr;
+  std::u16string outstr;
   EXPECT_FALSE(iter.ReadString16(&outstr));
 }
 
@@ -463,7 +462,7 @@ TEST(PickleTest, EvilLengths) {
   // ReadString16 used to have its read buffer length calculation wrong leading
   // to out-of-bounds reading.
   PickleIterator iter(source);
-  string16 str16;
+  std::u16string str16;
   EXPECT_FALSE(iter.ReadString16(&str16));
 
   // And check we didn't break ReadString16.
@@ -475,7 +474,7 @@ TEST(PickleTest, EvilLengths) {
   EXPECT_EQ(1U, str16.length());
 
   // Check we don't fail in a length check with invalid String16 size.
-  // (1<<31) * sizeof(char16) == 0, so this is particularly evil.
+  // (1<<31) * sizeof(char16_t) == 0, so this is particularly evil.
   Pickle bad_len;
   bad_len.WriteInt(1 << 31);
   iter = PickleIterator(bad_len);

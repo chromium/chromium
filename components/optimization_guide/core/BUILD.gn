@@ -1,0 +1,168 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+import("//components/optimization_guide/features.gni")
+
+static_library("core") {
+  sources = [
+    "bloom_filter.cc",
+    "bloom_filter.h",
+    "command_line_top_host_provider.cc",
+    "command_line_top_host_provider.h",
+    "decision_tree_prediction_model.cc",
+    "decision_tree_prediction_model.h",
+    "hint_cache.cc",
+    "hint_cache.h",
+    "hints_component_info.h",
+    "hints_component_util.cc",
+    "hints_component_util.h",
+    "hints_fetcher.cc",
+    "hints_fetcher.h",
+    "hints_fetcher_factory.cc",
+    "hints_fetcher_factory.h",
+    "hints_processing_util.cc",
+    "hints_processing_util.h",
+    "memory_hint.cc",
+    "memory_hint.h",
+    "optimization_filter.cc",
+    "optimization_filter.h",
+    "optimization_guide_constants.cc",
+    "optimization_guide_constants.h",
+    "optimization_guide_enums.h",
+    "optimization_guide_features.cc",
+    "optimization_guide_features.h",
+    "optimization_guide_permissions_util.cc",
+    "optimization_guide_permissions_util.h",
+    "optimization_guide_prefs.cc",
+    "optimization_guide_prefs.h",
+    "optimization_guide_session_statistic.cc",
+    "optimization_guide_session_statistic.h",
+    "optimization_guide_store.cc",
+    "optimization_guide_store.h",
+    "optimization_guide_switches.cc",
+    "optimization_guide_switches.h",
+    "optimization_guide_util.cc",
+    "optimization_guide_util.h",
+    "optimization_hints_component_observer.h",
+    "optimization_hints_component_update_listener.cc",
+    "optimization_hints_component_update_listener.h",
+    "optimization_metadata.cc",
+    "optimization_metadata.h",
+    "optimization_target_model_observer.h",
+    "prediction_model.cc",
+    "prediction_model.h",
+    "prediction_model_fetcher.cc",
+    "prediction_model_fetcher.h",
+    "prediction_model_file.cc",
+    "prediction_model_file.h",
+    "store_update_data.cc",
+    "store_update_data.h",
+    "tab_url_provider.h",
+    "top_host_provider.h",
+    "url_pattern_with_wildcards.cc",
+    "url_pattern_with_wildcards.h",
+  ]
+
+  public_deps = [
+    "//components/optimization_guide:machine_learning_tflite_buildflags",
+    "//third_party/re2",
+  ]
+
+  deps = [
+    "//base",
+    "//components/data_reduction_proxy/core/browser",
+    "//components/leveldb_proto",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/prefs",
+    "//components/unified_consent",
+    "//components/variations",
+    "//components/variations/net",
+    "//google_apis",
+    "//net:net",
+    "//services/network/public/cpp",
+    "//third_party/smhasher:murmurhash3",
+    "//url:url",
+  ]
+}
+
+if (build_with_tflite_lib) {
+  static_library("machine_learning") {
+    sources = [
+      "tflite_op_resolver.cc",
+      "tflite_op_resolver.h",
+    ]
+    deps = [
+      "//third_party/tflite",
+      "//third_party/tflite:tflite_public_headers",
+    ]
+  }
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "optimization_guide_test_util.cc",
+    "optimization_guide_test_util.h",
+    "proto_database_provider_test_base.cc",
+    "proto_database_provider_test_base.h",
+    "test_hints_component_creator.cc",
+    "test_hints_component_creator.h",
+  ]
+  deps = [
+    ":core",
+    "//base",
+    "//components/leveldb_proto",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "bloom_filter_unittest.cc",
+    "command_line_top_host_provider_unittest.cc",
+    "decision_tree_prediction_model_unittest.cc",
+    "hint_cache_unittest.cc",
+    "hints_component_util_unittest.cc",
+    "hints_fetcher_unittest.cc",
+    "hints_processing_util_unittest.cc",
+    "optimization_filter_unittest.cc",
+    "optimization_guide_features_unittest.cc",
+    "optimization_guide_permissions_util_unittest.cc",
+    "optimization_guide_session_statistic_unittest.cc",
+    "optimization_guide_store_unittest.cc",
+    "optimization_guide_switches_unittest.cc",
+    "optimization_guide_util_unittest.cc",
+    "optimization_hints_component_update_listener_unittest.cc",
+    "optimization_metadata_unittest.cc",
+    "prediction_model_fetcher_unittest.cc",
+    "prediction_model_unittest.cc",
+    "store_update_data_unittest.cc",
+    "url_pattern_with_wildcards_unittest.cc",
+  ]
+
+  deps = [
+    ":core",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/data_reduction_proxy/core/browser",
+    "//components/data_reduction_proxy/core/common",
+    "//components/leveldb_proto:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/prefs:test_support",
+    "//components/sync_preferences:test_support",
+    "//components/unified_consent",
+    "//net:test_support",
+    "//services/network:network_service",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url:url",
+  ]
+}

@@ -13,16 +13,26 @@ option optimize_for = LITE_RUNTIME;
 
 package sct_auditing;
 
+// SCTClientReport represents a single report from a client, containing reports
+// from multiple independent connections, each of which contain multiple SCTs.
+message SCTClientReport {
+  // The simplified user agent of the submitter (e.g.  Chrome/xy.0.abcd.e).
+  // Supplements API keys to provide per-version granularity.
+  string user_agent = 1;
+
+  repeated TLSConnectionReport certificate_report = 2;
+}
+
 // TLSConnectionReport is the primary per-handshake report for SCT auditing.
 message TLSConnectionReport {
   TLSConnectionContext context = 1;
 
-  // SCTs may appear in any order. See SCTWithSourceAndVerifyStatus for details.
-  repeated SCTWithSourceAndVerifyStatus included_scts = 2;
+  // SCTs may appear in any order. See SCTWithVerifyStatus for details.
+  repeated SCTWithVerifyStatus included_sct = 2;
 }
 
-// TLSConnectionContext contains details about the connection that are common
-// to all SCTs observed in that connection.
+// TLSConnectionContext contains details about the connection that are common to
+// all SCTs observed in that connection.
 message TLSConnectionContext {
   // Time when the UA observed the certificate in seconds since the Unix epoch.
   int64 time_seen = 1;
@@ -41,9 +51,9 @@ message TLSConnectionContext {
   repeated bytes certificate_chain = 3;
 }
 
-// SCTWithSourceAndVerifyStatus contains the raw SCT, where it was found in the
-// certificate, and its validation status according to the UA.
-message SCTWithSourceAndVerifyStatus {
+// SCTWithVerifyStatus contains the serialized SCT along with the validation
+// status according to the UA.
+message SCTWithVerifyStatus {
   // Keep sync'd with SctVerifyStatus in Chrome's net/cert/sct_status_flags.h.
   enum SctVerifyStatus {
     // Default to unspecified status.  See go/unspecified-enum.
@@ -67,15 +77,7 @@ message SCTWithSourceAndVerifyStatus {
   }
   SctVerifyStatus status = 1;
 
-  // The source is the manner in which the client received the SCT (embedded in
-  // the certificate, delivered via the TLS handshake, or delivered via OCSP).
-  enum Source {
-    SOURCE_UNSPECIFIED = 0;
-    EMBEDDED = 1;
-    TLS_EXTENSION = 2;
-    OCSP_RESPONSE = 3;
-  }
-  Source source = 2;
-
-  bytes sct = 3;
+  // SignedCertificateTimestamp struct serialized via
+  // net::ct::EncodeSignedCertificateTimestamp().
+  bytes serialized_sct = 2;
 }

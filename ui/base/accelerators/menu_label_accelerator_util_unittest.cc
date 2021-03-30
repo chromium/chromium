@@ -11,12 +11,11 @@ namespace ui {
 
 TEST(MenuLabelAcceleratorTest, GetMnemonic) {
   static const struct {
-    const base::string16 label;
-    const base::char16 mneumonic;
+    const std::u16string label;
+    const char16_t mneumonic;
   } cases[] = {
-      {base::ASCIIToUTF16(""), 0},         {base::ASCIIToUTF16("Exit"), 0},
-      {base::ASCIIToUTF16("E&xit"), 'x'},  {base::ASCIIToUTF16("E&&xit"), 0},
-      {base::ASCIIToUTF16("E&xi&t"), 'x'}, {base::ASCIIToUTF16("Exit&"), 0},
+      {u"", 0},       {u"Exit", 0},     {u"E&xit", 'x'},
+      {u"E&&xit", 0}, {u"E&xi&t", 'x'}, {u"Exit&", 0},
   };
   for (const auto& test : cases)
     EXPECT_EQ(GetMnemonic(test.label), test.mneumonic);
@@ -42,8 +41,8 @@ TEST(MenuLabelAcceleratorTest, EscapeMenuLabelAmpersands) {
   };
 
   for (const auto& test : cases) {
-    base::string16 in = base::ASCIIToUTF16(test.input);
-    base::string16 out = base::ASCIIToUTF16(test.output);
+    std::u16string in = base::ASCIIToUTF16(test.input);
+    std::u16string out = base::ASCIIToUTF16(test.output);
     EXPECT_EQ(out, EscapeMenuLabelAmpersands(in));
   }
 }

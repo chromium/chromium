@@ -11,7 +11,7 @@ class Keyboard;
 // Observers to the Keyboard are notified when the Keyboard destructs.
 class KeyboardObserver {
  public:
-  virtual ~KeyboardObserver() {}
+  virtual ~KeyboardObserver() = default;
 
   // Called at the top of the keyboard's destructor, to give observers a change
   // to remove themselves.

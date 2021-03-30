@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/remote_objects/remote_object.h"
+#include "base/metrics/histogram_macros.h"
 #include "gin/converter.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
@@ -13,6 +14,22 @@ namespace blink {
 gin::WrapperInfo RemoteObject::kWrapperInfo = {gin::kEmbedderNativeGin};
 
 namespace {
+
+// Used to specify what kind of error was encountered during Java bridge method
+// invocation.
+// Note: these values are logged to UMA. Entries should not be renumbered and
+// numeric values should never be reused. Please keep in sync with
+// "JavaJsBridgeMethodInvocationError" in
+// src/tools/metrics/histograms/enums.xml.
+enum class JavaJsBridgeMethodInvocationError {
+  kAsConstructorDisallowed,
+  kNonexistentMethod,
+  kOnNonInjectedObjectDisallowed,
+  kErrorMessage,
+  // Magic constant used by the histogram macros.
+  kMaxValue = kErrorMessage,
+};
+
 const char kMethodInvocationAsConstructorDisallowed[] =
     "Java bridge method can't be invoked as a constructor";
 const char kMethodInvocationNonexistentMethod[] =
@@ -31,6 +48,8 @@ String RemoteInvocationErrorToString(
       return "invoking Object.getClass() is not permitted";
     case mojom::blink::RemoteInvocationError::EXCEPTION_THROWN:
       return "an exception was thrown";
+    case mojom::blink::RemoteInvocationError::NON_ASSIGNABLE_TYPES:
+      return "an incompatible object type passed to method parameter";
     default:
       return String::Format("unknown RemoteInvocationError value: %d", value);
   }
@@ -130,6 +149,131 @@ mojom::blink::RemoteInvocationArgumentPtr JSValueToMojom(
         std::move(nested_arguments));
   }
 
+  if (js_value->IsTypedArray()) {
+    auto typed_array = js_value.As<v8::TypedArray>();
+    mojom::blink::RemoteArrayType array_type;
+    if (typed_array->IsInt8Array()) {
+      array_type = mojom::blink::RemoteArrayType::kInt8Array;
+    } else if (typed_array->IsUint8Array() ||
+               typed_array->IsUint8ClampedArray()) {
+      array_type = mojom::blink::RemoteArrayType::kUint8Array;
+    } else if (typed_array->IsInt16Array()) {
+      array_type = mojom::blink::RemoteArrayType::kInt16Array;
+    } else if (typed_array->IsUint16Array()) {
+      array_type = mojom::blink::RemoteArrayType::kUint16Array;
+    } else if (typed_array->IsInt32Array()) {
+      array_type = mojom::blink::RemoteArrayType::kInt32Array;
+    } else if (typed_array->IsUint32Array()) {
+      array_type = mojom::blink::RemoteArrayType::kUint32Array;
+    } else if (typed_array->IsFloat32Array()) {
+      array_type = mojom::blink::RemoteArrayType::kFloat32Array;
+    } else if (typed_array->IsFloat64Array()) {
+      array_type = mojom::blink::RemoteArrayType::kFloat64Array;
+    } else {
+      return nullptr;
+    }
+
+    auto remote_typed_array = mojom::blink::RemoteTypedArray::New();
+    mojo_base::BigBuffer buffer(typed_array->ByteLength());
+    typed_array->CopyContents(buffer.data(), buffer.size());
+
+    remote_typed_array->buffer = std::move(buffer);
+    remote_typed_array->type = array_type;
+
+    return mojom::blink::RemoteInvocationArgument::NewTypedArrayValue(
+        std::move(remote_typed_array));
+  }
+
+  if (js_value->IsArrayBuffer() || js_value->IsArrayBufferView()) {
+    // If ArrayBuffer or ArrayBufferView is not a TypedArray, we should treat it
+    // as undefined.
+    return mojom::blink::RemoteInvocationArgument::NewSingletonValue(
+        mojom::blink::SingletonJavaScriptValue::kUndefined);
+  }
+
+  if (js_value->IsObject()) {
+    v8::Local<v8::Object> object_val = js_value.As<v8::Object>();
+
+    RemoteObject* remote_object = nullptr;
+    if (gin::ConvertFromV8(isolate, object_val, &remote_object)) {
+      return mojom::blink::RemoteInvocationArgument::NewObjectIdValue(
+          remote_object->object_id());
+    }
+
+    v8::Local<v8::Value> length_value;
+    v8::TryCatch try_catch(isolate);
+    v8::MaybeLocal<v8::Value> maybe_length_value = object_val->Get(
+        isolate->GetCurrentContext(), V8AtomicString(isolate, "length"));
+    if (try_catch.HasCaught() || !maybe_length_value.ToLocal(&length_value)) {
+      length_value = v8::Null(isolate);
+      try_catch.Reset();
+    }
+
+    if (!length_value->IsNumber()) {
+      return mojom::blink::RemoteInvocationArgument::NewSingletonValue(
+          mojom::blink::SingletonJavaScriptValue::kUndefined);
+    }
+
+    double length = length_value.As<v8::Number>()->Value();
+    if (length < 0 || length > std::numeric_limits<int32_t>::max()) {
+      return mojom::blink::RemoteInvocationArgument::NewSingletonValue(
+          mojom::blink::SingletonJavaScriptValue::kNull);
+    }
+
+    v8::Local<v8::Array> property_names;
+    if (!object_val->GetOwnPropertyNames(isolate->GetCurrentContext())
+             .ToLocal(&property_names)) {
+      return mojom::blink::RemoteInvocationArgument::NewSingletonValue(
+          mojom::blink::SingletonJavaScriptValue::kNull);
+    }
+
+    WTF::Vector<mojom::blink::RemoteInvocationArgumentPtr> nested_arguments(
+        SafeCast<wtf_size_t>(length));
+    for (uint32_t i = 0; i < property_names->Length(); ++i) {
+      v8::Local<v8::Value> key;
+      if (!property_names->Get(isolate->GetCurrentContext(), i).ToLocal(&key) ||
+          key->IsString()) {
+        try_catch.Reset();
+        continue;
+      }
+
+      if (!key->IsNumber()) {
+        NOTREACHED() << "Key \"" << *v8::String::Utf8Value(isolate, key)
+                     << "\" is not a number";
+        continue;
+      }
+
+      uint32_t key_value;
+      if (!key->Uint32Value(isolate->GetCurrentContext()).To(&key_value))
+        continue;
+
+      v8::Local<v8::Value> value_v8;
+      v8::MaybeLocal<v8::Value> maybe_value =
+          object_val->Get(isolate->GetCurrentContext(), key);
+      if (try_catch.HasCaught() || !maybe_value.ToLocal(&value_v8)) {
+        value_v8 = v8::Null(isolate);
+        try_catch.Reset();
+      }
+
+      auto nested_argument = JSValueToMojom(value_v8, isolate);
+      if (!nested_argument)
+        continue;
+      nested_arguments[key_value] = std::move(nested_argument);
+    }
+
+    // Ensure that the vector has a null value.
+    for (wtf_size_t i = 0; i < nested_arguments.size(); i++) {
+      if (!nested_arguments[i]) {
+        nested_arguments[i] =
+            mojom::blink::RemoteInvocationArgument::NewSingletonValue(
+                mojom::blink::SingletonJavaScriptValue::kNull);
+      }
+    }
+
+    return mojom::blink::RemoteInvocationArgument::NewArrayValue(
+        std::move(nested_arguments));
+  }
+
   return nullptr;
 }
 
@@ -167,11 +311,12 @@ RemoteObject::RemoteObject(v8::Isolate* isolate,
       object_id_(object_id) {}
 
 RemoteObject::~RemoteObject() {
-  // TODO(https://crbug.com/794320): if |this| outlives |gateway_|, the
-  // browser (RemoteObjectImpl.java) needs to handle object ID invalidation when
-  // the RemoteObject mojo pipe is closed.
-  if (gateway_)
+  if (gateway_) {
     gateway_->ReleaseObject(object_id_);
+
+    if (object_)
+      object_->NotifyReleasedObject();
+  }
 }
 
 gin::ObjectTemplateBuilder RemoteObject::GetObjectTemplateBuilder(
@@ -187,6 +332,9 @@ void RemoteObject::RemoteObjectInvokeCallback(
     // This is not a constructor. Throw and return.
     isolate->ThrowException(v8::Exception::Error(
         V8String(isolate, kMethodInvocationAsConstructorDisallowed)));
+    UMA_HISTOGRAM_ENUMERATION(
+        "Blink.JavaJsBridge.MethodInvocationError",
+        JavaJsBridgeMethodInvocationError::kAsConstructorDisallowed);
     return;
   }
 
@@ -195,6 +343,9 @@ void RemoteObject::RemoteObjectInvokeCallback(
     // Someone messed with the |this| pointer. Throw and return.
     isolate->ThrowException(v8::Exception::Error(
         V8String(isolate, kMethodInvocationOnNonInjectedObjectDisallowed)));
+    UMA_HISTOGRAM_ENUMERATION(
+        "Blink.JavaJsBridge.MethodInvocationError",
+        JavaJsBridgeMethodInvocationError::kOnNonInjectedObjectDisallowed);
     return;
   }
 
@@ -213,6 +364,9 @@ void RemoteObject::RemoteObjectInvokeCallback(
   if (cached_method->IsUndefined()) {
     isolate->ThrowException(v8::Exception::Error(
         V8String(isolate, kMethodInvocationNonexistentMethod)));
+    UMA_HISTOGRAM_ENUMERATION(
+        "Blink.JavaJsBridge.MethodInvocationError",
+        JavaJsBridgeMethodInvocationError::kNonexistentMethod);
     return;
   }
 
@@ -236,6 +390,8 @@ void RemoteObject::RemoteObjectInvokeCallback(
     String message = String::Format("%s : ", kMethodInvocationErrorMessage) +
                      RemoteInvocationErrorToString(result->error);
     isolate->ThrowException(v8::Exception::Error(V8String(isolate, message)));
+    UMA_HISTOGRAM_ENUMERATION("Blink.JavaJsBridge.MethodInvocationError",
+                              JavaJsBridgeMethodInvocationError::kErrorMessage);
     return;
   }
 
@@ -243,11 +399,8 @@ void RemoteObject::RemoteObjectInvokeCallback(
     return;
 
   if (result->value->is_object_id()) {
-    // TODO(crbug.com/794320): need to check whether an object with this id has
-    // already been injected
-    RemoteObject* object_result =
-        new RemoteObject(info.GetIsolate(), remote_object->gateway_,
-                         result->value->get_object_id());
+    RemoteObject* object_result = remote_object->gateway_->GetRemoteObject(
+        info.GetIsolate(), result->value->get_object_id());
     gin::Handle<RemoteObject> controller =
         gin::CreateHandle(isolate, object_result);
     if (controller.IsEmpty())

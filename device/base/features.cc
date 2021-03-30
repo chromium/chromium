@@ -47,6 +47,10 @@ namespace features {
 #if BUILDFLAG(ENABLE_OPENXR)
 // Controls WebXR support for the OpenXR Runtime.
 const base::Feature kOpenXR{"OpenXR", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Controls whether shared images are used for OpenXR Runtime
+const base::Feature kOpenXRSharedImages{"OpenXRSharedImages",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // ENABLE_OPENXR
 }  // namespace features
 }  // namespace device

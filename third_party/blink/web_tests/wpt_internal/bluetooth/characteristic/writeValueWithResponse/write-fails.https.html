@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+bluetooth_test(async () => {
+  await setBluetoothFakeAdapter('FailingGATTOperationsAdapter');
+  const device = await requestDeviceWithTrustedClick({
+    filters: [{services: [errorUUID(0xA0)]}],
+  });
+  const gattServer = await device.gatt.connect();
+  const service = await gattServer.getPrimaryService(errorUUID(0xA0));
+  for (const testSpec of gatt_errors_tests) {
+    const characteristic = await service.getCharacteristic(testSpec.uuid);
+    await assert_promise_rejects_with_message(
+        characteristic.writeValueWithResponse(new Uint8Array([1])),
+        testSpec.error,
+        testSpec.testName);
+  }
+});
+</script>

@@ -1,0 +1,27 @@
+<!--
+@WAIT-FOR:done
+-->
+<!-- A <map> cannot use aria-owns, as it cannot have children of its own.
+     This is because a map is just a container for <area> elements, which must
+     be parented by an image. -->
+<!DOCTYPE html>
+<html>
+<body>
+
+<img src="pipe.jpg" width="145" height="126" alt="pipe" usemap="#pipe">
+<map name="pipe">
+  <area id="area" shape="rect" coords="0,0,145,126" alt="pipe1" href="fake.htm">
+</map>
+<p id="paragraph">Paragraph</p>
+
+<script>
+  setTimeout(() => {
+    document.querySelector('map').setAttribute('aria-owns', 'area paragraph');
+    setTimeout(() => {
+      document.title = 'done';
+    }, 250);
+  }, 50);
+</script>
+
+</body>
+</html>

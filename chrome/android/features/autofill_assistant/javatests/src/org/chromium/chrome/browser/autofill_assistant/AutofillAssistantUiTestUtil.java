@@ -16,7 +16,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build.VERSION;
 import android.support.test.InstrumentationRegistry;
@@ -237,32 +236,6 @@ class AutofillAssistantUiTestUtil {
                 }
 
                 description.appendText("has tint with ID " + colorId);
-            }
-        };
-    }
-
-    static Matcher<View> hasBackgroundColor(final int colorResId) {
-        return new BoundedMatcher<View, View>(View.class) {
-            private Context mContext;
-
-            @Override
-            protected boolean matchesSafely(View imageView) {
-                this.mContext = imageView.getContext();
-                Drawable background = imageView.getBackground();
-                if (!(background instanceof ColorDrawable)) return false;
-                int expectedColor =
-                        ApiCompatibilityUtils.getColor(mContext.getResources(), colorResId);
-                return ((ColorDrawable) background).getColor() == expectedColor;
-            }
-
-            @Override
-            public void describeTo(Description description) {
-                String colorId = String.valueOf(colorResId);
-                if (this.mContext != null) {
-                    colorId = this.mContext.getResources().getResourceName(colorResId);
-                }
-
-                description.appendText("has background color with ID " + colorId);
             }
         };
     }
@@ -564,8 +537,7 @@ class AutofillAssistantUiTestUtil {
         DisplayMetrics displayMetrics = testRule.getActivity().getResources().getDisplayMetrics();
         BottomSheetController bottomSheetController =
                 testRule.getActivity().getRootUiCoordinatorForTesting().getBottomSheetController();
-        int totalBottomSheetHeight = bottomSheetController.getCurrentOffset()
-                + bottomSheetController.getTopShadowHeight();
+        int totalBottomSheetHeight = bottomSheetController.getCurrentOffset();
         if (x < 0 || x > displayMetrics.widthPixels || y < 0
                 || y > displayMetrics.heightPixels - totalBottomSheetHeight) {
             throw new IllegalArgumentException(Arrays.toString(elementIds)
@@ -762,7 +734,7 @@ class AutofillAssistantUiTestUtil {
             String url, boolean startImmediately) {
         Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(
                 InstrumentationRegistry.getTargetContext(), url);
-        intent.putExtra(AutofillAssistantArguments.PARAMETER_START_IMMEDIATELY, startImmediately);
+        intent.putExtra(TriggerContext.PARAMETER_START_IMMEDIATELY, startImmediately);
         return intent;
     }
 }

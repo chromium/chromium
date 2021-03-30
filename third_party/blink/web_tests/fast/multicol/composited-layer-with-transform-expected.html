@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<!-- This is a copy of external/wpt/css/css-break/transform-007.html kept in
+     fast/multicol/ to allow the incorrect result we get when
+     CompositeAfterPaint is disabled. See crbug.com/1058792 . This copy of the
+     test can be removed when CompositeAfterPaint has shipped. -->
+<style>
+  .transformed {
+      will-change: transform;
+      width: 100px;
+      transform: rotate(25deg);
+      transform-origin: bottom right;
+      background: hotpink;
+  }
+  .child {
+      margin-left: auto;
+      width: 50px;
+      background: lime;
+  }
+</style>
+<div style="columns:1; width:460px; column-gap:20px; margin-top:50px;">
+  <div style="display:flow-root; height:100px; background:yellow;">
+    <div class="transformed" style="margin-top:50px; height:175px;">
+      <div class="child" style="height:300px;"></div>
+    </div>
+  </div>
+</div>

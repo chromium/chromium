@@ -53,7 +53,7 @@ class FontFallback
  protected:
   ~FontFallback() override;
 
-  bool GetCachedFont(const base::string16& text,
+  bool GetCachedFont(const std::u16string& text,
                      const wchar_t* base_family_name,
                      const wchar_t* locale,
                      DWRITE_FONT_WEIGHT base_weight,
@@ -75,7 +75,7 @@ class FontFallback
   // of font families that matched a character on a previous call. The list is
   // capped in size and maintained in MRU order. This gives us a good chance of
   // returning a suitable fallback font without having to do an IPC.
-  std::map<base::string16, std::list<Microsoft::WRL::ComPtr<IDWriteFontFamily>>>
+  std::map<std::wstring, std::list<Microsoft::WRL::ComPtr<IDWriteFontFamily>>>
       fallback_family_cache_;
 
   DISALLOW_ASSIGN(FontFallback);

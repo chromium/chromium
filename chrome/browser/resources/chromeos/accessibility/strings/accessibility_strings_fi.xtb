@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">Luettelokohde</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">Pyyhkäise oikealle kahdella sormella</translation>
-<translation id="1016393160682012902">Kokeile qwerty-näppäintä, päivitettävää pistekirjoitusnäppäintä tai kosketuselettä, niin näet sen toiminnan. Paina Control ja w tai Esc sulkeaksesi tilan.</translation>
 <translation id="1022586497894531524">Käytätkö ChromeVoxin äänipalautetta ensimmäistä kertaa? Tämän ohjeen avulla voit tutustua ChromeVoxin perusteisiin nopeasti.</translation>
 <translation id="1025074108959230262">Kiinnitetty tila pois käytöstä</translation>
 <translation id="1031961866430398710">sitten</translation>
@@ -150,6 +149,7 @@
 <translation id="2045055672832940894">Ei edellisiä säätimiä</translation>
 <translation id="2045606329038304310">Lomakekentän säädin</translation>
 <translation id="2063539687800151747">Epigrafi</translation>
+<translation id="2074531330963286860">Toimintoja on saatavilla. Katso painamalla haku + piste.</translation>
 <translation id="2086961585857038472">Seuraava sana</translation>
 <translation id="2087981446621639008">kuvluett tied</translation>
 <translation id="2089387485033699258">fi</translation>
@@ -976,6 +976,7 @@
 <translation id="827266600368092403">Aloita tai lopeta valinta</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8276439074553447000">Siirry edelliseen aktivoitavaan kohteeseen</translation>
+<translation id="8279039817939141096">Kokeile qwerty-näppäintä, päivitettävää pistekirjoitusnäppäintä tai kosketuselettä, niin näet sen toiminnan. Sulje tila painamalla Control ja w, välilyönti ja Z tai Esc tai pyyhkäisemällä vasemmalle kahdella sormella.</translation>
 <translation id="8283603667300770666">Seuraava lomakekenttä</translation>
 <translation id="8310185481635255431">Ei seuraavia linkkejä</translation>
 <translation id="831207808878314375">Määritelmä</translation>

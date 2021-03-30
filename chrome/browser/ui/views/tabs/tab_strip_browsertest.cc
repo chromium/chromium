@@ -47,7 +47,7 @@ class TabStripBrowsertest : public InProcessBrowserTest {
 
   std::vector<content::WebContents*> GetWebContentses() {
     std::vector<content::WebContents*> contentses;
-    for (int i = 0; i < tab_strip()->tab_count(); ++i)
+    for (int i = 0; i < tab_strip()->GetTabCount(); ++i)
       contentses.push_back(tab_strip_model()->GetWebContentsAt(i));
     return contentses;
   }
@@ -55,7 +55,7 @@ class TabStripBrowsertest : public InProcessBrowserTest {
   std::vector<content::WebContents*> GetWebContentsesInOrder(
       const std::vector<int>& order) {
     std::vector<content::WebContents*> contentses;
-    for (int i = 0; i < tab_strip()->tab_count(); ++i)
+    for (int i = 0; i < tab_strip()->GetTabCount(); ++i)
       contentses.push_back(tab_strip_model()->GetWebContentsAt(order[i]));
     return contentses;
   }

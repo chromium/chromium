@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_math.h"
 #include "base/sequence_checker.h"
@@ -70,7 +71,7 @@ DatabaseImpl::~DatabaseImpl() {
 
 void DatabaseImpl::RenameObjectStore(int64_t transaction_id,
                                      int64_t object_store_id,
-                                     const base::string16& new_name) {
+                                     const std::u16string& new_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!connection_->IsConnected())
     return;
@@ -147,35 +148,6 @@ void DatabaseImpl::VersionChangeIgnored() {
     return;
 
   connection_->VersionChangeIgnored();
-}
-
-void DatabaseImpl::AddObserver(int64_t transaction_id,
-                               int32_t observer_id,
-                               bool include_transaction,
-                               bool no_records,
-                               bool values,
-                               uint32_t operation_types) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!connection_->IsConnected())
-    return;
-
-  IndexedDBTransaction* transaction =
-      connection_->GetTransaction(transaction_id);
-  if (!transaction)
-    return;
-
-  IndexedDBObserver::Options options(include_transaction, no_records, values,
-                                     operation_types);
-  connection_->database()->AddPendingObserver(transaction, observer_id,
-                                              options);
-}
-
-void DatabaseImpl::RemoveObservers(const std::vector<int32_t>& observers) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!connection_->IsConnected())
-    return;
-
-  connection_->RemoveObservers(observers);
 }
 
 void DatabaseImpl::Get(int64_t transaction_id,
@@ -393,9 +365,9 @@ void DatabaseImpl::Count(
     mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks>
         pending_callbacks) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  scoped_refptr<IndexedDBCallbacks> callbacks(
-      new IndexedDBCallbacks(dispatcher_host_->AsWeakPtr(), origin_,
-                             std::move(pending_callbacks), idb_runner_));
+  auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
+      dispatcher_host_->AsWeakPtr(), origin_, std::move(pending_callbacks),
+      idb_runner_);
   if (!connection_->IsConnected())
     return;
 
@@ -418,9 +390,9 @@ void DatabaseImpl::DeleteRange(
     mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks>
         pending_callbacks) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  scoped_refptr<IndexedDBCallbacks> callbacks(
-      new IndexedDBCallbacks(dispatcher_host_->AsWeakPtr(), origin_,
-                             std::move(pending_callbacks), idb_runner_));
+  auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
+      dispatcher_host_->AsWeakPtr(), origin_, std::move(pending_callbacks),
+      idb_runner_);
   if (!connection_->IsConnected())
     return;
 
@@ -441,9 +413,9 @@ void DatabaseImpl::GetKeyGeneratorCurrentNumber(
     mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks>
         pending_callbacks) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  scoped_refptr<IndexedDBCallbacks> callbacks(
-      new IndexedDBCallbacks(dispatcher_host_->AsWeakPtr(), origin_,
-                             std::move(pending_callbacks), idb_runner_));
+  auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
+      dispatcher_host_->AsWeakPtr(), origin_, std::move(pending_callbacks),
+      idb_runner_);
   if (!connection_->IsConnected())
     return;
 
@@ -464,9 +436,9 @@ void DatabaseImpl::Clear(
     mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks>
         pending_callbacks) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  scoped_refptr<IndexedDBCallbacks> callbacks(
-      new IndexedDBCallbacks(dispatcher_host_->AsWeakPtr(), origin_,
-                             std::move(pending_callbacks), idb_runner_));
+  auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
+      dispatcher_host_->AsWeakPtr(), origin_, std::move(pending_callbacks),
+      idb_runner_);
   if (!connection_->IsConnected())
     return;
 
@@ -483,7 +455,7 @@ void DatabaseImpl::Clear(
 void DatabaseImpl::CreateIndex(int64_t transaction_id,
                                int64_t object_store_id,
                                int64_t index_id,
-                               const base::string16& name,
+                               const std::u16string& name,
                                const IndexedDBKeyPath& key_path,
                                bool unique,
                                bool multi_entry) {
@@ -535,7 +507,7 @@ void DatabaseImpl::DeleteIndex(int64_t transaction_id,
 void DatabaseImpl::RenameIndex(int64_t transaction_id,
                                int64_t object_store_id,
                                int64_t index_id,
-                               const base::string16& new_name) {
+                               const std::u16string& new_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!connection_->IsConnected())
     return;

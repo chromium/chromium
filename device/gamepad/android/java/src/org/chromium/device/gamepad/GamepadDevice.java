@@ -30,20 +30,43 @@ class GamepadDevice {
     @VisibleForTesting
     static final int MAX_RAW_BUTTON_VALUES = 256;
 
-    /** Keycodes which might be mapped by {@link GamepadMappings}. */
-    private static final int RELEVANT_KEYCODES[] = {KeyEvent.KEYCODE_BUTTON_A,
-            KeyEvent.KEYCODE_BUTTON_B, KeyEvent.KEYCODE_BUTTON_C, KeyEvent.KEYCODE_BUTTON_X,
-            KeyEvent.KEYCODE_BUTTON_Y, KeyEvent.KEYCODE_BUTTON_Z, KeyEvent.KEYCODE_BUTTON_L1,
-            KeyEvent.KEYCODE_BUTTON_R1, KeyEvent.KEYCODE_BUTTON_L2, KeyEvent.KEYCODE_BUTTON_R2,
-            KeyEvent.KEYCODE_BUTTON_SELECT, KeyEvent.KEYCODE_BUTTON_START,
-            KeyEvent.KEYCODE_BUTTON_THUMBL, KeyEvent.KEYCODE_BUTTON_THUMBR,
-            KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_LEFT,
-            KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.KEYCODE_BUTTON_MODE};
+    // Allow for devices that have more buttons than the Standard Gamepad.
+    static final int MAX_BUTTON_INDEX = CanonicalButtonIndex.COUNT;
+
+    /** Keycodes which might be mapped by {@link GamepadMappings}. Keep sorted by keycode. */
+    @VisibleForTesting
+    static final int RELEVANT_KEYCODES[] = {
+            KeyEvent.KEYCODE_DPAD_UP, // 0x13
+            KeyEvent.KEYCODE_DPAD_DOWN, // 0x14
+            KeyEvent.KEYCODE_DPAD_LEFT, // 0x15
+            KeyEvent.KEYCODE_DPAD_RIGHT, // 0x16
+            KeyEvent.KEYCODE_BUTTON_A, // 0x60
+            KeyEvent.KEYCODE_BUTTON_B, // 0x61
+            KeyEvent.KEYCODE_BUTTON_C, // 0x62
+            KeyEvent.KEYCODE_BUTTON_X, // 0x63
+            KeyEvent.KEYCODE_BUTTON_Y, // 0x64
+            KeyEvent.KEYCODE_BUTTON_Z, // 0x65
+            KeyEvent.KEYCODE_BUTTON_L1, // 0x66
+            KeyEvent.KEYCODE_BUTTON_R1, // 0x67
+            KeyEvent.KEYCODE_BUTTON_L2, // 0x68
+            KeyEvent.KEYCODE_BUTTON_R2, // 0x69
+            KeyEvent.KEYCODE_BUTTON_THUMBL, // 0x6a
+            KeyEvent.KEYCODE_BUTTON_THUMBR, // 0x6b
+            KeyEvent.KEYCODE_BUTTON_START, // 0x6c
+            KeyEvent.KEYCODE_BUTTON_SELECT, // 0x6d
+            KeyEvent.KEYCODE_BUTTON_MODE, // 0x6e
+            KeyEvent.KEYCODE_MEDIA_RECORD // 0x82
+    };
 
     // An id for the gamepad.
     private int mDeviceId;
     // The index of the gamepad in the Navigator.
     private int mDeviceIndex;
+    // The vendor ID of the gamepad, or zero if the gamepad does not have a vendor ID.
+    private int mDeviceVendorId;
+    // The product ID of the gamepad, or zero if the gamepad does not have a product ID.
+    private int mDeviceProductId;
+
     // Last time the data for this gamepad was updated.
     private long mTimestamp;
 
@@ -53,7 +76,7 @@ class GamepadDevice {
     // should correspond to "down" or "right".
     private final float[] mAxisValues = new float[CanonicalAxisIndex.COUNT];
 
-    private final float[] mButtonsValues = new float[CanonicalButtonIndex.COUNT];
+    private final float[] mButtonsValues = new float[MAX_BUTTON_INDEX + 1];
 
     // When the user agent recognizes the attached inputDevice, it is recommended
     // that it be remapped to a canonical ordering when possible. Devices that are
@@ -75,6 +98,8 @@ class GamepadDevice {
         mDeviceIndex = index;
         mDeviceId = inputDevice.getId();
         mDeviceName = inputDevice.getName();
+        mDeviceVendorId = inputDevice.getVendorId();
+        mDeviceProductId = inputDevice.getProductId();
         mTimestamp = SystemClock.uptimeMillis();
         // Get axis ids and initialize axes values.
         final List<MotionRange> ranges = inputDevice.getMotionRanges();
@@ -89,7 +114,8 @@ class GamepadDevice {
         }
 
         // Get the set of relevant buttons which exist on the gamepad.
-        BitSet buttons = new BitSet(KeyEvent.KEYCODE_BUTTON_MODE);
+        final int maxKeycode = RELEVANT_KEYCODES[RELEVANT_KEYCODES.length - 1];
+        BitSet buttons = new BitSet(maxKeycode);
         boolean[] presentKeys = inputDevice.hasKeys(RELEVANT_KEYCODES);
         for (int j = 0; j < RELEVANT_KEYCODES.length; ++j) {
             if (presentKeys[j]) {
@@ -126,6 +152,22 @@ class GamepadDevice {
      */
     public String getName() {
         return mDeviceName;
+    }
+
+    /**
+     * @return Vendor Id of the gamepad device.
+     * It can be zero if gamepad doesn't have a vendor ID.
+     */
+    public int getVendorId() {
+        return mDeviceVendorId;
+    }
+
+    /**
+     * @return The product ID of the gamepad.
+     * It can be zero if gamepad doesn't have a product ID.
+     */
+    public int getProductId() {
+        return mDeviceProductId;
     }
 
     /**

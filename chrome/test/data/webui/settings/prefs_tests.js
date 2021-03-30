@@ -3,13 +3,12 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {CrSettingsPrefs} from 'chrome://settings/settings.js';
-// #import {FakeSettingsPrivate} from 'chrome://test/settings/fake_settings_private.m.js';
-// #import {prefsTestCases} from 'chrome://test/settings/prefs_test_cases.m.js';
+import {CrSettingsPrefs} from 'chrome://settings/settings.js';
+import {FakeSettingsPrivate} from 'chrome://test/settings/fake_settings_private.js';
+import {prefsTestCases} from 'chrome://test/settings/prefs_test_cases.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for settings-prefs. */
-cr.define('settings_prefs', function() {
   /**
    * Creates a deep copy of the object.
    * @param {!Object} obj
@@ -26,7 +25,7 @@ cr.define('settings_prefs', function() {
      */
     let prefs;
 
-    /** @type {settings.FakeSettingsPrivate} */
+    /** @type {FakeSettingsPrivate} */
     let fakeApi = null;
 
     /**
@@ -81,10 +80,9 @@ cr.define('settings_prefs', function() {
       PolymerTest.clearBody();
 
       // Override chrome.settingsPrivate with FakeSettingsPrivate.
-      fakeApi = new settings.FakeSettingsPrivate(
-          prefsTestCases.map(function(testCase) {
-            return testCase.pref;
-          }));
+      fakeApi = new FakeSettingsPrivate(prefsTestCases.map(function(testCase) {
+        return testCase.pref;
+      }));
       CrSettingsPrefs.deferInitialization = true;
 
       prefs = document.createElement('settings-prefs');
@@ -179,5 +177,3 @@ cr.define('settings_prefs', function() {
     });
   });
 
-  // #cr_define_end
-});

@@ -35,6 +35,7 @@
 #include "base/auto_reset.h"
 #include "build/build_config.h"
 #include "cc/layers/picture_layer.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_data.h"
@@ -361,6 +362,9 @@ InspectorOverlayAgent::InspectorOverlayAgent(
       v8_session_(v8_session),
       dom_agent_(dom_agent),
       swallow_next_mouse_up_(false),
+      original_layer_tree_debug_state_(
+          std::make_unique<cc::LayerTreeDebugState>(
+              GetFrame()->GetWidgetForLocalRoot()->GetLayerTreeDebugState())),
       backend_node_id_to_inspect_(0),
       enabled_(&agent_state_, false),
       show_ad_highlights_(&agent_state_, false),
@@ -370,6 +374,7 @@ InspectorOverlayAgent::InspectorOverlayAgent(
       show_layout_shift_regions_(&agent_state_, false),
       show_scroll_bottleneck_rects_(&agent_state_, false),
       show_hit_test_borders_(&agent_state_, false),
+      show_web_vitals_(&agent_state_, false),
       show_size_on_resize_(&agent_state_, false),
       paused_in_debugger_message_(&agent_state_, String()),
       inspect_mode_(&agent_state_, protocol::Overlay::InspectModeEnum::None),
@@ -385,6 +390,7 @@ void InspectorOverlayAgent::Trace(Visitor* visitor) const {
   visitor->Trace(overlay_page_);
   visitor->Trace(overlay_chrome_client_);
   visitor->Trace(overlay_host_);
+  visitor->Trace(resize_timer_);
   visitor->Trace(dom_agent_);
   visitor->Trace(inspect_tool_);
   visitor->Trace(persistent_tool_);
@@ -436,16 +442,14 @@ void InspectorOverlayAgent::EnsureAXContext(Node* node) {
 Response InspectorOverlayAgent::disable() {
   enabled_.Clear();
   setShowAdHighlights(false);
-  setShowDebugBorders(false);
-  setShowFPSCounter(false);
-  setShowPaintRects(false);
-  setShowLayoutShiftRegions(false);
-  setShowScrollBottleneckRects(false);
-  setShowHitTestBorders(false);
   setShowViewportSizeOnResize(false);
   paused_in_debugger_message_.Clear();
   inspect_mode_.Set(protocol::Overlay::InspectModeEnum::None);
   inspect_mode_protocol_config_.Set(std::vector<uint8_t>());
+
+  GetFrame()->GetWidgetForLocalRoot()->SetLayerTreeDebugState(
+      *original_layer_tree_debug_state_);
+
   if (overlay_page_) {
     overlay_page_->WillBeDestroyed();
     overlay_page_.Clear();
@@ -476,18 +480,13 @@ Response InspectorOverlayAgent::setShowDebugBorders(bool show) {
     if (!response.IsSuccess())
       return response;
   }
-  WebFrameWidget* widget = frame_impl_->LocalRoot()->FrameWidget();
-  WebFrameWidgetImpl* widget_impl = static_cast<WebFrameWidgetImpl*>(widget);
-  // While a frame is being detached the inspector will shutdown and
-  // turn off debug overlays, but the WebFrameWidget is already gone.
-  if (widget_impl) {
-    cc::LayerTreeDebugState debug_state = widget_impl->GetLayerTreeDebugState();
-    if (show)
-      debug_state.show_debug_borders.set();
-    else
-      debug_state.show_debug_borders.reset();
-    widget_impl->SetLayerTreeDebugState(debug_state);
-  }
+  FrameWidget* widget = GetFrame()->GetWidgetForLocalRoot();
+  cc::LayerTreeDebugState debug_state = widget->GetLayerTreeDebugState();
+  if (show)
+    debug_state.show_debug_borders.set();
+  else
+    debug_state.show_debug_borders.reset();
+  widget->SetLayerTreeDebugState(debug_state);
   return Response::Success();
 }
 
@@ -498,15 +497,10 @@ Response InspectorOverlayAgent::setShowFPSCounter(bool show) {
     if (!response.IsSuccess())
       return response;
   }
-  WebFrameWidget* widget = frame_impl_->LocalRoot()->FrameWidget();
-  WebFrameWidgetImpl* widget_impl = static_cast<WebFrameWidgetImpl*>(widget);
-  // While a frame is being detached the inspector will shutdown and
-  // turn off debug overlays, but the WebFrameWidget is already gone.
-  if (widget_impl) {
-    cc::LayerTreeDebugState debug_state = widget_impl->GetLayerTreeDebugState();
-    debug_state.show_fps_counter = show;
-    widget_impl->SetLayerTreeDebugState(debug_state);
-  }
+  FrameWidget* widget = GetFrame()->GetWidgetForLocalRoot();
+  cc::LayerTreeDebugState debug_state = widget->GetLayerTreeDebugState();
+  debug_state.show_fps_counter = show;
+  widget->SetLayerTreeDebugState(debug_state);
   return Response::Success();
 }
 
@@ -517,15 +511,10 @@ Response InspectorOverlayAgent::setShowPaintRects(bool show) {
     if (!response.IsSuccess())
       return response;
   }
-  WebFrameWidget* widget = frame_impl_->LocalRoot()->FrameWidget();
-  WebFrameWidgetImpl* widget_impl = static_cast<WebFrameWidgetImpl*>(widget);
-  // While a frame is being detached the inspector will shutdown and
-  // turn off debug overlays, but the WebFrameWidget is already gone.
-  if (widget_impl) {
-    cc::LayerTreeDebugState debug_state = widget_impl->GetLayerTreeDebugState();
-    debug_state.show_paint_rects = show;
-    widget_impl->SetLayerTreeDebugState(debug_state);
-  }
+  FrameWidget* widget = GetFrame()->GetWidgetForLocalRoot();
+  cc::LayerTreeDebugState debug_state = widget->GetLayerTreeDebugState();
+  debug_state.show_paint_rects = show;
+  widget->SetLayerTreeDebugState(debug_state);
   if (!show && frame_impl_->GetFrameView())
     frame_impl_->GetFrameView()->Invalidate();
   return Response::Success();
@@ -538,15 +527,10 @@ Response InspectorOverlayAgent::setShowLayoutShiftRegions(bool show) {
     if (!response.IsSuccess())
       return response;
   }
-  WebFrameWidget* widget = frame_impl_->LocalRoot()->FrameWidget();
-  WebFrameWidgetImpl* widget_impl = static_cast<WebFrameWidgetImpl*>(widget);
-  // While a frame is being detached the inspector will shutdown and
-  // turn off debug overlays, but the WebFrameWidget is already gone.
-  if (widget_impl) {
-    cc::LayerTreeDebugState debug_state = widget_impl->GetLayerTreeDebugState();
-    debug_state.show_layout_shift_regions = show;
-    widget_impl->SetLayerTreeDebugState(debug_state);
-  }
+  FrameWidget* widget = GetFrame()->GetWidgetForLocalRoot();
+  cc::LayerTreeDebugState debug_state = widget->GetLayerTreeDebugState();
+  debug_state.show_layout_shift_regions = show;
+  widget->SetLayerTreeDebugState(debug_state);
 
   if (!show && frame_impl_->GetFrameView())
     frame_impl_->GetFrameView()->Invalidate();
@@ -560,18 +544,13 @@ Response InspectorOverlayAgent::setShowScrollBottleneckRects(bool show) {
     if (!response.IsSuccess())
       return response;
   }
-  WebFrameWidget* widget = frame_impl_->LocalRoot()->FrameWidget();
-  WebFrameWidgetImpl* widget_impl = static_cast<WebFrameWidgetImpl*>(widget);
-  // While a frame is being detached the inspector will shutdown and
-  // turn off debug overlays, but the WebFrameWidget is already gone.
-  if (widget_impl) {
-    cc::LayerTreeDebugState debug_state = widget_impl->GetLayerTreeDebugState();
-    debug_state.show_touch_event_handler_rects = show;
-    debug_state.show_wheel_event_handler_rects = show;
-    debug_state.show_non_fast_scrollable_rects = show;
-    debug_state.show_main_thread_scrolling_reason_rects = show;
-    widget_impl->SetLayerTreeDebugState(debug_state);
-  }
+  FrameWidget* widget = GetFrame()->GetWidgetForLocalRoot();
+  cc::LayerTreeDebugState debug_state = widget->GetLayerTreeDebugState();
+  debug_state.show_touch_event_handler_rects = show;
+  debug_state.show_wheel_event_handler_rects = show;
+  debug_state.show_non_fast_scrollable_rects = show;
+  debug_state.show_main_thread_scrolling_reason_rects = show;
+  widget->SetLayerTreeDebugState(debug_state);
 
   return Response::Success();
 }
@@ -583,20 +562,29 @@ Response InspectorOverlayAgent::setShowHitTestBorders(bool show) {
     if (!response.IsSuccess())
       return response;
   }
-  WebFrameWidget* widget = frame_impl_->LocalRoot()->FrameWidget();
-  WebFrameWidgetImpl* widget_impl = static_cast<WebFrameWidgetImpl*>(widget);
-  // While a frame is being detached the inspector will shutdown and
-  // turn off debug overlays, but the WebFrameWidget is already gone.
-  if (widget_impl) {
-    cc::LayerTreeDebugState debug_state = widget_impl->GetLayerTreeDebugState();
-    debug_state.show_hit_test_borders = show;
-    widget_impl->SetLayerTreeDebugState(debug_state);
-  }
+  FrameWidget* widget = GetFrame()->GetWidgetForLocalRoot();
+  cc::LayerTreeDebugState debug_state = widget->GetLayerTreeDebugState();
+  debug_state.show_hit_test_borders = show;
+  widget->SetLayerTreeDebugState(debug_state);
   return Response::Success();
 }
 
 Response InspectorOverlayAgent::setShowViewportSizeOnResize(bool show) {
   show_size_on_resize_.Set(show);
+  return Response::Success();
+}
+
+Response InspectorOverlayAgent::setShowWebVitals(bool show) {
+  show_web_vitals_.Set(show);
+  if (show) {
+    Response response = CompositingEnabled();
+    if (!response.IsSuccess())
+      return response;
+  }
+  FrameWidget* widget = GetFrame()->GetWidgetForLocalRoot();
+  cc::LayerTreeDebugState debug_state = widget->GetLayerTreeDebugState();
+  debug_state.show_web_vital_metrics = show;
+  widget->SetLayerTreeDebugState(debug_state);
   return Response::Success();
 }
 
@@ -843,6 +831,8 @@ Response InspectorOverlayAgent::getHighlightObjectForTest(
     config->color_format = ColorFormat::HEX;
   }
 
+  node->GetDocument().EnsurePaintLocationDataValidForNode(
+      node, DocumentUpdateReason::kInspector);
   NodeHighlightTool tool(this, GetFrontend(), node, "" /* selector_list */,
                          std::move(config));
   *result = tool.GetNodeInspectorHighlightAsJson(
@@ -918,14 +908,8 @@ void InspectorOverlayAgent::DispatchBufferedTouchEvents() {
   OverlayMainFrame()->GetEventHandler().DispatchBufferedTouchEvents();
 }
 
-void InspectorOverlayAgent::PageScrollStarted() {
-  // The new scroll can start without the previous ending.
-  is_page_scrolling_ = true;
-}
-
-void InspectorOverlayAgent::PageScrollEnded() {
-  DCHECK(is_page_scrolling_);
-  is_page_scrolling_ = false;
+void InspectorOverlayAgent::SetPageIsScrolling(bool is_scrolling) {
+  is_page_scrolling_ = is_scrolling;
 }
 
 WebInputEventResult InspectorOverlayAgent::HandleInputEvent(
@@ -1100,7 +1084,8 @@ void InspectorOverlayAgent::LoadOverlayPageResource() {
   overlay_chrome_client_ = MakeGarbageCollected<InspectorOverlayChromeClient>(
       GetFrame()->GetPage()->GetChromeClient(), *this);
   page_clients.chrome_client = overlay_chrome_client_.Get();
-  overlay_page_ = Page::CreateNonOrdinary(page_clients);
+  overlay_page_ = Page::CreateNonOrdinary(
+      page_clients, *GetFrame()->GetFrameScheduler()->GetAgentGroupScheduler());
   overlay_host_ = MakeGarbageCollected<InspectorOverlayHost>(this);
 
   Settings& settings = GetFrame()->GetPage()->GetSettings();
@@ -1131,10 +1116,10 @@ void InspectorOverlayAgent::LoadOverlayPageResource() {
                       (MakeGarbageCollected<EmptyLocalFrameClient>()));
   auto* frame = MakeGarbageCollected<LocalFrame>(
       dummy_local_frame_client, *overlay_page_, nullptr, nullptr, nullptr,
-      FrameInsertType::kInsertInConstructor, base::UnguessableToken::Create(),
-      nullptr, nullptr, /* policy_container */ nullptr);
+      FrameInsertType::kInsertInConstructor, LocalFrameToken(), nullptr,
+      nullptr);
   frame->SetView(MakeGarbageCollected<LocalFrameView>(*frame));
-  frame->Init(nullptr);
+  frame->Init(/*opener=*/nullptr, /*policy_container=*/nullptr);
   frame->View()->SetCanHaveScrollbars(false);
   frame->View()->SetBaseBackgroundColor(Color::kTransparent);
 
@@ -1563,6 +1548,26 @@ InspectorOverlayAgent::ToFlexContainerHighlightConfig(
 }
 
 // static
+std::unique_ptr<InspectorFlexItemHighlightConfig>
+InspectorOverlayAgent::ToFlexItemHighlightConfig(
+    protocol::Overlay::FlexItemHighlightConfig* config) {
+  if (!config) {
+    return nullptr;
+  }
+  std::unique_ptr<InspectorFlexItemHighlightConfig> highlight_config =
+      std::make_unique<InspectorFlexItemHighlightConfig>();
+
+  highlight_config->base_size_box =
+      InspectorOverlayAgent::ToBoxStyle(config->getBaseSizeBox(nullptr));
+  highlight_config->base_size_border =
+      InspectorOverlayAgent::ToLineStyle(config->getBaseSizeBorder(nullptr));
+  highlight_config->flexibility_arrow =
+      InspectorOverlayAgent::ToLineStyle(config->getFlexibilityArrow(nullptr));
+
+  return highlight_config;
+}
+
+// static
 base::Optional<LineStyle> InspectorOverlayAgent::ToLineStyle(
     protocol::Overlay::LineStyle* config) {
   if (!config) {
@@ -1653,6 +1658,11 @@ InspectorOverlayAgent::ToHighlightConfig(
   highlight_config->flex_container_highlight_config =
       InspectorOverlayAgent::ToFlexContainerHighlightConfig(
           config->getFlexContainerHighlightConfig(nullptr));
+
+  highlight_config->flex_item_highlight_config =
+      InspectorOverlayAgent::ToFlexItemHighlightConfig(
+          config->getFlexItemHighlightConfig(nullptr));
+
   return highlight_config;
 }
 

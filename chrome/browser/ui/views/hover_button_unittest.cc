@@ -8,6 +8,7 @@
 
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -114,12 +115,12 @@ TEST_F(HoverButtonTest, TooltipAndAccessibleName) {
 
     // The accessible name should always be the title and subtitle concatenated
     // by \n.
-    base::string16 expected = base::JoinString(
+    std::u16string expected = base::JoinString(
         {base::ASCIIToUTF16(pair.title), base::ASCIIToUTF16(pair.subtitle)},
-        base::ASCIIToUTF16("\n"));
+        u"\n");
     EXPECT_EQ(expected, base::UTF8ToUTF16(accessible_name));
 
-    EXPECT_EQ(pair.tooltip ? expected : base::string16(),
+    EXPECT_EQ(pair.tooltip ? expected : std::u16string(),
               button->GetTooltipText(gfx::Point()));
   }
 }
@@ -133,8 +134,7 @@ TEST_F(HoverButtonTest, CreateButtonWithSubtitleAndIcons) {
   views::View* secondary_icon_raw = secondary_icon.get();
 
   HoverButton button(views::Button::PressedCallback(), std::move(primary_icon),
-                     base::ASCIIToUTF16("Title"),
-                     base::ASCIIToUTF16("Subtitle"), std::move(secondary_icon));
+                     u"Title", u"Subtitle", std::move(secondary_icon));
   EXPECT_TRUE(button.Contains(primary_icon_raw));
   EXPECT_TRUE(button.Contains(secondary_icon_raw));
 }
@@ -144,7 +144,7 @@ TEST_F(HoverButtonTest, ActivatesOnMouseReleased) {
   bool clicked = false;
   HoverButton* button = widget()->SetContentsView(std::make_unique<HoverButton>(
       base::BindRepeating([](bool* clicked) { *clicked = true; }, &clicked),
-      CreateIcon(), base::ASCIIToUTF16("Title"), base::string16()));
+      CreateIcon(), u"Title", std::u16string()));
   button->SetBoundsRect(gfx::Rect(100, 100, 200, 200));
   widget()->Show();
 
@@ -158,5 +158,32 @@ TEST_F(HoverButtonTest, ActivatesOnMouseReleased) {
 
   widget()->Close();
 }
+
+// No touch on desktop Mac.
+#if !defined(OS_MAC) || defined(USE_AURA)
+
+// Tests that tapping hover button does not crash if the tap handler removes the
+// button from views hierarchy.
+TEST_F(HoverButtonTest, TapGestureThatDeletesTheButton) {
+  bool clicked = false;
+  HoverButton* button = widget()->SetContentsView(std::make_unique<HoverButton>(
+      base::BindRepeating(
+          [](bool* clicked, views::Widget* widget) {
+            *clicked = true;
+            // Update the widget contents view, which deletes the hover button.
+            widget->SetContentsView(std::make_unique<views::View>());
+          },
+          &clicked, widget()),
+      CreateIcon(), u"Title", std::u16string()));
+  button->SetBoundsRect(gfx::Rect(100, 100, 200, 200));
+  widget()->Show();
+
+  generator()->GestureTapAt(gfx::Point(150, 150));
+  EXPECT_TRUE(clicked);
+
+  widget()->Close();
+}
+
+#endif  // !defined(OS_MAC) || defined(USE_AURA)
 
 }  // namespace

@@ -106,7 +106,6 @@ export function routineResultListTestSuite() {
       getEntries().forEach((entry, index) => {
         // Routines are initialized in the unstarted state.
         let status = new ResultStatusItem(routines[index]);
-        status.progress = ExecutionProgress.kNotStarted;
         assertDeepEquals(status, entry.item);
       });
     });
@@ -143,12 +142,11 @@ export function routineResultListTestSuite() {
       getEntries().forEach((entry, index) => {
         // Routines are initialized in the unstarted state.
         let status = new ResultStatusItem(routines[index]);
-        status.progress = ExecutionProgress.kNotStarted;
         assertDeepEquals(status, entry.item);
       });
 
-      let status = new ResultStatusItem(routines[0]);
-      status.progress = ExecutionProgress.kRunning;
+      let status =
+          new ResultStatusItem(routines[0], ExecutionProgress.kRunning);
       routineResultListElement.onStatusUpdate(status);
       return flushTasks()
           .then(() => {
@@ -158,8 +156,8 @@ export function routineResultListTestSuite() {
             assertEquals(null, getEntries()[0].item.result);
 
             // Move the first routine to completed state.
-            status = new ResultStatusItem(routines[0]);
-            status.progress = ExecutionProgress.kCompleted;
+            status =
+                new ResultStatusItem(routines[0], ExecutionProgress.kCompleted);
             status.result = /** @type {!RoutineResult} */ ({
               simpleResult:
                   chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed
@@ -177,8 +175,8 @@ export function routineResultListTestSuite() {
                 chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed,
                 getEntries()[0].item.result.simpleResult);
 
-            status = new ResultStatusItem(routines[1]);
-            status.progress = ExecutionProgress.kRunning;
+            status =
+                new ResultStatusItem(routines[1], ExecutionProgress.kRunning);
             routineResultListElement.onStatusUpdate(status);
 
             return flushTasks();
@@ -190,8 +188,8 @@ export function routineResultListTestSuite() {
             assertEquals(null, getEntries()[1].item.result);
 
             // Move the second routine to completed state.
-            status = new ResultStatusItem(routines[1]);
-            status.progress = ExecutionProgress.kCompleted;
+            status =
+                new ResultStatusItem(routines[1], ExecutionProgress.kCompleted);
             status.result = /** @type {!RoutineResult} */ ({
               simpleResult:
                   chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed

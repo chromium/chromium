@@ -10,8 +10,7 @@ import("//tools/grit/grit_rule.gni")
 
 interfaces_bindings_gen_dir = "$root_gen_dir/mojo/public/interfaces/bindings"
 
-# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-python2_action("bindings") {
+action("bindings") {
   bindings_js_files = [
     # This must be the first file in the list, because it initializes global
     # variable |mojo| that the others need to refer to.
@@ -52,8 +51,7 @@ python2_action("bindings") {
 }
 
 template("concatenate_files") {
-  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-  python2_action(target_name) {
+  action(target_name) {
     script = "//mojo/public/tools/bindings/concatenate-files.py"
     inputs = invoker.inputs
     output = "$target_gen_dir/${invoker.output}"
@@ -103,6 +101,7 @@ concatenate_files("bindings_uncompiled_module") {
     "bindings_uncompiled_module_preamble.js.part",
     "bindings_lite.js",
     "$root_gen_dir/mojo/public/interfaces/bindings/interface_control_messages.mojom-lite.js",
+    "$root_gen_dir/mojo/public/interfaces/bindings/pipe_control_messages.mojom-lite.js",
     "interface_support.js",
     "bindings_uncompiled_module_export.js.part",
   ]
@@ -146,6 +145,7 @@ if (enable_mojom_closure_compile || enable_js_type_check) {
     inputs = [
       "$target_gen_dir/mojo_internal.js",
       "$root_gen_dir/mojo/public/interfaces/bindings/interface_control_messages.mojom-lite-for-compile.js",
+      "$root_gen_dir/mojo/public/interfaces/bindings/pipe_control_messages.mojom-lite-for-compile.js",
       "$target_gen_dir/interface_support.js",
     ]
     script = "//mojo/public/tools/bindings/concatenate_and_replace_closure_exports.py"
@@ -179,8 +179,6 @@ js_library("bindings_uncompiled") {
 }
 
 grit("resources") {
-  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-  run_under_python2 = true
   source = "mojo_bindings_resources.grd"
 
   outputs = [

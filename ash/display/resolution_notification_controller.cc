@@ -131,15 +131,15 @@ void ResolutionNotificationController::CreateOrReplaceModalDialog() {
   if (!change_info_)
     return;
 
-  const base::string16 display_name =
+  const std::u16string display_name =
       base::UTF8ToUTF16(Shell::Get()->display_manager()->GetDisplayNameForId(
           change_info_->display_id));
-  const base::string16 actual_display_size =
+  const std::u16string actual_display_size =
       base::UTF8ToUTF16(change_info_->current_resolution.size().ToString());
-  const base::string16 requested_display_size =
+  const std::u16string requested_display_size =
       base::UTF8ToUTF16(change_info_->new_resolution.size().ToString());
 
-  base::string16 dialog_title =
+  std::u16string dialog_title =
       l10n_util::GetStringUTF16(IDS_ASH_RESOLUTION_CHANGE_DIALOG_TITLE);
 
   // Construct the timeout message, leaving a placeholder for the countdown
@@ -147,14 +147,14 @@ void ResolutionNotificationController::CreateOrReplaceModalDialog() {
   // timer tick.
   constexpr char kTimeoutPlaceHolder[] = "$1";
 
-  base::string16 timeout_message_with_placeholder;
+  std::u16string timeout_message_with_placeholder;
   if (display::features::IsListAllDisplayModesEnabled()) {
     dialog_title = l10n_util::GetStringUTF16(
         IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_TITLE);
 
-    const base::string16 actual_refresh_rate = ConvertRefreshRateToString16(
+    const std::u16string actual_refresh_rate = ConvertRefreshRateToString16(
         change_info_->current_resolution.refresh_rate());
-    const base::string16 requested_refresh_rate = ConvertRefreshRateToString16(
+    const std::u16string requested_refresh_rate = ConvertRefreshRateToString16(
         change_info_->new_resolution.refresh_rate());
 
     const bool no_fallback = actual_display_size == requested_display_size &&

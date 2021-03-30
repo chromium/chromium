@@ -532,8 +532,8 @@ destroyed, e.g.:
 
 ```c++
   {
-    base::Callback<int> cb = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-        base::Bind([](int) { ... }), -1);
+    base::OnceCallback<int> cb = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+        base::BindOnce([](int) { ... }), -1);
   }  // |cb| is automatically invoked with an argument of -1.
 ```
 
@@ -542,7 +542,7 @@ This can be useful for detecting interface errors:
 ```c++
   process->GetMemoryStatistics(
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          base::Bind(&MemoryProfiler::OnReplyFromRenderer), <failure args>));
+          base::BindOnce(&MemoryProfiler::OnReplyFromRenderer), <failure args>));
   // If the remote process dies, &MemoryProfiler::OnReplyFromRenderer will be
   // invoked with <failure args> when Mojo drops outstanding callbacks due to
   // a connection error on |process|.

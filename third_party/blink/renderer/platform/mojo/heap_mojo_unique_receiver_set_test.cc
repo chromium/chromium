@@ -12,44 +12,18 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap_observer_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
+#include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
+#include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
 
 namespace blink {
 
 namespace {
 
-class FakeContextNotifier final : public GarbageCollected<FakeContextNotifier>,
-                                  public ContextLifecycleNotifier {
- public:
-  FakeContextNotifier() = default;
-
-  void AddContextLifecycleObserver(
-      ContextLifecycleObserver* observer) override {
-    observers_.AddObserver(observer);
-  }
-  void RemoveContextLifecycleObserver(
-      ContextLifecycleObserver* observer) override {
-    observers_.RemoveObserver(observer);
-  }
-
-  void NotifyContextDestroyed() {
-    observers_.ForEachObserver([](ContextLifecycleObserver* observer) {
-      observer->ContextDestroyed();
-    });
-  }
-
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(observers_);
-    ContextLifecycleNotifier::Trace(visitor);
-  }
-
- private:
-  HeapObserverSet<ContextLifecycleObserver> observers_;
-};
-
 template <HeapMojoWrapperMode Mode>
 class GCOwner : public GarbageCollected<GCOwner<Mode>> {
  public:
-  explicit GCOwner(FakeContextNotifier* context) : receiver_set_(context) {}
+  explicit GCOwner(MockContextLifecycleNotifier* context)
+      : receiver_set_(context) {}
   void Trace(Visitor* visitor) const { visitor->Trace(receiver_set_); }
 
   HeapMojoUniqueReceiverSet<sample::blink::Service,
@@ -69,7 +43,7 @@ class GCOwner : public GarbageCollected<GCOwner<Mode>> {
 template <HeapMojoWrapperMode Mode>
 class HeapMojoUniqueReceiverSetBaseTest : public TestSupportingGC {
  public:
-  FakeContextNotifier* context() { return context_; }
+  MockContextLifecycleNotifier* context() { return context_; }
   scoped_refptr<base::NullTaskRunner> task_runner() {
     return null_task_runner_;
   }
@@ -81,12 +55,12 @@ class HeapMojoUniqueReceiverSetBaseTest : public TestSupportingGC {
 
  protected:
   void SetUp() override {
-    context_ = MakeGarbageCollected<FakeContextNotifier>();
+    context_ = MakeGarbageCollected<MockContextLifecycleNotifier>();
     owner_ = MakeGarbageCollected<GCOwner<Mode>>(context());
   }
   void TearDown() override {}
 
-  Persistent<FakeContextNotifier> context_;
+  Persistent<MockContextLifecycleNotifier> context_;
   Persistent<GCOwner<Mode>> owner_;
   scoped_refptr<base::NullTaskRunner> null_task_runner_ =
       base::MakeRefCounted<base::NullTaskRunner>();

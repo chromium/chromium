@@ -55,7 +55,8 @@ Element* ComputeScrollSource(Document& document, const CSSValue* value) {
   if (IsNone(value))
     return nullptr;
   DCHECK(!value || IsAuto(value));
-  return document.scrollingElement();
+  // TODO(crbug.com/1189101): Respond when the scrolling element changes.
+  return document.ScrollingElementNoLayout();
 }
 
 Element* ComputeElementOffsetTarget(Document& document, const CSSValue* value) {

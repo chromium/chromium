@@ -10,11 +10,10 @@
 #include <vector>
 
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
-#include "components/autofill/core/common/renderer_id.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/form_parsing/password_field_prediction.h"
 #include "components/password_manager/core/browser/password_form.h"
 
@@ -28,10 +27,10 @@ namespace password_manager {
 class PasswordManagerClient;
 
 // A map from field names to field types.
-using FieldTypeMap = std::map<base::string16, autofill::ServerFieldType>;
+using FieldTypeMap = std::map<std::u16string, autofill::ServerFieldType>;
 // A map from field names to field vote types.
 using VoteTypeMap =
-    std::map<base::string16, autofill::AutofillUploadContents::Field::VoteType>;
+    std::map<std::u16string, autofill::AutofillUploadContents::Field::VoteType>;
 
 // Contains information for sending a SINGLE_USERNAME vote.
 struct SingleUsernameVoteData {
@@ -53,6 +52,19 @@ struct SingleUsernameVoteData {
 // This class manages vote uploads for password forms.
 class VotesUploader {
  public:
+  // The states a changed username can be in.
+  enum class UsernameChangeState {
+    // The user did not change the username.
+    kUnchanged,
+    // The user changed the username to a different value that was present in
+    // the submitted form. For example, via the dropdown in the Desktop bubble.
+    kChangedToKnownValue,
+    // The user changed the username to a different value that was not present
+    // in the submitted form. For example, via the text field in the Desktop
+    // bubble.
+    kChangedToUnknownValue,
+  };
+
   VotesUploader(PasswordManagerClient* client,
                 bool is_possible_change_password_form);
   VotesUploader(const VotesUploader& other);
@@ -93,12 +105,12 @@ class VotesUploader {
   // |username_correction_vote_| and the method returns true.
   bool FindCorrectedUsernameElement(
       const std::vector<const PasswordForm*>& matches,
-      const base::string16& username,
-      const base::string16& password);
+      const std::u16string& username,
+      const std::u16string& password);
 
   // Generates a password attributes vote based on |password_value| and saves it
   // to |form_structure|. Declared as public for testing.
-  void GeneratePasswordAttributesVote(const base::string16& password_value,
+  void GeneratePasswordAttributesVote(const std::u16string& password_value,
                                       autofill::FormStructure* form_structure);
 
   // Stores the |unique_renderer_id| and |values| of the fields in
@@ -137,8 +149,8 @@ class VotesUploader {
     generation_element_ = generation_element;
   }
 
-  void set_has_username_edited_vote(bool has_username_edited_vote) {
-    has_username_edited_vote_ = has_username_edited_vote;
+  void set_username_change_state(UsernameChangeState username_change_state) {
+    username_change_state_ = username_change_state;
   }
 
   void set_has_passwords_revealed_vote(bool has_passwords_revealed_vote) {
@@ -189,7 +201,7 @@ class VotesUploader {
   // username value is found, the match is saved to |username_correction_vote_|
   // and the function returns true.
   bool FindUsernameInOtherPossibleUsernames(const PasswordForm& match,
-                                            const base::string16& username);
+                                            const std::u16string& username);
 
   bool StartUploadRequest(
       std::unique_ptr<autofill::FormStructure> form_to_upload,
@@ -213,9 +225,9 @@ class VotesUploader {
   // A password field name that is used for generation.
   autofill::FieldRendererId generation_element_;
 
-  // True iff a user edited the username value in a prompt and new username is
-  // the value of another field of the observed form.
-  bool has_username_edited_vote_ = false;
+  // Captures whether the user changed the username to a known value, an unknown
+  // value, or didn't change the username at all.
+  UsernameChangeState username_change_state_ = UsernameChangeState::kUnchanged;
 
   // If the user typed username that doesn't match any saved credentials, but
   // matches an entry from |all_possible_usernames| of a saved credential,
@@ -243,7 +255,7 @@ class VotesUploader {
 
   // Maps a unique renderer ID to the initial value of the fields of an
   // observed form.
-  std::map<autofill::FieldRendererId, base::string16> initial_values_;
+  std::map<autofill::FieldRendererId, std::u16string> initial_values_;
 
   base::Optional<SingleUsernameVoteData> single_username_vote_data_;
 };

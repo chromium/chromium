@@ -5,10 +5,12 @@
 #include "media/gpu/gpu_video_encode_accelerator_factory.h"
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
+#include "media/base/media_switches.h"
 #include "media/gpu/buildflags.h"
 #include "media/gpu/gpu_video_accelerator_util.h"
 #include "media/gpu/macros.h"
@@ -23,8 +25,6 @@
 #include "media/gpu/mac/vt_video_encode_accelerator_mac.h"
 #endif
 #if defined(OS_WIN)
-#include "base/feature_list.h"
-#include "media/base/media_switches.h"
 #include "media/gpu/windows/media_foundation_video_encode_accelerator_win.h"
 #endif
 #if BUILDFLAG(USE_VAAPI)
@@ -93,7 +93,12 @@ std::vector<VEAFactoryFunction> GetVEAFactoryFunctions(
     return vea_factory_functions;
 
 #if BUILDFLAG(USE_VAAPI)
+#if defined(OS_LINUX)
+  if (base::FeatureList::IsEnabled(kVaapiVideoEncodeLinux))
+    vea_factory_functions.push_back(base::BindRepeating(&CreateVaapiVEA));
+#else
   vea_factory_functions.push_back(base::BindRepeating(&CreateVaapiVEA));
+#endif
 #endif
 #if BUILDFLAG(USE_V4L2_CODEC)
   vea_factory_functions.push_back(base::BindRepeating(&CreateV4L2VEA));
@@ -182,6 +187,13 @@ GpuVideoEncodeAcceleratorFactory::GetSupportedProfiles(
   if (gpu_workarounds.disable_accelerated_vp8_encode) {
     base::EraseIf(profiles, [](const auto& vea_profile) {
       return vea_profile.profile == VP8PROFILE_ANY;
+    });
+  }
+
+  if (gpu_workarounds.disable_accelerated_h264_encode) {
+    base::EraseIf(profiles, [](const auto& vea_profile) {
+      return vea_profile.profile >= H264PROFILE_MIN &&
+             vea_profile.profile <= H264PROFILE_MAX;
     });
   }
 

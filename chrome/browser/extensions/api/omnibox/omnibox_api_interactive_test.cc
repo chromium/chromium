@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/format_macros.h"
-#include "base/strings/string16.h"
+
+#include <string>
+
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -60,7 +62,7 @@ AutocompleteController* GetAutocompleteController(Browser* browser) {
       ->autocomplete_controller();
 }
 
-base::string16 AutocompleteResultAsString(const AutocompleteResult& result) {
+std::u16string AutocompleteResultAsString(const AutocompleteResult& result) {
   std::string output(base::StringPrintf("{%" PRIuS "} ", result.size()));
   for (size_t i = 0; i < result.size(); ++i) {
     AutocompleteMatch match = result.match_at(i);
@@ -92,8 +94,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, DISABLED_Basic) {
   // Test that our extension's keyword is suggested to us when we partially type
   // it.
   {
-    AutocompleteInput input(ASCIIToUTF16("keywor"),
-                            metrics::OmniboxEventProto::NTP,
+    AutocompleteInput input(u"keywor", metrics::OmniboxEventProto::NTP,
                             ChromeAutocompleteSchemeClassifier(profile));
     autocomplete_controller->Start(input);
     WaitForAutocompleteDone(browser());
@@ -109,13 +110,12 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, DISABLED_Basic) {
     EXPECT_FALSE(match.deletable);
 
     match = result.match_at(1);
-    EXPECT_EQ(ASCIIToUTF16("kw"), match.keyword);
+    EXPECT_EQ(u"kw", match.keyword);
   }
 
   // Test that our extension can send suggestions back to us.
   {
-    AutocompleteInput input(ASCIIToUTF16("kw suggestio"),
-                            metrics::OmniboxEventProto::NTP,
+    AutocompleteInput input(u"kw suggestio", metrics::OmniboxEventProto::NTP,
                             ChromeAutocompleteSchemeClassifier(profile));
     autocomplete_controller->Start(input);
     WaitForAutocompleteDone(browser());
@@ -128,30 +128,27 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, DISABLED_Basic) {
     const AutocompleteResult& result = autocomplete_controller->result();
     ASSERT_EQ(5U, result.size()) << AutocompleteResultAsString(result);
 
-    EXPECT_EQ(ASCIIToUTF16("kw"), result.match_at(0).keyword);
-    EXPECT_EQ(ASCIIToUTF16("kw suggestio"), result.match_at(0).fill_into_edit);
+    EXPECT_EQ(u"kw", result.match_at(0).keyword);
+    EXPECT_EQ(u"kw suggestio", result.match_at(0).fill_into_edit);
     EXPECT_EQ(AutocompleteMatchType::SEARCH_OTHER_ENGINE,
               result.match_at(0).type);
     EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
               result.match_at(0).provider->type());
-    EXPECT_EQ(ASCIIToUTF16("kw"), result.match_at(1).keyword);
-    EXPECT_EQ(ASCIIToUTF16("kw suggestion1"),
-              result.match_at(1).fill_into_edit);
+    EXPECT_EQ(u"kw", result.match_at(1).keyword);
+    EXPECT_EQ(u"kw suggestion1", result.match_at(1).fill_into_edit);
     EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
               result.match_at(1).provider->type());
-    EXPECT_EQ(ASCIIToUTF16("kw"), result.match_at(2).keyword);
-    EXPECT_EQ(ASCIIToUTF16("kw suggestion2"),
-              result.match_at(2).fill_into_edit);
+    EXPECT_EQ(u"kw", result.match_at(2).keyword);
+    EXPECT_EQ(u"kw suggestion2", result.match_at(2).fill_into_edit);
     EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
               result.match_at(2).provider->type());
-    EXPECT_EQ(ASCIIToUTF16("kw"), result.match_at(3).keyword);
-    EXPECT_EQ(ASCIIToUTF16("kw suggestion3"),
-              result.match_at(3).fill_into_edit);
+    EXPECT_EQ(u"kw", result.match_at(3).keyword);
+    EXPECT_EQ(u"kw suggestion3", result.match_at(3).fill_into_edit);
     EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
               result.match_at(3).provider->type());
 
-    base::string16 description =
-        ASCIIToUTF16("Description with style: <match>, [dim], (url till end)");
+    std::u16string description =
+        u"Description with style: <match>, [dim], (url till end)";
     EXPECT_EQ(description, result.match_at(1).contents);
     ASSERT_EQ(6u, result.match_at(1).contents_class.size());
 
@@ -198,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, DISABLED_Basic) {
     ResultCatcher catcher;
     OmniboxView* omnibox_view = location_bar->GetOmniboxView();
     omnibox_view->OnBeforePossibleChange();
-    omnibox_view->SetUserText(ASCIIToUTF16("kw command"));
+    omnibox_view->SetUserText(u"kw command");
     omnibox_view->OnAfterPossibleChange(true);
     location_bar->AcceptInput();
     // This checks that the keyword provider (via javascript)
@@ -220,12 +217,11 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, OnInputEntered) {
   AutocompleteController* autocomplete_controller =
       GetAutocompleteController(browser());
   omnibox_view->OnBeforePossibleChange();
-  omnibox_view->SetUserText(ASCIIToUTF16("kw command"));
+  omnibox_view->SetUserText(u"kw command");
   omnibox_view->OnAfterPossibleChange(true);
 
   {
-    AutocompleteInput input(ASCIIToUTF16("kw command"),
-                            metrics::OmniboxEventProto::NTP,
+    AutocompleteInput input(u"kw command", metrics::OmniboxEventProto::NTP,
                             ChromeAutocompleteSchemeClassifier(profile));
     autocomplete_controller->Start(input);
   }
@@ -235,14 +231,13 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, OnInputEntered) {
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 
   omnibox_view->OnBeforePossibleChange();
-  omnibox_view->SetUserText(ASCIIToUTF16("kw newtab"));
+  omnibox_view->SetUserText(u"kw newtab");
   omnibox_view->OnAfterPossibleChange(true);
   WaitForAutocompleteDone(browser());
   EXPECT_TRUE(autocomplete_controller->done());
 
   {
-    AutocompleteInput input(ASCIIToUTF16("kw newtab"),
-                            metrics::OmniboxEventProto::NTP,
+    AutocompleteInput input(u"kw newtab", metrics::OmniboxEventProto::NTP,
                             ChromeAutocompleteSchemeClassifier(profile));
     autocomplete_controller->Start(input);
   }
@@ -261,7 +256,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, DISABLED_IncognitoSplitMode) {
   ResultCatcher catcher_incognito;
   catcher_incognito.RestrictToBrowserContext(profile->GetPrimaryOTRProfile());
 
-  ASSERT_TRUE(RunExtensionTestIncognito("omnibox")) << message_;
+  ASSERT_TRUE(
+      RunExtensionTest({.name = "omnibox"}, {.allow_in_incognito = true}))
+      << message_;
 
   // Open an incognito window and wait for the incognito extension process to
   // respond.
@@ -279,8 +276,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, DISABLED_IncognitoSplitMode) {
 
   // Test that we get the incognito-specific suggestions.
   {
-    AutocompleteInput input(ASCIIToUTF16("kw suggestio"),
-                            metrics::OmniboxEventProto::NTP,
+    AutocompleteInput input(u"kw suggestio", metrics::OmniboxEventProto::NTP,
                             ChromeAutocompleteSchemeClassifier(profile));
     autocomplete_controller->Start(input);
     WaitForAutocompleteDone(browser());
@@ -292,8 +288,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, DISABLED_IncognitoSplitMode) {
     const AutocompleteResult& result = autocomplete_controller->result();
     ASSERT_EQ(5U, result.size()) << AutocompleteResultAsString(result);
     ASSERT_FALSE(result.match_at(0).keyword.empty());
-    EXPECT_EQ(ASCIIToUTF16("kw suggestion3 incognito"),
-              result.match_at(3).fill_into_edit);
+    EXPECT_EQ(u"kw suggestion3 incognito", result.match_at(3).fill_into_edit);
   }
 
   // Test that our input is sent to the incognito context. The test will do a
@@ -301,7 +296,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, DISABLED_IncognitoSplitMode) {
   // incognito context.
   {
     ResultCatcher catcher;
-    AutocompleteInput input(ASCIIToUTF16("kw command incognito"),
+    AutocompleteInput input(u"kw command incognito",
                             metrics::OmniboxEventProto::NTP,
                             ChromeAutocompleteSchemeClassifier(profile));
     autocomplete_controller->Start(input);
@@ -336,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_PopupStaysClosed) {
 
   // Input a keyword query and wait for suggestions from the extension.
   omnibox_view->OnBeforePossibleChange();
-  omnibox_view->SetUserText(base::ASCIIToUTF16("kw comman"));
+  omnibox_view->SetUserText(u"kw comman");
   omnibox_view->OnAfterPossibleChange(true);
   WaitForAutocompleteDone(browser());
   EXPECT_TRUE(autocomplete_controller->done());
@@ -350,8 +345,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_PopupStaysClosed) {
   // TODO: Rather than send this second request by talking to the controller
   // directly, figure out how to send it via the proper calls to
   // location_bar or location_bar->().
-  AutocompleteInput input(base::ASCIIToUTF16("kw command"),
-                          metrics::OmniboxEventProto::NTP,
+  AutocompleteInput input(u"kw command", metrics::OmniboxEventProto::NTP,
                           ChromeAutocompleteSchemeClassifier(profile));
   autocomplete_controller->Start(input);
   location_bar->AcceptInput();
@@ -396,24 +390,24 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_DeleteOmniboxSuggestionResult) {
   const AutocompleteResult& result = autocomplete_controller->result();
   ASSERT_EQ(4U, result.size()) << AutocompleteResultAsString(result);
 
-  EXPECT_EQ(base::ASCIIToUTF16("kw d"), result.match_at(0).fill_into_edit);
+  EXPECT_EQ(u"kw d", result.match_at(0).fill_into_edit);
   EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
             result.match_at(0).provider->type());
   EXPECT_FALSE(result.match_at(0).deletable);
 
-  EXPECT_EQ(base::ASCIIToUTF16("kw n1"), result.match_at(1).fill_into_edit);
+  EXPECT_EQ(u"kw n1", result.match_at(1).fill_into_edit);
   EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
             result.match_at(1).provider->type());
   // Verify that the first omnibox extension suggestion is deletable.
   EXPECT_TRUE(result.match_at(1).deletable);
 
-  EXPECT_EQ(base::ASCIIToUTF16("kw n2"), result.match_at(2).fill_into_edit);
+  EXPECT_EQ(u"kw n2", result.match_at(2).fill_into_edit);
   EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
             result.match_at(2).provider->type());
   // Verify that the second omnibox extension suggestion is not deletable.
   EXPECT_FALSE(result.match_at(2).deletable);
 
-  EXPECT_EQ(base::ASCIIToUTF16("kw d"), result.match_at(3).fill_into_edit);
+  EXPECT_EQ(u"kw d", result.match_at(3).fill_into_edit);
   EXPECT_EQ(AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
             result.match_at(3).type);
   EXPECT_FALSE(result.match_at(3).deletable);
@@ -437,9 +431,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_DeleteOmniboxSuggestionResult) {
   // Verify that the first suggestion result was deleted. There should be one
   // less suggestion result, 3 now instead of 4.
   ASSERT_EQ(3U, result.size());
-  EXPECT_EQ(base::ASCIIToUTF16("kw d"), result.match_at(0).fill_into_edit);
-  EXPECT_EQ(base::ASCIIToUTF16("kw n2"), result.match_at(1).fill_into_edit);
-  EXPECT_EQ(base::ASCIIToUTF16("kw d"), result.match_at(2).fill_into_edit);
+  EXPECT_EQ(u"kw d", result.match_at(0).fill_into_edit);
+  EXPECT_EQ(u"kw n2", result.match_at(1).fill_into_edit);
+  EXPECT_EQ(u"kw d", result.match_at(2).fill_into_edit);
 #endif
 }
 
@@ -475,19 +469,19 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, ExtensionSuggestionsOnlyInKeywordMode) {
     const AutocompleteResult& result = autocomplete_controller->result();
     ASSERT_EQ(4U, result.size()) << AutocompleteResultAsString(result);
 
-    EXPECT_EQ(base::ASCIIToUTF16("kw d"), result.match_at(0).fill_into_edit);
+    EXPECT_EQ(u"kw d", result.match_at(0).fill_into_edit);
     EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
               result.match_at(0).provider->type());
 
-    EXPECT_EQ(base::ASCIIToUTF16("kw n1"), result.match_at(1).fill_into_edit);
+    EXPECT_EQ(u"kw n1", result.match_at(1).fill_into_edit);
     EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
               result.match_at(1).provider->type());
 
-    EXPECT_EQ(base::ASCIIToUTF16("kw n2"), result.match_at(2).fill_into_edit);
+    EXPECT_EQ(u"kw n2", result.match_at(2).fill_into_edit);
     EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
               result.match_at(2).provider->type());
 
-    EXPECT_EQ(base::ASCIIToUTF16("kw d"), result.match_at(3).fill_into_edit);
+    EXPECT_EQ(u"kw d", result.match_at(3).fill_into_edit);
     EXPECT_EQ(AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
               result.match_at(3).type);
   }
@@ -515,11 +509,11 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, ExtensionSuggestionsOnlyInKeywordMode) {
     const AutocompleteResult& result = autocomplete_controller->result();
     ASSERT_EQ(2U, result.size()) << AutocompleteResultAsString(result);
 
-    EXPECT_EQ(base::ASCIIToUTF16("kw d"), result.match_at(0).fill_into_edit);
+    EXPECT_EQ(u"kw d", result.match_at(0).fill_into_edit);
     EXPECT_EQ(AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
               result.match_at(0).type);
 
-    EXPECT_EQ(base::ASCIIToUTF16("kw d"), result.match_at(1).fill_into_edit);
+    EXPECT_EQ(u"kw d", result.match_at(1).fill_into_edit);
     EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
               result.match_at(1).provider->type());
   }

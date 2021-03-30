@@ -72,6 +72,9 @@ Abseil contains the following C++ library components:
 * [`algorithm`](absl/algorithm/)
   <br /> The `algorithm` library contains additions to the C++ `<algorithm>`
   library and container-based versions of such algorithms.
+* [`cleanup`](absl/cleanup/)
+  <br /> The `cleanup` library contains the control-flow-construct-like type
+  `absl::Cleanup` which is used for executing a callback on scope exit.
 * [`container`](absl/container/)
   <br /> The `container` library contains additional STL-style containers,
   including Abseil's unordered "Swiss table" containers.

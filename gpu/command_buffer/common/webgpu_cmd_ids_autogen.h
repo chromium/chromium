@@ -16,8 +16,7 @@
   OP(AssociateMailboxImmediate) /* 257 */ \
   OP(DissociateMailbox)         /* 258 */ \
   OP(RequestAdapter)            /* 259 */ \
-  OP(RequestDevice)             /* 260 */ \
-  OP(RemoveDevice)              /* 261 */
+  OP(RequestDevice)             /* 260 */
 
 enum CommandId {
   kOneBeforeStartPoint =

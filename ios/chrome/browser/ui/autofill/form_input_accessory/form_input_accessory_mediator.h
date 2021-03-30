@@ -18,7 +18,6 @@
 @protocol FormInputAccessoryConsumer;
 @class FormInputAccessoryMediator;
 @protocol FormInputSuggestionsProvider;
-@class JsSuggestionManager;
 @class ReauthenticationModule;
 @protocol SecurityAlertCommands;
 
@@ -78,6 +77,9 @@ class WebStateList;
 // Stops observing all objects.
 - (void)disconnect;
 
+// Returns YES if the last focused field is of type 'password'.
+- (BOOL)lastFocusedFieldWasPassword;
+
 @end
 
 // Methods to allow injection in tests.
@@ -85,9 +87,6 @@ class WebStateList;
 
 // The WebState this instance is observing. Can be null.
 - (void)injectWebState:(web::WebState*)webState;
-
-// The JS manager for interacting with the underlying form.
-- (void)injectSuggestionManager:(JsSuggestionManager*)JSSuggestionManager;
 
 // Replaces the object in charge of providing suggestions.
 - (void)injectProvider:(id<FormInputSuggestionsProvider>)provider;

@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_VIEW_UTILS_H_
 #define CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_VIEW_UTILS_H_
 
+#include <string>
 #include <utility>
 
-#include "base/strings/string16.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 
@@ -42,14 +42,14 @@ gfx::ImageSkia ScaleImageForAccountAvatar(gfx::ImageSkia image_skia);
 
 // Returns the upper and lower label to be displayed in the account chooser UI
 // for |form|. The lower label can be multiline.
-std::pair<base::string16, base::string16> GetCredentialLabelsForAccountChooser(
+std::pair<std::u16string, std::u16string> GetCredentialLabelsForAccountChooser(
     const password_manager::PasswordForm& form);
 
 // Returns the formatted title in the Save Password bubble or the Update
 // Password bubble (depending on |dialog_type|). If the registry controlled
 // domain of |user_visible_url| (i.e. the one seen in the omnibox) differs from
 // the registry controlled domain of |form_origin_url|, it adds the site name.
-base::string16 GetSavePasswordDialogTitleText(
+std::u16string GetSavePasswordDialogTitleText(
     const GURL& user_visible_url,
     const url::Origin& form_origin_url,
     PasswordTitleType dialog_type);
@@ -65,21 +65,21 @@ base::string16 GetSavePasswordDialogTitleText(
 // |IDS_MANAGE_PASSWORDS_NO_PASSWORDS_TITLE| as the title having "this site".
 // The *_NO_PASSWORDS_* variants of the title strings are used when no
 // credentials are present.
-base::string16 GetManagePasswordsDialogTitleText(
+std::u16string GetManagePasswordsDialogTitleText(
     const GURL& user_visible_url,
     const url::Origin& password_origin_url,
     bool has_credentials);
 
 // Returns an username in the form that should be shown in the bubble.
-base::string16 GetDisplayUsername(const password_manager::PasswordForm& form);
+std::u16string GetDisplayUsername(const password_manager::PasswordForm& form);
 
 // Returns either the username or the |IDS_PASSWORD_MANAGER_EMPTY_LOGIN| in case
 // it is empty.
-base::string16 GetDisplayUsername(
+std::u16string GetDisplayUsername(
     const password_manager::UiCredential& credential);
 
 // Returns |federation_origin| in a human-readable format.
-base::string16 GetDisplayFederation(const password_manager::PasswordForm& form);
+std::u16string GetDisplayFederation(const password_manager::PasswordForm& form);
 
 // Check if |profile| syncing the Auto sign-in settings (by checking that user
 // syncs the PRIORITY_PREFERENCE). The view appearance might depend on it.

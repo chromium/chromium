@@ -418,7 +418,6 @@ _LANGUAGE_MAP = {
   'neutral' : [ 1200, 'LANG_NEUTRAL', 'SUBLANG_NEUTRAL' ],
   # LANG_USER_DEFAULT LCID, unicode(1200) code page.
   'userdefault' : [ 1200, 'LANG_NEUTRAL', 'SUBLANG_DEFAULT' ],
-  'fake-bidi' : [ 1255, 'LANG_HEBREW', 'SUBLANG_NEUTRAL' ],
   'af' : [ 1252, 'LANG_AFRIKAANS', 'SUBLANG_DEFAULT' ],
   'am' : [ 1200, 'LANG_AMHARIC', 'SUBLANG_DEFAULT' ],
   'ar' : [ 1256, 'LANG_ARABIC', 'SUBLANG_DEFAULT' ],

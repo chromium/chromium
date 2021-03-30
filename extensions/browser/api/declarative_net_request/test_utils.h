@@ -12,6 +12,7 @@
 
 #include "base/optional.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/request_action.h"
@@ -33,6 +34,7 @@ namespace declarative_net_request {
 
 class FileBackedRulesetSource;
 class RulesetMatcher;
+struct RulesCountPair;
 struct TestRule;
 
 // Enum specifying the extension load type. Used for parameterized tests.
@@ -58,6 +60,7 @@ std::ostream& operator<<(std::ostream& output, const ParseResult& result);
 std::ostream& operator<<(std::ostream& output,
                          const base::Optional<RequestAction>& action);
 std::ostream& operator<<(std::ostream& output, LoadRulesetResult result);
+std::ostream& operator<<(std::ostream& output, const RulesCountPair& count);
 
 // Returns true if the given extension's indexed static rulesets are all valid.
 // Should be called on a sequence where file IO is allowed.
@@ -137,7 +140,8 @@ class WarningServiceObserver : public WarningService::Observer {
   void ExtensionWarningsChanged(
       const ExtensionIdSet& affected_extensions) override;
 
-  ScopedObserver<WarningService, WarningService::Observer> observer_;
+  base::ScopedObservation<WarningService, WarningService::Observer>
+      observation_{this};
   const ExtensionId extension_id_;
   base::RunLoop run_loop_;
 };

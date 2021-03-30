@@ -1,0 +1,34 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/testharness-adapter.js"></script>
+</head>
+<body>
+<script type="module">
+import {GeolocationMock} from './resources/geolocation-mock.js';
+
+description("Tests that when a watch times out and is cleared from the error callback, there is no crash. This a regression test for https://bugs.webkit.org/show_bug.cgi?id=32111.");
+
+var error;
+
+const mock = new GeolocationMock();
+mock.setGeolocationPermission(true);
+mock.setGeolocationTimeoutError(true);
+
+var watchId = navigator.geolocation.watchPosition(function() {
+    testFailed('Success callback invoked unexpectedly');
+    finishJSTest();
+}, function(e) {
+    error = e;
+    assert_equals(error.code, error.TIMEOUT);
+    assert_equals(error.message, "Timeout expired");
+    navigator.geolocation.clearWatch(watchId);
+    window.setTimeout(finishJSTest, 0);
+}, {
+    timeout: 0
+});
+</script>
+</body>
+</html>

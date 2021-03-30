@@ -13,12 +13,12 @@
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/values_test_util.h"
-#include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_common.h"
-#include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_scheduler.h"
-#include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_test_helpers.h"
-#include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_worker.h"
-#include "chrome/browser/chromeos/cert_provisioning/mock_cert_provisioning_scheduler.h"
-#include "chrome/browser/chromeos/cert_provisioning/mock_cert_provisioning_worker.h"
+#include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
+#include "chrome/browser/ash/cert_provisioning/cert_provisioning_scheduler.h"
+#include "chrome/browser/ash/cert_provisioning/cert_provisioning_test_helpers.h"
+#include "chrome/browser/ash/cert_provisioning/cert_provisioning_worker.h"
+#include "chrome/browser/ash/cert_provisioning/mock_cert_provisioning_scheduler.h"
+#include "chrome/browser/ash/cert_provisioning/mock_cert_provisioning_worker.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -85,10 +85,11 @@ constexpr char kDeviceCertProfileName[] = "Device Certificate Profile 1";
 constexpr char kUserCertProfileId[] = "user_cert_profile_1";
 constexpr char kUserCertProfileName[] = "User Certificate Profile 1";
 
-void SetupMockCertProvisioningWorker(MockCertProvisioningWorker* worker,
-                                     CertProvisioningWorkerState state,
-                                     const std::string* public_key,
-                                     CertProfile& cert_profile) {
+void SetupMockCertProvisioningWorker(
+    ash::cert_provisioning::MockCertProvisioningWorker* worker,
+    ash::cert_provisioning::CertProvisioningWorkerState state,
+    const std::string* public_key,
+    ash::cert_provisioning::CertProfile& cert_profile) {
   EXPECT_CALL(*worker, GetState).WillRepeatedly(Return(state));
   EXPECT_CALL(*worker, GetLastUpdateTime).WillRepeatedly(Return(base::Time()));
   EXPECT_CALL(*worker, GetPublicKey).WillRepeatedly(ReturnPointee(public_key));
@@ -231,17 +232,25 @@ class CertificateProvisioningUiHandlerTestBase : public ::testing::Test {
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  ProfileHelperForTesting profile_helper_for_testing_;
+  ash::cert_provisioning::ProfileHelperForTesting profile_helper_for_testing_;
 
-  WorkerMap user_workers_;
-  base::flat_map<CertProfileId, FailedWorkerInfo> user_failed_workers_;
-  StrictMock<MockCertProvisioningScheduler> scheduler_for_user_;
-  CertProvisioningSchedulerObserver* scheduler_observer_for_user_ = nullptr;
+  ash::cert_provisioning::WorkerMap user_workers_;
+  base::flat_map<ash::cert_provisioning::CertProfileId,
+                 ash::cert_provisioning::FailedWorkerInfo>
+      user_failed_workers_;
+  StrictMock<ash::cert_provisioning::MockCertProvisioningScheduler>
+      scheduler_for_user_;
+  ash::cert_provisioning::CertProvisioningSchedulerObserver*
+      scheduler_observer_for_user_ = nullptr;
 
-  WorkerMap device_workers_;
-  base::flat_map<CertProfileId, FailedWorkerInfo> device_failed_workers_;
-  StrictMock<MockCertProvisioningScheduler> scheduler_for_device_;
-  CertProvisioningSchedulerObserver* scheduler_observer_for_device_ = nullptr;
+  ash::cert_provisioning::WorkerMap device_workers_;
+  base::flat_map<ash::cert_provisioning::CertProfileId,
+                 ash::cert_provisioning::FailedWorkerInfo>
+      device_failed_workers_;
+  StrictMock<ash::cert_provisioning::MockCertProvisioningScheduler>
+      scheduler_for_device_;
+  ash::cert_provisioning::CertProvisioningSchedulerObserver*
+      scheduler_observer_for_device_ = nullptr;
 
   content::TestWebUI web_ui_;
   std::unique_ptr<content::WebContents> web_contents_;
@@ -275,21 +284,25 @@ TEST_F(CertificateProvisioningUiHandlerTest, NoProcesses) {
 }
 
 TEST_F(CertificateProvisioningUiHandlerTest, HasProcesses) {
-  CertProfile user_cert_profile(
+  ash::cert_provisioning::CertProfile user_cert_profile(
       kUserCertProfileId, kUserCertProfileName, kCertProfileVersion,
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
-  auto user_cert_worker = std::make_unique<MockCertProvisioningWorker>();
+  auto user_cert_worker =
+      std::make_unique<ash::cert_provisioning::MockCertProvisioningWorker>();
   SetupMockCertProvisioningWorker(
-      user_cert_worker.get(), CertProvisioningWorkerState::kKeypairGenerated,
+      user_cert_worker.get(),
+      ash::cert_provisioning::CertProvisioningWorkerState::kKeypairGenerated,
       &der_encoded_spki_, user_cert_profile);
   user_workers_[kUserCertProfileId] = std::move(user_cert_worker);
 
-  CertProfile device_cert_profile(
+  ash::cert_provisioning::CertProfile device_cert_profile(
       kDeviceCertProfileId, kDeviceCertProfileName, kCertProfileVersion,
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
-  auto device_cert_worker = std::make_unique<MockCertProvisioningWorker>();
+  auto device_cert_worker =
+      std::make_unique<ash::cert_provisioning::MockCertProvisioningWorker>();
   SetupMockCertProvisioningWorker(
-      device_cert_worker.get(), CertProvisioningWorkerState::kKeypairGenerated,
+      device_cert_worker.get(),
+      ash::cert_provisioning::CertProvisioningWorkerState::kKeypairGenerated,
       &der_encoded_spki_, device_cert_profile);
   device_workers_[kDeviceCertProfileId] = std::move(device_cert_worker);
 
@@ -318,22 +331,26 @@ TEST_F(CertificateProvisioningUiHandlerTest, HasProcesses) {
 }
 
 TEST_F(CertificateProvisioningUiHandlerAffiliatedTest, HasProcessesAffiliated) {
-  CertProfile user_cert_profile(
+  ash::cert_provisioning::CertProfile user_cert_profile(
       kUserCertProfileId, kUserCertProfileName, kCertProfileVersion,
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
-  auto user_cert_worker = std::make_unique<MockCertProvisioningWorker>();
+  auto user_cert_worker =
+      std::make_unique<ash::cert_provisioning::MockCertProvisioningWorker>();
   SetupMockCertProvisioningWorker(
-      user_cert_worker.get(), CertProvisioningWorkerState::kKeypairGenerated,
+      user_cert_worker.get(),
+      ash::cert_provisioning::CertProvisioningWorkerState::kKeypairGenerated,
       &der_encoded_spki_, user_cert_profile);
   user_workers_[kUserCertProfileId] = std::move(user_cert_worker);
 
-  CertProfile device_cert_profile(
+  ash::cert_provisioning::CertProfile device_cert_profile(
       kDeviceCertProfileId, kDeviceCertProfileName, kCertProfileVersion,
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
-  auto device_cert_worker = std::make_unique<MockCertProvisioningWorker>();
-  SetupMockCertProvisioningWorker(device_cert_worker.get(),
-                                  CertProvisioningWorkerState::kFailed,
-                                  &der_encoded_spki_, device_cert_profile);
+  auto device_cert_worker =
+      std::make_unique<ash::cert_provisioning::MockCertProvisioningWorker>();
+  SetupMockCertProvisioningWorker(
+      device_cert_worker.get(),
+      ash::cert_provisioning::CertProvisioningWorkerState::kFailed,
+      &der_encoded_spki_, device_cert_profile);
   device_workers_[kDeviceCertProfileId] = std::move(device_cert_worker);
 
   // Both user and device-wide workers are expected to be displayed in the UI,
@@ -388,12 +405,14 @@ TEST_F(CertificateProvisioningUiHandlerTest, Updates) {
   ASSERT_THAT(profile_ids, UnorderedElementsAre());
   EXPECT_EQ(1U, handler_->ReadAndResetUiRefreshCountForTesting());
 
-  CertProfile user_cert_profile(
+  ash::cert_provisioning::CertProfile user_cert_profile(
       kUserCertProfileId, kUserCertProfileName, kCertProfileVersion,
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
-  auto user_cert_worker = std::make_unique<MockCertProvisioningWorker>();
+  auto user_cert_worker =
+      std::make_unique<ash::cert_provisioning::MockCertProvisioningWorker>();
   SetupMockCertProvisioningWorker(
-      user_cert_worker.get(), CertProvisioningWorkerState::kKeypairGenerated,
+      user_cert_worker.get(),
+      ash::cert_provisioning::CertProvisioningWorkerState::kKeypairGenerated,
       &der_encoded_spki_, user_cert_profile);
   user_workers_[kUserCertProfileId] = std::move(user_cert_worker);
 

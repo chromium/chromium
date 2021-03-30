@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_BLUETOOTH_PAIRING_DIALOG_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_BLUETOOTH_PAIRING_DIALOG_H_
 
+#include <string>
+
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
@@ -17,13 +18,13 @@ class BluetoothPairingDialog : public SystemWebDialogDelegate {
   // Shows a bluetooth pairing dialog. The dialog is returned for testing.
   static SystemWebDialogDelegate* ShowDialog(
       const std::string& address,
-      const base::string16& name_for_display,
+      const std::u16string& name_for_display,
       bool paired,
       bool connected);
 
  protected:
   BluetoothPairingDialog(const std::string& address,
-                         const base::string16& name_for_display,
+                         const std::u16string& name_for_display,
                          bool paired,
                          bool connected);
   ~BluetoothPairingDialog() override;

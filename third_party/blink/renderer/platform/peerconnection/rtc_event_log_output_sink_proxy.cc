@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_event_log_output_sink.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 

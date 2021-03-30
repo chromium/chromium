@@ -56,7 +56,8 @@ class TestTraceEventFilter : public base::trace_event::TraceEventFilter {
       std::unique_ptr<base::trace_event::TraceArguments> args =
           std::make_unique<base::trace_event::TraceArguments>(
               trace_event.arg_name(0), trace_event.arg_value(0).as_uint,
-              trace_event.arg_name(1), trace_event.arg_value(1).as_convertable);
+              trace_event.arg_name(1),
+              static_cast<void*>(trace_event.arg_value(1).as_convertable));
 
       g_trace_event = std::make_unique<base::trace_event::TraceEvent>(
           trace_event.thread_id(), trace_event.timestamp(),

@@ -25,7 +25,7 @@ message_center::Notification* FindNotification(const std::string& id) {
 TEST_F(ScreenSecurityNotificationControllerTest,
        ShowScreenCaptureNotification) {
   Shell::Get()->system_tray_notifier()->NotifyScreenCaptureStart(
-      base::DoNothing(), base::RepeatingClosure(), base::string16());
+      base::DoNothing(), base::RepeatingClosure(), std::u16string());
   EXPECT_TRUE(FindNotification(kScreenCaptureNotificationId));
   Shell::Get()->system_tray_notifier()->NotifyScreenCaptureStop();
   EXPECT_FALSE(FindNotification(kScreenCaptureNotificationId));
@@ -33,7 +33,7 @@ TEST_F(ScreenSecurityNotificationControllerTest,
 
 TEST_F(ScreenSecurityNotificationControllerTest, ShowScreenShareNotification) {
   Shell::Get()->system_tray_notifier()->NotifyScreenShareStart(
-      base::DoNothing(), base::string16());
+      base::DoNothing(), std::u16string());
   EXPECT_TRUE(FindNotification(kScreenShareNotificationId));
   Shell::Get()->system_tray_notifier()->NotifyScreenShareStop();
   EXPECT_FALSE(FindNotification(kScreenShareNotificationId));
@@ -43,7 +43,7 @@ TEST_F(ScreenSecurityNotificationControllerTest,
        DoNotShowScreenCaptureNotificationWhenCasting) {
   Shell::Get()->OnCastingSessionStartedOrStopped(true /* started */);
   Shell::Get()->system_tray_notifier()->NotifyScreenCaptureStart(
-      base::DoNothing(), base::RepeatingClosure(), base::string16());
+      base::DoNothing(), base::RepeatingClosure(), std::u16string());
   EXPECT_FALSE(FindNotification(kScreenCaptureNotificationId));
   Shell::Get()->system_tray_notifier()->NotifyScreenCaptureStop();
   Shell::Get()->OnCastingSessionStartedOrStopped(false /* started */);

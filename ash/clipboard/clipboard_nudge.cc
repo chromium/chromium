@@ -66,7 +66,7 @@ bool IsAssistantAvailable() {
 
 class ClipboardNudge::ClipboardNudgeView : public views::View {
  public:
-  ClipboardNudgeView() {
+  explicit ClipboardNudgeView(ClipboardNudgeType nudge_type) {
     SetPaintToLayer(ui::LAYER_SOLID_COLOR);
     layer()->SetColor(ShelfConfig::Get()->GetDefaultShelfColor());
     if (features::IsBackgroundBlurEnabled())
@@ -82,8 +82,9 @@ class ClipboardNudge::ClipboardNudgeView : public views::View {
     clipboard_icon_->layer()->SetFillsBoundsOpaquely(false);
     clipboard_icon_->SetBounds(kNudgePadding, kNudgePadding, kClipboardIconSize,
                                kClipboardIconSize);
-    clipboard_icon_->SetImage(
-        gfx::CreateVectorIcon(kClipboardIcon, icon_color));
+    clipboard_icon_->SetImage(gfx::CreateVectorIcon(
+        nudge_type == kZeroStateNudge ? kClipboardEmptyIcon : kClipboardIcon,
+        icon_color));
 
     label_ = AddChildView(std::make_unique<views::StyledLabel>());
     label_->SetPaintToLayer();
@@ -116,12 +117,15 @@ class ClipboardNudge::ClipboardNudgeView : public views::View {
     keyboard_shortcut_icon->SetBorder(views::CreateEmptyBorder(2, 4, 0, -2));
 
     // Set the text for |label_|.
-    base::string16 shortcut_key = l10n_util::GetStringUTF16(
-        use_launcher_key ? IDS_ASH_MULTIPASTE_CONTEXTUAL_NUDGE_LAUNCHER_KEY
-                         : IDS_ASH_MULTIPASTE_CONTEXTUAL_NUDGE_SEARCH_KEY);
+    std::u16string shortcut_key = l10n_util::GetStringUTF16(
+        use_launcher_key ? IDS_ASH_SHORTCUT_MODIFIER_LAUNCHER
+                         : IDS_ASH_SHORTCUT_MODIFIER_SEARCH);
     size_t offset;
-    base::string16 label_text = l10n_util::GetStringFUTF16(
-        IDS_ASH_MULTIPASTE_CONTEXTUAL_NUDGE, shortcut_key, &offset);
+    std::u16string label_text = l10n_util::GetStringFUTF16(
+        nudge_type == kZeroStateNudge
+            ? IDS_ASH_MULTIPASTE_ZERO_STATE_CONTEXTUAL_NUDGE
+            : IDS_ASH_MULTIPASTE_CONTEXTUAL_NUDGE,
+        shortcut_key, &offset);
     offset = offset + shortcut_key.length();
     label_->SetText(label_text);
 
@@ -149,29 +153,35 @@ class ClipboardNudge::ClipboardNudgeView : public views::View {
   views::ImageView* clipboard_icon_ = nullptr;
 };
 
-ClipboardNudge::ClipboardNudge()
+ClipboardNudge::ClipboardNudge(ClipboardNudgeType nudge_type)
     : widget_(std::make_unique<views::Widget>()),
+      nudge_type_(nudge_type),
       root_window_(Shell::GetRootWindowForNewWindows()) {
-  shelf_observer_.Add(RootWindowController::ForWindow(root_window_)->shelf());
+  shelf_observation_.Observe(
+      RootWindowController::ForWindow(root_window_)->shelf());
 
   views::Widget::InitParams params(
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.z_order = ui::ZOrderLevel::kFloatingWindow;
   params.activatable = views::Widget::InitParams::ACTIVATABLE_NO;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  params.ownership = views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET;
   params.name = "ClipboardContextualNudge";
   params.layer_type = ui::LAYER_NOT_DRAWN;
   params.parent =
       root_window_->GetChildById(kShellWindowId_SettingBubbleContainer);
   widget_->Init(std::move(params));
 
-  nudge_view_ =
-      widget_->SetContentsView(std::make_unique<ClipboardNudgeView>());
+  nudge_view_ = widget_->SetContentsView(
+      std::make_unique<ClipboardNudgeView>(nudge_type));
   CalculateAndSetWidgetBounds();
   widget_->Show();
 }
 
 ClipboardNudge::~ClipboardNudge() = default;
+
+void ClipboardNudge::OnAutoHideStateChanged(ShelfAutoHideState new_state) {
+  CalculateAndSetWidgetBounds();
+}
 
 void ClipboardNudge::OnHotseatStateChanged(HotseatState old_state,
                                            HotseatState new_state) {
@@ -179,7 +189,7 @@ void ClipboardNudge::OnHotseatStateChanged(HotseatState old_state,
 }
 
 void ClipboardNudge::Close() {
-  widget_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+  widget_.reset();
 }
 
 void ClipboardNudge::CalculateAndSetWidgetBounds() {
@@ -196,15 +206,36 @@ void ClipboardNudge::CalculateAndSetWidgetBounds() {
 
   widget_bounds =
       gfx::Rect(display_bounds.x() + kNudgeMargin,
-                display_bounds.height() - ShelfConfig::Get()->shelf_size() -
+                display_bounds.bottom() - ShelfConfig::Get()->shelf_size() -
                     nudge_height - kNudgeMargin,
                 nudge_width, nudge_height);
-  if (base::i18n::IsRTL())
-    widget_bounds.set_x(display_bounds.right() - nudge_width - kNudgeMargin);
+
+  Shelf* shelf = RootWindowController::ForWindow(root_window_)->shelf();
+  bool shelf_hidden = shelf->GetVisibilityState() != SHELF_VISIBLE &&
+                      shelf->GetAutoHideState() == SHELF_AUTO_HIDE_HIDDEN;
+
+  if (base::i18n::IsRTL()) {
+    if (shelf->alignment() == ShelfAlignment::kRight && !shelf_hidden) {
+      widget_bounds.set_x(display_bounds.right() - nudge_width - kNudgeMargin -
+                          ShelfConfig::Get()->shelf_size());
+    } else {
+      widget_bounds.set_x(display_bounds.right() - nudge_width - kNudgeMargin);
+    }
+  } else {
+    if (shelf->alignment() == ShelfAlignment::kLeft && !shelf_hidden) {
+      widget_bounds.set_x(display_bounds.x() +
+                          ShelfConfig::Get()->shelf_size() + kNudgeMargin);
+    }
+  }
+
+  if ((shelf->alignment() == ShelfAlignment::kBottom && shelf_hidden) ||
+      shelf->alignment() == ShelfAlignment::kLeft ||
+      shelf->alignment() == ShelfAlignment::kRight) {
+    widget_bounds.set_y(display_bounds.bottom() - nudge_height - kNudgeMargin);
+  }
 
   // Set the nudge's bounds above the hotseat when it is extended.
-  HotseatWidget* hotseat_widget =
-      RootWindowController::ForWindow(root_window_)->shelf()->hotseat_widget();
+  HotseatWidget* hotseat_widget = shelf->hotseat_widget();
   if (hotseat_widget->state() == HotseatState::kExtended) {
     widget_bounds.set_y(hotseat_widget->GetTargetBounds().y() - nudge_height -
                         kNudgeMargin);

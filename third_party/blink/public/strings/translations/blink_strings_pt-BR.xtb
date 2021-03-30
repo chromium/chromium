@@ -203,6 +203,7 @@
 <translation id="6643016212128521049">Limpar</translation>
 <translation id="668171684555832681">Outro...</translation>
 <translation id="6692633176391053278">stepper</translation>
+<translation id="6696580792574109116">seletor de mês</translation>
 <translation id="6709093583001123835">O valor precisa ser <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Baixa qualidade de reprodução</translation>
 <translation id="6755330956360078551">dica</translation>
@@ -296,7 +297,7 @@
 <translation id="8875657656876809964">Erro na reprodução do vídeo</translation>
 <translation id="8889402386540077796">Matiz</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
-<translation id="894736920926684893">Alternador de formato</translation>
+<translation id="894736920926684893">Seletor de formato</translation>
 <translation id="8987927404178983737">Mês</translation>
 <translation id="901493112792887934">tempo atual em segundos</translation>
 <translation id="901834265349196618">e-mail</translation>

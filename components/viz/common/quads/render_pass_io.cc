@@ -455,7 +455,8 @@ base::Value FilterOperationToDict(const cc::FilterOperation& filter) {
       dict.SetIntKey("zoom_inset", filter.zoom_inset());
       break;
     case cc::FilterOperation::BLUR:
-      dict.SetIntKey("blur_tile_mode", filter.blur_tile_mode());
+      dict.SetIntKey("blur_tile_mode",
+                     static_cast<int>(filter.blur_tile_mode()));
       break;
     default:
       break;
@@ -536,7 +537,7 @@ bool FilterOperationFromDict(const base::Value& dict,
       if (!blur_tile_mode)
         return false;
       filter.set_blur_tile_mode(
-          static_cast<SkBlurImageFilter::TileMode>(blur_tile_mode.value()));
+          static_cast<SkTileMode>(blur_tile_mode.value()));
       break;
     default:
       break;
@@ -850,7 +851,7 @@ base::Value DrawQuadResourcesToList(const DrawQuad::Resources& resources) {
   base::Value list(base::Value::Type::LIST);
   DCHECK_LE(resources.count, DrawQuad::Resources::kMaxResourceIdCount);
   for (ResourceId id : resources)
-    list.Append(static_cast<int>(id));
+    list.Append(static_cast<int>(id.GetUnsafeValue()));
   return list;
 }
 
@@ -873,7 +874,7 @@ bool DrawQuadResourcesFromList(const base::Value& list,
 
   resources->count = static_cast<uint32_t>(size);
   for (size_t ii = 0; ii < size; ++ii) {
-    resources->ids[ii] = static_cast<ResourceId>(list.GetList()[ii].GetInt());
+    resources->ids[ii] = ResourceId(list.GetList()[ii].GetInt());
   }
   return true;
 }
@@ -1256,7 +1257,7 @@ bool CompositorRenderPassDrawQuadFromDict(
   }
   CompositorRenderPassId t_render_pass_id{render_pass_id_as_int};
 
-  ResourceId mask_resource_id = 0u;
+  ResourceId mask_resource_id = kInvalidResourceId;
   if (common.resources.count == 1u) {
     const size_t kIndex = CompositorRenderPassDrawQuad::kMaskResourceIdIndex;
     mask_resource_id = common.resources.ids[kIndex];

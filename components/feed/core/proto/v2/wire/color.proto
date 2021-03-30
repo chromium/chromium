@@ -1,0 +1,18 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package feedwire;
+
+import "components/feed/core/proto/v2/wire/wrappers.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+message Color {
+  float red = 1;
+  float green = 2;
+  float blue = 3;
+  FloatValue alpha = 4;
+}

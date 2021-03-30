@@ -115,9 +115,6 @@ PDFIFrameNavigationThrottle::WillProcessResponse() {
 
   ReportPDFLoadStatus(PDFLoadStatus::kLoadedIframePdfWithNoPdfViewer);
 
-  if (!base::FeatureList::IsEnabled(features::kClickToOpenPDFPlaceholder))
-    return content::NavigationThrottle::PROCEED;
-
 #if BUILDFLAG(ENABLE_PLUGINS)
   bool is_stale = false;
   bool pdf_plugin_enabled = IsPDFPluginEnabled(navigation_handle(), &is_stale);

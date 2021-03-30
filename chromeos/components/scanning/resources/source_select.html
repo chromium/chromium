@@ -5,19 +5,16 @@
   </span>
   <div slot="settings">
     <select id="sourceSelect" class="md-select"
-        value="{{selectedSource::change}}" disabled="[[disabled]]"
+        value="{{selectedOption::change}}" disabled="[[disabled]]"
         aria-labelledby="sourceLabel">
-      <template is="dom-if" if="[[!sources.length]]" restamp>
-        <option value="">
-          [[i18n('defaultSourceOptionText')]]
-        </option>
-      </template>
-      <template is="dom-repeat" items="[[sources]]" as="source">
-        <option value="[[source.name]]"
-            selected$='[[isDefaultSource_(source.type)]]'>
+      <template is="dom-repeat" items="[[options]]" as="source">
+        <option value="[[source.name]]" selected$='[[isDefaultOption(source)]]'>
           [[getSourceTypeString_(source.type)]]
         </option>
       </template>
+      <option value="" hidden="[[options.length]]">
+        [[i18n('defaultSourceOptionText')]]
+      </option>
     </select>
   </div>
 </scan-settings-section>

@@ -29,6 +29,9 @@ if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
       "test:test_test",
       "util:util_test",
     ]
+
+    data_deps = [ "//testing/buildbot/filters:crashpad_tests_filters" ]
+
     if (!crashpad_is_ios) {
       deps += [ "snapshot:snapshot_test" ]
     }
@@ -64,11 +67,11 @@ if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
   }
 
   if (crashpad_is_in_fuchsia) {
-    import("//build/package.gni")
-    package("crashpad-test") {
-      testonly = true
-
+    import("//src/sys/build/components.gni")
+    fuchsia_test_component("crashpad-test-component") {
+      manifest = "test/fuchsia_crashpad_tests.cmx"
       deps = [
+        ":crashpad-test-resources",
         ":crashpad_tests",
         "snapshot:crashpad_snapshot_test_both_dt_hash_styles",
         "snapshot:crashpad_snapshot_test_module",
@@ -77,84 +80,41 @@ if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
         "test:crashpad_test_test_multiprocess_exec_test_child",
         "util:http_transport_test_server",
       ]
-
-      tests = [
-        {
-          name = "crashpad_tests"
-        },
-      ]
-
-      meta = [
-        {
-          path = "test/fuchsia_crashpad_tests.cmx"
-          dest = "crashpad_tests.cmx"
-        },
-      ]
-
-      binaries = [
-        {
-          name = "crashpad_test_test_multiprocess_exec_test_child"
-          dest = "crashpad_test_test_multiprocess_exec_test_child"
-        },
-        {
-          name = "http_transport_test_server"
-          dest = "http_transport_test_server"
-        },
-      ]
-
-      loadable_modules = [
-        {
-          name = "crashpad_snapshot_test_both_dt_hash_styles.so"
-        },
-        {
-          name = "crashpad_snapshot_test_module.so"
-        },
-        {
-          name = "crashpad_snapshot_test_module_large.so"
-        },
-        {
-          name = "crashpad_snapshot_test_module_small.so"
-        },
-      ]
-
-      resources = [
-        {
-          path = "util/net/testdata/ascii_http_body.txt"
-          dest = "util/net/testdata/ascii_http_body.txt"
-        },
-        {
-          path = "util/net/testdata/binary_http_body.dat"
-          dest = "util/net/testdata/binary_http_body.dat"
-        },
-        {
-          path = "test/test_paths_test_data_root.txt"
-          dest = "test/test_paths_test_data_root.txt"
-        },
-      ]
-
-      if (crashpad_use_boringssl_for_http_transport_socket) {
-        resources += [
-          {
-            path = "util/net/testdata/crashpad_util_test_cert.pem"
-            dest = "util/net/testdata/crashpad_util_test_cert.pem"
-          },
-          {
-            path = "util/net/testdata/crashpad_util_test_key.pem"
-            dest = "util/net/testdata/crashpad_util_test_key.pem"
-          },
-        ]
-      }
     }
 
-    package("crashpad-database-util") {
-      deps = [ "tools:crashpad_database_util" ]
+    fuchsia_test_package("crashpad-test") {
+      test_components = [ ":crashpad-test-component" ]
+    }
 
-      binaries = [
-        {
-          name = "crashpad_database_util"
-          shell = true
-        },
+    _resource_files = [
+      "test/test_paths_test_data_root.txt",
+      "util/net/testdata/ascii_http_body.txt",
+      "util/net/testdata/binary_http_body.dat",
+    ]
+    if (crashpad_use_boringssl_for_http_transport_socket) {
+      _resource_files += [
+        "util/net/testdata/crashpad_util_test_cert.pem",
+        "util/net/testdata/crashpad_util_test_key.pem",
       ]
+    }
+
+    _resources = []
+    foreach(resource_file, _resource_files) {
+      _resource_file_target = string_replace(resource_file, "/", "_")
+      resource("${_resource_file_target}") {
+        sources = [ "${resource_file}" ]
+        outputs = [ "data/${resource_file}" ]
+      }
+      _resources += [ ":${_resource_file_target}" ]
+    }
+
+    group("crashpad-test-resources") {
+      deps = _resources
+    }
+
+    fuchsia_shell_package("crashpad-database-util") {
+      package_name = "crashpad_database_util"
+      deps = [ "tools:crashpad_database_util" ]
     }
 
     group("tests") {

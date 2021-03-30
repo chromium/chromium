@@ -31,6 +31,7 @@ message BooleanProperties {
   optional bool has_toggled_state = 17;
   optional bool is_toggled = 18;
   optional bool has_implicit_scrolling = 19;
+  optional bool is_lift_to_type = 20;
 }
 
 message ActionProperties {

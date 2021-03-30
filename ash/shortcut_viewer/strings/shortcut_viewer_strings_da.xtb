@@ -23,11 +23,13 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Føj www. og .com til dit input i adresselinjen, og åbn siden</translation>
+<translation id="1768987374400973299">Tag et screenshot</translation>
 <translation id="1872219238824176091">Fjern det aktuelle skrivebord</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> og derefter <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> eller <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">Gå til næste fane</translation>
 <translation id="2010818616644390445">Gå til den sidste fane i vinduet</translation>
 <translation id="2040706009561734834">Åbn/luk applisten</translation>
+<translation id="2086334242442703436">Åbn emojivælger</translation>
 <translation id="2088054208777350526">Søg efter tastaturgenveje</translation>
 <translation id="2125211348069077981"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="E" /> eller <ph name="F" /></translation>
 <translation id="2145908266289632567">Tekstredigering</translation>
@@ -46,6 +48,7 @@
 <translation id="2480851840841871861">Åbn Google Assistent</translation>
 <translation id="2488661730534396940">Aktivér skrivebordet i venstre side</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516999188535378855">Åbn appen Diagnostics</translation>
 <translation id="2530339807289914946">Rul ned på websiden</translation>
 <translation id="2530896289327917474">Aktivér eller deaktiver tastenavigation</translation>
 <translation id="2574014812750545982">Nulstil zoomniveauet på siden</translation>
@@ -110,6 +113,7 @@
 <translation id="4801989101741319327">Flyt til slutningen af det næste ord</translation>
 <translation id="4866066940972151697">Aktivér skrivebordet i højre side</translation>
 <translation id="4916163929714267752">Åbn linket i et nyt vindue</translation>
+<translation id="492453977506755176">Tast til optagelsestilstand</translation>
 <translation id="5030659775136592441">Vis bogmærkeadministrator</translation>
 <translation id="5034421018520995080">Gå til toppen af siden</translation>
 <translation id="5042305953558921026">Tast til oversigtstilstand</translation>
@@ -132,6 +136,7 @@
 <translation id="5899919361772749550">Vis eller skjul konsollen med udviklerværktøjer</translation>
 <translation id="5919628958418675842">Slå privatlivsskærmen til eller fra</translation>
 <translation id="5921745308587794300">Rotér vindue</translation>
+<translation id="5926306472221400972">Tag screenshot af hele skærmen</translation>
 <translation id="6022924867608035986">Ryd teksten i søgefeltet</translation>
 <translation id="6045998054441862242">Aktivér tilstanden Høj kontrast</translation>
 <translation id="6052614013050385269">Højreklik på et link</translation>
@@ -149,6 +154,7 @@
 <translation id="6445033640292336367">Flyt fanen tilbage til sin udgangsposition</translation>
 <translation id="6474744297082284761">Zoom ud (når lupvinduet er fastgjort, ELLER forstørrelse af fuld skærm er aktiveret)</translation>
 <translation id="649811797655257835">Vælg filen, og tryk på <ph name="SPACE" /></translation>
+<translation id="6551886416582667425">Tag et afgrænset screenshot</translation>
 <translation id="6556040137485212400">Åbn det vindue, der ikke har været brugt i længst tid</translation>
 <translation id="666343722268997814">Åbn højrekliksmenuen for det fremhævede element</translation>
 <translation id="6671538777808758331">Gå til det næste match for din søgning</translation>
@@ -175,6 +181,7 @@
 <translation id="7611271430932669992">Flyt fokus til pop op-vinduer og dialogbokse</translation>
 <translation id="7635348532214572995">Flyt rundt på et appikon i appoversigten</translation>
 <translation id="766326951329901120">Indsæt indholdet fra udklipsholderen som almindelig tekst</translation>
+<translation id="7673453620027697230">Tag et screenshot af et vindue</translation>
 <translation id="7703010453515335249">venstre vinkelparentes</translation>
 <translation id="7724603315864178912">Klip</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> og derefter <ph name="SPACE" /> eller <ph name="ENTER" /></translation>

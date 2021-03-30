@@ -21,7 +21,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/previews_resource_loading_hints.mojom.h"
-#include "components/optimization_guide/optimization_guide_decider.h"
+#include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/lite_video_metadata.pb.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -237,7 +237,8 @@ void LiteVideoObserver::MaybeUpdateCoinflipExperimentState(
 }
 
 void LiteVideoObserver::MediaBufferUnderflow(const content::MediaPlayerId& id) {
-  content::RenderFrameHost* render_frame_host = id.render_frame_host;
+  auto* render_frame_host =
+      content::RenderFrameHost::FromID(id.frame_routing_id);
 
   if (!render_frame_host || !render_frame_host->GetProcess())
     return;
@@ -276,11 +277,12 @@ void LiteVideoObserver::MediaBufferUnderflow(const content::MediaPlayerId& id) {
 }
 
 void LiteVideoObserver::MediaPlayerSeek(const content::MediaPlayerId& id) {
-  content::RenderFrameHost* render_frame_host = id.render_frame_host;
 
   if (!lite_video::features::DisableLiteVideoOnMediaPlayerSeek())
     return;
 
+  auto* render_frame_host =
+      content::RenderFrameHost::FromID(id.frame_routing_id);
   if (!render_frame_host || !render_frame_host->GetProcess())
     return;
 

@@ -18,7 +18,7 @@ class MinimumChromeVersionChecker : public ManifestHandler {
 
   // Validate minimum Chrome version. We don't need to store this, since the
   // extension is not valid if it is incorrect.
-  bool Parse(Extension* extension, base::string16* error) override;
+  bool Parse(Extension* extension, std::u16string* error) override;
 
  private:
   base::span<const char* const> Keys() const override;

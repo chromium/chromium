@@ -1,5 +1,6 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_slider/cr_slider.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_tabs/cr_tabs.html">
@@ -10,13 +11,17 @@
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/cr_elements/md_select_css.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="chrome://resources/html/load_time_data.html">
+<link rel="import" href="device_page_browser_proxy.html">
 <link rel="import" href="display_layout.html">
 <link rel="import" href="display_overscan_dialog.html">
 <link rel="import" href="night_light_slider.html">
+<link rel="import" href="../os_route.html">
 <link rel="import" href="../deep_linking_behavior.html">
 <link rel="import" href="../../controls/settings_dropdown_menu.html">
 <link rel="import" href="../../controls/settings_slider.html">
 <link rel="import" href="../../prefs/prefs_behavior.html">
+<link rel="import" href="../../router.html">
 <link rel="import" href="../../settings_shared_css.html">
 <link rel="import" href="../../settings_vars_css.html">
 
@@ -43,6 +48,7 @@
         flex: 1 1;
         height: 300px;
         margin: 10px;
+        min-height: 300px;
       }
 
       .text-area {

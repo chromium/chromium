@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace content {
 class WebContents;
@@ -22,8 +23,11 @@ class CredentialManagerDialogController;
 class AccountChooserDialogView : public views::BubbleDialogDelegateView,
                                  public AccountChooserPrompt {
  public:
+  METADATA_HEADER(AccountChooserDialogView);
   AccountChooserDialogView(CredentialManagerDialogController* controller,
                            content::WebContents* web_contents);
+  AccountChooserDialogView(const AccountChooserDialogView&) = delete;
+  AccountChooserDialogView& operator=(const AccountChooserDialogView&) = delete;
   ~AccountChooserDialogView() override;
 
   // AccountChooserPrompt:
@@ -32,8 +36,7 @@ class AccountChooserDialogView : public views::BubbleDialogDelegateView,
 
  private:
   // WidgetDelegate:
-  ui::ModalType GetModalType() const override;
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
   bool ShouldShowCloseButton() const override;
   void WindowClosing() override;
 
@@ -48,8 +51,6 @@ class AccountChooserDialogView : public views::BubbleDialogDelegateView,
   // A weak pointer to the controller.
   CredentialManagerDialogController* controller_;
   content::WebContents* web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccountChooserDialogView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_ACCOUNT_CHOOSER_DIALOG_VIEW_H_

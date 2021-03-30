@@ -6,6 +6,7 @@ package org.chromium.weblayer_private.test_interfaces;
 
 import android.os.Bundle;
 import org.chromium.weblayer_private.interfaces.IBrowser;
+import org.chromium.weblayer_private.interfaces.IProfile;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.ITab;
 
@@ -70,4 +71,10 @@ interface ITestWebLayer {
 
   boolean isWindowOnSmallDevice(in IBrowser browser) = 21;
   IObjectWrapper getSecurityButton(IObjectWrapper /* View */ urlBarView) = 22;
+  void fetchAccessToken(in IProfile profile, in IObjectWrapper /* Set<String */ scopes, in IObjectWrapper /* ValueCallback<String> */ onTokenFetched) = 23;
+  // Add a TestContentCaptureConsumer for the provided |browser|, with a Runnable |onNewEvent| to notify the
+  // caller when the events happened, the event ID will be received through |eventsObserved| list.
+  void addContentCaptureConsumer(in IBrowser browser,
+                                 in IObjectWrapper /* Runnable */ onNewEvent,
+                                 in IObjectWrapper /* ArrayList<Integer> */ eventsObserved) = 24;
 }

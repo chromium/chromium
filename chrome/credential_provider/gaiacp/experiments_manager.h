@@ -6,9 +6,8 @@
 #define CHROME_CREDENTIAL_PROVIDER_GAIACP_EXPERIMENTS_MANAGER_H_
 
 #include <map>
+#include <string>
 #include <vector>
-
-#include "base/strings/string16.h"
 
 namespace credential_provider {
 
@@ -28,7 +27,7 @@ class ExperimentsManager {
   void RegisterExperiments();
 
   // Reloads the experiments for the given |sid|.
-  bool ReloadExperiments(const base::string16& sid);
+  bool ReloadExperiments(const std::wstring& sid);
 
   // Returns the experiment value for the provided |sid| and |experiment|.
   std::string GetExperimentForUser(const std::string& sid,

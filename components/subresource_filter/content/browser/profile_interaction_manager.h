@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_PROFILE_INTERACTION_MANAGER_H_
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_PROFILE_INTERACTION_MANAGER_H_
 
+#include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_activation_throttle.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -16,12 +17,15 @@ class WebContents;
 
 namespace subresource_filter {
 
+class SubresourceFilterClient;
 class SubresourceFilterProfileContext;
 
 // Class that manages interaction between interaction between the
 // per-navigation/per-tab subresource filter objects (i.e., the throttles and
 // throttle manager) and the per-profile objects (e.g., content settings).
-class ProfileInteractionManager : public content::WebContentsObserver {
+class ProfileInteractionManager
+    : public content::WebContentsObserver,
+      public SubresourceFilterSafeBrowsingActivationThrottle::Delegate {
  public:
   ProfileInteractionManager(content::WebContents* web_contents,
                             SubresourceFilterProfileContext* profile_context);
@@ -43,19 +47,17 @@ class ProfileInteractionManager : public content::WebContentsObserver {
   void OnAdsViolationTriggered(content::RenderFrameHost* rfh,
                                mojom::AdsViolation triggered_violation);
 
-  // Called when the initial activation decision has been computed by the
-  // safe browsing activation throttle. This object then applies any adjustments
-  // based on relevant state of the Profile (e.g., content settings). Returns
-  // the effective activation for this navigation.
-  //
-  // Note: |decision| is guaranteed to be non-nullptr, and can be modified by
-  // this method if any decision changes.
-  //
-  // Precondition: The navigation must be a main frame navigation.
+  // Invoked when a notification should potentially be shown to the user that
+  // ads are being blocked on this page. Will make the final determination as to
+  // whether the notification should be shown and call out to |client| to show
+  // the notification if so.
+  void MaybeShowNotification(SubresourceFilterClient* client);
+
+  // SubresourceFilterSafeBrowsingActivationThrottle::Delegate:
   mojom::ActivationLevel OnPageActivationComputed(
       content::NavigationHandle* navigation_handle,
       mojom::ActivationLevel initial_activation_level,
-      ActivationDecision* decision);
+      ActivationDecision* decision) override;
 
  private:
   // Unowned and must outlive this object.

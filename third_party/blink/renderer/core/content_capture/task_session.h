@@ -106,7 +106,7 @@ class TaskSession final : public GarbageCollected<TaskSession> {
     // OnGroupingComplete().
     HeapHashSet<WeakMember<const Node>> visible_sent_nodes_;
     // A set of node whose value has been changed since last capture.
-    HeapHashSet<WeakMember<Node>> changed_nodes_;
+    HeapHashSet<WeakMember<const Node>> changed_nodes_;
 
     bool first_data_has_sent_ = false;
     // This is for the metrics to record the total node that has been sent.

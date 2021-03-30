@@ -4,10 +4,10 @@
 
 #include "chrome/browser/web_applications/components/web_app_icon_generator.h"
 
+#include <string>
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -152,8 +152,7 @@ void TestIconGeneration(int icon_size,
   SkColor generated_icon_color = SK_ColorTRANSPARENT;
   bool is_generated_icon = true;
   auto size_map = ResizeIconsAndGenerateMissing(
-      downloaded, TestSizesToGenerate(),
-      GenerateIconLetterFromAppName(base::UTF8ToUTF16("Test")),
+      downloaded, TestSizesToGenerate(), GenerateIconLetterFromAppName(u"Test"),
       &generated_icon_color, &is_generated_icon);
   EXPECT_FALSE(is_generated_icon);
 
@@ -240,8 +239,7 @@ TEST_F(WebAppIconGeneratorTest, LinkedAppIconsAreNotChanged) {
   SkColor generated_icon_color = SK_ColorTRANSPARENT;
   bool is_generated_icon = true;
   SizeToBitmap size_map = ResizeIconsAndGenerateMissing(
-      downloaded, sizes,
-      GenerateIconLetterFromAppName(base::UTF8ToUTF16("Test")),
+      downloaded, sizes, GenerateIconLetterFromAppName(u"Test"),
       &generated_icon_color, &is_generated_icon);
   EXPECT_EQ(sizes.size(), size_map.size());
   EXPECT_FALSE(is_generated_icon);
@@ -266,8 +264,7 @@ TEST_F(WebAppIconGeneratorTest, IconsResizedFromOddSizes) {
   SkColor generated_icon_color = SK_ColorTRANSPARENT;
   bool is_generated_icon = true;
   SizeToBitmap size_map = ResizeIconsAndGenerateMissing(
-      downloaded, TestSizesToGenerate(),
-      GenerateIconLetterFromAppName(base::UTF8ToUTF16("Test")),
+      downloaded, TestSizesToGenerate(), GenerateIconLetterFromAppName(u"Test"),
       &generated_icon_color, &is_generated_icon);
   EXPECT_FALSE(is_generated_icon);
 
@@ -288,8 +285,7 @@ TEST_F(WebAppIconGeneratorTest, IconsResizedFromLarger) {
   SkColor generated_icon_color = SK_ColorTRANSPARENT;
   bool is_generated_icon = true;
   SizeToBitmap size_map = ResizeIconsAndGenerateMissing(
-      downloaded, TestSizesToGenerate(),
-      GenerateIconLetterFromAppName(base::UTF8ToUTF16("Test")),
+      downloaded, TestSizesToGenerate(), GenerateIconLetterFromAppName(u"Test"),
       &generated_icon_color, &is_generated_icon);
   EXPECT_FALSE(is_generated_icon);
 
@@ -307,8 +303,7 @@ TEST_F(WebAppIconGeneratorTest, AllIconsGeneratedWhenNotDownloaded) {
   SkColor generated_icon_color = SK_ColorTRANSPARENT;
   bool is_generated_icon = false;
   SizeToBitmap size_map = ResizeIconsAndGenerateMissing(
-      downloaded, TestSizesToGenerate(),
-      GenerateIconLetterFromAppName(base::UTF8ToUTF16("Test")),
+      downloaded, TestSizesToGenerate(), GenerateIconLetterFromAppName(u"Test"),
       &generated_icon_color, &is_generated_icon);
   EXPECT_TRUE(is_generated_icon);
 
@@ -328,8 +323,7 @@ TEST_F(WebAppIconGeneratorTest, IconResizedFromLargerAndSmaller) {
   SkColor generated_icon_color = SK_ColorTRANSPARENT;
   bool is_generated_icon = true;
   SizeToBitmap size_map = ResizeIconsAndGenerateMissing(
-      downloaded, TestSizesToGenerate(),
-      GenerateIconLetterFromAppName(base::UTF8ToUTF16("Test")),
+      downloaded, TestSizesToGenerate(), GenerateIconLetterFromAppName(u"Test"),
       &generated_icon_color, &is_generated_icon);
   EXPECT_FALSE(is_generated_icon);
 
@@ -368,12 +362,10 @@ TEST_F(WebAppIconGeneratorTest, GenerateIconLetterFromUrl) {
 
 TEST_F(WebAppIconGeneratorTest, GenerateIconLetterFromAppName) {
   // ASCII Encoding
-  EXPECT_EQ('T',
-            GenerateIconLetterFromAppName(base::ASCIIToUTF16("test app name")));
-  EXPECT_EQ('T',
-            GenerateIconLetterFromAppName(base::ASCIIToUTF16("Test app name")));
+  EXPECT_EQ('T', GenerateIconLetterFromAppName(u"test app name"));
+  EXPECT_EQ('T', GenerateIconLetterFromAppName(u"Test app name"));
   // UTF16 encoding:
-  const base::char16 russian_name[] = {0x0438, 0x043c, 0x044f, 0x0};
+  const char16_t russian_name[] = {0x0438, 0x043c, 0x044f, 0x0};
   EXPECT_EQ(0x0418, GenerateIconLetterFromAppName(russian_name));
 }
 

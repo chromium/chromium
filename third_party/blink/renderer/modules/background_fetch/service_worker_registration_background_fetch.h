@@ -35,7 +35,6 @@ class ServiceWorkerRegistrationBackgroundFetch final
   void Trace(Visitor* visitor) const override;
 
  private:
-  Member<ServiceWorkerRegistration> registration_;
   Member<BackgroundFetchManager> background_fetch_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerRegistrationBackgroundFetch);

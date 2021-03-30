@@ -26,7 +26,8 @@ SettingsOverrideAPIPermission::~SettingsOverrideAPIPermission() {}
 
 PermissionIDSet SettingsOverrideAPIPermission::GetPermissions() const {
   PermissionIDSet permissions;
-  permissions.insert(info()->id(), base::UTF8ToUTF16(setting_value_));
+  permissions.insert(static_cast<mojom::APIPermissionID>(info()->id()),
+                     base::UTF8ToUTF16(setting_value_));
   return permissions;
 }
 

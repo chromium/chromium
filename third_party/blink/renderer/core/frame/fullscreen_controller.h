@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
+#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -100,9 +101,6 @@ class CORE_EXPORT FullscreenController {
     kExitingFullscreen,
   };
   State state_ = State::kInitial;
-
-  bool initial_background_color_override_enabled_ = false;
-  RGBA32 initial_background_color_override_ = Color::kTransparent;
 
   using PendingFullscreenSet = HeapLinkedHashSet<WeakMember<LocalFrame>>;
   Persistent<PendingFullscreenSet> pending_frames_;

@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.SigninActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -44,6 +43,7 @@ import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -161,13 +161,6 @@ public class MainSettings extends PreferenceFragmentCompat
     private void createPreferences() {
         SettingsUtils.addPreferencesFromResource(this, R.xml.main_preferences);
 
-        // If the flag for adding a "Security" section is enabled, the "Privacy" section will be
-        // renamed to a "Privacy and security" section and the "Security" section will be added
-        // under the renamed section. See (go/esb-clank-dd) for more context.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SAFE_BROWSING_SECTION_UI)) {
-            findPreference(PREF_PRIVACY).setTitle(R.string.prefs_privacy_security);
-        }
-
         cachePreferences();
 
         mSyncPromoPreference.setOnStateChangedCallback(this::onSyncPromoPreferenceStateChanged);
@@ -203,15 +196,6 @@ public class MainSettings extends PreferenceFragmentCompat
         if (!TemplateUrlServiceFactory.get().isLoaded()) {
             TemplateUrlServiceFactory.get().registerLoadListener(this);
             TemplateUrlServiceFactory.get().load();
-        }
-
-        // Only show the Safety check section if the Safety check flag is on.
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SAFETY_CHECK_ANDROID)) {
-            getPreferenceScreen().removePreference(findPreference(PREF_SAFETY_CHECK));
-        } else {
-            findPreference(PREF_SAFETY_CHECK)
-                    .setTitle(SafetyCheckSettingsFragment.getSafetyCheckSettingsElementTitle(
-                            getContext()));
         }
 
         // Replace the account section header, replace SyncAndServicesSettings with
@@ -307,7 +291,7 @@ public class MainSettings extends PreferenceFragmentCompat
         String primaryAccountName = CoreAccountInfo.getEmailFrom(
                 IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED));
+                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN));
         boolean showManageSync =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
                 && primaryAccountName != null;

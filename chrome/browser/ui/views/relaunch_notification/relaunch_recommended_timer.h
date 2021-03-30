@@ -25,7 +25,7 @@ class RelaunchRecommendedTimer {
 
   // Returns current notification's title, composed depending on how much time
   // has passed since the update was detected (see above comment).
-  base::string16 GetWindowTitle() const;
+  std::u16string GetWindowTitle() const;
 
  private:
   // Schedules a timer to fire the next time the title text must be updated; for

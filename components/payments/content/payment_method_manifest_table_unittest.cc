@@ -7,13 +7,13 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/payments/core/secure_payment_confirmation_instrument.h"
 #include "components/webdata/common/web_database.h"
@@ -186,9 +186,9 @@ TEST_F(PaymentMethodManifestTableTest, AddAndGetOneValidInstrument) {
       PaymentMethodManifestTable::FromWebDatabase(db_.get());
 
   EXPECT_TRUE(table->AddSecurePaymentConfirmationInstrument(
-      SecurePaymentConfirmationInstrument(
-          CreateCredentialId(), "relying-party.example",
-          base::ASCIIToUTF16("Instrument label"), CreateIcon())));
+      SecurePaymentConfirmationInstrument(CreateCredentialId(),
+                                          "relying-party.example",
+                                          u"Instrument label", CreateIcon())));
 
   auto instruments =
       table->GetSecurePaymentConfirmationInstruments(CreateCredentialIdList());
@@ -210,26 +210,26 @@ TEST_F(PaymentMethodManifestTableTest, AddingInvalidInstrumentReturnsFalse) {
   // An empty credential.
   EXPECT_FALSE(table->AddSecurePaymentConfirmationInstrument(
       SecurePaymentConfirmationInstrument(
-          /*credential_id=*/{}, "relying-party.example",
-          base::ASCIIToUTF16("Instrument label"), CreateIcon())));
+          /*credential_id=*/{}, "relying-party.example", u"Instrument label",
+          CreateIcon())));
 
   // Empty relying party identifier.
   EXPECT_FALSE(table->AddSecurePaymentConfirmationInstrument(
-      SecurePaymentConfirmationInstrument(
-          CreateCredentialId(), /*relying_party_id=*/"",
-          base::ASCIIToUTF16("Instrument label"), CreateIcon())));
+      SecurePaymentConfirmationInstrument(CreateCredentialId(),
+                                          /*relying_party_id=*/"",
+                                          u"Instrument label", CreateIcon())));
 
   // Empty label.
   EXPECT_FALSE(table->AddSecurePaymentConfirmationInstrument(
       SecurePaymentConfirmationInstrument(
           CreateCredentialId(), "relying-party.example",
-          /*label=*/base::string16(), CreateIcon())));
+          /*label=*/std::u16string(), CreateIcon())));
 
   // Empty icon.
   EXPECT_FALSE(table->AddSecurePaymentConfirmationInstrument(
-      SecurePaymentConfirmationInstrument(
-          CreateCredentialId(), "relying-party.example",
-          base::ASCIIToUTF16("Instrument label"), {})));
+      SecurePaymentConfirmationInstrument(CreateCredentialId(),
+                                          "relying-party.example",
+                                          u"Instrument label", {})));
 }
 
 TEST_F(PaymentMethodManifestTableTest, UpdatingInstrumentReturnsTrue) {
@@ -238,14 +238,12 @@ TEST_F(PaymentMethodManifestTableTest, UpdatingInstrumentReturnsTrue) {
   EXPECT_TRUE(table->AddSecurePaymentConfirmationInstrument(
       SecurePaymentConfirmationInstrument(
           CreateCredentialId(/*first_byte=*/0), "relying-party.example",
-          base::ASCIIToUTF16("Instrument label 1"),
-          CreateIcon(/*first_byte=*/0))));
+          u"Instrument label 1", CreateIcon(/*first_byte=*/0))));
 
   EXPECT_TRUE(table->AddSecurePaymentConfirmationInstrument(
       SecurePaymentConfirmationInstrument(
           CreateCredentialId(/*first_byte=*/0), "relying-party.example",
-          base::ASCIIToUTF16("Instrument label 2"),
-          CreateIcon(/*first_byte=*/4))));
+          u"Instrument label 2", CreateIcon(/*first_byte=*/4))));
 
   auto instruments = table->GetSecurePaymentConfirmationInstruments(
       CreateCredentialIdList(/*first_byte=*/0));
@@ -261,14 +259,12 @@ TEST_F(PaymentMethodManifestTableTest,
   EXPECT_TRUE(table->AddSecurePaymentConfirmationInstrument(
       SecurePaymentConfirmationInstrument(
           CreateCredentialId(/*first_byte=*/0), "relying-party-1.example",
-          base::ASCIIToUTF16("Instrument label 1"),
-          CreateIcon(/*first_byte=*/0))));
+          u"Instrument label 1", CreateIcon(/*first_byte=*/0))));
 
   EXPECT_FALSE(table->AddSecurePaymentConfirmationInstrument(
       SecurePaymentConfirmationInstrument(
           CreateCredentialId(/*first_byte=*/0), "relying-party-2.example",
-          base::ASCIIToUTF16("Instrument label 2"),
-          CreateIcon(/*first_byte=*/4))));
+          u"Instrument label 2", CreateIcon(/*first_byte=*/4))));
 
   auto instruments = table->GetSecurePaymentConfirmationInstruments(
       CreateCredentialIdList(/*first_byte=*/0));
@@ -284,14 +280,12 @@ TEST_F(PaymentMethodManifestTableTest, RelyingPartyCanHaveMultipleCredentials) {
   EXPECT_TRUE(table->AddSecurePaymentConfirmationInstrument(
       SecurePaymentConfirmationInstrument(
           CreateCredentialId(/*first_byte=*/0), "relying-party.example",
-          base::ASCIIToUTF16("Instrument label 1"),
-          CreateIcon(/*first_byte=*/0))));
+          u"Instrument label 1", CreateIcon(/*first_byte=*/0))));
 
   EXPECT_TRUE(table->AddSecurePaymentConfirmationInstrument(
       SecurePaymentConfirmationInstrument(
           CreateCredentialId(/*first_byte=*/4), "relying-party.example",
-          base::ASCIIToUTF16("Instrument label 2"),
-          CreateIcon(/*first_byte=*/4))));
+          u"Instrument label 2", CreateIcon(/*first_byte=*/4))));
 
   auto instruments = table->GetSecurePaymentConfirmationInstruments(
       CreateCredentialIdList(/*first_byte=*/0));
@@ -321,8 +315,7 @@ TEST_F(PaymentMethodManifestTableTest, RelyingPartyCanHaveMultipleCredentials) {
   std::vector<uint8_t> expected_credential_id = {0, 1, 2, 3};
   EXPECT_EQ(expected_credential_id, instruments.front()->credential_id);
   EXPECT_EQ("relying-party.example", instruments.front()->relying_party_id);
-  EXPECT_EQ(base::ASCIIToUTF16("Instrument label 1"),
-            instruments.front()->label);
+  EXPECT_EQ(u"Instrument label 1", instruments.front()->label);
   std::vector<uint8_t> expected_icon = {0, 1, 2, 3};
   EXPECT_EQ(expected_icon, instruments.front()->icon);
 
@@ -331,8 +324,7 @@ TEST_F(PaymentMethodManifestTableTest, RelyingPartyCanHaveMultipleCredentials) {
   expected_credential_id = {4, 5, 6, 7};
   EXPECT_EQ(expected_credential_id, instruments.back()->credential_id);
   EXPECT_EQ("relying-party.example", instruments.back()->relying_party_id);
-  EXPECT_EQ(base::ASCIIToUTF16("Instrument label 2"),
-            instruments.back()->label);
+  EXPECT_EQ(u"Instrument label 2", instruments.back()->label);
   expected_icon = {4, 5, 6, 7};
   EXPECT_EQ(expected_icon, instruments.back()->icon);
 }

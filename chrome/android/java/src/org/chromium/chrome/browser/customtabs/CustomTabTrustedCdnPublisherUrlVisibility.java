@@ -9,7 +9,6 @@ import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
-import org.chromium.chrome.browser.previews.Previews;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn.PublisherUrlVisibility;
 import org.chromium.ui.base.WindowAndroid;
@@ -38,7 +37,6 @@ class CustomTabTrustedCdnPublisherUrlVisibility
             return false;
         }
 
-        if (Previews.isPreview(tab)) return false;
         return mIsPublisherPackageForSession.getAsBoolean();
     }
 

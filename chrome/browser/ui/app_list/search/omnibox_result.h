@@ -9,12 +9,14 @@
 
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "base/macros.h"
+#include "chrome/browser/bitmap_fetcher/bitmap_fetcher_delegate.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "url/gurl.h"
 
 class AppListControllerDelegate;
 class AutocompleteController;
+class BitmapFetcher;
 class Profile;
 
 // These are used in histograms, do not remove/renumber entries. If you're
@@ -28,7 +30,7 @@ enum class OmniboxResultType {
 
 namespace app_list {
 
-class OmniboxResult : public ChromeSearchResult {
+class OmniboxResult : public ChromeSearchResult, public BitmapFetcherDelegate {
  public:
   OmniboxResult(Profile* profile,
                 AppListControllerDelegate* list_controller,
@@ -37,9 +39,12 @@ class OmniboxResult : public ChromeSearchResult {
                 bool is_zero_suggestion);
   ~OmniboxResult() override;
 
-  // ChromeSearchResult overrides:
+  // ChromeSearchResult:
   void Open(int event_flags) override;
   void InvokeAction(int action_index) override;
+
+  // BitmapFetcherDelegate:
+  void OnFetchComplete(const GURL& url, const SkBitmap* bitmap) override;
 
   // Returns the URL that will be navigated to by this search result.
   GURL DestinationURL() const;
@@ -54,21 +59,21 @@ class OmniboxResult : public ChromeSearchResult {
   // description.
   bool IsUrlResultWithDescription() const;
 
+  bool IsRichEntityResult() const;
+  void FetchRichEntityImage(const GURL& url);
+
   void SetZeroSuggestionActions();
 
   void RecordOmniboxResultHistogram();
 
   ash::SearchResultType GetSearchResultType() const;
 
-  // Whether or not the result is an answer and rich entities are enabled.
-  // TODO(crbug/1130372): Remove this when rich entities are enabled by default.
-  bool ShouldDisplayAsAnswer();
-
   Profile* profile_;
   AppListControllerDelegate* list_controller_;
   AutocompleteController* autocomplete_controller_;
   AutocompleteMatch match_;
   const bool is_zero_suggestion_;
+  std::unique_ptr<BitmapFetcher> bitmap_fetcher_;
 
   DISALLOW_COPY_AND_ASSIGN(OmniboxResult);
 };

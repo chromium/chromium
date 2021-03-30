@@ -5,13 +5,15 @@
 #ifndef CC_TEST_ANIMATION_TEST_COMMON_H_
 #define CC_TEST_ANIMATION_TEST_COMMON_H_
 
-#include "cc/animation/animation_curve.h"
+#include <memory>
+
 #include "cc/animation/animation_timeline.h"
 #include "cc/animation/keyframe_model.h"
-#include "cc/animation/transform_operations.h"
 #include "cc/paint/element_id.h"
 #include "cc/paint/filter_operations.h"
 #include "cc/test/geometry_test_utils.h"
+#include "ui/gfx/animation/keyframe/animation_curve.h"
+#include "ui/gfx/transform_operations.h"
 
 namespace gfx {
 class ScrollOffset;
@@ -19,7 +21,7 @@ class ScrollOffset;
 
 namespace cc {
 
-class FakeFloatAnimationCurve : public FloatAnimationCurve {
+class FakeFloatAnimationCurve : public gfx::FloatAnimationCurve {
  public:
   FakeFloatAnimationCurve();
   explicit FakeFloatAnimationCurve(double duration);
@@ -27,33 +29,29 @@ class FakeFloatAnimationCurve : public FloatAnimationCurve {
 
   base::TimeDelta Duration() const override;
   float GetValue(base::TimeDelta now) const override;
-  std::unique_ptr<AnimationCurve> Clone() const override;
+  std::unique_ptr<gfx::AnimationCurve> Clone() const override;
 
  private:
   base::TimeDelta duration_;
 };
 
-class FakeTransformTransition : public TransformAnimationCurve {
+class FakeTransformTransition : public gfx::TransformAnimationCurve {
  public:
   explicit FakeTransformTransition(double duration);
   ~FakeTransformTransition() override;
 
   base::TimeDelta Duration() const override;
-  TransformOperations GetValue(base::TimeDelta time) const override;
-  bool IsTranslation() const override;
+  gfx::TransformOperations GetValue(base::TimeDelta time) const override;
   bool PreservesAxisAlignment() const override;
-  bool AnimationStartScale(bool forward_direction,
-                           float* start_scale) const override;
-  bool MaximumTargetScale(bool forward_direction,
-                          float* max_scale) const override;
+  bool MaximumScale(float* max_scale) const override;
 
-  std::unique_ptr<AnimationCurve> Clone() const override;
+  std::unique_ptr<gfx::AnimationCurve> Clone() const override;
 
  private:
   base::TimeDelta duration_;
 };
 
-class FakeFloatTransition : public FloatAnimationCurve {
+class FakeFloatTransition : public gfx::FloatAnimationCurve {
  public:
   FakeFloatTransition(double duration, float from, float to);
   ~FakeFloatTransition() override;
@@ -61,7 +59,7 @@ class FakeFloatTransition : public FloatAnimationCurve {
   base::TimeDelta Duration() const override;
   float GetValue(base::TimeDelta time) const override;
 
-  std::unique_ptr<AnimationCurve> Clone() const override;
+  std::unique_ptr<gfx::AnimationCurve> Clone() const override;
 
  private:
   base::TimeDelta duration_;
@@ -80,8 +78,8 @@ int AddAnimatedTransformToAnimation(Animation* animation,
 
 int AddAnimatedTransformToAnimation(Animation* animation,
                                     double duration,
-                                    TransformOperations start_operations,
-                                    TransformOperations operations);
+                                    gfx::TransformOperations start_operations,
+                                    gfx::TransformOperations operations);
 
 int AddOpacityTransitionToAnimation(Animation* animation,
                                     double duration,
@@ -142,8 +140,8 @@ int AddAnimatedTransformToElementWithAnimation(
     ElementId element_id,
     scoped_refptr<AnimationTimeline> timeline,
     double duration,
-    TransformOperations start_operations,
-    TransformOperations operations);
+    gfx::TransformOperations start_operations,
+    gfx::TransformOperations operations);
 
 int AddOpacityTransitionToElementWithAnimation(
     ElementId element_id,

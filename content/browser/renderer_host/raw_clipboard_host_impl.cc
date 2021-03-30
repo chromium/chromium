@@ -8,12 +8,14 @@
 
 #include "base/bind.h"
 #include "base/i18n/number_formatting.h"
+#include "base/memory/ptr_util.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/clipboard_host_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/child_process_host.h"
 #include "ipc/ipc_message.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/clipboard/raw_clipboard.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
@@ -61,29 +63,20 @@ void RawClipboardHostImpl::Create(
     return;
   }
 
-  // Clipboard implementations do interesting things, like run nested message
-  // loops. Use manual memory management instead of SelfOwnedReceiver<T> which
-  // synchronously destroys on failure and can result in some unfortunate
-  // use-after-frees after the nested message loops exit.
-  auto* host = new RawClipboardHostImpl(std::move(receiver), render_frame_host);
-  host->receiver_.set_disconnect_handler(base::BindOnce(
-      [](RawClipboardHostImpl* host) {
-        base::SequencedTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, host);
-      },
-      host));
+  mojo::MakeSelfOwnedReceiver(
+      base::WrapUnique(new RawClipboardHostImpl(
+          static_cast<RenderFrameHostImpl*>(render_frame_host))),
+      std::move(receiver));
 }
 
 RawClipboardHostImpl::~RawClipboardHostImpl() {
   clipboard_writer_->Reset();
 }
 
-RawClipboardHostImpl::RawClipboardHostImpl(
-    mojo::PendingReceiver<blink::mojom::RawClipboardHost> receiver,
-    RenderFrameHost* render_frame_host)
+RawClipboardHostImpl::RawClipboardHostImpl(RenderFrameHost* render_frame_host)
     : render_frame_routing_id_(
           GlobalFrameRoutingId(render_frame_host->GetProcess()->GetID(),
                                render_frame_host->GetRoutingID())),
-      receiver_(this, std::move(receiver)),
       clipboard_(ui::Clipboard::GetForCurrentThread()),
       clipboard_writer_(
           new ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste,
@@ -95,18 +88,18 @@ void RawClipboardHostImpl::ReadAvailableFormatNames(
     ReadAvailableFormatNamesCallback callback) {
   if (!HasTransientUserActivation())
     return;
-  std::vector<base::string16> raw_types =
+  std::vector<std::u16string> raw_types =
       clipboard_->ReadAvailablePlatformSpecificFormatNames(
           ui::ClipboardBuffer::kCopyPaste, CreateDataEndpoint().get());
   std::move(callback).Run(raw_types);
 }
 
-void RawClipboardHostImpl::Read(const base::string16& format,
+void RawClipboardHostImpl::Read(const std::u16string& format,
                                 ReadCallback callback) {
   if (!HasTransientUserActivation())
     return;
   if (format.size() >= kMaxFormatSize) {
-    receiver_.ReportBadMessage("Requested format string length too long.");
+    mojo::ReportBadMessage("Requested format string length too long.");
     return;
   }
 
@@ -120,16 +113,16 @@ void RawClipboardHostImpl::Read(const base::string16& format,
   std::move(callback).Run(std::move(buffer));
 }
 
-void RawClipboardHostImpl::Write(const base::string16& format,
+void RawClipboardHostImpl::Write(const std::u16string& format,
                                  mojo_base::BigBuffer data) {
   if (!HasTransientUserActivation())
     return;
   if (format.size() >= kMaxFormatSize) {
-    receiver_.ReportBadMessage("Target format string length too long.");
+    mojo::ReportBadMessage("Target format string length too long.");
     return;
   }
   if (data.size() >= kMaxDataSize) {
-    receiver_.ReportBadMessage("Write data too large.");
+    mojo::ReportBadMessage("Write data too large.");
     return;
   }
 
@@ -147,7 +140,7 @@ void RawClipboardHostImpl::Write(const base::string16& format,
   // https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-registerclipboardformata
   static constexpr int kMaxWindowsClipboardFormats = 0x4000;
   static constexpr int kMaxRegisteredFormats = kMaxWindowsClipboardFormats / 4;
-  static base::NoDestructor<std::set<base::string16>> registered_formats;
+  static base::NoDestructor<std::set<std::u16string>> registered_formats;
   if (!base::Contains(*registered_formats, format)) {
     if (registered_formats->size() >= kMaxRegisteredFormats)
       return;

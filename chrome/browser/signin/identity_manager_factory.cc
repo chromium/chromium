@@ -32,9 +32,10 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/account_manager/account_manager_factory.h"
+#include "chrome/browser/account_manager_facade_factory.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chromeos/components/account_manager/account_manager_factory.h"
 #endif
 
 #if defined(OS_WIN)
@@ -116,11 +117,13 @@ KeyedService* IdentityManagerFactory::BuildServiceInstanceFor(
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::AccountManagerFactory* factory =
+  auto* factory =
       g_browser_process->platform_part()->GetAccountManagerFactory();
   DCHECK(factory);
   params.account_manager =
       factory->GetAccountManager(profile->GetPath().value());
+  params.account_manager_facade =
+      GetAccountManagerFacade(profile->GetPath().value());
   params.is_regular_profile =
       chromeos::ProfileHelper::IsRegularProfile(profile);
 #endif
@@ -138,15 +141,4 @@ KeyedService* IdentityManagerFactory::BuildServiceInstanceFor(
     observer.IdentityManagerCreated(identity_manager.get());
 
   return identity_manager.release();
-}
-
-void IdentityManagerFactory::BrowserContextShutdown(
-    content::BrowserContext* context) {
-  auto* identity_manager = static_cast<signin::IdentityManager*>(
-      GetServiceForBrowserContext(context, false));
-  if (identity_manager) {
-    for (Observer& observer : observer_list_)
-      observer.IdentityManagerShutdown(identity_manager);
-  }
-  BrowserContextKeyedServiceFactory::BrowserContextShutdown(context);
 }

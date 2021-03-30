@@ -7,13 +7,13 @@
 
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
 
 class Document;
 class Event;
 class ExecutionContext;
-class Visitor;
 
 // Helper class used to setup beforeunload listener for certain documents which
 // include plugins that are handled externally and need user verification before

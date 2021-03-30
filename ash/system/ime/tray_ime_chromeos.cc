@@ -25,6 +25,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -78,9 +79,8 @@ void IMEDetailedView::ShowSettings() {
   Shell::Get()->system_tray_model()->client()->ShowIMESettings();
 }
 
-const char* IMEDetailedView::GetClassName() const {
-  return "IMEDetailedView";
-}
+BEGIN_METADATA(IMEDetailedView, ImeListView)
+END_METADATA
 
 }  // namespace tray
 

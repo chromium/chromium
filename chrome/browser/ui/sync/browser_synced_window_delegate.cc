@@ -40,7 +40,7 @@ SessionID BrowserSyncedWindowDelegate::GetTabIdAt(int index) const {
 }
 
 bool BrowserSyncedWindowDelegate::HasWindow() const {
-  return browser_->window() != NULL;
+  return browser_->window() != nullptr;
 }
 
 SessionID BrowserSyncedWindowDelegate::GetSessionId() const {

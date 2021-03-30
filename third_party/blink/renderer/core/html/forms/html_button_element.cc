@@ -26,10 +26,12 @@
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 
 #include "third_party/blink/renderer/core/dom/attribute.h"
+#include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
+#include "third_party/blink/renderer/core/html/html_popup_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -109,15 +111,21 @@ void HTMLButtonElement::ParseAttribute(
 }
 
 void HTMLButtonElement::DefaultEventHandler(Event& event) {
-  if (event.type() == event_type_names::kDOMActivate &&
-      !IsDisabledFormControl()) {
-    if (Form() && type_ == SUBMIT) {
-      Form()->PrepareForSubmission(&event, this);
-      event.SetDefaultHandled();
+  if (event.type() == event_type_names::kDOMActivate) {
+    Element* popupElement =
+        GetDocument().getElementById(getAttribute(html_names::kPopupAttr));
+    if (popupElement && IsA<HTMLPopupElement>(popupElement)) {
+      To<HTMLPopupElement>(popupElement)->show();
     }
-    if (Form() && type_ == RESET) {
-      Form()->reset();
-      event.SetDefaultHandled();
+    if (!IsDisabledFormControl()) {
+      if (Form() && type_ == SUBMIT) {
+        Form()->PrepareForSubmission(&event, this);
+        event.SetDefaultHandled();
+      }
+      if (Form() && type_ == RESET) {
+        Form()->reset();
+        event.SetDefaultHandled();
+      }
     }
   }
 
@@ -154,11 +162,10 @@ void HTMLButtonElement::AppendToFormData(FormData& form_data) {
     form_data.AppendFromElement(GetName(), Value());
 }
 
-void HTMLButtonElement::AccessKeyAction(bool send_mouse_events) {
+void HTMLButtonElement::AccessKeyAction(
+    SimulatedClickCreationScope creation_scope) {
   focus();
-
-  DispatchSimulatedClick(
-      nullptr, send_mouse_events ? kSendMouseUpDownEvents : kSendNoEvents);
+  DispatchSimulatedClick(nullptr, creation_scope);
 }
 
 bool HTMLButtonElement::IsURLAttribute(const Attribute& attribute) const {

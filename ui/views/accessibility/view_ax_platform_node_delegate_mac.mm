@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ui/accessibility/platform/ax_platform_node_mac.h"
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -14,7 +15,9 @@ namespace views {
 
 // static
 std::unique_ptr<ViewAccessibility> ViewAccessibility::Create(View* view) {
-  return std::make_unique<ViewAXPlatformNodeDelegateMac>(view);
+  auto result = std::make_unique<ViewAXPlatformNodeDelegateMac>(view);
+  result->Init();
+  return result;
 }
 
 ViewAXPlatformNodeDelegateMac::ViewAXPlatformNodeDelegateMac(View* view)

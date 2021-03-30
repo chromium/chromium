@@ -39,11 +39,11 @@ void IndexedDBExternalObject::ConvertToMojo(
             blink::mojom::IDBExternalObject::NewBlobOrFile(std::move(info)));
         break;
       }
-      case ObjectType::kNativeFileSystemHandle:
+      case ObjectType::kFileSystemAccessHandle:
         // Contents of token will be filled in later by
         // IndexedDBDispatcherHost::CreateAllExternalObjects.
         mojo_objects->push_back(
-            blink::mojom::IDBExternalObject::NewNativeFileSystemToken(
+            blink::mojom::IDBExternalObject::NewFileSystemAccessToken(
                 mojo::NullRemote()));
         break;
     }
@@ -56,7 +56,7 @@ IndexedDBExternalObject::IndexedDBExternalObject()
 IndexedDBExternalObject::IndexedDBExternalObject(
     mojo::PendingRemote<blink::mojom::Blob> blob_remote,
     const std::string& uuid,
-    const base::string16& type,
+    const std::u16string& type,
     int64_t size)
     : object_type_(ObjectType::kBlob),
       blob_remote_(std::move(blob_remote)),
@@ -64,7 +64,7 @@ IndexedDBExternalObject::IndexedDBExternalObject(
       type_(type),
       size_(size) {}
 
-IndexedDBExternalObject::IndexedDBExternalObject(const base::string16& type,
+IndexedDBExternalObject::IndexedDBExternalObject(const std::u16string& type,
                                                  int64_t size,
                                                  int64_t blob_number)
     : object_type_(ObjectType::kBlob),
@@ -75,8 +75,8 @@ IndexedDBExternalObject::IndexedDBExternalObject(const base::string16& type,
 IndexedDBExternalObject::IndexedDBExternalObject(
     mojo::PendingRemote<blink::mojom::Blob> blob_remote,
     const std::string& uuid,
-    const base::string16& file_name,
-    const base::string16& type,
+    const std::u16string& file_name,
+    const std::u16string& type,
     const base::Time& last_modified,
     const int64_t size)
     : object_type_(ObjectType::kFile),
@@ -89,8 +89,8 @@ IndexedDBExternalObject::IndexedDBExternalObject(
 
 IndexedDBExternalObject::IndexedDBExternalObject(
     int64_t blob_number,
-    const base::string16& type,
-    const base::string16& file_name,
+    const std::u16string& type,
+    const std::u16string& file_name,
     const base::Time& last_modified,
     const int64_t size)
     : object_type_(ObjectType::kFile),
@@ -101,15 +101,15 @@ IndexedDBExternalObject::IndexedDBExternalObject(
       blob_number_(blob_number) {}
 
 IndexedDBExternalObject::IndexedDBExternalObject(
-    mojo::PendingRemote<blink::mojom::NativeFileSystemTransferToken>
+    mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
         token_remote)
-    : object_type_(ObjectType::kNativeFileSystemHandle),
+    : object_type_(ObjectType::kFileSystemAccessHandle),
       token_remote_(std::move(token_remote)) {}
 
 IndexedDBExternalObject::IndexedDBExternalObject(
-    std::vector<uint8_t> native_file_system_token)
-    : object_type_(ObjectType::kNativeFileSystemHandle),
-      native_file_system_token_(std::move(native_file_system_token)) {}
+    std::vector<uint8_t> file_system_access_token)
+    : object_type_(ObjectType::kFileSystemAccessHandle),
+      file_system_access_token_(std::move(file_system_access_token)) {}
 
 IndexedDBExternalObject::IndexedDBExternalObject(
     const IndexedDBExternalObject& other) = default;
@@ -141,10 +141,10 @@ void IndexedDBExternalObject::set_last_modified(const base::Time& time) {
   last_modified_ = time;
 }
 
-void IndexedDBExternalObject::set_native_file_system_token(
+void IndexedDBExternalObject::set_file_system_access_token(
     std::vector<uint8_t> token) {
-  DCHECK_EQ(object_type_, ObjectType::kNativeFileSystemHandle);
-  native_file_system_token_ = std::move(token);
+  DCHECK_EQ(object_type_, ObjectType::kFileSystemAccessHandle);
+  file_system_access_token_ = std::move(token);
 }
 
 void IndexedDBExternalObject::set_blob_number(int64_t blob_number) {

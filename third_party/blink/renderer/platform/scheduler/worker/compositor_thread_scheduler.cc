@@ -48,8 +48,6 @@ CompositorThreadScheduler::DefaultTaskQueue() {
   return helper()->DefaultNonMainThreadTaskQueue();
 }
 
-void CompositorThreadScheduler::InitImpl() {}
-
 void CompositorThreadScheduler::OnTaskCompleted(
     NonMainThreadTaskQueue* worker_task_queue,
     const base::sequence_manager::Task& task,

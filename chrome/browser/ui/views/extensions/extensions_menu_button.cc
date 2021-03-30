@@ -16,37 +16,27 @@
 #include "chrome/browser/ui/views/hover_button_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
-
-const char ExtensionsMenuButton::kClassName[] = "ExtensionsMenuButton";
 
 ExtensionsMenuButton::ExtensionsMenuButton(
     Browser* browser,
     ExtensionsMenuItemView* parent,
     ToolbarActionViewController* controller,
     bool allow_pinning)
-    : views::LabelButton(
-          base::BindRepeating(&ExtensionsMenuButton::ButtonPressed,
-                              base::Unretained(this))),
+    : HoverButton(base::BindRepeating(&ExtensionsMenuButton::ButtonPressed,
+                                      base::Unretained(this)),
+                  std::u16string()),
       browser_(browser),
       parent_(parent),
       controller_(controller),
       allow_pinning_(allow_pinning) {
   ConfigureBubbleMenuItem(this, 0);
-  SetButtonController(std::make_unique<HoverButtonController>(
-      this,
-      base::BindRepeating(&ExtensionsMenuButton::ButtonPressed,
-                          base::Unretained(this)),
-      std::make_unique<views::Button::DefaultButtonControllerDelegate>(this)));
   controller_->SetDelegate(this);
   UpdateState();
 }
 
 ExtensionsMenuButton::~ExtensionsMenuButton() = default;
-
-const char* ExtensionsMenuButton::GetClassName() const {
-  return kClassName;
-}
 
 SkColor ExtensionsMenuButton::GetInkDropBaseColor() const {
   return HoverButton::GetInkDropColor(this);
@@ -105,3 +95,6 @@ void ExtensionsMenuButton::ButtonPressed() {
   controller_->ExecuteAction(
       true, ToolbarActionViewController::InvocationSource::kMenuEntry);
 }
+
+BEGIN_METADATA(ExtensionsMenuButton, views::LabelButton)
+END_METADATA

@@ -23,6 +23,7 @@
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -32,13 +33,9 @@
 #include "base/win/win_util.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/chrome_cleaner/public/constants/constants.h"
 #include "components/chrome_cleaner/public/proto/chrome_prompt.pb.h"
-#include "extensions/browser/extension_registry.h"
-#include "extensions/common/extension.h"
-#include "extensions/common/manifest.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -56,7 +53,6 @@ constexpr char kCrashPointSwitch[] = "mock-crash-point";
 constexpr char kUwsFoundSwitch[] = "mock-uws-found";
 constexpr char kRebootRequiredSwitch[] = "mock-reboot-required";
 constexpr char kRegistryKeysReportingSwitch[] = "registry-keys-reporting";
-constexpr char kExtensionsReportingSwitch[] = "extensions-reporting";
 constexpr char kExpectedUserResponseSwitch[] = "mock-expected-user-response";
 
 // MockCleanerResults
@@ -105,13 +101,8 @@ class MockCleanerResults {
       prompt_user->add_files_to_delete(file.AsUTF8Unsafe());
     }
     if (options_.registry_keys().has_value()) {
-      for (const base::string16& key : options_.registry_keys().value()) {
-        prompt_user->add_registry_keys(base::UTF16ToUTF8(key));
-      }
-    }
-    if (options_.extension_ids().has_value()) {
-      for (const base::string16& id : options_.extension_ids().value()) {
-        prompt_user->add_extension_ids(base::UTF16ToUTF8(id));
+      for (const auto& key : options_.registry_keys().value()) {
+        prompt_user->add_registry_keys(base::WideToUTF8(key));
       }
     }
     if (!WriteMessage(request.SerializeAsString()))
@@ -204,57 +195,7 @@ class MockCleanerResults {
   base::win::ScopedHandle write_handle_;
 };
 
-scoped_refptr<extensions::Extension> CreateExtension(const base::string16& name,
-                                                     const base::string16& id,
-                                                     std::string* error) {
-  base::DictionaryValue manifest;
-  manifest.SetKey("name", base::Value(name));
-  manifest.SetKey("version", base::Value("0"));
-  manifest.SetKey("manifest_version", base::Value(2));
-
-  return extensions::Extension::Create(base::FilePath(),
-                                       extensions::Manifest::INTERNAL, manifest,
-                                       0, base::UTF16ToUTF8(id), error);
-}
-
 }  // namespace
-
-const base::char16 MockChromeCleanerProcess::kInstalledExtensionId1[] =
-    L"aaaabbbbccccddddeeeeffffgggghhhh";
-const base::char16 MockChromeCleanerProcess::kInstalledExtensionName1[] =
-    L"Some Extension";
-const base::char16 MockChromeCleanerProcess::kInstalledExtensionId2[] =
-    L"ababababcdcdcdcdefefefefghghghgh";
-const base::char16 MockChromeCleanerProcess::kInstalledExtensionName2[] =
-    L"Another Extension";
-const base::char16 MockChromeCleanerProcess::kUnknownExtensionId[] =
-    L"unexpectedextensionidabcdefghijk";
-
-// static
-void MockChromeCleanerProcess::AddMockExtensionsToProfile(Profile* profile) {
-  extensions::ExtensionRegistry* extension_registry =
-      extensions::ExtensionRegistry::Get(profile);
-  scoped_refptr<extensions::Extension> extension;
-  std::string error;
-
-  extension =
-      CreateExtension(MockChromeCleanerProcess::kInstalledExtensionName1,
-                      MockChromeCleanerProcess::kInstalledExtensionId1, &error);
-  if (extension && error.empty()) {
-    extension_registry->AddEnabled(extension);
-  } else {
-    LOG(ERROR) << "Error creating mock extension: " << error;
-  }
-
-  extension =
-      CreateExtension(MockChromeCleanerProcess::kInstalledExtensionName2,
-                      MockChromeCleanerProcess::kInstalledExtensionId2, &error);
-  if (extension && error.empty()) {
-    extension_registry->AddEnabled(extension);
-  } else {
-    LOG(ERROR) << "Error creating mock extension: " << error;
-  }
-}
 
 // static
 bool MockChromeCleanerProcess::Options::FromCommandLine(
@@ -270,20 +211,9 @@ bool MockChromeCleanerProcess::Options::FromCommandLine(
     return false;
   }
 
-  int extensions_reporting_int = -1;
-  if (!base::StringToInt(
-          command_line.GetSwitchValueASCII(kExtensionsReportingSwitch),
-          &extensions_reporting_int) ||
-      extensions_reporting_int < 0 ||
-      extensions_reporting_int >=
-          static_cast<int>(ItemsReporting::kNumItemsReporting)) {
-    return false;
-  }
-
   options->SetReportedResults(
       command_line.HasSwitch(kUwsFoundSwitch),
-      static_cast<ItemsReporting>(registry_keys_reporting_int),
-      static_cast<ItemsReporting>(extensions_reporting_int));
+      static_cast<ItemsReporting>(registry_keys_reporting_int));
   options->set_reboot_required(command_line.HasSwitch(kRebootRequiredSwitch));
 
   if (command_line.HasSwitch(kCrashPointSwitch)) {
@@ -332,22 +262,18 @@ MockChromeCleanerProcess::Options::Options() = default;
 MockChromeCleanerProcess::Options::Options(const Options& other)
     : files_to_delete_(other.files_to_delete_),
       registry_keys_(other.registry_keys_),
-      extension_ids_(other.extension_ids_),
       reboot_required_(other.reboot_required_),
       crash_point_(other.crash_point_),
       registry_keys_reporting_(other.registry_keys_reporting_),
-      extensions_reporting_(other.extensions_reporting_),
       expected_user_response_(other.expected_user_response_) {}
 
 MockChromeCleanerProcess::Options& MockChromeCleanerProcess::Options::operator=(
     const Options& other) {
   files_to_delete_ = other.files_to_delete_;
   registry_keys_ = other.registry_keys_;
-  extension_ids_ = other.extension_ids_;
   reboot_required_ = other.reboot_required_;
   crash_point_ = other.crash_point_;
   registry_keys_reporting_ = other.registry_keys_reporting_;
-  extensions_reporting_ = other.extensions_reporting_;
   expected_user_response_ = other.expected_user_response_;
   return *this;
 }
@@ -371,9 +297,6 @@ void MockChromeCleanerProcess::Options::AddSwitchesToCommandLine(
   command_line->AppendSwitchASCII(
       kRegistryKeysReportingSwitch,
       base::NumberToString(static_cast<int>(registry_keys_reporting())));
-  command_line->AppendSwitchASCII(
-      kExtensionsReportingSwitch,
-      base::NumberToString(static_cast<int>(extensions_reporting())));
 
   if (expected_user_response() != PromptUserResponse::UNSPECIFIED) {
     command_line->AppendSwitchASCII(
@@ -384,8 +307,7 @@ void MockChromeCleanerProcess::Options::AddSwitchesToCommandLine(
 
 void MockChromeCleanerProcess::Options::SetReportedResults(
     bool has_files_to_remove,
-    ItemsReporting registry_keys_reporting,
-    ItemsReporting extensions_reporting) {
+    ItemsReporting registry_keys_reporting) {
   if (!has_files_to_remove)
     files_to_delete_.clear();
   if (has_files_to_remove) {
@@ -402,65 +324,23 @@ void MockChromeCleanerProcess::Options::SetReportedResults(
     case ItemsReporting::kUnsupported:
       // Defined as an optional object in which a registry keys vector is not
       // present.
-      registry_keys_ = base::Optional<std::vector<base::string16>>();
+      registry_keys_ = base::Optional<std::vector<std::wstring>>();
       break;
 
     case ItemsReporting::kNotReported:
       // Defined as an optional object in which an empty registry keys vector is
       // present.
       registry_keys_ =
-          base::Optional<std::vector<base::string16>>(base::in_place);
+          base::Optional<std::vector<std::wstring>>(base::in_place);
       break;
 
     case ItemsReporting::kReported:
       // Defined as an optional object in which a non-empty registry keys vector
       // is present.
-      registry_keys_ = base::Optional<std::vector<base::string16>>({
+      registry_keys_ = base::Optional<std::vector<std::wstring>>({
           L"HKCU:32\\Software\\Some\\Unwanted Software",
           L"HKCU:32\\Software\\Another\\Unwanted Software",
       });
-      break;
-
-    default:
-      NOTREACHED();
-  }
-
-  extensions_reporting_ = extensions_reporting;
-  switch (extensions_reporting) {
-    case ItemsReporting::kUnsupported:
-      // Defined as an optional object in which an extensions vector is not
-      // present.
-      extension_ids_ = base::Optional<std::vector<base::string16>>();
-      expected_extension_names_ = base::Optional<std::vector<base::string16>>();
-      break;
-
-    case ItemsReporting::kNotReported:
-      // Defined as an optional object in which an empty extensions vector is
-      // present.
-      extension_ids_ =
-          base::Optional<std::vector<base::string16>>(base::in_place);
-      expected_extension_names_ =
-          base::Optional<std::vector<base::string16>>(base::in_place);
-      break;
-
-    case ItemsReporting::kReported:
-      // Defined as an optional object in which a non-empty extensions vector is
-      // present.
-      extension_ids_ = base::Optional<std::vector<base::string16>>({
-          kInstalledExtensionId1, kInstalledExtensionId2, kUnknownExtensionId,
-      });
-// Scanner results only fetches extension names on Windows Chrome build.
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      expected_extension_names_ = base::Optional<std::vector<base::string16>>({
-          kInstalledExtensionName1, kInstalledExtensionName2,
-          l10n_util::GetStringFUTF16(
-              IDS_SETTINGS_RESET_CLEANUP_DETAILS_EXTENSION_UNKNOWN,
-              kUnknownExtensionId),
-      });
-#else
-      expected_extension_names_ =
-          base::Optional<std::vector<base::string16>>(base::in_place);
-#endif
       break;
 
     default:
@@ -553,12 +433,6 @@ std::ostream& operator<<(std::ostream& out, CrashPoint crash_point) {
 
 std::ostream& operator<<(std::ostream& out, UwsFoundStatus status) {
   return out << "UwS" << static_cast<int>(status);
-}
-
-std::ostream& operator<<(
-    std::ostream& out,
-    MockChromeCleanerProcess::ExtensionCleaningFeatureStatus status) {
-  return out << "Ext" << static_cast<int>(status);
 }
 
 std::ostream& operator<<(std::ostream& out, ItemsReporting items_reporting) {

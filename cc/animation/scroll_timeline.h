@@ -5,6 +5,7 @@
 #ifndef CC_ANIMATION_SCROLL_TIMELINE_H_
 #define CC_ANIMATION_SCROLL_TIMELINE_H_
 
+#include <vector>
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "cc/animation/animation_export.h"
@@ -124,14 +125,22 @@ inline ScrollTimeline* ToScrollTimeline(AnimationTimeline* timeline) {
 template <typename T>
 double ComputeProgress(double current_offset, const T& resolved_offsets) {
   DCHECK_GE(resolved_offsets.size(), 2u);
+  // When start offset is greater than end offset, current time is calculated
+  // outside of this method.
+  DCHECK(resolved_offsets[0] < resolved_offsets[resolved_offsets.size() - 1]);
   DCHECK(current_offset < resolved_offsets[resolved_offsets.size() - 1]);
-  // Look for scroll offset that contains the current offset.
+  // Traverse scroll offsets from the back to find first interval that
+  // contains the current offset. In case of overlapping offsets, last matching
+  // interval in the list is used to calculate the current time. The rational
+  // for choosing last matching offset is to be consistent with CSS property
+  // overrides.
   unsigned int offset_id;
-  for (offset_id = 1; offset_id < resolved_offsets.size() &&
-                      resolved_offsets[offset_id] <= current_offset;
-       offset_id++) {
+  for (offset_id = resolved_offsets.size() - 1;
+       offset_id > 0 && !(resolved_offsets[offset_id - 1] <= current_offset &&
+                          current_offset < resolved_offsets[offset_id]);
+       offset_id--) {
   }
-  DCHECK(offset_id < resolved_offsets.size());
+  DCHECK_GE(offset_id, 1u);
   // Weight of each offset within time range is distributed equally.
   double offset_distance = 1.0 / (resolved_offsets.size() - 1);
   // Progress of the current offset within its offset range.

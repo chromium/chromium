@@ -327,8 +327,15 @@ void TestReportingService::QueueReport(
                                type, std::move(body), depth));
 }
 
-void TestReportingService::ProcessHeader(
+void TestReportingService::ProcessReportToHeader(
     const GURL& url,
+    const NetworkIsolationKey& network_isolation_key,
+    const std::string& header_value) {
+  NOTREACHED();
+}
+
+void TestReportingService::ProcessReportingEndpointsHeader(
+    const url::Origin& origin,
     const NetworkIsolationKey& network_isolation_key,
     const std::string& header_value) {
   NOTREACHED();

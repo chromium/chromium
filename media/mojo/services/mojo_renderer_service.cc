@@ -68,7 +68,7 @@ void MojoRendererService::Initialize(
     media_resource_ = std::make_unique<MediaResourceShim>(
         std::move(*streams),
         base::BindOnce(&MojoRendererService::OnAllStreamsReady, weak_this_,
-                       base::Passed(&callback)));
+                       std::move(callback)));
     return;
   }
 

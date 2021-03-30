@@ -25,6 +25,7 @@
 #include "ui/ozone/public/ozone_switches.h"
 
 #if BUILDFLAG(USE_XKBCOMMON)
+#include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/events/ozone/layout/xkb/xkb_keyboard_layout_engine.h"
 #endif
 
@@ -42,7 +43,7 @@ base::Optional<size_t> OffsetFromUTF8Offset(const base::StringPiece& text,
   if (offset > text.length())
     return base::nullopt;
 
-  base::string16 converted;
+  std::u16string converted;
   if (!base::UTF8ToUTF16(text.data(), offset, &converted))
     return base::nullopt;
 
@@ -72,11 +73,10 @@ bool IsImeEnabled() {
   // Note: |init_params| may be null, if ash-chrome is too old.
   // TODO(crbug.com/1156033): Clean up the condition, after ash-chrome in the
   // world becomes new enough.
-  const crosapi::mojom::LacrosInitParams* init_params =
+  const crosapi::mojom::BrowserInitParams* init_params =
       lacros_chrome_service->init_params();
-  if (init_params &&
-      init_params->exo_ime_support ==
-          crosapi::mojom::ExoImeSupport::kConsumedByImeWorkaround) {
+  if (init_params && init_params->exo_ime_support !=
+                         crosapi::mojom::ExoImeSupport::kUnsupported) {
     return true;
   }
 #endif
@@ -136,7 +136,7 @@ bool WaylandInputMethodContext::DispatchKeyEvent(
 }
 
 void WaylandInputMethodContext::UpdatePreeditText(
-    const base::string16& preedit_text) {
+    const std::u16string& preedit_text) {
   CompositionText preedit;
   preedit.text = preedit_text;
   auto length = preedit.text.size();
@@ -177,7 +177,7 @@ void WaylandInputMethodContext::SetCursorLocation(const gfx::Rect& rect) {
 }
 
 void WaylandInputMethodContext::SetSurroundingText(
-    const base::string16& text,
+    const std::u16string& text,
     const gfx::Range& selection_range) {
   if (text_input_)
     text_input_->SetSurroundingText(text, selection_range);
@@ -256,16 +256,24 @@ void WaylandInputMethodContext::OnKeysym(uint32_t keysym,
                                          uint32_t state,
                                          uint32_t modifiers) {
 #if BUILDFLAG(USE_XKBCOMMON)
+  auto* layout_engine = KeyboardLayoutEngineManager::GetKeyboardLayoutEngine();
+  if (!layout_engine)
+    return;
+
   // TODO(crbug.com/1079353): Handle modifiers.
-  DomCode dom_code =
-      connection_->keyboard()->layout_engine()->GetDomCodeByKeysym(keysym);
+  DomCode dom_code = static_cast<XkbKeyboardLayoutEngine*>(layout_engine)
+                         ->GetDomCodeByKeysym(keysym);
   if (dom_code == DomCode::NONE)
     return;
+
+  // Keyboard might not exist.
+  int device_id =
+      connection_->keyboard() ? connection_->keyboard()->device_id() : 0;
 
   EventType type =
       state == WL_KEYBOARD_KEY_STATE_PRESSED ? ET_KEY_PRESSED : ET_KEY_RELEASED;
   key_delegate_->OnKeyboardKeyEvent(type, dom_code, /*repeat=*/false,
-                                    EventTimeForNow());
+                                    EventTimeForNow(), device_id);
 #else
   NOTIMPLEMENTED();
 #endif

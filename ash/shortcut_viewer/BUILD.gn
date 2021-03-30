@@ -26,6 +26,7 @@ source_set("shortcut_viewer") {
 
   deps = [
     "//ash",
+    "//ash/constants",
     "//ash/public/cpp",
     "//ash/public/cpp/resources:ash_public_unscaled_resources",
     "//ash/search_box",

@@ -35,6 +35,7 @@ void SVGImageForContainer::Draw(cc::PaintCanvas* canvas,
                                 const cc::PaintFlags& flags,
                                 const FloatRect& dst_rect,
                                 const FloatRect& src_rect,
+                                const SkSamplingOptions&,
                                 RespectImageOrientationEnum,
                                 ImageClampingMode,
                                 ImageDecodingMode) {

@@ -48,7 +48,8 @@ async function doNegotiation(caller, callee) {
       maybeLog('Audio: Count ' + count +  ', timeTakenMs is ' + timeTakenMs);
       assert_equals(callee.getReceivers().length, count);
     }
-    assert_greater_than_equal(count, 9);
+    // 6 has been observed on a weak Linux cloudtop in debug mode.
+    assert_greater_than_equal(count, 5);
   }, 'Adding multiple audio tracks with addTrack(), one at a time');
 
   promise_test(async t => {
@@ -90,7 +91,8 @@ async function doNegotiation(caller, callee) {
       maybeLog('Video: Count ' + count +  ', timeTakenMs is ' + timeTakenMs);
       assert_equals(callee.getReceivers().length, count);
     }
-    assert_greater_than_equal(count, 4);
+    // 2 has been observed on a weak Linux cloudtop instance in debug mode.
+    assert_greater_than_equal(count, 2);
   }, 'Adding multiple video tracks with addTrack(), one at a time');
 
   promise_test(async t => {
@@ -102,7 +104,9 @@ async function doNegotiation(caller, callee) {
     const stream = await getNoiseStream({video: true});
     t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
     const [track] = stream.getTracks();
-    const kTrackCount = 3;
+    // More than 1 second on 3 tracks has been observed
+    // on a weak Linux cloudtop in debug mode.
+    const kTrackCount = 2;
     for (let count = 1; count <= kTrackCount; count++) {
       const transceiver = caller.addTrack(track.clone());
     }

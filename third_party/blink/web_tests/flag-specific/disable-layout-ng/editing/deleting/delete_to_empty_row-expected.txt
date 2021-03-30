@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL assertSelection(inputText, tester, expectedText, options) resources/testharness.js:2092:25)
+	 expected <div contenteditable><table><tbody><tr><td>|<br></td><td></td><td><br></td></tr><tr><td>21</td><td>22</td><td>33</td></tr><tr><td><br></td><td><br></td><td><br></td></tr></tbody></table></div>,
+	 but got  <div contenteditable><table><tbody><tr><td>|<br></td><td></td><td></td></tr><tr><td>21</td><td>22</td><td>33</td></tr><tr><td><br></td><td><br></td><td><br></td></tr></tbody></table></div>,
+	 sameupto <div contenteditable><table><tbody><tr><td>|<br></td><td></td><td><
+Harness: the test ran to completion.
+

@@ -1,0 +1,214 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+import("//chrome/browser/buildflags.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/toolbar/ButtonData.java",
+    "java/src/org/chromium/chrome/browser/toolbar/ButtonDataImpl.java",
+    "java/src/org/chromium/chrome/browser/toolbar/ButtonDataProvider.java",
+    "java/src/org/chromium/chrome/browser/toolbar/ControlContainer.java",
+    "java/src/org/chromium/chrome/browser/toolbar/HomeButton.java",
+    "java/src/org/chromium/chrome/browser/toolbar/KeyboardNavigationListener.java",
+    "java/src/org/chromium/chrome/browser/toolbar/NewTabButton.java",
+    "java/src/org/chromium/chrome/browser/toolbar/ProgressAnimationSmooth.java",
+    "java/src/org/chromium/chrome/browser/toolbar/SettableThemeColorProvider.java",
+    "java/src/org/chromium/chrome/browser/toolbar/TabCountProvider.java",
+    "java/src/org/chromium/chrome/browser/toolbar/TabSwitcherButtonCoordinator.java",
+    "java/src/org/chromium/chrome/browser/toolbar/TabSwitcherButtonProperties.java",
+    "java/src/org/chromium/chrome/browser/toolbar/TabSwitcherButtonView.java",
+    "java/src/org/chromium/chrome/browser/toolbar/TabSwitcherButtonViewBinder.java",
+    "java/src/org/chromium/chrome/browser/toolbar/TabSwitcherDrawable.java",
+    "java/src/org/chromium/chrome/browser/toolbar/ToolbarIntentMetadata.java",
+    "java/src/org/chromium/chrome/browser/toolbar/ToolbarProgressBar.java",
+    "java/src/org/chromium/chrome/browser/toolbar/ToolbarProgressBarAnimatingView.java",
+    "java/src/org/chromium/chrome/browser/toolbar/ToolbarTabController.java",
+    "java/src/org/chromium/chrome/browser/toolbar/ToolbarTabControllerImpl.java",
+    "java/src/org/chromium/chrome/browser/toolbar/VoiceToolbarButtonController.java",
+    "java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveToolbarButtonController.java",
+    "java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveToolbarFeatures.java",
+    "java/src/org/chromium/chrome/browser/toolbar/adaptive/OptionalNewTabButtonController.java",
+    "java/src/org/chromium/chrome/browser/toolbar/bottom/BottomControlsContentDelegate.java",
+    "java/src/org/chromium/chrome/browser/toolbar/bottom/BottomControlsCoordinator.java",
+    "java/src/org/chromium/chrome/browser/toolbar/bottom/BottomControlsMediator.java",
+    "java/src/org/chromium/chrome/browser/toolbar/bottom/BottomControlsProperties.java",
+    "java/src/org/chromium/chrome/browser/toolbar/bottom/BottomControlsViewBinder.java",
+    "java/src/org/chromium/chrome/browser/toolbar/bottom/ScrollingBottomViewResourceFrameLayout.java",
+    "java/src/org/chromium/chrome/browser/toolbar/bottom/ScrollingBottomViewSceneLayer.java",
+    "java/src/org/chromium/chrome/browser/toolbar/load_progress/LoadProgressCoordinator.java",
+    "java/src/org/chromium/chrome/browser/toolbar/load_progress/LoadProgressMediator.java",
+    "java/src/org/chromium/chrome/browser/toolbar/load_progress/LoadProgressProperties.java",
+    "java/src/org/chromium/chrome/browser/toolbar/load_progress/LoadProgressSimulator.java",
+    "java/src/org/chromium/chrome/browser/toolbar/load_progress/LoadProgressViewBinder.java",
+    "java/src/org/chromium/chrome/browser/toolbar/top/ActionModeController.java",
+    "java/src/org/chromium/chrome/browser/toolbar/top/CohortUtils.java",
+    "java/src/org/chromium/chrome/browser/toolbar/top/HomeButtonCoordinator.java",
+    "java/src/org/chromium/chrome/browser/toolbar/top/IncognitoSwitchCoordinator.java",
+    "java/src/org/chromium/chrome/browser/toolbar/top/IncognitoSwitchProperties.java",
+    "java/src/org/chromium/chrome/browser/toolbar/top/IncognitoSwitchViewBinder.java",
+    "java/src/org/chromium/chrome/browser/toolbar/top/ToggleTabStackButton.java",
+    "java/src/org/chromium/chrome/browser/toolbar/top/ToggleTabStackButtonCoordinator.java",
+    "java/src/org/chromium/chrome/browser/toolbar/top/Toolbar.java",
+    "java/src/org/chromium/chrome/browser/toolbar/top/ToolbarActionModeCallback.java",
+    "java/src/org/chromium/chrome/browser/toolbar/top/TopToolbarOverlayCoordinator.java",
+    "java/src/org/chromium/chrome/browser/toolbar/top/TopToolbarOverlayMediator.java",
+    "java/src/org/chromium/chrome/browser/toolbar/top/TopToolbarOverlayProperties.java",
+    "java/src/org/chromium/chrome/browser/toolbar/top/TopToolbarSceneLayer.java",
+    "java/src/org/chromium/chrome/browser/toolbar/top/ViewShiftingActionBarDelegate.java",
+  ]
+
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/browser_controls/android:java",
+    "//chrome/browser/device:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/fullscreen/android:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tab_group:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/layouts:java",
+    "//chrome/browser/ui/android/native_page:java",
+    "//chrome/browser/ui/android/theme:java",
+    "//chrome/browser/user_education:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/browser_ui/widget/android:java_resources",
+    "//components/embedder_support/android:util_java",
+    "//components/feature_engagement:feature_engagement_java",
+    "//components/profile_metrics:browser_profile_type_enum_java",
+    "//content/public/android:content_java",
+    "//third_party/android_deps:android_support_v7_appcompat_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_full_java",
+    "//ui/android:ui_utils_java",
+    "//url:gurl_java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  resources_package = "org.chromium.chrome.browser.toolbar"
+}
+
+generate_jni("jni_headers") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/toolbar/bottom/ScrollingBottomViewSceneLayer.java",
+    "java/src/org/chromium/chrome/browser/toolbar/top/TopToolbarSceneLayer.java",
+  ]
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/drawable-hdpi/btn_tabswitcher_modern.png",
+    "java/res/drawable-hdpi/btn_toolbar_home.png",
+    "java/res/drawable-hdpi/incognito_simple.png",
+    "java/res/drawable-hdpi/incognito_switch.png",
+    "java/res/drawable-hdpi/modern_location_bar.9.png",
+    "java/res/drawable-mdpi/btn_tabswitcher_modern.png",
+    "java/res/drawable-mdpi/btn_toolbar_home.png",
+    "java/res/drawable-mdpi/incognito_simple.png",
+    "java/res/drawable-mdpi/incognito_switch.png",
+    "java/res/drawable-mdpi/modern_location_bar.9.png",
+    "java/res/drawable-xhdpi/btn_tabswitcher_modern.png",
+    "java/res/drawable-xhdpi/btn_toolbar_home.png",
+    "java/res/drawable-xhdpi/incognito_simple.png",
+    "java/res/drawable-xhdpi/incognito_switch.png",
+    "java/res/drawable-xhdpi/modern_location_bar.9.png",
+    "java/res/drawable-xxhdpi/btn_tabswitcher_modern.png",
+    "java/res/drawable-xxhdpi/btn_toolbar_home.png",
+    "java/res/drawable-xxhdpi/incognito_simple.png",
+    "java/res/drawable-xxhdpi/incognito_switch.png",
+    "java/res/drawable-xxhdpi/modern_location_bar.9.png",
+    "java/res/drawable-xxxhdpi/btn_tabswitcher_modern.png",
+    "java/res/drawable-xxxhdpi/btn_toolbar_home.png",
+    "java/res/drawable-xxxhdpi/incognito_simple.png",
+    "java/res/drawable-xxxhdpi/incognito_switch.png",
+    "java/res/drawable/new_tab_icon.xml",
+    "java/res/layout/bottom_control_container.xml",
+    "java/res/layout/control_container.xml",
+    "java/res/layout/tab_switcher_toolbar.xml",
+    "java/res/values-sw600dp/dimens.xml",
+    "java/res/values/dimens.xml",
+    "java/res/values/ids.xml",
+  ]
+
+  deps = [
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/styles/android:java_resources",
+  ]
+}
+
+java_library("junit") {
+  # Skip platform checks since Robolectric depends on requires_android targets.
+  bypass_platform_checks = true
+  testonly = true
+
+  sources = [
+    "java/src/org/chromium/chrome/browser/toolbar/VoiceToolbarButtonControllerUnitTest.java",
+    "java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveToolbarButtonControllerTest.java",
+    "java/src/org/chromium/chrome/browser/toolbar/top/HomeButtonCoordinatorTest.java",
+    "java/src/org/chromium/chrome/browser/toolbar/top/ToggleTabStackButtonCoordinatorTest.java",
+    "java/src/org/chromium/chrome/browser/toolbar/top/ToggleTabStackButtonTest.java",
+    "java/src/org/chromium/chrome/browser/toolbar/top/TopToolbarOverlayMediatorTest.java",
+  ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/browser_controls/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/layouts:java",
+    "//chrome/browser/ui/android/theme:java",
+    "//chrome/browser/user_education:java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//components/browser_ui/widget/android:java",
+    "//components/feature_engagement:feature_engagement_java",
+    "//third_party/android_deps:guava_android_java",
+    "//third_party/android_deps:robolectric_all_java",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
+    "//url:gurl_java",
+    "//url:gurl_junit_test_support",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+  sources = [
+    "java/src/org/chromium/chrome/browser/toolbar/ToolbarProgressBarTest.java",
+    "java/src/org/chromium/chrome/browser/toolbar/load_progress/LoadProgressMediatorTest.java",
+  ]
+
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//chrome/browser/tab:java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//components/browser_ui/widget/android:java",
+    "//content/public/android:content_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
+    "//url:gurl_java",
+  ]
+
+  resources_package = "org.chromium.chrome.browser.toolbar"
+}

@@ -7,7 +7,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/views/accessibility/ax_event_manager.h"
 #include "ui/views/accessibility/ax_event_observer.h"
@@ -39,8 +39,8 @@ class AXEventCounter : public views::AXEventObserver {
   base::flat_map<ax::mojom::Event, int> event_counts_;
   ax::mojom::Event wait_for_event_type_ = ax::mojom::Event::kNone;
   base::RunLoop* run_loop_ = nullptr;
-  ScopedObserver<views::AXEventManager, views::AXEventObserver> tree_observer_{
-      this};
+  base::ScopedObservation<views::AXEventManager, views::AXEventObserver>
+      tree_observation_{this};
 };
 
 }  // namespace test

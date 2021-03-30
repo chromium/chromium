@@ -19,8 +19,12 @@ enum ProxyMode {
   // Direct connection to the network, other proxy preferences are ignored.
   MODE_DIRECT = 0,
 
-  // Try to retrieve a PAC script from http://wpad/wpad.dat or fall back to
-  // direct connection.
+  // Try to auto-detect the PAC script location.
+  // On Windows and Chrome OS, DHCP is tried first (DHCP Option 252), and DNS
+  // (resolving http://wpad/wpad.dat) is tried second.
+  // On other platforms, only DNS is tried.
+  // If no PAC script can be found by this method, fall back to direct
+  // connection.
   MODE_AUTO_DETECT = 1,
 
   // Try to retrieve a PAC script from kProxyPacURL or fall back to direct

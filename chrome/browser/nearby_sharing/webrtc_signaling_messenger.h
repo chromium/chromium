@@ -12,8 +12,11 @@
 #include "chrome/browser/nearby_sharing/instantmessaging/send_message_express.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/token_fetcher.h"
 #include "chromeos/services/nearby/public/mojom/webrtc_signaling_messenger.mojom.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
 
 class WebRtcSignalingMessenger
     : public sharing::mojom::WebRtcSignalingMessenger {
@@ -35,19 +38,10 @@ class WebRtcSignalingMessenger
       mojo::PendingRemote<sharing::mojom::IncomingMessagesListener>
           incoming_messages_listener,
       StartReceivingMessagesCallback callback) override;
-  void StopReceivingMessages() override;
 
  private:
-  void OnStartedReceivingMessages(StartReceivingMessagesCallback callback,
-                                  bool success);
-  void OnMessageReceived(const std::string& message);
-
-  TokenFetcher token_fetcher_;
-  SendMessageExpress send_message_express_;
-  ReceiveMessagesExpress receive_messages_express_;
-
-  mojo::Remote<sharing::mojom::IncomingMessagesListener>
-      incoming_messages_listener_;
+  signin::IdentityManager* identity_manager_ = nullptr;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_WEBRTC_SIGNALING_MESSENGER_H_

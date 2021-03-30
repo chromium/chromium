@@ -50,6 +50,8 @@ public class StartupLoadingMetricsTest {
             "Startup.Android.Cold.TimeToFirstNavigationCommit";
     private static final String FIRST_CONTENTFUL_PAINT_HISTOGRAM =
             "Startup.Android.Cold.TimeToFirstContentfulPaint";
+    private static final String FIRST_VISIBLE_CONTENT_HISTOGRAM =
+            "Startup.Android.Cold.TimeToFirstVisibleContent";
     private static final String VISIBLE_CONTENT_HISTOGRAM =
             "Startup.Android.Cold.TimeToVisibleContent";
 
@@ -114,6 +116,9 @@ public class StartupLoadingMetricsTest {
                 RecordHistogram.getHistogramTotalCountForTesting(
                         FIRST_CONTENTFUL_PAINT_HISTOGRAM + histogramSuffix));
         if (histogramSuffix.equals(TABBED_SUFFIX)) {
+            Assert.assertEquals(expectedCount,
+                    RecordHistogram.getHistogramTotalCountForTesting(
+                            FIRST_VISIBLE_CONTENT_HISTOGRAM));
             Assert.assertEquals(expectedCount,
                     RecordHistogram.getHistogramTotalCountForTesting(VISIBLE_CONTENT_HISTOGRAM));
         }

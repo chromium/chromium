@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/personalization_section.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "base/bind.h"
@@ -19,7 +20,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -231,7 +231,7 @@ void PersonalizationSection::AddLoadTimeData(
       {"photoModeAccessibleText", IDS_SETTINGS_PHOTO_MODE_ACCESSIBLE_TEXT},
       {"videoModeAccessibleText", IDS_SETTINGS_VIDEO_MODE_ACCESSIBLE_TEXT},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddBoolean(
       "changePictureVideoModeEnabled",
@@ -260,7 +260,8 @@ void PersonalizationSection::AddHandlers(content::WebUI* web_ui) {
   if (!profile()->IsGuestSession() &&
       chromeos::features::IsAmbientModeEnabled()) {
     web_ui->AddMessageHandler(
-        std::make_unique<chromeos::settings::AmbientModeHandler>());
+        std::make_unique<chromeos::settings::AmbientModeHandler>(
+            pref_service_));
   }
 }
 

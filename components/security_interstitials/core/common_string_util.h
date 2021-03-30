@@ -18,7 +18,7 @@ namespace security_interstitials {
 namespace common_string_util {
 
 // Returns the |gurl| as a URL appropriate for display in an error page.
-base::string16 GetFormattedHostName(const GURL& gurl);
+std::u16string GetFormattedHostName(const GURL& gurl);
 
 // For SSL-related errors that share a basic structure.
 void PopulateSSLLayoutStrings(int cert_error,
@@ -35,7 +35,7 @@ void PopulateNewIconStrings(base::DictionaryValue* load_time_data);
 // Fills in the details for a legacy TLS error. Abstracts the strings for
 // access from ios/.
 void PopulateLegacyTLSStrings(base::DictionaryValue* load_time_data,
-                              const base::string16& hostname);
+                              const std::u16string& hostname);
 
 }  // common_string_util
 

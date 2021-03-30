@@ -24,7 +24,7 @@
 #define MAX_FILTER_BLOCK_SIZE 0x400000
 
 // Write data in 4 MB or smaller blocks. Must not exceed PACK_MAX_WRITE,
-// so we keep number of buffered filter in unpacker reasonable.
+// so we keep a number of buffered filters in unpacker reasonable.
 #define UNPACK_MAX_WRITE      0x400000
 
 // Decode compressed bit fields to alphabet numbers.
@@ -382,10 +382,7 @@ class Unpack:PackDef
     void SetSuspended(bool Suspended) {Unpack::Suspended=Suspended;}
 
 #ifdef RAR_SMP
-    // More than 8 threads are unlikely to provide a noticeable gain
-    // for unpacking, but would use the additional memory.
-    void SetThreads(uint Threads) {MaxUserThreads=Min(Threads,8);}
-
+    void SetThreads(uint Threads);
     void UnpackDecode(UnpackThreadData &D);
 #endif
 

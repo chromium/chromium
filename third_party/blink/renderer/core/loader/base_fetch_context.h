@@ -8,6 +8,7 @@
 #include "base/optional.h"
 #include "net/cookies/site_for_cookies.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
+#include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -28,7 +29,15 @@ class SecurityOrigin;
 class SubresourceFilter;
 class WebSocketHandshakeThrottle;
 
-// A core-level implementaiton of FetchContext that does not depend on
+// This is information for client hints that only make sense when attached to a
+// frame
+struct ClientHintImageInfo {
+  float dpr;
+  FetchParameters::ResourceWidth resource_width;
+  base::Optional<int> viewport_width;
+};
+
+// A core-level implementation of FetchContext that does not depend on
 // Frame. This class provides basic default implementation for some methods.
 class CORE_EXPORT BaseFetchContext : public FetchContext {
  public:
@@ -92,6 +101,16 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
       const base::Optional<ResourceRequest::RedirectInfo>& redirect_info,
       ReportingDisposition reporting_disposition) const;
 
+  void AddClientHintsIfNecessary(
+      const ClientHintsPreferences& hints_preferences,
+      const url::Origin& resource_origin,
+      bool is_1p_origin,
+      base::Optional<UserAgentMetadata> ua,
+      const PermissionsPolicy* policy,
+      const base::Optional<ClientHintImageInfo>& image_info,
+      const base::Optional<WTF::AtomicString>& lang,
+      ResourceRequest& request);
+
  protected:
   explicit BaseFetchContext(
       const DetachableResourceFetcherProperties& properties)
@@ -108,7 +127,7 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
                                        const FetchInitiatorInfo&,
                                        ResourceRequestBlockedReason,
                                        ResourceType) const = 0;
-  virtual const ContentSecurityPolicy* GetContentSecurityPolicyForWorld(
+  virtual ContentSecurityPolicy* GetContentSecurityPolicyForWorld(
       const DOMWrapperWorld* world) const = 0;
 
   virtual bool IsSVGImageChromeClient() const = 0;
@@ -122,7 +141,7 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
                                                          const KURL&) const = 0;
   virtual const KURL& Url() const = 0;
   virtual const SecurityOrigin* GetParentSecurityOrigin() const = 0;
-  virtual const ContentSecurityPolicy* GetContentSecurityPolicy() const = 0;
+  virtual ContentSecurityPolicy* GetContentSecurityPolicy() const = 0;
 
   // TODO(yhirano): Remove this.
   virtual void AddConsoleMessage(ConsoleMessage*) const = 0;
@@ -155,6 +174,14 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
       const KURL& url_before_redirects,
       ResourceRequest::RedirectStatus redirect_status,
       ContentSecurityPolicy::CheckHeaderType) const;
+
+  enum class ClientHintsMode { kLegacy, kStandard };
+  bool ShouldSendClientHint(ClientHintsMode mode,
+                            const PermissionsPolicy*,
+                            const url::Origin&,
+                            bool is_1p_origin,
+                            network::mojom::blink::WebClientHintsType,
+                            const ClientHintsPreferences&) const;
 };
 
 }  // namespace blink

@@ -99,7 +99,7 @@ class TestWidgetDelegate : public test::TestDesktopWidgetDelegate {
   static constexpr char kAccessibleWindowTitle[] = "My Accessible Window";
 
   // WidgetDelegate:
-  base::string16 GetAccessibleWindowTitle() const override {
+  std::u16string GetAccessibleWindowTitle() const override {
     return base::ASCIIToUTF16(kAccessibleWindowTitle);
   }
 
@@ -550,10 +550,10 @@ TEST_F(AXNativeWidgetMacTest, TextfieldWritableAttributes) {
             textfield->GetSelectedRange());
 
   // Replace a middle section only (with a backwards selection range).
-  base::string16 front = base::ASCIIToUTF16("Front ");
-  base::string16 middle = base::ASCIIToUTF16("middle");
-  base::string16 back = base::ASCIIToUTF16(" back");
-  base::string16 replacement = base::ASCIIToUTF16("replaced");
+  std::u16string front = u"Front ";
+  std::u16string middle = u"middle";
+  std::u16string back = u" back";
+  std::u16string replacement = u"replaced";
   textfield->SetText(front + middle + back);
   test_range = gfx::Range(front.length() + middle.length(), front.length());
   new_string = base::SysUTF16ToNSString(front + replacement + back);
@@ -697,13 +697,13 @@ TEST_F(AXNativeWidgetMacTest, ProtectedTextfields) {
   EXPECT_EQ(0, ax_node.accessibilityInsertionPointLineNumber);
 
   // Test replacing text.
-  textfield->SetText(base::ASCIIToUTF16("123"));
+  textfield->SetText(u"123");
   EXPECT_NSEQ(@"•••", ax_node.accessibilityValue);
   EXPECT_EQ(3, ax_node.accessibilityNumberOfCharacters);
 
   textfield->SetSelectedRange(gfx::Range(2, 3));  // Selects "3".
   ax_node.accessibilitySelectedText = @"ab";
-  EXPECT_EQ(base::ASCIIToUTF16("12ab"), textfield->GetText());
+  EXPECT_EQ(u"12ab", textfield->GetText());
   EXPECT_NSEQ(@"••••", ax_node.accessibilityValue);
   EXPECT_EQ(4, ax_node.accessibilityNumberOfCharacters);
 }
@@ -772,9 +772,9 @@ class TestComboboxModel : public ui::ComboboxModel {
 
   // ui::ComboboxModel:
   int GetItemCount() const override { return 2; }
-  base::string16 GetItemAt(int index) const override {
+  std::u16string GetItemAt(int index) const override {
     return index == 0 ? base::SysNSStringToUTF16(kTestStringValue)
-                      : base::ASCIIToUTF16("Second Item");
+                      : u"Second Item";
   }
 
  private:

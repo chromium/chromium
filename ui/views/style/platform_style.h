@@ -99,7 +99,7 @@ class VIEWS_EXPORT PlatformStyle {
   // This is to support deleting entire graphemes instead of individual
   // characters when necessary on Mac, and code points made from surrogate
   // pairs on other platforms.
-  static gfx::Range RangeToDeleteBackwards(const base::string16& text,
+  static gfx::Range RangeToDeleteBackwards(const std::u16string& text,
                                            size_t cursor_position);
 
  private:

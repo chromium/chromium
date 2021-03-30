@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Correct interpretation of valid badge values.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script type="module">
+import {badge_test} from './resources/mock-badge-service.js';
+
+badge_test(() => navigator.setAppBadge(), 'flag');
+
+badge_test(() => navigator.setAppBadge(undefined), 'flag');
+
+badge_test(() => navigator.setAppBadge(1), 'number:1');
+
+// Non-whole number should round down to nearest integer.
+badge_test(() => navigator.setAppBadge(10.6), 'number:10');
+
+// Maximum allowed value (2^53 - 1).
+badge_test(() => navigator.setAppBadge(Number.MAX_SAFE_INTEGER),
+           'number:' + Number.MAX_SAFE_INTEGER);
+
+// Setting the Badge to 0 should be equivalent to clearing the badge.
+badge_test(() => navigator.setAppBadge(0), 'clear');
+
+badge_test(() => navigator.clearAppBadge(), 'clear');
+
+// Non-numeric values that convert to integer.
+badge_test(() => navigator.setAppBadge(null), 'clear');
+badge_test(() => navigator.setAppBadge(false), 'clear');
+badge_test(() => navigator.setAppBadge(true), 'number:1');
+badge_test(() => navigator.setAppBadge('3'), 'number:3');
+
+</script>
+</body>
+</html>

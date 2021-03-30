@@ -57,13 +57,11 @@ class LayoutSVGResourceClipper final : public LayoutSVGResourceContainer {
   base::Optional<Path> AsPath();
   sk_sp<const PaintRecord> CreatePaintRecord();
 
- protected:
-  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
-  void WillBeDestroyed() override;
-
  private:
+  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+
   void CalculateLocalClipBounds();
-  bool FindCycleFromSelf(SVGResourcesCycleSolver&) const override;
+  bool FindCycleFromSelf() const override;
 
   // Cache of the clip path when using path clipping.
   enum ClipContentPathValidity {

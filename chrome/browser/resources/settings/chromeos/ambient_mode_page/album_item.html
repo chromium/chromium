@@ -5,6 +5,7 @@
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="constants.html">
+<link rel="import" href="text_with_tooltip.html">
 <link rel="import" href="../../settings_shared_css.html">
 
 <dom-module id="album-item">
@@ -14,6 +15,13 @@
         cursor: default;
         display: block;
         outline: none;
+      }
+
+      #albumContainer {
+        /* For a grid iron-list the list template item must have both a fixed
+           width and height. */
+        height: 236px;
+        line-height: 20px;
       }
 
       #albumContainer.personal-album {
@@ -137,8 +145,7 @@
         transform: scale(0.8);
       }
     </style>
-    <div id="albumContainer"
-        class$="layout vertical left flex [[computeClass_(topicSource)]]">
+    <div id="albumContainer" class$="[[computeClass_(topicSource)]]">
       <div id="imageContainer" class$="[[computeClass_(topicSource)]]"
           aria-hidden="true">
         <!-- Only shows the images and icon when the URLs are successfully
@@ -180,8 +187,12 @@
 
       <div id="albumInfo" class$="[[computeClass_(topicSource)]]"
           aria-hidden="true">
-        <div>[[album.title]]</div>
-        <div class="cr-secondary-text">[[album.description]]</div>
+        <text-with-tooltip id="albumTitle" text="[[album.title]]"
+          tooltip-is-visible="{{titleTooltipIsVisible}}"></text-with-tooltip>
+        <text-with-tooltip id="albumDescription"
+          text="[[album.description]]" line-clamp="2"
+          tooltip-is-visible="{{descriptionTooltipIsVisible}}"
+          text-style="cr-secondary-text"></text-with-tooltip>
       </div>
     </div>
   </template>

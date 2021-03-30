@@ -18,20 +18,20 @@ cr-dialog::part(dialog)  {
   width: calc(100% - var(--oobe-dialog-content-padding) * 2);
 }
 
-webview {
-  user-select: none;
+oobe-adaptive-dialog {
+  --oobe-dialog-header-padding-top: calc(var(--oobe-dialog-content-padding) -
+           var(--caption-bar-height));
 }
 
-.container {
-  box-sizing: border-box;
-  height: 100%;
-  padding-bottom: 0;
-  padding-inline-end: var(--oobe-dialog-content-padding);
-  padding-inline-start: var(--oobe-dialog-content-padding);
-  padding-top: calc(var(--oobe-dialog-content-padding) -
-                    var(--caption-bar-height));
-  position: absolute;
-  width: 100%;
+oobe-adaptive-dialog,
+oobe-content-dialog {
+  --oobe-adaptive-dialog-back-button-vertical-padding:
+      calc(var(--oobe-adaptive-dialog-buttons-vertical-padding) -
+          var(--caption-bar-height) / 2);
+}
+
+webview {
+  user-select: none;
 }
 
 .line {
@@ -40,32 +40,49 @@ webview {
   margin: 8px 0 8px 0;
 }
 
-.title {
-  color: var(--google-grey-900);
-  font-family: 'Google Sans', Roboto, sans-serif;
-  font-size: 28px;
-  line-height: 32px;
-  padding: 20px 0 16px 0;
-}
-
-.sub-title {
-  color: var(--google-grey-900);
-  font: 13px Roboto, sans-serif;
-  line-height: 16px;
-}
-
 .content {
   color: var(--google-grey-700);
   font: 13px Roboto, sans-serif;
   line-height: 16px;
 }
 
-#logo {
-  height: 32px;
-  margin: 0;
-  width: 32px;
-}
-
 #next-button {
   margin-inline-end: 0;
+}
+
+:host-context(html:not([new-layout])) .animation-container {
+  display: none;
+}
+
+:host-context([new-layout]) .animation-container {
+  height: 220px;
+}
+
+@media screen and (max-height: 1040px) {
+  :host-context([orientation=vertical][screen=oobe]) .animation-container,
+  :host-context([orientation=vertical][screen=oobe])
+      #animation-container-vertical-mode {
+    display: none;
+  }
+
+  :host-context([orientation=vertical][screen=oobe])
+      oobe-adaptive-dialog {
+    --oobe-adaptive-dialog-content-top-padding:
+        var(--oobe-adaptive-dialog-header-top-padding);
+  }
+}
+
+@media screen and (max-height: 825px) {
+  :host-context([orientation=vertical]:not([screen=oobe]))
+      .animation-container,
+  :host-context([orientation=vertical]:not([screen=oobe]))
+      #animation-container-vertical-mode {
+    display: none;
+  }
+
+  :host-context([orientation=vertical]:not([screen=oobe]))
+      oobe-adaptive-dialog {
+    --oobe-adaptive-dialog-content-top-padding:
+        var(--oobe-adaptive-dialog-header-top-padding);
+  }
 }

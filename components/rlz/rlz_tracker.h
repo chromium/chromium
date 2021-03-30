@@ -13,7 +13,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -84,7 +83,7 @@ class RLZTracker {
   // Returns false if the rlz string could not be obtained. In some cases
   // an empty string can be returned which is not an error.
   static bool GetAccessPointRlz(rlz_lib::AccessPoint point,
-                                base::string16* rlz);
+                                std::u16string* rlz);
 
   // Invoked during shutdown to clean up any state created by RLZTracker.
   static void CleanupRlz();
@@ -152,7 +151,7 @@ class RLZTracker {
   void RecordFirstSearch(rlz_lib::AccessPoint point);
 
   // Implementation called from GetAccessPointRlz() static method.
-  bool GetAccessPointRlzImpl(rlz_lib::AccessPoint point, base::string16* rlz);
+  bool GetAccessPointRlzImpl(rlz_lib::AccessPoint point, std::u16string* rlz);
 
   // Schedules the delayed initialization. This method is virtual to allow
   // tests to override how the scheduling is done.
@@ -181,8 +180,8 @@ class RLZTracker {
   // Sends the financial ping to the RLZ servers. This method is virtual to
   // allow tests to override.
   virtual bool SendFinancialPing(const std::string& brand,
-                                 const base::string16& lang,
-                                 const base::string16& referral);
+                                 const std::u16string& lang,
+                                 const std::u16string& referral);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Implementation called from ClearRlzState static method.
@@ -219,7 +218,7 @@ class RLZTracker {
   // The cache must be protected by a lock since it may be accessed from
   // the UI thread for reading and the IO thread for reading and/or writing.
   base::Lock cache_lock_;
-  std::map<rlz_lib::AccessPoint, base::string16> rlz_cache_;
+  std::map<rlz_lib::AccessPoint, std::u16string> rlz_cache_;
 
   // Keeps track of whether the omnibox, home page or app list have been used.
   bool omnibox_used_;

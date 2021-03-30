@@ -7,16 +7,17 @@
 #include <utility>
 
 #include "android_webview/browser/gfx/compositor_frame_producer.h"
-#include "android_webview/browser/gfx/gpu_service_web_view.h"
+#include "android_webview/browser/gfx/gpu_service_webview.h"
 #include "android_webview/browser/gfx/hardware_renderer_single_thread.h"
 #include "android_webview/browser/gfx/hardware_renderer_viz.h"
 #include "android_webview/browser/gfx/scoped_app_gl_state_restore.h"
-#include "android_webview/browser/gfx/task_queue_web_view.h"
+#include "android_webview/browser/gfx/task_queue_webview.h"
 #include "android_webview/common/aw_features.h"
 #include "android_webview/public/browser/draw_gl.h"
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -194,9 +195,14 @@ void RenderThreadManager::DrawOnRT(bool save_restore,
                                    const OverlaysParams& overlays_params) {
   // Force GL binding init if it's not yet initialized.
   GpuServiceWebView::GetInstance();
-  ScopedAppGLStateRestore state_restore(ScopedAppGLStateRestore::MODE_DRAW,
-                                        save_restore);
-  ScopedAllowGL allow_gl;
+
+  base::Optional<ScopedAppGLStateRestore> state_restore;
+  base::Optional<ScopedAllowGL> allow_gl;
+  if (!vulkan_context_provider_) {
+    state_restore.emplace(ScopedAppGLStateRestore::MODE_DRAW, save_restore);
+    allow_gl.emplace();
+  }
+
   if (!hardware_renderer_ && !IsInsideHardwareRelease() &&
       HasFrameForHardwareRendererOnRT()) {
     if (::features::IsUsingVizForWebView()) {
@@ -226,9 +232,15 @@ void RenderThreadManager::RemoveOverlaysOnRT(
 
 void RenderThreadManager::DestroyHardwareRendererOnRT(bool save_restore) {
   GpuServiceWebView::GetInstance();
-  ScopedAppGLStateRestore state_restore(
-      ScopedAppGLStateRestore::MODE_RESOURCE_MANAGEMENT, save_restore);
-  ScopedAllowGL allow_gl;
+
+  base::Optional<ScopedAppGLStateRestore> state_restore;
+  base::Optional<ScopedAllowGL> allow_gl;
+  if (!vulkan_context_provider_) {
+    state_restore.emplace(ScopedAppGLStateRestore::MODE_RESOURCE_MANAGEMENT,
+                          save_restore);
+    allow_gl.emplace();
+  }
+
   hardware_renderer_.reset();
 }
 

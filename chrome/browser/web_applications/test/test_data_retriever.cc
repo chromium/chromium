@@ -41,7 +41,7 @@ void TestDataRetriever::CheckInstallabilityAndRetrieveManifest(
     opt_manifest = *manifest_;
 
   completion_callback_ =
-      base::BindOnce(std::move(callback), opt_manifest,
+      base::BindOnce(std::move(callback), opt_manifest, manifest_url_,
                      /*valid_manifest_for_web_app=*/true, is_installable_);
   ScheduleCompletionCallback();
 }
@@ -73,9 +73,11 @@ void TestDataRetriever::SetEmptyRendererWebApplicationInfo() {
 }
 
 void TestDataRetriever::SetManifest(std::unique_ptr<blink::Manifest> manifest,
-                                    bool is_installable) {
+                                    bool is_installable,
+                                    GURL manifest_url) {
   manifest_ = std::move(manifest);
   is_installable_ = is_installable;
+  manifest_url_ = manifest_url;
 }
 
 void TestDataRetriever::SetIcons(IconsMap icons_map) {
@@ -101,7 +103,7 @@ void TestDataRetriever::BuildDefaultDataToRetrieve(const GURL& url,
   manifest->start_url = url;
   manifest->scope = scope;
   manifest->display = DisplayMode::kStandalone;
-  manifest->short_name = base::ASCIIToUTF16("Manifest Name");
+  manifest->short_name = u"Manifest Name";
 
   SetManifest(std::move(manifest), /*is_installable=*/true);
 

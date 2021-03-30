@@ -105,6 +105,14 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformScreen {
   virtual base::Value GetGpuExtraInfoAsListValue(
       const gfx::GpuExtraInfo& gpu_extra_info);
 
+  // Sets device scale factor received from external sources such as toolkits.
+  // Currently only used by Linux.
+  virtual void SetDeviceScaleFactor(float scale);
+
+ protected:
+  void StorePlatformNameIntoListValue(base::Value& list_value,
+                                      const std::string& platform_name);
+
  private:
   DISALLOW_COPY_AND_ASSIGN(PlatformScreen);
 };

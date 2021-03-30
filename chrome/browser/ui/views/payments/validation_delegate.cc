@@ -14,7 +14,7 @@ bool ValidationDelegate::ShouldFormat() {
   return false;
 }
 
-base::string16 ValidationDelegate::Format(const base::string16& text) {
+std::u16string ValidationDelegate::Format(const std::u16string& text) {
   NOTREACHED();
   return text;
 }

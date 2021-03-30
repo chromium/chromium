@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/animation/basic_shape_interpolation_functions.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -34,8 +35,6 @@ const BasicShape* GetBasicShape(const CSSProperty& property,
         return nullptr;
       return style.ShapeOutside()->Shape();
     case CSSPropertyID::kClipPath: {
-      if (!style.ClipPath())
-        return nullptr;
       auto* clip_path_operation =
           DynamicTo<ShapeClipPathOperation>(style.ClipPath());
       if (!clip_path_operation)
@@ -109,10 +108,12 @@ InterpolationValue CSSBasicShapeInterpolationType::MaybeConvertNeutral(
 }
 
 InterpolationValue CSSBasicShapeInterpolationType::MaybeConvertInitial(
-    const StyleResolverState&,
+    const StyleResolverState& state,
     ConversionCheckers&) const {
   return basic_shape_interpolation_functions::MaybeConvertBasicShape(
-      GetBasicShape(CssProperty(), ComputedStyle::InitialStyle()), 1);
+      GetBasicShape(CssProperty(),
+                    state.GetDocument().GetStyleResolver().InitialStyle()),
+      1);
 }
 
 InterpolationValue CSSBasicShapeInterpolationType::MaybeConvertInherit(

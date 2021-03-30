@@ -13,6 +13,13 @@
 
 namespace features {
 
+AX_BASE_EXPORT extern const base::Feature
+    kEnableAccessibilityAriaVirtualContent;
+
+// Returns true if "aria-virtualcontent" should be recognized as a valid aria
+// property.
+AX_BASE_EXPORT bool IsAccessibilityAriaVirtualContentEnabled();
+
 AX_BASE_EXPORT extern const base::Feature kEnableAccessibilityExposeDisplayNone;
 
 // Returns true if "display: none" nodes should be exposed to the
@@ -64,18 +71,28 @@ AX_BASE_EXPORT bool IsIChromeAccessibleEnabled();
 #endif  // defined(OS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-AX_BASE_EXPORT extern const base::Feature kAccessibilityCursorColor;
-
-// Returns true if the accessibility cursor color feature is enabled, letting
-// users pick a custom cursor color.
-AX_BASE_EXPORT bool IsAccessibilityCursorColorEnabled();
-
 // Enables new magnifier focus following feature, which provides a richer
 // focus following experience.
 AX_BASE_EXPORT extern const base::Feature kMagnifierNewFocusFollowing;
 
 // Returns true if the new magnifier focus following feature is enabled.
 AX_BASE_EXPORT bool IsMagnifierNewFocusFollowingEnabled();
+
+// Enables new magnifier panning improvements feature, which adds
+// additional keyboard and mouse panning functionality in Magnifier.
+AX_BASE_EXPORT extern const base::Feature kMagnifierPanningImprovements;
+
+// Returns true if the new magnifier panning improvements feature is enabled.
+AX_BASE_EXPORT bool IsMagnifierPanningImprovementsEnabled();
+
+// Enables ability to choose new continuous mouse following mode in Magnifier
+// settings.
+AX_BASE_EXPORT extern const base::Feature
+    kMagnifierContinuousMouseFollowingModeSetting;
+
+// Returns true if the feature to allow choosing the new continuous mouse
+// following mode in Magnifier settings is enabled.
+AX_BASE_EXPORT bool IsMagnifierContinuousMouseFollowingModeSettingEnabled();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Enables Get Image Descriptions to augment existing images labels,

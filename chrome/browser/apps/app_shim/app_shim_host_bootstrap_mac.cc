@@ -114,6 +114,11 @@ const std::vector<base::FilePath>& AppShimHostBootstrap::GetLaunchFiles()
   return app_shim_info_->files;
 }
 
+chrome::mojom::AppShimLoginItemRestoreState
+AppShimHostBootstrap::GetLoginItemRestoreState() const {
+  return app_shim_info_->login_item_restore_state;
+}
+
 bool AppShimHostBootstrap::IsMultiProfile() const {
   // PWAs and bookmark apps are multi-profile capable.
   return app_shim_info_->app_url.is_valid();

@@ -37,7 +37,7 @@ namespace blink {
 InertEffect::InertEffect(KeyframeEffectModelBase* model,
                          const Timing& timing,
                          bool paused,
-                         base::Optional<double> inherited_time,
+                         base::Optional<AnimationTimeDelta> inherited_time,
                          base::Optional<TimelinePhase> inherited_phase)
     : AnimationEffect(timing),
       model_(model),

@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests exception message contains stack with correct function name.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
     var foo = function ()

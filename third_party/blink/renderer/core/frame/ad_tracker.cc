@@ -51,11 +51,6 @@ namespace features {
 // the currently running stack is ad related.
 const base::Feature kAsyncStackAdTagging{"AsyncStackAdTagging",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Controls whether the AdTracker analyzes the bottom and top of the stack or
-// just the top of the stack when detecting ads.
-const base::Feature kTopOfStackAdTagging{"TopOfStackAdTagging",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
 }  // namespace features
 
 // static
@@ -82,9 +77,7 @@ bool AdTracker::IsAdScriptExecutingInDocument(Document* document,
 AdTracker::AdTracker(LocalFrame* local_root)
     : local_root_(local_root),
       async_stack_enabled_(
-          base::FeatureList::IsEnabled(features::kAsyncStackAdTagging)),
-      top_of_stack_only_(
-          base::FeatureList::IsEnabled(features::kTopOfStackAdTagging)) {
+          base::FeatureList::IsEnabled(features::kAsyncStackAdTagging)) {
   local_root_->GetProbeSink()->AddAdTracker(this);
 }
 
@@ -149,9 +142,6 @@ void AdTracker::WillExecuteScript(ExecutionContext* execution_context,
     }
   }
 
-  if (top_of_stack_only_)
-    return;
-
   if (!should_track_with_id)
     is_ad = IsKnownAdScript(execution_context, script_url);
 
@@ -161,9 +151,6 @@ void AdTracker::WillExecuteScript(ExecutionContext* execution_context,
 }
 
 void AdTracker::DidExecuteScript() {
-  if (top_of_stack_only_)
-    return;
-
   if (stack_frame_is_ad_.back()) {
     DCHECK_LT(0u, num_ads_in_stack_);
     num_ads_in_stack_ -= 1;

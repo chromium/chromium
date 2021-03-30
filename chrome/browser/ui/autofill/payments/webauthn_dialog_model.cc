@@ -46,7 +46,7 @@ bool WebauthnDialogModel::IsCancelButtonVisible() const {
   return true;
 }
 
-base::string16 WebauthnDialogModel::GetCancelButtonLabel() const {
+std::u16string WebauthnDialogModel::GetCancelButtonLabel() const {
   switch (state_) {
     case WebauthnDialogState::kOffer:
     case WebauthnDialogState::kOfferPending:
@@ -62,7 +62,7 @@ base::string16 WebauthnDialogModel::GetCancelButtonLabel() const {
     case WebauthnDialogState::kUnknown:
       break;
   }
-  return base::string16();
+  return std::u16string();
 }
 
 bool WebauthnDialogModel::IsAcceptButtonVisible() const {
@@ -74,7 +74,7 @@ bool WebauthnDialogModel::IsAcceptButtonEnabled() const {
   return state_ != WebauthnDialogState::kOfferPending;
 }
 
-base::string16 WebauthnDialogModel::GetAcceptButtonLabel() const {
+std::u16string WebauthnDialogModel::GetAcceptButtonLabel() const {
   return l10n_util::GetStringUTF16(
       IDS_AUTOFILL_WEBAUTHN_OPT_IN_DIALOG_OK_BUTTON_LABEL);
 }
@@ -99,7 +99,7 @@ const gfx::VectorIcon& WebauthnDialogModel::GetStepIllustration(
   return gfx::kNoneIcon;
 }
 
-base::string16 WebauthnDialogModel::GetStepTitle() const {
+std::u16string WebauthnDialogModel::GetStepTitle() const {
   switch (state_) {
     case WebauthnDialogState::kOffer:
     case WebauthnDialogState::kOfferPending:
@@ -116,10 +116,10 @@ base::string16 WebauthnDialogModel::GetStepTitle() const {
       break;
   }
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16 WebauthnDialogModel::GetStepDescription() const {
+std::u16string WebauthnDialogModel::GetStepDescription() const {
   switch (state_) {
     case WebauthnDialogState::kOffer:
     case WebauthnDialogState::kOfferPending:
@@ -129,13 +129,13 @@ base::string16 WebauthnDialogModel::GetStepDescription() const {
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_WEBAUTHN_OPT_IN_DIALOG_INSTRUCTION_ERROR);
     case WebauthnDialogState::kVerifyPending:
-      return base::string16();
+      return std::u16string();
     case WebauthnDialogState::kInactive:
     case WebauthnDialogState::kUnknown:
       break;
   }
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 }  // namespace autofill

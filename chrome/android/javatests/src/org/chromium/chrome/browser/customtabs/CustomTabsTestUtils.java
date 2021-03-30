@@ -25,6 +25,9 @@ import androidx.browser.customtabs.CustomTabsSession;
 
 import org.junit.Assert;
 
+import org.chromium.base.IntentUtils;
+import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -41,6 +44,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Utility class that contains convenience calls related with custom tabs testing.
  */
+@JNINamespace("customtabs")
 public class CustomTabsTestUtils {
     /** Intent extra to specify an id to a custom tab.*/
     public static final String EXTRA_CUSTOM_TAB_ID =
@@ -218,7 +222,9 @@ public class CustomTabsTestUtils {
     public static PendingIntent addMenuEntriesToIntent(
             Intent customTabIntent, int numEntries, Intent callbackIntent, String menuTitle) {
         PendingIntent pi = PendingIntent.getBroadcast(InstrumentationRegistry.getTargetContext(), 0,
-                callbackIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                callbackIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+                        | IntentUtils.getPendingIntentMutabilityFlag(true));
         ArrayList<Bundle> menuItems = new ArrayList<>();
         for (int i = 0; i < numEntries; i++) {
             Bundle bundle = new Bundle();
@@ -247,7 +253,7 @@ public class CustomTabsTestUtils {
         bundle.putParcelable(CustomTabsIntent.KEY_ICON, icon);
         bundle.putString(CustomTabsIntent.KEY_DESCRIPTION, description);
         bundle.putParcelable(CustomTabsIntent.KEY_PENDING_INTENT, pi);
-        bundle.putBoolean(CustomButtonParams.SHOW_ON_TOOLBAR, true);
+        bundle.putBoolean(CustomButtonParamsImpl.SHOW_ON_TOOLBAR, true);
         return bundle;
     }
 
@@ -287,5 +293,19 @@ public class CustomTabsTestUtils {
      */
     public static void setShareState(Intent intent, int shareState) {
         intent.putExtra(CustomTabsIntent.EXTRA_SHARE_STATE, shareState);
+    }
+
+    /**
+     * @param id Id of the variation to search for.
+     *
+     * @return true Whether id is a registered variation id.
+     */
+    public static boolean hasVariationId(int id) {
+        return CustomTabsTestUtilsJni.get().hasVariationId(id);
+    }
+
+    @NativeMethods
+    interface Natives {
+        boolean hasVariationId(int id);
     }
 }

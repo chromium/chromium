@@ -129,6 +129,7 @@ VulkanImplementationScenic::GetRequiredDeviceExtensions() {
       VK_FUCHSIA_EXTERNAL_MEMORY_EXTENSION_NAME,
       VK_FUCHSIA_EXTERNAL_SEMAPHORE_EXTENSION_NAME,
       VK_KHR_BIND_MEMORY_2_EXTENSION_NAME,
+      VK_KHR_DEDICATED_ALLOCATION_EXTENSION_NAME,
       VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME,
       VK_KHR_EXTERNAL_SEMAPHORE_EXTENSION_NAME,
       VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME,
@@ -186,7 +187,7 @@ VkSemaphore VulkanImplementationScenic::ImportSemaphoreHandle(
   import.semaphore = semaphore;
   import.handleType =
       VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_TEMP_ZIRCON_EVENT_BIT_FUCHSIA;
-  import.handle = event.get();
+  import.zirconHandle = event.get();
 
   result = vkImportSemaphoreZirconHandleFUCHSIA(vk_device, &import);
   if (result != VK_SUCCESS) {

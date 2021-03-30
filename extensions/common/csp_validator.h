@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece_forward.h"
 #include "extensions/common/manifest.h"
 
@@ -29,9 +28,7 @@ enum Options {
   // Allows 'unsafe-eval' to be specified as a source in a directive.
   OPTIONS_ALLOW_UNSAFE_EVAL = 1 << 0,
   // Allow an object-src to be specified with any sources (i.e. it may contain
-  // wildcards or http sources). Specifying this requires the CSP to contain
-  // a plugin-types directive which restricts the plugins that can be loaded
-  // to those which are fully sandboxed.
+  // wildcards or http sources).
   OPTIONS_ALLOW_INSECURE_OBJECT_SRC = 1 << 1,
 };
 
@@ -136,7 +133,7 @@ bool ContentSecurityPolicyIsSandboxed(
 // If not, populates |error|.
 bool DoesCSPDisallowRemoteCode(const std::string& content_security_policy,
                                base::StringPiece manifest_key,
-                               base::string16* error);
+                               std::u16string* error);
 
 }  // namespace csp_validator
 

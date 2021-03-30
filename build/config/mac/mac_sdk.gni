@@ -8,6 +8,8 @@ import("//build/config/mac/mac_sdk_overrides.gni")
 import("//build/toolchain/goma.gni")
 import("//build/toolchain/toolchain.gni")
 
+assert(current_os == "mac" || current_toolchain == default_toolchain)
+
 declare_args() {
   # The MACOSX_DEPLOYMENT_TARGET variable used when compiling. This partially
   # controls the minimum supported version of macOS for Chromium by
@@ -37,7 +39,7 @@ declare_args() {
   # The SDK version used when making official builds. This is a single exact
   # version, not a minimum. If this version isn't available official builds
   # will fail.
-  mac_sdk_official_version = "11.0"
+  mac_sdk_official_version = "11.1"
 
   # Production builds should use hermetic Xcode. If you want to do production
   # builds with system Xcode to test new SDKs, set this.
@@ -64,10 +66,10 @@ if (is_chrome_branded && is_official_build && target_os != "ios") {
 # The path to the hermetic install of Xcode. Only relevant when
 # use_system_xcode = false.
 if (!use_system_xcode) {
-  _hermetic_xcode_path = "//build/${target_os}_files/xcode_binaries"
+  _hermetic_xcode_path = "//build/mac_files/xcode_binaries"
 }
 
-script_name = "//build/config/mac/sdk_info.py"
+script_name = "//build/config/apple/sdk_info.py"
 sdk_info_args = []
 if (!use_system_xcode) {
   sdk_info_args += [

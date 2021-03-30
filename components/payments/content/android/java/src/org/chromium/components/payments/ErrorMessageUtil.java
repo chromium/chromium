@@ -4,6 +4,8 @@
 
 package org.chromium.components.payments;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 
@@ -27,7 +29,8 @@ public class ErrorMessageUtil {
      * ErrorMessageUtilJni.
      */
     @NativeMethods
-    /* package */ interface Natives {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public interface Natives {
         String getNotSupportedErrorMessage(String[] methods);
     }
 }

@@ -62,12 +62,12 @@ ExternallyConnectableHandler::~ExternallyConnectableHandler() {
 }
 
 bool ExternallyConnectableHandler::Parse(Extension* extension,
-                                         base::string16* error) {
+                                         std::u16string* error) {
   const base::Value* externally_connectable = NULL;
   CHECK(extension->manifest()->Get(keys::kExternallyConnectable,
                                    &externally_connectable));
   bool allow_all_urls = PermissionsParser::HasAPIPermission(
-      extension, APIPermission::kExternallyConnectableAllUrls);
+      extension, mojom::APIPermissionID::kExternallyConnectableAllUrls);
 
   std::vector<InstallWarning> install_warnings;
   std::unique_ptr<ExternallyConnectableInfo> info =
@@ -98,7 +98,7 @@ std::unique_ptr<ExternallyConnectableInfo> ExternallyConnectableInfo::FromValue(
     const base::Value& value,
     bool allow_all_urls,
     std::vector<InstallWarning>* install_warnings,
-    base::string16* error) {
+    std::u16string* error) {
   std::unique_ptr<ExternallyConnectable> externally_connectable =
       ExternallyConnectable::FromValue(value, error);
   if (!externally_connectable)

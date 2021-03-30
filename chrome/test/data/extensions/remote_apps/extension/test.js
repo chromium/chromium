@@ -6,6 +6,7 @@ let api;
 
 const testCases = [
   async function AddApp() {
+    // |add_to_front| omitted.
     const result1 = await api.addApp('App 1', '', '');
     chrome.test.assertFalse(!!result1.error);
     chrome.test.assertEq('Id 1', result1.appId);
@@ -15,7 +16,19 @@ const testCases = [
 
     chrome.test.succeed();
   },
+  async function AddAppToFront() {
+    const result1 = await api.addApp('App 1', '', '', false);
+    chrome.test.assertFalse(!!result1.error);
+    chrome.test.assertEq('Id 1', result1.appId);
+
+    const result2 = await api.addApp('App 2', '', '', true);
+    chrome.test.assertFalse(!!result2.error);
+    chrome.test.assertEq('Id 2', result2.appId);
+
+    chrome.test.succeed();
+  },
   async function AddFolderAndApps() {
+    // |add_to_front| omitted.
     const result1 = await api.addFolder('Folder 1');
     const folderId = result1.folderId;
     chrome.test.assertFalse(!!result1.error);
@@ -26,6 +39,23 @@ const testCases = [
     chrome.test.assertEq('Id 2', result2.appId);
 
     const result3 = await api.addApp('App 2', folderId, '');
+    chrome.test.assertFalse(!!result3.error);
+    chrome.test.assertEq('Id 3', result3.appId);
+
+    chrome.test.succeed();
+  },
+  async function AddFolderToFront() {
+    const result1 = await api.addApp('App 1', '', '', false);
+    chrome.test.assertFalse(!!result1.error);
+    chrome.test.assertEq('Id 1', result1.appId);
+
+    const result2 = await api.addFolder('Folder 1', true);
+    const folderId = result2.folderId;
+    chrome.test.assertFalse(!!result2.error);
+    chrome.test.assertEq('Id 2', folderId);
+
+    // App is not added to front since it has a parent folder.
+    const result3 = await api.addApp('App 2', folderId, '', true);
     chrome.test.assertFalse(!!result3.error);
     chrome.test.assertEq('Id 3', result3.appId);
 

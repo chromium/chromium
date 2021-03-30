@@ -13,8 +13,9 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_edit_controller.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "components/security_state/core/security_state.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_mac.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/font.h"
@@ -36,6 +38,7 @@
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/drag_controller.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 class CommandUpdater;
 class ContentSettingBubbleModelDelegate;
@@ -72,8 +75,12 @@ class LocationBarView : public LocationBar,
                         public IconLabelBubbleView::Delegate,
                         public LocationIconView::Delegate,
                         public ContentSettingImageView::Delegate,
-                        public PageActionIconView::Delegate {
+                        public PageActionIconView::Delegate,
+                        public device::GeolocationSystemPermissionManager::
+                            GeolocationPermissionObserver {
  public:
+  METADATA_HEADER(LocationBarView);
+
   class Delegate {
    public:
     // Should return the current web contents.
@@ -90,15 +97,13 @@ class LocationBarView : public LocationBar,
     virtual ~Delegate() {}
   };
 
-  // The location bar view's class name.
-  static const char kViewClassName[];
-
   LocationBarView(Browser* browser,
                   Profile* profile,
                   CommandUpdater* command_updater,
                   Delegate* delegate,
                   bool is_popup_mode);
-
+  LocationBarView(const LocationBarView&) = delete;
+  LocationBarView& operator=(const LocationBarView&) = delete;
   ~LocationBarView() override;
 
   // Returns the location bar border radius in DIPs.
@@ -140,7 +145,8 @@ class LocationBarView : public LocationBar,
   // Shows |text| as an inline autocompletion.  This is useful for IMEs, where
   // we can't show the autocompletion inside the actual OmniboxView.  See
   // comments on |ime_inline_autocomplete_view_|.
-  void SetImeInlineAutocompletion(const base::string16& text);
+  void SetImeInlineAutocompletion(const std::u16string& text);
+  std::u16string GetImeInlineAutocompletion() const;
 
   // Select all of the text. Needed when the user tabs through controls
   // in the toolbar in full keyboard accessibility mode.
@@ -156,7 +162,8 @@ class LocationBarView : public LocationBar,
 
   // Sets the additional omnibox text. E.g. the title corresponding to the URL
   // displayed in the OmniboxView.
-  void SetOmniboxAdditionalText(const base::string16& text);
+  void SetOmniboxAdditionalText(const std::u16string& text);
+  std::u16string GetOmniboxAdditionalText() const;
 
   // Updates the controller, and, if |contents| is non-null, restores saved
   // state that the tab holds.
@@ -200,6 +207,10 @@ class LocationBarView : public LocationBar,
   ContentSettingBubbleModelDelegate* GetContentSettingBubbleModelDelegate()
       override;
 
+  // GeolocationSystemPermissionManager::GeolocationPermissionObserver
+  void OnSystemPermissionUpdate(
+      device::LocationSystemPermissionStatus new_status) override;
+
   static bool IsVirtualKeyboardVisible(views::Widget* widget);
 
   // Returns the height available for user-entered text in the location bar.
@@ -235,6 +246,15 @@ class LocationBarView : public LocationBar,
   FRIEND_TEST_ALL_PREFIXES(TouchLocationBarViewBrowserTest,
                            IMEInlineAutocompletePosition);
   using ContentSettingViews = std::vector<ContentSettingImageView*>;
+
+#if defined(OS_MAC)
+  // Manage a subscription to GeolocationSystemPermissionManager, which may
+  // outlive this object.
+  base::ScopedObservation<
+      device::GeolocationSystemPermissionManager,
+      device::GeolocationSystemPermissionManager::GeolocationPermissionObserver>
+      geolocation_permission_observation_{this};
+#endif
 
   // Returns the amount of space required to the left of the omnibox text.
   int GetMinimumLeadingWidth() const;
@@ -279,6 +299,7 @@ class LocationBarView : public LocationBar,
 
   // LocationBar:
   GURL GetDestinationURL() const override;
+  bool IsInputTypedUrlWithoutScheme() const override;
   WindowOpenDisposition GetWindowOpenDisposition() const override;
   ui::PageTransition GetPageTransition() const override;
   base::TimeTicks GetMatchSelectionTimestamp() const override;
@@ -295,7 +316,6 @@ class LocationBarView : public LocationBar,
   bool IsContentSettingBubbleShowing(size_t index) override;
 
   // views::View:
-  const char* GetClassName() const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   bool GetNeedsNotificationWhenVisibleBoundsChange() const override;
   void OnVisibleBoundsChanged() override;
@@ -358,6 +378,8 @@ class LocationBarView : public LocationBar,
   // for directing LocationBarView events to the |omnibox_view_|.
   ui::MouseEvent AdjustMouseEventLocationForOmniboxView(
       const ui::MouseEvent& event) const;
+
+  bool GetPopupMode() const;
 
   // The Browser this LocationBarView is in.  Note that at least
   // chromeos::SimpleWebViewDialog uses a LocationBarView outside any browser
@@ -436,8 +458,6 @@ class LocationBarView : public LocationBar,
                               base::Unretained(this)));
 
   base::WeakPtrFactory<LocationBarView> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LocationBarView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_LOCATION_BAR_VIEW_H_

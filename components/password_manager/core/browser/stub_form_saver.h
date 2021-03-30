@@ -22,13 +22,13 @@ class StubFormSaver : public FormSaver {
   void Unblocklist(const PasswordStore::FormDigest& digest) override;
   void Save(PasswordForm pending,
             const std::vector<const PasswordForm*>& matches,
-            const base::string16& old_password) override {}
+            const std::u16string& old_password) override {}
   void Update(PasswordForm pending,
               const std::vector<const PasswordForm*>& matches,
-              const base::string16& old_password) override {}
+              const std::u16string& old_password) override {}
   void UpdateReplace(PasswordForm pending,
                      const std::vector<const PasswordForm*>& matches,
-                     const base::string16& old_password,
+                     const std::u16string& old_password,
                      const PasswordForm& old_unique_key) override {}
   void Remove(const PasswordForm& form) override {}
   std::unique_ptr<FormSaver> Clone() override;

@@ -15,17 +15,6 @@ void RecordDialogCreation(DialogIdentifier identifier) {
 }
 
 #if !defined(TOOLKIT_VIEWS)
-base::OnceClosure ShowDeviceChooserDialog(
-    content::RenderFrameHost* owner,
-    std::unique_ptr<ChooserController> controller) {
-  NOTIMPLEMENTED();
-  return base::DoNothing();
-}
-bool IsDeviceChooserShowingForTesting() {
-  NOTIMPLEMENTED();
-  return false;
-}
-
 void ShowWindowNamePrompt(Browser* browser) {
   NOTIMPLEMENTED();
 }

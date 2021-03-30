@@ -14,8 +14,8 @@
 #include "base/optional.h"
 #include "chrome/browser/web_applications/components/web_app_icon_downloader.h"
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
-#include "chrome/common/chrome_render_frame.mojom-forward.h"
-#include "chrome/common/web_page_metadata.mojom-forward.h"
+#include "components/webapps/common/web_page_metadata.mojom-forward.h"
+#include "components/webapps/common/web_page_metadata_agent.mojom-forward.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 
@@ -46,8 +46,10 @@ class WebAppDataRetriever : content::WebContentsObserver {
   // |is_installable| represents installability check result.
   // If |is_installable| then |valid_manifest_for_web_app| is true.
   // If manifest is present then it is non-empty.
+  // |manifest_url| is empty if manifest is empty.
   using CheckInstallabilityCallback =
       base::OnceCallback<void(base::Optional<blink::Manifest> manifest,
+                              const GURL& manifest_url,
                               bool valid_manifest_for_web_app,
                               bool is_installable)>;
   // Returns empty map if error.
@@ -83,10 +85,10 @@ class WebAppDataRetriever : content::WebContentsObserver {
 
  private:
   void OnGetWebPageMetadata(
-      mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
-          chrome_render_frame,
+      mojo::AssociatedRemote<webapps::mojom::WebPageMetadataAgent>
+          metadata_agent,
       int last_committed_nav_entry_unique_id,
-      chrome::mojom::WebPageMetadataPtr web_page_metadata);
+      webapps::mojom::WebPageMetadataPtr web_page_metadata);
   void OnDidPerformInstallableCheck(const webapps::InstallableData& data);
   void OnIconsDownloaded(bool success, IconsMap icons_map);
 

@@ -28,7 +28,9 @@
 using ::testing::_;
 using ::testing::DoAll;
 using ::testing::Invoke;
+using ::testing::Return;
 using ::testing::ReturnNull;
+using ::testing::ReturnPointee;
 using ::testing::StrictMock;
 using ::testing::WithArg;
 using ::testing::WithArgs;
@@ -68,10 +70,17 @@ class MojoCdmTest : public ::testing::Test {
   };
 
   MojoCdmTest() = default;
-
   ~MojoCdmTest() override = default;
 
   void Initialize(ExpectedResult expected_result) {
+    EXPECT_CALL(*remote_cdm_, GetCdmContext())
+        .WillRepeatedly(Return(&cdm_context_));
+    EXPECT_CALL(cdm_context_, GetDecryptor()).WillRepeatedly(ReturnNull());
+#if defined(OS_WIN)
+    EXPECT_CALL(cdm_context_, RequiresMediaFoundationRenderer())
+        .WillRepeatedly(ReturnPointee(&requires_media_foundation_renderer_));
+#endif
+
     if (expected_result == CONNECTION_ERROR_DURING) {
       // Create() will be successful, so provide a callback that will break
       // the connection before returning the CDM.
@@ -79,18 +88,17 @@ class MojoCdmTest : public ::testing::Test {
           &MojoCdmTest::ForceConnectionError, base::Unretained(this)));
     }
 
-    MojoCdmService::Create(
-        &cdm_factory_, &mojo_cdm_service_context_, kClearKeyKeySystem,
-        CdmConfig(),
-        base::BindOnce(&MojoCdmTest::OnCdmServiceCreated,
+    mojo_cdm_service_ =
+        std::make_unique<MojoCdmService>(&mojo_cdm_service_context_);
+    mojo_cdm_service_->Initialize(
+        &cdm_factory_, kClearKeyKeySystem, CdmConfig(),
+        base::BindOnce(&MojoCdmTest::OnCdmServiceInitialized,
                        base::Unretained(this), expected_result));
   }
 
-  void OnCdmServiceCreated(ExpectedResult expected_result,
-                           std::unique_ptr<MojoCdmService> cdm_service,
-                           mojo::PendingRemote<mojom::Decryptor> decryptor,
-                           const std::string& error_message) {
-    mojo_cdm_service_ = std::move(cdm_service);
+  void OnCdmServiceInitialized(ExpectedResult expected_result,
+                               mojom::CdmContextPtr cdm_context,
+                               const std::string& error_message) {
     cdm_receiver_ =
         std::make_unique<mojo::Receiver<mojom::ContentDecryptionModule>>(
             mojo_cdm_service_.get());
@@ -103,8 +111,7 @@ class MojoCdmTest : public ::testing::Test {
     mojo::Remote<mojom::ContentDecryptionModule> cdm_remote(
         cdm_receiver_->BindNewPipeAndPassRemote());
     mojo_cdm_ = base::MakeRefCounted<MojoCdm>(
-        std::move(cdm_remote), mojo_cdm_service_->cdm_id(),
-        std::move(decryptor),
+        std::move(cdm_remote), std::move(cdm_context),
         base::BindRepeating(&MockCdmClient::OnSessionMessage,
                             base::Unretained(&cdm_client_)),
         base::BindRepeating(&MockCdmClient::OnSessionClosed,
@@ -113,7 +120,6 @@ class MojoCdmTest : public ::testing::Test {
                             base::Unretained(&cdm_client_)),
         base::BindRepeating(&MockCdmClient::OnSessionExpirationUpdate,
                             base::Unretained(&cdm_client_)));
-    remote_cdm_ = cdm_factory_.GetCreatedCdm();
     EXPECT_EQ(kClearKeyKeySystem, remote_cdm_->GetKeySystem());
     base::RunLoop().RunUntilIdle();
   }
@@ -349,8 +355,9 @@ class MojoCdmTest : public ::testing::Test {
   base::TestMessageLoop message_loop_;
 
   // |remote_cdm_| represents the CDM at the end of the mojo message pipe.
-  MockCdm* remote_cdm_;
-  MockCdmFactory cdm_factory_;
+  scoped_refptr<MockCdm> remote_cdm_{new MockCdm()};
+  MockCdmFactory cdm_factory_{remote_cdm_};
+  MockCdmContext cdm_context_;
 
   MojoCdmServiceContext mojo_cdm_service_context_;
   StrictMock<MockCdmClient> cdm_client_;
@@ -362,6 +369,10 @@ class MojoCdmTest : public ::testing::Test {
   std::unique_ptr<MojoCdmService> mojo_cdm_service_;
   std::unique_ptr<mojo::Receiver<mojom::ContentDecryptionModule>> cdm_receiver_;
   scoped_refptr<ContentDecryptionModule> mojo_cdm_;
+
+#if defined(OS_WIN)
+  bool requires_media_foundation_renderer_ = false;
+#endif
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MojoCdmTest);
@@ -596,9 +607,6 @@ TEST_F(MojoCdmTest, SessionKeysChangeCB_Success) {
   base::RunLoop().RunUntilIdle();
 }
 
-// TODO(xhwang): Refactor MockCdmFactory to mock CdmFactory::Create() so that we
-// can set expectations and default actions on the created MockCdm, e.g. return
-// a non-null Decryptor to test the HasDecryptor case.
 TEST_F(MojoCdmTest, NoDecryptor) {
   Initialize(SUCCESS);
   auto* cdm_context = mojo_cdm_->GetCdmContext();
@@ -606,5 +614,23 @@ TEST_F(MojoCdmTest, NoDecryptor) {
   auto* decryptor = cdm_context->GetDecryptor();
   EXPECT_FALSE(decryptor);
 }
+
+#if defined(OS_WIN)
+TEST_F(MojoCdmTest, RequiresMediaFoundationRenderer) {
+  requires_media_foundation_renderer_ = true;
+  Initialize(SUCCESS);
+  auto* cdm_context = mojo_cdm_->GetCdmContext();
+  EXPECT_TRUE(cdm_context) << "All CDMs should support CdmContext";
+  EXPECT_TRUE(cdm_context->RequiresMediaFoundationRenderer());
+}
+
+TEST_F(MojoCdmTest, NotRequireMediaFoundationRenderer) {
+  requires_media_foundation_renderer_ = false;
+  Initialize(SUCCESS);
+  auto* cdm_context = mojo_cdm_->GetCdmContext();
+  EXPECT_TRUE(cdm_context) << "All CDMs should support CdmContext";
+  EXPECT_FALSE(cdm_context->RequiresMediaFoundationRenderer());
+}
+#endif
 
 }  // namespace media

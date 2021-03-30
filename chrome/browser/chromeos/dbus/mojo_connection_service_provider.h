@@ -68,8 +68,7 @@ class MojoConnectionServiceProvider
       dbus::MethodCall* method_call,
       dbus::ExportedObject::ResponseSender response_sender);
 
-  void SendInvitation(const std::string& token,
-                      mojo::PlatformChannel* platform_channel,
+  void SendInvitation(mojo::PlatformChannel* platform_channel,
                       mojo::ScopedMessagePipeHandle* pipe);
 
   void SendResponse(mojo::PlatformChannel platform_channel,

@@ -40,6 +40,10 @@ CaptureModeButton::CaptureModeButton(views::Button::PressedCallback callback,
                                              capture_mode::kButtonPadding);
 }
 
+views::View* CaptureModeButton::GetView() {
+  return this;
+}
+
 BEGIN_METADATA(CaptureModeButton, ViewWithInkDrop<views::ImageButton>)
 END_METADATA
 

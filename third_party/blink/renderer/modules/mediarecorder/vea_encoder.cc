@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/mediarecorder/vea_encoder.h"
 
 #include <string>
+#include <utility>
 
 #include "base/metrics/histogram_macros.h"
 #include "base/sequenced_task_runner.h"
@@ -154,11 +155,10 @@ void VEAEncoder::BitstreamBufferReady(
 
   PostCrossThreadTask(
       *origin_task_runner_.get(), FROM_HERE,
-      CrossThreadBindOnce(
-          OnFrameEncodeCompleted,
-          WTF::Passed(CrossThreadBindRepeating(on_encoded_video_cb_)),
-          front_frame.first, std::move(data), std::string(), front_frame.second,
-          metadata.key_frame));
+      CrossThreadBindOnce(OnFrameEncodeCompleted,
+                          CrossThreadBindRepeating(on_encoded_video_cb_),
+                          front_frame.first, std::move(data), std::string(),
+                          front_frame.second, metadata.key_frame));
 
   UseOutputBitstreamBufferId(bitstream_buffer_id);
 }
@@ -309,7 +309,8 @@ void VEAEncoder::ConfigureEncoderOnEncodingTaskRunner(const gfx::Size& size,
     // Currently the VAAPI and V4L2 VEA support only native input mode with NV12
     // DMA-buf buffers.
     pixel_format = media::PIXEL_FORMAT_NV12;
-    storage_type = media::VideoEncodeAccelerator::Config::StorageType::kDmabuf;
+    storage_type =
+        media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
   }
 
   const media::VideoEncodeAccelerator::Config config(

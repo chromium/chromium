@@ -150,8 +150,8 @@ class UnloadTest : public InProcessBrowserTest {
 
   void CheckTitle(const char* expected_title, bool wait = false) {
     auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-    base::string16 expected = base::ASCIIToUTF16(expected_title);
-    base::string16 actual;
+    std::u16string expected = base::ASCIIToUTF16(expected_title);
+    std::u16string actual;
     if (wait)
       actual = content::TitleWatcher(web_contents, expected).WaitAndGetTitle();
     else
@@ -328,7 +328,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserCloseBeforeUnloadCancel) {
   // window, to ensure that in-flight IPCs from the renderer reach the browser.
   // Otherwise the browser won't put up the beforeunload dialog because it's
   // waiting for an ack from the renderer.
-  base::string16 expected_title = base::ASCIIToUTF16("cancelled");
+  std::u16string expected_title = u"cancelled";
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
   ClickModalDialogButton(false);
@@ -396,7 +396,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserListCloseBeforeUnloadCancel) {
   // window, to ensure that in-flight IPCs from the renderer reach the browser.
   // Otherwise the browser won't put up the beforeunload dialog because it's
   // waiting for an ack from the renderer.
-  base::string16 expected_title = base::ASCIIToUTF16("cancelled");
+  std::u16string expected_title = u"cancelled";
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
   ClickModalDialogButton(false);
@@ -461,7 +461,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest, BrowserListDoubleCloseBeforeUnloadCancel) {
   // window, to ensure that in-flight IPCs from the renderer reach the browser.
   // Otherwise the browser won't put up the beforeunload dialog because it's
   // waiting for an ack from the renderer.
-  base::string16 expected_title = base::ASCIIToUTF16("cancelled");
+  std::u16string expected_title = u"cancelled";
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
   ClickModalDialogButton(false);
@@ -505,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(UnloadTest,
   // window, to ensure that in-flight IPCs from the renderer reach the browser.
   // Otherwise the browser won't put up the beforeunload dialog because it's
   // waiting for an ack from the renderer.
-  base::string16 expected_title = base::ASCIIToUTF16("cancelled");
+  std::u16string expected_title = u"cancelled";
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
   ClickModalDialogButton(false);

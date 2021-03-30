@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/eye_dropper/eye_dropper_view.h"
 
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/views/eye_dropper/eye_dropper.h"
 #include "content/public/browser/desktop_capture.h"
 #include "content/public/browser/render_view_host.h"
@@ -15,6 +16,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 class EyeDropperView::ViewPositionHandler {
@@ -102,7 +104,13 @@ EyeDropperView::EyeDropperView(content::RenderFrameHost* frame,
   SetModalType(ui::MODAL_TYPE_WINDOW);
   SetOwnedByWidget(false);
   SetPreferredSize(GetSize());
+#if defined(OS_LINUX)
+  // Use TYPE_MENU for Linux to ensure that the eye dropper view is displayed
+  // above the color picker.
+  views::Widget::InitParams params(views::Widget::InitParams::TYPE_MENU);
+#else
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+#endif
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   // Use software compositing to prevent situations when the widget is not
   // translucent when moved fast.
@@ -121,6 +129,7 @@ EyeDropperView::EyeDropperView(content::RenderFrameHost* frame,
   HideCursor();
   pre_dispatch_handler_ = std::make_unique<PreEventDispatchHandler>(this);
   widget->Show();
+  CaptureInputIfNeeded();
   // The ignore selection time should be long enough to allow the user to see
   // the UI.
   ignore_selection_time_ =
@@ -257,3 +266,8 @@ void EyeDropperView::OnColorSelected() {
   // Use the last selected color and notify listener.
   listener_->ColorSelected(selected_color_.value());
 }
+
+BEGIN_METADATA(EyeDropperView, views::WidgetDelegateView)
+ADD_READONLY_PROPERTY_METADATA(gfx::Size, Size)
+ADD_READONLY_PROPERTY_METADATA(float, Diameter)
+END_METADATA

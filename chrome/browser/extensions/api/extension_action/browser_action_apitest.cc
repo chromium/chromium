@@ -9,7 +9,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -58,7 +58,6 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/feature_switch.h"
-#include "extensions/common/scoped_worker_based_extensions_channel.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -153,27 +152,18 @@ using ContextType = ExtensionBrowserTest::ContextType;
 class BrowserActionApiLazyTest
     : public BrowserActionApiTest,
       public testing::WithParamInterface<ContextType> {
- public:
-  BrowserActionApiLazyTest() {
-    // Service Workers are currently only available on certain channels, so set
-    // the channel for those tests.
-    if (GetParam() == ContextType::kServiceWorker)
-      current_channel_ = std::make_unique<ScopedWorkerBasedExtensionsChannel>();
-  }
-
-  const extensions::Extension* LoadExtensionWithParamFlags(
+ protected:
+  const extensions::Extension* LoadExtensionWithParamOptions(
       const base::FilePath& path) {
-    int flags = kFlagEnableFileAccess;
-    if (GetParam() == ContextType::kServiceWorker)
-      flags |= ExtensionBrowserTest::kFlagRunAsServiceWorkerBasedExtension;
-    return LoadExtensionWithFlags(path, flags);
+    return LoadExtension(path, {.load_as_service_worker =
+                                    GetParam() == ContextType::kServiceWorker});
   }
 
   void RunUpdateTest(base::StringPiece path, bool expect_failure) {
     ExtensionTestMessageListener ready_listener("ready", true);
     ASSERT_TRUE(embedded_test_server()->Start());
     const Extension* extension =
-        LoadExtensionWithParamFlags(test_data_dir_.AppendASCII(path));
+        LoadExtensionWithParamOptions(test_data_dir_.AppendASCII(path));
     ASSERT_TRUE(extension) << message_;
     // Test that there is a browser action in the toolbar.
     ASSERT_EQ(1, GetBrowserActionsBar()->NumberOfBrowserActions());
@@ -210,7 +200,7 @@ class BrowserActionApiLazyTest
   void RunEnableTest(base::StringPiece path, bool start_enabled) {
     ExtensionTestMessageListener ready_listener("ready", true);
     const Extension* extension =
-        LoadExtensionWithParamFlags(test_data_dir_.AppendASCII(path));
+        LoadExtensionWithParamOptions(test_data_dir_.AppendASCII(path));
     ASSERT_TRUE(extension) << message_;
     // Test that there is a browser action in the toolbar.
     ASSERT_EQ(1, GetBrowserActionsBar()->NumberOfBrowserActions());
@@ -237,14 +227,12 @@ class BrowserActionApiLazyTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<extensions::ScopedWorkerBasedExtensionsChannel>
-      current_channel_;
 };
 
 IN_PROC_BROWSER_TEST_P(BrowserActionApiLazyTest, Basic) {
   ExtensionTestMessageListener ready_listener("ready", false);
   ASSERT_TRUE(embedded_test_server()->Start());
-  const Extension* extension = LoadExtensionWithParamFlags(
+  const Extension* extension = LoadExtensionWithParamOptions(
       test_data_dir_.AppendASCII("browser_action/basics"));
   ASSERT_TRUE(extension) << message_;
 
@@ -693,7 +681,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiLazyTest, BrowserActionRemovePopup) {
 IN_PROC_BROWSER_TEST_P(BrowserActionApiLazyTest, IncognitoBasic) {
   ExtensionTestMessageListener ready_listener("ready", false);
   ASSERT_TRUE(embedded_test_server()->Start());
-  scoped_refptr<const Extension> extension = LoadExtensionWithParamFlags(
+  scoped_refptr<const Extension> extension = LoadExtensionWithParamOptions(
       test_data_dir_.AppendASCII("browser_action/basics"));
   ASSERT_TRUE(extension) << message_;
 
@@ -742,7 +730,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiLazyTest, IncognitoUpdate) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ExtensionTestMessageListener incognito_not_allowed_listener(
       "incognito not allowed", false);
-  scoped_refptr<const Extension> extension = LoadExtensionWithParamFlags(
+  scoped_refptr<const Extension> extension = LoadExtensionWithParamOptions(
       test_data_dir_.AppendASCII("browser_action/update"));
   ASSERT_TRUE(extension) << message_;
   ASSERT_TRUE(incognito_not_allowed_listener.WaitUntilSatisfied());
@@ -803,9 +791,9 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiLazyTest, IncognitoUpdate) {
 // extensions.
 IN_PROC_BROWSER_TEST_P(BrowserActionApiLazyTest, IncognitoSplit) {
   ResultCatcher catcher;
-  const Extension* extension = LoadExtensionWithFlags(
-      test_data_dir_.AppendASCII("browser_action/split_mode"),
-      kFlagEnableIncognito);
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("browser_action/split_mode"),
+                    {.allow_in_incognito = true});
   ASSERT_TRUE(extension) << message_;
 
   // Open an incognito browser.
@@ -848,7 +836,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, CloseBackgroundPage) {
   class ExtensionHostDestructionObserver : public ExtensionHostObserver {
    public:
     explicit ExtensionHostDestructionObserver(ExtensionHost* host) {
-      host_observer_.Add(host);
+      host_observation_.Observe(host);
     }
     ExtensionHostDestructionObserver(
         const ExtensionHostDestructionObserver& other) = delete;
@@ -857,8 +845,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, CloseBackgroundPage) {
     ~ExtensionHostDestructionObserver() override = default;
 
     void OnExtensionHostDestroyed(ExtensionHost* host) override {
-      ASSERT_TRUE(host_observer_.IsObserving(host));
-      host_observer_.Remove(host);
+      ASSERT_TRUE(host_observation_.IsObservingSource(host));
+      host_observation_.Reset();
       run_loop_.QuitWhenIdle();
     }
 
@@ -866,7 +854,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, CloseBackgroundPage) {
 
    private:
     base::RunLoop run_loop_;
-    ScopedObserver<ExtensionHost, ExtensionHostObserver> host_observer_{this};
+    base::ScopedObservation<ExtensionHost, ExtensionHostObserver>
+        host_observation_{this};
   };
 
   ExtensionHostDestructionObserver host_destroyed_observer(extension_host);

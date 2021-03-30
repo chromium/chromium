@@ -39,5 +39,11 @@ per-file accessibility_node_data.*=dmazzoni@chromium.org
 per-file accessibility_node_data.*=dtseng@chromium.org
 
 # AppCache
+per-file appcache_interfaces.h=enne@chromium.org
+per-file appcache_interfaces.h=mek@chromium.org
 per-file appcache_interfaces.h=pwnall@chromium.org
+per-file appcache_interfaces.cc=enne@chromium.org
+per-file appcache_interfaces.cc=mek@chromium.org
 per-file appcache_interfaces.cc=pwnall@chromium.org
+
+per-file partition_alloc_support.*=file://base/allocator/partition_allocator/OWNERS

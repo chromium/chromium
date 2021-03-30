@@ -14,6 +14,7 @@
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 #import "net/base/mac/url_conversions.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_constants.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -58,8 +59,9 @@ bool ShouldIncludeForRequestUrl(NSHTTPCookie* cookie, const GURL& url) {
   }
   // No extra trustworthy URLs.
   bool delegate_treats_url_as_trustworthy = false;
-  net::CookieAccessParams params = {cookie_access_semantics,
-                                    delegate_treats_url_as_trustworthy};
+  net::CookieAccessParams params = {
+      cookie_access_semantics, delegate_treats_url_as_trustworthy,
+      net::CookieSamePartyStatus::kNoSamePartyEnforcement};
   return canonical_cookie->IncludeForRequestURL(url, options, params)
       .status.IsInclude();
 }

@@ -35,7 +35,7 @@ std::unique_ptr<views::View> MakeCrostiniAppRestartView() {
       provider->GetInsetsMetric(views::InsetsMetric::INSETS_DIALOG),
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
-  const base::string16 message =
+  const std::u16string message =
       l10n_util::GetStringUTF16(IDS_CROSTINI_APP_RESTART_BODY);
   views::Label* message_label = new views::Label(message);
   message_label->SetMultiLine(true);

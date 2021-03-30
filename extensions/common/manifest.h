@@ -13,60 +13,18 @@
 
 #include "base/containers/span.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/values.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/hashed_extension_id.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 
 namespace extensions {
 struct InstallWarning;
 
 // Wraps the DictionaryValue form of extension's manifest. Enforces access to
 // properties of the manifest using ManifestFeatureProvider.
-class Manifest {
+class Manifest final {
  public:
-  // Historically, where an extension was loaded from, and whether an
-  // extension's files were inside or outside of the profile's directory. In
-  // modern usage, a Location can be thought of as the installation source:
-  // whether an extension was explicitly installed by the user (through the
-  // UI), or implicitly installed by other means. For example, enterprise
-  // policy, being part of Chrome per se (but implemented as an extension), or
-  // installed as a side effect of installing third party software.
-  //
-  // NOTE: These values are stored as integers in the preferences and used
-  // in histograms so don't remove or reorder existing items.  Just append
-  // to the end.
-  enum Location {
-    INVALID_LOCATION,
-    INTERNAL,  // A crx file from the internal Extensions directory. This
-               // includes extensions explicitly installed by the user. It also
-               // includes installed-by-default extensions that are not part of
-               // Chrome itself (and thus not a COMPONENT), but are part of a
-               // larger system (such as Chrome OS).
-    EXTERNAL_PREF,      // A crx file from an external directory (via prefs).
-    EXTERNAL_REGISTRY,  // A crx file from an external directory (via eg the
-                        // registry on Windows).
-    UNPACKED,           // From loading an unpacked extension from the
-                        // extensions settings page.
-    COMPONENT,          // An integral component of Chrome itself, which
-                        // happens to be implemented as an extension. We don't
-                        // show these in the management UI.
-    EXTERNAL_PREF_DOWNLOAD,    // A crx file from an external directory (via
-                               // prefs), installed from an update URL.
-    EXTERNAL_POLICY_DOWNLOAD,  // A crx file from an external directory (via
-                               // admin policies), installed from an update URL.
-    COMMAND_LINE,              // --load-extension.
-    EXTERNAL_POLICY,     // A crx file from an external directory (via admin
-                         // policies), cached locally and installed from the
-                         // cache.
-    EXTERNAL_COMPONENT,  // Similar to COMPONENT in that it's considered an
-                         // internal implementation detail of chrome, but
-    // installed from an update URL like the *DOWNLOAD ones.
-
-    // New enum values must go above here.
-    NUM_LOCATIONS
-  };
-
   // Do not change the order of entries or remove entries in this list as this
   // is used in ExtensionType enum in tools/metrics/histograms/enums.xml.
   enum Type {
@@ -89,46 +47,57 @@ class Manifest {
   // Given two install sources, return the one which should take priority
   // over the other. If an extension is installed from two sources A and B,
   // its install source should be set to GetHigherPriorityLocation(A, B).
-  static Location GetHigherPriorityLocation(Location loc1, Location loc2);
+  static mojom::ManifestLocation GetHigherPriorityLocation(
+      mojom::ManifestLocation loc1,
+      mojom::ManifestLocation loc2);
 
   // Whether the |location| is external or not.
-  static inline bool IsExternalLocation(Location location) {
-    return location == EXTERNAL_PREF || location == EXTERNAL_REGISTRY ||
-           location == EXTERNAL_PREF_DOWNLOAD || location == EXTERNAL_POLICY ||
-           location == EXTERNAL_POLICY_DOWNLOAD ||
-           location == EXTERNAL_COMPONENT;
+  static inline bool IsExternalLocation(mojom::ManifestLocation location) {
+    return location == mojom::ManifestLocation::kExternalPref ||
+           location == mojom::ManifestLocation::kExternalRegistry ||
+           location == mojom::ManifestLocation::kExternalPrefDownload ||
+           location == mojom::ManifestLocation::kExternalPolicy ||
+           location == mojom::ManifestLocation::kExternalPolicyDownload ||
+           location == mojom::ManifestLocation::kExternalComponent;
   }
 
   // Whether the |location| is unpacked (no CRX) or not.
-  static inline bool IsUnpackedLocation(Location location) {
-    return location == UNPACKED || location == COMMAND_LINE;
+  static inline bool IsUnpackedLocation(mojom::ManifestLocation location) {
+    return location == mojom::ManifestLocation::kUnpacked ||
+           location == mojom::ManifestLocation::kCommandLine;
   }
 
   // Whether extensions with |location| are auto-updatable or not.
-  static inline bool IsAutoUpdateableLocation(Location location) {
+  static inline bool IsAutoUpdateableLocation(
+      mojom::ManifestLocation location) {
     // Only internal and external extensions can be autoupdated.
-    return location == INTERNAL || IsExternalLocation(location);
+    return location == mojom::ManifestLocation::kInternal ||
+           IsExternalLocation(location);
   }
 
   // Whether the |location| is a source of extensions force-installed through
   // policy.
-  static inline bool IsPolicyLocation(Location location) {
-    return location == EXTERNAL_POLICY || location == EXTERNAL_POLICY_DOWNLOAD;
+  static inline bool IsPolicyLocation(mojom::ManifestLocation location) {
+    return location == mojom::ManifestLocation::kExternalPolicy ||
+           location == mojom::ManifestLocation::kExternalPolicyDownload;
   }
 
   // Whether the |location| is an extension intended to be an internal part of
   // Chrome.
-  static inline bool IsComponentLocation(Location location) {
-    return location == COMPONENT || location == EXTERNAL_COMPONENT;
+  static inline bool IsComponentLocation(mojom::ManifestLocation location) {
+    return location == mojom::ManifestLocation::kComponent ||
+           location == mojom::ManifestLocation::kExternalComponent;
   }
 
-  static inline bool IsValidLocation(Location location) {
-    return location > INVALID_LOCATION && location < NUM_LOCATIONS;
+  static inline bool IsValidLocation(mojom::ManifestLocation location) {
+    return location > mojom::ManifestLocation::kInvalidLocation &&
+           location <= mojom::ManifestLocation::kMaxValue;
   }
 
   // Unpacked extensions start off with file access since they are a developer
   // feature.
-  static inline bool ShouldAlwaysAllowFileAccess(Location location) {
+  static inline bool ShouldAlwaysAllowFileAccess(
+      mojom::ManifestLocation location) {
     return IsUnpackedLocation(location);
   }
 
@@ -138,25 +107,26 @@ class Manifest {
 
   // Returns true if an item with the given |location| should always be loaded,
   // even if extensions are otherwise disabled.
-  static bool ShouldAlwaysLoadExtension(Manifest::Location location,
+  static bool ShouldAlwaysLoadExtension(mojom::ManifestLocation location,
                                         bool is_theme);
 
   // Creates a Manifest for a login screen context. Note that this won't always
   // result in a Manifest of TYPE_LOGIN_SCREEN_EXTENSION, since other items
   // (like platform apps) may be installed in the same login screen profile.
   static std::unique_ptr<Manifest> CreateManifestForLoginScreen(
-      Location location,
-      std::unique_ptr<base::DictionaryValue> value);
+      mojom::ManifestLocation location,
+      std::unique_ptr<base::DictionaryValue> value,
+      ExtensionId extension_id);
 
-  Manifest(Location location, std::unique_ptr<base::DictionaryValue> value);
-  virtual ~Manifest();
-
-  void SetExtensionId(const ExtensionId& id);
+  Manifest(mojom::ManifestLocation location,
+           std::unique_ptr<base::DictionaryValue> value,
+           ExtensionId extension_id);
+  ~Manifest();
 
   const ExtensionId& extension_id() const { return extension_id_; }
   const HashedExtensionId& hashed_id() const { return hashed_id_; }
 
-  Location location() const { return location_; }
+  mojom::ManifestLocation location() const { return location_; }
 
   // Returns false and |error| will be non-empty if the manifest is malformed.
   // |warnings| will be populated if there are keys in the manifest that cannot
@@ -168,7 +138,7 @@ class Manifest {
   // version when making breaking changes to the extension system. If the
   // manifest contains no explicit manifest version, this returns the current
   // system default.
-  int GetManifestVersion() const;
+  int manifest_version() const { return manifest_version_; }
 
   // Returns the manifest type.
   Type type() const { return type_; }
@@ -199,7 +169,7 @@ class Manifest {
   bool GetBoolean(const std::string& path, bool* out_value) const;
   bool GetInteger(const std::string& path, int* out_value) const;
   bool GetString(const std::string& path, std::string* out_value) const;
-  bool GetString(const std::string& path, base::string16* out_value) const;
+  bool GetString(const std::string& path, std::u16string* out_value) const;
   // Deprecated: Use the GetDictionary() overload that accepts a base::Value
   // output parameter instead.
   bool GetDictionary(const std::string& path,
@@ -216,42 +186,47 @@ class Manifest {
                      base::Value::Type type,
                      const base::Value** out_value) const;
 
-  // Returns a new Manifest equal to this one.
-  std::unique_ptr<Manifest> CreateDeepCopy() const;
-
   // Returns true if this equals the |other| manifest.
-  bool Equals(const Manifest* other) const;
+  bool EqualsForTesting(const Manifest& other) const;
 
   // Gets the underlying DictionaryValue representing the manifest.
   // Note: only use this when you KNOW you don't need the validation.
   const base::DictionaryValue* value() const { return value_.get(); }
 
+  // Gets the underlying DictionaryValue representing the manifest with all
+  // unavailable manifest keys removed.
+  const base::DictionaryValue& available_values() const {
+    return *available_values_;
+  }
+
  private:
-  Manifest(Location location,
+  Manifest(mojom::ManifestLocation location,
            std::unique_ptr<base::DictionaryValue> value,
+           ExtensionId extension_id,
            bool for_login_screen);
-  // Returns true if the extension can specify the given |path|.
-  bool CanAccessPath(const std::string& path) const;
-  bool CanAccessPath(const base::span<const base::StringPiece> path) const;
-  bool CanAccessKey(const std::string& key) const;
 
   // A persistent, globally unique ID. An extension's ID is used in things
   // like directory structures and URLs, and is expected to not change across
   // versions. It is generated as a SHA-256 hash of the extension's public
   // key, or as a hash of the path in the case of unpacked extensions.
-  std::string extension_id_;
+  const std::string extension_id_;
 
   // The hex-encoding of the SHA1 of the extension id; used to determine feature
   // availability.
-  HashedExtensionId hashed_id_;
+  const HashedExtensionId hashed_id_;
 
   // The location the extension was loaded from.
-  Location location_;
+  const mojom::ManifestLocation location_;
 
   // The underlying dictionary representation of the manifest.
-  std::unique_ptr<base::DictionaryValue> value_;
+  const std::unique_ptr<const base::DictionaryValue> value_;
 
-  Type type_;
+  // Same as |value_| but comprises only of keys available to this manifest.
+  std::unique_ptr<const base::DictionaryValue> available_values_;
+
+  const Type type_;
+
+  const int manifest_version_;
 
   DISALLOW_COPY_AND_ASSIGN(Manifest);
 };

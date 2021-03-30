@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_switches.h"
 #include "ash/login/ui/lock_contents_view.h"
 #include "ash/login/ui/lock_debug_view.h"
 #include "ash/login/ui/login_data_dispatcher.h"
@@ -19,13 +20,12 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
+#include "ash/wm/window_util.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
-#include "ui/views/widget/widget.h"
 #include "ui/wm/core/capture_controller.h"
 
 namespace ash {
@@ -55,7 +55,15 @@ void LockScreen::TestApi::AddOnShownCallback(base::OnceClosure on_shown) {
 }
 
 LockScreen::LockScreen(ScreenType type) : type_(type) {
-  tray_action_observer_.Add(Shell::Get()->tray_action());
+  auto* active_window = window_util::GetActiveWindow();
+  if (active_window) {
+    auto* active_widget =
+        views::Widget::GetWidgetForNativeWindow(active_window);
+    if (active_widget)
+      paint_as_active_lock_ = active_widget->LockPaintAsActive();
+  }
+
+  tray_action_observation_.Observe(Shell::Get()->tray_action());
   saved_clipboard_ = ui::Clipboard::TakeForCurrentThread();
 }
 
@@ -126,14 +134,7 @@ bool LockScreen::HasInstance() {
 }
 
 void LockScreen::Destroy() {
-  LoginScreenController::AuthenticationStage authentication_stage =
-      Shell::Get()->login_screen_controller()->authentication_stage();
-  base::debug::Alias(&authentication_stage);
-  if (Shell::Get()->login_screen_controller()->authentication_stage() !=
-      authentication_stage) {
-    LOG(FATAL) << "Unexpected authentication stage "
-               << static_cast<int>(authentication_stage);
-  }
+  Shell::Get()->login_screen_controller()->OnLockScreenDestroyed();
   CHECK_EQ(instance_, this);
 
   Shell::Get()->login_screen_controller()->data_dispatcher()->RemoveObserver(

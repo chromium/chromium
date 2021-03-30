@@ -47,12 +47,12 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import org.chromium.base.CommandLine;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.compat.ApiHelperForR;
 import org.chromium.weblayer.Browser;
 import org.chromium.weblayer.BrowsingDataType;
 import org.chromium.weblayer.ContextMenuParams;
+import org.chromium.weblayer.DarkModeStrategy;
 import org.chromium.weblayer.ErrorPageCallback;
 import org.chromium.weblayer.FaviconCallback;
 import org.chromium.weblayer.FaviconFetcher;
@@ -73,6 +73,7 @@ import org.chromium.weblayer.UrlBarOptions;
 import org.chromium.weblayer.UserIdentityCallback;
 import org.chromium.weblayer.WebLayer;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -92,7 +93,7 @@ public class WebLayerShellActivity extends AppCompatActivity {
     }
 
     private static final String NON_INCOGNITO_PROFILE_NAME = "DefaultProfile";
-    private static final String EXTRA_WEBVIEW_COMPAT = "EXTRA_WEBVIEW_COMPAT";
+    private static final String EXTRA_START_IN_INCOGNITO = "EXTRA_START_IN_INCOGNITO";
 
     private static class ContextMenuCreator
             implements View.OnCreateContextMenuListener, MenuItem.OnMenuItemClickListener {
@@ -184,6 +185,52 @@ public class WebLayerShellActivity extends AppCompatActivity {
         }
     }
 
+    private static final class FullscreenCallbackImpl extends FullscreenCallback {
+        private WebLayerShellActivity mActivity;
+        private int mSystemVisibilityToRestore;
+
+        public FullscreenCallbackImpl(WebLayerShellActivity activity) {
+            mActivity = activity;
+        }
+
+        public void setActivity(WebLayerShellActivity activity) {
+            mActivity = activity;
+        }
+
+        @Override
+        public void onEnterFullscreen(Runnable exitFullscreenRunnable) {
+            if (mActivity == null) return;
+            // This comes from Chrome code to avoid an extra resize.
+            final WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
+            attrs.flags |= WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
+            mActivity.getWindow().setAttributes(attrs);
+
+            View decorView = mActivity.getWindow().getDecorView();
+            // Caching the system ui visibility is ok for shell, but likely not ok for
+            // real code.
+            mSystemVisibilityToRestore = decorView.getSystemUiVisibility();
+            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+                    | View.SYSTEM_UI_FLAG_LOW_PROFILE | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        }
+
+        @Override
+        public void onExitFullscreen() {
+            if (mActivity == null) return;
+            View decorView = mActivity.getWindow().getDecorView();
+            decorView.setSystemUiVisibility(mSystemVisibilityToRestore);
+
+            final WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
+            if ((attrs.flags & WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS) != 0) {
+                attrs.flags &= ~WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
+                mActivity.getWindow().setAttributes(attrs);
+            }
+        }
+    }
+
     private static final String TAG = "WebLayerShell";
     private static final float DEFAULT_TEXT_SIZE = 15.0F;
     private static final int EDITABLE_URL_TEXT_VIEW = 0;
@@ -199,12 +246,11 @@ public class WebLayerShellActivity extends AppCompatActivity {
     private View mAltTopContentsContainer;
     private TabListCallback mTabListCallback;
     private NewTabCallback mNewTabCallback;
-    private FullscreenCallback mFullscreenCallback;
+    private FullscreenCallbackImpl mFullscreenCallback;
     private NavigationCallback mNavigationCallback;
     private ErrorPageCallback mErrorPageCallback;
     private List<Tab> mPreviousTabList = new ArrayList<>();
     private Map<Tab, PerTabState> mTabToPerTabState = new HashMap<>();
-    private Runnable mExitFullscreenRunnable;
     private boolean mIsTopViewVisible = true;
     private View mBottomView;
     private int mTopViewMinHeight;
@@ -212,18 +258,16 @@ public class WebLayerShellActivity extends AppCompatActivity {
     private boolean mAnimateControlsChanges;
     private boolean mSetDarkMode;
     private boolean mInIncognitoMode;
-    private boolean mEnableWebViewCompat;
     private boolean mEnableAltTopView;
+    private int mDarkModeStrategy = R.id.dark_mode_web_theme;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         mSetDarkMode = AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES;
-        mEnableWebViewCompat = getIntent().getBooleanExtra(EXTRA_WEBVIEW_COMPAT, false);
-        if (mEnableWebViewCompat) {
-            WebLayer.initializeWebViewCompatibilityMode(getApplicationContext());
-        }
+        mInIncognitoMode = getIntent().getBooleanExtra(EXTRA_START_IN_INCOGNITO, false);
+
         setContentView(R.layout.main);
         TextView versionText = (TextView) findViewById(R.id.version_text);
         versionText.setText(getString(
@@ -268,8 +312,8 @@ public class WebLayerShellActivity extends AppCompatActivity {
         popup.getMenu()
                 .findItem(R.id.translate_menu_id)
                 .setVisible(mBrowser.getActiveTab().canTranslate());
-        popup.getMenu().findItem(R.id.webview_compat_menu_id).setVisible(!mEnableWebViewCompat);
-        popup.getMenu().findItem(R.id.no_webview_compat_menu_id).setVisible(mEnableWebViewCompat);
+        popup.getMenu().findItem(R.id.enable_incognito_menu_id).setVisible(!mInIncognitoMode);
+        popup.getMenu().findItem(R.id.disable_incognito_menu_id).setVisible(mInIncognitoMode);
         boolean isDesktopUserAgent = mBrowser.getActiveTab().isDesktopUserAgentEnabled();
         popup.getMenu().findItem(R.id.desktop_site_menu_id).setVisible(!isDesktopUserAgent);
         popup.getMenu().findItem(R.id.no_desktop_site_menu_id).setVisible(isDesktopUserAgent);
@@ -318,30 +362,49 @@ public class WebLayerShellActivity extends AppCompatActivity {
                                          Toast.LENGTH_SHORT)
                                     .show();
                         });
+                return true;
             }
 
-            if (item.getItemId() == R.id.webview_compat_menu_id) {
+            if (item.getItemId() == R.id.enable_incognito_menu_id) {
                 restartShell(true);
+                return true;
             }
 
-            if (item.getItemId() == R.id.no_webview_compat_menu_id) {
+            if (item.getItemId() == R.id.disable_incognito_menu_id) {
                 restartShell(false);
+                return true;
             }
 
             if (item.getItemId() == R.id.desktop_site_menu_id) {
                 mBrowser.getActiveTab().setDesktopUserAgentEnabled(true);
+                return true;
             }
 
             if (item.getItemId() == R.id.no_desktop_site_menu_id) {
                 mBrowser.getActiveTab().setDesktopUserAgentEnabled(false);
+                return true;
             }
 
             if (item.getItemId() == R.id.set_translate_target_lang_menu_id) {
                 mBrowser.getActiveTab().setTranslateTargetLanguage("de");
+                return true;
             }
 
             if (item.getItemId() == R.id.clear_translate_target_lang_menu_id) {
                 mBrowser.getActiveTab().setTranslateTargetLanguage("");
+                return true;
+            }
+
+            if (item.getItemId() == R.id.add_to_homescreen) {
+                try {
+                    // Since the API is still experimental, it's private.
+                    Method addToHomescreen = Tab.class.getDeclaredMethod("addToHomescreen");
+                    addToHomescreen.setAccessible(true);
+                    addToHomescreen.invoke(mBrowser.getActiveTab());
+                } catch (Exception e) {
+                    throw new RuntimeException("Failed to start addToHomescreen", e);
+                }
+                return true;
             }
 
             return false;
@@ -365,6 +428,7 @@ public class WebLayerShellActivity extends AppCompatActivity {
                 .findItem(R.id.toggle_controls_animations_id)
                 .setChecked(mAnimateControlsChanges);
         popup.getMenu().findItem(R.id.toggle_dark_mode).setChecked(mSetDarkMode);
+        popup.getMenu().findItem(mDarkModeStrategy).setChecked(true);
 
         popup.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.toggle_top_view_id) {
@@ -413,6 +477,25 @@ public class WebLayerShellActivity extends AppCompatActivity {
                 return true;
             }
 
+            if (item.getItemId() == R.id.dark_mode_web_theme) {
+                mDarkModeStrategy = R.id.dark_mode_web_theme;
+                mBrowser.setDarkModeStrategy(DarkModeStrategy.WEB_THEME_DARKENING_ONLY);
+                return true;
+            }
+
+            if (item.getItemId() == R.id.dark_mode_user_agent) {
+                mDarkModeStrategy = R.id.dark_mode_user_agent;
+                mBrowser.setDarkModeStrategy(DarkModeStrategy.USER_AGENT_DARKENING_ONLY);
+                return true;
+            }
+
+            if (item.getItemId() == R.id.dark_mode_prefer_web_theme) {
+                mDarkModeStrategy = R.id.dark_mode_prefer_web_theme;
+                mBrowser.setDarkModeStrategy(
+                        DarkModeStrategy.PREFER_WEB_THEME_OVER_USER_AGENT_DARKENING);
+                return true;
+            }
+
             return false;
         });
         popup.show();
@@ -436,6 +519,9 @@ public class WebLayerShellActivity extends AppCompatActivity {
         mUrlViewContainer.reset();
         if (mTabListCallback != null) {
             unregisterBrowserAndTabCallbacks();
+        }
+        if (mFullscreenCallback != null) {
+            mFullscreenCallback.setActivity(null);
         }
     }
 
@@ -483,8 +569,11 @@ public class WebLayerShellActivity extends AppCompatActivity {
                 // Simulate a delayed load.
                 final Handler handler = new Handler(Looper.getMainLooper());
                 handler.postDelayed(() -> {
-                    avatarLoadedCallback.onReceiveValue(BitmapFactory.decodeResource(
-                            getApplicationContext().getResources(), R.drawable.avatar_sunglasses));
+                    Bitmap bitmap = BitmapFactory.decodeResource(
+                            getApplicationContext().getResources(), R.drawable.avatar_sunglasses);
+                    // Curveball: set an arbitrary density.
+                    bitmap.setDensity(120);
+                    avatarLoadedCallback.onReceiveValue(bitmap);
                 }, 3000);
             }
         });
@@ -578,43 +667,6 @@ public class WebLayerShellActivity extends AppCompatActivity {
             }
         };
 
-        mFullscreenCallback = new FullscreenCallback() {
-            private int mSystemVisibilityToRestore;
-
-            @Override
-            public void onEnterFullscreen(Runnable exitFullscreenRunnable) {
-                mExitFullscreenRunnable = exitFullscreenRunnable;
-                // This comes from Chrome code to avoid an extra resize.
-                final WindowManager.LayoutParams attrs = getWindow().getAttributes();
-                attrs.flags |= WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
-                getWindow().setAttributes(attrs);
-
-                View decorView = getWindow().getDecorView();
-                // Caching the system ui visibility is ok for shell, but likely not ok for
-                // real code.
-                mSystemVisibilityToRestore = decorView.getSystemUiVisibility();
-                decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
-                        | View.SYSTEM_UI_FLAG_LOW_PROFILE | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-            }
-
-            @Override
-            public void onExitFullscreen() {
-                mExitFullscreenRunnable = null;
-                View decorView = getWindow().getDecorView();
-                decorView.setSystemUiVisibility(mSystemVisibilityToRestore);
-
-                final WindowManager.LayoutParams attrs = getWindow().getAttributes();
-                if ((attrs.flags & WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS) != 0) {
-                    attrs.flags &= ~WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
-                    getWindow().setAttributes(attrs);
-                }
-            }
-        };
-
         mNavigationCallback = new NavigationCallback() {
             @Override
             public void onLoadStateChanged(boolean isLoading, boolean toDifferentDocument) {
@@ -639,7 +691,17 @@ public class WebLayerShellActivity extends AppCompatActivity {
 
     private void registerTabCallbacks(Tab tab) {
         tab.setNewTabCallback(mNewTabCallback);
-        tab.setFullscreenCallback(mFullscreenCallback);
+
+        if (mFullscreenCallback != null) {
+            tab.setFullscreenCallback(mFullscreenCallback);
+        } else if (tab.getFullscreenCallback() != null) {
+            mFullscreenCallback = (FullscreenCallbackImpl) tab.getFullscreenCallback();
+            mFullscreenCallback.setActivity(this);
+        } else {
+            mFullscreenCallback = new FullscreenCallbackImpl(this);
+            tab.setFullscreenCallback(mFullscreenCallback);
+        }
+
         tab.getNavigationController().registerNavigationCallback(mNavigationCallback);
         tab.setErrorPageCallback(mErrorPageCallback);
         TabCallback tabCallback = new TabCallback() {
@@ -681,8 +743,9 @@ public class WebLayerShellActivity extends AppCompatActivity {
     }
 
     private void unregisterTabCallbacks(Tab tab) {
+        // Do not unset FullscreenCallback here which is called from onDestroy, since
+        // unsetting FullscreenCallback also exits fullscreen.
         tab.setNewTabCallback(null);
-        tab.setFullscreenCallback(null);
         tab.getNavigationController().unregisterNavigationCallback(mNavigationCallback);
         tab.setErrorPageCallback(null);
         PerTabState perTabState = mTabToPerTabState.get(tab);
@@ -711,11 +774,6 @@ public class WebLayerShellActivity extends AppCompatActivity {
             if (fragments.size() == 1) {
                 return fragments.get(0);
             }
-        }
-
-        if (CommandLine.isInitialized()
-                && CommandLine.getInstance().hasSwitch("start-in-incognito")) {
-            mInIncognitoMode = true;
         }
 
         String profileName = mInIncognitoMode ? null : NON_INCOGNITO_PROFILE_NAME;
@@ -800,13 +858,13 @@ public class WebLayerShellActivity extends AppCompatActivity {
     }
 
     @SuppressWarnings("checkstyle:SystemExitCheck") // Allowed since this shouldn't be a crash.
-    private void restartShell(boolean enableWebViewCompat) {
+    private void restartShell(boolean enableIncognito) {
         finish();
 
         Intent intent = new Intent();
         intent.setClassName(getPackageName(), getClass().getName());
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(EXTRA_WEBVIEW_COMPAT, enableWebViewCompat);
+        intent.putExtra(EXTRA_START_IN_INCOGNITO, enableIncognito);
         startActivity(intent);
         System.exit(0);
     }

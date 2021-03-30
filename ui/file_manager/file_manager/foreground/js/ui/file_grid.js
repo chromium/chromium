@@ -2,13 +2,36 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {A11yAnnounce} from './a11y_announce.m.js';
+// #import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
+// #import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.m.js';
+// #import {importerHistoryInterfaces} from '../../../externs/background/import_history.m.js';
+// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
+// #import {ListThumbnailLoader} from '../list_thumbnail_loader.m.js';
+// #import {MetadataModel} from '../metadata/metadata_model.m.js';
+// #import {FileTapHandler} from './file_tap_handler.m.js';
+// #import {ListItem} from 'chrome://resources/js/cr/ui/list_item.m.js';
+// #import {DragSelector} from './drag_selector.m.js';
+// #import {FileType} from '../../../common/js/file_type.m.js';
+// #import {importer} from '../../../common/js/importer_common.m.js';
+// #import {filelist} from './file_table_list.m.js';
+// #import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
+// #import {util, str} from '../../../common/js/util.m.js';
+// #import {isRTL} from 'chrome://resources/js/util.m.js';
+// #import {AsyncUtil} from '../../../common/js/async_util.m.js';
+// #import {List} from 'chrome://resources/js/cr/ui/list.m.js';
+// #import {Grid, GridSelectionController} from 'chrome://resources/js/cr/ui/grid.m.js';
+// #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+// clang-format on
+
 /**
  * FileGrid constructor.
  *
  * Represents grid for the Grid View in the File Manager.
  */
 
-class FileGrid extends cr.ui.Grid {
+/* #export */ class FileGrid extends cr.ui.Grid {
   constructor() {
     super();
 
@@ -108,7 +131,9 @@ class FileGrid extends cr.ui.Grid {
    * @param {!A11yAnnounce} a11y
    */
   static decorate(element, metadataModel, volumeManager, historyLoader, a11y) {
-    cr.ui.Grid.decorate(element);
+    if (cr.ui.Grid.decorate) {
+      cr.ui.Grid.decorate(element);
+    }
     const self = /** @type {!FileGrid} */ (element);
     self.__proto__ = FileGrid.prototype;
     self.setAttribute('aria-multiselectable', true);
@@ -134,7 +159,7 @@ class FileGrid extends cr.ui.Grid {
       let item = self.ownerDocument.createElement('li');
       item.__proto__ = FileGrid.Item.prototype;
       item = /** @type {!FileGrid.Item} */ (item);
-      self.decorateThumbnail_(item, entry);
+      self.decorateThumbnail_(item, /** @type {!Entry} */ (entry));
       return item;
     };
 
@@ -1014,6 +1039,10 @@ FileGrid.Item = class extends cr.ui.ListItem {
     return this.querySelector('filename-label').textContent;
   }
 
+  set label(newLabel) {
+    // no-op setter. cr.ui.List calls this setter but Files app doesn't need it.
+  }
+
   /**
    * @override
    */
@@ -1033,7 +1062,8 @@ FileGrid.Item = class extends cr.ui.ListItem {
 /**
  * Selection controller for the file grid.
  */
-class FileGridSelectionController extends cr.ui.GridSelectionController {
+/* #export */ class FileGridSelectionController extends
+    cr.ui.GridSelectionController {
   /**
    * @param {!cr.ui.ListSelectionModel} selectionModel The selection model to
    *     interact with.
@@ -1057,7 +1087,7 @@ class FileGridSelectionController extends cr.ui.GridSelectionController {
   /** @override */
   handleTouchEvents(e, index) {
     if (this.tapHandler_.handleTouchEvents(
-            e, index, filelist.handleTap.bind(this))) {
+            assert(e), index, filelist.handleTap.bind(this))) {
       filelist.focusParentList(e);
     }
   }

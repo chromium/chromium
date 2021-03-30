@@ -8,12 +8,13 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/timer/mock_timer.h"
 #include "base/values.h"
-#include "chrome/browser/engagement/site_engagement_metrics.h"
-#include "chrome/browser/engagement/site_engagement_score.h"
-#include "chrome/browser/engagement/site_engagement_service.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/site_engagement/content/engagement_type.h"
+#include "components/site_engagement/content/site_engagement_metrics.h"
+#include "components/site_engagement/content/site_engagement_score.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
@@ -90,13 +91,13 @@ class SiteEngagementHelperTest : public ChromeRenderViewHostTestHarness {
   void MediaStartedPlaying(SiteEngagementService::Helper* helper) {
     helper->media_tracker_.MediaStartedPlaying(
         content::WebContentsObserver::MediaPlayerInfo(false, false),
-        content::MediaPlayerId(nullptr, 1));
+        content::MediaPlayerId::CreateMediaPlayerIdForTests());
   }
 
   void MediaStoppedPlaying(SiteEngagementService::Helper* helper) {
     helper->media_tracker_.MediaStoppedPlaying(
         content::WebContentsObserver::MediaPlayerInfo(false, false),
-        content::MediaPlayerId(nullptr, 1),
+        content::MediaPlayerId::CreateMediaPlayerIdForTests(),
         content::WebContentsObserver::MediaStoppedReason::kUnspecified);
   }
 
@@ -323,10 +324,9 @@ TEST_F(SiteEngagementHelperTest, MixedInputEngagementAccumulation) {
   histograms.ExpectTotalCount(SiteEngagementMetrics::kEngagementTypeHistogram,
                               2);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
-                               SiteEngagementService::ENGAGEMENT_NAVIGATION, 1);
-  histograms.ExpectBucketCount(
-      SiteEngagementMetrics::kEngagementTypeHistogram,
-      SiteEngagementService::ENGAGEMENT_FIRST_DAILY_ENGAGEMENT, 1);
+                               EngagementType::kNavigation, 1);
+  histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
+                               EngagementType::kFirstDailyEngagement, 1);
 
   HandleUserInputAndRestartTracking(helper,
                                     blink::WebInputEvent::Type::kRawKeyDown);
@@ -344,17 +344,15 @@ TEST_F(SiteEngagementHelperTest, MixedInputEngagementAccumulation) {
   histograms.ExpectTotalCount(SiteEngagementMetrics::kEngagementTypeHistogram,
                               7);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
-                               SiteEngagementService::ENGAGEMENT_NAVIGATION, 1);
+                               EngagementType::kNavigation, 1);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
-                               SiteEngagementService::ENGAGEMENT_KEYPRESS, 2);
+                               EngagementType::kKeypress, 2);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
-                               SiteEngagementService::ENGAGEMENT_MOUSE, 1);
+                               EngagementType::kMouse, 1);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
-                               SiteEngagementService::ENGAGEMENT_TOUCH_GESTURE,
-                               2);
-  histograms.ExpectBucketCount(
-      SiteEngagementMetrics::kEngagementTypeHistogram,
-      SiteEngagementService::ENGAGEMENT_FIRST_DAILY_ENGAGEMENT, 1);
+                               EngagementType::kTouchGesture, 2);
+  histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
+                               EngagementType::kFirstDailyEngagement, 1);
 
   HandleUserInputAndRestartTracking(
       helper, blink::WebInputEvent::Type::kGestureScrollBegin);
@@ -370,21 +368,17 @@ TEST_F(SiteEngagementHelperTest, MixedInputEngagementAccumulation) {
   histograms.ExpectTotalCount(SiteEngagementMetrics::kEngagementTypeHistogram,
                               12);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
-                               SiteEngagementService::ENGAGEMENT_MOUSE, 2);
+                               EngagementType::kMouse, 2);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
-                               SiteEngagementService::ENGAGEMENT_SCROLL, 1);
+                               EngagementType::kScroll, 1);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
-                               SiteEngagementService::ENGAGEMENT_TOUCH_GESTURE,
-                               3);
+                               EngagementType::kTouchGesture, 3);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
-                               SiteEngagementService::ENGAGEMENT_MEDIA_VISIBLE,
-                               1);
+                               EngagementType::kMediaVisible, 1);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
-                               SiteEngagementService::ENGAGEMENT_MEDIA_HIDDEN,
-                               1);
-  histograms.ExpectBucketCount(
-      SiteEngagementMetrics::kEngagementTypeHistogram,
-      SiteEngagementService::ENGAGEMENT_FIRST_DAILY_ENGAGEMENT, 1);
+                               EngagementType::kMediaHidden, 1);
+  histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
+                               EngagementType::kFirstDailyEngagement, 1);
 
   NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(), url2);
   TrackingStarted(helper);
@@ -404,15 +398,13 @@ TEST_F(SiteEngagementHelperTest, MixedInputEngagementAccumulation) {
   histograms.ExpectTotalCount(SiteEngagementMetrics::kEngagementTypeHistogram,
                               16);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
-                               SiteEngagementService::ENGAGEMENT_NAVIGATION, 2);
+                               EngagementType::kNavigation, 2);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
-                               SiteEngagementService::ENGAGEMENT_KEYPRESS, 3);
+                               EngagementType::kKeypress, 3);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
-                               SiteEngagementService::ENGAGEMENT_TOUCH_GESTURE,
-                               4);
-  histograms.ExpectBucketCount(
-      SiteEngagementMetrics::kEngagementTypeHistogram,
-      SiteEngagementService::ENGAGEMENT_FIRST_DAILY_ENGAGEMENT, 2);
+                               EngagementType::kTouchGesture, 4);
+  histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
+                               EngagementType::kFirstDailyEngagement, 2);
 }
 
 TEST_F(SiteEngagementHelperTest, CheckTimerAndCallbacks) {

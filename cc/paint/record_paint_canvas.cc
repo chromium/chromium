@@ -108,22 +108,24 @@ void RecordPaintCanvas::rotate(SkScalar degrees) {
 }
 
 void RecordPaintCanvas::concat(const SkMatrix& matrix) {
+  SkM44 m = SkM44(matrix);
+  list_->push<ConcatOp>(m);
+  GetCanvas()->concat(m);
+}
+
+void RecordPaintCanvas::concat(const SkM44& matrix) {
   list_->push<ConcatOp>(matrix);
   GetCanvas()->concat(matrix);
 }
 
-void RecordPaintCanvas::concat(const SkM44& matrix) {
-  list_->push<Concat44Op>(matrix);
-  GetCanvas()->concat(matrix);
-}
-
 void RecordPaintCanvas::setMatrix(const SkMatrix& matrix) {
-  list_->push<SetMatrixOp>(matrix);
-  GetCanvas()->setMatrix(matrix);
+  SkM44 m = SkM44(matrix);
+  list_->push<SetMatrixOp>(m);
+  GetCanvas()->setMatrix(m);
 }
 
 void RecordPaintCanvas::setMatrix(const SkM44& matrix) {
-  list_->push<SetMatrix44Op>(matrix);
+  list_->push<SetMatrixOp>(matrix);
   GetCanvas()->setMatrix(matrix);
 }
 
@@ -262,17 +264,19 @@ void RecordPaintCanvas::drawPath(const SkPath& path, const PaintFlags& flags) {
 void RecordPaintCanvas::drawImage(const PaintImage& image,
                                   SkScalar left,
                                   SkScalar top,
+                                  const SkSamplingOptions& sampling,
                                   const PaintFlags* flags) {
   DCHECK(!image.IsPaintWorklet());
-  list_->push<DrawImageOp>(image, left, top, flags);
+  list_->push<DrawImageOp>(image, left, top, sampling, flags);
 }
 
 void RecordPaintCanvas::drawImageRect(const PaintImage& image,
                                       const SkRect& src,
                                       const SkRect& dst,
+                                      const SkSamplingOptions& sampling,
                                       const PaintFlags* flags,
                                       SkCanvas::SrcRectConstraint constraint) {
-  list_->push<DrawImageRectOp>(image, src, dst, flags, constraint);
+  list_->push<DrawImageRectOp>(image, src, dst, sampling, flags, constraint);
 }
 
 void RecordPaintCanvas::drawSkottie(scoped_refptr<SkottieWrapper> skottie,

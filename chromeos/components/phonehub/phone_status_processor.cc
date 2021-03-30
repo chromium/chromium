@@ -6,16 +6,13 @@
 
 #include "base/containers/flat_set.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/time/time.h"
 #include "chromeos/components/phonehub/do_not_disturb_controller.h"
 #include "chromeos/components/phonehub/find_my_device_controller.h"
 #include "chromeos/components/phonehub/message_receiver.h"
 #include "chromeos/components/phonehub/mutable_phone_model.h"
-#include "chromeos/components/phonehub/notification.h"
 #include "chromeos/components/phonehub/notification_access_manager.h"
-#include "chromeos/components/phonehub/notification_manager.h"
+#include "chromeos/components/phonehub/notification_processor.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
-#include "ui/gfx/image/image.h"
 
 #include <algorithm>
 #include <string>
@@ -24,31 +21,6 @@ namespace chromeos {
 namespace phonehub {
 namespace {
 using multidevice_setup::MultiDeviceSetupClient;
-
-gfx::Image CreateImageFromSerializedIcon(const std::string& bytes) {
-  return gfx::Image::CreateFrom1xPNGBytes(
-      reinterpret_cast<const unsigned char*>(bytes.c_str()), bytes.size());
-}
-
-Notification::Importance GetNotificationImportanceFromProto(
-    proto::NotificationImportance importance) {
-  switch (importance) {
-    case proto::NotificationImportance::UNSPECIFIED:
-      return Notification::Importance::kUnspecified;
-    case proto::NotificationImportance::NONE:
-      return Notification::Importance::kNone;
-    case proto::NotificationImportance::MIN:
-      return Notification::Importance::kMin;
-    case proto::NotificationImportance::LOW:
-      return Notification::Importance::kLow;
-    case proto::NotificationImportance::DEFAULT:
-      return Notification::Importance::kDefault;
-    case proto::NotificationImportance::HIGH:
-      return Notification::Importance::kHigh;
-    default:
-      return Notification::Importance::kUnspecified;
-  }
-}
 
 PhoneStatusModel::MobileStatus GetMobileStatusFromProto(
     proto::MobileConnectionState mobile_status) {
@@ -138,44 +110,6 @@ FindMyDeviceController::Status ComputeFindMyDeviceStatus(
                     : FindMyDeviceController::Status::kRingingOff;
 }
 
-base::Optional<Notification> ProcessNotificationProto(
-    const proto::Notification& proto) {
-  // Only process notifications that are messaging apps with inline-replies.
-  auto actions_it = std::find_if(
-      proto.actions().begin(), proto.actions().end(), [](const auto& action) {
-        return action.type() == proto::Action_InputType::Action_InputType_TEXT;
-      });
-
-  if (actions_it == proto.actions().end())
-    return base::nullopt;
-
-  base::Optional<base::string16> title = base::nullopt;
-  if (!proto.title().empty())
-    title = base::UTF8ToUTF16(proto.title());
-
-  base::Optional<base::string16> text_content = base::nullopt;
-  if (!proto.text_content().empty())
-    text_content = base::UTF8ToUTF16(proto.text_content());
-
-  base::Optional<gfx::Image> shared_image = base::nullopt;
-  if (!proto.shared_image().empty())
-    shared_image = CreateImageFromSerializedIcon(proto.shared_image());
-
-  base::Optional<gfx::Image> contact_image = base::nullopt;
-  if (!proto.contact_image().empty())
-    contact_image = CreateImageFromSerializedIcon(proto.contact_image());
-
-  return Notification(
-      proto.id(),
-      Notification::AppMetadata(
-          base::UTF8ToUTF16(proto.origin_app().visible_name()),
-          proto.origin_app().package_name(),
-          CreateImageFromSerializedIcon(proto.origin_app().icon())),
-      base::Time::FromJsTime(proto.epoch_time_millis()),
-      GetNotificationImportanceFromProto(proto.importance()), actions_it->id(),
-      title, text_content, shared_image, contact_image);
-}
-
 PhoneStatusModel CreatePhoneStatusModel(const proto::PhoneProperties& proto) {
   return PhoneStatusModel(
       GetMobileStatusFromProto(proto.connection_state()),
@@ -195,7 +129,7 @@ PhoneStatusProcessor::PhoneStatusProcessor(
     MessageReceiver* message_receiver,
     FindMyDeviceController* find_my_device_controller,
     NotificationAccessManager* notification_access_manager,
-    NotificationManager* notification_manager,
+    NotificationProcessor* notification_processor_,
     MultiDeviceSetupClient* multidevice_setup_client,
     MutablePhoneModel* phone_model)
     : do_not_disturb_controller_(do_not_disturb_controller),
@@ -203,7 +137,7 @@ PhoneStatusProcessor::PhoneStatusProcessor(
       message_receiver_(message_receiver),
       find_my_device_controller_(find_my_device_controller),
       notification_access_manager_(notification_access_manager),
-      notification_manager_(notification_manager),
+      notification_processor_(notification_processor_),
       multidevice_setup_client_(multidevice_setup_client),
       phone_model_(phone_model) {
   DCHECK(do_not_disturb_controller_);
@@ -211,7 +145,7 @@ PhoneStatusProcessor::PhoneStatusProcessor(
   DCHECK(message_receiver_);
   DCHECK(find_my_device_controller_);
   DCHECK(notification_access_manager_);
-  DCHECK(notification_manager_);
+  DCHECK(notification_processor_);
   DCHECK(multidevice_setup_client_);
   DCHECK(phone_model_);
 
@@ -239,14 +173,12 @@ void PhoneStatusProcessor::ProcessReceivedNotifications(
     return;
   }
 
-  base::flat_set<Notification> notifications;
+  std::vector<proto::Notification> inline_replyable_protos;
 
-  for (const auto& proto : notification_protos) {
-    base::Optional<Notification> notif = ProcessNotificationProto(proto);
-    if (notif.has_value())
-      notifications.emplace(*notif);
-  }
-  notification_manager_->SetNotificationsInternal(notifications);
+  for (const auto& proto : notification_protos)
+    inline_replyable_protos.emplace_back(proto);
+
+  notification_processor_->AddNotifications(inline_replyable_protos);
 }
 
 void PhoneStatusProcessor::SetReceivedPhoneStatusModelStates(
@@ -280,7 +212,7 @@ void PhoneStatusProcessor::OnFeatureStatusChanged() {
   if (feature_status_provider_->GetStatus() !=
       FeatureStatus::kEnabledAndConnected) {
     phone_model_->SetPhoneStatusModel(base::nullopt);
-    notification_manager_->ClearNotificationsInternal();
+    notification_processor_->ClearNotificationsAndPendingUpdates();
   }
 }
 
@@ -300,8 +232,8 @@ void PhoneStatusProcessor::OnPhoneStatusUpdateReceived(
     for (auto& id : phone_status_update.removed_notification_ids()) {
       removed_notification_ids.emplace(id);
     }
-    notification_manager_->RemoveNotificationsInternal(
-        removed_notification_ids);
+
+    notification_processor_->RemoveNotifications(removed_notification_ids);
   }
 }
 

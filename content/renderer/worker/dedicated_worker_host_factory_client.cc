@@ -5,7 +5,6 @@
 #include "content/renderer/worker/dedicated_worker_host_factory_client.h"
 
 #include <utility>
-#include "content/renderer/loader/resource_dispatcher.h"
 #include "content/renderer/loader/web_worker_fetch_context_impl.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/service_worker/service_worker_provider_context.h"
@@ -38,16 +37,20 @@ DedicatedWorkerHostFactoryClient::~DedicatedWorkerHostFactoryClient() = default;
 
 void DedicatedWorkerHostFactoryClient::CreateWorkerHostDeprecated(
     const blink::DedicatedWorkerToken& dedicated_worker_token,
+    const blink::WebURL& script_url,
     base::OnceCallback<void(const network::CrossOriginEmbedderPolicy&)>
         callback) {
   DCHECK(!base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
   mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
       browser_interface_broker;
+  mojo::PendingRemote<blink::mojom::DedicatedWorkerHost> dedicated_worker_host;
   factory_->CreateWorkerHost(
-      dedicated_worker_token,
+      dedicated_worker_token, script_url,
       browser_interface_broker.InitWithNewPipeAndPassReceiver(),
+      dedicated_worker_host.InitWithNewPipeAndPassReceiver(),
       std::move(callback));
-  OnWorkerHostCreated(std::move(browser_interface_broker));
+  OnWorkerHostCreated(std::move(browser_interface_broker),
+                      std::move(dedicated_worker_host));
 }
 
 void DedicatedWorkerHostFactoryClient::CreateWorkerHost(
@@ -104,7 +107,6 @@ DedicatedWorkerHostFactoryClient::CreateWorkerFetchContext(
           subresource_loader_factory_bundle_->CloneWithoutAppCacheFactory(),
           std::move(pending_subresource_loader_updater_),
           RenderThreadImpl::current()
-              ->resource_dispatcher()
               ->cors_exempt_header_list(),
           std::move(pending_resource_load_info_notifier));
   return worker_fetch_context;
@@ -112,8 +114,11 @@ DedicatedWorkerHostFactoryClient::CreateWorkerFetchContext(
 
 void DedicatedWorkerHostFactoryClient::OnWorkerHostCreated(
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
-        browser_interface_broker) {
-  worker_->OnWorkerHostCreated(std::move(browser_interface_broker));
+        browser_interface_broker,
+    mojo::PendingRemote<blink::mojom::DedicatedWorkerHost>
+        dedicated_worker_host) {
+  worker_->OnWorkerHostCreated(std::move(browser_interface_broker),
+                               std::move(dedicated_worker_host));
 }
 
 void DedicatedWorkerHostFactoryClient::OnScriptLoadStarted(
@@ -153,6 +158,8 @@ void DedicatedWorkerHostFactoryClient::OnScriptLoadStarted(
   // the browser process.
   auto worker_main_script_load_params =
       std::make_unique<blink::WorkerMainScriptLoadParameters>();
+  worker_main_script_load_params->request_id =
+      main_script_load_params->request_id;
   worker_main_script_load_params->response_head =
       std::move(main_script_load_params->response_head);
   worker_main_script_load_params->response_body =

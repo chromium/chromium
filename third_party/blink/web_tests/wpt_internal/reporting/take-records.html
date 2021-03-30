@@ -1,0 +1,31 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/intervention.js"></script>
+
+<div id="target" style="padding: 10px; background-color: blue;">
+  <p>Testing ReportingObserver's takeRecords().</p>
+</div>
+
+<script>
+async_test(function(test) {
+  var observer = new ReportingObserver(function(reports, observer) {
+    test.step(function() {
+      // Only 1 report should be observed, since the first report should have
+      // been returned by takeRecords().
+      assert_equals(reports.length, 1);
+    });
+
+    test.done();
+  }, { buffered: true });
+  observer.observe();
+
+  // Generate two reports, one before and one after calling takeRecords().
+  causeIntervention();
+  var reports = observer.takeRecords();
+  causeIntervention();
+
+  assert_equals(reports.length, 1);
+  assert_equals(reports[0].type, "intervention");
+}, "takeRecords");
+</script>

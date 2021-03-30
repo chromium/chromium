@@ -8,6 +8,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/button/label_button.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -53,5 +55,8 @@ void SkipAdLabelButton::SetVisible(bool visible) {
   SetSize(visible ? gfx::Size(kSkipAdButtonWidth, kSkipAdButtonHeight)
                   : gfx::Size());
 }
+
+BEGIN_METADATA(SkipAdLabelButton, views::LabelButton)
+END_METADATA
 
 }  // namespace views

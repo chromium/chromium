@@ -5,7 +5,8 @@
 #ifndef UI_VIEWS_CONTROLS_TREE_TREE_VIEW_DRAWING_PROVIDER_H_
 #define UI_VIEWS_CONTROLS_TREE_TREE_VIEW_DRAWING_PROVIDER_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/views/views_export.h"
 
@@ -34,7 +35,7 @@ class VIEWS_EXPORT TreeViewDrawingProvider {
 
   // The auxiliary text for a node is descriptive text drawn on the trailing end
   // of the node's row in the treeview.
-  virtual base::string16 GetAuxiliaryTextForNode(TreeView* tree_view,
+  virtual std::u16string GetAuxiliaryTextForNode(TreeView* tree_view,
                                                  ui::TreeModelNode* node);
 
   // This method returns whether the icon for |node| should be drawn.

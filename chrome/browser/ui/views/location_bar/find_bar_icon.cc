@@ -11,6 +11,7 @@
 #include "components/omnibox/browser/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/animation/ink_drop.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 FindBarIcon::FindBarIcon(
     Browser* browser,
@@ -41,12 +42,8 @@ void FindBarIcon::SetActive(bool activate, bool should_animate) {
   }
 }
 
-base::string16 FindBarIcon::GetTextForTooltipAndAccessibleName() const {
+std::u16string FindBarIcon::GetTextForTooltipAndAccessibleName() const {
   return l10n_util::GetStringUTF16(IDS_TOOLTIP_FIND);
-}
-
-const char* FindBarIcon::GetClassName() const {
-  return "FindBarIcon";
 }
 
 void FindBarIcon::OnExecuting(ExecuteSource execute_source) {}
@@ -69,3 +66,6 @@ void FindBarIcon::UpdateImpl() {
   SetVisible(browser_->GetFindBarController()->find_bar()->IsFindBarVisible());
   SetActive(GetVisible(), was_visible != GetVisible());
 }
+
+BEGIN_METADATA(FindBarIcon, PageActionIconView)
+END_METADATA

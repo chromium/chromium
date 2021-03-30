@@ -100,7 +100,7 @@ std::string GetReportUrl(
 // GENERATED_JAVA_PREFIX_TO_STRIP: SB_THREAT_TYPE_
 enum SBThreatType {
   // This type can be used for lists that can be checked synchronously so a
-  // client callback isn't required, or for whitelists.
+  // client callback isn't required, or for allowlists.
   SB_THREAT_TYPE_UNUSED = 0,
 
   // No threat at all.
@@ -129,9 +129,9 @@ enum SBThreatType {
   // of the client side detection model.
   SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE = 8,
 
-  // Url leads to a blacklisted resource script. Note that no warnings should be
+  // Url leads to a blocklisted resource script. Note that no warnings should be
   // shown on this threat type, but an incident report might be sent.
-  SB_THREAT_TYPE_BLACKLISTED_RESOURCE = 9,
+  SB_THREAT_TYPE_BLOCKLISTED_RESOURCE = 9,
 
   // Url abuses a permission API.
   SB_THREAT_TYPE_API_ABUSE = 10,
@@ -139,8 +139,8 @@ enum SBThreatType {
   // Activation patterns for the Subresource Filter.
   SB_THREAT_TYPE_SUBRESOURCE_FILTER = 11,
 
-  // CSD Phishing whitelist.  This "threat" means a URL matched the whitelist.
-  SB_THREAT_TYPE_CSD_WHITELIST = 12,
+  // CSD Phishing allowlist.  This "threat" means a URL matched the allowlist.
+  SB_THREAT_TYPE_CSD_ALLOWLIST = 12,
 
   // DEPRECATED. Url detected by password protection service.
   DEPRECATED_SB_THREAT_TYPE_URL_PASSWORD_PROTECTION_PHISHING = 13,
@@ -229,14 +229,14 @@ class ListIdentifier {
 std::ostream& operator<<(std::ostream& os, const ListIdentifier& id);
 
 PlatformType GetCurrentPlatformType();
-ListIdentifier GetCertCsdDownloadWhitelistId();
+ListIdentifier GetCertCsdDownloadAllowlistId();
 ListIdentifier GetChromeExtMalwareId();
 ListIdentifier GetChromeUrlApiId();
 ListIdentifier GetChromeUrlClientIncidentId();
 ListIdentifier GetIpMalwareId();
 ListIdentifier GetUrlBillingId();
-ListIdentifier GetUrlCsdDownloadWhitelistId();
-ListIdentifier GetUrlCsdWhitelistId();
+ListIdentifier GetUrlCsdDownloadAllowlistId();
+ListIdentifier GetUrlCsdAllowlistId();
 ListIdentifier GetUrlHighConfidenceAllowlistId();
 ListIdentifier GetUrlMalBinId();
 ListIdentifier GetUrlMalwareId();

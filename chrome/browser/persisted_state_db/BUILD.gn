@@ -29,9 +29,12 @@ source_set("persisted_state_db") {
   ]
   if (is_android) {
     deps += [
+      "//chrome/browser/commerce/subscriptions:commerce_subscription_db_content_proto",
       "//chrome/browser/tab:jni_headers",
       "//components/embedder_support/android:browser_context",
     ]
+  } else {
+    deps += [ "//chrome/browser:cart_db_content_proto" ]
   }
 }
 

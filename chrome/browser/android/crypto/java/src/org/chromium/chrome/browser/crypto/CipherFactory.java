@@ -8,7 +8,9 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ByteArrayGenerator;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.SecureRandomInitializer;
@@ -82,6 +84,11 @@ public class CipherFactory {
     /** Singleton holder for the class. */
     private static class LazyHolder {
         private static CipherFactory sInstance = new CipherFactory();
+    }
+
+    @VisibleForTesting
+    public static void resetInstanceForTesting() {
+        LazyHolder.sInstance = new CipherFactory();
     }
 
     /**

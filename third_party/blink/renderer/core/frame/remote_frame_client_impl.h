@@ -20,33 +20,9 @@ class RemoteFrameClientImpl final : public RemoteFrameClient {
   // FrameClient overrides:
   bool InShadowTree() const override;
   void Detached(FrameDetachType) override;
-  base::UnguessableToken GetDevToolsFrameToken() const override;
 
-  // RemoteFrameClient overrides:
-  void Navigate(const ResourceRequest&,
-                blink::WebLocalFrame* initiator_frame,
-                bool should_replace_current_entry,
-                bool is_opener_navigation,
-                bool prevent_sandboxed_download,
-                bool initiator_frame_is_ad,
-                mojo::PendingRemote<mojom::blink::BlobURLToken>,
-                const base::Optional<WebImpression>& impression) override;
   unsigned BackForwardLength() override;
-  void FrameRectsChanged(const IntRect& local_frame_rect,
-                         const IntRect& screen_space_rect) override;
-  void ZoomLevelChanged(double zoom_level) override;
-  void UpdateCaptureSequenceNumber(uint32_t sequence_number) override;
-  void PageScaleFactorChanged(float page_scale_factor,
-                              bool is_pinch_gesture_active) override;
-  void DidChangeScreenInfo(const ScreenInfo& original_screen_info) override;
-  void DidChangeRootWindowSegments(
-      const std::vector<gfx::Rect>& root_widget_window_segments) override;
-  void DidChangeVisibleViewportSize(
-      const gfx::Size& visible_viewport_size) override;
-  void SynchronizeVisualProperties() override;
   AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces() override;
-  viz::FrameSinkId GetFrameSinkId() override;
-  void WasEvicted() override;
 
   WebRemoteFrameImpl* GetWebFrame() const { return web_frame_; }
 

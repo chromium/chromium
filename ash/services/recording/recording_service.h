@@ -25,6 +25,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom-forward.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace recording {
 
@@ -45,24 +46,33 @@ class RecordingService : public mojom::RecordingService,
   void RecordFullscreen(
       mojo::PendingRemote<mojom::RecordingServiceClient> client,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
-      mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
+      mojo::PendingRemote<media::mojom::AudioStreamFactory>
+          audio_stream_factory,
       const viz::FrameSinkId& frame_sink_id,
-      const gfx::Size& video_size) override;
+      const gfx::Size& frame_sink_size) override;
   void RecordWindow(
       mojo::PendingRemote<mojom::RecordingServiceClient> client,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
-      mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
+      mojo::PendingRemote<media::mojom::AudioStreamFactory>
+          audio_stream_factory,
       const viz::FrameSinkId& frame_sink_id,
-      const gfx::Size& initial_video_size,
-      const gfx::Size& max_video_size) override;
+      const gfx::Size& frame_sink_size,
+      const viz::SubtreeCaptureId& subtree_capture_id,
+      const gfx::Size& window_size) override;
   void RecordRegion(
       mojo::PendingRemote<mojom::RecordingServiceClient> client,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
-      mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
+      mojo::PendingRemote<media::mojom::AudioStreamFactory>
+          audio_stream_factory,
       const viz::FrameSinkId& frame_sink_id,
-      const gfx::Size& full_capture_size,
+      const gfx::Size& frame_sink_size,
       const gfx::Rect& crop_region) override;
   void StopRecording() override;
+  void OnRecordedWindowChangingRoot(
+      const viz::FrameSinkId& new_frame_sink_id,
+      const gfx::Size& new_frame_sink_size) override;
+  void OnRecordedWindowSizeChanged(const gfx::Size& new_window_size) override;
+  void OnFrameSinkSizeChanged(const gfx::Size& new_frame_sink_size) override;
 
   // viz::mojom::FrameSinkVideoConsumer:
   void OnFrameCaptured(
@@ -87,8 +97,13 @@ class RecordingService : public mojom::RecordingService,
   void StartNewRecording(
       mojo::PendingRemote<mojom::RecordingServiceClient> client,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
-      mojo::PendingRemote<audio::mojom::StreamFactory> audio_stream_factory,
+      mojo::PendingRemote<media::mojom::AudioStreamFactory>
+          audio_stream_factory,
       std::unique_ptr<VideoCaptureParams> capture_params);
+
+  // Called on the main thread during an on-going recording to reconfigure an
+  // existing video encoder.
+  void ReconfigureVideoEncoder();
 
   // Called on the main thread on |success| from OnStopped() when all video
   // frames have been sent, or from OnEncodingFailure() with |success| set to
@@ -169,6 +184,11 @@ class RecordingService : public mojom::RecordingService,
   mojo::Remote<mojom::RecordingServiceClient> client_remote_
       GUARDED_BY_CONTEXT(main_thread_checker_);
 
+  // A cached scaled down rgb image of the first valid video frame which will be
+  // used to provide the client with an image thumbnail representing the
+  // recorded video.
+  gfx::ImageSkia video_thumbnail_ GUARDED_BY_CONTEXT(main_thread_checker_);
+
   // True if a failure has been propagated from |encoder_muxer_| that we will
   // end recording abruptly and ignore any incoming audio/video frames.
   bool did_failure_occur_ GUARDED_BY_CONTEXT(main_thread_checker_) = false;
@@ -189,9 +209,11 @@ class RecordingService : public mojom::RecordingService,
   scoped_refptr<media::AudioCapturerSource> audio_capturer_
       GUARDED_BY_CONTEXT(main_thread_checker_);
 
-  // Performs all encoding and muxing operations on the |encoding_task_runner_|,
-  // and it is bound to the sequence of that task runner.
-  base::SequenceBound<RecordingEncoderMuxer> encoder_muxer_;
+  // Performs all encoding and muxing operations asynchronously on the
+  // |encoding_task_runner_|. However, the |encoder_muxer_| object itself is
+  // constructed, used, and destroyed on the main thread sequence.
+  base::SequenceBound<RecordingEncoderMuxer> encoder_muxer_
+      GUARDED_BY_CONTEXT(main_thread_checker_);
 
   // To avoid doing a ton of IPC calls to the client for each muxed chunk
   // received from |encoder_muxer_| in OnMuxerWrite(), we buffer those chunks

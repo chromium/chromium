@@ -242,8 +242,6 @@ TextIteratorAlgorithm<Strategy>::~TextIteratorAlgorithm() {
   if (!handle_shadow_root_)
     return;
   const Document& document = OwnerDocument();
-  if (behavior_.ForInnerText())
-    document.CountUse(WebFeature::kInnerTextWithShadowTree);
   if (behavior_.ForSelectionToString())
     document.CountUse(WebFeature::kSelectionToStringWithShadowTree);
   if (behavior_.ForWindowFind())

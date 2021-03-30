@@ -141,6 +141,7 @@ message DeviceReportingProto {
   optional bool report_fan_info = 23 [default = false];
   optional bool report_vpd_info = 24 [default = false];
   optional bool report_system_info = 25 [default = false];
+  optional bool report_print_jobs = 26 [default = false];
 
   // Frequency to report device status, default to 3 hours.
   // If changed, the default value has to be updated in
@@ -1750,6 +1751,23 @@ message DeviceArcDataSnapshotHoursProto {
   optional string arc_data_snapshot_hours = 1;
 }
 
+// Setting that controls whether system-wide trace collection using the Perfetto
+// system tracing service is allowed.
+message DeviceSystemWideTracingEnabledProto {
+  optional bool enabled = 1 [default = true];
+}
+
+// Setting that controls whether data access is enabled for Thunderbolt/USB4
+// peripherals.
+message DevicePciPeripheralDataAccessEnabledProto {
+  optional bool enabled = 1 [default = false];
+}
+
+// Setting that controls whether Borealis will be allowed on the device.
+message DeviceBorealisAllowedProto {
+  optional bool allowed = 1 [default = true];
+}
+
 message ChromeDeviceSettingsProto {
   reserved 61, 90;
   optional DevicePolicyRefreshRateProto device_policy_refresh_rate = 1;
@@ -1896,4 +1914,11 @@ message ChromeDeviceSettingsProto {
   optional DeviceFamilyLinkAccountsAllowedProto family_link_accounts_allowed =
       114;
   optional DeviceArcDataSnapshotHoursProto arc_data_snapshot_hours = 115;
+  optional BooleanPolicyProto device_allow_mgs_to_store_display_properties =
+      116;
+  optional DeviceSystemWideTracingEnabledProto
+      device_system_wide_tracing_enabled = 117;
+  optional DevicePciPeripheralDataAccessEnabledProto
+      device_pci_peripheral_data_access_enabled = 118;
+  optional DeviceBorealisAllowedProto device_borealis_allowed = 119;
 }

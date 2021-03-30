@@ -24,13 +24,13 @@
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "media/base/cdm_context.h"
+#include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_types.h"
 #include "media/gpu/chromeos/gpu_buffer_layout.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_backend.h"
-#include "media/video/supported_video_decoder_config.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -54,7 +54,8 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
   void Initialize(const VideoDecoderConfig& config,
                   CdmContext* cdm_context,
                   InitCB init_cb,
-                  const OutputCB& output_cb) override;
+                  const OutputCB& output_cb,
+                  const WaitingCB& waiting_cb) override;
   void Reset(base::OnceClosure closure) override;
   void Decode(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb) override;
   void ApplyResolutionChange() override;
@@ -81,9 +82,13 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
   ~V4L2VideoDecoder() override;
 
   enum class State {
-    // Initial state. Transitions to |kDecoding| if Initialize() is successful,
+    // Initial state. Transitions to |kInitialized| if Initialize() is
+    // successful,
     // |kError| otherwise.
     kUninitialized,
+    // Transitions to |kDecoding| when an input buffer has arrived that
+    // allows creation of hardware contexts. |kError| on error.
+    kInitialized,
     // Transitions to |kFlushing| when flushing or changing resolution,
     // |kError| if any unexpected error occurs.
     kDecoding,
@@ -135,6 +140,20 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
   // Change the state and check the state transition is valid.
   void SetState(State new_state);
 
+  // Continue backend initialization. Decoder will not take a hardware context
+  // until InitializeBackend() is called.
+  StatusCode InitializeBackend();
+
+  // Pages with multiple V4L2VideoDecoder instances might run out of memory
+  // (e.g. b/170870476) or crash (e.g. crbug.com/1109312). To avoid that and
+  // while the investigation goes on, limit the maximum number of simultaneous
+  // decoder instances for now. |num_instances_| tracks the number of
+  // simultaneous decoders. |can_use_decoder_| is true iff we haven't reached
+  // the maximum number of instances at the time this decoder is created.
+  static constexpr int kMaxNumOfInstances = 32;
+  static base::AtomicRefCount num_instances_;
+  bool can_use_decoder_ = false;
+
   // The V4L2 backend, i.e. the part of the decoder that sends
   // decoding jobs to the kernel.
   std::unique_ptr<V4L2VideoDecoderBackend> backend_;
@@ -157,6 +176,10 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
 
   // Callbacks passed from Initialize().
   OutputCB output_cb_;
+
+  // Hold onto profile passed in from Initialize() so that
+  // it is available for InitializeBackend().
+  VideoCodecProfile profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
 
   // V4L2 input and output queue.
   scoped_refptr<V4L2Queue> input_queue_;

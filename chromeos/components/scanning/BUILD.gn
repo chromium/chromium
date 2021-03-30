@@ -8,9 +8,11 @@ assert(is_chromeos, "Scanning App is Chrome OS only")
 
 static_library("scanning") {
   sources = [
+    "scanning_app_delegate.h",
     "scanning_handler.cc",
     "scanning_handler.h",
-    "scanning_paths_provider.h",
+    "scanning_metrics_handler.cc",
+    "scanning_metrics_handler.h",
     "scanning_ui.cc",
     "scanning_ui.h",
     "scanning_uma.cc",
@@ -20,8 +22,8 @@ static_library("scanning") {
   ]
 
   deps = [
+    "//ash/constants",
     "//chromeos/components/scanning/mojom",
-    "//chromeos/constants",
     "//chromeos/resources:scanning_app_resources",
     "//chromeos/strings/",
     "//content/public/browser",
@@ -44,6 +46,7 @@ source_set("unit_tests") {
 
   deps = [
     ":scanning",
+    "//ash/constants",
     "//base",
     "//content/test:test_support",
     "//testing/gtest",

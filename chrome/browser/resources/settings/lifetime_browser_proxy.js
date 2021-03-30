@@ -3,12 +3,11 @@
 // found in the LICENSE file.
 
 // clang-format on
-// #import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 // clang-format off
 
-cr.define('settings', function() {
   /** @interface */
-  /* #export */ class LifetimeBrowserProxy {
+  export class LifetimeBrowserProxy {
     // Triggers a browser restart.
     restart() {}
 
@@ -29,8 +28,8 @@ cr.define('settings', function() {
     // </if>
   }
 
-  /** @implements {settings.LifetimeBrowserProxy} */
-  /* #export */ class LifetimeBrowserProxyImpl {
+  /** @implements {LifetimeBrowserProxy} */
+  export class LifetimeBrowserProxyImpl {
     /** @override */
     restart() {
       chrome.send('restart');
@@ -54,11 +53,5 @@ cr.define('settings', function() {
     // </if>
   }
 
-  cr.addSingletonGetter(LifetimeBrowserProxyImpl);
+  addSingletonGetter(LifetimeBrowserProxyImpl);
 
-  // #cr_define_end
-  return {
-    LifetimeBrowserProxy: LifetimeBrowserProxy,
-    LifetimeBrowserProxyImpl: LifetimeBrowserProxyImpl,
-  };
-});

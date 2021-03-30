@@ -13,9 +13,10 @@ public class GEN_JNI {
     public static final boolean REQUIRE_MOCK = false;
 
 
-    public static native void org_chromium_example_SampleProxyJni_foo(long nativePtr);
-
-    public static native int org_chromium_example_SampleProxyJni_bar(int x, int y);
-
-    public static native String org_chromium_example_SampleProxyJni_foobar(String x, String y);
+      // Hashed name: MfuvK7$r
+      public static native void org_chromium_example_SampleProxyJni_foo(long nativePtr);
+      // Hashed name: MB1mTV9a
+      public static native int org_chromium_example_SampleProxyJni_bar(int x, int y);
+      // Hashed name: Me7X4JzV
+      public static native String org_chromium_example_SampleProxyJni_foobar(String x, String y);
 }

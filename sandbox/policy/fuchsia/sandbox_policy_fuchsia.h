@@ -14,13 +14,9 @@
 #include "sandbox/policy/sandbox_type.h"
 
 namespace base {
+class FilteredServiceDirectory;
 struct LaunchOptions;
 class SequencedTaskRunner;
-
-namespace fuchsia {
-class FilteredServiceDirectory;
-}  // namespace fuchsia
-
 }  // namespace base
 
 namespace sandbox {
@@ -48,7 +44,7 @@ class SANDBOX_POLICY_EXPORT SandboxPolicyFuchsia {
   SandboxType type_;
 
   // Services directory used for the /svc namespace of the child process.
-  std::unique_ptr<base::fuchsia::FilteredServiceDirectory> service_directory_;
+  std::unique_ptr<base::FilteredServiceDirectory> service_directory_;
   fidl::InterfaceHandle<::fuchsia::io::Directory> service_directory_client_;
   scoped_refptr<base::SequencedTaskRunner> service_directory_task_runner_;
 

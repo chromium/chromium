@@ -16,7 +16,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "services/device/usb/usb_descriptors.h"
 #include "url/gurl.h"
@@ -65,19 +64,19 @@ class UsbDevice : public base::RefCountedThreadSafe<UsbDevice> {
   uint16_t usb_version() const;
   uint16_t device_version() const;
 
-  const base::string16& manufacturer_string() const {
+  const std::u16string& manufacturer_string() const {
     if (device_info_->manufacturer_name)
       return *device_info_->manufacturer_name;
 
     return base::EmptyString16();
   }
-  const base::string16& product_string() const {
+  const std::u16string& product_string() const {
     if (device_info_->product_name)
       return *device_info_->product_name;
 
     return base::EmptyString16();
   }
-  const base::string16& serial_number() const {
+  const std::u16string& serial_number() const {
     if (device_info_->serial_number)
       return *device_info_->serial_number;
 
@@ -125,9 +124,9 @@ class UsbDevice : public base::RefCountedThreadSafe<UsbDevice> {
             uint16_t vendor_id,
             uint16_t product_id,
             uint16_t device_version,
-            const base::string16& manufacturer_string,
-            const base::string16& product_string,
-            const base::string16& serial_number,
+            const std::u16string& manufacturer_string,
+            const std::u16string& product_string,
+            const std::u16string& serial_number,
             uint32_t bus_number,
             uint32_t port_number);
   virtual ~UsbDevice();

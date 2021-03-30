@@ -31,6 +31,9 @@ class CC_EXPORT JankMetrics {
   JankMetrics(const JankMetrics&) = delete;
   JankMetrics& operator=(const JankMetrics&) = delete;
 
+  void AddFrameWithNoUpdate(uint32_t sequence_number,
+                            base::TimeDelta frame_interval);
+
   // Check if a jank occurs based on the timestamps of recent presentations.
   // If there is a jank, increment |jank_count_| and log a trace event.
   // Graphics.Smoothness.Stale.* metrics are reported in this function.
@@ -38,21 +41,23 @@ class CC_EXPORT JankMetrics {
                          base::TimeTicks current_presentation_timestamp,
                          base::TimeDelta frame_interval);
 
-  // Report Graphics.Smoothness.(Jank|MaxStale).* metrics.
-  void ReportJankMetrics(int frames_expected);
+  void AddSubmitFrame(uint32_t frame_token, uint32_t sequence_number);
 
   // Merge the current jank count with a previously unreported jank metrics.
   void Merge(std::unique_ptr<JankMetrics> jank_metrics);
 
-  void AddSubmitFrame(uint32_t frame_token, uint32_t sequence_number);
+  // Report Graphics.Smoothness.(Jank|MaxStale).* metrics.
+  void ReportJankMetrics(int frames_expected);
 
-  void AddFrameWithNoUpdate(uint32_t sequence_number,
-                            base::TimeDelta frame_interval);
+  // Reset the internal jank count
+  void Reset();
+
+  int jank_count() const { return jank_count_; }
+
+  base::TimeDelta max_staleness() const { return max_staleness_; }
   FrameSequenceMetrics::ThreadType thread_type() const {
     return effective_thread_;
   }
-
-  int jank_count() const { return jank_count_; }
 
  private:
   // The type of the tracker this JankMetrics object is attached to.

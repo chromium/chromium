@@ -69,7 +69,7 @@ class GeoNotifier final : public GarbageCollected<GeoNotifier>,
     bool IsActive() const { return timer_.IsActive(); }
 
    private:
-    TaskRunnerTimer<GeoNotifier> timer_;
+    HeapTaskRunnerTimer<GeoNotifier> timer_;
     Member<GeoNotifier> notifier_;
   };
 

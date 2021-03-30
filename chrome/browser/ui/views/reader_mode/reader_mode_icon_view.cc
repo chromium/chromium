@@ -18,6 +18,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 using dom_distiller::UMAHelper;
 using dom_distiller::url_utils::IsDistilledPage;
@@ -75,7 +76,8 @@ void ReaderModeIconView::ReadyToCommitNavigation(
                                       GetPageType(web_contents));
 }
 
-void ReaderModeIconView::DocumentAvailableInMainFrame() {
+void ReaderModeIconView::DocumentAvailableInMainFrame(
+    content::RenderFrameHost* render_frame_host) {
   content::WebContents* web_contents = GetWebContents();
   if (!web_contents)
     return;
@@ -126,16 +128,12 @@ void ReaderModeIconView::UpdateImpl() {
 }
 
 const gfx::VectorIcon& ReaderModeIconView::GetVectorIcon() const {
-  return active() ? kReaderModeIcon : kReaderModeDisabledIcon;
+  return GetActive() ? kReaderModeIcon : kReaderModeDisabledIcon;
 }
 
-base::string16 ReaderModeIconView::GetTextForTooltipAndAccessibleName() const {
-  return l10n_util::GetStringUTF16(active() ? IDS_EXIT_DISTILLED_PAGE
-                                            : IDS_DISTILL_PAGE);
-}
-
-const char* ReaderModeIconView::GetClassName() const {
-  return "ReaderModeIconView";
+std::u16string ReaderModeIconView::GetTextForTooltipAndAccessibleName() const {
+  return l10n_util::GetStringUTF16(GetActive() ? IDS_EXIT_DISTILLED_PAGE
+                                               : IDS_DISTILL_PAGE);
 }
 
 // TODO(gilmanmh): Consider displaying a bubble the first time a user
@@ -146,7 +144,7 @@ views::BubbleDialogDelegate* ReaderModeIconView::GetBubble() const {
 
 void ReaderModeIconView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {
-  if (active()) {
+  if (GetActive()) {
     dom_distiller::UMAHelper::RecordReaderModeExit(
         dom_distiller::UMAHelper::ReaderModeEntryPoint::kOmniboxIcon);
   } else {
@@ -186,3 +184,6 @@ void ReaderModeIconView::OnResult(
   UMAHelper::ReaderModePageType page_type = GetPageType(web_contents);
   UMAHelper::StartTimerIfNeeded(web_contents, page_type);
 }
+
+BEGIN_METADATA(ReaderModeIconView, PageActionIconView)
+END_METADATA

@@ -308,7 +308,8 @@ TEST_F(ProcessOutputWatcherTest, EndsWithInvalidUTF8) {
   RunTest(test_cases);
 }
 
-TEST_F(ProcessOutputWatcherTest, FourByteUTF8) {
+// TODO(crbug.com/1177137) Re-enable test
+TEST_F(ProcessOutputWatcherTest, DISABLED_FourByteUTF8) {
   std::vector<TestCase> test_cases;
   test_cases.push_back(TestCase("\xf0\xa4\xad", false, ""));
   test_cases.push_back(TestCase("\xa2", false, "\xf0\xa4\xad\xa2"));

@@ -17,6 +17,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/background.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 
 constexpr int TabGroupUnderline::kStrokeThickness;
@@ -44,7 +45,8 @@ void TabGroupUnderline::UpdateBounds(const gfx::Rect& group_bounds) {
   if (end_x <= start_x)
     return;
 
-  const int y = group_bounds.height() - 1;
+  const int y =
+      group_bounds.height() - GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
   SetBounds(start_x, y - kStrokeThickness, end_x - start_x, kStrokeThickness);
 }
 
@@ -79,3 +81,6 @@ SkPath TabGroupUnderline::GetPath() const {
 
   return path;
 }
+
+BEGIN_METADATA(TabGroupUnderline, views::View)
+END_METADATA

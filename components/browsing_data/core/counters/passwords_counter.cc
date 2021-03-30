@@ -24,11 +24,11 @@ bool IsPasswordSyncEnabled(const syncer::SyncService* sync_service) {
   if (!sync_service)
     return false;
   switch (password_manager_util::GetPasswordSyncState(sync_service)) {
-    case password_manager::NOT_SYNCING:
-    case password_manager::ACCOUNT_PASSWORDS_ACTIVE_NORMAL_ENCRYPTION:
+    case password_manager::SyncState::kNotSyncing:
+    case password_manager::SyncState::kAccountPasswordsActiveNormalEncryption:
       return false;
-    case password_manager::SYNCING_NORMAL_ENCRYPTION:
-    case password_manager::SYNCING_WITH_CUSTOM_PASSPHRASE:
+    case password_manager::SyncState::kSyncingNormalEncryption:
+    case password_manager::SyncState::kSyncingWithCustomPassphrase:
       return true;
   }
 }

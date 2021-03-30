@@ -49,7 +49,7 @@ fidl::InterfaceHandle<fuchsia::io::Directory> StartWebEngineForTestsInternal(
     launch_info.arguments->push_back("--enable-logging=stderr");
   }
 
-  fidl::InterfaceHandle<fuchsia::io::Directory> web_engine_services_dir;
+  fuchsia::io::DirectorySyncPtr web_engine_services_dir;
   launch_info.directory_request =
       web_engine_services_dir.NewRequest().TakeChannel();
 
@@ -58,7 +58,15 @@ fidl::InterfaceHandle<fuchsia::io::Directory> StartWebEngineForTestsInternal(
   launcher->CreateComponent(std::move(launch_info),
                             std::move(component_controller_request));
 
-  return web_engine_services_dir;
+  // The WebEngine binary can take sufficiently long for blobfs to resolve that
+  // tests using it may timeout as a result. Wait for the ContextProvider to
+  // be responsive, by making a synchronous request to its service directory.
+  fuchsia::io::NodeAttributes attributes{};
+  zx_status_t stat{};
+  zx_status_t status = web_engine_services_dir->GetAttr(&stat, &attributes);
+  ZX_CHECK(status == ZX_OK, status);
+
+  return web_engine_services_dir.Unbind();
 }
 
 }  // namespace

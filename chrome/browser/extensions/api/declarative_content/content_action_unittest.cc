@@ -20,6 +20,7 @@
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/user_script_manager.h"
 #include "extensions/common/api/declarative/declarative_constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -37,6 +38,7 @@ namespace {
 using base::test::ParseJson;
 using testing::HasSubstr;
 using ContentActionType = declarative_content_constants::ContentActionType;
+using extensions::mojom::ManifestLocation;
 
 std::unique_ptr<base::DictionaryValue> SimpleManifest() {
   return DictionaryBuilder()
@@ -57,8 +59,10 @@ class RequestContentScriptTest : public ExtensionServiceTestBase {
   // issue is fixed.
   virtual void Init() {
     InitializeEmptyExtensionService();
-    static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile()))->
-        SetReady();
+    auto* extension_system =
+        static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile()));
+    extension_system->CreateUserScriptManager();
+    extension_system->SetReady();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -117,7 +121,7 @@ TEST(DeclarativeContentActionTest, ShowActionWithoutAction) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
           .SetManifest(manifest.Build())
-          .SetLocation(Manifest::COMPONENT)
+          .SetLocation(ManifestLocation::kComponent)
           .Build();
   env.GetExtensionService()->AddExtension(extension.get());
 
@@ -146,7 +150,7 @@ TEST_P(ParameterizedDeclarativeContentActionTest, ShowAction) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
           .SetAction(GetParam())
-          .SetLocation(Manifest::INTERNAL)
+          .SetLocation(ManifestLocation::kInternal)
           .Build();
 
   env.GetExtensionService()->AddExtension(extension.get());

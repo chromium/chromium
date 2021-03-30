@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "ui/base/accelerators/accelerator.h"
 
 namespace base {
@@ -21,7 +20,7 @@ class Command {
  public:
   Command();
   Command(const std::string& command_name,
-          const base::string16& description,
+          const std::u16string& description,
           const std::string& accelerator,
           bool global);
   Command(const Command& other);
@@ -48,12 +47,12 @@ class Command {
   bool Parse(const base::DictionaryValue* command,
              const std::string& command_name,
              int index,
-             base::string16* error);
+             std::u16string* error);
 
   // Accessors:
   const std::string& command_name() const { return command_name_; }
   const ui::Accelerator& accelerator() const { return accelerator_; }
-  const base::string16& description() const { return description_; }
+  const std::u16string& description() const { return description_; }
   bool global() const { return global_; }
 
   // Setter:
@@ -67,7 +66,7 @@ class Command {
  private:
   std::string command_name_;
   ui::Accelerator accelerator_;
-  base::string16 description_;
+  std::u16string description_;
   bool global_;
 };
 

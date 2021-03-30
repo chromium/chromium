@@ -7,11 +7,14 @@ package org.chromium.chrome.browser.tab;
 import android.os.SystemClock;
 import android.text.format.DateUtils;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.net.NetError;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 /**
@@ -293,6 +296,11 @@ public class TabUma extends EmptyTabObserver implements UserData {
             //            renderer crashes and start to track that.
             mRestoreStartedAtMillis = -1;
         }
+    }
+
+    @Override
+    public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
+        // Intentionally do nothing to prevent automatic observer removal on detachment.
     }
 
     private static void increaseTabShowCount() {

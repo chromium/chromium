@@ -25,6 +25,7 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
 
@@ -84,7 +85,7 @@ void CriticalNotificationBubbleView::OnCountdown() {
   GetBubbleFrameView()->UpdateWindowTitle();
 }
 
-base::string16 CriticalNotificationBubbleView::GetWindowTitle() const {
+std::u16string CriticalNotificationBubbleView::GetWindowTitle() const {
   const auto remaining_time = GetRemainingTime();
   return remaining_time > base::TimeDelta()
              ? l10n_util::GetPluralStringFUTF16(IDS_CRITICAL_NOTIFICATION_TITLE,
@@ -145,3 +146,6 @@ void CriticalNotificationBubbleView::ViewHierarchyChanged(
   if (details.is_add && details.child == this)
     NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
 }
+
+BEGIN_METADATA(CriticalNotificationBubbleView, views::BubbleDialogDelegateView)
+END_METADATA

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -16,6 +17,7 @@
 #include "base/stl_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "chrome/browser/media_galleries/fileapi/media_file_system_backend.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -130,7 +132,7 @@ class MediaFileValidatorTest : public InProcessBrowserTest {
         std::make_unique<storage::TestFileSystemBackend>(
             file_system_runner_.get(), src_path));
     additional_providers.push_back(
-        std::make_unique<MediaFileSystemBackend>(base));
+        std::make_unique<MediaFileSystemBackend>(base, base::NullCallback()));
     file_system_context_ =
         storage::CreateFileSystemContextWithAdditionalProvidersForTesting(
             content::GetIOThreadTaskRunner({}).get(), file_system_runner_.get(),
@@ -148,7 +150,7 @@ class MediaFileValidatorTest : public InProcessBrowserTest {
     ASSERT_TRUE(base::CreateDirectory(dest_path));
     dest_fs_ =
         storage::IsolatedContext::GetInstance()->RegisterFileSystemForPath(
-            storage::kFileSystemTypeNativeMedia, std::string(), dest_path,
+            storage::kFileSystemTypeLocalMedia, std::string(), dest_path,
             nullptr);
 
     size_t extension_index = filename.find_last_of(".");
@@ -265,7 +267,13 @@ IN_PROC_BROWSER_TEST_F(MediaFileValidatorTest, UnsupportedExtension) {
   MoveTest("a.txt", std::string(kValidImage, base::size(kValidImage)), false);
 }
 
-IN_PROC_BROWSER_TEST_F(MediaFileValidatorTest, ValidImage) {
+// TODO(crbug.com/1169640): Re-enable. Flaky on Linux.
+#if defined(OS_LINUX)
+#define MAYBE_ValidImage DISABLED_ValidImage
+#else
+#define MAYBE_ValidImage ValidImage
+#endif
+IN_PROC_BROWSER_TEST_F(MediaFileValidatorTest, MAYBE_ValidImage) {
   MoveTest("a.webp", std::string(kValidImage, base::size(kValidImage)), true);
 }
 

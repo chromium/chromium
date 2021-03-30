@@ -9,10 +9,12 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/debug/crash_logging.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
+#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/traced_value.h"
@@ -42,6 +44,7 @@
 #endif
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_share_group.h"
+#include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/init/gl_factory.h"
 
@@ -96,6 +99,15 @@ void FormatAllocationSourcesForTracing(
       allocation_sources[GpuPeakMemoryAllocationSource::SHARED_IMAGE_STUB]);
   dict->SetInteger("SKIA",
                    allocation_sources[GpuPeakMemoryAllocationSource::SKIA]);
+}
+
+void SetCrashKeyTimeDelta(base::debug::CrashKeyString* key,
+                          base::TimeDelta time_delta) {
+  auto str = base::StringPrintf(
+      "%d hours, %d min, %lld sec, %lld ms", time_delta.InHours(),
+      time_delta.InMinutes() % 60, time_delta.InSeconds() % 60ll,
+      time_delta.InMilliseconds() % 1000ll);
+  base::debug::SetCrashKeyString(key, str);
 }
 
 }  // namespace
@@ -644,52 +656,22 @@ void GpuChannelManager::HandleMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  SCOPED_UMA_HISTOGRAM_TIMER(
-      "Memory.Experimental.GpuChannelManagerPressureHandlerDuration."
-      "TotalDuration");
-
-  if (program_cache_) {
-    SCOPED_UMA_HISTOGRAM_TIMER(
-        "Memory.Experimental.GpuChannelManagerPressureHandlerDuration."
-        "ProgramCacheHandleMemoryPressureDuration");
+  if (program_cache_)
     program_cache_->HandleMemoryPressure(memory_pressure_level);
-  }
 
   // These caches require a current context for cleanup.
   if (shared_context_state_ &&
       shared_context_state_->MakeCurrent(nullptr, true /* needs_gl */)) {
-    {
-      SCOPED_UMA_HISTOGRAM_TIMER(
-          "Memory.Experimental.GpuChannelManagerPressureHandlerDuration."
-          "DiscardableManagerHandleMemoryPressureDuration");
       discardable_manager_.HandleMemoryPressure(memory_pressure_level);
-    }
-    {
-      SCOPED_UMA_HISTOGRAM_TIMER(
-          "Memory.Experimental.GpuChannelManagerPressureHandlerDuration."
-          "PasshtroughDiscardableManagerHandleMemoryPressureDuration");
       passthrough_discardable_manager_.HandleMemoryPressure(
           memory_pressure_level);
-    }
-
-    SCOPED_UMA_HISTOGRAM_TIMER(
-        "Memory.Experimental.GpuChannelManagerPressureHandlerDuration."
-        "SharedContextStatePurgeMemoryDuration");
     shared_context_state_->PurgeMemory(memory_pressure_level);
   }
-  if (gr_shader_cache_) {
-    SCOPED_UMA_HISTOGRAM_TIMER(
-        "Memory.Experimental.GpuChannelManagerPressureHandlerDuration."
-        "GrShaderCachePurgeMemoryDuration");
+
+  if (gr_shader_cache_)
     gr_shader_cache_->PurgeMemory(memory_pressure_level);
-  }
 #if defined(OS_WIN)
-  {
-    SCOPED_UMA_HISTOGRAM_TIMER(
-        "Memory.Experimental.GpuChannelManagerPressureHandlerDuration."
-        "TrimD3DResourcesDuration");
-    TrimD3DResources();
-  }
+  TrimD3DResources();
 #endif
 }
 
@@ -712,9 +694,6 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
 #endif
   use_virtualized_gl_contexts |=
       gpu_driver_bug_workarounds_.use_virtualized_gl_contexts;
-  // MailboxManagerSync synchronization correctness currently depends on having
-  // only a single context. See crbug.com/510243 for details.
-  use_virtualized_gl_contexts |= mailbox_manager_->UsesSync();
 
   const bool use_passthrough_decoder =
       gles2::PassthroughCommandDecoderSupported() &&
@@ -739,9 +718,22 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
     gl::GLContextAttribs attribs = gles2::GenerateGLContextAttribs(
         ContextCreationAttribs(), use_passthrough_decoder);
 
+    // Disable robust resource initialization for raster decoder and compositor.
+    // TODO(crbug.com/1192632): disable robust_resource_initialization for
+    // SwANGLE.
+    if (gl::GLSurfaceEGL::GetDisplayType() != gl::ANGLE_SWIFTSHADER &&
+        features::IsUsingSkiaRenderer()) {
+      attribs.robust_resource_initialization = false;
+    }
+
     // Only skip validation if the GLContext will be used exclusively by the
-    // SharedContextState.
+    // SharedContextState and dcheck is off.
+#if DCHECK_IS_ON()
+    attribs.can_skip_validation = false;
+#else
     attribs.can_skip_validation = !use_virtualized_gl_contexts;
+#endif
+
     context =
         gl::init::CreateGLContext(share_group.get(), surface.get(), attribs);
     if (!context) {
@@ -828,6 +820,30 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
 
 void GpuChannelManager::OnContextLost(bool synthetic_loss) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  // Add crash keys for context lost count and time.
+  static auto* const lost_count_crash_key = base::debug::AllocateCrashKeyString(
+      "context-lost-count", base::debug::CrashKeySize::Size32);
+  // The context lost time since creation of |GpuChannelManager|.
+  static auto* const lost_time_crash_key = base::debug::AllocateCrashKeyString(
+      "context-lost-time", base::debug::CrashKeySize::Size64);
+  // The context lost interval since last context lost event.
+  static auto* const lost_interval_crash_key =
+      base::debug::AllocateCrashKeyString("context-lost-interval",
+                                          base::debug::CrashKeySize::Size64);
+
+  base::debug::SetCrashKeyString(
+      lost_count_crash_key, base::StringPrintf("%d", ++context_lost_count_));
+
+  auto lost_time = base::TimeTicks::Now() - creation_time_;
+  SetCrashKeyTimeDelta(lost_time_crash_key, lost_time);
+
+  if (!context_lost_time_.is_zero()) {
+    auto interval = lost_time - context_lost_time_;
+    SetCrashKeyTimeDelta(lost_interval_crash_key, interval);
+  }
+
+  context_lost_time_ = lost_time;
 
   if (synthetic_loss)
     return;

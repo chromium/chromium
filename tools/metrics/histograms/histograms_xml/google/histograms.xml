@@ -135,7 +135,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GoogleUpdate.MenuItem.ActionTakenAfterItemClicked"
-    enum="GoogleUpdateAfterItemClickedActions" expires_after="M85">
+    enum="GoogleUpdateAfterItemClickedActions" expires_after="2021-08-25">
+  <owner>dtrainor@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
     (Android-only) Records whether Chrome was updated after the update menu item
@@ -144,7 +146,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GoogleUpdate.MenuItem.ActionTakenOnMenuOpen"
-    enum="GoogleUpdateMenuItemActions" expires_after="M85">
+    enum="GoogleUpdateMenuItemActions" expires_after="2021-08-25">
+  <owner>dtrainor@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
     (Android-only) Records whether the update menu item was clicked when the app

@@ -53,7 +53,7 @@ void BrowserStateDependencyManager::DoCreateBrowserStateServices(
     web::BrowserState* context,
     bool is_testing_context) {
   TRACE_EVENT0("browser",
-               "BrowserStateDependencyManager::DoCreateBrowserStateServices")
+               "BrowserStateDependencyManager::DoCreateBrowserStateServices");
   DependencyManager::CreateContextServices(context, is_testing_context);
 }
 

@@ -159,8 +159,8 @@ TetherComponentImpl::TetherComponentImpl(
           synchronous_shutdown_object_container_->active_host(),
           synchronous_shutdown_object_container_->host_scan_cache())) {
   crash_recovery_manager_->RestorePreCrashStateIfNecessary(
-      base::Bind(&TetherComponentImpl::OnPreCrashStateRestored,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&TetherComponentImpl::OnPreCrashStateRestored,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 TetherComponentImpl::~TetherComponentImpl() = default;
@@ -218,7 +218,7 @@ void TetherComponentImpl::InitiateShutdown() {
                     << "\".";
     tether_disconnector->DisconnectFromNetwork(
         active_host->GetTetherNetworkGuid(), base::DoNothing(),
-        base::Bind(&OnDisconnectErrorDuringShutdown),
+        base::BindOnce(&OnDisconnectErrorDuringShutdown),
         GetSessionCompletionReasonFromShutdownReason(shutdown_reason_));
   }
 
@@ -229,8 +229,8 @@ void TetherComponentImpl::InitiateShutdown() {
 
   // Start the shutdown process for objects which shutdown asynchronously.
   asynchronous_shutdown_object_container_->Shutdown(
-      base::Bind(&TetherComponentImpl::OnShutdownComplete,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&TetherComponentImpl::OnShutdownComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TetherComponentImpl::OnShutdownComplete() {

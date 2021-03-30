@@ -22,8 +22,6 @@
 
 namespace syncer {
 
-class CryptoSyncPrefs;
-
 // This class functions as mostly independent component of SyncService that
 // handles things related to encryption, including holding lots of state and
 // encryption communications with the sync thread.
@@ -31,14 +29,12 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
                           public DataTypeEncryptionHandler,
                           public TrustedVaultClient::Observer {
  public:
-  // |sync_prefs| must not be null and must outlive this object.
   // |trusted_vault_client| may be null, but if non-null, the pointee must
   // outlive this object.
   SyncServiceCrypto(
       const base::RepeatingClosure& notify_observers,
       const base::RepeatingClosure& notify_required_user_action_changed,
       const base::RepeatingCallback<void(ConfigureReason)>& reconfigure,
-      CryptoSyncPrefs* sync_prefs,
       TrustedVaultClient* trusted_vault_client);
   ~SyncServiceCrypto() override;
 
@@ -146,10 +142,6 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   const base::RepeatingClosure notify_required_user_action_changed_;
 
   const base::RepeatingCallback<void(ConfigureReason)> reconfigure_;
-
-  // A pointer to the crypto-relevant sync prefs. Never null and guaranteed to
-  // outlive us.
-  CryptoSyncPrefs* const sync_prefs_;
 
   // Never null and guaranteed to outlive us.
   TrustedVaultClient* const trusted_vault_client_;

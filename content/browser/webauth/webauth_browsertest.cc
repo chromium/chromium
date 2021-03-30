@@ -18,6 +18,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webauth/authenticator_environment_impl.h"
 #include "content/browser/webauth/authenticator_impl.h"
@@ -113,7 +114,7 @@ constexpr char kRelyingPartyRpIconUrlSecurityErrorMessage[] =
 constexpr char kAbortErrorMessage[] =
     "webauth: AbortError: Request has been aborted.";
 
-constexpr char kGetFeaturePolicyMissingMessage[] =
+constexpr char kGetPermissionsPolicyMissingMessage[] =
     "webauth: NotAllowedError: The 'publickey-credentials-get' feature is "
     "not enabled in this document. Permissions Policy may be used to delegate "
     "Web Authentication capabilities to cross-origin child frames.";
@@ -405,8 +406,6 @@ class WebAuthBrowserTestBase : public content::ContentBrowserTest {
  protected:
   WebAuthBrowserTestBase() = default;
 
-  virtual std::vector<base::Feature> GetFeaturesToEnable() { return {}; }
-
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
 
@@ -448,13 +447,11 @@ class WebAuthBrowserTestBase : public content::ContentBrowserTest {
 
  private:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_feature_list_.InitWithFeatures(GetFeaturesToEnable(), {});
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   std::unique_ptr<WebAuthBrowserTestContentBrowserClient> test_client_;
   WebAuthBrowserTestState test_state_;
@@ -521,7 +518,8 @@ class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
         /*hmac_create_secret=*/false, /*prf_enable=*/false,
         blink::mojom::ProtectionPolicy::UNSPECIFIED,
         /*enforce_protection_policy=*/false, /*appid_exclude=*/base::nullopt,
-        /*cred_props=*/false, device::LargeBlobSupport::kNotRequested);
+        /*cred_props=*/false, device::LargeBlobSupport::kNotRequested,
+        /*is_payment_credential_creation=*/false);
 
     return mojo_options;
   }
@@ -540,9 +538,10 @@ class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
 
     std::vector<uint8_t> kTestChallenge{0, 0, 0};
     auto mojo_options = blink::mojom::PublicKeyCredentialRequestOptions::New(
-        kTestChallenge, base::TimeDelta::FromSeconds(30), "acme.com",
-        std::move(credentials), device::UserVerificationRequirement::kPreferred,
-        base::nullopt, std::vector<device::CableDiscoveryData>(), /*prf=*/false,
+        /*is_conditional=*/false, kTestChallenge,
+        base::TimeDelta::FromSeconds(30), "acme.com", std::move(credentials),
+        device::UserVerificationRequirement::kPreferred, base::nullopt,
+        std::vector<device::CableDiscoveryData>(), /*prf=*/false,
         /*prf_inputs=*/std::vector<blink::mojom::PRFValuesPtr>(),
         /*large_blob_read=*/false, /*large_blob_write=*/base::nullopt);
     return mojo_options;
@@ -660,6 +659,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBrowserTest,
 
           if (behavior == AttestationCallbackBehavior::BEFORE_NAVIGATION) {
             std::move(callback).Run(false);
+            // Silence the erroneous bugprone-use-after-move.
+            callback = base::OnceCallback<void(bool)>();
           }
           EXPECT_TRUE(NavigateToURL(
               shell(), GetHttpsURL("www.acme.com", "/title2.html")));
@@ -801,11 +802,6 @@ class WebAuthJavascriptClientBrowserTest : public WebAuthBrowserTestBase {
  public:
   WebAuthJavascriptClientBrowserTest() = default;
   ~WebAuthJavascriptClientBrowserTest() override = default;
-
- protected:
-  std::vector<base::Feature> GetFeaturesToEnable() override {
-    return {device::kWebAuthGetAssertionFeaturePolicy};
-  }
 
  private:
   DISALLOW_COPY_AND_ASSIGN(WebAuthJavascriptClientBrowserTest);
@@ -994,7 +990,17 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
 // signal's aborted flag set after sending request, we get an AbortError.
 IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
                        CreatePublicKeyCredentialWithAbortSetAfterCreate) {
-  InjectVirtualFidoDeviceFactory();
+  // This test sends the abort signal after making the WebAuthn call. However,
+  // the WebAuthn call could complete before the abort signal is sent, leading
+  // to a flakey test. Thus the |simulate_press_callback| is installed and
+  // always returns false, to ensure that the VirtualFidoDevice stalls the
+  // WebAuthn call and the abort signal will happen in time.
+  device::test::VirtualFidoDeviceFactory* virtual_device_factory =
+      InjectVirtualFidoDeviceFactory();
+  virtual_device_factory->mutable_state()->simulate_press_callback =
+      base::BindRepeating(
+          [](device::VirtualFidoDevice*) -> bool { return false; });
+
   CreateParameters parameters;
   parameters.signal = "authAbortSignal";
   std::string result;
@@ -1110,7 +1116,17 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
 // signal's aborted flag set after sending request, we get an AbortError.
 IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
                        GetPublicKeyCredentialWithAbortSetAfterGet) {
-  InjectVirtualFidoDeviceFactory();
+  // This test sends the abort signal after making the WebAuthn call. However,
+  // the WebAuthn call could complete before the abort signal is sent, leading
+  // to a flakey test. Thus the |simulate_press_callback| is installed and
+  // always returns false, to ensure that the VirtualFidoDevice stalls the
+  // WebAuthn call and the abort signal will happen in time.
+  device::test::VirtualFidoDeviceFactory* virtual_device_factory =
+      InjectVirtualFidoDeviceFactory();
+  virtual_device_factory->mutable_state()->simulate_press_callback =
+      base::BindRepeating(
+          [](device::VirtualFidoDevice*) -> bool { return false; });
+
   GetParameters parameters;
   parameters.signal = "authAbortSignal";
   std::string result;
@@ -1243,7 +1259,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
     if (test.get_should_work) {
       EXPECT_EQ(std::string(kOkMessage), result);
     } else {
-      EXPECT_EQ(kGetFeaturePolicyMissingMessage, result);
+      EXPECT_EQ(kGetPermissionsPolicyMissingMessage, result);
     }
   }
 }
@@ -1299,6 +1315,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
 
           if (behavior == AttestationCallbackBehavior::BEFORE_NAVIGATION) {
             std::move(callback).Run(true);
+            // Silence the erroneous bugprone-use-after-move.
+            callback = base::OnceCallback<void(bool)>();
           }
           // Can't use NavigateIframeToURL here because in the
           // BEFORE_NAVIGATION case we are racing AuthenticatorImpl and
@@ -1491,7 +1509,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBackForwardCacheBrowserTest,
   EXPECT_TRUE(tester_.IsDisabledForFrameWithReason(
       shell()->web_contents()->GetMainFrame()->GetProcess()->GetID(),
       shell()->web_contents()->GetMainFrame()->GetRoutingID(),
-      "WebAuthenticationAPI"));
+      BackForwardCacheDisable::DisabledReason(
+          BackForwardCacheDisable::DisabledReasonId::kWebAuthenticationAPI)));
 }
 
 // WebAuthBrowserCtapTest ----------------------------------------------

@@ -6,12 +6,13 @@
 
 #include <stdint.h>
 
+#include <string>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
-#include "base/strings/string16.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/public/android/content_jni_headers/NavigationControllerImpl_jni.h"
@@ -93,7 +94,7 @@ class MapData : public base::SupportsUserData::Data {
     return map_data;
   }
 
-  base::flat_map<std::string, base::string16>& map() { return map_; }
+  base::flat_map<std::string, std::u16string>& map() { return map_; }
 
   // base::SupportsUserData::Data:
   std::unique_ptr<Data> Clone() override {
@@ -103,7 +104,7 @@ class MapData : public base::SupportsUserData::Data {
   }
 
  private:
-  base::flat_map<std::string, base::string16> map_;
+  base::flat_map<std::string, std::u16string> map_;
 
   DISALLOW_COPY_AND_ASSIGN(MapData);
 };
@@ -446,7 +447,7 @@ ScopedJavaLocalRef<jstring> NavigationControllerAndroid::GetEntryExtraData(
       MapData::Get(navigation_controller_->GetEntryAtIndex(index));
   auto iter = map_data->map().find(key);
   return ConvertUTF16ToJavaString(
-      env, iter == map_data->map().end() ? base::string16() : iter->second);
+      env, iter == map_data->map().end() ? std::u16string() : iter->second);
 }
 
 void NavigationControllerAndroid::SetEntryExtraData(
@@ -459,7 +460,7 @@ void NavigationControllerAndroid::SetEntryExtraData(
     return;
 
   std::string key = base::android::ConvertJavaStringToUTF8(env, jkey);
-  base::string16 value = base::android::ConvertJavaStringToUTF16(env, jvalue);
+  std::u16string value = base::android::ConvertJavaStringToUTF16(env, jvalue);
   MapData* map_data =
       MapData::Get(navigation_controller_->GetEntryAtIndex(index));
   map_data->map()[key] = value;

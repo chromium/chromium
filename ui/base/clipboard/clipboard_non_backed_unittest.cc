@@ -5,12 +5,27 @@
 #include "ui/base/clipboard/clipboard_non_backed.h"
 
 #include <memory>
+#include <string>
+#include <vector>
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_data.h"
+#include "ui/base/ui_base_features.h"
 
 namespace ui {
+namespace {
+
+std::vector<std::string> UTF8Types(std::vector<std::u16string> types) {
+  std::vector<std::string> result;
+  for (const std::u16string& type : types)
+    result.push_back(base::UTF16ToUTF8(type));
+  return result;
+}
+
+}  // namespace
 
 class ClipboardNonBackedTest : public testing::Test {
  public:
@@ -72,6 +87,44 @@ TEST_F(ClipboardNonBackedTest, AdminWriteDoesNotRecordHistograms) {
 
   histogram_tester.ExpectTotalCount("Clipboard.Read", 0);
   histogram_tester.ExpectTotalCount("Clipboard.Write", 0);
+}
+
+// Tests that site bookmark URLs are accessed as text, and
+// IsFormatAvailable('text/uri-list') is only true for files.
+TEST_F(ClipboardNonBackedTest, TextURIList) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({features::kClipboardFilenames}, {});
+  EXPECT_EQ("text/uri-list", ClipboardFormatType::GetFilenamesType().GetName());
+
+  auto data = std::make_unique<ClipboardData>();
+  data->set_bookmark_url("http://example.com");
+  clipboard()->WriteClipboardData(std::move(data));
+  std::vector<std::u16string> types;
+  clipboard()->ReadAvailableTypes(ClipboardBuffer::kCopyPaste,
+                                  /*data_dst=*/nullptr, &types);
+
+  // With bookmark data, available types should be only 'text/plain'.
+  EXPECT_EQ(std::vector<std::string>({"text/plain"}), UTF8Types(types));
+  EXPECT_TRUE(clipboard()->IsFormatAvailable(ClipboardFormatType::GetUrlType(),
+                                             ClipboardBuffer::kCopyPaste,
+                                             /*data_dst=*/nullptr));
+  EXPECT_FALSE(clipboard()->IsFormatAvailable(
+      ClipboardFormatType::GetFilenamesType(), ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr));
+
+  // With filenames data, available types should be 'text/uri-list'.
+  data = std::make_unique<ClipboardData>();
+  data->set_filenames({FileInfo(base::FilePath("/path"), base::FilePath())});
+  clipboard()->WriteClipboardData(std::move(data));
+  clipboard()->ReadAvailableTypes(ClipboardBuffer::kCopyPaste,
+                                  /*data_dst=*/nullptr, &types);
+  EXPECT_EQ(std::vector<std::string>({"text/uri-list"}), UTF8Types(types));
+  EXPECT_FALSE(clipboard()->IsFormatAvailable(ClipboardFormatType::GetUrlType(),
+                                              ClipboardBuffer::kCopyPaste,
+                                              /*data_dst=*/nullptr));
+  EXPECT_TRUE(clipboard()->IsFormatAvailable(
+      ClipboardFormatType::GetFilenamesType(), ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr));
 }
 
 }  // namespace ui

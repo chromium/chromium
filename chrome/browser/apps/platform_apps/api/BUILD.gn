@@ -53,6 +53,7 @@ source_set("api") {
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/platform_apps/api/music_manager_private",
     "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chrome/common/apps/platform_apps",
     "//chrome/common/apps/platform_apps/api",

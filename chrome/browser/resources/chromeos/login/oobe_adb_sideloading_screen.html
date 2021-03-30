@@ -2,47 +2,44 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
+<link rel="import" href="chrome://resources/html/polymer.html">
+
 <link rel="import" href="chrome://resources/html/action_link.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 
 <link rel="import" href="/components/common_styles.html">
-<link rel="import" href="/components/hd_iron_icon.html">
-<link rel="import" href="/components/oobe_dialog.html">
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
+<link rel="import" href="/components/oobe_dialog_host_behavior.html">
+<link rel="import" href="/components/login_screen_behavior.html">
+<link rel="import" href="/components/multi_step_behavior.html">
 
 <dom-module id="oobe-adb-sideloading-element">
   <template>
-    <link rel="stylesheet" href="chrome://resources/css/throbber.css">
-    <style include="oobe-dialog-host">
-      a {
-        color: var(--google-blue-600);
-      }
-    </style>
+    <style include="oobe-dialog-host"></style>
 
     <!-- Dialog for normal confirmation -->
-    <oobe-dialog id="enableAdbSideloadDialog" role="dialog" has-buttons
+    <oobe-adaptive-dialog id="enableAdbSideloadDialog" role="dialog"
         for-step="setup" footer-shrinkable
-        title-key="enableAdbSideloadingSetupTitle"
         aria-label$="[[i18nDynamic(locale, 'enableAdbSideloadingSetupTitle')]]">
-      <hd-iron-icon slot="oobe-icon"
-          icon1x="oobe-32:alert" icon2x="oobe-64:alert">
-      </hd-iron-icon>
-      <div slot="subtitle">
-        <div>
-          [[i18nDynamic(locale, 'enableAdbSideloadingSetupMessage')]]
-          <a on-click="onLearnMoreTap_" class="oobe-local-link"
-              is="action-link">
-            [[i18nDynamic(locale, 'enableAdbSideloadingLearnMore')]]
-          </a>
-        </div>
-      </div>
-      <div slot="footer" class="flex layout vertical center center-justified">
+      <iron-icon slot="icon" icon="oobe-32:alert"></iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'enableAdbSideloadingSetupTitle')]]
+      </h1>
+      <p slot="subtitle">
+        [[i18nDynamic(locale, 'enableAdbSideloadingSetupMessage')]]
+        <a on-click="onLearnMoreTap_" class="oobe-local-link"
+            is="action-link">
+          [[i18nDynamic(locale, 'enableAdbSideloadingLearnMore')]]
+        </a>
+      </p>
+      <div slot="content" class="flex layout vertical center center-justified">
         <img srcset="images/1x/arc_sideloading_illustration.svg 1x,
                      images/2x/arc_sideloading_illustration.svg 2x"
              class="oobe-illustration"
              alt="[[i18nDynamic(locale,
                     'enableAdbSideloadingIllustrationTitle')]]">
       </div>
-      <div slot="bottom-buttons" class="flex layout horizontal">
-        <div class="flex"></div>
+      <div slot="bottom-buttons">
         <oobe-text-button border on-click="onCancelTap_"
             text-key="enableAdbSideloadingCancelButton"
             id="enable-adb-sideloading-cancel-button"></oobe-text-button>
@@ -50,34 +47,33 @@
             text-key="enableAdbSideloadingConfirmButton"
             id="enable-adb-sideloading-ok-button"></oobe-text-button>
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
 
     <!-- Dialog for error -->
-    <oobe-dialog id="enableAdbSideloadErrorDialog" role="dialog" has-buttons
+    <oobe-adaptive-dialog id="enableAdbSideloadErrorDialog" role="dialog"
         for-step="error" footer-shrinkable
-        title-key="enableAdbSideloadingErrorTitle"
         aria-label$="[[i18nDynamic(locale, 'enableAdbSideloadingSetupTitle')]]">
-      <hd-iron-icon slot="oobe-icon"
-          icon1x="oobe-32:alert" icon2x="oobe-64:alert">
-      </hd-iron-icon>
-      <div slot="subtitle">
+      <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'enableAdbSideloadingErrorTitle')]]
+      </h1>
+      <p slot="subtitle">
         [[i18nDynamic(locale, 'enableAdbSideloadingErrorMessage')]]
         <a on-click="onLearnMoreTap_" class="oobe-local-link" is="action-link">
           [[i18nDynamic(locale, 'enableAdbSideloadingLearnMore')]]
         </a>
-      </div>
-      <div slot="footer" class="flex layout vertical center center-justified">
-        <img srcset="images/1x/error_illustration.svg 1x,
-                     images/2x/error_illustration.svg 2x"
+      </p>
+      <div slot="content" class="flex layout vertical center center-justified">
+        <img srcset="images/1x/error.svg 1x,
+                     images/2x/error.svg 2x"
              class="oobe-illustration"
              alt="[[i18nDynamic(locale,
                     'enableAdbSideloadingErrorIllustrationTitle')]]">
       </div>
-      <div slot="bottom-buttons" class="flex layout horizontal">
-        <div class="flex"></div>
+      <div slot="bottom-buttons">
         <oobe-text-button inverse on-click="onCancelTap_" class="focus-on-show"
             text-key="enableAdbSideloadingOkButton"></oobe-text-button>
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
   </template>
 </dom-module>

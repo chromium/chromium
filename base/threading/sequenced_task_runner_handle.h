@@ -36,8 +36,7 @@ class BASE_EXPORT SequencedTaskRunnerHandle {
   ~SequencedTaskRunnerHandle();
 
  private:
-  // Friend needed for ThreadTaskRunnerHandle::OverrideForTesting().
-  friend class ThreadTaskRunnerHandle;
+  friend class ThreadTaskRunnerHandleOverride;
 
   scoped_refptr<SequencedTaskRunner> task_runner_;
 

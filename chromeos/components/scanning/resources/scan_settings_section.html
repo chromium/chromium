@@ -16,12 +16,15 @@
   }
 
   ::slotted([slot=label]) {
-    @apply --scanning-select-font;
-    color: var(--scanning-select-text-color);
+    color: var(--scanning-scan-setting-text-color);
     flex: none;
     flex-basis: 68px;
     flex-grow: 0;
     flex-shrink: 0;
+    font-family: var(--scanning-scan-setting-font-family);
+    font-size: var(--scanning-scan-setting-font-size);
+    font-weight: var(--scanning-regular-font-weight);
+    line-height: var(--scanning-scan-setting-line-height);
     padding-inline-end: 20px;
     word-break: break-word;
   }

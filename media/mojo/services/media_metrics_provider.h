@@ -95,15 +95,17 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
     bool video_decoder_changed = false;
     AudioCodec audio_codec;
     VideoCodec video_codec;
-    PipelineDecoderInfo video_pipeline_info;
-    PipelineDecoderInfo audio_pipeline_info;
+    VideoDecoderInfo video_pipeline_info;
+    AudioDecoderInfo audio_pipeline_info;
     PipelineStatus last_pipeline_status = PIPELINE_OK;
   };
 
   // mojom::MediaMetricsProvider implementation:
-  void Initialize(bool is_mse, mojom::MediaURLScheme url_scheme) override;
+  void Initialize(bool is_mse,
+                  mojom::MediaURLScheme url_scheme,
+                  mojom::MediaStreamType media_stream_type) override;
   void OnError(PipelineStatus status) override;
-  void SetAudioPipelineInfo(const PipelineDecoderInfo& info) override;
+  void SetAudioPipelineInfo(const AudioDecoderInfo& info) override;
   void SetContainerName(
       container_names::MediaContainerName container_name) override;
   void SetHasAudio(AudioCodec audio_codec) override;
@@ -114,7 +116,7 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
   void SetTimeToMetadata(base::TimeDelta elapsed) override;
   void SetTimeToFirstFrame(base::TimeDelta elapsed) override;
   void SetTimeToPlayReady(base::TimeDelta elapsed) override;
-  void SetVideoPipelineInfo(const PipelineDecoderInfo& info) override;
+  void SetVideoPipelineInfo(const VideoDecoderInfo& info) override;
 
   void AcquireWatchTimeRecorder(
       mojom::PlaybackPropertiesPtr properties,
@@ -152,6 +154,7 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
   bool initialized_ = false;
   bool is_mse_;
   mojom::MediaURLScheme url_scheme_;
+  mojom::MediaStreamType media_stream_type_;
 
   base::TimeDelta time_to_metadata_ = kNoTimestamp;
   base::TimeDelta time_to_first_frame_ = kNoTimestamp;

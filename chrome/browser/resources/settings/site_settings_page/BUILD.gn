@@ -19,9 +19,9 @@ js_type_check("closure_compile_module") {
 js_library("recent_site_permissions") {
   deps = [
     "..:route",
-    "..:router.m",
-    "../people_page:sync_browser_proxy.m",
-    "../prefs:prefs_behavior.m",
+    "..:router",
+    "../people_page:sync_browser_proxy",
+    "../prefs:prefs_behavior",
     "../site_settings:constants",
     "../site_settings:site_settings_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -33,7 +33,7 @@ js_library("recent_site_permissions") {
 
 js_library("site_settings_list") {
   deps = [
-    "..:router.m",
+    "..:router",
     "../site_settings:constants",
     "../site_settings:site_settings_prefs_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -49,7 +49,7 @@ js_library("site_settings_page") {
     ":recent_site_permissions",
     ":site_settings_list",
     "..:route",
-    "..:router.m",
+    "..:router",
     "../site_settings:constants",
     "../site_settings:site_settings_prefs_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

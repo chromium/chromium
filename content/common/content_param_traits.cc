@@ -17,11 +17,11 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/ip_endpoint.h"
 #include "services/network/public/cpp/net_ipc_param_traits.h"
-#include "third_party/blink/public/common/feature_policy/feature_policy.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/messaging/message_port_descriptor.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
-#include "third_party/blink/public/mojom/feature_policy/policy_value.mojom.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom.h"
 #include "ui/accessibility/ax_mode.h"
 
 namespace IPC {
@@ -178,12 +178,12 @@ struct ParamTraits<blink::mojom::SerializedBlobPtr> {
 
 template <>
 struct ParamTraits<
-    mojo::PendingRemote<blink::mojom::NativeFileSystemTransferToken>> {
+    mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>> {
   using param_type =
-      mojo::PendingRemote<blink::mojom::NativeFileSystemTransferToken>;
+      mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>;
   static void Write(base::Pickle* m, const param_type& p) {
     // Move the Mojo pipe to serialize the
-    // PendingRemote<NativeFileSystemTransferToken> for a postMessage() target.
+    // PendingRemote<FileSystemAccessTransferToken> for a postMessage() target.
     WriteParam(m, const_cast<param_type&>(p).PassPipe().release());
   }
 
@@ -194,9 +194,9 @@ struct ParamTraits<
     if (!ReadParam(m, iter, &handle)) {
       return false;
     }
-    *r = mojo::PendingRemote<blink::mojom::NativeFileSystemTransferToken>(
+    *r = mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>(
         mojo::ScopedMessagePipeHandle(handle),
-        blink::mojom::NativeFileSystemTransferToken::Version_);
+        blink::mojom::FileSystemAccessTransferToken::Version_);
     return true;
   }
 };

@@ -1,3 +1,4 @@
+set noparent
 blundell@chromium.org
 caitkp@chromium.org
 jochen@chromium.org
@@ -15,6 +16,7 @@ per-file browsing_data_strings.grdp=file://components/browsing_data/OWNERS
 per-file crash_strings.grdp=file://components/crash/OWNERS
 per-file dom_distiller_strings.grdp=file://components/dom_distiller/OWNERS
 per-file error_page_strings.grdp=file://components/error_page/OWNERS
+per-file heavy_ad_intervention_strings.grdp=file://components/heavy_ad_intervention/OWNERS
 per-file javascript_dialogs_strings.grdp=file://components/javascript_dialogs/OWNERS
 per-file management_mobile_strings.grdp=file://components/management/OWNERS
 per-file management_strings.grdp=file://docs/privacy/OWNERS
@@ -36,6 +38,7 @@ per-file reset_password_strings.grdp=file://components/safe_browsing/OWNERS
 per-file security_interstitials_strings.grdp=file://components/security_interstitials/OWNERS
 per-file security_state_strings.grdp=file://components/security_state/OWNERS
 per-file send_tab_to_self_strings.grdp=file://components/send_tab_to_self/OWNERS
+per-file sms_strings.grdp=file://content/browser/sms/OWNERS
 per-file ssl_errors_strings.grdp=file://components/ssl_errors/OWNERS
 per-file subresource_filter_strings.grdp=file://components/subresource_filter/OWNERS
 per-file sync_ui_strings.grdp=file://components/sync/OWNERS
@@ -49,6 +52,9 @@ per-file webxr_strings.grdp=file://components/webxr/OWNERS
 # For web_dev_style related changes.
 per-file .eslintrc.js=file://ui/webui/PLATFORM_OWNERS
 per-file PRESUBMIT.py=file://ui/webui/PLATFORM_OWNERS
+
+# For adding or removing languages.
+per-file *.grd=claudiomagni@chromium.org
 
 # Translation artifacts:
 per-file *.xtb=file://tools/translation/TRANSLATION_OWNERS

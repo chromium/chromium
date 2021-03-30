@@ -4,7 +4,7 @@
 
 #include "chromeos/services/chromebox_for_meetings/public/cpp/appid_util.h"
 
-#include <base/containers/contains.h>
+#include "base/containers/contains.h"
 
 namespace chromeos {
 namespace cfm {

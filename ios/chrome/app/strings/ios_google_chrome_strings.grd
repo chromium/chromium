@@ -26,7 +26,6 @@ locale.  The strings in this file are specific to iOS.
     <output filename="ios_google_chrome_strings_es-MX.pak" type="data_package" lang="es-419" />
     <output filename="ios_google_chrome_strings_et.pak" type="data_package" lang="et" />
     <output filename="ios_google_chrome_strings_fa.pak" type="data_package" lang="fa" />
-    <output filename="ios_google_chrome_strings_fake-bidi.pak" type="data_package" lang="fake-bidi" />
     <output filename="ios_google_chrome_strings_fi.pak" type="data_package" lang="fi" />
     <output filename="ios_google_chrome_strings_fil.pak" type="data_package" lang="fil" />
     <output filename="ios_google_chrome_strings_fr.pak" type="data_package" lang="fr" />
@@ -67,6 +66,10 @@ locale.  The strings in this file are specific to iOS.
     <output filename="ios_google_chrome_strings_vi.pak" type="data_package" lang="vi" />
     <output filename="ios_google_chrome_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
     <output filename="ios_google_chrome_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+
+    <!-- Pseudolocales -->
+    <output filename="ios_google_chrome_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="ios_google_chrome_strings_en-XA.pak" type="data_package" lang="en-XA" />
   </outputs>
   <translations>
     <file path="resources/ios_google_chrome_strings_af.xtb" lang="af" />
@@ -151,7 +154,7 @@ locale.  The strings in this file are specific to iOS.
     <file path="resources/ios_google_chrome_strings_zh-TW.xtb" lang="zh-TW" />
     <file path="resources/ios_google_chrome_strings_zu.xtb" lang="zu" />
   </translations>
-  <release seq="1" allow_pseudo="false">
+  <release seq="1">
     <messages fallback_to_english="true">
       <message name="IDS_IOS_ABOUT_PRODUCT_NAME" desc="The menu item to access information about the application.">
         About Google Chrome
@@ -184,17 +187,35 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_DEFAULT_BROWSER_TITLE" desc="Title of the default browser promotion modal. [iOS only]">
         Make Chrome Your Default
       </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_TITLE_CTA_EXPERIMENT_OPEN_LINKS" desc="Title of the default browser promotion modal. [iOS only]">
+        Use Chrome to Open Links
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_TITLE_CTA_EXPERIMENT_SWITCH" desc="Title of the default browser promotion modal. [iOS only]">
+        Switch to Chrome
+      </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_DESCRIPTION" desc="Description of the default browser promotion modal. [iOS only]">
-        To make Chrome your default, Open Settings, tap Default Browser App, and select Chrome.
+        To make Chrome your default browser, open Settings. Tap Default Browser App, and then select Chrome.
       </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_LEARN_MORE_MESSAGE" desc="Message when the user taps the addition information button in the default browser promotion modal. [iOS only]">
           You can now use Chrome any time you tap links in messages, documents, and other apps.
       </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_LEARN_MORE_INSTRUCTIONS_MESSAGE" desc="Description to user about how to reach the default browser setting in their device. [iOS only]">
+          To make Chrome your default:
+  1. Open Settings
+  2. Tap Default Browser App
+  3. Select Chrome.
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_LEARN_MORE_INSTRUCTIONS_MESSAGE_CTA_EXPERIMENT" desc="Description to user about how to reach the default browser setting in their device. [iOS only]">
+        You can now use Chrome any time you tap on links in messages, documents, and other apps.
+      </message>
       <message name="IDS_IOS_DISCONNECT_DIALOG_TITLE" desc="The title of the disconnect dialog [Length: 30em].">
         Sign out of Chrome?
       </message>
+     <message name="IDS_IOS_DISCONNECT_DIALOG_SYNCING_FOOTER_INFO_MOBILE" desc="The information text on the disconnect footer describing signout for non-managed accounts [Length: 400em].">
+       When you sign out, Chrome won't sync any new data to your Google Account. Data previously synced stays in the account.
+      </message>
       <message name="IDS_IOS_ENTERPRISE_SIGNED_OUT_SUBTEXT" desc="Text displayed in an alert when the user is signed out due to browser sign-in becoming disabled by policy. [iOS only]">
-        When you were signed out of Chrome, your bookmarks, history, passwords and other settings were cleared from this device. Your synced Chrome data is still saved to your Google account.
+        You can still see all your bookmarks, history, passwords and other settings on this device. If you make changes, they won't sync to your Google Account.
       </message>
       <message name="IDS_IOS_FACE_ID_USAGE_DESCRIPTION" desc="Specifies the reason for using the device's Face ID capabilities.">
         Chrome uses Face ID to ensure authorized access to your passwords.
@@ -217,14 +238,14 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_INCOGNITO_REAUTH_SET_UP_SYSTEM_DIALOG_REASON" desc="Text for system biometric authentication dialog to explain why authentication is required when the user attempts to enable the setting to protect incognito tabs with biometric auth. [iOS only]">
        Let Chrome lock your Incognito tabs.
       </message>
-      <message name="IDS_IOS_LOCATION_AUTHORIZATION_ALERT" desc="Specifies the reason for sending the user's location to Google [Length: unlimited] [iOS only].">
-          Get a better Google experience in Chrome based on your location.
+      <message name="IDS_IOS_INCOGNITO_REAUTH_SETTING_NAME" desc="Name of the Setting to protect incognito tabs with biometric authentication, e.g. Face ID or Touch ID. [iOS only]">
+       Lock Incognito Tabs When You Close Chrome
       </message>
       <message name="IDS_IOS_LOCATION_MODAL_DESCRIPTION" desc="The description of the location permissions modal [Length: unlimited] [iOS only].">
-          If you allow Chrome to know your location, Chrome sends it to your default search engine and any sites that you allow. Sites may ask for your location when they have local info to show you, like nearby shops or news.
+          If you allow Chrome to know your location, Chrome sends it to any sites that you allow. Sites may ask for your location when they have local info to show you, like nearby shops or news.
       </message>
       <message name="IDS_IOS_LOCATION_WHEN_IN_USE_USAGE_DESCRIPTION" desc="Specifies the reason for accessing the user's location information while the app is in use [Length: unlimited] [iOS only].">
-        Get a better experience in Chrome based on your location.
+          Chrome shares your location with sites you allow.
       </message>
       <message name="IDS_IOS_LOGIN_ERROR_AUTHENTICATING_HOSTED" desc="Couldn't sign in because hosted account is used.">
         Your account does not work on Google Chrome. Please contact your domain administrator or use a regular Google Account to sign in.
@@ -318,6 +339,12 @@ locale.  The strings in this file are specific to iOS.
       </message>
       <message name="IDS_IOS_SIGN_IN_TO_CHROME_SETTING_TITLE" desc="The title for the setting item to Sign in to Chrome [iOS only]">
         Sign in to Chrome
+      </message>
+      <message name="IDS_IOS_SIGNOUT_DIALOG_TITLE_WITH_SYNCING_ACCOUNT" desc="The signout dialog title. This dialog is used when the user have a gmail account and sync is turned on [iOS only].">
+        Choose whether to clear your Chrome data from this device or keep it
+      </message>
+      <message name="IDS_IOS_SIGNOUT_DIALOG_TITLE_WITH_SYNCING_MANAGED_ACCOUNT" desc="The signout dialog title. This dialog is used when the user have a managed account (other than gmail account) [iOS only].">
+        Your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex></ph>, so your Chrome data will be cleared from this device
       </message>
       <message name="IDS_IOS_TAB_SWITCHER_NO_TABS_TO_SYNC_PROMO" desc="The title of the paragraph IDS_OPEN_TABS_NO_SESSION_INSTRUCTIONS_IOS. The paragraph explains that tabs opened on other devices where the user is signed in will appear here, in the Tab Switcher. [iOS only]">
         Use Chrome Everywhere

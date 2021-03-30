@@ -36,7 +36,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer4.Browser.RasterTaskTotalDuration"
-    units="microseconds" expires_after="2021-06-01">
+    units="microseconds" expires_after="2021-08-09">
   <owner>khushalsagar@chromium.org</owner>
   <owner>chrome-gpu@google.com</owner>
   <summary>
@@ -51,21 +51,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer4.CompositorTouchScrollUpdateThread"
-    enum="ScrollThread" expires_after="M85">
+    enum="ScrollThread" expires_after="M97">
   <owner>flackr@chromium.org</owner>
-  <summary>Whether the scroll from touch is executed on main thread.</summary>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Whether the scroll from touch is executed on main thread. Recorded once for
+    each scroll. Contains incomplete data from M85 to M89 inclusively.
+  </summary>
 </histogram>
 
 <histogram name="Renderer4.CompositorWheelScrollUpdateThread"
-    enum="ScrollThread" expires_after="M85">
+    enum="ScrollThread" expires_after="M97">
   <owner>flackr@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
   <summary>
-    Whether the scroll from mouse wheel is executed on main thread.
+    Whether the scroll from mouse wheel is executed on main thread. Recorded
+    once for each scroll. Contains incomplete data from M85 to M89 inclusively.
   </summary>
 </histogram>
 
 <histogram name="Renderer4.GpuImageDecodeState" enum="GpuImageUsageState"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>cblume@chromium.org</owner>
   <owner>vmpstr@chromium.org</owner>
   <summary>
@@ -75,7 +81,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer4.GpuImageDecodeState.CachePeakUsagePercent"
-    units="units" expires_after="2021-06-06">
+    units="units" expires_after="2021-08-09">
   <owner>sashamcintosh@chromium.org</owner>
   <owner>ericrk@chromium.org</owner>
   <summary>
@@ -127,7 +133,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Renderer4.ImageDecodeTaskDurationUs"
-    units="microseconds" expires_after="2021-06-08">
+    units="microseconds" expires_after="2021-08-08">
 <!-- Name completed by histogram_suffixes name="DecodedImageType" -->
 
 <!-- Name completed by histogram_suffixes name="OutOfRaster" -->
@@ -152,7 +158,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Renderer4.ImageUploadTaskDurationUs"
-    units="microseconds" expires_after="2021-05-30">
+    units="microseconds" expires_after="2021-08-09">
 <!-- Name completed by histogram_suffixes name="DecodedImageType" -->
 
   <owner>sashamcintosh@chromium.org</owner>
@@ -173,28 +179,32 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer4.MainThreadGestureScrollReason"
-    enum="MainThreadScrollingReason" expires_after="M88">
+    enum="MainThreadScrollingReason" expires_after="M97">
   <owner>flackr@chromium.org</owner>
   <owner>pdr@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
   <summary>
     Ideally we'd always scroll on the impl thread, but there are a variety of
     situations where we need to scroll on main. We should try to drive these
     down. For every gesture, we record whether or not the scroll occurred on the
     main thread or it should scroll on the impl thread but is blocked on main
-    thread, and if it did, what the reason was.
+    thread, and if it did, what the reasons were. One report is made for each
+    reason preventing scrolling on the impl thread.
   </summary>
 </histogram>
 
 <histogram name="Renderer4.MainThreadWheelScrollReason"
-    enum="MainThreadScrollingReason" expires_after="M88">
+    enum="MainThreadScrollingReason" expires_after="M97">
   <owner>flackr@chromium.org</owner>
   <owner>pdr@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
   <summary>
     Ideally we'd always scroll on the impl thread, but there are a variety of
     situations where we need to scroll on main. We should try to drive these
     down. For every wheel tick, we record whether or not the the scroll occurred
     on the main thread or it should scroll on the impl thread but is blocked on
-    main thread, and if it did, what the reason was.
+    main thread, and if it did, what the reasons were. One report is made for
+    each reason preventing scrolling on the impl thread.
   </summary>
 </histogram>
 
@@ -236,7 +246,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer4.Renderer.RasterTaskTotalDuration"
-    units="microseconds" expires_after="2021-06-01">
+    units="microseconds" expires_after="2021-08-01">
   <owner>khushalsagar@chromium.org</owner>
   <owner>chrome-gpu@google.com</owner>
   <summary>
@@ -262,7 +272,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer4.ScrollingThread" enum="ScrollingThreadStatus"
-    expires_after="2021-05-30">
+    expires_after="2021-08-01">
 <!-- Name completed by histogram_suffixes name="ScrollSourceDevice" -->
 
   <owner>bokan@chromium.org</owner>

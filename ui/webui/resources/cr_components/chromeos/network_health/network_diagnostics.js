@@ -131,6 +131,18 @@ Polymer({
               },
             ]
           },
+          {
+            group: RoutineGroup.GOOGLE_SERVICES,
+            routines: [
+              {
+                name: 'NetworkDiagnosticsVideoConferencing',
+                type: RoutineType.VIDEO_CONFERENCING,
+                // A null stun_server_hostname will use the routine default.
+                func: () => this.networkDiagnostics_.videoConferencing(
+                    /*stun_server_hostname=*/ null),
+              },
+            ]
+          },
         ];
         const routines = [];
 
@@ -465,6 +477,22 @@ Polymer({
               break;
             case diagnosticsMojom.CaptivePortalProblem.kNoInternet:
               problemStrings.push(getString('CaptivePortalProblem_NoInternet'));
+              break;
+          }
+
+        case RoutineType.VIDEO_CONFERENCING:
+          switch (problem) {
+            case diagnosticsMojom.VideoConferencingProblem.kUdpFailure:
+              problemStrings.push(
+                  getString('VideoConferencingProblem_UdpFailure'));
+              break;
+            case diagnosticsMojom.VideoConferencingProblem.kTcpFailure:
+              problemStrings.push(
+                  getString('VideoConferencingProblem_TcpFailure'));
+              break;
+            case diagnosticsMojom.VideoConferencingProblem.kMediaFailure:
+              problemStrings.push(
+                  getString('VideoConferencingProblem_MediaFailure'));
               break;
           }
       }

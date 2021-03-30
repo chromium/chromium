@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/frame/root_frame_viewport.h"
 
 #include "base/barrier_closure.h"
+#include "base/callback_helpers.h"
 #include "cc/input/snap_selection_strategy.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -48,7 +49,9 @@ FloatRect GetUserScrollableRect(const ScrollableArea& area) {
 }  // namespace
 RootFrameViewport::RootFrameViewport(ScrollableArea& visual_viewport,
                                      ScrollableArea& layout_viewport)
-    : visual_viewport_(visual_viewport), should_restore_scroll_(false) {
+    : ScrollableArea(visual_viewport.GetCompositorTaskRunner()),
+      visual_viewport_(visual_viewport),
+      should_restore_scroll_(false) {
   SetLayoutViewport(layout_viewport);
 }
 

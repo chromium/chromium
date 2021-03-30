@@ -26,12 +26,8 @@ class CAPTURE_EXPORT VideoFrameReceiverOnTaskRunner
   void OnNewBuffer(int32_t buffer_id,
                    media::mojom::VideoBufferHandlePtr buffer_handle) override;
   void OnFrameReadyInBuffer(
-      int buffer_id,
-      int frame_feedback_id,
-      std::unique_ptr<
-          VideoCaptureDevice::Client::Buffer::ScopedAccessPermission>
-          buffer_read_permission,
-      mojom::VideoFrameInfoPtr frame_info) override;
+      ReadyFrameInBuffer frame,
+      std::vector<ReadyFrameInBuffer> scaled_frames) override;
   void OnBufferRetired(int buffer_id) override;
   void OnError(VideoCaptureError error) override;
   void OnFrameDropped(VideoCaptureFrameDropReason reason) override;

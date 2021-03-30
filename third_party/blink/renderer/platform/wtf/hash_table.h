@@ -922,6 +922,7 @@ class HashTable final
   ValueType* Reinsert(ValueType&&);
 
   static void InitializeBucket(ValueType& bucket);
+  static void ReinitializeBucket(ValueType& bucket);
   static void DeleteBucket(const ValueType& bucket) {
     bucket.~ValueType();
     Traits::ConstructDeletedValue(const_cast<ValueType&>(bucket),
@@ -1283,6 +1284,15 @@ struct HashTableBucketInitializer<false> {
     ConstructTraits<Value, Traits, Allocator>::ConstructAndNotifyElement(
         &bucket, Traits::EmptyValue());
   }
+
+  template <typename Traits, typename Allocator, typename Value>
+  static void Reinitialize(Value& bucket) {
+    // Reinitialize is used when recycling a deleted bucket. For buckets for
+    // which empty value is non-zero, this is forbidden during marking. Thus if
+    // we get here, marking is not active and we can reuse Initialize.
+    DCHECK(Allocator::template CanReuseHashTableDeletedBucket<Traits>());
+    Initialize<Traits, Allocator, Value>(bucket);
+  }
 };
 
 template <>
@@ -1295,6 +1305,19 @@ struct HashTableBucketInitializer<true> {
     // The memset to 0 looks like a slow operation but is optimized by the
     // compilers.
     memset(&bucket, 0, sizeof(bucket));
+  }
+
+  template <typename Traits, typename Allocator, typename Value>
+  static void Reinitialize(Value& bucket) {
+    // This initializes the bucket without copying the empty value.  That
+    // makes it possible to use this with types that don't support copying.
+    // The memset to 0 looks like a slow operation but is optimized by the
+    // compilers.
+    if (!Allocator::kIsGarbageCollected) {
+      memset(&bucket, 0, sizeof(bucket));
+      return;
+    }
+    AtomicMemzero(&bucket, sizeof(bucket));
   }
 };
 
@@ -1309,6 +1332,20 @@ inline void
 HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits, Allocator>::
     InitializeBucket(ValueType& bucket) {
   HashTableBucketInitializer<Traits::kEmptyValueIsZero>::template Initialize<
+      Traits, Allocator>(bucket);
+}
+
+template <typename Key,
+          typename Value,
+          typename Extractor,
+          typename HashFunctions,
+          typename Traits,
+          typename KeyTraits,
+          typename Allocator>
+inline void
+HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits, Allocator>::
+    ReinitializeBucket(ValueType& bucket) {
+  HashTableBucketInitializer<Traits::kEmptyValueIsZero>::template Reinitialize<
       Traits, Allocator>(bucket);
 }
 
@@ -1344,6 +1381,9 @@ HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits, Allocator>::
 
   UPDATE_ACCESS_COUNTS();
 
+  bool can_reuse_deleted_entry =
+      Allocator::template CanReuseHashTableDeletedBucket<Traits>();
+
   ValueType* deleted_entry = nullptr;
   ValueType* entry;
   while (1) {
@@ -1356,10 +1396,10 @@ HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits, Allocator>::
       if (HashTranslator::Equal(Extractor::Extract(*entry), key))
         return AddResult(this, entry, false);
 
-      if (IsDeletedBucket(*entry))
+      if (IsDeletedBucket(*entry) && can_reuse_deleted_entry)
         deleted_entry = entry;
     } else {
-      if (IsDeletedBucket(*entry))
+      if (IsDeletedBucket(*entry) && can_reuse_deleted_entry)
         deleted_entry = entry;
       else if (HashTranslator::Equal(Extractor::Extract(*entry), key))
         return AddResult(this, entry, false);
@@ -1373,9 +1413,10 @@ HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits, Allocator>::
   RegisterModification();
 
   if (deleted_entry) {
+    DCHECK(can_reuse_deleted_entry);
     // Overwrite any data left over from last use, using placement new or
     // memset.
-    InitializeBucket(*deleted_entry);
+    ReinitializeBucket(*deleted_entry);
     entry = deleted_entry;
     --deleted_count_;
   }
@@ -1444,7 +1485,7 @@ HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits, Allocator>::
   RegisterModification();
 
   if (IsDeletedBucket(*entry)) {
-    InitializeBucket(*entry);
+    ReinitializeBucket(*entry);
     --deleted_count_;
   }
 
@@ -1836,7 +1877,7 @@ HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits, Allocator>::
     }
   }
 
-  Allocator::TraceBackingStoreIfMarked(new_hash_table.table_);
+  Allocator::TraceBackingStoreIfMarked(&new_hash_table.table_);
 
   ValueType* old_table = table_;
   unsigned old_table_size = table_size_;
@@ -2018,9 +2059,9 @@ void HashTable<Key,
     // Weak processing is omitted when no backing store is present. In case such
     // an empty table is later on used it needs to be strongified.
     if (table_)
-      Allocator::TraceBackingStoreIfMarked(table_);
+      Allocator::TraceBackingStoreIfMarked(&table_);
     if (other.table_)
-      Allocator::TraceBackingStoreIfMarked(other.table_);
+      Allocator::TraceBackingStoreIfMarked(&other.table_);
   }
   std::swap(table_size_, other.table_size_);
   std::swap(key_count_, other.key_count_);

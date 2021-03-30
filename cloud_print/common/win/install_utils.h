@@ -9,34 +9,33 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/strings/string16.h"
 
 namespace cloud_print {
 
 // Sets Google Update registry keys after install or update.
-void SetGoogleUpdateKeys(const base::string16& product_id,
-                         const base::string16& product_name);
+void SetGoogleUpdateKeys(const std::wstring& product_id,
+                         const std::wstring& product_name);
 
 // Sets custom error message to show by Google Update installer
-void SetGoogleUpdateError(const base::string16& product_id,
-                          const base::string16& message);
+void SetGoogleUpdateError(const std::wstring& product_id,
+                          const std::wstring& message);
 
 // Sets custom system error code to show by Google Update installer
-void SetGoogleUpdateError(const base::string16& product_id, HRESULT hr);
+void SetGoogleUpdateError(const std::wstring& product_id, HRESULT hr);
 
 // Deletes Google Update reg keys on product uninstall.
-void DeleteGoogleUpdateKeys(const base::string16& product_id);
+void DeleteGoogleUpdateKeys(const std::wstring& product_id);
 
 // Creates control panel uninstall item.
-void CreateUninstallKey(const base::string16& uninstall_id,
-                        const base::string16& product_name,
+void CreateUninstallKey(const std::wstring& uninstall_id,
+                        const std::wstring& product_name,
                         const std::string& uninstall_switch);
 
 // Deletes control panel uninstall item.
-void DeleteUninstallKey(const base::string16& uninstall_id);
+void DeleteUninstallKey(const std::wstring& uninstall_id);
 
 // Returns install location retrieved from control panel uninstall key.
-base::FilePath GetInstallLocation(const base::string16& uninstall_id);
+base::FilePath GetInstallLocation(const std::wstring& uninstall_id);
 
 // Returns install location retrieved from control panel uninstall key.
 void DeleteProgramDir(const std::string& delete_switch);

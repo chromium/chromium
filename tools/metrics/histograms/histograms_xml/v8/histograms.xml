@@ -46,7 +46,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="V8.CodeCacheSizeRatio" units="%" expires_after="2021-04-18">
+<histogram name="V8.CodeCacheSizeRatio" units="%" expires_after="2021-07-27">
   <owner>yangguo@chromium.org</owner>
   <summary>Cache size to source size ratio when caching compiled code.</summary>
 </histogram>
@@ -80,7 +80,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.CompileDeserializeMicroSeconds" units="microseconds"
-    expires_after="2021-06-20">
+    expires_after="2021-08-22">
   <owner>vogelheim@chromium.org</owner>
   <summary>
     Time spent deseriailzing code, used by V8 code caching.
@@ -108,7 +108,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.CompileLazyMicroSeconds" units="microseconds"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>hablich@chromium.org</owner>
   <summary>
     Aggregated time spent compiling functions lazily during a single script
@@ -123,7 +123,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.CompileMicroSeconds" units="microseconds"
-    expires_after="2021-05-02">
+    expires_after="2021-09-05">
   <owner>yangguo@chromium.org</owner>
   <summary>
     Time spent in V8 compiler (full codegen) excluding parser.
@@ -137,7 +137,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.CompileScript.CacheBehaviour" enum="V8CacheBehaviour"
-    expires_after="2021-06-06">
+    expires_after="2021-08-08">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -148,7 +148,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds" units="microseconds"
-    expires_after="2021-06-06">
+    expires_after="2021-08-08">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -163,7 +163,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds.BackgroundThread"
-    units="microseconds" expires_after="2021-06-06">
+    units="microseconds" expires_after="2021-08-09">
   <owner>leszeks@chromium.org</owner>
   <owner>rmcilroy@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
@@ -180,7 +180,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds.ConsumeCache"
-    units="microseconds" expires_after="2021-06-06">
+    units="microseconds" expires_after="2021-08-09">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -228,7 +228,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds.NoCache.CacheTooCold"
-    units="microseconds" expires_after="2021-06-06">
+    units="microseconds" expires_after="2021-08-09">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -276,7 +276,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds.NoCache.ScriptTooSmall"
-    units="microseconds" expires_after="2021-06-13">
+    units="microseconds" expires_after="2021-08-15">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -292,7 +292,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds.ProduceCache"
-    units="microseconds" expires_after="2021-06-06">
+    units="microseconds" expires_after="2021-08-08">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -308,7 +308,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds.StreamingFinalization"
-    units="microseconds" expires_after="2021-06-06">
+    units="microseconds" expires_after="2021-08-08">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -337,8 +337,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.DebugFeatureUsage" enum="V8DebugFeature"
-    expires_after="2021-01-10">
+    expires_after="2022-01-10">
   <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
   <summary>
     Debugger feature used at least once per isolate, recorded on first use.
   </summary>
@@ -354,7 +355,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="V8.Execute" units="ms" expires_after="2021-05-09">
+<histogram name="V8.Execute" units="ms" expires_after="2021-09-12">
   <owner>rmcilroy@chromium.org</owner>
   <summary>
     Time spent in JavaScript Execution, including runtime calls, callbacks, and
@@ -362,7 +363,40 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="V8.GCBackgroundMarking" units="ms" expires_after="2021-06-06">
+<histogram name="V8.GC.TimeToCollectionOnBackground" units="microseconds"
+    expires_after="2021-10-01">
+  <owner>dinfuehr@chromium.org</owner>
+  <owner>ulan@chromium.org</owner>
+  <summary>
+    Time between requesting GC from background thread and actually starting
+    collection on main thread. This is reported each time a background thread
+    requests a GC.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.TimeToSafepoint" units="microseconds"
+    expires_after="2021-10-01">
+  <owner>dinfuehr@chromium.org</owner>
+  <owner>ulan@chromium.org</owner>
+  <summary>
+    Time spent in stopping other threads to reach a safepoint. This is reported
+    each time a safepoint is reached.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
+<histogram name="V8.GCBackgroundMarking" units="ms" expires_after="2021-08-09">
   <owner>ulan@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -372,7 +406,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.GCBackgroundScavenger" units="ms"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>ulan@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -381,7 +415,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="V8.GCBackgroundSweeping" units="ms" expires_after="2021-04-01">
+<histogram name="V8.GCBackgroundSweeping" units="ms" expires_after="2022-04-01">
   <owner>ulan@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -390,14 +424,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="V8.GCCompactor" units="ms" expires_after="2021-06-06">
+<histogram name="V8.GCCompactor" units="ms" expires_after="2021-08-09">
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>Time spent in mark-sweep phase of GC.</summary>
 </histogram>
 
 <histogram name="V8.GCCompactorBackground" units="ms"
-    expires_after="2021-04-01">
+    expires_after="2022-04-01">
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -406,7 +440,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.GCCompactorForeground" units="ms"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -414,7 +448,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="V8.GCFinalizeMC" units="ms" expires_after="2021-06-06">
+<histogram name="V8.GCFinalizeMC" units="ms" expires_after="2021-08-09">
   <owner>ulan@chromium.org</owner>
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
@@ -424,7 +458,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="V8.GCFinalizeMC.Clear" units="ms" expires_after="2021-04-01">
+<histogram name="V8.GCFinalizeMC.Clear" units="ms" expires_after="2022-04-01">
   <owner>ulan@chromium.org</owner>
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
@@ -435,7 +469,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.GCFinalizeMC.Epilogue" units="ms"
-    expires_after="2021-04-01">
+    expires_after="2022-04-01">
   <owner>ulan@chromium.org</owner>
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
@@ -445,7 +479,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.GCFinalizeMC.Evacuate" units="ms"
-    expires_after="2021-04-01">
+    expires_after="2021-07-27">
   <owner>ulan@chromium.org</owner>
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
@@ -455,7 +489,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="V8.GCFinalizeMC.Finish" units="ms" expires_after="2021-06-06">
+<histogram name="V8.GCFinalizeMC.Finish" units="ms" expires_after="2021-08-09">
   <owner>ulan@chromium.org</owner>
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
@@ -465,7 +499,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="V8.GCFinalizeMC.Mark" units="ms" expires_after="2021-04-01">
+<histogram name="V8.GCFinalizeMC.Mark" units="ms" expires_after="2021-08-09">
   <owner>ulan@chromium.org</owner>
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
@@ -476,7 +510,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.GCFinalizeMC.Prologue" units="ms"
-    expires_after="2021-04-01">
+    expires_after="2022-04-01">
   <owner>ulan@chromium.org</owner>
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
@@ -485,7 +519,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="V8.GCFinalizeMC.Sweep" units="ms" expires_after="2021-04-01">
+<histogram name="V8.GCFinalizeMC.Sweep" units="ms" expires_after="2022-04-01">
   <owner>ulan@chromium.org</owner>
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
@@ -496,7 +530,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.GCFinalizeMCBackground" units="ms"
-    expires_after="2021-04-01">
+    expires_after="2022-04-01">
   <owner>ulan@chromium.org</owner>
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
@@ -507,7 +541,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.GCFinalizeMCForeground" units="ms"
-    expires_after="2021-04-01">
+    expires_after="2022-04-01">
   <owner>ulan@chromium.org</owner>
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
@@ -518,7 +552,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.GCFinalizeMCReduceMemory" units="ms"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>ulan@chromium.org</owner>
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
@@ -529,7 +563,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.GCFinalizeMCReduceMemoryBackground" units="ms"
-    expires_after="2021-04-01">
+    expires_after="2022-04-01">
   <owner>ulan@chromium.org</owner>
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
@@ -540,7 +574,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.GCFinalizeMCReduceMemoryForeground" units="ms"
-    expires_after="2021-04-01">
+    expires_after="2022-04-01">
   <owner>ulan@chromium.org</owner>
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
@@ -550,35 +584,35 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="V8.GCIncrementalMarking" units="ms" expires_after="2021-06-06">
+<histogram name="V8.GCIncrementalMarking" units="ms" expires_after="2021-08-09">
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>Time spent doing incremental marking steps during GC.</summary>
 </histogram>
 
 <histogram name="V8.GCIncrementalMarkingFinalize" units="ms"
-    expires_after="2021-04-01">
+    expires_after="2022-04-01">
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>Time spent in finalizing incremental marking.</summary>
 </histogram>
 
 <histogram name="V8.GCIncrementalMarkingReason" enum="GarbageCollectionReason"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>ulan@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>Reason an incremental marking was started in V8.</summary>
 </histogram>
 
 <histogram name="V8.GCIncrementalMarkingStart" units="ms"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>Time spent in starting incremental marking.</summary>
 </histogram>
 
 <histogram name="V8.GCIncrementalMarkingSum" units="ms"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>ulan@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -588,7 +622,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.GCMainThreadMarkingThroughput" units="MB/s"
-    expires_after="2021-04-01">
+    expires_after="2021-07-27">
   <owner>mlippautz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -600,7 +634,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="V8.GCMarkCompactor" units="ms" expires_after="2021-06-27">
+<histogram name="V8.GCMarkCompactor" units="ms" expires_after="2021-08-29">
   <owner>mlippautz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -610,13 +644,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.GCMarkCompactReason" enum="GarbageCollectionReason"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>ulan@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>Reason a mark-compact garbage collection was started in V8.</summary>
 </histogram>
 
-<histogram name="V8.GCMarkingSum" units="ms" expires_after="2021-06-06">
+<histogram name="V8.GCMarkingSum" units="ms" expires_after="2021-08-08">
   <owner>mlippautz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -626,14 +660,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="V8.GCScavenger" units="ms" expires_after="2021-06-06">
+<histogram name="V8.GCScavenger" units="ms" expires_after="2021-08-09">
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>Time spent in scavenging phase of GC.</summary>
 </histogram>
 
 <histogram name="V8.GCScavenger.ScavengeMain" units="ms"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>mlippautz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -643,14 +677,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.GCScavenger.ScavengeRoots" units="ms"
-    expires_after="2021-04-01">
+    expires_after="2021-07-11">
   <owner>mlippautz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>Time spent in scavenging the roots during a V8 scavenge.</summary>
 </histogram>
 
 <histogram name="V8.GCScavengerBackground" units="ms"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -659,14 +693,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.GCScavengeReason" enum="GarbageCollectionReason"
-    expires_after="2021-04-01">
+    expires_after="2022-04-01">
   <owner>ulan@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>Reason a scavenge garbage collection was started in V8.</summary>
 </histogram>
 
 <histogram name="V8.GCScavengerForeground" units="ms"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -687,7 +721,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.LiftoffBailoutReasons" enum="LiftoffBailoutReason"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
@@ -765,7 +799,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.MemoryHeapSampleTotalCommitted" units="KB"
-    expires_after="2021-05-02">
+    expires_after="2021-09-05">
   <owner>hpayer@chromium.org</owner>
   <summary>
     The total size of committed memory used by V8 after each GC in KB.
@@ -773,7 +807,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.MemoryHeapSampleTotalUsed" units="KB"
-    expires_after="2021-05-09">
+    expires_after="2021-09-12">
   <owner>hpayer@chromium.org</owner>
   <summary>
     The total size of live memory used by V8 after each GC in KB.
@@ -781,7 +815,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.RegExpBacktracks" units="backtracks"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>jgruber@chromium.org</owner>
   <owner>mvstanton@chromium.org</owner>
   <summary>
@@ -799,12 +833,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.StopTheWorld" units="ms" expires_after="2021-10-01">
+  <obsolete>
+    Removed 02/2021. Renamed to V8.GC.TimeToSafepoint due to switch to
+    microseconds.
+  </obsolete>
   <owner>dinfuehr@chromium.org</owner>
   <owner>ulan@chromium.org</owner>
   <summary>Time spent in stopping other threads before performing GC.</summary>
 </histogram>
 
 <histogram name="V8.TimeToCollection" units="ms" expires_after="2021-10-01">
+  <obsolete>
+    Removed 02/2021. Renamed to V8.GC.TimeToCollectionBackground due to switch
+    to microseconds.
+  </obsolete>
   <owner>dinfuehr@chromium.org</owner>
   <owner>ulan@chromium.org</owner>
   <summary>
@@ -828,7 +870,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeConcurrentTotalTime" units="microseconds"
-    expires_after="2021-05-16">
+    expires_after="2021-08-01">
   <owner>bmeurer@chromium.org</owner>
   <owner>mslekova@chromium.org</owner>
   <summary>
@@ -840,7 +882,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeExecute" units="microseconds"
-    expires_after="2021-05-09">
+    expires_after="2021-09-12">
   <owner>neis@chromium.org</owner>
   <owner>mvstanton@chromium.org</owner>
   <summary>
@@ -852,7 +894,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeFinalize" units="microseconds"
-    expires_after="2021-05-09">
+    expires_after="2021-09-12">
   <owner>neis@chromium.org</owner>
   <owner>mvstanton@chromium.org</owner>
   <summary>
@@ -864,7 +906,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeForOnStackReplacementExecute"
-    units="microseconds" expires_after="2021-05-09">
+    units="microseconds" expires_after="2021-09-12">
   <owner>neis@chromium.org</owner>
   <owner>mvstanton@chromium.org</owner>
   <summary>
@@ -877,7 +919,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeForOnStackReplacementFinalize"
-    units="microseconds" expires_after="2021-05-09">
+    units="microseconds" expires_after="2021-09-12">
   <owner>neis@chromium.org</owner>
   <owner>mvstanton@chromium.org</owner>
   <summary>
@@ -890,7 +932,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeForOnStackReplacementPrepare"
-    units="microseconds" expires_after="2021-05-09">
+    units="microseconds" expires_after="2021-09-12">
   <owner>neis@chromium.org</owner>
   <owner>mvstanton@chromium.org</owner>
   <summary>
@@ -903,7 +945,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeForOnStackReplacementTotalTime"
-    units="microseconds" expires_after="2021-05-09">
+    units="microseconds" expires_after="2021-09-12">
   <owner>neis@chromium.org</owner>
   <owner>mvstanton@chromium.org</owner>
   <summary>
@@ -916,8 +958,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeNonConcurrentTotalTime"
-    units="microseconds" expires_after="2020-12-31">
-  <owner>bmeurer@chromium.org</owner>
+    units="microseconds" expires_after="2021-05-09">
+  <owner>neis@chromium.org</owner>
+  <owner>mvstanton@chromium.org</owner>
   <owner>mslekova@chromium.org</owner>
   <summary>
     Total time from starting optimizing to installing the code object. Recorded
@@ -928,7 +971,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.TurboFanOptimizePrepare" units="microseconds"
-    expires_after="2021-05-09">
+    expires_after="2021-09-12">
   <owner>neis@chromium.org</owner>
   <owner>mvstanton@chromium.org</owner>
   <summary>
@@ -940,7 +983,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeTotalBackground" units="microseconds"
-    expires_after="2021-05-09">
+    expires_after="2021-09-12">
   <owner>neis@chromium.org</owner>
   <owner>mvstanton@chromium.org</owner>
   <summary>
@@ -952,7 +995,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeTotalForeground" units="microseconds"
-    expires_after="2021-05-09">
+    expires_after="2021-09-12">
   <owner>neis@chromium.org</owner>
   <owner>mvstanton@chromium.org</owner>
   <summary>
@@ -964,7 +1007,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeTotalTime" units="microseconds"
-    expires_after="2021-05-09">
+    expires_after="2021-09-12">
   <owner>neis@chromium.org</owner>
   <owner>mvstanton@chromium.org</owner>
   <summary>
@@ -976,7 +1019,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.WasmAddressSpaceUsageMiB" units="MB"
-    expires_after="2021-03-31">
+    expires_after="2022-02-15">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>ahaas@chromium.org</owner>
@@ -987,8 +1030,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="V8.WasmCatchCount" units="count" expires_after="2021-11-24">
+  <owner>thibaudm@chromium.org</owner>
+  <owner>ecmziegler@chromium.org</owner>
+  <summary>
+    Number of exceptions caught so far in an isolate, recorded on each caught
+    exception.
+  </summary>
+</histogram>
+
 <histogram name="V8.WasmCompileFunctionMicroSeconds" units="microseconds"
-    expires_after="2021-05-30">
+    expires_after="2021-08-01">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
@@ -1005,7 +1057,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.WasmCompileFunctionPeakMemoryBytes" units="bytes"
-    expires_after="2021-03-31">
+    expires_after="2022-02-15">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
@@ -1016,7 +1068,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.WasmCompileModuleAsyncMicroSeconds" units="microseconds"
-    expires_after="2021-05-02">
+    expires_after="2021-09-05">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
@@ -1028,7 +1080,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.WasmCompileModuleMicroSeconds" units="microseconds"
-    expires_after="2021-05-30">
+    expires_after="2021-08-01">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
@@ -1045,7 +1097,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.WasmCompileModuleStreamingMicroSeconds"
-    units="microseconds" expires_after="2021-05-30">
+    units="microseconds" expires_after="2021-08-01">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
@@ -1059,7 +1111,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.WasmFinishModuleStreamingMicroSeconds" units="microseconds"
-    expires_after="2021-05-30">
+    expires_after="2021-08-01">
   <owner>bbudge@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
@@ -1074,7 +1126,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.WasmFunctionSizeBytes" units="bytes"
-    expires_after="2021-05-30">
+    expires_after="2021-08-01">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
@@ -1085,7 +1137,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.WasmFunctionsPerModule" units="functions"
-    expires_after="2021-05-30">
+    expires_after="2021-08-01">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
@@ -1096,7 +1148,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.WasmInstantiateModuleMicroSeconds" units="microseconds"
-    expires_after="2021-05-30">
+    expires_after="2021-08-01">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
@@ -1113,7 +1165,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.WasmMaxMemPagesCount" units="pages"
-    expires_after="2021-03-31">
+    expires_after="2022-02-15">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>ahaas@chromium.org</owner>
@@ -1124,7 +1176,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.WasmMemoryAllocationResult" enum="WasmAllocationResult"
-    expires_after="2021-03-31">
+    expires_after="2021-08-09">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>ahaas@chromium.org</owner>
@@ -1135,7 +1187,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.WasmMinMemPagesCount" units="pages"
-    expires_after="2021-03-31">
+    expires_after="2022-02-15">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>ahaas@chromium.org</owner>
@@ -1146,7 +1198,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.WasmModuleCodeSizeBaselineMiB" units="MB"
-    expires_after="2021-03-31">
+    expires_after="2022-02-15">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
@@ -1157,7 +1209,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.WasmModuleCodeSizeMiB" units="MB"
-    expires_after="2021-03-31">
+    expires_after="2022-02-15">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
@@ -1168,7 +1220,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.WasmModuleCodeSizePercentFreed" units="%"
-    expires_after="2021-03-31">
+    expires_after="2022-02-15">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
@@ -1180,7 +1232,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.WasmModuleCodeSizeTopTierMiB" units="MB"
-    expires_after="2021-05-30">
+    expires_after="2021-08-01">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
@@ -1191,7 +1243,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.WasmModuleNumberOfCodeGCsTriggered" units="gcs"
-    expires_after="2021-03-31">
+    expires_after="2021-08-09">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
@@ -1202,7 +1254,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.WasmModuleNumberOfCodeSpaces" units="spaces"
-    expires_after="2021-03-31">
+    expires_after="2022-02-15">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
@@ -1213,7 +1265,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.WasmModuleSizeBytes" units="bytes"
-    expires_after="2021-05-30">
+    expires_after="2021-08-01">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>ahaas@chromium.org</owner>
@@ -1225,7 +1277,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.WasmModulesPerEngine" units="count"
-    expires_after="2021-05-30">
+    expires_after="2021-08-01">
   <owner>clemensb@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
   <summary>
@@ -1235,7 +1287,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="V8.WasmModulesPerIsolate" units="count"
-    expires_after="2021-05-30">
+    expires_after="2021-08-01">
   <owner>clemensb@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
   <summary>
@@ -1244,8 +1296,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="V8.WasmReThrowCount" units="count" expires_after="2021-11-24">
+  <owner>thibaudm@chromium.org</owner>
+  <owner>ecmziegler@chromium.org</owner>
+  <summary>
+    Number of exceptions rethrown so far in an isolate, recorded on each
+    rethrown exception.
+  </summary>
+</histogram>
+
+<histogram name="V8.WasmThrowCount" units="count" expires_after="2021-11-24">
+  <owner>thibaudm@chromium.org</owner>
+  <owner>ecmziegler@chromium.org</owner>
+  <summary>
+    Number of exceptions thrown so far in an isolate, recorded on each thrown
+    exception.
+  </summary>
+</histogram>
+
 <histogram name="V8.WasmTierUpModuleMicroSeconds" units="microseconds"
-    expires_after="2021-05-30">
+    expires_after="2021-08-01">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
@@ -1254,6 +1324,36 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     compilation finishes and top-tier compilation finishes. Recorded whenever an
     asynchronously compiled module finishes top-tier compilation, but only if a
     high-resolution clock is available.
+  </summary>
+</histogram>
+
+<histogram name="V8.WasmTimeBetweenCatchMilliseconds" units="ms"
+    expires_after="2021-11-24">
+  <owner>thibaudm@chromium.org</owner>
+  <owner>ecmziegler@chromium.org</owner>
+  <summary>
+    Time since the last time an exception was caught in WebAssembly, recorded
+    when the next exception is caught (per isolate).
+  </summary>
+</histogram>
+
+<histogram name="V8.WasmTimeBetweenRethrowsMilliseconds" units="ms"
+    expires_after="2021-11-24">
+  <owner>thibaudm@chromium.org</owner>
+  <owner>ecmziegler@chromium.org</owner>
+  <summary>
+    Time since the last time an exception was rethrown in WebAssembly, recorded
+    when the next exception is rethrown (per isolate).
+  </summary>
+</histogram>
+
+<histogram name="V8.WasmTimeBetweenThrowsMilliseconds" units="ms"
+    expires_after="2021-11-24">
+  <owner>thibaudm@chromium.org</owner>
+  <owner>ecmziegler@chromium.org</owner>
+  <summary>
+    Time since the last time an exception was thrown in WebAssembly, recorded
+    when the next exception is thrown (per isolate).
   </summary>
 </histogram>
 

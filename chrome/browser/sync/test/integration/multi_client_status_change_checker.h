@@ -27,6 +27,7 @@ class MultiClientStatusChangeChecker : public StatusChangeChecker,
  protected:
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
   // StatusChangeChecker implementations and stubs.
   bool IsExitConditionSatisfied(std::ostream* os) override = 0;
@@ -37,7 +38,7 @@ class MultiClientStatusChangeChecker : public StatusChangeChecker,
 
  private:
   std::vector<syncer::ProfileSyncService*> services_;
-  ScopedObserver<syncer::ProfileSyncService, syncer::SyncServiceObserver>
+  ScopedObserver<syncer::SyncService, syncer::SyncServiceObserver>
       scoped_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MultiClientStatusChangeChecker);

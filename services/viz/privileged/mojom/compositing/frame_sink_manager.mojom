@@ -30,7 +30,6 @@ struct RootCompositorFrameSinkParams {
   // Disables begin frame rate limiting for the display compositor.
   bool disable_frame_rate_limit = false;
   bool use_preferred_interval_for_video = false;
-  uint32 num_of_frames_to_toggle_interval = 60;
 
   [EnableIf=is_android]
   float refresh_rate;
@@ -125,17 +124,11 @@ interface FrameSinkManager {
   // Marks the given SurfaceIds for destruction.
   EvictSurfaces(array<SurfaceId> surface_ids);
 
-  // Starts throttling the frame sinks specified by |frame_sink_ids| and all
-  // their descendant sinks to send BeginFrames at an interval of |interval|.
-  // |interval| should be greater than zero. Previous throttling operation on
-  // any frame sinks must be first ended by calling EndThrottling() before
-  // applying the current throttling operation.
-  StartThrottling(
-      array<FrameSinkId> frame_sink_ids,
-      mojo_base.mojom.TimeDelta interval);
-
-  // Ends all previously throttled frame sinks.
-  EndThrottling();
+  // Throttles the frame sinks specified by |frame_sink_ids| and all their
+  // descendant sinks to send BeginFrames at an interval of |interval|. This
+  // operation clears out any previous throttling operation on any frame sinks.
+  Throttle(array<FrameSinkId> frame_sink_ids,
+           mojo_base.mojom.TimeDelta interval);
 
   // Takes a snapshot of |surface_id| or a newer surface with the same
   // FrameSinkId. The request will be queued up until such surface exists and is
@@ -175,7 +168,8 @@ interface FrameSinkManagerClient {
   OnAggregatedHitTestRegionListUpdated(
       FrameSinkId frame_sink_id, array<AggregatedHitTestRegion> hit_test_data);
 
-  // Sends |frame_sink_id| and |frame_token| to the client when a surface
-  // of the provided |frame_sink_id| activates.
-  OnFrameTokenChanged(FrameSinkId frame_sink_id, uint32 frame_token);
+  // Sends |frame_sink_id|, |frame_token|, and |activation_time| to the client
+  // when a surface of the provided |frame_sink_id| activates.
+  OnFrameTokenChanged(FrameSinkId frame_sink_id, uint32 frame_token,
+                      mojo_base.mojom.TimeTicks activation_time);
 };

@@ -19,8 +19,6 @@ import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
  *
  * There is one FindInPageController per {@link Tab}, and only the active tab may have an active
  * find session.
- *
- * @since 81
  */
 public class FindInPageController {
     private final ITab mTab;

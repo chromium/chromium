@@ -33,7 +33,7 @@ const HRESULT kTimeoutErrorCode = E_ABORT;
 // Loads an embedded string resource from the specified module.
 bool LoadStringResource(HMODULE resource_module,
                         int resource_id,
-                        base::string16* string) {
+                        std::wstring* string) {
   DCHECK(resource_module);
   DCHECK(string);
 
@@ -99,14 +99,14 @@ void It2MeConfirmationDialogWin::Show(const std::string& remote_user_email,
     return;
   }
 
-  base::string16 title_text;
+  std::wstring title_text;
   if (!LoadStringResource(resource_module, IDS_PRODUCT_NAME, &title_text)) {
     LOG(ERROR) << "Failed to load title text for confirmation dialog.";
     std::move(callback).Run(result);
     return;
   }
 
-  base::string16 message_text;
+  std::wstring message_text;
   if (!LoadStringResource(resource_module,
                           IDS_SHARE_CONFIRM_DIALOG_MESSAGE_WITH_USERNAME,
                           &message_text)) {
@@ -114,10 +114,12 @@ void It2MeConfirmationDialogWin::Show(const std::string& remote_user_email,
     std::move(callback).Run(result);
     return;
   }
-  message_text = base::i18n::MessageFormatter::FormatWithNumberedArgs(
-      message_text, base::UTF8ToUTF16(remote_user_email));
+  message_text =
+      base::AsWString(base::i18n::MessageFormatter::FormatWithNumberedArgs(
+          base::AsStringPiece16(message_text),
+          base::UTF8ToUTF16(remote_user_email)));
 
-  base::string16 share_button_text;
+  std::wstring share_button_text;
   if (!LoadStringResource(resource_module, IDS_SHARE_CONFIRM_DIALOG_CONFIRM,
                           &share_button_text)) {
     LOG(ERROR) << "Failed to load share button text for confirmation dialog.";
@@ -125,7 +127,7 @@ void It2MeConfirmationDialogWin::Show(const std::string& remote_user_email,
     return;
   }
 
-  base::string16 decline_button_text;
+  std::wstring decline_button_text;
   if (!LoadStringResource(resource_module, IDS_SHARE_CONFIRM_DIALOG_DECLINE,
                           &decline_button_text)) {
     LOG(ERROR) << "Failed to load decline button text for confirmation dialog.";

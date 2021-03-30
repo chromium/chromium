@@ -70,8 +70,9 @@ class FakePictureLayerImplForRenderSurfaceTest : public FakePictureLayerImpl {
     bool needs_blending = false;
     for (const auto& rect : quad_rects_) {
       auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
-      quad->SetNew(shared_quad_state, rect, rect, needs_blending, 0,
-                   gfx::RectF(rect), bounds(), false, false, false);
+      quad->SetNew(shared_quad_state, rect, rect, needs_blending,
+                   viz::kInvalidResourceId, gfx::RectF(rect), bounds(), false,
+                   false, false);
     }
   }
 

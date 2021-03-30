@@ -219,7 +219,7 @@ void RemoteSuggestionsFetcherImpl::FetchSnippets(
       .SetUserClassifier(*user_classifier_)
       .SetOptionalImagesCapability(true);
 
-  if (identity_manager_->HasPrimaryAccount()) {
+  if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     // Signed-in: get OAuth token --> fetch suggestions.
     pending_requests_.emplace(std::move(builder), std::move(wrapped_callback));
     StartTokenRequest();
@@ -392,7 +392,8 @@ void RemoteSuggestionsFetcherImpl::FetchFinished(
 
   if (fetch_result == FetchResult::HTTP_ERROR_UNAUTHORIZED) {
     signin::ScopeSet scopes{kContentSuggestionsApiScope};
-    CoreAccountId account_id = identity_manager_->GetPrimaryAccountId();
+    CoreAccountId account_id =
+        identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync);
     identity_manager_->RemoveAccessTokenFromCache(account_id, scopes,
                                                   access_token);
   }

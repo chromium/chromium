@@ -33,7 +33,7 @@ InfoBarService* GetInfobarService(Browser* browser, int tab) {
   return InfoBarService::FromWebContents(GetWebContents(browser, tab));
 }
 
-base::string16 GetInfobarMessageText(Browser* browser, int tab) {
+std::u16string GetInfobarMessageText(Browser* browser, int tab) {
   return static_cast<ConfirmInfoBarDelegate*>(
              GetInfobarService(browser, tab)->infobar_at(0)->delegate())
       ->GetMessageText();
@@ -75,9 +75,8 @@ class TabSharingUIViewsBrowserTest : public InProcessBrowserTest {
     // Explicitly activate the shared tab in testing.
     ActivateTab(browser, tab);
 
-    tab_sharing_ui_ =
-        TabSharingUI::Create(GetDesktopMediaID(browser, tab),
-                             base::UTF8ToUTF16("example-sharing.com"));
+    tab_sharing_ui_ = TabSharingUI::Create(GetDesktopMediaID(browser, tab),
+                                           u"example-sharing.com");
     tab_sharing_ui_->OnStarted(
         base::OnceClosure(),
         base::BindRepeating(&TabSharingUIViewsBrowserTest::OnStartSharing,
@@ -296,9 +295,8 @@ class MultipleTabSharingUIViewsBrowserTest : public InProcessBrowserTest {
     for (int i = 0; i < tab_count; ++i) {
       int tab = tab_index + i;
       ActivateTab(browser, tab);
-      tab_sharing_ui_views_.push_back(
-          TabSharingUI::Create(GetDesktopMediaID(browser, tab),
-                               base::UTF8ToUTF16("example-sharing.com")));
+      tab_sharing_ui_views_.push_back(TabSharingUI::Create(
+          GetDesktopMediaID(browser, tab), u"example-sharing.com"));
       tab_sharing_ui_views_[tab_sharing_ui_views_.size() - 1]->OnStarted(
           base::OnceClosure(), content::MediaStreamUI::SourceCallback());
     }

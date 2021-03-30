@@ -66,7 +66,7 @@ TEST(ColorSpace, RGBToYUV) {
 
   for (size_t i = 0; i < kNumColorSpaces; ++i) {
     SkMatrix44 transfer;
-    color_spaces[i].GetTransferMatrix(&transfer);
+    color_spaces[i].GetTransferMatrix(/*bit_depth=*/8, &transfer);
 
     SkMatrix44 range_adjust;
     color_spaces[i].GetRangeAdjustMatrix(&range_adjust);

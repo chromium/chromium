@@ -14,7 +14,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/web_history_service_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
-#include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
+#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
@@ -33,7 +33,6 @@
 #endif
 
 #if defined(OS_ANDROID)
-#include "chrome/browser/android/feed/feed_host_service_factory.h"
 #include "chrome/browser/android/feed/v2/feed_service_factory.h"
 #include "components/feed/buildflags.h"
 #include "components/feed/feed_feature_list.h"
@@ -61,20 +60,13 @@ ChromeBrowsingDataRemoverDelegateFactory::
   DependsOn(DataReductionProxyChromeSettingsFactory::GetInstance());
 #if defined(OS_ANDROID)
 #if BUILDFLAG(ENABLE_FEED_V2)
-  if (feed::IsV2Enabled()) {
-    DependsOn(feed::FeedServiceFactory::GetInstance());
-  }
+  DependsOn(feed::FeedServiceFactory::GetInstance());
 #endif  // BUILDFLAG(ENABLE_FEED_V2)
-#if BUILDFLAG(ENABLE_FEED_V1)
-  if (feed::IsV1Enabled()) {
-    DependsOn(feed::FeedHostServiceFactory::GetInstance());
-  }
-#endif  // BUILDFLAG(ENABLE_FEED_V1)
 #endif  // defined(OS_ANDROID)
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(HostContentSettingsMapFactory::GetInstance());
   DependsOn(PasswordStoreFactory::GetInstance());
-  DependsOn(prerender::PrerenderManagerFactory::GetInstance());
+  DependsOn(prerender::NoStatePrefetchManagerFactory::GetInstance());
   DependsOn(TabRestoreServiceFactory::GetInstance());
   DependsOn(TemplateURLServiceFactory::GetInstance());
   DependsOn(WebDataServiceFactory::GetInstance());

@@ -201,6 +201,8 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
   RenderWidgetHostViewBase* GetRootView();
 
   RenderFrameHostImpl* host_;
+  // WebContents associated with the |host_|.
+  WebContents* web_contents_;
   base::flat_set<std::unique_ptr<InputInjector>, base::UniquePtrComparator>
       injectors_;
   float page_scale_factor_;

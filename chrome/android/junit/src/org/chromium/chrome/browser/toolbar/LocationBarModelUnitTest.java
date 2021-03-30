@@ -24,6 +24,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.customtabs.CustomTabIncognitoManager;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
+import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
+import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
@@ -56,6 +58,8 @@ public class LocationBarModelUnitTest {
     private Profile mNonPrimaryOTRProfileMock;
     @Mock
     private LocationBarDataProvider.Observer mLocationBarDataObserver;
+    @Mock
+    private SearchEngineLogoUtils mSearchEngineLogoUtils;
 
     @Before
     public void setUp() {
@@ -92,17 +96,19 @@ public class LocationBarModelUnitTest {
 
     // clang-format off
     private static class TestIncognitoLocationBarModel extends LocationBarModel {
-        public TestIncognitoLocationBarModel(Tab tab) {
-            super(ContextUtils.getApplicationContext(), NewTabPageDelegate.EMPTY, url -> url,
-                    IncognitoUtils::getNonPrimaryOTRProfileFromWindowAndroid, OFFLINE_STATUS);
+        public TestIncognitoLocationBarModel(Tab tab, SearchEngineLogoUtils searchEngineLogoUtils) {
+            super(ContextUtils.getApplicationContext(), NewTabPageDelegate.EMPTY,
+                    url -> url.getSpec(), IncognitoUtils::getNonPrimaryOTRProfileFromWindowAndroid,
+                    OFFLINE_STATUS, searchEngineLogoUtils);
             setTab(tab, /*incognito=*/true);
         }
     }
 
     private static class TestRegularLocationBarModel extends LocationBarModel {
-        public TestRegularLocationBarModel(Tab tab) {
-            super(ContextUtils.getApplicationContext(), NewTabPageDelegate.EMPTY, url -> url,
-                    IncognitoUtils::getNonPrimaryOTRProfileFromWindowAndroid, OFFLINE_STATUS);
+        public TestRegularLocationBarModel(Tab tab, SearchEngineLogoUtils searchEngineLogoUtils) {
+            super(ContextUtils.getApplicationContext(), NewTabPageDelegate.EMPTY,
+                    url -> url.getSpec(), IncognitoUtils::getNonPrimaryOTRProfileFromWindowAndroid,
+                    OFFLINE_STATUS, searchEngineLogoUtils);
             setTab(tab, /*incognito=*/false);
         }
     }
@@ -113,7 +119,7 @@ public class LocationBarModelUnitTest {
     public void getProfile_IncognitoTab_ReturnsPrimaryOTRProfile() {
         when(mCustomTabIncognitoManagerMock.getProfile()).thenReturn(null);
         LocationBarModel incognitoLocationBarModel =
-                new TestIncognitoLocationBarModel(mIncognitoTabMock);
+                new TestIncognitoLocationBarModel(mIncognitoTabMock, mSearchEngineLogoUtils);
         Profile otrProfile = incognitoLocationBarModel.getProfile();
         Assert.assertEquals(mPrimaryOTRProfileMock, otrProfile);
     }
@@ -122,7 +128,7 @@ public class LocationBarModelUnitTest {
     @MediumTest
     public void getProfile_IncognitoCCT_ReturnsNonPrimaryOTRProfile() {
         LocationBarModel incognitoLocationBarModel =
-                new TestIncognitoLocationBarModel(mIncognitoTabMock);
+                new TestIncognitoLocationBarModel(mIncognitoTabMock, mSearchEngineLogoUtils);
         Profile otrProfile = incognitoLocationBarModel.getProfile();
         Assert.assertEquals(mNonPrimaryOTRProfileMock, otrProfile);
     }
@@ -130,7 +136,8 @@ public class LocationBarModelUnitTest {
     @Test
     @MediumTest
     public void getProfile_NullTab_ReturnsPrimaryOTRProfile() {
-        LocationBarModel incognitoLocationBarModel = new TestIncognitoLocationBarModel(null);
+        LocationBarModel incognitoLocationBarModel =
+                new TestIncognitoLocationBarModel(null, mSearchEngineLogoUtils);
         Profile otrProfile = incognitoLocationBarModel.getProfile();
         Assert.assertEquals(mPrimaryOTRProfileMock, otrProfile);
     }
@@ -138,7 +145,8 @@ public class LocationBarModelUnitTest {
     @Test
     @MediumTest
     public void getProfile_RegularTab_ReturnsRegularProfile() {
-        LocationBarModel regularLocationBarModel = new TestRegularLocationBarModel(mRegularTabMock);
+        LocationBarModel regularLocationBarModel =
+                new TestRegularLocationBarModel(mRegularTabMock, mSearchEngineLogoUtils);
         Profile profile = regularLocationBarModel.getProfile();
         Assert.assertEquals(mRegularProfileMock, profile);
     }
@@ -146,7 +154,8 @@ public class LocationBarModelUnitTest {
     @Test
     @MediumTest
     public void getProfile_NullTab_ReturnsRegularProfile() {
-        LocationBarModel regularLocationBarModel = new TestRegularLocationBarModel(null);
+        LocationBarModel regularLocationBarModel =
+                new TestRegularLocationBarModel(null, mSearchEngineLogoUtils);
         Profile profile = regularLocationBarModel.getProfile();
         Assert.assertEquals(mRegularProfileMock, profile);
     }
@@ -154,7 +163,8 @@ public class LocationBarModelUnitTest {
     @Test
     @MediumTest
     public void testObserversNotified_titleChange() {
-        LocationBarModel regularLocationBarModel = new TestRegularLocationBarModel(null);
+        LocationBarModel regularLocationBarModel =
+                new TestRegularLocationBarModel(null, mSearchEngineLogoUtils);
         regularLocationBarModel.addObserver(mLocationBarDataObserver);
         verify(mLocationBarDataObserver, never()).onTitleChanged();
 
@@ -172,7 +182,8 @@ public class LocationBarModelUnitTest {
     @Test
     @MediumTest
     public void testObserversNotified_urlChange() {
-        LocationBarModel regularLocationBarModel = new TestRegularLocationBarModel(null);
+        LocationBarModel regularLocationBarModel =
+                new TestRegularLocationBarModel(null, mSearchEngineLogoUtils);
         regularLocationBarModel.addObserver(mLocationBarDataObserver);
         verify(mLocationBarDataObserver, never()).onUrlChanged();
 
@@ -190,11 +201,31 @@ public class LocationBarModelUnitTest {
     @Test
     @MediumTest
     public void testObserversNotified_ntpLoaded() {
-        LocationBarModel regularLocationBarModel = new TestRegularLocationBarModel(null);
+        LocationBarModel regularLocationBarModel =
+                new TestRegularLocationBarModel(null, mSearchEngineLogoUtils);
         regularLocationBarModel.addObserver(mLocationBarDataObserver);
         verify(mLocationBarDataObserver, never()).onNtpStartedLoading();
 
         regularLocationBarModel.notifyNtpStartedLoading();
         verify(mLocationBarDataObserver).onNtpStartedLoading();
+    }
+
+    @Test
+    @MediumTest
+    public void testObserversNotified_setIsShowingTabSwitcher() {
+        LocationBarModel regularLocationBarModel =
+                new TestRegularLocationBarModel(null, mSearchEngineLogoUtils);
+        regularLocationBarModel.addObserver(mLocationBarDataObserver);
+
+        verify(mLocationBarDataObserver, never()).onTitleChanged();
+        verify(mLocationBarDataObserver, never()).onUrlChanged();
+        verify(mLocationBarDataObserver, never()).onPrimaryColorChanged();
+        verify(mLocationBarDataObserver, never()).onSecurityStateChanged();
+
+        regularLocationBarModel.setIsShowingTabSwitcher(true);
+        verify(mLocationBarDataObserver).onTitleChanged();
+        verify(mLocationBarDataObserver).onUrlChanged();
+        verify(mLocationBarDataObserver).onPrimaryColorChanged();
+        verify(mLocationBarDataObserver).onSecurityStateChanged();
     }
 }

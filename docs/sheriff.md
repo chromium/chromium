@@ -20,8 +20,14 @@ necessary authority to fulfill them. In particular, you have the authority to:
 
 * Revert changes that you know or suspect are causing breakages
 * Disable or otherwise mark misbehaving tests
-* Use TBRs freely as part of your sheriffing duties
+* Use Owners-Override label to override OWNERS checks freely as part of your
+  sheriffing duties
 * Pull in any other engineer or team you need to help you do these duties
+* For clean reverts and cherry-picks, add the
+  [Rubber Stamper bot](code_reviews.md#automated-code_review). All other
+  changes require a +1 from another committer.
+
+TBRs were removed in Q1 2021.
 
 ## How to be a Sheriff
 

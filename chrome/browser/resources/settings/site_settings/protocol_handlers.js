@@ -10,22 +10,23 @@
 
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.m.js';
+import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import '../settings_shared_css.m.js';
+import '../prefs/prefs.js';
+import '../privacy_page/collapse_radio_button.js';
+import '../settings_shared_css.js';
 import '../site_favicon.js';
 
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
-// <if expr="chromeos">
-import {AndroidAppsInfo, AndroidInfoBrowserProxyImpl} from './android_info_browser_proxy.js';
-// </if>
 import {SiteSettingsBehavior} from './site_settings_behavior.js';
 
 /**
@@ -58,7 +59,10 @@ Polymer({
 
   _template: html`{__html_template__}`,
 
-  behaviors: [SiteSettingsBehavior, WebUIListenerBehavior],
+  behaviors: [
+    SiteSettingsBehavior,
+    WebUIListenerBehavior,
+  ],
 
   properties: {
     /**
@@ -88,13 +92,24 @@ Polymer({
      */
     ignoredProtocols: Array,
 
-    // <if expr="chromeos">
     /** @private */
-    settingsAppAvailable_: {
+    enableContentSettingsRedesign_: {
       type: Boolean,
-      value: false,
+      value() {
+        return loadTimeData.getBoolean('enableContentSettingsRedesign');
+      }
     },
-    // </if>
+
+    /** @private {chrome.settingsPrivate.PrefObject} */
+    handlersEnabledPref_: {
+      type: Object,
+      value() {
+        return /** @type {chrome.settingsPrivate.PrefObject} */ ({
+          type: chrome.settingsPrivate.PrefType.BOOLEAN,
+          value: false,
+        });
+      },
+    },
   },
 
   /** @override */
@@ -108,26 +123,6 @@ Polymer({
         this.setIgnoredProtocolHandlers_.bind(this));
     this.browserProxy.observeProtocolHandlers();
   },
-
-  // <if expr="chromeos">
-  /** @override */
-  attached() {
-    this.addWebUIListener(
-        'android-apps-info-update', this.androidAppsInfoUpdate_.bind(this));
-    AndroidInfoBrowserProxyImpl.getInstance().requestAndroidAppsInfo();
-  },
-  // </if>
-
-  // <if expr="chromeos">
-  /**
-   * Receives updates on whether or not ARC settings app is available.
-   * @param {AndroidAppsInfo} info
-   * @private
-   */
-  androidAppsInfoUpdate_(info) {
-    this.settingsAppAvailable_ = info.settingsAppAvailable;
-  },
-  // </if>
 
   /** @private */
   categoryLabelClicked_() {
@@ -150,6 +145,7 @@ Polymer({
    */
   setHandlersEnabled_(enabled) {
     this.categoryEnabled = enabled;
+    this.set('handlersEnabledPref_.value', this.categoryEnabled);
   },
 
   /**
@@ -185,6 +181,10 @@ Polymer({
    * @private
    */
   onToggleChange_(event) {
+    if (this.enableContentSettingsRedesign_) {
+      this.categoryEnabled =
+          (this.$$('#protcolHandlersRadio').selected === 'true');
+    }
     this.browserProxy.setProtocolHandlerDefault(this.categoryEnabled);
   },
 
@@ -227,15 +227,5 @@ Polymer({
     /** @type {!CrActionMenuElement} */ (this.$$('cr-action-menu'))
         .showAt(
             /** @type {!Element} */ (/** @type {!Event} */ (event).target));
-  },
-
-  // <if expr="chromeos">
-  /**
-   * Opens an activity to handle App links (preferred apps).
-   * @private
-   */
-  onManageAndroidAppsClick_() {
-    this.browserProxy.showAndroidManageAppLinks();
-  },
-  // </if>
+  }
 });

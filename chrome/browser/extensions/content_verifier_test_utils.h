@@ -72,9 +72,9 @@ class ForceInstallProvider : public ManagementPolicy::Provider {
 
   std::string GetDebugPolicyProviderName() const override;
   bool UserMayModifySettings(const Extension* extension,
-                             base::string16* error) const override;
+                             std::u16string* error) const override;
   bool MustRemainEnabled(const Extension* extension,
-                         base::string16* error) const override;
+                         std::u16string* error) const override;
 
  private:
   // The extension id we want to disallow uninstall/disable for.

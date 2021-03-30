@@ -27,7 +27,7 @@ GURL MostVisitedClient::GetExploreSitesUrl() const {
   return GURL(chrome::kChromeUINativeExploreURL);
 }
 
-base::string16 MostVisitedClient::GetExploreSitesTitle() const {
+std::u16string MostVisitedClient::GetExploreSitesTitle() const {
   return l10n_util::GetStringUTF16(IDS_NTP_EXPLORE_SITES_TILE_TITLE);
 }
 

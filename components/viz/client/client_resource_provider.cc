@@ -4,6 +4,9 @@
 
 #include "components/viz/client/client_resource_provider.h"
 
+#include <algorithm>
+#include <utility>
+
 #include "base/bind.h"
 #include "base/bits.h"
 #include "base/debug/stack_trace.h"
@@ -290,7 +293,7 @@ ResourceId ClientResourceProvider::ImportResource(
     const TransferableResource& resource,
     std::unique_ptr<SingleReleaseCallback> release_callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  ResourceId id = next_id_++;
+  ResourceId id = id_generator_.GenerateNextId();
   auto result = imported_resources_.emplace(
       id, ImportedResource(id, resource, std::move(release_callback)));
   DCHECK(result.second);  // If false, the id was already in the map.

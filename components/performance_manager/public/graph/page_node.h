@@ -8,6 +8,7 @@
 #include <ostream>
 #include <string>
 
+#include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/optional.h"
@@ -191,10 +192,14 @@ class PageNodeObserver {
 
   // Node lifetime notifications.
 
-  // Called when a |page_node| is added to the graph.
+  // Called when a |page_node| is added to the graph. Observers must not make
+  // any property changes or cause re-entrant notifications during the scope of
+  // this call. Instead, make property changes via a separate posted task.
   virtual void OnPageNodeAdded(const PageNode* page_node) = 0;
 
-  // Called before a |page_node| is removed from the graph.
+  // Called before a |page_node| is removed from the graph. Observers must not
+  // make any property changes or cause re-entrant notifications during the
+  // scope of this call.
   virtual void OnBeforePageNodeRemoved(const PageNode* page_node) = 0;
 
   // Notifications of property changes.

@@ -22,8 +22,10 @@ const unsigned kMaxMessagesToLog = 100;
 
 const size_t PushPullFIFO::kMaxFIFOLength = 65536;
 
-PushPullFIFO::PushPullFIFO(unsigned number_of_channels, size_t fifo_length)
-    : fifo_length_(fifo_length) {
+PushPullFIFO::PushPullFIFO(unsigned number_of_channels,
+                           size_t fifo_length,
+                           unsigned render_quantum_frames)
+    : fifo_length_(fifo_length), render_quantum_frames_(render_quantum_frames) {
   CHECK_LE(fifo_length_, kMaxFIFOLength);
   fifo_bus_ = AudioBus::Create(number_of_channels, fifo_length_);
 }
@@ -55,14 +57,14 @@ PushPullFIFO::~PushPullFIFO() {
 // Push the data from |input_bus| to FIFO. The size of push is determined by
 // the length of |input_bus|.
 void PushPullFIFO::Push(const AudioBus* input_bus) {
-  TRACE_EVENT2("webaudio", "PushPullFIFO::Push", "this", this, "frames",
-               input_bus->length());
+  TRACE_EVENT2("webaudio", "PushPullFIFO::Push", "this",
+               static_cast<void*>(this), "frames", input_bus->length());
 
   MutexLocker locker(lock_);
   TRACE_EVENT0("webaudio", "PushPullFIFO::Push under lock");
 
   CHECK(input_bus);
-  CHECK_EQ(input_bus->length(), audio_utilities::kRenderQuantumFrames);
+  CHECK_EQ(input_bus->length(), render_quantum_frames_);
   SECURITY_CHECK(input_bus->length() <= fifo_length_);
   SECURITY_CHECK(index_write_ < fifo_length_);
 
@@ -110,8 +112,8 @@ void PushPullFIFO::Push(const AudioBus* input_bus) {
 // Pull the data out of FIFO to |output_bus|. If remaining frame in the FIFO
 // is less than the frames to pull, provides remaining frame plus the silence.
 size_t PushPullFIFO::Pull(AudioBus* output_bus, size_t frames_requested) {
-  TRACE_EVENT2("webaudio", "PushPullFIFO::Pull", "this", this, "frames",
-               frames_requested);
+  TRACE_EVENT2("webaudio", "PushPullFIFO::Pull", "this",
+               static_cast<void*>(this), "frames", frames_requested);
 
   MutexLocker locker(lock_);
   TRACE_EVENT0("webaudio", "PushPullFIFO::Pull under lock");

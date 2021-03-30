@@ -23,11 +23,13 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">បញ្ចូល www. និង .com ទៅ​ក្នុង​ធាតុ​បញ្ចូល​របស់អ្នក​នៅក្នុង​របារអាសយដ្ឋាន រួច​បើក​ទំព័រ</translation>
+<translation id="1768987374400973299">ថតវីដេអូ/ថតរូបអេក្រង់</translation>
 <translation id="1872219238824176091">លុបតុ​បច្ចុប្បន្ន</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> បន្ទាប់មក <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> ឬ <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">ទៅកាន់​ផ្ទាំង​បន្ទាប់</translation>
 <translation id="2010818616644390445">ទៅ​កាន់​ផ្ទាំងចុងក្រោយ​នៅក្នុង​វិនដូ</translation>
 <translation id="2040706009561734834">បើក/បិទ​កម្មវិធី​ចាប់ផ្ដើម</translation>
+<translation id="2086334242442703436">បើកផ្ទាំង​ជ្រើសរើស​រូបអារម្មណ៍</translation>
 <translation id="2088054208777350526">ស្វែងរក​ផ្លូវកាត់​ក្តារចុច</translation>
 <translation id="2125211348069077981"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="E" /> ឬ <ph name="F" /></translation>
 <translation id="2145908266289632567">ការ​កែ​សម្រួល​អត្ថបទ</translation>
@@ -46,6 +48,7 @@
 <translation id="2480851840841871861">បើក Google ជំនួយការ</translation>
 <translation id="2488661730534396940">បើកដំណើរការ​តុនៅខាងឆ្វេង</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516999188535378855">បើកកម្មវិធីវិភាគ</translation>
 <translation id="2530339807289914946">រំកិល​ទំព័រ​ចុះក្រោម</translation>
 <translation id="2530896289327917474">បើក ឬបិទ​មុខងារ caret browsing</translation>
 <translation id="2574014812750545982">កំណត់​កម្រិត​ពង្រីកបង្រួម​នៅលើទំព័រឡើងវិញ</translation>
@@ -110,6 +113,7 @@
 <translation id="4801989101741319327">ផ្លាស់ទី​ទៅ​ខាងចុង​នៃ​ពាក្យបន្ទាប់</translation>
 <translation id="4866066940972151697">បើកដំណើរការ​តុនៅខាងស្ដាំ</translation>
 <translation id="4916163929714267752">បើក​តំណ​ក្នុង​វិន​ដូថ្មី</translation>
+<translation id="492453977506755176">គ្រាប់ចុចមុខងារថត</translation>
 <translation id="5030659775136592441">បង្ហាញ​ឧបករណ៍​គ្រប់គ្រង​ចំណាំ</translation>
 <translation id="5034421018520995080">ទៅ​កាន់​ផ្នែក​ខាងលើ​នៃ​ទំព័រ</translation>
 <translation id="5042305953558921026">គ្រាប់​ចុច​មុខងារ​ទិដ្ឋ​ភាពរួម</translation>
@@ -132,6 +136,7 @@
 <translation id="5899919361772749550">បង្ហាញ ឬ​លាក់​កុងសូល​ឧបករណ៍​អ្នកអភិវឌ្ឍន៍</translation>
 <translation id="5919628958418675842">បើក ឬបិទអេក្រង់ឯកជនភាព</translation>
 <translation id="5921745308587794300">បង្វិលវិនដូ</translation>
+<translation id="5926306472221400972">ថតរូប​អេក្រង់​ពេញអេក្រង់</translation>
 <translation id="6022924867608035986">សម្អាត​អក្សរក្នុងប្រអប់ស្វែងរក</translation>
 <translation id="6045998054441862242">បើក​មុខងារ​ភាព​ដិត​កម្រិត​ខ្ពស់</translation>
 <translation id="6052614013050385269">ចុច​ខាងស្ដាំ​លើ​តំណ</translation>
@@ -149,6 +154,7 @@
 <translation id="6445033640292336367">ផ្លាស់ទី​ផ្ទាំង​ទៅ​ទីតាំង​ដើម​របស់វា​វិញ</translation>
 <translation id="6474744297082284761">បង្រួម (នៅពេលភ្ជាប់ ឬ​បើក​កម្មវិធី​ពង្រីក​ពេញអេក្រង់)</translation>
 <translation id="649811797655257835">ជ្រើសរើស​ឯកសារ រួចចុច <ph name="SPACE" /></translation>
+<translation id="6551886416582667425">ថតវីដេអូ/ថតរូប​អេក្រង់នៅផ្នែកខ្លះ</translation>
 <translation id="6556040137485212400">បើក​វិន​ដូ​ដែល​មិន​បាន​ប្រើ​ប្រាស់​រយៈពេលយូរ​បំផុត</translation>
 <translation id="666343722268997814">បើក​ម៉ឺនុយ​ចុច​ខាងស្ដាំ​សម្រាប់​ធាតុ​ដែល​បាន​រំលេច</translation>
 <translation id="6671538777808758331">ទៅកាន់​ការ​ផ្គូ​ផ្គង​បន្ទាប់​សម្រាប់​ការ​ស្វែង​រក​របស់អ្នក</translation>
@@ -175,6 +181,7 @@
 <translation id="7611271430932669992">ផ្លាស់ទី​ការ​ផ្ដោត​ទៅ​ផ្ទាំង​លោតឡើង ឬ​ប្រអប់​បញ្ចូល</translation>
 <translation id="7635348532214572995">ផ្លាស់ទីរូបកម្មវិធី​នៅជុំវិញ​ក្រឡាកម្មវិធី</translation>
 <translation id="766326951329901120">ដាក់​ខ្លឹមសារ​ចូល​ពីអង្គចងចាំ​ជា​អត្ថបទ​ធម្មតា</translation>
+<translation id="7673453620027697230">ថតវីដេអូ/ថតរូបអេក្រង់របស់វិនដូ</translation>
 <translation id="7703010453515335249">តង្កៀបខាងឆ្វេង</translation>
 <translation id="7724603315864178912">កាត់</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> បន្ទាប់មក <ph name="SPACE" /> ឬ <ph name="ENTER" /></translation>

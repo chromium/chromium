@@ -38,7 +38,8 @@ RootCompositorFrameSinkImpl::Create(
     OutputSurfaceProvider* output_surface_provider,
     uint32_t restart_id,
     bool run_all_compositor_stages_before_draw,
-    const DebugRendererSettings* debug_settings) {
+    const DebugRendererSettings* debug_settings,
+    gfx::RenderingPipeline* gpu_pipeline) {
   // First create an output surface.
   mojo::Remote<mojom::DisplayClient> display_client(
       std::move(params->display_client));
@@ -127,7 +128,7 @@ RootCompositorFrameSinkImpl::Create(
 
   auto scheduler = std::make_unique<DisplayScheduler>(
       begin_frame_source, task_runner.get(), max_frames_pending,
-      run_all_compositor_stages_before_draw);
+      run_all_compositor_stages_before_draw, gpu_pipeline);
 
 #if !defined(OS_APPLE)
   auto* output_surface_ptr = output_surface.get();
@@ -161,8 +162,7 @@ RootCompositorFrameSinkImpl::Create(
       std::move(synthetic_begin_frame_source),
       std::move(external_begin_frame_source), std::move(display),
       params->use_preferred_interval_for_video,
-      hw_support_for_multiple_refresh_rates,
-      params->num_of_frames_to_toggle_interval));
+      hw_support_for_multiple_refresh_rates));
 
 #if !defined(OS_APPLE)
   // On Mac vsync parameter updates come from the browser process. We don't need
@@ -196,7 +196,8 @@ void RootCompositorFrameSinkImpl::DisableSwapUntilResize(
 #endif
 
 void RootCompositorFrameSinkImpl::Resize(const gfx::Size& size) {
-  display_->Resize(size);
+  if (!display_->resize_based_on_root_surface())
+    display_->Resize(size);
 }
 
 void RootCompositorFrameSinkImpl::SetDisplayColorMatrix(
@@ -307,6 +308,10 @@ void RootCompositorFrameSinkImpl::SetSupportedRefreshRates(
   display_->SetSupportedFrameIntervals(supported_frame_intervals);
 }
 
+void RootCompositorFrameSinkImpl::PreserveChildSurfaceControls() {
+  display_->PreserveChildSurfaceControls();
+}
+
 #endif  // defined(OS_ANDROID)
 
 void RootCompositorFrameSinkImpl::AddVSyncParameterObserver(
@@ -317,8 +322,10 @@ void RootCompositorFrameSinkImpl::AddVSyncParameterObserver(
 
 void RootCompositorFrameSinkImpl::SetDelegatedInkPointRenderer(
     mojo::PendingReceiver<mojom::DelegatedInkPointRenderer> receiver) {
-  if (auto* ink_renderer = display_->GetDelegatedInkPointRenderer())
+  if (auto* ink_renderer = display_->GetDelegatedInkPointRenderer(
+          /*create_if_necessary=*/true)) {
     ink_renderer->InitMessagePipeline(std::move(receiver));
+  }
 }
 
 void RootCompositorFrameSinkImpl::SetNeedsBeginFrame(bool needs_begin_frame) {
@@ -334,8 +341,13 @@ void RootCompositorFrameSinkImpl::SubmitCompositorFrame(
     CompositorFrame frame,
     base::Optional<HitTestRegionList> hit_test_region_list,
     uint64_t submit_time) {
-  if (support_->last_activated_local_surface_id() != local_surface_id)
+  if (support_->last_activated_local_surface_id() != local_surface_id) {
     display_->SetLocalSurfaceId(local_surface_id, frame.device_scale_factor());
+    // Resize the |display_| to the root compositor frame |output_rect| so that
+    // we won't show root surface gutters.
+    if (display_->resize_based_on_root_surface())
+      display_->Resize(frame.render_pass_list.back()->output_rect.size());
+  }
 
   const auto result = support_->MaybeSubmitCompositorFrame(
       local_surface_id, std::move(frame), std::move(hit_test_region_list),
@@ -397,8 +409,7 @@ RootCompositorFrameSinkImpl::RootCompositorFrameSinkImpl(
     std::unique_ptr<ExternalBeginFrameSource> external_begin_frame_source,
     std::unique_ptr<Display> display,
     bool use_preferred_interval_for_video,
-    bool hw_support_for_multiple_refresh_rates,
-    size_t num_of_frames_to_toggle_interval)
+    bool hw_support_for_multiple_refresh_rates)
     : compositor_frame_sink_client_(std::move(frame_sink_client)),
       compositor_frame_sink_receiver_(this, std::move(frame_sink_receiver)),
       display_client_(std::move(display_client)),
@@ -417,8 +428,7 @@ RootCompositorFrameSinkImpl::RootCompositorFrameSinkImpl(
                                                support_->frame_sink_id());
   display_->Initialize(this, support_->frame_sink_manager()->surface_manager(),
                        Display::kEnableSharedImages,
-                       hw_support_for_multiple_refresh_rates,
-                       num_of_frames_to_toggle_interval);
+                       hw_support_for_multiple_refresh_rates);
   support_->SetUpHitTest(display_.get());
   if (use_preferred_interval_for_video &&
       !hw_support_for_multiple_refresh_rates) {

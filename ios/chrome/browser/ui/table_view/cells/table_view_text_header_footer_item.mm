@@ -100,11 +100,11 @@
     bottomAnchorConstraint.priority = UILayoutPriorityDefaultHigh;
     NSLayoutConstraint* leadingAnchorConstraint = [containerView.leadingAnchor
         constraintEqualToAnchor:self.contentView.leadingAnchor
-                       constant:kTableViewHorizontalSpacing];
+                       constant:HorizontalPadding()];
     leadingAnchorConstraint.priority = UILayoutPriorityDefaultHigh;
     NSLayoutConstraint* trailingAnchorConstraint = [containerView.trailingAnchor
         constraintEqualToAnchor:self.contentView.trailingAnchor
-                       constant:-kTableViewHorizontalSpacing];
+                       constant:-HorizontalPadding()];
     trailingAnchorConstraint.priority = UILayoutPriorityDefaultHigh;
 
     // Set and activate constraints.

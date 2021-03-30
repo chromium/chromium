@@ -57,7 +57,6 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/fake_test_cert_verifier_params_factory.h"
 #include "services/network/test/test_network_context_client.h"
-#include "services/network/test/test_network_service_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -251,6 +250,17 @@ class SimpleLoaderTestHelper : public SimpleURLLoaderStreamConsumer {
     download_to_stream_async_resume_ = download_to_stream_async_resume;
   }
 
+  // Sets whether the resume-reading closure should be captured and later
+  // available in TakeCapturedStreamResume()
+  void set_download_to_stream_capture_resume(
+      bool download_to_stream_capture_resume) {
+    download_to_stream_capture_resume_ = download_to_stream_capture_resume;
+  }
+
+  base::OnceClosure TakeCapturedStreamResume() {
+    return std::move(captured_stream_resume_);
+  }
+
   // Sets whether the helper should destroy the SimpleURLLoader in
   // OnDataReceived.
   void set_download_to_stream_destroy_on_data_received(
@@ -417,6 +427,14 @@ class SimpleLoaderTestHelper : public SimpleURLLoaderStreamConsumer {
       return;
     }
 
+    if (download_to_stream_capture_resume_) {
+      if (captured_stream_resume_) {
+        std::move(captured_stream_resume_).Run();
+      }
+      captured_stream_resume_ = std::move(resume);
+      return;
+    }
+
     if (download_to_stream_async_resume_) {
       base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                        std::move(resume));
@@ -496,6 +514,8 @@ class SimpleLoaderTestHelper : public SimpleURLLoaderStreamConsumer {
   bool download_to_stream_destroy_on_data_received_ = false;
   bool download_to_stream_async_retry_ = false;
   bool download_to_stream_destroy_on_retry_ = false;
+  bool download_to_stream_capture_resume_ = false;
+  base::OnceClosure captured_stream_resume_;
 
   bool destroy_loader_on_complete_ = false;
 
@@ -604,13 +624,13 @@ class SimpleURLLoaderTestBase {
         network_context_.BindNewPipeAndPassReceiver(),
         std::move(context_params));
 
-    mojo::PendingRemote<network::mojom::NetworkServiceClient>
-        network_service_client_remote;
-    network_service_client_ = std::make_unique<TestNetworkServiceClient>(
-        network_service_client_remote.InitWithNewPipeAndPassReceiver());
-    network_service_remote->SetClient(
-        std::move(network_service_client_remote),
-        network::mojom::NetworkServiceParams::New());
+    mojo::PendingReceiver<network::mojom::URLLoaderNetworkServiceObserver>
+        default_observer_receiver;
+    network::mojom::NetworkServiceParamsPtr network_service_params =
+        network::mojom::NetworkServiceParams::New();
+    network_service_params->default_observer =
+        default_observer_receiver.InitWithNewPipeAndPassRemote();
+    network_service_remote->SetParams(std::move(network_service_params));
 
     mojo::PendingRemote<network::mojom::NetworkContextClient>
         network_context_client_remote;
@@ -666,7 +686,6 @@ class SimpleURLLoaderTestBase {
   base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<network::mojom::NetworkService> network_service_;
-  std::unique_ptr<network::mojom::NetworkServiceClient> network_service_client_;
   std::unique_ptr<network::mojom::NetworkContextClient> network_context_client_;
   mojo::Remote<network::mojom::NetworkContext> network_context_;
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
@@ -1966,9 +1985,10 @@ class MockURLLoader : public network::mojom::URLLoader {
         test_events_(std::move(test_events)) {
     if (request_body && request_body->elements()->size() == 1 &&
         (*request_body->elements())[0].type() ==
-            network::mojom::DataElementType::kDataPipe) {
-      data_pipe_getter_.Bind(
-          (*request_body->elements())[0].CloneDataPipeGetter());
+            network::mojom::DataElementDataView::Tag::kDataPipe) {
+      const auto& element =
+          (*request_body->elements())[0].As<network::DataElementDataPipe>();
+      data_pipe_getter_.Bind(element.CloneDataPipeGetter());
       DCHECK(data_pipe_getter_);
     }
   }
@@ -1981,13 +2001,15 @@ class MockURLLoader : public network::mojom::URLLoader {
           upload_data_pipe_.reset();
           weak_factory_for_data_pipe_callbacks_.InvalidateWeakPtrs();
           read_run_loop_ = std::make_unique<base::RunLoop>();
-          mojo::DataPipe data_pipe;
+          mojo::ScopedDataPipeProducerHandle producer_handle;
+          ASSERT_EQ(
+              mojo::CreateDataPipe(nullptr, producer_handle, upload_data_pipe_),
+              MOJO_RESULT_OK);
           data_pipe_getter_->Read(
-              std::move(data_pipe.producer_handle),
+              std::move(producer_handle),
               base::BindOnce(
                   &MockURLLoader::OnReadComplete,
                   weak_factory_for_data_pipe_callbacks_.GetWeakPtr()));
-          upload_data_pipe_ = std::move(data_pipe.consumer_handle);
           // Continue instead of break, to avoid spinning the message loop -
           // only wait for the response if next step indicates to do so.
           continue;
@@ -2091,10 +2113,10 @@ class MockURLLoader : public network::mojom::URLLoader {
           break;
         }
         case TestLoaderEvent::kBodyBufferReceived: {
-          mojo::DataPipe data_pipe(1024);
-          body_stream_ = std::move(data_pipe.producer_handle);
-          client_->OnStartLoadingResponseBody(
-              std::move(data_pipe.consumer_handle));
+          mojo::ScopedDataPipeConsumerHandle consumer_handle;
+          ASSERT_EQ(mojo::CreateDataPipe(1024, body_stream_, consumer_handle),
+                    MOJO_RESULT_OK);
+          client_->OnStartLoadingResponseBody(std::move(consumer_handle));
           break;
         }
         case TestLoaderEvent::kBodyDataRead: {
@@ -2232,7 +2254,6 @@ class MockURLLoaderFactory : public network::mojom::URLLoaderFactory {
 
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& url_request,
@@ -2764,6 +2785,9 @@ TEST_P(SimpleURLLoaderTest, RetryOn5xx) {
       EXPECT_EQ(test_case.expected_num_requests - 1,
                 test_helper->download_as_stream_retries());
     }
+
+    EXPECT_EQ(test_case.expected_num_requests - 1,
+              test_helper->simple_url_loader()->GetNumRetries());
   }
 }
 
@@ -2856,6 +2880,9 @@ TEST_P(SimpleURLLoaderTest, RetryOnNameNotResolved) {
       EXPECT_EQ(test_case.expected_num_requests - 1,
                 test_helper->download_as_stream_retries());
     }
+
+    EXPECT_EQ(test_case.expected_num_requests - 1,
+              test_helper->simple_url_loader()->GetNumRetries());
   }
 }
 
@@ -3037,6 +3064,9 @@ TEST_P(SimpleURLLoaderTest, RetryOnNetworkChange) {
         EXPECT_EQ(test_case.expected_num_requests - 1,
                   test_helper->download_as_stream_retries());
       }
+
+      EXPECT_EQ(test_case.expected_num_requests - 1,
+                test_helper->simple_url_loader()->GetNumRetries());
     }
   }
 
@@ -3403,11 +3433,17 @@ class SimpleURLLoaderMockTimeTest : public testing::Test {
  public:
   SimpleURLLoaderMockTimeTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        disallow_blocking_(std::make_unique<base::ScopedDisallowBlocking>()) {
+        disallow_blocking_(std::make_unique<base::ScopedDisallowBlocking>()) {}
+  ~SimpleURLLoaderMockTimeTest() override = default;
+
+  void SetUp() override {
     SimpleURLLoader::SetTimeoutTickClockForTest(
         task_environment_.GetMockTickClock());
   }
-  ~SimpleURLLoaderMockTimeTest() override {}
+
+  void TearDown() override {
+    SimpleURLLoader::SetTimeoutTickClockForTest(nullptr);
+  }
 
   std::unique_ptr<SimpleLoaderTestHelper> CreateHelper() {
     std::unique_ptr<network::ResourceRequest> resource_request =
@@ -3418,6 +3454,17 @@ class SimpleURLLoaderMockTimeTest : public testing::Test {
     return std::make_unique<SimpleLoaderTestHelper>(
         std::move(resource_request),
         SimpleLoaderTestHelper::DownloadType::TO_STRING);
+  }
+
+  std::unique_ptr<SimpleLoaderTestHelper> CreateStreamHelper() {
+    std::unique_ptr<network::ResourceRequest> resource_request =
+        std::make_unique<network::ResourceRequest>();
+    resource_request->url = GURL("foo://bar/");
+    resource_request->method = "GET";
+    resource_request->enable_upload_progress = true;
+    return std::make_unique<SimpleLoaderTestHelper>(
+        std::move(resource_request),
+        SimpleLoaderTestHelper::DownloadType::AS_STREAM);
   }
 
  protected:
@@ -3441,6 +3488,32 @@ TEST_F(SimpleURLLoaderMockTimeTest, TimeoutTriggered) {
 
   EXPECT_EQ(net::ERR_TIMED_OUT, test_helper->simple_url_loader()->NetError());
   EXPECT_FALSE(test_helper->simple_url_loader()->CompletionStatus());
+}
+
+// Request fails with a timeout like in TimeoutTriggered, and the stream resume
+// closure is called after the timeout. The loader is alive throughout.
+TEST_F(SimpleURLLoaderMockTimeTest, StreamResumeAfterTimeout) {
+  MockURLLoaderFactory loader_factory(&task_environment_);
+  loader_factory.AddEvents(
+      {TestLoaderEvent::kReceivedResponse, TestLoaderEvent::kBodyBufferReceived,
+       TestLoaderEvent::kBodyDataRead, TestLoaderEvent::kAdvanceOneSecond,
+       TestLoaderEvent::kResponseComplete, TestLoaderEvent::kBodyBufferClosed});
+  std::unique_ptr<SimpleLoaderTestHelper> test_helper = CreateStreamHelper();
+  test_helper->simple_url_loader()->SetTimeoutDuration(
+      base::TimeDelta::FromSeconds(1));
+  test_helper->set_download_to_stream_capture_resume(true);
+
+  loader_factory.RunTest(test_helper.get());
+
+  EXPECT_EQ(net::ERR_TIMED_OUT, test_helper->simple_url_loader()->NetError());
+  EXPECT_FALSE(test_helper->simple_url_loader()->CompletionStatus());
+
+  base::OnceClosure captured_resume = test_helper->TakeCapturedStreamResume();
+  ASSERT_TRUE(captured_resume);
+  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                   std::move(captured_resume));
+  // Make sure no pending task results in a crash.
+  base::RunLoop().RunUntilIdle();
 }
 
 // Less time is simulated passing than the timeout value, so this request should

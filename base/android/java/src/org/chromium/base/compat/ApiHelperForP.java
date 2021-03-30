@@ -5,18 +5,14 @@
 package org.chromium.base.compat;
 
 import android.annotation.TargetApi;
-import android.app.RemoteAction;
 import android.content.pm.PackageInfo;
 import android.location.LocationManager;
 import android.net.LinkProperties;
 import android.os.Build;
-import android.view.textclassifier.TextClassification;
-
-import androidx.annotation.NonNull;
+import android.telephony.SignalStrength;
+import android.telephony.TelephonyManager;
 
 import org.chromium.base.annotations.VerifiesOnP;
-
-import java.util.List;
 
 /**
  * Utility class to use new APIs that were added in P (API level 28). These need to exist in a
@@ -48,8 +44,8 @@ public final class ApiHelperForP {
         return locationManager.isLocationEnabled();
     }
 
-    /** See {@link TextClassification#getActions() } */
-    public static @NonNull List<RemoteAction> getActions(TextClassification classification) {
-        return classification.getActions();
+    /** See {@link TelephonyManager#getSignalStrength() }. */
+    public static SignalStrength getSignalStrength(TelephonyManager telephonyManager) {
+        return telephonyManager.getSignalStrength();
     }
 }

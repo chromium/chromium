@@ -30,7 +30,7 @@ class RelaunchRequiredTimer {
 
   // Returns current notification's title, composed depending on how much time
   // is left until the deadline.
-  base::string16 GetWindowTitle() const;
+  std::u16string GetWindowTitle() const;
 
  private:
   // Schedules a timer to fire the next time the title must be updated.

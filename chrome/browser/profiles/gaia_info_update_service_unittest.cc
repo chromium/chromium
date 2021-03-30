@@ -88,7 +88,7 @@ class GAIAInfoUpdateServiceTestBase : public testing::Test {
     service_.reset(new GAIAInfoUpdateService(
         identity_test_env_.identity_manager(),
         testing_profile_manager_.profile_attributes_storage(),
-        profile()->GetPath(), profile()->GetPrefs()));
+        profile()->GetPath()));
   }
 
   void TearDown() override {
@@ -163,12 +163,9 @@ TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOff) {
 
   ASSERT_EQ(1u, storage()->GetNumberOfProfiles());
   ProfileAttributesEntry* entry = storage()->GetAllProfilesAttributes().front();
-  EXPECT_EQ(entry->GetGAIAGivenName(), base::UTF8ToUTF16("Pat"));
-  EXPECT_EQ(entry->GetGAIAName(), base::UTF8ToUTF16("Pat Foo"));
+  EXPECT_EQ(entry->GetGAIAGivenName(), u"Pat");
+  EXPECT_EQ(entry->GetGAIAName(), u"Pat Foo");
   EXPECT_EQ(entry->GetHostedDomain(), kNoHostedDomainFound);
-  EXPECT_EQ(
-      profile()->GetPrefs()->GetString(prefs::kGoogleServicesHostedDomain),
-      kNoHostedDomainFound);
 
   gfx::Image gaia_picture = gfx::test::CreateImage(256, 256);
   signin::SimulateAccountImageFetch(identity_test_env()->identity_manager(),
@@ -183,10 +180,6 @@ TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOff) {
   EXPECT_TRUE(entry->GetGAIAName().empty());
   EXPECT_EQ(nullptr, entry->GetGAIAPicture());
   EXPECT_TRUE(entry->GetHostedDomain().empty());
-  EXPECT_TRUE(profile()
-                  ->GetPrefs()
-                  ->GetString(prefs::kGoogleServicesHostedDomain)
-                  .empty());
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -223,15 +216,12 @@ TEST_F(GAIAInfoUpdateServiceDiceTest, RevokeSyncConsent) {
   // Revoke sync consent (stay signed in with the primary account).
   identity_test_env()->RevokeSyncConsent();
   ASSERT_TRUE(identity_test_env()->identity_manager()->HasPrimaryAccount(
-      signin::ConsentLevel::kNotRequired));
+      signin::ConsentLevel::kSignin));
   // Verify that the GAIA name and picture, and picture URL are not cleared
   // as unconsented primary account still exists.
-  EXPECT_EQ(entry->GetGAIAGivenName(), base::UTF8ToUTF16("Pat"));
-  EXPECT_EQ(entry->GetGAIAName(), base::UTF8ToUTF16("Pat Foo"));
+  EXPECT_EQ(entry->GetGAIAGivenName(), u"Pat");
+  EXPECT_EQ(entry->GetGAIAName(), u"Pat Foo");
   EXPECT_EQ(entry->GetHostedDomain(), kNoHostedDomainFound);
-  EXPECT_EQ(
-      profile()->GetPrefs()->GetString(prefs::kGoogleServicesHostedDomain),
-      kNoHostedDomainFound);
   EXPECT_TRUE(gfx::test::AreImagesEqual(gaia_picture, entry->GetAvatarIcon()));
 }
 
@@ -240,8 +230,9 @@ TEST_F(GAIAInfoUpdateServiceTest, LogInLogOut) {
   AccountInfo info =
       identity_test_env()->MakeUnconsentedPrimaryAccountAvailable(email);
   EXPECT_TRUE(identity_test_env()->identity_manager()->HasPrimaryAccount(
-      signin::ConsentLevel::kNotRequired));
-  EXPECT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount());
+      signin::ConsentLevel::kSignin));
+  EXPECT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSync));
   info = GetValidAccountInfo(info.email, info.account_id, "Pat", "Pat Foo",
                              kNoHostedDomainFound);
   signin::UpdateAccountInfoForAccount(identity_test_env()->identity_manager(),
@@ -250,12 +241,9 @@ TEST_F(GAIAInfoUpdateServiceTest, LogInLogOut) {
 
   ASSERT_EQ(1u, storage()->GetNumberOfProfiles());
   ProfileAttributesEntry* entry = storage()->GetAllProfilesAttributes().front();
-  EXPECT_EQ(entry->GetGAIAGivenName(), base::UTF8ToUTF16("Pat"));
-  EXPECT_EQ(entry->GetGAIAName(), base::UTF8ToUTF16("Pat Foo"));
+  EXPECT_EQ(entry->GetGAIAGivenName(), u"Pat");
+  EXPECT_EQ(entry->GetGAIAName(), u"Pat Foo");
   EXPECT_EQ(entry->GetHostedDomain(), kNoHostedDomainFound);
-  EXPECT_EQ(
-      profile()->GetPrefs()->GetString(prefs::kGoogleServicesHostedDomain),
-      kNoHostedDomainFound);
 
   gfx::Image gaia_picture = gfx::test::CreateImage(256, 256);
   signin::SimulateAccountImageFetch(identity_test_env()->identity_manager(),
@@ -272,10 +260,6 @@ TEST_F(GAIAInfoUpdateServiceTest, LogInLogOut) {
   EXPECT_TRUE(entry->GetGAIAName().empty());
   EXPECT_EQ(nullptr, entry->GetGAIAPicture());
   EXPECT_TRUE(entry->GetHostedDomain().empty());
-  EXPECT_TRUE(profile()
-                  ->GetPrefs()
-                  ->GetString(prefs::kGoogleServicesHostedDomain)
-                  .empty());
 }
 
 TEST_F(GAIAInfoUpdateServiceTest, LogInLogOutLogIn) {
@@ -403,11 +387,11 @@ TEST_F(GAIAInfoUpdateServiceTest, ClearGaiaInfoOnStartup) {
   // Simulate a state where the profile entry has GAIA related information
   // when there is not primary account set.
   ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
-      signin::ConsentLevel::kNotRequired));
+      signin::ConsentLevel::kSignin));
   ASSERT_EQ(1u, storage()->GetNumberOfProfiles());
   ProfileAttributesEntry* entry = storage()->GetAllProfilesAttributes().front();
-  entry->SetGAIAName(base::UTF8ToUTF16("foo"));
-  entry->SetGAIAGivenName(base::UTF8ToUTF16("Pat Foo"));
+  entry->SetGAIAName(u"foo");
+  entry->SetGAIAGivenName(u"Pat Foo");
   gfx::Image gaia_picture = gfx::test::CreateImage(256, 256);
   entry->SetGAIAPicture("GAIA_IMAGE_URL_WITH_SIZE", gaia_picture);
   entry->SetHostedDomain(kNoHostedDomainFound);

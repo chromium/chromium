@@ -29,6 +29,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &features::kWebViewMixedContentAutoupgrades,
     &features::kWebViewTestFeature,
     &features::kWebViewMeasureScreenCoverage,
+    &features::kWebViewJavaJsBridgeMojo,
 };
 
 const base::Feature* FindFeatureExposedToJava(const std::string& feature_name) {

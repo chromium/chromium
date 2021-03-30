@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string16.h"
 #include "base/time/default_tick_clock.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -91,6 +90,56 @@ enum class SessionEvent {
 
 void LogSessionEvent(SessionEvent event) {
   base::UmaHistogramEnumeration("Accessibility.LiveCaption.Session", event);
+}
+
+std::unique_ptr<views::ImageButton> BuildImageButton(
+    views::Button::PressedCallback callback,
+    const int tooltip_text_id) {
+  auto button = views::CreateVectorImageButton(std::move(callback));
+  button->SetTooltipText(l10n_util::GetStringUTF16(tooltip_text_id));
+  button->SizeToPreferredSize();
+  views::InstallCircleHighlightPathGenerator(
+      button.get(), gfx::Insets(kButtonCircleHighlightPaddingDip));
+  return button;
+}
+
+// ui::CaptionStyle styles are CSS strings that can sometimes have !important.
+// This method removes " !important" if it exists at the end of a CSS string.
+std::string MaybeRemoveCSSImportant(std::string css_string) {
+  RE2::Replace(&css_string, "\\s+!important", "");
+  return css_string;
+}
+
+// Parses a CSS color string that is in the form rgba and has a non-zero alpha
+// value into an SkColor and sets it to be the value of the passed-in SkColor
+// address. Returns whether or not the operation was a success.
+//
+// `css_string` is the CSS color string passed in. It is in the form
+//     rgba(#,#,#,#). r, g, and b are integers between 0 and 255, inclusive.
+//     a is a double between 0.0 and 1.0. There may be whitespace in between the
+//     commas.
+// `sk_color` is the address of an SKColor. If the operation is a success, the
+//     function will set sk_color's value to be the parsed SkColor. If the
+//     operation is not a success, sk_color's value will not change.
+//
+// As of spring 2021, all OS's use rgba to define the caption style colors.
+// However, the ui::CaptionStyle spec also allows for the use of any valid CSS
+// color spec. This function will need to be revisited should ui::CaptionStyle
+// colors use non-rgba to define their colors.
+bool ParseNonTransparentRGBACSSColorString(std::string css_string,
+                                           SkColor* sk_color) {
+  std::string rgba = MaybeRemoveCSSImportant(css_string);
+  if (rgba.empty())
+    return false;
+  uint16_t r, g, b;
+  double a;
+  bool match = RE2::FullMatch(
+      rgba, "rgba\\((\\d+),\\s*(\\d+),\\s*(\\d+),\\s*(\\d+\\.?\\d*)\\)", &r, &g,
+      &b, &a);
+  match &= a != 0;
+  if (match)
+    *sk_color = SkColorSetARGB(a * 255, r, g, b);
+  return match;
 }
 
 }  // namespace
@@ -205,7 +254,7 @@ class CaptionBubbleLabel : public views::Label {
     node_data->role = ax::mojom::Role::kParagraph;
   }
 
-  void SetText(const base::string16& text) override {
+  void SetText(const std::u16string& text) override {
     views::Label::SetText(text);
 
     // Only update ViewAccessibility if accessibility is enabled.
@@ -225,11 +274,11 @@ class CaptionBubbleLabel : public views::Label {
     size_t start = 0;
     for (size_t i = 0; i < num_lines - 1; ++i) {
       size_t end = GetTextIndexOfLine(i + 1);
-      base::string16 substring = text.substr(start, end - start);
+      std::u16string substring = text.substr(start, end - start);
       UpdateAXLine(substring, i, gfx::Range(start, end));
       start = end;
     }
-    base::string16 substring = text.substr(start, text.size() - start);
+    std::u16string substring = text.substr(start, text.size() - start);
     if (!substring.empty()) {
       UpdateAXLine(substring, num_lines - 1, gfx::Range(start, text.size()));
     }
@@ -244,7 +293,7 @@ class CaptionBubbleLabel : public views::Label {
   }
 
  private:
-  void UpdateAXLine(const base::string16& line_text,
+  void UpdateAXLine(const std::u16string& line_text,
                     const size_t line_index,
                     const gfx::Range& text_range) {
     auto& ax_lines = GetViewAccessibility().virtual_children();
@@ -277,7 +326,7 @@ CaptionBubble::CaptionBubble(views::View* anchor,
                              base::OnceClosure destroyed_callback)
     : BubbleDialogDelegateView(anchor,
                                views::BubbleBorder::FLOAT,
-                               views::BubbleBorder::Shadow::NO_ASSETS),
+                               views::BubbleBorder::Shadow::NO_SHADOW),
       destroyed_callback_(std::move(destroyed_callback)),
       ratio_in_parent_x_(kDefaultRatioInParentX),
       ratio_in_parent_y_(kDefaultRatioInParentY),
@@ -415,11 +464,6 @@ void CaptionBubble::Init() {
       ->set_cross_axis_alignment(views::BoxLayout::CrossAxisAlignment::kEnd);
   UseCompactMargins();
 
-  // TODO(crbug.com/1055150): Use system caption color scheme rather than
-  // hard-coding the colors.
-  SkColor caption_bubble_color_ =
-      SkColorSetA(gfx::kGoogleGrey900, kCaptionBubbleAlpha);
-  set_color(caption_bubble_color_);
   set_close_on_deactivate(false);
   // The caption bubble starts out hidden and unable to be activated.
   SetCanActivate(false);
@@ -427,11 +471,10 @@ void CaptionBubble::Init() {
   auto label = std::make_unique<CaptionBubbleLabel>();
   label->SetMultiLine(true);
   label->SetMaximumWidth(kMaxWidthDip - kSidePaddingDip * 2);
-  label->SetEnabledColor(SK_ColorWHITE);
   label->SetBackgroundColor(SK_ColorTRANSPARENT);
   label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   label->SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_TOP);
-  label->SetTooltipText(base::string16());
+  label->SetTooltipText(std::u16string());
   // Render text truncates the end of text that is greater than 10000 chars.
   // While it is unlikely that the text will exceed 10000 chars, it is not
   // impossible, if the speech service sends a very long transcription_result.
@@ -441,21 +484,17 @@ void CaptionBubble::Init() {
   label->SetTruncateLength(0);
 
   auto title = std::make_unique<views::Label>();
-  title->SetEnabledColor(gfx::kGoogleGrey500);
   title->SetBackgroundColor(SK_ColorTRANSPARENT);
   title->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   title->SetText(l10n_util::GetStringUTF16(IDS_LIVE_CAPTION_BUBBLE_TITLE));
   title->GetViewAccessibility().OverrideIsIgnored(true);
 
   auto error_text = std::make_unique<views::Label>();
-  error_text->SetEnabledColor(SK_ColorWHITE);
   error_text->SetBackgroundColor(SK_ColorTRANSPARENT);
   error_text->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   error_text->SetText(l10n_util::GetStringUTF16(IDS_LIVE_CAPTION_BUBBLE_ERROR));
 
   auto error_icon = std::make_unique<views::ImageView>();
-  error_icon->SetImage(
-      gfx::CreateVectorIcon(vector_icons::kErrorOutlineIcon, SK_ColorWHITE));
 
   auto error_message = std::make_unique<views::View>();
   error_message
@@ -468,20 +507,18 @@ void CaptionBubble::Init() {
   views::Button::PressedCallback expand_or_collapse_callback =
       base::BindRepeating(&CaptionBubble::ExpandOrCollapseButtonPressed,
                           base::Unretained(this));
-  auto expand_button =
-      BuildImageButton(expand_or_collapse_callback, kCaretDownIcon,
-                       IDS_LIVE_CAPTION_BUBBLE_EXPAND);
+  auto expand_button = BuildImageButton(expand_or_collapse_callback,
+                                        IDS_LIVE_CAPTION_BUBBLE_EXPAND);
   expand_button->SetVisible(!is_expanded_);
 
-  auto collapse_button =
-      BuildImageButton(std::move(expand_or_collapse_callback), kCaretUpIcon,
-                       IDS_LIVE_CAPTION_BUBBLE_COLLAPSE);
+  auto collapse_button = BuildImageButton(
+      std::move(expand_or_collapse_callback), IDS_LIVE_CAPTION_BUBBLE_COLLAPSE);
   collapse_button->SetVisible(is_expanded_);
 
-  auto close_button = BuildImageButton(
-      base::BindRepeating(&CaptionBubble::CloseButtonPressed,
-                          base::Unretained(this)),
-      vector_icons::kCloseRoundedIcon, IDS_LIVE_CAPTION_BUBBLE_CLOSE);
+  auto close_button =
+      BuildImageButton(base::BindRepeating(&CaptionBubble::CloseButtonPressed,
+                                           base::Unretained(this)),
+                       IDS_LIVE_CAPTION_BUBBLE_CLOSE);
 
   title_ = content_container->AddChildView(std::move(title));
   label_ = content_container->AddChildView(std::move(label));
@@ -497,22 +534,8 @@ void CaptionBubble::Init() {
   close_button_ = AddChildView(std::move(close_button));
   content_container_ = AddChildView(std::move(content_container));
 
-  UpdateTextSize();
+  SetCaptionBubbleStyle();
   UpdateContentSize();
-}
-
-std::unique_ptr<views::ImageButton> CaptionBubble::BuildImageButton(
-    views::Button::PressedCallback callback,
-    const gfx::VectorIcon& icon,
-    const int tooltip_text_id) {
-  auto button = views::CreateVectorImageButton(std::move(callback));
-  views::SetImageFromVectorIcon(button.get(), icon, kButtonDip, SK_ColorWHITE);
-  button->SetTooltipText(l10n_util::GetStringUTF16(tooltip_text_id));
-  button->SetInkDropBaseColor(SkColor(gfx::kGoogleGrey600));
-  button->SizeToPreferredSize();
-  views::InstallCircleHighlightPathGenerator(
-      button.get(), gfx::Insets(kButtonCircleHighlightPaddingDip));
-  return button;
 }
 
 bool CaptionBubble::ShouldShowCloseButton() const {
@@ -594,7 +617,7 @@ void CaptionBubble::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetName(title_->GetText());
 }
 
-base::string16 CaptionBubble::GetAccessibleWindowTitle() const {
+std::u16string CaptionBubble::GetAccessibleWindowTitle() const {
   return title_->GetText();
 }
 
@@ -634,8 +657,11 @@ void CaptionBubble::SetModel(CaptionBubbleModel* model) {
   if (model_)
     model_->RemoveObserver();
   model_ = model;
-  if (model_)
+  if (model_) {
     model_->SetObserver(this);
+  } else {
+    UpdateBubbleVisibility();
+  }
 }
 
 void CaptionBubble::OnTextChanged() {
@@ -680,8 +706,7 @@ void CaptionBubble::UpdateBubbleVisibility() {
   DCHECK(GetWidget());
   // If there is no model set, do not show the bubble.
   if (!model_) {
-    if (GetWidget()->IsVisible())
-      GetWidget()->Hide();
+    Hide();
     return;
   }
 
@@ -690,8 +715,7 @@ void CaptionBubble::UpdateBubbleVisibility() {
   // the speech service or user interacting with the bubble through focus,
   // pressing buttons, or dragging.
   if (!can_layout_ || model_->IsClosed() || !HasActivity()) {
-    if (GetWidget()->IsVisible())
-      GetWidget()->Hide();
+    Hide();
     return;
   }
 
@@ -707,8 +731,7 @@ void CaptionBubble::UpdateBubbleVisibility() {
   }
 
   // No text and no error. Hide it.
-  if (GetWidget()->IsVisible())
-    GetWidget()->Hide();
+  Hide();
 }
 
 void CaptionBubble::OnWidgetVisibilityChanged(views::Widget* widget,
@@ -727,7 +750,7 @@ void CaptionBubble::OnWidgetVisibilityChanged(views::Widget* widget,
 void CaptionBubble::UpdateCaptionStyle(
     base::Optional<ui::CaptionStyle> caption_style) {
   caption_style_ = caption_style;
-  UpdateTextSize();
+  SetCaptionBubbleStyle();
   Redraw();
 }
 
@@ -743,27 +766,45 @@ int CaptionBubble::GetNumLinesVisible() {
   return is_expanded_ ? kNumLinesExpanded : kNumLinesCollapsed;
 }
 
+void CaptionBubble::SetCaptionBubbleStyle() {
+  SetTextSizeAndFontFamily();
+  SetTextColor();
+  SetBackgroundColor();
+}
+
 double CaptionBubble::GetTextScaleFactor() {
   double textScaleFactor = 1;
   if (caption_style_) {
-    // ui::CaptionStyle states that text_size is percentage as a CSS string. It
-    // can sometimes have !important which is why this is a partial match.
-    bool match = RE2::PartialMatch(caption_style_->text_size, "(\\d+)%",
-                                   &textScaleFactor);
-    textScaleFactor = match ? textScaleFactor / 100 : 1;
+    std::string text_size = MaybeRemoveCSSImportant(caption_style_->text_size);
+    if (!text_size.empty()) {
+      // ui::CaptionStyle states that text_size is percentage as a CSS string.
+      bool match =
+          RE2::FullMatch(text_size, "(\\d+\\.?\\d*)%", &textScaleFactor);
+      textScaleFactor = match ? textScaleFactor / 100 : 1;
+    }
   }
   return textScaleFactor;
 }
 
-void CaptionBubble::UpdateTextSize() {
+void CaptionBubble::SetTextSizeAndFontFamily() {
   double textScaleFactor = GetTextScaleFactor();
 
+  std::vector<std::string> font_names;
+  if (caption_style_) {
+    std::string font_family =
+        MaybeRemoveCSSImportant(caption_style_->font_family);
+    if (!font_family.empty())
+      font_names.push_back(font_family);
+  }
+  font_names.push_back(kPrimaryFont);
+  font_names.push_back(kSecondaryFont);
+  font_names.push_back(kTertiaryFont);
+
   const gfx::FontList font_list =
-      gfx::FontList({kPrimaryFont, kSecondaryFont, kTertiaryFont},
-                    gfx::Font::FontStyle::NORMAL, kFontSizePx * textScaleFactor,
-                    gfx::Font::Weight::NORMAL);
+      gfx::FontList(font_names, gfx::Font::FontStyle::NORMAL,
+                    kFontSizePx * textScaleFactor, gfx::Font::Weight::NORMAL);
   label_->SetFontList(font_list);
-  title_->SetFontList(font_list);
+  title_->SetFontList(font_list.DeriveWithStyle(gfx::Font::FontStyle::ITALIC));
   error_text_->SetFontList(font_list);
 
   label_->SetLineHeight(kLineHeightDip * textScaleFactor);
@@ -771,6 +812,42 @@ void CaptionBubble::UpdateTextSize() {
   error_text_->SetLineHeight(kLineHeightDip * textScaleFactor);
   error_icon_->SetImageSize(gfx::Size(kErrorImageSizeDip * textScaleFactor,
                                       kErrorImageSizeDip * textScaleFactor));
+}
+
+void CaptionBubble::SetTextColor() {
+  SkColor text_color = SK_ColorWHITE;  // The default text color is white.
+  if (caption_style_)
+    ParseNonTransparentRGBACSSColorString(caption_style_->text_color,
+                                          &text_color);
+  label_->SetEnabledColor(text_color);
+  title_->SetEnabledColor(text_color);
+  error_text_->SetEnabledColor(text_color);
+
+  error_icon_->SetImage(
+      gfx::CreateVectorIcon(vector_icons::kErrorOutlineIcon, text_color));
+  views::SetImageFromVectorIcon(close_button_, vector_icons::kCloseRoundedIcon,
+                                kButtonDip, text_color);
+  views::SetImageFromVectorIcon(expand_button_, kCaretDownIcon, kButtonDip,
+                                text_color);
+  views::SetImageFromVectorIcon(collapse_button_, kCaretUpIcon, kButtonDip,
+                                text_color);
+
+  close_button_->SetInkDropBaseColor(text_color);
+  expand_button_->SetInkDropBaseColor(text_color);
+  collapse_button_->SetInkDropBaseColor(text_color);
+}
+
+void CaptionBubble::SetBackgroundColor() {
+  // The default background color is Google Grey 900 with 90% opacity.
+  SkColor background_color =
+      SkColorSetA(gfx::kGoogleGrey900, kCaptionBubbleAlpha);
+  if (caption_style_ && !ParseNonTransparentRGBACSSColorString(
+                            caption_style_->window_color, &background_color)) {
+    ParseNonTransparentRGBACSSColorString(caption_style_->background_color,
+                                          &background_color);
+  }
+  set_color(background_color);
+  OnThemeChanged();  // Need to call `OnThemeChanged` after calling `set_color`.
 }
 
 void CaptionBubble::UpdateContentSize() {
@@ -798,10 +875,15 @@ void CaptionBubble::Redraw() {
   SizeToContents();
 }
 
-void CaptionBubble::OnInactivityTimeout() {
-  LogSessionEvent(SessionEvent::kStreamEnded);
-  if (GetWidget()->IsVisible())
+void CaptionBubble::Hide() {
+  if (GetWidget()->IsVisible()) {
     GetWidget()->Hide();
+    LogSessionEvent(SessionEvent::kStreamEnded);
+  }
+}
+
+void CaptionBubble::OnInactivityTimeout() {
+  Hide();
 
   // Clear the partial and final text in the caption bubble model and the label.
   // Does not affect the speech service. The speech service will emit a final
@@ -810,7 +892,8 @@ void CaptionBubble::OnInactivityTimeout() {
   // recognition phrase, and the caption bubble regains activity (such as if the
   // audio stream restarts), the speech service will emit partial results that
   // contain text cleared by the UI.
-  model_->ClearText();
+  if (model_)
+    model_->ClearText();
 }
 
 bool CaptionBubble::HasActivity() {

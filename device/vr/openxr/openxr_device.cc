@@ -79,6 +79,13 @@ OpenXrDevice::~OpenXrDevice() {
   if (render_loop_ && render_loop_->IsRunning()) {
     render_loop_->Stop();
   }
+
+  // request_session_callback_ may still be active if we're tearing down the
+  // OpenXrDevice while we're still making asynchronous calls to setup the GPU
+  // process connection. Ensure the callback is run regardless.
+  if (request_session_callback_) {
+    std::move(request_session_callback_).Run(nullptr, mojo::NullRemote());
+  }
 }
 
 mojo::PendingRemote<mojom::XRCompositorHost>
@@ -99,16 +106,24 @@ void OpenXrDevice::EnsureRenderLoop() {
 void OpenXrDevice::RequestSession(
     mojom::XRRuntimeSessionOptionsPtr options,
     mojom::XRRuntime::RequestSessionCallback callback) {
+  DCHECK(!request_session_callback_);
+
   // Check feature support and reject session request if we cannot fulfil it
   // TODO(https://crbug.com/995377): Currently OpenXR features are declared
   // statically, but we may only know a runtime's true support for a feature
   // dynamically
-  const bool anchorsRequired = base::Contains(
+  const bool anchors_required = base::Contains(
       options->required_features, device::mojom::XRSessionFeature::ANCHORS);
-  const bool anchorsSupported =
+  const bool anchors_supported =
       extension_helper_.ExtensionEnumeration()->ExtensionSupported(
           XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME);
-  if (anchorsRequired && !anchorsSupported) {
+  const bool hand_input_required = base::Contains(
+      options->required_features, device::mojom::XRSessionFeature::HAND_INPUT);
+  const bool hand_input_supported =
+      extension_helper_.ExtensionEnumeration()->ExtensionSupported(
+          kMSFTHandInteractionExtensionName);
+  if ((anchors_required && !anchors_supported) ||
+      (hand_input_required && !hand_input_supported)) {
     // Reject session request
     std::move(callback).Run(nullptr, mojo::NullRemote());
     return;
@@ -132,9 +147,8 @@ void OpenXrDevice::RequestSession(
     }
   }
 
-  auto my_callback =
-      base::BindOnce(&OpenXrDevice::OnRequestSessionResult,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+  auto my_callback = base::BindOnce(&OpenXrDevice::OnRequestSessionResult,
+                                    weak_ptr_factory_.GetWeakPtr());
 
   auto on_visibility_state_changed = base::BindRepeating(
       &OpenXrDevice::OnVisibilityStateChanged, weak_ptr_factory_.GetWeakPtr());
@@ -149,14 +163,17 @@ void OpenXrDevice::RequestSession(
                                 base::DoNothing::Once(),
                                 std::move(on_visibility_state_changed),
                                 std::move(options), std::move(my_callback)));
+
+  request_session_callback_ = std::move(callback);
 }
 
 void OpenXrDevice::OnRequestSessionResult(
-    mojom::XRRuntime::RequestSessionCallback callback,
     bool result,
     mojom::XRSessionPtr session) {
+  DCHECK(request_session_callback_);
+
   if (!result) {
-    std::move(callback).Run(nullptr, mojo::NullRemote());
+    std::move(request_session_callback_).Run(nullptr, mojo::NullRemote());
     return;
   }
 
@@ -164,9 +181,9 @@ void OpenXrDevice::OnRequestSessionResult(
 
   session->display_info = display_info_.Clone();
 
-  std::move(callback).Run(
-      std::move(session),
-      exclusive_controller_receiver_.BindNewPipeAndPassRemote());
+  std::move(request_session_callback_)
+      .Run(std::move(session),
+           exclusive_controller_receiver_.BindNewPipeAndPassRemote());
 
   // Use of Unretained is safe because the callback will only occur if the
   // binding is not destroyed.

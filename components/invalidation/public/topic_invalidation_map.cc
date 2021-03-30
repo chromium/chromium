@@ -8,7 +8,7 @@
 
 #include "base/values.h"
 
-namespace syncer {
+namespace invalidation {
 
 TopicInvalidationMap::TopicInvalidationMap() = default;
 
@@ -68,7 +68,7 @@ const SingleObjectInvalidationSet& TopicInvalidationMap::ForTopic(
 }
 
 void TopicInvalidationMap::GetAllInvalidations(
-    std::vector<syncer::Invalidation>* out) const {
+    std::vector<Invalidation>* out) const {
   for (const auto& topic_to_invalidations : map_) {
     out->insert(out->begin(), topic_to_invalidations.second.begin(),
                 topic_to_invalidations.second.end());
@@ -101,4 +101,4 @@ TopicInvalidationMap::TopicInvalidationMap(
     const std::map<Topic, SingleObjectInvalidationSet>& map)
     : map_(map) {}
 
-}  // namespace syncer
+}  // namespace invalidation

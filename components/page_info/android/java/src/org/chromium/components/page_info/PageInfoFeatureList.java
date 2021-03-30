@@ -17,6 +17,7 @@ import org.chromium.base.annotations.NativeMethods;
 @MainDex
 public class PageInfoFeatureList {
     public static final String PAGE_INFO_DISCOVERABILITY = "PageInfoDiscoverability";
+    public static final String PAGE_INFO_HISTORY = "PageInfoHistory";
     public static final String PAGE_INFO_V2 = "PageInfoV2";
 
     private PageInfoFeatureList() {}

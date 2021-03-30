@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_RENDERER_HOST_DELEGATED_FRAME_HOST_CLIENT_ANDROID_H_
 
 #include "base/macros.h"
+#include "base/time/time.h"
 #include "components/viz/common/frame_timing_details_map.h"
 #include "content/common/content_export.h"
 #include "ui/android/delegated_frame_host_android.h"
@@ -23,7 +24,8 @@ class CONTENT_EXPORT DelegatedFrameHostClientAndroid
 
  private:
   // DelegatedFrameHostAndroid::Client implementation.
-  void OnFrameTokenChanged(uint32_t frame_token) override;
+  void OnFrameTokenChanged(uint32_t frame_token,
+                           base::TimeTicks activation_time) override;
   void WasEvicted() override;
 
   RenderWidgetHostViewAndroid* render_widget_host_view_;

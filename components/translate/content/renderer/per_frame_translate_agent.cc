@@ -4,6 +4,8 @@
 
 #include "components/translate/content/renderer/per_frame_translate_agent.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
@@ -11,7 +13,6 @@
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/translate/content/renderer/isolated_world_util.h"
@@ -411,6 +412,7 @@ void PerFrameTranslateAgent::CancelPendingTranslation() {
 
 void PerFrameTranslateAgent::BindReceiver(
     mojo::PendingAssociatedReceiver<mojom::TranslateAgent> receiver) {
+  receiver_.reset();
   receiver_.Bind(std::move(receiver));
 }
 

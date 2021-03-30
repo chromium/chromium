@@ -163,11 +163,6 @@ public interface TabModelSelector {
     boolean isTabStateInitialized();
 
     /**
-     * Merges the tab states from two tab models.
-     */
-    void mergeState();
-
-    /**
      * Prevents the TabModelSelector from destroying its tabs to allow for reparenting.
      *
      * This is only safe to be called immediately before destruction. After entering reparenting

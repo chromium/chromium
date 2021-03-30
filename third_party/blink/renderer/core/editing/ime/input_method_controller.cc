@@ -392,7 +392,7 @@ void InputMethodController::DispatchBeforeInputFromComposition(
   // TODO(editing-dev): Pass appropriate |ranges| after it's defined on spec.
   // http://w3c.github.io/editing/input-events.html#dom-inputevent-inputtype
   InputEvent* before_input_event = InputEvent::CreateBeforeInput(
-      input_type, data, InputEvent::kNotCancelable,
+      input_type, data, InputTypeIsCancelable(input_type),
       InputEvent::EventIsComposing::kIsComposing, nullptr);
   target->DispatchEvent(*before_input_event);
 }
@@ -1495,8 +1495,8 @@ void InputMethodController::DeleteSurroundingTextInCodePoints(int before,
   return DeleteSurroundingText(before_length, after_length);
 }
 
-void InputMethodController::GetLayoutBounds(WebRect* control_bounds,
-                                            WebRect* selection_bounds) {
+void InputMethodController::GetLayoutBounds(gfx::Rect* control_bounds,
+                                            gfx::Rect* selection_bounds) {
   if (!IsAvailable())
     return;
 
@@ -1583,12 +1583,7 @@ WebTextInputInfo InputMethodController::TextInputInfo() const {
     info.selection_end = selection_plain_text_range.End();
   }
 
-  // Only gets ime text spans when there is no selection range.
-  // ie. the selection range is just a cursor position.
-  if (first_range.IsCollapsed()) {
-    info.ime_text_spans =
-        GetImeTextSpansAroundPosition(first_range.StartPosition());
-  }
+  info.ime_text_spans = GetImeTextSpans();
 
   const EphemeralRange& range = CompositionEphemeralRange();
   const PlainTextRange& composition_plain_text_range =
@@ -1818,8 +1813,7 @@ void InputMethodController::Trace(Visitor* visitor) const {
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
-WebVector<ui::ImeTextSpan> InputMethodController::GetImeTextSpansAroundPosition(
-    const Position& position) const {
+WebVector<ui::ImeTextSpan> InputMethodController::GetImeTextSpans() const {
   DCHECK(!GetDocument().NeedsLayoutTreeUpdate());
   Element* target = GetDocument().FocusedElement();
   if (!target)
@@ -1833,12 +1827,16 @@ WebVector<ui::ImeTextSpan> InputMethodController::GetImeTextSpansAroundPosition(
     return WebVector<ui::ImeTextSpan>();
 
   WebVector<ui::ImeTextSpan> ime_text_spans;
-  // Only queries Suggestion markers for now.
-  // This can be expanded when browser needs information for
-  // other types of markers.
+
+  const EphemeralRange range = EphemeralRange::RangeOfContents(*editable);
+  if (range.IsNull())
+    return WebVector<ui::ImeTextSpan>();
+
+  // MarkersIntersectingRange() might be expensive. In practice, we hope we will
+  // only check one node for the range.
   const HeapVector<std::pair<Member<const Text>, Member<DocumentMarker>>>&
-      node_marker_pairs = GetDocument().Markers().MarkersAroundPosition(
-          ToPositionInFlatTree(position),
+      node_marker_pairs = GetDocument().Markers().MarkersIntersectingRange(
+          ToEphemeralRangeInFlatTree(range),
           DocumentMarker::MarkerTypes::Suggestion());
 
   for (const std::pair<Member<const Text>, Member<DocumentMarker>>&

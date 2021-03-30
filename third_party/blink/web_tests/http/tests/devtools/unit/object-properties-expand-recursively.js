@@ -5,6 +5,7 @@
 (async function() {
   TestRunner.addResult(`Test that ObjectPropertiesSection expands recursively.\n`);
   await TestRunner.loadModule('object_ui');
+  await TestRunner.loadLegacyModule('object_ui');
 
   var object = {
     "foo": {

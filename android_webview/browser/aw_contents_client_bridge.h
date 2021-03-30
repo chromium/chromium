@@ -91,13 +91,13 @@ class AwContentsClientBridge {
   void RunJavaScriptDialog(
       content::JavaScriptDialogType dialog_type,
       const GURL& origin_url,
-      const base::string16& message_text,
-      const base::string16& default_prompt_text,
+      const std::u16string& message_text,
+      const std::u16string& default_prompt_text,
       content::JavaScriptDialogManager::DialogClosedCallback callback);
   void RunBeforeUnloadDialog(
       const GURL& origin_url,
       content::JavaScriptDialogManager::DialogClosedCallback callback);
-  bool ShouldOverrideUrlLoading(const base::string16& url,
+  bool ShouldOverrideUrlLoading(const std::u16string& url,
                                 bool has_user_gesture,
                                 bool is_redirect,
                                 bool is_main_frame,

@@ -1,0 +1,42 @@
+
+    Tests that device emulation affects media rules, viewport meta tag, body dimensions and window.screen.
+    Emulating small device on a page with viewport "width=device-width" set should work without reload for page without scrollbar.
+  
+Emulating device: 380x420x1
+Loading page with viewport=w=dw
+Device:
+window.screenX = 0px
+window.screenY = 0px
+Viewport: = ?w=dw
+@media orientation = portrait
+window.orientation = 0
+@media resolution = 96dpi
+@media device-pixel-ratio = 1.0000000298023224
+window.devicePixelRatio = 1.0000000298023224
+Widths:
+@media device-width = 380px
+screen.width = 380px
+screen.availWidth = 380px
+window.outerWidth = 380px
+window.innerWidth = 380px
+@media width = 380px
+doc.docElem.clientWidth = 380px
+doc.docElem.offsetWidth = 380px
+doc.docElem.scrollWidth = 380px
+doc.body.clientWidth = 380px
+doc.body.offsetWidth = 380px
+doc.body.scrollWidth = 380px
+Heights:
+@media device-height = 420px
+screen.height = 420px
+screen.availHeight = 420px
+window.outerHeight = 420px
+window.innerHeight = 420px
+@media height = 420px
+doc.docElem.clientHeight = 420px
+doc.docElem.offsetHeight = 420px
+doc.docElem.scrollHeight = 420px
+doc.body.clientHeight = 420px
+doc.body.offsetHeight = 420px
+doc.body.scrollHeight = 420px
+

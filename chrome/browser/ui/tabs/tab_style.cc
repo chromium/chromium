@@ -32,7 +32,7 @@ int TabStyle::GetStandardWidth() {
 
 // static
 int TabStyle::GetPinnedWidth() {
-  constexpr int kTabPinnedContentWidth = 23;
+  constexpr int kTabPinnedContentWidth = 24;
   return kTabPinnedContentWidth + GetContentsHorizontalInsetSize() * 2;
 }
 

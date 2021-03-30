@@ -12,6 +12,7 @@
 #include "base/task/post_task.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/feeds/media_feeds_contents_observer.h"
 #include "chrome/browser/media/feeds/media_feeds_service.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/media/history/media_history_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/schema_org/schema_org_entity_names.h"
@@ -421,7 +423,7 @@ IN_PROC_BROWSER_TEST_F(MediaFeedsBrowserTest, DiscoverAndFetch) {
   {
     mojom::MediaFeedItemPtr expected_item = mojom::MediaFeedItem::New();
     expected_item->id = 3;
-    expected_item->name = base::ASCIIToUTF16("Chrome Releases");
+    expected_item->name = u"Chrome Releases";
     expected_item->type = mojom::MediaFeedItemType::kTVSeries;
     ASSERT_TRUE(
         base::Time::FromString("2019-11-10", &expected_item->date_published));
@@ -492,7 +494,7 @@ IN_PROC_BROWSER_TEST_F(MediaFeedsBrowserTest, DiscoverAndFetch) {
   {
     mojom::MediaFeedItemPtr expected_item = mojom::MediaFeedItem::New();
     expected_item->id = 4;
-    expected_item->name = base::ASCIIToUTF16("Chrome University");
+    expected_item->name = u"Chrome University";
     expected_item->type = mojom::MediaFeedItemType::kTVSeries;
     ASSERT_TRUE(
         base::Time::FromString("2020-01-01", &expected_item->date_published));
@@ -558,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(MediaFeedsBrowserTest, DiscoverAndFetch) {
   {
     mojom::MediaFeedItemPtr expected_item = mojom::MediaFeedItem::New();
     expected_item->id = 5;
-    expected_item->name = base::ASCIIToUTF16("JAM stack");
+    expected_item->name = u"JAM stack";
     expected_item->type = mojom::MediaFeedItemType::kTVSeries;
     ASSERT_TRUE(
         base::Time::FromString("2020-01-22", &expected_item->date_published));
@@ -591,7 +593,7 @@ IN_PROC_BROWSER_TEST_F(MediaFeedsBrowserTest, DiscoverAndFetch) {
   {
     mojom::MediaFeedItemPtr expected_item = mojom::MediaFeedItem::New();
     expected_item->id = 6;
-    expected_item->name = base::ASCIIToUTF16("Ask Chrome");
+    expected_item->name = u"Ask Chrome";
     expected_item->type = mojom::MediaFeedItemType::kVideo;
     expected_item->author = mojom::Author::New();
     expected_item->author->name = "Google Chrome Developers";
@@ -632,7 +634,7 @@ IN_PROC_BROWSER_TEST_F(MediaFeedsBrowserTest, DiscoverAndFetch) {
   {
     mojom::MediaFeedItemPtr expected_item = mojom::MediaFeedItem::New();
     expected_item->id = 7;
-    expected_item->name = base::ASCIIToUTF16("Big Buck Bunny");
+    expected_item->name = u"Big Buck Bunny";
     expected_item->type = mojom::MediaFeedItemType::kMovie;
     ASSERT_TRUE(
         base::Time::FromString("2008-01-01", &expected_item->date_published));
@@ -730,8 +732,7 @@ IN_PROC_BROWSER_TEST_F(MediaFeedsBrowserTest, DiscoverAndFetchMinimal) {
   {
     mojom::MediaFeedItemPtr expected_item = mojom::MediaFeedItem::New();
     expected_item->id = 1;
-    expected_item->name =
-        base::ASCIIToUTF16("Anatomy of a Web Media Experience");
+    expected_item->name = u"Anatomy of a Web Media Experience";
     expected_item->type = mojom::MediaFeedItemType::kVideo;
     expected_item->author = mojom::Author::New();
     expected_item->author->name = "Google Chrome Developers";
@@ -764,7 +765,7 @@ IN_PROC_BROWSER_TEST_F(MediaFeedsBrowserTest, DiscoverAndFetchMinimal) {
   {
     mojom::MediaFeedItemPtr expected_item = mojom::MediaFeedItem::New();
     expected_item->id = 2;
-    expected_item->name = base::ASCIIToUTF16("Chrome Releases");
+    expected_item->name = u"Chrome Releases";
     expected_item->type = mojom::MediaFeedItemType::kTVSeries;
     ASSERT_TRUE(
         base::Time::FromString("2019-11-10", &expected_item->date_published));
@@ -806,7 +807,7 @@ IN_PROC_BROWSER_TEST_F(MediaFeedsBrowserTest, DiscoverAndFetchMinimal) {
   {
     mojom::MediaFeedItemPtr expected_item = mojom::MediaFeedItem::New();
     expected_item->id = 3;
-    expected_item->name = base::ASCIIToUTF16("Big Buck Bunny");
+    expected_item->name = u"Big Buck Bunny";
     expected_item->type = mojom::MediaFeedItemType::kMovie;
     ASSERT_TRUE(
         base::Time::FromString("2008-01-01", &expected_item->date_published));
@@ -924,9 +925,8 @@ IN_PROC_BROWSER_TEST_F(MediaFeedsBrowserTest,
   }
 }
 
-// Flaky on lacros and windows: crbug.com/1124983
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_WIN) || \
-    defined(UNDEFINED_SANITIZER)
+// Flaky on linux, windows, and chromeos: crbug.com/1124983
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_CHROMEOS)
 #define MAYBE_ResetMediaFeed_WebContentsDestroyed \
   DISABLED_ResetMediaFeed_WebContentsDestroyed
 #else
@@ -935,6 +935,12 @@ IN_PROC_BROWSER_TEST_F(MediaFeedsBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(MediaFeedsBrowserTest,
                        MAYBE_ResetMediaFeed_WebContentsDestroyed) {
+  // Open a separate tab, so that `CloseTab` below doesn't close *all* the
+  // browser window and doesn't destroy the browser state that
+  // GetDiscoveredFeeds relies on in the last test steps.  See also
+  // https://crbug.com/1124983.
+  chrome::NewTab(browser());
+
   DiscoverFeed(kMediaFeedsTestURL);
 
   {
@@ -953,7 +959,7 @@ IN_PROC_BROWSER_TEST_F(MediaFeedsBrowserTest,
   }
 
   // If we destroy the web contents then we should reset the feed.
-  browser()->tab_strip_model()->CloseAllTabs();
+  chrome::CloseTab(browser());
   WaitForDB();
 
   {

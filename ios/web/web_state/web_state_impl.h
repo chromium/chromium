@@ -17,12 +17,10 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 #include "base/values.h"
 #import "ios/web/js_messaging/web_frames_manager_impl.h"
 #import "ios/web/navigation/navigation_manager_delegate.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
-#include "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/ui/java_script_dialog_callback.h"
 #include "ios/web/public/ui/java_script_dialog_type.h"
@@ -46,6 +44,7 @@ struct FaviconURL;
 class NavigationContextImpl;
 class NavigationManager;
 class SessionCertificatePolicyCacheImpl;
+class WebFrame;
 class WebInterstitialImpl;
 class WebUIIOS;
 
@@ -203,13 +202,13 @@ class WebStateImpl : public WebState,
   CRWSessionStorage* BuildSessionStorage() override;
   CRWJSInjectionReceiver* GetJSInjectionReceiver() const override;
   void LoadData(NSData* data, NSString* mime_type, const GURL& url) override;
-  void ExecuteJavaScript(const base::string16& javascript) override;
-  void ExecuteJavaScript(const base::string16& javascript,
+  void ExecuteJavaScript(const std::u16string& javascript) override;
+  void ExecuteJavaScript(const std::u16string& javascript,
                          JavaScriptResultCallback callback) override;
   void ExecuteUserJavaScript(NSString* javaScript) override;
   const std::string& GetContentsMimeType() const override;
   bool ContentIsHTML() const override;
-  const base::string16& GetTitle() const override;
+  const std::u16string& GetTitle() const override;
   bool IsLoading() const override;
   double GetLoadingProgress() const override;
   bool IsCrashed() const override;
@@ -288,8 +287,6 @@ class WebStateImpl : public WebState,
   void ClearTransientContent() override;
   void ClearDialogs() override;
   void RecordPageStateInNavigationItem() override;
-  void OnGoToIndexSameDocumentNavigation(NavigationInitiationType type,
-                                         bool has_user_gesture) override;
   void LoadCurrentItem(NavigationInitiationType type) override;
   void LoadIfNecessary() override;
   void Reload() override;
@@ -379,7 +376,7 @@ class WebStateImpl : public WebState,
   WebInterstitialImpl* interstitial_;
 
   // Returned by reference.
-  base::string16 empty_string16_;
+  std::u16string empty_string16_;
 
   // Callbacks associated to command prefixes.
   std::map<std::string,

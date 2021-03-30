@@ -92,9 +92,9 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
   //            the order of enumeration in our IEnumFORMATETC implementation!
   //            This comes into play when selecting the best (most preferable)
   //            data type for insertion into a DropTarget.
-  void SetString(const base::string16& data);
+  void SetString(const std::u16string& data);
   // A URL can have an optional title in some exchange formats.
-  void SetURL(const GURL& url, const base::string16& title);
+  void SetURL(const GURL& url, const std::u16string& title);
   // A full path to a file.
   void SetFilename(const base::FilePath& path);
   // Full path to one or more files. See also SetFilenames() in Provider.
@@ -110,10 +110,10 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
   // NULL.
   // GetString() returns the plain text representation of the pasteboard
   // contents.
-  bool GetString(base::string16* data) const;
+  bool GetString(std::u16string* data) const;
   bool GetURLAndTitle(FilenameToURLPolicy policy,
                       GURL* url,
-                      base::string16* title) const;
+                      std::u16string* title) const;
   // Return the path of a file, if available.
   bool GetFilename(base::FilePath* path) const;
   bool GetFilenames(std::vector<FileInfo>* file_names) const;
@@ -182,8 +182,8 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
 #if defined(USE_AURA)
   // Adds a snippet of HTML.  |html| is just raw html but this sets both
   // text/html and CF_HTML.
-  void SetHtml(const base::string16& html, const GURL& base_url);
-  bool GetHtml(base::string16* html, GURL* base_url) const;
+  void SetHtml(const std::u16string& html, const GURL& base_url);
+  bool GetHtml(std::u16string* html, GURL* base_url) const;
   bool HasHtml() const;
 #endif
 

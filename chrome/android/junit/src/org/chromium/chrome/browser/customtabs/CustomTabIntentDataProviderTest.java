@@ -32,10 +32,10 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.device.mojom.ScreenOrientationLockType;
 
@@ -45,7 +45,6 @@ import java.util.Collections;
 /** Tests for {@link CustomTabIntentDataProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Features.EnableFeatures({ChromeFeatureList.SHARE_BY_DEFAULT_IN_CCT})
 public class CustomTabIntentDataProviderTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
@@ -202,22 +201,6 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
-    @Features.DisableFeatures({ChromeFeatureList.SHARE_BY_DEFAULT_IN_CCT})
-    public void shareStateDefaultFlagDisabled_hasShareItemInMenu() {
-        Context context = ApplicationProvider.getApplicationContext();
-        Intent intent = new Intent()
-                                .putExtra(CustomTabsIntent.EXTRA_SHARE_STATE,
-                                        CustomTabsIntent.SHARE_STATE_DEFAULT)
-                                .putExtra(CustomTabsIntent.EXTRA_DEFAULT_SHARE_MENU_ITEM, true);
-
-        CustomTabIntentDataProvider dataProvider =
-                new CustomTabIntentDataProvider(intent, context, COLOR_SCHEME_LIGHT);
-
-        assertTrue(dataProvider.getCustomButtonsOnToolbar().isEmpty());
-        assertTrue(dataProvider.shouldShowShareMenuItem());
-    }
-
-    @Test
     public void shareStateOff_noShareItems() {
         Context context = ApplicationProvider.getApplicationContext();
         Intent intent = new Intent().putExtra(
@@ -239,8 +222,9 @@ public class CustomTabIntentDataProviderTest {
                 Bitmap.createBitmap(iconHeight, iconHeight, Bitmap.Config.ALPHA_8));
         bundle.putString(CustomTabsIntent.KEY_DESCRIPTION, BUTTON_DESCRIPTION);
         bundle.putParcelable(CustomTabsIntent.KEY_PENDING_INTENT,
-                PendingIntent.getBroadcast(context, 0, new Intent(), 0));
-        bundle.putBoolean(CustomButtonParams.SHOW_ON_TOOLBAR, true);
+                PendingIntent.getBroadcast(context, 0, new Intent(),
+                        IntentUtils.getPendingIntentMutabilityFlag(true)));
+        bundle.putBoolean(CustomButtonParamsImpl.SHOW_ON_TOOLBAR, true);
         return bundle;
     }
 
@@ -249,7 +233,8 @@ public class CustomTabIntentDataProviderTest {
         Bundle bundle = new Bundle();
         bundle.putString(CustomTabsIntent.KEY_MENU_ITEM_TITLE, "title");
         bundle.putParcelable(CustomTabsIntent.KEY_PENDING_INTENT,
-                PendingIntent.getBroadcast(context, 0, new Intent(), 0));
+                PendingIntent.getBroadcast(context, 0, new Intent(),
+                        IntentUtils.getPendingIntentMutabilityFlag(true)));
         return bundle;
     }
 

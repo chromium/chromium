@@ -4,15 +4,19 @@
 
 #include "chromeos/services/multidevice_setup/eligible_host_devices_provider_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/components/multidevice/software_feature.h"
 #include "chromeos/components/multidevice/software_feature_state.h"
-#include "chromeos/constants/chromeos_features.h"
 
 namespace chromeos {
 
 namespace multidevice_setup {
+
+// static
+constexpr base::TimeDelta
+    EligibleHostDevicesProviderImpl::kInactiveDeviceThresholdInDays;
 
 // static
 EligibleHostDevicesProviderImpl::Factory*
@@ -119,8 +123,46 @@ void EligibleHostDevicesProviderImpl::OnGetDevicesActivityStatus(
                                       std::move(device_activity_status_ptr)});
   }
 
-  // Sort the list preferring online devices, then last activity time, then
-  // last update time.
+  // Remove inactive devices. A device is inactive if it has a
+  // last_activity_time or last_update_time before some defined threshold.
+  base::Time now = base::Time::Now();
+  eligible_active_devices_from_last_sync_.erase(
+      std::remove_if(
+          eligible_active_devices_from_last_sync_.begin(),
+          eligible_active_devices_from_last_sync_.end(),
+          [&id_to_activity_status_map,
+           &now](const multidevice::DeviceWithConnectivityStatus& device) {
+            auto it = id_to_activity_status_map.find(
+                device.remote_device.instance_id());
+
+            if (it == id_to_activity_status_map.end()) {
+              return false;
+            }
+
+            // Note: Do not filter out devices if the last activity time was not
+            // set by the server, as indicated by a trivial base::Time value.
+            base::Time last_activity_time =
+                std::get<1>(*it)->last_activity_time;
+            if (!last_activity_time.is_null() &&
+                now - last_activity_time > kInactiveDeviceThresholdInDays) {
+              return true;
+            }
+
+            // Note: Do not filter out devices if the last update time was not
+            // set by the server, as indicated by a trivial base::Time value.
+            // Note: This |last_update_time| is from GetDevicesActivityStatus,
+            // not from the RemoteDevice; they track different events.
+            base::Time last_update_time = std::get<1>(*it)->last_update_time;
+            return !last_update_time.is_null() &&
+                   now - last_update_time > kInactiveDeviceThresholdInDays;
+          }),
+      eligible_active_devices_from_last_sync_.end());
+
+  // Sort the list preferring online devices (if flag is enabled), then last
+  // activity time, then the last time the device enrolled or uploaded encrypted
+  // metadata to the CryptAuth server (GetDevicesActivityStatus's
+  // |last_update_time|), then last time a feature bit was flipped for the
+  // device on the CryptAuth server (RemoteDevice's |last_update_time_millis|).
   std::sort(
       eligible_active_devices_from_last_sync_.begin(),
       eligible_active_devices_from_last_sync_.end(),
@@ -170,6 +212,14 @@ void EligibleHostDevicesProviderImpl::OnGetDevicesActivityStatus(
             second_activity_status->last_activity_time) {
           return first_activity_status->last_activity_time >
                  second_activity_status->last_activity_time;
+        }
+
+        // Note: This |last_update_time| is from GetDevicesActivityStatus, not
+        // from the RemoteDevice; they track different events.
+        if (first_activity_status->last_update_time !=
+            second_activity_status->last_update_time) {
+          return first_activity_status->last_update_time >
+                 second_activity_status->last_update_time;
         }
 
         return first_device.remote_device.last_update_time_millis() >

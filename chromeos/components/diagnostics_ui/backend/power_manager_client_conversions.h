@@ -5,7 +5,8 @@
 #ifndef CHROMEOS_COMPONENTS_DIAGNOSTICS_UI_BACKEND_POWER_MANAGER_CLIENT_CONVERSIONS_H_
 #define CHROMEOS_COMPONENTS_DIAGNOSTICS_UI_BACKEND_POWER_MANAGER_CLIENT_CONVERSIONS_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "chromeos/components/diagnostics_ui/mojom/system_data_provider.mojom.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 
@@ -23,7 +24,7 @@ mojom::ExternalPowerSource ConvertPowerSourceFromProto(
 // amount of time is unreliable / still being calculated, this returns an
 // empty string. Otherwise, the time is returned in DURATION_WIDTH_NARROW
 // format.
-base::string16 ConstructPowerTime(
+std::u16string ConstructPowerTime(
     mojom::BatteryState battery_state,
     const power_manager::PowerSupplyProperties& power_supply_props);
 

@@ -107,6 +107,16 @@ base::Value MakeReceiverStatus(const std::string& app_id,
 
 using MockAppActivityCallback = base::RepeatingCallback<void(MockAppActivity*)>;
 
+class MockLaunchSessionCallback {
+ public:
+  MOCK_METHOD(void,
+              Run,
+              (const base::Optional<MediaRoute>& route,
+               mojom::RoutePresentationConnectionPtr presentation_connections,
+               const base::Optional<std::string>& error_message,
+               media_router::RouteRequestResult::ResultCode result_code));
+};
+
 class MockMirroringActivity : public MirroringActivity {
  public:
   MockMirroringActivity(const MediaRoute& route,
@@ -703,6 +713,29 @@ TEST_F(CastActivityManagerTest, OnMediaStatusUpdated) {
   EXPECT_CALL(*app_activity_,
               SendMediaStatusToClients(IsJson(status), request_id));
   manager_->OnMediaStatusUpdated(sink_, ParseJson(status), request_id);
+}
+
+TEST_F(CastActivityManagerTest, SecondPendingRequestCancelsTheFirst) {
+  auto source =
+      CastMediaSource::FromMediaSourceId(MakeSourceId(kAppId1, "", kClientId));
+  MockLaunchSessionCallback callback;
+  // Launch a session so that the next launch request gets queued.
+  LaunchAppSession();
+
+  // Ignore StopSession() so that pending requests don't get executed.
+  EXPECT_CALL(message_handler_, StopSession).WillRepeatedly([]() {});
+  // The first request gets queued, then cancelled when the second request
+  // replaces it.
+  EXPECT_CALL(callback, Run)
+      .WillOnce(WithArg<3>([](RouteRequestResult::ResultCode code) {
+        EXPECT_EQ(RouteRequestResult::ResultCode::CANCELLED, code);
+      }));
+  for (int i = 0; i < 2; i++) {
+    manager_->LaunchSession(*source, sink_, kPresentationId, origin_, kTabId,
+                            /*incognito*/ false,
+                            base::BindOnce(&MockLaunchSessionCallback::Run,
+                                           base::Unretained(&callback)));
+  }
 }
 
 }  // namespace media_router

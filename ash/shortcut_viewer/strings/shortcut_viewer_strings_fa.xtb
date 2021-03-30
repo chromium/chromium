@@ -23,11 +23,13 @@
 <translation id="169515659049020177">تبدیل</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">‏افزودن www.‎ و ‎.com به ورودی‌تان در نوار نشانی و سپس باز کردن صفحه</translation>
+<translation id="1768987374400973299">نماگرفت گرفتن/ ضبط کردن</translation>
 <translation id="1872219238824176091">برداشتن میز فعلی</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> و سپس <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> یا <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">رفتن به برگه بعدی</translation>
 <translation id="2010818616644390445">رفتن به آخرین برگه در پنجره</translation>
 <translation id="2040706009561734834">باز کردن/بستن راه‌انداز</translation>
+<translation id="2086334242442703436">باز کردن «انتخاب‌گر اموجی»</translation>
 <translation id="2088054208777350526">جستجوی میان‌برهای صفحه‌کلید</translation>
 <translation id="2125211348069077981"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="E" /> یا <ph name="F" /></translation>
 <translation id="2145908266289632567">ویرایش نوشتار</translation>
@@ -46,6 +48,7 @@
 <translation id="2480851840841871861">‏باز کردن دستیار Google</translation>
 <translation id="2488661730534396940">میز در سمت راست فعال شود</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516999188535378855">باز کردن برنامه عیب‌یابی</translation>
 <translation id="2530339807289914946">پیمایش به پایین صفحه وب</translation>
 <translation id="2530896289327917474">روشن یا خاموش کردن مرور با نشانگر نوشتار</translation>
 <translation id="2574014812750545982">بازنشانی میزان بزرگ‌نمایی صفحه</translation>
@@ -110,6 +113,7 @@
 <translation id="4801989101741319327">رفتن به انتهای کلمه بعد</translation>
 <translation id="4866066940972151697">میز در سمت چپ فعال شود</translation>
 <translation id="4916163929714267752">بازکردن پیوند در پنجره جدید</translation>
+<translation id="492453977506755176">کلید حالت ضبط</translation>
 <translation id="5030659775136592441">نمایش مدیر نشانک</translation>
 <translation id="5034421018520995080">رفتن به بالای صفحه</translation>
 <translation id="5042305953558921026">کلید حالت نمای کلی</translation>
@@ -132,7 +136,8 @@
 <translation id="5899919361772749550">نمایش یا پنهان کردن کنسول «ابزارهای برنامه‌نویس»</translation>
 <translation id="5919628958418675842">صفحه حریم‌خصوصی را روشن یا خاموش کنید</translation>
 <translation id="5921745308587794300">چرخاندن پنجره</translation>
-<translation id="6022924867608035986">پاک کردن نوشتار کادر جستجو</translation>
+<translation id="5926306472221400972">گرفتن نماگرفت از تمام صفحه</translation>
+<translation id="6022924867608035986">پاک کردن نوشتار چارگوش جستجو</translation>
 <translation id="6045998054441862242">روشن کردن حالت کنتراست بالا</translation>
 <translation id="6052614013050385269">راست کلیک یک پیوند</translation>
 <translation id="6129953537138746214">فاصله</translation>
@@ -146,9 +151,10 @@
 <translation id="6395172954772765143">انتخاب نوشتار تا انتهای خط</translation>
 <translation id="6425378783626925378">کلیک کردن نمادهای ۱ تا ۸ در قفسه</translation>
 <translation id="6435207348963613811">برجسته‌سازی مورد قبلی روی قفسه شما</translation>
-<translation id="6445033640292336367">برگرداندن برگه به جای اول</translation>
+<translation id="6445033640292336367">برگرداندن برگه به‌جای اول</translation>
 <translation id="6474744297082284761">دورنمایی کردن (وقتی ذره‌بین متصل یا ذره‌بین تمام‌صفحه فعال است)</translation>
 <translation id="649811797655257835">فایلی را انتخاب کنید و سپس <ph name="SPACE" /> را فشار دهید</translation>
+<translation id="6551886416582667425">نماگرفت گرفتن/ ضبط کردن جزئی</translation>
 <translation id="6556040137485212400">باز کردن پنجره‌ای که طی طولانی‌ترین زمان استفاده نشده است</translation>
 <translation id="666343722268997814">باز کردن منوی کلیک راست برای مورد برجسته‌شده</translation>
 <translation id="6671538777808758331">رفتن به مورد منطبق بعدی با جستجویتان</translation>
@@ -175,6 +181,7 @@
 <translation id="7611271430932669992">انتقال تمرکز به پنجره‌های بازشو و کادرهای گفتگو</translation>
 <translation id="7635348532214572995">نماد برنامه را در اطراف جدول برنامه جابه‌جا کنید</translation>
 <translation id="766326951329901120">جای‌گذاری محتوا از بریده‌دان به عنوان نوشتار ساده</translation>
+<translation id="7673453620027697230">ضبط کردن/ نماگرفت گرفتن از پنجره</translation>
 <translation id="7703010453515335249">کمانک چپ</translation>
 <translation id="7724603315864178912">برش</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> و سپس <ph name="SPACE" /> یا <ph name="ENTER" /></translation>

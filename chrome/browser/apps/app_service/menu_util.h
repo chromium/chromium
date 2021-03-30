@@ -9,7 +9,8 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "chrome/browser/chromeos/arc/app_shortcuts/arc_app_shortcut_item.h"
+#include "base/strings/string_piece.h"
+#include "chrome/browser/apps/app_service/app_shortcut_item.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -44,12 +45,12 @@ void AddRadioItem(uint32_t command_id,
 void AddSeparator(ui::MenuSeparatorType separator_type,
                   apps::mojom::MenuItemsPtr* menu_items);
 
-// Adds an ARC shortcut command menu item to |menu_items|.
-void AddArcCommandItem(int command_id,
-                       const std::string& shortcut_id,
-                       const std::string& label,
-                       const gfx::ImageSkia& icon,
-                       apps::mojom::MenuItemsPtr* menu_items);
+// Adds a shortcut command menu item to |menu_items|.
+void AddShortcutCommandItem(int command_id,
+                            const std::string& shortcut_id,
+                            const std::string& label,
+                            const gfx::ImageSkia& icon,
+                            apps::mojom::MenuItemsPtr* menu_items);
 
 // Adds a LAUNCH_NEW menu item to |menu_items|, and create radio items for the
 // submenu.
@@ -80,10 +81,19 @@ bool PopulateNewItemFromMojoMenuItems(
 
 // Populates the menu item to a simple menu model |model| from mojo
 // menu items |menu_items|.
-void PopulateItemFromMojoMenuItems(
-    apps::mojom::MenuItemPtr menu_item,
-    ui::SimpleMenuModel* model,
-    arc::ArcAppShortcutItems* arc_shortcut_items);
+void PopulateItemFromMojoMenuItems(apps::mojom::MenuItemPtr menu_item,
+                                   ui::SimpleMenuModel* model,
+                                   apps::AppShortcutItems* arc_shortcut_items);
+
+// Convert |menu_type| to string. Useful to pass |menu_type| enum as string id.
+base::StringPiece MenuTypeToString(apps::mojom::MenuType menu_type);
+
+// Convert |menu_type| string to enum. Useful to pass |menu_type| enum as string
+// id.
+apps::mojom::MenuType MenuTypeFromString(base::StringPiece menu_type);
+
+// A size of square shortcut menu item icons in the context menu.
+constexpr int kAppShortcutIconSizeDip = 32;
 
 }  // namespace apps
 

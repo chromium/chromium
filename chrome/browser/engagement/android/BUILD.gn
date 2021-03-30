@@ -4,33 +4,18 @@
 
 import("//build/config/android/rules.gni")
 
-android_library("java") {
-  sources = [ "java/src/org/chromium/chrome/browser/engagement/SiteEngagementService.java" ]
-  deps = [
-    ":jni_headers",
-    "//base:base_java",
-    "//base:jni_java",
-    "//chrome/browser/profiles/android:java",
-  ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
-}
-
 android_library("javatests") {
   testonly = true
   sources = [ "java/src/org/chromium/chrome/browser/engagement/SiteEngagementServiceTest.java" ]
   deps = [
-    ":java",
     "//base:base_java_test_support",
     "//chrome/android:chrome_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/test/android:chrome_java_test_support",
-    "//third_party/android_deps:androidx_test_runner_java",
+    "//components/site_engagement/content/android:java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
   ]
-}
-
-generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/chrome/browser/engagement/SiteEngagementService.java" ]
 }

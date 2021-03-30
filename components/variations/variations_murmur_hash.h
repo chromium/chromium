@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/strings/string_piece.h"
 
 namespace variations {
 namespace internal {
@@ -22,7 +23,7 @@ class VariationsMurmurHash {
   // multiple of 4 bytes, and produce the same uint32_t values regardless of
   // platform endianness. ("abcd" will always become 0x64636261). Any padding
   // will appear in the more-significant bytes of the last uint32_t.
-  static std::vector<uint32_t> StringToLE32(const std::string& data);
+  static std::vector<uint32_t> StringToLE32(base::StringPiece data);
 
   // Hash is a reimplementation of MurmurHash3_x86_32 from third_party/smhasher/
   // which works on all architectures. MurmurHash3_x86_32 does unaligned reads

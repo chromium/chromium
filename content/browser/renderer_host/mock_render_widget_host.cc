@@ -6,6 +6,7 @@
 
 #include "components/viz/test/mock_compositor_frame_sink_client.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
+#include "content/test/test_render_widget_host.h"
 
 namespace content {
 
@@ -39,26 +40,25 @@ void MockRenderWidgetHost::SetupForInputRouterTest() {
 
 // static
 std::unique_ptr<MockRenderWidgetHost> MockRenderWidgetHost::Create(
+    FrameTree* frame_tree,
     RenderWidgetHostDelegate* delegate,
     AgentSchedulingGroupHost& agent_scheduling_group,
     int32_t routing_id) {
-  mojo::AssociatedRemote<blink::mojom::Widget> blink_widget;
-  auto blink_widget_receiver =
-      blink_widget.BindNewEndpointAndPassDedicatedReceiver();
-  return Create(delegate, agent_scheduling_group, routing_id,
-                blink_widget.Unbind());
+  return Create(frame_tree, delegate, agent_scheduling_group, routing_id,
+                TestRenderWidgetHost::CreateStubWidgetRemote());
 }
 
 // static
 std::unique_ptr<MockRenderWidgetHost> MockRenderWidgetHost::Create(
+    FrameTree* frame_tree,
     RenderWidgetHostDelegate* delegate,
     AgentSchedulingGroupHost& agent_scheduling_group,
     int32_t routing_id,
     mojo::PendingAssociatedRemote<blink::mojom::Widget> pending_blink_widget) {
   DCHECK(pending_blink_widget);
   return base::WrapUnique(
-      new MockRenderWidgetHost(delegate, agent_scheduling_group, routing_id,
-                               std::move(pending_blink_widget)));
+      new MockRenderWidgetHost(frame_tree, delegate, agent_scheduling_group,
+                               routing_id, std::move(pending_blink_widget)));
 }
 
 blink::mojom::WidgetInputHandler*
@@ -71,11 +71,13 @@ void MockRenderWidgetHost::NotifyNewContentRenderingTimeoutForTesting() {
 }
 
 MockRenderWidgetHost::MockRenderWidgetHost(
+    FrameTree* frame_tree,
     RenderWidgetHostDelegate* delegate,
     AgentSchedulingGroupHost& agent_scheduling_group,
     int routing_id,
     mojo::PendingAssociatedRemote<blink::mojom::Widget> pending_blink_widget)
-    : RenderWidgetHostImpl(/*self_owned=*/false,
+    : RenderWidgetHostImpl(frame_tree,
+                           /*self_owned=*/false,
                            delegate,
                            agent_scheduling_group,
                            routing_id,

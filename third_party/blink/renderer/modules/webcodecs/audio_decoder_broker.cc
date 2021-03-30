@@ -198,7 +198,7 @@ class MediaAudioTaskWrapper {
     base::Optional<DecoderDetails> decoder_details;
     if (decoder_) {
       status = media::OkStatus();
-      decoder_details = DecoderDetails({decoder_->GetDisplayName(),
+      decoder_details = DecoderDetails({decoder_->GetDecoderType(),
                                         decoder_->IsPlatformDecoder(),
                                         decoder_->NeedsBitstreamConversion()});
     }
@@ -257,8 +257,6 @@ class MediaAudioTaskWrapper {
   base::WeakPtrFactory<MediaAudioTaskWrapper> weak_factory_{this};
 };
 
-constexpr char AudioDecoderBroker::kDefaultDisplayName[];
-
 AudioDecoderBroker::AudioDecoderBroker(media::MediaLog* media_log,
                                        ExecutionContext& execution_context)
     // Use a worker task runner to avoid scheduling decoder
@@ -278,9 +276,9 @@ AudioDecoderBroker::~AudioDecoderBroker() {
   media_task_runner_->DeleteSoon(FROM_HERE, std::move(media_tasks_));
 }
 
-std::string AudioDecoderBroker::GetDisplayName() const {
-  return decoder_details_ ? decoder_details_->display_name
-                          : AudioDecoderBroker::kDefaultDisplayName;
+media::AudioDecoderType AudioDecoderBroker::GetDecoderType() const {
+  return decoder_details_ ? decoder_details_->decoder_type
+                          : media::AudioDecoderType::kBroker;
 }
 
 bool AudioDecoderBroker::IsPlatformDecoder() const {

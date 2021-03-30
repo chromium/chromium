@@ -4,10 +4,13 @@
 <translation id="1075622780330595106">Gần đây, bạn không sử dụng <ph name="NUMBER_OF_TABS" /> trong tổng số các thẻ của mình. Bạn có muốn đóng các thẻ này không?</translation>
 <translation id="1181037720776840403">Xóa</translation>
 <translation id="125153950246128346">Nhấn để xem một thẻ khác</translation>
+<translation id="1302104331113804646">Tùy chọn theo dõi giá</translation>
+<translation id="1378979118429748177">Nhận thông báo khi có mặt hàng giảm giá</translation>
 <translation id="1657719826150349398">Chuyển thẻ xuống dưới</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
 <translation id="2277224997687551299">Chỉnh sửa tên nhóm</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Xóa <ph name="TABS_COUNT_ONE" /> thẻ đã chọn khỏi nhóm.}other{Xóa <ph name="TABS_COUNT_MANY" /> thẻ đã chọn khỏi nhóm.}}</translation>
+<translation id="2479148705183875116">Chuyển đến phần Cài đặt</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Thu gọn <ph name="TABS_COUNT_ONE" /> thẻ.}other{Thu gọn nhóm thẻ có <ph name="TABS_COUNT_MANY" /> thẻ.}}</translation>
 <translation id="2569352796411618312">Đề xuất: Gần đây, bạn không sử dụng <ph name="NUMBER_OF_TABS" /> thẻ. Bạn có muốn đóng các thẻ này không?</translation>
 <translation id="257674075312929031">Nhóm</translation>
@@ -15,13 +18,16 @@
 <translation id="2671423594960767771">Chia sẻ nhóm</translation>
 <translation id="2759453070259087442">Mở rộng nhóm thẻ <ph name="TITLE_OF_GROUP" /> có <ph name="NUMBER_OF_TABS" /> thẻ.</translation>
 <translation id="2977480621796371840">Xóa khỏi nhóm</translation>
+<translation id="3291470810748040983">Bạn sẽ nhận được thông báo khi có ưu đãi giảm giá trong một thẻ đang mở</translation>
 <translation id="3328308545011660196">Đề xuất: <ph name="NUMBER_OF_TABS" /> thẻ có vẻ liên quan đến nhau. Bạn có muốn nhóm các thẻ đó lại không?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Thu gọn <ph name="TABS_COUNT_ONE" /> thẻ.}other{Thu gọn nhóm thẻ <ph name="TITLE_OF_GROUP" /> có <ph name="TABS_COUNT_MANY" /> thẻ.}}</translation>
+<translation id="3882834874697329510">Để nhận thông báo khi có ưu đãi giảm giá trong một thẻ đang mở, hãy bật thông báo trong phần Cài đặt.</translation>
+<translation id="3940195383040445971">Theo dõi giá trên thẻ</translation>
+<translation id="3996880007329611795">Nhận thông báo</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> thẻ có vẻ liên quan đến nhau. Bạn có muốn nhóm các thẻ đó lại không?</translation>
 <translation id="4212246570487010370">Tiếp tục duyệt web</translation>
 <translation id="4450893287417543264">Không hiển thị lại</translation>
 <translation id="4648718555153979859">Các thẻ của bạn được nhóm với nhau tại đây</translation>
-<translation id="4922064041913095674">Xem mặt hàng có giá thấp hơn trong các thẻ mà bạn đang mở</translation>
 <translation id="492284538114688557">Đã phát hiện có mặt hàng giảm giá</translation>
 <translation id="5007392906805964215">Xem</translation>
 <translation id="5073204694187207510">Ẩn lưới toàn màn hình</translation>
@@ -30,6 +36,7 @@
 <translation id="5533021382642990449">Hiển thị sau</translation>
 <translation id="5558362125926932819">Đóng nhóm thẻ có <ph name="NUMBER_OF_TABS" /> thẻ</translation>
 <translation id="5580090775658607195">Đã nhóm <ph name="TAB_COUNT" /> thẻ</translation>
+<translation id="575494663145460764">Nhận thông báo khi có mặt hàng giảm giá?</translation>
 <translation id="58326064309361797">Kéo các thẻ để nhóm lại với nhau</translation>
 <translation id="5846292395804797011">Đóng nhóm <ph name="TITLE_OF_GROUP" /> có <ph name="NUMBER_OF_TABS" /> thẻ</translation>
 <translation id="6040143037577758943">Đóng</translation>
@@ -41,6 +48,7 @@
 <translation id="6856809498882026482">Ẩn chế độ chọn nhiều thẻ</translation>
 <translation id="7151209024774799310">Xóa thẻ khỏi nhóm</translation>
 <translation id="7204204600596740190">Chế độ chọn nhiều thẻ</translation>
+<translation id="7352298686197644113">Xem mặt hàng giảm giá trong các thẻ mà bạn đang mở</translation>
 <translation id="753732157349120914">Trình chuyển đổi thẻ</translation>
 <translation id="7559245342362162951">Hiển thị các thẻ của nhóm trong lưới toàn màn hình</translation>
 <translation id="7792771145871471484">Xem lại các đề xuất.</translation>
@@ -52,7 +60,10 @@
 <translation id="8304833501377495048">Không hiển thị lại dải thẻ?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Đóng <ph name="TABS_COUNT_ONE" /> thẻ đã chọn}other{Đóng <ph name="TABS_COUNT_MANY" /> thẻ đã chọn}}</translation>
 <translation id="8557923272772633250">Mở rộng nhóm thẻ có <ph name="NUMBER_OF_TABS" /> thẻ.</translation>
+<translation id="860282621117673749">Thông báo khi có mặt hàng giảm giá</translation>
+<translation id="8714939927607906138">Giá thấp hơn</translation>
 <translation id="8749939518995770034">Đã đóng dải thẻ</translation>
+<translation id="8820741577754260431">Xem các mặt hàng giảm giá trong thẻ của bạn</translation>
 <translation id="9150694013019234766">Chuyển đổi giữa các thẻ trong nhóm thẻ ở gần cuối màn hình</translation>
 <translation id="9169594135889675189">Thêm thẻ mới vào nhóm</translation>
 <translation id="959682366969460160">Sắp xếp gọn gàng</translation>

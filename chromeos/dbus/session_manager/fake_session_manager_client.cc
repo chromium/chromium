@@ -24,8 +24,8 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "chromeos/dbus/cryptohome/account_identifier_operators.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/login_manager/policy_descriptor.pb.h"
+#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "crypto/sha2.h"
 
@@ -154,7 +154,7 @@ base::FilePath GetStubRelativePolicyPath(
       cryptohome::AccountIdentifier cryptohome_id;
       cryptohome_id.set_account_id(descriptor.account_id());
       const std::string sanitized_id =
-          CryptohomeClient::GetStubSanitizedUsername(cryptohome_id);
+          UserDataAuthClient::GetStubSanitizedUsername(cryptohome_id);
       return base::FilePath(sanitized_id)
           .AppendASCII(kStubPerAccountPolicyFileNamePrefix + postfix);
     }
@@ -286,10 +286,12 @@ void FakeSessionManagerClient::EmitAshInitialized() {}
 
 void FakeSessionManagerClient::RestartJob(int socket_fd,
                                           const std::vector<std::string>& argv,
+                                          RestartJobReason reason,
                                           VoidDBusMethodCallback callback) {
   DCHECK(supports_browser_restart_);
 
   restart_job_argv_ = argv;
+  restart_job_reason_ = reason;
   if (restart_job_callback_)
     std::move(restart_job_callback_).Run();
 
@@ -332,7 +334,7 @@ void FakeSessionManagerClient::StartSession(
     const cryptohome::AccountIdentifier& cryptohome_id) {
   DCHECK_EQ(0UL, user_sessions_.count(cryptohome_id.account_id()));
   std::string user_id_hash =
-      CryptohomeClient::GetStubSanitizedUsername(cryptohome_id);
+      UserDataAuthClient::GetStubSanitizedUsername(cryptohome_id);
   user_sessions_[cryptohome_id.account_id()] = user_id_hash;
 }
 
@@ -589,6 +591,14 @@ void FakeSessionManagerClient::SetFlagsForUser(
     const cryptohome::AccountIdentifier& cryptohome_id,
     const std::vector<std::string>& flags) {
   flags_for_user_[cryptohome_id] = flags;
+}
+
+void FakeSessionManagerClient::SetFeatureFlagsForUser(
+    const cryptohome::AccountIdentifier& cryptohome_id,
+    const std::vector<std::string>& feature_flags) {
+  // session_manager's SetFeatureFlagsForUser implementation has the side effect
+  // of clearing flags, match that behavior.
+  flags_for_user_[cryptohome_id] = {};
 }
 
 void FakeSessionManagerClient::GetServerBackedStateKeys(

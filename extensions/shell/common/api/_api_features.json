@@ -7,16 +7,10 @@
 // feature.h, simple_feature.h, and feature_provider.h.
 
 {
-  // Stub implementation of chrome.identity for app_shell.
-  "identity": {
-    "channel": "dev",
-    "contexts": ["blessed_extension"],
-    "extension_types": ["platform_app"]
-  },
   // Setup related functions for a Google Cloud Devices (GCD) target device.
   "shell.gcd": {
     "channel": "dev",
     "contexts": ["blessed_extension"],
-    "extension_types": ["platform_app"]    
+    "extension_types": ["platform_app"]
   }
 }

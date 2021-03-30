@@ -1,4 +1,4 @@
-monorail:  {
-  component:  "Internals>EarlyLoadingFramework"
+monorail: {
+  component: "Internals>EarlyLoadingFramework"
 }
-team_email:  "security-dev@chromium.org"
+team_email: "security-dev@chromium.org"

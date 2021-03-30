@@ -269,7 +269,6 @@ void PrefetchManager::PrefetchUrl(
   std::unique_ptr<blink::ThrottlingURLLoader> loader =
       blink::ThrottlingURLLoader::CreateLoaderAndStart(
           std::move(factory), std::move(throttles),
-          /*routing_id is not needed*/ -1,
           content::GlobalRequestID::MakeBrowserInitiated().request_id, options,
           &request, client.get(), kPrefetchTrafficAnnotation,
           base::ThreadTaskRunnerHandle::Get(),

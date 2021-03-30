@@ -20,7 +20,7 @@ android_library("component_autofill_provider_java_test_support") {
     "//components/autofill/android/provider:autofill_aidl",
     "//components/autofill/android/provider:java",
     "//content/public/android:content_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }
 generate_jni("jni_headers") {

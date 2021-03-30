@@ -12,7 +12,6 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.database.Cursor;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -107,46 +106,57 @@ public final class GSAStateUnitTest {
     }
 
     @Test
-    public void testPublicGsaContentProvider() {
-        Assert.assertEquals("com.google.android.googlequicksearchbox.GsaPublicContentProvider",
-                GSAState.GSA_PUBLIC_CONTENT_PROVIDER);
-        Assert.assertEquals(
-                "content://com.google.android.googlequicksearchbox.GsaPublicContentProvider/publicvalue/roti_for_chrome_enabled",
-                GSAState.ROTI_CHROME_ENABLED_PROVIDER);
-    }
+    public void parseAgsaMajorMinorVersionAsInteger() {
+        String versionName = "11.7";
+        Integer value = mGsaState.parseAgsaMajorMinorVersionAsInteger(versionName);
+        Assert.assertNotNull(value);
+        Assert.assertEquals("Major/minor verisons should be parsed correctly.", 11007, (int) value);
 
-    @Test
-    public void parseAgsaCursorResult() {
-        Cursor cursor = Mockito.mock(Cursor.class);
-        doReturn(true).when(cursor).moveToFirst();
-        doReturn(Cursor.FIELD_TYPE_STRING).when(cursor).getType(0);
-        doReturn("true").when(cursor).getString(0);
+        versionName = "12.72.100.1";
+        value = mGsaState.parseAgsaMajorMinorVersionAsInteger(versionName);
+        Assert.assertNotNull(value);
+        Assert.assertEquals("Verisons after major/minor should be ignored.", 12072, (int) value);
 
-        Assert.assertTrue(mGsaState.parseAgsaAssistantCursorResult(cursor));
+        versionName = "999.999";
+        value = mGsaState.parseAgsaMajorMinorVersionAsInteger(versionName);
+        Assert.assertNotNull(value);
+        Assert.assertEquals("Test the upper edge case.", 999999, (int) value);
 
-        doReturn("false").when(cursor).getString(0);
-        Assert.assertFalse(mGsaState.parseAgsaAssistantCursorResult(cursor));
-    }
+        versionName = "0.0";
+        value = mGsaState.parseAgsaMajorMinorVersionAsInteger(versionName);
+        Assert.assertNotNull(value);
+        Assert.assertEquals("Test the lower edge case.", 0, (int) value);
 
-    @Test
-    public void parseAgsaCursorResult_cursorNull() {
-        Assert.assertFalse(mGsaState.parseAgsaAssistantCursorResult(null));
-    }
+        versionName = "0.1";
+        value = mGsaState.parseAgsaMajorMinorVersionAsInteger(versionName);
+        Assert.assertNotNull(value);
+        Assert.assertEquals("Test 0 for major.", 1, (int) value);
 
-    @Test
-    public void parseAgsaCursorResult_cursorEmpty() {
-        Cursor cursor = Mockito.mock(Cursor.class);
-        doReturn(false).when(cursor).moveToFirst();
+        versionName = "1.0";
+        value = mGsaState.parseAgsaMajorMinorVersionAsInteger(versionName);
+        Assert.assertNotNull(value);
+        Assert.assertEquals("Test 0 for minor.", 1000, (int) value);
 
-        Assert.assertFalse(mGsaState.parseAgsaAssistantCursorResult(cursor));
-    }
+        // Exceed maximum for both major/minor.
+        versionName = "1000.999";
+        value = mGsaState.parseAgsaMajorMinorVersionAsInteger(versionName);
+        Assert.assertNull(value);
+        versionName = "999.9999";
+        value = mGsaState.parseAgsaMajorMinorVersionAsInteger(versionName);
+        Assert.assertNull(value);
 
-    @Test
-    public void parseAgsaCursorResult_invalidType() {
-        Cursor cursor = Mockito.mock(Cursor.class);
-        doReturn(true).when(cursor).moveToFirst();
-        doReturn(Cursor.FIELD_TYPE_INTEGER).when(cursor).getType(0);
-
-        Assert.assertFalse(mGsaState.parseAgsaAssistantCursorResult(cursor));
+        // Formatting errors.
+        versionName = "999.";
+        value = mGsaState.parseAgsaMajorMinorVersionAsInteger(versionName);
+        Assert.assertNull(value);
+        versionName = ".999";
+        value = mGsaState.parseAgsaMajorMinorVersionAsInteger(versionName);
+        Assert.assertNull(value);
+        versionName = "999";
+        value = mGsaState.parseAgsaMajorMinorVersionAsInteger(versionName);
+        Assert.assertNull(value);
+        versionName = "12.7notavalidversion";
+        value = mGsaState.parseAgsaMajorMinorVersionAsInteger(versionName);
+        Assert.assertNull(value);
     }
 }

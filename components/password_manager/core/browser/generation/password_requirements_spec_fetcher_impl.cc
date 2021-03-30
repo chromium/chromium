@@ -195,9 +195,10 @@ void PasswordRequirementsSpecFetcherImpl::OnFetchComplete(
   lookup->download_timer.Stop();
   UMA_HISTOGRAM_TIMES("PasswordManager.RequirementsSpecFetcher.NetworkDuration",
                       base::TimeTicks::Now() - lookup->start_of_request);
+  // Network error codes are negative. See: src/net/base/net_error_list.h.
   base::UmaHistogramSparse(
       "PasswordManager.RequirementsSpecFetcher.NetErrorCode",
-      lookup->url_loader->NetError());
+      -lookup->url_loader->NetError());
   if (lookup->url_loader->ResponseInfo() &&
       lookup->url_loader->ResponseInfo()->headers) {
     base::UmaHistogramSparse(
@@ -206,8 +207,8 @@ void PasswordRequirementsSpecFetcherImpl::OnFetchComplete(
   }
 
   if (!response_body || lookup->url_loader->NetError() != net::Error::OK) {
-    VLOG(1) << "Fetch for " << hash_prefix << ": failed to fetch "
-            << lookup->url_loader->NetError();
+    VLOG(1) << "Fetch for " << hash_prefix << ": failed to fetch. Net Error: "
+            << net::ErrorToString(lookup->url_loader->NetError());
     TriggerCallbackToAll(&lookup->callbacks, ResultCode::kErrorFailedToFetch,
                          PasswordRequirementsSpec());
     return;

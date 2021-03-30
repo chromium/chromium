@@ -1,0 +1,36 @@
+Tests setting accepted encodings.
+Applying setAcceptedEncodings override to session#1
+[session#1] Testing overrides for navigation requests.
+[session#1] Server received Accept-Encoding header: br
+
+[session#1] Testing overrides for fetch requests.
+[session#1] Server received Accept-Encoding header: br
+
+Testing overrides set by the session#1 from session#2
+[session#2] Testing overrides for navigation requests.
+[session#2] Server received Accept-Encoding header: br
+
+[session#2] Testing overrides for fetch requests.
+[session#2] Server received Accept-Encoding header: br
+
+Testing additional overrides set by the session#2
+[session#1] Testing overrides for navigation requests.
+[session#1] Server received Accept-Encoding header: gzip, br
+
+[session#1] Testing overrides for fetch requests.
+[session#1] Server received Accept-Encoding header: gzip, br
+
+[session#2] Testing overrides for navigation requests.
+[session#2] Server received Accept-Encoding header: gzip, br
+
+[session#2] Testing overrides for fetch requests.
+[session#2] Server received Accept-Encoding header: gzip, br
+
+Disconnecting original session (which held the override)
+[session#2] Testing overrides for navigation requests.
+[session#2] Server received Accept-Encoding header: gzip
+
+[session#2] Testing overrides for fetch requests.
+[session#2] Server received Accept-Encoding header: gzip
+
+

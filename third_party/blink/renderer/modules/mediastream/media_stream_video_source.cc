@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/macros.h"
@@ -221,6 +222,7 @@ void MediaStreamVideoSource::StopForRestart(RestartCallback callback,
         *io_task_runner(), FROM_HERE,
         CrossThreadBindOnce(&VideoTrackAdapter::DeliverFrameOnIO,
                             GetTrackAdapter(), black_frame,
+                            std::vector<scoped_refptr<media::VideoFrame>>(),
                             base::TimeTicks::Now()));
   }
 

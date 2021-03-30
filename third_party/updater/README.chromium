@@ -1,0 +1,11 @@
+Name: ChromiumUpdater
+Version: Varies
+License: BSD
+License File: LICENSE
+Security Critical: Yes
+
+Description:
+The ChromiumUpdater package contains the ChromiumUpdater app bundle, which is
+used on the macOS platform to perform browser updates. Based on the way that the
+browser installs the macOS updater, it needs to be bundled within the browser
+product itself.

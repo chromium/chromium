@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_RULE_COUNTER_STYLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_RULE_COUNTER_STYLE_H_
 
+#include "third_party/blink/renderer/core/css/parser/at_rule_descriptors.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 
 namespace blink {
@@ -14,6 +15,13 @@ class CORE_EXPORT StyleRuleCounterStyle : public StyleRuleBase {
   StyleRuleCounterStyle(const AtomicString&, CSSPropertyValueSet*);
   StyleRuleCounterStyle(const StyleRuleCounterStyle&);
   ~StyleRuleCounterStyle();
+
+  int GetVersion() const { return version_; }
+
+  // Different 'system' values have different requirements on 'symbols' and
+  // 'additive-symbols'. Returns true if the requirement is met.
+  // https://drafts.csswg.org/css-counter-styles-3/#counter-style-symbols
+  bool HasValidSymbols() const;
 
   AtomicString GetName() const { return name_; }
   const CSSValue* GetSystem() const { return system_; }
@@ -27,22 +35,17 @@ class CORE_EXPORT StyleRuleCounterStyle : public StyleRuleBase {
   const CSSValue* GetAdditiveSymbols() const { return additive_symbols_; }
   const CSSValue* GetSpeakAs() const { return speak_as_; }
 
-  void SetName(const AtomicString& name) { name_ = name; }
-  void SetSystem(const CSSValue* system) { system_ = system; }
-  void SetNegative(const CSSValue* negative) { negative_ = negative; }
-  void SetPrefix(const CSSValue* prefix) { prefix_ = prefix; }
-  void SetSuffix(const CSSValue* suffix) { suffix_ = suffix; }
-  void SetRange(const CSSValue* range) { range_ = range; }
-  void SetPad(const CSSValue* pad) { pad_ = pad; }
-  void SetFallback(const CSSValue* fallback) { fallback_ = fallback; }
-  void SetSymbols(const CSSValue* symbols) { symbols_ = symbols; }
-  void SetAdditiveSymbols(const CSSValue* additive_symbols) {
-    additive_symbols_ = additive_symbols;
+  // Returns false if the new value is invalid or equivalent to the old value.
+  bool NewValueInvalidOrEqual(AtRuleDescriptorID, const CSSValue*);
+  void SetDescriptorValue(AtRuleDescriptorID, const CSSValue*);
+
+  void SetName(const AtomicString& name) {
+    name_ = name;
+    ++version_;
   }
-  void SetSpeakAs(const CSSValue* speak_as) { speak_as_ = speak_as; }
 
   bool HasFailedOrCanceledSubresources() const {
-    // TODO(crbug.com/687225): Implement.
+    // TODO(crbug.com/1176323): Handle image symbols when we implement it.
     return false;
   }
 
@@ -53,6 +56,8 @@ class CORE_EXPORT StyleRuleCounterStyle : public StyleRuleBase {
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
+  Member<const CSSValue>& GetDescriptorReference(AtRuleDescriptorID);
+
   AtomicString name_;
   Member<const CSSValue> system_;
   Member<const CSSValue> negative_;
@@ -64,6 +69,9 @@ class CORE_EXPORT StyleRuleCounterStyle : public StyleRuleBase {
   Member<const CSSValue> symbols_;
   Member<const CSSValue> additive_symbols_;
   Member<const CSSValue> speak_as_;
+
+  // Tracks mutations due to setter functions.
+  int version_ = 0;
 };
 
 template <>

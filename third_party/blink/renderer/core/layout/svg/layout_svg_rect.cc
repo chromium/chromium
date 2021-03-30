@@ -55,7 +55,6 @@ void LayoutSVGRect::UpdateShapeFromElement() {
   if (bounding_box_size.Width() < 0 || bounding_box_size.Height() < 0)
     return;
 
-  const SVGComputedStyle& svg_style = style.SvgStyle();
   // Spec: "A value of zero disables rendering of the element."
   if (!bounding_box_size.IsEmpty()) {
     // Fallback to LayoutSVGShape and path-based hit detection if the rect
@@ -68,8 +67,8 @@ void LayoutSVGRect::UpdateShapeFromElement() {
       use_path_fallback_ = true;
       return;
     }
-    FloatPoint radii(length_context.ResolveLengthPair(svg_style.Rx(),
-                                                      svg_style.Ry(), style));
+    FloatPoint radii(
+        length_context.ResolveLengthPair(style.Rx(), style.Ry(), style));
     if (radii.X() > 0 || radii.Y() > 0 || !DefinitelyHasSimpleStroke()) {
       CreatePath();
       use_path_fallback_ = true;
@@ -79,9 +78,9 @@ void LayoutSVGRect::UpdateShapeFromElement() {
   if (!use_path_fallback_)
     ClearPath();
 
-  fill_bounding_box_ = FloatRect(
-      length_context.ResolveLengthPair(svg_style.X(), svg_style.Y(), style),
-      bounding_box_size);
+  fill_bounding_box_ =
+      FloatRect(length_context.ResolveLengthPair(style.X(), style.Y(), style),
+                bounding_box_size);
   stroke_bounding_box_ = CalculateStrokeBoundingBox();
 }
 
@@ -124,7 +123,7 @@ bool LayoutSVGRect::ShapeDependentFillContains(const HitTestLocation& location,
 // Returns true if the stroke is continuous and definitely uses miter joins.
 bool LayoutSVGRect::DefinitelyHasSimpleStroke() const {
   NOT_DESTROYED();
-  const SVGComputedStyle& svg_style = StyleRef().SvgStyle();
+  const ComputedStyle& style = StyleRef();
 
   // The four angles of a rect are 90 degrees. Using the formula at:
   // http://www.w3.org/TR/SVG/painting.html#StrokeMiterlimitProperty
@@ -142,9 +141,8 @@ bool LayoutSVGRect::DefinitelyHasSimpleStroke() const {
   // miterlimits, the join style used might not be correct (e.g. a miterlimit
   // of 1.4142135 should result in bevel joins, but may be drawn using miter
   // joins).
-  return svg_style.StrokeDashArray()->data.IsEmpty() &&
-         svg_style.JoinStyle() == kMiterJoin &&
-         svg_style.StrokeMiterLimit() >= 1.5;
+  return !style.HasDashArray() && style.JoinStyle() == kMiterJoin &&
+         style.StrokeMiterLimit() >= 1.5;
 }
 
 }  // namespace blink

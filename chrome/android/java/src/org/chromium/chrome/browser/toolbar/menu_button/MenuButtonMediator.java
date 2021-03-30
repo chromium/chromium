@@ -6,8 +6,10 @@ package org.chromium.chrome.browser.toolbar.menu_button;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
+import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 
@@ -32,6 +34,8 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuObserver;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
+import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelAnimatorFactory;
 import org.chromium.ui.util.TokenHolder;
@@ -51,6 +55,8 @@ class MenuButtonMediator implements AppMenuObserver {
     private final PropertyModel mPropertyModel;
     private final Runnable mRequestRenderRunnable;
     private final ThemeColorProvider mThemeColorProvider;
+    private final Activity mActivity;
+    private final KeyboardVisibilityDelegate mKeyboardDelegate;
     private boolean mShouldShowAppUpdateBadge;
     private Runnable mUpdateStateChangedListener;
     private Supplier<Boolean> mIsActivityFinishingSupplier;
@@ -75,7 +81,7 @@ class MenuButtonMediator implements AppMenuObserver {
      *         a pending update.
      * @param isInOverviewModeSupplier Supplier of overview mode state.
      * @param themeColorProvider Provider of theme color changes.
-     * @param resources Resources object to use to obtain, e.g. localized strings.
+     * @param windowAndroid The WindowAndroid instance.
      * @param shouldShowAppUpdateBadge Whether the "update available" badge should ever be shown.
      * @param isActivityFinishingSupplier Supplier for knowing if the embedding activity is in the
      *         process of finishing or has already been destroyed.
@@ -86,7 +92,8 @@ class MenuButtonMediator implements AppMenuObserver {
             ThemeColorProvider themeColorProvider, Supplier<Boolean> isInOverviewModeSupplier,
             BrowserStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate,
             SetFocusFunction setUrlBarFocusFunction,
-            OneshotSupplier<AppMenuCoordinator> appMenuCoordinatorSupplier, Resources resources) {
+            OneshotSupplier<AppMenuCoordinator> appMenuCoordinatorSupplier,
+            WindowAndroid windowAndroid) {
         mPropertyModel = propertyModel;
         mShouldShowAppUpdateBadge = shouldShowAppUpdateBadge;
         mIsActivityFinishingSupplier = isActivityFinishingSupplier;
@@ -99,8 +106,10 @@ class MenuButtonMediator implements AppMenuObserver {
         mAppMenuCoordinatorSupplierObserver = this::onAppMenuInitialized;
         mAppMenuCoordinatorSupplier = appMenuCoordinatorSupplier;
         mAppMenuCoordinatorSupplier.onAvailable(mAppMenuCoordinatorSupplierObserver);
-        mResources = resources;
+        mActivity = windowAndroid.getActivity().get();
+        mResources = mActivity.getResources();
         mAppMenuButtonHelperSupplier = new ObservableSupplierImpl<>();
+        mKeyboardDelegate = windowAndroid.getKeyboardDelegate();
 
         mUrlFocusTranslationX =
                 mResources.getDimensionPixelSize(R.dimen.toolbar_url_focus_translation_x);
@@ -112,6 +121,13 @@ class MenuButtonMediator implements AppMenuObserver {
             // Defocus here to avoid handling focus in multiple places, e.g., when the
             // forward button is pressed. (see crbug.com/414219)
             mSetUrlBarFocusFunction.setFocus(false, OmniboxFocusReason.UNFOCUS);
+
+            View view = mActivity.getCurrentFocus();
+            if (view != null) {
+                // Dismiss keyboard in case the user was interacting with an input field on a
+                // website.
+                mKeyboardDelegate.hideKeyboard(view);
+            }
 
             if (!mIsInOverviewModeSupplier.get() && isShowingAppMenuUpdateBadge()) {
                 // The app menu badge should be removed the first time the menu is opened.

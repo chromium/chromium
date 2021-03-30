@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.navigation_interception.InterceptNavigationDelegate;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 
 /**
  * A helper class for using the DOM Distiller.
@@ -70,7 +71,7 @@ public class DomDistillerTabUtils {
      * @param url The original URL.
      * @return the formatted URL of the original page.
      */
-    public static String getFormattedUrlFromOriginalDistillerUrl(String url) {
+    public static String getFormattedUrlFromOriginalDistillerUrl(GURL url) {
         return DomDistillerTabUtilsJni.get().getFormattedUrlFromOriginalDistillerUrl(url);
     }
 
@@ -148,7 +149,7 @@ public class DomDistillerTabUtils {
         void distillCurrentPageAndView(WebContents webContents);
         void distillCurrentPage(WebContents webContents);
         void distillAndView(WebContents sourceWebContents, WebContents destinationWebContents);
-        String getFormattedUrlFromOriginalDistillerUrl(String url);
+        String getFormattedUrlFromOriginalDistillerUrl(GURL url);
         int getDistillerHeuristics();
         void setInterceptNavigationDelegate(
                 InterceptNavigationDelegate delegate, WebContents webContents);

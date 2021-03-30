@@ -87,7 +87,7 @@ TEST_F(MemoryWarningHelperTest, VerifyApplicationDidReceiveMemoryWarning) {
 }
 
 // Invokes applicationDidReceiveMemoryWarning and verifies the flags (i.e.
-// breakpad_helper and NSUserDefaults) are set.
+// crash_helper and NSUserDefaults) are set.
 TEST_F(MemoryWarningHelperTest, VerifyHelperDidSetMemoryWarningFlags) {
   // Setup.
   [[PreviousSessionInfo sharedInstance] beginRecordingCurrentSession];

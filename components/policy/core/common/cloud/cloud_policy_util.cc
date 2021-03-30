@@ -83,6 +83,14 @@ namespace policy {
 
 namespace em = enterprise_management;
 
+std::string GetDeviceManufacturer() {
+#if defined(OS_IOS)
+  return "Apple Inc.";
+#else
+  return std::string();
+#endif
+}
+
 std::string GetDeviceModel() {
 #if defined(OS_IOS)
   // Obtains the Apple internal device name (e.g. "iPad6,11").
@@ -232,7 +240,7 @@ std::unique_ptr<em::BrowserDeviceIdentifier> GetBrowserDeviceIdentifier() {
       std::make_unique<em::BrowserDeviceIdentifier>();
   device_identifier->set_computer_name(GetMachineName());
 #if defined(OS_WIN)
-  device_identifier->set_serial_number(base::UTF16ToUTF8(
+  device_identifier->set_serial_number(base::WideToUTF8(
       base::win::WmiComputerSystemInfo::Get().serial_number()));
 #else
   device_identifier->set_serial_number("");

@@ -8,13 +8,14 @@
 #import <LocalAuthentication/LocalAuthentication.h>
 #import <Security/Security.h>
 
+#include <string>
+
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 
 namespace device {
 namespace fido {
@@ -46,7 +47,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO)
   // Returns whether the device has a secure enclave and can authenticate the
   // local user, and whether the current binary carries a
   // keychain-access-groups entitlement that matches the one set in |config|.
-  static bool TouchIdAvailable(const AuthenticatorConfig& config);
+  static void TouchIdAvailable(AuthenticatorConfig config,
+                               base::OnceCallback<void(bool is_available)>);
 
   virtual ~TouchIdContext();
 
@@ -54,7 +56,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO)
   // reason string to the user. On completion or error, the provided callback is
   // invoked, unless the TouchIdContext instance has been destroyed in the
   // meantime (in which case nothing happens).
-  virtual void PromptTouchId(const base::string16& reason, Callback callback);
+  virtual void PromptTouchId(const std::u16string& reason, Callback callback);
 
   // authentication_context returns the LAContext used for the local user
   // authentication prompt.
@@ -69,13 +71,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO)
 
  private:
   using CreateFuncPtr = decltype(&Create);
-  using TouchIdAvailableFuncPtr = decltype(&TouchIdAvailable);
-
   static CreateFuncPtr g_create_;
+
+  static bool TouchIdAvailableImplBlocking(AuthenticatorConfig config);
+  using TouchIdAvailableFuncPtr = decltype(&TouchIdAvailableImplBlocking);
   static TouchIdAvailableFuncPtr g_touch_id_available_;
 
   static std::unique_ptr<TouchIdContext> CreateImpl();
-  static bool TouchIdAvailableImpl(const AuthenticatorConfig& config);
 
   void RunCallback(bool success);
 

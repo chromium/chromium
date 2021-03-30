@@ -8,10 +8,16 @@ import("//tools/generate_library_loader/generate_library_loader.gni")
 
 assert(use_x11 || ozone_platform_x11)
 
-xcbproto_path = "//third_party/xcbproto/src"
+declare_args() {
+  regenerate_x11_protos = false
+}
 
 config("x11_private_config") {
   visibility = [ ":*" ]
+  defines = [ "IS_X11_IMPL" ]
+}
+
+config("build_xprotos_config") {
   cflags = [
     # Generated proto files pull all fields from a struct into scope
     # even if they aren't used.  Rather than adding logic in the
@@ -19,7 +25,6 @@ config("x11_private_config") {
     # those, simply ignore unused variable warnings.
     "-Wno-unused-variable",
   ]
-  defines = [ "IS_X11_IMPL" ]
 }
 
 generate_library_loader("xlib_loader") {
@@ -36,6 +41,7 @@ generate_library_loader("xlib_loader") {
     "XSynchronize",
     "XSetErrorHandler",
     "XFree",
+    "XPending",
   ]
 }
 
@@ -48,98 +54,137 @@ generate_library_loader("xlib_xcb_loader") {
   functions = [ "XGetXCBConnection" ]
 }
 
-action("gen_xprotos") {
-  visibility = [ ":xprotos" ]
-  script = "gen_xproto.py"
-  protos = [
-    "bigreq",
-    "composite",
-    "damage",
-    "dpms",
-    "dri2",
-    "dri3",
-    "ge",
-    "glx",
-    "present",
-    "randr",
-    "record",
-    "render",
-    "res",
-    "screensaver",
-    "shape",
-    "shm",
-    "sync",
-    "xc_misc",
-    "xevie",
-    "xf86dri",
-    "xf86vidmode",
-    "xfixes",
-    "xinerama",
-    "xinput",
-    "xkb",
-    "xprint",
-    "xproto",
-    "xselinux",
-    "xtest",
-    "xv",
-    "xvmc",
+protos = [
+  "bigreq",
+  "composite",
+  "damage",
+  "dpms",
+  "dri2",
+  "dri3",
+  "ge",
+  "glx",
+  "present",
+  "randr",
+  "record",
+  "render",
+  "res",
+  "screensaver",
+  "shape",
+  "shm",
+  "sync",
+  "xc_misc",
+  "xevie",
+  "xf86dri",
+  "xf86vidmode",
+  "xfixes",
+  "xinerama",
+  "xinput",
+  "xkb",
+  "xprint",
+  "xproto",
+  "xselinux",
+  "xtest",
+  "xv",
+  "xvmc",
+]
+proto_generated_files = [
+  "read_event.cc",
+  "read_error.cc",
+  "extension_manager.h",
+  "extension_manager.cc",
+]
+foreach(proto, protos) {
+  proto_generated_files += [
+    "${proto}.h",
+    "${proto}.cc",
   ]
-  sources = []
-  outputs = [
-    "$target_gen_dir/read_event.cc",
-    "$target_gen_dir/read_error.cc",
-    "$target_gen_dir/extension_manager.h",
-    "$target_gen_dir/extension_manager.cc",
-  ]
-  foreach(proto, protos) {
-    sources += [ "$xcbproto_path/src/${proto}.xml" ]
-    outputs += [
-      "$target_gen_dir/${proto}.h",
-      "$target_gen_dir/${proto}.cc",
-    ]
-  }
-
-  args = rebase_path([
-                       xcbproto_path,
-                       target_gen_dir,
-                     ],
-                     root_build_dir) + protos
 }
 
-source_set("xprotos") {
-  visibility = [ ":x" ]
+if (regenerate_x11_protos) {
+  xcbproto_path = "//third_party/xcbproto/src"
+
+  action("gen_xprotos") {
+    visibility = [ ":build_xprotos" ]
+    script = "gen_xproto.py"
+
+    sources = []
+    foreach(proto, protos) {
+      sources += [ "$xcbproto_path/src/${proto}.xml" ]
+    }
+
+    outputs = []
+    foreach(proto_generated_file, proto_generated_files) {
+      outputs += [ "$target_gen_dir/$proto_generated_file" ]
+    }
+
+    args = rebase_path([
+                         xcbproto_path,
+                         target_gen_dir,
+                       ],
+                       root_build_dir) + protos
+  }
+} else {
+  copy("gen_xprotos") {
+    sources = []
+    foreach(proto_generated_file, proto_generated_files) {
+      sources += [ "generated_protos/$proto_generated_file" ]
+    }
+
+    outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+  }
+}
+
+source_set("build_xprotos") {
+  visibility = [ ":xproto" ]
   deps = [
     ":gen_xprotos",
+    "//base",
+  ]
+  sources = get_target_outputs(":gen_xprotos")
+  configs += [
+    ":build_xprotos_config",
+    ":x11_private_config",
+  ]
+}
+
+source_set("xproto") {
+  visibility = [ ":x" ]
+  sources = [
+    "connection.cc",
+    "connection.h",
+    "error.cc",
+    "error.h",
+    "event.cc",
+    "event.h",
+    "future.h",
+    "keyboard_state.cc",
+    "keyboard_state.h",
+    "ref_counted_fd.cc",
+    "ref_counted_fd.h",
+    "scoped_ignore_errors.cc",
+    "scoped_ignore_errors.h",
+    "x11_switches.cc",
+    "x11_switches.h",
+    "xlib_support.cc",
+    "xlib_support.h",
+    "xproto_internal.cc",
+    "xproto_internal.h",
+    "xproto_types.cc",
+    "xproto_types.h",
+    "xproto_util.cc",
+    "xproto_util.h",
+  ]
+  deps = [
     ":xlib_loader",
     ":xlib_xcb_loader",
     "//base",
     "//base:i18n",
     "//ui/events/platform",
   ]
-  public_deps = [ "//ui/gfx/x/keysyms" ]
-  sources = get_target_outputs(":gen_xprotos") + [
-              "connection.h",
-              "connection.cc",
-              "event.h",
-              "event.cc",
-              "error.h",
-              "error.cc",
-              "keyboard_state.h",
-              "keyboard_state.cc",
-              "scoped_ignore_errors.h",
-              "scoped_ignore_errors.cc",
-              "x11_switches.cc",
-              "x11_switches.h",
-              "xlib_support.h",
-              "xlib_support.cc",
-              "xproto_internal.h",
-              "xproto_internal.cc",
-              "xproto_types.h",
-              "xproto_types.cc",
-              "future.h",
-              "xproto_util.h",
-              "xproto_util.cc",
-            ]
+  public_deps = [
+    ":build_xprotos",
+    "//ui/gfx/x/keysyms",
+  ]
   configs += [ ":x11_private_config" ]
   libs = [ "xcb" ]
 }
@@ -164,7 +209,7 @@ component("x") {
     "//base",
     "//skia",
   ]
-  public_deps = [ ":xprotos" ]
+  public_deps = [ ":xproto" ]
 }
 
 source_set("unit_test") {

@@ -114,9 +114,7 @@ TEST_F(BrowserAccessibilityManagerWinTest, ChildTree) {
   ui::AXNodeData parent_tree_root;
   parent_tree_root.id = 1;
   parent_tree_root.role = ax::mojom::Role::kRootWebArea;
-  parent_tree_root.AddStringAttribute(
-      ax::mojom::StringAttribute::kChildTreeId,
-      child_tree_update.tree_data.tree_id.ToString());
+  parent_tree_root.AddChildTreeId(child_tree_update.tree_data.tree_id);
   ui::AXTreeUpdate parent_tree_update = MakeAXTreeUpdate(parent_tree_root);
 
   child_tree_update.tree_data.parent_tree_id =

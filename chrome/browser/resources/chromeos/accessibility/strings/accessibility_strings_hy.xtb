@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">Ցանկի միավոր</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">Երկու մատը սահեցրեք աջ</translation>
-<translation id="1016393160682012902">Սեղմեք սովորական կամ թարմացվող բրայլյան ստեղնաշարի որևէ ստեղն, կամ հպեք ժեստին՝ դրա գործառույթին ծանոթանալու համար։ Դուրս գալու համար սեղմեք Control + W կամ Escape։</translation>
 <translation id="1022586497894531524">Առաջին անգա՞մ եք օգտագործում ChromeVox Next-ի ձայնային հուշումները: Այս ամփոփ ուղեցույցը կօգնի ձեզ հասկանալ ChromeVox Next-ի հիմունքները:</translation>
 <translation id="1025074108959230262">Կպչուն ռեժիմն անջատված է</translation>
 <translation id="1031961866430398710">ապա</translation>
@@ -150,6 +149,7 @@
 <translation id="2045055672832940894">Նախորդ կառավար չկա</translation>
 <translation id="2045606329038304310">Ձևերի դաշտերի կառավարում</translation>
 <translation id="2063539687800151747">Բնաբան</translation>
+<translation id="2074531330963286860">Հասանելի են գործողություններ։ Դրանք դիտելու համար սեղմեք Որոնում + կետ։</translation>
 <translation id="2086961585857038472">Հաջորդ բառը</translation>
 <translation id="2087981446621639008">նկարագրությունների ցանկի մանրամասներ</translation>
 <translation id="2089387485033699258">hy</translation>
@@ -976,6 +976,7 @@
 <translation id="827266600368092403">Ընտրվածքի սկիզբ կամ վերջ</translation>
 <translation id="827422111966801947">Ինդիգո</translation>
 <translation id="8276439074553447000">Անցնել նախորդ ակտիվացվող տարրին</translation>
+<translation id="8279039817939141096">Սեղմեք QWERTY կամ թարմացվող բրայլյան ստեղնաշարի որևէ ստեղն կամ հպեք ժեստին՝ դրա գործառույթին ծանոթանալու համար։ Դուրս գալու համար սեղմեք Control+W, բացատ+Z, Escape կամ երկու մատը սահեցրեք ձախ։</translation>
 <translation id="8283603667300770666">Ձևաթղթի հաջորդ դաշտը</translation>
 <translation id="8310185481635255431">Հաջորդ հղում չկա</translation>
 <translation id="831207808878314375">Սահմանում</translation>

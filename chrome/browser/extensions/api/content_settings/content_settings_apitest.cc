@@ -21,6 +21,8 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -41,7 +43,6 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/test_extension_registry_observer.h"
-#include "extensions/common/scoped_worker_based_extensions_channel.h"
 
 namespace extensions {
 
@@ -61,11 +62,14 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
     // Closing the last browser window also releases a KeepAlive. Make
     // sure it's not the last one, so the message loop doesn't quit
     // unexpectedly.
-    keep_alive_.reset(new ScopedKeepAlive(KeepAliveOrigin::BROWSER,
-                                          KeepAliveRestartOption::DISABLED));
+    keep_alive_ = std::make_unique<ScopedKeepAlive>(
+        KeepAliveOrigin::BROWSER, KeepAliveRestartOption::DISABLED);
+    profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
+        profile_, ProfileKeepAliveOrigin::kBrowserWindow);
   }
 
   void TearDownOnMainThread() override {
+    profile_keep_alive_.reset();
     // BrowserProcess::Shutdown() needs to be called in a message loop, so we
     // post a task to release the keep alive, then run the message loop.
     base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -217,33 +221,18 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
  private:
   Profile* profile_;
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 };
 
 class ExtensionContentSettingsApiLazyTest
     : public ExtensionContentSettingsApiTest,
       public testing::WithParamInterface<ContextType> {
- public:
-  ExtensionContentSettingsApiLazyTest() {
-    // Service Workers are currently only available on certain channels, so set
-    // the channel for those tests.
-    if (GetParam() == ContextType::kServiceWorker)
-      current_channel_ = std::make_unique<ScopedWorkerBasedExtensionsChannel>();
-  }
-
  protected:
-  bool RunLazyTest(const std::string& extension_name) {
-    // TODO(https://crbug.com/1146173): These tests are being run with
-    // file access to prevent flakiness for the SW version. This should
-    // be reverted to run without file access when this bug is fixed.
-    int browser_test_flags = kFlagEnableFileAccess;
-    if (GetParam() == ContextType::kServiceWorker)
-      browser_test_flags |= kFlagRunAsServiceWorkerBasedExtension;
-
-    return RunExtensionTestWithFlagsAndArg(extension_name, nullptr,
-                                           browser_test_flags, kFlagNone);
+  bool RunLazyTest(const char* extension_name) {
+    return RunExtensionTest(
+        {.name = extension_name},
+        {.load_as_service_worker = GetParam() == ContextType::kServiceWorker});
   }
-
-  std::unique_ptr<ScopedWorkerBasedExtensionsChannel> current_channel_;
 };
 
 INSTANTIATE_TEST_SUITE_P(EventPage,
@@ -300,9 +289,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionContentSettingsApiTest, IncognitoIsolation) {
   std::vector<int> content_settings_before = GetContentSettingsSnapshot(url);
 
   // Run extension, set all permissions to allow, and check if they are changed.
-  EXPECT_TRUE(RunExtensionSubtestWithArgAndFlags(
-      "content_settings/incognitoisolation", "test.html", "allow",
-      kFlagEnableIncognito, kFlagUseIncognito))
+  ASSERT_TRUE(RunExtensionTest({.name = "content_settings/incognitoisolation",
+                                .page_url = "test.html",
+                                .custom_arg = "allow",
+                                .open_in_incognito = true},
+                               {.allow_in_incognito = true}))
       << message_;
 
   // Get content settings after running extension to ensure nothing is changed.
@@ -310,9 +301,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionContentSettingsApiTest, IncognitoIsolation) {
   EXPECT_EQ(content_settings_before, content_settings_after);
 
   // Run extension, set all permissions to block, and check if they are changed.
-  EXPECT_TRUE(RunExtensionSubtestWithArgAndFlags(
-      "content_settings/incognitoisolation", "test.html", "block",
-      kFlagEnableIncognito, kFlagUseIncognito))
+  ASSERT_TRUE(RunExtensionTest({.name = "content_settings/incognitoisolation",
+                                .page_url = "test.html",
+                                .custom_arg = "block",
+                                .open_in_incognito = true},
+                               {.allow_in_incognito = true}))
       << message_;
 
   // Get content settings after running extension to ensure nothing is changed.
@@ -323,8 +316,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionContentSettingsApiTest, IncognitoIsolation) {
 // Tests if changing incognito mode permissions in regular profile are rejected.
 IN_PROC_BROWSER_TEST_F(ExtensionContentSettingsApiTest,
                        IncognitoNotAllowedInRegular) {
-  EXPECT_FALSE(RunExtensionSubtestWithArg("content_settings/incognitoisolation",
-                                          "test.html", "allow"))
+  EXPECT_FALSE(RunExtensionTest({.name = "content_settings/incognitoisolation",
+                                 .page_url = "test.html",
+                                 .custom_arg = "allow"}))
       << message_;
 }
 
@@ -357,11 +351,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiLazyTest,
       "ContentSettings.ExtensionNonEmbeddedSettingSet", 2);
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiLazyTest, PluginsApiTest) {
-  constexpr char kExtensionPath[] = "content_settings/disablepluginsapi";
-  EXPECT_TRUE(RunLazyTest(kExtensionPath)) << message_;
-}
-
 IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiLazyTest, ConsoleErrorTest) {
   constexpr char kExtensionPath[] = "content_settings/disablepluginsapi";
   const extensions::Extension* extension =
@@ -371,7 +360,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiLazyTest, ConsoleErrorTest) {
                            ->GetBackgroundHostForExtension(extension->id())
                            ->host_contents();
   content::WebContentsConsoleObserver console_observer(web_contents);
-  console_observer.SetPattern("*API is no longer supported*");
+  console_observer.SetPattern("*contentSettings.plugins is deprecated.*");
   browsertest_util::ExecuteScriptInBackgroundPageNoWait(
       profile(), extension->id(), "setPluginsSetting()");
   console_observer.Wait();

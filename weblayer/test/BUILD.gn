@@ -26,6 +26,8 @@ if (is_android) {
     sources = [
       "../shell/android/browsertests_apk/src/org/chromium/weblayer_browsertests_apk/WebLayerBrowserTestsActivity.java",
       "../shell/android/browsertests_apk/src/org/chromium/weblayer_browsertests_apk/WebLayerBrowserTestsApplication.java",
+      "../shell/android/browsertests_apk/src/org/chromium/weblayer_private/AccessTokenFetchTestBridge.java",
+      "../shell/android/browsertests_apk/src/org/chromium/weblayer_private/GoogleAccountAccessTokenFetcherTestStub.java",
       "../shell/android/browsertests_apk/src/org/chromium/weblayer_private/MetricsTestHelper.java",
       "../shell/android/browsertests_apk/src/org/chromium/weblayer_private/TranslateTestBridge.java",
     ]
@@ -42,11 +44,13 @@ if (is_android) {
       "//content/public/test/android:content_java_test_support",
       "//testing/android/native_test:native_test_java",
       "//third_party/android_deps:android_support_v4_java",
-      "//third_party/android_deps:androidx_annotation_annotation_java",
-      "//third_party/android_deps:androidx_core_core_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_core_core_java",
       "//ui/android:ui_java",
       "//weblayer/browser/java",
+      "//weblayer/browser/java:base_module_interfaces_java",
       "//weblayer/browser/java:gms_bridge_java",
+      "//weblayer/browser/java:interfaces_java",
       "//weblayer/public/java",
       "//weblayer/public/javatestutil:test_java",
     ]
@@ -57,6 +61,8 @@ if (is_android) {
 
   generate_jni("weblayer_browsertests_jni") {
     sources = [
+      "../shell/android/browsertests_apk/src/org/chromium/weblayer_private/AccessTokenFetchTestBridge.java",
+      "../shell/android/browsertests_apk/src/org/chromium/weblayer_private/GoogleAccountAccessTokenFetcherTestStub.java",
       "../shell/android/browsertests_apk/src/org/chromium/weblayer_private/MetricsTestHelper.java",
       "../shell/android/browsertests_apk/src/org/chromium/weblayer_private/TranslateTestBridge.java",
     ]
@@ -84,6 +90,7 @@ test("weblayer_browsertests") {
   data = [
     "$root_out_dir/weblayer_shell.pak",
     "data/",
+    "//components/test/data",
     "//net/tools/testserver/",
     "//third_party/pywebsocket3/src/mod_pywebsocket/",
     "//third_party/tlslite/",
@@ -107,10 +114,15 @@ test("weblayer_browsertests") {
     "//components/content_settings/core/browser",
     "//components/error_page/content/browser",
     "//components/favicon/content",
+    "//components/heavy_ad_intervention",
     "//components/network_session_configurator/common",
     "//components/network_time",
     "//components/no_state_prefetch/browser",
     "//components/page_load_metrics/browser:browser",
+    "//components/page_load_metrics/browser:test_support",
+    "//components/page_load_metrics/browser/observers/ad_metrics",
+    "//components/page_load_metrics/browser/observers/ad_metrics:test_support",
+    "//components/permissions",
     "//components/prefs",
     "//components/security_interstitials/content:security_interstitial_page",
     "//components/sessions:test_support",
@@ -120,11 +132,13 @@ test("weblayer_browsertests") {
     "//components/subresource_filter/content/browser",
     "//components/subresource_filter/content/browser:test_support",
     "//components/subresource_filter/core/browser",
+    "//components/subresource_filter/core/common",
     "//components/subresource_filter/core/common:test_support",
     "//components/translate/content/browser",
     "//components/translate/content/browser:test_support",
     "//components/ukm:test_support",
     "//components/ukm:ukm_test_helper",
+    "//components/url_pattern_index/proto:url_pattern_index",
     "//components/user_prefs",
     "//components/variations",
     "//components/variations/net",
@@ -140,6 +154,8 @@ test("weblayer_browsertests") {
   ]
 
   sources = [
+    "../browser/ad_tagging_browsertest.cc",
+    "../browser/ads_page_load_metrics_observer_browsertest.cc",
     "../browser/autofill_browsertest.cc",
     "../browser/background_sync/background_sync_browsertest.cc",
     "../browser/client_hints_browsertest.cc",
@@ -151,13 +167,17 @@ test("weblayer_browsertests") {
     "../browser/favicon/favicon_fetcher_browsertest.cc",
     "../browser/favicon/test_favicon_fetcher_delegate.cc",
     "../browser/favicon/test_favicon_fetcher_delegate.h",
+    "../browser/fullscreen_browsertest.cc",
     "../browser/google_accounts_browsertest.cc",
     "../browser/js_communication/web_message_browsertest.cc",
+    "../browser/large_sticky_ad_intervention_browsertest.cc",
     "../browser/navigation_browsertest.cc",
     "../browser/navigation_error_navigation_throttle_browsertest.cc",
     "../browser/new_tab_delegate_browsertest.cc",
     "../browser/no_state_prefetch/no_state_prefetch_browsertest.cc",
+    "../browser/overlay_popup_ad_intervention_browsertest.cc",
     "../browser/page_load_metrics_browsertest.cc",
+    "../browser/permissions/permissions_browsertest.cc",
     "../browser/popup_blocker_browsertest.cc",
     "../browser/prefetch_browsertest.cc",
     "../browser/profile_browsertest.cc",
@@ -175,6 +195,8 @@ test("weblayer_browsertests") {
     "load_completion_observer.h",
     "stub_autofill_provider.cc",
     "stub_autofill_provider.h",
+    "subresource_filter_browser_test_harness.cc",
+    "subresource_filter_browser_test_harness.h",
     "test_launcher_delegate_impl.cc",
     "test_launcher_delegate_impl.h",
     "test_navigation_observer.cc",
@@ -188,6 +210,8 @@ test("weblayer_browsertests") {
 
   if (is_android) {
     sources += [
+      "../browser/android/access_token_fetch_browsertest.cc",
+      "../browser/android/ad_density_intervention_browsertest.cc",
       "../browser/android/metrics/metrics_browsertest.cc",
       "../browser/android/metrics/metrics_test_helper.cc",
       "../browser/android/metrics/metrics_test_helper.h",
@@ -218,6 +242,7 @@ test("weblayer_browsertests") {
       "//components/safe_browsing/content/common:interfaces",
       "//components/safe_browsing/core:client_model_proto",
       "//components/safe_browsing/core:features",
+      "//components/safe_browsing/core/browser:token_fetcher",
       "//components/safe_browsing/core/common",
       "//components/viz/service:service_java",
       "//content/public/test/android:android_test_message_pump_support_java",
@@ -252,6 +277,8 @@ test("weblayer_browsertests") {
       "../browser/persistence/browser_persister_browsertest.cc",
       "../browser/persistence/minimal_browser_persister_browsertest.cc",
     ]
+
+    deps += [ "//components/keep_alive_registry" ]
   }
 }
 
@@ -271,12 +298,15 @@ test("weblayer_unittests") {
     "//components/favicon/core:database",
     "//components/site_isolation",
   ]
-  if (is_android) {
-    deps += [ ":weblayer_test_assets" ]
-  }
   sources = [
     "../browser/favicon/favicon_backend_wrapper_unittest.cc",
     "../browser/profile_disk_operations_unittests.cc",
     "../browser/site_isolation_policy_unittest.cc",
   ]
+  if (is_android) {
+    deps += [ ":weblayer_test_assets" ]
+    sources += [
+      "../browser/safe_browsing/safe_browsing_token_fetcher_impl_unittest.cc",
+    ]
+  }
 }

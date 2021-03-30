@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImp
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.xsurface.ImageFetchClient;
+import org.chromium.chrome.browser.xsurface.PersistentKeyValueCache;
 import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -34,6 +35,7 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
 
     private Context mContext;
     private ImageFetchClient mImageFetchClient;
+    private FeedPersistentKeyValueCache mPersistentKeyValueCache;
     private LibraryResolver mLibraryResolver;
 
     @VisibleForTesting
@@ -42,6 +44,7 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
     FeedProcessScopeDependencyProvider() {
         mContext = createFeedContext(ContextUtils.getApplicationContext());
         mImageFetchClient = new FeedImageFetchClient();
+        mPersistentKeyValueCache = new FeedPersistentKeyValueCache();
         if (BundleUtils.isIsolatedSplitInstalled(mContext, FEED_SPLIT_NAME)) {
             mLibraryResolver = (libName) -> {
                 return BundleUtils.getNativeLibraryPath(libName, FEED_SPLIT_NAME);
@@ -61,7 +64,7 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
         CoreAccountInfo primaryAccount =
                 IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED);
+                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         return (primaryAccount == null) ? "" : primaryAccount.getEmail();
     }
 
@@ -82,6 +85,11 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
     @Override
     public ImageFetchClient getImageFetchClient() {
         return mImageFetchClient;
+    }
+
+    @Override
+    public PersistentKeyValueCache getPersistentKeyValueCache() {
+        return mPersistentKeyValueCache;
     }
 
     @Override

@@ -23,6 +23,7 @@ enum RecordingState { "inactive", "recording", "paused" };
     attribute EventHandler onerror;
     [HighEntropy=Direct, MeasureAs=MediaRecorder_VideoBitsPerSecond] readonly attribute unsigned long videoBitsPerSecond;
     [HighEntropy=Direct, MeasureAs=MediaRecorder_AudioBitsPerSecond] readonly attribute unsigned long audioBitsPerSecond;
+    readonly attribute BitrateMode audioBitrateMode;
 
     [RaisesException, Measure] void start(optional long timeslice);
     [RaisesException] void stop();

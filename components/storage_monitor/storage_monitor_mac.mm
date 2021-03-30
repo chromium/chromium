@@ -26,22 +26,22 @@ namespace {
 
 const char kDiskImageModelName[] = "Disk Image";
 
-base::string16 GetUTF16FromDictionary(CFDictionaryRef dictionary,
+std::u16string GetUTF16FromDictionary(CFDictionaryRef dictionary,
                                       CFStringRef key) {
   CFStringRef value =
       base::mac::GetValueFromDictionary<CFStringRef>(dictionary, key);
   if (!value)
-    return base::string16();
+    return std::u16string();
   return base::SysCFStringRefToUTF16(value);
 }
 
-base::string16 JoinName(const base::string16& name,
-                        const base::string16& addition) {
+std::u16string JoinName(const std::u16string& name,
+                        const std::u16string& addition) {
   if (addition.empty())
     return name;
   if (name.empty())
     return addition;
-  return name + static_cast<base::char16>(' ') + addition;
+  return name + u' ' + addition;
 }
 
 StorageInfo::Type GetDeviceType(bool is_removable, bool has_dcim) {
@@ -73,12 +73,12 @@ StorageInfo BuildStorageInfo(
   if (size_number)
     CFNumberGetValue(size_number, kCFNumberLongLongType, &size_in_bytes);
 
-  base::string16 vendor = GetUTF16FromDictionary(
-      dict, kDADiskDescriptionDeviceVendorKey);
-  base::string16 model = GetUTF16FromDictionary(
-      dict, kDADiskDescriptionDeviceModelKey);
-  base::string16 label = GetUTF16FromDictionary(
-      dict, kDADiskDescriptionVolumeNameKey);
+  std::u16string vendor =
+      GetUTF16FromDictionary(dict, kDADiskDescriptionDeviceVendorKey);
+  std::u16string model =
+      GetUTF16FromDictionary(dict, kDADiskDescriptionDeviceModelKey);
+  std::u16string label =
+      GetUTF16FromDictionary(dict, kDADiskDescriptionVolumeNameKey);
 
   CFUUIDRef uuid = base::mac::GetValueFromDictionary<CFUUIDRef>(
       dict, kDADiskDescriptionVolumeUUIDKey);
@@ -90,9 +90,9 @@ StorageInfo BuildStorageInfo(
       unique_id = base::SysCFStringRefToUTF8(uuid_string);
   }
   if (unique_id.empty()) {
-    base::string16 revision = GetUTF16FromDictionary(
-        dict, kDADiskDescriptionDeviceRevisionKey);
-    base::string16 unique_id2 = vendor;
+    std::u16string revision =
+        GetUTF16FromDictionary(dict, kDADiskDescriptionDeviceRevisionKey);
+    std::u16string unique_id2 = vendor;
     unique_id2 = JoinName(unique_id2, model);
     unique_id2 = JoinName(unique_id2, revision);
     unique_id = base::UTF16ToUTF8(unique_id2);

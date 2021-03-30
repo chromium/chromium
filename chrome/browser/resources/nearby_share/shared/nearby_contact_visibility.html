@@ -124,14 +124,9 @@
         margin-block-end: 12px;
       }
 
-      #zeroStateInfoContainer {
-        align-items: center;
-        display: flex;
-      }
-
-      #zeroStateIcon {
-        color: var(--cr-secondary-text-color);
-        margin-inline-end: 8px;
+      #zeroStateHelpLink {
+        color: var(--google-blue-600);
+        text-decoration: none;
       }
 
       #contactsPending {
@@ -168,6 +163,7 @@
         display: flex;
         font-size: 11px;
         margin-block-end: 8px;
+        margin-inline-end: 12px;
       }
 
       .padded-icon {
@@ -291,16 +287,8 @@
             </iron-icon>
           </div>
           <div id="zeroStateTextContainer">
-            <div id="zeroStateText" class="cr-title-text">
-              $i18n{nearbyShareContactVisibilityZeroStateText}
-            </div>
-            <div id="zeroStateInfoContainer">
-              <iron-icon id="zeroStateIcon" icon="cr:info"></iron-icon>
-              <div class="cr-secondary-text">
-                <a href="$i18n{nearbyShareLearnMoreLink}" target="_blank">
-                  $i18n{nearbyShareContactVisibilityZeroStateInfo}
-                </a>
-              </div>
+            <div id="zeroStateText" class="cr-title-text"
+                inner-h-t-m-l="[[getAriaLabelledZeroStateText_()]]">
             </div>
           </div>
         </div>
@@ -381,9 +369,18 @@
                       class="padded-icon grey-icon contact-icon">
                   </iron-icon>
                   <div class="contact-row">
-                    <div>
-                      <div class="cr-title-text elide">[[item.name]]</div>
-                      <div class="cr-secondary-text elide">
+                    <div aria-hidden$="[[getContactAriaHidden_(
+                                        selectedVisibility)]]"
+                        aria-labelledby$="contact-name-[[itemsIndex]]"
+                        aria-describedby$="contact-description-[[itemsIndex]]">
+                      <div id="contact-name-[[itemsIndex]]"
+                          class="cr-title-text elide"
+                          aria-hidden="true">
+                        [[item.name]]
+                      </div>
+                      <div id="contact-description-[[itemsIndex]]"
+                          class="cr-secondary-text elide"
+                          aria-hidden="true">
                         [[item.description]]
                       </div>
                     </div>
@@ -391,8 +388,10 @@
                         if="[[showContactCheckBoxes_(selectedVisibility)]]">
                       <cr-toggle class="contact-toggle"
                           checked="{{item.checked}}"
+                          aria-labelledby$="contact-name-[[itemsIndex]]"
+                          aria-describedby$="contact-description-[[itemsIndex]]"
                           disabled="[[!isVisibility_(
-                            selectedVisibility,'some')]]">
+                                    selectedVisibility,'some')]]">
                       </cr-toggle>
                     </template>
                   </div>

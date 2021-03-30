@@ -118,6 +118,10 @@ const char kAuraLegacyPowerButton[] = "aura-legacy-power-button";
 // Enables Shelf Dimming for ChromeOS.
 const char kEnableDimShelf[] = "enable-dim-shelf";
 
+// Enables compositing-based throttling
+const char kEnableCompositingBasedThrottling[] =
+    "enable-compositing-based-throttling";
+
 // If set, tablet-like power button behavior (i.e. tapping the button turns the
 // screen off) is used even if the device is in laptop mode.
 const char kForceTabletPowerButton[] = "force-tablet-power-button";
@@ -143,11 +147,10 @@ const char kTouchscreenUsableWhileScreenOff[] =
 // Hides all Message Center notification popups (toasts). Used for testing.
 const char kSuppressMessageCenterPopups[] = "suppress-message-center-popups";
 
-// If set, the device will be forced to stay in physical tablet state. Then the
-// UI will stay in tablet mode without external mouse, or clamshell mode if an
-// external mouse is attached. Screen auto rotation will be supported if
-// accelerometer data can be detected.
-const char kForceInTabletPhysicalState[] = "force-in-tablet-physical-state";
+// If set, the device will be forced to stay in clamshell UI mode but screen
+// auto rotation will be supported. E.g, chromebase device Dooly.
+const char kSupportsClamshellAutoRotation[] =
+    "supports-clamshell-auto-rotation";
 
 base::Optional<base::TimeDelta> ContextualNudgesInterval() {
   int numeric_cooldown_time;
@@ -174,6 +177,11 @@ bool ContextualNudgesResetShownCount() {
 
 bool IsUsingShelfAutoDim() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(kEnableDimShelf);
+}
+
+bool IsCompositingBasedThrottlingEnabled() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kEnableCompositingBasedThrottling);
 }
 
 bool ShouldClearFastInkBuffer() {

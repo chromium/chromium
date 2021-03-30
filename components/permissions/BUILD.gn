@@ -7,8 +7,12 @@ source_set("permissions_common") {
     "features.cc",
     "features.h",
     "permission_request_enums.h",
+    "request_type.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+  ]
 }
 
 source_set("permissions") {
@@ -19,6 +23,8 @@ source_set("permissions") {
     "contexts/font_access_permission_context.h",
     "contexts/geolocation_permission_context.cc",
     "contexts/geolocation_permission_context.h",
+    "contexts/nfc_permission_context.cc",
+    "contexts/nfc_permission_context.h",
     "contexts/payment_handler_permission_context.cc",
     "contexts/payment_handler_permission_context.h",
     "contexts/webxr_permission_context.cc",
@@ -58,6 +64,8 @@ source_set("permissions") {
     "pref_names.h",
     "quota_permission_context_impl.cc",
     "quota_permission_context_impl.h",
+    "request_type.cc",
+    "request_type.h",
     "switches.cc",
     "switches.h",
   ]
@@ -65,10 +73,12 @@ source_set("permissions") {
     "//base",
     "//build:chromeos_buildflags",
     "//components/autofill_assistant/browser/public:public",
+    "//components/back_forward_cache",
     "//components/content_settings/browser",
     "//components/content_settings/core/browser",
     "//components/keyed_service/content",
     "//components/permissions/prediction_service",
+    "//components/permissions/vector_icons",
     "//components/strings:components_strings_grit",
     "//components/ukm/content",
     "//components/url_formatter",
@@ -92,12 +102,15 @@ source_set("permissions") {
       "android/permission_prompt_android.h",
       "contexts/geolocation_permission_context_android.cc",
       "contexts/geolocation_permission_context_android.h",
+      "contexts/nfc_permission_context_android.cc",
+      "contexts/nfc_permission_context_android.h",
     ]
     deps += [
       "//components/infobars/core",
       "//components/location/android:location_settings_dialog_enums_java",
       "//components/location/android:settings",
       "//components/permissions/android:jni_headers",
+      "//components/permissions/android:native",
       "//components/prefs",
       "//components/resources:android_resources",
       "//ui/android",
@@ -147,6 +160,7 @@ source_set("unit_tests") {
   sources = [
     "chooser_context_base_unittest.cc",
     "contexts/geolocation_permission_context_unittest.cc",
+    "contexts/nfc_permission_context_unittest.cc",
     "permission_auditing_database_unittest.cc",
     "permission_auditing_service_unittest.cc",
     "permission_context_base_unittest.cc",
@@ -180,6 +194,7 @@ source_set("unit_tests") {
     deps += [
       "//components/location/android:location_settings_dialog_enums_java",
       "//components/location/android:test_support",
+      "//components/permissions/android:test_support",
     ]
   }
 }

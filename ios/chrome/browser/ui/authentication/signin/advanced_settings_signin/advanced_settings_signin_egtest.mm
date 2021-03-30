@@ -138,10 +138,7 @@ const NSTimeInterval kSyncOperationTimeout = 5.0;
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
-  [ChromeEarlGreyUI openToolsMenu];
-  [ChromeEarlGreyUI
-      tapToolsMenuButton:chrome_test_util::RecentTabsMenuButton()];
-  [SigninEarlGreyUI scrollToPrimarySignInButtonInRecentTabs];
+  [SigninEarlGreyUI tapPrimarySignInButtonInRecentTabs];
   [SigninEarlGreyUI tapSettingsLink];
   [ChromeEarlGreyUI waitForAppToIdle];
 
@@ -158,14 +155,7 @@ const NSTimeInterval kSyncOperationTimeout = 5.0;
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          TabGridOtherDevicesPanelButton()]
-      performAction:grey_tap()];
-
-  [SigninEarlGreyUI collapseRecentlyClosedTabsIfSigninPromoNotVisible];
-  [SigninEarlGreyUI scrollToPrimarySignInButtonInRecentTabs];
+  [SigninEarlGreyUI tapPrimarySignInButtonInTabSwitcher];
   [SigninEarlGreyUI tapSettingsLink];
   [ChromeEarlGreyUI waitForAppToIdle];
 

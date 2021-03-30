@@ -171,9 +171,8 @@ class SharedMemoryFactoryImpl : public webrtc::SharedMemoryFactory {
       size_t size) override {
     base::OnceClosure release_buffer_callback = base::BindOnce(
         send_message_callback_,
-        base::Passed(
-            std::make_unique<ChromotingDesktopNetworkMsg_ReleaseSharedBuffer>(
-                next_shared_buffer_id_)));
+        std::make_unique<ChromotingDesktopNetworkMsg_ReleaseSharedBuffer>(
+            next_shared_buffer_id_));
     std::unique_ptr<SharedMemoryImpl> buffer = SharedMemoryImpl::Create(
         size, next_shared_buffer_id_, std::move(release_buffer_callback));
     if (buffer) {

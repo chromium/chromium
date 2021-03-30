@@ -39,7 +39,7 @@ void TabCallbackProxy::OnRenderProcessGone() {
                                             java_observer_);
 }
 
-void TabCallbackProxy::OnTitleUpdated(const base::string16& title) {
+void TabCallbackProxy::OnTitleUpdated(const std::u16string& title) {
   JNIEnv* env = AttachCurrentThread();
   Java_TabCallbackProxy_onTitleUpdated(
       env, java_observer_, base::android::ConvertUTF16ToJavaString(env, title));

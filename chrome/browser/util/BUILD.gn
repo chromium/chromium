@@ -17,12 +17,10 @@ android_library("java") {
   ]
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//components/browser_ui/util/android:java",
     "//components/embedder_support/android:util_java",
-    "//content/public/android:content_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//third_party/android_deps:androidx_core_core_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//ui/android:ui_full_java",
     "//url:gurl_java",
   ]
@@ -47,11 +45,10 @@ android_library("javatests") {
     "//base:base_java_test_support",
     "//base/test:test_support_java",
     "//chrome/test/android:chrome_java_test_support",
-    "//components/signin/core/browser/android:java",
     "//content/public/test/android:content_java_test_support",
-    "//third_party/android_deps:androidx_test_runner_java",
     "//third_party/android_sdk:android_test_mock_java",
     "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]

@@ -51,7 +51,7 @@ FetchedCategory::~FetchedCategory() = default;
 FetchedCategory& FetchedCategory::operator=(FetchedCategory&&) = default;
 
 CategoryInfo BuildArticleCategoryInfo(
-    const base::Optional<base::string16>& title) {
+    const base::Optional<std::u16string>& title) {
   return CategoryInfo(
       title.has_value() ? title.value()
                         : l10n_util::GetStringUTF16(
@@ -62,7 +62,7 @@ CategoryInfo BuildArticleCategoryInfo(
       l10n_util::GetStringUTF16(IDS_NTP_ARTICLE_SUGGESTIONS_SECTION_EMPTY));
 }
 
-CategoryInfo BuildRemoteCategoryInfo(const base::string16& title,
+CategoryInfo BuildRemoteCategoryInfo(const std::u16string& title,
                                      bool allow_fetching_more_results) {
   ContentSuggestionsAdditionalAction action =
       ContentSuggestionsAdditionalAction::NONE;

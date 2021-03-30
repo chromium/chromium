@@ -56,6 +56,10 @@ body, html {
 <script>
 if (window.internals) {
   internals.runtimeFlags.implicitRootScrollerEnabled = true;
+  // Jump directly to the snap position. Otherwise, we need to wait until X ms
+  // goes by without a change to the scroll position, which leads to either slow
+  // running tests or flakes when the test machines get bogged down.
+  internals.settings.setScrollAnimatorEnabled(false);
 }
 
 const root_scroller = document.getElementById("root-scroller");
@@ -102,11 +106,9 @@ promise_test(async function () {
   assert_equals(visualViewport.offsetTop + root_scroller.scrollTop,
       initial_area.offsetTop);
 
-  await arrowDown()
-
-  await waitForAnimationEndTimeBased(() => {
-    return root_scroller.scrollTop;
-  });
+  const scrollWatcher = waitForScrollEvent(root_scroller);
+  await arrowDown();
+  await scrollWatcher;
 
   // The offset of the visual viewport and the layout viewport combined should
   // be at the snap point.

@@ -1,0 +1,37 @@
+Tests scroll rectangles support in in Layers3DViewxScroll rectangles
+
+Scroll rectangles
+{
+    0 : {
+        rect : {
+            height : 30
+            width : 45
+            x : 0
+            y : 0
+        }
+        type : "WheelEventHandler"
+    }
+}
+{
+    0 : {
+        rect : {
+            height : 30
+            width : 30
+            x : 0
+            y : 0
+        }
+        type : "TouchEventHandler"
+    }
+}
+{
+    0 : {
+        rect : {
+            height : 60
+            width : 60
+            x : 0
+            y : 0
+        }
+        type : "TouchEventHandler"
+    }
+}
+

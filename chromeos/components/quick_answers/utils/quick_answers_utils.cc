@@ -76,8 +76,22 @@ std::string BuildTranslationTitleText(const std::string& query_text,
                                    base::UTF8ToUTF16(locale_name));
 }
 
+std::string BuildUnitConversionResultText(const std::string& result_value,
+                                          const std::string& name) {
+  return l10n_util::GetStringFUTF8(
+      IDS_QUICK_ANSWERS_UNIT_CONVERSION_RESULT_TEXT,
+      base::UTF8ToUTF16(result_value), base::UTF8ToUTF16(name));
+}
+
 std::string UnescapeStringForHTML(const std::string& string) {
   return base::UTF16ToUTF8(net::UnescapeForHTML(base::UTF8ToUTF16(string)));
+}
+
+base::Optional<double> GetRatio(const double value1, const double value2) {
+  if (value1 == 0 || value2 == 0)
+    return base::nullopt;
+
+  return std::max(value1, value2) / std::min(value1, value2);
 }
 
 }  // namespace quick_answers

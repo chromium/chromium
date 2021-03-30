@@ -7,7 +7,9 @@
 
 #include "base/threading/sequence_bound.h"
 #include "components/services/storage/public/mojom/indexed_db_control.mojom.h"
+#include "components/services/storage/public/mojom/storage_policy_update.mojom.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
+#include "storage/browser/quota/storage_policy_observer.h"
 
 namespace content {
 
@@ -22,8 +24,8 @@ class CONTENT_EXPORT IndexedDBControlWrapper
       base::Clock* clock,
       mojo::PendingRemote<storage::mojom::BlobStorageContext>
           blob_storage_context,
-      mojo::PendingRemote<storage::mojom::NativeFileSystemContext>
-          native_file_system_context,
+      mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
+          file_system_access_context,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       scoped_refptr<base::SequencedTaskRunner> custom_task_runner);
   ~IndexedDBControlWrapper() override;
@@ -44,9 +46,8 @@ class CONTENT_EXPORT IndexedDBControlWrapper
                           DownloadOriginDataCallback callback) override;
   void GetAllOriginsDetails(GetAllOriginsDetailsCallback callback) override;
   void SetForceKeepSessionState() override;
-  void ApplyPolicyUpdates(
-      std::vector<storage::mojom::IndexedDBStoragePolicyUpdatePtr>
-          policy_updates) override;
+  void ApplyPolicyUpdates(std::vector<storage::mojom::StoragePolicyUpdatePtr>
+                              policy_updates) override;
   void BindTestInterface(
       mojo::PendingReceiver<storage::mojom::IndexedDBControlTest> receiver)
       override;
@@ -57,32 +58,12 @@ class CONTENT_EXPORT IndexedDBControlWrapper
   IndexedDBContextImpl* GetIndexedDBContextInternal() { return context_.get(); }
 
  private:
-  void OnSpecialStoragePolicyChanged();
-  void TrackOriginPolicyState(const url::Origin& origin);
-  bool ShouldPurgeOnShutdown(const GURL& origin);
   void BindRemoteIfNeeded();
 
-  // Special storage policy may be null.
-  scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_;
-
-  // Observer for the SpecialStoragePolicy on the IO thread.  May be null.
-  class StoragePolicyObserver;
-  base::SequenceBound<StoragePolicyObserver> storage_policy_observer_;
+  base::Optional<storage::StoragePolicyObserver> storage_policy_observer_;
 
   mojo::Remote<storage::mojom::IndexedDBControl> indexed_db_control_;
   scoped_refptr<IndexedDBContextImpl> context_;
-
-  struct OriginState {
-    // Indicates that storage for this origin should be purged on shutdown.
-    bool should_purge_on_shutdown = false;
-    // Indicates the last value for |purge_on_shutdown| communicated to the
-    // IndexedDB implementation.
-    bool will_purge_on_shutdown = false;
-  };
-  // NOTE: The GURL key is specifically an origin GURL.
-  // Special storage policy uses GURLs and not Origins, so it's simpler
-  // to store everything in GURL form.
-  std::map<GURL, OriginState> origin_state_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<IndexedDBControlWrapper> weak_factory_{this};

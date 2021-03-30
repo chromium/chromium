@@ -26,12 +26,31 @@ namespace content {
 // See content/browser/prerender/README.md for more about capability control.
 class CONTENT_EXPORT MojoBinderPolicyApplier {
  public:
+  enum class Mode {
+    // In the kEnforce mode, MojoBinderPolicyApplier processes binding requests
+    // strictly according to the pre-set policies.
+    kEnforce,
+    // If the page is about to activate, MojoBinderPolicyApplier will switch to
+    // the kPrepareToGrantAll mode, and all non-kGrant binders will be
+    // deferred.
+    kPrepareToGrantAll,
+    // In the kGrantAll mode, MojoBinderPolicyApplier grants all binding
+    // requests regardless of their policies.
+    kGrantAll,
+  };
+
   // `policy_map` must outlive `this` and must not be null.
   // `cancel_closure` will be executed when ApplyPolicyToBinder() processes a
   // kCancel interface.
   MojoBinderPolicyApplier(const MojoBinderPolicyMapImpl* policy_map,
                           base::OnceClosure cancel_closure);
   ~MojoBinderPolicyApplier();
+
+  // Returns the instance used by BrowserInterfaceBrokerImpl for same-origin
+  // prerendering pages. This is used when the prerendered page and the page
+  // that triggered the prerendering are same origin.
+  static std::unique_ptr<MojoBinderPolicyApplier>
+  CreateForSameOriginPrerendering(base::OnceClosure cancel_closure);
 
   // Disallows copy and move operations.
   MojoBinderPolicyApplier(const MojoBinderPolicyApplier& other) = delete;
@@ -41,19 +60,29 @@ class CONTENT_EXPORT MojoBinderPolicyApplier {
   MojoBinderPolicyApplier& operator=(MojoBinderPolicyApplier&&) = delete;
 
   // Applies `MojoBinderPolicy` before binding an interface.
-  // - kGrant: Runs `binder_callback` immediately.
-  // - kDefer: Saves `binder_callback` and runs it when GrantAll() is called.
-  // - kCancel: Drops `binder_callback` and runs `cancel_closure_`.
-  // - kUnexpected: Unimplemented now.
-  // If GrantAll() was already called, this always runs the callback
-  // immediately.
+  // - In kEnforce mode:
+  //   - kGrant: Runs `binder_callback` immediately.
+  //   - kDefer: Saves `binder_callback` and runs it when GrantAll() is called.
+  //   - kCancel: Drops `binder_callback` and runs `cancel_closure_`.
+  //   - kUnexpected: Unimplemented now.
+  // - In the kPrepareToGrantAll mode:
+  //   - kGrant: Runs `binder_callback` immediately.
+  //   - kDefer, kCancel and kUnexpected: Saves `binder_callback` and runs it
+  //   when GrantAll() is called.
+  // - In the kGrantAll mode: this always runs the callback immediately.
   void ApplyPolicyToBinder(const std::string& interface_name,
                            base::OnceClosure binder_callback);
+  // Switches this to the kPrepareToGrantAll mode.
+  void PrepareToGrantAll();
   // Runs all deferred binders and runs binder callbacks for all subsequent
   // requests, i.e., it stops applying the policies.
   void GrantAll();
+  // Deletes all deferred binders without running them.
+  void DropDeferredBinders();
 
  private:
+  friend class MojoBinderPolicyApplierTest;
+
   // Gets the corresponding policy of the given mojo interface name.
   MojoBinderPolicy GetMojoBinderPolicy(const std::string& interface_name) const;
 
@@ -62,9 +91,7 @@ class CONTENT_EXPORT MojoBinderPolicyApplier {
   const MojoBinderPolicyMapImpl& policy_map_;
   // Will be executed upon a request for a kCancel interface.
   base::OnceClosure cancel_closure_;
-  // Indicates if MojoBinderPolicyApplier grants all binding requests regardless
-  // of their policies.
-  bool grant_all_ = false;
+  Mode mode_ = Mode::kEnforce;
   // Stores binders which are delayed running.
   std::vector<base::OnceClosure> deferred_binders_;
 };

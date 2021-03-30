@@ -42,7 +42,6 @@ class MediaHistorySessionImagesTable;
 class MediaHistoryImagesTable;
 class MediaHistoryFeedsTable;
 class MediaHistoryFeedItemsTable;
-class MediaHistoryKaleidoscopeDataTable;
 
 // Refcounted as it is created, initialized and destroyed on a different thread
 // from the DB sequence provided to the constructor of this class that is
@@ -203,14 +202,6 @@ class MediaHistoryStore : public base::RefCountedThreadSafe<MediaHistoryStore> {
   void UpdateFeedUserStatus(const int64_t feed_id,
                             media_feeds::mojom::FeedUserStatus status);
 
-  void SetKaleidoscopeData(media::mojom::GetCollectionsResponsePtr data,
-                           const std::string& gaia_id);
-
-  media::mojom::GetCollectionsResponsePtr GetKaleidoscopeData(
-      const std::string& gaia_id);
-
-  void DeleteKaleidoscopeData();
-
  private:
   friend class base::RefCountedThreadSafe<MediaHistoryStore>;
 
@@ -233,7 +224,6 @@ class MediaHistoryStore : public base::RefCountedThreadSafe<MediaHistoryStore> {
   scoped_refptr<MediaHistoryImagesTable> images_table_;
   scoped_refptr<MediaHistoryFeedsTable> feeds_table_;
   scoped_refptr<MediaHistoryFeedItemsTable> feed_items_table_;
-  scoped_refptr<MediaHistoryKaleidoscopeDataTable> kaleidoscope_table_;
   bool initialization_successful_;
   base::AtomicFlag cancelled_;
 };

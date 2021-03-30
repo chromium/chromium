@@ -2,65 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/locales.gni")
 import("//tools/grit/grit_rule.gni")
 
 grit("strings") {
   source = "../ui_chromeos_strings.grd"
-  outputs = [
-    "grit/ui_chromeos_strings.h",
-    "ui_chromeos_strings_am.pak",
-    "ui_chromeos_strings_ar.pak",
-    "ui_chromeos_strings_bg.pak",
-    "ui_chromeos_strings_bn.pak",
-    "ui_chromeos_strings_ca.pak",
-    "ui_chromeos_strings_cs.pak",
-    "ui_chromeos_strings_da.pak",
-    "ui_chromeos_strings_de.pak",
-    "ui_chromeos_strings_el.pak",
-    "ui_chromeos_strings_en-GB.pak",
-    "ui_chromeos_strings_en-US.pak",
-    "ui_chromeos_strings_es-419.pak",
-    "ui_chromeos_strings_es.pak",
-    "ui_chromeos_strings_et.pak",
-    "ui_chromeos_strings_fake-bidi.pak",
-    "ui_chromeos_strings_fa.pak",
-    "ui_chromeos_strings_fil.pak",
-    "ui_chromeos_strings_fi.pak",
-    "ui_chromeos_strings_fr.pak",
-    "ui_chromeos_strings_gu.pak",
-    "ui_chromeos_strings_he.pak",
-    "ui_chromeos_strings_hi.pak",
-    "ui_chromeos_strings_hr.pak",
-    "ui_chromeos_strings_hu.pak",
-    "ui_chromeos_strings_id.pak",
-    "ui_chromeos_strings_it.pak",
-    "ui_chromeos_strings_ja.pak",
-    "ui_chromeos_strings_kn.pak",
-    "ui_chromeos_strings_ko.pak",
-    "ui_chromeos_strings_lt.pak",
-    "ui_chromeos_strings_lv.pak",
-    "ui_chromeos_strings_ml.pak",
-    "ui_chromeos_strings_mr.pak",
-    "ui_chromeos_strings_ms.pak",
-    "ui_chromeos_strings_nb.pak",
-    "ui_chromeos_strings_nl.pak",
-    "ui_chromeos_strings_pl.pak",
-    "ui_chromeos_strings_pt-BR.pak",
-    "ui_chromeos_strings_pt-PT.pak",
-    "ui_chromeos_strings_ro.pak",
-    "ui_chromeos_strings_ru.pak",
-    "ui_chromeos_strings_sk.pak",
-    "ui_chromeos_strings_sl.pak",
-    "ui_chromeos_strings_sr.pak",
-    "ui_chromeos_strings_sv.pak",
-    "ui_chromeos_strings_sw.pak",
-    "ui_chromeos_strings_ta.pak",
-    "ui_chromeos_strings_te.pak",
-    "ui_chromeos_strings_th.pak",
-    "ui_chromeos_strings_tr.pak",
-    "ui_chromeos_strings_uk.pak",
-    "ui_chromeos_strings_vi.pak",
-    "ui_chromeos_strings_zh-CN.pak",
-    "ui_chromeos_strings_zh-TW.pak",
-  ]
+  outputs =
+      [ "grit/ui_chromeos_strings.h" ] +
+      process_file_template(locales_with_pseudolocales,
+                            [ "ui_chromeos_strings_{{source_name_part}}.pak" ])
 }

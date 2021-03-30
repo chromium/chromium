@@ -14,7 +14,7 @@ blink::mojom::PolicyContainerPtr CreateStubPolicyContainer() {
   ignore_result(
       stub_policy_container_remote.InitWithNewEndpointAndPassReceiver());
   return blink::mojom::PolicyContainer::New(
-      blink::mojom::PolicyContainerDocumentPolicies::New(),
+      blink::mojom::PolicyContainerPolicies::New(),
       std::move(stub_policy_container_remote));
 }
 

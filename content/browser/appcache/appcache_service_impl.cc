@@ -19,7 +19,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/thread_annotations.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "components/services/storage/public/cpp/quota_client_callback_wrapper.h"
 #include "content/browser/appcache/appcache.h"
 #include "content/browser/appcache/appcache_disk_cache_ops.h"
 #include "content/browser/appcache/appcache_entry.h"
@@ -405,11 +407,18 @@ class AppCacheServiceImpl::QuotaClientHolder
 
   void NotifyStorageReadyOnIOThread();
 
-  // This reference must only be accessed on the IO thread.
+  // The client must only be accessed on the IO thread.
   //
   // Can be null in tests that don't set up a QuotaManager. Always non-null in
   // shipping code.
-  scoped_refptr<AppCacheQuotaClient> quota_client_;
+  std::unique_ptr<AppCacheQuotaClient> quota_client_;
+
+  // The client callback wrapper must only be accessed on the IO thread.
+  std::unique_ptr<storage::QuotaClientCallbackWrapper> quota_client_wrapper_;
+
+  // The client receiver must only be accessed on the IO thread.
+  std::unique_ptr<mojo::Receiver<storage::mojom::QuotaClient>>
+      quota_client_receiver_;
 };
 
 AppCacheServiceImpl::QuotaClientHolder::QuotaClientHolder()
@@ -420,8 +429,14 @@ AppCacheServiceImpl::QuotaClientHolder::QuotaClientHolder()
 
 AppCacheServiceImpl::QuotaClientHolder::~QuotaClientHolder() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (quota_client_)
+
+  quota_client_receiver_.reset();
+  quota_client_wrapper_.reset();
+
+  if (quota_client_) {
     quota_client_->NotifyServiceDestroyed();
+    quota_client_.reset();
+  }
 }
 
 void AppCacheServiceImpl::QuotaClientHolder::Initialize(
@@ -455,8 +470,20 @@ void AppCacheServiceImpl::QuotaClientHolder::InitializeOnIOThread(
     return;
 
   quota_client_ =
-      base::MakeRefCounted<AppCacheQuotaClient>(std::move(appcache_service));
-  quota_manager_proxy->RegisterClient(quota_client_,
+      std::make_unique<AppCacheQuotaClient>(std::move(appcache_service));
+
+  quota_client_wrapper_ = std::make_unique<storage::QuotaClientCallbackWrapper>(
+      quota_client_.get());
+
+  mojo::PendingRemote<storage::mojom::QuotaClient> quota_client_remote;
+  quota_client_receiver_ =
+      std::make_unique<mojo::Receiver<storage::mojom::QuotaClient>>(
+          quota_client_wrapper_.get(),
+          quota_client_remote.InitWithNewPipeAndPassReceiver());
+  quota_client_receiver_->set_disconnect_handler(
+      base::BindOnce(&AppCacheQuotaClient::OnMojoDisconnect,
+                     base::Unretained(quota_client_.get())));
+  quota_manager_proxy->RegisterClient(std::move(quota_client_remote),
                                       storage::QuotaClientType::kAppcache,
                                       {blink::mojom::StorageType::kTemporary});
 }

@@ -3,15 +3,15 @@
 // found in the LICENSE file.
 
 import {assertArrayEquals, assertEquals, assertNotReached, assertTrue} from 'chrome://test/chai_assert.js';
-import {reportPromise} from '../../../../base/js/test_error_reporting.m.js';
-import * as wrappedVolumeManagerCommon from '../../../../base/js/volume_manager_types.m.js';
+import {reportPromise} from '../../../common/js/test_error_reporting.m.js';
+import * as wrappedVolumeManagerCommon from '../../../common/js/volume_manager_types.m.js';
 const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
 import {ContentMetadataProvider} from './content_metadata_provider.m.js';
 import {ExternalMetadataProvider} from './external_metadata_provider.m.js';
 import {FileSystemMetadataProvider} from './file_system_metadata_provider.m.js';
 import {MetadataRequest} from './metadata_request.m.js';
 import {MultiMetadataProvider} from './multi_metadata_provider.m.js';
-import {VolumeManager} from '../../../../externs/volume_manager.m.js';
+import {VolumeManager} from '../../../externs/volume_manager.m.js';
 
 const entryA = /** @type {!Entry} */ ({
   toURL: function() {

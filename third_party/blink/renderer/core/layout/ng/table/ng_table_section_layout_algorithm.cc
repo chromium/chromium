@@ -15,12 +15,6 @@ NGTableSectionLayoutAlgorithm::NGTableSectionLayoutAlgorithm(
     const NGLayoutAlgorithmParams& params)
     : NGLayoutAlgorithm(params) {}
 
-MinMaxSizesResult NGTableSectionLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesInput&) const {
-  NOTREACHED();  // Table layout does not compute minmax for table row.
-  return MinMaxSizesResult();
-}
-
 // Generated fragment structure:
 // +-----section--------------+
 // |       vspacing           |

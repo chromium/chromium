@@ -59,9 +59,6 @@
 
 namespace blink {
 
-HeapAllocHooks::AllocationHook* HeapAllocHooks::allocation_hook_ = nullptr;
-HeapAllocHooks::FreeHook* HeapAllocHooks::free_hook_ = nullptr;
-
 class ProcessHeapReporter final : public ThreadHeapStatsObserver {
  public:
   void IncreaseAllocatedSpace(size_t bytes) final {
@@ -533,6 +530,7 @@ bool ThreadHeap::AdvanceConcurrentMarking(
     finished = DrainWorklist<kDefaultConcurrentDeadlineCheckInterval>(
         previously_not_fully_constructed_worklist_.get(),
         [visitor](NotFullyConstructedItem& item) {
+          PageFromObject(item)->SynchronizedLoad();
           visitor->DynamicallyMarkAddress(reinterpret_cast<ConstAddress>(item));
         },
         should_yield_callback, visitor->task_id());

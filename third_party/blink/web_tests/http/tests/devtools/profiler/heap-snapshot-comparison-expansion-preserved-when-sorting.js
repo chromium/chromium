@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests Comparison view of detailed heap snapshots. Expanded nodes must be preserved after sorting.\n`);
-  await TestRunner.loadModule('heap_profiler_test_runner');
+  await TestRunner.loadTestModule('heap_profiler_test_runner');
   await TestRunner.showPanel('heap_profiler');
 
   var instanceCount = 24;

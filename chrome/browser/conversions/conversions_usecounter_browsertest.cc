@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(ConversionsUseCounterBrowsertest,
   // Wait for the conversion redirect to be intercepted. This is indicated by
   // window title changing when the img element for the conversion request fires
   // an onerror event.
-  const base::string16 kConvertTitle = base::ASCIIToUTF16("converted");
+  const std::u16string kConvertTitle = u"converted";
   content::TitleWatcher watcher(web_contents, kConvertTitle);
   EXPECT_EQ(kConvertTitle, watcher.WaitAndGetTitle());
 

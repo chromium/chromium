@@ -3,6 +3,7 @@
 <link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_indicator.html">
 <link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_indicator_behavior.html">
+<link rel="import" href="chrome://resources/cr_elements/policy/cr_tooltip_icon.html">
 <link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
@@ -29,6 +30,10 @@
       #command-line {
         overflow-wrap: break-word;
         width: 100%;
+      }
+
+      #managedEolTooltipIcon {
+        margin-inline-end: 54px;
       }
     </style>
     <div class="settings-box two-line">
@@ -61,12 +66,29 @@
     </div>
     <div id="endOfLifeSectionContainer"
         class="settings-box two-line single-column"
-        hidden="[[!eolMessageWithMonthAndYear]]">
+        hidden="[[shouldHideEolInfo_]]">
       <div role="heading" aria-level="2">$i18n{aboutEndOfLifeTitle}</div>
       <settings-localized-link class="secondary"
           localized-string="[[eolMessageWithMonthAndYear]]">
       </settings-localized-link>
     </div>
+    <template is="dom-if" if="[[isManaged_]]">
+      <div class="settings-box two-line">
+        <div class="start" aria-hidden="true">
+          <div role="heading">$i18n{aboutEndOfLifeTitle}</div>
+          <div class="secondary">
+            $i18n{aboutManagedEndOfLifeSubtitle}
+          </div>
+        </div>
+        <cr-tooltip-icon
+            id="managedEolTooltipIcon"
+            icon-class="cr20:domain"
+            tooltip-text="$i18n{aboutManagedEndOfLifeSubtitle}"
+            icon-aria-label="$i18n{aboutManagedEndOfLifeSubtitle}"
+            tooltip-position="bottom">
+        </cr-tooltip-icon>
+      </div>
+    </template>
     <template is="dom-if" if="[[isHostnameSettingEnabled_]]">
       <div class="settings-box two-line">
         <div class="start">

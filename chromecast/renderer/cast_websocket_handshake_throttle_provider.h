@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "chromecast/renderer/cast_activity_url_filter_manager.h"
-#include "content/public/renderer/websocket_handshake_throttle_provider.h"
+#include "third_party/blink/public/platform/websocket_handshake_throttle_provider.h"
 
 namespace chromecast {
 
@@ -19,14 +19,14 @@ namespace chromecast {
 // This must be constructed on the render thread, and then used and destructed
 // on a single thread, which can be different from the render thread.
 class CastWebSocketHandshakeThrottleProvider
-    : public content::WebSocketHandshakeThrottleProvider {
+    : public blink::WebSocketHandshakeThrottleProvider {
  public:
   explicit CastWebSocketHandshakeThrottleProvider(
       CastActivityUrlFilterManager* url_filter_manager);
   ~CastWebSocketHandshakeThrottleProvider() override;
 
-  // content::WebSocketHandshakeThrottleProvider implementation:
-  std::unique_ptr<content::WebSocketHandshakeThrottleProvider> Clone(
+  // blink::WebSocketHandshakeThrottleProvider implementation:
+  std::unique_ptr<blink::WebSocketHandshakeThrottleProvider> Clone(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
   std::unique_ptr<blink::WebSocketHandshakeThrottle> CreateThrottle(
       int render_frame_id,

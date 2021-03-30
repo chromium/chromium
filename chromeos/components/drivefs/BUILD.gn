@@ -28,10 +28,10 @@ component("drivefs") {
     ]
   }
   deps = [
+    "//ash/constants",
     "//base",
     "//chromeos/components/drivefs/mojom",
     "//chromeos/components/mojo_bootstrap",
-    "//chromeos/constants",
     "//chromeos/dbus",
     "//chromeos/disks",
     "//components/account_id",

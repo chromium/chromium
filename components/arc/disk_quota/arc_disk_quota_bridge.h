@@ -7,6 +7,7 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "components/account_id/account_id.h"
 #include "components/arc/mojom/disk_quota.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -34,7 +35,7 @@ class ArcDiskQuotaBridge : public KeyedService, public mojom::DiskQuotaHost {
   // (go/arc-project-quota)
   static bool convertPathForSetProjectId(
       const base::FilePath& android_path,
-      cryptohome::SetProjectIdAllowedPathType* parent_path_out,
+      user_data_auth::SetProjectIdAllowedPathType* parent_path_out,
       base::FilePath* child_path_out);
 
   ArcDiskQuotaBridge(content::BrowserContext* context,

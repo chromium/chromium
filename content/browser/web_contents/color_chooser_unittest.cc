@@ -98,7 +98,8 @@ class ColorChooserTestWithBackForwardCache : public ColorChooserUnitTest {
   ColorChooserTestWithBackForwardCache() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kBackForwardCache, {GetFeatureParams()}}},
-        /*disabled_features=*/{});
+        // Allow BackForwardCache for all devices regardless of their memory.
+        /*disabled_features=*/{features::kBackForwardCacheMemoryControls});
   }
 
  protected:

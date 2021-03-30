@@ -11,7 +11,6 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {isMac, isWindows} from 'chrome://resources/js/cr.m.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -116,17 +115,6 @@ Polymer({
 
     /** @private {number} */
     maxSheets_: Number,
-
-    // <if expr="chromeos">
-    /** @private */
-    saveToDriveFlagEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('printSaveToDrive');
-      },
-      readOnly: true,
-    },
-    // </if>
   },
 
   listeners: {
@@ -210,7 +198,7 @@ Polymer({
 
   /** @private */
   onSidebarFocus_() {
-    this.$.previewArea.hideToolbars();
+    this.$.previewArea.hideToolbar();
   },
 
   /**
@@ -401,7 +389,8 @@ Polymer({
     switch (this.destinationState_) {
       case DestinationState.SELECTED:
       case DestinationState.SET:
-        if (this.state !== State.NOT_READY) {
+        if (this.state !== State.NOT_READY &&
+            this.state !== State.FATAL_ERROR) {
           this.$.state.transitTo(State.NOT_READY);
         }
         break;

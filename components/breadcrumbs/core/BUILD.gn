@@ -1,0 +1,16 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("core") {
+  sources = [
+    "breadcrumb_manager.cc",
+    "breadcrumb_manager.h",
+    "breadcrumb_manager_observer.h",
+    "breadcrumb_persistent_storage_util.cc",
+    "breadcrumb_persistent_storage_util.h",
+    "crash_reporter_breadcrumb_constants.h",
+  ]
+
+  deps = [ "//base" ]
+}

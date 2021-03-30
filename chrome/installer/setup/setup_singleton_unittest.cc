@@ -14,7 +14,6 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"
@@ -33,7 +32,7 @@ namespace {
 constexpr char kInstallDirSwitch[] = "install-dir";
 constexpr base::FilePath::CharType kSentinelFileName[] =
     FILE_PATH_LITERAL("sentinel.txt");
-constexpr base::char16 kTestProcessReadyEventName[] =
+constexpr wchar_t kTestProcessReadyEventName[] =
     L"Local\\ChromeSetupSingletonTestProcessReady";
 
 enum ErrorCode {
@@ -47,8 +46,8 @@ base::CommandLine GetDummyCommandLine() {
   return base::CommandLine(base::FilePath(FILE_PATH_LITERAL("dummy.exe")));
 }
 
-base::string16 HashFilePath(const base::FilePath& path) {
-  return base::NumberToString16(
+std::wstring HashFilePath(const base::FilePath& path) {
+  return base::NumberToWString(
       std::hash<base::FilePath::StringType>()(path.value()));
 }
 

@@ -1,0 +1,37 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom";
+
+// Represents an object to modify a file.
+interface FileSystemAccessFileWriter {
+  // Write data from |stream| to the given |position| in the file being written
+  // to. Returns whether the operation succeeded and if so how many bytes were
+  // written.
+  // TODO(mek): This might need some way of reporting progress events back to
+  // the renderer.
+  Write(uint64 offset, handle<data_pipe_consumer> stream) =>
+      (FileSystemAccessError result, uint64 bytes_written);
+
+  // Changes the length of the file to be |length|. If |length| is larger than
+  // the current size of the file, the file will be extended, and the extended
+  // part is filled with null bytes.
+  Truncate(uint64 length) => (FileSystemAccessError result);
+
+  // Closes the file writer. This will materialize the writes operations on the
+  // intended file target in the case of atomic writes.
+  // The mojo pipe will be destroyed when Close() completes.
+  // Specify the |autoClose| flag to ensure Close() is automatically invoked
+  // when the mojo pipe closes.
+  // Returns whether the operation succeeded.
+  Close() => (FileSystemAccessError result);
+
+  // Aborts the write operation, resulting in the writes not being committed,
+  // even if |autoClose| is specified. The mojo pipe will be destroyed when
+  // Abort() completes.
+  // Returns whether the write operation was aborted successfully.
+  Abort() => (FileSystemAccessError result);
+};

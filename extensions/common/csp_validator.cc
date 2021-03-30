@@ -45,8 +45,6 @@ const char kNoneSource[] = "'none'";
 
 const char kDirectiveSeparator = ';';
 
-const char kPluginTypes[] = "plugin-types";
-
 const char kObjectSrcDefaultDirective[] = "object-src 'self';";
 const char kScriptSrcDefaultDirective[] = "script-src 'self';";
 
@@ -57,14 +55,6 @@ const char kAppSandboxScriptSrcDefaultDirective[] =
 const char kSandboxDirectiveName[] = "sandbox";
 const char kAllowSameOriginToken[] = "allow-same-origin";
 const char kAllowTopNavigation[] = "allow-top-navigation";
-
-// This is the list of plugin types which are fully sandboxed and are safe to
-// load up in an extension, regardless of the URL they are navigated to.
-const char* const kSandboxedPluginTypes[] = {
-  "application/pdf",
-  "application/x-google-chrome-pdf",
-  "application/x-pnacl"
-};
 
 // List of CSP hash-source prefixes that are accepted. Blink is a bit more
 // lenient, but we only accept standard hashes to be forward-compatible.
@@ -321,37 +311,6 @@ std::string GetAppSandboxSecureDirectiveValues(
   return base::JoinString(sane_csp_parts, " ");
 }
 
-// Returns true if the |plugin_type| is one of the fully sandboxed plugin types.
-bool PluginTypeAllowed(base::StringPiece plugin_type) {
-  for (size_t i = 0; i < base::size(kSandboxedPluginTypes); ++i) {
-    if (plugin_type == kSandboxedPluginTypes[i])
-      return true;
-  }
-  return false;
-}
-
-// Returns true if the policy is allowed to contain an insecure object-src
-// directive. This requires OPTIONS_ALLOW_INSECURE_OBJECT_SRC to be specified
-// as an option and the plugin-types that can be loaded must be restricted to
-// the set specified in kSandboxedPluginTypes.
-bool AllowedToHaveInsecureObjectSrc(int options,
-                                    const DirectiveList& directives) {
-  if (!(options & OPTIONS_ALLOW_INSECURE_OBJECT_SRC))
-    return false;
-
-  auto it = std::find_if(directives.begin(), directives.end(),
-                         [](const Directive& directive) {
-                           return directive.directive_name == kPluginTypes;
-                         });
-
-  // plugin-types not specified.
-  if (it == directives.end())
-    return false;
-
-  return std::all_of(it->directive_values.begin(), it->directive_values.end(),
-                     PluginTypeAllowed);
-}
-
 using SecureDirectiveValueFunction = base::RepeatingCallback<std::string(
     const std::string& directive_name,
     const std::vector<base::StringPiece>& directive_values,
@@ -514,7 +473,7 @@ class ExtensionCSPEnforcer : public CSPEnforcer {
                        int options)
       : CSPEnforcer(std::move(manifest_key),
                     true,
-                    base::Bind(&GetSecureDirectiveValues, options)) {
+                    base::BindRepeating(&GetSecureDirectiveValues, options)) {
     secure_directives_.emplace_back(new DirectiveStatus({kScriptSrc}));
     if (!allow_insecure_object_src)
       secure_directives_.emplace_back(new DirectiveStatus({kObjectSrc}));
@@ -537,7 +496,7 @@ class AppSandboxPageCSPEnforcer : public CSPEnforcer {
   AppSandboxPageCSPEnforcer(std::string manifest_key)
       : CSPEnforcer(std::move(manifest_key),
                     false,
-                    base::Bind(&GetAppSandboxSecureDirectiveValues)) {
+                    base::BindRepeating(&GetAppSandboxSecureDirectiveValues)) {
     secure_directives_.emplace_back(
         new DirectiveStatus({kChildSrc, kFrameSrc}));
     secure_directives_.emplace_back(new DirectiveStatus({kScriptSrc}));
@@ -619,9 +578,7 @@ std::string SanitizeContentSecurityPolicy(
     std::vector<InstallWarning>* warnings) {
   CSPParser csp_parser(policy);
 
-  bool allow_insecure_object_src =
-      AllowedToHaveInsecureObjectSrc(options, csp_parser.directives());
-
+  bool allow_insecure_object_src = options & OPTIONS_ALLOW_INSECURE_OBJECT_SRC;
   ExtensionCSPEnforcer csp_enforcer(std::move(manifest_key),
                                     allow_insecure_object_src, options);
   return csp_enforcer.Enforce(csp_parser.directives(), warnings);
@@ -665,7 +622,7 @@ bool ContentSecurityPolicyIsSandboxed(
 
 bool DoesCSPDisallowRemoteCode(const std::string& content_security_policy,
                                base::StringPiece manifest_key,
-                               base::string16* error) {
+                               std::u16string* error) {
   DCHECK(error);
 
   struct DirectiveMapping {
@@ -725,7 +682,7 @@ bool DoesCSPDisallowRemoteCode(const std::string& content_security_policy,
   fallback_if_necessary(&worker_src_mapping, script_src_mapping);
 
   auto is_secure_directive = [manifest_key](const DirectiveMapping& mapping,
-                                            base::string16* error) {
+                                            std::u16string* error) {
     if (!mapping.directive) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           manifest_errors::kInvalidCSPMissingSecureSrc, manifest_key,

@@ -4,6 +4,8 @@
 
 #include "components/federated_learning/sim_hash.h"
 
+#include <cmath>
+
 #include "base/check_op.h"
 #include "base/hash/legacy_hash.h"
 #include "base/rand_util.h"

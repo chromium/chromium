@@ -25,6 +25,7 @@ class POLICY_EXPORT MachineLevelUserCloudPolicyStore
       const DMToken& machine_dm_token,
       const std::string& machine_client_id,
       const base::FilePath& external_policy_path,
+      const base::FilePath& external_policy_info_path,
       const base::FilePath& policy_path,
       const base::FilePath& key_path,
       bool cloud_policy_has_priority,
@@ -36,7 +37,7 @@ class POLICY_EXPORT MachineLevelUserCloudPolicyStore
   static std::unique_ptr<MachineLevelUserCloudPolicyStore> Create(
       const DMToken& machine_dm_token,
       const std::string& machine_client_id,
-      const base::FilePath& external_policy_path,
+      const base::FilePath& external_policy_dir,
       const base::FilePath& policy_dir,
       bool cloud_policy_has_priority,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
@@ -63,8 +64,14 @@ class POLICY_EXPORT MachineLevelUserCloudPolicyStore
   // Function used as a PolicyLoadFilter to use external policies if they are
   // newer than the ones previously written by the browser.
   static PolicyLoadResult MaybeUseExternalCachedPolicies(
-      const base::FilePath& path,
+      const base::FilePath& policy_cache_path,
+      const base::FilePath& policy_info_path,
       PolicyLoadResult default_cached_policy_load_result);
+
+  static PolicyLoadResult LoadExternalCachedPolicies(
+      const base::FilePath& policy_cache_path,
+      const base::FilePath& policy_info_path);
+
   // override DesktopCloudPolicyStore
   void Validate(
       std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,

@@ -21,7 +21,7 @@ namespace ui {
 namespace {
 
 // A global map from AXNodes to TestAXNodeWrappers.
-std::map<AXNode::AXID, TestAXNodeWrapper*> g_node_id_to_wrapper_map;
+std::map<AXNodeID, TestAXNodeWrapper*> g_node_id_to_wrapper_map;
 
 // A global coordinate offset.
 gfx::Vector2d g_offset;
@@ -48,7 +48,7 @@ bool g_is_web_content = false;
 
 // A map of hit test results - a map from source node ID to destination node
 // ID.
-std::map<AXNode::AXID, AXNode::AXID> g_hit_test_result;
+std::map<AXNodeID, AXNodeID> g_hit_test_result;
 
 // A simple implementation of AXTreeObserver to catch when AXNodes are
 // deleted so we can delete their wrappers.
@@ -115,8 +115,8 @@ void TestAXNodeWrapper::SetGlobalIsWebContent(bool is_web_content) {
 }
 
 // static
-void TestAXNodeWrapper::SetHitTestResult(AXNode::AXID src_node_id,
-                                         AXNode::AXID dst_node_id) {
+void TestAXNodeWrapper::SetHitTestResult(AXNodeID src_node_id,
+                                         AXNodeID dst_node_id) {
   g_hit_test_result[src_node_id] = dst_node_id;
 }
 
@@ -464,20 +464,20 @@ base::Optional<bool> TestAXNodeWrapper::GetTableHasColumnOrRowHeaderNode()
   return node_->GetTableHasColumnOrRowHeaderNode();
 }
 
-std::vector<AXNode::AXID> TestAXNodeWrapper::GetColHeaderNodeIds() const {
+std::vector<AXNodeID> TestAXNodeWrapper::GetColHeaderNodeIds() const {
   return node_->GetTableColHeaderNodeIds();
 }
 
-std::vector<AXNode::AXID> TestAXNodeWrapper::GetColHeaderNodeIds(
+std::vector<AXNodeID> TestAXNodeWrapper::GetColHeaderNodeIds(
     int col_index) const {
   return node_->GetTableColHeaderNodeIds(col_index);
 }
 
-std::vector<AXNode::AXID> TestAXNodeWrapper::GetRowHeaderNodeIds() const {
+std::vector<AXNodeID> TestAXNodeWrapper::GetRowHeaderNodeIds() const {
   return node_->GetTableCellRowHeaderNodeIds();
 }
 
-std::vector<AXNode::AXID> TestAXNodeWrapper::GetRowHeaderNodeIds(
+std::vector<AXNodeID> TestAXNodeWrapper::GetRowHeaderNodeIds(
     int row_index) const {
   return node_->GetTableRowHeaderNodeIds(row_index);
 }
@@ -667,29 +667,29 @@ bool TestAXNodeWrapper::AccessibilityPerformAction(
   }
 }
 
-base::string16 TestAXNodeWrapper::GetLocalizedRoleDescriptionForUnlabeledImage()
+std::u16string TestAXNodeWrapper::GetLocalizedRoleDescriptionForUnlabeledImage()
     const {
-  return base::ASCIIToUTF16("Unlabeled image");
+  return u"Unlabeled image";
 }
 
-base::string16 TestAXNodeWrapper::GetLocalizedStringForLandmarkType() const {
+std::u16string TestAXNodeWrapper::GetLocalizedStringForLandmarkType() const {
   const AXNodeData& data = GetData();
   switch (data.role) {
     case ax::mojom::Role::kBanner:
     case ax::mojom::Role::kHeader:
-      return base::ASCIIToUTF16("banner");
+      return u"banner";
 
     case ax::mojom::Role::kComplementary:
-      return base::ASCIIToUTF16("complementary");
+      return u"complementary";
 
     case ax::mojom::Role::kContentInfo:
     case ax::mojom::Role::kFooter:
-      return base::ASCIIToUTF16("content information");
+      return u"content information";
 
     case ax::mojom::Role::kRegion:
     case ax::mojom::Role::kSection:
       if (data.HasStringAttribute(ax::mojom::StringAttribute::kName))
-        return base::ASCIIToUTF16("region");
+        return u"region";
       FALLTHROUGH;
 
     default:
@@ -697,138 +697,138 @@ base::string16 TestAXNodeWrapper::GetLocalizedStringForLandmarkType() const {
   }
 }
 
-base::string16 TestAXNodeWrapper::GetLocalizedStringForRoleDescription() const {
+std::u16string TestAXNodeWrapper::GetLocalizedStringForRoleDescription() const {
   const AXNodeData& data = GetData();
 
   switch (data.role) {
     case ax::mojom::Role::kArticle:
-      return base::ASCIIToUTF16("article");
+      return u"article";
 
     case ax::mojom::Role::kAudio:
-      return base::ASCIIToUTF16("audio");
+      return u"audio";
 
     case ax::mojom::Role::kCode:
-      return base::ASCIIToUTF16("code");
+      return u"code";
 
     case ax::mojom::Role::kColorWell:
-      return base::ASCIIToUTF16("color picker");
+      return u"color picker";
 
     case ax::mojom::Role::kContentInfo:
-      return base::ASCIIToUTF16("content information");
+      return u"content information";
 
     case ax::mojom::Role::kDate:
-      return base::ASCIIToUTF16("date picker");
+      return u"date picker";
 
     case ax::mojom::Role::kDateTime: {
       std::string input_type;
       if (data.GetStringAttribute(ax::mojom::StringAttribute::kInputType,
                                   &input_type)) {
         if (input_type == "datetime-local") {
-          return base::ASCIIToUTF16("local date and time picker");
+          return u"local date and time picker";
         } else if (input_type == "week") {
-          return base::ASCIIToUTF16("week picker");
+          return u"week picker";
         }
       }
       return {};
     }
 
     case ax::mojom::Role::kDetails:
-      return base::ASCIIToUTF16("details");
+      return u"details";
 
     case ax::mojom::Role::kEmphasis:
-      return base::ASCIIToUTF16("emphasis");
+      return u"emphasis";
 
     case ax::mojom::Role::kFigure:
-      return base::ASCIIToUTF16("figure");
+      return u"figure";
 
     case ax::mojom::Role::kFooter:
     case ax::mojom::Role::kFooterAsNonLandmark:
-      return base::ASCIIToUTF16("footer");
+      return u"footer";
 
     case ax::mojom::Role::kHeader:
     case ax::mojom::Role::kHeaderAsNonLandmark:
-      return base::ASCIIToUTF16("header");
+      return u"header";
 
     case ax::mojom::Role::kMark:
-      return base::ASCIIToUTF16("highlight");
+      return u"highlight";
 
     case ax::mojom::Role::kMeter:
-      return base::ASCIIToUTF16("meter");
+      return u"meter";
 
     case ax::mojom::Role::kSearchBox:
-      return base::ASCIIToUTF16("search box");
+      return u"search box";
 
     case ax::mojom::Role::kSection: {
       if (data.HasStringAttribute(ax::mojom::StringAttribute::kName))
-        return base::ASCIIToUTF16("section");
+        return u"section";
 
       return {};
     }
 
     case ax::mojom::Role::kStatus:
-      return base::ASCIIToUTF16("output");
+      return u"output";
 
     case ax::mojom::Role::kStrong:
-      return base::ASCIIToUTF16("strong");
+      return u"strong";
 
     case ax::mojom::Role::kTextField: {
       std::string input_type;
       if (data.GetStringAttribute(ax::mojom::StringAttribute::kInputType,
                                   &input_type)) {
         if (input_type == "email") {
-          return base::ASCIIToUTF16("email");
+          return u"email";
         } else if (input_type == "tel") {
-          return base::ASCIIToUTF16("telephone");
+          return u"telephone";
         } else if (input_type == "url") {
-          return base::ASCIIToUTF16("url");
+          return u"url";
         }
       }
       return {};
     }
 
     case ax::mojom::Role::kTime:
-      return base::ASCIIToUTF16("time");
+      return u"time";
 
     default:
       return {};
   }
 }
 
-base::string16 TestAXNodeWrapper::GetLocalizedStringForImageAnnotationStatus(
+std::u16string TestAXNodeWrapper::GetLocalizedStringForImageAnnotationStatus(
     ax::mojom::ImageAnnotationStatus status) const {
   switch (status) {
     case ax::mojom::ImageAnnotationStatus::kEligibleForAnnotation:
       return base::ASCIIToUTF16(
           "To get missing image descriptions, open the context menu.");
     case ax::mojom::ImageAnnotationStatus::kAnnotationPending:
-      return base::ASCIIToUTF16("Getting description...");
+      return u"Getting description...";
     case ax::mojom::ImageAnnotationStatus::kAnnotationAdult:
       return base::ASCIIToUTF16(
           "Appears to contain adult content. No description available.");
     case ax::mojom::ImageAnnotationStatus::kAnnotationEmpty:
     case ax::mojom::ImageAnnotationStatus::kAnnotationProcessFailed:
-      return base::ASCIIToUTF16("No description available.");
+      return u"No description available.";
     case ax::mojom::ImageAnnotationStatus::kNone:
     case ax::mojom::ImageAnnotationStatus::kWillNotAnnotateDueToScheme:
     case ax::mojom::ImageAnnotationStatus::kIneligibleForAnnotation:
     case ax::mojom::ImageAnnotationStatus::kSilentlyEligibleForAnnotation:
     case ax::mojom::ImageAnnotationStatus::kAnnotationSucceeded:
-      return base::string16();
+      return std::u16string();
   }
 
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16 TestAXNodeWrapper::GetStyleNameAttributeAsLocalizedString()
+std::u16string TestAXNodeWrapper::GetStyleNameAttributeAsLocalizedString()
     const {
   AXNode* current_node = node_;
   while (current_node) {
     if (current_node->data().role == ax::mojom::Role::kMark)
-      return base::ASCIIToUTF16("mark");
+      return u"mark";
     current_node = current_node->parent();
   }
-  return base::string16();
+  return std::u16string();
 }
 
 bool TestAXNodeWrapper::ShouldIgnoreHoveredStateForTesting() {
@@ -897,6 +897,14 @@ base::Optional<int> TestAXNodeWrapper::GetPosInSet() const {
 
 base::Optional<int> TestAXNodeWrapper::GetSetSize() const {
   return node_->GetSetSize();
+}
+
+SkColor TestAXNodeWrapper::GetColor() const {
+  return node_->ComputeColor();
+}
+
+SkColor TestAXNodeWrapper::GetBackgroundColor() const {
+  return node_->ComputeBackgroundColor();
 }
 
 gfx::RectF TestAXNodeWrapper::GetLocation() const {

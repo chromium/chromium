@@ -13,7 +13,6 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/completion_once_callback.h"
@@ -187,7 +186,7 @@ class NET_EXPORT_PRIVATE PacFileDecider {
   size_t current_pac_source_index_;
 
   // Filled when the PAC script fetch completes.
-  base::string16 pac_script_;
+  std::u16string pac_script_;
 
   // Flag indicating whether the caller requested a mandatory PAC script
   // (i.e. fallback to direct connections are prohibited).

@@ -1,0 +1,17 @@
+Test that hit-test work with clip-path using svg reference
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+PASS path contains point at (99, 237)
+PASS path contains point at (94, 232)
+PASS path contains point at (104, 242)
+PASS path contains point at (94, 242)
+PASS path contains point at (104, 232)
+PASS path does not contain point at (67, 205)
+PASS path does not contain point at (66, 204)
+PASS path does not contain point at (68, 206)
+

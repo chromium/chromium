@@ -46,6 +46,9 @@ need to be translated for each locale.-->
       <output filename="ui_strings_zh-HK.pak" type="data_package" lang="zh-HK" />
       <output filename="ui_strings_zu.pak" type="data_package" lang="zu" />
     </if>
+    <if expr="chromeos or lacros">
+      <output filename="ui_strings_is.pak" type="data_package" lang="is" />
+    </if>
     <output filename="ui_strings_am.pak" type="data_package" lang="am" />
     <output filename="ui_strings_ar.pak" type="data_package" lang="ar" />
     <output filename="ui_strings_bg.pak" type="data_package" lang="bg" />
@@ -67,7 +70,6 @@ need to be translated for each locale.-->
     </if>
     <output filename="ui_strings_et.pak" type="data_package" lang="et" />
     <output filename="ui_strings_fa.pak" type="data_package" lang="fa" />
-    <output filename="ui_strings_fake-bidi.pak" type="data_package" lang="fake-bidi" />
     <output filename="ui_strings_fi.pak" type="data_package" lang="fi" />
     <output filename="ui_strings_fil.pak" type="data_package" lang="fil" />
     <output filename="ui_strings_fr.pak" type="data_package" lang="fr" />
@@ -114,6 +116,10 @@ need to be translated for each locale.-->
     <output filename="ui_strings_vi.pak" type="data_package" lang="vi" />
     <output filename="ui_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
     <output filename="ui_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+
+    <!-- Pseudolocales -->
+    <output filename="ui_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="ui_strings_en-XA.pak" type="data_package" lang="en-XA" />
   </outputs>
   <translations>
     <file path="translations/ui_strings_af.xtb" lang="af" />
@@ -198,7 +204,7 @@ need to be translated for each locale.-->
     <file path="translations/ui_strings_zh-TW.xtb" lang="zh-TW" />
     <file path="translations/ui_strings_zu.xtb" lang="zu" />
   </translations>
-  <release seq="1" allow_pseudo="false">
+  <release seq="1">
     <messages fallback_to_english="true">
 
       <!-- time format -->
@@ -618,6 +624,11 @@ need to be translated for each locale.-->
       <if expr="is_macosx">
         <message name="IDS_CONTENT_CONTEXT_EMOJI" desc="The context menu item to display the OS-provided emoji picker.">
           Emoji &amp;&amp; Symbols
+        </message>
+      </if>
+      <if expr="chromeos">
+        <message name="IDS_APP_SHOW_CLIPBOARD_HISTORY" desc="The context menu item to show the clipboard history menu.">
+          Clipboard
         </message>
       </if>
 

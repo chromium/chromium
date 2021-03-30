@@ -18,12 +18,14 @@
 #include "base/threading/sequence_bound.h"
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/session_storage_control.mojom.h"
+#include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/dom_storage_context.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "storage/browser/quota/storage_policy_observer.h"
 #include "third_party/blink/public/mojom/dom_storage/session_storage_namespace.mojom.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
 
@@ -62,11 +64,9 @@ class CONTENT_EXPORT DOMStorageContextWrapper
 
   static scoped_refptr<DOMStorageContextWrapper> Create(
       StoragePartitionImpl* partition,
-      storage::SpecialStoragePolicy* special_storage_policy);
+      scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy);
 
-  DOMStorageContextWrapper(
-      StoragePartitionImpl* partition,
-      storage::SpecialStoragePolicy* special_storage_policy);
+  explicit DOMStorageContextWrapper(StoragePartitionImpl* partition);
 
   storage::mojom::SessionStorageControl* GetSessionStorageControl();
   storage::mojom::LocalStorageControl* GetLocalStorageControl();
@@ -140,10 +140,9 @@ class CONTENT_EXPORT DOMStorageContextWrapper
   void PurgeMemory(PurgeOption purge_option);
 
   void OnStartupUsageRetrieved(
-      std::vector<storage::mojom::LocalStorageUsageInfoPtr> usage);
-  void EnsureLocalStorageOriginIsTracked(const url::Origin& origin);
-  void OnStoragePolicyChanged();
-  bool ShouldPurgeLocalStorageOnShutdown(const url::Origin& origin);
+      std::vector<storage::mojom::StorageUsageInfoPtr> usage);
+  void ApplyPolicyUpdates(
+      std::vector<storage::mojom::StoragePolicyUpdatePtr> policy_updates);
 
   // Since the tab restore code keeps a reference to the session namespaces
   // of recently closed tabs (see sessions::ContentPlatformSpecificTabData and
@@ -172,29 +171,7 @@ class CONTENT_EXPORT DOMStorageContextWrapper
   mojo::Remote<storage::mojom::SessionStorageControl> session_storage_control_;
   mojo::Remote<storage::mojom::LocalStorageControl> local_storage_control_;
 
-  const scoped_refptr<storage::SpecialStoragePolicy> storage_policy_;
-
-  // This wrapper generally lives on the UI thread, but must observe the
-  // BrowserContext's SpecialStoragePolicy from the IO thread. This helper does
-  // that.
-  class StoragePolicyObserver;
-  base::SequenceBound<StoragePolicyObserver> storage_policy_observer_;
-
-  // Tracks the total set of origins which may currently have Local Storage data
-  // in this partition. This set is synchronized on startup of Local Storage and
-  // maintained as new storage areas are bound. This mapping is used to
-  // efficiently deduce what policy changes to push to the Local Storage
-  // implementation any time a SpecialStoragePolicy change is observed.
-  struct LocalStorageOriginState {
-    // Indicates that storage for this origin should be purged on shutdown.
-    bool should_purge_on_shutdown = false;
-
-    // Indicates the last value for |purge_on_shutdown| communicated to the
-    // Local Storage implementation.
-    bool will_purge_on_shutdown = false;
-  };
-  // NOTE: The GURL key is specifically an origin GURL.
-  std::map<url::Origin, LocalStorageOriginState> local_storage_origins_;
+  base::Optional<storage::StoragePolicyObserver> storage_policy_observer_;
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(DOMStorageContextWrapper);
 };

@@ -135,8 +135,9 @@ void HttpUtil::ParseContentType(const std::string& content_type_str,
     if (offset == std::string::npos || content_type_str[offset] == ';')
       continue;
 
-    base::StringPiece param_name(content_type_str.begin() + param_name_start,
-                                 content_type_str.begin() + offset);
+    auto param_name =
+        base::MakeStringPiece(content_type_str.begin() + param_name_start,
+                              content_type_str.begin() + offset);
 
     // Now parse the value.
     DCHECK_EQ('=', content_type_str[offset]);
@@ -196,7 +197,7 @@ void HttpUtil::ParseContentType(const std::string& content_type_str,
         ++offset;
       }
 
-      param_value = TrimLWS(param_value).as_string();
+      param_value = std::string(TrimLWS(param_value));
 
       offset = content_type_str.find_first_of(';', offset);
     }
@@ -232,11 +233,11 @@ void HttpUtil::ParseContentType(const std::string& content_type_str,
   // It is common that mime_type is empty.
   bool eq = !mime_type->empty() &&
             base::LowerCaseEqualsASCII(
-                base::StringPiece(begin + type_val, begin + type_end),
+                base::MakeStringPiece(begin + type_val, begin + type_end),
                 mime_type->data());
   if (!eq) {
     *mime_type = base::ToLowerASCII(
-        base::StringPiece(begin + type_val, begin + type_end));
+        base::MakeStringPiece(begin + type_val, begin + type_end));
   }
   if ((!eq && *had_charset) || type_has_charset) {
     *had_charset = true;
@@ -522,6 +523,10 @@ bool HttpUtil::IsToken(base::StringPiece string) {
   return true;
 }
 
+bool HttpUtil::IsControlChar(char c) {
+  return (c >= 0x00 && c <= 0x1F) || c == 0x7F;
+}
+
 // See RFC 5987 Sec 3.2.1 for the definition of |parmname|.
 bool HttpUtil::IsParmName(base::StringPiece str) {
   if (str.empty())
@@ -583,7 +588,7 @@ bool UnquoteImpl(base::StringPiece str, bool strict_quotes, std::string* out) {
 std::string HttpUtil::Unquote(base::StringPiece str) {
   std::string result;
   if (!UnquoteImpl(str, false, &result))
-    return str.as_string();
+    return std::string(str);
 
   return result;
 }
@@ -786,11 +791,17 @@ std::string HttpUtil::ExpandLanguageList(const std::string& language_prefs) {
     const std::string& language = languages[i];
     builder.AddLanguageCode(language);
 
-    // Extract the base language
+    // Extract the primary language subtag.
     const std::string& base_language = GetBaseLanguageCode(language);
 
-    // Look ahead and add the base language if the next language is not part
-    // of the same family.
+    // Skip 'x' and 'i' as a primary language subtag per RFC 5646 section 2.1.1.
+    if (base_language == "x" || base_language == "i")
+      continue;
+
+    // Look ahead and add the primary language subtag as a language if the next
+    // language is not part of the same family. This may not be perfect because
+    // an input of "en-US,fr,en" will yield "en-US,en,fr,en" and later make "en"
+    // a higher priority than "fr" despite the original preference.
     const size_t j = i + 1;
     if (j >= size || GetBaseLanguageCode(languages[j]) != base_language) {
       builder.AddLanguageCode(base_language);
@@ -848,7 +859,7 @@ bool HttpUtil::HasStrongValidators(HttpVersion version,
     std::string::const_iterator i = etag_header.begin();
     std::string::const_iterator j = etag_header.begin() + slash;
     TrimLWS(&i, &j);
-    if (!base::LowerCaseEqualsASCII(base::StringPiece(i, j), "w"))
+    if (!base::LowerCaseEqualsASCII(base::MakeStringPiece(i, j), "w"))
       return true;
   }
 
@@ -949,7 +960,7 @@ bool HttpUtil::HeadersIterator::GetNext() {
 
     TrimLWS(&name_begin_, &name_end_);
     DCHECK(name_begin_ < name_end_);
-    if (!IsToken(base::StringPiece(name_begin_, name_end_)))
+    if (!IsToken(base::MakeStringPiece(name_begin_, name_end_)))
       continue;  // skip malformed header
 
     values_begin_ = colon + 1;
@@ -967,8 +978,8 @@ bool HttpUtil::HeadersIterator::AdvanceTo(const char* name) {
       << "the header name must be in all lower case";
 
   while (GetNext()) {
-    if (base::LowerCaseEqualsASCII(base::StringPiece(name_begin_, name_end_),
-                                   name)) {
+    if (base::LowerCaseEqualsASCII(
+            base::MakeStringPiece(name_begin_, name_end_), name)) {
       return true;
     }
   }
@@ -1090,8 +1101,9 @@ bool HttpUtil::NameValuePairsIterator::GetNext() {
     value_is_quoted_ = true;
 
     if (strict_quotes_) {
-      if (!HttpUtil::StrictUnquote(base::StringPiece(value_begin_, value_end_),
-                                   &unquoted_value_))
+      if (!HttpUtil::StrictUnquote(
+              base::MakeStringPiece(value_begin_, value_end_),
+              &unquoted_value_))
         return valid_ = false;
       return true;
     }
@@ -1108,7 +1120,7 @@ bool HttpUtil::NameValuePairsIterator::GetNext() {
     } else {
       // Do not store iterators into this. See declaration of unquoted_value_.
       unquoted_value_ =
-          HttpUtil::Unquote(base::StringPiece(value_begin_, value_end_));
+          HttpUtil::Unquote(base::MakeStringPiece(value_begin_, value_end_));
     }
   }
 

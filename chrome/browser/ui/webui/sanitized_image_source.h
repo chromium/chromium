@@ -61,6 +61,7 @@ class SanitizedImageSource : public content::URLDataSource {
       const content::WebContents::Getter& wc_getter,
       content::URLDataSource::GotDataCallback callback) override;
   std::string GetMimeType(const std::string& path) override;
+  bool ShouldReplaceExistingSource() override;
 
  private:
   void OnImageLoaded(network::SimpleURLLoader* loader,

@@ -72,9 +72,6 @@ PATCHES = [
     'chromium-issue-628581.patch',
     'libxml2-2.9.4-security-xpath-nodetab-uaf.patch',
     'chromium-issue-708434.patch',
-    # TODO(jarhar): Merge this back upstream.
-    'add-fuzz-target.patch',
-    'chromium-issue-1138555.patch',
 ]
 
 

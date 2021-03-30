@@ -9,7 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/common/password_generation_util.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "content/public/browser/web_contents.h"
@@ -24,11 +24,11 @@ using ::testing::_;
 class MockPasswordManagerDriver
     : public password_manager::StubPasswordManagerDriver {
  public:
-  MOCK_METHOD1(GeneratedPasswordAccepted, void(const base::string16&));
+  MOCK_METHOD1(GeneratedPasswordAccepted, void(const std::u16string&));
   MOCK_METHOD3(GeneratedPasswordAccepted,
                void(const autofill::FormData&,
                     autofill::FieldRendererId,
-                    const base::string16&));
+                    const std::u16string&));
 };
 
 class PasswordGenerationPopupControllerImplTest
@@ -44,7 +44,7 @@ PasswordGenerationPopupControllerImplTest::CreateDriver() {
 
 TEST_F(PasswordGenerationPopupControllerImplTest, GetOrCreateTheSame) {
   autofill::password_generation::PasswordGenerationUIData ui_data(
-      gfx::RectF(100, 20), /*max_length=*/20, base::ASCIIToUTF16("element"),
+      gfx::RectF(100, 20), /*max_length=*/20, u"element",
       autofill::FieldRendererId(100),
       /*is_generation_element_password_type=*/true, base::i18n::TextDirection(),
       autofill::FormData());
@@ -66,8 +66,7 @@ TEST_F(PasswordGenerationPopupControllerImplTest, GetOrCreateTheSame) {
 TEST_F(PasswordGenerationPopupControllerImplTest, GetOrCreateDifferentBounds) {
   gfx::RectF rect(100, 20);
   autofill::password_generation::PasswordGenerationUIData ui_data(
-      rect, /*max_length=*/20, base::ASCIIToUTF16("element"),
-      autofill::FieldRendererId(100),
+      rect, /*max_length=*/20, u"element", autofill::FieldRendererId(100),
       /*is_generation_element_password_type=*/true, base::i18n::TextDirection(),
       autofill::FormData());
   auto driver = CreateDriver();
@@ -89,7 +88,7 @@ TEST_F(PasswordGenerationPopupControllerImplTest, GetOrCreateDifferentBounds) {
 
 TEST_F(PasswordGenerationPopupControllerImplTest, GetOrCreateDifferentTabs) {
   autofill::password_generation::PasswordGenerationUIData ui_data(
-      gfx::RectF(100, 20), /*max_length=*/20, base::ASCIIToUTF16("element"),
+      gfx::RectF(100, 20), /*max_length=*/20, u"element",
       autofill::FieldRendererId(100),
       /*is_generation_element_password_type=*/true, base::i18n::TextDirection(),
       autofill::FormData());
@@ -112,7 +111,7 @@ TEST_F(PasswordGenerationPopupControllerImplTest, GetOrCreateDifferentTabs) {
 
 TEST_F(PasswordGenerationPopupControllerImplTest, GetOrCreateDifferentDrivers) {
   autofill::password_generation::PasswordGenerationUIData ui_data(
-      gfx::RectF(100, 20), /*max_length=*/20, base::ASCIIToUTF16("element"),
+      gfx::RectF(100, 20), /*max_length=*/20, u"element",
       autofill::FieldRendererId(100),
       /*is_generation_element_password_type=*/true, base::i18n::TextDirection(),
       autofill::FormData());
@@ -136,7 +135,7 @@ TEST_F(PasswordGenerationPopupControllerImplTest, GetOrCreateDifferentDrivers) {
 TEST_F(PasswordGenerationPopupControllerImplTest,
        GetOrCreateDifferentElements) {
   autofill::password_generation::PasswordGenerationUIData ui_data(
-      gfx::RectF(100, 20), /*max_length=*/20, base::ASCIIToUTF16("element"),
+      gfx::RectF(100, 20), /*max_length=*/20, u"element",
       autofill::FieldRendererId(100),
       /*is_generation_element_password_type=*/true, base::i18n::TextDirection(),
       autofill::FormData());
@@ -159,7 +158,7 @@ TEST_F(PasswordGenerationPopupControllerImplTest,
 
 TEST_F(PasswordGenerationPopupControllerImplTest, DestroyInPasswordAccepted) {
   autofill::password_generation::PasswordGenerationUIData ui_data(
-      gfx::RectF(100, 20), /*max_length=*/20, base::ASCIIToUTF16("element"),
+      gfx::RectF(100, 20), /*max_length=*/20, u"element",
       autofill::FieldRendererId(100),
       /*is_generation_element_password_type=*/true, base::i18n::TextDirection(),
       autofill::FormData());

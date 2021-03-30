@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
@@ -207,7 +208,7 @@ ScriptPromise ImageCapture::getPhotoCapabilities(ScriptState* script_state) {
   service_->GetPhotoState(
       stream_track_->Component()->Source()->Id(),
       WTF::Bind(&ImageCapture::OnMojoGetPhotoState, WrapPersistent(this),
-                WrapPersistent(resolver), WTF::Passed(std::move(resolver_cb)),
+                WrapPersistent(resolver), std::move(resolver_cb),
                 false /* trigger_take_photo */));
   return promise;
 }
@@ -239,7 +240,7 @@ ScriptPromise ImageCapture::getPhotoSettings(ScriptState* script_state) {
   service_->GetPhotoState(
       stream_track_->Component()->Source()->Id(),
       WTF::Bind(&ImageCapture::OnMojoGetPhotoState, WrapPersistent(this),
-                WrapPersistent(resolver), WTF::Passed(std::move(resolver_cb)),
+                WrapPersistent(resolver), std::move(resolver_cb),
                 false /* trigger_take_photo */));
   return promise;
 }
@@ -1038,7 +1039,7 @@ void ImageCapture::OnMojoSetOptions(ScriptPromiseResolver* resolver,
   service_->GetPhotoState(
       stream_track_->Component()->Source()->Id(),
       WTF::Bind(&ImageCapture::OnMojoGetPhotoState, WrapPersistent(this),
-                WrapPersistent(resolver), WTF::Passed(std::move(resolver_cb)),
+                WrapPersistent(resolver), std::move(resolver_cb),
                 trigger_take_photo));
 }
 

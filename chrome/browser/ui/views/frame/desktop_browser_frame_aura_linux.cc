@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/frame/browser_desktop_window_tree_host_linux.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/native_browser_frame_factory.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "ui/views/widget/widget.h"
@@ -56,17 +57,13 @@ views::Widget::InitParams DesktopBrowserFrameAuraLinux::GetWidgetParams() {
 
 bool DesktopBrowserFrameAuraLinux::UseCustomFrame() const {
   // Normal browser windows get a custom frame (per the user's preference).
-  if (use_custom_frame_pref_.GetValue() &&
-      browser_view()->IsBrowserTypeNormal()) {
+  if (use_custom_frame_pref_.GetValue() && browser_view()->GetIsNormalType()) {
     return true;
   }
 
   // Hosted app windows get a custom frame (if the desktop PWA experimental
   // feature is enabled).
-  if (browser_view()->IsBrowserTypeWebApp())
-    return true;
-
-  return false;
+  return browser_view()->GetIsWebAppType();
 }
 
 void DesktopBrowserFrameAuraLinux::TabDraggingKindChanged(
@@ -80,4 +77,10 @@ void DesktopBrowserFrameAuraLinux::OnUseCustomChromeFrameChanged() {
                                       ? views::Widget::FrameType::kForceCustom
                                       : views::Widget::FrameType::kForceNative);
   browser_frame()->FrameTypeChanged();
+}
+
+NativeBrowserFrame* NativeBrowserFrameFactory::Create(
+    BrowserFrame* browser_frame,
+    BrowserView* browser_view) {
+  return new DesktopBrowserFrameAuraLinux(browser_frame, browser_view);
 }

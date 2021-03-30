@@ -208,7 +208,6 @@
       case DeviceStateType.kDisabling:
       case DeviceStateType.kEnabling:
       case DeviceStateType.kUnavailable:
-        return true;
       case DeviceStateType.kDisabled:
       case DeviceStateType.kEnabled:
       case DeviceStateType.kProhibited:
@@ -216,6 +215,19 @@
     }
     assertNotReached('Unexpected enum value: ' + OncMojo.getEnumString(value));
     return false;
+  }
+
+  /**
+   * @param {?chromeos.networkConfig.mojom.DeviceStateProperties} device
+   * @return {boolean}
+   */
+  static deviceIsInhibited(device) {
+    if (!device) {
+      return false;
+    }
+
+    return device.inhibitReason !==
+        chromeos.networkConfig.mojom.InhibitReason.kNotInhibited;
   }
 
   /**
@@ -266,6 +278,16 @@
     }
     assertNotReached('Unexpected enum value: ' + OncMojo.getEnumString(value));
     return false;
+  }
+
+  /**
+   * @param {!chromeos.networkConfig.mojom.NetworkType} value
+   * @return {boolean}
+   */
+  static networkTypeHasConfigurationFlow(value) {
+    // Cellular networks are considered "configured" by their SIM, and Instant
+    // Tethering networks do not have a configuration flow.
+    return !OncMojo.networkTypeIsMobile(value);
   }
 
   /**
@@ -542,6 +564,25 @@
   }
 
   /**
+   * Determines whether a connection to |network| can be attempted. Note that
+   * this function does not consider policies which may block a connection from
+   * succeeding.
+   * @param {!chromeos.networkConfig.mojom.NetworkStateProperties|
+   *     !chromeos.networkConfig.mojom.ManagedProperties} network
+   * @return {boolean} Whether the network can currently be connected; if the
+   *     network is not connectable, it must first be configured.
+   */
+  static isNetworkConnectable(network) {
+    // Networks without a configuration flow are always connectable since no
+    // additional configuration can be performed to attempt a connection.
+    if (!OncMojo.networkTypeHasConfigurationFlow(network.type)) {
+      return true;
+    }
+
+    return network.connectable;
+  }
+
+  /**
    * @param {string} key
    * @return {boolean}
    */
@@ -590,6 +631,8 @@
     switch (type) {
       case mojom.NetworkType.kCellular:
         result.typeState.cellular = {
+          iccid: '',
+          eid: '',
           activationState: mojom.ActivationStateType.kUnknown,
           networkTechnology: '',
           roaming: false,
@@ -622,6 +665,7 @@
           bssid: '',
           frequency: 0,
           hexSsid: opt_name || '',
+          hiddenSsid: false,
           security: mojom.SecurityType.kNone,
           signalStrength: 0,
           ssid: '',
@@ -656,6 +700,10 @@
     switch (properties.type) {
       case mojom.NetworkType.kCellular:
         const cellularProperties = properties.typeProperties.cellular;
+        networkState.typeState.cellular.iccid =
+            cellularProperties.iccid || '';
+        networkState.typeState.cellular.eid =
+            cellularProperties.eid || '';
         networkState.typeState.cellular.activationState =
             cellularProperties.activationState;
         networkState.typeState.cellular.networkTechnology =
@@ -728,6 +776,7 @@
             activationState: mojom.ActivationStateType.kUnknown,
             allowRoaming: false,
             signalStrength: 0,
+            simLocked: false,
             supportNetworkScan: false,
           }
         };
@@ -794,7 +843,14 @@
       case mojom.NetworkType.kWiFi:
         // Note: wifi.security can not be changed, so |security| will be ignored
         // for existing configurations.
-        return {typeConfig: {wifi: {security: mojom.SecurityType.kNone}}};
+        return {
+          typeConfig: {
+            wifi: {
+              security: mojom.SecurityType.kNone,
+              hiddenSsid: mojom.HiddenSsidMode.kAutomatic
+            }
+          }
+        };
         break;
     }
     assertNotReached('Unexpected type: ' + type.toString());
@@ -1186,6 +1242,12 @@
     return false;
   }
 }
+
+/**
+ * The value of ApnProperties.attach must be equivalent to this value
+ * in order for an Attach APN to occur.
+ */
+OncMojo.USE_ATTACH_APN_NAME = "attach";
 
 /** @typedef {chromeos.networkConfig.mojom.DeviceStateProperties} */
 OncMojo.DeviceStateProperties;

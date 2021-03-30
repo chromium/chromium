@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
+#include "base/thread_annotations.h"
 #include "url/origin.h"
 
 namespace storage {
@@ -38,12 +39,16 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaOverrideHandle {
   void DidGetUniqueId();
   void DidGetOverrideHandleId(int id);
 
-  base::Optional<int> id_;
-  std::vector<base::OnceClosure> override_callback_queue_;
-  scoped_refptr<QuotaManagerProxy> quota_manager_;
-
   SEQUENCE_CHECKER(sequence_checker_);
-  base::WeakPtrFactory<QuotaOverrideHandle> weak_ptr_factory_{this};
+
+  const scoped_refptr<QuotaManagerProxy> quota_manager_proxy_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  base::Optional<int> id_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::vector<base::OnceClosure> override_callback_queue_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  base::WeakPtrFactory<QuotaOverrideHandle> weak_ptr_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
 };
 
 }  // namespace storage

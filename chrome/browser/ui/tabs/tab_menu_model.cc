@@ -34,19 +34,24 @@ TabMenuModel::TabMenuModel(ui::SimpleMenuModel::Delegate* delegate,
 TabMenuModel::~TabMenuModel() {}
 
 void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
-  std::vector<int> affected_indices =
-      tab_strip->IsTabSelected(index)
-          ? tab_strip->selection_model().selected_indices()
-          : std::vector<int>{index};
-  int num_affected_tabs = affected_indices.size();
+  std::vector<int> indices;
+  if (tab_strip->IsTabSelected(index)) {
+    const ui::ListSelectionModel::SelectedIndices& sel =
+        tab_strip->selection_model().selected_indices();
+    indices = std::vector<int>(sel.begin(), sel.end());
+  } else {
+    indices = {index};
+  }
+
+  int num_tabs = indices.size();
   AddItemWithStringId(TabStripModel::CommandNewTabToRight,
                       IDS_TAB_CXMENU_NEWTABTORIGHT);
   if (base::FeatureList::IsEnabled(reading_list::switches::kReadLater)) {
-    AddItem(TabStripModel::CommandAddToReadLater,
-            l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_READ_LATER,
-                                             num_affected_tabs));
+    AddItem(
+        TabStripModel::CommandAddToReadLater,
+        l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_READ_LATER, num_tabs));
     SetEnabledAt(GetItemCount() - 1,
-                 tab_strip->IsReadLaterSupportedForAny(affected_indices));
+                 tab_strip->IsReadLaterSupportedForAny(indices));
   }
   if (ExistingTabGroupSubMenuModel::ShouldShowSubmenu(tab_strip, index)) {
     // Create submenu with existing groups
@@ -55,18 +60,20 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
                                                        index);
     AddSubMenu(TabStripModel::CommandAddToExistingGroup,
                l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_ADD_TAB_TO_GROUP,
-                                                num_affected_tabs),
+                                                num_tabs),
                add_to_existing_group_submenu_.get());
-    SetIsNewFeatureAt(GetItemCount() - 1, true);
+    if (base::FeatureList::IsEnabled(features::kTabGroupsNewBadgePromo))
+      SetIsNewFeatureAt(GetItemCount() - 1, true);
   } else {
     AddItem(TabStripModel::CommandAddToNewGroup,
             l10n_util::GetPluralStringFUTF16(
-                IDS_TAB_CXMENU_ADD_TAB_TO_NEW_GROUP, num_affected_tabs));
-    SetIsNewFeatureAt(GetItemCount() - 1, true);
+                IDS_TAB_CXMENU_ADD_TAB_TO_NEW_GROUP, num_tabs));
+    if (base::FeatureList::IsEnabled(features::kTabGroupsNewBadgePromo))
+      SetIsNewFeatureAt(GetItemCount() - 1, true);
   }
 
-  for (size_t index = 0; index < affected_indices.size(); index++) {
-    if (tab_strip->GetTabGroupForTab(affected_indices[index]).has_value()) {
+  for (const auto& selection : indices) {
+    if (tab_strip->GetTabGroupForTab(selection).has_value()) {
       AddItemWithStringId(TabStripModel::CommandRemoveFromGroup,
                           IDS_TAB_CXMENU_REMOVE_TAB_FROM_GROUP);
       break;
@@ -80,12 +87,12 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
                                                      index);
     AddSubMenu(TabStripModel::CommandMoveToExistingWindow,
                l10n_util::GetPluralStringFUTF16(
-                   IDS_TAB_CXMENU_MOVETOANOTHERWINDOW, num_affected_tabs),
+                   IDS_TAB_CXMENU_MOVETOANOTHERWINDOW, num_tabs),
                add_to_existing_window_submenu_.get());
   } else {
     AddItem(TabStripModel::CommandMoveTabsToNewWindow,
             l10n_util::GetPluralStringFUTF16(
-                IDS_TAB_CXMENU_MOVE_TABS_TO_NEW_WINDOW, num_affected_tabs));
+                IDS_TAB_CXMENU_MOVE_TABS_TO_NEW_WINDOW, num_tabs));
   }
 
   AddSeparator(ui::NORMAL_SEPARATOR);
@@ -103,13 +110,12 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
                           IDS_TAB_CXMENU_FOCUS_THIS_TAB);
     }
   }
-  const bool will_mute =
-      !chrome::AreAllSitesMuted(*tab_strip, affected_indices);
+  const bool will_mute = !chrome::AreAllSitesMuted(*tab_strip, indices);
   AddItem(TabStripModel::CommandToggleSiteMuted,
           will_mute ? l10n_util::GetPluralStringFUTF16(
-                          IDS_TAB_CXMENU_SOUND_MUTE_SITE, num_affected_tabs)
+                          IDS_TAB_CXMENU_SOUND_MUTE_SITE, num_tabs)
                     : l10n_util::GetPluralStringFUTF16(
-                          IDS_TAB_CXMENU_SOUND_UNMUTE_SITE, num_affected_tabs));
+                          IDS_TAB_CXMENU_SOUND_UNMUTE_SITE, num_tabs));
   if (send_tab_to_self::ShouldOfferFeature(
           tab_strip->GetWebContentsAt(index))) {
     AddSeparator(ui::NORMAL_SEPARATOR);

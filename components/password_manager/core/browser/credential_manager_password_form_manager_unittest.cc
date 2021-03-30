@@ -39,11 +39,11 @@ class MockFormSaver : public StubFormSaver {
   MOCK_METHOD3(Save,
                void(PasswordForm pending,
                     const std::vector<const PasswordForm*>& matches,
-                    const base::string16& old_password));
+                    const std::u16string& old_password));
   MOCK_METHOD3(Update,
                void(PasswordForm pending,
                     const std::vector<const PasswordForm*>& matches,
-                    const base::string16& old_password));
+                    const std::u16string& old_password));
 
   // Convenience downcasting method.
   static MockFormSaver& Get(PasswordFormManager* form_manager) {
@@ -68,8 +68,8 @@ class CredentialManagerPasswordFormManagerTest : public testing::Test {
   CredentialManagerPasswordFormManagerTest() {
     form_to_save_.url = GURL("https://example.com/path");
     form_to_save_.signon_realm = "https://example.com/";
-    form_to_save_.username_value = ASCIIToUTF16("user1");
-    form_to_save_.password_value = ASCIIToUTF16("pass1");
+    form_to_save_.username_value = u"user1";
+    form_to_save_.password_value = u"pass1";
     form_to_save_.scheme = PasswordForm::Scheme::kHtml;
     form_to_save_.type = PasswordForm::Type::kApi;
   }
@@ -134,8 +134,8 @@ TEST_F(CredentialManagerPasswordFormManagerTest,
   // Simulate that the password store has crendentials with different
   // username/password as a submitted one.
   PasswordForm saved_match = form_to_save_;
-  saved_match.username_value += ASCIIToUTF16("1");
-  saved_match.password_value += ASCIIToUTF16("1");
+  saved_match.username_value += u"1";
+  saved_match.password_value += u"1";
 
   std::unique_ptr<CredentialManagerPasswordFormManager> form_manager =
       CreateFormManager(form_to_save_);
@@ -156,7 +156,7 @@ TEST_F(CredentialManagerPasswordFormManagerTest, UpdatePasswordCredentialAPI) {
   // Simulate that the submitted credential has the same username but the
   // different password from already saved one.
   PasswordForm saved_match = form_to_save_;
-  saved_match.password_value += ASCIIToUTF16("1");
+  saved_match.password_value += u"1";
 
   std::unique_ptr<CredentialManagerPasswordFormManager> form_manager =
       CreateFormManager(form_to_save_);

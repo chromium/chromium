@@ -7,7 +7,6 @@
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "build/build_config.h"
 #include "components/history/core/browser/history_backend_client.h"
 
 namespace bookmarks {
@@ -26,14 +25,6 @@ class ChromeHistoryBackendClient : public history::HistoryBackendClient {
   bool IsPinnedURL(const GURL& url) override;
   std::vector<history::URLAndTitle> GetPinnedURLs() override;
   bool IsWebSafe(const GURL& url) override;
-#if defined(OS_ANDROID)
-  void OnHistoryBackendInitialized(history::HistoryBackend* history_backend,
-                                   history::HistoryDatabase* history_database,
-                                   favicon::FaviconDatabase* favicon_database,
-                                   const base::FilePath& history_dir) override;
-  void OnHistoryBackendDestroyed(history::HistoryBackend* history_backend,
-                                 const base::FilePath& history_dir) override;
-#endif  // defined(OS_ANDROID)
 
  private:
   // ModelLoader is used to access bookmarks. May be null during testing.

@@ -36,7 +36,8 @@ def _TransformAarPaths(path):
 def _MergeResInfoFiles(res_info_path, info_paths):
   # Concatenate them all.
   # only_if_changed=False since no build rules depend on this as an input.
-  with build_utils.AtomicOutput(res_info_path, only_if_changed=False) as dst:
+  with build_utils.AtomicOutput(res_info_path, only_if_changed=False,
+                                mode='w+') as dst:
     for p in info_paths:
       with open(p) as src:
         dst.writelines(_TransformAarPaths(l) for l in src)
@@ -52,7 +53,8 @@ def _MergePakInfoFiles(merged_path, pak_infos):
     with open(pak_info_path, 'r') as src_info_file:
       info_lines.update(_TransformAarPaths(x) for x in src_info_file)
   # only_if_changed=False since no build rules depend on this as an input.
-  with build_utils.AtomicOutput(merged_path, only_if_changed=False) as f:
+  with build_utils.AtomicOutput(merged_path, only_if_changed=False,
+                                mode='w+') as f:
     f.writelines(sorted(info_lines))
 
 

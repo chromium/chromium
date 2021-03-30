@@ -1,0 +1,69 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+
+component("account_manager") {
+  sources = [
+    "access_token_fetcher.cc",
+    "access_token_fetcher.h",
+    "account_manager.cc",
+    "account_manager.h",
+    "account_manager_ash.cc",
+    "account_manager_ash.h",
+    "account_manager_factory.cc",
+    "account_manager_factory.h",
+    "account_manager_ui.cc",
+    "account_manager_ui.h",
+  ]
+
+  public_deps = [
+    ":account_manager_proto",
+    "//components/account_manager_core:account_manager_core",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chromeos/crosapi/mojom",
+    "//components/prefs:prefs",
+    "//google_apis",
+    "//net",
+    "//services/network/public/cpp:cpp",
+  ]
+
+  defines = [ "IS_ASH_COMPONENTS_ACCOUNT_MANAGER_IMPL" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "account_manager_ash_unittest.cc",
+    "account_manager_unittest.cc",
+  ]
+
+  deps = [
+    ":account_manager",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/crosapi/mojom",
+    "//components/prefs:test_support",
+    "//google_apis",
+    "//net",
+    "//services/network:test_support",
+    "//services/network/public/cpp:cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+proto_library("account_manager_proto") {
+  visibility = [ ":*" ]
+  sources = [ "tokens.proto" ]
+
+  proto_out_dir = "ash/components/account_manager"
+}

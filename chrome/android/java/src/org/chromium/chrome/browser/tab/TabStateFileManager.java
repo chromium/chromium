@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.tab;
 
+import android.os.SystemClock;
 import android.util.Pair;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.version.ChromeVersionInfo;
 
@@ -64,7 +66,13 @@ public class TabStateFileManager {
         if (!file.exists()) return null;
 
         // If one of them passed, open the file input stream and read the state contents.
-        return restoreTabState(file, encrypted);
+        long startTime = SystemClock.elapsedRealtime();
+        TabState tabState = restoreTabState(file, encrypted);
+        if (tabState != null) {
+            RecordHistogram.recordTimesHistogram(
+                    "Tabs.TabState.LoadTime", SystemClock.elapsedRealtime() - startTime);
+        }
+        return tabState;
     }
 
     /**
@@ -216,6 +224,7 @@ public class TabStateFileManager {
      */
     public static void saveState(File file, TabState state, boolean encrypted) {
         if (state == null || state.contentsState == null) return;
+        long startTime = SystemClock.elapsedRealtime();
 
         // Create the byte array from contentsState before opening the FileOutputStream, in case
         // contentsState.buffer is an instance of MappedByteBuffer that is mapped to
@@ -255,6 +264,8 @@ public class TabStateFileManager {
             dataOutputStream.writeInt(
                     state.tabLaunchTypeAtCreation != null ? state.tabLaunchTypeAtCreation : -1);
             dataOutputStream.writeInt(state.rootId);
+            RecordHistogram.recordTimesHistogram(
+                    "Tabs.TabState.SaveTime", SystemClock.elapsedRealtime() - startTime);
         } catch (FileNotFoundException e) {
             Log.w(TAG, "FileNotFoundException while attempting to save TabState.");
         } catch (IOException e) {

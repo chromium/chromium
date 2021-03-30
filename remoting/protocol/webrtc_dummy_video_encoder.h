@@ -54,10 +54,7 @@ class WebrtcDummyVideoEncoder : public webrtc::VideoEncoder {
   webrtc::VideoEncoder::EncoderInfo GetEncoderInfo() const override;
 
   webrtc::EncodedImageCallback::Result SendEncodedFrame(
-      const WebrtcVideoEncoder::EncodedFrame& frame,
-      base::TimeTicks capture_time,
-      base::TimeTicks encode_started_time,
-      base::TimeTicks encode_finished_time);
+      const WebrtcVideoEncoder::EncodedFrame& frame);
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
@@ -90,10 +87,7 @@ class WebrtcDummyVideoEncoderFactory : public webrtc::VideoEncoderFactory {
       const webrtc::SdpVideoFormat& format) const override;
 
   webrtc::EncodedImageCallback::Result SendEncodedFrame(
-      const WebrtcVideoEncoder::EncodedFrame& packet,
-      base::TimeTicks capture_time,
-      base::TimeTicks encode_started_time,
-      base::TimeTicks encode_finished_time);
+      const WebrtcVideoEncoder::EncodedFrame& packet);
 
   // Callback will be called once the dummy encoder has been created on
   // |main_task_runner_|.

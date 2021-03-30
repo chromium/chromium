@@ -72,7 +72,7 @@ SyncErrorInfoBarDelegate::GetIdentifier() const {
   return SYNC_ERROR_INFOBAR_DELEGATE_IOS;
 }
 
-base::string16 SyncErrorInfoBarDelegate::GetMessageText() const {
+std::u16string SyncErrorInfoBarDelegate::GetMessageText() const {
   return message_;
 }
 
@@ -80,7 +80,7 @@ int SyncErrorInfoBarDelegate::GetButtons() const {
   return button_text_.empty() ? BUTTON_NONE : BUTTON_OK;
 }
 
-base::string16 SyncErrorInfoBarDelegate::GetButtonLabel(
+std::u16string SyncErrorInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   DCHECK(button == BUTTON_OK);
   return button_text_;

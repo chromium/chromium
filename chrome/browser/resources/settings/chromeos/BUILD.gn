@@ -9,69 +9,18 @@ import("//tools/grit/preprocess_if_expr.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 import("//ui/webui/webui_features.gni")
-import("../../optimize_webui.gni")
+import("../../tools/optimize_webui.gni")
 import("./os_settings.gni")
 
-preprocess_folder_v2 = "preprocess_v2"
 preprocess_folder_v3 = "preprocess_v3"
 
-preprocess_v2_manifest = "preprocessed_v2_manifest.json"
 preprocess_v3_manifest = "preprocessed_manifest.json"
 preprocess_gen_v3_manifest = "preprocessed_gen_manifest.json"
 preprocess_external_mojo_manifest = "preprocessed_external_mojo_manifest.json"
 preprocess_mojo_manifest = "preprocessed_mojo_manifest.json"
 
 if (optimize_webui) {
-  build_manifest_v2 = "build_v2_manifest.json"
   build_manifest_v3 = "build_v3_manifest.json"
-
-  optimize_webui("build") {
-    host = "os-settings"
-    html_in_files = [
-      "chromeos/os_settings.html",
-      "chromeos/lazy_load.html",
-    ]
-    html_out_files = [
-      "vulcanized.html",
-      "lazy_load.vulcanized.html",
-    ]
-    insert_in_head = "<base href=\"chrome://os-settings\">"
-    input = rebase_path("$target_gen_dir/$preprocess_folder_v2", root_build_dir)
-    js_out_files = [
-      "crisper.js",
-      "lazy_load.crisper.js",
-    ]
-    out_manifest = "$target_gen_dir/$build_manifest_v2"
-    excludes = [
-      # TODO(calamity): Update optimize_webui to handle generated files.
-      "chrome://resources/chromeos/colors/cros_colors.generated.css",
-      "chrome://resources/mojo/chromeos/services/cellular_setup/public/mojom/cellular_setup.mojom.html",
-      "chrome://resources/mojo/chromeos/services/cellular_setup/public/mojom/esim_manager.mojom.html",
-      "chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom.html",
-      "chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js",
-      "chrome://os-settings/app-management/app_management.mojom-lite.js",
-      "chrome://os-settings/app-management/file_path.mojom-lite.js",
-      "chrome://os-settings/app-management/image.mojom-lite.js",
-      "chrome://os-settings/app-management/types.mojom-lite.js",
-      "chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js",
-      "chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom.html",
-      "chrome://resources/mojo/mojo/public/mojom/base/string16.mojom.html",
-      "chrome://resources/mojo/mojo/public/mojom/base/time.mojom.html",
-      "chrome://resources/mojo/skia/public/mojom/bitmap.mojom-lite.js",
-      "chrome://resources/mojo/skia/public/mojom/image_info.mojom-lite.js",
-      "chrome://resources/mojo/url/mojom/url.mojom-lite.js",
-      "mojo/nearby_share.mojom-lite.js",
-      "mojo/nearby_share_share_type.mojom-lite.js",
-      "mojo/nearby_share_target_types.mojom-lite.js",
-      "mojo/nearby_share_settings.mojom-lite.js",
-    ]
-
-    deps = [
-      ":preprocess_mojo_v2",
-      ":preprocess_v2",
-      "../../nearby_share/shared:preprocess_v2",
-    ]
-  }
 
   optimize_webui("build_polymer3") {
     host = "os-settings"
@@ -109,6 +58,8 @@ if (optimize_webui) {
       "chrome://resources/chromeos/colors/cros_colors.generated.css",
       "chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js",
       "chrome://resources/mojo/url/mojom/url.mojom-lite.js",
+      "chrome://resources/mojo/skia/public/mojom/bitmap.mojom-lite.js",
+      "chrome://resources/mojo/skia/public/mojom/image_info.mojom-lite.js",
       "app-management/app_management.mojom-lite.js",
       "app-management/bitmap.mojom-lite.js",
       "app-management/file_path.mojom-lite.js",
@@ -121,25 +72,6 @@ if (optimize_webui) {
       "mojo/nearby_share_settings.mojom-lite.js",
     ]
   }
-}
-
-# OS Settings specific mojo files, bundled in optimized builds. No need for a
-# manifest as the preprocess_mojo_v3 target generates the manifest file for the
-# grd.
-preprocess_if_expr("preprocess_mojo_v2") {
-  deps = [
-    "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_js",
-    "//chrome/browser/ui/webui/settings/chromeos/search:mojo_bindings_js",
-  ]
-  in_folder = get_path_info("../../../ui/webui/settings/chromeos/", "gen_dir")
-  out_folder = "$target_gen_dir/$preprocess_folder_v2"
-  in_files = [
-    "constants/routes.mojom-lite.js",
-    "constants/setting.mojom-lite.js",
-    "search/search.mojom-lite.js",
-    "search/search_result_icon.mojom-lite.js",
-    "search/user_action_recorder.mojom-lite.js",
-  ]
 }
 
 # OS Settings specific mojo files, bundled in optimized builds.
@@ -183,7 +115,7 @@ preprocess_if_expr("preprocess_external_mojo") {
   ]
 }
 
-grit("os_settings_resources") {
+grit("resources") {
   defines = chrome_grit_defines
 
   # These arguments are needed since the grd is generated at build time.
@@ -205,6 +137,8 @@ generate_grd("build_grd") {
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
   input_files = [
     "os_settings_v3.html",
+    "images/computer_and_bluetooth_switch.svg",
+    "images/error_badge.svg",
     "images/icon_add_circle.svg",
     "images/icon_add_wifi.svg",
     "images/icon_add_cellular.svg",
@@ -231,14 +165,8 @@ generate_grd("build_grd") {
   ]
 
   if (optimize_webui) {
-    deps += [
-      ":build",
-      ":build_polymer3",
-    ]
-    manifest_files += [
-      "$target_gen_dir/$build_manifest_v2",
-      "$target_gen_dir/$build_manifest_v3",
-    ]
+    deps += [ ":build_polymer3" ]
+    manifest_files += [ "$target_gen_dir/$build_manifest_v3" ]
     input_files += [ "../../nearby_share/shared/nearby_shared_icons.html" ]
     resource_path_rewrites += [
       "../../nearby_share/shared/nearby_shared_icons.html|shared/nearby_shared_icons.html",
@@ -251,18 +179,12 @@ generate_grd("build_grd") {
     deps += [
       ":preprocess_gen_v3",
       ":preprocess_mojo_v3",
-      ":preprocess_v2",
       ":preprocess_v3",
-      "../../nearby_share/shared:build_v2_grdp",
       "../../nearby_share/shared:build_v3_grdp",
     ]
-    grdp_files += [
-      "$root_gen_dir/chrome/browser/resources/nearby_share/shared/nearby_share_resources_v2.grdp",
-      "$root_gen_dir/chrome/browser/resources/nearby_share/shared/nearby_share_resources_v3.grdp",
-    ]
+    grdp_files += [ "$root_gen_dir/chrome/browser/resources/nearby_share/shared/nearby_share_resources_v3.grdp" ]
     manifest_files += [
       "$target_gen_dir/$preprocess_gen_v3_manifest",
-      "$target_gen_dir/$preprocess_v2_manifest",
       "$target_gen_dir/$preprocess_v3_manifest",
       "$target_gen_dir/$preprocess_mojo_manifest",
     ]
@@ -276,11 +198,32 @@ preprocess_if_expr("preprocess_v3") {
   out_folder = "$target_gen_dir/$preprocess_folder_v3"
   out_manifest = "$target_gen_dir/$preprocess_v3_manifest"
   in_files = [
+    "appearance_page/fonts_browser_proxy.js",
+    "about_page/about_page_browser_proxy.js",
     "chromeos/ensure_lazy_loaded.m.js",
     "chromeos/lazy_load.js",
     "chromeos/os_settings.js",
+    "controls/pref_control_behavior.js",
+    "controls/settings_boolean_control_behavior.js",
+    "extension_control_browser_proxy.js",
+    "global_scroll_target_behavior.js",
     "i18n_setup.js",
+    "languages_page/languages.js",
+    "languages_page/languages_browser_proxy.js",
+    "lifetime_browser_proxy.js",
     "page_visibility.js",
+    "people_page/account_manager_browser_proxy.js",
+    "people_page/profile_info_browser_proxy.js",
+    "people_page/sync_browser_proxy.js",
+    "prefs/prefs_behavior.js",
+    "prefs/prefs.js",
+    "prefs/prefs_types.js",
+    "prefs/pref_util.js",
+    "privacy_page/privacy_page_browser_proxy.js",
+    "router.js",
+    "search_engines_page/search_engines_browser_proxy.js",
+    "search_settings.js",
+    "setting_id_param_util.js",
   ]
 }
 
@@ -291,12 +234,14 @@ preprocess_if_expr("preprocess_gen_v3") {
   out_folder = "$target_gen_dir/$preprocess_folder_v3"
   out_manifest = "$target_gen_dir/$preprocess_gen_v3_manifest"
   in_files = [
-    "about_page/about_page_browser_proxy.m.js",
+    "a11y_page/captions_subpage.js",
+    "a11y_page/live_caption_section.js",
     "chromeos/ambient_mode_page/album_item.m.js",
     "chromeos/ambient_mode_page/album_list.m.js",
     "chromeos/ambient_mode_page/ambient_mode_browser_proxy.m.js",
     "chromeos/ambient_mode_page/ambient_mode_page.m.js",
     "chromeos/ambient_mode_page/ambient_mode_photos_page.m.js",
+    "chromeos/ambient_mode_page/text_with_tooltip.m.js",
     "chromeos/ambient_mode_page/art_album_dialog.m.js",
     "chromeos/ambient_mode_page/constants.m.js",
     "chromeos/ambient_mode_page/topic_source_item.m.js",
@@ -304,18 +249,49 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/bluetooth_page/bluetooth_device_list_item.m.js",
     "chromeos/bluetooth_page/bluetooth_page.m.js",
     "chromeos/bluetooth_page/bluetooth_subpage.m.js",
+    "chromeos/crostini_page/crostini_arc_adb.m.js",
+    "chromeos/crostini_page/crostini_arc_adb_confirmation_dialog.m.js",
+    "chromeos/crostini_page/crostini_browser_proxy.m.js",
+    "chromeos/crostini_page/crostini_disk_resize_confirmation_dialog.m.js",
+    "chromeos/crostini_page/crostini_disk_resize_dialog.m.js",
+    "chromeos/crostini_page/crostini_export_import.m.js",
+    "chromeos/crostini_page/crostini_import_confirmation_dialog.m.js",
+    "chromeos/crostini_page/crostini_mic_sharing_dialog.m.js",
+    "chromeos/crostini_page/crostini_page.m.js",
+    "chromeos/crostini_page/crostini_port_forwarding.m.js",
+    "chromeos/crostini_page/crostini_port_forwarding_add_port_dialog.m.js",
+    "chromeos/crostini_page/crostini_subpage.m.js",
     "chromeos/date_time_page/date_time_page.m.js",
     "chromeos/date_time_page/date_time_types.m.js",
     "chromeos/date_time_page/timezone_browser_proxy.m.js",
     "chromeos/date_time_page/timezone_selector.m.js",
     "chromeos/date_time_page/timezone_subpage.m.js",
     "chromeos/deep_linking_behavior.m.js",
+    "chromeos/device_page/device_page.m.js",
+    "chromeos/device_page/device_page_browser_proxy.m.js",
+    "chromeos/device_page/display.m.js",
+    "chromeos/device_page/display_layout.m.js",
+    "chromeos/device_page/display_overscan_dialog.m.js",
+    "chromeos/device_page/drag_behavior.m.js",
+    "chromeos/device_page/keyboard.m.js",
+    "chromeos/device_page/layout_behavior.m.js",
+    "chromeos/device_page/night_light_slider.m.js",
+    "chromeos/device_page/pointers.m.js",
+    "chromeos/device_page/power.m.js",
+    "chromeos/device_page/storage.m.js",
+    "chromeos/device_page/storage_external.m.js",
+    "chromeos/device_page/storage_external_entry.m.js",
+    "chromeos/device_page/stylus.m.js",
     "chromeos/google_assistant_page/google_assistant_browser_proxy.m.js",
     "chromeos/google_assistant_page/google_assistant_page.m.js",
+    "chromeos/guest_os/guest_os_browser_proxy.m.js",
+    "chromeos/guest_os/guest_os_shared_paths.m.js",
+    "chromeos/guest_os/guest_os_shared_usb_devices.m.js",
+    "chromeos/internet_page/esim_install_error_dialog.m.js",
     "chromeos/internet_page/esim_remove_profile_dialog.m.js",
     "chromeos/internet_page/esim_rename_dialog.m.js",
+    "chromeos/internet_page/cellular_banner.m.js",
     "chromeos/internet_page/cellular_networks_list.m.js",
-    "chromeos/internet_page/cellular_eid_popup.m.js",
     "chromeos/internet_page/cellular_setup_dialog.m.js",
     "chromeos/internet_page/cellular_setup_settings_delegate.m.js",
     "chromeos/internet_page/internet_config.m.js",
@@ -330,6 +306,9 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/internet_page/network_summary.m.js",
     "chromeos/internet_page/network_summary_item.m.js",
     "chromeos/internet_page/tether_connection_dialog.m.js",
+    "chromeos/kerberos_page/kerberos_accounts.m.js",
+    "chromeos/kerberos_page/kerberos_accounts_browser_proxy.m.js",
+    "chromeos/kerberos_page/kerberos_add_account_dialog.m.js",
     "chromeos/kerberos_page/kerberos_page.m.js",
     "chromeos/localized_link/localized_link.m.js",
     "chromeos/metrics_recorder.m.js",
@@ -359,9 +338,15 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/nearby_share_page/nearby_share_subpage.m.js",
     "chromeos/nearby_share_page/types.m.js",
     "chromeos/on_startup_page/on_startup_page.m.js",
+    "chromeos/os_a11y_page/manage_a11y_page.m.js",
+    "chromeos/os_a11y_page/os_a11y_page.m.js",
+    "chromeos/os_a11y_page/os_a11y_page_browser_proxy.m.js",
     "chromeos/os_a11y_page/switch_access_action_assignment_dialog.m.js",
     "chromeos/os_a11y_page/switch_access_constants.m.js",
+    "chromeos/os_a11y_page/switch_access_setup_guide_dialog.m.js",
     "chromeos/os_a11y_page/switch_access_subpage_browser_proxy.m.js",
+    "chromeos/os_a11y_page/switch_access_subpage.m.js",
+    "chromeos/os_a11y_page/manage_a11y_page_browser_proxy.m.js",
     "chromeos/os_a11y_page/tts_subpage.m.js",
     "chromeos/os_a11y_page/tts_subpage_browser_proxy.m.js",
     "chromeos/os_about_page/channel_switcher_dialog.m.js",
@@ -370,6 +355,36 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/os_about_page/edit_hostname_dialog.m.js",
     "chromeos/os_about_page/os_about_page.m.js",
     "chromeos/os_about_page/update_warning_dialog.m.js",
+    "chromeos/os_apps_page/android_apps_browser_proxy.m.js",
+    "chromeos/os_apps_page/android_apps_subpage.m.js",
+    "chromeos/os_apps_page/app_management_page/actions.m.js",
+    "chromeos/os_apps_page/app_management_page/api_listener.m.js",
+    "chromeos/os_apps_page/app_management_page/app_detail_view.m.js",
+    "chromeos/os_apps_page/app_management_page/app_item.m.js",
+    "chromeos/os_apps_page/app_management_page/app_management_page.m.js",
+    "chromeos/os_apps_page/app_management_page/arc_detail_view.m.js",
+    "chromeos/os_apps_page/app_management_page/browser_proxy.m.js",
+    "chromeos/os_apps_page/app_management_page/chrome_app_detail_view.m.js",
+    "chromeos/os_apps_page/app_management_page/constants.m.js",
+    "chromeos/os_apps_page/app_management_page/dom_switch.m.js",
+    "chromeos/os_apps_page/app_management_page/fake_page_handler.m.js",
+    "chromeos/os_apps_page/app_management_page/icons.m.js",
+    "chromeos/os_apps_page/app_management_page/main_view.m.js",
+    "chromeos/os_apps_page/app_management_page/permission_item.m.js",
+    "chromeos/os_apps_page/app_management_page/pin_to_shelf_item.m.js",
+    "chromeos/os_apps_page/app_management_page/plugin_vm_page/plugin_vm_browser_proxy.m.js",
+    "chromeos/os_apps_page/app_management_page/plugin_vm_page/plugin_vm_detail_view.m.js",
+    "chromeos/os_apps_page/app_management_page/pwa_detail_view.m.js",
+    "chromeos/os_apps_page/app_management_page/reducers.m.js",
+    "chromeos/os_apps_page/app_management_page/shared_style.m.js",
+    "chromeos/os_apps_page/app_management_page/shared_vars.m.js",
+    "chromeos/os_apps_page/app_management_page/store.m.js",
+    "chromeos/os_apps_page/app_management_page/store_client.m.js",
+    "chromeos/os_apps_page/app_management_page/toggle_row.m.js",
+    "chromeos/os_apps_page/app_management_page/types.m.js",
+    "chromeos/os_apps_page/app_management_page/uninstall_button.m.js",
+    "chromeos/os_apps_page/app_management_page/util.m.js",
+    "chromeos/os_apps_page/os_apps_page.m.js",
     "chromeos/os_files_page/os_files_page.m.js",
     "chromeos/os_files_page/smb_shares_page.m.js",
     "chromeos/os_icons.m.js",
@@ -392,9 +407,6 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/os_people_page/account_manager.m.js",
     "chromeos/os_people_page/fingerprint_browser_proxy.m.js",
     "chromeos/os_people_page/fingerprint_list.m.js",
-    "chromeos/os_people_page/kerberos_accounts.m.js",
-    "chromeos/os_people_page/kerberos_accounts_browser_proxy.m.js",
-    "chromeos/os_people_page/kerberos_add_account_dialog.m.js",
     "chromeos/os_people_page/lock_screen.m.js",
     "chromeos/os_people_page/lock_screen_password_prompt_dialog.m.js",
     "chromeos/os_people_page/lock_state_behavior.m.js",
@@ -426,6 +438,8 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/os_printing_page/cups_settings_add_printer_dialog.m.js",
     "chromeos/os_printing_page/os_printing_page.m.js",
     "chromeos/os_privacy_page/os_privacy_page.m.js",
+    "chromeos/os_privacy_page/peripheral_data_access_browser_proxy.m.js",
+    "chromeos/os_privacy_page/peripheral_data_access_protection_dialog.m.js",
     "chromeos/os_reset_page/os_powerwash_dialog.m.js",
     "chromeos/os_reset_page/os_reset_browser_proxy.m.js",
     "chromeos/os_reset_page/os_reset_page.m.js",
@@ -433,8 +447,16 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/os_search_page/os_search_page.m.js",
     "chromeos/os_search_page/os_search_selection_dialog.m.js",
     "chromeos/os_settings_icons_css.m.js",
+    "chromeos/os_settings_menu/os_settings_menu.m.js",
+    "chromeos/os_settings_main/os_settings_main.m.js",
     "chromeos/os_settings_page/main_page_behavior.m.js",
+    "chromeos/os_settings_page/settings_idle_load.m.js",
+    "chromeos/os_settings_page/os_settings_page.m.js",
+    "chromeos/os_settings_ui/os_settings_ui.m.js",
     "chromeos/os_settings_routes.m.js",
+    "chromeos/os_settings_search_box/os_search_result_row.m.js",
+    "chromeos/os_settings_search_box/os_settings_search_box.m.js",
+    "chromeos/os_toolbar/os_toolbar.m.js",
     "chromeos/parental_controls_page/parental_controls_browser_proxy.m.js",
     "chromeos/parental_controls_page/parental_controls_page.m.js",
     "chromeos/personalization_page/change_picture.m.js",
@@ -443,762 +465,100 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/personalization_page/wallpaper_browser_proxy.m.js",
     "chromeos/pref_to_setting_metric_converter.m.js",
     "chromeos/route_origin_behavior.m.js",
-    "controls/controlled_button.m.js",
-    "controls/controlled_radio_button.m.js",
-    "controls/extension_controlled_indicator.m.js",
-    "controls/password_prompt_dialog.m.js",
-    "controls/pref_control_behavior.m.js",
-    "controls/settings_boolean_control_behavior.m.js",
-    "controls/settings_dropdown_menu.m.js",
-    "controls/settings_radio_group.m.js",
-    "controls/settings_slider.m.js",
-    "controls/settings_textarea.m.js",
-    "controls/settings_toggle_button.m.js",
-    "extension_control_browser_proxy.m.js",
-    "global_scroll_target_behavior.m.js",
-    "icons.m.js",
-    "languages_page/languages.m.js",
-    "languages_page/languages_browser_proxy.m.js",
-    "lifetime_browser_proxy.m.js",
-    "people_page/account_manager_browser_proxy.m.js",
-    "people_page/profile_info_browser_proxy.m.js",
-    "people_page/signout_dialog.m.js",
-    "people_page/sync_account_control.m.js",
-    "people_page/sync_browser_proxy.m.js",
-    "people_page/sync_controls.m.js",
-    "people_page/sync_encryption_options.m.js",
-    "people_page/sync_page.m.js",
-    "prefs/pref_util.m.js",
-    "prefs/prefs.m.js",
-    "prefs/prefs_behavior.m.js",
-    "prefs/prefs_types.m.js",
-    "privacy_page/personalization_options.m.js",
-    "privacy_page/privacy_page_browser_proxy.m.js",
-    "router.m.js",
-    "search_engines_page/search_engines_browser_proxy.m.js",
-    "setting_id_param_util.m.js",
-    "settings_page/settings_animated_pages.m.js",
-    "settings_page/settings_section.m.js",
-    "settings_page/settings_subpage.m.js",
-    "settings_page_css.m.js",
-    "settings_shared_css.m.js",
-    "settings_vars_css.m.js",
-  ]
-}
-
-preprocess_if_expr("preprocess_v2") {
-  defines = chrome_grit_defines
-  in_folder = "../"
-  out_folder = "$target_gen_dir/$preprocess_folder_v2"
-  out_manifest = "$target_gen_dir/$preprocess_v2_manifest"
-  in_files = [
-    "a11y_page/captions_subpage.html",
-    "a11y_page/captions_subpage.js",
-    "about_page/about_page_browser_proxy.html",
-    "about_page/about_page_browser_proxy.js",
-    "appearance_page/fonts_browser_proxy.html",
-    "appearance_page/fonts_browser_proxy.js",
-    "chromeos/ambient_mode_page/album_item.html",
-    "chromeos/ambient_mode_page/album_item.js",
-    "chromeos/ambient_mode_page/album_list.html",
-    "chromeos/ambient_mode_page/album_list.js",
-    "chromeos/ambient_mode_page/ambient_mode_browser_proxy.html",
-    "chromeos/ambient_mode_page/ambient_mode_browser_proxy.js",
-    "chromeos/ambient_mode_page/ambient_mode_page.html",
-    "chromeos/ambient_mode_page/ambient_mode_page.js",
-    "chromeos/ambient_mode_page/ambient_mode_photos_page.html",
-    "chromeos/ambient_mode_page/ambient_mode_photos_page.js",
-    "chromeos/ambient_mode_page/art_album_dialog.html",
-    "chromeos/ambient_mode_page/art_album_dialog.js",
-    "chromeos/ambient_mode_page/constants.html",
-    "chromeos/ambient_mode_page/constants.js",
-    "chromeos/ambient_mode_page/topic_source_item.html",
-    "chromeos/ambient_mode_page/topic_source_item.js",
-    "chromeos/ambient_mode_page/topic_source_list.html",
-    "chromeos/ambient_mode_page/topic_source_list.js",
-    "chromeos/bluetooth_page/bluetooth_device_list_item.html",
-    "chromeos/bluetooth_page/bluetooth_device_list_item.js",
-    "chromeos/bluetooth_page/bluetooth_page.html",
-    "chromeos/bluetooth_page/bluetooth_page.js",
-    "chromeos/bluetooth_page/bluetooth_subpage.html",
-    "chromeos/bluetooth_page/bluetooth_subpage.js",
-    "chromeos/crostini_page/crostini_arc_adb.html",
-    "chromeos/crostini_page/crostini_arc_adb.js",
-    "chromeos/crostini_page/crostini_arc_adb_confirmation_dialog.html",
-    "chromeos/crostini_page/crostini_arc_adb_confirmation_dialog.js",
-    "chromeos/crostini_page/crostini_browser_proxy.html",
-    "chromeos/crostini_page/crostini_browser_proxy.js",
-    "chromeos/crostini_page/crostini_disk_resize_confirmation_dialog.html",
-    "chromeos/crostini_page/crostini_disk_resize_confirmation_dialog.js",
-    "chromeos/crostini_page/crostini_disk_resize_dialog.html",
-    "chromeos/crostini_page/crostini_disk_resize_dialog.js",
-    "chromeos/crostini_page/crostini_export_import.html",
-    "chromeos/crostini_page/crostini_export_import.js",
-    "chromeos/crostini_page/crostini_import_confirmation_dialog.html",
-    "chromeos/crostini_page/crostini_import_confirmation_dialog.js",
-    "chromeos/crostini_page/crostini_mic_sharing_dialog.html",
-    "chromeos/crostini_page/crostini_mic_sharing_dialog.js",
-    "chromeos/crostini_page/crostini_page.html",
-    "chromeos/crostini_page/crostini_page.js",
-    "chromeos/crostini_page/crostini_port_forwarding.html",
-    "chromeos/crostini_page/crostini_port_forwarding.js",
-    "chromeos/crostini_page/crostini_port_forwarding_add_port_dialog.html",
-    "chromeos/crostini_page/crostini_port_forwarding_add_port_dialog.js",
-    "chromeos/crostini_page/crostini_shared_paths.html",
-    "chromeos/crostini_page/crostini_shared_paths.js",
-    "chromeos/crostini_page/crostini_shared_usb_devices.html",
-    "chromeos/crostini_page/crostini_shared_usb_devices.js",
-    "chromeos/crostini_page/crostini_subpage.html",
-    "chromeos/crostini_page/crostini_subpage.js",
-    "chromeos/date_time_page/date_time_page.html",
-    "chromeos/date_time_page/date_time_page.js",
-    "chromeos/date_time_page/date_time_types.html",
-    "chromeos/date_time_page/date_time_types.js",
-    "chromeos/date_time_page/timezone_browser_proxy.html",
-    "chromeos/date_time_page/timezone_browser_proxy.js",
-    "chromeos/date_time_page/timezone_selector.html",
-    "chromeos/date_time_page/timezone_selector.js",
-    "chromeos/date_time_page/timezone_subpage.html",
-    "chromeos/date_time_page/timezone_subpage.js",
-    "chromeos/deep_linking_behavior.html",
-    "chromeos/deep_linking_behavior.js",
-    "chromeos/device_page/device_page.html",
-    "chromeos/device_page/device_page.js",
-    "chromeos/device_page/device_page_browser_proxy.html",
-    "chromeos/device_page/device_page_browser_proxy.js",
-    "chromeos/device_page/display.html",
-    "chromeos/device_page/display.js",
-    "chromeos/device_page/display_layout.html",
-    "chromeos/device_page/display_layout.js",
-    "chromeos/device_page/display_overscan_dialog.html",
-    "chromeos/device_page/display_overscan_dialog.js",
-    "chromeos/device_page/drag_behavior.html",
-    "chromeos/device_page/drag_behavior.js",
-    "chromeos/device_page/keyboard.html",
-    "chromeos/device_page/keyboard.js",
-    "chromeos/device_page/layout_behavior.html",
-    "chromeos/device_page/layout_behavior.js",
-    "chromeos/device_page/night_light_slider.html",
-    "chromeos/device_page/night_light_slider.js",
-    "chromeos/device_page/pointers.html",
-    "chromeos/device_page/pointers.js",
-    "chromeos/device_page/power.html",
-    "chromeos/device_page/power.js",
-    "chromeos/device_page/storage.html",
-    "chromeos/device_page/storage.js",
-    "chromeos/device_page/storage_external.html",
-    "chromeos/device_page/storage_external.js",
-    "chromeos/device_page/storage_external_entry.html",
-    "chromeos/device_page/storage_external_entry.js",
-    "chromeos/device_page/stylus.html",
-    "chromeos/device_page/stylus.js",
-    "chromeos/ensure_lazy_loaded.html",
-    "chromeos/google_assistant_page/google_assistant_browser_proxy.html",
-    "chromeos/google_assistant_page/google_assistant_browser_proxy.js",
-    "chromeos/google_assistant_page/google_assistant_page.html",
-    "chromeos/google_assistant_page/google_assistant_page.js",
-    "chromeos/internet_page/esim_remove_profile_dialog.js",
-    "chromeos/internet_page/esim_remove_profile_dialog.html",
-    "chromeos/internet_page/esim_rename_dialog.js",
-    "chromeos/internet_page/esim_rename_dialog.html",
-    "chromeos/internet_page/cellular_networks_list.js",
-    "chromeos/internet_page/cellular_networks_list.html",
-    "chromeos/internet_page/cellular_eid_popup.html",
-    "chromeos/internet_page/cellular_eid_popup.js",
-    "chromeos/internet_page/cellular_setup_dialog.html",
-    "chromeos/internet_page/cellular_setup_dialog.js",
-    "chromeos/internet_page/cellular_setup_settings_delegate.html",
-    "chromeos/internet_page/cellular_setup_settings_delegate.js",
-    "chromeos/internet_page/internet_config.html",
-    "chromeos/internet_page/internet_config.js",
-    "chromeos/internet_page/internet_detail_menu.html",
-    "chromeos/internet_page/internet_detail_menu.js",
-    "chromeos/internet_page/internet_detail_page.html",
-    "chromeos/internet_page/internet_detail_page.js",
-    "chromeos/internet_page/internet_known_networks_page.html",
-    "chromeos/internet_page/internet_known_networks_page.js",
-    "chromeos/internet_page/internet_page.html",
-    "chromeos/internet_page/internet_page.js",
-    "chromeos/internet_page/internet_page_browser_proxy.html",
-    "chromeos/internet_page/internet_page_browser_proxy.js",
-    "chromeos/internet_page/internet_shared_css.html",
-    "chromeos/internet_page/internet_subpage.html",
-    "chromeos/internet_page/internet_subpage.js",
-    "chromeos/internet_page/network_proxy_section.html",
-    "chromeos/internet_page/network_proxy_section.js",
-    "chromeos/internet_page/network_summary.html",
-    "chromeos/internet_page/network_summary.js",
-    "chromeos/internet_page/network_summary_item.html",
-    "chromeos/internet_page/network_summary_item.js",
-    "chromeos/internet_page/tether_connection_dialog.html",
-    "chromeos/internet_page/tether_connection_dialog.js",
-    "chromeos/kerberos_page/kerberos_page.html",
-    "chromeos/kerberos_page/kerberos_page.js",
-    "chromeos/lazy_load.html",
-    "chromeos/localized_link/localized_link.html",
-    "chromeos/localized_link/localized_link.js",
-    "chromeos/metrics_recorder.html",
-    "chromeos/metrics_recorder.js",
-    "chromeos/multidevice_page/multidevice_browser_proxy.html",
-    "chromeos/multidevice_page/multidevice_browser_proxy.js",
-    "chromeos/multidevice_page/multidevice_constants.html",
-    "chromeos/multidevice_page/multidevice_constants.js",
-    "chromeos/multidevice_page/multidevice_feature_behavior.html",
-    "chromeos/multidevice_page/multidevice_feature_behavior.js",
-    "chromeos/multidevice_page/multidevice_feature_item.html",
-    "chromeos/multidevice_page/multidevice_feature_item.js",
-    "chromeos/multidevice_page/multidevice_feature_toggle.html",
-    "chromeos/multidevice_page/multidevice_feature_toggle.js",
-    "chromeos/multidevice_page/multidevice_notification_access_setup_dialog.html",
-    "chromeos/multidevice_page/multidevice_notification_access_setup_dialog.js",
-    "chromeos/multidevice_page/multidevice_page.html",
-    "chromeos/multidevice_page/multidevice_page.js",
-    "chromeos/multidevice_page/multidevice_radio_button.html",
-    "chromeos/multidevice_page/multidevice_radio_button.js",
-    "chromeos/multidevice_page/multidevice_smartlock_subpage.html",
-    "chromeos/multidevice_page/multidevice_smartlock_subpage.js",
-    "chromeos/multidevice_page/multidevice_subpage.html",
-    "chromeos/multidevice_page/multidevice_subpage.js",
-    "chromeos/multidevice_page/multidevice_tether_item.html",
-    "chromeos/multidevice_page/multidevice_tether_item.js",
-    "chromeos/multidevice_page/multidevice_task_continuation_disabled_link.html",
-    "chromeos/multidevice_page/multidevice_task_continuation_disabled_link.js",
-    "chromeos/multidevice_page/multidevice_task_continuation_item.html",
-    "chromeos/multidevice_page/multidevice_task_continuation_item.js",
-    "chromeos/multidevice_page/multidevice_wifi_sync_disabled_link.html",
-    "chromeos/multidevice_page/multidevice_wifi_sync_disabled_link.js",
-    "chromeos/multidevice_page/multidevice_wifi_sync_item.html",
-    "chromeos/multidevice_page/multidevice_wifi_sync_item.js",
-    "chromeos/nearby_share_page/nearby_account_manager_browser_proxy.html",
-    "chromeos/nearby_share_page/nearby_account_manager_browser_proxy.js",
-    "chromeos/nearby_share_page/nearby_share_confirm_page.html",
-    "chromeos/nearby_share_page/nearby_share_confirm_page.js",
-    "chromeos/nearby_share_page/nearby_share_contact_visibility_dialog.html",
-    "chromeos/nearby_share_page/nearby_share_contact_visibility_dialog.js",
-    "chromeos/nearby_share_page/nearby_share_data_usage_dialog.html",
-    "chromeos/nearby_share_page/nearby_share_data_usage_dialog.js",
-    "chromeos/nearby_share_page/nearby_share_device_name_dialog.html",
-    "chromeos/nearby_share_page/nearby_share_device_name_dialog.js",
-    "chromeos/nearby_share_page/nearby_share_high_visibility_page.html",
-    "chromeos/nearby_share_page/nearby_share_high_visibility_page.js",
-    "chromeos/nearby_share_page/nearby_share_receive_dialog.html",
-    "chromeos/nearby_share_page/nearby_share_receive_dialog.js",
-    "chromeos/nearby_share_page/nearby_share_receive_manager.html",
-    "chromeos/nearby_share_page/nearby_share_receive_manager.js",
-    "chromeos/nearby_share_page/nearby_share_subpage.html",
-    "chromeos/nearby_share_page/nearby_share_subpage.js",
-    "chromeos/nearby_share_page/types.html",
-    "chromeos/nearby_share_page/types.js",
-    "chromeos/on_startup_page/on_startup_page.html",
-    "chromeos/on_startup_page/on_startup_page.js",
-    "chromeos/os_a11y_page/manage_a11y_page.html",
-    "chromeos/os_a11y_page/manage_a11y_page.js",
-    "chromeos/os_a11y_page/manage_a11y_page_browser_proxy.html",
-    "chromeos/os_a11y_page/manage_a11y_page_browser_proxy.js",
-    "chromeos/os_a11y_page/os_a11y_page.html",
-    "chromeos/os_a11y_page/os_a11y_page.js",
-    "chromeos/os_a11y_page/os_a11y_page_browser_proxy.html",
-    "chromeos/os_a11y_page/os_a11y_page_browser_proxy.js",
-    "chromeos/os_a11y_page/switch_access_action_assignment_dialog.html",
-    "chromeos/os_a11y_page/switch_access_action_assignment_dialog.js",
-    "chromeos/os_a11y_page/switch_access_constants.html",
-    "chromeos/os_a11y_page/switch_access_constants.js",
-    "chromeos/os_a11y_page/switch_access_subpage.html",
-    "chromeos/os_a11y_page/switch_access_subpage.js",
-    "chromeos/os_a11y_page/switch_access_subpage_browser_proxy.html",
-    "chromeos/os_a11y_page/switch_access_subpage_browser_proxy.js",
-    "chromeos/os_a11y_page/tts_subpage.html",
-    "chromeos/os_a11y_page/tts_subpage.js",
-    "chromeos/os_a11y_page/tts_subpage_browser_proxy.html",
-    "chromeos/os_a11y_page/tts_subpage_browser_proxy.js",
-    "chromeos/os_about_page/channel_switcher_dialog.html",
-    "chromeos/os_about_page/channel_switcher_dialog.js",
-    "chromeos/os_about_page/detailed_build_info.html",
-    "chromeos/os_about_page/detailed_build_info.js",
-    "chromeos/os_about_page/device_name_browser_proxy.html",
-    "chromeos/os_about_page/device_name_browser_proxy.js",
-    "chromeos/os_about_page/edit_hostname_dialog.html",
-    "chromeos/os_about_page/edit_hostname_dialog.js",
-    "chromeos/os_about_page/os_about_page.html",
-    "chromeos/os_about_page/os_about_page.js",
-    "chromeos/os_about_page/update_warning_dialog.html",
-    "chromeos/os_about_page/update_warning_dialog.js",
-    "chromeos/os_apps_page/android_apps_browser_proxy.html",
-    "chromeos/os_apps_page/android_apps_browser_proxy.js",
-    "chromeos/os_apps_page/android_apps_subpage.html",
-    "chromeos/os_apps_page/android_apps_subpage.js",
-    "chromeos/os_apps_page/app_management_page/actions.html",
-    "chromeos/os_apps_page/app_management_page/actions.js",
-    "chromeos/os_apps_page/app_management_page/api_listener.html",
-    "chromeos/os_apps_page/app_management_page/api_listener.js",
-    "chromeos/os_apps_page/app_management_page/app_detail_view.html",
-    "chromeos/os_apps_page/app_management_page/app_detail_view.js",
-    "chromeos/os_apps_page/app_management_page/app_item.html",
-    "chromeos/os_apps_page/app_management_page/app_item.js",
-    "chromeos/os_apps_page/app_management_page/app_management_page.html",
-    "chromeos/os_apps_page/app_management_page/app_management_page.js",
-    "chromeos/os_apps_page/app_management_page/arc_detail_view.html",
-    "chromeos/os_apps_page/app_management_page/arc_detail_view.js",
-    "chromeos/os_apps_page/app_management_page/browser_proxy.html",
-    "chromeos/os_apps_page/app_management_page/browser_proxy.js",
-    "chromeos/os_apps_page/app_management_page/chrome_app_detail_view.html",
-    "chromeos/os_apps_page/app_management_page/chrome_app_detail_view.js",
-    "chromeos/os_apps_page/app_management_page/constants.html",
-    "chromeos/os_apps_page/app_management_page/constants.js",
-    "chromeos/os_apps_page/app_management_page/dom_switch.html",
-    "chromeos/os_apps_page/app_management_page/dom_switch.js",
-    "chromeos/os_apps_page/app_management_page/fake_page_handler.js",
-    "chromeos/os_apps_page/app_management_page/icons.html",
-    "chromeos/os_apps_page/app_management_page/main_view.html",
-    "chromeos/os_apps_page/app_management_page/main_view.js",
-    "chromeos/os_apps_page/app_management_page/permission_item.html",
-    "chromeos/os_apps_page/app_management_page/permission_item.js",
-    "chromeos/os_apps_page/app_management_page/pin_to_shelf_item.html",
-    "chromeos/os_apps_page/app_management_page/pin_to_shelf_item.js",
-    "chromeos/os_apps_page/app_management_page/plugin_vm_page/plugin_vm_browser_proxy.html",
-    "chromeos/os_apps_page/app_management_page/plugin_vm_page/plugin_vm_browser_proxy.js",
-    "chromeos/os_apps_page/app_management_page/plugin_vm_page/plugin_vm_detail_view.html",
-    "chromeos/os_apps_page/app_management_page/plugin_vm_page/plugin_vm_detail_view.js",
-    "chromeos/os_apps_page/app_management_page/plugin_vm_page/plugin_vm_shared_paths.html",
-    "chromeos/os_apps_page/app_management_page/plugin_vm_page/plugin_vm_shared_paths.js",
-    "chromeos/os_apps_page/app_management_page/plugin_vm_page/plugin_vm_shared_usb_devices.html",
-    "chromeos/os_apps_page/app_management_page/plugin_vm_page/plugin_vm_shared_usb_devices.js",
-    "chromeos/os_apps_page/app_management_page/pwa_detail_view.html",
-    "chromeos/os_apps_page/app_management_page/pwa_detail_view.js",
-    "chromeos/os_apps_page/app_management_page/reducers.html",
-    "chromeos/os_apps_page/app_management_page/reducers.js",
-    "chromeos/os_apps_page/app_management_page/shared_style.html",
-    "chromeos/os_apps_page/app_management_page/shared_vars.html",
-    "chromeos/os_apps_page/app_management_page/store.html",
-    "chromeos/os_apps_page/app_management_page/store.js",
-    "chromeos/os_apps_page/app_management_page/store_client.html",
-    "chromeos/os_apps_page/app_management_page/store_client.js",
-    "chromeos/os_apps_page/app_management_page/toggle_row.html",
-    "chromeos/os_apps_page/app_management_page/toggle_row.js",
-    "chromeos/os_apps_page/app_management_page/types.js",
-    "chromeos/os_apps_page/app_management_page/uninstall_button.html",
-    "chromeos/os_apps_page/app_management_page/uninstall_button.js",
-    "chromeos/os_apps_page/app_management_page/util.html",
-    "chromeos/os_apps_page/app_management_page/util.js",
-    "chromeos/os_apps_page/os_apps_page.html",
-    "chromeos/os_apps_page/os_apps_page.js",
-    "chromeos/os_files_page/os_files_page.html",
-    "chromeos/os_files_page/os_files_page.js",
-    "chromeos/os_files_page/smb_shares_page.html",
-    "chromeos/os_files_page/smb_shares_page.js",
-    "chromeos/os_icons.html",
-    "chromeos/os_languages_page/add_input_methods_dialog.html",
-    "chromeos/os_languages_page/add_input_methods_dialog.js",
-    "chromeos/os_languages_page/change_device_language_dialog.html",
-    "chromeos/os_languages_page/change_device_language_dialog.js",
-    "chromeos/os_languages_page/input_method_options_page.html",
-    "chromeos/os_languages_page/input_method_options_page.js",
-    "chromeos/os_languages_page/input_method_util.html",
-    "chromeos/os_languages_page/input_method_util.js",
-    "chromeos/os_languages_page/input_page.html",
-    "chromeos/os_languages_page/input_page.js",
-    "chromeos/os_languages_page/languages_metrics_proxy.html",
-    "chromeos/os_languages_page/languages_metrics_proxy.js",
-    "chromeos/os_languages_page/manage_input_methods_page.html",
-    "chromeos/os_languages_page/manage_input_methods_page.js",
-    "chromeos/os_languages_page/os_add_languages_dialog.html",
-    "chromeos/os_languages_page/os_add_languages_dialog.js",
-    "chromeos/os_languages_page/os_edit_dictionary_page.html",
-    "chromeos/os_languages_page/os_edit_dictionary_page.js",
-    "chromeos/os_languages_page/os_languages_page.html",
-    "chromeos/os_languages_page/os_languages_page.js",
-    "chromeos/os_languages_page/os_languages_page_v2.html",
-    "chromeos/os_languages_page/os_languages_page_v2.js",
-    "chromeos/os_languages_page/os_languages_section.html",
-    "chromeos/os_languages_page/os_languages_section.js",
-    "chromeos/os_languages_page/shared_style.html",
-    "chromeos/os_languages_page/shared_vars.html",
-    "chromeos/os_languages_page/smart_inputs_page.html",
-    "chromeos/os_languages_page/smart_inputs_page.js",
-    "chromeos/os_page_visibility.html",
-    "chromeos/os_page_visibility.js",
-    "chromeos/os_people_page/account_manager.html",
-    "chromeos/os_people_page/account_manager.js",
-    "chromeos/os_people_page/fingerprint_browser_proxy.html",
-    "chromeos/os_people_page/fingerprint_browser_proxy.js",
-    "chromeos/os_people_page/fingerprint_list.html",
-    "chromeos/os_people_page/fingerprint_list.js",
-    "chromeos/os_people_page/kerberos_accounts.html",
-    "chromeos/os_people_page/kerberos_accounts.js",
-    "chromeos/os_people_page/kerberos_accounts_browser_proxy.html",
-    "chromeos/os_people_page/kerberos_accounts_browser_proxy.js",
-    "chromeos/os_people_page/kerberos_add_account_dialog.html",
-    "chromeos/os_people_page/kerberos_add_account_dialog.js",
-    "chromeos/os_people_page/lock_screen.html",
-    "chromeos/os_people_page/lock_screen.js",
-    "chromeos/os_people_page/lock_screen_password_prompt_dialog.html",
-    "chromeos/os_people_page/lock_screen_password_prompt_dialog.js",
-    "chromeos/os_people_page/lock_state_behavior.html",
-    "chromeos/os_people_page/lock_state_behavior.js",
-    "chromeos/os_people_page/os_people_page.html",
-    "chromeos/os_people_page/os_people_page.js",
-    "chromeos/os_people_page/os_sync_browser_proxy.html",
-    "chromeos/os_people_page/os_sync_browser_proxy.js",
-    "chromeos/os_people_page/os_sync_controls.html",
-    "chromeos/os_people_page/os_sync_controls.js",
-    "chromeos/os_people_page/pin_autosubmit_dialog.html",
-    "chromeos/os_people_page/pin_autosubmit_dialog.js",
-    "chromeos/os_people_page/setup_fingerprint_dialog.html",
-    "chromeos/os_people_page/setup_fingerprint_dialog.js",
-    "chromeos/os_people_page/setup_pin_dialog.html",
-    "chromeos/os_people_page/setup_pin_dialog.js",
-    "chromeos/os_people_page/user_list.html",
-    "chromeos/os_people_page/user_list.js",
-    "chromeos/os_people_page/users_add_user_dialog.html",
-    "chromeos/os_people_page/users_add_user_dialog.js",
-    "chromeos/os_people_page/users_page.html",
-    "chromeos/os_people_page/users_page.js",
-    "chromeos/os_printing_page/cups_add_print_server_dialog.html",
-    "chromeos/os_printing_page/cups_add_print_server_dialog.js",
-    "chromeos/os_printing_page/cups_add_printer_dialog.html",
-    "chromeos/os_printing_page/cups_add_printer_dialog.js",
-    "chromeos/os_printing_page/cups_add_printer_manually_dialog.html",
-    "chromeos/os_printing_page/cups_add_printer_manually_dialog.js",
-    "chromeos/os_printing_page/cups_add_printer_manufacturer_model_dialog.html",
-    "chromeos/os_printing_page/cups_add_printer_manufacturer_model_dialog.js",
-    "chromeos/os_printing_page/cups_edit_printer_dialog.html",
-    "chromeos/os_printing_page/cups_edit_printer_dialog.js",
-    "chromeos/os_printing_page/cups_nearby_printers.html",
-    "chromeos/os_printing_page/cups_nearby_printers.js",
-    "chromeos/os_printing_page/cups_printer_dialog_error.html",
-    "chromeos/os_printing_page/cups_printer_dialog_error.js",
-    "chromeos/os_printing_page/cups_printer_dialog_util.html",
-    "chromeos/os_printing_page/cups_printer_dialog_util.js",
-    "chromeos/os_printing_page/cups_printer_shared_css.html",
-    "chromeos/os_printing_page/cups_printer_types.html",
-    "chromeos/os_printing_page/cups_printer_types.js",
-    "chromeos/os_printing_page/cups_printers.html",
-    "chromeos/os_printing_page/cups_printers.js",
-    "chromeos/os_printing_page/cups_printers_browser_proxy.html",
-    "chromeos/os_printing_page/cups_printers_browser_proxy.js",
-    "chromeos/os_printing_page/cups_printers_entry.html",
-    "chromeos/os_printing_page/cups_printers_entry.js",
-    "chromeos/os_printing_page/cups_printers_entry_list_behavior.html",
-    "chromeos/os_printing_page/cups_printers_entry_list_behavior.js",
-    "chromeos/os_printing_page/cups_printers_entry_manager.html",
-    "chromeos/os_printing_page/cups_printers_entry_manager.js",
-    "chromeos/os_printing_page/cups_saved_printers.html",
-    "chromeos/os_printing_page/cups_saved_printers.js",
-    "chromeos/os_printing_page/cups_settings_add_printer_dialog.html",
-    "chromeos/os_printing_page/cups_settings_add_printer_dialog.js",
-    "chromeos/os_printing_page/os_printing_page.html",
-    "chromeos/os_printing_page/os_printing_page.js",
-    "chromeos/os_privacy_page/os_privacy_page.html",
-    "chromeos/os_privacy_page/os_privacy_page.js",
-    "chromeos/os_reset_page/os_powerwash_dialog.html",
-    "chromeos/os_reset_page/os_powerwash_dialog.js",
-    "chromeos/os_reset_page/os_reset_browser_proxy.html",
-    "chromeos/os_reset_page/os_reset_browser_proxy.js",
-    "chromeos/os_reset_page/os_reset_page.html",
-    "chromeos/os_reset_page/os_reset_page.js",
-    "chromeos/os_route.html",
-    "chromeos/os_route.js",
-    "chromeos/os_search_page/os_search_page.html",
-    "chromeos/os_search_page/os_search_page.js",
-    "chromeos/os_search_page/os_search_selection_dialog.html",
-    "chromeos/os_search_page/os_search_selection_dialog.js",
-    "chromeos/os_settings.html",
-    "chromeos/os_settings_icons_css.html",
-    "chromeos/os_settings_main/os_settings_main.html",
-    "chromeos/os_settings_main/os_settings_main.js",
-    "chromeos/os_settings_menu/os_settings_menu.html",
-    "chromeos/os_settings_menu/os_settings_menu.js",
-    "chromeos/os_settings_page/main_page_behavior.html",
-    "chromeos/os_settings_page/main_page_behavior.js",
-    "chromeos/os_settings_page/os_settings_page.html",
-    "chromeos/os_settings_page/os_settings_page.js",
-    "chromeos/os_settings_page/settings_idle_load.html",
-    "chromeos/os_settings_page/settings_idle_load.js",
-    "chromeos/os_settings_routes.html",
-    "chromeos/os_settings_routes.js",
-    "chromeos/os_settings_search_box/os_search_result_row.html",
-    "chromeos/os_settings_search_box/os_search_result_row.js",
-    "chromeos/os_settings_search_box/os_settings_search_box.html",
-    "chromeos/os_settings_search_box/os_settings_search_box.js",
-    "chromeos/os_settings_ui/os_settings_ui.html",
-    "chromeos/os_settings_ui/os_settings_ui.js",
-    "chromeos/os_toolbar/os_toolbar.html",
-    "chromeos/os_toolbar/os_toolbar.js",
-    "chromeos/parental_controls_page/parental_controls_browser_proxy.html",
-    "chromeos/parental_controls_page/parental_controls_browser_proxy.js",
-    "chromeos/parental_controls_page/parental_controls_page.html",
-    "chromeos/parental_controls_page/parental_controls_page.js",
-    "chromeos/personalization_page/change_picture.html",
-    "chromeos/personalization_page/change_picture.js",
-    "chromeos/personalization_page/change_picture_browser_proxy.html",
-    "chromeos/personalization_page/change_picture_browser_proxy.js",
-    "chromeos/personalization_page/personalization_page.html",
-    "chromeos/personalization_page/personalization_page.js",
-    "chromeos/personalization_page/wallpaper_browser_proxy.html",
-    "chromeos/personalization_page/wallpaper_browser_proxy.js",
-    "chromeos/pref_to_setting_metric_converter.html",
-    "chromeos/pref_to_setting_metric_converter.js",
-    "chromeos/route_origin_behavior.html",
-    "chromeos/route_origin_behavior.js",
-    "chromeos/search_handler.html",
-    "chromeos/search_handler.js",
-    "controls/controlled_button.html",
+    "chromeos/search_handler.m.js",
     "controls/controlled_button.js",
-    "controls/controlled_radio_button.html",
     "controls/controlled_radio_button.js",
-    "controls/extension_controlled_indicator.html",
     "controls/extension_controlled_indicator.js",
-    "controls/password_prompt_dialog.html",
     "controls/password_prompt_dialog.js",
-    "controls/pref_control_behavior.html",
-    "controls/pref_control_behavior.js",
-    "controls/settings_boolean_control_behavior.html",
-    "controls/settings_boolean_control_behavior.js",
-    "controls/settings_dropdown_menu.html",
     "controls/settings_dropdown_menu.js",
-    "controls/settings_radio_group.html",
     "controls/settings_radio_group.js",
-    "controls/settings_slider.html",
     "controls/settings_slider.js",
-    "controls/settings_textarea.html",
     "controls/settings_textarea.js",
-    "controls/settings_toggle_button.html",
     "controls/settings_toggle_button.js",
-    "extension_control_browser_proxy.html",
-    "extension_control_browser_proxy.js",
-    "global_scroll_target_behavior.html",
-    "global_scroll_target_behavior.js",
-    "i18n_setup.html",
-    "icons.html",
-    "languages_page/languages.html",
-    "languages_page/languages.js",
-    "languages_page/languages_browser_proxy.html",
-    "languages_page/languages_browser_proxy.js",
-    "lifetime_browser_proxy.html",
-    "lifetime_browser_proxy.js",
-    "people_page/account_manager_browser_proxy.html",
-    "people_page/account_manager_browser_proxy.js",
-    "people_page/profile_info_browser_proxy.html",
-    "people_page/profile_info_browser_proxy.js",
-    "people_page/signout_dialog.html",
+    "icons.js",
     "people_page/signout_dialog.js",
-    "people_page/sync_account_control.html",
     "people_page/sync_account_control.js",
-    "people_page/sync_browser_proxy.html",
-    "people_page/sync_browser_proxy.js",
-    "people_page/sync_controls.html",
     "people_page/sync_controls.js",
-    "people_page/sync_encryption_options.html",
     "people_page/sync_encryption_options.js",
-    "people_page/sync_page.html",
     "people_page/sync_page.js",
-    "prefs/pref_util.html",
-    "prefs/pref_util.js",
-    "prefs/prefs.html",
-    "prefs/prefs.js",
-    "prefs/prefs_behavior.html",
-    "prefs/prefs_behavior.js",
-    "prefs/prefs_types.html",
-    "prefs/prefs_types.js",
-    "privacy_page/personalization_options.html",
     "privacy_page/personalization_options.js",
-    "privacy_page/privacy_page_browser_proxy.html",
-    "privacy_page/privacy_page_browser_proxy.js",
-    "router.html",
-    "router.js",
-    "search_engines_page/search_engines_browser_proxy.html",
-    "search_engines_page/search_engines_browser_proxy.js",
-    "search_settings.html",
-    "search_settings.js",
-    "setting_id_param_util.html",
-    "setting_id_param_util.js",
-    "settings_page/settings_animated_pages.html",
     "settings_page/settings_animated_pages.js",
-    "settings_page/settings_section.html",
     "settings_page/settings_section.js",
-    "settings_page/settings_subpage.html",
     "settings_page/settings_subpage.js",
-    "settings_page_css.html",
-    "settings_shared_css.html",
-    "settings_vars_css.html",
+    "settings_page_css.js",
+    "settings_shared_css.js",
+    "settings_vars_css.js",
   ]
 }
-
-group("closure_compile") {
-  deps = [
-    ":deep_linking_behavior",
-    ":metrics_recorder",
-    ":os_page_visibility",
-    ":os_route",
-    ":os_settings_routes",
-    ":pref_to_setting_metric_converter",
-    ":route_origin_behavior",
-    ":search_handler",
-    "ambient_mode_page:closure_compile",
-    "bluetooth_page:closure_compile",
-    "crostini_page:closure_compile",
-    "date_time_page:closure_compile",
-    "device_page:closure_compile",
-    "google_assistant_page:closure_compile",
-    "internet_page:closure_compile",
-    "kerberos_page:closure_compile",
-    "localized_link:closure_compile",
-    "multidevice_page:closure_compile",
-    "nearby_share_page:closure_compile",
-    "on_startup_page:closure_compile",
-    "os_a11y_page:closure_compile",
-    "os_about_page:closure_compile",
-    "os_apps_page:closure_compile",
-    "os_files_page:closure_compile",
-    "os_languages_page:closure_compile",
-    "os_people_page:closure_compile",
-    "os_printing_page:closure_compile",
-    "os_privacy_page:closure_compile",
-    "os_reset_page:closure_compile",
-    "os_search_page:closure_compile",
-    "os_settings_main:closure_compile",
-    "os_settings_menu:closure_compile",
-    "os_settings_page:closure_compile",
-    "os_settings_search_box:closure_compile",
-    "os_settings_ui:closure_compile",
-    "parental_controls_page:closure_compile",
-    "personalization_page:closure_compile",
-
-    # TODO: These subpages should be listed in the BUILD files of their direct
-    # parents instead of here.
-    "os_apps_page/app_management_page:closure_compile",
-    "os_apps_page/app_management_page/plugin_vm_page:closure_compile",
-  ]
-}
-
-js_library("deep_linking_behavior") {
-  deps = [
-    "..:router",
-    "..:setting_id_param_util",
-    "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_js_library_for_compile",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:load_time_data",
-  ]
-}
-
-js_library("os_page_visibility") {
-  deps = [
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:load_time_data",
-  ]
-}
-
-js_library("os_route") {
-  deps = [
-    ":os_settings_routes",
-    "..:router",
-    "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_js_library_for_compile",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:load_time_data",
-  ]
-}
-
-js_library("os_settings_routes") {
-  deps = [
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:load_time_data",
-  ]
-}
-
-js_library("pref_to_setting_metric_converter") {
-  deps = [ "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_js_library_for_compile" ]
-}
-
-js_library("route_origin_behavior") {
-  deps = [
-    ":os_route",
-    "//ui/webui/resources/js:cr",
-  ]
-}
-
-js_library("metrics_recorder") {
-  deps = [
-    "//chrome/browser/ui/webui/settings/chromeos/search:mojo_bindings_js_library_for_compile",
-    "//ui/webui/resources/js:cr",
-  ]
-}
-
-js_library("search_handler") {
-  deps = [
-    "//chrome/browser/ui/webui/settings/chromeos/search:mojo_bindings_js_library_for_compile",
-    "//ui/webui/resources/js:cr",
-  ]
-}
-
-# Polymer 3 related rules.
 
 group("closure_compile_module") {
   deps = [
-    # TODO: Uncomment as the Polymer3 migration makes progress.
-    #":closure_compile_local_module",
+    ":closure_compile_local_module",
     "ambient_mode_page:closure_compile_module",
     "bluetooth_page:closure_compile_module",
-
-    #"crostini_page:closure_compile_module",
+    "crostini_page:closure_compile_module",
     "date_time_page:closure_compile_module",
-
-    #"device_page:closure_compile_module",
-    #"google_assistant_page:closure_compile_module",
+    "device_page:closure_compile_module",
+    "google_assistant_page:closure_compile_module",
+    "guest_os:closure_compile_module",
     "internet_page:closure_compile_module",
     "kerberos_page:closure_compile_module",
     "localized_link:closure_compile_module",
     "multidevice_page:closure_compile_module",
     "nearby_share_page:closure_compile_module",
+    "on_startup_page:closure_compile_module",
     "os_a11y_page:closure_compile_module",
     "os_about_page:closure_compile_module",
-
-    #"os_apps_page:closure_compile_module",
-    #"os_apps_page/app_management_page/plugin_vm_page:closure_compile_module",
-    "on_startup_page:closure_compile_module",
+    "os_apps_page:closure_compile_module",
+    "os_apps_page/app_management_page:closure_compile_module",
+    "os_apps_page/app_management_page/plugin_vm_page:closure_compile_module",
     "os_files_page:closure_compile_module",
     "os_languages_page:closure_compile_module",
     "os_people_page:closure_compile_module",
     "os_printing_page:closure_compile_module",
     "os_privacy_page:closure_compile_module",
     "os_reset_page:closure_compile_module",
-
-    #"os_search_page:closure_compile_module",
-    #"os_settings_main:closure_compile_module",
-    #"os_settings_menu:closure_compile_module",
+    "os_search_page:closure_compile_module",
+    "os_settings_main:closure_compile_module",
+    "os_settings_menu:closure_compile_module",
     "os_settings_page:closure_compile_module",
-
-    #"os_settings_search_box:closure_compile_module",
-    #"os_settings_ui:closure_compile_module",
-    #"os_toolbar:closure_compile_module",
-    #"parental_controls_page:closure_compile_module",
+    "os_settings_search_box:closure_compile_module",
+    "os_settings_ui:closure_compile_module",
+    "os_toolbar:closure_compile_module",
+    "parental_controls_page:closure_compile_module",
     "personalization_page:closure_compile_module",
   ]
 }
 
 js_type_check("closure_compile_local_module") {
   is_polymer3 = true
+  closure_flags = os_settings_closure_flags
   deps = [
+    ":lazy_load",
     ":metrics_recorder.m",
-
-    #  ":os_icons.m",
+    ":os_icons.m",
     ":os_page_visibility.m",
     ":os_route.m",
-
-    #  ":os_settings.m",
-    #  ":os_settings_icons_css.m",
+    ":os_settings",
+    ":os_settings_icons_css.m",
     ":os_settings_routes.m",
     ":pref_to_setting_metric_converter.m",
     ":route_origin_behavior.m",
-
-    #":search_handler.m",
+    ":search_handler.m",
   ]
+}
+
+js_library("os_settings") {
+}
+
+js_library("lazy_load") {
 }
 
 js_library("deep_linking_behavior.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/deep_linking_behavior.m.js" ]
   deps = [
-    "..:router.m",
-    "..:setting_id_param_util.m",
+    "..:router",
+    "..:setting_id_param_util",
     "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_js_library_for_compile",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
@@ -1217,7 +577,7 @@ js_library("os_icons.m") {
     "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_icons.m.js",
   ]
   deps = [
-    # TODO: Fill those in.
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":os_icons_module" ]
 }
@@ -1234,7 +594,7 @@ js_library("os_route.m") {
   ]
   deps = [
     ":os_settings_routes.m",
-    "..:router.m",
+    "..:router",
     "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_js_library_for_compile",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",
@@ -1244,15 +604,15 @@ js_library("os_route.m") {
 
 js_library("os_settings_icons_css.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_settings_icons_css.m.js" ]
-  deps = [
-    # TODO: Fill those in.
-  ]
   extra_deps = [ ":os_settings_icons_css_module" ]
 }
 
 js_library("os_settings_routes.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_settings_routes.m.js" ]
-  deps = [ "//ui/webui/resources/js:load_time_data.m" ]
+  deps = [
+    "..:router",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
   extra_deps = [ ":modulize" ]
 }
 
@@ -1274,7 +634,8 @@ js_library("route_origin_behavior.m") {
 js_library("search_handler.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/search_handler.m.js" ]
   deps = [
-    # TODO: Fill those in.
+    "//chrome/browser/ui/webui/settings/chromeos/search:mojo_bindings_js_library_for_compile",
+    "//ui/webui/resources/js:cr.m",
   ]
   extra_deps = [ ":modulize" ]
 }
@@ -1290,6 +651,7 @@ group("polymer3_elements") {
     "date_time_page:polymer3_elements",
     "device_page:polymer3_elements",
     "google_assistant_page:polymer3_elements",
+    "guest_os:polymer3_elements",
     "internet_page:polymer3_elements",
     "kerberos_page:polymer3_elements",
     "localized_link:polymer3_elements",
@@ -1299,6 +661,7 @@ group("polymer3_elements") {
     "os_a11y_page:polymer3_elements",
     "os_about_page:polymer3_elements",
     "os_apps_page:polymer3_elements",
+    "os_apps_page/app_management_page:polymer3_elements",
     "os_apps_page/app_management_page/plugin_vm_page:polymer3_elements",
     "os_files_page:polymer3_elements",
     "os_languages_page:polymer3_elements",
@@ -1322,17 +685,9 @@ group("polymer3_elements") {
     ":os_settings_icons_css_module",
 
     # Shared with browser settings
-    "..:modulize",
-    "..:settings_shared_css_module",
-    "..:settings_vars_css_module",
-    "../../settings:settings_page_css_module",
-    "../about_page:modulize",
-    "../prefs:modulize",
-    "../prefs:prefs_module",
-    "../search_engines_page:modulize",
-    "../settings_page:settings_animated_pages_module",
-    "../settings_page:settings_section_module",
-    "../settings_page:settings_subpage_module",
+    "..:web_components_local",
+    "../a11y_page:web_components",
+    "../settings_page:web_components",
   ]
 }
 
@@ -1340,12 +695,16 @@ polymer_modulizer("os_icons") {
   js_file = "os_icons.m.js"
   html_file = "os_icons.html"
   html_type = "iron-iconset"
+  auto_imports = os_settings_auto_imports
+  namespace_rewrites = os_settings_namespace_rewrites
 }
 
 polymer_modulizer("os_settings_icons_css") {
   js_file = "os_settings_icons_css.m.js"
   html_file = "os_settings_icons_css.html"
   html_type = "style-module"
+  auto_imports = os_settings_auto_imports
+  namespace_rewrites = os_settings_namespace_rewrites
 }
 
 js_modulizer("modulize") {

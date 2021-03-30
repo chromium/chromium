@@ -16,7 +16,7 @@ from grit import constants
 from grit import exception
 from grit import lazy_re
 from grit import pseudo
-from grit import pseudo_rtl
+from grit import pseudolocales
 from grit import tclib
 
 
@@ -399,8 +399,11 @@ class MessageClique(object):
       if lang == msglang:
         return self.clique[msglang]
 
-    if lang == constants.FAKE_BIDI:
-      return pseudo_rtl.PseudoRTLMessage(self.GetMessage())
+    if pseudo_if_no_match:
+      if lang == constants.PSEUDOLOCALE_LONG_STRINGS:
+        return pseudolocales.PseudoLongStringMessage(self.GetMessage())
+      elif lang == constants.PSEUDOLOCALE_RTL:
+        return pseudolocales.PseudoRTLMessage(self.GetMessage())
 
     if fallback_to_english:
       self.uber_clique._AddMissingTranslation(lang, self, is_error=False)

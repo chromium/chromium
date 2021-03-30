@@ -85,6 +85,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 
 using content::RenderFrameHost;
@@ -216,7 +217,7 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
   void SetupApp(const base::FilePath& app_folder) {
     DCHECK_EQ(GetParam(), AppType::HOSTED_APP);
     const Extension* app = InstallExtensionWithSourceAndFlags(
-        app_folder, 1, extensions::Manifest::INTERNAL,
+        app_folder, 1, extensions::mojom::ManifestLocation::kInternal,
         app_type_ == AppType::HOSTED_APP
             ? extensions::Extension::NO_FLAGS
             : extensions::Extension::FROM_BOOKMARK);
@@ -260,6 +261,9 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
     // Browser will both run and display insecure content.
     command_line->AppendSwitch(switches::kAllowRunningInsecureContent);
     cert_verifier_.SetUpCommandLine(command_line);
+    // Some builders are flaky due to slower loading interacting
+    // with deferred commits.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
   void SetUpOnMainThread() override {
@@ -850,6 +854,12 @@ class HostedAppProcessModelTest : public HostedOrWebAppTest {
     return subframe;
   }
 
+  GURL GetSiteForURL(content::BrowserContext* browser_context,
+                     const GURL& url) {
+    return content::SiteInstance::CreateForURL(browser_context, url)
+        ->GetSiteURL();
+  }
+
  protected:
   bool should_swap_for_cross_site_;
 
@@ -897,22 +907,22 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest, IframesInsideHostedApp) {
   RenderFrameHost* cross_site = find_frame("CrossSite");
 
   // Sanity-check sites of all relevant frames to verify test setup.
-  GURL app_site = content::SiteInstance::GetSiteForURL(
-      app_browser_->profile(), app->GetLastCommittedURL());
+  GURL app_site =
+      GetSiteForURL(app_browser_->profile(), app->GetLastCommittedURL());
   EXPECT_EQ(extensions::kExtensionScheme, app_site.scheme());
 
-  GURL same_dir_site = content::SiteInstance::GetSiteForURL(
-      app_browser_->profile(), same_dir->GetLastCommittedURL());
+  GURL same_dir_site =
+      GetSiteForURL(app_browser_->profile(), same_dir->GetLastCommittedURL());
   EXPECT_EQ(extensions::kExtensionScheme, same_dir_site.scheme());
   EXPECT_EQ(same_dir_site, app_site);
 
-  GURL diff_dir_site = content::SiteInstance::GetSiteForURL(
-      app_browser_->profile(), diff_dir->GetLastCommittedURL());
+  GURL diff_dir_site =
+      GetSiteForURL(app_browser_->profile(), diff_dir->GetLastCommittedURL());
   EXPECT_NE(extensions::kExtensionScheme, diff_dir_site.scheme());
   EXPECT_NE(diff_dir_site, app_site);
 
-  GURL same_site_site = content::SiteInstance::GetSiteForURL(
-      app_browser_->profile(), same_site->GetLastCommittedURL());
+  GURL same_site_site =
+      GetSiteForURL(app_browser_->profile(), same_site->GetLastCommittedURL());
   EXPECT_NE(extensions::kExtensionScheme, same_site_site.scheme());
   EXPECT_NE(same_site_site, app_site);
   EXPECT_EQ(same_site_site, diff_dir_site);
@@ -928,15 +938,15 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest, IframesInsideHostedApp) {
   // content/public via SiteInfo.  For now, this verification will be done
   // implicitly by comparing SiteInstances and then actual processes further
   // below.
-  GURL isolated_site = content::SiteInstance::GetSiteForURL(
-      app_browser_->profile(), isolated->GetLastCommittedURL());
+  GURL isolated_site =
+      GetSiteForURL(app_browser_->profile(), isolated->GetLastCommittedURL());
   EXPECT_EQ(extensions::kExtensionScheme, isolated_site.scheme());
   EXPECT_EQ(isolated_site, app_site);
   EXPECT_NE(isolated->GetSiteInstance(), app->GetSiteInstance());
   EXPECT_NE(isolated_site, diff_dir_site);
 
-  GURL cross_site_site = content::SiteInstance::GetSiteForURL(
-      app_browser_->profile(), cross_site->GetLastCommittedURL());
+  GURL cross_site_site =
+      GetSiteForURL(app_browser_->profile(), cross_site->GetLastCommittedURL());
   EXPECT_NE(cross_site_site, app_site);
   EXPECT_NE(cross_site_site, same_site_site);
 
@@ -1341,8 +1351,8 @@ IN_PROC_BROWSER_TEST_P(HostedAppIsolatedOriginTest,
   RenderFrameHost* app = web_contents->GetMainFrame();
   EXPECT_EQ(extensions::kExtensionScheme,
             app->GetSiteInstance()->GetSiteURL().scheme());
-  GURL app_site = content::SiteInstance::GetSiteForURL(
-      app_browser_->profile(), app->GetLastCommittedURL());
+  GURL app_site =
+      GetSiteForURL(app_browser_->profile(), app->GetLastCommittedURL());
   EXPECT_EQ(extensions::kExtensionScheme, app_site.scheme());
   EXPECT_TRUE(process_map_->Contains(app->GetProcess()->GetID()));
 
@@ -1563,14 +1573,14 @@ IN_PROC_BROWSER_TEST_P(HostedAppSitePerProcessTest,
 
   // Ensure each process only has access to its site's data.
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
-  EXPECT_TRUE(
-      policy->CanAccessDataForOrigin(foo_process->GetID(), foo_app_url));
-  EXPECT_FALSE(
-      policy->CanAccessDataForOrigin(foo_process->GetID(), bar_app_url));
-  EXPECT_FALSE(
-      policy->CanAccessDataForOrigin(bar_process->GetID(), foo_app_url));
-  EXPECT_TRUE(
-      policy->CanAccessDataForOrigin(bar_process->GetID(), bar_app_url));
+  EXPECT_TRUE(policy->CanAccessDataForOrigin(foo_process->GetID(),
+                                             url::Origin::Create(foo_app_url)));
+  EXPECT_FALSE(policy->CanAccessDataForOrigin(
+      foo_process->GetID(), url::Origin::Create(bar_app_url)));
+  EXPECT_FALSE(policy->CanAccessDataForOrigin(
+      bar_process->GetID(), url::Origin::Create(foo_app_url)));
+  EXPECT_TRUE(policy->CanAccessDataForOrigin(bar_process->GetID(),
+                                             url::Origin::Create(bar_app_url)));
 
   // Both processes should still be app processes.
   auto* process_map = extensions::ProcessMap::Get(browser()->profile());
@@ -1618,10 +1628,10 @@ IN_PROC_BROWSER_TEST_P(HostedAppSitePerProcessTest,
   // At this point the main frame process should have access to foo.com data
   // but not bar.com data.
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
-  EXPECT_TRUE(
-      policy->CanAccessDataForOrigin(foo_process->GetID(), foo_app_url));
-  EXPECT_FALSE(
-      policy->CanAccessDataForOrigin(foo_process->GetID(), bar_app_url));
+  EXPECT_TRUE(policy->CanAccessDataForOrigin(foo_process->GetID(),
+                                             url::Origin::Create(foo_app_url)));
+  EXPECT_FALSE(policy->CanAccessDataForOrigin(
+      foo_process->GetID(), url::Origin::Create(bar_app_url)));
 
   // Ensure the current process is allowed to access cookies.
   EXPECT_TRUE(ExecuteScript(web_contents, "document.cookie = 'foo=bar';"));
@@ -1644,10 +1654,10 @@ IN_PROC_BROWSER_TEST_P(HostedAppSitePerProcessTest,
   EXPECT_NE(foo_process, bar_process);
 
   // At this point the main frame process should have access to bar.com data.
-  EXPECT_TRUE(
-      policy->CanAccessDataForOrigin(bar_process->GetID(), bar_app_url));
-  EXPECT_FALSE(
-      policy->CanAccessDataForOrigin(bar_process->GetID(), foo_app_url));
+  EXPECT_TRUE(policy->CanAccessDataForOrigin(bar_process->GetID(),
+                                             url::Origin::Create(bar_app_url)));
+  EXPECT_FALSE(policy->CanAccessDataForOrigin(
+      bar_process->GetID(), url::Origin::Create(foo_app_url)));
 
   // Ensure the current process is allowed to access cookies.
   EXPECT_TRUE(ExecuteScript(web_contents, "document.cookie = 'foo=bar';"));
@@ -1677,8 +1687,8 @@ IN_PROC_BROWSER_TEST_P(HostedAppSitePerProcessTest,
 
   // Ensure the current non-app foo.com process is allowed to access foo.com
   // data.
-  EXPECT_TRUE(policy->CanAccessDataForOrigin(foo_nonapp_process->GetID(),
-                                             foo_nonapp_url));
+  EXPECT_TRUE(policy->CanAccessDataForOrigin(
+      foo_nonapp_process->GetID(), url::Origin::Create(foo_nonapp_url)));
   EXPECT_TRUE(ExecuteScript(web_contents, "document.cookie = 'foo=bar';"));
   EXPECT_EQ("foo=bar", EvalJs(web_contents, "document.cookie"));
 }

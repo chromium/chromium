@@ -30,6 +30,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ShortcutHelper;
+import org.chromium.chrome.browser.browserservices.intents.BitmapHelper;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabTestUtils;
@@ -179,7 +180,7 @@ public class WebappSplashScreenTest {
                 R.dimen.webapp_splash_image_size_minimum);
         int size = thresholdSize + 1;
         Bitmap splashBitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
-        String bitmapString = ShortcutHelper.encodeBitmapAsString(splashBitmap);
+        String bitmapString = BitmapHelper.encodeBitmapAsString(splashBitmap);
 
         TestFetchStorageCallback callback = new TestFetchStorageCallback();
         WebappRegistry.getInstance().register(WebappActivityTestRule.WEBAPP_ID, callback);
@@ -209,7 +210,7 @@ public class WebappSplashScreenTest {
         int size = context.getResources().getDimensionPixelSize(
                 R.dimen.webapp_splash_image_size_minimum) - 1;
         Bitmap splashBitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
-        String bitmapString = ShortcutHelper.encodeBitmapAsString(splashBitmap);
+        String bitmapString = BitmapHelper.encodeBitmapAsString(splashBitmap);
 
         TestFetchStorageCallback callback = new TestFetchStorageCallback();
         WebappRegistry.getInstance().register(WebappActivityTestRule.WEBAPP_ID, callback);

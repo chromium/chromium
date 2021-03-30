@@ -15,7 +15,7 @@ class NavigationHandle;
 
 namespace prerender {
 
-class PrerenderManager;
+class NoStatePrefetchManager;
 
 // Indicates whether the URL provided is a GWS origin.
 bool IsGoogleOriginURL(const GURL& origin_url);
@@ -25,7 +25,7 @@ bool IsGoogleOriginURL(const GURL& origin_url);
 void RecordNoStatePrefetchMetrics(
     content::NavigationHandle* navigation_handle,
     ukm::SourceId source_id,
-    prerender::PrerenderManager* prerender_manager);
+    prerender::NoStatePrefetchManager* no_state_prefetch_manager);
 
 }  // namespace prerender
 

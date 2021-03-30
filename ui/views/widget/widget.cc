@@ -20,6 +20,7 @@
 #include "ui/base/ime/input_method.h"
 #include "ui/base/l10n/l10n_font_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
@@ -87,7 +88,9 @@ void NotifyCaretBoundsChanged(ui::InputMethod* input_method) {
 }  // namespace
 
 // static
-bool Widget::g_disable_activation_change_handling_ = false;
+Widget::DisableActivationChangeHandlingType
+    Widget::g_disable_activation_change_handling_ =
+        Widget::DisableActivationChangeHandlingType::kNone;
 
 // A default implementation of WidgetDelegate, used by Widget when no
 // WidgetDelegate is supplied.
@@ -271,16 +274,18 @@ void Widget::ReparentNativeView(gfx::NativeView native_view,
 
 // static
 int Widget::GetLocalizedContentsWidth(int col_resource_id) {
-  return ui::GetLocalizedContentsWidthForFont(
-      col_resource_id, ui::ResourceBundle::GetSharedInstance().GetFontWithDelta(
-                           ui::kMessageFontSizeDelta));
+  return ui::GetLocalizedContentsWidthForFontList(
+      col_resource_id,
+      ui::ResourceBundle::GetSharedInstance().GetFontListWithDelta(
+          ui::kMessageFontSizeDelta));
 }
 
 // static
 int Widget::GetLocalizedContentsHeight(int row_resource_id) {
-  return ui::GetLocalizedContentsHeightForFont(
-      row_resource_id, ui::ResourceBundle::GetSharedInstance().GetFontWithDelta(
-                           ui::kMessageFontSizeDelta));
+  return ui::GetLocalizedContentsHeightForFontList(
+      row_resource_id,
+      ui::ResourceBundle::GetSharedInstance().GetFontListWithDelta(
+          ui::kMessageFontSizeDelta));
 }
 
 // static
@@ -394,7 +399,7 @@ void Widget::Init(InitParams params) {
     SetInitialBoundsForFramelessWindow(bounds);
   }
 
-  observer_manager_.Add(GetNativeTheme());
+  observation_.Observe(GetNativeTheme());
   native_widget_initialized_ = true;
   native_widget_->OnWidgetInitDone();
 
@@ -610,6 +615,15 @@ void Widget::CloseWithReason(ClosedReason closed_reason) {
   if (widget_delegate_ && !widget_delegate_->OnCloseRequested(closed_reason))
     return;
 
+  // Cancel widget close on focus lost. This is used in UI Devtools to lock
+  // bubbles and in some tests where we want to ignore spurious deactivation.
+  if (closed_reason == ClosedReason::kLostFocus &&
+      (g_disable_activation_change_handling_ ==
+           DisableActivationChangeHandlingType::kIgnore ||
+       g_disable_activation_change_handling_ ==
+           DisableActivationChangeHandlingType::kIgnoreDeactivationOnly))
+    return;
+
   // The actions below can cause this function to be called again, so mark
   // |this| as closed early. See crbug.com/714334
   widget_closed_ = true;
@@ -790,6 +804,17 @@ const ui::ThemeProvider* Widget::GetThemeProvider() const {
                                               : nullptr;
 }
 
+const ui::ColorProvider* Widget::GetColorProvider() const {
+  auto color_scheme = GetNativeTheme()->GetDefaultSystemColorScheme();
+  return ui::ColorProviderManager::Get().GetColorProviderFor(
+      {(color_scheme == ui::NativeTheme::ColorScheme::kDark)
+           ? ui::ColorProviderManager::ColorMode::kDark
+           : ui::ColorProviderManager::ColorMode::kLight,
+       (color_scheme == ui::NativeTheme::ColorScheme::kPlatformHighContrast)
+           ? ui::ColorProviderManager::ContrastMode::kHigh
+           : ui::ColorProviderManager::ContrastMode::kNormal});
+}
+
 FocusManager* Widget::GetFocusManager() {
   Widget* toplevel_widget = GetTopLevelWidget();
   return toplevel_widget ? toplevel_widget->focus_manager_.get() : nullptr;
@@ -877,7 +902,7 @@ void Widget::UpdateWindowTitle() {
 
   // Update the native frame's text. We do this regardless of whether or not
   // the native frame is being used, since this also updates the taskbar, etc.
-  base::string16 window_title = widget_delegate_->GetWindowTitle();
+  std::u16string window_title = widget_delegate_->GetWindowTitle();
   base::i18n::AdjustStringForLocaleDirection(&window_title);
   if (!native_widget_->SetWindowTitle(window_title))
     return;
@@ -996,7 +1021,7 @@ void Widget::SetCapture(View* view) {
 
   if (native_widget_->IsMouseButtonDown())
     is_mouse_button_pressed_ = true;
-  root_view_->SetMouseHandler(view);
+  root_view_->SetMouseAndGestureHandler(view);
 }
 
 void Widget::ReleaseCapture() {
@@ -1099,7 +1124,11 @@ bool Widget::IsNativeWidgetInitialized() const {
 }
 
 bool Widget::OnNativeWidgetActivationChanged(bool active) {
-  if (g_disable_activation_change_handling_)
+  if (g_disable_activation_change_handling_ ==
+          DisableActivationChangeHandlingType::kIgnore ||
+      (g_disable_activation_change_handling_ ==
+           DisableActivationChangeHandlingType::kIgnoreDeactivationOnly &&
+       !active))
     return false;
 
   // On windows we may end up here before we've completed initialization (from
@@ -1500,16 +1529,16 @@ View* Widget::GetFocusTraversableParentView() {
 void Widget::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
   TRACE_EVENT0("ui", "Widget::OnNativeThemeUpdated");
 
-  DCHECK(observer_manager_.IsObserving(observed_theme));
+  DCHECK(observation_.IsObservingSource(observed_theme));
 
 #if defined(OS_APPLE) || defined(OS_WIN)
   ui::NativeTheme* current_native_theme = observed_theme;
 #else
   ui::NativeTheme* current_native_theme = GetNativeTheme();
 #endif
-  if (!observer_manager_.IsObserving(current_native_theme)) {
-    observer_manager_.RemoveAll();
-    observer_manager_.Add(current_native_theme);
+  if (!observation_.IsObservingSource(current_native_theme)) {
+    observation_.Reset();
+    observation_.Observe(current_native_theme);
   }
 
   PropagateNativeThemeChanged();

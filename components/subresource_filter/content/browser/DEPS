@@ -1,14 +1,17 @@
 include_rules = [
+  "+components/content_settings/browser",
   "+components/content_settings/core/browser",
   "+components/content_settings/core/common",
   "+components/keyed_service/core",
   "+components/safe_browsing/core/db",
   "+components/sync_preferences",
   "+components/ukm",
+  "+components/user_prefs",
   "+content/public/browser",
   "+content/public/test",
   "+mojo/public",
   "+net/base",
   "+services/metrics/public/cpp",
+  "+services/network/public/mojom",
   "+ui/base",
 ]

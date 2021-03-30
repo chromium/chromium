@@ -3,10 +3,9 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 
-cr.define('settings', function() {
   /**
    * Information for an account managed by Chrome OS AccountManager.
    * @typedef {{
@@ -21,13 +20,13 @@ cr.define('settings', function() {
    *   organization: (string|undefined),
    * }}
    */
-  /* #export */ let Account;
+  export let Account;
 
   /** @interface */
-  /* #export */ class AccountManagerBrowserProxy {
+  export class AccountManagerBrowserProxy {
     /**
      * Returns a Promise for the list of GAIA accounts held in AccountManager.
-     * @return {!Promise<!Array<settings.Account>>}
+     * @return {!Promise<!Array<Account>>}
      */
     getAccounts() {}
 
@@ -52,7 +51,7 @@ cr.define('settings', function() {
 
     /**
      * Removes |account| from Account Manager.
-     * @param {?settings.Account} account
+     * @param {?Account} account
      */
     removeAccount(account) {}
 
@@ -63,12 +62,12 @@ cr.define('settings', function() {
   }
 
   /**
-   * @implements {settings.AccountManagerBrowserProxy}
+   * @implements {AccountManagerBrowserProxy}
    */
-  /* #export */ class AccountManagerBrowserProxyImpl {
+  export class AccountManagerBrowserProxyImpl {
     /** @override */
     getAccounts() {
-      return cr.sendWithPromise('getAccounts');
+      return sendWithPromise('getAccounts');
     }
 
     /** @override */
@@ -97,12 +96,5 @@ cr.define('settings', function() {
     }
   }
 
-  cr.addSingletonGetter(AccountManagerBrowserProxyImpl);
+  addSingletonGetter(AccountManagerBrowserProxyImpl);
 
-  // #cr_define_end
-  return {
-    Account,
-    AccountManagerBrowserProxy,
-    AccountManagerBrowserProxyImpl,
-  };
-});

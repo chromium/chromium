@@ -9,7 +9,6 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 
 namespace base {
 class DictionaryValue;
@@ -40,6 +39,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnect {
 
     // Shows UI to setup a mobile network.
     virtual void ShowMobileSetupDialog(const std::string& network_id) = 0;
+
+    // Shows UI displaying carrier network account details.
+    virtual void ShowCarrierAccountDetail(const std::string& network_id) = 0;
 
     // Shows an error notification. |error_name| is an error defined in
     // NetworkConnectionHandler. |network_id| may be empty.
@@ -85,6 +87,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnect {
   // setup and either shows a notification or opens the mobile setup dialog.
   virtual void ShowMobileSetup(const std::string& network_id) = 0;
 
+  // Opens the carrier account detail page.
+  virtual void ShowCarrierAccountDetail(const std::string& network_id) = 0;
+
   // Configures a network with a dictionary of Shill properties, then sends a
   // connect request. The profile is set according to 'shared' if allowed.
   // TODO(stevenjb): Use ONC properties instead of shill.
@@ -114,5 +119,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnect {
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when moved to ash
+namespace ash {
+using ::chromeos::NetworkConnect;
+}
 
 #endif  // CHROMEOS_NETWORK_NETWORK_CONNECT_H_

@@ -18,16 +18,23 @@ constexpr const char* kFullWildcardRegex = ".*";
 
 // Return the expected length of the value returned by EscapeString().
 COMPONENT_EXPORT(LIBURLPATTERN)
-size_t EscapedLength(absl::string_view input);
+size_t EscapedRegexpStringLength(absl::string_view input);
 
 // Escape an input string so that it may be safely included in a
 // regular expression.
 COMPONENT_EXPORT(LIBURLPATTERN)
-std::string EscapeString(absl::string_view input);
+std::string EscapeRegexpString(absl::string_view input);
 
 // Escape the input string so that it may be safely included in a
 // regular expression and append the result directly to the given target.
-void EscapeStringAndAppend(absl::string_view input, std::string& append_target);
+void EscapeRegexpStringAndAppend(absl::string_view input,
+                                 std::string& append_target);
+
+// Escape a fixed input string so that it may be safely included in a
+// pattern string.  Appends the result directly to the given target.
+COMPONENT_EXPORT(LIBURLPATTERN)
+void EscapePatternStringAndAppend(absl::string_view input,
+                                  std::string& append_target);
 
 }  // namespace liburlpattern
 

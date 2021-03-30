@@ -42,18 +42,18 @@ void PasswordReuseDetectionManager::DidNavigateMainFrame(
 }
 
 void PasswordReuseDetectionManager::OnKeyPressedCommitted(
-    const base::string16& text) {
+    const std::u16string& text) {
   OnKeyPressed(text, /*is_committed*/ true);
 }
 
 #if defined(OS_ANDROID)
 void PasswordReuseDetectionManager::OnKeyPressedUncommitted(
-    const base::string16& text) {
+    const std::u16string& text) {
   OnKeyPressed(text, /*is_committed*/ false);
 }
 #endif
 
-void PasswordReuseDetectionManager::OnKeyPressed(const base::string16& text,
+void PasswordReuseDetectionManager::OnKeyPressed(const std::u16string& text,
                                                  const bool is_committed) {
   // Do not check reuse if it was already found on this page.
   if (reuse_on_this_page_was_found_)
@@ -81,17 +81,17 @@ void PasswordReuseDetectionManager::OnKeyPressed(const base::string16& text,
         0, input_characters_.size() - kMaxNumberOfCharactersToStore);
   }
 
-  const base::string16 text_to_check =
+  const std::u16string text_to_check =
       is_committed ? input_characters_ : input_characters_ + text;
 
   CheckStoresForReuse(text_to_check);
 }
 
-void PasswordReuseDetectionManager::OnPaste(const base::string16 text) {
+void PasswordReuseDetectionManager::OnPaste(const std::u16string text) {
   // Do not check reuse if it was already found on this page.
   if (reuse_on_this_page_was_found_)
     return;
-  base::string16 input = std::move(text);
+  std::u16string input = std::move(text);
   if (input.size() > kMaxNumberOfCharactersToStore)
     input = input.substr(input.size() - kMaxNumberOfCharactersToStore);
 
@@ -201,7 +201,7 @@ metrics_util::PasswordType PasswordReuseDetectionManager::GetReusedPasswordType(
 }
 
 void PasswordReuseDetectionManager::CheckStoresForReuse(
-    const base::string16& input) {
+    const std::u16string& input) {
   PasswordStore* profile_store = client_->GetProfilePasswordStore();
   if (profile_store) {
     ++wait_counter_;

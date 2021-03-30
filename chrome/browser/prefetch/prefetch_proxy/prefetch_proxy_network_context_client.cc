@@ -14,46 +14,6 @@ PrefetchProxyNetworkContextClient::PrefetchProxyNetworkContextClient() =
 PrefetchProxyNetworkContextClient::~PrefetchProxyNetworkContextClient() =
     default;
 
-void PrefetchProxyNetworkContextClient::OnAuthRequired(
-    const base::Optional<base::UnguessableToken>& window_id,
-    int32_t process_id,
-    int32_t routing_id,
-    uint32_t request_id,
-    const GURL& url,
-    bool first_auth_attempt,
-    const net::AuthChallengeInfo& auth_info,
-    network::mojom::URLResponseHeadPtr head,
-    mojo::PendingRemote<network::mojom::AuthChallengeResponder>
-        auth_challenge_responder) {
-  mojo::Remote<network::mojom::AuthChallengeResponder>
-      auth_challenge_responder_remote(std::move(auth_challenge_responder));
-  auth_challenge_responder_remote->OnAuthCredentials(base::nullopt);
-}
-
-void PrefetchProxyNetworkContextClient::OnCertificateRequested(
-    const base::Optional<base::UnguessableToken>& window_id,
-    int32_t process_id,
-    int32_t routing_id,
-    uint32_t request_id,
-    const scoped_refptr<net::SSLCertRequestInfo>& cert_info,
-    mojo::PendingRemote<network::mojom::ClientCertificateResponder>
-        cert_responder_remote) {
-  mojo::Remote<network::mojom::ClientCertificateResponder> cert_responder(
-      std::move(cert_responder_remote));
-  cert_responder->CancelRequest();
-}
-
-void PrefetchProxyNetworkContextClient::OnSSLCertificateError(
-    int32_t process_id,
-    int32_t routing_id,
-    const GURL& url,
-    int net_error,
-    const net::SSLInfo& ssl_info,
-    bool fatal,
-    OnSSLCertificateErrorCallback response) {
-  std::move(response).Run(net::ERR_ABORTED);
-}
-
 void PrefetchProxyNetworkContextClient::OnFileUploadRequested(
     int32_t process_id,
     bool async,
@@ -72,16 +32,6 @@ void PrefetchProxyNetworkContextClient::OnCanSendDomainReliabilityUpload(
     const GURL& origin,
     OnCanSendDomainReliabilityUploadCallback callback) {
   std::move(callback).Run(false);
-}
-
-void PrefetchProxyNetworkContextClient::OnClearSiteData(
-    int32_t process_id,
-    int32_t routing_id,
-    const GURL& url,
-    const std::string& header_value,
-    int load_flags,
-    OnClearSiteDataCallback callback) {
-  std::move(callback).Run();
 }
 
 #if defined(OS_ANDROID)

@@ -220,12 +220,6 @@ TEST_P(PaintLayerTest, CompositedScrollingNoNeedsRepaint) {
 }
 
 TEST_P(PaintLayerTest, NonCompositedScrollingNeedsRepaint) {
-  // CAP scrolling raster invalidation decisions are made in
-  // ContentLayerClientImpl::GenerateRasterInvalidations through
-  // PaintArtifactCompositor.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   SetBodyInnerHTML(R"HTML(
     <style>
      /* to prevent the mock overlay scrollbar from affecting compositing. */
@@ -238,6 +232,11 @@ TEST_P(PaintLayerTest, NonCompositedScrollingNeedsRepaint) {
   )HTML");
 
   PaintLayer* scroll_layer = GetPaintLayerByElementId("scroll");
+  EXPECT_FALSE(scroll_layer->GetLayoutObject()
+                   .FirstFragment()
+                   .PaintProperties()
+                   ->ScrollTranslation()
+                   ->HasDirectCompositingReasons());
   EXPECT_EQ(kNotComposited, scroll_layer->GetCompositingState());
 
   PaintLayer* content_layer = GetPaintLayerByElementId("content");
@@ -253,8 +252,16 @@ TEST_P(PaintLayerTest, NonCompositedScrollingNeedsRepaint) {
       LayoutSize(1000, 1000),
       content_layer->ContainingLayer()->PixelSnappedScrolledContentOffset());
 
-  EXPECT_TRUE(scroll_layer->SelfNeedsRepaint());
-  EXPECT_FALSE(content_layer->SelfNeedsRepaint());
+  if (RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
+    EXPECT_FALSE(scroll_layer->SelfNeedsRepaint());
+    // The content layer needs repaint because its cull rect changed.
+    EXPECT_TRUE(content_layer->SelfNeedsRepaint());
+  } else {
+    EXPECT_TRUE(scroll_layer->SelfNeedsRepaint());
+    // We don't set the layer needing repaint, but will repaint the layer when
+    // we find that the cull rect changes during paint.
+    EXPECT_FALSE(content_layer->SelfNeedsRepaint());
+  }
   UpdateAllLifecyclePhasesForTest();
 }
 
@@ -2767,23 +2774,7 @@ TEST_P(PaintLayerTest, HasNonEmptyChildLayoutObjectsZeroSizeOverflowVisible) {
 
 enum { kCompositingOptimizations = 1 << 0 };
 
-// TODO(chrishtr): Remove this test configuration and keep the appropriate
-// variants of the tests when CompositingOptimizations ships or is removed.
-class PaintLayerOverlapTestConfigurations
-    : public testing::WithParamInterface<unsigned>,
-      private ScopedCompositingOptimizationsForTest {
- public:
-  PaintLayerOverlapTestConfigurations()
-      : ScopedCompositingOptimizationsForTest(GetParam() &
-                                              kCompositingOptimizations) {}
-  ~PaintLayerOverlapTestConfigurations() override {
-    // Must destruct all objects before toggling back feature flags.
-    WebHeap::CollectAllGarbageForTesting();
-  }
-};
-
-class PaintLayerOverlapTest : public PaintLayerOverlapTestConfigurations,
-                              public RenderingTest {
+class PaintLayerOverlapTest : public RenderingTest {
  public:
   PaintLayerOverlapTest()
       : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
@@ -2794,11 +2785,7 @@ class PaintLayerOverlapTest : public PaintLayerOverlapTestConfigurations,
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         PaintLayerOverlapTest,
-                         ::testing::Values(0, kCompositingOptimizations));
-
-TEST_P(PaintLayerOverlapTest, FixedUsesExpandedBoundingBoxForOverlap) {
+TEST_F(PaintLayerOverlapTest, FixedUsesExpandedBoundingBoxForOverlap) {
   SetBodyInnerHTML(R"HTML(
     <style>
       * {
@@ -2837,16 +2824,34 @@ TEST_P(PaintLayerOverlapTest, FixedUsesExpandedBoundingBoxForOverlap) {
             IntRect(50, 50, 30, 20));
   EXPECT_EQ(fixed->LocalBoundingBoxForCompositingOverlapTest(),
             PhysicalRect(0, 0, 10, 10));
-  if (!RuntimeEnabledFeatures::CompositingOptimizationsEnabled()) {
-    EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(50, 50, 10, 10));
-    EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(50, 50, 10, 10));
-  } else {
-    EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(60, 60, 10, 10));
-    EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(60, 60, 10, 10));
-  }
+  EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(60, 60, 10, 10));
+  EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(60, 60, 10, 10));
 }
 
-TEST_P(PaintLayerOverlapTest,
+TEST_F(PaintLayerOverlapTest, IncludeIntermediateScrollerOffset) {
+  SetBodyInnerHTML(R"HTML(
+    <style>body { margin:0; }</style>
+    <div id=intermediate style="overflow:scroll; width: 100px; height: 100px">
+      <div style="height: 2000px"></div>
+      <div id="target" style="position: relative; width: 100px; height: 100px"></div>
+    </div>
+    <div style="height: 2000px"></div>
+    )HTML");
+  PaintLayer* position = GetPaintLayerByElementId("target");
+  LayoutBoxModelObject* intermediate =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("intermediate"));
+
+  intermediate->GetScrollableArea()->ScrollBy(ScrollOffset(0, 1950),
+                                              mojom::blink::ScrollType::kUser);
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(100, 100), mojom::blink::ScrollType::kProgrammatic);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(position->UnclippedAbsoluteBoundingBox(), IntRect(0, 50, 100, 100));
+  EXPECT_EQ(position->ClippedAbsoluteBoundingBox(), IntRect(0, 50, 100, 50));
+}
+
+TEST_F(PaintLayerOverlapTest,
        FixedInScrollerUsesExpandedBoundingBoxForOverlap) {
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -2914,16 +2919,11 @@ TEST_P(PaintLayerOverlapTest,
             IntRect(50, 50, 30, 20));
   EXPECT_EQ(fixed->LocalBoundingBoxForCompositingOverlapTest(),
             PhysicalRect(0, 0, 10, 10));
-  if (!RuntimeEnabledFeatures::CompositingOptimizationsEnabled()) {
-    EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(50, 50, 10, 10));
-    EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(50, 50, 10, 10));
-  } else {
-    EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(60, 60, 10, 10));
-    EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(60, 60, 10, 10));
-  }
+  EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(60, 60, 10, 10));
+  EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(60, 60, 10, 10));
 }
 
-TEST_P(PaintLayerOverlapTest,
+TEST_F(PaintLayerOverlapTest,
        FixedUnderTransformDoesNotExpandBoundingBoxForOverlap) {
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -2968,10 +2968,10 @@ TEST_P(PaintLayerOverlapTest,
   EXPECT_EQ(fixed->LocalBoundingBoxForCompositingOverlapTest(),
             PhysicalRect(0, 0, 50, 50));
   EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(117, 117, 66, 66));
-  EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(117, 117, 66, 66));
+  EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(118, 118, 64, 64));
 }
 
-TEST_P(PaintLayerOverlapTest, NestedFixedUsesExpandedBoundingBoxForOverlap) {
+TEST_F(PaintLayerOverlapTest, NestedFixedUsesExpandedBoundingBoxForOverlap) {
   SetBodyInnerHTML(R"HTML(
     <style>
       * {
@@ -3047,16 +3047,11 @@ TEST_P(PaintLayerOverlapTest, NestedFixedUsesExpandedBoundingBoxForOverlap) {
             IntRect(50, 50, 410, 410));
   EXPECT_EQ(fixed->LocalBoundingBoxForCompositingOverlapTest(),
             PhysicalRect(0, 0, 10, 10));
-  if (!RuntimeEnabledFeatures::CompositingOptimizationsEnabled()) {
-    EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(50, 50, 10, 10));
-    EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(50, 50, 10, 10));
-  } else {
-    EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(60, 60, 10, 10));
-    EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(60, 60, 10, 10));
-  }
+  EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(60, 60, 10, 10));
+  EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(60, 60, 10, 10));
 }
 
-TEST_P(PaintLayerOverlapTest, FixedWithExpandedBoundsForChild) {
+TEST_F(PaintLayerOverlapTest, FixedWithExpandedBoundsForChild) {
   SetBodyInnerHTML(R"HTML(
     <style>
       * {
@@ -3123,28 +3118,18 @@ TEST_P(PaintLayerOverlapTest, FixedWithExpandedBoundsForChild) {
             IntRect(25, 25, 75, 625));
   EXPECT_EQ(fixed->LocalBoundingBoxForCompositingOverlapTest(),
             PhysicalRect(0, 0, 50, 50));
-  if (!RuntimeEnabledFeatures::CompositingOptimizationsEnabled()) {
-    EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(25, 25, 50, 50));
-    EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(25, 25, 50, 50));
-  } else {
-    EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
-    EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
-  }
+  EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
+  EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
 
   EXPECT_EQ(abs->ExpandedBoundingBoxForCompositingOverlapTest(false),
             IntRect(75, 625, 25, 25));
   EXPECT_EQ(abs->LocalBoundingBoxForCompositingOverlapTest(),
             PhysicalRect(0, 0, 25, 25));
-  if (!RuntimeEnabledFeatures::CompositingOptimizationsEnabled()) {
-    EXPECT_EQ(abs->UnclippedAbsoluteBoundingBox(), IntRect(75, 225, 25, 25));
-    EXPECT_EQ(abs->ClippedAbsoluteBoundingBox(), IntRect(75, 225, 25, 25));
-  } else {
-    EXPECT_EQ(abs->UnclippedAbsoluteBoundingBox(), IntRect(75, 625, 25, 25));
-    EXPECT_EQ(abs->ClippedAbsoluteBoundingBox(), IntRect(75, 625, 25, 25));
-  }
+  EXPECT_EQ(abs->UnclippedAbsoluteBoundingBox(), IntRect(75, 625, 25, 25));
+  EXPECT_EQ(abs->ClippedAbsoluteBoundingBox(), IntRect(75, 625, 25, 25));
 }
 
-TEST_P(PaintLayerOverlapTest, FixedWithClippedExpandedBoundsForChild) {
+TEST_F(PaintLayerOverlapTest, FixedWithClippedExpandedBoundsForChild) {
   SetBodyInnerHTML(R"HTML(
     <style>
       * {
@@ -3213,28 +3198,18 @@ TEST_P(PaintLayerOverlapTest, FixedWithClippedExpandedBoundsForChild) {
             IntRect(25, 25, 50, 450));
   EXPECT_EQ(fixed->LocalBoundingBoxForCompositingOverlapTest(),
             PhysicalRect(0, 0, 50, 50));
-  if (!RuntimeEnabledFeatures::CompositingOptimizationsEnabled()) {
-    EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(25, 25, 50, 50));
-    EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(25, 25, 50, 50));
-  } else {
-    EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
-    EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
-  }
+  EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
+  EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
 
   EXPECT_EQ(abs->ExpandedBoundingBoxForCompositingOverlapTest(false),
             IntRect(75, 625, 25, 25));
   EXPECT_EQ(abs->LocalBoundingBoxForCompositingOverlapTest(),
             PhysicalRect(0, 0, 25, 25));
-  if (!RuntimeEnabledFeatures::CompositingOptimizationsEnabled()) {
-    EXPECT_EQ(abs->UnclippedAbsoluteBoundingBox(), IntRect(75, 225, 25, 25));
-    EXPECT_EQ(abs->ClippedAbsoluteBoundingBox(), IntRect(0, 0, 0, 0));
-  } else {
-    EXPECT_EQ(abs->UnclippedAbsoluteBoundingBox(), IntRect(75, 625, 25, 25));
-    EXPECT_EQ(abs->ClippedAbsoluteBoundingBox(), IntRect(0, 0, 0, 0));
-  }
+  EXPECT_EQ(abs->UnclippedAbsoluteBoundingBox(), IntRect(75, 625, 25, 25));
+  EXPECT_EQ(abs->ClippedAbsoluteBoundingBox(), IntRect(0, 0, 0, 0));
 }
 
-TEST_P(PaintLayerOverlapTest, FixedWithExpandedBoundsForGrandChild) {
+TEST_F(PaintLayerOverlapTest, FixedWithExpandedBoundsForGrandChild) {
   SetBodyInnerHTML(R"HTML(
     <style>
       * {
@@ -3315,37 +3290,22 @@ TEST_P(PaintLayerOverlapTest, FixedWithExpandedBoundsForGrandChild) {
             IntRect(25, 25, 125, 725));
   EXPECT_EQ(fixed->LocalBoundingBoxForCompositingOverlapTest(),
             PhysicalRect(0, 0, 50, 50));
-  if (!RuntimeEnabledFeatures::CompositingOptimizationsEnabled()) {
-    EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(25, 25, 50, 50));
-    EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(25, 25, 50, 50));
-  } else {
-    EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
-    EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
-  }
+  EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
+  EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
 
   EXPECT_EQ(abs->ExpandedBoundingBoxForCompositingOverlapTest(false),
             IntRect(75, 625, 25, 25));
   EXPECT_EQ(abs->LocalBoundingBoxForCompositingOverlapTest(),
             PhysicalRect(0, 0, 25, 25));
-  if (!RuntimeEnabledFeatures::CompositingOptimizationsEnabled()) {
-    EXPECT_EQ(abs->UnclippedAbsoluteBoundingBox(), IntRect(75, 225, 25, 25));
-    EXPECT_EQ(abs->ClippedAbsoluteBoundingBox(), IntRect(75, 225, 25, 25));
-  } else {
-    EXPECT_EQ(abs->UnclippedAbsoluteBoundingBox(), IntRect(75, 625, 25, 25));
-    EXPECT_EQ(abs->ClippedAbsoluteBoundingBox(), IntRect(75, 625, 25, 25));
-  }
+  EXPECT_EQ(abs->UnclippedAbsoluteBoundingBox(), IntRect(75, 625, 25, 25));
+  EXPECT_EQ(abs->ClippedAbsoluteBoundingBox(), IntRect(75, 625, 25, 25));
 
   EXPECT_EQ(abs2->ExpandedBoundingBoxForCompositingOverlapTest(false),
             IntRect(125, 725, 25, 25));
   EXPECT_EQ(abs2->LocalBoundingBoxForCompositingOverlapTest(),
             PhysicalRect(0, 0, 25, 25));
-  if (!RuntimeEnabledFeatures::CompositingOptimizationsEnabled()) {
-    EXPECT_EQ(abs2->UnclippedAbsoluteBoundingBox(), IntRect(125, 325, 25, 25));
-    EXPECT_EQ(abs2->ClippedAbsoluteBoundingBox(), IntRect(125, 325, 25, 25));
-  } else {
-    EXPECT_EQ(abs2->UnclippedAbsoluteBoundingBox(), IntRect(125, 725, 25, 25));
-    EXPECT_EQ(abs2->ClippedAbsoluteBoundingBox(), IntRect(125, 725, 25, 25));
-  }
+  EXPECT_EQ(abs2->UnclippedAbsoluteBoundingBox(), IntRect(125, 725, 25, 25));
+  EXPECT_EQ(abs2->ClippedAbsoluteBoundingBox(), IntRect(125, 725, 25, 25));
 
   // Add will-change to the middle child to ensure the bounds are still the
   // same. This helps confirm that the computation of the bounds is agnostic to
@@ -3358,37 +3318,22 @@ TEST_P(PaintLayerOverlapTest, FixedWithExpandedBoundsForGrandChild) {
             IntRect(25, 25, 125, 725));
   EXPECT_EQ(fixed->LocalBoundingBoxForCompositingOverlapTest(),
             PhysicalRect(0, 0, 50, 50));
-  if (!RuntimeEnabledFeatures::CompositingOptimizationsEnabled()) {
-    EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(25, 25, 50, 50));
-    EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(25, 25, 50, 50));
-  } else {
-    EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
-    EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
-  }
+  EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
+  EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
 
   EXPECT_EQ(abs->ExpandedBoundingBoxForCompositingOverlapTest(false),
             IntRect(75, 625, 25, 25));
   EXPECT_EQ(abs->LocalBoundingBoxForCompositingOverlapTest(),
             PhysicalRect(0, 0, 25, 25));
-  if (!RuntimeEnabledFeatures::CompositingOptimizationsEnabled()) {
-    EXPECT_EQ(abs->UnclippedAbsoluteBoundingBox(), IntRect(75, 225, 25, 25));
-    EXPECT_EQ(abs->ClippedAbsoluteBoundingBox(), IntRect(75, 225, 25, 25));
-  } else {
-    EXPECT_EQ(abs->UnclippedAbsoluteBoundingBox(), IntRect(75, 625, 25, 25));
-    EXPECT_EQ(abs->ClippedAbsoluteBoundingBox(), IntRect(75, 625, 25, 25));
-  }
+  EXPECT_EQ(abs->UnclippedAbsoluteBoundingBox(), IntRect(75, 625, 25, 25));
+  EXPECT_EQ(abs->ClippedAbsoluteBoundingBox(), IntRect(75, 625, 25, 25));
 
   EXPECT_EQ(abs2->ExpandedBoundingBoxForCompositingOverlapTest(false),
             IntRect(125, 725, 25, 25));
   EXPECT_EQ(abs2->LocalBoundingBoxForCompositingOverlapTest(),
             PhysicalRect(0, 0, 25, 25));
-  if (!RuntimeEnabledFeatures::CompositingOptimizationsEnabled()) {
-    EXPECT_EQ(abs2->UnclippedAbsoluteBoundingBox(), IntRect(125, 325, 25, 25));
-    EXPECT_EQ(abs2->ClippedAbsoluteBoundingBox(), IntRect(125, 325, 25, 25));
-  } else {
-    EXPECT_EQ(abs2->UnclippedAbsoluteBoundingBox(), IntRect(125, 725, 25, 25));
-    EXPECT_EQ(abs2->ClippedAbsoluteBoundingBox(), IntRect(125, 725, 25, 25));
-  }
+  EXPECT_EQ(abs2->UnclippedAbsoluteBoundingBox(), IntRect(125, 725, 25, 25));
+  EXPECT_EQ(abs2->ClippedAbsoluteBoundingBox(), IntRect(125, 725, 25, 25));
 
   // Add will-change to the grandchild and ensure the bounds are still the same.
   GetDocument().getElementById("abs2")->setAttribute(html_names::kStyleAttr,
@@ -3399,37 +3344,22 @@ TEST_P(PaintLayerOverlapTest, FixedWithExpandedBoundsForGrandChild) {
             IntRect(25, 25, 125, 725));
   EXPECT_EQ(fixed->LocalBoundingBoxForCompositingOverlapTest(),
             PhysicalRect(0, 0, 50, 50));
-  if (!RuntimeEnabledFeatures::CompositingOptimizationsEnabled()) {
-    EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(25, 25, 50, 50));
-    EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(25, 25, 50, 50));
-  } else {
-    EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
-    EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
-  }
+  EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
+  EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
 
   EXPECT_EQ(abs->ExpandedBoundingBoxForCompositingOverlapTest(false),
             IntRect(75, 625, 25, 25));
   EXPECT_EQ(abs->LocalBoundingBoxForCompositingOverlapTest(),
             PhysicalRect(0, 0, 25, 25));
-  if (!RuntimeEnabledFeatures::CompositingOptimizationsEnabled()) {
-    EXPECT_EQ(abs->UnclippedAbsoluteBoundingBox(), IntRect(75, 225, 25, 25));
-    EXPECT_EQ(abs->ClippedAbsoluteBoundingBox(), IntRect(75, 225, 25, 25));
-  } else {
-    EXPECT_EQ(abs->UnclippedAbsoluteBoundingBox(), IntRect(75, 625, 25, 25));
-    EXPECT_EQ(abs->ClippedAbsoluteBoundingBox(), IntRect(75, 625, 25, 25));
-  }
+  EXPECT_EQ(abs->UnclippedAbsoluteBoundingBox(), IntRect(75, 625, 25, 25));
+  EXPECT_EQ(abs->ClippedAbsoluteBoundingBox(), IntRect(75, 625, 25, 25));
 
   EXPECT_EQ(abs2->ExpandedBoundingBoxForCompositingOverlapTest(false),
             IntRect(125, 725, 25, 25));
   EXPECT_EQ(abs2->LocalBoundingBoxForCompositingOverlapTest(),
             PhysicalRect(0, 0, 25, 25));
-  if (!RuntimeEnabledFeatures::CompositingOptimizationsEnabled()) {
-    EXPECT_EQ(abs2->UnclippedAbsoluteBoundingBox(), IntRect(125, 325, 25, 25));
-    EXPECT_EQ(abs2->ClippedAbsoluteBoundingBox(), IntRect(125, 325, 25, 25));
-  } else {
-    EXPECT_EQ(abs2->UnclippedAbsoluteBoundingBox(), IntRect(125, 725, 25, 25));
-    EXPECT_EQ(abs2->ClippedAbsoluteBoundingBox(), IntRect(125, 725, 25, 25));
-  }
+  EXPECT_EQ(abs2->UnclippedAbsoluteBoundingBox(), IntRect(125, 725, 25, 25));
+  EXPECT_EQ(abs2->ClippedAbsoluteBoundingBox(), IntRect(125, 725, 25, 25));
 
   // Remove will-change from the middle child and ensure the bounds are still
   // the same.
@@ -3440,40 +3370,25 @@ TEST_P(PaintLayerOverlapTest, FixedWithExpandedBoundsForGrandChild) {
             IntRect(25, 25, 125, 725));
   EXPECT_EQ(fixed->LocalBoundingBoxForCompositingOverlapTest(),
             PhysicalRect(0, 0, 50, 50));
-  if (!RuntimeEnabledFeatures::CompositingOptimizationsEnabled()) {
-    EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(25, 25, 50, 50));
-    EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(25, 25, 50, 50));
-  } else {
-    EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
-    EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
-  }
+  EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
+  EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
 
   EXPECT_EQ(abs->ExpandedBoundingBoxForCompositingOverlapTest(false),
             IntRect(75, 625, 25, 25));
   EXPECT_EQ(abs->LocalBoundingBoxForCompositingOverlapTest(),
             PhysicalRect(0, 0, 25, 25));
-  if (!RuntimeEnabledFeatures::CompositingOptimizationsEnabled()) {
-    EXPECT_EQ(abs->UnclippedAbsoluteBoundingBox(), IntRect(75, 225, 25, 25));
-    EXPECT_EQ(abs->ClippedAbsoluteBoundingBox(), IntRect(75, 225, 25, 25));
-  } else {
-    EXPECT_EQ(abs->UnclippedAbsoluteBoundingBox(), IntRect(75, 625, 25, 25));
-    EXPECT_EQ(abs->ClippedAbsoluteBoundingBox(), IntRect(75, 625, 25, 25));
-  }
+  EXPECT_EQ(abs->UnclippedAbsoluteBoundingBox(), IntRect(75, 625, 25, 25));
+  EXPECT_EQ(abs->ClippedAbsoluteBoundingBox(), IntRect(75, 625, 25, 25));
 
   EXPECT_EQ(abs2->ExpandedBoundingBoxForCompositingOverlapTest(false),
             IntRect(125, 725, 25, 25));
   EXPECT_EQ(abs2->LocalBoundingBoxForCompositingOverlapTest(),
             PhysicalRect(0, 0, 25, 25));
-  if (!RuntimeEnabledFeatures::CompositingOptimizationsEnabled()) {
-    EXPECT_EQ(abs2->UnclippedAbsoluteBoundingBox(), IntRect(125, 325, 25, 25));
-    EXPECT_EQ(abs2->ClippedAbsoluteBoundingBox(), IntRect(125, 325, 25, 25));
-  } else {
-    EXPECT_EQ(abs2->UnclippedAbsoluteBoundingBox(), IntRect(125, 725, 25, 25));
-    EXPECT_EQ(abs2->ClippedAbsoluteBoundingBox(), IntRect(125, 725, 25, 25));
-  }
+  EXPECT_EQ(abs2->UnclippedAbsoluteBoundingBox(), IntRect(125, 725, 25, 25));
+  EXPECT_EQ(abs2->ClippedAbsoluteBoundingBox(), IntRect(125, 725, 25, 25));
 }
 
-TEST_P(PaintLayerOverlapTest, FixedWithExpandedBoundsForFixedChild) {
+TEST_F(PaintLayerOverlapTest, FixedWithExpandedBoundsForFixedChild) {
   SetBodyInnerHTML(R"HTML(
     <style>
       * {
@@ -3536,29 +3451,17 @@ TEST_P(PaintLayerOverlapTest, FixedWithExpandedBoundsForFixedChild) {
             IntRect(25, 25, 50, 500));
   EXPECT_EQ(fixed->LocalBoundingBoxForCompositingOverlapTest(),
             PhysicalRect(0, 0, 50, 50));
-  if (!RuntimeEnabledFeatures::CompositingOptimizationsEnabled()) {
-    EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(25, 25, 50, 50));
-    EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(25, 25, 50, 50));
-  } else {
-    EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
-    EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
-  }
+  EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
+  EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
 
   EXPECT_EQ(nestedFixed->ExpandedBoundingBoxForCompositingOverlapTest(false),
             IntRect(50, 500, 25, 25));
   EXPECT_EQ(nestedFixed->LocalBoundingBoxForCompositingOverlapTest(),
             PhysicalRect(0, 0, 25, 25));
-  if (!RuntimeEnabledFeatures::CompositingOptimizationsEnabled()) {
-    EXPECT_EQ(nestedFixed->UnclippedAbsoluteBoundingBox(),
-              IntRect(50, 100, 25, 25));
-    EXPECT_EQ(nestedFixed->ClippedAbsoluteBoundingBox(),
-              IntRect(50, 100, 25, 25));
-  } else {
-    EXPECT_EQ(nestedFixed->UnclippedAbsoluteBoundingBox(),
-              IntRect(50, 500, 25, 25));
-    EXPECT_EQ(nestedFixed->ClippedAbsoluteBoundingBox(),
-              IntRect(50, 500, 25, 25));
-  }
+  EXPECT_EQ(nestedFixed->UnclippedAbsoluteBoundingBox(),
+            IntRect(50, 500, 25, 25));
+  EXPECT_EQ(nestedFixed->ClippedAbsoluteBoundingBox(),
+            IntRect(50, 500, 25, 25));
 }
 
 }  // namespace blink

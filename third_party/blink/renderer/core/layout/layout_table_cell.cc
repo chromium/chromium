@@ -443,7 +443,7 @@ OverflowClipAxes LayoutTableCell::ComputeOverflowClipAxes() const {
   NOT_DESTROYED();
   if (IsSpanningCollapsedRow() || IsSpanningCollapsedColumn())
     return kOverflowClipBothAxis;
-  return LayoutBox::ComputeOverflowClipAxes();
+  return LayoutBlockFlow::ComputeOverflowClipAxes();
 }
 
 LayoutUnit LayoutTableCell::CellBaselinePosition() const {

@@ -42,12 +42,12 @@ namespace dnr_api = api::declarative_net_request;
 // url_pattern_index.fbs. Whenever an extension with an indexed ruleset format
 // version different from the one currently used by Chrome is loaded, the
 // extension ruleset will be reindexed.
-constexpr int kIndexedRulesetFormatVersion = 18;
+constexpr int kIndexedRulesetFormatVersion = 19;
 
 // This static assert is meant to catch cases where
 // url_pattern_index::kUrlPatternIndexFormatVersion is incremented without
 // updating kIndexedRulesetFormatVersion.
-static_assert(url_pattern_index::kUrlPatternIndexFormatVersion == 6,
+static_assert(url_pattern_index::kUrlPatternIndexFormatVersion == 7,
               "kUrlPatternIndexFormatVersion has changed, make sure you've "
               "also updated kIndexedRulesetFormatVersion above.");
 
@@ -62,6 +62,7 @@ constexpr int kInvalidRuleLimit = -1;
 int g_static_guaranteed_minimum_for_testing = kInvalidRuleLimit;
 int g_global_static_rule_limit_for_testing = kInvalidRuleLimit;
 int g_regex_rule_limit_for_testing = kInvalidRuleLimit;
+int g_dynamic_and_session_rule_limit_for_testing = kInvalidRuleLimit;
 
 int GetIndexedRulesetFormatVersion() {
   return g_indexed_ruleset_format_version_for_testing ==
@@ -294,8 +295,10 @@ int GetMaximumRulesPerRuleset() {
   return GetStaticGuaranteedMinimumRuleCount() + GetGlobalStaticRuleLimit();
 }
 
-int GetDynamicRuleLimit() {
-  return dnr_api::MAX_NUMBER_OF_DYNAMIC_RULES;
+int GetDynamicAndSessionRuleLimit() {
+  return g_dynamic_and_session_rule_limit_for_testing == kInvalidRuleLimit
+             ? dnr_api::MAX_NUMBER_OF_DYNAMIC_AND_SESSION_RULES
+             : g_dynamic_and_session_rule_limit_for_testing;
 }
 
 int GetRegexRuleLimit() {
@@ -318,6 +321,12 @@ ScopedRuleLimitOverride CreateScopedGlobalStaticRuleLimitOverrideForTesting(
 ScopedRuleLimitOverride CreateScopedRegexRuleLimitOverrideForTesting(
     int limit) {
   return base::AutoReset<int>(&g_regex_rule_limit_for_testing, limit);
+}
+
+ScopedRuleLimitOverride
+CreateScopedDynamicAndSessionRuleLimitOverrideForTesting(int limit) {
+  return base::AutoReset<int>(&g_dynamic_and_session_rule_limit_for_testing,
+                              limit);
 }
 
 size_t GetEnabledStaticRuleCount(const CompositeMatcher* composite_matcher) {

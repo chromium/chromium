@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -18,7 +19,6 @@ class ScriptValue;
 class StrategySizeAlgorithm;
 class StreamAlgorithm;
 class StreamStartAlgorithm;
-class Visitor;
 class WritableStreamDefaultWriter;
 class WritableStream;
 

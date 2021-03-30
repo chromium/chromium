@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {browserProxy} from '../browser_proxy/browser_proxy.js';
+import * as animate from '../animation.js';
 import {
   assert,
   assertInstanceof,
@@ -14,7 +14,9 @@ import {
 // eslint-disable-next-line no-unused-vars
 import {DeviceInfoUpdater} from '../device/device_info_updater.js';
 import * as dom from '../dom.js';
+import * as error from '../error.js';
 import * as metrics from '../metrics.js';
+import * as localStorage from '../models/local_storage.js';
 // eslint-disable-next-line no-unused-vars
 import {ResultSaver} from '../models/result_saver.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
@@ -25,24 +27,29 @@ import {PerfLogger} from '../perf.js';
 import * as sound from '../sound.js';
 import * as state from '../state.js';
 import * as toast from '../toast.js';
+import {ErrorLevel, ErrorType} from '../type.js';
 import {
+  CanceledError,
   Facing,
   Mode,
+  Resolution,  // eslint-disable-line no-unused-vars
   ViewName,
 } from '../type.js';
 import * as util from '../util.js';
-import {windowController} from '../window_controller/window_controller.js';
+import {windowController} from '../window_controller.js';
 
 import {Layout} from './camera/layout.js';
-import {   // eslint-disable-line no-unused-vars
+import {
   Modes,
   PhotoHandler,  // eslint-disable-line no-unused-vars
+  setAvc1Parameters,
   Video,
   VideoHandler,  // eslint-disable-line no-unused-vars
 } from './camera/mode/index.js';
 import {Options} from './camera/options.js';
 import {Preview} from './camera/preview.js';
 import * as timertick from './camera/timertick.js';
+import {VideoEncoderOptions} from './camera/video_encoder_options.js';
 import {View} from './view.js';
 import {WarningType} from './warning.js';
 
@@ -118,6 +125,21 @@ export class Camera extends View {
     this.options_ = new Options(infoUpdater, this.start.bind(this));
 
     /**
+     * @type {!VideoEncoderOptions}
+     * @private
+     */
+    this.videoEncoderOptions_ =
+        new VideoEncoderOptions((parameters) => setAvc1Parameters(parameters));
+
+    /**
+     * Clock-wise rotation that needs to be applied to the recorded video in
+     * order for the video to be replayed in upright orientation.
+     * @type {number}
+     * @private
+     */
+    this.outputVideoRotation_ = 0;
+
+    /**
      * @type {!ResultSaver}
      * @protected
      */
@@ -183,8 +205,20 @@ export class Camera extends View {
 
     /**
      * @type {!HTMLElement}
+     * @private
      */
     this.banner_ = dom.get('#banner', HTMLElement);
+
+    /**
+     * @type {!HTMLButtonElement}
+     */
+    this.openPTZPanel_ = dom.get('#open-ptz-panel', HTMLButtonElement);
+
+    /**
+     * @const {!Set<function(): void>}
+     * @private
+     */
+    this.configureCompleteListener_ = new Set();
 
     /**
      * Gets type of ways to trigger shutter from click event.
@@ -200,16 +234,16 @@ export class Camera extends View {
           metrics.ShutterType.MOUSE;
     };
 
-    document.querySelector('#start-takephoto')
+    dom.get('#start-takephoto', HTMLButtonElement)
         .addEventListener('click', (e) => {
           const mouseEvent = assertInstanceof(e, MouseEvent);
           this.beginTake_(getShutterType(mouseEvent));
         });
 
-    document.querySelector('#stop-takephoto')
+    dom.get('#stop-takephoto', HTMLButtonElement)
         .addEventListener('click', () => this.endTake_());
 
-    const videoShutter = document.querySelector('#recordvideo');
+    const videoShutter = dom.get('#recordvideo', HTMLButtonElement);
     videoShutter.addEventListener('click', (e) => {
       if (!state.get(state.State.TAKING)) {
         this.beginTake_(getShutterType(assertInstanceof(e, MouseEvent)));
@@ -218,12 +252,13 @@ export class Camera extends View {
       }
     });
 
-    document.querySelector('#video-snapshot').addEventListener('click', () => {
-      const videoMode = assertInstanceof(this.modes_.current, Video);
-      videoMode.takeSnapshot();
-    });
+    dom.get('#video-snapshot', HTMLButtonElement)
+        .addEventListener('click', () => {
+          const videoMode = assertInstanceof(this.modes_.current, Video);
+          videoMode.takeSnapshot();
+        });
 
-    const pauseShutter = document.querySelector('#pause-recordvideo');
+    const pauseShutter = dom.get('#pause-recordvideo', HTMLButtonElement);
     pauseShutter.addEventListener('click', () => {
       const videoMode = assertInstanceof(this.modes_.current, Video);
       videoMode.togglePaused();
@@ -246,19 +281,25 @@ export class Camera extends View {
 
     dom.get('#banner-close', HTMLButtonElement)
         .addEventListener('click', () => {
-          util.animateCancel(this.banner_);
+          animate.cancel(this.banner_);
         });
 
+    this.openPTZPanel_.addEventListener('click', () => {
+      nav.open(ViewName.PTZ_PANEL, this.preview_.stream);
+    });
+
     // Monitor the states to stop camera when locked/minimized.
-    browserProxy.addOnLockListener((isLocked) => {
-      this.locked_ = isLocked;
+    const idleDetector = new window.IdleDetector();
+    idleDetector.addEventListener('change', () => {
+      this.locked_ = idleDetector.screenState === 'locked';
       if (this.locked_) {
         this.start();
       }
     });
-
-    windowController.addOnMinimizedListener(() => {
-      this.start();
+    idleDetector.start().catch((e) => {
+      error.reportError(
+          ErrorType.IDLE_DETECTOR_FAILURE, ErrorLevel.ERROR,
+          assertInstanceof(e, Error));
     });
 
     document.addEventListener('visibilitychange', () => {
@@ -302,6 +343,31 @@ export class Camera extends View {
 
     state.addObserver(state.State.SCREEN_OFF_AUTO, checkScreenOff);
     state.addObserver(state.State.HAS_EXTERNAL_SCREEN, checkScreenOff);
+
+    this.initVideoEncoderOptions_();
+  }
+
+  /**
+   * @private
+   */
+  initVideoEncoderOptions_() {
+    const options = this.videoEncoderOptions_;
+    this.addConfigureCompleteListener_(() => {
+      if (state.get(Mode.VIDEO)) {
+        const {width, height, frameRate} =
+            this.preview_.stream.getVideoTracks()[0].getSettings();
+        options.updateValues(new Resolution(width, height), frameRate);
+      }
+    });
+    options.initialize();
+  }
+
+  /**
+   * @param {function(): void} listener
+   * @private
+   */
+  addConfigureCompleteListener_(listener) {
+    this.configureCompleteListener_.add(listener);
   }
 
   /**
@@ -351,15 +417,13 @@ export class Camera extends View {
           .forEach((btn) => btn.offsetParent && btn.focus());
     };
     (async () => {
-      const values =
-          await browserProxy.localStorageGet({isFolderChangeMsgShown: false});
+      const values = await localStorage.get({isFolderChangeMsgShown: false});
       await this.configuring_;
       if (!values['isFolderChangeMsgShown']) {
-        browserProxy.localStorageSet({isFolderChangeMsgShown: true});
-        util.animateOnce(this.banner_, focusOnShutterButton);
-      } else {
-        focusOnShutterButton();
+        localStorage.set({isFolderChangeMsgShown: true});
+        await animate.play(this.banner_);
       }
+      focusOnShutterButton();
     })();
   }
 
@@ -383,11 +447,25 @@ export class Camera extends View {
     this.take_ = (async () => {
       let hasError = false;
       try {
+        // Record and keep the rotation only at the instance the user starts the
+        // capture. Users may change the device orientation while taking video.
+        const cameraFrameRotation = await (async () => {
+          const deviceOperator = await DeviceOperator.getInstance();
+          if (deviceOperator === null) {
+            return 0;
+          }
+          assert(this.activeDeviceId_ !== null);
+          return await deviceOperator.getCameraFrameRotation(
+              this.activeDeviceId_);
+        })();
+        // Translate the camera frame rotation back to the UI rotation, which is
+        // what we need to rotate the captured video with.
+        this.outputVideoRotation_ = (360 - cameraFrameRotation) % 360;
         await timertick.start();
         await this.modes_.current.startCapture();
       } catch (e) {
         hasError = true;
-        if (e && e.message === 'cancel') {
+        if (e instanceof CanceledError) {
           return;
         }
         console.error(e);
@@ -442,15 +520,15 @@ export class Camera extends View {
    * @override
    */
   createVideoSaver() {
-    return this.resultSaver_.startSaveVideo();
+    return this.resultSaver_.startSaveVideo(this.outputVideoRotation_);
   }
 
   /**
    * @override
    */
   playShutterEffect() {
-    sound.play('#sound-shutter');
-    util.animateOnce(this.preview_.video);
+    sound.play(dom.get('#sound-shutter', HTMLAudioElement));
+    animate.play(this.preview_.video);
   }
 
   /**
@@ -573,6 +651,9 @@ export class Camera extends View {
           await this.modes_.updateModeSelectionUI(deviceId);
           await this.modes_.updateMode(
               mode, factory, stream, this.facingMode_, deviceId, captureR);
+          for (const l of this.configureCompleteListener_) {
+            l();
+          }
           nav.close(ViewName.WARNING, WarningType.NO_CAMERA);
           return true;
         } catch (e) {

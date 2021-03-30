@@ -11,7 +11,9 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/android/usage_stats/usage_stats_database.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 
 namespace history {
@@ -94,6 +96,8 @@ class UsageStatsBridge : public history::HistoryServiceObserver {
   // Overridden from history::HistoryServiceObserver.
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;
+  void HistoryServiceBeingDeleted(
+      history::HistoryService* history_service) override;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
@@ -118,6 +122,10 @@ class UsageStatsBridge : public history::HistoryServiceObserver {
   Profile* profile_;
 
   base::android::ScopedJavaGlobalRef<jobject> j_this_;
+
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      scoped_history_service_observer_{this};
 
   base::WeakPtrFactory<UsageStatsBridge> weak_ptr_factory_{this};
 

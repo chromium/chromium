@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -125,10 +124,11 @@ void FindReadyRegistrationForScope(
                             scoped_refptr<ServiceWorkerRegistration>)>
         callback) {
   if (!BrowserThread::CurrentlyOn(ServiceWorkerContext::GetCoreThreadId())) {
-    base::PostTask(
-        FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-        base::BindOnce(&FindReadyRegistrationForScope,
-                       std::move(context_wrapper), scope, std::move(callback)));
+    BrowserThread::GetTaskRunnerForThread(
+        ServiceWorkerContext::GetCoreThreadId())
+        ->PostTask(FROM_HERE, base::BindOnce(&FindReadyRegistrationForScope,
+                                             std::move(context_wrapper), scope,
+                                             std::move(callback)));
     return;
   }
   context_wrapper->FindReadyRegistrationForScope(scope, std::move(callback));

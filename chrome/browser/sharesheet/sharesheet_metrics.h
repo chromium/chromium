@@ -31,13 +31,31 @@ class SharesheetMetrics {
     kMaxValue = kClamshell,
   };
 
+  // The source from which the sharesheet was launched from.
+  // This enum is for recording histograms and must be treated as append-only.
+  enum class LaunchSource {
+    kUnknown = 0,
+    kFilesAppShareButton = 1,
+    kFilesAppContextMenu = 2,
+    kWebShare = 3,
+    kArcNearbyShare = 4,
+    kMaxValue = kArcNearbyShare,
+  };
+
   SharesheetMetrics();
 
-  static void RecordSharesheetActionMetrics(UserAction action);
+  static void RecordSharesheetActionMetrics(const UserAction action);
 
-  static void RecordSharesheetAppCount(int app_count);
+  // Records number of each target type that appear in the Sharesheet
+  // when it is invoked.
+  static void RecordSharesheetAppCount(const int app_count);
+  static void RecordSharesheetArcAppCount(const int app_count);
+  static void RecordSharesheetWebAppCount(const int app_count);
+  static void RecordSharesheetShareAction(const UserAction action);
 
-  static void RecordSharesheetFormFactor(FormFactor form_factor);
+  static void RecordSharesheetFormFactor(const FormFactor form_factor);
+
+  static void RecordSharesheetLaunchSource(const LaunchSource source);
 };
 
 }  // namespace sharesheet

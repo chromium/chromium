@@ -4,7 +4,7 @@
 
 #include "components/invalidation/impl/fake_invalidation_handler.h"
 
-namespace syncer {
+namespace invalidation {
 
 FakeInvalidationHandler::FakeInvalidationHandler()
     : state_(DEFAULT_INVALIDATION_ERROR),
@@ -45,8 +45,8 @@ std::string FakeInvalidationHandler::GetOwnerName() const {
   return owner_name_;
 }
 
-bool FakeInvalidationHandler::IsPublicTopic(const syncer::Topic& topic) const {
+bool FakeInvalidationHandler::IsPublicTopic(const Topic& topic) const {
   return topic == "PREFERENCE";
 }
 
-}  // namespace syncer
+}  // namespace invalidation

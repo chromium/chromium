@@ -12,27 +12,24 @@
 #include "base/macros.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/chromeos/login/existing_user_controller.h"
-#include "chrome/browser/chromeos/login/session/user_session_manager.h"
-#include "chrome/browser/chromeos/login/session/user_session_manager_test_api.h"
-#include "chrome/browser/chromeos/login/test/device_state_mixin.h"
-#include "chrome/browser/chromeos/login/test/fake_gaia_mixin.h"
-#include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
-#include "chrome/browser/chromeos/login/test/oobe_base_test.h"
-#include "chrome/browser/chromeos/login/test/session_manager_state_waiter.h"
-#include "chrome/browser/chromeos/login/test/user_policy_mixin.h"
-#include "chrome/browser/chromeos/login/ui/login_display_host.h"
-#include "chrome/browser/chromeos/login/users/chrome_user_manager_impl.h"
-#include "chrome/browser/chromeos/login/wizard_controller.h"
+#include "chrome/browser/ash/login/existing_user_controller.h"
+#include "chrome/browser/ash/login/session/user_session_manager.h"
+#include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
+#include "chrome/browser/ash/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
+#include "chrome/browser/ash/login/test/login_manager_mixin.h"
+#include "chrome/browser/ash/login/test/oobe_base_test.h"
+#include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
+#include "chrome/browser/ash/login/test/user_policy_mixin.h"
+#include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
+#include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
-#include "chrome/browser/chromeos/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/chromeos/settings/stub_cros_settings_provider.h"
+#include "chrome/browser/site_isolation/about_flags.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/settings/cros_settings_names.h"
@@ -55,6 +52,9 @@ namespace em = enterprise_management;
 
 namespace chromeos {
 namespace {
+
+// TODO(https://crbug.com/1164001): remove once this file is migrated.
+using ::ash::ChromeUserManagerImpl;
 
 struct Params {
   Params(std::string login_screen_isolate_origins,
@@ -142,7 +142,8 @@ const Params kTestCases[] = {
         std::string() /* login_screen_isolate_origins */,
         std::string() /* user_policy_isolate_origins */,
         false /* user_policy_site_per_process */,
-        {"site-isolation-trial-opt-out@1"} /* user_flag_internal_names */,
+        /* user_flag_internal_names */
+        {about_flags::SiteIsolationTrialOptOutChoiceEnabled()},
         false /* ephemeral_users */,
         true /* expected_request_restart */,
         {"--disable-site-isolation-trials"} /* expected_switches_for_user */),
@@ -152,7 +153,8 @@ const Params kTestCases[] = {
     Params(std::string() /* login_screen_isolate_origins */,
            std::string() /* user_policy_isolate_origins */,
            true /* user_policy_site_per_process */,
-           {"site-isolation-trial-opt-out@1"} /* user_flag_internal_names */,
+           /* user_flag_internal_names */
+           {about_flags::SiteIsolationTrialOptOutChoiceEnabled()},
            false /* ephemeral_users */,
            false /* expected_request_restart */,
            {} /* expected_switches_for_user */),

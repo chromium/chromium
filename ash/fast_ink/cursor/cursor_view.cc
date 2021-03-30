@@ -205,8 +205,7 @@ void CursorView::OnTimerTick() {
 
     // Create directional blur filter for |sigma|.
     motion_blur_filter_ = sk_make_sp<cc::BlurPaintFilter>(
-        sigma, 0.f, SkBlurImageFilter::TileMode::kClampToBlack_TileMode,
-        nullptr);
+        sigma, 0.f, SkTileMode::kDecal, nullptr);
 
     // Compute blur offset.
     motion_blur_offset_ =

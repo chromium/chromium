@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Route} from './router.m.js';
+import {Route} from './router.js';
 
 /**
  * Specifies all possible routes in settings.
@@ -28,6 +28,7 @@ import {Route} from './router.m.js';
  *   IMPORT_DATA: !Route,
  *   INCOMPATIBLE_APPLICATIONS: !Route,
  *   LANGUAGES: !Route,
+ *   LANGUAGE_SETTINGS: !Route,
  *   MANAGE_PROFILE: !Route,
  *   ON_STARTUP: !Route,
  *   PASSWORDS: !Route,

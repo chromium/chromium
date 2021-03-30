@@ -21,7 +21,7 @@ TemplateURLServiceClientImpl::TemplateURLServiceClientImpl(
   // backend can handle automatically adding the search terms as the user
   // navigates.
   if (history_service_)
-    history_service_->AddObserver(this);
+    history_service_observation_.Observe(history_service_);
 }
 
 TemplateURLServiceClientImpl::~TemplateURLServiceClientImpl() {}
@@ -35,7 +35,7 @@ void TemplateURLServiceClientImpl::Shutdown() {
   // two-phases since KeyedService are not supposed to use a dependend service
   // after the Shutdown call.
   if (history_service_) {
-    history_service_->RemoveObserver(this);
+    history_service_observation_.Reset();
     history_service_ = nullptr;
   }
 }
@@ -55,7 +55,7 @@ void TemplateURLServiceClientImpl::DeleteAllSearchTermsForKeyword(
 void TemplateURLServiceClientImpl::SetKeywordSearchTermsForURL(
     const GURL& url,
     TemplateURLID id,
-    const base::string16& term) {
+    const std::u16string& term) {
   if (history_service_)
     history_service_->SetKeywordSearchTermsForURL(url, id, term);
 }

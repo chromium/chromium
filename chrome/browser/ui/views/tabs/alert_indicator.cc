@@ -16,6 +16,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/animation_delegate_views.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -241,8 +242,7 @@ void AlertIndicator::TransitionToAlertState(
 }
 
 void AlertIndicator::OnParentTabButtonColorChanged() {
-  if (alert_state_ == TabAlertState::AUDIO_PLAYING ||
-      alert_state_ == TabAlertState::AUDIO_MUTING)
+  if (alert_state_)
     ResetImage(alert_state_.value());
 }
 
@@ -256,3 +256,6 @@ void AlertIndicator::ResetImage(TabAlertState state) {
   gfx::ImageSkia image = GetTabAlertIndicatorImage(state, color).AsImageSkia();
   SetImage(&image);
 }
+
+BEGIN_METADATA(AlertIndicator, views::ImageView)
+END_METADATA

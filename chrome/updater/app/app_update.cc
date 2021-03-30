@@ -15,7 +15,6 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
-#include "chrome/updater/registration_data.h"
 #include "chrome/updater/setup.h"
 #include "chrome/updater/updater_version.h"
 
@@ -42,23 +41,12 @@ void AppUpdate::Uninitialize() {
 }
 
 void AppUpdate::FirstTaskRun() {
-  InstallCandidate(false, base::BindOnce(&AppUpdate::SetupDone, this));
+  InstallCandidate(updater_scope(),
+                   base::BindOnce(&AppUpdate::SetupDone, this));
 }
 
 void AppUpdate::SetupDone(int result) {
-  if (result != 0) {
-    Shutdown(result);
-    return;
-  }
-
-  RegistrationRequest request;
-  request.app_id = kUpdaterAppId;
-  request.version = base::Version(UPDATER_VERSION_STRING);
-
-  base::MakeRefCounted<PersistedData>(config_->GetPrefService())
-      ->RegisterApp(request);
-
-  Shutdown(0);
+  Shutdown(result);
 }
 
 scoped_refptr<App> MakeAppUpdate() {

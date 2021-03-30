@@ -51,11 +51,11 @@ void ChromeNSSCryptoModuleDelegate::ShowDialog(const std::string& slot_name,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ShowCryptoModulePasswordDialog(
       slot_name, retry, reason_, server_.host(),
-      NULL,  // TODO(mattm): Supply parent window.
-      base::Bind(&ChromeNSSCryptoModuleDelegate::GotPassword,
-                 // RequestPassword is blocked on |event_| until GotPassword is
-                 // called, so there's no need to ref-count.
-                 base::Unretained(this)));
+      nullptr,  // TODO(mattm): Supply parent window.
+      base::BindOnce(&ChromeNSSCryptoModuleDelegate::GotPassword,
+                     // RequestPassword is blocked on |event_| until GotPassword
+                     // is called, so there's no need to ref-count.
+                     base::Unretained(this)));
 }
 
 void ChromeNSSCryptoModuleDelegate::GotPassword(const std::string& password) {

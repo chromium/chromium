@@ -604,7 +604,7 @@ TEST_F(UrlPatternIndexTest, OneRuleWithActivationTypes) {
         << "; ActivationType: " << static_cast<int>(test_case.activation_type));
 
     auto rule = MakeUrlRule(UrlPattern(test_case.url_pattern, kSubstring));
-    rule.set_semantics(proto::RULE_SEMANTICS_WHITELIST);
+    rule.set_semantics(proto::RULE_SEMANTICS_ALLOWLIST);
     rule.clear_element_types();
     rule.set_activation_types(test_case.activation_types);
     ASSERT_TRUE(AddUrlRule(rule));
@@ -626,7 +626,7 @@ TEST_F(UrlPatternIndexTest, OneRuleWithActivationTypes) {
 
 TEST_F(UrlPatternIndexTest, OneRuleWithElementAndActivationTypes) {
   auto rule = MakeUrlRule(UrlPattern("allow.ex.com", kSubstring));
-  rule.set_semantics(proto::RULE_SEMANTICS_WHITELIST);
+  rule.set_semantics(proto::RULE_SEMANTICS_ALLOWLIST);
   rule.set_element_types(testing::kSubdocument);
   rule.set_activation_types(kDocument);
   ASSERT_TRUE(AddUrlRule(rule));
@@ -811,7 +811,7 @@ TEST_F(UrlPatternIndexTest, RulesWithSupportedAndUnsupportedTypes) {
 
   for (const auto& rule_data : kRules) {
     auto rule = MakeUrlRule(UrlPattern("example.com", kSubstring));
-    rule.set_semantics(proto::RULE_SEMANTICS_WHITELIST);
+    rule.set_semantics(proto::RULE_SEMANTICS_ALLOWLIST);
     rule.set_element_types(rule_data.element_types);
     rule.set_activation_types(rule_data.activation_types);
     EXPECT_TRUE(AddUrlRule(rule))

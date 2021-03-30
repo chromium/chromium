@@ -69,7 +69,7 @@
 #include "ui/webui/webui_allowlist.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/login/users/mock_user_manager.h"
+#include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif
 
@@ -157,7 +157,7 @@ class SiteSettingsHandlerTest : public testing::Test {
             ContentSettingsType::COOKIES)) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<chromeos::MockUserManager>());
+        std::make_unique<ash::MockUserManager>());
 #endif
 
     // Fully initialize |profile_| in the constructor since some children
@@ -176,7 +176,10 @@ class SiteSettingsHandlerTest : public testing::Test {
     // AllowJavascript() adds a callback to create leveldb_env::ChromiumEnv
     // which reads the FeatureList. Wait for the callback to be finished so that
     // we won't destruct |feature_list_| before the callback is executed.
-    base::RunLoop().RunUntilIdle();
+    // We also want to let the storage system finish setting up, to avoid test
+    // flakiness caused by the quota storage system shutting down at test end,
+    // while still being set up.
+    task_environment_.RunUntilIdle();
     web_ui()->ClearTrackedCalls();
   }
 
@@ -1200,8 +1203,10 @@ TEST_F(SiteSettingsHandlerTest, NotificationPermissionRevokeUkm) {
   EXPECT_EQ(
       *ukm_recorder.GetEntryMetric(entry, "Source"),
       static_cast<int64_t>(permissions::PermissionSourceUI::SITE_SETTINGS));
+  size_t num_values = 0;
   EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "PermissionType"),
-            static_cast<int64_t>(ContentSettingsType::NOTIFICATIONS));
+            ContentSettingTypeToHistogramValue(
+                ContentSettingsType::NOTIFICATIONS, &num_values));
   EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "Action"),
             static_cast<int64_t>(permissions::PermissionAction::REVOKED));
 }
@@ -1991,17 +1996,15 @@ class SiteSettingsHandlerChooserExceptionTest : public SiteSettingsHandlerTest {
     // Add the user granted permissions for testing.
     // These two persistent device permissions should be lumped together with
     // the policy permissions, since they apply to the same device and URL.
-    chooser_context->GrantDevicePermission(kChromiumOrigin, kChromiumOrigin,
+    chooser_context->GrantDevicePermission(kChromiumOrigin,
                                            *persistent_device_info_);
-    chooser_context->GrantDevicePermission(kChromiumOrigin, kGoogleOrigin,
+    chooser_context->GrantDevicePermission(kGoogleOrigin,
                                            *persistent_device_info_);
-    chooser_context->GrantDevicePermission(kAndroidOrigin, kChromiumOrigin,
+    chooser_context->GrantDevicePermission(kWebUIOrigin,
                                            *persistent_device_info_);
-    chooser_context->GrantDevicePermission(kWebUIOrigin, kWebUIOrigin,
-                                           *persistent_device_info_);
-    chooser_context->GrantDevicePermission(kAndroidOrigin, kAndroidOrigin,
+    chooser_context->GrantDevicePermission(kAndroidOrigin,
                                            *ephemeral_device_info_);
-    chooser_context->GrantDevicePermission(kAndroidOrigin, kAndroidOrigin,
+    chooser_context->GrantDevicePermission(kAndroidOrigin,
                                            *user_granted_device_info_);
 
     // Add the policy granted permissions for testing.
@@ -2029,9 +2032,8 @@ class SiteSettingsHandlerChooserExceptionTest : public SiteSettingsHandlerTest {
         base::DoNothing::Once<std::vector<device::mojom::UsbDeviceInfoPtr>>());
     base::RunLoop().RunUntilIdle();
 
-    const auto kAndroidOrigin = url::Origin::Create(AndroidUrl());
     const auto kChromiumOrigin = url::Origin::Create(ChromiumUrl());
-    chooser_context->GrantDevicePermission(kChromiumOrigin, kAndroidOrigin,
+    chooser_context->GrantDevicePermission(kChromiumOrigin,
                                            *off_the_record_device_);
 
     // Add the observer for permission changes.
@@ -2083,26 +2085,18 @@ class SiteSettingsHandlerChooserExceptionTest : public SiteSettingsHandlerTest {
 
   // Iterate through the exception's sites array and return true if a site
   // exception matches |requesting_origin| and |embedding_origin|.
-  bool ChooserExceptionContainsSiteException(
-      const base::Value& exception,
-      const std::string& requesting_origin,
-      const std::string& embedding_origin) {
+  bool ChooserExceptionContainsSiteException(const base::Value& exception,
+                                             const std::string& origin) {
     const base::Value* sites = exception.FindListKey(site_settings::kSites);
     if (!sites)
       return false;
 
     for (const auto& site : sites->GetList()) {
-      const std::string* origin = site.FindStringKey(site_settings::kOrigin);
-      if (!origin)
+      const std::string* exception_origin =
+          site.FindStringKey(site_settings::kOrigin);
+      if (!exception_origin)
         continue;
-      if (*origin != requesting_origin)
-        continue;
-
-      const std::string* exception_embedding_origin =
-          site.FindStringKey(site_settings::kEmbeddingOrigin);
-      if (!exception_embedding_origin)
-        continue;
-      if (*exception_embedding_origin == embedding_origin)
+      if (*exception_origin == origin)
         return true;
     }
     return false;
@@ -2110,12 +2104,10 @@ class SiteSettingsHandlerChooserExceptionTest : public SiteSettingsHandlerTest {
 
   // Iterate through the |exception_list| array and return true if there is a
   // chooser exception with |display_name| that contains a site exception for
-  // |requesting_origin| and |embedding_origin|.
-  bool ChooserExceptionContainsSiteException(
-      const base::Value& exceptions,
-      const std::string& display_name,
-      const std::string& requesting_origin,
-      const std::string& embedding_origin) {
+  // |origin|.
+  bool ChooserExceptionContainsSiteException(const base::Value& exceptions,
+                                             const std::string& display_name,
+                                             const std::string& origin) {
     if (!exceptions.is_list())
       return false;
 
@@ -2126,8 +2118,7 @@ class SiteSettingsHandlerChooserExceptionTest : public SiteSettingsHandlerTest {
         continue;
 
       if (*exception_display_name == display_name) {
-        return ChooserExceptionContainsSiteException(
-            exception, requesting_origin, embedding_origin);
+        return ChooserExceptionContainsSiteException(exception, origin);
       }
     }
     return false;
@@ -2157,8 +2148,8 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
 
   // Don't include WebUI schemes.
   const std::string kWebUIOriginStr = WebUIUrl().GetOrigin().spec();
-  EXPECT_FALSE(ChooserExceptionContainsSiteException(
-      exceptions, "Gizmo", kWebUIOriginStr, kWebUIOriginStr));
+  EXPECT_FALSE(ChooserExceptionContainsSiteException(exceptions, "Gizmo",
+                                                     kWebUIOriginStr));
 }
 
 TEST_F(SiteSettingsHandlerChooserExceptionTest,
@@ -2206,8 +2197,10 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
           .as_string();
   const auto kAndroidOrigin = url::Origin::Create(AndroidUrl());
   const auto kChromiumOrigin = url::Origin::Create(ChromiumUrl());
+  const auto kGoogleOrigin = url::Origin::Create(GoogleUrl());
   const std::string kAndroidOriginStr = AndroidUrl().GetOrigin().spec();
   const std::string kChromiumOriginStr = ChromiumUrl().GetOrigin().spec();
+  const std::string kGoogleOriginStr = GoogleUrl().GetOrigin().spec();
 
   {
     const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
@@ -2220,15 +2213,15 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
   // from the list.
   base::ListValue args;
   args.AppendString(kUsbChooserGroupName);
-  args.AppendString(kAndroidOriginStr);
-  args.AppendString(kChromiumOriginStr);
+  args.AppendString("https://unused.com");
+  args.AppendString(kGoogleOriginStr);
   args.Append(base::Value::ToUniquePtrValue(
       UsbChooserContext::DeviceInfoToValue(*persistent_device_info_)));
 
   EXPECT_CALL(observer_, OnChooserObjectPermissionChanged(
                              ContentSettingsType::USB_GUARD,
                              ContentSettingsType::USB_CHOOSER_DATA));
-  EXPECT_CALL(observer_, OnPermissionRevoked(kAndroidOrigin, kChromiumOrigin));
+  EXPECT_CALL(observer_, OnPermissionRevoked(kGoogleOrigin));
   handler()->HandleResetChooserExceptionForSite(&args);
 
   // The HandleResetChooserExceptionForSite() method should have also caused the
@@ -2244,15 +2237,15 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
 
     // Ensure that the sites list does not contain the URLs of the removed
     // permission.
-    EXPECT_FALSE(ChooserExceptionContainsSiteException(
-        exceptions, "Gizmo", kAndroidOriginStr, kChromiumOriginStr));
+    EXPECT_FALSE(ChooserExceptionContainsSiteException(exceptions, "Gizmo",
+                                                       kGoogleOriginStr));
   }
 
   // User granted USB permissions that are also granted by policy should not
   // be able to be reset.
   args.Clear();
   args.AppendString(kUsbChooserGroupName);
-  args.AppendString(kChromiumOriginStr);
+  args.AppendString("https://unused.com");
   args.AppendString(kChromiumOriginStr);
   args.Append(base::Value::ToUniquePtrValue(
       UsbChooserContext::DeviceInfoToValue(*persistent_device_info_)));
@@ -2263,19 +2256,18 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
     EXPECT_EQ(exceptions.GetList().size(), 5u);
 
     // User granted exceptions that are also granted by policy are only
-    // displayed through the policy granted site exception, so ensure that a
-    // site exception entry for a requesting and embedding origin of
-    // kChromiumOriginStr does not exist.
-    EXPECT_TRUE(ChooserExceptionContainsSiteException(
-        exceptions, "Gizmo", kChromiumOriginStr, std::string()));
-    EXPECT_FALSE(ChooserExceptionContainsSiteException(
-        exceptions, "Gizmo", kChromiumOriginStr, kChromiumOriginStr));
+    // displayed through the policy granted site exception, so ensure that the
+    // policy exception is present under the "Gizmo" device.
+    EXPECT_TRUE(ChooserExceptionContainsSiteException(exceptions, "Gizmo",
+                                                      kChromiumOriginStr));
+    EXPECT_FALSE(ChooserExceptionContainsSiteException(exceptions, "Gizmo",
+                                                       kGoogleOriginStr));
   }
 
   EXPECT_CALL(observer_, OnChooserObjectPermissionChanged(
                              ContentSettingsType::USB_GUARD,
                              ContentSettingsType::USB_CHOOSER_DATA));
-  EXPECT_CALL(observer_, OnPermissionRevoked(kChromiumOrigin, kChromiumOrigin));
+  EXPECT_CALL(observer_, OnPermissionRevoked(kChromiumOrigin));
   handler()->HandleResetChooserExceptionForSite(&args);
 
   // The HandleResetChooserExceptionForSite() method should have also caused the
@@ -2287,12 +2279,16 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
         kUsbChooserGroupName, /*expected_total_calls=*/8u);
     EXPECT_EQ(exceptions.GetList().size(), 5u);
 
-    // Ensure that the sites list still displays a site exception entry for a
-    // requesting origin of kChromiumOriginStr and a wildcard embedding origin.
+    // Ensure that the sites list still displays a site exception entry for an
+    // origin of kGoogleOriginStr.  Since now the device has had its
+    // permission revoked, the policy-provided object will not be able to deduce
+    // the name "Gizmo" from the connected device. As such we check that the
+    // policy is still active by looking for the genericly constructed name.
     EXPECT_TRUE(ChooserExceptionContainsSiteException(
-        exceptions, "Gizmo", kChromiumOriginStr, std::string()));
-    EXPECT_FALSE(ChooserExceptionContainsSiteException(
-        exceptions, "Gizmo", kChromiumOriginStr, kChromiumOriginStr));
+        exceptions, "Unknown product 0x162E from Google Inc.",
+        kChromiumOriginStr));
+    EXPECT_FALSE(ChooserExceptionContainsSiteException(exceptions, "Gizmo",
+                                                       kGoogleOriginStr));
   }
 
   // User granted USB permissions that are not covered by policy should be able
@@ -2300,7 +2296,7 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
   // when the exception only has one site exception granted to it..
   args.Clear();
   args.AppendString(kUsbChooserGroupName);
-  args.AppendString(kAndroidOriginStr);
+  args.AppendString("https://unused.com");
   args.AppendString(kAndroidOriginStr);
   args.Append(base::Value::ToUniquePtrValue(
       UsbChooserContext::DeviceInfoToValue(*user_granted_device_info_)));
@@ -2309,14 +2305,14 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
     const base::Value& exceptions =
         GetChooserExceptionListFromWebUiCallData(kUsbChooserGroupName, 9u);
     EXPECT_EQ(exceptions.GetList().size(), 5u);
-    EXPECT_TRUE(ChooserExceptionContainsSiteException(
-        exceptions, "Widget", kAndroidOriginStr, kAndroidOriginStr));
+    EXPECT_TRUE(ChooserExceptionContainsSiteException(exceptions, "Widget",
+                                                      kAndroidOriginStr));
   }
 
   EXPECT_CALL(observer_, OnChooserObjectPermissionChanged(
                              ContentSettingsType::USB_GUARD,
                              ContentSettingsType::USB_CHOOSER_DATA));
-  EXPECT_CALL(observer_, OnPermissionRevoked(kAndroidOrigin, kAndroidOrigin));
+  EXPECT_CALL(observer_, OnPermissionRevoked(kAndroidOrigin));
   handler()->HandleResetChooserExceptionForSite(&args);
 
   // The HandleResetChooserExceptionForSite() method should have also caused the
@@ -2327,8 +2323,8 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
     const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
         kUsbChooserGroupName, /*expected_total_calls=*/12u);
     EXPECT_EQ(exceptions.GetList().size(), 4u);
-    EXPECT_FALSE(ChooserExceptionContainsSiteException(
-        exceptions, "Widget", kAndroidOriginStr, kAndroidOriginStr));
+    EXPECT_FALSE(ChooserExceptionContainsSiteException(exceptions, "Widget",
+                                                       kAndroidOriginStr));
   }
 }
 

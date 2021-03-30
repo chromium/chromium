@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">Položka seznamu</translation>
 <translation id="1013742170491673792">upr vyhl</translation>
 <translation id="1014370462248694370">Přejeďte dvěma prsty doprava</translation>
-<translation id="1016393160682012902">Stisknutím klávesy na běžné klávesnici, tlačítka obnovitelného braillského řádku nebo provedením dotykového gesta získáte informace o jeho funkci. Režim výuky ukončíte stisknutím kombinace kláves Ctrl+W nebo klávesy Escape.</translation>
 <translation id="1022586497894531524">Používáte hlasovou odezvu ChromeVox poprvé? Tento stručný výukový program vysvětluje základy, které vám pomohou začít ChromeVox používat.</translation>
 <translation id="1025074108959230262">Režim Jedním prstem je vypnut</translation>
 <translation id="1031961866430398710">a pak</translation>
@@ -150,6 +149,7 @@
 <translation id="2045055672832940894">Žádný předchozí ovládací prvek není</translation>
 <translation id="2045606329038304310">Ovládání polí formuláře</translation>
 <translation id="2063539687800151747">Nápis</translation>
+<translation id="2074531330963286860">Jsou k dispozici akce. Zobrazíte je stisknutím vyhledávacího tlačítka a tečky</translation>
 <translation id="2086961585857038472">Další slovo</translation>
 <translation id="2087981446621639008">podr seznpopisů</translation>
 <translation id="2089387485033699258">cs</translation>
@@ -975,6 +975,7 @@
 <translation id="827266600368092403">Zahájit nebo ukončit výběr</translation>
 <translation id="827422111966801947">Indigová</translation>
 <translation id="8276439074553447000">Přejít na předchozí zaměřitelnou položku</translation>
+<translation id="8279039817939141096">Stisknutím klávesy na běžné klávesnici, tlačítka obnovitelného braillského řádku nebo provedením dotykového gesta získáte informace o jeho funkci. Ukončíte stisknutím kombinace kláves Ctrl+W nebo mezerník+Z, přejetím dvěma prsty doleva nebo stisknutím klávesy Escape.</translation>
 <translation id="8283603667300770666">Další pole formuláře</translation>
 <translation id="8310185481635255431">Žádný další odkaz není</translation>
 <translation id="831207808878314375">Definice</translation>

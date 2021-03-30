@@ -2,7 +2,7 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-#intro-text {
+:host-context(html:not([new-layout])) #intro-text {
   padding-bottom: 48px;
 }
 
@@ -28,13 +28,13 @@
 }
 
 @media screen and (max-height: 736px) {
-  #intro-text {
+  :host-context(html:not([new-layout])) #intro-text {
     padding-bottom: 24px;
   }
 }
 
 @media screen and (max-height: 536px) {
-  #intro-text {
+  :host-context(html:not([new-layout])) #intro-text {
     padding-bottom: 16px;
   }
 

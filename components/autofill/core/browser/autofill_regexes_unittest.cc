@@ -6,8 +6,9 @@
 
 #include <stddef.h>
 
+#include <string>
+
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_regex_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -86,7 +87,7 @@ class ExpirationDate2DigitYearPositive
 TEST_P(ExpirationDate2DigitYearPositive, ExpirationDate2DigitYearRegexes) {
   auto test_case = GetParam();
   SCOPED_TRACE(test_case.input);
-  const base::string16 pattern = ASCIIToUTF16(kExpirationDate2DigitYearRe);
+  const std::u16string pattern = ASCIIToUTF16(kExpirationDate2DigitYearRe);
   EXPECT_TRUE(MatchesPattern(ASCIIToUTF16(test_case.input), pattern));
 }
 
@@ -120,7 +121,7 @@ class ExpirationDate2DigitYearNegative
 TEST_P(ExpirationDate2DigitYearNegative, ExpirationDate2DigitYearRegexes) {
   auto test_case = GetParam();
   SCOPED_TRACE(test_case.input);
-  const base::string16 pattern = ASCIIToUTF16(kExpirationDate2DigitYearRe);
+  const std::u16string pattern = ASCIIToUTF16(kExpirationDate2DigitYearRe);
   EXPECT_FALSE(MatchesPattern(ASCIIToUTF16(test_case.input), pattern));
 }
 
@@ -159,7 +160,7 @@ class ExpirationDate4DigitYearPositive
 
 TEST_P(ExpirationDate4DigitYearPositive, ExpirationDate4DigitYearRegexes) {
   auto test_case = GetParam();
-  const base::string16 pattern = ASCIIToUTF16(kExpirationDate4DigitYearRe);
+  const std::u16string pattern = ASCIIToUTF16(kExpirationDate4DigitYearRe);
   SCOPED_TRACE(test_case.input);
   EXPECT_TRUE(MatchesPattern(ASCIIToUTF16(test_case.input), pattern));
 }
@@ -194,7 +195,7 @@ class ExpirationDate4DigitYearNegative
 
 TEST_P(ExpirationDate4DigitYearNegative, ExpirationDate4DigitYearRegexes) {
   auto test_case = GetParam();
-  const base::string16 pattern = ASCIIToUTF16(kExpirationDate4DigitYearRe);
+  const std::u16string pattern = ASCIIToUTF16(kExpirationDate4DigitYearRe);
   SCOPED_TRACE(test_case.input);
   EXPECT_FALSE(MatchesPattern(ASCIIToUTF16(test_case.input), pattern));
 }

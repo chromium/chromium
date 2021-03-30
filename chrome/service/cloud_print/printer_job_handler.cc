@@ -769,7 +769,7 @@ void PrinterJobHandler::DoPrint(const JobDetails& job_details,
                            base::Time::Now() - job_start_time_);
   DCHECK(job_spooler_.get());
 
-  base::string16 document_name =
+  std::u16string document_name =
       job_details.job_title_.empty()
           ? l10n_util::GetStringUTF16(IDS_DEFAULT_PRINT_DOCUMENT_TITLE)
           : base::UTF8ToUTF16(job_details.job_title_);

@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_registry.h"
@@ -49,29 +49,24 @@ class ExtensionMessageBubbleController : public BrowserListObserver,
     virtual void PerformAction(const ExtensionIdList& list) = 0;
 
     // Text for various UI labels shown in the bubble.
-    virtual base::string16 GetTitle() const = 0;
+    virtual std::u16string GetTitle() const = 0;
     // Fetches the message to show in the body. |anchored_to_browser_action|
     // will be true if the bubble is anchored against a specific extension
     // icon, allowing the bubble to show a different message than when it is
     // anchored against something else (e.g. show "This extension has..."
     // instead of "An extension has...").
     // |extension_count| is the number of extensions being referenced.
-    virtual base::string16 GetMessageBody(
-        bool anchored_to_browser_action,
-        int extension_count) const = 0;
-    virtual base::string16 GetOverflowText(
-        const base::string16& overflow_count) const = 0;
-    virtual base::string16 GetLearnMoreLabel() const;
+    virtual std::u16string GetMessageBody(bool anchored_to_browser_action,
+                                          int extension_count) const = 0;
+    virtual std::u16string GetOverflowText(
+        const std::u16string& overflow_count) const = 0;
+    virtual std::u16string GetLearnMoreLabel() const;
     virtual GURL GetLearnMoreUrl() const = 0;
-    virtual base::string16 GetActionButtonLabel() const = 0;
-    virtual base::string16 GetDismissButtonLabel() const = 0;
+    virtual std::u16string GetActionButtonLabel() const = 0;
+    virtual std::u16string GetDismissButtonLabel() const = 0;
 
     // Returns true if the bubble should close when the widget deactivates.
     virtual bool ShouldCloseOnDeactivate() const = 0;
-
-    // Returns true if the bubble should be considered acknowledged when the
-    // widget deactivates.
-    virtual bool ShouldAcknowledgeOnDeactivate() const = 0;
 
     // Returns true if the bubble should be shown. Called if and only if there
     // is at least one extension in |extensions|.
@@ -152,12 +147,12 @@ class ExtensionMessageBubbleController : public BrowserListObserver,
   bool ShouldShow();
 
   // Obtains a list of all extensions (by name) the controller knows about.
-  std::vector<base::string16> GetExtensionList();
+  std::vector<std::u16string> GetExtensionList();
 
   // Returns the list of all extensions to display in the bubble, including
   // bullets and newlines. If the extension list should not be displayed,
   // returns an empty string.
-  base::string16 GetExtensionListForDisplay();
+  std::u16string GetExtensionListForDisplay();
 
   // Obtains a list of all extensions (by id) the controller knows about.
   const ExtensionIdList& GetExtensionIdList();
@@ -240,8 +235,8 @@ class ExtensionMessageBubbleController : public BrowserListObserver,
   // Platform-specific implementation of closing the bubble.
   base::OnceClosure close_bubble_callback_;
 
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionMessageBubbleController);
 };

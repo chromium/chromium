@@ -8,9 +8,9 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include <string>
 #include <utility>
 
-#include "base/strings/string16.h"
 #include "ui/base/class_property.h"
 #include "ui/views/metadata/type_conversion.h"
 #include "ui/views/metadata/view_factory_internal.h"

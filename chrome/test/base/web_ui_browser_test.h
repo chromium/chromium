@@ -24,7 +24,7 @@ class Value;
 }
 
 namespace content {
-class RenderViewHost;
+class RenderFrameHost;
 class WebUI;
 }
 
@@ -80,12 +80,12 @@ class BaseWebUIBrowserTest : public JavaScriptBrowserTest {
   bool RunJavascriptAsyncTest(const std::string& test_name,
                               std::vector<base::Value> test_arguments);
 
-  // Sends message through |preload_host| to preload javascript libraries and
+  // Sends message through |preload_frame| to preload javascript libraries and
   // sets the |libraries_preloaded| flag to prevent re-loading at next
   // javascript invocation.
   void PreLoadJavascriptLibraries(const std::string& preload_test_fixture,
                                   const std::string& preload_test_name,
-                                  content::RenderViewHost* preload_host);
+                                  content::RenderFrameHost* preload_frame);
 
   // Called by javascript-generated test bodies to browse to a page and preload
   // the javascript for the given |preload_test_fixture| and
@@ -145,14 +145,14 @@ class BaseWebUIBrowserTest : public JavaScriptBrowserTest {
   // |function_arguments|. When |is_test| is true, the framework wraps
   // |function_name| with a test helper function, which waits for completion,
   // logging an error message on failure, otherwise |function_name| is called
-  // asynchronously. When |preload_host| is non-NULL, sends the javascript to
-  // the RenderView for evaluation at the appropriate time before the onload
+  // asynchronously. When |preload_frame| is non-NULL, sends the javascript to
+  // the renderer frame for evaluation at the appropriate time before the onload
   // call is made. Passes |is_async| along to runTest wrapper.
   bool RunJavascriptUsingHandler(const std::string& function_name,
                                  std::vector<base::Value> function_arguments,
                                  bool is_test,
                                  bool is_async,
-                                 content::RenderViewHost* preload_host);
+                                 content::RenderFrameHost* preload_frame);
 
   // Handles test framework messages.
   std::unique_ptr<WebUITestHandler> test_handler_;

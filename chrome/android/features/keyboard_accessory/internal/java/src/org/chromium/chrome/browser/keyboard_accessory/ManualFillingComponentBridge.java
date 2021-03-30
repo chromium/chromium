@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.keyboard_accessory;
 
 import android.app.Activity;
 import android.util.SparseArray;
-
 import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -196,9 +194,10 @@ class ManualFillingComponentBridge {
     }
 
     @VisibleForTesting
-    public static void notifyFocusedFieldType(WebContents webContents, int focusedFieldType) {
+    public static void notifyFocusedFieldType(
+            WebContents webContents, long focusedFieldId, int focusedFieldType) {
         ManualFillingComponentBridgeJni.get().notifyFocusedFieldTypeForTesting(
-                webContents, focusedFieldType);
+                webContents, focusedFieldId, focusedFieldType);
     }
 
     @VisibleForTesting
@@ -238,7 +237,8 @@ class ManualFillingComponentBridge {
                 long nativeManualFillingViewAndroid, ManualFillingComponentBridge caller);
         void cachePasswordSheetDataForTesting(WebContents webContents, String[] userNames,
                 String[] passwords, boolean originDenylisted);
-        void notifyFocusedFieldTypeForTesting(WebContents webContents, int focusedFieldType);
+        void notifyFocusedFieldTypeForTesting(
+                WebContents webContents, long focusedFieldId, int focusedFieldType);
         void signalAutoGenerationStatusForTesting(WebContents webContents, boolean available);
         void disableServerPredictionsForTesting();
     }

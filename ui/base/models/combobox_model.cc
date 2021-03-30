@@ -8,12 +8,12 @@
 
 namespace ui {
 
-base::string16 ComboboxModel::GetDropDownTextAt(int index) const {
+std::u16string ComboboxModel::GetDropDownTextAt(int index) const {
   return GetItemAt(index);
 }
 
-base::string16 ComboboxModel::GetDropDownSecondaryTextAt(int index) const {
-  return base::string16();
+std::u16string ComboboxModel::GetDropDownSecondaryTextAt(int index) const {
+  return std::u16string();
 }
 
 ImageModel ComboboxModel::GetIconAt(int index) const {

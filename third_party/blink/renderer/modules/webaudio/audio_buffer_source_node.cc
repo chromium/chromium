@@ -33,9 +33,10 @@
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/fdlibm/ieee754.h"
 
 namespace blink {
 
@@ -190,8 +191,8 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
   // Sanity check destinationFrameOffset, numberOfFrames.
   size_t destination_length = bus->length();
 
-  DCHECK_LE(destination_length, audio_utilities::kRenderQuantumFrames);
-  DCHECK_LE(number_of_frames, audio_utilities::kRenderQuantumFrames);
+  DCHECK_LE(destination_length, GetDeferredTaskHandler().RenderQuantumFrames());
+  DCHECK_LE(number_of_frames, GetDeferredTaskHandler().RenderQuantumFrames());
 
   DCHECK_LE(destination_frame_offset, destination_length);
   DCHECK_LE(destination_frame_offset + number_of_frames, destination_length);
@@ -630,7 +631,7 @@ double AudioBufferSourceHandler::ComputePlaybackRate() {
   double final_playback_rate = sample_rate_factor * base_playback_rate;
 
   // Take the detune value into account for the final playback rate.
-  final_playback_rate *= pow(2, detune_->FinalValue() / 1200);
+  final_playback_rate *= fdlibm::pow(2, detune_->FinalValue() / 1200);
 
   // Sanity check the total rate.  It's very important that the resampler not
   // get any bad rate values.
@@ -653,7 +654,21 @@ double AudioBufferSourceHandler::GetMinPlaybackRate() {
 }
 
 bool AudioBufferSourceHandler::PropagatesSilence() const {
-  return !IsPlayingOrScheduled() || HasFinished() || !shared_buffer_.get();
+  DCHECK(Context()->IsAudioThread());
+
+  if (!IsPlayingOrScheduled() || HasFinished())
+    return true;
+
+  // Protect |shared_buffer_| with tryLock because it can be accessed by the
+  // main thread.
+  MutexTryLocker try_locker(process_lock_);
+  if (try_locker.Locked()) {
+    return !shared_buffer_.get();
+  } else {
+    // Can't get lock. Assume |shared_buffer_| exists, so return false to
+    // indicate this node is (or might be) outputting non-zero samples.
+    return false;
+  }
 }
 
 void AudioBufferSourceHandler::HandleStoppableSourceNode() {

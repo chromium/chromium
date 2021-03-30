@@ -1,0 +1,23 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+enum CaptureLinks {
+  // Used when unset or invalid.
+  kUndefined,
+
+  // Standard link capturing behaviours described by:
+  // https://github.com/WICG/sw-launch/blob/master/declarative_link_capturing.md#proposal
+
+  // No link capturing.
+  kNone,
+
+  // Navigations into app scope are captured into a new app tab/window.
+  kNewClient,
+
+  // Navigations into app scope navigate an existing app tab/window if one
+  // exists otherwise falls back to kNewClient.
+  kExistingClientNavigate,
+};

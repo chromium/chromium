@@ -284,6 +284,59 @@ class DecodeMitigations {
 
 const DECODE_MITIGATIONS = new DecodeMitigations();
 
+const WELL_KNOWN_SIDS = {
+  'S-1-15-3-1': 'InternetClient',
+  'S-1-15-3-2': 'InternetClientServer',
+  'S-1-15-3-3': 'PrivateNetworkClientServer',
+  'S-1-15-3-4': 'PicturesLibrary',
+  'S-1-15-3-5': 'VideosLibrary',
+  'S-1-15-3-6': 'MusicLibrary',
+  'S-1-15-3-7': 'DocumentsLibrary',
+  'S-1-15-3-8': 'EnterpriseAuthentication',
+  'S-1-15-3-9': 'SharedUserCertificates',
+  'S-1-15-3-10': 'RemovableStorage',
+  'S-1-15-3-11': 'Appointments',
+  'S-1-15-3-12': 'Contacts',
+  'S-1-15-3-1024-3424233489-972189580-2057154623-747635277-1604371224-316187997-3786583170-1043257646':
+      'chromeInstallFiles',
+  'S-1-15-3-1024-1502825166-1963708345-2616377461-2562897074-4192028372-3968301570-1997628692-1435953622':
+      'lpacAppExperience',
+  'S-1-15-3-1024-2302894289-466761758-1166120688-1039016420-2430351297-4240214049-4028510897-3317428798':
+      'lpacChromeInstallFiles',
+  'S-1-15-3-1024-2405443489-874036122-4286035555-1823921565-1746547431-2453885448-3625952902-991631256':
+      'lpacCom',
+  'S-1-15-3-1024-3203351429-2120443784-2872670797-1918958302-2829055647-4275794519-765664414-2751773334':
+      'lpacCryptoServices',
+  'S-1-15-3-1024-126078593-3658686728-1984883306-821399696-3684079960-564038680-3414880098-3435825201':
+      'lpacEnterprisePolicyChangeNotifications',
+  'S-1-15-3-1024-1788129303-2183208577-3999474272-3147359985-1757322193-3815756386-151582180-1888101193':
+      'lpacIdentityServices',
+  'S-1-15-3-1024-3153509613-960666767-3724611135-2725662640-12138253-543910227-1950414635-4190290187':
+      'lpacInstrumentation',
+  'S-1-15-3-1024-1692970155-4054893335-185714091-3362601943-3526593181-1159816984-2199008581-497492991':
+      'lpacMedia',
+  'S-1-15-3-1024-220022770-701261984-3991292956-4208751020-2918293058-3396419331-1700932348-2078364891':
+      'lpacPnPNotifications',
+  'S-1-15-3-1024-528118966-3876874398-709513571-1907873084-3598227634-3698730060-278077788-3990600205':
+      'lpacServicesManagement',
+  'S-1-15-3-1024-1864111754-776273317-3666925027-2523908081-3792458206-3582472437-4114419977-1582884857':
+      'lpacSessionManagement',
+  'S-1-15-3-1024-1065365936-1281604716-3511738428-1654721687-432734479-3232135806-4053264122-3456934681':
+      'registryRead',
+};
+
+/**
+ * Maps capabilities to well known values.
+ * @param {string}
+ * @return {string}
+ */
+function mapCapabilitySid(sid) {
+  if (WELL_KNOWN_SIDS[sid]) {
+    return WELL_KNOWN_SIDS[sid];
+  }
+  return sid;
+}
+
 /**
  * Adds a row to the sandbox-status table.
  * @param {!Array<Node>} args
@@ -365,6 +418,45 @@ function makeMitigationEntry(platformMitigations) {
 }
 
 /**
+ * Formats a lowbox sid or appcontainer configuration (policies can only
+ * have one or the other).
+ * @param {PolicyDiagnostic} policy
+ * @return {Node}
+ */
+function makeLowboxAcEntry(policy) {
+  if (policy.lowboxSid) {
+    // Lowbox token does not have capabilities but should match AC entries.
+    const fixed = document.createElement('div');
+    fixed.classList.add('mitigations');
+    fixed.innerText = policy.lowboxSid;
+    const col = document.createElement('td');
+    col.appendChild(fixed);
+    return col;
+  }
+  if (policy.appContainerSid) {
+    // AC has identifying SID plus lockdown capabilities.
+    const expander = {
+      expanded: false,
+      caps: policy.appContainerCapabilities,
+      onClick: function(col) {
+        this.expanded = !this.expanded;
+        col.innerText = this.getText();
+        return this.expanded;
+      },
+      getText: function() {
+        if (this.expanded) {
+          return this.caps.map(mapCapabilitySid).sort().join('\n');
+        } else {
+          return '';
+        }
+      }
+    };
+    return makeExpandableEntry(policy.appContainerSid, expander);
+  }
+  return makeTextEntry('');
+}
+
+/**
  * Adds policy information for a process to the sandbox-status table.
  * @param {number} pid
  * @param {string} type
@@ -381,9 +473,11 @@ function addRowForProcess(pid, type, name, sandbox, policy) {
     ].map(makeTextEntry);
     // Clickable mitigations item.
     entries.push(makeMitigationEntry(policy.platformMitigations));
+    entries.push(makeLowboxAcEntry(policy));
     addRow(entries);
   } else {
-    addRow([pid, type, name, 'Not Sandboxed', '', '', ''].map(makeTextEntry));
+    addRow(
+        [pid, type, name, 'Not Sandboxed', '', '', '', ''].map(makeTextEntry));
   }
 }
 
@@ -400,7 +494,8 @@ function onGetSandboxDiagnostics(results) {
 
   // Titles.
   addRow([
-    'Process', 'Type', 'Name', 'Sandbox', 'Lockdown', 'Integrity', 'Mitigations'
+    'Process', 'Type', 'Name', 'Sandbox', 'Lockdown', 'Integrity',
+    'Mitigations', 'Lowbox/AppContainer'
   ].map(makeTextEntry));
 
   // Browser Processes.

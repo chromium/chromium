@@ -62,7 +62,7 @@ class ElementPositionGetter : public WebControllerWorker {
   void OnScrollIntoView(const DevtoolsClient::ReplyStatus& reply_status,
                         std::unique_ptr<runtime::CallFunctionOnResult> result);
   void OnResult(int x, int y);
-  void OnError();
+  void OnError(const ClientStatus& status);
 
   // Time to wait between two box model checks.
   const base::TimeDelta check_interval_;

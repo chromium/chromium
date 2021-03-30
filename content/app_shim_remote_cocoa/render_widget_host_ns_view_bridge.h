@@ -10,6 +10,7 @@
 #import "base/mac/scoped_nsobject.h"
 #import "content/app_shim_remote_cocoa/popup_window_mac.h"
 #import "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h"
+#include "content/app_shim_remote_cocoa/sharing_service_picker.h"
 #include "content/common/render_widget_host_ns_view.mojom.h"
 #include "content/public/common/widget_type.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -50,10 +51,10 @@ class RenderWidgetHostNSViewBridge : public mojom::RenderWidgetHostNSView,
   void SetCALayerParams(const gfx::CALayerParams& ca_layer_params) override;
   void SetBackgroundColor(SkColor color) override;
   void SetVisible(bool visible) override;
-  void SetTooltipText(const base::string16& display_text) override;
+  void SetTooltipText(const std::u16string& display_text) override;
   void SetTextInputState(ui::TextInputType text_input_type,
                          uint32_t flags) override;
-  void SetTextSelection(const base::string16& text,
+  void SetTextSelection(const std::u16string& text,
                         uint64_t offset,
                         const gfx::Range& range) override;
   void SetCompositionRangeInfo(const gfx::Range& range) override;
@@ -68,6 +69,12 @@ class RenderWidgetHostNSViewBridge : public mojom::RenderWidgetHostNSView,
   void LockKeyboard(
       const base::Optional<std::vector<uint32_t>>& uint_dom_codes) override;
   void UnlockKeyboard() override;
+  void ShowSharingServicePicker(
+      const std::string& title,
+      const std::string& text,
+      const std::string& url,
+      const std::vector<std::string>& file_paths,
+      ShowSharingServicePickerCallback callback) override;
 
  private:
   bool IsPopup() const { return !!popup_window_; }
@@ -92,7 +99,7 @@ class RenderWidgetHostNSViewBridge : public mojom::RenderWidgetHostNSView,
   std::unique_ptr<ui::DisplayCALayerTree> display_ca_layer_tree_;
 
   // Cached copy of the tooltip text, to avoid redundant calls.
-  base::string16 tooltip_text_;
+  std::u16string tooltip_text_;
 
   // The receiver for this object (only used when remotely instantiated).
   mojo::AssociatedReceiver<mojom::RenderWidgetHostNSView> receiver_{this};

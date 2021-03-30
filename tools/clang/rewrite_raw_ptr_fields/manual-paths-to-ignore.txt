@@ -4,6 +4,9 @@
 # If a source file path contains any of the lines in the filter file below,
 # then such source file will not be rewritten.
 #
+# Lines prefixed with "!" can be used to force include files that matched a file
+# path to be ignored.
+#
 # Note that the rewriter has a hardcoded logic for a handful of path-based
 # exclusions that cannot be expressed as substring matches:
 # - Excluding paths containing "third_party/", but still covering
@@ -27,8 +30,15 @@ net/tools/
 chrome/chrome_elf/
 chrome/installer/mini_installer/
 
-# Exclude pocdll.dll asnit doesn't depend on //base and only used for testing.
+# DEPS prohibits includes from base/
+chrome/install_static
+
+# Exclude pocdll.dll as it doesn't depend on //base and only used for testing.
 sandbox/win/sandbox_poc/pocdll
+
+# Exclude directories that don't depend on //base, because nothing there uses
+# anything from /base.
+sandbox/linux/system_headers/
 
 # The folder holds headers that are duplicated in the Android source and need to
 # provide a stable C ABI. Can't depend on //base.
@@ -36,6 +46,7 @@ android_webview/public/
 
 # Exclude dependences of checked_ptr.h
 base/logging.h
+base/synchronization/lock_impl.h
 
 # Exclude code that only runs inside a renderer process - renderer
 # processes are excluded for now from the MiraclePtr project scope,
@@ -46,12 +57,17 @@ base/logging.h
 # elsewhere - for example "v8/" is excluded in another part of this
 # file.
 #
+# The common/ directories must be included in the rewrite as they contain code
+# that is also used from the browser process.
+#
 # Also, note that isInThirdPartyLocation AST matcher in
 # RewriteRawPtrFields.cpp explicitly includes third_party/blink
 # (because it is in the same git repository as the rest of Chromium),
 # but we go ahead and exclude it below.
 /renderer/  # (e.g. //content/renderer/ or //components/visitedlink/renderer/).
 third_party/blink/
+!third_party/blink/public/common/
+!third_party/blink/common/
 
 # Exclude paths in separate repositories - i.e. in directories that
 # 1. Contain a ".git" subdirectory
@@ -74,7 +90,6 @@ chrome/app/vector_icons/google_chrome/
 chrome/browser/google/linkdoctor_internal/
 chrome/browser/internal/
 chrome/browser/media/engagement_internal/
-chrome/browser/media/kaleidoscope/internal/
 chrome/browser/resources/chromeos/quickoffice/
 chrome/browser/resources/media_router/extension/src/
 chrome/browser/resources/media_router_internal/

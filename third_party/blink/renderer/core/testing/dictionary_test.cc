@@ -66,8 +66,10 @@ void DictionaryTest::set(const InternalDictionary* testing_dictionary) {
     enum_or_null_member_ = testing_dictionary->enumOrNullMember();
   if (testing_dictionary->hasElementMember())
     element_member_ = testing_dictionary->elementMember();
-  if (testing_dictionary->hasElementOrNullMember())
+  if (testing_dictionary->hasElementOrNullMember()) {
     element_or_null_member_ = testing_dictionary->elementOrNullMember();
+    has_element_or_null_member_ = true;
+  }
   if (testing_dictionary->hasObjectMember())
     object_member_ = testing_dictionary->objectMember();
   object_or_null_member_with_default_ =
@@ -75,7 +77,9 @@ void DictionaryTest::set(const InternalDictionary* testing_dictionary) {
   if (testing_dictionary->hasDoubleOrStringMember())
     double_or_string_member_ = testing_dictionary->doubleOrStringMember();
   if (testing_dictionary->hasDoubleOrStringSequenceMember()) {
-    double_or_string_sequence_member_ =
+    double_or_string_sequence_or_null_member_ =
+        MakeGarbageCollected<HeapVector<DoubleOrString>>();
+    *double_or_string_sequence_or_null_member_ =
         testing_dictionary->doubleOrStringSequenceMember();
   }
   // eventTargetOrNullMember has a default null value.
@@ -149,10 +153,12 @@ void DictionaryTest::Reset() {
   enum_member_with_default_ = String();
   enum_or_null_member_ = base::nullopt;
   element_member_ = nullptr;
-  element_or_null_member_.reset();
+  element_or_null_member_.Clear();
+  has_element_or_null_member_ = false;
   object_member_ = ScriptValue();
   object_or_null_member_with_default_ = ScriptValue();
   double_or_string_member_ = DoubleOrString();
+  double_or_string_sequence_or_null_member_ = nullptr;
   event_target_or_null_member_ = nullptr;
   derived_string_member_ = base::nullopt;
   derived_string_member_with_default_ = String();
@@ -211,15 +217,15 @@ void DictionaryTest::GetInternals(InternalDictionary* dict) {
     dict->setEnumOrNullMember(enum_or_null_member_.value());
   if (element_member_)
     dict->setElementMember(element_member_);
-  if (element_or_null_member_.has_value())
-    dict->setElementOrNullMember(element_or_null_member_.value());
+  if (has_element_or_null_member_)
+    dict->setElementOrNullMember(element_or_null_member_);
   dict->setObjectMember(object_member_);
   dict->setObjectOrNullMemberWithDefault(object_or_null_member_with_default_);
   if (!double_or_string_member_.IsNull())
     dict->setDoubleOrStringMember(double_or_string_member_);
-  if (double_or_string_sequence_member_) {
+  if (double_or_string_sequence_or_null_member_) {
     dict->setDoubleOrStringSequenceMember(
-        double_or_string_sequence_member_.value());
+        *double_or_string_sequence_or_null_member_);
   }
   dict->setEventTargetOrNullMember(event_target_or_null_member_);
   dict->setInternalEnumOrInternalEnumSequenceMember(
@@ -251,7 +257,7 @@ void DictionaryTest::Trace(Visitor* visitor) const {
   visitor->Trace(element_or_null_member_);
   visitor->Trace(object_member_);
   visitor->Trace(object_or_null_member_with_default_);
-  visitor->Trace(double_or_string_sequence_member_);
+  visitor->Trace(double_or_string_sequence_or_null_member_);
   visitor->Trace(event_target_or_null_member_);
   visitor->Trace(any_member_);
   visitor->Trace(callback_function_member_);

@@ -12,9 +12,12 @@
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/web_applications/components/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_database_factory.h"
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
@@ -68,6 +71,33 @@ apps::ShareTarget::Enctype ProtoToEnctype(ShareTarget_Enctype enctype) {
       return apps::ShareTarget::Enctype::kFormUrlEncoded;
     case ShareTarget_Enctype_MULTIPART_FORM_DATA:
       return apps::ShareTarget::Enctype::kMultipartFormData;
+  }
+}
+
+blink::mojom::CaptureLinks ProtoToCaptureLinks(
+    WebAppProto::CaptureLinks capture_links) {
+  switch (capture_links) {
+    case WebAppProto_CaptureLinks_NONE:
+      return blink::mojom::CaptureLinks::kNone;
+    case WebAppProto_CaptureLinks_NEW_CLIENT:
+      return blink::mojom::CaptureLinks::kNewClient;
+    case WebAppProto_CaptureLinks_EXISTING_CLIENT_NAVIGATE:
+      return blink::mojom::CaptureLinks::kExistingClientNavigate;
+  }
+}
+
+WebAppProto::CaptureLinks CaptureLinksToProto(
+    blink::mojom::CaptureLinks capture_links) {
+  switch (capture_links) {
+    case blink::mojom::CaptureLinks::kUndefined:
+      NOTREACHED();
+      FALLTHROUGH;
+    case blink::mojom::CaptureLinks::kNone:
+      return WebAppProto_CaptureLinks_NONE;
+    case blink::mojom::CaptureLinks::kNewClient:
+      return WebAppProto_CaptureLinks_NEW_CLIENT;
+    case blink::mojom::CaptureLinks::kExistingClientNavigate:
+      return WebAppProto_CaptureLinks_EXISTING_CLIENT_NAVIGATE;
   }
 }
 
@@ -179,6 +209,10 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     local_data->set_theme_color(web_app.theme_color().value());
   if (web_app.background_color().has_value())
     local_data->set_background_color(web_app.background_color().value());
+  if (!web_app.last_badging_time().is_null()) {
+    local_data->set_last_badging_time(
+        syncer::TimeToProtoTime(web_app.last_badging_time()));
+  }
   if (!web_app.last_launch_time().is_null()) {
     local_data->set_last_launch_time(
         syncer::TimeToProtoTime(web_app.last_launch_time()));
@@ -196,13 +230,21 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     mutable_chromeos_data->set_show_in_management(
         chromeos_data.show_in_management);
     mutable_chromeos_data->set_is_disabled(chromeos_data.is_disabled);
+    mutable_chromeos_data->set_oem_installed(chromeos_data.oem_installed);
   }
 
-  if (web_app.run_on_os_login_mode() != RunOnOsLoginMode::kUndefined) {
-    local_data->set_user_run_on_os_login_mode(
-        ToWebAppProtoRunOnOsLoginMode(web_app.run_on_os_login_mode()));
+  if (web_app.client_data().system_web_app_data.has_value()) {
+    auto& swa_data = web_app.client_data().system_web_app_data.value();
+
+    auto* mutable_swa_data =
+        local_data->mutable_client_data()->mutable_system_web_app_data();
+    mutable_swa_data->set_system_app_type(
+        static_cast<SystemWebAppDataProto_SystemAppType>(
+            swa_data.system_app_type));
   }
 
+  local_data->set_user_run_on_os_login_mode(
+      ToWebAppProtoRunOnOsLoginMode(web_app.run_on_os_login_mode()));
   local_data->set_is_in_sync_install(web_app.is_in_sync_install());
 
   for (const WebApplicationIconInfo& icon_info : web_app.icon_infos())
@@ -301,7 +343,16 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
   for (const auto& url_handler : web_app.url_handlers()) {
     WebAppUrlHandlerProto* url_handler_proto = local_data->add_url_handlers();
     url_handler_proto->set_origin(url_handler.origin.Serialize());
+    url_handler_proto->set_has_origin_wildcard(url_handler.has_origin_wildcard);
   }
+
+  if (web_app.capture_links() != blink::mojom::CaptureLinks::kUndefined)
+    local_data->set_capture_links(CaptureLinksToProto(web_app.capture_links()));
+  else
+    local_data->clear_capture_links();
+
+  if (!web_app.manifest_url().is_empty())
+    local_data->set_manifest_url(web_app.manifest_url().spec());
 
   return local_data;
 }
@@ -400,7 +451,16 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     chromeos_data->show_in_management =
         chromeos_data_proto.show_in_management();
     chromeos_data->is_disabled = chromeos_data_proto.is_disabled();
+    chromeos_data->oem_installed = chromeos_data_proto.oem_installed();
     web_app->SetWebAppChromeOsData(std::move(chromeos_data));
+  }
+
+  if (local_data.client_data().has_system_web_app_data()) {
+    WebAppSystemWebAppData& swa_data =
+        web_app->client_data()->system_web_app_data.emplace();
+
+    swa_data.system_app_type = static_cast<SystemAppType>(
+        local_data.client_data().system_web_app_data().system_app_type());
   }
 
   // Optional fields:
@@ -439,6 +499,10 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   if (local_data.has_is_in_sync_install())
     web_app->SetIsInSyncInstall(local_data.is_in_sync_install());
 
+  if (local_data.has_last_badging_time()) {
+    web_app->SetLastBadgingTime(
+        syncer::ProtoTimeToTime(local_data.last_badging_time()));
+  }
   if (local_data.has_last_launch_time()) {
     web_app->SetLastLaunchTime(
         syncer::ProtoTimeToTime(local_data.last_launch_time()));
@@ -624,10 +688,25 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
       return nullptr;
     }
     url_handler.origin = std::move(origin);
+    url_handler.has_origin_wildcard = url_handler_proto.has_origin_wildcard();
     url_handlers.push_back(std::move(url_handler));
   }
   web_app->SetUrlHandlers(std::move(url_handlers));
 
+  if (local_data.has_capture_links())
+    web_app->SetCaptureLinks(ProtoToCaptureLinks(local_data.capture_links()));
+  else
+    web_app->SetCaptureLinks(blink::mojom::CaptureLinks::kUndefined);
+
+  if (local_data.has_manifest_url()) {
+    GURL manifest_url(local_data.manifest_url());
+    if (manifest_url.is_empty() || !manifest_url.is_valid()) {
+      DLOG(ERROR) << "WebApp proto manifest_url parse error: "
+                  << manifest_url.possibly_invalid_spec();
+      return nullptr;
+    }
+    web_app->SetManifestUrl(manifest_url);
+  }
   return web_app;
 }
 

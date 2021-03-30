@@ -6,8 +6,6 @@ import("//build/config/android/rules.gni")
 
 source_set("android") {
   sources = [
-    "content_capture_controller.cc",
-    "content_capture_controller.h",
     "content_capture_features_android.cc",
     "content_capture_receiver_manager_android.cc",
     "content_capture_receiver_manager_android.h",
@@ -22,18 +20,17 @@ source_set("android") {
 android_library("java") {
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//content/public/android:content_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   sources = [
     "java/src/org/chromium/components/content_capture/ContentCaptureConsumer.java",
     "java/src/org/chromium/components/content_capture/ContentCaptureConsumerImpl.java",
-    "java/src/org/chromium/components/content_capture/ContentCaptureController.java",
-    "java/src/org/chromium/components/content_capture/ContentCaptureControllerImpl.java",
     "java/src/org/chromium/components/content_capture/ContentCaptureData.java",
+    "java/src/org/chromium/components/content_capture/ContentCaptureDataBase.java",
     "java/src/org/chromium/components/content_capture/ContentCaptureFeatures.java",
+    "java/src/org/chromium/components/content_capture/ContentCaptureFrame.java",
     "java/src/org/chromium/components/content_capture/ContentCaptureReceiverManager.java",
     "java/src/org/chromium/components/content_capture/ContentCapturedTask.java",
     "java/src/org/chromium/components/content_capture/ContentRemovedTask.java",
@@ -43,17 +40,20 @@ android_library("java") {
     "java/src/org/chromium/components/content_capture/NotificationTask.java",
     "java/src/org/chromium/components/content_capture/PlatformAPIWrapper.java",
     "java/src/org/chromium/components/content_capture/PlatformAPIWrapperImpl.java",
+    "java/src/org/chromium/components/content_capture/PlatformContentCaptureController.java",
     "java/src/org/chromium/components/content_capture/PlatformSession.java",
     "java/src/org/chromium/components/content_capture/ProcessContentCaptureDataTask.java",
     "java/src/org/chromium/components/content_capture/SessionRemovedTask.java",
+    "java/src/org/chromium/components/content_capture/TitleUpdateTask.java",
+    "java/src/org/chromium/components/content_capture/UrlAllowlist.java",
   ]
 }
 
 generate_jni("jni_headers") {
   sources = [
-    "java/src/org/chromium/components/content_capture/ContentCaptureController.java",
     "java/src/org/chromium/components/content_capture/ContentCaptureData.java",
     "java/src/org/chromium/components/content_capture/ContentCaptureFeatures.java",
+    "java/src/org/chromium/components/content_capture/ContentCaptureFrame.java",
     "java/src/org/chromium/components/content_capture/ContentCaptureReceiverManager.java",
   ]
 }

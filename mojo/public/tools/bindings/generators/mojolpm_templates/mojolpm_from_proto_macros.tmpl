@@ -246,15 +246,15 @@ bool FromProto(
 {%-   elif struct|is_typemapped_kind %}
 {%-     set dataview_type = (struct|get_qualified_name_for_kind(flatten_nested_kind=True)) ~ "DataView" %}
 {%-     set data_type = (struct|get_qualified_name_for_kind(flatten_nested_kind=True, internal=True)) %}
-  ::mojo::internal::SerializationContext mojolpm_serialization_context;
   ::mojo::Message mojolpm_message(0, 0, 0, 0, nullptr);
-  {{data_type}}::BufferWriter mojolpm_writer;
+  ::mojo::internal::MessageFragment<{{data_type}}> mojolpm_fragment(
+      mojolpm_message);
   bool result = false;
 
   ::mojo::internal::Serializer<{{dataview_type}}, const {{struct_type}}>::Serialize(
-    input, mojolpm_message.payload_buffer(), &mojolpm_writer, &mojolpm_serialization_context);
+    input, mojolpm_fragment);
   result = ::mojo::internal::Serializer<{{dataview_type}}, {{mojom_type}}>::Deserialize(
-    mojolpm_writer.data(), &output, &mojolpm_serialization_context);
+    mojolpm_fragment.data(), &output, &mojolpm_message);
 
   return result;
 
@@ -324,14 +324,14 @@ bool FromProto(
 {%-   if union|is_typemapped_kind %}
 {%-     set dataview_type = (union|get_qualified_name_for_kind(flatten_nested_kind=True)) ~ "DataView" %}
 {%-     set data_type = (union|get_qualified_name_for_kind(flatten_nested_kind=True, internal=True)) %}
-  ::mojo::internal::SerializationContext mojolpm_serialization_context;
   ::mojo::Message mojolpm_message(0, 0, 0, 0, nullptr);
-  {{data_type}}::BufferWriter mojolpm_writer;
+  mojo::internal::MessageFragment<{{data_type}}> mojolpm_fragment(
+      mojolpm_message);
 
   ::mojo::internal::Serializer<{{dataview_type}}, const {{union_type}}>::Serialize(
-    input, mojolpm_message.payload_buffer(), &mojolpm_writer, false, &mojolpm_serialization_context);
+    input, mojolpm_fragment, false);
   return ::mojo::internal::Serializer<{{dataview_type}}, {{mojom_type}}>::Deserialize(
-    mojolpm_writer.data(), &output, &mojolpm_serialization_context);
+    mojolpm_fragment.data(), &output, &mojolpm_message);
 {%-   else %}
   switch (input.union_member_case()) {
 {%-     for field in union.fields %}

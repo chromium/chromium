@@ -159,6 +159,7 @@ source_set("sender") {
     ":net",
     "//base",
     "//media",
+    "//media/capture:capture_base",
     "//third_party/libvpx",
     "//third_party/opus",
     "//ui/gfx/geometry",

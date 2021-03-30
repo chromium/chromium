@@ -52,7 +52,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
-import org.chromium.chrome.browser.ChromeApplication;
+import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.browserservices.PostMessageHandler;
@@ -96,7 +96,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Implementation of the ICustomTabsService interface.
  *
  * Note: This class is meant to be package private, and is public to be
- * accessible from {@link ChromeApplication}.
+ * accessible from {@link ChromeApplicationImpl}.
  */
 @JNINamespace("customtabs")
 public class CustomTabsConnection {
@@ -216,14 +216,14 @@ public class CustomTabsConnection {
 
     /**
      * <strong>DO NOT CALL</strong>
-     * Public to be instanciable from {@link ChromeApplication}. This is however
+     * Public to be instanciable from {@link ChromeApplicationImpl}. This is however
      * intended to be private.
      */
     public CustomTabsConnection() {
         super();
         mClientManager = new ClientManager();
         mLogRequests = CommandLine.getInstance().hasSwitch(LOG_SERVICE_REQUESTS);
-        mSessionDataHolder = ChromeApplication.getComponent().resolveSessionDataHolder();
+        mSessionDataHolder = ChromeApplicationImpl.getComponent().resolveSessionDataHolder();
     }
 
     /**
@@ -334,7 +334,7 @@ public class CustomTabsConnection {
 
                 // TODO(pshmakov): invert this dependency by moving event dispatching to a separate
                 // class.
-                ChromeApplication.getComponent()
+                ChromeApplicationImpl.getComponent()
                         .resolveCustomTabsFileProcessor()
                         .onSessionDisconnected(session);
             }
@@ -670,8 +670,9 @@ public class CustomTabsConnection {
         if (actionButtonBundle != null) {
             int id = IntentUtils.safeGetInt(actionButtonBundle, CustomTabsIntent.KEY_ID,
                     CustomTabsIntent.TOOLBAR_ACTION_BUTTON_ID);
-            Bitmap bitmap = CustomButtonParams.parseBitmapFromBundle(actionButtonBundle);
-            String description = CustomButtonParams.parseDescriptionFromBundle(actionButtonBundle);
+            Bitmap bitmap = CustomButtonParamsImpl.parseBitmapFromBundle(actionButtonBundle);
+            String description =
+                    CustomButtonParamsImpl.parseDescriptionFromBundle(actionButtonBundle);
             if (bitmap != null && description != null) {
                 ids.add(id);
                 descriptions.add(description);
@@ -687,11 +688,11 @@ public class CustomTabsConnection {
                         CustomTabsIntent.TOOLBAR_ACTION_BUTTON_ID);
                 if (ids.contains(id)) continue;
 
-                Bitmap bitmap = CustomButtonParams.parseBitmapFromBundle(toolbarItemBundle);
+                Bitmap bitmap = CustomButtonParamsImpl.parseBitmapFromBundle(toolbarItemBundle);
                 if (bitmap == null) continue;
 
                 String description =
-                        CustomButtonParams.parseDescriptionFromBundle(toolbarItemBundle);
+                        CustomButtonParamsImpl.parseDescriptionFromBundle(toolbarItemBundle);
                 if (description == null) continue;
 
                 ids.add(id);
@@ -1451,7 +1452,7 @@ public class CustomTabsConnection {
     public static void onTrimMemory(int level) {
         if (!hasInstance()) return;
 
-        if (ChromeApplication.isSevereMemorySignal(level)) {
+        if (ChromeApplicationImpl.isSevereMemorySignal(level)) {
             getInstance().mClientManager.cleanupUnusedSessions();
         }
     }
@@ -1606,7 +1607,7 @@ public class CustomTabsConnection {
 
     public boolean receiveFile(
             CustomTabsSessionToken sessionToken, Uri uri, int purpose, Bundle extras) {
-        return ChromeApplication.getComponent().resolveCustomTabsFileProcessor().processFile(
+        return ChromeApplicationImpl.getComponent().resolveCustomTabsFileProcessor().processFile(
                 sessionToken, uri, purpose, extras);
     }
 

@@ -75,7 +75,7 @@ class AutoLockOnValidThread {
 PermissionsData::PermissionsData(
     const ExtensionId& extension_id,
     Manifest::Type manifest_type,
-    Manifest::Location location,
+    mojom::ManifestLocation location,
     std::unique_ptr<const PermissionSet> initial_permissions)
     : extension_id_(extension_id),
       manifest_type_(manifest_type),
@@ -94,8 +94,8 @@ void PermissionsData::SetPolicyDelegate(PolicyDelegate* delegate) {
 // static
 bool PermissionsData::CanExecuteScriptEverywhere(
     const ExtensionId& extension_id,
-    Manifest::Location location) {
-  if (location == Manifest::COMPONENT)
+    mojom::ManifestLocation location) {
+  if (location == mojom::ManifestLocation::kComponent)
     return true;
 
   const ExtensionsClient::ScriptingAllowlist& allowlist =
@@ -116,7 +116,8 @@ bool PermissionsData::IsRestrictedUrl(const GURL& document_url,
 
   // Check if the scheme is valid for extensions. If not, return.
   if (!URLPattern::IsValidSchemeForExtensions(document_url.scheme()) &&
-      document_url.spec() != url::kAboutBlankURL) {
+      document_url.spec() != url::kAboutBlankURL &&
+      document_url.spec() != url::kAboutSrcdocURL) {
     if (error) {
       if (active_permissions().HasAPIPermission(APIPermission::kTab)) {
         *error = ErrorUtils::FormatErrorMessage(
@@ -275,22 +276,18 @@ bool PermissionsData::HasAPIPermissionForTab(
 }
 
 bool PermissionsData::CheckAPIPermissionWithParam(
-    APIPermission::ID permission,
+    mojom::APIPermissionID permission,
     const APIPermission::CheckParam* param) const {
   base::AutoLock auto_lock(runtime_lock_);
   return active_permissions_unsafe_->CheckAPIPermissionWithParam(permission,
                                                                  param);
 }
 
-URLPatternSet PermissionsData::GetEffectiveHostPermissions(
-    EffectiveHostPermissionsMode mode) const {
+URLPatternSet PermissionsData::GetEffectiveHostPermissions() const {
   base::AutoLock auto_lock(runtime_lock_);
   URLPatternSet effective_hosts =
       active_permissions_unsafe_->effective_hosts().Clone();
-  if (mode == EffectiveHostPermissionsMode::kOmitTabSpecific)
-    return effective_hosts;
 
-  DCHECK_EQ(EffectiveHostPermissionsMode::kIncludeTabSpecific, mode);
   for (const auto& val : tab_specific_permissions_)
     effective_hosts.AddPatterns(val.second->effective_hosts());
   return effective_hosts;
@@ -393,7 +390,7 @@ bool PermissionsData::CanCaptureVisiblePage(
     // blocked host in a different page and then capture that, but it's better
     // than nothing (and policy hosts can set their x-frame options
     // accordingly).
-    if (location_ != Manifest::COMPONENT &&
+    if (location_ != mojom::ManifestLocation::kComponent &&
         IsPolicyBlockedHostUnsafe(origin_url)) {
       if (error)
         *error = extension_misc::kPolicyBlockedScripting;
@@ -530,7 +527,7 @@ PermissionsData::PageAccess PermissionsData::CanRunOnPage(
     const URLPatternSet* tab_url_patterns,
     std::string* error) const {
   runtime_lock_.AssertAcquired();
-  if (location_ != Manifest::COMPONENT &&
+  if (location_ != mojom::ManifestLocation::kComponent &&
       IsPolicyBlockedHostUnsafe(document_url)) {
     if (error)
       *error = extension_misc::kPolicyBlockedScripting;

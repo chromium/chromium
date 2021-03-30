@@ -25,7 +25,8 @@
 
 #include "third_party/blink/public/web/web_testing_support.h"
 
-#include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/renderer/bindings/core/v8/window_proxy_manager.h"
+#include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
 #include "third_party/blink/renderer/core/testing/v8/web_core_test_support.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -108,9 +109,14 @@ void WebTestingSupport::InjectInternalsObject(v8::Local<v8::Context> context) {
   web_core_test_support::InjectInternalsObject(context);
 }
 
-void WebTestingSupport::ResetInternalsObject(WebLocalFrame* frame) {
+void WebTestingSupport::ResetMainFrame(WebLocalFrame* main_frame) {
+  auto* main_frame_impl = To<WebLocalFrameImpl>(main_frame);
   v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
-  web_core_test_support::ResetInternalsObject(frame->MainWorldScriptContext());
+  web_core_test_support::ResetInternalsObject(
+      main_frame_impl->MainWorldScriptContext());
+  main_frame_impl->GetFrame()
+      ->GetWindowProxyManager()
+      ->ResetIsolatedWorldsForTesting();
 }
 
 }  // namespace blink

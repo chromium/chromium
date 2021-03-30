@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/chromeos/secure_channel/nearby_connection_broker.h"
+#include "chrome/browser/chromeos/secure_channel/util/histogram_util.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections.mojom.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 
@@ -102,7 +103,7 @@ class NearbyConnectionBrokerImpl
       std::unique_ptr<base::OneShotTimer> timer);
 
   void TransitionToStatus(ConnectionStatus connection_status);
-  void Disconnect();
+  void Disconnect(util::NearbyDisconnectionReason reason);
   void TransitionToDisconnectedAndInvokeCallback();
 
   void OnEndpointDiscovered(
@@ -167,12 +168,22 @@ class NearbyConnectionBrokerImpl
   // Starts empty, then set in OnEndpointDiscovered().
   std::string remote_endpoint_id_;
 
+  // Starts as false and changes to true when WebRTC upgrade occurs.
+  bool has_upgraded_to_webrtc_ = false;
+
+  // Whether or not a metric has been logged to note that a metric has been
+  // logged indicated that Disconnect() was called before a WebRTC upgrade
+  // occurred.
+  bool has_recorded_no_webrtc_metric_ = false;
+
   // Starts as false; set to true in OnConnectionInitiated() and back to false
   // in OnDisconnected().
   bool need_to_disconnect_endpoint_ = false;
 
   // Starts as null; set in OnConnectionAccepted().
   base::Time time_when_connection_accepted_;
+
+  bool has_disconnect_reason_been_logged_ = false;
 
   base::WeakPtrFactory<NearbyConnectionBrokerImpl> weak_ptr_factory_{this};
 };

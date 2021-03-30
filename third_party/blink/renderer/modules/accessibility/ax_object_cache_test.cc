@@ -64,8 +64,12 @@ class MockAXObject : public AXObject {
   static unsigned num_children_changed_calls_;
 
   void ChildrenChanged() final { num_children_changed_calls_++; }
-  AXObject* ComputeParent() const final { return nullptr; }
+  AXObject* ComputeParentImpl() const final { return nullptr; }
   Document* GetDocument() const final { return &AXObjectCache().GetDocument(); }
+  void AddChildren() final {}
+  ax::mojom::blink::Role DetermineAccessibilityRole() override {
+    return ax::mojom::blink::Role::kUnknown;
+  }
 };
 
 unsigned MockAXObject::num_children_changed_calls_ = 0;
@@ -83,7 +87,7 @@ TEST_F(AccessibilityTest, PauseUpdatesAfterMaxNumberQueued) {
   ax_object_cache->AssociateAXID(ax_obj);
   for (unsigned i = 0; i < max_updates + 1; i++) {
     ax_object_cache->DeferTreeUpdate(
-        &AXObjectCacheImpl::ChildrenChangedWithCleanLayout, nullptr, ax_obj);
+        &AXObjectCacheImpl::ChildrenChangedWithCleanLayout, ax_obj);
   }
   document.Lifecycle().AdvanceTo(DocumentLifecycle::kInAccessibility);
   ax_object_cache->ProcessCleanLayoutCallbacks(document);

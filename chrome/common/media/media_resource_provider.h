@@ -5,11 +5,12 @@
 #ifndef CHROME_COMMON_MEDIA_MEDIA_RESOURCE_PROVIDER_H_
 #define CHROME_COMMON_MEDIA_MEDIA_RESOURCE_PROVIDER_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "media/base/localized_strings.h"
 
 // This is called indirectly by the media layer to access resources.
-base::string16 ChromeMediaLocalizedStringProvider(
+std::u16string ChromeMediaLocalizedStringProvider(
     media::MessageId media_message_id);
 
 #endif  // CHROME_COMMON_MEDIA_MEDIA_RESOURCE_PROVIDER_H_

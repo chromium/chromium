@@ -7,7 +7,7 @@
     `Tests that console logging dumps properly styled messages, and that the whole message gets the same style, regardless of multiple %c settings.\n`
   );
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
     console.log('%cColors are awesome.', 'color: blue;');

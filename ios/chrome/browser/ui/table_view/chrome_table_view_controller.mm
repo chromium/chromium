@@ -73,6 +73,13 @@ const CGFloat kTableViewSeparatorInsetWithIcon = 56;
   return indexPath;
 }
 
+// TODO(crbug.com/1183349): Large titles appear collapsed when opening a
+// tableView on iOS 14. Remove this method when the issue is fixed.
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  [self.navigationController.navigationBar sizeToFit];
+}
+
 #pragma mark - Accessors
 
 - (void)setStyler:(ChromeTableViewStyler*)styler {

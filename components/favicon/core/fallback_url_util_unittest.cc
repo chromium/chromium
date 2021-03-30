@@ -33,7 +33,7 @@ TEST(FallbackURLUtilTest, GetFallbackIconText) {
       {"http://w-3.137.org", "1"},
       // Test URLs with a domian not in the registry.
       {"http://localhost/", "L"},
-      {"chrome-search://local-ntp/local-ntp.html", "L"},
+      {"chrome-search://most-visited/title.html", "M"},
       // Test IP URLs.
       {"http://192.168.0.1/", "IP"},
       {"http://[2001:4860:4860::8888]/", "IP"},
@@ -45,7 +45,7 @@ TEST(FallbackURLUtilTest, GetFallbackIconText) {
       {"http://xn-oogle-60a/", "X"},
   };
   for (size_t i = 0; i < base::size(test_cases); ++i) {
-    base::string16 expected = base::ASCIIToUTF16(test_cases[i].expected);
+    std::u16string expected = base::ASCIIToUTF16(test_cases[i].expected);
     GURL url(test_cases[i].url_str);
     EXPECT_EQ(expected, GetFallbackIconText(url)) << " for test_cases[" << i
                                                   << "]";

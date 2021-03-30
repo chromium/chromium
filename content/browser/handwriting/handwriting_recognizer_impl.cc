@@ -1,0 +1,38 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "content/browser/handwriting/handwriting_recognizer_impl.h"
+
+#include <memory>
+#include <utility>
+#include <vector>
+
+#include "base/bind.h"
+#include "base/optional.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
+
+namespace content {
+
+// static
+void HandwritingRecognizerImpl::Create(
+    handwriting::mojom::HandwritingModelConstraintPtr model_constraint,
+    handwriting::mojom::HandwritingRecognitionService::
+        CreateHandwritingRecognizerCallback callback) {
+  std::move(callback).Run(
+      handwriting::mojom::CreateHandwritingRecognizerResult::kError,
+      mojo::NullRemote());
+}
+
+HandwritingRecognizerImpl::HandwritingRecognizerImpl() = default;
+HandwritingRecognizerImpl::~HandwritingRecognizerImpl() = default;
+
+void HandwritingRecognizerImpl::GetPrediction(
+    std::vector<handwriting::mojom::HandwritingStrokePtr> strokes,
+    handwriting::mojom::HandwritingHintsPtr hints,
+    GetPredictionCallback callback) {
+  std::move(callback).Run(base::nullopt);
+}
+
+}  // namespace content

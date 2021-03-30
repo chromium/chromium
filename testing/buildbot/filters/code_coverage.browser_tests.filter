@@ -1,5 +1,4 @@
 # TODO(crbug.com/988146): Enable this.
--AutofillPrivateApiTest.AddAndUpdateAddress
 -PasswordManagerBrowserTest.*
 -ContentScriptApiTest.ContentScriptBlobFetch
 -CredentialManagerBrowserTest.*

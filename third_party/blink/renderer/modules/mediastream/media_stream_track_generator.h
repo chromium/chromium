@@ -11,8 +11,13 @@
 
 namespace blink {
 
+class MediaStreamAudioTrackUnderlyingSink;
+class MediaStreamTrackGeneratorInit;
 class MediaStreamVideoTrackUnderlyingSink;
+class PushableMediaStreamVideoSource;
+class ReadableStream;
 class ScriptState;
+class UnderlyingSourceBase;
 class WritableStream;
 
 class MODULES_EXPORT MediaStreamTrackGenerator : public MediaStreamTrack {
@@ -22,23 +27,41 @@ class MODULES_EXPORT MediaStreamTrackGenerator : public MediaStreamTrack {
   static MediaStreamTrackGenerator* Create(ScriptState*,
                                            const String& kind,
                                            ExceptionState&);
+  static MediaStreamTrackGenerator* Create(ScriptState*,
+                                           MediaStreamTrackGeneratorInit* init,
+                                           ExceptionState&);
   MediaStreamTrackGenerator(ScriptState*,
                             MediaStreamSource::StreamType,
-                            const String& track_id);
+                            const String& track_id,
+                            MediaStreamTrack* signal_target,
+                            wtf_size_t max_signal_buffer_size);
   MediaStreamTrackGenerator(const MediaStreamTrackGenerator&) = delete;
   MediaStreamTrackGenerator& operator=(const MediaStreamTrackGenerator&) =
       delete;
 
   WritableStream* writable(ScriptState* script_state);
+  ReadableStream* readableControl(ScriptState* script_state);
+
+  PushableMediaStreamVideoSource* PushableVideoSource() const;
 
   void Trace(Visitor* visitor) const override;
 
  private:
-  void CreateOutputPlatformTrack();
+  void CreateAudioOutputPlatformTrack();
+  void CreateAudioStream(ScriptState* script_state);
+
+  void CreateVideoOutputPlatformTrack(MediaStreamTrack* signal_target);
   void CreateVideoStream(ScriptState* script_state);
 
+  void CreateAudioControlStream(ScriptState* script_state);
+  void CreateVideoControlStream(ScriptState* script_state);
+
+  Member<MediaStreamAudioTrackUnderlyingSink> audio_underlying_sink_;
   Member<MediaStreamVideoTrackUnderlyingSink> video_underlying_sink_;
   Member<WritableStream> writable_;
+  Member<UnderlyingSourceBase> control_underlying_source_;
+  Member<ReadableStream> readable_control_;
+  const wtf_size_t max_signal_buffer_size_;
 };
 
 }  // namespace blink

@@ -15,7 +15,6 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/scoped_observer.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
@@ -35,10 +34,6 @@ class ProtocolHandlerRegistry;
 
 namespace content {
 class WebContents;
-}
-
-namespace rappor {
-class RapporServiceImpl;
 }
 
 namespace ui {
@@ -77,16 +72,16 @@ class ContentSettingBubbleModel {
 
   struct ListItem {
     ListItem(const gfx::VectorIcon* image,
-             const base::string16& title,
-             const base::string16& description,
+             const std::u16string& title,
+             const std::u16string& description,
              bool has_link,
              bool has_blocked_badge,
              int32_t item_id);
     ListItem(const ListItem& other);
     ListItem& operator=(const ListItem& other);
     const gfx::VectorIcon* image;
-    base::string16 title;
-    base::string16 description;
+    std::u16string title;
+    std::u16string description;
     bool has_link;
     bool has_blocked_badge;
     int32_t item_id;
@@ -103,7 +98,7 @@ class ContentSettingBubbleModel {
     virtual ~Owner() = default;
   };
 
-  typedef std::vector<base::string16> RadioItems;
+  typedef std::vector<std::u16string> RadioItems;
   struct RadioGroup {
     RadioGroup();
     ~RadioGroup();
@@ -122,7 +117,7 @@ class ContentSettingBubbleModel {
     DomainList(const DomainList& other);
     ~DomainList();
 
-    base::string16 title;
+    std::u16string title;
     std::set<std::string> hosts;
   };
 
@@ -131,7 +126,7 @@ class ContentSettingBubbleModel {
     MediaMenu(const MediaMenu& other);
     ~MediaMenu();
 
-    base::string16 label;
+    std::u16string label;
     blink::MediaStreamDevice default_device;
     blink::MediaStreamDevice selected_device;
     bool disabled;
@@ -151,19 +146,19 @@ class ContentSettingBubbleModel {
     BubbleContent();
     ~BubbleContent();
 
-    base::string16 title;
-    base::string16 message;
+    std::u16string title;
+    std::u16string message;
     ListItems list_items;
     RadioGroup radio_group;
     std::vector<DomainList> domain_lists;
-    base::string16 custom_link;
+    std::u16string custom_link;
     bool custom_link_enabled = false;
-    base::string16 manage_text;
+    std::u16string manage_text;
     ManageTextStyle manage_text_style = ManageTextStyle::kButton;
     MediaMenuMap media_menus;
     bool show_learn_more = false;
-    base::string16 done_button_text;
-    base::string16 cancel_button_text;
+    std::u16string done_button_text;
+    std::u16string cancel_button_text;
 
    private:
     DISALLOW_COPY_AND_ASSIGN(BubbleContent);
@@ -223,12 +218,6 @@ class ContentSettingBubbleModel {
   // Cast this bubble into ContentSettingNotificationsBubbleModel if possible.
   virtual ContentSettingNotificationsBubbleModel* AsNotificationsBubbleModel();
 
-  // Sets the Rappor service used for testing.
-  void SetRapporServiceImplForTesting(
-      rappor::RapporServiceImpl* rappor_service) {
-    rappor_service_ = rappor_service;
-  }
-
  protected:
   // |web_contents| must outlive this.
   ContentSettingBubbleModel(Delegate* delegate,
@@ -240,8 +229,8 @@ class ContentSettingBubbleModel {
   Delegate* delegate() const { return delegate_; }
   int selected_item() const { return owner_->GetSelectedRadioOption(); }
 
-  void set_title(const base::string16& title) { bubble_content_.title = title; }
-  void set_message(const base::string16& message) {
+  void set_title(const std::u16string& title) { bubble_content_.title = title; }
+  void set_message(const std::u16string& message) {
     bubble_content_.message = message;
   }
   void clear_message() { bubble_content_.message.clear(); }
@@ -253,13 +242,13 @@ class ContentSettingBubbleModel {
   void add_domain_list(const DomainList& domain_list) {
     bubble_content_.domain_lists.push_back(domain_list);
   }
-  void set_custom_link(const base::string16& link) {
+  void set_custom_link(const std::u16string& link) {
     bubble_content_.custom_link = link;
   }
   void set_custom_link_enabled(bool enabled) {
     bubble_content_.custom_link_enabled = enabled;
   }
-  void set_manage_text(const base::string16& text) {
+  void set_manage_text(const std::u16string& text) {
     bubble_content_.manage_text = text;
   }
   void set_manage_text_style(ManageTextStyle manage_text_style) {
@@ -275,21 +264,18 @@ class ContentSettingBubbleModel {
   void set_show_learn_more(bool show_learn_more) {
     bubble_content_.show_learn_more = show_learn_more;
   }
-  void set_done_button_text(const base::string16& done_button_text) {
+  void set_done_button_text(const std::u16string& done_button_text) {
     bubble_content_.done_button_text = done_button_text;
   }
-  void set_cancel_button_text(const base::string16& cancel_button_text) {
+  void set_cancel_button_text(const std::u16string& cancel_button_text) {
     bubble_content_.cancel_button_text = cancel_button_text;
   }
-  rappor::RapporServiceImpl* rappor_service() const { return rappor_service_; }
 
  private:
   content::WebContents* web_contents_;
   Owner* owner_;
   Delegate* delegate_;
   BubbleContent bubble_content_;
-  // The service used to record Rappor metrics. Can be set for testing.
-  rappor::RapporServiceImpl* rappor_service_;
 
   DISALLOW_COPY_AND_ASSIGN(ContentSettingBubbleModel);
 };

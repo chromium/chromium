@@ -20,6 +20,12 @@ extern const char kFragmentTextStartKey[];
 extern const char kFragmentTextEndKey[];
 extern const char kFragmentSuffixKey[];
 
+// Default highlight color stored as a hexadecimal number.
+extern const int kFragmentTextBackgroundColorARGB;
+
+// Default text color stored as a hexadecimal number.
+extern const int kFragmentTextForegroundColorARGB;
+
 }  // namespace shared_highlighting
 
 #endif  // COMPONENTS_SHARED_HIGHLIGHTING_CORE_COMMON_TEXT_FRAGMENTS_CONSTANTS_H_

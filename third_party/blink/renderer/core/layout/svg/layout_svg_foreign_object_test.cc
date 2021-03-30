@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/layout_geometry_map.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
@@ -48,12 +47,6 @@ TEST_F(LayoutSVGForeignObjectTest, DivInForeignObject) {
   EXPECT_EQ(PhysicalOffset(-150, -150),
             div.AncestorToLocalPoint(&GetLayoutView(), PhysicalOffset(),
                                      kTraverseDocumentBoundaries));
-
-  // PushMappingToContainer
-  LayoutGeometryMap rgm(kTraverseDocumentBoundaries);
-  rgm.PushMappingsToAncestor(&div, nullptr);
-  EXPECT_EQ(PhysicalRect(150, 150, 1, 2),
-            rgm.MapToAncestor(PhysicalRect(0, 0, 1, 2), nullptr));
 
   // Hit testing
   EXPECT_EQ(svg, HitTest(1, 1));
@@ -118,12 +111,6 @@ TEST_F(LayoutSVGForeignObjectTest, IframeInForeignObject) {
   EXPECT_EQ(PhysicalOffset(-200, -200),
             div.AncestorToLocalPoint(&GetLayoutView(), PhysicalOffset(),
                                      kTraverseDocumentBoundaries));
-
-  // PushMappingToContainer
-  LayoutGeometryMap rgm(kTraverseDocumentBoundaries);
-  rgm.PushMappingsToAncestor(&div, nullptr);
-  EXPECT_EQ(PhysicalRect(200, 200, 1, 2),
-            rgm.MapToAncestor(PhysicalRect(0, 0, 1, 2), nullptr));
 
   // Hit testing
   EXPECT_EQ(svg, HitTest(90, 90));
@@ -385,6 +372,27 @@ TEST_F(LayoutSVGForeignObjectTest, HitTestUnderScrollingAncestor) {
   GetDocument().GetLayoutView()->HitTest(location, result);
   EXPECT_EQ(target, result.InnerNode());
   EXPECT_EQ(PhysicalOffset(450, 450), result.PointInInnerNodeFrame());
+}
+
+TEST_F(LayoutSVGForeignObjectTest, BBoxPropagationZoomed) {
+  GetFrame().SetPageZoomFactor(2);
+  SetBodyInnerHTML(R"HTML(
+    <svg>
+      <g>
+        <foreignObject x="6" y="5" width="100" height="50" id="target"/>
+      </g>
+    </svg>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  const auto& target = *GetLayoutObjectByElementId("target");
+  ASSERT_EQ(target.StyleRef().EffectiveZoom(), 2);
+
+  EXPECT_EQ(target.ObjectBoundingBox(), FloatRect(6, 5, 100, 50));
+  EXPECT_EQ(target.StrokeBoundingBox(), FloatRect(12, 10, 200, 100));
+  const auto& parent_g = *target.Parent();
+  EXPECT_EQ(parent_g.ObjectBoundingBox(), FloatRect(6, 5, 100, 50));
+  EXPECT_EQ(parent_g.StrokeBoundingBox(), FloatRect(6, 5, 100, 50));
 }
 
 }  // namespace blink

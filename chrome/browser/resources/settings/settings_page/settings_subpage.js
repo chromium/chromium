@@ -8,14 +8,35 @@
  * the subpage title, a search field and a back icon.
  */
 
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/cr_search_field/cr_search_field.js';
+import '//resources/cr_elements/icons.m.js';
+import '//resources/cr_elements/shared_style_css.m.js';
+import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
+import '../settings_shared_css.js';
+
+import {FindShortcutBehavior} from '//resources/cr_elements/find_shortcut_behavior.js';
+import {assert} from '//resources/js/assert.m.js';
+import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {listenOnce} from '//resources/js/util.m.js';
+import {IronResizableBehavior} from '//resources/polymer/v3_0/iron-resizable-behavior/iron-resizable-behavior.js';
+import {afterNextRender, html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../i18n_setup.js';
+import {RouteObserverBehavior, Router} from '../router.js';
+import {getSettingIdParameter} from '../setting_id_param_util.js';
+
 Polymer({
   is: 'settings-subpage',
+
+  _template: html`{__html_template__}`,
 
   behaviors: [
     FindShortcutBehavior,
     I18nBehavior,
-    Polymer.IronResizableBehavior,
-    settings.RouteObserverBehavior,
+    IronResizableBehavior,
+    RouteObserverBehavior,
   ],
 
   properties: {
@@ -132,9 +153,7 @@ Polymer({
     const searchField = this.$$('cr-search-field');
     if (assert(searchField)) {
       const urlSearchQuery =
-          settings.Router.getInstance().getQueryParameters().get(
-              'searchSubpage') ||
-          '';
+          Router.getInstance().getQueryParameters().get('searchSubpage') || '';
       this.searchTerm = urlSearchQuery;
       searchField.setValue(urlSearchQuery);
     }
@@ -149,8 +168,8 @@ Polymer({
     const searchParams = query.length > 0 ?
         new URLSearchParams('searchSubpage=' + encodeURIComponent(query)) :
         undefined;
-    const currentRoute = settings.Router.getInstance().getCurrentRoute();
-    settings.Router.getInstance().navigateTo(currentRoute, searchParams);
+    const currentRoute = Router.getInstance().getCurrentRoute();
+    Router.getInstance().navigateTo(currentRoute, searchParams);
   },
 
   /** Focuses the back button when page is loaded. */
@@ -158,8 +177,7 @@ Polymer({
     if (this.hideCloseButton) {
       return;
     }
-    Polymer.RenderStatus.afterNextRender(
-        this, () => cr.ui.focusWithoutInk(this.$.closeButton));
+    afterNextRender(this, () => focusWithoutInk(this.$.closeButton));
   },
 
   /** @protected */
@@ -168,17 +186,15 @@ Polymer({
     if (this.active_ && this.searchLabel && this.preserveSearchTerm) {
       this.getSearchField_().then(() => this.restoreSearchInput_());
     }
-    // <if expr="chromeos">
-    if (!oldRoute && loadTimeData.valueExists('isOSSettings') &&
-        loadTimeData.getBoolean('isOSSettings') && !getSettingIdParameter()) {
-      // If an OS settings subpage is opened directly (i.e the |oldRoute| is
-      // null, e.g via an OS settings search result that surfaces from the
-      // Chrome OS launcher), the back button should be focused since it's the
-      // first actionable element in the the subpage. An exception is when
-      // a setting is deep linked, focus that setting instead of back button.
+    if (!oldRoute && !getSettingIdParameter()) {
+      // If a settings subpage is opened directly (i.e the |oldRoute| is null,
+      // e.g via an OS settings search result that surfaces from the Chrome OS
+      // launcher, or linking from other places of Chrome UI), the back button
+      // should be focused since it's the first actionable element in the the
+      // subpage. An exception is when a setting is deep linked, focus that
+      // setting instead of back button.
       this.focusBackButton();
     }
-    // </if>
   },
 
   /** @private */
@@ -219,8 +235,13 @@ Polymer({
   },
 
   /** @private */
-  onTapBack_() {
-    settings.Router.getInstance().navigateToPreviousRoute();
+  onBackClick_() {
+    Router.getInstance().navigateToPreviousRoute();
+  },
+
+  /** @private */
+  onHelpClick_() {
+    window.open(this.learnMoreUrl);
   },
 
   /** @private */

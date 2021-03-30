@@ -14,11 +14,8 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequenced_task_runner.h"
 #include "components/sessions/core/sessions_export.h"
-
-namespace base {
-class SequencedTaskRunner;
-}
 
 namespace sessions {
 class CommandStorageManagerDelegate;
@@ -33,19 +30,46 @@ class CommandStorageBackend;
 // and processed after a delay.
 class SESSIONS_EXPORT CommandStorageManager {
  public:
+  // The bool parameter indicates whether there was an error reading the file.
+  // If there was an error, the vector contains the set of commands up to the
+  // error.
   using GetCommandsCallback =
-      base::OnceCallback<void(std::vector<std::unique_ptr<SessionCommand>>)>;
+      base::OnceCallback<void(std::vector<std::unique_ptr<SessionCommand>>,
+                              bool)>;
+
+  // Identifies the type of session service this is. This is used by the
+  // backend to determine the name of the files.
+  // TODO(sky): this enum is purely for legacy reasons, and should be replaced
+  // with consumers building the path (similar to weblayer). Remove in
+  // approximately a year (1/2022), when we shouldn't need to worry too much
+  // about migrating older data.
+  enum SessionType { kAppRestore, kSessionRestore, kTabRestore, kOther };
 
   // Creates a new CommandStorageManager. After creation you need to invoke
-  // Init. |delegate| will remain owned by the creator and it is guaranteed
-  // that its lifetime surpasses this class. |path| is the path to save files
-  // to. If |enable_crypto| is true, the contents of the file are encrypted.
-  CommandStorageManager(const base::FilePath& path,
-                        CommandStorageManagerDelegate* delegate,
-                        bool enable_crypto = false);
+  // Init(). `delegate` is not owned by this and must outlive this. If
+  // `enable_crypto` is true, the contents of the file are encrypted.
+  //
+  // The meaning of `path` depends upon the type. If `type` is `kOther`, then
+  // the path is a file name to which `_TIMESTAMP` is added. If `type` is not
+  // `kOther`, then it is a path to a directory. The actual file name used
+  // depends upon the type. Once SessionType can be removed, this logic can
+  // standardize on that of `kOther`.
+  //
+  // See CommandStorageBackend for details on `use_marker`.
+  CommandStorageManager(
+      SessionType type,
+      const base::FilePath& path,
+      CommandStorageManagerDelegate* delegate,
+      bool use_marker = false,
+      bool enable_crypto = false,
+      const std::vector<uint8_t>& decryption_key = {},
+      scoped_refptr<base::SequencedTaskRunner> backend_task_runner = nullptr);
   CommandStorageManager(const CommandStorageManager&) = delete;
   CommandStorageManager& operator=(const CommandStorageManager&) = delete;
   virtual ~CommandStorageManager();
+
+  static scoped_refptr<base::SequencedTaskRunner>
+  CreateDefaultBackendTaskRunner();
 
   // Helper to generate a new key.
   static std::vector<uint8_t> CreateCryptoKey();
@@ -97,43 +121,37 @@ class SESSIONS_EXPORT CommandStorageManager {
   // occurred.
   bool HasPendingSave() const;
 
-  // Requests the commands for the current session. If |decryption_key| is
-  // non-empty it is used to decrypt the contents of the file.
-  // WARNING: |callback| may be called after |this| is deleted. In other words,
-  // be sure to use a WeakPtr with |callback|.
-  void GetCurrentSessionCommands(GetCommandsCallback callback,
-                                 const std::vector<uint8_t>& decryption_key);
+  // Moves the current session to the last session.
+  void MoveCurrentSessionToLastSession();
 
- protected:
-  // Provided for subclasses.
-  CommandStorageManager(scoped_refptr<CommandStorageBackend> backend,
-                        CommandStorageManagerDelegate* delegate);
+  // Deletes the last session.
+  void DeleteLastSession();
 
-  // Creates a SequencedTaskRunner suitable for the backend.
-  static scoped_refptr<base::SequencedTaskRunner>
-  CreateDefaultBackendTaskRunner();
-
-  scoped_refptr<base::SequencedTaskRunner> backend_task_runner() {
-    return backend_task_runner_;
-  }
-
-  CommandStorageBackend* backend() { return backend_.get(); }
+  // Uses the backend to load the last session commands from disk. |callback|
+  // is called once the data has arrived, and may be called after this is
+  // deleted.
+  void GetLastSessionCommands(GetCommandsCallback callback);
 
  private:
   friend class CommandStorageManagerTestHelper;
+
+  CommandStorageBackend* backend() { return backend_.get(); }
+
+  // Called by the backend if writing to the file failed.
+  void OnErrorWritingToFile();
 
   // The backend object which reads and saves commands.
   scoped_refptr<CommandStorageBackend> backend_;
 
   // If true, all commands are encrypted.
-  bool use_crypto_ = false;
+  const bool use_crypto_;
 
   // Commands we need to send over to the backend.
   std::vector<std::unique_ptr<SessionCommand>> pending_commands_;
 
   // Whether the backend file should be recreated the next time we send
   // over the commands.
-  bool pending_reset_ = false;
+  bool pending_reset_;
 
   // The number of commands sent to the backend before doing a reset.
   int commands_since_reset_ = 0;
@@ -143,6 +161,8 @@ class SESSIONS_EXPORT CommandStorageManager {
   // TaskRunner all backend tasks are run on. This is a SequencedTaskRunner as
   // all tasks *must* be processed in the order they are scheduled.
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
+
+  base::WeakPtrFactory<CommandStorageManager> weak_factory_{this};
 
   // Used solely for saving after a delay, and not to be used for any other
   // purposes.

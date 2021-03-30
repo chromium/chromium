@@ -122,7 +122,7 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
         model->GetMostRecentlyAddedUserNodeForURL(url_);
     if (!node)
       return;
-    const base::string16 new_title =
+    const std::u16string new_title =
         dialog_model()->GetTextfieldByUniqueId(kBookmarkName)->text();
     if (new_title != node->GetTitle()) {
       model->SetTitle(node, new_title);

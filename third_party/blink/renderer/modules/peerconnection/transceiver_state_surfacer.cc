@@ -9,6 +9,18 @@
 #include "third_party/webrtc/api/sctp_transport_interface.h"
 
 namespace blink {
+namespace {
+
+Vector<webrtc::RtpHeaderExtensionCapability> GetHeaderExtensionsNegotiated(
+    const webrtc::RtpTransceiverInterface* webrtc_transceiver) {
+  auto std_extensions = webrtc_transceiver->HeaderExtensionsNegotiated();
+  Vector<webrtc::RtpHeaderExtensionCapability> extensions;
+  std::move(std_extensions.begin(), std_extensions.end(),
+            std::back_inserter(extensions));
+  return extensions;
+}
+
+}  // namespace
 
 TransceiverStateSurfacer::TransceiverStateSurfacer(
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
@@ -112,14 +124,16 @@ void TransceiverStateSurfacer::Initialize(
           main_task_runner_, signaling_task_runner_, webrtc_receiver.get(),
           std::move(receiver_track_ref), std::move(receiver_stream_ids));
     }
+
     // Create the transceiver state.
-    transceiver_states_.push_back(blink::RtpTransceiverState(
+    transceiver_states_.emplace_back(
         main_task_runner_, signaling_task_runner_, webrtc_transceiver.get(),
         std::move(sender_state), std::move(receiver_state),
         blink::ToBaseOptional(webrtc_transceiver->mid()),
         webrtc_transceiver->stopped(), webrtc_transceiver->direction(),
         blink::ToBaseOptional(webrtc_transceiver->current_direction()),
-        blink::ToBaseOptional(webrtc_transceiver->fired_direction())));
+        blink::ToBaseOptional(webrtc_transceiver->fired_direction()),
+        GetHeaderExtensionsNegotiated(webrtc_transceiver));
   }
   is_initialized_ = true;
 }
@@ -147,7 +161,7 @@ SurfaceSenderStateOnly::SurfaceSenderStateOnly(
   DCHECK(sender_);
 }
 
-SurfaceSenderStateOnly::~SurfaceSenderStateOnly() {}
+SurfaceSenderStateOnly::~SurfaceSenderStateOnly() = default;
 
 cricket::MediaType SurfaceSenderStateOnly::media_type() const {
   return sender_->media_type();

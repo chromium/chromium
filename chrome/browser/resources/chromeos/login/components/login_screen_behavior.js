@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {OOBE_UI_STATE} from '/components/display_manager_types.m.js';
+
 /**
  * @fileoverview
  * 'LoginScreenBehavior' is login.Screen API implementation for Polymer objects.
@@ -66,10 +68,6 @@ var LoginScreenBehavior = {
   get defaultControl() {
     return this;
   },
-
-  // If defined, invoked when logn.preloadScreen() is called.
-  // @type{function()}
-  deferredInitialization: undefined,
 
   /**
    * Returns minimal size that screen prefers to have. Default implementation

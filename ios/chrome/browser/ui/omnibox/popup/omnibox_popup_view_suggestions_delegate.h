@@ -33,12 +33,12 @@ class OmniboxPopupViewSuggestionsDelegate {
   virtual void OnPopupDidScroll() = 0;
   // Called when the user chooses a suggestion from the popup via the "append"
   // button.
-  virtual void OnSelectedMatchForAppending(const base::string16& str) = 0;
+  virtual void OnSelectedMatchForAppending(const std::u16string& str) = 0;
   // Called when a match was chosen for opening.
   virtual void OnSelectedMatchForOpening(AutocompleteMatch match,
                                          WindowOpenDisposition disposition,
                                          const GURL& alternate_nav_url,
-                                         const base::string16& pasted_text,
+                                         const std::u16string& pasted_text,
                                          size_t index) = 0;
 };
 

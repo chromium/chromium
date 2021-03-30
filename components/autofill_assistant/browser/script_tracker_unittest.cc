@@ -8,6 +8,7 @@
 
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/task_environment.h"
 #include "components/autofill_assistant/browser/fake_script_executor_delegate.h"
 #include "components/autofill_assistant/browser/protocol_utils.h"
 #include "components/autofill_assistant/browser/script_executor_delegate.h"
@@ -125,6 +126,10 @@ class ScriptTrackerTest : public testing::Test, public ScriptTracker::Listener {
     message.SerializeToString(&output);
     return output;
   }
+
+  // task_environment_ must be first to guarantee other field
+  // creation run in that environment.
+  base::test::TaskEnvironment task_environment_;
 
   GURL url_;
   NiceMock<MockService> mock_service_;
@@ -256,7 +261,8 @@ TEST_F(ScriptTrackerTest, CheckScriptsAgainAfterScriptEnd) {
   EXPECT_CALL(execute_callback,
               Run(Field(&ScriptExecutor::Result::success, true)));
 
-  tracker_.ExecuteScript("script1", &user_data_, TriggerContext::CreateEmpty(),
+  tracker_.ExecuteScript("script1", &user_data_,
+                         std::make_unique<TriggerContext>(),
                          execute_callback.Get());
   tracker_.CheckScripts();
 
@@ -320,7 +326,8 @@ TEST_F(ScriptTrackerTest, UpdateScriptList) {
   EXPECT_CALL(execute_callback,
               Run(Field(&ScriptExecutor::Result::success, true)));
   tracker_.ExecuteScript("runnable name", &user_data_,
-                         TriggerContext::CreateEmpty(), execute_callback.Get());
+                         std::make_unique<TriggerContext>(),
+                         execute_callback.Get());
   tracker_.CheckScripts();
 
   // 3. Verify that the runnable scripts have changed to the updated list.
@@ -362,7 +369,8 @@ TEST_F(ScriptTrackerTest, UpdateScriptListFromInterrupt) {
   EXPECT_CALL(execute_callback,
               Run(Field(&ScriptExecutor::Result::success, true)));
   tracker_.ExecuteScript("runnable name", &user_data_,
-                         TriggerContext::CreateEmpty(), execute_callback.Get());
+                         std::make_unique<TriggerContext>(),
+                         execute_callback.Get());
   tracker_.CheckScripts();
 
   // 3. Verify that the runnable scripts have changed to the updated list.
@@ -407,7 +415,8 @@ TEST_F(ScriptTrackerTest, UpdateInterruptList) {
   base::MockCallback<ScriptExecutor::RunScriptCallback> execute_callback;
   EXPECT_CALL(execute_callback,
               Run(Field(&ScriptExecutor::Result::success, true)));
-  tracker_.ExecuteScript("main", &user_data_, TriggerContext::CreateEmpty(),
+  tracker_.ExecuteScript("main", &user_data_,
+                         std::make_unique<TriggerContext>(),
                          execute_callback.Get());
 }
 

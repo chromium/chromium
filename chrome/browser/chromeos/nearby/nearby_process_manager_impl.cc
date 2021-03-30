@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/nearby/nearby_connections_dependencies_provider.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
@@ -97,13 +98,12 @@ NearbyProcessManagerImpl::~NearbyProcessManagerImpl() = default;
 
 std::unique_ptr<NearbyProcessManager::NearbyProcessReference>
 NearbyProcessManagerImpl::GetNearbyProcessReference(
-    base::OnceClosure on_process_stopped_callback) {
+    NearbyProcessStoppedCallback on_process_stopped_callback) {
   if (shut_down_)
     return nullptr;
 
-  if (!sharing_.is_bound()) {
-    bool bound_successfully = AttemptToBindToUtilityProcess();
-    if (!bound_successfully) {
+  if (!sharing_ || !connections_ || !decoder_) {
+    if (!AttemptToBindToUtilityProcess()) {
       NS_LOG(WARNING) << "Could not connect to Nearby utility process; this "
                       << "likely means that the attempt was during shutdown.";
       return nullptr;
@@ -127,19 +127,20 @@ NearbyProcessManagerImpl::GetNearbyProcessReference(
 }
 
 void NearbyProcessManagerImpl::Shutdown() {
-  shut_down_ = true;
-
-  if (!sharing_.is_bound())
+  if (shut_down_)
     return;
 
-  // Shut down process first, then notify existing clients of the shutdown via
-  // OnActiveSharingDisconnected().
-  ShutDownProcess();
-  OnActiveSharingDisconnected();
+  shut_down_ = true;
+
+  NearbyProcessShutdownReason shutdown_reason =
+      NearbyProcessShutdownReason::kNormal;
+
+  ShutDownProcess(shutdown_reason);
+  NotifyProcessStopped(shutdown_reason);
 }
 
 bool NearbyProcessManagerImpl::AttemptToBindToUtilityProcess() {
-  DCHECK(!sharing_.is_bound());
+  DCHECK(!sharing_ && !connections_ && !decoder_);
 
   location::nearby::connections::mojom::NearbyConnectionsDependenciesPtr deps =
       nearby_connections_dependencies_provider_->GetDependencies();
@@ -152,23 +153,29 @@ bool NearbyProcessManagerImpl::AttemptToBindToUtilityProcess() {
   // Bind to the Sharing interface, which launches the process.
   sharing_.Bind(sharing_binder_.Run());
   sharing_.set_disconnect_handler(
-      base::BindOnce(&NearbyProcessManagerImpl::OnActiveSharingDisconnected,
+      base::BindOnce(&NearbyProcessManagerImpl::OnSharingProcessCrash,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  // Initialize a reference to NearbyConnections; bound on the calling sequence,
-  // so null is passed during the Bind() call.
+  // Remotes for NearbyConnections and NearbySharingDecoder are bound on the
+  // calling sequence by providing a null |bind_task_runner|.
   mojo::PendingRemote<location::nearby::connections::mojom::NearbyConnections>
       connections;
   mojo::PendingReceiver<location::nearby::connections::mojom::NearbyConnections>
       connections_receiver = connections.InitWithNewPipeAndPassReceiver();
   connections_.Bind(std::move(connections), /*bind_task_runner=*/nullptr);
+  connections_.set_disconnect_handler(
+      base::BindOnce(&NearbyProcessManagerImpl::OnMojoPipeDisconnect,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::SequencedTaskRunnerHandle::Get());
 
-  // Initialize a reference to NearbySharingDecoder; bound on the calling
-  // sequence, so null is passed during the Bind() call.
   mojo::PendingRemote<sharing::mojom::NearbySharingDecoder> decoder;
   mojo::PendingReceiver<sharing::mojom::NearbySharingDecoder> decoder_receiver =
       decoder.InitWithNewPipeAndPassReceiver();
   decoder_.Bind(std::move(decoder), /*bind_task_runner=*/nullptr);
+  decoder_.set_disconnect_handler(
+      base::BindOnce(&NearbyProcessManagerImpl::OnMojoPipeDisconnect,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::SequencedTaskRunnerHandle::Get());
 
   // Pass these references to Connect() to start up the process.
   sharing_->Connect(std::move(deps), std::move(connections_receiver),
@@ -177,30 +184,33 @@ bool NearbyProcessManagerImpl::AttemptToBindToUtilityProcess() {
   return true;
 }
 
-void NearbyProcessManagerImpl::OnActiveSharingDisconnected() {
-  NS_LOG(INFO) << "Nearby utility process has shut down.";
-  sharing_.reset();
+void NearbyProcessManagerImpl::OnSharingProcessCrash() {
+  NS_LOG(ERROR) << "The utility process has crashed.";
 
-  // We are notifying clients that references are no longer active, so
-  // invalidate WeakPtrs so that OnReferenceDeleted() is not invoked when
-  // clients respond to the callback by releasing their references.
-  weak_ptr_factory_.InvalidateWeakPtrs();
+  NearbyProcessShutdownReason shutdown_reason =
+      NearbyProcessShutdownReason::kCrash;
 
-  // Move the map to a local variable to ensure that the instance field is
-  // empty before any callbacks are made.
-  base::flat_map<base::UnguessableToken, base::OnceClosure> old_map =
-      std::move(id_to_process_stopped_callback_map_);
-  id_to_process_stopped_callback_map_.clear();
+  ShutDownProcess(shutdown_reason);
+  NotifyProcessStopped(shutdown_reason);
+}
 
-  // Invoke the "process stopped" callback for each client.
-  for (auto& it : old_map)
-    std::move(it.second).Run();
+void NearbyProcessManagerImpl::OnMojoPipeDisconnect() {
+  NS_LOG(ERROR) << "A utility process Mojo pipe has disconnected.";
+
+  NearbyProcessShutdownReason shutdown_reason =
+      NearbyProcessShutdownReason::kMojoPipeDisconnection;
+
+  ShutDownProcess(shutdown_reason);
+  NotifyProcessStopped(shutdown_reason);
 }
 
 void NearbyProcessManagerImpl::OnReferenceDeleted(
     const base::UnguessableToken& reference_id) {
   auto it = id_to_process_stopped_callback_map_.find(reference_id);
   DCHECK(it != id_to_process_stopped_callback_map_.end());
+
+  // Do not call the callback because its owner has already explicitly deleted
+  // its reference.
   id_to_process_stopped_callback_map_.erase(it);
 
   // If there are still active references, the process should be kept alive, so
@@ -219,32 +229,57 @@ void NearbyProcessManagerImpl::OnReferenceDeleted(
   shutdown_debounce_timer_->Start(
       FROM_HERE, kProcessCleanupTimeout,
       base::BindOnce(&NearbyProcessManagerImpl::ShutDownProcess,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     NearbyProcessShutdownReason::kNormal));
 }
 
-void NearbyProcessManagerImpl::ShutDownProcess() {
+void NearbyProcessManagerImpl::ShutDownProcess(
+    NearbyProcessShutdownReason shutdown_reason) {
+  if (!sharing_ && !connections_ && !decoder_)
+    return;
+
   // Ensure that we don't try to stop the process again.
   shutdown_debounce_timer_->Stop();
 
   NS_LOG(INFO) << "Shutting down Nearby utility process.";
 
-  // Ensure that any in-progress CreateNearbyConnections() or
-  // CreateNearbySharingDecoder() calls do not return.
+  base::UmaHistogramEnumeration(
+      "Nearby.Connections.UtilityProcessShutdownReason", shutdown_reason);
+
+  // Prevent the Remotes' disconnect handler callbacks from firing.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  // Overwrite the existing disconnect handler so that no new handler is run
-  // when the disconnection succeeds.
-  sharing_.set_disconnect_handler(base::DoNothing());
+  if (sharing_) {
+    // Start the asynchronous shutdown flow, and pass ownership of the existing
+    // Remote and SharedRemotes to the callback. These instance fields will stay
+    // alive until ShutDown() is complete, at which time they will go out of
+    // scope and become disconnected in OnSharingShutDownComplete().
+    sharing::mojom::Sharing* sharing = sharing_.get();
+    sharing->ShutDown(
+        base::BindOnce(&OnSharingShutDownComplete, std::move(sharing_),
+                       std::move(connections_), std::move(decoder_)));
+  }
 
-  sharing::mojom::Sharing* sharing = sharing_.get();
+  sharing_.reset();
+  connections_.reset();
+  decoder_.reset();
+}
 
-  // Start the asynchronous shutdown flow, and pass ownership of the existing
-  // Remote and SharedRemotes to the callback. These instance fields will stay
-  // alive until ShutDown() is complete, at which time they will go out of scope
-  // and become disconnected in OnSharingShutDownComplete().
-  sharing->ShutDown(base::BindOnce(&OnSharingShutDownComplete,
-                                   std::move(sharing_), std::move(connections_),
-                                   std::move(decoder_)));
+void NearbyProcessManagerImpl::NotifyProcessStopped(
+    NearbyProcessShutdownReason shutdown_reason) {
+  // We are notifying clients that references are no longer active, so
+  // invalidate WeakPtrs so that OnReferenceDeleted() is not invoked when
+  // clients respond to the callback by releasing their references.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
+  // Move the map to a local variable to ensure that the instance field is
+  // empty before any callbacks are made.
+  auto old_map = std::move(id_to_process_stopped_callback_map_);
+  id_to_process_stopped_callback_map_.clear();
+
+  // Invoke the "process stopped" callback for each client.
+  for (auto& it : old_map)
+    std::move(it.second).Run(shutdown_reason);
 }
 
 }  // namespace nearby

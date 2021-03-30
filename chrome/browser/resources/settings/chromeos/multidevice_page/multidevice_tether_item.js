@@ -124,6 +124,7 @@ Polymer({
           deviceStates.find(deviceState => deviceState.type === kTether);
       this.deviceState_ = deviceState || {
         deviceState: chromeos.networkConfig.mojom.DeviceStateType.kDisabled,
+        inhibitReason: chromeos.networkConfig.mojom.InhibitReason.kNotInhibited,
         managedNetworkAvailable: false,
         scanning: false,
         simAbsent: false,

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<title>MediaSession Mojo Test</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script type="module">
+import {MediaSessionServiceMock} from './resources/mediasessionservice-mock.js';
+
+import {MediaSessionPlaybackState} from '/gen/third_party/blink/public/mojom/mediasession/media_session.mojom.m.js';
+
+var inputStates = ["none", "paused", "playing", "invalid", "none"];
+var expectations;
+var nextExpectation = 0;
+
+// Delay the initialization since the initialization of MediaSessionPlaybackState is delayed.
+function getExpectations() {
+  if (!expectations) {
+    expectations = [
+      MediaSessionPlaybackState.NONE,
+      MediaSessionPlaybackState.PAUSED,
+      MediaSessionPlaybackState.PLAYING,
+      MediaSessionPlaybackState.NONE,
+    ];
+  }
+  return expectations;
+}
+
+async_test(function(t) {
+  const m = new MediaSessionServiceMock();
+  m.setPlaybackStateCallback(t.step_func(function(state) {
+    assert_equals(state, getExpectations()[nextExpectation++]);
+    if (nextExpectation == getExpectations().length)
+      t.done();
+  }));
+  for (let state of inputStates)
+    window.navigator.mediaSession.playbackState = state;
+}, "test that MediaSession.playbackState is correctly propagated");
+
+</script>

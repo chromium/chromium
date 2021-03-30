@@ -12,8 +12,8 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "chrome/browser/chromeos/login/users/scoped_test_user_manager.h"
-#include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -100,10 +100,10 @@ class TestDelegate : public RendererFreezer::Delegate, public ActionRecorder {
   void ThawRenderers(ResultCallback callback) override {
     AppendAction(kThawRenderers);
 
-    callback.Run(thaw_renderers_result_);
+    std::move(callback).Run(thaw_renderers_result_);
   }
   void CheckCanFreezeRenderers(ResultCallback callback) override {
-    callback.Run(can_freeze_renderers_);
+    std::move(callback).Run(can_freeze_renderers_);
   }
 
   void set_thaw_renderers_result(bool result) {

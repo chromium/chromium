@@ -7,12 +7,6 @@ import("//third_party/protobuf/proto_library.gni")
 # Nothing outside //chrome/chrome_cleaner can depend on these targets.
 visibility = [ "//chrome/chrome_cleaner/*" ]
 
-proto_library("uwe_matcher_proto") {
-  sources = [ "uwe_matcher.proto" ]
-
-  link_deps = [ ":uws_spec_by_version_proto" ]
-}
-
 proto_library("file_digest_proto") {
   sources = [ "file_digest.proto" ]
 }

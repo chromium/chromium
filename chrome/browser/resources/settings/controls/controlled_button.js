@@ -2,8 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
+import '//resources/cr_elements/shared_vars_css.m.js';
+import '../settings_shared_css.js';
+
+import {CrPolicyPrefBehavior} from '//resources/cr_elements/policy/cr_policy_pref_behavior.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../i18n_setup.js';
+
+import {PrefControlBehavior} from './pref_control_behavior.js';
+
 Polymer({
   is: 'controlled-button',
+
+  _template: html`{__html_template__}`,
 
   behaviors: [
     CrPolicyPrefBehavior,

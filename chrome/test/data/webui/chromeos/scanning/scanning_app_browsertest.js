@@ -19,7 +19,7 @@
 
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
-GEN('#include "chromeos/constants/chromeos_features.h"');
+GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 /**
@@ -34,26 +34,16 @@ ScanningAppBrowserTest.prototype = {
   browsePreload: 'chrome://scanning/test_loader.html?module=chromeos/' +
       'scanning/scanning_app_unified_test.js',
 
-  extraLibraries: [
-    '//chrome/test/data/webui/test_browser_proxy.js',
-    '//ui/webui/resources/js/assert.js',
-    '//ui/webui/resources/js/promise_resolver.js',
-  ],
-
-  featureList: {
-    enabled: [
-      'chromeos::features::kScanningUI',
-    ]
-  },
+  featureList: {enabled: ['chromeos::features::kScanAppMediaLink']},
 };
 
 // List of names of suites in unified test to register for individual debugging.
 // You must register all suites in unified test here as well for consistency,
 // although technically is not necessary.
 const debug_suites_list = [
-  'ColorModeSelect', 'FileTypeSelect', 'PageSizeSelect', 'ResolutionSelect',
-  'ScanApp', 'ScanDoneSection', 'ScannerSelect', 'ScanPreview', 'ScanToSelect',
-  'SelectBehavior', 'SourceSelect'
+  'ColorModeSelect', 'FileTypeSelect', 'LoadingPage', 'PageSizeSelect',
+  'ResolutionSelect', 'ScanApp', 'ScanDoneSection', 'ScannerSelect',
+  'ScanPreview', 'ScanToSelect', 'SourceSelect'
 ];
 
 TEST_F('ScanningAppBrowserTest', 'All', function() {

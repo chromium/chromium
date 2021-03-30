@@ -16,19 +16,18 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.SigninActivityLauncherImpl;
-import org.chromium.chrome.browser.signin.SigninPromoController;
-import org.chromium.chrome.browser.signin.SigninPromoUtil;
 import org.chromium.chrome.browser.signin.SyncPromoView;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
 import org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView;
+import org.chromium.chrome.browser.signin.ui.SigninPromoController;
+import org.chromium.chrome.browser.signin.ui.SigninPromoUtil;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -100,7 +99,7 @@ class BookmarkPromoHeader implements ProfileSyncService.SyncStateChangedListener
 
         if (SigninPromoController.hasNotReachedImpressionLimit(
                     SigninAccessPoint.BOOKMARK_MANAGER)) {
-            mProfileDataCache = ProfileDataCache.createProfileDataCache(mContext);
+            mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext);
             mProfileDataCache.addObserver(this);
             mSigninPromoController = new SigninPromoController(
                     SigninAccessPoint.BOOKMARK_MANAGER, SigninActivityLauncherImpl.get());
@@ -223,16 +222,13 @@ class BookmarkPromoHeader implements ProfileSyncService.SyncStateChangedListener
         }
 
         if (!mSignInManager.getIdentityManager().hasPrimaryAccount()) {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
-                CoreAccountInfo primaryAccount =
-                        mSignInManager.getIdentityManager().getPrimaryAccountInfo(
-                                ConsentLevel.NOT_REQUIRED);
-                if (primaryAccount != null && !wasPersonalizedSigninPromoDeclined()) {
-                    return PromoState.PROMO_SYNC_PERSONALIZED;
-                }
+            if (!shouldShowBookmarkSigninPromo()) {
+                return PromoState.PROMO_NONE;
             }
-            return shouldShowBookmarkSigninPromo() ? PromoState.PROMO_SIGNIN_PERSONALIZED
-                                                   : PromoState.PROMO_NONE;
+            CoreAccountInfo primaryAccount =
+                    mSignInManager.getIdentityManager().getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+            return primaryAccount == null ? PromoState.PROMO_SIGNIN_PERSONALIZED
+                                          : PromoState.PROMO_SYNC_PERSONALIZED;
         }
 
         boolean impressionLimitNotReached =

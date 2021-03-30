@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chrome/common/custom_handlers/protocol_handler.h"
@@ -81,8 +81,9 @@ class ProtocolHandlersHandler : public SettingsPageUIHandler,
 
   ProtocolHandlerRegistry* GetProtocolHandlerRegistry();
 
-  ScopedObserver<ProtocolHandlerRegistry, ProtocolHandlerRegistry::Observer>
-      registry_observer_{this};
+  base::ScopedObservation<ProtocolHandlerRegistry,
+                          ProtocolHandlerRegistry::Observer>
+      registry_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ProtocolHandlersHandler);
 };

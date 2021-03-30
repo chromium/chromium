@@ -92,7 +92,7 @@ bool AXSlider::OnNativeSetValueAction(const String& value) {
     return false;
 
   // Ensure the AX node is updated.
-  AXObjectCache().MarkAXObjectDirty(this, false);
+  AXObjectCache().MarkAXObjectDirtyWithCleanLayout(this, false);
 
   return true;
 }

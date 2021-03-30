@@ -23,11 +23,13 @@
 <translation id="169515659049020177">Maiús</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Engade www. e .com ao que introduciches na barra de enderezo e despois abre a páxina</translation>
+<translation id="1768987374400973299">Realizar unha gravación ou unha captura de pantalla</translation>
 <translation id="1872219238824176091">Quita o escritorio actual</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> e despois <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> ou <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">Vai á seguinte pestana</translation>
 <translation id="2010818616644390445">Vai á última pestana da ventá</translation>
 <translation id="2040706009561734834">Abre/pecha o menú de aplicacións</translation>
+<translation id="2086334242442703436">Abre o selector de emojis</translation>
 <translation id="2088054208777350526">Buscar atallos de teclado</translation>
 <translation id="2125211348069077981"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="E" /> ou <ph name="F" /></translation>
 <translation id="2145908266289632567">Edición de texto</translation>
@@ -46,6 +48,7 @@
 <translation id="2480851840841871861">Abre o Asistente de Google</translation>
 <translation id="2488661730534396940">Activa o escritorio na parte esquerda</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516999188535378855">Abre a aplicación Diagnósticos</translation>
 <translation id="2530339807289914946">Avanza cara abaixo pola páxina web</translation>
 <translation id="2530896289327917474">Activar ou desactivar a navegación por cursor de texto</translation>
 <translation id="2574014812750545982">Restablece o nivel do zoom na páxina</translation>
@@ -110,6 +113,7 @@
 <translation id="4801989101741319327">Avanza ao final da palabra seguinte</translation>
 <translation id="4866066940972151697">Activa o escritorio na parte dereita</translation>
 <translation id="4916163929714267752">Abre a ligazón nunha ventá nova</translation>
+<translation id="492453977506755176">Tecla do modo de captura</translation>
 <translation id="5030659775136592441">Mostra o xestor de marcadores</translation>
 <translation id="5034421018520995080">Vai á parte superior da páxina</translation>
 <translation id="5042305953558921026">Tecla do modo de visión xeral</translation>
@@ -132,6 +136,7 @@
 <translation id="5899919361772749550">Mostra ou oculta a consola de ferramentas para programadores</translation>
 <translation id="5919628958418675842">Activa/desactiva a pantalla de privacidade</translation>
 <translation id="5921745308587794300">Xira a ventá</translation>
+<translation id="5926306472221400972">Realizar unha captura da pantalla completa</translation>
 <translation id="6022924867608035986">Borrar texto da caixa de busca</translation>
 <translation id="6045998054441862242">Activa o modo de alto contraste</translation>
 <translation id="6052614013050385269">Fai clic co botón dereito nunha ligazón</translation>
@@ -149,6 +154,7 @@
 <translation id="6445033640292336367">Devolve a pestana á súa posición orixinal</translation>
 <translation id="6474744297082284761">Afasta o zoom (cando a lupa ancorada OU de pantalla completa está activada)</translation>
 <translation id="649811797655257835">Selecciona o ficheiro e despois preme <ph name="SPACE" /></translation>
+<translation id="6551886416582667425">Realiza unha gravación ou unha captura de pantalla parcial</translation>
 <translation id="6556040137485212400">Abre a ventá que estivese máis tempo sen usarse</translation>
 <translation id="666343722268997814">Abre o menú do botón dereito do elemento destacado</translation>
 <translation id="6671538777808758331">Vai á seguinte coincidencia da busca</translation>
@@ -175,6 +181,7 @@
 <translation id="7611271430932669992">Move o enfoque ás ventás emerxentes e aos cadros de diálogo</translation>
 <translation id="7635348532214572995">Move a icona dunha aplicación arredor da grade de aplicacións</translation>
 <translation id="766326951329901120">Pega o contido do portapapeis como texto sen formato</translation>
+<translation id="7673453620027697230">Realiza unha gravación ou unha captura de pantalla da ventá</translation>
 <translation id="7703010453515335249">corchete de apertura</translation>
 <translation id="7724603315864178912">Cortar</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> e despois <ph name="SPACE" /> ou <ph name="ENTER" /></translation>

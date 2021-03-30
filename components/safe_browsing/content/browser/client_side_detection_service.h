@@ -67,8 +67,7 @@ class ClientSideDetectionService : public KeyedService {
     virtual scoped_refptr<network::SharedURLLoaderFactory>
     GetSafeBrowsingURLLoaderFactory() = 0;
     // Returns the management status for current profile.
-    virtual ChromeUserPopulation::ProfileManagementStatus
-    GetManagementStatus() = 0;
+    virtual ChromeUserPopulation GetUserPopulation() = 0;
   };
 
   explicit ClientSideDetectionService(std::unique_ptr<Delegate> delegate);
@@ -91,17 +90,13 @@ class ClientSideDetectionService : public KeyedService {
   // The URL scheme of the |url()| in the request should be HTTP.  This method
   // takes ownership of the |verdict| as well as the |callback| and calls the
   // the callback once the result has come back from the server or if an error
-  // occurs during the fetch.  |is_extended_reporting| and
-  // |is_enhanced_protection| should be set based on the active profile setting.
-  // If the service is disabled or an error occurs the phishing verdict will
-  // always be false.  The callback is always called after
+  // occurs during the fetch.  If the service is disabled or an error occurs the
+  // phishing verdict will always be false.  The callback is always called after
   // SendClientReportPhishingRequest() returns and on the same thread as
   // SendClientReportPhishingRequest() was called.  You may set |callback| to
   // NULL if you don't care about the server verdict.
   virtual void SendClientReportPhishingRequest(
       std::unique_ptr<ClientPhishingRequest> verdict,
-      bool is_extended_reporting,
-      bool is_enhanced_protection,
       ClientReportPhishingRequestCallback callback);
 
   // Returns true if the given IP address string falls within a private
@@ -183,8 +178,6 @@ class ClientSideDetectionService : public KeyedService {
   // This method takes ownership of both pointers.
   void StartClientReportPhishingRequest(
       std::unique_ptr<ClientPhishingRequest> request,
-      bool is_extended_reporting,
-      bool is_enhanced_protection,
       ClientReportPhishingRequestCallback callback);
 
   // Called by OnURLFetchComplete to handle the server response from
@@ -201,9 +194,12 @@ class ClientSideDetectionService : public KeyedService {
   // Get the number of phishing reports that we have sent over kReportsInterval.
   int GetPhishingNumReports();
 
-  // Get the number of reports that we have sent over kReportsInterval, and
-  // trims off the old elements.
-  int GetNumReports(base::queue<base::Time>* report_times);
+  // Adds a phishing report to |phishing_report_times_| and stores the result in
+  // prefs.
+  void AddPhishingReport(base::Time timestamp);
+
+  // Populates |phishing_report_times_| with the data stored in local prefs.
+  void LoadPhishingReportTimesFromPrefs();
 
   // Returns the URL that will be used for phishing requests.
   static GURL GetClientReportUrl(const std::string& report_url);
@@ -235,8 +231,7 @@ class ClientSideDetectionService : public KeyedService {
 
   // Timestamp of when we sent a phishing request. Used to limit the number
   // of phishing requests that we send in a day.
-  // TODO(gcasto): Serialize this so that it doesn't reset on browser restart.
-  base::queue<base::Time> phishing_report_times_;
+  std::deque<base::Time> phishing_report_times_;
 
   // The URLLoaderFactory we use to issue network requests.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

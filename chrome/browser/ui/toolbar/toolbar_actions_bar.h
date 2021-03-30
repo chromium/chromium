@@ -15,7 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_bar_bubble_delegate.h"
@@ -248,6 +248,8 @@ class ToolbarActionsBar : public ExtensionsContainer,
       std::unique_ptr<ToolbarActionsBarBubbleDelegate> bubble) override;
   void ShowToolbarActionBubbleAsync(
       std::unique_ptr<ToolbarActionsBarBubbleDelegate> bubble) override;
+  void ToggleExtensionsMenu() override;
+  bool HasAnyExtensions() const override;
 
  private:
   // Returns the insets by which the icon area bounds (See GetIconAreaRect())
@@ -320,8 +322,8 @@ class ToolbarActionsBar : public ExtensionsContainer,
   // from toolbar_actions_).
   ToolbarActionViewController* popup_owner_;
 
-  ScopedObserver<ToolbarActionsModel, ToolbarActionsModel::Observer>
-      model_observer_;
+  base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
+      model_observation_{this};
 
   // True if we should suppress layout, such as when we are creating or
   // adjusting a lot of actions at once.

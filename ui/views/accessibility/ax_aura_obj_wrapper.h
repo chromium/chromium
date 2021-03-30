@@ -7,15 +7,18 @@
 
 #include <stdint.h>
 
+#include <string>
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/views_export.h"
 
 namespace ui {
+
 struct AXActionData;
-struct AXNodeData;
+
 }  // namespace ui
 
 namespace views {
@@ -29,18 +32,17 @@ class VIEWS_EXPORT AXAuraObjWrapper {
   explicit AXAuraObjWrapper(AXAuraObjCache* cache);
   virtual ~AXAuraObjWrapper() = default;
 
-  // See ViewAccessibility for details.
-  virtual bool IsIgnored() = 0;
-
   // Traversal and serialization.
   virtual AXAuraObjWrapper* GetParent() = 0;
   virtual void GetChildren(std::vector<AXAuraObjWrapper*>* out_children) = 0;
   virtual void Serialize(ui::AXNodeData* out_node_data) = 0;
-  virtual int32_t GetUniqueId() const = 0;
+  virtual ui::AXNodeID GetUniqueId() const = 0;
   virtual std::string ToString() const = 0;
 
   // Actions.
   virtual bool HandleAccessibleAction(const ui::AXActionData& action);
+
+  const AXAuraObjCache* cache() const { return aura_obj_cache_; }
 
  protected:
   // The cache associated with this wrapper. Subclasses should initialize this

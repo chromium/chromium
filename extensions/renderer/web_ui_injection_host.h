@@ -6,11 +6,12 @@
 #define EXTENSIONS_RENDERER_WEB_UI_INJECTION_HOST_H_
 
 #include "base/macros.h"
+#include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/renderer/injection_host.h"
 
 class WebUIInjectionHost : public InjectionHost {
  public:
-  WebUIInjectionHost(const HostID& host_id);
+  WebUIInjectionHost(const extensions::mojom::HostID& host_id);
   ~WebUIInjectionHost() override;
 
  private:

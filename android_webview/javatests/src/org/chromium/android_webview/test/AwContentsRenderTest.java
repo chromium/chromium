@@ -128,7 +128,8 @@ public class AwContentsRenderTest {
                 }
             });
         });
-        Assert.assertTrue(latch.await(AwActivityTestRule.WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        Assert.assertTrue(
+                latch.await(AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
 
         final int width =
                 TestThreadUtils.runOnUiThreadBlockingNoException(() -> mContainerView.getWidth());

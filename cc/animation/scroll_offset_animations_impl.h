@@ -5,6 +5,8 @@
 #ifndef CC_ANIMATION_SCROLL_OFFSET_ANIMATIONS_IMPL_H_
 #define CC_ANIMATION_SCROLL_OFFSET_ANIMATIONS_IMPL_H_
 
+#include <memory>
+
 #include "base/memory/ref_counted.h"
 #include "cc/animation/animation_delegate.h"
 #include "cc/animation/scroll_offset_animation_curve.h"
@@ -69,11 +71,11 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationsImpl
   void NotifyAnimationAborted(base::TimeTicks monotonic_time,
                               int target_property,
                               int group) override {}
-  void NotifyAnimationTakeover(base::TimeTicks monotonic_time,
-                               int target_property,
-                               base::TimeTicks animation_start_time,
-                               std::unique_ptr<AnimationCurve> curve) override {
-  }
+  void NotifyAnimationTakeover(
+      base::TimeTicks monotonic_time,
+      int target_property,
+      base::TimeTicks animation_start_time,
+      std::unique_ptr<gfx::AnimationCurve> curve) override {}
   void NotifyLocalTimeUpdated(
       base::Optional<base::TimeDelta> local_time) override {}
 
@@ -82,7 +84,7 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationsImpl
 
  private:
   void ScrollAnimationCreateInternal(ElementId element_id,
-                                     std::unique_ptr<AnimationCurve> curve,
+                                     std::unique_ptr<gfx::AnimationCurve> curve,
                                      base::TimeDelta animation_start_offset);
 
   void ReattachScrollOffsetAnimationIfNeeded(ElementId element_id);

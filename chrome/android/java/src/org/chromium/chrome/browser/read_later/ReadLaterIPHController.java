@@ -10,7 +10,6 @@ import android.os.Looper;
 import android.view.View;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
@@ -35,8 +34,8 @@ public class ReadLaterIPHController {
             Activity activity, View toolbarMenuButton, AppMenuHandler appMenuHandler) {
         mToolbarMenuButton = toolbarMenuButton;
         mAppMenuHandler = appMenuHandler;
-        mUserEducationHelper = new UserEducationHelper(activity,
-                new Handler(Looper.getMainLooper()), TrackerFactory::getTrackerForProfile);
+        mUserEducationHelper =
+                new UserEducationHelper(activity, new Handler(Looper.getMainLooper()));
     }
 
     /**
@@ -44,10 +43,6 @@ public class ReadLaterIPHController {
      */
     public void onCopyContextMenuItemClicked() {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.READ_LATER)) return;
-        if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR)) {
-            return;
-        }
         mUserEducationHelper.requestShowIPH(
                 new IPHCommandBuilder(mToolbarMenuButton.getContext().getResources(),
                         FeatureConstants.READ_LATER_APP_MENU_BOOKMARK_THIS_PAGE_FEATURE,
@@ -69,10 +64,6 @@ public class ReadLaterIPHController {
 
     private void showReadLaterAppMenuBookmarksIPH() {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.READ_LATER)) return;
-        if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR)) {
-            return;
-        }
         mUserEducationHelper.requestShowIPH(
                 new IPHCommandBuilder(mToolbarMenuButton.getContext().getResources(),
                         FeatureConstants.READ_LATER_APP_MENU_BOOKMARKS_FEATURE,

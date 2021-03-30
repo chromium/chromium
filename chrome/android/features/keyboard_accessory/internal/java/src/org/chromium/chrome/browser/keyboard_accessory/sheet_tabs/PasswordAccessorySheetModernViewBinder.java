@@ -64,7 +64,7 @@ class PasswordAccessorySheetModernViewBinder {
 
             // Set the default icon, then try to get a better one.
             mFaviconRequestOrigin = info.getOrigin(); // Save the origin for returning callback.
-            FaviconHelper faviconHelper = new FaviconHelper(view.getContext());
+            FaviconHelper faviconHelper = FaviconHelper.create(view.getContext());
             view.setIconForBitmap(faviconHelper.getDefaultIcon(info.getOrigin()));
             faviconHelper.fetchFavicon(info.getOrigin(), d -> setIcon(view, info.getOrigin(), d));
         }

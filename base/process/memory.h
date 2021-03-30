@@ -21,13 +21,18 @@ BASE_EXPORT void EnableTerminationOnHeapCorruption();
 BASE_EXPORT void EnableTerminationOnOutOfMemory();
 
 // Terminates process. Should be called only for out of memory errors.
+// |size| is the size of the failed allocation, or 0 if not known.
 // Crash reporting classifies such crashes as OOM.
+// Must be allocation-safe.
 BASE_EXPORT void TerminateBecauseOutOfMemory(size_t size);
+
+// Records the size of the allocation that caused the current OOM crash, for
+// consumption by Breakpad.
+// TODO: this can be removed when Breakpad is no longer supported.
+BASE_EXPORT extern size_t g_oom_size;
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
     defined(OS_AIX)
-BASE_EXPORT extern size_t g_oom_size;
-
 // The maximum allowed value for the OOM score.
 const int kMaxOomScore = 1000;
 
@@ -60,16 +65,6 @@ const DWORD kOomExceptionCode = 0xe0000008;
 
 }  // namespace win
 #endif
-
-namespace internal {
-
-// Handles out of memory, with the failed allocation |size|, or 0 when it is not
-// known.
-//
-// Must be allocation-safe.
-BASE_EXPORT NOINLINE void OnNoMemoryInternal(size_t size);
-
-}  // namespace internal
 
 // Special allocator functions for callers that want to check for OOM.
 // These will not abort if the allocation fails even if

@@ -9,6 +9,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/system/accessibility/floating_menu_utils.h"
+#include "ash/system/accessibility/select_to_speak_constants.h"
 #include "ash/system/accessibility/select_to_speak_speed_view.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_constants.h"
@@ -55,7 +56,6 @@ void SelectToSpeakSpeedBubbleController::Show(views::View* anchor_view,
     init_params.close_on_deactivate = false;
     init_params.preferred_width = kPreferredWidth;
     bubble_view_ = new TrayBubbleView(init_params);
-    // TODO(crbug.com/1143814): Ensure this works correctly for RTL languages.
     bubble_view_->SetArrow(views::BubbleBorder::BOTTOM_RIGHT);
     bubble_view_->SetCanActivate(true);
     bubble_view_->SetFocusBehavior(ActionableView::FocusBehavior::ALWAYS);
@@ -67,6 +67,8 @@ void SelectToSpeakSpeedBubbleController::Show(views::View* anchor_view,
 
     bubble_widget_ =
         views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
+    bubble_widget_->GetNativeView()->SetName(
+        kSelectToSpeakSpeedBubbleWindowName);
     TrayBackgroundView::InitializeBubbleAnimations(bubble_widget_);
     bubble_view_->InitializeAndShowBubble();
   } else {

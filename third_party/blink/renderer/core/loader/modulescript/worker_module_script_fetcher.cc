@@ -35,6 +35,7 @@ WorkerModuleScriptFetcher::WorkerModuleScriptFetcher(
 // <specdef href="https://html.spec.whatwg.org/C/#run-a-worker">
 void WorkerModuleScriptFetcher::Fetch(
     FetchParameters& fetch_params,
+    ModuleType expected_module_type,
     ResourceFetcher* fetch_client_settings_object_fetcher,
     ModuleGraphLevel level,
     ModuleScriptFetcher::Client* client) {
@@ -44,6 +45,7 @@ void WorkerModuleScriptFetcher::Fetch(
   fetch_client_settings_object_fetcher_ = fetch_client_settings_object_fetcher;
   client_ = client;
   level_ = level;
+  expected_module_type_ = expected_module_type;
 
   // Use WorkerMainScriptLoader to load the main script when
   // dedicated workers (PlzDedicatedWorker) and shared workers.
@@ -91,18 +93,16 @@ void WorkerModuleScriptFetcher::NotifyFinished(Resource* resource) {
   ClearResource();
 
   auto* script_resource = To<ScriptResource>(resource);
-  ModuleType module_type;
   {
     HeapVector<Member<ConsoleMessage>> error_messages;
-    if (!WasModuleLoadSuccessful(script_resource, &error_messages,
-                                 &module_type)) {
+    if (!WasModuleLoadSuccessful(script_resource, expected_module_type_,
+                                 &error_messages)) {
       client_->NotifyFetchFinishedError(error_messages);
       return;
     }
   }
 
-  NotifyClient(resource->Url(), module_type,
-               script_resource->GetResourceRequest().GetCredentialsMode(),
+  NotifyClient(resource->Url(), expected_module_type_,
                script_resource->SourceText(), resource->GetResponse(),
                script_resource->CacheHandler());
 }
@@ -110,7 +110,6 @@ void WorkerModuleScriptFetcher::NotifyFinished(Resource* resource) {
 void WorkerModuleScriptFetcher::NotifyClient(
     const KURL& request_url,
     ModuleType module_type,
-    const network::mojom::CredentialsMode credentials_mode,
     const ParkableString& source_text,
     const ResourceResponse& response,
     SingleCachedMetadataHandler* cache_handler) {
@@ -163,11 +162,6 @@ void WorkerModuleScriptFetcher::NotifyClient(
           kDoNotSupportReferrerPolicyLegacyKeywords, &response_referrer_policy);
     }
 
-    auto* response_content_security_policy =
-        MakeGarbageCollected<ContentSecurityPolicy>();
-    response_content_security_policy->DidReceiveHeaders(
-        ContentSecurityPolicyResponseHeaders(response));
-
     std::unique_ptr<Vector<String>> response_origin_trial_tokens =
         OriginTrialContext::ParseHeaderValue(
             response.HttpHeaderField(http_names::kOriginTrial));
@@ -175,7 +169,8 @@ void WorkerModuleScriptFetcher::NotifyClient(
     // Step 12.3-12.6 are implemented in Initialize().
     global_scope_->Initialize(
         response_url, response_referrer_policy, response.AddressSpace(),
-        response_content_security_policy->Headers(),
+        ContentSecurityPolicy::ParseHeaders(
+            ContentSecurityPolicyResponseHeaders(response)),
         response_origin_trial_tokens.get(), response.AppCacheID());
   }
 
@@ -188,7 +183,7 @@ void WorkerModuleScriptFetcher::NotifyClient(
   client_->NotifyFetchFinishedSuccess(ModuleScriptCreationParams(
       /*source_url=*/url, /*base_url=*/url,
       ScriptSourceLocationType::kExternalFile, module_type, source_text,
-      cache_handler, credentials_mode));
+      cache_handler));
 }
 
 void WorkerModuleScriptFetcher::DidReceiveData(base::span<const char> span) {
@@ -230,7 +225,6 @@ void WorkerModuleScriptFetcher::OnFinishedLoadingWorkerMainScript() {
     source_text_.Append(decoder_->Flush());
   NotifyClient(worker_main_script_loader_->GetRequestURL(),
                ModuleType::kJavaScript,
-               network::mojom::CredentialsMode::kSameOrigin,
                ParkableString(source_text_.ToString().ReleaseImpl()), response,
                worker_main_script_loader_->CreateCachedMetadataHandler());
 }

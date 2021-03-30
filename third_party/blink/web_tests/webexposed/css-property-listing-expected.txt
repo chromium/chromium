@@ -56,6 +56,7 @@ All changes to this list should go through Blink's feature review process: http:
     -webkit-user-drag
     -webkit-user-modify
     -webkit-writing-mode
+    accent-color
     align-content
     align-items
     align-self
@@ -192,6 +193,7 @@ All changes to this list should go through Blink's feature review process: http:
     font-variant-numeric
     font-variation-settings
     font-weight
+    forced-color-adjust
     grid-auto-columns
     grid-auto-flow
     grid-auto-rows

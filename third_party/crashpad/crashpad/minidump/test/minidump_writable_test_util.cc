@@ -18,7 +18,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "gtest/gtest.h"
 #include "util/file/file_writer.h"
 #include "util/misc/implicit_cast.h"
@@ -112,16 +111,15 @@ const IMAGE_DEBUG_MISC* MinidumpWritableAtLocationDescriptor<IMAGE_DEBUG_MISC>(
       return nullptr;
     }
   } else if (misc->Unicode == 1) {
-    if (misc->Length % sizeof(base::char16) != 0) {
-      EXPECT_EQ(misc->Length % sizeof(base::char16), 0u);
+    if (misc->Length % sizeof(char16_t) != 0) {
+      EXPECT_EQ(misc->Length % sizeof(char16_t), 0u);
       return nullptr;
     }
 
-    size_t string_length = (misc->Length - offsetof(IMAGE_DEBUG_MISC, Data)) /
-                               sizeof(base::char16) -
-                           1;
-    const base::char16* data16 =
-        reinterpret_cast<const base::char16*>(misc->Data);
+    size_t string_length =
+        (misc->Length - offsetof(IMAGE_DEBUG_MISC, Data)) / sizeof(char16_t) -
+        1;
+    const char16_t* data16 = reinterpret_cast<const char16_t*>(misc->Data);
     if (data16[string_length] != '\0') {
       EXPECT_EQ(data16[string_length], '\0');
       return nullptr;

@@ -7,10 +7,10 @@
 
 #include <cstddef>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -38,7 +38,7 @@ class MockRenderViewContextMenu : public ui::SimpleMenuModel::Delegate,
     bool enabled;
     bool checked;
     bool hidden;
-    base::string16 title;
+    std::u16string title;
     ui::ImageModel icon;
   };
 
@@ -51,14 +51,14 @@ class MockRenderViewContextMenu : public ui::SimpleMenuModel::Delegate,
   void ExecuteCommand(int command_id, int event_flags) override;
 
   // RenderViewContextMenuProxy implementation.
-  void AddMenuItem(int command_id, const base::string16& title) override;
+  void AddMenuItem(int command_id, const std::u16string& title) override;
   void AddMenuItemWithIcon(int command_id,
-                           const base::string16& title,
+                           const std::u16string& title,
                            const ui::ImageModel& icon) override;
-  void AddCheckItem(int command_id, const base::string16& title) override;
+  void AddCheckItem(int command_id, const std::u16string& title) override;
   void AddSeparator() override;
   void AddSubMenu(int command_id,
-                  const base::string16& label,
+                  const std::u16string& label,
                   ui::MenuModel* model) override;
   void AddSubMenuWithStringIdAndIcon(int command_id,
                                      int message_id,
@@ -67,10 +67,11 @@ class MockRenderViewContextMenu : public ui::SimpleMenuModel::Delegate,
   void UpdateMenuItem(int command_id,
                       bool enabled,
                       bool hidden,
-                      const base::string16& title) override;
+                      const std::u16string& title) override;
   void UpdateMenuIcon(int command_id, const ui::ImageModel& icon) override;
   void RemoveMenuItem(int command_id) override;
   void RemoveAdjacentSeparators() override;
+  void RemoveSeparatorBeforeMenuItem(int command_id) override;
   void AddSpellCheckServiceItem(bool is_checked) override;
   void AddAccessibilityLabelsServiceItem(bool is_checked) override;
   content::RenderViewHost* GetRenderViewHost() const override;

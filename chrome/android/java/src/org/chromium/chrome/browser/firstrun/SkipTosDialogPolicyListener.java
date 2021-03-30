@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -27,6 +28,7 @@ import org.chromium.components.policy.PolicyService;
  *  - Supplies [False] otherwise.
  */
 class SkipTosDialogPolicyListener implements OneshotSupplier<Boolean> {
+    private static final String TAG = "SkipTosPolicy";
     /**
      * Interface that provides histogram to be recorded when signals are available in this listener.
      */
@@ -53,12 +55,17 @@ class SkipTosDialogPolicyListener implements OneshotSupplier<Boolean> {
         String getOnPolicyAvailableTimeHistogramName();
     }
 
-    private final CallbackController mCallbackController;
-    private final OneshotSupplierImpl<Boolean> mSkipTosDialogPolicySupplier;
-    private final PolicyLoadListener mPolicyLoadListener;
+    private final CallbackController mCallbackController = new CallbackController();
+    private final OneshotSupplierImpl<Boolean> mSkipTosDialogPolicySupplier =
+            new OneshotSupplierImpl<>();
     private final long mObjectCreatedTimeMs;
 
     private final @Nullable HistogramNameProvider mHistNameProvider;
+
+    /**
+     * This could be null when the policy load listener is provided and owned by other components.
+     */
+    private @Nullable PolicyLoadListener mPolicyLoadListener;
 
     /**
      * The value of whether the ToS dialog is enabled on the device. If the value is false, it means
@@ -82,20 +89,32 @@ class SkipTosDialogPolicyListener implements OneshotSupplier<Boolean> {
     public SkipTosDialogPolicyListener(FirstRunAppRestrictionInfo firstRunAppRestrictionInfo,
             OneshotSupplier<PolicyService> policyServiceSupplier, EnterpriseInfo enterpriseInfo,
             @Nullable HistogramNameProvider histogramNameProvider) {
-        this(new PolicyLoadListener(firstRunAppRestrictionInfo, policyServiceSupplier),
-                enterpriseInfo, histogramNameProvider);
+        mObjectCreatedTimeMs = SystemClock.elapsedRealtime();
+        mHistNameProvider = histogramNameProvider;
+        mPolicyLoadListener =
+                new PolicyLoadListener(firstRunAppRestrictionInfo, policyServiceSupplier);
+
+        initInternally(enterpriseInfo, mPolicyLoadListener);
     }
 
-    @VisibleForTesting
-    SkipTosDialogPolicyListener(PolicyLoadListener policyLoadListener,
+    /**
+     * @param policyLoadListener Supplier that provides a boolean value *whether reading policy from
+     *         policy service is necessary*. See {@link PolicyLoadListener} for more information.
+     * @param enterpriseInfo Source that provides whether device is managed.
+     * @param histogramNameProvider Provider that provides histogram names when signals are
+     *         available.
+     */
+    public SkipTosDialogPolicyListener(OneshotSupplier<Boolean> policyLoadListener,
             EnterpriseInfo enterpriseInfo, @Nullable HistogramNameProvider histogramNameProvider) {
         mObjectCreatedTimeMs = SystemClock.elapsedRealtime();
-        mSkipTosDialogPolicySupplier = new OneshotSupplierImpl<>();
-        mCallbackController = new CallbackController();
         mHistNameProvider = histogramNameProvider;
-        mPolicyLoadListener = policyLoadListener;
 
-        Boolean hasPolicy = mPolicyLoadListener.onAvailable(
+        initInternally(enterpriseInfo, policyLoadListener);
+    }
+
+    private void initInternally(
+            EnterpriseInfo enterpriseInfo, OneshotSupplier<Boolean> policyLoadListener) {
+        Boolean hasPolicy = policyLoadListener.onAvailable(
                 mCallbackController.makeCancelable(this::onPolicyLoadListenerAvailable));
         if (hasPolicy != null) {
             onPolicyLoadListenerAvailable(hasPolicy);
@@ -113,7 +132,10 @@ class SkipTosDialogPolicyListener implements OneshotSupplier<Boolean> {
      */
     public void destroy() {
         mCallbackController.destroy();
-        mPolicyLoadListener.destroy();
+        if (mPolicyLoadListener != null) {
+            mPolicyLoadListener.destroy();
+            mPolicyLoadListener = null;
+        }
     }
 
     @Override
@@ -171,9 +193,20 @@ class SkipTosDialogPolicyListener implements OneshotSupplier<Boolean> {
         boolean hasOutstandingSignal = mIsDeviceOwned == null || mTosDialogEnabled == null;
 
         if (!hasOutstandingSignal) {
+            Log.i(TAG,
+                    "Supplier available, <TosDialogEnabled>=" + mTosDialogEnabled
+                            + " <IsDeviceOwned>=" + mIsDeviceOwned);
             mSkipTosDialogPolicySupplier.set(!mTosDialogEnabled && mIsDeviceOwned);
         } else if (confirmedTosDialogEnabled || confirmedDeviceNotOwned) {
+            Log.i(TAG,
+                    "Supplier early out, <confirmedTosDialogEnabled>=" + confirmedTosDialogEnabled
+                            + " <confirmedDeviceNotOwned>=" + confirmedDeviceNotOwned);
             mSkipTosDialogPolicySupplier.set(false);
         }
+    }
+
+    @VisibleForTesting
+    public PolicyLoadListener getPolicyLoadListenerForTesting() {
+        return mPolicyLoadListener;
     }
 }

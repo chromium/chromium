@@ -4,10 +4,11 @@
 
 #include "ash/ambient/util/ambient_util.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/no_destructor.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/shadow_value.h"
@@ -22,6 +23,25 @@ constexpr SkColor kTextShadowColor = gfx::kGoogleGrey800;
 
 bool IsShowing(LockScreen::ScreenType type) {
   return LockScreen::HasInstance() && LockScreen::Get()->screen_type() == type;
+}
+
+SkColor GetContentLayerColor(
+    AshColorProvider::ContentLayerType content_layer_type) {
+  auto* ash_color_provider = AshColorProvider::Get();
+
+  switch (content_layer_type) {
+    case AshColorProvider::ContentLayerType::kTextColorPrimary:
+    case AshColorProvider::ContentLayerType::kTextColorSecondary:
+    case AshColorProvider::ContentLayerType::kIconColorPrimary:
+    case AshColorProvider::ContentLayerType::kIconColorSecondary:
+      return ash_color_provider->IsDarkModeEnabled()
+                 ? ash_color_provider->GetContentLayerColor(content_layer_type)
+                 : SK_ColorWHITE;
+    default:
+      NOTREACHED() << "Unsupported content layer type";
+      // Return a very bright color so it's obvious there is a mistake.
+      return gfx::kPlaceholderColor;
+  }
 }
 
 const gfx::FontList& GetDefaultFontlist() {

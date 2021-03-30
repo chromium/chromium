@@ -122,6 +122,12 @@ public final class EventConstants {
             "contextual_search_tapped_but_should_longpress";
 
     /**
+     * Contextual Search acknowledged the suggestion that they should longpress instead of tap.
+     */
+    public static final String CONTEXTUAL_SEARCH_ACKNOWLEDGED_IN_PANEL_HELP =
+            "contextual_search_acknowledged_in_panel_help";
+
+    /**
      * Contextual Search user fully enabled access to page content through the opt-in.
      */
     public static final String CONTEXTUAL_SEARCH_ENABLED_OPT_IN =
@@ -173,8 +179,6 @@ public final class EventConstants {
     public static final String EPHEMERAL_TAB_USED = "ephemeral_tab_used";
 
     /** HomepagePromo has been accepted. */
-    public static final String HOMEPAGE_PROMO_ACCEPTED = "homepage_promo_accepted";
-    public static final String HOMEPAGE_PROMO_SEEN = "homepage_promo_seen";
     public static final String NTP_SHOWN = "ntp_shown";
     public static final String NTP_HOME_BUTTON_CLICKED = "ntp_homebutton_clicked";
 
@@ -216,6 +220,18 @@ public final class EventConstants {
 
     /** PWA install events. */
     public static final String PWA_INSTALL_MENU_SELECTED = "pwa_install_menu_clicked";
+
+    /** PageInfo events. */
+    public static final String PAGE_INFO_OPENED = "page_info_opened";
+
+    /** Permission events. */
+    public static final String PERMISSION_REQUEST_SHOWN = "permission_request_shown";
+
+    /** Screenshot events */
+    public static final String SHARE_SCREENSHOT_SELECTED = "share_screenshot_clicked";
+
+    /** Mic toolbar IPH event */
+    public static final String SUCCESSFUL_VOICE_SEARCH = "successful_voice_search";
 
     /**
      * Do not instantiate.

@@ -7,8 +7,8 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/engagement/site_engagement_score.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/site_engagement/content/site_engagement_score.h"
 #include "content/public/browser/browser_context.h"
 
 namespace site_engagement {

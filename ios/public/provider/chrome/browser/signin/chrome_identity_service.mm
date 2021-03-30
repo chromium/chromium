@@ -82,14 +82,6 @@ NSArray* ChromeIdentityService::GetAllIdentitiesSortedForDisplay() {
   return nil;
 }
 
-void ChromeIdentityService::RunAfterCacheIsPopulated(
-    base::OnceClosure callback) {
-  if (!callback.is_null())
-    std::move(callback).Run();
-}
-
-void ChromeIdentityService::WaitUntilCacheIsPopulated() {}
-
 void ChromeIdentityService::ForgetIdentity(ChromeIdentity* identity,
                                            ForgetIdentityCallback callback) {}
 
@@ -156,9 +148,9 @@ bool ChromeIdentityService::IsInvalidGrantError(NSDictionary* user_info) {
   return false;
 }
 
-void ChromeIdentityService::FireIdentityListChanged() {
+void ChromeIdentityService::FireIdentityListChanged(bool keychainReload) {
   for (auto& observer : observer_list_)
-    observer.OnIdentityListChanged();
+    observer.OnIdentityListChanged(keychainReload);
 }
 
 void ChromeIdentityService::FireAccessTokenRefreshFailed(

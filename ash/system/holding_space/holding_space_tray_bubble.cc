@@ -62,34 +62,49 @@ void RecordTimeFromFirstAvailabilityToFirstEntry(PrefService* prefs) {
       time_of_first_entry - time_of_first_availability);
 }
 
-// HoldingSpaceEventFilter -----------------------------------------------------
-class HoldingSpaceEventFilter : public ui::EventHandler {
+// HoldingSpaceTrayBubbleEventHandler ------------------------------------------
+
+class HoldingSpaceTrayBubbleEventHandler : public ui::EventHandler {
  public:
-  HoldingSpaceEventFilter(HoldingSpaceItemViewDelegate* delegate)
-      : delegate_(delegate) {
+  HoldingSpaceTrayBubbleEventHandler(HoldingSpaceTrayBubble* bubble,
+                                     HoldingSpaceItemViewDelegate* delegate)
+      : bubble_(bubble), delegate_(delegate) {
     aura::Env::GetInstance()->AddPreTargetHandler(
         this, ui::EventTarget::Priority::kSystem);
   }
-  ~HoldingSpaceEventFilter() override {
+
+  HoldingSpaceTrayBubbleEventHandler(
+      const HoldingSpaceTrayBubbleEventHandler&) = delete;
+  HoldingSpaceTrayBubbleEventHandler& operator=(
+      const HoldingSpaceTrayBubbleEventHandler&) = delete;
+
+  ~HoldingSpaceTrayBubbleEventHandler() override {
     aura::Env::GetInstance()->RemovePreTargetHandler(this);
   }
-  HoldingSpaceEventFilter(const HoldingSpaceEventFilter&) = delete;
-  HoldingSpaceEventFilter& operator=(const HoldingSpaceEventFilter&) = delete;
 
  private:
   // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override {
-    if (event->type() == ui::ET_KEY_PRESSED &&
-        delegate_->OnHoldingSpaceTrayKeyPressed(*event)) {
+    if (event->type() != ui::ET_KEY_PRESSED)
+      return;
+
+    // Only handle `event`s that would otherwise escape the `bubble_` window.
+    aura::Window* target = static_cast<aura::Window*>(event->target());
+    aura::Window* bubble_window = bubble_->GetBubbleWidget()->GetNativeView();
+    if (target && (bubble_window->Contains(target)))
+      return;
+
+    // If `delegate_` handles the `event`, prevent additional bubbling up.
+    if (delegate_->OnHoldingSpaceTrayBubbleKeyPressed(*event))
       event->StopPropagation();
-    }
-    return;
   }
 
-  HoldingSpaceItemViewDelegate* delegate_;
+  HoldingSpaceTrayBubble* const bubble_;
+  HoldingSpaceItemViewDelegate* const delegate_;
 };
 
 // ChildBubbleContainerLayout --------------------------------------------------
+
 // A class similar to a `views::LayoutManager` which supports calculating and
 // applying `views::ProposedLayout`s. Views are laid out similar to a vertical
 // `views::BoxLayout` with the first child flexing to cede layout space if the
@@ -235,12 +250,18 @@ class HoldingSpaceTrayBubble::ChildBubbleContainer
     start_layout_ = current_layout_;
     target_layout_ = target_layout;
 
-    // Animate changes from the `current_layout_` to the `target_layout_`.
+    // Animate changes from the `current_layout_` to the `target_layout_`. Note
+    // the use of a throughput tracker to record layout animation smoothness.
     layout_animation_ = std::make_unique<gfx::SlideAnimation>(this);
     layout_animation_->SetSlideDuration(
         ui::ScopedAnimationDurationScaleMode::duration_multiplier() *
         kAnimationDuration);
     layout_animation_->SetTweenType(gfx::Tween::Type::FAST_OUT_SLOW_IN);
+    layout_animation_throughput_tracker_ =
+        GetWidget()->GetCompositor()->RequestNewThroughputTracker();
+    layout_animation_throughput_tracker_->Start(
+        metrics_util::ForSmoothness(base::BindRepeating(
+            holding_space_metrics::RecordBubbleResizeAnimationSmoothness)));
     layout_animation_->Show();
   }
 
@@ -256,6 +277,10 @@ class HoldingSpaceTrayBubble::ChildBubbleContainer
   void AnimationEnded(const gfx::Animation* animation) override {
     current_layout_ = target_layout_;
     PreferredSizeChanged();
+
+    // Record layout animation smoothness.
+    layout_animation_throughput_tracker_->Stop();
+    layout_animation_throughput_tracker_.reset();
   }
 
  private:
@@ -270,13 +295,13 @@ class HoldingSpaceTrayBubble::ChildBubbleContainer
   mutable views::ProposedLayout target_layout_;   // Layout being animated to.
 
   std::unique_ptr<gfx::SlideAnimation> layout_animation_;
+  base::Optional<ui::ThroughputTracker> layout_animation_throughput_tracker_;
 };
 
 // HoldingSpaceTrayBubble ------------------------------------------------------
 
 HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
-    HoldingSpaceTray* holding_space_tray,
-    bool show_by_click)
+    HoldingSpaceTray* holding_space_tray)
     : holding_space_tray_(holding_space_tray) {
   TrayBubbleView::InitParams init_params;
   init_params.delegate = holding_space_tray;
@@ -289,8 +314,8 @@ HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
   init_params.shelf_alignment = holding_space_tray->shelf()->alignment();
   init_params.preferred_width = kHoldingSpaceBubbleWidth;
   init_params.close_on_deactivate = true;
-  init_params.show_by_click = show_by_click;
   init_params.has_shadow = false;
+  init_params.reroute_event_handler = true;
 
   // Create and customize bubble view.
   TrayBubbleView* bubble_view = new TrayBubbleView(init_params);
@@ -320,7 +345,8 @@ HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
       ->frame_view()
       ->SetVisible(false);
 
-  event_filter_ = std::make_unique<HoldingSpaceEventFilter>(&delegate_);
+  event_handler_ =
+      std::make_unique<HoldingSpaceTrayBubbleEventHandler>(this, &delegate_);
 
   PrefService* const prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
@@ -336,12 +362,11 @@ HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
   FindVisibleHoldingSpaceItems(bubble_view, &visible_items);
   holding_space_metrics::RecordItemCounts(visible_items);
 
-  shelf_observer_.Add(holding_space_tray_->shelf());
-  tablet_mode_observer_.Add(Shell::Get()->tablet_mode_controller());
+  shelf_observation_.Observe(holding_space_tray_->shelf());
+  tablet_mode_observation_.Observe(Shell::Get()->tablet_mode_controller());
 }
 
 HoldingSpaceTrayBubble::~HoldingSpaceTrayBubble() {
-  event_filter_.reset();
   bubble_wrapper_->bubble_view()->ResetDelegate();
 
   // Explicitly reset child bubbles so that they will stop observing the holding
@@ -360,6 +385,17 @@ TrayBubbleView* HoldingSpaceTrayBubble::GetBubbleView() {
 
 views::Widget* HoldingSpaceTrayBubble::GetBubbleWidget() {
   return bubble_wrapper_->GetBubbleWidget();
+}
+
+std::vector<HoldingSpaceItemView*>
+HoldingSpaceTrayBubble::GetHoldingSpaceItemViews() {
+  std::vector<HoldingSpaceItemView*> views;
+  for (HoldingSpaceTrayChildBubble* child_bubble : child_bubbles_) {
+    auto child_bubble_views = child_bubble->GetHoldingSpaceItemViews();
+    views.insert(views.end(), child_bubble_views.begin(),
+                 child_bubble_views.end());
+  }
+  return views;
 }
 
 int HoldingSpaceTrayBubble::CalculateMaxHeight() const {

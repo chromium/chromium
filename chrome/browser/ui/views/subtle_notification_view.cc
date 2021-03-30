@@ -18,6 +18,8 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
 
@@ -52,28 +54,29 @@ const char kKeyNameDelimiter[] = "|";
 // key (not just a simple label).
 class SubtleNotificationView::InstructionView : public views::View {
  public:
+  METADATA_HEADER(InstructionView);
   // Creates an InstructionView with specific text. |text| may contain one or
   // more segments delimited by a pair of pipes ('|'); each of these segments
   // will be displayed as a keyboard key. e.g., "Press |Alt|+|Q| to exit" will
   // have "Alt" and "Q" rendered as keys.
-  explicit InstructionView(const base::string16& text);
+  explicit InstructionView(const std::u16string& text);
+  InstructionView(const InstructionView&) = delete;
+  InstructionView& operator=(const InstructionView&) = delete;
 
-  const base::string16 text() const { return text_; }
-  void SetText(const base::string16& text);
+  std::u16string GetText() const;
+  void SetText(const std::u16string& text);
 
  private:
   // Adds a label to the end of the notification text. If |format_as_key|,
   // surrounds the label in a rounded-rect border to indicate that it is a
   // keyboard key.
-  void AddTextSegment(const base::string16& text, bool format_as_key);
+  void AddTextSegment(const std::u16string& text, bool format_as_key);
 
-  base::string16 text_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstructionView);
+  std::u16string text_;
 };
 
 SubtleNotificationView::InstructionView::InstructionView(
-    const base::string16& text) {
+    const std::u16string& text) {
   // The |between_child_spacing| is the horizontal margin of the key name.
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
@@ -82,8 +85,12 @@ SubtleNotificationView::InstructionView::InstructionView(
   SetText(text);
 }
 
+std::u16string SubtleNotificationView::InstructionView::GetText() const {
+  return text_;
+}
+
 void SubtleNotificationView::InstructionView::SetText(
-    const base::string16& text) {
+    const std::u16string& text) {
   // Avoid replacing the contents with the same text.
   if (text == text_)
     return;
@@ -91,7 +98,7 @@ void SubtleNotificationView::InstructionView::SetText(
   RemoveAllChildViews(true);
 
   // Parse |text|, looking for pipe-delimited segment.
-  std::vector<base::string16> segments =
+  std::vector<std::u16string> segments =
       base::SplitString(text, base::ASCIIToUTF16(kKeyNameDelimiter),
                         base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   // SplitString() returns empty strings for zero-length segments, so given an
@@ -112,7 +119,8 @@ void SubtleNotificationView::InstructionView::SetText(
 }
 
 void SubtleNotificationView::InstructionView::AddTextSegment(
-    const base::string16& text, bool format_as_key) {
+    const std::u16string& text,
+    bool format_as_key) {
   constexpr SkColor kForegroundColor = SK_ColorWHITE;
 
   views::Label* label = new views::Label(text, kInstructionTextContext);
@@ -139,14 +147,18 @@ void SubtleNotificationView::InstructionView::AddTextSegment(
   AddChildView(key);
 }
 
+BEGIN_METADATA(SubtleNotificationView, InstructionView, views::View)
+ADD_PROPERTY_METADATA(std::u16string, Text)
+END_METADATA
+
 SubtleNotificationView::SubtleNotificationView() : instruction_view_(nullptr) {
   std::unique_ptr<views::BubbleBorder> bubble_border(new views::BubbleBorder(
-      views::BubbleBorder::NONE, views::BubbleBorder::NO_ASSETS,
+      views::BubbleBorder::NONE, views::BubbleBorder::NO_SHADOW,
       kSubtleNotificationBackgroundColor));
   SetBackground(std::make_unique<views::BubbleBackground>(bubble_border.get()));
   SetBorder(std::move(bubble_border));
 
-  instruction_view_ = new InstructionView(base::string16());
+  instruction_view_ = new InstructionView(std::u16string());
 
   int outer_padding_horiz = kOuterPaddingHorizPx;
   int outer_padding_vert = kOuterPaddingVertPx;
@@ -160,7 +172,7 @@ SubtleNotificationView::SubtleNotificationView() : instruction_view_(nullptr) {
 SubtleNotificationView::~SubtleNotificationView() {}
 
 void SubtleNotificationView::UpdateContent(
-    const base::string16& instruction_text) {
+    const std::u16string& instruction_text) {
   instruction_view_->SetText(instruction_text);
   instruction_view_->SetVisible(!instruction_text.empty());
   Layout();
@@ -192,8 +204,11 @@ views::Widget* SubtleNotificationView::CreatePopupWidget(
 
 void SubtleNotificationView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kAlert;
-  base::string16 accessible_name;
-  base::RemoveChars(instruction_view_->text(),
+  std::u16string accessible_name;
+  base::RemoveChars(instruction_view_->GetText(),
                     base::ASCIIToUTF16(kKeyNameDelimiter), &accessible_name);
   node_data->SetName(accessible_name);
 }
+
+BEGIN_METADATA(SubtleNotificationView, views::View)
+END_METADATA

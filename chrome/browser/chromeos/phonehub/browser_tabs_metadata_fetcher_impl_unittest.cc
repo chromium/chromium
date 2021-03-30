@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/phonehub/browser_tabs_metadata_fetcher_impl.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/favicon/core/history_ui_favicon_request_handler.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
@@ -26,6 +27,7 @@ const base::Time kTimeB = base::Time::FromDoubleT(2);
 const base::Time kTimeC = base::Time::FromDoubleT(3);
 const base::Time kTimeD = base::Time::FromDoubleT(4);
 const base::Time kTimeE = base::Time::FromDoubleT(5);
+const base::Time kTimeF = base::Time::FromDoubleT(6);
 
 class MockHistoryUiFaviconRequestHandler
     : public favicon::HistoryUiFaviconRequestHandler {
@@ -83,7 +85,7 @@ class BrowserTabsMetadataFetcherImplTest : public testing::Test {
   }
 
   void AddTab(sync_sessions::SyncedSessionWindow* synced_session_window,
-              const base::string16& title,
+              const std::u16string& title,
               const GURL& url,
               const base::Time& time) {
     auto tab1 = std::make_unique<sessions::SessionTab>();
@@ -176,16 +178,16 @@ class BrowserTabsMetadataFetcherImplTest : public testing::Test {
 };
 
 TEST_F(BrowserTabsMetadataFetcherImplTest, NewFetchDuringOldFetchInProgress) {
-  const base::string16 kTitleA = base::UTF8ToUTF16("A");
+  const std::u16string kTitleA = u"A";
   const GURL kUrlA = GURL("http://a.com");
 
-  const base::string16 kTitleB = base::UTF8ToUTF16("B");
+  const std::u16string kTitleB = u"B";
   const GURL kUrlB = GURL("http://b.com");
 
-  const base::string16 kTitleC = base::UTF8ToUTF16("C");
+  const std::u16string kTitleC = u"C";
   const GURL kUrlC = GURL("http://c.com");
 
-  const base::string16 kTitleD = base::UTF8ToUTF16("D");
+  const std::u16string kTitleD = u"D";
   const GURL kUrlD = GURL("http://d.com");
 
   auto synced_session_window =
@@ -241,10 +243,10 @@ TEST_F(BrowserTabsMetadataFetcherImplTest, NoTabsOpen) {
 }
 
 TEST_F(BrowserTabsMetadataFetcherImplTest, BelowMaximumNumberOfTabs) {
-  const base::string16 kTitleC = base::UTF8ToUTF16("C");
+  const std::u16string kTitleC = u"C";
   const GURL kUrlC = GURL("http://c.com");
 
-  const base::string16 kTitleD = base::UTF8ToUTF16("D");
+  const std::u16string kTitleD = u"D";
   const GURL kUrlD = GURL("http://d.com");
 
   auto synced_session_window =
@@ -265,20 +267,23 @@ TEST_F(BrowserTabsMetadataFetcherImplTest, BelowMaximumNumberOfTabs) {
 }
 
 TEST_F(BrowserTabsMetadataFetcherImplTest, ExceedMaximumNumberOfTabs) {
-  const base::string16 kTitleA = base::UTF8ToUTF16("A");
+  const std::u16string kTitleA = u"A";
   const GURL kUrlA = GURL("http://a.com");
 
-  const base::string16 kTitleB = base::UTF8ToUTF16("B");
+  const std::u16string kTitleB = u"B";
   const GURL kUrlB = GURL("http://b.com");
 
-  const base::string16 kTitleC = base::UTF8ToUTF16("C");
+  const std::u16string kTitleC = u"C";
   const GURL kUrlC = GURL("http://c.com");
 
-  const base::string16 kTitleD = base::UTF8ToUTF16("D");
+  const std::u16string kTitleD = u"D";
   const GURL kUrlD = GURL("http://d.com");
 
-  const base::string16 kTitleE = base::UTF8ToUTF16("E");
-  const GURL kUrlE = GURL("http://e.com");
+  const std::u16string kTitleE = u"E";
+  const GURL kUrlE = GURL(chrome::kChromeUINewTabURL);
+
+  const std::u16string kTitleF = u"F";
+  const GURL kUrlF = GURL("content://image.png");
 
   auto synced_session_window =
       std::make_unique<sync_sessions::SyncedSessionWindow>();
@@ -286,34 +291,36 @@ TEST_F(BrowserTabsMetadataFetcherImplTest, ExceedMaximumNumberOfTabs) {
   AddTab(synced_session_window.get(), kTitleE, kUrlE, kTimeE);
   AddTab(synced_session_window.get(), kTitleB, kUrlB, kTimeB);
   AddTab(synced_session_window.get(), kTitleD, kUrlD, kTimeD);
+  AddTab(synced_session_window.get(), kTitleF, kUrlF, kTimeF);
   AddTab(synced_session_window.get(), kTitleC, kUrlC, kTimeC);
   AddWindow(std::move(synced_session_window));
 
   ExpectFaviconUrlFetchAttempt(kUrlD);
-  ExpectFaviconUrlFetchAttempt(kUrlE);
+  ExpectFaviconUrlFetchAttempt(kUrlC);
 
   AttemptFetch();
   InvokeNextFaviconCallbacks(/*num_successful_fetches=*/2);
 
-  // Tab A is not present because it has the oldest timestamp, and the maximum
-  // number of BrowserTabMetadata has been met.
+  // Tab A and Tab B are not present because they have the oldest timestamps,
+  // and the maximum number of BrowserTabMetadata has been met. Tabs E and F
+  // are not present because they have banned schemes.
   CheckIsExpectedMetadata(std::vector<BrowserTabMetadata>({
-      BrowserTabMetadata(kUrlE, kTitleE, kTimeE, GetDummyImage()),
       BrowserTabMetadata(kUrlD, kTitleD, kTimeD, GetDummyImage()),
+      BrowserTabMetadata(kUrlC, kTitleC, kTimeC, GetDummyImage()),
   }));
 }
 
 TEST_F(BrowserTabsMetadataFetcherImplTest, MultipleWindows) {
-  const base::string16 kTitleB = base::UTF8ToUTF16("B");
+  const std::u16string kTitleB = u"B";
   const GURL kUrlB = GURL("http://b.com");
 
-  const base::string16 kTitleC = base::UTF8ToUTF16("C");
+  const std::u16string kTitleC = u"C";
   const GURL kUrlC = GURL("http://c.com");
 
-  const base::string16 kTitleD = base::UTF8ToUTF16("D");
+  const std::u16string kTitleD = u"D";
   const GURL kUrlD = GURL("http://d.com");
 
-  const base::string16 kTitleE = base::UTF8ToUTF16("E");
+  const std::u16string kTitleE = u"E";
   const GURL kUrlE = GURL("http://e.com");
 
   auto synced_session_window_one =

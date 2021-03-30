@@ -129,11 +129,10 @@ void HTMLStyleElement::NotifyLoadedSheetAndAllCriticalSubresources(
       .GetTaskRunner(TaskType::kNetworking)
       ->PostTask(
           FROM_HERE,
-          WTF::Bind(&HTMLStyleElement::DispatchPendingEvent,
-                    WrapPersistent(this),
-                    WTF::Passed(std::make_unique<IncrementLoadEventDelayCount>(
-                        GetDocument())),
-                    is_load_event));
+          WTF::Bind(
+              &HTMLStyleElement::DispatchPendingEvent, WrapPersistent(this),
+              std::make_unique<IncrementLoadEventDelayCount>(GetDocument()),
+              is_load_event));
 }
 
 bool HTMLStyleElement::disabled() const {

@@ -21,10 +21,6 @@ MailboxManagerImpl::~MailboxManagerImpl() {
   DCHECK(textures_to_mailboxes_.empty());
 }
 
-bool MailboxManagerImpl::UsesSync() {
-  return false;
-}
-
 TextureBase* MailboxManagerImpl::ConsumeTexture(const Mailbox& mailbox) {
   MailboxToTextureMap::iterator it =
       mailbox_to_textures_.find(mailbox);

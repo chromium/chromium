@@ -76,7 +76,7 @@ static_library("sync_device_info") {
 
   if (is_chromeos_ash) {
     # Required by device_info_util_linux.cc on Chrome OS.
-    deps += [ "//chromeos/constants" ]
+    deps += [ "//ash/constants" ]
   }
 }
 
@@ -122,9 +122,4 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
-
-  if (is_chromeos_ash) {
-    # Required by local_device_info_util_unittest.cc on Chrome OS.
-    deps += [ "//chromeos/constants" ]
-  }
 }

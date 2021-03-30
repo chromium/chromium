@@ -161,10 +161,10 @@ v8::Local<v8::FunctionTemplate> CreateFunctionTemplate(
         V8PrivateProperty::GetCachedAccessor(isolate, v8_cached_accessor)
             .GetPrivate(),
         v8::Local<v8::Value>(), signature, length, v8_side_effect);
+    function_template->RemovePrototype();
   }
 
   function_template->SetClassName(name);
-  function_template->RemovePrototype();
   function_template->SetAcceptAnyReceiver(
       GetConfigCrossOriginCheck<kind>(config) ==
       IDLMemberInstaller::FlagCrossOriginCheck::kDoNotCheck);

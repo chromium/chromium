@@ -1,0 +1,3 @@
+CONSOLE ERROR: line 10: A boolean is being passed as a fourth parameter to window.open. This is not used and may cause an exception in a future release.
+success
+This tests that calling window.open() with a boolean as a fourth parameter does no throw an exception.

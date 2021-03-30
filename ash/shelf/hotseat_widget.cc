@@ -1134,7 +1134,7 @@ void HotseatWidget::LayoutHotseatByAnimation(double target_opacity,
   // between hidden and extended state use transform to animate. Clear any
   // transform that may have been set by the previous animation, and update
   // current bounds to match it.
-  gfx::RectF current_bounds_f(hotseat_layer->bounds());
+  gfx::RectF current_bounds_f(GetNativeView()->GetBoundsInScreen());
   hotseat_layer->transform().TransformRect(&current_bounds_f);
   gfx::Rect current_bounds = gfx::ToEnclosingRect(current_bounds_f);
 

@@ -17,12 +17,12 @@
 
 namespace autofill {
 
-constexpr base::char16 kLabelSeparator = ' ';
+constexpr char16_t kLabelSeparator = ' ';
 constexpr size_t kMaxBulletCount = 8;
 
 namespace {
-base::string16 CreateLabel(const Suggestion& suggestion) {
-  base::string16 password =
+std::u16string CreateLabel(const Suggestion& suggestion) {
+  std::u16string password =
       suggestion.additional_label.substr(0, kMaxBulletCount);
   // The label contains the signon_realm or is empty. The additional_label can
   // never be empty since it must contain a password.
@@ -98,13 +98,13 @@ const autofill::Suggestion& AutofillKeyboardAccessoryAdapter::GetSuggestionAt(
   return controller_->GetSuggestionAt(OffsetIndexFor(row));
 }
 
-const base::string16& AutofillKeyboardAccessoryAdapter::GetSuggestionValueAt(
+const std::u16string& AutofillKeyboardAccessoryAdapter::GetSuggestionValueAt(
     int row) const {
   DCHECK(controller_) << "Call GetSuggestionValueAt only from its owner!";
   return controller_->GetSuggestionValueAt(OffsetIndexFor(row));
 }
 
-const base::string16& AutofillKeyboardAccessoryAdapter::GetSuggestionLabelAt(
+const std::u16string& AutofillKeyboardAccessoryAdapter::GetSuggestionLabelAt(
     int row) const {
   DCHECK(controller_) << "Call GetSuggestionLabelAt only from its owner!";
   DCHECK(static_cast<size_t>(row) < labels_.size());
@@ -118,15 +118,15 @@ PopupType AutofillKeyboardAccessoryAdapter::GetPopupType() const {
 
 bool AutofillKeyboardAccessoryAdapter::GetRemovalConfirmationText(
     int index,
-    base::string16* title,
-    base::string16* body) {
+    std::u16string* title,
+    std::u16string* body) {
   return controller_ && controller_->GetRemovalConfirmationText(
                             OffsetIndexFor(index), title, body);
 }
 
 bool AutofillKeyboardAccessoryAdapter::RemoveSuggestion(int index) {
   DCHECK(view_) << "RemoveSuggestion called before a View was set!";
-  base::string16 title, body;
+  std::u16string title, body;
   if (!GetRemovalConfirmationText(index, &title, &body))
     return false;
 

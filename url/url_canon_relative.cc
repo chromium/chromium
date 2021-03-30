@@ -358,8 +358,8 @@ bool DoResolveRelativePath(const char* base_url,
       int path_begin = output->length();
       CopyToLastSlash(base_url, base_path_begin, base_parsed.path.end(),
                       output);
-      success &= CanonicalizePartialPath(relative_url, path, path_begin,
-                                         output);
+      success &= CanonicalizePartialPathInternal(relative_url, path, path_begin,
+                                                 output);
       out_parsed->path = MakeRange(path_begin, output->length());
 
       // Copy the rest of the stuff after the path from the relative path.
@@ -581,14 +581,14 @@ bool IsRelativeURL(const char* base,
 
 bool IsRelativeURL(const char* base,
                    const Parsed& base_parsed,
-                   const base::char16* fragment,
+                   const char16_t* fragment,
                    int fragment_len,
                    bool is_base_hierarchical,
                    bool* is_relative,
                    Component* relative_component) {
-  return DoIsRelativeURL<base::char16>(
-      base, base_parsed, fragment, fragment_len, is_base_hierarchical,
-      is_relative, relative_component);
+  return DoIsRelativeURL<char16_t>(base, base_parsed, fragment, fragment_len,
+                                   is_base_hierarchical, is_relative,
+                                   relative_component);
 }
 
 bool ResolveRelativeURL(const char* base_url,
@@ -607,14 +607,14 @@ bool ResolveRelativeURL(const char* base_url,
 bool ResolveRelativeURL(const char* base_url,
                         const Parsed& base_parsed,
                         bool base_is_file,
-                        const base::char16* relative_url,
+                        const char16_t* relative_url,
                         const Component& relative_component,
                         CharsetConverter* query_converter,
                         CanonOutput* output,
                         Parsed* out_parsed) {
-  return DoResolveRelativeURL<base::char16>(
-      base_url, base_parsed, base_is_file, relative_url,
-      relative_component, query_converter, output, out_parsed);
+  return DoResolveRelativeURL<char16_t>(base_url, base_parsed, base_is_file,
+                                        relative_url, relative_component,
+                                        query_converter, output, out_parsed);
 }
 
 }  // namespace url

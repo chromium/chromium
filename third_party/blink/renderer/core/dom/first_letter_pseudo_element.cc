@@ -169,7 +169,7 @@ LayoutText* FirstLetterPseudoElement::FirstLetterTextLayoutObject(
       return nullptr;
     } else if (first_letter_text_layout_object
                    ->IsFlexibleBoxIncludingDeprecatedAndNG() ||
-               first_letter_text_layout_object->IsLayoutGrid()) {
+               first_letter_text_layout_object->IsLayoutGridIncludingNG()) {
       first_letter_text_layout_object =
           first_letter_text_layout_object->NextSibling();
     } else if (!first_letter_text_layout_object->IsInline() &&
@@ -180,14 +180,20 @@ LayoutText* FirstLetterPseudoElement::FirstLetterTextLayoutObject(
       // PseudoIdFirstLetter set. When that node is attached we will handle
       // setting up the first letter then.
       return nullptr;
-    } else if (first_letter_text_layout_object->IsInline() &&
+    } else if ((first_letter_text_layout_object->IsInline() ||
+                first_letter_text_layout_object->IsAnonymousBlock()) &&
                !first_letter_text_layout_object->SlowFirstChild()) {
-      LayoutObject* next_sibling =
-          first_letter_text_layout_object->NextSibling();
-      first_letter_text_layout_object =
-          next_sibling
-              ? next_sibling
-              : first_letter_text_layout_object->Parent()->NextSibling();
+      if (LayoutObject* next_sibling =
+              first_letter_text_layout_object->NextSibling()) {
+        first_letter_text_layout_object = next_sibling;
+        continue;
+      }
+      LayoutObject* parent = first_letter_text_layout_object->Parent();
+      if (parent && parent != parent_layout_object) {
+        first_letter_text_layout_object = parent->NextSibling();
+        continue;
+      }
+      return nullptr;
     } else {
       first_letter_text_layout_object =
           first_letter_text_layout_object->SlowFirstChild();
@@ -306,15 +312,17 @@ void FirstLetterPseudoElement::DetachLayoutTree(bool performing_reattach) {
 }
 
 scoped_refptr<ComputedStyle>
-FirstLetterPseudoElement::CustomStyleForLayoutObject() {
+FirstLetterPseudoElement::CustomStyleForLayoutObject(
+    const StyleRecalcContext& style_recalc_context) {
   LayoutObject* first_letter_text =
       FirstLetterPseudoElement::FirstLetterTextLayoutObject(*this);
   if (!first_letter_text)
     return nullptr;
   DCHECK(first_letter_text->Parent());
   return ParentOrShadowHostElement()->StyleForPseudoElement(
-      PseudoElementStyleRequest(GetPseudoId()),
-      first_letter_text->Parent()->FirstLineStyle());
+      style_recalc_context,
+      StyleRequest(GetPseudoId(),
+                   first_letter_text->Parent()->FirstLineStyle()));
 }
 
 void FirstLetterPseudoElement::AttachFirstLetterTextLayoutObjects(LayoutText* first_letter_text) {

@@ -79,11 +79,6 @@ ExtractNamesFromFamily(Microsoft::WRL::ComPtr<IDWriteFontCollection> collection,
     return family_result;
   }
 
-  base::Optional<std::string> localized_family_name =
-      GetLocalizedString(family_names.Get(), locale);
-  if (!localized_family_name)
-    localized_family_name = native_family_name;
-
   UINT32 font_count = family->GetFontCount();
   for (UINT32 font_index = 0; font_index < font_count; ++font_index) {
     BOOL exists = false;
@@ -107,6 +102,7 @@ ExtractNamesFromFamily(Microsoft::WRL::ComPtr<IDWriteFontCollection> collection,
 
     Microsoft::WRL::ComPtr<IDWriteLocalizedStrings> postscript_name;
     Microsoft::WRL::ComPtr<IDWriteLocalizedStrings> full_name;
+    Microsoft::WRL::ComPtr<IDWriteLocalizedStrings> style;
 
     // DWRITE_INFORMATIONAL_STRING_POSTSCRIPT_NAME and
     // DWRITE_INFORMATIONAL_STRING_FULL_NAME are only supported on Windows 7
@@ -115,6 +111,7 @@ ExtractNamesFromFamily(Microsoft::WRL::ComPtr<IDWriteFontCollection> collection,
     // in Firefox: https://bugzilla.mozilla.org/show_bug.cgi?id=947812 However,
     // this might not be worth the effort.
 
+    // Extracting the postscript name.
     {
       base::ScopedBlockingCall scoped_blocking_call(
           FROM_HERE, base::BlockingType::MAY_BLOCK);
@@ -138,6 +135,7 @@ ExtractNamesFromFamily(Microsoft::WRL::ComPtr<IDWriteFontCollection> collection,
       return family_result;
     }
 
+    // Extracting the full name.
     {
       base::ScopedBlockingCall scoped_blocking_call(
           FROM_HERE, base::BlockingType::MAY_BLOCK);
@@ -160,10 +158,40 @@ ExtractNamesFromFamily(Microsoft::WRL::ComPtr<IDWriteFontCollection> collection,
     if (!localized_full_name)
       localized_full_name = native_postscript_name;
 
+    // Extracting Style.
+    {
+      base::ScopedBlockingCall scoped_blocking_call(
+          FROM_HERE, base::BlockingType::MAY_BLOCK);
+      hr = font->GetInformationalStrings(
+          DWRITE_INFORMATIONAL_STRING_PREFERRED_SUBFAMILY_NAMES, &style,
+          &exists);
+    }
+    if (FAILED(hr)) {
+      family_result->exit_hresult = hr;
+      return family_result;
+    }
+    if (!exists) {
+      {
+        base::ScopedBlockingCall scoped_blocking_call(
+            FROM_HERE, base::BlockingType::MAY_BLOCK);
+        hr = font->GetInformationalStrings(
+            DWRITE_INFORMATIONAL_STRING_WIN32_SUBFAMILY_NAMES, &style, &exists);
+      }
+      if (FAILED(hr)) {
+        family_result->exit_hresult = hr;
+        return family_result;
+      }
+    }
+    base::Optional<std::string> native_style_name;
+    if (exists) {
+      native_style_name = GetNativeString(style);
+    }
+
     blink::FontEnumerationTable_FontMetadata metadata;
     metadata.set_postscript_name(native_postscript_name.value());
     metadata.set_full_name(localized_full_name.value());
-    metadata.set_family(localized_family_name.value());
+    metadata.set_family(native_family_name.value());
+    metadata.set_style(native_style_name ? native_style_name.value() : "");
 
     family_result->fonts.push_back(std::move(metadata));
   }

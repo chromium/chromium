@@ -15,7 +15,7 @@ namespace password_generation {
 PasswordGenerationUIData::PasswordGenerationUIData(
     const gfx::RectF& bounds,
     int max_length,
-    const base::string16& generation_element,
+    const std::u16string& generation_element,
     FieldRendererId generation_element_id,
     bool is_generation_element_password_type,
     base::i18n::TextDirection text_direction,

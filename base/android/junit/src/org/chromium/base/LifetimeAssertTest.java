@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.BuildConfig;
 
 /**
  * junit tests for {@link LifetimeAssert}.
@@ -32,7 +33,7 @@ public class LifetimeAssertTest {
 
     @Before
     public void setUp() {
-        if (!BuildConfig.DCHECK_IS_ON) {
+        if (!BuildConfig.ENABLE_ASSERTS) {
             return;
         }
         mTestClass = new TestClass();
@@ -52,14 +53,14 @@ public class LifetimeAssertTest {
 
     @After
     public void tearDown() {
-        if (!BuildConfig.DCHECK_IS_ON) {
+        if (!BuildConfig.ENABLE_ASSERTS) {
             return;
         }
         LifetimeAssert.sTestHook = null;
     }
 
     private void runTest(boolean setSafe) {
-        if (!BuildConfig.DCHECK_IS_ON) {
+        if (!BuildConfig.ENABLE_ASSERTS) {
             return;
         }
 
@@ -98,7 +99,7 @@ public class LifetimeAssertTest {
 
     @Test
     public void testAssertAllInstancesDestroyedForTesting() {
-        if (!BuildConfig.DCHECK_IS_ON) {
+        if (!BuildConfig.ENABLE_ASSERTS) {
             return;
         }
         try {

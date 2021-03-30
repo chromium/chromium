@@ -194,21 +194,22 @@ public class ManualFillingTestHelper {
         getKeyboard().showKeyboard(mActivityTestRule.getActivity().getCurrentFocus());
     }
 
-    public void clickNodeAndShowKeyboard(String node) throws TimeoutException {
-        clickNodeAndShowKeyboard(node, FILLABLE_NON_SEARCH_FIELD);
+    public void clickNodeAndShowKeyboard(String node, long focusedFieldId) throws TimeoutException {
+        clickNodeAndShowKeyboard(node, focusedFieldId, FILLABLE_NON_SEARCH_FIELD);
     }
 
-    public void clickNodeAndShowKeyboard(String node, int focusedFieldType)
+    public void clickNodeAndShowKeyboard(String node, long focusedFieldId, int focusedFieldType)
             throws TimeoutException {
-        clickNode(node, focusedFieldType);
+        clickNode(node, focusedFieldId, focusedFieldType);
         getKeyboard().showKeyboard(mActivityTestRule.getActivity().getCurrentFocus());
     }
 
-    public void clickNode(String node, int focusedFieldType) throws TimeoutException {
+    public void clickNode(String node, long focusedFieldId, int focusedFieldType)
+            throws TimeoutException {
         DOMUtils.clickNode(mWebContentsRef.get(), node);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ManualFillingComponentBridge.notifyFocusedFieldType(
-                    mActivityTestRule.getWebContents(), focusedFieldType);
+                    mActivityTestRule.getWebContents(), focusedFieldId, focusedFieldType);
         });
     }
 

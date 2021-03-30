@@ -39,29 +39,24 @@ WaveShaperDSPKernel::WaveShaperDSPKernel(WaveShaperProcessor* processor)
     : AudioDSPKernel(processor),
       tail_time_(0),
       // 4 times render size to handle 4x oversampling.
-      virtual_index_(4 * audio_utilities::kRenderQuantumFrames),
-      index_(4 * audio_utilities::kRenderQuantumFrames),
-      v1_(4 * audio_utilities::kRenderQuantumFrames),
-      v2_(4 * audio_utilities::kRenderQuantumFrames),
-      f_(4 * audio_utilities::kRenderQuantumFrames) {
+      virtual_index_(4 * RenderQuantumFrames()),
+      index_(4 * RenderQuantumFrames()),
+      v1_(4 * RenderQuantumFrames()),
+      v2_(4 * RenderQuantumFrames()),
+      f_(4 * RenderQuantumFrames()) {
   if (processor->Oversample() != WaveShaperProcessor::kOverSampleNone)
     LazyInitializeOversampling();
 }
 
 void WaveShaperDSPKernel::LazyInitializeOversampling() {
   if (!temp_buffer_) {
-    temp_buffer_ = std::make_unique<AudioFloatArray>(
-        audio_utilities::kRenderQuantumFrames * 2);
-    temp_buffer2_ = std::make_unique<AudioFloatArray>(
-        audio_utilities::kRenderQuantumFrames * 4);
-    up_sampler_ =
-        std::make_unique<UpSampler>(audio_utilities::kRenderQuantumFrames);
-    down_sampler_ = std::make_unique<DownSampler>(
-        audio_utilities::kRenderQuantumFrames * 2);
-    up_sampler2_ =
-        std::make_unique<UpSampler>(audio_utilities::kRenderQuantumFrames * 2);
-    down_sampler2_ = std::make_unique<DownSampler>(
-        audio_utilities::kRenderQuantumFrames * 4);
+    temp_buffer_ = std::make_unique<AudioFloatArray>(RenderQuantumFrames() * 2);
+    temp_buffer2_ =
+        std::make_unique<AudioFloatArray>(RenderQuantumFrames() * 4);
+    up_sampler_ = std::make_unique<UpSampler>(RenderQuantumFrames());
+    down_sampler_ = std::make_unique<DownSampler>(RenderQuantumFrames() * 2);
+    up_sampler2_ = std::make_unique<UpSampler>(RenderQuantumFrames() * 2);
+    down_sampler2_ = std::make_unique<DownSampler>(RenderQuantumFrames() * 4);
   }
 }
 
@@ -305,7 +300,7 @@ void WaveShaperDSPKernel::ProcessCurve(const float* source,
 void WaveShaperDSPKernel::ProcessCurve2x(const float* source,
                                          float* destination,
                                          uint32_t frames_to_process) {
-  DCHECK_EQ(frames_to_process, audio_utilities::kRenderQuantumFrames);
+  DCHECK_EQ(frames_to_process, RenderQuantumFrames());
 
   float* temp_p = temp_buffer_->Data();
 
@@ -320,7 +315,7 @@ void WaveShaperDSPKernel::ProcessCurve2x(const float* source,
 void WaveShaperDSPKernel::ProcessCurve4x(const float* source,
                                          float* destination,
                                          uint32_t frames_to_process) {
-  DCHECK_EQ(frames_to_process, audio_utilities::kRenderQuantumFrames);
+  DCHECK_EQ(frames_to_process, RenderQuantumFrames());
 
   float* temp_p = temp_buffer_->Data();
   float* temp_p2 = temp_buffer2_->Data();

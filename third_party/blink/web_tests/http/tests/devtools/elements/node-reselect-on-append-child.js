@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `The test verifies that SelectedNodeChanged event is not fired whenever a child gets added to the node.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div>

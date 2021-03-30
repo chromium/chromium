@@ -180,7 +180,7 @@ scoped_refptr<ConfigurationList> GetAndSetActivateConfigurations(
 
 // Feature and variation parameter definitions -------------------------------
 
-// The master toggle to enable/disable the Safe Browsing Subresource Filter.
+// The primary toggle to enable/disable the Safe Browsing Subresource Filter.
 extern const base::Feature kSafeBrowsingSubresourceFilter;
 
 // Enables the blocking of ads on sites that are abusive.

@@ -9,8 +9,8 @@ assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
 component("disks") {
   defines = [ "IS_CHROMEOS_DISKS_IMPL" ]
   deps = [
+    "//ash/constants",
     "//base",
-    "//chromeos/constants",
     "//chromeos/dbus",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
@@ -50,7 +50,6 @@ source_set("unit_tests") {
     ":disks",
     ":test_support",
     "//base/test:test_support",
-    "//chromeos/constants",
     "//chromeos/dbus:test_support",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",

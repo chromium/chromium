@@ -388,11 +388,14 @@ class XCode11LogParserTest(test_runner_test.TestCase):
   @mock.patch('xcode_util.version', autospec=True)
   def testGetParser(self, mock_xcode_version):
     mock_xcode_version.return_value = ('12.0', '12A7209')
-    self.assertEqual(xcode_log_parser.get_parser().__class__.__name__, 'Xcode11LogParser')
+    self.assertEqual(xcode_log_parser.get_parser().__class__.__name__,
+        'Xcode11LogParser')
     mock_xcode_version.return_value = ('11.4', '11E146')
-    self.assertEqual(xcode_log_parser.get_parser().__class__.__name__, 'Xcode11LogParser')
+    self.assertEqual(xcode_log_parser.get_parser().__class__.__name__,
+        'Xcode11LogParser')
     mock_xcode_version.return_value = ('10.3', '10G8')
-    self.assertEqual(xcode_log_parser.get_parser().__class__.__name__, 'XcodeLogParser')
+    self.assertEqual(xcode_log_parser.get_parser().__class__.__name__,
+        'XcodeLogParser')
 
   @mock.patch('subprocess.check_output', autospec=True)
   def testXcresulttoolGetRoot(self, mock_process):
@@ -564,6 +567,43 @@ class XCode11LogParserTest(test_runner_test.TestCase):
         'DIAGNOSTICS_REF_ID', '--path', XCRESULT_PATH, '--output-path',
         '/tmp/attempt_0.xcresult_diagnostic'
     ])
+
+  @mock.patch('file_util.zip_and_remove_folder')
+  @mock.patch('shutil.copy')
+  @mock.patch('subprocess.check_output', autospec=True)
+  @mock.patch('os.path.exists', autospec=True)
+  @mock.patch('xcode_log_parser.Xcode11LogParser._xcresulttool_get')
+  def testStdoutCopiedInExportDiagnosticData(self, mock_xcresulttool_get,
+                                             mock_path_exists, mock_process,
+                                             mock_copy, _):
+    output_path_in_test = 'test_data/attempt_0'
+    xcresult_path_in_test = 'test_data/attempt_0.xcresult'
+    mock_path_exists.return_value = True
+    mock_xcresulttool_get.side_effect = _xcresulttool_get_side_effect
+    xcode_log_parser.Xcode11LogParser.export_diagnostic_data(
+        output_path_in_test)
+    # os.walk() walks folders in unknown sequence. Use try-except blocks to
+    # assert that any of the 2 assertions is true.
+    try:
+      mock_copy.assert_any_call(
+          'test_data/attempt_0.xcresult_diagnostic/test_module-UUID/test_module-UUID1/StandardOutputAndStandardError.txt',
+          'test_data/attempt_0/../attempt_0_simulator#1_StandardOutputAndStandardError.txt'
+      )
+    except AssertionError:
+      mock_copy.assert_any_call(
+          'test_data/attempt_0.xcresult_diagnostic/test_module-UUID/test_module-UUID1/StandardOutputAndStandardError.txt',
+          'test_data/attempt_0/../attempt_0_simulator#0_StandardOutputAndStandardError.txt'
+      )
+    try:
+      mock_copy.assert_any_call(
+          'test_data/attempt_0.xcresult_diagnostic/test_module-UUID/test_module-UUID2/StandardOutputAndStandardError-org.chromium.gtest.ios-chrome-eg2tests.txt',
+          'test_data/attempt_0/../attempt_0_simulator#1_StandardOutputAndStandardError-org.chromium.gtest.ios-chrome-eg2tests.txt'
+      )
+    except AssertionError:
+      mock_copy.assert_any_call(
+          'test_data/attempt_0.xcresult_diagnostic/test_module-UUID/test_module-UUID2/StandardOutputAndStandardError-org.chromium.gtest.ios-chrome-eg2tests.txt',
+          'test_data/attempt_0/../attempt_0_simulator#0_StandardOutputAndStandardError-org.chromium.gtest.ios-chrome-eg2tests.txt'
+      )
 
   @mock.patch('os.path.exists', autospec=True)
   def testCollectTestResults_interruptedTests(self, mock_path_exists):

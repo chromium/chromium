@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -22,6 +23,7 @@
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/prefs/pref_service.h"
+#include "components/reading_list/features/reading_list_switches.h"
 #include "components/search/search.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/user_prefs/user_prefs.h"
@@ -29,6 +31,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 
 #if defined(TOOLKIT_VIEWS)
@@ -45,12 +48,12 @@
 #include "ui/resources/grit/ui_resources.h"
 #endif
 
-using bookmarks::BookmarkModel;
-using bookmarks::BookmarkNode;
-
 namespace chrome {
-
 namespace {
+
+using ::bookmarks::BookmarkModel;
+using ::bookmarks::BookmarkNode;
+using ::ui::mojom::DragOperation;
 
 #if defined(TOOLKIT_VIEWS)
 // Image source that flips the supplied source image in RTL.
@@ -97,7 +100,7 @@ GURL GetURLToBookmark(content::WebContents* web_contents) {
 
 void GetURLAndTitleToBookmark(content::WebContents* web_contents,
                               GURL* url,
-                              base::string16* title) {
+                              std::u16string* title) {
   *url = GetURLToBookmark(web_contents);
   if (dom_distiller::url_utils::IsDistilledPage(web_contents->GetURL())) {
     // Users cannot bookmark Reader Mode pages directly. Instead, a bookmark
@@ -119,7 +122,7 @@ void ToggleBookmarkBarWhenVisible(content::BrowserContext* browser_context) {
   prefs->SetBoolean(bookmarks::prefs::kShowBookmarkBar, always_show);
 }
 
-base::string16 FormatBookmarkURLForDisplay(const GURL& url) {
+std::u16string FormatBookmarkURLForDisplay(const GURL& url) {
   // Because this gets re-parsed by FixupURL(), it's safe to omit the scheme
   // and trailing slash, and unescape most characters. However, it's
   // important not to drop any username/password, or unescape anything that
@@ -138,11 +141,6 @@ base::string16 FormatBookmarkURLForDisplay(const GURL& url) {
 }
 
 bool IsAppsShortcutEnabled(Profile* profile) {
-  // Legacy supervised users can not have apps installed currently so there's no
-  // need to show the apps shortcut.
-  if (profile->IsLegacySupervised())
-    return false;
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Chrome OS uses the app list / app launcher.
   return false;
@@ -155,6 +153,12 @@ bool ShouldShowAppsShortcutInBookmarkBar(Profile* profile) {
   return IsAppsShortcutEnabled(profile) &&
          profile->GetPrefs()->GetBoolean(
              bookmarks::prefs::kShowAppsShortcutInBookmarkBar);
+}
+
+bool ShouldShowReadingListInBookmarkBar(Profile* profile) {
+  return base::FeatureList::IsEnabled(reading_list::switches::kReadLater) &&
+         profile->GetPrefs()->GetBoolean(
+             bookmarks::prefs::kShowReadingListInBookmarkBar);
 }
 
 int GetBookmarkDragOperation(content::BrowserContext* browser_context,
@@ -173,36 +177,37 @@ int GetBookmarkDragOperation(content::BrowserContext* browser_context,
   return ui::DragDropTypes::DRAG_COPY | move;
 }
 
-int GetPreferredBookmarkDropOperation(int source_operations, int operations) {
+DragOperation GetPreferredBookmarkDropOperation(int source_operations,
+                                                int operations) {
   int common_ops = (source_operations & operations);
   if (!common_ops)
-    return ui::DragDropTypes::DRAG_NONE;
+    return DragOperation::kNone;
   if (ui::DragDropTypes::DRAG_COPY & common_ops)
-    return ui::DragDropTypes::DRAG_COPY;
+    return DragOperation::kCopy;
   if (ui::DragDropTypes::DRAG_LINK & common_ops)
-    return ui::DragDropTypes::DRAG_LINK;
+    return DragOperation::kLink;
   if (ui::DragDropTypes::DRAG_MOVE & common_ops)
-    return ui::DragDropTypes::DRAG_MOVE;
-  return ui::DragDropTypes::DRAG_NONE;
+    return DragOperation::kMove;
+  return DragOperation::kNone;
 }
 
-int GetBookmarkDropOperation(Profile* profile,
-                             const ui::DropTargetEvent& event,
-                             const bookmarks::BookmarkNodeData& data,
-                             const BookmarkNode* parent,
-                             size_t index) {
+DragOperation GetBookmarkDropOperation(Profile* profile,
+                                       const ui::DropTargetEvent& event,
+                                       const bookmarks::BookmarkNodeData& data,
+                                       const BookmarkNode* parent,
+                                       size_t index) {
   const base::FilePath& profile_path = profile->GetPath();
 
   if (data.IsFromProfilePath(profile_path) && data.size() > 1)
     // Currently only accept one dragged node at a time.
-    return ui::DragDropTypes::DRAG_NONE;
+    return DragOperation::kNone;
 
   if (!IsValidBookmarkDropLocation(profile, data, parent, index))
-    return ui::DragDropTypes::DRAG_NONE;
+    return DragOperation::kNone;
 
   BookmarkModel* model = BookmarkModelFactory::GetForBrowserContext(profile);
   if (!model->client()->CanBeEditedByUser(parent))
-    return ui::DragDropTypes::DRAG_NONE;
+    return DragOperation::kNone;
 
   const BookmarkNode* dragged_node =
       data.GetFirstNode(model, profile->GetPath());
@@ -211,9 +216,9 @@ int GetBookmarkDropOperation(Profile* profile,
     if (!model->client()->CanBeEditedByUser(dragged_node)) {
       // Do a copy instead of a move when dragging bookmarks that the user can't
       // modify.
-      return ui::DragDropTypes::DRAG_COPY;
+      return DragOperation::kCopy;
     }
-    return ui::DragDropTypes::DRAG_MOVE;
+    return DragOperation::kMove;
   }
 
   // User is dragging from another app, copy.

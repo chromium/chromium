@@ -4,6 +4,7 @@
 
 package org.chromium.android_webview.test;
 
+import static org.chromium.android_webview.test.AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS;
 import static org.chromium.android_webview.test.AwActivityTestRule.WAIT_TIMEOUT_MS;
 
 import android.annotation.SuppressLint;
@@ -116,12 +117,14 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
 
     private String getHtmlForPageWithJsAssignLinkTo(String url) {
         return makeHtmlPageFrom("",
-                "<img onclick=\"location.href='" + url + "'\" class=\"big\" id=\"link\" />");
+                "<img onclick=\"location.href='" + url
+                        + "'\" class=\"big\" id=\"link\" /><p>Text</p>");
     }
 
     private String getHtmlForPageWithJsReplaceLinkTo(String url) {
         return makeHtmlPageFrom("",
-                "<img onclick=\"location.replace('" + url + "');\" class=\"big\" id=\"link\" />");
+                "<img onclick=\"location.replace('" + url
+                        + "');\" class=\"big\" id=\"link\" /><p>Text</p>");
     }
 
     private String getHtmlForPageWithMetaRefreshRedirectTo(String url) {
@@ -1124,7 +1127,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
 
         public void waitForLatch() {
             try {
-                Assert.assertTrue(mLatch.await(WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+                Assert.assertTrue(mLatch.await(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -1146,7 +1149,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
         mActivityTestRule.loadUrlAsync(mAwContents, fromUrl);
         client.waitForLatch();
         // Wait for an arbitrary amount of time to ensure onReceivedError is never called.
-        Thread.sleep(WAIT_TIMEOUT_MS / 3);
+        Thread.sleep(SCALED_WAIT_TIMEOUT_MS / 3);
     }
 
     private void verifyShouldOverrideUrlLoadingInPopup(String popupPath) throws Throwable {

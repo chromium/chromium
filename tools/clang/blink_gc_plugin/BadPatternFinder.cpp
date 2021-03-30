@@ -19,7 +19,9 @@ namespace {
 TypeMatcher GarbageCollectedType() {
   auto has_gc_base = hasCanonicalType(hasDeclaration(
       cxxRecordDecl(isDerivedFrom(hasAnyName("::blink::GarbageCollected",
-                                             "::blink::GarbageCollectedMixin")))
+                                             "::blink::GarbageCollectedMixin",
+                                             "::cppgc::GarbageCollected",
+                                             "::cppgc::GarbageCollectedMixin")))
           .bind("gctype")));
   return anyOf(has_gc_base,
                hasCanonicalType(arrayType(hasElementType(has_gc_base))));

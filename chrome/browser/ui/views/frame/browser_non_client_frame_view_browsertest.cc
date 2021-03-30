@@ -57,7 +57,9 @@ class BrowserNonClientFrameViewBrowserTest
     manifest.theme_color = app_theme_color_;
 
     auto web_app_info = std::make_unique<WebApplicationInfo>();
-    web_app::UpdateWebAppInfoFromManifest(manifest, web_app_info.get());
+    GURL manifest_url = embedded_test_server()->GetURL("/manifest");
+    web_app::UpdateWebAppInfoFromManifest(manifest, manifest_url,
+                                          web_app_info.get());
 
     web_app::AppId app_id =
         web_app::InstallWebApp(profile(), std::move(web_app_info));
@@ -273,3 +275,19 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest, SaveCardIcon) {
   EXPECT_TRUE(app_frame_view_->Contains(icon));
   EXPECT_TRUE(icon->GetVisible());
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// Tests that GetWindowMask is supported for lacros in chromeos.
+IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
+                       BrowserFrameWindowMask) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  BrowserNonClientFrameView* frame_view = browser_view->frame()->GetFrameView();
+  SkPath path;
+  frame_view->GetWindowMask(frame_view->bounds().size(), &path);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  EXPECT_FALSE(path.isEmpty());
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_TRUE(path.isEmpty());
+#endif
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)

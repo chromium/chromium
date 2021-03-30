@@ -11,7 +11,7 @@
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/exo/toast_surface_manager.h"
 
 namespace ash {
@@ -43,7 +43,8 @@ class ASH_PUBLIC_EXPORT ArcToastSurfaceManager
 
   bool locked_;
 
-  ScopedObserver<SessionController, SessionObserver> scoped_observer_{this};
+  base::ScopedObservation<SessionController, SessionObserver>
+      scoped_observation_{this};
 };
 
 }  // namespace ash

@@ -10,6 +10,7 @@
 #include <memory>
 #include <set>
 
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/memory/discardable_memory_allocator.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
@@ -45,11 +46,12 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
 
   // Overridden from base::DiscardableMemoryAllocator:
   std::unique_ptr<base::DiscardableMemory> AllocateLockedDiscardableMemory(
-      size_t size) override;
+      size_t size) override LOCKS_EXCLUDED(lock_);
 
   // Overridden from base::trace_event::MemoryDumpProvider:
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
-                    base::trace_event::ProcessMemoryDump* pmd) override;
+                    base::trace_event::ProcessMemoryDump* pmd) override
+      LOCKS_EXCLUDED(lock_);
 
   // Purge all unlocked memory that was allocated by this manager.
   void BackgroundPurge();
@@ -74,7 +76,7 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
   base::trace_event::MemoryAllocatorDump* CreateMemoryAllocatorDump(
       DiscardableSharedMemoryHeap::Span* span,
       const char* name,
-      base::trace_event::ProcessMemoryDump* pmd) const;
+      base::trace_event::ProcessMemoryDump* pmd) const LOCKS_EXCLUDED(lock_);
 
   struct Statistics {
     size_t total_size;
@@ -82,7 +84,7 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
   };
 
   // Overridden from base::DiscardableMemoryAllocator:
-  size_t GetBytesAllocated() const override;
+  size_t GetBytesAllocated() const override LOCKS_EXCLUDED(lock_);
   void SetBytesAllocatedLimitForTesting(size_t limit) {
     bytes_allocated_limit_for_testing_ = limit;
   }
@@ -126,10 +128,10 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
     DiscardableMemoryImpl& operator=(const DiscardableMemoryImpl&) = delete;
 
     // Overridden from base::DiscardableMemory:
-    bool Lock() override;
-    void Unlock() override;
-    void* data() const override;
-    void DiscardForTesting() override;
+    bool Lock() override LOCKS_EXCLUDED(manager_->lock_);
+    void Unlock() override LOCKS_EXCLUDED(manager_->lock_);
+    void* data() const override LOCKS_EXCLUDED(manager_->lock_);
+    void DiscardForTesting() override LOCKS_EXCLUDED(manager_->lock_);
     base::trace_event::MemoryAllocatorDump* CreateMemoryAllocatorDump(
         const char* name,
         base::trace_event::ProcessMemoryDump* pmd) const override;
@@ -154,7 +156,7 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
 
   // Purge any unlocked memory from foreground that hasn't been touched in a
   // while.
-  void ScheduledPurge();
+  void ScheduledPurge() LOCKS_EXCLUDED(lock_);
 
   // This is only virtual for testing.
   virtual std::unique_ptr<base::DiscardableSharedMemory>
@@ -173,8 +175,8 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
                           size_t new_bytes_free) const;
 
   // Releases all unlocked memory that was last locked at least |min_age| ago.
-  void PurgeUnlockedMemory(base::TimeDelta min_age);
-  void ReleaseFreeMemoryImpl();
+  void PurgeUnlockedMemory(base::TimeDelta min_age) LOCKS_EXCLUDED(lock_);
+  void ReleaseFreeMemoryImpl() LOCKS_EXCLUDED(lock_);
   void UnlockAndReleaseMemory(
       DiscardableMemoryImpl* memory,
       std::unique_ptr<DiscardableSharedMemoryHeap::Span> span)

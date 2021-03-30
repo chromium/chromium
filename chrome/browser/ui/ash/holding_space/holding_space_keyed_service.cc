@@ -11,9 +11,10 @@
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/drive/drive_integration_service.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -334,7 +335,12 @@ void HoldingSpaceKeyedService::SuspendDone(base::TimeDelta sleep_duration) {
 }
 
 void HoldingSpaceKeyedService::InitializeDelegates() {
-  DCHECK(delegates_.empty());
+  // Bail out if delegates have already been initialized - delegates are
+  // shutdown on suspend, and re-initialized once suspend completes. If
+  // holding space keyed service starts observing suspend state after
+  // `SuspendImminent()` is sent out, original delegates may still be around.
+  if (!delegates_.empty())
+    return;
 
   // The `HoldingSpaceDownloadsDelegate` monitors the status of downloads.
   delegates_.push_back(std::make_unique<HoldingSpaceDownloadsDelegate>(

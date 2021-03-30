@@ -4,7 +4,8 @@
 
 #include "chrome/credential_provider/gaiacp/gaia_credential_provider_filter.h"
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "build/branding_buildflags.h"
 #include "chrome/credential_provider/gaiacp/associated_user_validator.h"
 #include "chrome/credential_provider/gaiacp/auth_utils.h"
@@ -98,7 +99,7 @@ HRESULT CGaiaCredentialProviderFilter::UpdateRemoteCredential(
 
   // If serialziation data is set, try to extract the sid for the user
   // referenced in the serialization data.
-  base::string16 serialization_sid;
+  std::wstring serialization_sid;
   hr = DetermineUserSidFromAuthenticationBuffer(pcpcs_in, &serialization_sid);
   if (FAILED(hr))
     return E_NOTIMPL;

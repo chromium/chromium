@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"
 
@@ -32,7 +31,7 @@ struct WebAppLinkedShortcutItems : public Extension::ManifestData {
     ShortcutItemInfo(const ShortcutItemInfo& other);
     ~ShortcutItemInfo();
 
-    base::string16 name;
+    std::u16string name;
     GURL url;
     std::vector<IconInfo> shortcut_item_icon_infos;
   };
@@ -58,7 +57,7 @@ class WebAppLinkedShortcutItemsHandler : public ManifestHandler {
   ~WebAppLinkedShortcutItemsHandler() override;
 
   // ManifestHandler:
-  bool Parse(Extension* extension, base::string16* error) override;
+  bool Parse(Extension* extension, std::u16string* error) override;
 
  private:
   // ManifestHandler:

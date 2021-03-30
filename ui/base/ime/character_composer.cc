@@ -34,7 +34,7 @@ bool CheckCharacterComposeTable(
 
 // Converts |character| to UTF16 string.
 // Returns false when |character| is not a valid character.
-bool UTF32CharacterToUTF16(uint32_t character, base::string16* output) {
+bool UTF32CharacterToUTF16(uint32_t character, std::u16string* output) {
   output->clear();
   // Reject invalid character. (e.g. codepoint greater than 0x10ffff)
   if (!CBU_IS_UNICODE_CHAR(character))
@@ -157,7 +157,7 @@ bool CharacterComposer::FilterKeyPressSequenceMode(const KeyEvent& event) {
 bool CharacterComposer::FilterKeyPressHexMode(const KeyEvent& event) {
   DCHECK(composition_mode_ == HEX_MODE);
   const size_t kMaxHexSequenceLength = 8;
-  base::char16 c = event.GetCharacter();
+  char16_t c = event.GetCharacter();
   int hex_digit = 0;
   if (base::IsHexDigit(c)) {
     hex_digit = base::HexDigitToInt(c);

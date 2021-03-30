@@ -39,8 +39,6 @@ void FakeLocalFrameHost::UnregisterProtocolHandler(const WTF::String& scheme,
 
 void FakeLocalFrameHost::DidDisplayInsecureContent() {}
 
-void FakeLocalFrameHost::DidAddContentSecurityPolicies(
-    WTF::Vector<::network::mojom::blink::ContentSecurityPolicyPtr>) {}
 void FakeLocalFrameHost::DidContainInsecureFormAction() {}
 
 void FakeLocalFrameHost::DocumentAvailableInMainFrame(
@@ -177,6 +175,11 @@ void FakeLocalFrameHost::ShowPopupMenu(
     bool right_aligned,
     bool allow_multiple_selection) {}
 
+void FakeLocalFrameHost::ShowContextMenu(
+    mojo::PendingAssociatedRemote<mojom::blink::ContextMenuClient>
+        context_menu_client,
+    const blink::UntrustworthyContextMenuParams& params) {}
+
 void FakeLocalFrameHost::DidLoadResourceFromMemoryCache(
     const KURL& url,
     const WTF::String& http_method,
@@ -184,28 +187,42 @@ void FakeLocalFrameHost::DidLoadResourceFromMemoryCache(
     network::mojom::blink::RequestDestination request_destination) {}
 
 void FakeLocalFrameHost::DidChangeFrameOwnerProperties(
-    const base::UnguessableToken& child_frame_token,
+    const blink::FrameToken& child_frame_token,
     mojom::blink::FrameOwnerPropertiesPtr frame_owner_properties) {}
 
 void FakeLocalFrameHost::DidChangeOpener(
-    const base::Optional<base::UnguessableToken>& opener_frame) {}
+    const base::Optional<LocalFrameToken>& opener_frame) {}
 
 void FakeLocalFrameHost::DidChangeCSPAttribute(
-    const base::UnguessableToken& child_frame_token,
+    const blink::FrameToken& child_frame_token,
     network::mojom::blink::ContentSecurityPolicyPtr) {}
 
 void FakeLocalFrameHost::DidChangeFramePolicy(
-    const base::UnguessableToken& child_frame_token,
+    const blink::FrameToken& child_frame_token,
     const FramePolicy& frame_policy) {}
 
 void FakeLocalFrameHost::CapturePaintPreviewOfSubframe(
     const gfx::Rect& clip_rect,
     const base::UnguessableToken& guid) {}
 
+void FakeLocalFrameHost::SetModalCloseListener(
+    mojo::PendingRemote<mojom::blink::ModalCloseListener>) {}
+
 void FakeLocalFrameHost::Detach() {}
 
-void FakeLocalFrameHost::IssueKeepAliveHandle(
-    mojo::PendingReceiver<mojom::blink::KeepAliveHandle> receiver) {}
+void FakeLocalFrameHost::GetKeepAliveHandleFactory(
+    mojo::PendingReceiver<mojom::blink::KeepAliveHandleFactory> receiver) {}
+
+void FakeLocalFrameHost::DidAddMessageToConsole(
+    mojom::ConsoleMessageLevel log_level,
+    const WTF::String& message,
+    int32_t line_no,
+    const WTF::String& source_id,
+    const WTF::String& untrusted_stack_trace) {}
+
+void FakeLocalFrameHost::FrameSizeChanged(const gfx::Size& frame_size) {}
+
+void FakeLocalFrameHost::DidActivateForPrerendering() {}
 
 void FakeLocalFrameHost::BindFrameHostReceiver(
     mojo::ScopedInterfaceEndpointHandle handle) {

@@ -133,6 +133,35 @@ void AccessContextAuditService::RecordStorageAPIAccess(
                                 database_, std::move(access_record)));
 }
 
+void AccessContextAuditService::GetCookieAccessRecords(
+    AccessContextRecordsCallback callback) {
+  if (!user_visible_tasks_in_progress++)
+    database_task_runner_->UpdatePriority(base::TaskPriority::USER_VISIBLE);
+
+  for (auto& helper : cookie_access_helpers_)
+    helper.FlushCookieRecords();
+
+  database_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&AccessContextAuditDatabase::GetCookieRecords, database_),
+      base::BindOnce(
+          &AccessContextAuditService::CompleteGetAccessRecordsInternal,
+          weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void AccessContextAuditService::GetStorageAccessRecords(
+    AccessContextRecordsCallback callback) {
+  if (!user_visible_tasks_in_progress++)
+    database_task_runner_->UpdatePriority(base::TaskPriority::USER_VISIBLE);
+
+  database_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&AccessContextAuditDatabase::GetStorageRecords, database_),
+      base::BindOnce(
+          &AccessContextAuditService::CompleteGetAccessRecordsInternal,
+          weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 void AccessContextAuditService::GetAllAccessRecords(
     AccessContextRecordsCallback callback) {
   if (!user_visible_tasks_in_progress++)
@@ -145,11 +174,11 @@ void AccessContextAuditService::GetAllAccessRecords(
       FROM_HERE,
       base::BindOnce(&AccessContextAuditDatabase::GetAllRecords, database_),
       base::BindOnce(
-          &AccessContextAuditService::CompleteGetAllAccessRecordsInternal,
+          &AccessContextAuditService::CompleteGetAccessRecordsInternal,
           weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void AccessContextAuditService::CompleteGetAllAccessRecordsInternal(
+void AccessContextAuditService::CompleteGetAccessRecordsInternal(
     AccessContextRecordsCallback callback,
     std::vector<AccessContextAuditDatabase::AccessRecord> records) {
   DCHECK_GT(user_visible_tasks_in_progress, 0);
@@ -172,7 +201,7 @@ void AccessContextAuditService::RemoveAllRecordsForOriginKeyedStorage(
 }
 
 void AccessContextAuditService::Shutdown() {
-  DCHECK(!cookie_access_helpers_.might_have_observers());
+  DCHECK(cookie_access_helpers_.empty());
   ClearSessionOnlyRecords();
 }
 

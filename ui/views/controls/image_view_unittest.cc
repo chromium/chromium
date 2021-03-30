@@ -148,7 +148,7 @@ TEST_P(ImageViewTest, ImageOriginForCustomViewBounds) {
 
 // Verifies setting the accessible name will be call NotifyAccessibilityEvent.
 TEST_P(ImageViewTest, SetAccessibleNameNotifiesAccessibilityEvent) {
-  base::string16 test_tooltip_text = base::ASCIIToUTF16("Test Tooltip Text");
+  std::u16string test_tooltip_text = u"Test Tooltip Text";
   test::AXEventCounter counter(views::AXEventManager::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged));
   image_view()->SetAccessibleName(test_tooltip_text);

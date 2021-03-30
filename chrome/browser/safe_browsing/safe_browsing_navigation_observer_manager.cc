@@ -36,10 +36,6 @@ namespace {
 
 constexpr size_t kMaxNumberOfNavigationsToAppend = 5;
 
-// Logging the number of events cleaned up every 2 minutes is excessive, so we
-// sample by this rate.
-const double kNavigationCleanUpSamplingRate = 0.01;
-
 // Given when an event happened and its TTL, determine if it is already expired.
 // Note, if for some reason this event's timestamp is in the future, this
 // event's timestamp is invalid, hence we treat it as expired.
@@ -185,6 +181,20 @@ NavigationEvent* NavigationEventList::FindNavigationEvent(
   return nullptr;
 }
 
+NavigationEvent* NavigationEventList::FindPendingNavigationEvent(
+    const GURL& target_url) {
+  for (auto& it : pending_navigation_events_) {
+    // It is possible that several pending navigation events have the
+    // same destination URL.
+    // TODO(crbug.com/1161342): Compare the last updated time of the event and
+    // return the latest.
+    if (it.second->GetDestinationUrl() == target_url) {
+      return it.second.get();
+    }
+  }
+  return nullptr;
+}
+
 NavigationEvent* NavigationEventList::FindRetargetingNavigationEvent(
     const base::Time& last_event_timestamp,
     SessionID target_tab_id) {
@@ -220,6 +230,29 @@ void NavigationEventList::RecordNavigationEvent(
   navigation_events_.push_back(std::move(nav_event));
 }
 
+void NavigationEventList::RecordPendingNavigationEvent(
+    content::NavigationHandle* navigation_handle,
+    std::unique_ptr<NavigationEvent> nav_event) {
+  pending_navigation_events_[navigation_handle] = std::move(nav_event);
+}
+
+void NavigationEventList::AddRedirectUrlToPendingNavigationEvent(
+    content::NavigationHandle* navigation_handle,
+    const GURL& server_redirect_url) {
+  if (!base::Contains(pending_navigation_events_, navigation_handle)) {
+    return;
+  }
+  pending_navigation_events_[navigation_handle]->server_redirect_urls.push_back(
+      SafeBrowsingNavigationObserverManager::ClearURLRef(server_redirect_url));
+}
+
+void NavigationEventList::RemovePendingNavigationEvent(
+    content::NavigationHandle* navigation_handle) {
+  if (base::Contains(pending_navigation_events_, navigation_handle)) {
+    pending_navigation_events_.erase(navigation_handle);
+  }
+}
+
 std::size_t NavigationEventList::CleanUpNavigationEvents() {
   // Remove any stale NavigationEnvent, if it is older than
   // kNavigationFootprintTTLInSecond.
@@ -230,6 +263,18 @@ std::size_t NavigationEventList::CleanUpNavigationEvents() {
     navigation_events_.pop_front();
     removal_count++;
   }
+
+  // Clean up expired pending navigation events.
+  auto it = pending_navigation_events_.begin();
+  while (it != pending_navigation_events_.end()) {
+    if (IsEventExpired(it->second->last_updated,
+                       kNavigationFootprintTTLInSecond)) {
+      it = pending_navigation_events_.erase(it);
+    } else {
+      ++it;
+    }
+  }
+
   return removal_count;
 }
 
@@ -303,8 +348,25 @@ SafeBrowsingNavigationObserverManager::SafeBrowsingNavigationObserverManager()
 }
 
 void SafeBrowsingNavigationObserverManager::RecordNavigationEvent(
+    content::NavigationHandle* navigation_handle,
     std::unique_ptr<NavigationEvent> nav_event) {
+  navigation_event_list_.RemovePendingNavigationEvent(navigation_handle);
   navigation_event_list_.RecordNavigationEvent(std::move(nav_event));
+}
+
+void SafeBrowsingNavigationObserverManager::RecordPendingNavigationEvent(
+    content::NavigationHandle* navigation_handle,
+    std::unique_ptr<NavigationEvent> nav_event) {
+  navigation_event_list_.RecordPendingNavigationEvent(navigation_handle,
+                                                      std::move(nav_event));
+}
+
+void SafeBrowsingNavigationObserverManager::
+    AddRedirectUrlToPendingNavigationEvent(
+        content::NavigationHandle* navigation_handle,
+        const GURL& server_redirect_url) {
+  navigation_event_list_.AddRedirectUrlToPendingNavigationEvent(
+      navigation_handle, server_redirect_url);
 }
 
 void SafeBrowsingNavigationObserverManager::RecordUserGestureForWebContents(
@@ -380,6 +442,8 @@ SafeBrowsingNavigationObserverManager::IdentifyReferrerChainByEventURL(
     SessionID event_tab_id,
     int user_gesture_count_limit,
     ReferrerChain* out_referrer_chain) {
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "SafeBrowsing.NavigationObserver.IdentifyReferrerChainByEventURLTime");
   if (!event_url.is_valid())
     return INVALID_URL;
 
@@ -400,10 +464,36 @@ SafeBrowsingNavigationObserverManager::IdentifyReferrerChainByEventURL(
 }
 
 SafeBrowsingNavigationObserverManager::AttributionResult
+SafeBrowsingNavigationObserverManager::IdentifyReferrerChainByPendingEventURL(
+    const GURL& event_url,
+    int user_gesture_count_limit,
+    ReferrerChain* out_referrer_chain) {
+  if (!event_url.is_valid())
+    return INVALID_URL;
+
+  NavigationEvent* nav_event =
+      navigation_event_list_.FindPendingNavigationEvent(ClearURLRef(event_url));
+  if (!nav_event) {
+    // We cannot find a single navigation event related to this event.
+    return NAVIGATION_EVENT_NOT_FOUND;
+  }
+  AttributionResult result = SUCCESS;
+  AddToReferrerChain(out_referrer_chain, nav_event, GURL(),
+                     ReferrerChainEntry::EVENT_URL);
+  int user_gesture_count = 0;
+  GetRemainingReferrerChain(nav_event, user_gesture_count,
+                            user_gesture_count_limit, out_referrer_chain,
+                            &result);
+  return result;
+}
+
+SafeBrowsingNavigationObserverManager::AttributionResult
 SafeBrowsingNavigationObserverManager::IdentifyReferrerChainByWebContents(
     content::WebContents* web_contents,
     int user_gesture_count_limit,
     ReferrerChain* out_referrer_chain) {
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "SafeBrowsing.NavigationObserver.IdentifyReferrerChainByWebContentsTime");
   if (!web_contents)
     return INVALID_URL;
   GURL last_committed_url = web_contents->GetLastCommittedURL();
@@ -461,8 +551,7 @@ SafeBrowsingNavigationObserverManager::
 
 void SafeBrowsingNavigationObserverManager::RecordNewWebContents(
     content::WebContents* source_web_contents,
-    int source_render_process_id,
-    int source_render_frame_id,
+    content::RenderFrameHost* source_render_frame_host,
     const GURL& target_url,
     ui::PageTransition page_transition,
     content::WebContents* target_web_contents,
@@ -470,8 +559,6 @@ void SafeBrowsingNavigationObserverManager::RecordNewWebContents(
   DCHECK(source_web_contents);
   DCHECK(target_web_contents);
 
-  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
-      source_render_process_id, source_render_frame_id);
   // Remove the "#" at the end of URL, since it does not point to any actual
   // page fragment ID.
   GURL cleaned_target_url =
@@ -479,19 +566,20 @@ void SafeBrowsingNavigationObserverManager::RecordNewWebContents(
 
   std::unique_ptr<NavigationEvent> nav_event =
       std::make_unique<NavigationEvent>();
-  if (rfh) {
+  if (source_render_frame_host) {
     nav_event->source_url = SafeBrowsingNavigationObserverManager::ClearURLRef(
-        rfh->GetLastCommittedURL());
+        source_render_frame_host->GetLastCommittedURL());
+    nav_event->source_main_frame_url =
+        SafeBrowsingNavigationObserverManager::ClearURLRef(
+            source_render_frame_host->GetMainFrame()->GetLastCommittedURL());
   }
   nav_event->source_tab_id =
       sessions::SessionTabHelper::IdForTab(source_web_contents);
-  nav_event->source_main_frame_url =
-      SafeBrowsingNavigationObserverManager::ClearURLRef(
-          source_web_contents->GetLastCommittedURL());
   nav_event->original_request_url = cleaned_target_url;
   nav_event->target_tab_id =
       sessions::SessionTabHelper::IdForTab(target_web_contents);
-  nav_event->frame_id = rfh ? rfh->GetFrameTreeNodeId()
+  nav_event->frame_id = source_render_frame_host
+                            ? source_render_frame_host->GetFrameTreeNodeId()
                             : content::RenderFrameHost::kNoFrameTreeNodeId;
   nav_event->maybe_launched_by_external_application =
       ui::PageTransitionCoreTypeIs(page_transition,
@@ -525,6 +613,8 @@ size_t SafeBrowsingNavigationObserverManager::CountOfRecentNavigationsToAppend(
 void SafeBrowsingNavigationObserverManager::AppendRecentNavigations(
     size_t recent_navigation_count,
     ReferrerChain* out_referrer_chain) {
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "SafeBrowsing.NavigationObserver.AppendRecentNavigationsTime");
   if (recent_navigation_count <= 0u)
     return;
   int current_referrer_chain_size = out_referrer_chain->size();
@@ -547,13 +637,7 @@ void SafeBrowsingNavigationObserverManager::AppendRecentNavigations(
 }
 
 void SafeBrowsingNavigationObserverManager::CleanUpNavigationEvents() {
-  std::size_t removal_count = navigation_event_list_.CleanUpNavigationEvents();
-
-  if (base::RandDouble() < kNavigationCleanUpSamplingRate) {
-    UMA_HISTOGRAM_COUNTS_10000(
-        "SafeBrowsing.NavigationObserver.NavigationEventCleanUpCount",
-        removal_count);
-  }
+  navigation_event_list_.CleanUpNavigationEvents();
 }
 
 void SafeBrowsingNavigationObserverManager::CleanUpUserGestures() {

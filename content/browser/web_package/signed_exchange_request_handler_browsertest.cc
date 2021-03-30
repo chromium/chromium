@@ -24,6 +24,7 @@
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
 #include "content/browser/web_package/signed_exchange_handler.h"
 #include "content/browser/web_package/signed_exchange_utils.h"
+#include "content/common/content_constants_internal.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -311,7 +312,7 @@ class SignedExchangeRequestHandlerBrowserTest
       return;
     const GURL prefetch_html_url = embedded_test_server()->GetURL(
         std::string("/sxg/prefetch.html#") + url.spec());
-    base::string16 expected_title =
+    std::u16string expected_title =
         base::ASCIIToUTF16(expect_success ? "OK" : "FAIL");
     TitleWatcher title_watcher(shell()->web_contents(), expected_title);
     EXPECT_TRUE(NavigateToURL(shell(), prefetch_html_url));
@@ -385,7 +386,7 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest, Simple) {
         NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
   }
 
-  base::string16 title = base::ASCIIToUTF16("https://test.example.org/test/");
+  std::u16string title = u"https://test.example.org/test/";
   TitleWatcher title_watcher(shell()->web_contents(), title);
   RedirectObserver redirect_observer(shell()->web_contents());
   AssertNavigationHandleFlagObserver assert_navigation_handle_flag_observer(
@@ -465,7 +466,7 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest, VariantMatch) {
         NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
   }
 
-  base::string16 title = base::ASCIIToUTF16("https://test.example.org/test/");
+  std::u16string title = u"https://test.example.org/test/";
   TitleWatcher title_watcher(shell()->web_contents(), title);
   // PrefetchedSignedExchangeCache is used only for renderer initiated
   // navigation. So use JavaScript to trigger renderer initiated navigation.
@@ -500,7 +501,7 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
       embedded_test_server()->GetURL("/sxg/test.example.org_fr_variant.sxg");
   MaybeTriggerPrefetchSXG(url, false);
 
-  base::string16 title = base::ASCIIToUTF16("Fallback URL response");
+  std::u16string title = u"Fallback URL response";
   TitleWatcher title_watcher(shell()->web_contents(), title);
   GURL expected_commit_url = GURL("https://test.example.org/test/");
   EXPECT_TRUE(NavigateToURL(shell(), url, expected_commit_url));
@@ -522,7 +523,7 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
       "/sxg/test.example.org_test_missing_nosniff.sxg");
   MaybeTriggerPrefetchSXG(url, false);
 
-  base::string16 title = base::ASCIIToUTF16("Fallback URL response");
+  std::u16string title = u"Fallback URL response";
   TitleWatcher title_watcher(shell()->web_contents(), title);
   RedirectObserver redirect_observer(shell()->web_contents());
   GURL expected_commit_url = GURL("https://test.example.org/test/");
@@ -547,7 +548,7 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
       "/sxg/test.example.org_test_invalid_content_type.sxg");
   MaybeTriggerPrefetchSXG(url, false);
 
-  base::string16 title = base::ASCIIToUTF16("Fallback URL response");
+  std::u16string title = u"Fallback URL response";
   TitleWatcher title_watcher(shell()->web_contents(), title);
   RedirectObserver redirect_observer(shell()->web_contents());
   GURL expected_commit_url = GURL("https://test.example.org/test/");
@@ -574,7 +575,7 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest, Expired) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL("/sxg/test.example.org_test.sxg");
 
-  base::string16 title = base::ASCIIToUTF16("Fallback URL response");
+  std::u16string title = u"Fallback URL response";
   TitleWatcher title_watcher(shell()->web_contents(), title);
   RedirectObserver redirect_observer(shell()->web_contents());
   GURL expected_commit_url = GURL("https://test.example.org/test/");
@@ -610,7 +611,7 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
 
     MaybeTriggerPrefetchSXG(url, false);
 
-    base::string16 title = base::ASCIIToUTF16("Fallback URL response");
+    std::u16string title = u"Fallback URL response";
     TitleWatcher title_watcher(shell()->web_contents(), title);
     GURL expected_commit_url = GURL("https://test.example.org/test/");
     EXPECT_TRUE(NavigateToURL(shell(), url, expected_commit_url));
@@ -644,8 +645,8 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest, MAYBE_BadMICE) {
 
   MaybeTriggerPrefetchSXG(url, false);
 
-  const base::string16 title_good = base::ASCIIToUTF16("Reached End: false");
-  const base::string16 title_bad = base::ASCIIToUTF16("Reached End: true");
+  const std::u16string title_good = u"Reached End: false";
+  const std::u16string title_bad = u"Reached End: true";
   TitleWatcher title_watcher(shell()->web_contents(), title_good);
   title_watcher.AlsoWaitForTitle(title_bad);
   GURL expected_commit_url = GURL("https://test.example.org/test/");
@@ -703,7 +704,7 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest, CertNotFound) {
 
   MaybeTriggerPrefetchSXG(url, false);
 
-  base::string16 title = base::ASCIIToUTF16("Fallback URL response");
+  std::u16string title = u"Fallback URL response";
   TitleWatcher title_watcher(shell()->web_contents(), title);
   GURL expected_commit_url = GURL("https://test.example.org/test/");
   EXPECT_TRUE(NavigateToURL(shell(), url, expected_commit_url));
@@ -884,7 +885,7 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeRequestHandlerRealCertVerifierBrowserTest,
   // TODO(https://crbug.com/815024): Make this test pass the OCSP check. We'll
   // need to either generate an OCSP response on the fly, or override the OCSP
   // verification time.
-  base::string16 title = base::ASCIIToUTF16("Fallback URL response");
+  std::u16string title = u"Fallback URL response";
   TitleWatcher title_watcher(shell()->web_contents(), title);
   GURL expected_commit_url = GURL("https://test.example.org/test/");
   EXPECT_TRUE(NavigateToURL(shell(), url, expected_commit_url));
@@ -911,7 +912,7 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
       GURL("https://test.example.org/test/publisher-service-worker.js"),
       "content/test/data/sxg/publisher-service-worker.js");
   {
-    base::string16 title = base::ASCIIToUTF16("Done");
+    std::u16string title = u"Done";
     TitleWatcher title_watcher(shell()->web_contents(), title);
     EXPECT_TRUE(NavigateToURL(shell(), install_sw_url));
     EXPECT_EQ(title, title_watcher.WaitAndGetTitle());
@@ -921,9 +922,9 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
 
   GURL url = embedded_test_server()->GetURL("/sxg/test.example.org_test.sxg");
 
-  base::string16 title = base::ASCIIToUTF16("https://test.example.org/test/");
+  std::u16string title = u"https://test.example.org/test/";
   TitleWatcher title_watcher(shell()->web_contents(), title);
-  title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16("Generated"));
+  title_watcher.AlsoWaitForTitle(u"Generated");
   GURL expected_commit_url = GURL("https://test.example.org/test/");
   EXPECT_TRUE(NavigateToURL(shell(), url, expected_commit_url));
   // The page content shoud be served from the signed exchange.
@@ -944,13 +945,13 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
       "/sxg/no-respond-with-service-worker.html");
 
   {
-    base::string16 title = base::ASCIIToUTF16("Done");
+    std::u16string title = u"Done";
     TitleWatcher title_watcher(shell()->web_contents(), title);
     EXPECT_TRUE(NavigateToURL(shell(), install_sw_url));
     EXPECT_EQ(title, title_watcher.WaitAndGetTitle());
   }
 
-  base::string16 title = base::ASCIIToUTF16("https://test.example.org/test/");
+  std::u16string title = u"https://test.example.org/test/";
   TitleWatcher title_watcher(shell()->web_contents(), title);
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("/sxg/test.example.org_test.sxg"),
@@ -983,13 +984,13 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
       "content/test/data/sxg/no-respond-with-service-worker.js");
 
   {
-    base::string16 title = base::ASCIIToUTF16("Done");
+    std::u16string title = u"Done";
     TitleWatcher title_watcher(shell()->web_contents(), title);
     EXPECT_TRUE(NavigateToURL(shell(), install_sw_url));
     EXPECT_EQ(title, title_watcher.WaitAndGetTitle());
   }
 
-  base::string16 title = base::ASCIIToUTF16("https://test.example.org/test/");
+  std::u16string title = u"https://test.example.org/test/";
   TitleWatcher title_watcher(shell()->web_contents(), title);
   EXPECT_TRUE(NavigateToURL(
       shell(), GURL("https://test.example.org/scope/test.sxg"),
@@ -1018,7 +1019,7 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
   GURL expected_commit_url = GURL("https://test.example.org/test/");
 
   {
-    base::string16 title = base::ASCIIToUTF16("https://test.example.org/test/");
+    std::u16string title = u"https://test.example.org/test/";
     TitleWatcher title_watcher(shell()->web_contents(), title);
     EXPECT_TRUE(NavigateToURL(shell(), url, expected_commit_url));
     EXPECT_EQ(title, title_watcher.WaitAndGetTitle());
@@ -1072,7 +1073,7 @@ class SignedExchangeAcceptHeaderBrowserTest
   }
 
   void NavigateAndWaitForTitle(const GURL& url, const std::string title) {
-    base::string16 expected_title = base::ASCIIToUTF16(title);
+    std::u16string expected_title = base::ASCIIToUTF16(title);
     TitleWatcher title_watcher(shell()->web_contents(), expected_title);
     EXPECT_TRUE(NavigateToURL(shell(), url));
     EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
@@ -1081,7 +1082,7 @@ class SignedExchangeAcceptHeaderBrowserTest
   void NavigateWithRedirectAndWaitForTitle(const GURL& url,
                                            const GURL& expected_commit_url,
                                            const std::string& title) {
-    base::string16 expected_title = base::ASCIIToUTF16(title);
+    std::u16string expected_title = base::ASCIIToUTF16(title);
     TitleWatcher title_watcher(shell()->web_contents(), expected_title);
     EXPECT_TRUE(NavigateToURL(shell(), url, expected_commit_url));
     EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
@@ -1094,23 +1095,15 @@ class SignedExchangeAcceptHeaderBrowserTest
                          bool is_fallback) {
     const auto accept_header = GetInterceptedAcceptHeader(url);
     ASSERT_TRUE(accept_header);
-    const char* frame_accept_c_str = network::kFrameAcceptHeaderValue;
-#if BUILDFLAG(ENABLE_AV1_DECODER)
-    if (base::FeatureList::IsEnabled(blink::features::kAVIF)) {
-      frame_accept_c_str =
-          "text/html,application/xhtml+xml,application/xml;q=0.9,"
-          "image/avif,image/webp,image/apng,*/*;q=0.8";
-    }
-#endif
     EXPECT_EQ(
         *accept_header,
         IsSignedExchangeEnabled() && !is_fallback
             ? (is_navigation
-                   ? std::string(frame_accept_c_str) +
+                   ? std::string(kFrameAcceptHeaderValue) +
                          std::string(kAcceptHeaderSignedExchangeSuffix)
                    : std::string(kExpectedSXGEnabledAcceptHeaderForPrefetch))
             : (is_navigation
-                   ? std::string(frame_accept_c_str)
+                   ? std::string(kFrameAcceptHeaderValue)
                    : std::string(network::kDefaultAcceptHeaderValue)));
   }
 
@@ -1297,15 +1290,7 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeAcceptHeaderBrowserTest, ServiceWorker) {
   NavigateAndWaitForTitle(https_server_.GetURL("/sxg/service-worker.html"),
                           "Done");
 
-  const char* frame_accept_c_str = network::kFrameAcceptHeaderValue;
-#if BUILDFLAG(ENABLE_AV1_DECODER)
-  if (base::FeatureList::IsEnabled(blink::features::kAVIF)) {
-    frame_accept_c_str =
-        "text/html,application/xhtml+xml,application/xml;q=0.9,"
-        "image/avif,image/webp,image/apng,*/*;q=0.8";
-  }
-#endif
-  const std::string frame_accept = std::string(frame_accept_c_str);
+  const std::string frame_accept = kFrameAcceptHeaderValue;
   const std::string frame_accept_with_sxg =
       frame_accept + std::string(kAcceptHeaderSignedExchangeSuffix);
   const std::vector<std::string> scopes = {"/sxg/sw-scope-generated/",
@@ -1635,7 +1620,7 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeExpectCTReportBrowserTest,
   const GURL prefetch_html_url = embedded_test_server()->GetURL(
       kPrefetcherHost,
       std::string("/sxg/prefetch-document.html#") + sxg_url().spec());
-  base::string16 expected_title = base::ASCIIToUTF16("FAIL");
+  std::u16string expected_title = u"FAIL";
   TitleWatcher title_watcher(shell()->web_contents(), expected_title);
   EXPECT_TRUE(NavigateToURL(shell(), prefetch_html_url));
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
@@ -1769,7 +1754,7 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeReportingBrowserTest,
     // embedded_test_server().
     const GURL prefetch_html_url = ssl_server_.GetURL(
         std::string("/sxg/prefetch.html#") + sxg_url().spec());
-    base::string16 expected_title = base::ASCIIToUTF16("FAIL");
+    std::u16string expected_title = u"FAIL";
     TitleWatcher title_watcher(shell()->web_contents(), expected_title);
     EXPECT_TRUE(NavigateToURL(shell(), prefetch_html_url));
     EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());

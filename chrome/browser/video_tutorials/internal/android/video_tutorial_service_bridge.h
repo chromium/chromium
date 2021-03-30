@@ -40,6 +40,10 @@ class VideoTutorialServiceBridge : public base::SupportsUserData::Data {
   ScopedJavaLocalRef<jobjectArray> GetSupportedLanguages(
       JNIEnv* env,
       const JavaParamRef<jobject>& jcaller);
+  ScopedJavaLocalRef<jobjectArray> GetAvailableLanguagesForTutorial(
+      JNIEnv* env,
+      const JavaParamRef<jobject>& jcaller,
+      jint j_feature);
   ScopedJavaLocalRef<jstring> GetPreferredLocale(
       JNIEnv* env,
       const JavaParamRef<jobject>& jcaller);

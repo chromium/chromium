@@ -32,13 +32,12 @@ class ASH_EXPORT PhotoView : public views::View,
                              public AmbientBackendModelObserver,
                              public ui::ImplicitAnimationObserver {
  public:
+  METADATA_HEADER(PhotoView);
+
   explicit PhotoView(AmbientViewDelegate* delegate);
   PhotoView(const PhotoView&) = delete;
   PhotoView& operator=(PhotoView&) = delete;
   ~PhotoView() override;
-
-  // views::View:
-  const char* GetClassName() const override;
 
   // AmbientBackendModelObserver:
   void OnImageAdded() override;

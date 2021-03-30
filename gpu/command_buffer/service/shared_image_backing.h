@@ -51,6 +51,7 @@ class SharedImageRepresentationGLTexturePassthrough;
 class SharedImageRepresentationSkia;
 class SharedImageRepresentationDawn;
 class SharedImageRepresentationOverlay;
+class SharedImageRepresentationMemory;
 class SharedImageRepresentationVaapi;
 class MemoryTypeTracker;
 class SharedImageFactory;
@@ -173,6 +174,9 @@ class GPU_GLES2_EXPORT SharedImageBacking {
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       VaapiDependenciesFactory* dep_factory);
+  virtual std::unique_ptr<SharedImageRepresentationMemory> ProduceMemory(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker);
 
   // Used by subclasses during destruction.
   bool have_context() const EXCLUSIVE_LOCKS_REQUIRED(lock_);

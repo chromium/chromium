@@ -12,6 +12,7 @@ class Node;
 
 bool IsSliderContainer(const Element& elmenet);
 bool IsSliderThumb(const Node* node);
+bool IsTextControlContainer(const Node* node);
 bool IsTextControlPlaceholder(const Node* node);
 
 }  // namespace blink

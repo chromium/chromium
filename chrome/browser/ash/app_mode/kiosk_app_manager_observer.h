@@ -1,0 +1,52 @@
+// Copyright 2013 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_MANAGER_OBSERVER_H_
+#define CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_MANAGER_OBSERVER_H_
+
+#include <string>
+
+namespace ash {
+
+class KioskAppManagerObserver {
+ public:
+  // Invoked when the app data is changed or loading state is changed.
+  virtual void OnKioskAppDataChanged(const std::string& app_id) {}
+
+  // Invoked when failed to load web store data of an app.
+  virtual void OnKioskAppDataLoadFailure(const std::string& app_id) {}
+
+  // Invoked when the extension is loaded in cache.
+  virtual void OnKioskExtensionLoadedInCache(const std::string& app_id) {}
+
+  // Invoked when the extension download fails.
+  virtual void OnKioskExtensionDownloadFailed(const std::string& app_id) {}
+
+  // Invoked when the Kiosk Apps configuration changes.
+  virtual void OnKioskAppsSettingsChanged() {}
+
+  // Invoked when kiosk app cache is updated for |app_id|.
+  virtual void OnKioskAppCacheUpdated(const std::string& app_id) {}
+
+  // Invoked when kiosk app updating from usb stick has been completed.
+  // |success| indicates if all the updates are completed successfully.
+  virtual void OnKioskAppExternalUpdateComplete(bool success) {}
+
+  // Called when kiosk app session initialization is complete - i.e. when
+  // KioskAppManager::InitSession() is called.
+  virtual void OnKioskSessionInitialized() {}
+
+ protected:
+  virtual ~KioskAppManagerObserver() {}
+};
+
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the //chrome/browser/chromeos
+// source code migration is finished.
+namespace chromeos {
+using ::ash::KioskAppManagerObserver;
+}
+
+#endif  // CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_MANAGER_OBSERVER_H_

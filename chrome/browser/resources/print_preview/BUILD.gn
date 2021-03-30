@@ -4,11 +4,14 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/common/features.gni")
+import("//printing/buildflags/buildflags.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
-import("../optimize_webui.gni")
+import("../tools/optimize_webui.gni")
+
+assert(enable_print_preview, "enable_print_preview check failed")
 
 preprocess_folder = "preprocessed"
 preprocess_manifest = "preprocessed_manifest.json"
@@ -51,7 +54,10 @@ generate_grd("build_grd") {
   ]
   resource_path_rewrites = [
     "pdf/index_pp.html|pdf/index.html",
-    "pdf/pdf_viewer_pp.js|pdf/pdf_viewer.js",
+
+    # Expose pdf_viewer_pp.js as pdf_viewer_wrapper.js so that the PDF viewer
+    # and Print Preview viewer can use the same main.js source.
+    "pdf/pdf_viewer_pp.js|pdf/pdf_viewer_wrapper.js",
   ]
   if (optimize_webui) {
     deps += [ ":build" ]
@@ -183,7 +189,24 @@ preprocess_if_expr("preprocess_pdf") {
   in_folder = "../"
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_pdf_manifest"
-  in_files = [ "pdf/index_pp.html" ]
+  in_files = [
+    "pdf/browser_api.js",
+    "pdf/constants.js",
+    "pdf/controller.js",
+    "pdf/gesture_detector.js",
+    "pdf/index.css",
+    "pdf/index_pp.html",
+    "pdf/main.js",
+    "pdf/metrics.js",
+    "pdf/open_pdf_params_parser.js",
+    "pdf/pdf_scripting_api.js",
+    "pdf/pdf_viewer_utils.js",
+    "pdf/pdf_viewer_base.js",
+    "pdf/toolbar_manager.js",
+    "pdf/viewport.js",
+    "pdf/viewport_scroller.js",
+    "pdf/zoom_manager.js",
+  ]
 }
 
 preprocess_if_expr("preprocess_pdf_generated") {
@@ -192,12 +215,18 @@ preprocess_if_expr("preprocess_pdf_generated") {
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_pdf_gen_manifest"
   in_files = [
-    "pdf/pdf_viewer_pp.js",
+    "pdf/elements/icons.js",
+    "pdf/elements/shared-vars.js",
+    "pdf/elements/viewer-error-screen.js",
     "pdf/elements/viewer-page-indicator.js",
+    "pdf/elements/viewer-zoom-button.js",
+    "pdf/elements/viewer-zoom-toolbar.js",
+    "pdf/pdf_viewer_pp.js",
+    "pdf/pdf_viewer_shared_style.js",
   ]
 }
 
-grit("print_preview_resources") {
+grit("resources") {
   defines = chrome_grit_defines
 
   # These arguments are needed since the grd is generated at build time.

@@ -57,8 +57,7 @@ class PhoneFieldTest : public testing::Test {
     field_candidates_map_.clear();
   }
 
-  void CheckField(const FieldRendererId id,
-                  ServerFieldType expected_type) const {
+  void CheckField(const FieldGlobalId id, ServerFieldType expected_type) const {
     auto it = field_candidates_map_.find(id);
     ASSERT_TRUE(it != field_candidates_map_.end());
     EXPECT_EQ(expected_type, it->second.BestHeuristicType());
@@ -73,7 +72,7 @@ class PhoneFieldTest : public testing::Test {
     field->name = ASCIIToUTF16(name);
     field->form_control_type = "select-one";
 
-    std::vector<base::string16> contents16;
+    std::vector<std::u16string> contents16;
     for (auto* const element : contents)
       contents16.push_back(base::UTF8ToUTF16(element));
 
@@ -112,11 +111,11 @@ TEST_F(PhoneFieldTest, ParseOneLinePhone) {
     Clear();
 
     field.form_control_type = field_type;
-    field.label = ASCIIToUTF16("Phone");
-    field.name = ASCIIToUTF16("phone");
+    field.label = u"Phone";
+    field.name = u"phone";
     field.unique_renderer_id = MakeFieldRendererId();
     list_.push_back(std::make_unique<AutofillField>(field));
-    FieldRendererId phone1 = list_.back()->unique_renderer_id;
+    FieldGlobalId phone1 = list_.back()->global_id();
 
     AutofillScanner scanner(list_);
     field_ = Parse(&scanner);
@@ -133,17 +132,17 @@ TEST_F(PhoneFieldTest, ParseTwoLinePhone) {
     Clear();
 
     field.form_control_type = field_type;
-    field.label = ASCIIToUTF16("Area Code");
-    field.name = ASCIIToUTF16("area code");
+    field.label = u"Area Code";
+    field.name = u"area code";
     field.unique_renderer_id = MakeFieldRendererId();
     list_.push_back(std::make_unique<AutofillField>(field));
-    FieldRendererId areacode1 = list_.back()->unique_renderer_id;
+    FieldGlobalId areacode1 = list_.back()->global_id();
 
-    field.label = ASCIIToUTF16("Phone");
-    field.name = ASCIIToUTF16("phone");
+    field.label = u"Phone";
+    field.name = u"phone";
     field.unique_renderer_id = MakeFieldRendererId();
     list_.push_back(std::make_unique<AutofillField>(field));
-    FieldRendererId phone2 = list_.back()->unique_renderer_id;
+    FieldGlobalId phone2 = list_.back()->global_id();
 
     AutofillScanner scanner(list_);
     field_ = Parse(&scanner);
@@ -166,33 +165,33 @@ TEST_F(PhoneFieldTest, ThreePartPhoneNumber) {
     Clear();
 
     field.form_control_type = field_type;
-    field.label = ASCIIToUTF16("Phone:");
-    field.name = ASCIIToUTF16("dayphone1");
+    field.label = u"Phone:";
+    field.name = u"dayphone1";
     field.max_length = 0;
     field.unique_renderer_id = MakeFieldRendererId();
     list_.push_back(std::make_unique<AutofillField>(field));
-    FieldRendererId areacode1 = list_.back()->unique_renderer_id;
+    FieldGlobalId areacode1 = list_.back()->global_id();
 
-    field.label = ASCIIToUTF16("-");
-    field.name = ASCIIToUTF16("dayphone2");
+    field.label = u"-";
+    field.name = u"dayphone2";
     field.max_length = 3;
     field.unique_renderer_id = MakeFieldRendererId();
     list_.push_back(std::make_unique<AutofillField>(field));
-    FieldRendererId prefix2 = list_.back()->unique_renderer_id;
+    FieldGlobalId prefix2 = list_.back()->global_id();
 
-    field.label = ASCIIToUTF16("-");
-    field.name = ASCIIToUTF16("dayphone3");
+    field.label = u"-";
+    field.name = u"dayphone3";
     field.max_length = 4;
     field.unique_renderer_id = MakeFieldRendererId();
     list_.push_back(std::make_unique<AutofillField>(field));
-    FieldRendererId suffix3 = list_.back()->unique_renderer_id;
+    FieldGlobalId suffix3 = list_.back()->global_id();
 
-    field.label = ASCIIToUTF16("ext.:");
-    field.name = ASCIIToUTF16("dayphone4");
+    field.label = u"ext.:";
+    field.name = u"dayphone4";
     field.max_length = 0;
     field.unique_renderer_id = MakeFieldRendererId();
     list_.push_back(std::make_unique<AutofillField>(field));
-    FieldRendererId ext4 = list_.back()->unique_renderer_id;
+    FieldGlobalId ext4 = list_.back()->global_id();
 
     AutofillScanner scanner(list_);
     field_ = Parse(&scanner);
@@ -215,23 +214,23 @@ TEST_F(PhoneFieldTest, ThreePartPhoneNumberPrefixSuffix) {
     Clear();
 
     field.form_control_type = field_type;
-    field.label = ASCIIToUTF16("Phone:");
-    field.name = ASCIIToUTF16("area");
+    field.label = u"Phone:";
+    field.name = u"area";
     field.unique_renderer_id = MakeFieldRendererId();
     list_.push_back(std::make_unique<AutofillField>(field));
-    FieldRendererId areacode1 = list_.back()->unique_renderer_id;
+    FieldGlobalId areacode1 = list_.back()->global_id();
 
-    field.label = base::string16();
-    field.name = ASCIIToUTF16("prefix");
+    field.label = std::u16string();
+    field.name = u"prefix";
     field.unique_renderer_id = MakeFieldRendererId();
     list_.push_back(std::make_unique<AutofillField>(field));
-    FieldRendererId prefix2 = list_.back()->unique_renderer_id;
+    FieldGlobalId prefix2 = list_.back()->global_id();
 
-    field.label = base::string16();
-    field.name = ASCIIToUTF16("suffix");
+    field.label = std::u16string();
+    field.name = u"suffix";
     field.unique_renderer_id = MakeFieldRendererId();
     list_.push_back(std::make_unique<AutofillField>(field));
-    FieldRendererId suffix3 = list_.back()->unique_renderer_id;
+    FieldGlobalId suffix3 = list_.back()->global_id();
 
     AutofillScanner scanner(list_);
     field_ = Parse(&scanner);
@@ -250,26 +249,26 @@ TEST_F(PhoneFieldTest, ThreePartPhoneNumberPrefixSuffix2) {
     Clear();
 
     field.form_control_type = field_type;
-    field.label = ASCIIToUTF16("(");
-    field.name = ASCIIToUTF16("phone1");
+    field.label = u"(";
+    field.name = u"phone1";
     field.max_length = 3;
     field.unique_renderer_id = MakeFieldRendererId();
     list_.push_back(std::make_unique<AutofillField>(field));
-    FieldRendererId phone1 = list_.back()->unique_renderer_id;
+    FieldGlobalId phone1 = list_.back()->global_id();
 
-    field.label = ASCIIToUTF16(")");
-    field.name = ASCIIToUTF16("phone2");
+    field.label = u")";
+    field.name = u"phone2";
     field.max_length = 3;
     field.unique_renderer_id = MakeFieldRendererId();
     list_.push_back(std::make_unique<AutofillField>(field));
-    FieldRendererId phone2 = list_.back()->unique_renderer_id;
+    FieldGlobalId phone2 = list_.back()->global_id();
 
-    field.label = base::string16();
-    field.name = ASCIIToUTF16("phone3");
+    field.label = std::u16string();
+    field.name = u"phone3";
     field.max_length = 4;
     field.unique_renderer_id = MakeFieldRendererId();
     list_.push_back(std::make_unique<AutofillField>(field));
-    FieldRendererId phone3 = list_.back()->unique_renderer_id;
+    FieldGlobalId phone3 = list_.back()->global_id();
 
     AutofillScanner scanner(list_);
     field_ = Parse(&scanner);
@@ -290,19 +289,19 @@ TEST_F(PhoneFieldTest, CountryAndCityAndPhoneNumber) {
     Clear();
 
     field.form_control_type = field_type;
-    field.label = ASCIIToUTF16("Phone Number");
-    field.name = ASCIIToUTF16("CountryCode");
+    field.label = u"Phone Number";
+    field.name = u"CountryCode";
     field.max_length = 3;
     field.unique_renderer_id = MakeFieldRendererId();
     list_.push_back(std::make_unique<AutofillField>(field));
-    FieldRendererId country = list_.back()->unique_renderer_id;
+    FieldGlobalId country = list_.back()->global_id();
 
-    field.label = ASCIIToUTF16("Phone Number");
-    field.name = ASCIIToUTF16("PhoneNumber");
+    field.label = u"Phone Number";
+    field.name = u"PhoneNumber";
     field.max_length = 10;
     field.unique_renderer_id = MakeFieldRendererId();
     list_.push_back(std::make_unique<AutofillField>(field));
-    FieldRendererId phone = list_.back()->unique_renderer_id;
+    FieldGlobalId phone = list_.back()->global_id();
 
     AutofillScanner scanner(list_);
     field_ = Parse(&scanner);
@@ -322,21 +321,21 @@ TEST_F(PhoneFieldTest, CountryAndCityAndPhoneNumberWithLongerMaxLength) {
     Clear();
 
     field.form_control_type = field_type;
-    field.label = ASCIIToUTF16("Phone Number");
-    field.name = ASCIIToUTF16("CountryCode");
+    field.label = u"Phone Number";
+    field.name = u"CountryCode";
     field.max_length = 3;
     field.unique_renderer_id = MakeFieldRendererId();
     list_.push_back(std::make_unique<AutofillField>(field));
-    FieldRendererId country = list_.back()->unique_renderer_id;
+    FieldGlobalId country = list_.back()->global_id();
 
     // Verify if websites expect a longer formatted number like:
     // (514)-123-1234, autofill is able to classify correctly.
-    field.label = ASCIIToUTF16("Phone Number");
-    field.name = ASCIIToUTF16("PhoneNumber");
+    field.label = u"Phone Number";
+    field.name = u"PhoneNumber";
     field.max_length = 14;
     field.unique_renderer_id = MakeFieldRendererId();
     list_.push_back(std::make_unique<AutofillField>(field));
-    FieldRendererId phone = list_.back()->unique_renderer_id;
+    FieldGlobalId phone = list_.back()->global_id();
 
     AutofillScanner scanner(list_);
     field_ = Parse(&scanner);
@@ -352,27 +351,27 @@ TEST_F(PhoneFieldTest, CountryAndCityAndPhoneNumberWithLongerMaxLength) {
 TEST_F(PhoneFieldTest, CountryCodeIsSelectElement) {
   FormFieldData field;
 
-  field.label = ASCIIToUTF16("Phone Country Code");
-  field.name = ASCIIToUTF16("ccode");
+  field.label = u"Phone Country Code";
+  field.name = u"ccode";
   field.form_control_type = "select-one";
   field.unique_renderer_id = MakeFieldRendererId();
   list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId country_code = list_.back()->unique_renderer_id;
+  FieldGlobalId country_code = list_.back()->global_id();
 
-  field.label = ASCIIToUTF16("Phone City Code");
-  field.name = ASCIIToUTF16("areacode");
+  field.label = u"Phone City Code";
+  field.name = u"areacode";
   field.form_control_type = "text";
   field.max_length = 3;
   field.unique_renderer_id = MakeFieldRendererId();
   list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId cityCode = list_.back()->unique_renderer_id;
+  FieldGlobalId cityCode = list_.back()->global_id();
 
-  field.label = ASCIIToUTF16("Phone Number");
-  field.name = ASCIIToUTF16("phonenumber");
+  field.label = u"Phone Number";
+  field.name = u"phonenumber";
   field.max_length = 0;
   field.unique_renderer_id = MakeFieldRendererId();
   list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId phoneNumber = list_.back()->unique_renderer_id;
+  FieldGlobalId phoneNumber = list_.back()->global_id();
 
   AutofillScanner scanner(list_);
   field_ = Parse(&scanner);
@@ -400,22 +399,22 @@ TEST_F(PhoneFieldTest, CountryCodeWithOptions) {
   CreateTestSelectField("PC", "PC", augmented_field_options_list, &field);
   field.unique_renderer_id = MakeFieldRendererId();
   list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId country_code = list_.back()->unique_renderer_id;
+  FieldGlobalId country_code = list_.back()->global_id();
 
-  field.label = ASCIIToUTF16("Phone City Code");
-  field.name = ASCIIToUTF16("areacode");
+  field.label = u"Phone City Code";
+  field.name = u"areacode";
   field.form_control_type = "text";
   field.max_length = 3;
   field.unique_renderer_id = MakeFieldRendererId();
   list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId cityCode = list_.back()->unique_renderer_id;
+  FieldGlobalId cityCode = list_.back()->global_id();
 
-  field.label = ASCIIToUTF16("Phone Number");
-  field.name = ASCIIToUTF16("phonenumber");
+  field.label = u"Phone Number";
+  field.name = u"phonenumber";
   field.max_length = 0;
   field.unique_renderer_id = MakeFieldRendererId();
   list_.push_back(std::make_unique<AutofillField>(field));
-  FieldRendererId phoneNumber = list_.back()->unique_renderer_id;
+  FieldGlobalId phoneNumber = list_.back()->global_id();
 
   AutofillScanner scanner(list_);
   field_ = Parse(&scanner);
@@ -496,10 +495,10 @@ TEST_F(PhoneFieldTest, IsPhoneCountryCodeField) {
     CreateTestSelectField("PC", "PC", options_list, &field);
     field.unique_renderer_id = MakeFieldRendererId();
     list_.push_back(std::make_unique<AutofillField>(field));
-    FieldRendererId country_code = list_.back()->unique_renderer_id;
+    FieldGlobalId country_code = list_.back()->global_id();
 
-    field.label = ASCIIToUTF16("Phone Number");
-    field.name = ASCIIToUTF16("phonenumber");
+    field.label = u"Phone Number";
+    field.name = u"phonenumber";
     field.max_length = 14;
     field.form_control_type = "text";
     field.unique_renderer_id = MakeFieldRendererId();
@@ -536,8 +535,8 @@ TEST_F(PhoneFieldTest, IsMonthField) {
     field.unique_renderer_id = MakeFieldRendererId();
     list_.push_back(std::make_unique<AutofillField>(field));
 
-    field.label = ASCIIToUTF16("Phone Number");
-    field.name = ASCIIToUTF16("phonenumber");
+    field.label = u"Phone Number";
+    field.name = u"phonenumber";
     field.max_length = 14;
     field.form_control_type = "text";
     field.unique_renderer_id = MakeFieldRendererId();
@@ -602,8 +601,8 @@ TEST_F(PhoneFieldTest, IsDayField) {
     field.unique_renderer_id = MakeFieldRendererId();
     list_.push_back(std::make_unique<AutofillField>(field));
 
-    field.label = ASCIIToUTF16("Phone Number");
-    field.name = ASCIIToUTF16("phonenumber");
+    field.label = u"Phone Number";
+    field.name = u"phonenumber";
     field.max_length = 14;
     field.form_control_type = "text";
     field.unique_renderer_id = MakeFieldRendererId();
@@ -654,8 +653,8 @@ TEST_F(PhoneFieldTest, IsYearField) {
     field.unique_renderer_id = MakeFieldRendererId();
     list_.push_back(std::make_unique<AutofillField>(field));
 
-    field.label = ASCIIToUTF16("Phone Number");
-    field.name = ASCIIToUTF16("phonenumber");
+    field.label = u"Phone Number";
+    field.name = u"phonenumber";
     field.max_length = 14;
     field.form_control_type = "text";
     field.unique_renderer_id = MakeFieldRendererId();
@@ -692,8 +691,8 @@ TEST_F(PhoneFieldTest, IsTimeZoneField) {
     field.unique_renderer_id = MakeFieldRendererId();
     list_.push_back(std::make_unique<AutofillField>(field));
 
-    field.label = ASCIIToUTF16("Phone Number");
-    field.name = ASCIIToUTF16("phonenumber");
+    field.label = u"Phone Number";
+    field.name = u"phonenumber";
     field.max_length = 14;
     field.form_control_type = "text";
     field.unique_renderer_id = MakeFieldRendererId();

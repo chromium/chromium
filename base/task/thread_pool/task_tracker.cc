@@ -298,8 +298,13 @@ void TaskTracker::CompleteShutdown() {
   // pointer never changes after being set by StartShutdown(), which must
   // happen-before this.
   DCHECK(TS_UNCHECKED_READ(shutdown_event_));
+
   {
     base::ScopedAllowBaseSyncPrimitives allow_wait;
+    // Allow tests to wait for and introduce logging about the shutdown tasks
+    // before we block this thread.
+    BeginCompleteShutdown(*TS_UNCHECKED_READ(shutdown_event_));
+    // Now block the thread until all tasks are done.
     TS_UNCHECKED_READ(shutdown_event_)->Wait();
   }
 
@@ -366,8 +371,13 @@ bool TaskTracker::WillPostTask(Task* task,
 }
 
 bool TaskTracker::WillPostTaskNow(const Task& task, TaskPriority priority) {
+  // Delayed tasks's TaskShutdownBehavior is implicitly capped at
+  // SKIP_ON_SHUTDOWN. i.e. it cannot BLOCK_SHUTDOWN, TaskTracker will not wait
+  // for a delayed task in a BLOCK_SHUTDOWN TaskSource and will also skip
+  // delayed tasks that happen to become ripe during shutdown.
   if (!task.delayed_run_time.is_null() && state_->HasShutdownStarted())
     return false;
+
   if (has_log_best_effort_tasks_switch_ &&
       priority == TaskPriority::BEST_EFFORT) {
     // A TaskPriority::BEST_EFFORT task is being posted.
@@ -527,6 +537,10 @@ void TaskTracker::RunTask(Task task,
   ThreadRestrictions::SetWaitAllowed(previous_wait_allowed);
   ThreadRestrictions::SetIOAllowed(previous_io_allowed);
   ThreadRestrictions::SetSingletonAllowed(previous_singleton_allowed);
+}
+
+void TaskTracker::BeginCompleteShutdown(base::WaitableEvent& shutdown_event) {
+  // Do nothing in production, tests may override this.
 }
 
 bool TaskTracker::HasIncompleteTaskSourcesForTesting() const {

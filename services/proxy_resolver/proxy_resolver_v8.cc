@@ -146,10 +146,10 @@ std::string V8StringToUTF8(v8::Isolate* isolate, v8::Local<v8::String> s) {
   return result;
 }
 
-// Converts a V8 String to a UTF16 base::string16.
-base::string16 V8StringToUTF16(v8::Isolate* isolate, v8::Local<v8::String> s) {
+// Converts a V8 String to a UTF16 std::u16string.
+std::u16string V8StringToUTF16(v8::Isolate* isolate, v8::Local<v8::String> s) {
   int len = s->Length();
-  base::string16 result;
+  std::u16string result;
   // Note that the reinterpret cast is because on Windows string16 is an alias
   // to wstring, and hence has character type wchar_t not uint16_t.
   if (len > 0) {
@@ -169,7 +169,7 @@ v8::Local<v8::String> ASCIIStringToV8String(v8::Isolate* isolate,
       .ToLocalChecked();
 }
 
-// Converts a UTF16 base::string16 (wrapped by a net::PacFileData) to a
+// Converts a UTF16 std::u16string (wrapped by a net::PacFileData) to a
 // V8 string.
 v8::Local<v8::String> ScriptDataToV8String(
     v8::Isolate* isolate,
@@ -202,7 +202,7 @@ v8::Local<v8::String> ASCIILiteralToV8String(v8::Isolate* isolate,
 // Stringizes a V8 object by calling its toString() method. Returns true
 // on success. This may fail if the toString() throws an exception.
 bool V8ObjectToUTF16String(v8::Local<v8::Value> object,
-                           base::string16* utf16_result,
+                           std::u16string* utf16_result,
                            v8::Isolate* isolate) {
   if (object.IsEmpty())
     return false;
@@ -223,7 +223,7 @@ bool GetHostnameArgument(const v8::FunctionCallbackInfo<v8::Value>& args,
   if (args.Length() == 0 || args[0].IsEmpty() || !args[0]->IsString())
     return false;
 
-  const base::string16 hostname_utf16 =
+  const std::u16string hostname_utf16 =
       V8StringToUTF16(args.GetIsolate(), v8::Local<v8::String>::Cast(args[0]));
 
   // If the hostname is already in ASCII, simply return it as is.
@@ -234,7 +234,7 @@ bool GetHostnameArgument(const v8::FunctionCallbackInfo<v8::Value>& args,
 
   // Otherwise try to convert it from IDN to punycode.
   const int kInitialBufferSize = 256;
-  url::RawCanonOutputT<base::char16, kInitialBufferSize> punycode_output;
+  url::RawCanonOutputT<char16_t, kInitialBufferSize> punycode_output;
   if (!url::IDNToASCII(hostname_utf16.data(), hostname_utf16.length(),
                        &punycode_output)) {
     return false;
@@ -477,12 +477,11 @@ class ProxyResolverV8::Context {
     }
 
     if (!ret->IsString()) {
-      js_bindings()->OnError(
-          -1, base::ASCIIToUTF16("FindProxyForURL() did not return a string."));
+      js_bindings()->OnError(-1, u"FindProxyForURL() did not return a string.");
       return net::ERR_PAC_SCRIPT_FAILED;
     }
 
-    base::string16 ret_str =
+    std::u16string ret_str =
         V8StringToUTF16(isolate_, v8::Local<v8::String>::Cast(ret));
 
     if (!base::IsStringASCII(ret_str)) {
@@ -490,7 +489,7 @@ class ProxyResolverV8::Context {
       //               could extend the parsing to handle IDNA hostnames by
       //               converting them to ASCII punycode.
       //               crbug.com/47234
-      base::string16 error_message =
+      std::u16string error_message =
           base::ASCIIToUTF16(
               "FindProxyForURL() returned a non-ASCII string "
               "(crbug.com/47234): ") +
@@ -616,9 +615,8 @@ class ProxyResolverV8::Context {
     // defensively just in case.
     DCHECK_EQ(function->IsEmpty(), try_catch.HasCaught());
     if (function->IsEmpty() || try_catch.HasCaught()) {
-      js_bindings()->OnError(
-          -1,
-          base::ASCIIToUTF16("Accessing FindProxyForURL threw an exception."));
+      js_bindings()->OnError(-1,
+                             u"Accessing FindProxyForURL threw an exception.");
       return net::ERR_PAC_SCRIPT_FAILED;
     }
 
@@ -636,7 +634,7 @@ class ProxyResolverV8::Context {
   void HandleError(v8::Local<v8::Message> message) {
     v8::Local<v8::Context> context =
         v8::Local<v8::Context>::New(isolate_, v8_context_);
-    base::string16 error_message;
+    std::u16string error_message;
     int line_number = -1;
 
     if (!message.IsEmpty()) {
@@ -657,8 +655,8 @@ class ProxyResolverV8::Context {
     v8::TryCatch try_catch(isolate_);
 
     // Compile the script.
-    v8::ScriptOrigin origin =
-        v8::ScriptOrigin(ASCIILiteralToV8String(isolate_, script_name));
+    v8::ScriptOrigin origin = v8::ScriptOrigin(
+        isolate_, ASCIILiteralToV8String(isolate_, script_name));
     v8::ScriptCompiler::Source script_source(script, origin);
     v8::Local<v8::Script> code;
     if (!v8::ScriptCompiler::Compile(
@@ -688,9 +686,9 @@ class ProxyResolverV8::Context {
 
     // Like firefox we assume "undefined" if no argument was specified, and
     // disregard any arguments beyond the first.
-    base::string16 message;
+    std::u16string message;
     if (args.Length() == 0) {
-      message = base::ASCIIToUTF16("undefined");
+      message = u"undefined";
     } else {
       if (!V8ObjectToUTF16String(args[0], &message, args.GetIsolate()))
         return;  // toString() threw an exception.

@@ -7,6 +7,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
+#include "services/network/public/mojom/url_request.mojom.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom.h"
 
 namespace network {
@@ -19,6 +20,29 @@ mojo::PendingRemote<mojom::CookieAccessObserver> Clone(
     return mojo::NullRemote();
   mojo::Remote<mojom::CookieAccessObserver> remote(std::move(*observer));
   mojo::PendingRemote<mojom::CookieAccessObserver> new_remote;
+  remote->Clone(new_remote.InitWithNewPipeAndPassReceiver());
+  *observer = remote.Unbind();
+  return new_remote;
+}
+
+mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver> Clone(
+    mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>* observer) {
+  if (!*observer)
+    return mojo::NullRemote();
+  mojo::Remote<mojom::URLLoaderNetworkServiceObserver> remote(
+      std::move(*observer));
+  mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver> new_remote;
+  remote->Clone(new_remote.InitWithNewPipeAndPassReceiver());
+  *observer = remote.Unbind();
+  return new_remote;
+}
+
+mojo::PendingRemote<mojom::DevToolsObserver> Clone(
+    mojo::PendingRemote<mojom::DevToolsObserver>* observer) {
+  if (!*observer)
+    return mojo::NullRemote();
+  mojo::Remote<mojom::DevToolsObserver> remote(std::move(*observer));
+  mojo::PendingRemote<mojom::DevToolsObserver> new_remote;
   remote->Clone(new_remote.InitWithNewPipeAndPassReceiver());
   *observer = remote.Unbind();
   return new_remote;
@@ -59,6 +83,12 @@ ResourceRequest::TrustedParams& ResourceRequest::TrustedParams::operator=(
   cookie_observer =
       Clone(&const_cast<mojo::PendingRemote<mojom::CookieAccessObserver>&>(
           other.cookie_observer));
+  url_loader_network_observer = Clone(
+      &const_cast<mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>&>(
+          other.url_loader_network_observer));
+  devtools_observer =
+      Clone(&const_cast<mojo::PendingRemote<mojom::DevToolsObserver>&>(
+          other.devtools_observer));
   client_security_state = other.client_security_state.Clone();
   return *this;
 }
@@ -82,20 +112,32 @@ ResourceRequest::WebBundleTokenParams::WebBundleTokenParams(
 ResourceRequest::WebBundleTokenParams&
 ResourceRequest::WebBundleTokenParams::operator=(
     const WebBundleTokenParams& other) {
+  bundle_url = other.bundle_url;
   token = other.token;
   handle = other.CloneHandle();
+  render_process_id = other.render_process_id;
   return *this;
 }
 
 ResourceRequest::WebBundleTokenParams::WebBundleTokenParams(
+    const GURL& bundle_url,
     const base::UnguessableToken& token,
     mojo::PendingRemote<mojom::WebBundleHandle> handle)
-    : token(token), handle(std::move(handle)) {}
+    : bundle_url(bundle_url), token(token), handle(std::move(handle)) {}
+
+ResourceRequest::WebBundleTokenParams::WebBundleTokenParams(
+    const GURL& bundle_url,
+    const base::UnguessableToken& token,
+    int32_t render_process_id)
+    : bundle_url(bundle_url),
+      token(token),
+      render_process_id(render_process_id) {}
 
 bool ResourceRequest::WebBundleTokenParams::EqualsForTesting(
     const WebBundleTokenParams& other) const {
-  return token == other.token &&
-         ((handle && other.handle) || (!handle && !other.handle));
+  return bundle_url == other.bundle_url && token == other.token &&
+         ((handle && other.handle) || (!handle && !other.handle)) &&
+         render_process_id == other.render_process_id;
 }
 
 mojo::PendingRemote<mojom::WebBundleHandle>
@@ -149,7 +191,6 @@ bool ResourceRequest::EqualsForTesting(const ResourceRequest& request) const {
          enable_load_timing == request.enable_load_timing &&
          enable_upload_progress == request.enable_upload_progress &&
          do_not_prompt_for_login == request.do_not_prompt_for_login &&
-         render_frame_id == request.render_frame_id &&
          is_main_frame == request.is_main_frame &&
          transition_type == request.transition_type &&
          report_raw_headers == request.report_raw_headers &&
@@ -166,10 +207,13 @@ bool ResourceRequest::EqualsForTesting(const ResourceRequest& request) const {
          is_signed_exchange_prefetch_cache_enabled ==
              request.is_signed_exchange_prefetch_cache_enabled &&
          is_fetch_like_api == request.is_fetch_like_api &&
+         is_favicon == request.is_favicon &&
          obey_origin_policy == request.obey_origin_policy &&
          recursive_prefetch_token == request.recursive_prefetch_token &&
          OptionalTrustedParamsEqualsForTesting(trusted_params,
                                                request.trusted_params) &&
+         devtools_accepted_stream_types ==
+             request.devtools_accepted_stream_types &&
          trust_token_params == request.trust_token_params &&
          OptionalWebBundleTokenParamsEqualsForTesting(  // IN-TEST
              web_bundle_token_params, request.web_bundle_token_params);

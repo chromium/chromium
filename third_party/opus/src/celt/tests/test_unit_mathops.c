@@ -143,7 +143,7 @@ void testbitexactlog2tan(void)
 void testlog2(void)
 {
    float x;
-   for (x=0.001;x<1677700.0;x+=(x/8.0))
+   for (x=0.001f;x<1677700.0;x+=(x/8.0))
    {
       float error = fabs((1.442695040888963387*log(x))-celt_log2(x));
       if (error>0.0009)
@@ -157,7 +157,7 @@ void testlog2(void)
 void testexp2(void)
 {
    float x;
-   for (x=-11.0;x<24.0;x+=0.0007)
+   for (x=-11.0;x<24.0;x+=0.0007f)
    {
       float error = fabs(x-(1.442695040888963387*log(celt_exp2(x))));
       if (error>0.0002)
@@ -171,7 +171,7 @@ void testexp2(void)
 void testexp2log2(void)
 {
    float x;
-   for (x=-11.0;x<24.0;x+=0.0007)
+   for (x=-11.0;x<24.0;x+=0.0007f)
    {
       float error = fabs(x-(celt_log2(celt_exp2(x))));
       if (error>0.001)

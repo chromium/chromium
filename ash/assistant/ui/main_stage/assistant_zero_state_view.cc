@@ -40,7 +40,7 @@ AssistantZeroStateView::AssistantZeroStateView(AssistantViewDelegate* delegate)
   InitLayout();
   UpdateLayout();
 
-  assistant_controller_observer_.Add(AssistantController::Get());
+  assistant_controller_observation_.Observe(AssistantController::Get());
   AssistantUiController::Get()->GetModel()->AddObserver(this);
 }
 
@@ -63,7 +63,9 @@ void AssistantZeroStateView::ChildPreferredSizeChanged(views::View* child) {
 
 void AssistantZeroStateView::OnAssistantControllerDestroying() {
   AssistantUiController::Get()->GetModel()->RemoveObserver(this);
-  assistant_controller_observer_.Remove(AssistantController::Get());
+  DCHECK(assistant_controller_observation_.IsObservingSource(
+      AssistantController::Get()));
+  assistant_controller_observation_.Reset();
 }
 
 void AssistantZeroStateView::OnUiVisibilityChanged(

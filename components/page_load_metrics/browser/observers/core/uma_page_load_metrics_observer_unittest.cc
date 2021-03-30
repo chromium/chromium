@@ -6,10 +6,13 @@
 
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/power_monitor_test_base.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_content_test_harness.h"
+#include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
@@ -35,12 +38,15 @@ const char kDefaultTestUrl2[] = "https://whatever.com";
 
 class UmaPageLoadMetricsObserverTest
     : public page_load_metrics::PageLoadMetricsObserverContentTestHarness {
- protected:
+ public:
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) override {
     tracker->AddObserver(std::make_unique<UmaPageLoadMetricsObserver>());
   }
 
+ protected:
   void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kV8PerFrameMemoryMonitoring);
     page_load_metrics::PageLoadMetricsObserverContentTestHarness::SetUp();
     page_load_metrics::LargestContentfulPaintHandler::SetTestMode(true);
   }
@@ -145,6 +151,18 @@ class UmaPageLoadMetricsObserverTest
                     kHistogramExperimentalLargestContentfulPaintMainFrameContentType)
             .empty());
   }
+
+  const base::HistogramTester& histogram_tester() {
+    return tester()->histogram_tester();
+  }
+
+  void SimulateV8MemoryChange(content::RenderFrameHost* render_frame_host,
+                              int64_t delta_bytes) {
+    tester()->SimulateMemoryUpdate(render_frame_host, delta_bytes);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(UmaPageLoadMetricsObserverTest, NoMetrics) {
@@ -1386,4 +1404,109 @@ TEST_F(UmaPageLoadMetricsObserverTest, UnfinishedBytesRecorded) {
   // Verify that the unfinished resource bytes are recorded.
   tester()->histogram_tester().ExpectUniqueSample(
       internal::kHistogramPageLoadUnfinishedBytes, 10, 1);
+}
+
+TEST_F(UmaPageLoadMetricsObserverTest, MainFrame_MaxMemoryBytesRecorded) {
+  // Commit the main frame and a subframe.
+  NavigateAndCommit(GURL(kDefaultTestUrl));
+
+  // Notify that memory measurements are available for the main frame.
+  SimulateV8MemoryChange(main_rfh(), 100 * 1024);
+
+  // Simulate positive and negative shifts to memory usage and ensure the
+  // maximum value is properly tracked.
+  SimulateV8MemoryChange(main_rfh(), 50 * 1024);
+  SimulateV8MemoryChange(main_rfh(), -150 * 1024);
+
+  // Navigate again to force histogram recording.
+  NavigateAndCommit(GURL(kDefaultTestUrl2));
+
+  histogram_tester().ExpectUniqueSample(internal::kHistogramMemoryMainframe,
+                                        150, 1);
+  histogram_tester().ExpectUniqueSample(
+      internal::kHistogramMemorySubframeAggregate, 0, 1);
+  histogram_tester().ExpectUniqueSample(internal::kHistogramMemoryTotal, 150,
+                                        1);
+  histogram_tester().ExpectUniqueSample(
+      internal::kHistogramMemoryUpdateReceived, true, 1);
+}
+
+TEST_F(UmaPageLoadMetricsObserverTest, SingleSubFrame_MaxMemoryBytesRecorded) {
+  // Commit the main frame and a subframe.
+  NavigateAndCommit(GURL(kDefaultTestUrl));
+  RenderFrameHost* subframe =
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL("https://google.com/subframe.html"),
+          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+              ->AppendChild("subframe"));
+
+  // Notify that memory measurements are available for each frame.
+  SimulateV8MemoryChange(main_rfh(), 100 * 1024);
+  SimulateV8MemoryChange(subframe, 10 * 1024);
+
+  // Simulate positive and negative shifts to memory usage and ensure the
+  // maximum value is properly tracked.
+  SimulateV8MemoryChange(subframe, 30 * 1024);
+  SimulateV8MemoryChange(subframe, -20 * 1024);
+
+  // Navigate again to force histogram recording.
+  NavigateAndCommit(GURL(kDefaultTestUrl2));
+
+  histogram_tester().ExpectUniqueSample(internal::kHistogramMemoryMainframe,
+                                        100, 1);
+  histogram_tester().ExpectUniqueSample(
+      internal::kHistogramMemorySubframeAggregate, 40, 1);
+  histogram_tester().ExpectUniqueSample(internal::kHistogramMemoryTotal, 140,
+                                        1);
+  histogram_tester().ExpectUniqueSample(
+      internal::kHistogramMemoryUpdateReceived, true, 1);
+}
+
+TEST_F(UmaPageLoadMetricsObserverTest, MultiSubFrames_MaxMemoryBytesRecorded) {
+  // Commit the main frame and a subframe.
+  NavigateAndCommit(GURL(kDefaultTestUrl));
+  RenderFrameHost* subframe1 =
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL("https://google.com/subframe.html"),
+          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+              ->AppendChild("subframe1"));
+  RenderFrameHost* subframe2 =
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL("https://google.com/subframe2.html"),
+          RenderFrameHostTester::For(web_contents()->GetMainFrame())
+              ->AppendChild("subframe2"));
+  RenderFrameHost* subframe3 =
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL("https://google.com/subframe3.html"),
+          RenderFrameHostTester::For(subframe2)->AppendChild("subframe3"));
+
+  // Notify that memory measurements are available for each frame.
+  SimulateV8MemoryChange(main_rfh(), 500 * 1024);
+  SimulateV8MemoryChange(subframe1, 10 * 1024);
+  SimulateV8MemoryChange(subframe2, 20 * 1024);
+  SimulateV8MemoryChange(subframe3, 30 * 1024);
+
+  // Simulate positive and negative shifts to memory usage and ensure the
+  // maximum value is properly tracked.
+  SimulateV8MemoryChange(main_rfh(), 100 * 1024);
+  SimulateV8MemoryChange(subframe1, 5 * 1024);
+  SimulateV8MemoryChange(subframe1, -2 * 1024);
+  SimulateV8MemoryChange(subframe2, 5 * 1024);
+  SimulateV8MemoryChange(subframe2, -2 * 1024);
+  SimulateV8MemoryChange(main_rfh(), -200 * 1024);
+  SimulateV8MemoryChange(subframe3, 5 * 1024);
+  SimulateV8MemoryChange(subframe3, -2 * 1024);
+
+  // Navigate again to force histogram recording.
+  NavigateAndCommit(GURL(kDefaultTestUrl2));
+
+  histogram_tester().ExpectUniqueSample(internal::kHistogramMemoryMainframe,
+                                        500 + 100, 1);
+  histogram_tester().ExpectUniqueSample(
+      internal::kHistogramMemorySubframeAggregate,
+      10 + 20 + 30 + 5 - 2 + 5 - 2 + 5, 1);
+  histogram_tester().ExpectUniqueSample(
+      internal::kHistogramMemoryTotal, 500 + 10 + 20 + 30 + 100 + 5 - 2 + 5, 1);
+  histogram_tester().ExpectUniqueSample(
+      internal::kHistogramMemoryUpdateReceived, true, 1);
 }

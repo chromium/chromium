@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/testharness-adapter.js"></script>
+</head>
+<body>
+<script type="module">
+import {GeolocationMock} from './resources/geolocation-mock.js';
+
+description('Tests that when a cached position is available the callback for getCurrentPosition is called only once. This is a regression test for http://crbug.com/311876 .');
+
+// Only one success callback should be reported per call to getCurrentPosition.
+let reportCount = 0;
+
+function reportCallback(success, id) {
+    assert_true(success);
+    assert_equals(id, reportCount);
+    if (++reportCount >= 3)
+        finishJSTest();
+}
+
+let getCurrentPositionCall = 0;
+function getPosition(milliseconds) {
+    const id = getCurrentPositionCall++;
+    const fn = function() {
+        navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    reportCallback(true, id);
+                },
+                function(error) {
+                    reportCallback(false, id);
+                },
+                { maximumAge:600000, timeout:0 });
+    };
+    setTimeout(fn, milliseconds);
+}
+
+const mock = new GeolocationMock();
+mock.setGeolocationPosition(31.478, -0.166, 100);
+mock.setGeolocationPermission(true);
+
+// Make a geolocation request to populate the cached value so requests with a
+// timeout of 0 can succeed.
+navigator.geolocation.getCurrentPosition(function(position) {
+    // The test terminates at the 3rd reported callback. If the bug still exists
+    // this happens after the 2nd call to getCurrentPosition, one of them is a
+    // repeat of the first.
+    getPosition(0);
+    getPosition(100);
+    getPosition(200);
+}, function(error) {
+    testFailed('Error callback invoked unexpectedly');
+});
+</script>
+</body>
+</html>

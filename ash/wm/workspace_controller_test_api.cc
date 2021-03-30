@@ -22,11 +22,6 @@ WorkspaceEventHandler* WorkspaceControllerTestApi::GetEventHandler() {
   return controller_->event_handler_.get();
 }
 
-MultiWindowResizeController*
-WorkspaceControllerTestApi::GetMultiWindowResizeController() {
-  return WorkspaceEventHandlerTestHelper(GetEventHandler()).resize_controller();
-}
-
 aura::Window* WorkspaceControllerTestApi::GetBackdropWindow() {
   return controller_->layout_manager_->backdrop_controller_->backdrop_window_;
 }

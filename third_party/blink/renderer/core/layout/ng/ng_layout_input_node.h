@@ -8,6 +8,7 @@
 #include "base/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
+#include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_box_utils.h"
@@ -22,41 +23,29 @@ class DisplayLockContext;
 class Document;
 class LayoutObject;
 class LayoutBox;
-class NGConstraintSpace;
 struct MinMaxSizes;
 struct PhysicalSize;
 
 // The input to the min/max inline size calculation algorithm for child nodes.
 // Child nodes within the same formatting context need to know which floats are
 // beside them.
-struct MinMaxSizesInput {
-  // The min-max size calculation (un-intuitively) requires a percentage
-  // resolution size!
-  // This occurs when a replaced element has an intrinsic size. E.g.
-  // <div style="float: left; height: 100px">
-  //   <img sr="intrinsic-ratio-1x1.png" style="height: 50%;" />
-  // </div>
-  // In the above example float ends up with a width of 50px.
-  //
-  // As we don't perform any tree walking, we need to pass the percentage
-  // resolution block-size for min/max down the min/max size calculation.
-  MinMaxSizesInput(LayoutUnit percentage_resolution_block_size,
-                   MinMaxSizesType type)
-      : percentage_resolution_block_size(percentage_resolution_block_size),
-        type(type) {}
+struct MinMaxSizesFloatInput {
+  explicit MinMaxSizesFloatInput() = default;
   LayoutUnit float_left_inline_size;
   LayoutUnit float_right_inline_size;
-  LayoutUnit percentage_resolution_block_size;
-
-  MinMaxSizesType type;
 };
 
 // The output of the min/max inline size calculation algorithm. Contains the
-// min/max sizes, and if this calculation will change if the
-// |MinMaxSizesInput::percentage_resolution_block_size| value changes.
+// min/max sizes, and if this calculation will change if the block constraints
+// change.
 struct MinMaxSizesResult {
+  MinMaxSizesResult() = default;
+  MinMaxSizesResult(MinMaxSizes sizes, bool depends_on_block_constraints)
+      : sizes(sizes),
+        depends_on_block_constraints(depends_on_block_constraints) {}
+
   MinMaxSizes sizes;
-  bool depends_on_percentage_block_size = false;
+  bool depends_on_block_constraints = false;
 };
 
 // Represents the input to a layout algorithm for a given node. The layout
@@ -111,6 +100,7 @@ class CORE_EXPORT NGLayoutInputNode {
   bool IsFlexibleBox() const {
     return IsBlock() && box_->IsFlexibleBoxIncludingNG();
   }
+  bool IsGrid() const { return IsBlock() && box_->IsLayoutGridIncludingNG(); }
   bool ShouldBeConsideredAsReplaced() const {
     return box_->ShouldBeConsideredAsReplaced();
   }
@@ -138,6 +128,7 @@ class CORE_EXPORT NGLayoutInputNode {
   bool IsSlider() const;
   // Return true if this node is for a slider thumb in <input type=range>.
   bool IsSliderThumb() const;
+  bool IsSVGText() const;
   bool IsTable() const { return IsBlock() && box_->IsTable(); }
   bool IsNGTable() const { return IsTable() && box_->IsLayoutNGMixin(); }
 
@@ -206,12 +197,6 @@ class CORE_EXPORT NGLayoutInputNode {
     return false;
   }
 
-  // Returns the border-box min/max content sizes for the node.
-  MinMaxSizesResult ComputeMinMaxSizes(
-      WritingMode,
-      const MinMaxSizesInput&,
-      const NGConstraintSpace* = nullptr) const;
-
   // Returns intrinsic sizing information for replaced elements.
   // ComputeReplacedSize can use it to compute actual replaced size.
   // Corresponds to Legacy's LayoutReplaced::IntrinsicSizingInfo.
@@ -235,6 +220,29 @@ class CORE_EXPORT NGLayoutInputNode {
 
   bool ShouldApplySizeContainment() const {
     return box_->ShouldApplySizeContainment();
+  }
+  // Return true if we should apply at least inline-size containment
+  // (i.e. "contain" is "size" or "inline-size").
+  bool ShouldApplyInlineSizeContainment() const {
+    return box_->ShouldApplyInlineSizeContainment();
+  }
+  // Return true if we should apply at least block-size containment
+  // (i.e. "contain" is "size" or "block-size").
+  bool ShouldApplyBlockSizeContainment() const {
+    return box_->ShouldApplyBlockSizeContainment();
+  }
+
+  bool IsContainerForContainerQueries() const {
+    return box_->IsContainerForContainerQueries();
+  }
+
+  LogicalAxes ContainedAxes() const {
+    LogicalAxes axes(kLogicalAxisNone);
+    if (ShouldApplyInlineSizeContainment())
+      axes |= LogicalAxes(kLogicalAxisInline);
+    if (ShouldApplyBlockSizeContainment())
+      axes |= LogicalAxes(kLogicalAxisBlock);
+    return axes;
   }
 
   // CSS defines certain cases to synthesize inline block baselines from box.

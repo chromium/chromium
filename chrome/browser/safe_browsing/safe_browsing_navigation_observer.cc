@@ -56,6 +56,8 @@ NavigationEvent::NavigationEvent(NavigationEvent&& nav_event)
       maybe_launched_by_external_application(
           nav_event.maybe_launched_by_external_application) {}
 
+NavigationEvent::NavigationEvent(const NavigationEvent& nav_event) = default;
+
 NavigationEvent& NavigationEvent::operator=(NavigationEvent&& nav_event) {
   source_url = std::move(nav_event.source_url);
   source_main_frame_url = std::move(nav_event.source_main_frame_url);
@@ -151,8 +153,7 @@ void SafeBrowsingNavigationObserver::DidStartNavigation(
       content::WebContents* initiator_contents =
           content::WebContents::FromRenderFrameHost(initiator_frame_host);
       manager_->RecordNewWebContents(
-          initiator_contents, initiator_frame_host->GetProcess()->GetID(),
-          initiator_frame_host->GetRoutingID(), navigation_handle->GetURL(),
+          initiator_contents, initiator_frame_host, navigation_handle->GetURL(),
           navigation_handle->GetPageTransition(), web_contents(),
           navigation_handle->IsRendererInitiated());
     }
@@ -189,11 +190,9 @@ void SafeBrowsingNavigationObserver::DidStartNavigation(
   // If there was a URL previously committed in the current RenderFrameHost,
   // set it as the source url of this navigation. Otherwise, this is the
   // first url going to commit in this frame.
-  int current_process_id =
-      navigation_handle->GetStartingSiteInstance()->GetProcess()->GetID();
   content::RenderFrameHost* current_frame_host =
-      navigation_handle->GetWebContents()->FindFrameByFrameTreeNodeId(
-          nav_event->frame_id, current_process_id);
+      content::RenderFrameHost::FromID(
+          navigation_handle->GetPreviousRenderFrameHostId());
   // For browser initiated navigation (e.g. from address bar or bookmark), we
   // don't fill the source_url to prevent attributing navigation to the last
   // committed navigation.
@@ -214,9 +213,16 @@ void SafeBrowsingNavigationObserver::DidStartNavigation(
   } else {
     nav_event->source_main_frame_url =
         SafeBrowsingNavigationObserverManager::ClearURLRef(
-            navigation_handle->GetWebContents()->GetLastCommittedURL());
+            navigation_handle->GetParentFrame()
+                ->GetMainFrame()
+                ->GetLastCommittedURL());
   }
+
+  std::unique_ptr<NavigationEvent> pending_nav_event =
+      std::make_unique<NavigationEvent>(*nav_event);
   navigation_handle_map_[navigation_handle] = std::move(nav_event);
+  manager_->RecordPendingNavigationEvent(navigation_handle,
+                                         std::move(pending_nav_event));
 }
 
 void SafeBrowsingNavigationObserver::DidRedirectNavigation(
@@ -231,6 +237,9 @@ void SafeBrowsingNavigationObserver::DidRedirectNavigation(
       SafeBrowsingNavigationObserverManager::ClearURLRef(
           navigation_handle->GetURL()));
   nav_event->last_updated = base::Time::Now();
+
+  manager_->AddRedirectUrlToPendingNavigationEvent(navigation_handle,
+                                                   navigation_handle->GetURL());
 }
 
 void SafeBrowsingNavigationObserver::DidFinishNavigation(
@@ -263,7 +272,7 @@ void SafeBrowsingNavigationObserver::DidFinishNavigation(
   nav_event->last_updated = base::Time::Now();
 
   manager_->RecordNavigationEvent(
-      std::move(navigation_handle_map_[navigation_handle]));
+      navigation_handle, std::move(navigation_handle_map_[navigation_handle]));
   navigation_handle_map_.erase(navigation_handle);
 }
 
@@ -287,10 +296,8 @@ void SafeBrowsingNavigationObserver::DidOpenRequestedURL(
     ui::PageTransition transition,
     bool started_from_context_menu,
     bool renderer_initiated) {
-  manager_->RecordNewWebContents(
-      web_contents(), source_render_frame_host->GetProcess()->GetID(),
-      source_render_frame_host->GetRoutingID(), url, transition, new_contents,
-      renderer_initiated);
+  manager_->RecordNewWebContents(web_contents(), source_render_frame_host, url,
+                                 transition, new_contents, renderer_initiated);
 }
 
 void SafeBrowsingNavigationObserver::OnContentSettingChanged(

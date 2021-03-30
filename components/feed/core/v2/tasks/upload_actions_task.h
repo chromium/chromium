@@ -11,8 +11,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "components/feed/core/proto/v2/store.pb.h"
-#include "components/feed/core/proto/v2/wire/discover_actions_service.pb.h"
 #include "components/feed/core/proto/v2/wire/feed_action.pb.h"
+#include "components/feed/core/proto/v2/wire/upload_actions_request.pb.h"
+#include "components/feed/core/proto/v2/wire/upload_actions_response.pb.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/feed_store.h"
@@ -87,8 +88,9 @@ class UploadActionsTask : public offline_pages::Task {
   void UploadPendingActions();
   void UpdateAndUploadNextBatch();
   void OnUpdateActionsFinished(std::unique_ptr<Batch> batch, bool update_ok);
-  void OnUploadFinished(std::unique_ptr<Batch> batch,
-                        FeedNetwork::ActionRequestResult result);
+  void OnUploadFinished(
+      std::unique_ptr<Batch> batch,
+      FeedNetwork::ApiResult<feedwire::UploadActionsResponse> result);
   void OnUploadedActionsRemoved(bool remove_ok);
   void UpdateTokenAndFinish();
   void BatchComplete(UploadActionsBatchStatus status);

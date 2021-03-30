@@ -5,29 +5,17 @@
 #ifndef COMPONENTS_HISTORY_CORE_BROWSER_HISTORY_BACKEND_CLIENT_H_
 #define COMPONENTS_HISTORY_CORE_BROWSER_HISTORY_BACKEND_CLIENT_H_
 
+#include <string>
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
-#include "build/build_config.h"
 #include "url/gurl.h"
-
-namespace base {
-class FilePath;
-}
-
-namespace favicon {
-class FaviconDatabase;
-}
 
 namespace history {
 
-class HistoryBackend;
-class HistoryDatabase;
-
 struct URLAndTitle {
   GURL url;
-  base::string16 title;
+  std::u16string title;
 };
 
 class HistoryBackendClient {
@@ -45,19 +33,6 @@ class HistoryBackendClient {
   // Returns whether |url| should be considered web-safe (see
   // content::ChildProcessSecurityPolicy).
   virtual bool IsWebSafe(const GURL& url) = 0;
-
-#if defined(OS_ANDROID)
-  // Called upon initialization of the HistoryBackend.
-  virtual void OnHistoryBackendInitialized(
-      HistoryBackend* history_backend,
-      HistoryDatabase* history_database,
-      favicon::FaviconDatabase* favicon_database,
-      const base::FilePath& history_dir) = 0;
-
-  // Called upon destruction of the HistoryBackend.
-  virtual void OnHistoryBackendDestroyed(HistoryBackend* history_backend,
-                                         const base::FilePath& history_dir) = 0;
-#endif  // defined(OS_ANDROID)
 
  private:
   DISALLOW_COPY_AND_ASSIGN(HistoryBackendClient);

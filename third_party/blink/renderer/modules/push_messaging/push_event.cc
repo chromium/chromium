@@ -24,7 +24,7 @@ PushEvent::PushEvent(const AtomicString& type,
     if (message_data.IsArrayBuffer() || message_data.IsArrayBufferView()) {
       DOMArrayBuffer* buffer =
           message_data.IsArrayBufferView()
-              ? message_data.GetAsArrayBufferView().View()->buffer()
+              ? message_data.GetAsArrayBufferView()->buffer()
               : message_data.GetAsArrayBuffer();
       if (!base::CheckedNumeric<uint32_t>(buffer->ByteLength()).IsValid()) {
         exception_state.ThrowRangeError(

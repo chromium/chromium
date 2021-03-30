@@ -9,7 +9,7 @@
 
 #include "base/containers/span.h"
 #include "base/macros.h"
-#include "base/memory/aligned_memory.h"
+#include "base/memory/nonscannable_memory.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
@@ -58,7 +58,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
   struct Message;
 
   using MessagePtr = std::unique_ptr<Message>;
-  using AlignedBuffer = std::unique_ptr<char, base::AlignedFreeDeleter>;
+  using AlignedBuffer = std::unique_ptr<char, base::NonScannableDeleter>;
 
   // A message to be written to a channel.
   struct MOJO_SYSTEM_IMPL_EXPORT Message {
@@ -76,6 +76,16 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
 #endif
       // A normal message that uses Header and can contain extra header values.
       NORMAL,
+
+      // The UPGRADE_OFFER control message offers to upgrade the channel to
+      // another side who has advertised support for an upgraded channel.
+      UPGRADE_OFFER,
+      // The UPGRADE_ACCEPT control message is returned when an upgrade offer is
+      // accepted.
+      UPGRADE_ACCEPT,
+      // The UPGRADE_REJECT control message is returned when the receiver cannot
+      // or chooses not to upgrade the channel.
+      UPGRADE_REJECT,
     };
 
 #pragma pack(push, 1)
@@ -281,7 +291,15 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
 #if defined(OS_POSIX) && !defined(OS_NACL) && !defined(OS_MAC)
   // At this point only ChannelPosix needs InitFeatures.
   static void set_posix_use_writev(bool use_writev);
-#endif
+#endif  // defined(OS_POSIX) && !defined(OS_NACL) && !defined(OS_MAC)
+
+  // SupportsChannelUpgrade will return true if this channel is capable of being
+  // upgraded.
+  static bool SupportsChannelUpgrade();
+
+  // OfferChannelUpgrade will inform this channel that it should offer an
+  // upgrade to the remote.
+  void OfferChannelUpgrade();
 
   // Allows the caller to change the Channel's HandlePolicy after construction.
   void set_handle_policy(HandlePolicy policy) { handle_policy_ = policy; }
@@ -327,6 +345,9 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
   virtual ~Channel();
 
   Delegate* delegate() const { return delegate_; }
+
+  // Allows the caller to determine the current HandlePolicy.
+  HandlePolicy handle_policy() const { return handle_policy_; }
 
   // Called by the implementation when it wants somewhere to stick data.
   // |*buffer_capacity| may be set by the caller to indicate the desired buffer

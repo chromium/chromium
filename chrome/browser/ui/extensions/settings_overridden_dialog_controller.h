@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_UI_EXTENSIONS_SETTINGS_OVERRIDDEN_DIALOG_CONTROLLER_H_
 #define CHROME_BROWSER_UI_EXTENSIONS_SETTINGS_OVERRIDDEN_DIALOG_CONTROLLER_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 
 namespace gfx {
 struct VectorIcon;
@@ -18,8 +19,8 @@ class SettingsOverriddenDialogController {
  public:
   // A struct describing the contents to be displayed in the dialog.
   struct ShowParams {
-    base::string16 dialog_title;
-    base::string16 message;
+    std::u16string dialog_title;
+    std::u16string message;
 
     // The icon to display, if any. If non-null, the VectorIcon should have
     // all its colors fully specified; otherwise a placehold grey color will

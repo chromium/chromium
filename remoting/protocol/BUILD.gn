@@ -209,6 +209,8 @@ static_library("protocol") {
     "webrtc_transport.h",
     "webrtc_video_renderer_adapter.cc",
     "webrtc_video_renderer_adapter.h",
+    "webrtc_video_track_source.cc",
+    "webrtc_video_track_source.h",
   ]
 
   configs += [
@@ -225,12 +227,15 @@ static_library("protocol") {
     "//base",
     "//build:chromeos_buildflags",
     "//crypto",
+    "//google_apis:google_apis",
     "//jingle:jingle_glue",
+    "//jingle:webrtc_glue",
     "//net",
     "//remoting/base",
     "//remoting/codec:decoder",
     "//remoting/proto/remoting/v1:network_traversal_proto",
     "//remoting/signaling",
+    "//services/network/public/cpp:cpp",
     "//third_party/boringssl",
     "//third_party/libyuv",
     "//third_party/webrtc_overrides:webrtc_component",
@@ -316,6 +321,18 @@ static_library("test_support") {
     ":protocol",
     "//testing/gmock",
   ]
+
+  deps = [
+    "//base:base",
+    "//net:net",
+    "//net/traffic_annotation:test_support",
+    "//net/traffic_annotation:traffic_annotation",
+    "//remoting/base:base",
+    "//remoting/codec:encoder",
+    "//remoting/signaling:signaling",
+    "//testing/gtest:gtest",
+    "//third_party/libjingle_xmpp:rtc_xmllite",
+  ]
 }
 
 source_set("unit_tests") {
@@ -376,9 +393,17 @@ source_set("unit_tests") {
 
   deps = [
     ":test_support",
+    "//jingle:webrtc_glue",
     "//net:test_support",
+    "//remoting/base:base",
+    "//remoting/base:test_support",
+    "//remoting/codec:encoder",
     "//remoting/proto/remoting/v1:network_traversal_proto",
+    "//remoting/signaling:test_support",
+    "//services/network/public/cpp:cpp",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/libjingle_xmpp:rtc_xmllite",
+    "//third_party/libjingle_xmpp:rtc_xmpp",
   ]
 }

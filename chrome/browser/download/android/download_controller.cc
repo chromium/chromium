@@ -32,6 +32,8 @@
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/offline_pages/android/offline_page_bridge.h"
 #include "chrome/browser/permissions/permission_update_infobar_delegate_android.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/grit/chromium_strings.h"
 #include "components/download/content/public/context_menu_download.h"
@@ -199,14 +201,25 @@ void DownloadController::RecordStoragePermission(StoragePermissionType type) {
 
 // static
 void DownloadController::CloseTabIfEmpty(content::WebContents* web_contents) {
-  if (!web_contents)
+  if (!web_contents || !web_contents->GetController().IsInitialNavigation())
     return;
 
-  TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
-  if (tab && !tab->GetJavaObject().is_null()) {
-    JNIEnv* env = base::android::AttachCurrentThread();
-    Java_DownloadController_closeTabIfBlank(env, tab->GetJavaObject());
+  TabModel* tab_model = TabModelList::GetTabModelForWebContents(web_contents);
+  if (!tab_model || tab_model->GetTabCount() == 1)
+    return;
+
+  int tab_index = -1;
+  for (int index = 0; index < tab_model->GetTabCount(); ++index) {
+    if (web_contents == tab_model->GetWebContentsAt(index)) {
+      tab_index = index;
+      break;
+    }
   }
+
+  if (tab_index == -1)
+    return;
+
+  tab_model->CloseTabAt(tab_index);
 }
 
 // static
@@ -301,7 +314,7 @@ void DownloadController::StartAndroidDownloadInternal(
     return;
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::string16 file_name =
+  std::u16string file_name =
       net::GetSuggestedFilename(info.url, info.content_disposition,
                                 std::string(),  // referrer_charset
                                 std::string(),  // suggested_name

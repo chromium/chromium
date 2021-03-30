@@ -1,0 +1,15 @@
+Verifies that the sourcePort field will be handled correctly.
+
+sourcePort_Specified: 1234
+sourcePort_Unspecified: 443
+sourcePort_Specified_Url_Specified_Match: 1234
+sourcePort_Unspecified_Url_Specified: 443
+{
+    error : {
+        code : -32602
+        message : Invalid cookie fields
+    }
+    id : <number>
+    sessionId : <string>
+}
+

@@ -10,7 +10,6 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/mixer.h"
@@ -38,7 +37,7 @@ class TestSearchResult : public ChromeSearchResult {
 
     switch (type) {
       case ResultType::kFileChip:
-      case ResultType::kDriveQuickAccessChip:
+      case ResultType::kDriveChip:
         SetDisplayType(DisplayType::kChip);
         break;
       case ResultType::kInstalledApp:
@@ -182,9 +181,8 @@ TEST_F(ChipRankerTest, DefaultInitialization) {
   Mixer::SortedResults results = MakeSearchResults(
       {"app1", "app2", "app3", "drive1", "drive2", "local1", "local2"},
       {ResultType::kInstalledApp, ResultType::kInstalledApp,
-       ResultType::kInstalledApp, ResultType::kDriveQuickAccessChip,
-       ResultType::kDriveQuickAccessChip, ResultType::kFileChip,
-       ResultType::kFileChip},
+       ResultType::kInstalledApp, ResultType::kDriveChip,
+       ResultType::kDriveChip, ResultType::kFileChip, ResultType::kFileChip},
       {8.9, 8.7, 8.5, 0.9, 0.7, 0.8, 0.6});
   ranker_->Rank(&results);
 

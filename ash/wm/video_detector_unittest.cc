@@ -9,6 +9,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_window_builder.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "base/compiler_specific.h"
@@ -54,7 +55,7 @@ class TestObserver : public VideoDetector::Observer {
 
 class VideoDetectorTest : public AshTestBase {
  public:
-  VideoDetectorTest() : next_window_id_(1000) {}
+  VideoDetectorTest() = default;
   ~VideoDetectorTest() override = default;
 
   void SetUp() override {
@@ -72,15 +73,15 @@ class VideoDetectorTest : public AshTestBase {
  protected:
   // Creates and returns a new window with |bounds|.
   std::unique_ptr<aura::Window> CreateTestWindow(const gfx::Rect& bounds) {
-    return std::unique_ptr<aura::Window>(
-        CreateTestWindowInShell(SK_ColorRED, next_window_id_++, bounds));
+    return TestWindowBuilder()
+        .SetColorWindowDelegate(SK_ColorRED)
+        .SetBounds(bounds)
+        .AllowAllWindowStates()
+        .Build();
   }
 
   VideoDetector* detector_;  // not owned
   std::unique_ptr<TestObserver> observer_;
-
-  // Next ID to be assigned by CreateTestWindow().
-  int next_window_id_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(VideoDetectorTest);

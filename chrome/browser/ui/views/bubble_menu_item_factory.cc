@@ -33,7 +33,7 @@ void ConfigureBubbleMenuItem(views::Button* button, int button_id) {
 
 std::unique_ptr<views::LabelButton> CreateBubbleMenuItem(
     int button_id,
-    const base::string16& name,
+    const std::u16string& name,
     views::Button::PressedCallback callback) {
   auto button = std::make_unique<views::LabelButton>(
       callback, name, views::style::CONTEXT_BUTTON);

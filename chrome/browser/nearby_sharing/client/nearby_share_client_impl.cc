@@ -14,8 +14,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_api_call_flow_impl.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_http_notifier.h"
-#include "chrome/browser/nearby_sharing/client/nearby_share_switches.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_http_result.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_switches.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/proto/certificate_rpc.pb.h"
 #include "chrome/browser/nearby_sharing/proto/contact_rpc.pb.h"
@@ -305,7 +305,7 @@ void NearbyShareClientImpl::MakeApiCall(
               weak_ptr_factory_.GetWeakPtr(), request_type, serialized_request,
               request_as_query_parameters, std::move(response_callback)),
           signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
-          signin::ConsentLevel::kNotRequired);
+          signin::ConsentLevel::kSignin);
 }
 
 template <class ResponseProto>

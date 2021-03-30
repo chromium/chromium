@@ -73,7 +73,7 @@ void ExecutionContextCSPDelegate::SetSandboxFlags(
 }
 
 void ExecutionContextCSPDelegate::SetRequireTrustedTypes() {
-  GetSecurityContext().SetRequireTrustedTypes();
+  execution_context_->SetRequireTrustedTypes();
 }
 
 void ExecutionContextCSPDelegate::AddInsecureRequestPolicy(
@@ -128,6 +128,7 @@ base::Optional<uint16_t> ExecutionContextCSPDelegate::GetStatusCode() {
 
   // TODO(mkwst): We only have status code information for Documents. It would
   // be nice to get them for Workers as well.
+  // TODO(crbug.com/1153336) Use network::IsUrlPotentiallyTrustworthy().
   Document* document = GetDocument();
   if (document && !SecurityOrigin::IsSecure(document->Url()) &&
       document->Loader()) {
@@ -185,8 +186,11 @@ void ExecutionContextCSPDelegate::PostViolationReport(
   // Construct and route the report to the ReportingContext, to be observed
   // by any ReportingObservers.
   auto* body = MakeGarbageCollected<CSPViolationReportBody>(violation_data);
+  String url_sending_report = is_frame_ancestors_violation
+                                  ? violation_data.documentURI()
+                                  : Url().GetString();
   Report* observed_report = MakeGarbageCollected<Report>(
-      ReportType::kCSPViolation, Url().GetString(), body);
+      ReportType::kCSPViolation, url_sending_report, body);
   ReportingContext::From(execution_context_.Get())
       ->QueueReport(observed_report,
                     use_reporting_api ? report_endpoints : Vector<String>());
@@ -265,9 +269,6 @@ void ExecutionContextCSPDelegate::DidAddContentSecurityPolicies(
       }
     }
   }
-
-  frame->GetLocalFrameHostRemote().DidAddContentSecurityPolicies(
-      std::move(policies));
 }
 
 SecurityContext& ExecutionContextCSPDelegate::GetSecurityContext() {

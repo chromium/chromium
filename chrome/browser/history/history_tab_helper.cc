@@ -4,25 +4,24 @@
 
 #include "chrome/browser/history/history_tab_helper.h"
 
-#include <algorithm>
-#include <utility>
+#include <string>
 
+#include "base/optional.h"
 #include "base/stl_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
+#include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
+#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/history/content/browser/history_context_helper.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_constants.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_delegate.h"
-#include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "ui/base/page_transition_types.h"
 
 #if defined(OS_ANDROID)
@@ -96,20 +95,18 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
                                                 page_transition);
   }
 
-  // In the future, this may encapsulate more conditions, e.g. page level
-  // opt-in, opt-out, etc.
-  bool floc_allowed =
-      navigation_handle->GetSocketAddress().address().IsPubliclyRoutable();
-
+  // Note: floc_allowed is set to false initially and is later updated by the
+  // floc eligibility observer. Eventually it will be removed from the history
+  // service API.
   history::HistoryAddPageArgs add_page_args(
       navigation_handle->GetURL(), timestamp,
       history::ContextIDForWebContents(web_contents()), nav_entry_id,
       navigation_handle->GetReferrer().url,
       navigation_handle->GetRedirectChain(), page_transition, hidden,
       history::SOURCE_BROWSED, navigation_handle->DidReplaceEntry(),
-      !content_suggestions_navigation, floc_allowed,
+      !content_suggestions_navigation, /*floc_allowed=*/false,
       navigation_handle->IsSameDocument()
-          ? base::Optional<base::string16>(
+          ? base::Optional<std::u16string>(
                 navigation_handle->GetWebContents()->GetTitle())
           : base::nullopt);
 
@@ -155,14 +152,14 @@ void HistoryTabHelper::DidFinishNavigation(
   if (navigation_handle->GetWebContents()->IsPortal())
     return;
 
-  // Prerenders should not update history. Prerenders will have their own
-  // WebContents with all observers (including |this|), and go through the
-  // normal flow of a navigation, including commit.
-  prerender::PrerenderManager* prerender_manager =
-      prerender::PrerenderManagerFactory::GetForBrowserContext(
+  // No-state prefetchers should not update history. The prefetchers will have
+  // their own WebContents with all observers (including |this|), and go through
+  // the normal flow of a navigation, including commit.
+  prerender::NoStatePrefetchManager* no_state_prefetch_manager =
+      prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
           web_contents()->GetBrowserContext());
-  if (prerender_manager &&
-      prerender_manager->IsWebContentsPrerendering(web_contents())) {
+  if (no_state_prefetch_manager &&
+      no_state_prefetch_manager->IsWebContentsPrerendering(web_contents())) {
     return;
   }
 
@@ -176,22 +173,16 @@ void HistoryTabHelper::DidFinishNavigation(
       web_contents()->GetLastCommittedURL(), last_committed->GetTimestamp(),
       last_committed->GetUniqueID(), navigation_handle);
 
-#if defined(OS_ANDROID)
-  auto* background_tab_manager = BackgroundTabManager::GetInstance();
-  if (background_tab_manager->IsBackgroundTab(web_contents())) {
-    // No history insertion is done for now since this is a tab that speculates
-    // future navigations. Just caching and returning for now.
-    background_tab_manager->CacheHistory(add_page_args);
+  if (!IsEligibleTab(add_page_args))
     return;
-  }
-#else
-  // Don't update history if this web contents isn't associated with a tab.
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
-  if (!browser)
-    return;
-#endif
 
   UpdateHistoryForNavigation(add_page_args);
+
+  if (HistoryClustersTabHelper* clusters_tab_helper =
+          HistoryClustersTabHelper::FromWebContents(web_contents())) {
+    clusters_tab_helper->DidUpdateHistoryForNavigation(navigation_handle,
+                                                       add_page_args);
+  }
 }
 
 // We update history upon the associated WebContents becoming the top level
@@ -285,6 +276,26 @@ void HistoryTabHelper::WebContentsDestroyed() {
     }
     hs->ClearCachedDataForContextID(context_id);
   }
+}
+
+bool HistoryTabHelper::IsEligibleTab(
+    const history::HistoryAddPageArgs& add_page_args) const {
+  if (force_eligibile_tab_for_testing_)
+    return true;
+
+#if defined(OS_ANDROID)
+  auto* background_tab_manager = BackgroundTabManager::GetInstance();
+  if (background_tab_manager->IsBackgroundTab(web_contents())) {
+    // No history insertion is done for now since this is a tab that speculates
+    // future navigations. Just caching and returning for now.
+    background_tab_manager->CacheHistory(add_page_args);
+    return false;
+  }
+  return true;
+#else
+  // Don't update history if this web contents isn't associated with a tab.
+  return chrome::FindBrowserWithWebContents(web_contents()) != nullptr;
+#endif
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(HistoryTabHelper)

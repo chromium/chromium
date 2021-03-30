@@ -39,7 +39,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/sequence_checker.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "skia/ext/image_operations.h"
@@ -49,6 +48,7 @@
 #include "ui/base/models/menu_model.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/display/manager/display_configurator.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -77,6 +77,9 @@ namespace ash {
 namespace {
 
 const char* kLoginShelfButtonClassName = "LoginShelfButton";
+
+// Skip only that many to avoid blocking users in case of any subtle bugs.
+const int kMaxDroppedCallsWhenDisplaysOff = 3;
 
 constexpr LoginShelfView::ButtonId kButtonIds[] = {
     LoginShelfView::kShutdown,
@@ -194,7 +197,8 @@ class LoginShelfButton : public views::LabelButton {
         text_resource_id_(text_resource_id),
         icon_(icon) {
     SetAccessibleName(GetText());
-    AshColorProvider::Get()->DecoratePillButton(this, &icon);
+    AshColorProvider* color_provider = AshColorProvider::Get();
+    color_provider->DecoratePillButton(this, &icon);
 
     SetFocusBehavior(FocusBehavior::ALWAYS);
     SetInstallFocusRingOnFocus(true);
@@ -204,10 +208,10 @@ class LoginShelfButton : public views::LabelButton {
     SetFocusPainter(nullptr);
     SetInkDropMode(InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
-    SetInkDropBaseColor(
-        DeprecatedGetInkDropBaseColor(kDefaultShelfInkDropColor));
-    SetInkDropVisibleOpacity(
-        DeprecatedGetInkDropOpacity(kDefaultShelfInkDropOpacity));
+    AshColorProvider::RippleAttributes ripple_attributes =
+        color_provider->GetRippleAttributes();
+    SetInkDropBaseColor(ripple_attributes.base_color);
+    SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
 
     // Layer rendering is required when the shelf background is visible, which
     // happens when the wallpaper is not blurred.
@@ -250,10 +254,10 @@ class LoginShelfButton : public views::LabelButton {
     return ink_drop;
   }
 
-  base::string16 GetTooltipText(const gfx::Point& p) const override {
+  std::u16string GetTooltipText(const gfx::Point& p) const override {
     if (label()->IsDisplayTextTruncated())
       return label()->GetText();
-    return base::string16();
+    return std::u16string();
   }
 
   void PaintDarkColors() {
@@ -315,10 +319,11 @@ class KioskAppsButton : public views::MenuButton,
     SetFocusPainter(nullptr);
     SetInkDropMode(InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
-    SetInkDropBaseColor(
-        DeprecatedGetInkDropBaseColor(kDefaultShelfInkDropColor));
-    SetInkDropVisibleOpacity(
-        DeprecatedGetInkDropOpacity(kDefaultShelfInkDropOpacity));
+
+    const AshColorProvider::RippleAttributes ripple_attributes =
+        AshColorProvider::Get()->GetRippleAttributes();
+    SetInkDropBaseColor(ripple_attributes.base_color);
+    SetInkDropVisibleOpacity(ripple_attributes.inkdrop_opacity);
 
     // Layer rendering is required when the shelf background is visible, which
     // happens when the wallpaper is not blurred.
@@ -483,6 +488,16 @@ class LoginShelfView::ScopedGuestButtonBlockerImpl
 
 LoginShelfView::TestUiUpdateDelegate::~TestUiUpdateDelegate() = default;
 
+void LoginShelfView::CallIfDisplayIsOn(const base::RepeatingClosure& closure) {
+  if (!Shell::Get()->display_configurator()->IsDisplayOn() &&
+      dropped_calls_when_displays_off_ < kMaxDroppedCallsWhenDisplaysOff) {
+    ++dropped_calls_when_displays_off_;
+    return;
+  }
+  dropped_calls_when_displays_off_ = 0;
+  closure.Run();
+}
+
 LoginShelfView::LoginShelfView(
     LockScreenActionBackgroundController* lock_screen_action_background)
     : lock_screen_action_background_(lock_screen_action_background) {
@@ -505,15 +520,21 @@ LoginShelfView::LoginShelfView(
       &LockStateController::RequestShutdown,
       base::Unretained(Shell::Get()->lock_state_controller()),
       ShutdownReason::LOGIN_SHUT_DOWN_BUTTON);
-  add_button(kShutdown, shutdown_restart_callback,
+  add_button(kShutdown,
+             base::BindRepeating(&LoginShelfView::CallIfDisplayIsOn,
+                                 weak_ptr_factory_.GetWeakPtr(),
+                                 shutdown_restart_callback),
              IDS_ASH_SHELF_SHUTDOWN_BUTTON, kShelfShutdownButtonIcon);
   add_button(kRestart, std::move(shutdown_restart_callback),
              IDS_ASH_SHELF_RESTART_BUTTON, kShelfShutdownButtonIcon);
   add_button(
-      kSignOut, base::BindRepeating([]() {
-        base::RecordAction(base::UserMetricsAction("ScreenLocker_Signout"));
-        Shell::Get()->session_controller()->RequestSignOut();
-      }),
+      kSignOut,
+      base::BindRepeating(
+          &LoginShelfView::CallIfDisplayIsOn, weak_ptr_factory_.GetWeakPtr(),
+          base::BindRepeating([]() {
+            base::RecordAction(base::UserMetricsAction("ScreenLocker_Signout"));
+            Shell::Get()->session_controller()->RequestSignOut();
+          })),
       IDS_ASH_SHELF_SIGN_OUT_BUTTON, kShelfSignOutButtonIcon);
   kiosk_apps_button_ = new KioskAppsButton();
   kiosk_apps_button_->SetID(kApps);
@@ -561,11 +582,12 @@ LoginShelfView::LoginShelfView(
                  ash::LoginAcceleratorAction::kStartEnrollment),
              IDS_ASH_ENTERPRISE_ENROLLMENT_BUTTON, chromeos::kEnterpriseIcon);
 
-  // Adds observers for states that affect the visiblity of different buttons.
-  tray_action_observer_.Add(Shell::Get()->tray_action());
-  shutdown_controller_observer_.Add(Shell::Get()->shutdown_controller());
-  lock_screen_action_background_observer_.Add(lock_screen_action_background);
-  login_data_dispatcher_observer_.Add(
+  // Adds observers for states that affect the visibility of different buttons.
+  tray_action_observation_.Observe(Shell::Get()->tray_action());
+  shutdown_controller_observation_.Observe(Shell::Get()->shutdown_controller());
+  lock_screen_action_background_observation_.Observe(
+      lock_screen_action_background);
+  login_data_dispatcher_observation_.Observe(
       Shell::Get()->login_screen_controller()->data_dispatcher());
   UpdateUi();
 }

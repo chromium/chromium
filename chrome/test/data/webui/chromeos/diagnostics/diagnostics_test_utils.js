@@ -83,14 +83,13 @@ export function getRunTestsButtonFromSection(element) {
 }
 
 /**
- * Helper function for getting the Show/Hide Tests Report button from a
- * routine-section.
+ * Helper function for getting the Stop Tests button from a routine-section.
  * @param {?RoutineSectionElement} element
  * @return {!CrButtonElement}
  */
-export function getToggleTestReportButtonFromSection(element) {
+export function getStopTestsButtonFromSection(element) {
   const button =
-      /** @type {!CrButtonElement} */ (element.$$('#toggleReportButton'));
+      /** @type {!CrButtonElement} */ (element.$$('#stopTestsButton'));
   assertTrue(!!button);
   return button;
 }
@@ -101,9 +100,9 @@ export function getToggleTestReportButtonFromSection(element) {
  * @param {?RoutineSectionElement} element
  * @return {!CrButtonElement}
  */
-export function getLearnMoreButtonFromSection(element) {
+export function getToggleTestReportButtonFromSection(element) {
   const button =
-      /** @type {!CrButtonElement} */ (element.$$('#learnMoreButton'));
+      /** @type {!CrButtonElement} */ (element.$$('#toggleReportButton'));
   assertTrue(!!button);
   return button;
 }

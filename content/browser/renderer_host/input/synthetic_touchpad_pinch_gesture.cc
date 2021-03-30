@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "content/browser/renderer_host/input/synthetic_touchpad_pinch_gesture.h"
+#include "content/common/input/input_injector.mojom.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 
 namespace content {
@@ -20,14 +21,16 @@ float Lerp(float start, float end, float progress) {
 SyntheticTouchpadPinchGesture::SyntheticTouchpadPinchGesture(
     const SyntheticPinchGestureParams& params)
     : params_(params),
-      gesture_source_type_(SyntheticGestureParams::DEFAULT_INPUT),
+      gesture_source_type_(content::mojom::GestureSourceType::kDefaultInput),
       state_(SETUP),
       current_scale_(1.0f) {
   DCHECK_GT(params_.scale_factor, 0.0f);
-  if (params_.gesture_source_type != SyntheticGestureParams::TOUCHPAD_INPUT) {
+  if (params_.gesture_source_type !=
+      content::mojom::GestureSourceType::kTouchpadInput) {
     DCHECK_EQ(params_.gesture_source_type,
-              SyntheticGestureParams::DEFAULT_INPUT);
-    params_.gesture_source_type = SyntheticGestureParams::TOUCHPAD_INPUT;
+              content::mojom::GestureSourceType::kDefaultInput);
+    params_.gesture_source_type =
+        content::mojom::GestureSourceType::kTouchpadInput;
   }
 }
 
@@ -38,15 +41,17 @@ SyntheticGesture::Result SyntheticTouchpadPinchGesture::ForwardInputEvents(
     SyntheticGestureTarget* target) {
   if (state_ == SETUP) {
     gesture_source_type_ = params_.gesture_source_type;
-    if (gesture_source_type_ == SyntheticGestureParams::DEFAULT_INPUT)
+    if (gesture_source_type_ ==
+        content::mojom::GestureSourceType::kDefaultInput)
       gesture_source_type_ = target->GetDefaultSyntheticGestureSourceType();
 
     state_ = STARTED;
     start_time_ = timestamp;
   }
 
-  DCHECK_NE(gesture_source_type_, SyntheticGestureParams::DEFAULT_INPUT);
-  if (gesture_source_type_ == SyntheticGestureParams::MOUSE_INPUT) {
+  DCHECK_NE(gesture_source_type_,
+            content::mojom::GestureSourceType::kDefaultInput);
+  if (gesture_source_type_ == content::mojom::GestureSourceType::kMouseInput) {
     ForwardGestureEvents(timestamp, target);
   } else {
     // Touch input should be using SyntheticTouchscreenPinchGesture.

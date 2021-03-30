@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -197,10 +198,11 @@ TEST_F(ProtobufHttpClientTest, SendRequestAndDecodeResponse) {
   ASSERT_TRUE(pending_request->request.headers.GetHeader(
       kAuthorizationHeaderKey, &auth_header));
   ASSERT_EQ(kFakeAccessTokenHeaderValue, auth_header);
-  auto& data_element =
+  const auto& data_element =
       pending_request->request.request_body->elements()->front();
-  std::string request_body_data =
-      std::string(data_element.bytes(), data_element.length());
+  ASSERT_EQ(data_element.type(), network::DataElement::Tag::kBytes);
+  std::string request_body_data(
+      data_element.As<network::DataElementBytes>().AsStringPiece());
   EchoRequest request_message;
   ASSERT_TRUE(request_message.ParseFromString(request_body_data));
   ASSERT_EQ(kRequestText, request_message.text());

@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/wake_lock/wake_lock.h"
 
-#include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -69,14 +69,6 @@ ScriptPromise WakeLock::request(ScriptState* script_state,
   auto* context = ExecutionContext::From(script_state);
   DCHECK(context->IsWindow() || context->IsDedicatedWorkerGlobalScope());
 
-  if (type == "screen" &&
-      !RuntimeEnabledFeatures::ScreenWakeLockEnabled(context)) {
-    exception_state.ThrowTypeError(
-        "The provided value 'screen' is not a valid enum value of type "
-        "WakeLockType.");
-    return ScriptPromise();
-  }
-
   if (type == "system" && !RuntimeEnabledFeatures::SystemWakeLockEnabled()) {
     exception_state.ThrowTypeError(
         "The provided value 'system' is not a valid enum value of type "
@@ -87,15 +79,15 @@ ScriptPromise WakeLock::request(ScriptState* script_state,
   // 2.1 If type is 'screen' and the document is not allowed to use the
   //     policy-controlled feature named "screen-wake-lock", reject promise with
   //     a "NotAllowedError" DOMException and return promise.
-  // [N.B. Per https://github.com/w3c/webappsec-feature-policy/issues/207 there
-  // is no official support for workers in the Feature Policy spec, but we can
-  // perform FP checks in workers in Blink]
+  // [N.B. Per https://github.com/w3c/webappsec-permissions-policy/issues/207
+  // there is no official support for workers in the Permissions Policy spec,
+  // but we can perform FP checks in workers in Blink]
   // 2.2. If the user agent denies the wake lock of this type for document,
   //      reject promise with a "NotAllowedError" DOMException and return
   //      promise.
   if (type == "screen" &&
       !context->IsFeatureEnabled(
-          mojom::blink::FeaturePolicyFeature::kScreenWakeLock,
+          mojom::blink::PermissionsPolicyFeature::kScreenWakeLock,
           ReportOptions::kReportOnFailure)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                       "Access to Screen Wake Lock features is "
@@ -103,7 +95,7 @@ ScriptPromise WakeLock::request(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  // TODO: Check feature policy enabling for System Wake Lock
+  // TODO: Check permissions policy enabling for System Wake Lock
 
   if (context->IsDedicatedWorkerGlobalScope()) {
     // 3. If the current global object is the DedicatedWorkerGlobalScope object:
@@ -278,7 +270,7 @@ PermissionService* WakeLock::GetPermissionService() {
     ConnectToPermissionService(
         GetExecutionContext(),
         permission_service_.BindNewPipeAndPassReceiver(
-            GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+            GetExecutionContext()->GetTaskRunner(TaskType::kWakeLock)));
   }
   return permission_service_.get();
 }

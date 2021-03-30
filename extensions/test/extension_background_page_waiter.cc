@@ -4,7 +4,7 @@
 
 #include "extensions/test/extension_background_page_waiter.h"
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_host.h"
@@ -78,13 +78,13 @@ void ExtensionBackgroundPageWaiter::Wait() {
 }
 
 void ExtensionBackgroundPageWaiter::WaitForExtensionHostCreation() {
-  process_manager_observer_.Add(ProcessManager::Get(browser_context_));
+  process_manager_observation_.Observe(ProcessManager::Get(browser_context_));
   host_created_run_loop_.Run();
 }
 
 void ExtensionBackgroundPageWaiter::WaitForExtensionHostReady(
     ExtensionHost* host) {
-  extension_host_observer_.Add(host);
+  extension_host_observation_.Observe(host);
   host_ready_run_loop_.Run();
 }
 
@@ -95,7 +95,7 @@ void ExtensionBackgroundPageWaiter::OnBackgroundHostCreated(
     return;
   }
 
-  process_manager_observer_.RemoveAll();
+  process_manager_observation_.Reset();
   host_created_run_loop_.QuitWhenIdle();
 }
 
@@ -103,7 +103,7 @@ void ExtensionBackgroundPageWaiter::OnExtensionHostDidStopFirstLoad(
     const ExtensionHost* host) {
   ASSERT_EQ(extension_->id(), host->extension_id());
   ASSERT_TRUE(host->has_loaded_once());
-  extension_host_observer_.RemoveAll();
+  extension_host_observation_.Reset();
   host_ready_run_loop_.QuitWhenIdle();
 }
 
@@ -115,8 +115,8 @@ void ExtensionBackgroundPageWaiter::OnExtensionHostDestroyed(
   ASSERT_EQ(extension_->id(), host->extension_id());
   ADD_FAILURE() << "Extension host for " << extension_->name()
                 << "was destroyed before it finished loading.";
-  ASSERT_TRUE(extension_host_observer_.IsObserving(host));
-  extension_host_observer_.Remove(host);
+  ASSERT_TRUE(extension_host_observation_.IsObservingSource(host));
+  extension_host_observation_.Reset();
 }
 
 }  // namespace extensions

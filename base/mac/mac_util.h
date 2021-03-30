@@ -51,8 +51,20 @@ BASE_EXPORT bool CheckLoginItemStatus(bool* is_hidden);
 // specified hide flag.
 BASE_EXPORT void AddToLoginItems(bool hide_on_startup);
 
+// Adds the specified application to the set of Login Items with specified
+// "hide" flag. This has the same effect as adding/removing the application in
+// SystemPreferences->Accounts->LoginItems or marking Application in the Dock
+// as "Options->Open on Login".
+// Does nothing if the application is already set up as Login Item with
+// specified hide flag.
+BASE_EXPORT void AddToLoginItems(const FilePath& app_bundle_file_path,
+                                 bool hide_on_startup);
+
 // Removes the current application from the list Of Login Items.
 BASE_EXPORT void RemoveFromLoginItems();
+
+// Removes the specified application from the list Of Login Items.
+BASE_EXPORT void RemoveFromLoginItems(const FilePath& app_bundle_file_path);
 
 // Returns true if the current process was automatically launched as a
 // 'Login Item' or via Lion's Resume. Used to suppress opening windows.

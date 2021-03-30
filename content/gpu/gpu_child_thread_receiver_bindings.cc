@@ -11,7 +11,7 @@
 #include "build/chromeos_buildflags.h"
 #include "media/mojo/buildflags.h"
 
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING) || !BUILDFLAG(IS_ASH)
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING) || !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "services/shape_detection/public/mojom/shape_detection_service.mojom.h"  // nogncheck
 #include "services/shape_detection/shape_detection_service.h"  // nogncheck
 #endif
@@ -30,7 +30,7 @@ void GpuChildThread::BindServiceInterface(
     return;
   }
 
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING) || !BUILDFLAG(IS_ASH)
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING) || !BUILDFLAG(IS_CHROMEOS_ASH)
   if (auto shape_detection_receiver =
           receiver.As<shape_detection::mojom::ShapeDetectionService>()) {
     static base::NoDestructor<shape_detection::ShapeDetectionService> service{

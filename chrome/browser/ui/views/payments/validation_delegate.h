@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAYMENTS_VALIDATION_DELEGATE_H_
 #define CHROME_BROWSER_UI_VIEWS_PAYMENTS_VALIDATION_DELEGATE_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 
 namespace views {
 class Textfield;
@@ -21,13 +22,13 @@ class ValidationDelegate {
   virtual ~ValidationDelegate();
 
   virtual bool ShouldFormat();
-  virtual base::string16 Format(const base::string16& text);
+  virtual std::u16string Format(const std::u16string& text);
 
   // Only the delegate knows how to validate the input fields.
   virtual bool IsValidTextfield(views::Textfield* textfield,
-                                base::string16* error_message) = 0;
+                                std::u16string* error_message) = 0;
   virtual bool IsValidCombobox(ValidatingCombobox* combobox,
-                               base::string16* error_message) = 0;
+                               std::u16string* error_message) = 0;
 
   // Notifications to let delegate react to input field changes and also let
   // caller know if the new values are valid. |was_blurred| indicates if the

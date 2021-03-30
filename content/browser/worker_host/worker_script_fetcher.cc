@@ -68,6 +68,7 @@ WorkerScriptFetcher::WorkerScriptFetcher(
     std::unique_ptr<network::ResourceRequest> resource_request,
     CreateAndStartCallback callback)
     : script_loader_factory_(std::move(script_loader_factory)),
+      request_id_(GlobalRequestID::MakeBrowserInitiated().request_id),
       resource_request_(std::move(resource_request)),
       callback_(std::move(callback)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -85,16 +86,15 @@ void WorkerScriptFetcher::Start(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           script_loader_factory_.get());
 
-  // SharedWorker doesn't have a frame.
-  // TODO(nhiroki): Make the caller pass the frame id to support dedicated
-  // workers (https://crbug.com/906991).
-  int32_t routing_id = MSG_ROUTING_NONE;
-
   url_loader_ = blink::ThrottlingURLLoader::CreateLoaderAndStart(
-      std::move(shared_url_loader_factory), std::move(throttles), routing_id,
-      GlobalRequestID::MakeBrowserInitiated().request_id,
+      std::move(shared_url_loader_factory), std::move(throttles), request_id_,
       network::mojom::kURLLoadOptionNone, resource_request_.get(), this,
       kWorkerScriptLoadTrafficAnnotation, base::ThreadTaskRunnerHandle::Get());
+}
+
+void WorkerScriptFetcher::OnReceiveEarlyHints(
+    network::mojom::EarlyHintsPtr early_hints) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
 void WorkerScriptFetcher::OnReceiveResponse(
@@ -130,8 +130,7 @@ void WorkerScriptFetcher::OnStartLoadingResponseBody(
 
   blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params =
       blink::mojom::WorkerMainScriptLoadParams::New();
-
-  // Fill in params for loading worker's main script and subresources.
+  main_script_load_params->request_id = request_id_;
   main_script_load_params->response_head = std::move(response_head_);
   main_script_load_params->response_body = std::move(response_body);
   if (url_loader_) {

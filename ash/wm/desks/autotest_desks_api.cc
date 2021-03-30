@@ -39,6 +39,7 @@ class DeskAnimationObserver : public DesksController::Observer {
   // DesksController::Observer:
   void OnDeskAdded(const Desk* desk) override {}
   void OnDeskRemoved(const Desk* desk) override {}
+  void OnDeskReordered(int old_index, int new_index) override {}
   void OnDeskActivationChanged(const Desk* activated,
                                const Desk* deactivated) override {}
   void OnDeskSwitchAnimationLaunching() override {}
@@ -102,6 +103,7 @@ class ChainedDeskAnimationObserver : public ui::LayerAnimationObserver,
   // DesksController::Observer:
   void OnDeskAdded(const Desk* desk) override {}
   void OnDeskRemoved(const Desk* desk) override {}
+  void OnDeskReordered(int old_index, int new_index) override {}
   void OnDeskActivationChanged(const Desk* activated,
                                const Desk* deactivated) override {
     // The first activation changed happens when the initial ending screenshot
@@ -199,6 +201,12 @@ bool AutotestDesksApi::ActivateAdjacentDesksToTargetIndex(
       going_left, DesksSwitchSource::kDeskSwitchShortcut);
   DCHECK(activated);
   return true;
+}
+
+bool AutotestDesksApi::IsWindowInDesk(aura::Window* window, int desk_index) {
+  aura::Window* desk_container = DesksController::Get()->GetDeskContainer(
+      window->GetRootWindow(), desk_index);
+  return desk_container->Contains(window);
 }
 
 }  // namespace ash

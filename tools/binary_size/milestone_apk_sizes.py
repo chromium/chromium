@@ -94,10 +94,14 @@ class _Artifact(object):
     metrics[self.name + ' (method count)'] = self._resource_sizes_json[
         'charts']['Dex']['unique methods']['value']
 
-  def AddDfmSizes(self, metrics):
+  def AddDfmSizes(self, metrics, base_name):
     for k, v in sorted(self._resource_sizes_json['charts'].items()):
-      if k.startswith('DFM_') and k != 'DFM_base':
-        metrics['DFM: ' + k[4:]] = v['Size with hindi']['value']
+      if k.startswith('DFM_') and k != 'DFM_test_dummy':
+        if k == 'DFM_base':
+          name = 'base ({})'.format(base_name)
+        else:
+          name = k[4:]
+        metrics['DFM: ' + name] = v['Size with hindi']['value']
 
   def PrintLibraryCompression(self):
     with zipfile.ZipFile(self._path) as z:
@@ -196,7 +200,8 @@ def _DownloadAndAnalyze(signed_prefix, unsigned_prefix, staging_dir):
   _DumpCsv(metrics)
   metrics = collections.OrderedDict()
 
-  trichrome_chrome.AddDfmSizes(metrics)
+  trichrome_chrome.AddDfmSizes(metrics, 'Chrome')
+  trichrome_webview.AddDfmSizes(metrics, 'WebView')
   _DumpCsv(metrics)
 
 

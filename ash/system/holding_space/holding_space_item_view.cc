@@ -8,10 +8,11 @@
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
-#include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/shelf_config.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_view_delegate.h"
+#include "ash/system/holding_space/holding_space_util.h"
 #include "base/bind.h"
 #include "ui/base/class_property.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -19,10 +20,9 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
-#include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/painter.h"
 #include "ui/views/style/platform_style.h"
@@ -37,6 +37,9 @@ namespace {
 // `HoldingSpaceItemView`. Class name is not an adequate identifier as it may be
 // overridden by subclasses.
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsHoldingSpaceItemViewProperty, false)
+
+// Appearance.
+constexpr size_t kCheckmarkBackgroundSize = 18;
 
 // Helpers ---------------------------------------------------------------------
 
@@ -95,7 +98,7 @@ HoldingSpaceItemView::HoldingSpaceItemView(
 
   // Accessibility.
   GetViewAccessibility().OverrideName(item->text());
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kButton);
+  GetViewAccessibility().OverrideRole(ax::mojom::Role::kListItem);
 
   // Background.
   SetBackground(views::CreateRoundedRectBackground(
@@ -120,25 +123,19 @@ HoldingSpaceItemView::HoldingSpaceItemView(
           &HoldingSpaceItemView::OnPaintSelect, base::Unretained(this)));
   layer()->Add(selected_layer_owner_->layer());
 
-  // Ink drop.
-  // Note that `ink_drop_container_` is added to the view hierarchy to parent
-  // any created ink drop layers. This will allow ink drop layers to animate
-  // in/out with the layer for this view as well as fix a crash in which ink
-  // drop layers were attempted to be reordered during destruction of this view.
-  ink_drop_container_ =
-      AddChildView(std::make_unique<views::InkDropContainerView>());
-  SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
-  SetInkDropVisibleOpacity(
-      AshColorProvider::Get()->GetRippleAttributes().inkdrop_opacity);
-
-  // Ink drop layers should match the corner radius of this view.
-  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
-                                                kHoldingSpaceCornerRadius);
+  // This view's `selected_` state is represented differently depending on
+  // `delegate_`'s selection UI. Register to be notified of changes.
+  selection_ui_changed_subscription_ =
+      delegate_->AddSelectionUiChangedCallback(base::BindRepeating(
+          &HoldingSpaceItemView::OnSelectionUiChanged, base::Unretained(this)));
 
   delegate_->OnHoldingSpaceItemViewCreated(this);
 }
 
-HoldingSpaceItemView::~HoldingSpaceItemView() = default;
+HoldingSpaceItemView::~HoldingSpaceItemView() {
+  if (delegate_)
+    delegate_->OnHoldingSpaceItemViewDestroying(this);
+}
 
 // static
 HoldingSpaceItemView* HoldingSpaceItemView::Cast(views::View* view) {
@@ -151,34 +148,27 @@ bool HoldingSpaceItemView::IsInstance(views::View* view) {
   return view->GetProperty(kIsHoldingSpaceItemViewProperty);
 }
 
-void HoldingSpaceItemView::AddLayerBeneathView(ui::Layer* layer) {
-  ink_drop_container_->AddInkDropLayer(layer);
-}
-
-void HoldingSpaceItemView::RemoveLayerBeneathView(ui::Layer* layer) {
-  ink_drop_container_->RemoveInkDropLayer(layer);
-}
-
-SkColor HoldingSpaceItemView::GetInkDropBaseColor() const {
-  return AshColorProvider::Get()->GetRippleAttributes().base_color;
+void HoldingSpaceItemView::Reset() {
+  delegate_ = nullptr;
 }
 
 bool HoldingSpaceItemView::HandleAccessibleAction(
     const ui::AXActionData& action_data) {
-  return delegate_->OnHoldingSpaceItemViewAccessibleAction(this, action_data) ||
-         views::InkDropHostView::HandleAccessibleAction(action_data);
+  return (delegate_ && delegate_->OnHoldingSpaceItemViewAccessibleAction(
+                           this, action_data)) ||
+         views::View::HandleAccessibleAction(action_data);
 }
 
 void HoldingSpaceItemView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   gfx::Rect bounds = GetLocalBounds();
+
+  // Selection ring.
   selected_layer_owner_->layer()->SetBounds(bounds);
   InvalidateLayer(selected_layer_owner_->layer());
 
-  // The focus ring is painted just outside the bounds for this view.
-  const float kFocusInsets = kHoldingSpaceFocusInsets -
-                             (views::PlatformStyle::kFocusHaloThickness / 2.f);
-
-  bounds.Inset(gfx::Insets(kFocusInsets));
+  // Focus ring.
+  // NOTE: The focus ring is painted just outside the bounds for this view.
+  bounds.Inset(gfx::Insets(kHoldingSpaceFocusInsets));
   focused_layer_owner_->layer()->SetBounds(bounds);
   InvalidateLayer(focused_layer_owner_->layer());
 }
@@ -192,11 +182,12 @@ void HoldingSpaceItemView::OnBlur() {
 }
 
 void HoldingSpaceItemView::OnGestureEvent(ui::GestureEvent* event) {
-  delegate_->OnHoldingSpaceItemViewGestureEvent(this, *event);
+  if (delegate_ && delegate_->OnHoldingSpaceItemViewGestureEvent(this, *event))
+    event->SetHandled();
 }
 
 bool HoldingSpaceItemView::OnKeyPressed(const ui::KeyEvent& event) {
-  return delegate_->OnHoldingSpaceItemViewKeyPressed(this, event);
+  return delegate_ && delegate_->OnHoldingSpaceItemViewKeyPressed(this, event);
 }
 
 void HoldingSpaceItemView::OnMouseEvent(ui::MouseEvent* event) {
@@ -208,15 +199,32 @@ void HoldingSpaceItemView::OnMouseEvent(ui::MouseEvent* event) {
     default:
       break;
   }
-  views::InkDropHostView::OnMouseEvent(event);
+  views::View::OnMouseEvent(event);
 }
 
 bool HoldingSpaceItemView::OnMousePressed(const ui::MouseEvent& event) {
-  return delegate_->OnHoldingSpaceItemViewMousePressed(this, event);
+  return delegate_ &&
+         delegate_->OnHoldingSpaceItemViewMousePressed(this, event);
 }
 
 void HoldingSpaceItemView::OnMouseReleased(const ui::MouseEvent& event) {
-  delegate_->OnHoldingSpaceItemViewMouseReleased(this, event);
+  if (delegate_)
+    delegate_->OnHoldingSpaceItemViewMouseReleased(this, event);
+}
+
+void HoldingSpaceItemView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  AshColorProvider* const ash_color_provider = AshColorProvider::Get();
+
+  // Checkmark.
+  checkmark_->SetBackground(holding_space_util::CreateCircleBackground(
+      ash_color_provider->GetControlsLayerColor(
+          AshColorProvider::ControlsLayerType::kFocusRingColor),
+      kCheckmarkBackgroundSize));
+  checkmark_->SetImage(gfx::CreateVectorIcon(
+      kCheckIcon, kHoldingSpaceIconSize,
+      ash_color_provider->IsDarkModeEnabled() ? gfx::kGoogleGrey900
+                                              : SK_ColorWHITE));
 }
 
 void HoldingSpaceItemView::OnHoldingSpaceItemUpdated(
@@ -252,6 +260,19 @@ void HoldingSpaceItemView::SetSelected(bool selected) {
 
   selected_ = selected;
   InvalidateLayer(selected_layer_owner_->layer());
+
+  if (delegate_)
+    delegate_->OnHoldingSpaceItemViewSelectedChanged(this);
+
+  OnSelectionUiChanged();
+}
+
+views::ImageView* HoldingSpaceItemView::AddCheckmark(views::View* parent) {
+  DCHECK(!checkmark_);
+  checkmark_ = parent->AddChildView(std::make_unique<views::ImageView>());
+  checkmark_->SetID(kHoldingSpaceItemCheckmarkId);
+  checkmark_->SetVisible(selected());
+  return checkmark_;
 }
 
 views::ToggleImageButton* HoldingSpaceItemView::AddPin(views::View* parent) {
@@ -284,6 +305,14 @@ views::ToggleImageButton* HoldingSpaceItemView::AddPin(views::View* parent) {
   return pin_;
 }
 
+void HoldingSpaceItemView::OnSelectionUiChanged() {
+  const bool multiselect =
+      delegate_ && delegate_->selection_ui() ==
+                       HoldingSpaceItemViewDelegate::SelectionUi::kMultiSelect;
+
+  checkmark_->SetVisible(selected() && multiselect);
+}
+
 void HoldingSpaceItemView::OnPaintFocus(gfx::Canvas* canvas, gfx::Size size) {
   if (!HasFocus())
     return;
@@ -297,32 +326,23 @@ void HoldingSpaceItemView::OnPaintFocus(gfx::Canvas* canvas, gfx::Size size) {
 
   gfx::Rect bounds = gfx::Rect(size);
   bounds.Inset(gfx::Insets(flags.getStrokeWidth() / 2));
-  canvas->DrawRoundRect(bounds, kHoldingSpaceCornerRadius, flags);
+  canvas->DrawRoundRect(bounds, kHoldingSpaceFocusCornerRadius, flags);
 }
 
 void HoldingSpaceItemView::OnPaintSelect(gfx::Canvas* canvas, gfx::Size size) {
   if (!selected_)
     return;
 
-  const SkColor color = AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor);
-
-  const SkColor overlay_color =
-      SkColorSetA(color, kHoldingSpaceSelectedOverlayOpacity * 0xFF);
+  const SkColor color =
+      SkColorSetA(AshColorProvider::Get()->GetControlsLayerColor(
+                      AshColorProvider::ControlsLayerType::kFocusRingColor),
+                  kHoldingSpaceSelectedOverlayOpacity * 0xFF);
 
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setColor(overlay_color);
-
-  gfx::Rect bounds = gfx::Rect(size);
-  canvas->DrawRoundRect(bounds, kHoldingSpaceCornerRadius, flags);
-
   flags.setColor(color);
-  flags.setStrokeWidth(views::PlatformStyle::kFocusHaloThickness);
-  flags.setStyle(cc::PaintFlags::kStroke_Style);
 
-  bounds.Inset(gfx::Insets(flags.getStrokeWidth() / 2));
-  canvas->DrawRoundRect(bounds, kHoldingSpaceCornerRadius, flags);
+  canvas->DrawRoundRect(gfx::Rect(size), kHoldingSpaceCornerRadius, flags);
 }
 
 void HoldingSpaceItemView::OnPinPressed() {
@@ -344,7 +364,7 @@ void HoldingSpaceItemView::OnPinPressed() {
 void HoldingSpaceItemView::UpdatePin() {
   if (!IsMouseHovered()) {
     pin_->SetVisible(false);
-    OnPinVisiblityChanged(false);
+    OnPinVisibilityChanged(false);
     return;
   }
 
@@ -354,10 +374,10 @@ void HoldingSpaceItemView::UpdatePin() {
 
   pin_->SetToggled(!is_item_pinned);
   pin_->SetVisible(true);
-  OnPinVisiblityChanged(true);
+  OnPinVisibilityChanged(true);
 }
 
-BEGIN_METADATA(HoldingSpaceItemView, views::InkDropHostView)
+BEGIN_METADATA(HoldingSpaceItemView, views::View)
 END_METADATA
 
 }  // namespace ash

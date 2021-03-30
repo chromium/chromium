@@ -8,6 +8,7 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autofill_provider.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 namespace content {
 class WebContents;
@@ -113,6 +114,7 @@ class AutofillProviderAndroid : public AutofillProvider {
 
   int32_t id_;
   std::unique_ptr<FormDataAndroid> form_;
+  FieldGlobalId field_id_;
   base::WeakPtr<AutofillHandlerProxy> handler_;
   JavaObjectWeakGlobalRef java_ref_;
   content::WebContents* web_contents_;

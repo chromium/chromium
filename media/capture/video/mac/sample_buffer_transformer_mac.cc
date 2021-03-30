@@ -18,16 +18,7 @@ namespace media {
 const base::Feature kInCaptureConvertToNv12{"InCaptureConvertToNv12",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kInCaptureConvertToNv12WithPixelTransfer{
-    "InCaptureConvertToNv12WithPixelTransfer",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kInCaptureConvertToNv12WithLibyuv{
-    "InCaptureConvertToNv12WithLibyuv", base::FEATURE_DISABLED_BY_DEFAULT};
-
 namespace {
-
-constexpr size_t kDefaultBufferPoolSize = 10;
 
 // NV12 a.k.a. 420v
 constexpr OSType kPixelFormatNv12 =
@@ -443,11 +434,21 @@ void CopyNV12(const NV12Planes& source, const NV12Planes& destination) {
 }  // namespace
 
 // static
-std::unique_ptr<SampleBufferTransformer>
-SampleBufferTransformer::CreateIfAutoReconfigureEnabled() {
-  return IsAutoReconfigureEnabled()
-             ? std::make_unique<SampleBufferTransformer>()
-             : nullptr;
+const SampleBufferTransformer::Transformer
+    SampleBufferTransformer::kBestTransformerForPixelBufferToNv12Output =
+        SampleBufferTransformer::Transformer::kPixelBufferTransfer;
+
+// static
+SampleBufferTransformer::Transformer
+SampleBufferTransformer::GetBestTransformerForNv12Output(
+    CMSampleBufferRef sample_buffer) {
+  if (CVPixelBufferRef pixel_buffer =
+          CMSampleBufferGetImageBuffer(sample_buffer)) {
+    return kBestTransformerForPixelBufferToNv12Output;
+  }
+  // When we don't have a pixel buffer (e.g. it's MJPEG or we get a SW-backed
+  // byte buffer) only libyuv is able to perform the transform.
+  return Transformer::kLibyuv;
 }
 
 // static
@@ -455,19 +456,9 @@ std::unique_ptr<SampleBufferTransformer> SampleBufferTransformer::Create() {
   return std::make_unique<SampleBufferTransformer>();
 }
 
-// static
-bool SampleBufferTransformer::IsAutoReconfigureEnabled() {
-  return base::FeatureList::IsEnabled(kInCaptureConvertToNv12) ||
-         base::FeatureList::IsEnabled(
-             kInCaptureConvertToNv12WithPixelTransfer) ||
-         base::FeatureList::IsEnabled(kInCaptureConvertToNv12WithLibyuv);
-}
-
 SampleBufferTransformer::SampleBufferTransformer()
     : transformer_(Transformer::kNotConfigured),
-      destination_pixel_format_(0x0),
-      destination_width_(0),
-      destination_height_(0) {}
+      destination_pixel_format_(0x0) {}
 
 SampleBufferTransformer::~SampleBufferTransformer() {}
 
@@ -480,26 +471,14 @@ OSType SampleBufferTransformer::destination_pixel_format() const {
   return destination_pixel_format_;
 }
 
-size_t SampleBufferTransformer::destination_width() const {
-  return destination_width_;
-}
-
-size_t SampleBufferTransformer::destination_height() const {
-  return destination_height_;
-}
-
-base::ScopedCFTypeRef<CVPixelBufferRef>
-SampleBufferTransformer::AutoReconfigureAndTransform(
-    CMSampleBufferRef sample_buffer) {
-  AutoReconfigureBasedOnInputAndFeatureFlags(sample_buffer);
-  return Transform(sample_buffer);
+const gfx::Size& SampleBufferTransformer::destination_size() const {
+  return destination_size_;
 }
 
 void SampleBufferTransformer::Reconfigure(
     Transformer transformer,
     OSType destination_pixel_format,
-    size_t destination_width,
-    size_t destination_height,
+    const gfx::Size& destination_size,
     base::Optional<size_t> buffer_pool_size) {
   DCHECK(transformer != Transformer::kLibyuv ||
          destination_pixel_format == kPixelFormatI420 ||
@@ -507,18 +486,16 @@ void SampleBufferTransformer::Reconfigure(
       << "Destination format is unsupported when running libyuv";
   if (transformer_ == transformer &&
       destination_pixel_format_ == destination_pixel_format &&
-      destination_width_ == destination_width &&
-      destination_height_ == destination_height) {
+      destination_size_ == destination_size) {
     // Already configured as desired, abort.
     return;
   }
   transformer_ = transformer;
   destination_pixel_format_ = destination_pixel_format;
-  destination_width_ = destination_width;
-  destination_height_ = destination_height;
-  destination_pixel_buffer_pool_ =
-      PixelBufferPool::Create(destination_pixel_format_, destination_width_,
-                              destination_height_, buffer_pool_size);
+  destination_size_ = destination_size;
+  destination_pixel_buffer_pool_ = PixelBufferPool::Create(
+      destination_pixel_format_, destination_size_.width(),
+      destination_size_.height(), buffer_pool_size);
   if (transformer == Transformer::kPixelBufferTransfer) {
     pixel_buffer_transferer_ = std::make_unique<PixelBufferTransferer>();
   } else {
@@ -528,72 +505,52 @@ void SampleBufferTransformer::Reconfigure(
   intermediate_nv12_buffer_.resize(0);
 }
 
-void SampleBufferTransformer::AutoReconfigureBasedOnInputAndFeatureFlags(
-    CMSampleBufferRef sample_buffer) {
-  DCHECK(IsAutoReconfigureEnabled());
-  Transformer desired_transformer = Transformer::kNotConfigured;
-  size_t desired_width;
-  size_t desired_height;
-  if (CVPixelBufferRef pixel_buffer =
-          CMSampleBufferGetImageBuffer(sample_buffer)) {
-    // We have a pixel buffer.
-    if (base::FeatureList::IsEnabled(kInCaptureConvertToNv12)) {
-      // Pixel transfers are believed to be more efficient for X -> NV12.
-      desired_transformer = Transformer::kPixelBufferTransfer;
-    }
-    desired_width = CVPixelBufferGetWidth(pixel_buffer);
-    desired_height = CVPixelBufferGetHeight(pixel_buffer);
-  } else {
-    // We don't have a pixel buffer. Reconfigure to be prepared for MJPEG.
-    if (base::FeatureList::IsEnabled(kInCaptureConvertToNv12)) {
-      // Only libyuv supports MJPEG -> NV12.
-      desired_transformer = Transformer::kLibyuv;
-    }
-    CMFormatDescriptionRef format_description =
-        CMSampleBufferGetFormatDescription(sample_buffer);
-    CMVideoDimensions dimensions =
-        CMVideoFormatDescriptionGetDimensions(format_description);
-    desired_width = dimensions.width;
-    desired_height = dimensions.height;
-  }
-  if (base::FeatureList::IsEnabled(kInCaptureConvertToNv12WithPixelTransfer)) {
-    desired_transformer = Transformer::kPixelBufferTransfer;
-  } else if (base::FeatureList::IsEnabled(kInCaptureConvertToNv12WithLibyuv)) {
-    desired_transformer = Transformer::kLibyuv;
-  }
-  Reconfigure(desired_transformer, kPixelFormatNv12, desired_width,
-              desired_height, kDefaultBufferPoolSize);
-}
-
 base::ScopedCFTypeRef<CVPixelBufferRef> SampleBufferTransformer::Transform(
-    CMSampleBufferRef sample_buffer) {
+    CVPixelBufferRef pixel_buffer) {
   DCHECK(transformer_ != Transformer::kNotConfigured);
-  CVPixelBufferRef source_pixel_buffer =
-      CMSampleBufferGetImageBuffer(sample_buffer);
+  DCHECK(pixel_buffer);
   // Fast path: If source and destination formats are identical, return the
   // source pixel buffer.
-  if (source_pixel_buffer &&
-      destination_width_ == CVPixelBufferGetWidth(source_pixel_buffer) &&
-      destination_height_ == CVPixelBufferGetHeight(source_pixel_buffer) &&
+  if (pixel_buffer &&
+      static_cast<size_t>(destination_size_.width()) ==
+          CVPixelBufferGetWidth(pixel_buffer) &&
+      static_cast<size_t>(destination_size_.height()) ==
+          CVPixelBufferGetHeight(pixel_buffer) &&
       destination_pixel_format_ ==
-          CVPixelBufferGetPixelFormatType(source_pixel_buffer) &&
-      CVPixelBufferGetIOSurface(source_pixel_buffer)) {
-    return base::ScopedCFTypeRef<CVPixelBufferRef>(source_pixel_buffer,
+          CVPixelBufferGetPixelFormatType(pixel_buffer) &&
+      CVPixelBufferGetIOSurface(pixel_buffer)) {
+    return base::ScopedCFTypeRef<CVPixelBufferRef>(pixel_buffer,
                                                    base::scoped_policy::RETAIN);
   }
   // Create destination buffer from pool.
   base::ScopedCFTypeRef<CVPixelBufferRef> destination_pixel_buffer =
       destination_pixel_buffer_pool_->CreateBuffer();
   if (!destination_pixel_buffer) {
-    // Maximum destination buffers exceeded. Old buffers are not being released
-    // (and thus not returned to the pool) in time.
-    LOG(ERROR) << "Maximum destination buffers exceeded";
+    // Most likely the buffer count was exceeded, but other errors are possible.
+    LOG(ERROR) << "Failed to create a destination buffer";
     return base::ScopedCFTypeRef<CVPixelBufferRef>();
   }
-  if (source_pixel_buffer) {
-    // Pixel buffer path. Do pixel transfer or libyuv conversion + rescale.
-    TransformPixelBuffer(source_pixel_buffer, destination_pixel_buffer);
-    return destination_pixel_buffer;
+  // Do pixel transfer or libyuv conversion + rescale.
+  TransformPixelBuffer(pixel_buffer, destination_pixel_buffer);
+  return destination_pixel_buffer;
+}
+
+base::ScopedCFTypeRef<CVPixelBufferRef> SampleBufferTransformer::Transform(
+    CMSampleBufferRef sample_buffer) {
+  DCHECK(transformer_ != Transformer::kNotConfigured);
+  DCHECK(sample_buffer);
+  // If the sample buffer has a pixel buffer, run the pixel buffer path instead.
+  if (CVPixelBufferRef pixel_buffer =
+          CMSampleBufferGetImageBuffer(sample_buffer)) {
+    return Transform(pixel_buffer);
+  }
+  // Create destination buffer from pool.
+  base::ScopedCFTypeRef<CVPixelBufferRef> destination_pixel_buffer =
+      destination_pixel_buffer_pool_->CreateBuffer();
+  if (!destination_pixel_buffer) {
+    // Most likely the buffer count was exceeded, but other errors are possible.
+    LOG(ERROR) << "Failed to create a destination buffer";
+    return base::ScopedCFTypeRef<CVPixelBufferRef>();
   }
   // Sample buffer path - it's MJPEG. Do libyuv conversion + rescale.
   if (!TransformSampleBuffer(sample_buffer, destination_pixel_buffer)) {
@@ -671,8 +628,9 @@ void SampleBufferTransformer::TransformPixelBufferWithLibyuvFromAnyToI420(
       CVPixelBufferGetPixelFormatType(source_pixel_buffer);
 
   // Rescaling has to be done in a separate step.
-  const bool rescale_needed = destination_width_ != source_width ||
-                              destination_height_ != source_height;
+  const bool rescale_needed =
+      static_cast<size_t>(destination_size_.width()) != source_width ||
+      static_cast<size_t>(destination_size_.height()) != source_height;
 
   // Step 1: Convert to I420.
   I420Planes i420_fullscale_buffer;
@@ -718,8 +676,9 @@ void SampleBufferTransformer::TransformPixelBufferWithLibyuvFromAnyToNV12(
       CVPixelBufferGetPixelFormatType(source_pixel_buffer);
 
   // Rescaling has to be done in a separate step.
-  const bool rescale_needed = destination_width_ != source_width ||
-                              destination_height_ != source_height;
+  const bool rescale_needed =
+      static_cast<size_t>(destination_size_.width()) != source_width ||
+      static_cast<size_t>(destination_size_.height()) != source_height;
 
   // Step 1: Convert to NV12.
   NV12Planes nv12_fullscale_buffer;
@@ -809,8 +768,9 @@ bool SampleBufferTransformer::TransformSampleBufferFromMjpegToI420(
     CVPixelBufferRef destination_pixel_buffer) {
   DCHECK(destination_pixel_format_ == kPixelFormatI420);
   // Rescaling has to be done in a separate step.
-  const bool rescale_needed = destination_width_ != source_width ||
-                              destination_height_ != source_height;
+  const bool rescale_needed =
+      static_cast<size_t>(destination_size_.width()) != source_width ||
+      static_cast<size_t>(destination_size_.height()) != source_height;
 
   // Step 1: Convert MJPEG -> I420.
   I420Planes i420_fullscale_buffer;
@@ -843,8 +803,9 @@ bool SampleBufferTransformer::TransformSampleBufferFromMjpegToNV12(
     CVPixelBufferRef destination_pixel_buffer) {
   DCHECK(destination_pixel_format_ == kPixelFormatNv12);
   // Rescaling has to be done in a separate step.
-  const bool rescale_needed = destination_width_ != source_width ||
-                              destination_height_ != source_height;
+  const bool rescale_needed =
+      static_cast<size_t>(destination_size_.width()) != source_width ||
+      static_cast<size_t>(destination_size_.height()) != source_height;
 
   // Step 1: Convert MJPEG -> NV12.
   NV12Planes nv12_fullscale_buffer;

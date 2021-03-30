@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/guid.h"
 #include "base/json/json_writer.h"
@@ -14,7 +15,6 @@
 #include "base/values.h"
 #include "chrome/browser/supervised_user/child_accounts/kids_management_api.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
-#include "chromeos/constants/chromeos_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -108,8 +108,8 @@ SecondaryAccountConsentLogger::SecondaryAccountConsentLogger(
     const std::string& parent_obfuscated_gaia_id,
     const std::string& re_auth_proof_token,
     base::OnceCallback<void(Result)> callback)
-    : primary_account_id_(identity_manager->GetPrimaryAccountId(
-          signin::ConsentLevel::kNotRequired)),
+    : primary_account_id_(
+          identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin)),
       identity_manager_(identity_manager),
       url_loader_factory_(std::move(url_loader_factory)),
       pref_service_(pref_service),
@@ -132,7 +132,7 @@ void SecondaryAccountConsentLogger::StartLogging() {
               base::Unretained(this)),
           signin::PrimaryAccountAccessTokenFetcher::Mode::
               kWaitUntilAvailable /*mode*/,
-          signin::ConsentLevel::kNotRequired /*consent*/);
+          signin::ConsentLevel::kSignin /*consent*/);
 }
 
 void SecondaryAccountConsentLogger::OnAccessTokenFetchComplete(

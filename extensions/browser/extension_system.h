@@ -40,8 +40,8 @@ class ManagementPolicy;
 class QuotaService;
 class RuntimeData;
 class ServiceWorkerManager;
-class SharedUserScriptManager;
 class StateStore;
+class UserScriptManager;
 class ValueStoreFactory;
 enum class UnloadedExtensionReason;
 
@@ -85,8 +85,8 @@ class ExtensionSystem : public KeyedService {
   // The ServiceWorkerManager is created at startup.
   virtual ServiceWorkerManager* service_worker_manager() = 0;
 
-  // The SharedUserScriptManager is created at startup.
-  virtual SharedUserScriptManager* shared_user_script_manager() = 0;
+  // The UserScriptManager is created at startup.
+  virtual UserScriptManager* user_script_manager() = 0;
 
   // The StateStore is created at startup.
   virtual StateStore* state_store() = 0;

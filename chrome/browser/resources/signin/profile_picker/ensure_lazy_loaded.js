@@ -19,6 +19,7 @@ export function ensureLazyLoaded() {
     lazyLoadPromise = Promise.all([
       'profile-type-choice',
       'local-profile-customization',
+      'profile-switch',
     ].map(name => customElements.whenDefined(name)));
   }
   return lazyLoadPromise;

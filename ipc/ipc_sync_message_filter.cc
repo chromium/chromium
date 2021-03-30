@@ -13,6 +13,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_sync_message.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/sync_handle_registry.h"
 
 namespace IPC {
@@ -84,8 +85,8 @@ bool SyncMessageFilter::Send(Message* message) {
     const bool* stop_flags[] = {&done, &shutdown};
     registry->Wait(stop_flags, 2);
     if (done) {
-      TRACE_EVENT_FLOW_END0("toplevel.flow", "SyncMessageFilter::Send",
-                            &done_event);
+      TRACE_EVENT_WITH_FLOW0("toplevel.flow", "SyncMessageFilter::Send",
+                             &done_event, TRACE_EVENT_FLAG_FLOW_IN);
     }
   }
 
@@ -132,9 +133,9 @@ bool SyncMessageFilter::OnMessageReceived(const Message& message) {
         (*iter)->send_result =
             (*iter)->deserializer->SerializeOutputParameters(message);
       }
-      TRACE_EVENT_FLOW_BEGIN0("toplevel.flow",
-                              "SyncMessageFilter::OnMessageReceived",
-                              (*iter)->done_event);
+      TRACE_EVENT_WITH_FLOW0("toplevel.flow",
+                             "SyncMessageFilter::OnMessageReceived",
+                             (*iter)->done_event, TRACE_EVENT_FLAG_FLOW_OUT);
       (*iter)->done_event->Signal();
       return true;
     }
@@ -170,9 +171,9 @@ void SyncMessageFilter::SignalAllEvents() {
   lock_.AssertAcquired();
   for (PendingSyncMessages::iterator iter = pending_sync_messages_.begin();
        iter != pending_sync_messages_.end(); ++iter) {
-    TRACE_EVENT_FLOW_BEGIN0("toplevel.flow",
-                            "SyncMessageFilter::SignalAllEvents",
-                            (*iter)->done_event);
+    TRACE_EVENT_WITH_FLOW0("toplevel.flow",
+                           "SyncMessageFilter::SignalAllEvents",
+                           (*iter)->done_event, TRACE_EVENT_FLAG_FLOW_OUT);
     (*iter)->done_event->Signal();
   }
 }

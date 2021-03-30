@@ -20,17 +20,6 @@ struct NGBfcOffset;
 CORE_EXPORT bool AdjustToClearance(LayoutUnit clearance_offset,
                                    NGBfcOffset* offset);
 
-// Create a child constraint space with no sizing data, except for fallback
-// inline sizing for orthogonal flow roots and a percentage resolution block
-// size based on |input| (for calculating aspect-ratio based sizes). This will
-// not and can not be used for final layout, but is needed in an intermediate
-// measure pass that calculates the min/max size contribution from a child that
-// establishes an orthogonal flow root.
-NGConstraintSpace CreateIndefiniteConstraintSpaceForChild(
-    const ComputedStyle& container_style,
-    const MinMaxSizesInput& input,
-    NGLayoutInputNode child);
-
 // Calculate and set the available inline fallback size for orthogonal flow
 // children. This size will be used if it's not resolvable via other means [1].
 //

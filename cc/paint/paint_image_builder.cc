@@ -33,6 +33,7 @@ PaintImageBuilder::PaintImageBuilder(PaintImage image, bool clear_contents)
     paint_image_.paint_record_rect_ = gfx::Rect();
     paint_image_.paint_image_generator_ = nullptr;
     paint_image_.cached_sk_image_ = nullptr;
+    paint_image_.texture_backing_ = nullptr;
   }
 }
 PaintImageBuilder::PaintImageBuilder(PaintImageBuilder&& other) = default;

@@ -26,7 +26,6 @@ class DeviceIdentityProvider : public invalidation::IdentityProvider {
       invalidation::ActiveAccountAccessTokenCallback callback) override;
   void InvalidateAccessToken(const OAuth2AccessTokenManager::ScopeSet& scopes,
                              const std::string& access_token) override;
-  void SetActiveAccountId(const CoreAccountId& account_id) override;
 
  private:
   void OnRefreshTokenAvailable();

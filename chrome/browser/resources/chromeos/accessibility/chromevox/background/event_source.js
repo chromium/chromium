@@ -36,4 +36,7 @@ EventSourceState.get = function() {
 /**
  * @private {EventSourceType}
  */
-EventSourceState.current_ = EventSourceType.NONE;
+EventSource.current_ =
+    chrome.accessibilityPrivate.IS_DEFAULT_EVENT_SOURCE_TOUCH ?
+    EventSourceType.TOUCH_GESTURE :
+    EventSourceType.NONE;

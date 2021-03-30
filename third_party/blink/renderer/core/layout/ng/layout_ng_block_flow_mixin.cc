@@ -219,6 +219,9 @@ bool LayoutNGBlockFlowMixin<Base>::NodeAtPoint(
 template <typename Base>
 PositionWithAffinity LayoutNGBlockFlowMixin<Base>::PositionForPoint(
     const PhysicalOffset& point) const {
+  DCHECK_GE(Base::GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::kPrePaintClean);
+
   if (Base::IsAtomicInlineLevel()) {
     const PositionWithAffinity atomic_inline_position =
         Base::PositionForPointIfOutsideAtomicInlineLevel(point);
@@ -228,8 +231,9 @@ PositionWithAffinity LayoutNGBlockFlowMixin<Base>::PositionForPoint(
 
   if (!Base::ChildrenInline())
     return LayoutBlock::PositionForPoint(point);
-  if (const NGPhysicalBoxFragment* fragment = CurrentFragment())
-    return fragment->PositionForPoint(point);
+
+  if (Base::PhysicalFragmentCount())
+    return Base::PositionForPointInFragments(point);
 
   return Base::CreatePositionWithAffinity(0);
 }
@@ -288,6 +292,7 @@ template class CORE_TEMPLATE_EXPORT LayoutNGBlockFlowMixin<LayoutRubyAsBlock>;
 template class CORE_TEMPLATE_EXPORT LayoutNGBlockFlowMixin<LayoutRubyBase>;
 template class CORE_TEMPLATE_EXPORT LayoutNGBlockFlowMixin<LayoutRubyRun>;
 template class CORE_TEMPLATE_EXPORT LayoutNGBlockFlowMixin<LayoutRubyText>;
+template class CORE_TEMPLATE_EXPORT LayoutNGBlockFlowMixin<LayoutSVGBlock>;
 template class CORE_TEMPLATE_EXPORT LayoutNGBlockFlowMixin<LayoutTableCaption>;
 template class CORE_TEMPLATE_EXPORT LayoutNGBlockFlowMixin<LayoutTableCell>;
 

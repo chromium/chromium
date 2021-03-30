@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/bluetooth_scanning_prompt.h"
 
@@ -38,7 +37,7 @@ class CONTENT_EXPORT BluetoothDeviceScanningPromptController final {
   // ShowPermissionPrompt() is called.
   void AddFilteredDevice(const std::string& device_id,
                          bool should_update_name,
-                         const base::string16& device_name);
+                         const std::u16string& device_name);
 
  private:
   // The WebBluetoothServiceImpl that owns this instance.

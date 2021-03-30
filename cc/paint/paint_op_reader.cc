@@ -590,7 +590,7 @@ void PaintOpReader::Read(sk_sp<PaintShader>* shader) {
 
   // All shader types but records are done.
   if (shader_type != PaintShader::Type::kPaintRecord) {
-    (*shader)->CreateSkShader();
+    (*shader)->ResolveSkObjects();
     return;
   }
 
@@ -607,10 +607,11 @@ void PaintOpReader::Read(sk_sp<PaintShader>* shader) {
   // side transfer cache to only having one entry per shader but this will hit
   // the common case of enabling Skia reuse.
   if (entry && entry->shader()->tile_ == ref.tile_) {
-    DCHECK(!ref.cached_shader_);
-    ref.cached_shader_ = entry->shader()->GetSkShader();
+    DCHECK(!ref.sk_cached_picture_);
+    ref.sk_cached_picture_ = entry->shader()->sk_cached_picture_;
   } else {
-    ref.CreateSkShader();
+    ref.ResolveSkObjects();
+    DCHECK(ref.sk_cached_picture_);
     options_.transfer_cache->CreateLocalEntry(
         shader_id, std::make_unique<ServiceShaderTransferCacheEntry>(
                        *shader, shader_size));
@@ -624,6 +625,23 @@ void PaintOpReader::Read(SkMatrix* matrix) {
 
 void PaintOpReader::Read(SkM44* matrix) {
   ReadSimple(matrix);
+}
+
+void PaintOpReader::Read(SkSamplingOptions* sampling) {
+  bool useCubic;
+  Read(&useCubic);
+  if (useCubic) {
+    SkCubicResampler cubic;
+    Read(&cubic.B);
+    Read(&cubic.C);
+    *sampling = SkSamplingOptions(cubic);
+  } else {
+    SkFilterMode filter;
+    SkMipmapMode mipmap;
+    Read(&filter);
+    Read(&mipmap);
+    *sampling = SkSamplingOptions(filter, mipmap);
+  }
 }
 
 void PaintOpReader::Read(SkYUVColorSpace* yuv_color_space) {
@@ -751,11 +769,9 @@ void PaintOpReader::Read(sk_sp<PaintFilter>* filter) {
   base::Optional<PaintFilter::CropRect> crop_rect;
   ReadSimple(&has_crop_rect);
   if (has_crop_rect) {
-    uint32_t flags = 0;
     SkRect rect = SkRect::MakeEmpty();
-    ReadSimple(&flags);
     ReadSimple(&rect);
-    crop_rect.emplace(rect, flags);
+    crop_rect.emplace(rect);
   }
 
   AlignMemory(4);
@@ -854,12 +870,12 @@ void PaintOpReader::ReadBlurPaintFilter(
     const base::Optional<PaintFilter::CropRect>& crop_rect) {
   SkScalar sigma_x = 0.f;
   SkScalar sigma_y = 0.f;
-  BlurPaintFilter::TileMode tile_mode = SkBlurImageFilter::kClamp_TileMode;
+  SkTileMode tile_mode;
   sk_sp<PaintFilter> input;
 
   Read(&sigma_x);
   Read(&sigma_y);
-  ReadSimple(&tile_mode);
+  Read(&tile_mode);
   Read(&input);
   if (!valid_)
     return;
@@ -871,13 +887,12 @@ void PaintOpReader::ReadBlurPaintFilter(
 void PaintOpReader::ReadDropShadowPaintFilter(
     sk_sp<PaintFilter>* filter,
     const base::Optional<PaintFilter::CropRect>& crop_rect) {
-  using ShadowMode = DropShadowPaintFilter::ShadowMode;
   SkScalar dx = 0.f;
   SkScalar dy = 0.f;
   SkScalar sigma_x = 0.f;
   SkScalar sigma_y = 0.f;
   SkColor color = SK_ColorBLACK;
-  ShadowMode shadow_mode;
+  DropShadowPaintFilter::ShadowMode shadow_mode;
   sk_sp<PaintFilter> input;
 
   Read(&dx);
@@ -885,7 +900,7 @@ void PaintOpReader::ReadDropShadowPaintFilter(
   Read(&sigma_x);
   Read(&sigma_y);
   Read(&color);
-  ReadEnum<ShadowMode, ShadowMode::kLast_ShadowMode>(&shadow_mode);
+  ReadEnum(&shadow_mode);
   Read(&input);
 
   if (!valid_)
@@ -992,7 +1007,7 @@ void PaintOpReader::ReadMatrixConvolutionPaintFilter(
   SkScalar gain = 0.f;
   SkScalar bias = 0.f;
   SkIPoint kernel_offset = SkIPoint::Make(0, 0);
-  uint32_t tile_mode_int = 0;
+  SkTileMode tile_mode;
   bool convolve_alpha = false;
   sk_sp<PaintFilter> input;
 
@@ -1011,15 +1026,11 @@ void PaintOpReader::ReadMatrixConvolutionPaintFilter(
   Read(&gain);
   Read(&bias);
   ReadSimple(&kernel_offset);
-  Read(&tile_mode_int);
+  Read(&tile_mode);
   Read(&convolve_alpha);
   Read(&input);
-  if (tile_mode_int > SkMatrixConvolutionImageFilter::kMax_TileMode)
-    SetInvalid();
   if (!valid_)
     return;
-  MatrixConvolutionPaintFilter::TileMode tile_mode =
-      static_cast<MatrixConvolutionPaintFilter::TileMode>(tile_mode_int);
   filter->reset(new MatrixConvolutionPaintFilter(
       kernel_size, kernel.data(), gain, bias, kernel_offset, tile_mode,
       convolve_alpha, std::move(input), base::OptionalOrNullptr(crop_rect)));
@@ -1028,19 +1039,14 @@ void PaintOpReader::ReadMatrixConvolutionPaintFilter(
 void PaintOpReader::ReadDisplacementMapEffectPaintFilter(
     sk_sp<PaintFilter>* filter,
     const base::Optional<PaintFilter::CropRect>& crop_rect) {
-  using ChannelSelectorType =
-      DisplacementMapEffectPaintFilter::ChannelSelectorType;
-
-  ChannelSelectorType channel_x;
-  ChannelSelectorType channel_y;
+  SkColorChannel channel_x;
+  SkColorChannel channel_y;
   SkScalar scale = 0.f;
   sk_sp<PaintFilter> displacement;
   sk_sp<PaintFilter> color;
 
-  ReadEnum<ChannelSelectorType, ChannelSelectorType::kLast_ChannelSelectorType>(
-      &channel_x);
-  ReadEnum<ChannelSelectorType, ChannelSelectorType::kLast_ChannelSelectorType>(
-      &channel_y);
+  ReadEnum<SkColorChannel, SkColorChannel::kA>(&channel_x);
+  ReadEnum<SkColorChannel, SkColorChannel::kA>(&channel_y);
   Read(&scale);
   Read(&displacement);
   Read(&color);
@@ -1186,7 +1192,6 @@ void PaintOpReader::ReadTurbulencePaintFilter(
 void PaintOpReader::ReadPaintFlagsPaintFilter(
     sk_sp<PaintFilter>* filter,
     const base::Optional<PaintFilter::CropRect>& crop_rect) {
-  AlignMemory(4);
   PaintFlags flags;
   Read(&flags);
   if (!valid_)

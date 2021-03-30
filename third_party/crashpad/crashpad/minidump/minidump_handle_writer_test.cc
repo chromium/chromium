@@ -98,7 +98,7 @@ TEST(MinidumpHandleDataWriter, OneHandle) {
   ASSERT_TRUE(minidump_file_writer.WriteEverything(&string_file));
 
   const size_t kTypeNameStringDataLength =
-      (handle_snapshot.type_name.size() + 1) * sizeof(base::char16);
+      (handle_snapshot.type_name.size() + 1) * sizeof(char16_t);
   ASSERT_EQ(string_file.string().size(),
             sizeof(MINIDUMP_HEADER) + sizeof(MINIDUMP_DIRECTORY) +
                 sizeof(MINIDUMP_HANDLE_DATA_STREAM) +
@@ -155,7 +155,7 @@ TEST(MinidumpHandleDataWriter, RepeatedTypeName) {
   ASSERT_TRUE(minidump_file_writer.WriteEverything(&string_file));
 
   const size_t kTypeNameStringDataLength =
-      (handle_snapshot.type_name.size() + 1) * sizeof(base::char16);
+      (handle_snapshot.type_name.size() + 1) * sizeof(char16_t);
   ASSERT_EQ(string_file.string().size(),
             sizeof(MINIDUMP_HEADER) + sizeof(MINIDUMP_DIRECTORY) +
                 sizeof(MINIDUMP_HANDLE_DATA_STREAM) +

@@ -118,6 +118,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
 #if DCHECK_IS_ON()
     if (has_block_fragmentation_)
       DCHECK(block_size_is_for_all_fragments_);
+    DCHECK(size_.block_size != kIndefiniteSize);
 #endif
     return size_.block_size;
   }
@@ -137,6 +138,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
 #if DCHECK_IS_ON()
     if (has_block_fragmentation_)
       DCHECK(!block_size_is_for_all_fragments_);
+    DCHECK(size_.block_size != kIndefiniteSize);
 #endif
     return size_.block_size;
   }
@@ -199,13 +201,18 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   // Add a layout result. This involves appending the fragment and its relative
   // offset to the builder, but also keeping track of out-of-flow positioned
   // descendants, propagating fragmentainer breaks, and more.
-  void AddResult(const NGLayoutResult&, const LogicalOffset);
+  void AddResult(const NGLayoutResult&,
+                 const LogicalOffset,
+                 bool offset_includes_relative_position = false,
+                 bool propagate_oof_descendants = true);
 
   void AddChild(const NGPhysicalContainerFragment&,
                 const LogicalOffset&,
                 const LayoutInline* inline_container = nullptr,
                 const NGMarginStrut* margin_strut = nullptr,
-                bool is_self_collapsing = false);
+                bool is_self_collapsing = false,
+                bool offset_includes_relative_position = false,
+                bool propagate_oof_descendants = true);
 
   // Manually add a break token to the builder. Note that we're assuming that
   // this break token is for content in the same flow as this parent.
@@ -317,8 +324,9 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     return tallest_unbreakable_block_size_ >= LayoutUnit();
   }
 
-  void SetInitialBreakBefore(EBreakBetween break_before) {
-    initial_break_before_ = break_before;
+  void SetInitialBreakBeforeIfNeeded(EBreakBetween break_before) {
+    if (!initial_break_before_)
+      initial_break_before_ = break_before;
   }
 
   void SetPreviousBreakAfter(EBreakBetween break_after) {
@@ -348,6 +356,23 @@ class CORE_EXPORT NGBoxFragmentBuilder final
 
   void SetIsAtBlockEnd() { is_at_block_end_ = true; }
   bool IsAtBlockEnd() const { return is_at_block_end_; }
+
+  // See |NGPhysicalBoxFragment::InflowBounds|.
+  void SetInflowBounds(const LogicalRect& inflow_bounds) {
+    DCHECK_NE(box_type_, NGPhysicalBoxFragment::NGBoxType::kInlineBox);
+    DCHECK(Node().IsScrollContainer());
+#if DCHECK_IS_ON()
+    is_inflow_bounds_explicitly_set_ = true;
+#endif
+    inflow_bounds_ = inflow_bounds;
+  }
+
+  void SetMayHaveDescendantAboveBlockStart(bool b) {
+#if DCHECK_IS_ON()
+    is_may_have_descendant_above_block_start_explicitly_set_ = true;
+#endif
+    may_have_descendant_above_block_start_ = b;
+  }
 
   void SetColumnSpanner(NGBlockNode spanner) { column_spanner_ = spanner; }
   bool FoundColumnSpanner() const { return !!column_spanner_; }
@@ -504,6 +529,10 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     table_cell_column_index_ = table_cell_column_index;
   }
 
+  void TransferGridData(std::unique_ptr<NGGridData> grid_data) {
+    grid_data_ = std::move(grid_data);
+  }
+
   // The |NGFragmentItemsBuilder| for the inline formatting context of this box.
   NGFragmentItemsBuilder* ItemsBuilder() { return items_builder_; }
   void SetItemsBuilder(NGFragmentItemsBuilder* builder) {
@@ -596,7 +625,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
 
   // The break-before value on the initial child we cannot honor. There's no
   // valid class A break point before a first child, only *between* siblings.
-  EBreakBetween initial_break_before_ = EBreakBetween::kAuto;
+  base::Optional<EBreakBetween> initial_break_before_;
 
   // The break-after value of the previous in-flow sibling.
   EBreakBetween previous_break_after_ = EBreakBetween::kAuto;
@@ -616,6 +645,9 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   // Table cell specific types.
   base::Optional<wtf_size_t> table_cell_column_index_;
 
+  // Grid specific types.
+  std::unique_ptr<NGGridData> grid_data_;
+
   LogicalBoxSides sides_to_include_;
 
   scoped_refptr<SerializedScriptValue> custom_layout_data_;
@@ -630,6 +662,13 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   // Describes what size_.block_size represents; either the size of a single
   // fragment (false), or the size of all fragments for a node (true).
   bool block_size_is_for_all_fragments_ = false;
+
+  // If any fragment has been added with an offset including the relative
+  // position, we also need the inflow-bounds set explicitly.
+  bool needs_inflow_bounds_explicitly_set_ = false;
+  bool needs_may_have_descendant_above_block_start_explicitly_set_ = false;
+  bool is_inflow_bounds_explicitly_set_ = false;
+  bool is_may_have_descendant_above_block_start_explicitly_set_ = false;
 #endif
 
   friend class NGBlockBreakToken;

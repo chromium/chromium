@@ -1,0 +1,10 @@
+include_rules = [
+  "+components/browser_ui/bottomsheet/android",
+]
+
+specific_include_rules = {
+  "AccountPickerDelegateImpl.*\.java"
+  : [
+  "+content/public/android/java/src/org/chromium/content_public/browser/LoadUrlParams.java"
+  ],
+}

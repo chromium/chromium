@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 (async function() {
-  await TestRunner.loadModule('axe_core_test_runner');
+  await TestRunner.loadTestModule('axe_core_test_runner');
 
   TestRunner.addResult('Tests accessibility of Tree outline sidepane in Application Panel.');
 

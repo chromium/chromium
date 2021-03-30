@@ -31,7 +31,8 @@ enum WellKnownCapabilities {
 // This class is used to hold and generate SIDS.
 class Sid {
  public:
-  // As PSID is just a void* make it explicit.
+  // As PSID is just a void* make it explicit. Copies
+  // the memory referenced by |sid|.
   explicit Sid(PSID sid);
   // Constructors initializing the object with the SID passed.
   // This is a converting constructor. It is not explicit.

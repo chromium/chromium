@@ -159,6 +159,10 @@ ResultExpr RestrictCloneToThreadsAndEPERMFork() {
       .Else(CrashSIGSYSClone());
 }
 
+#ifndef PR_PAC_RESET_KEYS
+#define PR_PAC_RESET_KEYS 54
+#endif
+
 ResultExpr RestrictPrctl() {
   // Will need to add seccomp compositing in the future. PR_SET_PTRACER is
   // used by breakpad but not needed anymore.
@@ -167,7 +171,7 @@ ResultExpr RestrictPrctl() {
       .CASES((PR_GET_NAME, PR_SET_NAME, PR_GET_DUMPABLE, PR_SET_DUMPABLE
 #if defined(OS_ANDROID)
               , PR_SET_VMA, PR_SET_PTRACER, PR_SET_TIMERSLACK
-              , PR_GET_NO_NEW_PRIVS
+              , PR_GET_NO_NEW_PRIVS, PR_PAC_RESET_KEYS
 
 // Enable PR_SET_TIMERSLACK_PID, an Android custom prctl which is used in:
 // https://android.googlesource.com/platform/system/core/+/lollipop-release/libcutils/sched_policy.c.
@@ -215,7 +219,7 @@ ResultExpr RestrictMmapFlags() {
   // TODO(davidung), remove MAP_DENYWRITE with updated Tegra libraries.
   const uint64_t kAllowedMask = MAP_SHARED | MAP_PRIVATE | MAP_ANONYMOUS |
                                 MAP_STACK | MAP_NORESERVE | MAP_FIXED |
-                                MAP_DENYWRITE;
+                                MAP_DENYWRITE | MAP_LOCKED;
   const Arg<int> flags(3);
   return If((flags & ~kAllowedMask) == 0, Allow()).Else(CrashSIGSYS());
 }
@@ -245,9 +249,12 @@ ResultExpr RestrictFcntlCommands() {
 
   const uint64_t kAllowedMask = O_ACCMODE | O_APPEND | O_NONBLOCK | O_SYNC |
                                 kOLargeFileFlag | O_CLOEXEC | O_NOATIME;
+  const uint64_t kAllowedSeals = F_SEAL_SEAL | F_SEAL_GROW | F_SEAL_SHRINK;
+  // clang-format off
   return Switch(cmd)
       .CASES((F_GETFL,
               F_GETFD,
+              F_GET_SEALS,
               F_SETFD,
               F_SETLK,
               F_SETLKW,
@@ -257,7 +264,10 @@ ResultExpr RestrictFcntlCommands() {
              Allow())
       .Case(F_SETFL,
             If((long_arg & ~kAllowedMask) == 0, Allow()).Else(CrashSIGSYS()))
+      .Case(F_ADD_SEALS,
+            If((long_arg & ~kAllowedSeals) == 0, Allow()).Else(CrashSIGSYS()))
       .Default(CrashSIGSYS());
+  // clang-format on
 }
 
 #if defined(__i386__) || defined(__mips__)
@@ -326,6 +336,10 @@ ResultExpr RestrictSchedTarget(pid_t target_pid, int sysno) {
     case __NR_sched_getparam:
     case __NR_sched_getscheduler:
     case __NR_sched_rr_get_interval:
+#if defined(__i386__) || defined(__arm__) || \
+    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
+    case __NR_sched_rr_get_interval_time64:
+#endif
     case __NR_sched_setaffinity:
     case __NR_sched_setattr:
     case __NR_sched_setparam:

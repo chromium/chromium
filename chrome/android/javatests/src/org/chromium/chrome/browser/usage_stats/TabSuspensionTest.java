@@ -118,7 +118,8 @@ public class TabSuspensionTest {
         mTab = mActivity.getActivityTab();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mPageViewObserver = new PageViewObserver(mActivity, mActivity.getTabModelSelector(),
-                    mEventTracker, mTokenTracker, mSuspensionTracker);
+                    mEventTracker, mTokenTracker, mSuspensionTracker,
+                    mActivity.getTabContentManagerSupplier());
         });
     }
 
@@ -248,7 +249,8 @@ public class TabSuspensionTest {
         // can trigger view maniplation.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mPageViewObserver2 = new PageViewObserver(activity2, activity2.getTabModelSelector(),
-                    mEventTracker, mTokenTracker, mSuspensionTracker);
+                    mEventTracker, mTokenTracker, mSuspensionTracker,
+                    mActivity.getTabContentManagerSupplier());
         });
 
         suspendDomain(STARTING_FQDN);
@@ -378,7 +380,8 @@ public class TabSuspensionTest {
 
     private void assertSuspendedTabState(Tab tab, boolean showing, String fqdn) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            SuspendedTab suspendedTab = SuspendedTab.from(tab);
+            SuspendedTab suspendedTab =
+                    SuspendedTab.from(tab, mActivity.getTabContentManagerSupplier());
             assertEquals(suspendedTab.isShowing(), showing);
             assertEquals(suspendedTab.isViewAttached(), showing);
             assertTrue((suspendedTab.getFqdn() == null && fqdn == null)
@@ -398,7 +401,7 @@ public class TabSuspensionTest {
 
     private void waitForSuspendedTabToShow(Tab tab, String fqdn) {
         CriteriaHelper.pollUiThread(() -> {
-            return SuspendedTab.from(tab).isShowing();
+            return SuspendedTab.from(tab, mActivity.getTabContentManagerSupplier()).isShowing();
         }, "Suspended tab should be showing", 10000, 50);
 
         assertSuspendedTabShowing(tab, fqdn);

@@ -113,7 +113,7 @@ std::vector<SkBitmap> LoadResourceBitmaps(
            extension->path() == it->resource.extension_root());
 
     int resource_id = 0;
-    if (extension->location() == Manifest::COMPONENT) {
+    if (extension->location() == mojom::ManifestLocation::kComponent) {
       const extensions::ComponentExtensionResourceManager* manager =
           extensions::ExtensionsBrowserClient::Get()
               ->GetComponentExtensionResourceManager();

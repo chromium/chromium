@@ -20,6 +20,7 @@ include_rules = [
   "+services/network/public/cpp",
   "+services/network/public/mojom",
   "+services/network/test",
+  "+third_party/blink/public/common/switches.h",
   "+third_party/blink/public/mojom/payments/payment_request.mojom.h",
   "+third_party/icu/source/common/unicode",
   "+third_party/libaddressinput/chromium/addressinput_util.h",

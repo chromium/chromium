@@ -5,233 +5,236 @@
 /**
  * Javascript for DeviceTable UI, served from chrome://bluetooth-internals/.
  */
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
 
-cr.define('device_table', function() {
-  const COLUMNS = {
-    NAME: 0,
-    ADDRESS: 1,
-    RSSI: 2,
-    SERVICES: 3,
-    CONNECTION_STATE: 4,
-    LINKS: 5,
-  };
+import {DeviceCollection} from './device_collection.js';
+
+const COLUMNS = {
+  NAME: 0,
+  ADDRESS: 1,
+  RSSI: 2,
+  SERVICES: 3,
+  CONNECTION_STATE: 4,
+  LINKS: 5,
+};
+
+/**
+ * A table that lists the devices and responds to changes in the given
+ * DeviceCollection. Fires events for inspection requests from listed
+ * devices.
+ * @constructor
+ * @extends {HTMLTableElement}
+ */
+export const DeviceTable = crUiDefine(function() {
+  return document.importNode($('table-template').content.children[0], true);
+});
+
+DeviceTable.prototype = {
+  __proto__: HTMLTableElement.prototype,
+
+  /** @private {?DeviceCollection} */
+  devices_: null,
 
   /**
-   * A table that lists the devices and responds to changes in the given
-   * DeviceCollection. Fires events for inspection requests from listed
-   * devices.
-   * @constructor
-   * @extends {HTMLTableElement}
+   * Decorates an element as a UI element class. Caches references to the
+   *    table body and headers.
    */
-  const DeviceTable = cr.ui.define(function() {
-    /** @private {?Array<bluetooth.mojom.DeviceInfo>} */
-    this.devices_ = null;
+  decorate() {
+    /** @private */
+    this.body_ = this.tBodies[0];
+    /** @private */
+    this.headers_ = this.tHead.rows[0].cells;
+    /** @private {!Map<!bluetooth.mojom.DeviceInfo, boolean>} */
+    this.inspectionMap_ = new Map();
+  },
 
-    return document.importNode(
-        $('table-template').content.children[0], true /* deep */);
-  });
+  /**
+   * Sets the tables device collection.
+   * @param {!DeviceCollection} deviceCollection
+   */
+  setDevices(deviceCollection) {
+    assert(!this.devices_, 'Devices can only be set once.');
 
-  DeviceTable.prototype = {
-    __proto__: HTMLTableElement.prototype,
+    this.devices_ = deviceCollection;
+    this.devices_.addEventListener('sorted', this.redraw_.bind(this));
+    this.devices_.addEventListener('change', this.handleChange_.bind(this));
+    this.devices_.addEventListener('splice', this.handleSplice_.bind(this));
 
-    /**
-     * Decorates an element as a UI element class. Caches references to the
-     *    table body and headers.
-     */
-    decorate() {
-      /** @private */
-      this.body_ = this.tBodies[0];
-      /** @private */
-      this.headers_ = this.tHead.rows[0].cells;
-      /** @private {!Map<!bluetooth.mojom.DeviceInfo, boolean>} */
-      this.inspectionMap_ = new Map();
-    },
+    this.redraw_();
+  },
 
-    /**
-     * Sets the tables device collection.
-     * @param {!device_collection.DeviceCollection} deviceCollection
-     */
-    setDevices(deviceCollection) {
-      assert(!this.devices_, 'Devices can only be set once.');
+  /**
+   * Updates the inspect status of the row matching the given |deviceInfo|.
+   * If |isInspecting| is true, the forget link is enabled otherwise it's
+   * disabled.
+   * @param {!bluetooth.mojom.DeviceInfo} deviceInfo
+   * @param {boolean} isInspecting
+   */
+  setInspecting(deviceInfo, isInspecting) {
+    this.inspectionMap_.set(deviceInfo, isInspecting);
+    this.updateRow_(deviceInfo, this.devices_.indexOf(deviceInfo));
+  },
 
-      this.devices_ = deviceCollection;
-      this.devices_.addEventListener('sorted', this.redraw_.bind(this));
-      this.devices_.addEventListener('change', this.handleChange_.bind(this));
-      this.devices_.addEventListener('splice', this.handleSplice_.bind(this));
+  /**
+   * Fires a forget pressed event for the row |index|.
+   * @param {number} index
+   * @private
+   */
+  handleForgetClick_(index) {
+    const event = new CustomEvent('forgetpressed', {
+      bubbles: true,
+      detail: {
+        address: this.devices_.item(index).address,
+      }
+    });
+    this.dispatchEvent(event);
+  },
 
-      this.redraw_();
-    },
+  /**
+   * Updates table row on change event of the device collection.
+   * @param {!Event} event
+   * @private
+   */
+  handleChange_(event) {
+    this.updateRow_(
+        /** @type {!bluetooth.mojom.DeviceInfo} */ (
+            this.devices_.item(event.index)),
+        event.index);
+  },
 
-    /**
-     * Updates the inspect status of the row matching the given |deviceInfo|.
-     * If |isInspecting| is true, the forget link is enabled otherwise it's
-     * disabled.
-     * @param {!bluetooth.mojom.DeviceInfo} deviceInfo
-     * @param {boolean} isInspecting
-     */
-    setInspecting(deviceInfo, isInspecting) {
-      this.inspectionMap_.set(deviceInfo, isInspecting);
-      this.updateRow_(deviceInfo, this.devices_.indexOf(deviceInfo));
-    },
+  /**
+   * Fires an inspect pressed event for the row |index|.
+   * @param {number} index
+   * @private
+   */
+  handleInspectClick_(index) {
+    const event = new CustomEvent('inspectpressed', {
+      bubbles: true,
+      detail: {
+        address: this.devices_.item(index).address,
+      }
+    });
+    this.dispatchEvent(event);
+  },
 
-    /**
-     * Fires a forget pressed event for the row |index|.
-     * @param {number} index
-     * @private
-     */
-    handleForgetClick_(index) {
-      const event = new CustomEvent('forgetpressed', {
-        bubbles: true,
-        detail: {
-          address: this.devices_.item(index).address,
-        }
-      });
-      this.dispatchEvent(event);
-    },
+  /**
+   * Updates table row on splice event of the device collection.
+   * @param {!Event} event
+   * @private
+   */
+  handleSplice_(event) {
+    event.removed.forEach(function() {
+      this.body_.deleteRow(event.index);
+    }, this);
 
-    /**
-     * Updates table row on change event of the device collection.
-     * @param {!Event} event
-     * @private
-     */
-    handleChange_(event) {
-      this.updateRow_(this.devices_.item(event.index), event.index);
-    },
+    event.added.forEach(function(device, index) {
+      this.insertRow_(device, event.index + index);
+    }, this);
+  },
 
-    /**
-     * Fires an inspect pressed event for the row |index|.
-     * @param {number} index
-     * @private
-     */
-    handleInspectClick_(index) {
-      const event = new CustomEvent('inspectpressed', {
-        bubbles: true,
-        detail: {
-          address: this.devices_.item(index).address,
-        }
-      });
-      this.dispatchEvent(event);
-    },
+  /**
+   * Inserts a new row at |index| and updates it with info from |device|.
+   * @param {!bluetooth.mojom.DeviceInfo} device
+   * @param {?number} index
+   * @private
+   */
+  insertRow_(device, index) {
+    const row = this.body_.insertRow(index);
+    row.id = device.address;
 
-    /**
-     * Updates table row on splice event of the device collection.
-     * @param {!Event} event
-     * @private
-     */
-    handleSplice_(event) {
-      event.removed.forEach(function() {
-        this.body_.deleteRow(event.index);
-      }, this);
+    for (let i = 0; i < this.headers_.length; i++) {
+      // Skip the LINKS column. It has no data-field attribute.
+      if (i === COLUMNS.LINKS) {
+        continue;
+      }
+      row.insertCell();
+    }
 
-      event.added.forEach(function(device, index) {
-        this.insertRow_(device, event.index + index);
-      }, this);
-    },
+    // Make two extra cells for the inspect link and connect errors.
+    const inspectCell = row.insertCell();
 
-    /**
-     * Inserts a new row at |index| and updates it with info from |device|.
-     * @param {!bluetooth.mojom.DeviceInfo} device
-     * @param {?number} index
-     * @private
-     */
-    insertRow_(device, index) {
-      const row = this.body_.insertRow(index);
-      row.id = device.address;
+    const inspectLink = document.createElement('a', {is: 'action-link'});
+    inspectLink.setAttribute('is', 'action-link');
+    inspectLink.textContent = 'Inspect';
+    inspectCell.appendChild(inspectLink);
+    inspectLink.addEventListener('click', function() {
+      this.handleInspectClick_(row.sectionRowIndex);
+    }.bind(this));
 
-      for (let i = 0; i < this.headers_.length; i++) {
-        // Skip the LINKS column. It has no data-field attribute.
-        if (i === COLUMNS.LINKS) {
-          continue;
-        }
-        row.insertCell();
+    const forgetLink = document.createElement('a', {is: 'action-link'});
+    forgetLink.setAttribute('is', 'action-link');
+    forgetLink.textContent = 'Forget';
+    inspectCell.appendChild(forgetLink);
+    forgetLink.addEventListener('click', function() {
+      this.handleForgetClick_(row.sectionRowIndex);
+    }.bind(this));
+
+    this.updateRow_(device, row.sectionRowIndex);
+  },
+
+  /**
+   * Deletes and recreates the table using the cached |devices_|.
+   * @private
+   */
+  redraw_() {
+    this.removeChild(this.body_);
+    this.appendChild(document.createElement('tbody'));
+    this.body_ = this.querySelector('tbody');
+    this.body_.classList.add('table-body');
+
+    for (let i = 0; i < this.devices_.length; i++) {
+      this.insertRow_(
+          /** @type {!bluetooth.mojom.DeviceInfo} */ (this.devices_.item(i)),
+          null);
+    }
+  },
+
+  /**
+   * Updates the row at |index| with the info from |device|.
+   * @param {!bluetooth.mojom.DeviceInfo} device
+   * @param {number} index
+   * @private
+   */
+  updateRow_(device, index) {
+    const row = this.body_.rows[index];
+    assert(row, 'Row ' + index + ' is not in the table.');
+
+    row.classList.toggle('removed', this.devices_.isRemoved(device));
+
+    const forgetLink = row.cells[COLUMNS.LINKS].children[1];
+
+    if (this.inspectionMap_.has(device)) {
+      forgetLink.disabled = !this.inspectionMap_.get(device);
+    } else {
+      forgetLink.disabled = true;
+    }
+
+    // Update the properties based on the header field path.
+    for (let i = 0; i < this.headers_.length; i++) {
+      // Skip the LINKS column. It has no data-field attribute.
+      if (i === COLUMNS.LINKS) {
+        continue;
       }
 
-      // Make two extra cells for the inspect link and connect errors.
-      const inspectCell = row.insertCell();
+      const header = this.headers_[i];
+      const propName = header.dataset.field;
 
-      const inspectLink = document.createElement('a', {is: 'action-link'});
-      inspectLink.setAttribute('is', 'action-link');
-      inspectLink.textContent = 'Inspect';
-      inspectCell.appendChild(inspectLink);
-      inspectLink.addEventListener('click', function() {
-        this.handleInspectClick_(row.sectionRowIndex);
-      }.bind(this));
-
-      const forgetLink = document.createElement('a', {is: 'action-link'});
-      forgetLink.setAttribute('is', 'action-link');
-      forgetLink.textContent = 'Forget';
-      inspectCell.appendChild(forgetLink);
-      forgetLink.addEventListener('click', function() {
-        this.handleForgetClick_(row.sectionRowIndex);
-      }.bind(this));
-
-      this.updateRow_(device, row.sectionRowIndex);
-    },
-
-    /**
-     * Deletes and recreates the table using the cached |devices_|.
-     * @private
-     */
-    redraw_() {
-      this.removeChild(this.body_);
-      this.appendChild(document.createElement('tbody'));
-      this.body_ = this.tBodies[0];
-      this.body_.classList.add('table-body');
-
-      for (let i = 0; i < this.devices_.length; i++) {
-        this.insertRow_(this.devices_.item(i), null);
-      }
-    },
-
-    /**
-     * Updates the row at |index| with the info from |device|.
-     * @param {!bluetooth.mojom.DeviceInfo} device
-     * @param {number} index
-     * @private
-     */
-    updateRow_(device, index) {
-      const row = this.body_.rows[index];
-      assert(row, 'Row ' + index + ' is not in the table.');
-
-      row.classList.toggle('removed', this.devices_.isRemoved(device));
-
-      const forgetLink = row.cells[COLUMNS.LINKS].children[1];
-
-      if (this.inspectionMap_.has(device)) {
-        forgetLink.disabled = !this.inspectionMap_.get(device);
-      } else {
-        forgetLink.disabled = true;
+      const parts = propName.split('.');
+      let obj = device;
+      while (obj != null && parts.length > 0) {
+        const part = parts.shift();
+        obj = obj[part];
       }
 
-      // Update the properties based on the header field path.
-      for (let i = 0; i < this.headers_.length; i++) {
-        // Skip the LINKS column. It has no data-field attribute.
-        if (i === COLUMNS.LINKS) {
-          continue;
-        }
-
-        const header = this.headers_[i];
-        const propName = header.dataset.field;
-
-        const parts = propName.split('.');
-        let obj = device;
-        while (obj != null && parts.length > 0) {
-          const part = parts.shift();
-          obj = obj[part];
-        }
-
-        if (propName == 'isGattConnected') {
-          obj = obj ? 'Connected' : 'Not Connected';
-        }
-
-        const cell = row.cells[i];
-        cell.textContent = obj == null ? 'Unknown' : obj;
-        cell.dataset.label = header.textContent;
+      if (propName == 'isGattConnected') {
+        obj = obj ? 'Connected' : 'Not Connected';
       }
-    },
-  };
 
-  return {
-    DeviceTable: DeviceTable,
-  };
-});
+      const cell = row.cells[i];
+      cell.textContent = obj == null ? 'Unknown' : obj;
+      cell.dataset.label = header.textContent;
+    }
+  },
+};

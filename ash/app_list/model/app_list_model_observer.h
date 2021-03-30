@@ -7,14 +7,15 @@
 
 #include <string>
 
-#include "ash/app_list/model/app_list_model.h"
-#include "ash/app_list/model/app_list_model_export.h"
+#include "ash/ash_export.h"
+#include "base/observer_list_types.h"
 
 namespace ash {
 
 class AppListItem;
+enum class AppListState;
 
-class APP_LIST_MODEL_EXPORT AppListModelObserver {
+class ASH_EXPORT AppListModelObserver : public base::CheckedObserver {
  public:
   // Triggered after AppListModel's status has changed.
   virtual void OnAppListModelStatusChanged() {}
@@ -39,7 +40,7 @@ class APP_LIST_MODEL_EXPORT AppListModelObserver {
   virtual void OnCustomLauncherPageEnabledStateChanged(bool enabled) {}
 
  protected:
-  virtual ~AppListModelObserver() {}
+  ~AppListModelObserver() override;
 };
 
 }  // namespace ash

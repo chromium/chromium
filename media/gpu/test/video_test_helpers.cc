@@ -8,10 +8,8 @@
 
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/memory/aligned_memory.h"
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
-#include "base/sys_byteorder.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "media/base/format_utils.h"
@@ -22,7 +20,6 @@
 #include "media/gpu/test/video_frame_helpers.h"
 #include "media/mojo/common/mojo_shared_buffer_video_frame.h"
 #include "media/parsers/vp8_parser.h"
-#include "media/video/h264_parser.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
@@ -36,6 +33,22 @@ namespace test {
 namespace {
 constexpr uint16_t kIvfFileHeaderSize = 32;
 constexpr size_t kIvfFrameHeaderSize = 12;
+
+bool IsH264SPSNALU(const uint8_t* data, size_t size) {
+  // Check if this is an H264 SPS NALU w/ a 3 or 4 byte start code.
+  return (size >= 4 && data[0] == 0x0 && data[1] == 0x0 && data[2] == 0x1 &&
+          (data[3] & 0x1f) == 0x7) ||
+         (size >= 5 && data[0] == 0x0 && data[1] == 0x0 && data[2] == 0x0 &&
+          data[3] == 0x1 && (data[4] & 0x1f) == 0x7);
+}
+
+bool IsHevcSPSNALU(const uint8_t* data, size_t size) {
+  // Check if this is an HEVC SPS NALU w/ a 3 or 4 byte start code.
+  return (size >= 4 && data[0] == 0x0 && data[1] == 0x0 && data[2] == 0x1 &&
+          (data[3] & 0x7e) == 0x42) ||
+         (size >= 5 && data[0] == 0x0 && data[1] == 0x0 && data[2] == 0x0 &&
+          data[3] == 0x1 && (data[4] & 0x7e) == 0x42);
+}
 }  // namespace
 
 IvfFileHeader GetIvfFileHeader(const base::span<const uint8_t>& data) {
@@ -132,6 +145,7 @@ bool EncodedDataHelper::IsNALHeader(const std::string& data, size_t pos) {
 scoped_refptr<DecoderBuffer> EncodedDataHelper::GetNextBuffer() {
   switch (VideoCodecProfileToVideoCodec(profile_)) {
     case kCodecH264:
+    case kCodecHEVC:
       return GetNextFragment();
     case kCodecVP8:
     case kCodecVP9:
@@ -183,7 +197,11 @@ size_t EncodedDataHelper::GetBytesForNextNALU(size_t start_pos) {
 bool EncodedDataHelper::LookForSPS(size_t* skipped_fragments_count) {
   *skipped_fragments_count = 0;
   while (next_pos_to_decode_ + 4 < data_.size()) {
-    if ((data_[next_pos_to_decode_ + 4] & 0x1f) == 0x7) {
+    if ((profile_ >= H264PROFILE_MIN && profile_ <= H264PROFILE_MAX) &&
+        ((data_[next_pos_to_decode_ + 4] & 0x1f) == 0x7)) {
+      return true;
+    } else if ((profile_ >= HEVCPROFILE_MIN && profile_ <= HEVCPROFILE_MAX) &&
+               ((data_[next_pos_to_decode_ + 4] & 0x7e) == 0x42)) {
       return true;
     }
     *skipped_fragments_count += 1;
@@ -311,16 +329,10 @@ bool EncodedDataHelper::HasConfigInfo(const uint8_t* data,
                                       size_t size,
                                       VideoCodecProfile profile) {
   if (profile >= H264PROFILE_MIN && profile <= H264PROFILE_MAX) {
-    H264Parser parser;
-    parser.SetStream(data, size);
-    H264NALU nalu;
-    H264Parser::Result result = parser.AdvanceToNextNALU(&nalu);
-    if (result != H264Parser::kOk) {
-      // Let the VDA figure out there's something wrong with the stream.
-      return false;
-    }
-
-    return nalu.nal_unit_type == H264NALU::kSPS;
+    // Check if this is an SPS NALU w/ a 3 or 4 byte start code.
+    return IsH264SPSNALU(data, size);
+  } else if (profile >= HEVCPROFILE_MIN && profile <= HEVCPROFILE_MAX) {
+    return IsHevcSPSNALU(data, size);
   } else if (profile >= VP8PROFILE_MIN && profile <= VP8PROFILE_MAX) {
     Vp8Parser parser;
     Vp8FrameHeader frame_header;
@@ -377,13 +389,21 @@ AlignedDataHelper::AlignedDataHelper(
     const gfx::Size& dst_coded_size,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
+    uint32_t frame_rate,
     VideoFrame::StorageType storage_type,
     gpu::GpuMemoryBufferFactory* const gpu_memory_buffer_factory)
     : num_frames_(num_frames),
       storage_type_(storage_type),
       gpu_memory_buffer_factory_(gpu_memory_buffer_factory),
       visible_rect_(visible_rect),
-      natural_size_(natural_size) {
+      natural_size_(natural_size),
+      time_stamp_interval_(base::TimeDelta::FromSeconds(/*secs=*/0u)),
+      elapsed_frame_time_(base::TimeDelta::FromSeconds(/*secs=*/0u)) {
+  // If the frame_rate is passed in, then use that timing information
+  // to generate timestamps that increment according the frame_rate.
+  // Otherwise timestamps will be generated when GetNextFrame() is called
+  UpdateFrameRate(frame_rate);
+
   if (storage_type_ == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
     LOG_ASSERT(gpu_memory_buffer_factory_ != nullptr);
     InitializeGpuMemoryBufferFrames(stream, pixel_format, src_coded_size,
@@ -411,8 +431,26 @@ bool AlignedDataHelper::AtEndOfStream() const {
   return frame_index_ == num_frames_;
 }
 
+void AlignedDataHelper::UpdateFrameRate(uint32_t frame_rate) {
+  if (frame_rate == 0) {
+    time_stamp_interval_ = base::TimeDelta::FromSeconds(/*secs=*/0u);
+  } else {
+    time_stamp_interval_ =
+        base::TimeDelta::FromSeconds(/*secs=*/1u) / frame_rate;
+  }
+}
+
 scoped_refptr<VideoFrame> AlignedDataHelper::GetNextFrame() {
   LOG_ASSERT(!AtEndOfStream());
+  base::TimeDelta frame_timestamp;
+
+  if (time_stamp_interval_.is_zero())
+    frame_timestamp = base::TimeTicks::Now().since_origin();
+  else
+    frame_timestamp = elapsed_frame_time_;
+
+  elapsed_frame_time_ += time_stamp_interval_;
+
   if (storage_type_ == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
     const auto& gmb_handle = video_frame_data_[frame_index_++].gmb_handle;
     auto dup_handle = gmb_handle.Clone();
@@ -432,7 +470,7 @@ scoped_refptr<VideoFrame> AlignedDataHelper::GetNextFrame() {
     gpu::GpuMemoryBufferSupport support;
     auto gpu_memory_buffer = support.CreateGpuMemoryBufferImplFromHandle(
         std::move(dup_handle), layout_->coded_size(), *buffer_format,
-        gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE,
+        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
         base::DoNothing());
     if (!gpu_memory_buffer) {
       LOG(ERROR) << "Failed to create GpuMemoryBuffer from "
@@ -444,7 +482,7 @@ scoped_refptr<VideoFrame> AlignedDataHelper::GetNextFrame() {
     return media::VideoFrame::WrapExternalGpuMemoryBuffer(
         visible_rect_, natural_size_, std::move(gpu_memory_buffer),
         dummy_mailbox, base::DoNothing() /* mailbox_holder_release_cb_ */,
-        base::TimeTicks::Now().since_origin());
+        frame_timestamp);
   } else {
     const auto& mojo_handle = video_frame_data_[frame_index_++].mojo_handle;
     auto dup_handle =
@@ -465,7 +503,7 @@ scoped_refptr<VideoFrame> AlignedDataHelper::GetNextFrame() {
     return MojoSharedBufferVideoFrame::Create(
         layout_->format(), layout_->coded_size(), visible_rect_, natural_size_,
         std::move(dup_handle), video_frame_size, offsets, strides,
-        base::TimeTicks::Now().since_origin());
+        frame_timestamp);
   }
 }
 
@@ -529,7 +567,7 @@ void AlignedDataHelper::InitializeGpuMemoryBufferFrames(
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   layout_ = GetPlatformVideoFrameLayout(
       gpu_memory_buffer_factory_, pixel_format, dst_coded_size,
-      gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE);
+      gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
   ASSERT_TRUE(layout_) << "Failed getting platform VideoFrameLayout";
 
   std::vector<size_t> src_plane_rows;
@@ -554,10 +592,10 @@ void AlignedDataHelper::InitializeGpuMemoryBufferFrames(
                         src_plane_rows[i]);
     }
     src_frame_ptr += src_video_frame_size;
-    auto frame = CloneVideoFrame(
-        gpu_memory_buffer_factory_, memory_frame.get(), *layout_,
-        VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
-        gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE);
+    auto frame =
+        CloneVideoFrame(gpu_memory_buffer_factory_, memory_frame.get(),
+                        *layout_, VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
+                        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
     LOG_ASSERT(!!frame) << "Failed creating GpuMemoryBuffer VideoFrame";
     auto gmb_handle = CreateGpuMemoryBufferHandle(frame.get());
     LOG_ASSERT(!gmb_handle.is_null())

@@ -1,9 +1,11 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # Copyright 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 """api_static_checks.py - Enforce Cronet API requirements."""
+
+from __future__ import print_function
 
 import argparse
 import os
@@ -154,7 +156,7 @@ def check_api_calls(opts):
         ' '.join(os.path.join(dirpath, f) for f in filenames).replace(
             '$', '\\$'),
         dump_file)):
-      print 'ERROR: javap failed on ' + ' '.join(filenames)
+      print('ERROR: javap failed on ' + ' '.join(filenames))
       return False
     # Process class dump
     with open(dump_file, 'r') as dump:
@@ -163,20 +165,21 @@ def check_api_calls(opts):
   shutil.rmtree(temp_dir)
 
   if bad_api_calls:
-    print 'ERROR: Found the following calls from implementation classes through'
-    print '       API classes.  These could fail if older API is used that'
-    print '       does not contain newer methods.  Please call through a'
-    print '       wrapper class from VersionSafeCallbacks.'
-    print '\n'.join(bad_api_calls)
+    print('ERROR: Found the following calls from implementation classes '
+          'through')
+    print('       API classes.  These could fail if older API is used that')
+    print('       does not contain newer methods.  Please call through a')
+    print('       wrapper class from VersionSafeCallbacks.')
+    print('\n'.join(bad_api_calls))
   return not bad_api_calls
 
 
 def check_api_version(opts):
   if update_api.check_up_to_date(opts.api_jar):
     return True
-  print 'ERROR: API file out of date.  Please run this command:'
-  print '       components/cronet/tools/update_api.py --api_jar %s' % (
-      os.path.abspath(opts.api_jar))
+  print('ERROR: API file out of date.  Please run this command:')
+  print('       components/cronet/tools/update_api.py --api_jar %s' % (
+      os.path.abspath(opts.api_jar)))
   return False
 
 

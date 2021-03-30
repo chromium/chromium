@@ -183,8 +183,8 @@ class MODULES_EXPORT PaymentRequest final
   HeapMojoRemote<payments::mojom::blink::PaymentRequest> payment_provider_;
   HeapMojoReceiver<payments::mojom::blink::PaymentRequestClient, PaymentRequest>
       client_receiver_;
-  TaskRunnerTimer<PaymentRequest> complete_timer_;
-  TaskRunnerTimer<PaymentRequest> update_payment_details_timer_;
+  HeapTaskRunnerTimer<PaymentRequest> complete_timer_;
+  HeapTaskRunnerTimer<PaymentRequest> update_payment_details_timer_;
   bool is_waiting_for_show_promise_to_resolve_;
   bool ignore_total_;
 

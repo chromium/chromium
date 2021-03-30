@@ -9,9 +9,9 @@
 #include <string>
 #include <vector>
 
-#include "ash/app_list/app_list_export.h"
 #include "ash/app_list/views/search_result_base_view.h"
 #include "ash/app_list/views/search_result_container_view.h"
+#include "ash/ash_export.h"
 #include "base/callback.h"
 #include "base/macros.h"
 
@@ -27,7 +27,7 @@ using ResultSelectionModel = std::vector<SearchResultContainerView*>;
 // result. This includes all information to determine exactly where a result is,
 // including both inter- and intra-container details, along with the traversal
 // direction for the container.
-struct APP_LIST_EXPORT ResultLocationDetails {
+struct ASH_EXPORT ResultLocationDetails {
   ResultLocationDetails();
   ResultLocationDetails(int container_index,
                         int container_count,
@@ -61,7 +61,7 @@ struct APP_LIST_EXPORT ResultLocationDetails {
 };
 
 // A controller class to manage result selection across containers.
-class APP_LIST_EXPORT ResultSelectionController {
+class ASH_EXPORT ResultSelectionController {
  public:
   enum class MoveResult {
     // The selection has not changed (excluding the case covered by
@@ -134,6 +134,11 @@ class APP_LIST_EXPORT ResultSelectionController {
   // Sets the current selection to the provided |location|.
   void SetSelection(const ResultLocationDetails& location,
                     bool reverse_tab_order);
+
+  // Returns the location for the first result in the first non-empty result
+  // container. Returns nullptr if no results exist.
+  std::unique_ptr<ResultLocationDetails> GetFirstAvailableResultLocation()
+      const;
 
   SearchResultBaseView* GetResultAtLocation(
       const ResultLocationDetails& location);

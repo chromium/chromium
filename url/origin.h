@@ -14,12 +14,12 @@
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "ipc/ipc_param_traits.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "url/scheme_host_port.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon.h"
@@ -294,6 +294,8 @@ class COMPONENT_EXPORT(URL) Origin {
   static Origin FromJavaObject(
       const base::android::JavaRef<jobject>& java_origin);
 #endif  // OS_ANDROID
+
+  void WriteIntoTracedValue(perfetto::TracedValue context) const;
 
  private:
   friend class blink::SecurityOrigin;

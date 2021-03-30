@@ -6,7 +6,8 @@
 
 #include <utility>
 
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_pref_names.h"
+#include "base/bind_post_task.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager_factory.h"
 #include "chrome/browser/chromeos/printing/printer_configurer.h"
@@ -85,15 +86,14 @@ void CupsProxyServiceDelegateImpl::SetupPrinter(
   auto cb_runner = base::SequencedTaskRunnerHandle::Get();
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&CupsProxyServiceDelegateImpl::SetupPrinterOnThread,
+      base::BindOnce(&CupsProxyServiceDelegateImpl::SetupPrinterOnUIThread,
                      weak_factory_.GetWeakPtr(), printer,
-                     base::Passed(&cb_runner), std::move(cb)));
+                     base::BindPostTask(std::move(cb_runner), std::move(cb))));
 }
 
 // Runs on UI thread.
-void CupsProxyServiceDelegateImpl::SetupPrinterOnThread(
+void CupsProxyServiceDelegateImpl::SetupPrinterOnUIThread(
     const Printer& printer,
-    scoped_refptr<base::SequencedTaskRunner> cb_runner,
     cups_proxy::SetupPrinterCallback cb) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -104,19 +104,14 @@ void CupsProxyServiceDelegateImpl::SetupPrinterOnThread(
 
   printer_configurer_->SetUpPrinter(
       printer, base::BindOnce(&CupsProxyServiceDelegateImpl::OnSetupPrinter,
-                              weak_factory_.GetWeakPtr(),
-                              base::Passed(&cb_runner), std::move(cb)));
+                              weak_factory_.GetWeakPtr(), std::move(cb)));
 }
 
-// |printer_configurer| unused but ensures this callback outlives it.
 void CupsProxyServiceDelegateImpl::OnSetupPrinter(
-    scoped_refptr<base::SequencedTaskRunner> cb_runner,
     cups_proxy::SetupPrinterCallback cb,
     PrinterSetupResult result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  cb_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(cb), result == PrinterSetupResult::kSuccess));
+  std::move(cb).Run(result == PrinterSetupResult::kSuccess);
 }
 
 }  // namespace chromeos

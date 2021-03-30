@@ -14,10 +14,7 @@ const char kInstallEventHistogram[] = "WebApk.Install.InstallEvent";
 
 void TrackRequestTokenDuration(base::TimeDelta delta,
                                const std::string& webapk_package) {
-  if (base::EndsWith(webapk_package, "_v2"))
-    UMA_HISTOGRAM_MEDIUM_TIMES("WebApk.Install.RequestTokenDurationV2", delta);
-  else
-    UMA_HISTOGRAM_TIMES("WebApk.Install.RequestTokenDuration", delta);
+  UMA_HISTOGRAM_MEDIUM_TIMES("WebApk.Install.RequestTokenDurationV2", delta);
 }
 
 void TrackInstallDuration(base::TimeDelta delta) {

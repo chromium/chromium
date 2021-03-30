@@ -26,7 +26,7 @@
 @interface SigninPromoView : UIView
 
 @property(nonatomic, weak) id<SigninPromoViewDelegate> delegate;
-@property(nonatomic) IdentityPromoViewMode mode;
+@property(nonatomic) SigninPromoViewMode mode;
 @property(nonatomic, readonly) UIImageView* imageView;
 @property(nonatomic, readonly) UILabel* textLabel;
 @property(nonatomic, readonly) UIButton* primaryButton;
@@ -41,7 +41,6 @@
 
 // Designated initializer.
 - (instancetype)initWithFrame:(CGRect)frame NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
 // Sets the image in |imageView|. This method will add a circular background

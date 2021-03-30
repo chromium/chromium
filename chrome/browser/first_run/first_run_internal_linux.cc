@@ -6,6 +6,7 @@
 
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "chrome/installer/util/initial_preferences.h"
 
@@ -22,6 +23,11 @@ base::FilePath InitialPrefsPath() {
   base::FilePath initial_prefs;
   if (!base::PathService::Get(base::DIR_EXE, &initial_prefs))
     return base::FilePath();
+
+  base::FilePath new_path = initial_prefs.AppendASCII(installer::kInitialPrefs);
+  if (base::PathIsReadable(new_path))
+    return new_path;
+
   return initial_prefs.AppendASCII(installer::kLegacyInitialPrefs);
 }
 

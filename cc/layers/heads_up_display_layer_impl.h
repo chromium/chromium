@@ -68,6 +68,7 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
 
   void SetHUDTypeface(sk_sp<SkTypeface> typeface);
   void SetLayoutShiftRects(const std::vector<gfx::Rect>& rects);
+  void ClearLayoutShiftRects();
   const std::vector<gfx::Rect>& LayoutShiftRects() const;
   void SetWebVitalMetrics(std::unique_ptr<WebVitalMetrics> web_vital_metrics);
 
@@ -143,6 +144,7 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
                        int top,
                        std::string name,
                        const WebVitalMetrics::MetricsInfo& info,
+                       bool has_value,
                        double value) const;
   SkRect DrawWebVitalMetrics(PaintCanvas* canvas,
                              int left,
@@ -174,6 +176,8 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
   gfx::Size internal_content_bounds_;
 
   uint32_t throughput_value_ = 0.0f;
+  // Obtained from the current BeginFrameArgs.
+  base::Optional<base::TimeDelta> frame_interval_;
   MemoryHistory::Entry memory_entry_;
   int paint_rects_fade_step_ = 0;
   int layout_shift_rects_fade_step_ = 0;

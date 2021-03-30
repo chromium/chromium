@@ -6,10 +6,12 @@
 #define CHROME_BROWSER_SHARESHEET_SHARESHEET_ACTION_CACHE_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+
+class Profile;
 
 namespace gfx {
 struct VectorIcon;
@@ -23,13 +25,13 @@ class ShareAction;
 // and the SharesheetService.
 class SharesheetActionCache {
  public:
-  SharesheetActionCache();
+  explicit SharesheetActionCache(Profile* profile);
   ~SharesheetActionCache();
 
   SharesheetActionCache(const SharesheetActionCache&) = delete;
   SharesheetActionCache& operator=(const SharesheetActionCache&) = delete;
 
-  ShareAction* GetActionFromName(const base::string16& action_name);
+  ShareAction* GetActionFromName(const std::u16string& action_name);
 
   const std::vector<std::unique_ptr<ShareAction>>& GetShareActions();
 
@@ -38,7 +40,7 @@ class SharesheetActionCache {
 
   // Returns null if |display_name| is not a valid ShareAction.
   const gfx::VectorIcon* GetVectorIconFromName(
-      const base::string16& display_name);
+      const std::u16string& display_name);
 
  private:
   void AddShareAction(std::unique_ptr<ShareAction> action);

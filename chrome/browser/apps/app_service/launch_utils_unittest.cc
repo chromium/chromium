@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/common/chrome_switches.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/types/display_constants.h"
@@ -91,4 +92,77 @@ TEST_F(LaunchUtilsTest, UseIntentFullUrlInLaunchParams) {
       apps::mojom::LaunchContainer::kLaunchContainerWindow, std::move(intent));
 
   EXPECT_EQ(url, params.override_url);
+}
+
+TEST_F(LaunchUtilsTest, GetLaunchFilesFromCommandLine_NoAppID) {
+  // Validate an empty vector is returned if there is
+  // no AppID specified on the command line.
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  std::vector<base::FilePath> launch_files =
+      apps::GetLaunchFilesFromCommandLine(command_line);
+  EXPECT_EQ(launch_files.size(), 0U);
+}
+
+TEST_F(LaunchUtilsTest, GetLaunchFilesFromCommandLine_NoFiles) {
+  // Validate an empty vector is returned if there are
+  // no files specified on the command line.
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitchASCII(switches::kAppId, "test");
+  std::vector<base::FilePath> launch_files =
+      apps::GetLaunchFilesFromCommandLine(command_line);
+  EXPECT_EQ(launch_files.size(), 0U);
+}
+
+TEST_F(LaunchUtilsTest, GetLaunchFilesFromCommandLine_SingleFile) {
+  // Validate a vector with size 1 is returned, and the
+  // contents match the command line parameter.
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitchASCII(switches::kAppId, "test");
+  command_line.AppendArg("filename");
+  std::vector<base::FilePath> launch_files =
+      apps::GetLaunchFilesFromCommandLine(command_line);
+  ASSERT_EQ(launch_files.size(), 1U);
+  EXPECT_EQ(launch_files[0], base::FilePath(FILE_PATH_LITERAL("filename")));
+}
+
+TEST_F(LaunchUtilsTest, GetLaunchFilesFromCommandLine_MultipleFiles) {
+  // Validate a vector with size 2 is returned, and the
+  // contents match the command line parameter.
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitchASCII(switches::kAppId, "test");
+  command_line.AppendArg("filename");
+  command_line.AppendArg("filename2");
+  std::vector<base::FilePath> launch_files =
+      apps::GetLaunchFilesFromCommandLine(command_line);
+  ASSERT_EQ(launch_files.size(), 2U);
+  EXPECT_EQ(launch_files[0], base::FilePath(FILE_PATH_LITERAL("filename")));
+  EXPECT_EQ(launch_files[1], base::FilePath(FILE_PATH_LITERAL("filename2")));
+}
+
+TEST_F(LaunchUtilsTest, GetLaunchFilesFromCommandLine_FileProtocol) {
+  // Validate a vector with size 1 is returned, and the
+  // contents match the command line parameter. This uses
+  // the file protocol to reference the file.
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitchASCII(switches::kAppId, "test");
+  command_line.AppendArg("file://filename");
+  std::vector<base::FilePath> launch_files =
+      apps::GetLaunchFilesFromCommandLine(command_line);
+  ASSERT_EQ(launch_files.size(), 1U);
+  EXPECT_EQ(launch_files[0],
+            base::FilePath(FILE_PATH_LITERAL("file://filename")));
+}
+
+TEST_F(LaunchUtilsTest, GetLaunchFilesFromCommandLine_CustomProtocol) {
+  // Validate a vector with size 1 is returned, and the
+  // contents match the command line parameter. This uses
+  // a test protocol.
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitchASCII(switches::kAppId, "test");
+  command_line.AppendArg("web+test://filename");
+  std::vector<base::FilePath> launch_files =
+      apps::GetLaunchFilesFromCommandLine(command_line);
+  ASSERT_EQ(launch_files.size(), 1U);
+  EXPECT_EQ(launch_files[0],
+            base::FilePath(FILE_PATH_LITERAL("web+test://filename")));
 }

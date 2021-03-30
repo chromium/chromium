@@ -54,7 +54,7 @@ int64_t ManagedBookmarksTracker::LoadInitial(BookmarkNode* folder,
                                              int64_t next_node_id) {
   for (size_t i = 0; i < list->GetSize(); ++i) {
     // Extract the data for the next bookmark from the |list|.
-    base::string16 title;
+    std::u16string title;
     GURL url;
     const base::ListValue* children = nullptr;
     if (!LoadBookmark(list, i, &title, &url, &children))
@@ -89,7 +89,7 @@ void ManagedBookmarksTracker::Init(BookmarkPermanentNode* managed_node) {
     ReloadManagedBookmarks();
 }
 
-base::string16 ManagedBookmarksTracker::GetBookmarksFolderTitle() const {
+std::u16string ManagedBookmarksTracker::GetBookmarksFolderTitle() const {
   std::string name = prefs_->GetString(prefs::kManagedBookmarksFolderName);
   if (!name.empty())
     return base::UTF8ToUTF16(name);
@@ -117,7 +117,7 @@ void ManagedBookmarksTracker::UpdateBookmarks(const BookmarkNode* folder,
   size_t folder_index = 0;
   for (size_t i = 0; i < list->GetSize(); ++i) {
     // Extract the data for the next bookmark from the |list|.
-    base::string16 title;
+    std::u16string title;
     GURL url;
     const base::ListValue* children = nullptr;
     if (!LoadBookmark(list, i, &title, &url, &children)) {
@@ -158,7 +158,7 @@ void ManagedBookmarksTracker::UpdateBookmarks(const BookmarkNode* folder,
 // static
 bool ManagedBookmarksTracker::LoadBookmark(const base::ListValue* list,
                                            size_t index,
-                                           base::string16* title,
+                                           std::u16string* title,
                                            GURL* url,
                                            const base::ListValue** children) {
   std::string spec;

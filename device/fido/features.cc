@@ -19,8 +19,19 @@ const base::Feature kWebAuthUseNativeWinApi{"WebAuthenticationUseNativeWinApi",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // defined(OS_WIN)
 
-extern const base::Feature kWebAuthBiometricEnrollment{
-    "WebAuthenticationBiometricEnrollment", base::FEATURE_ENABLED_BY_DEFAULT};
+extern const base::Feature kWebAuthCableServerLink {
+  // This feature is default-enabled in the same cases as |kWebAuthCable|.
+  "WebAuthenticationCableServerLink",
+
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+// If updating this, also update kWebAuthCable.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_LINUX)
+      base::FEATURE_DISABLED_BY_DEFAULT
+#else
+      base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+};
 
 extern const base::Feature kWebAuthPhoneSupport{
     "WebAuthenticationPhoneSupport", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -29,53 +40,10 @@ extern const base::Feature kWebAuthCableExtensionAnywhere{
     "WebAuthenticationCableExtensionAnywhere",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-extern const base::Feature kWebAuthGetAssertionFeaturePolicy{
-    "WebAuthenticationGetAssertionFeaturePolicy",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
-const base::Feature kWebAuthCableLowLatency{"WebAuthenticationCableLowLatency",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
-#endif  // defined(OS_CHROMEOS) || defined(OS_LINUX)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const base::Feature kWebAuthCrosPlatformAuthenticator{
     "WebAuthenticationCrosPlatformAuthenticator",
     base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-extern const base::Feature kWebAuthAttestationBlockList{
-    "WebAuthentiationAttestationBlockList", base::FEATURE_DISABLED_BY_DEFAULT};
-
-extern const base::FeatureParam<std::string> kWebAuthAttestationBlockedDomains{
-    &kWebAuthAttestationBlockList,
-    "domains",
-    "",
-};
-
-bool DoesMatchWebAuthAttestationBlockedDomains(const url::Origin& origin) {
-  const std::string& blocked_domains = kWebAuthAttestationBlockedDomains.Get();
-  if (blocked_domains.empty()) {
-    return false;
-  }
-
-  const std::vector<std::string> domains = base::SplitString(
-      blocked_domains, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  for (const std::string& domain : domains) {
-    static constexpr char kWildcardPrefix[] = "(*.)";
-    if (!domain.empty() && domain[0] == '(' &&
-        domain.find(kWildcardPrefix) == 0) {
-      base::StringPiece domain_part(domain);
-      domain_part.remove_prefix(sizeof(kWildcardPrefix) - 1);
-      if (origin.DomainIs(domain_part)) {
-        return true;
-      }
-    } else if (!origin.opaque() && origin.host() == domain) {
-      return true;
-    }
-  }
-
-  return false;
-}
 
 }  // namespace device

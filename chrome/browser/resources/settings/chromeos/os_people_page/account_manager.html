@@ -17,6 +17,7 @@
 <link rel="import" href="../../router.html">
 <link rel="import" href="../../settings_shared_css.html">
 <link rel="import" href="../../people_page/account_manager_browser_proxy.html">
+<link rel="import" href="../parental_controls_page/parental_controls_browser_proxy.html">
 
 <dom-module id="settings-account-manager">
   <template>
@@ -31,6 +32,10 @@
         max-width: 560px;
       }
 
+      .account-manager-description.full-width {
+        max-width: none;
+      }
+
       .profile-icon {
         --profile-icon-size: 40px;
         background: center / cover no-repeat;
@@ -42,7 +47,7 @@
 
       .profile-icon.device-account-icon {
         --profile-icon-size: 60px;
-        margin-top: 20px;
+        margin-top: 16px;
       }
 
       .device-account-container {
@@ -53,7 +58,8 @@
 
       .device-account-container .primary {
         font-weight: 500;
-        margin-top: 15px;
+        margin-bottom: 4px;
+        margin-top: 16px;
       }
 
       .account-list-item {
@@ -84,9 +90,35 @@
         width: 15px;
       }
 
+      .settings-box.secondary-accounts-box {
+        align-items: flex-end;
+      }
+
+      .account-list-header-description {
+        align-items: center;
+        display: flex;
+        width: 100%;
+      }
+
+      .account-list-header-description > .secondary {
+        flex-grow: 1;
+      }
+
+      .account-list-header-description > .secondary {
+        padding-inline-end: 40px;
+      }
+
+      .secondary-accounts-disabled-tooltip {
+        padding-inline-end: 12px;
+      }
+
       #account-list-header > h2 {
-        padding-bottom: 12px;
-        padding-top: 12px;
+        padding-bottom: 8px;
+        padding-top: 16px;
+      }
+
+      #account-list-header {
+        padding-bottom: 8px;
       }
 
       cr-policy-indicator {
@@ -94,7 +126,7 @@
         margin-top: var(--add-account-margin-top);
       }
 
-      #add-account-button {
+      .secondary-accounts-box > #add-account-button {
         margin-bottom: 12px;
         margin-top: 12px;
       }
@@ -112,7 +144,7 @@
       }
 
       .error-badge {
-        background: url(chrome://resources/images/error_badge.svg)
+        background: url(chrome://os-settings/images/error_badge.svg)
             center / cover no-repeat;
         display: block;
         height: 20px;
@@ -157,9 +189,11 @@
       .managed-message {
         color: var(--cr-secondary-text-color);
         justify-content: center;
+        margin-top: 16px;
       }
 
-      .managed-message > iron-icon {
+      .managed-message > iron-icon,
+      .managed-message > cr-icon-button {
         margin-inline-end: 5px;
       }
 
@@ -192,37 +226,32 @@
     </style>
 
     <!-- Account management description -->
-    <div class="settings-box first account-manager-description">
+    <div class$="[[getAccountManagerDescriptionClassList_(
+                        'settings-box first account-manager-description',
+                        isAccountManagementFlowsV2Enabled_)]]">
       <settings-localized-link
           localized-string="[[getAccountManagerDescription_()]]"
           link-url="$i18nRaw{accountManagerLearnMoreUrl}">
       </settings-localized-link>
-      <div hidden$="[[!isChildUser_]]">
+      <div hidden$="[[!showChildMessage_(isChildUser_,
+                        isAccountManagementFlowsV2Enabled_)]]">
         <p>$i18n{accountManagerChildFirstMessage}</p>
         <p>$i18n{accountManagerChildSecondMessage}</p>
       </div>
     </div>
 
     <template is="dom-if" if="[[isAccountManagementFlowsV2Enabled_]]">
-      <!-- Primary account description -->
-      <div class="settings-box first">
-        <div class="start two-line account-manager-description">
-          <div>
-            <h2>$i18n{accountManagerUnmanagedLabel}</h2>
-            <settings-localized-link
-                localized-string=
-                  "$i18n{accountManagerPrimaryAccountDescription}"
-                on-link-clicked="goToSyncSettings_">
-            </settings-localized-link>
-          </div>
-        </div>
-      </div>
-
+      <!-- Managed account badge and message -->
       <template is="dom-if" if="[[isDeviceAccountManaged_]]">
         <div class="settings-box first managed-message">
-          <iron-icon icon="[[getManagedAccountTooltipIcon_(isChildUser_,
-                            isDeviceAccountManaged_)]]">
-          </iron-icon>
+          <template is="dom-if" if="[[!isChildUser_]]">
+            <iron-icon icon="cr20:domain"></iron-icon>
+          </template>
+          <template is="dom-if" if="[[isChildUser_]]">
+            <cr-icon-button iron-icon="cr20:kite"
+                on-click="onManagedIconClick_">
+            </cr-icon-button>
+          </template>
           <settings-localized-link
               localized-string=
                 "[[getManagementDescription_(isChildUser_, deviceAccount_)]]"
@@ -232,7 +261,7 @@
       </template>
 
       <!-- Primary account icon, name and email -->
-      <div class="device-account-container" tabIndex="0"
+      <div class="device-account-container"
           aria-labelledby="deviceAccountFullName"
           aria-describedby="deviceAccountEmail">
         <div class="profile-icon device-account-icon"
@@ -254,41 +283,63 @@
       </div>
     </template>
 
-    <!-- Message saying that secondary account signin is not allowed -->
-    <div id="settings-box-user-message" class="settings-box first user-message"
-        hidden="[[isSecondaryGoogleAccountSigninAllowed_]]">
-      <cr-policy-pref-indicator class="secondary-accounts-policy-indicator"
-          pref=
-          "[[prefs.account_manager.secondary_google_account_signin_allowed]]">
-      </cr-policy-pref-indicator>
-      <div id="user-message-text" class="secondary">
-        [[getSecondaryAccountsDisabledUserMessage_()]]
+    <template is="dom-if" if="[[!isAccountManagementFlowsV2Enabled_]]">
+      <!-- Message saying that secondary account signin is not allowed -->
+      <div id="settings-box-user-message"
+          class="settings-box first user-message"
+          hidden="[[isSecondaryGoogleAccountSigninAllowed_]]">
+        <cr-policy-pref-indicator class="secondary-accounts-policy-indicator"
+            pref=
+            "[[prefs.account_manager.secondary_google_account_signin_allowed]]">
+        </cr-policy-pref-indicator>
+        <div id="user-message-text" class="secondary">
+          [[getSecondaryAccountsDisabledUserMessage_()]]
+        </div>
       </div>
-    </div>
+    </template>
 
     <!-- Secondary Accounts list header -->
-    <div class="settings-box first">
+    <div class="secondary-accounts-box settings-box first">
       <div id="account-list-header" class="start">
         <h2>
           [[getAccountListHeader_(isChildUser_)]]
-          <template is="dom-if" if="[[isAccountManagementFlowsV2Enabled_]]">
+        </h2>
+        <div class="account-list-header-description"
+            hidden$="[[!isAccountManagementFlowsV2Enabled_]]">
+          <span class="secondary">
+            [[getAccountListDescription_(isChildUser_)]]
+          </span>
+          <template is="dom-if" if="[[showSecondaryAccountsDisabledTooltip_(
+                                    isSecondaryGoogleAccountSigninAllowed_)]]">
             <cr-tooltip-icon
-                aria-hidden="true"
-                class="secondary-accounts-tooltip"
-                icon-class="cr:info-outline"
-                tooltip-text="[[getSecondaryAccountsTooltip_(accounts_)]]"
-                icon-aria-label="[[getSecondaryAccountsTooltip_(accounts_)]]">
+                class="secondary-accounts-disabled-tooltip"
+                icon-class="[[getManagedAccountTooltipIcon_(isChildUser_)]]"
+                tooltip-text="[[getSecondaryAccountsDisabledUserMessage_(
+                                    isChildUser_)]]"
+                icon-aria-label="[[getSecondaryAccountsDisabledUserMessage_(
+                                      isChildUser_)]]">
             </cr-tooltip-icon>
           </template>
-        </h2>
+          <template is="dom-if" if="[[isAccountManagementFlowsV2Enabled_]]">
+            <cr-button disabled="[[!isSecondaryGoogleAccountSigninAllowed_]]"
+                id="add-account-button" on-click="addAccount_"
+                deep-link-focus-id$="[[Setting.kAddAccount]]">
+              <div id="add-account-icon"></div>
+              [[getAddAccountLabel_(isChildUser_,
+                  isSecondaryGoogleAccountSigninAllowed_)]]
+            </cr-button>
+          </template>
+        </div>
       </div>
-      <cr-button disabled="[[!isSecondaryGoogleAccountSigninAllowed_]]"
-          id="add-account-button" on-click="addAccount_"
-          deep-link-focus-id$="[[Setting.kAddAccount]]">
-        <div id="add-account-icon"></div>
-        [[getAddAccountLabel_(isChildUser_,
-            isSecondaryGoogleAccountSigninAllowed_)]]
-      </cr-button>
+      <template is="dom-if" if="[[!isAccountManagementFlowsV2Enabled_]]">
+        <cr-button disabled="[[!isSecondaryGoogleAccountSigninAllowed_]]"
+            id="add-account-button" on-click="addAccount_"
+            deep-link-focus-id$="[[Setting.kAddAccount]]">
+          <div id="add-account-icon"></div>
+          [[getAddAccountLabel_(isChildUser_,
+              isSecondaryGoogleAccountSigninAllowed_)]]
+        </cr-button>
+      </template>
     </div>
 
     <!-- Secondary Accounts list -->
@@ -369,19 +420,14 @@
         </div>
       </template>
 
-      <div class$="[[getBottomBorderClassList_(accounts_)]]">
-        <div hidden$="[[!shouldShowNoAccountsMessage_(accounts_)]]"
-            class="no-accounts-message">
-          $i18n{accountManagerSecondaryAccountDescription}
-        </div>
-      </div>
-
       <cr-action-menu role-description="$i18n{menu}">
         <button class="dropdown-item" on-click="onRemoveAccountTap_">
           $i18n{removeAccountLabel}
         </button>
       </cr-action-menu>
     </div>
+
+    <div class="settings-box"></div>
 
   </template>
   <script src="account_manager.js"></script>

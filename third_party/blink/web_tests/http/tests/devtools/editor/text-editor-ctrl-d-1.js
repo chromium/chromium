@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`This test verifies Ctrl-D functionality, which selects next occurrence of word.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`
 <pre id="codeSnippet">function wordData() {

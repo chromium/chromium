@@ -4,8 +4,9 @@
 
 #include "chrome/browser/ui/ash/security_token_session_restriction_view.h"
 
+#include <string>
+
 #include "base/i18n/message_formatter.h"
-#include "base/strings/string16.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -22,6 +23,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -36,7 +38,7 @@ gfx::ImageSkia GetImage() {
   return gfx::CreateVectorIcon(chromeos::kEnterpriseIcon, 20, SK_ColorDKGRAY);
 }
 
-base::string16 GetTitle(
+std::u16string GetTitle(
     chromeos::login::SecurityTokenSessionController::Behavior behavior) {
   switch (behavior) {
     case chromeos::login::SecurityTokenSessionController::Behavior::kLogout:
@@ -51,10 +53,10 @@ base::string16 GetTitle(
       break;
   }
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16 GetButtonLabel(
+std::u16string GetButtonLabel(
     chromeos::login::SecurityTokenSessionController::Behavior behavior) {
   switch (behavior) {
     case chromeos::login::SecurityTokenSessionController::Behavior::kLogout:
@@ -68,10 +70,10 @@ base::string16 GetButtonLabel(
       break;
   }
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16 GetDialogText(
+std::u16string GetDialogText(
     chromeos::login::SecurityTokenSessionController::Behavior behavior,
     const std::string& domain,
     base::TimeDelta time_remaining) {
@@ -104,7 +106,7 @@ base::string16 GetDialogText(
       break;
   }
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 }  // namespace
@@ -112,7 +114,6 @@ base::string16 GetDialogText(
 SecurityTokenSessionRestrictionView::SecurityTokenSessionRestrictionView(
     base::TimeDelta duration,
     base::OnceClosure accept_callback,
-    base::OnceClosure window_closing_callback,
     chromeos::login::SecurityTokenSessionController::Behavior behavior,
     const std::string& domain)
     : AppDialogView(GetImage()),
@@ -125,9 +126,8 @@ SecurityTokenSessionRestrictionView::SecurityTokenSessionRestrictionView(
   SetTitle(GetTitle(behavior));
 
   SetAcceptCallback(std::move(accept_callback));
-  RegisterWindowClosingCallback(std::move(window_closing_callback));
 
-  InitializeView(/*heading_text=*/base::string16());
+  InitializeView(/*heading_text=*/std::u16string());
   UpdateLabel();
 
   update_timer_.Start(FROM_HERE, kCountdownUpdateInterval, this,
@@ -144,3 +144,6 @@ void SecurityTokenSessionRestrictionView::UpdateLabel() {
     update_timer_.Stop();
   }
 }
+
+BEGIN_METADATA(SecurityTokenSessionRestrictionView, AppDialogView);
+END_METADATA

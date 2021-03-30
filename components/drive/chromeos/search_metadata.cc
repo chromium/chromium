@@ -20,7 +20,7 @@ namespace internal {
 namespace {
 
 // Appends substring of |original_text| to |highlighted_text| with highlight.
-void AppendStringWithHighlight(const base::string16& original_text,
+void AppendStringWithHighlight(const std::u16string& original_text,
                                size_t start,
                                size_t length,
                                bool highlight,
@@ -49,7 +49,7 @@ bool FindAndHighlight(
   size_t match_start = 0;
   size_t match_length = 0;
 
-  base::string16 text16 = base::UTF8ToUTF16(text);
+  std::u16string text16 = base::UTF8ToUTF16(text);
   std::vector<bool> highlights(text16.size(), false);
   for (const auto& query : queries) {
     if (!query->Search(text16, &match_start, &match_length))

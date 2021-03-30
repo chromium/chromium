@@ -38,9 +38,9 @@ const int kMediaNotificationCountHistogramMax = 20;
 const char kCountHistogramName[] = "Media.Notification.Count";
 const char kCastCountHistogramName[] = "Media.Notification.Cast.Count";
 
-base::string16 GetAccessibleNameFromMetadata(
+std::u16string GetAccessibleNameFromMetadata(
     media_session::MediaMetadata session_metadata) {
-  std::vector<base::string16> text;
+  std::vector<std::u16string> text;
 
   if (!session_metadata.title.empty())
     text.push_back(session_metadata.title);
@@ -51,8 +51,7 @@ base::string16 GetAccessibleNameFromMetadata(
   if (!session_metadata.album.empty())
     text.push_back(session_metadata.album);
 
-  base::string16 accessible_name =
-      base::JoinString(text, base::ASCIIToUTF16(" - "));
+  std::u16string accessible_name = base::JoinString(text, u" - ");
   return accessible_name;
 }
 

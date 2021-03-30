@@ -4,7 +4,6 @@
 
 package org.chromium.components.strictmode;
 
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.StrictMode.ThreadPolicy;
@@ -181,11 +180,7 @@ public interface ThreadStrictModeInterceptor {
 
         /** Make immutable. */
         public ThreadStrictModeInterceptor build() {
-            if (Build.VERSION.SDK_INT >= 28) {
-                return new ThreadStrictModeInterceptorP(mWhitelistEntries, mCustomPenalty);
-            } else {
-                return new ReflectiveThreadStrictModeInterceptor(mWhitelistEntries, mCustomPenalty);
-            }
+            return new ReflectiveThreadStrictModeInterceptor(mWhitelistEntries, mCustomPenalty);
         }
     }
 }

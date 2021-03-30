@@ -1,0 +1,23 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer ignored
+++++++++layoutTable
+++++++++++genericContainer ignored
+++++++++++++layoutTableRow
+++++++++++++++layoutTableCell name='1.'
+++++++++++++++++staticText name='1.'
+++++++++++++++++++inlineTextBox name='1.'
+++++++++++++++layoutTableCell name='2.'
+++++++++++++++++staticText name='2.'
+++++++++++++++++++inlineTextBox name='2.'
+++++++genericContainer name='3. 4.'
+++++++++layoutTable
+++++++++++genericContainer ignored
+++++++++++++layoutTableRow
+++++++++++++++layoutTableCell name='3.'
+++++++++++++++++staticText name='3.'
+++++++++++++++++++inlineTextBox name='3.'
+++++++++++++++layoutTableCell name='4.'
+++++++++++++++++staticText name='4.'
+++++++++++++++++++inlineTextBox name='4.'

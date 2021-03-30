@@ -100,7 +100,7 @@ void ConnectionInfoViewAndroid::SetIdentityInfo(
 
     ScopedJavaLocalRef<jstring> description = ConvertUTF8ToJavaString(
         env, identity_info.identity_status_description_android);
-    base::string16 certificate_label;
+    std::u16string certificate_label;
 
     // Only show the certificate viewer link if the connection actually used a
     // certificate.
@@ -116,7 +116,7 @@ void ConnectionInfoViewAndroid::SetIdentityInfo(
         icon_color_id);
 
     if (identity_info.show_ssl_decision_revoke_button) {
-      base::string16 reset_button_label = l10n_util::GetStringUTF16(
+      std::u16string reset_button_label = l10n_util::GetStringUTF16(
           IDS_PAGE_INFO_RESET_INVALID_CERTIFICATE_DECISIONS_BUTTON);
       Java_ConnectionInfoView_addResetCertDecisionsButton(
           env, popup_jobject_,

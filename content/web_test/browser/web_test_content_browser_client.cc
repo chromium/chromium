@@ -30,6 +30,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_content_browser_client.h"
+#include "content/test/data/mojo_bindings_web_test.test-mojom.h"
 #include "content/test/data/mojo_web_test_helper_test.mojom.h"
 #include "content/test/mock_badge_service.h"
 #include "content/test/mock_clipboard_host.h"
@@ -48,12 +49,16 @@
 #include "content/web_test/browser/web_test_storage_access_manager.h"
 #include "content/web_test/browser/web_test_tts_platform.h"
 #include "content/web_test/common/web_test_bluetooth_fake_adapter_setter.mojom.h"
+#include "content/web_test/common/web_test_string_util.h"
 #include "content/web_test/common/web_test_switches.h"
 #include "device/bluetooth/public/mojom/test/fake_bluetooth.mojom.h"
 #include "device/bluetooth/test/fake_bluetooth.h"
 #include "gpu/config/gpu_switches.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/net_buildflags.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/service_manager/public/cpp/manifest.h"
@@ -142,6 +147,65 @@ void CreateChildProcessCrashWatcher() {
   static base::NoDestructor<ChildProcessCrashWatcher> watcher;
 }
 
+class MojoWebTestCounterImpl : public mojo_bindings_test::mojom::Counter {
+ public:
+  using CounterObserver = mojo_bindings_test::mojom::CounterObserver;
+
+  MojoWebTestCounterImpl() {
+    additional_receivers_.set_disconnect_handler(base::BindRepeating(
+        &MojoWebTestCounterImpl::OnCloneDisconnected, base::Unretained(this)));
+  }
+
+  ~MojoWebTestCounterImpl() override = default;
+
+  static void Bind(mojo::PendingReceiver<Counter> receiver) {
+    mojo::MakeSelfOwnedReceiver(std::make_unique<MojoWebTestCounterImpl>(),
+                                std::move(receiver));
+  }
+
+  // mojo_bindings_test::mojom::Counter:
+  void AddObserver(
+      mojo::PendingAssociatedRemote<CounterObserver> observer) override {
+    observers_.Add(std::move(observer));
+  }
+
+  void AddNewObserver(AddNewObserverCallback callback) override {
+    mojo::PendingAssociatedRemote<CounterObserver> observer;
+    std::move(callback).Run(observer.InitWithNewEndpointAndPassReceiver());
+    observers_.Add(std::move(observer));
+  }
+
+  void RemoveAllObservers() override { observers_.Clear(); }
+
+  void Clone(mojo::PendingAssociatedReceiver<Counter> receiver) override {
+    additional_receivers_.Add(this, std::move(receiver));
+  }
+
+  void CloneToNewRemote(CloneToNewRemoteCallback callback) override {
+    mojo::PendingAssociatedRemote<Counter> new_remote;
+    additional_receivers_.Add(this,
+                              new_remote.InitWithNewEndpointAndPassReceiver());
+    std::move(callback).Run(std::move(new_remote));
+  }
+
+  void Increment(IncrementCallback callback) override {
+    ++count_;
+    for (const auto& observer : observers_)
+      observer->OnCountChanged(count_);
+    std::move(callback).Run(count_);
+  }
+
+ private:
+  void OnCloneDisconnected() {
+    for (const auto& observer : observers_)
+      observer->OnCloneDisconnected();
+  }
+
+  int count_ = 0;
+  mojo::AssociatedReceiverSet<Counter> additional_receivers_;
+  mojo::AssociatedRemoteSet<CounterObserver> observers_;
+};
+
 }  // namespace
 
 WebTestContentBrowserClient::WebTestContentBrowserClient() {
@@ -205,6 +269,8 @@ void WebTestContentBrowserClient::ExposeInterfacesToRenderer(
     RenderProcessHost* render_process_host) {
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner =
       content::GetUIThreadTaskRunner({});
+  registry->AddInterface(base::BindRepeating(&MojoWebTestCounterImpl::Bind),
+                         ui_task_runner);
   registry->AddInterface(base::BindRepeating(&MojoEcho::Bind), ui_task_runner);
   registry->AddInterface(
       base::BindRepeating(&WebTestBluetoothFakeAdapterSetterImpl::Create),
@@ -253,7 +319,7 @@ void WebTestContentBrowserClient::BindStorageAccessAutomation(
 }
 
 void WebTestContentBrowserClient::OverrideWebkitPrefs(
-    RenderViewHost* render_view_host,
+    WebContents* web_contents,
     blink::web_pref::WebPreferences* prefs) {
   if (WebTestControlHost::Get())
     WebTestControlHost::Get()->OverrideWebkitPrefs(prefs);
@@ -330,7 +396,7 @@ WebTestContentBrowserClient::GetOriginsRequiringDedicatedProcess() {
     };
 
     // The list of schemes below is based on
-    // third_party/blink/tools/blinkpy/third_party/wpt/wpt.config.json
+    // //third_party/wpt_tools/wpt.config.json
     const char* kOriginTemplates[] = {
         "http://%s/",
         "https://%s/",
@@ -381,6 +447,19 @@ bool WebTestContentBrowserClient::CanCreateWindow(
     bool opener_suppressed,
     bool* no_javascript_access) {
   *no_javascript_access = false;
+
+  WebTestControlHost* control_host = WebTestControlHost::Get();
+  bool dump_navigation_policy =
+      control_host->web_test_runtime_flags().dump_navigation_policy();
+
+  if (dump_navigation_policy) {
+    static_cast<mojom::WebTestControlHost*>(control_host)
+        ->PrintMessage(
+            "Default policy for createView for '" +
+            web_test_string_util::URLDescription(target_url) + "' is '" +
+            web_test_string_util::WindowOpenDispositionToString(disposition) +
+            "'\n");
+  }
   return !block_popups_ || user_gesture;
 }
 
@@ -464,7 +543,8 @@ std::unique_ptr<LoginDelegate> WebTestContentBrowserClient::CreateLoginDelegate(
 void WebTestContentBrowserClient::ConfigureNetworkContextParamsForShell(
     BrowserContext* context,
     network::mojom::NetworkContextParams* context_params,
-    network::mojom::CertVerifierCreationParams* cert_verifier_creation_params) {
+    cert_verifier::mojom::CertVerifierCreationParams*
+        cert_verifier_creation_params) {
   ShellContentBrowserClient::ConfigureNetworkContextParamsForShell(
       context, context_params, cert_verifier_creation_params);
 
@@ -496,17 +576,20 @@ void WebTestContentBrowserClient::BindWebTestControlHost(
 }
 
 #if defined(OS_WIN)
-bool WebTestContentBrowserClient::PreSpawnRenderer(
+bool WebTestContentBrowserClient::PreSpawnChild(
     sandbox::TargetPolicy* policy,
-    RendererSpawnFlags flags) {
-  // Add sideloaded font files for testing. See also DIR_WINDOWS_FONTS
-  // addition in |StartSandboxedProcess|.
-  std::vector<std::string> font_files = switches::GetSideloadFontFiles();
-  for (std::vector<std::string>::const_iterator i(font_files.begin());
-       i != font_files.end(); ++i) {
-    policy->AddRule(sandbox::TargetPolicy::SUBSYS_FILES,
-                    sandbox::TargetPolicy::FILES_ALLOW_READONLY,
-                    base::UTF8ToWide(*i).c_str());
+    sandbox::policy::SandboxType sandbox_type,
+    ChildSpawnFlags flags) {
+  if (sandbox_type == sandbox::policy::SandboxType::kRenderer) {
+    // Add sideloaded font files for testing. See also DIR_WINDOWS_FONTS
+    // addition in |StartSandboxedProcess|.
+    std::vector<std::string> font_files = switches::GetSideloadFontFiles();
+    for (std::vector<std::string>::const_iterator i(font_files.begin());
+         i != font_files.end(); ++i) {
+      policy->AddRule(sandbox::TargetPolicy::SUBSYS_FILES,
+                      sandbox::TargetPolicy::FILES_ALLOW_READONLY,
+                      base::UTF8ToWide(*i).c_str());
+    }
   }
   return true;
 }

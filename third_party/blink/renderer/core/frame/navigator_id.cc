@@ -34,6 +34,7 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 #if !defined(OS_MAC) && !defined(OS_WIN)
 #include <sys/utsname.h>
@@ -81,10 +82,15 @@ String NavigatorID::platform() const {
   struct utsname osname;
   DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<String>, platform_name, ());
   if (platform_name->IsNull()) {
-    *platform_name =
-        String(uname(&osname) >= 0 ? String(osname.sysname) + String(" ") +
-                                         String(osname.machine)
-                                   : g_empty_string);
+    StringBuilder result;
+    if (uname(&osname) >= 0) {
+      result.Append(osname.sysname);
+      if (strlen(osname.machine) != 0) {
+        result.Append(" ");
+        result.Append(osname.machine);
+      }
+    }
+    *platform_name = result.ToString();
   }
   return *platform_name;
 #endif

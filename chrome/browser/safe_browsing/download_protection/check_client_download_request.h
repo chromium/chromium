@@ -43,16 +43,13 @@ class CheckClientDownloadRequest : public CheckClientDownloadRequestBase,
 
   static bool IsSupportedDownload(const download::DownloadItem& item,
                                   const base::FilePath& target_path,
-                                  DownloadCheckResultReason* reason,
-                                  ClientDownloadRequest::DownloadType* type);
+                                  DownloadCheckResultReason* reason);
 
  private:
   // CheckClientDownloadRequestBase overrides:
-  bool IsSupportedDownload(DownloadCheckResultReason* reason,
-                           ClientDownloadRequest::DownloadType* type) override;
+  bool IsSupportedDownload(DownloadCheckResultReason* reason) override;
   content::BrowserContext* GetBrowserContext() const override;
   bool IsCancelled() override;
-  void PopulateRequest(ClientDownloadRequest* request) override;
   base::WeakPtr<CheckClientDownloadRequestBase> GetWeakPtr() override;
 
   void NotifySendRequest(const ClientDownloadRequest* request) override;
@@ -80,7 +77,9 @@ class CheckClientDownloadRequest : public CheckClientDownloadRequestBase,
   bool ShouldPromptForDeepScanning(
       DownloadCheckResultReason reason) const override;
 
-  bool IsWhitelistedByPolicy() const override;
+  bool IsAllowlistedByPolicy() const override;
+
+  bool IsUnderAdvancedProtection() const;
 
   // The DownloadItem we are checking. Will be NULL if the request has been
   // canceled. Must be accessed only on UI thread.

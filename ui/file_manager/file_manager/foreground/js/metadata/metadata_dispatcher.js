@@ -8,7 +8,7 @@
 // #import {Id3Parser} from './id3_parser.m.js';
 // #import {MetadataParser} from './metadata_parser.m.js';
 // #import {MpegParser} from './mpeg_parser.m.js';
-// #import {MetadataParserLogger} from '../../../../externs/metadata_worker_window.m.js';
+// #import {MetadataParserLogger} from '../../../externs/metadata_worker_window.m.js';
 // clang-format on
 
 // All of these scripts could be imported with a single call to importScripts,

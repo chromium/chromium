@@ -60,12 +60,7 @@ if (enable_vulkan) {
       "vma_wrapper.h",
     ]
 
-    defines = [
-      "IS_VULKAN_IMPL",
-      "VMA_DYNAMIC_VULKAN_FUNCTIONS=0",
-      "VMA_STATS_STRING_ENABLED=0",
-      "VMA_IMPLEMENTATION",
-    ]
+    defines = [ "IS_VULKAN_IMPL" ]
 
     deps = [
       ":vulkan_function_pointers",
@@ -111,6 +106,7 @@ if (enable_vulkan) {
       ":buildflags",
       "//base",
       "//base/util/type_safety",
+      "//build:chromeos_buildflags",
       "//components/crash/core/common:crash_key",
       "//gpu/ipc/common:vulkan_ycbcr_info",
       "//ui/gfx",
@@ -157,9 +153,6 @@ if (enable_vulkan) {
       if (is_debug || dcheck_always_on) {
         data_deps += [ "//third_party/fuchsia-sdk:vulkan_validation" ]
       }
-    }
-    if (use_x11) {
-      deps += [ "//ui/base:features" ]
     }
   }
 

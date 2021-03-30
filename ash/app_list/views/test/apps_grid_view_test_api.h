@@ -38,17 +38,21 @@ class AppsGridViewTestApi {
 
   bool HasPendingPageFlip() const;
 
-  int TilesPerPage(int page) const;
+  int TilesPerPage() const;
 
   int AppsOnPage(int page) const;
 
   AppListItemView* GetViewAtIndex(GridIndex index) const;
 
-  views::View* GetViewAtVisualIndex(int page, int slot) const;
+  AppListItemView* GetViewAtVisualIndex(int page, int slot) const;
 
   gfx::Rect GetItemTileRectAtVisualIndex(int page, int slot) const;
 
   void WaitForItemMoveAnimationDone();
+
+  void Update() { view_->Update(); }
+
+  AppListItemList* GetItemList() { return view_->item_list_; }
 
  private:
   AppsGridView* view_;

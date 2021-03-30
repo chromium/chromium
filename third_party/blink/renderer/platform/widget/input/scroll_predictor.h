@@ -37,7 +37,8 @@ class PLATFORM_EXPORT ScrollPredictor {
   // event if enable_resampling is true.
   std::unique_ptr<EventWithCallback> ResampleScrollEvents(
       std::unique_ptr<EventWithCallback> event_with_callback,
-      base::TimeTicks frame_time);
+      base::TimeTicks frame_time,
+      base::TimeDelta frame_interval);
 
  private:
   friend class test::InputHandlerProxyEventQueueTest;
@@ -52,6 +53,7 @@ class PLATFORM_EXPORT ScrollPredictor {
 
   // Apply resampled deltaX/deltaY to gesture events
   void ResampleEvent(base::TimeTicks frame_time,
+                     base::TimeDelta frame_interval,
                      WebInputEvent* event,
                      ui::LatencyInfo* latency_info);
 

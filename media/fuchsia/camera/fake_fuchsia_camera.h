@@ -149,13 +149,20 @@ class FakeCameraStream : public fuchsia::camera3::testing::Stream_TestBase,
 
 class FakeCameraDevice : public fuchsia::camera3::testing::Device_TestBase {
  public:
-  explicit FakeCameraDevice(FakeCameraStream* stream);
+  FakeCameraDevice();
   ~FakeCameraDevice() final;
 
   FakeCameraDevice(const FakeCameraDevice&) = delete;
   FakeCameraDevice& operator=(const FakeCameraDevice&) = delete;
 
   void Bind(fidl::InterfaceRequest<fuchsia::camera3::Device> request);
+
+  FakeCameraStream* stream() { return &stream_; }
+
+  // Sets a custom handler for GetIdentifier() messages.
+  void SetGetIdentifierHandler(
+      base::RepeatingCallback<void(GetIdentifierCallback)>
+          get_identifier_handler);
 
  private:
   // fuchsia::camera3::Device implementation.
@@ -169,11 +176,16 @@ class FakeCameraDevice : public fuchsia::camera3::testing::Device_TestBase {
   void NotImplemented_(const std::string& name) override;
 
   fidl::BindingSet<fuchsia::camera3::Device> bindings_;
-  FakeCameraStream* const stream_;
+
+  FakeCameraStream stream_;
+
+  base::RepeatingCallback<void(GetIdentifierCallback)> get_identifier_handler_;
 };
 
 class FakeCameraDeviceWatcher {
  public:
+  using DevicesMap = std::map<uint64_t, std::unique_ptr<FakeCameraDevice>>;
+
   explicit FakeCameraDeviceWatcher(sys::OutgoingDirectory* outgoing_directory);
   ~FakeCameraDeviceWatcher();
 
@@ -182,16 +194,24 @@ class FakeCameraDeviceWatcher {
 
   void DisconnectClients();
 
-  FakeCameraStream* stream() { return &stream_; }
+  const DevicesMap& devices() const { return devices_; }
+
+  // Removes camera device from the list and returns the corresponding
+  // FakeCameraStream and FakeCameraDevice. The caller may want to hold the
+  // returned object, e.g. to ensure that the corresponding FIDL connections
+  // are not dropped.
+  std::unique_ptr<FakeCameraDevice> RemoveDevice(uint64_t device_id);
 
  private:
   class Client : public fuchsia::camera3::testing::DeviceWatcher_TestBase {
    public:
-    explicit Client(FakeCameraDevice* device);
+    explicit Client(FakeCameraDeviceWatcher* device_watcher);
     ~Client() final;
 
     Client(const Client&) = delete;
     Client& operator=(const Client&) = delete;
+
+    void QueueEvent(fuchsia::camera3::WatchDevicesEvent event);
 
     // fuchsia::camera3::testing::DeviceWatcher_TestBase override.
     void NotImplemented_(const std::string& name) final;
@@ -203,15 +223,19 @@ class FakeCameraDeviceWatcher {
         fidl::InterfaceRequest<fuchsia::camera3::Device> request) final;
 
    private:
-    bool devices_sent_ = false;
-    FakeCameraDevice* const device_;
+    bool initial_list_sent_ = false;
+    std::vector<fuchsia::camera3::WatchDevicesEvent> event_queue_;
+
+    WatchDevicesCallback watch_devices_callback_;
+    FakeCameraDeviceWatcher* const device_watcher_;
   };
 
   fidl::BindingSet<fuchsia::camera3::DeviceWatcher, std::unique_ptr<Client>>
       bindings_;
 
-  FakeCameraStream stream_;
-  FakeCameraDevice device_{&stream_};
+  DevicesMap devices_;
+
+  uint64_t next_device_id_ = 1;
 };
 
 }  // namespace media

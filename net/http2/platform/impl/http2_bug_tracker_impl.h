@@ -7,8 +7,12 @@
 
 #include "base/logging.h"
 
-#define HTTP2_BUG_IMPL LOG(DFATAL)
-#define HTTP2_BUG_IF_IMPL LOG_IF(DFATAL, (condition))
+#define HTTP2_BUG_IMPL(bug_id) LOG(DFATAL)
+#define HTTP2_BUG_IF_IMPL(bug_id) LOG_IF(DFATAL, (condition))
+
+#define HTTP2_BUG_V2_IMPL(bug_id) LOG(DFATAL)
+#define HTTP2_BUG_IF_V2_IMPL(bug_id, condition) LOG_IF(DFATAL, (condition))
+
 #define FLAGS_http2_always_log_bugs_for_tests_IMPL (true)
 
 #endif  // NET_HTTP2_PLATFORM_IMPL_HTTP2_BUG_TRACKER_IMPL_H_

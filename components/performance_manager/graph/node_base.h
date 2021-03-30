@@ -17,6 +17,7 @@
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/node_type.h"
 #include "components/performance_manager/graph/properties.h"
+#include "components/performance_manager/public/graph/node_state.h"
 
 namespace performance_manager {
 
@@ -43,6 +44,14 @@ class NodeBase {
   // May be called on any sequence.
   NodeTypeEnum type() const { return type_; }
 
+  // The state of this node.
+  NodeState GetNodeState() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!graph_)
+      return NodeState::kNotInGraph;
+    return graph_->GetNodeState(this);
+  }
+
   // Returns the graph that contains this node. Only valid after JoinGraph() and
   // before LeaveGraph().
   GraphImpl* graph() const {
@@ -61,28 +70,62 @@ class NodeBase {
   // TypedNodeBase.
   virtual const Node* ToNode() const = 0;
 
+  // Satisfies part of the contract expected by ObservedProperty.
+  // GetObservers is implemented by TypedNodeImpl.
+  bool CanSetProperty() const;
+  bool CanSetAndNotifyProperty() const;
+
  protected:
   friend class GraphImpl;
 
   // Helper function for TypedNodeBase to access the list of typed observers
   // stored in the graph.
   template <typename Observer>
-  static const std::vector<Observer*>& GetObservers(const GraphImpl* graph) {
+  const std::vector<Observer*>& GetObservers(const GraphImpl* graph) const {
+    DCHECK(CanSetAndNotifyProperty());
     return graph->GetObservers<Observer>();
   }
 
-  // Joins the |graph|.
+  // Node lifecycle:
+
+  // Step 0: A node is constructed. Node state is kNotInGraph.
+
+  // Step 1:
+  // Joins the |graph|. Node must be in the kNotInGraph state, and will
+  // transition to kInitializing immediately after this call.
   void JoinGraph(GraphImpl* graph);
 
-  // Leaves the graph that this node is a part of.
-  void LeaveGraph();
-
+  // Step 2:
   // Called as this node is joining |graph_|, a good opportunity to initialize
-  // node state.
+  // node state. The node will be in the kInitializing state during this
+  // call. Nodes may modify their properties but *not* cause notifications to be
+  // emitted.
   virtual void OnJoiningGraph();
+
+  // Step 3:
+  // Node added notifications are dispatched. The node must not be modified
+  // during any of these notifications. The node is in the kJoingGraph state.
+
+  // Step 4:
+  // The node lives in the graph normally at this point, in the kActiveInGraph
+  // state.
+
+  // Step 5:
   // Called just before leaving |graph_|, a good opportunity to uninitialize
-  // node state.
+  // node state. The node will be in the kActiveInGraph state during this call.
+  // The node may make property changes, and these changes may cause
+  // notifications to be dispatched.
   virtual void OnBeforeLeavingGraph();
+
+  // Step 6:
+  // Node removed notifications are dispatched. The node must not be modified
+  // during any of these notifications. The node is in the kLeavingGraph state.
+
+  // Step 7:
+  // Leaves the graph that this node is a part of. The node is in the
+  // kLeavingGraph state during this call, and will be in the kNotInGraph state
+  // immediately afterwards.
+  void LeaveGraph();
 
   const NodeTypeEnum type_;
 
@@ -103,6 +146,10 @@ class PublicNodeImpl : public PublicNodeClass {
   // Node implementation:
   Graph* GetGraph() const override {
     return static_cast<const NodeImplClass*>(this)->graph();
+  }
+  NodeState GetNodeState() const override {
+    return static_cast<const NodeBase*>(static_cast<const NodeImplClass*>(this))
+        ->GetNodeState();
   }
   uintptr_t GetImplType() const override { return NodeBase::kNodeBaseType; }
   const void* GetImpl() const override {
@@ -143,7 +190,7 @@ class TypedNodeBase : public NodeBase {
   }
 
   // Convenience accessor to the per-node-class list of observers that is stored
-  // in the graph.
+  // in the graph. Satisfies the contract expected by ObservedProperty.
   const std::vector<NodeObserverClass*>& GetObservers() const {
     // Mediate through NodeBase, as it's the class that is friended by the
     // GraphImpl in order to provide access.

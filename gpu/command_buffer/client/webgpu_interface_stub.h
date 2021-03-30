@@ -25,23 +25,21 @@ class WebGPUInterfaceStub : public WebGPUInterface {
   // WebGPUInterface implementation
   const DawnProcTable& GetProcs() const override;
   void FlushCommands() override;
-  void FlushCommands(DawnDeviceClientID device_client_id) override;
-  void EnsureAwaitingFlush(DawnDeviceClientID device_client_id,
-                           bool* needs_flush) override;
-  void FlushAwaitingCommands(DawnDeviceClientID device_client_id) override;
-  WGPUDevice GetDevice(DawnDeviceClientID device_client_id) override;
-  ReservedTexture ReserveTexture(DawnDeviceClientID device_client_id) override;
-  bool RequestAdapterAsync(
+  void EnsureAwaitingFlush(bool* needs_flush) override;
+  void FlushAwaitingCommands() override;
+  void DisconnectContextAndDestroyServer() override;
+  ReservedTexture ReserveTexture(WGPUDevice device) override;
+  void RequestAdapterAsync(
       PowerPreference power_preference,
       base::OnceCallback<void(int32_t,
                               const WGPUDeviceProperties&,
                               const char*)> request_adapter_callback) override;
-  bool RequestDeviceAsync(
+  void RequestDeviceAsync(
       uint32_t adapter_service_id,
       const WGPUDeviceProperties& requested_device_properties,
-      base::OnceCallback<void(bool, DawnDeviceClientID)>
-          request_device_callback) override;
-  void RemoveDevice(DawnDeviceClientID device_client_id) override;
+      base::OnceCallback<void(WGPUDevice)> request_device_callback) override;
+
+  WGPUDevice DeprecatedEnsureDefaultDeviceSync() override;
 
 // Include the auto-generated part of this class. We split this because
 // it means we can easily edit the non-auto generated parts right here in

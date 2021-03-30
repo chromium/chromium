@@ -21,6 +21,11 @@ namespace chrome_test_util {
 // test will have consecutive numbers.
 id<GREYMatcher> WindowWithNumber(int window_number);
 
+// Shorthand matcher for creating a matcher that ensures the given matcher
+// matches elements under the given window.
+id<GREYMatcher> MatchInWindowWithNumber(int window_number,
+                                        id<GREYMatcher> matcher);
+
 // Matcher for element with accessibility label corresponding to |message_id|
 // and accessibility trait UIAccessibilityTraitButton.
 id<GREYMatcher> ButtonWithAccessibilityLabelId(int message_id);
@@ -272,6 +277,10 @@ id<GREYMatcher> GoogleServicesSettingsView();
 // Returns matcher for the back button on a settings menu.
 id<GREYMatcher> SettingsMenuBackButton();
 
+// Returns matcher for the back button on a settings menu in given window
+// number.
+id<GREYMatcher> SettingsMenuBackButton(int window_number);
+
 // Returns matcher for the Privacy cell on the main Settings screen.
 id<GREYMatcher> SettingsMenuPrivacyButton();
 
@@ -430,6 +439,15 @@ id<GREYMatcher> TabGridIncognitoTabsPanelButton();
 // the tab grid.
 id<GREYMatcher> TabGridOtherDevicesPanelButton();
 
+// Returns the GREYMatcher for the tab grid background.
+id<GREYMatcher> TabGridBackground();
+
+// Returns the GREYMatcher for the regular tab grid.
+id<GREYMatcher> RegularTabGrid();
+
+// Returns the GREYMatcher for the incognito tab grid.
+id<GREYMatcher> IncognitoTabGrid();
+
 // Returns the GREYMatcher for the button to close the cell at |index| in the
 // tab grid.
 id<GREYMatcher> TabGridCloseButtonForCellAtIndex(unsigned int index);
@@ -536,6 +554,13 @@ id<GREYMatcher> ManualFallbackCreditCardTableViewWindowMatcher();
 
 // Returns the matcher for the iOS 13+ Activity View header.
 id<GREYMatcher> ActivityViewHeader(NSString* page_title);
+
+// Returns a matcher for the button to trigger password generation on manual
+// fallback.
+id<GREYMatcher> ManualFallbackSuggestPasswordMatcher();
+
+// Returns a matcher for the button to accept the generated password.
+id<GREYMatcher> UseSuggestedPasswordMatcher();
 
 }  // namespace chrome_test_util
 

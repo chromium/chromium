@@ -89,8 +89,7 @@
         </network-icon>
         <div id="networkState" class="title settings-box-text"
             connected$="[[isConnectedState_(managedProperties_)]]"
-            error$="[[isConnectionErrorState_(
-                managedProperties_, outOfRange_, deviceState_)]]">
+            error$="[[isOutOfRangeOrNotEnabled_(outOfRange_, deviceState_)]]">
           [[getStateText_(managedProperties_, propertiesReceived_,
               outOfRange_, deviceState_)]]
         </div>
@@ -105,22 +104,26 @@
       <cr-button id="forgetButton" on-click="onForgetTap_"
           hidden$="[[!showForget_(managedProperties_)]]"
           disabled="[[disableForget_(managedProperties_,
-              prefs.vpn_config_allowed)]]">
+              prefs.vpn_config_allowed, disabled)]]">
         $i18n{networkButtonForget}
       </cr-button>
-      <cr-button on-click="onViewAccountTap_"
-          hidden$="[[!showViewAccount_(managedProperties_)]]">
+      <cr-button id="viewAccountButton"
+          on-click="onViewAccountTap_"
+          hidden$="[[!showViewAccount_(managedProperties_)]]"
+          disabled="[[disabled]]">
         $i18n{networkButtonViewAccount}
       </cr-button>
-      <cr-button on-click="onActivateTap_"
-          hidden$="[[!showActivate_(managedProperties_)]]">
+      <cr-button id="activateButton"
+          on-click="onActivateTap_"
+          hidden$="[[!showActivate_(managedProperties_)]]"
+          disabled="[[disabled]]">
         $i18n{networkButtonActivate}
       </cr-button>
       <cr-button id="configureButton" on-click="onConfigureTap_"
           hidden$="[[!showConfigure_(managedProperties_, globalPolicy,
               managedNetworkAvailable)]]"
           disabled="[[disableConfigure_(managedProperties_,
-              prefs.vpn_config_allowed)]]"
+              prefs.vpn_config_allowed, disabled)]]"
           deep-link-focus-id$="[[Setting.kConfigureEthernet]]">
         $i18n{networkButtonConfigure}
       </cr-button>
@@ -132,8 +135,8 @@
               globalPolicy,managedNetworkAvailable, deviceState_)]]"
           disabled="[[shouldConnectDisconnectButtonBeDisabled_(
               managedProperties_, defaultNetwork,propertiesReceived_,
-              outOfRange_, globalPolicy, managedNetworkAvailable, deviceState_
-              )]]"
+              outOfRange_, globalPolicy, managedNetworkAvailable, deviceState_,
+              disabled)]]"
           label="[[getConnectDisconnectButtonLabel_(managedProperties_,
               globalPolicy,managedNetworkAvailable, deviceState_)]]"
           pref="[[getFakeVpnConfigPrefForEnforcement_(managedProperties_,
@@ -215,8 +218,8 @@
               property="[[managedProperties_.priority]]">
           </cr-policy-network-indicator-mojo>
           <cr-toggle id="preferNetworkToggle" checked="{{preferNetwork_}}"
-              disabled="[[isNetworkPolicyEnforced(
-                  managedProperties_.priority)]]"
+              disabled="[[shouldPreferNetworkToggleBeDisabled_(
+                  managedProperties_.priority, disabled)]]"
               aria-labelledby="preferNetworkToggleLabel"
               deep-link-focus-id$="[[Setting.kPreferWifiNetwork]]">
           </cr-toggle>
@@ -230,7 +233,8 @@
             pref="{{autoConnectPref_}}"
             label="[[getAutoConnectToggleLabel_(managedProperties_)]]"
             deep-link-focus-id$="[[Setting.kWifiAutoConnectToNetwork]]
-                [[Setting.kCellularAutoConnectToNetwork]]">
+                [[Setting.kCellularAutoConnectToNetwork]]"
+            disabled="[[disabled]]">
         </settings-toggle-button>
         <!-- Hidden Network Warning -->
         <template is="dom-if"
@@ -248,7 +252,8 @@
           if="[[showAlwaysOnVpn_(managedProperties_)]]">
         <settings-toggle-button id="alwaysOnVpnToggle" class="hr"
             pref="{{alwaysOnVpn_}}"
-            label="$i18n{networkAlwaysOnVpn}">
+            label="$i18n{networkAlwaysOnVpn}"
+            disabled="[[disabled]]">
         </settings-toggle-button>
       </template>
       <!-- Data roaming (Cellular only). -->
@@ -257,7 +262,8 @@
             pref="{{prefs.cros.signed.data_roaming_enabled}}"
             label="$i18n{networkAllowDataRoaming}"
             sub-label="[[getRoamingDetails_(managedProperties_)]]"
-            deep-link-focus-id$="[[Setting.kCellularRoaming]]">
+            deep-link-focus-id$="[[Setting.kCellularRoaming]]"
+            disabled="[[disabled]]">
         </settings-toggle-button>
       </template>
       <!-- SIM Info (Cellular only). -->
@@ -267,7 +273,9 @@
           restamp>
         <div class="settings-box single-column stretch">
           <network-siminfo id="cellularSimInfo"
-              device-state="[[deviceState_]]">
+              network-state="[[getNetworkState_(managedProperties_)]]"
+              device-state="[[deviceState_]]"
+              disabled="[[disabled]]">
           </network-siminfo>
         </div>
       </template>
@@ -280,11 +288,12 @@
       <!-- Properties to always show if present. -->
       <template is="dom-if" if="[[hasInfoFields_(managedProperties_)]]">
         <div class="settings-box single-column stretch">
-          <network-property-list-mojo
+          <network-property-list-mojo id="infoFields"
               fields="[[getInfoFields_(managedProperties_)]]"
               edit-field-types="[[getInfoEditFieldTypes_(managedProperties_)]]"
               property-dict="[[managedProperties_]]"
-              on-property-change="onNetworkPropertyChange_">
+              on-property-change="onNetworkPropertyChange_"
+              disabled="[[disabled]]">
           </network-property-list-mojo>
         </div>
       </template>
@@ -293,7 +302,7 @@
                                  propertiesReceived_, showMeteredToggle_)]]">
         <!-- Advanced toggle. -->
         <cr-expand-button
-            alt="$i18n{networkSectionAdvancedA11yLabel}"
+            aria-label="$i18n{networkSectionAdvancedA11yLabel}"
             class="settings-box"
             expanded="{{advancedExpanded_}}">
           $i18n{networkSectionAdvanced}
@@ -306,7 +315,10 @@
             <template is="dom-if"
                 if="[[showCellularSimUpdatedUi_(managedProperties_)]]" restamp>
               <div class="single-column stretch">
-                <network-siminfo device-state="[[deviceState_]]">
+                <network-siminfo id="cellularSimInfoAdvanced"
+                    network-state="[[getNetworkState_(managedProperties_)]]"
+                    device-state="[[deviceState_]]"
+                    disabled="[[disabled]]">
                 </network-siminfo>
               </div>
             </template>
@@ -320,22 +332,25 @@
                   checked="{{meteredOverride_}}"
                   on-checked-changed="meteredChanged_"
                   deep-link-focus-id$="[[Setting.kWifiMetered]]
-                      [[Setting.kCellularMetered]]">
+                      [[Setting.kCellularMetered]]"
+                  disabled="[[disabled]]">
               </network-config-toggle>
             </template>
             <!-- Advanced properties -->
             <template is="dom-if"
                 if="[[hasAdvancedFields_(managedProperties_)]]">
-              <network-property-list-mojo
+              <network-property-list-mojo id="advancedFields"
                   fields="[[getAdvancedFields_(managedProperties_)]]"
-                  property-dict="[[managedProperties_]]">
+                  property-dict="[[managedProperties_]]"
+                  disabled="[[disabled]]">
               </network-property-list-mojo>
             </template>
             <!-- Device properties -->
             <template is="dom-if" if="[[hasDeviceFields_(managedProperties_)]]">
-              <network-property-list-mojo
+              <network-property-list-mojo id="deviceFields"
                   fields="[[getDeviceFields_(managedProperties_)]]"
-                  property-dict="[[managedProperties_]]">
+                  property-dict="[[managedProperties_]]"
+                  disabled="[[disabled]]">
               </network-property-list-mojo>
             </template>
           </div>
@@ -346,7 +361,7 @@
           globalPolicy, managedNetworkAvailable)]]">
         <!-- Network toggle -->
         <cr-expand-button
-            alt="$i18n{networkSectionNetworkExpandA11yLabel}"
+            aria-label="$i18n{networkSectionNetworkExpandA11yLabel}"
             class="settings-box"
             expanded="{{networkExpanded_}}">
           <div class="settings-row">
@@ -366,14 +381,16 @@
             <template is="dom-if"
                 if="[[showCellularChooseNetwork_(managedProperties_)]]">
               <network-choose-mobile device-state="[[deviceState_]]"
-                  managed-properties="[[managedProperties_]]">
+                  managed-properties="[[managedProperties_]]"
+                  disabled="[[disabled]]">
               </network-choose-mobile>
             </template>
 
             <!-- APN -->
             <template is="dom-if" if="[[isCellular_(managedProperties_)]]">
               <network-apnlist on-apn-change="onApnChange_"
-                  managed-properties="[[managedProperties_]]">
+                  managed-properties="[[managedProperties_]]"
+                  disabled="[[disabled]]">
               </network-apnlist>
             </template>
 
@@ -381,10 +398,12 @@
             <template is="dom-if"
                 if="[[isRememberedOrConnected_(managedProperties_)]]">
               <network-ip-config on-ip-change="onIPConfigChange_"
-                  managed-properties="[[managedProperties_]]">
+                  managed-properties="[[managedProperties_]]"
+                  disabled="[[disabled]]">
               </network-ip-config>
               <network-nameservers on-nameservers-change="onIPConfigChange_"
-                  managed-properties="[[managedProperties_]]">
+                  managed-properties="[[managedProperties_]]"
+                  disabled="[[disabled]]">
               </network-nameservers>
             </template>
           </div>
@@ -403,7 +422,7 @@
           globalPolicy, managedNetworkAvailable)]]">
         <!-- Proxy toggle -->
         <cr-expand-button
-            alt="$i18n{networkSectionProxyExpandA11yLabel}"
+            aria-label="$i18n{networkSectionProxyExpandA11yLabel}"
             class="settings-box"
             expanded="{{proxyExpanded_}}">
           $i18n{networkSectionProxy}
@@ -412,7 +431,8 @@
         <iron-collapse opened="[[proxyExpanded_]]">
           <network-proxy-section prefs="{{prefs}}"
               on-proxy-change="onProxyChange_"
-              managed-properties="[[managedProperties_]]">
+              managed-properties="[[managedProperties_]]"
+              disabled="[[disabled]]">
           </network-proxy-section>
         </iron-collapse>
       </template>

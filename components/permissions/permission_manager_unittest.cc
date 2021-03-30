@@ -25,7 +25,7 @@
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/build_info.h"
@@ -42,10 +42,10 @@ class FakePermissionContext : public PermissionContextBase {
   FakePermissionContext(
       content::BrowserContext* browser_context,
       ContentSettingsType content_settings_type,
-      blink::mojom::FeaturePolicyFeature feature_policy_feature)
+      blink::mojom::PermissionsPolicyFeature permissions_policy_feature)
       : PermissionContextBase(browser_context,
                               content_settings_type,
-                              feature_policy_feature) {}
+                              permissions_policy_feature) {}
 
   // PermissionContextBase:
   bool IsRestrictedToSecureOrigins() const override { return true; }
@@ -56,10 +56,10 @@ class FakePermissionContextAlwaysAllow : public FakePermissionContext {
   FakePermissionContextAlwaysAllow(
       content::BrowserContext* browser_context,
       ContentSettingsType content_settings_type,
-      blink::mojom::FeaturePolicyFeature feature_policy_feature)
+      blink::mojom::PermissionsPolicyFeature permissions_policy_feature)
       : FakePermissionContext(browser_context,
                               content_settings_type,
-                              feature_policy_feature) {}
+                              permissions_policy_feature) {}
 
   // PermissionContextBase:
   ContentSetting GetPermissionStatusInternal(
@@ -76,28 +76,28 @@ PermissionManager::PermissionContextMap CreatePermissionContexts(
   permission_contexts[ContentSettingsType::GEOLOCATION] =
       std::make_unique<FakePermissionContext>(
           browser_context, ContentSettingsType::GEOLOCATION,
-          blink::mojom::FeaturePolicyFeature::kGeolocation);
+          blink::mojom::PermissionsPolicyFeature::kGeolocation);
   permission_contexts[ContentSettingsType::NOTIFICATIONS] =
       std::make_unique<FakePermissionContext>(
           browser_context, ContentSettingsType::NOTIFICATIONS,
-          blink::mojom::FeaturePolicyFeature::kNotFound);
+          blink::mojom::PermissionsPolicyFeature::kNotFound);
   permission_contexts[ContentSettingsType::MIDI_SYSEX] =
       std::make_unique<FakePermissionContext>(
           browser_context, ContentSettingsType::MIDI_SYSEX,
-          blink::mojom::FeaturePolicyFeature::kMidiFeature);
+          blink::mojom::PermissionsPolicyFeature::kMidiFeature);
   permission_contexts[ContentSettingsType::MIDI] =
       std::make_unique<FakePermissionContextAlwaysAllow>(
           browser_context, ContentSettingsType::MIDI,
-          blink::mojom::FeaturePolicyFeature::kMidiFeature);
+          blink::mojom::PermissionsPolicyFeature::kMidiFeature);
   permission_contexts[ContentSettingsType::STORAGE_ACCESS] =
       std::make_unique<FakePermissionContextAlwaysAllow>(
           browser_context, ContentSettingsType::STORAGE_ACCESS,
-          blink::mojom::FeaturePolicyFeature::kStorageAccessAPI);
+          blink::mojom::PermissionsPolicyFeature::kStorageAccessAPI);
 #if defined(OS_ANDROID)
   permission_contexts[ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER] =
       std::make_unique<FakePermissionContext>(
           browser_context, ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
-          blink::mojom::FeaturePolicyFeature::kEncryptedMedia);
+          blink::mojom::PermissionsPolicyFeature::kEncryptedMedia);
 #endif
   return permission_contexts;
 }
@@ -198,16 +198,17 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
 
   // The header policy should only be set once on page load, so we refresh the
   // page to simulate that.
-  void RefreshPageAndSetHeaderPolicy(content::RenderFrameHost** rfh,
-                                     blink::mojom::FeaturePolicyFeature feature,
-                                     const std::vector<std::string>& origins) {
+  void RefreshPageAndSetHeaderPolicy(
+      content::RenderFrameHost** rfh,
+      blink::mojom::PermissionsPolicyFeature feature,
+      const std::vector<std::string>& origins) {
     content::RenderFrameHost* current = *rfh;
     auto navigation = content::NavigationSimulator::CreateRendererInitiated(
         current->GetLastCommittedURL(), current);
     std::vector<url::Origin> parsed_origins;
     for (const std::string& origin : origins)
       parsed_origins.push_back(url::Origin::Create(GURL(origin)));
-    navigation->SetFeaturePolicyHeader(
+    navigation->SetPermissionsPolicyHeader(
         {{feature, parsed_origins, false, false}});
     navigation->Commit();
     *rfh = navigation->GetFinalRenderFrameHost();
@@ -216,10 +217,10 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
   content::RenderFrameHost* AddChildRFH(
       content::RenderFrameHost* parent,
       const char* origin,
-      blink::mojom::FeaturePolicyFeature feature =
-          blink::mojom::FeaturePolicyFeature::kNotFound) {
-    blink::ParsedFeaturePolicy frame_policy = {};
-    if (feature != blink::mojom::FeaturePolicyFeature::kNotFound) {
+      blink::mojom::PermissionsPolicyFeature feature =
+          blink::mojom::PermissionsPolicyFeature::kNotFound) {
+    blink::ParsedPermissionsPolicy frame_policy = {};
+    if (feature != blink::mojom::PermissionsPolicyFeature::kNotFound) {
       frame_policy.push_back(
           {feature, std::vector<url::Origin>{url::Origin::Create(GURL(origin))},
            false, false});
@@ -716,7 +717,7 @@ TEST_F(PermissionManagerTest, GetPermissionStatusDelegation) {
 
   // Enabling geolocation by FP should allow the child to request access also.
   child = AddChildRFH(parent, kOrigin2,
-                      blink::mojom::FeaturePolicyFeature::kGeolocation);
+                      blink::mojom::PermissionsPolicyFeature::kGeolocation);
 
   EXPECT_EQ(CONTENT_SETTING_ASK,
             GetPermissionControllerDelegate()
@@ -731,7 +732,7 @@ TEST_F(PermissionManagerTest, GetPermissionStatusDelegation) {
       PermissionRequestManager::FromWebContents(web_contents());
   auto prompt_factory = std::make_unique<MockPermissionPromptFactory>(manager);
   prompt_factory->set_response_type(PermissionRequestManager::ACCEPT_ALL);
-  prompt_factory->DocumentOnLoadCompletedInMainFrame();
+  prompt_factory->DocumentOnLoadCompletedInMainFrame(main_rfh());
 
   RequestPermission(PermissionType::GEOLOCATION, child, GURL(kOrigin2));
 
@@ -766,7 +767,8 @@ TEST_F(PermissionManagerTest, GetPermissionStatusDelegation) {
 
   // If the parent changes its policy, the child should be blocked.
   RefreshPageAndSetHeaderPolicy(
-      &parent, blink::mojom::FeaturePolicyFeature::kGeolocation, {kOrigin1});
+      &parent, blink::mojom::PermissionsPolicyFeature::kGeolocation,
+      {kOrigin1});
   child = AddChildRFH(parent, kOrigin2);
 
   EXPECT_EQ(CONTENT_SETTING_ASK,
@@ -820,7 +822,7 @@ TEST_F(PermissionManagerTest, SubscribeWithPermissionDelegation) {
 
   // Enabling geolocation by FP should allow the child to request access also.
   child = AddChildRFH(parent, kOrigin2,
-                      blink::mojom::FeaturePolicyFeature::kGeolocation);
+                      blink::mojom::PermissionsPolicyFeature::kGeolocation);
 
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             GetPermissionControllerDelegate()

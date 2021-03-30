@@ -6,8 +6,9 @@
 #define EXTENSIONS_COMMON_MANIFEST_HANDLERS_PERMISSIONS_PARSER_H_
 
 #include <memory>
+#include <string>
 
-#include "base/strings/string16.h"
+#include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permission_set.h"
 
@@ -27,7 +28,7 @@ class PermissionsParser {
   ~PermissionsParser();
 
   // Parse the manifest-specified permissions.
-  bool Parse(Extension* extension, base::string16* error);
+  bool Parse(Extension* extension, std::u16string* error);
 
   // Finalize the permissions, setting the related manifest data on the
   // extension.
@@ -36,10 +37,10 @@ class PermissionsParser {
   // Modify the manifest permissions. These methods should only be used
   // during initialization and will DCHECK() for safety.
   static void AddAPIPermission(Extension* extension,
-                               APIPermission::ID permission);
+                               mojom::APIPermissionID permission);
   static void AddAPIPermission(Extension* extension, APIPermission* permission);
   static bool HasAPIPermission(const Extension* extension,
-                               APIPermission::ID permission);
+                               mojom::APIPermissionID permission);
   static void SetScriptableHosts(Extension* extension,
                                  const URLPatternSet& scriptable_hosts);
 

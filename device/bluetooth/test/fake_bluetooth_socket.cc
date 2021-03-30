@@ -9,10 +9,6 @@ namespace device {
 FakeBluetoothSocket::FakeBluetoothSocket() = default;
 FakeBluetoothSocket::~FakeBluetoothSocket() = default;
 
-void FakeBluetoothSocket::Close() {
-  called_close_ = true;
-}
-
 void FakeBluetoothSocket::Disconnect(base::OnceClosure success_callback) {
   called_disconnect_ = true;
   std::move(success_callback).Run();

@@ -14,6 +14,15 @@
 namespace mojo {
 
 // static
+bool StructTraits<cc::mojom::DelegatedInkBrowserMetadataDataView,
+                  cc::DelegatedInkBrowserMetadata>::
+    Read(cc::mojom::DelegatedInkBrowserMetadataDataView data,
+         cc::DelegatedInkBrowserMetadata* out) {
+  out->delegated_ink_is_hovering = data.delegated_ink_is_hovering();
+  return true;
+}
+
+// static
 bool StructTraits<
     cc::mojom::RenderFrameMetadataDataView,
     cc::RenderFrameMetadata>::Read(cc::mojom::RenderFrameMetadataDataView data,
@@ -21,7 +30,6 @@ bool StructTraits<
   out->root_background_color = data.root_background_color();
   out->is_scroll_offset_at_top = data.is_scroll_offset_at_top();
   out->is_mobile_optimized = data.is_mobile_optimized();
-  out->has_delegated_ink_metadata = data.has_delegated_ink_metadata();
   out->device_scale_factor = data.device_scale_factor();
   out->page_scale_factor = data.page_scale_factor();
   out->external_page_scale_factor = data.external_page_scale_factor();
@@ -40,6 +48,7 @@ bool StructTraits<
 #endif
   return data.ReadRootScrollOffset(&out->root_scroll_offset) &&
          data.ReadSelection(&out->selection) &&
+         data.ReadDelegatedInkMetadata(&out->delegated_ink_metadata) &&
 #if defined(OS_ANDROID)
          data.ReadScrollableViewportSize(&out->scrollable_viewport_size) &&
          data.ReadRootLayerSize(&out->root_layer_size) &&

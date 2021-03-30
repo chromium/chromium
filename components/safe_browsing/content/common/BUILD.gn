@@ -12,12 +12,8 @@ mojom("interfaces") {
   public_deps = [
     "//components/safe_browsing/core/common:interfaces",
     "//services/network/public/mojom",
-    "//third_party/blink/public/mojom:mojom_platform",
     "//url/mojom:url_mojom_gurl",
   ]
-
-  overridden_deps = [ "//third_party/blink/public/mojom:mojom_platform" ]
-  component_deps = [ "//third_party/blink/public/common:common" ]
 
   enabled_features = []
   if (safe_browsing_mode > 0) {

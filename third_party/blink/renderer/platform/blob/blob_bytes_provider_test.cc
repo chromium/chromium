@@ -327,8 +327,11 @@ TEST_F(BlobBytesProviderTest, RequestAsStream) {
   provider->AppendData(test_data2_);
   provider->AppendData(test_data3_);
 
-  mojo::DataPipe pipe(7);
-  provider->RequestAsStream(std::move(pipe.producer_handle));
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  ASSERT_EQ(mojo::CreateDataPipe(7, producer_handle, consumer_handle),
+            MOJO_RESULT_OK);
+  provider->RequestAsStream(std::move(producer_handle));
 
   Vector<uint8_t> received_data;
   base::RunLoop loop;
@@ -336,7 +339,7 @@ TEST_F(BlobBytesProviderTest, RequestAsStream) {
       FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC,
       blink::scheduler::GetSequencedTaskRunnerForTesting());
   watcher.Watch(
-      pipe.consumer_handle.get(), MOJO_HANDLE_SIGNAL_READABLE,
+      consumer_handle.get(), MOJO_HANDLE_SIGNAL_READABLE,
       MOJO_WATCH_CONDITION_SATISFIED,
       base::BindRepeating(
           [](mojo::DataPipeConsumerHandle pipe,
@@ -361,7 +364,7 @@ TEST_F(BlobBytesProviderTest, RequestAsStream) {
                                     MOJO_READ_DATA_FLAG_ALL_OR_NONE));
             bytes_out->AppendVector(bytes);
           },
-          pipe.consumer_handle.get(), loop.QuitClosure(), &received_data));
+          consumer_handle.get(), loop.QuitClosure(), &received_data));
   loop.Run();
 
   EXPECT_EQ(combined_bytes_, received_data);

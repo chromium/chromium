@@ -16,8 +16,8 @@
 #include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/chromeos/ui/echo_dialog_view.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -34,6 +34,7 @@
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 
 namespace echo_api = extensions::api::echo_private;
 
@@ -215,13 +216,13 @@ void EchoPrivateGetUserConsentFunction::OnMoreInfoLinkClicked() {
 
 void EchoPrivateGetUserConsentFunction::CheckRedeemOffersAllowed() {
   chromeos::CrosSettingsProvider::TrustedStatus status =
-      chromeos::CrosSettings::Get()->PrepareTrustedValues(base::BindOnce(
+      ash::CrosSettings::Get()->PrepareTrustedValues(base::BindOnce(
           &EchoPrivateGetUserConsentFunction::CheckRedeemOffersAllowed, this));
   if (status == chromeos::CrosSettingsProvider::TEMPORARILY_UNTRUSTED)
     return;
 
   bool allow = true;
-  chromeos::CrosSettings::Get()->GetBoolean(
+  ash::CrosSettings::Get()->GetBoolean(
       chromeos::kAllowRedeemChromeOsRegistrationOffers, &allow);
 
   OnRedeemOffersAllowedChecked(allow);
@@ -246,7 +247,7 @@ void EchoPrivateGetUserConsentFunction::OnRedeemOffersAllowedChecked(
     web_contents = GetSenderWebContents();
 
     if (!web_contents || extensions::GetViewType(web_contents) !=
-                             extensions::VIEW_TYPE_APP_WINDOW) {
+                             extensions::mojom::ViewType::kAppWindow) {
       Respond(Error("Not called from an app window - the tabId is required."));
       return;
     }

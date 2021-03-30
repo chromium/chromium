@@ -83,7 +83,8 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
                        scoped_refptr<base::SingleThreadTaskRunner> task_runner,
                        bool enable_pixel_canvas,
                        bool use_external_begin_frame_control,
-                       bool force_software_compositor)
+                       bool force_software_compositor,
+                       bool enable_compositing_based_throttling)
     : context_factory_(context_factory),
       frame_sink_id_(frame_sink_id),
       task_runner_(task_runner),
@@ -221,6 +222,9 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
   if (base::FeatureList::IsEnabled(features::kPercentBasedScrolling)) {
     settings.percent_based_scrolling = true;
   }
+
+  settings.enable_compositing_based_throttling =
+      enable_compositing_based_throttling;
 
 #if DCHECK_IS_ON()
   if (command_line->HasSwitch(cc::switches::kLogOnUIDoubleBackgroundBlur))
@@ -576,7 +580,7 @@ bool Compositor::HasObserver(const CompositorObserver* observer) const {
 }
 
 void Compositor::AddAnimationObserver(CompositorAnimationObserver* observer) {
-  if (!animation_observer_list_.has_observers()) {
+  if (animation_observer_list_.empty()) {
     for (auto& obs : observer_list_)
       obs.OnFirstAnimationStarted(this);
   }
@@ -589,7 +593,7 @@ void Compositor::RemoveAnimationObserver(
   if (!animation_observer_list_.HasObserver(observer))
     return;
   animation_observer_list_.RemoveObserver(observer);
-  if (!animation_observer_list_.has_observers()) {
+  if (animation_observer_list_.empty()) {
     for (auto& obs : observer_list_)
       obs.OnLastAnimationEnded(this);
   }
@@ -635,7 +639,7 @@ void Compositor::BeginMainFrame(const viz::BeginFrameArgs& args) {
   DCHECK(!IsLocked());
   for (auto& observer : animation_observer_list_)
     observer.OnAnimationStep(args.frame_time);
-  if (animation_observer_list_.might_have_observers())
+  if (!animation_observer_list_.empty())
     host_->SetNeedsAnimate();
 }
 
@@ -719,12 +723,20 @@ void Compositor::FrameIntervalUpdated(base::TimeDelta interval) {
   refresh_rate_ = interval.ToHz();
 }
 
+void Compositor::FrameSinksToThrottleUpdated(
+    const base::flat_set<viz::FrameSinkId>& ids) {
+  for (auto& observer : observer_list_) {
+    observer.OnFrameSinksToThrottleUpdated(ids);
+  }
+}
+
 void Compositor::OnFirstSurfaceActivation(
     const viz::SurfaceInfo& surface_info) {
   NOTREACHED();
 }
 
-void Compositor::OnFrameTokenChanged(uint32_t frame_token) {
+void Compositor::OnFrameTokenChanged(uint32_t frame_token,
+                                     base::TimeTicks activation_time) {
   // TODO(yiyix, fsamuel): Implement frame token propagation for Compositor.
   NOTREACHED();
 }
@@ -738,7 +750,11 @@ void Compositor::StartThroughputTracker(
 }
 
 void Compositor::StopThroughtputTracker(TrackerId tracker_id) {
-  DCHECK(base::Contains(throughput_tracker_map_, tracker_id));
+  // TODO(crbug.com/1183374): DCHECKs are disabled during automated testing on
+  // CrOS and this check failed when tested on an experimental builder. Revert
+  // https://crrev.com/c/2727841 (or uncomment) to enable it. See
+  // go/chrome-dcheck-on-cros or http://crbug.com/1113456 for more details.
+  // DCHECK(base::Contains(throughput_tracker_map_, tracker_id));
   animation_host_->StopThroughputTracking(tracker_id);
 }
 

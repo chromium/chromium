@@ -6,18 +6,23 @@
 #import <XCTest/XCTest.h>
 
 #include "base/ios/ios_util.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "build/build_config.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
+#import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/table_view/feature_flags.h"
-#import "ios/chrome/browser/ui/util/multi_window_support.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/web/public/test/http_server/http_server.h"
+#include "ios/web/public/test/http_server/http_server_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -36,6 +41,19 @@ using chrome_test_util::OpenLinkInNewTabButton;
 using chrome_test_util::OpenLinkInIncognitoButton;
 using chrome_test_util::OpenLinkInNewWindowButton;
 using chrome_test_util::TappableBookmarkNodeWithLabel;
+using chrome_test_util::WindowWithNumber;
+
+namespace {
+char kURL1[] = "http://firstURL";
+char kTitle1[] = "Page 1";
+char kResponse1[] = "Test Page 1 content";
+char kPageFormat[] = "<head><title>%s</title></head><body>%s</body>";
+
+// Matcher for the add bookmark button in the tools menu.
+id<GREYMatcher> AddBookmarkButton() {
+  return grey_accessibilityID(kToolsMenuAddToBookmarks);
+}
+}  // namespace
 
 // Bookmark entries integration tests for Chrome.
 @interface BookmarksEntriesTestCase : WebHttpServerChromeTestCase
@@ -52,9 +70,6 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Tear down called once per test.
 - (void)tearDown {
-  // No-op if only one window presents.
-  [ChromeEarlGrey closeAllExtraWindowsAndForceRelaunchWithAppConfig:
-                      [self appConfigurationForTestCase]];
   [ChromeEarlGrey clearBookmarks];
   [BookmarkEarlGrey clearBookmarksPositionCache];
   [super tearDown];
@@ -196,32 +211,6 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       performAction:grey_tap()];
 
   [BookmarkEarlGreyUI verifyActionSheetsForSingleURLWithEditEnabled:YES];
-}
-
-// Tests display and selection of 'Open in New Window' in a context menu on a
-// bookmarks entry.
-//
-// TODO(crbug.com/1035764)/TODO(https://crbug.com/1145948): Reenable flaky test.
-- (void)DISABLED_testContextMenuOpenInNewWindow {
-  [BookmarkEarlGrey clearBookmarksPositionCache];
-  [BookmarkEarlGrey setupStandardBookmarks];
-  [BookmarkEarlGreyUI openBookmarks];
-  [BookmarkEarlGreyUI openMobileBookmarks];
-
-  [ChromeEarlGrey waitForForegroundWindowCount:1];
-
-  // Open a bookmark in a new window (through a long press).
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"First URL")]
-      performAction:grey_longPress()];
-  [[EarlGrey selectElementWithMatcher:OpenLinkInNewWindowButton()]
-      performAction:grey_tap()];
-
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
-                                          GetFirstUrl().GetContent())]
-      assertWithMatcher:grey_notNil()];
-  [ChromeEarlGrey waitForForegroundWindowCount:2];
-  [ChromeEarlGrey closeAllExtraWindowsAndForceRelaunchWithAppConfig:
-                      [self appConfigurationForTestCase]];
 }
 
 // Verify Edit Text functionality on single URL selection.
@@ -1118,6 +1107,88 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   // Check that the EditBookmark has been dismissed.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kBookmarkEditViewContainerIdentifier)]
+      assertWithMatcher:grey_nil()];
+}
+
+#pragma mark - Multiwindow
+
+// Tests display and selection of 'Open in New Window' in a context menu on a
+// bookmarks entry.
+- (void)testContextMenuOpenInNewWindow {
+  if (![ChromeEarlGrey areMultipleWindowsSupported])
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+
+  [BookmarkEarlGrey clearBookmarksPositionCache];
+  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGreyUI openBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks];
+
+  [ChromeEarlGrey waitForForegroundWindowCount:1];
+
+  // Open a bookmark in a new window (through a long press).
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"First URL")]
+      performAction:grey_longPress()];
+
+  [ChromeEarlGrey verifyOpenInNewWindowActionWithContent:"pony jokes"];
+}
+
+- (void)testBookmarksSyncInMultiwindow {
+  if (![ChromeEarlGrey areMultipleWindowsSupported])
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+
+  GURL URL1 = web::test::HttpServer::MakeUrl(kURL1);
+
+  std::map<GURL, std::string> responses;
+  responses[URL1] = base::StringPrintf(kPageFormat, kTitle1, kResponse1);
+  web::test::SetUpSimpleHttpServer(responses);
+
+  [BookmarkEarlGrey clearBookmarksPositionCache];
+  [BookmarkEarlGrey setupStandardBookmarks];
+
+  // Open bookmark panel in a second window
+  [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
+  [BookmarkEarlGreyUI openBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks];
+
+  // Load url in first window and bookmark it.
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
+  [ChromeEarlGrey loadURL:URL1 inWindowWithNumber:0];
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI tapToolsMenuButton:AddBookmarkButton()];
+
+  // Assert it appeared in second window's list.
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
+  [[EarlGrey selectElementWithMatcher:TappableBookmarkNodeWithLabel(
+                                          base::SysUTF8ToNSString(kTitle1))]
+      assertWithMatcher:grey_notNil()];
+
+  // Open bookmark panel in first window also.
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
+  [BookmarkEarlGreyUI openBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks];
+
+  [[EarlGrey selectElementWithMatcher:TappableBookmarkNodeWithLabel(
+                                          base::SysUTF8ToNSString(kTitle1))]
+      assertWithMatcher:grey_notNil()];
+
+  // Delete item from first window.
+  [[EarlGrey selectElementWithMatcher:TappableBookmarkNodeWithLabel(
+                                          base::SysUTF8ToNSString(kTitle1))]
+      performAction:grey_longPress()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DeleteButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:TappableBookmarkNodeWithLabel(
+                                          base::SysUTF8ToNSString(kTitle1))]
+      assertWithMatcher:grey_nil()];
+
+  // And make sure it has disappeared from second window.
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
+  [[EarlGrey selectElementWithMatcher:TappableBookmarkNodeWithLabel(
+                                          base::SysUTF8ToNSString(kTitle1))]
       assertWithMatcher:grey_nil()];
 }
 

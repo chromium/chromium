@@ -14,8 +14,8 @@ namespace mswr = Microsoft::WRL;
 namespace winui = ABI::Windows::UI;
 namespace winxml = ABI::Windows::Data::Xml;
 
-FakeIToastNotification::FakeIToastNotification(const base::string16& xml,
-                                               const base::string16& tag)
+FakeIToastNotification::FakeIToastNotification(const std::wstring& xml,
+                                               const std::wstring& tag)
     : xml_(xml), group_(L"Notifications"), tag_(tag) {}
 
 HRESULT FakeIToastNotification::get_Content(winxml::Dom::IXmlDocument** value) {

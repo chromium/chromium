@@ -25,7 +25,7 @@ void CheckboxExample::CreateExampleView(View* container) {
   container->SetLayoutManager(std::make_unique<FillLayout>());
   container->AddChildView(
       views::Builder<Checkbox>()
-          .SetText(base::ASCIIToUTF16("Checkbox"))
+          .SetText(u"Checkbox")
           .SetCallback(base::BindRepeating(
               [](int* count) { PrintStatus("Pressed! count: %d", ++(*count)); },
               &count_))

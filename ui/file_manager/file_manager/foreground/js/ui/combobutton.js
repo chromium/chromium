@@ -2,6 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.m.js';
+// #import {util} from '../../../common/js/util.m.js';
+// #import {FilesMenuItem} from './files_menu.m.js';
+// #import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+// #import {MultiMenuButton} from './multi_menu_button.m.js';
+// #import {getPropertyDescriptor, PropertyKind} from 'chrome://resources/js/cr.m.js';
+// clang-format on
+
 /**
  * @fileoverview This implements a combobutton control.
  */
@@ -9,7 +18,7 @@ cr.define('cr.ui', () => {
   /**
    * Creates a new combo button element.
    */
-  class ComboButton extends cr.ui.MultiMenuButton {
+  /* #export */ class ComboButton extends cr.ui.MultiMenuButton {
     constructor() {
       super();
 
@@ -21,6 +30,15 @@ cr.define('cr.ui', () => {
 
       /** @private {?Element} */
       this.actionNode_ = null;
+
+      /** @private {?Element} */
+      this.filesToggleRipple_ = null;
+
+      /** @private {boolean} */
+      this.disabled = false;
+
+      /** @private {boolean} */
+      this.multiple = false;
     }
 
     /**
@@ -177,9 +195,8 @@ cr.define('cr.ui', () => {
         ripplesLayer.setAttribute('hidden', '');
       }
 
-      /** @private {!FilesToggleRippleElement} */
-      this.filesToggleRipple_ = /** @type {!FilesToggleRippleElement} */
-          (this.ownerDocument.createElement('files-toggle-ripple'));
+      this.filesToggleRipple_ =
+          this.ownerDocument.createElement('files-toggle-ripple');
       ripplesLayer.appendChild(this.filesToggleRipple_);
 
       /** @private {!PaperRipple} */
@@ -260,9 +277,7 @@ cr.define('cr.ui', () => {
     }
   }
 
-  cr.defineProperty(ComboButton, 'disabled', cr.PropertyKind.BOOL_ATTR);
-  cr.defineProperty(ComboButton, 'multiple', cr.PropertyKind.BOOL_ATTR);
-
+  // #cr_define_end
   return {
     ComboButton: ComboButton,
   };

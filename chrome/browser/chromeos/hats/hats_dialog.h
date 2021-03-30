@@ -13,6 +13,7 @@
 class Profile;
 
 namespace chromeos {
+struct HatsConfig;
 
 // Happiness tracking survey dialog. Sometimes appears after login to ask the
 // user how satisfied they are with their Chromebook.
@@ -21,7 +22,8 @@ class HatsDialog : public ui::WebDialogDelegate {
  public:
   // Creates an instance of HatsDialog and posts a task to load all the relevant
   // device info before displaying the dialog.
-  static std::unique_ptr<HatsDialog> CreateAndShow();
+  static std::unique_ptr<HatsDialog> CreateAndShow(
+      const HatsConfig& hats_config);
   ~HatsDialog() override;
 
  private:
@@ -31,7 +33,7 @@ class HatsDialog : public ui::WebDialogDelegate {
 
   // ui::WebDialogDelegate implementation.
   ui::ModalType GetDialogModalType() const override;
-  base::string16 GetDialogTitle() const override;
+  std::u16string GetDialogTitle() const override;
   GURL GetDialogContentURL() const override;
   void GetWebUIMessageHandlers(
       std::vector<content::WebUIMessageHandler*>* handlers) const override;

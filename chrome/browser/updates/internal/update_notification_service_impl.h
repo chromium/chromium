@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UPDATES_INTERNAL_UPDATE_NOTIFICATION_SERVICE_IMPL_H_
 #define CHROME_BROWSER_UPDATES_INTERNAL_UPDATE_NOTIFICATION_SERVICE_IMPL_H_
 
-#include "chrome/browser/updates/update_notification_service.h"
+#include "chrome/browser/updates/update_notification_service.h"  // nogncheck
 
 #include <memory>
 

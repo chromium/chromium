@@ -27,15 +27,15 @@ const int kMessageTextMaxCols = 132;
 const int kDefaultPromptMaxRows = 24;
 const int kDefaultPromptMaxCols = 132;
 
-base::string16 EnforceMaxTextSize(const base::string16& in_string) {
-  base::string16 out_string;
+std::u16string EnforceMaxTextSize(const std::u16string& in_string) {
+  std::u16string out_string;
   gfx::ElideRectangleString(in_string, kMessageTextMaxRows, kMessageTextMaxCols,
                             false, &out_string);
   return out_string;
 }
 
-base::string16 EnforceMaxPromptSize(const base::string16& in_string) {
-  base::string16 out_string;
+std::u16string EnforceMaxPromptSize(const std::u16string& in_string) {
+  std::u16string out_string;
   gfx::ElideRectangleString(in_string, kDefaultPromptMaxRows,
                             kDefaultPromptMaxCols, false, &out_string);
   return out_string;
@@ -47,14 +47,14 @@ base::string16 EnforceMaxPromptSize(const base::string16& in_string) {
 const size_t kMessageTextMaxSize = 2000;
 const size_t kDefaultPromptMaxSize = 2000;
 
-base::string16 EnforceMaxTextSize(const base::string16& in_string) {
-  base::string16 out_string;
+std::u16string EnforceMaxTextSize(const std::u16string& in_string) {
+  std::u16string out_string;
   gfx::ElideString(in_string, kMessageTextMaxSize, &out_string);
   return out_string;
 }
 
-base::string16 EnforceMaxPromptSize(const base::string16& in_string) {
-  base::string16 out_string;
+std::u16string EnforceMaxPromptSize(const std::u16string& in_string) {
+  std::u16string out_string;
   gfx::ElideString(in_string, kDefaultPromptMaxSize, &out_string);
   return out_string;
 }
@@ -69,10 +69,10 @@ ChromeJavaScriptDialogExtraData::ChromeJavaScriptDialogExtraData()
 AppModalDialogController::AppModalDialogController(
     content::WebContents* web_contents,
     ExtraDataMap* extra_data_map,
-    const base::string16& title,
+    const std::u16string& title,
     content::JavaScriptDialogType javascript_dialog_type,
-    const base::string16& message_text,
-    const base::string16& default_prompt_text,
+    const std::u16string& message_text,
+    const std::u16string& default_prompt_text,
     bool display_suppress_checkbox,
     bool is_before_unload_dialog,
     bool is_reload,
@@ -132,7 +132,7 @@ void AppModalDialogController::Invalidate() {
     return;
 
   valid_ = false;
-  CallDialogClosedCallback(false, base::string16());
+  CallDialogClosedCallback(false, std::u16string());
   if (view_)
     CloseModalDialog();
 }
@@ -146,12 +146,12 @@ void AppModalDialogController::OnCancel(bool suppress_js_messages) {
   // is a temporary workaround.
   CompleteDialog();
 
-  NotifyDelegate(false, base::string16(), suppress_js_messages);
+  NotifyDelegate(false, std::u16string(), suppress_js_messages);
 }
 
-void AppModalDialogController::OnAccept(const base::string16& prompt_text,
+void AppModalDialogController::OnAccept(const std::u16string& prompt_text,
                                         bool suppress_js_messages) {
-  base::string16 prompt_text_to_use = prompt_text;
+  std::u16string prompt_text_to_use = prompt_text;
   // This is only for testing.
   if (use_override_prompt_text_)
     prompt_text_to_use = override_prompt_text_;
@@ -161,17 +161,17 @@ void AppModalDialogController::OnAccept(const base::string16& prompt_text,
 }
 
 void AppModalDialogController::OnClose() {
-  NotifyDelegate(false, base::string16(), false);
+  NotifyDelegate(false, std::u16string(), false);
 }
 
 void AppModalDialogController::SetOverridePromptText(
-    const base::string16& override_prompt_text) {
+    const std::u16string& override_prompt_text) {
   override_prompt_text_ = override_prompt_text;
   use_override_prompt_text_ = true;
 }
 
 void AppModalDialogController::NotifyDelegate(bool success,
-                                              const base::string16& user_input,
+                                              const std::u16string& user_input,
                                               bool suppress_js_messages) {
   if (!valid_)
     return;
@@ -194,7 +194,7 @@ void AppModalDialogController::NotifyDelegate(bool success,
 
 void AppModalDialogController::CallDialogClosedCallback(
     bool success,
-    const base::string16& user_input) {
+    const std::u16string& user_input) {
   if (!callback_.is_null())
     std::move(callback_).Run(success, user_input);
 }

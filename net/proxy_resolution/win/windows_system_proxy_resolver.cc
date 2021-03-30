@@ -5,11 +5,11 @@
 #include "net/proxy_resolution/win/windows_system_proxy_resolver.h"
 
 #include <cwchar>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -68,21 +68,22 @@ bool GetProxyServerFromWinHttpResultEntry(
   DCHECK(!!result_entry.pwszProxy);
   DCHECK(wcslen(result_entry.pwszProxy) > 0);
 
-  base::string16 host_wide(result_entry.pwszProxy,
-                           wcslen(result_entry.pwszProxy));
+  std::wstring host_wide(result_entry.pwszProxy,
+                         wcslen(result_entry.pwszProxy));
   if (!base::IsStringASCII(host_wide)) {
     const int kInitialBufferSize = 256;
-    url::RawCanonOutputT<base::char16, kInitialBufferSize> punycode_output;
-    if (!url::IDNToASCII(host_wide.data(), host_wide.length(),
+    url::RawCanonOutputT<char16_t, kInitialBufferSize> punycode_output;
+    if (!url::IDNToASCII(base::as_u16cstr(host_wide), host_wide.length(),
                          &punycode_output))
       return false;
 
-    host_wide.assign(punycode_output.data(), punycode_output.length());
+    host_wide.assign(base::as_wcstr(punycode_output.data()),
+                     punycode_output.length());
   }
 
   // At this point the string in |host_wide| is ASCII.
   std::string host;
-  if (!base::UTF16ToUTF8(host_wide.data(), host_wide.length(), &host))
+  if (!base::WideToUTF8(host_wide.data(), host_wide.length(), &host))
     return false;
 
   HostPortPair host_and_port(host, result_entry.ProxyPort);

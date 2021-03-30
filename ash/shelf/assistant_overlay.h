@@ -33,6 +33,7 @@ class ASH_EXPORT AssistantOverlay : public views::View {
 
   // views::View:
   const char* GetClassName() const override;
+  void OnThemeChanged() override;
 
  private:
   enum class AnimationState {

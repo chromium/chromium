@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<button>click me</button>
+<script type="module">
+import {PresentationServiceMock, waitForClick} from './resources/presentation-service-mock.js';
+
+const mock = new PresentationServiceMock();
+const button = document.querySelector('button');
+
+test(function() {
+  assert_throws_js(TypeError, () => {
+    new PresentationConnectionAvailableEvent('connectionavailable');
+  });
+  assert_throws_js(TypeError, () => {
+    new PresentationConnectionAvailableEvent('connectionavailable', {});
+  });
+  assert_throws_js(TypeError, () => {
+    new PresentationConnectionAvailableEvent(
+        'connectionavailable', {connection: null});
+  });
+}, "Test that the PresentationConnectionAvailableEvent ctor requires connection parameter.")
+
+promise_test(async _ => {
+  await waitForClick(button);
+  const connection =
+      await new PresentationRequest('https://example.com').start();
+  const e = new PresentationConnectionAvailableEvent(
+      'connectionavailable', {connection});
+  assert_not_equals(e, null);
+  assert_equals(e.connection, connection);
+}, "Test that the PresentationConnectionAvailableEvent ctor can take a valid PresentationConnection.")
+
+</script>
+</body>
+</html>

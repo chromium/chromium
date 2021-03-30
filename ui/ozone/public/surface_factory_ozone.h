@@ -73,16 +73,19 @@ class COMPONENT_EXPORT(OZONE_BASE) SurfaceFactoryOzone {
 
   // Returns the GLOzone to use for the specified GL implementation, or null if
   // GL implementation doesn't exist.
-  virtual GLOzone* GetGLOzone(gl::GLImplementation implementation);
+  virtual GLOzone* GetGLOzone(const gl::GLImplementationParts& implementation);
 
 #if BUILDFLAG(ENABLE_VULKAN)
   // Creates the vulkan implementation. This object should be capable of
   // creating surfaces that swap to a platform window.
+  // |use_swiftshader| suggests using Swiftshader.  The actual support depends
+  // on the platform.
   // |allow_protected_memory| suggests that the vulkan implementation should
   // create protected-capable resources, such as VkQueue.
   // |enforce_protected_memory| suggests that the vulkan implementation should
   // always use protected memory and resources, such as CommandBuffers.
   virtual std::unique_ptr<gpu::VulkanImplementation> CreateVulkanImplementation(
+      bool use_swiftshader,
       bool allow_protected_memory,
       bool enforce_protected_memory);
 

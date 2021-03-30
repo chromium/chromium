@@ -54,7 +54,7 @@ export function assertNotReached(optMessage) {
 
 /**
  * @param {*} value The value to check.
- * @param {function(new: T, ...)} type A user-defined constructor.
+ * @param {function(new: T, ...?)} type A user-defined constructor.
  * @param {string=} optMessage A message to show when this is hit.
  * @return {T}
  * @template T
@@ -89,6 +89,20 @@ export function assertString(value, optMessage) {
 /**
  * @param {*} value The value to check.
  * @param {string=} optMessage A message to show when this is hit.
+ * @return {number}
+ */
+export function assertNumber(value, optMessage) {
+  // We don't use assert immediately here so that we avoid constructing an error
+  // message if we don't have to.
+  if (typeof value !== 'number') {
+    assertNotReached(optMessage || 'Value ' + value + ' is not a number');
+  }
+  return /** @type {number} */ (value);
+}
+
+/**
+ * @param {*} value The value to check.
+ * @param {string=} optMessage A message to show when this is hit.
  * @return {boolean}
  */
 export function assertBoolean(value, optMessage) {
@@ -98,33 +112,4 @@ export function assertBoolean(value, optMessage) {
     assertNotReached(optMessage || 'Value ' + value + ' is not a boolean');
   }
   return /** @type {boolean} */ (value);
-}
-
-/**
- * Wraps a function with completion callback as a Promise.
- * @param {function(...?): ?} func The last parameter of the function should be
- *     a completion callback.
- * @return {function(...?): !Promise}
- */
-export function promisify(func) {
-  return (...args) => new Promise(
-             (resolve, reject) => func(...args, (val) => {
-               if (chrome && chrome.runtime && chrome.runtime.lastError) {
-                 reject(new Error(chrome.runtime.lastError.message));
-               } else {
-                 resolve(val);
-               }
-             }));
-}
-
-/**
- * Wraps a function with completion callback and error callback as a Promise.
- * @param {function(...?): ?} func The last two parameters of the function
- *     should be a completion callback and an error callback.
- * @return {function(...?): !Promise}
- */
-export function promisifyWithError(func) {
-  return (...args) => new Promise(
-             (resolve, reject) => func(
-                 ...args, (val) => resolve(val), (error) => reject(error)));
 }

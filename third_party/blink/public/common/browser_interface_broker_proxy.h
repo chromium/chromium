@@ -32,6 +32,8 @@ class BLINK_COMMON_EXPORT BrowserInterfaceBrokerProxy {
   void GetInterface(const std::string& name,
                     mojo::ScopedMessagePipeHandle pipe) const;
 
+  bool is_bound() const;
+
   // Overrides how the named interface is bound, rather than sending its
   // receivers to the browser. If |binder| is null, any registered override
   // for the interface is cancelled.

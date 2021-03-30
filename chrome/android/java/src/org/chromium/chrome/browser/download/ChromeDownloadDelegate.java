@@ -101,7 +101,7 @@ public class ChromeDownloadDelegate implements UserData {
                                                .setIsGETRequest(true)
                                                .build();
                 DownloadController.enqueueDownloadManagerRequest(newInfo);
-                DownloadController.closeTabIfBlank(mTab);
+                // TODO(shaktisahu): Verify if we still need to close an empty tab for OMA download.
             }
         }
                 .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);

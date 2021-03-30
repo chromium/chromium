@@ -77,7 +77,8 @@ class MediaStreamCaptureIndicator
   std::unique_ptr<content::MediaStreamUI> RegisterMediaStream(
       content::WebContents* web_contents,
       const blink::MediaStreamDevices& devices,
-      std::unique_ptr<MediaStreamUI> ui = nullptr);
+      std::unique_ptr<MediaStreamUI> ui = nullptr,
+      const std::u16string application_title = std::u16string());
 
   // Overrides from StatusIconMenuModel::Delegate implementation.
   void ExecuteCommand(int command_id, int event_flags) override;
@@ -137,7 +138,7 @@ class MediaStreamCaptureIndicator
   void GetStatusTrayIconInfo(bool audio,
                              bool video,
                              gfx::ImageSkia* image,
-                             base::string16* tool_tip);
+                             std::u16string* tool_tip);
 
   // Checks if |web_contents| or any portal WebContents in its tree is using
   // a device for capture. The type of capture is specified using |pred|.

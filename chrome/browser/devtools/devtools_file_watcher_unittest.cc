@@ -44,9 +44,10 @@ class DevToolsFileWatcherTest : public testing::Test {
 
 TEST_F(DevToolsFileWatcherTest, BasicUsage) {
   std::unique_ptr<DevToolsFileWatcher, DevToolsFileWatcher::Deleter> watcher(
-      new DevToolsFileWatcher(base::Bind(&DevToolsFileWatcherTest::Callback,
-                                         base::Unretained(this)),
-                              base::SequencedTaskRunnerHandle::Get()));
+      new DevToolsFileWatcher(
+          base::BindRepeating(&DevToolsFileWatcherTest::Callback,
+                              base::Unretained(this)),
+          base::SequencedTaskRunnerHandle::Get()));
 
   base::FilePath changed_path = base_path_.Append(FILE_PATH_LITERAL("file1"));
   base::WriteFile(changed_path, "test");

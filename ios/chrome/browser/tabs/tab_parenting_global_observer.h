@@ -38,7 +38,8 @@ class TabParentingGlobalObserver {
   TabParentingGlobalObserver();
   ~TabParentingGlobalObserver();
 
-  base::CallbackList<void(web::WebState*)> on_tab_parented_callback_list_;
+  base::RepeatingCallbackList<void(web::WebState*)>
+      on_tab_parented_callback_list_;
 
   DISALLOW_COPY_AND_ASSIGN(TabParentingGlobalObserver);
 };

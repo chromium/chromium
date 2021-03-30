@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/bookmarks/bookmark_home_view_controller.h"
 
+#import "base/ios/ios_util.h"
 #include "base/mac/foundation_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/numerics/safe_conversions.h"
@@ -25,6 +26,7 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
 #include "ios/chrome/browser/policy/policy_features.h"
+#import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/ui/activity_services/activity_params.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
@@ -67,7 +69,6 @@
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/menu_util.h"
-#import "ios/chrome/browser/ui/util/multi_window_support.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -1165,7 +1166,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     return;
   }
   self.sharedState.addingNewFolder = YES;
-  base::string16 folderTitle =
+  std::u16string folderTitle =
       l10n_util::GetStringUTF16(IDS_IOS_BOOKMARK_NEW_GROUP_DEFAULT_NAME);
   self.sharedState.editingFolderNode =
       self.sharedState.bookmarkModel->AddFolder(
@@ -1321,10 +1322,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 // Returns YES if user is allowed to edit any bookmarks.
 - (BOOL)isEditBookmarksEnabled {
-  if (IsEditBookmarksIOSEnabled())
     return self.browserState->GetPrefs()->GetBoolean(
         bookmarks::prefs::kEditBookmarksEnabled);
-  return YES;
 }
 
 // Returns the bookmark node associated with |indexPath|.
@@ -1453,6 +1452,16 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                                                       params:params
                                                   originView:cellView];
   [self.sharingCoordinator start];
+}
+
+// Returns whether the incognito mode is forced.
+- (BOOL)isIncognitoForced {
+  return IsIncognitoModeForced(self.browser->GetBrowserState()->GetPrefs());
+}
+
+// Returns whether the incognito mode is available.
+- (BOOL)isIncognitoAvailable {
+  return !IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs());
 }
 
 #pragma mark - Loading and Empty States
@@ -1777,12 +1786,15 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                            BookmarkHomeViewController* strongSelf = weakSelf;
                            if (!strongSelf)
                              return;
+                           if ([strongSelf isIncognitoForced])
+                             return;
                            auto nodes = [strongSelf editNodes];
                            [strongSelf openAllURLs:GetUrlsToOpen(nodes)
                                        inIncognito:NO
                                             newTab:NO];
                          }
-                          style:UIAlertActionStyleDefault];
+                          style:UIAlertActionStyleDefault
+                        enabled:![self isIncognitoForced]];
 
   titleString = GetNSString(IDS_IOS_BOOKMARK_CONTEXT_MENU_OPEN_INCOGNITO);
   [coordinator addItemWithTitle:titleString
@@ -1790,12 +1802,15 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                            BookmarkHomeViewController* strongSelf = weakSelf;
                            if (!strongSelf)
                              return;
+                           if (![strongSelf isIncognitoAvailable])
+                             return;
                            auto nodes = [strongSelf editNodes];
                            [strongSelf openAllURLs:GetUrlsToOpen(nodes)
                                        inIncognito:YES
                                             newTab:NO];
                          }
-                          style:UIAlertActionStyleDefault];
+                          style:UIAlertActionStyleDefault
+                        enabled:[self isIncognitoAvailable]];
 
   std::set<int64_t> nodeIds;
   for (const BookmarkNode* node : nodes) {
@@ -1828,6 +1843,11 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
   int64_t nodeId = node->id();
   NSString* titleString = GetNSString(IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT);
+  // Disable the edit menu option if the node is not editable by user, or if
+  // editing bookmarks is not allowed.
+  BOOL editEnabled =
+      [self isEditBookmarksEnabled] && [self isNodeEditableByUser:node];
+
   [coordinator addItemWithTitle:titleString
                          action:^{
                            BookmarkHomeViewController* strongSelf = weakSelf;
@@ -1839,26 +1859,23 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                            if (nodeFromId)
                              [strongSelf editNode:nodeFromId];
                          }
-                          style:UIAlertActionStyleDefault];
-  // Disable the edit menu option if the node is not editable by user, or if
-  // editing bookmarks is not allowed.
-  if (![self isEditBookmarksEnabled] || ![self isNodeEditableByUser:node]) {
-    // TODO(crbug.com/1070830): Modify AlertCoordinator to allow disabled
-    // actions.
-    coordinator.alertController.actions[0].enabled = NO;
-  }
+                          style:UIAlertActionStyleDefault
+                        enabled:editEnabled];
 
   GURL nodeURL = node->url();
   titleString = GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB);
   [coordinator addItemWithTitle:titleString
                          action:^{
+                           if ([weakSelf isIncognitoForced])
+                             return;
                            [weakSelf openAllURLs:{nodeURL}
                                      inIncognito:NO
                                           newTab:YES];
                          }
-                          style:UIAlertActionStyleDefault];
+                          style:UIAlertActionStyleDefault
+                        enabled:![self isIncognitoForced]];
 
-  if (IsMultipleScenesSupported()) {
+  if (base::ios::IsMultipleScenesSupported()) {
     titleString = GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENINNEWWINDOW);
     id<ApplicationCommands> windowOpener = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), ApplicationCommands);
@@ -1875,11 +1892,14 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   titleString = GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWINCOGNITOTAB);
   [coordinator addItemWithTitle:titleString
                          action:^{
+                           if (![weakSelf isIncognitoAvailable])
+                             return;
                            [weakSelf openAllURLs:{nodeURL}
                                      inIncognito:YES
                                           newTab:YES];
                          }
-                          style:UIAlertActionStyleDefault];
+                          style:UIAlertActionStyleDefault
+                        enabled:[self isIncognitoAvailable]];
 
   titleString = GetNSString(IDS_IOS_CONTENT_CONTEXT_COPY);
   [coordinator
@@ -1907,6 +1927,11 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   int64_t nodeId = node->id();
   NSString* titleString =
       GetNSString(IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT_FOLDER);
+  // Disable the edit and move menu options if the folder is not editable by
+  // user, or if editing bookmarks is not allowed.
+  BOOL editEnabled =
+      [self isEditBookmarksEnabled] && [self isNodeEditableByUser:node];
+
   [coordinator addItemWithTitle:titleString
                          action:^{
                            BookmarkHomeViewController* strongSelf = weakSelf;
@@ -1918,7 +1943,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                            if (nodeFromId)
                              [strongSelf editNode:nodeFromId];
                          }
-                          style:UIAlertActionStyleDefault];
+                          style:UIAlertActionStyleDefault
+                        enabled:editEnabled];
 
   titleString = GetNSString(IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE);
   [coordinator addItemWithTitle:titleString
@@ -1934,15 +1960,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                              [strongSelf moveNodes:nodes];
                            }
                          }
-                          style:UIAlertActionStyleDefault];
-  // Disable the edit and move menu options if the folder is not editable by
-  // user, or if editing bookmarks is not allowed.
-  if (![self isEditBookmarksEnabled] || ![self isNodeEditableByUser:node]) {
-    // TODO(crbug.com/1070830): Modify AlertCoordinator to allow disabled
-    // actions.
-    coordinator.alertController.actions[0].enabled = NO;
-    coordinator.alertController.actions[1].enabled = NO;
-  }
+                          style:UIAlertActionStyleDefault
+                        enabled:editEnabled];
 }
 
 - (void)configureCoordinator:(AlertCoordinator*)coordinator
@@ -2114,6 +2133,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   TableViewItem* item =
       [self.sharedState.tableViewModel itemAtIndexPath:indexPath];
 
+  cell.userInteractionEnabled = (item.type != BookmarkHomeItemTypeMessage);
+
   if (item.type == BookmarkHomeItemTypeBookmark) {
     BookmarkHomeNodeItem* nodeItem =
         base::mac::ObjCCastStrict<BookmarkHomeNodeItem>(item);
@@ -2237,6 +2258,11 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 #pragma mark - UITableViewDelegate
 
 - (CGFloat)tableView:(UITableView*)tableView
+    heightForHeaderInSection:(NSInteger)section {
+  return ChromeTableViewHeightForHeaderInSection(section);
+}
+
+- (CGFloat)tableView:(UITableView*)tableView
     heightForRowAtIndexPath:(NSIndexPath*)indexPath {
   return UITableViewAutomaticDimension;
 }
@@ -2338,18 +2364,28 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       NSMutableArray<UIMenuElement*>* menuElements =
           [[NSMutableArray alloc] init];
 
-      [menuElements addObject:[actionFactory actionToOpenInNewTabWithBlock:^{
-                      [weakSelf openAllURLs:{nodeURL}
-                                inIncognito:NO
-                                     newTab:YES];
-                    }]];
+      UIAction* openAction = [actionFactory actionToOpenInNewTabWithBlock:^{
+        if ([weakSelf isIncognitoForced])
+          return;
+        [weakSelf openAllURLs:{nodeURL} inIncognito:NO newTab:YES];
+      }];
+      if ([self isIncognitoForced]) {
+        openAction.attributes = UIMenuElementAttributesDisabled;
+      }
+      [menuElements addObject:openAction];
 
-      [menuElements
-          addObject:[actionFactory actionToOpenInNewIncognitoTabWithBlock:^{
+      UIAction* openInIncognito =
+          [actionFactory actionToOpenInNewIncognitoTabWithBlock:^{
+            if (![weakSelf isIncognitoAvailable])
+              return;
             [weakSelf openAllURLs:{nodeURL} inIncognito:YES newTab:YES];
-          }]];
+          }];
+      if (![self isIncognitoAvailable]) {
+        openInIncognito.attributes = UIMenuElementAttributesDisabled;
+      }
+      [menuElements addObject:openInIncognito];
 
-      if (IsMultipleScenesSupported()) {
+      if (base::ios::IsMultipleScenesSupported()) {
         [menuElements
             addObject:[actionFactory
                           actionToOpenInNewWindowWithURL:nodeURL
@@ -2488,8 +2524,14 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 - (URLInfo*)tableView:(UITableView*)tableView
     URLInfoAtIndexPath:(NSIndexPath*)indexPath {
+  if (indexPath.section ==
+      [self.tableViewModel
+          sectionForSectionIdentifier:BookmarkHomeSectionIdentifierMessages]) {
+    return nil;
+  }
+
   const bookmarks::BookmarkNode* node = [self nodeAtIndexPath:indexPath];
-  if (node->is_folder()) {
+  if (!node || node->is_folder()) {
     return nil;
   }
   return [[URLInfo alloc]

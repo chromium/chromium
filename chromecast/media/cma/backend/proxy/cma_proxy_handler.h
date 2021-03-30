@@ -6,6 +6,7 @@
 #define CHROMECAST_MEDIA_CMA_BACKEND_PROXY_CMA_PROXY_HANDLER_H_
 
 #include "base/memory/ref_counted.h"
+#include "chromecast/media/cma/backend/proxy/buffer_id_manager.h"
 
 namespace chromecast {
 
@@ -67,12 +68,17 @@ class CmaProxyHandler {
   // any thread.
   virtual void Initialize(const std::string& cast_session_id,
                           AudioDecoderOperationMode decoder_mode) = 0;
-  virtual void Start(int64_t start_pts) = 0;
+  virtual void Start(
+      int64_t start_pts,
+      const BufferIdManager::TargetBufferInfo& target_buffer) = 0;
   virtual void Stop() = 0;
   virtual void Pause() = 0;
-  virtual void Resume() = 0;
+  virtual void Resume(
+      const BufferIdManager::TargetBufferInfo& target_buffer) = 0;
   virtual void SetPlaybackRate(float rate) = 0;
   virtual void SetVolume(float multiplier) = 0;
+  virtual void UpdateTimestamp(
+      const BufferIdManager::TargetBufferInfo& target_buffer) = 0;
 
   // Push the provided data or config to a queue, for processing at a later
   // point when resources are available. Returns true if the data was
@@ -84,7 +90,8 @@ class CmaProxyHandler {
   // - SetConfig may be called later on as-well, after which time the new config
   //   will be used for all following PushBuffer calls.
   virtual bool SetConfig(const AudioConfig& config) = 0;
-  virtual bool PushBuffer(scoped_refptr<DecoderBufferBase> buffer) = 0;
+  virtual bool PushBuffer(scoped_refptr<DecoderBufferBase> buffer,
+                          BufferIdManager::BufferId buffer_id) = 0;
 };
 
 }  // namespace media

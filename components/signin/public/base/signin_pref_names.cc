@@ -49,10 +49,6 @@ const char kGoogleServicesAccountId[] = "google.services.account_id";
 const char kGoogleServicesConsentedToSync[] =
     "google.services.consented_to_sync";
 
-// The profile's hosted domain; empty if unset; kNoHostedDomainFound if there
-// is none.
-const char kGoogleServicesHostedDomain[] = "google.services.hosted_domain";
-
 // Similar to kGoogleServicesLastUsername, this is the corresponding version of
 // kGoogleServicesAccountId that is not cleared on signout.
 const char kGoogleServicesLastAccountId[] = "google.services.last_account_id";

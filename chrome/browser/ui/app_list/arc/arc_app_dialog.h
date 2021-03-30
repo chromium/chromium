@@ -23,7 +23,7 @@ void ShowUsbScanDeviceListPermissionDialog(Profile* profile,
 // Shows permission request dialog for targeting device name.
 void ShowUsbAccessPermissionDialog(Profile* profile,
                                    const std::string& app_id,
-                                   const base::string16& device_name,
+                                   const std::u16string& device_name,
                                    ArcUsbConfirmCallback callback);
 
 // Test purpose methods.

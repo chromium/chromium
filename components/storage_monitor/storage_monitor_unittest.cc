@@ -48,8 +48,8 @@ TEST(StorageMonitorTest, DeviceAttachDetachNotifications) {
   monitor.AddObserver(&observer1);
   monitor.AddObserver(&observer2);
 
-  StorageInfo info(kDeviceId1, FILE_PATH_LITERAL("path"), base::string16(),
-                   base::string16(), base::string16(), 0);
+  StorageInfo info(kDeviceId1, FILE_PATH_LITERAL("path"), std::u16string(),
+                   std::u16string(), std::u16string(), 0);
   monitor.receiver()->ProcessAttach(info);
   base::RunLoop().RunUntilIdle();
 
@@ -94,8 +94,8 @@ TEST(StorageMonitorTest, GetAllAvailableStorageAttachDetach) {
   TestStorageMonitor monitor;
   const std::string kDeviceId1 = "dcim:UUID:FFF0-0042";
   const base::FilePath kDevicePath1(FILE_PATH_LITERAL("/testfoo"));
-  StorageInfo info1(kDeviceId1, kDevicePath1.value(), base::string16(),
-                    base::string16(), base::string16(), 0);
+  StorageInfo info1(kDeviceId1, kDevicePath1.value(), std::u16string(),
+                    std::u16string(), std::u16string(), 0);
   monitor.receiver()->ProcessAttach(info1);
   base::RunLoop().RunUntilIdle();
   std::vector<StorageInfo> devices = monitor.GetAllAvailableStorages();
@@ -105,8 +105,8 @@ TEST(StorageMonitorTest, GetAllAvailableStorageAttachDetach) {
 
   const std::string kDeviceId2 = "dcim:UUID:FFF0-0044";
   const base::FilePath kDevicePath2(FILE_PATH_LITERAL("/testbar"));
-  StorageInfo info2(kDeviceId2, kDevicePath2.value(), base::string16(),
-                    base::string16(), base::string16(), 0);
+  StorageInfo info2(kDeviceId2, kDevicePath2.value(), std::u16string(),
+                    std::u16string(), std::u16string(), 0);
   monitor.receiver()->ProcessAttach(info2);
   base::RunLoop().RunUntilIdle();
   devices = monitor.GetAllAvailableStorages();

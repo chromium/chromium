@@ -87,22 +87,22 @@ void ExclusiveAccessBubble::ExitExclusiveAccess() {
   manager_->ExitExclusiveAccess();
 }
 
-base::string16 ExclusiveAccessBubble::GetCurrentMessageText() const {
+std::u16string ExclusiveAccessBubble::GetCurrentMessageText() const {
   return exclusive_access_bubble::GetLabelTextForType(
       bubble_type_, url_,
       extensions::ExtensionRegistry::Get(manager_->context()->GetProfile()));
 }
 
-base::string16 ExclusiveAccessBubble::GetCurrentDenyButtonText() const {
+std::u16string ExclusiveAccessBubble::GetCurrentDenyButtonText() const {
   return exclusive_access_bubble::GetDenyButtonTextForType(bubble_type_);
 }
 
-base::string16 ExclusiveAccessBubble::GetCurrentAllowButtonText() const {
+std::u16string ExclusiveAccessBubble::GetCurrentAllowButtonText() const {
   return exclusive_access_bubble::GetAllowButtonTextForType(bubble_type_, url_);
 }
 
-base::string16 ExclusiveAccessBubble::GetInstructionText(
-    const base::string16& accelerator) const {
+std::u16string ExclusiveAccessBubble::GetInstructionText(
+    const std::u16string& accelerator) const {
   return exclusive_access_bubble::GetInstructionTextForType(bubble_type_,
                                                             accelerator);
 }

@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_UI_USER_EDUCATION_FEATURE_PROMO_TEXT_REPLACEMENTS_H_
 #define CHROME_BROWSER_UI_USER_EDUCATION_FEATURE_PROMO_TEXT_REPLACEMENTS_H_
 
+#include <string>
+
 #include "base/optional.h"
-#include "base/strings/string16.h"
 
 // Context-specific text replacements for an in-product help bubble's
 // body text.
@@ -27,16 +28,16 @@ class FeaturePromoTextReplacements {
   FeaturePromoTextReplacements();
 
   // For a message with exactly one placeholder, fill it with a string.
-  static FeaturePromoTextReplacements WithString(base::string16 s);
+  static FeaturePromoTextReplacements WithString(std::u16string s);
 
   FeaturePromoTextReplacements(const FeaturePromoTextReplacements&);
   FeaturePromoTextReplacements(FeaturePromoTextReplacements&&);
   ~FeaturePromoTextReplacements();
 
-  base::string16 ApplyTo(int string_specifier) const;
+  std::u16string ApplyTo(int string_specifier) const;
 
  private:
-  base::Optional<base::string16> string_replacement_;
+  base::Optional<std::u16string> string_replacement_;
 };
 
 #endif  // CHROME_BROWSER_UI_USER_EDUCATION_FEATURE_PROMO_TEXT_REPLACEMENTS_H_

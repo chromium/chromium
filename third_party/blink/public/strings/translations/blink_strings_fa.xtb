@@ -49,7 +49,7 @@
 <translation id="2246498165605549352">فایل محلی</translation>
 <translation id="2247351761944213033">هفته <ph name="WEEKNUMBER" />، <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">آهنگ <ph name="NUMBER" /></translation>
-<translation id="2291999235780842123">کادر تأیید</translation>
+<translation id="2291999235780842123">چارگوش انتخاب</translation>
 <translation id="2307576640803031502">در فهرست، مورد <ph name="INDEX" /> از <ph name="COUNT" /></translation>
 <translation id="2311842470354187719">جداساز صفحه</translation>
 <translation id="2335594187091864976">انتخابگر تاریخ و زمان</translation>
@@ -103,7 +103,7 @@
 <translation id="3944740393230681990">گفتار آغازین</translation>
 <translation id="3960700977367013758">نوار پیمایش</translation>
 <translation id="4103419683916926126">میلی‌ ثانیه</translation>
-<translation id="4151657705144244502">گرافیک</translation>
+<translation id="4151657705144244502">ترسیمی</translation>
 <translation id="4160057747563657758">تلفن</translation>
 <translation id="4193965531860883258">پیش‌گفتار</translation>
 <translation id="4201051445878709314">نمایش ماه قبلی</translation>
@@ -203,6 +203,7 @@
 <translation id="6643016212128521049">پاک کردن</translation>
 <translation id="668171684555832681">دیگر...</translation>
 <translation id="6692633176391053278">گام به گام</translation>
+<translation id="6696580792574109116">انتخاب‌گر ماه</translation>
 <translation id="6709093583001123835">مقدار باید <ph name="VALUE" /> باشد.</translation>
 <translation id="6709570249143506788">کیفیت پخش ضعیف</translation>
 <translation id="6755330956360078551">نکته ابزار</translation>

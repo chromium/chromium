@@ -137,8 +137,10 @@ SharedImageRepresentationSkia::BeginScopedWriteAccess(
     sk_sp<SkSurface> surface =
         BeginWriteAccess(final_msaa_count, surface_props, begin_semaphores,
                          end_semaphores, &end_state);
-    if (!surface)
+    if (!surface) {
+      LOG(ERROR) << "Unable to initialize SkSurface";
       return nullptr;
+    }
 
     backing()->OnWriteSucceeded();
 
@@ -148,8 +150,10 @@ SharedImageRepresentationSkia::BeginScopedWriteAccess(
   }
   sk_sp<SkPromiseImageTexture> promise_image_texture =
       BeginWriteAccess(begin_semaphores, end_semaphores, &end_state);
-  if (!promise_image_texture)
+  if (!promise_image_texture) {
+    LOG(ERROR) << "Unable to initialize SkPromiseImageTexture";
     return nullptr;
+  }
 
   backing()->OnWriteSucceeded();
 
@@ -248,19 +252,24 @@ sk_sp<SkPromiseImageTexture> SharedImageRepresentationSkia::BeginReadAccess(
   return nullptr;
 }
 
+#if defined(OS_ANDROID)
+AHardwareBuffer* SharedImageRepresentationOverlay::GetAHardwareBuffer() {
+  NOTREACHED();
+  return nullptr;
+}
+#endif
+
 SharedImageRepresentationOverlay::ScopedReadAccess::ScopedReadAccess(
     base::PassKey<SharedImageRepresentationOverlay> pass_key,
     SharedImageRepresentationOverlay* representation,
     gl::GLImage* gl_image,
-    std::vector<gfx::GpuFence> acquire_fences,
-    std::vector<gfx::GpuFence> release_fences)
+    std::vector<gfx::GpuFence> acquire_fences)
     : ScopedAccessBase(representation),
       gl_image_(gl_image),
-      acquire_fences_(std::move(acquire_fences)),
-      release_fences_(std::move(release_fences)) {}
+      acquire_fences_(std::move(acquire_fences)) {}
 
 SharedImageRepresentationOverlay::ScopedReadAccess::~ScopedReadAccess() {
-  representation()->EndReadAccess();
+  representation()->EndReadAccess(std::move(release_fence_));
 }
 
 std::unique_ptr<SharedImageRepresentationOverlay::ScopedReadAccess>
@@ -271,16 +280,14 @@ SharedImageRepresentationOverlay::BeginScopedReadAccess(bool needs_gl_image) {
   }
 
   std::vector<gfx::GpuFence> acquire_fences;
-  std::vector<gfx::GpuFence> release_fences;
-  if (!BeginReadAccess(&acquire_fences, &release_fences))
+  if (!BeginReadAccess(&acquire_fences))
     return nullptr;
 
   backing()->OnReadSucceeded();
 
   return std::make_unique<ScopedReadAccess>(
       base::PassKey<SharedImageRepresentationOverlay>(), this,
-      needs_gl_image ? GetGLImage() : nullptr, std::move(acquire_fences),
-      std::move(release_fences));
+      needs_gl_image ? GetGLImage() : nullptr, std::move(acquire_fences));
 }
 
 SharedImageRepresentationDawn::ScopedAccess::ScopedAccess(
@@ -359,6 +366,22 @@ std::unique_ptr<SharedImageRepresentationVaapi::ScopedWriteAccess>
 SharedImageRepresentationVaapi::BeginScopedWriteAccess() {
   return std::make_unique<ScopedWriteAccess>(
       base::PassKey<SharedImageRepresentationVaapi>(), this);
+}
+
+SharedImageRepresentationMemory::ScopedReadAccess::ScopedReadAccess(
+    base::PassKey<SharedImageRepresentationMemory> pass_key,
+    SharedImageRepresentationMemory* representation,
+    SkPixmap pixmap)
+    : ScopedAccessBase(representation), pixmap_(pixmap) {}
+
+SharedImageRepresentationMemory::ScopedReadAccess::~ScopedReadAccess() =
+    default;
+
+std::unique_ptr<SharedImageRepresentationMemory::ScopedReadAccess>
+SharedImageRepresentationMemory::BeginScopedReadAccess() {
+  return std::make_unique<ScopedReadAccess>(
+      base::PassKey<SharedImageRepresentationMemory>(), this,
+      BeginReadAccess());
 }
 
 }  // namespace gpu

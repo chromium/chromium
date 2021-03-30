@@ -132,7 +132,7 @@ NSRange EmptyRange() {
 // Sets |composition_text| as the composition text with caret placed at
 // |caret_pos| and updates |caret_range|.
 void SetCompositionText(ui::TextInputClient* client,
-                        const base::string16& composition_text,
+                        const std::u16string& composition_text,
                         const int caret_pos,
                         NSRange* caret_range) {
   ui::CompositionText composition;
@@ -153,7 +153,7 @@ gfx::Rect GetCaretBounds(const ui::TextInputClient* client) {
 // Returns a zero width rectangle corresponding to caret bounds when it's placed
 // at |caret_pos| and updates |caret_range|.
 gfx::Rect GetCaretBoundsForPosition(ui::TextInputClient* client,
-                                    const base::string16& composition_text,
+                                    const std::u16string& composition_text,
                                     const int caret_pos,
                                     NSRange* caret_range) {
   SetCompositionText(client, composition_text, caret_pos, caret_range);
@@ -163,7 +163,7 @@ gfx::Rect GetCaretBoundsForPosition(ui::TextInputClient* client,
 // Returns the expected boundary rectangle for characters of |composition_text|
 // within the |query_range|.
 gfx::Rect GetExpectedBoundsForRange(ui::TextInputClient* client,
-                                    const base::string16& composition_text,
+                                    const std::u16string& composition_text,
                                     NSRange query_range) {
   gfx::Rect left_caret = GetCaretBoundsForPosition(
       client, composition_text, query_range.location, nullptr);
@@ -436,7 +436,7 @@ class BridgedNativeWidgetTest : public BridgedNativeWidgetTestBase,
   // Install a textfield with input type |text_input_type| in the view hierarchy
   // and make it the text input client. Also initializes |dummy_text_view_|.
   Textfield* InstallTextField(
-      const base::string16& text,
+      const std::u16string& text,
       ui::TextInputType text_input_type = ui::TEXT_INPUT_TYPE_TEXT);
   Textfield* InstallTextField(const std::string& text);
 
@@ -537,7 +537,7 @@ BridgedNativeWidgetTest::BridgedNativeWidgetTest() = default;
 BridgedNativeWidgetTest::~BridgedNativeWidgetTest() = default;
 
 Textfield* BridgedNativeWidgetTest::InstallTextField(
-    const base::string16& text,
+    const std::u16string& text,
     ui::TextInputType text_input_type) {
   Textfield* textfield = new Textfield();
   textfield->SetText(text);
@@ -735,11 +735,11 @@ void BridgedNativeWidgetTest::TestDeleteEnd(SEL sel) {
 
 void BridgedNativeWidgetTest::TestEditingCommands(NSArray* selectors) {
   struct {
-    base::string16 test_string;
+    std::u16string test_string;
     bool is_rtl;
   } test_cases[] = {
-      {base::WideToUTF16(L"ab c"), false},
-      {base::WideToUTF16(L"\x0634\x0632 \x064A"), true},
+      {u"ab c", false},
+      {u"\x0634\x0632 \x064A", true},
   };
 
   for (const auto& test_case : test_cases) {
@@ -935,7 +935,7 @@ TEST_F(BridgedNativeWidgetInitTest, DISABLED_ShadowType) {
 // Ensure a nil NSTextInputContext is returned when the ui::TextInputClient is
 // not editable, a password field, or unset.
 TEST_F(BridgedNativeWidgetTest, InputContext) {
-  const base::string16 test_string = base::ASCIIToUTF16("test_str");
+  const std::u16string test_string = u"test_str";
   InstallTextField(test_string, ui::TEXT_INPUT_TYPE_PASSWORD);
   EXPECT_FALSE([ns_view_ inputContext]);
   InstallTextField(test_string, ui::TEXT_INPUT_TYPE_TEXT);
@@ -1389,7 +1389,7 @@ TEST_F(BridgedNativeWidgetTest, TextInput_FirstRectForCharacterRange_Caret) {
   EXPECT_EQ_RANGE(caret_range, actual_range);
 
   // Set composition with caret before second character ('e').
-  const base::string16 test_string = base::ASCIIToUTF16("test_str");
+  const std::u16string test_string = u"test_str";
   const size_t kTextLength = 8;
   SetCompositionText(client, test_string, 1, &caret_range);
 
@@ -1439,7 +1439,7 @@ TEST_F(BridgedNativeWidgetTest, TextInput_FirstRectForCharacterRange) {
   InstallTextField("");
   ui::TextInputClient* client = [ns_view_ textInputClient];
 
-  const base::string16 test_string = base::ASCIIToUTF16("test_str");
+  const std::u16string test_string = u"test_str";
   const size_t kTextLength = 8;
   SetCompositionText(client, test_string, 1, nullptr);
 
@@ -1503,7 +1503,7 @@ TEST_F(BridgedNativeWidgetTest, TextInput_SimulatePhoneticIme) {
       },
       &saw_vkey_return));
 
-  EXPECT_EQ(base::UTF8ToUTF16(""), textfield->GetText());
+  EXPECT_EQ(u"", textfield->GetText());
 
   g_fake_interpret_key_events = &handle_q_in_ime;
   [ns_view_ keyDown:q_in_ime];
@@ -1573,7 +1573,7 @@ TEST_F(BridgedNativeWidgetTest, TextInput_SimulateTelexMoo) {
         [view doCommandBySelector:@selector(insertNewLine:)];
       });
 
-  EXPECT_EQ(base::UTF8ToUTF16(""), textfield->GetText());
+  EXPECT_EQ(u"", textfield->GetText());
   EXPECT_EQ(0, enter_view->count());
 
   object_setClass(ns_view_, [InterpretKeyEventMockedBridgedContentView class]);
@@ -1643,7 +1643,7 @@ TEST_F(BridgedNativeWidgetTest, TextInput_NoAcceleratorPinyinSelectWord) {
         [view doCommandBySelector:@selector(insertNewLine:)];
       });
 
-  EXPECT_EQ(base::UTF8ToUTF16(""), textfield->GetText());
+  EXPECT_EQ(u"", textfield->GetText());
   EXPECT_EQ(0, enter_view->count());
 
   object_setClass(ns_view_, [InterpretKeyEventMockedBridgedContentView class]);
@@ -1713,7 +1713,7 @@ TEST_F(BridgedNativeWidgetTest, TextInput_NoAcceleratorEnterComposition) {
   InterpretKeyEventsCallback handle_second_return_in_ime = base::BindRepeating(
       [](id view) { [view doCommandBySelector:@selector(insertNewLine:)]; });
 
-  EXPECT_EQ(base::UTF8ToUTF16(""), textfield->GetText());
+  EXPECT_EQ(u"", textfield->GetText());
   EXPECT_EQ(0, enter_view->count());
 
   object_setClass(ns_view_, [InterpretKeyEventMockedBridgedContentView class]);
@@ -1780,7 +1780,7 @@ TEST_F(BridgedNativeWidgetTest, TextInput_NoAcceleratorTabEnterComposition) {
         [view doCommandBySelector:@selector(insertNewLine:)];
       });
 
-  EXPECT_EQ(base::UTF8ToUTF16(""), textfield->GetText());
+  EXPECT_EQ(u"", textfield->GetText());
   EXPECT_EQ(0, enter_view->count());
 
   object_setClass(ns_view_, [InterpretKeyEventMockedBridgedContentView class]);

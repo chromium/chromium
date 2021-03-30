@@ -2,6 +2,8 @@ include_rules = [
   "+components/offline_pages",
   "+components/url_formatter",
   "+components/strings",
+  "+crypto",
   "+net",
+  "+third_party/zlib/google",
   "+ui/base",
 ]

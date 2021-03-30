@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "components/bookmarks/browser/titled_url_match.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 
@@ -54,6 +55,24 @@ class BookmarkProvider : public AutocompleteProvider {
   // Performs the actual matching of |input| over the bookmarks and fills in
   // |matches_|.
   void DoAutocomplete(const AutocompleteInput& input);
+
+  // Get the matches from |bookmark_model_| using the appropriate matching
+  // algorithm, determined by |GetMatchingAlgorithm()|, and path matching
+  // algorithm, determined by the |kBookmarkPaths| base::feature.
+  std::vector<bookmarks::TitledUrlMatch> GetMatchesWithBookmarkPaths(
+      const AutocompleteInput& input,
+      size_t kMaxBookmarkMatches);
+
+  // There are 2 short bookmark features that determine the matching algorithm
+  // used, i.e. whether input words shorter than 3 chars can prefix match.
+  // 1) |IsShortBookmarkSuggestionsEnabled()| always allows short input word
+  //    prefix matching.
+  // 2) |IsShortBookmarkSuggestionsByTotalInputLengthEnabled()| allows short
+  //    input word prefix matching only if the input is longer than a threshold
+  //    param. This feature also has a counterfactual param.
+  // 3) Otherwise, if both features are disabled (or if the counterfactual param
+  //    is true), short input word matching won't be allowed.
+  query_parser::MatchingAlgorithm GetMatchingAlgorithm(AutocompleteInput input);
 
   // Calculates the relevance score for |match|.
   int CalculateBookmarkMatchRelevance(

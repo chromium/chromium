@@ -23,9 +23,9 @@ class GPUComputePassEncoder : public DawnObject<WGPUComputePassEncoder>,
  public:
   explicit GPUComputePassEncoder(GPUDevice* device,
                                  WGPUComputePassEncoder compute_pass_encoder);
-  ~GPUComputePassEncoder() override;
 
   // gpu_compute_pass_encoder.idl
+  void setBindGroup(uint32_t index, GPUBindGroup* bindGroup);
   void setBindGroup(uint32_t index,
                     GPUBindGroup* bindGroup,
                     const Vector<uint32_t>& dynamicOffsets);

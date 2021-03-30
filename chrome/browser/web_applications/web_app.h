@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/components/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/components/web_app_system_web_app_data.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
@@ -75,6 +76,17 @@ class WebApp {
     return chromeos_data_;
   }
 
+  struct ClientData {
+    ClientData();
+    ~ClientData();
+    ClientData(const ClientData& client_data);
+    base::Optional<WebAppSystemWebAppData> system_web_app_data;
+  };
+
+  const ClientData& client_data() const { return client_data_; }
+
+  ClientData* client_data() { return &client_data_; }
+
   // Locally installed apps have shortcuts installed on various UI surfaces.
   // If app isn't locally installed, it is excluded from UIs and only listed as
   // a part of user's app library.
@@ -87,6 +99,8 @@ class WebApp {
   // using |sync_fallback_data| fields.
   bool is_in_sync_install() const { return is_in_sync_install_; }
 
+  // Represents the last time the Badging API was used.
+  const base::Time& last_badging_time() const { return last_badging_time_; }
   // Represents the last time this app is launched.
   const base::Time& last_launch_time() const { return last_launch_time_; }
   // Represents the time when this app is installed.
@@ -159,6 +173,10 @@ class WebApp {
     return downloaded_shortcuts_menu_icons_sizes_;
   }
 
+  blink::mojom::CaptureLinks capture_links() const { return capture_links_; }
+
+  const GURL& manifest_url() const { return manifest_url_; }
+
   // A Web App can be installed from multiple sources simultaneously. Installs
   // add a source to the app. Uninstalls remove a source from the app.
   void AddSource(Source::Type source);
@@ -207,10 +225,13 @@ class WebApp {
   void SetProtocolHandlers(
       std::vector<apps::ProtocolHandlerInfo> protocol_handlers);
   void SetUrlHandlers(apps::UrlHandlers url_handlers);
+  void SetLastBadgingTime(const base::Time& time);
   void SetLastLaunchTime(const base::Time& time);
   void SetInstallTime(const base::Time& time);
   void SetRunOnOsLoginMode(RunOnOsLoginMode mode);
   void SetSyncFallbackData(SyncFallbackData sync_fallback_data);
+  void SetCaptureLinks(blink::mojom::CaptureLinks capture_links);
+  void SetManifestUrl(const GURL& manifest_url);
 
   // For logging and debug purposes.
   bool operator==(const WebApp&) const;
@@ -257,11 +278,16 @@ class WebApp {
   base::Optional<apps::ShareTarget> share_target_;
   std::vector<std::string> additional_search_terms_;
   std::vector<apps::ProtocolHandlerInfo> protocol_handlers_;
+  base::Time last_badging_time_;
   base::Time last_launch_time_;
   base::Time install_time_;
-  RunOnOsLoginMode run_on_os_login_mode_ = RunOnOsLoginMode::kUndefined;
+  RunOnOsLoginMode run_on_os_login_mode_ = RunOnOsLoginMode::kNotRun;
   SyncFallbackData sync_fallback_data_;
   apps::UrlHandlers url_handlers_;
+  blink::mojom::CaptureLinks capture_links_ =
+      blink::mojom::CaptureLinks::kUndefined;
+  ClientData client_data_;
+  GURL manifest_url_;
   // New fields must be added to |operator==| and |operator<<|.
 };
 

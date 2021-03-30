@@ -1,0 +1,124 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_ASH_CROSAPI_BROWSER_UTIL_H_
+#define CHROME_BROWSER_ASH_CROSAPI_BROWSER_UTIL_H_
+
+#include "base/callback_forward.h"
+#include "base/containers/flat_map.h"
+#include "base/feature_list.h"
+#include "base/token.h"
+#include "chrome/browser/ash/crosapi/environment_provider.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+
+class PrefRegistrySimple;
+
+namespace aura {
+class Window;
+}  // namespace aura
+
+namespace base {
+class FilePath;
+}  // namespace base
+
+namespace mojo {
+class PlatformChannelEndpoint;
+}  // namespace mojo
+
+namespace version_info {
+enum class Channel;
+}  // namespace version_info
+
+// These methods are used by ash-chrome.
+namespace crosapi {
+namespace browser_util {
+
+extern const base::Feature kLacrosAllowOnStableChannel;
+
+// A command-line switch that can also be set from chrome://flags that affects
+// the frequency of Lacros updates.
+extern const char kLacrosStabilitySwitch[];
+extern const char kLacrosStabilityLessStable[];
+extern const char kLacrosStabilityMoreStable[];
+
+// Boolean preference. Whether to launch lacros-chrome on login.
+extern const char kLaunchOnLoginPref[];
+
+// Registers user profile preferences related to the lacros-chrome binary.
+void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+// Returns the user directory for lacros-chrome.
+base::FilePath GetUserDataDir();
+
+// Returns true if the Lacros feature is allowed to be enabled. This checks
+// current user type, chrome channel and enterprise policy.
+bool IsLacrosAllowedToBeEnabled(version_info::Channel channel);
+
+// Returns true if the Lacros feature is enabled.
+bool IsLacrosEnabled();
+
+// As above, but takes a channel. Exposed for testing.
+bool IsLacrosEnabled(version_info::Channel channel);
+
+// Forces IsLacrosEnabled() to return true for testing.
+void SetLacrosEnabledForTest(bool force_enabled);
+
+// Returns true if the lacros should be used as a primary browser.
+bool IsLacrosPrimaryBrowser();
+
+// As above, but takes a channel. Exposed for testing.
+bool IsLacrosPrimaryBrowser(version_info::Channel channel);
+
+// Returns true if the lacros can be used as a primary browser
+// for the current session.
+// Note that IsLacrosPrimaryBrowser may return false, even if this returns
+// true, specifically, the feature is disabled by user/policy.
+bool IsLacrosPrimaryBrowserAllowed(version_info::Channel channel);
+
+// Returns true if Lacros is allowed to launch and show a window. This can
+// return false if the user is using multi-signin, which is mutually exclusive
+// with Lacros.
+bool IsLacrosAllowedToLaunch();
+
+// Returns true if |window| is an exo ShellSurface window representing a Lacros
+// browser.
+bool IsLacrosWindow(const aura::Window* window);
+
+// Returns the UUID and version for all tracked interfaces. Exposed for testing.
+base::flat_map<base::Token, uint32_t> GetInterfaceVersions();
+
+enum class InitialBrowserAction {
+  kOpenWindow,
+  kOpenIncognitoWindow,
+  kRestoreLastSession,
+};
+
+// Returns the initial parameter to be passed to Crosapi client,
+// such as lacros-chrome.
+mojom::BrowserInitParamsPtr GetBrowserInitParams(
+    EnvironmentProvider* environment_provider,
+    InitialBrowserAction initial_browser_action);
+
+// Invite the lacros-chrome to the mojo universe.
+// Queue messages to establish the mojo connection, so that the passed IPC is
+// available already when lacros-chrome accepts the invitation.
+mojo::Remote<crosapi::mojom::BrowserService> SendMojoInvitationToLacrosChrome(
+    ::crosapi::EnvironmentProvider* environment_provider,
+    mojo::PlatformChannelEndpoint local_endpoint,
+    base::OnceClosure mojo_disconnected_callback,
+    base::OnceCallback<void(mojo::PendingReceiver<crosapi::mojom::Crosapi>)>
+        crosapi_callback);
+
+// Creates a memory backed file containing the serialized |params|,
+// and returns its FD.
+base::ScopedFD CreateStartupData(
+    ::crosapi::EnvironmentProvider* environment_provider,
+    InitialBrowserAction initial_browser_action);
+
+}  // namespace browser_util
+}  // namespace crosapi
+
+#endif  // CHROME_BROWSER_ASH_CROSAPI_BROWSER_UTIL_H_

@@ -7,7 +7,12 @@
   <template>
     <style include="settings-shared">
       :host {
+        --cr-settings-localized-link-display: inline;
         --cr-subsequent-anchors-of-span-margin: 0;
+      }
+
+      a {
+        display: var(--cr-settings-localized-link-display);
       }
     </style>
     <div id="container"

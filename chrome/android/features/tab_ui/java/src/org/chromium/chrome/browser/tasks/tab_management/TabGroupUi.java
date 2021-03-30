@@ -4,29 +4,15 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import android.app.Activity;
-
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
+import org.chromium.chrome.browser.toolbar.bottom.BottomControlsContentDelegate;
 
 /**
- * Interface for the Tab Groups related UI. This UI manages its own visibility through {@link
- * BottomControlsCoordinator.BottomControlsVisibilityController}.
+ * Interface for the Tab Groups related UI.
  */
-public interface TabGroupUi {
-    /**
-     * Called by the ToolbarManager when the system back button is pressed.
-     * @return Whether or not the TabGroupUi consumed the event.
-     */
-    boolean onBackPressed();
-
-    void initializeWithNative(Activity activity,
-            BottomControlsCoordinator.BottomControlsVisibilityController visibilityController);
-
+public interface TabGroupUi extends BottomControlsContentDelegate {
     /**
      * @return {@link Supplier} that provides dialog visibility.
      */
     Supplier<Boolean> getTabGridDialogVisibilitySupplier();
-
-    void destroy();
 }

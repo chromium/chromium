@@ -63,7 +63,7 @@ public class DownloadDirectoryProvider {
          * @return A list of directories on the secondary storage.
          */
         @NonNull
-        List<File> getSecondaryStorageDownloadDirectories();
+        SecondaryStorageInfo getSecondaryStorageDownloadDirectories();
     }
 
     /**
@@ -76,7 +76,7 @@ public class DownloadDirectoryProvider {
         }
 
         @Override
-        public List<File> getSecondaryStorageDownloadDirectories() {
+        public SecondaryStorageInfo getSecondaryStorageDownloadDirectories() {
             return DownloadDirectoryProvider.getSecondaryStorageDownloadDirectories();
         }
     }
@@ -111,13 +111,17 @@ public class DownloadDirectoryProvider {
             dirs.add(defaultOption);
             recordDirectoryType(DirectoryOption.DownloadLocationDirectoryType.DEFAULT);
 
-            // Retrieve additional directories, i.e. the external SD card directory.
+            // Retrieve additional directories, i.e. the external SD card directory. This doesn't
+            // include the legacy directories on Q+.
             mExternalStorageDirectory = Environment.getExternalStorageDirectory().getAbsolutePath();
-            List<File> files = mDelegate.getSecondaryStorageDownloadDirectories();
-
-            if (files.isEmpty()) return dirs;
+            SecondaryStorageInfo secondaryStorageInfo =
+                    mDelegate.getSecondaryStorageDownloadDirectories();
+            List<File> secondaryDirs = Build.VERSION.SDK_INT > Build.VERSION_CODES.Q
+                    ? secondaryStorageInfo.directories
+                    : secondaryStorageInfo.directoriesPreR;
+            if (secondaryDirs.isEmpty()) return dirs;
             boolean hasAddtionalDirectory = false;
-            for (File file : files) {
+            for (File file : secondaryDirs) {
                 if (file == null) continue;
                 dirs.add(toDirectoryOption(
                         file, DirectoryOption.DownloadLocationDirectoryType.ADDITIONAL));
@@ -256,25 +260,54 @@ public class DownloadDirectoryProvider {
     }
 
     /**
-     * Get download directories on secondary storage.
-     * @return A list of directories on the secondary storage.
+     * Contains download directories on secondary storage(external SD card).
      */
-    public static List<File> getSecondaryStorageDownloadDirectories() {
+    public static class SecondaryStorageInfo {
+        /**
+         * The download directories on secondary storage from Android R. Will be null before Android
+         * R.
+         */
+        @Nullable
+        public final List<File> directories;
+        /**
+         * The download directories on secondary storage pre R. Some downloads may exist in these
+         * directories on Q+.
+         */
+        public final List<File> directoriesPreR;
+
+        /**
+         * Construct the secondary storage info.
+         * @param directories See {@link #directories}.
+         * @param directoriesPreR See {@link #directoriesPreR}.
+         */
+        public SecondaryStorageInfo(List<File> directories, List<File> directoriesPreR) {
+            this.directories = directories;
+            this.directoriesPreR = directoriesPreR;
+        }
+    }
+
+    /**
+     * Get download directories on secondary storage.
+     * @return The {@link SecondaryStorageInfo} that contains the download directories on secondary
+     * storages.
+     */
+    public static SecondaryStorageInfo getSecondaryStorageDownloadDirectories() {
         // Starting from Android R, we use a different location for secondary storage.
-        String[] dirPaths;
-        ArrayList<File> files = new ArrayList<>();
+        ArrayList<File> directoriesPreR = new ArrayList<>();
+        String[] dirPaths = PathUtils.getAllPrivateDownloadsDirectories();
+        // The first element returned from getAllPrivateDownloadsDirectories() is on primary
+        // storage.
+        for (int i = 1; i < dirPaths.length; ++i) directoriesPreR.add(new File(dirPaths[i]));
+
+        ArrayList<File> directoriesOnR = new ArrayList<>();
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
             dirPaths = PathUtils.getExternalDownloadVolumesNames();
             // getExternalDownloadVolumesNames() doesn't include dirs on primary storage.
-            for (String dir : dirPaths) files.add(new File(dir));
-        } else {
-            dirPaths = PathUtils.getAllPrivateDownloadsDirectories();
-            // The first element returned from getAllPrivateDownloadsDirectories() is on primary
-            // storage.
-            for (int i = 1; i < dirPaths.length; ++i) files.add(new File(dirPaths[i]));
+            for (String dir : dirPaths) directoriesOnR.add(new File(dir));
+            return new SecondaryStorageInfo(directoriesOnR, directoriesPreR);
         }
 
-        return files;
+        return new SecondaryStorageInfo(null, directoriesPreR);
     }
 
     /**

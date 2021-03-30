@@ -19,7 +19,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
 // Set the default number of "automatic" implicit storage access grants per
 // third party origin that can be granted. This can be overridden via
@@ -48,7 +48,7 @@ StorageAccessGrantPermissionContext::StorageAccessGrantPermissionContext(
     : PermissionContextBase(
           browser_context,
           ContentSettingsType::STORAGE_ACCESS,
-          blink::mojom::FeaturePolicyFeature::kStorageAccessAPI),
+          blink::mojom::PermissionsPolicyFeature::kStorageAccessAPI),
       content_settings_type_(ContentSettingsType::STORAGE_ACCESS) {}
 
 StorageAccessGrantPermissionContext::~StorageAccessGrantPermissionContext() =

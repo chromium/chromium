@@ -156,7 +156,7 @@ void CSSStyleDeclaration::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
-String CSSStyleDeclaration::AnonymousNamedGetter(const AtomicString& name) {
+String CSSStyleDeclaration::GetPropertyAttribute(const AtomicString& name) {
   // Search the style declaration.
   CSSPropertyID unresolved_property =
       CssPropertyInfo(GetExecutionContext(), name);
@@ -168,70 +168,17 @@ String CSSStyleDeclaration::AnonymousNamedGetter(const AtomicString& name) {
   return GetPropertyValueInternal(ResolveCSSPropertyID(unresolved_property));
 }
 
-NamedPropertySetterResult CSSStyleDeclaration::AnonymousNamedSetter(
-    ScriptState* script_state,
+void CSSStyleDeclaration::SetPropertyAttribute(
+    const ExecutionContext* execution_context,
     const AtomicString& name,
-    const String& value) {
-  const ExecutionContext* execution_context =
-      ExecutionContext::From(script_state);
-  if (!execution_context)
-    return NamedPropertySetterResult::kDidNotIntercept;
+    const String& value,
+    ExceptionState& exception_state) {
   CSSPropertyID unresolved_property = CssPropertyInfo(execution_context, name);
   if (!IsValidCSSPropertyID(unresolved_property))
-    return NamedPropertySetterResult::kDidNotIntercept;
-  // We create the ExceptionState manually due to performance issues: adding
-  // [RaisesException] to the IDL causes the bindings layer to expensively
-  // create a std::string to set the ExceptionState's |property_name| argument,
-  // while we can use CSSProperty::GetPropertyName() here (see bug 829408).
-  ExceptionState exception_state(
-      script_state->GetIsolate(), ExceptionState::kSetterContext,
-      "CSSStyleDeclaration",
-      CSSProperty::Get(ResolveCSSPropertyID(unresolved_property))
-          .GetPropertyName());
+    return;
   SetPropertyInternal(unresolved_property, String(), value, false,
                       execution_context->GetSecureContextMode(),
                       exception_state);
-  if (exception_state.HadException())
-    return NamedPropertySetterResult::kIntercepted;
-  return NamedPropertySetterResult::kIntercepted;
-}
-
-NamedPropertyDeleterResult CSSStyleDeclaration::AnonymousNamedDeleter(
-    const AtomicString& name) {
-  // Pretend to be deleted since web author can define their own property with
-  // the same name.
-  return NamedPropertyDeleterResult::kDeleted;
-}
-
-void CSSStyleDeclaration::NamedPropertyEnumerator(Vector<String>& names,
-                                                  ExceptionState&) {
-  typedef Vector<String, kNumCSSProperties - 1> PreAllocatedPropertyVector;
-  DEFINE_STATIC_LOCAL(PreAllocatedPropertyVector, property_names, ());
-
-  const ExecutionContext* execution_context = GetExecutionContext();
-
-  if (property_names.IsEmpty()) {
-    for (CSSPropertyID property_id : CSSPropertyIDList()) {
-      const CSSProperty& property_class =
-          CSSProperty::Get(ResolveCSSPropertyID(property_id));
-      if (property_class.IsWebExposed(execution_context))
-        property_names.push_back(property_class.GetJSPropertyName());
-    }
-    for (CSSPropertyID property_id : kCSSPropertyAliasList) {
-      const CSSUnresolvedProperty* property_class =
-          CSSUnresolvedProperty::GetAliasProperty(property_id);
-      if (property_class->IsWebExposed(execution_context))
-        property_names.push_back(property_class->GetJSPropertyName());
-    }
-    std::sort(property_names.begin(), property_names.end(),
-              WTF::CodeUnitCompareLessThan);
-  }
-  names = property_names;
-}
-
-bool CSSStyleDeclaration::NamedPropertyQuery(const AtomicString& name,
-                                             ExceptionState&) {
-  return IsValidCSSPropertyID(CssPropertyInfo(GetExecutionContext(), name));
 }
 
 }  // namespace blink

@@ -20,6 +20,7 @@ namespace {
 const char kClient[] = "unittest";
 const char kAppVer[] = "1.0";
 const char kKeyParam[] = "test_key_param";
+const int kDefaultStoreFileSizeInBytes = 320000;
 
 }  // namespace
 
@@ -72,6 +73,10 @@ void TestV4Database::MarkPrefixAsBad(ListIdentifier list_id,
   V4Store* base_store = store_map_->at(list_id).get();
   TestV4Store* test_store = static_cast<TestV4Store*>(base_store);
   test_store->MarkPrefixAsBad(prefix);
+}
+
+int64_t TestV4Database::GetStoreSizeInBytes(const ListIdentifier& store) const {
+  return kDefaultStoreFileSizeInBytes;
 }
 
 TestV4StoreFactory::TestV4StoreFactory() = default;

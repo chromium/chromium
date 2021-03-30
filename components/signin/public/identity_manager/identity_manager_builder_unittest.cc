@@ -4,6 +4,8 @@
 
 #include "components/signin/public/identity_manager/identity_manager_builder.h"
 
+#include <limits>
+
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -22,8 +24,9 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/components/account_manager/account_manager.h"
-#include "chromeos/components/account_manager/account_manager_factory.h"
+#include "ash/components/account_manager/account_manager.h"
+#include "ash/components/account_manager/account_manager_factory.h"
+#include "components/account_manager_core/account_manager_facade_impl.h"
 #endif
 
 #if defined(OS_IOS)
@@ -48,7 +51,7 @@ class IdentityManagerBuilderTest : public testing::Test {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::AccountManagerFactory* GetAccountManagerFactory() {
+  ash::AccountManagerFactory* GetAccountManagerFactory() {
     return &account_manager_factory_;
   }
 #endif
@@ -64,7 +67,7 @@ class IdentityManagerBuilderTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   TestSigninClient signin_client_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::AccountManagerFactory account_manager_factory_;
+  ash::AccountManagerFactory account_manager_factory_;
 #endif
 };
 
@@ -76,7 +79,7 @@ TEST_F(IdentityManagerBuilderTest, BuildIdentityManagerInitParameters) {
   base::FilePath dest_path = temp_dir.GetPath();
 
 #if defined(OS_ANDROID)
-  DisableInteractionWithSystemAccounts();
+  SetUpMockAccountManagerFacade();
 #endif
 
   IdentityManagerBuildParams params;
@@ -95,13 +98,24 @@ TEST_F(IdentityManagerBuilderTest, BuildIdentityManagerInitParameters) {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::AccountManager* account_manager =
+  auto* account_manager =
       GetAccountManagerFactory()->GetAccountManager(dest_path.value());
   account_manager->Initialize(
       dest_path, GetSigninClient()->GetURLLoaderFactory(),
       base::BindRepeating(
           [](base::OnceClosure closure) -> void { std::move(closure).Run(); }));
   params.account_manager = account_manager;
+
+  mojo::Remote<crosapi::mojom::AccountManager> remote;
+  GetAccountManagerFactory()
+      ->GetAccountManagerAsh(dest_path.value())
+      ->BindReceiver(remote.BindNewPipeAndPassReceiver());
+  auto account_manager_facade =
+      std::make_unique<account_manager::AccountManagerFacadeImpl>(
+          std::move(remote),
+          /*remote_version=*/std::numeric_limits<uint32_t>::max());
+
+  params.account_manager_facade = account_manager_facade.get();
   params.is_regular_profile = true;
 #endif
 
@@ -124,12 +138,8 @@ TEST_F(IdentityManagerBuilderTest, BuildIdentityManagerInitParameters) {
   EXPECT_NE(init_params.accounts_mutator, nullptr);
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_NE(init_params.chromeos_account_manager, nullptr);
+  EXPECT_NE(init_params.ash_account_manager, nullptr);
 #endif
-
-  // Manually shut down AccountFetcherService to avoid DCHECK failure inside its
-  // destructor.
-  init_params.account_fetcher_service->Shutdown();
 }
 
 }  // namespace signin

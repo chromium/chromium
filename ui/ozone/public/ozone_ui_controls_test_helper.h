@@ -52,6 +52,11 @@ class OzoneUIControlsTestHelper {
 
   // Executes closure after all pending ui events are sent.
   virtual void RunClosureAfterAllPendingUIEvents(base::OnceClosure closure) = 0;
+
+  // Tells the client of OzoneUIControlsTestHelper that it must use
+  // SendMouseMotionNotifyEvent instead of calling MoveCursorTo via
+  // aura::Window.
+  virtual bool MustUseUiControlsForMoveCursorTo() = 0;
 };
 
 COMPONENT_EXPORT(OZONE)

@@ -10,10 +10,13 @@
 #include <map>
 
 #include "base/macros.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/service_worker_devtools_manager.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_process_host_observer.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
@@ -22,7 +25,8 @@ namespace content {
 
 class BrowserContext;
 
-class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
+class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl,
+                                       RenderProcessHostObserver {
  public:
   using List = std::vector<scoped_refptr<ServiceWorkerDevToolsAgentHost>>;
   using Map = std::map<std::string,
@@ -89,10 +93,14 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
  private:
   ~ServiceWorkerDevToolsAgentHost() override;
   void UpdateIsAttached(bool attached);
+  void UpdateProcessHost();
 
   // DevToolsAgentHostImpl overrides.
   bool AttachSession(DevToolsSession* session, bool acquire_wake_lock) override;
   void DetachSession(DevToolsSession* session) override;
+
+  // RenderProcessHostObserver implementation.
+  void RenderProcessHostDestroyed(RenderProcessHost* host) override;
 
   void UpdateLoaderFactories(base::OnceClosure callback);
 
@@ -115,6 +123,8 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
       cross_origin_embedder_policy_;
   mojo::Remote<network::mojom::CrossOriginEmbedderPolicyReporter>
       coep_reporter_;
+  base::ScopedObservation<RenderProcessHost, RenderProcessHostObserver>
+      process_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerDevToolsAgentHost);
 };

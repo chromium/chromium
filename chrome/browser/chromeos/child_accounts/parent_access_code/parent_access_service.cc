@@ -12,9 +12,11 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/timer/timer.h"
+#include "base/values.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 
@@ -50,8 +52,22 @@ bool IsDeviceOwnedByChild() {
                   "code validation";
     return false;
   }
-
   return device_owner->IsChild();
+}
+
+// Returns true is any parent code config is available on the device.
+bool IsParentCodeConfigAvailable() {
+  const user_manager::UserList& users =
+      user_manager::UserManager::Get()->GetUsers();
+  const base::Value* dictionary = nullptr;
+  for (const auto* user : users) {
+    if (user_manager::known_user::GetPref(
+            user->GetAccountId(), prefs::kKnownUserParentAccessCodeConfig,
+            &dictionary)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace
@@ -76,13 +92,18 @@ bool ParentAccessService::IsApprovalRequired(SupervisedAction action) {
         return user_manager::UserManager::Get()->GetActiveUser()->IsChild();
       return IsDeviceOwnedByChild();
     case SupervisedAction::kAddUser:
-    case SupervisedAction::kReauth:
       if (!features::IsParentAccessCodeForOnlineLoginEnabled())
         return false;
       return IsDeviceOwnedByChild();
+    case SupervisedAction::kReauth:
+      if (!features::IsParentAccessCodeForOnlineLoginEnabled())
+        return false;
+      if (!IsParentCodeConfigAvailable())
+        return false;
+      return IsDeviceOwnedByChild();
     case SupervisedAction::kUnlockTimeLimits:
-      NOTREACHED();
-      return false;
+      DCHECK(user_manager::UserManager::Get()->IsUserLoggedIn());
+      return true;
   }
 }
 
@@ -90,28 +111,35 @@ ParentAccessService::ParentAccessService() = default;
 
 ParentAccessService::~ParentAccessService() = default;
 
-bool ParentAccessService::ValidateParentAccessCode(
+ash::ParentCodeValidationResult ParentAccessService::ValidateParentAccessCode(
     const AccountId& account_id,
     const std::string& access_code,
     base::Time validation_time) {
-  bool validation_result = false;
+  ash::ParentCodeValidationResult result =
+      ash::ParentCodeValidationResult::kInvalid;
+
+  if (config_source_.config_map().empty() ||
+      (account_id.is_valid() &&
+       !base::Contains(config_source_.config_map(), account_id))) {
+    result = ash::ParentCodeValidationResult::kNoConfig;
+    NotifyObservers(result, account_id);
+    return result;
+  }
+
   for (const auto& map_entry : config_source_.config_map()) {
     if (!account_id.is_valid() || account_id == map_entry.first) {
       for (const auto& validator : map_entry.second) {
         if (validator->Validate(access_code, validation_time)) {
-          validation_result = true;
-          break;
+          result = ash::ParentCodeValidationResult::kValid;
+          NotifyObservers(result, account_id);
+          return result;
         }
       }
     }
-    if (validation_result)
-      break;
   }
 
-  for (auto& observer : observers_)
-    observer.OnAccessCodeValidation(validation_result, account_id);
-
-  return validation_result;
+  NotifyObservers(result, account_id);
+  return result;
 }
 
 void ParentAccessService::LoadConfigForUser(const user_manager::User* user) {
@@ -124,6 +152,13 @@ void ParentAccessService::AddObserver(Observer* observer) {
 
 void ParentAccessService::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void ParentAccessService::NotifyObservers(
+    ash::ParentCodeValidationResult validation_result,
+    const AccountId& account_id) {
+  for (auto& observer : observers_)
+    observer.OnAccessCodeValidation(validation_result, account_id);
 }
 
 }  // namespace parent_access

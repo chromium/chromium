@@ -2,6 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import 'chrome://os-settings/chromeos/lazy_load.js';
+
+// #import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, ManageA11yPageBrowserProxyImpl, ManageA11yPageBrowserProxy, CrSettingsPrefs, routes, Router} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+// #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
+// clang-format on
+
 /**
  * Checks whether a given element is visible to the user.
  * @param {!Element} element
@@ -158,7 +168,7 @@ suite('ManageAccessibilityPageTests', function() {
       showTabletModeShelfNavigationButtonsSettings: true,
     });
 
-    prefs = getDefaultPrefs();
+    const prefs = getDefaultPrefs();
     // Enable spoken feedback.
     prefs.settings.accessibility.value = true;
 

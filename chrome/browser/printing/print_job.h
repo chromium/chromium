@@ -67,7 +67,7 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob>,
   // the print settings. Sets the expected page count of the print job based on
   // the settings.
   virtual void Initialize(std::unique_ptr<PrinterQuery> query,
-                          const base::string16& name,
+                          const std::u16string& name,
                           uint32_t page_count);
 
 #if defined(OS_WIN)

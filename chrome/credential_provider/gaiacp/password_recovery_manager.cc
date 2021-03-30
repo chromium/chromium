@@ -262,7 +262,7 @@ base::Optional<std::string> PrivateKeyDecrypt(
 HRESULT EncryptUserPasswordUsingEscrowService(
     const std::string& access_token,
     const std::string& device_id,
-    const base::string16& password,
+    const std::wstring& password,
     const base::TimeDelta& request_timeout,
     base::Optional<base::Value>* encrypted_data) {
   DCHECK(encrypted_data);
@@ -304,7 +304,7 @@ HRESULT EncryptUserPasswordUsingEscrowService(
     return E_FAIL;
   }
 
-  std::string password_utf8 = base::UTF16ToUTF8(password);
+  std::string password_utf8 = base::WideToUTF8(password);
   std::string padded_password;
   auto result = PadSecret(password_utf8, &padded_password);
   SecurelyClearString(password_utf8);
@@ -341,7 +341,7 @@ HRESULT DecryptUserPasswordUsingEscrowService(
     const std::string& access_token,
     const base::Optional<base::Value>& encrypted_data,
     const base::TimeDelta& request_timeout,
-    base::string16* decrypted_password) {
+    std::wstring* decrypted_password) {
   if (!encrypted_data)
     return E_FAIL;
   DCHECK(decrypted_password);
@@ -407,7 +407,7 @@ HRESULT DecryptUserPasswordUsingEscrowService(
 
   std::string unpadded;
   UnpadSecret(*decrypted_secret, &unpadded);
-  *decrypted_password = base::UTF8ToUTF16(unpadded);
+  *decrypted_password = base::UTF8ToWide(unpadded);
 
   SecurelyClearString(*decrypted_secret);
   SecurelyClearString(unpadded);
@@ -441,7 +441,7 @@ PasswordRecoveryManager::PasswordRecoveryManager(
 PasswordRecoveryManager::~PasswordRecoveryManager() = default;
 
 HRESULT PasswordRecoveryManager::ClearUserRecoveryPassword(
-    const base::string16& sid) {
+    const std::wstring& sid) {
   auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
 
   if (!policy) {
@@ -449,18 +449,18 @@ HRESULT PasswordRecoveryManager::ClearUserRecoveryPassword(
     LOGFN(ERROR) << "ScopedLsaPolicy::Create hr=" << putHR(hr);
     return hr;
   }
-  base::string16 store_key = GetUserPasswordLsaStoreKey(sid);
+  std::wstring store_key = GetUserPasswordLsaStoreKey(sid);
   return policy->RemovePrivateData(store_key.c_str());
 }
 
 HRESULT PasswordRecoveryManager::StoreWindowsPasswordIfNeeded(
-    const base::string16& sid,
+    const std::wstring& sid,
     const std::string& access_token,
-    const base::string16& password) {
+    const std::wstring& password) {
   if (!PasswordRecoveryEnabled())
     return E_NOTIMPL;
 
-  base::string16 machine_guid;
+  std::wstring machine_guid;
   HRESULT hr = GetMachineGuid(&machine_guid);
 
   if (FAILED(hr)) {
@@ -468,7 +468,7 @@ HRESULT PasswordRecoveryManager::StoreWindowsPasswordIfNeeded(
     return hr;
   }
 
-  std::string device_id = base::UTF16ToUTF8(machine_guid);
+  std::string device_id = base::WideToUTF8(machine_guid);
 
   auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
 
@@ -479,7 +479,7 @@ HRESULT PasswordRecoveryManager::StoreWindowsPasswordIfNeeded(
   }
 
   // See if a password key is already stored in the LSA for this user.
-  base::string16 store_key = GetUserPasswordLsaStoreKey(sid);
+  std::wstring store_key = GetUserPasswordLsaStoreKey(sid);
 
   if (policy->PrivateDataExists(store_key.c_str())) {
     return S_OK;
@@ -492,7 +492,7 @@ HRESULT PasswordRecoveryManager::StoreWindowsPasswordIfNeeded(
   if (SUCCEEDED(hr)) {
     std::string lsa_value;
     if (base::JSONWriter::Write(encrypted_dict.value(), &lsa_value)) {
-      base::string16 lsa_value16 = base::UTF8ToUTF16(lsa_value);
+      std::wstring lsa_value16 = base::UTF8ToWide(lsa_value);
       hr = policy->StorePrivateData(store_key.c_str(), lsa_value16.c_str());
       SecurelyClearString(lsa_value16);
       SecurelyClearString(lsa_value);
@@ -518,9 +518,9 @@ HRESULT PasswordRecoveryManager::StoreWindowsPasswordIfNeeded(
 }
 
 HRESULT PasswordRecoveryManager::RecoverWindowsPasswordIfPossible(
-    const base::string16& sid,
+    const std::wstring& sid,
     const std::string& access_token,
-    base::string16* recovered_password) {
+    std::wstring* recovered_password) {
   if (!PasswordRecoveryEnabled())
     return E_NOTIMPL;
 
@@ -535,7 +535,7 @@ HRESULT PasswordRecoveryManager::RecoverWindowsPasswordIfPossible(
   }
 
   // See if a password key is already stored in the LSA for this user.
-  base::string16 store_key = GetUserPasswordLsaStoreKey(sid);
+  std::wstring store_key = GetUserPasswordLsaStoreKey(sid);
   wchar_t password_lsa_data[1024];
   HRESULT hr = policy->RetrievePrivateData(store_key.c_str(), password_lsa_data,
                                            base::size(password_lsa_data));
@@ -543,13 +543,13 @@ HRESULT PasswordRecoveryManager::RecoverWindowsPasswordIfPossible(
   if (FAILED(hr))
     LOGFN(ERROR) << "RetrievePrivateData hr=" << putHR(hr);
 
-  std::string json_string = base::UTF16ToUTF8(password_lsa_data);
+  std::string json_string = base::WideToUTF8(password_lsa_data);
   base::Optional<base::Value> encrypted_dict =
       base::JSONReader::Read(json_string, base::JSON_ALLOW_TRAILING_COMMAS);
   SecurelyClearString(json_string);
   SecurelyClearBuffer(password_lsa_data, sizeof(password_lsa_data));
 
-  base::string16 decrypted_password;
+  std::wstring decrypted_password;
   hr = DecryptUserPasswordUsingEscrowService(access_token, encrypted_dict,
                                              decryption_key_request_timeout_,
                                              &decrypted_password);

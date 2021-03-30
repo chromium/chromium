@@ -5,10 +5,11 @@
 #ifndef ASH_LOGIN_UI_LOGIN_USER_MENU_VIEW_H_
 #define ASH_LOGIN_UI_LOGIN_USER_MENU_VIEW_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 #include "ash/login/ui/login_base_bubble_view.h"
 #include "ash/login/ui/login_button.h"
-#include "base/strings/string16.h"
 #include "components/user_manager/user_type.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/focus/focus_search.h"
@@ -56,6 +57,7 @@ class ASH_EXPORT LoginUserMenuView : public LoginBaseBubbleView,
   bool HasFocus() const override;
   const char* GetClassName() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void OnThemeChanged() override;
   views::FocusTraversable* GetPaneFocusTraversable() override;
 
   // views::FocusTraversable:
@@ -76,7 +78,7 @@ class ASH_EXPORT LoginUserMenuView : public LoginBaseBubbleView,
   views::Label* email_label_ = nullptr;
   views::Label* management_disclosure_label_ = nullptr;
 
-  base::string16 warning_message_;
+  std::u16string warning_message_;
 
   std::unique_ptr<views::FocusSearch> focus_search_;
 

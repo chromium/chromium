@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/base/linux/linux_desktop.h"
 #include "ui/display/display.h"
 #include "ui/display/display_finder.h"
 #include "ui/display/display_list.h"
@@ -99,10 +100,12 @@ void WaylandScreen::AddOrUpdateDisplay(uint32_t output_id,
                                        const gfx::Rect& new_bounds,
                                        int32_t scale_factor) {
   display::Display changed_display(output_id);
-  if (!display::Display::HasForceDeviceScaleFactor())
-    changed_display.set_device_scale_factor(scale_factor);
-  changed_display.set_bounds(new_bounds);
-  changed_display.set_work_area(new_bounds);
+  if (!display::Display::HasForceDeviceScaleFactor()) {
+    changed_display.SetScaleAndBounds(scale_factor, new_bounds);
+  } else {
+    changed_display.set_bounds(new_bounds);
+    changed_display.set_work_area(new_bounds);
+  }
 
   gfx::DisplayColorSpaces color_spaces;
   color_spaces.SetOutputBufferFormats(image_format_no_alpha_.value(),
@@ -126,10 +129,6 @@ void WaylandScreen::AddOrUpdateDisplay(uint32_t output_id,
   }
 
   display_list_.AddOrUpdateDisplay(changed_display, type);
-
-  auto* wayland_window_manager = connection_->wayland_window_manager();
-  for (auto* window : wayland_window_manager->GetWindowsOnOutput(output_id))
-    window->UpdateBufferScale(true);
 }
 
 void WaylandScreen::OnTabletStateChanged(display::TabletState tablet_state) {
@@ -160,8 +159,7 @@ display::Display WaylandScreen::GetDisplayForAcceleratedWidget(
   if (!window)
     return GetPrimaryDisplay();
 
-  const auto* parent_window = window->parent_window();
-  const auto entered_outputs_ids = window->entered_outputs_ids();
+  const auto entered_output_id = window->GetPreferredEnteredOutputId();
   // Although spec says a surface receives enter/leave surface events on
   // create/move/resize actions, this might be called right after a window is
   // created, but it has not been configured by a Wayland compositor and it
@@ -169,22 +167,13 @@ display::Display WaylandScreen::GetDisplayForAcceleratedWidget(
   // switches between displays in a single output mode - Wayland may not send
   // enter events immediately, which can result in empty container of entered
   // ids (check comments in WaylandWindow::RemoveEnteredOutputId). In this
-  // case, it's also safe to return the primary display. A child window will
-  // most probably enter the same display than its parent so we return the
-  // parent's display if there is a parent.
-  if (entered_outputs_ids.empty()) {
-    if (parent_window)
-      return GetDisplayForAcceleratedWidget(parent_window->GetWidget());
+  // case, it's also safe to return the primary display.
+  if (entered_output_id == 0)
     return GetPrimaryDisplay();
-  }
 
   DCHECK(!display_list_.displays().empty());
-
-  // A widget can be located on two or more displays. It would be better if
-  // the most in DIP occupied display was returned, but it's impossible to do
-  // so in Wayland. Thus, return the one that was used the earliest.
   for (const auto& display : display_list_.displays()) {
-    if (display.id() == *entered_outputs_ids.begin())
+    if (display.id() == entered_output_id)
       return display;
   }
 
@@ -258,6 +247,15 @@ void WaylandScreen::AddObserver(display::DisplayObserver* observer) {
 
 void WaylandScreen::RemoveObserver(display::DisplayObserver* observer) {
   display_list_.RemoveObserver(observer);
+}
+
+base::Value WaylandScreen::GetGpuExtraInfoAsListValue(
+    const gfx::GpuExtraInfo& gpu_extra_info) {
+  // TODO(https://crbug.com/1138740): it'd be good to have the compositor name
+  // in the about://gpu as well.
+  auto list_value = GetDesktopEnvironmentInfoAsListValue();
+  StorePlatformNameIntoListValue(list_value, "wayland");
+  return list_value;
 }
 
 }  // namespace ui

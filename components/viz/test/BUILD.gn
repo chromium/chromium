@@ -26,6 +26,8 @@ viz_static_library("test_support") {
     "begin_frame_source_test.h",
     "compositor_frame_helpers.cc",
     "compositor_frame_helpers.h",
+    "delegated_ink_point_renderer_skia_for_test.cc",
+    "delegated_ink_point_renderer_skia_for_test.h",
     "fake_compositor_frame_sink_client.cc",
     "fake_compositor_frame_sink_client.h",
     "fake_delay_based_time_source.cc",

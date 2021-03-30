@@ -65,7 +65,8 @@ export class Resolution {
    * @return {!Resolution}
    */
   static fromString(s) {
-    return new Resolution(...s.split('x').map(Number));
+    const [width, height] = s.split('x').map((x) => Number(x));
+    return new Resolution(width, height);
   }
 
   /**
@@ -108,6 +109,7 @@ export const ViewName = {
   GRID_SETTINGS: 'view-grid-settings',
   MESSAGE_DIALOG: 'view-message-dialog',
   PHOTO_RESOLUTION_SETTINGS: 'view-photo-resolution-settings',
+  PTZ_PANEL: 'view-ptz-panel',
   RESOLUTION_SETTINGS: 'view-resolution-settings',
   SETTINGS: 'view-settings',
   SPLASH: 'view-splash',
@@ -211,6 +213,8 @@ export let ErrorInfo;
  */
 export const ErrorType = {
   BROKEN_THUMBNAIL: 'broken-thumbnail',
+  EMPTY_FILE: 'empty-file',
+  IDLE_DETECTOR_FAILURE: 'idle-detector-failure',
   PRELOAD_IMAGE_FAILURE: 'preload-image-failure',
   SET_FPS_RANGE_FAILURE: 'set-fps-range-failure',
   UNCAUGHT_PROMISE: 'uncaught-promise',
@@ -224,12 +228,6 @@ export const ErrorLevel = {
   WARNING: 'WARNING',
   ERROR: 'ERROR',
 };
-
-/**
- * Callback for reporting error in testing run.
- * @typedef {function(!ErrorInfo)}
- */
-export let TestingErrorCallback;
 
 /**
  * Throws when a method is not implemented.
@@ -246,10 +244,15 @@ export class NotImplementedError extends Error {
 }
 
 /**
- * The possible scheme to load untrusted context.
- * @enum {string}
+ * Throws when an action is canceled.
  */
-export const UntrustedOrigin = {
-  CHROME_EXTENSION: 'chrome-extension://hfhhnacclhffhdffklopdkcgdhifgngh',
-  CHROME_UNTRUSTED: 'chrome-untrusted://camera-app',
-};
+export class CanceledError extends Error {
+  /**
+   * @param {string=} message
+   * @public
+   */
+  constructor(message = 'The action is canceled') {
+    super(message);
+    this.name = this.constructor.name;
+  }
+}

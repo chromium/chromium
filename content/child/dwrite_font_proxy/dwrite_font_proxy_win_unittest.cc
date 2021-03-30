@@ -38,16 +38,16 @@ class DWriteFontProxyUnitTest : public testing::Test {
   }
 
   static void SetupFonts(FakeFontCollection* fonts) {
-    fonts->AddFont(L"Aardvark")
-        .AddFamilyName(L"en-us", L"Aardvark")
-        .AddFamilyName(L"de-de", L"Erdferkel")
+    fonts->AddFont(u"Aardvark")
+        .AddFamilyName(u"en-us", u"Aardvark")
+        .AddFamilyName(u"de-de", u"Erdferkel")
         .AddFilePath(base::FilePath(L"X:\\Nonexistent\\Folder\\Aardvark.ttf"));
     FakeFont& arial =
-        fonts->AddFont(L"Arial").AddFamilyName(L"en-us", L"Arial");
+        fonts->AddFont(u"Arial").AddFamilyName(u"en-us", u"Arial");
     for (auto& path : arial_font_files)
       arial.AddFilePath(base::FilePath(path));
-    fonts->AddFont(L"Times New Roman")
-        .AddFamilyName(L"en-us", L"Times New Roman")
+    fonts->AddFont(u"Times New Roman")
+        .AddFamilyName(u"en-us", u"Times New Roman")
         .AddFilePath(base::FilePath(L"X:\\Nonexistent\\Folder\\Times.ttf"));
   }
 
@@ -55,13 +55,13 @@ class DWriteFontProxyUnitTest : public testing::Test {
     DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory),
                         &factory);
 
-    std::vector<base::char16> font_path;
+    std::vector<wchar_t> font_path;
     font_path.resize(MAX_PATH);
     SHGetSpecialFolderPath(nullptr /* hwndOwner - reserved */, font_path.data(),
                            CSIDL_FONTS, FALSE /* fCreate*/);
-    base::string16 arial;
+    std::wstring arial;
     arial.append(font_path.data()).append(L"\\arial.ttf");
-    base::string16 arialbd;
+    std::wstring arialbd;
     arialbd.append(font_path.data()).append(L"\\arialbd.ttf");
     arial_font_files.push_back(arial);
     arial_font_files.push_back(arialbd);
@@ -72,10 +72,10 @@ class DWriteFontProxyUnitTest : public testing::Test {
   std::unique_ptr<FakeFontCollection> fake_collection_;
   mswr::ComPtr<DWriteFontCollectionProxy> collection_;
 
-  static std::vector<base::string16> arial_font_files;
+  static std::vector<std::wstring> arial_font_files;
   static mswr::ComPtr<IDWriteFactory> factory;
 };
-std::vector<base::string16> DWriteFontProxyUnitTest::arial_font_files;
+std::vector<std::wstring> DWriteFontProxyUnitTest::arial_font_files;
 mswr::ComPtr<IDWriteFactory> DWriteFontProxyUnitTest::factory;
 
 TEST_F(DWriteFontProxyUnitTest, GetFontFamilyCount) {
@@ -155,8 +155,8 @@ TEST_F(DWriteFontProxyUnitTest, GetFontFamilyShouldCreateFamily) {
   EXPECT_NE(nullptr, family.Get());
 }
 
-void CheckLocale(const base::string16& locale_name,
-                 const base::string16& expected_value,
+void CheckLocale(const std::wstring& locale_name,
+                 const std::wstring& expected_value,
                  IDWriteLocalizedStrings* strings) {
   UINT32 locale_index = 0;
   BOOL locale_exists = FALSE;
@@ -166,7 +166,7 @@ void CheckLocale(const base::string16& locale_name,
   UINT32 name_length = 0;
   strings->GetLocaleNameLength(locale_index, &name_length);
   EXPECT_EQ(locale_name.size(), name_length);
-  base::string16 actual_name;
+  std::wstring actual_name;
   name_length++;
   actual_name.resize(name_length);
   strings->GetLocaleName(locale_index, const_cast<WCHAR*>(actual_name.data()),
@@ -176,7 +176,7 @@ void CheckLocale(const base::string16& locale_name,
   UINT32 string_length = 0;
   strings->GetStringLength(locale_index, &string_length);
   EXPECT_EQ(expected_value.size(), string_length);
-  base::string16 actual_value;
+  std::wstring actual_value;
   string_length++;
   actual_value.resize(string_length);
   strings->GetString(locale_index, const_cast<WCHAR*>(actual_value.data()),
@@ -214,7 +214,7 @@ TEST_F(DWriteFontProxyUnitTest, GetFamilyNames) {
   CheckLocale(L"en-us", L"Aardvark", names.Get());
   CheckLocale(L"de-de", L"Erdferkel", names.Get());
 
-  base::string16 unused;
+  std::wstring unused;
   unused.resize(25);
   hr = names->GetLocaleName(15234, const_cast<WCHAR*>(unused.data()),
                             unused.size() - 1);
@@ -335,7 +335,7 @@ TEST_F(DWriteFontProxyUnitTest, GetFontFromFontFaceShouldFindFont) {
 
 TEST_F(DWriteFontProxyUnitTest, TestCustomFontFiles) {
   FakeFontCollection fonts;
-  FakeFont& arial = fonts.AddFont(L"Arial").AddFamilyName(L"en-us", L"Arial");
+  FakeFont& arial = fonts.AddFont(u"Arial").AddFamilyName(u"en-us", u"Arial");
   for (auto& path : arial_font_files) {
     base::File file(base::FilePath(path), base::File::FLAG_OPEN |
                                               base::File::FLAG_READ |

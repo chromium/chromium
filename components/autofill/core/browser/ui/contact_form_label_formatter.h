@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/ui/label_formatter.h"
@@ -27,18 +26,18 @@ class ContactFormLabelFormatter : public LabelFormatter {
 
   ~ContactFormLabelFormatter() override;
 
-  base::string16 GetLabelForProfile(
+  std::u16string GetLabelForProfile(
       const AutofillProfile& profile,
       FieldTypeGroup focused_group) const override;
 
  private:
   // Returns |profile|'s email address if |profile| has a valid email address
   // and if this formatter's associated form has an email field.
-  base::string16 MaybeGetEmail(const AutofillProfile& profile) const;
+  std::u16string MaybeGetEmail(const AutofillProfile& profile) const;
 
   // Returns |profile|'s phone number if |profile| has a phone number and if
   // this formatter's associated form has a phone field.
-  base::string16 MaybeGetPhone(const AutofillProfile& profile) const;
+  std::u16string MaybeGetPhone(const AutofillProfile& profile) const;
 };
 
 }  // namespace autofill

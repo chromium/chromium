@@ -18,11 +18,10 @@
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "components/crx_file/id_util.h"
 #include "components/strings/grit/components_strings.h"
@@ -103,7 +102,7 @@ bool ExtractsAppIdFromInput(const std::string& input,
 
 }  // namespace
 
-KioskAppsHandler::KioskAppsHandler(OwnerSettingsServiceChromeOS* service)
+KioskAppsHandler::KioskAppsHandler(OwnerSettingsServiceAsh* service)
     : kiosk_app_manager_(KioskAppManager::Get()),
       initialized_(false),
       is_kiosk_enabled_(false),
@@ -175,7 +174,7 @@ void KioskAppsHandler::OnKioskExtensionDownloadFailed(
 
 void KioskAppsHandler::OnGetConsumerKioskAutoLaunchStatus(
     const std::string& callback_id,
-    chromeos::KioskAppManager::ConsumerKioskAutoLaunchStatus status) {
+    ash::KioskAppManager::ConsumerKioskAutoLaunchStatus status) {
   initialized_ = true;
   if (KioskAppManager::IsConsumerKioskEnabled()) {
     if (!base::SysInfo::IsRunningOnChromeOS()) {
@@ -187,7 +186,7 @@ void KioskAppsHandler::OnGetConsumerKioskAutoLaunchStatus(
       is_kiosk_enabled_ =
           ProfileHelper::IsOwnerProfile(Profile::FromWebUI(web_ui()));
       is_auto_launch_enabled_ =
-          status == KioskAppManager::CONSUMER_KIOSK_AUTO_LAUNCH_ENABLED;
+          status == KioskAppManager::ConsumerKioskAutoLaunchStatus::kEnabled;
     }
   } else {
     // Otherwise, consumer kiosk is disabled.
@@ -200,7 +199,6 @@ void KioskAppsHandler::OnGetConsumerKioskAutoLaunchStatus(
   kiosk_params.SetBoolean("autoLaunchEnabled", is_auto_launch_enabled_);
   ResolveJavascriptCallback(base::Value(callback_id), kiosk_params);
 }
-
 
 void KioskAppsHandler::OnKioskAppsSettingsChanged() {
   FireWebUIListener("kiosk-app-settings-changed", *GetSettingsDictionary());

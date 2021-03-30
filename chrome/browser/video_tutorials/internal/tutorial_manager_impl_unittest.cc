@@ -132,6 +132,21 @@ class TutorialManagerTest : public testing::Test {
     std::move(closure).Run();
   }
 
+  void GetTutorial(FeatureType feature_type) {
+    base::RunLoop loop;
+    manager()->GetTutorial(
+        feature_type,
+        base::BindOnce(&TutorialManagerTest::OnGetTutorial,
+                       base::Unretained(this), loop.QuitClosure()));
+    loop.Run();
+  }
+
+  void OnGetTutorial(base::RepeatingClosure closure,
+                     base::Optional<Tutorial> tutorial) {
+    last_get_tutorial_result_ = tutorial;
+    std::move(closure).Run();
+  }
+
   void OnComplete(base::RepeatingClosure closure, bool success) {
     std::move(closure).Run();
   }
@@ -145,6 +160,9 @@ class TutorialManagerTest : public testing::Test {
   TutorialManager* manager() { return manager_.get(); }
   TestStore* tutorial_store() { return tutorial_store_; }
   std::vector<Tutorial> last_results() { return last_results_; }
+  base::Optional<Tutorial> last_get_tutorial_result() {
+    return last_get_tutorial_result_;
+  }
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -152,12 +170,15 @@ class TutorialManagerTest : public testing::Test {
   std::unique_ptr<TutorialManager> manager_;
   TestStore* tutorial_store_;
   std::vector<Tutorial> last_results_;
+  base::Optional<Tutorial> last_get_tutorial_result_;
 };
 
 TEST_F(TutorialManagerTest, InitAndGetTutorials) {
   std::vector<FeatureType> features(
       {FeatureType::kDownload, FeatureType::kSearch});
   auto groups = CreateSampleGroups({"hi", "kn"}, features);
+  groups[1].tutorials.emplace_back(
+      Tutorial(FeatureType::kVoiceSearch, "", "", "", "", "", "", "", 10));
   auto tutorial_store = std::make_unique<StrictMock<TestStore>>();
   tutorial_store->InitStoreData("hi", groups);
   CreateTutorialManager(std::move(tutorial_store));
@@ -167,6 +188,18 @@ TEST_F(TutorialManagerTest, InitAndGetTutorials) {
   manager()->SetPreferredLocale("hi");
   GetTutorials();
   EXPECT_EQ(last_results().size(), 2u);
+
+  GetTutorial(FeatureType::kSearch);
+  EXPECT_EQ(FeatureType::kSearch, last_get_tutorial_result()->feature);
+
+  languages = manager()->GetAvailableLanguagesForTutorial(FeatureType::kSearch);
+  EXPECT_EQ(languages.size(), 2u);
+  languages =
+      manager()->GetAvailableLanguagesForTutorial(FeatureType::kChromeIntro);
+  EXPECT_EQ(languages.size(), 0u);
+  languages =
+      manager()->GetAvailableLanguagesForTutorial(FeatureType::kVoiceSearch);
+  EXPECT_EQ(languages.size(), 1u);
 }
 
 TEST_F(TutorialManagerTest, InitAndGetTutorialsWithSummary) {
@@ -184,6 +217,27 @@ TEST_F(TutorialManagerTest, InitAndGetTutorialsWithSummary) {
   EXPECT_EQ(last_results().size(), 2u);
 }
 
+TEST_F(TutorialManagerTest, GetSingleTutorialBeforeGetTutorialsCall) {
+  std::vector<FeatureType> features(
+      {FeatureType::kDownload, FeatureType::kSearch, FeatureType::kSummary});
+  auto groups = CreateSampleGroups({"hi", "kn"}, features);
+  auto tutorial_store = std::make_unique<StrictMock<TestStore>>();
+  tutorial_store->InitStoreData("hi", groups);
+  CreateTutorialManager(std::move(tutorial_store));
+
+  auto languages = manager()->GetSupportedLanguages();
+  EXPECT_EQ(languages.size(), 2u);
+  manager()->SetPreferredLocale("hi");
+  GetTutorial(FeatureType::kSummary);
+  EXPECT_TRUE(last_get_tutorial_result().has_value());
+  EXPECT_EQ(FeatureType::kSummary, last_get_tutorial_result()->feature);
+
+  GetTutorial(FeatureType::kSearch);
+  EXPECT_EQ(FeatureType::kSearch, last_get_tutorial_result()->feature);
+  GetTutorial(FeatureType::kVoiceSearch);
+  EXPECT_FALSE(last_get_tutorial_result().has_value());
+}
+
 TEST_F(TutorialManagerTest, SaveNewData) {
   std::vector<FeatureType> features(
       {FeatureType::kDownload, FeatureType::kSearch, FeatureType::kSummary});
@@ -197,6 +251,9 @@ TEST_F(TutorialManagerTest, SaveNewData) {
   EXPECT_EQ(languages.size(), 2u);
   GetTutorials();
   EXPECT_EQ(last_results().size(), 2u);
+  languages =
+      manager()->GetAvailableLanguagesForTutorial(FeatureType::kDownload);
+  EXPECT_EQ(languages.size(), 2u);
 
   // New fetch data.
   features = std::vector<FeatureType>(
@@ -209,6 +266,10 @@ TEST_F(TutorialManagerTest, SaveNewData) {
   GetTutorials();
   EXPECT_EQ(last_results().size(), 4u);
 
+  languages =
+      manager()->GetAvailableLanguagesForTutorial(FeatureType::kDownload);
+  EXPECT_EQ(languages.size(), 3u);
+
   // New fetch data with summary.
   features = std::vector<FeatureType>(
       {FeatureType::kChromeIntro, FeatureType::kVoiceSearch,
@@ -218,6 +279,10 @@ TEST_F(TutorialManagerTest, SaveNewData) {
   manager()->SetPreferredLocale("tl");
   GetTutorials();
   EXPECT_EQ(last_results().size(), 3u);
+
+  languages =
+      manager()->GetAvailableLanguagesForTutorial(FeatureType::kDownload);
+  EXPECT_EQ(languages.size(), 0u);
 }
 
 }  // namespace

@@ -28,6 +28,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 
 class Profile;
+class ScopedProfileKeepAlive;
 class WebappRegistry;
 
 namespace content {
@@ -66,6 +67,8 @@ class ChromeBrowsingDataRemoverDelegate
       uint64_t origin_type_mask,
       base::OnceCallback<void(/*failed_data_types=*/uint64_t)> callback)
       override;
+  void OnStartRemoving() override;
+  void OnDoneRemoving() override;
 
 #if defined(OS_ANDROID)
   void OverrideWebappRegistryForTesting(
@@ -125,7 +128,8 @@ class ChromeBrowsingDataRemoverDelegate
     kAccountPasswords = 37,
     kAccountPasswordsSynced = 38,
     kAccountCompromisedCredentials = 39,
-    kMaxValue = kAccountCompromisedCredentials,
+    kFaviconCacheExpiration = 40,
+    kMaxValue = kFaviconCacheExpiration,
   };
 
   // Called by CreateTaskCompletionClosure().
@@ -172,6 +176,11 @@ class ChromeBrowsingDataRemoverDelegate
 
   // The profile for which the data will be deleted.
   Profile* profile_;
+
+  // Prevents |profile_| from getting deleted. Only active between
+  // OnStartRemoving() and OnDoneRemoving(), i.e. while there are tasks in
+  // progress.
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 
   // Start time to delete from.
   base::Time delete_begin_;

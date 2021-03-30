@@ -24,7 +24,8 @@ namespace extensions {
 
 class MockExternalProvider : public ExternalProviderInterface {
  public:
-  MockExternalProvider(VisitorInterface* visitor, Manifest::Location location);
+  MockExternalProvider(VisitorInterface* visitor,
+                       mojom::ManifestLocation location);
   ~MockExternalProvider() override;
 
   void UpdateOrAddExtension(const ExtensionId& id,
@@ -39,7 +40,7 @@ class MockExternalProvider : public ExternalProviderInterface {
   bool HasExtension(const std::string& id) const override;
   bool GetExtensionDetails(
       const std::string& id,
-      Manifest::Location* location,
+      mojom::ManifestLocation* location,
       std::unique_ptr<base::Version>* version) const override;
   bool IsReady() const override;
   void ServiceShutdown() override {}
@@ -54,7 +55,7 @@ class MockExternalProvider : public ExternalProviderInterface {
       std::map<ExtensionId, std::unique_ptr<ExternalInstallInfoUpdateUrl>>;
   FileDataMap file_extension_map_;
   UrlDataMap url_extension_map_;
-  Manifest::Location location_;
+  mojom::ManifestLocation location_;
   VisitorInterface* visitor_;
 
   // visit_count_ tracks the number of calls to VisitRegisteredExtension().

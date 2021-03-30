@@ -8,6 +8,7 @@
 
 goog.provide('GestureCommandHandler');
 
+goog.require('ChromeVoxState');
 goog.require('CommandHandler');
 goog.require('EventGenerator');
 goog.require('EventSourceState');
@@ -46,7 +47,15 @@ GestureCommandHandler.onAccessibilityGesture_ = function(gesture, x, y) {
 
   EventSourceState.set(EventSourceType.TOUCH_GESTURE);
 
-  if (gesture === 'touchExplore') {
+  const chromeVoxState = ChromeVoxState.instance;
+  const monitor = chromeVoxState ? chromeVoxState.getUserActionMonitor() : null;
+  if (monitor && !monitor.onGesture(gesture)) {
+    // UserActionMonitor returns true if this gesture should propagate.
+    // Prevent this gesture from propagating if it returns false.
+    return;
+  }
+
+  if (gesture === chrome.accessibilityPrivate.Gesture.TOUCH_EXPLORE) {
     GestureCommandHandler.pointerHandler_.onTouchMove(x, y);
     return;
   }
@@ -68,13 +77,19 @@ GestureCommandHandler.onAccessibilityGesture_ = function(gesture, x, y) {
   // Handle gestures mapped to keys. Global keys are handled in place of
   // commands, and menu key overrides are handled only in menus.
   let key;
-  if (ChromeVoxState.instance.currentRange) {
-    const range = ChromeVoxState.instance.currentRange;
-    if (commandData.menuKeyOverride && range.start && range.start.node &&
-        ((range.start.node.role === RoleType.MENU_ITEM &&
-          range.start.node.root.role === RoleType.DESKTOP) ||
-         range.start.node.root.docUrl.indexOf(
-             chrome.extension.getURL('chromevox/panel/panel.html')) === 0)) {
+  const range = ChromeVoxState.instance.currentRange;
+  if (range && range.start && range.start.node) {
+    let inMenu = false;
+    let node = range.start.node;
+    while (node) {
+      if (AutomationPredicate.menuItem(node)) {
+        inMenu = true;
+        break;
+      }
+      node = node.parent;
+    }
+
+    if (commandData.menuKeyOverride && inMenu) {
       key = commandData.menuKeyOverride;
     }
   }

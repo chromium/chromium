@@ -23,6 +23,7 @@ enum NTPLoggingEventType {
   // Deleted: NTP_MOUSEOVER = 9
   // Deleted: NTP_TILE_LOADED = 10,
   // Deleted: NTP_ALL_TILES_RECEIVED = 12,
+  // Deleted: NTP_MODULES_SHOWN = 83,
 
   // All NTP tiles have finished loading (successfully or failing). Logged only
   // by the single-iframe version of the NTP.
@@ -172,9 +173,6 @@ enum NTPLoggingEventType {
   NTP_BACKGROUND_REFRESH_TOGGLE_CLICKED = 81,
   // Daily refresh was enabled by clicked 'Done' in the richer picker.
   NTP_BACKGROUND_DAILY_REFRESH_ENABLED = 82,
-
-  // The NTP modules were shown.
-  NTP_MODULES_SHOWN = 83,
 
   // The NTP <ntp-app> element was created and ready() was called.
   NTP_APP_RENDERED = 84,

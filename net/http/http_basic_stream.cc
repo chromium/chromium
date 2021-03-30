@@ -200,6 +200,10 @@ const std::vector<std::string>& HttpBasicStream::GetDnsAliases() const {
   return state_.GetDnsAliases();
 }
 
+base::StringPiece HttpBasicStream::GetAcceptChViaAlps() const {
+  return {};
+}
+
 void HttpBasicStream::OnHandshakeConfirmed(CompletionOnceCallback callback,
                                            int rv) {
   if (rv == OK) {

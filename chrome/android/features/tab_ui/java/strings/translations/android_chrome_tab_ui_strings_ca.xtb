@@ -4,10 +4,13 @@
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> de les teves pestanyes no s'han utilitzat últimament. Vols tancar-les?</translation>
 <translation id="1181037720776840403">Suprimeix</translation>
 <translation id="125153950246128346">Toca per veure una altra pestanya</translation>
+<translation id="1302104331113804646">Configuració del seguiment dels preus</translation>
+<translation id="1378979118429748177">Rep notificacions quan baixin els preus</translation>
 <translation id="1657719826150349398">Mou la pestanya cap avall</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pestanya}other{<ph name="TABS_COUNT_MANY" /> pestanyes}}</translation>
 <translation id="2277224997687551299">Edita el nom del grup</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Suprimeix <ph name="TABS_COUNT_ONE" /> pestanya seleccionada del grup.}other{Suprimeix <ph name="TABS_COUNT_MANY" /> pestanyes seleccionades del grup.}}</translation>
+<translation id="2479148705183875116">Ves a Configuració</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Replega <ph name="TABS_COUNT_ONE" /> pestanya.}other{Replega el grup format per <ph name="TABS_COUNT_MANY" /> pestanyes.}}</translation>
 <translation id="2569352796411618312">Suggeriment: <ph name="NUMBER_OF_TABS" /> de les teves pestanyes no s'han utilitzat últimament. Vols tancar-les?</translation>
 <translation id="257674075312929031">Grup</translation>
@@ -15,13 +18,16 @@
 <translation id="2671423594960767771">Comparteix el grup</translation>
 <translation id="2759453070259087442">Desplega el grup de pestanyes <ph name="TITLE_OF_GROUP" /> amb <ph name="NUMBER_OF_TABS" /> pestanyes.</translation>
 <translation id="2977480621796371840">Suprimeix del grup</translation>
+<translation id="3291470810748040983">Rebràs una alerta quan hi hagi un preu més baix en una pestanya oberta</translation>
 <translation id="3328308545011660196">Suggeriment: sembla que hi ha <ph name="NUMBER_OF_TABS" /> pestanyes relacionades. Vols agrupar-les?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Replega <ph name="TABS_COUNT_ONE" /> pestanya.}other{Replega el grup <ph name="TITLE_OF_GROUP" /> format per <ph name="TABS_COUNT_MANY" /> pestanyes.}}</translation>
+<translation id="3882834874697329510">Per rebre una alerta quan hi hagi un preu més baix en una pestanya oberta, activa les notificacions a Configuració.</translation>
+<translation id="3940195383040445971">Seguiment dels preus a les pestanyes</translation>
+<translation id="3996880007329611795">Rep notificacions</translation>
 <translation id="4133493477912226187">Sembla que hi ha <ph name="NUMBER_OF_TABS" /> pestanyes relacionades. Vols agrupar-les?</translation>
 <translation id="4212246570487010370">Continua navegant</translation>
 <translation id="4450893287417543264">No ho tornis a mostrar</translation>
 <translation id="4648718555153979859">Les teves pestanyes s'agrupen aquí</translation>
-<translation id="4922064041913095674">Descobreix quin element de les pestanyes que hi ha obertes té millor preu</translation>
 <translation id="492284538114688557">S'ha detectat una baixada de preu</translation>
 <translation id="5007392906805964215">Revisa</translation>
 <translation id="5073204694187207510">Amaga la quadrícula en pantalla completa</translation>
@@ -30,6 +36,7 @@
 <translation id="5533021382642990449">Mostra més tard</translation>
 <translation id="5558362125926932819">Tanca el grup format per <ph name="NUMBER_OF_TABS" /> pestanyes</translation>
 <translation id="5580090775658607195">S'han agrupat <ph name="TAB_COUNT" /> pestanyes</translation>
+<translation id="575494663145460764">Vols rebre alertes de baixades de preu?</translation>
 <translation id="58326064309361797">Arrossega les pestanyes per agrupar-les</translation>
 <translation id="5846292395804797011">Tanca el grup <ph name="TITLE_OF_GROUP" /> format per <ph name="NUMBER_OF_TABS" /> pestanyes</translation>
 <translation id="6040143037577758943">Tanca</translation>
@@ -41,6 +48,7 @@
 <translation id="6856809498882026482">Amaga el mode de multiselecció</translation>
 <translation id="7151209024774799310">Suprimeix les pestanyes</translation>
 <translation id="7204204600596740190">Mode de multiselecció</translation>
+<translation id="7352298686197644113">Descobreix quin element de les pestanyes que hi ha obertes té un preu més baix</translation>
 <translation id="753732157349120914">Selector de pestanyes</translation>
 <translation id="7559245342362162951">Mostra les pestanyes del grup en una quadrícula en pantalla completa</translation>
 <translation id="7792771145871471484">Revisa els suggeriments.</translation>
@@ -52,7 +60,10 @@
 <translation id="8304833501377495048">No vols que es torni a mostrar la barra de pestanyes?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Tanca <ph name="TABS_COUNT_ONE" /> pestanya seleccionada}other{Tanca les <ph name="TABS_COUNT_MANY" /> pestanyes seleccionades}}</translation>
 <translation id="8557923272772633250">Desplega el grup format per <ph name="NUMBER_OF_TABS" /> pestanyes.</translation>
+<translation id="860282621117673749">Alertes de baixada de preu</translation>
+<translation id="8714939927607906138">Preu més baix</translation>
 <translation id="8749939518995770034">Barra de pestanyes tancada</translation>
+<translation id="8820741577754260431">Consulta les baixades de preu a les pestanyes</translation>
 <translation id="9150694013019234766">Canvia de pestanya al grup de pestanyes de la part inferior de la pantalla</translation>
 <translation id="9169594135889675189">Afegeix una pestanya nova al grup</translation>
 <translation id="959682366969460160">Organitza el contingut</translation>

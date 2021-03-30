@@ -35,4 +35,8 @@ StorableImpression::StorableImpression(const StorableImpression& other) =
 
 StorableImpression::~StorableImpression() = default;
 
+net::SchemefulSite StorableImpression::ConversionDestination() const {
+  return net::SchemefulSite(conversion_origin_);
+}
+
 }  // namespace content

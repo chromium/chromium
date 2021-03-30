@@ -40,7 +40,7 @@ int GetSmartBubbleDismissalThreshold() {
 
 bool IsSmartLockUser(const syncer::SyncService* sync_service) {
   return password_manager_util::GetPasswordSyncState(sync_service) !=
-         password_manager::NOT_SYNCING;
+         password_manager::SyncState::kNotSyncing;
 }
 
 bool ShouldShowAutoSignInPromptFirstRunExperience(PrefService* prefs) {

@@ -14,6 +14,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/resources/grit/ui_resources.h"
@@ -58,20 +59,20 @@ bool RenderViewContextMenuMac::IsCommandIdEnabled(int command_id) const {
   return RenderViewContextMenu::IsCommandIdEnabled(command_id);
 }
 
-base::string16 RenderViewContextMenuMac::GetSelectedText() const {
+std::u16string RenderViewContextMenuMac::GetSelectedText() const {
   return params_.selection_text;
 }
 
 bool RenderViewContextMenuMac::IsTextDirectionEnabled(
     base::i18n::TextDirection direction) const {
   return ParamsForTextDirection(direction) &
-         blink::WebContextMenuData::kCheckableMenuItemEnabled;
+         blink::ContextMenuData::kCheckableMenuItemEnabled;
 }
 
 bool RenderViewContextMenuMac::IsTextDirectionChecked(
     base::i18n::TextDirection direction) const {
   return ParamsForTextDirection(direction) &
-         blink::WebContextMenuData::kCheckableMenuItemChecked;
+         blink::ContextMenuData::kCheckableMenuItemChecked;
 }
 
 void RenderViewContextMenuMac::UpdateTextDirection(
@@ -95,7 +96,7 @@ void RenderViewContextMenuMac::AppendPlatformEditableItems() {
 
 void RenderViewContextMenuMac::InitToolkitMenu() {
   if (params_.input_field_type ==
-      blink::ContextMenuDataInputFieldType::kPassword)
+      blink::mojom::ContextMenuDataInputFieldType::kPassword)
     return;
 
   if (!params_.selection_text.empty() && params_.link_url.is_empty()) {
@@ -113,7 +114,7 @@ void RenderViewContextMenuMac::InitToolkitMenu() {
       index += 1; // Place it below the separator.
     }
 
-    base::string16 printable_selection_text = PrintableSelectionText();
+    std::u16string printable_selection_text = PrintableSelectionText();
     EscapeAmpersands(&printable_selection_text);
     menu_model_.InsertItemAt(
         index++, IDC_CONTENT_CONTEXT_LOOK_UP,

@@ -15,6 +15,11 @@
 // Whether to animate item insertions and deletions.
 @property(nonatomic, assign) BOOL animatesItemUpdates;
 
+// Index paths of items being inserted. Exposed for subclasses, and populated on
+// this class -prepareForCollectionViewUpdates:.
+@property(nonatomic, readonly)
+    NSArray<NSIndexPath*>* indexPathsOfInsertingItems;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_FLOW_LAYOUT_H_

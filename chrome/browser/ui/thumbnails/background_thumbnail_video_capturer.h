@@ -24,7 +24,11 @@ class BackgroundThumbnailVideoCapturer
     : public BackgroundThumbnailCapturer,
       public viz::mojom::FrameSinkVideoConsumer {
  public:
-  using GotFrameCallback = base::RepeatingCallback<void(const SkBitmap&)>;
+  // Client receives `SkBitmap` frames and `uin64_t` unique IDs for each
+  // frame. IDs are globally unique for a given browser process and are
+  // used for TRACE_EVENT_FLOW_* macros
+  using GotFrameCallback =
+      base::RepeatingCallback<void(const SkBitmap&, uint64_t)>;
   BackgroundThumbnailVideoCapturer(content::WebContents* contents,
                                    GotFrameCallback got_frame_callback);
   ~BackgroundThumbnailVideoCapturer() override;

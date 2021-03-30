@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,9 +18,7 @@
 /** @const */
 chrome.system = {};
 
-/**
- * @const
- */
+/** @const */
 chrome.system.display = {};
 
 /**
@@ -197,8 +195,8 @@ chrome.system.display.MirrorModeInfo;
 
 /**
  * Requests the information for all attached display devices.
- * @param {!chrome.system.display.GetInfoFlags} flags Options affecting how the
- *     information is returned.
+ * @param {?chrome.system.display.GetInfoFlags|undefined} flags Options
+ *     affecting how the information is returned.
  * @param {function(!Array<!chrome.system.display.DisplayUnitInfo>): void}
  *     callback The callback to invoke with the results.
  * @see https://developer.chrome.com/extensions/system.display#method-getInfo
@@ -208,8 +206,8 @@ chrome.system.display.getInfo = function(flags, callback) {};
 /**
  * Requests the layout info for all displays. NOTE: This is only available to
  * Chrome OS Kiosk apps and Web UI.
- * @param {function(!Array<!chrome.system.display.DisplayLayout>): void} callback
- *     The callback to invoke with the results.
+ * @param {function(!Array<!chrome.system.display.DisplayLayout>): void}
+ *     callback The callback to invoke with the results.
  * @see https://developer.chrome.com/extensions/system.display#method-getDisplayLayout
  */
 chrome.system.display.getDisplayLayout = function(callback) {};

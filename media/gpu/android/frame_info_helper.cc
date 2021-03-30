@@ -196,8 +196,8 @@ class FrameInfoHelperImpl : public FrameInfoHelper {
             base::BindOnce(&FrameInfoHelperImpl::OnFrameInfoReady,
                            weak_factory_.GetWeakPtr()));
 
-        on_gpu_.Post(FROM_HERE, &OnGpu::GetFrameInfo,
-                     std::move(request.buffer_renderer), std::move(cb));
+        on_gpu_.AsyncCall(&OnGpu::GetFrameInfo)
+            .WithArgs(std::move(request.buffer_renderer), std::move(cb));
         // We didn't complete this request quite yet, so we can't process queue
         // any further.
         break;

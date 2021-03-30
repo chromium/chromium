@@ -41,8 +41,6 @@ class MEDIA_EXPORT MediaPermission {
   // the spec.
   virtual bool IsEncryptedMediaEnabled() = 0;
 
-  virtual void NotifyUnsupportedPlatform();
-
  private:
   DISALLOW_COPY_AND_ASSIGN(MediaPermission);
 };

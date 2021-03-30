@@ -1,6 +1,8 @@
 /**
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
- **/ import { GPUConst } from './constants.js';
+ **/ import { assert } from '../common/framework/util/util.js';
+
+import { GPUConst } from './constants.js';
 
 function keysOf(obj) {
   return Object.keys(obj);
@@ -9,6 +11,29 @@ function keysOf(obj) {
 function numericKeysOf(obj) {
   return Object.keys(obj).map(n => Number(n));
 }
+
+/**
+ * Creates an info lookup object from a more nicely-formatted table. See below for examples.
+ *
+ * Note: Using `as const` on the arguments to this function is necessary to infer the correct type.
+ */
+function makeTable(members, defaults, table) {
+  const result = {};
+  for (const [k, v] of Object.entries(table)) {
+    const item = {};
+    for (let i = 0; i < members.length; ++i) {
+      item[members[i]] = v[i] ?? defaults[i];
+    }
+    result[k] = item;
+  }
+
+  return result;
+}
+
+// Queries
+
+export const kMaxQueryCount = 8192;
+export const kQueryTypes = ['occlusion', 'pipeline-statistics', 'timestamp'];
 
 // Buffers
 
@@ -31,753 +56,129 @@ export const kBufferUsages = numericKeysOf(kBufferUsageInfo);
 
 // Textures
 
-export const kRegularTextureFormatInfo = {
-  // 8-bit formats
-  r8unorm: {
-    renderable: true,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: false,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 1,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'unorm',
-    componentType: 'float',
-  },
-  r8snorm: {
-    renderable: false,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: false,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 1,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'snorm',
-    componentType: 'float',
-  },
-  r8uint: {
-    renderable: true,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: false,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 1,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'uint',
-    componentType: 'uint',
-  },
-  r8sint: {
-    renderable: true,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: false,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 1,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'sint',
-    componentType: 'sint',
-  },
-  // 16-bit formats
-  r16uint: {
-    renderable: true,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: false,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 2,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'uint',
-    componentType: 'uint',
-  },
-  r16sint: {
-    renderable: true,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: false,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 2,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'sint',
-    componentType: 'sint',
-  },
-  r16float: {
-    renderable: true,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: false,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 2,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'float',
-    componentType: 'float',
-  },
-  rg8unorm: {
-    renderable: true,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: false,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 2,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'unorm',
-    componentType: 'float',
-  },
-  rg8snorm: {
-    renderable: false,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: false,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 2,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'snorm',
-    componentType: 'float',
-  },
-  rg8uint: {
-    renderable: true,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: false,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 2,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'uint',
-    componentType: 'uint',
-  },
-  rg8sint: {
-    renderable: true,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: false,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 2,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'sint',
-    componentType: 'sint',
-  },
-  // 32-bit formats
-  r32uint: {
-    renderable: true,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: true,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 4,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'uint',
-    componentType: 'uint',
-  },
-  r32sint: {
-    renderable: true,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: true,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 4,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'sint',
-    componentType: 'sint',
-  },
-  r32float: {
-    renderable: true,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: true,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 4,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'float',
-    componentType: 'float',
-  },
-  rg16uint: {
-    renderable: true,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: false,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 4,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'uint',
-    componentType: 'uint',
-  },
-  rg16sint: {
-    renderable: true,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: false,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 4,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'sint',
-    componentType: 'sint',
-  },
-  rg16float: {
-    renderable: true,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: false,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 4,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'float',
-    componentType: 'float',
-  },
-  rgba8unorm: {
-    renderable: true,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: true,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 4,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'unorm',
-    componentType: 'float',
-  },
-  'rgba8unorm-srgb': {
-    renderable: true,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: false,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 4,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'unorm',
-    componentType: 'float',
-  },
-  rgba8snorm: {
-    renderable: false,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: true,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 4,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'snorm',
-    componentType: 'float',
-  },
-  rgba8uint: {
-    renderable: true,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: true,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 4,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'uint',
-    componentType: 'uint',
-  },
-  rgba8sint: {
-    renderable: true,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: true,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 4,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'sint',
-    componentType: 'sint',
-  },
-  bgra8unorm: {
-    renderable: true,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: false,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 4,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'unorm',
-    componentType: 'float',
-  },
-  'bgra8unorm-srgb': {
-    renderable: true,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: false,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 4,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'unorm',
-    componentType: 'float',
-  },
-  // Packed 32-bit formats
-  rgb10a2unorm: {
-    renderable: true,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: false,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 4,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'unorm',
-    componentType: 'float',
-  },
-  rg11b10ufloat: {
-    renderable: false,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: false,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 4,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'ufloat',
-    componentType: 'float',
-  },
-  rgb9e5ufloat: {
-    renderable: false,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: false,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 4,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'ufloat',
-    componentType: 'float',
-  },
-  // 64-bit formats
-  rg32uint: {
-    renderable: true,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: true,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 8,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'uint',
-    componentType: 'uint',
-  },
-  rg32sint: {
-    renderable: true,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: true,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 8,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'sint',
-    componentType: 'sint',
-  },
-  rg32float: {
-    renderable: true,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: true,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 8,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'float',
-    componentType: 'float',
-  },
-  rgba16uint: {
-    renderable: true,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: true,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 8,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'uint',
-    componentType: 'uint',
-  },
-  rgba16sint: {
-    renderable: true,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: true,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 8,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'sint',
-    componentType: 'sint',
-  },
-  rgba16float: {
-    renderable: true,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: true,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 8,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'float',
-    componentType: 'float',
-  },
-  // 128-bit formats
-  rgba32uint: {
-    renderable: true,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: true,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 16,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'uint',
-    componentType: 'uint',
-  },
-  rgba32sint: {
-    renderable: true,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: true,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 16,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'sint',
-    componentType: 'sint',
-  },
-  rgba32float: {
-    renderable: true,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: true,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 16,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'float',
-    componentType: 'float',
-  },
-};
+// Note that we repeat the header multiple times in order to make it easier to read.
+export const kRegularTextureFormatInfo = makeTable(
+  [
+    'renderable',
+    'multisample',
+    'color',
+    'depth',
+    'stencil',
+    'storage',
+    'copySrc',
+    'copyDst',
+    'bytesPerBlock',
+    'blockWidth',
+    'blockHeight',
+    'extension',
+  ],
+  [, true, true, false, false, , true, true, , 1, 1],
+  {
+    // 8-bit formats
+    r8unorm: [true, , , , , false, , , 1],
+    r8snorm: [false, , , , , false, , , 1],
+    r8uint: [true, , , , , false, , , 1],
+    r8sint: [true, , , , , false, , , 1],
+    // 16-bit formats
+    r16uint: [true, , , , , false, , , 2],
+    r16sint: [true, , , , , false, , , 2],
+    r16float: [true, , , , , false, , , 2],
+    rg8unorm: [true, , , , , false, , , 2],
+    rg8snorm: [false, , , , , false, , , 2],
+    rg8uint: [true, , , , , false, , , 2],
+    rg8sint: [true, , , , , false, , , 2],
+    // 32-bit formats
+    r32uint: [true, , , , , true, , , 4],
+    r32sint: [true, , , , , true, , , 4],
+    r32float: [true, , , , , true, , , 4],
+    rg16uint: [true, , , , , false, , , 4],
+    rg16sint: [true, , , , , false, , , 4],
+    rg16float: [true, , , , , false, , , 4],
+    rgba8unorm: [true, , , , , true, , , 4],
+    'rgba8unorm-srgb': [true, , , , , false, , , 4],
+    rgba8snorm: [false, , , , , true, , , 4],
+    rgba8uint: [true, , , , , true, , , 4],
+    rgba8sint: [true, , , , , true, , , 4],
+    bgra8unorm: [true, , , , , false, , , 4],
+    'bgra8unorm-srgb': [true, , , , , false, , , 4],
+    // Packed 32-bit formats
+    rgb10a2unorm: [true, , , , , false, , , 4],
+    rg11b10ufloat: [false, , , , , false, , , 4],
+    rgb9e5ufloat: [false, , , , , false, , , 4],
+    // 64-bit formats
+    rg32uint: [true, , , , , true, , , 8],
+    rg32sint: [true, , , , , true, , , 8],
+    rg32float: [true, , , , , true, , , 8],
+    rgba16uint: [true, , , , , true, , , 8],
+    rgba16sint: [true, , , , , true, , , 8],
+    rgba16float: [true, , , , , true, , , 8],
+    // 128-bit formats
+    rgba32uint: [true, , , , , true, , , 16],
+    rgba32sint: [true, , , , , true, , , 16],
+    rgba32float: [true, , , , , true, , , 16],
+  }
+);
+
+const kTexFmtInfoHeader = [
+  'renderable',
+  'multisample',
+  'color',
+  'depth',
+  'stencil',
+  'storage',
+  'copySrc',
+  'copyDst',
+  'bytesPerBlock',
+  'blockWidth',
+  'blockHeight',
+  'extension',
+];
+export const kSizedDepthStencilFormatInfo = makeTable(
+  kTexFmtInfoHeader,
+  [true, true, false, , , false, false, false, , 1, 1],
+  {
+    depth32float: [true, , , true, false, , , , 4],
+    depth16unorm: [true, , , true, false, , , , 2],
+    stencil8: [true, , , false, true, , , , 1],
+  }
+);
+
+export const kUnsizedDepthStencilFormatInfo = makeTable(
+  kTexFmtInfoHeader,
+  [true, true, false, , , false, false, false, undefined, 1, 1],
+  {
+    depth24plus: [, , , true, false, , ,],
+    'depth24plus-stencil8': [, , , true, true, , ,],
+    // bytesPerBlock only makes sense on a per-aspect basis. But this table can't express that. So we put depth24unorm-stencil8 and depth32float-stencil8 to be unsized formats for now.
+    'depth24unorm-stencil8': [, , , true, true, , , , , , , 'depth24unorm-stencil8'],
+    'depth32float-stencil8': [, , , true, true, , , , , , , 'depth32float-stencil8'],
+  }
+);
+
+export const kCompressedTextureFormatInfo = makeTable(
+  kTexFmtInfoHeader,
+  [false, false, true, false, false, false, true, true, , 4, 4],
+  {
+    'bc1-rgba-unorm': [, , , , , , , , 8, 4, 4, 'texture-compression-bc'],
+    'bc1-rgba-unorm-srgb': [, , , , , , , , 8, 4, 4, 'texture-compression-bc'],
+    'bc2-rgba-unorm': [, , , , , , , , 16, 4, 4, 'texture-compression-bc'],
+    'bc2-rgba-unorm-srgb': [, , , , , , , , 16, 4, 4, 'texture-compression-bc'],
+    'bc3-rgba-unorm': [, , , , , , , , 16, 4, 4, 'texture-compression-bc'],
+    'bc3-rgba-unorm-srgb': [, , , , , , , , 16, 4, 4, 'texture-compression-bc'],
+    'bc4-r-unorm': [, , , , , , , , 8, 4, 4, 'texture-compression-bc'],
+    'bc4-r-snorm': [, , , , , , , , 8, 4, 4, 'texture-compression-bc'],
+    'bc5-rg-unorm': [, , , , , , , , 16, 4, 4, 'texture-compression-bc'],
+    'bc5-rg-snorm': [, , , , , , , , 16, 4, 4, 'texture-compression-bc'],
+    'bc6h-rgb-ufloat': [, , , , , , , , 16, 4, 4, 'texture-compression-bc'],
+    'bc6h-rgb-float': [, , , , , , , , 16, 4, 4, 'texture-compression-bc'],
+    'bc7-rgba-unorm': [, , , , , , , , 16, 4, 4, 'texture-compression-bc'],
+    'bc7-rgba-unorm-srgb': [, , , , , , , , 16, 4, 4, 'texture-compression-bc'],
+  }
+);
 
 export const kRegularTextureFormats = keysOf(kRegularTextureFormatInfo);
-
-export const kSizedDepthStencilFormatInfo = {
-  depth32float: {
-    renderable: true,
-    color: false,
-    depth: true,
-    stencil: false,
-    storage: false,
-    copySrc: true,
-    copyDst: false,
-    bytesPerBlock: 4,
-    blockWidth: 1,
-    blockHeight: 1,
-    dataType: 'float',
-    componentType: 'float',
-  },
-};
-
 export const kSizedDepthStencilFormats = keysOf(kSizedDepthStencilFormatInfo);
-
-export const kUnsizedDepthStencilFormatInfo = {
-  depth24plus: {
-    renderable: true,
-    color: false,
-    depth: true,
-    stencil: false,
-    storage: false,
-    copySrc: false,
-    copyDst: false,
-    blockWidth: 1,
-    blockHeight: 1,
-  },
-  'depth24plus-stencil8': {
-    renderable: true,
-    color: false,
-    depth: true,
-    stencil: true,
-    storage: false,
-    copySrc: false,
-    copyDst: false,
-    blockWidth: 1,
-    blockHeight: 1,
-  },
-};
-
 export const kUnsizedDepthStencilFormats = keysOf(kUnsizedDepthStencilFormatInfo);
-
-export const kCompressedTextureFormatInfo = {
-  // BC formats
-  'bc1-rgba-unorm': {
-    renderable: false,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: false,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 8,
-    blockWidth: 4,
-    blockHeight: 4,
-    extension: 'texture-compression-bc',
-  },
-  'bc1-rgba-unorm-srgb': {
-    renderable: false,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: false,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 8,
-    blockWidth: 4,
-    blockHeight: 4,
-    extension: 'texture-compression-bc',
-  },
-  'bc2-rgba-unorm': {
-    renderable: false,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: false,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 16,
-    blockWidth: 4,
-    blockHeight: 4,
-    extension: 'texture-compression-bc',
-  },
-  'bc2-rgba-unorm-srgb': {
-    renderable: false,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: false,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 16,
-    blockWidth: 4,
-    blockHeight: 4,
-    extension: 'texture-compression-bc',
-  },
-  'bc3-rgba-unorm': {
-    renderable: false,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: false,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 16,
-    blockWidth: 4,
-    blockHeight: 4,
-    extension: 'texture-compression-bc',
-  },
-  'bc3-rgba-unorm-srgb': {
-    renderable: false,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: false,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 16,
-    blockWidth: 4,
-    blockHeight: 4,
-    extension: 'texture-compression-bc',
-  },
-  'bc4-r-unorm': {
-    renderable: false,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: false,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 8,
-    blockWidth: 4,
-    blockHeight: 4,
-    extension: 'texture-compression-bc',
-  },
-  'bc4-r-snorm': {
-    renderable: false,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: false,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 8,
-    blockWidth: 4,
-    blockHeight: 4,
-    extension: 'texture-compression-bc',
-  },
-  'bc5-rg-unorm': {
-    renderable: false,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: false,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 16,
-    blockWidth: 4,
-    blockHeight: 4,
-    extension: 'texture-compression-bc',
-  },
-  'bc5-rg-snorm': {
-    renderable: false,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: false,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 16,
-    blockWidth: 4,
-    blockHeight: 4,
-    extension: 'texture-compression-bc',
-  },
-  'bc6h-rgb-ufloat': {
-    renderable: false,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: false,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 16,
-    blockWidth: 4,
-    blockHeight: 4,
-    extension: 'texture-compression-bc',
-  },
-  'bc6h-rgb-float': {
-    renderable: false,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: false,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 16,
-    blockWidth: 4,
-    blockHeight: 4,
-    extension: 'texture-compression-bc',
-  },
-  'bc7-rgba-unorm': {
-    renderable: false,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: false,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 16,
-    blockWidth: 4,
-    blockHeight: 4,
-    extension: 'texture-compression-bc',
-  },
-  'bc7-rgba-unorm-srgb': {
-    renderable: false,
-    color: true,
-    depth: false,
-    stencil: false,
-    storage: false,
-    copySrc: true,
-    copyDst: true,
-    bytesPerBlock: 16,
-    blockWidth: 4,
-    blockHeight: 4,
-    extension: 'texture-compression-bc',
-  },
-};
-
 export const kCompressedTextureFormats = keysOf(kCompressedTextureFormatInfo);
 
 export const kColorTextureFormatInfo = {
@@ -823,6 +224,8 @@ export const kAllTextureFormatInfo = {
 };
 
 export const kAllTextureFormats = keysOf(kAllTextureFormatInfo);
+// Assert every GPUTextureFormat is covered by one of the tables.
+(x => x)(kAllTextureFormatInfo);
 
 export const kTextureDimensionInfo = {
   '1d': {},
@@ -840,12 +243,70 @@ export const kTextureAspectInfo = {
 
 export const kTextureAspects = keysOf(kTextureAspectInfo);
 
+const kDepthStencilFormatCapabilityInBufferTextureCopy = {
+  // kUnsizedDepthStencilFormats
+  depth24plus: {
+    CopyB2T: [],
+    CopyT2B: [],
+    texelAspectSize: { 'depth-only': -1, 'stencil-only': -1 },
+  },
+
+  'depth24plus-stencil8': {
+    CopyB2T: ['stencil-only'],
+    CopyT2B: ['stencil-only'],
+    texelAspectSize: { 'depth-only': -1, 'stencil-only': 1 },
+  },
+
+  // kSizedDepthStencilFormats
+  depth16unorm: {
+    CopyB2T: ['all', 'depth-only'],
+    CopyT2B: ['all', 'depth-only'],
+    texelAspectSize: { 'depth-only': 2, 'stencil-only': -1 },
+  },
+
+  depth32float: {
+    CopyB2T: [],
+    CopyT2B: ['all', 'depth-only'],
+    texelAspectSize: { 'depth-only': 4, 'stencil-only': -1 },
+  },
+
+  'depth24unorm-stencil8': {
+    CopyB2T: ['stencil-only'],
+    CopyT2B: ['depth-only', 'stencil-only'],
+    texelAspectSize: { 'depth-only': 4, 'stencil-only': 1 },
+  },
+
+  'depth32float-stencil8': {
+    CopyB2T: ['stencil-only'],
+    CopyT2B: ['depth-only', 'stencil-only'],
+    texelAspectSize: { 'depth-only': 4, 'stencil-only': 1 },
+  },
+
+  stencil8: {
+    CopyB2T: ['all', 'stencil-only'],
+    CopyT2B: ['all', 'stencil-only'],
+    texelAspectSize: { 'depth-only': -1, 'stencil-only': 1 },
+  },
+};
+
+export function depthStencilBufferTextureCopySupported(type, format, aspect) {
+  const supportedAspects = kDepthStencilFormatCapabilityInBufferTextureCopy[format][type];
+  return supportedAspects.includes(aspect);
+}
+
+export function depthStencilFormatAspectSize(format, aspect) {
+  const texelAspectSize =
+    kDepthStencilFormatCapabilityInBufferTextureCopy[format].texelAspectSize[aspect];
+  assert(texelAspectSize > 0);
+  return texelAspectSize;
+}
+
 export const kTextureUsageInfo = {
   [GPUConst.TextureUsage.COPY_SRC]: {},
   [GPUConst.TextureUsage.COPY_DST]: {},
   [GPUConst.TextureUsage.SAMPLED]: {},
   [GPUConst.TextureUsage.STORAGE]: {},
-  [GPUConst.TextureUsage.OUTPUT_ATTACHMENT]: {},
+  [GPUConst.TextureUsage.RENDER_ATTACHMENT]: {},
 };
 
 export const kTextureUsages = numericKeysOf(kTextureUsageInfo);
@@ -872,9 +333,52 @@ export const kTextureViewDimensionInfo = {
 
 export const kTextureViewDimensions = keysOf(kTextureViewDimensionInfo);
 
+// Vertex formats
+
+export const kVertexFormatInfo = makeTable(['bytesPerComponent', 'type', 'componentCount'], [, ,], {
+  // 8 bit components
+  uint8x2: [1, 'uint', 2],
+  uint8x4: [1, 'uint', 4],
+  sint8x2: [1, 'sint', 2],
+  sint8x4: [1, 'sint', 4],
+  unorm8x2: [1, 'unorm', 2],
+  unorm8x4: [1, 'unorm', 4],
+  snorm8x2: [1, 'snorm', 2],
+  snorm8x4: [1, 'snorm', 4],
+  // 16 bit components
+  uint16x2: [2, 'uint', 2],
+  uint16x4: [2, 'uint', 4],
+  sint16x2: [2, 'sint', 2],
+  sint16x4: [2, 'sint', 4],
+  unorm16x2: [2, 'unorm', 2],
+  unorm16x4: [2, 'unorm', 4],
+  snorm16x2: [2, 'snorm', 2],
+  snorm16x4: [2, 'snorm', 4],
+  float16x2: [2, 'float', 2],
+  float16x4: [2, 'float', 4],
+  // 32 bit components
+  float32: [4, 'float', 1],
+  float32x2: [4, 'float', 2],
+  float32x3: [4, 'float', 3],
+  float32x4: [4, 'float', 4],
+  uint32: [4, 'uint', 1],
+  uint32x2: [4, 'uint', 2],
+  uint32x3: [4, 'uint', 3],
+  uint32x4: [4, 'uint', 4],
+  sint32: [4, 'sint', 1],
+  sint32x2: [4, 'sint', 2],
+  sint32x3: [4, 'sint', 3],
+  sint32x4: [4, 'sint', 4],
+});
+
+export const kVertexFormats = keysOf(kVertexFormatInfo);
+
 // Typedefs for bindings
 
 // Bindings
+
+// Dynamic buffer offsets require offset to be divisible by 256
+export const kMinDynamicBufferOffsetAlignment = 256;
 
 export const kMaxBindingsPerBindGroup = 16;
 
@@ -900,6 +404,7 @@ const kBindableResource = {
   plainSamp: {},
   compareSamp: {},
   sampledTex: {},
+  sampledTexMS: {},
   storageTex: {},
   errorBuf: {},
   errorSamp: {},
@@ -931,6 +436,11 @@ const kBindingKind = {
   },
   sampledTex: {
     resource: 'sampledTex',
+    perStageLimitClass: kPerStageBindingLimits.sampledTex,
+    perPipelineLimitClass: kPerPipelineBindingLimits.sampledTex,
+  },
+  sampledTexMS: {
+    resource: 'sampledTexMS',
     perStageLimitClass: kPerStageBindingLimits.sampledTex,
     perPipelineLimitClass: kPerPipelineBindingLimits.sampledTex,
   },
@@ -987,7 +497,7 @@ export const kTextureBindingTypeInfo = {
   },
   'multisampled-texture': {
     usage: GPUConst.TextureUsage.SAMPLED,
-    ...kBindingKind.sampledTex,
+    ...kBindingKind.sampledTexMS,
     ...kValidStagesAll,
   },
   'writeonly-storage-texture': {
@@ -1021,3 +531,16 @@ export const kShaderStages = [
 ];
 
 export const kShaderStageCombinations = [0, 1, 2, 3, 4, 5, 6, 7];
+
+// TODO: Update with all possible sample counts when defined
+// TODO: Switch existing tests to use kTextureSampleCounts
+export const kTextureSampleCounts = [1, 4];
+
+// Pipeline limits
+
+// TODO: Update maximum color attachments when defined
+export const kMaxColorAttachments = 4;
+
+export const kMaxVertexBuffers = 8;
+export const kMaxVertexAttributes = 16;
+export const kMaxVertexBufferArrayStride = 2048;

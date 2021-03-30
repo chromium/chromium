@@ -8,7 +8,6 @@
 
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/task/post_task.h"
 #include "content/public/browser/browser_task_traits.h"
 
 namespace content {
@@ -20,7 +19,8 @@ void RunOrPostTaskOnThread(const base::Location& location,
     std::move(task).Run();
     return;
   }
-  base::PostTask(location, {thread_id}, std::move(task));
+  BrowserThread::GetTaskRunnerForThread(thread_id)->PostTask(location,
+                                                             std::move(task));
 }
 
 }  // namespace content

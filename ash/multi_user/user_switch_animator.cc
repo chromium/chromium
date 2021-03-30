@@ -8,6 +8,7 @@
 #include "ash/public/cpp/multi_user_window_manager_delegate.h"
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
+#include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_positioner.h"
@@ -266,8 +267,14 @@ void UserSwitchAnimator::TransitionWindows(AnimationStep animation_step) {
 
       // Show new user.
       auto new_user_itr = windows_by_account_id_.find(new_account_id_);
-      if (new_user_itr == windows_by_account_id_.end())
+      auto* desks_controller = Shell::Get()->desks_controller();
+      if (new_user_itr == windows_by_account_id_.end()) {
+        // Despite no new windows being shown, we still need to call
+        // DesksController::OnNewUserShown() to properly restack visible on all
+        // desks windows.
+        desks_controller->OnNewUserShown();
         return;
+      }
 
       for (auto* window : new_user_itr->second) {
         auto entry = owner_->window_to_entry().find(window);
@@ -276,6 +283,7 @@ void UserSwitchAnimator::TransitionWindows(AnimationStep animation_step) {
         if (entry->second->show())
           owner_->SetWindowVisibility(window, true, duration);
       }
+      desks_controller->OnNewUserShown();
 
       break;
     }

@@ -21,6 +21,14 @@ namespace {
 // The maximum number of TYPE_WINDOW_CONTENT_CHANGED events to fire in one
 // atomic update before we give up and fire it on the root node instead.
 constexpr int kMaxContentChangedEventsToFire = 5;
+
+// The number of 'ticks' on a slider when no step value is defined. The value
+// of 20 implies 20 steps, or a 5% move with each increment/decrement action.
+constexpr int kDefaultNumberOfTicksForSliders = 20;
+
+// The minimum amount a slider can move per increment/decement action as a
+// percentage of the total range, regardless of step value set on the element.
+constexpr float kMinimumPercentageMoveForSliders = 0.01f;
 }  // namespace
 
 class BrowserAccessibilityAndroid;
@@ -43,6 +51,10 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       WebContents* web_contents);
+  WebContentsAccessibilityAndroid(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      jlong ax_tree_update_ptr);
   ~WebContentsAccessibilityAndroid() override;
 
   // Notify the root BrowserAccessibilityManager that this is the
@@ -90,6 +102,10 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       jint id);
+  base::android::ScopedJavaLocalRef<jintArray> GetAbsolutePositionForNode(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      jint unique_id);
 
   // Populate Java accessibility data structures with info about a node.
   jboolean UpdateCachedAccessibilityNodeInfo(
@@ -142,11 +158,15 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // where |element_type| is a special uppercase string from TalkBack or
   // BrailleBack indicating general categories of web content like
   // "SECTION" or "CONTROL".  Return 0 if not found.
+  // Use |can_wrap_to_last_element| to specify if a backwards search can wrap
+  // around to the last element. This is used to expose the last HTML element
+  // upon swiping backwards into a WebView.
   jint FindElementType(JNIEnv* env,
                        const base::android::JavaParamRef<jobject>& obj,
                        jint start_id,
                        const base::android::JavaParamRef<jstring>& element_type,
-                       jboolean forwards);
+                       jboolean forwards,
+                       jboolean can_wrap_to_last_element);
 
   // Respond to a ACTION_[NEXT/PREVIOUS]_AT_MOVEMENT_GRANULARITY action
   // and move the cursor/selection within the given node id. We keep track
@@ -275,6 +295,9 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // Reset count of content changed events fired this atomic update.
   void ResetContentChangedEventsCounter() { content_changed_events_ = 0; }
 
+  // Call the BrowserAccessibilityManager to trigger an kEndOfTest event.
+  void SignalEndOfTestForTesting(JNIEnv* env);
+
   // --------------------------------------------------------------------------
   // Methods called from the BrowserAccessibilityManager
   // --------------------------------------------------------------------------
@@ -288,7 +311,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   void HandleClicked(int32_t unique_id);
   void HandleScrollPositionChanged(int32_t unique_id);
   void HandleScrolledToAnchor(int32_t unique_id);
-  void AnnounceLiveRegionText(const base::string16& text);
+  void AnnounceLiveRegionText(const std::u16string& text);
   void HandleTextSelectionChanged(int32_t unique_id);
   void HandleEditableTextChanged(int32_t unique_id);
   void HandleSliderChanged(int32_t unique_id);
@@ -297,6 +320,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   void HandleHover(int32_t unique_id);
   void HandleNavigate();
   void ClearNodeInfoCacheForGivenId(int32_t unique_id);
+  void HandleEndOfTestSignal();
 
   base::WeakPtr<WebContentsAccessibilityAndroid> GetWeakPtr();
 
@@ -336,6 +360,9 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // Owns itself, and destroyed upon WebContentsObserver::WebContentsDestroyed.
   class Connector;
   Connector* connector_ = nullptr;
+  // This isn't associated with a real WebContents and is only populated when
+  // this class is constructed with a ui::AXTreeUpdate.
+  std::unique_ptr<BrowserAccessibilityManagerAndroid> manager_;
 
   base::WeakPtrFactory<WebContentsAccessibilityAndroid> weak_ptr_factory_{this};
 

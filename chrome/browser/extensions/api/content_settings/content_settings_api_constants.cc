@@ -23,15 +23,5 @@ const char kIncognitoSessionOnlyError[] =
     "You cannot read incognito content settings when no incognito window "
     "is open.";
 const char kInvalidUrlError[] = "The URL \"*\" is invalid.";
-const char kSettingPluginContentSettingsIsDisallowed[] =
-    "`chrome.contentSettings.plugins.set()` API is no longer supported.";
-const char kSettingPluginContentSettingsResourceIdentifierIsDisallowed[] =
-    "`chrome.contentSettings.plugins.getResourceIdentifiers()` API is no "
-    "longer supported.";
-const char kSettingPluginContentSettingsGetIsDisallowed[] =
-    "`chrome.contentSettings.plugins.get()` API is no longer supported.";
-const char kSettingPluginContentSettingsClearIsDisallowed[] =
-    "`chrome.contentSettings.plugins.clear()` API is no longer supported.";
-
 }  // namespace content_settings_api_constants
 }  // namespace extensions

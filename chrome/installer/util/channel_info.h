@@ -5,7 +5,7 @@
 #ifndef CHROME_INSTALLER_UTIL_CHANNEL_INFO_H_
 #define CHROME_INSTALLER_UTIL_CHANNEL_INFO_H_
 
-#include "base/strings/string16.h"
+#include <string>
 
 namespace base {
 namespace win {
@@ -30,8 +30,8 @@ class ChannelInfo {
   // Returns false if the value could not be written to the registry.
   bool Write(base::win::RegKey* key) const;
 
-  const base::string16& value() const { return value_; }
-  void set_value(const base::string16& value) { value_ = value; }
+  const std::wstring& value() const { return value_; }
+  void set_value(const std::wstring& value) { value_ = value; }
   bool Equals(const ChannelInfo& other) const { return value_ == other.value_; }
 
   // Removes the -stage: modifier, returning true if the value is modified.
@@ -40,7 +40,7 @@ class ChannelInfo {
   // Returns the string identifying the stats default state (i.e., the starting
   // value of the "send usage stats" checkbox during install), or an empty
   // string if the -statsdef_ modifier is not present in the value.
-  base::string16 GetStatsDefault() const;
+  std::wstring GetStatsDefault() const;
 
   // Returns true if the -full suffix is present in the value.
   bool HasFullSuffix() const;
@@ -50,7 +50,7 @@ class ChannelInfo {
   bool SetFullSuffix(bool value);
 
  private:
-  base::string16 value_;
+  std::wstring value_;
 };  // class ChannelInfo
 
 }  // namespace installer

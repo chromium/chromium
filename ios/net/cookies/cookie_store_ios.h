@@ -126,7 +126,7 @@ class CookieStoreIOS : public net::CookieStore,
 
  private:
   using CookieChangeCallbackList =
-      base::CallbackList<void(const CookieChangeInfo&)>;
+      base::RepeatingCallbackList<void(const CookieChangeInfo&)>;
 
   class Subscription : public base::LinkNode<Subscription>,
                        public CookieChangeSubscription {

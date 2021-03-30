@@ -13,6 +13,7 @@ import org.json.JSONException;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.sync.KeyRetrievalTriggerForUMA;
 import org.chromium.components.sync.ModelType;
@@ -162,8 +163,8 @@ public class ProfileSyncService {
      *
      * @return true if Sync is active, false otherwise.
      */
-    public boolean isSyncActive() {
-        return ProfileSyncServiceJni.get().isSyncActive(
+    public boolean isSyncFeatureActive() {
+        return ProfileSyncServiceJni.get().isSyncFeatureActive(
                 mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
     }
 
@@ -526,37 +527,32 @@ public class ProfileSyncService {
 
     /**
      * Returns whether this client has previously prompted the user for a
-     * passphrase error via the android system notifications.
+     * passphrase error via the android system notifications for the current
+     * product major version (i.e. gets reset upon browser upgrade). More
+     * specifically, it returns whether the method
+     * markPassphrasePromptMutedForCurrentProductVersion() has been invoked
+     * before, since the last time the browser was upgraded to a new major
+     * version.
      *
      * Can be called whether or not sync is initialized.
      *
-     * @return Whether client has prompted for a passphrase error previously.
+     * @return Whether client has prompted for a passphrase error previously for
+     * the current product major version.
      */
-    public boolean isPassphrasePrompted() {
-        return ProfileSyncServiceJni.get().isPassphrasePrompted(
+    public boolean isPassphrasePromptMutedForCurrentProductVersion() {
+        return ProfileSyncServiceJni.get().isPassphrasePromptMutedForCurrentProductVersion(
                 mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
     }
 
     /**
-     * Sets whether this client has previously prompted the user for a
-     * passphrase error via the android system notifications.
+     * Mutes passphrase error via the android system notifications until the
+     * browser is upgraded to a new major version.
      *
      * Can be called whether or not sync is initialized.
-     *
-     * @param prompted whether the client has prompted the user previously.
      */
-    public void setPassphrasePrompted(boolean prompted) {
-        ProfileSyncServiceJni.get().setPassphrasePrompted(
-                mNativeProfileSyncServiceAndroid, ProfileSyncService.this, prompted);
-    }
-
-    /**
-     * Sets the the machine tag used by session sync.
-     */
-    public void setSessionsId(String sessionTag) {
-        ThreadUtils.assertOnUiThread();
-        ProfileSyncServiceJni.get().setSyncSessionsId(
-                mNativeProfileSyncServiceAndroid, ProfileSyncService.this, sessionTag);
+    public void markPassphrasePromptMutedForCurrentProductVersion() {
+        ProfileSyncServiceJni.get().markPassphrasePromptMutedForCurrentProductVersion(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
     }
 
     /**
@@ -565,6 +561,20 @@ public class ProfileSyncService {
     public void recordKeyRetrievalTrigger(@KeyRetrievalTriggerForUMA int keyRetrievalTrigger) {
         ProfileSyncServiceJni.get().recordKeyRetrievalTrigger(
                 mNativeProfileSyncServiceAndroid, ProfileSyncService.this, keyRetrievalTrigger);
+    }
+
+    /**
+     * @return Whether sync is enabled to sync urls or open tabs with a non custom passphrase.
+     */
+    public boolean isSyncingUrlsWithKeystorePassphrase() {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
+            return isEngineInitialized() && getActiveDataTypes().contains(ModelType.TYPED_URLS)
+                    && (getPassphraseType() == PassphraseType.KEYSTORE_PASSPHRASE
+                            || getPassphraseType() == PassphraseType.TRUSTED_VAULT_PASSPHRASE);
+        }
+        return isEngineInitialized() && getPreferredDataTypes().contains(ModelType.TYPED_URLS)
+                && (getPassphraseType() == PassphraseType.KEYSTORE_PASSPHRASE
+                        || getPassphraseType() == PassphraseType.TRUSTED_VAULT_PASSPHRASE);
     }
 
     @VisibleForTesting
@@ -654,8 +664,6 @@ public class ProfileSyncService {
                 long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
         void setSyncAllowedByPlatform(
                 long nativeProfileSyncServiceAndroid, ProfileSyncService caller, boolean allowed);
-        void setSyncSessionsId(
-                long nativeProfileSyncServiceAndroid, ProfileSyncService caller, String tag);
         int getAuthError(long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
         boolean requiresClientUpgrade(
                 long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
@@ -714,17 +722,18 @@ public class ProfileSyncService {
         boolean isSyncRequested(long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
         boolean canSyncFeatureStart(
                 long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
-        boolean isSyncActive(long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        boolean isSyncFeatureActive(
+                long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
         boolean isSyncDisabledByEnterprisePolicy(
                 long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
         boolean hasKeepEverythingSynced(
                 long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
         boolean hasUnrecoverableError(
                 long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
-        boolean isPassphrasePrompted(
+        boolean isPassphrasePromptMutedForCurrentProductVersion(
                 long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
-        void setPassphrasePrompted(
-                long nativeProfileSyncServiceAndroid, ProfileSyncService caller, boolean prompted);
+        void markPassphrasePromptMutedForCurrentProductVersion(
+                long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
         long getProfileSyncServiceForTest(
                 long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
         long getLastSyncedTimeForTest(

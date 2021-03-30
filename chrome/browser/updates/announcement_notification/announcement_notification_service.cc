@@ -11,9 +11,9 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile_attributes_entry.h"
-#include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"    // nogncheck
+#include "chrome/browser/profiles/profile_attributes_storage.h"  // nogncheck
+#include "chrome/browser/profiles/profile_manager.h"             // nogncheck
 #include "chrome/grit/generated_resources.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -181,11 +181,9 @@ class AnnouncementNotificationServiceImpl
 
     // Can't find the profile path, assume the user is not signed in.
     DCHECK(profile_);
-    ProfileAttributesEntry* entry = nullptr;
-    if (!storage.GetProfileAttributesWithPath(profile_->GetPath(), &entry))
-      return false;
-
-    return entry->GetSigninState() != SigninState::kNotSignedIn;
+    ProfileAttributesEntry* entry =
+        storage.GetProfileAttributesWithPath(profile_->GetPath());
+    return entry && entry->GetSigninState() != SigninState::kNotSignedIn;
   }
 
   Profile* profile_;

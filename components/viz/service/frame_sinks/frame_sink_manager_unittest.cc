@@ -404,7 +404,7 @@ TEST_F(FrameSinkManagerTest, DebugLabel) {
 
 // Verifies the the begin frames are throttled properly for the requested frame
 // sinks and their children.
-TEST_F(FrameSinkManagerTest, ThrottleBeginFrame) {
+TEST_F(FrameSinkManagerTest, Throttle) {
   // root -> A -> B
   //      -> C -> D
   auto root = CreateCompositorFrameSinkSupport(kFrameSinkIdRoot);
@@ -423,7 +423,7 @@ TEST_F(FrameSinkManagerTest, ThrottleBeginFrame) {
   manager_.RegisterFrameSinkHierarchy(client_c->frame_sink_id(),
                                       client_d->frame_sink_id());
 
-  constexpr base::TimeDelta interval = base::TimeDelta::FromSeconds(1) / 20;
+  constexpr base::TimeDelta interval = base::TimeDelta::FromHz(20);
 
   std::vector<FrameSinkId> ids{kFrameSinkIdRoot, kFrameSinkIdA, kFrameSinkIdB,
                                kFrameSinkIdC, kFrameSinkIdD};
@@ -435,24 +435,27 @@ TEST_F(FrameSinkManagerTest, ThrottleBeginFrame) {
               base::TimeDelta());
   }
 
-  manager_.StartThrottling({kFrameSinkIdRoot}, interval);
+  manager_.Throttle({kFrameSinkIdRoot}, interval);
   for (auto& id : ids) {
     EXPECT_EQ(GetCompositorFrameSinkSupportBeginFrameInterval(id), interval);
   }
 
-  manager_.EndThrottling();
+  manager_.Throttle({}, base::TimeDelta());
   for (auto& id : ids) {
     EXPECT_EQ(GetCompositorFrameSinkSupportBeginFrameInterval(id),
               base::TimeDelta());
   }
 
-  manager_.StartThrottling({kFrameSinkIdB, kFrameSinkIdC}, interval);
-  ids = {kFrameSinkIdB, kFrameSinkIdC, kFrameSinkIdD};
-  for (auto& id : ids) {
+  manager_.Throttle({kFrameSinkIdB, kFrameSinkIdC}, interval);
+  for (auto& id : {kFrameSinkIdB, kFrameSinkIdC, kFrameSinkIdD}) {
     EXPECT_EQ(GetCompositorFrameSinkSupportBeginFrameInterval(id), interval);
   }
+  for (auto& id : {kFrameSinkIdA, kFrameSinkIdRoot}) {
+    EXPECT_EQ(GetCompositorFrameSinkSupportBeginFrameInterval(id),
+              base::TimeDelta());
+  }
 
-  manager_.EndThrottling();
+  manager_.Throttle({}, base::TimeDelta());
   for (auto& id : ids) {
     EXPECT_EQ(GetCompositorFrameSinkSupportBeginFrameInterval(id),
               base::TimeDelta());

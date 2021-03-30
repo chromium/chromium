@@ -35,7 +35,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) InputMethodAuraLinux
   bool IsCandidatePopupOpen() const override;
 
   // Overriden from ui::LinuxInputMethodContextDelegate
-  void OnCommit(const base::string16& text) override;
+  void OnCommit(const std::u16string& text) override;
   void OnDeleteSurroundingText(int32_t index, uint32_t length) override;
   void OnPreeditChanged(const CompositionText& composition_text) override;
   void OnPreeditEnd() override;
@@ -68,7 +68,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) InputMethodAuraLinux
   std::unique_ptr<LinuxInputMethodContext> context_;
   std::unique_ptr<LinuxInputMethodContext> context_simple_;
 
-  base::string16 result_text_;
+  std::u16string result_text_;
 
   ui::CompositionText composition_;
 

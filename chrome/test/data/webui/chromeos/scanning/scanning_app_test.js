@@ -4,14 +4,19 @@
 
 import 'chrome://scanning/scanning_app.js';
 
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {setScanServiceForTesting} from 'chrome://scanning/mojo_interface_provider.js';
 import {ScannerArr} from 'chrome://scanning/scanning_app_types.js';
 import {tokenToString} from 'chrome://scanning/scanning_app_util.js';
+import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.m.js';
 
 import {changeSelect, createScanner, createScannerSource} from './scanning_app_test_utils.js';
+import {TestScanningBrowserProxy} from './test_scanning_browser_proxy.js';
+
+const MY_FILES_PATH = '/home/chronos/user/MyFiles';
 
 const ColorMode = {
   BLACK_AND_WHITE: chromeos.scanning.mojom.ColorMode.kBlackAndWhite,
@@ -105,7 +110,7 @@ class FakeScanService {
    */
   getResolver_(methodName) {
     let method = this.resolverMap_.get(methodName);
-    assert(!!method, `Method '${methodName}' not found.`);
+    assertTrue(!!method, `Method '${methodName}' not found.`);
     return method;
   }
 
@@ -174,11 +179,11 @@ class FakeScanService {
 
   /**
    * @param {boolean} success
-   * @param {!mojoBase.mojom.FilePath} lastScannedFilePath
+   * @param {!Array<!mojoBase.mojom.FilePath>} scannedFilePaths
    * @return {!Promise}
    */
-  simulateScanComplete(success, lastScannedFilePath) {
-    this.scanJobObserverRemote_.onScanComplete(success, lastScannedFilePath);
+  simulateScanComplete(success, scannedFilePaths) {
+    this.scanJobObserverRemote_.onScanComplete(success, scannedFilePaths);
     return flushTasks();
   }
 
@@ -239,11 +244,17 @@ export function scanningAppTest() {
   /** @type {?FakeScanService} */
   let fakeScanService_ = null;
 
+  /** @type {?TestScanningBrowserProxy} */
+  let testBrowserProxy = null;
+
   /** @type {?HTMLSelectElement} */
   let scannerSelect = null;
 
   /** @type {?HTMLSelectElement} */
   let sourceSelect = null;
+
+  /** @type {?HTMLSelectElement} */
+  let scanToSelect = null;
 
   /** @type {?HTMLSelectElement} */
   let fileTypeSelect = null;
@@ -295,6 +306,9 @@ export function scanningAppTest() {
   suiteSetup(() => {
     fakeScanService_ = new FakeScanService();
     setScanServiceForTesting(fakeScanService_);
+    testBrowserProxy = new TestScanningBrowserProxy();
+    ScanningBrowserProxyImpl.instance_ = testBrowserProxy;
+    testBrowserProxy.setMyFilesPath(MY_FILES_PATH);
   });
 
   setup(function() {
@@ -307,6 +321,7 @@ export function scanningAppTest() {
     scanningApp = null;
     scannerSelect = null;
     sourceSelect = null;
+    scanToSelect = null;
     fileTypeSelect = null;
     colorModeSelect = null;
     pageSizeSelect = null;
@@ -332,7 +347,9 @@ export function scanningAppTest() {
     scanningApp = /** @type {!ScanningAppElement} */ (
         document.createElement('scanning-app'));
     document.body.appendChild(scanningApp);
-    assert(!!scanningApp);
+    assertTrue(!!scanningApp);
+    assertTrue(isVisible(
+        /** @type {!HTMLElement} */ (scanningApp.$$('loading-page'))));
     return fakeScanService_.whenCalled('getScanners');
   }
 
@@ -387,14 +404,18 @@ export function scanningAppTest() {
   }
 
   test('Scan', () => {
-
-    /** @type {!mojoBase.mojom.FilePath} */
-    const lastScannedFilePath = {'path': '/test/path/scan.jpg'};
+    /** @type {!Array<!mojoBase.mojom.FilePath>} */
+    const scannedFilePaths =
+        [{'path': '/test/path/scan1.jpg'}, {'path': '/test/path/scan2.jpg'}];
 
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
+          assertFalse(isVisible(
+              /** @type {!HTMLElement} */ (scanningApp.$$('loading-page'))));
+
           scannerSelect = scanningApp.$$('#scannerSelect').$$('select');
           sourceSelect = scanningApp.$$('#sourceSelect').$$('select');
+          scanToSelect = scanningApp.$$('#scanToSelect').$$('select');
           fileTypeSelect = scanningApp.$$('#fileTypeSelect').$$('select');
           colorModeSelect = scanningApp.$$('#colorModeSelect').$$('select');
           pageSizeSelect = scanningApp.$$('#pageSizeSelect').$$('select');
@@ -417,6 +438,7 @@ export function scanningAppTest() {
           // if it exists.
           assertEquals(
               firstCapabilities.sources[1].name, scanningApp.selectedSource);
+          assertEquals(MY_FILES_PATH, scanningApp.selectedFilePath);
           assertEquals(FileType.PDF.toString(), scanningApp.selectedFileType);
           assertEquals(
               ColorMode.COLOR.toString(), scanningApp.selectedColorMode);
@@ -431,6 +453,7 @@ export function scanningAppTest() {
           // should be enabled, and the helper text should be displayed.
           assertFalse(scannerSelect.disabled);
           assertFalse(sourceSelect.disabled);
+          assertFalse(scanToSelect.disabled);
           assertFalse(fileTypeSelect.disabled);
           assertFalse(colorModeSelect.disabled);
           assertFalse(pageSizeSelect.disabled);
@@ -456,6 +479,7 @@ export function scanningAppTest() {
           // progress.
           assertTrue(scannerSelect.disabled);
           assertTrue(sourceSelect.disabled);
+          assertTrue(scanToSelect.disabled);
           assertTrue(fileTypeSelect.disabled);
           assertTrue(colorModeSelect.disabled);
           assertTrue(pageSizeSelect.disabled);
@@ -500,8 +524,7 @@ export function scanningAppTest() {
         })
         .then(() => {
           // Complete the scan.
-          return fakeScanService_.simulateScanComplete(
-              true, lastScannedFilePath);
+          return fakeScanService_.simulateScanComplete(true, scannedFilePaths);
         })
         .then(() => {
           assertTrue(isVisible(/** @type {!HTMLElement} */ (scannedImages)));
@@ -509,9 +532,9 @@ export function scanningAppTest() {
           assertTrue(isVisible(
               /** @type {!HTMLElement} */ (
                   scanningApp.$$('scan-done-section'))));
-          assertEquals(
-              lastScannedFilePath.path,
-              scanningApp.$$('scan-done-section').lastScannedFilePath.path);
+          assertArrayEquals(
+              scannedFilePaths,
+              scanningApp.$$('scan-done-section').scannedFilePaths);
 
           // Click the Done button to return to READY state.
           return clickDoneButton();
@@ -521,6 +544,7 @@ export function scanningAppTest() {
           // enabled. The progress bar and text should no longer be visible.
           assertFalse(scannerSelect.disabled);
           assertFalse(sourceSelect.disabled);
+          assertFalse(scanToSelect.disabled);
           assertFalse(fileTypeSelect.disabled);
           assertFalse(colorModeSelect.disabled);
           assertFalse(pageSizeSelect.disabled);
@@ -557,7 +581,7 @@ export function scanningAppTest() {
         })
         .then(() => {
           // Simulate the scan failing.
-          return fakeScanService_.simulateScanComplete(false, {'path': ''});
+          return fakeScanService_.simulateScanComplete(false, []);
         })
         .then(() => {
           // The scan failed dialog should open.
@@ -719,11 +743,11 @@ export function scanningAppTest() {
 
   test('PanelContainerContent', () => {
     return initializeScanningApp(expectedScanners, capabilities).then(() => {
-      const panelContainer = scanningApp.$$('.panel-container');
+      const panelContainer = scanningApp.$$('#panelContainer');
       assertTrue(!!panelContainer);
 
-      const leftPanel = scanningApp.$$('.panel-container > .left-panel');
-      const rightPanel = scanningApp.$$('.panel-container > .right-panel');
+      const leftPanel = scanningApp.$$('#panelContainer > #leftPanel');
+      const rightPanel = scanningApp.$$('#panelContainer > #rightPanel');
 
       assertTrue(!!leftPanel);
       assertTrue(!!rightPanel);
@@ -748,6 +772,37 @@ export function scanningAppTest() {
         })
         .then(() => {
           assertFalse(isSettingsOpen());
+        });
+  });
+
+  test('NoScanners', () => {
+    return initializeScanningApp(/*scanners=*/[], /*capabilities=*/ new Map())
+        .then(() => {
+          assertTrue(isVisible(
+              /** @type {!HTMLElement} */ (scanningApp.$$('loading-page'))));
+          assertFalse(isVisible(
+              /** @type {!HTMLElement} */ (scanningApp.$$('#panelContainer'))));
+        });
+  });
+
+  test('RetryClickLoadsScanners', () => {
+    return initializeScanningApp(/*scanners=*/[], /*capabilities=*/ new Map())
+        .then(() => {
+          assertTrue(isVisible(
+              /** @type {!HTMLElement} */ (scanningApp.$$('loading-page'))));
+          assertFalse(isVisible(
+              /** @type {!HTMLElement} */ (scanningApp.$$('#panelContainer'))));
+
+          fakeScanService_.setScanners(expectedScanners);
+          fakeScanService_.setCapabilities(capabilities);
+          scanningApp.$$('loading-page').$$('#retryButton').click();
+          return fakeScanService_.whenCalled('getScanners');
+        })
+        .then(() => {
+          assertFalse(isVisible(
+              /** @type {!HTMLElement} */ (scanningApp.$$('loading-page'))));
+          assertTrue(isVisible(
+              /** @type {!HTMLElement} */ (scanningApp.$$('#panelContainer'))));
         });
   });
 }

@@ -10,7 +10,7 @@
 #include <string>
 #include <utility>
 
-#include "chrome/browser/chromeos/arc/arc_util.h"
+#include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_features_util.h"
@@ -65,7 +65,6 @@ StorageHandler::StorageHandler(Profile* profile,
       other_users_size_calculator_(),
       profile_(profile),
       source_name_(html_source->GetSource()),
-      arc_observer_(this),
       special_volume_path_pattern_("[a-z]+://.*") {
   // TODO(khorimoto): Set kAndroidEnabled within DeviceSection, and
   // updates this value accordingly (see OnArcPlayStoreEnabledChanged()).
@@ -103,7 +102,7 @@ void StorageHandler::RegisterMessages() {
 
 void StorageHandler::OnJavascriptAllowed() {
   if (base::FeatureList::IsEnabled(arc::kUsbStorageUIFeature))
-    arc_observer_.Add(arc::ArcSessionManager::Get());
+    arc_observation_.Observe(arc::ArcSessionManager::Get());
 
   // Start observing mount/unmount events to update the connected device list.
   DiskMountManager::GetInstance()->AddObserver(this);
@@ -121,8 +120,10 @@ void StorageHandler::OnJavascriptDisallowed() {
   // Ensure that pending callbacks do not complete and cause JS to be evaluated.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  if (base::FeatureList::IsEnabled(arc::kUsbStorageUIFeature))
-    arc_observer_.Remove(arc::ArcSessionManager::Get());
+  if (base::FeatureList::IsEnabled(arc::kUsbStorageUIFeature)) {
+    DCHECK(arc_observation_.IsObservingSource(arc::ArcSessionManager::Get()));
+    arc_observation_.Reset();
+  }
 
   StopObservingEvents();
 }
@@ -273,7 +274,7 @@ void StorageHandler::UpdateStorageItem(
   if (calculation_type != calculator::SizeCalculator::CalculationType::kSystem)
     UpdateSystemSize(calculation_type, total_bytes);
 
-  base::string16 message;
+  std::u16string message;
   if (total_bytes < 0) {
     message = l10n_util::GetStringUTF16(IDS_SETTINGS_STORAGE_SIZE_UNKNOWN);
   } else {

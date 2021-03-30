@@ -14,7 +14,6 @@
 #include "components/autofill_assistant/browser/client.h"
 #include "components/autofill_assistant/browser/protocol_utils.h"
 #include "components/autofill_assistant/browser/service/api_key_fetcher.h"
-#include "components/autofill_assistant/browser/service/server_url_fetcher.h"
 #include "components/autofill_assistant/browser/service/service_request_sender_impl.h"
 #include "components/autofill_assistant/browser/switches.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
@@ -31,7 +30,16 @@ namespace autofill_assistant {
 std::unique_ptr<ServiceImpl> ServiceImpl::Create(
     content::BrowserContext* context,
     Client* client) {
-  ServerUrlFetcher url_fetcher{ServerUrlFetcher::GetDefaultServerUrl()};
+  return ServiceImpl::Create(
+      context, client,
+      ServerUrlFetcher(ServerUrlFetcher::GetDefaultServerUrl()));
+}
+
+// static
+std::unique_ptr<ServiceImpl> ServiceImpl::Create(
+    content::BrowserContext* context,
+    Client* client,
+    const ServerUrlFetcher& url_fetcher) {
   auto request_sender = std::make_unique<ServiceRequestSenderImpl>(
       context, client->GetAccessTokenFetcher(),
       std::make_unique<NativeURLLoaderFactory>(),
@@ -71,15 +79,11 @@ void ServiceImpl::GetScriptsForUrl(const GURL& url,
                                    ResponseCallback callback) {
   DCHECK(url.is_valid());
   client_context_->Update(trigger_context);
-  request_sender_->SendRequest(
-      script_server_url_,
-      ProtocolUtils::CreateGetScriptsRequest(url, client_context_->AsProto(),
-                                             trigger_context.GetParameters()),
-      std::move(callback));
-}
-
-bool ServiceImpl::IsLiteService() const {
-  return false;
+  request_sender_->SendRequest(script_server_url_,
+                               ProtocolUtils::CreateGetScriptsRequest(
+                                   url, client_context_->AsProto(),
+                                   trigger_context.GetScriptParameters()),
+                               std::move(callback));
 }
 
 void ServiceImpl::GetActions(const std::string& script_path,
@@ -94,7 +98,7 @@ void ServiceImpl::GetActions(const std::string& script_path,
       script_action_server_url_,
       ProtocolUtils::CreateInitialScriptActionsRequest(
           script_path, url, global_payload, script_payload,
-          client_context_->AsProto(), trigger_context.GetParameters(),
+          client_context_->AsProto(), trigger_context.GetScriptParameters(),
           script_store_config_),
       std::move(callback));
 }

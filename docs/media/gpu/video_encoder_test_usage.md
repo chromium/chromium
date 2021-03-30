@@ -8,20 +8,31 @@ don't require the full Chrome browser stack. They are built on top of the
 [GoogleTest](https://github.com/google/googletest/blob/master/README.md)
 framework.
 
-__Note:__ Currently these tests are under development and functionality is still
-limited.
-
 [TOC]
 
 ## Running from Tast
-Running these tests from Tast is not supported yet.
+The Tast framework provides an easy way to run the video encoder tests from a
+ChromeOS chroot. Test data is automatically deployed to the device being tested.
+To run all video encoder tests use:
+
+    tast run $HOST video.EncodeAccel.*
+
+Wildcards can be used to run specific sets of tests:
+* Run all VP8 tests: `tast run $HOST video.EncodeAccel.vp8*`
+
+Check the
+[tast video folder](https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/refs/heads/master/src/chromiumos/tast/local/bundles/cros/video/)
+for a list of all available tests.
+See the
+[Tast quickstart guide](https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/quickstart.md)
+for more information about the Tast framework.
 
 ## Running manually
 To run the video encoder tests manually the _video_encode_accelerator_tests_
 target needs to be built and deployed to the device being tested. Running
 the video encoder tests can be done by executing:
 
-    ./video_encode_accelerator_tests [<video path>] [<video metadata path>]
+    ./video_encode_accelerator_tests [<video path>]
 
 e.g.: `./video_encode_accelerator_tests bear_320x192_40frames.yuv.webm`
 
@@ -29,7 +40,7 @@ Running the video encoder performance tests can be done in a smilar way by
 building, deploying and executing the _video_encode_accelerator_perf_tests_
 target.
 
-    ./video_encode_accelerator_perf_tests [<video path>] [<video metadata path>]
+    ./video_encode_accelerator_perf_tests [<video path>]
 
 e.g.: `./video_encode_accelerator_perf_tests bear_320x192_40frames.yuv.webm`
 
@@ -48,13 +59,16 @@ simple json file that contains info about the video such as its pixel format,
 dimensions, framerate and number of frames. These can also be found in the
 _media/test/data_ folder (e.g.
 [_bear_320x192_40frames.yuv.webm.json_](https://cs.chromium.org/chromium/src/media/test/data/bear_320x192_40frames.yuv.webm.json)).
-If no metadata file is specified _\<video path\>.json_ will be used.
+The metadata file must be _\<video path\>.json_ in the same directory.
 
 ## Command line options
 Multiple command line arguments can be given to the command:
 
     --codec              codec profile to encode, "h264 (baseline)",
                          "h264main, "h264high", "vp8" and "vp9"
+    --output_folder      overwrite the output folder used to store
+                         performance metrics, if not specified results
+                         will be stored in the current working directory.
 
      -v                  enable verbose mode, e.g. -v=2.
     --vmodule            enable verbose mode for the specified module,
@@ -65,9 +79,21 @@ Multiple command line arguments can be given to the command:
 
 Non-performance tests only:
 
-    --disable_validator  disable validation of encoded bitstream.
+    --num_temporal_layers the number of temporal layers of the encoded
+                          bitstream. Only used in --codec=vp9 currently.
+    --disable_validator   disable validation of encoded bitstream.
+    --output_bitstream    save the output bitstream in either H264 AnnexB
+                          format (for H264) or IVF format (for vp8 and
+                          vp9) to <output_folder>/<testname>.
+    --output_images       in addition to saving the full encoded,
+                          bitstream it's also possible to dump individual
+                          frames to <output_folder>/<testname>, possible
+                          values are \"all|corrupt\"
+    --output_format       set the format of images saved to disk,
+                          supported formats are \"png\" (default) and
+                          \"yuv\".
+    --output_limit        limit the number of images saved to disk.
 
 ## Source code
 See the video encoder tests [source code](https://cs.chromium.org/chromium/src/media/gpu/video_encode_accelerator_tests.cc).
 See the video encoder performance tests [source code](https://cs.chromium.org/chromium/src/media/gpu/video_encode_accelerator_perf_tests.cc).
-

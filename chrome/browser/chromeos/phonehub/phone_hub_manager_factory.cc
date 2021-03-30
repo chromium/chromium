@@ -4,12 +4,13 @@
 
 #include "chrome/browser/chromeos/phonehub/phone_hub_manager_factory.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/system_tray.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/device_sync/device_sync_client_factory.h"
 #include "chrome/browser/chromeos/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/chromeos/phonehub/browser_tabs_metadata_fetcher_impl.h"
 #include "chrome/browser/chromeos/phonehub/browser_tabs_model_provider_impl.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/secure_channel/nearby_connector_factory.h"
 #include "chrome/browser/chromeos/secure_channel/secure_channel_client_provider.h"
 #include "chrome/browser/favicon/history_ui_favicon_request_handler_factory.h"
@@ -22,7 +23,6 @@
 #include "chromeos/components/phonehub/onboarding_ui_tracker_impl.h"
 #include "chromeos/components/phonehub/phone_hub_manager_impl.h"
 #include "chromeos/components/phonehub/user_action_recorder_impl.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -30,6 +30,8 @@
 namespace chromeos {
 namespace phonehub {
 namespace {
+
+content::BrowserContext* g_context_for_service = nullptr;
 
 bool IsProhibitedByPolicy(Profile* profile) {
   return !multidevice_setup::IsFeatureAllowed(
@@ -109,11 +111,40 @@ KeyedService* PhoneHubManagerFactory::BuildServiceInstanceFor(
   // the UI.
   ash::SystemTray::Get()->SetPhoneHubManager(phone_hub_manager);
 
+  DCHECK(!g_context_for_service);
+  g_context_for_service = context;
+
   return phone_hub_manager;
 }
 
-bool PhoneHubManagerFactory::ServiceIsCreatedWithBrowserContext() const {
+bool PhoneHubManagerFactory::ServiceIsNULLWhileTesting() const {
   return true;
+}
+
+bool PhoneHubManagerFactory::ServiceIsCreatedWithBrowserContext() const {
+  // We do want the service to be created with the BrowserContext, but returning
+  // true here causes issues when opting into Chrome Sync in OOBE because it
+  // causes ProfileSyncService to be created before SyncConsentScreen. Instead,
+  // we return false here and initialize PhoneHubManager within
+  // UserSessionInitializer.
+  return false;
+}
+
+void PhoneHubManagerFactory::BrowserContextShutdown(
+    content::BrowserContext* context) {
+  // If the primary Profile is being deleted, notify SystemTray that
+  // PhoneHubManager is being deleted. Note that the SystemTray is normally
+  // expected to be deleted *before* the Profile, so this check is only expected
+  // to be necessary in tests.
+  if (g_context_for_service == context) {
+    ash::SystemTray* system_tray = ash::SystemTray::Get();
+    if (system_tray)
+      system_tray->SetPhoneHubManager(nullptr);
+
+    g_context_for_service = nullptr;
+  }
+
+  BrowserContextKeyedServiceFactory::BrowserContextShutdown(context);
 }
 
 void PhoneHubManagerFactory::RegisterProfilePrefs(

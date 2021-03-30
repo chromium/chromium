@@ -14,7 +14,6 @@
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "pdf/page_orientation.h"
 #include "pdf/pdf_engine.h"
 #include "ppapi/cpp/private/pdf.h"
@@ -34,6 +33,10 @@ namespace chrome_pdf {
 
 class PDFiumEngine;
 class Thumbnail;
+struct AccessibilityLinkInfo;
+struct AccessibilityHighlightInfo;
+struct AccessibilityImageInfo;
+struct AccessibilityTextFieldInfo;
 struct AccessibilityTextRunInfo;
 struct AccessibilityTextStyleInfo;
 
@@ -64,15 +67,18 @@ class PDFiumPage {
   gfx::RectF GetCharBounds(int char_index);
   // For all the links on the page, get their urls, underlying text ranges and
   // bounding boxes.
-  std::vector<PDFEngine::AccessibilityLinkInfo> GetLinkInfo();
+  std::vector<AccessibilityLinkInfo> GetLinkInfo(
+      const std::vector<AccessibilityTextRunInfo>& text_runs);
   // For all the images on the page, get their alt texts and bounding boxes.
-  std::vector<PDFEngine::AccessibilityImageInfo> GetImageInfo();
+  std::vector<AccessibilityImageInfo> GetImageInfo(uint32_t text_run_count);
   // For all the highlights on the page, get their underlying text ranges and
   // bounding boxes.
-  std::vector<PDFEngine::AccessibilityHighlightInfo> GetHighlightInfo();
+  std::vector<AccessibilityHighlightInfo> GetHighlightInfo(
+      const std::vector<AccessibilityTextRunInfo>& text_runs);
   // For all the text fields on the page, get their properties like name,
   // value, bounding boxes, etc.
-  std::vector<PDFEngine::AccessibilityTextFieldInfo> GetTextFieldInfo();
+  std::vector<AccessibilityTextFieldInfo> GetTextFieldInfo(
+      uint32_t text_run_count);
 
   enum Area {
     NONSELECTABLE_AREA,
@@ -111,14 +117,27 @@ class PDFiumPage {
   // NONSELECTABLE_AREA if link detection failed.
   Area GetLinkTarget(FPDF_LINK link, LinkTarget* target);
 
-  // Fills the output params with the (x, y) position in page coordinates and
-  // zoom value of a destination.
+  // Fills the output params with the in-page coordinates and the zoom value of
+  // the destination.
   void GetPageDestinationTarget(FPDF_DEST destination,
-                                base::Optional<gfx::PointF>* xy,
+                                base::Optional<float>* dest_x,
+                                base::Optional<float>* dest_y,
                                 base::Optional<float>* zoom_value);
+
+  // For a named destination with "XYZ" view fit type, pre-processes the in-page
+  // x/y coordinate in case it's out of the range of the page dimension. Then
+  // transform it to a screen coordinate.
+  float PreProcessAndTransformInPageCoordX(float x);
+  float PreProcessAndTransformInPageCoordY(float y);
 
   // Transforms an (x, y) position in page coordinates to screen coordinates.
   gfx::PointF TransformPageToScreenXY(const gfx::PointF& xy);
+
+  // Transforms an in-page x coordinate to its value in screen coordinates.
+  float TransformPageToScreenX(float x);
+
+  // Transforms an in-page y coordinate to its value in screen coordinates.
+  float TransformPageToScreenY(float y);
 
   // Given a point in the document that's in this page, returns its character
   // index if it's near a character, and also the type of text.
@@ -134,7 +153,7 @@ class PDFiumPage {
   static Area FormTypeToArea(int form_type);
 
   // Gets the character at the given index.
-  base::char16 GetCharAtIndex(int index);
+  char16_t GetCharAtIndex(int index);
 
   // Gets the number of characters in the page.
   int GetCharCount();

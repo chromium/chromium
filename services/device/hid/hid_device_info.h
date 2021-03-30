@@ -12,9 +12,8 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
+#include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "services/device/public/mojom/hid.mojom.h"
 
@@ -51,9 +50,8 @@ class HidDeviceInfo : public base::RefCountedThreadSafe<HidDeviceInfo> {
                 const std::string& product_name,
                 const std::string& serial_number,
                 mojom::HidBusType bus_type,
-                const std::vector<uint8_t> report_descriptor,
+                base::span<const uint8_t> report_descriptor,
                 std::string device_node = "");
-
   HidDeviceInfo(PlatformDeviceIdMap platform_device_id_map,
                 const std::string& physical_device_id,
                 uint16_t vendor_id,
@@ -65,6 +63,8 @@ class HidDeviceInfo : public base::RefCountedThreadSafe<HidDeviceInfo> {
                 size_t max_input_report_size,
                 size_t max_output_report_size,
                 size_t max_feature_report_size);
+  HidDeviceInfo(const HidDeviceInfo& entry) = delete;
+  HidDeviceInfo& operator=(const HidDeviceInfo& entry) = delete;
 
   const mojom::HidDeviceInfoPtr& device() { return device_; }
 
@@ -111,8 +111,6 @@ class HidDeviceInfo : public base::RefCountedThreadSafe<HidDeviceInfo> {
 
   PlatformDeviceIdMap platform_device_id_map_;
   mojom::HidDeviceInfoPtr device_;
-
-  DISALLOW_COPY_AND_ASSIGN(HidDeviceInfo);
 };
 
 }  // namespace device

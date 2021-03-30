@@ -32,14 +32,8 @@ class WebRunnerSmokeTest : public testing::Test {
     test_server_.RegisterRequestHandler(base::BindRepeating(
         &WebRunnerSmokeTest::HandleRequest, base::Unretained(this)));
     ASSERT_TRUE(test_server_.Start());
-
-    fidl::InterfaceHandle<fuchsia::io::Directory> directory;
-    outgoing_directory_.GetOrCreateDirectory("svc")->Serve(
-        fuchsia::io::OPEN_RIGHT_READABLE | fuchsia::io::OPEN_RIGHT_WRITABLE,
-        directory.NewRequest().TakeChannel());
-
-    service_provider_ = std::make_unique<base::fuchsia::ServiceProviderImpl>(
-        std::move(directory));
+    service_provider_ = base::ServiceProviderImpl::CreateForOutgoingDirectory(
+        &outgoing_directory_);
   }
 
   fuchsia::sys::LaunchInfo LaunchInfoWithServices() {
@@ -86,7 +80,7 @@ class WebRunnerSmokeTest : public testing::Test {
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
 
   sys::OutgoingDirectory outgoing_directory_;
-  std::unique_ptr<base::fuchsia::ServiceProviderImpl> service_provider_;
+  std::unique_ptr<base::ServiceProviderImpl> service_provider_;
 
   net::EmbeddedTestServer test_server_;
 
@@ -199,7 +193,7 @@ TEST_F(WebRunnerSmokeTest, RemoveSelfFromStoryOnFrameClose) {
 
   MockModuleContext module_context;
   EXPECT_CALL(module_context, RemoveSelfFromStory);
-  base::fuchsia::ScopedServiceBinding<fuchsia::modular::ModuleContext> binding(
+  base::ScopedServiceBinding<fuchsia::modular::ModuleContext> binding(
       &outgoing_directory_, &module_context);
   launch_info.additional_services->names.emplace_back(
       fuchsia::modular::ModuleContext::Name_);

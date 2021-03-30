@@ -40,7 +40,7 @@ selection_test(
   selection => selection.modify('extend', 'right', 'word'),
   behavior === 'mac'
       ? '<div contenteditable dir="ltr">car^ means| \u05D0\u05D1\u05D2.</div>'
-      : '<div contenteditable dir="ltr">car^ means |\u05D0\u05D1\u05D2.</div>',
+      : '<div contenteditable dir="ltr">car^ |means \u05D0\u05D1\u05D2.</div>',
   `${behavior} 16-3 ltr right word`);
 
 selection_test(
@@ -86,7 +86,9 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr">car means| \u05D0\u05D1\u05D2.</div>',
   selection => selection.modify('extend', 'right', 'word'),
-  '<div contenteditable dir="ltr">car means^ \u05D0\u05D1\u05D2|.</div>',
+  behavior === 'mac'
+      ? '<div contenteditable dir="ltr">car means^ \u05D0\u05D1\u05D2|.</div>'
+      : '<div contenteditable dir="ltr">car means^ |\u05D0\u05D1\u05D2.</div>',
   `${behavior} 16-9 ltr right word`);
 
 selection_test(

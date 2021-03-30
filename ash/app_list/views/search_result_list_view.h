@@ -25,7 +25,7 @@ class AppListViewDelegate;
 
 // SearchResultListView displays SearchResultList with a list of
 // SearchResultView.
-class APP_LIST_EXPORT SearchResultListView : public SearchResultContainerView {
+class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
  public:
   SearchResultListView(AppListMainView* main_view,
                        AppListViewDelegate* view_delegate);
@@ -84,10 +84,6 @@ class APP_LIST_EXPORT SearchResultListView : public SearchResultContainerView {
 
   // Used for logging impressions shown to users.
   base::OneShotTimer impression_timer_;
-  base::OneShotTimer zero_state_file_impression_timer_;
-  base::OneShotTimer drive_quick_access_impression_timer_;
-  bool previous_found_zero_state_file_ = false;
-  bool previous_found_drive_quick_access_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(SearchResultListView);
 };

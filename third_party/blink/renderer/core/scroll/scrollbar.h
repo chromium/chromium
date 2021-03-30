@@ -235,7 +235,7 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
 
   bool enabled_;
 
-  TaskRunnerTimer<Scrollbar> scroll_timer_;
+  HeapTaskRunnerTimer<Scrollbar> scroll_timer_;
 
   float elastic_overscroll_;
 

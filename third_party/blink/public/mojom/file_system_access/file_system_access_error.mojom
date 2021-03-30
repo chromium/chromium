@@ -1,0 +1,38 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/file_error.mojom";
+
+// Always returned as a member of a FileSystemAccessError, which is declared below.
+enum FileSystemAccessStatus {
+  kOk,
+  // The website doesn't/didn't have permission to do what it tried to do.
+  kPermissionDenied,
+  // The website wasn't allowed to ask for permission in the current context.
+  kSecurityError,
+  // The object being operated on was in an invalid state for the operation.
+  kInvalidState,
+  // An invalid argument was passed to a method.
+  kInvalidArgument,
+  // The operation failed for some unspecified reason.
+  kOperationFailed,
+  // The operation was aborted by the user.
+  kOperationAborted,
+  // The operation failed with a mojom_base.mojom.FileError describing the
+  // underlying cause.
+  kFileError,
+};
+
+// Errors reported by File System Access API methods.
+struct FileSystemAccessError {
+  FileSystemAccessStatus status;
+  // Only meaningful when |status| is kFileError.
+  // Conceptually, this should be an optional member, but mojo does not
+  // currently support optionals.
+  mojo_base.mojom.FileError file_error;
+  // Optional extra information describing the error.
+  string message;
+};

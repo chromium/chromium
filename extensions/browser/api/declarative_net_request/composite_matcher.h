@@ -17,6 +17,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 
 namespace content {
+class NavigationHandle;
 class RenderFrameHost;
 }  // namespace content
 
@@ -53,6 +54,9 @@ class CompositeMatcher {
 
   const MatcherList& matchers() const { return matchers_; }
 
+  // Returns a pointer to RulesetMatcher with the given |id| if one is present.
+  const RulesetMatcher* GetMatcherWithID(RulesetID id) const;
+
   // Inserts |matcher|, overwriting any existing RulesetMatcher with the same
   // RulesetID.
   void AddOrUpdateRuleset(std::unique_ptr<RulesetMatcher> matcher);
@@ -84,7 +88,7 @@ class CompositeMatcher {
 
   void OnRenderFrameCreated(content::RenderFrameHost* host);
   void OnRenderFrameDeleted(content::RenderFrameHost* host);
-  void OnDidFinishNavigation(content::RenderFrameHost* host);
+  void OnDidFinishNavigation(content::NavigationHandle* navigation_handle);
 
  private:
   // This must be called whenever |matchers_| are modified.

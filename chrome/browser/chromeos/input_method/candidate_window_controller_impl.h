@@ -65,7 +65,7 @@ class CandidateWindowControllerImpl
   gfx::Rect GetCursorBounds() const override;
   void UpdateLookupTable(const ui::CandidateWindow& candidate_window,
                          bool visible) override;
-  void UpdatePreeditText(const base::string16& text,
+  void UpdatePreeditText(const std::u16string& text,
                          unsigned int cursor,
                          bool visible) override;
   void FocusStateChanged(bool is_focused) override;

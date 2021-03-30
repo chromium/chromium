@@ -6,7 +6,7 @@
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
-#include "ash/autoclick/autoclick_controller.h"
+#include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -15,6 +15,7 @@
 #include "ash/system/accessibility/tray_accessibility.h"
 #include "ash/test/ash_test_base.h"
 #include "base/barrier_closure.h"
+#include "base/callback_helpers.h"
 
 namespace ash {
 

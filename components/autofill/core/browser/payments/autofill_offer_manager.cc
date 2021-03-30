@@ -14,8 +14,10 @@
 #include "base/timer/timer.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -66,6 +68,60 @@ void AutofillOfferManager::UpdateSuggestionsWithOffers(
           l10n_util::GetStringUTF16(IDS_AUTOFILL_OFFERS_CASHBACK);
     }
   }
+  // Sort the suggestions such that suggestions with offers are shown at the
+  // top.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillSortSuggestionsBasedOnOfferPresence)) {
+    std::sort(suggestions.begin(), suggestions.end(),
+              [](const Suggestion& a, const Suggestion& b) {
+                if (!a.offer_label.empty() && b.offer_label.empty()) {
+                  return true;
+                }
+                return false;
+              });
+  }
+}
+
+bool AutofillOfferManager::IsUrlEligible(const GURL& last_committed_url) {
+  GURL last_committed_url_origin = last_committed_url.GetOrigin();
+  return base::ranges::count(eligible_merchant_domains_,
+                             last_committed_url_origin);
+}
+
+std::tuple<std::vector<GURL>, GURL, CreditCard*>
+AutofillOfferManager::GetEligibleDomainsAndCardForOfferForUrl(
+    const GURL& last_committed_url) {
+  std::vector<GURL> linked_domains;
+  std::vector<AutofillOfferData*> offers =
+      personal_data_->GetCreditCardOffers();
+  CreditCard* card = nullptr;
+  // Initialize to an empty url.
+  GURL offer_details_url = GURL();
+
+  // Check which offer is eligible on current domain, then return the full set
+  // of domains for that offer.
+  for (auto* offer : offers) {
+    if (IsOfferEligible(*offer, last_committed_url.GetOrigin())) {
+      for (auto& domain : offer->merchant_domain) {
+        linked_domains.emplace_back(domain);
+      }
+      // Pick first card in the vector. The UI shows only one card's
+      // information.
+      card = offer->eligible_instrument_id.empty()
+                 ? nullptr
+                 : personal_data_->GetCreditCardByInstrumentId(
+                       offer->eligible_instrument_id[0]);
+      offer_details_url = GURL(offer->offer_details_url);
+      break;
+    }
+  }
+
+  // Remove duplicates in domains.
+  base::ranges::sort(linked_domains);
+  linked_domains.erase(base::ranges::unique(linked_domains),
+                       linked_domains.end());
+
+  return std::make_tuple(linked_domains, offer_details_url, card);
 }
 
 void AutofillOfferManager::UpdateEligibleMerchantDomains() {

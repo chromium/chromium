@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/pattern.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -112,6 +113,25 @@ VkResult QueueSubmitHook(VkQueue queue,
   return vkQueueSubmit(queue, submitCount, pSubmits, fence);
 }
 
+VkResult CreateGraphicsPipelinesHook(
+    VkDevice device,
+    VkPipelineCache pipelineCache,
+    uint32_t createInfoCount,
+    const VkGraphicsPipelineCreateInfo* pCreateInfos,
+    const VkAllocationCallbacks* pAllocator,
+    VkPipeline* pPipelines) {
+  base::ScopedClosureRunner uma_runner(base::BindOnce(
+      [](base::Time time) {
+        UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+            "GPU.Vulkan.PipelineCache.vkCreateGraphicsPipelines",
+            base::Time::Now() - time, base::TimeDelta::FromMicroseconds(100),
+            base::TimeDelta::FromMicroseconds(50000), 50);
+      },
+      base::Time::Now()));
+  return vkCreateGraphicsPipelines(device, pipelineCache, createInfoCount,
+                                   pCreateInfos, pAllocator, pPipelines);
+}
+
 void RecordImportingVKSemaphoreIntoGL() {
   g_import_semaphore_into_gl_count++;
 }
@@ -129,7 +149,8 @@ void ReportUMAPerSwapBuffers() {
 }
 
 bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
-                              const GPUInfo& gpu_info) {
+                              const GPUInfo& gpu_info,
+                              std::string enable_by_device_name) {
 // Android uses AHB and SyncFD for interop. They are imported into GL with other
 // API.
 #if !defined(OS_ANDROID)
@@ -160,7 +181,13 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
 
   const auto& device_info = vulkan_info.physical_devices.front();
 
-  constexpr uint32_t kVendorARM = 0x13b5;
+  auto enable_patterns = base::SplitString(
+      enable_by_device_name, "|", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  for (const auto& enable_pattern : enable_patterns) {
+    if (base::MatchPattern(device_info.properties.deviceName, enable_pattern))
+      return true;
+  }
+
   if (device_info.properties.vendorID == kVendorARM) {
     // https://crbug.com/1096222: Display problem with Huawei and Honor devices
     // with Mali GPU. The Mali driver version is < 19.0.0.
@@ -188,27 +215,13 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
     }
   }
 
-  constexpr uint32_t kVendorQualcomm = 0x5143;
+  // https:://crbug.com/1165783: Performance is not yet as good as GL.
   if (device_info.properties.vendorID == kVendorQualcomm) {
-    // Remove "Adreno (TM) " prefix.
-    base::StringPiece device_name(device_info.properties.deviceName);
-    if (!base::StartsWith(device_name, "Adreno (TM) ")) {
-      LOG(ERROR) << "Unexpected device_name " << device_name;
-      return false;
-    }
-    device_name.remove_prefix(12);
-
-    // Older Adreno GPUs are not performant with Vulkan.
-    std::vector<const char*> slow_gpus = {"4??", "50?", "51?"};
-    for (base::StringPiece slow_gpu : slow_gpus) {
-      if (base::MatchPattern(device_name, slow_gpu))
-        return false;
-    }
+    return false;
   }
 
   // https://crbug.com/1122650: Poor performance and untriaged crashes with
   // Imagination GPUs.
-  constexpr uint32_t kVendorImagination = 0x1010;
   if (device_info.properties.vendorID == kVendorImagination)
     return false;
 #endif  // defined(OS_ANDROID)

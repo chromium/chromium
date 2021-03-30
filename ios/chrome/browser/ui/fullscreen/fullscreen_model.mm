@@ -79,7 +79,7 @@ void FullscreenModel::AnimationEndedWithProgress(CGFloat progress) {
 }
 
 void FullscreenModel::SetCollapsedToolbarHeight(CGFloat height) {
-  if (AreCGFloatsEqual(collapsed_toolbar_height_, height))
+  if (AreCGFloatsEqual(GetCollapsedToolbarHeight(), height))
     return;
   DCHECK_GE(height, 0.0);
   collapsed_toolbar_height_ = height;
@@ -91,11 +91,11 @@ void FullscreenModel::SetCollapsedToolbarHeight(CGFloat height) {
 }
 
 CGFloat FullscreenModel::GetCollapsedToolbarHeight() const {
-  return collapsed_toolbar_height_;
+  return GetFreezeToolbarHeight() ? 0 : collapsed_toolbar_height_;
 }
 
 void FullscreenModel::SetExpandedToolbarHeight(CGFloat height) {
-  if (AreCGFloatsEqual(expanded_toolbar_height_, height))
+  if (AreCGFloatsEqual(GetExpandedToolbarHeight(), height))
     return;
   DCHECK_GE(height, 0.0);
   expanded_toolbar_height_ = height;
@@ -107,7 +107,7 @@ void FullscreenModel::SetExpandedToolbarHeight(CGFloat height) {
 }
 
 CGFloat FullscreenModel::GetExpandedToolbarHeight() const {
-  return expanded_toolbar_height_;
+  return GetFreezeToolbarHeight() ? 0 : expanded_toolbar_height_;
 }
 
 void FullscreenModel::SetBottomToolbarHeight(CGFloat height) {
@@ -247,6 +247,22 @@ UIEdgeInsets FullscreenModel::GetWebViewSafeAreaInsets() const {
   return safe_area_insets_;
 }
 
+void FullscreenModel::SetFreezeToolbarHeight(bool freeze_toolbar_height) {
+  if (freeze_toolbar_height_ == freeze_toolbar_height) {
+    return;
+  }
+  freeze_toolbar_height_ = freeze_toolbar_height;
+  base_offset_ = NAN;
+  ScopedIncrementer toolbar_height_incrementer(&observer_callback_count_);
+  for (auto& observer : observers_) {
+    observer.FullscreenModelToolbarHeightsUpdated(this);
+  }
+}
+
+bool FullscreenModel::GetFreezeToolbarHeight() const {
+  return freeze_toolbar_height_;
+}
+
 FullscreenModel::ScrollAction FullscreenModel::ActionForScrollFromOffset(
     CGFloat from_offset) const {
   // Update the base offset but don't recalculate progress if:
@@ -309,7 +325,7 @@ void FullscreenModel::UpdateDisabledCounterForContentHeight() {
     // When Smooth Scrolling is disabled, the scroll view can sometimes be
     // resized to account for the viewport insets after the page has been
     // rendered, so account for the maximum toolbar insets in the threshold.
-    disabling_threshold += expanded_toolbar_height_ + bottom_toolbar_height_;
+    disabling_threshold += GetExpandedToolbarHeight() + bottom_toolbar_height_;
   } else {
     // After reloads, pages whose viewports fit the screen are sometimes resized
     // to account for the safe area insets.  Adding these to the threshold helps

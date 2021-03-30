@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 import 'chrome://new-tab-page/lazy_load.js';
-import {BrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import {assertFocus, createTestProxy, keydown} from 'chrome://test/new_tab_page/test_support.js';
+
+import {NewTabPageProxy, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {assertFocus, keydown} from 'chrome://test/new_tab_page/test_support.js';
+import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
 import {eventToPromise} from 'chrome://test/test_util.m.js';
 
 suite('NewTabPageMostVisitedFocusTest', () => {
@@ -12,10 +14,13 @@ suite('NewTabPageMostVisitedFocusTest', () => {
   let mostVisited;
 
   /**
-   * @implements {BrowserProxy}
+   * @implements {newTabPage.mojom.PageHandlerRemote}
    * @extends {TestBrowserProxy}
    */
-  let testProxy;
+  let handler;
+
+  /** @type {newTabPage.mojom.PageHandlerRemote} */
+  let callbackRouterRemote;
 
   /**
    * @param {string}
@@ -52,24 +57,29 @@ suite('NewTabPageMostVisitedFocusTest', () => {
       };
     });
     const tilesRendered = eventToPromise('dom-change', mostVisited.$.tiles);
-    testProxy.callbackRouterRemote.setMostVisitedInfo({
+    callbackRouterRemote.setMostVisitedInfo({
       customLinksEnabled: true,
       tiles: tiles,
       visible: true,
     });
-    await testProxy.callbackRouterRemote.$.flushForTesting();
+    await callbackRouterRemote.$.flushForTesting();
     await tilesRendered;
   }
 
   setup(() => {
     PolymerTest.clearBody();
 
-    testProxy = createTestProxy();
-    testProxy.setResultMapperFor('matchMedia', () => ({
-                                                 addListener() {},
-                                                 removeListener() {},
-                                               }));
-    BrowserProxy.instance_ = testProxy;
+    WindowProxy.setInstance(TestBrowserProxy.fromClass(WindowProxy));
+    WindowProxy.getInstance().setResultMapperFor(
+        'matchMedia', () => ({
+                        addListener() {},
+                        removeListener() {},
+                      }));
+
+    handler = TestBrowserProxy.fromClass(newTabPage.mojom.PageHandlerRemote);
+    const callbackRouter = new newTabPage.mojom.PageCallbackRouter();
+    NewTabPageProxy.setInstance(handler, callbackRouter);
+    callbackRouterRemote = callbackRouter.$.bindNewPipeAndPassRemote();
 
     mostVisited = document.createElement('ntp-most-visited');
     document.body.appendChild(mostVisited);

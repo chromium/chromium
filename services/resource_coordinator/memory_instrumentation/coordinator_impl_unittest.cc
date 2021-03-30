@@ -9,12 +9,13 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
-#include "base/test/trace_event_analyzer.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "build/build_config.h"
+#include "services/resource_coordinator/public/cpp/memory_instrumentation/tracing_observer_proto.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
+#include "services/tracing/public/cpp/perfetto/producer_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -130,7 +131,7 @@ class CoordinatorImplTest : public testing::Test {
  protected:
   std::unique_ptr<NiceMock<FakeCoordinatorImpl>> coordinator_;
 
-  base::test::SingleThreadTaskEnvironment task_environment_{
+  base::test::TaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
 };
 
@@ -300,7 +301,7 @@ TEST_F(CoordinatorImplTest, QueuedRequest) {
 
   // This variable to be static as the lambda below has to convert to a function
   // pointer rather than a functor.
-  static base::test::SingleThreadTaskEnvironment* task_environment = nullptr;
+  static base::test::TaskEnvironment* task_environment = nullptr;
   task_environment = &task_environment_;
 
   NiceMock<MockClientProcess> client_process_1(this, 1,
@@ -777,7 +778,11 @@ TEST_F(CoordinatorImplTest, VmRegionsForHeapProfiler) {
 // RequestGlobalMemoryDump, as opposite to RequestGlobalMemoryDumpAndAddToTrace,
 // shouldn't add anything into the trace
 TEST_F(CoordinatorImplTest, DumpsArentAddedToTraceUnlessRequested) {
-  using trace_analyzer::Query;
+  CoordinatorImpl* coordinator = CoordinatorImpl::GetInstance();
+  ASSERT_TRUE(coordinator->use_proto_writer_);
+  tracing::DataSourceTester trace_data_tester(
+      reinterpret_cast<TracingObserverProto*>(
+          coordinator->tracing_observer_.get()));
 
   base::RunLoop run_loop;
 
@@ -800,23 +805,28 @@ TEST_F(CoordinatorImplTest, DumpsArentAddedToTraceUnlessRequested) {
                                  IsEmpty()))))
       .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
 
-  trace_analyzer::Start(MemoryDumpManager::kTraceCategory);
+  auto* trace_log = base::trace_event::TraceLog::GetInstance();
+  trace_log->SetEnabled(
+      base::trace_event::TraceConfig(MemoryDumpManager::kTraceCategory,
+                                     base::trace_event::RECORD_UNTIL_FULL),
+      TraceLog::RECORDING_MODE);
+  trace_data_tester.BeginTrace();
   RequestGlobalMemoryDump(MemoryDumpType::EXPLICITLY_TRIGGERED,
                           MemoryDumpLevelOfDetail::DETAILED,
                           MemoryDumpDeterminism::NONE, {}, callback.Get());
   run_loop.Run();
-  auto analyzer = trace_analyzer::Stop();
+  trace_data_tester.EndTracing();
+  trace_log->SetDisabled();
 
-  trace_analyzer::TraceEventVector events;
-  analyzer->FindEvents(
-      trace_analyzer::Query::EventPhaseIs(TRACE_EVENT_PHASE_MEMORY_DUMP),
-      &events);
-
-  ASSERT_EQ(0u, events.size());
+  EXPECT_EQ(trace_data_tester.producer()->GetFinalizedPacketCount(), 0u);
 }
 
 TEST_F(CoordinatorImplTest, DumpsAreAddedToTraceWhenRequested) {
-  using trace_analyzer::Query;
+  CoordinatorImpl* coordinator = CoordinatorImpl::GetInstance();
+  ASSERT_TRUE(coordinator->use_proto_writer_);
+  tracing::DataSourceTester trace_data_tester(
+      reinterpret_cast<TracingObserverProto*>(
+          coordinator->tracing_observer_.get()));
 
   base::RunLoop run_loop;
 
@@ -835,20 +845,21 @@ TEST_F(CoordinatorImplTest, DumpsAreAddedToTraceWhenRequested) {
   EXPECT_CALL(callback, OnCall(true, Ne(0ul)))
       .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
 
-  trace_analyzer::Start(MemoryDumpManager::kTraceCategory);
+  auto* trace_log = base::trace_event::TraceLog::GetInstance();
+  trace_log->SetEnabled(
+      base::trace_event::TraceConfig(MemoryDumpManager::kTraceCategory,
+                                     base::trace_event::RECORD_UNTIL_FULL),
+      TraceLog::RECORDING_MODE);
+  trace_data_tester.BeginTrace();
   RequestGlobalMemoryDumpAndAppendToTrace(callback.Get());
   run_loop.Run();
-  auto analyzer = trace_analyzer::Stop();
+  trace_data_tester.EndTracing();
+  trace_log->SetDisabled();
 
-  trace_analyzer::TraceEventVector events;
-  analyzer->FindEvents(
-      trace_analyzer::Query::EventPhaseIs(TRACE_EVENT_PHASE_MEMORY_DUMP),
-      &events);
-
-  ASSERT_EQ(1u, events.size());
-  ASSERT_TRUE(trace_analyzer::CountMatches(
-      events, trace_analyzer::Query::EventNameIs(MemoryDumpTypeToString(
-                  MemoryDumpType::EXPLICITLY_TRIGGERED))));
+  EXPECT_EQ(trace_data_tester.producer()->GetFinalizedPacketCount(), 1u);
+  const auto* packet = trace_data_tester.producer()->GetFinalizedPacket();
+  EXPECT_EQ(packet->memory_tracker_snapshot().level_of_detail(),
+            perfetto::protos::MemoryTrackerSnapshot::DETAIL_FULL);
 }
 
 TEST_F(CoordinatorImplTest, DumpByPidSuccess) {

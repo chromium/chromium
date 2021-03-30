@@ -8,6 +8,8 @@
 #include <ostream>
 
 #include "base/callback.h"
+#include "base/optional.h"
+#include "base/time/time.h"
 
 namespace chromeos {
 namespace phonehub {
@@ -28,7 +30,9 @@ class NotificationAccessSetupOperation {
  public:
   // Note: Numerical values should not be changed because they must stay in
   // sync with multidevice_notification_access_setup_dialog.js, with the
-  // exception of NOT_STARTED, which has a value of 0.
+  // exception of NOT_STARTED, which has a value of 0. Also, these values are
+  // persisted to logs. Entries should not be renumbered and numeric values
+  // should never be reused. If entries are added, kMaxValue should be updated.
   enum class Status {
     // Connecting to the phone in order to set up notification access.
     kConnecting = 1,
@@ -51,7 +55,9 @@ class NotificationAccessSetupOperation {
 
     // The user's phone is prohibited from granting notification access (e.g.,
     // the user could be using a Work Profile).
-    kProhibitedFromProvidingAccess = 6
+    kProhibitedFromProvidingAccess = 6,
+
+    kMaxValue = kProhibitedFromProvidingAccess
   };
 
   // Returns true if the provided status is the final one for this operation,
@@ -80,6 +86,8 @@ class NotificationAccessSetupOperation {
 
   void NotifyStatusChanged(Status new_status);
 
+  base::Optional<Status> current_status_;
+  const base::TimeTicks start_timestamp_ = base::TimeTicks::Now();
   Delegate* const delegate_;
   base::OnceClosure destructor_callback_;
 };

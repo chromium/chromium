@@ -7,7 +7,8 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
-#include "base/strings/string16.h"
+#include <string>
+
 
 @class NSString;
 

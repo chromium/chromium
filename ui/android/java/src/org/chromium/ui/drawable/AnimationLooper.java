@@ -4,7 +4,6 @@
 
 package org.chromium.ui.drawable;
 
-import android.animation.ValueAnimator;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -17,6 +16,7 @@ import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.compat.ApiHelperForO;
 
 /**
  * Encapsulates the logic to loop animated drawables from both Android Framework.
@@ -70,7 +70,7 @@ public class AnimationLooper {
         if (sAreAnimatorsEnabledForTests != null) return sAreAnimatorsEnabledForTests;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            return ValueAnimator.areAnimatorsEnabled();
+            return ApiHelperForO.areAnimatorsEnabled();
         } else {
             return Settings.Global.getFloat(
                            ContextUtils.getApplicationContext().getContentResolver(),

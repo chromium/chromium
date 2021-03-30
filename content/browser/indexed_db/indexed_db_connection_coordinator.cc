@@ -12,7 +12,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scope.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
 #include "components/services/storage/indexed_db/scopes/scopes_lock_manager.h"
@@ -31,7 +30,6 @@
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/leveldatabase/env_chromium.h"
 
-using base::ASCIIToUTF16;
 using base::NumberToString16;
 using blink::IndexedDBDatabaseMetadata;
 using leveldb::Status;
@@ -146,14 +144,13 @@ class IndexedDBConnectionCoordinator::OpenRequest
       saved_leveldb_status_ = db_->OpenInternal();
       if (!saved_leveldb_status_.ok()) {
         // TODO(jsbell): Consider including sanitized leveldb status message.
-        base::string16 message;
+        std::u16string message;
         if (pending_->version == IndexedDBDatabaseMetadata::NO_VERSION) {
-          message = ASCIIToUTF16(
-              "Internal error opening database with no version specified.");
-        } else {
           message =
-              ASCIIToUTF16("Internal error opening database with version ") +
-              NumberToString16(pending_->version);
+              u"Internal error opening database with no version specified.";
+        } else {
+          message = u"Internal error opening database with version " +
+                    NumberToString16(pending_->version);
         }
         pending_->callbacks->OnError(IndexedDBDatabaseError(
             blink::mojom::IDBException::kUnknownError, message));
@@ -202,10 +199,9 @@ class IndexedDBConnectionCoordinator::OpenRequest
       DCHECK(!is_new_database);
       pending_->callbacks->OnError(IndexedDBDatabaseError(
           blink::mojom::IDBException::kVersionError,
-          ASCIIToUTF16("The requested version (") +
-              NumberToString16(pending_->version) +
-              ASCIIToUTF16(") is less than the existing version (") +
-              NumberToString16(db_->metadata_.version) + ASCIIToUTF16(").")));
+          u"The requested version (" + NumberToString16(pending_->version) +
+              u") is less than the existing version (" +
+              NumberToString16(db_->metadata_.version) + u")."));
       state_ = RequestState::kDone;
       return;
     }

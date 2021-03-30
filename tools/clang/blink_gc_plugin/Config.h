@@ -118,6 +118,10 @@ class Config {
            name == "ThreadSafeRefCounted";
   }
 
+  static bool IsCppgcGCBase(llvm::StringRef name) {
+    return name == "GarbageCollectedBase";
+  }
+
   static bool IsGCSimpleBase(llvm::StringRef name) {
     return name == "GarbageCollected";
   }

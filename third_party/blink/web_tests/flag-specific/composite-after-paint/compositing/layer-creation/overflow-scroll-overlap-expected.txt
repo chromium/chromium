@@ -16,7 +16,8 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='scroller' class='overflow'",
       "position": [20, 20],
-      "bounds": [306, 206]
+      "bounds": [306, 206],
+      "contentsOpaqueForText": true
     }
   ],
   "transforms": [

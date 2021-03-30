@@ -1,0 +1,92 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This is a .pyl, or "Python Literal", file. You can treat it just like a
+# .json file, with the following exceptions:
+# * all keys must be quoted (use single quotes, please);
+# * comments are allowed, using '#' syntax; and
+# * trailing commas are allowed.
+
+# See README.md for usage.
+{
+  # This is the config name.
+  'console_error': {
+    'v2_metric': 'consoleErrorMetric',
+    'v3_metric': 'console_error_metric',
+    # Optional precision value for comparing float. Applies to all histograms.
+    # This is 1e-3 by default.
+    # Using 1e-7 for console_error because these are technically ints.
+    'float_precision': 1e-7,
+    'histogram_mappings': {
+      # mappings are 'v2_histogram: 'v3_histogram'.
+      'console:error:all': 'console_error::all_errors',
+      'console:error:js': 'console_error::js_errors',
+      # We can also override precision for a single histogram.
+      'console:error:network': ('console_error::network_errors', 1e-6),
+    },
+  },
+  'reported_by_page': {
+    'v2_metric': 'reportedByPageMetric',
+    'v3_metric': 'reported_by_page',
+    # 1 microsecond precision - default for ms unit histograms.
+    'float_precision': 1e-3,
+    'histogram_mappings': {
+      # mappings are 'v2_histogram: 'v3_histogram'.
+      'reported_by_page:time_to_viewable': 'reported_by_page::time_to_viewable',
+      'reported_by_page:time_to_interactive': 'reported_by_page::time_to_interactive',
+      'reported_by_page:benchmark_time': 'reported_by_page::benchmark_time',
+    },
+  },
+  'blink_gc_metric': {
+    'v2_metric': 'blinkGcMetric',
+    'v3_metric': 'blink_gc_metric',
+    # Precision is lower than a microsecond because the way cpu time is
+    # computed in TBMv3 leads to small differences. See b/178379929.
+    'float_precision': 1e-2,
+    'histogram_mappings': {
+      # mappings are 'v2_histogram: 'v3_histogram'.
+      'blink-gc-atomic-pause-mark-epilogue': 'blink_gc::blink_gc_atomic_pause_mark_epilogue',
+      'blink:gc:main_thread:cycle:full:atomic:mark:epilogue': 'blink_gc::blink_gc_main_thread_cycle_full_atomic_mark_epilogue',
+      'blink-gc-atomic-pause-mark-prologue': 'blink_gc::blink_gc_atomic_pause_mark_prologue',
+      'blink:gc:main_thread:cycle:full:atomic:mark:prologue': 'blink_gc::blink_gc_main_thread_cycle_full_atomic_mark_prologue',
+      'blink-gc-atomic-pause-mark-roots': 'blink_gc::blink_gc_atomic_pause_mark_roots',
+      'blink:gc:main_thread:cycle:full:atomic:mark:roots': 'blink_gc::blink_gc_main_thread_cycle_full_atomic_mark_roots',
+      'blink-gc-atomic-pause-sweep-and-compact': 'blink_gc::blink_gc_atomic_pause_sweep_and_compact',
+      'blink:gc:main_thread:cycle:full:atomic:sweep:compact': 'blink_gc::blink_gc_main_thread_cycle_full_atomic_sweep_compact',
+      'blink-gc-complete-sweep': 'blink_gc::blink_gc_complete_sweep',
+      'blink:gc:main_thread:cycle:full:sweep:complete': 'blink_gc::blink_gc_main_thread_cycle_full_sweep_complete',
+      'blink-gc-incremental-start': 'blink_gc::blink_gc_incremental_start',
+      'blink:gc:main_thread:cycle:full:incremental:mark:start': 'blink_gc::blink_gc_main_thread_cycle_full_incremental_mark_start',
+      'blink-gc-incremental-step': 'blink_gc::blink_gc_incremental_step',
+      'blink:gc:main_thread:cycle:full:incremental:mark:step': 'blink_gc::blink_gc_main_thread_cycle_full_incremental_mark_step',
+      'blink-gc-sweep-allocation': 'blink_gc::blink_gc_sweep_allocation',
+      'blink:gc:main_thread:cycle:full:sweep:on_allocation': 'blink_gc::blink_gc_main_thread_cycle_full_sweep_on_allocation',
+      'blink-gc-sweep-task-foreground': 'blink_gc::blink_gc_sweep_task_foreground',
+      'blink:gc:main_thread:cycle:full:sweep:idle': 'blink_gc::blink_gc_main_thread_cycle_full_sweep_idle',
+      'blink-gc-unified-marking-by-v8': 'blink_gc::blink_gc_unified_marking_by_v8',
+      'unified:gc:main_thread:cycle:full:mark:step': 'blink_gc::unified_gc_main_thread_cycle_full_mark_step',
+      'blink-gc-atomic-pause': 'blink_gc::blink_gc_atomic_pause',
+      'blink:gc:main_thread:cycle:full:atomic': 'blink_gc::blink_gc_main_thread_cycle_full_atomic',
+      'blink-gc-atomic-pause-mark-transitive-closure': 'blink_gc::blink_gc_atomic_pause_mark_transitive_closure',
+      'blink:gc:main_thread:cycle:full:atomic:mark:transitive_closure': 'blink_gc::blink_gc_main_thread_cycle_full_atomic_mark_transitive_closure',
+      'blink-gc-total': 'blink_gc::blink_gc_total',
+      'blink:gc:main_thread:cycle:full': 'blink_gc::blink_gc_main_thread_cycle_full',
+      'blink-gc-mark-roots': 'blink_gc::blink_gc_mark_roots',
+      'blink:gc:main_thread:cycle:full:mark:roots': 'blink_gc::blink_gc_main_thread_cycle_full_mark_roots',
+      'blink-gc-mark-transitive-closure': 'blink_gc::blink_gc_mark_transitive_closure',
+      'blink:gc:main_thread:cycle:full:mark:transitive_closure': 'blink_gc::blink_gc_main_thread_cycle_full_mark_transitive_closure',
+      'blink-gc-mark-foreground': 'blink_gc::blink_gc_mark_foreground',
+      'blink:gc:main_thread:cycle:full:mark': 'blink_gc::blink_gc_main_thread_cycle_full_mark',
+      'blink-gc-mark-foreground-forced': 'blink_gc::blink_gc_mark_foreground_forced',
+      'blink:gc:main_thread:cycle:full:mark:forced': 'blink_gc::blink_gc_main_thread_cycle_full_mark_forced',
+      'blink-gc-mark-background': 'blink_gc::blink_gc_mark_background',
+      'blink:gc:concurrent_thread:cycle:full:mark': 'blink_gc::blink_gc_concurrent_thread_cycle_full_mark',
+      'blink-gc-sweep-foreground': 'blink_gc::blink_gc_sweep_foreground',
+      'blink:gc:main_thread:cycle:full:sweep': 'blink_gc::blink_gc_main_thread_cycle_full_sweep',
+      'blink-gc-sweep-background': 'blink_gc::blink_gc_sweep_background',
+      'blink:gc:concurrent_thread:cycle:full:sweep': 'blink_gc::blink_gc_concurrent_thread_cycle_full_sweep',
+      'unified-gc-total': 'blink_gc::unified_gc_total',
+    },
+  },
+}

@@ -83,8 +83,6 @@ IsolateHolder::IsolateHolder(
     params.only_terminate_in_safe_scope = true;
     params.embedder_wrapper_type_index = kWrapperInfoIndex;
     params.embedder_wrapper_object_index = kEncodedValueIndex;
-    params.supported_import_assertions = {kSupportedImportAssertions.begin(),
-                                          kSupportedImportAssertions.end()};
 
     v8::Isolate::Initialize(isolate_, params);
   }
@@ -119,7 +117,5 @@ void IsolateHolder::EnableIdleTasks(
   DCHECK(isolate_data_.get());
   isolate_data_->EnableIdleTasks(std::move(idle_task_runner));
 }
-
-constexpr std::array<const char*, 1> IsolateHolder::kSupportedImportAssertions;
 
 }  // namespace gin

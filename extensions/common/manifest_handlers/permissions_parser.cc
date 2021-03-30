@@ -88,7 +88,7 @@ bool CanSpecifyHostPermission(const Extension* extension,
 // manifest into |hosts|.
 bool ParseHostsFromJSON(Extension* extension,
                         std::vector<std::string>* hosts,
-                        base::string16* error) {
+                        std::u16string* error) {
   if (!extension->manifest()->HasKey(keys::kHostPermissions))
     return true;
 
@@ -200,7 +200,7 @@ bool ParseHelper(Extension* extension,
                  const char* key,
                  APIPermissionSet* api_permissions,
                  URLPatternSet* host_permissions,
-                 base::string16* error) {
+                 std::u16string* error) {
   if (!extension->manifest()->HasKey(key))
     return true;
 
@@ -394,7 +394,7 @@ PermissionsParser::PermissionsParser() {
 PermissionsParser::~PermissionsParser() {
 }
 
-bool PermissionsParser::Parse(Extension* extension, base::string16* error) {
+bool PermissionsParser::Parse(Extension* extension, std::u16string* error) {
   initial_required_permissions_.reset(new InitialPermissions);
   if (!ParseHelper(extension,
                    keys::kPermissions,
@@ -470,10 +470,11 @@ void PermissionsParser::Finalize(Extension* extension) {
 
 // static
 void PermissionsParser::AddAPIPermission(Extension* extension,
-                                         APIPermission::ID permission) {
+                                         mojom::APIPermissionID permission) {
   DCHECK(extension->permissions_parser());
   extension->permissions_parser()
-      ->initial_required_permissions_->api_permissions.insert(permission);
+      ->initial_required_permissions_->api_permissions.insert(
+          static_cast<mojom::APIPermissionID>(permission));
 }
 
 // static
@@ -487,11 +488,11 @@ void PermissionsParser::AddAPIPermission(Extension* extension,
 
 // static
 bool PermissionsParser::HasAPIPermission(const Extension* extension,
-                                         APIPermission::ID permission) {
+                                         mojom::APIPermissionID permission) {
   DCHECK(extension->permissions_parser());
   return extension->permissions_parser()
              ->initial_required_permissions_->api_permissions.count(
-                 permission) > 0;
+                 static_cast<APIPermission::ID>(permission)) > 0;
 }
 
 // static

@@ -18,7 +18,7 @@
 #include "components/invalidation/public/invalidator_state.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
-namespace syncer {
+namespace invalidation {
 
 class TopicInvalidationMap;
 
@@ -66,9 +66,8 @@ class FCMInvalidationListener
   void ClearInstanceIDToken();
 
   // AckHandler implementation.
-  void Acknowledge(const Topic& topic,
-                   const syncer::AckHandle& handle) override;
-  void Drop(const Topic& topic, const syncer::AckHandle& handle) override;
+  void Acknowledge(const Topic& topic, const AckHandle& handle) override;
+  void Drop(const Topic& topic, const AckHandle& handle) override;
 
   // FCMSyncNetworkChannel::Observer implementation.
   void OnFCMChannelStateChanged(FcmChannelState state) override;
@@ -151,6 +150,6 @@ class FCMInvalidationListener
   base::WeakPtrFactory<FCMInvalidationListener> weak_factory_{this};
 };
 
-}  // namespace syncer
+}  // namespace invalidation
 
 #endif  // COMPONENTS_INVALIDATION_IMPL_FCM_INVALIDATION_LISTENER_H_

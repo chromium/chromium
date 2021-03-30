@@ -11,7 +11,6 @@
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/move_to_account_store_bubble_controller.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
-#include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
@@ -31,6 +30,8 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
@@ -94,6 +95,7 @@ void BackgroundBorderAdderImageSource::Draw(gfx::Canvas* canvas) {
 // icon. However, badge could be updated via the UpdateBadge() method.
 class ImageWithBadge : public views::ImageView {
  public:
+  METADATA_HEADER(ImageWithBadge);
   // Constructs a View hierarchy with the a badge positioned in the bottom-right
   // corner of |main_image|. In RTL mode the badge is positioned in the
   // bottom-left corner.
@@ -107,8 +109,8 @@ class ImageWithBadge : public views::ImageView {
   void UpdateBadge(const gfx::ImageSkia& badge_image);
 
  private:
-  gfx::ImageSkia GetMainImage();
-  gfx::ImageSkia GetBadge();
+  gfx::ImageSkia GetMainImage() const;
+  gfx::ImageSkia GetBadge() const;
   void Render();
 
   const gfx::VectorIcon* main_vector_icon_ = nullptr;
@@ -132,7 +134,7 @@ void ImageWithBadge::UpdateBadge(const gfx::ImageSkia& badge_image) {
   Render();
 }
 
-gfx::ImageSkia ImageWithBadge::GetMainImage() {
+gfx::ImageSkia ImageWithBadge::GetMainImage() const {
   if (main_image_skia_)
     return main_image_skia_.value();
   DCHECK(main_vector_icon_);
@@ -141,7 +143,7 @@ gfx::ImageSkia ImageWithBadge::GetMainImage() {
   return gfx::CreateVectorIcon(*main_vector_icon_, kImageSize, color);
 }
 
-gfx::ImageSkia ImageWithBadge::GetBadge() {
+gfx::ImageSkia ImageWithBadge::GetBadge() const {
   if (badge_image_skia_)
     return badge_image_skia_.value();
   // If there is no badge set, fallback to the default globe icon.
@@ -180,21 +182,8 @@ void ImageWithBadge::Render() {
   SetImage(badged_image);
 }
 
-std::unique_ptr<views::View> CreateHeaderImage(int image_id) {
-  auto image_view = std::make_unique<NonAccessibleImageView>();
-  image_view->SetImage(
-      *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(image_id));
-  gfx::Size preferred_size = image_view->GetPreferredSize();
-  if (preferred_size.width()) {
-    preferred_size = gfx::ScaleToRoundedSize(
-        preferred_size,
-        static_cast<float>(ChromeLayoutProvider::Get()->GetDistanceMetric(
-            views::DISTANCE_BUBBLE_PREFERRED_WIDTH)) /
-            preferred_size.width());
-    image_view->SetImageSize(preferred_size);
-  }
-  return image_view;
-}
+BEGIN_METADATA(ImageWithBadge, views::ImageView)
+END_METADATA
 
 std::unique_ptr<views::Label> CreateDescription() {
   auto description = std::make_unique<views::Label>(
@@ -211,6 +200,7 @@ std::unique_ptr<views::Label> CreateDescription() {
 // that a password is being moved from the device to the account.
 class MoveToAccountStoreBubbleView::MovingBannerView : public views::View {
  public:
+  METADATA_HEADER(MovingBannerView);
   MovingBannerView(std::unique_ptr<ImageWithBadge> from_image,
                    std::unique_ptr<ImageWithBadge> to_image);
   ~MovingBannerView() override = default;
@@ -252,6 +242,9 @@ void MoveToAccountStoreBubbleView::MovingBannerView::UpdateFavicon(
   from_view->UpdateBadge(favicon);
   to_view->UpdateBadge(favicon);
 }
+
+BEGIN_METADATA(MoveToAccountStoreBubbleView, MovingBannerView, views::View)
+END_METADATA
 
 MoveToAccountStoreBubbleView::MoveToAccountStoreBubbleView(
     content::WebContents* web_contents,
@@ -316,14 +309,9 @@ MoveToAccountStoreBubbleView::~MoveToAccountStoreBubbleView() = default;
 void MoveToAccountStoreBubbleView::AddedToWidget() {
   static_cast<views::Label*>(GetBubbleFrameView()->title())
       ->SetAllowCharacterBreak(true);
-}
 
-void MoveToAccountStoreBubbleView::OnThemeChanged() {
-  PasswordBubbleViewBase::OnThemeChanged();
-  GetBubbleFrameView()->SetHeaderView(CreateHeaderImage(
-      color_utils::IsDark(GetBubbleFrameView()->GetBackgroundColor())
-          ? IDR_SAVE_PASSWORD_MULTI_DEVICE_DARK
-          : IDR_SAVE_PASSWORD_MULTI_DEVICE));
+  SetBubbleHeader(IDR_SAVE_PASSWORD_MULTI_DEVICE,
+                  IDR_SAVE_PASSWORD_MULTI_DEVICE_DARK);
 }
 
 MoveToAccountStoreBubbleController*

@@ -10,19 +10,38 @@
 
 namespace blink {
 
-void RecordScrollReasonMetric(WebGestureDevice device, uint32_t reason) {
-  constexpr uint32_t kMainThreadScrollingReasonEnumMax =
-      cc::MainThreadScrollingReason::kMainThreadScrollingReasonCount + 1;
-  // Note the use of `UMA_HISTOGRAM_EXACT_LINEAR` here. This is because the enum
-  // defined in cc::MainThreadScrollingReason defines both bitmasks and bitmask
-  // positions and doesn't correspond well to how the UMA helpers for
-  // enumerations are typically used.
+namespace {
+
+constexpr uint32_t kMax =
+    cc::MainThreadScrollingReason::kMainThreadScrollingReasonLast;
+
+static void RecordOneScrollReasonMetric(WebGestureDevice device,
+                                        uint32_t reason_index) {
   if (device == WebGestureDevice::kTouchscreen) {
     UMA_HISTOGRAM_EXACT_LINEAR("Renderer4.MainThreadGestureScrollReason",
-                               reason, kMainThreadScrollingReasonEnumMax);
+                               reason_index, kMax + 1);
   } else {
-    UMA_HISTOGRAM_EXACT_LINEAR("Renderer4.MainThreadWheelScrollReason", reason,
-                               kMainThreadScrollingReasonEnumMax);
+    UMA_HISTOGRAM_EXACT_LINEAR("Renderer4.MainThreadWheelScrollReason",
+                               reason_index, kMax + 1);
+  }
+}
+
+}  // anonymous namespace
+
+void RecordScrollReasonsMetric(WebGestureDevice device, uint32_t reasons) {
+  if (!reasons) {
+    RecordOneScrollReasonMetric(device, 0);
+    return;
+  }
+
+  // The enum in cc::MainThreadScrollingReason simultaneously defines actual
+  // bitmask values and indices into the bitmask, but kNotScrollingMain is
+  // recorded in the histograms as value 0, so the 0th bit should never be used.
+  DCHECK(!(reasons & (1 << 0)));
+
+  for (uint32_t i = 1; i <= kMax; ++i) {
+    if (reasons & (1 << i))
+      RecordOneScrollReasonMetric(device, i);
   }
 }
 

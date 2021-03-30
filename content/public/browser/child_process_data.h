@@ -5,8 +5,9 @@
 #ifndef CONTENT_PUBLIC_BROWSER_CHILD_PROCESS_DATA_H_
 #define CONTENT_PUBLIC_BROWSER_CHILD_PROCESS_DATA_H_
 
+#include <string>
+
 #include "base/process/process.h"
-#include "base/strings/string16.h"
 #include "content/common/content_export.h"
 #include "sandbox/policy/sandbox_type.h"
 
@@ -20,7 +21,7 @@ struct CONTENT_EXPORT ChildProcessData {
 
   // The name of the process.  i.e. for plugins it might be Flash, while for
   // for workers it might be the domain that it's from.
-  base::string16 name;
+  std::u16string name;
 
   // The non-localized name of the process used for metrics reporting.
   std::string metrics_name;

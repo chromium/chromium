@@ -47,7 +47,7 @@ class TabSearchButtonBrowserTest : public InProcessBrowserTest {
     return browser_view()->GetTabSearchButton();
   }
 
-  WebUIBubbleManagerBase* bubble_manager() {
+  WebUIBubbleManager* bubble_manager() {
     return tab_search_button()->webui_bubble_manager_for_testing();
   }
 

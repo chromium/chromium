@@ -7,13 +7,24 @@
 #include <cmath>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
+#include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/raster_interface.h"
 #include "media/base/status_codes.h"
 #include "media/base/video_frame.h"
+#include "media/base/video_frame_pool.h"
 #include "third_party/libyuv/include/libyuv.h"
+#include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
+#include "third_party/skia/include/core/SkSurface.h"
+#include "third_party/skia/include/core/SkYUVAPixmaps.h"
+#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
 namespace media {
@@ -47,6 +58,202 @@ void FillRegionOutsideVisibleRect(uint8_t* data,
          ++i, dst += stride)
       std::memcpy(dst, src, coded_width);
   }
+}
+
+std::pair<SkColorType, GrGLenum> GetSkiaAndGlColorTypesForPlane(
+    VideoPixelFormat format,
+    size_t plane) {
+  // TODO(eugene): There is some strange channel switch during RGB readback.
+  // When frame's pixel format matches GL and Skia color types we get reversed
+  // channels. But why?
+  switch (format) {
+    case PIXEL_FORMAT_NV12:
+      if (plane == VideoFrame::kUVPlane)
+        return {kR8G8_unorm_SkColorType, GL_RG8_EXT};
+      if (plane == VideoFrame::kYPlane)
+        return {kAlpha_8_SkColorType, GL_R8_EXT};
+      break;
+    case PIXEL_FORMAT_XBGR:
+      if (plane == VideoFrame::kARGBPlane)
+        return {kRGBA_8888_SkColorType, GL_RGBA8_OES};
+      break;
+    case PIXEL_FORMAT_ABGR:
+      if (plane == VideoFrame::kARGBPlane)
+        return {kRGBA_8888_SkColorType, GL_RGBA8_OES};
+      break;
+    case PIXEL_FORMAT_XRGB:
+      if (plane == VideoFrame::kARGBPlane)
+        return {kBGRA_8888_SkColorType, GL_BGRA8_EXT};
+      break;
+    case PIXEL_FORMAT_ARGB:
+      if (plane == VideoFrame::kARGBPlane)
+        return {kBGRA_8888_SkColorType, GL_BGRA8_EXT};
+      break;
+    default:
+      break;
+  }
+  NOTREACHED();
+  return {kUnknown_SkColorType, 0};
+}
+
+scoped_refptr<VideoFrame> ReadbackTextureBackedFrameToMemorySyncGLES(
+    const VideoFrame& txt_frame,
+    gpu::raster::RasterInterface* ri,
+    GrDirectContext* gr_context,
+    VideoFramePool* pool) {
+  DCHECK(gr_context);
+
+  if (txt_frame.NumTextures() > 2 || txt_frame.NumTextures() < 1) {
+    DLOG(ERROR) << "Readback is not possible for this frame: "
+                << txt_frame.AsHumanReadableString();
+    return nullptr;
+  }
+
+  VideoPixelFormat result_format = txt_frame.format();
+  if (txt_frame.NumTextures() == 1 && result_format == PIXEL_FORMAT_NV12) {
+    // Even though |txt_frame| format is NV12 and it is NV12 in GPU memory,
+    // the texture is a RGB view that is produced by a shader on the fly.
+    // So we currently we currently can only read it back as RGB.
+    result_format = PIXEL_FORMAT_ARGB;
+  }
+
+  scoped_refptr<VideoFrame> result =
+      pool
+          ? pool->CreateFrame(result_format, txt_frame.coded_size(),
+                              txt_frame.visible_rect(),
+                              txt_frame.natural_size(), txt_frame.timestamp())
+          : VideoFrame::CreateFrame(
+                result_format, txt_frame.coded_size(), txt_frame.visible_rect(),
+                txt_frame.natural_size(), txt_frame.timestamp());
+  result->set_color_space(txt_frame.ColorSpace());
+  result->metadata().MergeMetadataFrom(txt_frame.metadata());
+
+  size_t planes = VideoFrame::NumPlanes(result->format());
+  for (size_t plane = 0; plane < planes; plane++) {
+    const gpu::MailboxHolder& holder = txt_frame.mailbox_holder(plane);
+    if (holder.mailbox.IsZero())
+      return nullptr;
+    ri->WaitSyncTokenCHROMIUM(holder.sync_token.GetConstData());
+
+    int width = VideoFrame::Columns(plane, result->format(),
+                                    result->coded_size().width());
+    int height = result->rows(plane);
+
+    auto texture_id = ri->CreateAndConsumeForGpuRaster(holder.mailbox);
+    if (holder.mailbox.IsSharedImage()) {
+      ri->BeginSharedImageAccessDirectCHROMIUM(
+          texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
+    }
+
+    auto cleanup_fn = [](GLuint texture_id, bool shared,
+                         gpu::raster::RasterInterface* ri) {
+      if (shared)
+        ri->EndSharedImageAccessDirectCHROMIUM(texture_id);
+      ri->DeleteGpuRasterTexture(texture_id);
+    };
+    base::ScopedClosureRunner cleanup(base::BindOnce(
+        cleanup_fn, texture_id, holder.mailbox.IsSharedImage(), ri));
+
+    GrGLenum texture_format;
+    SkColorType sk_color_type;
+    std::tie(sk_color_type, texture_format) =
+        GetSkiaAndGlColorTypesForPlane(result->format(), plane);
+    GrGLTextureInfo gl_texture_info;
+    gl_texture_info.fID = texture_id;
+    gl_texture_info.fTarget = holder.texture_target;
+    gl_texture_info.fFormat = texture_format;
+
+    GrBackendTexture texture(width, height, GrMipMapped::kNo, gl_texture_info);
+    auto image = SkImage::MakeFromTexture(
+        gr_context, texture, kTopLeft_GrSurfaceOrigin, sk_color_type,
+        kOpaque_SkAlphaType, nullptr /* colorSpace */);
+
+    if (!image) {
+      DLOG(ERROR) << "Can't create SkImage from texture!"
+                  << " plane:" << plane;
+      return nullptr;
+    }
+
+    auto info =
+        SkImageInfo::Make(width, height, sk_color_type, kOpaque_SkAlphaType);
+    SkPixmap pixmap(info, result->data(plane), result->row_bytes(plane));
+    if (!image->readPixels(gr_context, pixmap, 0, 0,
+                           SkImage::kDisallow_CachingHint)) {
+      DLOG(ERROR) << "Plane readback failed."
+                  << " plane:" << plane << " width: " << width
+                  << " height: " << height
+                  << " minRowBytes: " << info.minRowBytes();
+      return nullptr;
+    }
+  }
+
+  return result;
+}
+
+scoped_refptr<VideoFrame> ReadbackTextureBackedFrameToMemorySyncOOP(
+    const VideoFrame& txt_frame,
+    gpu::raster::RasterInterface* ri,
+    VideoFramePool* pool) {
+  if (txt_frame.NumTextures() > 2 || txt_frame.NumTextures() < 1) {
+    DLOG(ERROR) << "Readback is not possible for this frame: "
+                << txt_frame.AsHumanReadableString();
+    return nullptr;
+  }
+
+  VideoPixelFormat result_format = txt_frame.format();
+  if (txt_frame.NumTextures() == 1 && result_format == PIXEL_FORMAT_NV12) {
+    // Even though |txt_frame| format is NV12 and it is NV12 in GPU memory,
+    // the texture is a RGB view that is produced by a shader on the fly.
+    // So we currently we currently can only read it back as RGB.
+    result_format = PIXEL_FORMAT_ARGB;
+  }
+
+  scoped_refptr<VideoFrame> result =
+      pool
+          ? pool->CreateFrame(result_format, txt_frame.coded_size(),
+                              txt_frame.visible_rect(),
+                              txt_frame.natural_size(), txt_frame.timestamp())
+          : VideoFrame::CreateFrame(
+                result_format, txt_frame.coded_size(), txt_frame.visible_rect(),
+                txt_frame.natural_size(), txt_frame.timestamp());
+  result->set_color_space(txt_frame.ColorSpace());
+  result->metadata().MergeMetadataFrom(txt_frame.metadata());
+
+  size_t planes = VideoFrame::NumPlanes(result->format());
+  for (size_t plane = 0; plane < planes; plane++) {
+    const gpu::MailboxHolder& holder = txt_frame.mailbox_holder(plane);
+    if (holder.mailbox.IsZero()) {
+      DLOG(ERROR) << "Can't readback video frame with Zero texture on plane "
+                  << plane;
+      return nullptr;
+    }
+    ri->WaitSyncTokenCHROMIUM(holder.sync_token.GetConstData());
+
+    int width = VideoFrame::Columns(plane, result->format(),
+                                    result->coded_size().width());
+    int height = result->rows(plane);
+
+    GrGLenum texture_format;
+    SkColorType sk_color_type;
+    std::tie(sk_color_type, texture_format) =
+        GetSkiaAndGlColorTypesForPlane(result->format(), plane);
+
+    auto info =
+        SkImageInfo::Make(width, height, sk_color_type, kOpaque_SkAlphaType);
+
+    ri->ReadbackImagePixels(holder.mailbox, info, info.minRowBytes(), 0, 0,
+                            result->data(plane));
+    if (ri->GetError() != GL_NO_ERROR) {
+      DLOG(ERROR) << "Plane readback failed."
+                  << " plane:" << plane << " width: " << width
+                  << " height: " << height
+                  << " minRowBytes: " << info.minRowBytes()
+                  << " error: " << ri->GetError();
+      return nullptr;
+    }
+  }
+
+  return result;
 }
 
 }  // namespace
@@ -426,7 +633,7 @@ scoped_refptr<VideoFrame> ConvertToMemoryMappedFrame(
   }
 
   mapped_frame->set_color_space(video_frame->ColorSpace());
-  mapped_frame->metadata()->MergeMetadataFrom(video_frame->metadata());
+  mapped_frame->metadata().MergeMetadataFrom(video_frame->metadata());
 
   // Pass |video_frame| so that it outlives |mapped_frame| and the mapped buffer
   // is unmapped on destruction.
@@ -446,8 +653,6 @@ scoped_refptr<VideoFrame> WrapAsI420VideoFrame(
 
   scoped_refptr<VideoFrame> wrapped_frame = VideoFrame::WrapVideoFrame(
       frame, PIXEL_FORMAT_I420, frame->visible_rect(), frame->natural_size());
-  if (!wrapped_frame)
-    return nullptr;
   return wrapped_frame;
 }
 
@@ -500,12 +705,89 @@ bool I420CopyWithPadding(const VideoFrame& src_frame, VideoFrame* dst_frame) {
   return true;
 }
 
+scoped_refptr<VideoFrame> ReadbackTextureBackedFrameToMemorySync(
+    const VideoFrame& txt_frame,
+    gpu::raster::RasterInterface* ri,
+    GrDirectContext* gr_context,
+    VideoFramePool* pool) {
+  DCHECK(ri);
+
+  if (gr_context) {
+    return ReadbackTextureBackedFrameToMemorySyncGLES(txt_frame, ri, gr_context,
+                                                      pool);
+  }
+  return ReadbackTextureBackedFrameToMemorySyncOOP(txt_frame, ri, pool);
+}
+
 Status ConvertAndScaleFrame(const VideoFrame& src_frame,
                             VideoFrame& dst_frame,
                             std::vector<uint8_t>& tmp_buf) {
   constexpr auto kDefaultFiltering = libyuv::kFilterBox;
   if (!src_frame.IsMappable() || !dst_frame.IsMappable())
     return Status(StatusCode::kUnsupportedFrameFormatError);
+
+  if ((dst_frame.format() == PIXEL_FORMAT_I420 ||
+       dst_frame.format() == PIXEL_FORMAT_NV12) &&
+      (src_frame.format() == PIXEL_FORMAT_XBGR ||
+       src_frame.format() == PIXEL_FORMAT_XRGB ||
+       src_frame.format() == PIXEL_FORMAT_ABGR ||
+       src_frame.format() == PIXEL_FORMAT_ARGB)) {
+    // libyuv's RGB to YUV methods always output BT.601.
+    dst_frame.set_color_space(gfx::ColorSpace::CreateREC601());
+
+    size_t src_stride = src_frame.stride(VideoFrame::kARGBPlane);
+    const uint8_t* src_data = src_frame.visible_data(VideoFrame::kARGBPlane);
+    if (src_frame.visible_rect() != dst_frame.visible_rect()) {
+      size_t tmp_buffer_size = VideoFrame::AllocationSize(
+          src_frame.format(), dst_frame.coded_size());
+      if (tmp_buf.size() < tmp_buffer_size)
+        tmp_buf.resize(tmp_buffer_size);
+
+      size_t stride =
+          VideoFrame::RowBytes(VideoFrame::kARGBPlane, src_frame.format(),
+                               dst_frame.visible_rect().width());
+      int error = libyuv::ARGBScale(
+          src_data, src_stride, src_frame.visible_rect().width(),
+          src_frame.visible_rect().height(), tmp_buf.data(), stride,
+          dst_frame.visible_rect().width(), dst_frame.visible_rect().height(),
+          kDefaultFiltering);
+      if (error)
+        return Status(StatusCode::kInvalidArgument);
+      src_data = tmp_buf.data();
+      src_stride = stride;
+    }
+
+    if (dst_frame.format() == PIXEL_FORMAT_I420) {
+      auto convert_fn = (src_frame.format() == PIXEL_FORMAT_XBGR ||
+                         src_frame.format() == PIXEL_FORMAT_ABGR)
+                            ? libyuv::ABGRToI420
+                            : libyuv::ARGBToI420;
+      int error = convert_fn(
+          src_data, src_stride, dst_frame.visible_data(VideoFrame::kYPlane),
+          dst_frame.stride(VideoFrame::kYPlane),
+          dst_frame.visible_data(VideoFrame::kUPlane),
+          dst_frame.stride(VideoFrame::kUPlane),
+          dst_frame.visible_data(VideoFrame::kVPlane),
+          dst_frame.stride(VideoFrame::kVPlane),
+          dst_frame.visible_rect().width(), dst_frame.visible_rect().height());
+      return error ? Status(StatusCode::kInvalidArgument) : Status();
+    }
+
+    auto convert_fn = (src_frame.format() == PIXEL_FORMAT_XBGR ||
+                       src_frame.format() == PIXEL_FORMAT_ABGR)
+                          ? libyuv::ABGRToNV12
+                          : libyuv::ARGBToNV12;
+    int error = convert_fn(
+        src_data, src_stride, dst_frame.visible_data(VideoFrame::kYPlane),
+        dst_frame.stride(VideoFrame::kYPlane),
+        dst_frame.visible_data(VideoFrame::kUVPlane),
+        dst_frame.stride(VideoFrame::kUVPlane),
+        dst_frame.visible_rect().width(), dst_frame.visible_rect().height());
+    return error ? Status(StatusCode::kInvalidArgument) : Status();
+  }
+
+  // Converting between YUV formats doesn't change the color space.
+  dst_frame.set_color_space(src_frame.ColorSpace());
 
   // Both frames are I420, only scaling is required.
   if (dst_frame.format() == PIXEL_FORMAT_I420 &&
@@ -660,6 +942,54 @@ Status ConvertAndScaleFrame(const VideoFrame& src_frame,
   return Status(StatusCode::kUnsupportedFrameFormatError)
       .WithData("src", src_frame.AsHumanReadableString())
       .WithData("dst", dst_frame.AsHumanReadableString());
+}
+
+scoped_refptr<VideoFrame> CreateFromSkImage(sk_sp<SkImage> sk_image,
+                                            const gfx::Rect& visible_rect,
+                                            const gfx::Size& natural_size,
+                                            base::TimeDelta timestamp) {
+  DCHECK(!sk_image->isTextureBacked());
+
+  // A given SkImage may not exist until it's rasterized.
+  if (sk_image->isLazyGenerated())
+    sk_image = sk_image->makeRasterImage();
+
+  // TODO(crbug.com/1073995): Add F16 support.
+  auto sk_color_type = sk_image->colorType();
+  if (sk_color_type != kRGBA_8888_SkColorType &&
+      sk_color_type != kBGRA_8888_SkColorType) {
+    return nullptr;
+  }
+
+  SkPixmap pm;
+  const bool peek_result = sk_image->peekPixels(&pm);
+  DCHECK(peek_result);
+
+  const auto format =
+      sk_image->isOpaque()
+          ? (sk_color_type == kRGBA_8888_SkColorType ? PIXEL_FORMAT_XBGR
+                                                     : PIXEL_FORMAT_XRGB)
+          : (sk_color_type == kRGBA_8888_SkColorType ? PIXEL_FORMAT_ABGR
+                                                     : PIXEL_FORMAT_ARGB);
+
+  auto coded_size = gfx::Size(sk_image->width(), sk_image->height());
+  auto layout = VideoFrameLayout::CreateWithStrides(
+      format, coded_size, std::vector<int32_t>(1, pm.rowBytes()));
+  if (!layout)
+    return nullptr;
+
+  auto frame = VideoFrame::WrapExternalDataWithLayout(
+      *layout, visible_rect, natural_size,
+      // TODO(crbug.com/1161304): We should be able to wrap readonly memory in
+      // a VideoFrame instead of using writable_addr() here.
+      reinterpret_cast<uint8_t*>(pm.writable_addr()), pm.computeByteSize(),
+      timestamp);
+  if (!frame)
+    return nullptr;
+
+  frame->AddDestructionObserver(base::BindOnce(
+      base::DoNothing::Once<sk_sp<SkImage>>(), std::move(sk_image)));
+  return frame;
 }
 
 }  // namespace media

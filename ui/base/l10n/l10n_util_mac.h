@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/strings/string16.h"
 
 #ifdef __OBJC__
 @class NSString;
@@ -28,14 +27,14 @@ namespace l10n_util {
 // "$lowercase_language ($UPPERCASE_SCRIPT)". If the - token is not found, the
 // lowercase version of |locale| will be returned.
 COMPONENT_EXPORT(UI_BASE)
-base::string16 GetDisplayNameForLocale(const std::string& locale,
+std::u16string GetDisplayNameForLocale(const std::string& locale,
                                        const std::string& display_locale);
 
 // Remove the Windows-style accelerator marker (for labels, menuitems, etc.)
 // and change "..." into an ellipsis.
 // Returns the result in an autoreleased NSString.
 COMPONENT_EXPORT(UI_BASE)
-NSString* FixUpWindowsStyleLabel(const base::string16& label);
+NSString* FixUpWindowsStyleLabel(const std::u16string& label);
 
 // Pulls resource string from the string bundle and returns it.
 COMPONENT_EXPORT(UI_BASE) NSString* GetNSString(int message_id);
@@ -43,36 +42,36 @@ COMPONENT_EXPORT(UI_BASE) NSString* GetNSString(int message_id);
 // Get a resource string and replace $1-$2-$3 with |a| and |b|
 // respectively.  Additionally, $$ is replaced by $.
 COMPONENT_EXPORT(UI_BASE)
-NSString* GetNSStringF(int message_id, const base::string16& a);
+NSString* GetNSStringF(int message_id, const std::u16string& a);
 COMPONENT_EXPORT(UI_BASE)
 NSString* GetNSStringF(int message_id,
-                       const base::string16& a,
-                       const base::string16& b);
+                       const std::u16string& a,
+                       const std::u16string& b);
 COMPONENT_EXPORT(UI_BASE)
 NSString* GetNSStringF(int message_id,
-                       const base::string16& a,
-                       const base::string16& b,
-                       const base::string16& c);
+                       const std::u16string& a,
+                       const std::u16string& b,
+                       const std::u16string& c);
 COMPONENT_EXPORT(UI_BASE)
 NSString* GetNSStringF(int message_id,
-                       const base::string16& a,
-                       const base::string16& b,
-                       const base::string16& c,
-                       const base::string16& d);
+                       const std::u16string& a,
+                       const std::u16string& b,
+                       const std::u16string& c,
+                       const std::u16string& d);
 COMPONENT_EXPORT(UI_BASE)
 NSString* GetNSStringF(int message_id,
-                       const base::string16& a,
-                       const base::string16& b,
-                       const base::string16& c,
-                       const base::string16& d,
-                       const base::string16& e);
+                       const std::u16string& a,
+                       const std::u16string& b,
+                       const std::u16string& c,
+                       const std::u16string& d,
+                       const std::u16string& e);
 
 // Variants that return the offset(s) of the replaced parameters. (See
 // app/l10n_util.h for more details.)
 COMPONENT_EXPORT(UI_BASE)
 NSString* GetNSStringF(int message_id,
-                       const base::string16& a,
-                       const base::string16& b,
+                       const std::u16string& a,
+                       const std::u16string& b,
                        std::vector<size_t>* offsets);
 
 // Same as GetNSString, but runs the result through FixUpWindowsStyleLabel
@@ -82,22 +81,22 @@ COMPONENT_EXPORT(UI_BASE) NSString* GetNSStringWithFixup(int message_id);
 // Same as GetNSStringF, but runs the result through FixUpWindowsStyleLabel
 // before returning it.
 COMPONENT_EXPORT(UI_BASE)
-NSString* GetNSStringFWithFixup(int message_id, const base::string16& a);
+NSString* GetNSStringFWithFixup(int message_id, const std::u16string& a);
 COMPONENT_EXPORT(UI_BASE)
 NSString* GetNSStringFWithFixup(int message_id,
-                                const base::string16& a,
-                                const base::string16& b);
+                                const std::u16string& a,
+                                const std::u16string& b);
 COMPONENT_EXPORT(UI_BASE)
 NSString* GetNSStringFWithFixup(int message_id,
-                                const base::string16& a,
-                                const base::string16& b,
-                                const base::string16& c);
+                                const std::u16string& a,
+                                const std::u16string& b,
+                                const std::u16string& c);
 COMPONENT_EXPORT(UI_BASE)
 NSString* GetNSStringFWithFixup(int message_id,
-                                const base::string16& a,
-                                const base::string16& b,
-                                const base::string16& c,
-                                const base::string16& d);
+                                const std::u16string& a,
+                                const std::u16string& b,
+                                const std::u16string& c,
+                                const std::u16string& d);
 
 // Get a resource string using |number| with a locale-specific plural rule.
 // |message_id| points to a message in the ICU syntax.

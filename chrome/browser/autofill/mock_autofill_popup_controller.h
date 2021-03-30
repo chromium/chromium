@@ -54,11 +54,11 @@ class MockAutofillPopupController
     return suggestions_[row];
   }
 
-  const base::string16& GetSuggestionValueAt(int i) const override {
+  const std::u16string& GetSuggestionValueAt(int i) const override {
     return suggestions_[i].value;
   }
 
-  const base::string16& GetSuggestionLabelAt(int row) const override {
+  const std::u16string& GetSuggestionLabelAt(int row) const override {
     return suggestions_[row].label;
   }
 
@@ -67,7 +67,7 @@ class MockAutofillPopupController
   }
 
   MOCK_METHOD3(GetRemovalConfirmationText,
-               bool(int index, base::string16* title, base::string16* body));
+               bool(int index, std::u16string* title, std::u16string* body));
   MOCK_METHOD1(RemoveSuggestion, bool(int index));
   MOCK_METHOD1(SetSelectedLine, void(base::Optional<int> selected_line));
   MOCK_CONST_METHOD0(selected_line, base::Optional<int>());

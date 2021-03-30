@@ -8,13 +8,20 @@
     Exposed(Window WebGPU, Worker WebGPU)
 ] interface GPUDevice : EventTarget {
     [SameObject] readonly attribute GPUAdapter adapter;
-    readonly attribute FrozenArray<GPUExtensionName> extensions;
+
+    readonly attribute FrozenArray<GPUFeatureName> features;
+    // Deprecated
+    readonly attribute FrozenArray<GPUFeatureName> extensions;
+
     [CallWith=ScriptState] readonly attribute Promise<GPUDeviceLostInfo> lost;
 
+    [SameObject] readonly attribute GPUQueue queue;
+    // Deprecated
     [SameObject] readonly attribute GPUQueue defaultQueue;
 
     GPUBuffer createBuffer(GPUBufferDescriptor descriptor);
     [RaisesException] GPUTexture createTexture(GPUTextureDescriptor descriptor);
+    [RuntimeEnabled=WebGPUImportTexture, RaisesException] GPUTexture experimentalImportTexture(HTMLVideoElement video, GPUTextureUsageFlags usage);
     GPUSampler createSampler(optional GPUSamplerDescriptor descriptor = {});
 
     [RaisesException] GPUBindGroup createBindGroup(GPUBindGroupDescriptor descriptor);
@@ -25,6 +32,10 @@
     [CallWith=ScriptState] GPURenderPipeline createRenderPipeline(GPURenderPipelineDescriptor descriptor);
     GPUComputePipeline createComputePipeline(GPUComputePipelineDescriptor descriptor);
 
+    [CallWith=ScriptState] Promise<GPURenderPipeline?> createRenderPipelineAsync(GPURenderPipelineDescriptor descriptor);
+    [CallWith=ScriptState] Promise<GPUComputePipeline?> createComputePipelineAsync(GPUComputePipelineDescriptor descriptor);
+
+    // Deprecated
     [CallWith=ScriptState] Promise<GPURenderPipeline?> createReadyRenderPipeline(GPURenderPipelineDescriptor descriptor);
     [CallWith=ScriptState] Promise<GPUComputePipeline?> createReadyComputePipeline(GPUComputePipelineDescriptor descriptor);
 
@@ -38,6 +49,7 @@
 
     attribute EventHandler onuncapturederror;
 };
+GPUDevice includes GPUObjectBase;
 
 enum GPUErrorFilter {
     "none",

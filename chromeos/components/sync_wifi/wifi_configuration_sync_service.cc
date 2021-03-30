@@ -19,8 +19,8 @@
 #include "chromeos/network/network_metadata_store.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/sync/base/report_unrecoverable_error.h"
+#include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/model_type_store.h"
-#include "components/sync/model_impl/client_tag_based_model_type_processor.h"
 
 namespace chromeos {
 
@@ -42,7 +42,7 @@ WifiConfigurationSyncService::WifiConfigurationSyncService(
       remote_cros_network_config_.get(), timer_factory_.get(),
       metrics_logger_.get());
   collector_ = std::make_unique<LocalNetworkCollectorImpl>(
-      remote_cros_network_config_.get());
+      remote_cros_network_config_.get(), metrics_logger_.get());
   bridge_ = std::make_unique<sync_wifi::WifiConfigurationBridge>(
       updater_.get(), collector_.get(),
       network_handler->network_configuration_handler(), metrics_logger_.get(),

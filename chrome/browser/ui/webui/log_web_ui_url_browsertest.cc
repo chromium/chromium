@@ -38,7 +38,7 @@ class LogWebUIUrlTest : public InProcessBrowserTest {
 
   void RunTest(int title_ids, const GURL& url) {
     auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
-    base::string16 title = l10n_util::GetStringUTF16(title_ids);
+    std::u16string title = l10n_util::GetStringUTF16(title_ids);
     content::TitleWatcher title_watcher(tab, title);
     ui_test_utils::NavigateToURL(browser(), url);
     ASSERT_EQ(title, title_watcher.WaitAndGetTitle());

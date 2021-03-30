@@ -55,7 +55,6 @@ source_set("feature_flags") {
   ]
   public_deps = [ "//base" ]
   deps = [
-    "//components/infobars/core:feature_flags",
     "//components/version_info",
     "//ios/chrome/common",
   ]
@@ -160,7 +159,6 @@ source_set("eg2_tests") {
     ":eg_test_support+eg2",
     "//base",
     "//base/test:test_support",
-    "//components/infobars/core:feature_flags",
     "//components/strings:components_strings_grit",
     "//components/translate/core/browser:translate_pref_names",
     "//components/translate/core/common",

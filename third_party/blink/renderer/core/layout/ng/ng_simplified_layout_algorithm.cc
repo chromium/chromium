@@ -156,7 +156,11 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
   } else {
     LayoutUnit old_block_size =
         NGFragment(writing_direction_, physical_fragment).BlockSize();
-    DCHECK_EQ(old_block_size, new_block_size);
+#if DCHECK_IS_ON()
+    // Tables don't respect the typical block-sizing rules.
+    if (!physical_fragment.IsTableNG())
+      DCHECK_EQ(old_block_size, new_block_size);
+#endif
     container_builder_.SetFragmentBlockSize(old_block_size);
   }
 
@@ -234,6 +238,19 @@ scoped_refptr<const NGLayoutResult> NGSimplifiedLayoutAlgorithm::Layout() {
     items_builder->AddPreviousItems(previous_fragment, *previous_items);
   }
 
+  // Some layout types (grid) manually calculate their inflow-bounds rather
+  // than use the value determined inside the builder. Just explicitly set this
+  // from the previous fragment for all types.
+  if (previous_fragment.InflowBounds()) {
+    LogicalRect inflow_bounds =
+        WritingModeConverter(writing_direction_,
+                             previous_physical_container_size_)
+            .ToLogical(*previous_fragment.InflowBounds());
+    container_builder_.SetInflowBounds(inflow_bounds);
+  }
+  container_builder_.SetMayHaveDescendantAboveBlockStart(
+      previous_fragment.MayHaveDescendantAboveBlockStart());
+
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
 
   // The block size may have been changed. This may affect the inline block
@@ -271,12 +288,11 @@ void NGSimplifiedLayoutAlgorithm::AddChildFragment(
                            previous_physical_container_size_)
           .ToLogical(old_fragment.Offset(), new_fragment.Size());
 
-  RemoveRelativeOffset(container_builder_, *old_fragment, &child_offset);
-
   // Add the new fragment to the builder.
   container_builder_.AddChild(new_fragment, child_offset,
                               /* inline_container */ nullptr, margin_strut,
-                              is_self_collapsing);
+                              is_self_collapsing,
+                              /* offset_includes_relative_position */ true);
 }
 
 }  // namespace blink

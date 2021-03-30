@@ -7,13 +7,13 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/animation/ink_drop_state.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/views_export.h"
 
@@ -25,6 +25,8 @@ class InkDropObserver;
 // well as visual hover state feedback.
 class VIEWS_EXPORT InkDrop {
  public:
+  InkDrop(const InkDrop&) = delete;
+  InkDrop& operator=(const InkDrop&) = delete;
   virtual ~InkDrop();
 
   // Called by ink drop hosts when their size is changed.
@@ -84,8 +86,6 @@ class VIEWS_EXPORT InkDrop {
 
  private:
   base::ObserverList<InkDropObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(InkDrop);
 };
 
 // A View which can be used to parent ink drop layers. Typically this is used
@@ -94,16 +94,16 @@ class VIEWS_EXPORT InkDrop {
 // rendering enabled are painted onto a non-opaque canvas.
 class VIEWS_EXPORT InkDropContainerView : public views::View {
  public:
+  METADATA_HEADER(InkDropContainerView);
   InkDropContainerView();
+  InkDropContainerView(const InkDropContainerView&) = delete;
+  InkDropContainerView& operator=(const InkDropContainerView&) = delete;
 
   void AddInkDropLayer(ui::Layer* ink_drop_layer);
   void RemoveInkDropLayer(ui::Layer* ink_drop_layer);
 
   // View:
   bool GetCanProcessEventsWithinSubtree() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InkDropContainerView);
 };
 
 }  // namespace views

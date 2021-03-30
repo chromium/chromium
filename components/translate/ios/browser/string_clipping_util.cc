@@ -8,15 +8,15 @@
 
 #include "base/strings/string_util.h"
 
-base::string16 GetStringByClippingLastWord(const base::string16& contents,
+std::u16string GetStringByClippingLastWord(const std::u16string& contents,
                                            size_t length) {
   if (contents.size() < length)
     return contents;
 
-  base::string16 clipped_contents = contents.substr(0, length);
+  std::u16string clipped_contents = contents.substr(0, length);
   size_t last_space_index =
       clipped_contents.find_last_of(base::kWhitespaceUTF16);
-  if (last_space_index != base::string16::npos)
+  if (last_space_index != std::u16string::npos)
     clipped_contents.resize(last_space_index);
   return clipped_contents;
 }

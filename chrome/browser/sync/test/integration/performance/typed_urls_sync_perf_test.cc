@@ -9,7 +9,7 @@
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/typed_urls_helper.h"
-#include "components/sync/engine_impl/cycle/sync_cycle_context.h"
+#include "components/sync/engine/cycle/sync_cycle_context.h"
 #include "content/public/test/browser_test.h"
 #include "testing/perf/perf_result_reporter.h"
 

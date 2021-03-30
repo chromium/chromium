@@ -53,6 +53,10 @@ declare_args() {
   # If true, the new implementation (experimental) of Blink-V8 bindings
   # (of IDL interface) is used.
   use_blink_v8_binding_new_idl_interface = true
+
+  # If true, the new implementation (experimental) of Blink-V8 bindings
+  # (of IDL union) is used.
+  use_blink_v8_binding_new_idl_union = false
 }
 
 # feature_defines_list ---------------------------------------------------------
@@ -81,6 +85,10 @@ if (use_blink_v8_binding_new_idl_dictionary) {
 
 if (use_blink_v8_binding_new_idl_interface) {
   feature_defines_list += [ "USE_BLINK_V8_BINDING_NEW_IDL_INTERFACE" ]
+}
+
+if (use_blink_v8_binding_new_idl_union) {
+  feature_defines_list += [ "USE_BLINK_V8_BINDING_NEW_IDL_UNION" ]
 }
 
 if (blink_symbol_level == 2) {

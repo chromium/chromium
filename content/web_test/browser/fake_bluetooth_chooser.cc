@@ -78,6 +78,9 @@ void FakeBluetoothChooser::SetAdapterPresence(AdapterPresence presence) {
     case AdapterPresence::POWERED_ON:
       event_ptr->type = mojom::ChooserEventType::ADAPTER_ENABLED;
       break;
+    case AdapterPresence::UNAUTHORIZED:
+      event_ptr->type = mojom::ChooserEventType::UNAUTHORIZED;
+      break;
   }
   client_->OnEvent(std::move(event_ptr));
 }
@@ -101,7 +104,7 @@ void FakeBluetoothChooser::ShowDiscoveryState(DiscoveryState state) {
 
 void FakeBluetoothChooser::AddOrUpdateDevice(const std::string& device_id,
                                              bool should_update_name,
-                                             const base::string16& device_name,
+                                             const std::u16string& device_name,
                                              bool is_gatt_connected,
                                              bool is_paired,
                                              int signal_strength_level) {

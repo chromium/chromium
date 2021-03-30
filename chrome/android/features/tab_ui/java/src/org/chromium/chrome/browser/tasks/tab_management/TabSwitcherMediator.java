@@ -42,7 +42,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
@@ -55,6 +54,7 @@ import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
+import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -65,15 +65,15 @@ import java.util.List;
  * The Mediator that is responsible for resetting the tab grid or carousel based on visibility and
  * model changes.
  */
-class TabSwitcherMediator
-        implements TabSwitcher.Controller, TabListRecyclerView.VisibilityListener,
-                   TabListMediator.GridCardOnClickListenerProvider,
-                   PriceWelcomeMessageService.PriceWelcomeMessageReviewActionProvider {
+class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView.VisibilityListener,
+                                     TabListMediator.GridCardOnClickListenerProvider,
+                                     PriceMessageService.PriceWelcomeMessageReviewActionProvider {
     private static final String TAG = "TabSwitcherMediator";
 
     // This should be the same as TabListCoordinator.GRID_LAYOUT_SPAN_COUNT for the selected tab
     // to be on the 2nd row.
-    static final int INITIAL_SCROLL_INDEX_OFFSET = 2;
+    static final int INITIAL_SCROLL_INDEX_OFFSET_GTS = 2;
+    static final int INITIAL_SCROLL_INDEX_OFFSET_CAROUSEL = 1;
 
     private static final int DEFAULT_TOP_PADDING = 0;
 
@@ -110,7 +110,7 @@ class TabSwitcherMediator
     private TabSelectionEditorCoordinator
             .TabSelectionEditorController mTabSelectionEditorController;
     private TabSwitcher.OnTabSelectingListener mOnTabSelectingListener;
-    private PriceWelcomeMessageService mPriceWelcomeMessageService;
+    private PriceMessageService mPriceMessageService;
 
     /**
      * In cases where a didSelectTab was due to switching models with a toggle,
@@ -205,6 +205,12 @@ class TabSwitcherMediator
          * when the closure of the binding tab in tab switcher is undone.
          */
         void restorePriceWelcomeMessage();
+
+        /**
+         * Show the price welcome message in tab switcher. This is used when any open tab in tab
+         * switcher has a price drop.
+         */
+        void showPriceWelcomeMessage(PriceMessageService.PriceTabData priceTabData);
     }
 
     /**
@@ -235,7 +241,7 @@ class TabSwitcherMediator
         mMultiWindowModeStateDispatcher = multiWindowModeStateDispatcher;
         mMode = mode;
 
-        mTabModelSelectorObserver = new EmptyTabModelSelectorObserver() {
+        mTabModelSelectorObserver = new TabModelSelectorObserver() {
             @Override
             public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
                 mShouldIgnoreNextSelect = true;
@@ -256,6 +262,7 @@ class TabSwitcherMediator
                 if (newModel.isIncognito() && newModel.getCount() == 0 && oldModel.getCount() > 0) {
                     oldModel.getTabAt(oldModel.index()).hide(TabHidingType.CHANGED_TABS);
                 }
+                setInitialScrollIndexOffset();
             }
         };
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
@@ -293,7 +300,7 @@ class TabSwitcherMediator
                 }
 
                 if (mContainerViewModel.get(IS_VISIBLE)) {
-                    onTabSelecting(tab.getId());
+                    onTabSelecting(tab.getId(), false);
                 }
             }
 
@@ -312,8 +319,8 @@ class TabSwitcherMediator
             public void willCloseTab(Tab tab, boolean animate) {
                 if (mTabModelSelector.getCurrentModel().getCount() == 1) {
                     messageItemsController.removeAllAppendedMessage();
-                } else if (mPriceWelcomeMessageService != null
-                        && mPriceWelcomeMessageService.getBindingTabId() == tab.getId()) {
+                } else if (mPriceMessageService != null
+                        && mPriceMessageService.getBindingTabId() == tab.getId()) {
                     priceWelcomeMessageController.removePriceWelcomeMessage();
                 }
             }
@@ -322,19 +329,20 @@ class TabSwitcherMediator
             public void tabClosureUndone(Tab tab) {
                 if (mTabModelSelector.getCurrentModel().getCount() == 1) {
                     messageItemsController.restoreAllAppendedMessage();
-                } else if (mPriceWelcomeMessageService != null
-                        && mPriceWelcomeMessageService.getBindingTabId() == tab.getId()) {
+                }
+                if (mPriceMessageService != null
+                        && mPriceMessageService.getBindingTabId() == tab.getId()) {
                     priceWelcomeMessageController.restorePriceWelcomeMessage();
                 }
             }
 
             @Override
             public void tabClosureCommitted(Tab tab) {
-                // TODO(crbug.com/1157578): Auto update the PriceWelcomeMessageService instead of
+                // TODO(crbug.com/1157578): Auto update the PriceMessageService instead of
                 // updating it based on the client caller.
-                if (mPriceWelcomeMessageService != null
-                        && mPriceWelcomeMessageService.getBindingTabId() == tab.getId()) {
-                    mPriceWelcomeMessageService.invalidateMessage();
+                if (mPriceMessageService != null
+                        && mPriceMessageService.getBindingTabId() == tab.getId()) {
+                    mPriceMessageService.invalidateMessage();
                 }
             }
         };
@@ -366,7 +374,7 @@ class TabSwitcherMediator
         mBrowserControlsStateProvider.addObserver(mBrowserControlsObserver);
 
         if (mTabModelSelector.getModels().isEmpty()) {
-            TabModelSelectorObserver selectorObserver = new EmptyTabModelSelectorObserver() {
+            TabModelSelectorObserver selectorObserver = new TabModelSelectorObserver() {
                 @Override
                 public void onChange() {
                     assert !mTabModelSelector.getModels().isEmpty();
@@ -651,9 +659,11 @@ class TabSwitcherMediator
     }
 
     private void setInitialScrollIndexOffset() {
+        int offset = mMode == TabListMode.CAROUSEL ? INITIAL_SCROLL_INDEX_OFFSET_CAROUSEL
+                                                   : INITIAL_SCROLL_INDEX_OFFSET_GTS;
         int initialPosition = Math.max(
                 mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter().index()
-                        - INITIAL_SCROLL_INDEX_OFFSET,
+                        - offset,
                 0);
         // In MRU order, selected Tab is always at the first position.
         if (mShowTabsInMruOrder) initialPosition = 0;
@@ -669,6 +679,10 @@ class TabSwitcherMediator
                     mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter(),
                     TabUiFeatureUtilities.isTabToGtsAnimationEnabled(), mShowTabsInMruOrder);
             recordTabCounts();
+            // When |mTabModelSelector.isTabStateInitialized| is false and INSTANT_START is enabled,
+            // the scrolling request is already processed in TabModelObserver#restoreCompleted.
+            // Therefore, we only need to handle the case with isTabStateInitialized() here.
+            setInitialScrollIndexOffset();
         } else if (CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START)) {
             List<PseudoTab> allTabs;
             try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
@@ -714,20 +728,48 @@ class TabSwitcherMediator
     }
 
     @Override
-    public boolean onBackPressed() {
-        if (!mContainerViewModel.get(IS_VISIBLE)) return false;
+    public boolean onBackPressed(boolean isOnHomepage) {
+        // The TabSelectionEditor dialog can be shown on the Start surface without showing the Grid
+        // Tab switcher, so skip the check of visibility of mContainerViewModel here.
         if (mTabSelectionEditorController != null
                 && mTabSelectionEditorController.handleBackPressed()) {
             return true;
         }
+
+        if (!mContainerViewModel.get(IS_VISIBLE)) return false;
+
         if (mTabGridDialogController != null && mTabGridDialogController.handleBackPressed()) {
             return true;
         }
+
+        // When the Start surface is showing, we no longer need to call onTabSelecting().
+        if (isOnHomepage && mMode == TabListCoordinator.TabListMode.CAROUSEL) return false;
+
         if (mTabModelSelector.getCurrentTab() == null) return false;
 
-        onTabSelecting(mTabModelSelector.getCurrentTabId());
+        onTabSelecting(mTabModelSelector.getCurrentTabId(), false);
 
         return true;
+    }
+
+    @Override
+    public boolean isDialogVisible() {
+        if (mTabSelectionEditorController != null && mTabSelectionEditorController.isVisible()) {
+            return true;
+        }
+
+        if (mTabGridDialogController != null && mTabGridDialogController.isVisible()) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void showTabSelectionEditor(List<Tab> tabs) {
+        if (mTabSelectionEditorController == null) {
+            return;
+        }
+        mTabSelectionEditorController.show(tabs);
     }
 
     @Override
@@ -768,11 +810,10 @@ class TabSwitcherMediator
      *  @return whether tabs should show in MRU order
      */
     static boolean isShowingTabsInMRUOrder() {
-        // TODO(crbug.com/1076449): Support MRU mode in Instant start.
-        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START)) return false;
-
         String feature = StartSurfaceConfiguration.START_SURFACE_VARIATION.getValue();
-        return TextUtils.equals(feature, "twopanes");
+        return TextUtils.equals(feature, "twopanes")
+                || StartSurfaceConfiguration.SHOW_TABS_IN_MRU_ORDER.getValue()
+                && TextUtils.equals(feature, "single");
     }
 
     /**
@@ -790,8 +831,8 @@ class TabSwitcherMediator
         mOnTabSelectingListener = listener;
     }
 
-    void setPriceWelcomeMessageService(PriceWelcomeMessageService priceWelcomeMessageService) {
-        mPriceWelcomeMessageService = priceWelcomeMessageService;
+    void setPriceMessageService(PriceMessageService priceMessageService) {
+        mPriceMessageService = priceMessageService;
     }
 
     // GridCardOnClickListenerProvider implementation.
@@ -812,7 +853,12 @@ class TabSwitcherMediator
     }
 
     @Override
-    public void onTabSelecting(int tabId) {
+    public void onTabSelecting(int tabId, boolean fromActionButton) {
+        if (fromActionButton && (mMode == TabListMode.CAROUSEL || mMode == TabListMode.GRID)) {
+            Tab newlySelectedTab =
+                    TabModelUtils.getTabById(mTabModelSelector.getCurrentModel(), tabId);
+            StartSurfaceUserData.setKeepTab(newlySelectedTab, true);
+        }
         mIsSelectingInTabSwitcher = true;
         if (mOnTabSelectingListener != null) {
             mOnTabSelectingListener.onTabSelecting(LayoutManagerImpl.time(), tabId);
@@ -820,7 +866,7 @@ class TabSwitcherMediator
     }
 
     @Override
-    public void scrollToBindingTab(int tabIndex) {
+    public void scrollToTab(int tabIndex) {
         mContainerViewModel.set(TabListContainerProperties.INITIAL_SCROLL_INDEX, tabIndex);
     }
 

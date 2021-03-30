@@ -203,6 +203,7 @@
 <translation id="6643016212128521049">ניקוי</translation>
 <translation id="668171684555832681">אחר...</translation>
 <translation id="6692633176391053278">פקד חצים</translation>
+<translation id="6696580792574109116">בחירת חודש</translation>
 <translation id="6709093583001123835">הערך חייב להיות <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">איכות הפעלה נמוכה</translation>
 <translation id="6755330956360078551">הסבר קצר</translation>
@@ -218,7 +219,7 @@
 <translation id="6941933287844615239">הורדת מדיה</translation>
 <translation id="6981594929165378967">הוספה</translation>
 <translation id="698788488269350478">מורחב.</translation>
-<translation id="6989848892321993519">עליך להאריך את הטקסט ל-<ph name="MIN_CHARACTERS" /> תווים או יותר (אתה משתמש כרגע בתו אחד).</translation>
+<translation id="6989848892321993519">עליך להאריך את הטקסט ל-<ph name="MIN_CHARACTERS" /> תווים או יותר (כרגע יש תו אחד).</translation>
 <translation id="7034405885550056553">הצעה</translation>
 <translation id="709897737746224366">יש להתאים את הפורמט המבוקש.</translation>
 <translation id="7102274145889307184">המיקום הנוכחי</translation>

@@ -7,8 +7,10 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/callback_helpers.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/nearby_sharing/mock_nearby_sharing_service.h"
 #include "chrome/browser/nearby_sharing/share_target.h"
@@ -35,7 +37,8 @@ const char kTextAttachmentBody[] = "Test text payload";
 std::vector<std::unique_ptr<Attachment>> CreateTextAttachments() {
   std::vector<std::unique_ptr<Attachment>> attachments;
   attachments.push_back(std::make_unique<TextAttachment>(
-      TextAttachment::Type::kText, kTextAttachmentBody));
+      TextAttachment::Type::kText, kTextAttachmentBody, /*title=*/base::nullopt,
+      /*mime_type=*/base::nullopt));
   return attachments;
 }
 

@@ -19,16 +19,16 @@ class IdentityGetAuthTokenError {
     kNone = 0,
     kInvalidClientId = 1,
     kEmptyScopes = 2,
-    kOAuth2InvalidScopes = 3,
-    kGaiaFlowAuthFailure = 4,
+    // kOAuth2InvalidScopes = 3,  // Deprecated
+    // kGaiaFlowAuthFailure = 4,  // Deprecated
     kMintTokenAuthFailure = 5,
     kGetAccessTokenAuthFailure = 6,
-    kOAuth2Failure = 7,
+    // kOAuth2Failure = 7,  // Deprecated
     kNoGrant = 8,
     kGaiaConsentInteractionRequired = 9,
     kGaiaConsentInteractionAlreadyRunning = 10,
-    kOAuth2AccessDenied = 11,
-    kGaiaFlowRejected = 12,
+    // kOAuth2AccessDenied = 11,  // Deprecated
+    // kGaiaFlowRejected = 12,  // Deprecated
     kRemoteConsentFlowRejected = 13,
     kUserNotSignedIn = 14,
     kNotAllowlistedInPublicSession = 15,
@@ -37,19 +37,15 @@ class IdentityGetAuthTokenError {
     kUserNonPrimary = 18,
     kRemoteConsentUserNonPrimary = 19,
     kBrowserSigninNotAllowed = 20,
-    kInvalidRedirect = 21,
+    // kInvalidRedirect = 21,  // Deprecated
     kOffTheRecord = 22,
-    kPageLoadFailure = 23,
+    // kPageLoadFailure = 23,  // Deprecated
     kRemoteConsentPageLoadFailure = 24,
     kSetAccountsInCookieFailure = 25,
     kInvalidConsentResult = 26,
     kCanceled = 27,
     kMaxValue = kCanceled,
   };
-
-  // Constructs a |State::kGaiaFlowAuthFailure| error with an |error_message|.
-  static IdentityGetAuthTokenError FromGaiaFlowAuthError(
-      base::StringPiece error_message);
 
   // Constructs a |State::kMintTokenAuthFailure| error with an
   // |error_message|.
@@ -60,10 +56,6 @@ class IdentityGetAuthTokenError {
   // |error_message|.
   static IdentityGetAuthTokenError FromGetAccessTokenAuthError(
       base::StringPiece error_message);
-
-  // Constructs an IdentityGetAuthTokenError from |oauth2_error|.
-  static IdentityGetAuthTokenError FromOAuth2Error(
-      base::StringPiece oauth2_error);
 
   // Constructs a |State::kNone| error.
   IdentityGetAuthTokenError();

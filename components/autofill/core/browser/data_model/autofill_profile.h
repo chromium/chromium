@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <iosfwd>
 #include <list>
 #include <map>
@@ -15,7 +16,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/address.h"
@@ -65,21 +65,21 @@ class AutofillProfile : public AutofillDataModel {
   bool IsDeletable() const override;
 
   // FormGroup:
-  void GetMatchingTypes(const base::string16& text,
+  void GetMatchingTypes(const std::u16string& text,
                         const std::string& app_locale,
                         ServerFieldTypeSet* matching_types) const override;
 
   void GetMatchingTypesAndValidities(
-      const base::string16& text,
+      const std::u16string& text,
       const std::string& app_locale,
       ServerFieldTypeSet* matching_types,
       std::map<ServerFieldType, AutofillProfile::ValidityState>*
           matching_types_validities) const;
 
-  base::string16 GetRawInfo(ServerFieldType type) const override;
+  std::u16string GetRawInfo(ServerFieldType type) const override;
   void SetRawInfoWithVerificationStatus(
       ServerFieldType type,
-      const base::string16& value,
+      const std::u16string& value,
       structured_address::VerificationStatus status) override;
 
   void GetSupportedTypes(ServerFieldTypeSet* supported_types) const override;
@@ -166,7 +166,7 @@ class AutofillProfile : public AutofillDataModel {
   static void CreateDifferentiatingLabels(
       const std::vector<AutofillProfile*>& profiles,
       const std::string& app_locale,
-      std::vector<base::string16>* labels);
+      std::vector<std::u16string>* labels);
 
   // Creates inferred labels for |profiles|, according to the rules above and
   // stores them in |created_labels|. If |suggested_fields| is not NULL, the
@@ -181,12 +181,12 @@ class AutofillProfile : public AutofillDataModel {
       ServerFieldType excluded_field,
       size_t minimal_fields_shown,
       const std::string& app_locale,
-      std::vector<base::string16>* labels);
+      std::vector<std::u16string>* labels);
 
   // Builds inferred label from the first |num_fields_to_include| non-empty
   // fields in |label_fields|. Uses as many fields as possible if there are not
   // enough non-empty fields.
-  base::string16 ConstructInferredLabel(const ServerFieldType* label_fields,
+  std::u16string ConstructInferredLabel(const ServerFieldType* label_fields,
                                         const size_t label_fields_size,
                                         size_t num_fields_to_include,
                                         const std::string& app_locale) const;
@@ -279,7 +279,7 @@ class AutofillProfile : public AutofillDataModel {
 
   // Check for the validity of the data. Leave the field empty if the data is
   // invalid and the relevant feature is enabled.
-  bool ShouldSkipFillingOrSuggesting(ServerFieldType type) const override;
+  bool ShouldSkipFillingOrSuggesting(ServerFieldType type) const;
 
   base::WeakPtr<const AutofillProfile> GetWeakPtr() const {
     return weak_ptr_factory_.GetWeakPtr();
@@ -300,10 +300,8 @@ class AutofillProfile : public AutofillDataModel {
   const Address& GetAddress() const { return address_; }
 
  private:
-  typedef std::vector<const FormGroup*> FormGroupList;
-
   // FormGroup:
-  base::string16 GetInfoImpl(const AutofillType& type,
+  std::u16string GetInfoImpl(const AutofillType& type,
                              const std::string& app_locale) const override;
 
   structured_address::VerificationStatus GetVerificationStatusImpl(
@@ -311,7 +309,7 @@ class AutofillProfile : public AutofillDataModel {
 
   bool SetInfoWithVerificationStatusImpl(
       const AutofillType& type,
-      const base::string16& value,
+      const std::u16string& value,
       const std::string& app_locale,
       structured_address::VerificationStatus status) override;
 
@@ -326,11 +324,15 @@ class AutofillProfile : public AutofillDataModel {
       const std::vector<ServerFieldType>& fields,
       size_t num_fields_to_include,
       const std::string& app_locale,
-      std::vector<base::string16>* labels);
+      std::vector<std::u16string>* labels);
 
   // Utilities for listing and lookup of the data members that constitute
   // user-visible profile information.
-  FormGroupList FormGroups() const;
+  std::array<const FormGroup*, 5> FormGroups() const {
+    // Adjust the return type size as necessary.
+    return {&name_, &email_, &company_, &phone_number_, &address_};
+  }
+
   const FormGroup* FormGroupForType(const AutofillType& type) const;
   FormGroup* MutableFormGroupForType(const AutofillType& type);
 

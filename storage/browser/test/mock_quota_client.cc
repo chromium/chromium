@@ -43,7 +43,7 @@ void MockQuotaClient::AddOriginAndNotify(const url::Origin& origin,
   DCHECK(origin_data_.find({origin, storage_type}) == origin_data_.end());
   DCHECK_GE(size, 0);
   origin_data_[{origin, storage_type}] = size;
-  quota_manager_proxy_->quota_manager()->NotifyStorageModifiedInternal(
+  quota_manager_proxy_->NotifyStorageModified(
       client_type_, origin, storage_type, size, IncrementMockTime());
 }
 
@@ -57,13 +57,13 @@ void MockQuotaClient::ModifyOriginAndNotify(
   DCHECK_GE(it->second, 0);
 
   // TODO(tzik): Check quota to prevent usage exceed
-  quota_manager_proxy_->quota_manager()->NotifyStorageModifiedInternal(
+  quota_manager_proxy_->NotifyStorageModified(
       client_type_, origin, storage_type, delta, IncrementMockTime());
 }
 
 void MockQuotaClient::TouchAllOriginsAndNotify() {
   for (const auto& origin_type : origin_data_) {
-    quota_manager_proxy_->quota_manager()->NotifyStorageModifiedInternal(
+    quota_manager_proxy_->NotifyStorageModified(
         client_type_, origin_type.first.first, origin_type.first.second, 0,
         IncrementMockTime());
   }
@@ -78,8 +78,6 @@ base::Time MockQuotaClient::IncrementMockTime() {
   ++mock_time_counter_;
   return base::Time::FromDoubleT(mock_time_counter_ * 10.0);
 }
-
-void MockQuotaClient::OnQuotaManagerDestroyed() {}
 
 void MockQuotaClient::GetOriginUsage(const url::Origin& origin,
                                      blink::mojom::StorageType type,
@@ -170,8 +168,8 @@ void MockQuotaClient::RunDeleteOriginData(
   auto it = origin_data_.find(std::make_pair(origin, storage_type));
   if (it != origin_data_.end()) {
     int64_t delta = it->second;
-    quota_manager_proxy_->NotifyStorageModified(client_type_, origin,
-                                                storage_type, -delta);
+    quota_manager_proxy_->NotifyStorageModified(
+        client_type_, origin, storage_type, -delta, base::Time::Now());
     origin_data_.erase(it);
   }
 

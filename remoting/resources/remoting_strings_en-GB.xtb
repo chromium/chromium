@@ -24,6 +24,7 @@ To grant this permission, click '<ph name="BUTTON_NAME" />' below to open the 'S
 If '<ph name="SERVICE_SCRIPT_NAME" />' is already ticked, untick it and then tick it again.</translation>
 <translation id="225614027745146050">Welcome</translation>
 <translation id="2320166752086256636">Hide keyboard</translation>
+<translation id="2333212046079545895">Copyright 2021 Google LLC. All rights reserved.</translation>
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2366718077645204424">Unable to reach the host. This is probably due to the configuration of the network you are using.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Last seen online <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -71,6 +72,7 @@ If '<ph name="SERVICE_SCRIPT_NAME" />' is already ticked, untick it and then tic
 <translation id="4405930547258349619">Core Library</translation>
 <translation id="443560535555262820">Open Accessibility Preferences</translation>
 <translation id="4450893287417543264">Don't show again</translation>
+<translation id="4512952200932940229">Copyright 2021 The Chromium Authors. All rights reserved.</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4563926062592110512">Client disconnected: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4635770493235256822">Remote devices</translation>
@@ -129,7 +131,6 @@ If '<ph name="SERVICE_SCRIPT_NAME" />' is already ticked, untick it and then tic
 <translation id="7067321367069083429">Screen acts like a touch screen</translation>
 <translation id="7116737094673640201">Welcome to Chrome Remote Desktop</translation>
 <translation id="7144878232160441200">Retry</translation>
-<translation id="724402108658370587">Copyright 2020 Google LLC. All rights reserved.</translation>
 <translation id="7312846573060934304">Host is offline.</translation>
 <translation id="7319983568955948908">Stop Sharing</translation>
 <translation id="7401733114166276557">Chrome Remote Desktop</translation>
@@ -155,7 +156,6 @@ If '<ph name="SERVICE_SCRIPT_NAME" />' is already ticked, untick it and then tic
 <translation id="8073845705237259513">To use Chrome Remote Desktop, you'll need to add a Google Account to your device.</translation>
 <translation id="809687642899217504">My Computers</translation>
 <translation id="8116630183974937060">A network error occurred. Please check that your device is on-line and try again.</translation>
-<translation id="8187079423890319756">Copyright 2013 The Chromium Authors. All Rights Reserved.</translation>
 <translation id="8295077433896346116">To use <ph name="PRODUCT_NAME" />, you need to grant the 'Accessibility' permission so that input from the remote machine can be injected on this Mac.
 
 To grant this permission, click '<ph name="BUTTON_NAME" />' below. In the 'Accessibility' preferences pane that opens, tick the box next to '<ph name="SERVICE_SCRIPT_NAME" />'.
@@ -174,6 +174,7 @@ If '<ph name="SERVICE_SCRIPT_NAME" />' is already ticked, untick it and then tic
 <translation id="8743328882720071828">Would you like to allow <ph name="CLIENT_USERNAME" /> to see and control your computer?</translation>
 <translation id="8747048596626351634">Session crashed or failed to start. If ~/.chrome-remote-desktop-session exists on the remote computer, make sure that it starts a long-running foreground process such as a desktop environment or window manager.</translation>
 <translation id="8804164990146287819">Privacy Policy</translation>
+<translation id="8906511416443321782">Microphone access is required to capture audio and stream it to the Chrome Remote Desktop client.</translation>
 <translation id="9111855907838866522">You are connected to your remote device. To open the menu, please tap the screen with four fingers.</translation>
 <translation id="9126115402994542723">Don't ask for a PIN again when connecting to this host from this device.</translation>
 <translation id="916856682307586697">Launch the default XSession</translation>

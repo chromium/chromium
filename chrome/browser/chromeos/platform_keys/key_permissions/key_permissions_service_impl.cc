@@ -18,10 +18,8 @@
 #include "base/stl_util.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager_impl.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_pref_util.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
@@ -29,7 +27,6 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "extensions/browser/state_store.h"
 
 namespace chromeos {
 namespace platform_keys {
@@ -37,18 +34,12 @@ namespace platform_keys {
 KeyPermissionsServiceImpl::KeyPermissionsServiceImpl(
     bool is_regular_user_profile,
     bool profile_is_managed,
-    PrefService* profile_prefs,
-    extensions::StateStore* extensions_state_store,
     PlatformKeysService* platform_keys_service,
     KeyPermissionsManager* profile_key_permissions_manager)
     : is_regular_user_profile_(is_regular_user_profile),
       profile_is_managed_(profile_is_managed),
-      profile_prefs_(profile_prefs),
-      extensions_state_store_(extensions_state_store),
       platform_keys_service_(platform_keys_service),
       profile_key_permissions_manager_(profile_key_permissions_manager) {
-  DCHECK(profile_prefs_);
-  DCHECK(extensions_state_store_);
   DCHECK(platform_keys_service_);
   DCHECK(profile_key_permissions_manager || !is_regular_user_profile);
 }
@@ -57,7 +48,7 @@ KeyPermissionsServiceImpl::~KeyPermissionsServiceImpl() = default;
 
 void KeyPermissionsServiceImpl::CanUserGrantPermissionForKey(
     const std::string& public_key_spki_der,
-    CanUserGrantPermissionForKeyCallback callback) const {
+    CanUserGrantPermissionForKeyCallback callback) {
   platform_keys_service_->GetKeyLocations(
       public_key_spki_der,
       base::BindOnce(
@@ -70,7 +61,7 @@ void KeyPermissionsServiceImpl::CanUserGrantPermissionForKeyWithLocations(
     const std::string& public_key_spki_der,
     CanUserGrantPermissionForKeyCallback callback,
     const std::vector<TokenId>& key_locations,
-    Status key_locations_retrieval_status) const {
+    Status key_locations_retrieval_status) {
   auto bound_callback = base::BindOnce(
       &KeyPermissionsServiceImpl::
           CanUserGrantPermissionForKeyWithLocationsAndFlag,
@@ -111,7 +102,7 @@ void KeyPermissionsServiceImpl::
 
 void KeyPermissionsServiceImpl::IsCorporateKey(
     const std::string& public_key_spki_der,
-    IsCorporateKeyCallback callback) const {
+    IsCorporateKeyCallback callback) {
   platform_keys_service_->GetKeyLocations(
       public_key_spki_der,
       base::BindOnce(&KeyPermissionsServiceImpl::IsCorporateKeyWithLocations,
@@ -123,35 +114,60 @@ void KeyPermissionsServiceImpl::IsCorporateKeyWithLocations(
     const std::string& public_key_spki_der,
     IsCorporateKeyCallback callback,
     const std::vector<TokenId>& key_locations,
-    Status status) const {
+    Status status) {
   if (status != Status::kSuccess) {
     LOG(ERROR) << "Key locations retrieval failed: " << StatusToString(status);
     std::move(callback).Run(/*corporate=*/false);
     return;
   }
 
+  bool key_on_user_token_only = false;
   for (const auto key_location : key_locations) {
     switch (key_location) {
       case TokenId::kUser:
-        DCHECK(is_regular_user_profile_);
-
-        if (internal::IsUserKeyMarkedCorporateInPref(public_key_spki_der,
-                                                     profile_prefs_)) {
-          std::move(callback).Run(/*corporate=*/true);
-          return;
-        }
+        key_on_user_token_only = true;
         break;
       case TokenId::kSystem:
-        std::move(callback).Run(/*corporate=*/true);
+        KeyPermissionsManagerImpl::GetSystemTokenKeyPermissionsManager()
+            ->IsKeyAllowedForUsage(
+                base::BindOnce(
+                    &KeyPermissionsServiceImpl::IsCorporateKeyWithKpmResponse,
+                    weak_factory_.GetWeakPtr(), std::move(callback)),
+                KeyUsage::kCorporate, public_key_spki_der);
         return;
     }
   }
+
+  if (key_on_user_token_only) {
+    DCHECK(is_regular_user_profile_);
+    profile_key_permissions_manager_->IsKeyAllowedForUsage(
+        base::BindOnce(
+            &KeyPermissionsServiceImpl::IsCorporateKeyWithKpmResponse,
+            weak_factory_.GetWeakPtr(), std::move(callback)),
+        KeyUsage::kCorporate, public_key_spki_der);
+    return;
+  }
+
+  std::move(callback).Run(/*corporate=*/false);
+}
+
+void KeyPermissionsServiceImpl::IsCorporateKeyWithKpmResponse(
+    IsCorporateKeyCallback callback,
+    base::Optional<bool> allowed,
+    Status status) {
+  if (allowed.has_value()) {
+    std::move(callback).Run(allowed.value());
+    return;
+  }
+
+  LOG(ERROR) << "Checking corporate flag via KeyPermissionsManager failed: "
+             << StatusToString(status);
   std::move(callback).Run(/*corporate=*/false);
 }
 
 void KeyPermissionsServiceImpl::SetCorporateKey(
     const std::string& public_key_spki_der,
-    SetCorporateKeyCallback callback) const {
+    SetCorporateKeyCallback callback) {
   platform_keys_service_->GetKeyLocations(
       public_key_spki_der,
       base::BindOnce(&KeyPermissionsServiceImpl::SetCorporateKeyWithLocations,
@@ -186,8 +202,6 @@ void KeyPermissionsServiceImpl::SetCorporateKeyWithLocations(
       return;
     case TokenId::kUser: {
       DCHECK(is_regular_user_profile_);
-
-      internal::MarkUserKeyCorporateInPref(public_key_spki_der, profile_prefs_);
 
       profile_key_permissions_manager_->AllowKeyForUsage(
           std::move(callback), KeyUsage::kCorporate, public_key_spki_der);

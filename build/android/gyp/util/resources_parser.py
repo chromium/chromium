@@ -135,7 +135,7 @@ class RTxtGenerator(object):
 
   def WriteRTxtFile(self, rtxt_path):
     resources = self._CollectResourcesListFromDirectories()
-    with build_utils.AtomicOutput(rtxt_path) as f:
+    with build_utils.AtomicOutput(rtxt_path, mode='w') as f:
       for resource in resources:
         line = '{0.java_type} {0.resource_type} {0.name} {0.value}\n'.format(
             resource)

@@ -6,21 +6,24 @@
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_ICON_VIEW_H_
 
 #include <memory>
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/browser/ui/cookie_controls_view.h"
 #include "components/content_settings/core/common/cookie_controls_status.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 // View for the cookie control icon in the Omnibox.
 class CookieControlsIconView : public PageActionIconView,
                                public content_settings::CookieControlsView {
  public:
+  METADATA_HEADER(CookieControlsIconView);
   CookieControlsIconView(
       IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
       PageActionIconView::Delegate* page_action_icon_delegate);
+  CookieControlsIconView(const CookieControlsIconView&) = delete;
+  CookieControlsIconView& operator=(const CookieControlsIconView&) = delete;
   ~CookieControlsIconView() override;
 
   // CookieControlsUI:
@@ -33,15 +36,14 @@ class CookieControlsIconView : public PageActionIconView,
   // PageActionIconView:
   views::BubbleDialogDelegate* GetBubble() const override;
   void UpdateImpl() override;
-  base::string16 GetTextForTooltipAndAccessibleName() const override;
+  std::u16string GetTextForTooltipAndAccessibleName() const override;
 
  protected:
   void OnExecuting(PageActionIconView::ExecuteSource source) override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-  const char* GetClassName() const override;
 
  private:
-  bool HasAssociatedBubble() const;
+  bool GetAssociatedBubble() const;
   bool ShouldBeVisible() const;
 
   CookieControlsStatus status_ = CookieControlsStatus::kUninitialized;
@@ -51,8 +53,6 @@ class CookieControlsIconView : public PageActionIconView,
   base::ScopedObservation<content_settings::CookieControlsController,
                           content_settings::CookieControlsView>
       observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CookieControlsIconView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_ICON_VIEW_H_

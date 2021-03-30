@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.payments.ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -14,15 +15,15 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.NormalizedAddressRequestDelegate;
-import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior.OverviewModeObserver;
+import org.chromium.chrome.browser.layouts.LayoutManagerProvider;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
+import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.payments.AddressEditor;
 import org.chromium.chrome.browser.payments.AutofillAddress;
 import org.chromium.chrome.browser.payments.AutofillContact;
@@ -42,11 +43,9 @@ import org.chromium.chrome.browser.payments.minimal.MinimalUICoordinator.Dismiss
 import org.chromium.chrome.browser.payments.minimal.MinimalUICoordinator.ReadyObserver;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestSection.OptionSection.FocusChangedObserver;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -55,11 +54,11 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.autofill.Completable;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.payments.AbortReason;
 import org.chromium.components.payments.BasicCardUtils;
 import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.components.payments.ErrorStrings;
-import org.chromium.components.payments.Event;
 import org.chromium.components.payments.JourneyLogger;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppType;
@@ -103,10 +102,10 @@ import java.util.Set;
  * This class manages all of the UIs related to payment. The UI logic of {@link
  * ChromePaymentRequestService} should be moved into this class.
  */
-public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Observer,
-                                         PaymentHandlerUiObserver, FocusChangedObserver,
-                                         PaymentUiServiceTestInterface,
-                                         NormalizedAddressRequestDelegate, PaymentRequestUI.Client {
+public class PaymentUiService
+        implements SettingsAutofillAndPaymentsObserver.Observer, PaymentHandlerUiObserver,
+                   FocusChangedObserver, PaymentUiServiceTestInterface,
+                   NormalizedAddressRequestDelegate, PaymentRequestUI.Client, LayoutStateObserver {
     /** Limit in the number of suggested items in a section. */
     /* package */ static final int SUGGESTIONS_LIMIT = 4;
 
@@ -118,7 +117,6 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
     private final boolean mIsOffTheRecord;
     private final Handler mHandler = new Handler();
     private final Queue<Runnable> mRetryQueue = new LinkedList<>();
-    private final OverviewModeObserver mOverviewModeObserver;
     private final TabModelSelectorObserver mSelectorObserver;
     private final TabModelObserver mTabModelObserver;
     private ContactEditor mContactEditor;
@@ -150,7 +148,7 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
     private boolean mCanUserAddCreditCard;
     private TabModelSelector mObservedTabModelSelector;
     private TabModel mObservedTabModel;
-    private OverviewModeBehavior mOverviewModeBehavior;
+    private LayoutStateProvider mLayoutStateProvider;
     private MinimalUICoordinator mMinimalUi;
 
     /** The delegate of this class. */
@@ -221,6 +219,10 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
          */
         @Nullable
         Context getContext();
+
+        /** @return The ActivityLifecycleDispatcher of the current ChromeActivity. */
+        @Nullable
+        ActivityLifecycleDispatcher getActivityLifecycleDispatcher();
     }
 
     /**
@@ -300,7 +302,8 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
                 AddressEditor.Purpose.PAYMENT_REQUEST, /*saveToDisk=*/!isOffTheRecord);
         // PaymentRequest card editor does not show the organization name in the dropdown with the
         // billing address labels.
-        mCardEditor = new CardEditor(webContents, mAddressEditor, /*includeOrgLabel=*/false);
+        mCardEditor = new CardEditor(
+                webContents, mAddressEditor, /*includeOrgLabel=*/false, isOffTheRecord);
         mJourneyLogger = journeyLogger;
         mWebContents = webContents;
         mTopLevelOriginFormattedForDisplay = topLevelOrigin;
@@ -310,7 +313,7 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
         mCurrencyFormatterMap = new HashMap<>();
         mIsOffTheRecord = isOffTheRecord;
         mPaymentAppComparator = new PaymentAppComparator(/*params=*/mParams);
-        mSelectorObserver = new EmptyTabModelSelectorObserver() {
+        mSelectorObserver = new TabModelSelectorObserver() {
             @Override
             public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
                 mDelegate.onLeavingCurrentTab(ErrorStrings.TAB_SWITCH);
@@ -324,12 +327,12 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
                 }
             }
         };
-        mOverviewModeObserver = new EmptyOverviewModeObserver() {
-            @Override
-            public void onOverviewModeStartedShowing(boolean showToolbar) {
-                mDelegate.onLeavingCurrentTab(ErrorStrings.TAB_OVERVIEW_MODE);
-            }
-        };
+    }
+
+    // Implements LayoutStateObserver:
+    @Override
+    public void onStartedShowing(int layoutType, boolean showToolbar) {
+        mDelegate.onLeavingCurrentTab(ErrorStrings.TAB_OVERVIEW_MODE);
     }
 
     /**
@@ -1050,7 +1053,6 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
                 new PaymentInformation(mUiShoppingCart, mShippingAddressesSection,
                         mUiShippingOptions, mContactSection, mPaymentMethodsSection));
         mPaymentInformationCallback = null;
-        mJourneyLogger.setEventOccurred(Event.SHOWN);
     }
 
     /**
@@ -1196,15 +1198,15 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
 
     /**
      * Build the PaymentRequest UI.
-     * @param activity The ChromeActivity for the payment request, cannot be null.
      * @param isWebContentsActive Whether the merchant's WebContents is active.
-     * @param isShowWaitingForUpdatedDetails Whether showing payment app or the app selector is
-     *         blocked on the updated payment details.
+     * @param activity The activity of the current tab.
+     * @param tabModelSelector The tab model selector of the current tab.
+     * @param tabModel The tab model of the current tab.
      * @return The error message if built unsuccessfully; null otherwise.
      */
     @Nullable
-    public String buildPaymentRequestUI(ChromeActivity activity, boolean isWebContentsActive,
-            boolean isShowWaitingForUpdatedDetails) {
+    public String buildPaymentRequestUI(boolean isWebContentsActive, Activity activity,
+            TabModelSelector tabModelSelector, TabModel tabModel) {
         // Payment methods section must be ready before building the rest of the UI. This is because
         // shipping and contact sections (when requested by merchant) are populated depending on
         // whether or not the selected payment app (if such exists) can provide the required
@@ -1212,6 +1214,8 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
         assert mPaymentMethodsSection != null;
 
         assert activity != null;
+        assert tabModelSelector != null;
+        assert tabModel != null;
 
         // Only the currently selected tab is allowed to show the payment UI.
         if (!isWebContentsActive) return ErrorStrings.CANNOT_SHOW_IN_BACKGROUND_TAB;
@@ -1223,25 +1227,26 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
         if (mObservedTabModelSelector != null) {
             mObservedTabModelSelector.removeObserver(mSelectorObserver);
         }
-        mObservedTabModelSelector = activity.getTabModelSelector();
+        mObservedTabModelSelector = tabModelSelector;
         mObservedTabModelSelector.addObserver(mSelectorObserver);
         if (mObservedTabModel != null) {
             mObservedTabModel.removeObserver(mTabModelObserver);
         }
-        mObservedTabModel = activity.getCurrentTabModel();
+        mObservedTabModel = tabModel;
         mObservedTabModel.addObserver(mTabModelObserver);
 
         // Catch any time the user enters the overview mode and dismiss the payment UI.
-        if (activity instanceof ChromeTabbedActivity) {
-            if (mOverviewModeBehavior != null) {
-                mOverviewModeBehavior.removeOverviewModeObserver(mOverviewModeObserver);
+        LayoutStateProvider layoutStateProvider =
+                LayoutManagerProvider.from(mWebContents.getTopLevelNativeWindow());
+        if (layoutStateProvider != null) {
+            if (mLayoutStateProvider != null) {
+                mLayoutStateProvider.removeObserver(this);
             }
-            mOverviewModeBehavior =
-                    ((ChromeTabbedActivity) activity).getOverviewModeBehaviorSupplier().get();
-
-            assert mOverviewModeBehavior != null;
-            if (mOverviewModeBehavior.overviewVisible()) return ErrorStrings.TAB_OVERVIEW_MODE;
-            mOverviewModeBehavior.addOverviewModeObserver(mOverviewModeObserver);
+            if (layoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER)) {
+                return ErrorStrings.TAB_OVERVIEW_MODE;
+            }
+            mLayoutStateProvider = layoutStateProvider;
+            mLayoutStateProvider.addObserver(this);
         }
 
         if (shouldShowContactSection()) {
@@ -1255,12 +1260,14 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
                 SecurityStateModel.getSecurityLevelForWebContents(mWebContents),
                 new ShippingStrings(mParams.getPaymentOptions().shippingType),
                 mPaymentUisShowStateReconciler, Profile.fromWebContents(mWebContents));
-        activity.getLifecycleDispatcher().register(
-                mPaymentRequestUI); // registered as a PauseResumeWithNativeObserver
+        ActivityLifecycleDispatcher dispatcher = mDelegate.getActivityLifecycleDispatcher();
+        if (dispatcher != null) {
+            dispatcher.register(mPaymentRequestUI); // registered as a PauseResumeWithNativeObserver
+        }
 
         final FaviconHelper faviconHelper = new FaviconHelper();
         faviconHelper.getLocalFaviconImageForURL(Profile.fromWebContents(mWebContents),
-                mWebContents.getLastCommittedUrl(),
+                mWebContents.getLastCommittedUrl().getSpec(),
                 activity.getResources().getDimensionPixelSize(R.dimen.payments_favicon_size),
                 (bitmap, iconUrl) -> {
                     if (bitmap == null) {
@@ -1527,9 +1534,9 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
             mObservedTabModel = null;
         }
 
-        if (mOverviewModeBehavior != null) {
-            mOverviewModeBehavior.removeOverviewModeObserver(mOverviewModeObserver);
-            mOverviewModeBehavior = null;
+        if (mLayoutStateProvider != null) {
+            mLayoutStateProvider.removeObserver(this);
+            mLayoutStateProvider = null;
         }
     }
 
@@ -1688,9 +1695,9 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
 
         if (mPaymentRequestUI != null) {
             mPaymentRequestUI.close();
-            ChromeActivity activity = ChromeActivity.fromWebContents(mWebContents);
-            if (activity != null) {
-                activity.getLifecycleDispatcher().unregister(mPaymentRequestUI);
+            ActivityLifecycleDispatcher dispatcher = mDelegate.getActivityLifecycleDispatcher();
+            if (dispatcher != null) {
+                dispatcher.unregister(mPaymentRequestUI);
             }
             mPaymentRequestUI = null;
             mPaymentUisShowStateReconciler.onPaymentRequestUiClosed();

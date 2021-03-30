@@ -36,9 +36,9 @@ void AndroidBrowserTest::PreRunTestOnMainThread() {
 }
 
 void AndroidBrowserTest::PostRunTestOnMainThread() {
-  for (size_t i = 0; i < TabModelList::size(); ++i) {
-    while (TabModelList::get(i)->GetTabCount())
-      TabModelList::get(i)->CloseTabAt(0);
+  for (TabModel* model : TabModelList::models()) {
+    while (model->GetTabCount())
+      model->CloseTabAt(0);
   }
 
   // Run any shutdown events from closing tabs.

@@ -80,13 +80,14 @@ AudioRendererImpl::AudioRendererImpl(
   // won't remove the observer until we're destructed on |task_runner_| so we
   // must post it here if we're on the wrong thread.
   if (task_runner_->BelongsToCurrentThread()) {
-    base::PowerMonitor::AddObserver(this);
+    base::PowerMonitor::AddPowerSuspendObserver(this);
   } else {
     // Safe to post this without a WeakPtr because this class must be destructed
     // on the same thread and construction has not completed yet.
     task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(IgnoreResult(&base::PowerMonitor::AddObserver), this));
+        base::BindOnce(
+            IgnoreResult(&base::PowerMonitor::AddPowerSuspendObserver), this));
   }
 
   // Do not add anything below this line since the above actions are only safe
@@ -96,7 +97,7 @@ AudioRendererImpl::AudioRendererImpl(
 AudioRendererImpl::~AudioRendererImpl() {
   DVLOG(1) << __func__;
   DCHECK(task_runner_->BelongsToCurrentThread());
-  base::PowerMonitor::RemoveObserver(this);
+  base::PowerMonitor::RemovePowerSuspendObserver(this);
 
   // If Render() is in progress, this call will wait for Render() to finish.
   // After this call, the |sink_| will not call back into |this| anymore.
@@ -727,6 +728,7 @@ void AudioRendererImpl::OnWaiting(WaitingReason reason) {
 
 void AudioRendererImpl::SetVolume(float volume) {
   DCHECK(task_runner_->BelongsToCurrentThread());
+  was_unmuted_ = was_unmuted_ || volume != 0;
   if (state_ == kUninitialized || state_ == kInitializing) {
     volume_ = volume;
     return;
@@ -795,6 +797,12 @@ void AudioRendererImpl::SetPreservesPitch(bool preserves_pitch) {
     algorithm_->SetPreservesPitch(preserves_pitch);
 }
 
+void AudioRendererImpl::SetAutoplayInitiated(bool autoplay_initiated) {
+  base::AutoLock auto_lock(lock_);
+
+  autoplay_initiated_ = autoplay_initiated;
+}
+
 void AudioRendererImpl::OnSuspend() {
   base::AutoLock auto_lock(lock_);
   is_suspending_ = true;
@@ -810,9 +818,9 @@ void AudioRendererImpl::SetPlayDelayCBForTesting(PlayDelayCBForTesting cb) {
   play_delay_cb_for_testing_ = std::move(cb);
 }
 
-void AudioRendererImpl::DecodedAudioReady(AudioDecoderStream::ReadStatus status,
-                                          scoped_refptr<AudioBuffer> buffer) {
-  DVLOG(2) << __func__ << "(" << status << ")";
+void AudioRendererImpl::DecodedAudioReady(
+    AudioDecoderStream::ReadResult result) {
+  DVLOG(2) << __func__ << "(" << result.code() << ")";
   DCHECK(task_runner_->BelongsToCurrentThread());
 
   base::AutoLock auto_lock(lock_);
@@ -821,18 +829,14 @@ void AudioRendererImpl::DecodedAudioReady(AudioDecoderStream::ReadStatus status,
   CHECK(pending_read_);
   pending_read_ = false;
 
-  if (status == AudioDecoderStream::ABORTED ||
-      status == AudioDecoderStream::DEMUXER_READ_ABORTED) {
-    HandleAbortedReadOrDecodeError(PIPELINE_OK);
+  if (result.has_error()) {
+    HandleAbortedReadOrDecodeError(result.code() == StatusCode::kAborted
+                                       ? PIPELINE_OK
+                                       : PIPELINE_ERROR_DECODE);
     return;
   }
 
-  if (status == AudioDecoderStream::DECODE_ERROR) {
-    HandleAbortedReadOrDecodeError(PIPELINE_ERROR_DECODE);
-    return;
-  }
-
-  DCHECK_EQ(status, AudioDecoderStream::OK);
+  scoped_refptr<AudioBuffer> buffer = std::move(result).value();
   DCHECK(buffer);
 
   if (state_ == kFlushing) {
@@ -959,8 +963,11 @@ bool AudioRendererImpl::HandleDecodedBuffer_Locked(
       first_packet_timestamp_ = buffer->timestamp();
 
 #if !defined(OS_ANDROID)
-    if (transcribe_audio_callback_ && volume_ > 0)
+    // Do not transcribe muted streams initiated by autoplay if the stream was
+    // never unmuted.
+    if (transcribe_audio_callback_ && !(autoplay_initiated_ && !was_unmuted_)) {
       transcribe_audio_callback_.Run(buffer);
+    }
 #endif
 
     if (state_ != kUninitialized)

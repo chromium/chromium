@@ -473,10 +473,11 @@ bool IsCorsSafelistedHeader(const std::string& name, const std::string& value) {
   }
 
   if (lower_name == "accept-language" || lower_name == "content-language") {
-    return (value.end() == std::find_if(value.begin(), value.end(), [](char c) {
-              return !isalnum(c) && c != 0x20 && c != 0x2a && c != 0x2c &&
-                     c != 0x2d && c != 0x2e && c != 0x3b && c != 0x3d;
-            }));
+    return std::all_of(value.begin(), value.end(), [](char c) {
+      return (0x30 <= c && c <= 0x39) || (0x41 <= c && c <= 0x5a) ||
+             (0x61 <= c && c <= 0x7a) || c == 0x20 || c == 0x2a || c == 0x2c ||
+             c == 0x2d || c == 0x2e || c == 0x3b || c == 0x3d;
+    });
   }
 
   if (lower_name == "content-type")

@@ -198,8 +198,6 @@ TEST_F(RenderWidgetHostLatencyTrackerTest, TestValidEventTiming) {
   histogram_tester().ExpectUniqueSample(
       "Event.Latency.ScrollBegin.Wheel.TimeToScrollUpdateSwapBegin4", 0, 1);
   histogram_tester().ExpectUniqueSample(
-      "Event.Latency.Scroll.Wheel.TimeToScrollUpdateSwapBegin2", 0, 1);
-  histogram_tester().ExpectUniqueSample(
       "Event.Latency.ScrollBegin.Wheel.TimeToHandled2_Impl", 0, 1);
   histogram_tester().ExpectUniqueSample(
       "Event.Latency.Scroll.Wheel.TimeToHandled2_Impl", 0, 1);
@@ -271,10 +269,6 @@ TEST_F(RenderWidgetHostLatencyTrackerTest,
       EXPECT_TRUE(
           HistogramSizeEq("Event.Latency.ScrollBegin.Wheel."
                           "TimeToScrollUpdateSwapBegin4",
-                          1));
-      EXPECT_TRUE(
-          HistogramSizeEq("Event.Latency.Scroll.Wheel."
-                          "TimeToScrollUpdateSwapBegin2",
                           1));
       EXPECT_TRUE(
           HistogramSizeEq("Event.Latency.ScrollUpdate.Wheel."
@@ -386,10 +380,6 @@ TEST_F(RenderWidgetHostLatencyTrackerTest, MAYBE_TestWheelToScrollHistograms) {
           HistogramSizeEq("Event.Latency.ScrollBegin.Wheel."
                           "TimeToScrollUpdateSwapBegin4",
                           0));
-      EXPECT_TRUE(
-          HistogramSizeEq("Event.Latency.Scroll.Wheel."
-                          "TimeToScrollUpdateSwapBegin2",
-                          1));
       EXPECT_TRUE(
           HistogramSizeEq("Event.Latency.ScrollUpdate.Wheel."
                           "TimeToScrollUpdateSwapBegin4",

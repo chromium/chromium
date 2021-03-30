@@ -5,9 +5,10 @@
 #ifndef EXTENSIONS_COMMON_MANIFEST_HANDLERS_WEB_APP_FILE_HANDLER_H_
 #define EXTENSIONS_COMMON_MANIFEST_HANDLERS_WEB_APP_FILE_HANDLER_H_
 
+#include <string>
+
 #include "base/containers/span.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"
@@ -30,7 +31,7 @@ class WebAppFileHandlersParser : public ManifestHandler {
   WebAppFileHandlersParser();
   ~WebAppFileHandlersParser() override;
 
-  bool Parse(Extension* extension, base::string16* error) override;
+  bool Parse(Extension* extension, std::u16string* error) override;
 
  private:
   base::span<const char* const> Keys() const override;

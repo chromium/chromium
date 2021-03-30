@@ -16,7 +16,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "media/base/android/media_player_listener.h"
@@ -92,6 +91,7 @@ class MEDIA_EXPORT MediaPlayerBridge {
 
   // Methods to partially expose the underlying MediaPlayer.
   void SetVideoSurface(gl::ScopedJavaSurface surface);
+  void SetPlaybackRate(double playback_rate);
   void Pause();
   void SeekTo(base::TimeDelta timestamp);
   base::TimeDelta GetCurrentTime();
@@ -172,8 +172,8 @@ class MEDIA_EXPORT MediaPlayerBridge {
 
   // Callback function passed to |resource_getter_|. Called when the auth
   // credentials are retrieved.
-  void OnAuthCredentialsRetrieved(const base::string16& username,
-                                  const base::string16& password);
+  void OnAuthCredentialsRetrieved(const std::u16string& username,
+                                  const std::u16string& password);
 
   // Extract the media metadata from a url, asynchronously.
   // OnMediaMetadataExtracted() will be called when this call finishes.

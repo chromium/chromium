@@ -1,0 +1,14 @@
+{
+  "facets": {
+    "fuchsia.test": {
+      "injected-services": {
+        "fuchsia.fonts.Provider": "fuchsia-pkg://fuchsia.com/fonts#meta/fonts.cmx",
+      }
+    }
+  },
+  "sandbox": {
+    "services": [
+      "fuchsia.fonts.Provider"
+    ]
+  }
+}

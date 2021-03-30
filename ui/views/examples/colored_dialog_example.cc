@@ -29,7 +29,7 @@ namespace examples {
 
 class ThemeTrackingCheckbox : public views::Checkbox {
  public:
-  explicit ThemeTrackingCheckbox(const base::string16& label)
+  explicit ThemeTrackingCheckbox(const std::u16string& label)
       : Checkbox(label,
                  base::BindRepeating(&ThemeTrackingCheckbox::ButtonPressed,
                                      base::Unretained(this))) {}
@@ -52,7 +52,7 @@ class ThemeTrackingCheckbox : public views::Checkbox {
 class TextVectorImageButton : public views::MdTextButton {
  public:
   TextVectorImageButton(PressedCallback callback,
-                        const base::string16& text,
+                        const std::u16string& text,
                         const gfx::VectorIcon& icon)
       : MdTextButton(callback, text), icon_(icon) {}
   TextVectorImageButton(const TextVectorImageButton&) = delete;
@@ -105,7 +105,7 @@ bool ColoredDialog::ShouldShowCloseButton() const {
 }
 
 void ColoredDialog::ContentsChanged(Textfield* sender,
-                                    const base::string16& new_contents) {
+                                    const std::u16string& new_contents) {
   SetButtonEnabled(ui::DIALOG_BUTTON_OK, !textfield_->GetText().empty());
   DialogModelChanged();
 }
@@ -130,7 +130,7 @@ ColoredDialogChooser::ColoredDialogChooser() {
       views::kInfoIcon));
 
   confirmation_label_ = AddChildView(
-      std::make_unique<views::Label>(base::string16(), style::CONTEXT_LABEL));
+      std::make_unique<views::Label>(std::u16string(), style::CONTEXT_LABEL));
   confirmation_label_->SetVisible(false);
 }
 
@@ -145,7 +145,7 @@ void ColoredDialogChooser::ButtonPressed() {
   widget->Show();
 }
 
-void ColoredDialogChooser::OnFeedbackSubmit(base::string16 text) {
+void ColoredDialogChooser::OnFeedbackSubmit(std::u16string text) {
   constexpr base::TimeDelta kConfirmationDuration =
       base::TimeDelta::FromSeconds(3);
 

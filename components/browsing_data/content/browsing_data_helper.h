@@ -27,7 +27,7 @@ class NetworkContext;
 }  // namespace network
 
 namespace prerender {
-class PrerenderManager;
+class NoStatePrefetchManager;
 }
 
 namespace browsing_data {
@@ -53,7 +53,8 @@ HostContentSettingsMap::PatternSourcePredicate CreateWebsiteSettingsFilter(
     content::BrowsingDataFilterBuilder* filter_builder);
 
 // Clears prerendering cache.
-void RemovePrerenderCacheData(prerender::PrerenderManager* prerender_manager);
+void RemovePrerenderCacheData(
+    prerender::NoStatePrefetchManager* no_state_prefetch_manager);
 
 // Removes site isolation prefs. Should be called when the user removes
 // cookies and other site settings or history.

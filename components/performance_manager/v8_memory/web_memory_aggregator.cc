@@ -9,9 +9,11 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/containers/stack.h"
 #include "base/stl_util.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/page_node.h"
+#include "components/performance_manager/public/graph/worker_node.h"
 #include "components/performance_manager/public/v8_memory/v8_detailed_memory.h"
 #include "components/performance_manager/v8_memory/v8_context_tracker.h"
 #include "url/gurl.h"
@@ -20,34 +22,125 @@ namespace performance_manager {
 
 namespace v8_memory {
 
+// A visitor that visits every node that can be aggregated into an aggregation
+// point.
+//
+// TODO(joenotcharles): If we ever need to aggregate different data for each
+// aggregation point, turn this into an interface and add a subclass for each
+// type of data to aggregate.
+class AggregationPointVisitor {
+ public:
+  // The given |main_origin| is the origin of the main web page, which is the
+  // same as the origin of the top-level frames.
+  AggregationPointVisitor(const url::Origin& requesting_origin,
+                          const ProcessNode* requesting_process_node,
+                          const url::Origin& main_origin);
+
+  ~AggregationPointVisitor();
+
+  AggregationPointVisitor(const AggregationPointVisitor& other) = delete;
+  AggregationPointVisitor& operator=(const AggregationPointVisitor& other) =
+      delete;
+
+  mojom::WebMemoryMeasurementPtr TakeAggregationResult();
+
+  // Called on first visiting |frame_node| in a depth-first traversal.
+  void OnFrameEntered(const FrameNode* frame_node);
+
+  // Called after visiting |frame_node| and all its children in a depth-first
+  // traversal.
+  void OnFrameExited(const FrameNode* frame_node);
+
+  // Called on first visiting |worker_node| in a depth-first traversal.
+  void OnWorkerEntered(const WorkerNode* worker_node);
+
+  // Called after visiting |worker_node| and all its children in a depth-first
+  // traversal.
+  void OnWorkerExited(const WorkerNode* worker_node);
+
+  // Called at the start of the depth-first traversal to set up the common
+  // root node for all frame trees.
+  void OnRootEntered();
+
+  // Called at the end of the traversal.
+  void OnRootExited();
+
+ private:
+  struct Enclosing {
+    url::Origin origin;
+    mojom::WebMemoryBreakdownEntry* aggregation_point;
+  };
+  const url::Origin requesting_origin_;
+  const ProcessNode* requesting_process_node_;
+  const url::Origin main_origin_;
+  mojom::WebMemoryMeasurementPtr aggregation_result_ =
+      mojom::WebMemoryMeasurement::New();
+  mojom::WebMemoryBreakdownEntryPtr root_aggregation_point_;
+  base::stack<Enclosing> enclosing_;
+};
+
 namespace {
 
 using AttributionScope = mojom::WebMemoryAttribution::Scope;
 
-// Returns true if |page_node| has an opener that should be followed by the
-// aggregation algorithm.
-bool ShouldFollowOpenerLink(const PageNode* page_node) {
-  return page_node->GetOpenedType() == PageNode::OpenedType::kPopup;
+// The various ways a node can be treated during the aggregation.
+enum class NodeAggregationType {
+  // Node is same-origin to |requesting_node| and its iframe attributes are
+  // visible;
+  // will be a new aggregation point with a scope depending on the node type
+  // (eg. "Window" or "DedicatedWorker").
+  kSameOriginAggregationPoint,
+  // Node is same-origin to |requesting_node| but its iframe attributes are not
+  // visible;
+  // will be a new aggregation point with a scope depending on the node type
+  // (eg. "Window" or "DedicatedWorker").
+  kSameOriginAggregationPointWithHiddenAttributes,
+  // Node is cross-origin with |requesting_node| but its parent is not; will
+  // be a new aggregation point with scope "cross-origin-aggregated".
+  kCrossOriginAggregationPoint,
+  // Node is cross-origin with |requesting_node| and so is its parent; will
+  // be aggregated into its parent's aggregation point.
+  kCrossOriginAggregated,
+};
+
+NodeAggregationType GetNodeAggregationType(const url::Origin& requesting_origin,
+                                           const url::Origin& enclosing_origin,
+                                           const url::Origin& node_origin) {
+  bool same_origin_node = requesting_origin.IsSameOriginWith(node_origin);
+  bool same_origin_parent =
+      requesting_origin.IsSameOriginWith(enclosing_origin);
+
+  if (same_origin_node) {
+    return same_origin_parent
+               ? NodeAggregationType::kSameOriginAggregationPoint
+               : NodeAggregationType::
+                     kSameOriginAggregationPointWithHiddenAttributes;
+  } else {
+    return same_origin_parent
+               ? NodeAggregationType::kCrossOriginAggregationPoint
+               : NodeAggregationType::kCrossOriginAggregated;
+  }
 }
 
 // Returns |frame_node|'s origin based on its current url.
+// An about:blank iframe inherits the origin of its parent. See:
+// https://html.spec.whatwg.org/multipage/browsers.html#determining-the-origin
 url::Origin GetOrigin(const FrameNode* frame_node) {
-  return url::Origin::Create(frame_node->GetURL());
+  if (frame_node->GetParentFrameNode()) {
+    return url::Origin::Resolve(
+        frame_node->GetURL(),
+        url::Origin::Create(frame_node->GetParentFrameNode()->GetURL()));
+  } else {
+    return url::Origin::Create(frame_node->GetURL());
+  }
 }
 
-// Returns the parent of |frame_node|, the opener if it has no parent, or
-// nullptr if it has neither.
-const FrameNode* GetParentOrOpener(const FrameNode* frame_node) {
-  // Only the main frame of a page should have an opener. So first check if
-  // there's a parent and, if not, check if there's an opener.
-  if (auto* parent = frame_node->GetParentFrameNode())
-    return parent;
-  auto* page_node = frame_node->GetPageNode();
-  DCHECK(page_node);
-  if (ShouldFollowOpenerLink(page_node))
-    return page_node->GetOpenerFrameNode();
-  return nullptr;
+#if DCHECK_IS_ON()
+// Returns |worker_node|'s origin based on its current url.
+url::Origin GetOrigin(const WorkerNode* worker_node) {
+  return url::Origin::Create(worker_node->GetURL());
 }
+#endif
 
 // Returns a mutable pointer to the WebMemoryAttribution structure in the given
 // |breakdown|.
@@ -71,210 +164,378 @@ const mojom::WebMemoryAttribution* GetAttributionFromBreakdown(
   return const_cast<mojom::WebMemoryAttribution*>(mutable_attribution);
 }
 
+AttributionScope AttributionScopeFromWorkerType(
+    WorkerNode::WorkerType worker_type) {
+  switch (worker_type) {
+    case WorkerNode::WorkerType::kDedicated:
+      return AttributionScope::kDedicatedWorker;
+    case WorkerNode::WorkerType::kShared:
+    case WorkerNode::WorkerType::kService:
+      // TODO(crbug.com/1169168): Support service and shared workers.
+      NOTREACHED();
+      return AttributionScope::kDedicatedWorker;
+  }
+}
+
+void AddMemoryBytes(mojom::WebMemoryBreakdownEntry* aggregation_point,
+                    const V8DetailedMemoryExecutionContextData* data,
+                    bool is_same_process) {
+  if (!data) {
+    return;
+  }
+  if (!aggregation_point->memory) {
+    aggregation_point->memory = mojom::WebMemoryUsage::New();
+  }
+  // Ensure this frame is actually in the same process as the requesting
+  // frame. If not it should be considered to have 0 bytes.
+  // (https://github.com/WICG/performance-measure-memory/issues/20).
+  uint64_t bytes_used = is_same_process ? data->v8_bytes_used() : 0;
+  aggregation_point->memory->bytes += bytes_used;
+}
+
+const FrameNode* GetTopFrame(const FrameNode* frame) {
+  DCHECK(frame);
+  // Follow the parent to find the top-most frame.
+  auto* current = frame;
+  while (auto* parent = current->GetParentFrameNode()) {
+    current = parent;
+  }
+
+  DCHECK(current);
+  // Make sure we didn't break out of the browsing context group.
+  DCHECK_EQ(current->GetBrowsingInstanceId(), frame->GetBrowsingInstanceId());
+  return current;
+}
+
+// Returns the process node of the main frame that is in the same browsing
+// context group as the given frame.
+const ProcessNode* GetMainProcess(const FrameNode* frame) {
+  // COOP guarantees that the top-most frame of the current frame tree
+  // and the main frame of the page have the same origin and thus have
+  // the same process node.
+  return GetTopFrame(frame)->GetProcessNode();
+}
+
 }  // anonymous namespace
 
+////////////////////////////////////////////////////////////////////////////////
+// AggregationPointVisitor
+
+AggregationPointVisitor::AggregationPointVisitor(
+    const url::Origin& requesting_origin,
+    const ProcessNode* requesting_process_node,
+    const url::Origin& main_origin)
+    : requesting_origin_(requesting_origin),
+      requesting_process_node_(requesting_process_node),
+      main_origin_(main_origin) {}
+
+AggregationPointVisitor::~AggregationPointVisitor() {
+  DCHECK(enclosing_.empty());
+}
+
+mojom::WebMemoryMeasurementPtr
+AggregationPointVisitor::TakeAggregationResult() {
+  DCHECK(aggregation_result_);
+  auto result = std::move(aggregation_result_);
+  aggregation_result_ = nullptr;
+  return result;
+}
+
+void AggregationPointVisitor::OnRootEntered() {
+  DCHECK(enclosing_.empty());
+  root_aggregation_point_ = mojom::WebMemoryBreakdownEntry::New();
+  root_aggregation_point_->attribution.emplace_back(
+      mojom::WebMemoryAttribution::New());
+  enclosing_.push(Enclosing{main_origin_, root_aggregation_point_.get()});
+}
+
+void AggregationPointVisitor::OnRootExited() {
+  if (root_aggregation_point_->memory) {
+    aggregation_result_->breakdown.push_back(
+        std::move(root_aggregation_point_));
+  }
+  enclosing_.pop();
+  DCHECK(enclosing_.empty());
+}
+
+void AggregationPointVisitor::OnFrameEntered(const FrameNode* frame_node) {
+  DCHECK(!enclosing_.empty());
+  DCHECK(frame_node);
+  url::Origin node_origin = GetOrigin(frame_node);
+  NodeAggregationType aggregation_type = GetNodeAggregationType(
+      requesting_origin_, enclosing_.top().origin, node_origin);
+  mojom::WebMemoryBreakdownEntry* aggregation_point = nullptr;
+  switch (aggregation_type) {
+    case NodeAggregationType::kSameOriginAggregationPoint:
+      aggregation_point = WebMemoryAggregator::CreateBreakdownEntry(
+          AttributionScope::kWindow, frame_node->GetURL().spec(),
+          aggregation_result_.get());
+      WebMemoryAggregator::SetBreakdownAttributionFromFrame(frame_node,
+                                                            aggregation_point);
+      break;
+
+    case NodeAggregationType::kSameOriginAggregationPointWithHiddenAttributes:
+      aggregation_point = WebMemoryAggregator::CreateBreakdownEntry(
+          AttributionScope::kWindow, frame_node->GetURL().spec(),
+          aggregation_result_.get());
+      // Some grandparent node is the most recent aggregation point whose
+      // attributes are visible to the start node, and
+      // |enclosing_aggregation_point| includes those attributes. Copy the
+      // id and src attributes from there.
+      WebMemoryAggregator::CopyBreakdownAttribution(
+          enclosing_.top().aggregation_point, aggregation_point);
+      break;
+    case NodeAggregationType::kCrossOriginAggregationPoint:
+      // Create a new aggregation point with cross-origin-aggregated scope.
+      // Since this node is NOT same-origin to the start node, the start node
+      // CANNOT view its current url.
+      aggregation_point = WebMemoryAggregator::CreateBreakdownEntry(
+          AttributionScope::kCrossOriginAggregated, base::nullopt,
+          aggregation_result_.get());
+      // This is cross-origin but not being aggregated into another
+      // aggregation point, so its parent or opener must be same-origin to the
+      // start node, which can therefore view its attributes. Add the id and
+      // src recorded for the node in V8ContextTracker to the new breakdown
+      // entry.
+      WebMemoryAggregator::SetBreakdownAttributionFromFrame(frame_node,
+                                                            aggregation_point);
+      break;
+
+    case NodeAggregationType::kCrossOriginAggregated:
+      // Update the enclosing aggregation point in-place.
+      aggregation_point = enclosing_.top().aggregation_point;
+      break;
+  }
+
+  // Now update the memory used in the chosen aggregation point.
+  DCHECK(aggregation_point);
+  AddMemoryBytes(aggregation_point,
+                 V8DetailedMemoryExecutionContextData::ForFrameNode(frame_node),
+                 frame_node->GetProcessNode() == requesting_process_node_);
+
+  enclosing_.push(Enclosing{node_origin, aggregation_point});
+}
+
+void AggregationPointVisitor::OnFrameExited(const FrameNode* frame_node) {
+  enclosing_.pop();
+  DCHECK(!enclosing_.empty());
+}
+
+void AggregationPointVisitor::OnWorkerEntered(const WorkerNode* worker_node) {
+  DCHECK(!enclosing_.empty());
+  DCHECK(worker_node);
+  // TODO(crbug.com/1169168): Support service and shared workers.
+  DCHECK_EQ(worker_node->GetWorkerType(), WorkerNode::WorkerType::kDedicated);
+  // A dedicated worker is guaranteed to have the same origin as its parent,
+  // which means that a dedicated worker cannot be a cross-origin aggregation
+  // point.
+  // TODO(crbug.com/1169178): The URL of a worker node is currently not
+  // available without PlzDedicatedWorker, which is disabled by default.
+  // Until then we use the origin of the parent.
+  url::Origin node_origin = enclosing_.top().origin;
+#if DCHECK_IS_ON()
+  auto client_frames = worker_node->GetClientFrames();
+  DCHECK(std::all_of(client_frames.begin(), client_frames.end(),
+                     [node_origin](const FrameNode* client) {
+                       return node_origin.IsSameOriginWith(GetOrigin(client));
+                     }));
+  auto client_workers = worker_node->GetClientWorkers();
+  DCHECK(std::all_of(client_workers.begin(), client_workers.end(),
+                     [node_origin](const WorkerNode* client) {
+                       // TODO(crbug.com/1169178): Remove the is_empty guard
+                       // once worker worker URLs are available.
+                       return client->GetURL().is_empty() ||
+                              node_origin.IsSameOriginWith(GetOrigin(client));
+                     }));
+#endif
+  NodeAggregationType aggregation_type = GetNodeAggregationType(
+      requesting_origin_, enclosing_.top().origin, node_origin);
+
+  mojom::WebMemoryBreakdownEntry* aggregation_point = nullptr;
+  switch (aggregation_type) {
+    case NodeAggregationType::kSameOriginAggregationPoint:
+    case NodeAggregationType::kSameOriginAggregationPointWithHiddenAttributes: {
+      // Create a new aggregation point with window scope. Since this node is
+      // same-origin to the start node, the start node can view its current
+      // url.
+      std::string url = worker_node->GetURL().spec();
+      if (url.empty()) {
+        // TODO(906991): Remove this once PlzDedicatedWorker ships. Until then
+        // the browser does not know URLs of dedicated workers, so we pass them
+        // together with the measurement result.
+        const auto* data =
+            V8DetailedMemoryExecutionContextData::ForWorkerNode(worker_node);
+        if (data && data->url()) {
+          url = *data->url();
+        }
+      }
+      aggregation_point = WebMemoryAggregator::CreateBreakdownEntry(
+          AttributionScopeFromWorkerType(worker_node->GetWorkerType()),
+          std::move(url), aggregation_result_.get());
+      WebMemoryAggregator::CopyBreakdownAttribution(
+          enclosing_.top().aggregation_point, aggregation_point);
+      break;
+    }
+
+    case NodeAggregationType::kCrossOriginAggregated:
+      // Update the enclosing aggregation point in-place.
+      aggregation_point = enclosing_.top().aggregation_point;
+      break;
+
+    case NodeAggregationType::kCrossOriginAggregationPoint:
+      NOTREACHED();
+      return;
+  }
+
+  // Now update the memory used in the chosen aggregation point.
+  DCHECK(aggregation_point);
+  AddMemoryBytes(
+      aggregation_point,
+      V8DetailedMemoryExecutionContextData::ForWorkerNode(worker_node),
+      worker_node->GetProcessNode() == requesting_process_node_);
+
+  enclosing_.push(Enclosing{node_origin, aggregation_point});
+}
+
+void AggregationPointVisitor::OnWorkerExited(const WorkerNode* worker_node) {
+  enclosing_.pop();
+  DCHECK(!enclosing_.empty());
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // WebMemoryAggregator
 
 WebMemoryAggregator::WebMemoryAggregator(const FrameNode* requesting_node)
     : requesting_origin_(GetOrigin(requesting_node)),
-      aggregation_start_node_(
-          internal::FindAggregationStartNode(requesting_node)) {
-  DCHECK(aggregation_start_node_);
-}
+      requesting_process_node_(requesting_node->GetProcessNode()),
+      main_process_node_(GetMainProcess(requesting_node)),
+      browsing_instance_id_(requesting_node->GetBrowsingInstanceId()) {}
 
 WebMemoryAggregator::~WebMemoryAggregator() = default;
 
-WebMemoryAggregator::NodeAggregationType
-WebMemoryAggregator::FindNodeAggregationType(const FrameNode* frame_node) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+namespace {
 
-#if DCHECK_IS_ON()
-  auto* node = frame_node;
-  while (node && node != aggregation_start_node_) {
-    node = GetParentOrOpener(node);
-  }
-  // Should have broken out of the loop by reaching the start node, not nullptr.
-  DCHECK_EQ(node, aggregation_start_node_);
-#endif
-
-  // If |frame_node| is in a different browsing context group from |start_node|
-  // it should be invisible.
-  if (frame_node->GetBrowsingInstanceId() !=
-      aggregation_start_node_->GetBrowsingInstanceId()) {
-    return NodeAggregationType::kInvisible;
-  }
-
-  // If |frame_node| is same-origin to |start_node|, it's an aggregation point.
-  // (This trivially includes the |start_node| itself.)
-  if (requesting_origin_.IsSameOriginWith(GetOrigin(frame_node)))
-    return NodeAggregationType::kSameOriginAggregationPoint;
-  DCHECK_NE(frame_node, aggregation_start_node_);
-
-  // If |frame_node| is cross-origin from |start_node|, but is a direct child of
-  // a same-origin node, its existence is visible to |start_node| so it's an
-  // aggregation point. But its current url will be hidden from |start_node|.
-  const FrameNode* parent_node = frame_node->GetParentFrameNode();
-  // |frame_node| is a child of |start_node| so must have a parent.
-  DCHECK(parent_node);
-  if (requesting_origin_.IsSameOriginWith(GetOrigin(parent_node)))
-    return NodeAggregationType::kCrossOriginAggregationPoint;
-
-  // Otherwise |frame_node|'s memory should be aggregated into the last
-  // aggregation point.
-  return NodeAggregationType::kCrossOriginAggregated;
+// Returns v8_browsing_memory / v8_process_memory where
+// - v8_browsing_memory is the total V8 memory usage of all frames of the given
+//   |browsing_instance_id| in the given |process_node|.
+// - v8_process_memory is the total V8 memory usage of all frames in the given
+//   |process_node|.
+double GetBrowsingInstanceV8BytesFraction(const ProcessNode* process_node,
+                                          int32_t browsing_instance_id) {
+  uint64_t bytes_used = 0;
+  uint64_t total_bytes_used = 0;
+  process_node->VisitFrameNodes(base::BindRepeating(
+      [](base::Optional<int32_t> browsing_instance_id, uint64_t* bytes_used,
+         uint64_t* total_bytes_used, const FrameNode* frame_node) {
+        const auto* data =
+            V8DetailedMemoryExecutionContextData::ForFrameNode(frame_node);
+        if (data) {
+          if (frame_node->GetBrowsingInstanceId() == browsing_instance_id) {
+            *bytes_used += data->v8_bytes_used();
+          }
+          *total_bytes_used += data->v8_bytes_used();
+        }
+        return true;
+      },
+      browsing_instance_id, &bytes_used, &total_bytes_used));
+  return static_cast<double>(bytes_used) / total_bytes_used;
 }
+
+}  // anonymous namespace
 
 mojom::WebMemoryMeasurementPtr
 WebMemoryAggregator::AggregateMeasureMemoryResult() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  aggregation_result_ = mojom::WebMemoryMeasurement::New();
-  VisitFrame(nullptr, aggregation_start_node_);
 
-  // Don't report breakdowns without any memory use.
-  base::EraseIf(aggregation_result_->breakdown,
-                [](const mojom::WebMemoryBreakdownEntryPtr& entry) {
-                  return entry->bytes == 0;
-                });
+  std::vector<const FrameNode*> top_frames;
+  main_process_node_->VisitFrameNodes(base::BindRepeating(
+      [](std::vector<const FrameNode*>* top_frames,
+         int32_t browsing_instance_id, const FrameNode* node) {
+        if (node->GetBrowsingInstanceId() == browsing_instance_id &&
+            !node->GetParentFrameNode() && !GetOrigin(node).opaque()) {
+          top_frames->push_back(node);
+        }
+        return true;
+      },
+      &top_frames, browsing_instance_id_));
 
-  return std::move(aggregation_result_);
+  CHECK(!top_frames.empty());
+  url::Origin main_origin = GetOrigin(top_frames[0]);
+  DCHECK(std::all_of(top_frames.begin(), top_frames.end(),
+                     [&main_origin](const FrameNode* node) {
+                       return GetOrigin(node).IsSameOriginWith(main_origin);
+                     }));
+
+  AggregationPointVisitor ap_visitor(requesting_origin_,
+                                     requesting_process_node_, main_origin);
+  ap_visitor.OnRootEntered();
+  for (const FrameNode* node : top_frames) {
+    VisitFrame(&ap_visitor, node);
+  }
+  ap_visitor.OnRootExited();
+  mojom::WebMemoryMeasurementPtr aggregation_result =
+      ap_visitor.TakeAggregationResult();
+  auto* process_data =
+      V8DetailedMemoryProcessData::ForProcessNode(requesting_process_node_);
+  if (process_data) {
+    // Shared memory is shared between browsing context groups in the process.
+    // We cannot attribute it to a single browsing context group, so we report
+    // it as is.
+    aggregation_result->shared_memory = mojom::WebMemoryUsage::New();
+    aggregation_result->shared_memory->bytes =
+        process_data->shared_v8_bytes_used();
+    // As we don't have precise attribution for detached and Blink memory,
+    // we approximate it using V8 memory.
+    double browsing_instance_factor = GetBrowsingInstanceV8BytesFraction(
+        requesting_process_node_, browsing_instance_id_);
+    aggregation_result->detached_memory = mojom::WebMemoryUsage::New();
+    aggregation_result->detached_memory->bytes = static_cast<uint64_t>(
+        process_data->detached_v8_bytes_used() * browsing_instance_factor);
+    aggregation_result->blink_memory = mojom::WebMemoryUsage::New();
+    aggregation_result->blink_memory->bytes = static_cast<uint64_t>(
+        process_data->blink_bytes_used() * browsing_instance_factor);
+  }
+  return aggregation_result;
 }
 
-bool WebMemoryAggregator::VisitFrame(
-    mojom::WebMemoryBreakdownEntry* enclosing_aggregation_point,
-    const FrameNode* frame_node) {
+bool WebMemoryAggregator::VisitFrame(AggregationPointVisitor* ap_visitor,
+                                     const FrameNode* frame_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(aggregation_result_);
-  DCHECK(enclosing_aggregation_point || frame_node == aggregation_start_node_);
   DCHECK(frame_node);
-
-  // An aggregation point is a node in the graph that holds a memory breakdown
-  // covering itself and any descendant nodes that are aggregated into the same
-  // breakdown. It is represented directly by the WebMemoryBreakdownEntry
-  // object the describes the breakdown since there is no extra information to
-  // store about the aggregation point.
-  mojom::WebMemoryBreakdownEntry* aggregation_point = nullptr;
-  switch (FindNodeAggregationType(frame_node)) {
-    case NodeAggregationType::kInvisible:
-      // Ignore this node, continue iterating its siblings.
-      return true;
-
-    case NodeAggregationType::kSameOriginAggregationPoint:
-      // Create a new aggregation point with window scope. Since this node is
-      // same-origin to the start node, the start node can view its current
-      // url.
-      aggregation_point = internal::CreateBreakdownEntry(
-          AttributionScope::kWindow, frame_node->GetURL().spec(),
-          aggregation_result_.get());
-      if (frame_node->IsMainFrame() || frame_node == aggregation_start_node_) {
-        // There should be no id or src attribute since there is no visible
-        // parent to take them from. Do nothing.
-      } else if (internal::GetSameOriginParentOrOpener(frame_node,
-                                                       requesting_origin_)) {
-        // The parent or opener is also same-origin so the start node can view
-        // its attributes. Add the id and src recorded for the node in
-        // V8ContextTracker to the new breakdown entry.
-        internal::SetBreakdownAttributionFromFrame(frame_node,
-                                                   aggregation_point);
-      } else {
-        // Some grandparent node is the most recent aggregation point whose
-        // attributes are visible to the start node, and
-        // |enclosing_aggregation_point| includes those attributes. Copy the id
-        // and src attributes from there.
-        internal::CopyBreakdownAttribution(enclosing_aggregation_point,
-                                           aggregation_point);
-      }
-      break;
-
-    case NodeAggregationType::kCrossOriginAggregationPoint:
-      // Create a new aggregation point with cross-origin-aggregated scope.
-      // Since this node is NOT same-origin to the start node, the start node
-      // CANNOT view its current url.
-      aggregation_point = internal::CreateBreakdownEntry(
-          AttributionScope::kCrossOriginAggregated, base::nullopt,
-          aggregation_result_.get());
-      // This is cross-origin but not being aggregated into another aggregation
-      // point, so its parent or opener must be same-origin to the start node,
-      // which can therefore view its attributes. Add the id and src recorded
-      // for the node in V8ContextTracker to the new breakdown entry.
-      internal::SetBreakdownAttributionFromFrame(frame_node, aggregation_point);
-      break;
-
-    case NodeAggregationType::kCrossOriginAggregated:
-      // Update the enclosing aggregation point in-place.
-      aggregation_point = enclosing_aggregation_point;
-      break;
+  if (frame_node->GetBrowsingInstanceId() != browsing_instance_id_) {
+    // Ignore frames from other browsing contexts.
+    return true;
   }
+  ap_visitor->OnFrameEntered(frame_node);
 
-  // Now update the memory used in the chosen aggregation point.
-  DCHECK(aggregation_point);
-  if (auto* frame_data =
-          V8DetailedMemoryExecutionContextData::ForFrameNode(frame_node)) {
-    aggregation_point->bytes += frame_data->v8_bytes_used();
-  }
+  frame_node->VisitChildDedicatedWorkers(base::BindRepeating(
+      &WebMemoryAggregator::VisitWorker, base::Unretained(this), ap_visitor));
+  frame_node->VisitChildFrameNodes(base::BindRepeating(
+      &WebMemoryAggregator::VisitFrame, base::Unretained(this), ap_visitor));
 
-  // Recurse into children and opened pages. This node's aggregation point
-  // becomes the enclosing aggregation point for those nodes. Unretained is safe
-  // because the Visit* functions are synchronous.
-  frame_node->VisitOpenedPageNodes(
-      base::BindRepeating(&WebMemoryAggregator::VisitOpenedPage,
-                          base::Unretained(this), aggregation_point));
-  return frame_node->VisitChildFrameNodes(
-      base::BindRepeating(&WebMemoryAggregator::VisitFrame,
-                          base::Unretained(this), aggregation_point));
-}
+  ap_visitor->OnFrameExited(frame_node);
 
-bool WebMemoryAggregator::VisitOpenedPage(
-    mojom::WebMemoryBreakdownEntry* enclosing_aggregation_point,
-    const PageNode* page_node) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (ShouldFollowOpenerLink(page_node)) {
-    // Visit only the "current" main frame instead of all of the main frames
-    // (non-current ones are either about to die, or represent an ongoing
-    // navigation).
-    return VisitFrame(enclosing_aggregation_point,
-                      page_node->GetMainFrameNode());
-  }
   return true;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// Free functions
+bool WebMemoryAggregator::VisitWorker(AggregationPointVisitor* ap_visitor,
+                                      const WorkerNode* worker_node) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(crbug.com/1169168): Support service and shared workers.
+  DCHECK_EQ(worker_node->GetWorkerType(), WorkerNode::WorkerType::kDedicated);
 
-namespace internal {
+  ap_visitor->OnWorkerEntered(worker_node);
 
-const FrameNode* GetSameOriginParentOrOpener(const FrameNode* frame_node,
-                                             const url::Origin& origin) {
-  if (auto* parent_or_opener = GetParentOrOpener(frame_node)) {
-    if (origin.IsSameOriginWith(GetOrigin(parent_or_opener)))
-      return parent_or_opener;
-  }
-  return nullptr;
+  worker_node->VisitChildDedicatedWorkers(base::BindRepeating(
+      &WebMemoryAggregator::VisitWorker, base::Unretained(this), ap_visitor));
+
+  ap_visitor->OnWorkerExited(worker_node);
+
+  return true;
 }
 
-const FrameNode* FindAggregationStartNode(const FrameNode* requesting_node) {
-  DCHECK(requesting_node);
-  auto requesting_origin = GetOrigin(requesting_node);
-
-  // Follow parent and opener links to find the most general same-site node to
-  // start the aggregation traversal from.
-  const FrameNode* start_node = requesting_node;
-  while (auto* parent_or_opener =
-             GetSameOriginParentOrOpener(start_node, requesting_origin)) {
-    start_node = parent_or_opener;
-  }
-
-  DCHECK(start_node);
-  DCHECK(requesting_origin.IsSameOriginWith(GetOrigin(start_node)));
-
-  // Make sure we didn't break out of the browsing context group.
-  DCHECK_EQ(start_node->GetBrowsingInstanceId(),
-            requesting_node->GetBrowsingInstanceId());
-  return start_node;
-}
-
-mojom::WebMemoryBreakdownEntry* CreateBreakdownEntry(
+// static
+mojom::WebMemoryBreakdownEntry* WebMemoryAggregator::CreateBreakdownEntry(
     AttributionScope scope,
     base::Optional<std::string> url,
     mojom::WebMemoryMeasurement* measurement) {
@@ -287,7 +548,8 @@ mojom::WebMemoryBreakdownEntry* CreateBreakdownEntry(
   return measurement->breakdown.back().get();
 }
 
-void SetBreakdownAttributionFromFrame(
+// static
+void WebMemoryAggregator::SetBreakdownAttributionFromFrame(
     const FrameNode* frame_node,
     mojom::WebMemoryBreakdownEntry* breakdown) {
   DCHECK(breakdown);
@@ -308,8 +570,10 @@ void SetBreakdownAttributionFromFrame(
   attribution->src = ec_attribution->src;
 }
 
-void CopyBreakdownAttribution(const mojom::WebMemoryBreakdownEntry* from,
-                              mojom::WebMemoryBreakdownEntry* to) {
+// static
+void WebMemoryAggregator::CopyBreakdownAttribution(
+    const mojom::WebMemoryBreakdownEntry* from,
+    mojom::WebMemoryBreakdownEntry* to) {
   DCHECK(from);
   DCHECK(to);
   const auto* from_attribution = GetAttributionFromBreakdown(from);
@@ -317,8 +581,6 @@ void CopyBreakdownAttribution(const mojom::WebMemoryBreakdownEntry* from,
   to_attribution->id = from_attribution->id;
   to_attribution->src = from_attribution->src;
 }
-
-}  // namespace internal
 
 }  // namespace v8_memory
 

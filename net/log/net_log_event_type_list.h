@@ -392,10 +392,21 @@ EVENT_TYPE(TCP_CONNECT)
 //     "address": <String of the network address>,
 //   }
 //
-// And the END event will contain the system error code if it failed:
+// The END event will contain one of the following:
+//
+// On success:
+//   {
+//     "local_address": <The local address, as a string>,
+//     "remote_address": <The remote address, as a string>,
+//   }
+//
+// On success, but unable to determine the connected address:
+//   {
+//     "get_address_net_error": <Net integer error code>,
+//   }
 //
 //   {
-//     "os_error": <Integer error code the operating system returned>,
+//     "net_error": <Net integer error code>,
 //   }
 EVENT_TYPE(TCP_CONNECT_ATTEMPT)
 
@@ -833,6 +844,8 @@ EVENT_TYPE(SOCKET_POOL_CLOSING_SOCKET)
 //      "load_flags": <Numeric value of the combined load flags>,
 //      "privacy_mode": <Privacy mode associated with the request>,
 //      "network_isolation_key": <NIK associated with the request>,
+//      "request_type": <Type of the request, which is "main frame", "subframe",
+//                       or "other">,
 //      "priority": <Numeric priority of the request>,
 //      "site_for_cookies": <SiteForCookies associated with the request>,
 //      "traffic_annotation": <int32 for the request's TrafficAnnotationTag>,
@@ -1238,6 +1251,13 @@ EVENT_TYPE(HTTP_TRANSACTION_READ_HEADERS)
 //     "headers": <The list of header:value pairs>,
 //   }
 EVENT_TYPE(HTTP_TRANSACTION_READ_RESPONSE_HEADERS)
+
+// This event is sent on receipt of a 103 Early Hints response headers.
+// The following parameters are attached:
+//   {
+//     "headers": <The list of header:value pairs>,
+//   }
+EVENT_TYPE(HTTP_TRANSACTION_READ_EARLY_HINTS_RESPONSE_HEADERS)
 
 // Measures the time to read the entity body from the server.
 EVENT_TYPE(HTTP_TRANSACTION_READ_BODY)
@@ -1943,11 +1963,11 @@ EVENT_TYPE(QUIC_SESSION_STOP_WAITING_FRAME_RECEIVED)
 //   }
 EVENT_TYPE(QUIC_SESSION_STOP_WAITING_FRAME_SENT)
 
-// Session recevied a RST_STREAM frame.
+// Session received a RST_STREAM frame.
 //   {
 //     "offset": <Offset in the byte stream which triggered the reset>,
 //     "quic_rst_stream_error": <quic::QuicRstStreamErrorCode in the frame>,
-//     "details": <Human readable description>,
+//     "stream_id": <The stream id which this frame refers to>,
 //   }
 EVENT_TYPE(QUIC_SESSION_RST_STREAM_FRAME_RECEIVED)
 
@@ -1955,7 +1975,7 @@ EVENT_TYPE(QUIC_SESSION_RST_STREAM_FRAME_RECEIVED)
 //   {
 //     "offset": <Offset in the byte stream which triggered the reset>,
 //     "quic_rst_stream_error": <quic::QuicRstStreamErrorCode in the frame>,
-//     "details": <Human readable description>,
+//     "stream_id": <The stream id which this frame refers to>,
 //   }
 EVENT_TYPE(QUIC_SESSION_RST_STREAM_FRAME_SENT)
 
@@ -2109,14 +2129,14 @@ EVENT_TYPE(QUIC_SESSION_CRYPTO_FRAME_RECEIVED)
 // Session sent a STOP_SENDING frame.
 //  {
 //    "stream_id": <The stream id>,
-//    "application_error_code": <The application error code>
+//    "rsr_stream_error_code": <quic::QuicRstStreamErrorCode in the frame>
 //  }
 EVENT_TYPE(QUIC_SESSION_STOP_SENDING_FRAME_SENT)
 
 // Session received a STOP_SENDING frame.
 //  {
 //    "stream_id": <The stream id>,
-//    "application_error_code": <The application error code>
+//    "rsr_stream_error_code": <Tquic::QuicRstStreamErrorCode in the frame>
 //  }
 EVENT_TYPE(QUIC_SESSION_STOP_SENDING_FRAME_RECEIVED)
 
@@ -2291,6 +2311,12 @@ EVENT_TYPE(HTTP_STREAM_REQUEST_BOUND_TO_QUIC_SESSION)
 //   }
 EVENT_TYPE(QUIC_CHROMIUM_CLIENT_STREAM_SEND_REQUEST_HEADERS)
 
+// The stream has read a 103 Early Hints response headers.
+//   {
+//     "headers": <The list of header:value pairs>
+//   }
+EVENT_TYPE(QUIC_CHROMIUM_CLIENT_STREAM_READ_EARLY_HINTS_RESPONSE_HEADERS)
+
 // The stream has read the response headers.
 //   {
 //     "headers": <The list of header:value pairs>
@@ -2436,6 +2462,13 @@ EVENT_TYPE(QUIC_PORT_MIGRATION_FAILURE)
 //     "connection_id": <Connection ID of the session>
 //  }
 EVENT_TYPE(QUIC_PORT_MIGRATION_SUCCESS)
+
+// A UDP socket error occurred while trying to read a QUIC packet.
+// The following parameters are attached to the event:
+//   {
+//     "net_error": <Integer code for the specific error type>,
+//   }
+EVENT_TYPE(QUIC_READ_ERROR)
 
 // ------------------------------------------------------------------------
 // HttpStreamParser

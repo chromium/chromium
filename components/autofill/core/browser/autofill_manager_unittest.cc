@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -19,7 +20,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -36,6 +36,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
 #include "components/autofill/core/browser/metrics/form_events.h"
 #include "components/autofill/core/browser/mock_autocomplete_history_manager.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
@@ -69,6 +70,7 @@
 #include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/driver/test_sync_service.h"
+#include "components/translate/core/common/language_detection_details.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/version_info/channel.h"
 #include "net/base/url_util.h"
@@ -87,6 +89,7 @@ using testing::_;
 using testing::AnyOf;
 using testing::AtLeast;
 using testing::Contains;
+using testing::DoAll;
 using testing::ElementsAre;
 using testing::HasSubstr;
 using testing::Not;
@@ -96,7 +99,6 @@ using testing::UnorderedElementsAre;
 
 namespace autofill {
 
-using features::kAutofillRestrictUnownedFieldsToFormlessCheckout;
 using mojom::SubmissionIndicatorEvent;
 using mojom::SubmissionSource;
 
@@ -120,6 +122,7 @@ class MockAutofillClient : public TestAutofillClient {
   MOCK_METHOD2(ConfirmSaveUpiIdLocally,
                void(const std::string& upi_id,
                     base::OnceCallback<void(bool user_decision)> callback));
+  MOCK_CONST_METHOD0(GetProfileType, profile_metrics::BrowserProfileType());
 };
 
 class MockAutofillDownloadManager : public TestAutofillDownloadManager {
@@ -182,7 +185,7 @@ void ExpectFilledForm(int page_id,
   const size_t kCreditCardFormSize = use_month_type ? 4 : 5;
 
   EXPECT_EQ(expected_page_id, page_id);
-  EXPECT_EQ(ASCIIToUTF16("MyForm"), filled_form.name);
+  EXPECT_EQ(u"MyForm", filled_form.name);
   EXPECT_EQ(GURL("https://myform.com/form.html"), filled_form.url);
   EXPECT_EQ(GURL("https://myform.com/submit.html"), filled_form.action);
 
@@ -322,6 +325,7 @@ class AutofillManagerTest : public testing::Test {
     personal_data_.Init(/*profile_database=*/database_,
                         /*account_database=*/nullptr,
                         /*pref_service=*/autofill_client_.GetPrefs(),
+                        /*local_state=*/autofill_client_.GetPrefs(),
                         /*identity_manager=*/nullptr,
                         /*client_profile_validator=*/nullptr,
                         /*history_service=*/nullptr,
@@ -449,7 +453,7 @@ class AutofillManagerTest : public testing::Test {
   }
 
   void AutocompleteSuggestionsReturned(
-      const std::vector<base::string16>& results,
+      const std::vector<std::u16string>& results,
       int query_id = kDefaultPageID) {
     std::vector<Suggestion> suggestions;
     std::transform(results.begin(), results.end(),
@@ -510,7 +514,7 @@ class AutofillManagerTest : public testing::Test {
   void CreateTestCreditCardFormData(FormData* form,
                                     bool is_https,
                                     bool use_month_type) {
-    form->name = ASCIIToUTF16("MyForm");
+    form->name = u"MyForm";
     if (is_https) {
       form->url = GURL("https://myform.com/form.html");
       form->action = GURL("https://myform.com/submit.html");
@@ -576,7 +580,7 @@ class AutofillManagerTest : public testing::Test {
 
     // Mock user response.
     payments::FullCardRequest::UserProvidedUnmaskDetails details;
-    details.cvc = base::ASCIIToUTF16("123");
+    details.cvc = u"123";
     full_card_request->OnUnmaskPromptAccepted(details);
 
     // Mock payments response.
@@ -720,21 +724,25 @@ class AutofillManagerStructuredProfileTest
 
   void InitializeFeatures();
 
-  bool StructuredNames() const { return structured_names_enabled_; }
+  bool StructuredNamesAndAddresses() const {
+    return structured_names_and_addresses_;
+  }
 
  private:
-  bool structured_names_enabled_;
+  bool structured_names_and_addresses_;
   base::test::ScopedFeatureList scoped_features_;
 };
 
 void AutofillManagerStructuredProfileTest::InitializeFeatures() {
-  structured_names_enabled_ = GetParam();
-  if (structured_names_enabled_) {
-    scoped_features_.InitAndEnableFeature(
-        features::kAutofillEnableSupportForMoreStructureInNames);
+  structured_names_and_addresses_ = GetParam();
+
+  std::vector<base::Feature> features = {
+      features::kAutofillEnableSupportForMoreStructureInAddresses,
+      features::kAutofillEnableSupportForMoreStructureInNames};
+  if (structured_names_and_addresses_) {
+    scoped_features_.InitWithFeatures(features, {});
   } else {
-    scoped_features_.InitAndDisableFeature(
-        features::kAutofillEnableSupportForMoreStructureInNames);
+    scoped_features_.InitWithFeatures({}, features);
   }
 }
 
@@ -863,8 +871,9 @@ TEST_P(AutofillManagerStructuredProfileTest,
 
   // Different form structure.
   FormData form2;
-  form2.unique_renderer_id.value() = 2;
-  form2.name = ASCIIToUTF16("MyForm");
+  form2.host_frame = test::GetLocalFrameToken();
+  form2.unique_renderer_id = test::MakeFormRendererId();
+  form2.name = u"MyForm";
   form2.url = GURL("https://myform.com/form.html");
   form2.action = GURL("https://myform.com/submit.html");
   FormFieldData field;
@@ -895,8 +904,9 @@ TEST_P(AutofillManagerStructuredProfileTest,
   FormData form2;
   FormFieldData field;
   test::CreateTestFormField("Querty", "qwerty", "", "text", &field);
-  form2.unique_renderer_id.value() = 2;
-  form2.name = ASCIIToUTF16("NonQueryable");
+  form2.host_frame = test::GetLocalFrameToken();
+  form2.unique_renderer_id = test::MakeFormRendererId();
+  form2.name = u"NonQueryable";
   form2.url = form1.url;
   form2.action = GURL("https://myform.com/submit.html");
   form2.fields.push_back(field);
@@ -916,7 +926,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
        GetProfileSuggestions_UnrecognizedAttribute) {
   // Set up our form data.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
   FormFieldData field;
@@ -959,7 +969,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
        GetProfileSuggestions_MinFieldsEnforced_NoAutocomplete) {
   // Set up our form data.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
   FormFieldData field;
@@ -990,7 +1000,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
        GetProfileSuggestions_MinFieldsEnforced_WithOneAutocomplete) {
   // Set up our form data.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
   FormFieldData field;
@@ -1023,7 +1033,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
        GetProfileSuggestions_SmallFormWithTwoAutocomplete) {
   // Set up our form data.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
   FormFieldData field;
@@ -1050,7 +1060,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
 
 // Test that the call is properly forwarded to AutocompleteHistoryManager.
 TEST_P(AutofillManagerStructuredProfileTest, OnAutocompleteEntrySelected) {
-  base::string16 test_value = ASCIIToUTF16("TestValue");
+  std::u16string test_value = u"TestValue";
   EXPECT_CALL(*autocomplete_history_manager_.get(),
               OnAutocompleteEntrySelected(test_value))
       .Times(1);
@@ -1147,26 +1157,23 @@ TEST_P(SuggestionMatchingTest,
   // letter for last name.
   AutofillProfile profile1;
   profile1.set_guid("00000000-0000-0000-0000-000000000103");
-  profile1.SetInfo(NAME_FIRST, ASCIIToUTF16("Robin"), "en-US");
-  profile1.SetInfo(NAME_LAST, ASCIIToUTF16("Grimes"), "en-US");
-  profile1.SetInfo(ADDRESS_HOME_LINE1, ASCIIToUTF16("1234 Smith Blvd."),
-                   "en-US");
+  profile1.SetInfo(NAME_FIRST, u"Robin", "en-US");
+  profile1.SetInfo(NAME_LAST, u"Grimes", "en-US");
+  profile1.SetInfo(ADDRESS_HOME_LINE1, u"1234 Smith Blvd.", "en-US");
   personal_data_.AddProfile(profile1);
 
   AutofillProfile profile2;
   profile2.set_guid("00000000-0000-0000-0000-000000000124");
-  profile2.SetInfo(NAME_FIRST, ASCIIToUTF16("Carl"), "en-US");
-  profile2.SetInfo(NAME_LAST, ASCIIToUTF16("Grimes"), "en-US");
-  profile2.SetInfo(ADDRESS_HOME_LINE1, ASCIIToUTF16("1234 Smith Blvd."),
-                   "en-US");
+  profile2.SetInfo(NAME_FIRST, u"Carl", "en-US");
+  profile2.SetInfo(NAME_LAST, u"Grimes", "en-US");
+  profile2.SetInfo(ADDRESS_HOME_LINE1, u"1234 Smith Blvd.", "en-US");
   personal_data_.AddProfile(profile2);
 
   AutofillProfile profile3;
   profile3.set_guid("00000000-0000-0000-0000-000000000126");
-  profile3.SetInfo(NAME_FIRST, ASCIIToUTF16("Aaron"), "en-US");
-  profile3.SetInfo(NAME_LAST, ASCIIToUTF16("Googler"), "en-US");
-  profile3.SetInfo(ADDRESS_HOME_LINE1, ASCIIToUTF16("1600 Amphitheater pkwy"),
-                   "en-US");
+  profile3.SetInfo(NAME_FIRST, u"Aaron", "en-US");
+  profile3.SetInfo(NAME_LAST, u"Googler", "en-US");
+  profile3.SetInfo(ADDRESS_HOME_LINE1, u"1600 Amphitheater pkwy", "en-US");
   personal_data_.AddProfile(profile3);
 
   FormFieldData field;
@@ -1230,7 +1237,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
        GetProfileSuggestions_UnknownFields) {
   // Set up our form data.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
 
@@ -1382,7 +1389,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   FormsSeen(forms);
 
   FormFieldData field = form.fields[1];
-  field.value = ASCIIToUTF16("       ");
+  field.value = u"       ";
   GetAutofillSuggestions(form, field);
 
 #if defined(OS_ANDROID) || defined(OS_IOS)
@@ -1416,7 +1423,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   FormsSeen(forms);
 
   FormFieldData field = form.fields[1];
-  field.value = ASCIIToUTF16("____-____-____-____");
+  field.value = u"____-____-____-____";
   GetAutofillSuggestions(form, field);
 
 #if defined(OS_ANDROID) || defined(OS_IOS)
@@ -1450,7 +1457,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   FormsSeen(forms);
 
   FormFieldData field = form.fields[1];
-  field.value = base::string16({0x200E, 0x200F});
+  field.value = std::u16string({0x200E, 0x200F});
   GetAutofillSuggestions(form, field);
 
 #if defined(OS_ANDROID) || defined(OS_IOS)
@@ -1493,7 +1500,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
 
   FormFieldData field = form.fields[1];
 
-  field.value = ASCIIToUTF16("5255-66__-____-____");
+  field.value = u"5255-66__-____-____";
   GetAutofillSuggestions(form, field);
 
 #if defined(OS_ANDROID) || defined(OS_IOS)
@@ -1658,7 +1665,8 @@ TEST_P(AutofillManagerStructuredProfileTest,
   FormsSeen(forms);
   // Set the field being edited to CC field.
   const FormFieldData& credit_card_number_field = form.fields[1];
-  const std::string google_issued_card_value = "Google";
+  const std::string google_issued_card_value = base::JoinString(
+      {"Plex Mastercard  ", test::ObfuscatedCardDigitsAsUTF8("4444")}, "");
 #if defined(OS_ANDROID) || defined(OS_IOS)
   const std::string google_issued_card_label = std::string("10/98");
 #else
@@ -1697,13 +1705,16 @@ TEST_P(AutofillManagerStructuredProfileTest,
   // Set the field being edited to the cardholder name field.
   const FormFieldData& cardholder_name_field = form.fields[0];
 #if defined(OS_ANDROID)
-  const std::string google_issued_card_label = std::string("Google");
+  const std::string google_issued_card_label = base::JoinString(
+      {"Plex Mastercard  ", test::ObfuscatedCardDigitsAsUTF8("4444")}, "");
 #elif defined(OS_IOS)
   const std::string google_issued_card_label =
       test::ObfuscatedCardDigitsAsUTF8("4444");
 #else
-  const std::string google_issued_card_label =
-      std::string("Google, expires on 10/98");
+  const std::string google_issued_card_label = base::JoinString(
+      {"Plex Mastercard  ", test::ObfuscatedCardDigitsAsUTF8("4444"),
+       ", expires on 10/98"},
+      "");
 #endif
 
   GetAutofillSuggestions(form, cardholder_name_field);
@@ -2159,6 +2170,86 @@ TEST_F(AutofillManagerTest,
                                      1);
 }
 
+// Test that we properly match typed values to stored state data.
+TEST_F(AutofillManagerTest, DetermineStateFieldTypeForUpload) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(features::kAutofillUseAlternativeStateNameMap);
+
+  test::ClearAlternativeStateNameMapForTesting();
+  test::PopulateAlternativeStateNameMapForTesting();
+
+  AutofillProfile profile;
+  test::SetProfileInfo(&profile, "", "", "", "", "", "", "", "", "Bavaria", "",
+                       "DE", "");
+
+  const char* const kValidMatches[] = {"by", "Bavaria", "Bayern",
+                                       "BY", "B.Y",     "B-Y"};
+  for (const char* valid_match : kValidMatches) {
+    SCOPED_TRACE(valid_match);
+    FormData form;
+    FormFieldData field;
+
+    test::CreateTestFormField("Name", "Name", "Test", "text", &field);
+    form.fields.push_back(field);
+
+    test::CreateTestFormField("State", "state", valid_match, "text", &field);
+    form.fields.push_back(field);
+
+    FormStructure form_structure(form);
+    EXPECT_EQ(form_structure.field_count(), 2U);
+
+    autofill_manager_->PreProcessStateMatchingTypesForTest({profile},
+                                                           &form_structure);
+    EXPECT_TRUE(form_structure.field(1)->state_is_a_matching_type());
+  }
+
+  const char* const kInvalidMatches[] = {"Garbage", "BYA",   "BYA is a state",
+                                         "Bava",    "Empty", ""};
+  for (const char* invalid_match : kInvalidMatches) {
+    SCOPED_TRACE(invalid_match);
+    FormData form;
+    FormFieldData field;
+
+    test::CreateTestFormField("Name", "Name", "Test", "text", &field);
+    form.fields.push_back(field);
+
+    test::CreateTestFormField("State", "state", invalid_match, "text", &field);
+    form.fields.push_back(field);
+
+    FormStructure form_structure(form);
+    EXPECT_EQ(form_structure.field_count(), 2U);
+
+    autofill_manager_->PreProcessStateMatchingTypesForTest({profile},
+                                                           &form_structure);
+    EXPECT_FALSE(form_structure.field(1)->state_is_a_matching_type());
+  }
+
+  test::PopulateAlternativeStateNameMapForTesting(
+      "US", "California",
+      {{.canonical_name = "California",
+        .abbreviations = {"CA"},
+        .alternative_names = {}}});
+
+  test::SetProfileInfo(&profile, "", "", "", "", "", "", "", "", "California",
+                       "", "US", "");
+
+  FormData form;
+  FormFieldData field;
+
+  test::CreateTestFormField("Name", "Name", "Test", "text", &field);
+  form.fields.push_back(field);
+
+  test::CreateTestFormField("State", "state", "CA", "text", &field);
+  form.fields.push_back(field);
+
+  FormStructure form_structure(form);
+  EXPECT_EQ(form_structure.field_count(), 2U);
+
+  autofill_manager_->PreProcessStateMatchingTypesForTest({profile},
+                                                         &form_structure);
+  EXPECT_TRUE(form_structure.field(1)->state_is_a_matching_type());
+}
+
 // Test that we return normal Autofill suggestions when trying to autofill
 // already filled forms.
 TEST_P(SuggestionMatchingTest, GetFieldSuggestionsWhenFormIsAutofilled) {
@@ -2221,9 +2312,9 @@ TEST_P(AutofillManagerStructuredProfileTest,
 
   // Add some Autocomplete suggestions.
   // This triggers the combined message send.
-  std::vector<base::string16> suggestions;
-  suggestions.push_back(ASCIIToUTF16("one"));
-  suggestions.push_back(ASCIIToUTF16("two"));
+  std::vector<std::u16string> suggestions;
+  suggestions.push_back(u"one");
+  suggestions.push_back(u"two");
   AutocompleteSuggestionsReturned(suggestions);
 
   // Test that we sent the right values to the external delegate.
@@ -2249,7 +2340,7 @@ TEST_P(SuggestionMatchingTest, GetFieldSuggestionsWithDuplicateValues) {
 
   FormFieldData& field = form.fields[0];
   field.is_autofilled = true;
-  field.value = ASCIIToUTF16("Elvis");
+  field.value = u"Elvis";
   GetAutofillSuggestions(form, field);
 
   std::string label;
@@ -2276,8 +2367,8 @@ TEST_P(SuggestionMatchingTest, GetProfileSuggestions_FancyPhone) {
 
   AutofillProfile profile;
   profile.set_guid("00000000-0000-0000-0000-000000000103");
-  profile.SetInfo(NAME_FULL, ASCIIToUTF16("Natty Bumppo"), "en-US");
-  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, ASCIIToUTF16("1800PRAIRIE"));
+  profile.SetInfo(NAME_FULL, u"Natty Bumppo", "en-US");
+  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"1800PRAIRIE");
   personal_data_.AddProfile(profile);
 
   const FormFieldData& field = form.fields[9];
@@ -2339,7 +2430,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
        GetProfileSuggestions_ForPhonePrefixOrSuffix) {
   // Set up our form data.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
 
@@ -2369,7 +2460,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   personal_data_.ClearProfiles();
   AutofillProfile profile;
   profile.set_guid("00000000-0000-0000-0000-000000000104");
-  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, ASCIIToUTF16("1800FLOWERS"));
+  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"1800FLOWERS");
   personal_data_.AddProfile(profile);
 
   const FormFieldData& phone_prefix = form.fields[2];
@@ -2385,13 +2476,38 @@ TEST_P(AutofillManagerStructuredProfileTest,
   CheckSuggestions(kDefaultPageID, Suggestion("9377", "1800FLOWERS", "", 1));
 }
 
+// Tests that the suggestion consists of phone number without the country code
+// when a length limit is imposed in the field due to which filling with
+// country code is not possible.
+TEST_P(AutofillManagerStructuredProfileTest,
+       GetProfileSuggestions_ForPhoneField) {
+  FormData form;
+  test::CreateTestAddressFormData(&form);
+  form.fields[9].max_length = 10;
+  std::vector<FormData> forms(1, form);
+  FormsSeen(forms);
+
+  AutofillProfile profile;
+  profile.set_guid("00000000-0000-0000-0000-000000000103");
+  profile.SetInfo(NAME_FULL, u"Natty Bumppo", "en-US");
+  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"+886123456789");
+  personal_data_.ClearProfiles();
+  personal_data_.AddProfile(profile);
+
+  const FormFieldData& field = form.fields[9];
+  GetAutofillSuggestions(form, field);
+
+  CheckSuggestions(kDefaultPageID,
+                   Suggestion("123456789", "Natty Bumppo", "", 1));
+}
+
 // Tests that we return email profile suggestions values
 // when the email field with username autocomplete attribute exist.
 TEST_P(AutofillManagerStructuredProfileTest,
        GetProfileSuggestions_ForEmailFieldWithUserNameAutocomplete) {
   // Set up our form data.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
 
@@ -2422,8 +2538,8 @@ TEST_P(AutofillManagerStructuredProfileTest,
   personal_data_.ClearProfiles();
   AutofillProfile profile;
   profile.set_guid("00000000-0000-0000-0000-000000000103");
-  profile.SetRawInfo(NAME_FULL, ASCIIToUTF16("Natty Bumppo"));
-  profile.SetRawInfo(EMAIL_ADDRESS, ASCIIToUTF16("test@example.com"));
+  profile.SetRawInfo(NAME_FULL, u"Natty Bumppo");
+  profile.SetRawInfo(EMAIL_ADDRESS, u"test@example.com");
   personal_data_.AddProfile(profile);
 
   GetAutofillSuggestions(form, form.fields[2]);
@@ -2468,11 +2584,11 @@ TEST_P(AutofillManagerStructuredProfileTest, WillFillCreditCardNumber) {
   FormFieldData* name_field = nullptr;
   FormFieldData* month_field = nullptr;
   for (size_t i = 0; i < form.fields.size(); ++i) {
-    if (form.fields[i].name == ASCIIToUTF16("cardnumber"))
+    if (form.fields[i].name == u"cardnumber")
       number_field = &form.fields[i];
-    else if (form.fields[i].name == ASCIIToUTF16("nameoncard"))
+    else if (form.fields[i].name == u"nameoncard")
       name_field = &form.fields[i];
-    else if (form.fields[i].name == ASCIIToUTF16("ccmonth"))
+    else if (form.fields[i].name == u"ccmonth")
       month_field = &form.fields[i];
   }
 
@@ -2481,7 +2597,7 @@ TEST_P(AutofillManagerStructuredProfileTest, WillFillCreditCardNumber) {
   EXPECT_TRUE(WillFillCreditCardNumber(form, *name_field));
 
   // If the user has entered a value, it won't be overridden.
-  number_field->value = ASCIIToUTF16("gibberish");
+  number_field->value = u"gibberish";
   EXPECT_TRUE(WillFillCreditCardNumber(form, *number_field));
   EXPECT_FALSE(WillFillCreditCardNumber(form, *name_field));
 
@@ -2711,7 +2827,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
        FillOnlyFirstNineteenCreditCardNumberFields) {
   // Set up our form data.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
 
@@ -2723,8 +2839,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
 
   // Add 20 credit card number fields with distinct names.
   for (int i = 0; i < 20; i++) {
-    base::string16 field_name =
-        base::ASCIIToUTF16("Card Number ") + base::NumberToString16(i + 1);
+    std::u16string field_name = u"Card Number " + base::NumberToString16(i + 1);
     test::CreateTestFormField(base::UTF16ToASCII(field_name).c_str(),
                               "cardnumber", "", "text", &field);
     form.fields.push_back(field);
@@ -2749,8 +2864,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
 
   // Verify that the first 19 credit card number fields are filled.
   for (int i = 0; i < 19; i++) {
-    base::string16 field_name =
-        base::ASCIIToUTF16("Card Number ") + base::NumberToString16(i + 1);
+    std::u16string field_name = u"Card Number " + base::NumberToString16(i + 1);
     ExpectFilledField(base::UTF16ToASCII(field_name).c_str(), "cardnumber",
                       "4234567890123456", "text", response_data.fields[2 + i]);
   }
@@ -2767,7 +2881,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
        FillOnlyFirstSixteenIdenticalCreditCardNumberFields) {
   // Set up our form data.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
 
@@ -2817,7 +2931,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
        FillCreditCardNumberIntoSingleDigitFields) {
   // Set up our form data.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
 
@@ -2853,7 +2967,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
                     response_data.fields[1]);
 
   // Verify that the first 19 card number fields are filled.
-  base::string16 card_number = base::ASCIIToUTF16("4234567890123456");
+  std::u16string card_number = u"4234567890123456";
   for (unsigned int i = 0; i < 19; i++) {
     ExpectFilledField("Card Number", "cardnumber",
                       i < card_number.length()
@@ -2874,7 +2988,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
 TEST_P(AutofillManagerStructuredProfileTest, FillCreditCardForm_SplitName) {
   // Set up our form data.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
 
@@ -2908,9 +3022,14 @@ TEST_P(AutofillManagerStructuredProfileTest, FillCreditCardForm_SplitName) {
 // Test that only filled selection boxes are counted for the type filling limit.
 TEST_P(AutofillManagerStructuredProfileTest,
        OnlyCountFilledSelectionBoxesForTypeFillingLimit) {
+  test::PopulateAlternativeStateNameMapForTesting(
+      "US", "Tennessee",
+      {{.canonical_name = "Tennessee",
+        .abbreviations = {"TN"},
+        .alternative_names = {}}});
   // Set up our form data.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
 
@@ -3045,7 +3164,7 @@ TEST_P(AutofillManagerStructuredProfileTest, FillAddressAndCreditCardForm) {
 TEST_P(AutofillManagerStructuredProfileTest,
        FillAddressForm_UnrecognizedAttribute) {
   FormData address_form;
-  address_form.name = ASCIIToUTF16("MyForm");
+  address_form.name = u"MyForm";
   address_form.url = GURL("https://myform.com/form.html");
   address_form.action = GURL("https://myform.com/submit.html");
   FormFieldData field;
@@ -3089,7 +3208,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
 TEST_P(AutofillManagerStructuredProfileTest,
        FillAddressForm_AutocompleteOffNotRespected) {
   FormData address_form;
-  address_form.name = ASCIIToUTF16("MyForm");
+  address_form.name = u"MyForm";
   address_form.url = GURL("https://myform.com/form.html");
   address_form.action = GURL("https://myform.com/submit.html");
   FormFieldData field;
@@ -3131,7 +3250,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
 TEST_P(AutofillManagerStructuredProfileTest, FillAddressForm_CompanyBirthyear) {
   // Set up our form data.
   FormData address_form;
-  address_form.name = ASCIIToUTF16("MyForm");
+  address_form.name = u"MyForm";
   address_form.url = GURL("https://myform.com/form.html");
   address_form.action = GURL("https://myform.com/submit.html");
 
@@ -3177,22 +3296,22 @@ TEST_P(AutofillManagerStructuredProfileTest, FillAddressForm_CompanyBirthyear) {
 TEST_P(AutofillManagerStructuredProfileTest,
        FillAddressForm_PlaceholderEqualsValue) {
   FormData address_form;
-  address_form.name = ASCIIToUTF16("MyForm");
+  address_form.name = u"MyForm";
   address_form.url = GURL("https://myform.com/form.html");
   address_form.action = GURL("https://myform.com/submit.html");
   FormFieldData field;
   // Set the same placeholder and value for each field.
   test::CreateTestFormField("First name", "firstname", "", "text", &field);
-  field.placeholder = ASCIIToUTF16("First Name");
-  field.value = ASCIIToUTF16("First Name");
+  field.placeholder = u"First Name";
+  field.value = u"First Name";
   address_form.fields.push_back(field);
   test::CreateTestFormField("Middle name", "middle", "", "text", &field);
-  field.placeholder = ASCIIToUTF16("Middle Name");
-  field.value = ASCIIToUTF16("Middle Name");
+  field.placeholder = u"Middle Name";
+  field.value = u"Middle Name";
   address_form.fields.push_back(field);
   test::CreateTestFormField("Last name", "lastname", "", "text", &field);
-  field.placeholder = ASCIIToUTF16("Last Name");
-  field.value = ASCIIToUTF16("Last Name");
+  field.placeholder = u"Last Name";
+  field.value = u"Last Name";
   address_form.fields.push_back(field);
   std::vector<FormData> address_forms(1, address_form);
   FormsSeen(address_forms);
@@ -3220,7 +3339,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
        FillCreditCardForm_UnrecognizedAttribute) {
   // Set up the form data.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
 
@@ -3298,7 +3417,7 @@ TEST_P(AutofillManagerStructuredProfileTest, FillCreditCardForm_ExpiredCard) {
 
   // Set up the form data.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
 
@@ -3352,7 +3471,7 @@ TEST_P(AutofillManagerStructuredProfileTest, FillCreditCardForm_ExpiredCard) {
 TEST_P(AutofillManagerStructuredProfileTest, FillFormWithNonFocusableFields) {
   // Create a form with both focusable and non-focusable fields.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
 
@@ -3413,7 +3532,7 @@ TEST_P(AutofillManagerStructuredProfileTest, FillFormWithMultipleSections) {
   test::CreateTestAddressFormData(&form);
   for (size_t i = kAddressFormSize; i < form.fields.size(); ++i) {
     // Make sure the fields have distinct names.
-    form.fields[i].name = form.fields[i].name + ASCIIToUTF16("_");
+    form.fields[i].name = form.fields[i].name + u"_";
   }
   std::vector<FormData> forms(1, form);
   FormsSeen(forms);
@@ -3430,7 +3549,7 @@ TEST_P(AutofillManagerStructuredProfileTest, FillFormWithMultipleSections) {
     // The second address section should be empty.
     ASSERT_EQ(response_data.fields.size(), 2 * kAddressFormSize);
     for (size_t i = kAddressFormSize; i < form.fields.size(); ++i) {
-      EXPECT_EQ(base::string16(), response_data.fields[i].value);
+      EXPECT_EQ(std::u16string(), response_data.fields[i].value);
     }
 
     // The first address section should be filled with Elvis's data.
@@ -3455,7 +3574,7 @@ TEST_P(AutofillManagerStructuredProfileTest, FillFormWithMultipleSections) {
     // The first address section should be empty.
     ASSERT_EQ(response_data.fields.size(), 2 * kAddressFormSize);
     for (size_t i = 0; i < kAddressFormSize; ++i) {
-      EXPECT_EQ(base::string16(), response_data.fields[i].value);
+      EXPECT_EQ(std::u16string(), response_data.fields[i].value);
     }
 
     // The second address section should be filled with Elvis's data.
@@ -3464,8 +3583,8 @@ TEST_P(AutofillManagerStructuredProfileTest, FillFormWithMultipleSections) {
                                secondSection.fields.begin() + kAddressFormSize);
     for (size_t i = 0; i < kAddressFormSize; ++i) {
       // Restore the expected field names.
-      base::string16 name = secondSection.fields[i].name;
-      base::string16 original_name = name.substr(0, name.size() - 1);
+      std::u16string name = secondSection.fields[i].name;
+      std::u16string original_name = name.substr(0, name.size() - 1);
       secondSection.fields[i].name = original_name;
     }
     ExpectFilledAddressFormElvis(response_page_id, secondSection, kPageID2,
@@ -3480,7 +3599,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   // Create a form with a billing section and an unnamed section, interleaved.
   // The billing section includes both address and credit card fields.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
 
@@ -3543,7 +3662,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   {
     SCOPED_TRACE("Unnamed section");
     EXPECT_EQ(kDefaultPageID, response_page_id);
-    EXPECT_EQ(ASCIIToUTF16("MyForm"), response_data.name);
+    EXPECT_EQ(u"MyForm", response_data.name);
     EXPECT_EQ(GURL("https://myform.com/form.html"), response_data.url);
     EXPECT_EQ(GURL("https://myform.com/submit.html"), response_data.action);
     ASSERT_EQ(11U, response_data.fields.size());
@@ -3574,7 +3693,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   {
     SCOPED_TRACE("Billing address");
     EXPECT_EQ(kPageID2, response_page_id);
-    EXPECT_EQ(ASCIIToUTF16("MyForm"), response_data.name);
+    EXPECT_EQ(u"MyForm", response_data.name);
     EXPECT_EQ(GURL("https://myform.com/form.html"), response_data.url);
     EXPECT_EQ(GURL("https://myform.com/submit.html"), response_data.action);
     ASSERT_EQ(11U, response_data.fields.size());
@@ -3604,7 +3723,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   {
     SCOPED_TRACE("Credit card");
     EXPECT_EQ(kPageID3, response_page_id);
-    EXPECT_EQ(ASCIIToUTF16("MyForm"), response_data.name);
+    EXPECT_EQ(u"MyForm", response_data.name);
     EXPECT_EQ(GURL("https://myform.com/form.html"), response_data.url);
     EXPECT_EQ(GURL("https://myform.com/submit.html"), response_data.action);
     ASSERT_EQ(11U, response_data.fields.size());
@@ -3647,8 +3766,7 @@ TEST_P(AutofillManagerStructuredProfileTest, FillFormWithMultipleEmails) {
                                      &response_page_id, &response_data);
 
   // The second email address should be filled.
-  EXPECT_EQ(ASCIIToUTF16("theking@gmail.com"),
-            response_data.fields.back().value);
+  EXPECT_EQ(u"theking@gmail.com", response_data.fields.back().value);
 
   // The remainder of the form should be filled as usual.
   response_data.fields.pop_back();
@@ -3772,11 +3890,11 @@ TEST_P(AutofillManagerStructuredProfileTest, FillPartlyManuallyFilledForm) {
 
   // Michael will be overridden with Elvis because Autofill is triggered from
   // the first field.
-  form.fields[0].value = base::ASCIIToUTF16("Michael");
+  form.fields[0].value = u"Michael";
   form.fields[0].properties_mask |= kUserTyped;
 
   // Jackson will be preserved.
-  form.fields[2].value = base::ASCIIToUTF16("Jackson");
+  form.fields[2].value = u"Jackson";
   form.fields[2].properties_mask |= kUserTyped;
 
   FormsSeen({form});
@@ -3817,13 +3935,13 @@ TEST_P(AutofillManagerStructuredProfileTest, FillPhoneNumber) {
   // In one form, rely on the max length attribute to imply US phone number
   // parts. In the other form, rely on the autocomplete type attribute.
   FormData form_with_us_number_max_length;
-  form_with_us_number_max_length.name = ASCIIToUTF16("MyMaxlengthPhoneForm");
+  form_with_us_number_max_length.name = u"MyMaxlengthPhoneForm";
   form_with_us_number_max_length.url =
       GURL("https://myform.com/phone_form.html");
   form_with_us_number_max_length.action =
       GURL("https://myform.com/phone_submit.html");
   FormData form_with_autocompletetype = form_with_us_number_max_length;
-  form_with_autocompletetype.name = ASCIIToUTF16("MyAutocompletetypePhoneForm");
+  form_with_autocompletetype.name = u"MyAutocompletetypePhoneForm";
 
   struct {
     const char* label;
@@ -3859,8 +3977,7 @@ TEST_P(AutofillManagerStructuredProfileTest, FillPhoneNumber) {
   AutofillProfile* work_profile =
       personal_data_.GetProfileWithGUID("00000000-0000-0000-0000-000000000002");
   ASSERT_TRUE(work_profile != nullptr);
-  work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER,
-                           ASCIIToUTF16("16505554567"));
+  work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"16505554567");
 
   std::string guid(work_profile->guid());
   int page_id = 1;
@@ -3873,11 +3990,11 @@ TEST_P(AutofillManagerStructuredProfileTest, FillPhoneNumber) {
   EXPECT_EQ(1, response_page_id);
 
   ASSERT_EQ(5U, response_data1.fields.size());
-  EXPECT_EQ(ASCIIToUTF16("1"), response_data1.fields[0].value);
-  EXPECT_EQ(ASCIIToUTF16("650"), response_data1.fields[1].value);
-  EXPECT_EQ(ASCIIToUTF16("555"), response_data1.fields[2].value);
-  EXPECT_EQ(ASCIIToUTF16("4567"), response_data1.fields[3].value);
-  EXPECT_EQ(base::string16(), response_data1.fields[4].value);
+  EXPECT_EQ(u"1", response_data1.fields[0].value);
+  EXPECT_EQ(u"650", response_data1.fields[1].value);
+  EXPECT_EQ(u"555", response_data1.fields[2].value);
+  EXPECT_EQ(u"4567", response_data1.fields[3].value);
+  EXPECT_EQ(std::u16string(), response_data1.fields[4].value);
 
   page_id = 2;
   response_page_id = 0;
@@ -3889,19 +4006,18 @@ TEST_P(AutofillManagerStructuredProfileTest, FillPhoneNumber) {
   EXPECT_EQ(2, response_page_id);
 
   ASSERT_EQ(5U, response_data2.fields.size());
-  EXPECT_EQ(ASCIIToUTF16("1"), response_data2.fields[0].value);
-  EXPECT_EQ(ASCIIToUTF16("650"), response_data2.fields[1].value);
-  EXPECT_EQ(ASCIIToUTF16("555"), response_data2.fields[2].value);
-  EXPECT_EQ(ASCIIToUTF16("4567"), response_data2.fields[3].value);
-  EXPECT_EQ(base::string16(), response_data2.fields[4].value);
+  EXPECT_EQ(u"1", response_data2.fields[0].value);
+  EXPECT_EQ(u"650", response_data2.fields[1].value);
+  EXPECT_EQ(u"555", response_data2.fields[2].value);
+  EXPECT_EQ(u"4567", response_data2.fields[3].value);
+  EXPECT_EQ(std::u16string(), response_data2.fields[4].value);
 
   // We should not be able to fill international numbers correctly in a form
   // containing fields with US max_length. However, the field should fill with
   // the number of digits equal to the max length specified, starting from the
   // right.
-  work_profile->SetRawInfo(ADDRESS_HOME_COUNTRY, ASCIIToUTF16("GB"));
-  work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER,
-                           ASCIIToUTF16("447700954321"));
+  work_profile->SetRawInfo(ADDRESS_HOME_COUNTRY, u"GB");
+  work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"447700954321");
   page_id = 3;
   response_page_id = 0;
   FormData response_data3;
@@ -3912,11 +4028,11 @@ TEST_P(AutofillManagerStructuredProfileTest, FillPhoneNumber) {
   EXPECT_EQ(3, response_page_id);
 
   ASSERT_EQ(5U, response_data3.fields.size());
-  EXPECT_EQ(ASCIIToUTF16("4"), response_data3.fields[0].value);
-  EXPECT_EQ(ASCIIToUTF16("700"), response_data3.fields[1].value);
-  EXPECT_EQ(ASCIIToUTF16("321"), response_data3.fields[2].value);
-  EXPECT_EQ(ASCIIToUTF16("4321"), response_data3.fields[3].value);
-  EXPECT_EQ(base::string16(), response_data3.fields[4].value);
+  EXPECT_EQ(u"4", response_data3.fields[0].value);
+  EXPECT_EQ(u"700", response_data3.fields[1].value);
+  EXPECT_EQ(u"321", response_data3.fields[2].value);
+  EXPECT_EQ(u"4321", response_data3.fields[3].value);
+  EXPECT_EQ(std::u16string(), response_data3.fields[4].value);
 
   page_id = 4;
   response_page_id = 0;
@@ -3928,11 +4044,11 @@ TEST_P(AutofillManagerStructuredProfileTest, FillPhoneNumber) {
   EXPECT_EQ(4, response_page_id);
 
   ASSERT_EQ(5U, response_data4.fields.size());
-  EXPECT_EQ(ASCIIToUTF16("44"), response_data4.fields[0].value);
-  EXPECT_EQ(ASCIIToUTF16("7700"), response_data4.fields[1].value);
-  EXPECT_EQ(ASCIIToUTF16("954321"), response_data4.fields[2].value);
-  EXPECT_EQ(ASCIIToUTF16("954321"), response_data4.fields[3].value);
-  EXPECT_EQ(base::string16(), response_data4.fields[4].value);
+  EXPECT_EQ(u"44", response_data4.fields[0].value);
+  EXPECT_EQ(u"7700", response_data4.fields[1].value);
+  EXPECT_EQ(u"954321", response_data4.fields[2].value);
+  EXPECT_EQ(u"954321", response_data4.fields[3].value);
+  EXPECT_EQ(std::u16string(), response_data4.fields[4].value);
 }
 
 TEST_P(AutofillManagerStructuredProfileTest,
@@ -3940,8 +4056,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   AutofillProfile* work_profile =
       personal_data_.GetProfileWithGUID("00000000-0000-0000-0000-000000000002");
   ASSERT_TRUE(work_profile != nullptr);
-  work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER,
-                           ASCIIToUTF16("16505554567"));
+  work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"16505554567");
 
   std::string guid(work_profile->guid());
 
@@ -3955,7 +4070,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   // Default is zero, have to set to a number autofill can process.
   field.max_length = 10;
   form_with_multiple_componentized_phone_fields.name =
-      ASCIIToUTF16("multiple_componentized_number_fields");
+      u"multiple_componentized_number_fields";
   test::CreateTestFormField("Full Name", "full_name", "", "text", &field);
   form_with_multiple_componentized_phone_fields.fields.push_back(field);
   test::CreateTestFormField("country code", "country_code", "", "text", &field);
@@ -3994,15 +4109,14 @@ TEST_P(AutofillManagerStructuredProfileTest,
 
   // Verify only the first complete set of phone number fields are filled.
   ASSERT_EQ(8U, response_data.fields.size());
-  EXPECT_EQ(ASCIIToUTF16("Charles Hardin Holley"),
-            response_data.fields[0].value);
-  EXPECT_EQ(ASCIIToUTF16("1"), response_data.fields[1].value);
-  EXPECT_EQ(ASCIIToUTF16("650"), response_data.fields[2].value);
-  EXPECT_EQ(ASCIIToUTF16("5554567"), response_data.fields[3].value);
-  EXPECT_EQ(base::string16(), response_data.fields[4].value);
-  EXPECT_EQ(base::string16(), response_data.fields[5].value);
-  EXPECT_EQ(base::string16(), response_data.fields[6].value);
-  EXPECT_EQ(base::string16(), response_data.fields[7].value);
+  EXPECT_EQ(u"Charles Hardin Holley", response_data.fields[0].value);
+  EXPECT_EQ(u"1", response_data.fields[1].value);
+  EXPECT_EQ(u"650", response_data.fields[2].value);
+  EXPECT_EQ(u"5554567", response_data.fields[3].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[4].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[5].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[6].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[7].value);
 }
 
 TEST_P(AutofillManagerStructuredProfileTest,
@@ -4010,8 +4124,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   AutofillProfile* work_profile =
       personal_data_.GetProfileWithGUID("00000000-0000-0000-0000-000000000002");
   ASSERT_TRUE(work_profile != nullptr);
-  work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER,
-                           ASCIIToUTF16("16505554567"));
+  work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"16505554567");
 
   std::string guid(work_profile->guid());
 
@@ -4021,8 +4134,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   FormFieldData field;
   // Default is zero, have to set to a number autofill can process.
   field.max_length = 10;
-  form_with_multiple_whole_number_fields.name =
-      ASCIIToUTF16("multiple_whole_number_fields");
+  form_with_multiple_whole_number_fields.name = u"multiple_whole_number_fields";
   test::CreateTestFormField("Full Name", "full_name", "", "text", &field);
   form_with_multiple_whole_number_fields.fields.push_back(field);
   test::CreateTestFormField("number", "phone_number", "", "text", &field);
@@ -4051,11 +4163,10 @@ TEST_P(AutofillManagerStructuredProfileTest,
 
   // Verify only the first complete set of phone number fields are filled.
   ASSERT_EQ(4U, response_data.fields.size());
-  EXPECT_EQ(ASCIIToUTF16("Charles Hardin Holley"),
-            response_data.fields[0].value);
-  EXPECT_EQ(ASCIIToUTF16("6505554567"), response_data.fields[1].value);
-  EXPECT_EQ(base::string16(), response_data.fields[2].value);
-  EXPECT_EQ(base::string16(), response_data.fields[3].value);
+  EXPECT_EQ(u"Charles Hardin Holley", response_data.fields[0].value);
+  EXPECT_EQ(u"6505554567", response_data.fields[1].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[2].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[3].value);
 }
 
 TEST_P(AutofillManagerStructuredProfileTest,
@@ -4063,8 +4174,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   AutofillProfile* work_profile =
       personal_data_.GetProfileWithGUID("00000000-0000-0000-0000-000000000002");
   ASSERT_TRUE(work_profile != nullptr);
-  work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER,
-                           ASCIIToUTF16("16505554567"));
+  work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"16505554567");
 
   std::string guid(work_profile->guid());
 
@@ -4078,7 +4188,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   // Default is zero, have to set to a number autofill can process.
   field.max_length = 10;
   form_with_multiple_componentized_phone_fields.name =
-      ASCIIToUTF16("multiple_componentized_number_fields");
+      u"multiple_componentized_number_fields";
   test::CreateTestFormField("Full Name", "full_name", "", "text", &field);
   form_with_multiple_componentized_phone_fields.fields.push_back(field);
   test::CreateTestFormField("country code", "country_code", "", "text", &field);
@@ -4120,15 +4230,14 @@ TEST_P(AutofillManagerStructuredProfileTest,
   // Verify only the first complete set of phone number fields are filled,
   // and phone components are not filled more than once.
   ASSERT_EQ(8U, response_data.fields.size());
-  EXPECT_EQ(ASCIIToUTF16("Charles Hardin Holley"),
-            response_data.fields[0].value);
-  EXPECT_EQ(ASCIIToUTF16("1"), response_data.fields[1].value);
-  EXPECT_EQ(base::string16(), response_data.fields[2].value);
-  EXPECT_EQ(ASCIIToUTF16("6505554567"), response_data.fields[3].value);
-  EXPECT_EQ(base::string16(), response_data.fields[4].value);
-  EXPECT_EQ(base::string16(), response_data.fields[5].value);
-  EXPECT_EQ(base::string16(), response_data.fields[6].value);
-  EXPECT_EQ(base::string16(), response_data.fields[7].value);
+  EXPECT_EQ(u"Charles Hardin Holley", response_data.fields[0].value);
+  EXPECT_EQ(u"1", response_data.fields[1].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[2].value);
+  EXPECT_EQ(u"6505554567", response_data.fields[3].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[4].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[5].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[6].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[7].value);
 }
 
 // Verify when extension is misclassified, and there is a complete
@@ -4138,8 +4247,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   AutofillProfile* work_profile =
       personal_data_.GetProfileWithGUID("00000000-0000-0000-0000-000000000002");
   ASSERT_TRUE(work_profile != nullptr);
-  work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER,
-                           ASCIIToUTF16("16505554567"));
+  work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"16505554567");
 
   std::string guid(work_profile->guid());
 
@@ -4150,7 +4258,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   // Default is zero, have to set to a number autofill can process.
   field.max_length = 10;
   form_with_misclassified_extension.name =
-      ASCIIToUTF16("complete_phone_form_with_extension");
+      u"complete_phone_form_with_extension";
   test::CreateTestFormField("Full Name", "full_name", "", "text", &field);
   field.autocomplete_attribute = "name";
   form_with_misclassified_extension.fields.push_back(field);
@@ -4186,12 +4294,11 @@ TEST_P(AutofillManagerStructuredProfileTest,
 
   // Verify the misclassified extension field is not filled.
   ASSERT_EQ(5U, response_data.fields.size());
-  EXPECT_EQ(ASCIIToUTF16("Charles Hardin Holley"),
-            response_data.fields[0].value);
-  EXPECT_EQ(base::string16(), response_data.fields[1].value);
-  EXPECT_EQ(ASCIIToUTF16("650"), response_data.fields[2].value);
-  EXPECT_EQ(ASCIIToUTF16("5554567"), response_data.fields[3].value);
-  EXPECT_EQ(base::string16(), response_data.fields[4].value);
+  EXPECT_EQ(u"Charles Hardin Holley", response_data.fields[0].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[1].value);
+  EXPECT_EQ(u"650", response_data.fields[2].value);
+  EXPECT_EQ(u"5554567", response_data.fields[3].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[4].value);
 }
 
 // Verify when no complete number can be found, we do best-effort filling.
@@ -4200,8 +4307,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   AutofillProfile* work_profile =
       personal_data_.GetProfileWithGUID("00000000-0000-0000-0000-000000000002");
   ASSERT_TRUE(work_profile != nullptr);
-  work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER,
-                           ASCIIToUTF16("16505554567"));
+  work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"16505554567");
 
   std::string guid(work_profile->guid());
 
@@ -4211,7 +4317,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   FormFieldData field;
   // Default is zero, have to set to a number autofill can process.
   field.max_length = 10;
-  form_with_no_complete_number.name = ASCIIToUTF16("no_complete_phone_form");
+  form_with_no_complete_number.name = u"no_complete_phone_form";
   test::CreateTestFormField("Full Name", "full_name", "", "text", &field);
   field.autocomplete_attribute = "name";
   form_with_no_complete_number.fields.push_back(field);
@@ -4245,12 +4351,10 @@ TEST_P(AutofillManagerStructuredProfileTest,
   // Verify when there is no complete phone number fields, we do best effort
   // filling.
   ASSERT_EQ(4U, response_data.fields.size());
-  EXPECT_EQ(ASCIIToUTF16("Charles Hardin Holley"),
-            response_data.fields[0].value);
-  EXPECT_EQ(ASCIIToUTF16("123 Apple St., unit 6"),
-            response_data.fields[1].value);
-  EXPECT_EQ(ASCIIToUTF16("650"), response_data.fields[2].value);
-  EXPECT_EQ(base::string16(), response_data.fields[3].value);
+  EXPECT_EQ(u"Charles Hardin Holley", response_data.fields[0].value);
+  EXPECT_EQ(u"123 Apple St., unit 6", response_data.fields[1].value);
+  EXPECT_EQ(u"650", response_data.fields[2].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[3].value);
 }
 
 // When the focus is on second phone field explicitly, we will fill the
@@ -4260,8 +4364,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   AutofillProfile* work_profile =
       personal_data_.GetProfileWithGUID("00000000-0000-0000-0000-000000000002");
   ASSERT_TRUE(work_profile != nullptr);
-  work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER,
-                           ASCIIToUTF16("16505554567"));
+  work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"16505554567");
 
   std::string guid(work_profile->guid());
 
@@ -4271,8 +4374,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   FormFieldData field;
   // Default is zero, have to set to a number autofill can process.
   field.max_length = 10;
-  form_with_multiple_whole_number_fields.name =
-      ASCIIToUTF16("multiple_whole_number_fields");
+  form_with_multiple_whole_number_fields.name = u"multiple_whole_number_fields";
   test::CreateTestFormField("Full Name", "full_name", "", "text", &field);
   form_with_multiple_whole_number_fields.fields.push_back(field);
   test::CreateTestFormField("number", "phone_number", "", "text", &field);
@@ -4304,11 +4406,10 @@ TEST_P(AutofillManagerStructuredProfileTest,
   // Verify when the second phone number field is being focused, we fill
   // that field *AND* the first phone number field.
   ASSERT_EQ(4U, response_data.fields.size());
-  EXPECT_EQ(ASCIIToUTF16("Charles Hardin Holley"),
-            response_data.fields[0].value);
-  EXPECT_EQ(ASCIIToUTF16("6505554567"), response_data.fields[1].value);
-  EXPECT_EQ(base::string16(), response_data.fields[2].value);
-  EXPECT_EQ(ASCIIToUTF16("6505554567"), response_data.fields[3].value);
+  EXPECT_EQ(u"Charles Hardin Holley", response_data.fields[0].value);
+  EXPECT_EQ(u"6505554567", response_data.fields[1].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[2].value);
+  EXPECT_EQ(u"6505554567", response_data.fields[3].value);
 }
 
 TEST_P(AutofillManagerStructuredProfileTest,
@@ -4316,8 +4417,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   AutofillProfile* work_profile =
       personal_data_.GetProfileWithGUID("00000000-0000-0000-0000-000000000002");
   ASSERT_TRUE(work_profile != nullptr);
-  work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER,
-                           ASCIIToUTF16("16505554567"));
+  work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"16505554567");
 
   std::string guid(work_profile->guid());
 
@@ -4327,8 +4427,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   FormFieldData field;
   // Default is zero, have to set to a number autofill can process.
   field.max_length = 10;
-  form_with_multiple_whole_number_fields.name =
-      ASCIIToUTF16("multiple_whole_number_fields");
+  form_with_multiple_whole_number_fields.name = u"multiple_whole_number_fields";
   test::CreateTestFormField("Full Name", "full_name", "", "text", &field);
   form_with_multiple_whole_number_fields.fields.push_back(field);
   test::CreateTestFormField("number", "phone_number", "", "text", &field);
@@ -4359,11 +4458,10 @@ TEST_P(AutofillManagerStructuredProfileTest,
 
   // Verify hidden/non-focusable phone field is set to only_fill_when_focused.
   ASSERT_EQ(4U, response_data.fields.size());
-  EXPECT_EQ(ASCIIToUTF16("Charles Hardin Holley"),
-            response_data.fields[0].value);
-  EXPECT_EQ(base::string16(), response_data.fields[1].value);
-  EXPECT_EQ(base::string16(), response_data.fields[2].value);
-  EXPECT_EQ(ASCIIToUTF16("6505554567"), response_data.fields[3].value);
+  EXPECT_EQ(u"Charles Hardin Holley", response_data.fields[0].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[1].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[2].value);
+  EXPECT_EQ(u"6505554567", response_data.fields[3].value);
 }
 
 // The hidden and the presentational fields should be filled, only if their
@@ -4372,7 +4470,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
 TEST_P(AutofillManagerStructuredProfileTest,
        FormWithHiddenOrPresentationalSelects) {
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
 
@@ -4443,8 +4541,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   AutofillProfile* work_profile =
       personal_data_.GetProfileWithGUID("00000000-0000-0000-0000-000000000002");
   ASSERT_TRUE(work_profile != nullptr);
-  work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER,
-                           ASCIIToUTF16("16505554567"));
+  work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"16505554567");
 
   std::string guid(work_profile->guid());
 
@@ -4454,7 +4551,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   FormFieldData field;
   // Default is zero, have to set to a number autofill can process.
   field.max_length = 10;
-  form_with_multiple_sections.name = ASCIIToUTF16("multiple_section_fields");
+  form_with_multiple_sections.name = u"multiple_section_fields";
   test::CreateTestFormField("Full Name", "full_name", "", "text", &field);
   form_with_multiple_sections.fields.push_back(field);
   test::CreateTestFormField("Address", "address", "", "text", &field);
@@ -4498,16 +4595,15 @@ TEST_P(AutofillManagerStructuredProfileTest,
 
   // Verify first section is filled with rationalization.
   ASSERT_EQ(9U, response_data.fields.size());
-  EXPECT_EQ(ASCIIToUTF16("Charles Hardin Holley"),
-            response_data.fields[0].value);
-  EXPECT_EQ(ASCIIToUTF16("123 Apple St."), response_data.fields[1].value);
-  EXPECT_EQ(ASCIIToUTF16("6505554567"), response_data.fields[2].value);
-  EXPECT_EQ(base::string16(), response_data.fields[3].value);
-  EXPECT_EQ(base::string16(), response_data.fields[4].value);
-  EXPECT_EQ(base::string16(), response_data.fields[5].value);
-  EXPECT_EQ(base::string16(), response_data.fields[6].value);
-  EXPECT_EQ(base::string16(), response_data.fields[7].value);
-  EXPECT_EQ(base::string16(), response_data.fields[8].value);
+  EXPECT_EQ(u"Charles Hardin Holley", response_data.fields[0].value);
+  EXPECT_EQ(u"123 Apple St.", response_data.fields[1].value);
+  EXPECT_EQ(u"6505554567", response_data.fields[2].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[3].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[4].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[5].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[6].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[7].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[8].value);
 
   // Fill second section.
   auto it = form_with_multiple_sections.fields.begin();
@@ -4520,16 +4616,15 @@ TEST_P(AutofillManagerStructuredProfileTest,
 
   // Verify second section is filled with rationalization.
   ASSERT_EQ(9U, response_data.fields.size());
-  EXPECT_EQ(base::string16(), response_data.fields[0].value);
-  EXPECT_EQ(base::string16(), response_data.fields[1].value);
-  EXPECT_EQ(base::string16(), response_data.fields[2].value);
-  EXPECT_EQ(base::string16(), response_data.fields[3].value);
-  EXPECT_EQ(base::string16(), response_data.fields[4].value);
-  EXPECT_EQ(ASCIIToUTF16("Charles Hardin Holley"),
-            response_data.fields[5].value);
-  EXPECT_EQ(ASCIIToUTF16("123 Apple St."), response_data.fields[6].value);
-  EXPECT_EQ(ASCIIToUTF16("6505554567"), response_data.fields[7].value);
-  EXPECT_EQ(base::string16(), response_data.fields[8].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[0].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[1].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[2].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[3].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[4].value);
+  EXPECT_EQ(u"Charles Hardin Holley", response_data.fields[5].value);
+  EXPECT_EQ(u"123 Apple St.", response_data.fields[6].value);
+  EXPECT_EQ(u"6505554567", response_data.fields[7].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[8].value);
 }
 
 // Test that we can still fill a form when a field has been removed from it.
@@ -4600,7 +4695,7 @@ TEST_P(AutofillManagerStructuredProfileTest, FormChangesVisibilityOfFields) {
 
   // Default is zero, have to set to a number autofill can process.
   field.max_length = 10;
-  form.name = ASCIIToUTF16("multiple_groups_fields");
+  form.name = u"multiple_groups_fields";
   test::CreateTestFormField("First Name", "first_name", "", "text", &field);
   form.fields.push_back(field);
   test::CreateTestFormField("Last Name", "last_name", "", "text", &field);
@@ -4745,7 +4840,7 @@ TEST_P(AutofillManagerStructuredProfileTest, ValuePatternsMetric) {
     test::CreateTestFormField("Some label", "my-field", test_case.value, "text",
                               &field);
     field.is_focusable = true;  // The metric skips hidden fields.
-    form.name = ASCIIToUTF16("my-form");
+    form.name = u"my-form";
     form.url = GURL("https://myform.com/form.html");
     form.action = GURL("https://myform.com/submit.html");
     form.fields.push_back(field);
@@ -5020,8 +5115,9 @@ TEST_P(AutofillManagerStructuredProfileTest,
 TEST_P(AutofillManagerStructuredProfileTest, OnLoadedServerPredictionsFromApi) {
   // First form on the page.
   FormData form;
-  form.unique_renderer_id.value() = 1;
-  form.name = ASCIIToUTF16("MyForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
   FormFieldData field;
@@ -5039,13 +5135,14 @@ TEST_P(AutofillManagerStructuredProfileTest, OnLoadedServerPredictionsFromApi) {
   auto form_structure_instance = std::make_unique<TestFormStructure>(form);
   // This pointer is valid as long as autofill manager lives.
   TestFormStructure* form_structure = form_structure_instance.get();
-  form_structure->DetermineHeuristicTypes();
+  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
   autofill_manager_->AddSeenFormStructure(std::move(form_structure_instance));
 
   // Second form on the page.
   FormData form2;
-  form2.unique_renderer_id.value() = 2;
-  form2.name = ASCIIToUTF16("MyForm2");
+  form2.host_frame = test::GetLocalFrameToken();
+  form2.unique_renderer_id = test::MakeFormRendererId();
+  form2.name = u"MyForm2";
   form2.url = GURL("https://myform.com/form.html");
   form2.action = GURL("https://myform.com/submit.html");
   test::CreateTestFormField("Last Name", "lastname", "", "text", &field);
@@ -5057,7 +5154,7 @@ TEST_P(AutofillManagerStructuredProfileTest, OnLoadedServerPredictionsFromApi) {
   auto form_structure_instance2 = std::make_unique<TestFormStructure>(form2);
   // This pointer is valid as long as autofill manager lives.
   TestFormStructure* form_structure2 = form_structure_instance2.get();
-  form_structure2->DetermineHeuristicTypes();
+  form_structure2->DetermineHeuristicTypes(nullptr, nullptr);
   autofill_manager_->AddSeenFormStructure(std::move(form_structure_instance2));
 
   // Make API response with suggestions.
@@ -5128,7 +5225,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   // Simulate having seen this form on page load.
   // |form_structure| will be owned by |autofill_manager_|.
   TestFormStructure* form_structure = new TestFormStructure(form);
-  form_structure->DetermineHeuristicTypes();
+  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
   std::vector<FormSignature> signatures =
       test::GetEncodedSignatures(*form_structure);
   autofill_manager_->AddSeenFormStructure(
@@ -5188,7 +5285,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   // Simulate having seen this form on page load.
   // |form_structure| will be owned by |autofill_manager_|.
   TestFormStructure* form_structure = new TestFormStructure(form);
-  form_structure->DetermineHeuristicTypes();
+  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
   autofill_manager_->AddSeenFormStructure(
       std::unique_ptr<TestFormStructure>(form_structure));
 
@@ -5262,7 +5359,7 @@ TEST_P(AutofillManagerStructuredProfileTest, FormSubmittedServerTypes) {
   // Simulate having seen this form on page load.
   // |form_structure| will be owned by |autofill_manager_|.
   TestFormStructure* form_structure = new TestFormStructure(form);
-  form_structure->DetermineHeuristicTypes();
+  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
 
   // Clear the heuristic types, and instead set the appropriate server types.
   std::vector<ServerFieldType> heuristic_types, server_types;
@@ -5371,13 +5468,13 @@ TEST_P(AutofillManagerStructuredProfileTest, FormSubmittedWithDefaultValues) {
   // Set up our form data.
   FormData form;
   test::CreateTestAddressFormData(&form);
-  form.fields[3].value = ASCIIToUTF16("Enter your address");
+  form.fields[3].value = u"Enter your address";
 
   // Convert the state field to a <select> popup, to make sure that we only
   // reject default values for text fields.
-  ASSERT_TRUE(form.fields[6].name == ASCIIToUTF16("state"));
+  ASSERT_TRUE(form.fields[6].name == u"state");
   form.fields[6].form_control_type = "select-one";
-  form.fields[6].value = ASCIIToUTF16("Tennessee");
+  form.fields[6].value = u"Tennessee";
 
   std::vector<FormData> forms(1, form);
   FormsSeen(forms);
@@ -5396,7 +5493,7 @@ TEST_P(AutofillManagerStructuredProfileTest, FormSubmittedWithDefaultValues) {
   EXPECT_EQ(1, personal_data_.num_times_save_imported_profile_called());
 
   // Set the address field's value back to the default value.
-  response_data.fields[3].value = ASCIIToUTF16("Enter your address");
+  response_data.fields[3].value = u"Enter your address";
 
   // Simulate form submission.  We should not call into the PDM to try to save
   // the filled data, since the filled form is effectively missing an address.
@@ -5406,9 +5503,8 @@ TEST_P(AutofillManagerStructuredProfileTest, FormSubmittedWithDefaultValues) {
 
 struct ProfileMatchingTypesTestCase {
   const char* input_value;  // The value to input in the field.
-  std::set<ServerFieldType>
-      field_types;  // The expected field types to be determined.
-  std::set<ServerFieldType>
+  ServerFieldTypeSet field_types;  // The expected field types to be determined.
+  ServerFieldTypeSet
       structured_field_types;  // The expected field types to be determined.
 };
 
@@ -5425,24 +5521,27 @@ class ProfileMatchingTypesTest
     InitializeFeatures();
   }
 
-  bool StructuredNames() const { return structured_names_enabled_; }
+  bool StructuredNamesAndAddresses() const {
+    return structured_names_and_addresses_;
+  }
 
   void InitializeFeatures();
 
  private:
-  bool structured_names_enabled_;
+  bool structured_names_and_addresses_;
   base::test::ScopedFeatureList scoped_features_;
 };
 
 void ProfileMatchingTypesTest::InitializeFeatures() {
-  structured_names_enabled_ = std::get<2>(GetParam());
+  structured_names_and_addresses_ = std::get<2>(GetParam());
 
-  if (structured_names_enabled_) {
-    scoped_features_.InitAndEnableFeature(
-        features::kAutofillEnableSupportForMoreStructureInNames);
+  std::vector<base::Feature> features = {
+      features::kAutofillEnableSupportForMoreStructureInAddresses,
+      features::kAutofillEnableSupportForMoreStructureInNames};
+  if (structured_names_and_addresses_) {
+    scoped_features_.InitWithFeatures(features, {});
   } else {
-    scoped_features_.InitAndDisableFeature(
-        features::kAutofillEnableSupportForMoreStructureInNames);
+    scoped_features_.InitWithFeatures({}, features);
   }
 }
 
@@ -5456,7 +5555,11 @@ const ProfileMatchingTypesTestCase kProfileMatchingTypesTestCases[] = {
     {"theking@gmail.com", {EMAIL_ADDRESS}, {EMAIL_ADDRESS}},
     {"RCA", {COMPANY_NAME}, {COMPANY_NAME}},
     {"3734 Elvis Presley Blvd.", {ADDRESS_HOME_LINE1}, {ADDRESS_HOME_LINE1}},
-    {"Apt. 10", {ADDRESS_HOME_LINE2}, {ADDRESS_HOME_LINE2}},
+    {"3734", {UNKNOWN_TYPE}, {ADDRESS_HOME_HOUSE_NUMBER}},
+    {"Elvis Presley Blvd.", {UNKNOWN_TYPE}, {ADDRESS_HOME_STREET_NAME}},
+    {"Apt. 10",
+     {ADDRESS_HOME_LINE2},
+     {ADDRESS_HOME_LINE2, ADDRESS_HOME_SUBPREMISE}},
     {"Memphis", {ADDRESS_HOME_CITY}, {ADDRESS_HOME_CITY}},
     {"Tennessee", {ADDRESS_HOME_STATE}, {ADDRESS_HOME_STATE}},
     {"38116", {ADDRESS_HOME_ZIP}, {ADDRESS_HOME_ZIP}},
@@ -5568,13 +5671,14 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
       "structured_names=%s ",
       test_case.input_value,
       AutofillType(*test_case.field_types.begin()).ToString().c_str(),
-      validity_state, validation_source, StructuredNames() ? "true" : "false"));
+      validity_state, validation_source,
+      StructuredNamesAndAddresses() ? "true" : "false"));
 
   // Take the field types depending on the state of the structured names
   // feature.
-  const std::set<ServerFieldType>& expected_possible_types =
-      StructuredNames() ? test_case.structured_field_types
-                        : test_case.field_types;
+  const ServerFieldTypeSet& expected_possible_types =
+      StructuredNamesAndAddresses() ? test_case.structured_field_types
+                                    : test_case.field_types;
 
   ASSERT_LE(AutofillDataModel::UNVALIDATED, validity_state);
   ASSERT_LE(validity_state, AutofillDataModel::UNSUPPORTED);
@@ -5601,7 +5705,7 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
 
   // Set the validity state for the matching field type.
   for (auto type : expected_possible_types) {
-    if (GroupTypeOfServerFieldType(type) != CREDIT_CARD) {
+    if (GroupTypeOfServerFieldType(type) != FieldTypeGroup::kCreditCard) {
       for (auto& profile : profiles) {
         ASSERT_GT(test_case.field_types.size(), 0U);
         if (type == UNKNOWN_TYPE) {
@@ -5626,7 +5730,7 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
   credit_cards.push_back(credit_card);
 
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
 
@@ -5639,7 +5743,7 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
 
   base::HistogramTester histogram_tester;
   AutofillManager::DeterminePossibleFieldTypesForUploadForTest(
-      profiles, credit_cards, base::string16(), "en-us", &form_structure);
+      profiles, credit_cards, std::u16string(), "en-us", &form_structure);
 
   ASSERT_EQ(1U, form_structure.field_count());
 
@@ -5648,7 +5752,7 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
 
   for (auto type : expected_possible_types) {
     // We don't add validity states for credit card fields.
-    if (GroupTypeOfServerFieldType(type) != CREDIT_CARD) {
+    if (GroupTypeOfServerFieldType(type) != FieldTypeGroup::kCreditCard) {
       ServerFieldTypeValidityStatesMap possible_types_validities =
           form_structure.field(0)->possible_types_validities();
       ASSERT_EQ(expected_possible_types.size(),
@@ -5668,33 +5772,33 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
 TEST_P(AutofillManagerStructuredProfileTest,
        DeterminePossibleFieldTypesForUpload_IsTriggered) {
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
 
   std::vector<ServerFieldTypeSet> expected_types;
-  std::vector<base::string16> expected_values;
+  std::vector<std::u16string> expected_values;
 
   // These fields should all match.
   FormFieldData field;
   ServerFieldTypeSet types;
 
   test::CreateTestFormField("", "1", "", "text", &field);
-  expected_values.push_back(ASCIIToUTF16("Elvis"));
+  expected_values.push_back(u"Elvis");
   types.clear();
   types.insert(NAME_FIRST);
   form.fields.push_back(field);
   expected_types.push_back(types);
 
   test::CreateTestFormField("", "2", "", "text", &field);
-  expected_values.push_back(ASCIIToUTF16("Aaron"));
+  expected_values.push_back(u"Aaron");
   types.clear();
   types.insert(NAME_MIDDLE);
   form.fields.push_back(field);
   expected_types.push_back(types);
 
   test::CreateTestFormField("", "3", "", "text", &field);
-  expected_values.push_back(ASCIIToUTF16("A"));
+  expected_values.push_back(u"A");
   types.clear();
   types.insert(NAME_MIDDLE_INITIAL);
   form.fields.push_back(field);
@@ -5771,7 +5875,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
 
   for (const std::vector<TestFieldData>& test_fields : test_cases) {
     FormData form;
-    form.name = ASCIIToUTF16("MyForm");
+    form.name = u"MyForm";
     form.url = GURL("https://myform.com/form.html");
     form.action = GURL("https://myform.com/submit.html");
 
@@ -5792,7 +5896,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
     }
 
     AutofillManager::DeterminePossibleFieldTypesForUploadForTest(
-        profiles, {}, base::string16(), "en-us", &form_structure);
+        profiles, {}, std::u16string(), "en-us", &form_structure);
 
     ASSERT_EQ(test_fields.size(), form_structure.field_count());
 
@@ -5960,7 +6064,7 @@ TEST_P(AutofillManagerStructuredProfileTest, DisambiguateUploadTypes) {
 
   for (const std::vector<TestFieldData>& test_fields : test_cases) {
     FormData form;
-    form.name = ASCIIToUTF16("MyForm");
+    form.name = u"MyForm";
     form.url = GURL("https://myform.com/form.html");
     form.action = GURL("https://myform.com/submit.html");
 
@@ -5978,7 +6082,7 @@ TEST_P(AutofillManagerStructuredProfileTest, DisambiguateUploadTypes) {
       form_structure.field(i)->set_server_type(test_fields[i].predicted_type);
 
     AutofillManager::DeterminePossibleFieldTypesForUploadForTest(
-        profiles, credit_cards, base::string16(), "en-us", &form_structure);
+        profiles, credit_cards, std::u16string(), "en-us", &form_structure);
     ASSERT_EQ(test_fields.size(), form_structure.field_count());
 
     // Make sure the disambiguation method selects the expected upload type.
@@ -5989,12 +6093,13 @@ TEST_P(AutofillManagerStructuredProfileTest, DisambiguateUploadTypes) {
         // For structured names it is possible that a field as two out of three
         // possible classifications: NAME_FULL, NAME_LAST,
         // NAME_LAST_FIRST/SECOND. Note, all cases contain NAME_LAST.
-        if (StructuredNames() && possible_types.size() == 2) {
+        if (StructuredNamesAndAddresses() && possible_types.size() == 2) {
           EXPECT_TRUE(possible_types.count(NAME_LAST) &&
                       (possible_types.count(NAME_LAST_SECOND) ||
                        possible_types.count(NAME_LAST_FIRST) ||
                        possible_types.count(NAME_FULL)));
-        } else if (StructuredNames() && possible_types.size() == 3) {
+        } else if (StructuredNamesAndAddresses() &&
+                   possible_types.size() == 3) {
           // Or even all three.
           EXPECT_TRUE(possible_types.count(NAME_FULL) &&
                       possible_types.count(NAME_LAST) &&
@@ -6029,7 +6134,7 @@ TEST_P(AutofillManagerStructuredProfileTest, CrowdsourceUPIVPA) {
   FormStructure form_structure(form);
 
   AutofillManager::DeterminePossibleFieldTypesForUploadForTest(
-      profiles, credit_cards, base::string16(), "en-us", &form_structure);
+      profiles, credit_cards, std::u16string(), "en-us", &form_structure);
 
   EXPECT_THAT(form_structure.field(0)->possible_types(), ElementsAre(UPI_VPA));
   EXPECT_THAT(form_structure.field(1)->possible_types(),
@@ -6124,7 +6229,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   std::vector<AutofillProfile> profiles;
 
   AutofillManager::DeterminePossibleFieldTypesForUploadForTest(
-      profiles, credit_cards, base::string16(), "en-us", &form_structure);
+      profiles, credit_cards, std::u16string(), "en-us", &form_structure);
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(form_structure, 2,
                                                CREDIT_CARD_VERIFICATION_CODE,
@@ -6178,7 +6283,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   std::vector<AutofillProfile> profiles;
 
   AutofillManager::DeterminePossibleFieldTypesForUploadForTest(
-      profiles, credit_cards, base::string16(), "en-us", &form_structure);
+      profiles, credit_cards, std::u16string(), "en-us", &form_structure);
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(form_structure, 2,
                                                CREDIT_CARD_VERIFICATION_CODE,
@@ -6232,7 +6337,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   std::vector<AutofillProfile> profiles;
 
   AutofillManager::DeterminePossibleFieldTypesForUploadForTest(
-      profiles, credit_cards, base::string16(), "en-us", &form_structure);
+      profiles, credit_cards, std::u16string(), "en-us", &form_structure);
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(form_structure, 1,
                                                CREDIT_CARD_VERIFICATION_CODE,
@@ -6286,7 +6391,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   std::vector<AutofillProfile> profiles;
 
   AutofillManager::DeterminePossibleFieldTypesForUploadForTest(
-      profiles, credit_cards, base::string16(), "en-us", &form_structure);
+      profiles, credit_cards, std::u16string(), "en-us", &form_structure);
   CheckThatNoFieldHasThisPossibleType(form_structure,
                                       CREDIT_CARD_VERIFICATION_CODE);
 }
@@ -6337,7 +6442,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   std::vector<AutofillProfile> profiles;
 
   AutofillManager::DeterminePossibleFieldTypesForUploadForTest(
-      profiles, credit_cards, base::string16(), "en-us", &form_structure);
+      profiles, credit_cards, std::u16string(), "en-us", &form_structure);
 
   CheckThatNoFieldHasThisPossibleType(form_structure,
                                       CREDIT_CARD_VERIFICATION_CODE);
@@ -6389,7 +6494,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
        OnTextFieldDidChangeAndUnfocus_Upload) {
   // Set up our form data (it's already filled out with user data).
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
 
@@ -6428,9 +6533,9 @@ TEST_P(AutofillManagerStructuredProfileTest,
 
   // The fields are edited after calling FormsSeen on them. This is because
   // default values are not used for upload comparisons.
-  form.fields[0].value = ASCIIToUTF16("Elvis");
-  form.fields[1].value = ASCIIToUTF16("Presley");
-  form.fields[2].value = ASCIIToUTF16("theking@gmail.com");
+  form.fields[0].value = u"Elvis";
+  form.fields[1].value = u"Presley";
+  form.fields[2].value = u"theking@gmail.com";
   // Simulate editing a field.
   autofill_manager_->OnTextFieldDidChange(
       form, form.fields.front(), gfx::RectF(), AutofillTickClock::NowTicks());
@@ -6445,7 +6550,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
        OnTextFieldDidChangeAndNavigation_Upload) {
   // Set up our form data (it's already filled out with user data).
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
 
@@ -6461,7 +6566,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   test::CreateTestFormField("Last Name", "lastname", "", "text", &field);
   form.fields.push_back(field);
   types.clear();
-  if (StructuredNames())
+  if (StructuredNamesAndAddresses())
     types.insert(NAME_LAST_SECOND);
   types.insert(NAME_LAST);
   expected_types.push_back(types);
@@ -6481,9 +6586,9 @@ TEST_P(AutofillManagerStructuredProfileTest,
 
   // The fields are edited after calling FormsSeen on them. This is because
   // default values are not used for upload comparisons.
-  form.fields[0].value = ASCIIToUTF16("Elvis");
-  form.fields[1].value = ASCIIToUTF16("Presley");
-  form.fields[2].value = ASCIIToUTF16("theking@gmail.com");
+  form.fields[0].value = u"Elvis";
+  form.fields[1].value = u"Presley";
+  form.fields[2].value = u"theking@gmail.com";
   // Simulate editing a field.
   autofill_manager_->OnTextFieldDidChange(
       form, form.fields.front(), gfx::RectF(), AutofillTickClock::NowTicks());
@@ -6498,7 +6603,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
        OnDidFillAutofillFormDataAndUnfocus_Upload) {
   // Set up our form data (empty).
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
 
@@ -6515,7 +6620,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   test::CreateTestFormField("Last Name", "lastname", "", "text", &field);
   form.fields.push_back(field);
   types.clear();
-  if (StructuredNames())
+  if (StructuredNamesAndAddresses())
     types.insert(NAME_LAST_SECOND);
   types.insert(NAME_LAST);
   expected_types.push_back(types);
@@ -6534,9 +6639,9 @@ TEST_P(AutofillManagerStructuredProfileTest,
   autofill_manager_->SetExpectedObservedSubmission(false);
 
   // Form was autofilled with user data.
-  form.fields[0].value = ASCIIToUTF16("Elvis");
-  form.fields[1].value = ASCIIToUTF16("Presley");
-  form.fields[2].value = ASCIIToUTF16("theking@gmail.com");
+  form.fields[0].value = u"Elvis";
+  form.fields[1].value = u"Presley";
+  form.fields[2].value = u"theking@gmail.com";
   autofill_manager_->OnDidFillAutofillFormData(form,
                                                AutofillTickClock::NowTicks());
 
@@ -6551,7 +6656,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
        GetCreditCardSuggestions_UnrecognizedAttribute) {
   // Set up the form data.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
 
@@ -6589,7 +6694,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
        GetCreditCardSuggestions_ForNumberSplitAcrossFields) {
   // Set up our form data with credit card number split across fields.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
 
@@ -6628,7 +6733,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   // Verify whether suggestions are populated correctly for one of the middle
   // credit card number fields when filled partially.
   FormFieldData number_field = form.fields[3];
-  number_field.value = ASCIIToUTF16("901");
+  number_field.value = u"901";
 
   // Get the suggestions for already filled credit card |number_field|.
   GetAutofillSuggestions(form, number_field);
@@ -6656,7 +6761,7 @@ TEST_P(AutofillManagerStructuredProfileTest, DontSaveCvcInAutocompleteHistory) {
       .WillOnce(SaveArg<0>(&form_seen_by_ahm));
 
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
 
@@ -6698,19 +6803,19 @@ TEST_P(AutofillManagerStructuredProfileTest, DontOfferToSavePaymentsCard) {
 
   // Manually fill out |form| so we can use it in OnFormSubmitted.
   for (size_t i = 0; i < form.fields.size(); ++i) {
-    if (form.fields[i].name == ASCIIToUTF16("cardnumber"))
-      form.fields[i].value = ASCIIToUTF16("4012888888881881");
-    else if (form.fields[i].name == ASCIIToUTF16("nameoncard"))
-      form.fields[i].value = ASCIIToUTF16("John H Dillinger");
-    else if (form.fields[i].name == ASCIIToUTF16("ccmonth"))
-      form.fields[i].value = ASCIIToUTF16("01");
-    else if (form.fields[i].name == ASCIIToUTF16("ccyear"))
-      form.fields[i].value = ASCIIToUTF16("2017");
+    if (form.fields[i].name == u"cardnumber")
+      form.fields[i].value = u"4012888888881881";
+    else if (form.fields[i].name == u"nameoncard")
+      form.fields[i].value = u"John H Dillinger";
+    else if (form.fields[i].name == u"ccmonth")
+      form.fields[i].value = u"01";
+    else if (form.fields[i].name == u"ccyear")
+      form.fields[i].value = u"2017";
   }
 
   CardUnmaskDelegate::UserProvidedUnmaskDetails details;
   details.should_store_pan = false;
-  details.cvc = ASCIIToUTF16("123");
+  details.cvc = u"123";
   full_card_unmask_delegate()->OnUnmaskPromptAccepted(details);
   OnDidGetRealPan(AutofillClient::SUCCESS, "4012888888881881");
   autofill_manager_->OnFormSubmitted(form, false,
@@ -6724,9 +6829,9 @@ TEST_P(AutofillManagerStructuredProfileTest, FillInUpdatedExpirationDate) {
 
   CardUnmaskDelegate::UserProvidedUnmaskDetails details;
   details.should_store_pan = false;
-  details.cvc = ASCIIToUTF16("123");
-  details.exp_month = ASCIIToUTF16("02");
-  details.exp_year = ASCIIToUTF16("2018");
+  details.cvc = u"123";
+  details.exp_month = u"02";
+  details.exp_year = u"2018";
   full_card_unmask_delegate()->OnUnmaskPromptAccepted(details);
   OnDidGetRealPan(AutofillClient::SUCCESS, "4012888888881881");
 }
@@ -7188,20 +7293,18 @@ TEST_P(SuggestionMatchingTest,
 
   AutofillProfile profile1;
   profile1.set_guid("00000000-0000-0000-0000-000000000103");
-  profile1.SetInfo(NAME_FIRST, ASCIIToUTF16("Robin"), "en-US");
-  profile1.SetInfo(NAME_MIDDLE, ASCIIToUTF16("Adam Smith"), "en-US");
-  profile1.SetInfo(NAME_LAST, ASCIIToUTF16("Grimes"), "en-US");
-  profile1.SetInfo(ADDRESS_HOME_LINE1, ASCIIToUTF16("1234 Smith Blvd."),
-                   "en-US");
+  profile1.SetInfo(NAME_FIRST, u"Robin", "en-US");
+  profile1.SetInfo(NAME_MIDDLE, u"Adam Smith", "en-US");
+  profile1.SetInfo(NAME_LAST, u"Grimes", "en-US");
+  profile1.SetInfo(ADDRESS_HOME_LINE1, u"1234 Smith Blvd.", "en-US");
   personal_data_.AddProfile(profile1);
 
   AutofillProfile profile2;
   profile2.set_guid("00000000-0000-0000-0000-000000000124");
-  profile2.SetInfo(NAME_FIRST, ASCIIToUTF16("Carl"), "en-US");
-  profile2.SetInfo(NAME_MIDDLE, ASCIIToUTF16("Shawn Smith"), "en-US");
-  profile2.SetInfo(NAME_LAST, ASCIIToUTF16("Grimes"), "en-US");
-  profile2.SetInfo(ADDRESS_HOME_LINE1, ASCIIToUTF16("1234 Smith Blvd."),
-                   "en-US");
+  profile2.SetInfo(NAME_FIRST, u"Carl", "en-US");
+  profile2.SetInfo(NAME_MIDDLE, u"Shawn Smith", "en-US");
+  profile2.SetInfo(NAME_LAST, u"Grimes", "en-US");
+  profile2.SetInfo(ADDRESS_HOME_LINE1, u"1234 Smith Blvd.", "en-US");
   personal_data_.AddProfile(profile2);
 
   FormFieldData field;
@@ -7231,7 +7334,7 @@ TEST_P(AutofillManagerStructuredProfileTest, ShouldUploadForm) {
   // is disabled by default. This tests validates both the disabled and enabled
   // scenarios.
   FormData form;
-  form.name = ASCIIToUTF16("TestForm");
+  form.name = u"TestForm";
   form.url = GURL("https://example.com/form.html");
   form.action = GURL("https://example.com/submit.html");
 
@@ -7295,7 +7398,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
        DisplaySuggestions_AutocompleteOffNotRespected_AddressField) {
   // Set up an address form.
   FormData mixed_form;
-  mixed_form.name = ASCIIToUTF16("MyForm");
+  mixed_form.name = u"MyForm";
   mixed_form.url = GURL("https://myform.com/form.html");
   mixed_form.action = GURL("https://myform.com/submit.html");
   FormFieldData field;
@@ -7330,7 +7433,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
        DisplaySuggestions_AutocompleteOff_CreditCardField) {
   // Set up a credit card form.
   FormData mixed_form;
-  mixed_form.name = ASCIIToUTF16("MyForm");
+  mixed_form.name = u"MyForm";
   mixed_form.url = GURL("https://myform.com/form.html");
   mixed_form.action = GURL("https://myform.com/submit.html");
   FormFieldData field;
@@ -7361,7 +7464,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
        DisplaySuggestionsForUpdatedServerTypedForm) {
   // Create a form with unknown heuristic fields.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
 
@@ -7374,7 +7477,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   form.fields.push_back(field);
 
   auto form_structure = std::make_unique<TestFormStructure>(form);
-  form_structure->DetermineHeuristicTypes();
+  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
   // Make sure the form can not be autofilled now.
   ASSERT_EQ(0u, form_structure->autofill_count());
   for (size_t idx = 0; idx < form_structure->field_count(); ++idx) {
@@ -7396,7 +7499,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   }
 
   // Modify one of the fields in the original form.
-  form.fields[0].css_classes += ASCIIToUTF16("a");
+  form.fields[0].css_classes += u"a";
 
   // Expect the form still can be autofilled.
   for (const FormFieldData& field : form.fields) {
@@ -7421,7 +7524,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
 TEST_P(AutofillManagerStructuredProfileTest,
        FormWithLongOptionValuesIsAcceptable) {
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
 
@@ -7551,7 +7654,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
 TEST_P(AutofillManagerStructuredProfileTest,
        DidShowSuggestions_LogAutocompleteShownMetric) {
   FormData form;
-  form.name = ASCIIToUTF16("NothingSpecial");
+  form.name = u"NothingSpecial";
 
   FormFieldData field;
   test::CreateTestFormField("Something", "something", "", "text", &field);
@@ -7605,10 +7708,9 @@ TEST_P(AutofillManagerStructuredProfileTest,
        DidShowSuggestions_LogByType_AddressOnly) {
   // Create a form with name and address fields.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
-  form.button_titles = {
-      std::make_pair(ASCIIToUTF16("Submit"),
-                     mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
+  form.name = u"MyForm";
+  form.button_titles = {std::make_pair(
+      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
   form.main_frame_origin =
@@ -7650,10 +7752,9 @@ TEST_P(AutofillManagerStructuredProfileTest,
        DidShowSuggestions_LogByType_AddressOnlyWithoutName) {
   // Create a form with address fields.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
-  form.button_titles = {
-      std::make_pair(ASCIIToUTF16("Submit"),
-                     mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
+  form.name = u"MyForm";
+  form.button_titles = {std::make_pair(
+      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
   form.main_frame_origin =
@@ -7695,10 +7796,9 @@ TEST_P(AutofillManagerStructuredProfileTest,
        DidShowSuggestions_LogByType_ContactOnly) {
   // Create a form with name and contact fields.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
-  form.button_titles = {
-      std::make_pair(ASCIIToUTF16("Submit"),
-                     mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
+  form.name = u"MyForm";
+  form.button_titles = {std::make_pair(
+      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
   form.main_frame_origin =
@@ -7739,10 +7839,9 @@ TEST_P(AutofillManagerStructuredProfileTest,
        DidShowSuggestions_LogByType_ContactOnlyWithoutName) {
   // Create a form with contact fields.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
-  form.button_titles = {
-      std::make_pair(ASCIIToUTF16("Submit"),
-                     mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
+  form.name = u"MyForm";
+  form.button_titles = {std::make_pair(
+      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
   form.main_frame_origin =
@@ -7783,10 +7882,9 @@ TEST_P(AutofillManagerStructuredProfileTest,
        DidShowSuggestions_LogByType_PhoneOnly) {
   // Create a form with phone field.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
-  form.button_titles = {
-      std::make_pair(ASCIIToUTF16("Submit"),
-                     mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
+  form.name = u"MyForm";
+  form.button_titles = {std::make_pair(
+      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
   form.main_frame_origin =
@@ -7827,10 +7925,9 @@ TEST_P(AutofillManagerStructuredProfileTest,
        DidShowSuggestions_LogByType_Other) {
   // Create a form with name fields.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
-  form.button_titles = {
-      std::make_pair(ASCIIToUTF16("Submit"),
-                     mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
+  form.name = u"MyForm";
+  form.button_titles = {std::make_pair(
+      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
   form.main_frame_origin =
@@ -7871,10 +7968,9 @@ TEST_P(AutofillManagerStructuredProfileTest,
        DidShowSuggestions_LogByType_AddressPlusEmail) {
   // Create a form with name, address, and email fields.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
-  form.button_titles = {
-      std::make_pair(ASCIIToUTF16("Submit"),
-                     mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
+  form.name = u"MyForm";
+  form.button_titles = {std::make_pair(
+      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
   form.main_frame_origin =
@@ -7924,10 +8020,9 @@ TEST_P(AutofillManagerStructuredProfileTest,
        DidShowSuggestions_LogByType_AddressPlusEmailWithoutName) {
   // Create a form with address and email fields.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
-  form.button_titles = {
-      std::make_pair(ASCIIToUTF16("Submit"),
-                     mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
+  form.name = u"MyForm";
+  form.button_titles = {std::make_pair(
+      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
   form.main_frame_origin =
@@ -7975,10 +8070,9 @@ TEST_P(AutofillManagerStructuredProfileTest,
        DidShowSuggestions_LogByType_AddressPlusPhone) {
   // Create a form with name fields.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
-  form.button_titles = {
-      std::make_pair(ASCIIToUTF16("Submit"),
-                     mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
+  form.name = u"MyForm";
+  form.button_titles = {std::make_pair(
+      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
   form.main_frame_origin =
@@ -8028,10 +8122,9 @@ TEST_P(AutofillManagerStructuredProfileTest,
        DidShowSuggestions_LogByType_AddressPlusPhoneWithoutName) {
   // Create a form with name, address, and phone fields.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
-  form.button_titles = {
-      std::make_pair(ASCIIToUTF16("Submit"),
-                     mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
+  form.name = u"MyForm";
+  form.button_titles = {std::make_pair(
+      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
   form.main_frame_origin =
@@ -8079,10 +8172,9 @@ TEST_P(AutofillManagerStructuredProfileTest,
        DidShowSuggestions_LogByType_AddressPlusEmailPlusPhone) {
   // Create a form with name, address, phone, and email fields.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
-  form.button_titles = {
-      std::make_pair(ASCIIToUTF16("Submit"),
-                     mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
+  form.name = u"MyForm";
+  form.button_titles = {std::make_pair(
+      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
   form.main_frame_origin =
@@ -8133,10 +8225,9 @@ TEST_P(AutofillManagerStructuredProfileTest,
        DidShowSuggestions_LogByType_AddressPlusEmailPlusPhoneWithoutName) {
   // Create a form with address, phone, and email fields.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
-  form.button_titles = {
-      std::make_pair(ASCIIToUTF16("Submit"),
-                     mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
+  form.name = u"MyForm";
+  form.button_titles = {std::make_pair(
+      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
   form.main_frame_origin =
@@ -8305,7 +8396,7 @@ TEST_F(AutofillManagerTest, DontImportUpiIdWhenIncognito) {
   form.submission_event =
       mojom::SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
 
-  form.fields[0].value = ASCIIToUTF16("user@indianbank");
+  form.fields[0].value = u"user@indianbank";
   FormSubmitted(form);
 
   EXPECT_EQ(0, personal_data_.num_times_save_upi_id_called());
@@ -8314,18 +8405,15 @@ TEST_F(AutofillManagerTest, DontImportUpiIdWhenIncognito) {
 // Tests the vote generation for the address enhancement types.
 TEST_F(AutofillManagerTest, PossibleFieldTypesForEnhancementVotes) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillAddressEnhancementVotes);
+  scoped_feature_list.InitWithFeatures(
+      {features::kAutofillAddressEnhancementVotes},
+      {features::kAutofillEnableSupportForMoreStructureInAddresses});
 
   std::vector<AutofillProfile> profiles = {AutofillProfile()};
-  profiles[0].SetRawInfo(ADDRESS_HOME_STREET_NAME,
-                         base::ASCIIToUTF16("StreetName"));
-  profiles[0].SetRawInfo(ADDRESS_HOME_HOUSE_NUMBER,
-                         base::ASCIIToUTF16("HouseNumber"));
-  profiles[0].SetRawInfo(ADDRESS_HOME_PREMISE_NAME,
-                         base::ASCIIToUTF16("Premise"));
-  profiles[0].SetRawInfo(ADDRESS_HOME_SUBPREMISE,
-                         base::ASCIIToUTF16("Subpremise"));
+  profiles[0].SetRawInfo(ADDRESS_HOME_STREET_NAME, u"StreetName");
+  profiles[0].SetRawInfo(ADDRESS_HOME_HOUSE_NUMBER, u"HouseNumber");
+  profiles[0].SetRawInfo(ADDRESS_HOME_PREMISE_NAME, u"Premise");
+  profiles[0].SetRawInfo(ADDRESS_HOME_SUBPREMISE, u"Subpremise");
 
   FormData form;
   FormFieldData field1;
@@ -8344,7 +8432,7 @@ TEST_F(AutofillManagerTest, PossibleFieldTypesForEnhancementVotes) {
   FormStructure form_structure(form);
 
   AutofillManager::DeterminePossibleFieldTypesForUploadForTest(
-      profiles, {}, base::string16(), "en-us", &form_structure);
+      profiles, {}, std::u16string(), "en-us", &form_structure);
 
   ASSERT_EQ(4U, form_structure.field_count());
 
@@ -8363,7 +8451,7 @@ TEST_F(AutofillManagerTest, PossibleFieldTypesForEnhancementVotes) {
       features::kAutofillAddressEnhancementVotes);
 
   AutofillManager::DeterminePossibleFieldTypesForUploadForTest(
-      profiles, {}, base::string16(), "en-us", &form_structure);
+      profiles, {}, std::u16string(), "en-us", &form_structure);
 
   ASSERT_EQ(4U, form_structure.field_count());
 
@@ -8381,23 +8469,87 @@ TEST_F(AutofillManagerTest, PageLanguageGetsCorrectlySet) {
   FormData form;
   test::CreateTestAddressFormData(&form);
 
-  autofill_client_.GetLanguageState()->SetCurrentLanguage("und");
-
   autofill_manager_->OnFormsSeen({form});
   FormStructure* parsed_form =
-      autofill_manager_->FindCachedFormByRendererId(form.unique_renderer_id);
+      autofill_manager_->FindCachedFormByRendererId(form.global_id());
 
   ASSERT_TRUE(parsed_form);
-  ASSERT_EQ(LanguageCode("und"), parsed_form->current_page_language());
+  ASSERT_EQ(LanguageCode(), parsed_form->current_page_language());
 
   autofill_client_.GetLanguageState()->SetCurrentLanguage("zh");
 
   autofill_manager_->OnFormsSeen({form});
-  parsed_form =
-      autofill_manager_->FindCachedFormByRendererId(form.unique_renderer_id);
+  parsed_form = autofill_manager_->FindCachedFormByRendererId(form.global_id());
 
   ASSERT_EQ(LanguageCode("zh"), parsed_form->current_page_language());
 }
+
+TEST_F(AutofillManagerTest, PageLanguageGetsCorrectlyDetected) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillParsingPatternsLanguageDetection);
+
+  FormData form;
+  test::CreateTestAddressFormData(&form);
+
+  autofill_manager_->OnFormsSeen({form});
+  FormStructure* parsed_form =
+      autofill_manager_->FindCachedFormByRendererId(form.global_id());
+
+  ASSERT_TRUE(parsed_form);
+  ASSERT_EQ(LanguageCode(), parsed_form->current_page_language());
+
+  translate::LanguageDetectionDetails language_detection_details;
+  language_detection_details.adopted_language = "zh";
+  autofill_manager_->OnLanguageDetermined(language_detection_details);
+
+  autofill_client_.GetLanguageState()->SetCurrentLanguage("zh");
+
+  parsed_form = autofill_manager_->FindCachedFormByRendererId(form.global_id());
+
+  ASSERT_EQ(LanguageCode("zh"), parsed_form->current_page_language());
+}
+
+// AutofillManagerTest with different browser profile types.
+class AutofillManagerProfileMetricsTest
+    : public AutofillManagerTest,
+      public testing::WithParamInterface<profile_metrics::BrowserProfileType> {
+ public:
+  AutofillManagerProfileMetricsTest() : profile_type_(GetParam()) {
+    EXPECT_CALL(autofill_client_, GetProfileType())
+        .WillRepeatedly(Return(profile_type_));
+  }
+
+  const profile_metrics::BrowserProfileType profile_type_;
+};
+
+// Tests if submitting a form in different browser profile types records correct
+// |Autofill.FormSubmission.PerProfileType| metric.
+TEST_P(AutofillManagerProfileMetricsTest, FormSubmissionPerProfileTypeMetrics) {
+  // Set up our form data.
+  FormData form;
+  test::CreateTestAddressFormData(&form);
+  std::vector<FormData> forms(1, form);
+  FormsSeen(forms);
+  FormFieldData field = form.fields[0];
+  GetAutofillSuggestions(form, field);
+
+  base::HistogramTester histogram_tester;
+
+  FormSubmitted(form);
+  histogram_tester.ExpectBucketCount("Autofill.FormSubmission.PerProfileType",
+                                     profile_type_, 1);
+  histogram_tester.ExpectTotalCount("Autofill.FormSubmission.PerProfileType",
+                                    1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AutofillManagerProfileMetricsTest,
+    testing::ValuesIn({profile_metrics::BrowserProfileType::kRegular,
+                       profile_metrics::BrowserProfileType::kIncognito,
+                       profile_metrics::BrowserProfileType::kGuest,
+                       profile_metrics::BrowserProfileType::kEphemeralGuest}));
 
 // AutofillManagerTest with kAutofillDisabledMixedForms feature enabled.
 class AutofillManagerTestWithMixedForms : public AutofillManagerTest {
@@ -8418,7 +8570,7 @@ class AutofillManagerTestWithMixedForms : public AutofillManagerTest {
 TEST_F(AutofillManagerTestWithMixedForms, GetSuggestions_MixedForm) {
   // Set up our form data.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("http://myform.com/submit.html");
   FormFieldData field;
@@ -8444,7 +8596,7 @@ TEST_F(AutofillManagerTestWithMixedForms,
 
   // Set up our form data.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("http://myform.com/submit.html");
   FormFieldData field;
@@ -8460,7 +8612,7 @@ TEST_F(AutofillManagerTestWithMixedForms,
 TEST_F(AutofillManagerTestWithMixedForms, GetSuggestions_MixedFormUserTyped) {
   // Set up our form data.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("http://myform.com/submit.html");
   FormFieldData field;
@@ -8476,7 +8628,7 @@ TEST_F(AutofillManagerTestWithMixedForms, GetSuggestions_MixedFormUserTyped) {
                  "", POPUP_ITEM_ID_MIXED_FORM_MESSAGE));
 
   // Pretend user started typing and make sure we no longer set suggestions.
-  form.fields[0].value = base::ASCIIToUTF16("Michael");
+  form.fields[0].value = u"Michael";
   form.fields[0].properties_mask |= kUserTyped;
   GetAutofillSuggestions(form, form.fields[0]);
   external_delegate_->CheckNoSuggestions(kDefaultPageID);
@@ -8487,7 +8639,7 @@ TEST_F(AutofillManagerTestWithMixedForms, GetSuggestions_MixedFormUserTyped) {
 TEST_F(AutofillManagerTestWithMixedForms, GetSuggestions_JavascriptUrlTarget) {
   // Set up our form data, using a javascript scheme target URL.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("javascript:alert('hello');");
   FormFieldData field;
@@ -8503,7 +8655,7 @@ TEST_F(AutofillManagerTestWithMixedForms, GetSuggestions_JavascriptUrlTarget) {
 TEST_F(AutofillManagerTestWithMixedForms, GetSuggestions_AboutBlankTarget) {
   // Set up our form data, using a javascript scheme target URL.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("about:blank");
   FormFieldData field;
@@ -8618,7 +8770,7 @@ TEST_F(AutofillManagerTestForVirtualCardOption,
        ShouldNotShowDueToFormNotHavingCardNumberField) {
   // Creates an incomplete form without card number field.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
   form.main_frame_origin =
@@ -8676,7 +8828,7 @@ TEST_F(AutofillManagerTestForVirtualCardOption,
        ShouldNotShowDueToFormNotHavingExpirationDateField) {
   // Creates an incomplete form without expiration date field.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
   form.main_frame_origin =
@@ -8703,7 +8855,7 @@ TEST_F(AutofillManagerTestForVirtualCardOption,
        ShouldNotShowDueToFormNotHavingCvcField) {
   // Creates an incomplete form without cvc field.
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
   form.main_frame_origin =
@@ -8803,12 +8955,6 @@ class OnFocusOnFormFieldTest : public AutofillManagerTest,
 
     has_active_screen_reader_ = GetParam();
     external_delegate_->set_has_active_screen_reader(has_active_screen_reader_);
-
-    scoped_feature_list_.InitWithFeatures(
-        // Enabled
-        {},
-        // Disabled
-        {kAutofillRestrictUnownedFieldsToFormlessCheckout});
   }
 
   void TearDown() override {
@@ -8841,7 +8987,7 @@ class OnFocusOnFormFieldTest : public AutofillManagerTest,
 
 TEST_P(OnFocusOnFormFieldTest, AddressSuggestions) {
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
   FormFieldData field;
@@ -8868,7 +9014,7 @@ TEST_P(OnFocusOnFormFieldTest, AddressSuggestions) {
 
 TEST_P(OnFocusOnFormFieldTest, AddressSuggestions_AutocompleteOffNotRespected) {
   FormData form;
-  form.name = ASCIIToUTF16("MyForm");
+  form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
   FormFieldData field;

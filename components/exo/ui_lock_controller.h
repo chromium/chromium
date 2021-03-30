@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_EXO_UI_LOCK_CONTROLLER_H_
 #define COMPONENTS_EXO_UI_LOCK_CONTROLLER_H_
 
+#include "ash/shell.h"
 #include "base/timer/timer.h"
 #include "components/exo/seat_observer.h"
 #include "ui/events/event_handler.h"
@@ -36,6 +37,8 @@ class UILockController : public ui::EventHandler, public SeatObserver {
   // Overridden from SeatObserver:
   void OnSurfaceFocusing(Surface* gaining_focus) override {}
   void OnSurfaceFocused(Surface* gained_focus) override;
+
+  bool IsBubbleVisibleForTesting(aura::Window* window);
 
  private:
   void OnEscapeKey(bool pressed);

@@ -16,6 +16,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -56,12 +57,12 @@ class FileSystemOperationImplTest : public testing::Test {
     update_observers_ = MockFileUpdateObserver::CreateList(&update_observer_);
 
     base::FilePath base_dir = base_.GetPath().AppendASCII("filesystem");
-    quota_manager_ =
-        new MockQuotaManager(false /* is_incognito */, base_dir,
-                             base::ThreadTaskRunnerHandle::Get().get(),
-                             nullptr /* special storage policy */);
-    quota_manager_proxy_ = new MockQuotaManagerProxy(
-        quota_manager(), base::ThreadTaskRunnerHandle::Get().get());
+    quota_manager_ = base::MakeRefCounted<MockQuotaManager>(
+        /* is_incognito= */ false, base_dir,
+        base::ThreadTaskRunnerHandle::Get().get(),
+        /* special storage policy= */ nullptr);
+    quota_manager_proxy_ = base::MakeRefCounted<MockQuotaManagerProxy>(
+        quota_manager(), base::ThreadTaskRunnerHandle::Get());
     sandbox_file_system_.SetUp(base_dir, quota_manager_proxy_.get());
     sandbox_file_system_.AddFileChangeObserver(&change_observer_);
     sandbox_file_system_.AddFileUpdateObserver(&update_observer_);
@@ -103,11 +104,10 @@ class FileSystemOperationImplTest : public testing::Test {
   MockFileChangeObserver* change_observer() { return &change_observer_; }
 
   std::unique_ptr<FileSystemOperationContext> NewContext() {
-    FileSystemOperationContext* context =
-        sandbox_file_system_.NewOperationContext();
+    auto context = sandbox_file_system_.NewOperationContext();
     // Grant enough quota for all test cases.
     context->set_allowed_bytes_growth(1000000);
-    return base::WrapUnique(context);
+    return context;
   }
 
   FileSystemURL URLForPath(const std::string& path) const {

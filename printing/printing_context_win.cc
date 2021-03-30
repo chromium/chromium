@@ -60,7 +60,7 @@ PrintingContextWin::~PrintingContextWin() {
   ReleaseContext();
 }
 
-void PrintingContextWin::PrintDocument(const base::string16& device_name,
+void PrintingContextWin::PrintDocument(const std::wstring& device_name,
                                        const MetafileSkia& metafile) {
   // TODO(crbug.com/1008222)
   NOTIMPLEMENTED();
@@ -78,7 +78,7 @@ PrintingContext::Result PrintingContextWin::UseDefaultSettings() {
 
   scoped_refptr<PrintBackend> backend =
       PrintBackend::CreateInstance(delegate_->GetAppLocale());
-  base::string16 default_printer =
+  std::wstring default_printer =
       base::UTF8ToWide(backend->GetDefaultPrinterName());
   if (!default_printer.empty()) {
     ScopedPrinterHandle printer;
@@ -162,13 +162,14 @@ PrintingContext::Result PrintingContextWin::UpdatePrinterSettings(
   DCHECK(!external_preview) << "Not implemented";
 
   ScopedPrinterHandle printer;
-  if (!printer.OpenPrinterWithName(settings_->device_name().c_str()))
+  if (!printer.OpenPrinterWithName(base::as_wcstr(settings_->device_name())))
     return OnError();
 
   // Make printer changes local to Chrome.
   // See MSDN documentation regarding DocumentProperties.
   std::unique_ptr<DEVMODE, base::FreeDeleter> scoped_dev_mode =
-      CreateDevModeWithColor(printer.Get(), settings_->device_name(),
+      CreateDevModeWithColor(printer.Get(),
+                             base::UTF16ToWide(settings_->device_name()),
                              settings_->color() != mojom::ColorModel::kGray);
   if (!scoped_dev_mode)
     return OnError();
@@ -247,7 +248,8 @@ PrintingContext::Result PrintingContextWin::UpdatePrinterSettings(
                                  ? DMCOLOR_COLOR
                                  : DMCOLOR_MONOCHROME;
 
-  return InitializeSettings(settings_->device_name(), scoped_dev_mode.get());
+  return InitializeSettings(base::UTF16ToWide(settings_->device_name()),
+                            scoped_dev_mode.get());
 }
 
 PrintingContext::Result PrintingContextWin::InitWithSettingsForTest(
@@ -258,17 +260,18 @@ PrintingContext::Result PrintingContextWin::InitWithSettingsForTest(
 
   // TODO(maruel): settings_.ToDEVMODE()
   ScopedPrinterHandle printer;
-  if (!printer.OpenPrinterWithName(settings_->device_name().c_str()))
+  if (!printer.OpenPrinterWithName(base::as_wcstr(settings_->device_name())))
     return FAILED;
 
   std::unique_ptr<DEVMODE, base::FreeDeleter> dev_mode =
       CreateDevMode(printer.Get(), nullptr);
 
-  return InitializeSettings(settings_->device_name(), dev_mode.get());
+  return InitializeSettings(base::UTF16ToWide(settings_->device_name()),
+                            dev_mode.get());
 }
 
 PrintingContext::Result PrintingContextWin::NewDocument(
-    const base::string16& document_name) {
+    const std::u16string& document_name) {
   DCHECK(!in_print_job_);
   if (!context_)
     return OnError();
@@ -289,7 +292,7 @@ PrintingContext::Result PrintingContextWin::NewDocument(
 
   DCHECK(SimplifyDocumentTitle(document_name) == document_name);
   DOCINFO di = {sizeof(DOCINFO)};
-  di.lpszDocName = document_name.c_str();
+  di.lpszDocName = base::as_wcstr(document_name);
 
   // Is there a debug dump directory specified? If so, force to print to a file.
   if (PrintedDocument::HasDebugDumpPath()) {
@@ -391,7 +394,7 @@ PrintingContext::Result PrintingContextWin::InitializeSettings(
   skia::InitializeDC(context_);
 
   DCHECK(!in_print_job_);
-  settings_->set_device_name(device_name);
+  settings_->set_device_name(base::WideToUTF16(device_name));
   PrintSettingsInitializerWin::InitPrintSettings(context_, *dev_mode,
                                                  settings_.get());
 

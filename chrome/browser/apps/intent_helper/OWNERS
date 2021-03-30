@@ -3,4 +3,4 @@ mxcai@chromium.org
 # For ARC related code
 djacobo@chromium.org
 # For ARC related code, backup reviewers
-file://chrome/browser/chromeos/arc/OWNERS
+file://chrome/browser/ash/arc/OWNERS

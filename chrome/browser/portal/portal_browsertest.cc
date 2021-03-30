@@ -3,15 +3,16 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/history_test_utils.h"
@@ -29,7 +30,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/safe_browsing/core/db/test_database_manager.h"
+#include "components/safe_browsing/core/db/fake_database_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
@@ -41,6 +42,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -89,8 +91,16 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, PortalActivation) {
   EXPECT_EQ(portal_contents, tab_strip_model->GetActiveWebContents());
 }
 
+// Flaky on Linux ASAN. crbug.com/1182702
+#if defined(ADDRESS_SANITIZER) && defined(OS_LINUX)
+#define MAYBE_DevToolsWindowStaysOpenAfterActivation \
+  DISABLED_DevToolsWindowStaysOpenAfterActivation
+#else
+#define MAYBE_DevToolsWindowStaysOpenAfterActivation \
+  DevToolsWindowStaysOpenAfterActivation
+#endif
 IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
-                       DevToolsWindowStaysOpenAfterActivation) {
+                       MAYBE_DevToolsWindowStaysOpenAfterActivation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/portal/activate.html"));
   ui_test_utils::NavigateToURL(browser(), url);
@@ -161,20 +171,19 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, HttpBasicAuthenticationInPortal) {
   WindowedAuthSuppliedObserver auth_supplied(&portal_controller);
   LoginHandler* login_handler = login_observer.handlers().front();
   EXPECT_EQ(login_handler->auth_info().realm, "Aperture");
-  login_handler->SetAuth(base::ASCIIToUTF16("basicuser"),
-                         base::ASCIIToUTF16("secret"));
+  login_handler->SetAuth(u"basicuser", u"secret");
   auth_supplied.Wait();
 
-  base::string16 expected_title = base::ASCIIToUTF16("basicuser/secret");
+  std::u16string expected_title = u"basicuser/secret";
   content::TitleWatcher title_watcher(portal_contents, expected_title);
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 }
 
 namespace {
 
-std::vector<base::string16> GetRendererTaskTitles(
+std::vector<std::u16string> GetRendererTaskTitles(
     task_manager::TaskManagerTester* tester) {
-  std::vector<base::string16> renderer_titles;
+  std::vector<std::u16string> renderer_titles;
   renderer_titles.reserve(tester->GetRowCount());
   for (int row = 0; row < tester->GetRowCount(); row++) {
     if (tester->GetTabId(row) != SessionID::InvalidValue())
@@ -190,14 +199,13 @@ std::vector<base::string16> GetRendererTaskTitles(
 IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TaskManagerUpdatesAfterActivation) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  const base::string16 expected_tab_title_before_activation =
+  const std::u16string expected_tab_title_before_activation =
+      l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_TAB_PREFIX, u"activate.html");
+  const std::u16string expected_tab_title_after_activation =
       l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_TAB_PREFIX,
-                                 base::ASCIIToUTF16("activate.html"));
-  const base::string16 expected_tab_title_after_activation =
-      l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_TAB_PREFIX,
-                                 base::ASCIIToUTF16("activate-portal.html"));
-  const base::string16 expected_portal_title = l10n_util::GetStringFUTF16(
-      IDS_TASK_MANAGER_PORTAL_PREFIX, base::ASCIIToUTF16("http://127.0.0.1/"));
+                                 u"activate-portal.html");
+  const std::u16string expected_portal_title = l10n_util::GetStringFUTF16(
+      IDS_TASK_MANAGER_PORTAL_PREFIX, u"http://127.0.0.1/");
 
   ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/portal/activate.html"));
@@ -206,7 +214,8 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TaskManagerUpdatesAfterActivation) {
 
   // Check that both tasks appear.
   chrome::ShowTaskManager(browser());
-  auto tester = task_manager::TaskManagerTester::Create(base::Closure());
+  auto tester =
+      task_manager::TaskManagerTester::Create(base::RepeatingClosure());
   task_manager::browsertest_util::WaitForTaskManagerRows(
       1, expected_tab_title_before_activation);
   task_manager::browsertest_util::WaitForTaskManagerRows(1,
@@ -235,11 +244,11 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TaskManagerOrderingOfDependentRows) {
   const unsigned kNumTabs = 3;
   const unsigned kPortalsPerTab = 2;
 
-  const base::string16 expected_tab_title = l10n_util::GetStringFUTF16(
-      IDS_TASK_MANAGER_TAB_PREFIX, base::ASCIIToUTF16("Title Of Awesomeness"));
-  const base::string16 expected_portal_title = l10n_util::GetStringFUTF16(
-      IDS_TASK_MANAGER_PORTAL_PREFIX, base::ASCIIToUTF16("http://127.0.0.1/"));
-  std::vector<base::string16> expected_titles;
+  const std::u16string expected_tab_title = l10n_util::GetStringFUTF16(
+      IDS_TASK_MANAGER_TAB_PREFIX, u"Title Of Awesomeness");
+  const std::u16string expected_portal_title = l10n_util::GetStringFUTF16(
+      IDS_TASK_MANAGER_PORTAL_PREFIX, u"http://127.0.0.1/");
+  std::vector<std::u16string> expected_titles;
   for (unsigned i = 0; i < kNumTabs; i++) {
     expected_titles.push_back(expected_tab_title);
     for (unsigned j = 0; j < kPortalsPerTab; j++)
@@ -279,7 +288,8 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TaskManagerOrderingOfDependentRows) {
 
   // Check that the tasks are grouped in the UI as expected.
   chrome::ShowTaskManager(browser());
-  auto tester = task_manager::TaskManagerTester::Create(base::Closure());
+  auto tester =
+      task_manager::TaskManagerTester::Create(base::RepeatingClosure());
   task_manager::browsertest_util::WaitForTaskManagerRows(kNumTabs,
                                                          expected_tab_title);
   task_manager::browsertest_util::WaitForTaskManagerRows(
@@ -405,64 +415,6 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, BrowserHistoryUpdatesOnActivation) {
       base::Contains(ui_test_utils::HistoryEnumerator(profile).urls(), url2));
 }
 
-namespace {
-
-// Allows us to treat certain URLs as dangerous with Safe Browsing.
-class FakeSafeBrowsingDatabaseManager
-    : public safe_browsing::TestSafeBrowsingDatabaseManager {
- public:
-  FakeSafeBrowsingDatabaseManager() = default;
-
-  void AddDangerousUrl(const GURL& dangerous_url) {
-    dangerous_urls_.insert(dangerous_url);
-  }
-
-  // safe_browsing::TestSafeBrowsingDatabaseManager:
-  bool CheckBrowseUrl(const GURL& url,
-                      const safe_browsing::SBThreatTypeSet& threat_types,
-                      Client* client) override {
-    if (!dangerous_urls_.contains(url))
-      return true;
-
-    base::PostTask(
-        FROM_HERE, {content::BrowserThread::IO},
-        base::BindOnce(&FakeSafeBrowsingDatabaseManager::CheckBrowseURLAsync,
-                       this, url, client));
-    return false;
-  }
-  bool IsSupported() const override { return true; }
-  bool ChecksAreAlwaysAsync() const override { return false; }
-  bool CheckExtensionIDs(const std::set<std::string>& extension_ids,
-                         Client* client) override {
-    return true;
-  }
-  bool CheckUrlForSubresourceFilter(const GURL& url, Client* client) override {
-    return true;
-  }
-  bool CanCheckResourceType(
-      blink::mojom::ResourceType resource_type) const override {
-    return true;
-  }
-  safe_browsing::ThreatSource GetThreatSource() const override {
-    // This choice is arbitrary. The blocking page expects this to not be
-    // |UNKNOWN|.
-    return safe_browsing::ThreatSource::LOCAL_PVER4;
-  }
-
- private:
-  ~FakeSafeBrowsingDatabaseManager() override = default;
-
-  void CheckBrowseURLAsync(const GURL& url, Client* client) {
-    client->OnCheckBrowseUrlResult(url,
-                                   safe_browsing::SB_THREAT_TYPE_URL_PHISHING,
-                                   safe_browsing::ThreatMetadata());
-  }
-
-  base::flat_set<GURL> dangerous_urls_;
-};
-
-}  // namespace
-
 class PortalSafeBrowsingBrowserTest : public PortalBrowserTest {
  public:
   PortalSafeBrowsingBrowserTest()
@@ -474,7 +426,7 @@ class PortalSafeBrowsingBrowserTest : public PortalBrowserTest {
   void CreatedBrowserMainParts(
       content::BrowserMainParts* browser_main_parts) override {
     fake_safe_browsing_database_manager_ =
-        base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>();
+        base::MakeRefCounted<safe_browsing::FakeSafeBrowsingDatabaseManager>();
     safe_browsing_factory_->SetTestDatabaseManager(
         fake_safe_browsing_database_manager_.get());
     safe_browsing::SafeBrowsingService::RegisterFactory(
@@ -488,11 +440,12 @@ class PortalSafeBrowsingBrowserTest : public PortalBrowserTest {
   }
 
   void AddDangerousUrl(const GURL& dangerous_url) {
-    fake_safe_browsing_database_manager_->AddDangerousUrl(dangerous_url);
+    fake_safe_browsing_database_manager_->AddDangerousUrl(
+        dangerous_url, safe_browsing::SB_THREAT_TYPE_URL_PHISHING);
   }
 
  private:
-  scoped_refptr<FakeSafeBrowsingDatabaseManager>
+  scoped_refptr<safe_browsing::FakeSafeBrowsingDatabaseManager>
       fake_safe_browsing_database_manager_;
   std::unique_ptr<safe_browsing::TestSafeBrowsingServiceFactory>
       safe_browsing_factory_;

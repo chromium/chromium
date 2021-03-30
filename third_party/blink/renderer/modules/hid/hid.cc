@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_hid_device_filter.h"
@@ -130,7 +130,7 @@ void HID::AddedEventListener(const AtomicString& event_type,
 
   auto* context = GetExecutionContext();
   if (!context ||
-      !context->IsFeatureEnabled(mojom::blink::FeaturePolicyFeature::kHid,
+      !context->IsFeatureEnabled(mojom::blink::PermissionsPolicyFeature::kHid,
                                  ReportOptions::kDoNotReport)) {
     return;
   }
@@ -163,7 +163,7 @@ ScriptPromise HID::getDevices(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  if (!context->IsFeatureEnabled(mojom::blink::FeaturePolicyFeature::kHid,
+  if (!context->IsFeatureEnabled(mojom::blink::PermissionsPolicyFeature::kHid,
                                  ReportOptions::kReportOnFailure)) {
     exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
     return ScriptPromise();
@@ -188,7 +188,7 @@ ScriptPromise HID::requestDevice(ScriptState* script_state,
   }
 
   if (!GetExecutionContext()->IsFeatureEnabled(
-          mojom::blink::FeaturePolicyFeature::kHid,
+          mojom::blink::PermissionsPolicyFeature::kHid,
           ReportOptions::kReportOnFailure)) {
     exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
     return ScriptPromise();

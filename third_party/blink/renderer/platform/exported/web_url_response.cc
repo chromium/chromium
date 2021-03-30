@@ -374,6 +374,14 @@ network::mojom::FetchResponseType WebURLResponse::GetType() const {
   return resource_response_->GetType();
 }
 
+void WebURLResponse::SetPadding(int64_t padding) {
+  resource_response_->SetPadding(padding);
+}
+
+int64_t WebURLResponse::GetPadding() const {
+  return resource_response_->GetPadding();
+}
+
 void WebURLResponse::SetUrlListViaServiceWorker(
     const WebVector<WebURL>& url_list_via_service_worker) {
   Vector<KURL> url_list(url_list_via_service_worker.size());
@@ -515,6 +523,24 @@ void WebURLResponse::SetDnsAliases(const WebVector<WebString>& aliases) {
   std::transform(aliases.begin(), aliases.end(), dns_aliases.begin(),
                  [](const WebString& h) { return WTF::String(h); });
   resource_response_->SetDnsAliases(std::move(dns_aliases));
+}
+
+WebURL WebURLResponse::WebBundleURL() const {
+  return resource_response_->WebBundleURL();
+}
+
+void WebURLResponse::SetWebBundleURL(const WebURL& url) {
+  resource_response_->SetWebBundleURL(url);
+}
+
+void WebURLResponse::SetAuthChallengeInfo(
+    const base::Optional<net::AuthChallengeInfo>& auth_challenge_info) {
+  resource_response_->SetAuthChallengeInfo(auth_challenge_info);
+}
+
+const base::Optional<net::AuthChallengeInfo>&
+WebURLResponse::AuthChallengeInfo() const {
+  return resource_response_->AuthChallengeInfo();
 }
 
 WebURLResponse::WebURLResponse(ResourceResponse& r) : resource_response_(&r) {}

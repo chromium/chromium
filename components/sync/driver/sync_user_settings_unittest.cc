@@ -20,16 +20,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #endif
 
 namespace syncer {
 
 namespace {
-
-// Declared here because the pref is obsolete in production code.
-const char kSyncSessions[] = "sync.sessions";
 
 ModelTypeSet GetUserTypes() {
   ModelTypeSet user_types = UserTypes();
@@ -62,7 +59,7 @@ class SyncUserSettingsTest : public testing::Test {
     sync_service_crypto_ = std::make_unique<SyncServiceCrypto>(
         /*notify_observers=*/base::DoNothing(),
         /*notify_required_user_action_changed=*/base::DoNothing(),
-        /*reconfigure=*/base::DoNothing(), sync_prefs_.get(),
+        /*reconfigure=*/base::DoNothing(),
         /*trusted_vault_client=*/nullptr);
   }
 
@@ -70,9 +67,7 @@ class SyncUserSettingsTest : public testing::Test {
       ModelTypeSet registered_types) {
     return std::make_unique<SyncUserSettingsImpl>(
         sync_service_crypto_.get(), sync_prefs_.get(),
-        /*preference_provider=*/nullptr, registered_types,
-        /*sync_allowed_by_platform_changed=*/
-        base::DoNothing());
+        /*preference_provider=*/nullptr, registered_types);
   }
 
   // The order of fields matters because it determines destruction order and
@@ -81,57 +76,6 @@ class SyncUserSettingsTest : public testing::Test {
   std::unique_ptr<SyncPrefs> sync_prefs_;
   std::unique_ptr<SyncServiceCrypto> sync_service_crypto_;
 };
-
-// TODO(crbug.com/950874): consider removing this test. The migration and the
-// test itself are old and the test is full of workarounds to mimic old
-// behavior, but the migration triggering logic was changed in
-// crbug.com/906611.
-TEST_F(SyncUserSettingsTest, DeleteDirectivesAndProxyTabsMigration) {
-  // Simulate an upgrade to delete directives + proxy tabs support. None of the
-  // new types or their pref group types should be registering, ensuring they
-  // don't have pref values.
-  ModelTypeSet registered_types = UserTypes();
-  registered_types.Remove(PROXY_TABS);
-  registered_types.Remove(TYPED_URLS);
-  registered_types.Remove(SESSIONS);
-  registered_types.Remove(HISTORY_DELETE_DIRECTIVES);
-
-  std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
-      MakeSyncUserSettings(registered_types);
-
-  // Enable all other types.
-  sync_user_settings->SetSelectedTypes(
-      /*keep_everything_synced=*/false,
-      /*selected_types=*/sync_user_settings->GetRegisteredSelectableTypes());
-
-  // Manually enable typed urls (to simulate the old world) and perform the
-  // migration to check it doesn't affect the proxy tab preference value.
-  pref_service_.SetBoolean(prefs::kSyncTypedUrls, true);
-  // TODO(crbug.com/906611): now we make an extra assumption that the migration
-  // can be called a second time and it will do the real migration if during the
-  // first call this migration wasn't needed. Maybe consider splitting this
-  // test?
-  MigrateSessionsToProxyTabsPrefs(&pref_service_);
-
-  // Register all user types.
-  sync_user_settings = MakeSyncUserSettings(UserTypes());
-  // Proxy tabs should not be enabled (since sessions wasn't), but history
-  // delete directives should (since typed urls was).
-  ModelTypeSet preferred_types = sync_user_settings->GetPreferredDataTypes();
-  EXPECT_FALSE(preferred_types.Has(PROXY_TABS));
-  EXPECT_TRUE(preferred_types.Has(HISTORY_DELETE_DIRECTIVES));
-
-  // Now manually enable sessions and perform the migration, which should result
-  // in proxy tabs also being enabled. Also, manually disable typed urls, which
-  // should mean that history delete directives are not enabled.
-  pref_service_.SetBoolean(prefs::kSyncTypedUrls, false);
-  pref_service_.SetBoolean(kSyncSessions, true);
-  MigrateSessionsToProxyTabsPrefs(&pref_service_);
-
-  preferred_types = sync_user_settings->GetPreferredDataTypes();
-  EXPECT_TRUE(preferred_types.Has(PROXY_TABS));
-  EXPECT_FALSE(preferred_types.Has(HISTORY_DELETE_DIRECTIVES));
-}
 
 TEST_F(SyncUserSettingsTest, PreferredTypesSyncEverything) {
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
@@ -349,6 +293,39 @@ TEST_F(SyncUserSettingsTest, AppsAreHandledByOsSettings) {
   EXPECT_FALSE(settings->GetPreferredDataTypes().Has(WEB_APPS));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+TEST_F(SyncUserSettingsTest, ShouldMutePassphrasePrompt) {
+  std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
+      MakeSyncUserSettings(GetUserTypes());
+
+  EXPECT_FALSE(
+      sync_user_settings->IsPassphrasePromptMutedForCurrentProductVersion());
+
+  sync_user_settings->MarkPassphrasePromptMutedForCurrentProductVersion();
+  EXPECT_TRUE(
+      sync_user_settings->IsPassphrasePromptMutedForCurrentProductVersion());
+
+  // Clearing the preference should unmute the prompt.
+  sync_prefs_->ClearPassphrasePromptMutedProductVersion();
+  EXPECT_FALSE(
+      sync_user_settings->IsPassphrasePromptMutedForCurrentProductVersion());
+}
+
+TEST_F(SyncUserSettingsTest, ShouldClearPassphrasePromptMuteUponUpgrade) {
+  // Mimic an old product version being written to prefs.
+  sync_prefs_->SetPassphrasePromptMutedProductVersion(/*major_version=*/73);
+
+  std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
+      MakeSyncUserSettings(GetUserTypes());
+
+  EXPECT_FALSE(
+      sync_user_settings->IsPassphrasePromptMutedForCurrentProductVersion());
+
+  // Muting should still work.
+  sync_user_settings->MarkPassphrasePromptMutedForCurrentProductVersion();
+  EXPECT_TRUE(
+      sync_user_settings->IsPassphrasePromptMutedForCurrentProductVersion());
+}
 
 }  // namespace
 

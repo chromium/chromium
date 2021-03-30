@@ -10,15 +10,15 @@
 
 #include "base/bind.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -43,7 +43,7 @@ class LowDiskNotificationTest : public BrowserWithTestWindowTest {
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-    CryptohomeClient::InitializeFake();
+    UserDataAuthClient::InitializeFake();
 
     GetCrosSettingsHelper()->ReplaceDeviceSettingsProviderWithStub();
     GetCrosSettingsHelper()->SetBoolean(
@@ -62,11 +62,14 @@ class LowDiskNotificationTest : public BrowserWithTestWindowTest {
         &LowDiskNotificationTest::OnNotificationAdded, base::Unretained(this)));
     low_disk_notification_ = std::make_unique<LowDiskNotification>();
     notification_count_ = 0;
+
+    medium_message_.set_disk_free_bytes(kMediumNotification);
+    high_message_.set_disk_free_bytes(kHighNotification);
   }
 
   void TearDown() override {
     low_disk_notification_.reset();
-    CryptohomeClient::Shutdown();
+    UserDataAuthClient::Shutdown();
     BrowserWithTestWindowTest::TearDown();
   }
 
@@ -87,12 +90,17 @@ class LowDiskNotificationTest : public BrowserWithTestWindowTest {
   std::unique_ptr<NotificationDisplayServiceTester> tester_;
   std::unique_ptr<LowDiskNotification> low_disk_notification_;
   int notification_count_;
+
+  // A LowDiskSpace protobuf message that contains `kMediumNotification`.
+  ::user_data_auth::LowDiskSpace medium_message_;
+  // A LowDiskSpace protobuf message that contains `kHighNotification`.
+  ::user_data_auth::LowDiskSpace high_message_;
 };
 
 TEST_F(LowDiskNotificationTest, MediumLevelNotification) {
-  base::string16 expected_title =
+  std::u16string expected_title =
       l10n_util::GetStringUTF16(IDS_LOW_DISK_NOTIFICATION_TITLE);
-  low_disk_notification_->LowDiskSpace(kMediumNotification);
+  low_disk_notification_->LowDiskSpace(medium_message_);
   auto notification = GetNotification();
   ASSERT_TRUE(notification);
   EXPECT_EQ(expected_title, notification->title());
@@ -100,10 +108,10 @@ TEST_F(LowDiskNotificationTest, MediumLevelNotification) {
 }
 
 TEST_F(LowDiskNotificationTest, HighLevelReplacesMedium) {
-  base::string16 expected_title =
+  std::u16string expected_title =
       l10n_util::GetStringUTF16(IDS_CRITICALLY_LOW_DISK_NOTIFICATION_TITLE);
-  low_disk_notification_->LowDiskSpace(kMediumNotification);
-  low_disk_notification_->LowDiskSpace(kHighNotification);
+  low_disk_notification_->LowDiskSpace(medium_message_);
+  low_disk_notification_->LowDiskSpace(high_message_);
   auto notification = GetNotification();
   ASSERT_TRUE(notification);
   EXPECT_EQ(expected_title, notification->title());
@@ -112,22 +120,22 @@ TEST_F(LowDiskNotificationTest, HighLevelReplacesMedium) {
 
 TEST_F(LowDiskNotificationTest, NotificationsAreThrottled) {
   SetNotificationThrottlingInterval(10000000);
-  low_disk_notification_->LowDiskSpace(kHighNotification);
-  low_disk_notification_->LowDiskSpace(kHighNotification);
+  low_disk_notification_->LowDiskSpace(high_message_);
+  low_disk_notification_->LowDiskSpace(high_message_);
   EXPECT_EQ(1, notification_count_);
 }
 
 TEST_F(LowDiskNotificationTest, HighNotificationsAreShownAfterThrottling) {
   SetNotificationThrottlingInterval(-1);
-  low_disk_notification_->LowDiskSpace(kHighNotification);
-  low_disk_notification_->LowDiskSpace(kHighNotification);
+  low_disk_notification_->LowDiskSpace(high_message_);
+  low_disk_notification_->LowDiskSpace(high_message_);
   EXPECT_EQ(2, notification_count_);
 }
 
 TEST_F(LowDiskNotificationTest, MediumNotificationsAreNotShownAfterThrottling) {
   SetNotificationThrottlingInterval(-1);
-  low_disk_notification_->LowDiskSpace(kMediumNotification);
-  low_disk_notification_->LowDiskSpace(kMediumNotification);
+  low_disk_notification_->LowDiskSpace(medium_message_);
+  low_disk_notification_->LowDiskSpace(medium_message_);
   EXPECT_EQ(1, notification_count_);
 }
 
@@ -138,7 +146,7 @@ TEST_F(LowDiskNotificationTest, ShowForMultipleUsersWhenEnrolled) {
       AccountId::FromUserEmailGaiaId("test_user2@example.com", "1234567892"));
 
   SetNotificationThrottlingInterval(-1);
-  low_disk_notification_->LowDiskSpace(kHighNotification);
+  low_disk_notification_->LowDiskSpace(high_message_);
   EXPECT_EQ(1, notification_count_);
 }
 
@@ -152,7 +160,7 @@ TEST_F(LowDiskNotificationTest, SupressedForMultipleUsersWhenEnrolled) {
       chromeos::kDeviceShowLowDiskSpaceNotification, false);
 
   SetNotificationThrottlingInterval(-1);
-  low_disk_notification_->LowDiskSpace(kHighNotification);
+  low_disk_notification_->LowDiskSpace(high_message_);
   EXPECT_EQ(0, notification_count_);
 }
 

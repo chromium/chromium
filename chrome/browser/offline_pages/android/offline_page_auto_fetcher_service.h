@@ -13,7 +13,6 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/offline_pages/android/auto_fetch_page_load_watcher.h"
 #include "chrome/common/offline_page_auto_fetcher.mojom-forward.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -66,7 +65,7 @@ class OfflinePageAutoFetcherService : public KeyedService,
    public:
     // Calls |offline_pages::ShowAutoFetchCompleteNotification()|.
     virtual void ShowAutoFetchCompleteNotification(
-        const base::string16& pageTitle,
+        const std::u16string& pageTitle,
         const std::string& original_url,
         const std::string& final_url,
         int android_tab_id,

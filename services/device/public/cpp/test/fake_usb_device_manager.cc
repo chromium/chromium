@@ -51,21 +51,23 @@ void FakeUsbDeviceManager::GetDevices(mojom::UsbEnumerationOptionsPtr options,
 
 void FakeUsbDeviceManager::GetDevice(
     const std::string& guid,
+    const std::vector<uint8_t>& blocked_interface_classes,
     mojo::PendingReceiver<device::mojom::UsbDevice> device_receiver,
     mojo::PendingRemote<mojom::UsbDeviceClient> device_client) {
   auto it = devices_.find(guid);
   if (it == devices_.end())
     return;
 
-  FakeUsbDevice::Create(it->second, std::move(device_receiver),
-                        std::move(device_client));
+  FakeUsbDevice::Create(it->second, blocked_interface_classes,
+                        std::move(device_receiver), std::move(device_client));
 }
 
 void FakeUsbDeviceManager::GetSecurityKeyDevice(
     const std::string& guid,
     mojo::PendingReceiver<device::mojom::UsbDevice> device_receiver,
     mojo::PendingRemote<mojom::UsbDeviceClient> device_client) {
-  return GetDevice(guid, std::move(device_receiver), std::move(device_client));
+  return GetDevice(guid, /*blocked_interface_classes=*/{},
+                   std::move(device_receiver), std::move(device_client));
 }
 
 #if defined(OS_ANDROID)
@@ -86,12 +88,6 @@ void FakeUsbDeviceManager::RefreshDeviceInfo(
 void FakeUsbDeviceManager::CheckAccess(const std::string& guid,
                                        CheckAccessCallback callback) {
   std::move(callback).Run(true);
-}
-
-void FakeUsbDeviceManager::EnumerateDevicesAndSetVmSharingClient(
-    mojo::PendingAssociatedRemote<mojom::UsbDeviceManagerClient> client,
-    EnumerateDevicesAndSetVmSharingClientCallback callback) {
-  EnumerateDevicesAndSetClient(std::move(client), std::move(callback));
 }
 
 void FakeUsbDeviceManager::OpenFileDescriptor(

@@ -8,7 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/path_service.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_restrictions.h"
@@ -72,7 +72,7 @@ namespace {
 class LoadedIncognitoObserver : public ExtensionRegistryObserver {
  public:
   explicit LoadedIncognitoObserver(Profile* profile) : profile_(profile) {
-    extension_registry_observer_.Add(ExtensionRegistry::Get(profile_));
+    extension_registry_observation_.Observe(ExtensionRegistry::Get(profile_));
   }
 
   void Wait() {
@@ -91,8 +91,8 @@ class LoadedIncognitoObserver : public ExtensionRegistryObserver {
   }
 
   Profile* profile_;
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
   std::unique_ptr<LazyBackgroundObserver> original_complete_;
   std::unique_ptr<LazyBackgroundObserver> incognito_complete_;
 };
@@ -509,7 +509,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, DISABLED_IncognitoSplitMode) {
     LoadedIncognitoObserver loaded(browser()->profile());
     base::FilePath extdir = test_data_dir_.AppendASCII("lazy_background_page").
         AppendASCII("incognito_split");
-    ASSERT_TRUE(LoadExtensionIncognito(extdir));
+    ASSERT_TRUE(LoadExtension(extdir, {.allow_in_incognito = true}));
     loaded.Wait();
   }
 
@@ -549,8 +549,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, DISABLED_IncognitoSplitMode) {
         BookmarkModelFactory::GetForBrowserContext(browser()->profile());
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
     const BookmarkNode* parent = bookmark_model->bookmark_bar_node();
-    bookmark_model->AddURL(
-        parent, 0, base::ASCIIToUTF16("Title"), GURL("about:blank"));
+    bookmark_model->AddURL(parent, 0, u"Title", GURL("about:blank"));
     page_complete.Wait();
     page2_complete.Wait();
 
@@ -565,7 +564,13 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, DISABLED_IncognitoSplitMode) {
 
 // Tests that messages from the content script activate the lazy background
 // page, and keep it alive until all channels are closed.
-IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, Messaging) {
+// http://crbug.com/1179524; test fails occasionally on OS X 10.15
+#if defined(OS_MAC)
+#define MAYBE_Messaging DISABLED_Messaging
+#else
+#define MAYBE_Messaging Messaging
+#endif
+IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, MAYBE_Messaging) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(LoadExtensionAndWait("messaging"));
 
@@ -631,9 +636,8 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, EventDispatchToTab) {
   BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(browser()->profile());
   bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
-  bookmarks::AddIfNotBookmarked(bookmark_model,
-                                GURL("http://www.google.com"),
-                                base::UTF8ToUTF16("Google"));
+  bookmarks::AddIfNotBookmarked(bookmark_model, GURL("http://www.google.com"),
+                                u"Google");
 
   EXPECT_TRUE(event_page_ready.WaitUntilSatisfied());
 

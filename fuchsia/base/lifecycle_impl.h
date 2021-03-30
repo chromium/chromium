@@ -29,8 +29,7 @@ class LifecycleImpl : public ::fuchsia::modular::Lifecycle {
   void Terminate() override;
 
  private:
-  const base::fuchsia::ScopedServiceBinding<::fuchsia::modular::Lifecycle>
-      binding_;
+  const base::ScopedServiceBinding<::fuchsia::modular::Lifecycle> binding_;
 
   base::OnceClosure on_terminate_;
 

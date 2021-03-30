@@ -41,7 +41,7 @@ class AppShimController : public chrome::mojom::AppShim {
     // The relative path of the profile.
     base::FilePath profile_dir;
     std::string app_id;
-    base::string16 app_name;
+    std::u16string app_name;
     GURL app_url;
   };
 

@@ -15,7 +15,7 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 import {PasswordManagerImpl, PasswordManagerProxy} from '../autofill_page/password_manager_proxy.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, SafetyCheckInteractions} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
-import {Router} from '../router.m.js';
+import {Router} from '../router.js';
 
 import {SafetyCheckCallbackConstants, SafetyCheckPasswordsStatus} from './safety_check_browser_proxy.js';
 import {SafetyCheckIconStatus} from './safety_check_child.js';
@@ -135,7 +135,7 @@ Polymer({
   onButtonClick_: function() {
     // Log click both in action and histogram.
     this.metricsBrowserProxy_.recordSafetyCheckInteractionHistogram(
-        SafetyCheckInteractions.SAFETY_CHECK_PASSWORDS_MANAGE);
+        SafetyCheckInteractions.PASSWORDS_MANAGE_COMPROMISED_PASSWORDS);
     this.metricsBrowserProxy_.recordAction(
         'Settings.SafetyCheck.ManagePasswords');
     this.openPasswordCheckPage_();
@@ -154,10 +154,13 @@ Polymer({
     if (this.isRowClickable_()) {
       // Log click both in action and histogram.
       this.metricsBrowserProxy_.recordSafetyCheckInteractionHistogram(
-          SafetyCheckInteractions
-              .SAFETY_CHECK_PASSWORDS_MANAGE_THROUGH_CARET_NAVIGATION);
+          this.status_ === SafetyCheckPasswordsStatus.WEAK_PASSWORDS_EXIST ?
+              SafetyCheckInteractions.PASSWORDS_MANAGE_WEAK_PASSWORDS :
+              SafetyCheckInteractions.PASSWORDS_CARET_NAVIGATION);
       this.metricsBrowserProxy_.recordAction(
-          'Settings.SafetyCheck.ManagePasswordsThroughCaretNavigation');
+          this.status_ === SafetyCheckPasswordsStatus.WEAK_PASSWORDS_EXIST ?
+              'Settings.SafetyCheck.ManageWeakPasswords' :
+              'Settings.SafetyCheck.ManagePasswordsThroughCaretNavigation');
       this.openPasswordCheckPage_();
     }
   },

@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/loader/fetch/render_blocking_behavior.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
@@ -67,9 +68,6 @@ class CORE_EXPORT StyleSheetContents final
 
   void ParseAuthorStyleSheet(const CSSStyleSheetResource*);
   ParseSheetResult ParseString(const String&, bool allow_import_rules = true);
-  ParseSheetResult ParseStringAtPosition(const String&,
-                                         const TextPosition&,
-                                         bool allow_import_rules = true);
 
   bool IsCacheableForResource() const;
   bool IsCacheableForStyleElement() const;
@@ -189,6 +187,13 @@ class CORE_EXPORT StyleSheetContents final
 
   String SourceMapURL() const { return source_map_url_; }
 
+  void SetRenderBlocking(RenderBlockingBehavior behavior) {
+    render_blocking_behavior_ = behavior;
+  }
+  RenderBlockingBehavior GetRenderBlockingBehavior() const {
+    return render_blocking_behavior_;
+  }
+
   void Trace(Visitor*) const;
 
  private:
@@ -226,6 +231,8 @@ class CORE_EXPORT StyleSheetContents final
 
   Member<RuleSet> rule_set_;
   String source_map_url_;
+  RenderBlockingBehavior render_blocking_behavior_ =
+      RenderBlockingBehavior::kUnset;
 };
 
 }  // namespace blink

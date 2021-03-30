@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Tests that FileReader's Blob request isn't shown in network panel.\n`);
-  await TestRunner.loadModule('network_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.evaluateInPagePromise(`
       function readBlob()
       {

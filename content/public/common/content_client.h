@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
@@ -21,6 +20,7 @@
 #include "url/url_util.h"
 
 namespace base {
+class FilePath;
 class RefCountedMemory;
 class SequencedTaskRunner;
 }
@@ -149,12 +149,12 @@ class CONTENT_EXPORT ContentClient {
   virtual void AddAdditionalSchemes(Schemes* schemes) {}
 
   // Returns a string resource given its id.
-  virtual base::string16 GetLocalizedString(int message_id);
+  virtual std::u16string GetLocalizedString(int message_id);
 
   // Returns a string resource given its id and replace $1 with the given
   // replacement.
-  virtual base::string16 GetLocalizedString(int message_id,
-                                            const base::string16& replacement);
+  virtual std::u16string GetLocalizedString(int message_id,
+                                            const std::u16string& replacement);
 
   // Return the contents of a resource in a StringPiece given the resource id.
   virtual base::StringPiece GetDataResource(int resource_id,
@@ -165,6 +165,16 @@ class CONTENT_EXPORT ContentClient {
 
   // Returns a native image given its id.
   virtual gfx::Image& GetNativeImageNamed(int resource_id);
+
+#if defined(OS_MAC)
+  // Gets the path for an embedder-specific helper child process. The
+  // |child_flags| is a value greater than
+  // ChildProcessHost::CHILD_EMBEDDER_FIRST. The |helpers_path| is the location
+  // of the known //content Mac helpers in the framework bundle.
+  virtual base::FilePath GetChildProcessPath(
+      int child_flags,
+      const base::FilePath& helpers_path);
+#endif  // defined(OS_MAC)
 
   // Called by content::GetProcessTypeNameInEnglish for process types that it
   // doesn't know about because they're from the embedder.

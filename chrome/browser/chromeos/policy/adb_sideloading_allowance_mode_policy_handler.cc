@@ -6,18 +6,18 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/screens/reset_screen.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/login/screens/reset_screen.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/settings/cros_settings_provider.h"
@@ -32,7 +32,7 @@ constexpr base::TimeDelta kAdbSideloadingPlannedNotificationWaitTime =
     base::TimeDelta::FromDays(1);
 
 base::Optional<policy::AdbSideloadingAllowanceMode>
-GetAdbSideloadingDevicePolicyMode(const chromeos::CrosSettings* cros_settings,
+GetAdbSideloadingDevicePolicyMode(const ash::CrosSettings* cros_settings,
                                   const base::RepeatingClosure callback) {
   auto status = cros_settings->PrepareTrustedValues(callback);
 
@@ -85,19 +85,21 @@ void AdbSideloadingAllowanceModePolicyHandler::RegisterPrefs(
 
 AdbSideloadingAllowanceModePolicyHandler::
     AdbSideloadingAllowanceModePolicyHandler(
-        chromeos::CrosSettings* cros_settings,
+        ash::CrosSettings* cros_settings,
         PrefService* local_state,
+        chromeos::PowerManagerClient* power_manager_client,
         chromeos::AdbSideloadingPolicyChangeNotification*
             adb_sideloading_policy_change_notification)
     : cros_settings_(cros_settings),
       local_state_(local_state),
       adb_sideloading_policy_change_notification_(
-          adb_sideloading_policy_change_notification) {
+          adb_sideloading_policy_change_notification),
+      power_manager_observer_(this) {
   DCHECK(local_state_);
   policy_subscription_ = cros_settings_->AddSettingsObserver(
       chromeos::kDeviceCrostiniArcAdbSideloadingAllowed,
       base::BindRepeating(
-          &AdbSideloadingAllowanceModePolicyHandler::OnPolicyChanged,
+          &AdbSideloadingAllowanceModePolicyHandler::MaybeShowNotification,
           weak_factory_.GetWeakPtr()));
 
   check_sideloading_status_callback_ = base::BindRepeating(
@@ -105,6 +107,9 @@ AdbSideloadingAllowanceModePolicyHandler::
       weak_factory_.GetWeakPtr());
 
   notification_timer_ = std::make_unique<base::OneShotTimer>();
+
+  DCHECK(power_manager_client);
+  power_manager_observer_.Observe(power_manager_client);
 }
 
 AdbSideloadingAllowanceModePolicyHandler::
@@ -121,12 +126,12 @@ void AdbSideloadingAllowanceModePolicyHandler::SetNotificationTimerForTesting(
   notification_timer_ = std::move(timer);
 }
 
-void AdbSideloadingAllowanceModePolicyHandler::OnPolicyChanged() {
+void AdbSideloadingAllowanceModePolicyHandler::MaybeShowNotification() {
   base::Optional<policy::AdbSideloadingAllowanceMode> mode =
       GetAdbSideloadingDevicePolicyMode(
           cros_settings_,
           base::BindRepeating(
-              &AdbSideloadingAllowanceModePolicyHandler::OnPolicyChanged,
+              &AdbSideloadingAllowanceModePolicyHandler::MaybeShowNotification,
               weak_factory_.GetWeakPtr()));
 
   if (!mode.has_value()) {
@@ -200,7 +205,7 @@ void AdbSideloadingAllowanceModePolicyHandler::CheckSideloadingStatus(
 
 void AdbSideloadingAllowanceModePolicyHandler::
     ShowAdbSideloadingPolicyChangeNotificationIfNeeded() {
-  OnPolicyChanged();
+  MaybeShowNotification();
 }
 
 bool AdbSideloadingAllowanceModePolicyHandler::
@@ -299,6 +304,23 @@ void AdbSideloadingAllowanceModePolicyHandler::
       prefs::kAdbSideloadingPowerwashPlannedNotificationShownTime);
   local_state_->ClearPref(
       prefs::kAdbSideloadingPowerwashOnNextRebootNotificationShown);
+}
+
+void AdbSideloadingAllowanceModePolicyHandler::ScreenIdleStateChanged(
+    const power_manager::ScreenIdleState& state) {
+  // Try showing the notification when the screen wakes up from idle state
+  if (!state.off()) {
+    MaybeShowNotification();
+  }
+}
+
+void AdbSideloadingAllowanceModePolicyHandler::LidEventReceived(
+    chromeos::PowerManagerClient::LidState state,
+    base::TimeTicks timestamp) {
+  // Try showing the notification when the user opens the lid
+  if (state == chromeos::PowerManagerClient::LidState::OPEN) {
+    MaybeShowNotification();
+  }
 }
 
 }  // namespace policy

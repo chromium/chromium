@@ -6,6 +6,7 @@
 
 #include "base/record_replay.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
+#include "base/trace_event/base_tracing.h"
 
 namespace base {
 namespace sequence_manager {

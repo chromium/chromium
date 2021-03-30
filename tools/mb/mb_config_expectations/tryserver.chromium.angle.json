@@ -96,6 +96,7 @@
       "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
+      "enable_nacl": false,
       "ffmpeg_branding": "Chrome",
       "internal_gles2_conform_tests": true,
       "is_component_build": false,
@@ -106,11 +107,30 @@
       "use_goma": true
     }
   },
+  "ios-angle-try-intel": {
+    "gn_args": {
+      "build_angle_deqp_tests": true,
+      "build_angle_gles1_conform_tests": true,
+      "build_angle_trace_perf_tests": true,
+      "dcheck_always_on": true,
+      "enable_nacl": false,
+      "enable_run_ios_unittests_with_xctest": true,
+      "ios_set_attributes_for_xcode_project_generation": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "target_cpu": "x64",
+      "target_environment": "simulator",
+      "target_os": "ios",
+      "use_goma": true
+    }
+  },
   "linux-angle-rel": {
     "gn_args": {
       "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
+      "enable_nacl": false,
       "ffmpeg_branding": "Chrome",
       "internal_gles2_conform_tests": true,
       "is_component_build": false,
@@ -140,6 +160,7 @@
       "is_component_build": false,
       "is_debug": false,
       "ozone_platform": "headless",
+      "ozone_platform_gbm": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "use_bundled_weston": true,
@@ -150,17 +171,51 @@
       "use_x11": false
     }
   },
-  "mac-angle-rel": {
+  "mac-angle-chromium-try": {
     "gn_args": {
+      "dcheck_always_on": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "mac_deterministic_build": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "mac-angle-try": {
+    "gn_args": {
+      "build_angle_deqp_tests": true,
       "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
+      "enable_nacl": false,
+      "is_component_build": true,
+      "is_debug": false,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "win-angle-chromium-x64-try": {
+    "gn_args": {
+      "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
-      "internal_gles2_conform_tests": true,
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "win-angle-chromium-x86-try": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "x86",
       "use_goma": true
     }
   },
@@ -175,21 +230,12 @@
       "use_goma": true
     }
   },
-  "win-angle-deqp-rel-64": {
-    "gn_args": {
-      "build_angle_deqp_tests": true,
-      "dcheck_always_on": true,
-      "is_component_build": true,
-      "is_debug": false,
-      "symbol_level": 1,
-      "use_goma": true
-    }
-  },
   "win-angle-rel-32": {
     "gn_args": {
       "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
+      "enable_nacl": false,
       "ffmpeg_branding": "Chrome",
       "internal_gles2_conform_tests": true,
       "is_component_build": false,
@@ -200,17 +246,30 @@
       "use_goma": true
     }
   },
-  "win-angle-rel-64": {
+  "win-angle-x64-try": {
     "gn_args": {
+      "build_angle_deqp_tests": true,
       "build_angle_gles1_conform_tests": true,
       "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
-      "ffmpeg_branding": "Chrome",
-      "internal_gles2_conform_tests": true,
-      "is_component_build": false,
+      "enable_nacl": false,
+      "is_component_build": true,
       "is_debug": false,
-      "proprietary_codecs": true,
       "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "win-angle-x86-try": {
+    "gn_args": {
+      "build_angle_deqp_tests": true,
+      "build_angle_gles1_conform_tests": true,
+      "build_angle_trace_perf_tests": true,
+      "dcheck_always_on": true,
+      "enable_nacl": false,
+      "is_component_build": true,
+      "is_debug": false,
+      "symbol_level": 1,
+      "target_cpu": "x86",
       "use_goma": true
     }
   }

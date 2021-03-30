@@ -53,7 +53,7 @@ NSString* RequesterIdentity(NSURLProtectionSpace* protectionSpace) {
     return l10n_util::GetNSStringF(
         formatID, base::SysNSStringToUTF16(protectionSpace.host));
   }
-  base::string16 authority =
+  std::u16string authority =
       url_formatter::FormatUrlForSecurityDisplay(requesterOrigin);
 
   return l10n_util::GetNSStringF(formatID, authority);

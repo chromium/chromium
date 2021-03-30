@@ -12,13 +12,16 @@
 #include "base/macros.h"
 #include "chrome/browser/profiles/profile.h"
 
+namespace ash {
+class CrosSettings;
+}  // namespace ash
+
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
 namespace chromeos {
 
-class CrosSettings;
 class Printer;
 
 // Uses classes BulkPrintersCalculator and CalculatorsPoliciesBinder to track
@@ -44,7 +47,7 @@ class EnterprisePrintersProvider {
 
   // |settings| is the source of device policies. |profile| is a user profile.
   static std::unique_ptr<EnterprisePrintersProvider> Create(
-      CrosSettings* settings,
+      ash::CrosSettings* settings,
       Profile* profile);
   virtual ~EnterprisePrintersProvider() = default;
 

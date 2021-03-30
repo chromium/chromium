@@ -21,7 +21,7 @@ class VideoCaptureDeviceLauncher;
 // MediaStreamType == DEVICE_VIDEO_CAPTURE, i.e. camera devices.
 class CONTENT_EXPORT VideoCaptureProvider {
  public:
-  using GetDeviceInfosCallback = base::RepeatingCallback<void(
+  using GetDeviceInfosCallback = base::OnceCallback<void(
       const std::vector<media::VideoCaptureDeviceInfo>&)>;
 
   virtual ~VideoCaptureProvider() {}

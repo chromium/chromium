@@ -88,7 +88,8 @@ class VIEWS_EXPORT SubmenuView : public View,
   void OnDragEntered(const ui::DropTargetEvent& event) override;
   int OnDragUpdated(const ui::DropTargetEvent& event) override;
   void OnDragExited() override;
-  int OnPerformDrop(const ui::DropTargetEvent& event) override;
+  ui::mojom::DragOperation OnPerformDrop(
+      const ui::DropTargetEvent& event) override;
 
   // Scrolls on menu item boundaries.
   bool OnMouseWheel(const ui::MouseWheelEvent& e) override;
@@ -97,13 +98,11 @@ class VIEWS_EXPORT SubmenuView : public View,
   // Scrolls on menu item boundaries.
   void OnGestureEvent(ui::GestureEvent* event) override;
 
-  bool OnKeyPressed(const ui::KeyEvent& event) override;
-
   // Overridden from PrefixDelegate.
   int GetRowCount() override;
   int GetSelectedRow() override;
   void SetSelectedRow(int row) override;
-  base::string16 GetTextForRow(int row) override;
+  std::u16string GetTextForRow(int row) override;
 
   // Returns true if the menu is showing.
   virtual bool IsShowing() const;

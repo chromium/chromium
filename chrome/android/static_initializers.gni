@@ -4,18 +4,50 @@
 
 import("//build/config/features.gni")
 import("//build/config/sanitizers/sanitizers.gni")
+import("//ui/gl/features.gni")
 
-# Be very specific here so that our static initializer count does not vary
-# between bots. This target will cause release bots to fail if the count
-# changes in either direction, and so should be updated when static initializers
-# are removed.
+# The monochrome_static_initializers target will cause release bots to fail if
+# the count of static initializers change in either direction. Please try not to
+# increase the numbers. If they come from third-party code, please try to update
+# the code, or apply a local modification to remove them.
+#
+# Some helpful hints at //docs/static_initializers.md
+#
+# Define expectations only for GN args covered by trybots.
 if (current_toolchain == default_toolchain &&
+    (target_cpu == "arm" || target_cpu == "arm64") &&
     (!is_debug && !using_sanitizer && proprietary_codecs)) {
-  # Define expectations only for target_cpu covered by trybots.
-  # Currently static_initializers come from:
-  # * iostream.cpp
-  # * token.cc
-  if (target_cpu == "arm" || target_cpu == "arm64") {
-    expected_static_initializer_count = 2
+  # Comments show static_initializers according to
+  # tools/linux/dump-static-initializers.py.
+
+  # 000101 (initializer offset 0x142e924 size 0xc)
+  # std::__1::ios_base::Init::Init()
+  #
+  # iostream.cpp (initializer offset 0x142e930 size 0x2)
+  #   [empty ctor, but it still has cost on gcc <4.6]
+  expected_static_initializer_count = 2
+
+  # TODO(https://crbug.com/1177849): Remove from tflite:
+  # tflite_engine.cc (initializer offset 0x34cb88c size 0x2c)
+  #   __ThumbV7PILongThunk__ZNSt3__18ios_base4InitC1Ev
+  #   __ThumbV7PILongThunk___cxa_atexit
+  expected_static_initializer_count += 1
+
+  # From v8 I think:
+  # token.cc (initializer offset 0x27f024c size 0x11c)
+  expected_static_initializer_count += 1
+
+  if (target_cpu == "arm") {
+    # This one is from //third_party/gvr-android-sdk
+    # base_logging.cc (initializer offset 0x9a4b0c size 0x48)
+    expected_static_initializer_count += 1
+  }
+
+  if (use_static_angle) {
+    # TODO(https://crbug.com/1172451): remove global variables from ANGLE:
+    #
+    # doc.cpp (initializer offset 0xcf9c6c size 0x138)
+    # SPVRemapper.cpp (initializer offset 0xcf2924 size 0x64)
+    expected_static_initializer_count += 2
   }
 }

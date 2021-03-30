@@ -10,8 +10,6 @@ public interface BrowserFragmentArgs {
     String PERSISTENCE_ID = "persistence_id";
     /**
      * A boolean value indicating whether the profile is incognito.
-     *
-     * @since 87
      */
     String IS_INCOGNITO = "is_incognito";
 }

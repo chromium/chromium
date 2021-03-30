@@ -34,7 +34,7 @@ class AppServiceInstanceRegistryHelper {
   ~AppServiceInstanceRegistryHelper();
 
   void ActiveUserChanged();
-  void AdditionalUserAddedToSession(Profile* profile);
+  void AdditionalUserAddedToSession();
 
   // Notifies the AppService InstanceRegistry that active tabs are changed.
   void OnActiveTabChanged(content::WebContents* old_contents,

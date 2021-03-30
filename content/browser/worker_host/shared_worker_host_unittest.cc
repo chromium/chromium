@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
@@ -52,10 +53,8 @@ class SharedWorkerHostTest : public testing::Test {
     helper_ = std::make_unique<EmbeddedWorkerTestHelper>(base::FilePath());
     RenderProcessHostImpl::set_render_process_host_factory_for_testing(
         &mock_render_process_host_factory_);
-    site_instance_ = SiteInstanceImpl::CreateForUrlInfo(
-        &browser_context_,
-        UrlInfo(kWorkerUrl, /*origin_requests_isolation=*/false),
-        CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
+    site_instance_ =
+        SiteInstanceImpl::CreateForTesting(&browser_context_, kWorkerUrl);
     RenderProcessHost* rph = site_instance_->GetProcess();
 
     std::vector<std::unique_ptr<MockRenderProcessHost>>* processes =
@@ -75,12 +74,12 @@ class SharedWorkerHostTest : public testing::Test {
     SharedWorkerInstance instance(
         kWorkerUrl, blink::mojom::ScriptType::kClassic,
         network::mojom::CredentialsMode::kSameOrigin, "name",
-        url::Origin::Create(kWorkerUrl), /*content_security_policy=*/"",
-        network::mojom::ContentSecurityPolicyType::kReport,
+        url::Origin::Create(kWorkerUrl),
         network::mojom::IPAddressSpace::kPublic,
         blink::mojom::SharedWorkerCreationContextType::kSecure);
-    auto host =
-        std::make_unique<SharedWorkerHost>(&service_, instance, site_instance_);
+    auto host = std::make_unique<SharedWorkerHost>(
+        &service_, instance, site_instance_,
+        std::vector<network::mojom::ContentSecurityPolicyPtr>());
     auto weak_host = host->AsWeakPtr();
     service_.worker_hosts_.insert(std::move(host));
     return weak_host;
@@ -96,7 +95,7 @@ class SharedWorkerHostTest : public testing::Test {
     mojo::ScopedDataPipeProducerHandle producer_handle;
     mojo::ScopedDataPipeConsumerHandle consumer_handle;
     MojoResult rv =
-        mojo::CreateDataPipe(nullptr, &producer_handle, &consumer_handle);
+        mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle);
     ASSERT_EQ(MOJO_RESULT_OK, rv);
     main_script_load_params->response_body = std::move(consumer_handle);
     auto subresource_loader_factories =
@@ -104,10 +103,9 @@ class SharedWorkerHostTest : public testing::Test {
 
     base::Optional<SubresourceLoaderParams> subresource_loader_params =
         SubresourceLoaderParams();
-    mojo::PendingRemote<network::mojom::URLLoaderFactory> loader_factory_remote;
-    mojo::MakeSelfOwnedReceiver(
-        std::make_unique<network::NotImplementedURLLoaderFactory>(),
-        loader_factory_remote.InitWithNewPipeAndPassReceiver());
+    mojo::PendingRemote<network::mojom::URLLoaderFactory>
+        loader_factory_remote =
+            network::NotImplementedURLLoaderFactory::Create();
     subresource_loader_params->pending_appcache_loader_factory =
         std::move(loader_factory_remote);
 
@@ -193,8 +191,7 @@ TEST_F(SharedWorkerHostTest, Normal) {
   mojo::PendingReceiver<blink::mojom::SharedWorker> worker_receiver;
   EXPECT_TRUE(factory_impl.CheckReceivedCreateSharedWorker(
       host->instance().url(), host->instance().name(),
-      host->instance().content_security_policy_type(), &worker_host,
-      &worker_receiver));
+      host->content_security_policies(), &worker_host, &worker_receiver));
   {
     MockSharedWorker worker(std::move(worker_receiver));
     base::RunLoop().RunUntilIdle();
@@ -283,8 +280,7 @@ TEST_F(SharedWorkerHostTest, TerminateAfterStarting) {
     mojo::PendingReceiver<blink::mojom::SharedWorker> worker_receiver;
     EXPECT_TRUE(factory_impl.CheckReceivedCreateSharedWorker(
         host->instance().url(), host->instance().name(),
-        host->instance().content_security_policy_type(), &worker_host,
-        &worker_receiver));
+        host->content_security_policies(), &worker_host, &worker_receiver));
     MockSharedWorker worker(std::move(worker_receiver));
 
     // Terminate after starting.
@@ -327,8 +323,7 @@ TEST_F(SharedWorkerHostTest, OnContextClosed) {
     mojo::PendingReceiver<blink::mojom::SharedWorker> worker_receiver;
     EXPECT_TRUE(factory_impl.CheckReceivedCreateSharedWorker(
         host->instance().url(), host->instance().name(),
-        host->instance().content_security_policy_type(), &worker_host,
-        &worker_receiver));
+        host->content_security_policies(), &worker_host, &worker_receiver));
     MockSharedWorker worker(std::move(worker_receiver));
 
     // Simulate the worker calling OnContextClosed().

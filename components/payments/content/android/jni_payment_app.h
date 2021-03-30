@@ -94,6 +94,8 @@ class JniPaymentApp : public PaymentApp::Delegate {
 
   std::unique_ptr<PaymentApp> payment_app_;
   base::android::ScopedJavaGlobalRef<jobject> invoke_callback_;
+
+  base::WeakPtrFactory<JniPaymentApp> weak_ptr_factory_{this};
 };
 
 }  // namespace payments

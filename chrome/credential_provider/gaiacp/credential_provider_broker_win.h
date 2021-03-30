@@ -5,9 +5,10 @@
 #ifndef CHROME_CREDENTIAL_PROVIDER_GAIACP_CREDENTIAL_PROVIDER_BROKER_WIN_H_
 #define CHROME_CREDENTIAL_PROVIDER_GAIACP_CREDENTIAL_PROVIDER_BROKER_WIN_H_
 
+#include <string>
+
 #include "chrome/credential_provider/gaiacp/mojom/gaia_credential_provider_win_hid.mojom.h"
 
-#include "base/strings/string16.h"
 #include "base/win/scoped_handle.h"
 
 namespace credential_provider {
@@ -20,7 +21,7 @@ class CredentialProviderBrokerWin
 
  protected:
   // GcpwHidBroker impl:
-  void OpenDevice(const base::string16& device_path,
+  void OpenDevice(const std::u16string& device_path,
                   OpenDeviceCallback callback) override;
 };
 }  // namespace credential_provider

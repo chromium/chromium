@@ -63,7 +63,7 @@
     self.sectionInset = kGridLayoutInsetsRegularRegular;
     self.minimumLineSpacing = kGridLayoutLineSpacingRegularRegular;
   }
-  if (IsThumbStripEnabled()) {
+  if (ShowThumbStripInTraitCollection(self.collectionView.traitCollection)) {
     // When the thumb strip feature is enabled, increase the bottom inset to
     // account for the bvc on the bottom of the screen.
     UIEdgeInsets sectionInset = self.sectionInset;

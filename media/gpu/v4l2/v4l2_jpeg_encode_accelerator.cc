@@ -10,6 +10,7 @@
 #include <sys/mman.h>
 
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -1912,9 +1913,8 @@ void V4L2JpegEncodeAccelerator::Encode(
       video_frame, quality, exif_buffer, std::move(output_buffer)));
 
   encoder_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&V4L2JpegEncodeAccelerator::EncodeTaskLegacy,
-                     base::Unretained(this), base::Passed(&job_record)));
+      FROM_HERE, base::BindOnce(&V4L2JpegEncodeAccelerator::EncodeTaskLegacy,
+                                base::Unretained(this), std::move(job_record)));
 }
 
 void V4L2JpegEncodeAccelerator::EncodeWithDmaBuf(
@@ -1949,9 +1949,8 @@ void V4L2JpegEncodeAccelerator::EncodeWithDmaBuf(
       new JobRecord(input_frame, output_frame, quality, task_id, exif_buffer));
 
   encoder_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&V4L2JpegEncodeAccelerator::EncodeTask,
-                     base::Unretained(this), base::Passed(&job_record)));
+      FROM_HERE, base::BindOnce(&V4L2JpegEncodeAccelerator::EncodeTask,
+                                base::Unretained(this), std::move(job_record)));
 }
 
 void V4L2JpegEncodeAccelerator::EncodeTaskLegacy(

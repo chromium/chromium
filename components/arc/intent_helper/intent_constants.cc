@@ -6,6 +6,7 @@
 
 namespace arc {
 
+const char kIntentActionMain[] = "android.intent.action.MAIN";
 const char kIntentActionView[] = "android.intent.action.VIEW";
 const char kIntentActionSend[] = "android.intent.action.SEND";
 const char kIntentActionSendMultiple[] = "android.intent.action.SEND_MULTIPLE";

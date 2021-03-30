@@ -56,7 +56,7 @@ class CONTENT_EXPORT SyntheticPointerAction : public SyntheticGesture {
   // previous synthetic events when a sequence of actions are dispatched one by
   // one.
   SyntheticPointerDriver* synthetic_pointer_driver_ = nullptr;
-  SyntheticGestureParams::GestureSourceType gesture_source_type_;
+  content::mojom::GestureSourceType gesture_source_type_;
   GestureState state_;
   size_t num_actions_dispatched_;
 

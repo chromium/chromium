@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Test loading resource for frontend.\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   var loggedHeaders = {'cache-control': true, 'expires': true, 'last-modified': true, 'pragma': true};

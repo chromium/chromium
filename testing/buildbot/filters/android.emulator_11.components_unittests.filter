@@ -1,0 +1,9 @@
+# crbug.com/1192286
+-All/DownloadLaterTest.TestDownloadScheduleAfterTargetDetermined/*
+-DownloadPathReservationTrackerTest.*
+-DownloadItemTest.*
+-Failure/DownloadItemDestinationUpdateRaceTest.IntermediateRename*
+-Success/DownloadItemDestinationUpdateRaceTest.IntermediateRename*
+
+# crbug.com/1192348
+-FieldFormatterTest.DifferentLocales

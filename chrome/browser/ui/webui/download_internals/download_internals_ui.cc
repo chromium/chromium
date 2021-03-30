@@ -9,7 +9,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/download_internals/download_internals_ui_message_handler.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/dev_ui_browser_resources.h"
+#include "chrome/grit/download_internals_resources.h"
+#include "chrome/grit/download_internals_resources_map.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -29,15 +30,10 @@ DownloadInternalsUI::DownloadInternalsUI(content::WebUI* web_ui)
 
   // Required resources.
   html_source->UseStringsJs();
-  html_source->AddResourcePath("download_internals.css",
-                               IDR_DOWNLOAD_INTERNALS_CSS);
-  html_source->AddResourcePath("download_internals.js",
-                               IDR_DOWNLOAD_INTERNALS_JS);
-  html_source->AddResourcePath("download_internals_browser_proxy.js",
-                               IDR_DOWNLOAD_INTERNALS_BROWSER_PROXY_JS);
-  html_source->AddResourcePath("download_internals_visuals.js",
-                               IDR_DOWNLOAD_INTERNALS_VISUALS_JS);
-  html_source->SetDefaultResource(IDR_DOWNLOAD_INTERNALS_HTML);
+  html_source->AddResourcePaths(base::make_span(
+      kDownloadInternalsResources, kDownloadInternalsResourcesSize));
+  html_source->AddResourcePath("",
+                               IDR_DOWNLOAD_INTERNALS_DOWNLOAD_INTERNALS_HTML);
 
   Profile* profile = Profile::FromWebUI(web_ui);
 

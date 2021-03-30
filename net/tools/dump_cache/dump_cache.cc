@@ -10,7 +10,6 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "net/disk_cache/blockfile/disk_format.h"
 #include "net/tools/dump_cache/dump_files.h"

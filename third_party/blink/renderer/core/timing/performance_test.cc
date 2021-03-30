@@ -27,6 +27,8 @@ class TestPerformance : public Performance {
   explicit TestPerformance(ScriptState* script_state)
       : Performance(base::TimeTicks(),
                     ExecutionContext::From(script_state)
+                        ->CrossOriginIsolatedCapability(),
+                    ExecutionContext::From(script_state)
                         ->GetTaskRunner(TaskType::kPerformanceTimeline)) {}
   ~TestPerformance() override = default;
 
@@ -45,6 +47,8 @@ class TestPerformance : public Performance {
 
 class PerformanceTest : public PageTestBase {
  protected:
+  ~PerformanceTest() override { execution_context_->NotifyContextDestroyed(); }
+
   void Initialize(ScriptState* script_state) {
     v8::Local<v8::Function> callback =
         v8::Function::New(script_state->GetContext(), nullptr).ToLocalChecked();

@@ -13,7 +13,7 @@
 
 namespace mojo {
 
-MaybeOwnedString16::MaybeOwnedString16(base::string16 owned_storage)
+MaybeOwnedString16::MaybeOwnedString16(std::u16string owned_storage)
     : owned_storage_(owned_storage),
       unowned_(base::make_span(
           reinterpret_cast<const uint16_t*>(owned_storage_.data()),
@@ -52,7 +52,7 @@ bool StructTraits<mojo_base::mojom::String16DataView, WTF::String>::Read(
 mojo_base::BigBuffer StructTraits<mojo_base::mojom::BigString16DataView,
                                   WTF::String>::data(const WTF::String& input) {
   if (input.Is8Bit()) {
-    base::string16 input16(input.Characters8(),
+    std::u16string input16(input.Characters8(),
                            input.Characters8() + input.length());
     return mojo_base::BigBuffer(base::as_bytes(base::make_span(input16)));
   }

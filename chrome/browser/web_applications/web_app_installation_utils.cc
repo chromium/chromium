@@ -36,13 +36,15 @@ std::vector<SquareSizePx> GetSquareSizePxs(
   return sizes;
 }
 
+// TODO(crbug.com/1152661): Return maskable icon sizes too. Consider
+// parameterizing method.
 std::vector<std::vector<SquareSizePx>> GetDownloadedShortcutsMenuIconsSizes(
-    const ShortcutsMenuIconsBitmaps& shortcuts_menu_icons_bitmaps) {
+    const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps) {
   std::vector<std::vector<SquareSizePx>> shortcuts_menu_icons_sizes;
-  shortcuts_menu_icons_sizes.reserve(shortcuts_menu_icons_bitmaps.size());
-  for (const auto& shortcut_icon_bitmaps : shortcuts_menu_icons_bitmaps) {
+  shortcuts_menu_icons_sizes.reserve(shortcuts_menu_icon_bitmaps.size());
+  for (const auto& shortcut_icon_bitmaps : shortcuts_menu_icon_bitmaps) {
     shortcuts_menu_icons_sizes.emplace_back(
-        GetSquareSizePxs(shortcut_icon_bitmaps));
+        GetSquareSizePxs(shortcut_icon_bitmaps.any));
   }
   return shortcuts_menu_icons_sizes;
 }
@@ -85,19 +87,6 @@ void SetWebAppProtocolHandlers(
   web_app.SetProtocolHandlers(web_app_protocol_handlers);
 }
 
-void SetWebAppUrlHandlers(
-    const std::vector<blink::Manifest::UrlHandler>& url_handlers,
-    WebApp& web_app) {
-  apps::UrlHandlers web_app_url_handlers;
-  for (const auto& url_handler : url_handlers) {
-    apps::UrlHandlerInfo web_app_url_handler;
-    web_app_url_handler.origin = url_handler.origin;
-    web_app_url_handlers.push_back(std::move(web_app_url_handler));
-  }
-
-  web_app.SetUrlHandlers(std::move(web_app_url_handlers));
-}
-
 }  // namespace
 
 void SetWebAppManifestFields(const WebApplicationInfo& web_app_info,
@@ -127,22 +116,22 @@ void SetWebAppManifestFields(const WebApplicationInfo& web_app_info,
 
   web_app.SetIconInfos(web_app_info.icon_infos);
   web_app.SetDownloadedIconSizes(
-      IconPurpose::ANY, GetSquareSizePxs(web_app_info.icon_bitmaps_any));
+      IconPurpose::ANY, GetSquareSizePxs(web_app_info.icon_bitmaps.any));
   // TODO (crbug.com/1114638): Add monochrome icons support.
   web_app.SetDownloadedIconSizes(
       IconPurpose::MASKABLE,
-      GetSquareSizePxs(web_app_info.icon_bitmaps_maskable));
+      GetSquareSizePxs(web_app_info.icon_bitmaps.maskable));
   web_app.SetIsGeneratedIcon(web_app_info.is_generated_icon);
 
   web_app.SetShortcutsMenuItemInfos(web_app_info.shortcuts_menu_item_infos);
   web_app.SetDownloadedShortcutsMenuIconsSizes(
       GetDownloadedShortcutsMenuIconsSizes(
-          web_app_info.shortcuts_menu_icons_bitmaps));
+          web_app_info.shortcuts_menu_icon_bitmaps));
 
   SetWebAppFileHandlers(web_app_info.file_handlers, web_app);
   web_app.SetShareTarget(web_app_info.share_target);
   SetWebAppProtocolHandlers(web_app_info.protocol_handlers, web_app);
-  SetWebAppUrlHandlers(web_app_info.url_handlers, web_app);
+  web_app.SetUrlHandlers(web_app_info.url_handlers);
 
   if (base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin) &&
       web_app_info.run_on_os_login) {
@@ -150,6 +139,10 @@ void SetWebAppManifestFields(const WebApplicationInfo& web_app_info,
     // default (windowed).
     web_app.SetRunOnOsLoginMode(RunOnOsLoginMode::kWindowed);
   }
+
+  web_app.SetCaptureLinks(web_app_info.capture_links);
+
+  web_app.SetManifestUrl(web_app_info.manifest_url);
 }
 
 }  // namespace web_app

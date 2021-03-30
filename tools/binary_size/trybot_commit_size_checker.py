@@ -22,6 +22,7 @@ import file_format
 import models
 
 _RESOURCE_SIZES_LOG = 'resource_sizes_log'
+_BASE_RESOURCE_SIZES_LOG = 'base_resource_sizes_log'
 _MUTABLE_CONSTANTS_LOG = 'mutable_contstants_log'
 _FOR_TESTING_LOG = 'for_test_log'
 _DEX_SYMBOLS_LOG = 'dex_symbols_log'
@@ -73,41 +74,46 @@ class _SizeDelta(collections.namedtuple(
     return self.name < other.name
 
 
-def _SymbolDiffHelper(symbols):
+def _SymbolDiffHelper(title_fragment, symbols):
   added = symbols.WhereDiffStatusIs(models.DIFF_STATUS_ADDED)
   removed = symbols.WhereDiffStatusIs(models.DIFF_STATUS_REMOVED)
   both = (added + removed).SortedByName()
-  lines = None
+  lines = []
   if len(both) > 0:
-    lines = [
-        'Added: {}'.format(len(added)),
-        'Removed: {}'.format(len(removed)),
-    ]
-    lines.extend(describe.GenerateLines(both, summarize=False))
+    for group in both.GroupedByContainer():
+      counts = group.CountsByDiffStatus()
+      lines += [
+          '===== {} Added & Removed ({}) ====='.format(
+              title_fragment, group.full_name),
+          'Added: {}'.format(counts[models.DIFF_STATUS_ADDED]),
+          'Removed: {}'.format(counts[models.DIFF_STATUS_REMOVED]),
+          ''
+      ]
+      lines.extend(describe.GenerateLines(group, summarize=False))
+      lines += ['']
 
   return lines, len(added) - len(removed)
 
 
 def _CreateMutableConstantsDelta(symbols):
   symbols = symbols.WhereInSection('d').WhereNameMatches(r'\bk[A-Z]|\b[A-Z_]+$')
-  lines, net_added = _SymbolDiffHelper(symbols)
+  lines, net_added = _SymbolDiffHelper('Mutable Constants', symbols)
 
   return lines, _SizeDelta('Mutable Constants', 'symbols', 0, net_added)
 
 
 def _CreateMethodCountDelta(symbols):
+  symbols = symbols.WhereIsOnDemand(False)
   method_symbols = symbols.WhereInSection(models.SECTION_DEX_METHOD)
-  method_lines, net_method_added = _SymbolDiffHelper(method_symbols)
+  method_lines, net_method_added = _SymbolDiffHelper('Methods', method_symbols)
   class_symbols = symbols.WhereInSection(
       models.SECTION_DEX).WhereNameMatches('#').Inverted()
-  class_lines, _ = _SymbolDiffHelper(class_symbols)
+  class_lines, _ = _SymbolDiffHelper('Classes', class_symbols)
   lines = []
   if class_lines:
-    lines.append('===== Classes Added & Removed =====')
     lines.extend(class_lines)
     lines.extend(['', ''])  # empty lines added for clarity
   if method_lines:
-    lines.append('===== Methods Added & Removed =====')
     lines.extend(method_lines)
 
   return lines, _SizeDelta('Dex Methods Count', 'methods',
@@ -121,6 +127,15 @@ def _CreateResourceSizesDelta(before_dir, after_dir):
   return sizes_diff.Summary(), _SizeDelta(
       'Normalized APK Size', 'bytes', _MAX_NORMALIZED_INCREASE,
       sizes_diff.summary_stat.value)
+
+
+def _CreateBaseModuleResourceSizesDelta(before_dir, after_dir):
+  sizes_diff = diagnose_bloat.ResourceSizesDiff(include_sections=['base'])
+  sizes_diff.ProduceDiff(before_dir, after_dir)
+
+  return sizes_diff.DetailedResults(), _SizeDelta(
+      'Base Module Size', 'bytes', _MAX_NORMALIZED_INCREASE,
+      sizes_diff.CombinedSizeChangeForSection('base'))
 
 
 def _CreateSupersizeDiff(main_file_name, before_dir, after_dir):
@@ -205,6 +220,10 @@ def _CreateTestingSymbolsDeltas(before_mapping_paths, after_mapping_paths):
 def _GenerateBinarySizePluginDetails(metrics):
   binary_size_listings = []
   for delta, log_name in metrics:
+    # Only show the base module delta if it is significant.
+    if (log_name == _BASE_RESOURCE_SIZES_LOG and delta.IsAllowable()
+        and not delta.IsLargeImprovement()):
+      continue
     listing = {
         'name': delta.name,
         'delta': '{} {}'.format(_FormatNumber(delta.actual), delta.units),
@@ -319,6 +338,12 @@ def main():
   size_deltas.add(resource_sizes_delta)
   metrics.add((resource_sizes_delta, _RESOURCE_SIZES_LOG))
 
+  logging.info('Creating base module sizes diff')
+  base_resource_sizes_lines, base_resource_sizes_delta = (
+      _CreateBaseModuleResourceSizesDelta(args.before_dir, args.after_dir))
+  size_deltas.add(base_resource_sizes_delta)
+  metrics.add((base_resource_sizes_delta, _BASE_RESOURCE_SIZES_LOG))
+
   # .sizediff can be consumed by the html viewer.
   logging.info('Creating HTML Report')
   sizediff_path = os.path.join(args.staging_dir, _SIZEDIFF_FILENAME)
@@ -356,6 +381,11 @@ https://chromium.googlesource.com/chromium/src/+/master/docs/speed/binary_size/a
           'name': 'Binary Size Details',
           'lines': resource_sizes_lines,
           'log_name': _RESOURCE_SIZES_LOG,
+      },
+      {
+          'name': 'Base Module Binary Size Details',
+          'lines': base_resource_sizes_lines,
+          'log_name': _BASE_RESOURCE_SIZES_LOG,
       },
       {
           'name': 'Mutable Constants Diff',

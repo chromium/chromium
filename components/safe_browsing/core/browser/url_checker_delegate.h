@@ -37,9 +37,9 @@ class SafeBrowsingDatabaseManager;
 class UrlCheckerDelegate
     : public base::RefCountedThreadSafe<UrlCheckerDelegate> {
  public:
-  // Destroys prerender contents if necessary. The parameter is a
+  // Destroys NoStatePrefetch contents if necessary. The parameter is a
   // WebContents::OnceGetter, but that type is not visible from here.
-  virtual void MaybeDestroyPrerenderContents(
+  virtual void MaybeDestroyNoStatePrefetchContents(
       base::OnceCallback<content::WebContents*()> web_contents_getter) = 0;
 
   // Starts displaying the SafeBrowsing interstitial page.
@@ -59,6 +59,13 @@ class UrlCheckerDelegate
   // An allowlisted URL is considered safe and therefore won't be checked with
   // the SafeBrowsing database.
   virtual bool IsUrlAllowlisted(const GURL& url) = 0;
+
+  // Set the Safe Browsing allowlist domains. If the url being checked matches
+  // one of the domains in |allowlist_domains|, it is considered safe and
+  // therefore won't be checked with the SafeBrowsing database. If the current
+  // platform doesn't support the allowlist policy, this function will be no-op.
+  virtual void SetPolicyAllowlistDomains(
+      const std::vector<std::string>& allowlist_domains) = 0;
 
   // If the method returns true, the entire request won't be checked, including
   // the original URL and redirects.

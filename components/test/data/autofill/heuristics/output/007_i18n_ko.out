@@ -8,7 +8,7 @@ ADDRESS_HOME_CITY | ct2 | 시·군·구: |  | ln_1-default
 ADDRESS_HOME_ZIP | zc | 우편번호: |  | ln_1-default
 ADDRESS_HOME_ZIP | zc2 | 우편 번호: |  | ln_1-default
 ADDRESS_HOME_STATE | st | 시도: |  | ln_1-default
-ADDRESS_HOME_STATE | st2 | 시・도: |  | ln_1-default
+ADDRESS_HOME_COUNTRY | st2 | 시・도: |  | ln_1-default
 EMAIL_ADDRESS | em | Email: |  | ln_1-default
 EMAIL_ADDRESS | em2 | 전자 우편: |  | ln_1-default
 EMAIL_ADDRESS | em3 | e-mail 주소 |  | ln_1-default

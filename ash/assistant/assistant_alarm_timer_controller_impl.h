@@ -16,7 +16,7 @@
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 
@@ -48,7 +48,8 @@ class AssistantAlarmTimerControllerImpl
 
   // AssistantAlarmTimerController:
   const AssistantAlarmTimerModel* GetModel() const override;
-  void OnTimerStateChanged(std::vector<AssistantTimerPtr> timers) override;
+  void OnTimerStateChanged(
+      const std::vector<chromeos::assistant::AssistantTimer>& timers) override;
 
   // AssistantControllerObserver:
   void OnAssistantControllerConstructed() override;
@@ -62,16 +63,18 @@ class AssistantAlarmTimerControllerImpl
       chromeos::assistant::AssistantStatus status) override;
 
   // AssistantAlarmTimerModelObserver:
-  void OnTimerAdded(const AssistantTimer& timer) override;
-  void OnTimerUpdated(const AssistantTimer& timer) override;
-  void OnTimerRemoved(const AssistantTimer& timer) override;
+  void OnTimerAdded(const chromeos::assistant::AssistantTimer& timer) override;
+  void OnTimerUpdated(
+      const chromeos::assistant::AssistantTimer& timer) override;
+  void OnTimerRemoved(
+      const chromeos::assistant::AssistantTimer& timer) override;
 
  private:
   void PerformAlarmTimerAction(const assistant::util::AlarmTimerAction& action,
                                const std::string& alarm_timer_id,
                                const base::Optional<base::TimeDelta>& duration);
 
-  void ScheduleNextTick(const AssistantTimer& timer);
+  void ScheduleNextTick(const chromeos::assistant::AssistantTimer& timer);
   void Tick(const std::string& timer_id);
 
   AssistantControllerImpl* const assistant_controller_;  // Owned by Shell.
@@ -85,8 +88,8 @@ class AssistantAlarmTimerControllerImpl
   // Owned by AssistantService.
   chromeos::assistant::Assistant* assistant_;
 
-  ScopedObserver<AssistantController, AssistantControllerObserver>
-      assistant_controller_observer_{this};
+  base::ScopedObservation<AssistantController, AssistantControllerObserver>
+      assistant_controller_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AssistantAlarmTimerControllerImpl);
 };

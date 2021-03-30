@@ -39,6 +39,8 @@ import sys
 import threading
 import time
 
+import six
+
 _log = logging.getLogger(__name__)
 
 
@@ -72,7 +74,7 @@ class ScriptError(Exception):
         self.cwd = cwd
 
     def message_with_output(self):
-        return unicode(self)
+        return six.text_type(self)
 
     def command_name(self):
         command_path = self.script_args
@@ -103,7 +105,12 @@ class Executive(object):
         return sys.platform != 'win32'
 
     def cpu_count(self):
-        return multiprocessing.cpu_count()
+        cpu_count = multiprocessing.cpu_count()
+        if sys.platform == 'win32':
+            # TODO(crbug.com/1190269) - we can't use more than 56
+            # cores on Windows or Python3 may hang.
+            cpu_count = min(cpu_count, 56)
+        return cpu_count
 
     def kill_process(self, pid, kill_tree=True):
         """Attempts to kill the given pid.
@@ -298,7 +305,7 @@ class Executive(object):
         # See https://bugs.webkit.org/show_bug.cgi?id=37528
         # for an example of a regression caused by passing a unicode string directly.
         # FIXME: We may need to encode differently on different platforms.
-        if isinstance(user_input, unicode):
+        if isinstance(user_input, six.text_type):
             user_input = user_input.encode(self._child_process_encoding())
         return (self.PIPE, user_input)
 
@@ -309,11 +316,11 @@ class Executive(object):
         args = self._stringify_args(args)
         escaped_args = []
         for arg in args:
-            if isinstance(arg, unicode):
+            if isinstance(arg, six.text_type):
                 # Escape any non-ascii characters for easy copy/paste
                 arg = arg.encode('unicode_escape')
             # FIXME: Do we need to fix quotes here?
-            escaped_args.append(arg)
+            escaped_args.append(arg.decode(self._child_process_encoding()))
         return ' '.join(escaped_args)
 
     def run_command(
@@ -374,8 +381,13 @@ class Executive(object):
             env=env,
             close_fds=self._should_close_fds())
 
+        def on_command_timeout():
+            _log.error('Error: Command timed out after %s seconds',
+                       timeout_seconds)
+            process.kill()
+
         if timeout_seconds:
-            timer = threading.Timer(timeout_seconds, process.kill)
+            timer = threading.Timer(timeout_seconds, on_command_timeout)
             timer.start()
 
         output = process.communicate(string_to_communicate)[0]
@@ -442,7 +454,7 @@ class Executive(object):
 
     def _stringify_args(self, args):
         # Popen will throw an exception if args are non-strings (like int())
-        string_args = map(unicode, args)
+        string_args = map(six.text_type, args)
         # The Windows implementation of Popen cannot handle unicode strings. :(
         return map(self._encode_argument_if_needed, string_args)
 
@@ -467,8 +479,7 @@ class Executive(object):
     def map(self, thunk, arglist, processes=None):
         if sys.platform == 'win32' or len(arglist) == 1:
             return map(thunk, arglist)
-        pool = multiprocessing.Pool(
-            processes=(processes or multiprocessing.cpu_count()))
+        pool = multiprocessing.Pool(processes=(processes or self.cpu_count()))
         try:
             return pool.map(thunk, arglist)
         finally:

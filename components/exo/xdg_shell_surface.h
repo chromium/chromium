@@ -13,7 +13,6 @@
 #include "ash/wm/window_state_observer.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/surface_observer.h"
 #include "components/exo/surface_tree_host.h"
@@ -44,15 +43,12 @@ class XdgShellSurface : public ShellSurface {
   // specified as part of the geometry is relative to the shell surface.
   XdgShellSurface(Surface* surface,
                   const gfx::Point& origin,
-                  bool activatable,
                   bool can_minimize,
                   int container);
   ~XdgShellSurface() override;
 
-  // Xdg surfaces have the behaviour that they should maximize themselves if
-  // their bounds are larger or equal to the display area. This behaviour is
-  // implemented in linux display managers (e.g. Muffin/Cinnamon).
-  bool ShouldAutoMaximize() override;
+  // ShellSurfaceBase::
+  void OverrideInitParams(views::Widget::InitParams* params) override;
 
   bool x_flipped() const { return x_flipped_; }
   void set_x_flipped(bool flipped) { x_flipped_ = flipped; }
@@ -65,6 +61,11 @@ class XdgShellSurface : public ShellSurface {
   // direction when the layout does not fit to the work area.
   bool y_flipped_ = false;
   bool x_flipped_ = false;
+
+  // Xdg surfaces have the behaviour that they should maximize themselves if
+  // their bounds are larger or equal to the display area. This behaviour is
+  // implemented in linux display managers (e.g. Muffin/Cinnamon).
+  bool ShouldAutoMaximize();
 
   DISALLOW_COPY_AND_ASSIGN(XdgShellSurface);
 };

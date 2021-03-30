@@ -7,28 +7,34 @@
 
 #import <Foundation/Foundation.h>
 
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_observer.h"
+#include "components/breadcrumbs/core/breadcrumb_manager_observer.h"
 
-class BreadcrumbManager;
 class BreadcrumbManagerKeyedService;
+
+namespace breadcrumbs {
+class BreadcrumbManager;
+}
 
 // Protocol mirroring BreadcrumbManagerObserver
 @protocol BreadcrumbManagerObserving <NSObject>
 @optional
-- (void)breadcrumbManager:(BreadcrumbManager*)manager
+- (void)breadcrumbManager:(breadcrumbs::BreadcrumbManager*)manager
               didAddEvent:(NSString*)string;
 
-- (void)breadcrumbManagerDidRemoveOldEvents:(BreadcrumbManager*)manager;
+- (void)breadcrumbManagerDidRemoveOldEvents:
+    (breadcrumbs::BreadcrumbManager*)manager;
 @end
 
 // A C++ bridge class to handle receiving notifications from the C++ class
 // that observes the connection type.
-class BreadcrumbManagerObserverBridge : public BreadcrumbManagerObserver {
+class BreadcrumbManagerObserverBridge
+    : public breadcrumbs::BreadcrumbManagerObserver {
  public:
   // Constructs a new bridge instance adding |observer| as an observer of
   // |breadcrumb_manager|.
-  BreadcrumbManagerObserverBridge(BreadcrumbManager* breadcrumb_manager,
-                                  id<BreadcrumbManagerObserving> observer);
+  BreadcrumbManagerObserverBridge(
+      breadcrumbs::BreadcrumbManager* breadcrumb_manager,
+      id<BreadcrumbManagerObserving> observer);
 
   // Constructs a new bridge instance adding |observer| as an observer of
   // |breadcrumb_manager_service|.
@@ -45,11 +51,11 @@ class BreadcrumbManagerObserverBridge : public BreadcrumbManagerObserver {
       const BreadcrumbManagerObserverBridge&) = delete;
 
   // BreadcrumbManagerObserver implementation:
-  void EventAdded(BreadcrumbManager* manager,
+  void EventAdded(breadcrumbs::BreadcrumbManager* manager,
                   const std::string& event) override;
-  void OldEventsRemoved(BreadcrumbManager* manager) override;
+  void OldEventsRemoved(breadcrumbs::BreadcrumbManager* manager) override;
 
-  BreadcrumbManager* breadcrumb_manager_ = nullptr;
+  breadcrumbs::BreadcrumbManager* breadcrumb_manager_ = nullptr;
   BreadcrumbManagerKeyedService* breadcrumb_manager_service_ = nullptr;
   __weak id<BreadcrumbManagerObserving> observer_ = nil;
 };

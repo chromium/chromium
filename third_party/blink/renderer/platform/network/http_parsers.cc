@@ -36,12 +36,14 @@
 #include "net/http/http_content_disposition.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
+#include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/mojom/parsed_headers.mojom-blink.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/network/header_field_tokenizer.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -155,10 +157,6 @@ blink::ContentSecurityPolicyPtr ConvertToBlink(
       ConvertToBlink(std::move(policy_in->header)),
       policy_in->use_reporting_api,
       ConvertToBlink(std::move(policy_in->report_endpoints)),
-      policy_in->plugin_types.has_value()
-          ? base::Optional<WTF::Vector<WTF::String>>(
-                ConvertToBlink(std::move(policy_in->plugin_types.value())))
-          : base::nullopt,
       policy_in->require_trusted_types_for,
       ConvertToBlink(std::move(policy_in->trusted_types)),
       ConvertToBlink(std::move(policy_in->parsing_errors)));
@@ -198,13 +196,31 @@ WTF::Vector<network::mojom::blink::WebClientHintsType> ConvertToBlink(
   return blink_accept_ch;
 }
 
+WTF::Vector<blink::LinkHeaderPtr> ConvertToBlink(
+    const std::vector<LinkHeaderPtr>& link_headers) {
+  WTF::Vector<blink::LinkHeaderPtr> converted_headers;
+
+  for (auto& header : link_headers) {
+    converted_headers.push_back(blink::LinkHeader::New(
+        ::blink::KURL(header->href),
+        static_cast<blink::LinkRelAttribute>(header->rel),
+        static_cast<blink::LinkAsAttribute>(header->as),
+        static_cast<blink::CrossOriginAttribute>(header->cross_origin),
+        header->mime_type.has_value()
+            ? String::FromUTF8(header->mime_type.value())
+            : String()));
+  }
+
+  return converted_headers;
+}
+
 blink::ParsedHeadersPtr ConvertToBlink(ParsedHeadersPtr parsed_headers) {
   return blink::ParsedHeaders::New(
       ConvertToBlink(std::move(parsed_headers->content_security_policy)),
       ConvertToBlink(std::move(parsed_headers->allow_csp_from)),
       std::move(parsed_headers->cross_origin_embedder_policy),
       std::move(parsed_headers->cross_origin_opener_policy),
-      parsed_headers->origin_isolation,
+      parsed_headers->origin_agent_cluster,
       parsed_headers->accept_ch.has_value()
           ? base::make_optional(
                 ConvertToBlink(parsed_headers->accept_ch.value()))
@@ -214,7 +230,7 @@ blink::ParsedHeadersPtr ConvertToBlink(ParsedHeadersPtr parsed_headers) {
           ? base::make_optional(
                 ConvertToBlink(parsed_headers->critical_ch.value()))
           : base::nullopt,
-      parsed_headers->xfo);
+      parsed_headers->xfo, ConvertToBlink(parsed_headers->link_headers));
 }
 
 }  // namespace mojom
@@ -778,7 +794,34 @@ network::mojom::blink::ParsedHeadersPtr ParseHeaders(const String& raw_headers,
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(raw_headers.Latin1()));
   return network::mojom::ConvertToBlink(
-      network::PopulateParsedHeaders(headers, url));
+      network::PopulateParsedHeaders(headers.get(), url));
+}
+
+// This function is simply calling network::ParseContentSecurityPolicies and
+// converting from/to blink types.
+Vector<network::mojom::blink::ContentSecurityPolicyPtr>
+ParseContentSecurityPolicies(
+    const String& raw_policies,
+    network::mojom::blink::ContentSecurityPolicyType type,
+    network::mojom::blink::ContentSecurityPolicySource source,
+    const KURL& base_url) {
+  return network::mojom::ConvertToBlink(network::ParseContentSecurityPolicies(
+      raw_policies.Utf8(), type, source, base_url));
+}
+
+// This function is simply calling network::ParseContentSecurityPolicies and
+// converting from/to blink types.
+Vector<network::mojom::blink::ContentSecurityPolicyPtr>
+ParseContentSecurityPolicies(
+    const String& raw_policies,
+    network::mojom::blink::ContentSecurityPolicyType type,
+    network::mojom::blink::ContentSecurityPolicySource source,
+    const SecurityOrigin& self_origin) {
+  KURL base_url;
+  base_url.SetProtocol(self_origin.Protocol());
+  base_url.SetHost(self_origin.Host());
+  base_url.SetPort(self_origin.Port());
+  return ParseContentSecurityPolicies(raw_policies, type, source, base_url);
 }
 
 }  // namespace blink

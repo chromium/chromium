@@ -22,7 +22,7 @@ TEST(CompactHTMLTokenTest, EmptyAttributeValueFromHTMLToken) {
   token.BeginAttributeValue(8);
   token.EndAttributeValue(8);
 
-  CompactHTMLToken ctoken(&token, TextPosition());
+  CompactHTMLToken ctoken(&token, TextPosition::MinimumPosition());
 
   const CompactHTMLToken::Attribute* attribute_b = ctoken.GetAttributeItem(
       QualifiedName(AtomicString(), "b", AtomicString()));

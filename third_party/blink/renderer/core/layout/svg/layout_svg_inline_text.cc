@@ -28,10 +28,13 @@
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/line/svg_inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/text/bidi_character_run.h"
 #include "third_party/blink/renderer/platform/text/bidi_resolver.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -62,6 +65,9 @@ void LayoutSVGInlineText::TextDidChange() {
   LayoutText::TextDidChange();
   LayoutSVGText::NotifySubtreeStructureChanged(
       this, layout_invalidation_reason::kTextChanged);
+
+  if (StyleRef().UserModify() != EUserModify::kReadOnly)
+    UseCounter::Count(GetDocument(), WebFeature::kSVGTextEdited);
 }
 
 void LayoutSVGInlineText::StyleDidChange(StyleDifference diff,
@@ -82,10 +88,13 @@ void LayoutSVGInlineText::StyleDidChange(StyleDifference diff,
     return;
 
   // The text metrics may be influenced by style changes.
-  if (LayoutSVGText* text_layout_object =
+  if (LayoutSVGBlock* text_or_ng_text =
           LayoutSVGText::LocateLayoutSVGTextAncestor(this)) {
-    text_layout_object->SetNeedsTextMetricsUpdate();
-    text_layout_object->SetNeedsLayoutAndFullPaintInvalidation(
+    if (auto* text_layout_object = DynamicTo<LayoutSVGText>(text_or_ng_text))
+      text_layout_object->SetNeedsTextMetricsUpdate();
+    else
+      To<LayoutNGSVGText>(text_or_ng_text)->SetNeedsTextMetricsUpdate();
+    text_or_ng_text->SetNeedsLayoutAndFullPaintInvalidation(
         layout_invalidation_reason::kStyleChange);
   }
 }
@@ -93,9 +102,12 @@ void LayoutSVGInlineText::StyleDidChange(StyleDifference diff,
 void LayoutSVGInlineText::InvalidateSubtreeLayoutForFontUpdates() {
   NOT_DESTROYED();
   if (!IsFontFallbackValid()) {
-    if (LayoutSVGText* text_layout_object =
+    if (LayoutSVGBlock* text_or_ng_text =
             LayoutSVGText::LocateLayoutSVGTextAncestor(this)) {
-      text_layout_object->SetNeedsTextMetricsUpdate();
+      if (auto* text_layout_object = DynamicTo<LayoutSVGText>(text_or_ng_text))
+        text_layout_object->SetNeedsTextMetricsUpdate();
+      else
+        To<LayoutNGSVGText>(text_or_ng_text)->SetNeedsTextMetricsUpdate();
     }
   }
   LayoutText::InvalidateSubtreeLayoutForFontUpdates();
@@ -170,6 +182,8 @@ bool LayoutSVGInlineText::CharacterStartsNewTextChunk(int position) const {
 PositionWithAffinity LayoutSVGInlineText::PositionForPoint(
     const PhysicalOffset& point) const {
   NOT_DESTROYED();
+  DCHECK_GE(GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::kPrePaintClean);
   if (!HasInlineFragments() || !TextLength())
     return CreatePositionWithAffinity(0);
 
@@ -242,6 +256,17 @@ inline bool IsValidSurrogatePair(const TextRun& run, unsigned index) {
   return U16_IS_TRAIL(run[index + 1]);
 }
 
+unsigned CountCodePoints(const TextRun& run,
+                         unsigned index,
+                         unsigned end_index) {
+  unsigned num_codepoints = 0;
+  while (index < end_index) {
+    index += IsValidSurrogatePair(run, index) ? 2 : 1;
+    num_codepoints++;
+  }
+  return num_codepoints;
+}
+
 TextRun ConstructTextRun(LayoutSVGInlineText& text,
                          unsigned position,
                          unsigned length,
@@ -287,28 +312,29 @@ void SynthesizeGraphemeWidths(const TextRun& run,
     CharacterRange& current_range = ranges[range_index];
     if (current_range.Width() == 0) {
       distribute_count++;
-    } else if (distribute_count != 0) {
-      // Only count surrogate pairs as a single character.
-      bool surrogate_pair = IsValidSurrogatePair(run, range_index);
-      if (!surrogate_pair)
-        distribute_count++;
-
-      float new_width = current_range.Width() / distribute_count;
-      current_range.end = current_range.start + new_width;
-      float last_end_position = current_range.end;
-      for (unsigned distribute = 1; distribute < distribute_count;
-           distribute++) {
-        // This surrogate pair check will skip processing of the second
-        // character forming the surrogate pair.
-        unsigned distribute_index =
-            range_index + distribute + (surrogate_pair ? 1 : 0);
-        ranges[distribute_index].start = last_end_position;
-        ranges[distribute_index].end = last_end_position + new_width;
-        last_end_position = ranges[distribute_index].end;
-      }
-
-      distribute_count = 0;
+      continue;
     }
+    if (distribute_count == 0)
+      continue;
+    distribute_count++;
+
+    // Distribute the width evenly among the code points.
+    const unsigned distribute_end = range_index + distribute_count;
+    unsigned num_codepoints = CountCodePoints(run, range_index, distribute_end);
+    DCHECK_GT(num_codepoints, 0u);
+    float new_width = current_range.Width() / num_codepoints;
+
+    float last_end_position = current_range.start;
+    unsigned distribute_index = range_index;
+    do {
+      CharacterRange& range = ranges[distribute_index];
+      range.start = last_end_position;
+      range.end = last_end_position + new_width;
+      last_end_position = range.end;
+      distribute_index += IsValidSurrogatePair(run, distribute_index) ? 2 : 1;
+    } while (distribute_index < distribute_end);
+
+    distribute_count = 0;
   }
 }
 

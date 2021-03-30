@@ -61,6 +61,8 @@ class TestAppBannerManagerDesktop : public AppBannerManagerDesktop {
   void OnInstall(blink::mojom::DisplayMode display) override;
   void DidFinishCreatingWebApp(const web_app::AppId& app_id,
                                web_app::InstallResultCode code) override;
+  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
+                     const GURL& validated_url) override;
   void UpdateState(AppBannerManager::State state) override;
 
  private:

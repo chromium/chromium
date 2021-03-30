@@ -11,12 +11,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/supervised_user/logged_in_user_mixin.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/browser/supervised_user/supervised_user_interstitial.h"
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
@@ -67,11 +67,11 @@ class SupervisedUserURLFilterTest : public MixinBasedInProcessBrowserTest {
   bool ShownPageIsInterstitial(Browser* browser) {
     WebContents* tab = browser->tab_strip_model()->GetActiveWebContents();
     EXPECT_FALSE(tab->IsCrashed());
-    base::string16 title;
+    std::u16string title;
     ui_test_utils::GetCurrentTabTitle(browser, &title);
     return tab->GetController().GetLastCommittedEntry()->GetPageType() ==
                content::PAGE_TYPE_ERROR &&
-           title == base::ASCIIToUTF16("Site blocked");
+           title == u"Site blocked";
   }
 
   void SendAccessRequest(WebContents* tab) {
@@ -84,8 +84,7 @@ class SupervisedUserURLFilterTest : public MixinBasedInProcessBrowserTest {
 
   void GoBack(WebContents* tab) {
     tab->GetMainFrame()->ExecuteJavaScriptForTests(
-        base::ASCIIToUTF16("supervisedUserErrorPageController.goBack()"),
-        base::NullCallback());
+        u"supervisedUserErrorPageController.goBack()", base::NullCallback());
     return;
   }
 

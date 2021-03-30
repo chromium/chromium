@@ -24,6 +24,7 @@ Toto oprávnění udělíte tak, že kliknutím na tlačítko <ph name="BUTTON_N
 Pokud je položka <ph name="SERVICE_SCRIPT_NAME" /> již zaškrtnutá, zrušte její zaškrtnutí a poté ji zaškrtněte znovu.</translation>
 <translation id="225614027745146050">Vítejte</translation>
 <translation id="2320166752086256636">Skrýt klávesnici</translation>
+<translation id="2333212046079545895">Copyright 2021 Google LLC. Všechna práva vyhrazena.</translation>
 <translation id="2359808026110333948">Pokračovat</translation>
 <translation id="2366718077645204424">Hostitele nelze nalézt. Pravděpodobnou příčinou je aktuální konfigurace sítě.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> Naposledy online: <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -71,6 +72,7 @@ Pokud je položka <ph name="SERVICE_SCRIPT_NAME" /> již zaškrtnutá, zrušte j
 <translation id="4405930547258349619">Základní knihovna</translation>
 <translation id="443560535555262820">Otevřít nastavení přístupnosti</translation>
 <translation id="4450893287417543264">Tuto zprávu již nezobrazovat</translation>
+<translation id="4512952200932940229">Copyright 2021 Autoři prohlížeče Chromium. Všechna práva vyhrazena.</translation>
 <translation id="4513946894732546136">Zpětná vazba</translation>
 <translation id="4563926062592110512">Klient odpojen: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4635770493235256822">Vzdálená zařízení</translation>
@@ -129,7 +131,6 @@ Pokud je položka <ph name="SERVICE_SCRIPT_NAME" /> již zaškrtnutá, zrušte j
 <translation id="7067321367069083429">Obrazovka se chová jako dotyková obrazovka</translation>
 <translation id="7116737094673640201">Vítá vás Vzdálená plocha Chrome</translation>
 <translation id="7144878232160441200">Opakovat</translation>
-<translation id="724402108658370587">Copyright 2020 Google LLC. Všechna práva vyhrazena.</translation>
 <translation id="7312846573060934304">Hostitel je offline.</translation>
 <translation id="7319983568955948908">Ukončit sdílení</translation>
 <translation id="7401733114166276557">Vzdálená plocha Chrome</translation>
@@ -155,7 +156,6 @@ Pokud je položka <ph name="SERVICE_SCRIPT_NAME" /> již zaškrtnutá, zrušte j
 <translation id="8073845705237259513">Chcete-li používat Vzdálenou plochu Chrome, budete do zařízení muset přidat účet Google.</translation>
 <translation id="809687642899217504">Mé počítače</translation>
 <translation id="8116630183974937060">Došlo k chybě sítě. Zkontrolujte prosím, zda je zařízení online a zkuste to znovu.</translation>
-<translation id="8187079423890319756">Copyright 2013 Autoři prohlížeče Chromium. Všechna práva vyhrazena.</translation>
 <translation id="8295077433896346116">Chcete-li používat službu <ph name="PRODUCT_NAME" />, musíte jí udělit oprávnění Přístupnost, aby do tohoto počítače Mac bylo možné vkládat obsah ze vzdáleného počítače.
 
 Chcete-li udělit toto oprávnění, klikněte na tlačítko <ph name="BUTTON_NAME" /> níže. Na panelu Přístupnost, který se otevře, pak zaškrtněte políčko vedle položky <ph name="SERVICE_SCRIPT_NAME" />.
@@ -174,6 +174,7 @@ Pokud je položka <ph name="SERVICE_SCRIPT_NAME" /> již zaškrtnutá, zrušte j
 <translation id="8743328882720071828">Chcete uživateli <ph name="CLIENT_USERNAME" /> povolit zobrazit a ovládat váš počítač?</translation>
 <translation id="8747048596626351634">Relace selhala, nebo se ji nepodařilo spustit. Je-li ve vzdáleném počítači k dispozici návštěvy ~/.chrome-remote-desktop-session, zkontrolujte, zda spouští dlouho běžící proces na popředí, například počítačovou plochu nebo správce oken.</translation>
 <translation id="8804164990146287819">Zásady ochrany soukromí</translation>
+<translation id="8906511416443321782">Přístup k mikrofonu je potřeba k zaznamenání zvuku a jeho odeslání do klienta Vzdálené plochy Chrome.</translation>
 <translation id="9111855907838866522">Jste připojeni ke vzdálenému zařízení. Chcete-li otevřít nabídku, klepněte na obrazovku čtyřmi prsty.</translation>
 <translation id="9126115402994542723">Při připojování k tomuto hostiteli z tohoto zařízení již nežádat o zadání kódu PIN.</translation>
 <translation id="916856682307586697">Spustit výchozí relaci XSession</translation>

@@ -16,14 +16,8 @@ CrosNetworkConfigTestHelper::CrosNetworkConfigTestHelper()
     : CrosNetworkConfigTestHelper(true) {}
 
 CrosNetworkConfigTestHelper::CrosNetworkConfigTestHelper(bool initialize) {
-  network_state_helper_ = std::make_unique<NetworkStateTestHelper>(
-      false /* use_default_devices_and_services */);
-  network_device_handler_ =
-      chromeos::NetworkDeviceHandler::InitializeForTesting(
-          network_state_helper_->network_state_handler());
-  if (initialize) {
+  if (initialize)
     Initialize(/*network_configuration_handler=*/nullptr);
-  }
 }
 
 CrosNetworkConfigTestHelper::~CrosNetworkConfigTestHelper() {
@@ -36,8 +30,11 @@ void CrosNetworkConfigTestHelper::Initialize(
     cros_network_config_impl_ = std::make_unique<CrosNetworkConfig>();
   } else {
     cros_network_config_impl_ = std::make_unique<CrosNetworkConfig>(
-        network_state_helper_->network_state_handler(),
-        network_device_handler_.get(), network_configuration_handler,
+        network_state_helper_.network_state_handler(),
+        network_state_helper_.network_device_handler(),
+        /*cellular_inhibitor=*/nullptr,
+        /*cellular_esim_profile_handler=*/nullptr,
+        network_configuration_handler,
         /*network_connection_handler=*/nullptr,
         /*network_certificate_handler=*/nullptr);
   }

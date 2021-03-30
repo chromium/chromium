@@ -25,6 +25,14 @@ public interface Resource {
     Bitmap getBitmap();
 
     /**
+     * Called when {@link getBitmap} returns null, if this returns true we will inform the CC layer
+     * to remove this resource as its no longer correct. This can be used when the Bitmap is
+     * produced asynchronously and something about the previous bitmap (like layout size) has
+     * changed and the CC layer should not fall back on the stale bitmap.
+     */
+    boolean shouldRemoveResourceOnNullBitmap();
+
+    /**
      * @return The size of the bitmap.
      */
     Rect getBitmapSize();

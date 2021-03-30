@@ -105,6 +105,10 @@ class CONTENT_EXPORT Compositor {
   // Evicts the cache entry created from the cached call above.
   virtual void EvictCachedBackBuffer() = 0;
 
+  // Notifies associated Display to not detach child surface controls during
+  // destruction.
+  virtual void PreserveChildSurfaceControls() = 0;
+
   // Registers a callback that is run when the next frame successfully makes it
   // to the screen (it's entirely possible some frames may be dropped between
   // the time this is called and the callback is run).

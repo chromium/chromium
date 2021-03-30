@@ -7,13 +7,13 @@
 
 #include <memory>
 
-#include "ash/app_list/app_list_export.h"
+#include "ash/ash_export.h"
 #include "ash/assistant/model/assistant_interaction_model_observer.h"
 #include "ash/assistant/model/assistant_ui_model_observer.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
@@ -29,7 +29,7 @@ class UiElementContainerView;
 // AppListAssistantMainStage is the child of AssistantMainView responsible for
 // displaying the Assistant interaction to the user. This includes visual
 // affordances for the query, response, as well as suggestions.
-class APP_LIST_EXPORT AppListAssistantMainStage
+class ASH_EXPORT AppListAssistantMainStage
     : public views::View,
       public views::ViewObserver,
       public AssistantControllerObserver,
@@ -85,8 +85,8 @@ class APP_LIST_EXPORT AppListAssistantMainStage
   AssistantZeroStateView* zero_state_view_;
   AssistantFooterView* footer_;
 
-  ScopedObserver<AssistantController, AssistantControllerObserver>
-      assistant_controller_observer_{this};
+  base::ScopedObservation<AssistantController, AssistantControllerObserver>
+      assistant_controller_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AppListAssistantMainStage);
 };

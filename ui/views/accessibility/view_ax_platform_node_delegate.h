@@ -7,9 +7,10 @@
 
 #include <stdint.h>
 
+#include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
+#include "base/optional.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -44,27 +45,34 @@ class ViewAXPlatformNodeDelegate : public ViewAccessibility,
   ~ViewAXPlatformNodeDelegate() override;
 
   // ViewAccessibility:
+  bool IsAccessibilityFocusable() const override;
+  bool IsFocusedForTesting() const override;
+  void SetPopupFocusOverride() override;
+  void EndPopupFocusOverride() override;
+  void FireFocusAfterMenuClose() override;
+  bool IsIgnored() const override;
+  bool IsAccessibilityEnabled() const override;
   gfx::NativeViewAccessible GetNativeObject() const override;
   void NotifyAccessibilityEvent(ax::mojom::Event event_type) override;
 #if defined(OS_APPLE)
-  void AnnounceText(const base::string16& text) override;
+  void AnnounceText(const std::u16string& text) override;
 #endif
-  bool IsIgnored() const override;
-  void FireFocusAfterMenuClose() override;
 
-  // ui::AXPlatformNodeDelegate
+  // ui::AXPlatformNodeDelegate.
   const ui::AXNodeData& GetData() const override;
   int GetChildCount() const override;
   gfx::NativeViewAccessible ChildAtIndex(int index) override;
   bool HasModalDialog() const override;
+  // Also in |ViewAccessibility|.
+  bool IsChildOfLeaf() const override;
   gfx::NativeViewAccessible GetNSWindow() override;
   // TODO(nektar): Make "GetNativeViewAccessible" a const method throughout the
   // codebase.
   gfx::NativeViewAccessible GetNativeViewAccessible() const;
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
   gfx::NativeViewAccessible GetParent() override;
-  bool IsChildOfLeaf() const override;
   bool IsLeaf() const override;
+  bool IsInvisibleOrIgnored() const override;
   bool IsFocused() const override;
   bool IsToplevelBrowserWindow() override;
   gfx::Rect GetBoundsRect(
@@ -81,7 +89,7 @@ class ViewAXPlatformNodeDelegate : public ViewAccessibility,
   bool AccessibilityPerformAction(const ui::AXActionData& data) override;
   bool ShouldIgnoreHoveredStateForTesting() override;
   bool IsOffscreen() const override;
-  base::string16 GetAuthorUniqueId() const override;
+  std::u16string GetAuthorUniqueId() const override;
   bool IsMinimized() const override;
   // Also in |ViewAccessibility|.
   const ui::AXUniqueId& GetUniqueId() const override;
@@ -94,12 +102,15 @@ class ViewAXPlatformNodeDelegate : public ViewAccessibility,
   bool IsOrderedSet() const override;
   base::Optional<int> GetPosInSet() const override;
   base::Optional<int> GetSetSize() const override;
-  void SetPopupFocusOverride() override;
-  void EndPopupFocusOverride() override;
-  bool IsFocusedForTesting() const override;
 
  protected:
   explicit ViewAXPlatformNodeDelegate(View* view);
+
+  friend class ViewAccessibility;
+  // Called by ViewAccessibility::Create immediately after
+  // construction. Used to avoid issues with calling virtual functions
+  // during the constructor.
+  virtual void Init();
 
   ui::AXPlatformNode* ax_platform_node() { return ax_platform_node_; }
 
@@ -137,7 +148,7 @@ class ViewAXPlatformNodeDelegate : public ViewAccessibility,
 
   // We own this, but it is reference-counted on some platforms so we can't use
   // a unique_ptr. It is destroyed in the destructor.
-  ui::AXPlatformNode* ax_platform_node_;
+  ui::AXPlatformNode* ax_platform_node_ = nullptr;
 
   mutable ui::AXNodeData data_;
 };

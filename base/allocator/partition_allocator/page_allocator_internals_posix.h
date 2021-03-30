@@ -8,8 +8,10 @@
 #include <errno.h>
 #include <sys/mman.h>
 
+#include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/check_op.h"
+#include "base/cpu.h"
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
@@ -139,23 +141,7 @@ bool UseMapJit() {
 constexpr bool kHintIsAdvisory = true;
 std::atomic<int32_t> s_allocPageErrorCode{0};
 
-int GetAccessFlags(PageAccessibilityConfiguration accessibility) {
-  switch (accessibility) {
-    case PageRead:
-      return PROT_READ;
-    case PageReadWrite:
-      return PROT_READ | PROT_WRITE;
-    case PageReadExecute:
-      return PROT_READ | PROT_EXEC;
-    case PageReadWriteExecute:
-      return PROT_READ | PROT_WRITE | PROT_EXEC;
-    default:
-      NOTREACHED();
-      FALLTHROUGH;
-    case PageInaccessible:
-      return PROT_NONE;
-  }
-}
+int GetAccessFlags(PageAccessibilityConfiguration accessibility);
 
 void* SystemAllocPagesInternal(void* hint,
                                size_t length,
@@ -216,8 +202,26 @@ void SetSystemPagesAccessInternal(
     void* address,
     size_t length,
     PageAccessibilityConfiguration accessibility) {
-  PA_PCHECK(0 == HANDLE_EINTR(
-                     mprotect(address, length, GetAccessFlags(accessibility))));
+  int access_flags = GetAccessFlags(accessibility);
+  const int ret = HANDLE_EINTR(mprotect(address, length, access_flags));
+
+  // On Linux, man mprotect(2) states that ENOMEM is returned when (1) internal
+  // kernel data structures cannot be allocated, (2) the address range is
+  // invalid, or (3) this would split an existing mapping in a way that would
+  // exceed the maximum number of allowed mappings.
+  //
+  // Neither are very likely, but we still get a lot of crashes here. This is
+  // because setrlimit(RLIMIT_DATA)'s limit is checked and enforced here, if the
+  // access flags match a "data" mapping, which in our case would be MAP_PRIVATE
+  // | MAP_ANONYMOUS, and PROT_WRITE. see the call to may_expand_vm() in
+  // mm/mprotect.c in the kernel for details.
+  //
+  // In this case, we are almost certainly bumping into the sandbox limit, mark
+  // the crash as OOM. See SandboxLinux::LimitAddressSpace() for details.
+  if (ret == -1 && errno == ENOMEM && (access_flags & PROT_WRITE))
+    OOM_CRASH(length);
+
+  PA_PCHECK(0 == ret);
 }
 
 void FreePagesInternal(void* address, size_t length) {
@@ -280,6 +284,29 @@ void RecommitSystemPagesInternal(
   // details, see https://crbug.com/823915.
   madvise(address, length, MADV_FREE_REUSE);
 #endif
+}
+
+bool TryRecommitSystemPagesInternal(
+    void* address,
+    size_t length,
+    PageAccessibilityConfiguration accessibility,
+    PageAccessibilityDisposition accessibility_disposition) {
+  // On POSIX systems, the caller needs to simply read the memory to recommit
+  // it. However, if decommit changed the permissions, recommit has to change
+  // them back.
+  if (accessibility_disposition == PageUpdatePermissions) {
+    bool ok = TrySetSystemPagesAccess(address, length, accessibility);
+    if (!ok)
+      return false;
+  }
+
+#if defined(OS_APPLE)
+  // On macOS, to update accounting, we need to make another syscall. For more
+  // details, see https://crbug.com/823915.
+  madvise(address, length, MADV_FREE_REUSE);
+#endif
+
+  return true;
 }
 
 void DiscardSystemPagesInternal(void* address, size_t length) {

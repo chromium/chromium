@@ -5,7 +5,7 @@
 <translation id="1276998909102132017">Zdjęcia z galerii</translation>
 <translation id="1430915738399379752">Drukuj</translation>
 <translation id="1473110567575736769">3-sekundowy samowyzwalacz</translation>
-<translation id="1620510694547887537">Kamera</translation>
+<translation id="1620510694547887537">Aparat</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Nic nie zostało nagrane</translation>
 <translation id="1851616744363735765">WSTRZYMANO</translation>
@@ -15,6 +15,7 @@
 <translation id="2036868001356139588">Czas samowyzwalacza</translation>
 <translation id="2050339315714019657">Pionowo</translation>
 <translation id="2064538373111010176">Aparat <ph name="CAMERA" /> jest aktywny</translation>
+<translation id="2144806332417375165">Niestandardowe parametry wideo</translation>
 <translation id="229579744168541441">Eksportuj na dysk</translation>
 <translation id="2501278716633472235">Wróć</translation>
 <translation id="2501853267655415902">Nagrywanie zatrzymane</translation>
@@ -33,7 +34,6 @@
 <translation id="3259149966178251584">Rozdzielczość aparatu</translation>
 <translation id="3517926952904427380">Nie można zrobić zdjęcia w orientacji pionowej</translation>
 <translation id="3569311554794739032">Czy na pewno chcesz usunąć plik <ph name="FILE" />?</translation>
-<translation id="3750315947605636967">Kamery używa inna aplikacja</translation>
 <translation id="3810838688059735925">Wideo</translation>
 <translation id="3838931309141338733">Zeskanuj kod kreskowy</translation>
 <translation id="3892148308691398805">Kopiuj tekst</translation>
@@ -76,10 +76,12 @@ Jeśli dotyczyła ona jakości zdjęć lub filmów, zamieść tutaj przykładowe
 <translation id="7337660886763914220">Błędy systemu plików.</translation>
 <translation id="7450541714075000668">Tekst został skopiowany</translation>
 <translation id="7557677699350329807">Przełącz na następny aparat</translation>
+<translation id="7607002721634913082">Wstrzymano</translation>
 <translation id="7608223098072244877">4 na 4</translation>
 <translation id="7649070708921625228">Pomoc</translation>
 <translation id="7658239707568436148">Anuluj</translation>
 <translation id="7670511624014457267">60 kl./s</translation>
+<translation id="7974782136796202581">Pokaż opcje przesunięcia, przechylenia i powiększenia</translation>
 <translation id="7983668134180549431">Wykryto tekst.</translation>
 <translation id="8067883171444229417">Odtwórz film</translation>
 <translation id="8131740175452115882">Potwierdź</translation>

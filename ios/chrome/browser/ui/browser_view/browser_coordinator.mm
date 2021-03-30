@@ -6,11 +6,14 @@
 
 #include <memory>
 
+#import "base/metrics/histogram_functions.h"
 #include "base/scoped_observer.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_abuse_detector.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/autofill/autofill_tab_helper.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/browser_state_metrics/browser_state_metrics.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/download/download_directory_util.h"
 #import "ios/chrome/browser/download/external_app_util.h"
@@ -23,6 +26,8 @@
 #import "ios/chrome/browser/ui/activity_services/activity_params.h"
 #import "ios/chrome/browser/ui/activity_services/requirements/activity_service_positioner.h"
 #import "ios/chrome/browser/ui/alert_coordinator/repost_form_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/signin/user_signin/policy_signout_commands.h"
+#import "ios/chrome/browser/ui/authentication/signin/user_signin/user_policy_signout_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_coordinator.h"
 #import "ios/chrome/browser/ui/badges/badge_popup_menu_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_coordinator.h"
@@ -37,22 +42,26 @@
 #import "ios/chrome/browser/ui/commands/infobar_commands.h"
 #import "ios/chrome/browser/ui/commands/page_info_commands.h"
 #import "ios/chrome/browser/ui/commands/password_breach_commands.h"
+#import "ios/chrome/browser/ui/commands/password_protection_commands.h"
 #import "ios/chrome/browser/ui/commands/qr_generation_commands.h"
 #import "ios/chrome/browser/ui/commands/share_highlight_command.h"
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/ui/commands/whats_new_commands.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_promo_coordinator.h"
 #import "ios/chrome/browser/ui/download/ar_quick_look_coordinator.h"
 #import "ios/chrome/browser/ui/download/pass_kit_coordinator.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_controller_ios.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_coordinator.h"
+#import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_mediator.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
-#import "ios/chrome/browser/ui/open_in/open_in_mediator.h"
+#import "ios/chrome/browser/ui/open_in/open_in_coordinator.h"
 #import "ios/chrome/browser/ui/overlays/overlay_container_coordinator.h"
 #import "ios/chrome/browser/ui/page_info/page_info_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/password_breach_coordinator.h"
+#import "ios/chrome/browser/ui/passwords/password_protection_coordinator.h"
 #import "ios/chrome/browser/ui/print/print_controller.h"
 #import "ios/chrome/browser/ui/qr_generator/qr_generator_coordinator.h"
 #import "ios/chrome/browser/ui/qr_scanner/qr_scanner_legacy_coordinator.h"
@@ -66,12 +75,11 @@
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_presenter.h"
 #import "ios/chrome/browser/ui/translate/legacy_translate_infobar_coordinator.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/browser/ui/whats_new/default_browser_promo_coordinator.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/web/features.h"
-#import "ios/chrome/browser/web/font_size_tab_helper.h"
-#import "ios/chrome/browser/web/print_tab_helper.h"
+#import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
+#import "ios/chrome/browser/web/print/print_tab_helper.h"
 #import "ios/chrome/browser/web/repost_form_tab_helper.h"
 #import "ios/chrome/browser/web/repost_form_tab_helper_delegate.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
@@ -89,6 +97,8 @@
                                   FormInputAccessoryCoordinatorNavigator,
                                   PageInfoCommands,
                                   PasswordBreachCommands,
+                                  PasswordProtectionCommands,
+                                  PolicySignoutPromptCommands,
                                   RepostFormTabHelperDelegate,
                                   ToolbarAccessoryCoordinatorDelegate,
                                   URLLoadingDelegate,
@@ -104,8 +114,8 @@
 @property(nonatomic, strong)
     BrowserContainerCoordinator* browserContainerCoordinator;
 
-// Mediator between OpenIn TabHelper and OpenIn UI.
-@property(nonatomic, strong) OpenInMediator* openInMediator;
+// Coordinator between OpenIn TabHelper and OpenIn UI.
+@property(nonatomic, strong) OpenInCoordinator* openInCoordinator;
 
 // Mediator for incognito reauth.
 @property(nonatomic, strong) IncognitoReauthMediator* incognitoAuthMediator;
@@ -145,6 +155,10 @@
 // Coordinator for the password breach UI presentation.
 @property(nonatomic, strong)
     PasswordBreachCoordinator* passwordBreachCoordinator;
+
+// Coordinator for the password protection UI presentation.
+@property(nonatomic, strong)
+    PasswordProtectionCoordinator* passwordProtectionCoordinator;
 
 // Used to display the Print UI. Nil if not visible.
 // TODO(crbug.com/910017): Convert to coordinator.
@@ -189,6 +203,11 @@
 @property(nonatomic, strong)
     OverlayContainerCoordinator* infobarModalOverlayContainerCoordinator;
 
+// The coordinator that manages the prompt for when the user is signed out due
+// to policy.
+@property(nonatomic, strong)
+    UserPolicySignoutCoordinator* policySignoutPromptCoordinator;
+
 @end
 
 @implementation BrowserCoordinator {
@@ -221,8 +240,9 @@
   NSArray<Protocol*>* protocols = @[
     @protocol(ActivityServiceCommands), @protocol(BrowserCoordinatorCommands),
     @protocol(FindInPageCommands), @protocol(PageInfoCommands),
-    @protocol(PasswordBreachCommands), @protocol(TextZoomCommands),
-    @protocol(WhatsNewCommands)
+    @protocol(PasswordBreachCommands), @protocol(PasswordProtectionCommands),
+    @protocol(TextZoomCommands), @protocol(WhatsNewCommands),
+    @protocol(PolicySignoutPromptCommands)
   ];
 
   for (Protocol* protocol in protocols) {
@@ -272,7 +292,7 @@
                            dismissOmnibox:(BOOL)dismissOmnibox {
   [self.passKitCoordinator stop];
 
-  [self.openInMediator disableAll];
+  [self.openInCoordinator disableAll];
 
   [self.printController dismissAnimated:YES];
 
@@ -284,6 +304,9 @@
 
   [self.passwordBreachCoordinator stop];
   self.passwordBreachCoordinator = nil;
+
+  [self.passwordProtectionCoordinator stop];
+  self.passwordProtectionCoordinator = nil;
 
   [self.pageInfoCoordinator stop];
 
@@ -378,6 +401,8 @@
 
   /* passwordBreachCoordinator is created and started by a BrowserCommand */
 
+  /* passwordProtectionCoordinator is created and started by a BrowserCommand */
+
   /* ReadingListCoordinator is created and started by a BrowserCommand */
 
   /* RecentTabsCoordinator is created and started by a BrowserCommand */
@@ -435,6 +460,9 @@
   [self.passwordBreachCoordinator stop];
   self.passwordBreachCoordinator = nil;
 
+  [self.passwordProtectionCoordinator stop];
+  self.passwordProtectionCoordinator = nil;
+
   self.printController = nil;
 
   [self.qrScannerCoordinator stop];
@@ -479,6 +507,9 @@
 
 // Starts mediators owned by this coordinator.
 - (void)startMediators {
+  self.viewController.reauthHandler =
+      HandlerForProtocol(self.dispatcher, IncognitoReauthCommands);
+
   if (self.browser->GetBrowserState()->IsOffTheRecord()) {
     IncognitoReauthSceneAgent* reauthAgent = [IncognitoReauthSceneAgent
         agentFromScene:SceneStateBrowserAgent::FromBrowser(self.browser)
@@ -488,9 +519,6 @@
         [[IncognitoReauthMediator alloc] initWithConsumer:self.viewController
                                               reauthAgent:reauthAgent];
   }
-
-  self.viewController.reauthHandler =
-      HandlerForProtocol(self.dispatcher, IncognitoReauthCommands);
 }
 
 #pragma mark - ActivityServiceCommands
@@ -498,6 +526,9 @@
 - (void)sharePage {
   ActivityParams* params = [[ActivityParams alloc]
       initWithScenario:ActivityScenario::TabShareButton];
+
+  // Exit fullscreen if needed to make sure that share button is visible.
+  FullscreenController::FromBrowser(self.browser)->ExitFullscreen();
 
   self.sharingCoordinator = [[SharingCoordinator alloc]
       initWithBaseViewController:self.viewController
@@ -550,6 +581,10 @@
   [[UIApplication sharedApplication] openURL:URL
                                      options:@{}
                            completionHandler:nil];
+
+  base::UmaHistogramEnumeration(
+      "Download.OpenDownloads.PerProfileType",
+      GetBrowserStateType(self.browser->GetBrowserState()));
 }
 
 - (void)showRecentTabs {
@@ -883,7 +918,10 @@
 
 // Installs delegates for each WebState in WebStateList.
 - (void)installDelegatesForAllWebStates {
-  self.openInMediator = [[OpenInMediator alloc] initWithBrowser:self.browser];
+  self.openInCoordinator =
+      [[OpenInCoordinator alloc] initWithBaseViewController:self.viewController
+                                                    browser:self.browser];
+  [self.openInCoordinator start];
 
   for (int i = 0; i < self.browser->GetWebStateList()->count(); i++) {
     web::WebState* webState = self.browser->GetWebStateList()->GetWebStateAt(i);
@@ -911,9 +949,10 @@
 
 // Uninstalls delegates for each WebState in WebStateList.
 - (void)uninstallDelegatesForAllWebStates {
-  // OpenInMediator is controlled directly monitors the webStateList and should
-  // be deleted.
-  self.openInMediator = nil;
+  // OpenInCoordinator monitors the webStateList and should be stopped.
+  [self.openInCoordinator stop];
+  self.openInCoordinator = nil;
+
   for (int i = 0; i < self.browser->GetWebStateList()->count(); i++) {
     web::WebState* webState = self.browser->GetWebStateList()->GetWebStateAt(i);
     [self uninstallDelegatesForWebState:webState];
@@ -962,6 +1001,37 @@
                         leakType:leakType
                              URL:URL];
   [self.passwordBreachCoordinator start];
+}
+
+#pragma mark - PasswordProtectionCommands
+
+- (void)showPasswordProtectionWarning:(NSString*)warningText
+                           completion:(void (^)(safe_browsing::WarningAction))
+                                          completion {
+  self.passwordProtectionCoordinator = [[PasswordProtectionCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                     warningText:warningText];
+  [self.passwordProtectionCoordinator startWithCompletion:completion];
+}
+
+#pragma mark - PolicySignoutPromptCommands
+
+- (void)showPolicySignoutPrompt {
+  if (!self.policySignoutPromptCoordinator) {
+    self.policySignoutPromptCoordinator = [[UserPolicySignoutCoordinator alloc]
+        initWithBaseViewController:self.viewController
+                           browser:self.browser];
+    self.policySignoutPromptCoordinator.signoutPromptHandler = self;
+    self.policySignoutPromptCoordinator.applicationHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), ApplicationCommands);
+  }
+  [self.policySignoutPromptCoordinator start];
+}
+
+- (void)hidePolicySignoutPrompt {
+  [self.policySignoutPromptCoordinator stop];
+  self.policySignoutPromptCoordinator = nil;
 }
 
 @end

@@ -8,10 +8,11 @@
 #include "base/metrics/histogram_macros.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/common/content_features.h"
 #include "device/fido/features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_util.h"
@@ -134,12 +135,13 @@ WebAuthRequestSecurityChecker::ValidateAncestorOrigins(
     RequestType type,
     bool* is_cross_origin) {
   *is_cross_origin = !IsSameOriginWithAncestors(origin);
-  if ((type == RequestType::kMakeCredential ||
-       !base::FeatureList::IsEnabled(
-           device::kWebAuthGetAssertionFeaturePolicy) ||
-       !static_cast<RenderFrameHostImpl*>(render_frame_host_)
-            ->IsFeatureEnabled(blink::mojom::FeaturePolicyFeature::
-                                   kPublicKeyCredentialsGet)) &&
+  if ((type != RequestType::kGetAssertion ||
+       !render_frame_host_->IsFeatureEnabled(
+           blink::mojom::PermissionsPolicyFeature::kPublicKeyCredentialsGet)) &&
+      (type != RequestType::kMakePaymentCredential ||
+       !base::FeatureList::IsEnabled(features::kSecurePaymentConfirmation) ||
+       !render_frame_host_->IsFeatureEnabled(
+           blink::mojom::PermissionsPolicyFeature::kPayment)) &&
       *is_cross_origin) {
     return blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR;
   }

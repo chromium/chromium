@@ -69,7 +69,6 @@ ResultExpr GpuProcessPolicy::EvaluateSyscall(int sysno) const {
 #endif
     case __NR_getdents64:
     case __NR_ioctl:
-    case __NR_memfd_create:
       return Allow();
 #if defined(__i386__) || defined(__x86_64__) || defined(__mips__)
     // The Nvidia driver uses flags not in the baseline policy
@@ -93,8 +92,6 @@ ResultExpr GpuProcessPolicy::EvaluateSyscall(int sysno) const {
     default:
       break;
   }
-  if (SyscallSets::IsEventFd(sysno))
-    return Allow();
 
 #if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && defined(USE_X11)
   if (SyscallSets::IsSystemVSharedMemory(sysno))

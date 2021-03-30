@@ -10,7 +10,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
-namespace fuchsia {
 
 class ScopedServiceBindingTest : public ServiceDirectoryTestBase {};
 
@@ -220,5 +219,4 @@ TEST_F(MultiUseBindingTest, MultipleLastClientCallback) {
   EXPECT_EQ(disconnect_count_, 2);
 }
 
-}  // namespace fuchsia
 }  // namespace base

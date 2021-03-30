@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <set>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -112,7 +112,7 @@ bool g_allow_directory_access_for_test = false;
 bool GetFileTypesFromAcceptOption(
     const file_system::AcceptOption& accept_option,
     std::vector<base::FilePath::StringType>* extensions,
-    base::string16* description) {
+    std::u16string* description) {
   std::set<base::FilePath::StringType> extension_set;
   int description_id = 0;
 
@@ -247,7 +247,7 @@ ExtensionFunction::ResponseAction FileSystemGetDisplayPathFunction::Run() {
   }
 
   file_path = path_util::PrettifyPath(file_path);
-  return RespondNow(OneArgument(base::Value(file_path.value())));
+  return RespondNow(OneArgument(base::Value(file_path.AsUTF8Unsafe())));
 }
 
 FileSystemEntryFunction::FileSystemEntryFunction()
@@ -484,8 +484,8 @@ void FileSystemChooseEntryFunction::RegisterTempExternalFileSystemForTest(
   // smoothly, all accessed paths need to be registered in the list of
   // external mount points.
   storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
-      name, storage::kFileSystemTypeNativeLocal,
-      storage::FileSystemMountOption(), path);
+      name, storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
+      path);
 }
 
 void FileSystemChooseEntryFunction::FilesSelected(
@@ -635,7 +635,7 @@ void FileSystemChooseEntryFunction::BuildFileTypeInfo(
 
   if (accepts) {
     for (const file_system::AcceptOption& option : *accepts) {
-      base::string16 description;
+      std::u16string description;
       std::vector<base::FilePath::StringType> extensions;
 
       if (!GetFileTypesFromAcceptOption(option, &extensions, &description))

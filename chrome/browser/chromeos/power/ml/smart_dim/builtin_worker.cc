@@ -4,12 +4,12 @@
 
 #include "chrome/browser/chromeos/power/ml/smart_dim/builtin_worker.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ref_counted_memory.h"
 #include "chrome/browser/chromeos/power/ml/smart_dim/ml_agent_util.h"
 #include "chrome/grit/browser_resources.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "components/assist_ranker/proto/example_preprocessor.pb.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -24,10 +24,8 @@ using chromeos::machine_learning::mojom::BuiltinModelId;
 using chromeos::machine_learning::mojom::BuiltinModelSpec;
 using chromeos::machine_learning::mojom::BuiltinModelSpecPtr;
 
-constexpr size_t k20181115ModelInputVectorSize = 343;
 constexpr size_t k20190521ModelInputVectorSize = 592;
 
-constexpr double k20181115ModelDefaultDimThreshold = -1.0;
 constexpr double k20190521ModelDefaultDimThreshold = -0.5;
 
 }  // namespace
@@ -49,22 +47,16 @@ BuiltinWorker::GetExecutor() {
 }
 
 void BuiltinWorker::LazyInitialize() {
-  const bool v3_enabled =
-      base::FeatureList::IsEnabled(features::kSmartDimModelV3);
-
   // Initialize builtin meta info.
-  dim_threshold_ = v3_enabled ? k20190521ModelDefaultDimThreshold
-                              : k20181115ModelDefaultDimThreshold;
-  expected_feature_size_ = v3_enabled ? k20190521ModelInputVectorSize
-                                      : k20181115ModelInputVectorSize;
+  dim_threshold_ = k20190521ModelDefaultDimThreshold;
+  expected_feature_size_ = k20190521ModelInputVectorSize;
 
   if (!preprocessor_config_) {
     preprocessor_config_ =
         std::make_unique<assist_ranker::ExamplePreprocessorConfig>();
 
     const int resource_id =
-        v3_enabled ? IDR_SMART_DIM_20190521_EXAMPLE_PREPROCESSOR_CONFIG_PB
-                   : IDR_SMART_DIM_20181115_EXAMPLE_PREPROCESSOR_CONFIG_PB;
+        IDR_SMART_DIM_20190521_EXAMPLE_PREPROCESSOR_CONFIG_PB;
 
     const scoped_refptr<base::RefCountedMemory> raw_config =
         ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
@@ -88,13 +80,13 @@ void BuiltinWorker::LazyInitialize() {
   if (!model_) {
     // Load the model.
     BuiltinModelSpecPtr spec =
-        BuiltinModelSpec::New(v3_enabled ? BuiltinModelId::SMART_DIM_20190521
-                                         : BuiltinModelId::SMART_DIM_20181115);
+        BuiltinModelSpec::New(BuiltinModelId::SMART_DIM_20190521);
     // Builtin model is supposed to be always available and valid, using
     // base::DoNothing as callbacks.
     chromeos::machine_learning::ServiceConnection::GetInstance()
-        ->LoadBuiltinModel(std::move(spec), model_.BindNewPipeAndPassReceiver(),
-                           base::DoNothing());
+        ->GetMachineLearningService()
+        .LoadBuiltinModel(std::move(spec), model_.BindNewPipeAndPassReceiver(),
+                          base::DoNothing());
   }
 
   if (!executor_) {

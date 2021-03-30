@@ -37,9 +37,9 @@ const std::vector<InteractionsStats>& FakeFormFetcher::GetInteractionsStats()
   return stats_;
 }
 
-base::span<const CompromisedCredentials>
-FakeFormFetcher::GetCompromisedCredentials() const {
-  return base::make_span(compromised_);
+base::span<const InsecureCredential> FakeFormFetcher::GetInsecureCredentials()
+    const {
+  return base::make_span(insecure_credentials_);
 }
 
 std::vector<const PasswordForm*> FakeFormFetcher::GetNonFederatedMatches()
@@ -56,7 +56,7 @@ bool FakeFormFetcher::IsBlocklisted() const {
 }
 
 bool FakeFormFetcher::IsMovingBlocked(const autofill::GaiaIdHash& destination,
-                                      const base::string16& username) const {
+                                      const std::u16string& username) const {
   // This is analogous to the implementation in
   // MultiStoreFormFetcher::IsMovingBlocked().
   for (const std::vector<const PasswordForm*>& matches_vector :

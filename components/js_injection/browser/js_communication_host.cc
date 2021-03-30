@@ -31,7 +31,7 @@ std::string ConvertToNativeAllowedOriginRulesWithSanityCheck(
 }  // namespace
 
 struct JsObject {
-  JsObject(const base::string16& name,
+  JsObject(const std::u16string& name,
            OriginMatcher allowed_origin_rules,
            std::unique_ptr<WebMessageHostFactory> factory)
       : name(std::move(name)),
@@ -41,13 +41,13 @@ struct JsObject {
   JsObject& operator=(JsObject&& other) = delete;
   ~JsObject() = default;
 
-  base::string16 name;
+  std::u16string name;
   OriginMatcher allowed_origin_rules;
   std::unique_ptr<WebMessageHostFactory> factory;
 };
 
 struct DocumentStartJavaScript {
-  DocumentStartJavaScript(base::string16 script,
+  DocumentStartJavaScript(std::u16string script,
                           OriginMatcher allowed_origin_rules,
                           int32_t script_id)
       : script_(std::move(script)),
@@ -59,7 +59,7 @@ struct DocumentStartJavaScript {
   DocumentStartJavaScript(DocumentStartJavaScript&&) = default;
   DocumentStartJavaScript& operator=(DocumentStartJavaScript&&) = default;
 
-  base::string16 script_;
+  std::u16string script_;
   OriginMatcher allowed_origin_rules_;
   int32_t script_id_;
 };
@@ -79,7 +79,7 @@ JsCommunicationHost::~JsCommunicationHost() = default;
 
 JsCommunicationHost::AddScriptResult
 JsCommunicationHost::AddDocumentStartJavaScript(
-    const base::string16& script,
+    const std::u16string& script,
     const std::vector<std::string>& allowed_origin_rules) {
   OriginMatcher origin_matcher;
   std::string error_message = ConvertToNativeAllowedOriginRulesWithSanityCheck(
@@ -112,9 +112,9 @@ bool JsCommunicationHost::RemoveDocumentStartJavaScript(int script_id) {
   return false;
 }
 
-base::string16 JsCommunicationHost::AddWebMessageHostFactory(
+std::u16string JsCommunicationHost::AddWebMessageHostFactory(
     std::unique_ptr<WebMessageHostFactory> factory,
-    const base::string16& js_object_name,
+    const std::u16string& js_object_name,
     const std::vector<std::string>& allowed_origin_rules) {
   OriginMatcher origin_matcher;
   std::string error_message = ConvertToNativeAllowedOriginRulesWithSanityCheck(
@@ -124,8 +124,7 @@ base::string16 JsCommunicationHost::AddWebMessageHostFactory(
 
   for (const auto& js_object : js_objects_) {
     if (js_object->name == js_object_name) {
-      return base::ASCIIToUTF16("jsObjectName ") + js_object->name +
-             base::ASCIIToUTF16(" was already added.");
+      return u"jsObjectName " + js_object->name + u" was already added.";
     }
   }
 
@@ -135,11 +134,11 @@ base::string16 JsCommunicationHost::AddWebMessageHostFactory(
   web_contents()->ForEachFrame(base::BindRepeating(
       &JsCommunicationHost::NotifyFrameForWebMessageListener,
       base::Unretained(this)));
-  return base::string16();
+  return std::u16string();
 }
 
 void JsCommunicationHost::RemoveWebMessageHostFactory(
-    const base::string16& js_object_name) {
+    const std::u16string& js_object_name) {
   for (auto iterator = js_objects_.begin(); iterator != js_objects_.end();
        ++iterator) {
     if ((*iterator)->name == js_object_name) {
@@ -173,6 +172,15 @@ void JsCommunicationHost::RenderFrameCreated(
 void JsCommunicationHost::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
   js_to_browser_messagings_.erase(render_frame_host);
+}
+
+void JsCommunicationHost::FrameBackForwardCacheStateChanged(
+    content::RenderFrameHost* render_frame_host) {
+  auto iter = js_to_browser_messagings_.find(render_frame_host);
+  if (iter == js_to_browser_messagings_.end())
+    return;
+  for (auto& js_to_browser_messaging_ptr : iter->second)
+    js_to_browser_messaging_ptr->OnBackForwardCacheStateChanged();
 }
 
 void JsCommunicationHost::NotifyFrameForAllDocumentStartJavaScripts(

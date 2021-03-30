@@ -445,10 +445,11 @@ void LoggingCanvas::onDrawPath(const SkPath& path, const SkPaint& paint) {
   this->SkCanvas::onDrawPath(path, paint);
 }
 
-void LoggingCanvas::onDrawImage(const SkImage* image,
-                                SkScalar left,
-                                SkScalar top,
-                                const SkPaint* paint) {
+void LoggingCanvas::onDrawImage2(const SkImage* image,
+                                 SkScalar left,
+                                 SkScalar top,
+                                 const SkSamplingOptions& sampling,
+                                 const SkPaint* paint) {
   AutoLogger logger(this);
   JSONObject* params = logger.LogItemWithParams("drawImage");
   params->SetDouble("left", left);
@@ -456,23 +457,24 @@ void LoggingCanvas::onDrawImage(const SkImage* image,
   params->SetObject("image", ObjectForSkImage(image));
   if (paint)
     params->SetObject("paint", ObjectForSkPaint(*paint));
-  this->SkCanvas::onDrawImage(image, left, top, paint);
+  this->SkCanvas::onDrawImage2(image, left, top, sampling, paint);
 }
 
-void LoggingCanvas::onDrawImageRect(const SkImage* image,
-                                    const SkRect* src,
-                                    const SkRect& dst,
-                                    const SkPaint* paint,
-                                    SrcRectConstraint constraint) {
+void LoggingCanvas::onDrawImageRect2(const SkImage* image,
+                                     const SkRect& src,
+                                     const SkRect& dst,
+                                     const SkSamplingOptions& sampling,
+                                     const SkPaint* paint,
+                                     SrcRectConstraint constraint) {
   AutoLogger logger(this);
   JSONObject* params = logger.LogItemWithParams("drawImageRect");
   params->SetObject("image", ObjectForSkImage(image));
-  if (src)
-    params->SetObject("src", ObjectForSkRect(*src));
+  params->SetObject("src", ObjectForSkRect(src));
   params->SetObject("dst", ObjectForSkRect(dst));
   if (paint)
     params->SetObject("paint", ObjectForSkPaint(*paint));
-  this->SkCanvas::onDrawImageRect(image, src, dst, paint, constraint);
+  this->SkCanvas::onDrawImageRect2(image, src, dst, sampling, paint,
+                                   constraint);
 }
 
 void LoggingCanvas::onDrawVerticesObject(const SkVertices* vertices,

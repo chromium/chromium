@@ -44,7 +44,7 @@ void AppendDataToRequestBody(
 
 void AppendFileRangeToRequestBody(
     const scoped_refptr<network::ResourceRequestBody>& request_body,
-    const base::Optional<base::string16>& file_path,
+    const base::Optional<std::u16string>& file_path,
     int file_start,
     int file_length,
     base::Time file_modification_time) {
@@ -59,16 +59,18 @@ void AppendFileRangeToRequestBody(
 
 void AppendReferencedFilesFromHttpBody(
     const std::vector<network::DataElement>& elements,
-    std::vector<base::Optional<base::string16>>* referenced_files) {
+    std::vector<base::Optional<std::u16string>>* referenced_files) {
   for (size_t i = 0; i < elements.size(); ++i) {
-    if (elements[i].type() == network::mojom::DataElementType::kFile)
-      referenced_files->emplace_back(elements[i].path().AsUTF16Unsafe());
+    if (elements[i].type() == network::DataElement::Tag::kFile) {
+      referenced_files->emplace_back(
+          elements[i].As<network::DataElementFile>().path().AsUTF16Unsafe());
+    }
   }
 }
 
 bool AppendReferencedFilesFromDocumentState(
-    const std::vector<base::Optional<base::string16>>& document_state,
-    std::vector<base::Optional<base::string16>>* referenced_files) {
+    const std::vector<base::Optional<std::u16string>>& document_state,
+    std::vector<base::Optional<std::u16string>>* referenced_files) {
   if (document_state.empty())
     return true;
 
@@ -97,7 +99,7 @@ bool AppendReferencedFilesFromDocumentState(
       return false;
 
     index++;  // Skip over name.
-    const base::Optional<base::string16>& type = document_state[index++];
+    const base::Optional<std::u16string>& type = document_state[index++];
 
     if (index >= document_state.size())
       return false;
@@ -127,7 +129,7 @@ bool AppendReferencedFilesFromDocumentState(
 
 bool RecursivelyAppendReferencedFiles(
     const ExplodedFrameState& frame_state,
-    std::vector<base::Optional<base::string16>>* referenced_files) {
+    std::vector<base::Optional<std::u16string>>* referenced_files) {
   if (frame_state.http_body.request_body) {
     AppendReferencedFilesFromHttpBody(
         *frame_state.http_body.request_body->elements(), referenced_files);
@@ -288,10 +290,10 @@ std::string ReadStdString(SerializeObject* obj) {
   return std::string();
 }
 
-// Pickles a base::string16 as <int length>:<char*16 data> tuple>.
-void WriteString(const base::string16& str, SerializeObject* obj) {
-  const base::char16* data = str.data();
-  size_t length_in_bytes = str.length() * sizeof(base::char16);
+// Pickles a std::u16string as <int length>:<char*16 data> tuple>.
+void WriteString(const std::u16string& str, SerializeObject* obj) {
+  const char16_t* data = str.data();
+  size_t length_in_bytes = str.length() * sizeof(char16_t);
 
   CHECK_LT(length_in_bytes,
            static_cast<size_t>(std::numeric_limits<int>::max()));
@@ -300,8 +302,8 @@ void WriteString(const base::string16& str, SerializeObject* obj) {
 }
 
 // If str is a null optional, this simply pickles a length of -1. Otherwise,
-// delegates to the base::string16 overload.
-void WriteString(const base::Optional<base::string16>& str,
+// delegates to the std::u16string overload.
+void WriteString(const base::Optional<std::u16string>& str,
                  SerializeObject* obj) {
   if (!str) {
     obj->pickle.WriteInt(-1);
@@ -310,9 +312,9 @@ void WriteString(const base::Optional<base::string16>& str,
   }
 }
 
-// This reads a serialized base::Optional<base::string16> from obj. If a string
+// This reads a serialized base::Optional<std::u16string> from obj. If a string
 // can't be read, nullptr is returned.
-const base::char16* ReadStringNoCopy(SerializeObject* obj, int* num_chars) {
+const char16_t* ReadStringNoCopy(SerializeObject* obj, int* num_chars) {
   int length_in_bytes;
   if (!obj->iter.ReadInt(&length_in_bytes)) {
     obj->parse_error = true;
@@ -329,14 +331,14 @@ const base::char16* ReadStringNoCopy(SerializeObject* obj, int* num_chars) {
   }
 
   if (num_chars)
-    *num_chars = length_in_bytes / sizeof(base::char16);
-  return reinterpret_cast<const base::char16*>(data);
+    *num_chars = length_in_bytes / sizeof(char16_t);
+  return reinterpret_cast<const char16_t*>(data);
 }
 
-base::Optional<base::string16> ReadString(SerializeObject* obj) {
+base::Optional<std::u16string> ReadString(SerializeObject* obj) {
   int num_chars;
-  const base::char16* chars = ReadStringNoCopy(obj, &num_chars);
-  base::Optional<base::string16> result;
+  const char16_t* chars = ReadStringNoCopy(obj, &num_chars);
+  base::Optional<std::u16string> result;
   if (chars)
     result.emplace(chars, num_chars);
   return result;
@@ -368,7 +370,7 @@ size_t ReadAndValidateVectorSize(SerializeObject* obj, size_t element_size) {
 }
 
 // Writes a Vector of strings into a SerializeObject for serialization.
-void WriteStringVector(const std::vector<base::Optional<base::string16>>& data,
+void WriteStringVector(const std::vector<base::Optional<std::u16string>>& data,
                        SerializeObject* obj) {
   WriteAndValidateVectorSize(data, obj);
   for (size_t i = 0; i < data.size(); ++i) {
@@ -377,9 +379,9 @@ void WriteStringVector(const std::vector<base::Optional<base::string16>>& data,
 }
 
 void ReadStringVector(SerializeObject* obj,
-                      std::vector<base::Optional<base::string16>>* result) {
+                      std::vector<base::Optional<std::u16string>>* result) {
   size_t num_elements =
-      ReadAndValidateVectorSize(obj, sizeof(base::Optional<base::string16>));
+      ReadAndValidateVectorSize(obj, sizeof(base::Optional<std::u16string>));
 
   result->resize(num_elements);
   for (size_t i = 0; i < num_elements; ++i)
@@ -391,17 +393,21 @@ void WriteResourceRequestBody(const network::ResourceRequestBody& request_body,
   WriteAndValidateVectorSize(*request_body.elements(), obj);
   for (const auto& element : *request_body.elements()) {
     switch (element.type()) {
-      case network::mojom::DataElementType::kBytes:
+      case network::DataElement::Tag::kBytes: {
+        const auto& bytes = element.As<network::DataElementBytes>().bytes();
         WriteInteger(static_cast<int>(HTTPBodyElementType::kTypeData), obj);
-        WriteData(element.bytes(), static_cast<int>(element.length()), obj);
+        WriteData(bytes.data(), static_cast<int>(bytes.size()), obj);
         break;
-      case network::mojom::DataElementType::kFile:
+      }
+      case network::DataElement::Tag::kFile: {
+        const auto& file = element.As<network::DataElementFile>();
         WriteInteger(static_cast<int>(HTTPBodyElementType::kTypeFile), obj);
-        WriteString(element.path().AsUTF16Unsafe(), obj);
-        WriteInteger64(static_cast<int64_t>(element.offset()), obj);
-        WriteInteger64(static_cast<int64_t>(element.length()), obj);
-        WriteReal(element.expected_modification_time().ToDoubleT(), obj);
+        WriteString(file.path().AsUTF16Unsafe(), obj);
+        WriteInteger64(static_cast<int64_t>(file.offset()), obj);
+        WriteInteger64(static_cast<int64_t>(file.length()), obj);
+        WriteReal(file.expected_modification_time().ToDoubleT(), obj);
         break;
+      }
       default:
         NOTREACHED();
         continue;
@@ -426,7 +432,7 @@ void ReadResourceRequestBody(
                                 length);
       }
     } else if (type == HTTPBodyElementType::kTypeFile) {
-      base::Optional<base::string16> file_path = ReadString(obj);
+      base::Optional<std::u16string> file_path = ReadString(obj);
       int64_t file_start = ReadInteger64(obj);
       int64_t file_length = ReadInteger64(obj);
       double file_modification_time = ReadReal(obj);
@@ -663,25 +669,25 @@ void WriteResourceRequestBody(const network::ResourceRequestBody& request_body,
   for (const auto& element : *request_body.elements()) {
     mojom::ElementPtr data_element = mojom::Element::New();
     switch (element.type()) {
-      case network::mojom::DataElementType::kBytes: {
-        data_element->set_bytes(std::vector<unsigned char>(
-            reinterpret_cast<const char*>(element.bytes()),
-            element.bytes() + element.length()));
+      case network::DataElement::Tag::kBytes: {
+        const auto& bytes = element.As<network::DataElementBytes>().bytes();
+        const char* data = reinterpret_cast<const char*>(bytes.data());
+        data_element->set_bytes(
+            std::vector<unsigned char>(data, data + bytes.size()));
         break;
       }
-      case network::mojom::DataElementType::kFile: {
+      case network::DataElement::Tag::kFile: {
+        const auto& element_file = element.As<network::DataElementFile>();
         mojom::FilePtr file = mojom::File::New(
-            element.path().AsUTF16Unsafe(), element.offset(), element.length(),
-            element.expected_modification_time());
+            element_file.path().AsUTF16Unsafe(), element_file.offset(),
+            element_file.length(), element_file.expected_modification_time());
         data_element->set_file(std::move(file));
         break;
       }
-      case network::mojom::DataElementType::kDataPipe:
+      case network::DataElement::Tag::kDataPipe:
         NOTIMPLEMENTED();
         break;
-      case network::mojom::DataElementType::kChunkedDataPipe:
-      case network::mojom::DataElementType::kReadOnceStream:
-      case network::mojom::DataElementType::kUnknown:
+      case network::DataElement::Tag::kChunkedDataPipe:
         NOTREACHED();
         continue;
     }

@@ -23,7 +23,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_ANIMATE_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_ANIMATE_ELEMENT_H_
 
-#include <base/gtest_prod_util.h>
+#include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/svg/svg_animation_element.h"
@@ -61,8 +61,7 @@ class CORE_EXPORT SVGAnimateElement : public SVGAnimationElement {
 
   bool HasValidAnimation() const override;
 
-  SMILAnimationValue CreateAnimationValue(
-      bool needs_underlying_value) const final;
+  SMILAnimationValue CreateAnimationValue() const final;
   void ClearAnimationValue() final;
 
   bool CalculateToAtEndOfDurationValue(

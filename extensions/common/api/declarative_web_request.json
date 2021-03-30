@@ -5,7 +5,7 @@
 [
   {
     "namespace": "declarativeWebRequest",
-    "description": "<em><strong>Note:</strong> this API is currently on hold, without concrete plans to move to stable.</em> Use the <code>chrome.declarativeWebRequest</code> API to intercept, block, or modify requests in-flight. It is significantly faster than the <a href='webRequest'><code>chrome.webRequest</code> API</a> because you can register rules that are evaluated in the browser rather than the JavaScript engine, which reduces roundtrip latencies and allows higher efficiency.",
+    "description": "<em><strong>Note:</strong> this API is deprecated. Check out the $(ref:declarativeNetRequest) API instead.</em> Use the <code>chrome.declarativeWebRequest</code> API to intercept, block, or modify requests in-flight. It is significantly faster than the <a href='webRequest'><code>chrome.webRequest</code> API</a> because you can register rules that are evaluated in the browser rather than the JavaScript engine, which reduces roundtrip latencies and allows higher efficiency.",
     "types": [
       // TODO(devlin): The declarativeWebRequest API uses these enums as a form
       // of RTTI, but it's a rather verbose implementation. We should see if we

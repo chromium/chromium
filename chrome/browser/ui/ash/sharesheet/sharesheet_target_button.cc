@@ -14,6 +14,7 @@
 #include "ui/views/controls/color_tracking_icon_view.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -59,8 +60,8 @@ std::unique_ptr<views::ImageView> CreateImageView(
 // as it is a transient UI invoked from the |SharesheetService|.
 SharesheetTargetButton::SharesheetTargetButton(
     PressedCallback callback,
-    const base::string16& display_name,
-    const base::string16& secondary_display_name,
+    const std::u16string& display_name,
+    const std::u16string& secondary_display_name,
     const base::Optional<gfx::ImageSkia> icon,
     const gfx::VectorIcon* vector_icon)
     : Button(std::move(callback)) {
@@ -86,8 +87,8 @@ SharesheetTargetButton::SharesheetTargetButton(
   label->SetEnabledColor(kShareTargetTitleColor);
   SetLabelProperties(label);
 
-  base::string16 accessible_name = display_name;
-  if (secondary_display_name != base::string16() &&
+  std::u16string accessible_name = display_name;
+  if (secondary_display_name != std::u16string() &&
       secondary_display_name != display_name) {
     auto* secondary_label =
         label_view->AddChildView(std::make_unique<views::Label>(
@@ -96,8 +97,8 @@ SharesheetTargetButton::SharesheetTargetButton(
             ash::STYLE_SHARESHEET));
     secondary_label->SetEnabledColor(kShareTargetSecondaryTitleColor);
     SetLabelProperties(secondary_label);
-    accessible_name = base::StrCat(
-        {display_name, base::ASCIIToUTF16(" "), secondary_display_name});
+    accessible_name =
+        base::StrCat({display_name, u" ", secondary_display_name});
     // As there is a secondary label, don't let the initial label stretch across
     // multiple lines.
     label->SetMultiLine(false);
@@ -125,3 +126,6 @@ void SharesheetTargetButton::SetLabelProperties(views::Label* label) {
 gfx::Size SharesheetTargetButton::CalculatePreferredSize() const {
   return gfx::Size(kButtonWidth, kButtonHeight);
 }
+
+BEGIN_METADATA(SharesheetTargetButton, views::Button)
+END_METADATA

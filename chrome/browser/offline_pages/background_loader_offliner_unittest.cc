@@ -16,7 +16,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/net/prediction_options.h"
 #include "chrome/browser/offline_pages/offliner_helper.h"
-#include "chrome/browser/previews/previews_ui_tab_helper.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -29,7 +28,6 @@
 #include "components/offline_pages/core/offline_page_feature.h"
 #include "components/offline_pages/core/stub_offline_page_model.h"
 #include "components/prefs/pref_service.h"
-#include "components/previews/content/previews_user_data.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/mhtml_extra_parts.h"
 #include "content/public/browser/web_contents.h"
@@ -266,8 +264,9 @@ class BackgroundLoaderOfflinerTest : public testing::Test {
     offliner_->SetBackgroundSnapshotControllerForTest(
         std::move(snapshot_controller));
     // Call complete loading.
-    offliner()->DocumentAvailableInMainFrame();
-    offliner()->DocumentOnLoadCompletedInMainFrame();
+    auto* main_frame = offliner()->web_contents()->GetMainFrame();
+    offliner()->DocumentAvailableInMainFrame(main_frame);
+    offliner()->DocumentOnLoadCompletedInMainFrame(main_frame);
     PumpLoop();
   }
 
@@ -817,64 +816,6 @@ TEST_F(BackgroundLoaderOfflinerTest, DoesNotCrashWithNullResponseHeaders) {
   offliner()->DidFinishNavigation(&handle);
 }
 
-TEST_F(BackgroundLoaderOfflinerTest, OffliningPreviewsStatusOffHistogram) {
-  base::Time creation_time = base::Time::Now();
-  SavePageRequest request(kRequestId, HttpUrl(), kClientId, creation_time,
-                          kUserRequested);
-  EXPECT_TRUE(offliner()->LoadAndSave(request, completion_callback(),
-                                      progress_callback()));
-
-  // Called after calling LoadAndSave so we have web_contents to work with.
-  content::MockNavigationHandle handle(
-      HttpUrl(), offliner()->web_contents()->GetMainFrame());
-  handle.set_has_committed(true);
-  // Set up PreviewsUserData on the handle.
-  PreviewsUITabHelper::CreateForWebContents(offliner()->web_contents());
-  PreviewsUITabHelper::FromWebContents(offliner()->web_contents())
-      ->CreatePreviewsUserDataForNavigationHandle(&handle, 1u)
-      ->set_committed_previews_state(
-          blink::PreviewsTypes::PREVIEWS_NO_TRANSFORM);
-  scoped_refptr<net::HttpResponseHeaders> header(
-      new net::HttpResponseHeaders("HTTP/1.1 200 OK"));
-  handle.set_response_headers(header.get());
-  // Call DidFinishNavigation with handle.
-  offliner()->DidFinishNavigation(&handle);
-
-  histograms().ExpectBucketCount(
-      "OfflinePages.Background.OffliningPreviewStatus.async_loading",
-      0,  // Previews Disabled
-      1);
-}
-
-TEST_F(BackgroundLoaderOfflinerTest, OffliningPreviewsStatusOnHistogram) {
-  base::Time creation_time = base::Time::Now();
-  SavePageRequest request(kRequestId, HttpUrl(), kClientId, creation_time,
-                          kUserRequested);
-  EXPECT_TRUE(offliner()->LoadAndSave(request, completion_callback(),
-                                      progress_callback()));
-
-  // Called after calling LoadAndSave so we have web_contents to work with.
-  content::MockNavigationHandle handle(
-      HttpUrl(), offliner()->web_contents()->GetMainFrame());
-  handle.set_has_committed(true);
-  // Set up PreviewsUserData on the handle.
-  PreviewsUITabHelper::CreateForWebContents(offliner()->web_contents());
-  PreviewsUITabHelper::FromWebContents(offliner()->web_contents())
-      ->CreatePreviewsUserDataForNavigationHandle(&handle, 1u)
-      ->set_committed_previews_state(blink::PreviewsTypes::NOSCRIPT_ON);
-  scoped_refptr<net::HttpResponseHeaders> header(
-      new net::HttpResponseHeaders("HTTP/1.1 200 OK"));
-  handle.set_response_headers(header.get());
-
-  // Call DidFinishNavigation with handle.
-  offliner()->DidFinishNavigation(&handle);
-
-  histograms().ExpectBucketCount(
-      "OfflinePages.Background.OffliningPreviewStatus.async_loading",
-      1,  // Previews Enabled
-      1);
-}
-
 TEST_F(BackgroundLoaderOfflinerTest, OnlySavesOnceOnMultipleLoads) {
   base::Time creation_time = base::Time::Now();
   SavePageRequest request(kRequestId, HttpUrl(), kClientId, creation_time,
@@ -903,7 +844,8 @@ TEST_F(BackgroundLoaderOfflinerTest, HandleTimeoutWithLowBarStartedTriesMet) {
   EXPECT_TRUE(offliner()->LoadAndSave(request, completion_callback(),
                                       progress_callback()));
   // Guarantees low bar for saving is met.
-  offliner()->DocumentAvailableInMainFrame();
+  auto* main_frame = offliner()->web_contents()->GetMainFrame();
+  offliner()->DocumentAvailableInMainFrame(main_frame);
   // Timeout
   EXPECT_TRUE(offliner()->HandleTimeout(kRequestId));
   EXPECT_TRUE(SaveInProgress());
@@ -920,7 +862,8 @@ TEST_F(BackgroundLoaderOfflinerTest, HandleTimeoutWithLowBarCompletedTriesMet) {
   EXPECT_TRUE(offliner()->LoadAndSave(request, completion_callback(),
                                       progress_callback()));
   // Guarantees low bar for saving is met.
-  offliner()->DocumentAvailableInMainFrame();
+  auto* main_frame = offliner()->web_contents()->GetMainFrame();
+  offliner()->DocumentAvailableInMainFrame(main_frame);
   // Timeout
   EXPECT_TRUE(offliner()->HandleTimeout(kRequestId));
   EXPECT_TRUE(SaveInProgress());
@@ -961,16 +904,14 @@ TEST_F(BackgroundLoaderOfflinerTest, HandleTimeoutWithLowBarNoRetryLimit) {
   EXPECT_TRUE(offliner()->LoadAndSave(request, completion_callback(),
                                       progress_callback()));
   // Sets lowbar.
-  offliner()->DocumentAvailableInMainFrame();
+  auto* main_frame = offliner()->web_contents()->GetMainFrame();
+  offliner()->DocumentAvailableInMainFrame(main_frame);
   // Timeout
   EXPECT_FALSE(offliner()->HandleTimeout(kRequestId));
   EXPECT_FALSE(SaveInProgress());
 }
 
 TEST_F(BackgroundLoaderOfflinerTest, SignalCollectionDisabled) {
-  // Ensure feature flag for Signal collection is off,
-  EXPECT_FALSE(offline_pages::IsOfflinePagesLoadSignalCollectingEnabled());
-
   base::Time creation_time = base::Time::Now();
   SavePageRequest request(kRequestId, HttpUrl(), kClientId, creation_time,
                           kUserRequested);
@@ -980,75 +921,10 @@ TEST_F(BackgroundLoaderOfflinerTest, SignalCollectionDisabled) {
   CompleteLoading();
   PumpLoop();
 
-  // No extra parts should be added if the flag is off.
+  // No extra parts should be added.
   content::MHTMLExtraParts* extra_parts =
       content::MHTMLExtraParts::FromWebContents(offliner()->web_contents());
   EXPECT_EQ(extra_parts->size(), 0);
-}
-
-TEST_F(BackgroundLoaderOfflinerTest, SignalCollectionEnabled) {
-  // Ensure feature flag for signal collection is on.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      kOfflinePagesLoadSignalCollectingFeature);
-  EXPECT_TRUE(IsOfflinePagesLoadSignalCollectingEnabled());
-
-  base::Time creation_time = base::Time::Now();
-  SavePageRequest request(kRequestId, HttpUrl(), kClientId, creation_time,
-                          kUserRequested);
-  EXPECT_TRUE(offliner()->LoadAndSave(request, completion_callback(),
-                                      progress_callback()));
-
-  CompleteLoading();
-  PumpLoop();
-
-  // One extra part should be added if the flag is on.
-  content::MHTMLExtraParts* extra_parts =
-      content::MHTMLExtraParts::FromWebContents(offliner()->web_contents());
-  EXPECT_EQ(extra_parts->size(), 1);
-}
-
-TEST_F(BackgroundLoaderOfflinerTest, ResourceSignalCollection) {
-  // Ensure feature flag for signal collection is on.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      kOfflinePagesLoadSignalCollectingFeature);
-  EXPECT_TRUE(IsOfflinePagesLoadSignalCollectingEnabled());
-
-  base::Time creation_time = base::Time::Now();
-  SavePageRequest request(kRequestId, HttpUrl(), kClientId, creation_time,
-                          kUserRequested);
-  EXPECT_TRUE(offliner()->LoadAndSave(request, completion_callback(),
-                                      progress_callback()));
-
-  // Simulate resource requests starting and completing
-  offliner()->ObserveResourceLoading(
-      ResourceLoadingObserver::ResourceDataType::IMAGE, true);
-  offliner()->ObserveResourceLoading(
-      ResourceLoadingObserver::ResourceDataType::IMAGE, false);
-  offliner()->ObserveResourceLoading(
-      ResourceLoadingObserver::ResourceDataType::TEXT_CSS, true);
-  offliner()->ObserveResourceLoading(
-      ResourceLoadingObserver::ResourceDataType::TEXT_CSS, true);
-  offliner()->ObserveResourceLoading(
-      ResourceLoadingObserver::ResourceDataType::XHR, true);
-
-  CompleteLoading();
-  PumpLoop();
-
-  // One extra part should be added if the flag is on.
-  content::MHTMLExtraParts* extra_parts =
-      content::MHTMLExtraParts::FromWebContents(offliner()->web_contents());
-  EXPECT_EQ(extra_parts->size(), 1);
-
-  offline_pages::RequestStats* stats = GetRequestStats();
-  EXPECT_EQ(1,
-            stats[ResourceLoadingObserver::ResourceDataType::IMAGE].requested);
-  EXPECT_EQ(1,
-            stats[ResourceLoadingObserver::ResourceDataType::IMAGE].completed);
-  EXPECT_EQ(
-      2, stats[ResourceLoadingObserver::ResourceDataType::TEXT_CSS].requested);
-  EXPECT_EQ(1, stats[ResourceLoadingObserver::ResourceDataType::XHR].requested);
 }
 
 }  // namespace offline_pages

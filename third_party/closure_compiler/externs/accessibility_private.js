@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -114,6 +114,7 @@ chrome.accessibilityPrivate.SwitchAccessMenuAction = {
   DICTATION: 'dictation',
   END_TEXT_SELECTION: 'endTextSelection',
   INCREMENT: 'increment',
+  ITEM_SCAN: 'itemScan',
   JUMP_TO_BEGINNING_OF_TEXT: 'jumpToBeginningOfText',
   JUMP_TO_END_OF_TEXT: 'jumpToEndOfText',
   KEYBOARD: 'keyboard',
@@ -231,8 +232,7 @@ chrome.accessibilityPrivate.FocusRingStackingOrder = {
  *   color: string,
  *   secondaryColor: (string|undefined),
  *   backgroundColor: (string|undefined),
- *   stackingOrder:
- * (!chrome.accessibilityPrivate.FocusRingStackingOrder|undefined),
+ *   stackingOrder: (!chrome.accessibilityPrivate.FocusRingStackingOrder|undefined),
  *   id: (string|undefined)
  * }}
  */
@@ -266,6 +266,12 @@ chrome.accessibilityPrivate.SelectToSpeakPanelAction = {
   EXIT: 'exit',
   CHANGE_SPEED: 'changeSpeed',
 };
+
+/**
+ * Property to indicate whether event source should default to touch.
+ * @type {number}
+ */
+chrome.accessibilityPrivate.IS_DEFAULT_EVENT_SOURCE_TOUCH;
 
 /**
  * Called to translate localeCodeToTranslate into human-readable string in the
@@ -450,6 +456,16 @@ chrome.accessibilityPrivate.isFeatureEnabled = function(feature, callback) {};
  * @param {number=} speed Current reading speed (TTS speech rate).
  */
 chrome.accessibilityPrivate.updateSelectToSpeakPanel = function(show, anchor, isPaused, speed) {};
+
+/**
+ * Shows a confirmation dialog.
+ * @param {string} title The title of the confirmation dialog.
+ * @param {string} description The description to show within the confirmation
+ *     dialog.
+ * @param {function(boolean): void} callback Called when the dialog is confirmed
+ *     or cancelled.
+ */
+chrome.accessibilityPrivate.showConfirmationDialog = function(title, description, callback) {};
 
 /**
  * Fired whenever ChromeVox should output introduction.

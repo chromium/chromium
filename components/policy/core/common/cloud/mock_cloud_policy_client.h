@@ -13,7 +13,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
-#include "components/policy/proto/record.pb.h"
+#include "components/reporting/proto/record.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace network {
@@ -101,12 +101,14 @@ class MockCloudPolicyClient : public CloudPolicyClient {
                     StatusCallback&));
 
   void UploadSecurityEventReport(content::BrowserContext* context,
+                                 bool include_device_info,
                                  base::Value value,
                                  StatusCallback callback) override {
-    UploadSecurityEventReport_(context, value, callback);
+    UploadSecurityEventReport_(context, include_device_info, value, callback);
   }
-  MOCK_METHOD3(UploadSecurityEventReport_,
+  MOCK_METHOD4(UploadSecurityEventReport_,
                void(content::BrowserContext* context,
+                    bool include_device_info,
                     base::Value&,
                     StatusCallback&));
 

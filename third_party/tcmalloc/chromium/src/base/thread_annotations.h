@@ -35,8 +35,8 @@
 // of their multi-threaded code. The annotations can also help program
 // analysis tools to identify potential thread safety issues.
 //
-// The annotations are implemented using GCC's "attributes" extension.
-// Using the macros defined here instead of the raw GCC attributes allows
+// The annotations are implemented using clang's "attributes" extension.
+// Using the macros defined here instead of the raw clang attributes allows
 // for portability and future compatibility.
 //
 // This functionality is not yet fully implemented in perftools,
@@ -46,9 +46,7 @@
 #define BASE_THREAD_ANNOTATIONS_H_
 
 
-#if defined(__GNUC__) \
-  && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 4)) \
-  && defined(__SUPPORT_TS_ANNOTATION__) && (!defined(SWIG))
+#if defined(__clang__)
 #define THREAD_ANNOTATION_ATTRIBUTE__(x)   __attribute__((x))
 #else
 #define THREAD_ANNOTATION_ATTRIBUTE__(x)   // no-op
@@ -113,19 +111,19 @@
 
 // The following annotations specify lock and unlock primitives.
 #define EXCLUSIVE_LOCK_FUNCTION(x) \
-  THREAD_ANNOTATION_ATTRIBUTE__(exclusive_lock(x))
+  THREAD_ANNOTATION_ATTRIBUTE__(exclusive_lock_function(x))
 
 #define SHARED_LOCK_FUNCTION(x) \
-  THREAD_ANNOTATION_ATTRIBUTE__(shared_lock(x))
+  THREAD_ANNOTATION_ATTRIBUTE__(shared_lock_function(x))
 
 #define EXCLUSIVE_TRYLOCK_FUNCTION(x) \
-  THREAD_ANNOTATION_ATTRIBUTE__(exclusive_trylock(x))
+  THREAD_ANNOTATION_ATTRIBUTE__(exclusive_trylock_function(x))
 
 #define SHARED_TRYLOCK_FUNCTION(x) \
-  THREAD_ANNOTATION_ATTRIBUTE__(shared_trylock(x))
+  THREAD_ANNOTATION_ATTRIBUTE__(shared_trylock_function(x))
 
 #define UNLOCK_FUNCTION(x) \
-  THREAD_ANNOTATION_ATTRIBUTE__(unlock(x))
+  THREAD_ANNOTATION_ATTRIBUTE__(unlock_function(x))
 
 // An escape hatch for thread safety analysis to ignore the annotated function.
 #define NO_THREAD_SAFETY_ANALYSIS \

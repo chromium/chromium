@@ -1,5 +1,5 @@
 per-file web_app_file_handler_registration*=davidbienvenu@chromium.org
 per-file web_app_file_handler_registration*=jessemckenna@google.com
-per-file web_app_ids.h=dominickn@chromium.org
-per-file web_app_ids.h=jshikaram@chromium.org
-per-file web_app_ids.h=tsergeant@chromium.org
+per-file web_app_id_constants.h=dominickn@chromium.org
+per-file web_app_id_constants.h=jshikaram@chromium.org
+per-file web_app_id_constants.h=tsergeant@chromium.org

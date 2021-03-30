@@ -8,16 +8,13 @@
 files."""
 
 import argparse
-import collections
 import os
-import re
 import shutil
 import sys
 import zipfile
 
 from util import build_utils
 from util import jar_info_utils
-from util import manifest_utils
 from util import md5_check
 from util import resources_parser
 from util import resource_utils
@@ -29,43 +26,31 @@ def _ParseArgs(args):
   Returns:
     An options object as from argparse.ArgumentParser.parse_args()
   """
-  parser, input_opts, output_opts = resource_utils.ResourceArgsParser()
+  parser = argparse.ArgumentParser(description=__doc__)
+  build_utils.AddDepfileOption(parser)
 
-  input_opts.add_argument(
-      '--res-sources-path',
-      required=True,
-      help='Path to a list of input resources for this target.')
+  parser.add_argument('--res-sources-path',
+                      required=True,
+                      help='Path to a list of input resources for this target.')
 
-  input_opts.add_argument(
-      '--shared-resources',
-      action='store_true',
-      help='Make resources shareable by generating an onResourcesLoaded() '
-           'method in the R.java source file.')
+  parser.add_argument(
+      '--r-text-in',
+      help='Path to pre-existing R.txt. Its resource IDs override those found '
+      'in the generated R.txt when generating R.java.')
 
-  input_opts.add_argument('--custom-package',
-                          help='Optional Java package for main R.java.')
-
-  input_opts.add_argument(
-      '--android-manifest',
-      help='Optional AndroidManifest.xml path. Only used to extract a package '
-           'name for R.java if a --custom-package is not provided.')
-
-  output_opts.add_argument(
+  parser.add_argument(
       '--resource-zip-out',
       help='Path to a zip archive containing all resources from '
       '--resource-dirs, merged into a single directory tree.')
 
-  output_opts.add_argument('--r-text-out',
-                    help='Path to store the generated R.txt file.')
+  parser.add_argument('--r-text-out',
+                      help='Path to store the generated R.txt file.')
 
-  input_opts.add_argument(
-      '--strip-drawables',
-      action="store_true",
-      help='Remove drawables from the resources.')
+  parser.add_argument('--strip-drawables',
+                      action="store_true",
+                      help='Remove drawables from the resources.')
 
   options = parser.parse_args(args)
-
-  resource_utils.HandleCommonOptions(options)
 
   with open(options.res_sources_path) as f:
     options.sources = f.read().splitlines()
@@ -128,29 +113,19 @@ def _ZipResources(resource_dirs, zip_path, ignore_pattern):
     build_utils.DoZip(files_to_zip, z)
 
 
-def _GenerateRTxt(options, dep_subdirs, gen_dir):
+def _GenerateRTxt(options, r_txt_path):
   """Generate R.txt file.
 
   Args:
     options: The command-line options tuple.
-    dep_subdirs: List of directories containing extracted dependency resources.
-    gen_dir: Locates where the aapt-generated files will go. In particular
-      the output file is always generated as |{gen_dir}/R.txt|.
+    r_txt_path: Locates where the R.txt file goes.
   """
   ignore_pattern = resource_utils.AAPT_IGNORE_PATTERN
   if options.strip_drawables:
     ignore_pattern += ':*drawable*'
 
-  # Adding all dependencies as sources is necessary for @type/foo references
-  # to symbols within dependencies to resolve. However, it has the side-effect
-  # that all Java symbols from dependencies are copied into the new R.java.
-  # E.g.: It enables an arguably incorrect usage of
-  # "mypackage.R.id.lib_symbol" where "libpackage.R.id.lib_symbol" would be
-  # more correct. This is just how Android works.
-  resource_dirs = dep_subdirs + options.resource_dirs
-
-  resources_parser.RTxtGenerator(resource_dirs, ignore_pattern).WriteRTxtFile(
-      os.path.join(gen_dir, 'R.txt'))
+  resources_parser.RTxtGenerator(options.resource_dirs,
+                                 ignore_pattern).WriteRTxtFile(r_txt_path)
 
 
 def _OnStaleMd5(options):
@@ -160,12 +135,7 @@ def _OnStaleMd5(options):
     if options.r_text_in:
       r_txt_path = options.r_text_in
     else:
-      # Extract dependencies to resolve @foo/type references into
-      # dependent packages.
-      dep_subdirs = resource_utils.ExtractDeps(options.dependencies_res_zips,
-                                               build.deps_dir)
-
-      _GenerateRTxt(options, dep_subdirs, build.gen_dir)
+      _GenerateRTxt(options, build.r_txt_path)
       r_txt_path = build.r_txt_path
 
     if options.r_text_out:
@@ -185,26 +155,15 @@ def main(args):
 
   # Order of these must match order specified in GN so that the correct one
   # appears first in the depfile.
-  possible_output_paths = [
-    options.resource_zip_out,
-    options.r_text_out,
-  ]
-  output_paths = [x for x in possible_output_paths if x]
-
-  # List python deps in input_strings rather than input_paths since the contents
-  # of them does not change what gets written to the depsfile.
-  input_strings = options.extra_res_packages + [
-      options.custom_package,
-      options.shared_resources,
-      options.strip_drawables,
+  output_paths = [
+      options.resource_zip_out,
+      options.resource_zip_out + '.info',
+      options.r_text_out,
   ]
 
-  possible_input_paths = [
-    options.android_manifest,
-  ]
-  possible_input_paths += options.include_resources
-  input_paths = [x for x in possible_input_paths if x]
-  input_paths.extend(options.dependencies_res_zips)
+  input_paths = [options.res_sources_path]
+  if options.r_text_in:
+    input_paths += [options.r_text_in]
 
   # Resource files aren't explicitly listed in GN. Listing them in the depfile
   # ensures the target will be marked stale when resource files are removed.
@@ -222,15 +181,20 @@ def main(args):
 
   # Resource filenames matter to the output, so add them to strings as well.
   # This matters if a file is renamed but not changed (http://crbug.com/597126).
-  input_strings.extend(sorted(resource_names))
+  input_strings = sorted(resource_names) + [
+      options.strip_drawables,
+  ]
 
-  md5_check.CallAndWriteDepfileIfStale(
-      lambda: _OnStaleMd5(options),
-      options,
-      input_paths=input_paths,
-      input_strings=input_strings,
-      output_paths=output_paths,
-      depfile_deps=depfile_deps)
+  # Since android_resources targets like *__all_dfm_resources depend on java
+  # targets that they do not need (in reality it only needs the transitive
+  # resource targets that those java targets depend on), md5_check is used to
+  # prevent outputs from being re-written when real inputs have not changed.
+  md5_check.CallAndWriteDepfileIfStale(lambda: _OnStaleMd5(options),
+                                       options,
+                                       input_paths=input_paths,
+                                       input_strings=input_strings,
+                                       output_paths=output_paths,
+                                       depfile_deps=depfile_deps)
 
 
 if __name__ == '__main__':

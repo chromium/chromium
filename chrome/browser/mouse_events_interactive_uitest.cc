@@ -43,7 +43,7 @@ class MouseEventsTest : public InProcessBrowserTest {
   void WaitForTitle(const std::string& title) {
     // Logging added temporarily to track down flakiness cited below.
     LOG(INFO) << "Waiting for title: " << title;
-    const base::string16 expected_title(base::ASCIIToUTF16(title));
+    const std::u16string expected_title(base::ASCIIToUTF16(title));
     content::TitleWatcher title_watcher(GetActiveWebContents(), expected_title);
     ASSERT_EQ(expected_title, title_watcher.WaitAndGetTitle());
   }
@@ -157,10 +157,10 @@ IN_PROC_BROWSER_TEST_F(MouseEventsTest, MAYBE_ContextMenu) {
   menu_observer.WaitForMenuOpenAndClose();
 
   content::WebContents* tab = GetActiveWebContents();
-  tab->GetMainFrame()->ExecuteJavaScriptForTests(base::ASCIIToUTF16("done()"),
+  tab->GetMainFrame()->ExecuteJavaScriptForTests(u"done()",
                                                  base::NullCallback());
-  const base::string16 success_title = base::ASCIIToUTF16("without mouseleave");
-  const base::string16 failure_title = base::ASCIIToUTF16("with mouseleave");
+  const std::u16string success_title = u"without mouseleave";
+  const std::u16string failure_title = u"with mouseleave";
   content::TitleWatcher done_title_watcher(tab, success_title);
   done_title_watcher.AlsoWaitForTitle(failure_title);
   EXPECT_EQ(success_title, done_title_watcher.WaitAndGetTitle());
@@ -188,17 +188,17 @@ IN_PROC_BROWSER_TEST_F(MouseEventsTest, MAYBE_ModalDialog) {
   base::RunLoop dialog_wait;
   js_dialog_manager->SetDialogShownCallbackForTesting(
       dialog_wait.QuitClosure());
-  tab->GetMainFrame()->ExecuteJavaScriptForTests(base::UTF8ToUTF16("alert()"),
+  tab->GetMainFrame()->ExecuteJavaScriptForTests(u"alert()",
                                                  base::NullCallback());
   dialog_wait.Run();
 
   // Cancel the dialog.
   js_dialog_manager->HandleJavaScriptDialog(tab, false, nullptr);
 
-  tab->GetMainFrame()->ExecuteJavaScriptForTests(base::ASCIIToUTF16("done()"),
+  tab->GetMainFrame()->ExecuteJavaScriptForTests(u"done()",
                                                  base::NullCallback());
-  const base::string16 success_title = base::ASCIIToUTF16("without mouseleave");
-  const base::string16 failure_title = base::ASCIIToUTF16("with mouseleave");
+  const std::u16string success_title = u"without mouseleave";
+  const std::u16string failure_title = u"with mouseleave";
   content::TitleWatcher done_title_watcher(tab, success_title);
   done_title_watcher.AlsoWaitForTitle(failure_title);
   EXPECT_EQ(success_title, done_title_watcher.WaitAndGetTitle());

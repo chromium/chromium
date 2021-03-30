@@ -12,20 +12,22 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/net/nss_context.h"
 #include "net/cert/nss_cert_database.h"
 #include "net/cert/scoped_nss_types.h"
 #include "net/ssl/client_cert_identity.h"
 
 namespace content {
 class BrowserContext;
-class ResourceContext;
 }  // namespace content
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-namespace chromeos {
+namespace ash {
 class CertificateProvider;
+}  // namespace ash
+
+namespace chromeos {
 class PolicyCertificateProvider;
 }
 #endif
@@ -48,7 +50,7 @@ class CertificateManagerModel {
 
     CertInfo(net::ScopedCERTCertificate cert,
              net::CertType type,
-             base::string16 name,
+             std::u16string name,
              bool can_be_deleted,
              bool untrusted,
              Source source,
@@ -59,7 +61,7 @@ class CertificateManagerModel {
 
     CERTCertificate* cert() const { return cert_.get(); }
     net::CertType type() const { return type_; }
-    const base::string16& name() const { return name_; }
+    const std::u16string& name() const { return name_; }
     bool can_be_deleted() const { return can_be_deleted_; }
     bool untrusted() const { return untrusted_; }
     Source source() const { return source_; }
@@ -79,7 +81,7 @@ class CertificateManagerModel {
     net::CertType type_;
 
     // A user readable certificate name.
-    base::string16 name_;
+    std::u16string name_;
 
     // false if the certificate is stored on a read-only slot or provided by
     // enterprise policy or an extension, otherwise true.
@@ -126,8 +128,7 @@ class CertificateManagerModel {
     // May be nullptr.
     chromeos::PolicyCertificateProvider* policy_certs_provider = nullptr;
     // May be nullptr.
-    std::unique_ptr<chromeos::CertificateProvider>
-        extension_certificate_provider;
+    std::unique_ptr<ash::CertificateProvider> extension_certificate_provider;
 #endif
 
     Params();
@@ -196,7 +197,7 @@ class CertificateManagerModel {
   // Returns a net error code on failure.
   int ImportFromPKCS12(PK11SlotInfo* slot_info,
                        const std::string& data,
-                       const base::string16& password,
+                       const std::u16string& password,
                        bool is_extractable);
 
   // Import user certificate from DER encoded |data|.
@@ -265,7 +266,7 @@ class CertificateManagerModel {
       CreationCallback callback,
       net::NSSCertDatabase* cert_db);
   static void GetCertDBOnIOThread(std::unique_ptr<Params> params,
-                                  content::ResourceContext* resource_context,
+                                  NssCertDatabaseGetter database_getter,
                                   CertificateManagerModel::Observer* observer,
                                   CreationCallback callback);
 

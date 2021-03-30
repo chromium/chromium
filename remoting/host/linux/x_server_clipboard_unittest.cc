@@ -19,10 +19,14 @@ namespace {
 class ClipboardTestClient : public x11::EventObserver {
  public:
   ClipboardTestClient() = default;
-  ~ClipboardTestClient() override = default;
+  ~ClipboardTestClient() override {
+    DCHECK(connection_);
+    connection_->RemoveEventObserver(this);
+  }
 
   void Init(x11::Connection* connection) {
     connection_ = connection;
+    connection_->AddEventObserver(this);
     clipboard_.Init(connection, base::BindRepeating(
                                     &ClipboardTestClient::OnClipboardChanged,
                                     base::Unretained(this)));

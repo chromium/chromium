@@ -1,0 +1,6 @@
+language: c
+script:
+  - make tests
+compiler:
+  - clang
+  - gcc

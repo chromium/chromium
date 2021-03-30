@@ -9,22 +9,18 @@ function loadCommonComponents() {
 // This inclusion is types-only. No actual code to execute.
 // <include src="../components/oobe_types.js">
 
-// <include src="../components/oobe_dialog_host_behavior.js">
-// <include src="../components/login_screen_behavior.js">
-// <include src="../components/multi_step_behavior.js">
 // <include src="../components/oobe_buttons.js">
 // <include src="../components/oobe_modal_dialog.js">
 // <include src="../components/html-echo.js">
 // <include src="../notification_card.js">
+// <include src="../gaia_dialog.js">
 
 // <include src="../gaia_buttons.js">
-// <include src="../gaia_card.js">
 // <include src="../gaia_header.js">
 // <include src="../gaia_input_form.js">
-// <include src="../navigation_bar.js">
 
 // <include src="../oobe_a11y_option.js">
-// <include src="../network_select_login.js">
+// <include src="../components/network_select_login.js">
 // <include src="../checking_downloading_update.js">
 
 // <include src="../screen_gaia_signin.js">
@@ -38,7 +34,7 @@ function loadCommonComponents() {
 // <include src="../fingerprint_setup.js">
 // <include src="../recommend_apps.js">
 // <include src="../app_downloading.js">
-// <include src="../discover/discover_components.js">
+// <include src="../pin_setup.js">
 // <include src="../marketing_opt_in.js">
 // <include src="../oobe_screen_assistant_optin_flow.js">
 // <include src="../multidevice_setup_first_run.js">
@@ -54,6 +50,7 @@ function loadCommonComponents() {
 // <include src="../parental_handoff.js">
 // <include src="../screen_app_launch_splash.js">
 // <include src="../oobe_screen_autolaunch.js">
+// <include src="../screen_error_message.js">
 
 // <include src="components_[OOBE].js">
 // TODO(crbug.com/1111387) - Remove excessive logging.

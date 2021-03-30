@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/autofill/core/browser/geo/country_data.h"
 
 namespace autofill {
@@ -30,7 +29,7 @@ class AutofillCountry {
   static const std::string CountryCodeForLocale(const std::string& locale);
 
   const std::string& country_code() const { return country_code_; }
-  const base::string16& name() const { return name_; }
+  const std::u16string& name() const { return name_; }
 
   // City is expected in a complete address for this country.
   bool requires_city() const {
@@ -61,15 +60,15 @@ class AutofillCountry {
 
  private:
   AutofillCountry(const std::string& country_code,
-                  const base::string16& name,
-                  const base::string16& postal_code_label,
-                  const base::string16& state_label);
+                  const std::u16string& name,
+                  const std::u16string& postal_code_label,
+                  const std::u16string& state_label);
 
   // The two-letter ISO-3166 country code.
   std::string country_code_;
 
   // The country's name, localized to the app locale.
-  base::string16 name_;
+  std::u16string name_;
 
   // Required fields for an address import for the country.
   RequiredFieldsForAddressImport required_fields_for_address_import_;

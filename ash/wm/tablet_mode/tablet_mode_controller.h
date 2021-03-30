@@ -134,7 +134,7 @@ class ASH_EXPORT TabletModeController
   // about to be initialized. When it is about to be shutdown, we are considered
   // out of tablet mode.
   bool InTabletMode() const override;
-  void ForceUiTabletModeState(base::Optional<bool> enabled) override;
+  bool ForceUiTabletModeState(base::Optional<bool> enabled) override;
   void SetEnabledForTest(bool enabled) override;
 
   // ShellObserver:
@@ -147,8 +147,8 @@ class ASH_EXPORT TabletModeController
   void OnChromeTerminating() override;
 
   // AccelerometerReader::Observer:
-  void OnAccelerometerUpdated(
-      scoped_refptr<const AccelerometerUpdate> update) override;
+  void OnECLidAngleDriverStatusChanged(bool is_supported) override;
+  void OnAccelerometerUpdated(const AccelerometerUpdate& update) override;
 
   // chromeos::PowerManagerClient::Observer:
   void LidEventReceived(chromeos::PowerManagerClient::LidState state,
@@ -251,7 +251,7 @@ class ASH_EXPORT TabletModeController
 
   // If EC cannot handle lid angle calc, browser detects hinge rotation from
   // base and lid accelerometers and automatically start / stop tablet mode.
-  void HandleHingeRotation(scoped_refptr<const AccelerometerUpdate> update);
+  void HandleHingeRotation(const AccelerometerUpdate& update);
 
   void OnGetSwitchStates(
       base::Optional<chromeos::PowerManagerClient::SwitchStates> result);
@@ -352,15 +352,17 @@ class ASH_EXPORT TabletModeController
   // internal keyboard and touchpad.
   std::unique_ptr<InternalInputDevicesEventBlocker> event_blocker_;
 
-  // Whether we have ever seen accelerometer data. When ChromeOS EC lid angle is
-  // present, convertible device cannot see accelerometer data.
+  // Whether we have ever seen accelerometer data. When ChromeOS EC lid angle
+  // driver is supported, convertible device cannot see accelerometer data.
   bool have_seen_accelerometer_data_ = false;
 
   // If ECLidAngleDriverStatus is supported, Chrome does not calculate lid angle
-  // itself, but will reply on the tablet-mode flag that EC sends to decide if
+  // itself, but will rely on the tablet-mode flag that EC sends to decide if
   // the device should in tablet mode.
-  ECLidAngleDriverStatus ec_lid_angle_driver_status_ =
-      ECLidAngleDriverStatus::UNKNOWN;
+  // As it's set in |OnECLidAngleDriverStatusChanged|, which is a callback by
+  // AccelerometerReader, we make it optional to indicate a lack of value until
+  // the accelerometer reader is initialized.
+  base::Optional<bool> is_ec_lid_angle_driver_supported_;
 
   // Whether the lid angle can be detected by browser. If it's true, the device
   // is a convertible device (both screen acclerometer and keyboard acclerometer
@@ -392,9 +394,8 @@ class ASH_EXPORT TabletModeController
   UiMode forced_ui_mode_ = UiMode::kNone;
 
   // True if the device is physically in a tablet state regardless of the UI
-  // tablet mode state. The physical tablet state usually changes based on
-  // device events such as lid angle changes, or device getting detached from
-  // its base. A device also can be forced to stay in physical tablet state.
+  // tablet mode state. The physical tablet state only changes based on device
+  // events such as lid angle changes, or device getting detached from its base.
   bool is_in_tablet_physical_state_ = false;
 
   // Set when tablet mode switch is on. This is used to force tablet mode.

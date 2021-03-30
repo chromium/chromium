@@ -10,6 +10,7 @@
 <link rel="import" href="start_setup_page.html">
 <link rel="import" href="../../../html/cr.html">
 <link rel="import" href="../../../html/web_ui_listener_behavior.html">
+<link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-pages/iron-pages.html">
 
 <dom-module id="multidevice-setup">
@@ -31,8 +32,6 @@
         height: 100%;
         line-height: 16px;
         margin: auto;
-        max-width: var(--multidevice-setup-width, var(--default-ui-width));
-        padding: 32px;
       }
 
       iron-pages {
@@ -40,26 +39,49 @@
         padding: 0 32px;
       }
 
+      :host-context([new-layout]) iron-pages {
+        height: 100%;
+        padding: 0;
+      }
+
+      :host-context([new-layout]) button-bar {
+        padding: 24px;
+      }
+
+      @media screen and (orientation: portrait) {
+        :host-context([new-layout][screen=oobe]) button-bar,
+        :host-context([new-layout][screen=gaia-signin]) button-bar {
+          align-items: center;
+        }
+      }
+
+      :host-context(html:not([new-layout])) #container {
+        max-width: var(--multidevice-setup-width, var(--default-ui-width));
+        padding: 32px;
+      }
+
       @media screen and (max-width: 767px) {
         /* On narrow screens, decrease width/padding. */
-        #container {
+        :host-context(html:not([new-layout])) #container {
           height: auto;
-          /* Add height of buttons plus padding on top and bottom of buttons. */
+          /*
+           * Add height of buttons plus padding on top and bottom of buttons.
+           */
           margin-bottom: calc(var(--narrow-button-bar-height) +
                               calc(2 * var(--narrow-button-bar-spacing)));
           padding: 32px 32px 0 32px;
         }
 
-        iron-pages {
+        :host-context(html:not([new-layout])) iron-pages {
           padding: 0;
         }
 
         /*
-         * Fix the button bar to the bottom of the window. Some content may be
-         * beneath the button bar, so make the background slightly transparent
-         * so that the content can be seen.
-         */
-        button-bar {
+        * Fix the button bar to the bottom of the window. Some content may be
+        * beneath the button bar, so make the background slightly transparent
+        * so that the content can be seen.
+        */
+        :host-context(html:not([new-layout])) button-bar {
           background: rgba(255, 255, 255, 0.9);
           bottom: 0;
           height: var(--narrow-button-bar-height);
@@ -105,6 +127,5 @@
       </button-bar>
     </div>
   </template>
-  <script src="multidevice_setup.js">
-  </script>
+  <script src="multidevice_setup.js"></script>
 </dom-module>

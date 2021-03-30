@@ -89,7 +89,7 @@ TEST_F(ContextMenuMatcherTest, AppendExtensionItemsWithInvisibleSubmenu) {
           profile_.get(), nullptr, menu_model.get(),
           base::BindRepeating(MenuItemHasAnyContext));
 
-  base::string16 printable_selection_text;
+  std::u16string printable_selection_text;
   int index = 0;
 
   // Add the items associated with the test extension.
@@ -124,7 +124,7 @@ TEST_F(ContextMenuMatcherTest, AppendExtensionItemsWithVisibleSubmenu) {
           base::BindRepeating(MenuItemHasAnyContext));
 
   // Add the items associated with the test extension.
-  base::string16 printable_selection_text;
+  std::u16string printable_selection_text;
   int index = 0;
   extension_items->AppendExtensionItems(MenuItem::ExtensionKey(extension->id()),
                                         printable_selection_text, &index,
@@ -170,7 +170,7 @@ TEST_F(ContextMenuMatcherTest, AppendExtensionItemWithInvisibleSubmenu) {
           base::BindRepeating(MenuItemHasAnyContext));
 
   // Add the items associated with the test extension.
-  base::string16 printable_selection_text;
+  std::u16string printable_selection_text;
   int index = 0;
   extension_items->AppendExtensionItems(MenuItem::ExtensionKey(extension->id()),
                                         printable_selection_text, &index,

@@ -5,6 +5,7 @@
 #include "content/browser/payments/service_worker_core_thread_event_dispatcher.h"
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "components/payments/core/native_error_strings.h"
 #include "components/payments/core/payments_validators.h"

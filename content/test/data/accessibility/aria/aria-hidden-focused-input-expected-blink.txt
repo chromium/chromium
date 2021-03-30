@@ -3,6 +3,6 @@ rootWebArea
 ++++genericContainer ignored
 ++++++genericContainer ignored invisible
 ++++++++textField invisible name='input 1'
-++++++++staticText ignored invisible name=' '
+++++++++++genericContainer ignored invisible
 ++++++++textField invisible name='input 2'
-++++++++staticText ignored invisible
+++++++++++genericContainer ignored invisible

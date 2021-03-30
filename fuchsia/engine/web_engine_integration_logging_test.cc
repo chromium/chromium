@@ -34,8 +34,8 @@ std::string NormalizeConsoleLogMessage(base::StringPiece original) {
   size_t port_begin =
       original.find(kSchemePortColon) + strlen(kSchemePortColon);
   size_t path_begin = original.find("/", port_begin);
-  return original.as_string().replace(port_begin, path_begin - port_begin,
-                                      kNormalizedPortNumber);
+  return std::string(original).replace(port_begin, path_begin - port_begin,
+                                       kNormalizedPortNumber);
 }
 
 }  // namespace

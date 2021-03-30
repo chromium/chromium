@@ -25,8 +25,15 @@ struct ReplyHeader {
 
 }  // namespace
 
-ReadBuffer::ReadBuffer(scoped_refptr<base::RefCountedMemory> data)
+ReadBuffer::ReadBuffer(scoped_refptr<base::RefCountedMemory> data,
+                       bool setup_message)
     : data(data) {
+  // X connection setup uses a special reply without the standard header, see:
+  // https://www.x.org/releases/X11R7.6/doc/xproto/x11protocol.html#server_response
+  // Don't try to parse it like a normal reply.
+  if (setup_message)
+    return;
+
   const auto* reply_header = reinterpret_cast<const ReplyHeader*>(data->data());
 
   // Only replies can have FDs, not events or errors.

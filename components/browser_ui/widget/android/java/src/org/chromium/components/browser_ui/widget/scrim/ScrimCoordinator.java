@@ -124,6 +124,11 @@ public class ScrimCoordinator {
         mMediator.hideScrim(animate);
     }
 
+    /** @return Whether the scrim is being shown. */
+    public boolean isShowingScrim() {
+        return mMediator.isActive();
+    }
+
     /**
      * Manually set the alpha for the scrim.
      * @param alpha The alpha in range [0, 1].

@@ -14,11 +14,11 @@
 #include "base/sequence_checker.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/isolation_info.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_change_dispatcher.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_store.h"
-#include "net/cookies/site_for_cookies.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
 #include "url/gurl.h"
@@ -40,28 +40,33 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
     : public mojom::RestrictedCookieManager {
  public:
   // All the pointers passed to the constructor are expected to point to
-  // objects that will outlive |this|.
+  // objects that will outlive `this`.
+  //
+  // `origin` represents the domain for which the RestrictedCookieManager can
+  // access cookies. It could either be a frame origin when `role` is
+  // RestrictedCookieManagerRole::SCRIPT (a script scoped to a particular
+  // document's frame)), or a request origin when `role` is
+  // RestrictedCookieManagerRole::NETWORK (a network request).
+  //
+  // `isolation_info` must be fully populated, its `frame_origin` field should
+  // not be used for cookie access decisions, but should be the same as `origin`
+  // if the `role` is mojom::RestrictedCookieManagerRole::SCRIPT.
   RestrictedCookieManager(
       mojom::RestrictedCookieManagerRole role,
       net::CookieStore* cookie_store,
       const CookieSettings* cookie_settings,
       const url::Origin& origin,
-      const net::SiteForCookies& site_for_cookies,
-      const url::Origin& top_frame_origin,
+      const net::IsolationInfo& isolation_info,
       mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer);
 
   ~RestrictedCookieManager() override;
 
-  void OverrideSiteForCookiesForTesting(
-      const net::SiteForCookies& new_site_for_cookies) {
-    site_for_cookies_ = new_site_for_cookies;
-  }
   void OverrideOriginForTesting(const url::Origin& new_origin) {
     origin_ = new_origin;
   }
-  void OverrideTopFrameOriginForTesting(
-      const url::Origin& new_top_frame_origin) {
-    top_frame_origin_ = new_top_frame_origin;
+  void OverrideIsolationInfoForTesting(
+      const net::IsolationInfo& new_isolation_info) {
+    isolation_info_ = new_isolation_info;
   }
 
   const CookieSettings* cookie_settings() const { return cookie_settings_; }
@@ -143,12 +148,25 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
       const url::Origin& top_frame_origin,
       const net::CanonicalCookie* cookie_being_set = nullptr);
 
+  const net::SiteForCookies& BoundSiteForCookies() const {
+    return isolation_info_.site_for_cookies();
+  }
+
+  const url::Origin& BoundTopFrameOrigin() const {
+    return isolation_info_.top_frame_origin().value();
+  }
+
   const mojom::RestrictedCookieManagerRole role_;
   net::CookieStore* const cookie_store_;
   const CookieSettings* const cookie_settings_;
+
   url::Origin origin_;
-  net::SiteForCookies site_for_cookies_;
-  url::Origin top_frame_origin_;
+
+  // Holds the browser-provided site_for_cookies and top_frame_origin to which
+  // this RestrictedCookieManager is bound. (The frame_origin field is not used
+  // directly, but must match the `origin_` if the RCM role is SCRIPT.)
+  net::IsolationInfo isolation_info_;
+
   mojo::Remote<mojom::CookieAccessObserver> cookie_observer_;
 
   base::LinkedList<Listener> listeners_;

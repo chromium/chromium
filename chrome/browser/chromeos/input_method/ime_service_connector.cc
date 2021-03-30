@@ -9,7 +9,6 @@
 
 #include "base/files/file_util.h"
 #include "chrome/browser/chromeos/service_sandbox_type.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/ime/constants.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/service_process_host.h"

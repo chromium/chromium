@@ -203,6 +203,7 @@
 <translation id="6643016212128521049">साफ करा</translation>
 <translation id="668171684555832681">अन्य...</translation>
 <translation id="6692633176391053278">stepper</translation>
+<translation id="6696580792574109116">मंथ पिकर</translation>
 <translation id="6709093583001123835">मूल्य <ph name="VALUE" /> असणे आवश्यक आहे.</translation>
 <translation id="6709570249143506788">खराब प्लेबॅक गुणवत्ता</translation>
 <translation id="6755330956360078551">टूलटिप</translation>
@@ -306,7 +307,7 @@
 <translation id="9108370397979208512">गणित</translation>
 <translation id="9132465097189459683">अन्य...</translation>
 <translation id="9138385573473225930">सूचना</translation>
-<translation id="9155987714137265666"><ph name="WEEK_START_DATE" /> रोजी प्रारंभ होणारा, <ph name="WEEK" /></translation>
+<translation id="9155987714137265666"><ph name="WEEK_START_DATE" /> रोजी सुरू होणारा, <ph name="WEEK" /></translation>
 <translation id="916607977885256133">चित्रात-चित्र</translation>
 <translation id="9168329111483466115">तळटीप</translation>
 <translation id="945780513535800434">अंशतः तपासलेले</translation>

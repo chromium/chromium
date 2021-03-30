@@ -231,6 +231,7 @@ message Study {
     PLATFORM_ANDROID_WEBVIEW = 6;
     PLATFORM_FUCHSIA = 7;
     PLATFORM_ANDROID_WEBLAYER = 8;
+    PLATFORM_CHROMEOS_LACROS = 9;
   }
 
   // Possible form factors Chrome is running on.
@@ -238,11 +239,25 @@ message Study {
     // Chrome Desktop on Windows, Mac, Linux, or Chrome OS.
     DESKTOP = 0;
     // Phone-based mobile Chrome, e.g. an Android phone or iPhone.
-    PHONE   = 1;
+    PHONE = 1;
     // Tablet-based mobile Chrome, e.g. an Android tablet or iPad.
-    TABLET  = 2;
+    TABLET = 2;
     // Chrome OS running in single-app Kiosk mode.
-    KIOSK   = 3;
+    KIOSK = 3;
+    // Chrome OS running on Meet Hardware devices e.g. Chromebox For Meetings.
+    MEET_DEVICE = 4;
+  }
+
+  // Possible CPU architectures Chrome is running on. Only supported on M90+.
+  enum CpuArchitecture {
+    X86_64 = 0;
+    ARM64 = 1;
+    X86_32 = 2;
+    ARM32 = 3;
+
+    // A Mac-only value, indicating an x86-64 binary running on an arm64 host
+    // via "Rosetta 2" binary translation.
+    TRANSLATED_X86_64 = 4;
   }
 
   // Enum to pass as optional bool.
@@ -415,6 +430,18 @@ message Study {
     // Specifies the restrictions applied by the "ChromeVariations" policy to
     // the study. See the definition of the PolicyRestriction enum for details.
     optional PolicyRestriction policy_restriction = 19 [default = NONE];
+
+    // List of CPU architectures that will receive this study. If omitted, the
+    // study applies to all architectures, unless |exclude_cpu_architecture| is
+    // specified. Mutually exclusive with |exclude_cpu_architecture|. Ex:
+    // [X86_32, ARM64]
+    repeated CpuArchitecture cpu_architecture = 20;
+
+    // List of CPU architectures that will be excluded from this study. If
+    // omitted, the study applies to all architectures unless |cpu_architecture|
+    // is specified. Mutually exclusive with |cpu_architecture|. Takes the same
+    // range of values as cpu_architecture, e.g. [X86_32, ARM64].
+    repeated CpuArchitecture exclude_cpu_architecture = 21;
   }
 
   // Filtering criteria for this study. A study that is filtered out for a given

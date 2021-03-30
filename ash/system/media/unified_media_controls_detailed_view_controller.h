@@ -23,7 +23,7 @@ class ASH_EXPORT UnifiedMediaControlsDetailedViewController
 
   // DetailedViewController implementations.
   views::View* CreateView() override;
-  base::string16 GetAccessibleName() const override;
+  std::u16string GetAccessibleName() const override;
 
  private:
   friend class UnifiedMediaControlsDetailedViewControllerTest;

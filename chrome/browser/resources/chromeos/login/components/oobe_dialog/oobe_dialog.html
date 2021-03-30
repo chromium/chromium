@@ -10,6 +10,7 @@
 
 <link rel="import" href="/components/common_styles.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
+<link rel="import" href="/components/oobe_scrollable_behavior.html">
 
 <!--
   Simple OOBE dialog which should be used for OOBE UI elements.
@@ -97,7 +98,7 @@
         padding-bottom: 0;
         padding-inline-end: var(--oobe-dialog-content-padding);
         padding-inline-start: var(--oobe-dialog-content-padding);
-        padding-top: var(--oobe-dialog-content-padding);
+        padding-top: var(--oobe-dialog-header-padding-top);
       }
 
       #oobe-title {
@@ -162,26 +163,6 @@
         flex-shrink: 1;
       }
 
-      #topScrollContainer.can-scroll:not(.is-scrolled):not(.scrolled-to-bottom) {
-        background: linear-gradient(0deg,
-                                    rgba(var(--google-grey-refresh-100-rgb), 1) 0,
-                                    rgba(var(--google-grey-refresh-100-rgb), 0) 8px);
-
-      }
-      #topScrollContainer.can-scroll.is-scrolled:not(.scrolled-to-bottom) {
-        background: linear-gradient(0deg,
-                                    rgba(var(--google-grey-refresh-100-rgb), 1) 0,
-                                    rgba(var(--google-grey-refresh-100-rgb), 0) 8px),
-                    linear-gradient(180deg,
-                                    rgba(var(--google-grey-refresh-100-rgb), 1) 0,
-                                    rgba(var(--google-grey-refresh-100-rgb), 0) 8px);
-      }
-      #topScrollContainer.is-scrolled.scrolled-to-bottom {
-        background: linear-gradient(180deg,
-                                    rgba(var(--google-grey-refresh-100-rgb), 1) 0,
-                                    rgba(var(--google-grey-refresh-100-rgb), 0) 8px);
-      }
-
       #oobe-bottom {
         height: calc(var(--oobe-dialog-footer-height)
                     - 2 * var(--oobe-dialog-footer-padding));
@@ -204,7 +185,7 @@
     </style>
     <cr-lazy-render id="lazy">
       <template>
-        <div id="topScrollContainer" class="layout vertical flex">
+        <div id="topScrollContainer" class="layout vertical flex scrollable">
           <div id="header-container" hidden="[[noHeader]]">
             <div id="oobe-icon-div" class="slot-container">
               <slot name="oobe-icon"></slot>
@@ -243,4 +224,3 @@
   </template>
   <script src="oobe_dialog.js"></script>
 </dom-module>
-

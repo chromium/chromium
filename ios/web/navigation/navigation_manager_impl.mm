@@ -489,24 +489,11 @@ void NavigationManagerImpl::SetWKWebViewNextPendingUrlNotSerializable(
   next_pending_url_should_skip_serialization_ = url;
 }
 
-bool NavigationManagerImpl::ShouldBlockUrlDuringRestore(const GURL& url) {
+bool NavigationManagerImpl::RestoreSessionFromCache(const GURL& url) {
   DCHECK(is_restore_session_in_progress_);
-  if (!web::GetWebClient()->ShouldBlockUrlDuringRestore(url, GetWebState()))
-    return false;
 
-  // Abort restore.
-  DiscardNonCommittedItems();
-  last_committed_item_index_ = web_view_cache_.GetCurrentItemIndex();
-  if (restored_visible_item_ &&
-      restored_visible_item_->GetUserAgentType() != UserAgentType::NONE) {
-    NavigationItem* last_committed_item =
-        GetLastCommittedItemInCurrentOrRestoredSession();
-    last_committed_item->SetUserAgentType(
-        restored_visible_item_->GetUserAgentType());
-  }
-  restored_visible_item_.reset();
-  FinalizeSessionRestore();
-  return true;
+  // TODO(crbug.com/1174560): Bring up native session restoration.
+  return false;
 }
 
 void NavigationManagerImpl::RemoveTransientURLRewriters() {
@@ -1205,7 +1192,7 @@ void NavigationManagerImpl::UnsafeRestore(
 
   // Grab the title of the first item before |restored_visible_item_| (which may
   // or may not be the first index) is moved out of |items| below.
-  const base::string16& firstTitle = items[first_index]->GetTitle();
+  const std::u16string& firstTitle = items[first_index]->GetTitle();
 
   // Ordering is important. Cache the visible item of the restored session
   // before starting the new navigation, which may trigger client lookup of

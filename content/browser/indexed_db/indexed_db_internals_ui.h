@@ -15,6 +15,7 @@
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/services/storage/public/mojom/indexed_db_control.mojom.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/web_ui_message_handler.h"
 
 namespace base {
 class ListValue;
@@ -37,38 +38,49 @@ class IndexedDBInternalsUI : public WebUIController {
   ~IndexedDBInternalsUI() override;
 
  private:
+  base::WeakPtrFactory<IndexedDBInternalsUI> weak_factory_{this};
+  DISALLOW_COPY_AND_ASSIGN(IndexedDBInternalsUI);
+};
+
+class IndexedDBInternalsHandler : public WebUIMessageHandler {
+ public:
+  IndexedDBInternalsHandler();
+  ~IndexedDBInternalsHandler() override;
+
+  // WebUIMessageHandler implementation.
+  void RegisterMessages() override;
+  void OnJavascriptDisallowed() override;
+
+ private:
   void GetAllOrigins(const base::ListValue* args);
   void OnOriginsReady(const base::Value& origins, const base::FilePath& path);
 
   void DownloadOriginData(const base::ListValue* args);
-  void OnDownloadDataReady(const base::FilePath& partition_path,
-                           const url::Origin& origin,
+  void OnDownloadDataReady(const std::string& callback_id,
                            uint64_t connection_count,
                            bool success,
                            const base::FilePath& temp_path,
                            const base::FilePath& zip_path);
-  void OnDownloadStarted(const base::FilePath& partition_path,
-                         const url::Origin& origin,
-                         const base::FilePath& temp_path,
+  void OnDownloadStarted(const base::FilePath& temp_path,
+                         const std::string& callback_id,
                          size_t connection_count,
                          download::DownloadItem* item,
                          download::DownloadInterruptReason interrupt_reason);
 
   void ForceCloseOrigin(const base::ListValue* args);
-  void OnForcedClose(const base::FilePath& partition_path,
-                     const url::Origin& origin,
-                     uint64_t connection_count);
+  void OnForcedClose(const std::string& callback_id, uint64_t connection_count);
 
   bool GetOriginControl(const base::FilePath& path,
                         const url::Origin& origin,
                         storage::mojom::IndexedDBControl** control);
   bool GetOriginData(const base::ListValue* args,
+                     std::string* callback_id,
                      base::FilePath* path,
                      url::Origin* origin,
                      storage::mojom::IndexedDBControl** control);
 
-  base::WeakPtrFactory<IndexedDBInternalsUI> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBInternalsUI);
+  base::WeakPtrFactory<IndexedDBInternalsHandler> weak_factory_{this};
+  DISALLOW_COPY_AND_ASSIGN(IndexedDBInternalsHandler);
 };
 
 }  // namespace content

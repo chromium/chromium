@@ -100,7 +100,25 @@ TEST_F(ClipboardHistoryUtilTest, GetFileSystemSources) {
 
   builder.SetFileSystemData({"/path/to/My%20File.txt"});
   EXPECT_EQ(GetFileSystemSources(builder.Build().data()),
-            base::UTF8ToUTF16("/path/to/My%20File.txt"));
+            u"/path/to/My%20File.txt");
+}
+
+TEST_F(ClipboardHistoryUtilTest, GetSplitFileSystemData) {
+  const std::string file_name1("File1.txt"), file_name2("File2.txt");
+  ClipboardHistoryItemBuilder builder;
+  builder.SetFileSystemData({file_name1, file_name2});
+  std::u16string sources;
+  std::vector<base::StringPiece16> source_list;
+  GetSplitFileSystemData(builder.Build().data(), &source_list, &sources);
+  EXPECT_EQ(file_name1, base::UTF16ToUTF8(source_list[0]));
+  EXPECT_EQ(file_name2, base::UTF16ToUTF8(source_list[1]));
+}
+
+TEST_F(ClipboardHistoryUtilTest, GetFilesCount) {
+  ClipboardHistoryItemBuilder builder;
+  builder.SetFileSystemData(
+      {"/path/to/My%20File1.txt", "/path/to/My%20File2.txt"});
+  EXPECT_EQ(2u, GetCountOfCopiedFiles(builder.Build().data()));
 }
 
 TEST_F(ClipboardHistoryUtilTest, IsSupported) {

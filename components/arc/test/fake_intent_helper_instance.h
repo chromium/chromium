@@ -82,6 +82,10 @@ class FakeIntentHelperInstance : public mojom::IntentHelperInstance {
   void HandleIntent(mojom::IntentInfoPtr intent,
                     mojom::ActivityNamePtr activity) override;
 
+  void HandleIntentWithWindowInfo(mojom::IntentInfoPtr intent,
+                                  mojom::ActivityNamePtr activity,
+                                  mojom::WindowInfoPtr window_info) override;
+
   void HandleUrl(const std::string& url,
                  const std::string& package_name) override;
 

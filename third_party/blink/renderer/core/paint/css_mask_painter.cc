@@ -21,7 +21,7 @@ base::Optional<IntRect> CSSMaskPainter::MaskBoundingBox(
   if (object.IsSVG()) {
     if (SVGResourceClient* client = SVGResources::GetClient(object)) {
       auto* masker = GetSVGResourceAsType<LayoutSVGResourceMasker>(
-          *client, style.SvgStyle().MaskerResource());
+          *client, style.MaskerResource());
       if (masker) {
         const FloatRect reference_box =
             SVGResources::ReferenceBoxForEffects(object);
@@ -56,21 +56,6 @@ base::Optional<IntRect> CSSMaskPainter::MaskBoundingBox(
     maximum_mask_region.Expand(style.MaskBoxImageOutsets());
   maximum_mask_region.offset += paint_offset;
   return PixelSnappedIntRect(maximum_mask_region);
-}
-
-ColorFilter CSSMaskPainter::MaskColorFilter(const LayoutObject& object) {
-  if (!object.IsSVGChild())
-    return kColorFilterNone;
-  SVGResourceClient* client = SVGResources::GetClient(object);
-  if (!client)
-    return kColorFilterNone;
-  auto* masker = GetSVGResourceAsType<LayoutSVGResourceMasker>(
-      *client, object.StyleRef().SvgStyle().MaskerResource());
-  if (!masker)
-    return kColorFilterNone;
-  return masker->StyleRef().SvgStyle().MaskType() == MT_LUMINANCE
-             ? kColorFilterLuminanceToAlpha
-             : kColorFilterNone;
 }
 
 }  // namespace blink

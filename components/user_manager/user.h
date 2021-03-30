@@ -12,22 +12,24 @@
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_image/user_image.h"
 #include "components/user_manager/user_info.h"
 #include "components/user_manager/user_manager_export.h"
 #include "components/user_manager/user_type.h"
 
-namespace chromeos {
+namespace ash {
 class ChromeUserManagerImpl;
 class FakeChromeUserManager;
 class MockUserManager;
+class UserImageManagerImpl;
+}  // namespace ash
+
+namespace chromeos {
 class SupervisedUserManagerImpl;
 class UserAddingScreenTest;
-class UserImageManagerImpl;
 class UserSessionManager;
-}
+}  // namespace chromeos
 
 namespace gfx {
 class ImageSkia;
@@ -81,8 +83,8 @@ class USER_MANAGER_EXPORT User : public UserInfo {
 
   // UserInfo
   std::string GetDisplayEmail() const override;
-  base::string16 GetDisplayName() const override;
-  base::string16 GetGivenName() const override;
+  std::u16string GetDisplayName() const override;
+  std::u16string GetGivenName() const override;
   const gfx::ImageSkia& GetImage() const override;
   const AccountId& GetAccountId() const override;
 
@@ -99,8 +101,9 @@ class USER_MANAGER_EXPORT User : public UserInfo {
   // Returns true if it's Active Directory user.
   virtual bool IsActiveDirectoryUser() const;
 
-  // Returns true if user is supervised.
-  virtual bool IsSupervised() const;
+  // Returns true if user is child or deprecated legacy supervised.
+  // TODO(crbug/1155729): Remove and replace with IsChild().
+  virtual bool IsChildOrDeprecatedSupervised() const;
 
   // Returns true if user is child.
   virtual bool IsChild() const;
@@ -111,8 +114,14 @@ class USER_MANAGER_EXPORT User : public UserInfo {
   // The displayed (non-canonical) user email.
   virtual std::string display_email() const;
 
-  // True if the user is affiliated to the device.
+  // True if the user is affiliated to the device. Returns false if the
+  // affiliation is not known. Use IsAffiliatedAsync if it's possible the call
+  // is done before affiliation is established.
   virtual bool IsAffiliated() const;
+
+  // Runs the callback immediately if the affiliation is known, otherwise later
+  // when the affiliation is established.
+  void IsAffiliatedAsync(base::OnceCallback<void(bool)> is_affiliated_callback);
 
   // True if the user is a device local account user.
   virtual bool IsDeviceLocalAccount() const;
@@ -121,7 +130,7 @@ class USER_MANAGER_EXPORT User : public UserInfo {
   bool IsKioskType() const;
 
   // The displayed user name.
-  base::string16 display_name() const { return display_name_; }
+  std::u16string display_name() const { return display_name_; }
 
   // If the user has to use SAML to log in.
   bool using_saml() const { return using_saml_; }
@@ -204,15 +213,15 @@ class USER_MANAGER_EXPORT User : public UserInfo {
 
  protected:
   friend class UserManagerBase;
-  friend class chromeos::ChromeUserManagerImpl;
+  friend class ash::ChromeUserManagerImpl;
   friend class chromeos::SupervisedUserManagerImpl;
-  friend class chromeos::UserImageManagerImpl;
+  friend class ash::UserImageManagerImpl;
   friend class chromeos::UserSessionManager;
 
   // For testing:
   friend class FakeUserManager;
-  friend class chromeos::FakeChromeUserManager;
-  friend class chromeos::MockUserManager;
+  friend class ash::FakeChromeUserManager;
+  friend class ash::MockUserManager;
   friend class chromeos::UserAddingScreenTest;
   friend class policy::ProfilePolicyConnectorTest;
   FRIEND_TEST_ALL_PREFIXES(UserTest, DeviceLocalAccountAffiliation);
@@ -245,11 +254,11 @@ class USER_MANAGER_EXPORT User : public UserInfo {
                     int image_index,
                     bool is_loading);
 
-  void set_display_name(const base::string16& display_name) {
+  void set_display_name(const std::u16string& display_name) {
     display_name_ = display_name;
   }
 
-  void set_given_name(const base::string16& given_name) {
+  void set_given_name(const std::u16string& given_name) {
     given_name_ = given_name;
   }
 
@@ -285,8 +294,8 @@ class USER_MANAGER_EXPORT User : public UserInfo {
 
  private:
   AccountId account_id_;
-  base::string16 display_name_;
-  base::string16 given_name_;
+  std::u16string display_name_;
+  std::u16string given_name_;
   // User email for display, which may include capitals and non-significant
   // periods. For example, "John.Steinbeck@gmail.com" is a display email, but
   // "johnsteinbeck@gmail.com" is the canonical form. Defaults to
@@ -329,9 +338,11 @@ class USER_MANAGER_EXPORT User : public UserInfo {
   bool profile_is_created_ = false;
 
   // True if the user is affiliated to the device.
-  bool is_affiliated_ = false;
+  base::Optional<bool> is_affiliated_;
 
   std::vector<base::OnceClosure> on_profile_created_observers_;
+  std::vector<base::OnceCallback<void(bool is_affiliated)>>
+      on_affiliation_set_callbacks_;
 
   DISALLOW_COPY_AND_ASSIGN(User);
 };

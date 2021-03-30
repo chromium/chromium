@@ -4,12 +4,13 @@
 
 (async function() {
   TestRunner.addResult(`Tests that watches pane renders errors in red.\n`);
+  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       var foo = 123
   `);
 
-  var watchExpressionsPane = self.runtime.sharedInstance(Sources.WatchExpressionsSidebarPane);
+  var watchExpressionsPane = Sources.WatchExpressionsSidebarPane.instance();
   UI.panels.sources._sidebarPaneStack.showView(UI.panels.sources._watchSidebarPane).then(() => {
     watchExpressionsPane.doUpdate();
     watchExpressionsPane._createWatchExpression('#$%');

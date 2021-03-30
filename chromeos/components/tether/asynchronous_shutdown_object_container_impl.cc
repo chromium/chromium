@@ -80,9 +80,9 @@ AsynchronousShutdownObjectContainerImpl::
     ~AsynchronousShutdownObjectContainerImpl() = default;
 
 void AsynchronousShutdownObjectContainerImpl::Shutdown(
-    const base::Closure& shutdown_complete_callback) {
+    base::OnceClosure shutdown_complete_callback) {
   DCHECK(shutdown_complete_callback_.is_null());
-  shutdown_complete_callback_ = shutdown_complete_callback;
+  shutdown_complete_callback_ = std::move(shutdown_complete_callback);
 
   // The objects below require asynchronous shutdowns, so start observering
   // these objects. Once they notify observers that they are finished shutting
@@ -125,7 +125,7 @@ void AsynchronousShutdownObjectContainerImpl::ShutdownIfPossible() {
 
   disconnect_tethering_request_sender_->RemoveObserver(this);
 
-  shutdown_complete_callback_.Run();
+  std::move(shutdown_complete_callback_).Run();
 }
 
 bool AsynchronousShutdownObjectContainerImpl::

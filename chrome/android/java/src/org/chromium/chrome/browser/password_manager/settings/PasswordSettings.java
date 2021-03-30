@@ -39,12 +39,12 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
-import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.webauthn.CableAuthenticatorModuleProvider;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SearchUtils;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -453,11 +453,13 @@ public class PasswordSettings
             intent.setPackage(getActivity().getPackageName());
             getActivity().startActivity(intent);
         } else if (ChromeFeatureList.isEnabled(ChromeFeatureList.EDIT_PASSWORDS_IN_SETTINGS)) {
-            // Launch preference activity with a PasswordEntryEditor fragment.
+            boolean isBlockedCredential =
+                    !preference.getExtras().containsKey(PasswordSettings.PASSWORD_LIST_NAME);
             PasswordManagerHandlerProvider.getInstance()
                     .getPasswordManagerHandler()
-                    .showPasswordEntryEditingView(getContext(),
-                            preference.getExtras().getInt(PasswordSettings.PASSWORD_LIST_ID));
+                    .showPasswordEntryEditingView(getActivity(), new SettingsLauncherImpl(),
+                            preference.getExtras().getInt(PasswordSettings.PASSWORD_LIST_ID),
+                            isBlockedCredential);
         } else {
             // Launch preference activity with PasswordEntryViewer fragment with
             // intent extras specifying the object.

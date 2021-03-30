@@ -222,9 +222,12 @@ public class PlatformAPIWrapperTest {
     }
 
     private static final String MAIN_URL = "http://main.domain.com";
+    private static final String MAIN_TITLE = "MAIN TITLE";
+    private static final String UPDATED_MAIN_TITLE = "MAIN TITLE UPDATE";
     private static final long MAIN_ID = 4;
     private static final Rect MAIN_FRAME_RECT = new Rect(0, 0, 200, 200);
     private static final String CHILD_URL = "http://test.domain.com";
+    private static final String CHILD_TITLE = null;
     private static final long CHILD_FRAME_ID = 1;
     private static final Rect CHILD_FRAME_RECT = new Rect(0, 0, 100, 100);
     private static final long CHILD1_ID = 2;
@@ -286,27 +289,27 @@ public class PlatformAPIWrapperTest {
 
     private FrameSession createFrameSession() {
         FrameSession frameSession = new FrameSession(1);
-        frameSession.add(ContentCaptureData.createContentCaptureData(null, MAIN_ID, MAIN_URL,
+        frameSession.add(ContentCaptureFrame.createContentCaptureFrame(MAIN_ID, MAIN_URL,
                 MAIN_FRAME_RECT.left, MAIN_FRAME_RECT.top, MAIN_FRAME_RECT.width(),
-                MAIN_FRAME_RECT.height()));
+                MAIN_FRAME_RECT.height(), MAIN_TITLE));
         return frameSession;
     }
 
     private FrameSession createFrameSessionForRemoveTask() {
         FrameSession frameSessionForRemoveTask = createFrameSession();
         frameSessionForRemoveTask.add(0,
-                ContentCaptureData.createContentCaptureData(null, CHILD_FRAME_ID, CHILD_URL,
+                ContentCaptureFrame.createContentCaptureFrame(CHILD_FRAME_ID, CHILD_URL,
                         CHILD_FRAME_RECT.left, CHILD_FRAME_RECT.top, CHILD_FRAME_RECT.width(),
-                        CHILD_FRAME_RECT.height()));
+                        CHILD_FRAME_RECT.height(), CHILD_TITLE));
         return frameSessionForRemoveTask;
     }
 
     // The below createFooTask() create the tasks for tests.
     private ContentCapturedTask createContentCapturedTask() {
         FrameSession frameSession = createFrameSession();
-        ContentCaptureData data = ContentCaptureData.createContentCaptureData(null, CHILD_FRAME_ID,
+        ContentCaptureFrame data = ContentCaptureFrame.createContentCaptureFrame(CHILD_FRAME_ID,
                 CHILD_URL, CHILD_FRAME_RECT.left, CHILD_FRAME_RECT.top, CHILD_FRAME_RECT.width(),
-                CHILD_FRAME_RECT.height());
+                CHILD_FRAME_RECT.height(), CHILD_TITLE);
         ContentCaptureData.createContentCaptureData(data, CHILD1_ID, CHILD1_TEXT, CHILD1_RECT.left,
                 CHILD1_RECT.top, CHILD1_RECT.width(), CHILD1_RECT.height());
         ContentCaptureData.createContentCaptureData(data, CHILD2_ID, CHILD2_TEXT, CHILD2_RECT.left,
@@ -316,9 +319,9 @@ public class PlatformAPIWrapperTest {
 
     private ContentUpdateTask createChild2ContentUpdateTask() {
         // Modifies child2
-        ContentCaptureData changeTextData = ContentCaptureData.createContentCaptureData(null,
+        ContentCaptureFrame changeTextData = ContentCaptureFrame.createContentCaptureFrame(
                 CHILD_FRAME_ID, CHILD_URL, CHILD_FRAME_RECT.left, CHILD_FRAME_RECT.top,
-                CHILD_FRAME_RECT.width(), CHILD_FRAME_RECT.height());
+                CHILD_FRAME_RECT.width(), CHILD_FRAME_RECT.height(), CHILD_TITLE);
         ContentCaptureData.createContentCaptureData(changeTextData, CHILD2_ID, CHILD2_NEW_TEXT,
                 CHILD2_RECT.left, CHILD2_RECT.top, CHILD2_RECT.width(), CHILD2_RECT.height());
         return new ContentUpdateTask(createFrameSession(), changeTextData, mRootPlatformSession);
@@ -332,6 +335,13 @@ public class PlatformAPIWrapperTest {
 
     private SessionRemovedTask createSessionRemovedTask() {
         return new SessionRemovedTask(createFrameSessionForRemoveTask(), mRootPlatformSession);
+    }
+
+    private TitleUpdateTask createTitleUpdateTask() {
+        ContentCaptureFrame mainFrame = ContentCaptureFrame.createContentCaptureFrame(MAIN_ID,
+                MAIN_URL, MAIN_FRAME_RECT.left, MAIN_FRAME_RECT.top, MAIN_FRAME_RECT.width(),
+                MAIN_FRAME_RECT.height(), UPDATED_MAIN_TITLE);
+        return new TitleUpdateTask(mainFrame, mRootPlatformSession);
     }
 
     private void runContentCapturedTask() throws Exception {
@@ -367,6 +377,7 @@ public class PlatformAPIWrapperTest {
         };
         return e;
     }
+
     @Test
     public void testTypicalLifecycle() throws Throwable {
         runContentCapturedTask();
@@ -384,7 +395,7 @@ public class PlatformAPIWrapperTest {
         inOrder.verify(mPlatformAPIWrapperTestHelperSpy)
                 .notifyViewAppeared(mMockedRootContentCaptureSession,
                         mPlatformAPIWrapperTestHelper.mCreatedViewStructures.get(0));
-        verifyVirtualViewStructure(MAIN_URL, MAIN_FRAME_RECT, 0);
+        verifyVirtualViewStructure(MAIN_TITLE, MAIN_FRAME_RECT, 0);
 
         // Verifies the child frame.
         inOrder.verify(mPlatformAPIWrapperTestHelperSpy)
@@ -455,6 +466,15 @@ public class PlatformAPIWrapperTest {
         inOrder.verify(mPlatformAPIWrapperTestHelperSpy)
                 .destroyContentCaptureSession(
                         mPlatformAPIWrapperTestHelper.mCreatedContentCaptureSessions.get(1));
+
+        // Updates the title.
+        runTaskAndVerifyCallback(createTitleUpdateTask(),
+                toIntArray(PlatformAPIWrapperTestHelper.NEW_AUTOFILL_ID,
+                        PlatformAPIWrapperTestHelper.NOTIFY_VIEW_TEXT_CHANGED));
+        inOrder.verify(mPlatformAPIWrapperTestHelperSpy)
+                .notifyViewTextChanged(mMockedRootContentCaptureSession,
+                        mPlatformAPIWrapperTestHelper.mCreatedAutofilIds.get(3),
+                        UPDATED_MAIN_TITLE);
     }
 
     // The below testFooException() tests mock the specific method to throw exception, then verify

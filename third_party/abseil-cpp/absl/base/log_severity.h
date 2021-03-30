@@ -36,7 +36,7 @@ ABSL_NAMESPACE_BEGIN
 // such values to a defined severity level, however in some cases values other
 // than the defined levels are useful for comparison.
 //
-// Exmaple:
+// Example:
 //
 //   // Effectively disables all logging:
 //   SetMinLogLevel(static_cast<absl::LogSeverity>(100));

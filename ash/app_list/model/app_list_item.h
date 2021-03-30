@@ -12,7 +12,7 @@
 #include <string>
 #include <utility>
 
-#include "ash/app_list/model/app_list_model_export.h"
+#include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "base/macros.h"
@@ -30,7 +30,7 @@ class AppListModel;
 
 // AppListItem provides icon and title to be shown in a AppListItemView
 // and action to be executed when the AppListItemView is activated.
-class APP_LIST_MODEL_EXPORT AppListItem {
+class ASH_EXPORT AppListItem {
  public:
   using AppListItemMetadata = ash::AppListItemMetadata;
 
@@ -39,6 +39,14 @@ class APP_LIST_MODEL_EXPORT AppListItem {
 
   void SetIcon(AppListConfigType config_type, const gfx::ImageSkia& icon);
   const gfx::ImageSkia& GetIcon(AppListConfigType config_type) const;
+
+  // Setter and getter for the default app list item icon. Used as a base to
+  // generate appropriate app list item icon for an app list config if an icon
+  // for the config has not been set using `SetIcon()`.
+  void SetDefaultIcon(const gfx::ImageSkia& icon);
+  const gfx::ImageSkia& GetDefaultIcon() const;
+
+  void SetNotificationBadgeColor(const SkColor color);
 
   const std::string& GetDisplayName() const {
     return short_name_.empty() ? name() : short_name_;
@@ -86,6 +94,8 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   bool is_page_break() const { return metadata_->is_page_break; }
 
   bool has_notification_badge() const { return has_notification_badge_; }
+
+  SkColor notification_badge_color() const { return notification_badge_color_; }
 
   void UpdateNotificationBadgeForTesting(bool has_badge) {
     UpdateNotificationBadge(has_badge);
@@ -148,7 +158,10 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   // Whether this item currently has a notification badge that should be shown.
   bool has_notification_badge_ = false;
 
-  base::ObserverList<AppListItemObserver>::Unchecked observers_;
+  // The color for the notification badge displayed over the app icon.
+  SkColor notification_badge_color_ = SK_ColorWHITE;
+
+  base::ObserverList<AppListItemObserver> observers_;
 
   DISALLOW_COPY_AND_ASSIGN(AppListItem);
 };

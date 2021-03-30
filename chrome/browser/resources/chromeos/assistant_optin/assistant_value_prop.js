@@ -40,6 +40,18 @@ Polymer({
         return this.urlTemplate_.replace('$', 'en_us');
       }
     },
+
+    /**
+     * Whether new OOBE layout is enabled.
+     * @type {boolean}
+     */
+    newLayoutEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('newLayoutEnabled') &&
+            loadTimeData.getBoolean('newLayoutEnabled');
+      }
+    },
   },
 
   setUrlTemplateForTesting(url) {
@@ -52,7 +64,7 @@ Polymer({
    * @private {string}
    */
   urlTemplate_:
-      'https://www.gstatic.com/opa-android/oobe/a02187e41eed9e42/v2_omni_$.html',
+      'https://www.gstatic.com/opa-android/oobe/a02187e41eed9e42/v3_omni_$.html',
 
   /**
    * Whether try to reload with the default url when a 404 error occurred.
@@ -69,11 +81,12 @@ Polymer({
   loadingError_: false,
 
   /**
-   * The value prop webview object.
-   * @type {Object}
+   * The value prop webview objects, could be populated with different webview
+   * elements for new/old oobe layout.
+   * @type {Array<Object>}
    * @private
    */
-  valuePropView_: null,
+  valuePropViewElements_: [],
 
   /**
    * Whether the screen has been initialized.
@@ -88,13 +101,6 @@ Polymer({
    * @private
    */
   headerReceived_: false,
-
-  /**
-   * Whether the webview has been successfully loaded.
-   * @type {boolean}
-   * @private
-   */
-  webViewLoaded_: false,
 
   /**
    * Whether all the setting zippy has been successfully loaded.
@@ -185,7 +191,7 @@ Polymer({
   },
 
   /**
-   * Reloads value prop webview.
+   * Reloads value prop page by fetching setting zippy and consent string.
    */
   reloadPage() {
     this.fire('loading');
@@ -196,12 +202,19 @@ Polymer({
       this.consentStringLoaded_ = false;
     }
 
+    this.buttonsDisabled = true;
+  },
+
+  /**
+   * Reloads value prop animation webview.
+   */
+  reloadWebView() {
     this.loadingError_ = false;
     this.headerReceived_ = false;
     let locale = this.locale.replace('-', '_').toLowerCase();
-    this.valuePropView_.src = this.urlTemplate_.replace('$', locale);
-
-    this.buttonsDisabled = true;
+    for (let webviewObj of this.valuePropViewElements_) {
+      webviewObj.src = this.urlTemplate_.replace('$', locale);
+    }
   },
 
   /**
@@ -223,13 +236,14 @@ Polymer({
       return;
     }
     if (this.reloadWithDefaultUrl_) {
-      this.valuePropView_.src = this.defaultUrl;
+      for (let webviewObj of this.valuePropViewElements_) {
+        webviewObj.src = this.defaultUrl;
+      }
       this.headerReceived_ = false;
       this.reloadWithDefaultUrl_ = false;
       return;
     }
 
-    this.webViewLoaded_ = true;
     if (this.settingZippyLoaded_ && this.consentStringLoaded_) {
       this.onPageLoaded();
     }
@@ -261,9 +275,10 @@ Polymer({
   reloadContent(data) {
     this.$['value-prop-dialog'].setAttribute(
         'aria-label', data['valuePropTitle']);
-    this.$['user-image'].src = data['valuePropUserImage'];
     this.$['title-text'].textContent = data['valuePropTitle'];
+    this.$['intro-title-text'].textContent = data['valuePropIntroTitle'];
     this.$['intro-text'].textContent = data['valuePropIntro'];
+    this.$['user-image'].src = data['valuePropUserImage'];
     this.$['user-name'].textContent = data['valuePropIdentity'];
     this.$['next-button'].labelForAria = data['valuePropNextButton'];
     this.$['next-button-text'].textContent = data['valuePropNextButton'];
@@ -273,8 +288,8 @@ Polymer({
         this.sanitizer_.sanitizeHtml(data['valuePropFooter']);
 
     this.consentStringLoaded_ = true;
-    if (this.webViewLoaded_ && this.settingZippyLoaded_) {
-      this.onPageLoaded();
+    if (this.settingZippyLoaded_) {
+      this.reloadWebView();
     }
   },
 
@@ -283,8 +298,8 @@ Polymer({
    */
   addSettingZippy(zippy_data) {
     if (this.settingZippyLoaded_) {
-      if (this.webViewLoaded_ && this.consentStringLoaded_) {
-        this.onPageLoaded();
+      if (this.consentStringLoaded_) {
+        this.reloadWebView();
       }
       return;
     }
@@ -297,8 +312,9 @@ Polymer({
           'data:text/html;charset=utf-8,' +
               encodeURIComponent(
                   zippy.getWrappedIcon(data['iconUri'], data['title'])));
-      zippy.setAttribute('hide-line', true);
-      zippy.setAttribute('popup-style', true);
+      if (!this.newLayoutEnabled_) {
+        zippy.setAttribute('hide-line', true);
+      }
 
       var title = document.createElement('div');
       title.slot = 'title';
@@ -326,8 +342,8 @@ Polymer({
     }
 
     this.settingZippyLoaded_ = true;
-    if (this.webViewLoaded_ && this.consentStringLoaded_) {
-      this.onPageLoaded();
+    if (this.consentStringLoaded_) {
+      this.reloadWebView();
     }
   },
 
@@ -350,35 +366,42 @@ Polymer({
    * Signal from host to show the screen.
    */
   onShow() {
-    var requestFilter = {urls: ['<all_urls>'], types: ['main_frame']};
-
     this.$['overlay-close-button'].addEventListener(
         'click', this.hideOverlay.bind(this));
-    this.valuePropView_ = this.$['value-prop-view'];
 
     Polymer.RenderStatus.afterNextRender(
         this, () => this.$['next-button'].focus());
 
     if (!this.initialized_) {
-      this.valuePropView_.request.onErrorOccurred.addListener(
-          this.onWebViewErrorOccurred.bind(this), requestFilter);
-      this.valuePropView_.request.onHeadersReceived.addListener(
-          this.onWebViewHeadersReceived.bind(this), requestFilter);
-      this.valuePropView_.addEventListener(
-          'contentload', this.onWebViewContentLoad.bind(this));
-
-      this.valuePropView_.addContentScripts([{
-        name: 'stripLinks',
-        matches: ['<all_urls>'],
-        js: {
-          code: 'document.querySelectorAll(\'a\').forEach(' +
-              'function(anchor){anchor.href=\'javascript:void(0)\';})'
-        },
-        run_at: 'document_end'
-      }]);
-
+      if (this.newLayoutEnabled_) {
+        // We show value prop webview element based on orientation of the
+        // device. Horizontal mode element is in subtitle slot and it is shown
+        // in bottom left of the screen in horizontal mode. Vertical mode
+        // element is in content slot and allows scrolling with the rest of the
+        // content in vertical mode.
+        this.valuePropViewElements_.push(
+            this.$['value-prop-view-vertical-mode']);
+        this.valuePropViewElements_.push(
+            this.$['value-prop-view-horizontal-mode']);
+      } else {
+        this.valuePropViewElements_.push(this.$['value-prop-view-old']);
+      }
+      for (let webviewObj of this.valuePropViewElements_) {
+        this.initializeWebview_(webviewObj);
+      }
       this.reloadPage();
       this.initialized_ = true;
     }
+  },
+
+  initializeWebview_(webview) {
+    const requestFilter = {urls: ['<all_urls>'], types: ['main_frame']};
+    webview.request.onErrorOccurred.addListener(
+        this.onWebViewErrorOccurred.bind(this), requestFilter);
+    webview.request.onHeadersReceived.addListener(
+        this.onWebViewHeadersReceived.bind(this), requestFilter);
+    webview.addEventListener(
+        'contentload', this.onWebViewContentLoad.bind(this));
+    webview.addContentScripts([webviewStripLinksContentScript]);
   },
 });

@@ -89,7 +89,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Cellular.Activation.StatusAtLogin"
-    enum="NetworkCellularActivationState" expires_after="2021-06-30">
+    enum="NetworkCellularActivationState" expires_after="2021-08-29">
+  <obsolete>
+    Split into Network.Cellular.PSim.StatusAtLogin and
+    Network.Cellular.ESim.StatusAtLogin on 3/2021 in M91.
+  </obsolete>
   <owner>azeemarshad@chromium.org</owner>
   <owner>cros-system-services-networking@google.com</owner>
   <summary>
@@ -99,7 +103,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Cellular.Connection.Disconnections"
-    enum="NetworkCellularConnectionState" expires_after="2021-06-30">
+    enum="NetworkCellularConnectionState" expires_after="2021-08-29">
+  <obsolete>
+    Split into Network.Cellular.PSim.Disconnections and
+    Network.Cellular.ESim.Disconnections on 03/2021.
+  </obsolete>
   <owner>azeemarshad@chromium.org</owner>
   <owner>cros-system-services-networking@google.com</owner>
   <summary>
@@ -109,23 +117,256 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Cellular.Connection.TimeToConnected" units="ms"
-    expires_after="2021-06-30">
+    expires_after="2021-08-29">
+  <obsolete>
+    Split into Network.Cellular.ESim.TimeToConnected and
+    Network.Cellular.ESim.TimeToConnected on 03/2021.
+  </obsolete>
   <owner>azeemarshad@chromium.org</owner>
-  <owner>cros-system-services-networking@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
   <summary>
     Tracks the amount fo time taken between when cellular device starts and
     finishes connecting.
   </summary>
 </histogram>
 
+<histogram name="Network.Cellular.ESim.ProfileDiscovery.Latency" units="ms"
+    expires_after="2022-03-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>hsuregan@chromium.org</owner>
+  <summary>
+    Tracks how long the user needs to wait before profile discovery is complete.
+  </summary>
+</histogram>
+
+<histogram name="Network.Cellular.ESim.ProfileDownload.ActivationCode.Latency"
+    units="ms" expires_after="2022-03-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>hsuregan@chromium.org</owner>
+  <summary>
+    Tracks the time for a profile to be fully downloaded from a provided
+    activation code.
+  </summary>
+</histogram>
+
+<histogram name="Network.Cellular.ESim.ProfileDownload.PendingProfile.Latency"
+    units="ms" expires_after="2022-03-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>hsuregan@chromium.org</owner>
+  <summary>
+    Tracks the time for a pending profile to be fully downloaded.
+  </summary>
+</histogram>
+
+<histogram name="Network.Cellular.ESim.ProfileRenameResult"
+    enum="BooleanSuccess" expires_after="2022-03-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>hsuregan@chromium.org</owner>
+  <summary>Tracks the rate of success of setting a profile nickname.</summary>
+</histogram>
+
+<histogram name="Network.Cellular.ESim.ProfileUninstallationResult"
+    enum="BooleanSuccess" expires_after="2022-03-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>hsuregan@chromium.org</owner>
+  <summary>Tracks the rate of success of uninstalling a profile.</summary>
+</histogram>
+
+<histogram name="Network.Cellular.ESim.ServiceAtLogin.Count" units="units"
+    expires_after="2022-03-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivit@google.com</owner>
+  <summary>
+    Tracks how many eSIM profiles are installed on the devices after a primary
+    user login.
+  </summary>
+</histogram>
+
+<histogram name="Network.Cellular.ESim.SetupFlowResult"
+    enum="ESimSetupFlowResult" expires_after="2022-03-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>hsuregan@chromium.org</owner>
+  <summary>
+    Tracks the result of the eSIM setup flow when the setup dialog closes.
+  </summary>
+</histogram>
+
+<histogram name="Network.Cellular.ESim.StatusAtLogin"
+    enum="NetworkCellularESimProfileStatus" expires_after="2022-03-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>hsuregan@chromium.org</owner>
+  <summary>
+    Tracks the ESim Cellular network profile status when the primary user
+    logs-in to the device.
+  </summary>
+</histogram>
+
+<histogram name="Network.Cellular.ESim.Usage.Count" enum="NetworkCellularUsage"
+    expires_after="2022-03-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Tracks the number of times a ESim cellular network is connected as the only
+    network, or with other network or not connected at all.
+  </summary>
+</histogram>
+
+<histogram name="Network.Cellular.Pin.{SimPinOperation}"
+    enum="SimPinOperationResult" expires_after="2022-03-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-system-services-networking@google.com</owner>
+  <owner>hsuregan@chromium.org</owner>
+  <summary>Tracks the rate of success of various pin operations.</summary>
+  <token key="SimPinOperation">
+    <variant name="ChangeSuccess"/>
+    <variant name="LockSuccess"/>
+    <variant name="UnblockSuccess"/>
+    <variant name="UnlockSuccess"/>
+  </token>
+</histogram>
+
+<histogram name="Network.Cellular.PSim.ServiceAtLogin.Count" units="units"
+    expires_after="2022-03-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-system-services-networking@google.com</owner>
+  <summary>
+    Tracks how many pSIM networks are available on the device after a primary
+    user login.
+  </summary>
+</histogram>
+
+<histogram name="Network.Cellular.PSim.SetupFlowResult"
+    enum="PSimSetupFlowResult" expires_after="2022-03-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>hsuregan@chromium.org</owner>
+  <summary>
+    Tracks the result of the physical SIM card setup flow when the setup dialog
+    closes.
+  </summary>
+</histogram>
+
+<histogram name="Network.Cellular.PSim.StatusAtLogin"
+    enum="NetworkCellularPSimActivationState" expires_after="2022-03-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>hsuregan@chromium.org</owner>
+  <summary>
+    Tracks the PSim Cellular network activation state when the primary user
+    logs-in to the device.
+  </summary>
+</histogram>
+
+<histogram name="Network.Cellular.PSim.Usage.Count" enum="NetworkCellularUsage"
+    expires_after="2022-03-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Tracks the number of times an PSim cellular network is connected as the only
+    network, or with other network or not connected at all.
+  </summary>
+</histogram>
+
 <histogram name="Network.Cellular.Usage.Count" enum="NetworkCellularUsage"
     expires_after="2021-06-30">
+  <obsolete>
+    Split into Network.Cellular.PSim.Usage.Count and
+    Network.Cellular.ESim.Usage.Count on 2/2021 in M91.
+  </obsolete>
   <owner>azeemarshad@chromium.org</owner>
   <owner>cros-system-services-networking@google.com</owner>
   <summary>
     Tracks the number of times a cellular network is connected as the only
     network, or with other network or not connected at all.
   </summary>
+</histogram>
+
+<histogram name="Network.Cellular.{SimType}.CellularSetup.{Result}.Duration"
+    units="ms" expires_after="2021-08-29">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>hsuregan@chromium.org</owner>
+  <summary>
+    Tracks the time taken by the user to complete Cellular setup flow of a
+    {SimType} network with result {Result}.
+  </summary>
+  <token key="SimType">
+    <variant name="ESim"/>
+    <variant name="PSim"/>
+  </token>
+  <token key="Result">
+    <variant name="Failure"/>
+    <variant name="Success"/>
+  </token>
+</histogram>
+
+<histogram name="Network.Cellular.{SimType}.ConnectionSuccess"
+    enum="CellularConnectResult" expires_after="2022-03-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>hsuregan@chromium.org</owner>
+  <summary>
+    Tracks the result of connecting to a cellular network. Logged when a
+    {SimType} connection succeeds or fails. In the case of failure, which can
+    occur in the Chrome or Shill layers, the error reason is emitted. Note that
+    Shill errors are mapped to Unknown. Refer to
+    go/cros-cellular-success-metrics for details.
+  </summary>
+  <token key="SimType">
+    <variant name="ESim"/>
+    <variant name="PSim"/>
+  </token>
+</histogram>
+
+<histogram name="Network.Cellular.{SimType}.Disconnections"
+    enum="NetworkCellularConnectionState" expires_after="2022-03-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-system-services-networking@google.com</owner>
+  <summary>
+    Tracks when cellular {SimType} network is connected and when cellular
+    network is disconnected without explicit user action.
+  </summary>
+  <token key="SimType">
+    <variant name="ESim"/>
+    <variant name="PSim"/>
+  </token>
+</histogram>
+
+<histogram name="Network.Cellular.{SimType}.TimeToConnected" units="ms"
+    expires_after="2022-03-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>hsuregan@chromium.org</owner>
+  <summary>
+    Tracks the amount fo time taken between when cellular device starts and
+    finishes connecting for {SimType} networks.
+  </summary>
+  <token key="SimType">
+    <variant name="ESim"/>
+    <variant name="PSim"/>
+  </token>
+</histogram>
+
+<histogram name="Network.Cellular.{SimType}.Usage.Duration" units="seconds"
+    expires_after="2022-03-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>hsuregan@chromium.org</owner>
+  <summary>
+    Tracks how long users are using a {SimType} cellular network as the sole
+    network for connectivity on their device.
+  </summary>
+  <token key="SimType">
+    <variant name="ESim"/>
+    <variant name="PSim"/>
+  </token>
 </histogram>
 
 <histogram name="Network.Shill.Cellular.3GPPRegistrationDelayedDrop"
@@ -1343,7 +1584,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Network.Shill.Wifi.LinkMonitorsDetectionTimeDiff.NeighborBetter"
-    units="ms" expires_after="M91">
+    units="ms" expires_after="2021-07-27">
   <owner>jiejiang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1979,7 +2220,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Wifi.Synced.Connection.FailureReason"
-    enum="ConnectionFailureReason" expires_after="2021-06-27">
+    enum="ConnectionFailureReason" expires_after="2021-08-29">
   <owner>jonmann@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1989,7 +2230,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Wifi.Synced.Connection.Result" enum="BooleanSuccess"
-    expires_after="2021-06-27">
+    expires_after="2021-08-29">
   <owner>jonmann@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -2009,7 +2250,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Wifi.Synced.ManualConnection.Result"
-    enum="BooleanSuccess" expires_after="2021-06-27">
+    enum="BooleanSuccess" expires_after="2021-08-29">
   <owner>jonmann@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -2019,7 +2260,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Wifi.Synced.TotalCount" units="units"
-    expires_after="2021-06-27">
+    expires_after="2021-08-29">
   <owner>jonmann@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -2029,7 +2270,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Wifi.Synced.UpdateOperation.FailureReason"
-    enum="ConnectionFailureReason" expires_after="2021-04-22">
+    enum="ConnectionFailureReason" expires_after="2021-07-27">
   <owner>jonmann@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -2040,13 +2281,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Wifi.Synced.UpdateOperation.Result"
-    enum="BooleanSuccess" expires_after="2021-06-27">
+    enum="BooleanSuccess" expires_after="2021-08-29">
   <owner>jonmann@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
     Chrome OS metric that tracks the result of update attempts to synced Wi-Fi
     networks. This includes create/modify/remove operations. failures are only
     recorded after all retries have been exhausted.
+  </summary>
+</histogram>
+
+<histogram name="Network.Wifi.Synced.ZeroNetworksEligibleForSync.Reason"
+    enum="NetworkEligibilityStatus" expires_after="2021-11-01">
+  <owner>cvandermerwe@google.com</owner>
+  <owner>jonmann@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Chrome OS metric logged for users who have the feature enabled but have zero
+    networks eligible for sync. Tracks the reasons why none of the networks are
+    eligible.
   </summary>
 </histogram>
 
@@ -2100,7 +2353,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NetworkService.CorsForcedOffForIsolatedWorldOrigin"
-    enum="BooleanForceDisabled" expires_after="M92">
+    enum="BooleanForceDisabled" expires_after="2021-08-09">
   <owner>lukasza@chromium.org</owner>
   <owner>rdevlin.cronin@chromium.org</owner>
   <summary>
@@ -2153,6 +2406,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="NetworkService.StreamingUploadDataPipeGetterValidity"
     units="BooleanValid" expires_after="2021-03-31">
+  <obsolete>
+    Removed 03/2021
+  </obsolete>
   <owner>yhirano@chromium.org</owner>
   <owner>yoichio@chromium.org</owner>
   <summary>
@@ -2195,7 +2451,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="NetworkService.URLLoader.RequestInitiatorOriginLockCompatibility"
-    enum="RequestInitiatorOriginLockCompatibility" expires_after="2021-05-02">
+    enum="RequestInitiatorOriginLockCompatibility" expires_after="2021-09-05">
   <owner>lukasza@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>jam@chromium.org</owner>

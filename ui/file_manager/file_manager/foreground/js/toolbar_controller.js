@@ -2,12 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {FileListSelectionModel} from './ui/file_list_selection_model.m.js';
+// #import {A11yAnnounce} from './ui/a11y_announce.m.js';
+// #import {VolumeManager} from '../../externs/volume_manager.m.js';
+// #import {FileOperationManager} from '../../externs/background/file_operation_manager.m.js';
+// #import {DirectoryModel} from './directory_model.m.js';
+// #import {LocationLine} from './ui/location_line.m.js';
+// #import {ListContainer} from './ui/list_container.m.js';
+// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
+// #import {util, str, strf} from '../../common/js/util.m.js';
+// #import {FileSelectionHandler} from './file_selection.m.js';
+// #import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
+// #import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
+// #import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
+// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+// clang-format on
+
 /**
  * This class controls wires toolbar UI and selection model. When selection
  * status is changed, this class changes the view of toolbar. If cancel
  * selection button is pressed, this class clears the selection.
  */
-class ToolbarController {
+/* #export */ class ToolbarController {
   /**
    * @param {!HTMLElement} toolbar Toolbar element which contains controls.
    * @param {!HTMLElement} navigationList Navigation list on the left pane. The
@@ -18,11 +35,12 @@ class ToolbarController {
    * @param {!FileSelectionHandler} selectionHandler
    * @param {!DirectoryModel} directoryModel
    * @param {!VolumeManager} volumeManager
+   * @param {!FileOperationManager} fileOperationManager
    * @param {!A11yAnnounce} a11y
    */
   constructor(
       toolbar, navigationList, listContainer, locationLine, selectionHandler,
-      directoryModel, volumeManager, a11y) {
+      directoryModel, volumeManager, fileOperationManager, a11y) {
     /**
      * @private {!HTMLElement}
      * @const
@@ -60,8 +78,22 @@ class ToolbarController {
      * @private {!HTMLElement}
      * @const
      */
+    this.moveToTrashButton_ =
+        queryRequiredElement('#move-to-trash-button', this.toolbar_);
+
+    /**
+     * @private {!HTMLElement}
+     * @const
+     */
     this.restoreFromTrashButton_ =
         queryRequiredElement('#restore-from-trash-button', this.toolbar_);
+
+    /**
+     * @private {!HTMLElement}
+     * @const
+     */
+    this.emptyTrashButton_ =
+        queryRequiredElement('#empty-trash-button', this.toolbar_);
 
     /**
      * @private {!HTMLElement}
@@ -96,9 +128,27 @@ class ToolbarController {
      * @private {!cr.ui.Command}
      * @const
      */
+    this.moveToTrashCommand_ = assertInstanceof(
+        queryRequiredElement(
+            '#move-to-trash', assert(this.toolbar_.ownerDocument.body)),
+        cr.ui.Command);
+
+    /**
+     * @private {!cr.ui.Command}
+     * @const
+     */
     this.restoreFromTrashCommand_ = assertInstanceof(
         queryRequiredElement(
             '#restore-from-trash', assert(this.toolbar_.ownerDocument.body)),
+        cr.ui.Command);
+
+    /**
+     * @private {!cr.ui.Command}
+     * @const
+     */
+    this.emptyTrashCommand_ = assertInstanceof(
+        queryRequiredElement(
+            '#empty-trash', assert(this.toolbar_.ownerDocument.body)),
         cr.ui.Command);
 
     /**
@@ -174,6 +224,12 @@ class ToolbarController {
     this.volumeManager_ = volumeManager;
 
     /**
+     * @private {!FileOperationManager}
+     * @const
+     */
+    this.fileOperationManager_ = fileOperationManager;
+
+    /**
      * @private {!A11yAnnounce}
      * @const
      */
@@ -199,8 +255,14 @@ class ToolbarController {
     this.deleteButton_.addEventListener(
         'click', this.onDeleteButtonClicked_.bind(this));
 
+    this.moveToTrashButton_.addEventListener(
+        'click', this.onMoveToTrashButtonClicked_.bind(this));
+
     this.restoreFromTrashButton_.addEventListener(
         'click', this.onRestoreFromTrashButtonClicked_.bind(this));
+
+    this.emptyTrashButton_.addEventListener(
+        'click', this.onEmptyTrashButtonClicked_.bind(this));
 
     if (util.isFilesNg()) {
       this.togglePinnedCommand_.addEventListener(
@@ -297,18 +359,32 @@ class ToolbarController {
     }
     this.filesSelectedLabel_.textContent = text;
 
-    // Update visibility of the delete button.
+    // Update visibility of the delete and move to trash buttons.
     this.deleteButton_.hidden =
         (selection.totalCount === 0 ||
          !this.directoryModel_.canDeleteEntries() ||
          selection.hasReadOnlyEntry() ||
          selection.entries.some(
              entry => util.isNonModifiable(this.volumeManager_, entry)));
+    // Show 'Move to Trash' rather than 'Delete' if possible.
+    this.moveToTrashButton_.hidden = true;
+    if (!this.deleteButton_.hidden &&
+        loadTimeData.getBoolean('FILES_TRASH_ENABLED') &&
+        this.fileOperationManager_.willUseTrash(
+            this.volumeManager_, selection.entries)) {
+      this.deleteButton_.hidden = true;
+      this.moveToTrashButton_.hidden = false;
+    }
 
     // Update visibility of the restore-from-trash button.
     this.restoreFromTrashButton_.hidden = (selection.totalCount == 0) ||
         this.directoryModel_.getCurrentRootType() !==
             VolumeManagerCommon.RootType.TRASH;
+
+    // Update visibility of the empty-trash button.
+    this.emptyTrashButton_.hidden =
+        this.directoryModel_.getCurrentRootType() !==
+        VolumeManagerCommon.RootType.TRASH;
 
     if (util.isFilesNg()) {
       this.togglePinnedCommand_.canExecuteChange(
@@ -329,9 +405,6 @@ class ToolbarController {
           /** @type {!FileListSelectionModel} */
           (this.directoryModel_.getFileListSelection()).getCheckSelectMode()) {
         bodyClassList.toggle('check-select');
-        // Some custom styles depend on |check-select| class. We need to
-        // re-evaluate the custom styles when the class value is changed.
-        Polymer.updateStyles();
       }
     }
   }
@@ -355,6 +428,16 @@ class ToolbarController {
   }
 
   /**
+   * Handles click event for move to trash button to execute the move to trash
+   * command.
+   * @private
+   */
+  onMoveToTrashButtonClicked_() {
+    this.moveToTrashCommand_.canExecuteChange(this.listContainer_.currentList);
+    this.moveToTrashCommand_.execute(this.listContainer_.currentList);
+  }
+
+  /**
    * Handles click event for restore from trash button to execute the restore
    * command.
    * @private
@@ -363,6 +446,16 @@ class ToolbarController {
     this.restoreFromTrashCommand_.canExecuteChange(
         this.listContainer_.currentList);
     this.restoreFromTrashCommand_.execute(this.listContainer_.currentList);
+  }
+
+  /**
+   * Handles click event for empty trash button to empty the trash.
+   * command.
+   * @private
+   */
+  onEmptyTrashButtonClicked_() {
+    this.emptyTrashCommand_.canExecuteChange(this.listContainer_.currentList);
+    this.emptyTrashCommand_.execute(this.listContainer_.currentList);
   }
 
   /**

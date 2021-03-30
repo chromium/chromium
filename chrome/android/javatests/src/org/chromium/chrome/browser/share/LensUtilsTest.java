@@ -29,8 +29,8 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensIntentParams;
-import org.chromium.chrome.browser.lens.LensQueryResult;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -76,9 +76,8 @@ public class LensUtilsTest {
 
         Intent intentNoUri = getShareWithGoogleLensIntentOnUiThread(Uri.EMPTY,
                 /* isIncognito= */ false, 1234L, /* srcUrl */ "", /* titleOrAltText */ "",
-                /* pageUrl */ null,
-                /* lensQueryResult */ null,
-                /* requiresConfirmation= */ false);
+                /* pageUrl */ null, LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM,
+                /* requiresConfirmation */ false);
         Assert.assertEquals("Intent without image has incorrect URI", "googleapp://lens",
                 intentNoUri.getData().toString());
         Assert.assertEquals("Intent without image has incorrect action", Intent.ACTION_VIEW,
@@ -87,9 +86,8 @@ public class LensUtilsTest {
         final String contentUrl = "content://image-url";
         Intent intentWithContentUri = getShareWithGoogleLensIntentOnUiThread(Uri.parse(contentUrl),
                 /* isIncognito= */ false, 1234L, /* srcUrl */ "", /* titleOrAltText */ "",
-                /* pageUrl */ null,
-                /* lensQueryResult */ null,
-                /* requiresConfirmation= */ false);
+                /* pageUrl */ null, LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM,
+                /* requiresConfirmation */ false);
         Assert.assertEquals("Intent with image has incorrect URI",
                 "googleapp://lens?LensBitmapUriKey=content%3A%2F%2Fimage-url&AccountNameUriKey="
                         + "test%40gmail.com&IncognitoUriKey=false&ActivityLaunchTimestampNanos=1234",
@@ -242,69 +240,6 @@ public class LensUtilsTest {
     }
 
     /**
-     * Test {@link LensUtils#enableImageChip()} method when disable incognito param is
-     * unset and user is incognito.
-     */
-    @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.CONTEXT_MENU_SHOP_WITH_GOOGLE_LENS
-                    + "<FakeStudyName",
-            "force-fieldtrials=FakeStudyName/Enabled"})
-    @Test
-    @SmallTest
-    public void
-    enableImageChip_incognitoParamUnsetIncognitoUser() {
-        Assert.assertFalse("Feature incorrectly enabled when incognito param is not set",
-                enableImageChipOnUiThread(true));
-    }
-
-    /**
-     * Test {@link LensUtils#enableImageChip()} method when incognito users are
-     * enabled and user is incognito.
-     */
-    @CommandLineFlags.
-    Add({"enable-features=" + ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP + "<FakeStudyName",
-            "force-fieldtrials=FakeStudyName/Enabled",
-            "force-fieldtrial-params=FakeStudyName.Enabled:disableOnIncognito/false"})
-    @Test
-    @SmallTest
-    public void
-    enableImageChip_incognitoEnabledIncognitoUser() {
-        Assert.assertTrue("Feature incorrectly disabled when incognito param is not set",
-                enableImageChipOnUiThread(true));
-    }
-
-    /**
-     * Test {@link LensUtils#enableImageChip()} method when incognito users are disabled
-     * and user is incognito.
-     */
-    @CommandLineFlags.
-    Add({"enable-features=" + ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP + "<FakeStudyName",
-            "force-fieldtrials=FakeStudyName/Enabled",
-            "force-fieldtrial-params=FakeStudyName.Enabled:disableOnIncognito/true"})
-    @Test
-    @SmallTest
-    public void
-    enableImageChip_incognitoDisabledIncognitoUser() {
-        Assert.assertFalse("Feature incorrectly not disabled when incognito param was set",
-                enableImageChipOnUiThread(true));
-    }
-
-    /**
-     * Test {@link LensUtils#enableImageChip()} method when incognito users are disabled
-     * and user is not incognito.
-     */
-    @CommandLineFlags.
-    Add({"enable-features=" + ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP + "<FakeStudyName",
-            "force-fieldtrials=FakeStudyName/Enabled",
-            "force-fieldtrial-params=FakeStudyName.Enabled:disableOnIncognito/true"})
-    @Test
-    @SmallTest
-    public void
-    enableImageChip_incognitoDisabledStandardUser() {
-        Assert.assertTrue("Feature incorrectly disabled when user was not incognito",
-                enableImageChipOnUiThread(false));
-    }
-
-    /**
      * Test {@link LensUtils#getShareWithGoogleLensIntent()} method when user is signed
      * in and the direct intent experiment is enabled.
      */
@@ -320,9 +255,8 @@ public class LensUtilsTest {
         LensUtils.setFakeInstalledAgsaVersion(TEST_MIN_AGSA_VERSION);
         Intent intentNoUri = getShareWithGoogleLensIntentOnUiThread(Uri.EMPTY,
                 /* isIncognito= */ false, 1234L, /* srcUrl */ "", /* titleOrAltText */ "",
-                /* pageUrl */ null,
-                /* lensQueryResult */ null,
-                /* requiresConfirmation= */ false);
+                /* pageUrl */ null, LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM,
+                /* requiresConfirmation */ false);
         Assert.assertEquals("Intent without image has incorrect URI", "google://lens",
                 intentNoUri.getData().toString());
         Assert.assertEquals("Intent without image has incorrect action", Intent.ACTION_VIEW,
@@ -331,9 +265,8 @@ public class LensUtilsTest {
         final String contentUrl = "content://image-url";
         Intent intentWithContentUri = getShareWithGoogleLensIntentOnUiThread(Uri.parse(contentUrl),
                 /* isIncognito= */ false, 1234L, /* srcUrl */ "", /* titleOrAltText */ "",
-                /* pageUrl */ null,
-                /* lensQueryResult */ null,
-                /* requiresConfirmation= */ false);
+                /* pageUrl */ null, LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM,
+                /* requiresConfirmation */ false);
         Assert.assertEquals("Intent with image has incorrect URI",
                 "google://lens?LensBitmapUriKey=content%3A%2F%2Fimage-url"
                         + "&AccountNameUriKey=test%40gmail.com&IncognitoUriKey=false"
@@ -359,9 +292,8 @@ public class LensUtilsTest {
         LensUtils.setFakeInstalledAgsaVersion("");
         Intent intentNoUri = getShareWithGoogleLensIntentOnUiThread(Uri.EMPTY,
                 /* isIncognito= */ false, 1234L, /* srcUrl */ "", /* titleOrAltText */ "",
-                /* pageUrl */ null,
-                /* lensQueryResult */ null,
-                /* requiresConfirmation= */ false);
+                /* pageUrl */ null, LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM,
+                /* requiresConfirmation */ false);
         Assert.assertEquals("Intent without image has incorrect URI", "googleapp://lens",
                 intentNoUri.getData().toString());
         Assert.assertEquals("Intent without image has incorrect action", Intent.ACTION_VIEW,
@@ -370,9 +302,8 @@ public class LensUtilsTest {
         final String contentUrl = "content://image-url";
         Intent intentWithContentUri = getShareWithGoogleLensIntentOnUiThread(Uri.parse(contentUrl),
                 /* isIncognito= */ false, 1234L, /* srcUrl */ "", /* titleOrAltText */ "",
-                /* pageUrl */ null,
-                /* lensQueryResult */ null,
-                /* requiresConfirmation= */ false);
+                /* pageUrl */ null, LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM,
+                /* requiresConfirmation */ false);
         Assert.assertEquals("Intent with image has incorrect URI",
                 "googleapp://lens?LensBitmapUriKey=content%3A%2F%2Fimage-url"
                         + "&AccountNameUriKey=test%40gmail.com&IncognitoUriKey=false"
@@ -399,9 +330,8 @@ public class LensUtilsTest {
         LensUtils.setFakeInstalledAgsaVersion(TEST_MIN_AGSA_VERSION_BELOW_DIRECT_INTENT_MIN);
         Intent intentNoUri = getShareWithGoogleLensIntentOnUiThread(Uri.EMPTY,
                 /* isIncognito= */ false, 1234L, /* srcUrl */ "", /* titleOrAltText */ "",
-                /* pageUrl */ null,
-                /* lensQueryResult */ null,
-                /* requiresConfirmation= */ false);
+                /* pageUrl */ null, LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM,
+                /* requiresConfirmation */ false);
         Assert.assertEquals("Intent without image has incorrect URI", "googleapp://lens",
                 intentNoUri.getData().toString());
         Assert.assertEquals("Intent without image has incorrect action", Intent.ACTION_VIEW,
@@ -410,9 +340,8 @@ public class LensUtilsTest {
         final String contentUrl = "content://image-url";
         Intent intentWithContentUri = getShareWithGoogleLensIntentOnUiThread(Uri.parse(contentUrl),
                 /* isIncognito= */ false, 1234L, /* srcUrl */ "", /* titleOrAltText */ "",
-                /* pageUrl */ null,
-                /* lensQueryResult */ null,
-                /* requiresConfirmation= */ false);
+                /* pageUrl */ null, LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM,
+                /* requiresConfirmation */ false);
         Assert.assertEquals("Intent with image has incorrect URI",
                 "googleapp://lens?LensBitmapUriKey=content%3A%2F%2Fimage-url"
                         + "&AccountNameUriKey=test%40gmail.com&IncognitoUriKey=false"
@@ -432,9 +361,8 @@ public class LensUtilsTest {
         mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
         Intent intentNoUri = getShareWithGoogleLensIntentOnUiThread(Uri.EMPTY,
                 /* isIncognito= */ true, 1234L, /* srcUrl */ "", /* titleOrAltText */ "",
-                /* pageUrl */ null,
-                /* lensQueryResult */ null,
-                /* requiresConfirmation= */ false);
+                /* pageUrl */ null, LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM,
+                /* requiresConfirmation */ false);
         Assert.assertEquals("Intent without image has incorrect URI", "googleapp://lens",
                 intentNoUri.getData().toString());
         Assert.assertEquals("Intent without image has incorrect action", Intent.ACTION_VIEW,
@@ -443,9 +371,8 @@ public class LensUtilsTest {
         final String contentUrl = "content://image-url";
         Intent intentWithContentUri = getShareWithGoogleLensIntentOnUiThread(Uri.parse(contentUrl),
                 /* isIncognito= */ true, 1234L, /* srcUrl */ "", /* titleOrAltText */ "",
-                /* pageUrl */ null,
-                /* lensQueryResult */ null,
-                /* requiresConfirmation= */ false);
+                /* pageUrl */ null, LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM,
+                /* requiresConfirmation */ false);
         // The account name should not be included in the intent because the uesr is incognito.
         Assert.assertEquals("Intent with image has incorrect URI",
                 "googleapp://lens?LensBitmapUriKey=content%3A%2F%2Fimage-url&AccountNameUriKey="
@@ -468,8 +395,8 @@ public class LensUtilsTest {
         final String contentUrl = "content://image-url";
         Intent intentWithContentUri = getShareWithGoogleLensIntentOnUiThread(Uri.parse(contentUrl),
                 /* isIncognito= */ false, 1234L, /* srcUrl */ "",
-                /* titleOrAltText */ "", /* pageUrl */ null, /* lensQueryResult */ null,
-                /* requiresConfirmation= */ false);
+                /* titleOrAltText */ "", /* pageUrl */ null,
+                LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM, /* requiresConfirmation */ false);
         // The account name should not be included in the intent because the uesr is incognito.
         Assert.assertEquals("Intent with image has incorrect URI",
                 "googleapp://lens?LensBitmapUriKey=content%3A%2F%2Fimage-url&AccountNameUriKey="
@@ -493,8 +420,8 @@ public class LensUtilsTest {
         final String contentUrl = "content://image-url";
         Intent intentWithContentUri = getShareWithGoogleLensIntentOnUiThread(Uri.parse(contentUrl),
                 /* isIncognito= */ true, 1234L, /* srcUrl */ "",
-                /* titleOrAltText */ "", /* pageUrl */ null, /* lensQueryResult */ null,
-                /* requiresConfirmation= */ false);
+                /* titleOrAltText */ "", /* pageUrl */ null,
+                LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM, /* requiresConfirmation */ false);
         // The account name should not be included in the intent because the uesr is incognito.
         Assert.assertEquals("Intent with image has incorrect URI",
                 "googleapp://lens?LensBitmapUriKey=content%3A%2F%2Fimage-url&AccountNameUriKey="
@@ -513,9 +440,8 @@ public class LensUtilsTest {
     public void getShareWithGoogleLensIntentNotSignedInTest() {
         Intent intentNoUri = getShareWithGoogleLensIntentOnUiThread(Uri.EMPTY,
                 /* isIncognito= */ false, 1234L, /* srcUrl */ "", /* titleOrAltText */ "",
-                /* pageUrl */ null,
-                /* lensQueryResult */ null,
-                /* requiresConfirmation= */ false);
+                /* pageUrl */ null, LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM,
+                /* requiresConfirmation */ false);
         Assert.assertEquals("Intent without image has incorrect URI", "googleapp://lens",
                 intentNoUri.getData().toString());
         Assert.assertEquals("Intent without image has incorrect action", Intent.ACTION_VIEW,
@@ -524,9 +450,8 @@ public class LensUtilsTest {
         final String contentUrl = "content://image-url";
         Intent intentWithContentUri = getShareWithGoogleLensIntentOnUiThread(Uri.parse(contentUrl),
                 /* isIncognito= */ false, 1234L, /* srcUrl */ "", /* titleOrAltText */ "",
-                /* pageUrl */ null,
-                /* lensQueryResult */ null,
-                /* requiresConfirmation= */ false);
+                /* pageUrl */ null, LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM,
+                /* requiresConfirmation */ false);
         Assert.assertEquals("Intent with image has incorrect URI",
                 "googleapp://lens?LensBitmapUriKey=content%3A%2F%2Fimage-url&AccountNameUriKey="
                         + "&IncognitoUriKey=false&ActivityLaunchTimestampNanos=1234",
@@ -546,9 +471,8 @@ public class LensUtilsTest {
         Intent intentWithContentUriZeroTimestamp =
                 getShareWithGoogleLensIntentOnUiThread(Uri.parse(contentUrl),
                         /* isIncognito= */ false, 0L, /* srcUrl */ "", /* titleOrAltText */ "",
-                        /* pageUrl */ null,
-                        /* lensQueryResult */ null,
-                        /* requiresConfirmation= */ false);
+                        /* pageUrl */ null, LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM,
+                        /* requiresConfirmation */ false);
         Assert.assertEquals("Intent with image has incorrect URI",
                 "googleapp://lens?LensBitmapUriKey=content%3A%2F%2Fimage-url&AccountNameUriKey="
                         + "&IncognitoUriKey=false&ActivityLaunchTimestampNanos=0",
@@ -557,12 +481,12 @@ public class LensUtilsTest {
 
     private Intent getShareWithGoogleLensIntentOnUiThread(Uri imageUri, boolean isIncognito,
             long currentTimeNanos, String srcUrl, String titleOrAltText, String pageUrl,
-            LensQueryResult lensQueryResult, boolean requiresConfirmation) {
+            @LensEntryPoint int lensEntryPoint, boolean requiresConfirmation) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 ()
                         -> LensUtils.getShareWithGoogleLensIntent(mContext, imageUri, isIncognito,
                                 currentTimeNanos, new GURL(srcUrl), titleOrAltText,
-                                new GURL(pageUrl), lensQueryResult, requiresConfirmation));
+                                new GURL(pageUrl), lensEntryPoint, requiresConfirmation));
     }
 
     /**
@@ -576,8 +500,7 @@ public class LensUtilsTest {
         Intent intentWithContentUri = getShareWithGoogleLensIntentOnUiThread(Uri.parse(contentUrl),
                 /* isIncognito= */ false, 1234L, /* srcUrl */ "",
                 /* titleOrAltText */ "An image description.", /* pageUrl */ null,
-                /* lensQueryResult */ null,
-                /* requiresConfirmation= */ false);
+                LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM, /* requiresConfirmation */ false);
         // The account name should not be included in the intent because the uesr is incognito.
         Assert.assertEquals("Intent with image has incorrect URI",
                 "googleapp://lens?LensBitmapUriKey=content%3A%2F%2Fimage-url&AccountNameUriKey="
@@ -603,8 +526,7 @@ public class LensUtilsTest {
         Intent intentWithContentUri = getShareWithGoogleLensIntentOnUiThread(Uri.parse(contentUrl),
                 /* isIncognito= */ true, 1234L, /* srcUrl */ "",
                 /* titleOrAltText */ "An image description.", /* pageUrl */ null,
-                /* lensQueryResult */ null,
-                /* requiresConfirmation= */ false);
+                LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM, /* requiresConfirmation */ false);
         // The account name should not be included in the intent because the uesr is incognito.
         Assert.assertEquals("Intent with image has incorrect URI",
                 "googleapp://lens?LensBitmapUriKey=content%3A%2F%2Fimage-url&AccountNameUriKey="
@@ -622,14 +544,10 @@ public class LensUtilsTest {
     @SmallTest
     public void getShareWithGoogleLensIntentWithShoppingIntentTest() {
         final String contentUrl = "content://image-url";
-        LensQueryResult lensQueryResult = (new LensQueryResult.Builder())
-                                                  .withIsShoppyIntent(true)
-                                                  .withLensIntentType(18)
-                                                  .build();
         Intent intentWithContentUri = getShareWithGoogleLensIntentOnUiThread(Uri.parse(contentUrl),
                 /* isIncognito= */ false, 1234L, /* srcUrl */ "",
-                /* titleOrAltText */ "", /* pageUrl */ null, /* lensQueryResult= */ lensQueryResult,
-                /* requiresConfirmation= */ false);
+                /* titleOrAltText */ "", /* pageUrl */ null,
+                LensEntryPoint.CONTEXT_MENU_SHOP_MENU_ITEM, /* requiresConfirmation */ false);
         // The account name should not be included in the intent because the uesr is incognito.
         Assert.assertEquals("Intent with image has incorrect URI",
                 "googleapp://lens?LensBitmapUriKey=content%3A%2F%2Fimage-url&AccountNameUriKey="
@@ -649,8 +567,8 @@ public class LensUtilsTest {
         final String contentUrl = "content://image-url";
         Intent intentWithContentUri = getShareWithGoogleLensIntentOnUiThread(Uri.parse(contentUrl),
                 /* isIncognito= */ false, 1234L, /* srcUrl */ "",
-                /* titleOrAltText */ "", /* pageUrl */ null, /* lensQueryResult */ null,
-                /* requiresConfirmation= */ true);
+                /* titleOrAltText */ "", /* pageUrl */ null,
+                LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM, /* requiresConfirmation */ true);
         // The account name should not be included in the intent because the uesr is incognito.
         Assert.assertEquals("Intent with image has incorrect URI",
                 "googleapp://lens?LensBitmapUriKey=content%3A%2F%2Fimage-url&AccountNameUriKey="
@@ -677,8 +595,7 @@ public class LensUtilsTest {
         Intent intentWithContentUri = getShareWithGoogleLensIntentOnUiThread(Uri.parse(contentUrl),
                 /* isIncognito= */ false, 1234L, /* srcUrl */ "",
                 /* titleOrAltText= */ "An image description.", /* pageUrl= */ null,
-                /* lensQueryResult */ null,
-                /* requiresConfirmation= */ false);
+                LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM, /* requiresConfirmation */ false);
         // The account name should not be included in the intent because the uesr is incognito.
         Assert.assertEquals("Intent with image has incorrect URI",
                 "googleapp://lens?LensBitmapUriKey=content%3A%2F%2Fimage-url&AccountNameUriKey="
@@ -706,8 +623,7 @@ public class LensUtilsTest {
                 /* isIncognito= */ false, 1234L, /* srcUrl */ "",
                 /* titleOrAltText */ "",
                 /* pageUrl */ "https://www.google.com?testQueryParam",
-                /* lensQueryResult */ null,
-                /* requiresConfirmation= */ false);
+                LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM, /* requiresConfirmation */ false);
         Assert.assertEquals("Intent with image has incorrect Page URL",
                 "googleapp://lens?LensBitmapUriKey=content%3A%2F%2Fimage-url&AccountNameUriKey="
                         + "&IncognitoUriKey=false&ActivityLaunchTimestampNanos=1234&PageUrl="
@@ -732,8 +648,7 @@ public class LensUtilsTest {
                 /* isIncognito= */ true, 1234L, /* srcUrl */ "",
                 /* titleOrAltText */ "",
                 /* pageUrl */ "https://www.google.com?testQueryParam",
-                /* lensQueryResult */ null,
-                /* requiresConfirmation= */ false);
+                LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM, /* requiresConfirmation */ false);
         Assert.assertEquals("Intent with image has incorrect URI",
                 "googleapp://lens?LensBitmapUriKey=content%3A%2F%2Fimage-url&AccountNameUriKey="
                         + "&IncognitoUriKey=true&ActivityLaunchTimestampNanos=1234",
@@ -752,8 +667,7 @@ public class LensUtilsTest {
                 /* isIncognito= */ false, 1234L, /* srcUrl */ "",
                 /* titleOrAltText */ "",
                 /* pageUrl */ "https://www.google.com?testQueryParam",
-                /* lensQueryResult */ null,
-                /* requiresConfirmation= */ false);
+                LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM, /* requiresConfirmation */ false);
         // The account name should not be included in the intent because the uesr is incognito.
         Assert.assertEquals("Intent with image has incorrect URI",
                 "googleapp://lens?LensBitmapUriKey=content%3A%2F%2Fimage-url&AccountNameUriKey="
@@ -771,8 +685,8 @@ public class LensUtilsTest {
         final String contentUrl = "content://image-url";
         Intent intentWithContentUri = getShareWithGoogleLensIntentOnUiThread(Uri.parse(contentUrl),
                 /* isIncognito= */ false, 1234L, /* srcUrl */ "http://www.google.com?key=val",
-                /* titleOrAltText */ "", /* pageUrl */ null, /* lensQueryResult */ null,
-                /* requiresConfirmation= */ false);
+                /* titleOrAltText */ "", /* pageUrl */ null,
+                LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM, /* requiresConfirmation */ false);
         // The account name should not be included in the intent because the param is disabled..
         Assert.assertEquals("Intent with image has incorrect URI",
                 "googleapp://lens?LensBitmapUriKey=content%3A%2F%2Fimage-url&AccountNameUriKey="
@@ -797,8 +711,8 @@ public class LensUtilsTest {
         final String contentUrl = "content://image-url";
         Intent intentWithContentUri = getShareWithGoogleLensIntentOnUiThread(Uri.parse(contentUrl),
                 /* isIncognito= */ false, 1234L, /* srcUrl */ "http://www.google.com?key=val",
-                /* titleOrAltText */ "", /* pageUrl */ null, /* lensQueryResult */ null,
-                /* requiresConfirmation= */ false);
+                /* titleOrAltText */ "", /* pageUrl */ null,
+                LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM, /* requiresConfirmation */ false);
         // The account name should not be included in the intent because the uesr is incognito.
         Assert.assertEquals("Intent with image has incorrect URI",
                 "googleapp://lens?LensBitmapUriKey=content%3A%2F%2Fimage-url&AccountNameUriKey="
@@ -824,8 +738,8 @@ public class LensUtilsTest {
         final String contentUrl = "content://image-url";
         Intent intentWithContentUri = getShareWithGoogleLensIntentOnUiThread(Uri.parse(contentUrl),
                 /* isIncognito= */ true, 1234L, /* srcUrl */ "http://www.google.com?key=val",
-                /* titleOrAltText */ "", /* pageUrl */ null, /* lensQueryResult */ null,
-                /* requiresConfirmation= */ false);
+                /* titleOrAltText */ "", /* pageUrl */ null,
+                LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM, /* requiresConfirmation */ false);
         // The account name should not be included in the intent because the uesr is incognito.
         Assert.assertEquals("Intent with image has incorrect URI",
                 "googleapp://lens?LensBitmapUriKey=content%3A%2F%2Fimage-url&AccountNameUriKey="
@@ -927,9 +841,10 @@ public class LensUtilsTest {
         final String srcUrl = "https://www.google.com";
         final String titleOrAltText = "Image Title";
         final String pageUrl = "https://www.google.com";
-        final boolean requiresConfirmation = false;
+        final int intentType = 0;
         LensIntentParams lensIntentParams = LensUtils.buildLensIntentParams(Uri.parse(contentUrl),
-                isIncognito, srcUrl, titleOrAltText, pageUrl, requiresConfirmation);
+                isIncognito, srcUrl, titleOrAltText, pageUrl,
+                LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM, /* requiresConfirmation */ false);
 
         Assert.assertEquals("Lens intent parameters has incorrect image URI.", contentUrl,
                 lensIntentParams.getImageUri().toString());
@@ -942,7 +857,9 @@ public class LensUtilsTest {
         Assert.assertEquals("Lens intent parameters has incorrect page URL.", pageUrl,
                 lensIntentParams.getPageUrl());
         Assert.assertEquals("Lens intent parameters has incorrect requires confirmation value.",
-                requiresConfirmation, lensIntentParams.getRequiresConfirmation());
+                false, lensIntentParams.getRequiresConfirmation());
+        Assert.assertEquals("Lens intent parameters has incorrect intent type value.", intentType,
+                lensIntentParams.getIntentType());
     }
 
     private boolean isInShoppingAllowlistOnUiThread(GURL imageUri) {
@@ -958,11 +875,6 @@ public class LensUtilsTest {
     private boolean isGoogleLensShoppingFeatureEnabledOnUiThread(boolean isIncognito) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> LensUtils.isGoogleLensShoppingFeatureEnabled(isIncognito));
-    }
-
-    private boolean enableImageChipOnUiThread(boolean isIncognito) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> LensUtils.enableImageChip(isIncognito));
     }
 
     private boolean shouldLogUkmOnUiThread(boolean isIncognito) {

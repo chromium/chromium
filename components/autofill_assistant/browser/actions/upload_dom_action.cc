@@ -32,7 +32,7 @@ void UploadDomAction::InternalProcessAction(ProcessActionCallback callback) {
     EndAction(ClientStatus(INVALID_SELECTOR));
     return;
   }
-  delegate_->ShortWaitForElement(
+  delegate_->ShortWaitForElementWithSlowWarning(
       selector,
       base::BindOnce(
           &UploadDomAction::OnWaitForElementTimed,

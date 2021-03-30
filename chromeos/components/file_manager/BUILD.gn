@@ -19,7 +19,6 @@ static_library("file_manager_ui") {
   deps = [
     "//base",
     "//chromeos/components/file_manager/mojom",
-    "//chromeos/constants",
     "//chromeos/resources:file_manager_resources",
     "//content/public/browser",
     "//ui/file_manager:file_manager_gen_resources",

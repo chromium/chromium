@@ -4,6 +4,7 @@
 
 #include "chrome/browser/component_updater/first_party_sets_component_installer.h"
 
+#include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
@@ -17,6 +18,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "net/base/features.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -24,6 +26,8 @@ namespace component_updater {
 
 namespace {
 using ::testing::_;
+using ::testing::Pair;
+using ::testing::UnorderedElementsAre;
 }  // namespace
 
 class FirstPartySetsComponentInstallerTest : public ::testing::Test {
@@ -110,6 +114,50 @@ TEST_F(FirstPartySetsComponentInstallerTest, LoadsSets_OnNetworkRestart) {
 
     run_loop.Run();
   }
+}
+
+TEST_F(FirstPartySetsComponentInstallerTest, GetInstallerAttributes_Disabled) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndDisableFeature(net::features::kFirstPartySets);
+
+  FirstPartySetsComponentInstallerPolicy policy(
+      base::DoNothing::Repeatedly<const std::string&>());
+
+  EXPECT_THAT(policy.GetInstallerAttributes(),
+              UnorderedElementsAre(Pair(FirstPartySetsComponentInstallerPolicy::
+                                            kDogfoodInstallerAttributeName,
+                                        "false")));
+}
+
+TEST_F(FirstPartySetsComponentInstallerTest,
+       GetInstallerAttributes_NonDogfooder) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      net::features::kFirstPartySets,
+      {{net::features::kFirstPartySetsIsDogfooder.name, "false"}});
+
+  FirstPartySetsComponentInstallerPolicy policy(
+      base::DoNothing::Repeatedly<const std::string&>());
+
+  EXPECT_THAT(policy.GetInstallerAttributes(),
+              UnorderedElementsAre(Pair(FirstPartySetsComponentInstallerPolicy::
+                                            kDogfoodInstallerAttributeName,
+                                        "false")));
+}
+
+TEST_F(FirstPartySetsComponentInstallerTest, GetInstallerAttributes_Dogfooder) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      net::features::kFirstPartySets,
+      {{net::features::kFirstPartySetsIsDogfooder.name, "true"}});
+
+  FirstPartySetsComponentInstallerPolicy policy(
+      base::DoNothing::Repeatedly<const std::string&>());
+
+  EXPECT_THAT(policy.GetInstallerAttributes(),
+              UnorderedElementsAre(Pair(FirstPartySetsComponentInstallerPolicy::
+                                            kDogfoodInstallerAttributeName,
+                                        "true")));
 }
 
 }  // namespace component_updater

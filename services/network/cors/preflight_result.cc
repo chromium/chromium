@@ -41,21 +41,32 @@ base::TimeTicks Now() {
   return base::TimeTicks::Now();
 }
 
-bool ParseAccessControlMaxAge(const base::Optional<std::string>& max_age,
-                              base::TimeDelta* expiry_delta) {
-  DCHECK(expiry_delta);
+base::TimeDelta ParseAccessControlMaxAge(
+    const base::Optional<std::string>& max_age) {
+  if (!max_age) {
+    return kDefaultTimeout;
+  }
 
-  if (!max_age)
-    return false;
+  int64_t seconds;
+  if (!base::StringToInt64(*max_age, &seconds)) {
+    return kDefaultTimeout;
+  }
 
-  uint64_t delta;
-  if (!base::StringToUint64(*max_age, &delta))
-    return false;
+  // Negative value doesn't make sense - use 0 instead, to represent that the
+  // entry cannot be cached.
+  if (seconds < 0) {
+    return base::TimeDelta();
+  }
+  // To avoid integer overflow, we compare seconds instead of comparing
+  // TimeDeltas.
+  static_assert(
+      kMaxTimeout == base::TimeDelta::FromSeconds(kMaxTimeout.InSeconds()),
+      "`kMaxTimeout` must be a multiple of one second.");
+  if (seconds >= kMaxTimeout.InSeconds()) {
+    return kMaxTimeout;
+  }
 
-  *expiry_delta = base::TimeDelta::FromSeconds(delta);
-  if (*expiry_delta > kMaxTimeout)
-    *expiry_delta = kMaxTimeout;
-  return true;
+  return base::TimeDelta::FromSeconds(seconds);
 }
 
 // Parses |string| as a Access-Control-Allow-* header value, storing the result
@@ -192,16 +203,7 @@ base::Optional<mojom::CorsError> PreflightResult::Parse(
   if (!ParseAccessControlAllowList(allow_headers_header, &headers_, true))
     return mojom::CorsError::kInvalidAllowHeadersPreflightResponse;
 
-  base::TimeDelta expiry_delta;
-  if (max_age_header) {
-    // Set expiry_delta to 0 on invalid Access-Control-Max-Age headers so to
-    // invalidate the entry immediately. CORS-preflight response should be still
-    // usable for the request that initiates the CORS-preflight.
-    if (!ParseAccessControlMaxAge(max_age_header, &expiry_delta))
-      expiry_delta = base::TimeDelta();
-  } else {
-    expiry_delta = kDefaultTimeout;
-  }
+  const base::TimeDelta expiry_delta = ParseAccessControlMaxAge(max_age_header);
   absolute_expiry_time_ = Now() + expiry_delta;
 
   return base::nullopt;

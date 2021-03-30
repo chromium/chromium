@@ -4,10 +4,11 @@
 
 #include "chrome/browser/ui/android/passwords/password_generation_dialog_view_android.h"
 
+#include <string>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "chrome/android/chrome_jni_headers/PasswordGenerationDialogBridge_jni.h"
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
 #include "chrome/browser/password_manager/android/password_generation_controller_impl.h"
@@ -39,14 +40,14 @@ PasswordGenerationDialogViewAndroid::~PasswordGenerationDialogViewAndroid() {
 }
 
 void PasswordGenerationDialogViewAndroid::Show(
-    base::string16& password,
+    std::u16string& password,
     base::WeakPtr<password_manager::PasswordManagerDriver> target_frame_driver,
     autofill::password_generation::PasswordGenerationType type) {
   generation_type_ = type;
   target_frame_driver_ = std::move(target_frame_driver);
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  base::string16 explanation_text =
+  std::u16string explanation_text =
       l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_PROMPT);
 
   Java_PasswordGenerationDialogBridge_showDialog(

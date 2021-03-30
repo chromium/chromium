@@ -1,0 +1,38 @@
+Tests that desktop device emulation affects media rules, viewport meta tag, body dimensions and window.screen.
+Loading page with viewport=w=dw
+Device:
+window.screenX = 110px
+window.screenY = 120px
+Viewport: = ?w=dw
+@media orientation = landscape
+window.orientation
+@media resolution = 96dpi
+@media device-pixel-ratio = 1.0000000298023224
+window.devicePixelRatio = 1.0000000298023224
+Widths:
+@media device-width = 1200px
+screen.width = 1200px
+screen.availWidth = 1200px
+window.outerWidth = 800px
+window.innerWidth = 800px
+@media width = 800px
+doc.docElem.clientWidth = 785px
+doc.docElem.offsetWidth = 785px
+doc.docElem.scrollWidth = 785px
+doc.body.clientWidth = 785px
+doc.body.offsetWidth = 785px
+doc.body.scrollWidth = 785px
+Heights:
+@media device-height = 1000px
+screen.height = 1000px
+screen.availHeight = 1000px
+window.outerHeight = 600px
+window.innerHeight = 600px
+@media height = 600px
+doc.docElem.clientHeight = 1000px
+doc.docElem.offsetHeight = 1000px
+doc.docElem.scrollHeight = 1000px
+doc.body.clientHeight = 600px
+doc.body.offsetHeight = 1000px
+doc.body.scrollHeight = 1000px
+

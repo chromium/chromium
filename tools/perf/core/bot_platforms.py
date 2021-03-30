@@ -36,6 +36,7 @@ class PerfPlatform(object):
                num_shards,
                platform_os,
                is_fyi=False,
+               is_calibration=False,
                run_reference_build=False,
                executables=None):
     benchmark_configs = benchmark_configs.Frozenset()
@@ -45,6 +46,7 @@ class PerfPlatform(object):
     # For sorting ignore case and "segments" in the bot name.
     self._sort_key = name.lower().replace('-', ' ')
     self._is_fyi = is_fyi
+    self._is_calibration = is_calibration
     self.run_reference_build = run_reference_build
     self.executables = executables or frozenset()
     assert num_shards
@@ -109,6 +111,14 @@ class PerfPlatform(object):
   @property
   def is_fyi(self):
     return self._is_fyi
+
+  @property
+  def is_calibration(self):
+    return self._is_calibration
+
+  @property
+  def is_official(self):
+    return not self._is_fyi and not self.is_calibration
 
   @property
   def builder_url(self):
@@ -211,6 +221,8 @@ def _GetBenchmarkConfig(benchmark_name, abridged=False):
 
 OFFICIAL_BENCHMARK_CONFIGS = PerfSuite(
     [_GetBenchmarkConfig(b.Name()) for b in OFFICIAL_BENCHMARKS])
+# power.mobile requires special hardware.
+OFFICIAL_BENCHMARK_CONFIGS = OFFICIAL_BENCHMARK_CONFIGS.Remove(['power.mobile'])
 # TODO(crbug.com/965158): Remove OFFICIAL_BENCHMARK_NAMES once sharding
 # scripts are no longer using it.
 OFFICIAL_BENCHMARK_NAMES = frozenset(
@@ -258,18 +270,6 @@ def _load_library_perf_tests(estimated_runtime=3):
   return ExecutableConfig('load_library_perf_tests',
                           estimated_runtime=estimated_runtime)
 
-
-def _media_perftests(estimated_runtime=16):
-  return ExecutableConfig(
-      'media_perftests',
-      flags=[
-          '--single-process-tests',
-          '--test-launcher-retry-limit=0',
-          '--isolated-script-test-filter=*::-*_unoptimized::*_unaligned::'
-          '*unoptimized_aligned',
-      ],
-      estimated_runtime=estimated_runtime)
-
 def _performance_browser_tests(estimated_runtime=67):
   return ExecutableConfig(
       'performance_browser_tests',
@@ -299,6 +299,10 @@ def _views_perftests(estimated_runtime=7):
                           flags=['--xvfb'],
                           estimated_runtime=estimated_runtime)
 
+_CHROME_HEALTH_BENCHMARK_CONFIGS_DESKTOP = PerfSuite([
+    _GetBenchmarkConfig('system_health.common_desktop')
+])
+
 
 _LINUX_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'blink_perf.display_locking',
@@ -308,7 +312,6 @@ _LINUX_EXECUTABLE_CONFIGS = frozenset([
     # TODO(crbug.com/811766): Add views_perftests.
     _base_perftests(200),
     _load_library_perf_tests(),
-    _media_perftests(),
     _performance_browser_tests(165),
     _tracing_perftests(5),
 ])
@@ -319,7 +322,6 @@ _MAC_HIGH_END_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
 _MAC_HIGH_END_EXECUTABLE_CONFIGS = frozenset([
     _base_perftests(300),
     _dawn_perf_tests(330),
-    _media_perftests(),
     _performance_browser_tests(190),
     _views_perftests(),
 ])
@@ -331,21 +333,16 @@ _MAC_LOW_END_EXECUTABLE_CONFIGS = frozenset([
     _load_library_perf_tests(),
     _performance_browser_tests(210),
 ])
-_MAC_ARM_DTK_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
-    'blink_perf.display_locking',
-    'v8.runtime_stats.top_25',
-])
-_MAC_ARM_DTK_EXECUTABLE_CONFIGS = frozenset([
+_MAC_M1_MINI_2020_BENCHMARK_CONFIGS = PerfSuite(
+    OFFICIAL_BENCHMARK_CONFIGS).Remove([
+        'blink_perf.display_locking',
+        'v8.runtime_stats.top_25',
+    ])
+_MAC_M1_MINI_2020_EXECUTABLE_CONFIGS = frozenset([
     _base_perftests(300),
     _dawn_perf_tests(330),
-    _media_perftests(),
     _performance_browser_tests(190),
     _views_perftests(),
-])
-_MAC_M1_MINI_2020_BENCHMARK_CONFIGS = PerfSuite([
-    'loading.desktop',
-]).Abridge([
-    'loading.desktop',
 ])
 
 _WIN_10_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
@@ -356,7 +353,6 @@ _WIN_10_EXECUTABLE_CONFIGS = frozenset([
     _base_perftests(200),
     _components_perftests(125),
     _dawn_perf_tests(600),
-    _media_perftests(),
     _views_perftests(),
 ])
 _WIN_10_LOW_END_BENCHMARK_CONFIGS = PerfSuite(
@@ -366,6 +362,11 @@ _WIN_10_LOW_END_BENCHMARK_CONFIGS = PerfSuite(
 _WIN_10_LOW_END_HP_CANDIDATE_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('v8.browsing_desktop'),
     _GetBenchmarkConfig('rendering.desktop'),
+])
+_WIN_10_AMD_BENCHMARK_CONFIGS = PerfSuite([
+    _GetBenchmarkConfig('kraken'),
+    _GetBenchmarkConfig('octane'),
+    _GetBenchmarkConfig('system_health.common_desktop'),
 ])
 _WIN_7_BENCHMARK_CONFIGS = PerfSuite([
     'loading.desktop',
@@ -404,11 +405,10 @@ _ANDROID_NEXUS_5X_WEBVIEW_BENCHMARK_CONFIGS = PerfSuite(
         'system_health.weblayer_startup',
         'v8.browsing_mobile-future',
     ])
-_ANDROID_PIXEL2_BENCHMARK_CONFIGS = _OFFICIAL_EXCEPT_DISPLAY_LOCKING.Remove(
-    ['system_health.weblayer_startup'])
+_ANDROID_PIXEL2_BENCHMARK_CONFIGS = PerfSuite(
+    _OFFICIAL_EXCEPT_DISPLAY_LOCKING).Remove(['system_health.weblayer_startup'])
 _ANDROID_PIXEL2_EXECUTABLE_CONFIGS = frozenset([
     _components_perftests(60),
-    _media_perftests(75),
 ])
 _ANDROID_PIXEL2_WEBVIEW_BENCHMARK_CONFIGS = PerfSuite(
     OFFICIAL_BENCHMARK_CONFIGS).Remove([
@@ -423,13 +423,30 @@ _ANDROID_PIXEL2_WEBLAYER_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('startup.mobile'),
     _GetBenchmarkConfig('system_health.weblayer_startup')
 ])
-_ANDROID_PIXEL4A_POWER_BENCHMARK_CONFIGS = PerfSuite([
-    _GetBenchmarkConfig('power.mobile')])
-_ANDROID_NEXUS5X_FYI_BENCHMARK_CONFIGS = PerfSuite([
-    # Running a sample benchmark to help testing out the work on
-    # trace_processor_shell: crbug.com/1028612
-    _GetBenchmarkConfig('system_health_infinite_scroll.common_mobile')
+_ANDROID_PIXEL4_BENCHMARK_CONFIGS = PerfSuite(
+    _OFFICIAL_EXCEPT_DISPLAY_LOCKING).Remove(['system_health.weblayer_startup'])
+_ANDROID_PIXEL4_EXECUTABLE_CONFIGS = frozenset([
+    _components_perftests(60),
 ])
+_ANDROID_PIXEL4_WEBVIEW_BENCHMARK_CONFIGS = PerfSuite(
+    OFFICIAL_BENCHMARK_CONFIGS).Remove([
+        'blink_perf.display_locking',
+        'jetstream2',
+        'system_health.weblayer_startup',
+        'v8.browsing_mobile-future',
+    ])
+_ANDROID_PIXEL4_WEBLAYER_BENCHMARK_CONFIGS = PerfSuite([
+    _GetBenchmarkConfig('system_health.common_mobile', True),
+    _GetBenchmarkConfig('system_health.memory_mobile', True),
+    _GetBenchmarkConfig('startup.mobile'),
+    _GetBenchmarkConfig('system_health.weblayer_startup')
+])
+_ANDROID_PIXEL4A_POWER_BENCHMARK_CONFIGS = PerfSuite([
+    _GetBenchmarkConfig('power.mobile'),
+    _GetBenchmarkConfig('system_health.scroll_jank_mobile')
+])
+_ANDROID_NEXUS5X_FYI_BENCHMARK_CONFIGS = PerfSuite(
+    [_GetBenchmarkConfig('system_health.scroll_jank_mobile')])
 _ANDROID_PIXEL2_AAB_FYI_BENCHMARK_CONFIGS = PerfSuite(
     [_GetBenchmarkConfig('startup.mobile')])
 _ANDROID_PIXEL2_FYI_BENCHMARK_CONFIGS = PerfSuite([
@@ -440,25 +457,40 @@ _ANDROID_PIXEL2_FYI_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('speedometer2'),
     _GetBenchmarkConfig('rendering.mobile'),
     _GetBenchmarkConfig('octane'),
-    _GetBenchmarkConfig('jetstream')
+    _GetBenchmarkConfig('jetstream'),
+    _GetBenchmarkConfig('system_health.scroll_jank_mobile')
 ])
 _CHROMEOS_KEVIN_FYI_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('rendering.desktop')])
+_LACROS_EVE_BENCHMARK_CONFIGS = PerfSuite(['loading.desktop'
+                                           ]).Abridge(['loading.desktop'])
 _LINUX_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('power.desktop'),
     _GetBenchmarkConfig('rendering.desktop'),
     _GetBenchmarkConfig('system_health.common_desktop')
 ])
-_FUCHSIA_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite(
-    [_GetBenchmarkConfig('system_health.memory_desktop')])
+_FUCHSIA_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
+    _GetBenchmarkConfig('system_health.memory_desktop'),
+    _GetBenchmarkConfig('media.desktop')
+])
+_LINUX_PERF_CALIBRATION_BENCHMARK_CONFIGS = PerfSuite([
+    _GetBenchmarkConfig('speedometer2'),
+])
 
 
 # Linux
 LINUX = PerfPlatform(
     'linux-perf',
-    'Ubuntu-14.04, 8 core, NVIDIA Quadro P400',
+    'Ubuntu-18.04, 8 core, NVIDIA Quadro P400',
     _LINUX_BENCHMARK_CONFIGS,
     26,
+    'linux',
+    executables=_LINUX_EXECUTABLE_CONFIGS)
+LINUX_REL = PerfPlatform(
+    'linux-perf-rel',
+    'Ubuntu-18.04, 8 core, NVIDIA Quadro P400',
+    _CHROME_HEALTH_BENCHMARK_CONFIGS_DESKTOP,
+    2,
     'linux',
     executables=_LINUX_EXECUTABLE_CONFIGS)
 
@@ -477,29 +509,32 @@ MAC_LOW_END = PerfPlatform(
     26,
     'mac',
     executables=_MAC_LOW_END_EXECUTABLE_CONFIGS)
-MAC_ARM_DTK_ARM = PerfPlatform('mac-arm_dtk_arm-perf',
-                               'Mac ARM DTK (ARM Chrome)',
-                               _MAC_ARM_DTK_BENCHMARK_CONFIGS,
-                               8,
-                               'mac',
-                               executables=_MAC_ARM_DTK_EXECUTABLE_CONFIGS)
-MAC_M1_MINI_2020 = PerfPlatform('mac-m1_mini_2020-perf', 'Mac M1 Mini 2020',
-                                _MAC_M1_MINI_2020_BENCHMARK_CONFIGS, 2, 'mac')
+MAC_M1_MINI_2020 = PerfPlatform(
+    'mac-m1_mini_2020-perf',
+    'Mac M1 Mini 2020',
+    _MAC_M1_MINI_2020_BENCHMARK_CONFIGS,
+    8,
+    'mac',
+    executables=_MAC_M1_MINI_2020_EXECUTABLE_CONFIGS)
 
 # Win
 WIN_10_LOW_END = PerfPlatform(
     'win-10_laptop_low_end-perf',
     'Low end windows 10 HP laptops. HD Graphics 5500, x86-64-i3-5005U, '
-    'SSD, 4GB RAM.', _WIN_10_LOW_END_BENCHMARK_CONFIGS,
+    'SSD, 4GB RAM.',
+    _WIN_10_LOW_END_BENCHMARK_CONFIGS,
     # TODO(crbug.com/998161): Increase the number of shards once you
     # have enough test data to make a shard map and when more devices
     # are added to the data center.
-    26, 'win')
+    46,
+    'win')
 WIN_10 = PerfPlatform(
     'win-10-perf',
     'Windows Intel HD 630 towers, Core i7-7700 3.6 GHz, 16GB RAM,'
     ' Intel Kaby Lake HD Graphics 630', _WIN_10_BENCHMARK_CONFIGS,
     26, 'win', executables=_WIN_10_EXECUTABLE_CONFIGS)
+WIN_10_AMD = PerfPlatform('win-10_amd-perf', 'Windows AMD chipset',
+                          _WIN_10_AMD_BENCHMARK_CONFIGS, 2, 'win')
 WIN_7 = PerfPlatform('Win 7 Perf', 'N/A', _WIN_7_BENCHMARK_CONFIGS, 2, 'win')
 WIN_7_GPU = PerfPlatform('Win 7 Nvidia GPU Perf', 'N/A',
                          _WIN_7_GPU_BENCHMARK_CONFIGS, 3, 'win')
@@ -512,9 +547,12 @@ ANDROID_GO_WEBVIEW = PerfPlatform('android-go_webview-perf',
                                   'Android OPM1.171019.021 (gobo)',
                                   _ANDROID_GO_WEBVIEW_BENCHMARK_CONFIGS, 13,
                                   'android')
-ANDROID_NEXUS_5 = PerfPlatform(
-    'Android Nexus5 Perf', 'Android KOT49H', _ANDROID_NEXUS_5_BENCHMARK_CONFIGS,
-    8, 'android', executables=_ANDROID_NEXUS_5_EXECUTABLE_CONFIGS)
+ANDROID_NEXUS_5 = PerfPlatform('Android Nexus5 Perf',
+                               'Android KOT49H',
+                               _ANDROID_NEXUS_5_BENCHMARK_CONFIGS,
+                               10,
+                               'android',
+                               executables=_ANDROID_NEXUS_5_EXECUTABLE_CONFIGS)
 ANDROID_NEXUS_5X_WEBVIEW = PerfPlatform(
     'Android Nexus5X WebView Perf', 'Android AOSP MOB30K',
     _ANDROID_NEXUS_5X_WEBVIEW_BENCHMARK_CONFIGS, 16, 'android')
@@ -530,10 +568,27 @@ ANDROID_PIXEL2_WEBVIEW = PerfPlatform(
 ANDROID_PIXEL2_WEBLAYER = PerfPlatform(
     'android-pixel2_weblayer-perf', 'Android OPM1.171019.021',
     _ANDROID_PIXEL2_WEBLAYER_BENCHMARK_CONFIGS, 4, 'android')
+ANDROID_PIXEL4 = PerfPlatform('android-pixel4-perf',
+                              'Android R',
+                              _ANDROID_PIXEL4_BENCHMARK_CONFIGS,
+                              28,
+                              'android',
+                              executables=_ANDROID_PIXEL4_EXECUTABLE_CONFIGS)
+ANDROID_PIXEL4_WEBVIEW = PerfPlatform(
+    'android-pixel4_webview-perf', 'Android R',
+    _ANDROID_PIXEL4_WEBVIEW_BENCHMARK_CONFIGS, 21, 'android')
+ANDROID_PIXEL4_WEBLAYER = PerfPlatform(
+    'android-pixel4_weblayer-perf', 'Android R',
+    _ANDROID_PIXEL4_WEBLAYER_BENCHMARK_CONFIGS, 4, 'android')
 ANDROID_PIXEL4A_POWER = PerfPlatform('android-pixel4a_power-perf',
                                      'Android QD4A.200102.001.A1',
                                      _ANDROID_PIXEL4A_POWER_BENCHMARK_CONFIGS,
                                      1, 'android')
+
+# Cros/Lacros
+LACROS_EVE_PERF = PerfPlatform('lacros-eve-perf', '',
+                               _LACROS_EVE_BENCHMARK_CONFIGS, 1, 'chromeos')
+
 # FYI bots
 WIN_10_LOW_END_HP_CANDIDATE = PerfPlatform(
     'win-10_laptop_low_end-perf_HP-Candidate', 'HP 15-BS121NR Laptop Candidate',
@@ -542,7 +597,7 @@ WIN_10_LOW_END_HP_CANDIDATE = PerfPlatform(
 ANDROID_NEXUS5X_PERF_FYI = PerfPlatform('android-nexus5x-perf-fyi',
                                         'Android MMB29Q',
                                         _ANDROID_NEXUS5X_FYI_BENCHMARK_CONFIGS,
-                                        3,
+                                        2,
                                         'android',
                                         is_fyi=True)
 ANDROID_PIXEL2_PERF_AAB_FYI = PerfPlatform(
@@ -573,9 +628,18 @@ LINUX_PERF_FYI = PerfPlatform('linux-perf-fyi',
 FUCHSIA_PERF_FYI = PerfPlatform('fuchsia-perf-fyi',
                                 '',
                                 _FUCHSIA_PERF_FYI_BENCHMARK_CONFIGS,
-                                1,
+                                7,
                                 'fuchsia',
                                 is_fyi=True)
+
+# Calibration bots
+LINUX_PERF_CALIBRATION = PerfPlatform(
+    'linux-perf-calibration',
+    'Ubuntu-18.04, 8 core, NVIDIA Quadro P400',
+    _LINUX_PERF_CALIBRATION_BENCHMARK_CONFIGS,
+    28,
+    'linux',
+    is_calibration=True)
 
 ALL_PLATFORMS = {
     p for p in locals().values() if isinstance(p, PerfPlatform)
@@ -584,12 +648,16 @@ PLATFORMS_BY_NAME = {p.name: p for p in ALL_PLATFORMS}
 FYI_PLATFORMS = {
     p for p in ALL_PLATFORMS if p.is_fyi
 }
-OFFICIAL_PLATFORMS = {
-    p for p in ALL_PLATFORMS if not p.is_fyi
-}
+OFFICIAL_PLATFORMS = {p for p in ALL_PLATFORMS if p.is_official}
 ALL_PLATFORM_NAMES = {
     p.name for p in ALL_PLATFORMS
 }
 OFFICIAL_PLATFORM_NAMES = {
     p.name for p in OFFICIAL_PLATFORMS
 }
+
+
+def find_bot_platform(builder_name):
+  for bot_platform in ALL_PLATFORMS:
+    if bot_platform.name == builder_name:
+      return bot_platform

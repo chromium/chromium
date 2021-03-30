@@ -89,17 +89,20 @@ export const ERROR_STRING_KEY_MAP = new Map([
  * responsibility is to determine which status reason is most relevant to
  * surface to the user. Any status reason with a severity of WARNING or ERROR
  * will get highest precedence since this usually means the printer is in a
- * bad state. NO_ERROR status reason is the next highest precedence so the
- * printer can be shown as available whenever possible.
+ * bad state. If there does not exist an error status reason with a high enough
+ * severity, then return NO_ERROR.
  * @param {!PrinterStatus} printerStatus
  * @return {!PrinterStatusReason} Status reason extracted from |printerStatus|.
  */
 export function getStatusReasonFromPrinterStatus(printerStatus) {
   if (!printerStatus.printerId) {
+    // TODO(crbug.com/1027400): Remove console log once bug is confirmed fix.
+    console.warn('Received printer status missing printer id');
     return PrinterStatusReason.UNKNOWN_REASON;
   }
 
-  let seenNoErrorReason = false;
+  let noErrorReasonExists = false;
+  let unknownReasonExists = false;
   for (const statusReason of printerStatus.statusReasons) {
     const reason = statusReason.reason;
     const severity = statusReason.severity;
@@ -110,11 +113,15 @@ export function getStatusReasonFromPrinterStatus(printerStatus) {
       return reason;
     }
 
-    seenNoErrorReason =
-        seenNoErrorReason || reason === PrinterStatusReason.NO_ERROR;
+    noErrorReasonExists =
+        noErrorReasonExists || reason === PrinterStatusReason.NO_ERROR;
+    unknownReasonExists =
+        unknownReasonExists || reason === PrinterStatusReason.UNKNOWN_REASON;
   }
-  return seenNoErrorReason ? PrinterStatusReason.NO_ERROR :
-                             PrinterStatusReason.UNKNOWN_REASON;
+
+  return noErrorReasonExists || !unknownReasonExists ?
+      PrinterStatusReason.NO_ERROR :
+      PrinterStatusReason.UNKNOWN_REASON;
 }
 
 /**

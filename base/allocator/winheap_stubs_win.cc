@@ -117,7 +117,7 @@ void* AlignAllocation(void* ptr, size_t alignment) {
   alignment = std::max(alignment, alignof(AlignedPrefix));
 
   uintptr_t address = reinterpret_cast<uintptr_t>(ptr);
-  address = base::bits::Align(address + sizeof(AlignedPrefix), alignment);
+  address = base::bits::AlignUp(address + sizeof(AlignedPrefix), alignment);
 
   // Write the prefix.
   AlignedPrefix* prefix = reinterpret_cast<AlignedPrefix*>(address) - 1;

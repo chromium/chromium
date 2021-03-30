@@ -2,17 +2,32 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
+import ast
 import argparse
+import importlib
 import json
 import logging
 import os
+import pprint
 import sys
-import tempfile
+import unittest
 import csv
 
-from core.tbmv3 import run_tbmv3_metric
+from collections import namedtuple
+
+from core.tbmv3 import trace_processor
 from cli_tools.tbmv3 import trace_downloader
 from tracing.metrics import metric_runner
+from tracing.value import histogram_set
+
+
+SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
+SIMPLE_CONFIG_PATH = os.path.join(SCRIPT_DIR, 'validators',
+                                  'simple_configs.pyl')
+
+SimpleConfig = namedtuple('SimpleConfig', ['name', 'config'])
 
 
 def SetUpLogging(level):
@@ -26,165 +41,301 @@ def SetUpLogging(level):
   logger.addHandler(handler)
 
 
+def PrintNoLn(msg):
+  """Print |msg| without adding new line."""
+  sys.stdout.write(msg)
+  sys.stdout.flush()
+
+
+def CursorErase(length):
+  """Erase |length| chars starting from cursor."""
+  for _ in xrange(length):
+    sys.stdout.write('\b')
+  # Add 80 spaces, because \b only moves back the cursor.
+  for _ in xrange(80):
+    sys.stdout.write(' ')
+  for _ in xrange(80):
+    sys.stdout.write('\b')
+  sys.stdout.flush()
+
+
 def ParseArgs():
   parser = argparse.ArgumentParser()
-  parser.add_argument('--tbmv3-name',
+  parser.add_argument('validator',
                       type=str,
-                      required=True,
-                      help='TBMv3 metric name')
-  parser.add_argument('--tbmv3-histogram',
-                      type=str,
-                      required=True,
-                      help='TBMv3 histogram name')
-  parser.add_argument('--tbmv2-name',
-                      type=str,
-                      required=True,
-                      help='TBMv2 metric name')
-  parser.add_argument('--tbmv2-histogram',
-                      type=str,
-                      required=True,
-                      help='TBMv2 histogram name')
-  parser.add_argument('--traces-dir',
-                      type=str,
-                      required=False,
-                      default=trace_downloader.DEFAULT_TRACE_DIR,
-                      help='Directory to store all intermediate files')
-  parser.add_argument('--trace-links-csv-path',
+                      default=None,
+                      help=('Name of the validtor from tools/perf/'
+                            'cli_tools/tbmv3/validators/, or alternatively '
+                            'a simple config defined in cli_tools/tbmv3/'
+                            'validators/simple_configs.pyl'))
+  parser.add_argument('--tracelist-csv',
                       type=str,
                       required=False,
                       default=None,
                       help=('Path to a csv file containing links to HTML '
                             'traces in CloudStorage in chrome-telemetry-output '
                             'bucket. Go to go/get-tbm-traces and follow '
-                            'instructions there to generate the CSV. '
-                            'Default: {--traces-dir}/trace_links.csv'))
+                            'instructions there to generate the CSV.'))
+  parser.add_argument('--proto-trace',
+                      type=str,
+                      required=False,
+                      help='Path to proto trace')
+  parser.add_argument('--json-trace',
+                      type=str,
+                      required=False,
+                      help='Path to json/html trace')
+  parser.add_argument('--traces-dir',
+                      type=str,
+                      required=False,
+                      default=trace_downloader.DEFAULT_TRACE_DIR,
+                      help='Directory to store all intermediate files')
   parser.add_argument('--trace-processor-path',
                       type=str,
                       required=False,
                       default=None,
                       help=('Path to trace_processor shell. '
                             'Default: Binary downloaded from cloud storage.'))
+  parser.add_argument('--force-recompute-tbmv2',
+                      action='store_true',
+                      help=('Recompute TBMv2 Metrics. Otherwise it will use '
+                            'a cached result when available.'))
   parser.add_argument('-v', '--verbose', action='store_true')
   args = parser.parse_args()
-  if args.trace_links_csv_path is None:
-    args.trace_links_csv_path = '/'.join([args.traces_dir, 'trace_links.csv'])
   return args
 
 
-def RunTBMv2Metric(tbmv2_name, html_trace_filename, traces_dir):
-  metrics = [tbmv2_name]
+class ValidatorContext(object):
+  def __init__(self, args):
+    with open(SIMPLE_CONFIG_PATH) as f:
+      simple_configs = ast.literal_eval(f.read())
+    validator_name = args.validator
+    if validator_name in simple_configs:
+      self.validator = importlib.import_module('cli_tools.tbmv3.validators.'
+                                               'simple_validator')
+      self.simple_config = SimpleConfig(validator_name,
+                                        simple_configs[validator_name])
+    else:
+      self.validator = importlib.import_module('cli_tools.tbmv3.validators.' +
+                                               args.validator)
+      self.simple_config = None
+
+    self.trace_processor_path = args.trace_processor_path
+    if self.trace_processor_path and not os.path.exists(
+        self.trace_processor_path):
+      raise Exception("Trace processor does not exist at %s" %
+                      args.trace_processor_path)
+
+    self.traces_dir = args.traces_dir
+    self.force_recompute_tbmv2 = args.force_recompute_tbmv2
+
+
+class TraceInfo(object):
+  def __init__(self, json_trace, proto_trace):
+    self.json_trace = json_trace
+    self.proto_trace = proto_trace
+    # If present, holds additional info about trace like bot, cloud url etc.
+    self.trace_metadata = None
+
+  def __repr__(self):
+    output = {
+        'json_trace_path': self.json_trace,
+        'proto_trace_path': self.proto_trace,
+    }
+    if self.trace_metadata:
+      output.update(self.trace_metadata)
+    return pprint.pformat(output)
+
+
+def CreateTraceInfoFromCsvRow(row, traces_dir):
+  message = 'Fetching traces...'
+  PrintNoLn(message)
+  html_trace_url = row['Trace Link']
+  html_trace = trace_downloader.DownloadHtmlTrace(html_trace_url,
+                                                  download_dir=traces_dir)
+  proto_trace = trace_downloader.DownloadProtoTrace(html_trace_url,
+                                                    download_dir=traces_dir)
+
+  trace_info = TraceInfo(html_trace, proto_trace)
+  trace_info.trace_metadata = {
+      'Bot': row['Bot'],
+      'Benchmark': row['Benchmark'],
+      'Cloud Trace URL': html_trace_url
+  }
+  CursorErase(len(message))
+  return trace_info
+
+
+def CreateTraceInfoFromArgs(args):
+  json_trace = os.path.expanduser(args.json_trace)
+  if json_trace is None:
+    raise Exception('You must supply a --json_trace if you do not use '
+                    '--tracelist-csv.')
+  if not os.path.exists(json_trace):
+    raise Exception('Json trace %s does not exist' % json_trace)
+
+  proto_trace = os.path.expanduser(args.proto_trace)
+  if proto_trace is None:
+    raise Exception('You must supply a --proto_trace if you do not use '
+                    '--tracelist-csv.')
+  if not os.path.exists(proto_trace):
+    raise Exception('Proto trace %s does not exist' % proto_trace)
+
+  return TraceInfo(json_trace, proto_trace)
+
+
+def GetV2CachedResultPath(tbmv2_metric, json_trace):
+  dirname = os.path.dirname(json_trace)
+  basename = os.path.basename(json_trace) + '.' + tbmv2_metric + '.json'
+  return os.path.join(dirname, basename)
+
+
+def RunTBMv2Metric(tbmv2_metric, json_trace, force_recompute=False):
+  message = 'Running TBMv2 Metric...'
+  PrintNoLn(message)
+  hset = histogram_set.HistogramSet()
+
+  cached_results = GetV2CachedResultPath(tbmv2_metric, json_trace)
+
+  if not force_recompute and os.path.exists(cached_results):
+    with open(cached_results) as f:
+      hset.ImportDicts(json.load(f))
+    CursorErase(len(message))
+    return hset
+
+  metrics = [tbmv2_metric]
   TEN_MINUTES = 60 * 10
-  trace_abspath = os.path.abspath(html_trace_filename)
+  trace_abspath = os.path.abspath(json_trace)
   mre_result = metric_runner.RunMetricOnSingleTrace(trace_abspath,
                                                     metrics,
                                                     timeout=TEN_MINUTES)
-  with tempfile.NamedTemporaryFile(dir=traces_dir,
-                                   suffix='_tbmv2.json',
-                                   delete=False) as out_file:
-    json.dump(mre_result.pairs.get('histograms', []),
-              out_file,
-              indent=2,
-              sort_keys=True,
-              separators=(',', ': '))
-  logging.debug('Saved TBMv2 metric to %s' % out_file.name)
-  return out_file.name
+  histograms = mre_result.pairs.get('histograms')
+  if mre_result.failures:
+    raise Exception("Error computing TBMv2 metric for %s" % json_trace)
+  if 'histograms' not in mre_result.pairs:
+    raise Exception("Metric %s is empty for trace %s" %
+                    (tbmv2_metric, json_trace))
+  histograms = mre_result.pairs['histograms']
+  hset.ImportDicts(histograms)
+  with open(cached_results, 'w') as f:
+    json.dump(histograms, f)
+
+  CursorErase(len(message))
+  return hset
 
 
-def RunTBMv3Metric(tbmv3_name, proto_trace_filename, traces_dir,
-                   trace_processor_path):
-  with tempfile.NamedTemporaryFile(dir=traces_dir,
-                                   suffix='_tbmv3.json',
-                                   delete=False) as out_file:
-    pass
-    # Open temp file and close it so it's written to disk.
-  run_tbmv3_metric.Main([
-      '--trace',
-      proto_trace_filename,
-      '--metric',
-      tbmv3_name,
-      '--outfile',
-      out_file.name,
-      '--trace-processor-path',
-      trace_processor_path,
-  ])
-  logging.debug('Saved TBMv3 metric to %s' % out_file.name)
-  return out_file.name
+def RunTBMv3Metric(tp_path, tbmv3_metric, proto_trace):
+  message = 'Running TBMv3 Metric...'
+  PrintNoLn(message)
+  histograms = trace_processor.RunMetric(tp_path,
+                                         proto_trace,
+                                         tbmv3_metric,
+                                         retain_all_samples=True)
+  CursorErase(len(message))
+  return histograms
 
 
-def GetSortedSampleValuesFromJson(histogram_name, json_result_filename):
-  with open(json_result_filename) as json_result_file:
-    result = json.load(json_result_file)
-  sample_values = []
-  for item in result:
-    if 'name' in item and item['name'] == histogram_name:
-      sample_values = item['sampleValues']
-  return sorted(sample_values)
+def ValidateSingleTrace(ctx, trace_info):
+  class ValidatorTestCase(unittest.TestCase):
+    def setUp(self):
+      self.trace_info = trace_info
+      if ctx.simple_config:
+        self.simple_config = ctx.simple_config
+
+    def RunTBMv2(self, metric):
+      return RunTBMv2Metric(metric,
+                            trace_info.json_trace,
+                            force_recompute=ctx.force_recompute_tbmv2)
+
+    def RunTBMv3(self, metric):
+      return RunTBMv3Metric(ctx.trace_processor_path, metric,
+                            trace_info.proto_trace)
+
+    def runTest(self):
+      ctx.validator.CompareHistograms(self)
+
+  result = unittest.TestResult()
+  validator_tc = ValidatorTestCase()
+  validator_tc.run(result)
+  return result
 
 
-def CalculateTBMv3Metric(tbmv3_histogram, tbmv3_json_filename):
-  # TODO(crbug.com/1128919): Add conversion of sample values based on their
-  # units.
-  return GetSortedSampleValuesFromJson(tbmv3_histogram, tbmv3_json_filename)
+def ValidateAllCsvTraces(ctx, tracelist_csv, results):
+  with open(os.path.expanduser(tracelist_csv)) as f:
+    rows = list(csv.DictReader(f))
+
+  for (i, row) in enumerate(rows, start=1):
+    PrintNoLn('Validating trace %d of %d: ' % (i, len(rows)))
+    trace_info = CreateTraceInfoFromCsvRow(row, ctx.traces_dir)
+    result = ValidateSingleTrace(ctx, trace_info)
+    results.append(result)
+    if result.wasSuccessful():
+      print('Success!')
+    else:
+      print('Failed.')
+      PrintErrorsOrFailures(result)
 
 
-def CalculateTBMv2Metric(tbmv2_histogram, tbmv2_json_filename):
-  # TODO(crbug.com/1128919): Add conversion of sample values based on their
-  # units.
-  return GetSortedSampleValuesFromJson(tbmv2_histogram, tbmv2_json_filename)
+def PrintSingleFailure(error_or_failure):
+  trace_info = error_or_failure[0].trace_info
+  error_msg = error_or_failure[1]
+  print('-------------------------------------------')
+  print('Validator failure for the following trace:')
+  print(trace_info)
+  print('Error: ')
+  print(error_msg)
+  print('-------------------------------------------')
 
 
-def ValidateTBMv3Metric(args):
-  reader = csv.DictReader(open(args.trace_links_csv_path))
-  debug_info_for_failed_comparisons = []
+def PrintErrorsOrFailures(result):
+  if result.wasSuccessful():
+    return
+  for error in result.errors:
+    PrintSingleFailure(error)
+  for failure in result.failures:
+    PrintSingleFailure(failure)
 
-  for trace_info in reader:
-    bot = trace_info['Bot']
-    benchmark = trace_info['Benchmark']
-    html_trace_url = trace_info['Trace Link']
-    html_trace = trace_downloader.DownloadHtmlTrace(
-        html_trace_url, download_dir=args.traces_dir)
-    proto_trace = trace_downloader.DownloadProtoTrace(
-        html_trace_url, download_dir=args.traces_dir)
-    tbmv3_out_filename = RunTBMv3Metric(args.tbmv3_name, proto_trace,
-                                        args.traces_dir,
-                                        args.trace_processor_path)
-    tbmv3_metric = CalculateTBMv3Metric(args.tbmv3_histogram,
-                                        tbmv3_out_filename)
-    tbmv2_out_filename = RunTBMv2Metric(args.tbmv2_name, html_trace,
-                                        args.traces_dir)
-    tbmv2_metric = CalculateTBMv2Metric(args.tbmv2_histogram,
-                                        tbmv2_out_filename)
-    if len(tbmv2_metric) == 0:
-      logging.warning('TBMv2 metric is empty for bot: %s, benchmark: %s' %
-                      (bot, benchmark))
-    if len(tbmv3_metric) == 0:
-      logging.warning('TBMv3 metric is empty for bot: %s, benchmark: %s' %
-                      (bot, benchmark))
-    if tbmv3_metric != tbmv2_metric:
-      logging.warning('TBMv3 differs from TBMv2 for bot: %s, benchmark: %s' %
-                      (bot, benchmark))
-      debug_info_for_failed_comparisons.append({
-          'tbmv3 json': tbmv3_out_filename,
-          'tbmv2 json': tbmv2_out_filename,
-          'html trace': html_trace,
-          'proto trace': proto_trace,
-          'bot': bot,
-          'benchmark': benchmark
-      })
-  if len(debug_info_for_failed_comparisons) == 0:
-    print 'SUCCESS!'
-    return 0
-  print 'TBMv3 validation failed for traces:'
-  for filenames in debug_info_for_failed_comparisons:
-    print(('\tBot: {bot}\n\tBenchmark: {benchmark}\n'
-           '\ttbmv3 json: {tbmv3 json}\n\ttbmv2 json: {tbmv2 json}\n'
-           '\thtml trace: {html trace}\n\tproto trace: {proto trace}\n').format(
-               **filenames))
-  return 1
+
+def CountFailures(results):
+  count = 0
+  for result in results:
+    if not result.wasSuccessful():
+      count += 1
+  return count
 
 
 def Main():
   args = ParseArgs()
   loglevel = logging.DEBUG if args.verbose else logging.WARNING
   SetUpLogging(level=loglevel)
-  sys.exit(ValidateTBMv3Metric(args))
+
+  ctx = ValidatorContext(args)
+
+  results = []
+  try:
+    if args.tracelist_csv:
+      ValidateAllCsvTraces(ctx, args.tracelist_csv, results)
+    elif args.json_trace and args.proto_trace:
+      trace_info = CreateTraceInfoFromArgs(args)
+      result = ValidateSingleTrace(ctx, trace_info)
+      PrintErrorsOrFailures(result)
+      results.append(result)
+    else:
+      sys.stderr.write(
+          'You must supply either --tracelist_csv to validate '
+          'traces, or both --proto-trace and --json-trace to validate a '
+          'single trace.')
+      sys.exit(1)
+  except KeyboardInterrupt:
+    print('\n')
+    failures = CountFailures(results)
+    successes = len(results) - failures
+    print('%d failed, %d succeeded' % (failures, successes))
+    # Without this various child processes often hangs the terminal.
+    os._exit(1)  # pylint: disable=protected-access
+
+  failures = CountFailures(results)
+  if failures == 0:
+    print('All validations succeeded!')
+  else:
+    print('%d out of %d validations did not pass. See above for details.' %
+          (failures, len(results)))

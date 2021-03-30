@@ -17,7 +17,6 @@ namespace device {
 class MockBluetoothSocket : public BluetoothSocket {
  public:
   MockBluetoothSocket();
-  MOCK_METHOD0(Close, void());
   MOCK_METHOD1(Disconnect, void(base::OnceClosure success_callback));
   MOCK_METHOD3(Receive,
                void(int count,

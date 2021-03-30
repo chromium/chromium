@@ -37,23 +37,21 @@ class NATIVE_THEME_EXPORT NativeThemeMac : public NativeThemeBase {
   // an appropriate gray.
   static SkColor ApplySystemControlTint(SkColor color);
 
-  // Overridden from NativeTheme:
-  SkColor GetSystemColor(ColorId color_id,
-                         ColorScheme color_scheme) const override;
-
-  // Overridden from NativeTheme:
+  // NativeTheme:
+  SkColor GetSystemColorDeprecated(ColorId color_id,
+                                   ColorScheme color_scheme,
+                                   bool apply_processing) const override;
   SkColor GetSystemButtonPressedColor(SkColor base_color) const override;
-
-  // Overridden from NativeTheme:
   PreferredContrast CalculatePreferredContrast() const override;
 
-  // Overridden from NativeThemeBase:
+  // NativeThemeBase:
   void Paint(cc::PaintCanvas* canvas,
              Part part,
              State state,
              const gfx::Rect& rect,
              const ExtraParams& extra,
-             ColorScheme color_scheme) const override;
+             ColorScheme color_scheme,
+             const base::Optional<SkColor>& accent_color) const override;
   void PaintMenuPopupBackground(
       cc::PaintCanvas* canvas,
       const gfx::Size& size,

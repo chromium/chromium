@@ -27,7 +27,8 @@ class DedicatedWorkerTest : public PageTestBase {
 
   DedicatedWorkerThreadForTest* GetWorkerThread();
 
-  void StartWorker(const String& source_code);
+  void StartWorker();
+  void EvaluateClassicScript(const String& source_code);
   void WaitUntilWorkerIsRunning();
 
  private:

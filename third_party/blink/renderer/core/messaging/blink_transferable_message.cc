@@ -45,6 +45,9 @@ BlinkTransferableMessage BlinkTransferableMessage::FromMessageEvent(
         user_activation->hasBeenActive(), user_activation->isActive());
   }
 
+  // Capability delegation
+  result.delegate_payment_request = message_event->delegatePaymentRequest();
+
   // Blobs.
   for (const auto& blob : serialized_script_value->BlobDataHandles()) {
     result.message->BlobDataHandles().Set(
@@ -108,9 +111,9 @@ BlinkTransferableMessage BlinkTransferableMessage::FromMessageEvent(
         std::move(image_bitmap_contents_array));
   }
 
-  // Native file system transfer tokens.
-  for (auto& token : serialized_script_value->NativeFileSystemTokens()) {
-    result.message->NativeFileSystemTokens().push_back(std::move(token));
+  // File System Access transfer tokens.
+  for (auto& token : serialized_script_value->FileSystemAccessTokens()) {
+    result.message->FileSystemAccessTokens().push_back(std::move(token));
   }
 
   return result;
@@ -150,6 +153,7 @@ BlinkTransferableMessage BlinkTransferableMessage::FromTransferableMessage(
         message.user_activation->has_been_active,
         message.user_activation->was_active);
   }
+  result.delegate_payment_request = message.delegate_payment_request;
 
   if (!message.array_buffer_contents_array.empty()) {
     SerializedScriptValue::ArrayBufferContentsArray array_buffer_contents_array;
@@ -189,10 +193,10 @@ BlinkTransferableMessage BlinkTransferableMessage::FromTransferableMessage(
         std::move(image_bitmap_contents_array));
   }
 
-  // Convert the PendingRemote<NativeFileSystemTransferToken> from the
+  // Convert the PendingRemote<FileSystemAccessTransferToken> from the
   // blink::mojom namespace to the blink::mojom::blink namespace.
-  for (auto& token : message.native_file_system_tokens) {
-    result.message->NativeFileSystemTokens().push_back(
+  for (auto& token : message.file_system_access_tokens) {
+    result.message->FileSystemAccessTokens().push_back(
         ToCrossVariantMojoType(std::move(token)));
   }
   return result;

@@ -17,7 +17,7 @@ class TestWPTServe(LoggingTestCase):
         self.host = MockHost()
         self.port = TestPort(self.host)
         self.host.filesystem.write_text_file(
-            '/mock-checkout/third_party/blink/tools/blinkpy/third_party/wpt/wpt.config.json',
+            '/mock-checkout/third_party/wpt_tools/wpt.config.json',
             '{"ports": {}, "aliases": []}')
 
     # pylint: disable=protected-access
@@ -27,13 +27,12 @@ class TestWPTServe(LoggingTestCase):
         self.assertEqual(server._start_cmd, [
             'python3',
             '-u',
-            '/mock-checkout/third_party/blink/tools/blinkpy/third_party/wpt/wpt/wpt',
+            '/mock-checkout/third_party/wpt_tools/wpt/wpt',
             'serve',
             '--config',
             server._config_file,
             '--doc_root',
             '/test.checkout/wtests/external/wpt',
-            '--no-h2',
         ])
 
     def test_init_start_cmd_with_ws_handlers(self):
@@ -43,13 +42,12 @@ class TestWPTServe(LoggingTestCase):
         self.assertEqual(server._start_cmd, [
             'python3',
             '-u',
-            '/mock-checkout/third_party/blink/tools/blinkpy/third_party/wpt/wpt/wpt',
+            '/mock-checkout/third_party/wpt_tools/wpt/wpt',
             'serve',
             '--config',
             server._config_file,
             '--doc_root',
             '/test.checkout/wtests/external/wpt',
-            '--no-h2',
             '--ws_doc_root',
             '/test.checkout/wtests/external/wpt/websockets/handlers',
         ])

@@ -46,14 +46,14 @@ const SkColor kChildColor = SK_ColorWHITE;
 views::WidgetDelegateView* CreateChildModalWindow() {
   auto child = std::make_unique<views::WidgetDelegateView>();
   child->SetModalType(ui::MODAL_TYPE_CHILD);
-  child->SetTitle(base::ASCIIToUTF16("Examples: Child Modal Window"));
+  child->SetTitle(u"Examples: Child Modal Window");
   child->SetBackground(views::CreateSolidBackground(kChildColor));
   child->SetPreferredSize(gfx::Size(kChildWindowWidth, kChildWindowHeight));
 
   auto textfield = std::make_unique<views::Textfield>();
   textfield->SetBounds(kTextfieldLeft, kTextfieldTop, kTextfieldWidth,
                        kTextfieldHeight);
-  textfield->SetPlaceholderText(base::ASCIIToUTF16("modal child window"));
+  textfield->SetPlaceholderText(u"modal child window");
   child->AddChildView(std::move(textfield));
   return child.release();
 }
@@ -78,8 +78,8 @@ TestChildModalParent::TestChildModalParent(aura::Window* context)
     : modal_parent_(std::make_unique<Widget>()),
       textfield_(new views::Textfield),
       host_(new views::NativeViewHost) {
-  SetTitle(base::ASCIIToUTF16("Examples: Child Modal Parent"));
-  textfield_->SetPlaceholderText(base::ASCIIToUTF16("top level window"));
+  SetTitle(u"Examples: Child Modal Parent");
+  textfield_->SetPlaceholderText(u"top level window");
   Widget::InitParams params(Widget::InitParams::TYPE_CONTROL);
   params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.context = context;
@@ -90,13 +90,12 @@ TestChildModalParent::TestChildModalParent(aura::Window* context)
   modal_parent_->GetRootView()->AddChildView(modal_parent_textfield);
   modal_parent_textfield->SetBounds(kTextfieldLeft, kTextfieldTop,
                                     kTextfieldWidth, kTextfieldHeight);
-  modal_parent_textfield->SetPlaceholderText(
-      base::ASCIIToUTF16("modal parent window"));
+  modal_parent_textfield->SetPlaceholderText(u"modal parent window");
   modal_parent_->GetNativeView()->SetName("ModalParent");
   auto button = std::make_unique<views::MdTextButton>(
       base::BindRepeating(&TestChildModalParent::ButtonPressed,
                           base::Unretained(this)),
-      base::ASCIIToUTF16("Show/Hide Child Modal Window"));
+      u"Show/Hide Child Modal Window");
   button_ = AddChildView(std::move(button));
   AddChildView(textfield_);
   AddChildView(host_);

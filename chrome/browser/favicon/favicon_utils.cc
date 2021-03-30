@@ -63,7 +63,7 @@ void DrawFallbackIconLetter(const GURL& icon_url,
                             int offset,
                             gfx::Canvas* canvas) {
   // Get the appropriate letter to draw, then eventually draw it.
-  base::string16 icon_text = favicon::GetFallbackIconText(icon_url);
+  std::u16string icon_text = favicon::GetFallbackIconText(icon_url);
   if (icon_text.empty())
     return;
 

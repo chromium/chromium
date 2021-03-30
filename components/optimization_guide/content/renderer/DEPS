@@ -1,0 +1,7 @@
+include_rules = [
+  "+content/public/renderer",
+  "+content/public/test",
+  "+mojo/public",
+  "+services/service_manager/public",
+  "+third_party/blink/public",
+]

@@ -148,8 +148,7 @@ void SyncErrorNotifier::OnStateChanged(syncer::SyncService* service) {
       ash::CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, notification_id_,
           l10n_util::GetStringUTF16(IDS_SYNC_ERROR_BUBBLE_VIEW_TITLE),
-          l10n_util::GetStringUTF16(parameters.message_id),
-          l10n_util::GetStringUTF16(IDS_SIGNIN_ERROR_DISPLAY_SOURCE),
+          l10n_util::GetStringUTF16(parameters.message_id), std::u16string(),
           GURL(notification_id_), notifier_id,
           message_center::RichNotificationData(),
           base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(

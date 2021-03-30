@@ -4,16 +4,16 @@
 
 #include "chrome/browser/chromeos/release_notes/release_notes_storage.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/version.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/chrome_version_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -62,6 +62,7 @@ ReleaseNotesStorage::ReleaseNotesStorage(Profile* profile)
 ReleaseNotesStorage::~ReleaseNotesStorage() = default;
 
 bool ReleaseNotesStorage::ShouldNotify() {
+  // TODO(b/174514401): Make this server controlled.
   if (!base::FeatureList::IsEnabled(
           chromeos::features::kReleaseNotesNotification))
     return false;
@@ -84,10 +85,10 @@ bool ReleaseNotesStorage::ShouldNotify() {
         ChromeVersionService::GetVersion(profile_->GetPrefs()));
     last_milestone = profile_version.components()[0];
   }
-  if (last_milestone >= GetMilestone()) {
-    return false;
-  }
-  return true;
+  // Hardcoding this to M89 as that should be the last release notes update that
+  // the current chrome version should see. There is not an update every
+  // milestone.
+  return last_milestone < 89;
 }
 
 void ReleaseNotesStorage::MarkNotificationShown() {

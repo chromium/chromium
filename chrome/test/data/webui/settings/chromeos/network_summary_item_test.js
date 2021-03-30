@@ -29,10 +29,19 @@ suite('NetworkSummaryItem', function() {
   test('Device enabled button state', function() {
     const mojom = chromeos.networkConfig.mojom;
 
-    netSummaryItem.deviceState = {
-      deviceState: mojom.DeviceStateType.kUninitialized,
-      type: mojom.NetworkType.kEthernet,
-    };
+    netSummaryItem.setProperties({
+      isUpdatedCellularUiEnabled_: false,
+      deviceState: {
+        deviceState: mojom.DeviceStateType.kUninitialized,
+        type: mojom.NetworkType.kEthernet,
+      },
+      activeNetworkState: {
+        connectionState: mojom.ConnectionStateType.kNotConnected,
+        guid: '',
+        type: mojom.NetworkType.kEthernet,
+      },
+    });
+
     Polymer.dom.flush();
     assertFalse(doesElementExist('#deviceEnabledButton'));
 
@@ -73,5 +82,77 @@ suite('NetworkSummaryItem', function() {
     });
     Polymer.dom.flush();
     assertTrue(doesElementExist('#deviceEnabledButton'));
+  });
+
+  test('SIM info shown when locked but enabled, flag off', function() {
+    const mojom = chromeos.networkConfig.mojom;
+
+    netSummaryItem.setProperties({
+      isUpdatedCellularUiEnabled_: false,
+      deviceState: {
+        deviceState: mojom.DeviceStateType.kEnabled,
+        type: mojom.NetworkType.kCellular,
+        simAbsent: false,
+        simLockStatus: {lockType: 'sim-pin'},
+      },
+      activeNetworkState: {
+        connectionState: mojom.ConnectionStateType.kNotConnected,
+        guid: '',
+        type: mojom.NetworkType.kCellular,
+        typeState: {cellular: {networkTechnology: ''}}
+      },
+    });
+
+    Polymer.dom.flush();
+    assertTrue(doesElementExist('network-siminfo'));
+    assertFalse(doesElementExist('.subpage-arrow'));
+  });
+
+  test('Inhibited device on cellular network, flag on', function() {
+    const mojom = chromeos.networkConfig.mojom;
+
+    netSummaryItem.setProperties({
+      isUpdatedCellularUiEnabled_: true,
+      deviceState: {
+        inhibitReason: mojom.InhibitReason.kInstallingProfile,
+        deviceState: mojom.DeviceStateType.kEnabled,
+        type: mojom.NetworkType.kCellular,
+        simAbsent: false,
+      },
+      activeNetworkState: {
+        connectionState: mojom.ConnectionStateType.kNotConnected,
+        guid: '',
+        type: mojom.NetworkType.kCellular,
+        typeState: {cellular: {networkTechnology: ''}}
+      },
+    });
+
+    Polymer.dom.flush();
+    assertTrue(netSummaryItem.$$('#deviceEnabledButton').checked);
+    assertTrue(netSummaryItem.$$('#deviceEnabledButton').disabled);
+  });
+
+  test('Not inhibited device on cellular network, flag on', function() {
+    const mojom = chromeos.networkConfig.mojom;
+
+    netSummaryItem.setProperties({
+      isUpdatedCellularUiEnabled_: true,
+      deviceState: {
+        inhibitReason: mojom.InhibitReason.kNotInhibited,
+        deviceState: mojom.DeviceStateType.kUnavailable,
+        type: mojom.NetworkType.kCellular,
+        simAbsent: false,
+      },
+      activeNetworkState: {
+        connectionState: mojom.ConnectionStateType.kNotConnected,
+        guid: '',
+        type: mojom.NetworkType.kCellular,
+        typeState: {cellular: {networkTechnology: ''}}
+      },
+    });
+
+    Polymer.dom.flush();
+    assertFalse(netSummaryItem.$$('#deviceEnabledButton').checked);
+    assertFalse(netSummaryItem.$$('#deviceEnabledButton').disabled);
   });
 });

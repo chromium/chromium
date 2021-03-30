@@ -49,18 +49,7 @@ class PLATFORM_EXPORT SchemeRegistry {
   STATIC_ONLY(SchemeRegistry);
 
  public:
-  static void RegisterURLSchemeAsLocal(const String&);
-  static bool ShouldTreatURLSchemeAsLocal(const String&);
-
   static bool ShouldTreatURLSchemeAsRestrictingMixedContent(const String&);
-
-  // Subresources transported by secure schemes do not trigger mixed content
-  // warnings. For example, https and data are secure schemes because they
-  // cannot be corrupted by active network attackers.
-  static void RegisterURLSchemeAsSecure(const String&);
-  static bool ShouldTreatURLSchemeAsSecure(const String&);
-
-  static bool ShouldTreatURLSchemeAsNoAccess(const String&);
 
   // Display-isolated schemes can only be displayed (in the sense of
   // SecurityOrigin::canDisplay) by documents from the same scheme.
@@ -69,9 +58,9 @@ class PLATFORM_EXPORT SchemeRegistry {
 
   static bool ShouldLoadURLSchemeAsEmptyDocument(const String&);
 
-  static void SetDomainRelaxationForbiddenForURLScheme(bool forbidden,
-                                                       const String&);
-  static void ResetDomainRelaxation();
+  static void SetDomainRelaxationForbiddenForURLSchemeForTest(bool forbidden,
+                                                              const String&);
+  static void ResetDomainRelaxationForTest();
   static bool IsDomainRelaxationForbiddenForURLScheme(const String&);
 
   // Such schemes should delegate to SecurityOrigin::canRequest for any URL
@@ -106,9 +95,6 @@ class PLATFORM_EXPORT SchemeRegistry {
   // HTTP-like schemes that are treated as supporting the Fetch API.
   static void RegisterURLSchemeAsSupportingFetchAPI(const String& scheme);
   static bool ShouldTreatURLSchemeAsSupportingFetchAPI(const String& scheme);
-
-  // https://fetch.spec.whatwg.org/#fetch-scheme
-  static bool IsFetchScheme(const String& scheme);
 
   // https://url.spec.whatwg.org/#special-scheme
   static bool IsSpecialScheme(const String& scheme);

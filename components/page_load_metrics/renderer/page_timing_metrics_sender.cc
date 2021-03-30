@@ -24,11 +24,12 @@ namespace page_load_metrics {
 
 const base::Feature kLayoutShiftNormalizationEmitShiftsForKeyMetrics{
     "LayoutShiftNormalizationEmitShiftsForKeyMetrics",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 namespace {
 const int kInitialTimerDelayMillis = 50;
 const int64_t kInputDelayAdjustmentMillis = int64_t(50);
+constexpr auto MAX_INPUT_TIMESTAMPS_SIZE = 300;
 }  // namespace
 
 PageTimingMetricsSender::PageTimingMetricsSender(
@@ -113,6 +114,13 @@ void PageTimingMetricsSender::DidObserveLayoutShift(
   }
   if (!after_input_or_scroll)
     render_data_.layout_shift_delta_before_input_or_scroll += score;
+  EnsureSendTimer();
+}
+
+void PageTimingMetricsSender::DidObserveInputForLayoutShiftTracking(
+    base::TimeTicks timestamp) {
+  if (render_data_.input_timestamps.size() < MAX_INPUT_TIMESTAMPS_SIZE)
+    render_data_.input_timestamps.push_back(timestamp);
   EnsureSendTimer();
 }
 
@@ -232,9 +240,9 @@ void PageTimingMetricsSender::DidLoadResourceFromMemoryCache(
 }
 
 void PageTimingMetricsSender::OnMainFrameIntersectionChanged(
-    const blink::WebRect& main_frame_intersection) {
+    const gfx::Rect& main_frame_intersection) {
   metadata_->intersection_update =
-      mojom::FrameIntersectionUpdate::New(gfx::Rect(main_frame_intersection));
+      mojom::FrameIntersectionUpdate::New(main_frame_intersection);
   EnsureSendTimer();
 }
 
@@ -280,9 +288,16 @@ void PageTimingMetricsSender::Update(
     return;
   }
 
+  // We want to force sending the metrics quickly when FCP is reached.
+  bool send_urgently =
+      (!last_timing_->paint_timing ||
+       !last_timing_->paint_timing->first_contentful_paint.has_value()) &&
+      timing->paint_timing &&
+      timing->paint_timing->first_contentful_paint.has_value();
+
   last_timing_ = std::move(timing);
   metadata_recorder_.UpdateMetadata(monotonic_timing);
-  EnsureSendTimer();
+  EnsureSendTimer(send_urgently);
 }
 
 void PageTimingMetricsSender::SendLatest() {
@@ -298,14 +313,26 @@ void PageTimingMetricsSender::UpdateCpuTiming(base::TimeDelta task_time) {
   EnsureSendTimer();
 }
 
-void PageTimingMetricsSender::EnsureSendTimer() {
-  if (timer_->IsRunning())
+void PageTimingMetricsSender::EnsureSendTimer(bool urgent) {
+  if (urgent)
+    timer_->Stop();
+  else if (timer_->IsRunning())
     return;
 
-  // Send the first IPC eagerly to make sure the receiving side knows we're
-  // sending metrics as soon as possible.
-  int delay_ms =
-      have_sent_ipc_ ? buffer_timer_delay_ms_ : kInitialTimerDelayMillis;
+  int delay_ms;
+  if (urgent) {
+    // Send as soon as possible, but not synchronously, so that all pending
+    // presentation callbacks for the current frame can run first.
+    delay_ms = 0;
+  } else if (have_sent_ipc_) {
+    // This is the typical case.
+    delay_ms = buffer_timer_delay_ms_;
+  } else {
+    // Send the first IPC eagerly to make sure the receiving side knows we're
+    // sending metrics as soon as possible.
+    delay_ms = kInitialTimerDelayMillis;
+  }
+
   timer_->Start(FROM_HERE, base::TimeDelta::FromMilliseconds(delay_ms),
                 base::BindOnce(&PageTimingMetricsSender::SendNow,
                                base::Unretained(this)));
@@ -320,12 +347,12 @@ void PageTimingMetricsSender::SendNow() {
       page_resource_data_use_.erase(resource->resource_id());
     }
   }
-
-  sender_->SendTiming(
-      last_timing_, metadata_, std::move(new_features_), std::move(resources),
-      render_data_, last_cpu_timing_, std::move(new_deferred_resource_data_),
-      std::move(input_timing_delta_), std::move(mobile_friendliness_));
-  mobile_friendliness_ = blink::MobileFriendliness();
+  std::sort(render_data_.input_timestamps.begin(),
+            render_data_.input_timestamps.end());
+  sender_->SendTiming(last_timing_, metadata_, std::move(new_features_),
+                      std::move(resources), render_data_, last_cpu_timing_,
+                      std::move(new_deferred_resource_data_),
+                      std::move(input_timing_delta_), mobile_friendliness_);
   input_timing_delta_ = mojom::InputTiming::New();
   new_deferred_resource_data_ = mojom::DeferredResourceCounts::New();
   new_features_ = mojom::PageLoadFeatures::New();
@@ -333,6 +360,7 @@ void PageTimingMetricsSender::SendNow() {
   last_cpu_timing_->task_time = base::TimeDelta();
   modified_resources_.clear();
   render_data_.new_layout_shifts.clear();
+  render_data_.input_timestamps.clear();
   render_data_.layout_shift_delta = 0;
   render_data_.layout_shift_delta_before_input_or_scroll = 0;
   render_data_.all_layout_block_count_delta = 0;

@@ -52,6 +52,8 @@ struct Theme {
   ThemeType type;
   // Additional info about the theme depending on the type.
   ThemeInfo info;
+  // Whether theme is forced through a policy.
+  bool is_forced;
 };
 
 // Used by the component to bootstrap bidirectional communication.

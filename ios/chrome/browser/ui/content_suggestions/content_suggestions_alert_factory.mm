@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_alert_factory.h"
 
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_gesture_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_item.h"
@@ -132,6 +135,8 @@
                 }
                  style:UIAlertActionStyleDefault];
 
+  BOOL incognitoEnabled =
+      !IsIncognitoModeDisabled(browser->GetBrowserState()->GetPrefs());
   [alertCoordinator
       addItemWithTitle:l10n_util::GetNSStringWithFixup(
                            IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWINCOGNITOTAB)
@@ -144,7 +149,8 @@
                                               atIndex:indexPath.item];
                   }
                 }
-                 style:UIAlertActionStyleDefault];
+                 style:UIAlertActionStyleDefault
+               enabled:incognitoEnabled];
 
   [alertCoordinator
       addItemWithTitle:l10n_util::GetNSStringWithFixup(

@@ -31,5 +31,7 @@ Local modifications:
   modified to accept an additional parameter convertingTextToURL:, which
   indicates whether the string contents of the pasteboard should be
   interpreted as a URL if possible.
+- -[NSPasteboard getURLs:andTitles:convertingFilenames:convertingTextToURL:]
+  was modified to retain the -types array.
 - NSWorkspace+Utils.m was modified to compile on the x86_64 architecture.
 - MOZILLA_EXPORT was added to some constants in NSPasteboard+Utils.h.

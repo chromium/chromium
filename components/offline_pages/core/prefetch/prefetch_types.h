@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "components/offline_pages/core/client_id.h"
 #include "url/gurl.h"
@@ -230,10 +229,10 @@ using PrefetchRequestFinishedCallback =
 struct PrefetchURL {
   PrefetchURL(const std::string& id,
               const GURL& url,
-              const base::string16& title);
+              const std::u16string& title);
   PrefetchURL(const std::string& id,
               const GURL& url,
-              const base::string16& title,
+              const std::u16string& title,
               const GURL& thumbnail_url,
               const GURL& favicon_url,
               const std::string& snippet,
@@ -251,7 +250,7 @@ struct PrefetchURL {
   GURL url;
 
   // The title of the page.
-  base::string16 title;
+  std::u16string title;
 
   // URL for a thumbnail that represents the page. May be empty if no thumbnail
   // is available.
@@ -293,7 +292,7 @@ struct PrefetchArchiveInfo {
   ClientId client_id;
   GURL url;
   GURL final_archived_url;
-  base::string16 title;
+  std::u16string title;
   base::FilePath file_path;
   int64_t file_size = 0;
   GURL favicon_url;

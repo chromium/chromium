@@ -52,19 +52,24 @@ void Agent::SetIsCrossOriginIsolated(bool value) {
   is_cross_origin_isolated = value;
 }
 
-bool Agent::IsOriginIsolated() {
+bool Agent::IsOriginKeyed() {
+  if (IsCrossOriginIsolated()) {
+    return true;
+  }
+
 #if DCHECK_IS_ON()
-  DCHECK(is_origin_isolated_set_);
+  DCHECK(is_explicitly_origin_keyed_set_);
 #endif
-  return is_origin_isolated_;
+  return is_explicitly_origin_keyed_;
 }
 
-void Agent::SetIsOriginIsolated(bool value) {
+void Agent::SetIsExplicitlyOriginKeyed(bool value) {
 #if DCHECK_IS_ON()
-  DCHECK(!is_origin_isolated_set_ || value == is_origin_isolated_);
-  is_origin_isolated_set_ = true;
+  DCHECK(!is_explicitly_origin_keyed_set_ ||
+         value == is_explicitly_origin_keyed_);
+  is_explicitly_origin_keyed_set_ = true;
 #endif
-  is_origin_isolated_ = value;
+  is_explicitly_origin_keyed_ = value;
 }
 
 }  // namespace blink

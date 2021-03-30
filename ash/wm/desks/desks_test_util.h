@@ -23,6 +23,7 @@ class DeskSwitchAnimationWaiter : public DesksController::Observer {
   // DesksController::Observer:
   void OnDeskAdded(const Desk* desk) override;
   void OnDeskRemoved(const Desk* desk) override;
+  void OnDeskReordered(int old_index, int new_index) override;
   void OnDeskActivationChanged(const Desk* activated,
                                const Desk* deactivated) override;
   void OnDeskSwitchAnimationLaunching() override;

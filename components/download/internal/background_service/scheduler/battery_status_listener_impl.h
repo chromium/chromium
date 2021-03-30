@@ -14,7 +14,7 @@ namespace download {
 
 // Default implementation of BatteryStatusListener.
 class BatteryStatusListenerImpl : public BatteryStatusListener,
-                                  public base::PowerObserver {
+                                  public base::PowerStateObserver {
  public:
   explicit BatteryStatusListenerImpl(
       const base::TimeDelta& battery_query_interval);
@@ -35,7 +35,7 @@ class BatteryStatusListenerImpl : public BatteryStatusListener,
   // |battery_query_interval_| when |force| is false.
   void UpdateBatteryPercentage(bool force);
 
-  // base::PowerObserver implementation.
+  // base::PowerStateObserver implementation.
   void OnPowerStateChange(bool on_battery_power) override;
 
   // Cached battery percentage.

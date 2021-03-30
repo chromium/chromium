@@ -40,14 +40,16 @@ NSString* const kOriginDetectedKey = @"OriginDetectedKey";
     _window = [[ChromeOverlayWindow alloc] init];
     CustomizeUIWindowAppearance(_window);
 
+    // Assign an a11y identifier for using in EGTest.
     if (@available(iOS 13, *)) {
-      // Assign an a11y identifier for using in EGTest.
       // See comment for [ChromeMatchersAppInterface windowWithNumber:] matcher
       // for context.
       _window.accessibilityIdentifier =
           [NSString stringWithFormat:@"%ld", UIApplication.sharedApplication
                                                      .connectedScenes.count -
                                                  1];
+    } else {
+      _window.accessibilityIdentifier = @"0";
     }
   }
   return _window;

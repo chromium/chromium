@@ -73,6 +73,7 @@ class CertNetFetcher;
 class CertNetFetcherURLRequest;
 class CertVerifier;
 class HostPortPair;
+class IsolationInfo;
 class NetworkIsolationKey;
 class ReportSender;
 class StaticHttpUserAgentSettings;
@@ -200,14 +201,18 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       mojo::PendingReceiver<mojom::RestrictedCookieManager> receiver,
       mojom::RestrictedCookieManagerRole role,
       const url::Origin& origin,
-      const net::SiteForCookies& site_for_cookies,
-      const url::Origin& top_frame_origin,
+      const net::IsolationInfo& isolation_info,
       mojo::PendingRemote<mojom::CookieAccessObserver> observer) override;
   void GetHasTrustTokensAnswerer(
       mojo::PendingReceiver<mojom::HasTrustTokensAnswerer> receiver,
       const url::Origin& top_frame_origin) override;
   void ClearTrustTokenData(mojom::ClearDataFilterPtr filter,
                            base::OnceClosure done) override;
+  void GetStoredTrustTokenCounts(
+      GetStoredTrustTokenCountsCallback callback) override;
+  void DeleteStoredTrustTokens(
+      const url::Origin& issuer,
+      DeleteStoredTrustTokensCallback callback) override;
   void ClearNetworkingHistoryBetween(
       base::Time start_time,
       base::Time end_time,
@@ -311,12 +316,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const net::IsolationInfo& isolation_info,
       std::vector<mojom::HttpHeaderPtr> additional_headers,
       int32_t process_id,
-      int32_t render_frame_id,
       const url::Origin& origin,
       uint32_t options,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       mojo::PendingRemote<mojom::WebSocketHandshakeClient> handshake_client,
-      mojo::PendingRemote<mojom::AuthenticationHandler> auth_handler,
+      mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
+          url_loader_network_observer,
+      mojo::PendingRemote<mojom::WebSocketAuthenticationHandler> auth_handler,
       mojo::PendingRemote<mojom::TrustedHeaderClient> header_client) override;
   void CreateQuicTransport(
       const GURL& url,
@@ -525,8 +531,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // Returns the current same-origin-policy exceptions.  For more details see
   // network::mojom::NetworkContextParams::cors_origin_access_list and
   // network::mojom::NetworkContext::SetCorsOriginAccessListsForOrigin.
-  const cors::OriginAccessList* cors_origin_access_list() {
-    return &cors_origin_access_list_;
+  const cors::OriginAccessList& cors_origin_access_list() {
+    return cors_origin_access_list_;
+  }
+
+  bool require_network_isolation_key() const {
+    return require_network_isolation_key_;
   }
 
  private:
@@ -637,13 +647,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   std::vector<std::unique_ptr<HttpCacheDataCounter>> http_cache_data_counters_;
   std::set<std::unique_ptr<ProxyLookupRequest>, base::UniquePtrComparator>
       proxy_lookup_requests_;
-
-  // This must be below |url_request_context_| so that the URLRequestContext
-  // outlives all the URLLoaderFactories and URLLoaders that depend on it;
-  // for the same reason, it must also be below |network_context_|.
-  std::set<std::unique_ptr<cors::CorsURLLoaderFactory>,
-           base::UniquePtrComparator>
-      url_loader_factories_;
 
   std::set<std::unique_ptr<QuicTransport>, base::UniquePtrComparator>
       quic_transports_;
@@ -757,6 +760,24 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // Each network context holds its own WebBundleManager, which
   // manages the lifetiem of a WebBundleURLLoaderFactory object.
   WebBundleManager web_bundle_manager_;
+
+  // Whether all external consumers are expected to provide a non-empty
+  // NetworkIsolationKey with all requests. When set, enabled a variety of
+  // DCHECKs on APIs used by external callers.
+  bool require_network_isolation_key_ = false;
+
+  // CorsURLLoaderFactory assumes that fields owned by the NetworkContext always
+  // live longer than the factory.  Therefore we want the factories to be
+  // destroyed before other fields above.  In particular:
+  // - This must be below |url_request_context_| so that the URLRequestContext
+  //   outlives all the URLLoaderFactories and URLLoaders that depend on it;
+  //   for the same reason, it must also be below |network_context_|.
+  // - This must be below |loader_count_per_process_| that is touched by
+  //   CorsURLLoaderFactory::DestroyURLLoader (see also
+  //   https://crbug.com/1174943).
+  std::set<std::unique_ptr<cors::CorsURLLoaderFactory>,
+           base::UniquePtrComparator>
+      url_loader_factories_;
 
   base::WeakPtrFactory<NetworkContext> weak_factory_{this};
 

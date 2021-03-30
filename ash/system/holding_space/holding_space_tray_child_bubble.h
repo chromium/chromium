@@ -21,6 +21,7 @@ class LayerAnimationObserver;
 
 namespace ash {
 
+class HoldingSpaceItemView;
 class HoldingSpaceItemViewDelegate;
 class HoldingSpaceItemViewsSection;
 
@@ -43,6 +44,10 @@ class HoldingSpaceTrayChildBubble : public views::View,
   // observing the holding space controller/model to ensure that no new items
   // are created while the bubble widget is begin asynchronously closed.
   void Reset();
+
+  // Returns all holding space item views in the child bubble. Views are
+  // returned in top-to-bottom, left-to-right order (or mirrored for RTL).
+  std::vector<HoldingSpaceItemView*> GetHoldingSpaceItemViews();
 
   // HoldingSpaceControllerObserver:
   void OnHoldingSpaceModelAttached(HoldingSpaceModel* model) override;
@@ -67,6 +72,8 @@ class HoldingSpaceTrayChildBubble : public views::View,
   const char* GetClassName() const override;
   void ChildPreferredSizeChanged(views::View* child) override;
   void ChildVisibilityChanged(views::View* child) override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
+  bool OnMousePressed(const ui::MouseEvent& event) override;
 
   // Invoked to animate in/out this view if necessary.
   void MaybeAnimateIn();
@@ -87,6 +94,11 @@ class HoldingSpaceTrayChildBubble : public views::View,
 
   // Views owned by view hierarchy.
   std::vector<HoldingSpaceItemViewsSection*> sections_;
+
+  // Whether or not to ignore `ChildVisibilityChanged()` events. This is used
+  // when removing all holding space item views from `sections_` to prevent this
+  // view from inadvertently regaining visibility.
+  bool ignore_child_visibility_changed_ = false;
 
   // Whether or not this view is currently being animated out.
   bool is_animating_out_ = false;

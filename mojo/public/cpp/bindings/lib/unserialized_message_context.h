@@ -13,7 +13,6 @@
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/bindings/lib/buffer.h"
 #include "mojo/public/cpp/bindings/lib/message_internal.h"
-#include "mojo/public/cpp/bindings/lib/serialization_context.h"
 
 namespace mojo {
 namespace internal {
@@ -40,8 +39,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) UnserializedMessageContext {
 
   MessageHeaderV1* header() { return &header_; }
 
-  virtual void Serialize(SerializationContext* serialization_context,
-                         Buffer* buffer) = 0;
+  virtual void Serialize(Message& message) = 0;
 
  private:
   // The |tag_| is used for run-time type identification of specific

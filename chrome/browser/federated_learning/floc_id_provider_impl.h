@@ -6,34 +6,30 @@
 #define CHROME_BROWSER_FEDERATED_LEARNING_FLOC_ID_PROVIDER_IMPL_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/federated_learning/floc_id_provider.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/federated_learning/floc_sorting_lsh_clusters_service.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
-#include "components/sync/driver/sync_service_observer.h"
-
-class PrivacySandboxSettings;
-
-namespace syncer {
-class UserEventService;
-}
 
 namespace federated_learning {
 
-class FlocRemotePermissionService;
+class FlocEventLogger;
 
-// A service that regularly computes the floc id and logs it in a user event. A
-// computed floc can be in either a valid or invalid state, based on whether all
-// the prerequisites are met:
-// 1) Sync & sync-history are enabled.
-// 2) 3rd party cookies are NOT blocked.
-// 3) Supplemental Web and App Activity is enabled.
-// 4) Supplemental Ad Personalization is enabled.
-// 5) The account type is NOT a child account.
+// A service that regularly computes the floc id and logs it in a user event.
 //
-// When all the prerequisites are met, the floc will be computed by:
+// For the first browser session of a profile, we'll start computing the floc
+// after the sorting-lsh file is loaded, and another computation will be
+// scheduled every X days. When the browser shuts down and starts up again, it
+// can remember the last state and can still schedule the computation at X days
+// after the last compute time. If we've missed a scheduled update due to the
+// browser not being alive, it'll compute after the next session starts, using
+// the sorting-lsh-file-loaded as the first compute triggering condition.
+//
+// The floc will be computed by:
 // Step 1: sim-hashing navigation URL domains in the last 7 days. This step aims
 // to group together users with similar browsing habit.
 // Step 2: applying the sorting-lsh post processing to the sim-hash value. The
@@ -42,24 +38,25 @@ class FlocRemotePermissionService;
 // server side in chrome-sync, based on logged sim-hash data, and is pushed to
 // Chrome on a regular basis through the component updater.
 //
-// If some prerequisites are not met, an invalid floc will be given.
+// A computed floc will be valid if:
+// - 3rd party cookies are NOT blocked.
+// - There are at least 3 *eligible* history entries in the last 7 days, where
+// eligible means the IP was publicly routable.
+// - It's not blocked by the sorting-lsh (with encoded blocklist) file.
 //
-// For the first browser session of a profile, we'll compute the floc after sync
-// & sync-history are enabled and the sorting-lsh file is loaded, and another
-// computation will be scheduled every X days. When the browser shuts down and
-// starts up again, it can remember the last state and can still schedule the
-// computation at X days after the last compute time. If we've missed a
-// scheduled update due to browser not being alive, it'll compute after the next
-// session starts, using sync-history-enabled & sorting-lsh-file-loaded as the
-// first compute triggering condition.
-
+// If some of those conditions are not met, an invalid floc will be given.
+//
 // In the event of history deletion, the floc will be invalidated immediately if
 // the time range of the deletion overlaps with the time range used to compute
-// the existing floc.
+// the existing floc. In the event of cookie deletion, the floc will always be
+// invalidated. Note that we only invalidate the floc rather than recomputing,
+// because we don't want the floc to change more frequently than the scheduled
+// update rate (% rare cases such as when the finch version param has changed
+// indicating a new algorithm / experiment, a recompute will be needed).
 class FlocIdProviderImpl : public FlocIdProvider,
                            public FlocSortingLshClustersService::Observer,
-                           public history::HistoryServiceObserver,
-                           public syncer::SyncServiceObserver {
+                           public PrivacySandboxSettings::Observer,
+                           public history::HistoryServiceObserver {
  public:
   struct ComputeFlocResult {
     ComputeFlocResult() = default;
@@ -85,20 +82,19 @@ class FlocIdProviderImpl : public FlocIdProvider,
   using GetRecentlyVisitedURLsCallback =
       history::HistoryService::QueryHistoryCallback;
 
-  FlocIdProviderImpl(
-      PrefService* prefs,
-      syncer::SyncService* sync_service,
-      PrivacySandboxSettings* privacy_sandbox_settings,
-      FlocRemotePermissionService* floc_remote_permission_service,
-      history::HistoryService* history_service,
-      syncer::UserEventService* user_event_service);
+  FlocIdProviderImpl(PrefService* prefs,
+                     PrivacySandboxSettings* privacy_sandbox_settings,
+                     history::HistoryService* history_service,
+                     std::unique_ptr<FlocEventLogger> floc_event_logger);
   ~FlocIdProviderImpl() override;
   FlocIdProviderImpl(const FlocIdProviderImpl&) = delete;
   FlocIdProviderImpl& operator=(const FlocIdProviderImpl&) = delete;
 
-  std::string GetInterestCohortForJsApi(
+  blink::mojom::InterestCohortPtr GetInterestCohortForJsApi(
       const GURL& url,
       const base::Optional<url::Origin>& top_frame_origin) const override;
+
+  void MaybeRecordFlocToUkm(ukm::SourceId source_id) override;
 
  protected:
   // protected virtual for testing.
@@ -112,8 +108,14 @@ class FlocIdProviderImpl : public FlocIdProvider,
   // KeyedService:
   void Shutdown() override;
 
-  // history::HistoryServiceObserver
-  //
+  // PrivacySandboxSettings::Observer
+
+  // When the floc-accessible-since time is updated (due to e.g. cookies
+  // deletion), we'll either invalidate or keep using the floc. This will
+  // depend on the updated time and the begin time of the history used to
+  // compute the current floc.
+  void OnFlocDataAccessibleSinceUpdated() override;
+
   // On history deletion, we'll either invalidate or keep using the floc. This
   // will depend on the deletion type and the time range.
   void OnURLsDeleted(history::HistoryService* history_service,
@@ -122,15 +124,10 @@ class FlocIdProviderImpl : public FlocIdProvider,
   // FlocSortingLshClustersService::Observer
   void OnSortingLshClustersFileReady() override;
 
-  // syncer::SyncServiceObserver:
-  void OnStateChanged(syncer::SyncService* sync_service) override;
-
-  void MaybeComputeOnInitialSetupReady();
-
-  // This function will be called whenever the sync setting has changed or the
-  // sorting-lsh file is loaded. It'll trigger an immediate floc computation if
-  // the floc was never computed before, or if the floc already expired when the
-  // browser session starts.
+  // This function will be called at the start or when the sorting-lsh file is
+  // loaded. It'll trigger an immediate floc computation if the floc was never
+  // computed before, or if the floc already expired when the browser session
+  // starts.
   void MaybeTriggerImmediateComputation();
 
   void ComputeFloc();
@@ -174,15 +171,21 @@ class FlocIdProviderImpl : public FlocIdProvider,
   // FlocIdProviderFactory::FlocIdProviderFactory() guarantees that this object
   // will be destroyed first among those services.
   PrefService* prefs_;
-  syncer::SyncService* sync_service_;
   PrivacySandboxSettings* privacy_sandbox_settings_;
-  FlocRemotePermissionService* floc_remote_permission_service_;
   history::HistoryService* history_service_;
-  syncer::UserEventService* user_event_service_;
+
+  std::unique_ptr<FlocEventLogger> floc_event_logger_;
 
   // The id to be exposed to the JS API. It will always be in sync with the one
   // stored in prefs.
   FlocId floc_id_;
+
+  // When a floc is computed, we'll record it to the UKM on the next page load.
+  // This flag controls whether the recording is needed. Caveat: given that this
+  // info does not persist across browser sessions, we could miss the recording
+  // when the floc is computed and then the browser is closed before the next
+  // page load occurs.
+  bool need_ukm_recording_ = false;
 
   bool floc_computation_in_progress_ = false;
 
@@ -195,13 +198,16 @@ class FlocIdProviderImpl : public FlocIdProvider,
   bool need_recompute_ = false;
 
   bool first_sorting_lsh_file_ready_seen_ = false;
-  bool first_sync_history_enabled_seen_ = false;
 
   // Used for the async tasks querying the HistoryService.
   base::CancelableTaskTracker history_task_tracker_;
 
   // The timer used to schedule a floc computation.
   base::OneShotTimer compute_floc_timer_;
+
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_service_observation_{this};
 
   base::WeakPtrFactory<FlocIdProviderImpl> weak_ptr_factory_{this};
 };

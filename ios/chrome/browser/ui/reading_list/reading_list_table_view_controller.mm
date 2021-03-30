@@ -77,6 +77,12 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 @property(nonatomic, readonly)
     TableViewModel<TableViewItem<ReadingListListItem>*>* tableViewModel;
 
+// The number of batch operation triggered by UI.
+// One UI operation can trigger multiple batch operation, so this can be greater
+// than 1.
+@property(nonatomic, assign) int numberOfBatchOperationInProgress;
+// Whether the data source has been modified while in editing mode.
+@property(nonatomic, assign) BOOL dataSourceModifiedWhileEditing;
 // The toolbar button manager.
 @property(nonatomic, strong) ReadingListToolbarButtonManager* toolbarManager;
 // The number of read and unread cells that are currently selected.
@@ -98,17 +104,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 @end
 
 @implementation ReadingListTableViewController
-@synthesize delegate = _delegate;
-@synthesize audience = _audience;
-@synthesize dataSource = _dataSource;
-@synthesize browser = _browser;
 @dynamic tableViewModel;
-@synthesize toolbarManager = _toolbarManager;
-@synthesize selectedUnreadItemCount = _selectedUnreadItemCount;
-@synthesize selectedReadItemCount = _selectedReadItemCount;
-@synthesize markConfirmationSheet = _markConfirmationSheet;
-@synthesize editingWithToolbarButtons = _editingWithToolbarButtons;
-@synthesize needsSectionCleanupAfterEditing = _needsSectionCleanupAfterEditing;
 
 - (instancetype)init {
   UITableViewStyle style = base::FeatureList::IsEnabled(kSettingsRefresh)
@@ -355,6 +351,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 
 - (void)loadModel {
   [super loadModel];
+  self.dataSourceModifiedWhileEditing = NO;
 
   if (self.dataSource.hasElements) {
     [self loadItems];
@@ -374,7 +371,13 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 }
 
 - (void)dataSourceChanged {
-  [self reloadData];
+  // If the model is updated when the UI is already making a change, set a flag
+  // to reload the data at the end of the editing.
+  if (self.numberOfBatchOperationInProgress) {
+    self.dataSourceModifiedWhileEditing = YES;
+  } else {
+    [self reloadData];
+  }
 }
 
 - (NSArray<id<ReadingListListItem>>*)readItems {
@@ -588,6 +591,21 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   [self.markConfirmationSheet start];
 }
 
+- (void)performBatchTableViewUpdates:(void (^)(void))updates
+                          completion:(void (^)(BOOL finished))completion {
+  self.numberOfBatchOperationInProgress += 1;
+  void (^releaseDataSource)(BOOL) = ^(BOOL finished) {
+    // Set numberOfBatchOperationInProgress before calling completion, as
+    // completion may trigger another change.
+    DCHECK_GT(self.numberOfBatchOperationInProgress, 0);
+    self.numberOfBatchOperationInProgress -= 1;
+    if (completion) {
+      completion(finished);
+    }
+  };
+  [super performBatchTableViewUpdates:updates completion:releaseDataSource];
+}
+
 #pragma mark - ReadingListToolbarButtonCommands Helpers
 
 // Creates a confirmation action sheet for the "Mark" toolbar button item.
@@ -773,7 +791,6 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
     [self batchEditDidFinish];
   };
   [self performBatchTableViewUpdates:updates completion:completion];
-  [self removeEmptySections];
 }
 
 // Moves the ListItem within self.tableViewModel at |modelIndex| and the
@@ -927,6 +944,9 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 
 // Cleanup function called in the completion block of editing operations.
 - (void)batchEditDidFinish {
+  // Reload the items if the datasource was modified during the edit.
+  if (self.dataSourceModifiedWhileEditing)
+    [self reloadData];
   // Remove any newly emptied sections.
   [self removeEmptySections];
 }
@@ -955,13 +975,12 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
       }
     }
   };
-  [self performBatchTableViewUpdates:updates completion:nil];
 
+  [self performBatchTableViewUpdates:updates completion:nil];
   if (!self.dataSource.hasElements)
     [self tableIsEmpty];
   else
     [self updateToolbarItems];
-
   return removedSectionCount;
 }
 

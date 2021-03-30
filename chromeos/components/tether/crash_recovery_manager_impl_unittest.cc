@@ -101,8 +101,8 @@ class CrashRecoveryManagerImplTest : public testing::Test {
 
   void StartRestoration() {
     crash_recovery_manager_->RestorePreCrashStateIfNecessary(
-        base::Bind(&CrashRecoveryManagerImplTest::OnRestorationFinished,
-                   base::Unretained(this)));
+        base::BindOnce(&CrashRecoveryManagerImplTest::OnRestorationFinished,
+                       base::Unretained(this)));
   }
 
   void OnRestorationFinished() { is_restoration_finished_ = true; }

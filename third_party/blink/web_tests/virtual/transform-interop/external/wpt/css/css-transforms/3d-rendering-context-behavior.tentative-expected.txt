@@ -1,6 +1,8 @@
 This is a testharness.js-based test.
 PASS Direct DOM parent is root of rendering context
-PASS Intermediate DOM nodes cause rendering context to end
+PASS Intermediate DOM nodes cause rendering context to end (normal flow)
+FAIL Intermediate DOM nodes cause rendering context to end (absolute) assert_equals: expected 100 but got 200
+FAIL Intermediate DOM nodes cause rendering context to end (fixed) assert_equals: expected 100 but got 200
 PASS Perspective applies to direct DOM normal-flow children
 PASS Perspective applies to direct DOM abs-pos children
 PASS Perspective applies to direct DOM fixed-pos children

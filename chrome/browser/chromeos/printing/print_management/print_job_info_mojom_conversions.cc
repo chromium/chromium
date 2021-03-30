@@ -155,7 +155,6 @@ mojom::PrintJobInfoPtr CupsPrintJobToMojom(const CupsPrintJob& job) {
   mojom::PrintJobInfoPtr print_job_mojom = mojom::PrintJobInfo::New();
   print_job_mojom->active_print_job_info = std::move(active_job_info_mojom);
   print_job_mojom->id = job.GetUniqueId();
-  // TODO(crbug/1091953): Use 16-bit strings.
   print_job_mojom->title = base::UTF8ToUTF16(job.document_title());
   print_job_mojom->creation_time = job.creation_time();
   print_job_mojom->number_of_pages = job.total_page_number();

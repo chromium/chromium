@@ -8,11 +8,11 @@
 #include <windows.h>
 
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string16.h"
 
 class AutomationController;
 
@@ -39,7 +39,7 @@ class SettingsAppMonitor {
     virtual void OnChooserInvoked() = 0;
 
     // Invoked when the user has chosen a particular Web browser.
-    virtual void OnBrowserChosen(const base::string16& browser_name) = 0;
+    virtual void OnBrowserChosen(const std::wstring& browser_name) = 0;
 
     // Invoked when the Edge promo has received keyboard focus.
     virtual void OnPromoFocused() = 0;
@@ -59,7 +59,7 @@ class SettingsAppMonitor {
   void OnInitialized(HRESULT result);
   void OnAppFocused();
   void OnChooserInvoked();
-  void OnBrowserChosen(const base::string16& browser_name);
+  void OnBrowserChosen(const std::wstring& browser_name);
   void OnPromoFocused();
   void OnPromoChoiceMade(bool accept_promo);
 

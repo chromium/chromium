@@ -86,7 +86,7 @@ class FakePasswordAutofillAgent
   MOCK_METHOD(void, InformNoSavedCredentials, (bool), (override));
   MOCK_METHOD(void,
               FillIntoFocusedField,
-              (bool, const base::string16&),
+              (bool, const std::u16string&),
               (override));
   MOCK_METHOD(void, TouchToFillClosed, (bool), (override));
   MOCK_METHOD(void,
@@ -116,18 +116,20 @@ PasswordFormFillData GetTestPasswordFormFillData() {
   form_on_page.action = GURL("https://foo.com/login");
   form_on_page.signon_realm = "https://foo.com/";
   form_on_page.scheme = PasswordForm::Scheme::kHtml;
+  form_on_page.form_data.host_frame = autofill::LocalFrameToken(
+      base::UnguessableToken::Deserialize(98765, 43210));
 
   // Create an exact match in the database.
   PasswordForm preferred_match = form_on_page;
-  preferred_match.username_element = ASCIIToUTF16("username");
-  preferred_match.username_value = ASCIIToUTF16("test@gmail.com");
-  preferred_match.password_element = ASCIIToUTF16("password");
-  preferred_match.password_value = ASCIIToUTF16("test");
+  preferred_match.username_element = u"username";
+  preferred_match.username_value = u"test@gmail.com";
+  preferred_match.password_element = u"password";
+  preferred_match.password_value = u"test";
 
   std::vector<const PasswordForm*> matches;
   PasswordForm non_preferred_match = preferred_match;
-  non_preferred_match.username_value = ASCIIToUTF16("test1@gmail.com");
-  non_preferred_match.password_value = ASCIIToUTF16("test1");
+  non_preferred_match.username_value = u"test1@gmail.com";
+  non_preferred_match.password_value = u"test1";
   matches.push_back(&non_preferred_match);
 
   return CreatePasswordFormFillData(form_on_page, matches, preferred_match,

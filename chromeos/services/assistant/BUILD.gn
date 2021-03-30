@@ -21,33 +21,53 @@ component("lib") {
   sources = [
     "assistant_interaction_logger.cc",
     "assistant_interaction_logger.h",
+    "assistant_manager_service.cc",
     "assistant_manager_service.h",
-    "fake_assistant_manager_service_impl.cc",
-    "fake_assistant_manager_service_impl.h",
-    "fake_assistant_settings_impl.cc",
-    "fake_assistant_settings_impl.h",
+    "assistant_manager_service_impl.cc",
+    "assistant_manager_service_impl.h",
+    "assistant_settings_impl.cc",
+    "assistant_settings_impl.h",
+    "device_settings_host.cc",
+    "device_settings_host.h",
+    "media_host.cc",
+    "media_host.h",
+    "media_session/assistant_media_session.cc",
+    "media_session/assistant_media_session.h",
+    "platform/audio_devices.cc",
+    "platform/audio_devices.h",
+    "platform/audio_input_host.h",
+    "platform/audio_input_host_impl.cc",
+    "platform/audio_input_host_impl.h",
+    "platform/audio_output_delegate_impl.cc",
+    "platform/audio_output_delegate_impl.h",
+    "platform/platform_delegate_impl.cc",
+    "platform/platform_delegate_impl.h",
     "service.cc",
     "service.h",
     "service_context.h",
+    "timer_host.cc",
+    "timer_host.h",
   ]
 
   deps = [
+    ":libassistant_service_host",
+    "//ash/components/audio",
+    "//ash/constants",
     "//base",
-    "//build/util:webkit_version",
     "//chromeos/assistant:buildflags",
-    "//chromeos/audio",
-    "//chromeos/constants",
     "//chromeos/dbus",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
+    "//chromeos/services/assistant/proxy",
     "//chromeos/services/assistant/public/proto",
+    "//chromeos/services/libassistant/public/mojom",
+    "//chromeos/strings",
     "//components/account_id",
     "//components/prefs",
     "//components/signin/public/identity_manager",
     "//components/user_manager",
-    "//media",
-    "//services/device/public/mojom",
-    "//services/network/public/cpp:cpp",
+    "//media/mojo/mojom",
+    "//services/media_session/public/cpp",
     "//ui/accessibility:ax_assistant",
   ]
 
@@ -56,93 +76,25 @@ component("lib") {
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/assistant/public/mojom",
     "//chromeos/services/assistant/public/shared",
-    "//mojo/public/cpp/bindings:bindings",
-    "//services/audio/public/cpp:cpp",
+    "//mojo/public/cpp/bindings",
+    "//services/audio/public/cpp",
+  ]
+}
+
+source_set("libassistant_service_host") {
+  sources = [
+    "libassistant_service_host_impl.cc",
+    "libassistant_service_host_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/assistant:buildflags",
+    "//chromeos/services/assistant/proxy",
   ]
 
   if (enable_cros_libassistant) {
-    sources += [
-      "assistant_device_settings_delegate.cc",
-      "assistant_device_settings_delegate.h",
-      "assistant_manager_service_delegate_impl.cc",
-      "assistant_manager_service_delegate_impl.h",
-      "assistant_manager_service_impl.cc",
-      "assistant_manager_service_impl.h",
-      "assistant_settings_impl.cc",
-      "assistant_settings_impl.h",
-      "chromium_api_delegate.cc",
-      "chromium_api_delegate.h",
-      "chromium_http_connection.cc",
-      "chromium_http_connection.h",
-      "libassistant_service_host_impl.cc",
-      "libassistant_service_host_impl.h",
-      "media_session/assistant_media_session.cc",
-      "media_session/assistant_media_session.h",
-      "platform/audio_device_owner.cc",
-      "platform/audio_device_owner.h",
-      "platform/audio_input_host.cc",
-      "platform/audio_input_host.h",
-      "platform/audio_input_impl.cc",
-      "platform/audio_input_impl.h",
-      "platform/audio_input_provider_impl.cc",
-      "platform/audio_input_provider_impl.h",
-      "platform/audio_media_data_source.cc",
-      "platform/audio_media_data_source.h",
-      "platform/audio_output_provider_impl.cc",
-      "platform/audio_output_provider_impl.h",
-      "platform/audio_stream.cc",
-      "platform/audio_stream.h",
-      "platform/audio_stream_factory_delegate.cc",
-      "platform/audio_stream_factory_delegate.h",
-      "platform/audio_stream_handler.cc",
-      "platform/audio_stream_handler.h",
-      "platform/file_provider_impl.cc",
-      "platform/file_provider_impl.h",
-      "platform/network_provider_impl.cc",
-      "platform/network_provider_impl.h",
-      "platform/power_manager_provider_impl.cc",
-      "platform/power_manager_provider_impl.h",
-      "platform/system_provider_impl.cc",
-      "platform/system_provider_impl.h",
-      "platform/volume_control_impl.cc",
-      "platform/volume_control_impl.h",
-      "platform_api_impl.cc",
-      "platform_api_impl.h",
-      "utils.cc",
-      "utils.h",
-    ]
-
-    if (enable_fake_assistant_microphone) {
-      sources += [
-        "platform/fake_input_device.cc",
-        "platform/fake_input_device.h",
-      ]
-    }
-
-    deps += [
-      ":buildflags",
-      "//chromeos/assistant/internal",
-      "//chromeos/assistant/internal:libassistant",
-      "//chromeos/assistant/internal/proto/google3",
-      "//chromeos/dbus",
-      "//chromeos/resources",
-      "//chromeos/services/assistant/proxy",
-      "//chromeos/services/assistant/public/cpp/migration",
-      "//chromeos/services/libassistant",
-      "//chromeos/services/network_config/public/mojom",
-      "//chromeos/strings",
-      "//libassistant/shared/internal_api:fuchsia_api_helper",
-      "//libassistant/shared/internal_api/c:api_wrappers_entrypoint",
-      "//libassistant/shared/public",
-      "//libassistant/shared/public:export",
-      "//net",
-      "//services/media_session/public/cpp",
-      "//services/media_session/public/mojom",
-      "//services/network/public/cpp",
-      "//services/network/public/mojom",
-      "//ui/base",
-      "//url",
-    ]
+    deps += [ "//chromeos/services/libassistant" ]
   }
 }
 
@@ -151,30 +103,39 @@ source_set("tests") {
   deps = [
     ":lib",
     ":test_support",
+    "//ash/components/audio",
+    "//ash/constants",
     "//ash/public/cpp/assistant/test_support",
-    "//ash/public/mojom",
     "//base",
     "//base/test:test_support",
-    "//chromeos/audio",
-    "//chromeos/constants",
+    "//chromeos/assistant/test_support",
     "//chromeos/dbus:test_support",
     "//chromeos/dbus/audio",
     "//chromeos/dbus/power",
+    "//chromeos/services/assistant/proxy",
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/assistant/public/mojom",
+    "//chromeos/services/libassistant/public/mojom",
     "//components/prefs:test_support",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
-    "//mojo/public/cpp/bindings:bindings",
+    "//mojo/public/cpp/bindings",
     "//services/device/public/mojom",
+    "//services/media_session/public/mojom",
     "//services/network:test_support",
-    "//services/network/public/cpp:cpp",
     "//testing/gmock",
     "//testing/gtest",
   ]
 
   sources = [
+    "assistant_manager_service_impl_unittest.cc",
+    "media_host_unittest.cc",
+    "media_session/assistant_media_session_unittest.cc",
+    "platform/audio_devices_unittest.cc",
+    "platform/audio_input_host_unittest.cc",
     "service_unittest.cc",
+    "test_support/fake_service_context.cc",
+    "test_support/fake_service_context.h",
     "test_support/fully_initialized_assistant_state.cc",
     "test_support/fully_initialized_assistant_state.h",
     "test_support/scoped_assistant_client.cc",
@@ -182,71 +143,36 @@ source_set("tests") {
     "test_support/scoped_device_actions.cc",
     "test_support/scoped_device_actions.h",
   ]
-
-  if (enable_cros_libassistant) {
-    sources += [
-      "assistant_device_settings_delegate_unittest.cc",
-      "assistant_manager_service_impl_unittest.cc",
-      "media_session/assistant_media_session_unittest.cc",
-      "platform/audio_input_impl_unittest.cc",
-      "platform/audio_output_provider_impl_unittest.cc",
-      "platform/network_provider_impl_unittest.cc",
-      "platform/power_manager_provider_impl_unittest.cc",
-      "platform/system_provider_impl_unittest.cc",
-      "test_support/fake_service_context.cc",
-      "test_support/fake_service_context.h",
-      "test_support/mock_media_manager.cc",
-      "test_support/mock_media_manager.h",
-    ]
-
-    deps += [
-      "//chromeos/assistant/internal",
-      "//chromeos/assistant/internal:test_support",
-      "//chromeos/assistant/internal:tests",
-      "//chromeos/assistant/internal/proto/google3",
-      "//chromeos/dbus",
-      "//chromeos/services/assistant/proxy",
-      "//chromeos/services/assistant/public/cpp/migration",
-      "//chromeos/services/assistant/public/cpp/migration:test_support",
-      "//chromeos/services/network_config/public/mojom",
-      "//services/audio/public/cpp:test_support",
-      "//services/device/public/cpp:test_support",
-      "//services/media_session/public/mojom",
-    ]
-  }
 }
 
 static_library("test_support") {
   testonly = true
   sources = [
+    "test_support/fake_assistant_manager_service_impl.cc",
+    "test_support/fake_assistant_manager_service_impl.h",
+    "test_support/fake_assistant_settings_impl.cc",
+    "test_support/fake_assistant_settings_impl.h",
     "test_support/fake_libassistant_service.cc",
     "test_support/fake_libassistant_service.h",
     "test_support/fake_service_controller.cc",
     "test_support/fake_service_controller.h",
+    "test_support/libassistant_media_controller_mock.cc",
+    "test_support/libassistant_media_controller_mock.h",
     "test_support/mock_assistant.cc",
     "test_support/mock_assistant.h",
     "test_support/mock_assistant_interaction_subscriber.cc",
     "test_support/mock_assistant_interaction_subscriber.h",
   ]
   deps = [
+    ":lib",
     "//base",
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/assistant/public/mojom",
+    "//chromeos/services/assistant/public/proto",
     "//chromeos/services/assistant/public/shared",
     "//chromeos/services/libassistant/public/mojom",
     "//mojo/public/cpp/bindings",
     "//testing/gmock",
     "//testing/gtest",
   ]
-
-  if (enable_cros_libassistant) {
-    deps += [ "//chromeos/services/assistant/public/cpp/migration" ]
-  }
-}
-
-buildflag_header("buildflags") {
-  header = "buildflags.h"
-
-  flags =
-      [ "ENABLE_FAKE_ASSISTANT_MICROPHONE=$enable_fake_assistant_microphone" ]
 }

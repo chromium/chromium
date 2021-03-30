@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/files/scoped_file.h"
-#include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/ozone/platform/wayland/common/data_util.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
@@ -94,10 +93,7 @@ void WaylandDataDevice::OnOffer(void* data,
                                 wl_data_device* data_device,
                                 wl_data_offer* offer) {
   auto* self = static_cast<WaylandDataDevice*>(data);
-
-  self->connection()->clipboard()->UpdateSequenceNumber(
-      ClipboardBuffer::kCopyPaste);
-
+  DCHECK(self);
   DCHECK(!self->new_offer_);
   self->new_offer_ = std::make_unique<WaylandDataOffer>(offer);
 }
@@ -163,7 +159,7 @@ void WaylandDataDevice::OnLeave(void* data, wl_data_device* data_device) {
   // potential use-after-free. Above call to OnDragLeave() may result in
   // |drag_delegate_| being reset, so it must be checked here as well.
   if (self->drag_delegate_ && !self->drag_delegate_->IsDragSource())
-    self->drag_delegate_ = nullptr;
+    self->ResetDragDelegate();
 }
 
 void WaylandDataDevice::OnSelection(void* data,
@@ -173,19 +169,17 @@ void WaylandDataDevice::OnSelection(void* data,
   DCHECK(self);
 
   // 'offer' will be null to indicate that the selection is no longer valid,
-  // i.e. there is no longer clipboard data available to paste.
+  // i.e. there is no longer selection data available to fetch.
   if (!offer) {
     self->ResetDataOffer();
-
-    // Clear Clipboard cache.
-    self->connection()->clipboard()->SetData({}, {});
-    return;
+  } else {
+    DCHECK(self->new_offer_);
+    self->set_data_offer(std::move(self->new_offer_));
+    self->data_offer()->EnsureTextMimeTypeIfNeeded();
   }
 
-  DCHECK(self->new_offer_);
-  self->set_data_offer(std::move(self->new_offer_));
-
-  self->data_offer()->EnsureTextMimeTypeIfNeeded();
+  if (self->selection_delegate())
+    self->selection_delegate()->OnSelectionOffer(self->data_offer());
 }
 
 }  // namespace ui

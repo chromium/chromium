@@ -36,6 +36,8 @@
 #include "ui/views/widget/native_widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/desks_helper.h"
 #include "components/user_manager/user_manager.h"
 #endif
 
@@ -81,26 +83,30 @@ void BrowserFrame::InitBrowserFrame() {
   views::Widget::InitParams params = native_browser_frame_->GetWidgetParams();
   params.name = "BrowserFrame";
   params.delegate = browser_view_;
-  if (browser_view_->browser()->is_type_normal() ||
-      browser_view_->browser()->is_type_devtools() ||
-      browser_view_->browser()->is_type_app()) {
-    // Typed panel/popup can only return a size once the widget has been
-    // created.
-    // DevTools counts as a popup, but DevToolsWindow::CreateDevToolsBrowser
-    // ensures there is always a size available. Without this, the tools
-    // launch on the wrong display and can have sizing issues when
-    // repositioned to the saved bounds in Widget::SetInitialBounds.
-    chrome::GetSavedWindowBoundsAndShowState(browser_view_->browser(),
-                                             &params.bounds,
-                                             &params.show_state);
 
-    params.workspace = browser_view_->browser()->initial_workspace();
-    const base::CommandLine& parsed_command_line =
-        *base::CommandLine::ForCurrentProcess();
+  if (native_browser_frame_->ShouldRestorePreviousBrowserWidgetState()) {
+    Browser* browser = browser_view_->browser();
+    if (browser->is_type_normal() || browser->is_type_devtools() ||
+        browser->is_type_app()) {
+      // Typed panel/popup can only return a size once the widget has been
+      // created.
+      // DevTools counts as a popup, but DevToolsWindow::CreateDevToolsBrowser
+      // ensures there is always a size available. Without this, the tools
+      // launch on the wrong display and can have sizing issues when
+      // repositioned to the saved bounds in Widget::SetInitialBounds.
+      chrome::GetSavedWindowBoundsAndShowState(browser, &params.bounds,
+                                               &params.show_state);
 
-    if (parsed_command_line.HasSwitch(switches::kWindowWorkspace)) {
-      params.workspace =
-          parsed_command_line.GetSwitchValueASCII(switches::kWindowWorkspace);
+      params.workspace = browser->initial_workspace();
+      params.visible_on_all_workspaces =
+          browser->initial_visible_on_all_workspaces_state();
+      const base::CommandLine& parsed_command_line =
+          *base::CommandLine::ForCurrentProcess();
+
+      if (parsed_command_line.HasSwitch(switches::kWindowWorkspace)) {
+        params.workspace =
+            parsed_command_line.GetSwitchValueASCII(switches::kWindowWorkspace);
+      }
     }
   }
 
@@ -210,6 +216,8 @@ const ui::NativeTheme* BrowserFrame::GetNativeTheme() const {
 
 void BrowserFrame::OnNativeWidgetWorkspaceChanged() {
   chrome::SaveWindowWorkspace(browser_view_->browser(), GetWorkspace());
+  chrome::SaveWindowVisibleOnAllWorkspaces(browser_view_->browser(),
+                                           IsVisibleOnAllWorkspaces());
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -266,6 +274,17 @@ ui::MenuModel* BrowserFrame::GetSystemMenuModel() {
     // model contains the user information, it must get updated to show any
     // changes happened since the last invocation.
     menu_model_builder_.reset();
+  }
+  if (ash::features::IsBentoEnabled()) {
+    auto* desks_helper = ash::DesksHelper::Get();
+    int current_num_desks =
+        desks_helper ? desks_helper->GetNumberOfDesks() : -1;
+    if (current_num_desks != num_desks_) {
+      // Since the number of desks can change, the model must update to show any
+      // changes happened since the last invocation.
+      menu_model_builder_.reset();
+      num_desks_ = current_num_desks;
+    }
   }
 #endif
   if (!menu_model_builder_.get()) {

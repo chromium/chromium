@@ -65,14 +65,12 @@ class ContainerView : public views::View {
 
 }  // namespace
 
-UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray,
-                                                 bool show_by_click)
+UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
     : controller_(std::make_unique<UnifiedSystemTrayController>(tray->model(),
                                                                 this,
                                                                 tray)),
       tray_(tray) {
-  if (show_by_click)
-    time_shown_by_click_ = base::TimeTicks::Now();
+  time_opened_ = base::TimeTicks::Now();
 
   TrayBubbleView::InitParams init_params;
   init_params.shelf_alignment = tray_->shelf()->alignment();
@@ -85,8 +83,8 @@ UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray,
   init_params.insets = GetTrayBubbleInsets();
   init_params.corner_radius = kUnifiedTrayCornerRadius;
   init_params.has_shadow = false;
-  init_params.show_by_click = show_by_click;
   init_params.close_on_deactivate = false;
+  init_params.reroute_event_handler = true;
   init_params.translucent = true;
 
   bubble_view_ = new TrayBubbleView(init_params);
@@ -135,16 +133,6 @@ gfx::Rect UnifiedSystemTrayBubble::GetBoundsInScreen() const {
 
 bool UnifiedSystemTrayBubble::IsBubbleActive() const {
   return bubble_widget_ && bubble_widget_->IsActive();
-}
-
-void UnifiedSystemTrayBubble::ActivateBubble() {
-  DCHECK(unified_view_);
-  DCHECK(bubble_widget_);
-
-  if (bubble_widget_->IsClosed())
-    return;
-  bubble_widget_->widget_delegate()->SetCanActivate(true);
-  bubble_widget_->Activate();
 }
 
 void UnifiedSystemTrayBubble::CloseNow() {
@@ -235,10 +223,12 @@ int UnifiedSystemTrayBubble::GetCurrentTrayHeight() const {
 }
 
 int UnifiedSystemTrayBubble::CalculateMaxHeight() const {
-  gfx::Rect anchor_bounds =
-      tray_->shelf()->GetSystemTrayAnchorView()->GetBoundsInScreen();
-  int bottom = tray_->shelf()->IsHorizontalAlignment() ? anchor_bounds.y()
-                                                       : anchor_bounds.bottom();
+  // We use the system tray anchor rect's bottom position to calculate the free
+  // space height. Here 'GetSystemTrayAnchorRect' gets the rect that those
+  // bubble views will be anchored. The calculation of this rect has considered
+  // the position of the tray (bottom, left, right), the status of the tray
+  // (tray_->is_active()), etc.
+  int bottom = tray_->shelf()->GetSystemTrayAnchorRect().bottom();
   WorkAreaInsets* work_area =
       WorkAreaInsets::ForWindow(tray_->shelf()->GetWindow()->GetRootWindow());
   int free_space_height_above_anchor =
@@ -308,17 +298,16 @@ void UnifiedSystemTrayBubble::OnWindowActivated(ActivationReason reason,
 }
 
 void UnifiedSystemTrayBubble::RecordTimeToClick() {
+  if (!time_opened_)
+    return;
+
   tray_->MaybeRecordFirstInteraction(
       UnifiedSystemTray::FirstInteractionType::kQuickSettings);
 
-  // Ignore if the tray bubble is not opened by click.
-  if (!time_shown_by_click_)
-    return;
+  UMA_HISTOGRAM_TIMES("ChromeOS.SystemTray.TimeToClick2",
+                      base::TimeTicks::Now() - time_opened_.value());
 
-  UMA_HISTOGRAM_TIMES("ChromeOS.SystemTray.TimeToClick",
-                      base::TimeTicks::Now() - time_shown_by_click_.value());
-
-  time_shown_by_click_.reset();
+  time_opened_.reset();
 }
 
 void UnifiedSystemTrayBubble::OnTabletModeStarted() {

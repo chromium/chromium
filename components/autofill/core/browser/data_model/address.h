@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/strings/string16.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address.h"
 #include "components/autofill/core/browser/data_model/form_group.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map.h"
@@ -28,12 +27,12 @@ class Address : public FormGroup {
   bool operator!=(const Address& other) const { return !operator==(other); }
 
   // FormGroup:
-  base::string16 GetRawInfo(ServerFieldType type) const override;
+  std::u16string GetRawInfo(ServerFieldType type) const override;
   void SetRawInfoWithVerificationStatus(
       ServerFieldType type,
-      const base::string16& value,
+      const std::u16string& value,
       structured_address::VerificationStatus status) override;
-  void GetMatchingTypes(const base::string16& text,
+  void GetMatchingTypes(const std::u16string& text,
                         const std::string& locale,
                         ServerFieldTypeSet* matching_types) const override;
 
@@ -68,11 +67,11 @@ class Address : public FormGroup {
  private:
   // FormGroup:
   void GetSupportedTypes(ServerFieldTypeSet* supported_types) const override;
-  base::string16 GetInfoImpl(const AutofillType& type,
+  std::u16string GetInfoImpl(const AutofillType& type,
                              const std::string& locale) const override;
   bool SetInfoWithVerificationStatusImpl(
       const AutofillType& type,
-      const base::string16& value,
+      const std::u16string& value,
       const std::string& locale,
       structured_address::VerificationStatus status) override;
 
@@ -86,23 +85,23 @@ class Address : public FormGroup {
   // TODO(crbug.com/1130194): Clean legacy implementation once structured
   // addresses are fully launched.
   // The lines of the street address.
-  std::vector<base::string16> street_address_;
+  std::vector<std::u16string> street_address_;
   // A subdivision of city, e.g. inner-city district or suburb.
-  base::string16 dependent_locality_;
-  base::string16 city_;
-  base::string16 state_;
-  base::string16 zip_code_;
+  std::u16string dependent_locality_;
+  std::u16string city_;
+  std::u16string state_;
+  std::u16string zip_code_;
   // Similar to a ZIP code, but used by entities that might not be
   // geographically contiguous.  The canonical example is CEDEX in France.
-  base::string16 sorting_code_;
+  std::u16string sorting_code_;
 
   // The following entries are only popluated by Sync and
   // used to create type votes, but are not used for filling fields.
-  base::string16 street_name_;
-  base::string16 dependent_street_name_;
-  base::string16 house_number_;
-  base::string16 premise_name_;
-  base::string16 subpremise_;
+  std::u16string street_name_;
+  std::u16string dependent_street_name_;
+  std::u16string house_number_;
+  std::u16string premise_name_;
+  std::u16string subpremise_;
 
   // The ISO 3166 2-letter country code, or an empty string if there is no
   // country data specified for this address.

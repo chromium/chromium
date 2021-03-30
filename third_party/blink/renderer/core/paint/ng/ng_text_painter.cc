@@ -26,9 +26,11 @@ void NGTextPainter::Paint(unsigned start_offset,
                           unsigned end_offset,
                           unsigned length,
                           const TextPaintStyle& text_style,
-                          DOMNodeId node_id) {
+                          DOMNodeId node_id,
+                          ShadowMode shadow_mode) {
   GraphicsContextStateSaver state_saver(graphics_context_, false);
-  UpdateGraphicsContext(text_style, state_saver);
+  UpdateGraphicsContext(graphics_context_, text_style, horizontal_, state_saver,
+                        shadow_mode);
   // TODO(layout-dev): Handle combine text here or elsewhere.
   PaintInternal<kPaintText>(start_offset, end_offset, length, node_id);
 
@@ -80,7 +82,8 @@ void NGTextPainter::PaintSelectedText(unsigned start_offset,
   {
     GraphicsContextStateSaver state_saver(graphics_context_);
     graphics_context_.ClipOut(float_selection_rect);
-    Paint(start_offset, end_offset, length, text_style, node_id);
+    Paint(start_offset, end_offset, length, text_style, node_id,
+          kTextProperOnly);
   }
   // Then draw the glyphs inside the selection area, with the selection style.
   {

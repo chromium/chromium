@@ -9,7 +9,7 @@ import android.os.Build;
 import android.view.Window;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.util.ColorUtils;
 

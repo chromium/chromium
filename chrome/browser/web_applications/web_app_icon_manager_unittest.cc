@@ -94,12 +94,12 @@ class WebAppIconManagerTest : public WebAppTest {
                                const std::vector<int>& sizes_px,
                                const std::vector<SkColor>& colors) {
     DCHECK_EQ(sizes_px.size(), colors.size());
-    ShortcutsMenuIconsBitmaps shortcuts_menu_icons;
+    ShortcutsMenuIconBitmaps shortcuts_menu_icons;
     for (size_t i = 0; i < sizes_px.size(); i++) {
-      std::map<SquareSizePx, SkBitmap> shortcuts_menu_icon_map;
+      IconBitmaps shortcuts_menu_icon_map;
       std::vector<SquareSizePx> icon_sizes;
-      shortcuts_menu_icon_map.emplace(sizes_px[i],
-                                      CreateSquareIcon(sizes_px[i], colors[i]));
+      shortcuts_menu_icon_map.any.emplace(
+          sizes_px[i], CreateSquareIcon(sizes_px[i], colors[i]));
       shortcuts_menu_icons.push_back(std::move(shortcuts_menu_icon_map));
     }
     base::RunLoop run_loop;
@@ -112,12 +112,12 @@ class WebAppIconManagerTest : public WebAppTest {
     run_loop.Run();
   }
 
-  ShortcutsMenuIconsBitmaps ReadAllShortcutsMenuIcons(const AppId& app_id) {
-    ShortcutsMenuIconsBitmaps result;
+  ShortcutsMenuIconBitmaps ReadAllShortcutsMenuIcons(const AppId& app_id) {
+    ShortcutsMenuIconBitmaps result;
     base::RunLoop run_loop;
     icon_manager().ReadAllShortcutsMenuIcons(
         app_id, base::BindLambdaForTesting(
-                    [&](ShortcutsMenuIconsBitmaps shortcuts_menu_icons_map) {
+                    [&](ShortcutsMenuIconBitmaps shortcuts_menu_icons_map) {
                       result = std::move(shortcuts_menu_icons_map);
                       run_loop.Quit();
                     }));
@@ -569,11 +569,11 @@ TEST_F(WebAppIconManagerTest, ReadShortcutsMenuIconsFailed) {
   controller().RegisterApp(std::move(web_app));
 
   // Request shortcuts menu icons which don't exist on disk.
-  ShortcutsMenuIconsBitmaps shortcuts_menu_icons_map =
+  ShortcutsMenuIconBitmaps shortcuts_menu_icons_map =
       ReadAllShortcutsMenuIcons(app_id);
   EXPECT_EQ(sizes_px.size(), shortcuts_menu_icons_map.size());
   for (const auto& icon_map : shortcuts_menu_icons_map) {
-    EXPECT_EQ(0u, icon_map.size());
+    EXPECT_TRUE(icon_map.empty());
   }
 }
 
@@ -593,18 +593,18 @@ TEST_F(WebAppIconManagerTest, WriteAndReadAllShortcutsMenuIcons) {
 
   controller().RegisterApp(std::move(web_app));
 
-  ShortcutsMenuIconsBitmaps shortcuts_menu_icons_map =
+  ShortcutsMenuIconBitmaps shortcuts_menu_icons_map =
       ReadAllShortcutsMenuIcons(app_id);
   EXPECT_EQ(3u, shortcuts_menu_icons_map.size());
-  EXPECT_EQ(sizes_px[0], shortcuts_menu_icons_map[0].begin()->first);
+  EXPECT_EQ(sizes_px[0], shortcuts_menu_icons_map[0].any.begin()->first);
   EXPECT_EQ(colors[0],
-            shortcuts_menu_icons_map[0].begin()->second.getColor(0, 0));
-  EXPECT_EQ(sizes_px[1], shortcuts_menu_icons_map[1].begin()->first);
+            shortcuts_menu_icons_map[0].any.begin()->second.getColor(0, 0));
+  EXPECT_EQ(sizes_px[1], shortcuts_menu_icons_map[1].any.begin()->first);
   EXPECT_EQ(colors[1],
-            shortcuts_menu_icons_map[1].begin()->second.getColor(0, 0));
-  EXPECT_EQ(sizes_px[2], shortcuts_menu_icons_map[2].begin()->first);
+            shortcuts_menu_icons_map[1].any.begin()->second.getColor(0, 0));
+  EXPECT_EQ(sizes_px[2], shortcuts_menu_icons_map[2].any.begin()->first);
   EXPECT_EQ(colors[2],
-            shortcuts_menu_icons_map[2].begin()->second.getColor(0, 0));
+            shortcuts_menu_icons_map[2].any.begin()->second.getColor(0, 0));
 }
 
 TEST_F(WebAppIconManagerTest, WriteShortcutsMenuIconsEmptyMap) {
@@ -616,7 +616,7 @@ TEST_F(WebAppIconManagerTest, WriteShortcutsMenuIconsEmptyMap) {
 
   controller().RegisterApp(std::move(web_app));
 
-  ShortcutsMenuIconsBitmaps shortcuts_menu_icons;
+  ShortcutsMenuIconBitmaps shortcuts_menu_icons;
   base::RunLoop run_loop;
   icon_manager().WriteShortcutsMenuIconsData(
       app_id, std::move(shortcuts_menu_icons),
@@ -627,7 +627,7 @@ TEST_F(WebAppIconManagerTest, WriteShortcutsMenuIconsEmptyMap) {
   run_loop.Run();
 
   // Make sure that nothing was written to disk.
-  ShortcutsMenuIconsBitmaps shortcuts_menu_icons_map =
+  ShortcutsMenuIconBitmaps shortcuts_menu_icons_map =
       ReadAllShortcutsMenuIcons(app_id);
   EXPECT_EQ(0u, shortcuts_menu_icons_map.size());
 }

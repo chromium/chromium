@@ -6,7 +6,7 @@
 
 enum ColorSpacePrimaryID {
   "BT709",
-  "BT407M",
+  "BT470M",
   "BT470BG",
   "SMPTE170M",
   "SMPTE240M",

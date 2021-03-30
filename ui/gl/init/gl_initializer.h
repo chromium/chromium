@@ -5,6 +5,7 @@
 #ifndef UI_GL_INIT_GL_INITIALIZER_H_
 #define UI_GL_INIT_GL_INITIALIZER_H_
 
+#include "ui/gl/buildflags.h"
 #include "ui/gl/gl_implementation.h"
 
 namespace gl {
@@ -20,7 +21,11 @@ namespace init {
 bool InitializeGLOneOffPlatform();
 
 // Initializes a particular GL implementation.
-bool InitializeStaticGLBindings(GLImplementation implementation);
+bool InitializeStaticGLBindings(GLImplementationParts implementation);
+
+#if BUILDFLAG(USE_STATIC_ANGLE)
+bool InitializeStaticANGLEEGL();
+#endif  // BUILDFLAG(USE_STATIC_ANGLE)
 
 // Clears GL bindings for all implementations supported by platform.
 void ShutdownGLPlatform();

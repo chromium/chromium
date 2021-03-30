@@ -39,9 +39,6 @@ const base::FilePath::CharType kPolicyCacheFile[] =
 const base::FilePath::CharType kKeyCacheFile[] =
     FILE_PATH_LITERAL("Signing Key");
 
-const char kMetricPolicyHasVerifiedCachedKey[] =
-    "Enterprise.PolicyHasVerifiedCachedKey";
-
 // Maximum policy and key size that will be loaded, in bytes.
 const size_t kPolicySizeLimit = 1024 * 1024;
 const size_t kKeySizeLimit = 16 * 1024;
@@ -201,20 +198,11 @@ PolicyLoadResult DesktopCloudPolicyStore::LoadPolicyFromDisk(
     result.key.clear_signing_key();
   }
 
-  // Track the occurrence of valid cached keys - when this ratio gets high
-  // enough, we can update the code to reject unsigned policy or unverified
-  // keys.
-  UMA_HISTOGRAM_BOOLEAN(kMetricPolicyHasVerifiedCachedKey,
-                        result.key.has_signing_key());
-
   return result;
 }
 
 void DesktopCloudPolicyStore::PolicyLoaded(bool validate_in_background,
                                            PolicyLoadResult result) {
-  // TODO(zmin): figure out what do with the metrics. https://crbug.com/814371
-  UMA_HISTOGRAM_ENUMERATION("Enterprise.UserCloudPolicyStore.LoadStatus",
-                            result.status, LOAD_RESULT_SIZE);
   switch (result.status) {
     case LOAD_RESULT_LOAD_ERROR:
       status_ = STATUS_LOAD_ERROR;
@@ -230,11 +218,10 @@ void DesktopCloudPolicyStore::PolicyLoaded(bool validate_in_background,
       // Found policy on disk - need to validate it before it can be used.
       std::unique_ptr<em::PolicyFetchResponse> cloud_policy(
           new em::PolicyFetchResponse(result.policy));
-      std::unique_ptr<em::PolicySigningKey> key;
-      if (!result.skip_key_signature_validation)
-        key = std::make_unique<em::PolicySigningKey>(result.key);
+      std::unique_ptr<em::PolicySigningKey> key =
+          std::make_unique<em::PolicySigningKey>(result.key);
 
-      bool doing_key_rotation = false;
+      bool doing_key_rotation = result.doing_key_rotation;
       if (key && (!key->has_verification_key() ||
                   key->verification_key() != GetPolicyVerificationKey())) {
         // The cached key didn't match our current key, so we're doing a key
@@ -318,10 +305,6 @@ void DesktopCloudPolicyStore::InstallLoadedPolicyAfterValidation(
     bool doing_key_rotation,
     const std::string& signing_key,
     UserCloudPolicyValidator* validator) {
-  // TODO(zmin): metrics
-  UMA_HISTOGRAM_ENUMERATION(
-      "Enterprise.UserCloudPolicyStore.LoadValidationStatus",
-      validator->status(), CloudPolicyValidatorBase::VALIDATION_STATUS_SIZE);
   validation_result_ = validator->GetValidationResult();
   if (!validator->success()) {
     DVLOG(1) << "Validation failed: status=" << validator->status();
@@ -366,9 +349,6 @@ void DesktopCloudPolicyStore::Store(const em::PolicyFetchResponse& policy) {
 
 void DesktopCloudPolicyStore::OnPolicyToStoreValidated(
     UserCloudPolicyValidator* validator) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "Enterprise.UserCloudPolicyStore.StoreValidationStatus",
-      validator->status(), CloudPolicyValidatorBase::VALIDATION_STATUS_SIZE);
   validation_result_ = validator->GetValidationResult();
   DVLOG(1) << "Policy validation complete: status = " << validator->status();
   if (!validator->success()) {

@@ -67,7 +67,7 @@ ui::Accelerator ParseImpl(const std::string& accelerator,
                           const std::string& platform_key,
                           int index,
                           bool should_parse_media_keys,
-                          base::string16* error) {
+                          std::u16string* error) {
   error->clear();
   if (platform_key != values::kKeybindingPlatformWin &&
       platform_key != values::kKeybindingPlatformMac &&
@@ -273,11 +273,11 @@ std::string NormalizeShortcutSuggestion(const std::string& suggestion,
 Command::Command() : global_(false) {}
 
 Command::Command(const std::string& command_name,
-                 const base::string16& description,
+                 const std::u16string& description,
                  const std::string& accelerator,
                  bool global)
     : command_name_(command_name), description_(description), global_(global) {
-  base::string16 error;
+  std::u16string error;
   accelerator_ = ParseImpl(accelerator, CommandPlatform(), 0,
                            IsNamedCommand(command_name), &error);
 }
@@ -304,7 +304,7 @@ std::string Command::CommandPlatform() {
 // static
 ui::Accelerator Command::StringToAccelerator(const std::string& accelerator,
                                              const std::string& command_name) {
-  base::string16 error;
+  std::u16string error;
   ui::Accelerator parsed =
       ParseImpl(accelerator, Command::CommandPlatform(), 0,
                 IsNamedCommand(command_name), &error);
@@ -418,10 +418,10 @@ bool Command::IsMediaKey(const ui::Accelerator& accelerator) {
 bool Command::Parse(const base::DictionaryValue* command,
                     const std::string& command_name,
                     int index,
-                    base::string16* error) {
+                    std::u16string* error) {
   DCHECK(!command_name.empty());
 
-  base::string16 description;
+  std::u16string description;
   if (IsNamedCommand(command_name)) {
     if (!command->GetString(keys::kDescription, &description) ||
         description.empty()) {

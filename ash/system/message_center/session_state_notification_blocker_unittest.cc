@@ -56,12 +56,23 @@ class SessionStateNotificationBlockerTest
     return result;
   }
 
-  bool ShouldShowNotificationAsPopup(
-      const message_center::NotifierId& notifier_id) {
+  bool ShouldShowNotification(const message_center::NotifierId& notifier_id) {
     message_center::Notification notification(
         message_center::NOTIFICATION_TYPE_SIMPLE, "chromeos-id",
         UTF8ToUTF16("chromeos-title"), UTF8ToUTF16("chromeos-message"),
         gfx::Image(), UTF8ToUTF16("chromeos-source"), GURL(), notifier_id,
+        message_center::RichNotificationData(), nullptr);
+    if (notifier_id.id == kNotifierSystemPriority)
+      notification.set_priority(message_center::SYSTEM_PRIORITY);
+    return blocker_->ShouldShowNotification(notification);
+  }
+
+  bool ShouldShowNotificationAsPopup(
+      const message_center::NotifierId& notifier_id) {
+    message_center::Notification notification(
+        message_center::NOTIFICATION_TYPE_SIMPLE, "chromeos-id",
+        u"chromeos-title", u"chromeos-message", gfx::Image(),
+        u"chromeos-source", GURL(), notifier_id,
         message_center::RichNotificationData(), nullptr);
     if (notifier_id.id == kNotifierSystemPriority)
       notification.set_priority(message_center::SYSTEM_PRIORITY);
@@ -187,6 +198,27 @@ TEST_F(SessionStateNotificationBlockerTest, BlockInKioskMode) {
 
   SimulateKioskMode(user_manager::USER_TYPE_KIOSK_APP);
   EXPECT_FALSE(ShouldShowNotificationAsPopup(notifier_id));
+}
+
+TEST_F(SessionStateNotificationBlockerTest, DelayAfterLogin) {
+  SessionStateNotificationBlocker::SetUseLoginNotificationDelayForTest(true);
+  GetSessionControllerClient()->SetSessionState(SessionState::LOGIN_PRIMARY);
+
+  // Logged in as a normal user.
+  SimulateUserLogin("user@test.com");
+
+  // Non system notification should not be shown immediately after login.
+  message_center::NotifierId notifier_id(
+      message_center::NotifierType::APPLICATION, "test-notifier");
+  EXPECT_FALSE(ShouldShowNotification(notifier_id));
+
+  // System notification should still be shown.
+  message_center::NotifierId system_notifier_id(
+      message_center::NotifierType::SYSTEM_COMPONENT, "system-notifier");
+  EXPECT_TRUE(ShouldShowNotification(system_notifier_id));
+
+  // The notification delay should not be enabled for all other tests.
+  SessionStateNotificationBlocker::SetUseLoginNotificationDelayForTest(false);
 }
 
 }  // namespace

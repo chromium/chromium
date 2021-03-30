@@ -8,10 +8,11 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/service_worker_test_helpers.h"
+#include "extensions/browser/api/messaging/message_service.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
-#include "extensions/common/scoped_worker_based_extensions_channel.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -94,8 +95,6 @@ class ServiceWorkerMessagingTest : public ExtensionApiTest {
   extensions::ScopedTestNativeMessagingHost test_host_;
 
  private:
-  ScopedWorkerBasedExtensionsChannel current_channel_;
-
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerMessagingTest);
 };
 
@@ -184,7 +183,11 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
          });
       )");
   ResultCatcher catcher;
-  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  const Extension* extension =
+      LoadExtension(test_dir.UnpackedPath(),
+                    // Wait for the registration to be stored so that it's
+                    // persistent before the worker is stopped later.
+                    {.wait_for_registration_stored = true});
   ASSERT_TRUE(extension);
 
   // Wait for the extension to register runtime.onConnect listener.
@@ -204,20 +207,29 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-// Tests chrome.runtime.sendNativeMessage from SW extension to a native
-// messaging host.
-IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, NativeMessagingBasic) {
+// Regression test for https://crbug.com/1176400.
+// Tests that service worker shutdown closes messaging channel properly.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
+                       WorkerShutsDownWhileNativeMessagePortIsOpen) {
+  // Set up an observer to wait for the registration to be stored before
+  // calling StopServiceWorker below.
+  service_worker_test_utils::TestRegistrationObserver observer(
+      browser()->profile());
   ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestHost(false));
-  ASSERT_TRUE(RunExtensionTest("service_worker/messaging/send_native_message"))
-      << message_;
-}
 
-// Tests chrome.runtime.connectNative from SW extension to a native messaging
-// host.
-IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, ConnectNative) {
-  ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestHost(false));
-  ASSERT_TRUE(RunExtensionTest("service_worker/messaging/connect_native"))
-      << message_;
+  ResultCatcher catcher;
+  const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
+      "service_worker/messaging/native_message_after_worker_stop"));
+  ASSERT_TRUE(extension);
+
+  observer.WaitForRegistrationStored();
+  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+  size_t num_channels =
+      MessageService::Get(profile())->GetChannelCountForTest();
+  StopServiceWorker(*extension);
+  // After worker shutdown, expect the channel count to reduce by 1.
+  EXPECT_EQ(num_channels - 1,
+            MessageService::Get(profile())->GetChannelCountForTest());
 }
 
 // Tests chrome.tabs.sendMessage from SW extension to content script.
@@ -339,18 +351,16 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
   // stopping the service worker doesn't cause message port in
   // |message_port_extension| to crash.
   ExtensionTestMessageListener worker_running_listener("worker_running", false);
-  service_worker_test_utils::TestRegistrationObserver registration_observer(
-      browser()->profile());
 
   TestExtensionDir worker_extension_dir;
   const Extension* service_worker_extension =
-      LoadExtension(WriteServiceWorkerExtensionToDir(&worker_extension_dir));
+      LoadExtension(WriteServiceWorkerExtensionToDir(&worker_extension_dir),
+                    {.wait_for_registration_stored = true});
   const ExtensionId worker_extension_id = service_worker_extension->id();
   ASSERT_TRUE(service_worker_extension);
 
   // Wait for the extension service worker to settle before moving to next step.
   EXPECT_TRUE(worker_running_listener.WaitUntilSatisfied());
-  registration_observer.WaitForRegistrationStored();
 
   {
     // Stop the worker, and ensure its completion.

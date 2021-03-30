@@ -6,18 +6,17 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_STRING_DATA_VIEW_H_
 
 #include "mojo/public/cpp/bindings/lib/array_internal.h"
-#include "mojo/public/cpp/bindings/lib/serialization_context.h"
 
 namespace mojo {
+
+class Message;
 
 // Access to the contents of a serialized string.
 class StringDataView {
  public:
   StringDataView() {}
 
-  StringDataView(internal::String_Data* data,
-                 internal::SerializationContext* context)
-      : data_(data) {}
+  StringDataView(internal::String_Data* data, Message* message) : data_(data) {}
 
   bool is_null() const { return !data_; }
 

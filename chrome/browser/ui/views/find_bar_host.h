@@ -59,13 +59,13 @@ class FindBarHost : public DropdownBarHost,
       const find_in_page::FindNotificationDetails& results) override;
   void StopAnimation() override;
   void MoveWindowIfNecessary() override;
-  void SetFindTextAndSelectedRange(const base::string16& find_text,
+  void SetFindTextAndSelectedRange(const std::u16string& find_text,
                                    const gfx::Range& selected_range) override;
-  base::string16 GetFindText() const override;
+  std::u16string GetFindText() const override;
   gfx::Range GetSelectedRange() const override;
   void UpdateUIForFindResult(
       const find_in_page::FindNotificationDetails& result,
-      const base::string16& find_text) override;
+      const std::u16string& find_text) override;
   void AudibleAlert() override;
   bool IsFindBarVisible() const override;
   void RestoreSavedFocus() override;
@@ -80,8 +80,8 @@ class FindBarHost : public DropdownBarHost,
   // FindBarTesting implementation:
   bool GetFindBarWindowInfo(gfx::Point* position,
                             bool* fully_visible) const override;
-  base::string16 GetFindSelectedText() const override;
-  base::string16 GetMatchCountText() const override;
+  std::u16string GetFindSelectedText() const override;
+  std::u16string GetMatchCountText() const override;
   int GetContentsWidth() const override;
   size_t GetAudibleAlertCount() const override;
 
@@ -127,7 +127,7 @@ class FindBarHost : public DropdownBarHost,
 
   // views::WidgetDelegate:
   ax::mojom::Role GetAccessibleWindowRole() override;
-  base::string16 GetAccessibleWindowTitle() const override;
+  std::u16string GetAccessibleWindowTitle() const override;
 
  private:
   friend class FindInPageTest;

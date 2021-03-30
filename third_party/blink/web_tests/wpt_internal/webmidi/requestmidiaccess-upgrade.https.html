@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="module">
+import {MockMIDIService} from './resources/mock-midiservice.js';
+import {setMidiPermission} from './resources/permissions-helper.js';
+
+const mock = new MockMIDIService();
+promise_test(async () => {
+  // Obtain the first MIDIAccess instance without a sysex permission.
+  await setMidiPermission({}, 'granted');
+  const nosysex_access = await navigator.requestMIDIAccess();
+
+  // See if a sysex message can not be sent over the first instance.
+  const nosysex_outport = nosysex_access.outputs.values().next().value;
+  const sysex_message = [0xf0, 0x00, 0x01, 0x02, 0xf7];
+
+  assert_throws_dom("InvalidAccessError", () => {
+    nosysex_outport.send(sysex_message);
+  });
+
+  // Obtain the second MIDIAccess instance with a sysex permission.
+  await setMidiPermission({sysex: true}, 'granted');
+  const sysex_access = await navigator.requestMIDIAccess({sysex: true});
+
+  // See if a sysex message can be sent correctly over the second instance.
+  const sysex_loopback_inport = sysex_access.inputs.values().next().value;
+  const received_data = await new Promise((resolve, reject) => {
+    sysex_loopback_inport.onmidimessage = e => resolve(e.data);
+    const sysex_outport = sysex_access.outputs.values().next().value;
+    sysex_outport.send(sysex_message);
+  });
+  assert_array_equals(sysex_message, received_data);
+}, "Test if the second MIDIAccess with stronger authority works correctly");
+</script>

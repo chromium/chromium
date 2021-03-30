@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/mac/bundle_locations.h"
 #import "base/mac/foundation_util.h"
 #include "base/process/launch.h"
@@ -18,6 +19,8 @@
 #include "chrome/updater/mac/xpc_service_names.h"
 #include "chrome/updater/test/test_app/constants.h"
 #include "chrome/updater/test/test_app/test_app_version.h"
+#include "chrome/updater/updater_scope.h"
+#include "chrome/updater/util.h"
 
 namespace updater {
 
@@ -64,6 +67,10 @@ int InstallUpdater() {
 
   base::CommandLine command(updater_executable_path);
   command.AppendSwitch(kInstallSwitch);
+  if (GetProcessScope() == UpdaterScope::kSystem) {
+    command.AppendSwitch(kSystemSwitch);
+    command = MakeElevated(command);
+  }
   command.AppendSwitchASCII("--vmodule", "*/updater/*=2");
 
   std::string output;

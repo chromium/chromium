@@ -5,9 +5,10 @@
 #ifndef UI_BASE_L10N_TIME_FORMAT_H_
 #define UI_BASE_L10N_TIME_FORMAT_H_
 
+#include <string>
+
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 
 namespace base {
 class Time;
@@ -33,7 +34,7 @@ class COMPONENT_EXPORT(UI_BASE) TimeFormat {
   };
 
   // Equivalent to SimpleWithMonthAndYear(format, length, delta, false);
-  static base::string16 Simple(Format format,
+  static std::u16string Simple(Format format,
                                Length length,
                                const base::TimeDelta& delta);
   // Return a localized string of approximate time duration, formatted as a
@@ -41,14 +42,14 @@ class COMPONENT_EXPORT(UI_BASE) TimeFormat {
   // of format and length are implemented.
   // If |use_month_and_year| is false. biggest unit is the day. If it is true,
   // "month" and "year" are also used.
-  static base::string16 SimpleWithMonthAndYear(Format format,
+  static std::u16string SimpleWithMonthAndYear(Format format,
                                                Length length,
                                                const base::TimeDelta& delta,
                                                bool use_month_and_year);
 
   // Equivalent to
   // DetailedWithMonthAndYear(format, length, cutoff, delta, false);
-  static base::string16 Detailed(Format format,
+  static std::u16string Detailed(Format format,
                                  Length length,
                                  int cutoff,
                                  const base::TimeDelta& delta);
@@ -88,7 +89,7 @@ class COMPONENT_EXPORT(UI_BASE) TimeFormat {
   // units] and are concatenated after having been formatted individually.  The
   // separator between first unit and second unit (a blank in English) is
   // included in IDS_TIME_*_1ST.
-  static base::string16 DetailedWithMonthAndYear(Format format,
+  static std::u16string DetailedWithMonthAndYear(Format format,
                                                  Length length,
                                                  int cutoff,
                                                  const base::TimeDelta& delta,
@@ -108,7 +109,7 @@ class COMPONENT_EXPORT(UI_BASE) TimeFormat {
   // If NULL, the current day's midnight will be retrieved, which can be
   // slow. If many items are being processed, it is best to get the current
   // time once at the beginning and pass it for each computation.
-  static base::string16 RelativeDate(const base::Time& time,
+  static std::u16string RelativeDate(const base::Time& time,
                                      const base::Time* optional_midnight_today);
 
  private:

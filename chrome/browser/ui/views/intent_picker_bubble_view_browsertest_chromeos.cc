@@ -11,8 +11,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/chromeos/arc/arc_util.h"
-#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -151,7 +151,9 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
     auto intent_filter = apps_util::CreateIntentFilterForUrlScope(url);
     app->intent_filters.push_back(std::move(intent_filter));
     apps.push_back(std::move(app));
-    app_service_proxy_->AppRegistryCache().OnApps(std::move(apps));
+    app_service_proxy_->AppRegistryCache().OnApps(
+        std::move(apps), apps::mojom::AppType::kArc,
+        false /* should_notify_initialized */);
     WaitForAppService();
 
     return app_id;
@@ -214,9 +216,9 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
 
   void ShowBubbleForTesting() {
     std::vector<apps::IntentPickerAppInfo> app_info;
-    app_info.emplace_back(apps::PickerEntryType::kArc, gfx::Image(),
+    app_info.emplace_back(apps::PickerEntryType::kArc, ui::ImageModel(),
                           "package_1", "dank app 1");
-    app_info.emplace_back(apps::PickerEntryType::kArc, gfx::Image(),
+    app_info.emplace_back(apps::PickerEntryType::kArc, ui::ImageModel(),
                           "package_2", "dank_app_2");
 
     browser()->window()->ShowIntentPickerBubble(

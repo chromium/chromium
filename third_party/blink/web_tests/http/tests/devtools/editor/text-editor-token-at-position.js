@@ -4,7 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Test editor tokenAtTextPosition method.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('source_frame');
   await TestRunner.showPanel('sources');
 
   var text =

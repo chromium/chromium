@@ -9,29 +9,34 @@
 #include <utility>
 #include <vector>
 
-#include "ash/app_list/app_list_export.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/model/search/search_box_model.h"
 #include "ash/app_list/model/search/search_box_model_observer.h"
 #include "ash/app_list/views/app_list_page.h"
 #include "ash/app_list/views/result_selection_controller.h"
 #include "ash/app_list/views/search_result_container_view.h"
+#include "ash/ash_export.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 
 namespace views {
 class DialogDelegateView;
+class Textfield;
 }
 
 namespace ash {
 
+class AppListMainView;
+class PrivacyContainerView;
 class SearchResultBaseView;
-class ViewShadow;
+class SearchResultListView;
+class SearchResultTileItemListView;
 class SearchResultPageAnchoredDialog;
+class ViewShadow;
 
 // The search results page for the app list.
-class APP_LIST_EXPORT SearchResultPageView
+class ASH_EXPORT SearchResultPageView
     : public AppListPage,
       public SearchResultContainerView::Delegate,
       public SearchBoxModelObserver {
@@ -39,12 +44,9 @@ class APP_LIST_EXPORT SearchResultPageView
   explicit SearchResultPageView(SearchModel* search_model);
   ~SearchResultPageView() override;
 
-  template <typename T>
-  T* AddSearchResultContainerView(std::unique_ptr<T> result_container) {
-    auto* result = result_container.get();
-    AddSearchResultContainerViewInternal(std::move(result_container));
-    return result;
-  }
+  void InitializeContainers(AppListViewDelegate* view_delegate,
+                            AppListMainView* app_list_main_view,
+                            views::Textfield* search_box);
 
   const std::vector<SearchResultContainerView*>& result_container_views() {
     return result_container_views_;
@@ -114,12 +116,20 @@ class APP_LIST_EXPORT SearchResultPageView
     return anchored_dialog_.get();
   }
 
+  // Returns background color for the given state.
+  SkColor GetBackgroundColorForState(AppListState state) const;
+
+  PrivacyContainerView* GetPrivacyContainerViewForTest();
+  SearchResultTileItemListView* GetSearchResultTileItemListViewForTest();
+  SearchResultListView* GetSearchResultListViewForTest();
+
  private:
   // Separator between SearchResultContainerView.
   class HorizontalSeparator;
 
-  // Sort the result container views.
-  void ReorderSearchResultContainers();
+  // Sets visibility of result container and separator views so only containers
+  // that contain some results are shown.
+  void UpdateResultContainersVisibility();
 
   // Passed to |result_selection_controller_| as a callback that gets called
   // when the currently selected result changes.
@@ -156,6 +166,13 @@ class APP_LIST_EXPORT SearchResultPageView
   // Called when the widget anchored in the search results page gets closed.
   void OnAnchoredDialogClosed();
 
+  template <typename T>
+  T* AddSearchResultContainerView(std::unique_ptr<T> result_container) {
+    auto* result = result_container.get();
+    AddSearchResultContainerViewInternal(std::move(result_container));
+    return result;
+  }
+
   void AddSearchResultContainerViewInternal(
       std::unique_ptr<SearchResultContainerView> result_container);
 
@@ -170,7 +187,15 @@ class APP_LIST_EXPORT SearchResultPageView
   // |result_container_views_|
   std::unique_ptr<ResultSelectionController> result_selection_controller_;
 
-  std::vector<HorizontalSeparator*> separators_;
+  // Search result containers shown within search results page (and added to
+  // `result_container_views_`).
+  PrivacyContainerView* privacy_container_view_ = nullptr;
+  SearchResultTileItemListView* search_result_tile_item_list_view_ = nullptr;
+  SearchResultListView* search_result_list_view_ = nullptr;
+
+  // Separator view shown between search result tile item list and search
+  // results list.
+  HorizontalSeparator* result_lists_separator_ = nullptr;
 
   // View containing SearchCardView instances. Owned by view hierarchy.
   views::View* const contents_view_;
@@ -194,8 +219,8 @@ class APP_LIST_EXPORT SearchResultPageView
   // The dialog anchored within the search results page.
   std::unique_ptr<SearchResultPageAnchoredDialog> anchored_dialog_;
 
-  ScopedObserver<SearchBoxModel, SearchBoxModelObserver> search_box_observer_{
-      this};
+  base::ScopedObservation<SearchBoxModel, SearchBoxModelObserver>
+      search_box_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SearchResultPageView);
 };

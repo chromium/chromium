@@ -163,7 +163,9 @@ void NGBoxFragmentBuilder::AddBreakBeforeChild(
 }
 
 void NGBoxFragmentBuilder::AddResult(const NGLayoutResult& child_layout_result,
-                                     const LogicalOffset offset) {
+                                     const LogicalOffset offset,
+                                     bool offset_includes_relative_position,
+                                     bool propagate_oof_descendants) {
   const auto& fragment = child_layout_result.PhysicalFragment();
   if (items_builder_) {
     if (const NGPhysicalLineBoxFragment* line =
@@ -179,7 +181,8 @@ void NGBoxFragmentBuilder::AddResult(const NGLayoutResult& child_layout_result,
   DCHECK(!fragment.IsFormattingContextRoot() || end_margin_strut.IsEmpty());
 
   AddChild(fragment, offset, /* inline_container */ nullptr, &end_margin_strut,
-           child_layout_result.IsSelfCollapsing());
+           child_layout_result.IsSelfCollapsing(),
+           offset_includes_relative_position, propagate_oof_descendants);
   if (fragment.IsBox())
     PropagateBreak(child_layout_result);
 }
@@ -188,10 +191,13 @@ void NGBoxFragmentBuilder::AddChild(const NGPhysicalContainerFragment& child,
                                     const LogicalOffset& child_offset,
                                     const LayoutInline* inline_container,
                                     const NGMarginStrut* margin_strut,
-                                    bool is_self_collapsing) {
+                                    bool is_self_collapsing,
+                                    bool offset_includes_relative_position,
+                                    bool propagate_oof_descendants) {
   LogicalOffset adjusted_offset = child_offset;
 
-  if (box_type_ != NGPhysicalBoxFragment::NGBoxType::kInlineBox) {
+  if (box_type_ != NGPhysicalBoxFragment::NGBoxType::kInlineBox &&
+      !offset_includes_relative_position) {
     if (child.IsCSSBox()) {
       // Apply the relative position offset.
       const auto& box_child = To<NGPhysicalBoxFragment>(child);
@@ -222,7 +228,9 @@ void NGBoxFragmentBuilder::AddChild(const NGPhysicalContainerFragment& child,
     //
     // Out-of-flow positioned children still contribute to the layout-overflow,
     // but just don't influence where this padding is.
-    if (Node().IsScrollContainer() && !child.IsOutOfFlowPositioned()) {
+    if (Node().IsScrollContainer() &&
+        box_type_ != NGPhysicalBoxFragment::NGBoxType::kColumnBox &&
+        !child.IsOutOfFlowPositioned()) {
       NGBoxStrut margins;
       if (child.IsCSSBox()) {
         margins =
@@ -298,7 +306,14 @@ void NGBoxFragmentBuilder::AddChild(const NGPhysicalContainerFragment& child,
     }
   }
 
-  PropagateChildData(child, adjusted_offset, inline_container);
+#if DCHECK_IS_ON()
+  needs_inflow_bounds_explicitly_set_ |= offset_includes_relative_position;
+  needs_may_have_descendant_above_block_start_explicitly_set_ |=
+      offset_includes_relative_position;
+#endif
+
+  PropagateChildData(child, adjusted_offset, inline_container,
+                     propagate_oof_descendants);
   AddChildInternal(&child, adjusted_offset);
 }
 
@@ -462,8 +477,7 @@ LogicalOffset NGBoxFragmentBuilder::GetChildOffset(
   if (const NGFragmentItemsBuilder* items_builder = items_builder_) {
     if (auto offset = items_builder->LogicalOffsetFor(*object))
       return *offset;
-    NOTREACHED();
-    return LogicalOffset();
+    // Out-of-flow objects may be in |FragmentItems| or in |children_|.
   }
 
   for (const auto& child : children_) {
@@ -575,7 +589,7 @@ void NGBoxFragmentBuilder::CheckNoBlockFragmentation() const {
   DCHECK(!has_forced_break_);
   DCHECK_EQ(consumed_block_size_, LayoutUnit());
   DCHECK_EQ(minimal_space_shortage_, LayoutUnit::Max());
-  DCHECK_EQ(initial_break_before_, EBreakBetween::kAuto);
+  DCHECK(!initial_break_before_);
   DCHECK_EQ(previous_break_after_, EBreakBetween::kAuto);
 }
 

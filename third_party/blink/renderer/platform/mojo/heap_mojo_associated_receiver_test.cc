@@ -12,37 +12,13 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap_observer_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
+#include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
+#include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
+#include "third_party/blink/renderer/platform/wtf/buildflags.h"
 
 namespace blink {
 
 namespace {
-
-class MockContext final : public GarbageCollected<MockContext>,
-                          public ContextLifecycleNotifier {
- public:
-  void AddContextLifecycleObserver(
-      ContextLifecycleObserver* observer) override {
-    observers_.AddObserver(observer);
-  }
-  void RemoveContextLifecycleObserver(
-      ContextLifecycleObserver* observer) override {
-    observers_.RemoveObserver(observer);
-  }
-
-  void NotifyContextDestroyed() {
-    observers_.ForEachObserver([](ContextLifecycleObserver* observer) {
-      observer->ContextDestroyed();
-    });
-  }
-
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(observers_);
-    ContextLifecycleNotifier::Trace(visitor);
-  }
-
- private:
-  HeapObserverSet<ContextLifecycleObserver> observers_;
-};
 
 template <HeapMojoWrapperMode Mode>
 class HeapMojoAssociatedReceiverGCBaseTest;
@@ -55,7 +31,7 @@ class AssociatedReceiverOwner
 
  public:
   explicit AssociatedReceiverOwner(
-      MockContext* context,
+      MockContextLifecycleNotifier* context,
       HeapMojoAssociatedReceiverGCBaseTest<Mode>* test = nullptr)
       : associated_receiver_(this, context), test_(test) {
     if (test_)
@@ -103,7 +79,7 @@ class HeapMojoAssociatedReceiverGCBaseTest : public TestSupportingGC {
  protected:
   void SetUp() override {
     disconnected_ = false;
-    context_ = MakeGarbageCollected<MockContext>();
+    context_ = MakeGarbageCollected<MockContextLifecycleNotifier>();
     owner_ =
         MakeGarbageCollected<AssociatedReceiverOwner<Mode>>(context_, this);
     scoped_refptr<base::NullTaskRunner> null_task_runner =
@@ -123,7 +99,7 @@ class HeapMojoAssociatedReceiverGCBaseTest : public TestSupportingGC {
     PreciselyCollectGarbage();
   }
 
-  Persistent<MockContext> context_;
+  Persistent<MockContextLifecycleNotifier> context_;
   Persistent<AssociatedReceiverOwner<Mode>> owner_;
   bool is_owner_alive_ = false;
   base::RunLoop run_loop_;
@@ -136,7 +112,7 @@ class HeapMojoAssociatedReceiverDestroyContextBaseTest
     : public TestSupportingGC {
  protected:
   void SetUp() override {
-    context_ = MakeGarbageCollected<MockContext>();
+    context_ = MakeGarbageCollected<MockContextLifecycleNotifier>();
     owner_ = MakeGarbageCollected<AssociatedReceiverOwner<Mode>>(context_);
     scoped_refptr<base::NullTaskRunner> null_task_runner =
         base::MakeRefCounted<base::NullTaskRunner>();
@@ -145,7 +121,7 @@ class HeapMojoAssociatedReceiverDestroyContextBaseTest
             null_task_runner));
   }
 
-  Persistent<MockContext> context_;
+  Persistent<MockContextLifecycleNotifier> context_;
   Persistent<AssociatedReceiverOwner<Mode>> owner_;
   mojo::AssociatedRemote<sample::blink::Service> associated_remote_;
 };
@@ -173,7 +149,7 @@ TEST_F(HeapMojoAssociatedReceiverGCWithContextObserverTest, ResetsOnGC) {
   PreciselyCollectGarbage();
   run_loop().Run();
   EXPECT_TRUE(disconnected());
-  CompleteSweepingIfNeeded();
+  CompleteGarbageCollectionIfNeeded();
 }
 
 // Check that the owner
@@ -197,7 +173,7 @@ TEST_F(HeapMojoAssociatedReceiverGCWithoutContextObserverTest, ResetsOnGC) {
   PreciselyCollectGarbage();
   run_loop().Run();
   EXPECT_TRUE(disconnected());
-  CompleteSweepingIfNeeded();
+  CompleteGarbageCollectionIfNeeded();
 }
 
 // Destroy the context with context observer and check that the connection is

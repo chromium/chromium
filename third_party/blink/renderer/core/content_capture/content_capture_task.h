@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/content_capture/content_capture_task_histogram_reporter.h"
 #include "third_party/blink/renderer/core/content_capture/task_session.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -142,7 +143,7 @@ class CORE_EXPORT ContentCaptureTask
 
   Member<LocalFrame> local_frame_root_;
   Member<TaskSession> task_session_;
-  std::unique_ptr<TaskRunnerTimer<ContentCaptureTask>> delay_task_;
+  HeapTaskRunnerTimer<ContentCaptureTask> delay_task_;
   TaskState task_state_ = TaskState::kStop;
 
   std::unique_ptr<TaskDelay> task_delay_;

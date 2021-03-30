@@ -41,13 +41,24 @@ public final class ScreenshotTask implements ScreenshotSource {
     private boolean mDone;
     private Bitmap mBitmap;
     private Runnable mCallback;
+    private @ScreenshotMode int mScreenshotMode;
+
+    /**
+     * Creates a {@link ScreenshotTask} instance that, will grab a screenshot of {@code activity}.
+     * @param activity The {@link Activity} to grab a screenshot of.
+     * @param screenshotMode The kind of screenshot to take.
+     */
+    public ScreenshotTask(Activity activity, @ScreenshotMode int screenshotMode) {
+        mActivity = activity;
+        mScreenshotMode = screenshotMode;
+    }
 
     /**
      * Creates a {@link ScreenshotTask} instance that, will grab a screenshot of {@code activity}.
      * @param activity The {@link Activity} to grab a screenshot of.
      */
     public ScreenshotTask(Activity activity) {
-        mActivity = activity;
+        this(activity, ScreenshotMode.DEFAULT);
     }
 
     // ScreenshotSource implementation.
@@ -55,8 +66,21 @@ public final class ScreenshotTask implements ScreenshotSource {
     public void capture(@Nullable Runnable callback) {
         mCallback = callback;
 
-        if (takeCompositorScreenshot(mActivity)) return;
-        if (takeAndroidViewScreenshot(mActivity)) return;
+        switch (mScreenshotMode) {
+            case ScreenshotMode.DEFAULT:
+                if (shouldTakeCompositorScreenshot(mActivity)
+                        && takeCompositorScreenshot(mActivity)) {
+                    return;
+                }
+                if (takeAndroidViewScreenshot(mActivity)) return;
+                break;
+            case ScreenshotMode.COMPOSITOR:
+                if (takeCompositorScreenshot(mActivity)) return;
+                break;
+            case ScreenshotMode.ANDROID_VIEW:
+                if (takeAndroidViewScreenshot(mActivity)) return;
+                break;
+        }
 
         // If neither the compositor nor the Android view screenshot tasks were kicked off, admit
         // defeat and return a {@code null} screenshot.
@@ -95,7 +119,7 @@ public final class ScreenshotTask implements ScreenshotSource {
     }
 
     private boolean takeCompositorScreenshot(@Nullable Activity activity) {
-        if (activity == null || !shouldTakeCompositorScreenshot((activity))) return false;
+        if (activity == null) return false;
 
         Rect rect = new Rect();
         activity.getWindow().getDecorView().getRootView().getWindowVisibleDisplayFrame(rect);

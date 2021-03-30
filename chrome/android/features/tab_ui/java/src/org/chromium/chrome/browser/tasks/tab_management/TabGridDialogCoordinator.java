@@ -82,7 +82,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                         : TabListCoordinator.TabListMode.GRID,
                 context, tabModelSelector, tabContentManager::getTabThumbnailWithCallback, null,
                 false, gridCardOnClickListenerProvider, mMediator.getTabGridDialogHandler(),
-                TabProperties.UiType.CLOSABLE, null, containerView, false, mComponentName);
+                TabProperties.UiType.CLOSABLE, null, null, containerView, false, mComponentName);
         TabListRecyclerView recyclerView = mTabListCoordinator.getContainerView();
 
         TabGroupUiToolbarView toolbarView =
@@ -130,7 +130,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
         }
     }
 
-    boolean isVisible() {
+    @Override
+    public boolean isVisible() {
         return mMediator.isVisible();
     }
 

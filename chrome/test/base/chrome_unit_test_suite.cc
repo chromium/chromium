@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "base/environment.h"
 #include "base/path_service.h"
+#include "base/power_monitor/power_monitor.h"
 #include "base/process/process_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -33,7 +35,7 @@
 #include "ui/gl/test/gl_surface_test_support.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/constants/chromeos_paths.h"
+#include "ash/constants/ash_paths.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #endif
 
@@ -44,6 +46,8 @@
 #endif
 
 namespace {
+
+constexpr char kDefaultLocale[] = "en-US";
 
 class ChromeContentBrowserClientWithoutNetworkServiceInitialization
     : public ChromeContentBrowserClient {
@@ -75,6 +79,15 @@ class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
     content::SetUtilityClientForTesting(utility_content_client_.get());
 
     TestingBrowserProcess::CreateInstance();
+    // Make sure the loaded locale is "en-US".
+    if (ui::ResourceBundle::GetSharedInstance().GetLoadedLocaleForTesting() !=
+        kDefaultLocale) {
+      // Linux uses environment to determine locale.
+      std::unique_ptr<base::Environment> env(base::Environment::Create());
+      env->SetVar("LANG", kDefaultLocale);
+      ui::ResourceBundle::GetSharedInstance().ReloadLocaleResources(
+          kDefaultLocale);
+    }
   }
 
   void OnTestEnd(const testing::TestInfo& test_info) override {
@@ -88,6 +101,8 @@ class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
     content::SetContentClient(nullptr);
 
     TestingBrowserProcess::DeleteInstance();
+    // Some tests cause ChildThreadImpl to initialize a PowerMonitor.
+    base::PowerMonitor::ShutdownForTesting();
   }
 
  private:
@@ -174,7 +189,7 @@ void ChromeUnitTestSuite::InitializeResourceBundle() {
   // Force unittests to run using en-US so if we test against string
   // output, it'll pass regardless of the system language.
   ui::ResourceBundle::InitSharedInstanceWithLocale(
-      "en-US", nullptr, ui::ResourceBundle::LOAD_COMMON_RESOURCES);
+      kDefaultLocale, nullptr, ui::ResourceBundle::LOAD_COMMON_RESOURCES);
   base::FilePath resources_pack_path;
   base::PathService::Get(chrome::FILE_RESOURCES_PACK, &resources_pack_path);
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(

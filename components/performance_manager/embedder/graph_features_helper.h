@@ -117,6 +117,7 @@ class GraphFeaturesHelper {
   // browser to work.
   constexpr GraphFeaturesHelper& EnableMinimal() {
     EnableExecutionContextRegistry();
+    EnableV8ContextTracker();
     return *this;
   }
 

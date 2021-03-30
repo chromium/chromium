@@ -100,10 +100,14 @@ void NotificationAccessManagerImpl::OnSetupRequested() {
     // We're already connecting, so wait until a connection succeeds before
     // trying to send a message
     case FeatureStatus::kEnabledAndConnecting:
+      SetNotificationSetupOperationStatus(
+          NotificationAccessSetupOperation::Status::kConnecting);
       break;
     // We are not connected, so schedule a connection; once the
     // connection succeeds, we'll send the message in OnFeatureStatusChanged().
     case FeatureStatus::kEnabledButDisconnected:
+      SetNotificationSetupOperationStatus(
+          NotificationAccessSetupOperation::Status::kConnecting);
       connection_scheduler_->ScheduleConnectionNow();
       break;
     default:

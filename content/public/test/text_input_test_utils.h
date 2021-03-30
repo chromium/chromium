@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "content/public/test/test_utils.h"
 #include "ui/base/ime/mojom/text_input_state.mojom.h"
@@ -75,7 +74,7 @@ bool DoesFrameHaveFocusedEditableElement(RenderFrameHost* frame);
 // given |text|.
 void SendImeCommitTextToWidget(
     RenderWidgetHost* rwh,
-    const base::string16& text,
+    const std::u16string& text,
     const std::vector<ui::ImeTextSpan>& ime_text_spans,
     const gfx::Range& replacement_range,
     int relative_cursor_pos);
@@ -84,7 +83,7 @@ void SendImeCommitTextToWidget(
 // composition text and update the corresponding IME params.
 void SendImeSetCompositionTextToWidget(
     RenderWidgetHost* rwh,
-    const base::string16& text,
+    const std::u16string& text,
     const std::vector<ui::ImeTextSpan>& ime_text_spans,
     const gfx::Range& replacement_range,
     int selection_start,

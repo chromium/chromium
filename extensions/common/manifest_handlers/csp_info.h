@@ -60,16 +60,16 @@ class CSPHandler : public ManifestHandler {
   ~CSPHandler() override;
 
   // ManifestHandler override:
-  bool Parse(Extension* extension, base::string16* error) override;
+  bool Parse(Extension* extension, std::u16string* error) override;
 
  private:
   // Parses the "content_security_policy" dictionary in the manifest.
-  bool ParseCSPDictionary(Extension* extension, base::string16* error);
+  bool ParseCSPDictionary(Extension* extension, std::u16string* error);
 
   // Parses the content security policy specified in the manifest for extension
   // pages.
   bool ParseExtensionPagesCSP(Extension* extension,
-                              base::string16* error,
+                              std::u16string* error,
                               base::StringPiece manifest_key,
                               bool secure_only,
                               const base::Value* content_security_policy);
@@ -77,7 +77,7 @@ class CSPHandler : public ManifestHandler {
   // Parses the content security policy specified in the manifest for sandboxed
   // pages. This should be called after ParseExtensionPagesCSP.
   bool ParseSandboxCSP(Extension* extension,
-                       base::string16* error,
+                       std::u16string* error,
                        base::StringPiece manifest_key,
                        const base::Value* sandbox_csp);
 

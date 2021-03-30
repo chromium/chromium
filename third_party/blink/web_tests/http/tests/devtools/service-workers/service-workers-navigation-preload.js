@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests the navigation request related events are available in the DevTools\n`);
-  await TestRunner.loadModule('application_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('application_test_runner');
     // Note: every test that uses a storage API must manually clean-up state from previous tests.
   await ApplicationTestRunner.resetState();
 

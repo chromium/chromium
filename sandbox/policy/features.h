@@ -17,14 +17,16 @@ namespace sandbox {
 namespace policy {
 namespace features {
 
-#if !defined(OS_MAC)
+#if !defined(OS_MAC) && !defined(OS_FUCHSIA)
 SANDBOX_POLICY_EXPORT extern const base::Feature kNetworkServiceSandbox;
 #endif
 
 #if defined(OS_WIN)
+SANDBOX_POLICY_EXPORT extern const base::Feature kWinSboxDisableKtmComponent;
 SANDBOX_POLICY_EXPORT extern const base::Feature kWinSboxDisableExtensionPoints;
 SANDBOX_POLICY_EXPORT extern const base::Feature kGpuAppContainer;
 SANDBOX_POLICY_EXPORT extern const base::Feature kGpuLPAC;
+SANDBOX_POLICY_EXPORT extern const base::Feature kNetworkServiceSandboxLPAC;
 #endif  // defined(OS_WIN)
 
 #if !defined(OS_ANDROID)

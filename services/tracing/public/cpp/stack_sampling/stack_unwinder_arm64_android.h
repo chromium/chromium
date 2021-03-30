@@ -17,7 +17,6 @@ class COMPONENT_EXPORT(TRACING_CPP) UnwinderArm64 : public base::Unwinder {
 
   base::UnwindResult TryUnwind(base::RegisterContext* thread_context,
                                uintptr_t stack_top,
-                               base::ModuleCache* module_cache,
                                std::vector<base::Frame>* stack) const override;
 };
 

@@ -206,7 +206,10 @@ class LogMessageManager {
   }
 
   // Called when it's no longer safe to invoke |log_callback_|.
-  void ShutdownLogging() { logging::SetLogMessageHandler(nullptr); }
+  void ShutdownLogging() {
+    logging::SetLogMessageHandler(nullptr);
+    log_callback_.Reset();
+  }
 
  private:
   base::Lock message_lock_;
@@ -624,6 +627,12 @@ void GpuServiceImpl::FlushPreInitializeLogMessages(mojom::GpuHost* gpu_host) {
   GetLogMessageManager()->FlushMessages(gpu_host);
 }
 
+void GpuServiceImpl::SetVisibilityChangedCallback(
+    VisibilityChangedCallback callback) {
+  DCHECK(main_runner_->BelongsToCurrentThread());
+  visibility_changed_callback_ = std::move(callback);
+}
+
 void GpuServiceImpl::RecordLogMessage(int severity,
                                       const std::string& header,
                                       const std::string& message) {
@@ -766,6 +775,16 @@ void GpuServiceImpl::DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
     return;
   }
   gpu_channel_manager_->DestroyGpuMemoryBuffer(id, client_id, sync_token);
+}
+
+void GpuServiceImpl::CopyGpuMemoryBuffer(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion shared_memory,
+    CopyGpuMemoryBufferCallback callback) {
+  DCHECK(io_runner_->BelongsToCurrentThread());
+  std::move(callback).Run(
+      gpu_memory_buffer_factory_->FillSharedMemoryRegionWithBufferContents(
+          std::move(buffer_handle), std::move(shared_memory)));
 }
 
 void GpuServiceImpl::GetVideoMemoryUsageStats(
@@ -1085,11 +1104,24 @@ void GpuServiceImpl::OnBackgrounded() {
 
 void GpuServiceImpl::OnBackgroundedOnMainThread() {
   gpu_channel_manager_->OnApplicationBackgrounded();
+
+  if (visibility_changed_callback_)
+    visibility_changed_callback_.Run(false);
 }
 
 void GpuServiceImpl::OnForegrounded() {
+  DCHECK(io_runner_->BelongsToCurrentThread());
   if (watchdog_thread_)
     watchdog_thread_->OnForegrounded();
+
+  main_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&GpuServiceImpl::OnForegroundedOnMainThread, weak_ptr_));
+}
+
+void GpuServiceImpl::OnForegroundedOnMainThread() {
+  if (visibility_changed_callback_)
+    visibility_changed_callback_.Run(true);
 }
 
 #if !defined(OS_ANDROID)

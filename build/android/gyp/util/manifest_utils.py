@@ -129,7 +129,7 @@ def _SortAndStripElementTree(root):
     # for the node or any of its descendants. Remove them so as to prevent a
     # change to a child that adds/removes a namespace usage from changing sort
     # order.
-    return re.sub(r' xmlns:.*?".*?"', '', ret)
+    return re.sub(r' xmlns:.*?".*?"', '', ret.decode('utf8'))
 
   def helper(node):
     for child in node:
@@ -205,7 +205,7 @@ def _CreateNodeHash(lines):
     assert False, 'Did not find end of node:\n' + '\n'.join(lines)
 
   # Insecure and truncated hash as it only needs to be unique vs. its neighbors.
-  return hashlib.md5('\n'.join(tag_lines)).hexdigest()[:8]
+  return hashlib.md5(('\n'.join(tag_lines)).encode('utf8')).hexdigest()[:8]
 
 
 def _IsSelfClosing(lines):
@@ -257,11 +257,18 @@ def NormalizeManifest(manifest_contents):
   root = ElementTree.fromstring(manifest_contents)
   package = GetPackage(root)
 
-  # Trichrome's static library version number is updated daily. To avoid
-  # frequent manifest check failures, we remove the exact version number
-  # during normalization.
   app_node = root.find('application')
   if app_node is not None:
+    # android:debuggable is added when !is_official_build. Strip it out to avoid
+    # expectation diffs caused by not adding is_official_build. Play store
+    # blocks uploading apps with it set, so there's no risk of it slipping in.
+    debuggable_name = '{%s}debuggable' % ANDROID_NAMESPACE
+    if debuggable_name in app_node.attrib:
+      del app_node.attrib[debuggable_name]
+
+    # Trichrome's static library version number is updated daily. To avoid
+    # frequent manifest check failures, we remove the exact version number
+    # during normalization.
     for node in app_node.getchildren():
       if (node.tag in ['uses-static-library', 'static-library']
           and '{%s}version' % ANDROID_NAMESPACE in node.keys()

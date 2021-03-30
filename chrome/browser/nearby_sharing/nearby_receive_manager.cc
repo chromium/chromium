@@ -4,6 +4,7 @@
 
 #include "chrome/browser/nearby_sharing/nearby_receive_manager.h"
 
+#include "base/callback_helpers.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 
 NearbyReceiveManager::NearbyReceiveManager(
@@ -126,6 +127,18 @@ void NearbyReceiveManager::Reject(const base::UnguessableToken& share_target_id,
 void NearbyReceiveManager::OnHighVisibilityChanged(bool in_high_visibility) {
   for (auto& remote : observers_set_) {
     remote->OnHighVisibilityChanged(in_high_visibility);
+  }
+}
+
+void NearbyReceiveManager::OnNearbyProcessStopped() {
+  for (auto& remote : observers_set_) {
+    remote->OnNearbyProcessStopped();
+  }
+}
+
+void NearbyReceiveManager::OnStartAdvertisingFailure() {
+  for (auto& remote : observers_set_) {
+    remote->OnStartAdvertisingFailure();
   }
 }
 

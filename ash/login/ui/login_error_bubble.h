@@ -19,24 +19,35 @@ class ASH_EXPORT LoginErrorBubble : public LoginBaseBubbleView {
   LoginErrorBubble(views::View* content, views::View* anchor_view);
   ~LoginErrorBubble() override;
 
+  // If the content is theme-change sensitive, it should be updated by the
+  // class managing this instance via a new call to SetContent.
   void SetContent(views::View* content);
   // Covers most cases where content is a simple label containing a message.
-  void SetTextContent(const base::string16& message);
+  // The eventual theme changes will be handled internally.
+  void SetTextContent(const std::u16string& message);
   // We set an accessible name when content is not accessible. This happens if
   // content is a container (e.g. a text and a "learn more" button). In such a
   // case, it will have multiple subviews but only one which needs to be read
   // on bubble show – when the alert event occurs.
-  void SetAccessibleName(const base::string16& name);
+  void set_accessible_name(const std::u16string& name) {
+    accessible_name_ = name;
+  }
 
   // views::View:
   const char* GetClassName() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
+  // LoginBaseBubbleView:
+  void OnThemeChanged() override;
+
  private:
   views::View* content_ = nullptr;
+  views::ImageView* alert_icon_ = nullptr;
 
   // Accessibility data.
-  base::string16 accessible_name_;
+  std::u16string accessible_name_;
+
+  std::u16string message_;
 
   DISALLOW_COPY_AND_ASSIGN(LoginErrorBubble);
 };

@@ -8,8 +8,10 @@
 
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/version_info/version_info.h"
 
 namespace net_log {
@@ -35,7 +37,11 @@ std::unique_ptr<base::DictionaryValue> GetPlatformConstantsForNetLog(
       base::SysInfo::OperatingSystemVersion().c_str(),
       base::SysInfo::OperatingSystemArchitecture().c_str());
   dict->SetString("os_type", os_type);
+#if defined(OS_WIN)
+  dict->SetString("command_line", base::WideToUTF8(command_line_string));
+#else
   dict->SetString("command_line", command_line_string);
+#endif
 
   constants_dict->Set("clientInfo", std::move(dict));
 

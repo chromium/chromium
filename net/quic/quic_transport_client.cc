@@ -394,12 +394,13 @@ void QuicTransportClient::OnCanCreateNewOutgoingUnidirectionalStream() {
   visitor_->OnCanCreateNewOutgoingUnidirectionalStream();
 }
 
-void QuicTransportClient::OnReadError(int result,
+bool QuicTransportClient::OnReadError(int result,
                                       const DatagramClientSocket* socket) {
   error_.net_error = result;
   connection_->CloseConnection(quic::QUIC_PACKET_READ_ERROR,
                                ErrorToString(result),
                                quic::ConnectionCloseBehavior::SILENT_CLOSE);
+  return false;
 }
 
 bool QuicTransportClient::OnPacket(

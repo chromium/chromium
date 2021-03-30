@@ -49,23 +49,4 @@ void ShadowList::AdjustRectForShadow(FloatRect& rect) const {
   rect.Expand(RectOutsetsIncludingOriginal());
 }
 
-sk_sp<SkDrawLooper> ShadowList::CreateDrawLooper(
-    DrawLooperBuilder::ShadowAlphaMode alpha_mode,
-    const Color& current_color,
-    mojom::blink::ColorScheme color_scheme,
-    bool is_horizontal) const {
-  DrawLooperBuilder draw_looper_builder;
-  for (wtf_size_t i = Shadows().size(); i--;) {
-    const ShadowData& shadow = Shadows()[i];
-    float shadow_x = is_horizontal ? shadow.X() : shadow.Y();
-    float shadow_y = is_horizontal ? shadow.Y() : -shadow.X();
-    draw_looper_builder.AddShadow(
-        FloatSize(shadow_x, shadow_y), shadow.Blur(),
-        shadow.GetColor().Resolve(current_color, color_scheme),
-        DrawLooperBuilder::kShadowRespectsTransforms, alpha_mode);
-  }
-  draw_looper_builder.AddUnmodifiedContent();
-  return draw_looper_builder.DetachDrawLooper();
-}
-
 }  // namespace blink

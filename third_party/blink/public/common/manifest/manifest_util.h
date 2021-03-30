@@ -9,6 +9,7 @@
 
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h"
 #include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/mojom/manifest/capture_links.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-forward.h"
 
 namespace blink {
@@ -47,6 +48,9 @@ BLINK_COMMON_EXPORT std::string WebScreenOrientationLockTypeToString(
 // device::mojom::ScreenOrientationLockType::DEFAULT if there is no match.
 BLINK_COMMON_EXPORT device::mojom::ScreenOrientationLockType
 WebScreenOrientationLockTypeFromString(const std::string& orientation);
+
+BLINK_COMMON_EXPORT mojom::CaptureLinks CaptureLinksFromString(
+    const std::string& capture_links);
 
 }  // namespace blink
 

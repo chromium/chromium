@@ -29,42 +29,46 @@ enum DifferentPrimaryAccounts {
 // Track all the ways a profile can become signed out as a histogram.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.signin.metrics
 // GENERATED_JAVA_CLASS_NAME_OVERRIDE: SignoutReason
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum ProfileSignout : int {
   // The value used within unit tests.
   SIGNOUT_TEST = 0,
   // The preference or policy controlling if signin is valid has changed.
   SIGNOUT_PREF_CHANGED = 0,
   // The valid pattern for signing in to the Google service changed.
-  GOOGLE_SERVICE_NAME_PATTERN_CHANGED,
+  GOOGLE_SERVICE_NAME_PATTERN_CHANGED = 1,
   // The preference or policy controlling if signin is valid changed during
   // the signin process.
-  SIGNIN_PREF_CHANGED_DURING_SIGNIN,
+  SIGNIN_PREF_CHANGED_DURING_SIGNIN = 2,
   // User clicked to signout from the settings page.
-  USER_CLICKED_SIGNOUT_SETTINGS,
+  USER_CLICKED_SIGNOUT_SETTINGS = 3,
   // The signin process was aborted, but signin had succeeded, so signout. This
   // may be due to a server response, policy definition or user action.
-  ABORT_SIGNIN,
+  ABORT_SIGNIN = 4,
   // The sync server caused the profile to be signed out.
-  SERVER_FORCED_DISABLE,
+  SERVER_FORCED_DISABLE = 5,
   // The credentials are being transfered to a new profile, so the old one is
   // signed out.
-  TRANSFER_CREDENTIALS,
+  TRANSFER_CREDENTIALS = 6,
   // Signed out because credentials are invalid and force-sign-in is enabled.
-  AUTHENTICATION_FAILED_WITH_FORCE_SIGNIN,
+  AUTHENTICATION_FAILED_WITH_FORCE_SIGNIN = 7,
   // The user disables sync from the DICE UI.
-  USER_TUNED_OFF_SYNC_FROM_DICE_UI,
+  USER_TUNED_OFF_SYNC_FROM_DICE_UI = 8,
   // Android specific. Signout forced because the account was removed from the
   // device.
-  ACCOUNT_REMOVED_FROM_DEVICE,
+  ACCOUNT_REMOVED_FROM_DEVICE = 9,
   // Signin is no longer allowed when the profile is initialized.
-  SIGNIN_NOT_ALLOWED_ON_PROFILE_INIT,
+  SIGNIN_NOT_ALLOWED_ON_PROFILE_INIT = 10,
   // Sign out is forced allowed. Only used for tests.
-  FORCE_SIGNOUT_ALWAYS_ALLOWED_FOR_TEST,
+  FORCE_SIGNOUT_ALWAYS_ALLOWED_FOR_TEST = 11,
   // User cleared account cookies when there's no sync consent, which has caused
   // sign out.
-  USER_DELETED_ACCOUNT_COOKIES,
+  USER_DELETED_ACCOUNT_COOKIES = 12,
   // Signout triggered by MobileIdentityConsistency rollback.
-  MOBILE_IDENTITY_CONSISTENCY_ROLLBACK,
+  MOBILE_IDENTITY_CONSISTENCY_ROLLBACK = 13,
+  // Sign-out when the account id migration to Gaia ID did not finish,
+  ACCOUNT_ID_MIGRATION = 14,
   // Keep this as the last enum.
   NUM_PROFILE_SIGNOUT_METRICS,
 };
@@ -259,27 +263,51 @@ enum class AccountConsistencyPromoAction : int {
   // User has completed the account addition flow triggered from the bottom
   // sheet.
   ADD_ACCOUNT_COMPLETED,
+  // The bottom sheet was suppressed as the user hit consecutive active
+  // dismissal limit.
+  SUPPRESSED_CONSECUTIVE_DISMISSALS,
 
   MAX,
+};
+
+// This class is used to record web sign-in events within 2 minutes after
+// account picker bottom sheet was dismissed.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AccountConsistencyPromoAfterDismissal {
+  // User signed in with the default device account. This account is the first
+  // account in the cookies.
+  kSignedInOnWebWithDefaultDeviceAccount = 0,
+  // User signed in with non-default device account.
+  kSignedInOnWebWithNonDefaultDeviceAccount = 1,
+  // User signed in with an account not present on device.
+  kSignedInOnWebWithOtherAccount = 2,
+
+  kMaxValue = kSignedInOnWebWithOtherAccount,
 };
 #endif  // defined(OS_ANDROID)
 
 // Enum values which enumerates all reasons to start sign in process.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Please keep in Sync with "SigninReason" in
+// src/tools/metrics/histograms/enums.xml.
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.signin.metrics
 // GENERATED_JAVA_CLASS_NAME_OVERRIDE: SigninReason
 enum class Reason : int {
   REASON_SIGNIN_PRIMARY_ACCOUNT = 0,
-  REASON_ADD_SECONDARY_ACCOUNT,
-  REASON_REAUTHENTICATION,
-  REASON_UNLOCK,
-  REASON_UNKNOWN_REASON,  // This should never have been used to get signin URL.
-  REASON_FORCED_SIGNIN_PRIMARY_ACCOUNT,
-  REASON_FETCH_LST_ONLY,  // Used to simply login and acquire a login scope
-                          // token without actually signing into any profiles on
-                          // Chrome. This allows the chrome signin page to work
-                          // in incognito mode.
-  REASON_MAX,             // This must be last.
+  REASON_ADD_SECONDARY_ACCOUNT = 1,
+  REASON_REAUTHENTICATION = 2,
+  // REASON_UNLOCK = 3,  // DEPRECATED, profile unlocking was removed.
+  // This should never have been used to get signin URL.
+  REASON_UNKNOWN_REASON = 4,
+  REASON_FORCED_SIGNIN_PRIMARY_ACCOUNT = 5,
+  // Used to simply login and acquire a login scope token without actually
+  // signing into any profiles on Chrome. This allows the chrome signin page to
+  // work in incognito mode.
+  REASON_FETCH_LST_ONLY = 6,
+  kMaxValue = REASON_FETCH_LST_ONLY,
 };
 
 // Enum values used for use with the "Signin.Reauth" histogram.

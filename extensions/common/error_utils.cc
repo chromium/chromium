@@ -64,18 +64,18 @@ std::string ErrorUtils::FormatErrorMessage(base::StringPiece format,
   return FormatErrorMessageInternal(format, {s1, s2, s3});
 }
 
-base::string16 ErrorUtils::FormatErrorMessageUTF16(base::StringPiece format,
+std::u16string ErrorUtils::FormatErrorMessageUTF16(base::StringPiece format,
                                                    base::StringPiece s1) {
   return base::UTF8ToUTF16(FormatErrorMessageInternal(format, {s1}));
 }
 
-base::string16 ErrorUtils::FormatErrorMessageUTF16(base::StringPiece format,
+std::u16string ErrorUtils::FormatErrorMessageUTF16(base::StringPiece format,
                                                    base::StringPiece s1,
                                                    base::StringPiece s2) {
   return base::UTF8ToUTF16(FormatErrorMessageInternal(format, {s1, s2}));
 }
 
-base::string16 ErrorUtils::FormatErrorMessageUTF16(base::StringPiece format,
+std::u16string ErrorUtils::FormatErrorMessageUTF16(base::StringPiece format,
                                                    base::StringPiece s1,
                                                    base::StringPiece s2,
                                                    base::StringPiece s3) {

@@ -1,11 +1,11 @@
 This is a testharness.js-based test.
-FAIL Object with usemap of #sanityCheck should match the area with map named sanityCheck assert_equals: expected Element node <area shape="rect" coords="0,0,300,300"></area> but got Element node <object data="/images/threecolors.png" usemap="#sanityChe...
-PASS Object with usemap of #sImPlE should not match any of the areas
-PASS Object with usemap of #paSSfield-killroyß should not match any of the areas
-PASS Object with usemap of #глупый should not match any of the areas
-FAIL Object with usemap of #åωk should not match any of the areas Cannot read property 'parentElement' of null
-FAIL Object with usemap of #blah1 should not match any of the areas Cannot read property 'parentElement' of null
-FAIL Object with usemap of #tÉdz5アパートFi should not match any of the areas Cannot read property 'parentElement' of null
-FAIL Object with usemap of #ΣΣ should not match any of the areas Cannot read property 'parentElement' of null
+PASS Object with usemap of #sanityCheck should not match any of the areas (it does not support usemap)
+PASS Object with usemap of #sImPlE should not match any of the areas (it does not support usemap)
+PASS Object with usemap of #paSSfield-killroyß should not match any of the areas (it does not support usemap)
+PASS Object with usemap of #глупый should not match any of the areas (it does not support usemap)
+FAIL Object with usemap of #åωk should not match any of the areas (it does not support usemap) Cannot read property 'parentElement' of null
+FAIL Object with usemap of #blah1 should not match any of the areas (it does not support usemap) Cannot read property 'parentElement' of null
+FAIL Object with usemap of #tÉdz5アパートFi should not match any of the areas (it does not support usemap) Cannot read property 'parentElement' of null
+FAIL Object with usemap of #ΣΣ should not match any of the areas (it does not support usemap) Cannot read property 'parentElement' of null
 Harness: the test ran to completion.
 

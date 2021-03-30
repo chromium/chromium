@@ -11,6 +11,8 @@
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #include "ios/chrome/grit/ios_theme_resources.h"
 #include "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -20,7 +22,7 @@
 #error "This file requires ARC support."
 #endif
 
-@interface LocationBarMediator () <SearchEngineObserving>
+@interface LocationBarMediator () <SearchEngineObserving, WebStateListObserving>
 
 // Whether the current default search engine supports search by image.
 @property(nonatomic, assign) BOOL searchEngineSupportsSearchByImage;
@@ -29,14 +31,24 @@
 
 @implementation LocationBarMediator {
   std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserver;
+  std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
 }
 
 - (instancetype)init {
   self = [super init];
   if (self) {
     _searchEngineSupportsSearchByImage = NO;
+    _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
   }
   return self;
+}
+
+- (void)disconnect {
+  self.webStateList = nil;
+}
+
+- (void)dealloc {
+  [self disconnect];
 }
 
 #pragma mark - SearchEngineObserving
@@ -71,6 +83,29 @@
     [self.consumer
         updateSearchByImageSupported:searchEngineSupportsSearchByImage];
   }
+}
+
+- (void)setWebStateList:(WebStateList*)webStateList {
+  if (_webStateList) {
+    _webStateList->RemoveObserver(_webStateListObserver.get());
+  }
+
+  _webStateList = webStateList;
+
+  if (_webStateList) {
+    _webStateList->AddObserver(_webStateListObserver.get());
+  }
+}
+
+#pragma mark - WebStateListObserver
+
+- (void)webStateList:(WebStateList*)webStateList
+    didChangeActiveWebState:(web::WebState*)newWebState
+                oldWebState:(web::WebState*)oldWebState
+                    atIndex:(int)atIndex
+                     reason:(ActiveWebStateChangeReason)reason {
+  DCHECK_EQ(_webStateList, webStateList);
+  [self.consumer defocusOmnibox];
 }
 
 @end

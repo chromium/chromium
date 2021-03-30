@@ -4,7 +4,8 @@
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
-import 'chrome://resources/cr_elements/cr_icons_css.m.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import './profile_picker_shared_css.js';
 import './icons.js';
@@ -14,7 +15,6 @@ import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import './strings.js';
 
 import {ManageProfilesBrowserProxy, ManageProfilesBrowserProxyImpl, ProfileState} from './manage_profiles_browser_proxy.js';
 
@@ -26,7 +26,7 @@ import {ManageProfilesBrowserProxy, ManageProfilesBrowserProxyImpl, ProfileState
  *   Autofill: number,
  * }}
  */
-let Statistics;
+export let Statistics;
 
 /**
  * This is the data structure sent back and forth between C++ and JS.
@@ -35,7 +35,7 @@ let Statistics;
  *   statistics: Statistics,
  * }}
  */
-let StatisticsResult;
+export let StatisticsResult;
 
 
 /**
@@ -92,6 +92,12 @@ Polymer({
       type: String,
       computed: 'computeRemoveWarningText_(profileState)',
     },
+
+    /** @private */
+    removeWarningTitle_: {
+      type: String,
+      computed: 'computeRemoveWarningTitle_(profileState)',
+    },
   },
 
   /** @private {ManageProfilesBrowserProxy} */
@@ -108,7 +114,7 @@ Polymer({
     this.addWebUIListener(
         'profiles-list-changed', () => this.handleProfilesUpdated_());
     this.addWebUIListener(
-        'profile-removed', () => this.handleProfilesUpdated_());
+        'profile-removed', this.handleProfileRemoved_.bind(this));
     this.addWebUIListener(
         'profile-statistics-received',
         this.handleProfileStatsReceived_.bind(this));
@@ -122,6 +128,16 @@ Polymer({
     return this.i18n(
         this.profileState.isSyncing ? 'removeWarningSignedInProfile' :
                                       'removeWarningLocalProfile');
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  computeRemoveWarningTitle_() {
+    return this.i18n(
+        this.profileState.isSyncing ? 'removeWarningSignedInProfileTitle' :
+                                      'removeWarningLocalProfileTitle');
   },
 
   /**
@@ -147,7 +163,7 @@ Polymer({
     this.manageProfilesBrowserProxy_.getProfileStatistics(
         this.profileState.profilePath);
     this.$.actionMenu.close();
-    this.$.removeActionMenu.showAt(this.$.moreActionsButton);
+    this.$.removeConfirmationDialog.showModal();
     chrome.metricsPrivate.recordUserAction('ProfilePicker_RemoveOptionClicked');
   },
 
@@ -197,11 +213,19 @@ Polymer({
    * @param {!Event} e
    * @private
    */
-  onRemoveComfirationClicked_(e) {
+  onRemoveConfirmationClicked_(e) {
     e.stopPropagation();
     e.preventDefault();
     this.manageProfilesBrowserProxy_.removeProfile(
         this.profileState.profilePath);
+  },
+
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  onRemoveCancelClicked_(e) {
+    this.$.removeConfirmationDialog.cancel();
   },
 
   /**
@@ -210,7 +234,18 @@ Polymer({
    */
   handleProfilesUpdated_() {
     this.$.actionMenu.close();
-    this.$.removeActionMenu.close();
+  },
+
+  /**
+   * Closes the remove confirmation dialog when the profile is removed.
+   * @param {string} profilePath
+   * @private
+   */
+  handleProfileRemoved_(profilePath) {
+    this.handleProfilesUpdated_();
+    if (this.profileState.profilePath === profilePath) {
+      this.$.removeConfirmationDialog.close();
+    }
   },
 
   /** @private */

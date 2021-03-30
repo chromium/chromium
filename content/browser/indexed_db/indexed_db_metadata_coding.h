@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
@@ -42,11 +41,11 @@ class CONTENT_EXPORT IndexedDBMetadataCoding {
   virtual leveldb::Status ReadDatabaseNames(
       TransactionalLevelDBDatabase* db,
       const std::string& origin_identifier,
-      std::vector<base::string16>* names);
+      std::vector<std::u16string>* names);
   virtual leveldb::Status ReadDatabaseNames(
       TransactionalLevelDBTransaction* transaction,
       const std::string& origin_identifier,
-      std::vector<base::string16>* names);
+      std::vector<std::u16string>* names);
 
   // Reads in the list of database names and versions for the given origin.
   virtual leveldb::Status ReadDatabaseNamesAndVersions(
@@ -59,13 +58,13 @@ class CONTENT_EXPORT IndexedDBMetadataCoding {
   virtual leveldb::Status ReadMetadataForDatabaseName(
       TransactionalLevelDBDatabase* db,
       const std::string& origin_identifier,
-      const base::string16& name,
+      const std::u16string& name,
       blink::IndexedDBDatabaseMetadata* metadata,
       bool* found);
   virtual leveldb::Status ReadMetadataForDatabaseName(
       TransactionalLevelDBTransaction* transaction,
       const std::string& origin_identifier,
-      const base::string16& name,
+      const std::u16string& name,
       blink::IndexedDBDatabaseMetadata* metadata,
       bool* found);
 
@@ -73,7 +72,7 @@ class CONTENT_EXPORT IndexedDBMetadataCoding {
   virtual leveldb::Status CreateDatabase(
       TransactionalLevelDBDatabase* database,
       const std::string& origin_identifier,
-      const base::string16& name,
+      const std::u16string& name,
       int64_t version,
       blink::IndexedDBDatabaseMetadata* metadata);
 
@@ -87,7 +86,7 @@ class CONTENT_EXPORT IndexedDBMetadataCoding {
   // Reads only the database id, if found.
   virtual leveldb::Status FindDatabaseId(TransactionalLevelDBDatabase* db,
                                          const std::string& origin_identifier,
-                                         const base::string16& name,
+                                         const std::u16string& name,
                                          int64_t* id,
                                          bool* found);
 
@@ -96,7 +95,7 @@ class CONTENT_EXPORT IndexedDBMetadataCoding {
       TransactionalLevelDBTransaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
-      base::string16 name,
+      std::u16string name,
       blink::IndexedDBKeyPath key_path,
       bool auto_increment,
       blink::IndexedDBObjectStoreMetadata* metadata);
@@ -112,8 +111,8 @@ class CONTENT_EXPORT IndexedDBMetadataCoding {
   virtual leveldb::Status RenameObjectStore(
       TransactionalLevelDBTransaction* transaction,
       int64_t database_id,
-      base::string16 new_name,
-      base::string16* old_name,
+      std::u16string new_name,
+      std::u16string* old_name,
       blink::IndexedDBObjectStoreMetadata* metadata);
 
   // Creates a new index metadata and writes it to the transaction.
@@ -122,7 +121,7 @@ class CONTENT_EXPORT IndexedDBMetadataCoding {
       int64_t database_id,
       int64_t object_store_id,
       int64_t index_id,
-      base::string16 name,
+      std::u16string name,
       blink::IndexedDBKeyPath key_path,
       bool is_unique,
       bool is_multi_entry,
@@ -140,8 +139,8 @@ class CONTENT_EXPORT IndexedDBMetadataCoding {
       TransactionalLevelDBTransaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
-      base::string16 new_name,
-      base::string16* old_name,
+      std::u16string new_name,
+      std::u16string* old_name,
       blink::IndexedDBIndexMetadata* metadata);
 
  private:

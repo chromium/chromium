@@ -122,27 +122,19 @@ void WakeUpBudgetPool::OnWakeUp(base::TimeTicks now) {
   last_wake_up_ = now;
 }
 
-void WakeUpBudgetPool::AsValueInto(base::trace_event::TracedValue* state,
-                                   base::TimeTicks now) const {
-  auto dictionary_scope = state->BeginDictionaryScoped(name_);
+void WakeUpBudgetPool::WriteIntoTracedValue(perfetto::TracedValue context,
+                                            base::TimeTicks now) const {
+  auto dict = std::move(context).WriteDictionary();
 
-  state->SetString("name", name_);
-  state->SetDouble("wake_up_interval_in_seconds",
-                   wake_up_interval_.InSecondsF());
-  state->SetDouble("wake_up_duration_in_seconds",
-                   wake_up_duration_.InSecondsF());
+  dict.Add("name", name_);
+  dict.Add("wake_up_interval_in_seconds", wake_up_interval_.InSecondsF());
+  dict.Add("wake_up_duration_in_seconds", wake_up_duration_.InSecondsF());
   if (last_wake_up_) {
-    state->SetDouble("last_wake_up_seconds_ago",
-                     (now - last_wake_up_.value()).InSecondsF());
+    dict.Add("last_wake_up_seconds_ago",
+             (now - last_wake_up_.value()).InSecondsF());
   }
-  state->SetBoolean("is_enabled", is_enabled_);
-
-  {
-    auto array_scope = state->BeginArrayScoped("task_queues");
-    for (TaskQueue* queue : associated_task_queues_) {
-      state->AppendString(PointerToString(queue));
-    }
-  }
+  dict.Add("is_enabled", is_enabled_);
+  dict.Add("task_queues", associated_task_queues_);
 }
 
 }  // namespace scheduler

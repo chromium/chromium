@@ -67,6 +67,8 @@ GURL GetSimplifiedURL(const GURL& url) {
 }  // namespace
 
 namespace prefs {
+const char kSafeBrowsingCsdPingTimestamps[] =
+    "safebrowsing.csd_ping_timestamps";
 const char kSafeBrowsingEnabled[] = "safebrowsing.enabled";
 const char kSafeBrowsingEnhanced[] = "safebrowsing.enhanced";
 const char kSafeBrowsingEnterpriseRealTimeUrlCheckMode[] =
@@ -88,7 +90,7 @@ const char kSafeBrowsingUnhandledGaiaPasswordReuses[] =
     "safebrowsing.unhandled_sync_password_reuses";
 const char kSafeBrowsingNextPasswordCaptureEventLogTime[] =
     "safebrowsing.next_password_capture_event_log_time";
-const char kSafeBrowsingWhitelistDomains[] =
+const char kSafeBrowsingAllowlistDomains[] =
     "safebrowsing.safe_browsing_whitelist_domains";
 const char kPasswordProtectionChangePasswordURL[] =
     "safebrowsing.password_protection_change_password_url";
@@ -102,6 +104,7 @@ const char kAdvancedProtectionAllowed[] =
     "safebrowsing.advanced_protection_allowed";
 const char kSafeBrowsingMetricsLastLogTime[] =
     "safebrowsing.metrics_last_log_time";
+const char kSafeBrowsingEventTimestamps[] = "safebrowsing.event_timestamps";
 }  // namespace prefs
 
 namespace safe_browsing {
@@ -136,8 +139,7 @@ bool IsSafeBrowsingEnabled(const PrefService& prefs) {
 bool IsEnhancedProtectionEnabled(const PrefService& prefs) {
   // SafeBrowsingEnabled is checked too due to devices being out
   // of sync or not on a version that includes SafeBrowsingEnhanced pref.
-  return base::FeatureList::IsEnabled(kEnhancedProtection) &&
-         prefs.GetBoolean(prefs::kSafeBrowsingEnhanced) &&
+  return prefs.GetBoolean(prefs::kSafeBrowsingEnhanced) &&
          IsSafeBrowsingEnabled(prefs);
 }
 
@@ -168,11 +170,6 @@ bool IsSafeBrowsingPolicyManaged(const PrefService& prefs) {
          prefs.IsManagedPreference(prefs::kSafeBrowsingEnhanced);
 }
 
-bool IsEnhancedProtectionMessageInInterstitialsEnabled() {
-  return base::FeatureList::IsEnabled(
-      kEnhancedProtectionMessageInInterstitials);
-}
-
 void RecordExtendedReportingMetrics(const PrefService& prefs) {
   // This metric tracks the extended browsing opt-in based on whichever setting
   // the user is currently seeing. It tells us whether extended reporting is
@@ -187,6 +184,7 @@ void RecordExtendedReportingMetrics(const PrefService& prefs) {
 }
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterListPref(prefs::kSafeBrowsingCsdPingTimestamps);
   registry->RegisterBooleanPref(prefs::kSafeBrowsingScoutReportingEnabled,
                                 false);
   registry->RegisterBooleanPref(
@@ -205,7 +203,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(
       prefs::kSafeBrowsingNextPasswordCaptureEventLogTime,
       "0");  // int64 as string
-  registry->RegisterListPref(prefs::kSafeBrowsingWhitelistDomains);
+  registry->RegisterListPref(prefs::kSafeBrowsingAllowlistDomains);
   registry->RegisterStringPref(prefs::kPasswordProtectionChangePasswordURL, "");
   registry->RegisterListPref(prefs::kPasswordProtectionLoginURLs);
   registry->RegisterIntegerPref(prefs::kPasswordProtectionWarningTrigger,
@@ -218,6 +216,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope, 0);
   registry->RegisterInt64Pref(prefs::kSafeBrowsingMetricsLastLogTime, 0);
+  registry->RegisterDictionaryPref(prefs::kSafeBrowsingEventTimestamps);
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -274,11 +273,11 @@ base::ListValue GetSafeBrowsingPreferencesList(PrefService* prefs) {
   return preferences_list;
 }
 
-void GetSafeBrowsingWhitelistDomainsPref(
+void GetSafeBrowsingAllowlistDomainsPref(
     const PrefService& prefs,
     std::vector<std::string>* out_canonicalized_domain_list) {
   const base::ListValue* pref_value =
-      prefs.GetList(prefs::kSafeBrowsingWhitelistDomains);
+      prefs.GetList(prefs::kSafeBrowsingAllowlistDomains);
   CanonicalizeDomainList(*pref_value, out_canonicalized_domain_list);
 }
 
@@ -297,36 +296,46 @@ void CanonicalizeDomainList(
   }
 }
 
-bool IsURLWhitelistedByPolicy(const GURL& url,
+bool IsURLAllowlistedByPolicy(const GURL& url,
                               StringListPrefMember* pref_member) {
   DCHECK(CurrentlyOnThread(ThreadID::IO));
   if (!pref_member)
     return false;
 
-  std::vector<std::string> sb_whitelist_domains = pref_member->GetValue();
-  return std::find_if(sb_whitelist_domains.begin(), sb_whitelist_domains.end(),
+  std::vector<std::string> sb_allowlist_domains = pref_member->GetValue();
+  return std::find_if(sb_allowlist_domains.begin(), sb_allowlist_domains.end(),
                       [&url](const std::string& domain) {
                         return url.DomainIs(domain);
-                      }) != sb_whitelist_domains.end();
+                      }) != sb_allowlist_domains.end();
 }
 
-bool IsURLWhitelistedByPolicy(const GURL& url, const PrefService& pref) {
+bool IsURLAllowlistedByPolicy(const GURL& url, const PrefService& pref) {
   DCHECK(CurrentlyOnThread(ThreadID::UI));
-  if (!pref.HasPrefPath(prefs::kSafeBrowsingWhitelistDomains))
+  if (!pref.HasPrefPath(prefs::kSafeBrowsingAllowlistDomains))
     return false;
-  const base::ListValue* whitelist =
-      pref.GetList(prefs::kSafeBrowsingWhitelistDomains);
-  for (const base::Value& value : whitelist->GetList()) {
+  const base::ListValue* allowlist =
+      pref.GetList(prefs::kSafeBrowsingAllowlistDomains);
+  for (const base::Value& value : allowlist->GetList()) {
     if (url.DomainIs(value.GetString()))
       return true;
   }
   return false;
 }
 
-bool MatchesEnterpriseWhitelist(const PrefService& pref,
+std::vector<std::string> GetURLAllowlistByPolicy(PrefService* pref_service) {
+  std::vector<std::string> allowlist_domains;
+  const base::ListValue* allowlist =
+      pref_service->GetList(prefs::kSafeBrowsingAllowlistDomains);
+  for (const base::Value& value : allowlist->GetList()) {
+    allowlist_domains.push_back(value.GetString());
+  }
+  return allowlist_domains;
+}
+
+bool MatchesEnterpriseAllowlist(const PrefService& pref,
                                 const std::vector<GURL>& url_chain) {
   for (const GURL& url : url_chain) {
-    if (IsURLWhitelistedByPolicy(url, pref))
+    if (IsURLAllowlistedByPolicy(url, pref))
       return true;
   }
   return false;

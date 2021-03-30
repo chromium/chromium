@@ -46,7 +46,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Power.BacklightLevelOnAC" units="%" expires_after="2021-06-27">
+<histogram name="Power.BacklightLevelOnAC" units="%" expires_after="2021-08-29">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The level of the backlight as a percentage when the user is on AC. Sampled
@@ -55,7 +55,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.BacklightLevelOnBattery" units="%"
-    expires_after="2021-05-02">
+    expires_after="2021-09-05">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The level of the backlight as a percentage when the user is on battery.
@@ -64,7 +64,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.BatteryChargeHealth" units="%"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>tbroch@chromium.org</owner>
   <summary>
     Chrome OS battery charge health percentage. Sampled once when device starts
@@ -72,8 +72,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Power.BatteryDischargeMode" enum="BatteryDischargeMode"
+    expires_after="2021-07-18">
+  <owner>etiennep@chromium.org</owner>
+  <owner>olivierli@chromium.org</owner>
+  <summary>
+    Battery discharge mode describing whether BatteryDischargeRate2 could be
+    reported or not, and why, reported everytime the battery charge level is
+    sampled. This is reported on Mac and Windows. See
+    go/chrome_power_use_per_scenario for more details.
+  </summary>
+</histogram>
+
 <histogram name="Power.BatteryDischargeRate" units="mW"
-    expires_after="2021-05-16">
+    expires_after="2021-09-19">
   <owner>tbroch@chromium.org</owner>
   <summary>
     Chrome OS battery discharge rate in mW sampled every 30 seconds while the
@@ -81,8 +93,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Power.BatteryDischargeRate2" units="hundredth of percent"
+    expires_after="2021-09-26">
+  <owner>etiennep@chromium.org</owner>
+  <owner>olivierli@chromium.org</owner>
+  <owner>lgrey@chromium.org</owner>
+  <summary>
+    Battery discharge rate per minute, with 1/10000 of full charge resolution,
+    example: - Battery capacity = 4000 mAh; - Battery charge at the beginning of
+    the interval: 3900 mAh; - Battery charge at the end of the interval: 3700
+    mAh; - Discharge proportion: (3900-3700) / 4000 = 0.05 - Reported value:
+    500. This metric is only recorded when on battery power. This is reported on
+    Mac and Windows. See go/chrome_power_use_per_scenario for more details.
+  </summary>
+</histogram>
+
 <histogram name="Power.BatteryDischargeRateWhileSuspended" units="mW"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>tbroch@chromium.org</owner>
   <summary>
     Chrome OS battery discharge rate in mW while the system was suspended,
@@ -102,7 +129,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Power.BatteryPercentDrop" units="%" expires_after="2021-06-06">
+<histogram name="Power.BatteryPercentDrop" units="%" expires_after="2021-08-09">
   <owner>ryansturm@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -127,7 +154,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.BatteryRemainingAtEndOfSessionOnBattery" units="%"
-    expires_after="2021-06-20">
+    expires_after="2021-08-22">
   <owner>tbroch@chromium.org</owner>
   <summary>
     Chrome OS remaining battery charge as percent of the maximum battery charge,
@@ -136,7 +163,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.BatteryRemainingAtStartOfSessionOnAC" units="%"
-    expires_after="2021-06-20">
+    expires_after="2021-08-22">
   <owner>tbroch@chromium.org</owner>
   <summary>
     Chrome OS remaining battery charge as percent of the maximum battery charge,
@@ -154,11 +181,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.BatteryRemainingWhenChargeStarts" units="%"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>tbroch@chromium.org</owner>
   <summary>
     Chrome OS remaining battery charge as percent of the maximum battery charge,
     sampled when charging starts.
+  </summary>
+</histogram>
+
+<histogram name="Power.BatterySamplingDelay" units="microseconds"
+    expires_after="2021-07-18">
+  <owner>etiennep@chromium.org</owner>
+  <owner>sebmarchand@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
+  <summary>
+    The delay in microseconds between the time a battery charge level query was
+    schedule and the time the state is made available, reported everytime the
+    battery charge level is sampled. Reported for all users on Windows and Mac.
   </summary>
 </histogram>
 
@@ -183,7 +222,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.ConnectedChargingPorts"
-    enum="PowerConnectedChargingPorts" expires_after="2021-04-04">
+    enum="PowerConnectedChargingPorts" expires_after="2021-08-15">
   <owner>bleung@chromium.org</owner>
   <owner>tbroch@chromium.org</owner>
   <summary>
@@ -210,7 +249,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.CpuTimeSecondsPerCoreTypeAndFrequency" units="50 MHz"
-    expires_after="2021-06-26">
+    expires_after="2021-08-29">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
@@ -218,8 +257,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     as core type and core frequency. Currently only implemented on Android. For
     every second of CPU time consumed by a process on a specific CPU core type
     and at a specific frequency, a sample is recorded into the bucket for the
-    frequency range. The histogram thus shows the total sum of CPU time seconds
-    spent for a specific process and core type across all users.
+    frequency range. Samples are recorded periodically depending on the task
+    load of each process's main thread. The histogram thus shows the total sum
+    of CPU time seconds spent for a specific process and core type across all
+    users.
+
+    For a histogram of daily per-user values, select &quot;Per-Client
+    Aggregation Mode&quot;.
+  </summary>
+</histogram>
+
+<histogram name="Power.CpuTimeSecondsPerPowerMode" enum="PowerMode"
+    expires_after="2021-12-31">
+  <owner>eseckler@chromium.org</owner>
+  <owner>skyostil@chromium.org</owner>
+  <summary>
+    Total seconds of CPU time consumed by Chrome, split by process type and
+    power mode. Currently only implemented on Android. For every second of CPU
+    time consumed by a process of the chosen type, while a specific PowerMode
+    was active, a sample is recorded into the bucket for the PowerMode. Samples
+    are recorded periodically depending on the task load of each process's main
+    thread. The histogram thus shows the total sum of CPU time seconds spent per
+    PowerMode within all processes of the chosen type across all users.
 
     For a histogram of daily per-user values, select &quot;Per-Client
     Aggregation Mode&quot;.
@@ -227,23 +286,47 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.CpuTimeSecondsPerProcessType" enum="ProcessType2"
-    expires_after="2021-05-14">
+    expires_after="2021-09-19">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
     Total seconds of CPU time consumed by Chrome, split by process type.
     Currently only implemented on Android. For every second of CPU time consumed
     by one process, a sample is recorded into the bucket for the process's type.
-    The histogram thus shows the total sum of CPU time seconds spent per process
-    type across all users.
+    Samples are recorded periodically depending on the task load of each
+    process's main thread. The histogram thus shows the total sum of CPU time
+    seconds spent per process type across all users.
 
     For a histogram of daily per-user values, select &quot;Per-Client
     Aggregation Mode&quot;.
   </summary>
 </histogram>
 
+<histogram name="Power.CpuTimeSecondsPerProcessType.{Visibility}"
+    enum="ProcessType2" expires_after="2021-07-18">
+  <owner>eseckler@chromium.org</owner>
+  <owner>skyostil@chromium.org</owner>
+  <summary>
+    Total seconds of CPU time consumed by Chrome/WebView in the {Visibility}
+    state, split by process type. Currently only implemented on Android. For
+    every second of CPU time consumed by one process, a sample is recorded into
+    the bucket for the process's type. Samples are recorded periodically
+    depending on the task load of each process's main thread. The histogram thus
+    shows the total sum of CPU time seconds spent per process type across all
+    users.
+
+    For a histogram of daily per-user values, select &quot;Per-Client
+    Aggregation Mode&quot;.
+  </summary>
+  <token key="Visibility">
+    <variant name="Background" summary="backgrounded"/>
+    <variant name="Foreground" summary="foregrounded"/>
+    <variant name="Unattributed" summary="undetermined visibility"/>
+  </token>
+</histogram>
+
 <histogram name="Power.CpuTimeSecondsPerThreadType"
-    enum="CpuTimeMetricsThreadType" expires_after="2021-06-10">
+    enum="CpuTimeMetricsThreadType" expires_after="2021-08-09">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
@@ -252,8 +335,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     time consumed by one thread, a sample is recorded into the bucket for the
     thread's type. CPU time consumed by a process that cannot be attributed to a
     specific thread is recorded into the &quot;UnattributedThread&quot; bucket.
-    The histogram thus shows the total sum of CPU time seconds spent per thread
-    type (within processes of a specific type) across all users.
+    Samples are recorded periodically depending on the task load of each
+    process's main thread. The histogram thus shows the total sum of CPU time
+    seconds spent per thread type (within processes of a specific type) across
+    all users.
 
     For a histogram of daily per-user values, select &quot;Per-Client
     Aggregation Mode&quot;.
@@ -357,7 +442,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.ExternalDisplayOpenResult"
-    enum="ExternalDisplayOpenResult" expires_after="2021-05-30">
+    enum="ExternalDisplayOpenResult" expires_after="2021-08-01">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The result of attempting to open an I2C device to control an external
@@ -367,7 +452,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.FirmwareResumeTimeOnAC" units="ms"
-    expires_after="2021-06-27">
+    expires_after="2021-08-29">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The time that the firmware took to resume the Chrome OS device from
@@ -376,7 +461,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.FirmwareResumeTimeOnBattery" units="ms"
-    expires_after="2021-06-27">
+    expires_after="2021-08-29">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The time that the firmware took to resume the Chrome OS device from
@@ -385,7 +470,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.ForegroundBatteryDrain" units="0.1 mAh"
-    expires_after="2021-07-03">
+    expires_after="2021-09-05">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
@@ -400,7 +485,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.ForegroundBatteryDrain.30Seconds" units="uAh"
-    expires_after="2021-07-03">
+    expires_after="2021-09-05">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
@@ -419,7 +504,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.ForegroundBatteryDrain.30Seconds.Exclusive" units="uAh"
-    expires_after="2021-07-03">
+    expires_after="2021-09-05">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
@@ -439,7 +524,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.ForegroundBatteryDrain.30SecondsAvg" units="uAh"
-    expires_after="2021-07-03">
+    expires_after="2021-09-05">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
@@ -454,7 +539,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.ForegroundBatteryDrain.30SecondsAvg.Exclusive"
-    units="uAh" expires_after="2021-07-03">
+    units="uAh" expires_after="2021-09-05">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
@@ -470,7 +555,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.ForegroundBatteryDrain.Exclusive" units="0.1 mAh"
-    expires_after="2021-07-03">
+    expires_after="2021-09-05">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
@@ -518,7 +603,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.ForegroundRadio.Wakeups.Cell.30Seconds"
-    enum="RadioSignalLevel" expires_after="2021-07-03">
+    enum="RadioSignalLevel" expires_after="2021-09-05">
   <owner>eseckler@chromium.org</owner>
   <owner>khokhlov@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
@@ -593,7 +678,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.IdleSuspendCountDaily" units="count"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>tbroch@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <summary>
@@ -655,7 +740,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Power.IdleTimeOnBattery" units="ms" expires_after="2021-06-13">
+<histogram name="Power.IdleTimeOnBattery" units="ms" expires_after="2021-08-15">
   <owner>tbroch@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <summary>
@@ -665,7 +750,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.KernelResumeTimeOnAC" units="ms"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The time that the kernel took to resume the Chrome OS device from
@@ -692,7 +777,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.KernelSuspendTimeOnBattery" units="ms"
-    expires_after="2021-06-20">
+    expires_after="2021-08-22">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The time that the kernel took to suspend-to-RAM the Chrome OS device when
@@ -710,7 +795,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.LengthOfSession" units="seconds"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The length of time, in seconds, that a user spent in a single session.
@@ -720,7 +805,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.LidClosedSuspendCountDaily" units="count"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>tbroch@chromium.org</owner>
   <summary>
     Number of times that that the system has suspended in response to its lid
@@ -744,7 +829,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.Mac.AppleSMCOpened" enum="BooleanSuccess"
-    expires_after="2021-06-20">
+    expires_after="2021-08-22">
   <owner>lgrey@chromium.org</owner>
   <summary>
     When metrics collection started, records true if a handle to the System
@@ -756,7 +841,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.Mac.BatteryDischarge" units="hundredth of percent"
-    expires_after="2021-06-15">
+    expires_after="2021-08-15">
+  <obsolete>
+    Replaced with cross-platform Power.BatteryDischargeRate2 03/2021.
+  </obsolete>
   <owner>olivierli@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
   <summary>
@@ -784,7 +872,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.Mac.IsOnBattery2" enum="BooleanOnBattery"
-    expires_after="2021-06-27">
+    expires_after="2021-08-29">
   <owner>avi@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
   <summary>
@@ -825,7 +913,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.NumberOfSessionsPerCharge" units="units"
-    expires_after="2021-04-25">
+    expires_after="2021-08-01">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The number of user sessions that occured since the last time that the device
@@ -853,14 +941,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.PowerButtonMenuAction" enum="PowerButtonMenuActionType"
-    expires_after="2021-04-04">
+    expires_after="2021-08-01">
   <owner>minch@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>Actions performed while the power button menu is open.</summary>
 </histogram>
 
 <histogram name="Power.PowerButtonPressInLaptopMode"
-    enum="PowerButtonPressType" expires_after="2021-06-20">
+    enum="PowerButtonPressType" expires_after="2021-08-22">
   <owner>minch@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>
@@ -871,7 +959,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.PowerButtonPressInTabletMode"
-    enum="PowerButtonPressType" expires_after="2021-06-06">
+    enum="PowerButtonPressType" expires_after="2021-08-09">
   <owner>minch@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>
@@ -882,7 +970,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.PowerSupplyMaxPower" units="W"
-    expires_after="2021-06-27">
+    expires_after="2021-08-29">
   <owner>bleung@chromium.org</owner>
   <owner>tbroch@chromium.org</owner>
   <summary>
@@ -903,7 +991,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.PowerSupplyType" enum="PowerSupplyType"
-    expires_after="2021-06-27">
+    expires_after="2021-08-29">
   <owner>bleung@chromium.org</owner>
   <owner>tbroch@chromium.org</owner>
   <summary>
@@ -930,7 +1018,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.SuspendAttempt" enum="SuspendAttempt"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The number of suspend attempts on Chrome OS. Samples are reported before
@@ -940,7 +1028,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.SuspendAttemptsBeforeCancel" units="units"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The number of suspend attempts performed for a single suspend request (e.g.
@@ -951,7 +1039,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.SuspendAttemptsBeforeSuccess" units="units"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The number of suspend attempts performed for a single suspend request (e.g.
@@ -961,7 +1049,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.SuspendResult" enum="SuspendResult"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The results of suspend attempts on Chrome OS. Samples are reported after
@@ -998,7 +1086,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.UserBrightnessAdjustmentsPerSessionOnBattery"
-    units="units" expires_after="2021-06-20">
+    units="units" expires_after="2021-08-22">
   <owner>tbroch@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <summary>
@@ -1009,7 +1097,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PowerML.DimImminent.Action" enum="PowerMLDimImminentAction"
-    expires_after="2021-06-20">
+    expires_after="2021-08-22">
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -1019,7 +1107,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PowerML.ModelDim.Result" enum="PowerMLFinalResult"
-    expires_after="2021-06-20">
+    expires_after="2021-08-22">
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -1029,7 +1117,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PowerML.ModelNoDim.Result" enum="PowerMLFinalResult"
-    expires_after="2021-06-20">
+    expires_after="2021-08-22">
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -1039,7 +1127,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PowerML.NonModelDim.Result" enum="PowerMLFinalResult"
-    expires_after="2021-05-16">
+    expires_after="2021-09-19">
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -1060,7 +1148,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PowerML.SmartDimComponent.LoadComponentEvent"
     enum="PowerMLSmartDimComponentLoadComponentEvent"
-    expires_after="2021-04-25">
+    expires_after="2021-08-09">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
@@ -1071,7 +1159,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PowerML.SmartDimComponent.VersionType"
-    enum="PowerMLSmartDimComponentVersionType" expires_after="2021-04-25">
+    enum="PowerMLSmartDimComponentVersionType" expires_after="2021-08-09">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
@@ -1082,7 +1170,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PowerML.SmartDimComponent.WorkerType"
-    enum="PowerMLSmartDimComponentWorkerType" expires_after="2021-04-25">
+    enum="PowerMLSmartDimComponentWorkerType" expires_after="2021-08-09">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
@@ -1093,7 +1181,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PowerML.SmartDimModel.RequestCanceledDuration" units="ms"
-    expires_after="2021-06-20">
+    expires_after="2021-08-22">
   <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>napper@chromium.org</owner>
@@ -1105,7 +1193,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PowerML.SmartDimModel.RequestCompleteDuration" units="ms"
-    expires_after="2021-06-20">
+    expires_after="2021-08-22">
   <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>napper@chromium.org</owner>
@@ -1117,7 +1205,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PowerML.SmartDimModel.Result"
-    enum="PowerMLSmartDimModelResult" expires_after="2021-06-13">
+    enum="PowerMLSmartDimModelResult" expires_after="2021-08-15">
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -1130,7 +1218,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PowerML.SmartDimParameter.Result"
-    enum="PowerMLSmartDimParameterResult" expires_after="2021-06-20">
+    enum="PowerMLSmartDimParameterResult" expires_after="2021-08-22">
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>

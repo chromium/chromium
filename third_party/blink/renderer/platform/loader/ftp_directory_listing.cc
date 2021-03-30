@@ -27,7 +27,7 @@ namespace blink {
 
 namespace {
 
-base::string16 ConvertPathToUTF16(const std::string& path) {
+std::u16string ConvertPathToUTF16(const std::string& path) {
   // Per RFC 2640, FTP servers should use UTF-8 or its proper subset ASCII,
   // but many old FTP servers use legacy encodings. Try UTF-8 first.
   if (base::IsStringUTF8(path))
@@ -37,7 +37,7 @@ base::string16 ConvertPathToUTF16(const std::string& path) {
   // fail.
   std::string encoding;
   if (base::DetectEncoding(path, &encoding) && encoding != "US-ASCII") {
-    base::string16 path_utf16;
+    std::u16string path_utf16;
     if (base::CodepageToUTF16(path, encoding.c_str(),
                               base::OnStringConversionError::SUBSTITUTE,
                               &path_utf16)) {

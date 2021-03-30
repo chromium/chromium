@@ -29,9 +29,15 @@ class COMPONENT_EXPORT(COLOR) ColorProvider {
   ColorProvider& operator=(const ColorProvider&) = delete;
   ~ColorProvider();
 
-  // Adds a mixer to the end of the current color pipeline.  Returns a reference
-  // to the added mixer so callers can subsequently add sets and/or recipes.
+  // Adds a mixer to the current color pipeline after all other
+  // non-"postprocessing" mixers.  Returns a reference to the added mixer so
+  // callers can subsequently add sets and/or recipes.
   ColorMixer& AddMixer();
+
+  // Like AddMixer(), but adds at the very end of the color pipeline.
+  // "Postprocessing" mixers are meant to run after all other mixers and are
+  // skipped when calling GetUnprocessedColor().
+  ColorMixer& AddPostprocessingMixer();
 
   // Returns the result color for |id| by applying the effects of each mixer in
   // order.  Returns gfx::kPlaceholderColor if no mixer knows how to construct
@@ -39,9 +45,18 @@ class COMPONENT_EXPORT(COLOR) ColorProvider {
   SkColor GetColor(ColorId id) const;
 
  private:
+  using Mixers = std::forward_list<ColorMixer>;
+
+  // Returns the last mixer in the chain that is not a "postprocessing" mixer,
+  // or nullptr.
+  const ColorMixer* GetLastNonPostprocessingMixer() const;
+
   // The entire color pipeline, in reverse order (that is, the "last" mixer is
   // at the front).
-  std::forward_list<ColorMixer> mixers_;
+  Mixers mixers_;
+
+  // The first mixer in the chain that is a "postprocessing" mixer.
+  Mixers::iterator first_postprocessing_mixer_ = mixers_.before_begin();
 
   // Caches the results of calls to GetColor().  This is invalidated by
   // AddMixer().  Uses a std::map rather than a base::flat_map since it has

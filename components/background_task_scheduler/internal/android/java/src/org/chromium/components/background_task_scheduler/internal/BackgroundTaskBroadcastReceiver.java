@@ -21,6 +21,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.task.PostTask;
 import org.chromium.components.background_task_scheduler.BackgroundTask;
 import org.chromium.components.background_task_scheduler.TaskInfo;
@@ -165,7 +166,7 @@ public class BackgroundTaskBroadcastReceiver extends BroadcastReceiver {
                 (ConnectivityManager) context.getApplicationContext().getSystemService(
                         Context.CONNECTIVITY_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Network network = connectivityManager.getActiveNetwork();
+            Network network = ApiHelperForM.getActiveNetwork(connectivityManager);
             if (requiredNetworkType == TaskInfo.NetworkType.ANY) return (network != null);
         } else {
             NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
@@ -181,7 +182,7 @@ public class BackgroundTaskBroadcastReceiver extends BroadcastReceiver {
                 (BatteryManager) context.getSystemService(Context.BATTERY_SERVICE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return batteryManager.isCharging();
+            return ApiHelperForM.isCharging(batteryManager);
         }
 
         IntentFilter intentFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);

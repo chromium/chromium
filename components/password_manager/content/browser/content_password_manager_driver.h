@@ -14,7 +14,7 @@
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/core/common/password_form_generation_data.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/password_autofill_manager.h"
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_manager.h"
@@ -57,18 +57,18 @@ class ContentPasswordManagerDriver
       bool should_show_popup_without_passwords) override;
   void FormEligibleForGenerationFound(
       const autofill::PasswordFormGenerationData& form) override;
-  void GeneratedPasswordAccepted(const base::string16& password) override;
+  void GeneratedPasswordAccepted(const std::u16string& password) override;
   void GeneratedPasswordAccepted(
       const autofill::FormData& form_data,
       autofill::FieldRendererId generation_element_id,
-      const base::string16& password) override;
+      const std::u16string& password) override;
   void TouchToFillClosed(ShowVirtualKeyboard show_virtual_keyboard) override;
-  void FillSuggestion(const base::string16& username,
-                      const base::string16& password) override;
+  void FillSuggestion(const std::u16string& username,
+                      const std::u16string& password) override;
   void FillIntoFocusedField(bool is_password,
-                            const base::string16& credential) override;
-  void PreviewSuggestion(const base::string16& username,
-                         const base::string16& password) override;
+                            const std::u16string& credential) override;
+  void PreviewSuggestion(const std::u16string& username,
+                         const std::u16string& password) override;
   void ClearPreviewedForm() override;
   PasswordGenerationFrameHelper* GetPasswordGenerationHelper() override;
   PasswordManager* GetPasswordManager() override;
@@ -101,21 +101,22 @@ class ContentPasswordManagerDriver
       bool did_stop_loading) override;
   void PasswordFormSubmitted(const autofill::FormData& form_data) override;
   void InformAboutUserInput(const autofill::FormData& form_data) override;
-  void SameDocumentNavigation(autofill::mojom::SubmissionIndicatorEvent
-                                  submission_indication_event) override;
+  void DynamicFormSubmission(autofill::mojom::SubmissionIndicatorEvent
+                                 submission_indication_event) override;
   void PasswordFormCleared(const autofill::FormData& form_data) override;
   void RecordSavePasswordProgress(const std::string& log) override;
   void UserModifiedPasswordField() override;
   void UserModifiedNonPasswordField(autofill::FieldRendererId renderer_id,
-                                    const base::string16& value) override;
+                                    const std::u16string& value) override;
   void ShowPasswordSuggestions(base::i18n::TextDirection text_direction,
-                               const base::string16& typed_username,
+                               const std::u16string& typed_username,
                                int options,
                                const gfx::RectF& bounds) override;
   void ShowTouchToFill() override;
   void CheckSafeBrowsingReputation(const GURL& form_action,
                                    const GURL& frame_url) override;
   void FocusedInputChanged(
+      autofill::FieldRendererId focused_field_id,
       autofill::mojom::FocusedFieldType focused_field_type) override;
   void LogFirstFillingResult(autofill::FormRendererId form_renderer_id,
                              int32_t result) override;

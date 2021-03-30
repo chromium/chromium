@@ -4,8 +4,9 @@
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
 
+#import "base/check_op.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
@@ -19,22 +20,14 @@
 
 namespace {
 
-// Padding used on the leading and trailing edges of the cell.
-const CGFloat kHorizontalPadding = 16;
-
 // Padding used on the top and bottom edges of the cell.
 const CGFloat kVerticalPadding = 8;
 
-// Returns a padding according to the width of the current device.
-CGFloat HorizontalPadding() {
-  if (base::FeatureList::IsEnabled(kSettingsRefresh) && !IsSmallDevice())
-    return 0;
-  return kHorizontalPadding;
-}
-
 }  // namespace
 
-@implementation TableViewLinkHeaderFooterItem
+@implementation TableViewLinkHeaderFooterItem {
+  std::vector<GURL> urls_;
+}
 
 - (instancetype)initWithType:(NSInteger)type {
   self = [super initWithType:type];
@@ -44,17 +37,31 @@ CGFloat HorizontalPadding() {
   return self;
 }
 
+#pragma mark Properties
+
+- (const std::vector<GURL>&)urls {
+  return urls_;
+}
+
+- (void)setUrls:(const std::vector<GURL>&)urls {
+  for (const GURL& url : urls_) {
+    DCHECK(url.is_valid());
+  }
+  urls_ = urls;
+}
+
 #pragma mark CollectionViewItem
 
 - (void)configureHeaderFooterView:(TableViewLinkHeaderFooterView*)headerFooter
                        withStyler:(ChromeTableViewStyler*)styler {
   [super configureHeaderFooterView:headerFooter withStyler:styler];
 
-  headerFooter.linkURL = self.linkURL;
-  if (self.linkURL.is_valid())
-    headerFooter.accessibilityTraits |= UIAccessibilityTraitLink;
-  else
+  if (self.urls.empty()) {
     headerFooter.accessibilityTraits &= ~UIAccessibilityTraitLink;
+  } else {
+    headerFooter.urls = self.urls;
+    headerFooter.accessibilityTraits |= UIAccessibilityTraitLink;
+  }
   [headerFooter setText:self.text];
 }
 
@@ -67,7 +74,9 @@ CGFloat HorizontalPadding() {
 
 @end
 
-@implementation TableViewLinkHeaderFooterView
+@implementation TableViewLinkHeaderFooterView {
+  std::vector<GURL> urls_;
+}
 
 @synthesize textView = _textView;
 
@@ -107,39 +116,49 @@ CGFloat HorizontalPadding() {
   return self;
 }
 
+- (void)prepareForReuse {
+  [super prepareForReuse];
+  self.textView.text = nil;
+  self.delegate = nil;
+  self.urls = std::vector<GURL>();
+}
+
+#pragma mark - Properties
+
 - (void)setText:(NSString*)text {
-  NSRange range;
+  StringWithTags parsedString = ParseStringWithLinks(text);
 
-  NSString* strippedText = ParseStringWithLink(text, &range);
-  NSRange fullRange = NSMakeRange(0, strippedText.length);
+  NSDictionary* textAttributes = @{
+    NSFontAttributeName :
+        [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle],
+    NSForegroundColorAttributeName : UIColor.cr_secondaryLabelColor
+  };
+
   NSMutableAttributedString* attributedText =
-      [[NSMutableAttributedString alloc] initWithString:strippedText];
-  [attributedText addAttribute:NSForegroundColorAttributeName
-                         value:UIColor.cr_secondaryLabelColor
-                         range:fullRange];
+      [[NSMutableAttributedString alloc] initWithString:parsedString.string
+                                             attributes:textAttributes];
 
-  [attributedText
-      addAttribute:NSFontAttributeName
-             value:[UIFont
-                       preferredFontForTextStyle:kTableViewSublabelFontStyle]
-             range:fullRange];
-
-  if (range.location != NSNotFound && range.length != 0) {
-    NSURL* URL = net::NSURLWithGURL(self.linkURL);
-    id linkValue = URL ? URL : @"";
+  DCHECK_EQ(parsedString.ranges.size(), self.urls.size());
+  size_t index = 0;
+  for (const GURL& url : self.urls) {
     [attributedText addAttribute:NSLinkAttributeName
-                           value:linkValue
-                           range:range];
+                           value:net::NSURLWithGURL(url)
+                           range:parsedString.ranges[index]];
+    index += 1;
   }
 
   self.textView.attributedText = attributedText;
 }
 
-- (void)prepareForReuse {
-  [super prepareForReuse];
-  self.textView.text = nil;
-  self.delegate = nil;
-  self.linkURL = GURL();
+- (const std::vector<GURL>&)urls {
+  return urls_;
+}
+
+- (void)setUrls:(const std::vector<GURL>&)urls {
+  for (const GURL& url : urls_) {
+    DCHECK(url.is_valid());
+  }
+  urls_ = urls;
 }
 
 #pragma mark - UITextViewDelegate
@@ -149,8 +168,10 @@ CGFloat HorizontalPadding() {
                   inRange:(NSRange)characterRange
               interaction:(UITextItemInteraction)interaction {
   DCHECK(self.textView == textView);
-  GURL convertedURL = URL ? net::GURLWithNSURL(URL) : self.linkURL;
-  [self.delegate view:self didTapLinkURL:convertedURL];
+  const GURL gURL = net::GURLWithNSURL(URL);
+  DCHECK(gURL.is_valid());
+  DCHECK(base::Contains(self.urls, gURL));
+  [self.delegate view:self didTapLinkURL:gURL];
   // Returns NO as the app is handling the opening of the URL.
   return NO;
 }

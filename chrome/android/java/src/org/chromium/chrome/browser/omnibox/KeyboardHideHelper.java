@@ -12,7 +12,7 @@ import android.view.WindowManager;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.WindowDelegate;
+import org.chromium.ui.base.WindowDelegate;
 
 /**
  * Helps to detect whether the virtual keyboard was hidden to allow unfocusing of the omnibox.

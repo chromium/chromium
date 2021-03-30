@@ -44,9 +44,7 @@ class KeyboardLayout final : public GarbageCollected<KeyboardLayout>,
 
   Member<ScriptPromiseResolver> script_promise_resolver_;
 
-  HeapMojoRemote<mojom::blink::KeyboardLockService,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      service_;
+  HeapMojoRemote<mojom::blink::KeyboardLockService> service_;
 
   DISALLOW_COPY_AND_ASSIGN(KeyboardLayout);
 };

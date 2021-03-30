@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="module">
+import {Counter, CounterObserverReceiver, CounterRemote} from '/gen/content/test/data/mojo_bindings_web_test.test-mojom.m.js';
+
+class ObserverImpl {
+  constructor() {
+    this.count_ = null;
+    this.disconnectResolvers_ = [];
+  }
+
+  get count() {
+    return this.count_;
+  }
+
+  async nextCloneDisconnect() {
+    return new Promise(r => this.disconnectResolvers_.push(r));
+  }
+
+  onCountChanged(count) {
+    this.count_ = count;
+  }
+
+  onCloneDisconnected() {
+    let resolvers = [];
+    [resolvers, this.disconnectResolvers_] =
+        [this.disconnectResolvers_, resolvers];
+    resolvers.forEach(r => r());
+  }
+}
+
+function getCounterRemote() {
+  const {handle0, handle1} = Mojo.createMessagePipe();
+  const remote = new CounterRemote(handle1);
+  Mojo.bindInterface(Counter.$interfaceName, handle0, 'process');
+  return remote;
+}
+
+async function waitForDisconnect(receiver) {
+  return new Promise(r => receiver.onConnectionError.addListener(r));
+}
+
+promise_test(async () => {
+  const counter = getCounterRemote();
+
+  counter.increment();
+  counter.increment();
+  const {count} = await counter.increment();
+  assert_equals(count, 3);
+}, 'basic validity check for browser-side support of these tests');
+
+promise_test(async () => {
+  const counter = getCounterRemote();
+  const observerA = new ObserverImpl;
+  const receiverA = new CounterObserverReceiver(observerA);
+  const observerB = new ObserverImpl;
+  const receiverB = new CounterObserverReceiver(observerB);
+
+  counter.addObserver(receiverA.$.associateAndPassRemote());
+  counter.addObserver(receiverB.$.associateAndPassRemote());
+
+  counter.increment();
+  const {count} = await counter.increment();
+  assert_equals(count, 2);
+
+  // The observers should always observe changes before the caller of increment
+  // gets a reply, so the above await should guarantee that the observers' count
+  // values are up-to-date.
+  assert_equals(observerA.count, 2);
+  assert_equals(observerB.count, 2);
+}, 'associated remotes can be created and passed');
+
+promise_test(async () => {
+  const counter = getCounterRemote();
+  const observerA = new ObserverImpl;
+  const receiverA = new CounterObserverReceiver(observerA);
+  const observerB = new ObserverImpl;
+  const receiverB = new CounterObserverReceiver(observerB);
+
+  receiverA.$.bindHandle((await counter.addNewObserver()).receiver.handle);
+  receiverB.$.bindHandle((await counter.addNewObserver()).receiver.handle);
+
+  counter.increment();
+  const {count} = await counter.increment();
+  assert_equals(count, 2);
+
+  assert_equals(observerA.count, 2);
+  assert_equals(observerB.count, 2);
+}, 'associated receivers can be deserialized and receive messages');
+
+promise_test(async () => {
+  const counterA = getCounterRemote();
+  const counterB = new CounterRemote;
+  const counterC = new CounterRemote;
+  const counterD = new CounterRemote;
+  counterA.clone(counterB.$.associateAndPassReceiver());
+  counterA.clone(counterC.$.associateAndPassReceiver());
+  counterB.clone(counterD.$.associateAndPassReceiver());
+
+  // Increment operations among the three interfaces should be strictly ordered.
+  const increments = [
+    counterA.increment(),
+    counterB.increment(),
+    counterC.increment(),
+    counterD.increment(),
+    counterA.increment(),
+    counterB.increment(),
+    counterC.increment(),
+    counterD.increment(),
+  ];
+  const replies = await Promise.all(increments);
+  const results = replies.map(reply => reply.count);
+  assert_array_equals([1, 2, 3, 4, 5, 6, 7, 8], results);
+}, 'associated receivers can be created and passed, and message ordering is preserved among endpoints');
+
+promise_test(async () => {
+  const counterA = getCounterRemote();
+  const {remote: counterB} = await counterA.cloneToNewRemote();
+  const {remote: counterC} = await counterA.cloneToNewRemote();
+  const {remote: counterD} = await counterC.cloneToNewRemote();
+
+  const increments = [
+    counterA.increment(),
+    counterB.increment(),
+    counterC.increment(),
+    counterD.increment(),
+    counterA.increment(),
+    counterB.increment(),
+    counterC.increment(),
+    counterD.increment(),
+  ];
+  const replies = await Promise.all(increments);
+  const results = replies.map(reply => reply.count);
+  assert_array_equals([1, 2, 3, 4, 5, 6, 7, 8], results);
+}, 'associated remotes can be deserialized and used to send messages, and message ordering is preserved among endpoints');
+
+promise_test(async () => {
+  const counter = getCounterRemote();
+  const observer = new ObserverImpl;
+  const receiver = new CounterObserverReceiver(observer);
+  counter.addObserver(receiver.$.associateAndPassRemote());
+  counter.increment();
+  counter.increment();
+  counter.increment();
+  await counter.$.flushForTesting();
+  assert_equals(observer.count, 3);
+}, 'associated endpoints can use flushForTesting');
+
+promise_test(async () => {
+  const counter = getCounterRemote();
+  const {remote: clone} = await counter.cloneToNewRemote();
+  const observer = new ObserverImpl;
+  const receiver = new CounterObserverReceiver(observer);
+  counter.addObserver(receiver.$.associateAndPassRemote());
+  clone.$.close();
+  observer.nextCloneDisconnect();
+}, 'closing an associated endpoint from JavaScript will signal its peer');
+
+promise_test(async () => {
+  const counter = getCounterRemote();
+  const observer = new ObserverImpl;
+  const receiver = new CounterObserverReceiver(observer);
+  counter.addObserver(receiver.$.associateAndPassRemote());
+  counter.removeAllObservers();
+  await waitForDisconnect(receiver);
+}, 'JavaScript associated endpoints are notified when their peers close');
+</script>

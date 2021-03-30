@@ -87,6 +87,8 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
       BeforeNetworkStartCallback callback) override;
   void SetConnectedCallback(const ConnectedCallback& callback) override;
   void SetRequestHeadersCallback(RequestHeadersCallback callback) override;
+  void SetEarlyResponseHeadersCallback(
+      ResponseHeadersCallback callback) override;
   void SetResponseHeadersCallback(ResponseHeadersCallback callback) override;
   int ResumeNetworkStart() override;
   void CloseConnectionOnDestruction() override;
@@ -140,6 +142,7 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
     STATE_CREATE_STREAM_COMPLETE,
     STATE_INIT_STREAM,
     STATE_INIT_STREAM_COMPLETE,
+    STATE_CONNECTED_CALLBACK_COMPLETE,
     STATE_GENERATE_PROXY_AUTH_TOKEN,
     STATE_GENERATE_PROXY_AUTH_TOKEN_COMPLETE,
     STATE_GENERATE_SERVER_AUTH_TOKEN,
@@ -180,6 +183,7 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   int DoCreateStreamComplete(int result);
   int DoInitStream();
   int DoInitStreamComplete(int result);
+  int DoConnectedCallbackComplete(int results);
   int DoGenerateProxyAuthToken();
   int DoGenerateProxyAuthTokenComplete(int result);
   int DoGenerateServerAuthToken();
@@ -200,6 +204,11 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   int BuildRequestHeaders(bool using_http_proxy_without_tunnel);
 
 #if BUILDFLAG(ENABLE_REPORTING)
+  // Processes the Reporting-Endpoints header specified in document reporting
+  // spec, if one exists. This header configures where the Reporting API (in
+  // net/reporting) will send reports for the document.
+  void ProcessReportingEndpointsHeader();
+
   // Processes the Report-To header, if one exists. This header configures where
   // the Reporting API (in //net/reporting) will send reports for the origin.
   void ProcessReportToHeader();
@@ -300,6 +309,8 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   // Returns true if response "Content-Encoding" headers respect
   // "Accept-Encoding".
   bool ContentEncodingsValid() const;
+
+  void ResumeAfterConnected(int result);
 
   scoped_refptr<HttpAuthController>
       auth_controllers_[HttpAuth::AUTH_NUM_TARGETS];
@@ -416,6 +427,7 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   BeforeNetworkStartCallback before_network_start_callback_;
   ConnectedCallback connected_callback_;
   RequestHeadersCallback request_headers_callback_;
+  ResponseHeadersCallback early_response_headers_callback_;
   ResponseHeadersCallback response_headers_callback_;
 
   ConnectionAttempts connection_attempts_;

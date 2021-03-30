@@ -13,8 +13,6 @@ source_set("storage") {
     "backend_task_runner.h",
     "local_value_store_cache.cc",
     "local_value_store_cache.h",
-    "settings_namespace.cc",
-    "settings_namespace.h",
     "settings_observer.h",
     "settings_storage_quota_enforcer.cc",
     "settings_storage_quota_enforcer.h",
@@ -28,7 +26,11 @@ source_set("storage") {
     "weak_unlimited_settings_storage.h",
   ]
 
-  deps = [ "//extensions/common/api" ]
+  deps = [
+    "//extensions/browser/api",
+    "//extensions/common",
+    "//extensions/common/api",
+  ]
 
   public_deps = [ "//extensions/browser:browser_sources" ]
 }

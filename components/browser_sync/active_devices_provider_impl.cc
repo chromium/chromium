@@ -8,21 +8,11 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/stl_util.h"
 #include "components/browser_sync/active_devices_provider_impl.h"
+#include "components/browser_sync/browser_sync_switches.h"
 
 namespace browser_sync {
-
-// Enables filtering out inactive devices which haven't sent DeviceInfo update
-// recently (depending on the device's pulse_interval and an additional margin).
-const base::Feature kSyncFilterOutInactiveDevicesForSingleClient{
-    "SyncFilterOutInactiveDevicesForSingleClient",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
-// An additional threshold to consider devices as active. It extends device's
-// pulse interval to mitigate possible latency after DeviceInfo commit.
-const base::FeatureParam<base::TimeDelta> kSyncActiveDeviceMargin{
-    &kSyncFilterOutInactiveDevicesForSingleClient, "SyncActiveDeviceMargin",
-    base::TimeDelta::FromMinutes(30)};
 
 ActiveDevicesProviderImpl::ActiveDevicesProviderImpl(
     syncer::DeviceInfoTracker* device_info_tracker,
@@ -40,25 +30,43 @@ ActiveDevicesProviderImpl::~ActiveDevicesProviderImpl() {
 
 size_t ActiveDevicesProviderImpl::CountActiveDevicesIfAvailable() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::vector<std::unique_ptr<syncer::DeviceInfo>> all_devices =
-      device_info_tracker_->GetAllDeviceInfo();
+
+  return GetActiveDevices().size();
+}
+
+std::vector<std::string>
+ActiveDevicesProviderImpl::CollectFCMRegistrationTokensForInvalidations(
+    const std::string& local_cache_guid) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::vector<std::string> fcm_registration_tokens;
   if (!base::FeatureList::IsEnabled(
-          kSyncFilterOutInactiveDevicesForSingleClient)) {
-    return all_devices.size();
+          switches::kSyncUseFCMRegistrationTokensList)) {
+    return fcm_registration_tokens;
   }
 
-  size_t active_devices = 0;
-  for (const auto& device : all_devices) {
-    const base::Time expected_expiration_time =
-        device->last_updated_timestamp() + device->pulse_interval() +
-        kSyncActiveDeviceMargin.Get();
-    // If the device's expiration time hasn't been reached, then it is
-    // considered active device.
-    if (expected_expiration_time > clock_->Now()) {
-      active_devices++;
+  for (const std::unique_ptr<syncer::DeviceInfo>& device : GetActiveDevices()) {
+    if (!local_cache_guid.empty() && device->guid() == local_cache_guid) {
+      continue;
     }
+    if (device->fcm_registration_token().empty()) {
+      continue;
+    }
+
+    fcm_registration_tokens.push_back(device->fcm_registration_token());
   }
-  return active_devices;
+
+  // Do not send tokens if the list of active devices is huge. This is similar
+  // to the case when the client doesn't know about other devices, so return an
+  // empty list. Otherwise the client would return only a part of all active
+  // clients and other clients might miss an invalidation.
+  if (fcm_registration_tokens.size() >
+      static_cast<size_t>(
+          switches::kSyncFCMRegistrationTokensListMaxSize.Get())) {
+    return std::vector<std::string>();
+  }
+
+  return fcm_registration_tokens;
 }
 
 void ActiveDevicesProviderImpl::SetActiveDevicesChangedCallback(
@@ -75,6 +83,28 @@ void ActiveDevicesProviderImpl::OnDeviceInfoChange() {
   if (callback_) {
     callback_.Run();
   }
+}
+
+std::vector<std::unique_ptr<syncer::DeviceInfo>>
+ActiveDevicesProviderImpl::GetActiveDevices() const {
+  std::vector<std::unique_ptr<syncer::DeviceInfo>> all_devices =
+      device_info_tracker_->GetAllDeviceInfo();
+  if (!base::FeatureList::IsEnabled(
+          switches::kSyncFilterOutInactiveDevicesForSingleClient)) {
+    return all_devices;
+  }
+
+  base::EraseIf(
+      all_devices, [this](const std::unique_ptr<syncer::DeviceInfo>& device) {
+        const base::Time expected_expiration_time =
+            device->last_updated_timestamp() + device->pulse_interval() +
+            switches::kSyncActiveDeviceMargin.Get();
+        // If the device's expiration time hasn't been reached, then
+        // it is considered active device.
+        return expected_expiration_time <= clock_->Now();
+      });
+
+  return all_devices;
 }
 
 }  // namespace browser_sync

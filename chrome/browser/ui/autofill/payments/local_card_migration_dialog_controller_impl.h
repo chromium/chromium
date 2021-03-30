@@ -42,7 +42,7 @@ class LocalCardMigrationDialogControllerImpl
   // When migration is finished, update the credit card icon. Also passes
   // |tip_message|, and |migratable_credit_cards| to controller.
   void UpdateCreditCardIcon(
-      const base::string16& tip_message,
+      const std::u16string& tip_message,
       const std::vector<MigratableCreditCard>& migratable_credit_cards,
       AutofillClient::MigrationDeleteCardCallback delete_local_card_callback);
 
@@ -62,7 +62,7 @@ class LocalCardMigrationDialogControllerImpl
   LocalCardMigrationDialogState GetViewState() const override;
   const std::vector<MigratableCreditCard>& GetCardList() const override;
   const LegalMessageLines& GetLegalMessageLines() const override;
-  const base::string16& GetTipMessage() const override;
+  const std::u16string& GetTipMessage() const override;
   const std::string& GetUserEmail() const override;
   void OnSaveButtonClicked(
       const std::vector<std::string>& selected_cards_guids) override;
@@ -124,7 +124,7 @@ class LocalCardMigrationDialogControllerImpl
 
   // The message containing information from Google Payments. Shown in the
   // feedback dialogs after migration process is finished.
-  base::string16 tip_message_;
+  std::u16string tip_message_;
 
   // The user email shown in the dialogs.
   std::string user_email_;

@@ -5,11 +5,12 @@
 #ifndef PRINTING_BACKEND_PRINT_BACKEND_CUPS_H_
 #define PRINTING_BACKEND_PRINT_BACKEND_CUPS_H_
 
+#include <cups/cups.h>
+
 #include <memory>
 #include <string>
 
-#include "base/files/file_util.h"
-#include "printing/backend/cups_helper.h"
+#include "base/files/file_path.h"
 #include "printing/backend/print_backend.h"
 #include "printing/printing_export.h"
 #include "url/gurl.h"
@@ -23,10 +24,12 @@ class PrintBackendCUPS : public PrintBackend {
                    bool blocking,
                    const std::string& locale);
 
-  // This static function is exposed here for use in the tests.
+  // These static functions are exposed here for use in the tests.
   PRINTING_EXPORT static bool PrinterBasicInfoFromCUPS(
       const cups_dest_t& printer,
       PrinterBasicInfo* printer_info);
+  PRINTING_EXPORT static std::string PrinterDriverInfoFromCUPS(
+      const cups_dest_t& printer);
 
  private:
   struct DestinationDeleter {
@@ -34,7 +37,7 @@ class PrintBackendCUPS : public PrintBackend {
   };
   using ScopedDestination = std::unique_ptr<cups_dest_t, DestinationDeleter>;
 
-  ~PrintBackendCUPS() override {}
+  ~PrintBackendCUPS() override;
 
   // PrintBackend implementation.
   bool EnumeratePrinters(PrinterList* printer_list) override;

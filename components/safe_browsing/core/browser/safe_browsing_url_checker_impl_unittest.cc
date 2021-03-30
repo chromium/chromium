@@ -5,11 +5,12 @@
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include <memory>
 
+#include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "components/safe_browsing/core/common/test_task_environment.h"
 #include "components/safe_browsing/core/common/thread_utils.h"
@@ -51,9 +52,10 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
       return true;
     }
     if (!urls_delayed_callback_[url]) {
-      base::PostTask(
-          FROM_HERE, CreateTaskTraits(ThreadID::IO),
-          base::BindOnce(&MockSafeBrowsingDatabaseManager::OnCheckBrowseURLDone,
+      GetTaskRunner(ThreadID::IO)
+          ->PostTask(FROM_HERE,
+                     base::BindOnce(
+                         &MockSafeBrowsingDatabaseManager::OnCheckBrowseURLDone,
                          this, gurl, client));
     } else {
       // If delayed callback is set to true, store the client in |urls_client_|.
@@ -63,8 +65,8 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
     return false;
   }
 
-  bool CanCheckResourceType(
-      blink::mojom::ResourceType resource_type) const override {
+  bool CanCheckRequestDestination(
+      network::mojom::RequestDestination request_destination) const override {
     return true;
   }
 
@@ -92,9 +94,10 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
     std::string url = gurl.spec();
     DCHECK(base::Contains(urls_delayed_callback_, url));
     DCHECK_EQ(true, urls_delayed_callback_[url]);
-    base::PostTask(
-        FROM_HERE, CreateTaskTraits(ThreadID::IO),
-        base::BindOnce(&MockSafeBrowsingDatabaseManager::OnCheckBrowseURLDone,
+    GetTaskRunner(ThreadID::IO)
+        ->PostTask(FROM_HERE,
+                   base::BindOnce(
+                       &MockSafeBrowsingDatabaseManager::OnCheckBrowseURLDone,
                        this, gurl, urls_client_[url]));
   }
 
@@ -134,7 +137,7 @@ class MockUrlCheckerDelegate : public UrlCheckerDelegate {
         threat_types_(
             SBThreatTypeSet({safe_browsing::SB_THREAT_TYPE_URL_PHISHING})) {}
 
-  MOCK_METHOD1(MaybeDestroyPrerenderContents,
+  MOCK_METHOD1(MaybeDestroyNoStatePrefetchContents,
                void(base::OnceCallback<content::WebContents*()>));
   MOCK_METHOD5(StartDisplayingBlockingPageHelper,
                void(const security_interstitials::UnsafeResource&,
@@ -150,6 +153,8 @@ class MockUrlCheckerDelegate : public UrlCheckerDelegate {
   MOCK_METHOD0(GetUIManager, BaseUIManager*());
 
   bool IsUrlAllowlisted(const GURL& url) override { return false; }
+  void SetPolicyAllowlistDomains(
+      const std::vector<std::string>& allowlist_domains) override {}
   const SBThreatTypeSet& GetThreatTypes() override { return threat_types_; }
   SafeBrowsingDatabaseManager* GetDatabaseManager() override {
     return database_manager_;
@@ -166,15 +171,19 @@ class MockUrlCheckerDelegate : public UrlCheckerDelegate {
 class MockRealTimeUrlLookupService : public RealTimeUrlLookupService {
  public:
   MockRealTimeUrlLookupService()
-      : RealTimeUrlLookupService(/*url_loader_factory=*/nullptr,
-                                 /*cache_manager=*/nullptr,
-                                 /*identity_manager=*/nullptr,
-                                 /*sync_service=*/nullptr,
-                                 /*pref_service=*/nullptr,
-                                 ChromeUserPopulation::NOT_MANAGED,
-                                 /*is_under_advanced_protection=*/false,
-                                 /*is_off_the_record=*/false,
-                                 /*variations_service=*/nullptr) {}
+      : RealTimeUrlLookupService(
+            /*url_loader_factory=*/nullptr,
+            /*cache_manager=*/nullptr,
+            /*get_user_population_callback=*/base::BindRepeating([]() {
+              return ChromeUserPopulation();
+            }),
+            /*pref_service=*/nullptr,
+            /*token_fetcher=*/nullptr,
+            /*client_token_config_callback=*/base::BindRepeating([](bool) {
+              return false;
+            }),
+            /*is_off_the_record=*/false,
+            /*variations_service=*/nullptr) {}
   // Returns the threat type previously set by |SetThreatTypeForUrl|. It crashes
   // if the threat type for the |gurl| is not set in advance.
   void StartLookup(const GURL& gurl,
@@ -205,7 +214,8 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupService {
     threat_info.set_threat_type(threat_type);
     threat_info.set_verdict_type(verdict_type);
     *new_threat_info = threat_info;
-    base::PostTask(FROM_HERE, CreateTaskTraits(ThreadID::IO),
+    GetTaskRunner(ThreadID::IO)
+        ->PostTask(FROM_HERE,
                    base::BindOnce(std::move(response_callback),
                                   /* is_rt_lookup_successful */ true,
                                   /* is_cached_response */ is_cached_response_,
@@ -244,7 +254,7 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
         mock_web_contents_getter;
     return std::make_unique<SafeBrowsingUrlCheckerImpl>(
         net::HttpRequestHeaders(), /*load_flags=*/0,
-        static_cast<blink::mojom::ResourceType>(ResourceType::kMainFrame),
+        network::mojom::RequestDestination::kDocument,
         /*has_user_gesture=*/false, url_checker_delegate_,
         mock_web_contents_getter.Get(), real_time_lookup_enabled,
         /*can_rt_check_subresource_url=*/false, can_check_safe_browsing_db,

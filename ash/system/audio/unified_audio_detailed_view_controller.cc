@@ -9,8 +9,6 @@
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
 
-using chromeos::CrasAudioHandler;
-
 namespace ash {
 
 UnifiedAudioDetailedViewController::UnifiedAudioDetailedViewController(
@@ -31,7 +29,7 @@ views::View* UnifiedAudioDetailedViewController::CreateView() {
   return view_;
 }
 
-base::string16 UnifiedAudioDetailedViewController::GetAccessibleName() const {
+std::u16string UnifiedAudioDetailedViewController::GetAccessibleName() const {
   return l10n_util::GetStringUTF16(
       IDS_ASH_QUICK_SETTINGS_BUBBLE_AUDIO_SETTINGS_ACCESSIBLE_DESCRIPTION);
 }

@@ -9,6 +9,7 @@
 
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/test_data_creator.h"
+#include "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
 #include "components/sync/base/model_type.h"
 
 class PrefService;
@@ -22,8 +23,10 @@ class PersonalDataManager;
 // when the sync starts.
 class PersonalDataManagerCleaner {
  public:
-  PersonalDataManagerCleaner(PersonalDataManager* personal_data_manager,
-                             PrefService* pref_service);
+  PersonalDataManagerCleaner(
+      PersonalDataManager* personal_data_manager,
+      AlternativeStateNameMapUpdater* alternative_state_name_map_updater,
+      PrefService* pref_service);
   ~PersonalDataManagerCleaner();
   PersonalDataManagerCleaner(const PersonalDataManagerCleaner&) = delete;
   PersonalDataManagerCleaner& operator=(const PersonalDataManagerCleaner&) =
@@ -31,7 +34,7 @@ class PersonalDataManagerCleaner {
 
   // Applies address and credit card fixes and cleanups if the sync is enabled.
   // Also, logs address, credit card and offer startup metrics.
-  void CleanupData();
+  void CleanupDataAndNotifyPersonalDataObservers();
 
   // Applies address/credit card fixes and cleanups depending on the
   // |model_type|.
@@ -74,12 +77,6 @@ class PersonalDataManagerCleaner {
   // purposes.
   void ClearCreditCardNonSettingsOriginsForTesting() {
     ClearCreditCardNonSettingsOrigins();
-  }
-
-  // Setter method for |is_autofill_profile_cleanup_pending_| used for testing
-  // purposes.
-  void set_is_autofill_profile_cleanup_pending(bool value) {
-    is_autofill_profile_cleanup_pending_ = value;
   }
 #endif  // defined(UNIT_TEST)
 
@@ -151,6 +148,15 @@ class PersonalDataManagerCleaner {
 
   // The PrefService used by this instance.
   PrefService* const pref_service_ = nullptr;
+
+  // The AlternativeStateNameMapUpdater, used to populate
+  // AlternativeStateNameMap with the geographical state data.
+  AlternativeStateNameMapUpdater* const alternative_state_name_map_updater_ =
+      nullptr;
+
+  // base::WeakPtr ensures that the callback bound to the object is canceled
+  // when that object is destroyed.
+  base::WeakPtrFactory<PersonalDataManagerCleaner> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

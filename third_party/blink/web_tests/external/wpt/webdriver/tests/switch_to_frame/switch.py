@@ -2,7 +2,7 @@ import pytest
 
 import webdriver.protocol as protocol
 
-from webdriver import StaleElementReferenceException
+from webdriver import NoSuchElementException
 from webdriver.transport import Response
 
 from tests.support.asserts import assert_error, assert_same_element, assert_success
@@ -90,10 +90,27 @@ def test_frame_id_null(session, inline, iframe):
     response = switch_to_frame(session, None)
     assert_success(response)
 
-    with pytest.raises(StaleElementReferenceException):
+    with pytest.raises(NoSuchElementException):
         element2.text
-    with pytest.raises(StaleElementReferenceException):
+    with pytest.raises(NoSuchElementException):
         element1.text
 
     frame = session.find.css("iframe", all=False)
     assert_same_element(session, frame, frame1)
+
+
+def test_find_element_while_frame_is_still_loading(session, url):
+    session.timeouts.implicit = 5
+
+    frame_url = url("/webdriver/tests/support/html/subframe.html?pipe=trickle(d2)")
+    page_url = "<html><body><iframe src='{}'></iframe></body></html>".format(frame_url)
+
+    session.execute_script(
+        "document.documentElement.innerHTML = arguments[0];", args=[page_url])
+
+    frame1 = session.find.css("iframe", all=False)
+    session.switch_frame(frame1)
+
+    # Ensure that the is always a valid browsing context, and the element
+    # can be found eventually.
+    session.find.css("#delete", all=False)

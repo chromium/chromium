@@ -107,7 +107,6 @@ class USBDevice : public ScriptWrappable,
   wtf_size_t FindInterfaceIndex(uint8_t interface_number) const;
   wtf_size_t FindAlternateIndex(wtf_size_t interface_index,
                                 uint8_t alternate_setting) const;
-  bool IsProtectedInterfaceClass(wtf_size_t interface_index) const;
   bool EnsureNoDeviceChangeInProgress(ScriptPromiseResolver*) const;
   bool EnsureNoDeviceOrInterfaceChangeInProgress(ScriptPromiseResolver*) const;
   bool EnsureDeviceConfigured(ScriptPromiseResolver*) const;
@@ -130,9 +129,10 @@ class USBDevice : public ScriptWrappable,
                                 ScriptPromiseResolver*,
                                 bool success);
   void OnConfigurationSelected(bool success, wtf_size_t configuration_index);
-  void AsyncClaimInterface(wtf_size_t interface_index,
-                           ScriptPromiseResolver*,
-                           bool success);
+  void AsyncClaimInterface(
+      wtf_size_t interface_index,
+      ScriptPromiseResolver*,
+      device::mojom::blink::UsbClaimInterfaceResult result);
   void AsyncReleaseInterface(wtf_size_t interface_index,
                              ScriptPromiseResolver*,
                              bool success);

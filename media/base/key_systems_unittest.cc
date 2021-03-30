@@ -80,11 +80,6 @@ class TestKeySystemPropertiesBase : public KeySystemProperties {
     return requested_robustness.empty() ? EmeConfigRule::SUPPORTED
                                         : EmeConfigRule::NOT_SUPPORTED;
   }
-
-  EmeSessionTypeSupport GetPersistentUsageRecordSessionSupport()
-      const override {
-    return EmeSessionTypeSupport::NOT_SUPPORTED;
-  }
 };
 
 class AesKeySystemProperties : public TestKeySystemPropertiesBase {

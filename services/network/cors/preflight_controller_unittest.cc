@@ -25,7 +25,6 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/fake_test_cert_verifier_params_factory.h"
-#include "services/network/test/test_network_service_client.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
@@ -210,21 +209,6 @@ TEST(PreflightControllerCreatePreflightRequestTest, FetchWindowId) {
   EXPECT_EQ(request.fetch_window_id, preflight->fetch_window_id);
 }
 
-TEST(PreflightControllerCreatePreflightRequestTest, RenderFrameId) {
-  ResourceRequest request;
-  request.mode = mojom::RequestMode::kCors;
-  request.credentials_mode = mojom::CredentialsMode::kOmit;
-  request.request_initiator = url::Origin();
-  request.headers.SetHeader(net::HttpRequestHeaders::kContentType,
-                            "application/octet-stream");
-  request.render_frame_id = 99;
-
-  std::unique_ptr<ResourceRequest> preflight =
-      PreflightController::CreatePreflightRequestForTesting(request);
-
-  EXPECT_EQ(request.render_frame_id, preflight->render_frame_id);
-}
-
 TEST(PreflightControllerOptionsTest, CheckOptions) {
   base::test::TaskEnvironment task_environment_(
       base::test::TaskEnvironment::MainThreadType::IO);
@@ -237,14 +221,14 @@ TEST(PreflightControllerOptionsTest, CheckOptions) {
   preflight_controller.PerformPreflightCheck(
       base::BindOnce([](int, base::Optional<CorsErrorStatus>) {}), request,
       WithTrustedHeaderClient(false), false /* tainted */,
-      TRAFFIC_ANNOTATION_FOR_TESTS, &url_loader_factory, 0 /* process_id */,
-      net::IsolationInfo());
+      TRAFFIC_ANNOTATION_FOR_TESTS, &url_loader_factory, net::IsolationInfo(),
+      /*devtools_observer=*/mojo::NullRemote());
 
   preflight_controller.PerformPreflightCheck(
       base::BindOnce([](int, base::Optional<CorsErrorStatus>) {}), request,
       WithTrustedHeaderClient(true), false /* tainted */,
-      TRAFFIC_ANNOTATION_FOR_TESTS, &url_loader_factory, 0 /* process_id */,
-      net::IsolationInfo());
+      TRAFFIC_ANNOTATION_FOR_TESTS, &url_loader_factory, net::IsolationInfo(),
+      /*devtools_observer=*/mojo::NullRemote());
 
   ASSERT_EQ(2, url_loader_factory.NumPending());
   EXPECT_EQ(mojom::kURLLoadOptionAsCorsPreflight,
@@ -254,15 +238,22 @@ TEST(PreflightControllerOptionsTest, CheckOptions) {
             url_loader_factory.GetPendingRequest(1)->options);
 }
 
-class MockNetworkServiceClient : public TestNetworkServiceClient {
+class MockDevToolsObserver : public mojom::DevToolsObserver {
  public:
-  explicit MockNetworkServiceClient(
-      mojo::PendingReceiver<mojom::NetworkServiceClient> receiver)
-      : TestNetworkServiceClient(std::move(receiver)) {}
-  ~MockNetworkServiceClient() override = default;
+  explicit MockDevToolsObserver(
+      mojo::PendingReceiver<mojom::DevToolsObserver> receiver) {
+    receivers_.Add(this, std::move(receiver));
+  }
+  ~MockDevToolsObserver() override = default;
 
-  MockNetworkServiceClient(const MockNetworkServiceClient&) = delete;
-  MockNetworkServiceClient& operator=(const MockNetworkServiceClient&) = delete;
+  MockDevToolsObserver(const MockDevToolsObserver&) = delete;
+  MockDevToolsObserver& operator=(const MockDevToolsObserver&) = delete;
+
+  mojo::PendingRemote<mojom::DevToolsObserver> Bind() {
+    mojo::PendingRemote<mojom::DevToolsObserver> remote;
+    receivers_.Add(this, remote.InitWithNewPipeAndPassReceiver());
+    return remote;
+  }
 
   void WaitUntilRequestCompleted() {
     if (completed_)
@@ -289,10 +280,8 @@ class MockNetworkServiceClient : public TestNetworkServiceClient {
   }
 
  private:
-  // mojom::NetworkServiceClient:
+  // mojom::DevToolsObserver:
   void OnRawRequest(
-      int32_t process_id,
-      int32_t routing_id,
       const std::string& devtools_request_id,
       const net::CookieAccessResultList& cookies_with_access_result,
       std::vector<network::mojom::HttpRawHeaderPairPtr> headers,
@@ -300,17 +289,14 @@ class MockNetworkServiceClient : public TestNetworkServiceClient {
     on_raw_request_called_ = true;
   }
   void OnRawResponse(
-      int32_t process_id,
-      int32_t routing_id,
       const std::string& devtools_request_id,
       const net::CookieAndLineAccessResultList& cookies_with_access_result,
       std::vector<network::mojom::HttpRawHeaderPairPtr> headers,
-      const base::Optional<std::string>& raw_response_headers) override {
+      const base::Optional<std::string>& raw_response_headers,
+      network::mojom::IPAddressSpace resource_address_space) override {
     on_raw_response_called_ = true;
   }
   void OnCorsPreflightRequest(
-      int32_t process_id,
-      int32_t routing_id,
       const base::UnguessableToken& devtool_request_id,
       const network::ResourceRequest& request,
       const GURL& initiator_url,
@@ -319,16 +305,12 @@ class MockNetworkServiceClient : public TestNetworkServiceClient {
     initiator_devtools_request_id_ = initiator_devtools_request_id;
   }
   void OnCorsPreflightResponse(
-      int32_t process_id,
-      int32_t routing_id,
       const base::UnguessableToken& devtool_request_id,
       const GURL& url,
       network::mojom::URLResponseHeadPtr head) override {
     preflight_response_ = std::move(head);
   }
   void OnCorsPreflightRequestCompleted(
-      int32_t process_id,
-      int32_t routing_id,
       const base::UnguessableToken& devtool_request_id,
       const network::URLLoaderCompletionStatus& status) override {
     completed_ = true;
@@ -336,6 +318,22 @@ class MockNetworkServiceClient : public TestNetworkServiceClient {
     if (wait_for_completed_)
       std::move(wait_for_completed_).Run();
   }
+  void OnCorsError(const base::Optional<std::string>& devtool_request_id,
+                   const base::Optional<::url::Origin>& initiator_origin,
+                   const GURL& url,
+                   const network::CorsErrorStatus& status) override {}
+  void Clone(mojo::PendingReceiver<DevToolsObserver> observer) override {
+    receivers_.Add(this, std::move(observer));
+  }
+  void OnPrivateNetworkRequest(
+      const base::Optional<std::string>& devtool_request_id,
+      const GURL& url,
+      bool is_warning,
+      network::mojom::IPAddressSpace resource_address_space,
+      network::mojom::ClientSecurityStatePtr client_security_state) override {}
+  void OnTrustTokenOperationDone(
+      const std::string& devtool_request_id,
+      network::mojom::TrustTokenOperationResultPtr result) override {}
 
   bool completed_ = false;
   base::OnceClosure wait_for_completed_;
@@ -345,6 +343,8 @@ class MockNetworkServiceClient : public TestNetworkServiceClient {
   network::mojom::URLResponseHeadPtr preflight_response_;
   base::Optional<network::URLLoaderCompletionStatus> preflight_status_;
   std::string initiator_devtools_request_id_;
+
+  mojo::ReceiverSet<mojom::DevToolsObserver> receivers_;
 };
 
 class PreflightControllerTest : public testing::Test {
@@ -376,6 +376,8 @@ class PreflightControllerTest : public testing::Test {
     // the URLLoader would create a CORS-preflight for the preflight request.
     params->disable_web_security = true;
     params->is_corb_enabled = false;
+    devtools_observer_ = std::make_unique<MockDevToolsObserver>(
+        params->devtools_observer.InitWithNewPipeAndPassReceiver());
     network_context_remote_->CreateURLLoaderFactory(
         url_loader_factory_remote_.BindNewPipeAndPassReceiver(),
         std::move(params));
@@ -405,7 +407,7 @@ class PreflightControllerTest : public testing::Test {
                        base::Unretained(this)),
         request, WithTrustedHeaderClient(false), tainted,
         TRAFFIC_ANNOTATION_FOR_TESTS, url_loader_factory_remote_.get(),
-        0 /* process_id */, isolation_info);
+        isolation_info, devtools_observer_->Bind());
     run_loop_->Run();
   }
 
@@ -423,7 +425,7 @@ class PreflightControllerTest : public testing::Test {
   base::Optional<CorsErrorStatus> status() { return status_; }
   base::Optional<CorsErrorStatus> success() { return base::nullopt; }
   size_t access_count() { return access_count_; }
-  NetworkService* network_service() { return network_service_.get(); }
+  MockDevToolsObserver* devtools_observer() { return devtools_observer_.get(); }
 
  private:
   void SetUp() override {
@@ -474,6 +476,7 @@ class PreflightControllerTest : public testing::Test {
   std::unique_ptr<base::RunLoop> run_loop_;
 
   std::unique_ptr<NetworkService> network_service_;
+  std::unique_ptr<MockDevToolsObserver> devtools_observer_;
   mojo::Remote<mojom::NetworkContext> network_context_remote_;
   mojo::Remote<mojom::URLLoaderFactory> url_loader_factory_remote_;
 
@@ -631,14 +634,6 @@ TEST_F(PreflightControllerTest, CheckResponseWithNullHeaders) {
 }
 
 TEST_F(PreflightControllerTest, DevToolsEvents) {
-  mojo::PendingRemote<network::mojom::NetworkServiceClient>
-      network_service_client_remote;
-  std::unique_ptr<MockNetworkServiceClient> network_service_client =
-      std::make_unique<MockNetworkServiceClient>(
-          network_service_client_remote.InitWithNewPipeAndPassReceiver());
-  network_service()->SetClient(std::move(network_service_client_remote),
-                               network::mojom::NetworkServiceParams::New());
-
   ResourceRequest request;
   request.mode = mojom::RequestMode::kCors;
   request.credentials_mode = mojom::CredentialsMode::kOmit;
@@ -654,20 +649,19 @@ TEST_F(PreflightControllerTest, DevToolsEvents) {
   EXPECT_EQ(1u, access_count());
 
   // Check the DevTools event results.
-  network_service_client->WaitUntilRequestCompleted();
-  EXPECT_TRUE(network_service_client->on_raw_request_called());
-  EXPECT_TRUE(network_service_client->on_raw_response_called());
-  ASSERT_TRUE(network_service_client->preflight_request().has_value());
-  EXPECT_EQ(request.url, network_service_client->preflight_request()->url);
-  EXPECT_EQ("OPTIONS", network_service_client->preflight_request()->method);
-  ASSERT_TRUE(network_service_client->preflight_response());
-  ASSERT_TRUE(network_service_client->preflight_response()->headers);
+  devtools_observer()->WaitUntilRequestCompleted();
+  EXPECT_TRUE(devtools_observer()->on_raw_request_called());
+  EXPECT_TRUE(devtools_observer()->on_raw_response_called());
+  ASSERT_TRUE(devtools_observer()->preflight_request().has_value());
+  EXPECT_EQ(request.url, devtools_observer()->preflight_request()->url);
+  EXPECT_EQ("OPTIONS", devtools_observer()->preflight_request()->method);
+  ASSERT_TRUE(devtools_observer()->preflight_response());
+  ASSERT_TRUE(devtools_observer()->preflight_response()->headers);
   EXPECT_EQ(
-      200,
-      network_service_client->preflight_response()->headers->response_code());
-  ASSERT_TRUE(network_service_client->preflight_status().has_value());
-  EXPECT_EQ(net::OK, network_service_client->preflight_status()->error_code);
-  EXPECT_EQ("TEST", network_service_client->initiator_devtools_request_id());
+      200, devtools_observer()->preflight_response()->headers->response_code());
+  ASSERT_TRUE(devtools_observer()->preflight_status().has_value());
+  EXPECT_EQ(net::OK, devtools_observer()->preflight_status()->error_code);
+  EXPECT_EQ("TEST", devtools_observer()->initiator_devtools_request_id());
 }
 
 }  // namespace

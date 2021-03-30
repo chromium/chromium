@@ -83,7 +83,8 @@ VideoTutorialServiceFactory::BuildServiceInstanceFor(
       SystemNetworkContextManager::GetInstance()->GetSharedURLLoaderFactory();
 
   base::Version version = version_info::GetVersion();
-  std::string channel_name = chrome::GetChannelName();
+  std::string channel_name =
+      chrome::GetChannelName(chrome::WithExtendedStable(true));
   std::string client_version =
       base::StringPrintf("%d.%d.%d.%s.chrome",
                          version.components()[0],  // Major

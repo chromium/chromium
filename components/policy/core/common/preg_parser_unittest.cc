@@ -148,9 +148,8 @@ TEST_F(PRegParserTest, SubstringRootInvalid) {
 
   // No data should be loaded for partial roots ("Aa/Bb/C").
   RegistryDict dict1;
-  ASSERT_TRUE(preg_parser::ReadFile(
-      test_file, base::ASCIIToUTF16("SOFTWARE\\Policies\\Chro"), &dict1,
-      &status));
+  ASSERT_TRUE(preg_parser::ReadFile(test_file, u"SOFTWARE\\Policies\\Chro",
+                                    &dict1, &status));
   EXPECT_TRUE(RegistryDictEquals(dict1, empty));
 
   // Safety check with kRegistryKey (dict should not be empty).

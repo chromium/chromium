@@ -1,0 +1,68 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+option java_outer_classname = "PageTopicsModelMetadataProto";
+
+package optimization_guide.proto;
+
+enum PageTopicsSupportedOutput {
+  PAGE_TOPICS_SUPPORTED_OUTPUT_UNKNOWN = 0;
+  // Supports evaluating whether page content is FLoC-protected.
+  PAGE_TOPICS_SUPPORTED_OUTPUT_FLOC_PROTECTED = 1;
+  // Supports evaluating categories of page content.
+  PAGE_TOPICS_SUPPORTED_OUTPUT_CATEGORIES = 2;
+}
+
+message PageTopicsFlocProtectedPostprocessingParams {
+  // The name of the category to evaluate whether page content is
+  // FLoC-protected.
+  optional string category_name = 1;
+}
+
+message PageTopicsCategoryPostprocessingParams {
+  // Output at most max_categories, and only those with min_category_weight.
+  optional int32 max_categories = 1;
+  // The minimum weight a category must have for it to be in the output.
+  optional float min_category_weight = 2;
+  // The minimum weight after category weights are normalized that the top N
+  // categories must have.
+  optional float min_normalized_weight_within_top_n = 3;
+  // The minimum weight for the NONE label has to be to remove all labels.
+  optional float min_none_weight = 4;
+}
+
+message PageTopicsOutputPostprocessingParams {
+  // The parameters to use to post-process how FLoC-protected the page content
+  // is.
+  //
+  // Will only be included if PAGE_TOPICS_SUPPORTED_OUTPUT_FLOC_PROTECTED is
+  // supported by the model.
+  optional PageTopicsFlocProtectedPostprocessingParams floc_protected_params =
+      1;
+  // The parameters to use to post-process categories.
+  //
+  // Will only be included if PAGE_TOPICS_SUPPORTED_OUTPUT_CATEGORIES is
+  // supported by the model.
+  optional PageTopicsCategoryPostprocessingParams category_params = 2;
+}
+
+message PageTopicsModelMetadata {
+  // The version of the model sent by the server, and thus, will only be
+  // populated by the server.
+  optional int64 version = 1;
+  // The supported output.
+  //
+  // If sent by the client, this represents the output that the client knows
+  // how to support. If sent by the server, this represents the outputs of the
+  // model.
+  repeated PageTopicsSupportedOutput supported_output = 2;
+  // A set of postprocessing parameters per supported output and will only be
+  // populated by the server.
+  optional PageTopicsOutputPostprocessingParams output_postprocessing_params =
+      3;
+}

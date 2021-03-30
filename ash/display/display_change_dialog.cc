@@ -32,8 +32,8 @@ void RecordDisplayChangeDialogHistogram(bool accepted) {
 }  // namespace
 
 DisplayChangeDialog::DisplayChangeDialog(
-    base::string16 window_title,
-    base::string16 timeout_message_with_placeholder,
+    std::u16string window_title,
+    std::u16string timeout_message_with_placeholder,
     base::OnceClosure on_accept_callback,
     CancelCallback on_cancel_callback)
     : timeout_message_with_placeholder_(
@@ -96,8 +96,8 @@ void DisplayChangeDialog::OnTimerTick() {
   label_->SetText(GetRevertTimeoutString());
 }
 
-base::string16 DisplayChangeDialog::GetRevertTimeoutString() const {
-  const base::string16 timer = ui::TimeFormat::Simple(
+std::u16string DisplayChangeDialog::GetRevertTimeoutString() const {
+  const std::u16string timer = ui::TimeFormat::Simple(
       ui::TimeFormat::FORMAT_DURATION, ui::TimeFormat::LENGTH_LONG,
       base::TimeDelta::FromSeconds(timeout_count_));
   return base::ReplaceStringPlaceholders(timeout_message_with_placeholder_,

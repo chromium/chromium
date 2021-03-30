@@ -28,9 +28,9 @@
 
 // ABSL_BLOCK_TAIL_CALL_OPTIMIZATION
 //
-// Instructs the compiler to avoid optimizing tail-call recursion. Use of this
-// macro is useful when you wish to preserve the existing function order within
-// a stack trace for logging, debugging, or profiling purposes.
+// Instructs the compiler to avoid optimizing tail-call recursion. This macro is
+// useful when you wish to preserve the existing function order within a stack
+// trace for logging, debugging, or profiling purposes.
 //
 // Example:
 //

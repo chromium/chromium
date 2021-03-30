@@ -5,9 +5,10 @@
 #ifndef COMPONENTS_FAVICON_CORE_FAVICON_DRIVER_H_
 #define COMPONENTS_FAVICON_CORE_FAVICON_DRIVER_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 #include "components/favicon/core/favicon_driver_observer.h"
 
 class GURL;

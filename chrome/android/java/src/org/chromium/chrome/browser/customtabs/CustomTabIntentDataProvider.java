@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import android.app.Activity;
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.content.Context;
@@ -37,10 +38,9 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.chrome.browser.version.ChromeVersionInfo;
@@ -185,13 +185,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     public static final String EXTRA_HIDE_VISITS_FROM_CCT =
             "androidx.browser.customtabs.extra.HIDE_VISITS_FROM_CCT";
 
-    /**
-     * Extra used to provide a PendingIntent that we can launch to focus the client.
-     * TODO(peconn): Move to AndroidX.
-     */
-    private static final String EXTRA_FOCUS_INTENT =
-            "androidx.browser.customtabs.extra.FOCUS_INTENT";
-
     private static final String EXTRA_TWA_DISCLOSURE_UI =
             "androidx.browser.trusted.extra.DISCLOSURE_VERSION";
 
@@ -204,7 +197,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             + "To make locally-built Chrome a first-party app, sign with release-test "
             + "signing keys and run on userdebug devices. See use_signing_keys GN arg.";
 
-    private static final String EXPERIMENT_IDS =
+    // Extra whose value is an array of ints that is supplied to
+    // SyntheticTrialRegistry::RegisterExternalExperiments().
+    public static final String EXPERIMENT_IDS =
             "org.chromium.chrome.browser.customtabs.AGA_EXPERIMENT_IDS";
 
     private final Intent mIntent;
@@ -240,7 +235,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     private PendingIntent mRemoteViewsPendingIntent;
     // OnFinished listener for PendingIntents. Used for testing only.
     private PendingIntent.OnFinished mOnFinished;
-    private PendingIntent mFocusIntent;
 
     /** Whether this CustomTabActivity was explicitly started by another Chrome Activity. */
     private final boolean mIsOpenedByChrome;
@@ -364,7 +358,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 IntentUtils.safeGetBooleanExtra(intent, EXTRA_DISABLE_DOWNLOAD_BUTTON, false);
 
         mTranslateLanguage = IntentUtils.safeGetStringExtra(intent, EXTRA_TRANSLATE_LANGUAGE);
-        mFocusIntent = IntentUtils.safeGetParcelableExtra(intent, EXTRA_FOCUS_INTENT);
         // Import the {@link ScreenOrientation}.
         mDefaultOrientation = convertOrientationType(IntentUtils.safeGetIntExtra(intent,
                 TrustedWebActivityIntentBuilder.EXTRA_SCREEN_ORIENTATION,
@@ -387,14 +380,14 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     /**
      * Triggers the client-defined action when the user clicks a custom menu item.
-     * @param activity The {@link ChromeActivity} to use for sending the {@link PendingIntent}.
+     * @param activity The {@link Activity} to use for sending the {@link PendingIntent}.
      * @param menuIndex The index that the menu item is shown in the result of
      *                  {@link #getMenuTitles()}.
      * @param url The URL to attach as additional data to the {@link PendingIntent}.
      * @param title The title to attach as additional data to the {@link PendingIntent}.
      */
     public void clickMenuItemWithUrlAndTitle(
-            ChromeActivity activity, int menuIndex, String url, String title) {
+            Activity activity, int menuIndex, String url, String title) {
         Intent addedIntent = new Intent();
         addedIntent.setData(Uri.parse(url));
         addedIntent.putExtra(Intent.EXTRA_SUBJECT, title);
@@ -441,7 +434,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
      */
     private void retrieveCustomButtons(Intent intent, Context context) {
         assert mCustomButtonParams == null;
-        mCustomButtonParams = CustomButtonParams.fromIntent(context, intent);
+        mCustomButtonParams = CustomButtonParamsImpl.fromIntent(context, intent);
         for (CustomButtonParams params : mCustomButtonParams) {
             if (!params.showOnToolbar()) {
                 mBottombarButtons.add(params);
@@ -475,12 +468,10 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         int shareState = IntentUtils.safeGetIntExtra(
                 intent, CustomTabsIntent.EXTRA_SHARE_STATE, CustomTabsIntent.SHARE_STATE_DEFAULT);
         if (shareState == CustomTabsIntent.SHARE_STATE_ON
-                || (shareState == CustomTabsIntent.SHARE_STATE_DEFAULT
-                        && CachedFeatureFlags.isEnabled(
-                                ChromeFeatureList.SHARE_BY_DEFAULT_IN_CCT))) {
+                || shareState == CustomTabsIntent.SHARE_STATE_DEFAULT) {
             if (mToolbarButtons.isEmpty()) {
                 mToolbarButtons.add(
-                        CustomButtonParams.createShareButton(context, getToolbarColor()));
+                        CustomButtonParamsImpl.createShareButton(context, getToolbarColor()));
                 logShareOptionLocation(ShareOptionLocation.TOOLBAR);
             } else if (mMenuEntries.isEmpty()) {
                 mShowShareItemInMenu = true;
@@ -828,12 +819,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             // Catch unparcelling errors.
             return null;
         }
-    }
-
-    @Override
-    @Nullable
-    public PendingIntent getFocusIntent() {
-        return mFocusIntent;
     }
 
     @TwaDisclosureUi

@@ -188,10 +188,10 @@ TEST_F(GraphicsLayerTest, ContentsLayer) {
   FakeGraphicsLayerClient client;
   GraphicsLayer graphics_layer(client);
   auto contents_layer = cc::Layer::Create();
-  graphics_layer.SetContentsToCcLayer(contents_layer, true);
+  graphics_layer.SetContentsToCcLayer(contents_layer);
   EXPECT_TRUE(graphics_layer.HasContentsLayer());
   EXPECT_EQ(contents_layer.get(), graphics_layer.ContentsLayer());
-  graphics_layer.SetContentsToCcLayer(nullptr, true);
+  graphics_layer.SetContentsToCcLayer(nullptr);
   EXPECT_FALSE(graphics_layer.HasContentsLayer());
   EXPECT_EQ(nullptr, graphics_layer.ContentsLayer());
 }

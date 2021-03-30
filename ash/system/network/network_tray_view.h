@@ -29,14 +29,14 @@ class NetworkTrayView : public TrayItemView,
 
   NetworkTrayView(Shelf* shelf, ActiveNetworkIcon::Type type);
 
-  base::string16 GetAccessibleNameString() const;
+  std::u16string GetAccessibleNameString() const;
 
   const char* GetClassName() const override;
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
-  base::string16 GetTooltipText(const gfx::Point& p) const override;
+  std::u16string GetTooltipText(const gfx::Point& p) const override;
 
   // TrayItemView:
   void HandleLocaleChange() override;
@@ -63,15 +63,15 @@ class NetworkTrayView : public TrayItemView,
 
   // The name provided by GetAccessibleNodeData, which includes the network
   // name and connection state.
-  base::string16 accessible_name_;
+  std::u16string accessible_name_;
 
   // The description provided by GetAccessibleNodeData. For wifi networks this
   // is the signal strength of the network. Otherwise it is empty.
-  base::string16 accessible_description_;
+  std::u16string accessible_description_;
 
   // The tooltip for the icon. Includes the network name and signal strength
   // (for wireless networks).
-  base::string16 tooltip_;
+  std::u16string tooltip_;
 
   DISALLOW_COPY_AND_ASSIGN(NetworkTrayView);
 };

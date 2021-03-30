@@ -81,11 +81,11 @@ ConfirmInfoBar::~ConfirmInfoBar() {
 void ConfirmInfoBar::Layout() {
   InfoBarView::Layout();
 
-  int x = StartX();
+  int x = GetStartX();
   Views views;
   views.push_back(label_);
   views.push_back(link_);
-  AssignWidths(&views, std::max(0, EndX() - x - NonLabelWidth()));
+  AssignWidths(&views, std::max(0, GetEndX() - x - NonLabelWidth()));
 
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
 
@@ -105,7 +105,7 @@ void ConfirmInfoBar::Layout() {
   if (cancel_button_)
     cancel_button_->SetPosition(gfx::Point(x, OffsetY(cancel_button_)));
 
-  link_->SetPosition(gfx::Point(EndX() - link_->width(), OffsetY(link_)));
+  link_->SetPosition(gfx::Point(GetEndX() - link_->width(), OffsetY(link_)));
 }
 
 void ConfirmInfoBar::OkButtonPressed() {
@@ -126,7 +126,7 @@ ConfirmInfoBarDelegate* ConfirmInfoBar::GetDelegate() {
   return delegate()->AsConfirmInfoBarDelegate();
 }
 
-int ConfirmInfoBar::ContentMinimumWidth() const {
+int ConfirmInfoBar::GetContentMinimumWidth() const {
   return label_->GetMinimumSize().width() + link_->GetMinimumSize().width() +
          NonLabelWidth();
 }

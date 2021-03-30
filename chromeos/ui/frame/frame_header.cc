@@ -18,6 +18,8 @@
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/native_widget_aura.h"
 #include "ui/views/widget/widget.h"
@@ -68,6 +70,103 @@ gfx::Rect GetAvailableTitleBounds(const views::View* left_view,
 
 }  // namespace
 
+FrameHeader::FrameAnimatorView::FrameAnimatorView(views::View* parent)
+    : parent_(parent) {
+  SetPaintToLayer(ui::LAYER_NOT_DRAWN);
+  parent_->AddChildViewAt(this, 0);
+  parent_->AddObserver(this);
+}
+
+FrameHeader::FrameAnimatorView::~FrameAnimatorView() {
+  StopAnimation();
+  // A child view should always be removed first.
+  parent_->RemoveObserver(this);
+}
+
+void FrameHeader::FrameAnimatorView::StartAnimation(base::TimeDelta duration) {
+  aura::Window* window =
+      parent_->GetWidget() ? parent_->GetWidget()->GetNativeWindow() : nullptr;
+  if (layer_owner_ || !window ||
+      window->layer()->GetAnimator()->is_animating()) {
+    // If the frame animation is already running or the widget
+    // hasn't been initialized yet, just update the content of the
+    // new layer.
+    parent_->SchedulePaint();
+    return;
+  }
+
+  // Make sure the this view is at the bottom of root view's children.
+  parent_->ReorderChildView(this, 0);
+
+  std::unique_ptr<ui::LayerTreeOwner> old_layer_owner =
+      std::make_unique<ui::LayerTreeOwner>(window->RecreateLayer());
+  ui::Layer* old_layer = old_layer_owner->root();
+  ui::Layer* new_layer = window->layer();
+  new_layer->SetName(old_layer->name());
+  old_layer->SetName(old_layer->name() + ":Old");
+  old_layer->SetTransform(gfx::Transform());
+  // Layer in maximized / fullscreen / snapped state is set to
+  // opaque, which can prevent resterizing the new layer immediately.
+  old_layer->SetFillsBoundsOpaquely(false);
+
+  layer_owner_ = std::move(old_layer_owner);
+
+  AddLayerBeneathView(old_layer);
+
+  // The old layer is on top and should fade out.
+  old_layer->SetOpacity(1.f);
+  new_layer->SetOpacity(1.f);
+  {
+    ui::ScopedLayerAnimationSettings settings(old_layer->GetAnimator());
+    settings.SetPreemptionStrategy(
+        ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
+    settings.AddObserver(this);
+    settings.SetTransitionDuration(duration);
+    old_layer->SetOpacity(0.f);
+    settings.SetTweenType(gfx::Tween::EASE_OUT);
+  }
+}
+
+std::unique_ptr<ui::Layer> FrameHeader::FrameAnimatorView::RecreateLayer() {
+  // A layer may be recreated for another animation (maximize/restore).
+  // Just cancel the animation if that happens during animation.
+  StopAnimation();
+  return views::View::RecreateLayer();
+}
+
+void FrameHeader::FrameAnimatorView::OnChildViewReordered(
+    views::View* observed_view,
+    views::View* child) {
+  // Stop animation if the child view order has changed during animation.
+  StopAnimation();
+}
+
+void FrameHeader::FrameAnimatorView::OnViewBoundsChanged(
+    views::View* observed_view) {
+  // Stop animation if the frame size changed during animation.
+  StopAnimation();
+  SetBoundsRect(parent_->GetLocalBounds());
+}
+
+void FrameHeader::FrameAnimatorView::OnImplicitAnimationsCompleted() {
+  // TODO(crbug.com/1172694): Remove this DCHECK if this is indeed the cause.
+  DCHECK(layer_owner_);
+  if (layer_owner_) {
+    RemoveLayerBeneathView(layer_owner_->root());
+    layer_owner_.reset();
+  }
+}
+
+void FrameHeader::FrameAnimatorView::StopAnimation() {
+  if (layer_owner_) {
+    layer_owner_->root()->GetAnimator()->StopAnimating();
+    layer_owner_.reset();
+  }
+}
+
+BEGIN_METADATA(FrameHeader, FrameAnimatorView, views::View)
+END_METADATA
+
 ///////////////////////////////////////////////////////////////////////////////
 // FrameHeader, public:
 
@@ -88,111 +187,6 @@ int FrameHeader::GetMinimumHeaderWidth() const {
   return GetTitleBounds().x() +
          caption_button_container_->GetMinimumSize().width();
 }
-
-// An invisible view that drives the frame's animation. This holds the animating
-// layer as a layer beneath this view so that it's behind all other child layers
-// of the window to avoid hiding their contents.
-class FrameHeader::FrameAnimatorView : public views::View,
-                                       public views::ViewObserver,
-                                       public ui::ImplicitAnimationObserver {
- public:
-  FrameAnimatorView(views::View* parent)
-      : parent_(parent) {
-    SetPaintToLayer(ui::LAYER_NOT_DRAWN);
-    parent_->AddChildViewAt(this, 0);
-    parent_->AddObserver(this);
-  }
-  FrameAnimatorView(const FrameAnimatorView&) = delete;
-  FrameAnimatorView& operator=(const FrameAnimatorView&) = delete;
-  ~FrameAnimatorView() override {
-    StopAnimation();
-    // A child view should always be removed first.
-    parent_->RemoveObserver(this);
-  }
-
-  void StartAnimation(base::TimeDelta duration) {
-    aura::Window* window = parent_->GetWidget()
-                               ? parent_->GetWidget()->GetNativeWindow()
-                               : nullptr;
-    if (layer_owner_ || !window ||
-        window->layer()->GetAnimator()->is_animating()) {
-      // If the frame animation is already running or the widget
-      // hasn't been initialized yet, just update the content of the
-      // new layer.
-      parent_->SchedulePaint();
-      return;
-    }
-
-    // Make sure the this view is at the bottom of root view's children.
-    parent_->ReorderChildView(this, 0);
-
-    std::unique_ptr<ui::LayerTreeOwner> old_layer_owner =
-        std::make_unique<ui::LayerTreeOwner>(window->RecreateLayer());
-    ui::Layer* old_layer = old_layer_owner->root();
-    ui::Layer* new_layer = window->layer();
-    new_layer->SetName(old_layer->name());
-    old_layer->SetName(old_layer->name() + ":Old");
-    old_layer->SetTransform(gfx::Transform());
-    // Layer in maximized / fullscreen / snapped state is set to
-    // opaque, which can prevent resterizing the new layer immediately.
-    old_layer->SetFillsBoundsOpaquely(false);
-
-    layer_owner_ = std::move(old_layer_owner);
-
-    AddLayerBeneathView(old_layer);
-
-    // The old layer is on top and should fade out.
-    old_layer->SetOpacity(1.f);
-    new_layer->SetOpacity(1.f);
-    {
-      ui::ScopedLayerAnimationSettings settings(old_layer->GetAnimator());
-      settings.SetPreemptionStrategy(
-          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-      settings.AddObserver(this);
-      settings.SetTransitionDuration(duration);
-      old_layer->SetOpacity(0.f);
-      settings.SetTweenType(gfx::Tween::EASE_OUT);
-    }
-  }
-
-  // views::Views:
-  const char* GetClassName() const override { return "FrameAnimatorView"; }
-  std::unique_ptr<ui::Layer> RecreateLayer() override {
-    // A layer may be recreated for another animation (maximize/restore).
-    // Just cancel the animation if that happens during animation.
-    StopAnimation();
-    return views::View::RecreateLayer();
-  }
-
-  // ViewObserver::
-  void OnChildViewReordered(views::View* observed_view,
-                            views::View* child) override {
-    // Stop animation if the child view order has changed during animation.
-    StopAnimation();
-  }
-  void OnViewBoundsChanged(views::View* observed_view) override {
-    // Stop animation if the frame size changed during animation.
-    StopAnimation();
-    SetBoundsRect(parent_->GetLocalBounds());
-  }
-
-  // ui::ImplicitAnimationObserver overrides:
-  void OnImplicitAnimationsCompleted() override {
-    RemoveLayerBeneathView(layer_owner_->root());
-    layer_owner_ = nullptr;
-  }
-
- private:
-  void StopAnimation() {
-    if (layer_owner_) {
-      layer_owner_->root()->GetAnimator()->StopAnimating();
-      layer_owner_ = nullptr;
-    }
-  }
-
-  views::View* parent_;
-  std::unique_ptr<ui::LayerTreeOwner> layer_owner_;
-};
 
 void FrameHeader::PaintHeader(gfx::Canvas* canvas) {
   painted_ = true;
@@ -237,7 +231,7 @@ void FrameHeader::SetPaintAsActive(bool paint_as_active) {
 
   caption_button_container_->SetPaintAsActive(paint_as_active);
   if (back_button_)
-    back_button_->set_paint_as_active(paint_as_active);
+    back_button_->SetPaintAsActive(paint_as_active);
   UpdateCaptionButtonColors();
 }
 
@@ -271,9 +265,13 @@ const chromeos::CaptionButtonModel* FrameHeader::GetCaptionButtonModel() const {
 }
 
 void FrameHeader::SetFrameTextOverride(
-    const base::string16& frame_text_override) {
+    const std::u16string& frame_text_override) {
   frame_text_override_ = frame_text_override;
   SchedulePaintForTitle();
+}
+
+SkPath FrameHeader::GetWindowMaskForFrameHeader(const gfx::Size& size) {
+  return SkPath();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -303,7 +301,7 @@ void FrameHeader::UpdateCaptionButtonColors() {
 }
 
 void FrameHeader::PaintTitleBar(gfx::Canvas* canvas) {
-  base::string16 text = frame_text_override_;
+  std::u16string text = frame_text_override_;
   views::WidgetDelegate* target_widget_delegate =
       target_widget_->widget_delegate();
   if (text.empty() && target_widget_delegate &&

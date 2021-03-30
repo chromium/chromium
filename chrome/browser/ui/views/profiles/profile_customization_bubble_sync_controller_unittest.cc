@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/profiles/profile_customization_bubble_sync_controller.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_syncable_service.h"
@@ -82,14 +83,17 @@ class ProfileCustomizationBubbleSyncControllerTest : public testing::Test {
     fake_theme_service_.DoSetTheme(nullptr, false);
   }
 
-  syncer::TestSyncService* test_sync_service() { return &test_sync_service_; }
-
-  void NotifyOnSyncStarted() {
-    theme_syncable_service_.NotifyOnSyncStartedForTesting();
+  void NotifyOnSyncStarted(bool waiting_for_extension_installation = false) {
+    theme_syncable_service_.NotifyOnSyncStartedForTesting(
+        waiting_for_extension_installation
+            ? ThemeSyncableService::ThemeSyncState::
+                  kWaitingForExtensionInstallation
+            : ThemeSyncableService::ThemeSyncState::kApplied);
   }
 
  protected:
   syncer::TestSyncService test_sync_service_;
+  base::HistogramTester histogram_tester_;
 
  private:
   FakeThemeService fake_theme_service_;
@@ -104,6 +108,7 @@ TEST_F(ProfileCustomizationBubbleSyncControllerTest,
 
   ApplyColorAndShowBubbleWhenNoValueSynced(show_bubble.Get());
   NotifyOnSyncStarted();
+  histogram_tester_.ExpectTotalCount("Profile.SyncCustomizationBubbleDelay", 1);
 }
 
 TEST_F(ProfileCustomizationBubbleSyncControllerTest,
@@ -114,6 +119,7 @@ TEST_F(ProfileCustomizationBubbleSyncControllerTest,
   test_sync_service_.SetDisableReasons(
       syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
   ApplyColorAndShowBubbleWhenNoValueSynced(show_bubble.Get());
+  histogram_tester_.ExpectTotalCount("Profile.SyncCustomizationBubbleDelay", 1);
 }
 
 TEST_F(ProfileCustomizationBubbleSyncControllerTest,
@@ -124,6 +130,7 @@ TEST_F(ProfileCustomizationBubbleSyncControllerTest,
   ApplyColorAndShowBubbleWhenNoValueSynced(show_bubble.Get());
   SetSyncedProfileColor();
   NotifyOnSyncStarted();
+  histogram_tester_.ExpectTotalCount("Profile.SyncCustomizationBubbleDelay", 1);
 }
 
 TEST_F(ProfileCustomizationBubbleSyncControllerTest,
@@ -134,6 +141,17 @@ TEST_F(ProfileCustomizationBubbleSyncControllerTest,
   ApplyColorAndShowBubbleWhenNoValueSynced(show_bubble.Get());
   SetSyncedProfileTheme();
   NotifyOnSyncStarted();
+  histogram_tester_.ExpectTotalCount("Profile.SyncCustomizationBubbleDelay", 1);
+}
+
+TEST_F(ProfileCustomizationBubbleSyncControllerTest,
+       ShouldNotShowWhenSyncGetsCustomThemeToInstall) {
+  base::MockCallback<base::OnceCallback<void(bool)>> show_bubble;
+  EXPECT_CALL(show_bubble, Run(false));
+
+  ApplyColorAndShowBubbleWhenNoValueSynced(show_bubble.Get());
+  NotifyOnSyncStarted(/*waiting_for_extension_installation=*/true);
+  histogram_tester_.ExpectTotalCount("Profile.SyncCustomizationBubbleDelay", 1);
 }
 
 TEST_F(ProfileCustomizationBubbleSyncControllerTest,
@@ -144,6 +162,7 @@ TEST_F(ProfileCustomizationBubbleSyncControllerTest,
   test_sync_service_.SetPassphraseRequired(true);
   ApplyColorAndShowBubbleWhenNoValueSynced(show_bubble.Get());
   test_sync_service_.FireStateChanged();
+  histogram_tester_.ExpectTotalCount("Profile.SyncCustomizationBubbleDelay", 1);
 }
 
 }  // namespace

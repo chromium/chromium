@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_PRINTING_PRINT_VIEW_MANAGER_BASE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
 #include "components/prefs/pref_member.h"
@@ -69,7 +69,7 @@ class PrintViewManagerBase : public content::NotificationObserver,
   void SystemDialogCancelled();
 #endif
 
-  base::string16 RenderSourceName();
+  std::u16string RenderSourceName();
 
   content::RenderFrameHost* GetPrintingRFHForTesting() const {
     return printing_rfh_;
@@ -89,6 +89,8 @@ class PrintViewManagerBase : public content::NotificationObserver,
   void UpdatePrintSettings(int32_t cookie,
                            base::Value job_settings,
                            UpdatePrintSettingsCallback callback) override;
+  void ScriptedPrint(mojom::ScriptedPrintParamsPtr params,
+                     ScriptedPrintCallback callback) override;
   void ShowInvalidPrinterSettingsError() override;
   void PrintingFailed(int32_t cookie) override;
 
@@ -133,11 +135,6 @@ class PrintViewManagerBase : public content::NotificationObserver,
 
   // Cancels the print job.
   void NavigationStopped() override;
-
-  // printing::PrintManager:
-  void OnScriptedPrint(content::RenderFrameHost* render_frame_host,
-                       const mojom::ScriptedPrintParams& params,
-                       IPC::Message* reply_msg) override;
 
   // IPC message handlers for service.
   void OnComposePdfDone(const gfx::Size& page_size,

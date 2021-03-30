@@ -9,8 +9,8 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chromeos/dbus/system_clock/system_clock_client.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -64,8 +64,8 @@ class DateTimeHandler : public ::settings::SettingsPageUIHandler,
   // Used to listen to changes to the system time zone detection policy.
   PrefChangeRegistrar local_state_pref_change_registrar_;
 
-  ScopedObserver<SystemClockClient, SystemClockClient::Observer>
-      scoped_observer_;
+  base::ScopedObservation<SystemClockClient, SystemClockClient::Observer>
+      scoped_observation_{this};
   base::WeakPtrFactory<DateTimeHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DateTimeHandler);

@@ -7,11 +7,11 @@
 
 #include <jni.h>
 #include <memory>
+#include <string>
 
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_view.h"
 
 namespace content {
@@ -33,6 +33,8 @@ class CardExpirationDateFixFlowViewAndroid
                     const base::android::JavaParamRef<jobject>& obj,
                     const base::android::JavaParamRef<jstring>& month,
                     const base::android::JavaParamRef<jstring>& year);
+  void OnUserDismiss(JNIEnv* env,
+                     const base::android::JavaParamRef<jobject>& obj);
   void PromptDismissed(JNIEnv* env,
                        const base::android::JavaParamRef<jobject>& obj);
 

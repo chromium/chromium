@@ -1043,6 +1043,9 @@ void JPEGImageDecoder::OnSetData(SegmentReader* data) {
   if (reader_)
     reader_->SetData(data);
 
+  if (allow_decode_to_yuv_)
+    return;
+
   allow_decode_to_yuv_ =
       // Incremental YUV decoding is not currently supported (crbug.com/943519).
       IsAllDataReceived() &&
@@ -1052,12 +1055,14 @@ void JPEGImageDecoder::OnSetData(SegmentReader* data) {
       // the color profile is known, and the subsampling is known.
       IsSizeAvailable() &&
       // YUV decoding to a smaller size is not supported.
-      reader_->Info()->scale_num == reader_->Info()->scale_denom &&
+      reader_ && reader_->Info()->scale_num == reader_->Info()->scale_denom &&
       // TODO(crbug.com/911246): Support color space transformations on planar
       // data.
       !ColorTransform() &&
-      // TODO(crbug.com/919627): Support 4:4:4 and 4:2:2 sub samplings.
-      GetYUVSubsampling() == cc::YUVSubsampling::k420;
+      // Only subsamplings 4:4:4, 4:2:2, and 4:2:0 are supported.
+      (GetYUVSubsampling() == cc::YUVSubsampling::k444 ||
+       GetYUVSubsampling() == cc::YUVSubsampling::k422 ||
+       GetYUVSubsampling() == cc::YUVSubsampling::k420);
 }
 
 void JPEGImageDecoder::SetDecodedSize(unsigned width, unsigned height) {
@@ -1293,6 +1298,7 @@ static bool OutputRawData(JPEGImageReader* reader, ImagePlanes* image_planes) {
   }
 
   info->output_scanline = std::min(info->output_scanline, info->output_height);
+  image_planes->SetHasCompleteScan();
   return true;
 }
 

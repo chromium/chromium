@@ -6,7 +6,7 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
-#include "chrome/browser/apps/app_service/extension_apps_chromeos.h"
+#include "chrome/browser/apps/app_service/publishers/extension_apps_chromeos.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/native_window_tracker.h"
 #include "chrome/common/chrome_features.h"
@@ -40,6 +40,7 @@ UninstallDialog::UninstallDialog(Profile* profile,
 
   switch (app_type) {
     case apps::mojom::AppType::kArc:
+    case apps::mojom::AppType::kBorealis:
     case apps::mojom::AppType::kPluginVm:
       break;
     case apps::mojom::AppType::kCrostini:

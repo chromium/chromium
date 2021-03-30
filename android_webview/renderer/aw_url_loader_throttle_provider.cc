@@ -18,7 +18,7 @@ namespace android_webview {
 
 AwURLLoaderThrottleProvider::AwURLLoaderThrottleProvider(
     blink::ThreadSafeBrowserInterfaceBrokerProxy* broker,
-    content::URLLoaderThrottleProviderType type)
+    blink::URLLoaderThrottleProviderType type)
     : type_(type) {
   DETACH_FROM_THREAD(thread_checker_);
   broker->GetInterface(safe_browsing_remote_.InitWithNewPipeAndPassReceiver());
@@ -34,7 +34,7 @@ AwURLLoaderThrottleProvider::AwURLLoaderThrottleProvider(
   }
 }
 
-std::unique_ptr<content::URLLoaderThrottleProvider>
+std::unique_ptr<blink::URLLoaderThrottleProvider>
 AwURLLoaderThrottleProvider::Clone() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (safe_browsing_remote_)
@@ -46,13 +46,13 @@ AwURLLoaderThrottleProvider::~AwURLLoaderThrottleProvider() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
-std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
+blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>>
 AwURLLoaderThrottleProvider::CreateThrottles(
     int render_frame_id,
     const blink::WebURLRequest& request) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
+  blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
 
   // Some throttles have already been added in the browser for frame resources.
   // Don't add them for frame requests.
@@ -60,12 +60,12 @@ AwURLLoaderThrottleProvider::CreateThrottles(
       blink::IsRequestDestinationFrame(request.GetRequestDestination());
 
   DCHECK(!is_frame_resource ||
-         type_ == content::URLLoaderThrottleProviderType::kFrame);
+         type_ == blink::URLLoaderThrottleProviderType::kFrame);
 
   if (!is_frame_resource) {
     if (safe_browsing_remote_)
       safe_browsing_.Bind(std::move(safe_browsing_remote_));
-    throttles.push_back(
+    throttles.emplace_back(
         std::make_unique<safe_browsing::RendererURLLoaderThrottle>(
             safe_browsing_.get(), render_frame_id));
   }

@@ -468,12 +468,9 @@ void InputController::DoLogAudioLevels(float level_dbfs,
   if (microphone_is_muted) {
     LogMicrophoneMuteResult(MICROPHONE_IS_MUTED);
     handler_->OnLog("AIC::OnData => (microphone is muted)");
-    // Return early if microphone is muted. No need to adding logs and UMA stats
-    // of audio levels if we know that the microphone is muted.
-    return;
+  } else {
+    LogMicrophoneMuteResult(MICROPHONE_IS_NOT_MUTED);
   }
-
-  LogMicrophoneMuteResult(MICROPHONE_IS_NOT_MUTED);
 
   std::string log_string = base::StringPrintf(
       "AIC::OnData => (average audio level=%.2f dBFS", level_dbfs);
@@ -482,7 +479,9 @@ void InputController::DoLogAudioLevels(float level_dbfs,
     log_string += " <=> low audio input level";
   handler_->OnLog(log_string + ")");
 
-  UpdateSilenceState(level_dbfs < kSilenceThresholdDBFS);
+  if (!microphone_is_muted) {
+    UpdateSilenceState(level_dbfs < kSilenceThresholdDBFS);
+  }
 
   log_string = base::StringPrintf("AIC::OnData => (microphone volume=%d%%",
                                   microphone_volume_percent);

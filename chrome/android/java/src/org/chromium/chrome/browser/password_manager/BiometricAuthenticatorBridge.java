@@ -16,6 +16,7 @@ import android.os.Build;
 import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.compat.ApiHelperForQ;
 import org.chromium.ui.base.WindowAndroid;
 
 class BiometricAuthenticatorBridge {
@@ -33,8 +34,9 @@ class BiometricAuthenticatorBridge {
     @CalledByNative
     public @BiometricsAvailability int canAuthenticate() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            BiometricManager biometricManager = mContext.getSystemService(BiometricManager.class);
-            switch (biometricManager.canAuthenticate()) {
+            BiometricManager biometricManager =
+                    ApiHelperForQ.getBiometricManagerSystemService(mContext);
+            switch (ApiHelperForQ.canAuthenticate(biometricManager)) {
                 case BIOMETRIC_SUCCESS:
                     return BiometricsAvailability.AVAILABLE;
                 case BIOMETRIC_ERROR_NO_HARDWARE:

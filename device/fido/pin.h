@@ -85,7 +85,7 @@ PINEntryError ValidatePIN(
 // Like |ValidatePIN| above but takes a wide string.
 COMPONENT_EXPORT(DEVICE_FIDO)
 PINEntryError ValidatePIN(
-    const base::string16& pin16,
+    const std::u16string& pin16,
     uint32_t min_pin_length = kMinPinLength,
     base::Optional<std::string> current_pin = base::nullopt);
 

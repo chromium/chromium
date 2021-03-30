@@ -102,8 +102,7 @@ class EnterprisePlatformKeysChallengeMachineKeyFunction
   ResponseAction Run() override;
 
   // Called when the challenge operation is complete.
-  void OnChallengedKey(
-      const chromeos::attestation::TpmChallengeKeyResult& result);
+  void OnChallengedKey(const ash::attestation::TpmChallengeKeyResult& result);
 
   EPKPChallengeKey impl_;
 
@@ -121,8 +120,7 @@ class EnterprisePlatformKeysChallengeUserKeyFunction
   ResponseAction Run() override;
 
   // Called when the challenge operation is complete.
-  void OnChallengedKey(
-      const chromeos::attestation::TpmChallengeKeyResult& result);
+  void OnChallengedKey(const ash::attestation::TpmChallengeKeyResult& result);
 
   EPKPChallengeKey impl_;
 

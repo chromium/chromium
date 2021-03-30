@@ -9,6 +9,7 @@
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace crostini {
 enum class CrostiniResult;
@@ -20,6 +21,8 @@ class Profile;
 // connection is needed.
 class CrostiniRecoveryView : public views::BubbleDialogDelegateView {
  public:
+  METADATA_HEADER(CrostiniRecoveryView);
+
   static void Show(Profile* profile,
                    const std::string& app_id,
                    int64_t display_id,

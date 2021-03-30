@@ -28,7 +28,16 @@ UndoStep::UndoStep(Document* document,
       starting_selection_(starting_selection),
       ending_selection_(ending_selection),
       input_type_(input_type),
-      sequence_number_(++g_current_sequence_number) {}
+      sequence_number_(++g_current_sequence_number) {
+  // Note: Both |starting_selection| and |ending_selection| can be null,
+  // Note: |starting_selection_| can be disconnected when forward-delete.
+  // See |TypingCommand::ForwardDeleteKeyPressed()|
+}
+
+bool UndoStep::IsConnected() const {
+  return EndingRootEditableElement() &&
+         EndingRootEditableElement()->isConnected();
+}
 
 void UndoStep::Unapply() {
   DCHECK(document_);

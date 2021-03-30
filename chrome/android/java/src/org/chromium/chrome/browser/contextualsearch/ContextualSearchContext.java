@@ -84,8 +84,8 @@ public abstract class ContextualSearchContext {
     @NonNull
     private String mFluentLanguages = "";
 
-    // Whether the Related Searches functionality should also be activated.
-    private boolean mDoRelatedSearches;
+    // The Related Searches stamp - non-empty when Related Searches are being requested.
+    private String mRelatedSearchesStamp;
 
     /** A {@link ContextualSearchContext} that ignores changes to the selection. */
     static class ChangeIgnoringContext extends ContextualSearchContext {
@@ -281,6 +281,7 @@ public abstract class ContextualSearchContext {
      *        be requested.
      */
     void prepareToResolve(boolean isExactSearch, String relatedSearchesStamp) {
+        mRelatedSearchesStamp = relatedSearchesStamp;
         ContextualSearchContextJni.get().prepareToResolve(
                 mNativePointer, this, isExactSearch, relatedSearchesStamp);
     }
@@ -577,6 +578,11 @@ public abstract class ContextualSearchContext {
     @VisibleForTesting
     long getPreviousEventId() {
         return mPreviousEventId;
+    }
+
+    @VisibleForTesting
+    String getRelatedSearchesStamp() {
+        return mRelatedSearchesStamp;
     }
 
     // ============================================================================================

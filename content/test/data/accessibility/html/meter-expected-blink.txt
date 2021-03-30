@@ -2,4 +2,8 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer
 ++++++meter valueForRange=2.00 minValueForRange=1.00 maxValueForRange=10.00
-++++++++genericContainer
+++++++++genericContainer ignored
+++++++++++genericContainer
+++++++++++++genericContainer ignored
+++++++++genericContainer ignored invisible
+++++++++++staticText ignored name='2 out of 10'

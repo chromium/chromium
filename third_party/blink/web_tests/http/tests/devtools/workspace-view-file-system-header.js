@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult('Tests workspace view file system headers\n');
-  await TestRunner.loadModule('bindings_test_runner');
+  await TestRunner.loadTestModule('bindings_test_runner');
 
   const fs = new BindingsTestRunner.TestFileSystem('file:///this/is/a/test');
   await fs.reportCreatedPromise();

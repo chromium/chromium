@@ -15,6 +15,10 @@ class URLRequest;
 
 namespace network {
 
+namespace cors {
+class OriginAccessList;
+}  // namespace cors
+
 namespace mojom {
 class URLLoaderFactoryParams;
 }  // namespace mojom
@@ -36,7 +40,8 @@ void SetFetchMetadataHeaders(
     bool has_user_activation,
     network::mojom::RequestDestination dest,
     const GURL* pending_redirect_url,
-    const mojom::URLLoaderFactoryParams& factory_params);
+    const mojom::URLLoaderFactoryParams& factory_params,
+    const cors::OriginAccessList& origin_access_list);
 
 // Removes any sec-ch- or sec-fetch- prefixed request headers on the |request|
 // if the |pending_redirect_url| is not trustworthy and the current url is.

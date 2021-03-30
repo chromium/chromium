@@ -228,6 +228,21 @@ class XRSystem final : public EventTargetWithInlineData,
       return tracked_images_;
     }
 
+    void SetDepthSensingConfiguration(
+        const Vector<device::mojom::XRDepthUsage>& preferred_usage,
+        const Vector<device::mojom::XRDepthDataFormat>& preferred_format) {
+      preferred_usage_ = preferred_usage;
+      preferred_format_ = preferred_format;
+    }
+
+    const Vector<device::mojom::XRDepthUsage>& PreferredUsage() const {
+      return preferred_usage_;
+    }
+
+    const Vector<device::mojom::XRDepthDataFormat>& PreferredFormat() const {
+      return preferred_format_;
+    }
+
     virtual void Trace(Visitor*) const;
 
    private:
@@ -252,6 +267,9 @@ class XRSystem final : public EventTargetWithInlineData,
     Member<Element> dom_overlay_element_;
 
     Vector<device::mojom::blink::XRTrackedImage> tracked_images_;
+
+    Vector<device::mojom::XRDepthUsage> preferred_usage_;
+    Vector<device::mojom::XRDepthDataFormat> preferred_format_;
 
     DISALLOW_COPY_AND_ASSIGN(PendingRequestSessionQuery);
   };
@@ -427,6 +445,11 @@ class XRSystem final : public EventTargetWithInlineData,
 
   void TryEnsureService();
 
+  // Helper, returns true if immersive AR session creation is supported.
+  // Currently, it checks whether AR is enabled in runtime features, and in web
+  // settings (controlled by enterprise policy).
+  bool IsImmersiveArAllowed();
+
   // Indicates whether use of requestDevice has already been logged.
   bool did_log_supports_immersive_ = false;
 
@@ -446,8 +469,7 @@ class XRSystem final : public EventTargetWithInlineData,
   HeapHashSet<WeakMember<XRSession>> sessions_;
   HeapMojoRemote<device::mojom::blink::VRService> service_;
   HeapMojoAssociatedRemote<
-      device::mojom::blink::XREnvironmentIntegrationProvider,
-      HeapMojoWrapperMode::kWithoutContextObserver>
+      device::mojom::blink::XREnvironmentIntegrationProvider>
       environment_provider_;
   HeapMojoReceiver<device::mojom::blink::VRServiceClient, XRSystem> receiver_;
 

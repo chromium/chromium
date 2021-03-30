@@ -104,6 +104,11 @@
 #include "media/remoting/remoting_renderer_factory.h"  // nogncheck
 #endif
 
+#if defined(OS_WIN)
+#include "base/win/windows_version.h"
+#include "media/mojo/clients/win/media_foundation_renderer_client_factory.h"
+#endif  // defined(OS_WIN)
+
 namespace {
 class FrameFetchContext : public media::ResourceFetchContext {
  public:
@@ -246,6 +251,8 @@ blink::WebMediaPlayer::SurfaceLayerMode GetSurfaceLayerMode(
 // Creates the VideoFrameSubmitter and its task_runner based on the current
 // SurfaceLayerMode;
 std::unique_ptr<blink::WebVideoFrameSubmitter> CreateSubmitter(
+    scoped_refptr<base::SingleThreadTaskRunner>
+        main_thread_compositor_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner>*
         video_frame_compositor_task_runner,
     const cc::LayerTreeSettings& settings,
@@ -284,10 +291,8 @@ std::unique_ptr<blink::WebVideoFrameSubmitter> CreateSubmitter(
 
   auto log_roughness_cb =
       base::BindRepeating(LogRoughness, base::Owned(media_log->Clone()));
-  auto post_to_context_provider_cb =
-      base::BindRepeating(&PostContextProviderToCallback,
-                          content::RenderThreadImpl::current()
-                              ->GetCompositorMainThreadTaskRunner());
+  auto post_to_context_provider_cb = base::BindRepeating(
+      &PostContextProviderToCallback, main_thread_compositor_task_runner);
   return blink::WebVideoFrameSubmitter::Create(
       std::move(post_to_context_provider_cb), std::move(log_roughness_cb),
       settings, use_sync_primitives);
@@ -357,7 +362,6 @@ bool UseMediaPlayerRenderer(const GURL& url) {
 }
 #endif  // defined(OS_ANDROID)
 
-
 blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
     const blink::WebMediaPlayerSource& source,
     blink::WebMediaPlayerClient* client,
@@ -366,12 +370,14 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
     blink::WebContentDecryptionModule* initial_cdm,
     const blink::WebString& sink_id,
     viz::FrameSinkId parent_frame_sink_id,
-    const cc::LayerTreeSettings& settings) {
+    const cc::LayerTreeSettings& settings,
+    scoped_refptr<base::SingleThreadTaskRunner>
+        main_thread_compositor_task_runner) {
   blink::WebLocalFrame* web_frame = render_frame_->GetWebFrame();
   if (source.IsMediaStream()) {
-    return CreateWebMediaPlayerForMediaStream(client, inspector_context,
-                                              sink_id, web_frame,
-                                              parent_frame_sink_id, settings);
+    return CreateWebMediaPlayerForMediaStream(
+        client, inspector_context, sink_id, web_frame, parent_frame_sink_id,
+        settings, main_thread_compositor_task_runner);
   }
 
   // If |source| was not a MediaStream, it must be a URL.
@@ -466,9 +472,9 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
   scoped_refptr<base::SingleThreadTaskRunner>
       video_frame_compositor_task_runner;
   const auto surface_layer_mode = GetSurfaceLayerMode(MediaPlayerType::kNormal);
-  std::unique_ptr<blink::WebVideoFrameSubmitter> submitter =
-      CreateSubmitter(&video_frame_compositor_task_runner, settings,
-                      media_log.get(), render_frame_, surface_layer_mode);
+  std::unique_ptr<blink::WebVideoFrameSubmitter> submitter = CreateSubmitter(
+      main_thread_compositor_task_runner, &video_frame_compositor_task_runner,
+      settings, media_log.get(), render_frame_, surface_layer_mode);
 
   scoped_refptr<base::SingleThreadTaskRunner> media_task_runner =
       render_thread->GetMediaThreadTaskRunner();
@@ -526,8 +532,11 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
 
 blink::WebEncryptedMediaClient* MediaFactory::EncryptedMediaClient() {
   if (!web_encrypted_media_client_) {
-    web_encrypted_media_client_.reset(new media::WebEncryptedMediaClientImpl(
-        GetCdmFactory(), render_frame_->GetMediaPermission()));
+    web_encrypted_media_client_ = std::make_unique<
+        media::WebEncryptedMediaClientImpl>(
+        GetCdmFactory(), render_frame_->GetMediaPermission(),
+        std::make_unique<media::KeySystemConfigSelector::WebLocalFrameDelegate>(
+            render_frame_->GetWebFrame()));
   }
   return web_encrypted_media_client_.get();
 }
@@ -662,6 +671,16 @@ MediaFactory::CreateRendererFactorySelector(
       FactoryType::kCourier, std::move(courier_factory), is_remoting_cb);
 #endif
 
+#if defined(OS_WIN)
+  if (base::win::GetVersion() >= base::win::Version::WIN10_20H1) {
+    factory_selector->AddFactory(
+        FactoryType::kMediaFoundation,
+        std::make_unique<media::MediaFoundationRendererClientFactory>(
+            render_thread->compositor_task_runner(),
+            CreateMojoRendererFactory()));
+  }
+#endif  // defined(OS_WIN)
+
 #if BUILDFLAG(IS_CHROMECAST)
   if (renderer_media_playback_options.is_remoting_renderer_enabled()) {
 #if BUILDFLAG(ENABLE_CAST_RENDERER)
@@ -697,7 +716,9 @@ blink::WebMediaPlayer* MediaFactory::CreateWebMediaPlayerForMediaStream(
     const blink::WebString& sink_id,
     blink::WebLocalFrame* frame,
     viz::FrameSinkId parent_frame_sink_id,
-    const cc::LayerTreeSettings& settings) {
+    const cc::LayerTreeSettings& settings,
+    scoped_refptr<base::SingleThreadTaskRunner>
+        main_thread_compositor_task_runner) {
   RenderThreadImpl* const render_thread = RenderThreadImpl::current();
 
   scoped_refptr<base::SingleThreadTaskRunner>
@@ -717,9 +738,9 @@ blink::WebMediaPlayer* MediaFactory::CreateWebMediaPlayerForMediaStream(
 
   const auto surface_layer_mode =
       GetSurfaceLayerMode(MediaPlayerType::kMediaStream);
-  std::unique_ptr<blink::WebVideoFrameSubmitter> submitter =
-      CreateSubmitter(&video_frame_compositor_task_runner, settings,
-                      media_log.get(), render_frame_, surface_layer_mode);
+  std::unique_ptr<blink::WebVideoFrameSubmitter> submitter = CreateSubmitter(
+      main_thread_compositor_task_runner, &video_frame_compositor_task_runner,
+      settings, media_log.get(), render_frame_, surface_layer_mode);
 
   return new blink::WebMediaPlayerMS(
       frame, client, GetWebMediaPlayerDelegate(), std::move(media_log),

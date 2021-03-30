@@ -116,10 +116,11 @@ FileSystemOperationRunner* SandboxFileSystemTestHelper::operation_runner() {
   return file_system_context_->operation_runner();
 }
 
-FileSystemOperationContext* SandboxFileSystemTestHelper::NewOperationContext() {
+std::unique_ptr<FileSystemOperationContext>
+SandboxFileSystemTestHelper::NewOperationContext() {
   DCHECK(file_system_context_.get());
-  FileSystemOperationContext* context =
-      new FileSystemOperationContext(file_system_context_.get());
+  auto context =
+      std::make_unique<FileSystemOperationContext>(file_system_context_.get());
   context->set_update_observers(
       *file_system_context_->GetUpdateObservers(type_));
   return context;

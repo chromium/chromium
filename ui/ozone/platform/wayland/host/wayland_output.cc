@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 
+#include "ui/display/display.h"
 #include "ui/gfx/color_space.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 
@@ -13,9 +14,13 @@ WaylandOutput::WaylandOutput(uint32_t output_id, wl_output* output)
     : output_id_(output_id),
       output_(output),
       scale_factor_(kDefaultScaleFactor),
-      rect_in_physical_pixels_(gfx::Rect()) {}
+      rect_in_physical_pixels_(gfx::Rect()) {
+  wl_output_set_user_data(output_.get(), this);
+}
 
-WaylandOutput::~WaylandOutput() = default;
+WaylandOutput::~WaylandOutput() {
+  wl_output_set_user_data(output_.get(), nullptr);
+}
 
 void WaylandOutput::Initialize(Delegate* delegate) {
   DCHECK(!delegate_);
@@ -27,6 +32,12 @@ void WaylandOutput::Initialize(Delegate* delegate) {
       &WaylandOutput::OutputHandleScale,
   };
   wl_output_add_listener(output_.get(), &output_listener, this);
+}
+
+float WaylandOutput::GetUIScaleFactor() const {
+  return display::Display::HasForceDeviceScaleFactor()
+             ? display::Display::GetForcedDeviceScaleFactor()
+             : scale_factor();
 }
 
 void WaylandOutput::TriggerDelegateNotifications() const {

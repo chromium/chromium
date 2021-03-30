@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Animate SVGMarkerElement orientAttr from auto to auto-start-reverse assert_equals: expected (undefined) undefined but got (number) 0
+Harness: the test ran to completion.
+

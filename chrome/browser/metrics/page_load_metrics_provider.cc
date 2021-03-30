@@ -13,9 +13,7 @@ PageLoadMetricsProvider::PageLoadMetricsProvider() {}
 PageLoadMetricsProvider::~PageLoadMetricsProvider() {}
 
 void PageLoadMetricsProvider::OnAppEnterBackground() {
-  for (TabModelList::const_iterator it = TabModelList::begin();
-       it != TabModelList::end(); ++it) {
-    TabModel* model = *it;
+  for (const TabModel* model : TabModelList::models()) {
     for (int tab_index = 0; tab_index < model->GetTabCount(); ++tab_index) {
       content::WebContents* web_contents = model->GetWebContentsAt(tab_index);
       if (!web_contents)

@@ -8,17 +8,8 @@ package feedwire;
 
 option optimize_for = LITE_RUNTIME;
 
-// The information about the client's screen.
-// Next id: 4
 message DisplayInfo {
-  // Density of the screen in physical pixels per density independent pixel
-  // (DIP); see:
-  // http://developer.android.com/reference/android/util/DisplayMetrics.html#density
   optional float screen_density = 1;
-
-  // The width of the screen in pixels.
   optional uint32 screen_width_in_pixels = 2;
-
-  // The height of the screen in pixels.
   optional uint32 screen_height_in_pixels = 3;
 }

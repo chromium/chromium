@@ -5,6 +5,7 @@
 package org.chromium.components.autofill;
 
 import android.annotation.TargetApi;
+import android.content.ComponentName;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Build;
@@ -29,7 +30,8 @@ public class AutofillManagerWrapper {
     // NOTE: As a result of the above, the tag below still references the name of this class from
     // when it was originally developed specifically for Android WebView.
     public static final String TAG = "AwAutofillManager";
-
+    private static final String AWG_COMPONENT_NAME =
+            "com.google.android.gms/com.google.android.gms.autofill.service.AutofillService";
     /**
      * The observer of suggestion window.
      */
@@ -58,17 +60,42 @@ public class AutofillManagerWrapper {
     private boolean mDestroyed;
     private boolean mDisabled;
     private ArrayList<WeakReference<InputUIObserver>> mInputUIObservers;
+    // Indicates if AwG is the current Android autofill service.
+    private final boolean mIsAwGCurrentAutofillService;
 
     public AutofillManagerWrapper(Context context) {
         updateLogStat();
         if (isLoggable()) log("constructor");
         mAutofillManager = context.getSystemService(AutofillManager.class);
         mDisabled = mAutofillManager == null || !mAutofillManager.isEnabled();
+
         if (mDisabled) {
+            mIsAwGCurrentAutofillService = false;
             if (isLoggable()) log("disabled");
             return;
         }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            ComponentName componentName = null;
+            try {
+                componentName = mAutofillManager.getAutofillServiceComponentName();
+            } catch (Exception e) {
+                // Can't catch com.android.internal.util.SyncResultReceiver.TimeoutException,
+                // because
+                // - The exception isn't Android API.
+                // - Different version of Android handle it differently.
+                // Uses Exception to catch various cases. (refer to crbug.com/1186406)
+                Log.e(TAG, "getAutofillServiceComponentName", e);
+            }
+            if (componentName != null) {
+                mIsAwGCurrentAutofillService =
+                        AWG_COMPONENT_NAME.equals(componentName.flattenToString());
+            } else {
+                mIsAwGCurrentAutofillService = false;
+            }
+        } else {
+            mIsAwGCurrentAutofillService = false;
+        }
         mMonitor = new AutofillInputUIMonitor(this);
         mAutofillManager.registerCallback(mMonitor);
     }
@@ -142,6 +169,14 @@ public class AutofillManagerWrapper {
         return mDisabled;
     }
 
+    /**
+     * Only work for Android P and beyond. Always return false for Android O.
+     * @return if the Autofill with Google is the current autofill service.
+     */
+    public boolean isAwGCurrentAutofillService() {
+        return mIsAwGCurrentAutofillService;
+    }
+
     private boolean checkAndWarnIfDestroyed() {
         if (mDestroyed) {
             Log.w(TAG, "Application attempted to call on a destroyed AutofillManagerWrapper",
@@ -165,9 +200,9 @@ public class AutofillManagerWrapper {
         }
     }
 
-    public void notifyNewSessionStarted() {
+    public void notifyNewSessionStarted(boolean hasServerPrediction) {
         updateLogStat();
-        if (isLoggable()) log("Session starts");
+        if (isLoggable()) log("Session starts, has server prediction = " + hasServerPrediction);
     }
 
     public void onQueryDone(boolean success) {

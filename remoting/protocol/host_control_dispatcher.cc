@@ -56,6 +56,12 @@ void HostControlDispatcher::SetTransportInfo(
   message_pipe()->Send(&message, {});
 }
 
+void HostControlDispatcher::OpenUrl(const OpenUrlRequest& open_url_request) {
+  ControlMessage message;
+  message.mutable_open_url_request()->CopyFrom(open_url_request);
+  message_pipe()->Send(&message, {});
+}
+
 void HostControlDispatcher::InjectClipboardEvent(const ClipboardEvent& event) {
   ControlMessage message;
   message.mutable_clipboard_event()->CopyFrom(event);

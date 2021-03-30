@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/tether/tether_service_factory.h"
 
+#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string_number_conversions.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/chromeos/tether/fake_tether_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state_handler.h"

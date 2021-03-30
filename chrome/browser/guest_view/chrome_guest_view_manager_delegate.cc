@@ -9,8 +9,8 @@
 #include "chrome/browser/task_manager/web_contents_tags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/app_mode/app_session.h"
-#include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/app_session.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #endif
 
 namespace extensions {
@@ -34,8 +34,7 @@ void ChromeGuestViewManagerDelegate::OnGuestAdded(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Notifies kiosk session about the added guest.
-  chromeos::AppSession* app_session =
-      chromeos::KioskAppManager::Get()->app_session();
+  ash::AppSession* app_session = ash::KioskAppManager::Get()->app_session();
   if (app_session)
     app_session->OnGuestAdded(guest_web_contents);
 #endif

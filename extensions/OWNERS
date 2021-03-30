@@ -9,6 +9,7 @@
 #   chrome/renderer/extensions/OWNERS
 #   chrome/renderer/resources/extensions/OWNERS
 
+set noparent
 rdevlin.cronin@chromium.org
 lazyboy@chromium.org
 karandeepb@chromium.org

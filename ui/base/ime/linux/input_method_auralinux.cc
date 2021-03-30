@@ -196,7 +196,7 @@ ui::EventDispatchDetails InputMethodAuraLinux::ProcessKeyEventDone(
       // TextInputClient::InsertChar().
       // Note: don't use |client| and use GetTextInputClient() here because
       // DispatchKeyEventPostIME may cause the current text input client change.
-      base::char16 ch = event->GetCharacter();
+      char16_t ch = event->GetCharacter();
       if (ch && GetTextInputClient())
         GetTextInputClient()->InsertChar(*event);
       should_stop_propagation = true;
@@ -245,7 +245,7 @@ void InputMethodAuraLinux::OnCaretBoundsChanged(const TextInputClient* client) {
   context_->SetCursorLocation(GetTextInputClient()->GetCaretBounds());
 
   gfx::Range text_range, selection_range;
-  base::string16 text;
+  std::u16string text;
   if (client->GetTextRange(&text_range) &&
       client->GetTextFromRange(text_range, &text) &&
       client->GetEditableSelectionRange(&selection_range)) {
@@ -295,7 +295,7 @@ bool InputMethodAuraLinux::IsCandidatePopupOpen() const {
 
 // Overriden from ui::LinuxInputMethodContextDelegate
 
-void InputMethodAuraLinux::OnCommit(const base::string16& text) {
+void InputMethodAuraLinux::OnCommit(const std::u16string& text) {
   if (IgnoringNonKeyInput() || !GetTextInputClient())
     return;
 

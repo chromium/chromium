@@ -21,21 +21,21 @@ class SafetyTipInfoBarDelegate : public ConfirmInfoBarDelegate {
   ~SafetyTipInfoBarDelegate() override;
 
   // ConfirmInfoBarDelegate:
-  base::string16 GetMessageText() const override;
+  std::u16string GetMessageText() const override;
   int GetButtons() const override;
-  base::string16 GetButtonLabel(InfoBarButton button) const override;
+  std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool Accept() override;
 
   // infobars::InfoBarDelegate
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
   int GetIconId() const override;
   void InfoBarDismissed() override;
-  base::string16 GetLinkText() const override;
+  std::u16string GetLinkText() const override;
   bool LinkClicked(WindowOpenDisposition disposition) override;
 
   // This function is the equivalent of GetMessageText(), but for the portion of
   // the infobar below the 'message' title.
-  base::string16 GetDescriptionText() const;
+  std::u16string GetDescriptionText() const;
 
  private:
   security_state::SafetyTipStatus safety_tip_status_;

@@ -135,80 +135,9 @@ class OverviewFocusButton : public views::Button {
 
 }  // namespace
 
-// Class that updates the focusable overview widgets so that the point to the
-// correct next and previous widgets for a11y purposes. Needs to be updated when
-// an overview item is added or removed. It is expected that the desk widget
-// does not get altered for the duration of overview.
-class OverviewSession::AccessibilityFocusAnnotator {
- public:
-  explicit AccessibilityFocusAnnotator(OverviewSession* session)
-      : session_(session) {}
-  AccessibilityFocusAnnotator(const AccessibilityFocusAnnotator&) = delete;
-  AccessibilityFocusAnnotator& operator=(const AccessibilityFocusAnnotator&) =
-      delete;
-  ~AccessibilityFocusAnnotator() = default;
-
-  void UpdateAccessibilityFocus() {
-    if (session_->is_shutting_down())
-      return;
-
-    // Construct the list of accessible widgets, these are the overview focus
-    // widget, desk bar widget, all the item widgets and the no window indicator
-    // widget, if available.
-    std::vector<views::Widget*> a11y_widgets;
-    if (session_->overview_focus_widget_)
-      a11y_widgets.push_back(session_->overview_focus_widget_.get());
-
-    for (aura::Window* root : Shell::GetAllRootWindows()) {
-      OverviewGrid* grid = session_->GetGridWithRootWindow(root);
-      DCHECK(grid);
-      if (grid->desks_widget())
-        a11y_widgets.push_back(
-            const_cast<views::Widget*>(grid->desks_widget()));
-      for (const auto& item : grid->window_list())
-        a11y_widgets.push_back(item->item_widget());
-    }
-    if (session_->no_windows_widget_.get())
-      a11y_widgets.push_back(session_->no_windows_widget_.get());
-
-    if (a11y_widgets.empty())
-      return;
-
-    auto get_view_a11y =
-        [&a11y_widgets](int index) -> views::ViewAccessibility& {
-      return a11y_widgets[index]->GetContentsView()->GetViewAccessibility();
-    };
-
-    // If there is only one widget left, clear the focus overrides so that they
-    // do not point to deleted objects.
-    if (a11y_widgets.size() == 1) {
-      get_view_a11y(/*index=*/0).OverridePreviousFocus(nullptr);
-      get_view_a11y(/*index=*/0).OverrideNextFocus(nullptr);
-      a11y_widgets[0]->GetContentsView()->NotifyAccessibilityEvent(
-          ax::mojom::Event::kTreeChanged, true);
-      return;
-    }
-
-    int size = a11y_widgets.size();
-    for (int i = 0; i < size; ++i) {
-      int previous_index = (i + size - 1) % size;
-      int next_index = (i + 1) % size;
-      get_view_a11y(i).OverridePreviousFocus(a11y_widgets[previous_index]);
-      get_view_a11y(i).OverrideNextFocus(a11y_widgets[next_index]);
-      a11y_widgets[i]->GetContentsView()->NotifyAccessibilityEvent(
-          ax::mojom::Event::kTreeChanged, true);
-    }
-  }
-
- private:
-  // The associated overview session. Guaranteed to be non null for the lifetime
-  // of |this|.
-  OverviewSession* session_;
-};
-
 OverviewSession::OverviewSession(OverviewDelegate* delegate)
     : delegate_(delegate),
-      restore_focus_window_(window_util::GetFocusedWindow()),
+      active_window_before_overview_(window_util::GetActiveWindow()),
       overview_start_time_(base::Time::Now()),
       highlight_controller_(
           std::make_unique<OverviewHighlightController>(this)) {
@@ -235,8 +164,8 @@ void OverviewSession::Init(const WindowList& windows,
 
   hide_overview_windows_ = std::make_unique<ScopedOverviewHideWindows>(
       std::move(hide_windows), /*force_hidden=*/false);
-  if (restore_focus_window_)
-    restore_focus_window_->AddObserver(this);
+  if (active_window_before_overview_)
+    active_window_before_overview_->AddObserver(this);
 
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   std::sort(root_windows.begin(), root_windows.end(),
@@ -284,7 +213,7 @@ void OverviewSession::Init(const WindowList& windows,
 
   // Create the widget that will receive focus while in overview mode for
   // accessibility purposes. Add a button as the contents so that
-  // |accessibility_focus_annotator_| can put it on the accessibility focus
+  // UpdateAccessibilityFocus can put it on the accessibility focus
   // cycler.
   overview_focus_widget_ = std::make_unique<views::Widget>();
   views::Widget::InitParams params;
@@ -353,12 +282,12 @@ void OverviewSession::Shutdown() {
   }
 
   // Setting focus after restoring windows' state avoids unnecessary animations.
-  // No need to restore if we are sliding to the home launcher screen, as all
+  // No need to restore if we are fading out to the home launcher screen, as all
   // windows will be minimized.
-  const bool should_focus =
+  const bool should_restore =
       enter_exit_overview_type_ == OverviewEnterExitType::kNormal ||
       enter_exit_overview_type_ == OverviewEnterExitType::kImmediateExit;
-  ResetFocusRestoreWindow(should_focus);
+  RestoreWindowActivation(should_restore);
   RemoveAllObservers();
 
   for (std::unique_ptr<OverviewGrid>& overview_grid : grid_list_)
@@ -574,9 +503,9 @@ void OverviewSession::RemoveItem(OverviewItem* overview_item) {
 void OverviewSession::RemoveItem(OverviewItem* overview_item,
                                  bool item_destroying,
                                  bool reposition) {
-  if (overview_item->GetWindow() == restore_focus_window_) {
-    restore_focus_window_->RemoveObserver(this);
-    restore_focus_window_ = nullptr;
+  if (overview_item->GetWindow() == active_window_before_overview_) {
+    active_window_before_overview_->RemoveObserver(this);
+    active_window_before_overview_ = nullptr;
   }
 
   overview_item->overview_grid()->RemoveItem(overview_item, item_destroying,
@@ -584,9 +513,7 @@ void OverviewSession::RemoveItem(OverviewItem* overview_item,
   --num_items_;
 
   UpdateNoWindowsWidget();
-
-  if (accessibility_focus_annotator_)
-    accessibility_focus_annotator_->UpdateAccessibilityFocus();
+  UpdateAccessibilityFocus();
 }
 
 void OverviewSession::RemoveDropTargets() {
@@ -775,10 +702,7 @@ void OverviewSession::OnStartingAnimationComplete(bool canceled,
     }
   }
 
-  accessibility_focus_annotator_ =
-      std::make_unique<AccessibilityFocusAnnotator>(this);
-  accessibility_focus_annotator_->UpdateAccessibilityFocus();
-
+  UpdateAccessibilityFocus();
   Shell::Get()->overview_controller()->DelayedUpdateRoundedCornersAndShadow();
 }
 
@@ -802,9 +726,9 @@ void OverviewSession::OnWindowActivating(
   }
 
   if (!gained_active) {
-    // Cancel overview session and do not restore focus when active window is
-    // set to nullptr. This happens when removing a display.
-    ResetFocusRestoreWindow(false);
+    // Cancel overview session and do not restore activation when active window
+    // is set to nullptr. This happens when removing a display.
+    RestoreWindowActivation(false);
     EndOverview();
     return;
   }
@@ -814,7 +738,7 @@ void OverviewSession::OnWindowActivating(
   // mode, so do not handle it here.
   if (gained_active == Shell::Get()->app_list_controller()->GetWindow() &&
       !Shell::Get()->tablet_mode_controller()->InTabletMode()) {
-    ResetFocusRestoreWindow(false);
+    RestoreWindowActivation(false);
     EndOverview();
     return;
   }
@@ -828,6 +752,7 @@ void OverviewSession::OnWindowActivating(
       SplitViewController::Get(gained_active);
   if (split_view_controller->left_window() ||
       split_view_controller->right_window()) {
+    RestoreWindowActivation(false);
     return;
   }
 
@@ -851,8 +776,8 @@ void OverviewSession::OnWindowActivating(
   if (iter != windows.end())
     selected_item_ = iter->get();
 
-  // Don't restore focus on exit if a window was just activated.
-  ResetFocusRestoreWindow(false);
+  // Don't restore window activation on exit if a window was just activated.
+  RestoreWindowActivation(false);
   EndOverview();
 }
 
@@ -888,23 +813,23 @@ bool OverviewSession::IsEmpty() const {
   return true;
 }
 
-void OverviewSession::ResetFocusRestoreWindow(bool focus) {
-  if (!restore_focus_window_)
+void OverviewSession::RestoreWindowActivation(bool restore) {
+  if (!active_window_before_overview_)
     return;
 
   // Do not restore focus to a window that exists on an inactive desk.
-  focus &= base::Contains(DesksController::Get()->active_desk()->windows(),
-                          restore_focus_window_);
+  restore &= base::Contains(DesksController::Get()->active_desk()->windows(),
+                            active_window_before_overview_);
 
   // Ensure the window is still in the window hierarchy and not in the middle
   // of teardown.
-  if (focus && restore_focus_window_->GetRootWindow()) {
+  if (restore && active_window_before_overview_->GetRootWindow()) {
     base::AutoReset<bool> restoring_focus(&ignore_activations_, true);
-    wm::ActivateWindow(restore_focus_window_);
+    wm::ActivateWindow(active_window_before_overview_);
   }
 
-  restore_focus_window_->RemoveObserver(this);
-  restore_focus_window_ = nullptr;
+  active_window_before_overview_->RemoveObserver(this);
+  active_window_before_overview_ = nullptr;
 }
 
 void OverviewSession::OnHighlightedItemActivated(OverviewItem* item) {
@@ -966,6 +891,12 @@ bool OverviewSession::CanProcessEvent(OverviewItem* sender,
   return false;
 }
 
+bool OverviewSession::IsWindowActiveWindowBeforeOverview(
+    aura::Window* window) const {
+  DCHECK(window);
+  return window == active_window_before_overview_;
+}
+
 void OverviewSession::OnDisplayAdded(const display::Display& display) {
   if (EndOverview())
     return;
@@ -996,9 +927,9 @@ void OverviewSession::OnDisplayMetricsChanged(const display::Display& display,
 }
 
 void OverviewSession::OnWindowDestroying(aura::Window* window) {
-  DCHECK_EQ(restore_focus_window_, window);
-  restore_focus_window_->RemoveObserver(this);
-  restore_focus_window_ = nullptr;
+  DCHECK_EQ(active_window_before_overview_, window);
+  active_window_before_overview_->RemoveObserver(this);
+  active_window_before_overview_ = nullptr;
 }
 
 void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
@@ -1017,9 +948,10 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
   // If any desk name is being modified, let the DeskNameView handle the key
   // events.
   // Note that Tab presses should commit any pending desk name changes.
+  const ui::KeyboardCode key_code = event->key_code();
   const bool is_key_press = event->type() == ui::ET_KEY_PRESSED;
   const bool should_commit_name_changes =
-      is_key_press && event->key_code() == ui::VKEY_TAB;
+      is_key_press && key_code == ui::VKEY_TAB;
   for (auto& grid : grid_list_) {
     if (grid->IsDeskNameBeingModified()) {
       if (!should_commit_name_changes)
@@ -1042,7 +974,9 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
   if (!is_key_press)
     return;
 
-  switch (event->key_code()) {
+  bool is_control_down = event->IsControlDown();
+
+  switch (key_code) {
     case ui::VKEY_BROWSER_BACK:
     case ui::VKEY_ESCAPE:
       EndOverview();
@@ -1057,7 +991,10 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
       break;
     case ui::VKEY_RIGHT:
       ++num_key_presses_;
-      Move(/*reverse=*/false);
+      if (!is_control_down ||
+          !highlight_controller_->MaybeSwapHighlightedView(/*right=*/true)) {
+        Move(/*reverse=*/false);
+      }
       break;
     case ui::VKEY_TAB: {
       const bool reverse = event->flags() & ui::EF_SHIFT_DOWN;
@@ -1067,7 +1004,10 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
     }
     case ui::VKEY_LEFT:
       ++num_key_presses_;
-      Move(/*reverse=*/true);
+      if (!is_control_down ||
+          !highlight_controller_->MaybeSwapHighlightedView(/*right=*/false)) {
+        Move(/*reverse=*/true);
+      }
       break;
     case ui::VKEY_W: {
       if (!(event->flags() & ui::EF_CONTROL_DOWN))
@@ -1147,7 +1087,7 @@ void OverviewSession::OnSplitViewDividerPositionChanged() {
 
 void OverviewSession::Move(bool reverse) {
   // Do not allow moving the highlight while in the middle of a drag.
-  if (window_util::IsAnyWindowDragged())
+  if (window_util::IsAnyWindowDragged() || desks_util::IsDraggingAnyDesk())
     return;
 
   highlight_controller_->MoveHighlight(reverse);
@@ -1194,9 +1134,9 @@ bool OverviewSession::ProcessForScrolling(const ui::KeyEvent& event) {
 
 void OverviewSession::RemoveAllObservers() {
   display::Screen::GetScreen()->RemoveObserver(this);
-  if (restore_focus_window_)
-    restore_focus_window_->RemoveObserver(this);
-  restore_focus_window_ = nullptr;
+  if (active_window_before_overview_)
+    active_window_before_overview_->RemoveObserver(this);
+  active_window_before_overview_ = nullptr;
 }
 
 void OverviewSession::UpdateNoWindowsWidget() {
@@ -1266,8 +1206,55 @@ void OverviewSession::OnItemAdded(aura::Window* window) {
   // instead of ActivateWindow() to show and activate the widget.
   overview_focus_widget_->Show();
 
-  if (accessibility_focus_annotator_)
-    accessibility_focus_annotator_->UpdateAccessibilityFocus();
+  UpdateAccessibilityFocus();
+}
+
+void OverviewSession::UpdateAccessibilityFocus() {
+  if (is_shutting_down())
+    return;
+
+  // Construct the list of accessible widgets, these are the overview focus
+  // widget, desk bar widget, all the item widgets and the no window indicator
+  // widget, if available.
+  std::vector<views::Widget*> a11y_widgets;
+  if (overview_focus_widget_)
+    a11y_widgets.push_back(overview_focus_widget_.get());
+
+  for (auto& grid : grid_list_) {
+    if (grid->desks_widget())
+      a11y_widgets.push_back(const_cast<views::Widget*>(grid->desks_widget()));
+    for (const auto& item : grid->window_list())
+      a11y_widgets.push_back(item->item_widget());
+  }
+  if (no_windows_widget_.get())
+    a11y_widgets.push_back(no_windows_widget_.get());
+
+  if (a11y_widgets.empty())
+    return;
+
+  auto get_view_a11y = [&a11y_widgets](int index) -> views::ViewAccessibility& {
+    return a11y_widgets[index]->GetContentsView()->GetViewAccessibility();
+  };
+
+  // If there is only one widget left, clear the focus overrides so that they
+  // do not point to deleted objects.
+  if (a11y_widgets.size() == 1) {
+    get_view_a11y(/*index=*/0).OverridePreviousFocus(nullptr);
+    get_view_a11y(/*index=*/0).OverrideNextFocus(nullptr);
+    a11y_widgets[0]->GetContentsView()->NotifyAccessibilityEvent(
+        ax::mojom::Event::kTreeChanged, true);
+    return;
+  }
+
+  int size = a11y_widgets.size();
+  for (int i = 0; i < size; ++i) {
+    int previous_index = (i + size - 1) % size;
+    int next_index = (i + 1) % size;
+    get_view_a11y(i).OverridePreviousFocus(a11y_widgets[previous_index]);
+    get_view_a11y(i).OverrideNextFocus(a11y_widgets[next_index]);
+    a11y_widgets[i]->GetContentsView()->NotifyAccessibilityEvent(
+        ax::mojom::Event::kTreeChanged, true);
+  }
 }
 
 }  // namespace ash

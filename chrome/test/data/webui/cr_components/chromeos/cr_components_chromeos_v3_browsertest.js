@@ -6,8 +6,9 @@
 
 // Polymer BrowserTest fixture.
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
+
+GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
-GEN('#include "chromeos/constants/chromeos_features.h"');
 
 // clang-format off
 [['CrPolicyNetworkBehaviorMojo', 'network/cr_policy_network_behavior_mojo_tests.m.js'],
@@ -30,14 +31,24 @@ GEN('#include "chromeos/constants/chromeos_features.h"');
  ['NetworkProxy', 'network/network_proxy_test.m.js'],
  ['NetworkSelect', 'network/network_select_test.m.js'],
  ['NetworkSiminfo', 'network/network_siminfo_test.m.js'],
+ ['SimLockDialogs', 'network/sim_lock_dialogs_test.m.js'],
 ].forEach(test => registerTest('NetworkComponents', 'os-settings', ...test));
 
 [['RoutineGroup', 'network_health/routine_group_test.m.js'],
 ].forEach(test => registerTest('NetworkHealth', 'connectivity-diagnostics', ...test));
 
-[['ActivationCodePage', 'cellular_setup/activation_code_page_test.m.js'],
+[
+ ['Integration', 'multidevice_setup/integration_test.m.js'],
+ ['SetupSucceededPage', 'multidevice_setup/setup_succeeded_page_test.m.js'],
+ ['StartSetupPage', 'multidevice_setup/start_setup_page_test.m.js'],
+].forEach(test => registerTest('MultiDeviceSetup', 'multidevice-setup', ...test));
+
+[
+ ['ActivationCodePage', 'cellular_setup/activation_code_page_test.m.js'],
  ['BasePage', 'cellular_setup/base_page_test.m.js'],
  ['ButtonBar', 'cellular_setup/button_bar_test.m.js'],
+ ['ConfirmationCodePage', 'cellular_setup/confirmation_code_page_test.m.js'],
+ ['CellularEidPopup', 'cellular_setup/cellular_eid_popup_test.m.js'],
  ['CellularSetup', 'cellular_setup/cellular_setup_test.m.js'],
  ['EsimFlowUi', 'cellular_setup/esim_flow_ui_test.m.js'],
  ['FinalPage', 'cellular_setup/final_page_test.m.js'],
@@ -63,9 +74,8 @@ function registerTest(componentName, webuiHost, testName, module, caseName) {
     get featureList() {
       return {
         enabled: [
-          'chromeos::features::kConnectivityDiagnosticsWebUi',
-          'chromeos::features::kOsSettingsPolymer3',
           'chromeos::features::kUpdatedCellularActivationUi',
+          'chromeos::features::kCellularUseAttachApn',
         ],
       };
     }

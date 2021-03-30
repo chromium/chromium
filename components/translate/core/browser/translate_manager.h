@@ -18,6 +18,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/translate/core/browser/language_state.h"
+#include "components/translate/core/browser/translate_metrics_logger.h"
 #include "components/translate/core/common/translate_errors.h"
 
 namespace language {
@@ -32,7 +33,6 @@ namespace translate {
 
 class TranslateClient;
 class TranslateDriver;
-class TranslateMetricsLogger;
 class TranslatePrefs;
 class TranslateRanker;
 struct TranslateTriggerDecision;
@@ -43,6 +43,7 @@ namespace testing {
 class TranslateManagerTest;
 }  // namespace testing
 
+struct LanguageDetectionDetails;
 struct TranslateErrorDetails;
 struct TranslateInitDetails;
 
@@ -92,13 +93,14 @@ class TranslateManager {
                                        language::LanguageModel* language_model);
 
   // Returns the language to translate to using the same logic as
-  // GetTargetLanguage but doesn't returned languages contained in
+  // GetTargetLanguage but doesn't return languages contained in
   // |skipped_languages| if |language_model| is not null and there is at least
   // one other suitable language.
   static std::string GetTargetLanguage(
       const TranslatePrefs* prefs,
       language::LanguageModel* language_model,
-      const std::set<std::string>& skipped_languages);
+      const std::set<std::string>& skipped_languages,
+      TranslateBrowserMetrics::TargetLanguageOrigin& target_language_origin);
 
   // Returns the language to automatically translate to. |original_language| is
   // the webpage's original language.
@@ -117,9 +119,11 @@ class TranslateManager {
   // Translates the page contents from |source_lang| to |target_lang|.
   // The actual translation might be performed asynchronously if the translate
   // script is not yet available.
-  void TranslatePage(const std::string& source_lang,
-                     const std::string& target_lang,
-                     bool triggered_from_menu);
+  void TranslatePage(
+      const std::string& source_lang,
+      const std::string& target_lang,
+      bool triggered_from_menu,
+      TranslationType translate_type = TranslationType::kUninitialized);
 
   // Starts the translation process for the page in the |page_lang| language.
   void InitiateTranslation(const std::string& page_lang);
@@ -151,6 +155,14 @@ class TranslateManager {
   // under options in the translate infobar.
   void ReportLanguageDetectionError();
 
+  // Global Callbacks
+
+  // The three callbacks below (translate error, translate initialization, and
+  // language detected) are global for all WebContentses and should only be used
+  // by translate-internals. All other clients should (probably) care about
+  // which WebContents is being translated and therefore should instead use
+  // LanguageDetectionObserver.
+
   // Callback types for translate errors.
   using TranslateErrorCallbackList =
       base::RepeatingCallbackList<void(const TranslateErrorDetails&)>;
@@ -161,6 +173,11 @@ class TranslateManager {
       base::RepeatingCallbackList<void(const TranslateInitDetails&)>;
   using TranslateInitCallback = TranslateInitCallbackList::CallbackType;
 
+  // Callback types for language detection.
+  using LanguageDetectedCallbackList =
+      base::RepeatingCallbackList<void(const LanguageDetectionDetails&)>;
+  using LanguageDetectedCallback = LanguageDetectedCallbackList::CallbackType;
+
   // Registers a callback for translate errors.
   static base::CallbackListSubscription RegisterTranslateErrorCallback(
       const TranslateErrorCallback& callback);
@@ -168,6 +185,10 @@ class TranslateManager {
   // Registers a callback for translate initialization.
   static base::CallbackListSubscription RegisterTranslateInitCallback(
       const TranslateInitCallback& callback);
+
+  // Registers a callback for language detection.
+  static base::CallbackListSubscription RegisterLanguageDetectedCallback(
+      const LanguageDetectedCallback& callback);
 
   // Gets the LanguageState associated with the TranslateManager
   LanguageState* GetLanguageState();
@@ -216,6 +237,9 @@ class TranslateManager {
   void RegisterTranslateMetricsLogger(
       base::WeakPtr<TranslateMetricsLogger> translate_metrics_logger);
 
+  // Called when the language of a page has been detected.
+  void NotifyLanguageDetected(const LanguageDetectionDetails& details);
+
  private:
   friend class translate::testing::TranslateManagerTest;
 
@@ -237,8 +261,7 @@ class TranslateManager {
   // Initiates the translation.
   void OnTranslateScriptFetchComplete(const std::string& source_lang,
                                       const std::string& target_lang,
-                                      bool success,
-                                      const std::string& data);
+                                      bool success);
 
   // Helper function to initialize a translate event metric proto.
   void InitTranslateEvent(const std::string& src_lang,

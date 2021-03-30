@@ -12,7 +12,7 @@
 namespace messages {
 
 MessageWrapper::MessageWrapper(base::OnceClosure action_callback,
-                               base::OnceClosure dismiss_callback)
+                               DismissCallback dismiss_callback)
     : action_callback_(std::move(action_callback)),
       dismiss_callback_(std::move(dismiss_callback)),
       message_dismissed_(false) {
@@ -25,48 +25,48 @@ MessageWrapper::~MessageWrapper() {
   CHECK(message_dismissed_);
 }
 
-base::string16 MessageWrapper::GetTitle() {
+std::u16string MessageWrapper::GetTitle() {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jstring> jtitle =
       Java_MessageWrapper_getTitle(env, java_message_wrapper_);
-  return jtitle.is_null() ? base::string16()
+  return jtitle.is_null() ? std::u16string()
                           : base::android::ConvertJavaStringToUTF16(jtitle);
 }
 
-void MessageWrapper::SetTitle(const base::string16& title) {
+void MessageWrapper::SetTitle(const std::u16string& title) {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jstring> jtitle =
       base::android::ConvertUTF16ToJavaString(env, title);
   Java_MessageWrapper_setTitle(env, java_message_wrapper_, jtitle);
 }
 
-base::string16 MessageWrapper::GetDescription() {
+std::u16string MessageWrapper::GetDescription() {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jstring> jdescription =
       Java_MessageWrapper_getDescription(env, java_message_wrapper_);
   return jdescription.is_null()
-             ? base::string16()
+             ? std::u16string()
              : base::android::ConvertJavaStringToUTF16(jdescription);
 }
 
-void MessageWrapper::SetDescription(const base::string16& description) {
+void MessageWrapper::SetDescription(const std::u16string& description) {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jstring> jdescription =
       base::android::ConvertUTF16ToJavaString(env, description);
   Java_MessageWrapper_setDescription(env, java_message_wrapper_, jdescription);
 }
 
-base::string16 MessageWrapper::GetPrimaryButtonText() {
+std::u16string MessageWrapper::GetPrimaryButtonText() {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jstring> jprimary_button_text =
       Java_MessageWrapper_getPrimaryButtonText(env, java_message_wrapper_);
   return jprimary_button_text.is_null()
-             ? base::string16()
+             ? std::u16string()
              : base::android::ConvertJavaStringToUTF16(jprimary_button_text);
 }
 
 void MessageWrapper::SetPrimaryButtonText(
-    const base::string16& primary_button_text) {
+    const std::u16string& primary_button_text) {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jstring> jprimary_button_text =
       base::android::ConvertUTF16ToJavaString(env, primary_button_text);
@@ -74,17 +74,17 @@ void MessageWrapper::SetPrimaryButtonText(
                                            jprimary_button_text);
 }
 
-base::string16 MessageWrapper::GetSecondaryActionText() {
+std::u16string MessageWrapper::GetSecondaryActionText() {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jstring> jsecondary_action_text =
       Java_MessageWrapper_getSecondaryActionText(env, java_message_wrapper_);
   return jsecondary_action_text.is_null()
-             ? base::string16()
+             ? std::u16string()
              : base::android::ConvertJavaStringToUTF16(jsecondary_action_text);
 }
 
 void MessageWrapper::SetSecondaryActionText(
-    const base::string16& secondary_action_text) {
+    const std::u16string& secondary_action_text) {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jstring> jsecondary_action_text =
       base::android::ConvertUTF16ToJavaString(env, secondary_action_text);
@@ -129,13 +129,14 @@ void MessageWrapper::HandleSecondaryActionClick(JNIEnv* env) {
     std::move(secondary_action_callback_).Run();
 }
 
-void MessageWrapper::HandleDismissCallback(JNIEnv* env) {
+void MessageWrapper::HandleDismissCallback(JNIEnv* env, int dismiss_reason) {
   // Make sure message dismissed callback is called exactly once.
   CHECK(!message_dismissed_);
   message_dismissed_ = true;
   Java_MessageWrapper_clearNativePtr(env, java_message_wrapper_);
   if (!dismiss_callback_.is_null())
-    std::move(dismiss_callback_).Run();
+    std::move(dismiss_callback_)
+        .Run(static_cast<DismissReason>(dismiss_reason));
   // Dismiss callback typically deletes the instance of MessageWrapper,
   // invalidating |this| pointer. Don't call any methods after dismiss_callback_
   // is invoked.

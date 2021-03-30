@@ -46,10 +46,12 @@ DelayHandler::DelayHandler(AudioNode& node,
           kNodeTypeDelay,
           node,
           sample_rate,
-          std::make_unique<DelayProcessor>(sample_rate,
-                                           1,
-                                           delay_time,
-                                           max_delay_time)) {
+          std::make_unique<DelayProcessor>(
+              sample_rate,
+              1,
+              node.context()->GetDeferredTaskHandler().RenderQuantumFrames(),
+              delay_time,
+              max_delay_time)) {
   // Initialize the handler so that AudioParams can be processed.
   Initialize();
 }

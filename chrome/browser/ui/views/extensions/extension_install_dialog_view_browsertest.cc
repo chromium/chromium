@@ -149,7 +149,7 @@ bool ScrollbarTest::IsScrollbarVisible(
 // Tests that a scrollbar _is_ shown for an excessively long extension
 // install prompt.
 IN_PROC_BROWSER_TEST_F(ScrollbarTest, LongPromptScrollbar) {
-  base::string16 permission_string(base::ASCIIToUTF16("Test"));
+  std::u16string permission_string(u"Test");
   PermissionMessages permissions;
   for (int i = 0; i < 20; i++) {
     permissions.push_back(PermissionMessage(permission_string,
@@ -171,8 +171,8 @@ IN_PROC_BROWSER_TEST_F(ScrollbarTest, LongPromptScrollbar) {
 #define MAYBE_ScrollbarRegression ScrollbarRegression
 #endif
 IN_PROC_BROWSER_TEST_F(ScrollbarTest, MAYBE_ScrollbarRegression) {
-  base::string16 permission_string(base::ASCIIToUTF16(
-      "Read and modify your data on *.facebook.com"));
+  std::u16string permission_string(
+      u"Read and modify your data on *.facebook.com");
   PermissionMessages permissions;
   permissions.push_back(PermissionMessage(permission_string,
                                           PermissionIDSet()));
@@ -331,7 +331,7 @@ class ExtensionInstallDialogViewInteractiveBrowserTest
 
   void AddPermissionWithDetails(
       std::string main_permission,
-      std::vector<base::string16> detailed_permissions) {
+      std::vector<std::u16string> detailed_permissions) {
     permission_messages_.push_back(
         PermissionMessage(base::ASCIIToUTF16(main_permission),
                           PermissionIDSet(), std::move(detailed_permissions)));
@@ -344,7 +344,7 @@ class ExtensionInstallDialogViewInteractiveBrowserTest
   std::unique_ptr<PermissionSet> permission_set_;
   PermissionMessages permission_messages_;
   std::vector<base::FilePath> retained_files_;
-  std::vector<base::string16> retained_devices_;
+  std::vector<std::u16string> retained_devices_;
 
   base::test::ScopedFeatureList feature_list_;
 
@@ -400,19 +400,30 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
   ShowAndVerifyUi();
 }
 
+// crbug.com/1166152
+#if defined(OS_WIN)
+#define MAYBE_InvokeUi_ManyPermissions DISABLED_InvokeUi_ManyPermissions
+#else
+#define MAYBE_InvokeUi_ManyPermissions InvokeUi_ManyPermissions
+#endif
 IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
-                       InvokeUi_ManyPermissions) {
+                       MAYBE_InvokeUi_ManyPermissions) {
   for (int i = 0; i < 20; i++)
     AddPermission("Example permission");
   ShowAndVerifyUi();
 }
 
+// TODO(https://crbug.com/1126736): Flaky on Win10.
+#if defined(OS_WIN)
+#define MAYBE_InvokeUi_DetailedPermission DISABLED_InvokeUi_DetailedPermission
+#else
+#define MAYBE_InvokeUi_DetailedPermission InvokeUi_DetailedPermission
+#endif
 IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
-                       InvokeUi_DetailedPermission) {
+                       MAYBE_InvokeUi_DetailedPermission) {
   AddPermissionWithDetails(
       "Example header permission",
-      {base::ASCIIToUTF16("Detailed permission 1"),
-       base::ASCIIToUTF16("Detailed permission 2"),
+      {u"Detailed permission 1", u"Detailed permission 2",
        base::ASCIIToUTF16("Very very very very very very long detailed "
                           "permission that wraps to a new line")});
   ShowAndVerifyUi();
@@ -439,8 +450,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
   ShowAndVerifyUi();
 }
 
+// TODO(https://crbug.com/1126741): Flaky on Win10.
+#if defined(OS_WIN)
+#define MAYBE_InvokeUi_WithWithholdingOption \
+  DISABLED_InvokeUi_WithWithholdingOption
+#else
+#define MAYBE_InvokeUi_WithWithholdingOption InvokeUi_WithWithholdingOption
+#endif
 IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
-                       InvokeUi_WithWithholdingOption) {
+                       MAYBE_InvokeUi_WithWithholdingOption) {
   // The permissions withholding UI requires a proper permission set to be used,
   // as it checks for host permissions to determine if it should be shown.
   auto permissions = std::make_unique<PermissionSet>(
@@ -456,9 +474,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
 IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
                        InvokeUi_AllInfoTypes) {
   AddPermission("Example permission");
-  AddPermissionWithDetails("This permission has details",
-                           {base::ASCIIToUTF16("Detailed permission 1"),
-                            base::ASCIIToUTF16("Detailed permission 2")});
+  AddPermissionWithDetails(
+      "This permission has details",
+      {u"Detailed permission 1", u"Detailed permission 2"});
   AddRetainedDevice("USB Device");
   AddRetainedFile(base::FilePath(FILE_PATH_LITERAL("/dev/null")));
   ShowAndVerifyUi();

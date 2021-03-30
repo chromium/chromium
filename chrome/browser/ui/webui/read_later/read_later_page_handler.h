@@ -17,7 +17,10 @@ namespace base {
 class Clock;
 }
 
-class Browser;
+namespace content {
+class WebUI;
+}
+
 class GURL;
 class ReadLaterUI;
 class ReadingListEntry;
@@ -28,7 +31,8 @@ class ReadLaterPageHandler : public read_later::mojom::PageHandler {
   ReadLaterPageHandler(
       mojo::PendingReceiver<read_later::mojom::PageHandler> receiver,
       mojo::PendingRemote<read_later::mojom::Page> page,
-      ReadLaterUI* read_later_ui);
+      ReadLaterUI* read_later_ui,
+      content::WebUI* web_ui);
   ReadLaterPageHandler(const ReadLaterPageHandler&) = delete;
   ReadLaterPageHandler& operator=(const ReadLaterPageHandler&) = delete;
   ~ReadLaterPageHandler() override;
@@ -47,6 +51,10 @@ class ReadLaterPageHandler : public read_later::mojom::PageHandler {
   read_later::mojom::ReadLaterEntryPtr GetEntryData(
       const ReadingListEntry* entry);
 
+  // Returns the lists for the read/unread entries.
+  read_later::mojom::ReadLaterEntriesByStatusPtr
+  CreateReadLaterEntriesByStatusData();
+
   // Converts |last_update_time| from microseconds since epoch in Unix-like
   // system (Jan 1, 1970), since this is how ReadingListEntry's |update_time| is
   // stored, to a localized representation as a delay (e.g. "5 minutes ago").
@@ -54,7 +62,6 @@ class ReadLaterPageHandler : public read_later::mojom::PageHandler {
 
   mojo::Receiver<read_later::mojom::PageHandler> receiver_;
   mojo::Remote<read_later::mojom::Page> page_;
-  Browser* const browser_;
   // ReadLaterPageHandler is owned by |read_later_ui_| and so we expect
   // |read_later_ui_| to remain valid for the lifetime of |this|.
   ReadLaterUI* const read_later_ui_;

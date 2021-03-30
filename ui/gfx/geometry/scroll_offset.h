@@ -20,8 +20,8 @@ namespace gfx {
 
 class GEOMETRY_EXPORT ScrollOffset {
  public:
-  ScrollOffset() : x_(0), y_(0) {}
-  ScrollOffset(float x, float y) : x_(x), y_(y) {}
+  constexpr ScrollOffset() : x_(0), y_(0) {}
+  constexpr ScrollOffset(float x, float y) : x_(x), y_(y) {}
   explicit ScrollOffset(const Vector2dF& v) : x_(v.x()), y_(v.y()) {}
   explicit ScrollOffset(const Vector2d& v) : x_(v.x()), y_(v.y()) {}
 

@@ -63,6 +63,10 @@ const char kLoadExtension[] = "load-extension";
 // extension loaded must match kTestSigninProfileExtensionId.
 const char kLoadSigninProfileTestExtension[] =
     "load-signin-profile-test-extension";
+
+// Path to the unpacked test extension to load into guest mode. The extension ID
+// must match kGuestModeTestExtensionId.
+const char kLoadGuestModeTestExtension[] = "load-guest-mode-test-extension";
 #endif
 
 // Set the parameters for ExtensionURLLoaderThrottleBrowserTest.

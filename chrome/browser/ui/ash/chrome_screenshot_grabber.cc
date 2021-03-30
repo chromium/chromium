@@ -86,7 +86,7 @@ class ScreenshotGrabberNotificationDelegate
 
   // message_center::NotificationDelegate:
   void Click(const base::Optional<int>& button_index,
-             const base::Optional<base::string16>& reply) override {
+             const base::Optional<std::u16string>& reply) override {
     if (!button_index) {
       // TODO(estade): this conditional can be a DCHECK after
       // NotificationDelegate::Click() is not called for notifications that are
@@ -144,6 +144,8 @@ int GetScreenshotNotificationTitle(ScreenshotResult screenshot_result) {
   switch (screenshot_result) {
     case ScreenshotResult::DISABLED:
       return IDS_SCREENSHOT_NOTIFICATION_TITLE_DISABLED;
+    case ScreenshotResult::DISABLED_BY_DLP:
+      return IDS_SCREENSHOT_NOTIFICATION_TITLE_DISABLED_BY_DLP;
     case ScreenshotResult::SUCCESS:
       return IDS_SCREENSHOT_NOTIFICATION_TITLE_SUCCESS;
     default:
@@ -155,6 +157,8 @@ int GetScreenshotNotificationText(ScreenshotResult screenshot_result) {
   switch (screenshot_result) {
     case ScreenshotResult::DISABLED:
       return IDS_SCREENSHOT_NOTIFICATION_TEXT_DISABLED;
+    case ScreenshotResult::DISABLED_BY_DLP:
+      return IDS_SCREENSHOT_NOTIFICATION_TEXT_DISABLED_BY_DLP;
     case ScreenshotResult::SUCCESS:
       return IDS_SCREENSHOT_NOTIFICATION_TEXT_SUCCESS;
     default:
@@ -298,8 +302,7 @@ ChromeScreenshotGrabber* ChromeScreenshotGrabber::Get() {
 
 void ChromeScreenshotGrabber::HandleTakeScreenshotForAllRootWindows() {
   const ScreenshotArea area = ScreenshotArea::CreateForAllRootWindows();
-  if (!IsScreenshotAllowed(area)) {
-    OnScreenshotCompleted(ScreenshotResult::DISABLED, base::FilePath());
+  if (!CheckIfScreenshotAllowed(area)) {
     return;
   }
 
@@ -332,8 +335,7 @@ void ChromeScreenshotGrabber::HandleTakePartialScreenshot(
     const gfx::Rect& rect) {
   const ScreenshotArea area =
       ScreenshotArea::CreateForPartialWindow(window, rect);
-  if (!IsScreenshotAllowed(area)) {
-    OnScreenshotCompleted(ScreenshotResult::DISABLED, base::FilePath());
+  if (!CheckIfScreenshotAllowed(area)) {
     return;
   }
 
@@ -347,8 +349,7 @@ void ChromeScreenshotGrabber::HandleTakePartialScreenshot(
 
 void ChromeScreenshotGrabber::HandleTakeWindowScreenshot(aura::Window* window) {
   const ScreenshotArea area = ScreenshotArea::CreateForWindow(window);
-  if (!IsScreenshotAllowed(area)) {
-    OnScreenshotCompleted(ScreenshotResult::DISABLED, base::FilePath());
+  if (!CheckIfScreenshotAllowed(area)) {
     return;
   }
 
@@ -376,8 +377,7 @@ void ChromeScreenshotGrabber::OnTookScreenshot(
     return;
   }
 
-  if (!IsScreenshotAllowed(area)) {
-    OnScreenshotCompleted(ScreenshotResult::DISABLED, base::FilePath());
+  if (!CheckIfScreenshotAllowed(area)) {
     return;
   }
 
@@ -528,7 +528,7 @@ void ChromeScreenshotGrabber::OnReadScreenshotFileForPreviewCompleted(
           kNotificationId,
           l10n_util::GetStringUTF16(GetScreenshotNotificationTitle(result)),
           l10n_util::GetStringUTF16(GetScreenshotNotificationText(result)),
-          /*display_source=*/base::string16() /*system name*/,
+          /*display_source=*/std::u16string() /*system name*/,
           GURL(kNotificationOriginUrl),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
@@ -556,17 +556,24 @@ Profile* ChromeScreenshotGrabber::GetProfile() {
   return ProfileManager::GetActiveUserProfile();
 }
 
-bool ChromeScreenshotGrabber::IsScreenshotAllowed(
-    const ScreenshotArea& area) const {
+bool ChromeScreenshotGrabber::CheckIfScreenshotAllowed(
+    const ScreenshotArea& area) {
   // Have three ways to disable screenshots:
   // - local state pref whose value is set from policy;
   // - simple flag which is set/unset when entering/exiting special modes where
   // screenshots should be disabled (pref is problematic because it's kept
   // across reboots, hence if the device crashes it may get stuck with the wrong
   // value).
-  // - because of DLP restricted content present in the area of the screenshot.
-  return screenshots_allowed_ &&
-         !g_browser_process->local_state()->GetBoolean(
-             prefs::kDisableScreenshots) &&
-         !policy::DlpContentManager::Get()->IsScreenshotRestricted(area);
+  // - because of DataLeakPrevention restricted content present in the area of
+  // the screenshot - handled in the second check.
+  if (!screenshots_allowed_ || g_browser_process->local_state()->GetBoolean(
+                                   prefs::kDisableScreenshots)) {
+    OnScreenshotCompleted(ScreenshotResult::DISABLED, base::FilePath());
+    return false;
+  }
+  if (policy::DlpContentManager::Get()->IsScreenshotRestricted(area)) {
+    OnScreenshotCompleted(ScreenshotResult::DISABLED_BY_DLP, base::FilePath());
+    return false;
+  }
+  return true;
 }

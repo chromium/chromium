@@ -69,7 +69,9 @@ class FileHandlerManager {
   // Disables file handlers for all OSs and unregisters OS specific file
   // handlers for OSs that need them. On Chrome OS file handlers are registered
   // separately but they are still enabled and disabled here.
-  void DisableAndUnregisterOsFileHandlers(const AppId& app_id);
+  void DisableAndUnregisterOsFileHandlers(const AppId& app_id,
+                                          std::unique_ptr<ShortcutInfo> info,
+                                          base::OnceCallback<void()> callback);
 
   // Updates the file handling origin trial expiry timer based on a currently
   // open instance of the site. This will not update the expiry timer if

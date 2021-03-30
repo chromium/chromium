@@ -14,8 +14,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
-#include "chrome/updater/service_scope.h"
 #include "chrome/updater/update_service.h"
+#include "chrome/updater/updater_scope.h"
 
 @class CRUUpdateServiceProxyImpl;
 
@@ -33,7 +33,7 @@ namespace updater {
 // All functions and callbacks must be called on the same sequence.
 class UpdateServiceProxy : public UpdateService {
  public:
-  explicit UpdateServiceProxy(ServiceScope scope);
+  explicit UpdateServiceProxy(UpdaterScope scope);
 
   // Overrides for UpdateService.
   void GetVersion(
@@ -41,6 +41,7 @@ class UpdateServiceProxy : public UpdateService {
   void RegisterApp(
       const RegistrationRequest& request,
       base::OnceCallback<void(const RegistrationResponse&)> callback) override;
+  void RunPeriodicTasks(base::OnceClosure callback) override;
   void UpdateAll(StateChangeCallback state_update, Callback callback) override;
   void Update(const std::string& app_id,
               Priority priority,

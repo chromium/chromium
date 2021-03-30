@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.notifications;
 import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.PendingIntent;
-import android.app.RemoteInput;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -22,7 +21,10 @@ import android.os.Build;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.app.NotificationCompat;
+import androidx.core.graphics.drawable.IconCompat;
 
+import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
@@ -59,7 +61,7 @@ public abstract class NotificationBuilderBase {
         public int iconId;
         public Bitmap iconBitmap;
         public CharSequence title;
-        public PendingIntent intent;
+        public PendingIntentProvider intent;
         public @Type int type;
         public @NotificationUmaTracker.ActionType int umaActionType;
 
@@ -68,13 +70,13 @@ public abstract class NotificationBuilderBase {
          */
         public String placeholder;
 
-        Action(int iconId, CharSequence title, PendingIntent intent, @Type int type,
+        Action(int iconId, CharSequence title, PendingIntentProvider intent, @Type int type,
                 String placeholder) {
             this(iconId, title, intent, type, placeholder,
                     NotificationUmaTracker.ActionType.UNKNOWN);
         }
 
-        Action(int iconId, CharSequence title, PendingIntent intent, @Type int type,
+        Action(int iconId, CharSequence title, PendingIntentProvider intent, @Type int type,
                 String placeholder, @NotificationUmaTracker.ActionType int umaActionType) {
             this.iconId = iconId;
             this.title = title;
@@ -84,7 +86,7 @@ public abstract class NotificationBuilderBase {
             this.umaActionType = umaActionType;
         }
 
-        Action(Bitmap iconBitmap, CharSequence title, PendingIntent intent, @Type int type,
+        Action(Bitmap iconBitmap, CharSequence title, PendingIntentProvider intent, @Type int type,
                 String placeholder) {
             this.iconBitmap = iconBitmap;
             this.title = title;
@@ -149,6 +151,7 @@ public abstract class NotificationBuilderBase {
     protected Action mSettingsAction;
     protected int mDefaults;
     protected long[] mVibratePattern;
+    protected boolean mSilent;
     protected long mTimestamp;
     protected boolean mRenotify;
     protected int mPriority;
@@ -340,7 +343,7 @@ public abstract class NotificationBuilderBase {
      * content.
      */
     public NotificationBuilderBase addButtonAction(@Nullable Bitmap iconBitmap,
-            @Nullable CharSequence title, @Nullable PendingIntent intent) {
+            @Nullable CharSequence title, PendingIntentProvider intent) {
         addAuthorProvidedAction(iconBitmap, title, intent, Action.Type.BUTTON, null);
         return this;
     }
@@ -351,13 +354,13 @@ public abstract class NotificationBuilderBase {
      * from Android N, displays a text box within the notification for inline replies.
      */
     public NotificationBuilderBase addTextAction(@Nullable Bitmap iconBitmap,
-            @Nullable CharSequence title, @Nullable PendingIntent intent, String placeholder) {
+            @Nullable CharSequence title, PendingIntentProvider intent, String placeholder) {
         addAuthorProvidedAction(iconBitmap, title, intent, Action.Type.TEXT, placeholder);
         return this;
     }
 
     private void addAuthorProvidedAction(@Nullable Bitmap iconBitmap, @Nullable CharSequence title,
-            @Nullable PendingIntent intent, @Action.Type int actionType,
+            PendingIntentProvider intent, @Action.Type int actionType,
             @Nullable String placeholder) {
         if (mActions.size() == MAX_AUTHOR_PROVIDED_ACTION_BUTTONS) {
             throw new IllegalStateException(
@@ -373,7 +376,7 @@ public abstract class NotificationBuilderBase {
      * Adds an action to the notification for opening the settings screen.
      */
     public NotificationBuilderBase addSettingsAction(
-            int iconId, @Nullable CharSequence title, @Nullable PendingIntent intent) {
+            int iconId, @Nullable CharSequence title, PendingIntentProvider intent) {
         mSettingsAction = new Action(iconId, limitLength(title), intent, Action.Type.BUTTON, null,
                 NotificationUmaTracker.ActionType.SETTINGS);
         return this;
@@ -399,6 +402,14 @@ public abstract class NotificationBuilderBase {
      */
     public NotificationBuilderBase setVibrate(long[] pattern) {
         mVibratePattern = Arrays.copyOf(pattern, pattern.length);
+        return this;
+    }
+
+    /**
+     * Sets whether this notification should be silent.
+     */
+    public NotificationBuilderBase setSilent(boolean silent) {
+        mSilent = silent;
         return this;
     }
 
@@ -470,10 +481,9 @@ public abstract class NotificationBuilderBase {
      * on the lockscreen, displaying just the site origin and badge or generated icon.
      */
     protected Notification createPublicNotification(Context context) {
-        // Use a non-compat builder because we want the default small icon behaviour.
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory
-                        .createNotificationWrapperBuilder(false /* preferCompat */, mChannelId)
+                        .createNotificationWrapperBuilder(shouldUseCompat(), mChannelId)
                         .setContentText(context.getString(
                                 org.chromium.chrome.R.string.notification_hidden_text))
                         .setSmallIcon(org.chromium.chrome.R.drawable.ic_chrome);
@@ -494,7 +504,7 @@ public abstract class NotificationBuilderBase {
             // The Icon class was added in Android M.
             Bitmap publicIcon = mSmallIconBitmapForStatusBar.copy(
                     mSmallIconBitmapForStatusBar.getConfig(), true);
-            builder.setSmallIcon(Icon.createWithBitmap(publicIcon));
+            builder.setSmallIcon(ApiHelperForM.createIconWithBitmap(publicIcon));
         } else if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M && mOrigin != null) {
             // Only set the large icon for L & M because on N(+?) it would add an extra icon on
             // the right hand side, which looks odd without a notification title.
@@ -514,6 +524,11 @@ public abstract class NotificationBuilderBase {
         return input;
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    static boolean shouldUseCompat() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.USE_NOTIFICATION_COMPAT_BUILDER);
+    }
+
     /**
      * Sets the small icon on {@code builder} using a {@code Bitmap} if a non-null bitmap is
      * provided and the API level is high enough, otherwise the resource id is used.
@@ -524,7 +539,7 @@ public abstract class NotificationBuilderBase {
             NotificationWrapperBuilder builder, int iconId, @Nullable Bitmap iconBitmap) {
         if (iconBitmap != null) {
             assert deviceSupportsBitmapStatusBarIcons();
-            builder.setSmallIcon(Icon.createWithBitmap(iconBitmap));
+            builder.setSmallIcon(ApiHelperForM.createIconWithBitmap(iconBitmap));
         } else {
             builder.setSmallIcon(iconId);
         }
@@ -559,13 +574,22 @@ public abstract class NotificationBuilderBase {
      * Adds an action to {@code builder} using a {@code Bitmap} if a bitmap is provided and the API
      * level is high enough, otherwise a resource id is used.
      */
-    @SuppressWarnings("deprecation") // For addAction(int, CharSequence, PendingIntent)
     protected static void addActionToBuilder(NotificationWrapperBuilder builder, Action action) {
-        Notification.Action.Builder actionBuilder = getActionBuilder(action);
+        if (shouldUseCompat()) {
+            addActionToBuilderCompat(builder, action);
+        } else {
+            addActionToBuilderStandard(builder, action);
+        }
+    }
+
+    @SuppressWarnings("deprecation") // For addAction(Notification.Action)
+    private static void addActionToBuilderStandard(
+            NotificationWrapperBuilder builder, Action action) {
+        Notification.Action.Builder actionBuilder = getActionBuilderStandard(action);
         if (action.type == Action.Type.TEXT) {
             assert action.placeholder != null;
             actionBuilder.addRemoteInput(
-                    new RemoteInput.Builder(NotificationConstants.KEY_TEXT_REPLY)
+                    new android.app.RemoteInput.Builder(NotificationConstants.KEY_TEXT_REPLY)
                             .setLabel(action.placeholder)
                             .build());
         }
@@ -574,7 +598,27 @@ public abstract class NotificationBuilderBase {
             builder.addAction(actionBuilder.build());
         } else {
             builder.addAction(
-                    actionBuilder.build(), PendingIntent.FLAG_UPDATE_CURRENT, action.umaActionType);
+                    actionBuilder.build(), action.intent.getFlags(), action.umaActionType);
+        }
+    }
+
+    @SuppressWarnings("deprecation") // For addAction(NotificationCompat.Action)
+    private static void addActionToBuilderCompat(
+            NotificationWrapperBuilder builder, Action action) {
+        NotificationCompat.Action.Builder actionBuilder = getActionBuilderCompat(action);
+        if (action.type == Action.Type.TEXT) {
+            assert action.placeholder != null;
+            actionBuilder.addRemoteInput(
+                    new androidx.core.app.RemoteInput.Builder(NotificationConstants.KEY_TEXT_REPLY)
+                            .setLabel(action.placeholder)
+                            .build());
+        }
+
+        if (action.umaActionType == NotificationUmaTracker.ActionType.UNKNOWN) {
+            builder.addAction(actionBuilder.build());
+        } else {
+            builder.addAction(
+                    actionBuilder.build(), action.intent.getFlags(), action.umaActionType);
         }
     }
 
@@ -592,18 +636,22 @@ public abstract class NotificationBuilderBase {
         // all Chrome notifications on N though (see crbug.com/674015).
     }
 
-    @SuppressWarnings("deprecation") // For Builder(int, CharSequence, PendingIntent)
-    private static Notification.Action.Builder getActionBuilder(Action action) {
-        Notification.Action.Builder actionBuilder;
+    private static Notification.Action.Builder getActionBuilderStandard(Action action) {
+        PendingIntent intent = action.intent.getPendingIntent();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && action.iconBitmap != null) {
-            // Icon was added in Android M.
-            Icon icon = Icon.createWithBitmap(action.iconBitmap);
-            actionBuilder = new Notification.Action.Builder(icon, action.title, action.intent);
-        } else {
-            actionBuilder =
-                    new Notification.Action.Builder(action.iconId, action.title, action.intent);
+            Icon icon = ApiHelperForM.createIconWithBitmap(action.iconBitmap);
+            return ApiHelperForM.newNotificationActionBuilder(icon, action.title, intent);
         }
-        return actionBuilder;
+        return new Notification.Action.Builder(action.iconId, action.title, intent);
+    }
+
+    private static NotificationCompat.Action.Builder getActionBuilderCompat(Action action) {
+        PendingIntent intent = action.intent.getPendingIntent();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && action.iconBitmap != null) {
+            IconCompat icon = IconCompat.createWithBitmap(action.iconBitmap);
+            return new NotificationCompat.Action.Builder(icon, action.title, intent);
+        }
+        return new NotificationCompat.Action.Builder(action.iconId, action.title, intent);
     }
 
     /**

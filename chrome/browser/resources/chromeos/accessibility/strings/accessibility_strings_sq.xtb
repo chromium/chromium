@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">Artikull liste</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">Rrëshqit shpejt dy gishta djathtas</translation>
-<translation id="1016393160682012902">Shtyp një tast qwerty, tast të rifreskueshëm brail ose gjest me prekje për të mësuar funksionin e tij. Shtyp "Control" me w ose "Escape" për të dalë.</translation>
 <translation id="1022586497894531524">Po i përdor për herë të parë komentet me zë të ChromeVox? Ky udhëzues i shpejtë shpjegon bazat për të filluar me ChromeVox.</translation>
 <translation id="1025074108959230262">Modaliteti "i ngjitur" është çaktivizuar</translation>
 <translation id="1031961866430398710">më pas</translation>
@@ -150,6 +149,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="2045055672832940894">Nuk ka kontroll të mëparshëm</translation>
 <translation id="2045606329038304310">Kontrolli i fushës së formës</translation>
 <translation id="2063539687800151747">Epigraf</translation>
+<translation id="2074531330963286860">Veprimet e mundshme. Shtyp Kërko+Pikë për të parë</translation>
 <translation id="2086961585857038472">Fjala tjetër</translation>
 <translation id="2087981446621639008">detaje liste përshkrimesh</translation>
 <translation id="2089387485033699258">sq</translation>
@@ -976,6 +976,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="827266600368092403">Fillo ose përfundo zgjedhjen</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8276439074553447000">Kalo në artikullin e mëparshëm të përqendrueshëm</translation>
+<translation id="8279039817939141096">Shtyp një tast qwerty, tast të rifreskueshëm brail ose gjest me prekje për të mësuar funksionin e tij. Shtyp "Control" me w, hapësirën me Z, rrëshqit shpejt majtas me dy gishta ose "Escape" për të dalë.</translation>
 <translation id="8283603667300770666">Fusha tjetër e formularit</translation>
 <translation id="8310185481635255431">Nuk ka asnjë lidhje tjetër</translation>
 <translation id="831207808878314375">Përkufizimi</translation>

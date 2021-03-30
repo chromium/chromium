@@ -764,6 +764,20 @@ TEST(ParsedCookieTest, InvalidNonAlphanumericChars) {
       "\x05"
       "o");
 
+  ParsedCookie pc13(
+      "foo=bar;ba"
+      "\x7F"
+      "z=bo");
+  ParsedCookie pc14(
+      "fo"
+      "\x7F"
+      "o=bar;"
+      "z=bo");
+  ParsedCookie pc15(
+      "foo=bar"
+      "\x7F"
+      ";z=bo");
+
   EXPECT_FALSE(pc1.IsValid());
   EXPECT_FALSE(pc2.IsValid());
   EXPECT_FALSE(pc3.IsValid());
@@ -776,6 +790,9 @@ TEST(ParsedCookieTest, InvalidNonAlphanumericChars) {
   EXPECT_FALSE(pc10.IsValid());
   EXPECT_FALSE(pc11.IsValid());
   EXPECT_FALSE(pc12.IsValid());
+  EXPECT_FALSE(pc13.IsValid());
+  EXPECT_FALSE(pc14.IsValid());
+  EXPECT_FALSE(pc15.IsValid());
 }
 
 TEST(ParsedCookieTest, ValidNonAlphanumericChars) {

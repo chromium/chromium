@@ -90,8 +90,8 @@ int FileSystemContext::GetPermissionPolicy(FileSystemType type) {
     case kFileSystemTypeSyncable:
       return FILE_PERMISSION_SANDBOX;
 
-    case kFileSystemTypeNativeForPlatformApp:
-    case kFileSystemTypeNativeLocal:
+    case kFileSystemTypeLocalForPlatformApp:
+    case kFileSystemTypeLocal:
     case kFileSystemTypeCloudDevice:
     case kFileSystemTypeProvided:
     case kFileSystemTypeDeviceMediaAsFileStorage:
@@ -101,11 +101,11 @@ int FileSystemContext::GetPermissionPolicy(FileSystemType type) {
     case kFileSystemTypeSmbFs:
       return FILE_PERMISSION_USE_FILE_PERMISSION;
 
-    case kFileSystemTypeRestrictedNativeLocal:
+    case kFileSystemTypeRestrictedLocal:
       return FILE_PERMISSION_READ_ONLY | FILE_PERMISSION_USE_FILE_PERMISSION;
 
     case kFileSystemTypeDeviceMedia:
-    case kFileSystemTypeNativeMedia:
+    case kFileSystemTypeLocalMedia:
       return FILE_PERMISSION_USE_FILE_PERMISSION;
 
     // Following types are only accessed via IsolatedFileSystem, and
@@ -150,28 +150,29 @@ FileSystemContext::FileSystemContext(
       io_task_runner_(io_task_runner),
       default_file_task_runner_(file_task_runner),
       quota_manager_proxy_(quota_manager_proxy),
-      sandbox_delegate_(
-          new SandboxFileSystemBackendDelegate(quota_manager_proxy,
-                                               file_task_runner,
-                                               partition_path,
-                                               special_storage_policy,
-                                               options,
-                                               env_override_.get())),
-      sandbox_backend_(new SandboxFileSystemBackend(sandbox_delegate_.get())),
-      plugin_private_backend_(
-          new PluginPrivateFileSystemBackend(file_task_runner,
-                                             partition_path,
-                                             special_storage_policy,
-                                             options,
-                                             env_override_.get())),
+      sandbox_delegate_(std::make_unique<SandboxFileSystemBackendDelegate>(
+          quota_manager_proxy,
+          file_task_runner,
+          partition_path,
+          special_storage_policy,
+          options,
+          env_override_.get())),
+      sandbox_backend_(
+          std::make_unique<SandboxFileSystemBackend>(sandbox_delegate_.get())),
+      plugin_private_backend_(std::make_unique<PluginPrivateFileSystemBackend>(
+          file_task_runner,
+          partition_path,
+          special_storage_policy,
+          options,
+          env_override_.get())),
       additional_backends_(std::move(additional_backends)),
       auto_mount_handlers_(auto_mount_handlers),
       external_mount_points_(external_mount_points),
       partition_path_(partition_path),
       is_incognito_(options.is_incognito()),
-      operation_runner_(
-          new FileSystemOperationRunner(base::PassKey<FileSystemContext>(),
-                                        this)) {
+      operation_runner_(std::make_unique<FileSystemOperationRunner>(
+          base::PassKey<FileSystemContext>(),
+          this)) {
   RegisterBackend(sandbox_backend_.get());
   RegisterBackend(plugin_private_backend_.get());
 
@@ -179,18 +180,19 @@ FileSystemContext::FileSystemContext(
     RegisterBackend(backend.get());
 
   // If the embedder's additional backends already provide support for
-  // kFileSystemTypeNativeLocal and kFileSystemTypeNativeForPlatformApp then
+  // kFileSystemTypeLocal and kFileSystemTypeLocalForPlatformApp then
   // IsolatedFileSystemBackend does not need to handle them. For example, on
   // Chrome OS the additional backend chromeos::FileSystemBackend handles these
   // types.
-  isolated_backend_.reset(new IsolatedFileSystemBackend(
-      !base::Contains(backend_map_, kFileSystemTypeNativeLocal),
-      !base::Contains(backend_map_, kFileSystemTypeNativeForPlatformApp)));
+  isolated_backend_ = std::make_unique<IsolatedFileSystemBackend>(
+      !base::Contains(backend_map_, kFileSystemTypeLocal),
+      !base::Contains(backend_map_, kFileSystemTypeLocalForPlatformApp));
   RegisterBackend(isolated_backend_.get());
 
   if (quota_manager_proxy) {
     // Quota client assumes all backends have registered.
-    quota_manager_proxy->RegisterClient(
+    // TODO(crbug.com/1163048): Use mojo and switch to RegisterClient().
+    quota_manager_proxy->RegisterLegacyClient(
         base::MakeRefCounted<FileSystemQuotaClient>(this),
         QuotaClientType::kFileSystem, QuotaManagedStorageTypes());
   }
@@ -639,12 +641,8 @@ void FileSystemContext::DidOpenFileSystemForResolveURL(
     DCHECK(result);
   }
 
-  // TODO(mtomasz): Not all fields should be required for ResolveURL.
   operation_runner()->GetMetadata(
-      url,
-      FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
-          FileSystemOperation::GET_METADATA_FIELD_SIZE |
-          FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED,
+      url, FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY,
       base::BindOnce(&DidGetMetadataForResolveURL, path, std::move(callback),
                      info));
 }

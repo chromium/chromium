@@ -6,12 +6,10 @@
 #define IOS_CHROME_BROWSER_SCREEN_TIME_SCREEN_TIME_HISTORY_DELETER_H_
 
 #include "base/macros.h"
+#include "base/scoped_observation.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
-
-namespace history {
-class HistoryService;
-}
 
 @class STWebHistory;
 
@@ -34,6 +32,10 @@ class API_AVAILABLE(ios(14.0)) ScreenTimeHistoryDeleter
 
   history::HistoryService* history_service_;
   STWebHistory* screen_time_history_;
+
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_service_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ScreenTimeHistoryDeleter);
 };

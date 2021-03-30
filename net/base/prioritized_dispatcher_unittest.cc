@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/test/gtest_util.h"
 #include "net/base/request_priority.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -530,11 +531,11 @@ TEST_F(PrioritizedDispatcherTest, ZeroLimitsThenIncreasePriority) {
   Expect("a.");
 }
 
-#if GTEST_HAS_DEATH_TEST && !defined(NDEBUG)
+#if GTEST_HAS_DEATH_TEST
 TEST_F(PrioritizedDispatcherTest, CancelNull) {
   PrioritizedDispatcher::Limits limits(NUM_PRIORITIES, 1);
   Prepare(limits);
-  EXPECT_DEBUG_DEATH(dispatcher_->Cancel(PrioritizedDispatcher::Handle()), "");
+  EXPECT_DCHECK_DEATH(dispatcher_->Cancel(PrioritizedDispatcher::Handle()));
 }
 
 TEST_F(PrioritizedDispatcherTest, CancelMissing) {
@@ -545,9 +546,9 @@ TEST_F(PrioritizedDispatcherTest, CancelMissing) {
   PrioritizedDispatcher::Handle handle = job_b->handle();
   ASSERT_FALSE(handle.is_null());
   dispatcher_->Cancel(handle);
-  EXPECT_DEBUG_DEATH(dispatcher_->Cancel(handle), "");
+  EXPECT_DCHECK_DEATH(dispatcher_->Cancel(handle));
 }
-#endif  // GTEST_HAS_DEATH_TEST && !defined(NDEBUG)
+#endif  // GTEST_HAS_DEATH_TEST
 
 }  // namespace
 

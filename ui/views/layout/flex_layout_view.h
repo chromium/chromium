@@ -7,6 +7,7 @@
 
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/views_export.h"
@@ -15,6 +16,7 @@ namespace views {
 
 class VIEWS_EXPORT FlexLayoutView : public View {
  public:
+  METADATA_HEADER(FlexLayoutView);
   FlexLayoutView();
   FlexLayoutView(const FlexLayoutView&) = delete;
   FlexLayoutView operator=(const FlexLayoutView&) = delete;

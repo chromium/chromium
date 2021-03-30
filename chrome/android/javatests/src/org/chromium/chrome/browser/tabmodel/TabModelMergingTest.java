@@ -26,18 +26,19 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper;
@@ -50,7 +51,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OverviewModeBehaviorWatcher;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
@@ -361,7 +361,10 @@ public class TabModelMergingTest {
         MockTabPersistentStoreObserver mockObserver = new MockTabPersistentStoreObserver();
         TabModelSelectorImpl tabModelSelector =
                 (TabModelSelectorImpl) mActivity2.getTabModelSelector();
-        tabModelSelector.getTabPersistentStoreForTesting().addObserver(mockObserver);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivity2.getTabModelOrchestratorSupplier().get().getTabPersistentStore().addObserver(
+                    mockObserver);
+        });
 
         // Merge tabs into ChromeTabbedActivity2. Wait for the merge to finish, ensuring the
         // tab metadata file for ChromeTabbedActivity gets deleted before attempting to merge
@@ -461,6 +464,10 @@ public class TabModelMergingTest {
     @LargeTest
     @Feature({"TabPersistentStore", "MultiWindow"})
     public void testMergeWithNoTabs() {
+        // Enter the tab switcher before closing all tabs with grid tab switcher enabled, otherwise
+        // the activity is killed and the test fails.
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivity1.getLayoutManager().showOverview(false));
+
         // Close all tabs and wait for the callback.
         ChromeTabUtils.closeAllTabs(InstrumentationRegistry.getInstrumentation(), mActivity1);
 
@@ -477,6 +484,7 @@ public class TabModelMergingTest {
     @Test
     @LargeTest
     @Feature({"TabPersistentStore", "MultiWindow"})
+    @DisabledTest(message = "https://crbug.com/1190012")
     public void testMergingIncognitoTabs() {
         // Incognito tabs must be fully loaded so that their tab states are written out.
         ChromeTabUtils.fullyLoadUrlInNewTab(
@@ -506,7 +514,6 @@ public class TabModelMergingTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_MULTIPLE_DISPLAY)
     @DisableIf.Build(sdk_is_less_than = VERSION_CODES.P)
     public void testMergeOnMultiDisplay_CTA_Resumed_CTA2_Not_Resumed() throws TimeoutException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -547,7 +554,6 @@ public class TabModelMergingTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_MULTIPLE_DISPLAY)
     @DisableIf.Build(sdk_is_less_than = VERSION_CODES.P)
     public void testMergeOnMultiDisplay_OnDisplayChanged() throws TimeoutException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {

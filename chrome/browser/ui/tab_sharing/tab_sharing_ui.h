@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_UI_TAB_SHARING_TAB_SHARING_UI_H_
 #define CHROME_BROWSER_UI_TAB_SHARING_TAB_SHARING_UI_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 
 namespace infobars {
@@ -19,7 +20,7 @@ class TabSharingUI : public MediaStreamUI {
 
   static std::unique_ptr<TabSharingUI> Create(
       const content::DesktopMediaID& media_id,
-      base::string16 app_name);
+      std::u16string app_name);
 
   virtual void StartSharing(infobars::InfoBar* infobar) = 0;
   virtual void StopSharing() = 0;

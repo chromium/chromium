@@ -9,6 +9,8 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
@@ -78,6 +80,14 @@ BleScannerImpl::~BleScannerImpl() {
 }
 
 void BleScannerImpl::HandleScanRequestChange() {
+  if (GetAllDeviceIdPairs().empty()) {
+    PA_LOG(INFO) << "No devices to scan for";
+  } else {
+    PA_LOG(INFO) << "Scanning for: "
+                 << bluetooth_helper_->ExpectedServiceDataToString(
+                        GetAllDeviceIdPairs());
+  }
+
   UpdateDiscoveryStatus();
 }
 
@@ -258,17 +268,15 @@ void BleScannerImpl::HandlePotentialScanResult(
   }
 
   // Prepare a hex string of |service_data|.
-  std::stringstream ss;
-  ss << "0x" << std::hex;
-  for (const auto& character : service_data)
-    ss << static_cast<uint32_t>(character);
+  std::string hex_service_data = base::StrCat(
+      {"0x", base::HexEncode(service_data.data(), service_data.size())});
 
   if (results.empty()) {
     PA_LOG(WARNING) << "BleScannerImpl::HandleDeviceUpdated(): Received scan "
                     << "result from device with ID \""
                     << potential_result.first.GetTruncatedDeviceIdForLogs()
                     << "\", but it did not correspond to an active scan "
-                    << "request. Service data: " << ss.str()
+                    << "request. Service data: " << hex_service_data
                     << ", Background advertisement: "
                     << (potential_result.second ? "true" : "false");
     return;
@@ -277,7 +285,7 @@ void BleScannerImpl::HandlePotentialScanResult(
   PA_LOG(INFO) << "BleScannerImpl::HandleDeviceUpdated(): Received scan result "
                << "from device with ID \""
                << potential_result.first.GetTruncatedDeviceIdForLogs() << "\""
-               << ". Service data: " << ss.str()
+               << ". Service data: " << hex_service_data
                << ", Background advertisement: "
                << (potential_result.second ? "true" : "false");
 

@@ -11,10 +11,10 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "content/public/browser/native_file_system_entry_factory.h"
+#include "content/public/browser/file_system_access_entry_factory.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_directory_handle.mojom-forward.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom-forward.h"
 #include "third_party/blink/public/mojom/web_launch/web_launch.mojom.h"
 #include "url/gurl.h"
 
@@ -34,7 +34,7 @@ namespace web_launch {
 //
 // Note: The lifetime of this class is tied to the WebContents it is attached
 // to. However, in general it will be destroyed before the WebContents, when the
-// helper sends the NativeFileSystemEntries to the renderer.
+// helper sends the FileSystemAccessEntries to the renderer.
 class WebLaunchFilesHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<WebLaunchFilesHelper> {
@@ -73,7 +73,7 @@ class WebLaunchFilesHelper
   void MaybeSendLaunchEntries();
 
   // The entries causing the launch (may be empty).
-  std::vector<blink::mojom::NativeFileSystemEntryPtr> launch_entries_;
+  std::vector<blink::mojom::FileSystemAccessEntryPtr> launch_entries_;
 
   // The url the launch entries are for.
   GURL launch_url_;

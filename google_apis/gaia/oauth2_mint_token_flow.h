@@ -12,7 +12,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "google_apis/gaia/oauth2_api_call_flow.h"
 #include "net/cookies/canonical_cookie.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
@@ -32,46 +31,22 @@ extern const char kOAuth2MintTokenApiCallResultHistogram[];
 // numeric values should never be reused.
 enum class OAuth2MintTokenApiCallResult {
   kMintTokenSuccess = 0,
-  kIssueAdviceSuccess = 1,
+  // DEPRECATED:
+  // kIssueAdviceSuccess = 1,
   kRemoteConsentSuccess = 2,
   kApiCallFailure = 3,
   kParseJsonFailure = 4,
   kIssueAdviceKeyNotFoundFailure = 5,
   kParseMintTokenFailure = 6,
-  kParseIssueAdviceFailure = 7,
+  // DEPRECATED:
+  // kParseIssueAdviceFailure = 7,
   // DEPRECATED:
   // kRemoteConsentFallback = 8
   kParseRemoteConsentFailure = 9,
-  kMintTokenSuccessWithFallbackScopes = 10,
-  kMaxValue = kMintTokenSuccessWithFallbackScopes
+  // DEPRECATED:
+  // kMintTokenSuccessWithFallbackScopes = 10,
+  kMaxValue = kParseRemoteConsentFailure
 };
-
-// IssueAdvice: messages to show to the user to get a user's approval.
-// The structure is as follows:
-// * Description 1
-//   - Detail 1.1
-//   - Details 1.2
-// * Description 2
-//   - Detail 2.1
-//   - Detail 2.2
-//   - Detail 2.3
-// * Description 3
-//   - Detail 3.1
-struct IssueAdviceInfoEntry {
- public:
-  IssueAdviceInfoEntry();
-  ~IssueAdviceInfoEntry();
-
-  IssueAdviceInfoEntry(const IssueAdviceInfoEntry& other);
-  IssueAdviceInfoEntry& operator=(const IssueAdviceInfoEntry& other);
-
-  base::string16 description;
-  std::vector<base::string16> details;
-
-  bool operator==(const IssueAdviceInfoEntry& rhs) const;
-};
-
-typedef std::vector<IssueAdviceInfoEntry> IssueAdviceInfo;
 
 // Data for the remote consent resolution:
 // - URL of the consent page to be displayed to the user.
@@ -142,7 +117,6 @@ class OAuth2MintTokenFlow : public OAuth2ApiCallFlow {
     virtual void OnMintTokenSuccess(const std::string& access_token,
                                     const std::set<std::string>& granted_scopes,
                                     int time_to_live) {}
-    virtual void OnIssueAdviceSuccess(const IssueAdviceInfo& issue_advice)  {}
     virtual void OnMintTokenFailure(const GoogleServiceAuthError& error) {}
     virtual void OnRemoteConsentSuccess(
         const RemoteConsentResolutionData& resolution_data) {}
@@ -201,13 +175,10 @@ class OAuth2MintTokenFlow : public OAuth2ApiCallFlow {
   void ReportSuccess(const std::string& access_token,
                      const std::set<std::string>& granted_scopes,
                      int time_to_live);
-  void ReportIssueAdviceSuccess(const IssueAdviceInfo& issue_advice);
   void ReportRemoteConsentSuccess(
       const RemoteConsentResolutionData& resolution_data);
   void ReportFailure(const GoogleServiceAuthError& error);
 
-  static bool ParseIssueAdviceResponse(const base::Value* dict,
-                                       IssueAdviceInfo* issue_advice);
   static bool ParseRemoteConsentResponse(
       const base::Value* dict,
       RemoteConsentResolutionData* resolution_data);

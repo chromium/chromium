@@ -1925,10 +1925,12 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, LatencyConstraint) {
                          default_device_max);
   CheckLocalMediaStreamAudioSourceLatency(
       default_device_, 0.003,
-      default_device_min * media::AudioParameters::kAudioCDSampleRate);
+      default_device_min *
+          static_cast<double>(media::AudioParameters::kAudioCDSampleRate));
   CheckLocalMediaStreamAudioSourceLatency(
       default_device_, 0.015,
-      default_device_min * media::AudioParameters::kAudioCDSampleRate);
+      default_device_min *
+          static_cast<double>(media::AudioParameters::kAudioCDSampleRate));
   CheckLocalMediaStreamAudioSourceLatency(default_device_, 0.022, 1000);
   CheckLocalMediaStreamAudioSourceLatency(default_device_, 0.04, 1000);
 

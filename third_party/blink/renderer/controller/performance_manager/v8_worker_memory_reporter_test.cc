@@ -68,6 +68,7 @@ class MemoryUsageChecker {
     EXPECT_THAT(expected_counts, testing::Contains(worker_count_));
     if (worker_count_ == 1) {
       EXPECT_LE(bytes_per_worker_lower_bound_, result.workers[0].bytes);
+      EXPECT_EQ(KURL("http://fake.url/"), result.workers[0].url);
     }
     called_ = true;
     if (callback_action_ == CallbackAction::kExitRunLoop) {
@@ -98,7 +99,7 @@ TEST_F(V8WorkerMemoryReporterTest, OnMeasurementSuccess) {
 
   EXPECT_CALL(mock_callback, Callback(result)).Times(1);
   for (auto& worker : result.workers) {
-    reporter.OnMeasurementSuccess(worker);
+    reporter.OnMeasurementSuccess(std::make_unique<WorkerMemoryUsage>(worker));
   }
 }
 
@@ -112,9 +113,11 @@ TEST_F(V8WorkerMemoryReporterTest, OnMeasurementFailure) {
        WorkerMemoryUsage{WorkerToken(DedicatedWorkerToken()), 2}})};
 
   EXPECT_CALL(mock_callback, Callback(result)).Times(1);
-  reporter.OnMeasurementSuccess(result.workers[0]);
+  reporter.OnMeasurementSuccess(
+      std::make_unique<WorkerMemoryUsage>(result.workers[0]));
   reporter.OnMeasurementFailure();
-  reporter.OnMeasurementSuccess(result.workers[1]);
+  reporter.OnMeasurementSuccess(
+      std::make_unique<WorkerMemoryUsage>(result.workers[1]));
 }
 
 TEST_F(V8WorkerMemoryReporterTest, OnTimeout) {
@@ -128,11 +131,13 @@ TEST_F(V8WorkerMemoryReporterTest, OnTimeout) {
 
   EXPECT_CALL(mock_callback, Callback(result)).Times(1);
 
-  reporter.OnMeasurementSuccess(result.workers[0]);
-  reporter.OnMeasurementSuccess(result.workers[1]);
-  reporter.OnTimeout();
   reporter.OnMeasurementSuccess(
-      WorkerMemoryUsage{WorkerToken(SharedWorkerToken()), 2});
+      std::make_unique<WorkerMemoryUsage>(result.workers[0]));
+  reporter.OnMeasurementSuccess(
+      std::make_unique<WorkerMemoryUsage>(result.workers[1]));
+  reporter.OnTimeout();
+  reporter.OnMeasurementSuccess(std::make_unique<WorkerMemoryUsage>(
+      WorkerMemoryUsage{WorkerToken(SharedWorkerToken()), 2}));
   reporter.OnMeasurementFailure();
 }
 
@@ -146,14 +151,17 @@ TEST_F(V8WorkerMemoryReporterTest, OnTimeoutNoop) {
        WorkerMemoryUsage{WorkerToken(DedicatedWorkerToken()), 2}})};
 
   EXPECT_CALL(mock_callback, Callback(result)).Times(1);
-  reporter.OnMeasurementSuccess(result.workers[0]);
-  reporter.OnMeasurementSuccess(result.workers[1]);
+  reporter.OnMeasurementSuccess(
+      std::make_unique<WorkerMemoryUsage>(result.workers[0]));
+  reporter.OnMeasurementSuccess(
+      std::make_unique<WorkerMemoryUsage>(result.workers[1]));
   reporter.OnTimeout();
 }
 
 TEST_F(V8WorkerMemoryReporterTestWithDedicatedWorker, GetMemoryUsage) {
   const String source_code = "globalThis.array = new Array(1000000).fill(0);";
-  StartWorker(source_code);
+  StartWorker();
+  EvaluateClassicScript(source_code);
   WaitUntilWorkerIsRunning();
   constexpr size_t kBytesPerArrayElement = 4;
   constexpr size_t kArrayLength = 1000000;
@@ -168,7 +176,8 @@ TEST_F(V8WorkerMemoryReporterTestWithDedicatedWorker, GetMemoryUsage) {
 
 TEST_F(V8WorkerMemoryReporterTestWithMockPlatform, GetMemoryUsageTimeout) {
   const String source_code = "while(true);";
-  StartWorker(source_code);
+  StartWorker();
+  EvaluateClassicScript(source_code);
   // Since the worker is in infinite loop and does not process tasks,
   // we cannot call WaitUntilWorkerIsRunning here as that would block.
   MemoryUsageChecker checker(0, 0, MemoryUsageChecker::CallbackAction::kNone);

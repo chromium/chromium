@@ -30,6 +30,10 @@ using blink::mojom::ShareError;
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/webshare/chromeos/sharesheet_client.h"
 #endif
+#if defined(OS_MAC)
+#include "chrome/browser/webshare/mac/sharing_service_operation.h"
+#include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
+#endif
 #if defined(OS_WIN)
 #include "chrome/browser/webshare/win/scoped_share_operation_fake_components.h"
 #endif
@@ -47,6 +51,10 @@ class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     webshare::SharesheetClient::SetSharesheetCallbackForTesting(
+        base::BindRepeating(&ShareServiceUnitTest::AcceptShareRequest));
+#endif
+#if defined(OS_MAC)
+    webshare::SharingServiceOperation::SetSharePickerCallbackForTesting(
         base::BindRepeating(&ShareServiceUnitTest::AcceptShareRequest));
 #endif
 #if defined(OS_WIN)
@@ -141,6 +149,18 @@ class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
   }
 #endif
 
+#if defined(OS_MAC)
+  static void AcceptShareRequest(
+      content::WebContents* web_contents,
+      const std::vector<base::FilePath>& file_paths,
+      const std::string& text,
+      const std::string& title,
+      const GURL& url,
+      blink::mojom::ShareService::ShareCallback close_callback) {
+    std::move(close_callback).Run(blink::mojom::ShareError::OK);
+  }
+#endif
+
 #if defined(OS_WIN)
   webshare::ScopedShareOperationFakeComponents scoped_fake_components_;
 #endif
@@ -188,6 +208,9 @@ TEST_F(ShareServiceUnitTest, DangerousMimeType) {
 
   EXPECT_TRUE(ShareServiceImpl::IsDangerousMimeType("audio/Flac"));
   EXPECT_TRUE(ShareServiceImpl::IsDangerousMimeType("Video/webm"));
+
+  EXPECT_FALSE(ShareServiceImpl::IsDangerousMimeType("audio/mp3"));
+  EXPECT_FALSE(ShareServiceImpl::IsDangerousMimeType("audio/mpeg"));
 }
 
 TEST_F(ShareServiceUnitTest, Multimedia) {

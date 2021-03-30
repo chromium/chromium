@@ -7,12 +7,12 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/machine_learning/public/cpp/fake_service_connection.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/text_classifier.mojom.h"
@@ -70,6 +70,8 @@ class IntentGeneratorTest : public testing::Test {
           std::vector<TextLanguagePtr>()) {
     chromeos::machine_learning::ServiceConnection::
         UseFakeServiceConnectionForTesting(&fake_service_connection_);
+    chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
+
     fake_service_connection_.SetOutputAnnotation(annotations);
     fake_service_connection_.SetOutputLanguages(languages);
   }
@@ -121,7 +123,7 @@ TEST_F(IntentGeneratorTest, TranslationIntentSameLanguage) {
   EXPECT_EQ("quick answers", intent_info_.intent_text);
 }
 
-TEST_F(IntentGeneratorTest, TranslationIntentPreferredLanguage) {
+TEST_F(IntentGeneratorTest, TranslationIntentPreferredLocale) {
   std::vector<TextLanguagePtr> languages;
   languages.push_back(DefaultLanguage());
   UseFakeServiceConnection({}, languages);
@@ -130,6 +132,25 @@ TEST_F(IntentGeneratorTest, TranslationIntentPreferredLanguage) {
   request.selected_text = "quick answers";
   request.context.device_properties.language = "es";
   request.context.device_properties.preferred_languages = "es,en,zh";
+  intent_generator_->GenerateIntent(request);
+
+  task_environment_.RunUntilIdle();
+
+  // Should not generate translation intent since the detected language is in
+  // the preferred languages list.
+  EXPECT_EQ(IntentType::kUnknown, intent_info_.intent_type);
+  EXPECT_EQ("quick answers", intent_info_.intent_text);
+}
+
+TEST_F(IntentGeneratorTest, TranslationIntentPreferredLanguage) {
+  std::vector<TextLanguagePtr> languages;
+  languages.push_back(DefaultLanguage());
+  UseFakeServiceConnection({}, languages);
+
+  QuickAnswersRequest request;
+  request.selected_text = "quick answers";
+  request.context.device_properties.language = "es";
+  request.context.device_properties.preferred_languages = "es-MX,en-US,zh-CN";
   intent_generator_->GenerateIntent(request);
 
   task_environment_.RunUntilIdle();
@@ -193,12 +214,10 @@ TEST_F(IntentGeneratorTest, TranslationIntentWithAnnotation) {
 
   task_environment_.RunUntilIdle();
 
-  // Should generate translation intent which is prioritized against
-  // annotations.
-  EXPECT_EQ(IntentType::kTranslation, intent_info_.intent_type);
+  // Should generate dictionary intent which is prioritized against
+  // translation.
+  EXPECT_EQ(IntentType::kDictionary, intent_info_.intent_type);
   EXPECT_EQ("unfathomable", intent_info_.intent_text);
-  EXPECT_EQ("en", intent_info_.source_language);
-  EXPECT_EQ("es", intent_info_.target_language);
 }
 
 TEST_F(IntentGeneratorTest, TranslationIntentNotEnabled) {

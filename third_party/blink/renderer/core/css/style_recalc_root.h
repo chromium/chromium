@@ -15,13 +15,14 @@ class CORE_EXPORT StyleRecalcRoot : public StyleTraversalRoot {
  public:
   Element& RootElement() const;
   void RemovedFromFlatTree(const Node& node);
+  void SubtreeModified(ContainerNode& parent) final;
 
  private:
 #if DCHECK_IS_ON()
   ContainerNode* Parent(const Node& node) const final;
+  bool IsChildDirty(const Node& node) const final;
 #endif  // DCHECK_IS_ON()
   bool IsDirty(const Node& node) const final;
-  void RootRemoved(ContainerNode& parent) final;
 };
 
 }  // namespace blink

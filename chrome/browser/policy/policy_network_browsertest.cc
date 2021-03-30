@@ -9,11 +9,14 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -21,30 +24,37 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/network_service_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
+#include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/quic_simple_test_server.h"
 #include "net/test/test_data_directory.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
+#include "third_party/boringssl/src/include/openssl/obj.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/constants/chromeos_switches.h"
+#include "ash/constants/ash_switches.h"
 #endif
 
 namespace {
@@ -75,12 +85,12 @@ bool IsQuicEnabledForSafeBrowsing() {
 // Called when an additional profile has been created.
 // The created profile is stored in *|out_created_profile|.
 void OnProfileInitialized(Profile** out_created_profile,
-                          const base::Closure& closure,
+                          base::RunLoop* run_loop,
                           Profile* profile,
                           Profile::CreateStatus status) {
   if (status == Profile::CREATE_STATUS_INITIALIZED) {
     *out_created_profile = profile;
-    closure.Run();
+    run_loop->Quit();
   }
 }
 
@@ -371,9 +381,8 @@ class QuicAllowedPolicyDynamicTest : public QuicTestBase {
     base::RunLoop run_loop;
     profile_manager->CreateProfileAsync(
         path_profile,
-        base::BindRepeating(&OnProfileInitialized, &profile_2_,
-                            run_loop.QuitClosure()),
-        base::string16(), std::string());
+        base::BindRepeating(&OnProfileInitialized, &profile_2_, &run_loop),
+        std::u16string(), std::string());
 
     // Run the message loop to allow profile creation to take place; the loop is
     // terminated by OnProfileInitialized calling the loop's QuitClosure when
@@ -571,6 +580,81 @@ IN_PROC_BROWSER_TEST_F(QuicAllowedPolicyDynamicTest,
   EXPECT_FALSE(IsQuicEnabledForSafeBrowsing());
   EXPECT_FALSE(IsQuicEnabled(profile_1()));
   EXPECT_FALSE(IsQuicEnabled(profile_2()));
+}
+
+class CECPQ2PolicyTest : public PolicyTest {
+ public:
+  CECPQ2PolicyTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        net::features::kPostQuantumCECPQ2);
+  }
+
+ protected:
+  // RunTest checks that CECPQ2 works initially but stops working after
+  // |update_policy| has run.
+  void RunTest(base::OnceCallback<void(PolicyMap*)> update_policy) {
+    // A test server is configured with support for only CECPQ2.
+    net::EmbeddedTestServer https_server_ok(
+        net::EmbeddedTestServer::TYPE_HTTPS);
+    net::SSLServerConfig ssl_config;
+    ssl_config.curves_for_testing = {NID_CECPQ2};
+    https_server_ok.SetSSLConfig(net::EmbeddedTestServer::CERT_OK, ssl_config);
+    https_server_ok.ServeFilesFromSourceDirectory("chrome/test/data");
+    ASSERT_TRUE(https_server_ok.Start());
+
+    PrefService* const prefs = g_browser_process->local_state();
+    EXPECT_TRUE(prefs->GetBoolean(prefs::kCECPQ2Enabled));
+
+    // Should be able to load a page from the test server because CECPQ2 is
+    // enabled.
+    ui_test_utils::NavigateToURL(browser(),
+                                 https_server_ok.GetURL("/title2.html"));
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    EXPECT_EQ(base::UTF8ToUTF16("Title Of Awesomeness"),
+              web_contents->GetTitle());
+    EXPECT_NE(
+        web_contents->GetController().GetLastCommittedEntry()->GetPageType(),
+        content::PAGE_TYPE_ERROR);
+
+    PolicyMap policies;
+    std::move(update_policy).Run(&policies);
+    UpdateProviderPolicy(policies);
+    content::FlushNetworkServiceInstanceForTesting();
+
+    // Page loads should now fail.
+    const GURL fail_url = https_server_ok.GetURL("/title3.html");
+    ui_test_utils::NavigateToURL(browser(), fail_url);
+    web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    EXPECT_EQ(
+        web_contents->GetController().GetLastCommittedEntry()->GetPageType(),
+        content::PAGE_TYPE_ERROR);
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(CECPQ2PolicyTest, CECPQ2EnabledPolicy) {
+  RunTest(base::BindOnce([](PolicyMap* policies) {
+    SetPolicy(policies, key::kCECPQ2Enabled, base::Value(false));
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(CECPQ2PolicyTest, ChromeVariations) {
+  // Setting ChromeVariations to a non-zero value should also disable
+  // CECPQ2.
+  RunTest(base::BindOnce([](PolicyMap* policies) {
+    const auto* const variations_key =
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+        // On Chrome OS the ChromeVariations policy doesn't exist and is
+        // replaced by DeviceChromeVariations.
+        key::kDeviceChromeVariations;
+#else
+        key::kChromeVariations;
+#endif
+
+    SetPolicy(policies, variations_key, base::Value(1));
+  }));
 }
 
 }  // namespace policy

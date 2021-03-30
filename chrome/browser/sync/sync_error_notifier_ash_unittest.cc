@@ -6,14 +6,14 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/chromeos/login/users/mock_user_manager.h"
+#include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/sync/driver/test_sync_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -87,7 +87,7 @@ class SyncErrorNotifierTest : public BrowserWithTestWindowTest {
   FakeLoginUI login_ui_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
   user_manager::ScopedUserManager scoped_user_manager_{
-      std::make_unique<chromeos::MockUserManager>()};
+      std::make_unique<ash::MockUserManager>()};
 
  private:
   DISALLOW_COPY_AND_ASSIGN(SyncErrorNotifierTest);

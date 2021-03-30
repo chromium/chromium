@@ -35,15 +35,6 @@ class ManifestV3BrowserTest : public ExtensionBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
-  // Loads and returns an extension while ignoring warnings.
-  const Extension* LoadMv3Extension(const base::FilePath& path) {
-    // We ignore the manifest warnings on the extension because it includes the
-    // "manifest v3 ain't quite ready yet" warning.
-    // TODO(devlin): We should probably introduce a flag to specifically ignore
-    // *that* warning, but no others.
-    return LoadExtensionWithFlags(path, kFlagIgnoreManifestWarnings);
-  }
-
  private:
   ScopedCurrentChannel channel_override_{version_info::Channel::UNKNOWN};
 
@@ -56,15 +47,13 @@ IN_PROC_BROWSER_TEST_F(ManifestV3BrowserTest, ProgrammaticScriptInjection) {
            "name": "Programmatic Script Injection",
            "manifest_version": 3,
            "version": "0.1",
-           "background": {
-             "service_worker": "worker.js"
-           },
+           "background": { "service_worker": "worker.js" },
            "permissions": ["tabs", "scripting"],
            "host_permissions": ["*://example.com/*"]
          })";
   constexpr char kWorker[] =
       R"(chrome.tabs.onUpdated.addListener(
-             function listener(tabId, changeInfo, tab) {
+             async function listener(tabId, changeInfo, tab) {
            if (changeInfo.status != 'complete')
              return;
            let url = new URL(tab.url);
@@ -73,6 +62,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3BrowserTest, ProgrammaticScriptInjection) {
            // The tabs API equivalents of script injection are removed in MV3.
            chrome.test.assertEq(undefined, chrome.tabs.executeScript);
            chrome.test.assertEq(undefined, chrome.tabs.insertCSS);
+           chrome.test.assertEq(undefined, chrome.tabs.removeCSS);
 
            chrome.tabs.onUpdated.removeListener(listener);
 
@@ -80,18 +70,18 @@ IN_PROC_BROWSER_TEST_F(ManifestV3BrowserTest, ProgrammaticScriptInjection) {
              document.title = 'My New Title';
              return document.title;
            }
-           chrome.scripting.executeScript(
-               {
-                 target: {tabId: tabId},
-                 function: injectedFunction,
-               },
-               (results) => {
-                 chrome.test.assertNoLastError();
-                 chrome.test.assertTrue(!!results);
-                 chrome.test.assertEq(1, results.length);
-                 chrome.test.assertEq('My New Title', results[0].result);
-                 chrome.test.notifyPass();
-               });
+           try {
+             const results = await chrome.scripting.executeScript({
+               target: {tabId: tabId},
+               function: injectedFunction,
+             });
+             chrome.test.assertTrue(!!results);
+             chrome.test.assertEq(1, results.length);
+             chrome.test.assertEq('My New Title', results[0].result);
+             chrome.test.notifyPass();
+           } catch(error) {
+             chrome.test.notifyFail('executeScript promise rejected');
+           }
          });
          chrome.test.sendMessage('ready');)";
 
@@ -100,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3BrowserTest, ProgrammaticScriptInjection) {
   test_dir.WriteFile(FILE_PATH_LITERAL("worker.js"), kWorker);
 
   ExtensionTestMessageListener listener("ready", /*will_reply=*/false);
-  const Extension* extension = LoadMv3Extension(test_dir.UnpackedPath());
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 
@@ -109,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3BrowserTest, ProgrammaticScriptInjection) {
       browser(), embedded_test_server()->GetURL("example.com", "/simple.html"));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 
-  EXPECT_EQ(base::ASCIIToUTF16("My New Title"),
+  EXPECT_EQ(u"My New Title",
             browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
 }
 
@@ -141,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3BrowserTest, ActionAPI) {
       FILE_PATH_LITERAL("blue_icon.png"));
 
   ExtensionTestMessageListener listener("ready", /*will_reply=*/false);
-  const Extension* extension = LoadMv3Extension(test_dir.UnpackedPath());
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 
@@ -160,6 +150,48 @@ IN_PROC_BROWSER_TEST_F(ManifestV3BrowserTest, ActionAPI) {
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 
   EXPECT_TRUE(action->HasIcon(ExtensionAction::kDefaultTabId));
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestV3BrowserTest,
+                       DeprecatedExtensionNamespaceAPIs) {
+  constexpr char kManifest[] =
+      R"({
+           "name": "Deprecated Extension Namespace APIs",
+           "manifest_version": 3,
+           "version": "0.1",
+           "background": { "service_worker": "worker.js" }
+         })";
+  constexpr char kWorker[] =
+      R"(chrome.test.runTests([
+           function deprecatedMethods() {
+             chrome.test.assertEq(undefined, chrome.extension.connect);
+             chrome.test.assertEq(undefined, chrome.extension.connectNative);
+             chrome.test.assertEq(undefined, chrome.extension.onConnect);
+             chrome.test.assertEq(undefined,
+                                  chrome.extension.onConnectExternal);
+             chrome.test.assertEq(undefined, chrome.extension.onMessage);
+             chrome.test.assertEq(undefined,
+                                  chrome.extension.onMessageExternal);
+             chrome.test.assertEq(undefined, chrome.extension.onRequest);
+             chrome.test.assertEq(undefined,
+                                  chrome.extension.onRequestExternal);
+             chrome.test.assertEq(undefined,
+                                  chrome.extension.sendNativeMessage);
+             chrome.test.assertEq(undefined, chrome.extension.sendMessage);
+             chrome.test.assertEq(undefined, chrome.extension.sendRequest);
+
+             chrome.test.succeed();
+           },
+         ]);)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("worker.js"), kWorker);
+
+  ResultCatcher catcher;
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
 }  // namespace extensions

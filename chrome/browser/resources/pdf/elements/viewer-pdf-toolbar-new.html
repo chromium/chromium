@@ -235,7 +235,7 @@
                                              fittingType_)]]"
         on-click="onFitToButtonClick_">
     </cr-icon-button>
-    <cr-icon-button iron-icon="pdf:rotate-left"
+    <cr-icon-button iron-icon="pdf:rotate-left" dir="ltr"
 <if expr="chromeos">
         disabled="[[annotationMode]]"
 </if>
@@ -256,8 +256,7 @@
     <viewer-download-controls id="downloads"
         has-edits="[[hasEdits]]"
         has-entered-annotation-mode="[[hasEnteredAnnotationMode]]"
-        is-form-field-focused="[[isFormFieldFocused]]"
-        pdf-form-save-enabled="[[pdfFormSaveEnabled]]">
+        is-form-field-focused="[[isFormFieldFocused]]">
     </viewer-download-controls>
     <cr-icon-button id="print" iron-icon="cr:print"
         hidden="[[!printingEnabled]]" title="$i18n{tooltipPrint}"
@@ -300,6 +299,15 @@
         on-click="onPresentClick_">
       <span class="check-container" aria-hidden="true"></span>
       $i18n{present}
+    </button>
+  </template>
+
+  <template is="dom-if" if="[[documentPropertiesEnabled]]">
+    <hr hidden="[[presentationModeEnabled]]">
+    <button id="properties-button" class="dropdown-item"
+        on-click="onPropertiesClick_">
+      <span class="check-container" aria-hidden="true"></span>
+      $i18n{propertiesDialogTitle}
     </button>
   </template>
 </cr-action-menu>

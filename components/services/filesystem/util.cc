@@ -98,7 +98,7 @@ base::File::Error ValidatePath(const std::string& raw_path,
     return base::File::Error::FILE_ERROR_INVALID_OPERATION;
 
 #if defined(OS_WIN)
-  base::FilePath::StringType path = base::UTF8ToUTF16(raw_path);
+  base::FilePath::StringType path = base::UTF8ToWide(raw_path);
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
   base::FilePath::StringType path = raw_path;
 #endif

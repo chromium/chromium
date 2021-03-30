@@ -164,7 +164,7 @@ void SearchGeolocationDisclosureTabHelper::MaybeShowDisclosureForValidUrl(
   // search |template_url| was non-null, and ShouldShowDisclosureForAPIAccess()
   // would have also seen an empty DSE origin if it were.
   DCHECK(template_url);
-  base::string16 search_engine_name = template_url->short_name();
+  std::u16string search_engine_name = template_url->short_name();
   SearchGeolocationDisclosureInfoBarDelegate::Create(web_contents(), gurl,
                                                      search_engine_name);
   shown_count++;

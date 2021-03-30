@@ -1102,7 +1102,8 @@ xsltDefaultSortFunction(xsltTransformContextPtr ctxt, xmlNodePtr *sorts,
     int depth;
     xmlNodePtr node;
     xmlXPathObjectPtr tmp;
-    int tempstype[XSLT_MAX_SORT], temporder[XSLT_MAX_SORT];
+    int tempstype[XSLT_MAX_SORT], temporder[XSLT_MAX_SORT],
+        templang[XSLT_MAX_SORT];
 
     if ((ctxt == NULL) || (sorts == NULL) || (nbsorts <= 0) ||
 	(nbsorts >= XSLT_MAX_SORT))
@@ -1124,7 +1125,7 @@ xsltDefaultSortFunction(xsltTransformContextPtr ctxt, xmlNodePtr *sorts,
 	    comp->stype =
 		xsltEvalAttrValueTemplate(ctxt, sorts[j],
 					  (const xmlChar *) "data-type",
-					  XSLT_NAMESPACE);
+					  NULL);
 	    if (comp->stype != NULL) {
 		tempstype[j] = 1;
 		if (xmlStrEqual(comp->stype, (const xmlChar *) "text"))
@@ -1143,7 +1144,7 @@ xsltDefaultSortFunction(xsltTransformContextPtr ctxt, xmlNodePtr *sorts,
 	if ((comp->order == NULL) && (comp->has_order != 0)) {
 	    comp->order = xsltEvalAttrValueTemplate(ctxt, sorts[j],
 						    (const xmlChar *) "order",
-						    XSLT_NAMESPACE);
+						    NULL);
 	    if (comp->order != NULL) {
 		temporder[j] = 1;
 		if (xmlStrEqual(comp->order, (const xmlChar *) "ascending"))
@@ -1159,6 +1160,17 @@ xsltDefaultSortFunction(xsltTransformContextPtr ctxt, xmlNodePtr *sorts,
 		}
 	    }
 	}
+	templang[j] = 0;
+	if ((comp->lang == NULL) && (comp->has_lang != 0)) {
+            xmlChar *lang = xsltEvalAttrValueTemplate(ctxt, sorts[j],
+						      (xmlChar *) "lang",
+						      NULL);
+	    if (lang != NULL) {
+		templang[j] = 1;
+                comp->locale = xsltNewLocale(lang);
+                xmlFree(lang);
+            }
+	}
     }
 
     len = list->nodeNr;
@@ -1173,7 +1185,7 @@ xsltDefaultSortFunction(xsltTransformContextPtr ctxt, xmlNodePtr *sorts,
     descending = comp->descending;
     number = comp->number;
     if (results == NULL)
-	return;
+	goto cleanup;
 
     /* Shell's sort of node-set */
     for (incr = len / 2; incr > 0; incr /= 2) {
@@ -1315,6 +1327,7 @@ xsltDefaultSortFunction(xsltTransformContextPtr ctxt, xmlNodePtr *sorts,
 	}
     }
 
+cleanup:
     for (j = 0; j < nbsorts; j++) {
 	comp = sorts[j]->psvi;
 	if (tempstype[j] == 1) {
@@ -1326,6 +1339,10 @@ xsltDefaultSortFunction(xsltTransformContextPtr ctxt, xmlNodePtr *sorts,
 	    /* The order needs to be recomputed each time */
 	    xmlFree((void *)(comp->order));
 	    comp->order = NULL;
+	}
+	if (templang[j] == 1) {
+	    xsltFreeLocale(comp->locale);
+	    comp->locale = (xsltLocale)0;
 	}
 	if (resultsTab[j] != NULL) {
 	    for (i = 0;i < len;i++)

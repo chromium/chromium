@@ -27,8 +27,8 @@ ConfirmInfoBarDelegate::GetInfoBarAutomationType() const {
   return CONFIRM_INFOBAR;
 }
 
-base::string16 ConfirmInfoBarDelegate::GetTitleText() const {
-  return base::string16();
+std::u16string ConfirmInfoBarDelegate::GetTitleText() const {
+  return std::u16string();
 }
 
 gfx::ElideBehavior ConfirmInfoBarDelegate::GetMessageElideBehavior() const {
@@ -39,7 +39,7 @@ int ConfirmInfoBarDelegate::GetButtons() const {
   return BUTTON_OK | BUTTON_CANCEL;
 }
 
-base::string16 ConfirmInfoBarDelegate::GetButtonLabel(
+std::u16string ConfirmInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   return l10n_util::GetStringUTF16((button == BUTTON_OK) ? IDS_APP_OK
                                                          : IDS_APP_CANCEL);

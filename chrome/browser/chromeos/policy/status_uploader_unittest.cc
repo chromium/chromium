@@ -13,11 +13,10 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
+#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/chromeos/policy/device_local_account.h"
 #include "chrome/browser/chromeos/policy/status_collector/device_status_collector.h"
-#include "chrome/browser/chromeos/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/chromeos/settings/stub_cros_settings_provider.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
@@ -40,7 +39,6 @@
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Return;
-using ::testing::SaveArg;
 using ::testing::WithArgs;
 
 namespace em = enterprise_management;
@@ -58,7 +56,7 @@ class MockDeviceStatusCollector : public policy::DeviceStatusCollector {
  public:
   explicit MockDeviceStatusCollector(PrefService* local_state)
       : DeviceStatusCollector(local_state, nullptr) {}
-  MOCK_METHOD1(GetStatusAsync, void(const policy::StatusCollectorCallback&));
+  MOCK_METHOD1(GetStatusAsync, void(policy::StatusCollectorCallback));
 
   MOCK_METHOD0(OnSubmittedSuccessfully, void());
 
@@ -85,7 +83,6 @@ class StatusUploaderTest : public testing::Test {
     // Required for policy::DeviceStatusCollector
     chromeos::DBusThreadManager::Initialize();
 
-    chromeos::CryptohomeClient::InitializeFake();
     chromeos::PowerManagerClient::InitializeFake();
     chromeos::TpmManagerClient::InitializeFake();
     client_.SetDMToken("dm_token");
@@ -100,7 +97,6 @@ class StatusUploaderTest : public testing::Test {
     content::RunAllTasksUntilIdle();
     chromeos::TpmManagerClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
-    chromeos::CryptohomeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 
@@ -113,7 +109,7 @@ class StatusUploaderTest : public testing::Test {
     EXPECT_TRUE(task_runner_->HasPendingTask());
     StatusCollectorCallback status_callback;
     EXPECT_CALL(*collector_ptr_, GetStatusAsync)
-        .WillOnce(SaveArg<0>(&status_callback));
+        .WillOnce(MoveArg<0>(&status_callback));
     task_runner_->RunPendingTasks();
     testing::Mock::VerifyAndClearExpectations(&device_management_service_);
 
@@ -134,7 +130,7 @@ class StatusUploaderTest : public testing::Test {
     // Send some "valid" (read: non-nullptr) device/session data to the
     // callback in order to simulate valid status data.
     StatusCollectorParams status_params;
-    status_callback.Run(std::move(status_params));
+    std::move(status_callback).Run(std::move(status_params));
 
     testing::Mock::VerifyAndClearExpectations(&device_management_service_);
 
@@ -178,7 +174,7 @@ class StatusUploaderTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  chromeos::ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   std::unique_ptr<MockDeviceStatusCollector> collector_;
   MockDeviceStatusCollector* collector_ptr_;
   ui::UserActivityDetector detector_;
@@ -239,7 +235,7 @@ TEST_F(StatusUploaderTest, ResetTimerAfterFailedStatusCollection) {
   EXPECT_EQ(1U, task_runner_->NumPendingTasks());
   StatusCollectorCallback status_callback;
   EXPECT_CALL(*collector_ptr_, GetStatusAsync)
-      .WillOnce(SaveArg<0>(&status_callback));
+      .WillOnce(MoveArg<0>(&status_callback));
   task_runner_->RunPendingTasks();
   testing::Mock::VerifyAndClearExpectations(&device_management_service_);
 
@@ -250,7 +246,7 @@ TEST_F(StatusUploaderTest, ResetTimerAfterFailedStatusCollection) {
   status_params.device_status.reset();
   status_params.session_status.reset();
   status_params.child_status.reset();
-  status_callback.Run(std::move(status_params));
+  std::move(status_callback).Run(std::move(status_params));
   EXPECT_EQ(1U, task_runner_->NumPendingTasks());
 
   // Check the delay of the queued upload
@@ -285,7 +281,7 @@ TEST_F(StatusUploaderTest, ResetTimerAfterUnregisteredClient) {
   // StatusUploader should not try to upload using an unregistered client
   EXPECT_CALL(client_, UploadDeviceStatus_).Times(0);
   StatusCollectorParams status_params;
-  status_callback.Run(std::move(status_params));
+  std::move(status_callback).Run(std::move(status_params));
 
   // A task to try again should be queued.
   ASSERT_EQ(1U, task_runner_->NumPendingTasks());

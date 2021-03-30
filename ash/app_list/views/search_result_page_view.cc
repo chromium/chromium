@@ -207,17 +207,29 @@ SearchResultPageView::SearchResultPageView(SearchModel* search_model)
       base::BindRepeating(&SearchResultPageView::SelectedResultChanged,
                           base::Unretained(this)));
 
-  search_box_observer_.Add(search_model->search_box());
+  search_box_observation_.Observe(search_model->search_box());
 }
 
 SearchResultPageView::~SearchResultPageView() = default;
 
+void SearchResultPageView::InitializeContainers(
+    AppListViewDelegate* view_delegate,
+    AppListMainView* app_list_main_view,
+    views::Textfield* search_box) {
+  privacy_container_view_ = AddSearchResultContainerView(
+      std::make_unique<PrivacyContainerView>(view_delegate));
+  search_result_tile_item_list_view_ = AddSearchResultContainerView(
+      std::make_unique<SearchResultTileItemListView>(search_box,
+                                                     view_delegate));
+  result_lists_separator_ = contents_view_->AddChildView(
+      std::make_unique<HorizontalSeparator>(bounds().width()));
+  search_result_list_view_ =
+      AddSearchResultContainerView(std::make_unique<SearchResultListView>(
+          app_list_main_view, view_delegate));
+}
+
 void SearchResultPageView::AddSearchResultContainerViewInternal(
     std::unique_ptr<SearchResultContainerView> result_container) {
-  if (!result_container_views_.empty()) {
-    separators_.push_back(contents_view_->AddChildView(
-        std::make_unique<HorizontalSeparator>(bounds().width())));
-  }
   auto* result_container_ptr = result_container.get();
   contents_view_->AddChildView(
       std::make_unique<SearchCardView>(std::move(result_container)));
@@ -262,8 +274,8 @@ void SearchResultPageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
   node_data->role = ax::mojom::Role::kListBox;
 
-  base::string16 value;
-  base::string16 query = search_model_->search_box()->text();
+  std::u16string value;
+  std::u16string query = search_model_->search_box()->text();
   if (!query.empty()) {
     if (last_search_result_count_ == 1) {
       value = l10n_util::GetStringFUTF16(
@@ -282,34 +294,17 @@ void SearchResultPageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetValue(value);
 }
 
-void SearchResultPageView::ReorderSearchResultContainers() {
-  // Sort the result container views by their score.
-  std::sort(result_container_views_.begin(), result_container_views_.end(),
-            [](const SearchResultContainerView* a,
-               const SearchResultContainerView* b) -> bool {
-              return a->container_score() > b->container_score();
-            });
-
-  for (size_t i = 0; i < result_container_views_.size(); ++i) {
-    SearchResultContainerView* view = result_container_views_[i];
-
-    if (i > 0) {
-      HorizontalSeparator* separator = separators_[i - 1];
-      const bool preceded_by_privacy_container =
-          result_container_views_[i - 1] ==
-          AppListPage::contents_view()->privacy_container_view();
-      // Hides the separator above the container that has no results, and below
-      // the privacy container.
-      separator->SetVisible(view->num_results() &&
-                            !preceded_by_privacy_container);
-
-      contents_view_->ReorderChildView(separator, i * 2 - 1);
-      contents_view_->ReorderChildView(view->parent(), i * 2);
-    } else {
-      contents_view_->ReorderChildView(view->parent(), i);
-    }
+void SearchResultPageView::UpdateResultContainersVisibility() {
+  for (auto* container : result_container_views_) {
+    // Containers are wrapped by a `SearchCardView`, so update the parent
+    // visibility.
+    container->parent()->SetVisible(container->num_results());
+    container->SetVisible(container->num_results());
   }
 
+  result_lists_separator_->SetVisible(
+      search_result_tile_item_list_view_->num_results() &&
+      search_result_list_view_->num_results());
   Layout();
 }
 
@@ -398,7 +393,6 @@ void SearchResultPageView::OnSearchResultContainerResultsChanging() {
 
 void SearchResultPageView::OnSearchResultContainerResultsChanged() {
   DCHECK(!result_container_views_.empty());
-  DCHECK(result_container_views_.size() == separators_.size() + 1);
 
   int result_count = 0;
   // Only sort and layout the containers when they have all updated.
@@ -410,11 +404,17 @@ void SearchResultPageView::OnSearchResultContainerResultsChanged() {
 
   last_search_result_count_ = result_count;
 
-  ReorderSearchResultContainers();
+  UpdateResultContainersVisibility();
 
   ScheduleResultsChangedA11yNotification();
 
-  first_result_view_ = result_container_views_[0]->GetFirstResultView();
+  // Find the first result view.
+  first_result_view_ = nullptr;
+  for (auto* container : result_container_views_) {
+    first_result_view_ = container->GetFirstResultView();
+    if (first_result_view_)
+      break;
+  }
 
   // Reset selection to first when things change. The first result is set as
   // as the default result.
@@ -449,6 +449,26 @@ void SearchResultPageView::ShowAnchoredDialog(
   anchored_dialog_->UpdateBounds(anchor_bounds);
 
   anchored_dialog_->widget()->Show();
+}
+
+SkColor SearchResultPageView::GetBackgroundColorForState(
+    AppListState state) const {
+  if (state == AppListState::kStateSearchResults)
+    return AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor();
+  return AppListColorProvider::Get()->GetSearchBoxBackgroundColor();
+}
+
+PrivacyContainerView* SearchResultPageView::GetPrivacyContainerViewForTest() {
+  return privacy_container_view_;
+}
+
+SearchResultTileItemListView*
+SearchResultPageView::GetSearchResultTileItemListViewForTest() {
+  return search_result_tile_item_list_view_;
+}
+
+SearchResultListView* SearchResultPageView::GetSearchResultListViewForTest() {
+  return search_result_list_view_;
 }
 
 void SearchResultPageView::OnWillBeHidden() {
@@ -592,11 +612,9 @@ void SearchResultPageView::OnAnimationUpdated(double progress,
       to_state != AppListState::kStateSearchResults) {
     return;
   }
-  const SearchBoxView* search_box =
-      AppListPage::contents_view()->GetSearchBoxView();
   const SkColor color = gfx::Tween::ColorValueBetween(
-      progress, search_box->GetBackgroundColorForState(from_state),
-      search_box->GetBackgroundColorForState(to_state));
+      progress, GetBackgroundColorForState(from_state),
+      GetBackgroundColorForState(to_state));
 
   if (color != background()->get_color()) {
     background()->SetNativeControlColor(color);
@@ -613,7 +631,9 @@ base::Optional<int> SearchResultPageView::GetSearchBoxTop(
     AppListViewState view_state) const {
   if (view_state == AppListViewState::kPeeking ||
       view_state == AppListViewState::kHalf) {
-    return AppListConfig::instance().search_box_fullscreen_top_padding();
+    return AppListPage::contents_view()
+        ->GetAppListConfig()
+        .search_box_fullscreen_top_padding();
   }
   // For other view states, return base::nullopt so the ContentsView
   // sets the default search box widget origin.

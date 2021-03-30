@@ -21,6 +21,8 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wallpaper/wallpaper_widget_controller.h"
+#include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_wallpaper_controller.h"
@@ -31,7 +33,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/run_loop.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/client/window_types.h"
 #include "ui/base/hit_test.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -619,6 +620,85 @@ TEST_F(OverviewControllerTest, OverviewExitWhileStillEntering) {
   EXPECT_TRUE(WindowState::Get(window.get())->IsMinimized());
 }
 
+// Tests that overview animations continue even if a window gets destroyed
+// during the animation.
+TEST_F(OverviewControllerTest, CloseWindowDuringAnimation) {
+  // Create two windows. They should both be visible so that they both get
+  // animated.
+  std::unique_ptr<aura::Window> window1 = CreateAppWindow(gfx::Rect(250, 100));
+  std::unique_ptr<aura::Window> window2 =
+      CreateAppWindow(gfx::Rect(250, 250, 250, 100));
+
+  ui::ScopedAnimationDurationScaleMode non_zero(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  Shell::Get()->overview_controller()->StartOverview();
+
+  // Destroy a window during the enter animation.
+  window1.reset();
+  ShellTestApi().WaitForOverviewAnimationState(
+      OverviewAnimationState::kEnterAnimationComplete);
+  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+
+  Shell::Get()->overview_controller()->EndOverview();
+
+  // Destroy a window during the exit animation.
+  window2.reset();
+  ShellTestApi().WaitForOverviewAnimationState(
+      OverviewAnimationState::kExitAnimationComplete);
+  EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+}
+
+// A subclass of DeskSwitchAnimationWaiter that additionally attempts to start
+// overview after the desk animation screenshots have been taken. Using the
+// regular DeskSwitchAnimatorWaiter and attempting to start overview before
+// calling Wait() would be similar to performing a desk switch when overview is
+// already open. This waiter mocks the behavior of trying to enter overview
+// while the desk switch is already in motion.
+class DeskSwitchStartOverviewAnimationWaiter
+    : public DeskSwitchAnimationWaiter {
+ public:
+  DeskSwitchStartOverviewAnimationWaiter() = default;
+  DeskSwitchStartOverviewAnimationWaiter(
+      const DeskSwitchStartOverviewAnimationWaiter&) = delete;
+  DeskSwitchStartOverviewAnimationWaiter& operator=(
+      const DeskSwitchStartOverviewAnimationWaiter&) = delete;
+  ~DeskSwitchStartOverviewAnimationWaiter() override = default;
+
+  // DeskSwitchAnimationWaiter:
+  void OnDeskActivationChanged(const Desk* activated,
+                               const Desk* deactivated) override {
+    Shell::Get()->overview_controller()->StartOverview();
+  }
+};
+
+// Tests that entering overview while performing a desk animation is disallowed,
+// but exiting is still done.
+TEST_F(OverviewControllerTest, OverviewEnterExitWhileDeskAnimation) {
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  const Desk* desk1 = desks_controller->desks()[0].get();
+  const Desk* desk2 = desks_controller->desks()[1].get();
+
+  ui::ScopedAnimationDurationScaleMode non_zero(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Animate to desk 2. Try to enter overview while animating. On desk animation
+  // finished, we shouldn't be in overview.
+  DeskSwitchStartOverviewAnimationWaiter waiter;
+  desks_controller->ActivateDesk(desk2, DesksSwitchSource::kDeskSwitchShortcut);
+  waiter.Wait();
+  EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+
+  Shell::Get()->overview_controller()->StartOverview();
+  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+
+  // Tests that exiting overview works as it is part of the desk switch
+  // animation.
+  ActivateDesk(desk1);
+  EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+}
+
 class OverviewVirtualKeyboardTest : public OverviewControllerTest {
  protected:
   void SetUp() override {
@@ -668,28 +748,38 @@ TEST_F(OverviewControllerTest, FrameThrottling) {
   MockFrameThrottlingObserver observer;
   FrameThrottlingController* frame_throttling_controller =
       Shell::Get()->frame_throttling_controller();
-  frame_throttling_controller->AddObserver(&observer);
+  frame_throttling_controller->AddArcObserver(&observer);
   const int browser_window_count = 3;
   const int arc_window_count = 2;
-  const int total_window_count = browser_window_count + arc_window_count;
-  std::unique_ptr<aura::Window> created_windows[total_window_count];
-  std::vector<aura::Window*> windows(total_window_count, nullptr);
-  for (int i = 0; i < total_window_count; ++i) {
-    created_windows[i] = CreateAppWindow(gfx::Rect(), i < browser_window_count
-                                                          ? AppType::BROWSER
-                                                          : AppType::ARC_APP);
-    windows[i] = created_windows[i].get();
+
+  const std::vector<viz::FrameSinkId> ids{{1u, 1u}, {2u, 2u}, {3u, 3u}};
+  std::unique_ptr<aura::Window>
+      created_windows[browser_window_count + arc_window_count];
+  for (int i = 0; i < browser_window_count; ++i) {
+    created_windows[i] = CreateAppWindow(gfx::Rect(), AppType::BROWSER);
+    created_windows[i]->SetEmbedFrameSinkId(ids[i]);
+  }
+
+  std::vector<aura::Window*> arc_windows(arc_window_count, nullptr);
+  for (int i = 0; i < arc_window_count; ++i) {
+    created_windows[i + browser_window_count] =
+        CreateAppWindow(gfx::Rect(), AppType::ARC_APP);
+    arc_windows[i] = created_windows[i + browser_window_count].get();
   }
 
   auto* controller = Shell::Get()->overview_controller();
   EXPECT_CALL(observer, OnThrottlingStarted(
-                            testing::UnorderedElementsAreArray(windows),
+                            testing::UnorderedElementsAreArray(arc_windows),
                             frame_throttling_controller->throttled_fps()));
   controller->StartOverview();
+  EXPECT_THAT(frame_throttling_controller->GetFrameSinkIdsToThrottle(),
+              ::testing::UnorderedElementsAreArray(ids));
 
   EXPECT_CALL(observer, OnThrottlingEnded());
   controller->EndOverview();
-  frame_throttling_controller->RemoveObserver(&observer);
+  EXPECT_TRUE(frame_throttling_controller->GetFrameSinkIdsToThrottle().empty());
+
+  frame_throttling_controller->RemoveArcObserver(&observer);
 }
 
 }  // namespace ash

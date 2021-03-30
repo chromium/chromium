@@ -43,7 +43,7 @@ constexpr ServerFieldType kTypesToInclude[] = {
 void AddProfileInfoAsSelectableField(UserInfo* info,
                                      const AutofillProfile* profile,
                                      ServerFieldType type) {
-  base::string16 field = profile->GetRawInfo(type);
+  std::u16string field = profile->GetRawInfo(type);
   if (type == ServerFieldType::NAME_MIDDLE && field.empty()) {
     field = profile->GetRawInfo(ServerFieldType::NAME_MIDDLE_INITIAL);
   }
@@ -100,16 +100,31 @@ AddressAccessoryController* AddressAccessoryController::GetOrCreate(
   return AddressAccessoryControllerImpl::FromWebContents(web_contents);
 }
 
+void AddressAccessoryControllerImpl::RegisterFillingSourceObserver(
+    FillingSourceObserver observer) {
+  NOTIMPLEMENTED();
+}
+
+base::Optional<autofill::AccessorySheetData>
+AddressAccessoryControllerImpl::GetSheetData() const {
+  NOTIMPLEMENTED();
+  return base::nullopt;
+}
+
 void AddressAccessoryControllerImpl::OnFillingTriggered(
+    FieldGlobalId focused_field_id,
     const UserInfo::Field& selection) {
   // Since the data we fill is scoped to the profile and not to a frame, we can
   // fill the focused frame - we basically behave like a keyboard here.
+  content::RenderFrameHost* rfh = web_contents_->GetFocusedFrame();
+  if (!rfh)
+    return;
   autofill::ContentAutofillDriver* driver =
-      autofill::ContentAutofillDriver::GetForRenderFrameHost(
-          web_contents_->GetFocusedFrame());
+      autofill::ContentAutofillDriver::GetForRenderFrameHost(rfh);
   if (!driver)
     return;
-  driver->RendererShouldFillFieldWithValue(selection.display_text());
+  driver->RendererShouldFillFieldWithValue(focused_field_id,
+                                           selection.display_text());
 }
 
 void AddressAccessoryControllerImpl::OnOptionSelected(
@@ -131,7 +146,7 @@ void AddressAccessoryControllerImpl::OnToggleChanged(
 
 void AddressAccessoryControllerImpl::RefreshSuggestions() {
   std::vector<AutofillProfile*> profiles = GetProfiles();
-  base::string16 title_or_empty_message;
+  std::u16string title_or_empty_message;
   if (profiles.empty())
     title_or_empty_message =
         l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SHEET_EMPTY_MESSAGE);

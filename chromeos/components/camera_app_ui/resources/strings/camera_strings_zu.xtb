@@ -15,6 +15,7 @@
 <translation id="2036868001356139588">Ubude besikhathi</translation>
 <translation id="2050339315714019657">Ukuma ngobude</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> iyasebenza</translation>
+<translation id="2144806332417375165">Yenza ngokwezifiso amapharamitha wevidiyo yakho</translation>
 <translation id="229579744168541441">Thumela kudiski</translation>
 <translation id="2501278716633472235">Iya emuva</translation>
 <translation id="2501853267655415902">Ukurekhoda kumisiwe</translation>
@@ -33,7 +34,6 @@
 <translation id="3259149966178251584">Ukulungiswa kwekhamera</translation>
 <translation id="3517926952904427380">Ayikwazi ukuthatha isithombe sokuma ngobude</translation>
 <translation id="3569311554794739032">Ufuna ngempela ukukhipha <ph name="FILE" />?</translation>
-<translation id="3750315947605636967">Ikhamera yakho isetshenziswa olunye uhlelo lokusebenza</translation>
 <translation id="3810838688059735925">Ividiyo</translation>
 <translation id="3838931309141338733">Skena ibhakhodi</translation>
 <translation id="3892148308691398805">Kopisha umbhalo</translation>
@@ -76,10 +76,12 @@ Uma impendulo yakho imayelana nesithombe noma ikhwalithi yevidiyo, sicela unamat
 <translation id="7337660886763914220">Amaphutha esistimu lefayela.</translation>
 <translation id="7450541714075000668">Umbhalo okopishiwe</translation>
 <translation id="7557677699350329807">Shintshela kukhamera elandelayo</translation>
+<translation id="7607002721634913082">Imiswe isikhashana</translation>
 <translation id="7608223098072244877">4 ngo-4</translation>
 <translation id="7649070708921625228">Usizo</translation>
 <translation id="7658239707568436148">Khansela</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7974782136796202581">Bonisa izinketho zokusondeza i-pan tilt</translation>
 <translation id="7983668134180549431">Umbhalo utholiwe.</translation>
 <translation id="8067883171444229417">Dlala ividiyo</translation>
 <translation id="8131740175452115882">Qinisekisa</translation>

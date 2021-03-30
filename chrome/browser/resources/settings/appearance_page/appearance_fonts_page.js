@@ -4,18 +4,18 @@
 
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import '../controls/settings_slider.m.js';
-import '../settings_shared_css.m.js';
+import '../controls/settings_slider.js';
+import '../settings_shared_css.js';
 
 import {SliderTick} from 'chrome://resources/cr_elements/cr_slider/cr_slider.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.m.js';
+import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import {loadTimeData} from '../i18n_setup.js';
 
-import {FontsBrowserProxy, FontsBrowserProxyImpl, FontsData} from './fonts_browser_proxy.m.js';
+import {FontsBrowserProxy, FontsBrowserProxyImpl, FontsData} from './fonts_browser_proxy.js';
 
 
 /** @type {!Array<number>} */
@@ -122,6 +122,6 @@ Polymer({
 
   /** @private */
   onMinimumSizeChange_() {
-    this.$.minimumSizeSample.hidden = this.computeMinimumFontSize_() <= 0;
+    this.$.minimumSizeFontPreview.hidden = this.computeMinimumFontSize_() <= 0;
   },
 });

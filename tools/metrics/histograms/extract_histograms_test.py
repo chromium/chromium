@@ -569,6 +569,19 @@ class ExtractHistogramsTest(unittest.TestCase):
         histogram_with_enum_and_unit, {})
     self.assertTrue(have_errors)
 
+  def testEmptyEnum(self):
+    empty_enum = xml.dom.minidom.parseString("""
+<histogram-configuration>
+<enums>
+  <enum name="MyEnumType">
+    <summary>This is an empty enum</summary>
+  </enum>
+</enums>
+</histogram-configuration>
+""")
+    _, have_errors = extract_histograms.ExtractEnumsFromXmlTree(empty_enum)
+    self.assertTrue(have_errors)
+
   def testNewHistogramWithEnum(self):
     histogram_with_enum = xml.dom.minidom.parseString("""
 <histogram-configuration>

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_factory.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"

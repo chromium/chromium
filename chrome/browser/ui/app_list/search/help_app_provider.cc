@@ -12,6 +12,7 @@
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/chromeos/release_notes/release_notes_storage.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
@@ -56,7 +57,7 @@ void HelpAppResult::Open(int event_flags) {
   proxy->LaunchAppWithUrl(web_app::kHelpAppId, event_flags,
                           GURL("chrome://help-app/updates"),
                           apps::mojom::LaunchSource::kFromAppListRecommendation,
-                          display::kDefaultDisplayId);
+                          apps::MakeWindowInfo(display::kDefaultDisplayId));
   chromeos::ReleaseNotesStorage(profile_).StopShowingSuggestionChip();
 }
 
@@ -70,7 +71,7 @@ HelpAppProvider::HelpAppProvider(Profile* profile) : profile_(profile) {
 
 HelpAppProvider::~HelpAppProvider() = default;
 
-void HelpAppProvider::Start(const base::string16& query) {
+void HelpAppProvider::Start(const std::u16string& query) {
   // This provider doesn't handle searches, if there is any query just clear the
   // results and return.
   if (!query.empty()) {
@@ -126,7 +127,7 @@ void HelpAppProvider::LoadIcon() {
           : apps::mojom::IconType::kUncompressed;
   app_service_proxy_->LoadIcon(
       apps::mojom::AppType::kWeb, web_app::kHelpAppId, icon_type,
-      ash::AppListConfig::instance().suggestion_chip_icon_dimension(),
+      ash::SharedAppListConfig::instance().suggestion_chip_icon_dimension(),
       /*allow_placeholder_icon=*/false,
       base::BindOnce(&HelpAppProvider::OnLoadIcon, weak_factory_.GetWeakPtr()));
 }

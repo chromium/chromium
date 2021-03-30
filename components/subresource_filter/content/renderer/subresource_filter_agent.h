@@ -47,6 +47,11 @@ class SubresourceFilterAgent
       std::unique_ptr<AdResourceTracker> ad_resource_tracker);
   ~SubresourceFilterAgent() override;
 
+  // Unit tests don't have a RenderFrame so the construction relies on virtual
+  // methods on this class instead to inject test behaviour. That can't happen
+  // in the constructor, so we need an Initialize() method.
+  void Initialize();
+
  protected:
   // Below methods are protected virtual so they can be mocked out in tests.
 
@@ -54,6 +59,9 @@ class SubresourceFilterAgent
   virtual GURL GetDocumentURL();
 
   virtual bool IsMainFrame();
+  virtual bool IsParentAdSubframe();
+  virtual bool IsProvisional();
+  virtual bool IsSubframeCreatedByAdScript();
 
   virtual bool HasDocumentLoader();
 
@@ -71,16 +79,23 @@ class SubresourceFilterAgent
   virtual void SendDocumentLoadStatistics(
       const mojom::DocumentLoadStatistics& statistics);
 
-  // Tells the browser that the frame is an ad subframe.
+  // Tells the browser that the renderer tagged the frame as an ad subframe.
+  // This is not sent for frames tagged by the browser.
   virtual void SendFrameIsAdSubframe();
+
+  // Tells the browser that the frame is a subframe that was created by ad
+  // script.
+  virtual void SendSubframeWasCreatedByAdScript();
 
   // True if the frame has been heuristically determined to be an ad subframe.
   virtual bool IsAdSubframe();
   virtual void SetIsAdSubframe(blink::mojom::AdFrameType ad_frame_type);
 
-  void SetFirstDocument(bool first_document) {
-    first_document_ = first_document;
-  }
+  // If the browser has not yet informed the renderer of the frame's ad status
+  // (i.e. due to an initial synchronous commit to about:blank), calculates
+  // whether the frame should be an ad by populating a temporary FrameAdEvidence
+  // object.
+  void SetIsAdSubframeIfNecessary();
 
   // mojom::SubresourceFilterAgent:
   void ActivateForNextCommittedLoad(
@@ -132,10 +147,6 @@ class SubresourceFilterAgent
   mojo::AssociatedRemote<mojom::SubresourceFilterHost> subresource_filter_host_;
 
   mojo::AssociatedReceiver<mojom::SubresourceFilterAgent> receiver_{this};
-
-  // If a document hasn't been created for this frame before. The first document
-  // for a new local subframe should be about:blank.
-  bool first_document_ = true;
 
   base::WeakPtr<WebDocumentSubresourceFilterImpl>
       filter_for_last_created_document_;

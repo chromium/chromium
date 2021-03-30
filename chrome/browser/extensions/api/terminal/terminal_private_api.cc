@@ -366,26 +366,27 @@ void TerminalPrivateOpenTerminalProcessFunction::OpenProcess(
       FROM_HERE,
       base::BindOnce(
           &TerminalPrivateOpenTerminalProcessFunction::OpenOnRegistryTaskRunner,
-          this, base::Bind(&NotifyProcessOutput, browser_context()),
-          base::Bind(
+          this, base::BindRepeating(&NotifyProcessOutput, browser_context()),
+          base::BindOnce(
               &TerminalPrivateOpenTerminalProcessFunction::RespondOnUIThread,
               this),
           std::move(cmdline), user_id_hash));
 }
 
 void TerminalPrivateOpenTerminalProcessFunction::OpenOnRegistryTaskRunner(
-    const ProcessOutputCallback& output_callback,
-    const OpenProcessCallback& callback,
+    ProcessOutputCallback output_callback,
+    OpenProcessCallback callback,
     base::CommandLine cmdline,
     const std::string& user_id_hash) {
   chromeos::ProcessProxyRegistry* registry =
       chromeos::ProcessProxyRegistry::Get();
   std::string terminal_id;
-  bool success = registry->OpenProcess(std::move(cmdline), user_id_hash,
-                                       output_callback, &terminal_id);
+  bool success =
+      registry->OpenProcess(std::move(cmdline), user_id_hash,
+                            std::move(output_callback), &terminal_id);
 
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(callback, success, terminal_id));
+      FROM_HERE, base::BindOnce(std::move(callback), success, terminal_id));
 }
 
 void TerminalPrivateOpenTerminalProcessFunction::RespondOnUIThread(

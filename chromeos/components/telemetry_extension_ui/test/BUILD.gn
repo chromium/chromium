@@ -31,10 +31,10 @@ source_set("browser_test_support") {
 
   deps = [
     "../:telemetry_extension_ui",
+    "//ash/constants",
     "//chrome/browser/chromeos/wilco_dtc_supportd:mojo_utils",
     "//chrome/test:test_support_ui",
     "//chromeos/components/web_applications/test:test_support",
-    "//chromeos/constants",
     "//chromeos/dbus/cros_healthd:cros_healthd",
   ]
 
@@ -43,6 +43,7 @@ source_set("browser_test_support") {
     "untrusted_app_resources/",
     "untrusted_browsertest.js",
     "untrusted_test_handlers.js",
+    "untrusted_test_utils.js",
   ]
 }
 
@@ -83,8 +84,9 @@ js_library("untrusted_browsertest") {
   sources = [
     "untrusted_browsertest.js",
     "untrusted_test_handlers.js",
+    "untrusted_test_utils.js",
   ]
-  deps = [ "//chromeos/components/telemetry_extension_ui/resources:untrusted" ]
+  deps = [ "//chromeos/components/telemetry_extension_ui/resources/dpsl" ]
   externs_list = [
     "$externs_path/pending.js",
     "//chromeos/components/web_applications/js2gtest_support.externs.js",

@@ -71,7 +71,8 @@ bool KalmanPredictor::HasPrediction() const {
 }
 
 std::unique_ptr<InputPredictor::InputData> KalmanPredictor::GeneratePrediction(
-    base::TimeTicks predict_time) const {
+    base::TimeTicks predict_time,
+    base::TimeDelta frame_interval) {
   if (!HasPrediction())
     return nullptr;
 

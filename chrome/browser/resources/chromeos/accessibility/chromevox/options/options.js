@@ -22,6 +22,12 @@ goog.require('ChromeVoxKbHandler');
 goog.require('ChromeVoxPrefs');
 goog.require('ExtensionBridge');
 
+/** @const {string} */
+const GOOGLE_TTS_EXTENSION_ID = 'gjjabgpgjpampikjhjpfhneeoapjbjaf';
+
+/** @const {string} */
+const ESPEAK_TTS_EXTENSION_ID = 'dakbfdmgjiabojdgbiljlhgjbokobjpg';
+
 /**
  * Class to manage the options page.
  */
@@ -31,11 +37,10 @@ OptionsPage = class {
   /**
    * Initialize the options page by setting the current value of all prefs, and
    * adding event listeners.
-   * @suppress {missingProperties} Property prefs never defined on Window
    * @this {OptionsPage}
    */
   static init() {
-    OptionsPage.prefs = chrome.extension.getBackgroundPage().prefs;
+    OptionsPage.prefs = chrome.extension.getBackgroundPage()['prefs'];
     OptionsPage.consoleTts =
         chrome.extension.getBackgroundPage().ConsoleTts.getInstance();
     OptionsPage.backgroundTts =
@@ -139,7 +144,7 @@ OptionsPage = class {
     });
 
     $('chromeVoxDeveloperOptions').addEventListener('expanded-changed', () => {
-      const hidden = !$('chromeVoxDeveloperOptions').expanded;
+      const hidden = !$('chromeVoxDeveloperOptions')['expanded'];
       $('developerSpeechLogging').hidden = hidden;
       $('developerEarconLogging').hidden = hidden;
       $('developerBrailleLogging').hidden = hidden;
@@ -163,7 +168,7 @@ OptionsPage = class {
 
     window.addEventListener('storage', (event) => {
       if (event.key === 'speakTextUnderMouse') {
-        chrome.accessibilityPrivate.enableChromeVoxMouseEvents(
+        chrome.accessibilityPrivate.enableMouseEvents(
             event.newValue === String(true));
       }
     });
@@ -278,7 +283,24 @@ OptionsPage = class {
           voice.voiceName = voice.voiceName || '';
         });
         voices.sort(function(a, b) {
-          return a.voiceName.localeCompare(b.voiceName);
+          // Prefer Google tts voices over all others.
+          if (a.extensionId === GOOGLE_TTS_EXTENSION_ID &&
+              b.extensionId !== GOOGLE_TTS_EXTENSION_ID) {
+            return -1;
+          }
+
+          // Next, prefer Espeak tts voices.
+          if (a.extensionId === ESPEAK_TTS_EXTENSION_ID &&
+              b.extensionId !== ESPEAK_TTS_EXTENSION_ID) {
+            return -1;
+          }
+
+          // Finally, prefer local over remote voices.
+          if (!a['remote'] && b['remote']) {
+            return -1;
+          }
+
+          return 0;
         });
         addVoiceOption(Msgs.getMsg('system_voice'), constants.SYSTEM_VOICE);
         voices.forEach((voice) => {

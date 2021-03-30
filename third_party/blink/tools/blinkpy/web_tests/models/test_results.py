@@ -26,7 +26,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import cPickle
+from six.moves import cPickle
 
 from blinkpy.web_tests.models import test_failures, test_expectations
 from blinkpy.web_tests.models.typ_types import ResultType, Artifacts

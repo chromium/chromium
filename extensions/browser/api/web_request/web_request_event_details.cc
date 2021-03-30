@@ -162,7 +162,7 @@ std::unique_ptr<base::DictionaryValue> WebRequestEventDetails::GetFilteredDict(
     result->SetKey(keys::kResponseHeadersKey, std::move(response_headers));
   }
 
-  // Only listeners with a permission for the initiator should recieve it.
+  // Only listeners with a permission for the initiator should receive it.
   if (initiator_) {
     int tab_id = -1;
     dict_.GetInteger(keys::kTabIdKey, &tab_id);

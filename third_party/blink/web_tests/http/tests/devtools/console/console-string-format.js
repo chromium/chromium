@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that formatting processes '%' properly in case of missing formatters.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   var params = [

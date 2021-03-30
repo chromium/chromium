@@ -130,7 +130,7 @@ void AddMacTrustFlagsToReport(
 }
 
 void AddMacPlatformDebugInfoToReport(
-    const network::mojom::MacPlatformVerifierDebugInfoPtr&
+    const cert_verifier::mojom::MacPlatformVerifierDebugInfoPtr&
         mac_platform_debug_info,
     chrome_browser_ssl::TrialVerificationInfo* trial_report) {
   if (!mac_platform_debug_info)
@@ -145,6 +145,26 @@ void AddMacPlatformDebugInfoToReport(
     report_cert_info->set_status_bits(cert_info->status_bits);
     for (auto code : cert_info->status_codes)
       report_cert_info->add_status_codes(code);
+  }
+}
+
+chrome_browser_ssl::TrialVerificationInfo::MacTrustImplType
+TrustImplTypeFromMojom(
+    cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType input) {
+  switch (input) {
+    case cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::
+        kUnknown:
+      return chrome_browser_ssl::TrialVerificationInfo::MAC_TRUST_IMPL_UNKNOWN;
+    case cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::
+        kDomainCache:
+      return chrome_browser_ssl::TrialVerificationInfo::
+          MAC_TRUST_IMPL_DOMAIN_CACHE;
+    case cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::kSimple:
+      return chrome_browser_ssl::TrialVerificationInfo::MAC_TRUST_IMPL_SIMPLE;
+    case cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::
+        kMruCache:
+      return chrome_browser_ssl::TrialVerificationInfo::
+          MAC_TRUST_IMPL_MRU_CACHE;
   }
 }
 #endif  // defined(OS_APPLE)
@@ -187,7 +207,7 @@ CertificateErrorReport::CertificateErrorReport(
     const std::string& sct_list,
     const net::CertVerifyResult& primary_result,
     const net::CertVerifyResult& trial_result,
-    network::mojom::CertVerifierDebugInfoPtr debug_info)
+    cert_verifier::mojom::CertVerifierDebugInfoPtr debug_info)
     : CertificateErrorReport(hostname,
                              *primary_result.verified_cert,
                              &unverified_cert,
@@ -223,6 +243,8 @@ CertificateErrorReport::CertificateErrorReport(
   AddMacTrustFlagsToReport(
       debug_info->mac_combined_trust_debug_info,
       trial_report->mutable_mac_combined_trust_debug_info());
+  trial_report->set_mac_trust_impl(
+      TrustImplTypeFromMojom(debug_info->mac_trust_impl));
 #endif
   if (!debug_info->trial_verification_time.is_null()) {
     trial_report->set_trial_verification_time_usec(

@@ -20,7 +20,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -143,7 +142,7 @@ void CheckForNewOfflineContentCallback(
     const ScopedJavaGlobalRef<jobject>& j_callback_obj,
     const OfflinePageModel::MultipleOfflinePageItemResult& result) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::string16 relevant_host =
+  std::u16string relevant_host =
       ExtractRelevantHostFromOfflinePageItemList(pages_created_after, result);
   ScopedJavaLocalRef<jstring> j_result =
       base::android::ConvertUTF16ToJavaString(env, relevant_host);

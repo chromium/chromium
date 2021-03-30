@@ -88,9 +88,9 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothAdapterClient
   // Sets whether discovery simulation should be enabled or not.
   void SetDiscoverySimulation(bool enabled);
 
-  // Mark the adapter and second adapter as visible or invisible.
-  void SetVisible(bool visible);
-  void SetSecondVisible(bool visible);
+  // Mark the adapter and second adapter as present or not.
+  void SetPresent(bool present);
+  void SetSecondPresent(bool present);
 
   // Set adapter UUIDs
   void SetUUIDs(const std::vector<std::string>& uuids);
@@ -125,18 +125,18 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothAdapterClient
   std::unique_ptr<Properties> properties_;
   std::unique_ptr<Properties> second_properties_;
 
-  // Whether the adapter and second adapter should be visible or not.
-  bool visible_;
-  bool second_visible_;
+  // Whether the adapter and second adapter should be present or not.
+  bool present_ = true;
+  bool second_present_ = false;
 
   // Number of times we've been asked to discover.
-  int discovering_count_;
+  int discovering_count_ = 0;
 
   // Current discovery filter
   std::unique_ptr<DiscoveryFilter> discovery_filter_;
 
   // When set, next call to SetDiscoveryFilter would fail.
-  bool set_discovery_filter_should_fail_;
+  bool set_discovery_filter_should_fail_ = false;
 
   // When set, next call to StartDiscovery would fail.
   bool set_start_discovery_should_fail_ = false;
@@ -148,7 +148,7 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothAdapterClient
   int simulation_interval_ms_;
 
   // Last used handle value issued for a service record.
-  uint32_t last_handle_;
+  uint32_t last_handle_ = 0;
 
   // Service records manually registered with this adapter by handle.
   std::map<uint32_t, BluetoothServiceRecordBlueZ> records_;

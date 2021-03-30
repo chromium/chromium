@@ -1,0 +1,5 @@
+This tests verifies the hit test regions given to the compositor for an element with child at negative offset. It can only be run in DumpRenderTree.
+
+negativeOffsetChild: layer(316x20) has hit test rect (0,2 153x18)
+
+

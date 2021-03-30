@@ -17,11 +17,12 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
+#include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/history/core/browser/history_db_task.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -42,7 +43,6 @@ class BookmarkModel;
 
 namespace history {
 class HistoryDatabase;
-class HistoryService;
 class HQPPerfTestOnePopularURL;
 }
 
@@ -119,11 +119,11 @@ class InMemoryURLIndex : public KeyedService,
   // Scans the history index and returns a vector with all scored, matching
   // history items. This entry point simply forwards the call on to the
   // URLIndexPrivateData class. For a complete description of this function
-  // refer to that class.  If |cursor_position| is base::string16::npos, the
+  // refer to that class.  If |cursor_position| is std::u16string::npos, the
   // function doesn't do anything special with the cursor; this is equivalent
   // to the cursor being at the end.  In total, |max_matches| of items will be
   // returned in the |ScoredHistoryMatches| vector.
-  ScoredHistoryMatches HistoryItemsForTerms(const base::string16& term_string,
+  ScoredHistoryMatches HistoryItemsForTerms(const std::u16string& term_string,
                                             size_t cursor_position,
                                             size_t max_matches);
 
@@ -322,6 +322,10 @@ class InMemoryURLIndex : public KeyedService,
   // This flag is set to true if we want to listen to the
   // HistoryServiceLoaded Notification.
   bool listen_to_history_service_loaded_;
+
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_service_observation_{this};
 
   base::ThreadChecker thread_checker_;
 };

@@ -4,7 +4,6 @@
 
 import("//media/gpu/args.gni")
 import("//media/media_options.gni")
-import("//third_party/libaom/options.gni")
 
 source_set("filters") {
   # Do not expand the visibility here without double-checking with OWNERS, this
@@ -300,6 +299,7 @@ source_set("unit_tests") {
     "video_renderer_algorithm_unittest.cc",
     "vp9_parser_unittest.cc",
     "vp9_raw_bits_reader_unittest.cc",
+    "vp9_uncompressed_header_parser_unittest.cc",
   ]
 
   deps = [

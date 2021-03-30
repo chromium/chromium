@@ -5,7 +5,7 @@
 #include "chrome/browser/devtools/protocol/page_handler.h"
 
 #include "components/subresource_filter/content/browser/devtools_interaction_tracker.h"
-#include "components/webapps/installable/installable_manager.h"
+#include "components/webapps/browser/installable/installable_manager.h"
 #include "ui/gfx/image/image.h"
 
 PageHandler::PageHandler(content::WebContents* web_contents,

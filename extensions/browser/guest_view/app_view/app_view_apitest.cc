@@ -6,7 +6,6 @@
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
-#include "build/chromeos_buildflags.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/guest_view/browser/guest_view_manager_factory.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
@@ -76,7 +75,8 @@ class MockShellAppViewGuestDelegate
  public:
   MockShellAppViewGuestDelegate() = default;
 
-  extensions::AppDelegate* CreateAppDelegate() override {
+  extensions::AppDelegate* CreateAppDelegate(
+      content::WebContents* web_contents) override {
     return new MockShellAppDelegate();
   }
 };

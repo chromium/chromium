@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_EXTENSIONS_WEB_APP_EXTENSION_SHORTCUT_H_
 
 #include <memory>
+#include <string>
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut.h"
 
@@ -77,7 +77,7 @@ void DeleteAllShortcuts(Profile* profile, const extensions::Extension* app);
 // hidden shortcuts to interact correctly with the system shelf.
 // |old_app_title| contains the title of the app prior to this update.
 // |callback| is invoked once the FILE thread tasks have completed.
-void UpdateAllShortcuts(const base::string16& old_app_title,
+void UpdateAllShortcuts(const std::u16string& old_app_title,
                         Profile* profile,
                         const extensions::Extension* app,
                         base::OnceClosure callback);

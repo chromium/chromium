@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/display/mirror_window_controller.h"
 #include "ash/display/privacy_screen_controller.h"
 #include "ash/display/window_tree_host_manager.h"
@@ -13,7 +14,6 @@
 #include "ash/events/keyboard_driven_event_rewriter.h"
 #include "ash/public/cpp/accessibility_event_rewriter_delegate.h"
 #include "ash/shell.h"
-#include "ash/sticky_keys/sticky_keys_controller.h"
 #include "base/command_line.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/aura/env.h"
@@ -113,10 +113,9 @@ void EventRewriterControllerImpl::SetSendMouseEvents(bool value) {
   accessibility_event_rewriter_->set_send_mouse_events(value);
 }
 
-void EventRewriterControllerImpl::SetAltLeftClickRemappingEnabled(
-    bool enabled) {
+void EventRewriterControllerImpl::SetAltDownRemappingEnabled(bool enabled) {
   if (event_rewriter_chromeos_)
-    event_rewriter_chromeos_->set_alt_left_click_remapping_enabled(enabled);
+    event_rewriter_chromeos_->set_alt_down_remapping_enabled(enabled);
 }
 
 void EventRewriterControllerImpl::OnHostInitialized(

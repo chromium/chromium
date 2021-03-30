@@ -14,7 +14,6 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "gin/gin_export.h"
 #include "v8/include/v8.h"
@@ -123,12 +122,12 @@ struct GIN_EXPORT Converter<std::string> {
 };
 
 template <>
-struct GIN_EXPORT Converter<base::string16> {
+struct GIN_EXPORT Converter<std::u16string> {
   static v8::Local<v8::Value> ToV8(v8::Isolate* isolate,
-                                   const base::string16& val);
+                                   const std::u16string& val);
   static bool FromV8(v8::Isolate* isolate,
                      v8::Local<v8::Value> val,
-                     base::string16* out);
+                     std::u16string* out);
 };
 
 template <>

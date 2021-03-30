@@ -104,11 +104,9 @@
   AppendHorizontalConstraintsForViews(constraints, @[ self.titleButton ],
                                       self.contentView);
   [NSLayoutConstraint activateConstraints:constraints];
-#if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
       [self addInteraction:[[ViewPointerInteraction alloc] init]];
   }
-#endif  // defined(__IPHONE_13_4)
 }
 
 - (void)userDidTapTitleButton:(UIButton*)sender {

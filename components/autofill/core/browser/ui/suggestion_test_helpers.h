@@ -65,7 +65,7 @@ template <class EltsAreMatcher>
 inline testing::Matcher<const std::vector<Suggestion>&>
 SuggestionVectorValuesAre(const EltsAreMatcher& elts_are_matcher) {
   return testing::MakeMatcher(
-      new SuggestionVectorMembersAreMatcher<base::string16>(
+      new SuggestionVectorMembersAreMatcher<std::u16string>(
           elts_are_matcher, &Suggestion::value));
 }
 
@@ -74,7 +74,7 @@ template <class EltsAreMatcher>
 inline testing::Matcher<const std::vector<Suggestion>&>
 SuggestionVectorLabelsAre(const EltsAreMatcher& elts_are_matcher) {
   return testing::MakeMatcher(
-      new SuggestionVectorMembersAreMatcher<base::string16>(
+      new SuggestionVectorMembersAreMatcher<std::u16string>(
           elts_are_matcher, &Suggestion::label));
 }
 

@@ -37,38 +37,34 @@ enum NotificationType {
   // Sent when a CrxInstaller finishes. Source is the CrxInstaller that
   // finished. The details are the extension which was installed.
   // DEPRECATED: Use extensions::InstallObserver::OnFinishCrxInstall()
+  // TODO(https://crbug.com/1174728): Remove.
   NOTIFICATION_CRX_INSTALLER_DONE = NOTIFICATION_EXTENSIONS_START,
-
-  // An error occurred while attempting to load an extension. The details are a
-  // string with details about why the load failed.
-  // DEPRECATED: Use extensions::LoadErrorReporter::OnLoadFailure()
-  NOTIFICATION_EXTENSION_LOAD_ERROR,
 
   // Sent when attempting to load a new extension, but they are disabled. The
   // details are an Extension, and the source is a BrowserContext*.
+  // TODO(https://crbug.com/1174732): Remove.
   NOTIFICATION_EXTENSION_UPDATE_DISABLED,
 
   // Sent when an extension's permissions change. The details are an
   // UpdatedExtensionPermissionsInfo, and the source is a BrowserContext*.
+  // TODO(https://crbug.com/1174733): Remove.
   NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
 
   // An error occurred during extension install. The details are a string with
   // details about why the install failed.
+  // TODO(https://crbug.com/1174734): Remove.
   NOTIFICATION_EXTENSION_INSTALL_ERROR,
-
-  // Sent when an extension uninstall is not allowed because the extension is
-  // not user manageable.  The details are an Extension, and the source is a
-  // BrowserContext*.
-  NOTIFICATION_EXTENSION_UNINSTALL_NOT_ALLOWED,
 
   // Sent when an Extension object is removed from ExtensionService. This
   // can happen when an extension is uninstalled, upgraded, or blocklisted,
   // including all cases when the Extension is deleted. The details are an
   // Extension, and the source is a BrowserContext*.
+  // TODO(https://crbug.com/1174736): Remove.
   NOTIFICATION_EXTENSION_REMOVED,
 
   // Sent after a new ExtensionHost* is created. The details are
   // an ExtensionHost* and the source is a BrowserContext*.
+  // TODO(https://crbug.com/1174737): Remove.
   NOTIFICATION_EXTENSION_HOST_CREATED,
 
   // Sent before an ExtensionHost* is destroyed. The details are
@@ -76,6 +72,7 @@ enum NotificationType {
   //
   // DEPRECATED: Use
   // extensions::ExtensionHostObserver::OnExtensionHostDestroyed()
+  // TODO(https://crbug.com/1174738): Remove.
   NOTIFICATION_EXTENSION_HOST_DESTROYED,
 
   // Sent by an ExtensionHost* when it has finished its initial page load,
@@ -84,23 +81,22 @@ enum NotificationType {
   //
   // DEPRECATED: Use extensions::DeferredStartRenderHostObserver::
   // OnDeferredStartRenderHostDidStopFirstLoad()
+  // TODO(https://crbug.com/1174741): Remove.
   NOTIFICATION_EXTENSION_HOST_DID_STOP_FIRST_LOAD,
-
-  // Sent by an ExtensionHost* when its render view requests closing through
-  // window.close(). The details are an ExtensionHost* and the source is a
-  // BrowserContext*.
-  NOTIFICATION_EXTENSION_HOST_VIEW_SHOULD_CLOSE,
 
   // Sent when extension render process ends (whether it crashes or closes). The
   // details are an ExtensionHost* and the source is a BrowserContext*. Not sent
   // during browser shutdown.
+  // TODO(https://crbug.com/1174743): Remove.
   NOTIFICATION_EXTENSION_PROCESS_TERMINATED,
 
   // Sent when a background page is ready so other components can load.
+  // TODO(https://crbug.com/1174744): Remove.
   NOTIFICATION_EXTENSION_BACKGROUND_PAGE_READY,
 
   // Sent by an extension to notify the browser about the results of a unit
   // test.
+  // TODO(https://crbug.com/1174745): Remove.
   NOTIFICATION_EXTENSION_TEST_PASSED,
   NOTIFICATION_EXTENSION_TEST_FAILED,
 
@@ -108,45 +104,43 @@ enum NotificationType {
   // sender is a std::string representing the extension id, and the details
   // are a std::string with some message. This is particularly useful when you
   // want to have C++ code wait for javascript code to do something.
+  // TODO(https://crbug.com/1174746): Remove.
   NOTIFICATION_EXTENSION_TEST_MESSAGE,
 
   // Sent when an bookmarks extensions API function was successfully invoked.
   // The source is the id of the extension that invoked the function, and the
   // details are a pointer to the const BookmarksFunction in question.
+  // TODO(https://crbug.com/1174748): Remove.
   NOTIFICATION_EXTENSION_BOOKMARKS_API_INVOKED,
-
-  // Sent when a downloads extensions API event is fired. The source is an
-  // ExtensionDownloadsEventRouter::NotificationSource, and the details is a
-  // std::string containing json. Used for testing.
-  NOTIFICATION_EXTENSION_DOWNLOADS_EVENT,
 
   // Sent when an omnibox extension has sent back omnibox suggestions. The
   // source is the BrowserContext*, and the details are an
   // extensions::api::omnibox::SendSuggestions::Params object.
+  // TODO(https://crbug.com/1174750): Remove.
   NOTIFICATION_EXTENSION_OMNIBOX_SUGGESTIONS_READY,
 
   // Sent when the user accepts the input in an extension omnibox keyword
   // session. The source is the BrowserContext*.
+  // TODO(https://crbug.com/1174751): Remove.
   NOTIFICATION_EXTENSION_OMNIBOX_INPUT_ENTERED,
 
   // Sent when an omnibox extension has updated the default suggestion. The
   // source is the BrowserContext*.
+  // TODO(https://crbug.com/1174752): Remove.
   NOTIFICATION_EXTENSION_OMNIBOX_DEFAULT_SUGGESTION_CHANGED,
 
   // Sent when the extension updater starts checking for updates to installed
   // extensions. The source is a BrowserContext*, and there are no details.
+  // TODO(https://crbug.com/1174753): Remove.
   NOTIFICATION_EXTENSION_UPDATING_STARTED,
 
   // The extension updater found an update and will attempt to download and
   // install it. The source is a BrowserContext*, and the details are an
   // extensions::UpdateDetails object with the extension id and version of the
   // found update.
+  // TODO(https://crbug.com/1174754): Remove.
   NOTIFICATION_EXTENSION_UPDATE_FOUND,
 
-  // Sent when there are new user scripts available.  The details are a
-  // pointer to SharedMemory containing the new scripts.
-  // DEPRECATED: Use extensions::UserScriptLoader::Observer::OnScriptsLoaded()
-  NOTIFICATION_USER_SCRIPTS_UPDATED,
   NOTIFICATION_EXTENSIONS_END
 };
 

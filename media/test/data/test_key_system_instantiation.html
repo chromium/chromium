@@ -5,8 +5,7 @@
       // of the result.
       function setResultInTitle(title) {
         if (title == "" || title == "success" || title == "TypeError" ||
-            title == "Unsupported keySystem or supportedConfigurations." ||
-            title == "Unsupported platform.") {
+            title == "Unsupported keySystem or supportedConfigurations.") {
           document.title = title;
         } else {
           console.log("Unexpected result: " + title);
@@ -32,7 +31,7 @@
       // Calls navigator.requestMediaKeySystemAccess() using the supplied codec
       // lists, and then verifies the result. Sets page title when done.
       function requestMediaKeySystemAccessAndVerifyConfiguration(
-          keySystem, initDataType, audioCapabilities, videoCapabilities, 
+          keySystem, initDataType, audioCapabilities, videoCapabilities,
           sessionType) {
         var configuration = {
             initDataTypes: [initDataType],

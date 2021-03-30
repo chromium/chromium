@@ -29,11 +29,11 @@ int ConcatMenuModel::GetCommandIdAt(int index) const {
   return GetterImpl(&ui::MenuModel::GetCommandIdAt, index);
 }
 
-base::string16 ConcatMenuModel::GetLabelAt(int index) const {
+std::u16string ConcatMenuModel::GetLabelAt(int index) const {
   return GetterImpl(&ui::MenuModel::GetLabelAt, index);
 }
 
-base::string16 ConcatMenuModel::GetMinorTextAt(int index) const {
+std::u16string ConcatMenuModel::GetMinorTextAt(int index) const {
   return GetterImpl(&ui::MenuModel::GetMinorTextAt, index);
 }
 

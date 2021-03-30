@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "components/autofill/core/common/form_data.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
 
@@ -29,8 +29,8 @@ struct PasswordAndMetadata {
   PasswordAndMetadata& operator=(PasswordAndMetadata&&);
   ~PasswordAndMetadata();
 
-  base::string16 username;
-  base::string16 password;
+  std::u16string username;
+  std::u16string password;
   std::string realm;
   bool uses_account_store = false;
 };
@@ -56,7 +56,7 @@ struct PasswordFormFillData {
   FormRendererId form_renderer_id;
 
   // The name of the form.
-  base::string16 name;
+  std::u16string name;
 
   // An URL consisting of the scheme, host, port and path; the rest is stripped.
   GURL url;

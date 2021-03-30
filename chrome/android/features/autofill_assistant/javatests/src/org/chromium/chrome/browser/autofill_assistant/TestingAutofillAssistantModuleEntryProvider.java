@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.autofill_assistant.onboarding.OnboardingCoordinatorFactory;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.tab.Tab;
@@ -44,8 +45,9 @@ class TestingAutofillAssistantModuleEntryProvider extends AutofillAssistantModul
                 BrowserControlsStateProvider browserControls,
                 CompositorViewHolder compositorViewHolder,
                 ActivityTabProvider activityTabProvider) {
-            super(context, bottomSheetController, browserControls, compositorViewHolder,
-                    activityTabProvider, bottomSheetController.getScrimCoordinator());
+            super(new OnboardingCoordinatorFactory(
+                          context, bottomSheetController, browserControls, compositorViewHolder),
+                    activityTabProvider);
         }
 
         @Override
@@ -72,7 +74,7 @@ class TestingAutofillAssistantModuleEntryProvider extends AutofillAssistantModul
                 ApplicationViewportInsetSupplier bottomInsetProvider,
                 ActivityTabProvider activityTabProvider, boolean isChromeCustomTab,
                 @NonNull String initialUrl, Map<String, String> parameters, String experimentIds,
-                @Nullable String callerAccount, @Nullable String userName) {}
+                @Nullable String callerEmail, @Nullable String originalDeeplink) {}
 
         @Override
         public AutofillAssistantActionHandler createActionHandler(Context context,
@@ -110,12 +112,13 @@ class TestingAutofillAssistantModuleEntryProvider extends AutofillAssistantModul
     }
 
     @Override
-    public void getModuleEntry(Tab tab, Callback<AutofillAssistantModuleEntry> callback) {
+    public void getModuleEntry(
+            Tab tab, Callback<AutofillAssistantModuleEntry> callback, boolean showUi) {
         if (mCannotInstall) {
             callback.onResult(null);
             return;
         }
         mNotInstalled = false;
-        super.getModuleEntry(tab, callback);
+        super.getModuleEntry(tab, callback, showUi);
     }
 }

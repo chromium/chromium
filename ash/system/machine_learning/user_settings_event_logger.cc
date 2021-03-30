@@ -56,7 +56,7 @@ UserSettingsEventLogger::UserSettingsEventLogger()
       is_playing_audio_(false),
       is_playing_video_(false),
       clock_(base::DefaultClock::GetInstance()) {
-  chromeos::CrasAudioHandler* audio_handler = chromeos::CrasAudioHandler::Get();
+  auto* audio_handler = CrasAudioHandler::Get();
   DCHECK(audio_handler);
 
   audio_handler->AddAudioObserver(this);
@@ -68,7 +68,7 @@ UserSettingsEventLogger::UserSettingsEventLogger()
 }
 
 UserSettingsEventLogger::~UserSettingsEventLogger() {
-  chromeos::CrasAudioHandler::Get()->RemoveAudioObserver(this);
+  CrasAudioHandler::Get()->RemoveAudioObserver(this);
   chromeos::PowerManagerClient::Get()->RemoveObserver(this);
   Shell::Get()->RemoveShellObserver(this);
   Shell::Get()->video_detector()->RemoveObserver(this);

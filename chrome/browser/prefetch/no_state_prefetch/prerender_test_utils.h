@@ -20,94 +20,56 @@
 #include "base/synchronization/lock.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
-#include "chrome/browser/prefetch/no_state_prefetch/chrome_prerender_contents_delegate.h"
+#include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/no_state_prefetch/browser/prerender_contents.h"
-#include "components/no_state_prefetch/browser/prerender_contents_delegate.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
-#include "components/safe_browsing/core/db/test_database_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_contents_delegate.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
+#include "components/safe_browsing/core/db/fake_database_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_widget_host_observer.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "url/gurl.h"
 
 namespace prerender {
 
 namespace test_utils {
 
-// A SafeBrowsingDatabaseManager implementation that returns a fixed result for
-// a given URL.
-class FakeSafeBrowsingDatabaseManager
-    : public safe_browsing::TestSafeBrowsingDatabaseManager {
+class TestNoStatePrefetchContents : public NoStatePrefetchContents,
+                                    public content::RenderWidgetHostObserver {
  public:
-  FakeSafeBrowsingDatabaseManager();
+  TestNoStatePrefetchContents(
+      NoStatePrefetchManager* no_state_prefetch_manager,
+      content::BrowserContext* browser_context,
+      const GURL& url,
+      const content::Referrer& referrer,
+      const base::Optional<url::Origin>& initiator_origin,
+      Origin origin,
+      FinalStatus expected_final_status,
+      bool ignore_final_status);
 
-  // Called on the IO thread to check if the given url is safe or not.  If we
-  // can synchronously determine that the url is safe, CheckUrl returns true.
-  // Otherwise it returns false, and "client" is called asynchronously with the
-  // result when it is ready.
-  // Returns true, indicating a SAFE result, unless the URL is the fixed URL
-  // specified by the user, and the user-specified result is not SAFE
-  // (in which that result will be communicated back via a call into the
-  // client, and false will be returned).
-  // Overrides SafeBrowsingDatabaseManager::CheckBrowseUrl.
-  bool CheckBrowseUrl(const GURL& gurl,
-                      const safe_browsing::SBThreatTypeSet& threat_types,
-                      Client* client) override;
-
-  void SetThreatTypeForUrl(const GURL& url,
-                           safe_browsing::SBThreatType threat_type) {
-    bad_urls_[url.spec()] = threat_type;
-  }
-
-  // These are called when checking URLs, so we implement them.
-  bool IsSupported() const override;
-  bool ChecksAreAlwaysAsync() const override;
-  bool CanCheckResourceType(
-      blink::mojom::ResourceType /* resource_type */) const override;
-
-  bool CheckExtensionIDs(const std::set<std::string>& extension_ids,
-                         Client* client) override;
-
- private:
-  ~FakeSafeBrowsingDatabaseManager() override;
-
-  void OnCheckBrowseURLDone(const GURL& gurl, Client* client);
-
-  std::unordered_map<std::string, safe_browsing::SBThreatType> bad_urls_;
-  DISALLOW_COPY_AND_ASSIGN(FakeSafeBrowsingDatabaseManager);
-};
-
-// PrerenderContents that stops the UI message loop on DidStopLoading().
-class TestPrerenderContents : public PrerenderContents,
-                              public content::RenderWidgetHostObserver {
- public:
-  TestPrerenderContents(PrerenderManager* prerender_manager,
-                        content::BrowserContext* browser_context,
-                        const GURL& url,
-                        const content::Referrer& referrer,
-                        const base::Optional<url::Origin>& initiator_origin,
-                        Origin origin,
-                        FinalStatus expected_final_status,
-                        bool ignore_final_status);
-
-  ~TestPrerenderContents() override;
+  ~TestNoStatePrefetchContents() override;
 
   bool CheckURL(const GURL& url) override;
 
-  // For tests that open the prerender in a new background tab, the RenderView
-  // will not have been made visible when the PrerenderContents is destroyed
-  // even though it is used.
+  // For tests that open the no-state prefetcher in a new background tab, the
+  // RenderView will not have been made visible when the NoStatePrefetchContents
+  // is destroyed even though it is used.
   void set_should_be_shown(bool value) { should_be_shown_ = value; }
 
-  // For tests which do not know whether the prerender will be used.
+  // For tests which do not know whether the no-state prefetcher will be used.
   void set_skip_final_checks(bool value) { skip_final_checks_ = value; }
 
   FinalStatus expected_final_status() const { return expected_final_status_; }
 
  private:
-  void OnRenderViewHostCreated(
-      content::RenderViewHost* new_render_view_host) override;
+  // WebContentsObserver overrides.
+  void RenderFrameHostChanged(
+      content::RenderFrameHost* old_frame_host,
+      content::RenderFrameHost* new_frame_host) override;
+
+  // RenderWidgetHostObserver overrides.
   void RenderWidgetHostVisibilityChanged(content::RenderWidgetHost* widget_host,
                                          bool became_visible) override;
   void RenderWidgetHostDestroyed(
@@ -117,32 +79,30 @@ class TestPrerenderContents : public PrerenderContents,
 
   ScopedObserver<content::RenderWidgetHost, content::RenderWidgetHostObserver>
       observer_;
-  // The RenderViewHost created for the prerender, if any.
-  content::RenderViewHost* new_render_view_host_;
-  // Set to true when the prerendering RenderWidget is hidden.
-  bool was_hidden_;
+  // The main frame created for the prerender, if any.
+  content::RenderFrameHost* new_main_frame_ = nullptr;
   // Set to true when the prerendering RenderWidget is shown, after having been
   // hidden.
-  bool was_shown_;
+  bool was_shown_ = false;
   // Expected final value of was_shown_.  Defaults to true for
   // FINAL_STATUS_USED, and false otherwise.
   bool should_be_shown_;
   // If true, |expected_final_status_| and other shutdown checks are skipped.
   bool skip_final_checks_;
 
-  DISALLOW_COPY_AND_ASSIGN(TestPrerenderContents);
+  DISALLOW_COPY_AND_ASSIGN(TestNoStatePrefetchContents);
 };
 
-// A handle to a TestPrerenderContents whose lifetime is under the caller's
-// control. A PrerenderContents may be destroyed at any point. This allows
-// tracking the FinalStatus.
-class TestPrerender : public PrerenderContents::Observer,
+// A handle to a TestNoStatePrefetchContents whose lifetime is under the
+// caller's control. A NoStatePrefetchContents may be destroyed at any point.
+// This allows tracking the FinalStatus.
+class TestPrerender : public NoStatePrefetchContents::Observer,
                       public base::SupportsWeakPtr<TestPrerender> {
  public:
   TestPrerender();
   ~TestPrerender() override;
 
-  TestPrerenderContents* contents() const { return contents_; }
+  TestNoStatePrefetchContents* contents() const { return contents_; }
   int number_of_loads() const { return number_of_loads_; }
   FinalStatus GetFinalStatus() const;
 
@@ -156,17 +116,17 @@ class TestPrerender : public PrerenderContents::Observer,
   // caller must do it instead.
   void WaitForLoads(int expected_number_of_loads);
 
-  void OnPrerenderCreated(TestPrerenderContents* contents);
+  void OnPrefetchContentsCreated(TestNoStatePrefetchContents* contents);
 
-  // PrerenderContents::Observer implementation:
-  void OnPrerenderStart(PrerenderContents* contents) override;
+  // NoStatePrefetchContents::Observer implementation:
+  void OnPrefetchStart(NoStatePrefetchContents* contents) override;
 
-  void OnPrerenderStopLoading(PrerenderContents* contents) override;
+  void OnPrefetchStopLoading(NoStatePrefetchContents* contents) override;
 
-  void OnPrerenderStop(PrerenderContents* contents) override;
+  void OnPrefetchStop(NoStatePrefetchContents* contents) override;
 
  private:
-  TestPrerenderContents* contents_;
+  TestNoStatePrefetchContents* contents_;
   FinalStatus final_status_;
   int number_of_loads_;
 
@@ -183,32 +143,34 @@ class TestPrerender : public PrerenderContents::Observer,
   DISALLOW_COPY_AND_ASSIGN(TestPrerender);
 };
 
-// Blocks until a TestPrerenderContents has been destroyed with the given final
-// status. Should be created with a TestPrerenderContents, and then
+// Blocks until a TestNoStatePrefetchContents has been destroyed with the given
+// final status. Should be created with a TestNoStatePrefetchContents, and then
 // WaitForDestroy should be called and its return value checked.
 class DestructionWaiter {
  public:
-  // Does not own the prerender_contents, which must outlive any call to
+  // Does not own the no_state_prefetch_contents, which must outlive any call to
   // WaitForDestroy().
-  DestructionWaiter(TestPrerenderContents* prerender_contents,
+  DestructionWaiter(TestNoStatePrefetchContents* no_state_prefetch_contents,
                     FinalStatus expected_final_status);
 
   ~DestructionWaiter();
 
-  // Returns true if the TestPrerenderContents was destroyed with the correct
-  // final status, or false otherwise. Note this also may hang if the contents
-  // is never destroyed (which will presumably cause the test to time out).
+  // Returns true if the TestNoStatePrefetchContents was destroyed with the
+  // correct final status, or false otherwise. Note this also may hang if the
+  // contents is never destroyed (which will presumably cause the test to time
+  // out).
   bool WaitForDestroy();
 
  private:
-  class DestructionMarker : public PrerenderContents::Observer {
+  class DestructionMarker : public NoStatePrefetchContents::Observer {
    public:
-    // Does not own the waiter which must outlive the TestPrerenderContents.
+    // Does not own the waiter which must outlive the
+    // TestNoStatePrefetchContents.
     explicit DestructionMarker(DestructionWaiter* waiter);
 
     ~DestructionMarker() override;
 
-    void OnPrerenderStop(PrerenderContents* contents) override;
+    void OnPrefetchStop(NoStatePrefetchContents* contents) override;
 
    private:
     DestructionWaiter* waiter_;
@@ -227,18 +189,20 @@ class DestructionWaiter {
   DISALLOW_COPY_AND_ASSIGN(DestructionWaiter);
 };
 
-// Wait until a PrerenderManager has seen a first contentful paint.
-class FirstContentfulPaintManagerWaiter : public PrerenderManagerObserver {
+// Wait until a NoStatePrefetchManager has seen a first contentful paint.
+class FirstContentfulPaintManagerWaiter
+    : public NoStatePrefetchManagerObserver {
  public:
   // Create and return a pointer to a |FirstContentfulPaintManagerWaiter|. The
-  // instance is owned by the |PrerenderManager|.
-  static FirstContentfulPaintManagerWaiter* Create(PrerenderManager* manager);
+  // instance is owned by the |NoStatePrefetchManager|.
+  static FirstContentfulPaintManagerWaiter* Create(
+      NoStatePrefetchManager* manager);
 
   ~FirstContentfulPaintManagerWaiter() override;
 
   void OnFirstContentfulPaint() override;
 
-  // Wait for a first contentful paint to be seen by our PrerenderManager.
+  // Wait for a first contentful paint to be seen by our NoStatePrefetchManager.
   void Wait();
 
  private:
@@ -250,21 +214,22 @@ class FirstContentfulPaintManagerWaiter : public PrerenderManagerObserver {
   DISALLOW_COPY_AND_ASSIGN(FirstContentfulPaintManagerWaiter);
 };
 
-// PrerenderContentsFactory that uses TestPrerenderContents.
-class TestPrerenderContentsFactory : public PrerenderContents::Factory {
+// NoStatePrefetchContentsFactory that uses TestNoStatePrefetchContents.
+class TestNoStatePrefetchContentsFactory
+    : public NoStatePrefetchContents::Factory {
  public:
-  TestPrerenderContentsFactory();
+  TestNoStatePrefetchContentsFactory();
 
-  ~TestPrerenderContentsFactory() override;
+  ~TestNoStatePrefetchContentsFactory() override;
 
-  std::unique_ptr<TestPrerender> ExpectPrerenderContents(
+  std::unique_ptr<TestPrerender> ExpectNoStatePrefetchContents(
       FinalStatus final_status);
 
-  void IgnorePrerenderContents();
+  void IgnoreNoStatePrefetchContents();
 
-  PrerenderContents* CreatePrerenderContents(
-      std::unique_ptr<PrerenderContentsDelegate> delegate,
-      PrerenderManager* prerender_manager,
+  NoStatePrefetchContents* CreateNoStatePrefetchContents(
+      std::unique_ptr<NoStatePrefetchContentsDelegate> delegate,
+      NoStatePrefetchManager* no_state_prefetch_manager,
       content::BrowserContext* browser_context,
       const GURL& url,
       const content::Referrer& referrer,
@@ -287,7 +252,7 @@ class TestPrerenderContentsFactory : public PrerenderContents::Factory {
 
   base::circular_deque<ExpectedContents> expected_contents_queue_;
 
-  DISALLOW_COPY_AND_ASSIGN(TestPrerenderContentsFactory);
+  DISALLOW_COPY_AND_ASSIGN(TestNoStatePrefetchContentsFactory);
 };
 
 class PrerenderInProcessBrowserTest : virtual public InProcessBrowserTest {
@@ -307,16 +272,17 @@ class PrerenderInProcessBrowserTest : virtual public InProcessBrowserTest {
   // already. The path must not be empty.
   std::string MakeAbsolute(const std::string& path);
 
-  bool UrlIsInPrerenderManager(const std::string& html_file) const;
-  bool UrlIsInPrerenderManager(const GURL& url) const;
+  bool UrlIsInNoStatePrefetchManager(const std::string& html_file) const;
+  bool UrlIsInNoStatePrefetchManager(const GURL& url) const;
 
   // Convenience function to get the currently active WebContents in
   // current_browser().
   content::WebContents* GetActiveWebContents() const;
 
-  PrerenderManager* GetPrerenderManager() const;
+  NoStatePrefetchManager* GetNoStatePrefetchManager() const;
 
-  TestPrerenderContents* GetPrerenderContentsFor(const GURL& url) const;
+  TestNoStatePrefetchContents* GetNoStatePrefetchContentsFor(
+      const GURL& url) const;
 
   // Set up an HTTPS server.
   void UseHttpsSrcServer();
@@ -328,11 +294,12 @@ class PrerenderInProcessBrowserTest : virtual public InProcessBrowserTest {
     return safe_browsing_factory_.get();
   }
 
-  test_utils::FakeSafeBrowsingDatabaseManager*
+  safe_browsing::FakeSafeBrowsingDatabaseManager*
   GetFakeSafeBrowsingDatabaseManager();
 
-  TestPrerenderContentsFactory* prerender_contents_factory() const {
-    return prerender_contents_factory_;
+  TestNoStatePrefetchContentsFactory* no_state_prefetch_contents_factory()
+      const {
+    return no_state_prefetch_contents_factory_;
   }
 
   void set_autostart_test_server(bool value) { autostart_test_server_ = value; }
@@ -346,10 +313,10 @@ class PrerenderInProcessBrowserTest : virtual public InProcessBrowserTest {
   const base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
   // Returns a string for pattern-matching TaskManager tab entries.
-  base::string16 MatchTaskManagerTab(const char* page_title);
+  std::u16string MatchTaskManagerTab(const char* page_title);
 
   // Returns a string for pattern-matching TaskManager prerender entries.
-  base::string16 MatchTaskManagerPrerender(const char* page_title);
+  std::u16string MatchTaskManagerPrerender(const char* page_title);
 
   // Returns a GURL for an EmbeddedTestServer that will serves the file
   // |url_file| with |replacement_text| replacing |replacement_variable|.
@@ -360,7 +327,7 @@ class PrerenderInProcessBrowserTest : virtual public InProcessBrowserTest {
  protected:
   // For each FinalStatus in |expected_final_status_queue| creates a prerender
   // that is going to verify the correctness of its FinalStatus upon
-  // destruction. Waits for creation of the first PrerenderContents.
+  // destruction. Waits for creation of the first NoStatePrefetchContents.
   std::vector<std::unique_ptr<TestPrerender>> NavigateWithPrerenders(
       const GURL& loader_url,
       const std::vector<FinalStatus>& expected_final_status_queue);
@@ -391,7 +358,7 @@ class PrerenderInProcessBrowserTest : virtual public InProcessBrowserTest {
       external_protocol_handler_delegate_;
   std::unique_ptr<safe_browsing::TestSafeBrowsingServiceFactory>
       safe_browsing_factory_;
-  TestPrerenderContentsFactory* prerender_contents_factory_;
+  TestNoStatePrefetchContentsFactory* no_state_prefetch_contents_factory_;
   Browser* explicitly_set_browser_;
   bool autostart_test_server_;
   base::HistogramTester histogram_tester_;
@@ -401,7 +368,7 @@ class PrerenderInProcessBrowserTest : virtual public InProcessBrowserTest {
   std::map<GURL, uint32_t> requests_;
   GURL waiting_url_;
   uint32_t waiting_count_ = 0;
-  base::Closure waiting_closure_;
+  base::OnceClosure waiting_closure_;
   base::Lock lock_;
 
   DISALLOW_COPY_AND_ASSIGN(PrerenderInProcessBrowserTest);

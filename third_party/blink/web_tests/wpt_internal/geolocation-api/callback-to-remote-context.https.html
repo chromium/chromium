@@ -1,0 +1,28 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/testharness-adapter.js"></script>
+</head>
+<body>
+<script>
+description("Tests that when a Geolocation request is made from a remote frame, callbacks are made as usual.");
+
+function onIframeReady() {
+    // Make request from remote frame
+    iframe.contentWindow.navigator.geolocation.getCurrentPosition(function() {
+        testPassed('Success callback invoked');
+        finishJSTest();
+    }, function() {
+        testFailed('Error callback invoked unexpectedly');
+        finishJSTest();
+    });
+}
+
+var iframe = document.createElement('iframe');
+iframe.src = 'resources/callback-to-remote-context-inner.html';
+document.body.appendChild(iframe);
+</script>
+</body>
+</html>

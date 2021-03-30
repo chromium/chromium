@@ -5,8 +5,8 @@
 (async function() {
   TestRunner.addResult(
       `Tests that proper (and different) styles are returned for body elements of main document and iframe.\n`);
-  await TestRunner.loadModule('elements_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>

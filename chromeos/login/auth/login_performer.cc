@@ -165,13 +165,6 @@ void LoginPerformer::DoPerformLogin(const UserContext& user_context,
   }
 }
 
-void LoginPerformer::LoginAsSupervisedUser(const UserContext& user_context) {
-  // TODO(crbug.com/866790): remove this method as a part of further clean-up.
-  LOG(ERROR) << "Login attempt of supervised user detected.";
-  delegate_->AllowlistCheckFailed(user_context.GetAccountId().GetUserEmail());
-  return;
-}
-
 void LoginPerformer::LoginAsPublicSession(const UserContext& user_context) {
   if (!CheckPolicyForUser(user_context.GetAccountId())) {
     DCHECK(delegate_);
@@ -242,12 +235,10 @@ void LoginPerformer::EnsureExtendedAuthenticator() {
 void LoginPerformer::StartLoginCompletion() {
   VLOG(1) << "Online login completion started.";
   chromeos::LoginEventRecorder::Get()->AddLoginTimeMarker("AuthStarted", false);
-  content::BrowserContext* browser_context = GetSigninContext();
   EnsureAuthenticator();
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&chromeos::Authenticator::CompleteLogin,
-                     authenticator_.get(), browser_context, user_context_));
+  task_runner_->PostTask(FROM_HERE,
+                         base::BindOnce(&chromeos::Authenticator::CompleteLogin,
+                                        authenticator_.get(), user_context_));
   user_context_.ClearSecrets();
 }
 
@@ -256,12 +247,9 @@ void LoginPerformer::StartAuthentication() {
   chromeos::LoginEventRecorder::Get()->AddLoginTimeMarker("AuthStarted", false);
   if (delegate_) {
     EnsureAuthenticator();
-    content::BrowserContext* browser_context = GetSigninContext();
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&Authenticator::AuthenticateToLogin,
-                       authenticator_.get(), base::Unretained(browser_context),
-                       user_context_));
+    task_runner_->PostTask(FROM_HERE,
+                           base::BindOnce(&Authenticator::AuthenticateToLogin,
+                                          authenticator_.get(), user_context_));
   } else {
     NOTREACHED();
   }

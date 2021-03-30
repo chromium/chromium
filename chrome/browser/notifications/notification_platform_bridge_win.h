@@ -50,8 +50,8 @@ class NotificationPlatformBridgeWin : public NotificationPlatformBridge {
   // notification-launch-id switch.
   static bool HandleActivation(const base::CommandLine& command_line);
 
-  // Checks if native notification is enabled.
-  static bool NativeNotificationEnabled();
+  // Checks if system notifications are enabled.
+  static bool SystemNotificationEnabled();
 
   // Struct used to build the key to identify the notifications.
   struct NotificationKeyType {
@@ -113,7 +113,7 @@ class NotificationPlatformBridgeWin : public NotificationPlatformBridge {
   Microsoft::WRL::ComPtr<ABI::Windows::UI::Notifications::IToastNotification>
   GetToastNotificationForTesting(
       const message_center::Notification& notification,
-      const base::string16& xml_template,
+      const std::wstring& xml_template,
       const std::string& profile_id,
       bool incognito);
 

@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import 'chrome://resources/cr_elements/cr_search_field/cr_search_field.m.js';
-//
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {flushTasks} from '../test_util.m.js';
-// #import {assertEquals, assertDeepEquals, assertNotReached, assertFalse, assertNotEquals, assertTrue} from '../chai_assert.js';
+import 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
+
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNotReached, assertTrue} from '../chai_assert.js';
+import {flushTasks} from '../test_util.m.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for cr-search-field. */
@@ -64,12 +65,12 @@ suite('cr-search-field', function() {
     field.click();
 
     simulateSearch(' ');
-    Polymer.dom.flush();
+    flush();
     assertTrue(field.hasSearchText);
 
     field.$$('#clearSearch').click();
     assertEquals('', field.getValue());
-    await test_util.flushTasks();
+    await flushTasks();
     assertEquals(field.$$('#searchInput'), field.root.activeElement);
     assertFalse(field.hasSearchText);
   });
@@ -78,12 +79,12 @@ suite('cr-search-field', function() {
     field.click();
 
     simulateSearch('query1');
-    Polymer.dom.flush();
+    flush();
     assertTrue(field.hasSearchText);
 
     field.$$('#clearSearch').click();
     assertEquals('', field.getValue());
-    await test_util.flushTasks();
+    await flushTasks();
     assertEquals(field.$$('#searchInput'), field.root.activeElement);
     assertFalse(field.hasSearchText);
   });
@@ -91,7 +92,7 @@ suite('cr-search-field', function() {
   test('notifies on new searches and setValue', function() {
     field.click();
     simulateSearch('query1');
-    Polymer.dom.flush();
+    flush();
     assertEquals('query1', field.getValue());
 
     field.$$('#clearSearch').click();

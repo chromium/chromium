@@ -53,7 +53,7 @@
 			<string>Viewer</string>
 			<key>LSItemContentTypes</key>
 			<array>
-				<string>com.netscape.javascript-​source</string>
+				<string>com.netscape.javascript-source</string>
 			</array>
 		</dict>
 		<dict>
@@ -203,6 +203,13 @@
 	<true/>
 	<key>OSAScriptingDefinition</key>
 	<string>scripting.sdef</string>
+	<key>ASWebAuthenticationSessionWebBrowserSupportCapabilities</key>
+	<dict>
+		<key>IsSupported</key>
+		<true/>
+		<key>EphemeralBrowserSessionIsSupported</key>
+		<true/>
+	</dict>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

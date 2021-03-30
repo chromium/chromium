@@ -146,7 +146,7 @@ class Service : public KeyedService,
                         const Watcher& watcher,
                         storage::WatcherManager::ChangeType change_type,
                         const ProvidedFileSystemObserver::Changes& changes,
-                        const base::Closure& callback) override;
+                        base::OnceClosure callback) override;
   void OnWatcherTagUpdated(const ProvidedFileSystemInfo& file_system_info,
                            const Watcher& watcher) override;
   void OnWatcherListChanged(const ProvidedFileSystemInfo& file_system_info,

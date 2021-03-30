@@ -9,15 +9,17 @@
 #include <stdint.h>
 
 #include <map>
+#include <string>
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #import "content/browser/accessibility/browser_accessibility_cocoa.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/public/browser/ax_event_notification_details.h"
 
 namespace content {
+
+class BrowserAccessibilityCocoaBrowserTest;
 
 class CONTENT_EXPORT BrowserAccessibilityManagerMac
     : public BrowserAccessibilityManager {
@@ -54,14 +56,13 @@ class CONTENT_EXPORT BrowserAccessibilityManagerMac
                               const std::vector<Change>& changes) override;
 
   // Returns an autoreleased object.
-  NSDictionary* GetUserInfoForSelectedTextChangedNotification(
-      bool focus_changed);
+  NSDictionary* GetUserInfoForSelectedTextChangedNotification();
 
   // Returns an autoreleased object.
   NSDictionary* GetUserInfoForValueChangedNotification(
       const BrowserAccessibilityCocoa* native_node,
-      const base::string16& deleted_text,
-      const base::string16& inserted_text,
+      const std::u16string& deleted_text,
+      const std::u16string& inserted_text,
       id edit_text_marker) const;
 
   void AnnounceActiveDescendant(BrowserAccessibility* node) const;
@@ -79,6 +80,8 @@ class CONTENT_EXPORT BrowserAccessibilityManagerMac
   // This gives BrowserAccessibilityManager::Create access to the class
   // constructor.
   friend class BrowserAccessibilityManager;
+
+  friend class BrowserAccessibilityCocoaBrowserTest;
 
   DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityManagerMac);
 };

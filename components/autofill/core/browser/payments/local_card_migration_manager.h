@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
@@ -153,7 +152,7 @@ class LocalCardMigrationManager {
   virtual void OnDidGetUploadDetails(
       bool is_from_settings_page,
       AutofillClient::PaymentsRpcResult result,
-      const base::string16& context_token,
+      const std::u16string& context_token,
       std::unique_ptr<base::Value> legal_message,
       std::vector<std::pair<int, int>> supported_card_bin_ranges);
 
@@ -223,7 +222,7 @@ class LocalCardMigrationManager {
   PersonalDataManager* personal_data_manager_;
 
   // The imported credit card number from the form submission.
-  base::Optional<base::string16> imported_credit_card_number_;
+  base::Optional<std::u16string> imported_credit_card_number_;
 
   // The imported credit card record type from the form submission.
   int imported_credit_card_record_type_;

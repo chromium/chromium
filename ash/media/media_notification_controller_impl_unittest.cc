@@ -20,6 +20,7 @@
 #include "base/unguessable_token.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_message_center/media_notification_util.h"
+#include "media/base/media_switches.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "ui/message_center/message_center.h"
 
@@ -56,8 +57,9 @@ class MediaNotificationControllerImplTest : public AshTestBase {
 
   // AshTestBase
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kMediaSessionNotification);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kMediaSessionNotification},
+        {media::kGlobalMediaControlsForChromeOS});
 
     AshTestBase::SetUp();
 
@@ -78,8 +80,8 @@ class MediaNotificationControllerImplTest : public AshTestBase {
 
   media_session::MediaMetadata BuildMediaMetadata() {
     media_session::MediaMetadata metadata;
-    metadata.title = base::ASCIIToUTF16("title");
-    metadata.artist = base::ASCIIToUTF16("artist");
+    metadata.title = u"title";
+    metadata.artist = u"artist";
     return metadata;
   }
 
@@ -313,7 +315,7 @@ TEST_F(MediaNotificationControllerImplTest, MediaMetadata_NoTitle) {
       GetRequestStateWithId(id));
 
   media_session::MediaMetadata metadata;
-  metadata.artist = base::ASCIIToUTF16("artist");
+  metadata.artist = u"artist";
 
   Shell::Get()
       ->media_notification_controller()
@@ -453,7 +455,7 @@ TEST_F(MediaNotificationControllerImplTest, HideWhenScreenLocked) {
 
   // Show a non-media notification that should still be displayed.
   message_center->AddNotification(
-      CreateSystemNotification("test", base::string16(), base::string16(),
+      CreateSystemNotification("test", std::u16string(), std::u16string(),
                                "test", base::BindRepeating([]() {})));
 
   EXPECT_EQ(2u, message_center->GetVisibleNotifications().size());

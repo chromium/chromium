@@ -133,7 +133,9 @@ public class AutofillPaymentMethodsFragmentTest {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
         Preference cardPreference = getPreferenceScreen(activity).getPreference(1);
-        assertThat(cardPreference.getTitle()).isEqualTo("Google");
+        String title = cardPreference.getTitle().toString();
+        assertThat(title).contains("Plex Visa");
+        assertThat(title).contains("1111");
     }
 
     @Test

@@ -19,7 +19,6 @@
 #include "content/browser/renderer_host/input/input_router_client.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/input/web_touch_event_traits.h"
-#include "content/common/input_messages.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/common/content_switches.h"
@@ -588,7 +587,7 @@ void InputRouterImpl::KeyboardEventHandled(
     blink::mojom::InputEventResultState state,
     blink::mojom::DidOverscrollParamsPtr overscroll,
     blink::mojom::TouchActionOptionalPtr touch_action) {
-  TRACE_EVENT2("input", "InputRouterImpl::KeboardEventHandled", "type",
+  TRACE_EVENT2("input", "InputRouterImpl::KeyboardEventHandled", "type",
                WebInputEvent::GetName(event.event.GetType()), "ack",
                InputEventResultStateToString(state));
 

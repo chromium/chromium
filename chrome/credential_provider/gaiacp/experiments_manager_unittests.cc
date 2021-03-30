@@ -26,8 +26,7 @@ class ExperimentsManagerTest : public GlsRunnerTestBase {
 void ExperimentsManagerTest::SetUp() {
   GlsRunnerTestBase::SetUp();
 
-  ASSERT_EQ(S_OK,
-            SetGlobalFlagForTesting(L"experiments_enabled", 1));  // IN-TEST
+  ASSERT_EQ(S_OK, SetGlobalFlagForTesting(L"experiments_enabled", 1));
   FakesForTesting fakes;
   fakes.fake_win_http_url_fetcher_creator =
       fake_http_url_fetcher_factory()->GetCreatorCallback();
@@ -68,9 +67,9 @@ TEST_P(ExperimentsManagerGcpwE2ETest, FetchingExperiments) {
   ASSERT_EQ(S_OK,
             fake_os_user_manager()->CreateTestOSUser(
                 L"foo", L"password", L"Full Name", L"comment",
-                base::UTF8ToUTF16(kDefaultGaiaId), L"user@company.com", &sid));
+                base::UTF8ToWide(kDefaultGaiaId), L"user@company.com", &sid));
 
-  base::string16 device_resource_id = L"foo_resource_id";
+  std::wstring device_resource_id = L"foo_resource_id";
   ASSERT_EQ(S_OK, SetUserProperty(OLE2W(sid), L"device_resource_id",
                                   device_resource_id));
 
@@ -116,10 +115,10 @@ TEST_P(ExperimentsManagerGcpwE2ETest, FetchingExperiments) {
 
   EXPECT_EQ(experiment1_value,
             ExperimentsManager::Get()->GetExperimentForUser(
-                base::UTF16ToUTF8(OLE2W(sid)), Experiment::TEST_CLIENT_FLAG));
+                base::WideToUTF8(OLE2W(sid)), Experiment::TEST_CLIENT_FLAG));
   EXPECT_EQ(experiment2_value,
             ExperimentsManager::Get()->GetExperimentForUser(
-                base::UTF16ToUTF8(OLE2W(sid)), Experiment::TEST_CLIENT_FLAG2));
+                base::WideToUTF8(OLE2W(sid)), Experiment::TEST_CLIENT_FLAG2));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -142,11 +141,11 @@ TEST_P(ExperimentsManagerESAE2ETest, FetchingExperiments) {
   ASSERT_EQ(S_OK,
             fake_os_user_manager()->CreateTestOSUser(
                 L"foo", L"password", L"Full Name", L"comment",
-                base::UTF8ToUTF16(kDefaultGaiaId), L"user@company.com", &sid));
+                base::UTF8ToWide(kDefaultGaiaId), L"user@company.com", &sid));
 
   ASSERT_EQ(S_OK, GenerateGCPWDmToken((BSTR)sid));
 
-  base::string16 device_resource_id = L"foo_resource_id";
+  std::wstring device_resource_id = L"foo_resource_id";
   ASSERT_EQ(S_OK, SetUserProperty(OLE2W(sid), L"device_resource_id",
                                   device_resource_id));
 
@@ -169,7 +168,7 @@ TEST_P(ExperimentsManagerESAE2ETest, FetchingExperiments) {
         url, FakeWinHttpUrlFetcher::Headers(), "{\"bad_experiments\": [ ] }");
   }
 
-  base::string16 dm_token;
+  std::wstring dm_token;
   ASSERT_EQ(S_OK, GetGCPWDmToken((BSTR)sid, &dm_token));
 
   std::unique_ptr<extension::Task> task(
@@ -187,10 +186,10 @@ TEST_P(ExperimentsManagerESAE2ETest, FetchingExperiments) {
 
   EXPECT_EQ(experiment1_value,
             ExperimentsManager::Get()->GetExperimentForUser(
-                base::UTF16ToUTF8(OLE2W(sid)), Experiment::TEST_CLIENT_FLAG));
+                base::WideToUTF8(OLE2W(sid)), Experiment::TEST_CLIENT_FLAG));
   EXPECT_EQ(experiment2_value,
             ExperimentsManager::Get()->GetExperimentForUser(
-                base::UTF16ToUTF8(OLE2W(sid)), Experiment::TEST_CLIENT_FLAG2));
+                base::WideToUTF8(OLE2W(sid)), Experiment::TEST_CLIENT_FLAG2));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

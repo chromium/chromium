@@ -39,7 +39,6 @@ public class MessageContainerCoordinator implements BrowserControlsStateProvider
     private void updateMargins() {
         CoordinatorLayout.LayoutParams params =
                 (CoordinatorLayout.LayoutParams) mContainer.getLayoutParams();
-        // TODO(crbug.com/1123947): Update dimens for PWAs.
         params.topMargin = getContainerTopOffset();
         mContainer.setLayoutParams(params);
     }
@@ -54,20 +53,19 @@ public class MessageContainerCoordinator implements BrowserControlsStateProvider
     }
 
     /**
-     * If there are no browser controls visible, the {@link MessageContainer} view should be laid
-     * out for this method to return a meaningful value.
+     * The {@link MessageContainer} view should be laid out for this method to return a meaningful
+     * value.
      *
      * @return The maximum translation Y value the message banner can have as a result of the
      *         animations or the gestures. Positive values mean the message banner can be translated
      *         upward from the top of the MessagesContainer.
      */
     public int getMessageMaxTranslation() {
-        final int containerTopOffset = getContainerTopOffset();
-        if (containerTopOffset == 0) {
-            return mContainer.getHeight();
-        }
-
-        return containerTopOffset;
+        // The max translation is message height + message shadow + controls height (adjusted for
+        // Message container offsets)
+        final int messageHeightWithShadow =
+                mContainer.getMessageBannerHeight() + mContainer.getMessageShadowTopMargin();
+        return messageHeightWithShadow + getContainerTopOffset();
     }
 
     @Override
@@ -87,6 +85,6 @@ public class MessageContainerCoordinator implements BrowserControlsStateProvider
         final Resources res = mContainer.getResources();
         return mControlsManager.getContentOffset()
                 - res.getDimensionPixelOffset(R.dimen.message_bubble_inset)
-                - res.getDimensionPixelOffset(R.dimen.message_shadow_top_margin);
+                - mContainer.getMessageShadowTopMargin();
     }
 }

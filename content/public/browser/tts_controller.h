@@ -66,7 +66,7 @@ class CONTENT_EXPORT TtsEngineDelegate {
   virtual void Resume(TtsUtterance* utterance) = 0;
 
   // Load the built-in TTS engine.
-  virtual bool LoadBuiltInTtsEngine(BrowserContext* browser_context) = 0;
+  virtual void LoadBuiltInTtsEngine(BrowserContext* browser_context) = 0;
 
   // Returns whether the built in engine is initialized.
   virtual bool IsBuiltInTtsEngineInitialized(

@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+FAIL restartIce() does not trigger negotiation ahead of initial negotiation assert_equals: No negotiationneeded event expected (undefined) undefined but got (object) object "[object Event]"
+PASS restartIce() has no effect on initial negotiation
+PASS restartIce() fires negotiationneeded after initial negotiation
+PASS restartIce() causes fresh ufrags
+PASS restartIce() works in have-local-offer
+PASS restartIce() works in initial have-local-offer
+PASS restartIce() works in have-remote-offer
+PASS restartIce() does nothing in initial have-remote-offer
+PASS restartIce() survives remote offer
+PASS restartIce() is satisfied by remote ICE restart
+PASS restartIce() trumps {iceRestart: false}
+PASS restartIce() survives rollback
+FAIL restartIce() survives remote offer containing partial restart assert_false: Restarted 2 expected false got true
+Harness: the test ran to completion.
+

@@ -12,12 +12,13 @@
 #include "base/containers/circular_deque.h"
 #include "base/memory/weak_ptr.h"
 #include "gpu/command_buffer/service/external_semaphore.h"
+#include "gpu/gpu_gles2_export.h"
 
 namespace gpu {
 
 class SharedContextState;
 
-class ExternalSemaphorePool {
+class GPU_GLES2_EXPORT ExternalSemaphorePool {
  public:
   explicit ExternalSemaphorePool(SharedContextState* shared_context_state);
   ~ExternalSemaphorePool();

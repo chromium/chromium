@@ -18,8 +18,8 @@
 #include "extensions/browser/extension_registry_factory.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service_factory.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

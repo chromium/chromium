@@ -135,6 +135,8 @@ PhysicalRect NGInkOverflow::Self(Type type, const PhysicalSize& size) const {
   DCHECK_NE(type, kNotSet);
   switch (type) {
     case kNotSet:
+      NOTREACHED();
+      FALLTHROUGH;
     case kNone:
     case kSmallContents:
     case kContents:

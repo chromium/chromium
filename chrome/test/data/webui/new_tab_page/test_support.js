@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
+import {assertEquals, assertNotEquals} from '../chai_assert.js';
+import {TestBrowserProxy} from '../test_browser_proxy.m.js';
 
 /** @type {string} */
 export const NONE_ANIMATION = 'none 0s ease 0s 1 normal none running';
@@ -49,18 +49,26 @@ export function assertFocus(element) {
 }
 
 /**
- * Creates a mocked test proxy.
- * @return {TestBrowserProxy}
+ * @param {!typeof T} clazz
+ * @return {{mock: !T, callTracker: !TestBrowserProxy}}
+ * @template T
  */
-export function createTestProxy() {
-  const testProxy = TestBrowserProxy.fromClass(BrowserProxy);
-  testProxy.callbackRouter = new newTabPage.mojom.PageCallbackRouter();
-  testProxy.callbackRouterRemote =
-      testProxy.callbackRouter.$.bindNewPipeAndPassRemote();
-  testProxy.handler =
-      TestBrowserProxy.fromClass(newTabPage.mojom.PageHandlerRemote);
-  testProxy.setResultFor('createIframeSrc', '');
-  return testProxy;
+export function createMock(clazz) {
+  const callTracker = new TestBrowserProxy(
+      Object.getOwnPropertyNames(clazz.prototype)
+          .filter(methodName => methodName !== 'constructor'));
+  const handler = {
+    get: function(target, prop, receiver) {
+      if (clazz.prototype[prop] instanceof Function) {
+        return (...args) => callTracker.methodCalled(prop, ...args);
+      }
+      if (Object.getOwnPropertyDescriptor(clazz.prototype, prop).get) {
+        return callTracker.methodCalled(prop);
+      }
+      return undefined;
+    }
+  };
+  return {mock: new Proxy({}, handler), callTracker};
 }
 
 /** @return {!newTabPage.mojom.Theme} */

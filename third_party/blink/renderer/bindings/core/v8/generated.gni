@@ -64,8 +64,6 @@ bindings_core_generated_union_type_files = [
   "$bindings_core_v8_output_dir/html_option_element_or_html_opt_group_element.h",
   "$bindings_core_v8_output_dir/html_script_element_or_svg_script_element.cc",
   "$bindings_core_v8_output_dir/html_script_element_or_svg_script_element.h",
-  "$bindings_core_v8_output_dir/image_bitmap_source.cc",
-  "$bindings_core_v8_output_dir/image_bitmap_source.h",
   "$bindings_core_v8_output_dir/internal_enum_or_internal_enum_sequence.cc",
   "$bindings_core_v8_output_dir/internal_enum_or_internal_enum_sequence.h",
   "$bindings_core_v8_output_dir/media_list_or_string.cc",

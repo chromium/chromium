@@ -389,11 +389,13 @@ struct BeginRasterCHROMIUMImmediate {
   void SetHeader() { header.SetCmdByTotalSize<ValueType>(ComputeSize()); }
 
   void Init(GLuint _sk_color,
+            GLboolean _needs_clear,
             GLuint _msaa_sample_count,
             GLboolean _can_use_lcd_text,
             const GLbyte* _mailbox) {
     SetHeader();
     sk_color = _sk_color;
+    needs_clear = _needs_clear;
     msaa_sample_count = _msaa_sample_count;
     can_use_lcd_text = _can_use_lcd_text;
     memcpy(ImmediateDataAddress(this), _mailbox, ComputeDataSize());
@@ -401,33 +403,38 @@ struct BeginRasterCHROMIUMImmediate {
 
   void* Set(void* cmd,
             GLuint _sk_color,
+            GLboolean _needs_clear,
             GLuint _msaa_sample_count,
             GLboolean _can_use_lcd_text,
             const GLbyte* _mailbox) {
-    static_cast<ValueType*>(cmd)->Init(_sk_color, _msaa_sample_count,
-                                       _can_use_lcd_text, _mailbox);
+    static_cast<ValueType*>(cmd)->Init(_sk_color, _needs_clear,
+                                       _msaa_sample_count, _can_use_lcd_text,
+                                       _mailbox);
     const uint32_t size = ComputeSize();
     return NextImmediateCmdAddressTotalSize<ValueType>(cmd, size);
   }
 
   gpu::CommandHeader header;
   uint32_t sk_color;
+  uint32_t needs_clear;
   uint32_t msaa_sample_count;
   uint32_t can_use_lcd_text;
 };
 
-static_assert(sizeof(BeginRasterCHROMIUMImmediate) == 16,
-              "size of BeginRasterCHROMIUMImmediate should be 16");
+static_assert(sizeof(BeginRasterCHROMIUMImmediate) == 20,
+              "size of BeginRasterCHROMIUMImmediate should be 20");
 static_assert(offsetof(BeginRasterCHROMIUMImmediate, header) == 0,
               "offset of BeginRasterCHROMIUMImmediate header should be 0");
 static_assert(offsetof(BeginRasterCHROMIUMImmediate, sk_color) == 4,
               "offset of BeginRasterCHROMIUMImmediate sk_color should be 4");
+static_assert(offsetof(BeginRasterCHROMIUMImmediate, needs_clear) == 8,
+              "offset of BeginRasterCHROMIUMImmediate needs_clear should be 8");
 static_assert(
-    offsetof(BeginRasterCHROMIUMImmediate, msaa_sample_count) == 8,
-    "offset of BeginRasterCHROMIUMImmediate msaa_sample_count should be 8");
+    offsetof(BeginRasterCHROMIUMImmediate, msaa_sample_count) == 12,
+    "offset of BeginRasterCHROMIUMImmediate msaa_sample_count should be 12");
 static_assert(
-    offsetof(BeginRasterCHROMIUMImmediate, can_use_lcd_text) == 12,
-    "offset of BeginRasterCHROMIUMImmediate can_use_lcd_text should be 12");
+    offsetof(BeginRasterCHROMIUMImmediate, can_use_lcd_text) == 16,
+    "offset of BeginRasterCHROMIUMImmediate can_use_lcd_text should be 16");
 
 struct RasterCHROMIUM {
   typedef RasterCHROMIUM ValueType;
@@ -982,6 +989,8 @@ struct ReadbackImagePixelsINTERNALImmediate {
   static const cmd::ArgFlags kArgFlags = cmd::kAtLeastN;
   static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(2);
 
+  typedef uint32_t Result;
+
   static uint32_t ComputeDataSize() {
     return static_cast<uint32_t>(sizeof(GLbyte) * 16);
   }
@@ -1002,6 +1011,8 @@ struct ReadbackImagePixelsINTERNALImmediate {
             GLint _shm_id,
             GLuint _shm_offset,
             GLuint _pixels_offset,
+            GLint _result_shm_id,
+            GLuint _result_shm_offset,
             const GLbyte* _mailbox) {
     SetHeader();
     src_x = _src_x;
@@ -1014,6 +1025,8 @@ struct ReadbackImagePixelsINTERNALImmediate {
     shm_id = _shm_id;
     shm_offset = _shm_offset;
     pixels_offset = _pixels_offset;
+    result_shm_id = _result_shm_id;
+    result_shm_offset = _result_shm_offset;
     memcpy(ImmediateDataAddress(this), _mailbox, ComputeDataSize());
   }
 
@@ -1028,10 +1041,13 @@ struct ReadbackImagePixelsINTERNALImmediate {
             GLint _shm_id,
             GLuint _shm_offset,
             GLuint _pixels_offset,
+            GLint _result_shm_id,
+            GLuint _result_shm_offset,
             const GLbyte* _mailbox) {
     static_cast<ValueType*>(cmd)->Init(
         _src_x, _src_y, _dst_width, _dst_height, _row_bytes, _dst_sk_color_type,
-        _dst_sk_alpha_type, _shm_id, _shm_offset, _pixels_offset, _mailbox);
+        _dst_sk_alpha_type, _shm_id, _shm_offset, _pixels_offset,
+        _result_shm_id, _result_shm_offset, _mailbox);
     const uint32_t size = ComputeSize();
     return NextImmediateCmdAddressTotalSize<ValueType>(cmd, size);
   }
@@ -1047,10 +1063,12 @@ struct ReadbackImagePixelsINTERNALImmediate {
   int32_t shm_id;
   uint32_t shm_offset;
   uint32_t pixels_offset;
+  int32_t result_shm_id;
+  uint32_t result_shm_offset;
 };
 
-static_assert(sizeof(ReadbackImagePixelsINTERNALImmediate) == 44,
-              "size of ReadbackImagePixelsINTERNALImmediate should be 44");
+static_assert(sizeof(ReadbackImagePixelsINTERNALImmediate) == 52,
+              "size of ReadbackImagePixelsINTERNALImmediate should be 52");
 static_assert(
     offsetof(ReadbackImagePixelsINTERNALImmediate, header) == 0,
     "offset of ReadbackImagePixelsINTERNALImmediate header should be 0");
@@ -1087,6 +1105,14 @@ static_assert(offsetof(ReadbackImagePixelsINTERNALImmediate, pixels_offset) ==
                   40,
               "offset of ReadbackImagePixelsINTERNALImmediate pixels_offset "
               "should be 40");
+static_assert(offsetof(ReadbackImagePixelsINTERNALImmediate, result_shm_id) ==
+                  44,
+              "offset of ReadbackImagePixelsINTERNALImmediate result_shm_id "
+              "should be 44");
+static_assert(offsetof(ReadbackImagePixelsINTERNALImmediate,
+                       result_shm_offset) == 48,
+              "offset of ReadbackImagePixelsINTERNALImmediate "
+              "result_shm_offset should be 48");
 
 struct ConvertYUVAMailboxesToRGBINTERNALImmediate {
   typedef ConvertYUVAMailboxesToRGBINTERNALImmediate ValueType;

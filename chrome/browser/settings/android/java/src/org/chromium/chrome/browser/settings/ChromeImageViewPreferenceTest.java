@@ -31,12 +31,12 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.R;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /**
  * Tests of {@link ChromeImageViewPreference}.
  *
- * TODO(chouinard): Once SettingsLauncher and SettingsActivity have compontentized interfaces, these
- * tests should be moved to //components/browser_ui/settings/.
+ * TODO(crbug.com/1166810): Move these tests to //components/browser_ui/settings/.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class ChromeImageViewPreferenceTest {

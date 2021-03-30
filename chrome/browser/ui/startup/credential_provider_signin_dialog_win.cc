@@ -5,13 +5,13 @@
 #include "chrome/browser/ui/startup/credential_provider_signin_dialog_win.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/json/json_writer.h"
-#include "base/strings/string16.h"
 #include "base/syslog_logging.h"
 #include "base/win/win_util.h"
 #include "chrome/browser/signin/signin_promo.h"
@@ -329,10 +329,10 @@ class CredentialProviderWebDialogDelegate : public ui::WebDialogDelegate {
     return ui::MODAL_TYPE_WINDOW;
   }
 
-  base::string16 GetDialogTitle() const override { return base::string16(); }
+  std::u16string GetDialogTitle() const override { return std::u16string(); }
 
-  base::string16 GetAccessibleDialogTitle() const override {
-    return base::string16();
+  std::u16string GetAccessibleDialogTitle() const override {
+    return std::u16string();
   }
 
   std::string GetDialogName() const override {
@@ -434,7 +434,7 @@ bool CanStartGCPWSignin() {
 #endif  // BUILDFLAG(CAN_TEST_GCPW_SIGNIN_STARTUP)
   // Ensure that we are running under a "winlogon" desktop before starting the
   // gcpw sign in dialog.
-  return base::win::IsRunningUnderDesktopName(STRING16_LITERAL("winlogon"));
+  return base::win::IsRunningUnderDesktopName(L"winlogon");
 }
 
 bool StartGCPWSignin(const base::CommandLine& command_line,

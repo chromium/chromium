@@ -12,6 +12,5 @@
 #endif
 
 bool IsNativeContextMenuEnabled() {
-  return base::ios::IsRunningOnIOS13OrLater() &&
-         base::FeatureList::IsEnabled(kEnableNativeContextMenus);
+  return base::ios::IsRunningOnIOS13OrLater();
 }

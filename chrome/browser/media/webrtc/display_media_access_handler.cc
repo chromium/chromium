@@ -57,17 +57,15 @@ struct DisplayMediaAccessHandler::PendingAccessRequest {
 };
 
 DisplayMediaAccessHandler::DisplayMediaAccessHandler()
-    : picker_factory_(new DesktopMediaPickerFactoryImpl()) {
-  AddNotificationObserver();
-}
+    : picker_factory_(new DesktopMediaPickerFactoryImpl()),
+      web_contents_collection_(this) {}
 
 DisplayMediaAccessHandler::DisplayMediaAccessHandler(
     std::unique_ptr<DesktopMediaPickerFactory> picker_factory,
     bool display_notification)
     : display_notification_(display_notification),
-      picker_factory_(std::move(picker_factory)) {
-  AddNotificationObserver();
-}
+      picker_factory_(std::move(picker_factory)),
+      web_contents_collection_(this) {}
 
 DisplayMediaAccessHandler::~DisplayMediaAccessHandler() = default;
 
@@ -151,7 +149,7 @@ void DisplayMediaAccessHandler::HandleRequest(
       return;
     }
     if (!rfh->IsFeatureEnabled(
-            blink::mojom::FeaturePolicyFeature::kDisplayCapture)) {
+            blink::mojom::PermissionsPolicyFeature::kDisplayCapture)) {
       bad_message::ReceivedBadMessage(
           rfh->GetProcess(), bad_message::BadMessageReason::
                                  RFH_DISPLAY_CAPTURE_PERMISSION_MISSING);
@@ -171,7 +169,11 @@ void DisplayMediaAccessHandler::HandleRequest(
     return;
   }
 
+  // Ensure we are observing the deletion of |web_contents|.
+  web_contents_collection_.StartObserving(web_contents);
+
   RequestsQueue& queue = pending_requests_[web_contents];
+
   queue.push_back(std::make_unique<PendingAccessRequest>(
       std::move(picker), request, std::move(callback)));
   // If this is the only request then pop picker UI.
@@ -212,19 +214,28 @@ void DisplayMediaAccessHandler::ProcessQueuedAccessRequest(
   const PendingAccessRequest& pending_request = *queue.front();
   UpdateTrusted(pending_request.request, false /* is_trusted */);
 
-  std::vector<content::DesktopMediaID::Type> media_types = {
-      content::DesktopMediaID::TYPE_SCREEN,
-      content::DesktopMediaID::TYPE_WINDOW,
-      content::DesktopMediaID::TYPE_WEB_CONTENTS};
+  std::vector<DesktopMediaList::Type> media_types;
+  if (pending_request.request.video_type ==
+      blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB) {
+    media_types = {DesktopMediaList::Type::kCurrentTab,
+                   DesktopMediaList::Type::kWebContents,
+                   DesktopMediaList::Type::kWindow,
+                   DesktopMediaList::Type::kScreen};
+  } else {
+    media_types = {DesktopMediaList::Type::kScreen,
+                   DesktopMediaList::Type::kWindow,
+                   DesktopMediaList::Type::kWebContents};
+  }
 
   // Avoid offering window-capture as a separate source, since PipeWire's
   // content-picker will offer both screen and window sources.
   // See crbug.com/1157006.
   if (content::desktop_capture::CanUsePipeWire()) {
-    base::Erase(media_types, content::DesktopMediaID::TYPE_WINDOW);
+    base::Erase(media_types, DesktopMediaList::Type::kWindow);
   }
 
-  auto source_lists = picker_factory_->CreateMediaList(media_types);
+  auto source_lists =
+      picker_factory_->CreateMediaList(media_types, web_contents);
 
   DesktopMediaPicker::DoneCallback done_callback =
       base::BindOnce(&DisplayMediaAccessHandler::OnPickerDialogResults,
@@ -241,7 +252,12 @@ void DisplayMediaAccessHandler::ProcessQueuedAccessRequest(
   picker_params.request_audio =
       pending_request.request.audio_type ==
       blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE;
-  picker_params.approve_audio_by_default = false;
+  // getDisplayMedia's checkbox state defaults to unchecked, but for
+  // getCurrentBrowsingContextMedia, we default to checked.
+  picker_params.approve_audio_by_default =
+      (picker_params.request_audio &&
+       pending_request.request.video_type ==
+           blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB);
   pending_request.picker->Show(picker_params, std::move(source_lists),
                                std::move(done_callback));
 }
@@ -302,11 +318,14 @@ void DisplayMediaAccessHandler::OnPickerDialogResults(
       const auto& visible_url = url_formatter::FormatUrlForSecurityDisplay(
           web_contents->GetLastCommittedURL(),
           url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
+      const bool disable_local_echo =
+          (media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS) &&
+          media_id.web_contents_id.disable_local_echo;
       ui = GetDevicesForDesktopCapture(
           web_contents, &devices, media_id, pending_request.request.video_type,
           blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE,
-          media_id.audio_share, false /* disable_local_echo */,
-          display_notification_, visible_url, visible_url);
+          media_id.audio_share, disable_local_echo, display_notification_,
+          visible_url, visible_url);
     }
   }
 
@@ -321,21 +340,11 @@ void DisplayMediaAccessHandler::OnPickerDialogResults(
     ProcessQueuedAccessRequest(queue, web_contents);
 }
 
-void DisplayMediaAccessHandler::AddNotificationObserver() {
+void DisplayMediaAccessHandler::WebContentsDestroyed(
+    content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  notifications_registrar_.Add(this,
-                               content::NOTIFICATION_WEB_CONTENTS_DESTROYED,
-                               content::NotificationService::AllSources());
-}
 
-void DisplayMediaAccessHandler::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_EQ(content::NOTIFICATION_WEB_CONTENTS_DESTROYED, type);
-
-  pending_requests_.erase(content::Source<content::WebContents>(source).ptr());
+  pending_requests_.erase(web_contents);
 }
 
 void DisplayMediaAccessHandler::DeletePendingAccessRequest(

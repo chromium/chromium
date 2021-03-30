@@ -270,7 +270,6 @@ bool ScrollTimeline::ResolveScrollOffsets(
     }
     resolved_offsets.push_back(resolved_offset.value());
   }
-  // TODO(crbug.com/1094014): Implement clamping for overlapping offsets.
   DCHECK_GE(resolved_offsets.size(), 2u);
   return true;
 }

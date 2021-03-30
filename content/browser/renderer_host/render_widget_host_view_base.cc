@@ -9,6 +9,7 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/viz/common/features.h"
+#include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/compositor/surface_utils.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
@@ -84,7 +85,7 @@ void RenderWidgetHostViewBase::NotifyObserversAboutShutdown() {
   for (auto& observer : observers_)
     observer.OnRenderWidgetHostViewBaseDestroyed(this);
   // All observers are required to disconnect after they are notified.
-  DCHECK(!observers_.might_have_observers());
+  DCHECK(observers_.empty());
 }
 
 MouseWheelPhaseHandler* RenderWidgetHostViewBase::GetMouseWheelPhaseHandler() {
@@ -144,7 +145,7 @@ RenderWidgetHostViewBase* RenderWidgetHostViewBase::GetRootView() {
   return this;
 }
 
-void RenderWidgetHostViewBase::SelectionChanged(const base::string16& text,
+void RenderWidgetHostViewBase::SelectionChanged(const std::u16string& text,
                                                 size_t offset,
                                                 const gfx::Range& range) {
   if (GetTextInputManager())
@@ -244,7 +245,7 @@ void RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
                const SkBitmap& popup_image) {
               // Draw popup_image into main_image.
               SkCanvas canvas(main_image, SkSurfaceProps{});
-              canvas.drawBitmap(popup_image, offset.x(), offset.y());
+              canvas.drawImage(popup_image.asImage(), offset.x(), offset.y());
               std::move(final_callback).Run(main_image);
             },
             std::move(final_callback), offset, std::move(main_image));
@@ -275,13 +276,13 @@ std::unique_ptr<viz::ClientFrameSinkVideoCapturer>
 RenderWidgetHostViewBase::CreateVideoCapturer() {
   std::unique_ptr<viz::ClientFrameSinkVideoCapturer> video_capturer =
       GetHostFrameSinkManager()->CreateVideoCapturer();
-  video_capturer->ChangeTarget(GetFrameSinkId());
+  video_capturer->ChangeTarget(GetFrameSinkId(), viz::SubtreeCaptureId());
   return video_capturer;
 }
 
-base::string16 RenderWidgetHostViewBase::GetSelectedText() {
+std::u16string RenderWidgetHostViewBase::GetSelectedText() {
   if (!GetTextInputManager())
-    return base::string16();
+    return std::u16string();
   return GetTextInputManager()->GetTextSelection(this)->selected_text();
 }
 
@@ -311,6 +312,33 @@ base::Optional<SkColor> RenderWidgetHostViewBase::GetBackgroundColor() {
   if (content_background_color_)
     return content_background_color_;
   return default_background_color_;
+}
+
+bool RenderWidgetHostViewBase::IsBackgroundColorOpaque() {
+  base::Optional<SkColor> bg_color = GetBackgroundColor();
+  return bg_color ? SkColorGetA(*bg_color) == SK_AlphaOPAQUE : true;
+}
+
+void RenderWidgetHostViewBase::CopyBackgroundColorIfPresentFrom(
+    const RenderWidgetHostView& other) {
+  const RenderWidgetHostViewBase& other_base =
+      static_cast<const RenderWidgetHostViewBase&>(other);
+  if (!other_base.content_background_color_ &&
+      !other_base.default_background_color_) {
+    return;
+  }
+  if (content_background_color_ == other_base.content_background_color_ &&
+      default_background_color_ == other_base.default_background_color_) {
+    return;
+  }
+  bool was_opaque = IsBackgroundColorOpaque();
+  content_background_color_ = other_base.content_background_color_;
+  default_background_color_ = other_base.default_background_color_;
+  UpdateBackgroundColor();
+  bool opaque = IsBackgroundColorOpaque();
+  if (was_opaque != opaque && host()->owner_delegate()) {
+    host()->owner_delegate()->SetBackgroundOpaque(opaque);
+  }
 }
 
 bool RenderWidgetHostViewBase::IsMouseLocked() {
@@ -456,26 +484,35 @@ void RenderWidgetHostViewBase::UpdateScreenInfo(gfx::NativeView view) {
   if (host() && host()->delegate())
     host()->delegate()->SendScreenRects();
 
+  // TODO(crbug.com/1169312): Unify display info caching and change detection.
+  display::Display::Rotation old_display_rotation = current_display_.rotation();
   if (HasDisplayPropertyChanged(view) && host()) {
-    OnSynchronizedDisplayPropertiesChanged();
+    OnSynchronizedDisplayPropertiesChanged(old_display_rotation !=
+                                           current_display_.rotation());
     host()->NotifyScreenInfoChanged();
   }
 }
 
 bool RenderWidgetHostViewBase::HasDisplayPropertyChanged(gfx::NativeView view) {
-  display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestView(view);
-  if (current_display_area_ == display.work_area() &&
-      current_device_scale_factor_ == display.device_scale_factor() &&
-      current_display_rotation_ == display.rotation() &&
-      current_display_color_spaces_ == display.color_spaces()) {
+  auto* screen = display::Screen::GetScreen();
+  auto display = screen->GetDisplayNearestView(view);
+  bool display_is_extended = screen->GetNumDisplays() > 1;
+  bool display_is_primary = screen->GetPrimaryDisplay().id() == display.id();
+  if (current_display_.id() == display.id() &&
+      current_display_.bounds() == display.bounds() &&
+      current_display_.work_area() == display.work_area() &&
+      current_display_.device_scale_factor() == display.device_scale_factor() &&
+      current_display_.rotation() == display.rotation() &&
+      current_display_.color_spaces() == display.color_spaces() &&
+      current_display_.IsInternal() == display.IsInternal() &&
+      current_display_is_extended_ == display_is_extended &&
+      current_display_is_primary_ == display_is_primary) {
     return false;
   }
 
-  current_display_area_ = display.work_area();
-  current_device_scale_factor_ = display.device_scale_factor();
-  current_display_rotation_ = display.rotation();
-  current_display_color_spaces_ = display.color_spaces();
+  current_display_ = display;
+  current_display_is_extended_ = display_is_extended;
+  current_display_is_primary_ = display_is_primary;
   return true;
 }
 
@@ -556,9 +593,10 @@ void RenderWidgetHostViewBase::OnDidNavigateMainFrameToNewPage() {
 }
 
 void RenderWidgetHostViewBase::OnFrameTokenChangedForView(
-    uint32_t frame_token) {
+    uint32_t frame_token,
+    base::TimeTicks activation_time) {
   if (host())
-    host()->DidProcessFrame(frame_token);
+    host()->DidProcessFrame(frame_token, activation_time);
 }
 
 bool RenderWidgetHostViewBase::ScreenRectIsUnstableFor(
@@ -628,6 +666,12 @@ bool RenderWidgetHostViewBase::IsRenderWidgetHostViewChildFrame() {
 
 bool RenderWidgetHostViewBase::HasSize() const {
   return true;
+}
+
+// RenderWidgetHostViewAura overrides this.
+void RenderWidgetHostViewBase::ShowWithVisibility(
+    content::Visibility web_contents_visibility) {
+  Show();
 }
 
 void RenderWidgetHostViewBase::Destroy() {

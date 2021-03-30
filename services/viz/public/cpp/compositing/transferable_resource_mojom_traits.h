@@ -6,6 +6,7 @@
 #define SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_TRANSFERABLE_RESOURCE_MOJOM_TRAITS_H_
 
 #include "build/build_config.h"
+#include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info_mojom_traits.h"
@@ -15,15 +16,22 @@
 namespace mojo {
 
 template <>
+struct EnumTraits<viz::mojom::ResourceFormat, viz::ResourceFormat> {
+  static viz::mojom::ResourceFormat ToMojom(viz::ResourceFormat type);
+
+  static bool FromMojom(viz::mojom::ResourceFormat input,
+                        viz::ResourceFormat* out);
+};
+
+template <>
 struct StructTraits<viz::mojom::TransferableResourceDataView,
                     viz::TransferableResource> {
-  static uint32_t id(const viz::TransferableResource& resource) {
+  static const viz::ResourceId& id(const viz::TransferableResource& resource) {
     return resource.id;
   }
 
-  static viz::mojom::ResourceFormat format(
-      const viz::TransferableResource& resource) {
-    return static_cast<viz::mojom::ResourceFormat>(resource.format);
+  static viz::ResourceFormat format(const viz::TransferableResource& resource) {
+    return resource.format;
   }
 
   static uint32_t filter(const viz::TransferableResource& resource) {

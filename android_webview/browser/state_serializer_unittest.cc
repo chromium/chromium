@@ -33,7 +33,7 @@ std::unique_ptr<content::NavigationEntry> CreateNavigationEntry() {
   content::Referrer referrer;
   referrer.url = GURL("http://referrer_url");
   referrer.policy = network::mojom::ReferrerPolicy::kOrigin;
-  const base::string16 title(base::UTF8ToUTF16("title"));
+  const std::u16string title(u"title");
   const bool has_post_data = true;
   const GURL original_request_url("http://original_request_url");
   const GURL base_url_for_data_url("http://base_url");
@@ -182,7 +182,7 @@ TEST_F(AndroidWebViewStateSerializerTest,
   GURL virtual_url("https://example.com/virtual_url");
   content::Referrer referrer(GURL("https://example.com/referrer"),
                              network::mojom::ReferrerPolicy::kDefault);
-  base::string16 title = base::UTF8ToUTF16("title");
+  std::u16string title = u"title";
   std::string empty_encoded_page_state = "";
   bool has_post_data = false;
   GURL original_request_url("https://example.com/original");

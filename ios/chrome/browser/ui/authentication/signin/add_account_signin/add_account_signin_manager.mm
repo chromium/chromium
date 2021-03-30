@@ -55,8 +55,8 @@
       break;
     }
     case AddAccountSigninIntentReauthPrimaryAccount: {
-      CoreAccountInfo accountInfo =
-          self.identityManager->GetPrimaryAccountInfo();
+      CoreAccountInfo accountInfo = self.identityManager->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSync);
       std::string userEmailString = accountInfo.email;
 
       if (userEmailString.empty()) {
@@ -75,6 +75,8 @@
       break;
     }
   }
+  self.identityInteractionManager.openAccountCreationURLCallback =
+      self.openAccountCreationURLCallback;
   __weak AddAccountSigninManager* weakSelf = self;
   [self.identityInteractionManager
       addAccountWithPresentingViewController:self.viewController

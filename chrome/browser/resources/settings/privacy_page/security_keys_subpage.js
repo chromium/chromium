@@ -6,8 +6,8 @@
  * @fileoverview 'security-keys-subpage' is a settings subpage
  * containing operations on security keys.
  */
-import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.m.js';
-import '../settings_shared_css.m.js';
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import '../settings_shared_css.js';
 import './security_keys_credential_management_dialog.js';
 import './security_keys_bio_enroll_dialog.js';
 import './security_keys_set_pin_dialog.js';

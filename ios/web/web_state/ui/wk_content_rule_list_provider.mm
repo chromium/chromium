@@ -48,6 +48,18 @@ WKContentRuleListProvider::WKContentRuleListProvider(
                           block_third_party_content_rule_list_ = rule_list;
                           InstallContentRuleLists();
                         }];
+
+  [WKContentRuleListStore.defaultStore
+      compileContentRuleListForIdentifier:@"block-local"
+                   encodedContentRuleList:CreateLocalBlockingJsonRuleList()
+                        completionHandler:^(WKContentRuleList* rule_list,
+                                            NSError* error) {
+                          if (!weak_this.get()) {
+                            return;
+                          }
+                          block_local_rule_list_ = rule_list;
+                          InstallContentRuleLists();
+                        }];
 }
 
 WKContentRuleListProvider::~WKContentRuleListProvider() {}
@@ -63,6 +75,11 @@ void WKContentRuleListProvider::UpdateContentRuleLists(
 
 void WKContentRuleListProvider::InstallContentRuleLists() {
   UninstallContentRuleLists();
+
+  if (block_local_rule_list_) {
+    [user_content_controller_ addContentRuleList:block_local_rule_list_];
+  }
+
   switch (browser_state_->GetCookieBlockingMode()) {
     case CookieBlockingMode::kAllow:
       if (update_callback_) {
@@ -90,6 +107,9 @@ void WKContentRuleListProvider::InstallContentRuleLists() {
 }
 
 void WKContentRuleListProvider::UninstallContentRuleLists() {
+  if (block_local_rule_list_) {
+    [user_content_controller_ removeContentRuleList:block_local_rule_list_];
+  }
   if (block_content_rule_list_) {
     [user_content_controller_ removeContentRuleList:block_content_rule_list_];
   }

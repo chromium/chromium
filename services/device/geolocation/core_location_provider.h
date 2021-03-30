@@ -33,6 +33,7 @@ class CoreLocationProvider : public LocationProvider {
   void SystemLocationPermissionDenied();
   void DidUpdatePosition(CLLocation* location);
   void SetManagerForTesting(CLLocationManager* location_manager);
+  static bool IsSafeToCallCoreLocation();
 
  private:
   base::scoped_nsobject<CLLocationManager> location_manager_;

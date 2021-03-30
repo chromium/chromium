@@ -317,7 +317,13 @@
         appId, '#file-list [file-name="hello.txt"]', {shift: true});
 
     // Delete item and confirm delete.
-    await remoteCall.waitAndClickElement(appId, '#delete-button');
+    if (await sendTestMessage({name: 'isTrashEnabled'}) === 'true') {
+      await remoteCall.waitAndClickElement(appId, '#move-to-trash-button');
+    } else {
+      await remoteCall.waitAndClickElement(appId, '#delete-button');
+      await remoteCall.waitAndClickElement(
+          appId, '.files-confirm-dialog .cr-dialog-ok');
+    }
 
     // Wait for completion of file deletion.
     await remoteCall.waitForElementLost(
@@ -339,7 +345,13 @@
     // Select and delete first item.
     await remoteCall.waitAndClickElement(
         appId, '#file-list [file-name="photos"]');
-    await remoteCall.waitAndClickElement(appId, '#delete-button');
+    if (await sendTestMessage({name: 'isTrashEnabled'}) === 'true') {
+      await remoteCall.waitAndClickElement(appId, '#move-to-trash-button');
+    } else {
+      await remoteCall.waitAndClickElement(appId, '#delete-button');
+      await remoteCall.waitAndClickElement(
+          appId, '.files-confirm-dialog .cr-dialog-ok');
+    }
 
     // Wait for file deletion.
     await remoteCall.waitForElementLost(
@@ -355,6 +367,60 @@
 
     // Check: selected state of first item.
     chrome.test.assertTrue('selected' in item.attributes);
+  };
+
+  /**
+   * Tests that in selection mode, the rename operation is applied to the
+   * selected item, as seen by the selection model, rather than the lead item.
+   * The lead and the selected item(s) are different when we deselect a file
+   * list item in selection mode. crbug.com/1094260
+   */
+  testcase.fileListRenameSelectedItem = async () => {
+    const appId = await setupAndWaitUntilReady(
+        RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
+
+    // Select 2 items.
+    await remoteCall.waitAndClickElement(
+        appId, '#file-list [file-name="hello.txt"]');
+    await remoteCall.waitAndClickElement(
+        appId, '#file-list [file-name="world.ogv"]', {ctrl: true});
+
+    // Deselect first item.
+    await remoteCall.waitAndClickElement(
+        appId, '#file-list [file-name="hello.txt"]', {ctrl: true});
+
+    // Check: the first item should have the lead state.
+    const item = await remoteCall.waitForElement(
+        appId, '#file-list li:not([selected])[file-name="hello.txt"]');
+    chrome.test.assertTrue('lead' in item.attributes);
+
+    // Check: selection should be on the second item.
+    await remoteCall.waitForElement(
+        appId, '#file-list li[selected][file-name="world.ogv"]');
+
+    // Press Ctrl+Enter key to rename the selected file.
+    const key = ['#file-list', 'Enter', true, false, false];
+    chrome.test.assertTrue(
+        await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, key));
+
+    // Check: the renaming text input should be shown in the file list.
+    const textInput = '#file-list .table-row[renaming] input.rename';
+    await remoteCall.waitForElement(appId, textInput);
+
+    // Type new file name.
+    await remoteCall.callRemoteTestUtil(
+        'inputText', appId, [textInput, 'New File Name.txt']);
+
+    // Send Enter key to the text input.
+    const key2 = [textInput, 'Enter', false, false, false];
+    chrome.test.assertTrue(
+        await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, key2));
+
+    // Check: the selected file should have been renamed.
+    await remoteCall.waitForElementLost(
+        appId, '#file-list [file-name="world.ogv"]');
+    await remoteCall.waitForElement(
+        appId, '#file-list li[selected][file-name="New File Name.txt"]');
   };
 
   /**

@@ -72,8 +72,6 @@ static_library("base") {
     "weak_handle.h",
   ]
 
-  configs += [ "//build/config:precompiled_headers" ]
-
   public_deps = [
     "//base",
     "//components/invalidation/public",
@@ -95,12 +93,14 @@ static_library("base") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [ "//chromeos/constants" ]
+    deps += [ "//ash/constants" ]
   }
 
   defines = [ "SYNC_USER_AGENT_PRODUCT=$sync_user_agent_product" ]
 }
 
+# TODO(crbug.com/948661): The other sync targets have their test support targets
+# declared outside of the production code directory. Do the same for this one.
 static_library("test_support") {
   testonly = true
   sources = [
@@ -109,7 +109,6 @@ static_library("test_support") {
     "../test/mock_invalidation.h",
     "../test/mock_invalidation_tracker.cc",
     "../test/mock_invalidation_tracker.h",
-    "../test/test_matchers.h",
     "../test/trackable_mock_invalidation.cc",
     "../test/trackable_mock_invalidation.h",
     "fake_encryptor.cc",
@@ -123,11 +122,6 @@ static_library("test_support") {
     "//components/sync/base",
     "//testing/gmock",
     "//testing/gtest",
-  ]
-
-  deps = [
-    # For test_matchers.h, which should probably be split up.
-    "//components/sync:rest_of_sync",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

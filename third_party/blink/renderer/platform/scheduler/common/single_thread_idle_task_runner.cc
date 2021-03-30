@@ -18,8 +18,6 @@ SingleThreadIdleTaskRunner::SingleThreadIdleTaskRunner(
     : idle_priority_task_runner_(idle_priority_task_runner),
       delegate_(delegate),
       blame_context_(nullptr) {
-  DCHECK(!idle_priority_task_runner_ ||
-         idle_priority_task_runner_->RunsTasksInCurrentSequence());
   weak_scheduler_ptr_ = weak_factory_.GetWeakPtr();
 }
 

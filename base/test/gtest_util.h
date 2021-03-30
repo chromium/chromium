@@ -24,19 +24,24 @@
 #if DCHECK_IS_ON() && defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID)
 
 // EXPECT/ASSERT_DCHECK_DEATH tests verify that a DCHECK is hit ("Check failed"
-// is part of the error message), but intentionally do not expose the gtest
-// death test's full |regex| parameter to avoid users having to verify the exact
-// syntax of the error message produced by the DCHECK.
+// is part of the error message). Optionally you may specify part of the message
+// to verify which DCHECK (or LOG(DFATAL)) is being hit.
 #define EXPECT_DCHECK_DEATH(statement) EXPECT_DEATH(statement, "Check failed")
+#define EXPECT_DCHECK_DEATH_WITH(statement, msg) EXPECT_DEATH(statement, msg)
 #define ASSERT_DCHECK_DEATH(statement) ASSERT_DEATH(statement, "Check failed")
+#define ASSERT_DCHECK_DEATH_WITH(statement, msg) ASSERT_DEATH(statement, msg)
 
 #else
 // DCHECK_IS_ON() && defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID)
 
 #define EXPECT_DCHECK_DEATH(statement) \
-    GTEST_UNSUPPORTED_DEATH_TEST(statement, "Check failed", )
+  GTEST_UNSUPPORTED_DEATH_TEST(statement, "Check failed", )
+#define EXPECT_DCHECK_DEATH_WITH(statement, msg) \
+  GTEST_UNSUPPORTED_DEATH_TEST(statement, msg, )
 #define ASSERT_DCHECK_DEATH(statement) \
-    GTEST_UNSUPPORTED_DEATH_TEST(statement, "Check failed", return)
+  GTEST_UNSUPPORTED_DEATH_TEST(statement, "Check failed", return )
+#define ASSERT_DCHECK_DEATH_WITH(statement, msg) \
+  GTEST_UNSUPPORTED_DEATH_TEST(statement, msg, return )
 
 #endif
 // DCHECK_IS_ON() && defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID)

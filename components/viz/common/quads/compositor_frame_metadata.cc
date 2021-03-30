@@ -42,9 +42,10 @@ CompositorFrameMetadata::CompositorFrameMetadata(
       min_page_scale_factor(other.min_page_scale_factor),
       top_controls_visible_height(other.top_controls_visible_height),
       preferred_frame_interval(other.preferred_frame_interval),
-      display_transform_hint(other.display_transform_hint) {
+      display_transform_hint(other.display_transform_hint),
+      transition_directives(other.transition_directives) {
   if (other.delegated_ink_metadata) {
-    delegated_ink_metadata = std::make_unique<DelegatedInkMetadata>(
+    delegated_ink_metadata = std::make_unique<gfx::DelegatedInkMetadata>(
         *other.delegated_ink_metadata.get());
   }
 }

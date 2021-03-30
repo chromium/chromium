@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "ash/constants/ash_paths.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
@@ -26,11 +27,11 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/customization/customization_wallpaper_downloader.h"
 #include "chrome/browser/chromeos/customization/customization_wallpaper_util.h"
 #include "chrome/browser/chromeos/extensions/default_app_order.h"
-#include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/chromeos/net/delay_network_call.h"
 #include "chrome/browser/extensions/external_loader.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
@@ -39,7 +40,6 @@
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/constants/chromeos_paths.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -520,10 +520,11 @@ void ServicesCustomizationDocument::EnsureCustomizationApplied() {
   StartFetching();
 }
 
-base::Closure
+base::OnceClosure
 ServicesCustomizationDocument::EnsureCustomizationAppliedClosure() {
-  return base::Bind(&ServicesCustomizationDocument::EnsureCustomizationApplied,
-                    weak_ptr_factory_.GetWeakPtr());
+  return base::BindOnce(
+      &ServicesCustomizationDocument::EnsureCustomizationApplied,
+      weak_ptr_factory_.GetWeakPtr());
 }
 
 void ServicesCustomizationDocument::StartFetching() {
@@ -824,9 +825,8 @@ void ServicesCustomizationDocument::StartOEMWallpaperDownload(
 
   wallpaper_downloader_.reset(new CustomizationWallpaperDownloader(
       wallpaper_url, dir, file,
-      base::Bind(&ServicesCustomizationDocument::OnOEMWallpaperDownloaded,
-                 weak_ptr_factory_.GetWeakPtr(),
-                 base::Passed(std::move(applying)))));
+      base::BindOnce(&ServicesCustomizationDocument::OnOEMWallpaperDownloaded,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(applying))));
 
   wallpaper_downloader_->Start();
 }

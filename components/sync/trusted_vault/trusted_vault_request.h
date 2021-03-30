@@ -35,10 +35,12 @@ class TrustedVaultRequest : public TrustedVaultConnection::Request {
   enum class HttpStatus {
     // Reported when server returns http status code 200 or 204.
     kSuccess,
-    // Reported when server return http status code 400 (bad request).
-    kBadRequest,
+    // Reported when server returns http status code 404 (not found).
+    kNotFound,
+    // Reported when server returns http status code 412 (precondition failed).
+    kFailedPrecondition,
     // Reported when other error occurs: unable to fetch access token, network
-    // and http errors (except 400).
+    // and http errors (except 404 and 412).
     kOtherError
   };
 

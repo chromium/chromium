@@ -1,0 +1,2 @@
+# BUG: The expected result is 'This is a test'
+textField name='is a test' nameFrom=relatedElement

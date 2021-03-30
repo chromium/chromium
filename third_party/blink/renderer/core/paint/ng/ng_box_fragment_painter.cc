@@ -768,7 +768,10 @@ void NGBoxFragmentPainter::PaintFloatingChildren(
       if (child_fragment.IsPaintedAtomically())
         continue;
 
-      if (child_fragment.Type() == NGPhysicalFragment::kFragmentBox &&
+      // Drawing in SelectionDragImage phase can result in an exponential
+      // paint time: crbug.com://1182106
+      if (paint_info.phase != PaintPhase::kSelectionDragImage &&
+          child_fragment.Type() == NGPhysicalFragment::kFragmentBox &&
           FragmentRequiresLegacyFallback(child_fragment)) {
         child_fragment.GetLayoutObject()->Paint(paint_info);
         continue;
@@ -826,8 +829,7 @@ void NGBoxFragmentPainter::PaintFloatingChildren(
       PaintFloatingItems(float_paint_info, &descendants);
       return;
     }
-    DCHECK(!RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled() ||
-           !box->IsInlineBox());
+    DCHECK(!box->IsInlineBox());
   }
 }
 
@@ -922,27 +924,22 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackground(
           .PaintBoxDecorationBackground(paint_info, paint_offset);
     } else if (PhysicalFragment().IsTableNGPart()) {
       if (box_fragment_.IsTableNGCell()) {
-        // Just doing this without any collapsed borders makes 2 extra tests
-        // pass, they used to be off by 1 pixel.
-        // external/wpt/css/css-backgrounds/background-image-table-cells-zoomed.html
-        // tables/mozilla/bugs/bug131020_iframe.html
-        // TODO(atotic+pdr) Flagged for followup code review.
         NGTableCellPainter(box_fragment_)
             .PaintBoxDecorationBackground(paint_info, paint_offset,
-                                          visual_rect);
+                                          *background_client, visual_rect);
       } else if (box_fragment_.IsTableNGRow()) {
         NGTableRowPainter(box_fragment_)
             .PaintBoxDecorationBackground(paint_info, paint_offset,
-                                          visual_rect);
+                                          *background_client, visual_rect);
       } else if (box_fragment_.IsTableNGSection()) {
         NGTableSectionPainter(box_fragment_)
             .PaintBoxDecorationBackground(paint_info, paint_offset,
-                                          visual_rect);
+                                          *background_client, visual_rect);
       } else {
         DCHECK(box_fragment_.IsTableNG());
         NGTablePainter(box_fragment_)
             .PaintBoxDecorationBackground(paint_info, paint_offset,
-                                          visual_rect);
+                                          *background_client, visual_rect);
       }
     } else if (box_fragment_.Style().HasBoxDecorationBackground()) {
       PaintBoxDecorationBackgroundWithRect(
@@ -1028,30 +1025,18 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackgroundWithRectImpl(
   }
 
   bool needs_end_layer = false;
-  if (!box_decoration_data.IsPaintingScrollingBackground()) {
-    if (box_fragment_.HasSelfPaintingLayer() && layout_box.IsTableCell() &&
-        ToInterface<LayoutNGTableCellInterface>(layout_box)
-            .TableInterface()
-            ->ShouldCollapseBorders()) {
-      // We have to clip here because the background would paint on top of the
-      // collapsed table borders otherwise, since this is a self-painting layer.
-      PhysicalRect clip_rect = paint_rect;
-      clip_rect.Expand(layout_box.BorderInsets());
-      state_saver.Save();
-      paint_info.context.Clip(PixelSnappedIntRect(clip_rect));
-    } else if (BleedAvoidanceIsClipping(
-                   box_decoration_data.GetBackgroundBleedAvoidance())) {
-      state_saver.Save();
-      FloatRoundedRect border =
-          RoundedBorderGeometry::PixelSnappedRoundedBorder(
-              style, paint_rect, box_fragment_.SidesToInclude());
-      paint_info.context.ClipRoundedRect(border);
+  if (!box_decoration_data.IsPaintingScrollingBackground() &&
+      BleedAvoidanceIsClipping(
+          box_decoration_data.GetBackgroundBleedAvoidance())) {
+    state_saver.Save();
+    FloatRoundedRect border = RoundedBorderGeometry::PixelSnappedRoundedBorder(
+        style, paint_rect, box_fragment_.SidesToInclude());
+    paint_info.context.ClipRoundedRect(border);
 
-      if (box_decoration_data.GetBackgroundBleedAvoidance() ==
-          kBackgroundBleedClipLayer) {
-        paint_info.context.BeginLayer();
-        needs_end_layer = true;
-      }
+    if (box_decoration_data.GetBackgroundBleedAvoidance() ==
+        kBackgroundBleedClipLayer) {
+      paint_info.context.BeginLayer();
+      needs_end_layer = true;
     }
   }
 
@@ -1203,10 +1188,8 @@ void NGBoxFragmentPainter::PaintColumnRules(
 
     rule.Move(paint_offset);
     IntRect snapped_rule = PixelSnappedIntRect(rule);
-    ObjectPainter::DrawLineForBoxSide(paint_info.context, snapped_rule.X(),
-                                      snapped_rule.Y(), snapped_rule.MaxX(),
-                                      snapped_rule.MaxY(), box_side, rule_color,
-                                      rule_style, 0, 0, true);
+    ObjectPainter::DrawBoxSide(paint_info.context, snapped_rule, box_side,
+                               rule_color, rule_style);
     recorder.UniteVisualRect(snapped_rule);
 
     previous_column = current_column;
@@ -1299,6 +1282,7 @@ void NGBoxFragmentPainter::PaintInlineItems(const PaintInfo& paint_info,
     }
     switch (item->Type()) {
       case NGFragmentItem::kText:
+      case NGFragmentItem::kSVGText:
       case NGFragmentItem::kGeneratedText:
         if (!item->IsHiddenForPaint())
           PaintTextItem(*cursor, paint_info, paint_offset, parent_offset);
@@ -1527,6 +1511,13 @@ void NGBoxFragmentPainter::PaintBoxItem(
 
   if (child_fragment.IsAtomicInline() || child_fragment.IsListMarker()) {
     if (FragmentRequiresLegacyFallback(child_fragment)) {
+      // The legacy painter may be confused when painting fragmented descendant
+      // PaintLayers (which should not be fragmented but legacy layout does) and
+      // will produce duplicated PaintChunk ids for the fragments. Skip display
+      // item cache to tolerate that.
+      base::Optional<DisplayItemCacheSkipper> skipper;
+      if (paint_info.context.GetPaintController().CurrentFragment())
+        skipper.emplace(paint_info.context);
       PaintInlineChildBoxUsingLegacyFallback(child_fragment, paint_info);
       return;
     }
@@ -1596,7 +1587,7 @@ void NGBoxFragmentPainter::PaintTextClipMask(GraphicsContext& context,
                                              const IntRect& mask_rect,
                                              const PhysicalOffset& paint_offset,
                                              bool object_has_multiple_boxes) {
-  PaintInfo paint_info(context, mask_rect, PaintPhase::kTextClip,
+  PaintInfo paint_info(context, CullRect(mask_rect), PaintPhase::kTextClip,
                        kGlobalPaintNormalPhase, 0);
   if (!object_has_multiple_boxes) {
     PaintObject(paint_info, paint_offset);
@@ -2053,8 +2044,7 @@ bool NGBoxFragmentPainter::HitTestChildren(
   // Check descendants of this fragment because floats may be in the
   // |NGFragmentItems| of the descendants.
   if (hit_test.action == kHitTestFloat &&
-      box_fragment_.HasFloatingDescendantsForPaint() &&
-      RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
+      box_fragment_.HasFloatingDescendantsForPaint()) {
     return HitTestFloatingChildren(hit_test, box_fragment_, accumulated_offset);
   }
 
@@ -2225,8 +2215,7 @@ bool NGBoxFragmentPainter::HitTestFloatingChildren(
     // If this is a legacy root, fallback to legacy. It does not have
     // |HasFloatingDescendantsForPaint()| set, but it may have floating
     // descendants.
-    if (child_container->IsLegacyLayoutRoot() &&
-        RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
+    if (child_container->IsLegacyLayoutRoot()) {
       if (child_container->GetMutableLayoutObject()->NodeAtPoint(
               *hit_test.result, hit_test.location, child_offset,
               hit_test.action))

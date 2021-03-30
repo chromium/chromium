@@ -71,7 +71,7 @@ class ChromeZoomLevelPrefs : public content::ZoomLevelDelegate {
   content::HostZoomMap* host_zoom_map_;
   base::CallbackListSubscription zoom_subscription_;
   std::string partition_key_;
-  base::CallbackList<void(void)> default_zoom_changed_callbacks_;
+  base::RepeatingClosureList default_zoom_changed_callbacks_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeZoomLevelPrefs);
 };

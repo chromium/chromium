@@ -7,9 +7,11 @@
 #include <algorithm>
 
 #include "ash/shell.h"
+#include "base/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "chrome/browser/sharesheet/sharesheet_service_factory.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
@@ -50,6 +52,7 @@ class SharesheetBubbleViewBrowserTest
     intent->action = apps_util::kIntentActionSend;
     sharesheet_service->ShowBubble(
         browser()->tab_strip_model()->GetActiveWebContents(), std::move(intent),
+        sharesheet::SharesheetMetrics::LaunchSource::kUnknown,
         base::DoNothing());
 
     views::Widget::Widgets new_widgets;

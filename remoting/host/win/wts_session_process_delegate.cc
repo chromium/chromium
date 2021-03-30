@@ -401,7 +401,7 @@ void WtsSessionProcessDelegate::Core::DoLaunchProcess() {
   if (launch_elevated_) {
     // Pass the name of the IPC channel to use.
     mojo::NamedPlatformChannel::Options options;
-    options.security_descriptor = base::UTF8ToUTF16(channel_security_);
+    options.security_descriptor = base::UTF8ToWide(channel_security_);
     elevated_mojo_channel =
         std::make_unique<mojo::NamedPlatformChannel>(options);
     elevated_mojo_channel->PassServerNameOnCommandLine(&command_line);
@@ -419,7 +419,7 @@ void WtsSessionProcessDelegate::Core::DoLaunchProcess() {
           session_token_.Get(), /*security_attributes=*/nullptr,
           /* thread_attributes= */ nullptr, handles_to_inherit,
           /* creation_flags= */ CREATE_SUSPENDED | CREATE_BREAKAWAY_FROM_JOB,
-          base::UTF8ToUTF16(kDefaultDesktopName).c_str(), &worker_process,
+          base::UTF8ToWide(kDefaultDesktopName).c_str(), &worker_process,
           &worker_thread)) {
     ReportFatalError();
     return;

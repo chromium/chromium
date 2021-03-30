@@ -11,7 +11,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings_factory.h"
-#include "chrome/browser/previews/previews_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -231,20 +230,6 @@ class DataSaverWithServerBrowserTest : public InProcessBrowserTest {
     SetDataSaverEnabled(browser()->profile(), enabled);
   }
 
-  net::EffectiveConnectionType GetEffectiveConnectionType() const {
-    return DataReductionProxyChromeSettingsFactory::GetForBrowserContext(
-               browser()->profile())
-        ->data_reduction_proxy_service()
-        ->GetEffectiveConnectionType();
-  }
-
-  base::Optional<base::TimeDelta> GetHttpRttEstimate() const {
-    return DataReductionProxyChromeSettingsFactory::GetForBrowserContext(
-               browser()->profile())
-        ->data_reduction_proxy_service()
-        ->GetHttpRttEstimate();
-  }
-
   std::unique_ptr<net::test_server::HttpResponse> VerifySaveDataHeader(
       const net::test_server::HttpRequest& request) {
     auto save_data_header_it = request.headers.find("save-data");
@@ -293,66 +278,6 @@ IN_PROC_BROWSER_TEST_F(DataSaverWithServerBrowserTest, ReloadPage) {
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   EXPECT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
-}
-
-// Test that the data saver receives changes in effective connection type.
-IN_PROC_BROWSER_TEST_F(DataSaverWithServerBrowserTest,
-                       EffectiveConnectionType) {
-  Init();
-
-  // Add a test observer. To determine if data reduction proxy component has
-  // received the network quality change notification, we check if the test
-  // observer has received the notification. Note that all the observers are
-  // notified in the same message loop by the network quality tracker.
-  TestEffectiveConnectionTypeObserver observer(
-      g_browser_process->network_quality_tracker());
-
-  g_browser_process->network_quality_tracker()
-      ->ReportEffectiveConnectionTypeForTesting(
-          net::EFFECTIVE_CONNECTION_TYPE_4G);
-  observer.WaitForNotification(net::EFFECTIVE_CONNECTION_TYPE_4G);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(net::EFFECTIVE_CONNECTION_TYPE_4G, GetEffectiveConnectionType());
-
-  g_browser_process->network_quality_tracker()
-      ->ReportEffectiveConnectionTypeForTesting(
-          net::EFFECTIVE_CONNECTION_TYPE_2G);
-  observer.WaitForNotification(net::EFFECTIVE_CONNECTION_TYPE_2G);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(net::EFFECTIVE_CONNECTION_TYPE_2G, GetEffectiveConnectionType());
-
-  g_browser_process->network_quality_tracker()
-      ->ReportEffectiveConnectionTypeForTesting(
-          net::EFFECTIVE_CONNECTION_TYPE_3G);
-  observer.WaitForNotification(net::EFFECTIVE_CONNECTION_TYPE_3G);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(net::EFFECTIVE_CONNECTION_TYPE_3G, GetEffectiveConnectionType());
-}
-
-// Test that the data saver receives changes in HTTP RTT estimate.
-IN_PROC_BROWSER_TEST_F(DataSaverWithServerBrowserTest, HttpRttEstimate) {
-  Init();
-
-  // Add a test observer. To determine if data reduction proxy component has
-  // received the network quality change notification, we check if the test
-  // observer has received the notification. Note that all the observers are
-  // notified in the same message loop by the network quality tracker.
-  TestRTTAndThroughputEstimatesObserver observer(
-      g_browser_process->network_quality_tracker());
-
-  g_browser_process->network_quality_tracker()
-      ->ReportRTTsAndThroughputForTesting(
-          base::TimeDelta::FromMilliseconds(100), 0);
-  observer.WaitForNotification(base::TimeDelta::FromMilliseconds(100));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(100), GetHttpRttEstimate());
-
-  g_browser_process->network_quality_tracker()
-      ->ReportRTTsAndThroughputForTesting(
-          base::TimeDelta::FromMilliseconds(500), 0);
-  observer.WaitForNotification(base::TimeDelta::FromMilliseconds(500));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(500), GetHttpRttEstimate());
 }
 
 class DataSaverForWorkerBrowserTest : public InProcessBrowserTest,
@@ -626,6 +551,10 @@ IN_PROC_BROWSER_TEST_P(DataSaverForWorkerBrowserTest,
 
 class DataSaverWithImageServerBrowserTest : public InProcessBrowserTest {
  public:
+  DataSaverWithImageServerBrowserTest() {
+    scoped_feature_list_.InitWithFeatures({blink::features::kSaveDataImgSrcset},
+                                          {});
+  }
   void SetUp() override {
     test_server_.reset(new net::EmbeddedTestServer());
     test_server_->RegisterRequestMonitor(base::BindRepeating(
@@ -635,8 +564,6 @@ class DataSaverWithImageServerBrowserTest : public InProcessBrowserTest {
     LOG(WARNING) << GetChromeTestDataDir();
     ASSERT_TRUE(test_server_->Start());
 
-    scoped_feature_list_.InitWithFeatures({blink::features::kSaveDataImgSrcset},
-                                          {});
 
     InProcessBrowserTest::SetUp();
   }

@@ -71,7 +71,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
             new NativeInitializationController(this);
 
     private final ActivityLifecycleDispatcherImpl mLifecycleDispatcher =
-            new ActivityLifecycleDispatcherImpl();
+            new ActivityLifecycleDispatcherImpl(this);
     private final MultiWindowModeStateDispatcherImpl mMultiWindowModeStateDispatcher =
             new MultiWindowModeStateDispatcherImpl(this);
 
@@ -99,6 +99,9 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     private Runnable mOnInflationCompleteCallback;
     private boolean mInitialLayoutInflationComplete;
 
+    private static boolean sInterceptMoveTaskToBackForTesting;
+    private static boolean sBackInterceptedForTesting;
+
     public AsyncInitializationActivity() {
         mHandler = new Handler();
     }
@@ -107,6 +110,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     @Override
     protected void onDestroy() {
         mDestroyed = true;
+        mLifecycleDispatcher.onDestroyStarted();
 
         if (mWindowAndroid != null) {
             mWindowAndroid.destroy();
@@ -310,7 +314,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
 
     private final void onCreateInternal(Bundle savedInstanceState) {
         initializeStartupMetrics();
-        setIntent(validateIntent(getIntent()));
+        setIntent(IntentHandler.rewriteFromHistoryIntent(getIntent()));
 
         @LaunchIntentDispatcher.Action
         int dispatchAction = maybeDispatchLaunchIntent(getIntent(), savedInstanceState);
@@ -346,7 +350,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
         mModalDialogManagerSupplier.set(createModalDialogManager());
 
         mStartupDelayed = shouldDelayBrowserStartup();
-        ChromeBrowserInitializer.getInstance().handlePreNativeStartup(this);
+        ChromeBrowserInitializer.getInstance().handlePreNativeStartupAndLoadLibraries(this);
     }
 
     /**
@@ -443,14 +447,6 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
      */
     protected boolean isStartedUpCorrectly(Intent intent) {
         return true;
-    }
-
-    /**
-     * Validates the intent that started this activity.
-     * @return The validated intent.
-     */
-    protected Intent validateIntent(final Intent intent) {
-        return intent;
     }
 
     /**
@@ -887,5 +883,27 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
                 return true;
             }
         };
+    }
+
+    @Override
+    public boolean moveTaskToBack(boolean nonRoot) {
+        // On Android L moving the task to the background flakily stops the
+        // Activity from being finished, breaking tests. Trying to bring the
+        // task back to the foreground after also happens to be flaky, so just
+        // allow tests to prevent actually moving to the background.
+        if (sInterceptMoveTaskToBackForTesting) {
+            sBackInterceptedForTesting = true;
+            return false;
+        }
+        return super.moveTaskToBack(nonRoot);
+    }
+
+    public static void interceptMoveTaskToBackForTesting() {
+        sInterceptMoveTaskToBackForTesting = true;
+        sBackInterceptedForTesting = false;
+    }
+
+    public static boolean wasMoveTaskToBackInterceptedForTesting() {
+        return sBackInterceptedForTesting;
     }
 }

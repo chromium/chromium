@@ -16,10 +16,13 @@ import android.os.IBinder;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.TransactionTooLargeException;
+import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.BundleCompat;
+
+import org.chromium.base.compat.ApiHelperForM;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -39,6 +42,9 @@ public class IntentUtils {
     @VisibleForTesting
     public static final String EPHEMERAL_INSTALLER_CLASS =
             "com.google.android.gms.instantapps.routing.EphemeralInstallerActivity";
+
+    // TODO(mthiesse): Move to ApiHelperForS when it exist.
+    private static final int FLAG_MUTABLE = 1 << 25;
 
     /**
      * Whether the given ResolveInfo object refers to Instant Apps as a launcher.
@@ -472,5 +478,64 @@ public class IntentUtils {
             }
             throw e;
         }
+    }
+
+    /**
+     * @return True if the intent is a MAIN intent a launcher would send.
+     */
+    public static boolean isMainIntentFromLauncher(Intent intent) {
+        return intent != null && TextUtils.equals(intent.getAction(), Intent.ACTION_MAIN)
+                && intent.hasCategory(Intent.CATEGORY_LAUNCHER)
+                && 0 == (intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY);
+    }
+
+    /**
+     * Gets the PendingIntent flag for the specified mutability.
+     * PendingIntent.FLAG_IMMUTABLE was added in API level 23 (M), and FLAG_MUTABLE was added in
+     * Android S.
+     *
+     * Unless mutability is required, PendingIntents should always be marked as Immutable as this
+     * is the more secure default.
+     */
+    public static int getPendingIntentMutabilityFlag(boolean mutable) {
+        if (!mutable && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return ApiHelperForM.getPendingIntentImmutableFlag();
+        } else if (mutable && BuildInfo.isAtLeastS()) {
+            return FLAG_MUTABLE;
+        }
+        return 0;
+    }
+
+    /**
+     * Determines whether this app is the only possible handler for this Intent.
+     *
+     * @param context Any context for this app.
+     * @param intent The intent to check.
+     * @return True if the intent targets this app.
+     */
+    public static boolean intentTargetsSelf(Context context, Intent intent) {
+        boolean hasPackage = !TextUtils.isEmpty(intent.getPackage());
+        boolean matchesPackage = hasPackage && context.getPackageName().equals(intent.getPackage());
+        boolean hasComponent = intent.getComponent() != null;
+        boolean matchesComponent = hasComponent
+                && context.getPackageName().equals(intent.getComponent().getPackageName());
+
+        // Component takes precedence over PackageName when routing Intents if both are set, but to
+        // be on the safe side, ensure that if we have both package and component set, that they
+        // agree.
+        if (matchesComponent) {
+            if (hasPackage) {
+                // We should not create intents that disagree on package/component, but for security
+                // purposes we should handle this case.
+                assert matchesPackage;
+                return matchesPackage;
+            }
+            return true;
+        }
+        if (matchesPackage) {
+            assert !hasComponent;
+            return !hasComponent;
+        }
+        return false;
     }
 }

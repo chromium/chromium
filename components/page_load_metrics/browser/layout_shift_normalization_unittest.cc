@@ -19,6 +19,12 @@ class LayoutShiftNormalizationTest : public testing::Test {
     layout_shift_normalization_.AddNewLayoutShifts(
         new_shifts, current_time, cumulative_layoutshift_score_);
   }
+
+  void AddInputTimeStamps(
+      const std::vector<base::TimeTicks>& input_timestamps) {
+    layout_shift_normalization_.AddInputTimeStamps(input_timestamps);
+  }
+
   const page_load_metrics::NormalizedCLSData& normalized_cls_data() const {
     return layout_shift_normalization_.normalized_cls_data();
   }
@@ -142,5 +148,31 @@ TEST_F(LayoutShiftNormalizationTest, MultipleShiftsFromDifferentTimes) {
             3.0);
   EXPECT_EQ(normalized_cls_data().session_windows_gap5000ms_maxMax_average_cls,
             3.5);
+  EXPECT_EQ(normalized_cls_data().data_tainted, false);
+}
+
+TEST_F(LayoutShiftNormalizationTest, SessionWindowByInputs) {
+  base::TimeTicks time_origin = base::TimeTicks::Now();
+  std::vector<page_load_metrics::mojom::LayoutShiftPtr> new_shifts;
+  // Insert new layout shifts. The insertion order matters.
+  InsertNewLayoutShifts(new_shifts, time_origin,
+                        {{2100, 1.5}, {1800, 1.5}, {1300, 1.5}, {1000, 1.5}});
+  // Update CLS normalization data.
+  AddInputTimeStamps({time_origin - base::TimeDelta::FromMilliseconds(2200),
+                      time_origin - base::TimeDelta::FromMilliseconds(1100),
+                      time_origin - base::TimeDelta::FromMilliseconds(800)});
+  AddNewLayoutShifts(new_shifts, time_origin);
+
+  EXPECT_EQ(normalized_cls_data().sliding_windows_duration300ms_max_cls, 3.0);
+  EXPECT_EQ(normalized_cls_data().sliding_windows_duration1000ms_max_cls, 4.5);
+  EXPECT_EQ(normalized_cls_data().session_windows_gap1000ms_max5000ms_max_cls,
+            6.0);
+  EXPECT_EQ(normalized_cls_data().session_windows_gap1000ms_maxMax_max_cls,
+            6.0);
+  EXPECT_EQ(normalized_cls_data().session_windows_gap5000ms_maxMax_average_cls,
+            6.0);
+  EXPECT_EQ(normalized_cls_data()
+                .session_windows_by_inputs_gap1000ms_max5000ms_max_cls,
+            4.5);
   EXPECT_EQ(normalized_cls_data().data_tainted, false);
 }

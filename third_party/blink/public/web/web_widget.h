@@ -40,16 +40,15 @@
 #include "cc/trees/layer_tree_host_client.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
-#include "third_party/blink/public/common/widget/screen_info.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_context.mojom-shared.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/input/input_handler_proxy.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
-#include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_text_input_info.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_hit_test_result.h"
@@ -69,13 +68,18 @@ class Cursor;
 class LatencyInfo;
 }
 
+namespace gfx {
+class RenderingPipeline;
+}
+
 namespace blink {
+struct ScreenInfo;
+struct ScreenInfos;
 struct VisualProperties;
 class WebCoalescedInputEvent;
 
 namespace scheduler {
 class WebRenderWidgetSchedulingState;
-class WebThreadScheduler;
 }
 
 class WebWidget {
@@ -86,11 +90,13 @@ class WebWidget {
   // the default settings will be used, tests may provide a |settings| object to
   // override the defaults.
   virtual void InitializeCompositing(
-      scheduler::WebThreadScheduler* main_thread_scheduler,
+      scheduler::WebAgentGroupScheduler& agent_group_scheduler,
       cc::TaskGraphRunner* task_graph_runner,
-      const ScreenInfo& screen_info,
+      const ScreenInfos& screen_info,
       std::unique_ptr<cc::UkmRecorderFactory> ukm_recorder_factory,
-      const cc::LayerTreeSettings* settings) = 0;
+      const cc::LayerTreeSettings* settings,
+      gfx::RenderingPipeline* main_thread_pipeline,
+      gfx::RenderingPipeline* compositor_thread_pipeline) = 0;
 
   // Set the compositor as visible. If |visible| is true, then the compositor
   // will request a new layer frame sink and begin producing frames from the
@@ -202,9 +208,15 @@ class WebWidget {
   // displayed.
   virtual const ScreenInfo& GetScreenInfo() = 0;
 
+  // Returns information about all available screens.
+  virtual const ScreenInfos& GetScreenInfos() = 0;
+
   // Returns original (non-emulated) information about the screen where this
   // view's widgets are being displayed.
   virtual const ScreenInfo& GetOriginalScreenInfo() = 0;
+
+  // Returns original (non-emulated) information about all available screens.
+  virtual const ScreenInfos& GetOriginalScreenInfos() = 0;
 
   // Called to get the position of the widget's window in screen
   // coordinates. Note, the window includes any decorations such as borders,

@@ -12,6 +12,8 @@ mojom("mojom") {
     "buffer_types.mojom",
     "ca_layer_params.mojom",
     "color_space.mojom",
+    "delegated_ink_metadata.mojom",
+    "delegated_ink_point.mojom",
     "display_color_spaces.mojom",
     "font_render_params.mojom",
     "gpu_extra_info.mojom",
@@ -30,6 +32,7 @@ mojom("mojom") {
   public_deps = [
     ":native_handle_types",
     "//mojo/public/mojom/base",
+    "//skia/public/mojom",
     "//ui/gfx/geometry/mojom",
   ]
 
@@ -187,6 +190,30 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "gfx.mojom.DelegatedInkMetadata"
+          cpp = "::std::unique_ptr<::gfx::DelegatedInkMetadata>"
+          move_only = true
+          nullable_is_same_type = true
+        },
+      ]
+      traits_sources = [ "delegated_ink_metadata_mojom_traits.cc" ]
+      traits_headers = [ "delegated_ink_metadata_mojom_traits.h" ]
+      traits_public_deps = [ "//ui/gfx" ]
+    },
+    {
+      types = [
+        {
+          mojom = "gfx.mojom.DelegatedInkPoint"
+          cpp = "::gfx::DelegatedInkPoint"
+        },
+      ]
+      traits_sources = [ "delegated_ink_point_mojom_traits.cc" ]
+      traits_headers = [ "delegated_ink_point_mojom_traits.h" ]
+      traits_public_deps = [ "//ui/gfx" ]
+    },
+    {
+      types = [
+        {
           mojom = "gfx.mojom.MasteringMetadata"
           cpp = "::gfx::MasteringMetadata"
         },
@@ -258,6 +285,20 @@ mojom("mojom") {
 
   cpp_typemaps += shared_cpp_typemaps
   blink_cpp_typemaps = shared_cpp_typemaps
+  blink_cpp_typemaps += [
+    {
+      types = [
+        {
+          mojom = "gfx.mojom.DelegatedInkMetadata"
+          cpp = "::std::unique_ptr<::gfx::DelegatedInkMetadata>"
+          move_only = true
+          nullable_is_same_type = true
+        },
+      ]
+      traits_headers = [ "delegated_ink_metadata_mojom_traits.h" ]
+      traits_public_deps = [ "//ui/gfx" ]
+    },
+  ]
 }
 
 mojom("native_handle_types") {

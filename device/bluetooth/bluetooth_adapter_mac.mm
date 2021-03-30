@@ -4,6 +4,7 @@
 
 #include "device/bluetooth/bluetooth_adapter_mac.h"
 
+#import <CoreBluetooth/CBManager.h>
 #include <CoreFoundation/CFNumber.h>
 #import <IOBluetooth/objc/IOBluetoothDevice.h>
 #import <IOBluetooth/objc/IOBluetoothHostController.h>
@@ -217,6 +218,25 @@ bool BluetoothAdapterMac::IsPresent() const {
           service, CFSTR("BluetoothTransportConnected"), kCFAllocatorDefault,
           0)));
   return CFBooleanGetValue(connected);
+}
+
+BluetoothAdapter::PermissionStatus BluetoothAdapterMac::GetOsPermissionStatus()
+    const {
+  if (@available(macOS 10.15.0, *)) {
+    switch (CBCentralManager.authorization) {
+      case CBManagerAuthorizationNotDetermined:
+        return PermissionStatus::kUndetermined;
+      case CBManagerAuthorizationRestricted:
+      case CBManagerAuthorizationDenied:
+        return PermissionStatus::kDenied;
+      case CBManagerAuthorizationAllowedAlways:
+        return PermissionStatus::kAllowed;
+    }
+  }
+
+  // There are no Core Bluetooth permissions before macOS 10.15 so assume we
+  // always have permission.
+  return PermissionStatus::kAllowed;
 }
 
 bool BluetoothAdapterMac::IsPowered() const {

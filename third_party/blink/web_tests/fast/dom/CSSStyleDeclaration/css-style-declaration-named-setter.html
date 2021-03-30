@@ -14,12 +14,12 @@ shouldThrow("document.body.style.margin = badString", "'Exception in toString()'
 shouldBeEqualToString("document.body.style.margin", "1px"); // Should not reset the previous value.
 
 // Creating a new property on prototype shadows the named property.
-shouldBe("document.body.style.__proto__.margin = 2", "2");
-shouldBe("document.body.style.__proto__.margin", "2");
-shouldBeEqualToNumber("document.body.style.margin", 2);
+shouldThrow("document.body.style.__proto__.margin = 2");
+shouldThrow("document.body.style.__proto__.margin");
+shouldBeEqualToString("document.body.style.margin", "1px");
 
 shouldBe("document.body.style.margin = 3", "3");
-shouldBeEqualToNumber("document.body.style.margin", 3);
+shouldBeEqualToString("document.body.style.margin", "3px");
 
 </script>
 </body>

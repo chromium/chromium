@@ -46,7 +46,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/file_url_loader.h"
 #include "content/public/browser/navigation_ui_data.h"
-#include "content/public/browser/non_network_url_loader_factory_base.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/child_process_host.h"
@@ -91,6 +90,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -124,6 +124,10 @@ class ResultRecordingClient : public network::mojom::URLLoaderClient {
       : url_(url),
         ukm_source_id_(ukm_source_id),
         real_client_(std::move(real_client)) {}
+
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
+    real_client_->OnReceiveEarlyHints(std::move(early_hints));
+  }
 
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head) override {
@@ -457,8 +461,7 @@ class FileLoaderObserver : public content::FileURLLoaderObserver {
   DISALLOW_COPY_AND_ASSIGN(FileLoaderObserver);
 };
 
-class ExtensionURLLoaderFactory
-    : public content::NonNetworkURLLoaderFactoryBase {
+class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
  public:
   static mojo::PendingRemote<network::mojom::URLLoaderFactory> Create(
       content::BrowserContext* browser_context,
@@ -492,14 +495,14 @@ class ExtensionURLLoaderFactory
   // The factory is self-owned - it will delete itself once there are no more
   // receivers (including the receiver associated with the returned
   // mojo::PendingRemote and the receivers bound by the Clone method).  See also
-  // the NonNetworkURLLoaderFactoryBase::OnDisconnect method.
+  // the network::SelfDeletingURLLoaderFactory::OnDisconnect method.
   ExtensionURLLoaderFactory(
       content::BrowserContext* browser_context,
       ukm::SourceIdObj ukm_source_id,
       bool is_web_view_request,
       int render_process_id,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver)
-      : content::NonNetworkURLLoaderFactoryBase(std::move(factory_receiver)),
+      : network::SelfDeletingURLLoaderFactory(std::move(factory_receiver)),
         browser_context_(browser_context),
         is_web_view_request_(is_web_view_request),
         ukm_source_id_(ukm_source_id),
@@ -524,7 +527,6 @@ class ExtensionURLLoaderFactory
   // network::mojom::URLLoaderFactory:
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& request,
@@ -618,12 +620,20 @@ class ExtensionURLLoaderFactory
       std::string contents;
       GenerateBackgroundPageContents(extension.get(), &head->mime_type,
                                      &head->charset, &contents);
-      uint32_t size = base::saturated_cast<uint32_t>(contents.size());
-      mojo::DataPipe pipe(size);
-      MojoResult result = pipe.producer_handle->WriteData(
-          contents.data(), &size, MOJO_WRITE_DATA_FLAG_NONE);
+
       mojo::Remote<network::mojom::URLLoaderClient> client_remote(
           std::move(client));
+
+      uint32_t size = base::saturated_cast<uint32_t>(contents.size());
+      mojo::ScopedDataPipeProducerHandle producer_handle;
+      mojo::ScopedDataPipeConsumerHandle consumer_handle;
+      if (mojo::CreateDataPipe(size, producer_handle, consumer_handle) !=
+          MOJO_RESULT_OK) {
+        client_remote->OnComplete(
+            network::URLLoaderCompletionStatus(net::ERR_FAILED));
+      }
+      MojoResult result = producer_handle->WriteData(contents.data(), &size,
+                                                     MOJO_WRITE_DATA_FLAG_NONE);
       if (result != MOJO_RESULT_OK || size < contents.size()) {
         client_remote->OnComplete(
             network::URLLoaderCompletionStatus(net::ERR_FAILED));
@@ -631,8 +641,7 @@ class ExtensionURLLoaderFactory
       }
 
       client_remote->OnReceiveResponse(std::move(head));
-      client_remote->OnStartLoadingResponseBody(
-          std::move(pipe.consumer_handle));
+      client_remote->OnStartLoadingResponseBody(std::move(consumer_handle));
       client_remote->OnComplete(network::URLLoaderCompletionStatus(net::OK));
       return;
     }

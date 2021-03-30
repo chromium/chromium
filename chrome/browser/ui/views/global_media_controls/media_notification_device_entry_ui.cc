@@ -10,6 +10,7 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -82,6 +83,9 @@ AudioDeviceEntryView::AudioDeviceEntryView(PressedCallback callback,
 }
 
 void AudioDeviceEntryView::SetHighlighted(bool highlighted) {
+  if (is_highlighted_ == highlighted) {
+    return;
+  }
   is_highlighted_ = highlighted;
   if (highlighted) {
     SetInkDropMode(Button::InkDropMode::OFF);
@@ -93,6 +97,11 @@ void AudioDeviceEntryView::SetHighlighted(bool highlighted) {
     SetHasInkDropActionOnClick(true);
     SetBackground(nullptr);
   }
+  OnPropertyChanged(&is_highlighted_, views::kPropertyEffectsPaint);
+}
+
+bool AudioDeviceEntryView::GetHighlighted() const {
+  return is_highlighted_;
 }
 
 void AudioDeviceEntryView::OnColorsChanged(SkColor foreground_color,
@@ -164,3 +173,10 @@ DeviceEntryUIType CastDeviceEntryView::GetType() const {
 SkColor CastDeviceEntryView::GetInkDropBaseColor() const {
   return views::Button::GetInkDropBaseColor();
 }
+
+BEGIN_METADATA(AudioDeviceEntryView, HoverButton)
+ADD_PROPERTY_METADATA(bool, Highlighted)
+END_METADATA
+
+BEGIN_METADATA(CastDeviceEntryView, media_router::CastDialogSinkButton)
+END_METADATA

@@ -1,4 +1,4 @@
-<style include="profile-picker-shared cr-hidden-style">
+<style include="profile-picker-shared cr-hidden-style cr-shared-style">
   #profileCardContainer {
     border-radius: inherit;
     height: 100%;
@@ -9,10 +9,8 @@
   }
 
   cr-button {
-    --card-background-color: var(--md-background-color);
-    background-color: var(--card-background-color);
+    --hover-bg-color: none; /* Stick to the profile card hover color. */
     border: none;
-    border-radius: inherit;
     box-shadow: none;
     flex-direction: column;
     height: inherit;
@@ -20,19 +18,8 @@
     width: inherit;
   }
 
-  :host-context(.focus-outline-visible) cr-button:focus {
-    box-shadow: 0 0 0 2px rgba(var(--google-blue-600-rgb), .4);
-  }
-
-  .profile-avatar {
-    border-radius: 37px;
-    flex-shrink: 0;
-    height: var(--avatar-icon-size);
-    width: var(--avatar-icon-size);
-  }
-
   #avatarContainer {
-    height: var(--avatar-icon-size);
+    height: var(--profile-card-avatar-icon-size);
     position: relative;
   }
 
@@ -43,7 +30,8 @@
     --domain-icon-border-size: 2px;
     align-items: center;
     background-color: white;
-    border: var(--domain-icon-border-size) solid var(--card-background-color);
+    border:
+      var(--domain-icon-border-size) solid var(--profile-card-hover-color);
     border-radius: 50%;
     box-shadow: 0 0 2px rgba(60, 64, 67, 0.12), 0 0 6px rgba(60, 64, 67, 0.15);
     display: flex;
@@ -51,7 +39,7 @@
     justify-content: center;
     position: absolute;
     right: -6px;
-    top: calc(var(--avatar-icon-size) - var(--domain-icon-size)
+    top: calc(var(--profile-card-avatar-icon-size) - var(--domain-icon-size)
       - var(--domain-icon-border-size));
     width: var(--domain-icon-size);
   }
@@ -85,7 +73,6 @@
   cr-input {
     --cr-input-background-color: none;
     --cr-input-padding-top: 0;
-    font-weight: 500;
     top: 0;
   }
 
@@ -112,11 +99,15 @@
     width: 130px;
   }
 
-  @media (prefers-color-scheme: dark) {
-    cr-button {
-      --card-background-color: var(--google-grey-800);
-    }
+  paper-tooltip {
+    --paper-tooltip-delay-in: 200ms;
+    --paper-tooltip-duration-in: 200ms;
+    --paper-tooltip-duration-out: 200ms;
+    --paper-tooltip-min-width: none;
+    overflow-wrap: break-word;
+  }
 
+  @media (prefers-color-scheme: dark) {
     #iconContainer {
       background-color: var(--md-background-color);
       box-shadow: 0 0 2px rgba(60, 64, 67, 0.12), 0 0 6px
@@ -135,25 +126,27 @@
 
 <div id="profileCardContainer">
   <cr-button on-click="onProfileClick_"
-      aria-label="[[profileState.localProfileName]]">
+      aria-label="[[i18n(
+          'profileCardButtonLabel', profileState.localProfileName)]]">
     <div id="avatarContainer">
       <img class="profile-avatar" alt="" src="[[profileState.avatarIcon]]">
       <div id="iconContainer" hidden="[[!profileState.isManaged]]">
         <iron-icon icon="cr:domain"></iron-icon>
       </div>
     </div>
-    <div class="profile-card-info">
-      <div id="gaiaName" hidden="[[profileState.needsSignin]]">
-        [[profileState.gaiaName]]
-      </div>
-      <div id="forceSigninContainer" hidden="[[!profileState.needsSignin]]">
-        <div>$i18n{needsSigninPrompt}</div>
-        <iron-icon id="forceSigninIcon" icon="profiles:lock"></iron-icon>
-      </div>
+    <div id="gaiaName" class="profile-card-info secondary-text"
+        hidden="[[profileState.needsSignin]]">
+      [[profileState.gaiaName]]
+    </div>
+    <div id="forceSigninContainer" class="profile-card-info secondary-text"
+        hidden="[[!profileState.needsSignin]]">
+      <div>$i18n{needsSigninPrompt}</div>
+      <iron-icon id="forceSigninIcon" icon="profiles:lock"></iron-icon>
     </div>
   </cr-button>
   <div id="profileNameInputWrapper">
-    <cr-input class="profile-card-info" id="nameInput"
+    <cr-input class="profile-card-info prominent-text" id="nameInput"
+        aria-label="$i18n{profileCardInputLabel}"
         value="[[profileState.localProfileName]]"
         on-change="onProfileNameChanged_" on-keydown="onProfileNameKeydown_"
         on-blur="onProfileNameInputBlur_" pattern="[[pattern_]]"
@@ -163,3 +156,10 @@
   </div>
   <profile-card-menu profile-state="[[profileState]]"></profile-card-menu>
 </div>
+<paper-tooltip id="gaiaNameTooltip" for="gaiaName" manual-mode offset="0"
+    position="bottom">
+  [[profileState.gaiaName]]
+</paper-tooltip>
+<paper-tooltip id="tooltip" for="nameInput" manual-mode offset="-10">
+  [[profileState.localProfileName]]
+</paper-tooltip>

@@ -341,23 +341,6 @@ public class SideSlideLayout extends ViewGroup {
     }
 
     /**
-     * Update arrow bubble transparency as navigation sheet state changes.
-     * @param faded {@code true} if arrow bubble should fade out.
-     * @param animate {@code true} if animation is needed.
-     */
-    void fadeBubble(boolean faded, boolean animate) {
-        mArrowView.setFaded(faded, animate);
-    }
-
-    /**
-     * Hide arrow bubble by making it fade away at the current position.
-     */
-    void hideBubble() {
-        mNavigating = false;
-        startHidingAnimation(mNavigateListener);
-    }
-
-    /**
      * @return {@code true} if swiped long enough to trigger navigation upon release.
      */
     boolean willNavigate() {

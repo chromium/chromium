@@ -5,6 +5,8 @@
 #include "media/capture/video/chromeos/camera_app_device_impl.h"
 
 #include "media/base/bind_to_current_loop.h"
+#include "media/capture/video/chromeos/camera_app_device_bridge_impl.h"
+#include "media/capture/video/chromeos/camera_device_context.h"
 #include "media/capture/video/chromeos/camera_metadata_utils.h"
 
 namespace media {
@@ -59,20 +61,23 @@ ReprocessTaskQueue CameraAppDeviceImpl::GetSingleShotReprocessOptions(
 }
 
 CameraAppDeviceImpl::CameraAppDeviceImpl(const std::string& device_id,
-                                         cros::mojom::CameraInfoPtr camera_info,
-                                         base::OnceClosure cleanup_callback)
+                                         cros::mojom::CameraInfoPtr camera_info)
     : device_id_(device_id),
+      allow_new_ipc_weak_ptrs_(true),
       camera_info_(std::move(camera_info)),
-      cleanup_callback_(std::move(cleanup_callback)),
-      creation_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       capture_intent_(cros::mojom::CaptureIntent::DEFAULT),
       next_metadata_observer_id_(0),
       next_camera_event_observer_id_(0),
-      weak_ptr_factory_(
-          std::make_unique<base::WeakPtrFactory<CameraAppDeviceImpl>>(this)) {}
+      camera_device_context_(nullptr) {}
 
 CameraAppDeviceImpl::~CameraAppDeviceImpl() {
-  creation_task_runner_->DeleteSoon(FROM_HERE, std::move(weak_ptr_factory_));
+  // If the instance is bound, then this instance should only be destroyed when
+  // the mojo connection is dropped, which also happens on the mojo thread.
+  DCHECK(!mojo_task_runner_ || mojo_task_runner_->BelongsToCurrentThread());
+
+  // All the weak pointers of |weak_ptr_factory_| should be invalidated on
+  // camera device IPC thread before destroying CameraAppDeviceImpl.
+  DCHECK(!weak_ptr_factory_.HasWeakPtrs());
 }
 
 void CameraAppDeviceImpl::BindReceiver(
@@ -80,8 +85,21 @@ void CameraAppDeviceImpl::BindReceiver(
   receivers_.Add(this, std::move(receiver));
   receivers_.set_disconnect_handler(
       base::BindRepeating(&CameraAppDeviceImpl::OnMojoConnectionError,
-                          weak_ptr_factory_->GetWeakPtr()));
+                          weak_ptr_factory_for_mojo_.GetWeakPtr()));
   mojo_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+}
+
+base::WeakPtr<CameraAppDeviceImpl> CameraAppDeviceImpl::GetWeakPtr() {
+  return allow_new_ipc_weak_ptrs_ ? weak_ptr_factory_.GetWeakPtr() : nullptr;
+}
+
+void CameraAppDeviceImpl::InvalidatePtrs(base::OnceClosure callback,
+                                         bool should_disable_new_ptrs) {
+  if (should_disable_new_ptrs) {
+    allow_new_ipc_weak_ptrs_ = false;
+  }
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  std::move(callback).Run();
 }
 
 void CameraAppDeviceImpl::ConsumeReprocessOptions(
@@ -140,7 +158,13 @@ void CameraAppDeviceImpl::OnShutterDone() {
   mojo_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&CameraAppDeviceImpl::NotifyShutterDoneOnMojoThread,
-                     weak_ptr_factory_->GetWeakPtr()));
+                     weak_ptr_factory_for_mojo_.GetWeakPtr()));
+}
+
+void CameraAppDeviceImpl::SetCameraDeviceContext(
+    CameraDeviceContext* camera_device_context) {
+  base::AutoLock lock(camera_device_context_lock_);
+  camera_device_context_ = camera_device_context;
 }
 
 void CameraAppDeviceImpl::GetCameraInfo(GetCameraInfoCallback callback) {
@@ -157,9 +181,10 @@ void CameraAppDeviceImpl::SetReprocessOption(
 
   ReprocessTask task;
   task.effect = effect;
-  task.callback = media::BindToCurrentLoop(base::BindOnce(
-      &CameraAppDeviceImpl::SetReprocessResultOnMojoThread,
-      weak_ptr_factory_->GetWeakPtr(), std::move(reprocess_result_callback)));
+  task.callback = media::BindToCurrentLoop(
+      base::BindOnce(&CameraAppDeviceImpl::SetReprocessResultOnMojoThread,
+                     weak_ptr_factory_for_mojo_.GetWeakPtr(),
+                     std::move(reprocess_result_callback)));
 
   if (effect == cros::mojom::Effect::PORTRAIT_MODE) {
     auto e = BuildMetadataEntry(
@@ -282,6 +307,39 @@ void CameraAppDeviceImpl::RemoveCameraEventObserver(
   std::move(callback).Run(is_success);
 }
 
+void CameraAppDeviceImpl::SetCameraFrameRotationEnabledAtSource(
+    bool is_enabled,
+    SetCameraFrameRotationEnabledAtSourceCallback callback) {
+  DCHECK(mojo_task_runner_->BelongsToCurrentThread());
+
+  bool is_success = false;
+  {
+    base::AutoLock lock(camera_device_context_lock_);
+    if (camera_device_context_) {
+      camera_device_context_->SetCameraFrameRotationEnabledAtSource(is_enabled);
+      is_success = true;
+    }
+  }
+  std::move(callback).Run(is_success);
+}
+
+void CameraAppDeviceImpl::GetCameraFrameRotation(
+    GetCameraFrameRotationCallback callback) {
+  DCHECK(mojo_task_runner_->BelongsToCurrentThread());
+
+  uint32_t rotation = 0;
+  {
+    base::AutoLock lock(camera_device_context_lock_);
+    if (camera_device_context_ &&
+        !camera_device_context_->IsCameraFrameRotationEnabledAtSource()) {
+      // The camera rotation value can only be [0, 90, 180, 270].
+      rotation = static_cast<uint32_t>(
+          camera_device_context_->GetCameraFrameRotation());
+    }
+  }
+  std::move(callback).Run(rotation);
+}
+
 // static
 void CameraAppDeviceImpl::DisableEeNr(ReprocessTask* task) {
   auto ee_entry =
@@ -295,7 +353,8 @@ void CameraAppDeviceImpl::DisableEeNr(ReprocessTask* task) {
 }
 
 void CameraAppDeviceImpl::OnMojoConnectionError() {
-  std::move(cleanup_callback_).Run();
+  CameraAppDeviceBridgeImpl::GetInstance()->OnDeviceMojoDisconnected(
+      device_id_);
 }
 
 void CameraAppDeviceImpl::SetReprocessResultOnMojoThread(

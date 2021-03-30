@@ -95,9 +95,11 @@ TEST_F(FidoMakeCredentialTaskTest, TestRegisterSuccessWithFake) {
 
   // We don't verify the response from the fake, but do a quick sanity check.
   ASSERT_TRUE(make_credential_callback_receiver().value());
-  EXPECT_EQ(
-      32u,
-      make_credential_callback_receiver().value()->raw_credential_id().size());
+  EXPECT_EQ(32u, make_credential_callback_receiver()
+                     .value()
+                     ->attestation_object()
+                     .GetCredentialId()
+                     .size());
 }
 
 TEST_F(FidoMakeCredentialTaskTest, FallbackToU2fRegisterSuccess) {

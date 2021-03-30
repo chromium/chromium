@@ -5,12 +5,10 @@
 package org.chromium.chrome.browser.sync.settings;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
@@ -21,8 +19,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -73,8 +74,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Settings fragment to customize Sync options (data types, encryption). Can be accessed from
- * {@link SyncAndServicesSettings}.
+ * Settings fragment to customize Sync options (data types, encryption). Corresponds to
+ * chrome://settings/syncSetup/advanced and parts of chrome://settings/syncSetup on desktop.
+ * With the MobileIdentityConsistency feature, this fragment is accessible from the main settings
+ * view. If the feature is disabled, the entry point is in {@link SyncAndServicesSettings}.
  */
 public class ManageSyncSettings extends PreferenceFragmentCompat
         implements PassphraseDialogFragment.Listener, PassphraseCreationDialogFragment.Listener,
@@ -179,7 +182,13 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
                         ? R.string.sync_category_title
                         : R.string.manage_sync_title);
         setHasOptionsMenu(true);
-        // TODO(https://crbug.com/1063982): Change accessibility text for Advanced Sync Flow.
+        if (mIsFromSigninScreen) {
+            ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+            assert actionBar != null;
+            actionBar.setHomeActionContentDescription(
+                    R.string.prefs_manage_sync_settings_content_description);
+            RecordUserAction.record("Signin_Signin_ShowAdvancedSyncSettings");
+        }
 
         SettingsUtils.addPreferencesFromResource(this, R.xml.manage_sync_preferences);
 
@@ -435,9 +444,9 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
             // error.
             closeDialogIfOpen(FRAGMENT_CUSTOM_PASSPHRASE);
             closeDialogIfOpen(FRAGMENT_ENTER_PASSPHRASE);
-            mSyncEncryption.setSummary(mProfileSyncService.isEncryptEverythingEnabled()
+            setEncryptionErrorSummary(mProfileSyncService.isEncryptEverythingEnabled()
                             ? R.string.sync_error_card_title
-                            : R.string.sync_passwords_error_card_title);
+                            : R.string.password_sync_error_summary);
             return;
         }
 
@@ -445,18 +454,16 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
             closeDialogIfOpen(FRAGMENT_ENTER_PASSPHRASE);
         }
         if (mProfileSyncService.isPassphraseRequiredForPreferredDataTypes() && isAdded()) {
-            mSyncEncryption.setSummary(
-                    errorSummary(getString(R.string.sync_need_passphrase), getActivity()));
+            setEncryptionErrorSummary(R.string.sync_need_passphrase);
         }
     }
 
-    /** Applies a span to the given string to give it an error color. */
-    private static Spannable errorSummary(String string, Context context) {
-        SpannableString summary = new SpannableString(string);
-        summary.setSpan(new ForegroundColorSpan(ApiCompatibilityUtils.getColor(
-                                context.getResources(), R.color.input_underline_error_color)),
-                0, summary.length(), 0);
-        return summary;
+    private void setEncryptionErrorSummary(@StringRes int stringId) {
+        SpannableString summary = new SpannableString(getString(stringId));
+        final int errorColor =
+                ApiCompatibilityUtils.getColor(getResources(), R.color.input_underline_error_color);
+        summary.setSpan(new ForegroundColorSpan(errorColor), 0, summary.length(), 0);
+        mSyncEncryption.setSummary(summary);
     }
 
     private Set<Integer> getSelectedModelTypes() {

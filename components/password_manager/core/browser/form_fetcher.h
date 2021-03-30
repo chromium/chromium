@@ -6,17 +6,17 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FORM_FETCHER_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/observer_list_types.h"
-#include "base/strings/string16.h"
 #include "components/autofill/core/common/gaia_id_hash.h"
+#include "components/password_manager/core/browser/insecure_credentials_table.h"
 
 namespace password_manager {
 
-struct CompromisedCredentials;
 struct InteractionsStats;
 struct PasswordForm;
 
@@ -65,8 +65,8 @@ class FormFetcher {
   virtual const std::vector<InteractionsStats>& GetInteractionsStats()
       const = 0;
 
-  // Compromised records for the current site.
-  virtual base::span<const CompromisedCredentials> GetCompromisedCredentials()
+  // Insecure credentials records for the current site.
+  virtual base::span<const InsecureCredential> GetInsecureCredentials()
       const = 0;
 
   // Non-federated matches obtained from the backend. Valid only if GetState()
@@ -86,7 +86,7 @@ class FormFetcher {
   // |destination| GaiaIdHash is blocked. This is relevant only for account
   // store users.
   virtual bool IsMovingBlocked(const autofill::GaiaIdHash& destination,
-                               const base::string16& username) const = 0;
+                               const std::u16string& username) const = 0;
 
   // Non-federated matches obtained from the backend that have the same scheme
   // of this form.

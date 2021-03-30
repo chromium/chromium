@@ -146,11 +146,18 @@
         "description": "A subset of accelerator actions used by accessibility."
       }
     ],
+    "properties": {
+      "IS_DEFAULT_EVENT_SOURCE_TOUCH": {
+        "type": "integer",
+        "value": 1,
+        "description": "Property to indicate whether event source should default to touch."
+      }
+    },
     "functions": [
       {
         "name": "getBatteryDescription",
         "type": "function",
-        "description": "Called to request battery status from Chrome OS system.",
+        "description": "Called to request battery status from chromecast system.",
         "parameters": [
           {
             "name": "callback",
@@ -385,7 +392,7 @@
       {
         "name": "onSelectToSpeakStateChangeRequested",
         "type": "function",
-        "description": "Called when Chrome OS wants to change the Select-to-Speak state, between selecting with the mouse, speaking, and inactive.",
+        "description": "Called when chromecast wants to change the Select-to-Speak state, between selecting with the mouse, speaking, and inactive.",
         "parameters": [],
         "platforms": ["chromeos"]
       },

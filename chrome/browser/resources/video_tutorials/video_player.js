@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$} from '//resources/js/util.m.js';
-
 function onDocumentLoaded() {
   // Find out the video, image, and caption urls from the url params.
   const urlParams = new URLSearchParams(window.location.search);
@@ -19,7 +17,7 @@ function onVideoEnded() {
   video.controls = false;
 }
 
-const video = $('video');
-const track = $('track');
+const video = document.querySelector('video');
+const track = document.querySelector('track');
 video.addEventListener('ended', onVideoEnded);
 document.addEventListener('DOMContentLoaded', onDocumentLoaded);

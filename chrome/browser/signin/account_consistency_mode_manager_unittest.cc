@@ -29,7 +29,7 @@ namespace {
 
 std::unique_ptr<TestingProfile> BuildTestingProfile(bool is_new_profile) {
   TestingProfile::Builder profile_builder;
-  profile_builder.OverrideIsNewProfile(is_new_profile);
+  profile_builder.SetIsNewProfile(is_new_profile);
   std::unique_ptr<TestingProfile> profile = profile_builder.Build();
   EXPECT_EQ(is_new_profile, profile->IsNewProfile());
   return profile;
@@ -246,19 +246,6 @@ TEST(AccountConsistencyModeManagerTest,
       EXPECT_TRUE(AccountConsistencyModeManager::ShouldBuildServiceForProfile(
           profile.get()));
     }
-  }
-
-  {
-    // Legacy supervised profile.
-    TestingProfile::Builder profile_builder;
-    profile_builder.SetSupervisedUserId("supervised_id");
-    std::unique_ptr<Profile> profile = profile_builder.Build();
-    ASSERT_TRUE(profile->IsLegacySupervised());
-    EXPECT_FALSE(
-        AccountConsistencyModeManager::IsDiceEnabledForProfile(profile.get()));
-    EXPECT_EQ(
-        signin::AccountConsistencyMethod::kDisabled,
-        AccountConsistencyModeManager::GetMethodForProfile(profile.get()));
   }
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

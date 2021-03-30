@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_PAGE_FREEZING_POLICY_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_PAGE_FREEZING_POLICY_H_
 
+#include <array>
+
+#include "base/containers/flat_map.h"
+#include "base/timer/timer.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/freezing/freezing.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -23,19 +27,20 @@ namespace policies {
 //
 // Tabs in one of the following states won't be frozen:
 //   - Audible;
+//   - Holding at least one WebLock.
+//   - Holding at least one IndexedDB lock;
+//   - Connected to a USB device;
+//   - Connected to a bluetooth device;
 //   - Capturing video;
 //   - Capturing audio;
 //   - Mirrored;
 //   - Capturing window;
 //   - Capturing display;
-//   - Connected to a bluetooth device;
-//   - Connected to a USB device;
-//   - Holding at least one IndexedDB lock;
-//   - Holding at least one WebLock.
 //
 // Note that visible tabs can't be frozen and tabs that becomes visible are
 // automatically unfrozen, there's no need to track this feature here.
-class PageFreezingPolicy : public GraphOwned,
+class PageFreezingPolicy : public GraphObserver,
+                           public GraphOwnedDefaultImpl,
                            public PageNode::ObserverDefaultImpl,
                            public PageLiveStateObserver {
  public:
@@ -51,12 +56,15 @@ class PageFreezingPolicy : public GraphOwned,
     page_freezer_ = std::move(page_freezer);
   }
 
+  static const base::TimeDelta GetUnfreezeIntervalForTesting();
+  static const base::TimeDelta GetUnfreezeDurationForTesting();
+
  protected:
   // List of states that prevent a tab from being frozen.
-  enum class CannotFreezeReason {
-    kAudible,
-    kHoldingIndexedDBLock,
+  enum CannotFreezeReason {
+    kAudible = 0,
     kHoldingWebLock,
+    kHoldingIndexedDBLock,
     kConnectedToUsbDevice,
     kConnectedToBluetoothDevice,
     kCapturingVideo,
@@ -64,29 +72,25 @@ class PageFreezingPolicy : public GraphOwned,
     kBeingMirrored,
     kCapturingWindow,
     kCapturingDisplay,
+    kCount,
   };
 
   // Helper function to convert a |CannotFreezeReason| to a string.
   static const char* CannotFreezeReasonToString(CannotFreezeReason reason);
 
  private:
-  // A map that associates a CannotFreezeReason to a negative vote.
-  using PageCannotFreezeVoteMap =
-      base::flat_map<CannotFreezeReason,
-                     std::unique_ptr<freezing::FreezingVotingChannelWrapper>>;
-  // A map that associates a PageCannotFreezeVoteMap with a page node.
-  using NegativeVotesForPagesMap =
-      base::flat_map<const PageNode*, PageCannotFreezeVoteMap>;
-
-  // Indicates if the negative freezing vote should be emitted or removed.
-  enum class NegativeVoteAction {
-    kEmit,
-    kRemove,
+  // Actions that can be performed by the temporary unfreeze logic. It either
+  // should unfreeze the page node or refreeze it.
+  enum class PageNodeUnfreezeAction {
+    kTemporaryUnfreeze,
+    kRefreeze,
   };
+
+  // GraphObserver implementation:
+  void OnBeforeGraphDestroyed(Graph* graph) override;
 
   // GraphOwned implementation:
   void OnPassedToGraph(Graph* graph) override;
-  void OnTakenFromGraph(Graph* graph) override;
 
   // PageNodeObserver implementation:
   void OnPageNodeAdded(const PageNode* page_node) override;
@@ -98,6 +102,8 @@ class PageFreezingPolicy : public GraphOwned,
       const PageNode* page_node,
       base::Optional<performance_manager::freezing::FreezingVote> previous_vote)
       override;
+  void OnLoadingStateChanged(const PageNode* page_node) override;
+  void OnPageLifecycleStateChanged(const PageNode* page_node) override;
 
   // PageLiveStateObserver:
   void OnIsConnectedToUSBDeviceChanged(const PageNode* page_node) override;
@@ -111,15 +117,35 @@ class PageFreezingPolicy : public GraphOwned,
   void OnIsAutoDiscardableChanged(const PageNode* page_node) override {}
   void OnWasDiscardedChanged(const PageNode* page_node) override {}
 
-  // Emit or remove a negative freezing vote for |page_node| for |reason|.
-  // There can only be one vote associated with this reason.
-  void UpdateNegativeFreezingVote(const PageNode* page_node,
-                                  CannotFreezeReason reason,
-                                  NegativeVoteAction action);
+  // Helper function that either calls SubmitNegativeVote() or
+  // InvalidateNegativeVote() when the value of a property changes.
+  void OnPropertyChanged(const PageNode* page_node,
+                         bool submit_vote,
+                         CannotFreezeReason reason);
 
-  NegativeVotesForPagesMap negative_vote_for_pages_;
+  // Submits or invalidates a negative freezing vote for |page_node| for
+  // |reason|. There can only be one vote associated with this reason.
+  void SubmitNegativeFreezingVote(const PageNode* page_node,
+                                  CannotFreezeReason reason);
+  void InvalidateNegativeFreezingVote(const PageNode* page_node,
+                                      CannotFreezeReason reason);
 
-  Graph* graph_ = nullptr;
+  // Unfreeze |page_node| and schedule a task to refreeze it.
+  void TemporarilyUnfreezePageNode(const PageNode* page_node);
+
+  // Refreeze |page_node| after it has been temporarily unfrozen.
+  void FreezePageNodeAfterTemporaryUnfreeze(const PageNode* page_node);
+
+  // Holds one voting channel per CannotFreezeReason.
+  std::array<freezing::FreezingVotingChannel, CannotFreezeReason::kCount>
+      voting_channels_;
+
+  // Map that tracks the frozen |page_node| and the periodic unfreeze/refreeze
+  // tasks associated to them.
+  base::flat_map<
+      const PageNode*,
+      std::pair<PageNodeUnfreezeAction, std::unique_ptr<base::OneShotTimer>>>
+      page_nodes_unfreeze_tasks_;
 
   // The page node being removed, used to avoid freezing/unfreezing a page node
   // while it's being removed.

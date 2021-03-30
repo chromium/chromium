@@ -65,12 +65,13 @@ void WebviewRpcInstance::CreateWebview(int app_id,
   content::BrowserContext* browser_context =
       shell::CastBrowserProcess::GetInstance()->browser_context();
   if (incognito) {
-    incognito_context_ =
-        std::make_unique<WebviewBrowserContext>(browser_context);
-    browser_context = incognito_context_.get();
+    controller_ = std::make_unique<WebviewController>(
+        std::make_unique<WebviewBrowserContext>(browser_context), this,
+        enabled_for_dev_);
+  } else {
+    controller_ = std::make_unique<WebviewController>(browser_context, this,
+                                                      enabled_for_dev_);
   }
-  controller_ = std::make_unique<WebviewController>(browser_context, this,
-                                                    enabled_for_dev_);
 
   // Begin reading again.
   io_.Read(request_.get(), &read_callback_);

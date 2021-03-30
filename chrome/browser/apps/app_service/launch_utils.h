@@ -12,6 +12,10 @@
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/base/window_open_disposition.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/arc/mojom/app.mojom.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 class Browser;
 class Profile;
 
@@ -74,8 +78,17 @@ int GetEventFlags(apps::mojom::LaunchContainer container,
 // for a system web app, or for a web app not opened in tab. Otherwise, returns
 // an invalid session id.
 int GetSessionIdForRestoreFromWebContents(
-    apps::mojom::LaunchContainer container,
     const content::WebContents* web_contents);
+
+// Helper to create apps::mojom::WindowInfoPtr using |display_id|, which is the
+// id of the display from which the app is launched.
+apps::mojom::WindowInfoPtr MakeWindowInfo(int64_t display_id);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Helper to convert apps::mojom::WindowInfoPtr to arc::mojom::WindowInfoPtr.
+arc::mojom::WindowInfoPtr MakeArcWindowInfo(
+    apps::mojom::WindowInfoPtr window_info);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace apps
 

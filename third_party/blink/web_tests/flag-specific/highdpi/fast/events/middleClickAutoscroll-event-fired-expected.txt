@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL middleClickAutoscroll-event-fired promise_test: Unhandled rejection with value: "Reaches the maximum frames."
+Harness: the test ran to completion.
+

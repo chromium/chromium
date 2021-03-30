@@ -14,6 +14,7 @@
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_constants.h"
+#include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
 using base::android::JavaParamRef;
@@ -51,8 +52,8 @@ void JNI_DomDistillerTabUtils_DistillAndView(
 ScopedJavaLocalRef<jstring>
 JNI_DomDistillerTabUtils_GetFormattedUrlFromOriginalDistillerUrl(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_url) {
-  GURL url(base::android::ConvertJavaStringToUTF8(env, j_url));
+    const JavaParamRef<jobject>& j_url) {
+  auto url = *url::GURLAndroid::ToNativeGURL(env, j_url);
 
   if (url.spec().length() > content::kMaxURLDisplayChars)
     url = url.IsStandard() ? url.GetOrigin() : GURL(url.scheme() + ":");

@@ -10,9 +10,6 @@ danakj@chromium.org
 vmpstr@chromium.org
 weiliangc@chromium.org
 
-# CopyOutputRequests/Results and FrameSinkVideoCapture
-miu@chromium.org
-
 # renderers (GL/Skia/Software)
 weiliangc@chromium.org
 rjkroege@chromium.org
@@ -29,6 +26,9 @@ sadrul@chromium.org
 kylechar@chromium.org
 jonross@chromium.org
 
+# frame sink video capturer
+per-file client_frame_sink_video_capturer*=ilnik@chromium.org
+
 # gpu
 danakj@chromium.org
 sadrul@chromium.org
@@ -43,9 +43,9 @@ flackr@chromium.org
 
 # overlays
 ccameron@chromium.org
-dcastagna@chromium.org
-khushalsagar@chromium.org
+vasilyt@chromium.org
 magchen@chromium.org
+petermcneeley@chromium.org
 
 # scheduling / begin frames
 sunnyps@chromium.org

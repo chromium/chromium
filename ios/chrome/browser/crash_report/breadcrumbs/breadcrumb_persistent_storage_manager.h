@@ -11,26 +11,31 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/timer/timer.h"
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_observer.h"
-#include "ios/chrome/browser/crash_report/crash_reporter_breadcrumb_constants.h"
+#include "components/breadcrumbs/core/breadcrumb_manager_observer.h"
+#include "components/breadcrumbs/core/crash_reporter_breadcrumb_constants.h"
 
 // The filesize for the file at |breadcrumbs_file_path_|. The file will always
 // be this constant size because it is accessed using a memory mapped file. The
-// file is twice as large as |kMaxBreadcrumbsDataLength| which leaves room for
-// appending breadcrumb events. Once the file is full of events, the contents
-// will be reduced to kMaxBreadcrumbsDataLength.
-constexpr size_t kPersistedFilesizeInBytes = kMaxBreadcrumbsDataLength * 2;
+// file is twice as large as |kMaxDataLength| which leaves room for appending
+// breadcrumb events. Once the file is full of events, the contents will be
+// reduced to kMaxDataLength.
+constexpr size_t kPersistedFilesizeInBytes = breadcrumbs::kMaxDataLength * 2;
 
 namespace base {
 class FilePath;
 }  // namespace base
+
+namespace breadcrumbs {
+class BreadcrumbManager;
+}  // namespace breadcrumbs
 
 class BreadcrumbManagerKeyedService;
 
 // Stores breadcrumb events to and retireves them from a file on disk.
 // Persisting these events allows access to breadcrumb events from previous
 // application sessions.
-class BreadcrumbPersistentStorageManager : public BreadcrumbManagerObserver {
+class BreadcrumbPersistentStorageManager
+    : public breadcrumbs::BreadcrumbManagerObserver {
  public:
   explicit BreadcrumbPersistentStorageManager(base::FilePath directory);
   ~BreadcrumbPersistentStorageManager() override;
@@ -41,13 +46,13 @@ class BreadcrumbPersistentStorageManager : public BreadcrumbManagerObserver {
 
   // Starts observing |manager| for events. Existing events will be persisted
   // immediately.
-  void MonitorBreadcrumbManager(BreadcrumbManager* manager);
+  void MonitorBreadcrumbManager(breadcrumbs::BreadcrumbManager* manager);
   // Starts observing |service| for events. Existing events will be persisted
   // immediately.
   void MonitorBreadcrumbManagerService(BreadcrumbManagerKeyedService* service);
 
   // Stops observing |manager|.
-  void StopMonitoringBreadcrumbManager(BreadcrumbManager* manager);
+  void StopMonitoringBreadcrumbManager(breadcrumbs::BreadcrumbManager* manager);
   // Stops observing |service|.
   void StopMonitoringBreadcrumbManagerService(
       BreadcrumbManagerKeyedService* service);
@@ -73,9 +78,9 @@ class BreadcrumbPersistentStorageManager : public BreadcrumbManagerObserver {
   void WriteEvent(const std::string& event);
 
   // BreadcrumbManagerObserver
-  void EventAdded(BreadcrumbManager* manager,
+  void EventAdded(breadcrumbs::BreadcrumbManager* manager,
                   const std::string& event) override;
-  void OldEventsRemoved(BreadcrumbManager* manager) override;
+  void OldEventsRemoved(breadcrumbs::BreadcrumbManager* manager) override;
 
   // Individual beadcrumbs which have not yet been written to disk.
   std::string pending_breadcrumbs_;

@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 18
+// Next MinVersion: 20
 
 module arc.mojom;
 
+import "components/arc/mojom/app.mojom";
 import "components/arc/mojom/bitmap.mojom";
 import "components/arc/mojom/gfx.mojom";
 import "components/arc/mojom/intent_common.mojom";
@@ -254,6 +255,17 @@ struct FileSelectorElements {
   string? search_query;
 };
 
+// Returned output for GetRootSize.
+struct RootSize {
+  // Available size of a root in bytes. Set to -1 if the available size is
+  // unknown or unbounded.
+  int64 available_bytes;
+
+  // Capacity of a root in bytes. Set to -1 if the capacity is unknown or
+  // unbounded.
+  int64 capacity_bytes;
+};
+
 // Next method ID: 11
 interface FileSystemHost {
   // Returns the name of the file specified by the URL.
@@ -304,7 +316,7 @@ interface FileSystemHost {
       (FileSelectorElements elements);
 };
 
-// Next method ID: 22
+// Next method ID: 24
 interface FileSystemInstance {
   // Notes about Android Documents Provider:
   //
@@ -371,11 +383,17 @@ interface FileSystemInstance {
   [MinVersion=5] GetRecentDocuments@9(string authority, string root_id) =>
       (array<Document>? documents);
 
-  // Queries available roots from all Documents Providers.
+  // Obtains cached roots from all Documents Providers.
   // If there is no root in ARC, an empty array is returned.
-  // If an error is found during GetRoots() methord processing in ARC, null
+  // If an error is found during GetRoots() method processing in ARC, null
   // value is returned.
   [MinVersion=10] GetRoots@12() => (array<Root>? roots);
+
+  // Queries available roots to find the one matching |root_id| and |authority|.
+  // Obtains the root's available bytes and capacity bytes for |root_size|.
+  // Returns null if there is no root that matches the input parameters.
+  [MinVersion=18] GetRootSize@22(string authority, string root_id) =>
+      (RootSize? root_size);
 
   // Deletes the given document.
   [MinVersion=12] DeleteDocument@13(string authority, string document_id) =>
@@ -452,9 +470,15 @@ interface FileSystemInstance {
   // |directory_paths| (non-recursively) in MediaStore and removes them.
   [MinVersion=14] RequestFileRemovalScan@20(array<string> directory_paths);
 
-  // Opens URLs by sending an intent to the specified activity.
+  // DEPRECATED. Use OpenUrlsWithPermissionAndWindowInfo() instead.
+  [MinVersion=8] OpenUrlsWithPermission@11(OpenUrlsRequest request) => ();
+
+  // Opens URLs by sending an intent to the specified activity with a specific
+  // launch window info.
+  //
   // Since this grants read/write URL permissions to the activity, callers must
   // ensure that the user is correctly aware of the URLs and the activity they
   // are passing.
-  [MinVersion=8] OpenUrlsWithPermission@11(OpenUrlsRequest request) => ();
+  [MinVersion=19] OpenUrlsWithPermissionAndWindowInfo@23(
+      OpenUrlsRequest request, WindowInfo window_info)  => ();
 };

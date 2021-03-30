@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">Plik lub katalog nie nadaje się do użycia.</translation>
 <translation id="1363028406613469049">Utwór</translation>
 <translation id="1378727793141957596">Dysk Google – witamy</translation>
+<translation id="1379911846207762492">Możesz udostępnić pliki w trybie offline, aby móc z nich korzystać bez połączenia z internetem.</translation>
 <translation id="1383876407941801731">Szukaj</translation>
 <translation id="1395262318152388157">Suwak wyszukiwania</translation>
 <translation id="1404323374378969387">Norweski</translation>
@@ -55,7 +56,7 @@
 <translation id="1572585716423026576">Ustaw jako tapetę</translation>
 <translation id="1576937952766665062">Bengalski – transliteracja</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
-<translation id="1620510694547887537">Kamera</translation>
+<translation id="1620510694547887537">Aparat</translation>
 <translation id="162175252992296058">Portugalski z klawiaturą amerykańską międzynarodową</translation>
 <translation id="1641780993263690097">Chiński pinyin</translation>
 <translation id="1646019627374511909">Udostępniam pliki (<ph name="NUMBER_OF_ITEMS" />) offline</translation>
@@ -76,6 +77,7 @@
 <translation id="1807938677607439181">Wszystkie pliki</translation>
 <translation id="1810764548349082891">Podgląd niedostępny</translation>
 <translation id="1812302367230252929">Amharski – transliteracja</translation>
+<translation id="1813278315230285598">Usługi</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Przestroga:<ph name="END_BOLD" /> te pliki mają charakter tymczasowy i mogą zostać automatycznie usunięte w celu zwolnienia miejsca na dysku. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingwin</translation>
 <translation id="183183971458492120">Ładuję informacje…</translation>
@@ -85,13 +87,14 @@
 <translation id="1853795129690976061">Ten folder jest udostępniany Linuksowi</translation>
 <translation id="1864756863218646478">Nie można znaleźć pliku.</translation>
 <translation id="1920670151694390848">Malajalam – transliteracja</translation>
+<translation id="1920798810075583923">Arbuz</translation>
 <translation id="1924372192547904021">Sformatowano: <ph name="DRIVE_NAME" /></translation>
 <translation id="1931134289871235022">Słowacki</translation>
 <translation id="1933345018156373194">Przenoszenie nie powiodło się z powodu nieoczekiwanego błędu: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Fiński</translation>
 <translation id="1942765061641586207">Rozdzielczość grafiki</translation>
-<translation id="1943097386230153518">Zainstaluj nową usługę</translation>
 <translation id="1972984168337863910">Rozwiń panele informacji zwrotnej o plikach</translation>
+<translation id="1984456723671657197">Ten typ pliku nie jest obsługiwany. <ph name="BEGIN_LINK_HELP" />Więcej informacji<ph name="END_LINK_HELP" /> o otwieraniu plików w Chrome OS.</translation>
 <translation id="1995337122023280937">Otwórz lokalizację pliku</translation>
 <translation id="2001796770603320721">Zarządzaj na Dysku</translation>
 <translation id="2009067268969781306">Sformatowanie dysku spowoduje usunięcie wszystkich zapisanych na nim danych. Nie można tego cofnąć.</translation>
@@ -118,6 +121,7 @@
 <translation id="2288278176040912387">Gramofon</translation>
 <translation id="2291538123825441971">Otwieram pliki (<ph name="NUMBER_OF_FILES" />).</translation>
 <translation id="2303301624314357662">Otwieram plik <ph name="FILE_NAME" />.</translation>
+<translation id="2304820083631266885">Planeta</translation>
 <translation id="2305020378527873881">Odłączono <ph name="VOLUME_NAME" />.</translation>
 <translation id="2325650632570794183">Ten typ plików jest nieobsługiwany. W Chrome Web Store znajdziesz aplikację otwierającą pliki tego typu.</translation>
 <translation id="2326539130272988168">Bułgarski</translation>
@@ -142,7 +146,6 @@
 <translation id="255937426064304553">amerykańska klawiatura międzynarodowa</translation>
 <translation id="2562685439590298522">Dokumenty</translation>
 <translation id="2563185590376525700">Żaba</translation>
-<translation id="2572501073504669105">Możesz udostępnić pliki w trybie offline, by móc z nich korzystać bez połączenia z internetem.</translation>
 <translation id="2578394532502990878">Tamilski fonetyczny</translation>
 <translation id="2579959351793446050">Orija</translation>
 <translation id="2614589611416690597">Plik wideo <ph name="VIDEO_TYPE" /></translation>
@@ -186,6 +189,7 @@
 <translation id="299638574917407533">Francuski (Kanada)</translation>
 <translation id="3003633581067744647">Przełącz na widok miniatur</translation>
 <translation id="3007214526293698309">Stałe proporcje</translation>
+<translation id="3029114385395636667">Włącz Dokumenty Google offline, aby udostępnić w trybie offline Dokumenty, Arkusze i Prezentacje.</translation>
 <translation id="303198083543495566">Lokalizacja</translation>
 <translation id="3047197340186497470">Chiński dayi</translation>
 <translation id="3057861065630527966">Utwórz kopię zapasową zdjęć i filmów</translation>
@@ -216,14 +220,17 @@
 <translation id="3335337277364016868">Rok nagrania</translation>
 <translation id="3353984535370177728">Wybierz folder do przesłania</translation>
 <translation id="3356580349448036450">Zakończone</translation>
+<translation id="3358452157379365236">Gitara</translation>
 <translation id="3382143449143186018">Nepalski z klawiaturą InScript</translation>
 <translation id="3408236822532681288">Niemiecki (Niemcy) z klawiaturą Neo 2</translation>
 <translation id="3414856743105198592">Formatowanie nośnika wymiennego spowoduje usunięcie wszystkich danych. Czy chcesz kontynuować?</translation>
 <translation id="3437801641691368414">Godzina utworzenia</translation>
+<translation id="343907260260897561">Polaroid</translation>
 <translation id="3455931012307786678">Estoński</translation>
 <translation id="3466147780910026086">Skanuję nośnik danych...</translation>
 <translation id="3468522857997926824">Kopie zapasowe <ph name="FILE_COUNT" /> zdjęć zostały utworzone na <ph name="BEGIN_LINK" />Dysku Google<ph name="END_LINK" /></translation>
 <translation id="3475447146579922140">Arkusz kalkulacyjny Google</translation>
+<translation id="3479552764303398839">Nie teraz</translation>
 <translation id="3486821258960016770">Mongolski</translation>
 <translation id="3495304270784461826">Błędy: <ph name="COUNT" />.</translation>
 <translation id="3522708245912499433">Portugalski</translation>
@@ -233,6 +240,7 @@
 <translation id="3553048479571901246">Aby otworzyć pliki w aplikacji <ph name="APP_NAME" />, najpierw skopiuj je do folderu Pliki systemu Windows.</translation>
 <translation id="3556731189587832921">Angielski (USA) z komputerową klawiaturą międzynarodową</translation>
 <translation id="357479282490346887">Litewski</translation>
+<translation id="3592251141500063301">Pliku <ph name="FILE_NAME" /> nie udało się udostępnić offline</translation>
 <translation id="3603385196401704894">kanadyjski francuski</translation>
 <translation id="3606220979431771195">Turecki (wersja F)</translation>
 <translation id="3616113530831147358">Dźwięk</translation>
@@ -279,6 +287,7 @@
 <translation id="4124935795427217608">Jednorożec</translation>
 <translation id="4158739975813877944">Otwórz listę odtwarzania</translation>
 <translation id="4159731583141908892">Plik <ph name="FILE_NAME" /> został przeniesiony.</translation>
+<translation id="4186579485882418952">Włącz tryb offline</translation>
 <translation id="4193154014135846272">Dokument Google</translation>
 <translation id="4197674956721858839">Spakuj wybrane do pliku ZIP</translation>
 <translation id="4202378258276439759">Hiszpański (Ameryka Łacińska)</translation>
@@ -292,6 +301,7 @@
 <translation id="4309915981827077375">Informacje ogólne</translation>
 <translation id="432252891123397018">Rumuński z klawiaturą standardową</translation>
 <translation id="4325128273762811722">Słoweński</translation>
+<translation id="4326142238881453352">Botanik</translation>
 <translation id="4326192123064055915">Kawa</translation>
 <translation id="4336032328163998280">Kopiowanie nie powiodło się: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">Kurdyjski sorani z klawiaturą arabską</translation>
@@ -327,7 +337,6 @@
 <translation id="4706042980341760088">Tamilski z klawiaturą jak na maszynie do pisania</translation>
 <translation id="4711094779914110278">Turecki</translation>
 <translation id="4712283082407695269">Otwieram plik „<ph name="PATH" />”</translation>
-<translation id="4713544552769165154">Ten plik został opracowany z myślą o komputerach Mac. Jest on niezgodny z Twoim urządzeniem z Chrome OS. Spróbuj znaleźć aplikację zastępczą w <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />. <ph name="BEGIN_LINK_HELP" />Więcej informacji<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">Kopie zapasowe <ph name="FILE_COUNT" /> zdjęć zostały utworzone</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4732760563705710320">Twoje urządzenie przesyłające nie obsługuje tego filmu.</translation>
@@ -408,6 +417,7 @@
     <ph name="MARKUP_7" />Udostępniaj i twórz pliki oraz edytuj<ph name="MARKUP_8" />
     je z innymi użytkownikami – wszystko w jednym miejscu.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Pliki odzyskane z Dysku Google</translation>
+<translation id="5288441970121584418">Burger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Zapisz</translation>
 <translation id="5318819489018851358">Udostępnij Linuksowi</translation>
@@ -461,8 +471,6 @@
 <translation id="5833610766403489739">Plik gdzieś się zawieruszył. Sprawdź ustawienie lokalizacji pobierania i spróbuj ponownie.</translation>
 <translation id="5838451609423551646">Usunięto wszystkie elementy z zaznaczenia.</translation>
 <translation id="5838825566232597749">Amerykańska klawiatura międzynarodowa Workman</translation>
-<translation id="5850516540536751549">Ten typ plików nie jest obsługiwany. W <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> znajdziesz aplikację umożliwiającą otwieranie plików tego typu.
-    <ph name="BEGIN_LINK_HELP" />Więcej informacji<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Niczego tu nie ma...</translation>
 <translation id="5911887972742538906">Podczas instalowania aplikacji na Linuksa wystąpił błąd.</translation>
 <translation id="5912396950572065471">Format</translation>
@@ -500,10 +508,12 @@
 <translation id="6248400709929739064">Włącz napisy</translation>
 <translation id="6269630227984243955">Malajski</translation>
 <translation id="6287852322318138013">Wybierz aplikację, by otworzyć ten plik</translation>
+<translation id="6321303798550928047">Machanie ręką</translation>
 <translation id="6339145975392024142">Amerykańska międzynarodowa (PC)</translation>
 <translation id="6346310558342052870">Ograniczony dostęp</translation>
 <translation id="6356685157277930264">Okno informacji zwrotnych o plikach</translation>
 <translation id="6358884629796491903">Smok</translation>
+<translation id="6367976544441405720">Furgonetka</translation>
 <translation id="637062427944097960">Ten plik został otwarty na innym pulpicie. Przejdź do <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), aby go zobaczyć.</translation>
 <translation id="6394388407447716302">Tylko do odczytu</translation>
 <translation id="6395575651121294044">Elementy: <ph name="NUMBER_OF_FILES" /></translation>
@@ -527,6 +537,7 @@
 <translation id="6650726141019353908">Różowy motyl</translation>
 <translation id="6657585470893396449">Hasło</translation>
 <translation id="6673674183150363784">Francuski (Francja) z klawiaturą Bépo</translation>
+<translation id="6710022688720561421">Robot</translation>
 <translation id="6710213216561001401">Poprzedni</translation>
 <translation id="6751256176799620176">Wybrano jeden folder</translation>
 <translation id="6790428901817661496">Odtwórz</translation>
@@ -560,6 +571,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6970230597523682626">Bułgarski</translation>
 <translation id="6973630695168034713">Foldery</translation>
+<translation id="6976795442547527108">Lew</translation>
 <translation id="6978611942794658017">To jest plik na komputery z Windows. Jest niezgodny z Twoim urządzeniem z Chrome OS. Poszukaj odpowiedniej aplikacji zastępczej w Chrome Web Store.</translation>
 <translation id="6979158407327259162">Dysk Google</translation>
 <translation id="6989942356279143254">Szwedzki</translation>
@@ -606,6 +618,7 @@
 <translation id="7532029025027028521">Perski – transliteracja</translation>
 <translation id="7544830582642184299">Przyznaj aplikacjom na Linuksa uprawnienia dostępu do plików na Dysku Google. Zmiany będą synchronizowane z innymi urządzeniami.</translation>
 <translation id="7544853251252956727">Odtwarzaj losowo</translation>
+<translation id="7547009467130558110">But sportowy</translation>
 <translation id="7547780573915868306">Litewski</translation>
 <translation id="7547811415869834682">Niderlandzki</translation>
 <translation id="7551643184018910560">Przypnij do półki</translation>
@@ -620,6 +633,7 @@
 <translation id="7628656427739290098">Ukończono: <ph name="PERCENT" />%.</translation>
 <translation id="7649070708921625228">Pomoc</translation>
 <translation id="7654209398114106148">Przenoszę elementy (<ph name="NUMBER_OF_ITEMS" />)...</translation>
+<translation id="7655441028674523381">Szybki dostęp do Zdjęć Google</translation>
 <translation id="7658239707568436148">Anuluj</translation>
 <translation id="7663224033570512922">Hindi</translation>
 <translation id="7693909743393669729">Sformatowanie dysku spowoduje usunięcie wszystkich zapisanych na nim danych i wszystkich znajdujących się na nim partycji, w tym partycji niewidocznych. Tej czynności nie będzie można cofnąć.</translation>
@@ -651,7 +665,6 @@
 <translation id="7839804798877833423">Pobranie tych plików spowoduje przesłanie <ph name="FILE_SIZE" /> przy użyciu komórkowej transmisji danych.</translation>
 <translation id="7846076177841592234">Anuluj wybór</translation>
 <translation id="7853966320808728790">Francuska BÉPO</translation>
-<translation id="7864662577698025113">Dodaj nową usługę</translation>
 <translation id="7868774406711971383">Polski</translation>
 <translation id="7873831373602885875">Nie można zapisać w folderze <ph name="FOLDER_NAME" />. Wszystkie zmiany będą zapisywane w folderze <ph name="DOWNLOADS_FOLDER" /> znajdującym się w folderze Pobrane pliki.</translation>
 <translation id="7874321682039004450">Filipiński</translation>
@@ -666,13 +679,13 @@
 <translation id="7972920761225148017">Francuski (Szwajcaria)</translation>
 <translation id="7980421588063892270">Angielski (USA) z klawiaturą Colemak</translation>
 <translation id="7982283708762922719">Wysokość</translation>
+<translation id="79907182588096956">To jest plik na komputery z oprogramowaniem Windows. Twoje urządzenie z Chrome OS go nie obsługuje. <ph name="BEGIN_LINK_HELP" />Więcej informacji<ph name="END_LINK_HELP" /> o otwieraniu plików w Chrome OS.</translation>
 <translation id="8008366997883261463">Pies</translation>
 <translation id="8028993641010258682">Rozmiar</translation>
 <translation id="803771048473350947">Plik</translation>
 <translation id="8038111231936746805">(domyślnie)</translation>
 <translation id="8042602468072383151">Plik audio <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">Rumuński</translation>
-<translation id="8052887694493382350">To jest plik na komputery z oprogramowaniem Windows. Twoje urządzenie z Chrome OS go nie obsługuje. <ph name="BEGIN_LINK_HELP" />Więcej informacji<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Wszystkie zmiany zostaną zapisane w folderze <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Powtórz</translation>
 <translation id="8106045200081704138">Udostępnione dla mnie</translation>
@@ -712,6 +725,7 @@
 <translation id="8466234950814670489">Archiwum Tar</translation>
 <translation id="8475647382427415476">Dysk Google nie mógł zsynchronizować pliku „<ph name="FILENAME" />”. Spróbujemy ponownie później.</translation>
 <translation id="8477649328507734757">Wirowanie</translation>
+<translation id="8484284835977497781">Wybierz z ostatnich zdjęć.</translation>
 <translation id="8487700953926739672">Dostępny offline</translation>
 <translation id="8521441079177373948">brytyjska klawiatura</translation>
 <translation id="8525306231823319788">Pełny ekran</translation>
@@ -744,8 +758,10 @@
 <translation id="8860454412039442620">Arkusz kalkulacyjny Excela</translation>
 <translation id="8866284467018526531">Arabski – transliteracja</translation>
 <translation id="8900820606136623064">Węgierski</translation>
+<translation id="8903931173357132290">Absolwent</translation>
 <translation id="8919081441417203123">Duński</translation>
 <translation id="8965697826696209160">Nie ma wystarczającej ilości miejsca.</translation>
+<translation id="8970501467542182729">To jest plik na komputery Mac. Twoje urządzenie z Chrome OS go nie obsługuje. <ph name="BEGIN_LINK_HELP" />Więcej informacji<ph name="END_LINK_HELP" /> o otwieraniu plików w Chrome OS.</translation>
 <translation id="8997962250644902079">Chiński (tradycyjny) pinyin</translation>
 <translation id="9017798300203431059">rosyjska klawiatura fonetyczna</translation>
 <translation id="9034924485347205037">Pliki Linuksa</translation>

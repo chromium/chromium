@@ -17,11 +17,7 @@ using testing::ElementsAre;
 
 namespace blink {
 
-class NGFragmentItemsBuilderTest : public NGLayoutTest,
-                                   ScopedLayoutNGFragmentItemForTest {
- public:
-  NGFragmentItemsBuilderTest() : ScopedLayoutNGFragmentItemForTest(true) {}
-};
+class NGFragmentItemsBuilderTest : public NGLayoutTest {};
 
 TEST_F(NGFragmentItemsBuilderTest, MultipleLogicalLineItems) {
   SetBodyInnerHTML(R"HTML(

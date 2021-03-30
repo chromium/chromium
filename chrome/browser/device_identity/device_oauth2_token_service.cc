@@ -374,7 +374,7 @@ void DeviceOAuth2TokenService::StartValidation() {
 
   gaia_oauth_client_->RefreshToken(
       client_info, store_->GetRefreshToken(),
-      std::vector<std::string>(1, GaiaConstants::kOAuthWrapBridgeUserInfoScope),
+      std::vector<std::string>(1, GaiaConstants::kGoogleUserInfoEmail),
       max_refresh_token_validation_retries_, this);
 }
 

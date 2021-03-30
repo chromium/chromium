@@ -8,14 +8,18 @@
  * a link to the web store accessibility page on most platforms, and
  * a subpage with lots of other settings on Chrome OS.
  */
-import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.m.js';
-import '../controls/settings_toggle_button.m.js';
-import '../settings_page/settings_animated_pages.m.js';
-import '../settings_shared_css.m.js';
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import '../controls/settings_toggle_button.js';
+import '../settings_page/settings_animated_pages.js';
+import '../settings_shared_css.js';
 
 // <if expr="not is_macosx and not chromeos">
-import './captions_subpage.m.js';
-import '../settings_page/settings_subpage.m.js';
+import './captions_subpage.js';
+import '../settings_page/settings_subpage.js';
+// </if>
+
+// <if expr="is_win or is_macosx">
+import './live_caption_section.js';
 // </if>
 
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
@@ -23,7 +27,7 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
-import {Router} from '../router.m.js';
+import {Router} from '../router.js';
 
 // <if expr="is_win or is_macosx">
 import {CaptionsBrowserProxyImpl} from './captions_browser_proxy.js';
@@ -61,17 +65,6 @@ Polymer({
       value: function() {
         return loadTimeData.getBoolean('enableLiveCaption');
       },
-    },
-
-    /**
-     * The subtitle to display under the Live Caption heading. Generally, this
-     * is a generic subtitle describing the feature. While the SODA model is
-     * being downloading, this displays the download progress.
-     * @private
-     */
-    enableLiveCaptionSubtitle_: {
-      type: String,
-      value: loadTimeData.getString('captionsEnableLiveCaptionSubtitle'),
     },
 
     /**
@@ -134,12 +127,6 @@ Polymer({
         'screen-reader-state-changed',
         this.onScreenReaderStateChanged_.bind(this));
 
-    // <if expr="not chromeos">
-    this.addWebUIListener(
-        'enable-live-caption-subtitle-changed',
-        this.onEnableLiveCaptionSubtitleChanged_.bind(this));
-    // </if>
-
     // Enables javascript and gets the screen reader state.
     chrome.send('a11yPageReady');
   },
@@ -181,25 +168,6 @@ Polymer({
 
   // <if expr="not chromeos">
   /**
-   * @param {!Event} event
-   * @private
-   */
-  onA11yLiveCaptionChange_(event) {
-    const a11yLiveCaptionOn = event.target.checked;
-    chrome.metricsPrivate.recordBoolean(
-        'Accessibility.LiveCaption.EnableFromSettings', a11yLiveCaptionOn);
-  },
-
-  /**
-   * @private
-   * @param {!string} enableLiveCaptionSubtitle The message sent from the webui
-   *     to be displayed as a subtitle to Live Captions.
-   */
-  onEnableLiveCaptionSubtitleChanged_(enableLiveCaptionSubtitle) {
-    this.enableLiveCaptionSubtitle_ = enableLiveCaptionSubtitle;
-  },
-
-  /**
    * @private
    * @param {!Event} event
    */
@@ -219,7 +187,7 @@ Polymer({
   /** private */
   onMoreFeaturesLinkClick_() {
     window.open(
-        'https://chrome.google.com/webstore/category/collection/accessibility');
+        'https://chrome.google.com/webstore/category/collection/3p_accessibility_extensions');
   },
 
   /** @private */

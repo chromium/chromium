@@ -27,7 +27,7 @@
         }
       }
     </style>
-    <div id="shadow" hidden></div>
+    <div id="shadow" hidden$="[[!shouldShowShadow]]"></div>
     <div id="button-container">
       <div id="backward"
           on-click="onBackwardButtonClicked_"
@@ -47,6 +47,5 @@
       </div>
     </div>
   </template>
-  <script src="button_bar.js">
-  </script>
+  <script src="button_bar.js"></script>
 </dom-module>

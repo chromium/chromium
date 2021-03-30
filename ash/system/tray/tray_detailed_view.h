@@ -66,7 +66,7 @@ class ASH_EXPORT TrayDetailedView : public views::View,
 
   // Adds a targetable row to |scroll_content_| containing |icon| and |text|.
   HoverHighlightView* AddScrollListItem(const gfx::VectorIcon& icon,
-                                        const base::string16& text);
+                                        const std::u16string& text);
 
   // Add a child view to the scroll list.
   void AddScrollListChild(std::unique_ptr<views::View> child);
@@ -77,7 +77,7 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   // managed icon for that item.
   HoverHighlightView* AddScrollListCheckableItem(
       const gfx::VectorIcon& icon,
-      const base::string16& text,
+      const std::u16string& text,
       bool checked,
       bool enterprise_managed = false);
 
@@ -86,7 +86,7 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   // |enterprise_managed| determines whether or not there will be an enterprise
   // managed icon for that item.
   HoverHighlightView* AddScrollListCheckableItem(
-      const base::string16& text,
+      const std::u16string& text,
       bool checked,
       bool enterprise_managed = false);
 

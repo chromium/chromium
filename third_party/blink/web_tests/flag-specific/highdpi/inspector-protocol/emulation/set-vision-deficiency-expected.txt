@@ -1,0 +1,54 @@
+Tests that vision deficiencies can be emulated.
+<p>Emulating "none":
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAAAAXNSR0IArs4c6QAAAG1JREFUaIHt2cENwDAMxDCnk3fzdAwDrLjAQfDTZ965s+HdmX1WVhcVrCtYV7CuYF3BuoJ1BesK1hWsK1hXsK5gXcG6gnVn5u688Zb87sIF6wrWFawrWFewrmBdwbqCdQXrCtYVrCtYV7CuYN0H6kMFc/ySzm8AAAAASUVORK5CYII=">
+<p>Emulating "achromatopsia":
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAAAAXNSR0IArs4c6QAAAHNJREFUaIHt2VENgEAMBUFAwuk7nWcPZDQZdgy8bPrZe+/9XgPOOROz1zOyOqhgXcG6gnUF6wrWFawrWFewrmBdwbqCdQXrCtYVrLvXWiPfwym/u3DBuoJ1BesK1hWsK1hXsK5gXcG6gnUF6wrWFawrWPcBE7QF4d3JdCQAAAAASUVORK5CYII=">
+<p>Emulating "blurredVision":
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAAAAXNSR0IArs4c6QAAAzlJREFUaIHtmW9vmzAQhx9j8ydN1FbtvsQ+/D7Y9qJdtzYJYMNenI1JGnUSBCpRftIpClF8fnxnA3eK7z9aNk9Q/IbsDcwRkhpU441hapU3DU0KtoBqC8c7ODzC/hEOD1Dey3VbgEuhTYAE2oF+/yPDzRNsf8LmCfI/kO5BV6CcBx7ouVUy+VaDy6DeQHkrC6oAZwTSFqAyUCkoLf+jZfhKfyxD/iKw218xyrqExArw4KX2wI0G56NrSvnJFlBuZQF0DYkDvK/AO5EM2SvkL1A8w+YZ8lfQRw/sRqa0jsC6D+u3ToANmdTBThNdAIM5QnqA9E1gs79gDjHCo1LaA9tartlctow5yrZJ6rh1TsI6ZUprK85NJZE13roIjwU28t2lETTAJi76UC0COmE+AwblBK6z+v1khqhV0Pr/Ju7U+pnTBVIxZSoHmbi64TYUbCRwmLxScax3PkIqzxNdANM5Uh/YYF0aa3qoj5R8qvdP0Aq8dK3AS9cKvHStwEvXCrx0rcBLl+neQ9sLNub99NJ43ZjzvPtekokTSXyVMZgOMx82cqh49Mckue6iDpDpyjCdpdBYmYhS1ynxNOmpj7AQnEd9ehmckbqxzaS6aGugvVIRLxFAW/ixM/HljBT3Gt2LNsxT4rGFFMnrLZSVXHXpFcq0xAi7Asqd+Kg3fgGy99GeQYZqB+WdL5IrcPmVC/FGxqy2cLwXX9UO7EauN8bv8Xn2tBHYo3yzxYStlhvpNBweetC9SIc75MQlL8P+QZzYPPZ+rtJMI57OJ820ew99K4vgst5pPkeED99kQtVOOhC6OkvnMWXaflpnvbPiLgLb3J/imhjlKVst+weoC2mvmIrTjsPY/Oq3TI2c0nYjoMFc5k/ruSJc3km6JTVoG/cujKxJEyPV7WV/T3a5RNZln7CHqx0khYCGtuUJ6MjOA8QnuUbz/kFHz3xK26KXwteCDboAfemRc8ZHTEVStd1+VTBdTvWepgLgyaf/bWIplPOE7Zm/a4H3o3z2vb8IM0lB057Pa1KdrOP8r4i9Ju7X0JereKzAS9cKvHStwEvXCrx0rcBL1wq8dK3AS9cKvHStwEvXCrx0/QM0QcJUyClohQAAAABJRU5ErkJggg==">
+<p>Emulating "none":
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAAAAXNSR0IArs4c6QAAAG1JREFUaIHt2cENwDAMxDCnk3fzdAwDrLjAQfDTZ965s+HdmX1WVhcVrCtYV7CuYF3BuoJ1BesK1hWsK1hXsK5gXcG6gnVn5u688Zb87sIF6wrWFawrWFewrmBdwbqCdQXrCtYVrCtYV7CuYN0H6kMFc/ySzm8AAAAASUVORK5CYII=">
+<p>Emulating "deuteranopia":
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAAAAXNSR0IArs4c6QAAAHtJREFUaIHt2TENw1AQBcFvF6mMLzAMxmDMK5XLBMZJkx0CT6srbzvfr+8acN2fidm1j6wOKlhXsK5gXcG6gnUF6wrWFawrWFewrmBdwbqCdQXrtnU8I9/DKX934YJ1BesK1hWsK1hXsK5gXcG6gnUF6wrWFawrWFew7gdkYQZ7okAEDgAAAABJRU5ErkJggg==">
+<p>Emulating "none":
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAAAAXNSR0IArs4c6QAAAG1JREFUaIHt2cENwDAMxDCnk3fzdAwDrLjAQfDTZ965s+HdmX1WVhcVrCtYV7CuYF3BuoJ1BesK1hWsK1hXsK5gXcG6gnVn5u688Zb87sIF6wrWFawrWFewrmBdwbqCdQXrCtYVrCtYV7CuYN0H6kMFc/ySzm8AAAAASUVORK5CYII=">
+<p>Emulating "protanopia":
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAAAAXNSR0IArs4c6QAAAHVJREFUaIHt2UENgFAMBcEPLhCICBRgCH8go8mwY+Bl02O3+1zvGnA9I7NrH1kdVLCuYF3BuoJ1BesK1hWsK1hXsK5gXcG6gnUF6wrWbet4Z954Q3534YJ1BesK1hWsK1hXsK5gXcG6gnUF6wrWFawrWFew7gNdwAalraEIzwAAAABJRU5ErkJggg==">
+<p>Emulating "tritanopia":
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAAAAXNSR0IArs4c6QAAAHFJREFUaIHt2UENgFAMBcEPQSROkIU7riCjyTJj4GXTY7d1ne+acD8js/vI6iDBdYLrBNcJrhNcJ7hOcJ3gOsF1gusE1wmuE1wnuO6Y+uJN+d2FBdcJrhNcJ7hOcJ3gOsF1gusE1wmuE1wnuE5wneC6Dy7KBZLCTI07AAAAAElFTkSuQmCC">
+<p>Emulating "tritanopia":
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAAAAXNSR0IArs4c6QAAAHFJREFUaIHt2UENgFAMBcEPQSROkIU7riCjyTJj4GXTY7d1ne+acD8js/vI6iDBdYLrBNcJrhNcJ7hOcJ3gOsF1gusE1wmuE1wnuO6Y+uJN+d2FBdcJrhNcJ7hOcJ3gOsF1gusE1wmuE1wnuE5wneC6Dy7KBZLCTI07AAAAAElFTkSuQmCC">
+<p>Emulating "some-invalid-deficiency":
+{
+  "code": -32602,
+  "message": "Unknown vision deficiency type"
+}
+<p>Emulating "":
+{
+  "code": -32602,
+  "message": "Unknown vision deficiency type"
+}
+<p>Emulating "achromatomaly":
+{
+  "code": -32602,
+  "message": "Unknown vision deficiency type"
+}
+<p>Emulating "deuteranomaly":
+{
+  "code": -32602,
+  "message": "Unknown vision deficiency type"
+}
+<p>Emulating "protanomaly":
+{
+  "code": -32602,
+  "message": "Unknown vision deficiency type"
+}
+<p>Emulating "tritanomaly":
+{
+  "code": -32602,
+  "message": "Unknown vision deficiency type"
+}
+<p>Navigating&mldr;
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAAAAXNSR0IArs4c6QAAAHFJREFUaIHt2UENgFAMBcEPQSROkIU7riCjyTJj4GXTY7d1ne+acD8js/vI6iDBdYLrBNcJrhNcJ7hOcJ3gOsF1gusE1wmuE1wnuO6Y+uJN+d2FBdcJrhNcJ7hOcJ3gOsF1gusE1wmuE1wnuE5wneC6Dy7KBZLCTI07AAAAAElFTkSuQmCC">
+<p>Emulating "achromatopsia":
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAAAAXNSR0IArs4c6QAAAHNJREFUaIHt2VENgEAMBUFAwuk7nWcPZDQZdgy8bPrZe+/9XgPOOROz1zOyOqhgXcG6gnUF6wrWFawrWFewrmBdwbqCdQXrCtYVrLvXWiPfwym/u3DBuoJ1BesK1hWsK1hXsK5gXcG6gnUF6wrWFawrWPcBE7QF4d3JdCQAAAAASUVORK5CYII=">
+

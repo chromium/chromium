@@ -10,7 +10,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/launcher_search_provider/launcher_search_provider_service.h"
-#include "chromeos/components/string_matching/fuzzy_tokenized_string_match.h"
+#include "chromeos/components/string_matching/tokenized_string_match.h"
 
 using chromeos::launcher_search_provider::Service;
 
@@ -19,33 +19,21 @@ namespace app_list {
 namespace {
 
 using TokenizedString = chromeos::string_matching::TokenizedString;
-using FuzzyTokenizedStringMatch =
-    chromeos::string_matching::FuzzyTokenizedStringMatch;
+using TokenizedStringMatch = chromeos::string_matching::TokenizedStringMatch;
 
 constexpr int kLauncherSearchProviderQueryDelayInMs = 100;
 constexpr int kLauncherSearchProviderMaxResults = 6;
 
 constexpr double kDefaultRelevance = 0.5;
 
-// Parameters for FuzzyTokenizedStringMatch. Note that the underlying file
-// search uses an exact substring match to retrieve file results, so using edit
-// distance here doesn't provide any benefit.
-constexpr bool kUsePrefixOnly = false;
-constexpr bool kUseWeightedRatio = true;
-constexpr bool kUseEditDistance = false;
-constexpr double kRelevanceThreshold = 0.0;
-constexpr double kPartialMatchPenaltyRate = 0.9;
-
-double FuzzyMatchRelevance(const TokenizedString& title,
-                           const TokenizedString& query) {
+double MatchRelevance(const TokenizedString& title,
+                      const TokenizedString& query) {
   if (title.text().empty() || query.text().empty()) {
     return kDefaultRelevance;
   }
 
-  FuzzyTokenizedStringMatch match;
-  match.IsRelevant(query, title, kRelevanceThreshold, kUsePrefixOnly,
-                   kUseWeightedRatio, kUseEditDistance,
-                   kPartialMatchPenaltyRate);
+  TokenizedStringMatch match;
+  match.Calculate(query, title);
   return match.relevance();
 }
 
@@ -60,7 +48,7 @@ LauncherSearchProvider::~LauncherSearchProvider() {
     service->OnQueryEnded();
 }
 
-void LauncherSearchProvider::Start(const base::string16& query) {
+void LauncherSearchProvider::Start(const std::u16string& query) {
   query_timer_.Stop();
 
   // Clear all search results of the previous query. Since results are
@@ -111,7 +99,7 @@ void LauncherSearchProvider::SetSearchResults(
         const TokenizedString tokenized_title(new_result->title(),
                                               TokenizedString::Mode::kWords);
         relevance =
-            FuzzyMatchRelevance(tokenized_title, last_tokenized_query_.value());
+            MatchRelevance(tokenized_title, last_tokenized_query_.value());
       }
       new_result->set_relevance(relevance);
 
@@ -137,7 +125,7 @@ void LauncherSearchProvider::DelayQuery(base::OnceClosure closure) {
   last_query_time_ = base::Time::Now();
 }
 
-void LauncherSearchProvider::StartInternal(const base::string16& query) {
+void LauncherSearchProvider::StartInternal(const std::u16string& query) {
   if (!query.empty()) {
     query_start_time_ = base::TimeTicks::Now();
     Service::Get(profile_)->OnQueryStarted(this, base::UTF16ToUTF8(query),

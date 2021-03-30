@@ -1,0 +1,14 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/app-history/
+dictionary AppHistoryNavigateEventInit : EventInit {
+  boolean canRespond = false;
+  boolean userInitiated = false;
+  boolean hashChange = false;
+  // readonly attribute AppHistoryEntry destination;
+  // readonly attribute AbortSignal signal;
+  FormData? formData = null;
+  // readonly attribute any info;
+};

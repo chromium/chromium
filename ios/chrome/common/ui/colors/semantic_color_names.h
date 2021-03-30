@@ -14,6 +14,10 @@ extern NSString* const kCloseButtonColor;
 extern NSString* const kDisabledTintColor;
 // Background color used in the rounded squares behind favicons.
 extern NSString* const kFaviconBackgroundColor;
+// Primary grouped background color.
+extern NSString* const kGroupedPrimaryBackgroundColor;
+// Secondary grouped background color.
+extern NSString* const kGroupedSecondaryBackgroundColor;
 // Ink color for an MDC button.
 extern NSString* const kMDCInkColor;
 // Ink color for a secondary style MDC button (button with transparent
@@ -21,12 +25,15 @@ extern NSString* const kMDCInkColor;
 extern NSString* const kMDCSecondaryInkColor;
 // Color used to tint placeholder images and icons.
 extern NSString* const kPlaceholderImageTintColor;
+// Primary background color.
+extern NSString* const kPrimaryBackgroundColor;
 extern NSString* const kScrimBackgroundColor;
 // Secondary background color.
 extern NSString* const kSecondaryBackgroundColor;
 extern NSString* const kSeparatorColor;
 extern NSString* const kSolidButtonTextColor;
 extern NSString* const kTableViewRowHighlightColor;
+extern NSString* const kTertiaryBackgroundColor;
 extern NSString* const kTextPrimaryColor;
 extern NSString* const kTextSecondaryColor;
 extern NSString* const kTextfieldBackgroundColor;
@@ -69,6 +76,8 @@ extern NSString* const kGrey900Color;
 // TODO(crbug.com/981889): Clean up after iOS 12 support is dropped.
 
 extern NSString* const kBackgroundDarkColor;
+extern NSString* const kSecondaryBackgroundDarkColor;
+extern NSString* const kTertiaryBackgroundDarkColor;
 extern NSString* const kCloseButtonDarkColor;
 extern NSString* const kTableViewRowHighlightDarkColor;
 extern NSString* const kTextPrimaryDarkColor;

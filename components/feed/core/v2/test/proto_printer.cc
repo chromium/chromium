@@ -7,6 +7,7 @@
 #include <sstream>
 #include <type_traits>
 #include "base/json/string_escape.h"
+#include "components/feed/core/proto/v2/wire/action_payload.pb.h"
 #include "components/feed/core/proto/v2/wire/client_info.pb.h"
 #include "components/feed/core/proto/v2/wire/content_id.pb.h"
 #include "components/feed/core/v2/protocol_translator.h"
@@ -126,6 +127,12 @@ class TextProtoPrinter {
     EndMessage();
     return *this;
   }
+  TextProtoPrinter& operator<<(const feedwire::ActionPayload& v) {
+    BeginMessage();
+    PRINT_FIELD(action_payload_data);
+    EndMessage();
+    return *this;
+  }
   TextProtoPrinter& operator<<(const feedwire::Version& v) {
     BeginMessage();
     PRINT_FIELD(major);
@@ -162,6 +169,7 @@ class TextProtoPrinter {
     PRINT_FIELD(next_page_token);
     PRINT_FIELD(last_added_time_millis);
     PRINT_FIELD(shared_state_id);
+    PRINT_FIELD(stream_id);
     EndMessage();
     return *this;
   }
@@ -169,6 +177,7 @@ class TextProtoPrinter {
     BeginMessage();
     PRINT_FIELD(consistency_token);
     PRINT_FIELD(next_action_id);
+    PRINT_FIELD(stream_schema_version);
     EndMessage();
     return *this;
   }
@@ -199,6 +208,55 @@ class TextProtoPrinter {
     EndMessage();
     return *this;
   }
+  TextProtoPrinter& operator<<(const feedstore::WebFeedInfo& v) {
+    BeginMessage();
+    PRINT_FIELD(web_feed_id);
+    PRINT_FIELD(title);
+    PRINT_FIELD(subtitle);
+    PRINT_FIELD(detail_text);
+    PRINT_FIELD(visit_uri);
+    PRINT_FIELD(rss_uri);
+    PRINT_FIELD(favicon);
+    PRINT_FIELD(follower_count);
+    PRINT_FIELD(state);
+    PRINT_FIELD(uri_matchers);
+    EndMessage();
+    return *this;
+  }
+  TextProtoPrinter& operator<<(
+      const feedstore::RecommendedWebFeedIndex::Entry& v) {
+    BeginMessage();
+    PRINT_FIELD(matchers);
+    PRINT_FIELD(web_feed_id);
+    EndMessage();
+    return *this;
+  }
+  TextProtoPrinter& operator<<(const feedstore::Image& v) {
+    BeginMessage();
+    PRINT_FIELD(url);
+    EndMessage();
+    return *this;
+  }
+  TextProtoPrinter& operator<<(const feedstore::RecommendedWebFeedIndex& v) {
+    BeginMessage();
+    PRINT_FIELD(entries);
+    PRINT_FIELD(update_time_millis);
+    EndMessage();
+    return *this;
+  }
+  TextProtoPrinter& operator<<(const feedstore::SubscribedWebFeeds& v) {
+    BeginMessage();
+    PRINT_FIELD(feeds);
+    PRINT_FIELD(update_time_millis);
+    EndMessage();
+    return *this;
+  }
+  TextProtoPrinter& operator<<(const feedstore::UriMatcher& v) {
+    BeginMessage();
+    PRINT_FIELD(domain_match);
+    EndMessage();
+    return *this;
+  }
 
   TextProtoPrinter& operator<<(const feedstore::ContentInfo& v) {
     BeginMessage();
@@ -213,6 +271,7 @@ class TextProtoPrinter {
     BeginMessage();
     PRINT_FIELD(content_id);
     PRINT_FIELD(frame);
+    PRINT_FIELD(stream_id);
     EndMessage();
     return *this;
   }
@@ -220,6 +279,7 @@ class TextProtoPrinter {
     BeginMessage();
     PRINT_FIELD(content_id);
     PRINT_FIELD(shared_state_data);
+    PRINT_FIELD(stream_id);
     EndMessage();
     return *this;
   }
@@ -303,48 +363,33 @@ class TextProtoPrinter {
   std::stringstream ss_;
 };  // namespace feed
 
-std::string ToTextProto(const feedwire::ContentId& v) {
-  return TextProtoPrinter::ToString(v);
-}
-std::string ToTextProto(const feedwire::DisplayInfo& v) {
-  return TextProtoPrinter::ToString(v);
-}
-std::string ToTextProto(const feedwire::Version& v) {
-  return TextProtoPrinter::ToString(v);
-}
-std::string ToTextProto(const feedwire::ClientInfo& v) {
-  return TextProtoPrinter::ToString(v);
-}
-std::string ToTextProto(const feedstore::StreamData& v) {
-  return TextProtoPrinter::ToString(v);
-}
-std::string ToTextProto(const feedstore::Metadata& v) {
-  return TextProtoPrinter::ToString(v);
-}
-std::string ToTextProto(const feedstore::StreamStructureSet& v) {
-  return TextProtoPrinter::ToString(v);
-}
-std::string ToTextProto(const feedstore::StreamStructure& v) {
-  return TextProtoPrinter::ToString(v);
-}
-std::string ToTextProto(const feedstore::Content& v) {
-  return TextProtoPrinter::ToString(v);
-}
-std::string ToTextProto(const feedstore::StreamSharedState& v) {
-  return TextProtoPrinter::ToString(v);
-}
-std::string ToTextProto(const feedstore::StoredAction& v) {
-  return TextProtoPrinter::ToString(v);
-}
-std::string ToTextProto(const feedstore::Record& v) {
-  return TextProtoPrinter::ToString(v);
-}
-std::string ToTextProto(const feedstore::DataOperation& v) {
-  return TextProtoPrinter::ToString(v);
-}
-std::string ToTextProto(const feedui::StreamUpdate& v) {
-  return TextProtoPrinter::ToString(v);
-}
+#define DECLARE_PRINTER(PROTO_TYPE)              \
+  std::string ToTextProto(const PROTO_TYPE& v) { \
+    return TextProtoPrinter::ToString(v);        \
+  }
+
+DECLARE_PRINTER(feedwire::ContentId)
+DECLARE_PRINTER(feedwire::Version)
+DECLARE_PRINTER(feedwire::DisplayInfo)
+DECLARE_PRINTER(feedwire::ClientInfo)
+DECLARE_PRINTER(feedwire::ActionPayload)
+DECLARE_PRINTER(feedstore::StreamData)
+DECLARE_PRINTER(feedstore::Metadata)
+DECLARE_PRINTER(feedstore::StreamStructureSet)
+DECLARE_PRINTER(feedstore::StreamStructure)
+DECLARE_PRINTER(feedstore::Content)
+DECLARE_PRINTER(feedstore::StreamSharedState)
+DECLARE_PRINTER(feedstore::StoredAction)
+DECLARE_PRINTER(feedstore::Record)
+DECLARE_PRINTER(feedstore::DataOperation)
+DECLARE_PRINTER(feedstore::WebFeedInfo)
+DECLARE_PRINTER(feedstore::RecommendedWebFeedIndex)
+DECLARE_PRINTER(feedstore::SubscribedWebFeeds)
+DECLARE_PRINTER(feedstore::Image)
+DECLARE_PRINTER(feedstore::UriMatcher)
+DECLARE_PRINTER(feedui::StreamUpdate)
+
+#undef DECLARE_PRINTER
 
 std::ostream& operator<<(std::ostream& os, const StreamModelUpdateRequest& v) {
   os << "source: " << static_cast<int>(v.source) << '\n';

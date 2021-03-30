@@ -46,7 +46,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestJourneyLoggerSelectedPaymentAppTest,
   // Complete the Payment Request.
   InvokePaymentRequestUI();
   ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
-  PayWithCreditCardAndWait(base::ASCIIToUTF16("123"));
+  PayWithCreditCardAndWait(u"123");
 
   // Make sure the correct events were logged.
   std::vector<base::Bucket> buckets =
@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestJourneyLoggerMultipleShowTest,
   ASSERT_TRUE(content::ExecuteScript(web_contents, click_buy_button_js));
 
   // Complete the original Payment Request.
-  PayWithCreditCardAndWait(base::ASCIIToUTF16("123"));
+  PayWithCreditCardAndWait(u"123");
 
   // Trying to show the same request twice is not considered a concurrent
   // request.
@@ -240,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(
   WaitForObservedEvent();
 
   // Complete the original Payment Request.
-  PayWithCreditCardAndWait(base::ASCIIToUTF16("123"), first_dialog_view);
+  PayWithCreditCardAndWait(u"123", first_dialog_view);
 
   // There is one no show and one shown (verified below).
   histogram_tester.ExpectBucketCount(
@@ -363,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(
   WaitForObservedEvent();
 
   // Complete the original Payment Request.
-  PayWithCreditCardAndWait(base::ASCIIToUTF16("123"), first_dialog_view);
+  PayWithCreditCardAndWait(u"123", first_dialog_view);
 
   // There is one no show and one shown (verified below).
   histogram_tester.ExpectBucketCount(
@@ -457,7 +457,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestJourneyLoggerAllSectionStatsTest,
   // Complete the Payment Request.
   InvokePaymentRequestUI();
   ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
-  PayWithCreditCardAndWait(base::ASCIIToUTF16("123"));
+  PayWithCreditCardAndWait(u"123");
 
   // Expect the appropriate number of suggestions shown to be logged.
   histogram_tester.ExpectUniqueSample(
@@ -584,7 +584,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestJourneyLoggerNoShippingSectionStatsTest,
   // Complete the Payment Request.
   InvokePaymentRequestUI();
   ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
-  PayWithCreditCardAndWait(base::ASCIIToUTF16("123"));
+  PayWithCreditCardAndWait(u"123");
 
   // Expect the appropriate number of suggestions shown to be logged.
   histogram_tester.ExpectUniqueSample(
@@ -714,7 +714,7 @@ IN_PROC_BROWSER_TEST_F(
   // Complete the Payment Request.
   InvokePaymentRequestUI();
   ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
-  PayWithCreditCardAndWait(base::ASCIIToUTF16("123"));
+  PayWithCreditCardAndWait(u"123");
 
   // Expect the appropriate number of suggestions shown to be logged.
   histogram_tester.ExpectUniqueSample(
@@ -1074,7 +1074,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestIframeTest, CrossOriginIframe) {
   EXPECT_EQ(1u, entries.size());
   for (const auto* const entry : entries) {
     test_ukm_recorder_->ExpectEntrySourceHasUrl(entry, main_frame_url);
-    EXPECT_EQ(2U, entry->metrics.size());
+    EXPECT_EQ(3U, entry->metrics.size());
     test_ukm_recorder_->ExpectEntryMetric(
         entry,
         ukm::builders::PaymentRequest_CheckoutEvents::kCompletionStatusName,
@@ -1153,7 +1153,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestIframeTest, IframeNavigation_Completed) {
 
   // Complete the Payment Request.
   ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
-  PayWithCreditCardAndWait(base::ASCIIToUTF16("123"));
+  PayWithCreditCardAndWait(u"123");
 
   // Make sure the correct events were logged.
   std::vector<base::Bucket> buckets =
@@ -1258,7 +1258,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestIframeTest, HistoryPushState_Completed) {
 
   // Complete the Payment Request.
   ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
-  PayWithCreditCardAndWait(base::ASCIIToUTF16("123"));
+  PayWithCreditCardAndWait(u"123");
 
   // Make sure the correct events were logged.
   std::vector<base::Bucket> buckets =

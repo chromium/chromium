@@ -23,6 +23,7 @@
 #include "base/pickle.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/platform_thread.h"
@@ -401,8 +402,8 @@ bool ActivityUserData::CreateSnapshot(Snapshot* output_snapshot) const {
       case END_OF_VALUES:  // Included for completeness purposes.
         NOTREACHED();
     }
-    auto inserted = output_snapshot->insert(
-        std::make_pair(entry.second.name.as_string(), std::move(value)));
+    auto inserted = output_snapshot->emplace(std::string(entry.second.name),
+                                             std::move(value));
     DCHECK(inserted.second);  // True if inserted, false if existed.
   }
 
@@ -468,9 +469,9 @@ void* ActivityUserData::Set(StringPiece name,
     // following field will be aligned properly.
     size_t name_size = name.length();
     size_t name_extent =
-        bits::Align(sizeof(FieldHeader) + name_size, kMemoryAlignment) -
+        bits::AlignUp(sizeof(FieldHeader) + name_size, kMemoryAlignment) -
         sizeof(FieldHeader);
-    size_t value_extent = bits::Align(size, kMemoryAlignment);
+    size_t value_extent = bits::AlignUp(size, kMemoryAlignment);
 
     // The "base size" is the size of the header and (padded) string key. Stop
     // now if there's not room enough for even this.
@@ -566,8 +567,8 @@ void ActivityUserData::ImportExistingData() const {
     if (header->record_size > available_)
       return;
 
-    size_t value_offset =
-        bits::Align(sizeof(FieldHeader) + header->name_size, kMemoryAlignment);
+    size_t value_offset = bits::AlignUp(sizeof(FieldHeader) + header->name_size,
+                                        kMemoryAlignment);
     if (header->record_size == value_offset &&
         header->value_size.load(std::memory_order_relaxed) == 1) {
       value_offset -= 1;

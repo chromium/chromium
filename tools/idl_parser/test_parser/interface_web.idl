@@ -463,11 +463,6 @@ interface MyIfacePromise {
  *      PrimitiveType(long long)
  *      ExtAttributes()
  *        ExtAttribute(EnforceRange)
- *  AsyncIterable()
- *    Type()
- *      PrimitiveType(double)
- *    Type()
- *      StringType(DOMString)
  */
 interface MyIfaceIterable {
   iterable<long>;
@@ -476,7 +471,44 @@ interface MyIfaceIterable {
   iterable<[TreatNullAs=EmptyString] DOMString>;
   iterable<[Clamp, XAttr] long>;
   iterable<[Clamp] long, [EnforceRange] long long>;
+};
+
+/** TREE
+ *Interface(MyIfaceAsyncIterable)
+ *  AsyncIterable()
+ *    Type()
+ *      PrimitiveType(long)
+ *  AsyncIterable()
+ *    Type()
+ *      PrimitiveType(double)
+ *    Type()
+ *      StringType(DOMString)
+ *  AsyncIterable()
+ *    Type()
+ *      PrimitiveType(long)
+ *      ExtAttributes()
+ *        ExtAttribute(Clamp)
+ *    Arguments()
+ *  AsyncIterable()
+ *    Type()
+ *      PrimitiveType(double)
+ *    Type()
+ *      StringType(DOMString)
+ *    Arguments()
+ *      Argument(arg1)
+ *        OPTIONAL: True
+ *        Type()
+ *          PrimitiveType(long)
+ *      Argument(arg2)
+ *        OPTIONAL: True
+ *        Type()
+ *          StringType(DOMString)
+ */
+interface MyIfaceAsyncIterable {
+  async iterable<long>;
   async iterable<double, DOMString>;
+  async iterable<[Clamp] long>();
+  async iterable<double, DOMString>(optional long arg1, optional DOMString arg2);
 };
 
 /** TREE

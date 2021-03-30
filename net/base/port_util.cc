@@ -7,7 +7,9 @@
 #include <limits>
 #include <set>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/lazy_instance.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -17,8 +19,49 @@ namespace net {
 
 namespace {
 
+// Records ports newly blocked in https://github.com/whatwg/fetch/pull/1148 for
+// "NAT Slipstreaming v2.0" vulnerability, plus 10080, to measure the breakage
+// from blocking them. Every other port is logged as kOther to provide a
+// baseline. See also https://samy.pl/slipstream/. Ports are logged regardless
+// of protocol and whether they are blocked or not.
+// TODO(ricea): Remove this in April 2021.
+void LogSlipstreamRestrictedPort(int port) {
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class SlipstreamPort {
+    kOther = 0,
+    k69 = 1,
+    k137 = 2,
+    k161 = 3,
+    k554 = 4,
+    k1719 = 5,
+    k1720 = 6,
+    k1723 = 7,
+    k6566 = 8,
+    k10080 = 9,
+    kMaxValue = k10080,
+  };
+
+  constexpr auto kMap = base::MakeFixedFlatMap<int, SlipstreamPort>({
+      {69, SlipstreamPort::k69},
+      {137, SlipstreamPort::k137},
+      {161, SlipstreamPort::k161},
+      {554, SlipstreamPort::k554},
+      {1719, SlipstreamPort::k1719},
+      {1720, SlipstreamPort::k1720},
+      {1723, SlipstreamPort::k1723},
+      {6566, SlipstreamPort::k6566},
+      {10080, SlipstreamPort::k10080},
+  });
+
+  auto* it = kMap.find(port);
+  SlipstreamPort as_enum =
+      it == kMap.end() ? SlipstreamPort::kOther : it->second;
+  base::UmaHistogramEnumeration("Net.Port.SlipstreamRestricted", as_enum);
+}
+
 // The general list of blocked ports. Will be blocked unless a specific
-// protocol overrides it. (Ex: ftp can use ports 20 and 21)
+// protocol overrides it. (Ex: ftp can use port 21)
 const int kRestrictedPorts[] = {
     1,     // tcpmux
     7,     // echo
@@ -99,11 +142,6 @@ const int kRestrictedPorts[] = {
     6697,  // IRC + TLS
 };
 
-// FTP overrides the following restricted port.
-const int kAllowedFtpPorts[] = {
-    21,  // ftp data
-};
-
 base::LazyInstance<std::multiset<int>>::Leaky g_explicitly_allowed_ports =
     LAZY_INSTANCE_INITIALIZER;
 
@@ -122,16 +160,15 @@ bool IsPortAllowedForScheme(int port, base::StringPiece url_scheme) {
   if (!IsPortValid(port))
     return false;
 
-  // Allow explitly allowed ports for any scheme.
+  LogSlipstreamRestrictedPort(port);
+
+  // Allow explicitly allowed ports for any scheme.
   if (g_explicitly_allowed_ports.Get().count(port) > 0)
     return true;
 
-  // FTP requests have an extra set of allowed schemes.
-  if (base::LowerCaseEqualsASCII(url_scheme, url::kFtpScheme)) {
-    for (int allowed_ftp_port : kAllowedFtpPorts) {
-      if (allowed_ftp_port == port)
-        return true;
-    }
+  // FTP requests are permitted to use port 21.
+  if (base::LowerCaseEqualsASCII(url_scheme, url::kFtpScheme) && port == 21) {
+    return true;
   }
 
   // Finally check against the generic list of restricted ports for all
@@ -169,8 +206,8 @@ void SetExplicitlyAllowedPorts(const std::string& allowed_ports) {
     if (i == size || allowed_ports[i] == kComma) {
       if (i > last) {
         int port;
-        base::StringToInt(base::StringPiece(allowed_ports.begin() + last,
-                                            allowed_ports.begin() + i),
+        base::StringToInt(base::MakeStringPiece(allowed_ports.begin() + last,
+                                                allowed_ports.begin() + i),
                           &port);
         ports.insert(port);
       }

@@ -134,6 +134,12 @@ struct URLResponseHead {
   // https://fetch.spec.whatwg.org/#concept-response-type
   FetchResponseType response_type = FetchResponseType.kDefault;
 
+  // Pre-computed padding.  This should only be non-zero when |response_type|
+  // is set to kOpaque.  Note, this is not set by network service, but will be
+  // populated if the response was provided by a service worker FetchEvent
+  // handler.
+  int64 padding = 0;
+
   // The cache name of the CacheStorage from where the response is served via
   // the ServiceWorker. Empty if the response isn't from the CacheStorage.
   string cache_storage_cache_name;

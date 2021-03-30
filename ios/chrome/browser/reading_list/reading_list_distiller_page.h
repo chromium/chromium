@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_READING_LIST_READING_LIST_DISTILLER_PAGE_H_
 #define IOS_CHROME_BROWSER_READING_LIST_READING_LIST_DISTILLER_PAGE_H_
 
+#include <objc/objc.h>
 #include <memory>
 #include <string>
 

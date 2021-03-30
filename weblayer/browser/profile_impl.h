@@ -84,6 +84,9 @@ class ProfileImpl : public Profile {
   const base::FilePath& data_path() const { return info_.data_path; }
   const std::string& name() const { return info_.name; }
   DownloadDelegate* download_delegate() { return download_delegate_; }
+  GoogleAccountAccessTokenFetchDelegate* access_token_fetch_delegate() {
+    return access_token_fetch_delegate_;
+  }
 
   void MarkAsDeleted();
 
@@ -94,6 +97,8 @@ class ProfileImpl : public Profile {
                          base::OnceClosure callback) override;
   void SetDownloadDirectory(const base::FilePath& directory) override;
   void SetDownloadDelegate(DownloadDelegate* delegate) override;
+  void SetGoogleAccountAccessTokenFetchDelegate(
+      GoogleAccountAccessTokenFetchDelegate* delegate) override;
   CookieManager* GetCookieManager() override;
   PrerenderController* GetPrerenderController() override;
   void GetBrowserPersistenceIds(
@@ -146,6 +151,9 @@ class ProfileImpl : public Profile {
       const base::android::JavaRef<jstring>& j_page_url,
       const base::android::JavaRef<jobject>& j_callback);
   void MarkAsDeleted(JNIEnv* env) { MarkAsDeleted(); }
+  base::android::ScopedJavaGlobalRef<jobject> GetJavaProfile() {
+    return java_profile_;
+  }
 #endif
 
   const base::FilePath& download_directory() { return download_directory_; }
@@ -180,6 +188,7 @@ class ProfileImpl : public Profile {
   base::FilePath download_directory_;
 
   DownloadDelegate* download_delegate_ = nullptr;
+  GoogleAccountAccessTokenFetchDelegate* access_token_fetch_delegate_ = nullptr;
 
   base::CallbackListSubscription locale_change_subscription_;
 

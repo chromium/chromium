@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_PLUGINS_PLUGIN_INSTALLER_H_
 #define CHROME_BROWSER_PLUGINS_PLUGIN_INSTALLER_H_
 
+#include <string>
+
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 #include "base/version.h"
 #include "chrome/browser/plugins/plugin_metadata.h"
 #include "url/gurl.h"

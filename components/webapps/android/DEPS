@@ -1,9 +1,0 @@
-include_rules = [
-  "+components/browser_ui/widget/android",
-  "+components/strings",
-  "+components/webapk/android/libs/client",
-  "+services/device/public/mojom",
-  "+ui/android",
-  "+ui/base",
-  "+ui/gfx",
-]

@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_selection_dialog_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace autofill {
@@ -18,8 +19,13 @@ class VirtualCardSelectionDialogViewImpl
     : public VirtualCardSelectionDialogView,
       public views::DialogDelegateView {
  public:
+  METADATA_HEADER(VirtualCardSelectionDialogViewImpl);
   VirtualCardSelectionDialogViewImpl(
       VirtualCardSelectionDialogController* controller);
+  VirtualCardSelectionDialogViewImpl(
+      const VirtualCardSelectionDialogViewImpl&) = delete;
+  VirtualCardSelectionDialogViewImpl& operator=(
+      const VirtualCardSelectionDialogViewImpl&) = delete;
   ~VirtualCardSelectionDialogViewImpl() override;
 
   // VirtualCardSelectionDialogView:
@@ -29,12 +35,10 @@ class VirtualCardSelectionDialogViewImpl
   void AddedToWidget() override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
   View* GetContentsView() override;
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
 
  private:
   VirtualCardSelectionDialogController* controller_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(VirtualCardSelectionDialogViewImpl);
 };
 
 }  // namespace autofill

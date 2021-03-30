@@ -6,42 +6,16 @@
 
 #include "base/bind.h"
 #include "build/build_config.h"
-#include "components/printing/common/print_messages.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 namespace printing {
-
-struct PrintManager::FrameDispatchHelper {
-  PrintManager* manager;
-  content::RenderFrameHost* render_frame_host;
-
-  bool Send(IPC::Message* msg) { return render_frame_host->Send(msg); }
-
-  void OnScriptedPrint(const mojom::ScriptedPrintParams& scripted_params,
-                       IPC::Message* reply_msg) {
-    manager->OnScriptedPrint(render_frame_host, scripted_params, reply_msg);
-  }
-};
 
 PrintManager::PrintManager(content::WebContents* contents)
     : content::WebContentsObserver(contents),
       print_manager_host_receivers_(contents, this) {}
 
 PrintManager::~PrintManager() = default;
-
-bool PrintManager::OnMessageReceived(
-    const IPC::Message& message,
-    content::RenderFrameHost* render_frame_host) {
-  FrameDispatchHelper helper = {this, render_frame_host};
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(PrintManager, message)
-    IPC_MESSAGE_FORWARD_DELAY_REPLY(PrintHostMsg_ScriptedPrint, &helper,
-                                    FrameDispatchHelper::OnScriptedPrint)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  return handled;
-}
 
 void PrintManager::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
@@ -93,15 +67,26 @@ void PrintManager::PrintingFailed(int32_t cookie) {
 }
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+void PrintManager::SetupScriptedPrintPreview(
+    SetupScriptedPrintPreviewCallback callback) {
+  std::move(callback).Run();
+}
+
 void PrintManager::ShowScriptedPrintPreview(bool source_is_modifiable) {}
+
+void PrintManager::RequestPrintPreview(
+    mojom::RequestPrintPreviewParamsPtr params) {}
+
+void PrintManager::CheckForCancel(int32_t preview_ui_id,
+                                  int32_t request_id,
+                                  CheckForCancelCallback callback) {}
 #endif
 
-bool PrintManager::IsPrintRenderFrameConnected(content::RenderFrameHost* rfh) {
+bool PrintManager::IsPrintRenderFrameConnected(
+    content::RenderFrameHost* rfh) const {
   auto it = print_render_frames_.find(rfh);
-  if (it == print_render_frames_.end())
-    return false;
-
-  return it->second.is_bound() && it->second.is_connected();
+  return it != print_render_frames_.end() && it->second.is_bound() &&
+         it->second.is_connected();
 }
 
 const mojo::AssociatedRemote<printing::mojom::PrintRenderFrame>&

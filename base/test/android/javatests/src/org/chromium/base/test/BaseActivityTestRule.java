@@ -108,4 +108,12 @@ public class BaseActivityTestRule<T extends Activity> implements TestRule {
         mActivity = ApplicationTestUtils.waitForActivityWithClass(mActivityClass, Stage.CREATED,
                 () -> ContextUtils.getApplicationContext().startActivity(intent));
     }
+
+    /**
+     * Recreates the Activity, blocking until finished.
+     * After calling this, getActivity() returns the new Activity.
+     */
+    public void recreateActivity() {
+        setActivity(ApplicationTestUtils.recreateActivity(getActivity()));
+    }
 }

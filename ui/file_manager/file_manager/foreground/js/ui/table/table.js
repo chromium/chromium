@@ -6,12 +6,24 @@
  * @fileoverview This implements a table control.
  */
 
+// clang-format off
+// #import {getPropertyDescriptor, PropertyKind, dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+// #import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
+// #import {List} from 'chrome://resources/js/cr/ui/list.m.js';
+// #import {ListItem} from 'chrome://resources/js/cr/ui/list_item.m.js';
+// #import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
+// #import {ListSingleSelectionModel} from 'chrome://resources/js/cr/ui/list_single_selection_model.m.js';
+// #import {TableColumnModel} from './table_column_model.m.js';
+// #import {TableList} from './table_list.m.js';
+// #import {TableHeader} from './table_header.m.js';
+// clang-format on
+
 cr.define('cr.ui', function() {
   /**
    * Creates a new table element.
    * @extends {HTMLDivElement}
    */
-  class Table {
+  /* #export */ class Table {
     constructor() {
       /** @private {cr.ui.table.TableColumnModel} */
       this.columnModel_;
@@ -421,8 +433,13 @@ cr.define('cr.ui', function() {
    * because table contents can contain controls that can be focused, and for
    * some purposes (e.g., styling), the table can still be conceptually focused
    * at that point even though it doesn't actually have the page focus.
+   * @type {boolean}
    */
-  cr.defineProperty(Table, 'hasElementFocus', cr.PropertyKind.BOOL_ATTR);
+  Table.prototype.hasElementFocus;
+  Object.defineProperty(
+      Table.prototype, 'hasElementFocus',
+      cr.getPropertyDescriptor('hasElementFocus', cr.PropertyKind.BOOL_ATTR));
 
+  // #cr_define_end
   return {Table: Table};
 });

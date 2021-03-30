@@ -4,11 +4,11 @@
 
 #include "headless/lib/headless_crash_reporter_client.h"
 
+#include <string>
 #include <utility>
 
 #include "base/command_line.h"
 #include "base/path_service.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/public/common/content_switches.h"
@@ -53,11 +53,11 @@ base::FilePath HeadlessCrashReporterClient::GetReporterLogFilename() {
 
 bool HeadlessCrashReporterClient::GetCrashDumpLocation(
 #if defined(OS_WIN)
-    base::string16* crash_dir
+    std::wstring* crash_dir
 #else
     base::FilePath* crash_dir
 #endif
-    ) {
+) {
   base::FilePath crash_directory = crash_dumps_dir_;
   if (crash_directory.empty() &&
       !base::PathService::Get(base::DIR_MODULE, &crash_directory)) {

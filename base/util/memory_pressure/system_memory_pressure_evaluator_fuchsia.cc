@@ -65,10 +65,17 @@ void SystemMemoryPressureEvaluatorFuchsia::OnLevelChanged(
     case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
       // By convention no notifications are sent when returning to NONE level.
       SendCurrentVote(false);
+      send_current_vote_timer_.Stop();
       break;
     case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
     case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
       SendCurrentVote(true);
+      // This will reset the timer if already running.
+      send_current_vote_timer_.Start(
+          FROM_HERE, base::MemoryPressureMonitor::kUMAMemoryPressureLevelPeriod,
+          base::BindRepeating(
+              &SystemMemoryPressureEvaluatorFuchsia::SendCurrentVote,
+              base::Unretained(this), true));
       break;
   }
 

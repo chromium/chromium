@@ -161,10 +161,13 @@ net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag(bool is_app) {
             "policy."
           chrome_policy {
             OnFileAttachedEnterpriseConnector {
+              OnFileAttachedEnterpriseConnector: "[]"
             }
             OnFileDownloadedEnterpriseConnector {
+              OnFileDownloadedEnterpriseConnector: "[]"
             }
             OnBulkDataEntryEnterpriseConnector {
+              OnBulkDataEntryEnterpriseConnector: "[]"
             }
           }
         }
@@ -338,7 +341,8 @@ void BinaryUploadService::OnGetRequestData(Request* request,
                      weakptr_factory_.GetWeakPtr(), request));
 
   WebUIInfoSingleton::GetInstance()->AddToDeepScanRequests(
-      request->tab_url(), request->content_analysis_request());
+      request->tab_url(), request->per_profile_request(),
+      request->content_analysis_request());
 
   // |request| might have been deleted by the call to Start() in tests, so don't
   // dereference it afterwards.
@@ -425,7 +429,8 @@ void BinaryUploadService::FinishRequest(
   // We add the request here in case we never actually uploaded anything, so it
   // wasn't added in OnGetRequestData
   WebUIInfoSingleton::GetInstance()->AddToDeepScanRequests(
-      request->tab_url(), request->content_analysis_request());
+      request->tab_url(), request->per_profile_request(),
+      request->content_analysis_request());
   WebUIInfoSingleton::GetInstance()->AddToDeepScanResponses(
       active_tokens_[request], ResultToString(result), response);
 
@@ -524,6 +529,15 @@ void BinaryUploadService::Request::set_tab_url(const GURL& tab_url) {
 
 const GURL& BinaryUploadService::Request::tab_url() const {
   return tab_url_;
+}
+
+void BinaryUploadService::Request::set_per_profile_request(
+    bool per_profile_request) {
+  per_profile_request_ = per_profile_request;
+}
+
+bool BinaryUploadService::Request::per_profile_request() const {
+  return per_profile_request_;
 }
 
 void BinaryUploadService::Request::set_fcm_token(const std::string& token) {
@@ -740,6 +754,11 @@ void BinaryUploadService::ResetAuthorizationData(const GURL& url) {
 }
 
 void BinaryUploadService::Shutdown() {
+  if (!active_requests_.empty()) {
+    base::UmaHistogramCounts10000(
+        "SafeBrowsingBinaryUploadService.ActiveRequestsAtShutdown",
+        active_requests_.size());
+  }
   if (binary_fcm_service_)
     binary_fcm_service_->Shutdown();
 }

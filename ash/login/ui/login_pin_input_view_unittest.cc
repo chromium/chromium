@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/optional.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string16.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/events/test/event_generator.h"
@@ -44,7 +43,7 @@ class LoginPinInputViewTest
     SetWidget(CreateWidgetWithContent(view_));
   }
 
-  void OnPinSubmit(const base::string16& pin) {
+  void OnPinSubmit(const std::u16string& pin) {
     submitted_pin_ = base::make_optional(pin);
   }
 
@@ -78,7 +77,7 @@ class LoginPinInputViewTest
   int length_ = 0;
 
   // Generated during the callback response.
-  base::Optional<base::string16> submitted_pin_;
+  base::Optional<std::u16string> submitted_pin_;
   base::Optional<bool> is_empty_;
 };
 
@@ -96,7 +95,7 @@ TEST_P(LoginPinInputViewTest, PressingReturnTriggersUnlockWithEmptyPin) {
   view_->SetAuthenticateWithEmptyPinOnReturnKey(true);
   generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
   ASSERT_TRUE(submitted_pin_.has_value());
-  EXPECT_EQ(base::ASCIIToUTF16(""), *submitted_pin_);
+  EXPECT_EQ(u"", *submitted_pin_);
 }
 
 // Tests that ChromeVox announces "Enter your PIN" when the

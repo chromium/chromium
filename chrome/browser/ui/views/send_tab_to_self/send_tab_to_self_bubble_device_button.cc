@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -18,6 +17,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/color_tracking_icon_view.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace send_tab_to_self {
 
@@ -35,7 +35,7 @@ std::unique_ptr<views::ColorTrackingIconView> CreateIcon(
   return icon;
 }
 
-base::string16 GetLastUpdatedTime(const TargetDeviceInfo& device_info) {
+std::u16string GetLastUpdatedTime(const TargetDeviceInfo& device_info) {
   int time_in_days =
       (base::Time::Now() - device_info.last_updated_timestamp).InDays();
   if (time_in_days == 0) {
@@ -70,5 +70,8 @@ SendTabToSelfBubbleDeviceButton::SendTabToSelfBubbleDeviceButton(
 }
 
 SendTabToSelfBubbleDeviceButton::~SendTabToSelfBubbleDeviceButton() = default;
+
+BEGIN_METADATA(SendTabToSelfBubbleDeviceButton, HoverButton)
+END_METADATA
 
 }  // namespace send_tab_to_self

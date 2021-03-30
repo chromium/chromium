@@ -179,7 +179,8 @@ HRESULT ValidateAndUnpackCRX(const base::FilePath& from_crx_path,
 
   std::string public_key;
   if (crx_file::Verify(to_crx_path, crx_format, {crx_hash}, {}, &public_key,
-                       nullptr) != crx_file::VerifierResult::OK_FULL) {
+                       nullptr, /*compressed_verified_contents=*/nullptr) !=
+      crx_file::VerifierResult::OK_FULL) {
     return CRYPT_E_NO_MATCH;
   }
 
@@ -226,9 +227,9 @@ HRESULT LaunchCmd(const base::CommandLine& command_line,
   return S_OK;
 }
 
-HRESULT ValidateCRXArgs(const base::string16& browser_appid,
-                        const base::string16& browser_version,
-                        const base::string16& session_id) {
+HRESULT ValidateCRXArgs(const std::wstring& browser_appid,
+                        const std::wstring& browser_version,
+                        const std::wstring& session_id) {
   if (!browser_appid.empty()) {
     GUID guid = {};
     HRESULT hr = ::IIDFromString(browser_appid.c_str(), &guid);
@@ -236,7 +237,7 @@ HRESULT ValidateCRXArgs(const base::string16& browser_appid,
       return hr;
   }
 
-  const base::Version version(base::UTF16ToASCII(browser_version));
+  const base::Version version(base::WideToASCII(browser_version));
   if (!version.IsValid())
     return E_INVALIDARG;
 
@@ -306,9 +307,9 @@ HRESULT CleanupChromeRecoveryDirectory() {
 }
 
 HRESULT RunChromeRecoveryCRX(const base::FilePath& crx_path,
-                             const base::string16& browser_appid,
-                             const base::string16& browser_version,
-                             const base::string16& session_id,
+                             const std::wstring& browser_appid,
+                             const std::wstring& browser_version,
+                             const std::wstring& session_id,
                              uint32_t caller_proc_id,
                              base::win::ScopedHandle* proc_handle) {
   if (crx_path.empty() || !caller_proc_id || !proc_handle)

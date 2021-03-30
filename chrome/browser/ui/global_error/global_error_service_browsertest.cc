@@ -32,23 +32,19 @@ class BubbleViewError : public GlobalErrorWithStandardBubble {
     ADD_FAILURE();
     return 0;
   }
-  base::string16 MenuItemLabel() override {
+  std::u16string MenuItemLabel() override {
     ADD_FAILURE();
-    return base::string16();
+    return std::u16string();
   }
   void ExecuteMenuItem(Browser* browser) override { ADD_FAILURE(); }
 
   bool HasBubbleView() override { return true; }
-  base::string16 GetBubbleViewTitle() override { return base::string16(); }
-  std::vector<base::string16> GetBubbleViewMessages() override {
-    return std::vector<base::string16>();
+  std::u16string GetBubbleViewTitle() override { return std::u16string(); }
+  std::vector<std::u16string> GetBubbleViewMessages() override {
+    return std::vector<std::u16string>();
   }
-  base::string16 GetBubbleViewAcceptButtonLabel() override {
-    return base::ASCIIToUTF16("OK");
-  }
-  base::string16 GetBubbleViewCancelButtonLabel() override {
-    return base::ASCIIToUTF16("Cancel");
-  }
+  std::u16string GetBubbleViewAcceptButtonLabel() override { return u"OK"; }
+  std::u16string GetBubbleViewCancelButtonLabel() override { return u"Cancel"; }
   void OnBubbleViewDidClose(Browser* browser) override {
     EXPECT_TRUE(browser);
     ++bubble_view_close_count_;

@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
@@ -47,7 +48,7 @@ class VerifyTrustAPI::IOPart {
   // extension is deleted (see OnExtensionUnloaded).
   void Verify(std::unique_ptr<Params> params,
               const std::string& extension_id,
-              const VerifyCallback& callback);
+              VerifyCallback callback);
 
   // Must be called when the extension with id |extension_id| is unloaded.
   // Deletes the verifier for |extension_id| and cancels all pending
@@ -65,7 +66,7 @@ class VerifyTrustAPI::IOPart {
   };
 
   // Calls back |callback| with the result and no error.
-  void CallBackWithResult(const VerifyCallback& callback,
+  void CallBackWithResult(VerifyCallback callback,
                           std::unique_ptr<net::CertVerifyResult> verify_result,
                           RequestState* request_state,
                           int return_value);
@@ -93,7 +94,7 @@ void BrowserContextKeyedAPIFactory<
 VerifyTrustAPI::VerifyTrustAPI(content::BrowserContext* context)
     : io_part_(new IOPart) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  registry_observer_.Add(ExtensionRegistry::Get(context));
+  registry_observation_.Observe(ExtensionRegistry::Get(context));
 }
 
 VerifyTrustAPI::~VerifyTrustAPI() {
@@ -102,20 +103,22 @@ VerifyTrustAPI::~VerifyTrustAPI() {
 
 void VerifyTrustAPI::Verify(std::unique_ptr<Params> params,
                             const std::string& extension_id,
-                            const VerifyCallback& ui_callback) {
+                            VerifyCallback ui_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Call back through the VerifyTrustAPI object on the UIThread. Because of the
   // WeakPtr usage, this will ensure that |ui_callback| is not called after the
   // API is destroyed.
-  VerifyCallback finish_callback(base::Bind(
-      &CallBackOnUI, base::Bind(&VerifyTrustAPI::FinishedVerificationOnUI,
-                                weak_factory_.GetWeakPtr(), ui_callback)));
+  VerifyCallback finish_callback(base::BindOnce(
+      &CallBackOnUI,
+      base::BindOnce(&VerifyTrustAPI::FinishedVerificationOnUI,
+                     weak_factory_.GetWeakPtr(), std::move(ui_callback))));
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&IOPart::Verify, base::Unretained(io_part_.get()),
-                     std::move(params), extension_id, finish_callback));
+                     std::move(params), extension_id,
+                     std::move(finish_callback)));
 }
 
 void VerifyTrustAPI::OnExtensionUnloaded(
@@ -128,22 +131,23 @@ void VerifyTrustAPI::OnExtensionUnloaded(
                      base::Unretained(io_part_.get()), extension->id()));
 }
 
-void VerifyTrustAPI::FinishedVerificationOnUI(const VerifyCallback& ui_callback,
+void VerifyTrustAPI::FinishedVerificationOnUI(VerifyCallback ui_callback,
                                               const std::string& error,
                                               int return_value,
                                               int cert_status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  ui_callback.Run(error, return_value, cert_status);
+  std::move(ui_callback).Run(error, return_value, cert_status);
 }
 
 // static
-void VerifyTrustAPI::CallBackOnUI(const VerifyCallback& ui_callback,
+void VerifyTrustAPI::CallBackOnUI(VerifyCallback ui_callback,
                                   const std::string& error,
                                   int return_value,
                                   int cert_status) {
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(ui_callback, error, return_value, cert_status));
+      FROM_HERE,
+      base::BindOnce(std::move(ui_callback), error, return_value, cert_status));
 }
 
 VerifyTrustAPI::IOPart::~IOPart() {
@@ -152,13 +156,13 @@ VerifyTrustAPI::IOPart::~IOPart() {
 
 void VerifyTrustAPI::IOPart::Verify(std::unique_ptr<Params> params,
                                     const std::string& extension_id,
-                                    const VerifyCallback& callback) {
+                                    VerifyCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   const api::platform_keys::VerificationDetails& details = params->details;
 
   if (details.server_certificate_chain.empty()) {
-    callback.Run(kErrorEmptyCertificateChain, 0, 0);
+    std::move(callback).Run(kErrorEmptyCertificateChain, 0, 0);
     return;
   }
 
@@ -166,7 +170,7 @@ void VerifyTrustAPI::IOPart::Verify(std::unique_ptr<Params> params,
   for (const std::vector<uint8_t>& cert_der :
        details.server_certificate_chain) {
     if (cert_der.empty()) {
-      callback.Run(platform_keys::kErrorInvalidX509Cert, 0, 0);
+      std::move(callback).Run(platform_keys::kErrorInvalidX509Cert, 0, 0);
       return;
     }
     der_cert_chain.push_back(base::StringPiece(
@@ -175,7 +179,7 @@ void VerifyTrustAPI::IOPart::Verify(std::unique_ptr<Params> params,
   scoped_refptr<net::X509Certificate> cert_chain(
       net::X509Certificate::CreateFromDERCertChain(der_cert_chain));
   if (!cert_chain) {
-    callback.Run(platform_keys::kErrorInvalidX509Cert, 0, 0);
+    std::move(callback).Run(platform_keys::kErrorInvalidX509Cert, 0, 0);
     return;
   }
 
@@ -195,17 +199,21 @@ void VerifyTrustAPI::IOPart::Verify(std::unique_ptr<Params> params,
   net::CertVerifyResult* const verify_result_ptr = verify_result.get();
 
   RequestState* request_state = new RequestState();
-  base::Callback<void(int)> bound_callback(
-      base::Bind(&IOPart::CallBackWithResult, base::Unretained(this), callback,
-                 base::Passed(&verify_result), base::Owned(request_state)));
+  using VerificationCallback = base::OnceCallback<void(int)>;
+  VerificationCallback bound_callback = base::BindOnce(
+      &IOPart::CallBackWithResult, base::Unretained(this), std::move(callback),
+      std::move(verify_result), base::Owned(request_state));
+  std::pair<VerificationCallback, VerificationCallback> split_callback =
+      base::SplitOnceCallback(std::move(bound_callback));
 
   const int return_value = verifier->Verify(
       net::CertVerifier::RequestParams(std::move(cert_chain), details.hostname,
                                        flags, ocsp_response, sct_list),
-      verify_result_ptr, bound_callback, &request_state->request, *net_log);
+      verify_result_ptr, std::move(split_callback.first),
+      &request_state->request, *net_log);
 
   if (return_value != net::ERR_IO_PENDING) {
-    bound_callback.Run(return_value);
+    std::move(split_callback.second).Run(return_value);
     return;
   }
 }
@@ -216,14 +224,14 @@ void VerifyTrustAPI::IOPart::OnExtensionUnloaded(
 }
 
 void VerifyTrustAPI::IOPart::CallBackWithResult(
-    const VerifyCallback& callback,
+    VerifyCallback callback,
     std::unique_ptr<net::CertVerifyResult> verify_result,
     RequestState* request_state,
     int return_value) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  callback.Run(std::string() /* no error message */, return_value,
-               verify_result->cert_status);
+  std::move(callback).Run(std::string() /* no error message */, return_value,
+                          verify_result->cert_status);
 }
 
 }  // namespace extensions

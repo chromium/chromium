@@ -16,12 +16,7 @@ LayoutNGTableSection::LayoutNGTableSection(Element* element)
 
 bool LayoutNGTableSection::IsEmpty() const {
   NOT_DESTROYED();
-  for (LayoutObject* child = FirstChild(); child;
-       child = child->NextSibling()) {
-    if (!To<LayoutNGTableRow>(child)->IsEmpty())
-      return false;
-  }
-  return true;
+  return !FirstChild();
 }
 
 LayoutNGTable* LayoutNGTableSection::Table() const {
@@ -87,11 +82,20 @@ void LayoutNGTableSection::RemoveChild(LayoutObject* child) {
   LayoutNGMixin<LayoutBlock>::RemoveChild(child);
 }
 
+void LayoutNGTableSection::WillBeRemovedFromTree() {
+  NOT_DESTROYED();
+  if (LayoutNGTable* table = Table())
+    table->TableGridStructureChanged();
+  LayoutNGMixin<LayoutBlock>::WillBeRemovedFromTree();
+}
+
 void LayoutNGTableSection::StyleDidChange(StyleDifference diff,
                                           const ComputedStyle* old_style) {
   NOT_DESTROYED();
   if (LayoutNGTable* table = Table()) {
     if ((old_style && !old_style->BorderVisuallyEqual(StyleRef())) ||
+        (old_style && old_style->GetWritingDirection() !=
+                          StyleRef().GetWritingDirection()) ||
         (diff.TextDecorationOrColorChanged() &&
          StyleRef().HasBorderColorReferencingCurrentColor())) {
       table->GridBordersChanged();
@@ -130,7 +134,12 @@ LayoutNGTableRowInterface* LayoutNGTableSection::LastRowInterface() const {
 // behaviour is correct. Consider removing these methods.
 unsigned LayoutNGTableSection::NumEffectiveColumns() const {
   NOT_DESTROYED();
-  return To<LayoutNGTable>(TableInterface()->ToLayoutObject())->ColumnCount();
+  const LayoutNGTable* table = Table();
+  DCHECK(table);
+  wtf_size_t column_count = table->ColumnCount();
+  if (column_count == 0)
+    return 0;
+  return table->AbsoluteColumnToEffectiveColumn(column_count - 1) + 1;
 }
 
 // TODO(crbug.com/1079133): Used by AXLayoutObject::IsDataTable/ColumnCount,

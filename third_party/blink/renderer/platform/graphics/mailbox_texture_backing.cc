@@ -32,6 +32,7 @@ MailboxTextureBacking::MailboxTextureBacking(
       context_provider_wrapper_(std::move(context_provider_wrapper)) {}
 
 MailboxTextureBacking::~MailboxTextureBacking() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (context_provider_wrapper_) {
     gpu::raster::RasterInterface* ri =
         context_provider_wrapper_->ContextProvider()->RasterInterface();
@@ -52,10 +53,13 @@ gpu::Mailbox MailboxTextureBacking::GetMailbox() const {
 }
 
 sk_sp<SkImage> MailboxTextureBacking::GetAcceleratedSkImage() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
   return sk_image_;
 }
 
 sk_sp<SkImage> MailboxTextureBacking::GetSkImageViaReadback() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!mailbox_.IsZero()) {
     if (!context_provider_wrapper_)
       return nullptr;
@@ -85,6 +89,7 @@ bool MailboxTextureBacking::readPixels(const SkImageInfo& dst_info,
                                        size_t dst_row_bytes,
                                        int src_x,
                                        int src_y) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!mailbox_.IsZero()) {
     if (!context_provider_wrapper_)
       return false;
@@ -102,6 +107,7 @@ bool MailboxTextureBacking::readPixels(const SkImageInfo& dst_info,
 }
 
 void MailboxTextureBacking::FlushPendingSkiaOps() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!context_provider_wrapper_ || !sk_image_)
     return;
   sk_image_->flushAndSubmit(

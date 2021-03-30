@@ -7,12 +7,12 @@
 #include <algorithm>
 #include <memory>
 #include <numeric>
+#include <string>
 #include <utility>
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/i18n/break_iterator.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -69,10 +69,10 @@ class ScoredHistoryMatchTest : public testing::Test {
   // and word break information automatically that are needed to call
   // GetTopicalityScore().
   float GetTopicalityScoreOfTermAgainstURLAndTitle(
-      const std::vector<const std::string>&,
+      const std::vector<std::string>&,
       const WordStarts term_word_starts,
       const GURL& url,
-      const base::string16& title);
+      const std::u16string& title);
 };
 
 history::URLRow ScoredHistoryMatchTest::MakeURLRow(const char* url,
@@ -111,10 +111,10 @@ String16Vector ScoredHistoryMatchTest::Make2Terms(const char* term_1,
 }
 
 float ScoredHistoryMatchTest::GetTopicalityScoreOfTermAgainstURLAndTitle(
-    const std::vector<const std::string>& terms,
+    const std::vector<std::string>& terms,
     const WordStarts term_word_starts,
     const GURL& url,
-    const base::string16& title) {
+    const std::u16string& title) {
   String16Vector term_vector;
   std::transform(terms.begin(), terms.end(), std::back_inserter(term_vector),
                  [](auto term) { return base::UTF8ToUTF16(term); });
@@ -124,7 +124,7 @@ float ScoredHistoryMatchTest::GetTopicalityScoreOfTermAgainstURLAndTitle(
                         return accumulator + " " + term;
                       });
   RowWordStarts row_word_starts;
-  base::string16 url_string = base::UTF8ToUTF16(url.spec());
+  std::u16string url_string = base::UTF8ToUTF16(url.spec());
   String16SetFromString16(url_string, &row_word_starts.url_word_starts_);
   String16SetFromString16(title, &row_word_starts.title_word_starts_);
   auto row = history::URLRow(GURL(url));
@@ -150,9 +150,8 @@ TEST_F(ScoredHistoryMatchTest, Scoring) {
   VisitInfoVector visits_a = CreateVisitInfoVector(3, 30, now);
   // Mark one visit as typed.
   visits_a[0].second = ui::PAGE_TRANSITION_TYPED;
-  ScoredHistoryMatch scored_a(row_a, visits_a, ASCIIToUTF16("abc"),
-                              Make1Term("abc"), one_word_no_offset,
-                              word_starts_a, false, 1, now);
+  ScoredHistoryMatch scored_a(row_a, visits_a, u"abc", Make1Term("abc"),
+                              one_word_no_offset, word_starts_a, false, 1, now);
 
   // Test scores based on visit_count.
   history::URLRow row_b(MakeURLRow("http://abcdef", "abcd bcd", 10, 30, 1));
@@ -160,9 +159,8 @@ TEST_F(ScoredHistoryMatchTest, Scoring) {
   PopulateWordStarts(row_b, &word_starts_b);
   VisitInfoVector visits_b = CreateVisitInfoVector(10, 30, now);
   visits_b[0].second = ui::PAGE_TRANSITION_TYPED;
-  ScoredHistoryMatch scored_b(row_b, visits_b, ASCIIToUTF16("abc"),
-                              Make1Term("abc"), one_word_no_offset,
-                              word_starts_b, false, 1, now);
+  ScoredHistoryMatch scored_b(row_b, visits_b, u"abc", Make1Term("abc"),
+                              one_word_no_offset, word_starts_b, false, 1, now);
   EXPECT_GT(scored_b.raw_score, scored_a.raw_score);
 
   // Test scores based on last_visit.
@@ -171,9 +169,8 @@ TEST_F(ScoredHistoryMatchTest, Scoring) {
   PopulateWordStarts(row_c, &word_starts_c);
   VisitInfoVector visits_c = CreateVisitInfoVector(3, 10, now);
   visits_c[0].second = ui::PAGE_TRANSITION_TYPED;
-  ScoredHistoryMatch scored_c(row_c, visits_c, ASCIIToUTF16("abc"),
-                              Make1Term("abc"), one_word_no_offset,
-                              word_starts_c, false, 1, now);
+  ScoredHistoryMatch scored_c(row_c, visits_c, u"abc", Make1Term("abc"),
+                              one_word_no_offset, word_starts_c, false, 1, now);
   EXPECT_GT(scored_c.raw_score, scored_a.raw_score);
 
   // Test scores based on typed_count.
@@ -184,9 +181,8 @@ TEST_F(ScoredHistoryMatchTest, Scoring) {
   visits_d[0].second = ui::PAGE_TRANSITION_TYPED;
   visits_d[1].second = ui::PAGE_TRANSITION_TYPED;
   visits_d[2].second = ui::PAGE_TRANSITION_TYPED;
-  ScoredHistoryMatch scored_d(row_d, visits_d, ASCIIToUTF16("abc"),
-                              Make1Term("abc"), one_word_no_offset,
-                              word_starts_d, false, 1, now);
+  ScoredHistoryMatch scored_d(row_d, visits_d, u"abc", Make1Term("abc"),
+                              one_word_no_offset, word_starts_d, false, 1, now);
   EXPECT_GT(scored_d.raw_score, scored_a.raw_score);
 
   // Test scores based on a terms appearing multiple times.
@@ -196,16 +192,14 @@ TEST_F(ScoredHistoryMatchTest, Scoring) {
   RowWordStarts word_starts_e;
   PopulateWordStarts(row_e, &word_starts_e);
   const VisitInfoVector visits_e = visits_d;
-  ScoredHistoryMatch scored_e(row_e, visits_e, ASCIIToUTF16("csi"),
-                              Make1Term("csi"), one_word_no_offset,
-                              word_starts_e, false, 1, now);
+  ScoredHistoryMatch scored_e(row_e, visits_e, u"csi", Make1Term("csi"),
+                              one_word_no_offset, word_starts_e, false, 1, now);
   EXPECT_LT(scored_e.raw_score, 1400);
 
   // Test that a result with only a mid-term match (i.e., not at a word
   // boundary) scores 0.
-  ScoredHistoryMatch scored_f(row_a, visits_a, ASCIIToUTF16("cd"),
-                              Make1Term("cd"), one_word_no_offset,
-                              word_starts_a, false, 1, now);
+  ScoredHistoryMatch scored_f(row_a, visits_a, u"cd", Make1Term("cd"),
+                              one_word_no_offset, word_starts_a, false, 1, now);
   EXPECT_EQ(scored_f.raw_score, 0);
 }
 
@@ -221,13 +215,13 @@ TEST_F(ScoredHistoryMatchTest, ScoringBookmarks) {
   PopulateWordStarts(row, &word_starts);
   WordStarts one_word_no_offset(1, 0u);
   VisitInfoVector visits = CreateVisitInfoVector(8, 3, now);
-  ScoredHistoryMatch scored(row, visits, ASCIIToUTF16("abc"), Make1Term("abc"),
+  ScoredHistoryMatch scored(row, visits, u"abc", Make1Term("abc"),
                             one_word_no_offset, word_starts, false, 1, now);
   // Now check that if URL is bookmarked then its score increases.
   base::AutoReset<float> reset(&ScoredHistoryMatch::bookmark_value_, 5);
-  ScoredHistoryMatch scored_with_bookmark(row, visits, ASCIIToUTF16("abc"),
-                                          Make1Term("abc"), one_word_no_offset,
-                                          word_starts, true, 1, now);
+  ScoredHistoryMatch scored_with_bookmark(row, visits, u"abc", Make1Term("abc"),
+                                          one_word_no_offset, word_starts, true,
+                                          1, now);
   EXPECT_GT(scored_with_bookmark.raw_score, scored.raw_score);
 }
 
@@ -244,16 +238,15 @@ TEST_F(ScoredHistoryMatchTest, ScoringTLD) {
   PopulateWordStarts(row, &word_starts);
   WordStarts two_words_no_offsets(2, 0u);
   VisitInfoVector visits = CreateVisitInfoVector(8, 3, now);
-  ScoredHistoryMatch scored(row, visits, ASCIIToUTF16("fed com"),
-                            Make2Terms("fed", "com"), two_words_no_offsets,
-                            word_starts, false, 1, now);
+  ScoredHistoryMatch scored(row, visits, u"fed com", Make2Terms("fed", "com"),
+                            two_words_no_offsets, word_starts, false, 1, now);
   EXPECT_GT(scored.raw_score, 0);
 
   // Now allow credit for the match in the TLD.
   base::AutoReset<bool> reset(&ScoredHistoryMatch::allow_tld_matches_, true);
   ScoredHistoryMatch scored_with_tld(
-      row, visits, ASCIIToUTF16("fed com"), Make2Terms("fed", "com"),
-      two_words_no_offsets, word_starts, false, 1, now);
+      row, visits, u"fed com", Make2Terms("fed", "com"), two_words_no_offsets,
+      word_starts, false, 1, now);
   EXPECT_GT(scored_with_tld.raw_score, 0);
 
   EXPECT_GT(scored_with_tld.raw_score, scored.raw_score);
@@ -272,16 +265,15 @@ TEST_F(ScoredHistoryMatchTest, ScoringScheme) {
   PopulateWordStarts(row, &word_starts);
   WordStarts two_words_no_offsets(2, 0u);
   VisitInfoVector visits = CreateVisitInfoVector(8, 3, now);
-  ScoredHistoryMatch scored(row, visits, ASCIIToUTF16("fed http"),
-                            Make2Terms("fed", "http"), two_words_no_offsets,
-                            word_starts, false, 1, now);
+  ScoredHistoryMatch scored(row, visits, u"fed http", Make2Terms("fed", "http"),
+                            two_words_no_offsets, word_starts, false, 1, now);
   EXPECT_GT(scored.raw_score, 0);
 
   // Now allow credit for the match in the scheme.
   base::AutoReset<bool> reset(&ScoredHistoryMatch::allow_scheme_matches_, true);
   ScoredHistoryMatch scored_with_scheme(
-      row, visits, ASCIIToUTF16("fed http"), Make2Terms("fed", "http"),
-      two_words_no_offsets, word_starts, false, 1, now);
+      row, visits, u"fed http", Make2Terms("fed", "http"), two_words_no_offsets,
+      word_starts, false, 1, now);
   EXPECT_GT(scored_with_scheme.raw_score, 0);
 
   EXPECT_GT(scored_with_scheme.raw_score, scored.raw_score);
@@ -299,19 +291,19 @@ TEST_F(ScoredHistoryMatchTest, MatchURLComponents) {
     history::URLRow row(
         MakeURLRow("http://www.google.com", "abcdef", 3, 30, 1));
     PopulateWordStarts(row, &word_starts);
-    ScoredHistoryMatch scored_a(row, visits, ASCIIToUTF16("g"), Make1Term("g"),
+    ScoredHistoryMatch scored_a(row, visits, u"g", Make1Term("g"),
                                 one_word_no_offset, word_starts, false, 1, now);
     EXPECT_FALSE(scored_a.match_in_scheme);
     EXPECT_FALSE(scored_a.match_in_subdomain);
-    ScoredHistoryMatch scored_b(row, visits, ASCIIToUTF16("w"), Make1Term("w"),
+    ScoredHistoryMatch scored_b(row, visits, u"w", Make1Term("w"),
                                 one_word_no_offset, word_starts, false, 1, now);
     EXPECT_FALSE(scored_b.match_in_scheme);
     EXPECT_TRUE(scored_b.match_in_subdomain);
-    ScoredHistoryMatch scored_c(row, visits, ASCIIToUTF16("h"), Make1Term("h"),
+    ScoredHistoryMatch scored_c(row, visits, u"h", Make1Term("h"),
                                 one_word_no_offset, word_starts, false, 1, now);
     EXPECT_TRUE(scored_c.match_in_scheme);
     EXPECT_FALSE(scored_c.match_in_subdomain);
-    ScoredHistoryMatch scored_d(row, visits, ASCIIToUTF16("o"), Make1Term("o"),
+    ScoredHistoryMatch scored_d(row, visits, u"o", Make1Term("o"),
                                 one_word_no_offset, word_starts, false, 1, now);
     EXPECT_FALSE(scored_d.match_in_scheme);
     EXPECT_FALSE(scored_d.match_in_subdomain);
@@ -320,15 +312,15 @@ TEST_F(ScoredHistoryMatchTest, MatchURLComponents) {
   {
     history::URLRow row(MakeURLRow("http://teams.foo.com", "abcdef", 3, 30, 1));
     PopulateWordStarts(row, &word_starts);
-    ScoredHistoryMatch scored_a(row, visits, ASCIIToUTF16("t"), Make1Term("t"),
+    ScoredHistoryMatch scored_a(row, visits, u"t", Make1Term("t"),
                                 one_word_no_offset, word_starts, false, 1, now);
     EXPECT_FALSE(scored_a.match_in_scheme);
     EXPECT_TRUE(scored_a.match_in_subdomain);
-    ScoredHistoryMatch scored_b(row, visits, ASCIIToUTF16("f"), Make1Term("f"),
+    ScoredHistoryMatch scored_b(row, visits, u"f", Make1Term("f"),
                                 one_word_no_offset, word_starts, false, 1, now);
     EXPECT_FALSE(scored_b.match_in_scheme);
     EXPECT_FALSE(scored_b.match_in_subdomain);
-    ScoredHistoryMatch scored_c(row, visits, ASCIIToUTF16("o"), Make1Term("o"),
+    ScoredHistoryMatch scored_c(row, visits, u"o", Make1Term("o"),
                                 one_word_no_offset, word_starts, false, 1, now);
     EXPECT_FALSE(scored_c.match_in_scheme);
     EXPECT_FALSE(scored_c.match_in_subdomain);
@@ -337,15 +329,15 @@ TEST_F(ScoredHistoryMatchTest, MatchURLComponents) {
   {
     history::URLRow row(MakeURLRow("http://en.m.foo.com", "abcdef", 3, 30, 1));
     PopulateWordStarts(row, &word_starts);
-    ScoredHistoryMatch scored_a(row, visits, ASCIIToUTF16("e"), Make1Term("e"),
+    ScoredHistoryMatch scored_a(row, visits, u"e", Make1Term("e"),
                                 one_word_no_offset, word_starts, false, 1, now);
     EXPECT_FALSE(scored_a.match_in_scheme);
     EXPECT_TRUE(scored_a.match_in_subdomain);
-    ScoredHistoryMatch scored_b(row, visits, ASCIIToUTF16("m"), Make1Term("m"),
+    ScoredHistoryMatch scored_b(row, visits, u"m", Make1Term("m"),
                                 one_word_no_offset, word_starts, false, 1, now);
     EXPECT_FALSE(scored_b.match_in_scheme);
     EXPECT_TRUE(scored_b.match_in_subdomain);
-    ScoredHistoryMatch scored_c(row, visits, ASCIIToUTF16("f"), Make1Term("f"),
+    ScoredHistoryMatch scored_c(row, visits, u"f", Make1Term("f"),
                                 one_word_no_offset, word_starts, false, 1, now);
     EXPECT_FALSE(scored_c.match_in_scheme);
     EXPECT_FALSE(scored_c.match_in_subdomain);
@@ -355,42 +347,41 @@ TEST_F(ScoredHistoryMatchTest, MatchURLComponents) {
     history::URLRow row(
         MakeURLRow("https://www.testing.com/xxx?yyy#zzz", "abcdef", 3, 30, 1));
     PopulateWordStarts(row, &word_starts);
-    ScoredHistoryMatch scored_a(row, visits, ASCIIToUTF16("t"), Make1Term("t"),
+    ScoredHistoryMatch scored_a(row, visits, u"t", Make1Term("t"),
                                 one_word_no_offset, word_starts, false, 1, now);
     EXPECT_FALSE(scored_a.match_in_scheme);
     EXPECT_FALSE(scored_a.match_in_subdomain);
-    ScoredHistoryMatch scored_b(row, visits, ASCIIToUTF16("h"), Make1Term("h"),
+    ScoredHistoryMatch scored_b(row, visits, u"h", Make1Term("h"),
                                 one_word_no_offset, word_starts, false, 1, now);
     EXPECT_TRUE(scored_b.match_in_scheme);
     EXPECT_FALSE(scored_b.match_in_subdomain);
-    ScoredHistoryMatch scored_c(row, visits, ASCIIToUTF16("w"), Make1Term("w"),
+    ScoredHistoryMatch scored_c(row, visits, u"w", Make1Term("w"),
                                 one_word_no_offset, word_starts, false, 1, now);
     EXPECT_FALSE(scored_c.match_in_scheme);
     EXPECT_TRUE(scored_c.match_in_subdomain);
-    ScoredHistoryMatch scored_d(row, visits, ASCIIToUTF16("x"), Make1Term("x"),
+    ScoredHistoryMatch scored_d(row, visits, u"x", Make1Term("x"),
                                 one_word_no_offset, word_starts, false, 1, now);
     EXPECT_FALSE(scored_d.match_in_scheme);
     EXPECT_FALSE(scored_d.match_in_subdomain);
-    ScoredHistoryMatch scored_e(row, visits, ASCIIToUTF16("y"), Make1Term("y"),
+    ScoredHistoryMatch scored_e(row, visits, u"y", Make1Term("y"),
                                 one_word_no_offset, word_starts, false, 1, now);
     EXPECT_FALSE(scored_e.match_in_scheme);
     EXPECT_FALSE(scored_e.match_in_subdomain);
-    ScoredHistoryMatch scored_f(row, visits, ASCIIToUTF16("z"), Make1Term("z"),
+    ScoredHistoryMatch scored_f(row, visits, u"z", Make1Term("z"),
                                 one_word_no_offset, word_starts, false, 1, now);
     EXPECT_FALSE(scored_f.match_in_scheme);
     EXPECT_FALSE(scored_f.match_in_subdomain);
-    ScoredHistoryMatch scored_g(row, visits, ASCIIToUTF16("https://www"),
+    ScoredHistoryMatch scored_g(row, visits, u"https://www",
                                 Make1Term("https://www"), one_word_no_offset,
                                 word_starts, false, 1, now);
     EXPECT_TRUE(scored_g.match_in_scheme);
     EXPECT_TRUE(scored_g.match_in_subdomain);
-    ScoredHistoryMatch scored_h(row, visits, ASCIIToUTF16("testing.com/x"),
+    ScoredHistoryMatch scored_h(row, visits, u"testing.com/x",
                                 Make1Term("testing.com/x"), one_word_no_offset,
                                 word_starts, false, 1, now);
     EXPECT_FALSE(scored_h.match_in_scheme);
     EXPECT_FALSE(scored_h.match_in_subdomain);
-    ScoredHistoryMatch scored_i(row, visits,
-                                ASCIIToUTF16("https://www.testing.com/x"),
+    ScoredHistoryMatch scored_i(row, visits, u"https://www.testing.com/x",
                                 Make1Term("https://www.testing.com/x"),
                                 one_word_no_offset, word_starts, false, 1, now);
     EXPECT_TRUE(scored_i.match_in_scheme);
@@ -401,16 +392,15 @@ TEST_F(ScoredHistoryMatchTest, MatchURLComponents) {
     history::URLRow row(
         MakeURLRow("http://www.xn--1lq90ic7f1rc.cn/xnblah", "abcd", 3, 30, 1));
     PopulateWordStarts(row, &word_starts);
-    ScoredHistoryMatch scored_a(row, visits, ASCIIToUTF16("x"), Make1Term("x"),
+    ScoredHistoryMatch scored_a(row, visits, u"x", Make1Term("x"),
                                 one_word_no_offset, word_starts, false, 1, now);
     EXPECT_FALSE(scored_a.match_in_scheme);
     EXPECT_FALSE(scored_a.match_in_subdomain);
-    ScoredHistoryMatch scored_b(row, visits, ASCIIToUTF16("xn"),
-                                Make1Term("xn"), one_word_no_offset,
-                                word_starts, false, 1, now);
+    ScoredHistoryMatch scored_b(row, visits, u"xn", Make1Term("xn"),
+                                one_word_no_offset, word_starts, false, 1, now);
     EXPECT_FALSE(scored_b.match_in_scheme);
     EXPECT_FALSE(scored_b.match_in_subdomain);
-    ScoredHistoryMatch scored_c(row, visits, ASCIIToUTF16("w"), Make1Term("w"),
+    ScoredHistoryMatch scored_c(row, visits, u"w", Make1Term("w"),
                                 one_word_no_offset, word_starts, false, 1, now);
     EXPECT_FALSE(scored_c.match_in_scheme);
     EXPECT_TRUE(scored_c.match_in_subdomain);
@@ -419,11 +409,9 @@ TEST_F(ScoredHistoryMatchTest, MatchURLComponents) {
 
 TEST_F(ScoredHistoryMatchTest, GetTopicalityScoreTrailingSlash) {
   const float hostname = GetTopicalityScoreOfTermAgainstURLAndTitle(
-      {"def"}, {0}, GURL("http://abc.def.com/"),
-      ASCIIToUTF16("Non-Matching Title"));
+      {"def"}, {0}, GURL("http://abc.def.com/"), u"Non-Matching Title");
   const float hostname_no_slash = GetTopicalityScoreOfTermAgainstURLAndTitle(
-      {"def"}, {0}, GURL("http://abc.def.com"),
-      ASCIIToUTF16("Non-Matching Title"));
+      {"def"}, {0}, GURL("http://abc.def.com"), u"Non-Matching Title");
   EXPECT_EQ(hostname_no_slash, hostname);
 }
 
@@ -572,8 +560,8 @@ TEST_F(ScoredHistoryMatchTest, GetFrequency) {
   PopulateWordStarts(row, &row_word_starts);
   base::Time now(base::Time::Max());
   VisitInfoVector visits;
-  ScoredHistoryMatch match(row, visits, ASCIIToUTF16("foo"), Make1Term("foo"),
-                           WordStarts{0}, row_word_starts, false, 1, now);
+  ScoredHistoryMatch match(row, visits, u"foo", Make1Term("foo"), WordStarts{0},
+                           row_word_starts, false, 1, now);
 
   // Record the score for one untyped visit.
   visits = {{now, ui::PAGE_TRANSITION_LINK}};
@@ -632,8 +620,8 @@ TEST_F(ScoredHistoryMatchTest, GetDocumentSpecificityScore) {
   PopulateWordStarts(row, &row_word_starts);
   base::Time now(base::Time::Max());
   VisitInfoVector visits;
-  ScoredHistoryMatch match(row, visits, ASCIIToUTF16("foo"), Make1Term("foo"),
-                           WordStarts{0}, row_word_starts, false, 1, now);
+  ScoredHistoryMatch match(row, visits, u"foo", Make1Term("foo"), WordStarts{0},
+                           row_word_starts, false, 1, now);
 
   EXPECT_EQ(3.0, match.GetDocumentSpecificityScore(1));
   EXPECT_EQ(1.0, match.GetDocumentSpecificityScore(5));
@@ -659,8 +647,8 @@ TEST_F(ScoredHistoryMatchTest, GetDocumentSpecificityScore) {
 // once somewhere in the URL or title.
 TEST_F(ScoredHistoryMatchTest, GetTopicalityScore) {
   GURL url("http://abc.def.com/path1/path2?arg1=val1&arg2=val2#hash_fragment");
-  base::string16 title = ASCIIToUTF16("here is a - title");
-  auto Score = [&](const std::vector<const std::string>& term_vector,
+  std::u16string title = u"here is a - title";
+  auto Score = [&](const std::vector<std::string>& term_vector,
                    const WordStarts term_word_starts) {
     return GetTopicalityScoreOfTermAgainstURLAndTitle(
         term_vector, term_word_starts, url, title);
@@ -731,8 +719,8 @@ TEST_F(ScoredHistoryMatchTest, GetTopicalityScore) {
 
 TEST_F(ScoredHistoryMatchTest, GetTopicalityScore_MidwordMatching) {
   GURL url("http://abc.def.com/path1/path2?arg1=val1&arg2=val2#hash_fragment");
-  base::string16 title = ASCIIToUTF16("here is a - title");
-  auto Score = [&](const std::vector<const std::string>& term_vector,
+  std::u16string title = u"here is a - title";
+  auto Score = [&](const std::vector<std::string>& term_vector,
                    const WordStarts term_word_starts) {
     return GetTopicalityScoreOfTermAgainstURLAndTitle(
         term_vector, term_word_starts, url, title);

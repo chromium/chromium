@@ -9,6 +9,7 @@ import android.content.Context;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
 
 import java.util.Collections;
@@ -34,7 +35,7 @@ class ReadingListSectionHeader {
             List<BookmarkListEntry> listItems, Context context) {
         if (listItems.isEmpty()) return;
 
-        // The topmost item(s) could be promo headers.
+        // Compute the first reading list index. The topmost item(s) could be promo headers.
         int readingListStartIndex = 0;
         for (BookmarkListEntry listItem : listItems) {
             boolean isReadingListItem = listItem.getBookmarkItem() != null
@@ -48,22 +49,23 @@ class ReadingListSectionHeader {
         sort(listItems, readingListStartIndex);
         recordMetrics(listItems);
 
-        // Add a section header at the top. If it is for read, exit right away.
-        assert listItems.get(readingListStartIndex).getBookmarkItem().getId().getType()
-                == BookmarkType.READING_LIST;
-        boolean isRead = listItems.get(readingListStartIndex).getBookmarkItem().isRead();
-        listItems.add(readingListStartIndex, createReadingListSectionHeader(isRead, context));
-        if (isRead) return;
+        // Always show both read/unread section headers even if we may have only one reading list
+        // item.
+        listItems.add(
+                readingListStartIndex, createReadingListSectionHeader(/*read=*/false, context));
 
         // Search for the first read element, and insert the read section header.
-        for (int i = readingListStartIndex + 2; i < listItems.size(); i++) {
+        for (int i = readingListStartIndex + 1; i < listItems.size(); i++) {
             BookmarkListEntry listItem = listItems.get(i);
             assert listItem.getBookmarkItem().getId().getType() == BookmarkType.READING_LIST;
             if (listItem.getBookmarkItem().isRead()) {
-                listItems.add(i, createReadingListSectionHeader(true /*read*/, context));
+                listItems.add(i, createReadingListSectionHeader(/*read=*/true, context));
                 return;
             }
         }
+
+        // If no read reading list items, add a read section header at the end.
+        listItems.add(listItems.size(), createReadingListSectionHeader(/*read=*/true, context));
     }
 
     /**
@@ -72,18 +74,29 @@ class ReadingListSectionHeader {
     private static void sort(List<BookmarkListEntry> listItems, int readingListStartIndex) {
         // TODO(crbug.com/1147259): Sort items by creation time possibly.
         Collections.sort(listItems.subList(readingListStartIndex, listItems.size()), (lhs, rhs) -> {
-            // Unread items are shown first.
+            // Unread items are shown first, then sorted based on creation time.
             boolean lhsRead = lhs.getBookmarkItem().isRead();
-            boolean rhsRead = rhs.getBookmarkItem().isRead();
-            if (lhsRead == rhsRead) return 0;
-            return lhsRead ? 1 : -1;
+            BookmarkItem lhsItem = lhs.getBookmarkItem();
+            BookmarkItem rhsItem = rhs.getBookmarkItem();
+
+            // Sort by read status first.
+            if (lhsItem.isRead() != rhsItem.isRead()) {
+                return lhsItem.isRead() ? 1 : -1;
+            }
+
+            // Sort by creation timestamp descending for items with the same read status.
+            return lhsItem.getDateAdded() <= rhsItem.getDateAdded() ? 1 : -1;
         });
     }
 
     private static BookmarkListEntry createReadingListSectionHeader(boolean read, Context context) {
+        String title =
+                context.getString(read ? R.string.reading_list_read : R.string.reading_list_unread);
+        int paddingTop = read ? context.getResources().getDimensionPixelSize(
+                                 R.dimen.bookmark_reading_list_section_header_padding_top)
+                              : 0;
         return BookmarkListEntry.createSectionHeader(
-                read ? R.string.reading_list_read : R.string.reading_list_unread,
-                read ? null : R.string.reading_list_ready_for_offline, context);
+                title, /*description=*/null, paddingTop, context);
     }
 
     private static void recordMetrics(List<BookmarkListEntry> listItems) {

@@ -55,12 +55,41 @@ suite('AppearanceFontHandler', function() {
     return fontsBrowserProxy.whenCalled('fetchFontsData');
   });
 
-  test('minimum font size sample', async () => {
+  test('minimum font size preview', async () => {
     fontsPage.prefs = {webkit: {webprefs: {minimum_font_size: {value: 0}}}};
-    assertTrue(fontsPage.$.minimumSizeSample.hidden);
+    assertTrue(fontsPage.$.minimumSizeFontPreview.hidden);
     fontsPage.set('prefs.webkit.webprefs.minimum_font_size.value', 6);
-    assertFalse(fontsPage.$.minimumSizeSample.hidden);
+    assertFalse(fontsPage.$.minimumSizeFontPreview.hidden);
     fontsPage.set('prefs.webkit.webprefs.minimum_font_size.value', 0);
-    assertTrue(fontsPage.$.minimumSizeSample.hidden);
+    assertTrue(fontsPage.$.minimumSizeFontPreview.hidden);
+  });
+
+  test('font preview size', async () => {
+    /**
+     * @param {!HTMLElement} element
+     * @param {number} expectedFontSize
+     */
+    function assertFontSize(element, expectedFontSize) {
+      // Check that the font size is applied correctly.
+      const {value, unit} = element.computedStyleMap().get('font-size');
+      assertEquals('px', unit);
+      assertEquals(expectedFontSize, value);
+      // Check that the font size value is displayed correctly.
+      assertTrue(element.textContent.trim().startsWith(expectedFontSize));
+    }
+
+    fontsPage.prefs = {
+      webkit: {
+        webprefs: {
+          default_font_size: {value: 20},
+          default_fixed_font_size: {value: 10},
+        }
+      }
+    };
+
+    assertFontSize(fontsPage.$.standardFontPreview, 20);
+    assertFontSize(fontsPage.$.serifFontPreview, 20);
+    assertFontSize(fontsPage.$.sansSerifFontPreview, 20);
+    assertFontSize(fontsPage.$.fixedFontPreview, 10);
   });
 });

@@ -4,6 +4,8 @@
 
 #include "content/browser/mojo_binder_policy_applier.h"
 
+#include "mojo/public/cpp/bindings/message.h"
+
 namespace content {
 
 MojoBinderPolicyApplier::MojoBinderPolicyApplier(
@@ -13,20 +15,46 @@ MojoBinderPolicyApplier::MojoBinderPolicyApplier(
 
 MojoBinderPolicyApplier::~MojoBinderPolicyApplier() = default;
 
+// static
+std::unique_ptr<MojoBinderPolicyApplier>
+MojoBinderPolicyApplier::CreateForSameOriginPrerendering(
+    base::OnceClosure cancel_closure) {
+  return std::make_unique<MojoBinderPolicyApplier>(
+      MojoBinderPolicyMapImpl::GetInstanceForSameOriginPrerendering(),
+      std::move(cancel_closure));
+}
+
 void MojoBinderPolicyApplier::ApplyPolicyToBinder(
     const std::string& interface_name,
     base::OnceClosure binder_callback) {
-  if (grant_all_) {
+  if (mode_ == Mode::kGrantAll) {
     std::move(binder_callback).Run();
     return;
   }
   const MojoBinderPolicy policy = GetMojoBinderPolicy(interface_name);
+
+  // Running in kPrepareToGrantAll mode means that the page will be activated
+  // soon, so the restrictions should be relaxed.
+  if (mode_ == Mode::kPrepareToGrantAll) {
+    switch (policy) {
+      case MojoBinderPolicy::kGrant:
+        std::move(binder_callback).Run();
+        break;
+      case MojoBinderPolicy::kCancel:
+      case MojoBinderPolicy::kDefer:
+      case MojoBinderPolicy::kUnexpected:
+        deferred_binders_.push_back(std::move(binder_callback));
+        break;
+    }
+    return;
+  }
+
+  DCHECK_EQ(mode_, Mode::kEnforce);
   switch (policy) {
     case MojoBinderPolicy::kGrant:
       std::move(binder_callback).Run();
       break;
     case MojoBinderPolicy::kCancel:
-      // TODO(crbug.com/1132752): Integrate with `PrerenderHostRegistry`.
       if (cancel_closure_)
         std::move(cancel_closure_).Run();
       break;
@@ -34,19 +62,29 @@ void MojoBinderPolicyApplier::ApplyPolicyToBinder(
       deferred_binders_.push_back(std::move(binder_callback));
       break;
     case MojoBinderPolicy::kUnexpected:
-      // TODO(crbug.com/1141364): Report a metric to understand the unexpected
-      // case.
+      mojo::ReportBadMessage("MBPA_BAD_INTERFACE: " + interface_name);
+      if (cancel_closure_)
+        std::move(cancel_closure_).Run();
       break;
   }
 }
 
+void MojoBinderPolicyApplier::PrepareToGrantAll() {
+  DCHECK_EQ(mode_, Mode::kEnforce);
+  mode_ = Mode::kPrepareToGrantAll;
+}
+
 void MojoBinderPolicyApplier::GrantAll() {
-  DCHECK(!grant_all_);
-  grant_all_ = true;
+  DCHECK_NE(mode_, Mode::kGrantAll);
+  mode_ = Mode::kGrantAll;
   // It's safe to iterate over `deferred_binders_` because no more callbacks
   // will be added to it once `grant_all_` is true."
   for (auto& deferred_binder : deferred_binders_)
     std::move(deferred_binder).Run();
+  deferred_binders_.clear();
+}
+
+void MojoBinderPolicyApplier::DropDeferredBinders() {
   deferred_binders_.clear();
 }
 

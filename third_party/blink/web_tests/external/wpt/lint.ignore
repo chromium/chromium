@@ -12,7 +12,6 @@ INDENT TABS: encoding/legacy*/*
 
 TRAILING WHITESPACE: html/canvas/tools/current-work-canvas.xhtml
 TRAILING WHITESPACE: conformance-checkers/*
-TRAILING WHITESPACE: content-security-policy/*
 TRAILING WHITESPACE: WebIDL/valid/*
 
 ## File types that should never be checked ##
@@ -56,6 +55,7 @@ W3C-TEST.ORG: .gitignore
 W3C-TEST.ORG: README.md
 W3C-TEST.ORG: */README.md
 W3C-TEST.ORG: docs/*
+WEB-PLATFORM.TEST:*/README.md
 WEB-PLATFORM.TEST:docs/*
 CR AT EOL, INDENT TABS:docs/make.bat
 INDENT TABS:docs/Makefile
@@ -94,7 +94,7 @@ TRAILING WHITESPACE: server-timing/resources/parsing/*
 TRAILING WHITESPACE: webvtt/parsing/file-parsing/support/*.vtt
 TRAILING WHITESPACE: webvtt/parsing/file-parsing/tests/support/*.vtt
 TRAILING WHITESPACE: xhr/resources/headers-some-are-empty.asis
-TRAILING WHITESPACE: cookies/http-state/resources/test-files/*
+TRAILING WHITESPACE: content-security-policy/support/manifest.json
 
 # Intentional use of print statements
 PRINT STATEMENT: dom/nodes/Document-createElement-namespace-tests/generate.py
@@ -107,6 +107,7 @@ CONSOLE: console/*
 CONSOLE: js/builtins/weakrefs/resources/maybe-garbage-collect.js
 CONSOLE: resources/check-layout-th.js
 CONSOLE: resources/chromium/*
+CONSOLE: resources/testharness.js
 CONSOLE: streams/resources/test-utils.js
 CONSOLE: service-workers/service-worker/resources/navigation-redirect-other-origin.html
 CONSOLE: service-workers/service-worker/navigation-redirect.https.html
@@ -128,6 +129,7 @@ PARSE-FAILED: dom/nodes/Document-createElement-namespace-tests/empty.xml
 PARSE-FAILED: dom/nodes/Document-createElement-namespace-tests/minimal_html.svg
 PARSE-FAILED: dom/nodes/Document-createElement-namespace-tests/minimal_html.xhtml
 PARSE-FAILED: dom/nodes/Document-createElement-namespace-tests/minimal_html.xml
+PARSE-FAILED: custom-elements/xhtml-crash.xhtml
 
 # setTimeout usage (should probably mostly be fixed)
 SET TIMEOUT: *-manual.*
@@ -158,6 +160,7 @@ SET TIMEOUT: html/browsers/history/the-location-interface/*
 SET TIMEOUT: html/browsers/history/the-session-history-of-browsing-contexts/*
 SET TIMEOUT: html/browsers/offline/*
 SET TIMEOUT: html/browsers/the-window-object/*
+SET TIMEOUT: html/cross-origin-embedder-policy/credentialless/resources/dispatcher.js
 SET TIMEOUT: html/editing/dnd/*
 SET TIMEOUT: html/semantics/embedded-content/the-iframe-element/*
 SET TIMEOUT: html/semantics/embedded-content/the-img-element/*
@@ -214,6 +217,12 @@ SET TIMEOUT: webvtt/*
 SET TIMEOUT: workers/*
 SET TIMEOUT: xhr/resources/init.htm
 SET TIMEOUT: xhr/resources/xmlhttprequest-timeout.js
+SET TIMEOUT: focus/support/iframe-focus-with-different-site-intermediate-frame-outer.sub.html
+SET TIMEOUT: focus/support/iframe-focus-with-different-site-intermediate-frame-middle.sub.html
+SET TIMEOUT: focus/support/iframe-contentwindow-focus-with-different-site-intermediate-frame-outer.sub.html
+SET TIMEOUT: focus/support/iframe-contentwindow-focus-with-different-site-intermediate-frame-middle.sub.html
+SET TIMEOUT: focus/support/iframe-focuses-parent-different-site-inner.html
+SET TIMEOUT: focus/support/iframe-focuses-parent-same-site-inner.html
 
 # generate_tests implementation and sample usage
 GENERATE_TESTS: resources/test/tests/functional/generate-callback.html
@@ -274,7 +283,7 @@ GENERATE_TESTS: html/syntax/parsing/template/clearing-the-stack-back-to-a-given-
 GENERATE_TESTS: html/syntax/parsing/template/clearing-the-stack-back-to-a-given-context/clearing-stack-back-to-a-table-row-context.html
 GENERATE_TESTS: html/syntax/parsing/template/creating-an-element-for-the-token/template-owner-document.html
 GENERATE_TESTS: html/syntax/serializing-html-fragments/serializing.html
-GENERATE_TESTS: html/webappapis/atob/base64.html
+GENERATE_TESTS: html/webappapis/atob/base64.any.js
 GENERATE_TESTS: mediacapture-fromelement/capture.html
 GENERATE_TESTS: mediacapture-fromelement/creation.html
 GENERATE_TESTS: mediacapture-fromelement/ended.html
@@ -300,10 +309,10 @@ SET TIMEOUT: document-policy/font-display/override-to-optional.tentative.html
 SET TIMEOUT: feature-policy/experimental-features/resources/focus-without-user-activation-iframe-tentative.html
 SET TIMEOUT: permissions-policy/experimental-features/resources/focus-without-user-activation-iframe-tentative.html
 SET TIMEOUT: html/browsers/windows/auxiliary-browsing-contexts/resources/close-opener.html
-SET TIMEOUT: html/cross-origin-embedder-policy/resources/navigate-none.sub.html
-SET TIMEOUT: html/cross-origin-embedder-policy/resources/navigate-require-corp.sub.html
-SET TIMEOUT: html/cross-origin-embedder-policy/resources/navigate-require-corp-same-site.sub.html
 SET TIMEOUT: html/cross-origin-embedder-policy/resources/reporting-worker.js
+SET TIMEOUT: html/cross-origin-opener-policy/navigate-to-aboutblank.https.html
+SET TIMEOUT: html/cross-origin-opener-policy/navigate-top-to-aboutblank.https.html
+SET TIMEOUT: html/cross-origin-opener-policy/resources/dispatcher.js
 SET TIMEOUT: html/dom/documents/dom-tree-accessors/Document.currentScript.html
 SET TIMEOUT: html/webappapis/timers/*
 SET TIMEOUT: orientation-event/resources/orientation-event-helpers.js
@@ -591,15 +600,7 @@ CSS-COLLIDING-REF-NAME: css/CSS2/visuren/inline-formatting-context-001-ref.xht
 CSS-COLLIDING-REF-NAME: css/CSS2/linebox/inline-formatting-context-001-ref.xht
 CSS-COLLIDING-REF-NAME: css/css-flexbox/reference/percentage-size-subitems-001-ref.html
 CSS-COLLIDING-REF-NAME: css/css-grid/grid-items/percentage-size-subitems-001-ref.html
-CSS-COLLIDING-REF-NAME: css/css-contain/reference/contain-size-button-001-ref.html
-CSS-COLLIDING-REF-NAME: css/vendor-imports/mozilla/mozilla-central-reftests/contain/contain-size-button-001-ref.html
-CSS-COLLIDING-REF-NAME: css/css-contain/reference/contain-size-grid-001-ref.html
-CSS-COLLIDING-REF-NAME: css/vendor-imports/mozilla/mozilla-central-reftests/contain/contain-size-grid-001-ref.html
 CSS-COLLIDING-SUPPORT-NAME: css/css-backgrounds/support/red.png
-CSS-COLLIDING-REF-NAME: css/css-contain/reference/contain-size-fieldset-001-ref.html
-CSS-COLLIDING-REF-NAME: css/vendor-imports/mozilla/mozilla-central-reftests/contain/contain-size-fieldset-001-ref.html
-CSS-COLLIDING-REF-NAME: css/css-contain/reference/contain-size-fieldset-002-ref.html
-CSS-COLLIDING-REF-NAME: css/vendor-imports/mozilla/mozilla-central-reftests/contain/contain-size-fieldset-002-ref.html
 CSS-COLLIDING-SUPPORT-NAME: css/compositing/mix-blend-mode/support/red.png
 CSS-COLLIDING-SUPPORT-NAME: css/compositing/background-blending/support/red.png
 CSS-COLLIDING-SUPPORT-NAME: css/CSS2/normal-flow/support/replaced-min-max-3.png
@@ -609,6 +610,9 @@ CSS-COLLIDING-SUPPORT-NAME: css/css-backgrounds/support/50x50-green.png
 CSS-COLLIDING-SUPPORT-NAME: css/css-grid/grid-items/support/50x50-green.png
 CSS-COLLIDING-SUPPORT-NAME: css/CSS2/support/50x50-green.png
 CSS-COLLIDING-SUPPORT-NAME: css/CSS2/ui/support/animated.gif
+CSS-COLLIDING-SUPPORT-NAME: css/css-grid/alignment/support/50x50-green.png
+CSS-COLLIDING-SUPPORT-NAME: css/css-grid/alignment/support/25x50-green.png
+CSS-COLLIDING-SUPPORT-NAME: css/css-grid/grid-items/support/25x50-green.png
 CSS-COLLIDING-SUPPORT-NAME: css/CSS2/backgrounds/support/animated.gif
 CSS-COLLIDING-SUPPORT-NAME: css/css-shapes/shape-outside/shape-image/support/animated.gif
 CSS-COLLIDING-SUPPORT-NAME: css/css-display/support/util.js
@@ -711,6 +715,7 @@ WEB-PLATFORM.TEST:signed-exchange/appcache/resources/*.sxg
 WEB-PLATFORM.TEST:signed-exchange/resources/generate-test-sxgs.sh
 
 # Web Bundle files have hard-coded URLs
+WEB-PLATFORM.TEST:web-bundle/resources/*.har
 WEB-PLATFORM.TEST:web-bundle/resources/generate-test-wbns.sh
 WEB-PLATFORM.TEST:web-bundle/resources/nested/*.wbn
 WEB-PLATFORM.TEST:web-bundle/resources/wbn/*.wbn
@@ -719,23 +724,25 @@ WEB-PLATFORM.TEST:web-bundle/subresource-loading/*.html
 # Tests that depend on resources in /gen/ in Chromium:
 # https://github.com/web-platform-tests/wpt/issues/16455
 # Please consult with ecosystem-infra@chromium.org before adding more.
-MISSING DEPENDENCY: bluetooth/resources/bluetooth-test.js
-MISSING DEPENDENCY: contacts/resources/helpers.js
 MISSING DEPENDENCY: credential-management/support/otpcredential-helper.js
-MISSING DEPENDENCY: generic-sensor/resources/generic-sensor-helpers.js
-MISSING DEPENDENCY: idle-detection/resources/idle-detection-helper.js
-MISSING DEPENDENCY: mediacapture-image/resources/imagecapture-helpers.js
-MISSING DEPENDENCY: orientation-event/resources/orientation-event-helpers.js
-MISSING DEPENDENCY: resources/test-only-api.js
-MISSING DEPENDENCY: screen_enumeration/resources/screenenumeration-helpers.js
-MISSING DEPENDENCY: serial/resources/automation.js
-MISSING DEPENDENCY: shape-detection/resources/shapedetection-helpers.js
-MISSING DEPENDENCY: web-nfc/resources/nfc-helpers.js
-MISSING DEPENDENCY: webusb/resources/usb-helpers.js
-MISSING DEPENDENCY: webxr/resources/webxr_util.js
+MISSING DEPENDENCY: resources/chromium/contacts_manager_mock.js
+MISSING DEPENDENCY: resources/chromium/web-bluetooth-test.js
+MISSING DEPENDENCY: resources/chromium/webusb-test.js
+MISSING DEPENDENCY: resources/chromium/fake-serial.js
+MISSING DEPENDENCY: resources/chromium/generic_sensor_mocks.js
+MISSING DEPENDENCY: resources/chromium/mock-barcodedetection.js
+MISSING DEPENDENCY: resources/chromium/mock-facedetection.js
+MISSING DEPENDENCY: resources/chromium/mock-idle-detection.js
+MISSING DEPENDENCY: resources/chromium/mock-imagecapture.js
+MISSING DEPENDENCY: resources/chromium/mock-screenenumeration.js
+MISSING DEPENDENCY: resources/chromium/mock-textdetection.js
+MISSING DEPENDENCY: resources/chromium/nfc-mock.js
+MISSING DEPENDENCY: resources/chromium/webxr-test.js
 
 # Tests that are false positives for using Ahem as a system font
 AHEM SYSTEM FONT: acid/acid3/test.html
+AHEM SYSTEM FONT: resource-timing/entry-attributes.html
+AHEM SYSTEM FONT: resource-timing/font-timestamps.html
 AHEM SYSTEM FONT: resource-timing/resources/all_resource_types.htm
 AHEM SYSTEM FONT: resource-timing/resources/iframe-reload-TAO.sub.html
 AHEM SYSTEM FONT: html/canvas/element/drawing-text-to-the-canvas/2d.text.measure.fontBoundingBox.ahem.html

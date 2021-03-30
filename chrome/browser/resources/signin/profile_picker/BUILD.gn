@@ -8,7 +8,7 @@ import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
-import("../../optimize_webui.gni")
+import("../../tools/optimize_webui.gni")
 
 preprocess_folder = "preprocessed"
 preprocess_manifest = "preprocessed_manifest.json"
@@ -106,10 +106,11 @@ preprocess_if_expr("preprocess_generated") {
     "profile_creation_flow/local_profile_customization.js",
     "profile_picker_shared_css.js",
     "profile_creation_flow/shared_css.js",
+    "profile_switch.js",
   ]
 }
 
-grit("profile_picker_resources") {
+grit("resources") {
   defines = chrome_grit_defines
 
   # These arguments are needed since the grd is generated at build time.
@@ -150,6 +151,7 @@ js_type_check("profile_picker_files") {
     ":profile_picker",
     ":profile_picker_app",
     ":profile_picker_main_view",
+    ":profile_switch",
   ]
 }
 
@@ -168,6 +170,7 @@ js_library("ensure_lazy_loaded") {
 
 js_library("lazy_load") {
   deps = [
+    ":profile_switch",
     "profile_creation_flow:local_profile_customization",
     "profile_creation_flow:profile_type_choice",
   ]
@@ -201,6 +204,7 @@ js_library("profile_picker_app") {
     ":ensure_lazy_loaded",
     ":navigation_behavior",
     ":profile_picker_main_view",
+    ":profile_switch",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render.m",
     "//ui/webui/resources/cr_elements/cr_view_manager:cr_view_manager.m",
@@ -211,8 +215,10 @@ js_library("profile_card") {
   deps = [
     ":manage_profiles_browser_proxy",
     ":profile_card_menu",
+    "//third_party/polymer/v3_0/components-chromium/paper-tooltip:paper-tooltip",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }
 
@@ -221,6 +227,7 @@ js_library("profile_card_menu") {
     ":manage_profiles_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
     "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -239,6 +246,10 @@ js_library("policy_helper") {
   deps = [ "//ui/webui/resources/js:load_time_data.m" ]
 }
 
+js_library("profile_switch") {
+  deps = [ ":manage_profiles_browser_proxy" ]
+}
+
 group("web_components") {
   public_deps = [
     ":web_components_local",
@@ -253,5 +264,6 @@ html_to_js("web_components_local") {
     "profile_card.js",
     "profile_card_menu.js",
     "profile_picker_shared_css.js",
+    "profile_switch.js",
   ]
 }

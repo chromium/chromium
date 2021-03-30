@@ -23,6 +23,11 @@
 #include "services/tracing/public/mojom/tracing_service.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/command_line.h"
+#include "chromeos/dbus/constants/dbus_switches.h"
+#endif
+
 #if defined(OS_POSIX)
 // As per 'gn help check':
 /*
@@ -38,8 +43,9 @@
 
 namespace tracing {
 namespace {
-std::unique_ptr<SystemProducer> NewSystemProducer(PerfettoTaskRunner* runner,
-                                                  const char* socket_name) {
+std::unique_ptr<SystemProducer> NewSystemProducer(
+    base::tracing::PerfettoTaskRunner* runner,
+    const char* socket_name) {
 #if defined(OS_POSIX)
   DCHECK(socket_name);
   return std::make_unique<PosixSystemProducer>(socket_name, runner);
@@ -172,8 +178,9 @@ void PerfettoTracedProcess::CreateConsumerConnection(
 // of TraceWriters in TLS, which could happen after the PerfettoTracedProcess
 // is deleted.
 // static
-PerfettoTaskRunner* PerfettoTracedProcess::GetTaskRunner() {
-  static base::NoDestructor<PerfettoTaskRunner> task_runner(nullptr);
+base::tracing::PerfettoTaskRunner* PerfettoTracedProcess::GetTaskRunner() {
+  static base::NoDestructor<base::tracing::PerfettoTaskRunner> task_runner(
+      nullptr);
   return task_runner.get();
 }
 
@@ -181,17 +188,11 @@ PerfettoTaskRunner* PerfettoTracedProcess::GetTaskRunner() {
 void PerfettoTracedProcess::ResetTaskRunnerForTesting(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   GetTaskRunner()->ResetTaskRunnerForTesting(task_runner);
+  // On the first call within the process's lifetime, this will call
+  // PerfettoTracedProcess::Get(), ensuring PerfettoTracedProcess is created.
   InitTracingPostThreadPoolStartAndFeatureList();
-  // Detaching the sequence_checker_ must happen after we reset the task runner.
-  // This is because the Get() could call the constructor (if this is the first
-  // call to Get()) which would then PostTask which would create races if we
-  // reset the task runner right afterwards.
+  // Disassociate the PerfettoTracedProcess from any prior task runner.
   DETACH_FROM_SEQUENCE(PerfettoTracedProcess::Get()->sequence_checker_);
-  // Call Get() explicitly. This ensures that we constructed the
-  // PerfettoTracedProcess. On some tests (like cast linux) the DETACH macro is
-  // compiled to nothing, which woud cause this PostTask to access a nullptr the
-  // producer requires a PostTask from inside the constructor.
-  PerfettoTracedProcess::Get();
   PerfettoTracedProcess::GetTaskRunner()->GetOrCreateTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce([]() {
         PerfettoTracedProcess::Get()
@@ -260,10 +261,36 @@ void PerfettoTracedProcess::SetupClientLibrary() {
   init_args.platform = platform_.get();
   init_args.custom_backend = tracing_backend_.get();
   init_args.backends |= perfetto::kCustomBackend;
+// System tracing backend is currently only supported on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Enable the system backend for access as system consumer
+  // in the browser process.
+  bool is_browser = base::CommandLine::ForCurrentProcess()
+                        ->GetSwitchValueASCII("type")
+                        .empty();
+
+  // We currently only use the system backend for consumer connections, and
+  // those should only be allowed when the CrOS device is in dev mode.
+  // TODO(eseckler): Augment this check with content's
+  // TracingDelegate::IsSystemWideTracingEnabled().
+  // TODO(eseckler): Move the check for the system wide tracing policy into the
+  // consumer backend connection, it probably shouldn't affect the producer
+  // connection.
+  bool is_system_wide_tracing_enabled =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          chromeos::switches::kSystemDevMode);
+
+  if (is_browser && is_system_wide_tracing_enabled &&
+      tracing::ShouldSetupSystemTracing()) {
+    init_args.backends |= perfetto::kSystemBackend;
+  }
+#endif
   perfetto::Tracing::Initialize(init_args);
 }
 
 void PerfettoTracedProcess::OnThreadPoolAvailable() {
+  SetupClientLibrary();
+
   // Create our task runner now, so that ProducerClient/SystemProducer are
   // notified about future data source registrations and schedule any necessary
   // startup tracing timeouts.

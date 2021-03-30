@@ -178,7 +178,8 @@ class UserPolicySigninServiceTest : public testing::Test {
 
   virtual void AddProfile() {
     // For this test, the user should not be signed in yet.
-    DCHECK(!identity_test_env()->identity_manager()->HasPrimaryAccount());
+    DCHECK(!identity_test_env()->identity_manager()->HasPrimaryAccount(
+        signin::ConsentLevel::kSync));
 
     // Initializing UserPolicySigninService while the user is not signed in
     // should result in the store being cleared to remove any lingering policy.
@@ -317,7 +318,8 @@ class UserPolicySigninServiceSignedInTest : public UserPolicySigninServiceTest {
 
 TEST_F(UserPolicySigninServiceTest, InitWhileSignedOut) {
   // Make sure user is not signed in.
-  ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount());
+  ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSync));
 
   // UserCloudPolicyManager should not be initialized.
   ASSERT_FALSE(manager_->core()->service());
@@ -326,7 +328,8 @@ TEST_F(UserPolicySigninServiceTest, InitWhileSignedOut) {
 #if !defined(OS_ANDROID)
 TEST_F(UserPolicySigninServiceTest, InitRefreshTokenAvailableBeforeSignin) {
   // Make sure user is not signed in.
-  ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount());
+  ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSync));
 
   // No oauth access token yet, so client registration should be deferred.
   ASSERT_FALSE(IsRequestActive());

@@ -8,9 +8,9 @@
 #include <stdint.h>
 
 #include <set>
+#include <string>
 
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
 #include "net/base/network_delegate.h"
@@ -59,7 +59,7 @@ class NET_EXPORT NetworkDelegateImpl : public NetworkDelegate {
 
   void OnURLRequestDestroyed(URLRequest* request) override;
 
-  void OnPACScriptError(int line_number, const base::string16& error) override;
+  void OnPACScriptError(int line_number, const std::u16string& error) override;
 
   bool OnCanGetCookies(const URLRequest& request,
                        bool allowed_from_caller) override;

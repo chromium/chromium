@@ -88,7 +88,7 @@ class MEDIA_EXPORT VideoRendererImpl
   // VideoRendererSink::RenderCallback implementation.
   scoped_refptr<VideoFrame> Render(base::TimeTicks deadline_min,
                                    base::TimeTicks deadline_max,
-                                   bool background_rendering) override;
+                                   RenderingMode rendering_mode) override;
   void OnFrameDropped() override;
   base::TimeDelta GetPreferredRenderInterval() override;
 
@@ -112,8 +112,7 @@ class MEDIA_EXPORT VideoRendererImpl
 
   // Callback for |video_decoder_stream_| to deliver decoded video frames and
   // report video decoding status.
-  void FrameReady(VideoDecoderStream::ReadStatus status,
-                  scoped_refptr<VideoFrame> frame);
+  void FrameReady(VideoDecoderStream::ReadResult result);
 
   // Helper method for enqueueing a frame to |alogorithm_|.
   void AddReadyFrame_Locked(scoped_refptr<VideoFrame> frame);

@@ -263,15 +263,13 @@ IdentityInternalsWebUITestAsync.prototype = {
 TEST_F('IdentityInternalsWebUITestAsync', 'revokeToken', function() {
   const tokenListBefore = this.getTokens();
   expectEquals(2, tokenListBefore.length);
-  const tokenRevokeDone = identity_internals.tokenRevokeDone;
-  identity_internals.tokenRevokeDone = this.continueTest(
-      WhenTestDone.ALWAYS, function(accessTokens) {
-        tokenRevokeDone.call(identity_internals, accessTokens);
-        identity_internals.tokenRevokeDone = tokenRevokeDone;
-        const tokenListAfter = this.getTokens();
-        expectEquals(1, tokenListAfter.length);
-        expectEquals(this.getAccessToken(tokenListBefore[0]),
-                     this.getAccessToken(tokenListAfter[0]));
-      }.bind(this));
+  const tokenList = document.querySelector('#token-list');
+  tokenList.addEventListener('token-removed-for-test', e => {
+    const tokenListAfter = this.getTokens();
+    expectEquals(1, tokenListAfter.length);
+    expectEquals(this.getAccessToken(tokenListBefore[0]),
+                 this.getAccessToken(tokenListAfter[0]));
+    testDone();
+  });
   this.getRevokeButton(tokenListBefore[1]).click();
 });

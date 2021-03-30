@@ -4,12 +4,20 @@
 
 (async function() {
   TestRunner.addResult(`Tests that pseudo elements and their styles are handled properly.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
       #inspected::target-text {
         color: green;
+      }
+
+      #inspected::spelling-error {
+        color: orange;
+      }
+
+      #inspected::grammar-error {
+        color: teal;
       }
 
       #inspected {

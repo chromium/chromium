@@ -203,7 +203,7 @@ ShillClientHelper::ShillClientHelper(dbus::ObjectProxy* proxy)
     : proxy_(proxy), active_refs_(0) {}
 
 ShillClientHelper::~ShillClientHelper() {
-  if (observer_list_.might_have_observers())
+  if (!observer_list_.empty())
     NET_LOG(ERROR) << "ShillClientHelper destroyed with active observers";
 }
 
@@ -236,7 +236,7 @@ void ShillClientHelper::RemovePropertyChangedObserver(
 
 void ShillClientHelper::MonitorPropertyChanged(
     const std::string& interface_name) {
-  if (observer_list_.might_have_observers()) {
+  if (!observer_list_.empty()) {
     // Effectively monitor the PropertyChanged now.
     MonitorPropertyChangedInternal(interface_name);
   } else {
@@ -494,7 +494,7 @@ void ShillClientHelper::OnSignalConnected(const std::string& interface,
 }
 
 void ShillClientHelper::OnPropertyChanged(dbus::Signal* signal) {
-  if (!observer_list_.might_have_observers())
+  if (observer_list_.empty())
     return;
 
   dbus::MessageReader reader(signal);

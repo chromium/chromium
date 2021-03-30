@@ -241,12 +241,11 @@ TEST(RemoteSuggestionTest, ToContentSuggestionWithoutNotificationInfo) {
               Eq(Category::FromKnownCategory(KnownCategories::ARTICLES)));
   EXPECT_THAT(sugg.id().id_within_category(), Eq("foo"));
   EXPECT_THAT(sugg.url(), Eq(GURL("http://cdn.ampproject.org/c/foo/")));
-  EXPECT_THAT(sugg.title(), Eq(base::UTF8ToUTF16("a suggestion title")));
+  EXPECT_THAT(sugg.title(), Eq(u"a suggestion title"));
   EXPECT_THAT(sugg.snippet_text(),
-              Eq(base::UTF8ToUTF16("the snippet describing the suggestion.")));
+              Eq(u"the snippet describing the suggestion."));
   EXPECT_THAT(sugg.publish_date().ToJavaTime(), Eq(1467284497000));
-  EXPECT_THAT(sugg.publisher_name(),
-              Eq(base::UTF8ToUTF16("Great Suggestions Inc.")));
+  EXPECT_THAT(sugg.publisher_name(), Eq(u"Great Suggestions Inc."));
   EXPECT_THAT(sugg.score(), Eq(1.5));
   EXPECT_THAT(sugg.salient_image_url(), Eq(GURL("http://google.com/logo/")));
   EXPECT_THAT(sugg.notification_extra(), IsNull());
@@ -265,12 +264,11 @@ TEST(RemoteSuggestionTest, ToContentSuggestionWithNotificationInfo) {
               Eq(Category::FromKnownCategory(KnownCategories::ARTICLES)));
   EXPECT_THAT(sugg.id().id_within_category(), Eq("foo"));
   EXPECT_THAT(sugg.url(), Eq(GURL("http://cdn.ampproject.org/c/foo/")));
-  EXPECT_THAT(sugg.title(), Eq(base::UTF8ToUTF16("a suggestion title")));
+  EXPECT_THAT(sugg.title(), Eq(u"a suggestion title"));
   EXPECT_THAT(sugg.snippet_text(),
-              Eq(base::UTF8ToUTF16("the snippet describing the suggestion.")));
+              Eq(u"the snippet describing the suggestion."));
   EXPECT_THAT(sugg.publish_date().ToJavaTime(), Eq(1467284497000));
-  EXPECT_THAT(sugg.publisher_name(),
-              Eq(base::UTF8ToUTF16("Great Suggestions Inc.")));
+  EXPECT_THAT(sugg.publisher_name(), Eq(u"Great Suggestions Inc."));
   EXPECT_THAT(sugg.score(), Eq(1.5));
   ASSERT_THAT(sugg.notification_extra(), NotNull());
   EXPECT_THAT(sugg.notification_extra()->deadline.ToJavaTime(),

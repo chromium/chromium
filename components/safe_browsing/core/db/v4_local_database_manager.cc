@@ -12,12 +12,14 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_map.h"
+#include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_tokenizer.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -35,8 +37,23 @@ using CommandLineSwitchAndThreatType = std::pair<std::string, ThreatType>;
 // The expiration time of the full hash stored in the artificial database.
 const int64_t kFullHashExpiryTimeInMinutes = 60;
 
+// The number of bytes in a full hash entry.
+const int64_t kBytesPerFullHashEntry = 32;
+
+// The minimum number of entries in the allowlist. If the actual size is
+// smaller than this number, the allowlist is considered as unavailable.
+const int kHighConfidenceAllowlistMinimumEntryCount = 100;
+
 const ThreatSeverity kLeastSeverity =
     std::numeric_limits<ThreatSeverity>::max();
+
+// This map contain pairs of the old and the new name for certain .store files.
+constexpr auto kStoreFilesToRename =
+    base::MakeFixedFlatMap<base::StringPiece, base::StringPiece>({
+        {"CertCsdDownloadWhitelist.store", "CertCsdDownloadAllowlist.store"},
+        {"UrlCsdDownloadWhitelist.store", "UrlCsdDownloadAllowlist.store"},
+        {"UrlCsdWhitelist.store", "UrlCsdAllowlist.store"},
+    });
 
 ListInfos GetListInfos() {
 // NOTE(vakh): When adding a store here, add the corresponding store-specific
@@ -64,6 +81,7 @@ ListInfos GetListInfos() {
   const bool kSyncOnChromeDesktopBuilds = kIsChromeBranded && kSyncOnDesktopBuilds;
   const bool kSyncAlways = true;
   const bool kSyncNever = false;
+
   return ListInfos({
       ListInfo(kSyncOnDesktopBuilds, "IpMalware.store", GetIpMalwareId(),
                SB_THREAT_TYPE_UNUSED),
@@ -77,23 +95,25 @@ ListInfos GetListInfos() {
                SB_THREAT_TYPE_URL_BINARY_MALWARE),
       ListInfo(kSyncOnDesktopBuilds, "ChromeExtMalware.store",
                GetChromeExtMalwareId(), SB_THREAT_TYPE_EXTENSION),
-      ListInfo(kSyncOnChromeDesktopBuilds, "CertCsdDownloadWhitelist.store",
-               GetCertCsdDownloadWhitelistId(), SB_THREAT_TYPE_UNUSED),
+      ListInfo(kSyncOnChromeDesktopBuilds, "CertCsdDownloadAllowlist.store",
+               GetCertCsdDownloadAllowlistId(), SB_THREAT_TYPE_UNUSED),
       ListInfo(kSyncOnChromeDesktopBuilds, "ChromeUrlClientIncident.store",
                GetChromeUrlClientIncidentId(),
-               SB_THREAT_TYPE_BLACKLISTED_RESOURCE),
+               SB_THREAT_TYPE_BLOCKLISTED_RESOURCE),
       ListInfo(kSyncAlways, "UrlBilling.store", GetUrlBillingId(),
                SB_THREAT_TYPE_BILLING),
-      ListInfo(kSyncOnChromeDesktopBuilds, "UrlCsdDownloadWhitelist.store",
-               GetUrlCsdDownloadWhitelistId(), SB_THREAT_TYPE_UNUSED),
-      ListInfo(kSyncOnChromeDesktopBuilds, "UrlCsdWhitelist.store",
-               GetUrlCsdWhitelistId(), SB_THREAT_TYPE_CSD_WHITELIST),
+      ListInfo(kSyncOnChromeDesktopBuilds, "UrlCsdDownloadAllowlist.store",
+               GetUrlCsdDownloadAllowlistId(), SB_THREAT_TYPE_UNUSED),
+      ListInfo(kSyncOnChromeDesktopBuilds || kSyncOnIos,
+               "UrlCsdAllowlist.store", GetUrlCsdAllowlistId(),
+               SB_THREAT_TYPE_CSD_ALLOWLIST),
       ListInfo(kSyncOnChromeDesktopBuilds, "UrlSubresourceFilter.store",
                GetUrlSubresourceFilterId(), SB_THREAT_TYPE_SUBRESOURCE_FILTER),
       ListInfo(kSyncOnChromeDesktopBuilds, "UrlSuspiciousSite.store",
                GetUrlSuspiciousSiteId(), SB_THREAT_TYPE_SUSPICIOUS_SITE),
       ListInfo(kSyncNever, "", GetChromeUrlApiId(), SB_THREAT_TYPE_API_ABUSE),
-      ListInfo(kSyncOnChromeDesktopBuilds || kSyncOnIos, "UrlHighConfidenceAllowlist.store",
+      ListInfo(kSyncOnChromeDesktopBuilds || kSyncOnIos,
+               "UrlHighConfidenceAllowlist.store",
                GetUrlHighConfidenceAllowlistId(),
                SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST),
   });
@@ -195,12 +215,7 @@ enum StoreAvailabilityResult {
 };
 
 void RecordTimeSinceLastUpdateHistograms(const base::Time& last_response_time) {
-  bool response_received = !last_response_time.is_null();
-  UMA_HISTOGRAM_BOOLEAN(
-      "SafeBrowsing.V4LocalDatabaseManager.HasReceivedUpdateResponse",
-      response_received);
-
-  if (!response_received)
+  if (last_response_time.is_null())
     return;
 
   base::TimeDelta time_since_update = base::Time::Now() - last_response_time;
@@ -284,6 +299,10 @@ V4LocalDatabaseManager::V4LocalDatabaseManager(
                        : base::ThreadPool::CreateSequencedTaskRunner(
                              {base::MayBlock(),
                               base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&V4LocalDatabaseManager::RenameOldStoreFiles,
+                                weak_factory_.GetWeakPtr()));
+
   DCHECK(!base_path_.empty());
   DCHECK(!list_infos_.empty());
 }
@@ -317,9 +336,9 @@ void V4LocalDatabaseManager::CancelCheck(Client* client) {
   }
 }
 
-bool V4LocalDatabaseManager::CanCheckResourceType(
-    blink::mojom::ResourceType resource_type) const {
-  // We check all types since most checks are fast.
+bool V4LocalDatabaseManager::CanCheckRequestDestination(
+    network::mojom::RequestDestination request_destination) const {
+  // We check all destinations since most checks are fast.
   return true;
 }
 
@@ -418,14 +437,21 @@ AsyncMatch V4LocalDatabaseManager::CheckUrlForHighConfidenceAllowlist(
   bool all_stores_available = AreAllStoresAvailableNow(stores_to_check);
   UMA_HISTOGRAM_BOOLEAN("SafeBrowsing.RT.AllStoresAvailable",
                         all_stores_available);
-  if (!enabled_ || !CanCheckUrl(url) ||
-      (!all_stores_available &&
-       artificially_marked_store_and_hash_prefixes_.empty())) {
+  bool is_artificial_prefix_empty =
+      artificially_marked_store_and_hash_prefixes_.empty();
+  bool is_allowlist_too_small =
+      IsStoreTooSmall(GetUrlHighConfidenceAllowlistId(), kBytesPerFullHashEntry,
+                      kHighConfidenceAllowlistMinimumEntryCount);
+  UMA_HISTOGRAM_BOOLEAN("SafeBrowsing.RT.AllowlistSizeTooSmall",
+                        is_allowlist_too_small);
+  if (!enabled_ || (is_allowlist_too_small && is_artificial_prefix_empty) ||
+      !CanCheckUrl(url) ||
+      (!all_stores_available && is_artificial_prefix_empty)) {
     // NOTE(vakh): If Safe Browsing isn't enabled yet, or if the URL isn't a
-    // navigation URL, or if the allowlist isn't ready yet, return MATCH.
-    // The full URL check won't be performed, but hash-based check will still
-    // be done. If any artificial matches are present, consider the allowlist
-    // as ready.
+    // navigation URL, or if the allowlist isn't ready yet, or if the allowlist
+    // is too small, return MATCH. The full URL check won't be performed, but
+    // hash-based check will still be done. If any artificial matches are
+    // present, consider the allowlist as ready.
     return AsyncMatch::MATCH;
   }
 
@@ -433,7 +459,7 @@ AsyncMatch V4LocalDatabaseManager::CheckUrlForHighConfidenceAllowlist(
       client, ClientCallbackType::CHECK_HIGH_CONFIDENCE_ALLOWLIST,
       stores_to_check, std::vector<GURL>(1, url));
 
-  return HandleWhitelistCheck(std::move(check));
+  return HandleAllowlistCheck(std::move(check));
 }
 
 bool V4LocalDatabaseManager::CheckUrlForSubresourceFilter(const GURL& url,
@@ -453,13 +479,13 @@ bool V4LocalDatabaseManager::CheckUrlForSubresourceFilter(const GURL& url,
   return HandleCheck(std::move(check));
 }
 
-AsyncMatch V4LocalDatabaseManager::CheckCsdWhitelistUrl(const GURL& url,
+AsyncMatch V4LocalDatabaseManager::CheckCsdAllowlistUrl(const GURL& url,
                                                         Client* client) {
   DCHECK(CurrentlyOnThread(ThreadID::IO));
 
-  StoresToCheck stores_to_check({GetUrlCsdWhitelistId()});
+  StoresToCheck stores_to_check({GetUrlCsdAllowlistId()});
   if (!AreAllStoresAvailableNow(stores_to_check) || !CanCheckUrl(url)) {
-    // Fail open: Whitelist everything. Otherwise we may run the
+    // Fail open: Allowlist everything. Otherwise we may run the
     // CSD phishing/malware detector on popular domains and generate
     // undue load on the client and server, or send Password Reputation
     // requests on popular sites. This has the effect of disabling
@@ -469,20 +495,20 @@ AsyncMatch V4LocalDatabaseManager::CheckCsdWhitelistUrl(const GURL& url,
   }
 
   std::unique_ptr<PendingCheck> check = std::make_unique<PendingCheck>(
-      client, ClientCallbackType::CHECK_CSD_WHITELIST, stores_to_check,
+      client, ClientCallbackType::CHECK_CSD_ALLOWLIST, stores_to_check,
       std::vector<GURL>(1, url));
 
-  return HandleWhitelistCheck(std::move(check));
+  return HandleAllowlistCheck(std::move(check));
 }
 
-bool V4LocalDatabaseManager::MatchDownloadWhitelistString(
+bool V4LocalDatabaseManager::MatchDownloadAllowlistString(
     const std::string& str) {
   DCHECK(CurrentlyOnThread(ThreadID::IO));
 
-  StoresToCheck stores_to_check({GetCertCsdDownloadWhitelistId()});
+  StoresToCheck stores_to_check({GetCertCsdDownloadAllowlistId()});
   if (!AreAllStoresAvailableNow(stores_to_check)) {
-    // Fail close: Whitelist nothing. This may generate download-protection
-    // pings for whitelisted binaries, but that's fine.
+    // Fail close: Allowlist nothing. This may generate download-protection
+    // pings for allowlisted binaries, but that's fine.
     return false;
   }
 
@@ -490,14 +516,14 @@ bool V4LocalDatabaseManager::MatchDownloadWhitelistString(
                                  stores_to_check);
 }
 
-bool V4LocalDatabaseManager::MatchDownloadWhitelistUrl(const GURL& url) {
+bool V4LocalDatabaseManager::MatchDownloadAllowlistUrl(const GURL& url) {
   DCHECK(CurrentlyOnThread(ThreadID::IO));
 
-  StoresToCheck stores_to_check({GetUrlCsdDownloadWhitelistId()});
+  StoresToCheck stores_to_check({GetUrlCsdDownloadAllowlistId()});
 
   if (!AreAllStoresAvailableNow(stores_to_check) || !CanCheckUrl(url)) {
-    // Fail close: Whitelist nothing. This may generate download-protection
-    // pings for whitelisted domains, but that's fine.
+    // Fail close: Allowlist nothing. This may generate download-protection
+    // pings for allowlisted domains, but that's fine.
     return false;
   }
 
@@ -525,8 +551,6 @@ ThreatSource V4LocalDatabaseManager::GetThreatSource() const {
 }
 
 bool V4LocalDatabaseManager::IsDownloadProtectionEnabled() const {
-  // TODO(vakh): Investigate the possibility of using a command line switch for
-  // this instead.
   return true;
 }
 
@@ -626,10 +650,12 @@ void V4LocalDatabaseManager::DatabaseUpdated() {
     v4_database_->RecordFileSizeHistograms();
     UpdateListClientStates(GetStoreStateMap());
 
-    base::PostTask(
-        FROM_HERE, CreateTaskTraits(ThreadID::UI),
-        base::BindOnce(
-            &SafeBrowsingDatabaseManager::NotifyDatabaseUpdateFinished, this));
+    GetTaskRunner(ThreadID::UI)
+        ->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                &SafeBrowsingDatabaseManager::NotifyDatabaseUpdateFinished,
+                this));
   }
 }
 
@@ -725,10 +751,10 @@ SBThreatType V4LocalDatabaseManager::GetSBThreatTypeForList(
   return it->sb_threat_type();
 }
 
-AsyncMatch V4LocalDatabaseManager::HandleWhitelistCheck(
+AsyncMatch V4LocalDatabaseManager::HandleAllowlistCheck(
     std::unique_ptr<PendingCheck> check) {
-  // We don't bother queuing whitelist checks since the DB will
-  // normally be available already -- whitelists are used after page load,
+  // We don't bother queuing allowlist checks since the DB will
+  // normally be available already -- allowlists are used after page load,
   // and navigations are blocked until the DB is ready and dequeues checks.
   // The caller should have already checked that the DB is ready.
   DCHECK(v4_database_);
@@ -812,16 +838,18 @@ void V4LocalDatabaseManager::ScheduleFullHashCheck(
         full_hash_infos.emplace_back(entry.first, list_id, next);
       }
     }
-    base::PostTask(FROM_HERE, CreateTaskTraits(ThreadID::IO),
+    GetTaskRunner(ThreadID::IO)
+        ->PostTask(FROM_HERE,
                    base::BindOnce(&V4LocalDatabaseManager::OnFullHashResponse,
                                   weak_factory_.GetWeakPtr(), std::move(check),
                                   full_hash_infos));
   } else {
     // Post on the IO thread to enforce async behavior.
-    base::PostTask(
-        FROM_HERE, CreateTaskTraits(ThreadID::IO),
-        base::BindOnce(&V4LocalDatabaseManager::PerformFullHashCheck,
-                       weak_factory_.GetWeakPtr(), std::move(check)));
+    GetTaskRunner(ThreadID::IO)
+        ->PostTask(
+            FROM_HERE,
+            base::BindOnce(&V4LocalDatabaseManager::PerformFullHashCheck,
+                           weak_factory_.GetWeakPtr(), std::move(check)));
   }
 }
 
@@ -906,6 +934,58 @@ void V4LocalDatabaseManager::ProcessQueuedChecks() {
   }
 }
 
+void V4LocalDatabaseManager::RenameOldStoreFiles() {
+  for (auto const& pair : kStoreFilesToRename) {
+    const base::StringPiece& old_name = pair.first;
+    const base::StringPiece& new_name = pair.second;
+
+    const base::FilePath old_store_path = base_path_.AppendASCII(old_name);
+    // Is the old filename also being used for a valid V4Store?
+    auto it = std::find_if(
+        std::begin(list_infos_), std::end(list_infos_),
+        [&old_name](ListInfo const& li) { return li.filename() == old_name; });
+    bool old_filename_in_use = list_infos_.end() != it;
+    base::UmaHistogramBoolean("SafeBrowsing.V4Store.OldFileNameInUse" +
+                                  GetUmaSuffixForStore(old_store_path),
+                              old_filename_in_use);
+    if (old_filename_in_use) {
+      NOTREACHED() << "Trying to rename a store file that's in use: "
+                   << old_name;
+      continue;
+    }
+
+    bool old_path_exists = base::PathExists(old_store_path);
+    base::UmaHistogramBoolean("SafeBrowsing.V4Store.OldFileNameExists" +
+                                  GetUmaSuffixForStore(old_store_path),
+                              old_path_exists);
+    if (!old_path_exists) {
+      continue;
+    }
+
+    const base::FilePath new_store_path = base_path_.AppendASCII(new_name);
+    bool new_path_exists = base::PathExists(new_store_path);
+    base::UmaHistogramBoolean("SafeBrowsing.V4Store.NewFileNameExists" +
+                                  GetUmaSuffixForStore(new_store_path),
+                              new_path_exists);
+    if (new_path_exists) {
+      continue;
+    }
+
+    RenameStoreFile(old_store_path, new_store_path);
+  }
+}
+
+// static
+void V4LocalDatabaseManager::RenameStoreFile(const base::FilePath& old_path,
+                                             const base::FilePath& new_path) {
+  base::File::Error error = base::File::FILE_OK;
+  base::ReplaceFile(old_path, new_path, &error);
+
+  base::UmaHistogramExactLinear(
+      "SafeBrowsing.V4Store.RenameStatus" + GetUmaSuffixForStore(new_path),
+      -error, -base::File::FILE_ERROR_MAX);
+}
+
 void V4LocalDatabaseManager::RespondSafeToQueuedChecks() {
   DCHECK(CurrentlyOnThread(ThreadID::IO));
 
@@ -952,13 +1032,13 @@ void V4LocalDatabaseManager::RespondToClient(
                                               check->matching_full_hash);
       break;
 
-    case ClientCallbackType::CHECK_CSD_WHITELIST: {
+    case ClientCallbackType::CHECK_CSD_ALLOWLIST: {
       DCHECK_EQ(1u, check->urls.size());
       bool did_match_allowlist =
-          check->most_severe_threat_type == SB_THREAT_TYPE_CSD_WHITELIST;
+          check->most_severe_threat_type == SB_THREAT_TYPE_CSD_ALLOWLIST;
       DCHECK(did_match_allowlist ||
              check->most_severe_threat_type == SB_THREAT_TYPE_SAFE);
-      check->client->OnCheckWhitelistUrlResult(did_match_allowlist);
+      check->client->OnCheckAllowlistUrlResult(did_match_allowlist);
       break;
     }
 
@@ -1028,6 +1108,20 @@ bool V4LocalDatabaseManager::AreAllStoresAvailableNow(
       "SafeBrowsing.V4LocalDatabaseManager.AreAllStoresAvailableNow", result,
       StoreAvailabilityResult::COUNT);
   return (result == StoreAvailabilityResult::AVAILABLE);
+}
+
+int64_t V4LocalDatabaseManager::GetStoreEntryCount(const ListIdentifier& store,
+                                                   int bytes_per_entry) const {
+  if (!enabled_ || !v4_database_) {
+    return 0;
+  }
+  return v4_database_->GetStoreSizeInBytes(store) / bytes_per_entry;
+}
+
+bool V4LocalDatabaseManager::IsStoreTooSmall(const ListIdentifier& store,
+                                             int bytes_per_entry,
+                                             int min_entry_count) const {
+  return GetStoreEntryCount(store, bytes_per_entry) < min_entry_count;
 }
 
 bool V4LocalDatabaseManager::AreAnyStoresAvailableNow(

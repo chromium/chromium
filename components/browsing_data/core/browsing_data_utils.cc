@@ -23,14 +23,14 @@
 namespace browsing_data {
 
 // Creates a string like "for a.com, b.com, and 4 more".
-base::string16 CreateDomainExamples(
+std::u16string CreateDomainExamples(
     int password_count,
     const std::vector<std::string> domain_examples) {
   DCHECK_GE(password_count,
             base::checked_cast<browsing_data::BrowsingDataCounter::ResultInt>(
                 domain_examples.size()));
   DCHECK_EQ(domain_examples.empty(), password_count == 0);
-  std::vector<base::string16> replacements;
+  std::vector<std::u16string> replacements;
 
   replacements.emplace_back(base::UTF8ToUTF16(domain_examples[0]));
   if (domain_examples.size() > 1) {
@@ -40,7 +40,7 @@ base::string16 CreateDomainExamples(
     replacements.emplace_back(l10n_util::GetPluralStringFUTF16(
         IDS_DEL_PASSWORDS_COUNTER_AND_X_MORE, password_count - 2));
   }
-  base::string16 domains_list = base::ReplaceStringPlaceholders(
+  std::u16string domains_list = base::ReplaceStringPlaceholders(
       l10n_util::GetPluralStringFUTF16(IDS_DEL_PASSWORDS_DOMAINS_DISPLAY,
                                        (domain_examples.size() > 1)
                                            ? password_count
@@ -135,7 +135,7 @@ void RecordTimePeriodChange(TimePeriod period) {
   }
 }
 
-base::string16 GetCounterTextFromResult(
+std::u16string GetCounterTextFromResult(
     const BrowsingDataCounter::Result* result) {
   std::string pref_name = result->source()->GetPrefName();
 
@@ -148,7 +148,7 @@ base::string16 GetCounterTextFromResult(
     const PasswordsCounter::PasswordsResult* password_result =
         static_cast<const PasswordsCounter::PasswordsResult*>(result);
 
-    std::vector<base::string16> parts;
+    std::vector<std::u16string> parts;
     BrowsingDataCounter::ResultInt profile_passwords = password_result->Value();
 
     if (profile_passwords) {
@@ -230,7 +230,7 @@ base::string16 GetCounterTextFromResult(
         autofill_result->num_credit_cards();
     AutofillCounter::ResultInt num_addresses = autofill_result->num_addresses();
 
-    std::vector<base::string16> displayed_strings;
+    std::vector<std::u16string> displayed_strings;
 
     if (num_credit_cards) {
       displayed_strings.push_back(l10n_util::GetPluralStringFUTF16(
@@ -292,7 +292,7 @@ base::string16 GetCounterTextFromResult(
   }
 
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 const char* GetTimePeriodPreferenceName(

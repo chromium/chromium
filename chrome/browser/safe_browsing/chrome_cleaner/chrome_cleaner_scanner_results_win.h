@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_SAFE_BROWSING_CHROME_CLEANER_CHROME_CLEANER_SCANNER_RESULTS_WIN_H_
 
 #include <set>
+#include <string>
 
 #include "base/files/file_path.h"
-#include "base/strings/string16.h"
 
 namespace safe_browsing {
 
@@ -17,13 +17,11 @@ namespace safe_browsing {
 class ChromeCleanerScannerResults {
  public:
   using FileCollection = std::set<base::FilePath>;
-  using RegistryKeyCollection = std::set<base::string16>;
-  using ExtensionCollection = std::set<base::string16>;
+  using RegistryKeyCollection = std::set<std::wstring>;
 
   ChromeCleanerScannerResults();
   ChromeCleanerScannerResults(const FileCollection& files_to_delete,
-                              const RegistryKeyCollection& registry_keys,
-                              const ExtensionCollection& extension_ids);
+                              const RegistryKeyCollection& registry_keys);
   ChromeCleanerScannerResults(const ChromeCleanerScannerResults& other);
   ~ChromeCleanerScannerResults();
 
@@ -32,12 +30,10 @@ class ChromeCleanerScannerResults {
 
   const FileCollection& files_to_delete() const { return files_to_delete_; }
   const RegistryKeyCollection& registry_keys() const { return registry_keys_; }
-  const ExtensionCollection& extension_ids() const { return extension_ids_; }
 
  private:
   FileCollection files_to_delete_;
   RegistryKeyCollection registry_keys_;
-  ExtensionCollection extension_ids_;
 };
 
 }  // namespace safe_browsing

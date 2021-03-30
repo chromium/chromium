@@ -79,6 +79,8 @@ class ChildAccountService : public KeyedService,
   void SetIsChildAccount(bool is_child_account);
 
   // signin::IdentityManager::Observer implementation.
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
   void OnExtendedAccountInfoRemoved(const AccountInfo& info) override;
 
@@ -116,7 +118,7 @@ class ChildAccountService : public KeyedService,
 
   signin::IdentityManager* identity_manager_;
 
-  base::CallbackList<void()> google_auth_state_observers_;
+  base::RepeatingClosureList google_auth_state_observers_;
 
   // Callbacks to run when the user status becomes known.
   std::vector<base::OnceClosure> status_received_callback_list_;

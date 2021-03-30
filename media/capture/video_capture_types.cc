@@ -8,7 +8,6 @@
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/limits.h"
-#include "media/base/video_frame.h"
 
 namespace media {
 
@@ -30,18 +29,14 @@ VideoCaptureFormat::VideoCaptureFormat(const gfx::Size& frame_size,
       pixel_format(pixel_format) {}
 
 bool VideoCaptureFormat::IsValid() const {
-  return (frame_size.width() < media::limits::kMaxDimension) &&
-         (frame_size.height() < media::limits::kMaxDimension) &&
+  return (frame_size.width() <= media::limits::kMaxDimension) &&
+         (frame_size.height() <= media::limits::kMaxDimension) &&
          (frame_size.GetArea() >= 0) &&
-         (frame_size.GetArea() < media::limits::kMaxCanvas) &&
+         (frame_size.GetArea() <= media::limits::kMaxCanvas) &&
          (frame_rate >= 0.0f) &&
-         (frame_rate < media::limits::kMaxFramesPerSecond) &&
+         (frame_rate <= media::limits::kMaxFramesPerSecond) &&
          (pixel_format >= PIXEL_FORMAT_UNKNOWN &&
           pixel_format <= PIXEL_FORMAT_MAX);
-}
-
-size_t VideoCaptureFormat::ImageAllocationSize() const {
-  return VideoFrame::AllocationSize(pixel_format, frame_size);
 }
 
 // static

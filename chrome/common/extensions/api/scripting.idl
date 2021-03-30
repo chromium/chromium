@@ -8,7 +8,7 @@ namespace scripting {
   callback InjectedFunction = void();
 
   // The origin for a style change.
-  // See <href="https://developer.mozilla.org/en-US/docs/Glossary/Style_origin">style origins</href>
+  // See <a href="https://developer.mozilla.org/en-US/docs/Glossary/Style_origin">style origins</a>
   // for more info.
   enum StyleOrigin {
     AUTHOR,
@@ -19,7 +19,7 @@ namespace scripting {
     // The ID of the tab into which to inject.
     long tabId;
 
-    // The <a href="https://developer.chrome.com/extensions/webNavigation#frame_ids">IDs</href>
+    // The <a href="https://developer.chrome.com/extensions/webNavigation#frame_ids">IDs</a>
     // of specific frames to inject into.
     long[]? frameIds;
 
@@ -37,8 +37,8 @@ namespace scripting {
     // specified.
     [serializableFunction]InjectedFunction? function;
 
-    // The path of the JS files to inject, relative to the extension's root
-    // directory.
+    // The path of the JS or CSS files to inject, relative to the extension's
+    // root directory.
     // NOTE: Currently a maximum of one file is supported.
     // Exactly one of <code>files</code> and <code>function</code> must be
     // specified.
@@ -71,6 +71,9 @@ namespace scripting {
   dictionary InjectionResult {
     // The result of the script execution.
     any? result;
+
+    // The frame associated with the injection.
+    long frameId;
   };
 
   callback ScriptInjectionCallback = void(InjectionResult[] results);
@@ -82,14 +85,29 @@ namespace scripting {
     // <code>document_end</code>.
     // |injection|: The details of the script which to inject.
     // |callback|: Invoked upon completion of the injection. The resulting
-    // array contains the result of execution for each frame.
-    static void executeScript(ScriptInjection injection,
-                              optional ScriptInjectionCallback callback);
+    // array contains the result of execution for each frame where the
+    // injection succeeded.
+    [supportsPromises] static void executeScript(
+        ScriptInjection injection,
+        optional ScriptInjectionCallback callback);
 
     // Inserts a CSS stylesheet into a target context.
+    // If multiple frames are specified, unsuccessful injections are ignored.
     // |injection|: The details of the styles to insert.
     // |callback|: Invoked upon completion of the insertion.
-    static void insertCSS(CSSInjection injection,
-                          optional CSSInjectionCallback callback);
+    [supportsPromises] static void insertCSS(
+        CSSInjection injection,
+        optional CSSInjectionCallback callback);
+
+    // Removes a CSS stylesheet that was previously inserted by this extension
+    // from a target context.
+    // |injection|: The details of the styles to remove. Note that the
+    // <code>css</code>, <code>files</code>, and <code>origin</code> properties
+    // must exactly match the stylesheet inserted through $(ref:insertCSS).
+    // Attempting to remove a non-existent stylesheet is a no-op.
+    // |callback|: A callback to be invoked upon the completion of the removal.
+    [supportsPromises] static void removeCSS(
+        CSSInjection injection,
+        optional CSSInjectionCallback callback);
   };
 };

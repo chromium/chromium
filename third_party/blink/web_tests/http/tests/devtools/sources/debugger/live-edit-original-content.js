@@ -4,7 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Tests that the original content is accessible on live edited scripts.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('workspace_diff');
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('resources/edit-me.js');
 

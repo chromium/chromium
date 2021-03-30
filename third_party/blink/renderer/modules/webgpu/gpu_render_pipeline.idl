@@ -7,5 +7,6 @@
 [
     Exposed(Window WebGPU, Worker WebGPU)
 ] interface GPURenderPipeline {
-    GPUBindGroupLayout getBindGroupLayout(GPUIndex32 index);
 };
+GPURenderPipeline includes GPUObjectBase;
+GPURenderPipeline includes GPUPipelineBase;

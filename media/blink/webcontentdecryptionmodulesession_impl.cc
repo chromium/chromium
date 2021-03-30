@@ -72,8 +72,6 @@ CdmSessionType convertSessionType(
       return CdmSessionType::kTemporary;
     case blink::WebEncryptedMediaSessionType::kPersistentLicense:
       return CdmSessionType::kPersistentLicense;
-    case blink::WebEncryptedMediaSessionType::kPersistentUsageRecord:
-      return CdmSessionType::kPersistentUsageRecord;
     case blink::WebEncryptedMediaSessionType::kUnknown:
       break;
   }
@@ -153,12 +151,12 @@ bool SanitizeSessionId(const blink::WebString& session_id,
   if (sanitized_session_id->length() > limits::kMaxSessionIdLength)
     return false;
 
-  // Check that |sanitized_session_id| only contains non-space printable
-  // characters for easier logging. Note that checking alphanumeric is too
-  // strict because there are key systems using Base64 session IDs. See
+  // Check that |sanitized_session_id| only contains printable characters for
+  // easier logging. Note that checking alphanumeric is too strict because there
+  // are key systems using Base64 session IDs (which may include spaces). See
   // https://crbug.com/902828.
   for (const char c : *sanitized_session_id) {
-    if (!base::IsAsciiPrintable(c) || c == ' ')
+    if (!base::IsAsciiPrintable(c))
       return false;
   }
 
@@ -350,8 +348,7 @@ void WebContentDecryptionModuleSessionImpl::Load(
   DCHECK(!session_id.IsEmpty());
   DCHECK(session_id_.empty());
   DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(session_type_ == CdmSessionType::kPersistentLicense ||
-         session_type_ == CdmSessionType::kPersistentUsageRecord);
+  DCHECK(session_type_ == CdmSessionType::kPersistentLicense);
 
   // From https://w3c.github.io/encrypted-media/#load.
   // 8.1 Let sanitized session ID be a validated and/or sanitized version of

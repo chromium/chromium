@@ -46,6 +46,10 @@
 #include "ui/gfx/skia_util.h"
 #include "ui/gl/gl_implementation.h"
 
+#if defined(OS_ANDROID)
+#include "base/android/build_info.h"
+#endif
+
 namespace cc {
 namespace {
 scoped_refptr<DisplayItemList> MakeNoopDisplayItemList() {
@@ -174,16 +178,20 @@ class OopPixelTest : public testing::Test,
 
     if (options.preclear) {
       raster_implementation->BeginRasterCHROMIUM(
-          options.preclear_color, options.msaa_sample_count,
-          options.use_lcd_text, options.color_space, mailbox.name);
+          options.preclear_color, /*needs_clear=*/options.preclear,
+          options.msaa_sample_count, options.use_lcd_text, options.color_space,
+          mailbox.name);
       raster_implementation->EndRasterCHROMIUM();
     }
 
     // "Out of process" raster! \o/
-
+    // If |options.preclear| is true, the mailbox has already been cleared by
+    // the BeginRasterCHROMIUM call above, and we want to test that it is indeed
+    // cleared, so set |needs_clear| to false here.
     raster_implementation->BeginRasterCHROMIUM(
-        options.background_color, options.msaa_sample_count,
-        options.use_lcd_text, options.color_space, mailbox.name);
+        options.background_color, /*needs_clear=*/!options.preclear,
+        options.msaa_sample_count, options.use_lcd_text, options.color_space,
+        mailbox.name);
     size_t max_op_size_limit =
         gpu::raster::RasterInterface::kDefaultMaxOpSizeHint;
     raster_implementation->RasterCHROMIUM(
@@ -329,7 +337,8 @@ class OopPixelTest : public testing::Test,
         options.resource_size.width(), options.resource_size.height(),
         options.color_space.ToSkColorSpace());
     auto surface = SkSurface::MakeRenderTarget(
-        gles2_context_provider_->GrContext(), SkBudgeted::kYes, image_info);
+        gles2_context_provider_->GrContext(), SkBudgeted::kYes, image_info, 0,
+        &surface_props);
     SkCanvas* canvas = surface->getCanvas();
     if (options.preclear)
       canvas->drawColor(options.preclear_color);
@@ -360,11 +369,22 @@ class OopPixelTest : public testing::Test,
   void ExpectEquals(SkBitmap actual,
                     SkBitmap expected,
                     const char* label = nullptr) {
+    ExactPixelComparator exact(/* discard_alpha */ false);
+    ExpectEquals(actual, expected, exact, label);
+  }
+
+  void ExpectEquals(SkBitmap actual,
+                    SkBitmap expected,
+                    const PixelComparator& comparator,
+                    const char* label = nullptr) {
     EXPECT_EQ(actual.dimensions(), expected.dimensions());
+
+    // We don't just use MatchesBitmap so that we can control logging output.
+    if (comparator.Compare(actual, expected))
+      return;
+
     auto expected_url = GetPNGDataUrl(expected);
     auto actual_url = GetPNGDataUrl(actual);
-    if (actual_url == expected_url)
-      return;
     if (label) {
       ADD_FAILURE() << "\nCase: " << label << "\nExpected: " << expected_url
                     << "\nActual:   " << actual_url;
@@ -520,9 +540,9 @@ TEST_P(OopImagePixelTest, DrawImage) {
 
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();
-  PaintFlags flags;
-  flags.setFilterQuality(FilterQuality());
-  display_item_list->push<DrawImageOp>(paint_image, 0.f, 0.f, &flags);
+  SkSamplingOptions sampling(FilterQuality());
+  display_item_list->push<DrawImageOp>(paint_image, 0.f, 0.f, sampling,
+                                       nullptr);
   display_item_list->EndPaintOfUnpaired(rect);
   display_item_list->Finalize();
 
@@ -559,9 +579,9 @@ TEST_P(OopImagePixelTest, DrawImageScaled) {
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();
   display_item_list->push<ScaleOp>(0.5f, 0.5f);
-  PaintFlags flags;
-  flags.setFilterQuality(FilterQuality());
-  display_item_list->push<DrawImageOp>(paint_image, 0.f, 0.f, &flags);
+  SkSamplingOptions sampling(FilterQuality());
+  display_item_list->push<DrawImageOp>(paint_image, 0.f, 0.f, sampling,
+                                       nullptr);
   display_item_list->EndPaintOfUnpaired(rect);
   display_item_list->Finalize();
 
@@ -633,9 +653,8 @@ TEST_P(OopImagePixelTest, DrawRecordShaderWithImageScaled) {
       PaintImage::GetNextId());
   auto paint_image = builder.TakePaintImage();
   auto paint_record = sk_make_sp<PaintOpBuffer>();
-  PaintFlags flags;
-  flags.setFilterQuality(FilterQuality());
-  paint_record->push<DrawImageOp>(paint_image, 0.f, 0.f, &flags);
+  SkSamplingOptions sampling(FilterQuality());
+  paint_record->push<DrawImageOp>(paint_image, 0.f, 0.f, sampling, nullptr);
   auto paint_record_shader = PaintShader::MakePaintRecord(
       paint_record, gfx::RectToSkRect(rect), SkTileMode::kRepeat,
       SkTileMode::kRepeat, nullptr);
@@ -683,6 +702,10 @@ TEST_F(OopImagePixelTest, DrawRecordShaderTranslatedTileRect) {
   sk_sp<PaintShader> paint_record_shader = PaintShader::MakePaintRecord(
       shader_buffer, tile_rect, SkTileMode::kRepeat, SkTileMode::kRepeat,
       nullptr, PaintShader::ScalingBehavior::kRasterAtScale);
+  // Force paint_flags to convert this to kFixedScale, so we can safely compare
+  // pixels between direct and oop-r modes (since oop will convert to
+  // kFixedScale no matter what.
+  paint_record_shader->set_has_animated_images(true);
 
   gfx::Size output_size(10, 10);
 
@@ -728,9 +751,9 @@ TEST_P(OopImagePixelTest, DrawImageWithTargetColorSpace) {
 
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();
-  PaintFlags flags;
-  flags.setFilterQuality(FilterQuality());
-  display_item_list->push<DrawImageOp>(paint_image, 0.f, 0.f, &flags);
+  SkSamplingOptions sampling(FilterQuality());
+  display_item_list->push<DrawImageOp>(paint_image, 0.f, 0.f, sampling,
+                                       nullptr);
   display_item_list->EndPaintOfUnpaired(rect);
   display_item_list->Finalize();
 
@@ -774,9 +797,9 @@ TEST_P(OopImagePixelTest, DrawImageWithSourceColorSpace) {
 
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();
-  PaintFlags flags;
-  flags.setFilterQuality(FilterQuality());
-  display_item_list->push<DrawImageOp>(paint_image, 0.f, 0.f, &flags);
+  SkSamplingOptions sampling(FilterQuality());
+  display_item_list->push<DrawImageOp>(paint_image, 0.f, 0.f, sampling,
+                                       nullptr);
   display_item_list->EndPaintOfUnpaired(rect);
   display_item_list->Finalize();
 
@@ -819,9 +842,9 @@ TEST_P(OopImagePixelTest, DrawImageWithSourceAndTargetColorSpace) {
 
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();
-  PaintFlags flags;
-  flags.setFilterQuality(FilterQuality());
-  display_item_list->push<DrawImageOp>(paint_image, 0.f, 0.f, &flags);
+  SkSamplingOptions sampling(FilterQuality());
+  display_item_list->push<DrawImageOp>(paint_image, 0.f, 0.f, sampling,
+                                       nullptr);
   display_item_list->EndPaintOfUnpaired(rect);
   display_item_list->Finalize();
 
@@ -859,10 +882,10 @@ TEST_P(OopImagePixelTest, DrawImageWithSetMatrix) {
 
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();
-  PaintFlags flags;
-  flags.setFilterQuality(FilterQuality());
-  display_item_list->push<SetMatrixOp>(SkMatrix::Scale(0.5f, 0.5f));
-  display_item_list->push<DrawImageOp>(paint_image, 0.f, 0.f, &flags);
+  SkSamplingOptions sampling(FilterQuality());
+  display_item_list->push<SetMatrixOp>(SkM44::Scale(0.5f, 0.5f));
+  display_item_list->push<DrawImageOp>(paint_image, 0.f, 0.f, sampling,
+                                       nullptr);
   display_item_list->EndPaintOfUnpaired(rect);
   display_item_list->Finalize();
 
@@ -934,8 +957,7 @@ TEST_F(OopPixelTest, DrawMailboxBackedImage) {
 
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();
-  PaintFlags flags;
-  display_item_list->push<DrawImageOp>(src_paint_image, 0.f, 0.f, &flags);
+  display_item_list->push<DrawImageOp>(src_paint_image, 0.f, 0.f);
   display_item_list->EndPaintOfUnpaired(gfx::Rect(options.resource_size));
   display_item_list->Finalize();
 
@@ -1653,48 +1675,42 @@ sk_sp<SkTextBlob> BuildTextBlob(
   SkFont font;
   font.setTypeface(typeface);
   font.setHinting(SkFontHinting::kNormal);
-  font.setSize(1u);
+  font.setSize(8.f);
   if (use_lcd_text) {
     font.setSubpixel(true);
     font.setEdging(SkFont::Edging::kSubpixelAntiAlias);
   }
 
-  SkTextBlobBuilder builder;
-  const int glyphCount = 10;
-  const auto& runBuffer = builder.allocRunPosH(font, glyphCount, 0);
-  for (int i = 0; i < glyphCount; i++) {
-    runBuffer.glyphs[i] = static_cast<SkGlyphID>(i);
-    runBuffer.pos[i] = SkIntToScalar(i);
-  }
-  return builder.make();
+  return SkTextBlob::MakeFromString("Hamburgefons", font);
 }
 
-TEST_F(OopPixelTest, DrawTextBlob) {
-  RasterOptions options;
-  options.resource_size = gfx::Size(100, 100);
-  options.content_size = options.resource_size;
-  options.full_raster_rect = gfx::Rect(options.content_size);
-  options.playback_rect = options.full_raster_rect;
-  options.color_space = gfx::ColorSpace::CreateSRGB();
+// A reasonable Y offset given the font parameters of BuildTextBlob() that
+// ensures the text is not just drawn above the top edge of the surface.
+static constexpr SkScalar kTextBlobY = 16.f;
 
-  auto display_item_list = base::MakeRefCounted<DisplayItemList>();
-  display_item_list->StartPaint();
-  PaintFlags flags;
-  flags.setStyle(PaintFlags::kFill_Style);
-  flags.setColor(SK_ColorGREEN);
-  display_item_list->push<DrawTextBlobOp>(BuildTextBlob(), 0u, 0u, flags);
-  display_item_list->EndPaintOfUnpaired(options.full_raster_rect);
-  display_item_list->Finalize();
+// OopTextBlobPixelTest's test suite runs through the cross product of these
+// strategies.
+enum class TextBlobStrategy {
+  kDirect,        // DrawTextBlobOp directly in the display list
+  kDrawRecord,    // DrawRecordOp where the paint record includes text
+  kRecordShader,  // DrawRectOp where the paint has a RecordShader with text
+  kRecordFilter   // DrawRectOp where the paint has a RecordFilter with text
+};
+enum class MatrixStrategy {
+  kIdentity,     // Identity matrix (no extra scale factor for text then)
+  kScaled,       // Matrix is an axis-aligned scale factor
+  kComplex,      // Matrix is not axis-aligned and scale must be decomposed
+  kPerspective,  // Matrix has perspective and an approximate scale is needed
+};
+enum class LCDStrategy { kNo, kYes };
 
-  auto actual = Raster(display_item_list, options);
-  auto expected = RasterExpectedBitmap(display_item_list, options);
-  ExpectEquals(actual, expected);
-}
+using TextBlobTestConfig =
+    ::testing::tuple<TextBlobStrategy, MatrixStrategy, LCDStrategy>;
 
-class OopRecordShaderPixelTest : public OopPixelTest,
-                                 public ::testing::WithParamInterface<bool> {
+class OopTextBlobPixelTest
+    : public OopPixelTest,
+      public ::testing::WithParamInterface<TextBlobTestConfig> {
  public:
-  bool UseLcdText() const { return GetParam(); }
   void RunTest() {
     RasterOptions options;
     options.resource_size = gfx::Size(100, 100);
@@ -1704,82 +1720,208 @@ class OopRecordShaderPixelTest : public OopPixelTest,
     options.color_space = gfx::ColorSpace::CreateSRGB();
     options.use_lcd_text = UseLcdText();
 
-    auto paint_record = sk_make_sp<PaintOpBuffer>();
-    PaintFlags flags;
-    flags.setStyle(PaintFlags::kFill_Style);
-    flags.setColor(SK_ColorGREEN);
-    paint_record->push<DrawTextBlobOp>(
-        BuildTextBlob(SkTypeface::MakeDefault(), UseLcdText()), 0u, 0u, flags);
-    auto paint_record_shader = PaintShader::MakePaintRecord(
-        paint_record, SkRect::MakeWH(25, 25), SkTileMode::kRepeat,
-        SkTileMode::kRepeat, nullptr);
-
     auto display_item_list = base::MakeRefCounted<DisplayItemList>();
     display_item_list->StartPaint();
-    display_item_list->push<ScaleOp>(2.f, 2.f);
-    PaintFlags shader_flags;
-    shader_flags.setShader(paint_record_shader);
-    display_item_list->push<DrawRectOp>(SkRect::MakeWH(50, 50), shader_flags);
+
+    SetMatrix(display_item_list);
+    PushDrawOp(display_item_list);
+
     display_item_list->EndPaintOfUnpaired(options.full_raster_rect);
     display_item_list->Finalize();
 
     auto actual = Raster(display_item_list, options);
     auto expected = RasterExpectedBitmap(display_item_list, options);
-    ExpectEquals(actual, expected);
+
+    // Drawing text into an image and then transforming that can lead to small
+    // flakiness in devices, although in practice they are very imperceptible,
+    // and distinctly different from using the wrong glyph or text params.
+    float error_pixels_percentage = 0.f;
+    int max_abs_error = 0;
+#if defined(OS_ANDROID)
+    // The nexus5 and nexus5x bots are particularly susceptible to small changes
+    // when bilerping an image (not visible).
+    const int sdk = base::android::BuildInfo::GetInstance()->sdk_int();
+    if (sdk <= base::android::SDK_VERSION_MARSHMALLOW) {
+      error_pixels_percentage = 10.f;
+      max_abs_error = 16;
+    }
+#elif defined(OS_MAC) || defined(OS_WIN)
+    // Mac and Windows need very small tolerances only under complex transforms
+    if (GetMatrixStrategy(GetParam()) == MatrixStrategy::kComplex) {
+      error_pixels_percentage = 0.2f;
+      max_abs_error = 2;
+    }
+#endif
+    // Regardless of OS, perspective triggers path rendering for each glyph,
+    // which produces its own set of pixel differences.
+    if (GetMatrixStrategy(GetParam()) == MatrixStrategy::kPerspective) {
+      error_pixels_percentage = 4.f;
+      max_abs_error = 36;
+    }
+
+    FuzzyPixelComparator comparator(
+        /*discard_alpha=*/false,
+        /*error_pixels_percentage_limit=*/error_pixels_percentage,
+        /*small_error_pixels_percentage_limit=*/0.0f,
+        /*avg_abs_error_limit=*/max_abs_error,
+        /*max_abs_error_limit=*/max_abs_error,
+        /*small_error_threshold=*/0);
+    ExpectEquals(actual, expected, comparator);
+  }
+
+  void SetMatrix(scoped_refptr<DisplayItemList> display_list) {
+    MatrixStrategy strategy = GetMatrixStrategy(GetParam());
+
+    SkM44 m;  // Default constructed to identity
+    if (strategy != MatrixStrategy::kIdentity) {
+      // Scaled, Complex, and Perspective all have a 2x scale factor
+      m.preScale(2.0f, 2.0f);
+      if (strategy == MatrixStrategy::kComplex) {
+        SkM44 skew = SkM44();
+        skew.setRC(0, 1, 2.f);
+        skew.setRC(1, 0, 2.f);
+        m.preConcat(skew);
+      } else if (strategy == MatrixStrategy::kPerspective) {
+        SkM44 persp = SkM44::Perspective(0.01f, 10.f, SK_ScalarPI / 3.f);
+        persp.preTranslate(0.f, 5.f, -0.1f);
+        persp.preConcat(SkM44::Rotate({0.f, 1.f, 0.f}, 0.008f /* radians */));
+        m.postConcat(persp);
+      }
+    }
+
+    display_list->push<ConcatOp>(m);
+  }
+
+  void PushDrawOp(scoped_refptr<DisplayItemList> display_list) {
+    TextBlobStrategy strategy = GetTextBlobStrategy(GetParam());
+    auto text_blob = BuildTextBlob(SkTypeface::MakeDefault(), UseLcdText());
+
+    PaintFlags text_flags;
+    text_flags.setStyle(PaintFlags::kFill_Style);
+    text_flags.setColor(SK_ColorGREEN);
+
+    if (strategy == TextBlobStrategy::kDirect) {
+      display_list->push<DrawTextBlobOp>(std::move(text_blob), 0u, kTextBlobY,
+                                         text_flags);
+      return;
+    }
+
+    // All remaining strategies add the DrawTextBlobOp to an inner paint record.
+    auto paint_record = sk_make_sp<PaintOpBuffer>();
+    paint_record->push<DrawTextBlobOp>(std::move(text_blob), 0u, kTextBlobY,
+                                       text_flags);
+    if (strategy == TextBlobStrategy::kDrawRecord) {
+      display_list->push<DrawRecordOp>(std::move(paint_record));
+      return;
+    }
+
+    PaintFlags record_flags;
+    if (strategy == TextBlobStrategy::kRecordShader) {
+      auto paint_record_shader = PaintShader::MakePaintRecord(
+          paint_record, SkRect::MakeWH(25, 25), SkTileMode::kRepeat,
+          SkTileMode::kRepeat, nullptr,
+          PaintShader::ScalingBehavior::kRasterAtScale);
+      // Force paint_flags to convert this to kFixedScale, so we can safely
+      // compare pixels between direct and oop-r modes (since oop will convert
+      // to kFixedScale no matter what.
+      paint_record_shader->set_has_animated_images(true);
+
+      record_flags.setShader(paint_record_shader);
+    } else {
+      DCHECK(strategy == TextBlobStrategy::kRecordFilter);
+
+      sk_sp<PaintFilter> paint_record_filter =
+          sk_make_sp<RecordPaintFilter>(paint_record, SkRect::MakeWH(100, 100));
+      record_flags.setImageFilter(std::move(paint_record_filter));
+    }
+
+    // Use bilerp sampling with the PaintRecord to help reduce max RGB error
+    // from pixel-snapping flakiness when using NN sampling.
+    record_flags.setFilterQuality(kLow_SkFilterQuality);
+
+    // The text blob is embedded in a paint record, which is attached to the
+    // paint via a shader or image filter. Just draw a rect with the paint.
+    display_list->push<DrawRectOp>(SkRect::MakeWH(50, 50), record_flags);
+  }
+
+  static TextBlobStrategy GetTextBlobStrategy(
+      const TextBlobTestConfig& config) {
+    return ::testing::get<0>(config);
+  }
+  static MatrixStrategy GetMatrixStrategy(const TextBlobTestConfig& config) {
+    return ::testing::get<1>(config);
+  }
+  static LCDStrategy GetLCDStrategy(const TextBlobTestConfig& config) {
+    return ::testing::get<2>(config);
+  }
+
+  bool UseLcdText() const {
+    return GetLCDStrategy(GetParam()) == LCDStrategy::kYes;
+  }
+
+  static std::string PrintTestName(
+      const ::testing::TestParamInfo<TextBlobTestConfig>& info) {
+    std::stringstream ss;
+    switch (GetTextBlobStrategy(info.param)) {
+      case TextBlobStrategy::kDirect:
+        ss << "Direct";
+        break;
+      case TextBlobStrategy::kDrawRecord:
+        ss << "DrawRecord";
+        break;
+      case TextBlobStrategy::kRecordShader:
+        ss << "RecordShader";
+        break;
+      case TextBlobStrategy::kRecordFilter:
+        ss << "RecordFilter";
+        break;
+    }
+    ss << "_";
+    switch (GetMatrixStrategy(info.param)) {
+      case MatrixStrategy::kIdentity:
+        ss << "IdentityCTM";
+        break;
+      case MatrixStrategy::kScaled:
+        ss << "ScaledCTM";
+        break;
+      case MatrixStrategy::kComplex:
+        ss << "ComplexCTM";
+        break;
+      case MatrixStrategy::kPerspective:
+        ss << "PerspectiveCTM";
+        break;
+    }
+    ss << "_";
+    switch (GetLCDStrategy(info.param)) {
+      case LCDStrategy::kNo:
+        ss << "NoLCD";
+        break;
+      case LCDStrategy::kYes:
+        ss << "LCD";
+        break;
+    }
+
+    return ss.str();
   }
 };
 
-TEST_P(OopRecordShaderPixelTest, ShaderWithTextScaled) {
+TEST_P(OopTextBlobPixelTest, Config) {
   RunTest();
 }
 
-class OopRecordFilterPixelTest : public OopPixelTest,
-                                 public ::testing::WithParamInterface<bool> {
- public:
-  bool UseLcdText() const { return GetParam(); }
-  void RunTest(const SkMatrix& mat) {
-    RasterOptions options;
-    options.resource_size = gfx::Size(100, 100);
-    options.content_size = options.resource_size;
-    options.full_raster_rect = gfx::Rect(options.content_size);
-    options.playback_rect = options.full_raster_rect;
-    options.color_space = gfx::ColorSpace::CreateSRGB();
-    options.use_lcd_text = UseLcdText();
-
-    auto paint_record = sk_make_sp<PaintOpBuffer>();
-    PaintFlags flags;
-    flags.setStyle(PaintFlags::kFill_Style);
-    flags.setColor(SK_ColorGREEN);
-    paint_record->push<DrawTextBlobOp>(
-        BuildTextBlob(SkTypeface::MakeDefault(), UseLcdText()), 0u, 0u, flags);
-    auto paint_record_filter =
-        sk_make_sp<RecordPaintFilter>(paint_record, SkRect::MakeWH(100, 100));
-
-    auto display_item_list = base::MakeRefCounted<DisplayItemList>();
-    display_item_list->StartPaint();
-    display_item_list->push<SetMatrixOp>(mat);
-    PaintFlags shader_flags;
-    shader_flags.setImageFilter(paint_record_filter);
-    display_item_list->push<DrawRectOp>(SkRect::MakeWH(50, 50), shader_flags);
-    display_item_list->EndPaintOfUnpaired(options.full_raster_rect);
-    display_item_list->Finalize();
-
-    auto actual = Raster(display_item_list, options);
-    auto expected = RasterExpectedBitmap(display_item_list, options);
-    ExpectEquals(actual, expected);
-  }
-};
-
-TEST_P(OopRecordFilterPixelTest, FilterWithTextScaled) {
-  SkMatrix mat = SkMatrix::Scale(2.f, 2.f);
-  RunTest(mat);
-}
-
-TEST_P(OopRecordFilterPixelTest, FilterWithTextAndComplexCTM) {
-  SkMatrix mat = SkMatrix::Scale(2.f, 2.f);
-  mat.preSkew(2.f, 2.f);
-  RunTest(mat);
-}
+INSTANTIATE_TEST_SUITE_P(
+    P,
+    OopTextBlobPixelTest,
+    ::testing::Combine(::testing::Values(TextBlobStrategy::kDirect,
+                                         TextBlobStrategy::kDrawRecord,
+                                         TextBlobStrategy::kRecordShader,
+                                         TextBlobStrategy::kRecordFilter),
+                       ::testing::Values(MatrixStrategy::kIdentity,
+                                         MatrixStrategy::kScaled,
+                                         MatrixStrategy::kComplex,
+                                         MatrixStrategy::kPerspective),
+                       ::testing::Values(LCDStrategy::kNo, LCDStrategy::kYes)),
+    OopTextBlobPixelTest::PrintTestName);
 
 void ClearFontCache(CompletionEvent* event) {
   SkGraphics::PurgeFontCache();
@@ -1802,8 +1944,8 @@ TEST_F(OopPixelTest, DrawTextMultipleRasterCHROMIUM) {
   PaintFlags flags;
   flags.setStyle(PaintFlags::kFill_Style);
   flags.setColor(SK_ColorGREEN);
-  display_item_list->push<DrawTextBlobOp>(BuildTextBlob(sk_typeface_1), 0u, 0u,
-                                          flags);
+  display_item_list->push<DrawTextBlobOp>(BuildTextBlob(sk_typeface_1), 0u,
+                                          kTextBlobY, flags);
   display_item_list->EndPaintOfUnpaired(options.full_raster_rect);
   display_item_list->Finalize();
 
@@ -1811,7 +1953,7 @@ TEST_F(OopPixelTest, DrawTextMultipleRasterCHROMIUM) {
   auto display_item_list_2 = base::MakeRefCounted<DisplayItemList>();
   display_item_list_2->StartPaint();
   display_item_list_2->push<DrawTextBlobOp>(BuildTextBlob(sk_typeface_2), 0u,
-                                            0u, flags);
+                                            kTextBlobY, flags);
   display_item_list_2->EndPaintOfUnpaired(options.full_raster_rect);
   display_item_list_2->Finalize();
 
@@ -1843,7 +1985,8 @@ TEST_F(OopPixelTest, DrawTextBlobPersistentShaderCache) {
   PaintFlags flags;
   flags.setStyle(PaintFlags::kFill_Style);
   flags.setColor(SK_ColorGREEN);
-  display_item_list->push<DrawTextBlobOp>(BuildTextBlob(), 0u, 0u, flags);
+  display_item_list->push<DrawTextBlobOp>(BuildTextBlob(), 0u, kTextBlobY,
+                                          flags);
   display_item_list->EndPaintOfUnpaired(options.full_raster_rect);
   display_item_list->Finalize();
 
@@ -2178,8 +2321,6 @@ TEST_F(OopPixelTest, RecordShaderExceedsMaxTextureSize) {
 
 INSTANTIATE_TEST_SUITE_P(P, OopImagePixelTest, ::testing::Bool());
 INSTANTIATE_TEST_SUITE_P(P, OopClearPixelTest, ::testing::Bool());
-INSTANTIATE_TEST_SUITE_P(P, OopRecordShaderPixelTest, ::testing::Bool());
-INSTANTIATE_TEST_SUITE_P(P, OopRecordFilterPixelTest, ::testing::Bool());
 INSTANTIATE_TEST_SUITE_P(P, OopPathPixelTest, ::testing::Bool());
 
 }  // namespace

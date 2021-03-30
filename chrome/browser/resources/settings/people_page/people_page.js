@@ -8,19 +8,19 @@
  */
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.m.js';
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_indicator.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import '../controls/settings_toggle_button.m.js';
-import './sync_account_control.m.js';
-import '../icons.m.js';
-import '../settings_page/settings_animated_pages.m.js';
-import '../settings_page/settings_subpage.m.js';
-import '../settings_shared_css.m.js';
+import '../controls/settings_toggle_button.js';
+import './sync_account_control.js';
+import '../icons.js';
+import '../settings_page/settings_animated_pages.js';
+import '../settings_page/settings_subpage.js';
+import '../settings_shared_css.js';
 
 // <if expr="chromeos">
 import {convertImageSequenceToPng} from 'chrome://resources/cr_elements/chromeos/cr_picture/png.m.js';
@@ -37,13 +37,13 @@ import {loadTimeData} from '../i18n_setup.js';
 import {OpenWindowProxyImpl} from '../open_window_proxy.js';
 import {PageVisibility} from '../page_visibility.js';
 import {routes} from '../route.js';
-import {RouteObserverBehavior, Router} from '../router.m.js';
+import {RouteObserverBehavior, Router} from '../router.js';
 
 // <if expr="chromeos">
-import {AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.m.js';
+import {AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js';
 // </if>
-import {ProfileInfo, ProfileInfoBrowserProxy, ProfileInfoBrowserProxyImpl} from './profile_info_browser_proxy.m.js';
-import {StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from './sync_browser_proxy.m.js';
+import {ProfileInfo, ProfileInfoBrowserProxy, ProfileInfoBrowserProxyImpl} from './profile_info_browser_proxy.js';
+import {StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from './sync_browser_proxy.js';
 
 Polymer({
   is: 'settings-people-page',
@@ -169,7 +169,7 @@ Polymer({
         if (routes.MANAGE_PROFILE) {
           map.set(
               routes.MANAGE_PROFILE.path,
-              this.signinAllowed_ ? '#edit-profile .subpage-arrow' :
+              this.signinAllowed_ ? '#edit-profile' :
                                     '#profile-row .subpage-arrow');
         }
         // </if>

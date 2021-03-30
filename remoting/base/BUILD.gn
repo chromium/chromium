@@ -46,6 +46,8 @@ source_set("base") {
     "protobuf_http_stream_parser.h",
     "protobuf_http_stream_request.cc",
     "protobuf_http_stream_request.h",
+    "queued_task_poster.cc",
+    "queued_task_poster.h",
     "rate_counter.cc",
     "rate_counter.h",
     "result.h",
@@ -89,12 +91,14 @@ source_set("base") {
     "//third_party/protobuf:protobuf_lite",
   ]
   deps = [
+    ":authorization",
     ":protobuf_http_client_messages_proto",
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//google_apis",
     "//remoting/proto/remoting/v1:directory_proto",
     "//remoting/proto/remoting/v1:telemetry_messages",
+    "//services/network/public/cpp",
     "//third_party/libvpx",
     "//third_party/libyuv",
     "//third_party/webrtc_overrides:webrtc_component",
@@ -125,6 +129,8 @@ source_set("authorization") {
     "//build/config/compiler:wexit_time_destructors",
     "//remoting/build/config:version",
   ]
+
+  deps = [ "//services/network/public/cpp" ]
 
   public_deps = [
     "//base",
@@ -170,6 +176,7 @@ static_library("test_support") {
 
   deps = [
     ":protobuf_http_client_messages_proto",
+    "//base/test:test_support",
     "//remoting/proto",
     "//services/network:test_support",
   ]
@@ -196,6 +203,7 @@ source_set("run_all_unittests") {
   sources = [ "run_all_unittests.cc" ]
   deps = [
     "//base",
+    "//base/test:test_support",
     "//mojo/core/embedder",
     "//testing/gtest",
   ]
@@ -214,6 +222,7 @@ source_set("unit_tests") {
     "oauth_token_getter_proxy_unittest.cc",
     "protobuf_http_client_unittest.cc",
     "protobuf_http_stream_parser_unittest.cc",
+    "queued_task_poster_unittest.cc",
     "rate_counter_unittest.cc",
     "result_unittest.cc",
     "rsa_key_pair_unittest.cc",
@@ -226,11 +235,15 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":protobuf_http_client_messages_proto",
     ":run_all_unittests",
     ":test_proto",
     ":test_support",
     "//base",
     "//net:test_support",
+    "//remoting/proto/remoting/v1:telemetry_messages",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
     "//third_party/libyuv",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
@@ -241,6 +254,7 @@ source_set("unit_tests") {
 
   if (is_win) {
     sources += [ "breakpad_win_unittest.cc" ]
+    deps += [ "//third_party/breakpad:breakpad_handler" ]
     libs = [ "rpcrt4.lib" ]  # For UuidCreate in breakpad_win_unittest.cc.
   }
 }

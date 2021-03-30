@@ -171,6 +171,15 @@ void SetForceSigninPolicy(bool enable) {
 
 }  // namespace
 
+ScopedForceSigninSetterForTesting::ScopedForceSigninSetterForTesting(
+    bool enable) {
+  SetForceSigninForTesting(enable);  // IN-TEST
+}
+
+ScopedForceSigninSetterForTesting::~ScopedForceSigninSetterForTesting() {
+  ResetForceSigninForTesting();  // IN-TEST
+}
+
 bool IsForceSigninEnabled() {
   if (g_is_force_signin_enabled_cache == NOT_CACHED) {
     PrefService* prefs = g_browser_process->local_state();
@@ -214,10 +223,11 @@ void EnsurePrimaryAccountAllowedForProfile(Profile* profile) {
 // ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  if (!identity_manager->HasPrimaryAccount())
+  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync))
     return;
 
-  CoreAccountInfo primary_account = identity_manager->GetPrimaryAccountInfo();
+  CoreAccountInfo primary_account =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
   if (profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed) &&
       signin::IsUsernameAllowedByPatternFromPrefs(
           g_browser_process->local_state(), primary_account.email)) {

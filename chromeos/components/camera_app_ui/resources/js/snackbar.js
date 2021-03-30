@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {browserProxy} from './browser_proxy/browser_proxy.js';
+import * as animate from './animation.js';
 import * as dom from './dom.js';
-import * as util from './util.js';
+import * as loadTimeData from './models/load_time_data.js';
 
 /**
  * Shows a snackbar message.
@@ -12,9 +12,9 @@ import * as util from './util.js';
  * @param {...string} substitutions The substitutions for the label.
  */
 export function show(label, ...substitutions) {
-  const message = browserProxy.getI18nMessage(label, ...substitutions);
+  const message = loadTimeData.getI18nMessage(label, ...substitutions);
   const el = dom.get('.snackbar', HTMLElement);
   el.textContent = '';  // Force reiterate the same message for a11y.
   el.textContent = message;
-  util.animateOnce(el);
+  animate.play(el);
 }

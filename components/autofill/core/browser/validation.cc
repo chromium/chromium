@@ -50,8 +50,8 @@ bool IsValidCreditCardExpirationYear(int year, const base::Time& now) {
   return year >= now_exploded.year;
 }
 
-bool IsValidCreditCardNumber(const base::string16& text) {
-  const base::string16 number = CreditCard::StripSeparators(text);
+bool IsValidCreditCardNumber(const std::u16string& text) {
+  const std::u16string number = CreditCard::StripSeparators(text);
 
   if (!HasCorrectLength(number))
     return false;
@@ -59,7 +59,7 @@ bool IsValidCreditCardNumber(const base::string16& text) {
   return PassesLuhnCheck(number);
 }
 
-bool HasCorrectLength(const base::string16& number) {
+bool HasCorrectLength(const std::u16string& number) {
   // Credit card numbers are at most 19 digits in length, 12 digits seems to
   // be a fairly safe lower-bound [1].  Specific card issuers have more rigidly
   // defined sizes.
@@ -95,12 +95,12 @@ bool HasCorrectLength(const base::string16& number) {
 }
 
 // TODO(crbug.com/927767): Add unit tests for this function.
-bool PassesLuhnCheck(const base::string16& number) {
+bool PassesLuhnCheck(const std::u16string& number) {
   // Use the Luhn formula [3] to validate the number.
   // [3] http://en.wikipedia.org/wiki/Luhn_algorithm
   int sum = 0;
   bool odd = false;
-  for (base::string16::const_reverse_iterator iter = number.rbegin();
+  for (std::u16string::const_reverse_iterator iter = number.rbegin();
        iter != number.rend(); ++iter) {
     if (!base::IsAsciiDigit(*iter))
       return false;
@@ -118,16 +118,16 @@ bool PassesLuhnCheck(const base::string16& number) {
   return (sum % 10) == 0;
 }
 
-bool IsValidCreditCardSecurityCode(const base::string16& code,
+bool IsValidCreditCardSecurityCode(const std::u16string& code,
                                    const base::StringPiece card_network) {
   return code.length() == GetCvcLengthForCardNetwork(card_network) &&
-         base::ContainsOnlyChars(code, base::ASCIIToUTF16("0123456789"));
+         base::ContainsOnlyChars(code, u"0123456789");
 }
 
 bool IsValidCreditCardNumberForBasicCardNetworks(
-    const base::string16& text,
+    const std::u16string& text,
     const std::set<std::string>& supported_basic_card_networks,
-    base::string16* error_message) {
+    std::u16string* error_message) {
   DCHECK(error_message);
 
   // The type check is cheaper than the credit card number check.
@@ -149,32 +149,32 @@ bool IsValidCreditCardNumberForBasicCardNetworks(
   return false;
 }
 
-bool IsValidEmailAddress(const base::string16& text) {
+bool IsValidEmailAddress(const std::u16string& text) {
   // E-Mail pattern as defined by the WhatWG. (4.10.7.1.5 E-Mail state)
-  const base::string16 kEmailPattern = base::ASCIIToUTF16(
+  const std::u16string kEmailPattern = base::ASCIIToUTF16(
       "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@"
       "[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$");
   return MatchesPattern(text, kEmailPattern);
 }
 
-bool IsValidState(const base::string16& text) {
+bool IsValidState(const std::u16string& text) {
   return !state_names::GetAbbreviationForName(text).empty() ||
          !state_names::GetNameForAbbreviation(text).empty();
 }
 
-bool IsPossiblePhoneNumber(const base::string16& text,
+bool IsPossiblePhoneNumber(const std::u16string& text,
                            const std::string& country_code) {
   return i18n::IsPossiblePhoneNumber(base::UTF16ToUTF8(text), country_code);
 }
 
-bool IsValidZip(const base::string16& text) {
-  const base::string16 kZipPattern = base::ASCIIToUTF16("^\\d{5}(-\\d{4})?$");
+bool IsValidZip(const std::u16string& text) {
+  const std::u16string kZipPattern = u"^\\d{5}(-\\d{4})?$";
   return MatchesPattern(text, kZipPattern);
 }
 
-bool IsSSN(const base::string16& text) {
-  base::string16 number_string;
-  base::RemoveChars(text, base::ASCIIToUTF16("- "), &number_string);
+bool IsSSN(const std::u16string& text) {
+  std::u16string number_string;
+  base::RemoveChars(text, u"- ", &number_string);
 
   // A SSN is of the form AAA-GG-SSSS (A = area number, G = group number, S =
   // serial number). The validation we do here is simply checking if the area,
@@ -204,9 +204,9 @@ bool IsSSN(const base::string16& text) {
     return false;
 
   int area;
-  if (!base::StringToInt(
-          base::StringPiece16(number_string.begin(), number_string.begin() + 3),
-          &area)) {
+  if (!base::StringToInt(base::MakeStringPiece16(number_string.begin(),
+                                                 number_string.begin() + 3),
+                         &area)) {
     return false;
   }
   if (area < 1 || area == 666 || area >= 900) {
@@ -214,16 +214,16 @@ bool IsSSN(const base::string16& text) {
   }
 
   int group;
-  if (!base::StringToInt(base::StringPiece16(number_string.begin() + 3,
-                                             number_string.begin() + 5),
+  if (!base::StringToInt(base::MakeStringPiece16(number_string.begin() + 3,
+                                                 number_string.begin() + 5),
                          &group) ||
       group == 0) {
     return false;
   }
 
   int serial;
-  if (!base::StringToInt(base::StringPiece16(number_string.begin() + 5,
-                                             number_string.begin() + 9),
+  if (!base::StringToInt(base::MakeStringPiece16(number_string.begin() + 5,
+                                                 number_string.begin() + 9),
                          &serial) ||
       serial == 0) {
     return false;
@@ -232,9 +232,9 @@ bool IsSSN(const base::string16& text) {
   return true;
 }
 
-bool IsValidForType(const base::string16& value,
+bool IsValidForType(const std::u16string& value,
                     ServerFieldType type,
-                    base::string16* error_message) {
+                    std::u16string* error_message) {
   switch (type) {
     case CREDIT_CARD_NAME_FULL:
       if (!value.empty())
@@ -290,10 +290,9 @@ bool IsValidForType(const base::string16& value,
 
     case CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR:
     case CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR: {
-      const base::string16 pattern =
-          type == CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR
-              ? base::UTF8ToUTF16("^[0-9]{1,2}[-/|]?[0-9]{2}$")
-              : base::UTF8ToUTF16("^[0-9]{1,2}[-/|]?[0-9]{4}$");
+      const std::u16string pattern = type == CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR
+                                         ? u"^[0-9]{1,2}[-/|]?[0-9]{2}$"
+                                         : u"^[0-9]{1,2}[-/|]?[0-9]{4}$";
 
       CreditCard temp;
       temp.SetExpirationDateFromString(value);
@@ -343,22 +342,22 @@ size_t GetCvcLengthForCardNetwork(const base::StringPiece card_network) {
   return GENERAL_CVC_LENGTH;
 }
 
-bool IsUPIVirtualPaymentAddress(const base::string16& value) {
+bool IsUPIVirtualPaymentAddress(const std::u16string& value) {
   return MatchesPattern(value, base::ASCIIToUTF16(kUPIVirtualPaymentAddressRe));
 }
 
-bool IsInternationalBankAccountNumber(const base::string16& value) {
-  base::string16 no_spaces;
-  base::RemoveChars(value, base::ASCIIToUTF16(" "), &no_spaces);
+bool IsInternationalBankAccountNumber(const std::u16string& value) {
+  std::u16string no_spaces;
+  base::RemoveChars(value, u" ", &no_spaces);
   return MatchesPattern(no_spaces,
                         base::ASCIIToUTF16(kInternationalBankAccountNumberRe));
 }
 
-bool IsPlausibleCreditCardCVCNumber(const base::string16& value) {
+bool IsPlausibleCreditCardCVCNumber(const std::u16string& value) {
   return MatchesPattern(value, base::ASCIIToUTF16(kCreditCardCVCPattern));
 }
 
-bool IsPlausible4DigitExpirationYear(const base::string16& value) {
+bool IsPlausible4DigitExpirationYear(const std::u16string& value) {
   return MatchesPattern(value,
                         base::ASCIIToUTF16(kCreditCard4DigitExpYearPattern));
 }

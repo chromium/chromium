@@ -19,6 +19,8 @@ class BrowserContext;
 class RenderFrameHost;
 }  // namespace content
 
+class NavigationPredictorKeyedService;
+
 class NavigationPredictorPreconnectClient
     : public content::WebContentsObserver,
       public content::WebContentsUserData<NavigationPredictorPreconnectClient> {
@@ -36,6 +38,8 @@ class NavigationPredictorPreconnectClient
       NavigationPredictorPreconnectClient>;
   explicit NavigationPredictorPreconnectClient(
       content::WebContents* web_contents);
+
+  NavigationPredictorKeyedService* GetNavigationPredictorKeyedService() const;
 
   // content::WebContentsObserver:
   void OnVisibilityChanged(content::Visibility visibility) override;
@@ -56,6 +60,8 @@ class NavigationPredictorPreconnectClient
   // Returns true if the origin is publicly routable.
   base::Optional<bool> IsPubliclyRoutable(
       content::NavigationHandle* navigation_handle) const;
+
+  content::WebContents* web_contents_;
 
   // Used to get keyed services.
   content::BrowserContext* const browser_context_;

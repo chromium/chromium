@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">Saraksta vienums</translation>
 <translation id="1013742170491673792">meklēšana</translation>
 <translation id="1014370462248694370">Velciet ar diviem pirkstiem pa labi</translation>
-<translation id="1016393160682012902">Lai uzzinātu par pieejamajām funkcijām, nospiediet kādu no QWERTY tastatūras taustiņiem, atsvaidzināmās Braila raksta tastatūras taustiņu vai veiciet kādu skāriena žestu. Lai izietu, nospiediet taustiņu kombināciju Ctrl+W vai nospiediet taustiņu Escape.</translation>
 <translation id="1022586497894531524">Vai izmantojat ChromeVox balss funkciju pirmo reizi? Šajā ātrajā pamācībā ir izskaidroti darba sākšanas ar ChromeVox pamati.</translation>
 <translation id="1025074108959230262">Saistošais režīms atspējots</translation>
 <translation id="1031961866430398710">, pēc tam</translation>
@@ -150,6 +149,7 @@
 <translation id="2045055672832940894">Nav iepriekšējās vadīklas.</translation>
 <translation id="2045606329038304310">Veidlapas lauka vadīkla</translation>
 <translation id="2063539687800151747">Epigrāfs</translation>
+<translation id="2074531330963286860">Pieejamas darbības. Lai tās skatītu, nospiediet vienlaikus meklēšanas taustiņu un punkta taustiņu.</translation>
 <translation id="2086961585857038472">Nākamais vārds</translation>
 <translation id="2087981446621639008">detal. apraksts</translation>
 <translation id="2089387485033699258">lv</translation>
@@ -976,6 +976,7 @@
 <translation id="827266600368092403">Sākt vai beigt atlasi</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8276439074553447000">Pāriet uz iepriekšējo fokusējamo vienumu</translation>
+<translation id="8279039817939141096">Lai uzzinātu par pieejamajām funkcijām, nospiediet kādu no QWERTY tastatūras taustiņiem, atsvaidzināmās Braila raksta tastatūras taustiņu vai veiciet kādu skāriena žestu. Lai izietu, nospiediet vadīšanas taustiņu un W, atstarpes taustiņu un Z, velciet pa kreisi ar diviem pirkstiem vai nospiediet taustiņu Escape.</translation>
 <translation id="8283603667300770666">Nākamais veidlapas lauks</translation>
 <translation id="8310185481635255431">Nav nākamās saites.</translation>
 <translation id="831207808878314375">Definīcija</translation>

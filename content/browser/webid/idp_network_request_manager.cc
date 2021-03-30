@@ -5,7 +5,6 @@
 #include "content/browser/webid/idp_network_request_manager.h"
 
 #include "base/base64url.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -23,7 +22,6 @@ namespace content {
 namespace {
 // TODO(kenrb): These need to be defined in the explainer or draft spec and
 // referenced here.
-constexpr char kWellKnownFilePath[] = ".well-known/webid";
 
 // Well-known configuration keys.
 constexpr char kIdpEndpointKey[] = "idp_endpoint";
@@ -37,7 +35,7 @@ constexpr char kAcceptMimeType[] = "application/json";
 // `Sec-` prefix makes this a forbidden header and cannot be added by
 // JavaScript.
 // See https://fetch.spec.whatwg.org/#forbidden-header-name
-constexpr char kSecWebIDHeader[] = "Sec-WebID";
+constexpr char kSecWebIdHeader[] = "Sec-WebID";
 
 // 1 MiB is an arbitrary upper bound that should account for any reasonable
 // response size that is a part of this protocol.
@@ -76,12 +74,13 @@ net::NetworkTrafficAnnotationTag CreateTrafficAnnotation() {
 
 scoped_refptr<network::SharedURLLoaderFactory> GetUrlLoaderFactory(
     content::RenderFrameHost* host) {
-  return content::BrowserContext::GetDefaultStoragePartition(
-             host->GetBrowserContext())
-      ->GetURLLoaderFactoryForBrowserProcess();
+  return host->GetStoragePartition()->GetURLLoaderFactoryForBrowserProcess();
 }
 
 }  // namespace
+
+// static
+constexpr char IdpNetworkRequestManager::kWellKnownFilePath[];
 
 // static
 std::unique_ptr<IdpNetworkRequestManager> IdpNetworkRequestManager::Create(
@@ -100,15 +99,16 @@ IdpNetworkRequestManager::IdpNetworkRequestManager(const GURL& provider,
 
 IdpNetworkRequestManager::~IdpNetworkRequestManager() = default;
 
-void IdpNetworkRequestManager::FetchIDPWellKnown(
+void IdpNetworkRequestManager::FetchIdpWellKnown(
     FetchWellKnownCallback callback) {
   DCHECK(!url_loader_);
   DCHECK(!idp_well_known_callback_);
 
   idp_well_known_callback_ = std::move(callback);
 
-  const url::Origin& idp = url::Origin::Create(provider_);
-  GURL target_url = idp.GetURL().Resolve(kWellKnownFilePath);
+  const url::Origin& idp_origin = url::Origin::Create(provider_);
+  GURL target_url =
+      idp_origin.GetURL().Resolve(IdpNetworkRequestManager::kWellKnownFilePath);
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       CreateTrafficAnnotation();
@@ -124,18 +124,23 @@ void IdpNetworkRequestManager::FetchIDPWellKnown(
       network::mojom::CredentialsMode::kInclude;
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
                                       kAcceptMimeType);
+  // TODO(kenrb): Not following redirects is important for security because
+  // this bypasses CORB. Ensure there is a test added.
+  // https://crbug.com/1155312.
+  resource_request->redirect_mode = network::mojom::RedirectMode::kError;
   resource_request->request_initiator =
       render_frame_host_->GetLastCommittedOrigin();
+  resource_request->trusted_params = network::ResourceRequest::TrustedParams();
+  resource_request->trusted_params->isolation_info =
+      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                 idp_origin, idp_origin, net::SiteForCookies());
 
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  traffic_annotation);
 
-  // This creates a new URLLoaderFactory that matches the RP's factory for
-  // the early uncredentialed request, which serves to minimize cross-site
-  // tracking risk in the case that the flow does not proceed any further.
-  mojo::Remote<network::mojom::URLLoaderFactory> loader_factory;
-  render_frame_host_->CreateNetworkServiceDefaultFactory(
-      loader_factory.BindNewPipeAndPassReceiver());
+  // Use the browser process URL loader factory because it has cross-origin
+  // read blocking disabled.
+  auto loader_factory = GetUrlLoaderFactory(render_frame_host_);
 
   url_loader_->DownloadToString(
       loader_factory.get(),
@@ -179,7 +184,7 @@ void IdpNetworkRequestManager::SendSigninRequest(
   // This header is present mostly for CSRF resistance, but the value could
   // provide a protocol version. This might change if something more useful
   // is needed.
-  resource_request->headers.SetHeader(kSecWebIDHeader, "1.0");
+  resource_request->headers.SetHeader(kSecWebIdHeader, "1.0");
   resource_request->credentials_mode =
       network::mojom::CredentialsMode::kInclude;
   resource_request->trusted_params = network::ResourceRequest::TrustedParams();
@@ -203,8 +208,9 @@ void IdpNetworkRequestManager::SendSigninRequest(
 void IdpNetworkRequestManager::OnWellKnownLoaded(
     std::unique_ptr<std::string> response_body) {
   int response_code = -1;
-  if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers)
-    response_code = url_loader_->ResponseInfo()->headers->response_code();
+  auto* response_info = url_loader_->ResponseInfo();
+  if (response_info && response_info->headers)
+    response_code = response_info->headers->response_code();
 
   url_loader_.reset();
 

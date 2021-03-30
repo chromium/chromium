@@ -72,13 +72,13 @@ bool KeystoreKeysCryptographer::IsEmpty() const {
 
 std::unique_ptr<KeystoreKeysCryptographer> KeystoreKeysCryptographer::Clone()
     const {
-  return base::WrapUnique(new KeystoreKeysCryptographer(
-      cryptographer_->CloneImpl(), keystore_keys_));
+  return base::WrapUnique(
+      new KeystoreKeysCryptographer(cryptographer_->Clone(), keystore_keys_));
 }
 
 std::unique_ptr<CryptographerImpl>
 KeystoreKeysCryptographer::ToCryptographerImpl() const {
-  return cryptographer_->CloneImpl();
+  return cryptographer_->Clone();
 }
 
 bool KeystoreKeysCryptographer::EncryptKeystoreDecryptorToken(

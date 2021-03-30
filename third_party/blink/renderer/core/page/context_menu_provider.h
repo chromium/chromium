@@ -36,14 +36,14 @@
 
 namespace blink {
 
-struct WebMenuItemInfo;
+struct MenuItemInfo;
 
 class ContextMenuProvider : public GarbageCollected<ContextMenuProvider> {
  public:
   virtual ~ContextMenuProvider() = default;
   virtual void Trace(Visitor* visitor) const {}
 
-  virtual WebVector<WebMenuItemInfo> PopulateContextMenu() = 0;
+  virtual WebVector<MenuItemInfo> PopulateContextMenu() = 0;
   virtual void ContextMenuItemSelected(unsigned action) = 0;
   virtual void ContextMenuCleared() = 0;
 };

@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/webui/chromeos/smb_shares/smb_share_dialog.h"
 
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "base/callback_helpers.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/smb_client/smb_service.h"
 #include "chrome/browser/chromeos/smb_client/smb_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -14,6 +15,7 @@
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 
@@ -51,7 +53,7 @@ void SmbShareDialog::Show() {
 
 SmbShareDialog::SmbShareDialog()
     : SystemWebDialogDelegate(GURL(chrome::kChromeUISmbShareURL),
-                              base::string16() /* title */) {}
+                              std::u16string() /* title */) {}
 
 SmbShareDialog::~SmbShareDialog() = default;
 
@@ -85,6 +87,10 @@ SmbShareDialogUI::SmbShareDialogUI(content::WebUI* web_ui)
   bool is_kerberos_enabled =
       smb_service && smb_service->IsKerberosEnabledViaPolicy();
   source->AddBoolean("isKerberosEnabled", is_kerberos_enabled);
+
+  bool is_guest = user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
+                  user_manager::UserManager::Get()->IsLoggedInAsPublicAccount();
+  source->AddBoolean("isGuest", is_guest);
 
   source->UseStringsJs();
   source->SetDefaultResource(IDR_SMB_SHARES_DIALOG_CONTAINER_HTML);

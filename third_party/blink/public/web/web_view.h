@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_VIEW_H_
 
 #include "base/time/time.h"
+#include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -113,7 +114,8 @@ class WebView {
       WebView* opener,
       CrossVariantMojoAssociatedReceiver<mojom::PageBroadcastInterfaceBase>
           page_handle,
-      scheduler::WebAgentGroupScheduler& agent_group_scheduler);
+      scheduler::WebAgentGroupScheduler& agent_group_scheduler,
+      const SessionStorageNamespaceId& session_storage_namespace_id);
 
   // Destroys the WebView.
   virtual void Close() = 0;
@@ -134,6 +136,9 @@ class WebView {
   virtual void DidDetachRemoteMainFrame() = 0;
 
   virtual void SetNoStatePrefetchClient(WebNoStatePrefetchClient*) = 0;
+
+  // Returns the session storage namespace id associated with this WebView.
+  virtual const SessionStorageNamespaceId& GetSessionStorageNamespaceId() = 0;
 
   // Options -------------------------------------------------------------
 
@@ -366,13 +371,6 @@ class WebView {
       mojom::PageVisibilityState visibility,
       mojom::PagehideDispatch pagehide_dispatch) = 0;
 
-  // i18n -----------------------------------------------------------------
-
-  // Inform the WebView that the accept languages have changed.
-  // If the WebView wants to get the accept languages value, it will have
-  // to call the WebViewClient::acceptLanguages().
-  virtual void AcceptLanguagesChanged() = 0;
-
   // Lifecycle state ------------------------------------------------------
 
   // Freezes or unfreezes the page and all the local frames.
@@ -435,6 +433,18 @@ class WebView {
   // TODO(lfg): Remove this once the refactor of WebView/WebWidget is
   // completed.
   virtual WebFrameWidget* MainFrameWidget() = 0;
+
+  // History list ---------------------------------------------------------
+  virtual void SetHistoryListFromNavigation(
+      int32_t history_offset,
+      base::Optional<int32_t> history_length) = 0;
+  virtual void IncreaseHistoryListFromNavigation() = 0;
+
+  // Session history -----------------------------------------------------
+  // Returns the number of history items before/after the current
+  // history item.
+  virtual int32_t HistoryBackListCount() = 0;
+  virtual int32_t HistoryForwardListCount() = 0;
 
   // Portals --------------------------------------------------------------
 

@@ -32,6 +32,9 @@ enum MapCoordinatesMode {
   // This flag is not implemented in all methods that take a MapCoordinatesMode
   // parameter;  see particular methods for more details.
   kUseGeometryMapperMode = 1 << 7,
+
+  // Ignore the scroll offset of the mapped-to ancestor.
+  kIgnoreScrollOffsetOfAncestor = 1 << 8,
 };
 typedef unsigned MapCoordinatesFlags;
 

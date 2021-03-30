@@ -10,10 +10,12 @@
 #import "base/ios/ios_util.h"
 #import "base/ios/ns_error_util.h"
 #include "base/mac/bundle_locations.h"
+#include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/google/core/common/google_util.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/version_info/version_info.h"
 #include "ios/chrome/browser/application_context.h"
@@ -23,6 +25,7 @@
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/ios_chrome_main_parts.h"
 #import "ios/chrome/browser/reading_list/offline_page_tab_helper.h"
+#import "ios/chrome/browser/safe_browsing/password_protection_java_script_feature.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_blocking_page.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_error.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_unsafe_resource_container.h"
@@ -32,6 +35,9 @@
 #include "ios/chrome/browser/web/error_page_controller_bridge.h"
 #import "ios/chrome/browser/web/error_page_util.h"
 #include "ios/chrome/browser/web/features.h"
+#import "ios/chrome/browser/web/java_script_console/java_script_console_feature.h"
+#import "ios/chrome/browser/web/java_script_console/java_script_console_feature_factory.h"
+#include "ios/chrome/browser/web/print/print_java_script_feature.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
 #import "ios/components/security_interstitials/legacy_tls/legacy_tls_blocking_page.h"
 #import "ios/components/security_interstitials/legacy_tls/legacy_tls_controller_client.h"
@@ -210,13 +216,6 @@ bool ChromeWebClient::IsAppSpecificURL(const GURL& url) const {
   return url.SchemeIs(kChromeUIScheme);
 }
 
-bool ChromeWebClient::ShouldBlockUrlDuringRestore(
-    const GURL& url,
-    web::WebState* web_state) const {
-  return ios::GetChromeBrowserProvider()->ShouldBlockUrlDuringRestore(
-      url, web_state);
-}
-
 void ChromeWebClient::AddSerializableData(
     web::SerializableUserDataManager* user_data_manager,
     web::WebState* web_state) {
@@ -224,7 +223,7 @@ void ChromeWebClient::AddSerializableData(
                                                               web_state);
 }
 
-base::string16 ChromeWebClient::GetPluginNotSupportedText() const {
+std::u16string ChromeWebClient::GetPluginNotSupportedText() const {
   return l10n_util::GetStringUTF16(IDS_PLUGIN_NOT_SUPPORTED);
 }
 
@@ -249,7 +248,7 @@ std::string ChromeWebClient::GetUserAgent(web::UserAgentType type) const {
   return web::BuildMobileUserAgent(GetMobileProduct());
 }
 
-base::string16 ChromeWebClient::GetLocalizedString(int message_id) const {
+std::u16string ChromeWebClient::GetLocalizedString(int message_id) const {
   return l10n_util::GetStringUTF16(message_id);
 }
 
@@ -280,6 +279,26 @@ void ChromeWebClient::PostBrowserURLRewriterCreation(
     provider->AddProviderRewriters(rewriter);
 }
 
+std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
+    web::BrowserState* browser_state) const {
+  static base::NoDestructor<PrintJavaScriptFeature> print_feature;
+  std::vector<web::JavaScriptFeature*> features;
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordReuseDetectionEnabled) &&
+      base::ios::IsRunningOnIOS14OrLater()) {
+    features.push_back(PasswordProtectionJavaScriptFeature::GetInstance());
+  }
+
+  JavaScriptConsoleFeature* java_script_console_feature =
+      JavaScriptConsoleFeatureFactory::GetInstance()->GetForBrowserState(
+          browser_state);
+  features.push_back(java_script_console_feature);
+
+  features.push_back(print_feature.get());
+
+  return features;
+}
+
 NSString* ChromeWebClient::GetDocumentStartScriptForAllFrames(
     web::BrowserState* browser_state) const {
   return GetPageScript(@"chrome_bundle_all_frames");
@@ -291,24 +310,6 @@ NSString* ChromeWebClient::GetDocumentStartScriptForMainFrame(
   [scripts addObject:GetPageScript(@"chrome_bundle_main_frame")];
 
   return [scripts componentsJoinedByString:@";"];
-}
-
-void ChromeWebClient::AllowCertificateError(
-    web::WebState* web_state,
-    int cert_error,
-    const net::SSLInfo& info,
-    const GURL& request_url,
-    bool overridable,
-    int64_t navigation_id,
-    base::OnceCallback<void(bool)> callback) {
-  base::OnceCallback<void(NSString*)> null_callback;
-  // TODO(crbug.com/760873): IOSSSLErrorHandler will present an interstitial
-  // for the user to decide if it is safe to proceed.
-  // Handle the case of web_state not presenting UI to users like prerender tabs
-  // or web_state used to fetch offline content in Reading List.
-  IOSSSLErrorHandler::HandleSSLError(
-      web_state, cert_error, info, request_url, overridable, navigation_id,
-      std::move(callback), std::move(null_callback));
 }
 
 bool ChromeWebClient::IsLegacyTLSAllowedForHost(web::WebState* web_state,
@@ -333,7 +334,7 @@ void ChromeWebClient::PrepareErrorPage(
   // WebState that are not attached to a tab may not have an
   // OfflinePageTabHelper.
   if (offline_page_tab_helper &&
-      offline_page_tab_helper->HasDistilledVersionForOnlineUrl(url)) {
+      (offline_page_tab_helper->CanHandleErrorLoadingURL(url))) {
     // An offline version of the page will be displayed to replace this error
     // page. Loading an error page here can cause a race between the
     // navigation to load the error page and the navigation to display the
@@ -397,7 +398,11 @@ UIView* ChromeWebClient::GetWindowedContainer() {
 }
 
 bool ChromeWebClient::EnableLongPressAndForceTouchHandling() const {
-  return !web::features::UseWebViewNativeContextMenu();
+  return !web::features::UseWebViewNativeContextMenuWeb();
+}
+
+bool ChromeWebClient::EnableLongPressUIContextMenu() const {
+  return web::features::UseWebViewNativeContextMenuSystem();
 }
 
 bool ChromeWebClient::ForceMobileVersionByDefault(const GURL& url) {
@@ -420,8 +425,4 @@ web::UserAgentType ChromeWebClient::GetDefaultUserAgent(
                               UIUserInterfaceSizeClassRegular;
   return isRegularRegular ? web::UserAgentType::DESKTOP
                           : web::UserAgentType::MOBILE;
-}
-
-bool ChromeWebClient::IsEmbedderBlockRestoreUrlEnabled() {
-  return ios::GetChromeBrowserProvider()->MightBlockUrlDuringRestore();
 }

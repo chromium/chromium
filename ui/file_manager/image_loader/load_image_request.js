@@ -4,7 +4,7 @@
 
 // clang-format off
 // #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {ImageOrientation, ImageTransformParam} from '../file_manager/foreground/js/metadata/image_orientation.m.js';
+// #import {ImageOrientation, ImageTransformParam} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/js/metadata/image_orientation.m.js';
 // clang-format on
 
 /* #ignore */ 'use strict';

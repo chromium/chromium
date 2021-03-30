@@ -8,11 +8,14 @@
 #import <AVFoundation/AVFoundation.h>
 #import <Foundation/Foundation.h>
 
+#include <vector>
+
 #import "base/mac/scoped_nsobject.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video_capture_types.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace media {
 class VideoCaptureDeviceMac;
@@ -35,9 +38,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceAVFoundationFrameReceiver {
   // function may be called from any thread, including those controlled by
   // AVFoundation.
   virtual void ReceiveExternalGpuMemoryBufferFrame(
-      gfx::GpuMemoryBufferHandle handle,
-      const VideoCaptureFormat& frame_format,
-      const gfx::ColorSpace color_space,
+      CapturedExternalVideoBuffer frame,
+      std::vector<CapturedExternalVideoBuffer> scaled_frames,
       base::TimeDelta timestamp) = 0;
 
   // Callbacks with the result of a still image capture, or in case of error,
@@ -93,6 +95,13 @@ class CAPTURE_EXPORT VideoCaptureDeviceAVFoundationFrameReceiver {
 - (BOOL)setCaptureHeight:(int)height
                    width:(int)width
                frameRate:(float)frameRate;
+
+// If an efficient path is available, the capturer will perform scaling and
+// deliver scaled frames to the |frameReceiver| as specified by |resolutions|.
+// The scaled frames are delivered in addition to the original captured frame.
+// Resolutions that match the captured frame or that would result in upscaling
+// are ignored.
+- (void)setScaledResolutions:(std::vector<gfx::Size>)resolutions;
 
 // Starts video capturing and registers notification listeners. Must be
 // called after setCaptureDevice:, and, eventually, also after

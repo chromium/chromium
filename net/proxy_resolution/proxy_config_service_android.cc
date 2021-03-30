@@ -248,12 +248,15 @@ std::string CreateOverrideProxyConfig(
     const std::vector<ProxyConfigServiceAndroid::ProxyOverrideRule>&
         proxy_rules,
     const std::vector<std::string>& bypass_rules,
+    const bool reverse_bypass,
     ProxyConfigWithAnnotation* config) {
   ProxyConfig proxy_config;
   auto result = ParseOverrideRules(proxy_rules, &proxy_config.proxy_rules());
   if (!result.empty()) {
     return result;
   }
+
+  proxy_config.proxy_rules().reverse_bypass = reverse_bypass;
 
   for (const auto& bypass_rule : bypass_rules) {
     if (!proxy_config.proxy_rules().bypass_rules.AddRuleFromString(
@@ -370,14 +373,15 @@ class ProxyConfigServiceAndroid::Delegate
   std::string SetProxyOverride(
       const std::vector<ProxyOverrideRule>& proxy_rules,
       const std::vector<std::string>& bypass_rules,
+      const bool reverse_bypass,
       base::OnceClosure callback) {
     DCHECK(InJNISequence());
     has_proxy_override_ = true;
 
     // Creates a new proxy config
     ProxyConfigWithAnnotation proxy_config;
-    std::string result =
-        CreateOverrideProxyConfig(proxy_rules, bypass_rules, &proxy_config);
+    std::string result = CreateOverrideProxyConfig(
+        proxy_rules, bypass_rules, reverse_bypass, &proxy_config);
     if (!result.empty()) {
       return result;
     }
@@ -544,8 +548,9 @@ void ProxyConfigServiceAndroid::ProxySettingsChanged() {
 std::string ProxyConfigServiceAndroid::SetProxyOverride(
     const std::vector<ProxyOverrideRule>& proxy_rules,
     const std::vector<std::string>& bypass_rules,
+    const bool reverse_bypass,
     base::OnceClosure callback) {
-  return delegate_->SetProxyOverride(proxy_rules, bypass_rules,
+  return delegate_->SetProxyOverride(proxy_rules, bypass_rules, reverse_bypass,
                                      std::move(callback));
 }
 

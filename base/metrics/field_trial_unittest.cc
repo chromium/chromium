@@ -1275,8 +1275,7 @@ TEST_F(FieldTrialListTest, AssociateFieldTrialParams) {
 
   // Check that we fetch the param from shared memory properly.
   std::map<std::string, std::string> new_params;
-  FieldTrialParamAssociator::GetInstance()->GetFieldTrialParams(trial_name,
-                                                                &new_params);
+  GetFieldTrialParams(trial_name, &new_params);
   EXPECT_EQ("value1", new_params["key1"]);
   EXPECT_EQ("value2", new_params["key2"]);
   EXPECT_EQ(2U, new_params.size());
@@ -1315,8 +1314,7 @@ TEST_F(FieldTrialListTest, MAYBE_ClearParamsFromSharedMemory) {
 
     // Check that there are no params associated with the field trial anymore.
     std::map<std::string, std::string> new_params;
-    FieldTrialParamAssociator::GetInstance()->GetFieldTrialParams(trial_name,
-                                                                  &new_params);
+    GetFieldTrialParams(trial_name, &new_params);
     EXPECT_EQ(0U, new_params.size());
 
     // Now duplicate the handle so we can easily check that the trial is still

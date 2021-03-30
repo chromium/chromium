@@ -205,6 +205,9 @@ void ChromotingClient::SetVideoLayout(const protocol::VideoLayout& layout) {
 void ChromotingClient::SetTransportInfo(
     const protocol::TransportInfo& transport_info) {}
 
+void ChromotingClient::OpenUrl(
+    const protocol::OpenUrlRequest& open_url_request) {}
+
 void ChromotingClient::InjectClipboardEvent(
     const protocol::ClipboardEvent& event) {
   DCHECK(thread_checker_.CalledOnValidThread());

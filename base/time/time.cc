@@ -196,17 +196,6 @@ int TimeDelta::InDaysFloored() const {
                       : std::numeric_limits<int>::max();
 }
 
-double TimeDelta::InSecondsF() const {
-  if (!is_inf())
-    return double{delta_} / Time::kMicrosecondsPerSecond;
-  return (delta_ < 0) ? -std::numeric_limits<double>::infinity()
-                      : std::numeric_limits<double>::infinity();
-}
-
-int64_t TimeDelta::InSeconds() const {
-  return is_inf() ? delta_ : (delta_ / Time::kMicrosecondsPerSecond);
-}
-
 double TimeDelta::InMillisecondsF() const {
   if (!is_inf())
     return double{delta_} / Time::kMicrosecondsPerMillisecond;

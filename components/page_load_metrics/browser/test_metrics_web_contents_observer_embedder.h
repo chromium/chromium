@@ -16,6 +16,8 @@
 
 namespace page_load_metrics {
 
+class PageLoadMetricsMemoryTracker;
+
 class TestMetricsWebContentsObserverEmbedder
     : public PageLoadMetricsEmbedderInterface,
       public test::WeakMockTimerProvider {
@@ -29,6 +31,8 @@ class TestMetricsWebContentsObserverEmbedder
   std::unique_ptr<base::OneShotTimer> CreateTimer() override;
   bool IsPrerender(content::WebContents* web_contents) override;
   bool IsExtensionUrl(const GURL& url) override;
+  PageLoadMetricsMemoryTracker* GetMemoryTrackerForBrowserContext(
+      content::BrowserContext* browser_context) override;
 
   void set_is_ntp(bool is_ntp) { is_ntp_ = is_ntp; }
 

@@ -82,7 +82,7 @@ class ScopedBundleSwizzlerMac;
 // . SetUpUserDataDirectory()
 //
 // Default command line switches are added in the default implementation of
-// SetUpDefaultCommandLine(). Addtional command line switches can be simply
+// SetUpDefaultCommandLine(). Additional command line switches can be simply
 // appended in SetUpCommandLine() without the need to invoke
 // InProcessBrowserTest::SetUpCommandLine(). If a test needs to change the
 // default command line, it can override SetUpDefaultCommandLine(), where it
@@ -215,6 +215,9 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // BrowserTestBase:
   void PreRunTestOnMainThread() override;
   void PostRunTestOnMainThread() override;
+#if defined(OS_MAC)
+  void CreatedBrowserMainParts(content::BrowserMainParts* parts) override;
+#endif
 
   // Ensures that no devtools are open, and then opens the devtools.
   void OpenDevToolsWindow(content::WebContents* web_contents);
@@ -282,6 +285,10 @@ class InProcessBrowserTest : public content::BrowserTestBase {
     open_about_blank_on_browser_launch_ = value;
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void set_skip_initial_restore(bool value) { skip_initial_restore_ = value; }
+#endif
+
   // Runs scheduled layouts on all Widgets using
   // Widget::LayoutRootViewIfNecessary(). No-op outside of Views.
   void RunScheduledLayouts();
@@ -339,6 +346,12 @@ class InProcessBrowserTest : public content::BrowserTestBase {
 #endif
 
   std::unique_ptr<MainThreadStackSamplingProfiler> sampling_profiler_;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // False to create a browser by default before tests code run for browser
+  // tests. To run or test the full restore logic, sets the value as true.
+  bool skip_initial_restore_ = false;
+#endif
 };
 
 // When including either in_process_browser_test.h or android_browser_test.h

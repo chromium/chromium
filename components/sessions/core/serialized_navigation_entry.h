@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "components/sessions/core/sessions_export.h"
 #include "ui/base/page_transition_types.h"
@@ -71,8 +70,8 @@ class SESSIONS_EXPORT SerializedNavigationEntry {
 
   int unique_id() const { return unique_id_; }
   void set_unique_id(int unique_id) { unique_id_ = unique_id; }
-  const base::string16& title() const { return title_; }
-  void set_title(const base::string16& title) { title_ = title; }
+  const std::u16string& title() const { return title_; }
+  void set_title(const std::u16string& title) { title_ = title; }
   const GURL& favicon_url() const { return favicon_url_; }
   void set_favicon_url(const GURL& favicon_url) { favicon_url_ = favicon_url; }
   int http_status_code() const { return http_status_code_; }
@@ -172,13 +171,6 @@ class SESSIONS_EXPORT SerializedNavigationEntry {
   int64_t root_task_id() const { return root_task_id_; }
   void set_root_task_id(int64_t root_task_id) { root_task_id_ = root_task_id; }
 
-  const std::vector<int64_t>& children_task_ids() const {
-    return children_task_ids_;
-  }
-  void set_children_task_ids(std::vector<int64_t> children_task_ids) {
-    children_task_ids_ = children_task_ids;
-  }
-
   size_t EstimateMemoryUsage() const;
 
  private:
@@ -197,7 +189,7 @@ class SESSIONS_EXPORT SerializedNavigationEntry {
   GURL referrer_url_;
   int referrer_policy_;
   GURL virtual_url_;
-  base::string16 title_;
+  std::u16string title_;
   std::string encoded_page_state_;
   ui::PageTransition transition_type_ = ui::PAGE_TRANSITION_TYPED;
   bool has_post_data_ = false;
@@ -226,7 +218,6 @@ class SESSIONS_EXPORT SerializedNavigationEntry {
   int64_t task_id_ = -1;
   int64_t parent_task_id_ = -1;
   int64_t root_task_id_ = -1;
-  std::vector<int64_t> children_task_ids_;
 };
 
 }  // namespace sessions

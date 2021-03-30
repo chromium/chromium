@@ -286,12 +286,10 @@ const CGFloat kIconTrailingMargin = 12;
   self.dismissButton = dismissButton;
   [contentView addSubview:self.dismissButton];
 
-#if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
       self.optionsButton.pointerInteractionEnabled = YES;
       self.dismissButton.pointerInteractionEnabled = YES;
   }
-#endif  // defined(__IPHONE_13_4)
 
   ApplyVisualConstraintsWithMetrics(
       @[

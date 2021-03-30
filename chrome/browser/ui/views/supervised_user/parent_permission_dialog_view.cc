@@ -56,6 +56,8 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 constexpr int kPermissionSectionPaddingTop = 20;
@@ -67,6 +69,8 @@ constexpr int kInvalidCredentialLabelTopPadding = 3;
 // Override is needed to configure accessibility node for an empty name.
 class MaybeEmptyLabel : public views::Label {
  public:
+  METADATA_HEADER(MaybeEmptyLabel);
+
   MaybeEmptyLabel(const std::string& text, const CustomFont& font)
       : views::Label(base::UTF8ToUTF16(text), font) {}
 
@@ -83,6 +87,9 @@ class MaybeEmptyLabel : public views::Label {
       node_data->SetNameExplicitlyEmpty();
   }
 };
+
+BEGIN_METADATA(MaybeEmptyLabel, views::Label)
+END_METADATA
 
 // Returns bitmap for the default icon with size equal to the default icon's
 // pixel size under maximal supported scale factor.
@@ -101,7 +108,7 @@ class ParentPermissionInputSection : public views::TextfieldController {
  public:
   ParentPermissionInputSection(
       ParentPermissionDialogView* main_view,
-      const std::vector<base::string16>& parent_permission_email_addresses,
+      const std::vector<std::u16string>& parent_permission_email_addresses,
       int available_width)
       : main_view_(main_view) {
     DCHECK_GT(parent_permission_email_addresses.size(), 0u);
@@ -125,15 +132,14 @@ class ParentPermissionInputSection : public views::TextfieldController {
 
       // Add first parent radio button
       auto parent_0_radio_button = std::make_unique<views::RadioButton>(
-          base::string16(parent_permission_email_addresses[0]), 1 /* group */);
+          std::u16string(parent_permission_email_addresses[0]), 1 /* group */);
 
       // Add a subscription
       parent_0_subscription_ =
           parent_0_radio_button->AddCheckedChangedCallback(base::BindRepeating(
               [](ParentPermissionDialogView* main_view,
-                 const base::string16& parent_email) {
-                main_view->set_selected_parent_permission_email_address(
-                    parent_email);
+                 const std::u16string& parent_email) {
+                main_view->SetSelectedParentPermissionEmail(parent_email);
               },
               main_view, parent_permission_email_addresses[0]));
 
@@ -143,21 +149,20 @@ class ParentPermissionInputSection : public views::TextfieldController {
 
       // Add second parent radio button.
       auto parent_1_radio_button = std::make_unique<views::RadioButton>(
-          base::string16(parent_permission_email_addresses[1]), 1 /* group */);
+          std::u16string(parent_permission_email_addresses[1]), 1 /* group */);
 
       parent_1_subscription_ =
           parent_1_radio_button->AddCheckedChangedCallback(base::BindRepeating(
               [](ParentPermissionDialogView* main_view,
-                 const base::string16& parent_email) {
-                main_view->set_selected_parent_permission_email_address(
-                    parent_email);
+                 const std::u16string& parent_email) {
+                main_view->SetSelectedParentPermissionEmail(parent_email);
               },
               main_view, parent_permission_email_addresses[1]));
 
       view->AddChildView(std::move(parent_1_radio_button));
 
       // Default to first parent in the response.
-      main_view_->set_selected_parent_permission_email_address(
+      main_view_->SetSelectedParentPermissionEmail(
           parent_permission_email_addresses[0]);
     } else {
       // If there is just one parent, show a label with that parent's email.
@@ -179,12 +184,12 @@ class ParentPermissionInputSection : public views::TextfieldController {
       view->AddChildView(std::move(parent_email_label));
       // Since there is only one parent, just set the output value of selected
       // parent email address here..
-      main_view->set_selected_parent_permission_email_address(
+      main_view->SetSelectedParentPermissionEmail(
           parent_permission_email_addresses[0]);
     }
 
     // Add the credential input field.
-    base::string16 enter_password_string = l10n_util::GetStringUTF16(
+    std::u16string enter_password_string = l10n_util::GetStringUTF16(
         IDS_PARENT_PERMISSION_PROMPT_ENTER_PASSWORD_LABEL);
     auto enter_password_label = std::make_unique<views::Label>(
         enter_password_string, views::style::CONTEXT_DIALOG_BODY_TEXT,
@@ -216,19 +221,19 @@ class ParentPermissionInputSection : public views::TextfieldController {
 
   // views::TextfieldController
   void ContentsChanged(views::Textfield* sender,
-                       const base::string16& new_contents) override {
-    main_view_->set_parent_permission_credential(new_contents);
+                       const std::u16string& new_contents) override {
+    main_view_->SetParentPermissionCredential(new_contents);
   }
 
   void ClearCredentialInputField() {
-    credential_input_field_->SetText(base::string16());
+    credential_input_field_->SetText(std::u16string());
   }
   void FocusCredentialInputField() { credential_input_field_->RequestFocus(); }
 
  private:
   void OnParentRadioButtonSelected(ParentPermissionDialogView* main_view,
-                                   const base::string16& parent_email) {
-    main_view->set_selected_parent_permission_email_address(parent_email);
+                                   const std::u16string& parent_email) {
+    main_view->SetSelectedParentPermissionEmail(parent_email);
   }
 
   base::CallbackListSubscription parent_0_subscription_;
@@ -250,7 +255,7 @@ struct ParentPermissionDialogView::Params {
   gfx::ImageSkia icon;
 
   // The message to show. Ignored if extension is set.
-  base::string16 message;
+  std::u16string message;
 
   // An optional extension whose permissions should be displayed
   const extensions::Extension* extension = nullptr;
@@ -309,10 +314,18 @@ void ParentPermissionDialogView::SetIdentityManagerForTesting(
 
 void ParentPermissionDialogView::SetRepromptAfterIncorrectCredential(
     bool reprompt) {
+  if (reprompt_after_incorrect_credential_ == reprompt)
+    return;
   reprompt_after_incorrect_credential_ = reprompt;
+  OnPropertyChanged(&reprompt_after_incorrect_credential_,
+                    views::kPropertyEffectsNone);
 }
 
-base::string16 ParentPermissionDialogView::GetActiveUserFirstName() const {
+bool ParentPermissionDialogView::GetRepromptAfterIncorrectCredential() const {
+  return reprompt_after_incorrect_credential_;
+}
+
+std::u16string ParentPermissionDialogView::GetActiveUserFirstName() const {
   user_manager::UserManager* manager = user_manager::UserManager::Get();
   const user_manager::User* user = manager->GetActiveUser();
   return user->GetGivenName();
@@ -376,7 +389,7 @@ bool ParentPermissionDialogView::Accept() {
   SetEnabled(false);
   // Clear out the invalid credential label, so that it disappears/reappears to
   // the user to emphasize that the password check happened again.
-  invalid_credential_label_->SetText(base::string16());
+  invalid_credential_label_->SetText(std::u16string());
   std::string parent_obfuscated_gaia_id =
       GetParentObfuscatedGaiaID(selected_parent_permission_email_);
   std::string parent_credential =
@@ -386,7 +399,7 @@ bool ParentPermissionDialogView::Accept() {
   return false;
 }
 
-base::string16 ParentPermissionDialogView::GetAccessibleWindowTitle() const {
+std::u16string ParentPermissionDialogView::GetAccessibleWindowTitle() const {
   return params_->message;
 }
 
@@ -414,7 +427,7 @@ void ParentPermissionDialogView::CreateContents() {
     // Set up the permissions header string.
     // Shouldn't be asking for permissions for theme installs.
     DCHECK(!params_->extension->is_theme());
-    base::string16 extension_type;
+    std::u16string extension_type;
     if (params_->extension->is_extension()) {
       extension_type = l10n_util::GetStringUTF16(
           IDS_PARENT_PERMISSION_PROMPT_EXTENSION_TYPE_EXTENSION);
@@ -422,7 +435,7 @@ void ParentPermissionDialogView::CreateContents() {
       extension_type = l10n_util::GetStringUTF16(
           IDS_PARENT_PERMISSION_PROMPT_EXTENSION_TYPE_APP);
     }
-    base::string16 permission_header_label = l10n_util::GetStringFUTF16(
+    std::u16string permission_header_label = l10n_util::GetStringFUTF16(
         IDS_PARENT_PERMISSION_PROMPT_CHILD_WANTS_TO_INSTALL_LABEL,
         GetActiveUserFirstName(), extension_type);
 
@@ -512,6 +525,38 @@ void ParentPermissionDialogView::RemoveObserver() {
   observer_ = nullptr;
 }
 
+void ParentPermissionDialogView::SetSelectedParentPermissionEmail(
+    const std::u16string& email_address) {
+  if (selected_parent_permission_email_ == email_address)
+    return;
+  selected_parent_permission_email_ = email_address;
+  OnPropertyChanged(&selected_parent_permission_email_,
+                    views::kPropertyEffectsNone);
+}
+
+std::u16string ParentPermissionDialogView::GetSelectedParentPermissionEmail()
+    const {
+  return selected_parent_permission_email_;
+}
+
+void ParentPermissionDialogView::SetParentPermissionCredential(
+    const std::u16string& credential) {
+  if (parent_permission_credential_ == credential)
+    return;
+  parent_permission_credential_ = credential;
+  OnPropertyChanged(&parent_permission_credential_,
+                    views::kPropertyEffectsNone);
+}
+
+std::u16string ParentPermissionDialogView::GetParentPermissionCredential()
+    const {
+  return parent_permission_credential_;
+}
+
+bool ParentPermissionDialogView::GetInvalidCredentialReceived() const {
+  return invalid_credential_received_;
+}
+
 void ParentPermissionDialogView::ShowDialogInternal() {
   // The contents have to be created here, instead of during construction
   // because they can potentially rely on the side effects of loading info
@@ -535,12 +580,12 @@ void ParentPermissionDialogView::LoadParentEmailAddresses() {
   SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(params_->profile);
 
-  base::string16 primary_parent_email =
+  std::u16string primary_parent_email =
       base::UTF8ToUTF16(service->GetCustodianEmailAddress());
   if (!primary_parent_email.empty())
     parent_permission_email_addresses_.push_back(primary_parent_email);
 
-  base::string16 secondary_parent_email =
+  std::u16string secondary_parent_email =
       base::UTF8ToUTF16(service->GetSecondCustodianEmailAddress());
   if (!secondary_parent_email.empty())
     parent_permission_email_addresses_.push_back(secondary_parent_email);
@@ -598,7 +643,7 @@ void ParentPermissionDialogView::CloseWithReason(
 }
 
 std::string ParentPermissionDialogView::GetParentObfuscatedGaiaID(
-    const base::string16& parent_email) const {
+    const std::u16string& parent_email) const {
   SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(params_->profile);
 
@@ -624,7 +669,7 @@ void ParentPermissionDialogView::StartReauthAccessTokenFetch(
   scopes.insert(GaiaConstants::kAccountsReauthOAuth2Scope);
   oauth2_access_token_fetcher_ =
       identity_manager_->CreateAccessTokenFetcherForAccount(
-          identity_manager_->GetPrimaryAccountId(),
+          identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync),
           "chrome_webstore_private_api", scopes,
           base::BindOnce(
               &ParentPermissionDialogView::OnAccessTokenFetchComplete,
@@ -740,6 +785,14 @@ void ParentPermissionDialogView::InitializeExtensionData(
   LoadExtensionIcon();
 }
 
+BEGIN_METADATA(ParentPermissionDialogView, views::DialogDelegateView)
+ADD_PROPERTY_METADATA(std::u16string, SelectedParentPermissionEmail)
+ADD_PROPERTY_METADATA(std::u16string, ParentPermissionCredential)
+ADD_READONLY_PROPERTY_METADATA(bool, InvalidCredentialReceived)
+ADD_PROPERTY_METADATA(bool, RepromptAfterIncorrectCredential)
+ADD_READONLY_PROPERTY_METADATA(std::u16string, ActiveUserFirstName)
+END_METADATA
+
 class ParentPermissionDialogImpl : public ParentPermissionDialog,
                                    public ParentPermissionDialogView::Observer {
  public:
@@ -794,7 +847,7 @@ ParentPermissionDialog::CreateParentPermissionDialog(
     Profile* profile,
     gfx::NativeWindow window,
     const gfx::ImageSkia& icon,
-    const base::string16& message,
+    const std::u16string& message,
     ParentPermissionDialog::DoneCallback done_callback) {
   auto params = std::make_unique<ParentPermissionDialogView::Params>();
   params->message = message;

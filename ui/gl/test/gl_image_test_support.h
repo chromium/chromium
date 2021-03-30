@@ -18,7 +18,7 @@ class GLImageTestSupport {
   // Initialize GL for image testing. |prefered_impl| is the GL implementation
   // to select if it is an allowed GL implementation. Otherwise it selects the
   // first allowed GL implementation.
-  static void InitializeGL(base::Optional<GLImplementation> prefered_impl);
+  static void InitializeGL(base::Optional<GLImplementationParts> prefered_impl);
 
   // Cleanup GL after being initialized for image testing.
   static void CleanupGL();

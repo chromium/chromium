@@ -23,17 +23,15 @@ namespace ntlm {
 namespace test {
 
 // Common input values defined in [MS-NLMP] Section 4.2.1.
-constexpr base::char16 kPassword[] = {'P', 'a', 's', 's', 'w',
-                                      'o', 'r', 'd', '\0'};
-constexpr base::char16 kNtlmDomain[] = {'D', 'o', 'm', 'a', 'i', 'n', '\0'};
+constexpr char16_t kPassword[] = {'P', 'a', 's', 's', 'w', 'o', 'r', 'd', '\0'};
+constexpr char16_t kNtlmDomain[] = {'D', 'o', 'm', 'a', 'i', 'n', '\0'};
 constexpr uint8_t kNtlmDomainRaw[] = {'D', 0x00, 'o', 0x00, 'm', 0x00,
                                       'a', 0x00, 'i', 0x00, 'n', 0x00};
-constexpr base::char16 kUser[] = {'U', 's', 'e', 'r', '\0'};
-constexpr base::char16 kDomainUserCombined[] = {'D',  'o', 'm', 'a', 'i', 'n',
-                                                '\\', 'U', 's', 'e', 'r', '\0'};
-constexpr base::char16 kHostname[] = {'C', 'O', 'M', 'P', 'U',
-                                      'T', 'E', 'R', '\0'};
-constexpr base::char16 kServer[] = {'S', 'e', 'r', 'v', 'e', 'r', '\0'};
+constexpr char16_t kUser[] = {'U', 's', 'e', 'r', '\0'};
+constexpr char16_t kDomainUserCombined[] = {'D',  'o', 'm', 'a', 'i', 'n',
+                                            '\\', 'U', 's', 'e', 'r', '\0'};
+constexpr char16_t kHostname[] = {'C', 'O', 'M', 'P', 'U', 'T', 'E', 'R', '\0'};
+constexpr char16_t kServer[] = {'S', 'e', 'r', 'v', 'e', 'r', '\0'};
 constexpr uint8_t kServerRaw[] = {'S', 0x00, 'e', 0x00, 'r', 0x00,
                                   'v', 0x00, 'e', 0x00, 'r', 0x00};
 

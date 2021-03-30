@@ -36,14 +36,53 @@
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_api_shim.h"
-#include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
-#include "third_party/blink/renderer/core/layout/line/root_inline_box.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_caret_position.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_caret_rect.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 
 namespace blink {
 
 namespace {
+
+// Returns a position suitable for |ComputeNGCaretPosition()| to calculate
+// local caret rect by |ComputeLocalCaretRect()|:
+//  - A position in |Text| node
+//  - A position before/after atomic inline element. Note: This function
+//    doesn't check whether anchor node is atomic inline level or not.
+template <typename Strategy>
+PositionWithAffinityTemplate<Strategy> AdjustForNGCaretPosition(
+    const PositionWithAffinityTemplate<Strategy>& position_with_affinity) {
+  switch (position_with_affinity.GetPosition().AnchorType()) {
+    case PositionAnchorType::kAfterAnchor:
+    case PositionAnchorType::kBeforeAnchor:
+      return position_with_affinity;
+    case PositionAnchorType::kAfterChildren:
+      // For caret rect computation, |kAfterChildren| and |kAfterNode| are
+      // equivalent. See http://crbug.com/1174101
+      return PositionWithAffinityTemplate<Strategy>(
+          PositionTemplate<Strategy>::AfterNode(
+              *position_with_affinity.GetPosition().AnchorNode()),
+          position_with_affinity.Affinity());
+    case PositionAnchorType::kOffsetInAnchor: {
+      const Node& node = *position_with_affinity.GetPosition().AnchorNode();
+      if (IsA<Text>(node) ||
+          position_with_affinity.GetPosition().OffsetInContainerNode())
+        return position_with_affinity;
+      const LayoutObject* const layout_object = node.GetLayoutObject();
+      if (!layout_object || IsA<LayoutBlockFlow>(layout_object)) {
+        // In case of <div>@0
+        return position_with_affinity;
+      }
+      // For caret rect computation, we paint caret before |layout_object|
+      // instead of inside of it.
+      return PositionWithAffinityTemplate<Strategy>(
+          PositionTemplate<Strategy>::BeforeNode(node),
+          position_with_affinity.Affinity());
+    }
+  }
+  NOTREACHED();
+  return position_with_affinity;
+}
 
 template <typename Strategy>
 LocalCaretRect LocalCaretRectOfPositionTemplate(
@@ -60,8 +99,9 @@ LocalCaretRect LocalCaretRectOfPositionTemplate(
       ComputeInlineAdjustedPosition(position);
 
   if (adjusted.IsNotNull()) {
-    if (NGInlineFormattingContextOf(adjusted.GetPosition()))
-      return ComputeNGLocalCaretRect(adjusted);
+    if (auto caret_position =
+            ComputeNGCaretPosition(AdjustForNGCaretPosition(adjusted)))
+      return ComputeLocalCaretRect(caret_position);
 
     const InlineBoxPosition& box_position =
         ComputeInlineBoxPositionForInlineAdjustedPosition(adjusted);
@@ -101,9 +141,9 @@ LocalCaretRect LocalSelectionRectOfPositionTemplate(
   if (adjusted.IsNull())
     return LocalCaretRect();
 
-  if (NGInlineFormattingContextOf(adjusted.GetPosition())) {
-    return ComputeNGLocalSelectionRect(adjusted);
-  }
+  if (auto caret_position =
+          ComputeNGCaretPosition(AdjustForNGCaretPosition(adjusted)))
+    return ComputeLocalSelectionRect(caret_position);
 
   const InlineBoxPosition& box_position =
       ComputeInlineBoxPositionForInlineAdjustedPosition(adjusted);

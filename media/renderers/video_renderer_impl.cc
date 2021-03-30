@@ -221,7 +221,7 @@ void VideoRendererImpl::Initialize(
 scoped_refptr<VideoFrame> VideoRendererImpl::Render(
     base::TimeTicks deadline_min,
     base::TimeTicks deadline_max,
-    bool background_rendering) {
+    RenderingMode rendering_mode) {
   TRACE_EVENT_BEGIN1("media", "VideoRendererImpl::Render", "id",
                      media_log_->id());
   base::AutoLock auto_lock(lock_);
@@ -235,6 +235,9 @@ scoped_refptr<VideoFrame> VideoRendererImpl::Render(
   // Due to how the |algorithm_| holds frames, this should never be null if
   // we've had a proper startup sequence.
   DCHECK(result);
+
+  const bool background_rendering =
+      rendering_mode == RenderingMode::kBackground;
 
   // Declare HAVE_NOTHING if we reach a state where we can't progress playback
   // any further.  We don't want to do this if we've already done so, reached
@@ -548,33 +551,40 @@ void VideoRendererImpl::UpdateLatencyHintBufferingCaps_Locked(
   }
 }
 
-void VideoRendererImpl::FrameReady(VideoDecoderStream::ReadStatus status,
-                                   scoped_refptr<VideoFrame> frame) {
+void VideoRendererImpl::FrameReady(VideoDecoderStream::ReadResult result) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   base::AutoLock auto_lock(lock_);
   DCHECK_EQ(state_, kPlaying);
   CHECK(pending_read_);
   pending_read_ = false;
 
-  if (status == VideoDecoderStream::DECODE_ERROR) {
-    DCHECK(!frame);
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&VideoRendererImpl::OnPlaybackError,
-                       weak_factory_.GetWeakPtr(), PIPELINE_ERROR_DECODE));
-    return;
+  // Can happen when demuxers are preparing for a new Seek().
+  switch (result.code()) {
+    case StatusCode::kOk:
+      break;
+    case StatusCode::kAborted:
+      // TODO(liberato): This used to check specifically for the value
+      // DEMUXER_READ_ABORTED, which was more specific than |kAborted|.
+      // However, since it's a dcheck, this seems okay.
+      return;
+    default:
+      DCHECK(result.has_error());
+      // Anything other than `kOk` or `kAborted` is treated as an error.
+      task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&VideoRendererImpl::OnPlaybackError,
+                         weak_factory_.GetWeakPtr(), PIPELINE_ERROR_DECODE));
+      return;
   }
 
-  // Can happen when demuxers are preparing for a new Seek().
-  if (!frame) {
-    DCHECK_EQ(status, VideoDecoderStream::DEMUXER_READ_ABORTED);
-    return;
-  }
+  DCHECK(result.has_value());
+  scoped_refptr<VideoFrame> frame = std::move(result).value();
+  DCHECK(frame);
 
   last_frame_ready_time_ = tick_clock_->NowTicks();
   last_decoder_stream_avg_duration_ = video_decoder_stream_->AverageDuration();
 
-  const bool is_eos = frame->metadata()->end_of_stream;
+  const bool is_eos = frame->metadata().end_of_stream;
   const bool is_before_start_time = !is_eos && IsBeforeStartTime(*frame);
   const bool cant_read = !video_decoder_stream_->CanReadWithoutStalling();
 
@@ -606,8 +616,8 @@ void VideoRendererImpl::FrameReady(VideoDecoderStream::ReadStatus status,
     // RemoveFramesForUnderflowOrBackgroundRendering() below to actually expire
     // this frame if it's too far behind the current media time. Without this,
     // we may resume too soon after a track change in the low delay case.
-    if (!frame->metadata()->frame_duration.has_value())
-      frame->metadata()->frame_duration = last_decoder_stream_avg_duration_;
+    if (!frame->metadata().frame_duration.has_value())
+      frame->metadata().frame_duration = last_decoder_stream_avg_duration_;
 
     AddReadyFrame_Locked(std::move(frame));
   }
@@ -736,11 +746,11 @@ void VideoRendererImpl::TransitionToHaveNothing_Locked() {
 void VideoRendererImpl::AddReadyFrame_Locked(scoped_refptr<VideoFrame> frame) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   lock_.AssertAcquired();
-  DCHECK(!frame->metadata()->end_of_stream);
+  DCHECK(!frame->metadata().end_of_stream);
 
   ++stats_.video_frames_decoded;
 
-  if (frame->metadata()->power_efficient)
+  if (frame->metadata().power_efficient)
     ++stats_.video_frames_decoded_power_efficient;
 
   algorithm_->EnqueueFrame(std::move(frame));
@@ -930,7 +940,7 @@ base::TimeTicks VideoRendererImpl::GetCurrentMediaTimeAsWallClockTime() {
 
 bool VideoRendererImpl::IsBeforeStartTime(const VideoFrame& frame) {
   // Prefer the actual frame duration over the average if available.
-  return frame.timestamp() + frame.metadata()->frame_duration.value_or(
+  return frame.timestamp() + frame.metadata().frame_duration.value_or(
                                  last_decoder_stream_avg_duration_) <
          start_timestamp_;
 }

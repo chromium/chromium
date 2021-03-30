@@ -1399,8 +1399,8 @@ cr.define('cr.ui', function() {
    * @param {Event} e The mouse event object.
    */
   function handleMouseDown(e) {
-    e.target = /** @type {!HTMLElement} */ (e.target);
-    const listItem = this.getListItemAncestor(e.target);
+    const target = /** @type {!HTMLElement} */ (e.target);
+    const listItem = this.getListItemAncestor(target);
     const wasSelected = listItem && listItem.selected;
     this.handlePointerDownUp_(e);
 
@@ -1419,7 +1419,7 @@ cr.define('cr.ui', function() {
     //
     // [1] For example, clicking non-focusable area gives focus on the first
     // form control in the item.
-    if (!containsFocusableElement(e.target, listItem) &&
+    if (!containsFocusableElement(target, listItem) &&
         listItem.contains(listItem.ownerDocument.activeElement)) {
       e.preventDefault();
     }
@@ -1470,6 +1470,7 @@ cr.define('cr.ui', function() {
   }
 
   // #cr_define_end
+  console.warn('crbug/1173575, non-JS module files deprecated.');
   return {
     List: List,
     Size: Size,

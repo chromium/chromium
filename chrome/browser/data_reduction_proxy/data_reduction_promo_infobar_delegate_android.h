@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_DATA_REDUCTION_PROXY_DATA_REDUCTION_PROMO_INFOBAR_DELEGATE_ANDROID_H_
 
 #include <memory>
+#include <string>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar_delegate.h"
 
@@ -43,7 +43,7 @@ class DataReductionPromoInfoBarDelegateAndroid : public ConfirmInfoBarDelegate {
 
   // ConfirmInfoBarDelegate:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
-  base::string16 GetMessageText() const override;
+  std::u16string GetMessageText() const override;
   bool Accept() override;
 
   DISALLOW_COPY_AND_ASSIGN(DataReductionPromoInfoBarDelegateAndroid);

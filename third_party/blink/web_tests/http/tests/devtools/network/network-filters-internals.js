@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests to ensure data being passed from outside network to filter results filters properly.\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   NetworkTestRunner.recordNetwork();

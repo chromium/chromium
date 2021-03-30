@@ -182,7 +182,7 @@ ax::mojom::AssistantStructurePtr CloneAssistantStructure(
 AssistantScreenContextControllerImpl::AssistantScreenContextControllerImpl(
     AssistantControllerImpl* assistant_controller)
     : assistant_controller_(assistant_controller) {
-  assistant_controller_observer_.Add(AssistantController::Get());
+  assistant_controller_observation_.Observe(AssistantController::Get());
 }
 
 AssistantScreenContextControllerImpl::~AssistantScreenContextControllerImpl() =
@@ -215,9 +215,8 @@ void AssistantScreenContextControllerImpl::RequestScreenshot(
 
   ui::GrabLayerSnapshotAsync(
       root_layer, source_rect,
-      base::BindOnce(&EncodeScreenshotAndRunCallback,
-                     base::Passed(std::move(callback)),
-                     base::Passed(std::move(layer_owner))));
+      base::BindOnce(&EncodeScreenshotAndRunCallback, std::move(callback),
+                     std::move(layer_owner)));
 }
 
 void AssistantScreenContextControllerImpl::OnAssistantControllerConstructed() {

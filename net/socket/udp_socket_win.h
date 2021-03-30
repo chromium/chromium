@@ -155,6 +155,8 @@ class NET_EXPORT DscpManager {
 
 class NET_EXPORT UDPSocketWin : public base::win::ObjectWatcher::Delegate {
  public:
+  // BindType is ignored. Windows has an option to do random binds, so
+  // UDPSocketWin sets that whenever connecting a socket.
   UDPSocketWin(DatagramSocket::BindType bind_type,
                net::NetLog* net_log,
                const net::NetLogSource& source);
@@ -416,8 +418,6 @@ class NET_EXPORT UDPSocketWin : public base::win::ObjectWatcher::Delegate {
   // Bind().
   int SetMulticastOptions();
   int DoBind(const IPEndPoint& address);
-  // Binds to a random port on |address|.
-  int RandomBind(const IPAddress& address);
 
   // This is provided to allow QwaveApi mocking in tests. |UDPSocketWin| method
   // implementations should call |GetQwaveApi()| instead of
@@ -438,10 +438,6 @@ class NET_EXPORT UDPSocketWin : public base::win::ObjectWatcher::Delegate {
   // Multicast socket options cached for SetMulticastOption.
   // Cannot be used after Bind().
   int multicast_time_to_live_;
-
-  // How to do source port binding, used only when UDPSocket is part of
-  // UDPClientSocket, since UDPServerSocket provides Bind.
-  DatagramSocket::BindType bind_type_;
 
   // These are mutable since they're just cached copies to make
   // GetPeerAddress/GetLocalAddress smarter.

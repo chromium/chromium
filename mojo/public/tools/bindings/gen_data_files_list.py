@@ -18,7 +18,6 @@ import os
 import re
 import sys
 
-from cStringIO import StringIO
 from optparse import OptionParser
 
 sys.path.insert(
@@ -41,12 +40,9 @@ def main():
   pattern = re.compile(options.pattern)
   files = [f for f in os.listdir(options.directory) if pattern.match(f)]
 
-  stream = StringIO()
-  for f in files:
-    print(f, file=stream)
+  contents = '\n'.join(f for f in files) + '\n'
+  WriteFile(contents, options.output)
 
-  WriteFile(stream.getvalue(), options.output)
-  stream.close()
 
 if __name__ == '__main__':
   sys.exit(main())

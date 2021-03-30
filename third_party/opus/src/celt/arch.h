@@ -75,6 +75,9 @@ void celt_fatal(const char *str, const char *file, int line)
 #if !defined(CHROMIUM_NO_LOGGING)
    fprintf (stderr, "Fatal (internal) error in %s, line %d: %s\n", file, line, str);
 #endif
+#if defined(_MSC_VER)
+   _set_abort_behavior( 0, _WRITE_ABORT_MSG);
+#endif
    abort();
 }
 #endif

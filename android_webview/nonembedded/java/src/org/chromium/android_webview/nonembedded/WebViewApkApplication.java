@@ -8,6 +8,9 @@ import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.os.Build;
+
+import com.android.webview.chromium.WebViewLibraryPreloader;
 
 import org.chromium.android_webview.AwLocaleConfig;
 import org.chromium.android_webview.common.CommandLineUtil;
@@ -45,8 +48,7 @@ public class WebViewApkApplication extends Application {
 
         // MonochromeApplication has its own locale configuration already, so call this here
         // rather than in maybeInitProcessGlobals.
-        ResourceBundle.setAvailablePakLocales(
-                new String[] {}, AwLocaleConfig.getWebViewSupportedPakLocales());
+        ResourceBundle.setAvailablePakLocales(AwLocaleConfig.getWebViewSupportedPakLocales());
     }
 
     @Override
@@ -69,6 +71,12 @@ public class WebViewApkApplication extends Application {
             // disable using a native recorder in this process because native lib isn't loaded.
             UmaRecorderHolder.setAllowNativeUmaRecorder(false);
             UmaRecorderHolder.setNonNativeDelegate(new AwNonembeddedUmaRecorder());
+        }
+
+        // Limit to N+ since external services were added in N.
+        if (!LibraryLoader.getInstance().isLoadedByZygote()
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            LibraryLoader.getInstance().setNativeLibraryPreloader(new WebViewLibraryPreloader());
         }
     }
 
@@ -129,7 +137,8 @@ public class WebViewApkApplication extends Application {
             }
             // Should not call LibraryLoader.initialize() since this will reset UmaRecorder
             // delegate.
-            LibraryLoader.getInstance().setLibraryProcessType(LibraryProcessType.PROCESS_WEBVIEW);
+            LibraryLoader.getInstance().setLibraryProcessType(
+                    LibraryProcessType.PROCESS_WEBVIEW_NONEMBEDDED);
             LibraryLoader.getInstance().loadNow();
         } catch (Throwable unused) {
             // Happens for WebView Stub. Throws NoClassDefFoundError because of no
@@ -137,12 +146,12 @@ public class WebViewApkApplication extends Application {
             return false;
         }
         LibraryLoader.getInstance().switchCommandLineForWebView();
-        WebViewApkApplicationJni.get().initializePakResources();
+        WebViewApkApplicationJni.get().initializeGlobalsAndResources();
         return true;
     }
 
     @NativeMethods
     interface Natives {
-        void initializePakResources();
+        void initializeGlobalsAndResources();
     }
 }

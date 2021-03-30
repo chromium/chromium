@@ -26,8 +26,7 @@ content::WebUIDataSource* CreateQuotaInternalsHTMLSource() {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIQuotaInternalsHost);
   source->UseStringsJs();
-  webui::AddResourcePathsBulk(
-      source,
+  source->AddResourcePaths(
       base::make_span(kQuotaInternalsResources, kQuotaInternalsResourcesSize));
   source->AddResourcePath("", IDR_QUOTA_INTERNALS_MAIN_HTML);
   source->OverrideContentSecurityPolicy(

@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_PUBLIC_AGENT_GROUP_SCHEDULER_H_
 
 #include "base/single_thread_task_runner.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/renderer/platform/scheduler/public/page_scheduler.h"
@@ -21,6 +22,8 @@ class BLINK_PLATFORM_EXPORT AgentGroupScheduler
   // associated WebThread.
   virtual std::unique_ptr<PageScheduler> CreatePageScheduler(
       PageScheduler::Delegate*) = 0;
+
+  virtual BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() = 0;
 };
 
 }  // namespace blink

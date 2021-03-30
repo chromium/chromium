@@ -4,11 +4,15 @@
 
 #include "chrome/browser/themes/theme_service.h"
 
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/themes/browser_theme_pack.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -73,23 +77,6 @@ const std::array<SkColor, 2> GetTabGroupColors(int color_id) {
     default:
       return {gfx::kGoogleGrey700, gfx::kGoogleGrey400};
   }
-}
-
-// Translate the relevant ThemeProperty color ids to SecurityChipColorIds so
-// that the security chip color implementation can be shared between NativeTheme
-// and ThemeProvider.
-ui::NativeTheme::SecurityChipColorId GetSecurityChipColorId(int color_id) {
-  static const base::NoDestructor<
-      base::flat_map<int, ui::NativeTheme::SecurityChipColorId>>
-      color_id_map({
-          {TP::COLOR_OMNIBOX_SECURITY_CHIP_DEFAULT,
-           ui::NativeTheme::SecurityChipColorId::DEFAULT},
-          {TP::COLOR_OMNIBOX_SECURITY_CHIP_SECURE,
-           ui::NativeTheme::SecurityChipColorId::SECURE},
-          {TP::COLOR_OMNIBOX_SECURITY_CHIP_DANGEROUS,
-           ui::NativeTheme::SecurityChipColorId::DANGEROUS},
-      });
-  return color_id_map->at(color_id);
 }
 
 SkColor IncreaseLightness(SkColor color, double percent) {
@@ -300,7 +287,15 @@ bool ThemeHelper::ShouldUseNativeFrame(
 
 bool ThemeHelper::ShouldUseIncreasedContrastThemeSupplier(
     ui::NativeTheme* native_theme) const {
-  return native_theme && native_theme->UsesHighContrastColors();
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On Linux the GTK system theme provides the high contrast colors,
+  // so don't use the IncreasedContrastThemeSupplier.
+  return false;
+#else
+  return native_theme && native_theme->UserHasContrastPreference();
+#endif
 }
 
 SkColor ThemeHelper::GetDefaultColor(
@@ -396,14 +391,29 @@ SkColor ThemeHelper::GetDefaultColor(
           GetColor(TP::COLOR_NTP_TEXT, incognito, theme_supplier), 0.40);
     case TP::COLOR_TAB_THROBBER_SPINNING:
     case TP::COLOR_TAB_THROBBER_WAITING: {
-      SkColor base_color =
-          ui::GetAuraColor(id == TP::COLOR_TAB_THROBBER_SPINNING
-                               ? ui::NativeTheme::kColorId_ThrobberSpinningColor
-                               : ui::NativeTheme::kColorId_ThrobberWaitingColor,
-                           ui::NativeTheme::GetInstanceForNativeUi());
-      color_utils::HSL hsl =
-          GetTint(TP::TINT_BUTTONS, incognito, theme_supplier);
-      return color_utils::HSLShift(base_color, hsl);
+      // Similar to the code in BrowserThemeProvider::HasCustomColor(), here we
+      // decide the toolbar button icon has a custom color if the theme supplier
+      // has explicitly specified it or a TINT_BUTTONS value. Unlike that code,
+      // this does not consider TINT_BUTTONS to have been customized just
+      // because it differs from {-1, -1, -1}. The effect is that for the
+      // default light/dark/incognito themes, or custom themes which use the
+      // default toolbar button colors, the default throbber colors will be
+      // used; otherwise the throbber will be colored to match the toolbar
+      // buttons to guarantee visibility.
+      bool has_custom_color = false;
+      const SkColor button_color =
+          GetColor(TP::COLOR_TOOLBAR_BUTTON_ICON, incognito, theme_supplier,
+                   &has_custom_color);
+      color_utils::HSL hsl;
+      return (has_custom_color ||
+              (theme_supplier &&
+               theme_supplier->GetTint(TP::TINT_BUTTONS, &hsl)))
+                 ? button_color
+                 : ui::GetAuraColor(
+                       id == TP::COLOR_TAB_THROBBER_SPINNING
+                           ? ui::NativeTheme::kColorId_ThrobberSpinningColor
+                           : ui::NativeTheme::kColorId_ThrobberWaitingColor,
+                       ui::NativeTheme::GetInstanceForNativeUi());
     }
   }
 
@@ -472,6 +482,10 @@ bool ThemeHelper::ShouldIgnoreThemeSupplier(
     int id,
     bool incognito,
     const CustomThemeSupplier* theme_supplier) {
+  if (incognito && base::FeatureList::IsEnabled(
+                       features::kIncognitoBrandConsistencyForDesktop)) {
+    return true;
+  }
   // The incognito NTP uses the default background color instead of any theme
   // background color, unless the theme also sets a custom background image.
   return incognito && (id == TP::COLOR_NTP_BACKGROUND) &&
@@ -674,12 +688,13 @@ base::Optional<ThemeHelper::OmniboxColor> ThemeHelper::GetOmniboxColorImpl(
       return blend_toward_max_contrast(bg, gfx::kGoogleGreyAlpha400);
     case TP::COLOR_OMNIBOX_SECURITY_CHIP_DEFAULT:
     case TP::COLOR_OMNIBOX_SECURITY_CHIP_SECURE:
-    case TP::COLOR_OMNIBOX_SECURITY_CHIP_DANGEROUS: {
-      return {
-          {ui::GetSecurityChipColor(GetSecurityChipColorId(id), fg.value,
-                                    bg_hovered_color().value, high_contrast),
-           fg.custom || (!dark && bg.custom)}};
-    }
+      return blend_for_min_contrast(
+          {dark ? gfx::kGoogleGrey500 : gfx::kGoogleGrey700, false},
+          bg_hovered_color());
+    case TP::COLOR_OMNIBOX_SECURITY_CHIP_DANGEROUS:
+      return blend_for_min_contrast(
+          {dark ? gfx::kGoogleRed300 : gfx::kGoogleRed600, false},
+          bg_hovered_color());
     default:
       return base::nullopt;
   }

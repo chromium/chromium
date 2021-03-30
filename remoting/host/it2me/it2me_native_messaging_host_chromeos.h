@@ -22,7 +22,6 @@ namespace remoting {
 
 // Creates native messaging host on ChromeOS. Must be called on the UI thread
 // of the browser process.
-
 std::unique_ptr<extensions::NativeMessageHost>
 CreateIt2MeNativeMessagingHostForChromeOS(
     scoped_refptr<base::SingleThreadTaskRunner> io_runnner,

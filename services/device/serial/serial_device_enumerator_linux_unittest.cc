@@ -52,7 +52,8 @@ TEST_F(SerialDeviceEnumeratorLinuxTest, Enumerate) {
   testing::FakeUdevLoader fake_udev;
   fake_udev.AddFakeDevice(/*name=*/"ttyACM0",
                           /*syspath=*/"/sys/class/tty/ttyACM0",
-                          /*subsystem=*/"tty", /*sysattrs=*/{},
+                          /*subsystem=*/"tty", /*devnode=*/base::nullopt,
+                          /*devtype=*/base::nullopt, /*sysattrs=*/{},
                           /*properties=*/
                           {
                               {"DEVNAME", "/dev/ttyACM0"},

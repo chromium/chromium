@@ -382,6 +382,36 @@ TEST(StringTokenizerTest, ParseQuotedString_EscapedQuotes2) {
   EXPECT_FALSE(t.GetNext());
 }
 
+TEST(StringTokenizerTest, ParseWithWhitespace_NoQuotes) {
+  string input = "\t\t\t     foo=a,\r\n b,\r\n\t\t\t      bar\t ";
+  StringTokenizer t(input, ",", StringTokenizer::WhitespacePolicy::kSkipOver);
+
+  EXPECT_TRUE(t.GetNext());
+  EXPECT_EQ("foo=a", t.token());
+
+  EXPECT_TRUE(t.GetNext());
+  EXPECT_EQ("b", t.token());
+
+  EXPECT_TRUE(t.GetNext());
+  EXPECT_EQ("bar", t.token());
+
+  EXPECT_FALSE(t.GetNext());
+}
+
+TEST(StringTokenizerTest, ParseWithWhitespace_Quotes) {
+  string input = "\t\t\t     foo='a, b',\t\t\t      bar\t ";
+  StringTokenizer t(input, ",", StringTokenizer::WhitespacePolicy::kSkipOver);
+  t.set_quote_chars("'");
+
+  EXPECT_TRUE(t.GetNext());
+  EXPECT_EQ("foo='a, b'", t.token());
+
+  EXPECT_TRUE(t.GetNext());
+  EXPECT_EQ("bar", t.token());
+
+  EXPECT_FALSE(t.GetNext());
+}
+
 }  // namespace
 
 }  // namespace base

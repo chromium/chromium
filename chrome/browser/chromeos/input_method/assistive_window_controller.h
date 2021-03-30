@@ -50,9 +50,9 @@ class AssistiveWindowController : public views::WidgetObserver,
   void ShowSuggestion(const ui::ime::SuggestionDetails& details) override;
   void SetButtonHighlighted(const ui::ime::AssistiveWindowButton& button,
                             bool highlighted) override;
-  void AcceptSuggestion(const base::string16& suggestion) override;
+  void AcceptSuggestion(const std::u16string& suggestion) override;
   void HideSuggestion() override;
-  base::string16 GetSuggestionText() const override;
+  std::u16string GetSuggestionText() const override;
   size_t GetConfirmedLength() const override;
   void FocusStateChanged() override;
   void OnWidgetClosing(views::Widget* widget) override;
@@ -70,7 +70,7 @@ class AssistiveWindowController : public views::WidgetObserver,
   AssistiveWindowProperties window_;
   ui::ime::SuggestionWindowView* suggestion_window_view_ = nullptr;
   ui::ime::UndoWindow* undo_window_ = nullptr;
-  base::string16 suggestion_text_;
+  std::u16string suggestion_text_;
   size_t confirmed_length_ = 0;
   Bounds bounds_;
 

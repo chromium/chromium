@@ -6,11 +6,11 @@
 #define SERVICES_DEVICE_GEOLOCATION_NETWORK_LOCATION_REQUEST_H_
 
 #include <memory>
+#include <string>
 
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "services/device/geolocation/wifi_data_provider.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 #include "url/gurl.h"

@@ -32,8 +32,7 @@ namespace cert_verifier {
 
 // Base class for any tests that just need a NetworkService and a
 // TaskEnvironment, and to create NetworkContexts using the NetworkService.
-class SSLConfigServiceMojoTestWithCertVerifier
-    : public testing::TestWithParam<bool> {
+class SSLConfigServiceMojoTestWithCertVerifier : public testing::Test {
  public:
   SSLConfigServiceMojoTestWithCertVerifier()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
@@ -42,50 +41,22 @@ class SSLConfigServiceMojoTestWithCertVerifier
             cert_verifier_service_remote_.BindNewPipeAndPassReceiver()) {}
   ~SSLConfigServiceMojoTestWithCertVerifier() override = default;
 
-  void SetUp() override {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          network::features::kCertVerifierService);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          network::features::kCertVerifierService);
-    }
-  }
-
   void DestroyService() { service_.reset(); }
 
   network::mojom::NetworkContextParamsPtr CreateNetworkContextParams() {
-    network::mojom::CertVerifierCreationParamsPtr
-        cert_verifier_creation_params =
-            network::mojom::CertVerifierCreationParams::New();
-    network::mojom::CertVerifierParamsPtr cert_verifier_params;
-    if (base::FeatureList::IsEnabled(network::features::kCertVerifierService)) {
-      mojo::PendingRemote<mojom::CertVerifierService> cv_service_remote;
+    mojo::PendingRemote<mojom::CertVerifierService> cv_service_remote;
 
-      auto cv_service_remote_params =
-          network::mojom::CertVerifierServiceRemoteParams::New();
-
-      // Create a cert verifier service.
-      cert_verifier_service_impl_.GetNewCertVerifierForTesting(
-          cv_service_remote.InitWithNewPipeAndPassReceiver(),
-          std::move(cert_verifier_creation_params),
-          &cert_net_fetcher_url_loader_);
-
-      cv_service_remote_params->cert_verifier_service =
-          std::move(cv_service_remote);
-
-      cert_verifier_params =
-          network::mojom::CertVerifierParams::NewRemoteParams(
-              std::move(cv_service_remote_params));
-    } else {
-      cert_verifier_params =
-          network::mojom::CertVerifierParams::NewCreationParams(
-              std::move(cert_verifier_creation_params));
-    }
+    // Create a cert verifier service.
+    cert_verifier_service_impl_.GetNewCertVerifierForTesting(
+        cv_service_remote.InitWithNewPipeAndPassReceiver(),
+        mojom::CertVerifierCreationParams::New(),
+        &cert_net_fetcher_url_loader_);
 
     network::mojom::NetworkContextParamsPtr params =
         network::mojom::NetworkContextParams::New();
-    params->cert_verifier_params = std::move(cert_verifier_params);
+    params->cert_verifier_params =
+        network::mojom::CertVerifierServiceRemoteParams::New(
+            std::move(cv_service_remote));
     // Use a fixed proxy config, to avoid dependencies on local network
     // configuration.
     params->initial_proxy_config =
@@ -116,7 +87,6 @@ class SSLConfigServiceMojoTestWithCertVerifier
  private:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<network::NetworkService> service_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   mojo::Remote<network::mojom::NetworkContext> network_context_remote_;
   std::unique_ptr<network::NetworkContext> network_context_;
@@ -127,7 +97,7 @@ class SSLConfigServiceMojoTestWithCertVerifier
 };
 
 #if !defined(OS_IOS) && !defined(OS_ANDROID)
-TEST_P(SSLConfigServiceMojoTestWithCertVerifier, CRLSetIsApplied) {
+TEST_F(SSLConfigServiceMojoTestWithCertVerifier, CRLSetIsApplied) {
   mojo::Remote<network::mojom::SSLConfigClient> ssl_config_client;
 
   network::mojom::NetworkContextParamsPtr context_params =
@@ -193,9 +163,6 @@ TEST_P(SSLConfigServiceMojoTestWithCertVerifier, CRLSetIsApplied) {
               net::test::IsError(net::ERR_CERT_REVOKED));
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         SSLConfigServiceMojoTestWithCertVerifier,
-                         ::testing::Bool());
 #endif  // !defined(OS_IOS) && !defined(OS_ANDROID)
 
 }  // namespace cert_verifier

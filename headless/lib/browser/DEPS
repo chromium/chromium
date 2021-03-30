@@ -7,6 +7,7 @@ include_rules = [
   "+components/security_state",
   "+components/viz",
   "+printing",
+  "+services/cert_verifier/public/mojom",
   "+services/network",
   "+storage/browser/quota",
   "+storage/common/quota",
@@ -18,3 +19,12 @@ include_rules = [
   "+ui/compositor",
   "+ui/events/keycodes/dom",
 ]
+specific_include_rules = {
+  "headless_browser_main_parts.*": [
+    "+components/policy",
+    "+components/prefs",
+  ],
+  "headless_browser_policy_connector.*": [
+    "+components/policy",
+  ],
+}

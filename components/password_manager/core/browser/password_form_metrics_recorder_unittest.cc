@@ -6,9 +6,10 @@
 
 #include <stdint.h>
 
+#include <string>
+
 #include "base/metrics/metrics_hashes.h"
 #include "base/notreached.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -610,7 +611,7 @@ TEST(PasswordFormMetricsRecorder, FormChangeBitmapRecordedMultipleTimes) {
 
 struct TestCaseFieldInfo {
   std::string value;
-  std::string typed_value;
+  std::string user_input;
   bool user_typed = false;
   bool automatically_filled = false;
   bool manually_filled = false;
@@ -637,7 +638,7 @@ FormData ConvertToFormData(const std::vector<TestCaseFieldInfo>& fields) {
   for (const auto& field : fields) {
     FormFieldData form_field;
     form_field.value = ASCIIToUTF16(field.value);
-    form_field.typed_value = ASCIIToUTF16(field.typed_value);
+    form_field.user_input = ASCIIToUTF16(field.user_input);
 
     if (field.user_typed)
       form_field.properties_mask |= FieldPropertiesFlags::kUserTyped;
@@ -656,11 +657,11 @@ FormData ConvertToFormData(const std::vector<TestCaseFieldInfo>& fields) {
   return form;
 }
 
-std::set<std::pair<base::string16, PasswordForm::Store>>
+std::set<std::pair<std::u16string, PasswordForm::Store>>
 ConvertToString16AndStoreSet(
     const std::vector<std::string>& profile_store_values,
     const std::vector<std::string>& account_store_values) {
-  std::set<std::pair<base::string16, PasswordForm::Store>> result;
+  std::set<std::pair<std::u16string, PasswordForm::Store>> result;
   for (const std::string& str : profile_store_values)
     result.emplace(ASCIIToUTF16(str), PasswordForm::Store::kProfileStore);
   for (const std::string& str : account_store_values)
@@ -735,10 +736,10 @@ void CheckFillingAssistanceTestCase(
 
     // Note: Don't bother with the profile store vs. account store distinction
     // here; there are separate tests that cover the filling source.
-    std::set<std::pair<base::string16, PasswordForm::Store>> saved_usernames =
+    std::set<std::pair<std::u16string, PasswordForm::Store>> saved_usernames =
         ConvertToString16AndStoreSet(test_case.saved_usernames,
                                      /*account_store_values=*/{});
-    std::set<std::pair<base::string16, PasswordForm::Store>> saved_passwords =
+    std::set<std::pair<std::u16string, PasswordForm::Store>> saved_passwords =
         ConvertToString16AndStoreSet(test_case.saved_passwords,
                                      /*account_store_values=*/{});
 
@@ -943,7 +944,7 @@ TEST(PasswordFormMetricsRecorder, FillingAssistanceUserTypedPassword) {
   CheckFillingAssistanceTestCase(
       {.description_for_logging = "The user typed into password field",
        .fields = {{.value = "user2", .automatically_filled = true},
-                  {.typed_value = "password2",
+                  {.user_input = "password2",
                    .user_typed = true,
                    .automatically_filled = true,
                    .is_password = true}},
@@ -958,7 +959,7 @@ TEST(PasswordFormMetricsRecorder, FillingAssistanceUserTypedUsername) {
   CheckFillingAssistanceTestCase(
       {.description_for_logging = "The user typed into password field",
        .fields = {{.value = "user2", .user_typed = true},
-                  {.typed_value = "password2",
+                  {.user_input = "password2",
                    .automatically_filled = true,
                    .is_password = true}},
        .saved_usernames = {"user1", "user2"},
@@ -975,7 +976,7 @@ TEST(PasswordFormMetricsRecorder, FillingAssistanceUserTypedNewCredentials) {
                       .value = "user2",
                       .automatically_filled = true,
                   },
-                  {.typed_value = "password3",
+                  {.user_input = "password3",
                    .user_typed = true,
                    .automatically_filled = true,
                    .is_password = true}},
@@ -1082,7 +1083,7 @@ TEST(PasswordFormMetricsRecorder, FillingAssistanceBlocklistedBySmartBubble) {
                   {.value = "password1", .is_password = true}},
        .saved_usernames = {},
        .saved_passwords = {},
-       .interactions_stats = {{.username_value = ASCIIToUTF16("user1"),
+       .interactions_stats = {{.username_value = u"user1",
                                .dismissal_count = 10}},
        .expectation = PasswordFormMetricsRecorder::FillingAssistance::
            kNoSavedCredentialsAndBlocklistedBySmartBubble});
@@ -1135,10 +1136,10 @@ void CheckFillingSourceTestCase(const FillingSourceTestCase& test_case) {
 
   FormData form_data = ConvertToFormData(test_case.fields);
 
-  std::set<std::pair<base::string16, PasswordForm::Store>> saved_usernames =
+  std::set<std::pair<std::u16string, PasswordForm::Store>> saved_usernames =
       ConvertToString16AndStoreSet(test_case.saved_profile_usernames,
                                    test_case.saved_account_usernames);
-  std::set<std::pair<base::string16, PasswordForm::Store>> saved_passwords =
+  std::set<std::pair<std::u16string, PasswordForm::Store>> saved_passwords =
       ConvertToString16AndStoreSet(test_case.saved_profile_passwords,
                                    test_case.saved_account_passwords);
 
@@ -1246,9 +1247,9 @@ TEST(PasswordFormMetricsRecorder, StoresUsedForFillingInLast7And28Days) {
   sync_preferences::TestingPrefServiceSyncable pref_service;
   PasswordManager::RegisterProfilePrefs(pref_service.registry());
 
-  std::set<std::pair<base::string16, PasswordForm::Store>> saved_usernames =
+  std::set<std::pair<std::u16string, PasswordForm::Store>> saved_usernames =
       ConvertToString16AndStoreSet({"profileuser"}, {"accountuser"});
-  std::set<std::pair<base::string16, PasswordForm::Store>> saved_passwords =
+  std::set<std::pair<std::u16string, PasswordForm::Store>> saved_passwords =
       ConvertToString16AndStoreSet({"profilepass"}, {"accountpass"});
 
   // Phase 1: The user manually enters a credential that's not stored.
@@ -1379,9 +1380,9 @@ TEST(PasswordFormMetricsRecorder, StoresUsedForFillingInLast7And28DaysExpiry) {
   base::SimpleTestClock clock;
   clock.SetNow(base::Time::Now());
 
-  std::set<std::pair<base::string16, PasswordForm::Store>> saved_usernames =
+  std::set<std::pair<std::u16string, PasswordForm::Store>> saved_usernames =
       ConvertToString16AndStoreSet({"profileuser"}, {"accountuser"});
-  std::set<std::pair<base::string16, PasswordForm::Store>> saved_passwords =
+  std::set<std::pair<std::u16string, PasswordForm::Store>> saved_passwords =
       ConvertToString16AndStoreSet({"profilepass"}, {"accountpass"});
 
   // Day 0: A credential from the profile store is filled.

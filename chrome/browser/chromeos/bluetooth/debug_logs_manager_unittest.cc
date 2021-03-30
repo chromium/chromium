@@ -6,9 +6,9 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/testing_pref_service.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/dbus/fake_bluetooth_debug_manager_client.h"
@@ -51,10 +51,6 @@ class DebugLogsManagerTest : public testing::Test {
 
   void EnableDebugFlag() { is_debug_toggle_flag_enabled_ = true; }
 
-  void EnableGooglerDefaultPrefFlag() {
-    is_googler_default_pref_enabled_ = true;
-  }
-
   void InitFeatures() {
     std::vector<base::Feature> enabled_features;
     std::vector<base::Feature> disabled_features;
@@ -65,14 +61,6 @@ class DebugLogsManagerTest : public testing::Test {
     } else {
       disabled_features.push_back(
           chromeos::features::kShowBluetoothDebugLogToggle);
-    }
-
-    if (is_googler_default_pref_enabled_) {
-      enabled_features.push_back(
-          chromeos::features::kEnableBluetoothVerboseLogsForGooglers);
-    } else {
-      disabled_features.push_back(
-          chromeos::features::kEnableBluetoothVerboseLogsForGooglers);
     }
 
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -94,7 +82,6 @@ class DebugLogsManagerTest : public testing::Test {
  private:
   base::test::ScopedFeatureList feature_list_;
   bool is_debug_toggle_flag_enabled_ = false;
-  bool is_googler_default_pref_enabled_ = false;
   bluez::FakeBluetoothDebugManagerClient* fake_bluetooth_debug_manager_client_;
   std::unique_ptr<DebugLogsManager> debug_logs_manager_;
   TestingPrefServiceSimple prefs_;
@@ -120,7 +107,6 @@ TEST_F(DebugLogsManagerTest, NonGoogler) {
 
 TEST_F(DebugLogsManagerTest, GooglerDefaultPref) {
   EnableDebugFlag();
-  EnableGooglerDefaultPrefFlag();
   InitFeatures();
   InstantiateDebugManager(kTestGooglerEmail);
   EXPECT_EQ(debug_manager()->GetDebugLogsState(),
@@ -130,17 +116,6 @@ TEST_F(DebugLogsManagerTest, GooglerDefaultPref) {
 TEST_F(DebugLogsManagerTest, ChangeDebugLogsState) {
   EnableDebugFlag();
   InitFeatures();
-  InstantiateDebugManager(kTestGooglerEmail);
-  EXPECT_EQ(debug_manager()->GetDebugLogsState(),
-            DebugLogsManager::DebugLogsState::kSupportedButDisabled);
-
-  debug_manager()->ChangeDebugLogsState(
-      true /* should_debug_logs_be_enabled */);
-  EXPECT_EQ(debug_manager()->GetDebugLogsState(),
-            DebugLogsManager::DebugLogsState::kSupportedAndEnabled);
-
-  // Despite DebugLogsManager is destroyed, the state of Debug logs is saved
-  DestroyDebugManager();
   InstantiateDebugManager(kTestGooglerEmail);
   EXPECT_EQ(debug_manager()->GetDebugLogsState(),
             DebugLogsManager::DebugLogsState::kSupportedAndEnabled);
@@ -159,15 +134,6 @@ TEST_F(DebugLogsManagerTest, ChangeDebugLogsState) {
 TEST_F(DebugLogsManagerTest, SendVerboseLogsRequestUponLoginAndLogout) {
   EnableDebugFlag();
   InitFeatures();
-  InstantiateDebugManager(kTestGooglerEmail);
-  EXPECT_EQ(fake_bluetooth_debug_manager_client()->bluez_level(), 0);
-  debug_manager()->ChangeDebugLogsState(
-      true /* should_debug_logs_be_enabled */);
-  // BlueZ level is updated only on login/logout, so now it stays the same.
-  EXPECT_EQ(fake_bluetooth_debug_manager_client()->bluez_level(), 0);
-
-  // Deletion and Recreation of DebugManager simulates logout-login event
-  DestroyDebugManager();
   InstantiateDebugManager(kTestGooglerEmail);
   // After login, bluez level should change
   EXPECT_EQ(fake_bluetooth_debug_manager_client()->bluez_level(), 1);
@@ -198,9 +164,9 @@ TEST_F(DebugLogsManagerTest, RetryUponSetVerboseLogsFailure) {
   EnableDebugFlag();
   InitFeatures();
   InstantiateDebugManager(kTestGooglerEmail);
-  EXPECT_EQ(fake_bluetooth_debug_manager_client()->bluez_level(), 0);
+  EXPECT_EQ(fake_bluetooth_debug_manager_client()->bluez_level(), 1);
   debug_manager()->ChangeDebugLogsState(
-      true /* should_debug_logs_be_enabled */);
+      false /* should_debug_logs_be_enabled */);
 
   DestroyDebugManager();
   fake_bluetooth_debug_manager_client()->MakeNextSetLogLevelsFail();
@@ -210,7 +176,7 @@ TEST_F(DebugLogsManagerTest, RetryUponSetVerboseLogsFailure) {
   EXPECT_EQ(fake_bluetooth_debug_manager_client()->set_log_levels_fail_count(),
             1);
   // Message is re-sent upon failing, eventually bluez level should change.
-  EXPECT_EQ(fake_bluetooth_debug_manager_client()->bluez_level(), 1);
+  EXPECT_EQ(fake_bluetooth_debug_manager_client()->bluez_level(), 0);
 }
 
 }  // namespace bluetooth

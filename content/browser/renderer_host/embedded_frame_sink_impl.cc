@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/time/time.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 
 namespace content {
@@ -67,7 +68,9 @@ void EmbeddedFrameSinkImpl::ConnectToEmbedder(
 void EmbeddedFrameSinkImpl::OnFirstSurfaceActivation(
     const viz::SurfaceInfo& surface_info) {}
 
-void EmbeddedFrameSinkImpl::OnFrameTokenChanged(uint32_t frame_token) {
+void EmbeddedFrameSinkImpl::OnFrameTokenChanged(
+    uint32_t frame_token,
+    base::TimeTicks activation_time) {
   // TODO(yiyix, fsamuel): To complete plumbing of frame tokens for offscreen
   // canvas
 }

@@ -473,8 +473,15 @@ PanelSearchMenu = class extends PanelMenu {
         'aria-description', Msgs.getMsg('search_chromevox_menus_description'));
     this.searchBar.setAttribute('role', 'searchbox');
 
+    // Create menu item to own search bar.
+    const menuItem = document.createElement('tr');
+    menuItem.tabIndex = -1;
+    menuItem.setAttribute('role', 'menuitem');
+
+    menuItem.appendChild(this.searchBar);
+
     // Add the search bar above the menu.
-    this.menuContainerElement.insertBefore(this.searchBar, this.menuElement);
+    this.menuContainerElement.insertBefore(menuItem, this.menuElement);
   }
 
   /** @override */

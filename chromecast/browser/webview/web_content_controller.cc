@@ -13,6 +13,7 @@
 #include "chromecast/browser/webview/proto/webview.pb.h"
 #include "chromecast/browser/webview/webview_input_method_observer.h"
 #include "chromecast/browser/webview/webview_navigation_throttle.h"
+#include "chromecast/common/cast_content_client.h"
 #include "chromecast/graphics/cast_focus_client_aura.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_remover.h"
@@ -174,6 +175,20 @@ void WebContentController::ProcessRequest(
       }
       break;
 
+    case webview::WebviewRequest::kSetInsets:
+      if (request.has_set_insets()) {
+        HandleSetInsets(gfx::Insets(
+            request.set_insets().top(), request.set_insets().left(),
+            request.set_insets().bottom(), request.set_insets().right()));
+      } else {
+        client_->OnError("set_insets() not supplied");
+      }
+      break;
+
+    case webview::WebviewRequest::kGetUserAgent:
+      HandleGetUserAgent(request.id());
+      break;
+
     default:
       client_->OnError("Unknown request code");
       break;
@@ -328,17 +343,24 @@ void WebContentController::ProcessInputEvent(const webview::InputEvent& ev) {
       if (ev.has_key()) {
         ui::DomKey dom_key =
             ui::KeycodeConverter::KeyStringToDomKey(ev.key().key_string());
-        bool is_char = dom_key.IsCharacter();
-        int32_t key_code = is_char ? dom_key.ToCharacter()
-                                   : NonPrintableDomKeyToKeyboardCode(dom_key);
+
+        // Backspace, delete, and tab have to be treated specially as they are
+        // characters according to DomKey, but they are non-printable.
+        bool is_printable_character =
+            dom_key.IsCharacter() && dom_key != ui::DomKey::TAB &&
+            dom_key != ui::DomKey::BACKSPACE && dom_key != ui::DomKey::DEL;
+
         ui::KeyboardCode keyboard_code =
-            static_cast<ui::KeyboardCode>(key_code);
+            is_printable_character
+                ? static_cast<ui::KeyboardCode>(dom_key.ToCharacter())
+                : NonPrintableDomKeyToKeyboardCode(dom_key);
         ui::KeyEvent evt(type, keyboard_code,
                          UsLayoutKeyboardCodeToDomCode(keyboard_code),
                          ev.flags() | ui::EF_IS_SYNTHESIZED, dom_key,
                          base::TimeTicks() +
                              base::TimeDelta::FromMicroseconds(ev.timestamp()),
-                         is_char);
+                         is_printable_character);
+
         // Marks the simulated key event is from a Virtual Keyboard.
         ui::Event::Properties properties;
         properties[ui::kPropertyFromVK] =
@@ -506,6 +528,21 @@ void WebContentController::HandleResize(const gfx::Size& size) {
   }
 }
 
+void WebContentController::HandleSetInsets(const gfx::Insets& insets) {
+  auto* contents = GetWebContents();
+  if (contents && contents->GetTopLevelRenderWidgetHostView())
+    contents->GetTopLevelRenderWidgetHostView()->SetInsets(insets);
+}
+
+void WebContentController::HandleGetUserAgent(int64_t id) {
+  std::unique_ptr<webview::WebviewResponse> response =
+      std::make_unique<webview::WebviewResponse>();
+
+  response->set_id(id);
+  response->mutable_get_user_agent()->set_user_agent(shell::GetUserAgent());
+  client_->EnqueueSend(std::move(response));
+}
+
 viz::SurfaceId WebContentController::GetSurfaceId() {
   content::WebContents* web_contents = GetWebContents();
   // Web contents are destroyed before controller for cast apps.
@@ -546,6 +583,10 @@ void WebContentController::FrameSizeChanged(
 void WebContentController::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
   current_render_frame_set_.insert(render_frame_host);
+
+  if (!render_frame_host->GetParent())
+    RegisterRenderWidgetInputObserver(render_frame_host->GetRenderWidgetHost());
+
   auto* instance =
       JsClientInstance::Find(render_frame_host->GetProcess()->GetID(),
                              render_frame_host->GetRoutingID());
@@ -562,6 +603,14 @@ void WebContentController::RenderFrameCreated(
 void WebContentController::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
   current_render_frame_set_.erase(render_frame_host);
+
+  if (!render_frame_host->GetParent()) {
+    content::RenderWidgetHost* rwh = render_frame_host->GetRenderWidgetHost();
+    UnregisterRenderWidgetInputObserver(rwh);
+    content::RenderWidgetHostView* rwhv = render_frame_host->GetView();
+    base::EraseIf(touch_queue_,
+                  [rwhv](TouchData data) { return data.rwhv == rwhv; });
+  }
 }
 
 void WebContentController::RenderFrameHostChanged(
@@ -572,20 +621,6 @@ void WebContentController::RenderFrameHostChanged(
   if (surface_) {
     surface_->Commit();
   }
-}
-
-void WebContentController::RenderViewCreated(
-    content::RenderViewHost* render_view_host) {
-  RegisterRenderWidgetInputObserver(render_view_host->GetWidget());
-}
-
-void WebContentController::RenderViewDeleted(
-    content::RenderViewHost* render_view_host) {
-  content::RenderWidgetHost* rwh = render_view_host->GetWidget();
-  UnregisterRenderWidgetInputObserver(rwh);
-  content::RenderWidgetHostView* rwhv = rwh->GetView();
-  base::EraseIf(touch_queue_,
-                [rwhv](TouchData data) { return data.rwhv == rwhv; });
 }
 
 void WebContentController::OnJsClientInstanceRegistered(

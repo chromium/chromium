@@ -2,52 +2,46 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {isChromeOS} from 'chrome://resources/js/cr.m.js';
-// #import {TestBrowserProxy} from '../test_browser_proxy.m.js';
-// #import {LifetimeBrowserProxy} from 'chrome://settings/settings.js';
+import {isChromeOS} from 'chrome://resources/js/cr.m.js';
+import {LifetimeBrowserProxy} from 'chrome://settings/settings.js';
 
-cr.define('settings', function() {
-  /**
-   * A test version of LifetimeBrowserProxy.
-   *
-   * @implements {settings.LifetimeBrowserProxy}
-   */
-  /* #export */ class TestLifetimeBrowserProxy extends TestBrowserProxy {
-    constructor() {
-      const methodNames = ['restart', 'relaunch'];
-      if (cr.isChromeOS) {
-        methodNames.push('signOutAndRestart', 'factoryReset');
-      }
+import {TestBrowserProxy} from '../test_browser_proxy.m.js';
 
-      super(methodNames);
+/**
+ * A test version of LifetimeBrowserProxy.
+ *
+ * @implements {LifetimeBrowserProxy}
+ */
+export class TestLifetimeBrowserProxy extends TestBrowserProxy {
+  constructor() {
+    const methodNames = ['restart', 'relaunch'];
+    if (isChromeOS) {
+      methodNames.push('signOutAndRestart', 'factoryReset');
     }
 
-    /** @override */
-    restart() {
-      this.methodCalled('restart');
-    }
-
-    /** @override */
-    relaunch() {
-      this.methodCalled('relaunch');
-    }
+    super(methodNames);
   }
 
-  if (cr.isChromeOS) {
-    /** @override */
-    TestLifetimeBrowserProxy.prototype.signOutAndRestart = function() {
-      this.methodCalled('signOutAndRestart');
-    };
-
-    /** @override */
-    TestLifetimeBrowserProxy.prototype.factoryReset = function(
-        requestTpmFirmwareUpdate) {
-      this.methodCalled('factoryReset', requestTpmFirmwareUpdate);
-    };
+  /** @override */
+  restart() {
+    this.methodCalled('restart');
   }
 
-  // #cr_define_end
-  return {
-    TestLifetimeBrowserProxy: TestLifetimeBrowserProxy,
+  /** @override */
+  relaunch() {
+    this.methodCalled('relaunch');
+  }
+}
+
+if (isChromeOS) {
+  /** @override */
+  TestLifetimeBrowserProxy.prototype.signOutAndRestart = function() {
+    this.methodCalled('signOutAndRestart');
   };
-});
+
+  /** @override */
+  TestLifetimeBrowserProxy.prototype.factoryReset = function(
+      requestTpmFirmwareUpdate) {
+    this.methodCalled('factoryReset', requestTpmFirmwareUpdate);
+  };
+}

@@ -19,7 +19,7 @@ int ExampleComboboxModel::GetItemCount() const {
   return count_;
 }
 
-base::string16 ExampleComboboxModel::GetItemAt(int index) const {
+std::u16string ExampleComboboxModel::GetItemAt(int index) const {
   return base::ASCIIToUTF16(strings_[index]);
 }
 

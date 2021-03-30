@@ -99,8 +99,8 @@ class DragDropOperation : public DataSourceObserver,
 
   void OnDragIconCaptured(const SkBitmap& icon_bitmap);
 
-  void OnTextRead(const std::string& mime_type, base::string16 data);
-  void OnHTMLRead(const std::string& mime_type, base::string16 data);
+  void OnTextRead(const std::string& mime_type, std::u16string data);
+  void OnHTMLRead(const std::string& mime_type, std::u16string data);
   void OnFilenamesRead(DataExchangeDelegate* data_exchange_delegate,
                        aura::Window* source,
                        const std::string& mime_type,

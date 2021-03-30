@@ -19,6 +19,7 @@ import org.chromium.ui.base.WindowAndroid;
 public class TabBuilder {
     private int mId = Tab.INVALID_TAB_ID;
     private Tab mParent;
+    private TabResolver mTabResolver;
     private boolean mIncognito;
     private WindowAndroid mWindow;
     private Integer mLaunchType;
@@ -50,6 +51,16 @@ public class TabBuilder {
      */
     public TabBuilder setParent(Tab parent) {
         mParent = parent;
+        return this;
+    }
+
+    /**
+     * Sets the tab resolver (tab id -> {@link Tab} mapping)
+     * @param tabResolver the {@link TabResolver}
+     * @return {@link TabBuilder} creating the Tab.
+     */
+    public TabBuilder setTabResolver(TabResolver tabResolver) {
+        mTabResolver = tabResolver;
         return this;
     }
 
@@ -160,24 +171,35 @@ public class TabBuilder {
             if (mFromFrozenState) assert mLaunchType == TabLaunchType.FROM_RESTORE;
         }
 
-        TabImpl tab = new TabImpl(mId, mParent, mIncognito, mLaunchType);
+        TabImpl tab =
+                new TabImpl(mId, mIncognito, mLaunchType, mSerializedCriticalPersistedTabData);
+        Tab parent = null;
+        if (mParent != null) {
+            parent = mParent;
+        } else if (mTabResolver != null) {
+            if (mSerializedCriticalPersistedTabData != null) {
+                parent = mTabResolver.resolve(CriticalPersistedTabData.from(tab).getParentId());
+            } else if (mTabState != null) {
+                parent = mTabResolver.resolve(mTabState.parentId);
+            }
+        }
         tab.updateWindowAndroid(mWindow);
 
-        if (mParent != null && mDelegateFactory == null) {
-            mDelegateFactory = ((TabImpl) mParent).getDelegateFactory();
+        if (parent != null && mDelegateFactory == null) {
+            mDelegateFactory = ((TabImpl) parent).getDelegateFactory();
         }
 
         if (mPreInitializeAction != null) mPreInitializeAction.onResult(tab);
 
         // Initializes Tab. Its user data objects are also initialized through the event
         // |onInitialized| of TabObserver they register.
-        tab.initialize(mParent, mCreationType, mLoadUrlParams, mWebContents, mDelegateFactory,
-                mInitiallyHidden, mTabState, mSerializedCriticalPersistedTabData);
-        if (mParent != null) {
-            if (mParent.getAddApi2TransitionToFutureNavigations()) {
+        tab.initialize(parent, mCreationType, mLoadUrlParams, mWebContents, mDelegateFactory,
+                mInitiallyHidden, mTabState);
+        if (parent != null) {
+            if (parent.getAddApi2TransitionToFutureNavigations()) {
                 tab.setAddApi2TransitionToFutureNavigations(true);
             }
-            if (mParent.getHideFutureNavigations()) {
+            if (parent.getHideFutureNavigations()) {
                 tab.setHideFutureNavigations(true);
             }
         }

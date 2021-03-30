@@ -51,11 +51,10 @@ class IntentGenerator {
   void AnnotationCallback(
       const QuickAnswersRequest& request,
       std::vector<machine_learning::mojom::TextAnnotationPtr> annotations);
-  void LanguageDetectorCallback(const QuickAnswersRequest& request,
-                                base::Optional<std::string> detected_locale);
 
-  void MaybeGenerateTranslationIntent(const QuickAnswersRequest& request,
-                                      const std::string& detected_locale);
+  void MaybeGenerateTranslationIntent(const QuickAnswersRequest& request);
+  void LanguageDetectorCallback(const QuickAnswersRequest& request,
+                                base::Optional<std::string> detected_language);
 
   IntentGeneratorCallback complete_callback_;
   mojo::Remote<::chromeos::machine_learning::mojom::TextClassifier>

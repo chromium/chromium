@@ -5,6 +5,7 @@
 #include "sandbox/policy/win/sandbox_win.h"
 
 #include <algorithm>
+#include <string>
 #include <vector>
 
 #include <windows.h>
@@ -19,7 +20,6 @@
 #include "base/path_service.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string16.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/win/windows_version.h"
 #include "build/build_config.h"
@@ -68,9 +68,7 @@ class TestTargetPolicy : public TargetPolicy {
   ResultCode SetAlternateDesktop(bool alternate_winstation) override {
     return SBOX_ALL_OK;
   }
-  base::string16 GetAlternateDesktop() const override {
-    return base::string16();
-  }
+  std::wstring GetAlternateDesktop() const override { return std::wstring(); }
   ResultCode CreateAlternateDesktop(bool alternate_winstation) override {
     return SBOX_ALL_OK;
   }
@@ -151,7 +149,7 @@ class TestTargetPolicy : public TargetPolicy {
 };
 
 std::vector<Sid> GetCapabilitySids(
-    const std::initializer_list<base::string16>& capabilities) {
+    const std::initializer_list<std::wstring>& capabilities) {
   std::vector<Sid> sids;
   for (const auto& capability : capabilities) {
     sids.emplace_back(Sid::FromNamedCapability(capability.c_str()));
@@ -159,11 +157,11 @@ std::vector<Sid> GetCapabilitySids(
   return sids;
 }
 
-base::string16 GetAccessAllowedForCapabilities(
-    const std::initializer_list<base::string16>& capabilities) {
-  base::string16 sddl = kBaseSecurityDescriptor;
+std::wstring GetAccessAllowedForCapabilities(
+    const std::initializer_list<std::wstring>& capabilities) {
+  std::wstring sddl = kBaseSecurityDescriptor;
   for (const auto& capability : GetCapabilitySids(capabilities)) {
-    base::string16 sid_string;
+    std::wstring sid_string;
     CHECK(capability.ToSddlString(&sid_string));
     base::StrAppend(&sddl, {L"(A;;GRGX;;;", sid_string, L")"});
   }
@@ -173,7 +171,7 @@ base::string16 GetAccessAllowedForCapabilities(
 // Drops a temporary file granting RX access to a list of capabilities.
 bool DropTempFileWithSecurity(
     const base::ScopedTempDir& temp_dir,
-    const std::initializer_list<base::string16>& capabilities,
+    const std::initializer_list<std::wstring>& capabilities,
     base::FilePath* path) {
   if (!base::CreateTemporaryFileInDir(temp_dir.GetPath(), path))
     return false;
@@ -201,7 +199,7 @@ void EqualSidList(const std::vector<Sid>& left, const std::vector<Sid>& right) {
 
 void CheckCapabilities(
     AppContainerProfileBase* profile,
-    const std::initializer_list<base::string16>& additional_capabilities) {
+    const std::initializer_list<std::wstring>& additional_capabilities) {
   auto additional_caps = GetCapabilitySids(additional_capabilities);
   auto impersonation_caps =
       GetCapabilitySids({kChromeInstallFiles, klpacPnpNotifications,
@@ -227,7 +225,7 @@ class SandboxWinTest : public ::testing::Test {
   void TearDown() override {}
 
  protected:
-  void CreateProgramFile(std::initializer_list<base::string16> capabilities,
+  void CreateProgramFile(std::initializer_list<std::wstring> capabilities,
                          base::CommandLine* command_line) {
     base::FilePath path;
     ASSERT_TRUE(DropTempFileWithSecurity(temp_dir_, capabilities, &path));

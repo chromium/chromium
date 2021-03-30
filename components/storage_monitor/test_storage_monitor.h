@@ -49,8 +49,8 @@ class TestStorageMonitor : public StorageMonitor {
 #if defined(OS_WIN)
   bool GetMTPStorageInfoFromDeviceId(
       const std::string& storage_device_id,
-      base::string16* device_location,
-      base::string16* storage_object_id) const override;
+      std::wstring* device_location,
+      std::wstring* storage_object_id) const override;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -145,12 +145,12 @@ RenderPageInfo::RenderPageInfo(const RenderPageInfo& other) = default;
 
 PrefetchURL::PrefetchURL(const std::string& id,
                          const GURL& url,
-                         const base::string16& title)
+                         const std::u16string& title)
     : id(id), url(url), title(title) {}
 
 PrefetchURL::PrefetchURL(const std::string& id,
                          const GURL& url,
-                         const base::string16& title,
+                         const std::u16string& title,
                          const GURL& thumbnail_url,
                          const GURL& favicon_url,
                          const std::string& snippet,

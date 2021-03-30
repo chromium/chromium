@@ -81,6 +81,14 @@ class TestMessageCenter : public message_center::FakeMessageCenter {
       observer.OnNotificationClicked(id, base::nullopt, base::nullopt);
   }
 
+  void ClickOnNotificationButton(const std::string& id,
+                                 int button_index) override {
+    EXPECT_TRUE(notification_);
+    EXPECT_EQ(id, notification_->id());
+    for (auto& observer : observer_list())
+      observer.OnNotificationClicked(id, button_index, base::nullopt);
+  }
+
  private:
   std::unique_ptr<message_center::Notification> notification_;
 
@@ -156,36 +164,76 @@ class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
     InvokePendingMojoCalls();
   }
 
+  void ShowWifiSyncNotification() {
+    EXPECT_TRUE(fake_multidevice_setup_->delegate().is_bound());
+    fake_multidevice_setup_->delegate()->OnBecameEligibleForWifiSync();
+    InvokePendingMojoCalls();
+  }
+
   void ClickNotification() {
     test_message_center_.ClickOnNotification(
-        MultiDeviceNotificationPresenter::kNotificationId);
+        MultiDeviceNotificationPresenter::kSetupNotificationId);
+  }
+
+  void ClickWifiSyncNotification() {
+    test_message_center_.ClickOnNotification(
+        MultiDeviceNotificationPresenter::kWifiSyncNotificationId);
+  }
+
+  void ClickWifiSyncNotificationButton(int button_index) {
+    test_message_center_.ClickOnNotificationButton(
+        MultiDeviceNotificationPresenter::kWifiSyncNotificationId,
+        button_index);
+  }
+
+  void DismissWifiSyncNotification(bool by_user) {
+    test_message_center_.RemoveNotification(
+        MultiDeviceNotificationPresenter::kWifiSyncNotificationId, by_user);
   }
 
   void DismissNotification(bool by_user) {
     test_message_center_.RemoveNotification(
-        MultiDeviceNotificationPresenter::kNotificationId, by_user);
+        MultiDeviceNotificationPresenter::kSetupNotificationId, by_user);
   }
 
   void VerifyNewUserPotentialHostExistsNotificationIsVisible() {
-    VerifyNotificationIsVisible(
+    VerifySetupNotificationIsVisible(
         MultiDeviceNotificationPresenter::Status::kNewUserNotificationVisible);
   }
 
   void VerifyExistingUserHostSwitchedNotificationIsVisible() {
-    VerifyNotificationIsVisible(
+    VerifySetupNotificationIsVisible(
         MultiDeviceNotificationPresenter::Status::
             kExistingUserHostSwitchedNotificationVisible);
   }
 
   void VerifyExistingUserNewChromebookAddedNotificationIsVisible() {
-    VerifyNotificationIsVisible(
+    VerifySetupNotificationIsVisible(
         MultiDeviceNotificationPresenter::Status::
             kExistingUserNewChromebookNotificationVisible);
   }
 
+  void VerifyWifiSyncNotificationIsVisible() {
+    const message_center::Notification* kVisibleNotification =
+        test_message_center_.FindVisibleNotificationById(
+            MultiDeviceNotificationPresenter::kWifiSyncNotificationId);
+    std::u16string title = l10n_util::GetStringUTF16(
+        IDS_ASH_MULTI_DEVICE_WIFI_SYNC_AVAILABLE_TITLE);
+    std::u16string message = l10n_util::GetStringFUTF16(
+        IDS_ASH_MULTI_DEVICE_WIFI_SYNC_AVAILABLE_MESSAGE,
+        base::ASCIIToUTF16(kTestDeviceType));
+    EXPECT_EQ(title, kVisibleNotification->title());
+    EXPECT_EQ(message, kVisibleNotification->message());
+  }
+
   void VerifyNoNotificationIsVisible() {
     EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
-        MultiDeviceNotificationPresenter::kNotificationId));
+        MultiDeviceNotificationPresenter::kSetupNotificationId));
+  }
+
+  void VerifyNoWifiSyncNotificationIsVisible() {
+    EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
+        MultiDeviceNotificationPresenter::kWifiSyncNotificationId));
   }
 
   void AssertPotentialHostBucketCount(std::string histogram, int count) {
@@ -195,8 +243,8 @@ class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
     }
     histogram_tester_.ExpectBucketCount(
         histogram,
-        MultiDeviceNotificationPresenter::
-            kNotificationTypeNewUserPotentialHostExists,
+        MultiDeviceNotificationPresenter::NotificationType::
+            kNewUserPotentialHostExists,
         count);
   }
 
@@ -207,8 +255,8 @@ class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
     }
     histogram_tester_.ExpectBucketCount(
         histogram,
-        MultiDeviceNotificationPresenter::
-            kNotificationTypeExistingUserHostSwitched,
+        MultiDeviceNotificationPresenter::NotificationType::
+            kExistingUserHostSwitched,
         count);
   }
 
@@ -219,8 +267,20 @@ class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
     }
     histogram_tester_.ExpectBucketCount(
         histogram,
-        MultiDeviceNotificationPresenter::
-            kNotificationTypeExistingUserNewChromebookAdded,
+        MultiDeviceNotificationPresenter::NotificationType::
+            kExistingUserNewChromebookAdded,
+        count);
+  }
+
+  void AssertWifiSyncBucketCount(std::string histogram, int count) {
+    if (histogram_tester_.GetAllSamples(histogram).empty()) {
+      EXPECT_EQ(count, 0);
+      return;
+    }
+    histogram_tester_.ExpectBucketCount(
+        histogram,
+        MultiDeviceNotificationPresenter::NotificationType::
+            kWifiSyncAnnouncement,
         count);
   }
 
@@ -232,13 +292,13 @@ class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
   std::unique_ptr<MultiDeviceNotificationPresenter> notification_presenter_;
 
  private:
-  void VerifyNotificationIsVisible(
+  void VerifySetupNotificationIsVisible(
       MultiDeviceNotificationPresenter::Status notification_status) {
     const message_center::Notification* kVisibleNotification =
         test_message_center_.FindVisibleNotificationById(
-            MultiDeviceNotificationPresenter::kNotificationId);
-    base::string16 title;
-    base::string16 message;
+            MultiDeviceNotificationPresenter::kSetupNotificationId);
+    std::u16string title;
+    std::u16string message;
     switch (notification_status) {
       case MultiDeviceNotificationPresenter::Status::
           kNewUserNotificationVisible:
@@ -434,6 +494,76 @@ TEST_F(
             0);
   AssertNewChromebookBucketCount("MultiDeviceSetup_NotificationClicked", 0);
   AssertNewChromebookBucketCount("MultiDeviceSetup_NotificationShown", 1);
+}
+
+TEST_F(MultiDeviceNotificationPresenterTest,
+       TestWifiSyncNotification_TapNotification) {
+  SignIntoAccount();
+
+  ShowWifiSyncNotification();
+  VerifyWifiSyncNotificationIsVisible();
+
+  ClickWifiSyncNotification();
+
+  VerifyNoWifiSyncNotificationIsVisible();
+
+  EXPECT_EQ(test_system_tray_client_->show_wifi_sync_settings_count(), 1);
+
+  AssertWifiSyncBucketCount("MultiDeviceSetup_NotificationClicked", 1);
+  AssertWifiSyncBucketCount("MultiDeviceSetup_NotificationDismissed", 0);
+  AssertWifiSyncBucketCount("MultiDeviceSetup_NotificationShown", 1);
+}
+
+TEST_F(MultiDeviceNotificationPresenterTest,
+       TestWifiSyncNotification_TapTurnOnButton) {
+  SignIntoAccount();
+
+  ShowWifiSyncNotification();
+  VerifyWifiSyncNotificationIsVisible();
+
+  ClickWifiSyncNotificationButton(0);
+
+  VerifyNoWifiSyncNotificationIsVisible();
+
+  EXPECT_EQ(test_system_tray_client_->show_wifi_sync_settings_count(), 1);
+
+  AssertWifiSyncBucketCount("MultiDeviceSetup_NotificationClicked", 1);
+  AssertWifiSyncBucketCount("MultiDeviceSetup_NotificationDismissed", 0);
+  AssertWifiSyncBucketCount("MultiDeviceSetup_NotificationShown", 1);
+}
+
+TEST_F(MultiDeviceNotificationPresenterTest,
+       TestWifiSyncNotification_TapCancelButton) {
+  SignIntoAccount();
+
+  ShowWifiSyncNotification();
+  VerifyWifiSyncNotificationIsVisible();
+
+  ClickWifiSyncNotificationButton(1);
+  VerifyNoWifiSyncNotificationIsVisible();
+
+  EXPECT_EQ(test_system_tray_client_->show_wifi_sync_settings_count(), 0);
+
+  AssertWifiSyncBucketCount("MultiDeviceSetup_NotificationClicked", 0);
+  AssertWifiSyncBucketCount("MultiDeviceSetup_NotificationDismissed", 1);
+  AssertWifiSyncBucketCount("MultiDeviceSetup_NotificationShown", 1);
+}
+
+TEST_F(MultiDeviceNotificationPresenterTest,
+       TestWifiSyncNotification_DismissedNotification) {
+  SignIntoAccount();
+
+  ShowWifiSyncNotification();
+  VerifyWifiSyncNotificationIsVisible();
+
+  DismissWifiSyncNotification(/*by_user=*/true);
+  VerifyNoWifiSyncNotificationIsVisible();
+
+  EXPECT_EQ(test_system_tray_client_->show_wifi_sync_settings_count(), 0);
+
+  AssertWifiSyncBucketCount("MultiDeviceSetup_NotificationClicked", 0);
+  AssertWifiSyncBucketCount("MultiDeviceSetup_NotificationDismissed", 1);
+  AssertWifiSyncBucketCount("MultiDeviceSetup_NotificationShown", 1);
 }
 
 TEST_F(MultiDeviceNotificationPresenterTest,

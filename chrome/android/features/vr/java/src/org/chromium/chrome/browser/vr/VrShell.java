@@ -41,9 +41,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.CompositorView;
-import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
-import org.chromium.chrome.browser.page_info.ChromePageInfoControllerDelegate;
-import org.chromium.chrome.browser.page_info.ChromePermissionParamsListBuilderDelegate;
+import org.chromium.chrome.browser.page_info.ChromePageInfo;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
@@ -53,7 +51,6 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
-import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -63,6 +60,7 @@ import org.chromium.chrome.browser.util.VoiceRecognitionUtil;
 import org.chromium.chrome.browser.vr.keyboard.VrInputMethodManagerWrapper;
 import org.chromium.components.external_intents.RedirectHandler;
 import org.chromium.components.page_info.PageInfoController;
+import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -206,7 +204,8 @@ public class VrShell extends GvrLayout
         mContentVirtualDisplay = VirtualDisplayAndroid.createVirtualDisplay();
         mContentVirtualDisplay.setTo(primaryDisplay);
 
-        mContentVrWindowAndroid = new VrWindowAndroid(mActivity, mContentVirtualDisplay);
+        mContentVrWindowAndroid = new VrWindowAndroid(
+                mActivity, mContentVirtualDisplay, mActivity.getModalDialogManagerSupplier());
         reparentAllTabs(mContentVrWindowAndroid);
 
         mCompositorView = mActivity.getCompositorViewHolder().getCompositorView();
@@ -299,7 +298,7 @@ public class VrShell extends GvrLayout
             }
         };
 
-        mTabModelSelectorObserver = new EmptyTabModelSelectorObserver() {
+        mTabModelSelectorObserver = new TabModelSelectorObserver() {
             @Override
             public void onChange() {
                 swapToForegroundTab();
@@ -571,14 +570,8 @@ public class VrShell extends GvrLayout
     public void showPageInfo() {
         Tab tab = mActivity.getActivityTab();
         if (tab == null) return;
-        WebContents webContents = tab.getWebContents();
-        PageInfoController.show(mActivity, webContents, null,
-                PageInfoController.OpenedFromSource.VR,
-                new ChromePageInfoControllerDelegate(mActivity, webContents,
-                        mActivity::getModalDialogManager,
-                        /*offlinePageLoadUrlDelegate=*/
-                        new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(tab)),
-                new ChromePermissionParamsListBuilderDelegate());
+        new ChromePageInfo(mActivity.getModalDialogManagerSupplier(), null, OpenedFromSource.VR)
+                .show(tab, PageInfoController.NO_HIGHLIGHTED_PERMISSION);
     }
 
     // Called because showing audio permission dialog isn't supported in VR. This happens when

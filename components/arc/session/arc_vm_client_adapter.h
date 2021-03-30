@@ -41,9 +41,6 @@ void SetArcVmBootNotificationServerAddressForTesting(
 // Sets the an FD ConnectToArcVmBootNotificationServer() returns for testing.
 void SetArcVmBootNotificationServerFdForTesting(base::Optional<int> fd);
 
-// Enable adb-over-usb and let the adapter start the support daemon for testing.
-void EnableAdbOverUsbForTesting();
-
 // Generates a list of props from |upgrade_params|, each of which takes the form
 // "prefix.prop_name=value"
 std::vector<std::string> GenerateUpgradePropsForTesting(

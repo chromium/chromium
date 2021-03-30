@@ -7,13 +7,19 @@
 
 #import "ios/web_view/public/cwv_web_view.h"
 
+#import "ios/web/common/crw_input_view_provider.h"
+#import "ios/web/public/web_state_delegate_bridge.h"
+#import "ios/web/public/web_state_observer_bridge.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 namespace web {
 class WebState;
 }
 
-@interface CWVWebView ()
+@interface CWVWebView () <CRWResponderInputView,
+                          CRWWebStateDelegate,
+                          CRWWebStateObserver>
 
 // Returns CWVWebView which corresponds to the given web state.
 // It causes an assertion failure if the web state has no corresponding

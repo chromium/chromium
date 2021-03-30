@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta http-equiv="Content-Security-Policy" content="script-src 'nonce-noncynonce' 'nonce-noncy+/=nonce'">
+        <meta http-equiv="Content-Security-Policy" content="script-src 'nonce-noncynonce' 'nonce-noncy+/='">
         <script nonce="noncynonce">
         if (window.testRunner)
             testRunner.dumpAsText();
@@ -9,7 +9,7 @@
         <script nonce="noncynonce">
             alert('PASS (1/2)');
         </script>
-        <script nonce="noncy+/=nonce">
+        <script nonce="noncy+/=">
             alert('PASS (2/2)');
         </script>
     </head>

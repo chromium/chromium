@@ -168,6 +168,7 @@
         <meta-data android:name="org.chromium.webapk.shell_apk.webManifestUrl" android:value="{{{web_manifest_url}}}" />
 
         <meta-data android:name="org.chromium.webapk.shell_apk.isNewStyleWebApk" android:value="[[{use_new_splash}]]" />
+        <meta-data android:name="org.chromium.webapk.shell_apk.enableSiteSettingsShortcut" android:value="{{{enable_site_settings_shortcut}}}" />
         <service
             android:name="org.chromium.webapk.shell_apk.WebApkServiceFactory"
             android:exported="true"

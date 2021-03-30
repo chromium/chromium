@@ -19,6 +19,7 @@
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_role_properties.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/gfx/transform.h"
 
 namespace ui {
@@ -209,8 +210,7 @@ bool IsNodeIdIntListAttribute(ax::mojom::IntListAttribute attr) {
   return false;
 }
 
-AXNodeData::AXNodeData()
-    : role(ax::mojom::Role::kUnknown), state(0U), actions(0ULL) {}
+AXNodeData::AXNodeData() : role(ax::mojom::Role::kUnknown) {}
 
 AXNodeData::~AXNodeData() = default;
 
@@ -355,16 +355,16 @@ bool AXNodeData::GetStringAttribute(ax::mojom::StringAttribute attribute,
   return false;
 }
 
-base::string16 AXNodeData::GetString16Attribute(
+std::u16string AXNodeData::GetString16Attribute(
     ax::mojom::StringAttribute attribute) const {
   std::string value_utf8;
   if (!GetStringAttribute(attribute, &value_utf8))
-    return base::string16();
+    return std::u16string();
   return base::UTF8ToUTF16(value_utf8);
 }
 
 bool AXNodeData::GetString16Attribute(ax::mojom::StringAttribute attribute,
-                                      base::string16* value) const {
+                                      std::u16string* value) const {
   std::string value_utf8;
   if (!GetStringAttribute(attribute, &value_utf8))
     return false;
@@ -440,7 +440,7 @@ bool AXNodeData::GetHtmlAttribute(const char* html_attr,
 }
 
 bool AXNodeData::GetHtmlAttribute(const char* html_attr,
-                                  base::string16* value) const {
+                                  std::u16string* value) const {
   std::string value_utf8;
   if (!GetHtmlAttribute(html_attr, &value_utf8))
     return false;
@@ -451,9 +451,19 @@ bool AXNodeData::GetHtmlAttribute(const char* html_attr,
 void AXNodeData::AddStringAttribute(ax::mojom::StringAttribute attribute,
                                     const std::string& value) {
   DCHECK_NE(attribute, ax::mojom::StringAttribute::kNone);
+  DCHECK_NE(attribute, ax::mojom::StringAttribute::kChildTreeId)
+      << "Use AddChildTreeId";
   if (HasStringAttribute(attribute))
     RemoveStringAttribute(attribute);
   string_attributes.push_back(std::make_pair(attribute, value));
+}
+
+void AXNodeData::AddChildTreeId(const ui::AXTreeID& tree_id) {
+  ax::mojom::StringAttribute attribute =
+      ax::mojom::StringAttribute::kChildTreeId;
+  if (HasStringAttribute(attribute))
+    RemoveStringAttribute(attribute);
+  string_attributes.push_back(std::make_pair(attribute, tree_id.ToString()));
 }
 
 void AXNodeData::AddIntAttribute(ax::mojom::IntAttribute attribute, int value) {
@@ -609,7 +619,7 @@ void AXNodeData::SetName(const std::string& name) {
   }
 }
 
-void AXNodeData::SetName(const base::string16& name) {
+void AXNodeData::SetName(const std::u16string& name) {
   SetName(base::UTF16ToUTF8(name));
 }
 
@@ -621,7 +631,7 @@ void AXNodeData::SetDescription(const std::string& description) {
   AddStringAttribute(ax::mojom::StringAttribute::kDescription, description);
 }
 
-void AXNodeData::SetDescription(const base::string16& description) {
+void AXNodeData::SetDescription(const std::u16string& description) {
   SetDescription(base::UTF16ToUTF8(description));
 }
 
@@ -629,7 +639,7 @@ void AXNodeData::SetValue(const std::string& value) {
   AddStringAttribute(ax::mojom::StringAttribute::kValue, value);
 }
 
-void AXNodeData::SetValue(const base::string16& value) {
+void AXNodeData::SetValue(const std::u16string& value) {
   SetValue(base::UTF16ToUTF8(value));
 }
 
@@ -926,6 +936,15 @@ bool AXNodeData::IsActivatable() const {
   return IsTextField() || role == ax::mojom::Role::kListBox;
 }
 
+bool AXNodeData::IsActiveLiveRegionRoot() const {
+  std::string aria_live_status;
+  if (GetStringAttribute(ax::mojom::StringAttribute::kLiveStatus,
+                         &aria_live_status)) {
+    return aria_live_status != "off";
+  }
+  return false;
+}
+
 bool AXNodeData::IsButtonPressed() const {
   // Currently there is no internal representation for |aria-pressed|, and
   // we map |aria-pressed="true"| to ax::mojom::CheckedState::kTrue for a native
@@ -946,6 +965,16 @@ bool AXNodeData::IsClickable() const {
     return true;
 
   return ui::IsClickable(role);
+}
+
+bool AXNodeData::IsContainedInActiveLiveRegion() const {
+  std::string aria_container_live_status;
+  if (GetStringAttribute(ax::mojom::StringAttribute::kContainerLiveStatus,
+                         &aria_container_live_status)) {
+    return aria_container_live_status != "off" &&
+           HasStringAttribute(ax::mojom::StringAttribute::kName);
+  }
+  return false;
 }
 
 bool AXNodeData::IsSelectable() const {
@@ -1004,11 +1033,27 @@ bool AXNodeData::IsPlainTextField() const {
   // We need to check both the role and editable state, because some ARIA text
   // fields may in fact not be editable, whilst some editable fields might not
   // have the role.
-  return !HasState(ax::mojom::State::kRichlyEditable) &&
-         (role == ax::mojom::Role::kTextField ||
-          role == ax::mojom::Role::kTextFieldWithComboBox ||
-          role == ax::mojom::Role::kSearchBox ||
-          GetBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot));
+  if (HasState(ax::mojom::State::kRichlyEditable))
+    return false;
+
+  // Blink adds the "kEditableRoot" attribute to all nodes that are at the root
+  // of any editable region, such as an <input> or a <textarea> field.
+  if (GetBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot)) {
+    DCHECK(HasState(ax::mojom::State::kEditable));
+    return true;
+  }
+
+  // Has editable ARIA role, but is not actually editable.
+  // In theory, a webpage author could create a plain text field by using any of
+  // the following ARIA roles, even on elements that do not have the
+  // contenteditable attribute set. For example, <div role="textbox">. However,
+  // in practice it might be difficult to create such a plain text field because
+  // it would be hard to support text selection and a caret without specifying
+  // contenteditable="true"
+  // Exposing these roles as plain text fields is harmless and simplifies tests.
+  return role == ax::mojom::Role::kTextField ||
+         role == ax::mojom::Role::kTextFieldWithComboBox ||
+         role == ax::mojom::Role::kSearchBox;
 }
 
 bool AXNodeData::IsRichTextField() const {
@@ -1513,6 +1558,9 @@ std::string AXNodeData::ToString() const {
       case ax::mojom::StringAttribute::kValue:
         result += " value=" + value;
         break;
+      case ax::mojom::StringAttribute::kVirtualContent:
+        result += " virtual_content=" + value;
+        break;
       case ax::mojom::StringAttribute::kNone:
         break;
     }
@@ -1608,6 +1656,9 @@ std::string AXNodeData::ToString() const {
         break;
       case ax::mojom::BoolAttribute::kHasAriaAttribute:
         result += " has_aria_attribute=" + value;
+        break;
+      case ax::mojom::BoolAttribute::kTouchPassthrough:
+        result += " touch_passthrough=" + value;
         break;
       case ax::mojom::BoolAttribute::kNone:
         break;

@@ -24,12 +24,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_MOUSE_EVENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_MOUSE_EVENT_H_
 
+#include <cmath>
+
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/events/ui_event_with_key_state.h"
 #include "third_party/blink/renderer/platform/geometry/double_point.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -67,26 +68,12 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
                             const AtomicString& event_type,
                             const MouseEventInit*);
 
-  static MouseEvent* Create(const AtomicString& event_type,
-                            AbstractView*,
-                            const Event* underlying_event,
-                            SimulatedClickCreationScope);
-
-  static void PopulateMouseEventInit(const AtomicString& event_type,
-                                     AbstractView* view,
-                                     const Event* underlying_event,
-                                     SimulatedClickCreationScope creation_scope,
-                                     MouseEventInit* initializer);
-
   MouseEvent(const AtomicString& type,
              const MouseEventInit*,
-             base::TimeTicks platform_time_stamp,
+             base::TimeTicks platform_time_stamp = base::TimeTicks::Now(),
              SyntheticEventType = kRealOrIndistinguishable,
              WebMenuSourceType = kMenuSourceNone);
-  MouseEvent(const AtomicString& type, const MouseEventInit* init)
-      : MouseEvent(type, init, base::TimeTicks::Now()) {}
   MouseEvent();
-  ~MouseEvent() override;
 
   static uint16_t WebInputEventModifiersToButtons(unsigned modifiers);
   static void SetCoordinatesFromWebPointerProperties(
@@ -150,21 +137,13 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
 
   // Note that these values are adjusted to counter the effects of zoom, so that
   // values exposed via DOM APIs are invariant under zooming.
-  virtual double screenX() const {
-    return static_cast<int>(screen_location_.X());
-  }
+  virtual double screenX() const { return std::floor(screen_location_.X()); }
 
-  virtual double screenY() const {
-    return static_cast<int>(screen_location_.Y());
-  }
+  virtual double screenY() const { return std::floor(screen_location_.Y()); }
 
-  virtual double clientX() const {
-    return static_cast<int>(client_location_.X());
-  }
+  virtual double clientX() const { return std::floor(client_location_.X()); }
 
-  virtual double clientY() const {
-    return static_cast<int>(client_location_.Y());
-  }
+  virtual double clientY() const { return std::floor(client_location_.Y()); }
 
   int movementX() const { return movement_delta_.X(); }
   int movementY() const { return movement_delta_.Y(); }
@@ -175,9 +154,9 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
   virtual double offsetX() const;
   virtual double offsetY() const;
 
-  virtual double pageX() const { return static_cast<int>(page_location_.X()); }
+  virtual double pageX() const { return std::floor(page_location_.X()); }
 
-  virtual double pageY() const { return static_cast<int>(page_location_.Y()); }
+  virtual double pageY() const { return std::floor(page_location_.Y()); }
 
   double x() const { return clientX(); }
   double y() const { return clientY(); }
@@ -193,6 +172,8 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
 
   DispatchEventResult DispatchEvent(EventDispatcher&) override;
 
+  void InitCoordinates(const double client_x, const double client_y);
+
   void Trace(Visitor*) const override;
 
   DoublePoint screen_location_;
@@ -206,8 +187,6 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
   void ReceivedTarget() override;
 
   void ComputeRelativePosition();
-
-  void InitCoordinates(const double client_x, const double client_y);
 
   bool has_cached_relative_position_ = false;
 

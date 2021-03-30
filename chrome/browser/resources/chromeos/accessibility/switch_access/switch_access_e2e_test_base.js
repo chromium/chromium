@@ -16,7 +16,7 @@ SwitchAccessE2ETest = class extends E2ETestBase {
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "content/public/test/browser_test.h"
 #include "ash/keyboard/ui/keyboard_util.h"
@@ -27,12 +27,12 @@ SwitchAccessE2ETest = class extends E2ETestBase {
   testGenPreamble() {
     super.testGenPreamble();
     GEN(`
-  base::Closure load_cb =
-      base::Bind(&chromeos::AccessibilityManager::SetSwitchAccessEnabled,
-          base::Unretained(chromeos::AccessibilityManager::Get()),
+  base::OnceClosure load_cb =
+      base::BindOnce(&ash::AccessibilityManager::SetSwitchAccessEnabled,
+          base::Unretained(ash::AccessibilityManager::Get()),
           true);
-  WaitForExtension(extension_misc::kSwitchAccessExtensionId, load_cb);
     `);
+    super.testGenPreambleCommon('kSwitchAccessExtensionId');
   }
 
   /**
@@ -63,6 +63,6 @@ SwitchAccessE2ETest = class extends E2ETestBase {
    */
   waitForPredicate(predicate, callback) {
     this.listenUntil(
-        predicate, NavigationManager.desktopNode, 'childrenChanged', callback);
+        predicate, Navigator.byItem.desktopNode, 'childrenChanged', callback);
   }
 };

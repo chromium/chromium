@@ -19,7 +19,7 @@ namespace {
 const BookmarkNode* CreateNewNode(BookmarkModel* model,
                                   const BookmarkNode* parent,
                                   const BookmarkEditor::EditDetails& details,
-                                  const base::string16& new_title,
+                                  const std::u16string& new_title,
                                   const GURL& new_url) {
   const BookmarkNode* node;
   // When create the new one to right-clicked folder, add it to the next to the
@@ -106,7 +106,7 @@ BookmarkEditor::EditDetails BookmarkEditor::EditDetails::AddNodeInFolder(
     const BookmarkNode* parent_node,
     size_t index,
     const GURL& url,
-    const base::string16& title) {
+    const std::u16string& title) {
   EditDetails details(NEW_URL);
   details.parent_node = parent_node;
   details.index = index;
@@ -133,7 +133,7 @@ const BookmarkNode* BookmarkEditor::ApplyEditsWithNoFolderChange(
     BookmarkModel* model,
     const BookmarkNode* parent,
     const EditDetails& details,
-    const base::string16& new_title,
+    const std::u16string& new_title,
     const GURL& new_url) {
   if (details.type == EditDetails::NEW_URL ||
       details.type == EditDetails::NEW_FOLDER) {
@@ -155,7 +155,7 @@ const BookmarkNode* BookmarkEditor::ApplyEditsWithPossibleFolderChange(
     BookmarkModel* model,
     const BookmarkNode* new_parent,
     const EditDetails& details,
-    const base::string16& new_title,
+    const std::u16string& new_title,
     const GURL& new_url) {
   if (details.type == EditDetails::NEW_URL ||
       details.type == EditDetails::NEW_FOLDER) {

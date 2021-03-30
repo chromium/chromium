@@ -26,7 +26,6 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
-#include "ui/message_center/message_center.h"
 
 namespace ash {
 
@@ -109,7 +108,6 @@ ShelfController::ShelfController()
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
   Shell::Get()->window_tree_host_manager()->AddObserver(this);
   model_.AddObserver(this);
-  message_center::MessageCenter::Get()->AddObserver(this);
 }
 
 ShelfController::~ShelfController() {
@@ -117,7 +115,6 @@ ShelfController::~ShelfController() {
 }
 
 void ShelfController::Shutdown() {
-  message_center::MessageCenter::Get()->RemoveObserver(this);
   model_.RemoveObserver(this);
   Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
   Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
@@ -226,8 +223,7 @@ void ShelfController::OnDisplayConfigurationChanged() {
 
 void ShelfController::OnAppUpdate(const apps::AppUpdate& update) {
   if (update.HasBadgeChanged() &&
-      notification_badging_pref_enabled_.value_or(false) &&
-      !quiet_mode_enabled_.value_or(false)) {
+      notification_badging_pref_enabled_.value_or(false)) {
     bool has_badge = update.HasBadge() == apps::mojom::OptionalBool::kTrue;
     model_.UpdateItemNotification(update.AppId(), has_badge);
   }
@@ -252,33 +248,23 @@ void ShelfController::ShelfItemAdded(int index) {
   });
 }
 
-void ShelfController::OnQuietModeChanged(bool in_quiet_mode) {
-  UpdateAppNotificationBadging();
-}
-
 void ShelfController::UpdateAppNotificationBadging() {
   bool new_badging_enabled = pref_change_registrar_
                                  ? pref_change_registrar_->prefs()->GetBoolean(
                                        prefs::kAppNotificationBadgingEnabled)
                                  : false;
-  bool new_quiet_mode_enabled =
-      message_center::MessageCenter::Get()->IsQuietMode();
 
   if (notification_badging_pref_enabled_.has_value() &&
-      notification_badging_pref_enabled_.value() == new_badging_enabled &&
-      quiet_mode_enabled_.has_value() &&
-      quiet_mode_enabled_.value() == new_quiet_mode_enabled) {
+      notification_badging_pref_enabled_.value() == new_badging_enabled) {
     return;
   }
   notification_badging_pref_enabled_ = new_badging_enabled;
-  quiet_mode_enabled_ = new_quiet_mode_enabled;
 
   if (cache_) {
     cache_->ForEachApp([this](const apps::AppUpdate& update) {
       // Set the app notification badge hidden when the pref is disabled.
       bool has_badge =
-          notification_badging_pref_enabled_.value() &&
-                  !quiet_mode_enabled_.value()
+          notification_badging_pref_enabled_.value()
               ? (update.HasBadge() == apps::mojom::OptionalBool::kTrue)
               : false;
 

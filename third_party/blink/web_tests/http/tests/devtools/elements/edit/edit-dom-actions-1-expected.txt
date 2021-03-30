@@ -34,10 +34,10 @@ Running: testSetNodeNameInput
 Running: testSetNodeValue
 ==== before ====
 - <div id="testSetNodeValue">
-      <div id="node-to-set-value">\n                Text\n              </div>
+      <div id="node-to-set-value"> Text </div>
   </div>
 ==== after ====
 - <div id="testSetNodeValue">
-      <div id="node-to-set-value">  \n  Edited Text  \n  </div>
+      <div id="node-to-set-value"> Edited Text </div>
   </div>
 

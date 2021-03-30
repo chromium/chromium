@@ -11,7 +11,9 @@
 
 #include "ash/public/cpp/stylus_utils.h"
 #include "base/bind.h"
-#include "chrome/browser/chromeos/arc/arc_util.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 
@@ -60,13 +62,13 @@ void StylusHandler::RegisterMessages() {
 }
 
 void StylusHandler::OnJavascriptAllowed() {
-  note_observer_.Add(NoteTakingHelper::Get());
-  input_observer_.Add(ui::DeviceDataManager::GetInstance());
+  note_observation_.Observe(NoteTakingHelper::Get());
+  input_observation_.Observe(ui::DeviceDataManager::GetInstance());
 }
 
 void StylusHandler::OnJavascriptDisallowed() {
-  note_observer_.RemoveAll();
-  input_observer_.RemoveAll();
+  note_observation_.Reset();
+  input_observation_.Reset();
 }
 
 void StylusHandler::OnAvailableNoteTakingAppsUpdated() {
@@ -163,7 +165,11 @@ void StylusHandler::HandleShowPlayStoreApps(const base::ListValue* args) {
     return;
   }
 
-  arc::LaunchPlayStoreWithUrl(apps_url);
+  DCHECK(
+      apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile));
+  apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithUrl(
+      arc::kPlayStoreAppId, ui::EF_NONE, GURL(apps_url),
+      apps::mojom::LaunchSource::kFromChromeInternal);
 }
 
 }  // namespace settings

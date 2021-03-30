@@ -15,16 +15,10 @@ namespace {
 
 class NGFieldsetLayoutAlgorithmTest
     : public NGBaseLayoutAlgorithmTest,
-      private ScopedLayoutNGFieldsetForTest,
       private ScopedLayoutNGBlockFragmentationForTest {
  protected:
   NGFieldsetLayoutAlgorithmTest()
-      : ScopedLayoutNGFieldsetForTest(true),
-        ScopedLayoutNGBlockFragmentationForTest(true) {}
-  void SetUp() override {
-    NGBaseLayoutAlgorithmTest::SetUp();
-    style_ = ComputedStyle::Create();
-  }
+      : ScopedLayoutNGBlockFragmentationForTest(true) {}
 
   scoped_refptr<const NGPhysicalBoxFragment> RunBlockLayoutAlgorithm(
       Element* element) {
@@ -42,13 +36,10 @@ class NGFieldsetLayoutAlgorithmTest
         /* stretch_inline_size_if_auto */ true,
         node.CreatesNewFormattingContext());
     NGFragmentGeometry fragment_geometry =
-        CalculateInitialMinMaxFragmentGeometry(space, node);
+        CalculateInitialFragmentGeometry(space, node, /* is_intrinsic */ true);
 
     NGFieldsetLayoutAlgorithm algorithm({node, fragment_geometry, space});
-    MinMaxSizesInput input(
-        /* percentage_resolution_block_size */ LayoutUnit(),
-        MinMaxSizesType::kContent);
-    return algorithm.ComputeMinMaxSizes(input).sizes;
+    return algorithm.ComputeMinMaxSizes(MinMaxSizesFloatInput()).sizes;
   }
 
   MinMaxSizes RunComputeMinMaxSizes(const char* element_id) {
@@ -69,8 +60,6 @@ class NGFieldsetLayoutAlgorithmTest
     auto fragment = RunBlockLayoutAlgorithm(element);
     return DumpFragmentTree(fragment.get());
   }
-
-  scoped_refptr<ComputedStyle> style_;
 };
 
 TEST_F(NGFieldsetLayoutAlgorithmTest, Empty) {

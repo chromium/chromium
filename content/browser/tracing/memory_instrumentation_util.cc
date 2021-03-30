@@ -24,7 +24,7 @@ void InitializeBrowserMemoryInstrumentationClient() {
   mojo::PendingRemote<memory_instrumentation::mojom::Coordinator> coordinator;
   mojo::PendingRemote<memory_instrumentation::mojom::ClientProcess> process;
   auto process_receiver = process.InitWithNewPipeAndPassReceiver();
-  GetMemoryInstrumentationCoordinatorController()->RegisterClientProcess(
+  GetMemoryInstrumentationRegistry()->RegisterClientProcess(
       coordinator.InitWithNewPipeAndPassReceiver(), std::move(process),
       memory_instrumentation::mojom::ProcessType::BROWSER,
       base::GetCurrentProcId(), /*service_name=*/base::nullopt);

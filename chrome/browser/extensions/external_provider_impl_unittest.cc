@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/external_provider_impl.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
@@ -15,7 +16,6 @@
 #include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_path_override.h"
 #include "build/branding_buildflags.h"
@@ -44,8 +44,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/customization/customization_document.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -100,7 +100,7 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
   void InitService() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     user_manager::ScopedUserManager scoped_user_manager(
-        std::make_unique<chromeos::FakeChromeUserManager>());
+        std::make_unique<ash::FakeChromeUserManager>());
 #endif
     InitializeExtensionServiceWithUpdaterAndPrefs();
 
@@ -122,8 +122,7 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
 
     ProviderCollection providers;
     extensions::ExternalProviderImpl::CreateExternalProviders(
-        service_, profile_.get(), service_->pending_extension_manager(),
-        &providers);
+        service_, profile_.get(), &providers);
 
     for (std::unique_ptr<ExternalProviderInterface>& provider : providers)
       service_->AddProviderForTesting(std::move(provider));
@@ -299,8 +298,8 @@ TEST_F(ExternalProviderImplTest, WebAppMigrationFlag) {
       service_,
       base::MakeRefCounted<ExternalTestingLoader>(
           json, base::FilePath(FILE_PATH_LITERAL("//absolute/path"))),
-      profile_.get(), Manifest::EXTERNAL_PREF, Manifest::EXTERNAL_PREF_DOWNLOAD,
-      Extension::NO_FLAGS));
+      profile_.get(), mojom::ManifestLocation::kExternalPref,
+      mojom::ManifestLocation::kExternalPrefDownload, Extension::NO_FLAGS));
 
   // App is not installed, we should not install if the flag is enabled.
   {

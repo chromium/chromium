@@ -14,6 +14,7 @@
 #include "ui/views/controls/message_box_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 JavaScriptTabModalDialogViewViews::~JavaScriptTabModalDialogViewViews() =
     default;
@@ -24,11 +25,11 @@ void JavaScriptTabModalDialogViewViews::CloseDialogWithoutCallback() {
   GetWidget()->Close();
 }
 
-base::string16 JavaScriptTabModalDialogViewViews::GetUserInput() {
+std::u16string JavaScriptTabModalDialogViewViews::GetUserInput() {
   return message_box_view_->GetInputText();
 }
 
-base::string16 JavaScriptTabModalDialogViewViews::GetWindowTitle() const {
+std::u16string JavaScriptTabModalDialogViewViews::GetWindowTitle() const {
   return title_;
 }
 
@@ -41,10 +42,6 @@ views::View* JavaScriptTabModalDialogViewViews::GetInitiallyFocusedView() {
   return text_box ? text_box : views::DialogDelegate::GetInitiallyFocusedView();
 }
 
-ui::ModalType JavaScriptTabModalDialogViewViews::GetModalType() const {
-  return ui::MODAL_TYPE_CHILD;
-}
-
 void JavaScriptTabModalDialogViewViews::AddedToWidget() {
   auto* bubble_frame_view = static_cast<views::BubbleFrameView*>(
       GetWidget()->non_client_view()->frame_view());
@@ -54,10 +51,10 @@ void JavaScriptTabModalDialogViewViews::AddedToWidget() {
 JavaScriptTabModalDialogViewViews::JavaScriptTabModalDialogViewViews(
     content::WebContents* parent_web_contents,
     content::WebContents* alerting_web_contents,
-    const base::string16& title,
+    const std::u16string& title,
     content::JavaScriptDialogType dialog_type,
-    const base::string16& message_text,
-    const base::string16& default_prompt_text,
+    const std::u16string& message_text,
+    const std::u16string& default_prompt_text,
     content::JavaScriptDialogManager::DialogClosedCallback dialog_callback,
     base::OnceClosure dialog_force_closed_callback)
     : title_(title),
@@ -65,6 +62,7 @@ JavaScriptTabModalDialogViewViews::JavaScriptTabModalDialogViewViews(
       default_prompt_text_(default_prompt_text),
       dialog_callback_(std::move(dialog_callback)),
       dialog_force_closed_callback_(std::move(dialog_force_closed_callback)) {
+  SetModalType(ui::MODAL_TYPE_CHILD);
   SetDefaultButton(ui::DIALOG_BUTTON_OK);
   const bool is_alert = dialog_type == content::JAVASCRIPT_DIALOG_TYPE_ALERT;
   SetButtons(
@@ -83,7 +81,7 @@ JavaScriptTabModalDialogViewViews::JavaScriptTabModalDialogViewViews(
   SetCancelCallback(base::BindOnce(
       [](JavaScriptTabModalDialogViewViews* dialog) {
         if (dialog->dialog_callback_)
-          std::move(dialog->dialog_callback_).Run(false, base::string16());
+          std::move(dialog->dialog_callback_).Run(false, std::u16string());
       },
       base::Unretained(this)));
   SetCloseCallback(base::BindOnce(
@@ -105,16 +103,19 @@ JavaScriptTabModalDialogViewViews::JavaScriptTabModalDialogViewViews(
   chrome::RecordDialogCreation(chrome::DialogIdentifier::JAVA_SCRIPT);
 }
 
+BEGIN_METADATA(JavaScriptTabModalDialogViewViews, views::DialogDelegateView)
+END_METADATA
+
 // Creates a new JS dialog. Note the two callbacks; |dialog_callback| is for
 // user responses, while |dialog_force_closed_callback| is for when Views
 // forces the dialog closed without a user reply.
 base::WeakPtr<javascript_dialogs::TabModalDialogView>
 JavaScriptTabModalDialogManagerDelegateDesktop::CreateNewDialog(
     content::WebContents* alerting_web_contents,
-    const base::string16& title,
+    const std::u16string& title,
     content::JavaScriptDialogType dialog_type,
-    const base::string16& message_text,
-    const base::string16& default_prompt_text,
+    const std::u16string& message_text,
+    const std::u16string& default_prompt_text,
     content::JavaScriptDialogManager::DialogClosedCallback dialog_callback,
     base::OnceClosure dialog_force_closed_callback) {
   return (new JavaScriptTabModalDialogViewViews(

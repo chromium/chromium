@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests completions prototype chain and scope variables.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.evaluateInPagePromise(`
       function A() {
           this.instanceMember = 1;

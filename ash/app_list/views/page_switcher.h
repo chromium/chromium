@@ -7,6 +7,7 @@
 
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
 #include "base/macros.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -27,7 +28,8 @@ class PageSwitcher : public views::View,
 
   PageSwitcher(PaginationModel* model,
                bool is_root_app_grid_page_switcher,
-               bool is_tablet_mode);
+               bool is_tablet_mode,
+               SkColor background_color = gfx::kPlaceholderColor);
   PageSwitcher(const PageSwitcher&) = delete;
   PageSwitcher& operator=(const PageSwitcher&) = delete;
   ~PageSwitcher() override;
@@ -36,6 +38,7 @@ class PageSwitcher : public views::View,
   gfx::Size CalculatePreferredSize() const override;
   void Layout() override;
   const char* GetClassName() const override;
+  void OnThemeChanged() override;
 
   void set_ignore_button_press(bool ignore) { ignore_button_press_ = ignore; }
   void set_is_tablet_mode(bool started) { is_tablet_mode_ = started; }
@@ -59,6 +62,8 @@ class PageSwitcher : public views::View,
 
   // Whether tablet mode is enabled.
   bool is_tablet_mode_;
+
+  const SkColor background_color_;
 };
 
 }  // namespace ash

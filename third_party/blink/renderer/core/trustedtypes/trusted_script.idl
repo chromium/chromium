@@ -12,4 +12,5 @@ typedef [StringContext=TrustedScript] DOMString ScriptString;
     RuntimeEnabled=TrustedDOMTypes
 ] interface TrustedScript {
     stringifier;
+    DOMString toJSON();
 };

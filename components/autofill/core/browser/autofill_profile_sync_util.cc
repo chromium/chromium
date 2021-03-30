@@ -18,7 +18,7 @@
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/proto/autofill_sync.pb.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
-#include "components/sync/model/entity_data.h"
+#include "components/sync/engine/entity_data.h"
 
 using autofill::data_util::TruncateUTF8;
 using base::UTF16ToUTF8;
@@ -120,6 +120,8 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
       TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(NAME_LAST_CONJUNCTION))));
   specifics->add_name_full(
       TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(NAME_FULL))));
+  specifics->add_name_full_with_honorific(TruncateUTF8(
+      UTF16ToUTF8(entry.GetRawInfo(NAME_FULL_WITH_HONORIFIC_PREFIX))));
 
   // Set address-related statuses.
   specifics->add_name_honorific_status(
@@ -142,6 +144,9 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
           entry.GetVerificationStatus(NAME_LAST_SECOND)));
   specifics->add_name_full_status(ConvertProfileToSpecificsVerificationStatus(
       entry.GetVerificationStatus(NAME_FULL)));
+  specifics->add_name_full_with_honorific_status(
+      ConvertProfileToSpecificsVerificationStatus(
+          entry.GetVerificationStatus(NAME_FULL_WITH_HONORIFIC_PREFIX)));
 
   // Set email, phone and company values.
   specifics->add_email_address(
@@ -256,6 +261,17 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
       ConvertSpecificsToProfileVerificationStatus(
           specifics.name_honorific_status_size()
               ? specifics.name_honorific_status(0)
+              : AutofillProfileSpecifics::VerificationStatus::
+                    AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED));
+
+  profile->SetRawInfoWithVerificationStatus(
+      NAME_FULL_WITH_HONORIFIC_PREFIX,
+      UTF8ToUTF16(specifics.name_full_with_honorific_size()
+                      ? specifics.name_full_with_honorific(0)
+                      : std::string()),
+      ConvertSpecificsToProfileVerificationStatus(
+          specifics.name_full_with_honorific_status_size()
+              ? specifics.name_full_with_honorific_status(0)
               : AutofillProfileSpecifics::VerificationStatus::
                     AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED));
 
@@ -377,7 +393,7 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
   // by a newer version of Chrome), or a country name (if set by an older
   // version of Chrome).
   // TODO(jkrcal): Move this migration logic into Address::SetRawInfo()?
-  base::string16 country_name_or_code =
+  std::u16string country_name_or_code =
       base::ASCIIToUTF16(specifics.address_home_country());
   std::string country_code =
       CountryNames::GetInstance()->GetCountryCode(country_name_or_code);

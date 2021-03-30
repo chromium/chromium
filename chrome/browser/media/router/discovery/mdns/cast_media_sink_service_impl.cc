@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/default_clock.h"
@@ -50,6 +51,30 @@ MediaSinkInternal CreateCastSinkFromDialSink(
   extra_data.capabilities = cast_channel::CastDeviceCapability::NONE;
 
   return MediaSinkInternal(sink, extra_data);
+}
+
+std::string EnumToString(MediaRouterChannelError error) {
+  switch (error) {
+    case MediaRouterChannelError::UNKNOWN:
+      return "UNKNOWN";
+    case MediaRouterChannelError::AUTHENTICATION:
+      return "AUTHENTICATION";
+    case MediaRouterChannelError::CONNECT:
+      return "CONNECT";
+    case MediaRouterChannelError::GENERAL_CERTIFICATE:
+      return "GENERAL_CERTIFICATE";
+    case MediaRouterChannelError::CERTIFICATE_TIMING:
+      return "CERTIFICATE_TIMING";
+    case MediaRouterChannelError::NETWORK:
+      return "NETWORK";
+    case MediaRouterChannelError::CONNECT_TIMEOUT:
+      return "CONNECT_TIMEOUT";
+    case MediaRouterChannelError::PING_TIMEOUT:
+      return "PING_TIMEOUT";
+    case MediaRouterChannelError::TOTAL_COUNT:
+      NOTREACHED();
+      return "";
+  }
 }
 
 MediaRouterChannelError RecordError(cast_channel::ChannelError channel_error,
@@ -327,30 +352,25 @@ void CastMediaSinkServiceImpl::OnError(const cast_channel::CastSocket& socket,
       });
   if (logger_.is_bound()) {
     auto sink_id = sink_it == sinks.end() ? "" : sink_it->first;
-    logger_->LogError(mojom::LogCategory::kDiscovery, kLoggerComponent,
-                      base::StringPrintf("MediaRouterChannelError: %d",
-                                         static_cast<int>(error_code)),
-                      sink_id, "", "");
+    logger_->LogError(
+        mojom::LogCategory::kDiscovery, kLoggerComponent,
+        base::StrCat({"Media Router Channel Error: ", EnumToString(error_code),
+                      ". channel_id: ", base::NumberToString(socket_id),
+                      ". IP endpoint: ", ip_endpoint.ToString()}),
+        sink_id, "", "");
   }
   if (sink_it == sinks.end()) {
     return;
   }
 
-  // We erase the sink here so that OpenChannel would not find an existing
-  // sink.
-  // Note: a better longer term solution is to introduce a state field to the
-  // sink. We would set it to ERROR here. In OpenChannel(), we would check
-  // create a socket only if the state is not already CONNECTED.
   MediaSinkInternal sink = sink_it->second;
-  RemoveSink(sink);
-
   // If socket is not opened yet, then |OnChannelOpened()| will handle the
   // retry.
   if (socket.ready_state() != cast_channel::ReadyState::CONNECTING) {
     task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&CastMediaSinkServiceImpl::OpenChannel, GetWeakPtr(),
-                       sink, nullptr, SinkSource::kConnectionRetry));
+                       sink, nullptr, SinkSource::kConnectionRetryOnError));
   }
 }
 
@@ -378,10 +398,19 @@ void CastMediaSinkServiceImpl::OnNetworksChanged(
     sink_cache_[last_network_id] = std::move(current_sinks);
   }
 
+  if (logger_.is_bound()) {
+    logger_->LogError(mojom::LogCategory::kDiscovery, kLoggerComponent,
+                      base::StringPrintf(
+                          "Network ID chagned from \"%s\" to \"%s\".",
+                          last_network_id.c_str(), current_network_id_.c_str()),
+                      "", "", "");
+  }
+
   // TODO(imcheng): Maybe this should clear |sinks_| and call |StartTimer()|
   // so it is more responsive?
-  if (IsNetworkIdUnknownOrDisconnected(network_id))
+  if (IsNetworkIdUnknownOrDisconnected(network_id)) {
     return;
+  }
 
   auto cache_entry = sink_cache_.find(network_id);
   // Check if we have any cached sinks for this network ID.
@@ -438,12 +467,11 @@ void CastMediaSinkServiceImpl::OpenChannel(
   if (sink_source != SinkSource::kDial)
     dial_sink_failure_count_.erase(sink_id);
 
-  // If the sink already exists, then we need to check if there are updates.
-  // If the IP endpoint changed, then we will need to reopen a socket.
-  // If the IP endpoint remained the same but other properties changed, then we
-  // can update the existing sink without opening a new socket.
+  // If there already is a connected sink whose IP endpoint stayed the same,
+  // then there's no need to reopen a socket. We just update the sink info.
   const MediaSinkInternal* existing_sink = GetSinkById(sink_id);
-  if (existing_sink && existing_sink->cast_data().ip_endpoint == ip_endpoint) {
+  if (sink_source != SinkSource::kConnectionRetryOnError && existing_sink &&
+      existing_sink->cast_data().ip_endpoint == ip_endpoint) {
     // This update is only performed if |sink_source| is kMdns. In particular,
     // DIAL-discovered
     // sinks contain incomplete information which should not be used for
@@ -611,8 +639,11 @@ void CastMediaSinkServiceImpl::OnChannelOpenFailed(
 
   if (logger_.is_bound()) {
     logger_->LogError(mojom::LogCategory::kDiscovery, kLoggerComponent,
-                      "Failed to open a channel for sink", sink.sink().id(), "",
-                      "");
+                      base::StrCat({"Failed to open the channel. IP endpoint: ",
+                                    ip_endpoint.ToString(), ". channel_id: ",
+                                    base::NumberToString(
+                                        existing_sink->cast_channel_id())}),
+                      sink.sink().id(), "", "");
   }
   RemoveSink(sink);
 }

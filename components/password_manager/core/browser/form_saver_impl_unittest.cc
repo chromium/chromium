@@ -7,10 +7,10 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <string>
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
@@ -90,13 +90,13 @@ class FormSaverImplSaveTest
   // Either saves, updates or replaces |pending| according to the test param.
   void SaveCredential(PasswordForm pending,
                       const std::vector<const PasswordForm*>& matches,
-                      const base::string16& old_password);
+                      const std::u16string& old_password);
 };
 
 void FormSaverImplSaveTest::SaveCredential(
     PasswordForm pending,
     const std::vector<const PasswordForm*>& matches,
-    const base::string16& old_password) {
+    const std::u16string& old_password) {
   switch (GetParam()) {
     case SaveOperation::kSave:
       EXPECT_CALL(*mock_store_, AddLogin(pending));
@@ -118,7 +118,7 @@ TEST_P(FormSaverImplSaveTest, Write_EmptyStore) {
   PasswordForm pending = CreatePending("nameofuser", "wordToP4a55");
 
   SaveCredential(pending, {} /* matches */,
-                 base::string16() /* old_password */);
+                 std::u16string() /* old_password */);
 }
 
 // Pushes the credential to the store with |matches| containing the pending
@@ -144,7 +144,7 @@ TEST_P(FormSaverImplSaveTest, Write_AndDeleteEmptyUsernameCredentials) {
   PasswordForm pending = CreatePending("nameofuser", "wordToP4a55");
 
   PasswordForm non_empty_username = pending;
-  non_empty_username.username_value = ASCIIToUTF16("othername");
+  non_empty_username.username_value = u"othername";
 
   PasswordForm no_username = pending;
   no_username.username_value.clear();
@@ -152,7 +152,7 @@ TEST_P(FormSaverImplSaveTest, Write_AndDeleteEmptyUsernameCredentials) {
                                                     &no_username};
 
   EXPECT_CALL(*mock_store_, RemoveLogin(no_username));
-  SaveCredential(pending, matches, base::string16());
+  SaveCredential(pending, matches, std::u16string());
 }
 
 // Check that storing credentials with a non-empty username does not result in
@@ -164,10 +164,10 @@ TEST_P(FormSaverImplSaveTest,
 
   PasswordForm no_username = pending;
   no_username.username_value.clear();
-  no_username.password_value = ASCIIToUTF16("abcd");
+  no_username.password_value = u"abcd";
 
   EXPECT_CALL(*mock_store_, RemoveLogin(_)).Times(0);
-  SaveCredential(pending, {&no_username}, base::string16());
+  SaveCredential(pending, {&no_username}, std::u16string());
 }
 
 // Check that if a credential without username is saved, and another credential
@@ -177,10 +177,10 @@ TEST_P(FormSaverImplSaveTest, Write_EmptyUsernameWillNotCauseDeletion) {
   PasswordForm pending = CreatePending("", "wordToP4a55");
 
   PasswordForm with_username = pending;
-  with_username.username_value = ASCIIToUTF16("nameofuser");
+  with_username.username_value = u"nameofuser";
 
   EXPECT_CALL(*mock_store_, RemoveLogin(_)).Times(0);
-  SaveCredential(pending, {&with_username}, base::string16());
+  SaveCredential(pending, {&with_username}, std::u16string());
 }
 
 // Check that PSL-matched credentials in matches are exempt from deletion,
@@ -196,7 +196,7 @@ TEST_P(FormSaverImplSaveTest, Write_AndDoNotDeleteEmptyUsernamePSLCredentials) {
   const std::vector<const PasswordForm*> matches = {&stored, &no_username_psl};
 
   EXPECT_CALL(*mock_store_, RemoveLogin(_)).Times(0);
-  SaveCredential(pending, matches, base::string16());
+  SaveCredential(pending, matches, std::u16string());
 }
 
 // Check that on storing a credential, other credentials with the same password
@@ -205,10 +205,10 @@ TEST_P(FormSaverImplSaveTest, Write_AndDoNotDeleteNonEmptyUsernameCredentials) {
   PasswordForm pending = CreatePending("nameofuser", "wordToP4a55");
 
   PasswordForm other_username = pending;
-  other_username.username_value = ASCIIToUTF16("other username");
+  other_username.username_value = u"other username";
 
   EXPECT_CALL(*mock_store_, RemoveLogin(_)).Times(0);
-  SaveCredential(pending, {&other_username}, base::string16());
+  SaveCredential(pending, {&other_username}, std::u16string());
 }
 
 // Stores a credential and makes sure that its duplicate is updated.
@@ -251,10 +251,10 @@ TEST_P(FormSaverImplSaveTest, Write_AndUpdatePasswordValues_IgnoreNonMatches) {
   PasswordForm pending = CreatePending("nameofuser", kOldPassword);
 
   PasswordForm different_username = pending;
-  different_username.username_value = ASCIIToUTF16("someuser");
+  different_username.username_value = u"someuser";
 
   PasswordForm different_password = pending;
-  different_password.password_value = ASCIIToUTF16("some_password");
+  different_password.password_value = u"some_password";
 
   PasswordForm empty_username = pending;
   empty_username.username_value.clear();
@@ -271,36 +271,35 @@ TEST_P(FormSaverImplSaveTest, Write_AndUpdatePasswordValues_IgnoreNonMatches) {
 TEST_P(FormSaverImplSaveTest, FormDataSanitized) {
   PasswordForm pending = CreatePending("nameofuser", "wordToP4a55");
   FormFieldData field;
-  field.name = ASCIIToUTF16("name");
+  field.name = u"name";
   field.form_control_type = "password";
-  field.value = ASCIIToUTF16("value");
-  field.label = ASCIIToUTF16("label");
-  field.placeholder = ASCIIToUTF16("placeholder");
-  field.id_attribute = ASCIIToUTF16("id");
+  field.value = u"value";
+  field.label = u"label";
+  field.placeholder = u"placeholder";
+  field.id_attribute = u"id";
   field.name_attribute = field.name;
-  field.css_classes = ASCIIToUTF16("css_classes");
+  field.css_classes = u"css_classes";
   pending.form_data.fields.push_back(field);
 
   PasswordForm saved;
   switch (GetParam()) {
     case SaveOperation::kSave:
       EXPECT_CALL(*mock_store_, AddLogin(_)).WillOnce(SaveArg<0>(&saved));
-      return form_saver_.Save(std::move(pending), {}, ASCIIToUTF16(""));
+      return form_saver_.Save(std::move(pending), {}, u"");
     case SaveOperation::kUpdate:
       EXPECT_CALL(*mock_store_, UpdateLogin(_)).WillOnce(SaveArg<0>(&saved));
-      return form_saver_.Update(std::move(pending), {}, ASCIIToUTF16(""));
+      return form_saver_.Update(std::move(pending), {}, u"");
     case SaveOperation::kReplaceUpdate: {
       PasswordForm old_key = CreatePending("some_other_username", "1234");
       EXPECT_CALL(*mock_store_, UpdateLoginWithPrimaryKey(_, old_key))
           .WillOnce(SaveArg<0>(&saved));
-      return form_saver_.UpdateReplace(std::move(pending), {}, ASCIIToUTF16(""),
-                                       old_key);
+      return form_saver_.UpdateReplace(std::move(pending), {}, u"", old_key);
     }
   }
 
   ASSERT_EQ(1u, saved.form_data.fields.size());
   const FormFieldData& saved_field = saved.form_data.fields[0];
-  EXPECT_EQ(ASCIIToUTF16("name"), saved_field.name);
+  EXPECT_EQ(u"name", saved_field.name);
   EXPECT_EQ("password", saved_field.form_control_type);
   EXPECT_TRUE(saved_field.value.empty());
   EXPECT_TRUE(saved_field.label.empty());
@@ -321,12 +320,11 @@ INSTANTIATE_TEST_SUITE_P(All,
 TEST_F(FormSaverImplTest, Blocklist) {
   PasswordForm observed = CreateObserved();
   observed.blocked_by_user = false;
-  observed.username_value = ASCIIToUTF16("user1");
-  observed.username_element = ASCIIToUTF16("user");
-  observed.password_value = ASCIIToUTF16("12345");
-  observed.password_element = ASCIIToUTF16("password");
-  observed.all_possible_usernames = {
-      {ASCIIToUTF16("user2"), ASCIIToUTF16("field")}};
+  observed.username_value = u"user1";
+  observed.username_element = u"user";
+  observed.password_value = u"12345";
+  observed.password_element = u"password";
+  observed.all_possible_usernames = {{u"user2", u"field"}};
   observed.url = GURL("https://www.example.com/foobar");
 
   PasswordForm blocklisted =

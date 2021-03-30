@@ -56,9 +56,24 @@ message TextFilter {
   optional bool case_sensitive = 2;
 }
 
+// A value that allows filling usernames and passwords stored in the password
+// manager. The credentials have to be selected before in a CollectUserData
+// step.
+message PasswordManagerValue {
+  enum CredentialType {
+    NOT_SET = 0;
+    PASSWORD = 1;
+    USERNAME = 2;
+  }
+
+  optional CredentialType credential_type = 1;
+}
+
 message TextValue {
   oneof value {
     string text = 1;
     AutofillValue autofill_value = 2;
+    PasswordManagerValue password_manager_value = 3;
+    string client_memory_key = 4;
   }
 }

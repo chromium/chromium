@@ -19,14 +19,12 @@
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
-#include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -59,9 +57,6 @@
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -69,7 +64,6 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_prefs.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/browser/warning_service.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "net/base/filename_util.h"
@@ -1036,19 +1030,14 @@ ExtensionFunction::ResponseAction DownloadsDownloadFunction::Run() {
   std::unique_ptr<download::DownloadUrlParameters> download_params(
       new download::DownloadUrlParameters(
           download_url, source_process_id(),
-          render_frame_host()->GetRoutingID(), traffic_annotation));
+          render_frame_host() ? render_frame_host()->GetRoutingID() : -1,
+          traffic_annotation));
 
   base::FilePath creator_suggested_filename;
   if (options.filename.get()) {
 #if defined(OS_WIN)
-    // Can't get filename16 from options.ToValue() because that converts it from
-    // std::string.
-    base::DictionaryValue* options_value = NULL;
-    EXTENSION_FUNCTION_VALIDATE(args_->GetDictionary(0, &options_value));
-    base::string16 filename16;
-    EXTENSION_FUNCTION_VALIDATE(options_value->GetString(
-        kFilenameKey, &filename16));
-    creator_suggested_filename = base::FilePath(filename16);
+    creator_suggested_filename =
+        base::FilePath::FromUTF8Unsafe(*options.filename);
 #elif defined(OS_POSIX)
     creator_suggested_filename = base::FilePath(*options.filename);
 #endif
@@ -1360,7 +1349,7 @@ void DownloadsAcceptDangerFunction::PromptOrWait(int download_id, int retries) {
                      download_id));
   // DownloadDangerPrompt deletes itself
   if (on_prompt_created_ && !on_prompt_created_->is_null())
-    on_prompt_created_->Run(prompt);
+    std::move(*on_prompt_created_).Run(prompt);
   // Function finishes in DangerPromptCallback().
 }
 
@@ -1616,7 +1605,7 @@ ExtensionDownloadsEventRouter::ExtensionDownloadsEventRouter(
     : profile_(profile), notifier_(manager, this) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(profile_);
-  extension_registry_observer_.Add(ExtensionRegistry::Get(profile_));
+  extension_registry_observation_.Observe(ExtensionRegistry::Get(profile_));
   EventRouter* router = EventRouter::Get(profile_);
   if (router)
     router->RegisterObserver(this,
@@ -1694,8 +1683,8 @@ void ExtensionDownloadsEventRouter::OnDeterminingFilename(
   json->SetString(kFilenameKey, suggested_path.LossyDisplayName());
   DispatchEvent(events::DOWNLOADS_ON_DETERMINING_FILENAME,
                 downloads::OnDeterminingFilename::kEventName, false,
-                base::Bind(&OnDeterminingFilenameWillDispatchCallback,
-                           &any_determiners, data),
+                base::BindRepeating(&OnDeterminingFilenameWillDispatchCallback,
+                                    &any_determiners, data),
                 std::move(json));
   if (!any_determiners) {
     data->CallFilenameCallback();
@@ -1994,15 +1983,6 @@ void ExtensionDownloadsEventRouter::DispatchEvent(
                               restrict_to_browser_context);
   event->will_dispatch_callback = std::move(will_dispatch_callback);
   EventRouter::Get(profile_)->BroadcastEvent(std::move(event));
-  DownloadsNotificationSource notification_source;
-  notification_source.event_name = event_name;
-  notification_source.profile = profile_;
-  content::Source<DownloadsNotificationSource> content_source(
-      &notification_source);
-  content::NotificationService::current()->Notify(
-      extensions::NOTIFICATION_EXTENSION_DOWNLOADS_EVENT,
-      content_source,
-      content::Details<std::string>(&json_args));
 }
 
 void ExtensionDownloadsEventRouter::OnExtensionUnloaded(

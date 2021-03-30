@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="module">
+import {assert_array_relatedapplication_equals, installedapp_test} from './resources/installedapp-test-helper.js';
+
+installedapp_test((t, mock) => {
+  // With no manifest, expect the Mojo call to FilterInstalledApps to be empty,
+  // and return an empty list.
+  mock.pushExpectedCall([], []);
+  return navigator.getInstalledRelatedApps().then(result => {
+    assert_array_relatedapplication_equals(result, []);
+  });
+}, 'getInstalledRelatedApps with no apps');
+
+</script>

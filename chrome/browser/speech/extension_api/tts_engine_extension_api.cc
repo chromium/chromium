@@ -10,6 +10,7 @@
 
 #include "base/json/json_writer.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/system/sys_info.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -331,10 +332,10 @@ void TtsExtensionEngine::Resume(content::TtsUtterance* utterance) {
   WarnIfMissingPauseOrResumeListener(profile, event_router, id);
 }
 
-bool TtsExtensionEngine::LoadBuiltInTtsEngine(
+void TtsExtensionEngine::LoadBuiltInTtsEngine(
     content::BrowserContext* browser_context) {
   if (disable_built_in_tts_engine_for_testing_)
-    return false;
+    return;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   Profile* profile = Profile::FromBrowserContext(browser_context);
@@ -344,9 +345,6 @@ bool TtsExtensionEngine::LoadBuiltInTtsEngine(
       extensions::ExtensionSystem::Get(profile)->extension_service();
   DCHECK(extension_service);
   extension_service->component_loader()->AddChromeOsSpeechSynthesisExtensions();
-  return true;
-#else
-  return false;
 #endif
 }
 
@@ -366,7 +364,12 @@ bool TtsExtensionEngine::IsBuiltInTtsEngineInitialized(
     saw_espeak |=
         voice.engine_id == extension_misc::kEspeakSpeechSynthesisExtensionId;
   }
-  return saw_google_tts && saw_espeak;
+
+  // When running on a real Chrome OS environment, require both Google tts and
+  // Espeak to be initialized; otherwise, only check for Espeak (i.e. on a
+  // non-Chrome OS linux system running the CHrome OS variant of Chrome).
+  return base::SysInfo::IsRunningOnChromeOS() ? (saw_google_tts && saw_espeak)
+                                              : saw_espeak;
 #else
   // Vacuously; no built in engines on other platforms yet. TODO: network tts?
   return true;

@@ -41,7 +41,7 @@ class DISPLAY_EXPORT Screen {
   Screen();
   virtual ~Screen();
 
-  // Retrieves the single Screen object.
+  // Retrieves the single Screen object; this may be null (e.g. in some tests).
   static Screen* GetScreen();
 
   // Sets the global screen. Returns the previously installed screen, if any.

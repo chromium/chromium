@@ -25,8 +25,8 @@ void FrameSinkResourceManager::SetResourceReleaseCallback(
   DCHECK(!callback.is_null());
   release_callbacks_[id] = std::move(callback);
 }
-int FrameSinkResourceManager::AllocateResourceId() {
-  return next_resource_id_++;
+viz::ResourceId FrameSinkResourceManager::AllocateResourceId() {
+  return id_generator_.GenerateNextId();
 }
 
 bool FrameSinkResourceManager::HasNoCallbacks() const {

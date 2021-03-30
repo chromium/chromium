@@ -285,7 +285,7 @@ const NtpTheme* SearchBox::GetNtpTheme() const {
   return base::OptionalOrNullptr(theme_);
 }
 
-void SearchBox::Paste(const base::string16& text) {
+void SearchBox::Paste(const std::u16string& text) {
   embedded_search_service_->PasteAndOpenDropdown(page_seq_no_, text);
 }
 
@@ -438,7 +438,7 @@ void SearchBox::ConfirmThemeChanges() {
   embedded_search_service_->ConfirmThemeChanges();
 }
 
-void SearchBox::QueryAutocomplete(const base::string16& input,
+void SearchBox::QueryAutocomplete(const std::u16string& input,
                                   bool prevent_inline_autocomplete) {
   embedded_search_service_->QueryAutocomplete(input,
                                               prevent_inline_autocomplete);

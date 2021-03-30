@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "extensions/common/extension.h"
 
@@ -34,10 +33,7 @@ class ExtensionsToolbarBrowserTest : public DialogBrowserTest {
       delete;
 
  protected:
-  // Note the |enable_flag| parameter exists to test migration of extensions
-  // triggered by the experiment. Pre-migration setup must be done with the flag
-  // disabled.
-  explicit ExtensionsToolbarBrowserTest(bool enable_flag = true);
+  ExtensionsToolbarBrowserTest();
   ~ExtensionsToolbarBrowserTest() override;
 
   void SetUpOnMainThread() override;
@@ -65,17 +61,23 @@ class ExtensionsToolbarBrowserTest : public DialogBrowserTest {
 
   // Gets the extensions toolbar container from the browser() toolbar.
   ExtensionsToolbarContainer* GetExtensionsToolbarContainer() const;
+  // Returns the extensions toolbar container for the given `browser`.
+  ExtensionsToolbarContainer* GetExtensionsToolbarContainerForBrowser(
+      Browser* browser) const;
 
   // Gets the ToolbarActionView instances inside
   // GetExtensionsToolbarContainer().
   std::vector<ToolbarActionView*> GetToolbarActionViews() const;
+  // Returns the ToolbarActionView instances within the extensions toolbar for
+  // the given `browser`.
+  std::vector<ToolbarActionView*> GetToolbarActionViewsForBrowser(
+      Browser* browser) const;
 
   // Gets only the visible ToolbarActionView instances from
   // GetToolbarActionViews().
   std::vector<ToolbarActionView*> GetVisibleToolbarActionViews() const;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   Browser* incognito_browser_ = nullptr;
   std::vector<scoped_refptr<const extensions::Extension>> extensions_;
 };

@@ -54,4 +54,8 @@ std::string PlatformWindow::GetWindowUniqueId() const {
   return std::string();
 }
 
+bool PlatformWindow::ShouldUseLayerForShapedWindow() const {
+  return false;
+}
+
 }  // namespace ui

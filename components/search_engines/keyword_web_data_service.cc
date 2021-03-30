@@ -122,17 +122,17 @@ WebDataServiceBase::Handle KeywordWebDataService::GetKeywords(
   CommitQueuedOperations();
 
   return wdbs_->ScheduleDBTaskWithResult(
-      FROM_HERE, base::Bind(&GetKeywordsImpl), consumer);
+      FROM_HERE, base::BindOnce(&GetKeywordsImpl), consumer);
 }
 
 void KeywordWebDataService::SetDefaultSearchProviderID(TemplateURLID id) {
   wdbs_->ScheduleDBTask(FROM_HERE,
-                        base::Bind(&SetDefaultSearchProviderIDImpl, id));
+                        base::BindOnce(&SetDefaultSearchProviderIDImpl, id));
 }
 
 void KeywordWebDataService::SetBuiltinKeywordVersion(int version) {
   wdbs_->ScheduleDBTask(FROM_HERE,
-                        base::Bind(&SetBuiltinKeywordVersionImpl, version));
+                        base::BindOnce(&SetBuiltinKeywordVersionImpl, version));
 }
 
 void KeywordWebDataService::ShutdownOnUISequence() {
@@ -167,8 +167,9 @@ void KeywordWebDataService::AdjustBatchModeLevel(bool entering_batch_mode) {
 
 void KeywordWebDataService::CommitQueuedOperations() {
   if (!queued_keyword_operations_.empty()) {
-    wdbs_->ScheduleDBTask(FROM_HERE, base::Bind(&PerformKeywordOperationsImpl,
-                                                queued_keyword_operations_));
+    wdbs_->ScheduleDBTask(FROM_HERE,
+                          base::BindOnce(&PerformKeywordOperationsImpl,
+                                         queued_keyword_operations_));
     queued_keyword_operations_.clear();
   }
   timer_.Stop();

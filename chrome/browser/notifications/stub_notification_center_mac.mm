@@ -6,15 +6,17 @@
 
 #include "base/check.h"
 #include "base/mac/scoped_nsobject.h"
-#include "chrome/browser/ui/cocoa/notifications/notification_constants_mac.h"
+#include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
 
 @implementation StubNotificationCenter {
   base::scoped_nsobject<NSMutableArray> _banners;
+  id<NSUserNotificationCenterDelegate> _delegate;
 }
 
 - (instancetype)init {
   if ((self = [super init])) {
     _banners.reset([[NSMutableArray alloc] init]);
+    _delegate = nil;
   }
   return self;
 }
@@ -41,15 +43,20 @@
       objectForKey:notification_constants::kNotificationId];
   NSString* profileId = [notification.userInfo
       objectForKey:notification_constants::kNotificationProfileId];
+  BOOL incognito = [[notification.userInfo
+      objectForKey:notification_constants::kNotificationIncognito] boolValue];
   DCHECK(profileId);
   DCHECK(notificationId);
   for (NSUserNotification* toast in _banners.get()) {
     NSString* toastId =
         [toast.userInfo objectForKey:notification_constants::kNotificationId];
-    NSString* persistentProfileId = [toast.userInfo
+    NSString* toastProfileId = [toast.userInfo
         objectForKey:notification_constants::kNotificationProfileId];
-    if ([toastId isEqualToString:notificationId] &&
-        [persistentProfileId isEqualToString:profileId]) {
+    BOOL toastIncognito = [[toast.userInfo
+        objectForKey:notification_constants::kNotificationIncognito] boolValue];
+    if ([notificationId isEqualToString:toastId] &&
+        [profileId isEqualToString:toastProfileId] &&
+        incognito == toastIncognito) {
       [_banners removeObject:toast];
       break;
     }
@@ -60,9 +67,12 @@
   [_banners removeAllObjects];
 }
 
-// Need to provide a nop implementation of setDelegate as it is
-// used during the setup of the bridge.
-- (void)setDelegate:(id<NSUserNotificationCenterDelegate>)delegate {
+- (void)setDelegate:(id<NSUserNotificationCenterDelegate> _Nullable)delegate {
+  _delegate = delegate;
+}
+
+- (id<NSUserNotificationCenterDelegate> _Nullable)delegate {
+  return _delegate;
 }
 
 @end

@@ -4,54 +4,7 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_js.gni")
-import("//tools/polymer/polymer.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../settings.gni")
-
-js_type_check("closure_compile") {
-  deps = [
-    ":languages",
-    ":languages_browser_proxy",
-  ]
-}
-
-js_library("languages_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr" ]
-  externs_list = [
-    "$externs_path/chrome_send.js",
-    "$externs_path/input_method_private.js",
-    "$externs_path/language_settings_private.js",
-  ]
-  extra_sources = [
-    "$interfaces_path/input_method_private_interface.js",
-    "$interfaces_path/language_settings_private_interface.js",
-  ]
-}
-
-js_library("languages") {
-  deps = [
-    ":languages_browser_proxy",
-    ":languages_types",
-    "../prefs",
-    "../prefs:prefs_types",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:promise_resolver",
-  ]
-  externs_list = [
-    "$externs_path/input_method_private.js",
-    "$externs_path/language_settings_private.js",
-  ]
-  extra_sources = [
-    "$interfaces_path/input_method_private_interface.js",
-    "$interfaces_path/language_settings_private_interface.js",
-  ]
-}
-
-js_library("languages_types") {
-  externs_list = [ "$externs_path/language_settings_private.js" ]
-}
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
@@ -59,31 +12,36 @@ js_type_check("closure_compile_module") {
   deps = [
     ":add_languages_dialog",
     ":edit_dictionary_page",
-    ":languages.m",
-    ":languages_browser_proxy.m",
+    ":languages",
+    ":languages_browser_proxy",
     ":languages_metrics_proxy",
     ":languages_page",
+    ":languages_settings_metrics_proxy",
+    ":languages_subpage",
     ":languages_types",
   ]
 }
 
+js_library("languages_types") {
+  externs_list = [ "$externs_path/language_settings_private.js" ]
+}
+
 js_library("add_languages_dialog") {
   deps = [
-    ":languages.m",
     ":languages_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements:cr_scrollable_behavior.m",
-    "//ui/webui/resources/cr_elements:find_shortcut_behavior.m",
-    "//ui/webui/resources/cr_elements/cr_search_field:cr_search_field.m",
+    "//ui/webui/resources/cr_elements:find_shortcut_behavior",
+    "//ui/webui/resources/cr_elements/cr_search_field:cr_search_field",
   ]
 }
 
 js_library("edit_dictionary_page") {
   deps = [
-    ":languages_browser_proxy.m",
-    "..:global_scroll_target_behavior.m",
+    ":languages_browser_proxy",
+    "..:global_scroll_target_behavior",
     "..:route",
-    "../prefs:prefs.m",
+    "../prefs:prefs",
     "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
@@ -91,14 +49,13 @@ js_library("edit_dictionary_page") {
   ]
 }
 
-js_library("languages.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/languages_page/languages.m.js" ]
+js_library("languages") {
   deps = [
-    ":languages_browser_proxy.m",
+    ":languages_browser_proxy",
     ":languages_types",
-    "../prefs:prefs.m",
-    "../prefs:prefs_behavior.m",
-    "../prefs:prefs_types.m",
+    "../prefs:prefs",
+    "../prefs:prefs_behavior",
+    "../prefs:prefs_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
@@ -114,11 +71,9 @@ js_library("languages.m") {
     "$interfaces_path/input_method_private_interface.js",
     "$interfaces_path/language_settings_private_interface.js",
   ]
-  extra_deps = [ ":languages_module" ]
 }
 
-js_library("languages_browser_proxy.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/languages_page/languages_browser_proxy.m.js" ]
+js_library("languages_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
   externs_list = [
     "$externs_path/chrome_send.js",
@@ -129,7 +84,6 @@ js_library("languages_browser_proxy.m") {
     "$interfaces_path/input_method_private_interface.js",
     "$interfaces_path/language_settings_private_interface.js",
   ]
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("languages_metrics_proxy") {
@@ -137,17 +91,39 @@ js_library("languages_metrics_proxy") {
   externs_list = [ "$externs_path/metrics_private.js" ]
 }
 
+js_library("languages_settings_metrics_proxy") {
+  deps = [ "//ui/webui/resources/js:cr.m" ]
+  externs_list = [ "$externs_path/metrics_private.js" ]
+}
+
 js_library("languages_page") {
   deps = [
-    ":languages.m",
+    ":languages",
     ":languages_metrics_proxy",
-    "..:lifetime_browser_proxy.m",
+    ":languages_settings_metrics_proxy",
+    "..:lifetime_browser_proxy",
     "..:route",
-    "..:router.m",
-    "../settings_page:settings_animated_pages.m",
+    "..:router",
+    "../settings_page:settings_animated_pages",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_expand_button:cr_expand_button.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
+  ]
+}
+
+js_library("languages_subpage") {
+  deps = [
+    ":languages",
+    ":languages_metrics_proxy",
+    ":languages_settings_metrics_proxy",
+    "..:lifetime_browser_proxy",
+    "..:route",
+    "..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
-    "//ui/webui/resources/cr_elements/cr_expand_button:cr_expand_button.m",
     "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render.m",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
@@ -156,35 +132,11 @@ js_library("languages_page") {
   ]
 }
 
-group("polymer3_elements") {
-  public_deps = [
-    ":languages_module",
-    ":modulize",
-    ":web_components",
-  ]
-}
-
 html_to_js("web_components") {
   js_files = [
     "add_languages_dialog.js",
     "edit_dictionary_page.js",
     "languages_page.js",
+    "languages_subpage.js",
   ]
-}
-
-polymer_modulizer("languages") {
-  js_file = "languages.js"
-  html_file = "languages.html"
-  html_type = "dom-module"
-  auto_imports = settings_auto_imports + [
-                   "chrome/browser/resources/settings/languages_page/languages_browser_proxy.html|LanguagesBrowserProxy,LanguagesBrowserProxyImpl",
-                   "ui/webui/resources/html/assert.html|assert",
-                   "ui/webui/resources/html/cr.html|isChromeOS, isWindows",
-                 ]
-  namespace_rewrites = settings_namespace_rewrites
-}
-
-js_modulizer("modulize") {
-  input_files = [ "languages_browser_proxy.js" ]
-  namespace_rewrites = settings_namespace_rewrites
 }

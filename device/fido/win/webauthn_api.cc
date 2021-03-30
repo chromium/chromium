@@ -8,22 +8,25 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/strings/string_util_win.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "components/device_event_log/device_event_log.h"
+#include "device/fido/features.h"
 #include "device/fido/win/logging.h"
 #include "device/fido/win/type_conversions.h"
 
 namespace device {
 
 namespace {
-base::string16 OptionalGURLToUTF16(const base::Optional<GURL>& in) {
-  return in ? base::UTF8ToUTF16(in->spec()) : base::string16();
+std::u16string OptionalGURLToUTF16(const base::Optional<GURL>& in) {
+  return in ? base::UTF8ToUTF16(in->spec()) : std::u16string();
 }
 }  // namespace
 
@@ -35,6 +38,10 @@ constexpr uint32_t kWinWebAuthnTimeoutMilliseconds = 1000 * 60 * 5;
 class WinWebAuthnApiImpl : public WinWebAuthnApi {
  public:
   WinWebAuthnApiImpl() : WinWebAuthnApi(), is_bound_(false) {
+    if (!base::FeatureList::IsEnabled(device::kWebAuthUseNativeWinApi)) {
+      FIDO_LOG(DEBUG) << "Windows WebAuthn API deactivated via feature flag";
+      return;
+    }
     {
       // Mitigate the issues caused by loading DLLs on a background thread
       // (http://crbug/973868).
@@ -43,6 +50,7 @@ class WinWebAuthnApiImpl : public WinWebAuthnApi {
           LoadLibraryExA("webauthn.dll", NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
     }
     if (!webauthn_dll_) {
+      FIDO_LOG(ERROR) << "Windows WebAuthn API failed to load";
       return;
     }
 
@@ -98,6 +106,8 @@ class WinWebAuthnApiImpl : public WinWebAuthnApi {
     // Mitigate the issues caused by loading DLLs on a background thread
     // (http://crbug/973868).
     SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
+    base::ScopedBlockingCall scoped_blocking_call(
+        FROM_HERE, base::BlockingType::MAY_BLOCK);
     return is_user_verifying_platform_authenticator_available_(available);
   }
 
@@ -110,6 +120,8 @@ class WinWebAuthnApiImpl : public WinWebAuthnApi {
       PCWEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS options,
       PWEBAUTHN_CREDENTIAL_ATTESTATION* credential_attestation_ptr) override {
     DCHECK(is_bound_);
+    base::ScopedBlockingCall scoped_blocking_call(
+        FROM_HERE, base::BlockingType::MAY_BLOCK);
     return authenticator_make_credential_(
         h_wnd, rp, user, cose_credential_parameters, client_data, options,
         credential_attestation_ptr);
@@ -122,6 +134,8 @@ class WinWebAuthnApiImpl : public WinWebAuthnApi {
       PCWEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS options,
       PWEBAUTHN_ASSERTION* assertion_ptr) override {
     DCHECK(is_bound_);
+    base::ScopedBlockingCall scoped_blocking_call(
+        FROM_HERE, base::BlockingType::MAY_BLOCK);
     return authenticator_get_assertion_(h_wnd, rp_id, client_data, options,
                                         assertion_ptr);
   }
@@ -189,16 +203,16 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
                                     CtapMakeCredentialRequest request) {
   DCHECK(webauthn_api->IsAvailable());
 
-  base::string16 rp_id = base::UTF8ToUTF16(request.rp.id);
-  base::string16 rp_name = base::UTF8ToUTF16(request.rp.name.value_or(""));
-  base::string16 rp_icon_url = OptionalGURLToUTF16(request.rp.icon_url);
+  std::u16string rp_id = base::UTF8ToUTF16(request.rp.id);
+  std::u16string rp_name = base::UTF8ToUTF16(request.rp.name.value_or(""));
+  std::u16string rp_icon_url = OptionalGURLToUTF16(request.rp.icon_url);
   WEBAUTHN_RP_ENTITY_INFORMATION rp_info{
       WEBAUTHN_RP_ENTITY_INFORMATION_CURRENT_VERSION, base::as_wcstr(rp_id),
       base::as_wcstr(rp_name), base::as_wcstr(rp_icon_url)};
 
-  base::string16 user_name = base::UTF8ToUTF16(request.user.name.value_or(""));
-  base::string16 user_icon_url = OptionalGURLToUTF16(request.user.icon_url);
-  base::string16 user_display_name =
+  std::u16string user_name = base::UTF8ToUTF16(request.user.name.value_or(""));
+  std::u16string user_icon_url = OptionalGURLToUTF16(request.user.icon_url);
+  std::u16string user_display_name =
       base::UTF8ToUTF16(request.user.display_name.value_or(""));
   std::vector<uint8_t> user_id = request.user.id;
   WEBAUTHN_USER_ENTITY_INFORMATION user_info{
@@ -268,9 +282,12 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
   if (request.is_u2f_only) {
     authenticator_attachment =
         WEBAUTHN_AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM_U2F_V2;
-  } else if (request.is_incognito_mode) {
-    // Disable all platform authenticators in incognito mode. We are going to
-    // revisit this in crbug/908622.
+  } else if (request.is_off_the_record_context) {
+    // Disable all platform authenticators in off-the-record contexts.
+    //
+    // TODO(crbug.com/908622): Revisit this if the Windows WebAuthn API supports
+    // showing an equivalent dialog to what Chrome is displaying before creating
+    // a platform credential in Incognito mode.
     authenticator_attachment = WEBAUTHN_AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM;
   } else {
     authenticator_attachment =
@@ -344,7 +361,7 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
                                   CtapGetAssertionOptions request_options) {
   DCHECK(webauthn_api->IsAvailable());
 
-  base::string16 rp_id16 = base::UTF8ToUTF16(request.rp_id);
+  std::u16string rp_id16 = base::UTF8ToUTF16(request.rp_id);
   std::string client_data_json = request.client_data_json;
   WEBAUTHN_CLIENT_DATA client_data{
       WEBAUTHN_CLIENT_DATA_CURRENT_VERSION, client_data_json.size(),
@@ -352,7 +369,7 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
           reinterpret_cast<const unsigned char*>(client_data_json.data())),
       WEBAUTHN_HASH_ALGORITHM_SHA_256};
 
-  base::Optional<base::string16> opt_app_id16 = base::nullopt;
+  base::Optional<std::u16string> opt_app_id16 = base::nullopt;
   if (request.app_id) {
     opt_app_id16 = base::UTF8ToUTF16(
         base::StringPiece(reinterpret_cast<const char*>(request.app_id->data()),
@@ -378,9 +395,12 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
   if (request.is_u2f_only) {
     authenticator_attachment =
         WEBAUTHN_AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM_U2F_V2;
-  } else if (request.is_incognito_mode) {
-    // Disable all platform authenticators in incognito mode. We are going to
-    // revisit this in crbug/908622.
+  } else if (request.is_off_the_record_context) {
+    // Disable all platform authenticators in off-the-record contexts.
+    //
+    // TODO(crbug.com/908622): Revisit this if the Windows WebAuthn API supports
+    // showing an equivalent dialog to what Chrome is displaying before creating
+    // a platform credential in Incognito mode.
     authenticator_attachment = WEBAUTHN_AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM;
   } else {
     authenticator_attachment = WEBAUTHN_AUTHENTICATOR_ATTACHMENT_ANY;
@@ -437,7 +457,7 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
       ToAuthenticatorGetAssertionResponse(*assertion, request.allow_list);
   if (response && !request_options.prf_inputs.empty()) {
     // Windows does not yet support passing in inputs for hmac_secret.
-    response->set_hmac_secret_not_evaluated(true);
+    response->hmac_secret_not_evaluated = true;
   }
   return {response ? CtapDeviceResponseCode::kSuccess
                    : CtapDeviceResponseCode::kCtap2ErrOther,

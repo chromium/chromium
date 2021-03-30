@@ -10,7 +10,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "components/autofill/content/renderer/html_based_username_detector.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -171,7 +171,7 @@ std::unique_ptr<FormData> CreateFormDataFromUnownedInputElements(
     return nullptr;
 
   auto form_data = std::make_unique<FormData>();
-  if (!UnownedPasswordFormElementsAndFieldSetsToFormData(
+  if (!UnownedFormElementsAndFieldSetsToFormData(
           fieldsets, control_elements, nullptr, frame.GetDocument(),
           field_data_manager, form_util::EXTRACT_VALUE, form_data.get(),
           nullptr /* FormFieldData */)) {

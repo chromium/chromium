@@ -9,8 +9,6 @@
 #include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::TimeDelta;
-
 namespace content {
 
 class MockTapSuppressionController : public TapSuppressionController {
@@ -143,7 +141,8 @@ TEST_F(TapSuppressionControllerTest, GFCAckBeforeTapInsufficientlyLateTapDown) {
 
   // Wait less than allowed delay between GestureFlingCancel and TapDown, so the
   // TapDown is still considered associated with the GestureFlingCancel.
-  tap_suppression_controller_->AdvanceTime(TimeDelta::FromMilliseconds(7));
+  tap_suppression_controller_->AdvanceTime(
+      base::TimeDelta::FromMilliseconds(7));
   EXPECT_EQ(MockTapSuppressionController::NONE,
             tap_suppression_controller_->last_actions());
   EXPECT_EQ(MockTapSuppressionController::LAST_CANCEL_STOPPED_FLING,
@@ -176,7 +175,8 @@ TEST_F(TapSuppressionControllerTest, GFCAckBeforeTapSufficientlyLateTapDown) {
 
   // Wait more than allowed delay between GestureFlingCancel and TapDown, so the
   // TapDown is not considered associated with the GestureFlingCancel.
-  tap_suppression_controller_->AdvanceTime(TimeDelta::FromMilliseconds(13));
+  tap_suppression_controller_->AdvanceTime(
+      base::TimeDelta::FromMilliseconds(13));
   EXPECT_EQ(MockTapSuppressionController::NONE,
             tap_suppression_controller_->last_actions());
   EXPECT_EQ(MockTapSuppressionController::LAST_CANCEL_STOPPED_FLING,

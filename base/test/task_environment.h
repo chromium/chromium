@@ -292,10 +292,9 @@ class TaskEnvironment {
   // TimeSource::MOCK_TIME.
   base::TimeTicks NowTicks() const;
 
-  // Only valid for instances using TimeSource::MOCK_TIME. Returns the
-  // number of pending tasks (delayed and non-delayed) of the main thread's
-  // TaskRunner. When debugging, you can use DescribePendingMainThreadTasks() to
-  // see what those are.
+  // Only valid for instances using TimeSource::MOCK_TIME. Returns the number of
+  // pending tasks (delayed and non-delayed) of the main thread's TaskRunner.
+  // When debugging, you can use DescribeCurrentTasks() to see what those are.
   size_t GetPendingMainThreadTaskCount() const;
 
   // Only valid for instances using TimeSource::MOCK_TIME.
@@ -309,8 +308,13 @@ class TaskEnvironment {
   bool NextTaskIsDelayed() const;
 
   // For debugging purposes: Dumps information about pending tasks on the main
-  // thread.
-  void DescribePendingMainThreadTasks() const;
+  // thread, and currently running tasks on the thread pool.
+  void DescribeCurrentTasks() const;
+
+  class TestTaskTracker;
+  // Callers outside of TaskEnvironment may not use the returned pointer. They
+  // should just use base::ThreadPoolInstance::Get().
+  static TestTaskTracker* CreateThreadPool();
 
   class DestructionObserver : public CheckedObserver {
    public:
@@ -360,7 +364,6 @@ class TaskEnvironment {
   void NotifyDestructionObserversAndReleaseSequenceManager();
 
  private:
-  class TestTaskTracker;
   class MockTimeDomain;
 
   void InitializeThreadPool();

@@ -62,7 +62,7 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
       service_manager::BinderRegistry* registry,
       blink::AssociatedInterfaceRegistry* associated_registry,
       RenderProcessHost* render_process_host) override;
-  void OverrideWebkitPrefs(RenderViewHost* render_view_host,
+  void OverrideWebkitPrefs(WebContents* web_contents,
                            blink::web_pref::WebPreferences* prefs) override;
   void AppendExtraCommandLineSwitches(base::CommandLine* command_line,
                                       int child_process_id) override;
@@ -103,8 +103,9 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
       bool first_auth_attempt,
       LoginAuthRequiredCallback auth_required_callback) override;
 #if defined(OS_WIN)
-  bool PreSpawnRenderer(sandbox::TargetPolicy* policy,
-                        RendererSpawnFlags flags) override;
+  bool PreSpawnChild(sandbox::TargetPolicy* policy,
+                     sandbox::policy::SandboxType sandbox_type,
+                     ChildSpawnFlags flags) override;
 #endif
   std::string GetAcceptLangs(BrowserContext* context) override;
   void GetHyphenationDictionary(
@@ -115,8 +116,8 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
   void ConfigureNetworkContextParamsForShell(
       BrowserContext* context,
       network::mojom::NetworkContextParams* context_params,
-      network::mojom::CertVerifierCreationParams* cert_verifier_creation_params)
-      override;
+      cert_verifier::mojom::CertVerifierCreationParams*
+          cert_verifier_creation_params) override;
 
   // Creates and stores a FakeBluetoothChooserFactory instance.
   void CreateFakeBluetoothChooserFactory(
@@ -145,7 +146,7 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
 
   std::unique_ptr<MockPlatformNotificationService>
       mock_platform_notification_service_;
-  bool block_popups_ = false;
+  bool block_popups_ = true;
   bool screen_orientation_changed_ = false;
 
   // Stores the FakeBluetoothChooserFactory that produces FakeBluetoothChoosers.

@@ -353,7 +353,7 @@ void ThreadDebugger::installAdditionalCommandLineAPI(
           isolate_, ScriptState::From(context),
           ScriptSourceCode("(function(e) { console.log(e.type, e); })",
                            ScriptSourceLocationType::kInternal, nullptr, KURL(),
-                           TextPosition()))
+                           TextPosition::MinimumPosition()))
           .ToLocal(&function_value) &&
       function_value->IsFunction();
   DCHECK(success);
@@ -539,9 +539,8 @@ void ThreadDebugger::consoleTimeStamp(const v8_inspector::StringView& title) {
   ExecutionContext* ec = CurrentExecutionContext(isolate_);
   // TODO(dgozman): we can save on a copy here if TracedValue would take a
   // StringView.
-  TRACE_EVENT_INSTANT1(
-      "devtools.timeline", "TimeStamp", TRACE_EVENT_SCOPE_THREAD, "data",
-      inspector_time_stamp_event::Data(ec, ToCoreString(title)));
+  DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
+      "TimeStamp", inspector_time_stamp_event::Data, ec, ToCoreString(title));
   probe::ConsoleTimeStamp(ec, ToCoreString(title));
 }
 

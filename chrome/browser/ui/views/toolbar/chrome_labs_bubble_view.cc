@@ -10,14 +10,21 @@
 #include "chrome/browser/flag_descriptions.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/webui/flags/flags_ui.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/google_chrome_strings.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
+#include "components/version_info/channel.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -27,12 +34,13 @@ enum class ChromeLabsSelectedLab {
   kUnspecifiedSelected = 0,
   kReadLaterSelected = 1,
   kTabSearchSelected = 2,
-  kMaxValue = kTabSearchSelected,
+  kTabScrollingSelected = 3,
+  kMaxValue = kTabScrollingSelected,
 };
 
-void EmitToHistogram(const base::string16& selected_lab_state,
+void EmitToHistogram(const std::u16string& selected_lab_state,
                      const std::string& internal_name) {
-  const auto get_histogram_name = [](const base::string16& selected_lab_state) {
+  const auto get_histogram_name = [](const std::u16string& selected_lab_state) {
     if (selected_lab_state == base::ASCIIToUTF16(base::StringPiece(
                                   flags_ui::kGenericExperimentChoiceDefault))) {
       return "Toolbar.ChromeLabs.DefaultLabAction";
@@ -54,6 +62,8 @@ void EmitToHistogram(const base::string16& selected_lab_state,
       return ChromeLabsSelectedLab::kReadLaterSelected;
     } else if (internal_name == flag_descriptions::kEnableTabSearchFlagId) {
       return ChromeLabsSelectedLab::kTabSearchSelected;
+    } else if (internal_name == flag_descriptions::kScrollableTabStripFlagId) {
+      return ChromeLabsSelectedLab::kTabScrollingSelected;
     } else {
       return ChromeLabsSelectedLab::kUnspecifiedSelected;
     }
@@ -68,26 +78,34 @@ ChromeLabsBubbleView* g_chrome_labs_bubble = nullptr;
 
 class ChromeLabsFooter : public views::View {
  public:
+  METADATA_HEADER(ChromeLabsFooter);
   ChromeLabsFooter() {
     SetLayoutManager(std::make_unique<views::FlexLayout>())
-        ->SetOrientation(views::LayoutOrientation::kVertical);
+        ->SetOrientation(views::LayoutOrientation::kVertical)
+        .SetCrossAxisAlignment(views::LayoutAlignment::kStart);
     AddChildView(
         views::Builder<views::Label>()
             .CopyAddressTo(&restart_label_)
-            .SetText(base::ASCIIToUTF16(
-                "Your changes will take effect the next time you "
-                "relaunch Google Chrome."))
+            .SetText(l10n_util::GetStringUTF16(
+                IDS_CHROMELABS_RELAUNCH_FOOTER_MESSAGE))
             .SetMultiLine(true)
             .SetHorizontalAlignment(gfx::ALIGN_LEFT)
             .SetProperty(views::kFlexBehaviorKey,
                          views::FlexSpecification(
                              views::MinimumFlexSizeRule::kPreferred,
                              views::MaximumFlexSizeRule::kPreferred, true))
+            .SetBorder(views::CreateEmptyBorder(
+                gfx::Insets(0, 0,
+                            views::LayoutProvider::Get()->GetDistanceMetric(
+                                views::DISTANCE_RELATED_CONTROL_VERTICAL),
+                            0)))
             .Build());
     AddChildView(views::Builder<views::MdTextButton>()
                      .CopyAddressTo(&restart_button_)
                      .SetCallback(base::BindRepeating(&chrome::AttemptRestart))
-                     .SetText(base::ASCIIToUTF16("Relaunch"))
+                     .SetText(l10n_util::GetStringUTF16(
+                         IDS_CHROMELABS_RELAUNCH_BUTTON_LABEL))
+                     .SetProminent(true)
                      .Build());
     SetBackground(views::CreateThemedSolidBackground(
         this, ui::NativeTheme::kColorId_BubbleFooterBackground));
@@ -103,14 +121,16 @@ class ChromeLabsFooter : public views::View {
   views::Label* restart_label_;
 };
 
+BEGIN_METADATA(ChromeLabsFooter, views::View)
+END_METADATA
+
 }  // namespace
 
 // static
-void ChromeLabsBubbleView::Show(
-    views::View* anchor_view,
-    std::unique_ptr<ChromeLabsBubbleViewModel> model) {
-  g_chrome_labs_bubble =
-      new ChromeLabsBubbleView(anchor_view, std::move(model));
+void ChromeLabsBubbleView::Show(views::View* anchor_view,
+                                Browser* browser,
+                                const ChromeLabsBubbleViewModel* model) {
+  g_chrome_labs_bubble = new ChromeLabsBubbleView(anchor_view, browser, model);
   views::Widget* const widget =
       BubbleDialogDelegateView::CreateBubble(g_chrome_labs_bubble);
   widget->Show();
@@ -134,13 +154,14 @@ ChromeLabsBubbleView::~ChromeLabsBubbleView() {
 
 ChromeLabsBubbleView::ChromeLabsBubbleView(
     views::View* anchor_view,
-    std::unique_ptr<ChromeLabsBubbleViewModel> model)
+    Browser* browser,
+    const ChromeLabsBubbleViewModel* model)
     : BubbleDialogDelegateView(anchor_view,
                                views::BubbleBorder::Arrow::TOP_RIGHT),
-      model_(std::move(model)) {
+      model_(model) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetShowCloseButton(true);
-  SetTitle(base::ASCIIToUTF16("Chrome Labs"));
+  SetTitle(l10n_util::GetStringUTF16(IDS_WINDOW_TITLE_EXPERIMENTS));
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
@@ -153,29 +174,37 @@ ChromeLabsBubbleView::ChromeLabsBubbleView(
   flags_state_ = about_flags::GetCurrentFlagsState();
 
   menu_item_container_ = AddChildView(
-      views::Builder<views::View>()
+      views::Builder<views::FlexLayoutView>()
+          .SetOrientation(views::LayoutOrientation::kVertical)
           .SetProperty(views::kFlexBehaviorKey,
                        views::FlexSpecification(
                            views::MinimumFlexSizeRule::kScaleToZero,
                            views::MaximumFlexSizeRule::kPreferred, true))
+          .SetBorder(views::CreateEmptyBorder(
+              views::LayoutProvider::Get()->GetInsetsMetric(
+                  views::INSETS_DIALOG)))
           .Build());
-  menu_item_container_->SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetDefault(views::kMarginsKey, gfx::Insets(10));
 
   // Create each lab item.
   const std::vector<LabInfo>& all_labs = model_->GetLabInfo();
   for (const auto& lab : all_labs) {
     const flags_ui::FeatureEntry* entry =
         flags_state_->FindFeatureEntryByName(lab.internal_name);
-    if (IsFeatureSupportedOnPlatform(entry)) {
-      DCHECK_EQ(entry->type, flags_ui::FeatureEntry::FEATURE_VALUE);
+    if (IsFeatureSupportedOnChannel(lab) &&
+        IsFeatureSupportedOnPlatform(entry) &&
+        !about_flags::ShouldSkipConditionalFeatureEntry(flags_storage_.get(),
+                                                        *entry)) {
+      bool valid_entry_type =
+          entry->type == flags_ui::FeatureEntry::FEATURE_VALUE ||
+          entry->type == flags_ui::FeatureEntry::FEATURE_WITH_PARAMS_VALUE;
+      DCHECK(valid_entry_type);
       int default_index = GetIndexOfEnabledLabState(entry);
       menu_item_container_->AddChildView(
-          CreateLabItem(lab, default_index, entry));
+          CreateLabItem(lab, default_index, entry, browser));
     }
   }
-  // TODO(elainechien): Build UI for 0 experiments case.
+  // ChromeLabsButton should not appear in the toolbar if there are no
+  // experiments to show. Therefore ChromeLabsBubble should not be created.
   DCHECK(menu_item_container_->children().size() >= 1);
 
   restart_prompt_ = AddChildView(std::make_unique<ChromeLabsFooter>());
@@ -185,14 +214,17 @@ ChromeLabsBubbleView::ChromeLabsBubbleView(
 std::unique_ptr<ChromeLabsItemView> ChromeLabsBubbleView::CreateLabItem(
     const LabInfo& lab,
     int default_index,
-    const flags_ui::FeatureEntry* entry) {
+    const flags_ui::FeatureEntry* entry,
+    Browser* browser) {
   auto combobox_callback = [](ChromeLabsBubbleView* bubble_view,
                               std::string internal_name,
                               ChromeLabsItemView* item_view) {
     int selected_index = item_view->GetSelectedIndex();
     about_flags::SetFeatureEntryEnabled(
         bubble_view->flags_storage_.get(),
-        internal_name + "@" + base::NumberToString(selected_index), true);
+        internal_name + flags_ui::kMultiSeparatorChar +
+            base::NumberToString(selected_index),
+        true);
     bubble_view->ShowRelaunchPrompt();
     EmitToHistogram(
         item_view->GetFeatureEntry()->DescriptionForOption(selected_index),
@@ -202,7 +234,8 @@ std::unique_ptr<ChromeLabsItemView> ChromeLabsBubbleView::CreateLabItem(
   std::unique_ptr<ChromeLabsItemView> item_view =
       std::make_unique<ChromeLabsItemView>(
           lab, default_index, entry,
-          base::BindRepeating(combobox_callback, this, lab.internal_name));
+          base::BindRepeating(combobox_callback, this, lab.internal_name),
+          browser);
 
   item_view->SetProperty(
       views::kFlexBehaviorKey,
@@ -222,6 +255,10 @@ int ChromeLabsBubbleView::GetIndexOfEnabledLabState(
       return i;
   }
   return 0;
+}
+
+bool ChromeLabsBubbleView::IsFeatureSupportedOnChannel(const LabInfo& lab) {
+  return chrome::GetChannel() <= lab.allowed_channel;
 }
 
 // TODO(elainechien): ChromeOS specific logic for owner access only flags.
@@ -258,3 +295,6 @@ views::View* ChromeLabsBubbleView::GetMenuItemContainerForTesting() {
 bool ChromeLabsBubbleView::IsRestartPromptVisibleForTesting() {
   return restart_prompt_->GetVisible();
 }
+
+BEGIN_METADATA(ChromeLabsBubbleView, views::BubbleDialogDelegateView)
+END_METADATA

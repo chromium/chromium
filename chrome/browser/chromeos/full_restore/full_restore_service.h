@@ -14,13 +14,20 @@
 
 class Profile;
 
+namespace message_center {
+class Notification;
+}
+
 namespace chromeos {
 namespace full_restore {
 
+class AppLaunchHandler;
+class FullRestoreDataHandler;
 class NewUserRestorePrefHandler;
 
 extern const char kRestoreForCrashNotificationId[];
 extern const char kRestoreNotificationId[];
+extern const char kSetRestorePrefNotificationId[];
 
 // The restore notification button index.
 enum class RestoreNotificationButtonIndex {
@@ -30,31 +37,32 @@ enum class RestoreNotificationButtonIndex {
 
 // The FullRestoreService class calls AppService and Window Management
 // interfaces to restore the app launchings and app windows.
-//
-// 1. If the system is recovered from the crash, creates the notification to let
-// the user select restore or not.
-// 2. For normal reboot, read the restore setting fromt the user pref, and based
-// on the setting to decide restore or not.
-//
-// TODO(crbug.com/909794): Observe the AppRegistryCache to read the app info,
-// and restore apps and app windows.
 class FullRestoreService : public KeyedService {
  public:
+  static FullRestoreService* GetForProfile(Profile* profile);
+
   explicit FullRestoreService(Profile* profile);
   ~FullRestoreService() override;
 
   FullRestoreService(const FullRestoreService&) = delete;
   FullRestoreService& operator=(const FullRestoreService&) = delete;
 
+  // Launches the browser, When the restore data is loaded, and the user chooses
+  // to restore.
+  void LaunchBrowserWhenReady();
+
+  void RestoreForTesting();
+
  private:
+  void Init();
+
   // KeyedService overrides.
   void Shutdown() override;
 
   // Show the restore notification on startup.
   void ShowRestoreNotification(const std::string& id);
 
-  void HandleRestoreNotificationClicked(const std::string& id,
-                                        base::Optional<int> button_index);
+  void HandleRestoreNotificationClicked(base::Optional<int> button_index);
 
   // Implement the restoration.
   void Restore();
@@ -64,6 +72,14 @@ class FullRestoreService : public KeyedService {
   bool is_shut_down_ = false;
 
   std::unique_ptr<NewUserRestorePrefHandler> new_user_pref_handler_;
+
+  // |app_launch_handler_| is responsible for launching apps based on the
+  // restore data.
+  std::unique_ptr<AppLaunchHandler> app_launch_handler_;
+
+  std::unique_ptr<FullRestoreDataHandler> restore_data_handler_;
+
+  std::unique_ptr<message_center::Notification> notification_;
 
   base::WeakPtrFactory<FullRestoreService> weak_ptr_factory_{this};
 };

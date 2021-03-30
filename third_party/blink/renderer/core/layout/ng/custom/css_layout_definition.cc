@@ -222,10 +222,10 @@ bool CSSLayoutDefinition::Instance::IntrinsicSizes(
     const NGBlockNode& node,
     const LogicalSize& border_box_size,
     const NGBoxStrut& border_scrollbar_padding,
-    const LayoutUnit child_percentage_resolution_block_size_for_min_max,
+    const LayoutUnit child_available_block_size,
     CustomLayoutScope* custom_layout_scope,
     IntrinsicSizesResultOptions** intrinsic_sizes_result_options,
-    bool* child_depends_on_percentage_block_size) {
+    bool* child_depends_on_block_constraints) {
   ScriptState* script_state = definition_->GetScriptState();
   v8::Isolate* isolate = script_state->GetIsolate();
 
@@ -276,9 +276,8 @@ bool CSSLayoutDefinition::Instance::IntrinsicSizes(
     // The queue may mutate (re-allocating the vector) while running a task.
     for (wtf_size_t index = 0; index < queue.size(); ++index) {
       auto task = queue[index];
-      task->Run(space, node.Style(),
-                child_percentage_resolution_block_size_for_min_max,
-                child_depends_on_percentage_block_size);
+      task->Run(space, node.Style(), child_available_block_size,
+                child_depends_on_block_constraints);
     }
     queue.clear();
     {

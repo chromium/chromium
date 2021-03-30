@@ -5,6 +5,10 @@
 #ifndef COMPONENTS_VIZ_TEST_TEST_FRAME_SINK_MANAGER_H_
 #define COMPONENTS_VIZ_TEST_TEST_FRAME_SINK_MANAGER_H_
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -62,9 +66,8 @@ class TestFrameSinkManagerImpl : public mojom::FrameSinkManager {
                        EvictBackBufferCallback callback) override {}
   void UpdateDebugRendererSettings(
       const DebugRendererSettings& debug_settings) override {}
-  void StartThrottling(const std::vector<FrameSinkId>& frame_sink_ids,
-                       base::TimeDelta interval) override {}
-  void EndThrottling() override {}
+  void Throttle(const std::vector<FrameSinkId>& ids,
+                base::TimeDelta interval) override {}
 
   mojo::Receiver<mojom::FrameSinkManager> receiver_{this};
   mojo::Remote<mojom::FrameSinkManagerClient> client_;

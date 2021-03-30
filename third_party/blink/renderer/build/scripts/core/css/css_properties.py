@@ -33,6 +33,8 @@ def validate_property(prop):
         'Only longhands can have a field_template [%s]' % name
     assert not prop['valid_for_first_letter'] or prop['is_longhand'], \
         'Only longhands can be valid_for_first_letter [%s]' % name
+    assert not prop['valid_for_first_line'] or prop['is_longhand'], \
+        'Only longhands can be valid_for_first_line [%s]' % name
     assert not prop['valid_for_cue'] or prop['is_longhand'], \
         'Only longhands can be valid_for_cue [%s]' % name
     assert not prop['valid_for_marker'] or prop['is_longhand'], \
@@ -382,6 +384,14 @@ class CSSProperties(object):
     @property
     def properties_including_aliases(self):
         return self._properties_including_aliases
+
+    # https://drafts.csswg.org/cssom/#supported-css-property
+    @property
+    def supported_properties(self):
+        return [
+            prop for prop in self._properties_including_aliases
+            if not prop['is_internal']
+        ]
 
     @property
     def first_property_id(self):

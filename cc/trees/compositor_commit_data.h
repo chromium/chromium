@@ -57,8 +57,9 @@ struct CC_EXPORT CompositorCommitData {
   ScrollUpdateInfo inner_viewport_scroll;
 
   std::vector<ScrollUpdateInfo> scrolls;
-  float page_scale_delta;
-  bool is_pinch_gesture_active;
+  float page_scale_delta = 1.f;
+  bool is_pinch_gesture_active = false;
+  bool is_scroll_active = false;
 
   // Elastic overscroll effect offset delta. This is used only on Mac and shows
   // the pixels that the page is rubber-banned/stretched by.
@@ -72,8 +73,8 @@ struct CC_EXPORT CompositorCommitData {
   // send overscroll/scrollend DOM events to proper targets whenever needed.
   ElementId scroll_latched_element_id;
 
-  float top_controls_delta;
-  float bottom_controls_delta;
+  float top_controls_delta = 0.f;
+  float bottom_controls_delta = 0.f;
 
   // Used to communicate scrollbar visibility from Impl thread to Blink.
   // Scrollbar input is handled by Blink but the compositor thread animates
@@ -91,12 +92,13 @@ struct CC_EXPORT CompositorCommitData {
   std::vector<ScrollbarsUpdateInfo> scrollbars;
 
   std::vector<std::unique_ptr<SwapPromise>> swap_promises;
-  BrowserControlsState browser_controls_constraint;
-  bool browser_controls_constraint_changed;
+  BrowserControlsState browser_controls_constraint =
+      BrowserControlsState::kBoth;
+  bool browser_controls_constraint_changed = false;
 
   // Set to true when a scroll gesture being handled on the compositor has
   // ended.
-  bool scroll_gesture_did_end;
+  bool scroll_gesture_did_end = false;
 
   // Tracks whether there is an ongoing compositor-driven animation for a
   // scroll.
@@ -104,7 +106,7 @@ struct CC_EXPORT CompositorCommitData {
 
   // Tracks different methods of scrolling (e.g. wheel, touch, precision
   // touchpad, etc.).
-  ManipulationInfo manipulation_info;
+  ManipulationInfo manipulation_info = kManipulationInfoNone;
 };
 
 }  // namespace cc

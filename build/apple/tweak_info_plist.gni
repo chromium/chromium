@@ -36,7 +36,7 @@ template("tweak_info_plist") {
                                "testonly",
                                "deps",
                              ])
-      script = "//build/config/mac/plist_util.py"
+      script = "//build/apple/plist_util.py"
       sources = invoker.info_plists
       outputs = [ _source_name ]
       args = [

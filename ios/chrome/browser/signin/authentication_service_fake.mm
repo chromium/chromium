@@ -15,7 +15,7 @@
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
-#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
+#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -40,6 +40,8 @@ void AuthenticationServiceFake::SignIn(ChromeIdentity* identity) {
   sync_setup_service_->PrepareForFirstSyncSetup();
   authenticated_identity_ = identity;
 }
+
+void AuthenticationServiceFake::GrantSyncConsent(ChromeIdentity* identity) {}
 
 void AuthenticationServiceFake::SignOut(
     signin_metrics::ProfileSignout signout_source,

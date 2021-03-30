@@ -7,6 +7,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/permissions/permission_util.h"
+#include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -35,7 +36,7 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
         names.begin(), names.end(), std::back_inserter(requests_),
         [&](auto& name) {
           return std::make_unique<permissions::MockPermissionRequest>(
-              name, permissions::PermissionRequestType::UNKNOWN, origin);
+              name, permissions::RequestType::kGeolocation, origin);
         });
     std::transform(requests_.begin(), requests_.end(),
                    std::back_inserter(raw_requests_),

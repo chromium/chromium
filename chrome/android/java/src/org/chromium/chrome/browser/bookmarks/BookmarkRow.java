@@ -114,6 +114,9 @@ public abstract class BookmarkRow
             mMoreIcon.setVisibility(bookmarkItem.isEditable() ? VISIBLE : GONE);
             mMoreIcon.setClickable(!isSelectionModeActive());
             mMoreIcon.setEnabled(mMoreIcon.isClickable());
+            mMoreIcon.setImportantForAccessibility(mMoreIcon.isClickable()
+                            ? IMPORTANT_FOR_ACCESSIBILITY_YES
+                            : IMPORTANT_FOR_ACCESSIBILITY_NO);
         }
     }
 

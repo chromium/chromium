@@ -2,8 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '../cr_icon_button/cr_icon_button.m.js';
+import '../cr_icons_css.m.js';
+import '../icons.m.js';
+import '../shared_style_css.m.js';
+import '../shared_vars_css.m.js';
+import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {CrSearchFieldBehavior} from '../cr_search_field/cr_search_field_behavior.js';
+
 Polymer({
   is: 'cr-toolbar-search-field',
+
+  _template: html`{__html_template__}`,
 
   behaviors: [CrSearchFieldBehavior],
 

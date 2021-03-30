@@ -159,8 +159,6 @@ class CORE_EXPORT WorkletGlobalScope
 
   EventTarget* ErrorEventTarget() final { return nullptr; }
 
-  void BindContentSecurityPolicyToExecutionContext() override;
-
   // The |url_| and |user_agent_| are inherited from the parent Document.
   const KURL url_;
   const String user_agent_;

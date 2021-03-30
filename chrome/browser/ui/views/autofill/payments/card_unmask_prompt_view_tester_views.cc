@@ -29,7 +29,7 @@ void CardUnmaskPromptViewTesterViews::Close() {
 }
 
 void CardUnmaskPromptViewTesterViews::EnterCVCAndAccept() {
-  view_->cvc_input_->SetText(base::ASCIIToUTF16("123"));
+  view_->cvc_input_->SetText(u"123");
   view_->AcceptDialog();
 }
 

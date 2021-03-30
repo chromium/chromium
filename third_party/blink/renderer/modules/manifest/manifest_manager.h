@@ -78,6 +78,7 @@ class MODULES_EXPORT ManifestManager
   void OnManifestFetchComplete(const KURL& document_url,
                                const ResourceResponse& response,
                                const String& data);
+  void RecordMetrics(const mojom::blink::Manifest& manifest);
   void ResolveCallbacks(ResolveState state);
 
   void BindReceiver(

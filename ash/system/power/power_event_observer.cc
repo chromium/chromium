@@ -17,7 +17,7 @@
 #include "ash/wm/lock_state_observer.h"
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -61,7 +61,7 @@ class CompositorWatcher : public ui::CompositorObserver {
   //     CompositorWatcher instance is deleted, nor from the CompositorWatcher
   //     destructor.
   explicit CompositorWatcher(base::OnceClosure callback)
-      : callback_(std::move(callback)), compositor_observer_(this) {
+      : callback_(std::move(callback)), compositor_observations_(this) {
     Start();
   }
   ~CompositorWatcher() override = default;
@@ -99,13 +99,13 @@ class CompositorWatcher : public ui::CompositorObserver {
       return;
     }
 
-    compositor_observer_.Remove(compositor);
+    compositor_observations_.RemoveObservation(compositor);
     pending_compositing_.erase(compositor);
 
     RunCallbackIfAllCompositingEnded();
   }
   void OnCompositingShuttingDown(ui::Compositor* compositor) override {
-    compositor_observer_.Remove(compositor);
+    compositor_observations_.RemoveObservation(compositor);
     pending_compositing_.erase(compositor);
 
     RunCallbackIfAllCompositingEnded();
@@ -144,7 +144,7 @@ class CompositorWatcher : public ui::CompositorObserver {
 
       DCHECK(!pending_compositing_.count(compositor));
 
-      compositor_observer_.Add(compositor);
+      compositor_observations_.AddObservation(compositor);
       pending_compositing_[compositor].state =
           CompositingState::kWaitingForWallpaperAnimation;
 
@@ -200,7 +200,8 @@ class CompositorWatcher : public ui::CompositorObserver {
   // visibility set to false), so there should be no need for tracking
   // compositors that were hidden to start with.
   std::map<ui::Compositor*, CompositorInfo> pending_compositing_;
-  ScopedObserver<ui::Compositor, ui::CompositorObserver> compositor_observer_;
+  base::ScopedMultiSourceObservation<ui::Compositor, ui::CompositorObserver>
+      compositor_observations_;
 
   base::WeakPtrFactory<CompositorWatcher> weak_ptr_factory_{this};
 

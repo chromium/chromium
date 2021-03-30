@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -37,7 +38,6 @@
 #include "extensions/browser/test_management_policy.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/features/feature_channel.h"
-#include "extensions/common/scoped_worker_based_extensions_channel.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "net/dns/mock_host_resolver.h"
@@ -60,7 +60,7 @@ class StateStoreObserver : public StateStore::TestObserver {
  public:
   explicit StateStoreObserver(content::BrowserContext* context)
       : state_store_(extensions::ExtensionSystem::Get(context)->state_store()) {
-    observed_.Add(state_store_);
+    observed_.Observe(state_store_);
   }
 
   ~StateStoreObserver() final = default;
@@ -93,7 +93,7 @@ class StateStoreObserver : public StateStore::TestObserver {
   std::set<std::string> ids_with_writes_;
   std::string waiting_for_id_;
   base::RunLoop run_loop_;
-  ScopedObserver<StateStore, StateStore::TestObserver> observed_{this};
+  base::ScopedObservation<StateStore, StateStore::TestObserver> observed_{this};
 };
 
 constexpr char kPersistentExtensionId[] = "cmgkkmeeoiceijkpmaabbmpgnkpaaela";
@@ -183,10 +183,10 @@ class ExtensionContextMenuBrowserTest
 
   bool MenuHasExtensionItemWithLabel(TestRenderViewContextMenu* menu,
                                      const std::string& label) {
-    base::string16 label16 = base::UTF8ToUTF16(label);
+    std::u16string label16 = base::UTF8ToUTF16(label);
     for (const auto& it : menu->extension_items().extension_item_map_) {
       const MenuItem::Id& id = it.second;
-      base::string16 tmp_label;
+      std::u16string tmp_label;
       EXPECT_TRUE(GetItemLabel(menu, id, &tmp_label));
       if (tmp_label == label16)
         return true;
@@ -199,7 +199,7 @@ class ExtensionContextMenuBrowserTest
   // false.
   bool GetItemLabel(TestRenderViewContextMenu* menu,
                     const MenuItem::Id& id,
-                    base::string16* result) const {
+                    std::u16string* result) const {
     int command_id = 0;
     if (!FindCommandId(menu, id, &command_id))
       return false;
@@ -260,15 +260,6 @@ class ExtensionContextMenuLazyTest
     : public ExtensionContextMenuBrowserTest,
       public testing::WithParamInterface<ContextType> {
  public:
-  ExtensionContextMenuLazyTest() {
-    // Service Workers are currently only available on certain channels, so set
-    // the channel for those tests.
-    if (GetParam() == ContextType::kServiceWorker) {
-      current_channel_ =
-          std::make_unique<extensions::ScopedWorkerBasedExtensionsChannel>();
-    }
-  }
-
   void SetUpOnMainThread() override {
     ExtensionContextMenuBrowserTest::SetUpOnMainThread();
     // Set shorter delays to prevent test timeouts.
@@ -277,19 +268,19 @@ class ExtensionContextMenuLazyTest
   }
 
  protected:
-  const extensions::Extension* LoadExtensionWithParamFlags(
+  const extensions::Extension* LoadExtensionWithParamOptions(
       const base::FilePath& path,
-      int flags) {
+      LoadOptions options) {
     if (GetParam() == ContextType::kServiceWorker)
-      flags |= kFlagRunAsServiceWorkerBasedExtension;
+      options.load_as_service_worker = true;
 
-    return LoadExtensionWithFlags(path, flags);
+    return LoadExtension(path, options);
   }
 
   const extensions::Extension* LoadContextMenuExtension(
       base::StringPiece subdirectory) {
     base::FilePath extension_dir = GetRootDir().AppendASCII(subdirectory);
-    return LoadExtensionWithParamFlags(extension_dir, kFlagEnableFileAccess);
+    return LoadExtensionWithParamOptions(extension_dir, {});
   }
 
   // Helper to load an extension from context_menus/top_level/|subdirectory| in
@@ -298,14 +289,14 @@ class ExtensionContextMenuLazyTest
       base::StringPiece subdirectory) {
     base::FilePath extension_dir =
         GetRootDir().AppendASCII("top_level").AppendASCII(subdirectory);
-    return LoadExtensionWithParamFlags(extension_dir, kFlagEnableFileAccess);
+    return LoadExtensionWithParamOptions(extension_dir, {});
   }
 
   const extensions::Extension* LoadContextMenuExtensionWithIncognitoFlags(
       base::StringPiece subdirectory) {
     base::FilePath extension_dir = GetRootDir().AppendASCII(subdirectory);
-    return LoadExtensionWithParamFlags(
-        extension_dir, kFlagEnableFileAccess | kFlagEnableIncognito);
+    return LoadExtensionWithParamOptions(extension_dir,
+                                         {.allow_in_incognito = true});
   }
 
   base::FilePath GetDirForContext(base::StringPiece subdirectory) {
@@ -349,10 +340,6 @@ class ExtensionContextMenuLazyTest
     ASSERT_TRUE(update.WaitUntilSatisfied());
     ASSERT_EQ(!enabled, menu->IsCommandIdEnabled(command_id));
   }
-
- private:
-  std::unique_ptr<extensions::ScopedWorkerBasedExtensionsChannel>
-      current_channel_;
 };
 
 class ExtensionContextMenuPersistentTest
@@ -399,8 +386,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, PRE_Persistent) {
   ResultCatcher catcher;
   base::FilePath path =
       GetDirForContext("persistent").AddExtensionASCII(".crx");
-  const extensions::Extension* extension =
-      LoadExtensionWithFlags(path, kFlagNone);
+  const extensions::Extension* extension = LoadExtension(path);
   ASSERT_TRUE(extension);
 
   // Wait for the extension to tell us it's been installed and the
@@ -630,7 +616,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, LongTitle) {
   std::unique_ptr<TestRenderViewContextMenu> menu(
       TestRenderViewContextMenu::Create(GetWebContents(), url, GURL(), GURL()));
 
-  base::string16 label;
+  std::u16string label;
   ASSERT_TRUE(GetItemLabel(menu.get(), item->id(), &label));
   ASSERT_TRUE(label.size() <= limit);
 }
@@ -682,15 +668,12 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, TopLevel) {
   ASSERT_TRUE(menu->GetMenuModelAndItemIndex(
       ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0), &model,
       &index));
-  EXPECT_EQ(base::UTF8ToUTF16("An Extension with multiple Context Menus"),
+  EXPECT_EQ(u"An Extension with multiple Context Menus",
             model->GetLabelAt(index++));
-  EXPECT_EQ(base::UTF8ToUTF16("Context Menu #1 - Extension #2"),
-            model->GetLabelAt(index++));
-  EXPECT_EQ(base::UTF8ToUTF16("Context Menu #2 - Extension #3"),
-            model->GetLabelAt(index++));
-  EXPECT_EQ(base::UTF8ToUTF16("Context Menu #3 - Extension #1"),
-            model->GetLabelAt(index++));
-  EXPECT_EQ(base::UTF8ToUTF16("Ze Extension with multiple Context Menus"),
+  EXPECT_EQ(u"Context Menu #1 - Extension #2", model->GetLabelAt(index++));
+  EXPECT_EQ(u"Context Menu #2 - Extension #3", model->GetLabelAt(index++));
+  EXPECT_EQ(u"Context Menu #3 - Extension #1", model->GetLabelAt(index++));
+  EXPECT_EQ(u"Ze Extension with multiple Context Menus",
             model->GetLabelAt(index++));
 }
 
@@ -777,7 +760,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuPersistentTest, Separators) {
   // name.
   MenuModel* model = nullptr;
   int index = 0;
-  base::string16 label;
+  std::u16string label;
   ASSERT_TRUE(menu->GetMenuModelAndItemIndex(
       ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0),
       &model,
@@ -802,7 +785,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuPersistentTest, Separators) {
       ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0),
       &model,
       &index));
-  EXPECT_EQ(base::UTF8ToUTF16("parent"), model->GetLabelAt(index));
+  EXPECT_EQ(u"parent", model->GetLabelAt(index));
   submenu = model->GetSubmenuModelAt(index);
   ASSERT_TRUE(submenu);
   VerifyMenuForSeparatorsTest(*submenu);

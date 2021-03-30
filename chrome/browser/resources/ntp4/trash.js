@@ -2,76 +2,70 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {DragWrapper, DragWrapperDelegate} from 'chrome://resources/js/cr/ui/drag_wrapper.m.js';
+import {getCurrentlyDraggingTile, setCurrentDropEffect} from './tile_page.js';
+
 /**
  * @fileoverview Trash
  * This is the class for the trash can that appears when dragging an app.
  */
 
-cr.define('ntp', function() {
-  'use strict';
+
+/**
+ * @constructor
+ * @extends {HTMLDivElement}
+ * @implements {DragWrapperDelegate}
+ */
+export function Trash(trash) {
+  trash.__proto__ = Trash.prototype;
+  trash.initialize();
+  return trash;
+}
+
+Trash.prototype = {
+  __proto__: HTMLDivElement.prototype,
+
+  initialize(element) {
+    this.dragWrapper_ = new DragWrapper(this, this);
+  },
 
   /**
-   * @constructor
-   * @extends {HTMLDivElement}
-   * @implements {cr.ui.DragWrapperDelegate}
+   * Determines whether we are interested in the drag data for |e|.
+   * @param {Event} e The event from drag enter.
+   * @return {boolean} True if we are interested in the drag data for |e|.
    */
-  function Trash(trash) {
-    trash.__proto__ = Trash.prototype;
-    trash.initialize();
-    return trash;
-  }
+  shouldAcceptDrag(e) {
+    const tile = getCurrentlyDraggingTile();
+    if (!tile) {
+      return false;
+    }
 
-  Trash.prototype = {
-    __proto__: HTMLDivElement.prototype,
+    return tile.firstChild.canBeRemoved();
+  },
 
-    initialize(element) {
-      this.dragWrapper_ = new cr.ui.DragWrapper(this, this);
-    },
+  /** @override */
+  doDragOver(e) {
+    getCurrentlyDraggingTile().dragClone.classList.add('hovering-on-trash');
+    setCurrentDropEffect(e.dataTransfer, 'move');
+    e.preventDefault();
+  },
 
-    /**
-     * Determines whether we are interested in the drag data for |e|.
-     * @param {Event} e The event from drag enter.
-     * @return {boolean} True if we are interested in the drag data for |e|.
-     */
-    shouldAcceptDrag(e) {
-      const tile = ntp.getCurrentlyDraggingTile();
-      if (!tile) {
-        return false;
-      }
+  /** @override */
+  doDragEnter(e) {
+    this.doDragOver(e);
+  },
 
-      return tile.firstChild.canBeRemoved();
-    },
+  /** @override */
+  doDrop(e) {
+    e.preventDefault();
 
-    /** @override */
-    doDragOver(e) {
-      ntp.getCurrentlyDraggingTile().dragClone.classList.add(
-          'hovering-on-trash');
-      ntp.setCurrentDropEffect(e.dataTransfer, 'move');
-      e.preventDefault();
-    },
+    const tile = getCurrentlyDraggingTile();
+    tile.firstChild.removeFromChrome();
+    tile.landedOnTrash = true;
+  },
 
-    /** @override */
-    doDragEnter(e) {
-      this.doDragOver(e);
-    },
-
-    /** @override */
-    doDrop(e) {
-      e.preventDefault();
-
-      const tile = ntp.getCurrentlyDraggingTile();
-      tile.firstChild.removeFromChrome();
-      tile.landedOnTrash = true;
-    },
-
-    /** @override */
-    doDragLeave(e) {
-      ntp.getCurrentlyDraggingTile().dragClone.classList.remove(
-          'hovering-on-trash');
-    },
-  };
-
-  return {
-    Trash: Trash,
-  };
-});
+  /** @override */
+  doDragLeave(e) {
+    getCurrentlyDraggingTile().dragClone.classList.remove('hovering-on-trash');
+  },
+};

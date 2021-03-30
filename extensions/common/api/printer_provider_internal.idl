@@ -12,6 +12,7 @@
 // is internally dispatched having a requestId argument (which is removed from
 // the argument list before the event actually reaches the event listeners). The
 // requestId is forwarded to the chrome.printerProviderInternal API functions.
+[implemented_in="extensions/browser/api/printer_provider/printer_provider_internal_api.h"]
 namespace printerProviderInternal {
   // Same as in printerProvider.PrintError enum API.
   enum PrintError { OK, FAILED, INVALID_TICKET, INVALID_DATA };
@@ -65,7 +66,7 @@ namespace printerProviderInternal {
     //     needed.
     // |callback|: Callback called with the information needed to create a blob
     //     of print data.
-    void getPrintData(long requestId, BlobCallback callback);
+    [supportsPromises] void getPrintData(long requestId, BlobCallback callback);
   };
 };
 

@@ -10,7 +10,19 @@
  * this class via languageHelper.
  */
 
-(function() {
+import '../prefs/prefs.js';
+
+import {assert} from '//resources/js/assert.m.js';
+import {isChromeOS, isWindows} from '//resources/js/cr.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {PromiseResolver} from '//resources/js/promise_resolver.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {PrefsBehavior} from '../prefs/prefs_behavior.js';
+import {CrSettingsPrefs} from '../prefs/prefs_types.js';
+
+import {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from './languages_browser_proxy.js';
+
 
 const MoveType = chrome.languageSettingsPrivate.MoveType;
 
@@ -36,9 +48,23 @@ const kTranslateLanguageSynonyms = {
 // one in ui/base/ime/chromeos/extension_ime_util.h.
 const kArcImeLanguage = '_arc_ime_language_';
 
-const preferredLanguagesPrefName = cr.isChromeOS ?
+const preferredLanguagesPrefName = isChromeOS ?
     'settings.language.preferred_languages' :
     'intl.accept_languages';
+
+/**
+ * @typedef {{
+ *   initialized: boolean,
+ *   supportedLanguages: !Array<!chrome.languageSettingsPrivate.Language>,
+ *   translateTarget: string,
+ *   alwaysTranslateCodes: !Array<string>,
+ *   startingUILanguage: string,
+ *   supportedInputMethods:
+ * (!Array<!chrome.languageSettingsPrivate.InputMethod>|undefined),
+ *   currentInputMethodId: (string|undefined)
+ * }}
+ */
+let ModelArgs;
 
 /**
  * Singleton element that generates the languages model on start-up and
@@ -47,6 +73,8 @@ const preferredLanguagesPrefName = cr.isChromeOS ?
  */
 Polymer({
   is: 'settings-languages',
+
+  _template: null,
 
   behaviors: [PrefsBehavior],
 
@@ -153,12 +181,16 @@ Polymer({
     'prospectiveUILanguageChanged_(prefs.intl.app_locale.value, languages)',
     'preferredLanguagesPrefChanged_(' +
         'prefs.' + preferredLanguagesPrefName + '.value, languages)',
+    'preferredLanguagesPrefChanged_(' +
+        'prefs.intl.forced_languages.value.*, languages)',
     'spellCheckDictionariesPrefChanged_(' +
         'prefs.spellcheck.dictionaries.value.*, ' +
         'prefs.spellcheck.forced_dictionaries.value.*, ' +
         'prefs.spellcheck.blocked_dictionaries.value.*, languages)',
     'translateLanguagesPrefChanged_(' +
         'prefs.translate_blocked_languages.value.*, languages)',
+    'translateTargetPrefChanged_(' +
+        'prefs.translate_recent_target.value, languages)',
     'updateRemovableLanguages_(' +
         'prefs.intl.app_locale.value, languages.enabled)',
     'updateRemovableLanguages_(' +
@@ -178,7 +210,7 @@ Polymer({
   boundOnSpellcheckDictionariesChanged_: null,
   // </if>
 
-  /** @private {?settings.LanguagesBrowserProxy} */
+  /** @private {?LanguagesBrowserProxy} */
   browserProxy_: null,
 
   /** @private {?LanguageSettingsPrivate} */
@@ -197,7 +229,7 @@ Polymer({
 
   /** @override */
   attached() {
-    this.browserProxy_ = settings.LanguagesBrowserProxyImpl.getInstance();
+    this.browserProxy_ = LanguagesBrowserProxyImpl.getInstance();
     this.languageSettingsPrivate_ =
         this.browserProxy_.getLanguageSettingsPrivate();
     // <if expr="chromeos">
@@ -206,34 +238,60 @@ Polymer({
 
     const promises = [];
 
+    /**
+     * An object passed into createModel to keep track of platform-specific
+     * arguments, populated by the "promises" array.
+     * @type {!ModelArgs}
+     */
+    const args = {
+      initialized: false,
+      supportedLanguages: [],
+      translateTarget: '',
+      alwaysTranslateCodes: [],
+      startingUILanguage: '',
+
+      // Only used by ChromeOS
+      supportedInputMethods: [],
+      currentInputMethodId: '',
+    };
+
     // Wait until prefs are initialized before creating the model, so we can
     // include information about enabled languages.
-    promises[0] = CrSettingsPrefs.initialized;
+    promises.push(
+        CrSettingsPrefs.initialized.then(result => args.initialized = result));
 
     // Get the language list.
-    promises[1] = new Promise(resolve => {
-      this.languageSettingsPrivate_.getLanguageList(resolve);
-    });
+    promises.push(new Promise(resolve => {
+                    this.languageSettingsPrivate_.getLanguageList(resolve);
+                  }).then(result => args.supportedLanguages = result));
 
     // Get the translate target language.
-    promises[2] = new Promise(resolve => {
-      this.languageSettingsPrivate_.getTranslateTargetLanguage(resolve);
-    });
+    promises.push(new Promise(resolve => {
+                    this.languageSettingsPrivate_.getTranslateTargetLanguage(
+                        resolve);
+                  }).then(result => args.translateTarget = result));
 
-    if (cr.isChromeOS) {
-      promises[3] = new Promise(resolve => {
-        this.languageSettingsPrivate_.getInputMethodLists(function(lists) {
-          resolve(lists.componentExtensionImes.concat(
-              lists.thirdPartyExtensionImes));
-        });
-      });
+    if (isChromeOS) {
+      promises.push(
+          new Promise(resolve => {
+            this.languageSettingsPrivate_.getInputMethodLists(function(lists) {
+              resolve(lists.componentExtensionImes.concat(
+                  lists.thirdPartyExtensionImes));
+            });
+          }).then(result => args.supportedInputMethods = result));
 
-      promises[4] = new Promise(resolve => {
-        this.inputMethodPrivate_.getCurrentInputMethod(resolve);
-      });
+      promises.push(new Promise(resolve => {
+                      this.inputMethodPrivate_.getCurrentInputMethod(resolve);
+                    }).then(result => args.currentInputMethodId = result));
     }
 
-    if (cr.isWindows || cr.isChromeOS) {
+    // Get the list of language-codes to always translate.
+    promises.push(new Promise(resolve => {
+                    this.languageSettingsPrivate_.getAlwaysTranslateLanguages(
+                        resolve);
+                  }).then(result => args.alwaysTranslateCodes = result));
+
+    if (isWindows || isChromeOS) {
       // Fetch the starting UI language, which affects which actions should be
       // enabled.
       promises.push(this.browserProxy_.getProspectiveUILanguage().then(
@@ -250,9 +308,7 @@ Polymer({
         return;
       }
 
-      // TODO(dpapad): Cleanup this code. It uses results[3] and results[4]
-      // which only exist for ChromeOS.
-      this.createModel_(results[1], results[2], results[3], results[4]);
+      this.createModel_(args);
 
       // <if expr="not is_macosx">
       this.boundOnSpellcheckDictionariesChanged_ =
@@ -266,7 +322,7 @@ Polymer({
       this.resolver_.resolve();
     });
 
-    if (cr.isChromeOS) {
+    if (isChromeOS) {
       this.boundOnInputMethodChanged_ = this.onInputMethodChanged_.bind(this);
       this.inputMethodPrivate_.onChanged.addListener(
           assert(this.boundOnInputMethodChanged_));
@@ -281,7 +337,7 @@ Polymer({
 
   /** @override */
   detached() {
-    if (cr.isChromeOS) {
+    if (isChromeOS) {
       this.inputMethodPrivate_.onChanged.removeListener(
           assert(this.boundOnInputMethodChanged_));
       this.boundOnInputMethodChanged_ = null;
@@ -338,12 +394,6 @@ Polymer({
       this.languageSettingsPrivate_.getSpellcheckDictionaryStatuses(
           this.boundOnSpellcheckDictionariesChanged_);
     }
-
-    // Recreate the set of spellcheck forced languages in case a forced
-    // spellcheck language was removed from the languages list.
-    this.set(
-        'languages.forcedSpellCheckLanguages',
-        this.getForcedSpellCheckLanguages_(this.languages.enabled));
     // </if>
 
     // Update translate target language.
@@ -383,38 +433,97 @@ Polymer({
       this.set(`languages.enabled.${i}.isManaged`, isForced || isBlocked);
     }
 
-    this.set(
-        'languages.forcedSpellCheckLanguages',
-        this.getForcedSpellCheckLanguages_(this.languages.enabled));
+    const {on: spellCheckOnLanguages, off: spellCheckOffLanguages} =
+        this.getSpellCheckLanguages_(this.languages.supported);
+    this.set('languages.spellCheckOnLanguages', spellCheckOnLanguages);
+    this.set('languages.spellCheckOffLanguages', spellCheckOffLanguages);
   },
 
   /**
-   * Returns an array of language codes for the spellcheck languages that are
-   * force-enabled by policy, but that are not "enabled" languages.
-   * @param {!Array<!LanguageState>} enabledLanguages An array of enabled
-   *     languages.
-   * @return {!Array<!string>}
+   * Returns two arrays of SpellCheckLanguageStates for spell check languages:
+   * one for spell check on, one for spell check off.
+   * @param {!Array<!chrome.languageSettingsPrivate.Language>}
+   *     supportedLanguages The list of supported languages, normally
+   *     this.languages.supported.
+   * @return {{on: !Array<SpellCheckLanguageState>, off:
+   *     !Array<SpellCheckLanguageState>}}
    * @private
    */
-  getForcedSpellCheckLanguages_(enabledLanguages) {
-    const enabledSet = this.makeSetFromArray_(/** @type {!Array<string>} */ (
-        enabledLanguages.map(x => x.language.code)));
-    const spellCheckForcedDictionaries = /** @type {!Array<string>} */ (
-        this.getPref('spellcheck.forced_dictionaries').value);
+  getSpellCheckLanguages_(supportedLanguages) {
+    // The spell check preferences are prioritised in this order:
+    // forced_dictionaries, blocked_dictionaries, dictionaries.
 
-    const forcedLanguages = [];
-    for (let i = 0; i < spellCheckForcedDictionaries.length; i++) {
-      const code = spellCheckForcedDictionaries[i];
-      if (!enabledSet.has(code) && this.supportedLanguageMap_.has(code)) {
-        forcedLanguages.push({
-          language: this.supportedLanguageMap_.get(code),
-          isManaged: true,
+    // The set of all language codes seen thus far.
+    const /** !Set<string> */ seenCodes = new Set();
+
+    /**
+     * Gets the list of language codes indicated by the preference name, and
+     * de-duplicates it with all other language codes.
+     * @param {string} prefName
+     * @return {!Array<string>}
+     */
+    const getPrefAndDedupe = prefName => {
+      const /** !Array<string> */ result =
+          this.getPref(prefName).value.filter(x => !seenCodes.has(x));
+      result.forEach(code => seenCodes.add(code));
+      return result;
+    };
+
+    const forcedCodes = getPrefAndDedupe('spellcheck.forced_dictionaries');
+    const forcedCodesSet = new Set(forcedCodes);
+    const blockedCodes = getPrefAndDedupe('spellcheck.blocked_dictionaries');
+    const blockedCodesSet = new Set(blockedCodes);
+    const enabledCodes = getPrefAndDedupe('spellcheck.dictionaries');
+
+    const /** !Array<SpellCheckLanguageState> */ on = [];
+    // We want to add newly enabled languages to the end of the "on" list, so we
+    // should explicitly move the forced languages to the front of the list.
+    for (const code of [...forcedCodes, ...enabledCodes]) {
+      const language = this.supportedLanguageMap_.get(code);
+      // language could be undefined if code is not in supportedLanguageMap_.
+      // This should be rare, but could happen if supportedLanguageMap_ is
+      // missing languages or the prefs are manually modified. We want to fail
+      // gracefully if this happens - throwing an error here would cause
+      // language settings to not load.
+      if (language) {
+        on.push({
+          language,
+          isManaged: forcedCodesSet.has(code),
           spellCheckEnabled: true,
+          downloadDictionaryStatus: null,
           downloadDictionaryFailureCount: 0,
         });
       }
     }
-    return forcedLanguages;
+
+    // Because the list of "spell check supported" languages is only exposed
+    // through "supported languages", we need to filter that list along with
+    // whether we've seen the language before.
+    // We don't want to split this list in "forced" / "not-forced" like the
+    // spell check on list above, as we don't want to explicitly surface / hide
+    // blocked languages to the user.
+    const /** !Array<SpellCheckLanguageState> */ off = [];
+
+    for (const language of supportedLanguages) {
+      // If spell check is off for this language, it must either not be in any
+      // spell check pref, or be in the blocked dictionaries pref.
+      if (language.supportsSpellcheck &&
+          (!seenCodes.has(language.code) ||
+           blockedCodesSet.has(language.code))) {
+        off.push({
+          language,
+          isManaged: blockedCodesSet.has(language.code),
+          spellCheckEnabled: false,
+          downloadDictionaryStatus: null,
+          downloadDictionaryFailureCount: 0
+        });
+      }
+    }
+
+    return {
+      on,
+      off,
+    };
   },
 
   /** @private */
@@ -437,24 +546,26 @@ Polymer({
     }
   },
 
+  /** @private */
+  translateTargetPrefChanged_() {
+    if (this.prefs === undefined || this.languages === undefined) {
+      return;
+    }
+    this.set(
+        'languages.translateTarget',
+        this.getPref('translate_recent_target').value);
+  },
+
   /**
    * Constructs the languages model.
-   * @param {!Array<!chrome.languageSettingsPrivate.Language>}
-   *     supportedLanguages
-   * @param {string} translateTarget Language code of the default translate
-   *     target language.
-   * @param {!Array<!chrome.languageSettingsPrivate.InputMethod>|undefined}
-   *     supportedInputMethods Input methods (Chrome OS only).
-   * @param {string|undefined} currentInputMethodId ID of the currently used
-   *     input method (Chrome OS only).
+   * @param {!ModelArgs} args used to populate the model
+   *     above.
    * @private
    */
-  createModel_(
-      supportedLanguages, translateTarget, supportedInputMethods,
-      currentInputMethodId) {
+  createModel_(args) {
     // Populate the hash map of supported languages.
-    for (let i = 0; i < supportedLanguages.length; i++) {
-      const language = supportedLanguages[i];
+    for (let i = 0; i < args.supportedLanguages.length; i++) {
+      const language = args.supportedLanguages[i];
       language.supportsUI = !!language.supportsUI;
       language.supportsTranslate = !!language.supportsTranslate;
       language.supportsSpellcheck = !!language.supportsSpellcheck;
@@ -463,42 +574,47 @@ Polymer({
     }
 
     let prospectiveUILanguage;
-    if (cr.isChromeOS || cr.isWindows) {
+    if (isChromeOS || isWindows) {
       prospectiveUILanguage =
           /** @type {string} */ (this.getPref('intl.app_locale').value) ||
           this.originalProspectiveUILanguage_;
     }
 
     // Create a list of enabled languages from the supported languages.
-    const enabledLanguageStates =
-        this.getEnabledLanguageStates_(translateTarget, prospectiveUILanguage);
+    const enabledLanguageStates = this.getEnabledLanguageStates_(
+        args.translateTarget, prospectiveUILanguage);
     // Populate the hash set of enabled languages.
     for (let l = 0; l < enabledLanguageStates.length; l++) {
       this.enabledLanguageSet_.add(enabledLanguageStates[l].language.code);
     }
 
-    const forcedSpellCheckLanguages =
-        this.getForcedSpellCheckLanguages_(enabledLanguageStates);
+    const {on: spellCheckOnLanguages, off: spellCheckOffLanguages} =
+        this.getSpellCheckLanguages_(args.supportedLanguages);
+
+    const alwaysTranslateLanguages =
+        args.alwaysTranslateCodes.map(code => this.getLanguage(code));
 
     const model = /** @type {!LanguagesModel} */ ({
-      supported: supportedLanguages,
+      supported: args.supportedLanguages,
       enabled: enabledLanguageStates,
-      translateTarget: translateTarget,
-      forcedSpellCheckLanguages: forcedSpellCheckLanguages,
+      translateTarget: args.translateTarget,
+      alwaysTranslate: alwaysTranslateLanguages,
+      spellCheckOnLanguages,
+      spellCheckOffLanguages,
     });
 
-    if (cr.isChromeOS || cr.isWindows) {
+    if (isChromeOS || isWindows) {
       model.prospectiveUILanguage = prospectiveUILanguage;
     }
 
-    if (cr.isChromeOS) {
-      if (supportedInputMethods) {
-        this.createInputMethodModel_(supportedInputMethods);
+    if (isChromeOS) {
+      if (args.supportedInputMethods) {
+        this.createInputMethodModel_(args.supportedInputMethods);
       }
       model.inputMethods = /** @type {!InputMethodsModel} */ ({
-        supported: supportedInputMethods,
+        supported: args.supportedInputMethods,
         enabled: this.getEnabledInputMethods_(),
-        currentId: currentInputMethodId,
+        currentId: args.currentInputMethodId,
       });
     }
 
@@ -521,10 +637,13 @@ Polymer({
 
     const pref = this.getPref(preferredLanguagesPrefName);
     const enabledLanguageCodes = pref.value.split(',');
+    const languagesForcedPref = this.getPref('intl.forced_languages');
     const spellCheckPref = this.getPref('spellcheck.dictionaries');
     const spellCheckForcedPref = this.getPref('spellcheck.forced_dictionaries');
     const spellCheckBlockedPref =
         this.getPref('spellcheck.blocked_dictionaries');
+    const languageForcedSet = this.makeSetFromArray_(
+        /** @type {!Array<string>} */ (languagesForcedPref.value));
     const spellCheckSet = this.makeSetFromArray_(
         /** @type {!Array<string>} */ (
             spellCheckPref.value.concat(spellCheckForcedPref.value)));
@@ -538,6 +657,7 @@ Polymer({
         /** @type {!Array<string>} */ (translateBlockedPref.value));
 
     const enabledLanguageStates = [];
+
     for (let i = 0; i < enabledLanguageCodes.length; i++) {
       const code = enabledLanguageCodes[i];
       const language = this.supportedLanguageMap_.get(code);
@@ -555,6 +675,7 @@ Polymer({
           translateTarget, prospectiveUILanguage);
       languageState.isManaged =
           spellCheckForcedSet.has(code) || spellCheckBlockedSet.has(code);
+      languageState.isForced = languageForcedSet.has(code);
       languageState.downloadDictionaryFailureCount = 0;
       enabledLanguageStates.push(languageState);
     }
@@ -586,10 +707,8 @@ Polymer({
 
   // <if expr="not is_macosx">
   /**
-   * Updates the dictionary download status for languages in
-   * |this.languages.enabled| and |this.languages.forcedSpellCheckLanguages| in
-   * order to track the number of times a spell check dictionary download has
-   * failed.
+   * Updates the dictionary download status for spell check languages in order
+   * to track the number of times a spell check dictionary download has failed.
    * @param {!Array<!chrome.languageSettingsPrivate.SpellcheckDictionaryStatus>}
    *     statuses
    * @private
@@ -600,7 +719,9 @@ Polymer({
       statusMap.set(status.languageCode, status);
     });
 
-    ['enabled', 'forcedSpellCheckLanguages'].forEach(collectionName => {
+    const collectionNames =
+        ['enabled', 'spellCheckOnLanguages', 'spellCheckOffLanguages'];
+    collectionNames.forEach(collectionName => {
       this.languages[collectionName].forEach((languageState, index) => {
         const status = statusMap.get(languageState.language.code);
         if (!status) {
@@ -638,7 +759,7 @@ Polymer({
     // TODO(michaelpg): Enabled input methods can affect which languages are
     // removable, so run updateEnabledInputMethods_ first (if it has been
     // scheduled).
-    if (cr.isChromeOS) {
+    if (isChromeOS) {
       this.updateEnabledInputMethods_();
     }
 
@@ -739,7 +860,7 @@ Polymer({
 
     // For language settings V2, languages and input methods are decoupled
     // so there's no need to remove related input methods.
-    if (cr.isChromeOS && !this.isChromeOSLanguageSettingsV2_()) {
+    if (isChromeOS && !this.isChromeOSLanguageSettingsV2_()) {
       // Remove input methods that don't support any other enabled language.
       const inputMethods = this.languageInputMethods_.get(languageCode) || [];
       for (const inputMethod of inputMethods) {
@@ -760,7 +881,7 @@ Polymer({
    * @private
    */
   isChromeOSLanguageSettingsV2_() {
-    if (!cr.isChromeOS) {
+    if (!isChromeOS) {
       return false;
     }
     return loadTimeData.valueExists('enableLanguageSettingsV2') &&
@@ -800,7 +921,7 @@ Polymer({
       return false;
     }
 
-    if (!cr.isChromeOS) {
+    if (!isChromeOS) {
       return true;
     }
 
@@ -838,6 +959,16 @@ Polymer({
         this.isLanguageEnabled(language.code) ||
         language.isProhibitedLanguage ||
         this.isLanguageCodeForArcIme(language.code) /* internal use only */);
+  },
+
+  /**
+   * Sets whether a given language should always be automatically translated.
+   * @param {string} languageCode
+   * @param {boolean} alwaysTranslate
+   */
+  setLanguageAlwaysTranslateState(languageCode, alwaysTranslate) {
+    this.languageSettingsPrivate_.setLanguageAlwaysTranslateState(
+        languageCode, alwaysTranslate);
   },
 
   /**
@@ -889,6 +1020,15 @@ Polymer({
   disableTranslateLanguage(languageCode) {
     this.languageSettingsPrivate_.setEnableTranslationForLanguage(
         languageCode, false);
+  },
+
+  /**
+   * Sets the translate target language and adds it to the content languages if
+   * not already there.
+   * @param {string} languageCode
+   */
+  setTranslateTargetLanguage(languageCode) {
+    this.languageSettingsPrivate_.setTranslateTargetLanguage(languageCode);
   },
 
   /**
@@ -1175,4 +1315,3 @@ Polymer({
   },
   // </if>
 });
-})();

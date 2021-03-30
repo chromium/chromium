@@ -18,6 +18,7 @@
 #include "base/process/process_metrics.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/system/sys_info_internal.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -93,6 +94,38 @@ std::string SysInfo::CPUModelName() {
       }
     }
   }
+
+#if defined(ARCH_CPU_ARMEL)
+  // /proc/cpuinfo does not have a defined ABI and so devices may fall
+  // through without a model name.
+  // For ARM devices use /sys/devices/socX/soc_id
+  //
+  // https://www.kernel.org/doc/Documentation/ABI/testing/sysfs-devices-soc:
+  // On many of ARM based silicon with SMCCC v1.2+ compliant firmware
+  // this will contain the SOC ID appended to the family attribute
+  // to ensure there is no conflict in this namespace across various
+  // vendors. The format is "jep106:XXYY:ZZZZ" where XX is identity
+  // code, YY is continuation code and ZZZZ is the SOC ID.
+
+  const char kSocIdDirectory[] = "/sys/devices/soc%u";
+  const char kSocIdFile[] = "/sys/devices/soc%u/soc_id";
+  const char kJEP106[] = "jep106";
+
+  // There can be multiple /sys/bus/soc/devices/socX on a system.
+  // Iterate through until one with jep106:XXYY:ZZZZ is found.
+  for (int soc_instance = 0;; ++soc_instance) {
+    if (!PathExists(
+            FilePath(base::StringPrintf(kSocIdDirectory, soc_instance))))
+      break;
+
+    std::string soc_id;
+    ReadFileToString(FilePath(base::StringPrintf(kSocIdFile, soc_instance)),
+                     &soc_id);
+    if (soc_id.find(kJEP106) == 0)
+      return soc_id;
+  }
+#endif
+
   return std::string();
 }
 

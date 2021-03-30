@@ -25,7 +25,6 @@
 #import "ios/web/public/test/web_task_environment.h"
 #include "net/base/network_change_notifier.h"
 #include "testing/platform_test.h"
-#import "third_party/breakpad/breakpad/src/client/ios/BreakpadController.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #include "third_party/ocmock/gtest_support.h"
 

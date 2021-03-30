@@ -11,10 +11,10 @@
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/window_factory.h"
 #include "base/run_loop.h"
 #include "ui/aura/env.h"
 #include "ui/aura/test/test_window_delegate.h"
+#include "ui/aura/window.h"
 #include "ui/aura/window_tracker.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/layout.h"
@@ -40,7 +40,7 @@ class ScreenPositionControllerTest : public AshTestBase {
 
   void SetUp() override {
     AshTestBase::SetUp();
-    window_ = window_factory::NewWindow(&window_delegate_);
+    window_ = std::make_unique<aura::Window>(&window_delegate_);
     window_->SetType(aura::client::WINDOW_TYPE_NORMAL);
     window_->Init(ui::LAYER_NOT_DRAWN);
     ParentWindowInPrimaryRootWindow(window_.get());

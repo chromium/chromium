@@ -112,4 +112,9 @@ DownloadManagerDelegate::GetRenameHandlerForDownload(
   return nullptr;
 }
 
+download::DownloadItem* DownloadManagerDelegate::GetDownloadByGuid(
+    const std::string& guid) {
+  return nullptr;
+}
+
 }  // namespace content

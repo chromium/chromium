@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/animation/css_color_interpolation_type.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -30,9 +31,9 @@ bool GetColor(const CSSProperty& property,
               StyleColor& result) {
   switch (property.PropertyID()) {
     case CSSPropertyID::kFill:
-      return GetColorFromPaint(style.SvgStyle().FillPaint(), result);
+      return GetColorFromPaint(style.FillPaint(), result);
     case CSSPropertyID::kStroke:
-      return GetColorFromPaint(style.SvgStyle().StrokePaint(), result);
+      return GetColorFromPaint(style.StrokePaint(), result);
     default:
       NOTREACHED();
       return false;
@@ -49,10 +50,12 @@ InterpolationValue CSSPaintInterpolationType::MaybeConvertNeutral(
 }
 
 InterpolationValue CSSPaintInterpolationType::MaybeConvertInitial(
-    const StyleResolverState&,
+    const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
   StyleColor initial_color;
-  if (!GetColor(CssProperty(), ComputedStyle::InitialStyle(), initial_color))
+  if (!GetColor(CssProperty(),
+                state.GetDocument().GetStyleResolver().InitialStyle(),
+                initial_color))
     return nullptr;
   return InterpolationValue(
       CSSColorInterpolationType::CreateInterpolableColor(initial_color));
@@ -126,15 +129,14 @@ void CSSPaintInterpolationType::ApplyStandardPropertyValue(
     StyleResolverState& state) const {
   Color color = CSSColorInterpolationType::ResolveInterpolableColor(
       interpolable_color, state);
-  SVGComputedStyle& mutable_svg_style = state.Style()->AccessSVGStyle();
   switch (CssProperty().PropertyID()) {
     case CSSPropertyID::kFill:
-      mutable_svg_style.SetFillPaint(SVGPaint(color));
-      mutable_svg_style.SetInternalVisitedFillPaint(SVGPaint(color));
+      state.Style()->SetFillPaint(SVGPaint(color));
+      state.Style()->SetInternalVisitedFillPaint(SVGPaint(color));
       break;
     case CSSPropertyID::kStroke:
-      mutable_svg_style.SetStrokePaint(SVGPaint(color));
-      mutable_svg_style.SetInternalVisitedStrokePaint(SVGPaint(color));
+      state.Style()->SetStrokePaint(SVGPaint(color));
+      state.Style()->SetInternalVisitedStrokePaint(SVGPaint(color));
       break;
     default:
       NOTREACHED();

@@ -50,6 +50,9 @@ struct IgnoredValue {
 #define INTERNAL_TRACE_EVENT_ADD_WITH_ID_TID_AND_TIMESTAMPS(...) \
   INTERNAL_TRACE_IGNORE(__VA_ARGS__)
 
+// Defined in application_state_proto_android.h
+#define TRACE_APPLICATION_STATE(...) INTERNAL_TRACE_IGNORE(__VA_ARGS__)
+
 #define TRACE_HEAP_PROFILER_API_SCOPED_TASK_EXECUTION \
   trace_event_internal::IgnoredValue
 
@@ -69,8 +72,8 @@ struct IgnoredValue {
   INTERNAL_TRACE_IGNORE(category, name)
 #define TRACE_EVENT_END(category, ...) INTERNAL_TRACE_IGNORE(category)
 #define TRACE_EVENT(category, name, ...) INTERNAL_TRACE_IGNORE(category, name)
-#define TRACE_EVENT_INSTANT(category, name, scope, ...) \
-  INTERNAL_TRACE_IGNORE(category, name, scope)
+#define TRACE_EVENT_INSTANT(category, name, ...) \
+  INTERNAL_TRACE_IGNORE(category, name)
 
 namespace base {
 namespace trace_event {
@@ -169,7 +172,68 @@ class BASE_EXPORT MemoryDumpProvider {
   MemoryDumpProvider() = default;
 };
 
+class BASE_EXPORT MemoryDumpManager {
+ public:
+  static constexpr const char* const kTraceCategory =
+      TRACE_DISABLED_BY_DEFAULT("memory-infra");
+};
+
 }  // namespace trace_event
 }  // namespace base
+
+// Stub implementation for
+// perfetto::StaticString/ThreadTrack/TracedValue/TracedDictionary/TracedArray.
+namespace perfetto {
+
+class TracedArray;
+class TracedDictionary;
+
+class StaticString {
+ public:
+  template <typename T>
+  explicit StaticString(T*) {}
+};
+
+class TracedValue {
+ public:
+  void WriteInt64(int64_t) && {}
+  void WriteUInt64(uint64_t) && {}
+  void WriteDouble(double) && {}
+  void WriteBoolean(bool) && {}
+  void WriteString(const char*) && {}
+  void WriteString(const char*, size_t) && {}
+  void WriteString(const std::string&) && {}
+  void WritePointer(const void*) && {}
+
+  TracedDictionary WriteDictionary() &&;
+  TracedArray WriteArray() &&;
+};
+
+class TracedDictionary {
+ public:
+  TracedValue AddItem(const char*) { return TracedValue(); }
+
+  template <typename T>
+  void Add(const char*, T&&) {}
+
+  TracedDictionary AddDictionary(const char*);
+  TracedArray AddArray(const char*);
+};
+
+class TracedArray {
+ public:
+  TracedValue AppendItem() { return TracedValue(); }
+
+  template <typename T>
+  void Append(T&&) {}
+
+  TracedDictionary AppendDictionary();
+  TracedArray AppendArray();
+};
+
+template <class T>
+void WriteIntoTracedValue(TracedValue, T&&) {}
+
+}  // namespace perfetto
 
 #endif  // BASE_TRACE_EVENT_TRACE_EVENT_STUB_H_

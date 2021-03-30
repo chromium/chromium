@@ -23,10 +23,11 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 ChosenObjectView::ChosenObjectView(
     std::unique_ptr<PageInfoUI::ChosenObjectInfo> info,
-    base::string16 display_name)
+    std::u16string display_name)
     : info_(std::move(info)) {
   // |ChosenObjectView| layout (fills parent):
   // *------------------------------------*
@@ -159,3 +160,6 @@ void ChosenObjectView::UpdateIconImage(bool is_deleted) const {
       views::style::GetColor(*this, views::style::CONTEXT_LABEL,
                              views::style::STYLE_PRIMARY)));
 }
+
+BEGIN_METADATA(ChosenObjectView, views::View)
+END_METADATA

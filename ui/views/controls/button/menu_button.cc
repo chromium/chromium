@@ -15,7 +15,7 @@
 namespace views {
 
 MenuButton::MenuButton(PressedCallback callback,
-                       const base::string16& text,
+                       const std::u16string& text,
                        int button_context)
     : LabelButton(PressedCallback(), text, button_context) {
   SetHorizontalAlignment(gfx::ALIGN_LEFT);

@@ -2,23 +2,34 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/browser/resources/tools/optimize_webui.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
 import("//ui/file_manager/base/gn/js_test_gen_html.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 
 js_type_check("closure_compile_jsmodules") {
-  uses_js_modules = true
+  closure_flags = default_closure_args + [
+                    "jscomp_error=strictCheckTypes",
+                    "js_module_root=gen/ui/file_manager/",
+                    "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
+                  ]
   deps = [
+    ":background.m",
+    ":cache.m",
+    ":image_loader.m",
     ":image_loader_client.m",
+    ":image_loader_util.m",
+    ":image_request_task.m",
     ":load_image_request.m",
+    ":piex_loader.m",
+    ":scheduler.m",
   ]
 }
 
 js_type_check("closure_compile_module") {
   closure_flags = default_closure_args + [ "jscomp_error=strictCheckTypes" ]
   deps = [
-    ":background",
     ":cache",
     ":image_loader",
     ":image_loader_client",
@@ -30,18 +41,23 @@ js_type_check("closure_compile_module") {
   ]
 }
 
-js_library("background") {
-  deps = [ ":image_loader" ]
+js_library("background.m") {
+  deps = [ ":image_loader.m" ]
 }
 
 js_library("cache") {
 }
 
-js_unittest("cache_unittest") {
+js_library("cache.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/image_loader/cache.m.js" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_unittest("cache_unittest.m") {
   deps = [
-    ":cache",
-    ":load_image_request",
-    "//ui/webui/resources/js:webui_resource_test",
+    ":load_image_request.m",
+    "//chrome/test/data/webui:chai_assert",
   ]
 }
 
@@ -51,14 +67,30 @@ js_library("image_loader") {
     ":image_request_task",
     ":load_image_request",
     ":scheduler",
-    "//ui/file_manager/externs:file_manager_private",
+    "//ui/file_manager/file_manager/externs:file_manager_private",
   ]
 }
 
-js_unittest("image_loader_unittest") {
+js_library("image_loader.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/image_loader/image_loader.m.js" ]
   deps = [
-    ":image_loader",
-    "//ui/webui/resources/js:webui_resource_test",
+    ":cache.m",
+    ":image_request_task.m",
+    ":load_image_request.m",
+    ":scheduler.m",
+    "//ui/file_manager/file_manager/foreground/js/metadata:image_orientation.m",
+    "//ui/webui/resources/js:assert.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_unittest("image_loader_unittest.m") {
+  deps = [
+    ":image_loader_util.m",
+    ":load_image_request.m",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/file_manager/foreground/js/metadata:image_orientation.m",
   ]
 }
 
@@ -67,6 +99,17 @@ js_library("image_loader_util") {
     ":load_image_request",
     "//ui/webui/resources/js:assert",
   ]
+}
+
+js_library("image_loader_util.m") {
+  sources =
+      [ "$root_gen_dir/ui/file_manager/image_loader/image_loader_util.m.js" ]
+  deps = [
+    ":load_image_request.m",
+    "//ui/webui/resources/js:assert.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("load_image_request") {
@@ -120,7 +163,7 @@ js_unittest("image_loader_client_unittest.m") {
     ":image_loader_client.m",
     ":load_image_request.m",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/base/js:test_error_reporting.m",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting.m",
   ]
 }
 
@@ -128,7 +171,14 @@ js_library("piex_loader") {
   # No dependencies should be added here, so the module can be loaded as a
   # standalone .js file.
 
-  externs_list = [ "//ui/file_manager/externs/platform.js" ]
+  externs_list = [ "//ui/file_manager/file_manager/externs/platform.js" ]
+}
+
+js_library("piex_loader.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/image_loader/piex_loader.m.js" ]
+  externs_list = [ "//ui/file_manager/file_manager/externs/platform.js" ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("image_request_task") {
@@ -139,39 +189,60 @@ js_library("image_request_task") {
     ":piex_loader",
     "//ui/file_manager/file_manager/common/js:file_type",
   ]
-  externs_list = [ "//ui/file_manager/externs/platform.js" ]
+  externs_list = [ "//ui/file_manager/file_manager/externs/platform.js" ]
+}
+
+js_library("image_request_task.m") {
+  sources =
+      [ "$root_gen_dir/ui/file_manager/image_loader/image_request_task.m.js" ]
+  deps = [
+    ":cache.m",
+    ":image_loader_util.m",
+    ":load_image_request.m",
+    ":piex_loader.m",
+    "//ui/file_manager/file_manager/common/js:file_type.m",
+    "//ui/file_manager/file_manager/foreground/js/metadata:image_orientation.m",
+    "//ui/webui/resources/js:assert.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("scheduler") {
   deps = [ ":image_request_task" ]
 }
 
-js_unittest("scheduler_unittest") {
+js_library("scheduler.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/image_loader/scheduler.m.js" ]
+  deps = [ ":image_request_task.m" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_unittest("scheduler_unittest.m") {
   deps = [
-    ":scheduler",
-    "//ui/webui/resources/js:webui_resource_test",
+    ":image_request_task.m",
+    ":scheduler.m",
+    "//chrome/test/data/webui:chai_assert",
   ]
 }
 
 js_test_gen_html("js_test_gen_html_modules") {
-  deps = [ ":image_loader_client_unittest.m" ]
+  deps = [
+    ":cache_unittest.m",
+    ":image_loader_client_unittest.m",
+    ":image_loader_unittest.m",
+    ":scheduler_unittest.m",
+  ]
   js_module = true
 
-  closure_flags =
-      strict_error_checking_closure_args + [
-        "js_module_root=./gen/ui",
-        "js_module_root=../../ui",
-        "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
-      ]
-}
-
-js_test_gen_html("js_test_gen_html") {
-  closure_flags = default_closure_args + [ "jscomp_error=strictCheckTypes" ]
-  deps = [
-    ":cache_unittest",
-    ":image_loader_unittest",
-    ":scheduler_unittest",
-  ]
+  closure_flags = strict_error_checking_closure_args + [
+                    "js_module_root=./gen/ui",
+                    "js_module_root=../../ui/file_manager/",
+                    "js_module_root=./gen/ui/file_manager/",
+                    "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
+                    "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
+                  ]
 }
 
 group("closure_compile") {
@@ -180,7 +251,6 @@ group("closure_compile") {
     ":closure_compile_jsmodules",
     ":closure_compile_module",
     ":js_test_gen_html_modules_type_check_auto",
-    ":js_test_gen_html_type_check_auto",
   ]
 }
 
@@ -188,5 +258,42 @@ js_modulizer("modulize") {
   input_files = [
     "image_loader_client.js",
     "load_image_request.js",
+    "cache.js",
+    "piex_loader.js",
+    "image_loader_util.js",
+    "scheduler.js",
+    "image_request_task.js",
+    "image_loader.js",
+  ]
+}
+
+preprocess_folder =
+    rebase_path("$target_gen_dir/../preprocessed/image_loader", root_build_dir)
+
+files_app_path =
+    rebase_path("$root_gen_dir/ui/file_manager/preprocessed/file_manager",
+                root_build_dir)
+image_loader_path =
+    rebase_path("$root_gen_dir/ui/file_manager/preprocessed/image_loader",
+                root_build_dir)
+
+optimize_webui("build") {
+  host = "image_loader"
+
+  input = preprocess_folder
+  js_module_in_files = [ "background.m.js" ]
+
+  js_out_files = [ "background.m.rollup.js" ]
+
+  external_paths = [
+    "chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj|$files_app_path",
+    "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp|$image_loader_path",
+  ]
+
+  deps = [
+    ":background.m",
+    "//ui/file_manager:preprocess_generated",
+    "//ui/file_manager:preprocess_static",
+    "//ui/webui/resources:preprocess",
   ]
 }

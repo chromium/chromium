@@ -6,6 +6,7 @@
 #define ASH_PUBLIC_CPP_ASH_TYPOGRAPHY_H_
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/font.h"
 #include "ui/views/style/typography.h"
 
@@ -52,13 +53,12 @@ enum AshTextStyle {
   ASH_TEXT_STYLE_END
 };
 
-// Sets the |size_delta| and |font_weight| for ash-specific text contexts.
-// Values are only set for contexts specific to ash.
-void ASH_PUBLIC_EXPORT ApplyAshFontStyles(int context,
-                                          int style,
-                                          int* size_delta,
-                                          gfx::Font::Weight* font_weight,
-                                          std::string* typeface);
+// Sets the |details| for ash-specific text contexts. Values are only set for
+// contexts specific to ash.
+void ASH_PUBLIC_EXPORT
+ApplyAshFontStyles(int context,
+                   int style,
+                   ui::ResourceBundle::FontDetails& details);
 
 }  // namespace ash
 

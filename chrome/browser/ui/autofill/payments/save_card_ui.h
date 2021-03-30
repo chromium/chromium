@@ -19,9 +19,6 @@ enum class BubbleType {
   // card icon with the loading indicator animation.
   UPLOAD_IN_PROGRESS,
 
-  // The sign-in promo that is shown after local save.
-  SIGN_IN_PROMO,
-
   // The manage cards bubble when bubble is reshown after
   // icon is clicked.
   MANAGE_CARDS,

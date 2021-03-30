@@ -16,6 +16,8 @@
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -34,12 +36,18 @@ const int kPreferredHeight = 250;
 
 class KioskExternalUpdateNotificationView : public views::WidgetDelegateView {
  public:
+  METADATA_HEADER(KioskExternalUpdateNotificationView);
   explicit KioskExternalUpdateNotificationView(
       KioskExternalUpdateNotification* owner)
       : owner_(owner), widget_closed_(false) {
     AddLabel();
     SetLayoutManager(std::make_unique<views::FillLayout>());
   }
+
+  KioskExternalUpdateNotificationView(
+      const KioskExternalUpdateNotificationView&) = delete;
+  KioskExternalUpdateNotificationView& operator=(
+      const KioskExternalUpdateNotificationView&) = delete;
 
   ~KioskExternalUpdateNotificationView() override {
     widget_closed_ = true;
@@ -55,7 +63,7 @@ class KioskExternalUpdateNotificationView : public views::WidgetDelegateView {
     }
   }
 
-  void SetMessage(const base::string16& message) { label_->SetText(message); }
+  void SetMessage(const std::u16string& message) { label_->SetText(message); }
 
   // views::WidgetDelegateView overrides:
   void OnPaint(gfx::Canvas* canvas) override {
@@ -98,12 +106,10 @@ class KioskExternalUpdateNotificationView : public views::WidgetDelegateView {
 
   // True if the widget got already closed.
   bool widget_closed_;
-
-  DISALLOW_COPY_AND_ASSIGN(KioskExternalUpdateNotificationView);
 };
 
 KioskExternalUpdateNotification::KioskExternalUpdateNotification(
-    const base::string16& message) {
+    const std::u16string& message) {
   CreateAndShowNotificationView(message);
 }
 
@@ -112,13 +118,13 @@ KioskExternalUpdateNotification::~KioskExternalUpdateNotification() {
 }
 
 void KioskExternalUpdateNotification::ShowMessage(
-    const base::string16& message) {
+    const std::u16string& message) {
   if (view_)
     view_->SetMessage(message);
 }
 
 void KioskExternalUpdateNotification::CreateAndShowNotificationView(
-    const base::string16& message) {
+    const std::u16string& message) {
   view_ = new KioskExternalUpdateNotificationView(this);
   view_->SetMessage(message);
 
@@ -153,5 +159,8 @@ void KioskExternalUpdateNotification::Dismiss() {
     view->CloseByOwner();
   }
 }
+
+BEGIN_METADATA(KioskExternalUpdateNotificationView, views::WidgetDelegateView)
+END_METADATA
 
 }  // namespace chromeos

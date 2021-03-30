@@ -115,11 +115,16 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
     virtual bool RemoveOutputSurfaceAsOverlay();
 
     virtual OverlayStrategy GetUMAEnum() const;
+
+    // Does a null-check on |primary_plane| and returns it's |display_rect|
+    // member if non-null and an empty gfx::RectF otherwise.
+    gfx::RectF GetPrimaryPlaneDisplayRect(const PrimaryPlane* primary_plane);
   };
   using StrategyList = std::vector<std::unique_ptr<Strategy>>;
 
   ~OverlayProcessorUsingStrategy() override;
 
+  gfx::Rect GetPreviousFrameOverlaysBoundingRect() const final;
   gfx::Rect GetAndResetOverlayDamage() final;
 
   // Override OverlayProcessor.
@@ -170,6 +175,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
 
   gfx::Rect overlay_damage_rect_;
   bool previous_is_underlay = false;
+  bool previous_has_mask_filter_ = false;
   gfx::Rect previous_frame_overlay_rect_;
 
   struct OverlayPrioritizationConfig {
@@ -243,6 +249,11 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
       const OverlayCandidateList& candidate_list,
       const QuadList& quad_list);
 
+  // Used to update |min_working_scale_| and |max_failed_scale_|. |scale_factor|
+  // should be the src->dst scaling amount that is < 1.0f and |success| should
+  // be whether that scaling worked or not.
+  void UpdateDownscalingCapabilities(float scale_factor, bool success);
+
   struct ProposedCandidateKey {
     gfx::Rect rect;
     OverlayStrategy strategy_id = OverlayStrategy::kUnknown;
@@ -271,6 +282,12 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   base::TimeTicks last_time_interval_switch_overlay_tick_;
   ProposedCandidateKey prev_overlay_tracking_id_;
   uint64_t frame_sequence_number_ = 0;
+
+  // These values are used for tracking how much we can downscale with overlays
+  // and is used for when we require an overlay so we can determine how much we
+  // can downscale without failing.
+  float min_working_scale_ = 1.0f;
+  float max_failed_scale_ = 0.0f;
 
   DISALLOW_COPY_AND_ASSIGN(OverlayProcessorUsingStrategy);
 };

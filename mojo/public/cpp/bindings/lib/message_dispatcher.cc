@@ -31,6 +31,8 @@ void MessageDispatcher::SetSink(MessageReceiver* sink) {
 }
 
 bool MessageDispatcher::Accept(Message* message) {
+  internal::MessageDispatchContext dispatch_context(message);
+
   DCHECK(sink_);
   if (validator_) {
     if (!validator_->Accept(message))

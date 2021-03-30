@@ -10,8 +10,8 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
-#include "build/chromeos_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
@@ -66,10 +66,7 @@ gl::GLContextAttribs GenerateGLContextAttribs(
     attribs.robust_buffer_access = true;
 
     // Request a specific context version instead of always 3.0
-    if (IsWebGL2ComputeContextType(attribs_helper.context_type)) {
-      attribs.client_major_es_version = 3;
-      attribs.client_minor_es_version = 1;
-    } else if (IsWebGL2OrES3ContextType(attribs_helper.context_type)) {
+    if (IsWebGL2OrES3ContextType(attribs_helper.context_type)) {
       attribs.client_major_es_version = 3;
       attribs.client_minor_es_version = 0;
     } else {
@@ -85,6 +82,13 @@ gl::GLContextAttribs GenerateGLContextAttribs(
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableES3GLContext)) {
     // Forcefully disable ES3 contexts
+    attribs.client_major_es_version = 2;
+    attribs.client_minor_es_version = 0;
+  }
+
+  if (IsES31ForTestingContextType(attribs_helper.context_type)) {
+    // Forcefully disable ES 3.1 contexts. Tests create contexts by initializing
+    // the attributes directly.
     attribs.client_major_es_version = 2;
     attribs.client_minor_es_version = 0;
   }
@@ -217,16 +221,18 @@ VulkanImplementationName ParseVulkanImplementationName(
     }
   }
 
-  // GrContext is not going to use Vulkan.
-  if (!base::FeatureList::IsEnabled(features::kVulkan))
-    return VulkanImplementationName::kNone;
+  if (features::IsUsingVulkan()) {
+    // If the vulkan feature is enabled from command line, we will force to use
+    // vulkan even if it is blocklisted.
+    return base::FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
+               features::kVulkan.name,
+               base::FeatureList::OVERRIDE_ENABLE_FEATURE)
+               ? VulkanImplementationName::kForcedNative
+               : VulkanImplementationName::kNative;
+  }
 
-  // If the vulkan feature is enabled from command line, we will force to use
-  // vulkan even if it is blocklisted.
-  return base::FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
-             features::kVulkan.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE)
-             ? VulkanImplementationName::kForcedNative
-             : VulkanImplementationName::kNative;
+  // GrContext is not going to use Vulkan.
+  return VulkanImplementationName::kNone;
 #endif
 }
 

@@ -530,7 +530,6 @@ class BASE_EXPORT TraceLog : public MemoryDumpProvider {
   std::unordered_map<int, int> thread_sort_indices_;
   std::unordered_map<int, std::string> thread_names_
       GUARDED_BY(thread_info_lock_);
-  base::Time process_creation_time_;
 
   // The following two maps are used only when ECHO_TO_CONSOLE.
   std::unordered_map<int, base::stack<TimeTicks>> thread_event_start_times_

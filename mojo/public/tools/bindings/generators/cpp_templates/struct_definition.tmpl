@@ -8,43 +8,27 @@ bool {{class_name}}::Validate(
   if (!data)
     return true;
 
-  if (!ValidateStructHeaderAndClaimMemory(data, validation_context))
+{%- if struct.versions|length == 1 %}
+  if (!ValidateUnversionedStructHeaderAndSizeAndClaimMemory(
+          data, {{struct.versions[0].num_bytes}}, validation_context)) {
     return false;
+  }
+{%- else %}
+  static constexpr mojo::internal::StructVersionSize kVersionSizes[] = {
+{%- for version in struct.versions %}
+    { {{version.version}}, {{version.num_bytes}} },
+{%- endfor %}
+  };
+  if (!ValidateStructHeaderAndVersionSizeAndClaimMemory(
+          data, kVersionSizes, validation_context)) {
+    return false;
+  }
+{%- endif %}
 
   // NOTE: The memory backing |object| may be smaller than |sizeof(*object)| if
   // the message comes from an older version.
   const {{class_name}}* object = static_cast<const {{class_name}}*>(data);
-
-  static constexpr struct {
-    uint32_t version;
-    uint32_t num_bytes;
-  } kVersionSizes[] = {
-{%- for version in struct.versions -%}
-    { {{version.version}}, {{version.num_bytes}} }{% if not loop.last %}, {% endif -%}
-{%- endfor -%}
-  };
-
-  if (object->header_.version <=
-          kVersionSizes[base::size(kVersionSizes) - 1].version) {
-    // Scan in reverse order to optimize for more recent versions.
-    for (int i = base::size(kVersionSizes) - 1; i >= 0; --i) {
-      if (object->header_.version >= kVersionSizes[i].version) {
-        if (object->header_.num_bytes == kVersionSizes[i].num_bytes)
-          break;
-
-        ReportValidationError(
-            validation_context,
-            mojo::internal::VALIDATION_ERROR_UNEXPECTED_STRUCT_HEADER);
-        return false;
-      }
-    }
-  } else if (object->header_.num_bytes <
-                 kVersionSizes[base::size(kVersionSizes) - 1].num_bytes) {
-    ReportValidationError(
-        validation_context,
-        mojo::internal::VALIDATION_ERROR_UNEXPECTED_STRUCT_HEADER);
-    return false;
-  }
+  ALLOW_UNUSED_LOCAL(object);
 
 {#- Before validating fields introduced at a certain version, we need to add
     a version check, which makes sure we skip further validation if |object|

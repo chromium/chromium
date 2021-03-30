@@ -70,7 +70,7 @@ class TtsService : public mojom::TtsService,
   // mojom::TtsService:
   void BindTtsStreamFactory(
       mojo::PendingReceiver<mojom::TtsStreamFactory> receiver,
-      mojo::PendingRemote<audio::mojom::StreamFactory> factory) override;
+      mojo::PendingRemote<media::mojom::AudioStreamFactory> factory) override;
 
   // mojom::GoogleTtsStream:
   void CreateGoogleTtsStream(CreateGoogleTtsStreamCallback callback) override;
@@ -91,6 +91,10 @@ class TtsService : public mojom::TtsService,
 
   // Satisfies any pending tts stream factory receivers.
   void ProcessPendingTtsStreamFactories();
+
+  // Do any processing (e.g. sending start/end events) on buffers that have just
+  // been rendered on the audio thread.
+  void ProcessRenderedBuffers();
 
   // Connection to tts in the browser.
   mojo::Receiver<mojom::TtsService> service_receiver_;
@@ -117,6 +121,7 @@ class TtsService : public mojom::TtsService,
 
   // The queue of audio buffers to be played by the audio thread.
   std::queue<AudioBuffer> buffers_ GUARDED_BY(state_lock_);
+  std::queue<AudioBuffer> rendered_buffers_;
 
   // An explicit list of increasing time delta sorted timepoints to be fired
   // while rendering audio at the specified |delay| from start of audio
@@ -126,6 +131,14 @@ class TtsService : public mojom::TtsService,
 
   // The time at which playback of the current utterance started.
   base::Time start_playback_time_;
+
+  // Whether a task to process rendered audio buffers has been posted.
+  bool process_rendered_buffers_posted_ GUARDED_BY(state_lock_) = false;
+
+  // The main thread's task runner handle.
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+
+  base::WeakPtrFactory<TtsService> weak_factory_{this};
 };
 
 }  // namespace tts

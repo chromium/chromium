@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- Generate this token with the command:
+generate_token.py http://127.0.0.1:8000 WebAssemblyExceptions --expire-timestamp=2000000000
+-->
+<meta http-equiv="origin-trial" content="A1LXKvRBV7wg2YSm+f594gEXeYs7h1EYTd8+2ce9rJkUrf1X++wRovCKQUNysqjOkOpiJBN2jvn9DInDjI9EGwgAAABdeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiV2ViQXNzZW1ibHlFeGNlcHRpb25zIiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9" />
+<script src="../../../../resources/testharness.js"></script>
+<script src="../../../../resources/testharnessreport.js"></script>
+<script src="../../wasm/resources/wasm-module-builder.js"></script>
+<script src="resources/wasm-exceptions-origin-trial.js"></script>
+<script>
+test(testWasmExceptionsEnabled,
+     "Test that WebAssembly exceptions are enabled with origin trial token");
+promise_test(testWasmExceptionsEnabledOnWorker,
+     "Test that WebAssembly exceptions are enabled in worker with origin trial token");
+</script>

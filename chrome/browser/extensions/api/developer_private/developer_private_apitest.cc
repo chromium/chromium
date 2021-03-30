@@ -17,7 +17,6 @@
 #include "content/public/test/service_worker_test_helpers.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
-#include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/test/result_catcher.h"
 
@@ -30,12 +29,13 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, Basics) {
   // setings in the API test.
   base::FilePath base_dir = test_data_dir_.AppendASCII("developer");
   EXPECT_TRUE(LoadExtension(base_dir.AppendASCII("hosted_app")));
-  EXPECT_TRUE(InstallExtension(
-      base_dir.AppendASCII("packaged_app"), 1, Manifest::INTERNAL));
+  EXPECT_TRUE(InstallExtension(base_dir.AppendASCII("packaged_app"), 1,
+                               mojom::ManifestLocation::kInternal));
   LoadExtension(base_dir.AppendASCII("simple_extension"));
 
-  ASSERT_TRUE(RunPlatformAppTestWithFlags("developer/test", kFlagNone,
-                                          kFlagLoadAsComponent));
+  ASSERT_TRUE(RunExtensionTest({.name = "developer/test",
+                                .load_as_component = true,
+                                .launch_as_platform_app = true}));
 }
 
 // Tests opening the developer tools for an app window.
@@ -140,16 +140,16 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectEmbeddedOptionsPage) {
 IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
                        InspectInactiveServiceWorkerBackground) {
   ResultCatcher result_catcher;
-  service_worker_test_utils::TestRegistrationObserver registration_observer(
-      browser()->profile());
-  // Load an extension that is service worker based.
+  // Load an extension that is service worker-based.
   const Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("service_worker")
                         .AppendASCII("worker_based_background")
-                        .AppendASCII("inspect"));
+                        .AppendASCII("inspect"),
+                    // Wait for the registration to be stored since we'll stop
+                    // the worker.
+                    {.wait_for_registration_stored = true});
   ASSERT_TRUE(extension);
   ASSERT_TRUE(result_catcher.GetNextResult());
-  registration_observer.WaitForRegistrationStored();
 
   // Stop the service worker.
   {

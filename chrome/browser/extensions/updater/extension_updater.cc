@@ -23,6 +23,7 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/api/module/module.h"
 #include "chrome/browser/extensions/crx_installer.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/extensions/pending_extension_manager.h"
@@ -314,7 +315,9 @@ bool ExtensionUpdater::AddExtensionToDownloader(
     const Extension& extension,
     int request_id,
     ManifestFetchData::FetchPriority fetch_priority) {
-  GURL update_url = ManifestURL::GetUpdateURL(&extension);
+  ExtensionManagement* extension_management =
+      ExtensionManagementFactory::GetForBrowserContext(profile_);
+  GURL update_url = extension_management->GetEffectiveUpdateURL(extension);
   // Skip extensions with empty update URLs converted from user
   // scripts.
   if (extension.converted_from_user_script() && update_url.is_empty()) {
@@ -368,14 +371,6 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
   ExtensionUpdateCheckParams update_check_params;
 
   if (params.ids.empty()) {
-    // We have to mark high-priority extensions (such as policy-forced
-    // extensions or external component extensions) with foreground fetch
-    // priority; otherwise their installation may be throttled by bandwidth
-    // limits.
-    // See https://crbug.com/904600 and https://crbug.com/965686.
-    if (pending_extension_manager->HasHighPriorityPendingExtension())
-      params.fetch_priority = ManifestFetchData::FOREGROUND;
-
     // If no extension ids are specified, check for updates for all extensions.
     pending_extension_manager->GetPendingIdsForUpdateCheck(&pending_ids);
 
@@ -390,12 +385,22 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
       const bool is_corrupt_reinstall =
           pending_extension_manager->IsPolicyReinstallForCorruptionExpected(
               pending_id);
+      // We have to mark high-priority extensions (such as policy-forced
+      // extensions or external component extensions) with foreground fetch
+      // priority; otherwise their installation may be throttled by bandwidth
+      // limits.
+      // See https://crbug.com/904600 and https://crbug.com/965686.
+      const bool is_high_priority_extension_pending =
+          pending_extension_manager->HasHighPriorityPendingExtension();
       if (CanUseUpdateService(pending_id)) {
         update_check_params.update_info[pending_id].is_corrupt_reinstall =
             is_corrupt_reinstall;
       } else if (downloader_->AddPendingExtension(
                      pending_id, info->update_url(), info->install_source(),
-                     is_corrupt_reinstall, request_id, params.fetch_priority)) {
+                     is_corrupt_reinstall, request_id,
+                     is_high_priority_extension_pending
+                         ? ManifestFetchData::FOREGROUND
+                         : params.fetch_priority)) {
         request.in_progress_ids_.insert(pending_id);
         InstallStageTracker::Get(profile_)->ReportInstallationStage(
             pending_id, InstallStageTracker::Stage::DOWNLOADING);
@@ -646,7 +651,10 @@ bool ExtensionUpdater::CanUseUpdateService(
   // Furthermore, we can only update extensions that were installed from the
   // default webstore or extensions with empty update URLs not converted from
   // user scripts.
-  const GURL& update_url = ManifestURL::GetUpdateURL(extension);
+  ExtensionManagement* extension_management =
+      ExtensionManagementFactory::GetForBrowserContext(profile_);
+  const GURL& update_url =
+      extension_management->GetEffectiveUpdateURL(*extension);
   if (update_url.is_empty())
     return !extension->converted_from_user_script();
   return extension_urls::IsWebstoreUpdateUrl(update_url);

@@ -1,0 +1,19 @@
+noparent = True
+
+include_rules = [
+  "+base/android/java/src/org/chromium/base",
+  "+chrome/browser/preferences/android/java/src/org/chromium/chrome/browser/preferences",
+  "+chrome/browser/profiles/android/java/src/org/chromium/chrome/browser/profiles",
+  "+components/embedder_support/android/java/src/org/chromium/components/embedder_support/util",
+  "+components/externalauth/android/java/src/org/chromium/components/externalauth",
+  "+content/public/android/java/src/org/chromium/content_public/browser",
+]
+
+specific_include_rules = {
+  '.*Test\.java': [
+    "+base/test/android",
+    "+chrome/android/java/src/org/chromium/chrome/browser/browsing_data",
+    "+chrome/test/android",
+    "+content/public/test/android/javatests/src/org/chromium/content_public/browser/test",
+  ]
+}

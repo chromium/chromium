@@ -22,26 +22,26 @@ const char kFixedMassStoragePrefix[] = "path:";
 const char kMtpPtpPrefix[] = "mtp:";
 const char kMacImageCapturePrefix[] = "ic:";
 
-base::string16 GetDisplayNameForDevice(uint64_t storage_size_in_bytes,
-                                       const base::string16& name) {
+std::u16string GetDisplayNameForDevice(uint64_t storage_size_in_bytes,
+                                       const std::u16string& name) {
   DCHECK(!name.empty());
-  return (storage_size_in_bytes == 0) ?
-      name :
-      ui::FormatBytes(storage_size_in_bytes) + base::ASCIIToUTF16(" ") + name;
+  return (storage_size_in_bytes == 0)
+             ? name
+             : ui::FormatBytes(storage_size_in_bytes) + u" " + name;
 }
 
-base::string16 GetFullProductName(const base::string16& vendor_name,
-                                  const base::string16& model_name) {
+std::u16string GetFullProductName(const std::u16string& vendor_name,
+                                  const std::u16string& model_name) {
   if (vendor_name.empty() && model_name.empty())
-    return base::string16();
+    return std::u16string();
 
-  base::string16 product_name;
+  std::u16string product_name;
   if (vendor_name.empty())
     product_name = model_name;
   else if (model_name.empty())
     product_name = vendor_name;
   else if (!vendor_name.empty() && !model_name.empty())
-    product_name = vendor_name + base::UTF8ToUTF16(", ") + model_name;
+    product_name = vendor_name + u", " + model_name;
 
   return product_name;
 }
@@ -57,9 +57,9 @@ StorageInfo::StorageInfo(const StorageInfo& other) = default;
 
 StorageInfo::StorageInfo(const std::string& device_id_in,
                          const base::FilePath::StringType& device_location,
-                         const base::string16& label,
-                         const base::string16& vendor,
-                         const base::string16& model,
+                         const std::u16string& label,
+                         const std::u16string& vendor,
+                         const std::u16string& model,
                          uint64_t size_in_bytes)
     : device_id_(device_id_in),
       location_(device_location),
@@ -162,25 +162,26 @@ bool StorageInfo::IsMTPDevice(const std::string& device_id) {
   return CrackDeviceId(device_id, &type, nullptr) && type == MTP_OR_PTP;
 }
 
-base::string16 StorageInfo::GetDisplayName(bool with_size) const {
-  return GetDisplayNameWithOverride(base::string16(), with_size);
+std::u16string StorageInfo::GetDisplayName(bool with_size) const {
+  return GetDisplayNameWithOverride(std::u16string(), with_size);
 }
 
-base::string16 StorageInfo::GetDisplayNameWithOverride(
-    const base::string16& override_display_name, bool with_size) const {
+std::u16string StorageInfo::GetDisplayNameWithOverride(
+    const std::u16string& override_display_name,
+    bool with_size) const {
   if (!IsRemovableDevice(device_id_)) {
     if (!storage_label_.empty())
       return storage_label_;
     return base::FilePath(location_).LossyDisplayName();
   }
 
-  base::string16 name = override_display_name;
+  std::u16string name = override_display_name;
   if (name.empty())
     name = storage_label_;
   if (name.empty())
     name = GetFullProductName(vendor_name_, model_name_);
   if (name.empty())
-    name = base::ASCIIToUTF16("Unlabeled device");
+    name = u"Unlabeled device";
 
   if (with_size)
     name = GetDisplayNameForDevice(total_size_in_bytes_, name);

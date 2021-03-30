@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next min version: 3
+// Next min version: 4
 
 module cros.mojom;
 
@@ -28,10 +28,6 @@ const uint32 GRALLOC_USAGE_FORCE_I420 = 0x10000000;
 // into a new HAL request for Zero-Shutter Lag (ZSL). See crrev.com/c/1877636
 // for the CL that does the aforementioned things.
 const uint32 GRALLOC_USAGE_STILL_CAPTURE = 0x20000000;
-// Flag to indicate ZSL is enabled for this session. Returned in the updated
-// stream configuration returned from configure_streams(). Refer to
-// crrev.com/c/2055927 which returns this flag.
-const uint32 GRALLOC_USAGE_ZERO_SHUTTER_LAG_ENABLED = 0x40000000;
 
 [Extensible]
 enum HalPixelFormat {
@@ -102,7 +98,8 @@ enum Camera3BufferStatus {
   CAMERA3_BUFFER_STATUS_ERROR = 1,
 };
 
-// Structure that contains needed information about a camera buffer.
+// Structure that contains needed information about a camera buffer that could
+// be used to map in userspace.
 struct CameraBufferHandle {
   uint64 buffer_id;
   array<handle> fds;
@@ -112,6 +109,7 @@ struct CameraBufferHandle {
   uint32 height;
   array<uint32> strides;
   array<uint32> offsets;
+  [MinVersion=3] array<uint32>? sizes;
 };
 
 struct Camera3StreamBuffer {
@@ -253,7 +251,7 @@ interface Camera3CallbackOps {
 //
 //    7. Close() closes the camera device.
 //
-// Next method ID: 8
+// Next method ID: 9
 interface Camera3DeviceOps {
   // Initialize() is called once after the camera device is opened to register
   // the Camera3CallbackOps handle.
@@ -309,4 +307,12 @@ interface Camera3DeviceOps {
 
   // Close() is called to close the camera device.
   Close@7() => (int32 result);
+
+  // ConfigureStreamsAndGetAllocatedBuffers() is called every time the client
+  // needs to set up new set of streams. Also allocated buffers for clients that
+  // do not have capabilities to allocate DMA-bufs.
+  [MinVersion=3]
+  ConfigureStreamsAndGetAllocatedBuffers@8(Camera3StreamConfiguration config) =>
+      (int32 result, Camera3StreamConfiguration? updated_config,
+       map<uint64, array<Camera3StreamBuffer>> allocated_buffers);
 };

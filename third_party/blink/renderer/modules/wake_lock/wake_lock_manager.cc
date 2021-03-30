@@ -47,15 +47,10 @@ void WakeLockManager::AcquireWakeLock(ScriptPromiseResolver* resolver) {
         ToMojomWakeLockType(wake_lock_type_),
         device::mojom::blink::WakeLockReason::kOther, "Blink Wake Lock",
         wake_lock_.BindNewPipeAndPassReceiver(
-            execution_context_->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+            execution_context_->GetTaskRunner(TaskType::kWakeLock)));
     wake_lock_.set_disconnect_handler(WTF::Bind(
         &WakeLockManager::OnWakeLockConnectionError, WrapWeakPersistent(this)));
     wake_lock_->RequestWakeLock();
-
-    feature_handle_for_scheduler_ =
-        execution_context_->GetScheduler()->RegisterFeature(
-            SchedulingPolicy::Feature::kWakeLock,
-            {SchedulingPolicy::DisableBackForwardCache()});
   }
   // https://w3c.github.io/screen-wake-lock/#the-request-method
   // 5.2. Let lock be a new WakeLockSentinel object with its type attribute set
@@ -91,9 +86,6 @@ void WakeLockManager::UnregisterSentinel(WakeLockSentinel* sentinel) {
     // 5.2. If success is true and type is "screen" run the following:
     // 5.2.1. Reset the platform-specific inactivity timer after which the
     //        screen is actually turned off.
-
-    // Make the page bfcache-eligible if there is no WakeLock held.
-    feature_handle_for_scheduler_.reset();
   }
 }
 

@@ -8,7 +8,8 @@
 #ifndef CHROME_INSTALLER_SETUP_INSTALL_WORKER_H_
 #define CHROME_INSTALLER_SETUP_INSTALL_WORKER_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "base/win/windows_types.h"
 
 class WorkItemList;
@@ -43,7 +44,7 @@ void AddUpdateBrandCodeWorkItem(const InstallerState& installer_state,
 // Checks to see if the given brand code is one that should be updated if
 // the current install is considered an enterprise install.  If so the updated
 // brand code is returned, otherwise an empty string is returned.
-base::string16 GetUpdatedBrandCode(const base::string16& brand_code);
+std::wstring GetUpdatedBrandCode(const std::wstring& brand_code);
 
 // After a successful copying of all the files, this function is called to
 // do a few post install tasks:
@@ -97,6 +98,21 @@ void AddOsUpgradeWorkItems(const InstallerState& installer_state,
                            const base::FilePath& setup_path,
                            const base::Version& new_version,
                            WorkItemList* install_list);
+
+// Adds work items to set or delete the "channel" value in `clients_key`. The
+// value is set if a channel was provided to the installer via the --channel
+// command line switch and deleted otherwise.
+void AddChannelWorkItems(HKEY root,
+                         const std::wstring& clients_key,
+                         WorkItemList* list);
+
+// Adds work items to be done when finalizing an update. This happens both
+// after the executables get renamed for an in-use update or as the last steps
+// for a regular update.
+void AddFinalizeUpdateWorkItems(const base::Version& new_version,
+                                const InstallerState& installer_state,
+                                const base::FilePath& setup_path,
+                                WorkItemList* list);
 
 }  // namespace installer
 

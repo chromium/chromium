@@ -54,8 +54,8 @@ class BookmarkBubbleViewTest : public BrowserWithTestWindowTest {
         BookmarkModelFactory::GetForBrowserContext(profile());
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
 
-    bookmarks::AddIfNotBookmarked(
-        bookmark_model, GURL(kTestBookmarkURL), base::string16());
+    bookmarks::AddIfNotBookmarked(bookmark_model, GURL(kTestBookmarkURL),
+                                  std::u16string());
   }
 
   void TearDown() override {

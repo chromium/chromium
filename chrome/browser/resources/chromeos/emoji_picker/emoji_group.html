@@ -1,0 +1,28 @@
+<style>
+  :host {
+    margin-top: 10px;
+  }
+
+  #heading {
+    color: var(--cr-secondary-text-color);
+    font-size: 10pt;
+    padding-bottom: 8px;
+    padding-top: 8px;
+  }
+
+  #emoji {
+    display: grid;
+    grid-auto-rows: max-content;
+    grid-template-columns: repeat(var(--emoji-per-row), 1fr);
+    justify-items: center;
+  }
+</style>
+
+<div id="heading" role="heading" aria-level="2" tabindex="0">[[data.group]]</div>
+<div id="emoji">
+  <template is="dom-repeat" items="[[data.emoji]]">
+    <emoji-button emoji="[[getDisplayEmojiForEmoji(item.base.string)]]"
+      variants="[[item.alternates]]">
+    </emoji-button>
+  </template>
+</div>

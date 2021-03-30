@@ -5,7 +5,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -25,7 +25,6 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/process_manager.h"
-#include "extensions/common/scoped_worker_based_extensions_channel.h"
 #include "extensions/test/result_catcher.h"
 
 namespace extensions {
@@ -33,68 +32,58 @@ namespace {
 
 using ContextType = ExtensionApiTest::ContextType;
 
-class NativeMessagingApiTest : public ExtensionApiTest {
+class NativeMessagingApiTestBase : public ExtensionApiTest {
  protected:
   extensions::ScopedTestNativeMessagingHost test_host_;
 };
 
-IN_PROC_BROWSER_TEST_F(NativeMessagingApiTest, NativeMessagingBasic) {
-  ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestHost(false));
-  ASSERT_TRUE(RunExtensionTest("native_messaging")) << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(NativeMessagingApiTest, UserLevelNativeMessaging) {
-  ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestHost(true));
-  ASSERT_TRUE(RunExtensionTest("native_messaging")) << message_;
-}
-
-// TODO(crbug.com/1094027): Clean up duplicate test coverage.
-class NativeMessagingLazyApiTest
-    : public NativeMessagingApiTest,
-      public testing::WithParamInterface<ContextType> {
- public:
-  NativeMessagingLazyApiTest() {
-    // Service Workers are currently only available on certain channels, so set
-    // the channel for those tests.
-    if (GetParam() == ContextType::kServiceWorker)
-      current_channel_ = std::make_unique<ScopedWorkerBasedExtensionsChannel>();
-  }
-
+class NativeMessagingApiTest : public NativeMessagingApiTestBase,
+                               public testing::WithParamInterface<ContextType> {
  protected:
-  bool RunLazyTest(const std::string& extension_name) {
-    if (GetParam() == ContextType::kEventPage) {
-      return RunExtensionTest(extension_name);
-    }
-    // TODO(https://crbug.com/1146173): These tests are being run with
-    // file access to prevent flakiness for the SW version. This should
-    // be reverted to run without file access when this bug is fixed.
-    return RunExtensionTestWithFlags(
-        extension_name,
-        kFlagRunAsServiceWorkerBasedExtension | kFlagEnableFileAccess,
-        kFlagNone);
+  bool RunTest(const char* extension_name) {
+    if (GetParam() == ContextType::kPersistentBackground)
+      return RunExtensionTest({.name = extension_name});
+    std::string lazy_exension_name = base::StrCat({extension_name, "/lazy"});
+    return RunExtensionTest(
+        {.name = lazy_exension_name.c_str()},
+        {.load_as_service_worker = GetParam() == ContextType::kServiceWorker});
   }
-
-  std::unique_ptr<ScopedWorkerBasedExtensionsChannel> current_channel_;
 };
 
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         NativeMessagingApiTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
 INSTANTIATE_TEST_SUITE_P(EventPage,
-                         NativeMessagingLazyApiTest,
+                         NativeMessagingApiTest,
                          ::testing::Values(ContextType::kEventPage));
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         NativeMessagingLazyApiTest,
+                         NativeMessagingApiTest,
                          ::testing::Values(ContextType::kServiceWorker));
 
-IN_PROC_BROWSER_TEST_P(NativeMessagingLazyApiTest, NativeMessagingBasic) {
+// Tests chrome.runtime.sendNativeMessage to a native messaging host.
+IN_PROC_BROWSER_TEST_P(NativeMessagingApiTest, NativeMessagingBasic) {
   ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestHost(false));
-  ASSERT_TRUE(RunLazyTest("native_messaging_lazy")) << message_;
+  ASSERT_TRUE(RunTest("native_messaging")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(NativeMessagingLazyApiTest, UserLevelNativeMessaging) {
+IN_PROC_BROWSER_TEST_P(NativeMessagingApiTest, UserLevelNativeMessaging) {
   ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestHost(true));
-  ASSERT_TRUE(RunLazyTest("native_messaging_lazy")) << message_;
+  ASSERT_TRUE(RunTest("native_messaging")) << message_;
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Tests chrome.runtime.connectNative to a native messaging host.
+IN_PROC_BROWSER_TEST_P(NativeMessagingApiTest, ConnectNative) {
+  ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestHost(false));
+  ASSERT_TRUE(RunTest("native_messaging_connect")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(NativeMessagingApiTest,
+                       UserLevelNativeMessagingConnectNative) {
+  ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestHost(true));
+  ASSERT_TRUE(RunTest("native_messaging_connect")) << message_;
+}
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class TestProcessManagerObserver : public ProcessManagerObserver {
  public:
@@ -108,7 +97,7 @@ class TestProcessManagerObserver : public ProcessManagerObserver {
     base::RunLoop run_loop;
     quit_ = run_loop.QuitClosure();
 
-    observer_.Add(process_manager);
+    observation_.Observe(process_manager);
     run_loop.Run();
   }
 
@@ -117,13 +106,14 @@ class TestProcessManagerObserver : public ProcessManagerObserver {
     if (extension_id != extension_id_) {
       return;
     }
-    observer_.RemoveAll();
+    observation_.Reset();
     extension_id_.clear();
     std::move(quit_).Run();
   }
 
   std::string extension_id_;
-  ScopedObserver<ProcessManager, ProcessManagerObserver> observer_{this};
+  base::ScopedObservation<ProcessManager, ProcessManagerObserver> observation_{
+      this};
   base::OnceClosure quit_;
 
   DISALLOW_COPY_AND_ASSIGN(TestProcessManagerObserver);
@@ -146,7 +136,7 @@ base::CommandLine CreateNativeMessagingConnectCommandLine(
   return command_line;
 }
 
-class NativeMessagingLaunchApiTest : public NativeMessagingApiTest {
+class NativeMessagingLaunchApiTest : public NativeMessagingApiTestBase {
  public:
   NativeMessagingLaunchApiTest() {
     feature_list_.InitAndEnableFeature(features::kOnConnectNative);
@@ -238,8 +228,9 @@ class TestKeepAliveStateObserver : public KeepAliveStateObserver {
 
   void WaitForNoKeepAlive() {
     ASSERT_TRUE(KeepAliveRegistry::GetInstance()->IsKeepingAlive());
-    ScopedObserver<KeepAliveRegistry, KeepAliveStateObserver> observer(this);
-    observer.Add(KeepAliveRegistry::GetInstance());
+    base::ScopedObservation<KeepAliveRegistry, KeepAliveStateObserver> observer(
+        this);
+    observer.Observe(KeepAliveRegistry::GetInstance());
 
     // On Mac, the browser remains alive when no windows are open, so observing
     // the KeepAliveRegistry cannot detect when the native messaging keep-alive
@@ -448,7 +439,7 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchBackgroundModeApiTest,
   ASSERT_NO_FATAL_FAILURE(TestKeepAliveStateObserver().WaitForNoKeepAlive());
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace
 }  // namespace extensions

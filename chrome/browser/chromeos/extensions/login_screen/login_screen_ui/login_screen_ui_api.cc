@@ -37,14 +37,21 @@ LoginScreenUiCloseFunction::LoginScreenUiCloseFunction() = default;
 LoginScreenUiCloseFunction::~LoginScreenUiCloseFunction() = default;
 
 ExtensionFunction::ResponseAction LoginScreenUiCloseFunction::Run() {
-  std::string error;
-  bool success =
-      chromeos::login_screen_extension_ui::UiHandler::Get(true /*can_create*/)
-          ->Close(extension(), &error);
+  chromeos::login_screen_extension_ui::UiHandler::Get(true /*can_create*/)
+      ->Close(extension(),
+              base::BindOnce(&LoginScreenUiCloseFunction::OnClosed, this));
+  // UiHandler::Close() repsonds asynchronously for success, but not for error.
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
 
-  if (!success)
-    return RespondNow(Error(error));
-  return RespondNow(NoArguments());
+void LoginScreenUiCloseFunction::OnClosed(
+    bool success,
+    const base::Optional<std::string>& error) {
+  if (!success) {
+    Respond(Error(error.value()));
+    return;
+  }
+  Respond(NoArguments());
 }
 
 }  // namespace extensions

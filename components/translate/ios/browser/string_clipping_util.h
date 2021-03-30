@@ -7,14 +7,15 @@
 
 #include <stddef.h>
 
-#include "base/strings/string16.h"
+#include <string>
+
 
 // Truncates |contents| to |length|.
 // Returns a string terminated at the last space to ensure no words are
 // clipped.
 // Note: This function uses spaces as word boundaries and may not handle all
 // languages correctly.
-base::string16 GetStringByClippingLastWord(const base::string16& contents,
+std::u16string GetStringByClippingLastWord(const std::u16string& contents,
                                            size_t length);
 
 #endif  // COMPONENTS_TRANSLATE_IOS_BROWSER_STRING_CLIPPING_UTIL_H_

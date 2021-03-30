@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/menu_test_base.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -18,6 +19,8 @@
 #include "ui/views/widget/drop_helper.h"
 
 namespace {
+
+using ::ui::mojom::DragOperation;
 
 const char kTestNestedDragData[] = "test_nested_drag_data";
 const char kTestTopLevelDragData[] = "test_top_level_drag_data";
@@ -73,7 +76,7 @@ class TestTargetView : public views::View {
   bool CanDrop(const OSExchangeData& data) override;
   void OnDragEntered(const ui::DropTargetEvent& event) override;
   int OnDragUpdated(const ui::DropTargetEvent& event) override;
-  int OnPerformDrop(const ui::DropTargetEvent& event) override;
+  DragOperation OnPerformDrop(const ui::DropTargetEvent& event) override;
   void OnDragExited() override;
 
   // Whether or not we are currently dragging.
@@ -111,7 +114,7 @@ bool TestTargetView::AreDropTypesRequired() {
 }
 
 bool TestTargetView::CanDrop(const OSExchangeData& data) {
-  base::string16 contents;
+  std::u16string contents;
   return data.GetString(&contents) &&
          contents == base::ASCIIToUTF16(kTestNestedDragData);
 }
@@ -124,10 +127,10 @@ int TestTargetView::OnDragUpdated(const ui::DropTargetEvent& event) {
   return ui::DragDropTypes::DRAG_MOVE;
 }
 
-int TestTargetView::OnPerformDrop(const ui::DropTargetEvent& event) {
+DragOperation TestTargetView::OnPerformDrop(const ui::DropTargetEvent& event) {
   dragging_ = false;
   dropped_ = true;
-  return ui::DragDropTypes::DRAG_MOVE;
+  return DragOperation::kMove;
 }
 
 void TestTargetView::OnDragExited() {
@@ -168,12 +171,12 @@ class MenuViewDragAndDropTest : public MenuTestBase,
   bool AreDropTypesRequired(views::MenuItemView* menu) override;
   bool CanDrop(views::MenuItemView* menu,
                const ui::OSExchangeData& data) override;
-  int GetDropOperation(views::MenuItemView* item,
-                       const ui::DropTargetEvent& event,
-                       DropPosition* position) override;
-  int OnPerformDrop(views::MenuItemView* menu,
-                    DropPosition position,
-                    const ui::DropTargetEvent& event) override;
+  DragOperation GetDropOperation(views::MenuItemView* item,
+                                 const ui::DropTargetEvent& event,
+                                 DropPosition* position) override;
+  DragOperation OnPerformDrop(views::MenuItemView* menu,
+                              DropPosition position,
+                              const ui::DropTargetEvent& event) override;
   bool CanDrag(views::MenuItemView* menu) override;
   void WriteDragData(views::MenuItemView* sender,
                      ui::OSExchangeData* data) override;
@@ -198,13 +201,12 @@ class MenuViewDragAndDropTest : public MenuTestBase,
 void MenuViewDragAndDropTest::BuildMenu(views::MenuItemView* menu) {
   // Build a menu item that has a nested view that supports its own drag and
   // drop...
-  views::MenuItemView* menu_item_view =
-      menu->AppendMenuItem(1, base::ASCIIToUTF16("item 1"));
+  views::MenuItemView* menu_item_view = menu->AppendMenuItem(1, u"item 1");
   target_view_ = new TestTargetView();
   menu_item_view->AddChildView(target_view_);
   // ... as well as two other, normal items.
-  menu->AppendMenuItem(2, base::ASCIIToUTF16("item 2"));
-  menu->AppendMenuItem(3, base::ASCIIToUTF16("item 3"));
+  menu->AppendMenuItem(2, u"item 2");
+  menu->AppendMenuItem(3, u"item 3");
 }
 
 void MenuViewDragAndDropTest::DoTestWithMenuOpen() {
@@ -256,23 +258,24 @@ bool MenuViewDragAndDropTest::AreDropTypesRequired(views::MenuItemView* menu) {
 
 bool MenuViewDragAndDropTest::CanDrop(views::MenuItemView* menu,
                                       const ui::OSExchangeData& data) {
-  base::string16 contents;
+  std::u16string contents;
   return data.GetString(&contents) &&
          contents == base::ASCIIToUTF16(kTestTopLevelDragData);
 }
 
-int MenuViewDragAndDropTest::GetDropOperation(views::MenuItemView* item,
-                                              const ui::DropTargetEvent& event,
-                                              DropPosition* position) {
-  return ui::DragDropTypes::DRAG_MOVE;
+DragOperation MenuViewDragAndDropTest::GetDropOperation(
+    views::MenuItemView* item,
+    const ui::DropTargetEvent& event,
+    DropPosition* position) {
+  return DragOperation::kMove;
 }
 
-
-int MenuViewDragAndDropTest::OnPerformDrop(views::MenuItemView* menu,
-                                           DropPosition position,
-                                           const ui::DropTargetEvent& event) {
+DragOperation MenuViewDragAndDropTest::OnPerformDrop(
+    views::MenuItemView* menu,
+    DropPosition position,
+    const ui::DropTargetEvent& event) {
   performed_in_menu_drop_ = true;
-  return ui::DragDropTypes::DRAG_MOVE;
+  return DragOperation::kMove;
 }
 
 bool MenuViewDragAndDropTest::CanDrag(views::MenuItemView* menu) {

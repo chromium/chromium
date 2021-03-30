@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
 class Browser;
@@ -50,6 +51,7 @@ class WebAppLaunchManager {
       const std::string& app_id,
       const base::CommandLine& command_line,
       const base::FilePath& current_directory,
+      const base::Optional<GURL>& url_handler_launch_url,
       base::OnceCallback<void(Browser* browser,
                               apps::mojom::LaunchContainer container)>
           callback);
@@ -74,7 +76,10 @@ class WebAppLaunchManager {
 
 Browser* CreateWebApplicationWindow(Profile* profile,
                                     const std::string& app_id,
-                                    WindowOpenDisposition disposition);
+                                    WindowOpenDisposition disposition,
+                                    int32_t restore_id,
+                                    bool can_resize = true,
+                                    bool can_maximize = true);
 
 content::WebContents* NavigateWebApplicationWindow(
     Browser* browser,

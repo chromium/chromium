@@ -30,8 +30,10 @@
 #include "content/public/browser/navigation_type.h"
 #include "content/public/browser/reload_type.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace content {
+class FrameTree;
 class FrameTreeNode;
 class NavigationRequest;
 class RenderFrameHostImpl;
@@ -70,8 +72,9 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
     DISALLOW_COPY_AND_ASSIGN(PendingEntryRef);
   };
 
-  NavigationControllerImpl(NavigationControllerDelegate* delegate,
-                           BrowserContext* browser_context);
+  NavigationControllerImpl(BrowserContext* browser_context,
+                           FrameTree& frame_tree,
+                           NavigationControllerDelegate* delegate);
   ~NavigationControllerImpl() override;
 
   // NavigationController implementation:
@@ -155,7 +158,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   void NavigateFromFrameProxy(
       RenderFrameHostImpl* render_frame_host,
       const GURL& url,
-      const base::UnguessableToken* initiator_frame_token,
+      const blink::LocalFrameToken* initiator_frame_token,
       int initiator_process_id,
       const base::Optional<url::Origin>& initiator_origin,
       bool is_renderer_initiated,
@@ -163,20 +166,21 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       const Referrer& referrer,
       ui::PageTransition page_transition,
       bool should_replace_current_entry,
-      NavigationDownloadPolicy download_policy,
+      blink::NavigationDownloadPolicy download_policy,
       const std::string& method,
       scoped_refptr<network::ResourceRequestBody> post_body,
       const std::string& extra_headers,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
-      const base::Optional<Impression>& impression);
+      const base::Optional<blink::Impression>& impression);
 
   // Whether this is the initial navigation in an unmodified new tab.  In this
   // case, we know there is no content displayed in the page.
   bool IsUnmodifiedBlankTab();
 
-  // The session storage namespace that all child RenderViews belonging to
-  // |instance| should use.
-  SessionStorageNamespace* GetSessionStorageNamespace(SiteInstance* instance);
+  // The session storage namespace that all child RenderViews associated with
+  // |site_info| should use.
+  SessionStorageNamespace* GetSessionStorageNamespace(
+      const SiteInfo& site_info);
 
   // Returns the index of the specified entry, or -1 if entry is not contained
   // in this NavigationController.
@@ -278,10 +282,12 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // Calling this function when a SessionStorageNamespace has already been
   // associated with a |partition_id| will CHECK() fail.
   void SetSessionStorageNamespace(
-      const std::string& partition_id,
+      const StoragePartitionId& partition_id,
       SessionStorageNamespace* session_storage_namespace);
 
   // Random data ---------------------------------------------------------------
+
+  FrameTree& frame_tree() { return frame_tree_; }
 
   SSLManager* ssl_manager() { return &ssl_manager_; }
 
@@ -317,6 +323,14 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // NavigationRequest. Callers are responsible for only calling this for
   // requests corresponding to the current pending entry.
   std::unique_ptr<PendingEntryRef> ReferencePendingEntry();
+
+  // Another page accessed the initial empty main document, which means it
+  // is no longer safe to display a pending URL without risking a URL spoof.
+  void DidAccessInitialMainDocument();
+
+  // The state for the page changed and should be updated in session history.
+  void UpdateStateForFrame(RenderFrameHostImpl* render_frame_host,
+                           const blink::PageState& page_state);
 
   // Like NavigationController::CreateNavigationEntry, but takes extra arguments
   // like |source_site_instance| and |should_replace_entry|. |web_contents| is
@@ -460,7 +474,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       bool override_user_agent,
       bool should_replace_current_entry,
       bool has_user_gesture,
-      NavigationDownloadPolicy download_policy,
+      blink::NavigationDownloadPolicy download_policy,
       ReloadType reload_type,
       NavigationEntryImpl* entry,
       FrameNavigationEntry* frame_entry,
@@ -498,30 +512,25 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // anything if some random subframe is loaded. It will return true if anything
   // changed, or false if not.
   //
-  // The NewPage and NewSubframe functions take in |replace_entry| to pass to
+  // The NewEntry and NewSubframe functions take in |replace_entry| to pass to
   // InsertOrReplaceEntry, in case the newly created NavigationEntry is meant to
   // replace the current one (e.g., for location.replace or successful loads
   // after net errors), in contrast to updating a NavigationEntry in place
   // (e.g., for history.replaceState).
-  void RendererDidNavigateToNewPage(
+  void RendererDidNavigateToNewEntry(
       RenderFrameHostImpl* rfh,
       const mojom::DidCommitProvisionalLoadParams& params,
       bool is_same_document,
       bool replace_entry,
       bool previous_document_was_activated,
       NavigationRequest* request);
-  void RendererDidNavigateToExistingPage(
+  void RendererDidNavigateToExistingEntry(
       RenderFrameHostImpl* rfh,
       const mojom::DidCommitProvisionalLoadParams& params,
       bool is_same_document,
       bool was_restored,
       NavigationRequest* request,
       bool keep_pending_entry);
-  void RendererDidNavigateToSamePage(
-      RenderFrameHostImpl* rfh,
-      const mojom::DidCommitProvisionalLoadParams& params,
-      bool is_same_document,
-      NavigationRequest* request);
   void RendererDidNavigateNewSubframe(
       RenderFrameHostImpl* rfh,
       const mojom::DidCommitProvisionalLoadParams& params,
@@ -609,14 +618,39 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // pending NavigationEntry.
   void PendingEntryRefDeleted(PendingEntryRef* ref);
 
-  // Compute the document policies to be stored in the FrameNavigationEntry by
-  // RendererDidNavigate.
-  std::unique_ptr<PolicyContainerHost::DocumentPolicies>
-  ComputeDocumentPoliciesForFrameEntry(RenderFrameHostImpl* rfh,
-                                       bool is_same_document,
-                                       NavigationRequest* request);
+  // Computes the policy container policies to be stored in the
+  // FrameNavigationEntry by RendererDidNavigate.
+  std::unique_ptr<PolicyContainerPolicies>
+  ComputePolicyContainerPoliciesForFrameEntry(RenderFrameHostImpl* rfh,
+                                              bool is_same_document,
+                                              NavigationRequest* request);
+
+  // Sets the history to |history_length| entries, with an offset of
+  // |history_offset|. This notifies all renderers involved in rendering the
+  // current page about the new offset and length.
+  void SetHistoryOffsetAndLength(int history_offset, int history_length);
+
+  // Helper functions used to determine if it is safe to change the internal
+  // representation of StoragePartitionId.
+  //
+  // Called when a new StoragePartitionId is added to
+  // `session_storage_namespace_map_` and adds an entry to
+  // `partition_config_to_id_map_`.
+  void OnStoragePartitionIdAdded(const StoragePartitionId& partition_id);
+  // Called to log a crash dump when unique string representations result in
+  // the same StoragePartitionConfig, or an ID used to lookup a namespace
+  // contains a different config than the one used when the namespace was
+  // added to the map. Both situations imply that there is not a 1:1 mapping
+  // between representations.
+  void LogStoragePartitionIdCrashKeys(
+      const StoragePartitionId& original_partition_id,
+      const StoragePartitionId& new_partition_id);
 
   // ---------------------------------------------------------------------------
+
+  // The FrameTree this instance belongs to. Each FrameTree gets its own
+  // NavigationController.
+  FrameTree& frame_tree_;
 
   // The user browser context associated with this controller.
   BrowserContext* const browser_context_;
@@ -687,6 +721,15 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // NavigationController, only entries in the same StoragePartition may
   // share session storage state with one another.
   SessionStorageNamespaceMap session_storage_namespace_map_;
+
+  // Temporary map that is being used to verify that there is a 1:1
+  // relationship between the string representation used as the key in
+  // `session_storage_namespace_map_` and the StoragePartitionConfig
+  // representation that we plan to migrate the map key to.
+  // TODO(acolwell): Remove this map once we have enough data to determine if
+  // it is safe to change representations or not.
+  std::map<StoragePartitionConfig, StoragePartitionId>
+      partition_config_to_id_map_;
 
   // The maximum number of entries that a navigation controller can store.
   static size_t max_entry_count_for_testing_;

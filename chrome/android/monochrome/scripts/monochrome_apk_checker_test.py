@@ -47,7 +47,9 @@ WEBVIEW_SPECIFIC = BuildFileMatchRegex(
      # whose api level is less than v24.
     r'res/.*-v1\d/.*\.xml',
     r'res/.*-v2[0-3]/.*\.xml',
-    r'lib/.*/gdbserver')
+    r'lib/.*/gdbserver',
+    # libarcore is only added to the aab version of monochrome.
+    r'lib/.*/libarcore_sdk_c\.so')
 
 # The files in Chrome are not same as those in Monochrome
 CHROME_CHANGES = BuildFileMatchRegex(

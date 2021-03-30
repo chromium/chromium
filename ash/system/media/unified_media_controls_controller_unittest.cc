@@ -106,7 +106,7 @@ class UnifiedMediaControlsControllerTest : public AshTestBase {
     controller()->MediaSessionInfoChanged(session_info.Clone());
 
     media_session::MediaMetadata metadata;
-    metadata.title = base::ASCIIToUTF16("foo");
+    metadata.title = u"foo";
     controller()->MediaSessionMetadataChanged(metadata);
   }
 
@@ -256,8 +256,8 @@ TEST_F(UnifiedMediaControlsControllerTest, MetadataUpdate) {
   SimulateNewMediaSessionWithData(base::UnguessableToken::Create());
 
   media_session::MediaMetadata metadata;
-  metadata.title = base::ASCIIToUTF16("title");
-  metadata.artist = base::ASCIIToUTF16("artist");
+  metadata.title = u"title";
+  metadata.artist = u"artist";
   controller()->MediaSessionMetadataChanged(metadata);
 
   EXPECT_EQ(metadata.title, title_label()->GetText());
@@ -396,7 +396,7 @@ TEST_F(UnifiedMediaControlsControllerTest,
   session_info->is_controllable = false;
   controller()->MediaSessionInfoChanged(session_info.Clone());
   media_session::MediaMetadata metadata;
-  metadata.title = base::ASCIIToUTF16("foo");
+  metadata.title = u"foo";
   controller()->MediaSessionMetadataChanged(metadata);
   EXPECT_FALSE(delegate()->IsControlsVisible());
 
@@ -441,8 +441,8 @@ TEST_F(UnifiedMediaControlsControllerTest, MediaControlsEmptyState) {
   EnableAction(MediaSessionAction::kNextTrack);
 
   media_session::MediaMetadata metadata;
-  metadata.title = base::ASCIIToUTF16("title");
-  metadata.artist = base::ASCIIToUTF16("artist");
+  metadata.title = u"title";
+  metadata.artist = u"artist";
   controller()->MediaSessionMetadataChanged(metadata);
 
   EXPECT_TRUE(artist_label()->GetVisible());
@@ -529,8 +529,8 @@ TEST_F(UnifiedMediaControlsControllerTest, FreezeControlsWhenUpdateSession) {
       media_session::mojom::MediaPlaybackState::kPlaying);
 
   media_session::MediaMetadata init_metadata;
-  init_metadata.title = base::ASCIIToUTF16("init_title");
-  init_metadata.artist = base::ASCIIToUTF16("init_artist");
+  init_metadata.title = u"init_title";
+  init_metadata.artist = u"init_artist";
   controller()->MediaSessionMetadataChanged(init_metadata);
 
   // Initial state of media controls.
@@ -545,8 +545,8 @@ TEST_F(UnifiedMediaControlsControllerTest, FreezeControlsWhenUpdateSession) {
 
   // Test that metadata update is ignored when we waiting for new session.
   media_session::MediaMetadata metadata;
-  metadata.title = base::ASCIIToUTF16("title");
-  metadata.artist = base::ASCIIToUTF16("artist");
+  metadata.title = u"title";
+  metadata.artist = u"artist";
   controller()->MediaSessionMetadataChanged(metadata);
 
   EXPECT_EQ(title_label()->GetText(), init_metadata.title);
@@ -604,8 +604,8 @@ TEST_F(UnifiedMediaControlsControllerTest, FreezeControlsBetweenSessions) {
       media_session::mojom::MediaPlaybackState::kPlaying);
 
   media_session::MediaMetadata metadata;
-  metadata.title = base::ASCIIToUTF16("title");
-  metadata.artist = base::ASCIIToUTF16("artist");
+  metadata.title = u"title";
+  metadata.artist = u"artist";
   controller()->MediaSessionMetadataChanged(metadata);
 
   // Verify initial state
@@ -625,8 +625,8 @@ TEST_F(UnifiedMediaControlsControllerTest, FreezeControlsBetweenSessions) {
       media_session::mojom::MediaPlaybackState::kPaused);
 
   media_session::MediaMetadata new_metadata;
-  new_metadata.title = base::ASCIIToUTF16("different title");
-  new_metadata.artist = base::ASCIIToUTF16("different artist");
+  new_metadata.title = u"different title";
+  new_metadata.artist = u"different artist";
   controller()->MediaSessionMetadataChanged(new_metadata);
 
   SkBitmap artwork;
@@ -683,13 +683,13 @@ TEST_F(UnifiedMediaControlsControllerTest, ArtistVisibility) {
   controller()->MediaSessionChanged(request_id);
 
   media_session::MediaMetadata metadata;
-  metadata.title = base::ASCIIToUTF16("title");
+  metadata.title = u"title";
   controller()->MediaSessionMetadataChanged(metadata);
 
   // Artist label should be hidden if empty.
   EXPECT_FALSE(artist_label()->GetVisible());
 
-  metadata.artist = base::ASCIIToUTF16("artist");
+  metadata.artist = u"artist";
   controller()->MediaSessionMetadataChanged(metadata);
   EXPECT_TRUE(artist_label()->GetVisible());
 }

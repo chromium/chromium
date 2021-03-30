@@ -4,8 +4,9 @@
 
 #include "ui/views/controls/combobox/empty_combobox_model.h"
 
+#include <string>
+
 #include "base/notreached.h"
-#include "base/strings/string16.h"
 
 namespace views {
 namespace internal {
@@ -17,9 +18,9 @@ int EmptyComboboxModel::GetItemCount() const {
   return 0;
 }
 
-base::string16 EmptyComboboxModel::GetItemAt(int index) const {
+std::u16string EmptyComboboxModel::GetItemAt(int index) const {
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 int EmptyComboboxModel::GetDefaultIndex() const {

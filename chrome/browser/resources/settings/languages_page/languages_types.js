@@ -15,6 +15,7 @@
  *   spellCheckEnabled: boolean,
  *   translateEnabled: boolean,
  *   isManaged: boolean,
+ *   isForced: boolean,
  *   downloadDictionaryFailureCount: number,
  *   downloadDictionaryStatus:
  *       ?chrome.languageSettingsPrivate.SpellcheckDictionaryStatus,
@@ -23,16 +24,17 @@
 let LanguageState;
 
 /**
- * Settings and state for a policy-enforced spellcheck language.
+ * Settings and state for spellcheck languages.
  * @typedef {{
  *   language: !chrome.languageSettingsPrivate.Language,
+ *   spellCheckEnabled: boolean,
  *   isManaged: boolean,
  *   downloadDictionaryFailureCount: number,
  *   downloadDictionaryStatus:
  *       ?chrome.languageSettingsPrivate.SpellcheckDictionaryStatus,
  * }}
  */
-let ForcedLanguageState;
+let SpellCheckLanguageState;
 
 /**
  * Input method data to expose to consumers (Chrome OS only).
@@ -59,15 +61,19 @@ let InputMethodsModel;
  *     from the actually used language (navigator.language). Chrome OS and
  *     Windows only.
  * inputMethods: the InputMethodsModel (Chrome OS only).
- * forcedSpellCheckLanguages: an array of spellcheck languages that are not in
- *     |enabled|.
+ * spellCheckOnLanguages: an array of spell check languages that are currently
+ *     in use, including the languages force-enabled by policy.
+ * spellCheckOffLanguages: an array of spell check languages that are currently
+ *     not in use, including the languages force-disabled by policy.
  * @typedef {{
  *   supported: !Array<!chrome.languageSettingsPrivate.Language>,
  *   enabled: !Array<!LanguageState>,
  *   translateTarget: string,
  *   prospectiveUILanguage: (string|undefined),
  *   inputMethods: (!InputMethodsModel|undefined),
- *   forcedSpellCheckLanguages: !Array<!ForcedLanguageState>,
+ *   alwaysTranslate: !Array<!chrome.languageSettingsPrivate.Language>,
+ *   spellCheckOnLanguages: !Array<!SpellCheckLanguageState>,
+ *   spellCheckOffLanguages: !Array<!SpellCheckLanguageState>,
  * }}
  */
 let LanguagesModel;

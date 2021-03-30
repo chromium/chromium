@@ -9,6 +9,8 @@
 #include <string>
 
 #include "chromeos/services/assistant/public/cpp/assistant_settings.h"
+#include "chromeos/services/libassistant/public/mojom/settings_controller.mojom-forward.h"
+#include "chromeos/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -19,25 +21,21 @@ class AssistantController;
 class AssistantStateBase;
 }  // namespace ash
 
-namespace assistant_client {
-struct SpeakerIdEnrollmentStatus;
-struct SpeakerIdEnrollmentUpdate;
-struct VoicelessResponse;
-}  // namespace assistant_client
-
 namespace chromeos {
 namespace assistant {
 
-class AssistantManagerServiceImpl;
 class ServiceContext;
 
 class AssistantSettingsImpl : public AssistantSettings {
  public:
-  AssistantSettingsImpl(ServiceContext* context,
-                        AssistantManagerServiceImpl* assistant_manager_service);
+  explicit AssistantSettingsImpl(ServiceContext* context);
   ~AssistantSettingsImpl() override;
 
-  bool speaker_id_enrollment_done() { return speaker_id_enrollment_done_; }
+  void Initialize(
+      mojo::PendingRemote<
+          chromeos::libassistant::mojom::SpeakerIdEnrollmentController>
+          enrollment_controller_remote,
+      chromeos::libassistant::mojom::SettingsController* settings_controller);
 
   // AssistantSettings overrides:
   void GetSettings(const std::string& selector,
@@ -52,29 +50,22 @@ class AssistantSettingsImpl : public AssistantSettings {
 
   void SyncDeviceAppsStatus(base::OnceCallback<void(bool)> callback);
 
-  void UpdateServerDeviceSettings();
-
  private:
-  void HandleSpeakerIdEnrollmentUpdate(
-      const assistant_client::SpeakerIdEnrollmentUpdate& update);
-  void HandleStopSpeakerIdEnrollment();
   void HandleSpeakerIdEnrollmentStatusSync(
-      const assistant_client::SpeakerIdEnrollmentStatus& status);
+      chromeos::libassistant::mojom::SpeakerIdEnrollmentStatusPtr status);
   void HandleDeviceAppsStatusSync(base::OnceCallback<void(bool)> callback,
                                   const std::string& settings);
 
-  bool ShouldIgnoreResponse(const assistant_client::VoicelessResponse&) const;
-
   ash::AssistantStateBase* assistant_state();
   ash::AssistantController* assistant_controller();
-  scoped_refptr<base::SequencedTaskRunner> main_task_runner();
+  chromeos::libassistant::mojom::SettingsController& settings_controller();
 
   ServiceContext* const context_;
-  AssistantManagerServiceImpl* const assistant_manager_service_;
-  base::WeakPtr<SpeakerIdEnrollmentClient> speaker_id_enrollment_client_;
+  chromeos::libassistant::mojom::SettingsController* settings_controller_ =
+      nullptr;
 
-  // Whether the speaker id enrollment has complete for the user.
-  bool speaker_id_enrollment_done_ = false;
+  mojo::Remote<chromeos::libassistant::mojom::SpeakerIdEnrollmentController>
+      speaker_id_enrollment_remote_;
 
   base::WeakPtrFactory<AssistantSettingsImpl> weak_factory_{this};
 

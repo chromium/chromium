@@ -16,14 +16,22 @@
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
 
+struct wl_cursor;
+
 namespace gfx {
 class Point;
 }
 
+namespace wl {
+class WaylandProxy;
+}
+
 namespace ui {
 
+class DeviceHotplugEventObserver;
 class WaylandBufferManagerHost;
 class WaylandCursor;
+class WaylandCursorBufferListener;
 class WaylandDrm;
 class WaylandEventSource;
 class WaylandKeyboard;
@@ -65,6 +73,8 @@ class WaylandConnection {
 
   wl_display* display() const { return display_.get(); }
   wl_compositor* compositor() const { return compositor_.get(); }
+  // The server version of the compositor interface (might be higher than the
+  // version binded).
   uint32_t compositor_version() const { return compositor_version_; }
   wl_subcompositor* subcompositor() const { return subcompositor_.get(); }
   wp_viewporter* viewporter() const { return viewporter_.get(); }
@@ -91,6 +101,10 @@ class WaylandConnection {
   }
   uint32_t serial() const { return serial_.serial; }
   EventSerial event_serial() const { return serial_; }
+
+  void SetPlatformCursor(wl_cursor* cursor_data, int buffer_scale);
+
+  void SetCursorBufferListener(WaylandCursorBufferListener* listener);
 
   void SetCursorBitmap(const std::vector<SkBitmap>& bitmaps,
                        const gfx::Point& hotspot_in_dips,
@@ -147,7 +161,8 @@ class WaylandConnection {
     return gtk_primary_selection_device_manager_.get();
   }
 
-  ZwpPrimarySelectionDeviceManager* zwp_primary_selection_device_manager() const {
+  ZwpPrimarySelectionDeviceManager* zwp_primary_selection_device_manager()
+      const {
     return zwp_primary_selection_device_manager_.get();
   }
 
@@ -180,6 +195,8 @@ class WaylandConnection {
   // Creates WaylandKeyboard with the currently acquired protocol objects, if
   // possible. Returns true iff WaylandKeyboard was created.
   bool CreateKeyboard();
+
+  DeviceHotplugEventObserver* GetHotplugEventObserver();
 
   // wl_registry_listener
   static void Global(void* data,
@@ -247,8 +264,15 @@ class WaylandConnection {
   std::unique_ptr<WaylandDataDragController> data_drag_controller_;
   std::unique_ptr<WaylandWindowDragController> window_drag_controller_;
 
+  // Helper class that lets input emulation access some data of objects
+  // that Wayland holds. For example, wl_surface and others. It's only
+  // created when platform window test config is set.
+  std::unique_ptr<wl::WaylandProxy> wayland_proxy_;
+
   // Manages Wayland windows.
   WaylandWindowManager wayland_window_manager_;
+
+  WaylandCursorBufferListener* listener_ = nullptr;
 
   bool scheduled_flush_ = false;
 

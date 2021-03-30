@@ -20,7 +20,6 @@
 #include <string>
 
 #include "base/memory/free_deleter.h"
-#include "base/strings/string16.h"
 #include "base/win/scoped_handle.h"
 #include "printing/printing_export.h"
 
@@ -81,7 +80,7 @@ class PRINTING_EXPORT XPSModule {
   // All the other methods can ONLY be called after a successful call to Init.
   // Init can be called many times and by multiple threads.
   static bool Init();
-  static HRESULT OpenProvider(const base::string16& printer_name,
+  static HRESULT OpenProvider(const std::wstring& printer_name,
                               DWORD version,
                               HPTPROVIDER* provider);
   static HRESULT GetPrintCapabilities(HPTPROVIDER provider,
@@ -163,7 +162,7 @@ PRINTING_EXPORT bool InitBasicPrinterInfo(HANDLE printer,
 PRINTING_EXPORT std::string GetDriverInfo(HANDLE printer);
 
 PRINTING_EXPORT std::unique_ptr<DEVMODE, base::FreeDeleter> XpsTicketToDevMode(
-    const base::string16& printer_name,
+    const std::wstring& printer_name,
     const std::string& print_ticket);
 
 PRINTING_EXPORT bool IsDevModeWithColor(const DEVMODE* devmode);
@@ -172,7 +171,7 @@ PRINTING_EXPORT bool IsDevModeWithColor(const DEVMODE* devmode);
 // workaround for color.
 PRINTING_EXPORT std::unique_ptr<DEVMODE, base::FreeDeleter>
 CreateDevModeWithColor(HANDLE printer,
-                       const base::string16& printer_name,
+                       const std::wstring& printer_name,
                        bool color);
 
 // Creates new DEVMODE. If |in| is not NULL copy settings from there.
@@ -183,7 +182,7 @@ PRINTING_EXPORT std::unique_ptr<DEVMODE, base::FreeDeleter> CreateDevMode(
 // Prompts for new DEVMODE. If |in| is not NULL copy settings from there.
 PRINTING_EXPORT std::unique_ptr<DEVMODE, base::FreeDeleter> PromptDevMode(
     HANDLE printer,
-    const base::string16& printer_name,
+    const std::wstring& printer_name,
     DEVMODE* in,
     HWND window,
     bool* canceled);

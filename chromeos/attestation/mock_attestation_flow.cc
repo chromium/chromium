@@ -32,6 +32,10 @@ void FakeServerProxy::SendCertificateRequest(const std::string& request,
       result_, cert_response_.empty() ? request + "_response" : cert_response_);
 }
 
+void FakeServerProxy::CheckIfAnyProxyPresent(ProxyPresenceCallback callback) {
+  std::move(callback).Run(true);
+}
+
 MockServerProxy::MockServerProxy() {
   DefaultValue<PrivacyCAType>::Set(DEFAULT_PCA);
 }

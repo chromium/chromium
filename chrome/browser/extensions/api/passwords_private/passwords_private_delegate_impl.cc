@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -44,10 +45,10 @@
 #elif defined(OS_MAC)
 #include "chrome/browser/password_manager/password_manager_util_mac.h"
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/login/quick_unlock/auth_token.h"
-#include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_factory.h"
-#include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_storage.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/login/quick_unlock/auth_token.h"
+#include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
+#include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chromeos/login/auth/password_visibility_utils.h"
 #include "components/user_manager/user.h"
 #endif
@@ -216,8 +217,8 @@ void PasswordsPrivateDelegateImpl::GetPasswordExceptionsList(
 
 bool PasswordsPrivateDelegateImpl::ChangeSavedPassword(
     const std::vector<int>& ids,
-    const base::string16& new_username,
-    const base::string16& new_password) {
+    const std::u16string& new_username,
+    const std::u16string& new_password) {
   const std::vector<std::string> sort_keys =
       GetSortKeys(password_id_generator_, ids);
 
@@ -241,9 +242,9 @@ bool PasswordsPrivateDelegateImpl::ChangeSavedPassword(
 
 void PasswordsPrivateDelegateImpl::RemoveSavedPasswords(
     const std::vector<int>& ids) {
-  ExecuteFunction(
-      base::Bind(&PasswordsPrivateDelegateImpl::RemoveSavedPasswordsInternal,
-                 base::Unretained(this), ids));
+  ExecuteFunction(base::BindOnce(
+      &PasswordsPrivateDelegateImpl::RemoveSavedPasswordsInternal,
+      base::Unretained(this), ids));
 }
 
 void PasswordsPrivateDelegateImpl::RemoveSavedPasswordsInternal(
@@ -254,7 +255,7 @@ void PasswordsPrivateDelegateImpl::RemoveSavedPasswordsInternal(
 
 void PasswordsPrivateDelegateImpl::RemovePasswordExceptions(
     const std::vector<int>& ids) {
-  ExecuteFunction(base::Bind(
+  ExecuteFunction(base::BindOnce(
       &PasswordsPrivateDelegateImpl::RemovePasswordExceptionsInternal,
       base::Unretained(this), ids));
 }
@@ -266,7 +267,7 @@ void PasswordsPrivateDelegateImpl::RemovePasswordExceptionsInternal(
 }
 
 void PasswordsPrivateDelegateImpl::UndoRemoveSavedPasswordOrException() {
-  ExecuteFunction(base::Bind(
+  ExecuteFunction(base::BindOnce(
       &PasswordsPrivateDelegateImpl::UndoRemoveSavedPasswordOrExceptionInternal,
       base::Unretained(this)));
 }
@@ -306,7 +307,7 @@ void PasswordsPrivateDelegateImpl::RequestPlaintextPassword(
     // Copying occurs here so javascript doesn't need plaintext password.
     callback = base::BindOnce(
         [](PlaintextPasswordCallback callback,
-           base::Optional<base::string16> password) {
+           base::Optional<std::u16string> password) {
           if (!password) {
             std::move(callback).Run(base::nullopt);
             return;
@@ -315,7 +316,7 @@ void PasswordsPrivateDelegateImpl::RequestPlaintextPassword(
               ui::ClipboardBuffer::kCopyPaste);
           clipboard_writer.WriteText(*password);
           clipboard_writer.MarkAsConfidential();
-          std::move(callback).Run(base::string16());
+          std::move(callback).Run(std::u16string());
         },
         std::move(callback));
   }
@@ -592,14 +593,13 @@ PasswordsPrivateDelegateImpl::GetPasswordIdGeneratorForTesting() {
   return password_id_generator_;
 }
 
-void PasswordsPrivateDelegateImpl::ExecuteFunction(
-    const base::Closure& callback) {
+void PasswordsPrivateDelegateImpl::ExecuteFunction(base::OnceClosure callback) {
   if (is_initialized_) {
-    callback.Run();
+    std::move(callback).Run();
     return;
   }
 
-  pre_initialization_callbacks_.push_back(callback);
+  pre_initialization_callbacks_.emplace_back(std::move(callback));
 }
 
 void PasswordsPrivateDelegateImpl::InitializeIfNecessary() {
@@ -609,8 +609,8 @@ void PasswordsPrivateDelegateImpl::InitializeIfNecessary() {
 
   is_initialized_ = true;
 
-  for (const base::Closure& callback : pre_initialization_callbacks_)
-    callback.Run();
+  for (base::OnceClosure& callback : pre_initialization_callbacks_)
+    std::move(callback).Run();
   pre_initialization_callbacks_.clear();
 }
 

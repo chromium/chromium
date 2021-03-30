@@ -14,6 +14,8 @@ using GdkDisplay = struct _GdkDisplay;
 
 namespace ui {
 
+class GtkEventLoopX11;
+
 // GtkUiDelegate implementation for desktop Linux X11 backends.
 //
 // TODO(crbug.com/1002674): For now, this is used by both Aura (legacy) and
@@ -27,10 +29,10 @@ class COMPONENT_EXPORT(UI_GTK_X) GtkUiDelegateX11 : public GtkUiDelegate {
   ~GtkUiDelegateX11() override;
 
   // GtkUiDelegate:
-  void OnInitialized() override;
+  void OnInitialized(GtkWidget* widget) override;
   GdkKeymap* GetGdkKeymap() override;
   GdkWindow* GetGdkWindow(gfx::AcceleratedWidget window_id) override;
-  bool SetGdkWindowTransientFor(GdkWindow* window,
+  bool SetGtkWidgetTransientFor(GtkWidget* widget,
                                 gfx::AcceleratedWidget parent) override;
   void ClearTransientFor(gfx::AcceleratedWidget parent) override;
   void ShowGtkWindow(GtkWindow* window) override;
@@ -41,6 +43,7 @@ class COMPONENT_EXPORT(UI_GTK_X) GtkUiDelegateX11 : public GtkUiDelegate {
 
   x11::Connection* const connection_;
   GdkDisplay* display_ = nullptr;
+  std::unique_ptr<GtkEventLoopX11> event_loop_;
 };
 
 }  // namespace ui

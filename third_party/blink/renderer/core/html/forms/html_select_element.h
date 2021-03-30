@@ -30,6 +30,7 @@
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element_with_state.h"
 #include "third_party/blink/renderer/core/html/forms/html_options_collection.h"
 #include "third_party/blink/renderer/core/html/forms/option_list.h"
@@ -115,7 +116,7 @@ class CORE_EXPORT HTMLSelectElement final
   // We prefer |optionList()| to |listItems()|.
   const ListItems& GetListItems() const;
 
-  void AccessKeyAction(bool send_mouse_events) override;
+  void AccessKeyAction(SimulatedClickCreationScope creation_scope) override;
   void SelectOptionByAccessKey(HTMLOptionElement*);
 
   void SetOption(unsigned index, HTMLOptionElement*, ExceptionState&);
@@ -161,7 +162,8 @@ class CORE_EXPORT HTMLSelectElement final
   void ProvisionalSelectionChanged(unsigned);
   void PopupDidHide();
   bool PopupIsVisible() const;
-  HTMLOptionElement* OptionToBeShownForTesting() const;
+  // Returns the active option. Only available in menulist mode.
+  HTMLOptionElement* OptionToBeShown() const;
   // Style of the selected OPTION. This is nullable, and only for
   // the menulist mode.
   const ComputedStyle* OptionStyle() const;

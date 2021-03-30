@@ -21,6 +21,7 @@
 #include "extensions/browser/guest_view/web_view/web_view_permission_helper.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_types.h"
 #include "extensions/browser/script_executor.h"
+#include "extensions/common/mojom/frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom.h"
 
 namespace content {
@@ -55,6 +56,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   // the partition requested by it. The format for that URL is:
   // chrome-guest://partition_domain/persist?partition_name
   static bool GetGuestPartitionConfigForSite(
+      content::BrowserContext* browser_context,
       const GURL& site,
       content::StoragePartitionConfig* storage_partition_config);
 
@@ -116,7 +118,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
                            std::string* error);
 
   // Begin or continue a find request.
-  void StartFind(const base::string16& search_text,
+  void StartFind(const std::u16string& search_text,
                  blink::mojom::FindOptionsPtr options,
                  scoped_refptr<WebViewInternalFindFunction> find_function);
 
@@ -149,6 +151,9 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
                  base::OnceClosure callback);
 
   ScriptExecutor* script_executor() { return script_executor_.get(); }
+  WebViewPermissionHelper* web_view_permission_helper() {
+    return web_view_permission_helper_.get();
+  }
 
   // Enables or disables spatial navigation.
   void SetSpatialNavigationEnabled(bool enabled);
@@ -157,8 +162,6 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   bool IsSpatialNavigationEnabled() const;
 
  private:
-  friend class WebViewPermissionHelper;
-
   explicit WebViewGuest(content::WebContents* owner_web_contents);
 
   ~WebViewGuest() override;
@@ -269,7 +272,8 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
       content::NavigationHandle* navigation_handle) final;
   void DidFinishNavigation(content::NavigationHandle* navigation_handle) final;
   void LoadProgressChanged(double progress) final;
-  void DocumentOnLoadCompletedInMainFrame() final;
+  void DocumentOnLoadCompletedInMainFrame(
+      content::RenderFrameHost* render_frame_host) final;
   void RenderProcessGone(base::TerminationStatus status) final;
   void UserAgentOverrideSet(const blink::UserAgentOverride& ua_override) final;
   void FrameNameChanged(content::RenderFrameHost* render_frame_host,
@@ -278,10 +282,10 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   void OnDidAddMessageToConsole(
       content::RenderFrameHost* source_frame,
       blink::mojom::ConsoleMessageLevel log_level,
-      const base::string16& message,
+      const std::u16string& message,
       int32_t line_no,
-      const base::string16& source_id,
-      const base::Optional<base::string16>& untrusted_stack_trace) final;
+      const std::u16string& source_id,
+      const base::Optional<std::u16string>& untrusted_stack_trace) final;
 
   // Informs the embedder of a frame name change.
   void ReportFrameNameChange(const std::string& name);
@@ -319,6 +323,8 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   void ApplyAttributes(const base::DictionaryValue& params);
 
   void SetTransparency();
+
+  extensions::mojom::LocalFrame* GetLocalFrame();
 
   // Identifies the set of rules registries belonging to this guest.
   int rules_registry_id_;

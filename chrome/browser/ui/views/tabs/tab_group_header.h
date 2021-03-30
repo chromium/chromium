@@ -9,6 +9,7 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/focus_ring.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view_targeter_delegate.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -27,6 +28,7 @@ class TabGroupHeader : public TabSlotView,
                        public views::ContextMenuController,
                        public views::ViewTargeterDelegate {
  public:
+  METADATA_HEADER(TabGroupHeader);
   TabGroupHeader(TabStrip* tab_strip, const tab_groups::TabGroupId& group);
   TabGroupHeader(const TabGroupHeader&) = delete;
   TabGroupHeader& operator=(const TabGroupHeader&) = delete;
@@ -65,7 +67,7 @@ class TabGroupHeader : public TabSlotView,
   friend class TabGroupEditorBubbleViewDialogBrowserTest;
 
   // Calculate the width for this View.
-  int CalculateWidth() const;
+  int GetDesiredWidth() const;
 
   // Helper method used to log the time since the group was last expanded or
   // collapsed.

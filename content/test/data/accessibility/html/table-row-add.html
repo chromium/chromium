@@ -1,0 +1,25 @@
+<!--
+@WAIT-FOR:Row4
+-->
+<!--
+The border should ensure that the table will be treated as a data table.
+-->
+<!-- role=table enforces a data table -->
+<table role="table">
+</table>
+
+<script>
+let rowNumber = 0;
+const table = document.querySelector('table');
+function addRow() {
+  if (++ rowNumber > 4)
+    return;
+  const tr = document.createElement('tr');
+  tr.innerHTML = '<td>Row' + rowNumber + '</td><td>Foo' + rowNumber + '</td>';
+  table.appendChild(tr);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  setInterval(addRow, 50);
+});
+</script>

@@ -14,6 +14,7 @@ namespace blink {
 
 class LocalFrame;
 class KURL;
+class Node;
 
 // An element fragment anchor is a FragmentAnchor based on a single element.
 // This is the traditional fragment anchor of the web. For example, the fragment

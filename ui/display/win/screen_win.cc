@@ -780,7 +780,7 @@ void ScreenWin::Initialize() {
   // We want to remember that we've observed a screen metrics object so that we
   // can remove ourselves as an observer at some later point (either when the
   // metrics object notifies us it's going away or when we are destructed).
-  scale_factor_observer_.Add(UwpTextScaleFactor::Instance());
+  scale_factor_observation_.Observe(UwpTextScaleFactor::Instance());
 }
 
 MONITORINFOEX ScreenWin::MonitorInfoFromScreenPoint(
@@ -953,8 +953,7 @@ void ScreenWin::OnUwpTextScaleFactorChanged() {
 }
 
 void ScreenWin::OnUwpTextScaleFactorCleanup(UwpTextScaleFactor* source) {
-  if (scale_factor_observer_.IsObserving(source))
-    scale_factor_observer_.Remove(source);
+  scale_factor_observation_.Reset();
   UwpTextScaleFactor::Observer::OnUwpTextScaleFactorCleanup(source);
 }
 

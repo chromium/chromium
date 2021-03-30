@@ -21,6 +21,9 @@ int
 LLVMFuzzerTestOneInput(const char *data, size_t size) {
     xmlSchemaParserCtxtPtr pctxt;
 
+    if (size > 50000)
+        return(0);
+
     xmlFuzzDataInit(data, size);
     xmlFuzzReadEntities();
 

@@ -196,8 +196,9 @@ class ComponentInfoProviderModules(ComponentInfoProvider):
 
     @property
     def callback_functions(self):
-        return dict(self._component_info_core['callback_functions'].items() +
-                    self._component_info_modules['callback_functions'].items())
+        return dict(
+            list(self._component_info_core['callback_functions'].items()) +
+            list(self._component_info_modules['callback_functions'].items()))
 
     @property
     def specifier_for_export(self):
@@ -209,8 +210,8 @@ class ComponentInfoProviderModules(ComponentInfoProvider):
 
 
 def load_interfaces_info_overall_pickle(info_dir):
-    with open(os.path.join(info_dir,
-                           'interfaces_info.pickle')) as interface_info_file:
+    with open(os.path.join(info_dir, 'interfaces_info.pickle'),
+              mode='rb') as interface_info_file:
         return pickle.load(interface_info_file)
 
 
@@ -236,23 +237,20 @@ def merge_dict_recursively(target, diff):
 
 def create_component_info_provider_core(info_dir):
     interfaces_info = load_interfaces_info_overall_pickle(info_dir)
-    with open(
-            os.path.join(info_dir, 'core',
-                         'component_info_core.pickle')) as component_info_file:
+    with open(os.path.join(info_dir, 'core', 'component_info_core.pickle'),
+              mode='rb') as component_info_file:
         component_info = pickle.load(component_info_file)
     return ComponentInfoProviderCore(interfaces_info, component_info)
 
 
 def create_component_info_provider_modules(info_dir):
     interfaces_info = load_interfaces_info_overall_pickle(info_dir)
-    with open(
-            os.path.join(info_dir, 'core',
-                         'component_info_core.pickle')) as component_info_file:
+    with open(os.path.join(info_dir, 'core', 'component_info_core.pickle'),
+              mode='rb') as component_info_file:
         component_info_core = pickle.load(component_info_file)
-    with open(
-            os.path.join(
-                info_dir, 'modules',
-                'component_info_modules.pickle')) as component_info_file:
+    with open(os.path.join(info_dir, 'modules',
+                           'component_info_modules.pickle'),
+              mode='rb') as component_info_file:
         component_info_modules = pickle.load(component_info_file)
     return ComponentInfoProviderModules(interfaces_info, component_info_core,
                                         component_info_modules)
@@ -347,7 +345,7 @@ def write_file(new_text, destination_filename):
 def write_pickle_file(pickle_filename, data):
     # If |data| is same with the file content, we skip updating.
     if os.path.isfile(pickle_filename):
-        with open(pickle_filename) as pickle_file:
+        with open(pickle_filename, 'rb') as pickle_file:
             try:
                 if pickle.load(pickle_file) == data:
                     return
@@ -477,19 +475,19 @@ def get_first_interface_name_from_idl(file_contents):
 def shorten_union_name(union_type):
     aliases = {
         # modules/canvas2d/CanvasRenderingContext2D.idl
-        'CSSImageValueOrHTMLImageElementOrSVGImageElementOrHTMLVideoElementOrHTMLCanvasElementOrImageBitmapOrOffscreenCanvas':
+        'CSSImageValueOrHTMLImageElementOrSVGImageElementOrHTMLVideoElementOrHTMLCanvasElementOrImageBitmapOrOffscreenCanvasOrVideoFrame':
         'CanvasImageSource',
         # modules/canvas/htmlcanvas/html_canvas_element_module.idl
         'CanvasRenderingContext2DOrWebGLRenderingContextOrWebGL2RenderingContextOrImageBitmapRenderingContextOrGPUCanvasContext':
         'RenderingContext',
         # core/frame/window_or_worker_global_scope.idl
-        'HTMLImageElementOrSVGImageElementOrHTMLVideoElementOrHTMLCanvasElementOrBlobOrImageDataOrImageBitmapOrOffscreenCanvas':
+        'HTMLImageElementOrSVGImageElementOrHTMLVideoElementOrHTMLCanvasElementOrBlobOrImageDataOrImageBitmapOrOffscreenCanvasOrVideoFrame':
         'ImageBitmapSource',
         # bindings/tests/idls/core/TestTypedefs.idl
         'NodeOrLongSequenceOrEventOrXMLHttpRequestOrStringOrStringByteStringOrNodeListRecord':
         'NestedUnionType',
         # modules/canvas/offscreencanvas/offscreen_canvas_module.idl
-        'OffscreenCanvasRenderingContext2DOrWebGLRenderingContextOrWebGL2RenderingContextOrImageBitmapRenderingContext':
+        'OffscreenCanvasRenderingContext2DOrWebGLRenderingContextOrWebGL2RenderingContextOrImageBitmapRenderingContextOrGPUCanvasContext':
         'OffscreenRenderingContext',
         # core/xmlhttprequest/xml_http_request.idl
         'DocumentOrBlobOrArrayBufferOrArrayBufferViewOrFormDataOrURLSearchParamsOrUSVString':

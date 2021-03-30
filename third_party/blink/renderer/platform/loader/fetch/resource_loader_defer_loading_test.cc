@@ -118,7 +118,8 @@ class DeferTestLoaderFactory final : public ResourceFetcher::LoaderFactory {
       const ResourceRequest& request,
       const ResourceLoaderOptions& options,
       scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner)
+      scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
+      WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
       override {
     return std::make_unique<TestWebURLLoader>(defers_flag_);
   }
@@ -159,7 +160,8 @@ class ResourceLoaderDefersLoadingTest : public testing::Test {
         base::MakeRefCounted<scheduler::FakeTaskRunner>(),
         MakeGarbageCollected<DeferTestLoaderFactory>(
             &web_url_loader_defers_, process_code_cache_request_callback_),
-        MakeGarbageCollected<MockContextLifecycleNotifier>()));
+        MakeGarbageCollected<MockContextLifecycleNotifier>(),
+        nullptr /* back_forward_cache_loader_helper */));
   }
 
   void SetCodeCacheProcessFunction(ProcessCodeCacheRequestCallback callback) {

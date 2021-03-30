@@ -16,7 +16,6 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/profile_picker.h"
-#include "chrome/browser/ui/user_manager.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -25,32 +24,6 @@
 
 namespace webui {
 namespace {
-
-void ShowUserManager(const ProfileManager::CreateCallback& callback) {
-  if (!UserManager::IsShowing()) {
-    UserManager::Show(base::FilePath(),
-                      profiles::USER_MANAGER_SELECT_PROFILE_NO_ACTION);
-  }
-
-  g_browser_process->profile_manager()->CreateProfileAsync(
-      ProfileManager::GetSystemProfilePath(), callback, base::string16(),
-      std::string());
-}
-
-std::string GetProfileUserName(Profile* profile) {
-  ProfileAttributesEntry* entry;
-  if (!g_browser_process->profile_manager()
-           ->GetProfileAttributesStorage()
-           .GetProfileAttributesWithPath(profile->GetPath(), &entry))
-    return std::string();
-  return base::UTF16ToUTF8(entry->GetUserName());
-}
-
-void ShowUnlockDialog(const std::string& user_name,
-                      Profile* system_profile,
-                      Profile::CreateStatus status) {
-  UserManagerProfileDialog::ShowUnlockDialog(system_profile, user_name);
-}
 
 void DeleteProfileCallback(std::unique_ptr<ScopedKeepAlive> keep_alive,
                            Profile* profile) {
@@ -61,17 +34,15 @@ void DeleteProfileCallback(std::unique_ptr<ScopedKeepAlive> keep_alive,
 
 void OpenNewWindowForProfile(Profile* profile) {
   if (profiles::IsProfileLocked(profile->GetPath())) {
-    // The profile picker does not support locked profiles.
-    DCHECK(!ProfilePicker::IsOpen());
-
-    if (signin_util::IsForceSigninEnabled()) {
-      // If force-sign-in policy is enabled, UserManager will be displayed
-      // without any sign-in dialog opened.
-      ShowUserManager(ProfileManager::CreateCallback());
-    } else {
-      ShowUserManager(
-          base::BindRepeating(&ShowUnlockDialog, GetProfileUserName(profile)));
+    DCHECK(signin_util::IsForceSigninEnabled());
+    // Displays the ProfilePicker without any sign-in dialog opened.
+    if (!ProfilePicker::IsOpen()) {
+      ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileLocked);
     }
+
+    g_browser_process->profile_manager()->CreateProfileAsync(
+        ProfileManager::GetSystemProfilePath(),
+        ProfileManager::CreateCallback(), std::u16string(), std::string());
     return;
   }
 

@@ -49,12 +49,6 @@ using ScheduledRemovalSettings =
 // An observer of all the browsing data removal tasks that are started by the
 // ChromeBrowsingDataLifetimeManager that records the the tasks starts and
 // completed states as well as their durations.
-// TODO(crbug.com/88586): While the profile lifetime is tied to the browser's,
-// the profile is kept from being deleted until |OnBrowsingDataRemoverDone| is
-// called and |keep_alive| is not null. Once the profile lifetime is untied from
-// the browser's and could be deleted before the browser's shutdown, it should
-// still be kept from being deleted until |OnBrowsingDataRemoverDone| when
-// |keep_alive| is not null.
 class BrowsingDataRemoverObserver
     : public content::BrowsingDataRemover::Observer {
  public:

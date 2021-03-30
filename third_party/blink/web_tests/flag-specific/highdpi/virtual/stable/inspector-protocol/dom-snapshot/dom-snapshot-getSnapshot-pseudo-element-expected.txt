@@ -1,0 +1,895 @@
+Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo elements.
+{
+    computedStyles : [
+        [0] : {
+            properties : [
+                [0] : {
+                    name : font-weight
+                    value : 400
+                }
+                [1] : {
+                    name : color
+                    value : rgb(0, 0, 0)
+                }
+            ]
+        }
+        [1] : {
+            properties : [
+                [0] : {
+                    name : font-weight
+                    value : 100
+                }
+                [1] : {
+                    name : color
+                    value : rgb(0, 128, 0)
+                }
+            ]
+        }
+        [2] : {
+            properties : [
+                [0] : {
+                    name : font-weight
+                    value : 700
+                }
+                [1] : {
+                    name : color
+                    value : rgb(0, 0, 255)
+                }
+            ]
+        }
+    ]
+    domNodes : [
+        [0] : {
+            backendNodeId : <number>
+            baseURL : <string>
+            childNodeIndexes : [
+                [0] : 1
+            ]
+            documentEncoding : windows-1252
+            documentURL : <string>
+            frameId : <string>
+            layoutNodeIndex : 0
+            nodeName : #document
+            nodeType : 9
+            nodeValue : 
+            scrollOffsetX : 0
+            scrollOffsetY : 0
+        }
+        [1] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 2
+                [1] : 8
+            ]
+            frameId : <string>
+            layoutNodeIndex : 1
+            nodeName : HTML
+            nodeType : 1
+            nodeValue : 
+        }
+        [2] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 3
+                [1] : 5
+                [2] : 6
+                [3] : 7
+            ]
+            nodeName : HEAD
+            nodeType : 1
+            nodeValue : 
+        }
+        [3] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 4
+            ]
+            nodeName : STYLE
+            nodeType : 1
+            nodeValue : 
+        }
+        [4] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :      p {       position: absolute;       height: 200px;       width: 200px;       font: 10px Ahem;     }     .c1::first-letter { font-weight: lighter; color: green; }     .c2::first-letter { font-weight: bold; color: blue; }     .c2::before { counter-increment: square; content: 'square: ' counter(square) url(square.png) '! '; }     ul { font: 10px Ahem; }   
+        }
+        [5] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :    
+        }
+        [6] : {
+            attributes : [
+                [0] : {
+                    name : src
+                    value : ../../resources/ahem.js
+                }
+            ]
+            backendNodeId : <number>
+            nodeName : SCRIPT
+            nodeType : 1
+            nodeValue : 
+        }
+        [7] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :    
+        }
+        [8] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 9
+                [1] : 10
+                [2] : 13
+                [3] : 14
+                [4] : 18
+                [5] : 19
+                [6] : 23
+                [7] : 24
+                [8] : 33
+            ]
+            layoutNodeIndex : 2
+            nodeName : BODY
+            nodeType : 1
+            nodeValue : 
+        }
+        [9] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :      
+        }
+        [10] : {
+            attributes : [
+                [0] : {
+                    name : class
+                    value : c1
+                }
+            ]
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 12
+            ]
+            layoutNodeIndex : 3
+            nodeName : P
+            nodeType : 1
+            nodeValue : 
+            pseudoElementIndexes : [
+                [0] : 11
+            ]
+        }
+        [11] : {
+            backendNodeId : <number>
+            layoutNodeIndex : 5
+            nodeName : ::first-letter
+            nodeType : 1
+            nodeValue : 
+            pseudoType : first-letter
+        }
+        [12] : {
+            backendNodeId : <number>
+            layoutNodeIndex : 6
+            nodeName : #text
+            nodeType : 3
+            nodeValue : I have a first letter.
+        }
+        [13] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :      
+        }
+        [14] : {
+            attributes : [
+                [0] : {
+                    name : class
+                    value : c1
+                }
+            ]
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 16
+            ]
+            layoutNodeIndex : 7
+            nodeName : P
+            nodeType : 1
+            nodeValue : 
+            pseudoElementIndexes : [
+                [0] : 15
+            ]
+        }
+        [15] : {
+            backendNodeId : <number>
+            layoutNodeIndex : 9
+            nodeName : ::first-letter
+            nodeType : 1
+            nodeValue : 
+            pseudoType : first-letter
+        }
+        [16] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 17
+            ]
+            layoutNodeIndex : 10
+            nodeName : SPAN
+            nodeType : 1
+            nodeValue : 
+        }
+        [17] : {
+            backendNodeId : <number>
+            layoutNodeIndex : 11
+            nodeName : #text
+            nodeType : 3
+            nodeValue : I have a first letter because of my parent.
+        }
+        [18] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :      
+        }
+        [19] : {
+            attributes : [
+                [0] : {
+                    name : class
+                    value : c2
+                }
+            ]
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 22
+            ]
+            layoutNodeIndex : 12
+            nodeName : P
+            nodeType : 1
+            nodeValue : 
+            pseudoElementIndexes : [
+                [0] : 20
+                [1] : 21
+            ]
+        }
+        [20] : {
+            backendNodeId : <number>
+            layoutNodeIndex : 14
+            nodeName : ::first-letter
+            nodeType : 1
+            nodeValue : 
+            pseudoType : first-letter
+        }
+        [21] : {
+            backendNodeId : <number>
+            layoutNodeIndex : 19
+            nodeName : ::before
+            nodeType : 1
+            nodeValue : 
+            pseudoType : before
+        }
+        [22] : {
+            backendNodeId : <number>
+            layoutNodeIndex : 20
+            nodeName : #text
+            nodeType : 3
+            nodeValue : I have some content before me with a first letter.
+        }
+        [23] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :      
+        }
+        [24] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 25
+                [1] : 27
+                [2] : 29
+                [3] : 31
+            ]
+            layoutNodeIndex : 21
+            nodeName : UL
+            nodeType : 1
+            nodeValue : 
+        }
+        [25] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 26
+            ]
+            layoutNodeIndex : 22
+            nodeName : LI
+            nodeType : 1
+            nodeValue : 
+        }
+        [26] : {
+            backendNodeId : <number>
+            layoutNodeIndex : 23
+            nodeName : #text
+            nodeType : 3
+            nodeValue : water
+        }
+        [27] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 28
+            ]
+            layoutNodeIndex : 24
+            nodeName : LI
+            nodeType : 1
+            nodeValue : 
+        }
+        [28] : {
+            backendNodeId : <number>
+            layoutNodeIndex : 25
+            nodeName : #text
+            nodeType : 3
+            nodeValue : malt
+        }
+        [29] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 30
+            ]
+            layoutNodeIndex : 26
+            nodeName : LI
+            nodeType : 1
+            nodeValue : 
+        }
+        [30] : {
+            backendNodeId : <number>
+            layoutNodeIndex : 27
+            nodeName : #text
+            nodeType : 3
+            nodeValue : hops
+        }
+        [31] : {
+            backendNodeId : <number>
+            childNodeIndexes : [
+                [0] : 32
+            ]
+            layoutNodeIndex : 28
+            nodeName : LI
+            nodeType : 1
+            nodeValue : 
+        }
+        [32] : {
+            backendNodeId : <number>
+            layoutNodeIndex : 29
+            nodeName : #text
+            nodeType : 3
+            nodeValue : yeast
+        }
+        [33] : {
+            backendNodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :      
+        }
+    ]
+    layoutTreeNodes : [
+        [0] : {
+            boundingBox : {
+                height : 900
+                width : 1200
+                x : 0
+                y : 0
+            }
+            domNodeIndex : 0
+            isStackingContext : true
+        }
+        [1] : {
+            boundingBox : {
+                height : 900
+                width : 1200
+                x : 0
+                y : 0
+            }
+            domNodeIndex : 1
+            isStackingContext : true
+            styleIndex : 0
+        }
+        [2] : {
+            boundingBox : {
+                height : 873
+                width : 1176
+                x : 12
+                y : 12
+            }
+            domNodeIndex : 8
+            styleIndex : 0
+        }
+        [3] : {
+            boundingBox : {
+                height : 300
+                width : 300
+                x : 12
+                y : 27
+            }
+            domNodeIndex : 10
+            styleIndex : 0
+        }
+        [4] : {
+            boundingBox : {
+                height : 15
+                width : 15
+                x : 12
+                y : 27
+            }
+            domNodeIndex : 11
+            inlineTextNodes : [
+                [0] : {
+                    boundingBox : {
+                        height : 15
+                        width : 15
+                        x : 12
+                        y : 27
+                    }
+                    numCharacters : 1
+                    startCharacterIndex : 0
+                }
+            ]
+            layoutText : I
+            styleIndex : 1
+        }
+        [5] : {
+            boundingBox : {
+                height : 15
+                width : 15
+                x : 12
+                y : 27
+            }
+            domNodeIndex : 11
+            styleIndex : 1
+        }
+        [6] : {
+            boundingBox : {
+                height : 30
+                width : 210
+                x : 12
+                y : 27
+            }
+            domNodeIndex : 12
+            inlineTextNodes : [
+                [0] : {
+                    boundingBox : {
+                        height : 15
+                        width : 195
+                        x : 27
+                        y : 27
+                    }
+                    numCharacters : 13
+                    startCharacterIndex : 0
+                }
+                [1] : {
+                    boundingBox : {
+                        height : 15
+                        width : 105
+                        x : 12
+                        y : 42
+                    }
+                    numCharacters : 7
+                    startCharacterIndex : 14
+                }
+            ]
+            layoutText :  have a first letter.
+            styleIndex : 0
+        }
+        [7] : {
+            boundingBox : {
+                height : 300
+                width : 300
+                x : 12
+                y : 27
+            }
+            domNodeIndex : 14
+            styleIndex : 0
+        }
+        [8] : {
+            boundingBox : {
+                height : 15
+                width : 15
+                x : 12
+                y : 27
+            }
+            domNodeIndex : 15
+            inlineTextNodes : [
+                [0] : {
+                    boundingBox : {
+                        height : 15
+                        width : 15
+                        x : 12
+                        y : 27
+                    }
+                    numCharacters : 1
+                    startCharacterIndex : 0
+                }
+            ]
+            layoutText : I
+            styleIndex : 1
+        }
+        [9] : {
+            boundingBox : {
+                height : 15
+                width : 15
+                x : 12
+                y : 27
+            }
+            domNodeIndex : 15
+            styleIndex : 1
+        }
+        [10] : {
+            boundingBox : {
+                height : 45
+                width : 300
+                x : 12
+                y : 27
+            }
+            domNodeIndex : 16
+            styleIndex : 0
+        }
+        [11] : {
+            boundingBox : {
+                height : 45
+                width : 300
+                x : 12
+                y : 27
+            }
+            domNodeIndex : 17
+            inlineTextNodes : [
+                [0] : {
+                    boundingBox : {
+                        height : 15
+                        width : 195
+                        x : 27
+                        y : 27
+                    }
+                    numCharacters : 13
+                    startCharacterIndex : 0
+                }
+                [1] : {
+                    boundingBox : {
+                        height : 15
+                        width : 300
+                        x : 12
+                        y : 42
+                    }
+                    numCharacters : 20
+                    startCharacterIndex : 14
+                }
+                [2] : {
+                    boundingBox : {
+                        height : 15
+                        width : 105
+                        x : 12
+                        y : 57
+                    }
+                    numCharacters : 7
+                    startCharacterIndex : 35
+                }
+            ]
+            layoutText :  have a first letter because of my parent.
+            styleIndex : 0
+        }
+        [12] : {
+            boundingBox : {
+                height : 300
+                width : 300
+                x : 12
+                y : 27
+            }
+            domNodeIndex : 19
+            styleIndex : 0
+        }
+        [13] : {
+            boundingBox : {
+                height : 15
+                width : 15
+                x : 12
+                y : 165
+            }
+            domNodeIndex : 20
+            inlineTextNodes : [
+                [0] : {
+                    boundingBox : {
+                        height : 15
+                        width : 15
+                        x : 12
+                        y : 165
+                    }
+                    numCharacters : 1
+                    startCharacterIndex : 0
+                }
+            ]
+            layoutText : s
+            styleIndex : 2
+        }
+        [14] : {
+            boundingBox : {
+                height : 15
+                width : 15
+                x : 12
+                y : 165
+            }
+            domNodeIndex : 20
+            styleIndex : 2
+        }
+        [15] : {
+            boundingBox : {
+                height : 15
+                width : 105
+                x : 27
+                y : 165
+            }
+            domNodeIndex : 21
+            inlineTextNodes : [
+                [0] : {
+                    boundingBox : {
+                        height : 15
+                        width : 105
+                        x : 27
+                        y : 165
+                    }
+                    numCharacters : 7
+                    startCharacterIndex : 0
+                }
+            ]
+            layoutText : quare: 
+            styleIndex : 0
+        }
+        [16] : {
+            boundingBox : {
+                height : 15
+                width : 15
+                x : 132
+                y : 165
+            }
+            domNodeIndex : 21
+            inlineTextNodes : [
+                [0] : {
+                    boundingBox : {
+                        height : 15
+                        width : 15
+                        x : 132
+                        y : 165
+                    }
+                    numCharacters : 1
+                    startCharacterIndex : 0
+                }
+            ]
+            layoutText : 1
+            styleIndex : 0
+        }
+        [17] : {
+            boundingBox : {
+                height : 150
+                width : 150
+                x : 147
+                y : 27
+            }
+            domNodeIndex : 21
+            styleIndex : 0
+        }
+        [18] : {
+            boundingBox : {
+                height : 15
+                width : 15
+                x : 297
+                y : 165
+            }
+            domNodeIndex : 21
+            inlineTextNodes : [
+                [0] : {
+                    boundingBox : {
+                        height : 15
+                        width : 15
+                        x : 297
+                        y : 165
+                    }
+                    numCharacters : 1
+                    startCharacterIndex : 0
+                }
+            ]
+            layoutText : ! 
+            styleIndex : 0
+        }
+        [19] : {
+            boundingBox : {
+                height : 15
+                width : 300
+                x : 12
+                y : 165
+            }
+            domNodeIndex : 21
+            styleIndex : 0
+        }
+        [20] : {
+            boundingBox : {
+                height : 45
+                width : 285
+                x : 12
+                y : 180
+            }
+            domNodeIndex : 22
+            inlineTextNodes : [
+                [0] : {
+                    boundingBox : {
+                        height : 15
+                        width : 285
+                        x : 12
+                        y : 180
+                    }
+                    numCharacters : 19
+                    startCharacterIndex : 0
+                }
+                [1] : {
+                    boundingBox : {
+                        height : 15
+                        width : 240
+                        x : 12
+                        y : 195
+                    }
+                    numCharacters : 16
+                    startCharacterIndex : 20
+                }
+                [2] : {
+                    boundingBox : {
+                        height : 15
+                        width : 195
+                        x : 12
+                        y : 210
+                    }
+                    numCharacters : 13
+                    startCharacterIndex : 37
+                }
+            ]
+            layoutText : I have some content before me with a first letter.
+            styleIndex : 0
+        }
+        [21] : {
+            boundingBox : {
+                height : 60
+                width : 1176
+                x : 12
+                y : 12
+            }
+            domNodeIndex : 24
+            styleIndex : 0
+        }
+        [22] : {
+            boundingBox : {
+                height : 15
+                width : 1116
+                x : 72
+                y : 12
+            }
+            domNodeIndex : 25
+            styleIndex : 0
+        }
+        [23] : {
+            boundingBox : {
+                height : 15
+                width : 75
+                x : 72
+                y : 12
+            }
+            domNodeIndex : 26
+            inlineTextNodes : [
+                [0] : {
+                    boundingBox : {
+                        height : 15
+                        width : 75
+                        x : 72
+                        y : 12
+                    }
+                    numCharacters : 5
+                    startCharacterIndex : 0
+                }
+            ]
+            layoutText : water
+            styleIndex : 0
+        }
+        [24] : {
+            boundingBox : {
+                height : 15
+                width : 1116
+                x : 72
+                y : 27
+            }
+            domNodeIndex : 27
+            styleIndex : 0
+        }
+        [25] : {
+            boundingBox : {
+                height : 15
+                width : 60
+                x : 72
+                y : 27
+            }
+            domNodeIndex : 28
+            inlineTextNodes : [
+                [0] : {
+                    boundingBox : {
+                        height : 15
+                        width : 60
+                        x : 72
+                        y : 27
+                    }
+                    numCharacters : 4
+                    startCharacterIndex : 0
+                }
+            ]
+            layoutText : malt
+            styleIndex : 0
+        }
+        [26] : {
+            boundingBox : {
+                height : 15
+                width : 1116
+                x : 72
+                y : 42
+            }
+            domNodeIndex : 29
+            styleIndex : 0
+        }
+        [27] : {
+            boundingBox : {
+                height : 15
+                width : 60
+                x : 72
+                y : 42
+            }
+            domNodeIndex : 30
+            inlineTextNodes : [
+                [0] : {
+                    boundingBox : {
+                        height : 15
+                        width : 60
+                        x : 72
+                        y : 42
+                    }
+                    numCharacters : 4
+                    startCharacterIndex : 0
+                }
+            ]
+            layoutText : hops
+            styleIndex : 0
+        }
+        [28] : {
+            boundingBox : {
+                height : 15
+                width : 1116
+                x : 72
+                y : 57
+            }
+            domNodeIndex : 31
+            styleIndex : 0
+        }
+        [29] : {
+            boundingBox : {
+                height : 15
+                width : 75
+                x : 72
+                y : 57
+            }
+            domNodeIndex : 32
+            inlineTextNodes : [
+                [0] : {
+                    boundingBox : {
+                        height : 15
+                        width : 75
+                        x : 72
+                        y : 57
+                    }
+                    numCharacters : 5
+                    startCharacterIndex : 0
+                }
+            ]
+            layoutText : yeast
+            styleIndex : 0
+        }
+    ]
+}
+

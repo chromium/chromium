@@ -10,10 +10,10 @@
 #include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/chromeos/file_manager/volume_manager_observer.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -128,7 +128,7 @@ namespace {
 // Helper to exit a RunLoop the next time OnVolumeMounted() is invoked.
 class VolumeWaiter : public VolumeManagerObserver {
  public:
-  VolumeWaiter(Profile* profile, const base::Closure& on_mount)
+  VolumeWaiter(Profile* profile, const base::RepeatingClosure& on_mount)
       : profile_(profile), on_mount_(on_mount) {
     VolumeManager::Get(profile_)->AddObserver(this);
   }
@@ -144,7 +144,7 @@ class VolumeWaiter : public VolumeManagerObserver {
 
  private:
   Profile* profile_;
-  base::Closure on_mount_;
+  base::RepeatingClosure on_mount_;
 };
 }  // namespace
 

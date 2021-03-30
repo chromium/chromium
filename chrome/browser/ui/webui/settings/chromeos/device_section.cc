@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/device_section.h"
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/ash_interfaces.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/night_light_controller.h"
@@ -14,8 +16,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
-#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ui/webui/settings/chromeos/device_display_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/device_keyboard_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/device_pointer_handler.h"
@@ -28,8 +29,6 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -198,6 +197,18 @@ GetTouchpadScrollAccelerationSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetMouseScrollAccelerationSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_MOUSE_SCROLL_ACCELERATION,
+       mojom::kPointersSubpagePath,
+       mojom::SearchResultIcon::kMouse,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kMouseScrollAcceleration}},
+  });
+  return *tags;
+}
+
 const std::vector<SearchConcept>& GetMouseSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_MOUSE_ACCELERATION,
@@ -230,12 +241,6 @@ const std::vector<SearchConcept>& GetMouseSearchConcepts() {
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kPointers}},
-      {IDS_OS_SETTINGS_TAG_MOUSE_SCROLL_ACCELERATION,
-       mojom::kPointersSubpagePath,
-       mojom::SearchResultIcon::kMouse,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kMouseScrollAcceleration}},
   });
   return *tags;
 }
@@ -472,6 +477,11 @@ const std::vector<SearchConcept>& GetPowerWithLaptopLidSearchConcepts() {
   return *tags;
 }
 
+bool AreScrollSettingsAllowed() {
+  return base::FeatureList::IsEnabled(
+      ::chromeos::features::kAllowScrollSettings);
+}
+
 bool IsUnifiedDesktopAvailable() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ::switches::kEnableUnifiedDesktop);
@@ -521,7 +531,7 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_KEYBOARD_SHOW_LANGUAGE_AND_INPUT},
       {"keyboardShowInputSettings", IDS_SETTINGS_KEYBOARD_SHOW_INPUT_SETTINGS},
   };
-  AddLocalizedStringsBulk(html_source, keyboard_strings);
+  html_source->AddLocalizedStrings(keyboard_strings);
 
   html_source->AddLocalizedString("keyboardKeySearch",
                                   ui::DeviceUsesKeyboardLayout2()
@@ -553,7 +563,7 @@ void AddDeviceStylusStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_STYLUS_NOTE_TAKING_APP_NONE_AVAILABLE},
       {"stylusNoteTakingAppWaitingForAndroid",
        IDS_SETTINGS_STYLUS_NOTE_TAKING_APP_WAITING_FOR_ANDROID}};
-  AddLocalizedStringsBulk(html_source, kStylusStrings);
+  html_source->AddLocalizedStrings(kStylusStrings);
 
   html_source->AddBoolean("hasInternalStylus",
                           ash::stylus_utils::HasInternalStylus());
@@ -642,7 +652,7 @@ void AddDeviceDisplayStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_DISPLAY_TOUCH_CALIBRATION_TITLE},
       {"displayTouchCalibrationText",
        IDS_SETTINGS_DISPLAY_TOUCH_CALIBRATION_TEXT}};
-  AddLocalizedStringsBulk(html_source, kDisplayStrings);
+  html_source->AddLocalizedStrings(kDisplayStrings);
 
   html_source->AddLocalizedString(
       "displayArrangementText",
@@ -712,7 +722,7 @@ void AddDeviceStorageStrings(content::WebUIDataSource* html_source,
       {"storageExternalStorageListHeader",
        IDS_SETTINGS_STORAGE_EXTERNAL_STORAGE_LIST_HEADER},
       {"storageOverviewAriaLabel", IDS_SETTINGS_STORAGE_OVERVIEW_ARIA_LABEL}};
-  AddLocalizedStringsBulk(html_source, kStorageStrings);
+  html_source->AddLocalizedStrings(kStorageStrings);
 
   html_source->AddBoolean("androidEnabled", is_external_storage_page_available);
 
@@ -750,7 +760,7 @@ void AddDevicePowerStrings(content::WebUIDataSource* html_source) {
       {"powerLidSignOutLabel", IDS_SETTINGS_POWER_LID_CLOSED_SIGN_OUT_LABEL},
       {"powerLidShutDownLabel", IDS_SETTINGS_POWER_LID_CLOSED_SHUT_DOWN_LABEL},
   };
-  AddLocalizedStringsBulk(html_source, kPowerStrings);
+  html_source->AddLocalizedStrings(kPowerStrings);
 }
 
 // Mirrors enum of the same name in enums.xml.
@@ -838,7 +848,7 @@ void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"devicePageTitle", IDS_SETTINGS_DEVICE_TITLE},
       {"touchPadScrollLabel", IDS_OS_SETTINGS_TOUCHPAD_REVERSE_SCROLL_LABEL},
   };
-  AddLocalizedStringsBulk(html_source, kDeviceStrings);
+  html_source->AddLocalizedStrings(kDeviceStrings);
 
   html_source->AddBoolean("isDemoSession",
                           chromeos::DemoSession::IsDeviceInDemoMode());
@@ -1020,11 +1030,14 @@ void DeviceSection::TouchpadExists(bool exists) {
 
 void DeviceSection::MouseExists(bool exists) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
+  updater.RemoveSearchTags(GetMouseSearchConcepts());
+  updater.RemoveSearchTags(GetMouseScrollAccelerationSearchConcepts());
 
-  if (exists)
+  if (exists) {
     updater.AddSearchTags(GetMouseSearchConcepts());
-  else
-    updater.RemoveSearchTags(GetMouseSearchConcepts());
+    if (AreScrollSettingsAllowed())
+      updater.AddSearchTags(GetMouseScrollAccelerationSearchConcepts());
+  }
 }
 
 void DeviceSection::PointingStickExists(bool exists) {
@@ -1205,7 +1218,7 @@ void DeviceSection::AddDevicePointersStrings(
        IDS_SETTINGS_TOUCHPAD_SCROLL_ACCELERATION_LABEL},
       {"touchpadScrollSpeed", IDS_SETTINGS_TOUCHPAD_SCROLL_SPEED_LABEL},
   };
-  AddLocalizedStringsBulk(html_source, kPointersStrings);
+  html_source->AddLocalizedStrings(kPointersStrings);
 
   html_source->AddString("naturalScrollLearnMoreLink",
                          GetHelpUrlWithBoard(chrome::kNaturalScrollHelpURL));
@@ -1213,12 +1226,7 @@ void DeviceSection::AddDevicePointersStrings(
   html_source->AddBoolean(
       "allowDisableMouseAcceleration",
       base::FeatureList::IsEnabled(::features::kAllowDisableMouseAcceleration));
-  html_source->AddBoolean(
-      "allowScrollSettings",
-      base::FeatureList::IsEnabled(::chromeos::features::kAllowScrollSettings));
-  html_source->AddBoolean(
-      "separatePointingStickSettings",
-      base::FeatureList::IsEnabled(::features::kSeparatePointingStickSettings));
+  html_source->AddBoolean("allowScrollSettings", AreScrollSettingsAllowed());
 }
 
 }  // namespace settings

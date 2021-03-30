@@ -4,10 +4,11 @@
 
 #include "base/power_monitor/power_monitor_device_source.h"
 
+#include <string>
+
 #include "base/logging.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/task/current_thread.h"
 #include "base/win/wrapped_window_proc.h"
@@ -57,7 +58,7 @@ void ProcessWmPowerBroadcastMessage(WPARAM event_id) {
 
 // Function to query the system to see if it is currently running on
 // battery power.  Returns true if running on battery.
-bool PowerMonitorDeviceSource::IsOnBatteryPowerImpl() {
+bool PowerMonitorDeviceSource::IsOnBatteryPower() {
   SYSTEM_POWER_STATUS status;
   if (!GetSystemPowerStatus(&status)) {
     DPLOG(ERROR) << "GetSystemPowerStatus failed";

@@ -1,4 +1,4 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++math
+++++++math name='ARIA role math.'

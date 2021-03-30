@@ -54,7 +54,7 @@ class PredictionService : public PredictionServiceBase {
  private:
   static const GURL GetPredictionServiceUrl(bool recalculate_for_testing);
   std::unique_ptr<network::ResourceRequest> GetResourceRequest();
-  std::unique_ptr<GetSuggestionsRequest> GetPredictionRequestProto(
+  std::unique_ptr<GeneratePredictionsRequest> GetPredictionRequestProto(
       const PredictionRequestFeatures& entity);
   void SendRequestInternal(std::unique_ptr<network::ResourceRequest> request,
                            const std::string& request_data,
@@ -64,7 +64,7 @@ class PredictionService : public PredictionServiceBase {
                            network::SimpleURLLoader* loader,
                            base::TimeTicks request_start_time,
                            std::unique_ptr<std::string> response_body);
-  std::unique_ptr<GetSuggestionsResponse> CreatePredictionsResponse(
+  std::unique_ptr<GeneratePredictionsResponse> CreatePredictionsResponse(
       network::SimpleURLLoader* loader,
       const std::string* response_body);
 

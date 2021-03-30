@@ -4,9 +4,10 @@
 
 #include "components/content_settings/browser/page_specific_content_settings.h"
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/content_settings/browser/test_page_specific_content_settings_delegate.h"

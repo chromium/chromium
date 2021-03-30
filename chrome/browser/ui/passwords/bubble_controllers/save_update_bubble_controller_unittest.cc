@@ -183,7 +183,7 @@ void SaveUpdateBubbleControllerTest::PretendUpdatePasswordWaiting() {
       GetCurrentForms();
   auto current_form =
       std::make_unique<password_manager::PasswordForm>(pending_password());
-  current_form->password_value = base::ASCIIToUTF16("old_password");
+  current_form->password_value = u"old_password";
   forms.push_back(std::move(current_form));
   EXPECT_CALL(*delegate(), GetCurrentForms()).WillOnce(ReturnRef(forms));
   SetUpWithState(password_manager::ui::PENDING_PASSWORD_UPDATE_STATE,
@@ -226,11 +226,11 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>>
 SaveUpdateBubbleControllerTest::GetCurrentForms() const {
   password_manager::PasswordForm form(pending_password());
   form.username_value = base::ASCIIToUTF16(kUsernameExisting);
-  form.password_value = base::ASCIIToUTF16("123456");
+  form.password_value = u"123456";
 
   password_manager::PasswordForm preferred_form(pending_password());
-  preferred_form.username_value = base::ASCIIToUTF16("preferred_username");
-  preferred_form.password_value = base::ASCIIToUTF16("654321");
+  preferred_form.username_value = u"preferred_username";
+  preferred_form.password_value = u"654321";
 
   std::vector<std::unique_ptr<password_manager::PasswordForm>> forms;
   forms.push_back(std::make_unique<password_manager::PasswordForm>(form));
@@ -360,8 +360,8 @@ TEST_F(SaveUpdateBubbleControllerTest, EditCredential) {
   PretendPasswordWaiting();
   EXPECT_CALL(*GetStore(), RemoveSiteStatsImpl(GURL(kSiteOrigin).GetOrigin()));
 
-  const base::string16 kExpectedUsername = base::UTF8ToUTF16("new_username");
-  const base::string16 kExpectedPassword = base::UTF8ToUTF16("new_password");
+  const std::u16string kExpectedUsername = u"new_username";
+  const std::u16string kExpectedPassword = u"new_password";
 
   controller()->OnCredentialEdited(kExpectedUsername, kExpectedPassword);
   EXPECT_EQ(kExpectedUsername, controller()->pending_password().username_value);

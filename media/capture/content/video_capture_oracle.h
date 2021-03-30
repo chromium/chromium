@@ -10,11 +10,11 @@
 #include "base/callback.h"
 #include "base/time/time.h"
 #include "media/base/feedback_signal_accumulator.h"
-#include "media/base/video_frame_feedback.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/content/animated_content_sampler.h"
 #include "media/capture/content/capture_resolution_chooser.h"
 #include "media/capture/content/smooth_event_sampler.h"
+#include "media/capture/video_frame_feedback.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace media {

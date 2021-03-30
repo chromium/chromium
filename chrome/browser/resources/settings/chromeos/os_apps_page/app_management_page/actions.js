@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {Action} from 'chrome://resources/js/cr/ui/store.m.js';
+// clang-format on
+
 /**
  * @fileoverview Module for functions which produce action objects. These are
  * listed in one place to document available actions and their parameters.
@@ -11,7 +15,7 @@ cr.define('app_management.actions', function() {
   /**
    * @param {App} app
    */
-  function addApp(app) {
+  /* #export */ function addApp(app) {
     return {
       name: 'add-app',
       app: app,
@@ -21,7 +25,7 @@ cr.define('app_management.actions', function() {
   /**
    * @param {App} app
    */
-  function changeApp(app) {
+  /* #export */ function changeApp(app) {
     return {
       name: 'change-app',
       app: app,
@@ -31,7 +35,7 @@ cr.define('app_management.actions', function() {
   /**
    * @param {string} id
    */
-  function removeApp(id) {
+  /* #export */ function removeApp(id) {
     return {
       name: 'remove-app',
       id: id,
@@ -41,7 +45,7 @@ cr.define('app_management.actions', function() {
   /**
    * @param {?string} appId
    */
-  function updateSelectedAppId(appId) {
+  /* #export */ function updateSelectedAppId(appId) {
     return {
       name: 'update-selected-app-id',
       value: appId,
@@ -52,7 +56,7 @@ cr.define('app_management.actions', function() {
    * @param {boolean} isSupported
    * @return {!cr.ui.Action}
    */
-  function updateArcSupported(isSupported) {
+  /* #export */ function updateArcSupported(isSupported) {
     return {
       name: 'update-arc-supported',
       value: isSupported,

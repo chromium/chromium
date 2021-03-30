@@ -100,16 +100,16 @@ base::Optional<std::vector<std::wstring>> GetDeviceStringListProperty(
   if (property_type != DEVPROP_TYPE_STRING_LIST)
     return base::nullopt;
 
-  base::string16 buffer16;
+  std::wstring bufferw;
   if (!SetupDiGetDeviceProperty(
           device_info_set, &device_info_data, &property_key, &property_type,
-          reinterpret_cast<PBYTE>(base::WriteInto(&buffer16, required_size)),
+          reinterpret_cast<PBYTE>(base::WriteInto(&bufferw, required_size)),
           required_size, /*RequiredSize=*/nullptr, /*Flags=*/0)) {
     HID_PLOG(DEBUG) << "SetupDiGetDeviceProperty failed";
     return base::nullopt;
   }
 
-  return base::SplitString(buffer16, base::WStringPiece(L"\0", 1),
+  return base::SplitString(bufferw, base::WStringPiece(L"\0", 1),
                            base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 }
 
@@ -699,7 +699,7 @@ void HidServiceWin::AddDeviceBlocking(
 
       // 1023 characters plus NULL terminator is more than enough for a USB
       // string descriptor which is limited to 126 characters.
-      base::char16 buffer[1024];
+      char16_t buffer[1024];
       if (HidD_GetProductString(device_handle.Get(), &buffer[0],
                                 sizeof(buffer))) {
         // NULL termination guaranteed by the API.
@@ -715,7 +715,10 @@ void HidServiceWin::AddDeviceBlocking(
     // Create a HidCollectionInfo for |device_path| and update the relevant
     // HidDeviceInfo properties.
     auto collection = preparsed_data->CreateHidCollectionInfo();
-    platform_device_id_map.emplace_back(collection->report_ids, device_path);
+    if (collection->report_ids.empty())
+      platform_device_id_map.emplace_back(std::vector<uint8_t>{0}, device_path);
+    else
+      platform_device_id_map.emplace_back(collection->report_ids, device_path);
     collections.push_back(std::move(collection));
     max_input_report_size = std::max(
         max_input_report_size, preparsed_data->GetReportByteLength(HidP_Input));

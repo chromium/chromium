@@ -462,7 +462,8 @@ void Path::AddRoundedRect(const FloatRect& rect,
   if (radius.Height() > half_size.Height())
     radius.SetHeight(half_size.Height());
 
-  AddPathForRoundedRect(rect, radius, radius, radius, radius);
+  const bool clockwise = true;
+  AddPathForRoundedRect(rect, radius, radius, radius, radius, clockwise);
 }
 
 void Path::AddRoundedRect(const FloatRect& rect,
@@ -488,19 +489,21 @@ void Path::AddRoundedRect(const FloatRect& rect,
     return;
   }
 
+  const bool clockwise = true;
   AddPathForRoundedRect(rect, top_left_radius, top_right_radius,
-                        bottom_left_radius, bottom_right_radius);
+                        bottom_left_radius, bottom_right_radius, clockwise);
 }
 
 void Path::AddPathForRoundedRect(const FloatRect& rect,
                                  const FloatSize& top_left_radius,
                                  const FloatSize& top_right_radius,
                                  const FloatSize& bottom_left_radius,
-                                 const FloatSize& bottom_right_radius) {
-  // Start at upper-left (after corner radii), add clock-wise.
+                                 const FloatSize& bottom_right_radius,
+                                 bool clockwise) {
+  // Start at upper-left (after corner radius).
   path_.addRRect(FloatRoundedRect(rect, top_left_radius, top_right_radius,
                                   bottom_left_radius, bottom_right_radius),
-                 SkPathDirection::kCW, 0);
+                 clockwise ? SkPathDirection::kCW : SkPathDirection::kCCW, 0);
 }
 
 void Path::AddPath(const Path& src, const AffineTransform& transform) {

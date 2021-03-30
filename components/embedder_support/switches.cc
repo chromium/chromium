@@ -21,4 +21,7 @@ const char kOriginTrialDisabledTokens[] = "origin-trial-disabled-tokens";
 // checking origin trial tokens.
 const char kOriginTrialPublicKey[] = "origin-trial-public-key";
 
+// A string used to override the default user agent with a custom one.
+const char kUserAgent[] = "user-agent";
+
 }  // namespace embedder_support

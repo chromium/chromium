@@ -190,8 +190,8 @@ class COMPONENT_EXPORT(VULKAN) VulkanImage {
   VkDeviceMemory device_memory_ = VK_NULL_HANDLE;
   VkExternalMemoryHandleTypeFlags handle_types_ = 0;
   scoped_refptr<gfx::NativePixmap> native_pixmap_;
-  uint64_t modifier_ = 0;
-  size_t plane_count_ = 0;
+  uint64_t modifier_ = gfx::NativePixmapHandle::kNoModifier;
+  size_t plane_count_ = 1;
   std::array<VkSubresourceLayout, 4> layouts_ = {};
 };
 

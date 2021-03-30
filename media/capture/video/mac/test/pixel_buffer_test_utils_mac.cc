@@ -132,11 +132,6 @@ std::unique_ptr<ByteArrayPixelBuffer> CreateYuvsPixelBufferFromArgbBuffer(
     int width,
     int height,
     const std::vector<uint8_t>& argb_buffer) {
-  // These utility methods don't work well with widths that aren't multiples of
-  // 16. There could be assumptions about memory alignment, or there could
-  // simply be a loss of information in the YUVS <-> ARGB conversions since YUVS
-  // is packed. Either way, the pixels may change, so we avoid these widths.
-  DCHECK(width % 16 == 0);
   std::unique_ptr<ByteArrayPixelBuffer> result =
       std::make_unique<ByteArrayPixelBuffer>();
   size_t yuvs_stride = GetYuvsStride(width);

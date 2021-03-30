@@ -45,7 +45,6 @@ namespace ash {
 
 namespace {
 
-using chromeos::assistant::features::IsTimersV2Enabled;
 using chromeos::assistant::features::IsWaitSchedulingEnabled;
 
 // Android.
@@ -90,9 +89,10 @@ AssistantInteractionControllerImpl::AssistantInteractionControllerImpl(
     : assistant_controller_(assistant_controller) {
   model_.AddObserver(this);
 
-  assistant_controller_observer_.Add(AssistantController::Get());
-  highlighter_controller_observer_.Add(Shell::Get()->highlighter_controller());
-  tablet_mode_controller_observer_.Add(GetTabletModeController());
+  assistant_controller_observation_.Observe(AssistantController::Get());
+  highlighter_controller_observation_.Observe(
+      Shell::Get()->highlighter_controller());
+  tablet_mode_controller_observation_.Observe(GetTabletModeController());
 }
 
 AssistantInteractionControllerImpl::~AssistantInteractionControllerImpl() {
@@ -146,24 +146,6 @@ void AssistantInteractionControllerImpl::StartTextInteraction(
       std::make_unique<AssistantTextQuery>(text, query_source));
 
   assistant_->StartTextInteraction(text, query_source, allow_tts);
-}
-
-void AssistantInteractionControllerImpl::StartBloomInteraction() {
-  // TODO(jeroendh): Test.
-  StopActiveInteraction(false);
-
-  AssistantUiController::Get()->ShowUi(AssistantEntryPoint::kBloom);
-
-  OnInteractionStarted(AssistantInteractionMetadata(
-      AssistantInteractionType::kText, AssistantQuerySource::kBloom,
-      /*query=*/"processing query"));
-}
-
-void AssistantInteractionControllerImpl::ShowBloomResult(
-    const std::string& html) {
-  // TODO(jeroendh) ensure we're in a bloom interaction
-
-  OnHtmlResponse(html, /*fallback=*/"");
 }
 
 void AssistantInteractionControllerImpl::OnAssistantControllerConstructed() {
@@ -281,6 +263,7 @@ void AssistantInteractionControllerImpl::OnUiVisibilityChanged(
       // reset the interaction state and restore the default input modality.
       StopActiveInteraction(true);
       model_.ClearInteraction();
+      model_.SetInputModality(GetDefaultInputModality());
       break;
     case AssistantVisibility::kVisible:
       OnUiVisible(entry_point.value());
@@ -439,8 +422,10 @@ void AssistantInteractionControllerImpl::OnInteractionFinished(
   // If we don't have an active interaction, that indicates that this
   // interaction was explicitly stopped outside of LibAssistant. In this case,
   // we ensure that the mic is closed but otherwise ignore this event.
-  if (!HasActiveInteraction())
+  if (!HasActiveInteraction()) {
+    DVLOG(1) << "Assistant: Dropping response outside of active interaction";
     return;
+  }
 
   model_.SetInteractionState(InteractionState::kInactive);
 
@@ -513,8 +498,10 @@ void AssistantInteractionControllerImpl::OnInteractionFinished(
 void AssistantInteractionControllerImpl::OnHtmlResponse(
     const std::string& html,
     const std::string& fallback) {
-  if (!HasActiveInteraction())
+  if (!HasActiveInteraction()) {
+    DVLOG(1) << "Assistant: Dropping response outside of active interaction";
     return;
+  }
 
   AssistantResponse* response = GetResponseForActiveInteraction();
   response->AddUiElement(
@@ -603,8 +590,10 @@ void AssistantInteractionControllerImpl::OnTabletModeChanged() {
 
 void AssistantInteractionControllerImpl::OnSuggestionsResponse(
     const std::vector<AssistantSuggestion>& suggestions) {
-  if (!HasActiveInteraction())
+  if (!HasActiveInteraction()) {
+    DVLOG(1) << "Assistant: Dropping response outside of active interaction";
     return;
+  }
 
   AssistantResponse* response = GetResponseForActiveInteraction();
   response->AddSuggestions(suggestions);
@@ -618,8 +607,10 @@ void AssistantInteractionControllerImpl::OnSuggestionsResponse(
 
 void AssistantInteractionControllerImpl::OnTextResponse(
     const std::string& text) {
-  if (!HasActiveInteraction())
+  if (!HasActiveInteraction()) {
+    DVLOG(1) << "Assistant: Dropping response outside of active interaction";
     return;
+  }
 
   AssistantResponse* response = GetResponseForActiveInteraction();
   response->AddUiElement(std::make_unique<AssistantTextElement>(text));
@@ -665,8 +656,10 @@ void AssistantInteractionControllerImpl::OnTtsStarted(bool due_to_error) {
   // When Assistant is talking, ChromeVox should not be.
   Shell::Get()->accessibility_controller()->SilenceSpokenFeedback();
 
-  if (!HasActiveInteraction())
+  if (!HasActiveInteraction()) {
+    DVLOG(1) << "Assistant: Dropping response outside of active interaction";
     return;
+  }
 
   // Commit the pending query in whatever state it's in. In most cases the
   // pending query is already committed, but we must always commit the pending
@@ -701,8 +694,10 @@ void AssistantInteractionControllerImpl::OnTtsStarted(bool due_to_error) {
 
 void AssistantInteractionControllerImpl::OnWaitStarted() {
   DCHECK(IsWaitSchedulingEnabled());
-  if (!HasActiveInteraction())
+  if (!HasActiveInteraction()) {
+    DVLOG(1) << "Assistant: Dropping response outside of active interaction";
     return;
+  }
 
   // If necessary, commit the pending query in whatever state it's in. This is
   // prerequisite to being able to commit a response.
@@ -718,8 +713,10 @@ void AssistantInteractionControllerImpl::OnWaitStarted() {
 
 void AssistantInteractionControllerImpl::OnOpenUrlResponse(const GURL& url,
                                                            bool in_background) {
-  if (!HasActiveInteraction())
+  if (!HasActiveInteraction()) {
+    DVLOG(1) << "Assistant: Dropping response outside of active interaction";
     return;
+  }
 
   // We need to indicate that the navigation attempt is occurring as a result of
   // a server response so that we can differentiate from navigation attempts
@@ -727,18 +724,20 @@ void AssistantInteractionControllerImpl::OnOpenUrlResponse(const GURL& url,
   AssistantController::Get()->OpenUrl(url, in_background, /*from_server=*/true);
 }
 
-bool AssistantInteractionControllerImpl::OnOpenAppResponse(
+void AssistantInteractionControllerImpl::OnOpenAppResponse(
     const chromeos::assistant::AndroidAppInfo& app_info) {
-  if (!HasActiveInteraction())
-    return false;
+  if (!HasActiveInteraction()) {
+    DVLOG(1) << "Assistant: Dropping response outside of active interaction";
+    return;
+  }
 
   auto* android_helper = AndroidIntentHelper::GetInstance();
   if (!android_helper)
-    return false;
+    return;
 
   auto intent = android_helper->GetAndroidAppLaunchIntent(app_info);
   if (!intent.has_value())
-    return false;
+    return;
 
   // Common Android intent might starts with intent scheme "intent://" or
   // Android app scheme "android-app://". But it might also only contains
@@ -753,7 +752,6 @@ bool AssistantInteractionControllerImpl::OnOpenAppResponse(
   }
   AssistantController::Get()->OpenUrl(GURL(intent_str), /*in_background=*/false,
                                       /*from_server=*/true);
-  return true;
 }
 
 void AssistantInteractionControllerImpl::OnDialogPlateButtonPressed(
@@ -791,15 +789,12 @@ bool AssistantInteractionControllerImpl::HasActiveInteraction() const {
 void AssistantInteractionControllerImpl::OnUiVisible(
     AssistantEntryPoint entry_point) {
   DCHECK(IsVisible());
-  const bool is_voice_entry =
-      assistant::util::IsVoiceEntryPoint(entry_point, IsPreferVoice());
-  model_.SetInputModality(is_voice_entry ? InputModality::kVoice
-                                         : InputModality::kKeyboard);
 
   // We don't explicitly start a new voice interaction if the entry point
   // is hotword since in such cases a voice interaction will already be in
   // progress.
-  if (is_voice_entry && entry_point != AssistantEntryPoint::kHotword) {
+  if (assistant::util::IsVoiceEntryPoint(entry_point, IsPreferVoice()) &&
+      entry_point != AssistantEntryPoint::kHotword) {
     StartVoiceInteraction();
     return;
   }

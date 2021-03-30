@@ -20,6 +20,7 @@ typedef NS_ENUM(NSInteger, AutofillUIType) {
   AutofillUITypeCreditCardExpDate,
   AutofillUITypeCreditCardBillingAddress,
   AutofillUITypeCreditCardSaveToChrome,
+  AutofillUITypeProfileHonorificPrefix,
   AutofillUITypeProfileFullName,
   AutofillUITypeProfileCompanyName,
   AutofillUITypeProfileHomeAddressStreet,

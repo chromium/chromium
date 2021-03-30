@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/input_method/native_input_method_engine.h"
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/guid.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
@@ -24,8 +26,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "chromeos/constants/chromeos_pref_names.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -61,6 +61,7 @@ class TestObserver : public InputMethodEngineBase::Observer {
   void OnActivate(const std::string& engine_id) override {}
   void OnDeactivated(const std::string& engine_id) override {}
   void OnFocus(
+      int context_id,
       const ui::IMEEngineHandlerInterface::InputContext& context) override {}
   void OnBlur(int context_id) override {}
   void OnKeyEvent(
@@ -76,7 +77,7 @@ class TestObserver : public InputMethodEngineBase::Observer {
   void OnMenuItemActivated(const std::string& engine_id,
                            const std::string& menu_id) override {}
   void OnSurroundingTextChanged(const std::string& engine_id,
-                                const base::string16& text,
+                                const std::u16string& text,
                                 int cursor_pos,
                                 int anchor_pos,
                                 int offset) override {}
@@ -269,8 +270,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
 
   // Expect to commit 'Á '.
   ASSERT_EQ(text_input_client.composition_history().size(), 2U);
-  EXPECT_EQ(text_input_client.composition_history()[0].text,
-            base::ASCIIToUTF16("A"));
+  EXPECT_EQ(text_input_client.composition_history()[0].text, u"A");
   EXPECT_EQ(text_input_client.composition_history()[1].text,
             base::UTF8ToUTF16(u8"\u00c1"));
   ASSERT_EQ(text_input_client.insert_text_history().size(), 1U);
@@ -295,11 +295,9 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, VietnameseTelex_Reset) {
 
   // Expect to commit 's'.
   ASSERT_EQ(text_input_client.composition_history().size(), 1U);
-  EXPECT_EQ(text_input_client.composition_history()[0].text,
-            base::ASCIIToUTF16("a"));
+  EXPECT_EQ(text_input_client.composition_history()[0].text, u"a");
   ASSERT_EQ(text_input_client.insert_text_history().size(), 1U);
-  EXPECT_EQ(text_input_client.insert_text_history()[0],
-            base::ASCIIToUTF16("s"));
+  EXPECT_EQ(text_input_client.insert_text_history()[0], u"s");
 
   SetFocus(nullptr);
 }
@@ -360,9 +358,8 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, SuggestUserEmail) {
   TextInputTestHelper helper(GetBrowserInputMethod());
   SetUpTextInput(helper);
 
-  const base::string16 prefix_text = base::UTF8ToUTF16("my email is ");
-  const base::string16 expected_result_text =
-      base::UTF8ToUTF16("my email is johnwayne@me.xyz");
+  const std::u16string prefix_text = u"my email is ";
+  const std::u16string expected_result_text = u"my email is johnwayne@me.xyz";
 
   helper.GetTextInputClient()->InsertText(
       prefix_text,
@@ -403,9 +400,8 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   TextInputTestHelper helper(GetBrowserInputMethod());
   SetUpTextInput(helper);
 
-  const base::string16 prefix_text = base::UTF8ToUTF16("my email is ");
-  const base::string16 expected_result_text =
-      base::UTF8ToUTF16("my email is john@abc.com");
+  const std::u16string prefix_text = u"my email is ";
+  const std::u16string expected_result_text = u"my email is john@abc.com";
 
   helper.GetTextInputClient()->InsertText(
       prefix_text,
@@ -419,7 +415,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   DispatchKeyPress(ui::VKEY_DOWN, false);
   DispatchKeyPress(ui::VKEY_RETURN, false);
   helper.GetTextInputClient()->InsertText(
-      base::UTF8ToUTF16("john@abc.com"),
+      u"john@abc.com",
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   helper.WaitForSurroundingTextChanged(expected_result_text);
 
@@ -439,7 +435,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, SuggestUserName) {
   autofill::AutofillProfile autofill_profile(base::GenerateGUID(),
                                              autofill::test::kEmptyOrigin);
   autofill_profile.SetRawInfo(autofill::ServerFieldType::NAME_FULL,
-                              base::UTF8ToUTF16("John Wayne"));
+                              u"John Wayne");
   autofill::PersonalDataManagerFactory::GetForProfile(profile_)->AddProfile(
       autofill_profile);
   personal_data_observer.Wait();
@@ -449,9 +445,8 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, SuggestUserName) {
   TextInputTestHelper helper(GetBrowserInputMethod());
   SetUpTextInput(helper);
 
-  const base::string16 prefix_text = base::UTF8ToUTF16("my name is ");
-  const base::string16 expected_result_text =
-      base::UTF8ToUTF16("my name is John Wayne");
+  const std::u16string prefix_text = u"my name is ";
+  const std::u16string expected_result_text = u"my name is John Wayne";
 
   helper.GetTextInputClient()->InsertText(
       prefix_text,
@@ -466,9 +461,9 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, SuggestUserName) {
 
   // Keep typing
   helper.GetTextInputClient()->InsertText(
-      base::UTF8ToUTF16("jo"),
+      u"jo",
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-  helper.WaitForSurroundingTextChanged(base::UTF8ToUTF16("my name is jo"));
+  helper.WaitForSurroundingTextChanged(u"my name is jo");
 
   DispatchKeyPress(ui::VKEY_DOWN, false);
   DispatchKeyPress(ui::VKEY_RETURN, false);
@@ -525,8 +520,8 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, SuggestEmoji) {
   engine_->Enable(kEngineIdUs);
   TextInputTestHelper helper(GetBrowserInputMethod());
   SetUpTextInput(helper);
-  const base::string16 prefix_text = base::UTF8ToUTF16("happy ");
-  const base::string16 expected_result_text = base::UTF8ToUTF16("happy 😀");
+  const std::u16string prefix_text = u"happy ";
+  const std::u16string expected_result_text = u"happy 😀";
 
   helper.GetTextInputClient()->InsertText(
       prefix_text,
@@ -558,8 +553,8 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   engine_->Enable(kEngineIdUs);
   TextInputTestHelper helper(GetBrowserInputMethod());
   SetUpTextInput(helper);
-  const base::string16 prefix_text = base::UTF8ToUTF16("happy ");
-  const base::string16 expected_result_text = base::UTF8ToUTF16("happy a");
+  const std::u16string prefix_text = u"happy ";
+  const std::u16string expected_result_text = u"happy a";
 
   helper.GetTextInputClient()->InsertText(
       prefix_text,
@@ -567,7 +562,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   helper.WaitForSurroundingTextChanged(prefix_text);
   // Types something random to dismiss emoji
   helper.GetTextInputClient()->InsertText(
-      base::UTF8ToUTF16("a"),
+      u"a",
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   helper.WaitForSurroundingTextChanged(expected_result_text);
 
@@ -687,7 +682,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
       },
       false);
 
-  engine_->OnAutocorrect("typed", "corrected", 0);
+  engine_->OnAutocorrect(u"typed", u"corrected", 0);
 
   EXPECT_FALSE(engine_->GetAutocorrectRange().is_empty());
 
@@ -710,13 +705,13 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   engine_->Enable(kEngineIdUs);
   TextInputTestHelper helper(GetBrowserInputMethod());
   SetUpTextInput(helper);
-  const base::string16 prefix_text = base::UTF8ToUTF16("corrected ");
+  const std::u16string prefix_text = u"corrected ";
   helper.GetTextInputClient()->InsertText(
       prefix_text,
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   helper.WaitForSurroundingTextChanged(prefix_text);
 
-  engine_->OnAutocorrect("typed", "corrected", 0);
+  engine_->OnAutocorrect(u"typed", u"corrected", 0);
 
   auto* controller =
       ((input_method::
@@ -727,7 +722,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
 
   // Move cursor back into the autocorrected word to show the window.
   helper.GetTextInputClient()->ExtendSelectionAndDelete(1, 0);
-  helper.WaitForSurroundingTextChanged(base::UTF8ToUTF16("corrected"));
+  helper.WaitForSurroundingTextChanged(u"corrected");
 
   EXPECT_TRUE(controller->GetUndoWindowForTesting());
   EXPECT_TRUE(controller->GetUndoWindowForTesting()->GetVisible());
@@ -739,9 +734,8 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, RevertsAutocorrect) {
   engine_->Enable(kEngineIdUs);
   TextInputTestHelper helper(GetBrowserInputMethod());
   SetUpTextInput(helper);
-  const base::string16 corrected_text =
-      base::UTF8ToUTF16("hello corrected world");
-  const base::string16 typed_text = base::UTF8ToUTF16("hello typed world");
+  const std::u16string corrected_text = u"hello corrected world";
+  const std::u16string typed_text = u"hello typed world";
   helper.GetTextInputClient()->InsertText(
       corrected_text,
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
@@ -752,7 +746,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, RevertsAutocorrect) {
                 .surrounding_text,
             corrected_text);
 
-  engine_->OnAutocorrect("typed", "corrected", 6);
+  engine_->OnAutocorrect(u"typed", u"corrected", 6);
 
   // Move cursor into the corrected word, sending VKEY_LEFT fails, so use JS.
   content::WebContents* tab =
@@ -781,8 +775,8 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
 
   TextInputTestHelper helper(GetBrowserInputMethod());
   SetUpTextInput(helper);
-  const base::string16 corrected_text = base::UTF8ToUTF16("corrected");
-  const base::string16 typed_text = base::UTF8ToUTF16("typed");
+  const std::u16string corrected_text = u"corrected";
+  const std::u16string typed_text = u"typed";
   helper.GetTextInputClient()->InsertText(
       corrected_text,
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
@@ -793,7 +787,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
                 .surrounding_text,
             corrected_text);
 
-  engine_->OnAutocorrect("typed", "corrected", 0);
+  engine_->OnAutocorrect(u"typed", u"corrected", 0);
   // Move cursor into the corrected word, sending VKEY_LEFT fails, so use JS.
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -822,8 +816,8 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
 
   TextInputTestHelper helper(GetBrowserInputMethod());
   SetUpTextInput(helper);
-  const base::string16 corrected_text = base::UTF8ToUTF16("corrected");
-  const base::string16 typed_text = base::UTF8ToUTF16("typed");
+  const std::u16string corrected_text = u"corrected";
+  const std::u16string typed_text = u"typed";
   helper.GetTextInputClient()->InsertText(
       corrected_text,
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
@@ -836,7 +830,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
 
   histogram_tester.ExpectBucketCount("InputMethod.Assistive.Coverage",
                                      AssistiveType::kAutocorrectWindowShown, 0);
-  engine_->OnAutocorrect("typed", "corrected", 0);
+  engine_->OnAutocorrect(u"typed", u"corrected", 0);
   histogram_tester.ExpectBucketCount("InputMethod.Assistive.Coverage",
                                      AssistiveType::kAutocorrectUnderlined, 1);
 

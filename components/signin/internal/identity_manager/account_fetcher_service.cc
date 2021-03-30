@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/image_fetcher/core/image_decoder.h"
@@ -48,7 +49,12 @@ AccountFetcherService::AccountFetcherService() = default;
 
 AccountFetcherService::~AccountFetcherService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(shutdown_called_);
+  token_service_->RemoveObserver(this);
+#if defined(OS_ANDROID)
+  // child_info_request_ is an invalidation handler and needs to be
+  // unregistered during the lifetime of the invalidation service.
+  child_info_request_.reset();
+#endif
 }
 
 // static
@@ -87,16 +93,6 @@ void AccountFetcherService::Initialize(
   // lines above.
   if (token_service_->AreAllCredentialsLoaded())
     OnRefreshTokensLoaded();
-}
-
-void AccountFetcherService::Shutdown() {
-  token_service_->RemoveObserver(this);
-#if defined(OS_ANDROID)
-  // child_info_request_ is an invalidation handler and needs to be
-  // unregistered during the lifetime of the invalidation service.
-  child_info_request_.reset();
-#endif
-  shutdown_called_ = true;
 }
 
 bool AccountFetcherService::IsAllUserInfoFetched() const {
@@ -189,6 +185,7 @@ void AccountFetcherService::StartFetchingUserInfo(
             token_service_, signin_client_->GetURLLoaderFactory(), this,
             account_id);
     request = std::move(fetcher);
+    user_info_fetch_start_times_[account_id] = base::TimeTicks::Now();
     request->Start();
   }
 }
@@ -244,6 +241,13 @@ void AccountFetcherService::OnUserInfoFetchSuccess(
     std::unique_ptr<base::DictionaryValue> user_info) {
   account_tracker_service_->SetAccountInfoFromUserInfo(account_id,
                                                        user_info.get());
+  auto it = user_info_fetch_start_times_.find(account_id);
+  if (it != user_info_fetch_start_times_.end()) {
+    base::UmaHistogramMediumTimes(
+        "Signin.AccountFetcher.AccountUserInfoFetchTime",
+        base::TimeTicks::Now() - it->second);
+    user_info_fetch_start_times_.erase(it);
+  }
   FetchAccountImage(account_id);
   user_info_requests_.erase(account_id);
 }
@@ -306,6 +310,7 @@ void AccountFetcherService::FetchAccountImage(const CoreAccountId& account_id) {
                                  image_url_with_size.spec());
   image_fetcher::ImageFetcherParams params(traffic_annotation,
                                            kImageFetcherUmaClient);
+  user_avatar_fetch_start_times_[account_id] = base::TimeTicks::Now();
   GetOrCreateImageFetcher()->FetchImage(image_url_with_size,
                                         std::move(callback), std::move(params));
 }
@@ -313,6 +318,8 @@ void AccountFetcherService::FetchAccountImage(const CoreAccountId& account_id) {
 void AccountFetcherService::OnUserInfoFetchFailure(
     const CoreAccountId& account_id) {
   LOG(WARNING) << "Failed to get UserInfo for " << account_id;
+  user_info_fetch_start_times_.erase(account_id);
+  // |account_id| is owned by the request. Cannot be used after this line.
   user_info_requests_.erase(account_id);
 }
 
@@ -375,4 +382,11 @@ void AccountFetcherService::OnImageFetched(
   }
   account_tracker_service_->SetAccountImage(account_id, image_url_with_size,
                                             image);
+  auto it = user_avatar_fetch_start_times_.find(account_id);
+  if (it != user_avatar_fetch_start_times_.end()) {
+    base::UmaHistogramMediumTimes(
+        "Signin.AccountFetcher.AccountAvatarFetchTime",
+        base::TimeTicks::Now() - it->second);
+    user_avatar_fetch_start_times_.erase(it);
+  }
 }

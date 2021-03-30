@@ -211,12 +211,15 @@ bool XShmImagePool::Resize(const gfx::Size& pixel_size) {
     }
   }
 
+  const auto* visual_info = connection_->GetVisualInfoFromId(visual_);
+  if (!visual_info)
+    return false;
+  size_t row_bytes = RowBytesForVisualWidth(*visual_info, pixel_size.width());
+
   for (FrameState& state : frame_states_) {
     state.bitmap = SkBitmap();
-    if (!state.bitmap.installPixels(image_info, state.shmaddr,
-                                    image_info.minRowBytes())) {
+    if (!state.bitmap.installPixels(image_info, state.shmaddr, row_bytes))
       return false;
-    }
     state.canvas = std::make_unique<SkCanvas>(state.bitmap);
   }
 

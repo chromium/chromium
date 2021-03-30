@@ -110,7 +110,9 @@ class TestExpectations(object):
             test_expectations = typ_types.TestExpectations(
                 tags=self._system_condition_tags)
             ret, errors = test_expectations.parse_tagged_list(
-                content, tags_conflict=self._tags_conflict)
+                content,
+                file_name=filesystem.abspath(path),
+                tags_conflict=self._tags_conflict)
             if ret:
                 expectation_errors.append(
                     'Parsing file %s produced following errors\n%s' % (path,
@@ -184,7 +186,7 @@ class TestExpectations(object):
         args:
             path: Absolute path of expectations file."""
         content = self._expectations_dict[path]
-        idx = self._expectations_dict.keys().index(path)
+        idx = list(self._expectations_dict.keys()).index(path)
         typ_expectations = self._expectations[idx]
         lines = []
 

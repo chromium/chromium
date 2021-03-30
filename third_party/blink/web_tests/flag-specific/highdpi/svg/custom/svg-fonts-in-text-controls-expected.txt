@@ -1,0 +1,10 @@
+This tests that the width of textareas and inputs is correctly calculated based on the metrics of the SVG font.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+Textarea offsetWidth: 137
+Input offsetWidth: 138

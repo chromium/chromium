@@ -4,9 +4,29 @@
 
 #include "content/public/browser/storage_partition_config.h"
 
+#include <sstream>
+
 #include "base/check.h"
+#include "base/strings/string_number_conversions.h"
+#include "content/public/browser/browser_context.h"
+#include "url/gurl.h"
 
 namespace content {
+
+StoragePartitionId::StoragePartitionId(BrowserContext* browser_context)
+    : config_(StoragePartitionConfig::CreateDefault(browser_context)) {}
+
+StoragePartitionId::StoragePartitionId(const std::string& partition_id,
+                                       const StoragePartitionConfig& config)
+    : id_(partition_id), config_(config) {
+  DCHECK(id_.empty() || GURL(id_).is_valid());
+}
+
+std::string StoragePartitionId::ToString() const {
+  std::stringstream ss;
+  ss << "id='" << id_ << "' config=" << config_;
+  return ss.str();
+}
 
 StoragePartitionConfig::StoragePartitionConfig(const StoragePartitionConfig&) =
     default;
@@ -14,12 +34,14 @@ StoragePartitionConfig& StoragePartitionConfig::operator=(
     const StoragePartitionConfig&) = default;
 
 // static
-StoragePartitionConfig StoragePartitionConfig::CreateDefault() {
-  return StoragePartitionConfig("", "", false);
+StoragePartitionConfig StoragePartitionConfig::CreateDefault(
+    BrowserContext* browser_context) {
+  return StoragePartitionConfig("", "", browser_context->IsOffTheRecord());
 }
 
 // static
 StoragePartitionConfig StoragePartitionConfig::Create(
+    BrowserContext* browser_context,
     const std::string& partition_domain,
     const std::string& partition_name,
     bool in_memory) {
@@ -27,7 +49,8 @@ StoragePartitionConfig StoragePartitionConfig::Create(
   // wrong or the calling code is not explicitly signalling its desire to create
   // a default partition by calling CreateDefault().
   CHECK(!partition_domain.empty());
-  return StoragePartitionConfig(partition_domain, partition_name, in_memory);
+  return StoragePartitionConfig(partition_domain, partition_name,
+                                in_memory || browser_context->IsOffTheRecord());
 }
 
 StoragePartitionConfig::StoragePartitionConfig(
@@ -37,17 +60,6 @@ StoragePartitionConfig::StoragePartitionConfig(
     : partition_domain_(partition_domain),
       partition_name_(partition_name),
       in_memory_(in_memory) {}
-
-StoragePartitionConfig StoragePartitionConfig::CopyWithInMemorySet() const {
-  if (in_memory_)
-    return *this;
-
-  auto result = StoragePartitionConfig(partition_domain_, partition_name_,
-                                       true /* in_memory */);
-  result.set_fallback_to_partition_domain_for_blob_urls(
-      fallback_to_partition_domain_for_blob_urls_);
-  return result;
-}
 
 base::Optional<StoragePartitionConfig>
 StoragePartitionConfig::GetFallbackForBlobUrls() const {
@@ -92,6 +104,28 @@ bool StoragePartitionConfig::operator==(
 bool StoragePartitionConfig::operator!=(
     const StoragePartitionConfig& rhs) const {
   return !(*this == rhs);
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         const StoragePartitionConfig& config) {
+  out << "{";
+  if (config.is_default()) {
+    out << "default";
+  } else {
+    out << "partition_domain='" << config.partition_domain() << "'";
+    out << " partition_name='" << config.partition_name() << "'";
+
+    if (config.in_memory())
+      out << " in_memory";
+
+    auto fallback_mode = config.fallback_to_partition_domain_for_blob_urls();
+    if (fallback_mode != StoragePartitionConfig::FallbackMode::kNone) {
+      out << " fallback_mode="
+          << base::NumberToString(static_cast<int>(fallback_mode));
+    }
+  }
+  out << "}";
+  return out;
 }
 
 }  // namespace content

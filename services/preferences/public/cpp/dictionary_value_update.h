@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "services/preferences/public/cpp/scoped_pref_update.h"
 
@@ -65,7 +64,7 @@ class DictionaryValueUpdate {
   void SetInteger(base::StringPiece path, int in_value);
   void SetDouble(base::StringPiece path, double in_value);
   void SetString(base::StringPiece path, base::StringPiece in_value);
-  void SetString(base::StringPiece path, const base::string16& in_value);
+  void SetString(base::StringPiece path, const std::u16string& in_value);
   std::unique_ptr<DictionaryValueUpdate> SetDictionary(
       base::StringPiece path,
       std::unique_ptr<base::DictionaryValue> in_value);
@@ -91,7 +90,7 @@ class DictionaryValueUpdate {
   // doubles.
   bool GetDouble(base::StringPiece path, double* out_value) const;
   bool GetString(base::StringPiece path, std::string* out_value) const;
-  bool GetString(base::StringPiece path, base::string16* out_value) const;
+  bool GetString(base::StringPiece path, std::u16string* out_value) const;
   bool GetDictionary(base::StringPiece path,
                      const base::DictionaryValue** out_value) const;
   bool GetDictionary(base::StringPiece path,
@@ -110,7 +109,7 @@ class DictionaryValueUpdate {
   bool GetStringWithoutPathExpansion(base::StringPiece key,
                                      std::string* out_value) const;
   bool GetStringWithoutPathExpansion(base::StringPiece key,
-                                     base::string16* out_value) const;
+                                     std::u16string* out_value) const;
   bool GetDictionaryWithoutPathExpansion(
       base::StringPiece key,
       const base::DictionaryValue** out_value) const;

@@ -39,7 +39,6 @@ class SerializableUserDataManager;
 class WebState;
 }
 
-class GURL;
 @protocol LogoVendor;
 @class UITextField;
 @class UIView;
@@ -50,7 +49,6 @@ namespace ios {
 class ChromeBrowserProvider;
 class ChromeIdentityService;
 class ChromeTrustedVaultService;
-class GeolocationUpdaterProvider;
 class SigninErrorProvider;
 class SigninResourcesProvider;
 
@@ -109,8 +107,6 @@ class ChromeBrowserProvider {
   virtual ChromeIdentityService* GetChromeIdentityService();
   // Returns an instance of a Chrome trusted vault service.
   virtual ChromeTrustedVaultService* GetChromeTrustedVaultService();
-  // Returns an instance of a GeolocationUpdaterProvider.
-  virtual GeolocationUpdaterProvider* GetGeolocationUpdaterProvider();
   // Returns risk data used in Wallet requests.
   virtual std::string GetRiskData();
   // Creates and returns a new styled text field.
@@ -122,10 +118,6 @@ class ChromeBrowserProvider {
 
   // Whether the embedder might block specific URL.
   virtual bool MightBlockUrlDuringRestore();
-
-  // Allow embedders to block a specific URL.
-  virtual bool ShouldBlockUrlDuringRestore(const GURL& url,
-                                           web::WebState* web_state);
 
   // Attaches any embedder-specific tab helpers to the given |web_state|.
   virtual void AttachTabHelpers(web::WebState* web_state) const;

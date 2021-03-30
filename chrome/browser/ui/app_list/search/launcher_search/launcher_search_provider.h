@@ -7,10 +7,10 @@
 
 #include <map>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,12 +23,14 @@ namespace app_list {
 
 // LauncherSearchProvider dispatches queries to extensions and fetches the
 // results from them via chrome.launcherSearchProvider API.
+// TODO(crbug.com/1188495): This provider is no longer used and should be
+// cleaned up.
 class LauncherSearchProvider : public SearchProvider {
  public:
   explicit LauncherSearchProvider(Profile* profile);
   ~LauncherSearchProvider() override;
 
-  void Start(const base::string16& query) override;
+  void Start(const std::u16string& query) override;
   void SetSearchResults(
       const extensions::ExtensionId& extension_id,
       std::vector<std::unique_ptr<LauncherSearchResult>> extension_results);
@@ -40,7 +42,7 @@ class LauncherSearchProvider : public SearchProvider {
   void DelayQuery(base::OnceClosure closure);
 
   // Dispatches |query| to LauncherSearchProvider service.
-  void StartInternal(const base::string16& query);
+  void StartInternal(const std::u16string& query);
 
   // The search results of each extension.
   std::map<extensions::ExtensionId,

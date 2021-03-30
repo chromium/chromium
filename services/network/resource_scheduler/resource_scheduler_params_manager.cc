@@ -70,6 +70,36 @@ std::set<int32_t> GetThrottledHashes() {
   return throttled_hashes;
 }
 
+base::Optional<base::TimeDelta> GetMaxWeakSignalThrottlingDuration() {
+  if (!base::FeatureList::IsEnabled(
+          features::kPauseLowPriorityBrowserRequestsOnWeakSignal)) {
+    return base::nullopt;
+  }
+
+  int max_weak_signal_throttling_duration_in_seconds =
+      base::GetFieldTrialParamByFeatureAsInt(
+          features::kPauseLowPriorityBrowserRequestsOnWeakSignal,
+          "max_weak_signal_throttling_duration_in_seconds", 600);
+
+  return base::TimeDelta::FromSeconds(
+      max_weak_signal_throttling_duration_in_seconds);
+}
+
+base::Optional<base::TimeDelta> GetWeakSignalUnthrottleDuration() {
+  if (!base::FeatureList::IsEnabled(
+          features::kPauseLowPriorityBrowserRequestsOnWeakSignal)) {
+    return base::nullopt;
+  }
+
+  int weak_signal_unthrottle_duration_in_seconds =
+      base::GetFieldTrialParamByFeatureAsInt(
+          features::kPauseLowPriorityBrowserRequestsOnWeakSignal,
+          "weak_signal_unthrottle_duration_in_seconds", 60);
+
+  return base::TimeDelta::FromSeconds(
+      weak_signal_unthrottle_duration_in_seconds);
+}
+
 // The maximum number of delayable requests to allow to be in-flight at any
 // point in time (across all hosts).
 constexpr size_t kDefaultMaxNumDelayableRequestsPerClient = 10;
@@ -307,7 +337,10 @@ ResourceSchedulerParamsManager::ResourceSchedulerParamsManager(
     : params_for_network_quality_container_(
           params_for_network_quality_container),
       max_wait_time_p2p_connections_(GetMaxWaitTimeP2PConnections()),
-      throttled_traffic_annotation_hashes_(GetThrottledHashes()) {}
+      throttled_traffic_annotation_hashes_(GetThrottledHashes()),
+      max_weak_signal_throttling_duration_(
+          GetMaxWeakSignalThrottlingDuration()),
+      weak_signal_unthrottle_duration_(GetWeakSignalUnthrottleDuration()) {}
 
 ResourceSchedulerParamsManager::ResourceSchedulerParamsManager(
     const ResourceSchedulerParamsManager& other)
@@ -315,7 +348,11 @@ ResourceSchedulerParamsManager::ResourceSchedulerParamsManager(
           other.params_for_network_quality_container_),
       max_wait_time_p2p_connections_(other.max_wait_time_p2p_connections_),
       throttled_traffic_annotation_hashes_(
-          other.throttled_traffic_annotation_hashes_) {}
+          other.throttled_traffic_annotation_hashes_),
+      max_weak_signal_throttling_duration_(
+          other.max_weak_signal_throttling_duration_),
+      weak_signal_unthrottle_duration_(other.weak_signal_unthrottle_duration_) {
+}
 
 ResourceSchedulerParamsManager::~ResourceSchedulerParamsManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

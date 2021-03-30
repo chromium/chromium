@@ -66,6 +66,16 @@ bool DeviceState::PropertyChanged(const std::string& key,
       return false;
     scan_results_.swap(parsed_results);
     return true;
+  } else if (key == shill::kSIMSlotInfoProperty) {
+    if (!value.is_list())
+      return false;
+    CellularSIMSlotInfos parsed_results;
+    if (!network_util::ParseCellularSIMSlotInfo(value.GetList(),
+                                                &parsed_results)) {
+      return false;
+    }
+    sim_slot_infos_.swap(parsed_results);
+    return true;
   } else if (key == shill::kSIMLockStatusProperty) {
     const base::DictionaryValue* dict = nullptr;
     if (!value.GetAsDictionary(&dict))
@@ -105,7 +115,7 @@ bool DeviceState::PropertyChanged(const std::string& key,
   } else if (key == shill::kCellularApnListProperty) {
     if (!value.is_list())
       return false;
-    apn_list_ = base::ListValue(value.Clone().TakeList());
+    apn_list_ = value.Clone();
     return true;
   } else if (key == shill::kInhibitedProperty) {
     return GetBooleanValue(key, value, &inhibited_);
@@ -178,6 +188,11 @@ bool DeviceState::IsSimLocked() const {
 
 bool DeviceState::HasAPN(const std::string& access_point_name) const {
   for (const auto& apn : apn_list_.GetList()) {
+    // bogus empty entries in the list might have been converted to a list while
+    // traveling over D-Bus, skip them rather than crashing below.
+    if (!apn.is_dict())
+      continue;
+
     const std::string* apn_name = apn.FindStringKey(shill::kApnProperty);
     if (apn_name && *apn_name == access_point_name) {
       return true;

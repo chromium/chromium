@@ -5,6 +5,7 @@
 #include "chrome/browser/offline_pages/offline_page_utils.h"
 
 #include <stdint.h>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
@@ -16,7 +17,6 @@
 #include "base/location.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -325,7 +325,7 @@ std::unique_ptr<OfflinePageTestArchiver> OfflinePageUtilsTest::BuildArchiver(
     const base::FilePath& file_name) {
   std::unique_ptr<OfflinePageTestArchiver> archiver(new OfflinePageTestArchiver(
       this, url, OfflinePageArchiver::ArchiverResult::SUCCESSFULLY_CREATED,
-      base::string16(), kTestFileSize, std::string(),
+      std::u16string(), kTestFileSize, std::string(),
       base::ThreadTaskRunnerHandle::Get()));
   archiver->set_filename(file_name);
   return archiver;

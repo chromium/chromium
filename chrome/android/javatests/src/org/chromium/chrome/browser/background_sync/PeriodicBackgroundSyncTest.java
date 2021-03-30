@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.background_sync;
 
 import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
 
+import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.MediumTest;
@@ -18,9 +19,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.background_sync.BackgroundSyncBackgroundTaskScheduler.BackgroundSyncTask;
-import org.chromium.chrome.browser.engagement.SiteEngagementService;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -29,12 +30,14 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.externalauth.ExternalAuthUtils;
+import org.chromium.components.site_engagement.SiteEngagementService;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.BackgroundSyncNetworkUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.ConnectionType;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
+import org.chromium.ui.test.util.UiDisableIf;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -177,7 +180,11 @@ public final class PeriodicBackgroundSyncTest {
     @Test
     @MediumTest
     @Feature({"PeriodicBackgroundSync"})
-    public void unregisterCancelsBrowserWakeup() throws Exception {
+    @DisableIf.Device(type = {UiDisableIf.TABLET})
+    @DisableIf.Build(message = "Flaky on Android M tablets, see https://crbug.com/1163581",
+            sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N)
+    public void
+    unregisterCancelsBrowserWakeup() throws Exception {
         // Schedule and cancel expected once each.
         addSchedulerObserver(/* scheduleCount= */ 1, /* cancelCount= */ 1);
 
@@ -230,7 +237,7 @@ public final class PeriodicBackgroundSyncTest {
     private void resetEngagementForUrl(final String url, final double engagement) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // TODO (https://crbug.com/1063807):  Add incognito mode tests.
-            SiteEngagementService.getForProfile(Profile.getLastUsedRegularProfile())
+            SiteEngagementService.getForBrowserContext(Profile.getLastUsedRegularProfile())
                     .resetBaseScoreForUrl(url, engagement);
         });
     }

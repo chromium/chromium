@@ -52,8 +52,8 @@ class PendingAppManagerImplBrowserTest : public InProcessBrowserTest {
   }
 
   void InstallApp(ExternalInstallOptions install_options) {
-    result_code_ = web_app::PendingAppManagerInstall(browser()->profile(),
-                                                     install_options);
+    result_code_ =
+        PendingAppManagerInstall(browser()->profile(), install_options);
   }
 
   void CheckServiceWorkerStatus(const GURL& url,

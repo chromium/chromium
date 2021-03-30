@@ -20,7 +20,8 @@ SandboxedRarAnalyzer::SandboxedRarAnalyzer(
     const base::FilePath& rar_file_path,
     ResultCallback callback,
     mojo::PendingRemote<chrome::mojom::FileUtilService> service)
-    : file_path_(rar_file_path),
+    : RefCountedDeleteOnSequence(content::GetUIThreadTaskRunner({})),
+      file_path_(rar_file_path),
       callback_(std::move(callback)),
       service_(std::move(service)) {
   DCHECK(callback_);

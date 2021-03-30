@@ -21,7 +21,7 @@ bool DeletePlatformShortcuts(const base::FilePath& web_app_path,
 }
 
 void UpdatePlatformShortcuts(const base::FilePath& web_app_path,
-                             const base::string16& old_app_title,
+                             const std::u16string& old_app_title,
                              const ShortcutInfo& shortcut_info) {}
 
 void DeleteAllShortcutsForProfile(const base::FilePath& profile_path) {}

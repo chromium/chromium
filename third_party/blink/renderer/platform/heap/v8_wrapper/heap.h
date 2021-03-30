@@ -5,16 +5,18 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_HEAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_HEAP_H_
 
+#include "third_party/blink/renderer/platform/heap/v8_wrapper/process_heap.h"
 #include "third_party/blink/renderer/platform/heap/v8_wrapper/thread_state.h"
 #include "v8/include/cppgc/allocation.h"
 #include "v8/include/cppgc/garbage-collected.h"
+#include "v8/include/cppgc/liveness-broker.h"
 
 namespace blink {
 
+using LivenessBroker = cppgc::LivenessBroker;
+
 template <typename T>
 using GarbageCollected = cppgc::GarbageCollected<T>;
-
-using GarbageCollectedMixin = cppgc::GarbageCollectedMixin;
 
 // Default MakeGarbageCollected: Constructs an instance of T, which is a garbage
 // collected type.
@@ -36,7 +38,7 @@ T* MakeGarbageCollected(AdditionalBytes additional_bytes, Args&&... args) {
       ThreadStateFor<ThreadingTrait<T>::kAffinity>::GetState()
           ->allocation_handle(),
       std::forward<AdditionalBytes>(additional_bytes),
-      std::forward<args>(args)...);
+      std::forward<Args>(args)...);
 }
 
 }  // namespace blink

@@ -149,8 +149,7 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
                 parent.getWidth() / 2);
         mItemHeight = getSizePx(context, R.dimen.navigation_popup_item_height);
         mContentPadding = getSizePx(context, R.dimen.navigation_sheet_content_top_padding)
-                + getSizePx(context, R.dimen.navigation_sheet_content_bottom_padding)
-                + getSizePx(context, R.dimen.navigation_sheet_content_wrap_padding);
+                + getSizePx(context, R.dimen.navigation_sheet_content_bottom_padding);
     }
 
     private static int getSizePx(Context context, @DimenRes int id) {

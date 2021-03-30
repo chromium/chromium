@@ -89,6 +89,12 @@ class BuilderListTest(unittest.TestCase):
                 'master': "luci",
                 'has_webdriver_tests': True
             },
+            'Flag Specific': {
+                'port_name': 'port-c',
+                'specifiers': ['C', 'Release'],
+                'flag_specific': 'highdpi',
+                "is_try_builder": True
+            },
         })
 
     def test_constructor_validates_list(self):
@@ -107,6 +113,7 @@ class BuilderListTest(unittest.TestCase):
             'CQ Try A',
             'CQ Try B',
             'CQ Try C',
+            'Flag Specific',
             'Try A',
             'Try B',
             'some-wpt-bot',
@@ -130,6 +137,12 @@ class BuilderListTest(unittest.TestCase):
         self.assertEqual(
             ['CQ Try A', 'CQ Try B', 'CQ Try C'],
             builders.all_cq_try_builder_names())
+
+    def test_all_flag_specific_builder_names(self):
+        builders = self.sample_builder_list()
+        self.assertEqual(['Flag Specific'],
+                         builders.all_flag_specific_try_builder_names(
+                             flag_specific="highdpi"))
 
     def test_all_port_names(self):
         builders = self.sample_builder_list()

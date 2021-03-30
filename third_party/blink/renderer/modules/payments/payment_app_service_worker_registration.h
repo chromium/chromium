@@ -34,7 +34,6 @@ class PaymentAppServiceWorkerRegistration final
   void Trace(Visitor*) const override;
 
  private:
-  Member<ServiceWorkerRegistration> registration_;
   Member<PaymentManager> payment_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(PaymentAppServiceWorkerRegistration);

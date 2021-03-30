@@ -8,10 +8,10 @@
 #include <stdint.h>
 
 #include <limits>
+#include <string>
 
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/strings/string16.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/pe_image.h"
 

@@ -63,7 +63,7 @@ class WebAppMigrationManager {
   void OnWebAppIconsWritten(const AppId& app_id, bool success);
   void OnBookmarkAppShortcutsMenuIconsRead(
       const AppId& app_id,
-      ShortcutsMenuIconsBitmaps shortcuts_menu_icons_bitmaps);
+      ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps);
   void OnWebAppShortcutsMenuIconsWritten(bool success);
 
   void MigrateBookmarkAppInstallSource(const AppId& app_id, WebApp* web_app);

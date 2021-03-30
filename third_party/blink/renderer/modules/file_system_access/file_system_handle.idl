@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://wicg.github.io/native-file-system/#enumdef-filesystemhandlekind
+// https://wicg.github.io/file-system-access/#enumdef-filesystemhandlekind
 enum FileSystemHandleKind {
   "file",
   "directory",
 };
 
-// https://wicg.github.io/native-file-system/#filesystemhandle
+// https://wicg.github.io/file-system-access/#filesystemhandle
 [
     Exposed=(Window,Worker),
     SecureContext,
     Serializable,
-    RuntimeEnabled=NativeFileSystem,
-    ImplementedAs=NativeFileSystemHandle
+    RuntimeEnabled=FileSystemAccess
 ] interface FileSystemHandle {
     // Brand checking APIs because javascript makes it otherwise really hard to
     // figure out what type an object is when you don't know in which global
@@ -28,5 +27,6 @@ enum FileSystemHandleKind {
     [CallWith=ScriptState] Promise<PermissionState> requestPermission(
         optional FileSystemHandlePermissionDescriptor descriptor = {});
 
-    [CallWith=ScriptState, Measure] Promise<boolean> isSameEntry(FileSystemHandle other);
+    [CallWith=ScriptState, Measure]
+    Promise<boolean> isSameEntry(FileSystemHandle other);
 };

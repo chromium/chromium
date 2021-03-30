@@ -14,7 +14,6 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
@@ -41,7 +40,7 @@ class ScopedUserHive {
  private:
   // The randomly-chosen name of the subkey under HKLM where the file is loaded.
   // If empty, the file is not loaded.
-  base::string16 subkey_name_;
+  std::wstring subkey_name_;
 
   // The loaded key.
   base::win::RegKey key_;
@@ -52,7 +51,7 @@ class ScopedUserHive {
 ScopedUserHive::ScopedUserHive(const base::FilePath& hive_file) {
   // Generate a random name for the key at which the file will be loaded.
   std::string buffer = base::RandBytesAsString(10);
-  subkey_name_ = base::ASCIIToUTF16(
+  subkey_name_ = base::ASCIIToWide(
       base32::Base32Encode(buffer, base32::Base32EncodePolicy::OMIT_PADDING));
   DCHECK_EQ(16U, subkey_name_.size());
 
@@ -127,7 +126,7 @@ void VisitUserHives(const HiveVisitor& visitor) {
     }
 
     // Read the path to the profile directory to load the hive manually.
-    base::string16 profile_key_name(kProfileListKey);
+    std::wstring profile_key_name(kProfileListKey);
     profile_key_name.append(1, L'\\').append(sid);
     LONG result =
         key.Open(HKEY_LOCAL_MACHINE, profile_key_name.c_str(), KEY_QUERY_VALUE);
@@ -137,7 +136,7 @@ void VisitUserHives(const HiveVisitor& visitor) {
                   << "\"";
       continue;
     }
-    base::string16 image_path;
+    std::wstring image_path;
     result = key.ReadValue(L"ProfileImagePath", &image_path);
     if (result != ERROR_SUCCESS) {
       ::SetLastError(result);

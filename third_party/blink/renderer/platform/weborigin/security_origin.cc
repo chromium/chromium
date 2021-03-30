@@ -35,6 +35,7 @@
 #include <utility>
 
 #include "net/base/url_util.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/renderer/platform/blob/blob_url.h"
 #include "third_party/blink/renderer/platform/blob/blob_url_null_origin_map.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -86,6 +87,10 @@ KURL SecurityOrigin::ExtractInnerURL(const KURL& url) {
   return KURL(url.GetPath());
 }
 
+// Note: When changing ShouldTreatAsOpaqueOrigin, consider also updating
+// IsValidInput in //url/scheme_host_port.cc (there might be existing
+// differences in behavior between these 2 layers, but we should avoid
+// introducing new differences).
 static bool ShouldTreatAsOpaqueOrigin(const KURL& url) {
   if (!url.IsValid())
     return true;
@@ -109,7 +114,8 @@ static bool ShouldTreatAsOpaqueOrigin(const KURL& url) {
             relevant_url.ProtocolIs("ftp")) &&
            relevant_url.Host().IsEmpty()));
 
-  if (SchemeRegistry::ShouldTreatURLSchemeAsNoAccess(relevant_url.Protocol()))
+  if (base::Contains(url::GetNoAccessSchemes(),
+                     relevant_url.Protocol().Ascii()))
     return true;
 
   // Nonstandard schemes and unregistered schemes aren't known to contain hosts
@@ -118,7 +124,7 @@ static bool ShouldTreatAsOpaqueOrigin(const KURL& url) {
     // A temporary exception is made for non-standard local schemes.
     // TODO: Migrate "content:" and "externalfile:" to be standard schemes, and
     // remove the local scheme exception.
-    if (SchemeRegistry::ShouldTreatURLSchemeAsLocal(relevant_url.Protocol()))
+    if (base::Contains(url::GetLocalSchemes(), relevant_url.Protocol().Ascii()))
       return false;
 
     // Otherwise, treat non-standard origins as opaque, unless the Android
@@ -204,6 +210,12 @@ scoped_refptr<SecurityOrigin> SecurityOrigin::CreateWithReferenceOrigin(
     if (scoped_refptr<SecurityOrigin> origin =
             BlobURLNullOriginMap::GetInstance()->Get(url))
       return origin;
+  }
+
+  if (url.IsAboutBlankURL()) {
+    if (!reference_origin)
+      return CreateUniqueOpaque();
+    return reference_origin->IsolatedCopy();
   }
 
   if (ShouldTreatAsOpaqueOrigin(url)) {
@@ -299,17 +311,61 @@ String SecurityOrigin::RegistrableDomain() const {
   return domain.IsEmpty() ? String() : domain;
 }
 
+// TODO(crbug.com/1153336): Remove this method and make existing call sites rely
+// on network::IsUrlPotentiallyTrustworthy() instead.
 bool SecurityOrigin::IsSecure(const KURL& url) {
-  if (SchemeRegistry::ShouldTreatURLSchemeAsSecure(url.Protocol()))
+  GURL gurl = GURL(url);
+
+  // 1. If url is "about:blank" or "about:srcdoc", return "Potentially
+  //    Trustworthy".
+  if (gurl.IsAboutBlank() || gurl.IsAboutSrcdoc())
     return true;
 
-  // URLs that wrap inner URLs are secure if those inner URLs are secure.
-  if (ShouldUseInnerURL(url) && SchemeRegistry::ShouldTreatURLSchemeAsSecure(
-                                    ExtractInnerURL(url).Protocol()))
+  // 2. If url’s scheme is "data", return "Potentially Trustworthy".
+  if (gurl.SchemeIs(url::kDataScheme))
     return true;
 
-  return SecurityPolicy::IsOriginTrustworthySafelisted(
-      *SecurityOrigin::Create(url).get());
+  // 3. Return the result of executing §3.2 Is origin potentially trustworthy?
+  //    on url’s origin.
+  //    Note: The origin of blob: and filesystem: URLs is the origin of the
+  //    context in which they were created. Therefore, blobs created in a
+  //    trustworthy origin will themselves be potentially trustworthy.
+  url::Origin origin = url::Origin::Create(gurl);
+  if (origin.opaque() &&
+      base::Contains(url::GetSecureSchemes(), gurl.scheme_piece())) {
+    // Authenticated schemes should be treated as trustworthy, even if they
+    // translate into an opaque origin (e.g. because some of them might also be
+    // registered as a no-access, like the //content-layer chrome-error:// or
+    // the //chrome-layer chrome-native://).
+    return true;
+  }
+
+  // https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin
+  // 1. If origin is an opaque origin, return "Not Trustworthy".
+  if (origin.opaque())
+    return false;
+
+  // 2. Assert: origin is a tuple origin.
+  DCHECK(!origin.opaque());
+
+  // 3. If origin’s scheme is either "https" or "wss", return "Potentially
+  //    Trustworthy".
+  // This is handled by the url::GetSecureSchemes() call below.
+
+  // 7. If origin’s scheme component is one which the user agent considers to be
+  //    authenticated, return "Potentially Trustworthy".
+  //    Note: See §7.1 Packaged Applications for detail here.
+  if (base::Contains(url::GetSecureSchemes(), origin.scheme()))
+    return true;
+
+  // 8. If origin has been configured as a trustworthy origin, return
+  //    "Potentially Trustworthy".
+  //    Note: See §7.2 Development Environments for detail here.
+  if (network::SecureOriginAllowlist::GetInstance().IsOriginAllowlisted(origin))
+    return true;
+
+  // 9. Return "Not Trustworthy".
+  return false;
 }
 
 base::Optional<base::UnguessableToken>
@@ -415,7 +471,7 @@ bool SecurityOrigin::CanDisplay(const KURL& url) const {
            SecurityPolicy::IsOriginAccessToURLAllowed(this, url);
   }
 
-  if (SchemeRegistry::ShouldTreatURLSchemeAsLocal(protocol)) {
+  if (base::Contains(url::GetLocalSchemes(), protocol.Ascii())) {
     return CanLoadLocalResources() ||
            SecurityPolicy::IsOriginAccessToURLAllowed(this, url);
   }
@@ -429,47 +485,9 @@ bool SecurityOrigin::IsPotentiallyTrustworthy() const {
   // //services/network/public/cpp/is_potentially_trustworthy.h).
 
   DCHECK_NE(protocol_, "data");
-
-  // The code below is based on the specification at
-  // https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin
-
-  // 1. If origin is an opaque origin, return "Not Trustworthy".
   if (IsOpaque())
     return is_opaque_origin_potentially_trustworthy_;
-
-  // 2. Assert: origin is a tuple origin.
-  DCHECK(!IsOpaque());
-
-  // 3. If origin’s scheme is either "https" or "wss", return "Potentially
-  //    Trustworthy".
-  // This is handled by the ShouldTreatURLSchemeAsSecure() call below.
-
-  // 4. If origin’s host component matches one of the CIDR notations 127.0.0.0/8
-  //    or ::1/128 [RFC4632], return "Potentially Trustworthy".
-  // 5. If origin’s host component is "localhost" or falls within ".localhost",
-  //    and the user agent conforms to the name resolution rules in
-  //    [let-localhost-be-localhost], return "Potentially Trustworthy".
-  if (IsLocalhost())
-    return true;
-
-  // 6. If origin’s scheme component is file, return "Potentially Trustworthy".
-  // This is handled by the IsLocal() call below.
-
-  // 7. If origin’s scheme component is one which the user agent considers to be
-  //    authenticated, return "Potentially Trustworthy".
-  //    Note: See §7.1 Packaged Applications for detail here.
-  //
-  if (SchemeRegistry::ShouldTreatURLSchemeAsSecure(protocol_) || IsLocal())
-    return true;
-
-  // 8. If origin has been configured as a trustworthy origin, return
-  //    "Potentially Trustworthy".
-  //    Note: See §7.2 Development Environments for detail here.
-  if (SecurityPolicy::IsOriginTrustworthySafelisted(*this))
-    return true;
-
-  // 9. Return "Not Trustworthy".
-  return false;
+  return network::IsOriginPotentiallyTrustworthy(ToUrlOrigin());
 }
 
 // static
@@ -499,7 +517,7 @@ void SecurityOrigin::BlockLocalAccessFromLocalOrigin() {
 }
 
 bool SecurityOrigin::IsLocal() const {
-  return SchemeRegistry::ShouldTreatURLSchemeAsLocal(protocol_);
+  return base::Contains(url::GetLocalSchemes(), protocol_.Ascii());
 }
 
 bool SecurityOrigin::IsLocalhost() const {
@@ -663,6 +681,23 @@ bool SecurityOrigin::IsSameOriginDomainWith(
   }
 
   return can_access;
+}
+
+bool SecurityOrigin::IsSameSiteWith(const SecurityOrigin* other) const {
+  // "A and B are either both opaque origins, or both tuple origins with the
+  // same scheme"
+  if (IsOpaque() != other->IsOpaque())
+    return false;
+  if (!IsOpaque() && Protocol() != other->Protocol())
+    return false;
+
+  // Schemelessly same site check.
+  // https://html.spec.whatwg.org/#schemelessly-same-site
+  if (IsOpaque())
+    return IsSameOriginWith(other);
+  if (RegistrableDomain().IsNull())
+    return Host() == other->Host();
+  return RegistrableDomain() == other->RegistrableDomain();
 }
 
 const KURL& SecurityOrigin::UrlWithUniqueOpaqueOrigin() {

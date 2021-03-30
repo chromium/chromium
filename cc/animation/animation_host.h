@@ -82,12 +82,10 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   void SetNeedsPushProperties();
   bool needs_push_properties() const { return needs_push_properties_; }
 
-  bool SupportsScrollAnimations() const;
-
   // MutatorHost implementation.
-  std::unique_ptr<MutatorHost> CreateImplInstance(
-      bool supports_impl_scrolling) const override;
+  std::unique_ptr<MutatorHost> CreateImplInstance() const override;
   void ClearMutators() override;
+  base::TimeDelta MinimumTickInterval() const override;
 
   // Processes the current |element_to_animations_map_|, registering animations
   // which can now be animated and unregistering those that can't based on the
@@ -106,7 +104,6 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
 
   void PushPropertiesTo(MutatorHost* host_impl) override;
 
-  void SetSupportsScrollAnimations(bool supports_scroll_animations) override;
   void SetScrollAnimationDurationForTesting(base::TimeDelta duration) override;
   bool NeedsTickAnimations() const override;
 
@@ -158,10 +155,8 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
 
   bool AnimationsPreserveAxisAlignment(ElementId element_id) const override;
 
-  void GetAnimationScales(ElementId element_id,
-                          ElementListType list_type,
-                          float* maximum_scale,
-                          float* starting_scale) const override;
+  float MaximumScale(ElementId element_id,
+                     ElementListType list_type) const override;
 
   bool IsElementAnimating(ElementId element_id) const override;
   bool HasTickingKeyframeModelForTesting(ElementId element_id) const override;
@@ -269,7 +264,6 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
 
   const ThreadInstance thread_instance_;
 
-  bool supports_scroll_animations_;
   bool needs_push_properties_;
 
   std::unique_ptr<LayerTreeMutator> mutator_;

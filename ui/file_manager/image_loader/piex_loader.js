@@ -718,7 +718,7 @@ class ImageBuffer {
 /**
  * PiexLoader: is a namespace.
  */
-const PiexLoader = {};
+/* #export */ const PiexLoader = {};
 
 /**
  * Loads a RAW image. Returns the image metadata and the image thumbnail in a

@@ -55,9 +55,7 @@ void NotifyMouseEventsEnableStateChange(bool enabled) {
 }  // namespace
 
 NativeCursorManagerAsh::NativeCursorManagerAsh()
-    : native_cursor_enabled_(true),
-      cursor_loader_(ui::CursorLoader::Create(/*use_platform_cursors=*/false)) {
-}
+    : native_cursor_enabled_(true) {}
 
 NativeCursorManagerAsh::~NativeCursorManagerAsh() = default;
 
@@ -69,11 +67,11 @@ void NativeCursorManagerAsh::SetNativeCursorEnabled(bool enabled) {
 }
 
 float NativeCursorManagerAsh::GetScale() const {
-  return cursor_loader_->scale();
+  return cursor_loader_.scale();
 }
 
 display::Display::Rotation NativeCursorManagerAsh::GetRotation() const {
-  return cursor_loader_->rotation();
+  return cursor_loader_.rotation();
 }
 
 void NativeCursorManagerAsh::SetDisplay(
@@ -86,7 +84,7 @@ void NativeCursorManagerAsh::SetDisplay(
   const float cursor_scale =
       ui::GetScaleForScaleFactor(ui::GetSupportedScaleFactor(original_scale));
 
-  if (cursor_loader_->SetDisplayData(display.panel_rotation(), cursor_scale))
+  if (cursor_loader_.SetDisplayData(display.panel_rotation(), cursor_scale))
     SetCursor(delegate->GetCursor(), delegate);
 
   Shell::Get()
@@ -99,13 +97,13 @@ void NativeCursorManagerAsh::SetCursor(
     gfx::NativeCursor cursor,
     ::wm::NativeCursorManagerDelegate* delegate) {
   if (native_cursor_enabled_) {
-    cursor_loader_->SetPlatformCursor(&cursor);
+    cursor_loader_.SetPlatformCursor(&cursor);
   } else {
     gfx::NativeCursor invisible_cursor(ui::mojom::CursorType::kNone);
-    cursor_loader_->SetPlatformCursor(&invisible_cursor);
+    cursor_loader_.SetPlatformCursor(&invisible_cursor);
     cursor.SetPlatformCursor(invisible_cursor.platform());
   }
-  cursor.set_image_scale_factor(cursor_loader_->scale());
+  cursor.set_image_scale_factor(cursor_loader_.scale());
 
   delegate->CommitCursor(cursor);
 
@@ -116,7 +114,7 @@ void NativeCursorManagerAsh::SetCursor(
 void NativeCursorManagerAsh::SetCursorSize(
     ui::CursorSize cursor_size,
     ::wm::NativeCursorManagerDelegate* delegate) {
-  cursor_loader_->set_size(cursor_size);
+  cursor_loader_.SetSize(cursor_size);
   delegate->CommitCursorSize(cursor_size);
 
   // Sets the cursor to reflect the scale change immediately.
@@ -138,7 +136,7 @@ void NativeCursorManagerAsh::SetVisibility(
     SetCursor(delegate->GetCursor(), delegate);
   } else {
     gfx::NativeCursor invisible_cursor(ui::mojom::CursorType::kNone);
-    cursor_loader_->SetPlatformCursor(&invisible_cursor);
+    cursor_loader_.SetPlatformCursor(&invisible_cursor);
     SetCursorOnAllRootWindows(invisible_cursor);
   }
 

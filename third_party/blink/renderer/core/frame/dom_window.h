@@ -7,6 +7,7 @@
 
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/cross_origin_opener_policy.mojom-blink.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/transferables.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
@@ -68,6 +69,7 @@ class CORE_EXPORT DOMWindow : public EventTargetWithInlineData {
   // ScriptWrappable overrides:
   v8::Local<v8::Value> Wrap(v8::Isolate*,
                             v8::Local<v8::Object> creation_context) final;
+  v8::MaybeLocal<v8::Value> WrapV2(ScriptState*) final;
   v8::Local<v8::Object> AssociateWithWrapper(
       v8::Isolate*,
       const WrapperTypeInfo*,
@@ -170,7 +172,7 @@ class CORE_EXPORT DOMWindow : public EventTargetWithInlineData {
   // Removed the CoopAccessMonitor with the given |accessing_main_frame| from
   // the |coop_access_monitor| list. This is called when the COOP reporter is
   // gone or a more recent CoopAccessMonitor is being added.
-  void DisconnectCoopAccessMonitor(base::UnguessableToken accessing_main_frame);
+  void DisconnectCoopAccessMonitor(const LocalFrameToken& accessing_main_frame);
 
   Member<Frame> frame_;
   // Unlike |frame_|, |window_proxy_manager_| is available even after the
@@ -192,7 +194,7 @@ class CORE_EXPORT DOMWindow : public EventTargetWithInlineData {
   // happens a report will sent to |reporter|.
   struct CoopAccessMonitor {
     network::mojom::blink::CoopAccessReportType report_type;
-    base::UnguessableToken accessing_main_frame;
+    blink::LocalFrameToken accessing_main_frame;
     mojo::Remote<network::mojom::blink::CrossOriginOpenerPolicyReporter>
         reporter;
     bool endpoint_defined;

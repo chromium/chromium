@@ -37,7 +37,7 @@ scoped_refptr<SiteInstance> GetSiteInstanceForNewTab(Profile* profile,
   // Rewrite the |url| if necessary, to ensure that the SiteInstance is
   // associated with a |url| that will actually be loaded.  For example,
   // |url| set to chrome://newtab/ might actually result in a navigation to a
-  // different URL like chrome-search://local-ntp/local-ntp.html
+  // different URL like chrome://new-tab-page.
   content::BrowserURLHandler::GetInstance()->RewriteURLIfNecessary(&url,
                                                                    profile);
 

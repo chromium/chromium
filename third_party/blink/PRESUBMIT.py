@@ -27,7 +27,6 @@ except IOError:
 _EXCLUDED_PATHS = (
     # These are third-party dependencies that we don't directly control.
     r'^third_party[\\/]blink[\\/]tools[\\/]blinkpy[\\/]third_party[\\/]wpt[\\/]wpt[\\/].*',
-    r'^third_party[\\/]blink[\\/]web_tests[\\/]external[\\/]wpt[\\/]tools[\\/].*',
     r'^third_party[\\/]blink[\\/]web_tests[\\/]external[\\/]wpt[\\/]resources[\\/]webidl2[\\/].*',
 )
 
@@ -75,7 +74,8 @@ def _CheckForWrongMojomIncludes(input_api, output_api):
         'third_party/blink/public/mojom/worker/subresource_loader_updater',
         'third_party/blink/public/mojom/loader/transferrable_url_loader',
         'media/mojo/mojom/interface_factory', 'media/mojo/mojom/audio_decoder',
-        'media/mojo/mojom/video_decoder')
+        'media/mojo/mojom/video_decoder',
+        'media/mojo/mojom/media_metrics_provider')
 
     for f in input_api.AffectedFiles(file_filter=source_file_filter):
         for line_num, line in f.ChangedContents():

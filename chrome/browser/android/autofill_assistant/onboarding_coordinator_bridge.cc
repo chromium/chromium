@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/autofill_assistant/onboarding_coordinator_bridge.h"
-
+#include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/containers/flat_map.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/BaseOnboardingCoordinator_jni.h"
 #include "chrome/browser/android/autofill_assistant/onboarding_fetcher_factory.h"

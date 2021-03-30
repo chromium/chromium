@@ -17,13 +17,15 @@ COMPONENT_EXPORT(PLATFORM_WINDOW_COMMON) bool UseTestConfigForPlatformWindows();
 namespace test {
 
 // Sets that PlatformWindow should use test configuration. This can safely be
-// called on all platforms but only has an effect for X11.
+// called on all platforms but only has an effect for X11 and Wayland.
 
 // For X11 this sets the value of the |override_redirect| attribute used when
 // creating an X11 window to true. It is necessary to set this flag on for
 // various tests, otherwise the call to Show() blocks because it never receives
 // the MapNotify event. It is unclear why this is necessary, but might be
 // related to calls to XInitThreads().
+//
+// For Wayland, forces visual size updates on every configuration event.
 COMPONENT_EXPORT(PLATFORM_WINDOW_COMMON)
 void EnableTestConfigForPlatformWindows();
 

@@ -2,6 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {EntryLocation} from '../../externs/entry_location.m.js';
+// #import {VolumeInfo} from '../../externs/volume_info.m.js';
+// #import {List} from 'chrome://resources/js/cr/ui/list.m.js';
+// #import {FilesAppDirEntry, FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.m.js';
+// #import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
+// #import {VolumeManager} from '../../externs/volume_manager.m.js';
+// #import {DirectoryModel} from './directory_model.m.js';
+// #import {ThumbnailModel} from './metadata/thumbnail_model.m.js';
+// #import {MetadataModel} from './metadata/metadata_model.m.js';
+// #import {FileOperationManager} from '../../externs/background/file_operation_manager.m.js';
+// #import {ProgressCenter} from '../../externs/background/progress_center.m.js';
+// #import {ListContainer} from './ui/list_container.m.js';
+// #import {DropEffectAndLabel, DropEffectType} from './drop_effect_and_label.m.js';
+// #import {FileSelectionHandler} from './file_selection.m.js';
+// #import {DragSelector} from './ui/drag_selector.m.js';
+// #import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
+// #import {DirectoryItem, DirectoryTree} from './ui/directory_tree.m.js';
+// #import {TreeItem} from 'chrome://resources/js/cr/ui/tree.m.js';
+// #import {ThumbnailLoader} from './thumbnail_loader.m.js';
+// #import {ProgressCenterItem, ProgressItemType, ProgressItemState} from '../../common/js/progress_center_common.m.js';
+// #import {FileType} from '../../common/js/file_type.m.js';
+// #import {util, strf} from '../../common/js/util.m.js';
+// #import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
+// clang-format on
+
 /**
  * Global (placed in the window object) variable name to hold internal
  * file dragging information. Needed to show visual feedback while dragging
@@ -15,7 +42,7 @@ const DRAG_AND_DROP_GLOBAL_DATA = '__drag_and_drop_global_data';
  */
 let FileAsyncData;
 
-class FileTransferController {
+/* #export */ class FileTransferController {
   /**
    * @param {!Document} doc Owning document.
    * @param {!ListContainer} listContainer List container.
@@ -1349,8 +1376,8 @@ class FileTransferController {
       return false;
     }
 
-    // DataTransfer type will be 'fs/tag' when the source was FilesApp, or
-    // 'Files' when the source was any other app.
+    // DataTransfer type will be 'fs/tag' when the source was FilesApp or exo,
+    // or 'Files' when the source was any other app.
     const types = clipboardData.types;
     if (!types || !(types.includes('fs/tag') || types.includes('Files'))) {
       return false;  // Unsupported type of content.

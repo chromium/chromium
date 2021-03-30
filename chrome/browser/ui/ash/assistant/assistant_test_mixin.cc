@@ -11,6 +11,7 @@
 #include "ash/assistant/model/ui/assistant_card_element.h"
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/main_stage/assistant_ui_element_view.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/test/assistant_test_api.h"
@@ -18,13 +19,12 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/login/test/embedded_test_server_mixin.h"
-#include "chrome/browser/chromeos/login/test/fake_gaia_mixin.h"
-#include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
+#include "chrome/browser/ash/login/test/embedded_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
+#include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/assistant/test_support/fake_s3_server.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/language/core/browser/pref_names.h"
@@ -260,23 +260,6 @@ class TypedExpectedResponseWaiter : public ExpectedResponseWaiter {
   const std::string class_name_;
 };
 
-template <typename T>
-void CheckResult(base::OnceClosure quit,
-                 T expected_value,
-                 base::RepeatingCallback<T()> value_callback) {
-  if (expected_value == value_callback.Run()) {
-    std::move(quit).Run();
-    return;
-  }
-
-  // Check again in the future
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(CheckResult<T>, std::move(quit), expected_value,
-                     value_callback),
-      base::TimeDelta::FromMilliseconds(10));
-}
-
 // Calls a callback when the view hierarchy changes.
 class CallbackViewHierarchyChangedObserver : views::ViewObserver {
  public:
@@ -453,27 +436,6 @@ void AssistantTestMixin::SetPreferVoice(bool prefer_voice) {
 void AssistantTestMixin::SendTextQuery(const std::string& query) {
   test_api_->SendTextQuery(query);
 }
-
-template <typename T>
-void AssistantTestMixin::ExpectResult(
-    T expected_value,
-    base::RepeatingCallback<T()> value_callback) {
-  const base::test::ScopedRunLoopTimeout run_timeout(FROM_HERE,
-                                                     kDefaultWaitTimeout);
-
-  // Wait until we're ready or we hit the timeout.
-  base::RunLoop run_loop;
-  CheckResult(run_loop.QuitClosure(), expected_value, value_callback);
-
-  EXPECT_NO_FATAL_FAILURE(run_loop.Run())
-      << "Failed waiting for expected result.\n"
-      << "Expected \"" << expected_value << "\"\n"
-      << "Got \"" << value_callback.Run() << "\"";
-}
-
-template void AssistantTestMixin::ExpectResult<bool>(
-    bool expected_value,
-    base::RepeatingCallback<bool()> value_callback);
 
 template <typename T>
 T AssistantTestMixin::SyncCall(

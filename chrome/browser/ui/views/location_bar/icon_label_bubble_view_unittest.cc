@@ -54,7 +54,7 @@ class TestIconLabelBubbleView : public IconLabelBubbleView {
                                    Delegate* delegate)
       : IconLabelBubbleView(font_list, delegate) {
     GetImageView()->SetImageSize(gfx::Size(kImageSize, kImageSize));
-    SetLabel(base::ASCIIToUTF16("Label"));
+    SetLabel(u"Label");
   }
 
   void SetCurrentAnimationValue(int value) {
@@ -346,7 +346,7 @@ TEST_F(IconLabelBubbleViewTest, MouseInkDropState) {
 TEST_F(IconLabelBubbleViewTest, SeparatorOpacity) {
   views::View* separator_view = view()->separator_view();
   separator_view->SetPaintToLayer();
-  view()->SetLabel(base::ASCIIToUTF16("x"));
+  view()->SetLabel(u"x");
   EXPECT_EQ(1.0f, separator_view->layer()->opacity());
 
   AttachInkDrop();
@@ -429,7 +429,7 @@ TEST_F(IconLabelBubbleViewCrashTest,
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
   IconLabelBubbleView* icon_label_bubble_view = widget->SetContentsView(
       std::make_unique<TestIconLabelBubbleView>(font_list, this));
-  icon_label_bubble_view->SetLabel(base::ASCIIToUTF16("x"));
+  icon_label_bubble_view->SetLabel(u"x");
   aura::Window* widget_native_view = widget->GetNativeView();
   // Remove the window from its parent. This means GetWidget() in
   // IconLabelBubbleView will return non-null, but GetWidget()->GetCompositor()

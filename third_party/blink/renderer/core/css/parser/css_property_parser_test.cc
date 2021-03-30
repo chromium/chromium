@@ -387,8 +387,8 @@ TEST(CSSPropertyParserTest, GradientUseCount) {
 TEST(CSSPropertyParserTest, PaintUseCount) {
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
   dummy_page_holder->GetFrame().Loader().CommitNavigation(
-      WebNavigationParams::CreateWithHTMLBuffer(SharedBuffer::Create(),
-                                                KURL("https://example.com")),
+      WebNavigationParams::CreateWithHTMLBufferForTesting(
+          SharedBuffer::Create(), KURL("https://example.com")),
       nullptr /* extra_data */);
   Document& document = dummy_page_holder->GetDocument();
   Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());

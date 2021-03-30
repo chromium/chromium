@@ -17,6 +17,7 @@
 #include <sstream>
 #include <utility>
 
+#include "ash/components/audio/cras_audio_handler.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
@@ -41,30 +42,29 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/login/users/chrome_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/app_mode/arc/arc_kiosk_app_manager.h"
-#include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/chromeos/crostini/crostini_pref_names.h"
 #include "chrome/browser/chromeos/crostini/crostini_reporting_util.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service_factory.h"
-#include "chrome/browser/chromeos/login/users/chrome_user_manager.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/policy/device_local_account.h"
 #include "chrome/browser/chromeos/policy/status_collector/enterprise_activity_storage.h"
 #include "chrome/browser/chromeos/policy/status_collector/interval_map.h"
 #include "chrome/browser/chromeos/policy/status_collector/status_collector_state.h"
 #include "chrome/browser/chromeos/policy/status_collector/tpm_status_combiner.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/crash_upload_list/crash_upload_list.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/audio/cras_audio_handler.h"
 #include "chromeos/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
@@ -117,6 +117,7 @@ using base::TimeDelta;
 namespace em = enterprise_management;
 
 namespace {
+
 // How many seconds of inactivity triggers the idle state.
 const int kIdleStateThresholdSeconds = 300;
 
@@ -421,7 +422,7 @@ void FetchGraphicsStatus(
 }
 
 bool ReadAndroidStatus(
-    const policy::StatusCollector::AndroidStatusReceiver& receiver) {
+    policy::StatusCollector::AndroidStatusReceiver receiver) {
   auto* const arc_service_manager = arc::ArcServiceManager::Get();
   if (!arc_service_manager)
     return false;
@@ -433,7 +434,7 @@ bool ReadAndroidStatus(
       ARC_GET_INSTANCE_FOR_METHOD(instance_holder, GetStatus);
   if (!instance)
     return false;
-  instance->GetStatus(receiver);
+  instance->GetStatus(std::move(receiver));
   return true;
 }
 
@@ -632,8 +633,8 @@ class DeviceStatusCollectorState : public StatusCollectorState {
  public:
   explicit DeviceStatusCollectorState(
       const scoped_refptr<base::SequencedTaskRunner> task_runner,
-      const StatusCollectorCallback& response)
-      : StatusCollectorState(task_runner, response) {}
+      StatusCollectorCallback response)
+      : StatusCollectorState(task_runner, std::move(response)) {}
 
   // Queues an async callback to query disk volume information.
   void SampleVolumeInfo(
@@ -674,8 +675,8 @@ class DeviceStatusCollectorState : public StatusCollectorState {
 
   bool FetchAndroidStatus(
       const StatusCollector::AndroidStatusFetcher& android_status_fetcher) {
-    return android_status_fetcher.Run(
-        base::Bind(&DeviceStatusCollectorState::OnAndroidInfoReceived, this));
+    return android_status_fetcher.Run(base::BindOnce(
+        &DeviceStatusCollectorState::OnAndroidInfoReceived, this));
   }
 
   void FetchTpmStatus(
@@ -959,6 +960,10 @@ class DeviceStatusCollectorState : public StatusCollectorState {
 
         case cros_healthd::BatteryResult::Tag::BATTERY_INFO: {
           const auto& battery_info = battery_result->get_battery_info();
+          // Device does not have a battery.
+          if (battery_info.is_null())
+            break;
+
           em::PowerStatus* const power_status_out =
               response_params_.device_status->mutable_power_status();
           em::BatteryInfo* const battery_info_out =
@@ -1319,7 +1324,7 @@ DeviceStatusCollector::DeviceStatusCollector(
     const GraphicsStatusFetcher& graphics_status_fetcher,
     const CrashReportInfoFetcher& crash_report_info_fetcher,
     base::Clock* clock)
-    : StatusCollector(provider, chromeos::CrosSettings::Get(), clock),
+    : StatusCollector(provider, ash::CrosSettings::Get(), clock),
       pref_service_(pref_service),
       firmware_fetch_error_(kFirmwareNotInitialized),
       volume_info_fetcher_(volume_info_fetcher),
@@ -1344,16 +1349,16 @@ DeviceStatusCollector::DeviceStatusCollector(
   task_runner_ = base::SequencedTaskRunnerHandle::Get();
 
   if (volume_info_fetcher_.is_null())
-    volume_info_fetcher_ = base::Bind(&GetVolumeInfo);
+    volume_info_fetcher_ = base::BindRepeating(&GetVolumeInfo);
 
   if (cpu_statistics_fetcher_.is_null())
-    cpu_statistics_fetcher_ = base::Bind(&ReadCPUStatistics);
+    cpu_statistics_fetcher_ = base::BindRepeating(&ReadCPUStatistics);
 
   if (cpu_temp_fetcher_.is_null())
-    cpu_temp_fetcher_ = base::Bind(&ReadCPUTempInfo);
+    cpu_temp_fetcher_ = base::BindRepeating(&ReadCPUTempInfo);
 
   if (android_status_fetcher_.is_null())
-    android_status_fetcher_ = base::Bind(&ReadAndroidStatus);
+    android_status_fetcher_ = base::BindRepeating(&ReadAndroidStatus);
 
   if (tpm_status_fetcher_.is_null())
     tpm_status_fetcher_ = base::BindRepeating(&ReadTpmStatus);
@@ -1361,8 +1366,10 @@ DeviceStatusCollector::DeviceStatusCollector(
   if (emmc_lifetime_fetcher_.is_null())
     emmc_lifetime_fetcher_ = base::BindRepeating(&ReadDiskLifeTimeEstimation);
 
-  if (stateful_partition_info_fetcher_.is_null())
-    stateful_partition_info_fetcher_ = base::Bind(&ReadStatefulPartitionInfo);
+  if (stateful_partition_info_fetcher_.is_null()) {
+    stateful_partition_info_fetcher_ =
+        base::BindRepeating(&ReadStatefulPartitionInfo);
+  }
 
   if (cros_healthd_data_fetcher_.is_null()) {
     cros_healthd_data_fetcher_ =
@@ -1384,7 +1391,7 @@ DeviceStatusCollector::DeviceStatusCollector(
 
   // Watch for changes to the individual policies that control what the status
   // reports contain.
-  base::Closure callback = base::Bind(
+  auto callback = base::BindRepeating(
       &DeviceStatusCollector::UpdateReportingSettings, base::Unretained(this));
   version_info_subscription_ = cros_settings_->AddSettingsObserver(
       chromeos::kReportDeviceVersionInfo, callback);
@@ -1960,8 +1967,7 @@ std::string DeviceStatusCollector::GetUserForActivityReporting() const {
 
   // Report only affiliated users for enterprise reporting.
   std::string primary_user_email = primary_user->GetAccountId().GetUserEmail();
-  if (!chromeos::ChromeUserManager::Get()->ShouldReportUser(
-          primary_user_email)) {
+  if (!ash::ChromeUserManager::Get()->ShouldReportUser(primary_user_email)) {
     return std::string();
   }
   return primary_user_email;
@@ -2200,7 +2206,7 @@ bool DeviceStatusCollector::GetNetworkInterfaces(
 
 bool DeviceStatusCollector::GetUsers(em::DeviceStatusReportRequest* status) {
   const user_manager::UserList& users =
-      chromeos::ChromeUserManager::Get()->GetUsers();
+      ash::ChromeUserManager::Get()->GetUsers();
 
   bool anything_reported = false;
   for (auto* user : users) {
@@ -2209,7 +2215,7 @@ bool DeviceStatusCollector::GetUsers(em::DeviceStatusReportRequest* status) {
       continue;
 
     em::DeviceUser* device_user = status->add_users();
-    if (chromeos::ChromeUserManager::Get()->ShouldReportUser(
+    if (ash::ChromeUserManager::Get()->ShouldReportUser(
             user->GetAccountId().GetUserEmail())) {
       device_user->set_type(em::DeviceUser::USER_TYPE_MANAGED);
       device_user->set_email(user->GetAccountId().GetUserEmail());
@@ -2296,8 +2302,7 @@ bool DeviceStatusCollector::GetOsUpdateStatus(
     return false;
 
   const std::string required_platform_version_string =
-      chromeos::KioskAppManager::Get()
-          ->GetAutoLaunchAppRequiredPlatformVersion();
+      ash::KioskAppManager::Get()->GetAutoLaunchAppRequiredPlatformVersion();
   em::OsUpdateStatus* os_update_status = status->mutable_os_update_status();
 
   const update_engine::StatusResult update_engine_status =
@@ -2394,9 +2399,8 @@ bool DeviceStatusCollector::GetRunningKioskApp(
       running_kiosk_app->set_extension_version(app_version);
     }
 
-    chromeos::KioskAppManager::App app_info;
-    if (chromeos::KioskAppManager::Get()->GetApp(account->kiosk_app_id,
-                                                 &app_info)) {
+    ash::KioskAppManager::App app_info;
+    if (ash::KioskAppManager::Get()->GetApp(account->kiosk_app_id, &app_info)) {
       running_kiosk_app->set_required_platform_version(
           app_info.required_platform_version);
     }
@@ -2426,8 +2430,7 @@ bool DeviceStatusCollector::GetCrashReportInfo(
   return true;
 }
 
-void DeviceStatusCollector::GetStatusAsync(
-    const StatusCollectorCallback& response) {
+void DeviceStatusCollector::GetStatusAsync(StatusCollectorCallback response) {
   last_requested_ = clock_->Now();
 
   app_info_generator_.OnWillReport();
@@ -2438,7 +2441,7 @@ void DeviceStatusCollector::GetStatusAsync(
   // Some of the data we're collecting is gathered in background threads.
   // This object keeps track of the state of each async request.
   scoped_refptr<DeviceStatusCollectorState> state(
-      new DeviceStatusCollectorState(task_runner_, response));
+      new DeviceStatusCollectorState(task_runner_, std::move(response)));
   // Gather device status (might queue some async queries)
   GetDeviceStatus(state);
 

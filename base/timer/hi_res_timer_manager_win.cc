@@ -42,8 +42,10 @@ HighResolutionTimerManager::HighResolutionTimerManager()
   // hi_res_clock_available_ will remain at its initial value.
   if (HighResolutionTimerAllowed()) {
     DCHECK(PowerMonitor::IsInitialized());
-    PowerMonitor::AddObserver(this);
-    UseHiResClock(!PowerMonitor::IsOnBatteryPower());
+    PowerMonitor::AddPowerSuspendObserver(this);
+    const bool on_battery =
+        PowerMonitor::AddPowerStateObserverAndReturnOnBatteryState(this);
+    UseHiResClock(!on_battery);
 
     // Start polling the high resolution timer usage.
     Time::ResetHighResolutionTimerUsage();
@@ -54,7 +56,8 @@ HighResolutionTimerManager::HighResolutionTimerManager()
 
 HighResolutionTimerManager::~HighResolutionTimerManager() {
   if (HighResolutionTimerAllowed()) {
-    PowerMonitor::RemoveObserver(this);
+    PowerMonitor::RemovePowerSuspendObserver(this);
+    PowerMonitor::RemovePowerStateObserver(this);
     UseHiResClock(false);
   }
 }

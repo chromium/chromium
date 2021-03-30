@@ -21,29 +21,10 @@ namespace blink {
 WTF::AtomicStringTable::WeakResult Element::WeakLowercaseIfNecessary(
     const StringView& name) const {
   if (LIKELY(IsHTMLElement() && IsA<HTMLDocument>(GetDocument()))) {
-#if defined(ARCH_CPU_ARMEL)
-    // The compiler on x64 and ARM32 produces code with very different
-    // performance characteristics for WeakFindLowercased(). On ARM, explicitly
-    // lowercasing the string into a new buffer before doing the lookup in the
-    // AtomicStringTable is ~15% faster than doing the WeakFindLowercased().
-    // This appears to be due to different inlining choices. Thus far, a
-    // single block of code that works well on both platforms hasn't been found
-    // so settling of an ifdef.
-    //
-    // TODO(ajwong): Figure out why this architecture divergence exists and
-    // remove.
-    StringView::StackBackingStore buf;
-    StringView lowered = name.LowerASCIIMaybeUsingBuffer(buf);
-    // TODO(ajwong): Why is this nearly 2x faster than calling the inlined
-    // WeakFind() which also does the same check?
-    if (LIKELY(lowered.IsAtomic())) {
-      return AtomicStringTable::WeakResult(lowered.SharedImpl());
-    } else {
-      return WTF::AtomicStringTable::Instance().WeakFind(lowered);
-    }
-#else
+    StringImpl* impl = name.SharedImpl();
+    if (impl && impl->IsAtomic() && impl->IsLowerASCII())
+      return WTF::AtomicStringTable::WeakResult(impl);
     return WTF::AtomicStringTable::Instance().WeakFindLowercased(name);
-#endif
   }
 
   return WTF::AtomicStringTable::Instance().WeakFind(name);

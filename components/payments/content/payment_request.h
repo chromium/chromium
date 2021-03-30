@@ -207,6 +207,9 @@ class PaymentRequest : public mojom::PaymentRequest,
   // Show an error message in the UI (if available) and abort payment.
   void ShowErrorMessageAndAbortPayment();
 
+  // Get the payment method category from the selected app.
+  JourneyLogger::PaymentMethodCategory GetSelectedMethodCategory() const;
+
   const content::GlobalFrameRoutingId initiator_frame_routing_id_;
   DeveloperConsoleLogger log_;
   std::unique_ptr<ContentPaymentRequestDelegate> delegate_;

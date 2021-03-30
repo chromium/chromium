@@ -5,12 +5,17 @@
 #include <cmath>
 
 #include "base/optional.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -18,6 +23,11 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_navigation_button_container.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
+#include "chrome/browser/ui/web_applications/web_app_menu_model.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -26,6 +36,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/theme_change_waiter.h"
+#include "extensions/test/test_extension_dir.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/size.h"
@@ -50,6 +61,22 @@ T* GetLastVisible(const std::vector<T*>& views) {
   return visible;
 }
 
+void LoadTestPopUpExtension(Profile* profile) {
+  extensions::TestExtensionDir test_extension_dir;
+  test_extension_dir.WriteManifest(
+      R"({
+          "name": "Pop up extension",
+          "version": "1.0",
+          "manifest_version": 2,
+          "browser_action": {
+            "default_popup": "popup.html"
+          }
+         })");
+  test_extension_dir.WriteFile(FILE_PATH_LITERAL("popup.html"), "");
+  extensions::ChromeTestExtensionLoader(profile).LoadExtension(
+      test_extension_dir.UnpackedPath());
+}
+
 }  // namespace
 
 class WebAppFrameToolbarBrowserTest : public InProcessBrowserTest {
@@ -70,6 +97,19 @@ class WebAppFrameToolbarBrowserTest : public InProcessBrowserTest {
     return &web_app_frame_toolbar_helper_;
   }
 
+  bool IsMenuCommandEnabled(int command_id) {
+    auto app_menu_model = std::make_unique<WebAppMenuModel>(
+        /*provider=*/nullptr, helper()->app_browser());
+    app_menu_model->Init();
+    ui::MenuModel* model = app_menu_model.get();
+    int index = -1;
+    if (!app_menu_model->GetModelAndIndexForCommandId(command_id, &model,
+                                                      &index)) {
+      return false;
+    }
+    return model->IsEnabledAt(index);
+  }
+
  private:
   net::EmbeddedTestServer https_server_;
   WebAppFrameToolbarTestHelper web_app_frame_toolbar_helper_;
@@ -79,8 +119,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
   const GURL app_url("https://test.org");
   helper()->InstallAndLaunchWebApp(browser(), app_url);
 
-  views::View* const toolbar_left_container =
-      helper()->web_app_frame_toolbar()->GetLeftContainerForTesting();
+  WebAppNavigationButtonContainer* const toolbar_left_container =
+      helper()->web_app_frame_toolbar()->get_left_container_for_testing();
   EXPECT_EQ(toolbar_left_container->parent(),
             helper()->web_app_frame_toolbar());
 
@@ -92,8 +132,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
   EXPECT_EQ(window_title->parent(), helper()->frame_view());
 #endif
 
-  views::View* const toolbar_right_container =
-      helper()->web_app_frame_toolbar()->GetRightContainerForTesting();
+  WebAppToolbarButtonContainer* const toolbar_right_container =
+      helper()->web_app_frame_toolbar()->get_right_container_for_testing();
   EXPECT_EQ(toolbar_right_container->parent(),
             helper()->web_app_frame_toolbar());
 
@@ -226,10 +266,10 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, TitleHover) {
   const GURL app_url("https://test.org");
   helper()->InstallAndLaunchWebApp(browser(), app_url);
 
-  views::View* const toolbar_left_container =
-      helper()->web_app_frame_toolbar()->GetLeftContainerForTesting();
-  views::View* const toolbar_right_container =
-      helper()->web_app_frame_toolbar()->GetRightContainerForTesting();
+  WebAppNavigationButtonContainer* const toolbar_left_container =
+      helper()->web_app_frame_toolbar()->get_left_container_for_testing();
+  WebAppToolbarButtonContainer* const toolbar_right_container =
+      helper()->web_app_frame_toolbar()->get_right_container_for_testing();
 
   auto* const window_title = static_cast<views::Label*>(
       helper()->frame_view()->GetViewByID(VIEW_ID_WINDOW_TITLE));
@@ -240,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, TitleHover) {
 #endif
   EXPECT_EQ(window_title->parent(), helper()->frame_view());
 
-  window_title->SetText(base::string16(30, 't'));
+  window_title->SetText(std::u16string(30, 't'));
 
   // Ensure we initially have abundant space.
   helper()->frame_view()->SetSize(gfx::Size(1000, 1000));
@@ -270,4 +310,80 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, TitleHover) {
   EXPECT_EQ(
       helper()->frame_view()->GetTooltipHandlerForPoint(window_title->origin()),
       window_title);
+}
+
+class WebAppFrameToolbarBrowserTest_ElidedExtensionsMenu
+    : public WebAppFrameToolbarBrowserTest {
+ public:
+  WebAppFrameToolbarBrowserTest_ElidedExtensionsMenu() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kDesktopPWAsElidedExtensionsMenu);
+  }
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ElidedExtensionsMenu,
+                       Test) {
+  helper()->InstallAndLaunchWebApp(browser(), GURL("https://test.org"));
+
+  // There should be no menu entry for opening the Extensions menu prior to
+  // installing Extensions.
+  EXPECT_FALSE(IsMenuCommandEnabled(WebAppMenuModel::kExtensionsMenuCommandId));
+
+  // Install test Extension.
+  LoadTestPopUpExtension(browser()->profile());
+
+  // There should be no visible Extensions icon.
+  WebAppToolbarButtonContainer* toolbar_button_container =
+      helper()->web_app_frame_toolbar()->get_right_container_for_testing();
+  EXPECT_FALSE(toolbar_button_container->extensions_container()->GetVisible());
+
+  // There should be a menu entry for opening the Extensions menu.
+  EXPECT_TRUE(IsMenuCommandEnabled(WebAppMenuModel::kExtensionsMenuCommandId));
+
+  // Trigger the Extensions menu entry.
+  auto app_menu_model = std::make_unique<WebAppMenuModel>(
+      /*provider=*/nullptr, helper()->app_browser());
+  app_menu_model->Init();
+  app_menu_model->ExecuteCommand(WebAppMenuModel::kExtensionsMenuCommandId,
+                                 /*event_flags=*/0);
+
+  // Extensions icon and menu should be visible.
+  EXPECT_TRUE(toolbar_button_container->extensions_container()->GetVisible());
+  EXPECT_TRUE(ExtensionsMenuView::IsShowing());
+}
+
+class WebAppFrameToolbarBrowserTest_NoElidedExtensionsMenu
+    : public WebAppFrameToolbarBrowserTest {
+ public:
+  WebAppFrameToolbarBrowserTest_NoElidedExtensionsMenu() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kDesktopPWAsElidedExtensionsMenu);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_NoElidedExtensionsMenu,
+                       Test) {
+  helper()->InstallAndLaunchWebApp(browser(), GURL("https://test.org"));
+
+  WebAppToolbarButtonContainer* toolbar_button_container =
+      helper()->web_app_frame_toolbar()->get_right_container_for_testing();
+
+  // Extensions toolbar should be hidden while there are no Extensions
+  // installed.
+  EXPECT_FALSE(toolbar_button_container->extensions_container()->GetVisible());
+
+  // Install Extension and wait for Extensions toolbar to appear.
+  base::RunLoop run_loop;
+  ExtensionsToolbarContainer::SetOnVisibleCallbackForTesting(
+      run_loop.QuitClosure());
+  LoadTestPopUpExtension(browser()->profile());
+  run_loop.Run();
+  EXPECT_TRUE(toolbar_button_container->extensions_container()->GetVisible());
+
+  // There should be no menu entry for opening the Extensions menu.
+  EXPECT_FALSE(IsMenuCommandEnabled(WebAppMenuModel::kExtensionsMenuCommandId));
 }

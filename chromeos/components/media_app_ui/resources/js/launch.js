@@ -326,9 +326,15 @@ guestMessagePipe.registerHandler(Message.OPEN_FILE, async () => {
  * @return {!Promise<!FileSystemFileHandle>}
  */
 function pickWritableFile(suggestedName, mimeType) {
-  const extension = '.' + suggestedName.split('.').reverse()[0];
+  // Cast to expose (draft) string.replaceAll() - available since Chrome 85.
+  const suffix = /** @type{{replaceAll: function(*,*): string}} */ (
+      suggestedName.split('.').reverse()[0]);
+  // Strip non-alphnumeric characters: showSaveFilePicker() will reject them if
+  // they appear in the extension. See b/175625372. This regex should be
+  // consistent with IsValidSuffixCodePoint() in global_file_system_access.cc.
+  const extension = '.' + suffix.replaceAll(/[^A-Za-z0-9.+]+/g, '');
   // TODO(b/161087799): Add a default filename when it's supported by the
-  // native file api.
+  // File System Access API.
   /** @type {!FilePickerOptions} */
   const options = {
     types: [
@@ -372,6 +378,110 @@ function generateToken(handle) {
   const token = tokenGenerator.next().value;
   tokenMap.set(token, handle);
   return token;
+}
+
+/**
+ * Return the mimetype of a file given it's filename. Returns null if the
+ * mimetype could not be determined or if the file does not have a extension.
+ * TODO(b/178986064): Remove this once we have a file system access metadata
+ * api.
+ * @param {string} filename
+ * @return {?string}
+ */
+function getMimeTypeFromFilename(filename) {
+  // This file extension to mime type map is adapted from
+  // https://source.chromium.org/chromium/chromium/src/+/master:net/base/mime_util.cc;l=147;drc=51373c4ea13372d7711c59d9929b0be5d468633e
+  const mapping = {
+    'avif': 'image/avif',
+    'crx': 'application/x-chrome-extension',
+    'css': 'text/css',
+    'flac': 'audio/flac',
+    'gif': 'image/gif',
+    'htm': 'text/html',
+    'html': 'text/html',
+    'jpeg': 'image/jpeg',
+    'jpg': 'image/jpeg',
+    'js': 'text/javascript',
+    'm4a': 'audio/x-m4a',
+    'm4v': 'video/mp4',
+    'mht': 'multipart/related',
+    'mhtml': 'multipart/related',
+    'mjs': 'text/javascript',
+    'mp3': 'audio/mpeg',
+    'mp4': 'video/mp4',
+    'oga': 'audio/ogg',
+    'ogg': 'audio/ogg',
+    'ogm': 'video/ogg',
+    'ogv': 'video/ogg',
+    'opus': 'audio/ogg',
+    'png': 'image/png',
+    'shtm': 'text/html',
+    'shtml': 'text/html',
+    'wasm': 'application/wasm',
+    'wav': 'audio/wav',
+    'webm': 'video/webm',
+    'webp': 'image/webp',
+    'xht': 'application/xhtml+xml',
+    'xhtm': 'application/xhtml+xml',
+    'xhtml': 'application/xhtml+xml',
+    'xml': 'text/xml',
+    'epub': 'application/epub+zip',
+    'woff': 'application/font-woff',
+    'gz': 'application/gzip',
+    'tgz': 'application/gzip',
+    'json': 'application/json',
+    'bin': 'application/octet-stream',
+    'exe': 'application/octet-stream',
+    'com': 'application/octet-stream',
+    'pdf': 'application/pdf',
+    'p7m': 'application/pkcs7-mime',
+    'p7c': 'application/pkcs7-mime',
+    'p7z': 'application/pkcs7-mime',
+    'p7s': 'application/pkcs7-signature',
+    'ps': 'application/postscript',
+    'eps': 'application/postscript',
+    'ai': 'application/postscript',
+    'rdf': 'application/rdf+xml',
+    'rss': 'application/rss+xml',
+    'apk': 'application/vnd.android.package-archive',
+    'xul': 'application/vnd.mozilla.xul+xml',
+    'xls': 'application/vnd.ms-excel',
+    'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'zip': 'application/zip',
+    'weba': 'audio/webm',
+    'bmp': 'image/bmp',
+    'jfif': 'image/jpeg',
+    'pjpeg': 'image/jpeg',
+    'pjp': 'image/jpeg',
+    'svg': 'image/svg+xml',
+    'svgz': 'image/svg+xml',
+    'tiff': 'image/tiff',
+    'tif': 'image/tiff',
+    'ico': 'image/vnd.microsoft.icon',
+    'eml': 'message/rfc822',
+    'ics': 'text/calendar',
+    'ehtml': 'text/html',
+    'txt': 'text/plain',
+    'text': 'text/plain',
+    'sh': 'text/x-sh',
+    'xsl': 'text/xml',
+    'xbl': 'text/xml',
+    'xslt': 'text/xml',
+    'mpeg': 'video/mpeg',
+    'mpg': 'video/mpeg',
+    // Add .mkv explicitly because it is not a web-supported type, but is in
+    // common use on ChromeOS.
+    'mkv': 'video/x-matroska'
+  };
+
+  const fileParts = filename.split('.');
+  if (fileParts.length < 2) {
+    return null;
+  }
+  const extension = fileParts[fileParts.length - 1].toLowerCase();
+  /** @type {(string|undefined)} */
+  const mimeType = mapping[extension];
+  return mimeType !== undefined ? mimeType : null;
 }
 
 /**
@@ -484,11 +594,10 @@ async function sendSnapshotToGuest(
     snapshot, localLaunchNumber, extraFiles = false) {
   const focusIndex = entryIndex;
 
-  // On first launch, files are opened to determine navigation candidates. Don't
-  // reopen in that case. Otherwise, attempt to reopen the focus file only. In
-  // future we might also open "nearby" files for preloading. However, reopening
-  // *all* files on every navigation attempt to verify they can still be
-  // navigated to adds noticeable lag in large directories.
+  // Attempt to reopen the focus file only. In future we might also open
+  // "nearby" files for preloading. However, reopening *all* files on every
+  // navigation attempt to verify they can still be navigated to adds noticeable
+  // lag in large directories.
   if (focusIndex >= 0 && focusIndex < snapshot.length) {
     await refreshFile(snapshot[focusIndex]);
   } else if (snapshot.length !== 0) {
@@ -554,7 +663,7 @@ async function isHandleInCurrentDirectory(handle) {
   }
 
   // It's unclear if getFile will always give us a NotFoundError if the file has
-  // been moved as it's not explicitly stated in the native file system API
+  // been moved as it's not explicitly stated in the File System Access API
   // spec. As such we perform an additional check here to make sure the file
   // returned by the handle is in fact in the current directory.
   // TODO(b/172628918): Remove this once we have more assurances getFile() does
@@ -640,24 +749,33 @@ async function maybeGetFileFromFileHandle(handle) {
 }
 
 /**
- * Returns whether `filename` has an extension indicating a possible RAW image.
- * @param {string} filename
+ * Returns whether `fileName` has an extension indicating a possible RAW image.
+ * @param {string} fileName
  * @return {boolean}
  */
-function isRawImageFile(filename) {
-  return /\.(arw|cr2|dng|nef|nrw|orf|raf|rw2)$/.test(filename.toLowerCase());
+function isRawImageFile(fileName) {
+  return /\.(arw|cr2|dng|nef|nrw|orf|raf|rw2)$/.test(fileName.toLowerCase());
 }
 
 /**
- * Returns whether `file` is a video or image file.
- * @param {!File} file
+ * Returns whether `fileName` is a file potentially containing subtitles.
+ * @param {string} fileName
  * @return {boolean}
  */
-function isVideoOrImage(file) {
-  // Check for .mkv explicitly because it is not a web-supported type, but is in
-  // common use on ChromeOS.
-  return /^(image)|(video)\//.test(file.type) ||
-      /\.mkv$/.test(file.name.toLowerCase()) || isRawImageFile(file.name);
+function isSubtitleFile(fileName) {
+  return /\.vtt$/.test(fileName.toLowerCase());
+}
+
+/**
+ * Returns whether fileName is the filename for a video or image, or a related
+ * file type (e.g. video subtitles).
+ * @param {string} fileName
+ * @return {boolean}
+ */
+function isVideoOrImage(fileName) {
+  const fileType = getMimeTypeFromFilename(fileName);
+  return /^(image)|(video)\//.test(fileType) || isRawImageFile(fileName) ||
+      isSubtitleFile(fileName);
 }
 
 /**
@@ -665,13 +783,16 @@ function isVideoOrImage(file) {
  * they should be traversable from one another. Usually this means they share a
  * similar (non-empty) MIME type.
  * @param {!File} focusFile The file selected by the user.
- * @param {!File} siblingFile A file in the same directory as `focusFile`.
+ * @param {string} siblingFileName Filename for a file in the same directory as
+ *     `focusFile`.
  * @return {boolean}
  */
-function isFileRelated(focusFile, siblingFile) {
-  return focusFile.name === siblingFile.name ||
-      (!!focusFile.type && focusFile.type === siblingFile.type) ||
-      (isVideoOrImage(focusFile) && isVideoOrImage(siblingFile));
+function isFileRelated(focusFile, siblingFileName) {
+  const siblingFileType = getMimeTypeFromFilename(siblingFileName);
+  return focusFile.name === siblingFileName ||
+      (!!focusFile.type && !!siblingFileType &&
+       focusFile.type === siblingFileType) ||
+      (isVideoOrImage(focusFile.name) && isVideoOrImage(siblingFileName));
 }
 
 /**
@@ -716,24 +837,16 @@ async function processOtherFilesInDirectory(
     if (handle.kind !== 'file') {
       continue;
     }
-    let entry = null;
-    try {
-      entry = await getFileFromHandle(handle);
-    } catch (/** @type {!DOMException} */ e) {
-      // Ignore exceptions thrown trying to open "other" files in the folder,
-      // and skip adding that file to `currentFiles`.
-      // Note the focusFile is passed in as `File`, so should be openable.
-      warnIfUncommon(e, handle.name);
-    }
-
+    const fileHandle = /** @type {!FileSystemFileHandle} */ (handle);
     // Only allow traversal of related file types.
-    if (entry && isFileRelated(focusFile, entry.file)) {
+    if (isFileRelated(focusFile, handle.name)) {
       // Note: The focus file will be processed here again but will be skipped
       // over when added to `currentFiles`.
       relatedFiles.push({
-        token: generateToken(entry.handle),
-        file: entry.file,
-        handle: entry.handle,
+        token: generateToken(fileHandle),
+        // This will get populated by refreshFile before the file gets opened.
+        file: null,
+        handle: fileHandle,
         inCurrentDirectory: true,
       });
     }
@@ -743,38 +856,52 @@ async function processOtherFilesInDirectory(
     return ProcessOtherFilesResult.ABORT;
   }
 
+  if (sortOrder === SortOrder.NEWEST_FIRST) {
+    // If we are sorting by modification time we need to have the actual File
+    // object available.
+    for (const descriptor of relatedFiles) {
+      // TODO(b/166210455): Remove this call to getFile as it may be slow for
+      // android files see b/172529567. Leaving it in at the moment since sort
+      // order is not set to NEWEST_FIRST in any production release and there is
+      // no way to get modified time without calling getFile.
+      try {
+        descriptor.file = (await getFileFromHandle(descriptor.handle)).file;
+      } catch (/** @type {!DOMException} */ e) {
+        warnIfUncommon(e, descriptor.handle.name);
+      }
+    }
+  }
+
   // Iteration order is not guaranteed using `directory.entries()`, so we
   // sort it afterwards by modification time to ensure a consistent and logical
   // order. More recent (i.e. higher timestamp) files should appear first. In
   // the case where timestamps are equal, the files will be sorted
   // lexicographically according to their names.
   relatedFiles.sort((a, b) => {
-    // Sort null files last if they racily appear.
-    if (!a.file && !b.file) {
-      return 0;
-    } else if (!b.file) {
-      return -1;
-    } else if (!a.file) {
-      return 1;
-    }
     if (sortOrder === SortOrder.NEWEST_FIRST) {
-      if (a.file.lastModified === b.file.lastModified) {
+      // Sort null files last if they racily appear.
+      if (!a.file && !b.file) {
+        return 0;
+      } else if (!b.file) {
+        return -1;
+      } else if (!a.file) {
+        return 1;
+      } else if (a.file.lastModified === b.file.lastModified) {
         return a.file.name.localeCompare(b.file.name);
       }
       return b.file.lastModified - a.file.lastModified;
     }
+    // Else default to lexicographical sort.
     // Match the Intl.Collator params used for sorting in the files app in
     // file_manager/common/js/util.js.
     const direction = sortOrder === SortOrder.A_FIRST ? 1 : -1;
     return direction *
-        a.file.name.localeCompare(
-            b.file.name, [],
+        a.handle.name.localeCompare(
+            b.handle.name, [],
             {usage: 'sort', numeric: true, sensitivity: 'base'});
   });
-
   const name = focusFile.name;
-  const focusIndex =
-      relatedFiles.findIndex(i => !!i.file && i.file.name === name);
+  const focusIndex = relatedFiles.findIndex(i => i.handle.name === name);
   entryIndex = 0;
   if (focusIndex === -1) {
     // The focus file is no longer there i.e. might have been deleted, should be
@@ -860,7 +987,7 @@ async function launchWithDirectory(directory, handle) {
   // The app is operable with the first file now.
 
   // Process other files in directory.
-  // TODO(https://github.com/WICG/native-file-system/issues/215): Don't process
+  // TODO(https://github.com/WICG/file-system-access/issues/215): Don't process
   // other files if there is only 1 file which is already loaded by
   // `sendSnapshotToGuest()` above.
   await loadOtherRelatedFiles(

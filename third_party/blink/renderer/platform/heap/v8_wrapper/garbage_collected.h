@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_GARBAGE_COLLECTED_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_GARBAGE_COLLECTED_H_
 
+#include "v8/include/cppgc/garbage-collected.h"
 #include "v8/include/cppgc/type-traits.h"
 
 // GC_PLUGIN_IGNORE is used to make the plugin ignore a particular class or
@@ -19,6 +20,8 @@
 #endif
 
 namespace blink {
+
+using GarbageCollectedMixin = cppgc::GarbageCollectedMixin;
 
 template <typename T>
 struct IsGarbageCollectedMixin {

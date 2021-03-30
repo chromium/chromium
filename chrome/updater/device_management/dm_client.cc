@@ -13,7 +13,9 @@
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/device_management/dm_cached_policy_info.h"
+#include "chrome/updater/device_management/dm_response_validator.h"
 #include "chrome/updater/device_management/dm_storage.h"
+#include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
@@ -61,7 +63,7 @@ class DefaultConfigurator : public DMClient::Configurator {
   ~DefaultConfigurator() override = default;
 
   std::string GetDMServerUrl() const override {
-    return kDeviceManagementServerURL;
+    return DEVICE_MANAGEMENT_SERVER_URL;
   }
 
   std::string GetAgentParameter() const override {
@@ -286,9 +288,13 @@ void DMClient::OnPolicyFetchRequestComplete(
             << http_status_code_;
     request_result = RequestResult::kHttpError;
   } else {
+    std::vector<PolicyValidationResult> validation_results;
     DMPolicyMap policies = ParsePolicyFetchResponse(
         *response_body, *cached_info_, storage_->GetDmToken(),
-        storage_->GetDeviceID());
+        storage_->GetDeviceID(), validation_results);
+
+    // TODO(crbug/1183453): Post `validation_results` back to caller via
+    // the callback. The caller can then send the results back to DM server.
 
     if (policies.empty()) {
       request_result = RequestResult::kUnexpectedResponse;

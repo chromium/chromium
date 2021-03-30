@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -50,7 +51,7 @@ public class MenuButtonCoordinator {
      *         app menu MVC components.
      * @param controlsVisibilityDelegate Delegate for forcing persistent display of browser
      *         controls.
-     * @param activity Activity in which this object lives.
+     * @param windowAndroid The WindowAndroid instance.
      * @param setUrlBarFocusFunction Function that allows setting focus on the url bar.
      * @param requestRenderRunnable Runnable that requests a re-rendering of the compositor view
      *         containing the app menu button.
@@ -62,11 +63,11 @@ public class MenuButtonCoordinator {
      */
     public MenuButtonCoordinator(OneshotSupplier<AppMenuCoordinator> appMenuCoordinatorSupplier,
             BrowserStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate,
-            Activity activity, SetFocusFunction setUrlBarFocusFunction,
+            WindowAndroid windowAndroid, SetFocusFunction setUrlBarFocusFunction,
             Runnable requestRenderRunnable, boolean shouldShowAppUpdateBadge,
             Supplier<Boolean> isInOverviewModeSupplier, ThemeColorProvider themeColorProvider,
             @IdRes int menuButtonId) {
-        mActivity = activity;
+        mActivity = windowAndroid.getActivity().get();
         mMenuButton = mActivity.findViewById(menuButtonId);
         mPropertyModel = new PropertyModel.Builder(MenuButtonProperties.ALL_KEYS)
                                  .with(MenuButtonProperties.SHOW_UPDATE_BADGE,
@@ -81,7 +82,7 @@ public class MenuButtonCoordinator {
                         -> mActivity.isFinishing() || mActivity.isDestroyed(),
                 requestRenderRunnable, themeColorProvider, isInOverviewModeSupplier,
                 controlsVisibilityDelegate, setUrlBarFocusFunction, appMenuCoordinatorSupplier,
-                mActivity.getResources());
+                windowAndroid);
         mMediator.getMenuButtonHelperSupplier().addObserver(
                 (helper) -> mAppMenuButtonHelper = helper);
         if (mMenuButton != null) {
@@ -135,8 +136,8 @@ public class MenuButtonCoordinator {
     /**
      * @return Whether the menu button is present and visible.
      */
-    public boolean isShown() {
-        return mMenuButton != null && mMenuButton.isShown();
+    public boolean isVisible() {
+        return mMenuButton != null && mMenuButton.getVisibility() == View.VISIBLE;
     }
 
     /**

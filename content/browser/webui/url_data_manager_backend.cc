@@ -67,17 +67,9 @@ bool SchemeIsInSchemes(const std::string& scheme,
 }  // namespace
 
 URLDataManagerBackend::URLDataManagerBackend() : next_request_id_(0) {
-  // Add a shared data source for chrome://resources. For chrome:// data sources
-  // we use the host name as the source name.
-  AddDataSource(new URLDataSourceImpl(
-      kChromeUIResourcesHost,
-      SharedResourcesDataSource::CreateForChromeScheme()));
-
-  // Add a shared data source for chrome-untrusted://resources. For
-  // chrome-untrusted:// data sources we use the full origin as the source name.
-  AddDataSource(new URLDataSourceImpl(
-      kChromeUIUntrustedResourcesURL,
-      SharedResourcesDataSource::CreateForChromeUntrustedScheme()));
+  // Add a shared data source for chrome://resources.
+  AddDataSource(
+      static_cast<WebUIDataSourceImpl*>(CreateSharedResourcesDataSource()));
 }
 
 URLDataManagerBackend::~URLDataManagerBackend() = default;
@@ -162,9 +154,11 @@ scoped_refptr<net::HttpResponseHeaders> URLDataManagerBackend::GetHeaders(
     std::string csp_header;
 
     const network::mojom::CSPDirectiveName kAllDirectives[] = {
+        network::mojom::CSPDirectiveName::BaseURI,
         network::mojom::CSPDirectiveName::ChildSrc,
         network::mojom::CSPDirectiveName::ConnectSrc,
         network::mojom::CSPDirectiveName::DefaultSrc,
+        network::mojom::CSPDirectiveName::FormAction,
         network::mojom::CSPDirectiveName::FrameSrc,
         network::mojom::CSPDirectiveName::ImgSrc,
         network::mojom::CSPDirectiveName::MediaSrc,

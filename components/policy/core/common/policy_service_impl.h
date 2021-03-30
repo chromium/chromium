@@ -84,9 +84,6 @@ class POLICY_EXPORT PolicyServiceImpl
  private:
   enum class PolicyDomainStatus { kUninitialized, kInitialized, kPolicyReady };
 
-  using Observers =
-      base::ObserverList<PolicyService::Observer, true>::Unchecked;
-
   // This constructor is not publicly visible so callers that want a
   // PolicyServiceImpl with throttled initialization use
   // |CreateWithInitializationThrottled| for clarity.
@@ -136,7 +133,9 @@ class POLICY_EXPORT PolicyServiceImpl
   PolicyBundle policy_bundle_;
 
   // Maps each policy domain to its observer list.
-  std::map<PolicyDomain, std::unique_ptr<Observers>> observers_;
+  std::map<PolicyDomain,
+           base::ObserverList<PolicyService::Observer, /*check_empty=*/true>>
+      observers_;
 
   // The status of all the providers for the indexed policy domain.
   PolicyDomainStatus policy_domain_status_[POLICY_DOMAIN_SIZE];

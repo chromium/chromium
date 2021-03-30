@@ -28,6 +28,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
+#include "base/time/time.h"
 #include "ui/base/cursor/cursor_theme_manager.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/x/connection.h"
@@ -293,7 +294,7 @@ XCursorLoader::XCursorLoader(x11::Connection* connection)
     : connection_(connection) {
   auto ver_cookie = connection_->render().QueryVersion(
       {x11::Render::major_version, x11::Render::minor_version});
-  auto pf_cookie = connection_->render().QueryPictFormats({});
+  auto pf_cookie = connection_->render().QueryPictFormats();
   cursor_font_ = connection_->GenerateId<x11::Font>();
   connection_->OpenFont({cursor_font_, "cursor"});
 
@@ -325,10 +326,9 @@ scoped_refptr<X11Cursor> XCursorLoader::LoadCursor(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto cursor = base::MakeRefCounted<X11Cursor>();
   if (SupportsCreateCursor()) {
-    base::PostTaskAndReplyWithResult(
+    base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE,
-        {base::ThreadPool(), base::MayBlock(),
-         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+        {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
         base::BindOnce(ReadCursorImages, names, rm_xcursor_theme_,
                        GetPreferredCursorSize()),
         base::BindOnce(&XCursorLoader::LoadCursorImpl,
@@ -351,7 +351,7 @@ scoped_refptr<X11Cursor> XCursorLoader::CreateCursor(
     auto cursor = CreateCursor(image.bitmap, image.hotspot);
     cursors.push_back(cursor);
     elements.push_back(x11::Render::AnimationCursorElement{
-        cursor->xcursor_, image.frame_delay_ms});
+        cursor->xcursor_, image.frame_delay.InMilliseconds()});
   }
 
   if (elements.empty())
@@ -584,8 +584,9 @@ std::vector<XCursorLoader::Image> ParseCursorFile(
     bitmap.allocN32Pixels(image.width, image.height);
     if (!ReadU32s(bitmap.getPixels(), bitmap.computeByteSize()))
       continue;
-    images.push_back(XCursorLoader::Image{
-        bitmap, gfx::Point(image.xhot, image.yhot), image.delay});
+    images.push_back(
+        XCursorLoader::Image{bitmap, gfx::Point(image.xhot, image.yhot),
+                             base::TimeDelta::FromMilliseconds(image.delay)});
   }
   return images;
 }

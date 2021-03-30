@@ -7,7 +7,8 @@
 #include <sddl.h>
 #include <stdint.h>
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "base/strings/utf_string_conversions.h"
 
 namespace remoting {
@@ -16,7 +17,7 @@ ScopedSd ConvertSddlToSd(const std::string& sddl) {
   PSECURITY_DESCRIPTOR raw_sd = nullptr;
   ULONG length = 0;
   if (!ConvertStringSecurityDescriptorToSecurityDescriptor(
-          base::UTF8ToUTF16(sddl).c_str(), SDDL_REVISION_1, &raw_sd, &length)) {
+          base::UTF8ToWide(sddl).c_str(), SDDL_REVISION_1, &raw_sd, &length)) {
     return ScopedSd();
   }
 
@@ -29,13 +30,13 @@ ScopedSd ConvertSddlToSd(const std::string& sddl) {
 
 // Converts a SID into a text string.
 std::string ConvertSidToString(SID* sid) {
-  base::char16* c_sid_string = nullptr;
+  wchar_t* c_sid_string = nullptr;
   if (!ConvertSidToStringSid(sid, &c_sid_string))
     return std::string();
 
-  base::string16 sid_string(c_sid_string);
+  std::wstring sid_string(c_sid_string);
   LocalFree(c_sid_string);
-  return base::UTF16ToUTF8(sid_string);
+  return base::WideToUTF8(sid_string);
 }
 
 // Returns the logon SID of a token. Returns nullptr if the token does not

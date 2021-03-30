@@ -9,10 +9,10 @@
 
 #include <memory>
 
-#include "ash/app_list/app_list_export.h"
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_presenter_delegate.h"
 #include "ash/app_list/views/app_list_view.h"
+#include "ash/ash_export.h"
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "base/callback.h"
@@ -32,7 +32,7 @@ enum class AppListViewState;
 // Manages app list UI. Creates AppListView and schedules showing/hiding
 // animation. While the UI is visible, it monitors things such as app list
 // activation state to auto dismiss the UI.
-class APP_LIST_EXPORT AppListPresenterImpl
+class ASH_EXPORT AppListPresenterImpl
     : public PaginationModelObserver,
       public aura::client::FocusChangeObserver,
       public ui::ImplicitAnimationObserver,
@@ -58,7 +58,9 @@ class APP_LIST_EXPORT AppListPresenterImpl
   // Show the app list window on the display with the given id. If
   // |event_time_stamp| is not 0, it means |Show()| was triggered by one of the
   // AppListShowSources: kSearchKey, kShelfButton, or kSwipeFromShelf.
-  void Show(int64_t display_id, base::TimeTicks event_time_stamp);
+  void Show(AppListViewState preferred_state,
+            int64_t display_id,
+            base::TimeTicks event_time_stamp);
 
   // Hide the open app list window. This may leave the view open but hidden.
   // If |event_time_stamp| is not 0, it means |Dismiss()| was triggered by
@@ -122,9 +124,6 @@ class APP_LIST_EXPORT AppListPresenterImpl
 
   // Returns current visibility of the Assistant page.
   bool IsShowingEmbeddedAssistantUI() const;
-
-  // Show/hide the expand arrow view button.
-  void SetExpandArrowViewVisibility(bool show);
 
   // Called when tablet mode starts and ends.
   void OnTabletModeChanged(bool started);

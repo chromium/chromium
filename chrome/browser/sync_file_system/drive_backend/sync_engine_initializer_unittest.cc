@@ -88,8 +88,8 @@ class SyncEngineInitializerTest : public testing::Test {
     sync_task_manager_->ScheduleSyncTask(
         FROM_HERE, std::unique_ptr<SyncTask>(initializer),
         SyncTaskManager::PRIORITY_MED,
-        base::Bind(&SyncEngineInitializerTest::DidRunInitializer,
-                   base::Unretained(this), initializer, &status));
+        base::BindOnce(&SyncEngineInitializerTest::DidRunInitializer,
+                       base::Unretained(this), initializer, &status));
 
     base::RunLoop().RunUntilIdle();
     return status;

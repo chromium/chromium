@@ -50,64 +50,43 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           })");
 
 bool IsLoaderSuccessful(const network::SimpleURLLoader* loader) {
-  if (!loader || loader->NetError() != net::OK)
-    return false;
+  DCHECK(loader);
 
-  if (!loader->ResponseInfo() || !loader->ResponseInfo()->headers)
+  if (loader->NetError() != net::OK) {
+    LOG(ERROR) << "IceConfigFetcher url loader network error: "
+               << loader->NetError();
     return false;
+  }
+
+  if (!loader->ResponseInfo() || !loader->ResponseInfo()->headers) {
+    LOG(ERROR) << "IceConfigFetcher invalid response or missing headers";
+    return false;
+  }
 
   // Success response codes are 2xx.
-  return (loader->ResponseInfo()->headers->response_code() / 100) == 2;
+  bool is_successful_response_code =
+      (loader->ResponseInfo()->headers->response_code() / 100) == 2;
+  if (!is_successful_response_code) {
+    LOG(ERROR) << "IceConfigFetcher non-successful response code: "
+               << loader->ResponseInfo()->headers->response_code();
+  }
+  return is_successful_response_code;
 }
 
-}  // namespace
+std::vector<sharing::mojom::IceServerPtr> GetDefaultIceServers() {
+  sharing::mojom::IceServerPtr ice_server(sharing::mojom::IceServer::New());
+  ice_server->urls.emplace_back("stun:stun.l.google.com:19302");
+  ice_server->urls.emplace_back("stun:stun1.l.google.com:19302");
+  ice_server->urls.emplace_back("stun:stun2.l.google.com:19302");
+  ice_server->urls.emplace_back("stun:stun3.l.google.com:19302");
+  ice_server->urls.emplace_back("stun:stun4.l.google.com:19302");
 
-IceConfigFetcher::IceConfigFetcher(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : url_loader_factory_(std::move(url_loader_factory)) {}
-
-IceConfigFetcher::~IceConfigFetcher() = default;
-
-void IceConfigFetcher::GetIceServers(GetIceServersCallback callback) {
-  url_loader_.reset();
-
-  auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url =
-      GURL(base::StrCat({kIceConfigApiUrl, google_apis::GetSharingAPIKey()}));
-  resource_request->load_flags =
-      net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
-  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  resource_request->method = net::HttpRequestHeaders::kPostMethod;
-  resource_request->headers.SetHeader(net::HttpRequestHeaders::kContentType,
-                                      "application/json");
-
-  url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
-                                                 kTrafficAnnotation);
-  url_loader_->DownloadToString(
-      url_loader_factory_.get(),
-      base::BindOnce(&IceConfigFetcher::OnIceServersResponse,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-      kMaxBodySize);
+  std::vector<sharing::mojom::IceServerPtr> default_servers;
+  default_servers.push_back(std::move(ice_server));
+  return default_servers;
 }
 
-void IceConfigFetcher::OnIceServersResponse(
-    GetIceServersCallback callback,
-    std::unique_ptr<std::string> response_body) {
-  std::vector<sharing::mojom::IceServerPtr> ice_servers;
-
-  if (IsLoaderSuccessful(url_loader_.get()) && response_body)
-    ice_servers = ParseIceConfigJson(*response_body);
-
-  sharing::LogWebRtcIceConfigFetched(ice_servers.size());
-
-  if (ice_servers.empty())
-    ice_servers = GetDefaultIceServers();
-
-  std::move(callback).Run(std::move(ice_servers));
-}
-
-std::vector<sharing::mojom::IceServerPtr> IceConfigFetcher::ParseIceConfigJson(
-    std::string json) {
+std::vector<sharing::mojom::IceServerPtr> ParseIceConfigJson(std::string json) {
   std::vector<sharing::mojom::IceServerPtr> ice_servers;
   base::Optional<base::Value> response = base::JSONReader::Read(json);
   if (!response)
@@ -151,17 +130,50 @@ std::vector<sharing::mojom::IceServerPtr> IceConfigFetcher::ParseIceConfigJson(
   return ice_servers;
 }
 
-// static
-std::vector<sharing::mojom::IceServerPtr>
-IceConfigFetcher::GetDefaultIceServers() {
-  sharing::mojom::IceServerPtr ice_server(sharing::mojom::IceServer::New());
-  ice_server->urls.emplace_back("stun:stun.l.google.com:19302");
-  ice_server->urls.emplace_back("stun:stun1.l.google.com:19302");
-  ice_server->urls.emplace_back("stun:stun2.l.google.com:19302");
-  ice_server->urls.emplace_back("stun:stun3.l.google.com:19302");
-  ice_server->urls.emplace_back("stun:stun4.l.google.com:19302");
+void OnIceServersResponse(
+    sharing::mojom::IceConfigFetcher::GetIceServersCallback callback,
+    std::unique_ptr<network::SimpleURLLoader> url_loader,
+    std::unique_ptr<std::string> response_body) {
+  std::vector<sharing::mojom::IceServerPtr> ice_servers;
 
-  std::vector<sharing::mojom::IceServerPtr> default_servers;
-  default_servers.push_back(std::move(ice_server));
-  return default_servers;
+  if (IsLoaderSuccessful(url_loader.get()) && response_body)
+    ice_servers = ParseIceConfigJson(*response_body);
+
+  sharing::LogWebRtcIceConfigFetched(ice_servers.size());
+
+  if (ice_servers.empty()) {
+    VLOG(1) << "IceConfigFetcher returning default ice servers";
+    ice_servers = GetDefaultIceServers();
+  }
+
+  std::move(callback).Run(std::move(ice_servers));
+}
+
+}  // namespace
+
+IceConfigFetcher::IceConfigFetcher(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    : url_loader_factory_(std::move(url_loader_factory)) {}
+
+IceConfigFetcher::~IceConfigFetcher() = default;
+
+void IceConfigFetcher::GetIceServers(GetIceServersCallback callback) {
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->url =
+      GURL(base::StrCat({kIceConfigApiUrl, google_apis::GetSharingAPIKey()}));
+  resource_request->load_flags =
+      net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  resource_request->method = net::HttpRequestHeaders::kPostMethod;
+  resource_request->headers.SetHeader(net::HttpRequestHeaders::kContentType,
+                                      "application/json");
+
+  auto url_loader = network::SimpleURLLoader::Create(
+      std::move(resource_request), kTrafficAnnotation);
+  auto* url_loader_ptr = url_loader.get();
+  url_loader_ptr->DownloadToString(
+      url_loader_factory_.get(),
+      base::BindOnce(&OnIceServersResponse, std::move(callback),
+                     std::move(url_loader)),
+      kMaxBodySize);
 }

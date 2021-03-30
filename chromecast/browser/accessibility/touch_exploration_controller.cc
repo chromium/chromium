@@ -86,6 +86,11 @@ void TouchExplorationController::SetExcludeBounds(const gfx::Rect& bounds) {
   exclude_bounds_ = bounds;
 }
 
+void TouchExplorationController::SetLiftActivationBounds(
+    const gfx::Rect& bounds) {
+  lift_activation_bounds_ = bounds;
+}
+
 ui::EventDispatchDetails TouchExplorationController::RewriteEvent(
     const ui::Event& event,
     const Continuation continuation) {
@@ -304,7 +309,6 @@ ui::EventDispatchDetails TouchExplorationController::InSingleTapPressed(
     const ui::TouchEvent& event,
     const Continuation continuation) {
   const ui::EventType type = event.type();
-
   if (type == ui::ET_TOUCH_PRESSED) {
     initial_presses_[event.pointer_details().id] = event.location();
     SET_STATE(TWO_FINGER_TAP);
@@ -611,11 +615,8 @@ ui::EventDispatchDetails TouchExplorationController::InWaitForNoFingers(
 void TouchExplorationController::SendSimulatedClick(
     const Continuation continuation) {
   const gfx::Point location;
-  // For Chromecast, always send a simulated tap. NOTE: This differs
-  // from chromeos's touch exploration controller which always send an
-  // accessibility gesture.
   delegate_->HandleTap(location);
-  SendSimulatedTap(continuation);
+  delegate_->HandleAccessibilityGesture(ax::mojom::Gesture::kClick);
 }
 
 void TouchExplorationController::SendSimulatedTap(

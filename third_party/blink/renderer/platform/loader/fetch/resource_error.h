@@ -99,7 +99,8 @@ class PLATFORM_EXPORT ResourceError final {
   bool IsTimeout() const;
   bool IsCacheMiss() const;
   bool WasBlockedByResponse() const;
-  bool ShouldCollapseInitiator() const;
+  bool ShouldCollapseInitiator() const { return should_collapse_inititator_; }
+
   base::Optional<ResourceRequestBlockedReason> GetResourceRequestBlockedReason()
       const;
   base::Optional<network::mojom::BlockedByResponseReason>
@@ -128,8 +129,8 @@ class PLATFORM_EXPORT ResourceError final {
   String localized_description_;
   bool is_access_check_ = false;
   bool has_copy_in_cache_ = false;
-  bool blocked_by_subresource_filter_ = false;
   base::Optional<network::CorsErrorStatus> cors_error_status_;
+  bool should_collapse_inititator_ = false;
 
   base::Optional<network::mojom::BlockedByResponseReason>
       blocked_by_response_reason_;

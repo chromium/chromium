@@ -81,7 +81,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/audio/cras_audio_handler.h"
+#include "ash/components/audio/cras_audio_handler.h"
 #include "content/browser/gpu/chromeos/video_capture_dependencies.h"
 #include "content/browser/gpu/gpu_memory_buffer_manager_singleton.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
@@ -144,7 +144,7 @@ void EnableHotwordEffect(const StreamControls& controls, int* effects) {
   if (controls.hotword_enabled) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Only enable if a hotword device exists.
-    if (chromeos::CrasAudioHandler::Get()->HasHotwordDevice())
+    if (ash::CrasAudioHandler::Get()->HasHotwordDevice())
       *effects |= media::AudioParameters::HOTWORD;
 #endif
   }
@@ -372,6 +372,7 @@ void SendVideoCaptureLogMessage(const std::string& message) {
 // If |kUseFakeDeviceForMediaStream| specifies a browser window, use
 // |render_process_id| and |render_frame_id| as the browser window identifier.
 MediaStreamDevices DisplayMediaDevicesFromFakeDeviceConfig(
+    blink::mojom::MediaStreamType media_type,
     bool request_audio,
     int render_process_id,
     int render_frame_id) {
@@ -414,8 +415,8 @@ MediaStreamDevices DisplayMediaDevicesFromFakeDeviceConfig(
   }
   DesktopMediaID media_id(desktop_media_type, desktop_media_id_id,
                           web_contents_id);
-  MediaStreamDevice device(MediaStreamType::DISPLAY_VIDEO_CAPTURE,
-                           media_id.ToString(), media_id.ToString());
+  MediaStreamDevice device(media_type, media_id.ToString(),
+                           media_id.ToString());
   device.display_media_info = media::mojom::DisplayMediaInformation::New(
       display_surface, true, media::mojom::CursorCaptureType::NEVER);
   devices.push_back(device);
@@ -789,14 +790,16 @@ MediaStreamManager::MediaStreamManager(
 
   audio_service_listener_ = std::make_unique<AudioServiceListener>();
 
-  base::PowerMonitor::AddObserver(this);
+  base::PowerMonitor::AddPowerSuspendObserver(this);
+  base::PowerMonitor::AddPowerThermalObserver(this);
 }
 
 MediaStreamManager::~MediaStreamManager() {
   DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::IO));
   DCHECK(requests_.empty());
 
-  base::PowerMonitor::RemoveObserver(this);
+  base::PowerMonitor::RemovePowerSuspendObserver(this);
+  base::PowerMonitor::RemovePowerThermalObserver(this);
 }
 
 VideoCaptureManager* MediaStreamManager::video_capture_manager() {
@@ -1413,8 +1416,11 @@ void MediaStreamManager::PostRequestToUI(
        !base::CommandLine::ForCurrentProcess()->HasSwitch(
            switches::kUseFakeUIForMediaStream))) {
     MediaStreamDevices devices;
-    if (request->video_type() == MediaStreamType::DISPLAY_VIDEO_CAPTURE) {
+    if (request->video_type() == MediaStreamType::DISPLAY_VIDEO_CAPTURE ||
+        request->video_type() ==
+            MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB) {
       devices = DisplayMediaDevicesFromFakeDeviceConfig(
+          request->video_type(),
           request->audio_type() == MediaStreamType::DISPLAY_AUDIO_CAPTURE,
           request->requesting_process_id, request->requesting_frame_id);
     } else if (request->video_type() ==
@@ -2147,7 +2153,7 @@ void MediaStreamManager::OnResume() {
 }
 
 void MediaStreamManager::OnThermalStateChange(
-    base::PowerObserver::DeviceThermalState new_state) {
+    base::PowerThermalObserver::DeviceThermalState new_state) {
   const char* state_name =
       base::PowerMonitorSource::DeviceThermalStateToString(new_state);
   SendLogMessage(base::StringPrintf(

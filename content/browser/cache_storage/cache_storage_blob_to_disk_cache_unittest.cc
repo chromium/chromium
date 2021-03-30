@@ -90,7 +90,6 @@ class CacheStorageBlobToDiskCacheTest : public testing::Test {
   }
 
   void TearDown() override {
-    quota_manager_proxy()->SimulateQuotaManagerDestroyed();
     quota_manager_ = nullptr;
     quota_manager_proxy_ = nullptr;
   }
@@ -134,7 +133,7 @@ class CacheStorageBlobToDiskCacheTest : public testing::Test {
         base::ThreadTaskRunnerHandle::Get().get(),
         nullptr /* special storage policy */);
     quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
-        quota_manager(), base::ThreadTaskRunnerHandle::Get().get());
+        quota_manager(), base::ThreadTaskRunnerHandle::Get());
   }
 
   std::string ReadCacheContent() {

@@ -3,28 +3,28 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.m.js';
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/md_select_css.m.js';
-import '../controls/controlled_radio_button.m.js';
-import '../controls/extension_controlled_indicator.m.js';
-import '../controls/settings_radio_group.m.js';
-import '../controls/settings_toggle_button.m.js';
-import '../settings_page/settings_animated_pages.m.js';
-import '../settings_page/settings_subpage.m.js';
-import '../settings_shared_css.m.js';
-import '../settings_vars_css.m.js';
+import '../controls/controlled_radio_button.js';
+import '../controls/extension_controlled_indicator.js';
+import '../controls/settings_radio_group.js';
+import '../controls/settings_toggle_button.js';
+import '../settings_page/settings_animated_pages.js';
+import '../settings_page/settings_subpage.js';
+import '../settings_shared_css.js';
+import '../settings_vars_css.js';
 import './home_url_input.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.m.js';
+import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {AppearancePageVisibility} from '../page_visibility.js';
 import {routes} from '../route.js';
-import {Router} from '../router.m.js';
+import {Router} from '../router.js';
 
 import {AppearanceBrowserProxy, AppearanceBrowserProxyImpl} from './appearance_browser_proxy.js';
 
@@ -322,5 +322,14 @@ Polymer({
    */
   zoomValuesEqual_(zoom1, zoom2) {
     return Math.abs(zoom1 - zoom2) <= 0.001;
+  },
+
+  /**
+   * @param {boolean} previousIsVisible
+   * @param {boolean} nextIsVisible
+   * @return {boolean}
+   */
+  showHr_(previousIsVisible, nextIsVisible) {
+    return previousIsVisible && nextIsVisible;
   },
 });

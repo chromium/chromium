@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 import './strings.m.js';
 import './signin_shared_css.js';
+import './signin_vars_css.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -30,6 +31,26 @@ Polymer({
       value() {
         return loadTimeData.getString('accountPictureUrl');
       },
+    },
+
+    /** @private */
+    isProfileCreationFlow_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('isProfileCreationFlow');
+      }
+    },
+
+    /** @private */
+    highlightColor_: {
+      type: String,
+      value() {
+        if (!loadTimeData.valueExists('highlightColor')) {
+          return '';
+        }
+
+        return loadTimeData.getString('highlightColor');
+      }
     },
   },
 
@@ -85,7 +106,7 @@ Polymer({
         Array.from(this.shadowRoot.querySelectorAll('[consent-description]'))
             .filter(element => element.clientWidth * element.clientHeight > 0)
             .map(element => element.innerHTML.trim());
-    assert(consentDescription);
+    assert(consentDescription.length);
     return consentDescription;
   },
 

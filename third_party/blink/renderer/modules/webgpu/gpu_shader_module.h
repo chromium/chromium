@@ -20,7 +20,6 @@ class GPUShaderModule : public DawnObject<WGPUShaderModule> {
                                  const GPUShaderModuleDescriptor* webgpu_desc,
                                  ExceptionState& exception_state);
   explicit GPUShaderModule(GPUDevice* device, WGPUShaderModule shader_module);
-  ~GPUShaderModule() override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(GPUShaderModule);

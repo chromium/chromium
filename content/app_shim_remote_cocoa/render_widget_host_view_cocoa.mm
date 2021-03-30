@@ -210,13 +210,17 @@ void ExtractUnderlines(NSAttributedString* string,
 @synthesize textInputFlags = _textInputFlags;
 @synthesize spellCheckerForTesting = _spellCheckerForTesting;
 
++ (void)initialize {
+  RenderWidgetHostViewMacEditCommandHelper::AddEditingSelectorsToClass(self);
+}
+
 - (id)initWithHost:(RenderWidgetHostNSViewHost*)host
     withHostHelper:(RenderWidgetHostNSViewHostHelper*)hostHelper {
   self = [super initWithFrame:NSZeroRect];
   if (self) {
     self.acceptsTouchEvents = YES;
-    _editCommandHelper.reset(new RenderWidgetHostViewMacEditCommandHelper);
-    _editCommandHelper->AddEditingSelectorsToClass([self class]);
+    _editCommandHelper =
+        std::make_unique<RenderWidgetHostViewMacEditCommandHelper>();
 
     _host = host;
     _hostHelper = hostHelper;
@@ -277,7 +281,7 @@ void ExtractUnderlines(NSAttributedString* string,
   if (!textCheckingTypes)
     return;
 
-  NSString* availableText = base::SysUTF16ToNSString(_textSelectionText);
+  NSString* availableText = base::SysUTF16ToNSString(_availableText);
 
   if (!availableText)
     return;
@@ -295,7 +299,7 @@ void ExtractUnderlines(NSAttributedString* string,
   base::scoped_nsobject<NSTextCheckingResult> scopedCandidateResult;
   for (NSTextCheckingResult* result in textCheckingResults) {
     NSTextCheckingResult* adjustedResult =
-        [result resultByAdjustingRangesWithOffset:_textSelectionOffset];
+        [result resultByAdjustingRangesWithOffset:_availableTextOffset];
     if (!NSLocationInRange(cursorLocation,
                            NSMakeRange(adjustedResult.range.location,
                                        adjustedResult.range.length + 1)))
@@ -344,13 +348,13 @@ void ExtractUnderlines(NSAttributedString* string,
     return;
 
   NSRange availableTextRange =
-      NSMakeRange(_textSelectionOffset, _textSelectionText.length());
+      NSMakeRange(_availableTextOffset, _availableText.length());
 
   if (NSMaxRange(correction.range) > NSMaxRange(availableTextRange))
     return;
 
   NSAttributedString* attString = [[[NSAttributedString alloc]
-      initWithString:base::SysUTF16ToNSString(_textSelectionText)] autorelease];
+      initWithString:base::SysUTF16ToNSString(_availableText)] autorelease];
   NSRange trailingRange = NSMakeRange(
       NSMaxRange(correction.range),
       NSMaxRange(availableTextRange) - NSMaxRange(correction.range));
@@ -358,7 +362,7 @@ void ExtractUnderlines(NSAttributedString* string,
   if (trailingRange.length > 0 &&
       trailingRange.location < NSMaxRange(availableTextRange)) {
     NSRange trailingRangeInAvailableText = NSMakeRange(
-        trailingRange.location - _textSelectionOffset, trailingRange.length);
+        trailingRange.location - _availableTextOffset, trailingRange.length);
     if (@available(macOS 10.12, *)) {
       NSString* trailingString =
           [attString.string substringWithRange:trailingRangeInAvailableText];
@@ -386,12 +390,12 @@ void ExtractUnderlines(NSAttributedString* string,
   if (!touchBarItem.candidateListVisible)
     return;
   if (!_textSelectionRange.IsValid() ||
-      _textSelectionOffset > _textSelectionRange.GetMin())
+      _availableTextOffset > _textSelectionRange.GetMin())
     return;
 
   NSRange selectionRange = _textSelectionRange.ToNSRange();
-  NSString* selectionText = base::SysUTF16ToNSString(_textSelectionText);
-  selectionRange.location -= _textSelectionOffset;
+  NSString* selectionText = base::SysUTF16ToNSString(_availableText);
+  selectionRange.location -= _availableTextOffset;
   if (NSMaxRange(selectionRange) > selectionText.length)
     return;
 
@@ -443,11 +447,11 @@ void ExtractUnderlines(NSAttributedString* string,
   [NSSpellChecker.sharedSpellChecker.substitutionsPanel orderFront:sender];
 }
 
-- (void)setTextSelectionText:(base::string16)text
+- (void)setTextSelectionText:(std::u16string)text
                       offset:(size_t)offset
                        range:(gfx::Range)range {
-  _textSelectionText = text;
-  _textSelectionOffset = offset;
+  _availableText = text;
+  _availableTextOffset = offset;
   _textSelectionRange = range;
   _substitutionWasApplied = NO;
   [NSSpellChecker.sharedSpellChecker dismissCorrectionIndicatorForView:self];
@@ -466,7 +470,7 @@ void ExtractUnderlines(NSAttributedString* string,
     return;
   NSTextCheckingResult* selectedResult = anItem.candidates[index];
   NSRange replacementRange = selectedResult.range;
-  replacementRange.location += _textSelectionOffset;
+  replacementRange.location += _availableTextOffset;
   [self insertText:selectedResult.replacementString
       replacementRange:replacementRange];
 
@@ -487,15 +491,14 @@ void ExtractUnderlines(NSAttributedString* string,
     [self invalidateTouchBar];
 }
 
-- (base::string16)selectedText {
-  gfx::Range textRange(_textSelectionOffset,
-                       _textSelectionOffset + _textSelectionText.size());
+- (std::u16string)selectedText {
+  gfx::Range textRange(_availableTextOffset,
+                       _availableTextOffset + _availableText.size());
   gfx::Range intersectionRange = textRange.Intersect(_textSelectionRange);
   if (intersectionRange.is_empty())
-    return base::string16();
-  return _textSelectionText.substr(
-      intersectionRange.start() - _textSelectionOffset,
-      intersectionRange.length());
+    return std::u16string();
+  return _availableText.substr(intersectionRange.start() - _availableTextOffset,
+                               intersectionRange.length());
 }
 
 - (void)setCompositionRange:(gfx::Range)range {
@@ -898,6 +901,11 @@ void ExtractUnderlines(NSAttributedString* string,
   // If the event is reserved by the system, then do not pass it to web content.
   if (EventIsReservedBySystem(theEvent))
     return NO;
+
+  if (![self isKeyLocked:theEvent] &&
+      ![_responderDelegate webContentShouldHandleKeyEquivalent:theEvent]) {
+    return NO;
+  }
 
   // Command key combinations are sent via performKeyEquivalent rather than
   // keyDown:. We just forward this on and if WebCore doesn't want to handle
@@ -1822,21 +1830,11 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
     return nil;
 
   gfx::Range expectedRange;
-  const base::string16* expectedText;
+  const std::u16string* expectedText;
 
-  if (!_compositionRange.is_empty()) {
-    // This method might get called after TextInputState.type is reset to none,
-    // in which case there will be no composition range information
-    // https://crbug.com/698672
-    expectedText = &_markedText;
-    expectedRange = _compositionRange.Intersect(
-        gfx::Range(_compositionRange.start(),
-                   _compositionRange.start() + expectedText->length()));
-  } else {
-    expectedText = &_textSelectionText;
-    size_t offset = _textSelectionOffset;
-    expectedRange = gfx::Range(offset, offset + expectedText->size());
-  }
+  expectedText = &_availableText;
+  size_t offset = _availableTextOffset;
+  expectedRange = gfx::Range(offset, offset + expectedText->size());
 
   gfx::Range gfxActualRange = expectedRange.Intersect(requestedRange);
   if (!gfxActualRange.IsValid())
@@ -1844,7 +1842,7 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
   if (actualRange)
     *actualRange = gfxActualRange.ToNSRange();
 
-  base::string16 string = expectedText->substr(
+  std::u16string string = expectedText->substr(
       gfxActualRange.start() - expectedRange.start(), gfxActualRange.length());
   return [[[NSAttributedString alloc]
       initWithString:base::SysUTF16ToNSString(string)] autorelease];
@@ -1980,16 +1978,44 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
   // Text inserting might be initiated by other source instead of keyboard
   // events, such as the Characters dialog. In this case the text should be
   // sent as an input method event as well.
-  // TODO(suzhe): It's hard for us to support replacementRange without accessing
-  // the full web content.
   BOOL isAttributedString = [string isKindOfClass:[NSAttributedString class]];
-  NSString* im_text = isAttributedString ? [string string] : string;
+  NSString* imText = isAttributedString ? [string string] : string;
   if (_handlingKeyDown && replacementRange.location == NSNotFound) {
-    _textToBeInserted.append(base::SysNSStringToUTF16(im_text));
+    // The user uses keyboard to type in a char without an IME or select a word
+    // on the IME. Don't commit the change to the render, because the event is
+    // being processed in |keyEvent:|. The commit will happen later after
+    // |interpretKeyEvents:| returns.
+    _textToBeInserted.append(base::SysNSStringToUTF16(imText));
     _shouldRequestTextSubstitutions = YES;
   } else {
+    // The user uses mouse or touch bar to select a word on the IME.
     gfx::Range replacement_range(replacementRange);
-    _host->ImeCommitText(base::SysNSStringToUTF16(im_text), replacement_range);
+    _host->ImeCommitText(base::SysNSStringToUTF16(imText), replacement_range);
+  }
+
+  if (replacementRange.location == NSNotFound) {
+    // Cancel selection after a IME commit by setting a zero-length selection
+    // at the end of insertion point.
+    // This is required for macOS 10.12+, otherwise the predictive completions
+    // of IMEs won't work. See crbug.com/710101.
+    int insertEndpoint = _markedRange.location + [imText length];
+    _textSelectionRange = gfx::Range(insertEndpoint, insertEndpoint);
+    // IMEs read |_availableText| preceding the insertion point as the context
+    // for predictive completion. Unfortunately by the moment IME reads the
+    // text, Blink likely hasn't finished the commit so the IME will read a
+    // wrong context. We hack it by temporarily inserting the committed text
+    // into
+    // |_availableText|. This variable will ultimately be asynchronously updated
+    // by Blink.
+    // TODO(crbug.com/1169288): Mac's IME API is synchronous and it plays badly
+    // with async APIs between the browser and the renderer. Probably replace
+    // the sync |interpretKeyEvents:| with the async
+    // |handleEventByInputMethod:|, which is an undocumented API used in
+    // Webkit2.
+    if (_markedRange.location >= _availableTextOffset &&
+        _markedRange.location <= _availableTextOffset + _availableText.length())
+      _availableText.insert(_markedRange.location - _availableTextOffset,
+                            base::SysNSStringToUTF16(imText));
   }
 
   // Inserting text will delete all marked text automatically.

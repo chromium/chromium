@@ -10,12 +10,6 @@
 #include "base/callback.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace audio {
-namespace mojom {
-class StreamFactory;
-}  // namespace mojom
-}  // namespace audio
-
 namespace aura {
 class Window;
 }  // namespace aura
@@ -28,6 +22,12 @@ namespace gfx {
 class Rect;
 }  // namespace gfx
 
+namespace media {
+namespace mojom {
+class AudioStreamFactory;
+}  // namespace mojom
+}  // namespace media
+
 namespace ash {
 
 // Defines the interface for the delegate of CaptureModeController, that can be
@@ -37,9 +37,9 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
  public:
   virtual ~CaptureModeDelegate() = default;
 
-  // Returns the path to the active user's downloads directory. This will never
-  // be called if the user is not logged in.
-  virtual base::FilePath GetActiveUserDownloadsDir() const = 0;
+  // Returns the path to save screen capture files based on user login status.
+  // If no user is logged in, returns the temporary directory.
+  virtual base::FilePath GetScreenCaptureDir() const = 0;
 
   // Shows the screenshot or screen recording item in the screen capture folder.
   virtual void ShowScreenCaptureItemInFolder(
@@ -53,15 +53,18 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   // video.
   virtual bool Uses24HourFormat() const = 0;
 
-  // Returns whether initiation of capture mode is restricted because of
-  // currently visible restricted content.
-  virtual bool IsCaptureModeInitRestricted() const = 0;
+  // Returns whether initiation of capture mode is restricted because of Data
+  // Leak Prevention applied to the currently visible content.
+  virtual bool IsCaptureModeInitRestrictedByDlp() const = 0;
 
   // Returns whether capture of the region defined by |window| and |bounds|
-  // is currently allowed or not.
-  virtual bool IsCaptureAllowed(const aura::Window* window,
-                                const gfx::Rect& bounds,
-                                bool for_video) const = 0;
+  // is currently allowed by Data Leak Prevention feature.
+  virtual bool IsCaptureAllowedByDlp(const aura::Window* window,
+                                     const gfx::Rect& bounds,
+                                     bool for_video) const = 0;
+
+  // Returns whether screen capture is allowed by an enterprise policy.
+  virtual bool IsCaptureAllowedByPolicy() const = 0;
 
   // Called when a video capture for |window| and |bounds| area is started, so
   // that Data Leak Prevention can start observing the area.
@@ -75,16 +78,16 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   // Called when the running video capture is stopped.
   virtual void StopObservingRestrictedContent() = 0;
 
-  // Called when the feedback button is pressed.
-  virtual void OpenFeedbackDialog() = 0;
-
   // Launches the Recording Service into a separate utility process.
   virtual mojo::Remote<recording::mojom::RecordingService>
   LaunchRecordingService() = 0;
 
-  // Binds the given audio StreamFactory |receiver| to the audio service.
+  // Binds the given AudioStreamFactory |receiver| to the audio service.
   virtual void BindAudioStreamFactory(
-      mojo::PendingReceiver<audio::mojom::StreamFactory> receiver) = 0;
+      mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver) = 0;
+
+  // Called when a capture mode session starts or stops.
+  virtual void OnSessionStateChanged(bool started) = 0;
 };
 
 }  // namespace ash

@@ -5,10 +5,11 @@
 #ifndef CONTENT_BROWSER_MEDIA_MEDIA_INTERNALS_PROXY_H_
 #define CONTENT_BROWSER_MEDIA_MEDIA_INTERNALS_PROXY_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequenced_task_runner_helpers.h"
-#include "base/strings/string16.h"
 #include "content/browser/media/media_internals.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -43,7 +44,7 @@ class MediaInternalsProxy
 
   // Callback for MediaInternals to update. Must be called on UI thread.
   static void UpdateUIOnUIThread(MediaInternalsMessageHandler* handler,
-                                 const base::string16& update);
+                                 const std::u16string& update);
 
   MediaInternals::UpdateCallback update_callback_;
 

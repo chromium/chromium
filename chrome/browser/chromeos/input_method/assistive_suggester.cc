@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/input_method/assistive_suggester.h"
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/feature_list.h"
 #include "base/hash/hash.h"
@@ -13,8 +15,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "chromeos/constants/chromeos_pref_names.h"
 #include "components/exo/wm_helper.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -349,14 +349,14 @@ void AssistiveSuggester::RecordAssistiveMatchMetricsForAction(
   }
 }
 
-void AssistiveSuggester::RecordAssistiveMatchMetrics(const base::string16& text,
+void AssistiveSuggester::RecordAssistiveMatchMetrics(const std::u16string& text,
                                                      int cursor_pos,
                                                      int anchor_pos) {
   int len = static_cast<int>(text.length());
   if (cursor_pos > 0 && cursor_pos <= len && cursor_pos == anchor_pos &&
       (cursor_pos == len || base::IsAsciiWhitespace(text[cursor_pos]))) {
     int start_pos = std::max(0, cursor_pos - kMaxTextBeforeCursorLength);
-    base::string16 text_before_cursor =
+    std::u16string text_before_cursor =
         text.substr(start_pos, cursor_pos - start_pos);
     // Personal info suggestion match
     AssistiveType action =
@@ -375,7 +375,7 @@ void AssistiveSuggester::RecordAssistiveMatchMetrics(const base::string16& text,
   }
 }
 
-bool AssistiveSuggester::OnSurroundingTextChanged(const base::string16& text,
+bool AssistiveSuggester::OnSurroundingTextChanged(const std::u16string& text,
                                                   int cursor_pos,
                                                   int anchor_pos) {
   if (context_id_ == -1)
@@ -387,7 +387,7 @@ bool AssistiveSuggester::OnSurroundingTextChanged(const base::string16& text,
   return IsSuggestionShown();
 }
 
-bool AssistiveSuggester::Suggest(const base::string16& text,
+bool AssistiveSuggester::Suggest(const std::u16string& text,
                                  int cursor_pos,
                                  int anchor_pos) {
   int len = static_cast<int>(text.length());
@@ -397,7 +397,7 @@ bool AssistiveSuggester::Suggest(const base::string16& text,
     // |text| could be very long, we get at most |kMaxTextBeforeCursorLength|
     // characters before cursor.
     int start_pos = std::max(0, cursor_pos - kMaxTextBeforeCursorLength);
-    base::string16 text_before_cursor =
+    std::u16string text_before_cursor =
         text.substr(start_pos, cursor_pos - start_pos);
 
     if (IsSuggestionShown()) {

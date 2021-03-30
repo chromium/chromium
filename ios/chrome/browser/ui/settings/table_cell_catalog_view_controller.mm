@@ -231,6 +231,17 @@ typedef NS_ENUM(NSInteger, ItemType) {
   detailIconItem.detailText = @"Short";
   [model addItem:detailIconItem toSectionWithIdentifier:SectionIdentifierText];
 
+  TableViewDetailIconItem* detailIconItemVerticalTextLayout =
+      [[TableViewDetailIconItem alloc] initWithType:ItemTypeTextSettingsDetail];
+  detailIconItemVerticalTextLayout.iconImageName =
+      @"settings_article_suggestions";
+  detailIconItemVerticalTextLayout.text = @"Detail Icon Item Cell";
+  detailIconItemVerticalTextLayout.detailText = @"Short subtitle";
+  detailIconItemVerticalTextLayout.textLayoutConstraintAxis =
+      UILayoutConstraintAxisVertical;
+  [model addItem:detailIconItemVerticalTextLayout
+      toSectionWithIdentifier:SectionIdentifierText];
+
   TableViewDetailIconItem* detailIconItemLeftLong =
       [[TableViewDetailIconItem alloc] initWithType:ItemTypeTextSettingsDetail];
   detailIconItemLeftLong.text =
@@ -489,10 +500,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewSigninPromoItem* signinPromo =
       [[TableViewSigninPromoItem alloc] initWithType:ItemTypeAccount];
   signinPromo.configurator = [[SigninPromoViewConfigurator alloc]
-      initWithUserEmail:@"jonhdoe@example.com"
-           userFullName:@"John Doe"
-              userImage:nil
-         hasCloseButton:NO];
+      initWithSigninPromoViewMode:SigninPromoViewModeSigninWithAccount
+                        userEmail:@"jonhdoe@example.com"
+                    userGivenName:@"John Doe"
+                        userImage:nil
+                   hasCloseButton:NO];
   signinPromo.text = @"Signin promo text example";
   [model addItem:signinPromo toSectionWithIdentifier:SectionIdentifierAccount];
 

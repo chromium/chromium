@@ -76,10 +76,7 @@ void SyncInvalidationsServiceImpl::SetInterestedDataTypesHandler(
 
 base::Optional<ModelTypeSet>
 SyncInvalidationsServiceImpl::GetInterestedDataTypes() const {
-  if (data_types_manager_.IsInitialized()) {
-    return data_types_manager_.GetInterestedDataTypes();
-  }
-  return base::nullopt;
+  return data_types_manager_.GetInterestedDataTypes();
 }
 
 void SyncInvalidationsServiceImpl::SetInterestedDataTypes(

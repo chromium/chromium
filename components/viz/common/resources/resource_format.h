@@ -23,6 +23,7 @@ enum ResourceFormat {
   LUMINANCE_F16,
   RGBA_F16,
   R16_EXT,
+  RG16_EXT,
   RGBX_8888,
   BGRX_8888,
   RGBA_1010102,

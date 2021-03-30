@@ -4,12 +4,13 @@
 
 #include "ui/base/dragdrop/os_exchange_data_provider_x11.h"
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_constants.h"
-#include "ui/base/dragdrop/file_info/file_info.h"
+#include "ui/base/clipboard/file_info.h"
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/x11_atom_cache.h"
@@ -47,7 +48,7 @@ TEST_F(OSExchangeDataProviderX11Test, MozillaURL) {
   provider.SetURL(GURL(kGoogleURL), base::ASCIIToUTF16(kGoogleTitle));
   {
     GURL out_gurl;
-    base::string16 out_str;
+    std::u16string out_str;
     EXPECT_TRUE(provider.GetURLAndTitle(
         FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES, &out_gurl, &out_str));
     EXPECT_EQ(base::ASCIIToUTF16(kGoogleTitle), out_str);
@@ -55,13 +56,13 @@ TEST_F(OSExchangeDataProviderX11Test, MozillaURL) {
   }
 
   // Check that we can get non-titled entries.
-  provider.SetURL(GURL(kGoogleURL), base::string16());
+  provider.SetURL(GURL(kGoogleURL), std::u16string());
   {
     GURL out_gurl;
-    base::string16 out_str;
+    std::u16string out_str;
     EXPECT_TRUE(provider.GetURLAndTitle(
         FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES, &out_gurl, &out_str));
-    EXPECT_EQ(base::string16(), out_str);
+    EXPECT_EQ(std::u16string(), out_str);
     EXPECT_EQ(kGoogleURL, out_gurl.spec());
   }
 }
@@ -97,15 +98,15 @@ TEST_F(OSExchangeDataProviderX11Test, URIListWithBoth) {
 
   // We should only receive the URL here.
   GURL out_gurl;
-  base::string16 out_str;
+  std::u16string out_str;
   EXPECT_TRUE(provider.GetURLAndTitle(
       FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES, &out_gurl, &out_str));
-  EXPECT_EQ(base::string16(), out_str);
+  EXPECT_EQ(std::u16string(), out_str);
   EXPECT_EQ(kGoogleURL, out_gurl.spec());
 }
 
 TEST_F(OSExchangeDataProviderX11Test, OnlyStringURLIsUnfiltered) {
-  const base::string16 file_url = base::UTF8ToUTF16(kFileURL);
+  const std::u16string file_url = base::UTF8ToUTF16(kFileURL);
   provider.SetString(file_url);
 
   EXPECT_TRUE(provider.HasString());
@@ -113,12 +114,12 @@ TEST_F(OSExchangeDataProviderX11Test, OnlyStringURLIsUnfiltered) {
 }
 
 TEST_F(OSExchangeDataProviderX11Test, StringAndURIListFilterString) {
-  const base::string16 file_url = base::UTF8ToUTF16(kFileURL);
+  const std::u16string file_url = base::UTF8ToUTF16(kFileURL);
   provider.SetString(file_url);
   AddURLList(kFileURL);
 
   EXPECT_FALSE(provider.HasString());
-  base::string16 out_str;
+  std::u16string out_str;
   EXPECT_FALSE(provider.GetString(&out_str));
 
   EXPECT_TRUE(provider.HasFile());

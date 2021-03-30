@@ -25,7 +25,7 @@ namespace extensions {
 
 namespace {
 
-base::string16 GenerateTitle(const ExtensionSet& forbidden) {
+std::u16string GenerateTitle(const ExtensionSet& forbidden) {
   int app_count = 0;
   int extension_count = 0;
   for (const auto& extension : forbidden) {
@@ -45,10 +45,10 @@ base::string16 GenerateTitle(const ExtensionSet& forbidden) {
                                           extension_count);
 }
 
-std::vector<base::string16> GenerateMessage(
+std::vector<std::u16string> GenerateMessage(
     const ExtensionSet& forbidden,
     content::BrowserContext* browser_context) {
-  std::vector<base::string16> message;
+  std::vector<std::u16string> message;
   message.reserve(forbidden.size());
   ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context);
   for (const auto& extension : forbidden) {
@@ -86,29 +86,29 @@ class ExtensionGlobalError : public GlobalErrorWithStandardBubble {
     return 0;
   }
 
-  base::string16 MenuItemLabel() override {
+  std::u16string MenuItemLabel() override {
     NOTREACHED();
     return {};
   }
 
   void ExecuteMenuItem(Browser* browser) override { NOTREACHED(); }
 
-  base::string16 GetBubbleViewTitle() override {
+  std::u16string GetBubbleViewTitle() override {
     return GenerateTitle(delegate_->GetBlocklistedExtensions());
   }
 
-  std::vector<base::string16> GetBubbleViewMessages() override {
+  std::vector<std::u16string> GetBubbleViewMessages() override {
     return GenerateMessage(delegate_->GetBlocklistedExtensions(),
                            delegate_->GetContext());
   }
 
-  base::string16 GetBubbleViewAcceptButtonLabel() override {
+  std::u16string GetBubbleViewAcceptButtonLabel() override {
     return l10n_util::GetStringUTF16(IDS_EXTENSION_ALERT_ITEM_OK);
   }
 
-  base::string16 GetBubbleViewCancelButtonLabel() override { return {}; }
+  std::u16string GetBubbleViewCancelButtonLabel() override { return {}; }
 
-  base::string16 GetBubbleViewDetailsButtonLabel() override {
+  std::u16string GetBubbleViewDetailsButtonLabel() override {
     return l10n_util::GetStringUTF16(IDS_EXTENSION_ALERT_ITEM_DETAILS);
   }
 

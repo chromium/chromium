@@ -39,12 +39,7 @@ android_library("java") {
     "java/src/org/chromium/components/metrics/AndroidMetricsServiceClient.java",
   ]
 
-  deps = [
-    "//base:base_java",
-    "//base:jni_java",
-    "//third_party/android_deps:protobuf_lite_runtime_java",
-    "//third_party/metrics_proto:metrics_proto_java",
-  ]
+  deps = [ "//base:base_java" ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 

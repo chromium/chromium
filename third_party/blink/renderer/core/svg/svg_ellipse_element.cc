@@ -74,20 +74,18 @@ Path SVGEllipseElement::AsPath() const {
   SVGLengthContext length_context(this);
   const ComputedStyle& style = ComputedStyleRef();
 
-  const SVGComputedStyle& svg_style = style.SvgStyle();
-
   FloatSize radii(ToFloatSize(
-      length_context.ResolveLengthPair(svg_style.Rx(), svg_style.Ry(), style)));
-  if (svg_style.Rx().IsAuto())
+      length_context.ResolveLengthPair(style.Rx(), style.Ry(), style)));
+  if (style.Rx().IsAuto())
     radii.SetWidth(radii.Height());
-  else if (svg_style.Ry().IsAuto())
+  else if (style.Ry().IsAuto())
     radii.SetHeight(radii.Width());
   if (radii.Width() < 0 || radii.Height() < 0 ||
       (!radii.Width() && !radii.Height()))
     return path;
 
   FloatPoint center(
-      length_context.ResolveLengthPair(svg_style.Cx(), svg_style.Cy(), style));
+      length_context.ResolveLengthPair(style.Cx(), style.Cy(), style));
   path.AddEllipse(FloatRect(center - radii, radii.ScaledBy(2)));
   return path;
 }

@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">File atau direktori tidak dapat digunakan.</translation>
 <translation id="1363028406613469049">Lacak</translation>
 <translation id="1378727793141957596">Selamat datang di Google Drive!</translation>
+<translation id="1379911846207762492">Anda bisa membuat file dapat diakses secara offline saat tidak memiliki koneksi internet.</translation>
 <translation id="1383876407941801731">Telusuri</translation>
 <translation id="1395262318152388157">Bilah geser</translation>
 <translation id="1404323374378969387">Norwegia</translation>
@@ -76,6 +77,7 @@
 <translation id="1807938677607439181">Semua file</translation>
 <translation id="1810764548349082891">Tidak ada pratinjau yang tersedia</translation>
 <translation id="1812302367230252929">Transliterasi Amhar</translation>
+<translation id="1813278315230285598">Layanan</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Perhatian:<ph name="END_BOLD" /> File ini bersifat sementara dan dapat dihapus secara otomatis untuk menambah ruang disk. <ph name="BEGIN_LINK" />Pelajari Lebih Lanjut<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Penguin</translation>
 <translation id="183183971458492120">Memuat informasi...</translation>
@@ -85,13 +87,14 @@
 <translation id="1853795129690976061">Folder ini dibagikan ke Linux</translation>
 <translation id="1864756863218646478">File tidak dapat ditemukan.</translation>
 <translation id="1920670151694390848">Transliterasi Malayalam</translation>
+<translation id="1920798810075583923">Semangka</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> telah diformat</translation>
 <translation id="1931134289871235022">Slovakia</translation>
 <translation id="1933345018156373194">Pemindahan gagal, terjadi error: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Finlandia</translation>
 <translation id="1942765061641586207">Resolusi gambar</translation>
-<translation id="1943097386230153518">Instal layanan baru</translation>
 <translation id="1972984168337863910">Luaskan panel masukan file</translation>
+<translation id="1984456723671657197">Jenis file ini tidak didukung. <ph name="BEGIN_LINK_HELP" />Pelajari Lebih Lanjut<ph name="END_LINK_HELP" /> cara membuka file di Chrome OS.</translation>
 <translation id="1995337122023280937">Buka lokasi file</translation>
 <translation id="2001796770603320721">Kelola di Drive</translation>
 <translation id="2009067268969781306">Memformat drive akan menghapus semua data yang tersimpan di dalamnya. Tindakan ini tidak dapat diurungkan.</translation>
@@ -118,6 +121,7 @@
 <translation id="2288278176040912387">Pemutar piringan hitam</translation>
 <translation id="2291538123825441971">Membuka <ph name="NUMBER_OF_FILES" /> file.</translation>
 <translation id="2303301624314357662">Membuka file <ph name="FILE_NAME" />.</translation>
+<translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> telah dikeluarkan.</translation>
 <translation id="2325650632570794183">Jenis file ini tidak didukung. Kunjungi Chrome Webstore untuk menemukan aplikasi yang dapat membuka jenis file ini.</translation>
 <translation id="2326539130272988168">Bulgaria</translation>
@@ -142,7 +146,6 @@
 <translation id="255937426064304553">Internasional AS</translation>
 <translation id="2562685439590298522">Dokumen</translation>
 <translation id="2563185590376525700">Katak</translation>
-<translation id="2572501073504669105">Anda bisa membuat file dapat diakses secara offline saat tidak memiliki koneksi internet.</translation>
 <translation id="2578394532502990878">Fonetik Tamil</translation>
 <translation id="2579959351793446050">Odia</translation>
 <translation id="2614589611416690597">Video <ph name="VIDEO_TYPE" /></translation>
@@ -186,6 +189,7 @@
 <translation id="299638574917407533">Prancis (Kanada)</translation>
 <translation id="3003633581067744647">Beralih ke tampilan thumbnail</translation>
 <translation id="3007214526293698309">Perbaiki rasio</translation>
+<translation id="3029114385395636667">Aktifkan Google Dokumen Offline agar Dokumen, Spreadsheet, dan Slide tersedia secara offline.</translation>
 <translation id="303198083543495566">Geografi</translation>
 <translation id="3047197340186497470">Dayi China</translation>
 <translation id="3057861065630527966">Cadangkan foto dan video</translation>
@@ -216,14 +220,17 @@
 <translation id="3335337277364016868">Tahun perekaman</translation>
 <translation id="3353984535370177728">Pilih folder untuk diunggah</translation>
 <translation id="3356580349448036450">Selesai</translation>
+<translation id="3358452157379365236">Gitar</translation>
 <translation id="3382143449143186018">Nepali dengan keyboard InScript</translation>
 <translation id="3408236822532681288">Jerman (Jerman) dengan keyboard Neo 2</translation>
 <translation id="3414856743105198592">Memformat media yang dapat dilepas akan menghapus semua data. Apakah Anda ingin melanjutkan?</translation>
 <translation id="3437801641691368414">Waktu pembuatan</translation>
+<translation id="343907260260897561">Kamera Instan</translation>
 <translation id="3455931012307786678">Estonia</translation>
 <translation id="3466147780910026086">Memindai perangkat media Anda...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> foto dicadangkan ke <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="3475447146579922140">Spreadsheet Google</translation>
+<translation id="3479552764303398839">Jangan sekarang</translation>
 <translation id="3486821258960016770">Mongolia</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> kesalahan.</translation>
 <translation id="3522708245912499433">Portugis</translation>
@@ -233,6 +240,7 @@
 <translation id="3553048479571901246">Untuk membuka file dengan <ph name="APP_NAME" />, salin ke folder file Windows terlebih dulu.</translation>
 <translation id="3556731189587832921">Inggris (AS) dengan keyboard International PC</translation>
 <translation id="357479282490346887">Lithuania</translation>
+<translation id="3592251141500063301">Tidak dapat membuat <ph name="FILE_NAME" /> tersedia offline</translation>
 <translation id="3603385196401704894">Prancis Kanada</translation>
 <translation id="3606220979431771195">Turki-F</translation>
 <translation id="3616113530831147358">Audio</translation>
@@ -279,6 +287,7 @@
 <translation id="4124935795427217608">Unicorn</translation>
 <translation id="4158739975813877944">Buka daftar putar</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> dipindahkan.</translation>
+<translation id="4186579485882418952">Aktifkan Offline</translation>
 <translation id="4193154014135846272">Dokumen Google</translation>
 <translation id="4197674956721858839">Pilihan file zip</translation>
 <translation id="4202378258276439759">Spanyol (Amerika Latin)</translation>
@@ -292,6 +301,7 @@
 <translation id="4309915981827077375">Info umum</translation>
 <translation id="432252891123397018">Rumania dengan keyboard Standar</translation>
 <translation id="4325128273762811722">Slovenia</translation>
+<translation id="4326142238881453352">Ahli botani</translation>
 <translation id="4326192123064055915">Kopi</translation>
 <translation id="4336032328163998280">Operasi penyalinan gagal. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">Kurdi Sorani dengan keyboard berbasis bahasa Arab</translation>
@@ -327,7 +337,6 @@
 <translation id="4706042980341760088">Tamil dengan keyboard Mesin ketik</translation>
 <translation id="4711094779914110278">Turki</translation>
 <translation id="4712283082407695269">Membuka "<ph name="PATH" />"</translation>
-<translation id="4713544552769165154">File ini dirancang untuk komputer yang menggunakan software Macintosh. File ini tidak kompatibel dengan perangkat Anda yang menjalankan Chrome OS. Telusuri aplikasi pengganti yang sesuai di <ph name="BEGIN_LINK" />Chrome Webstore<ph name="END_LINK" />.<ph name="BEGIN_LINK_HELP" />Pelajari Lebih Lanjut<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> foto dicadangkan</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4732760563705710320">Maaf, video ini tidak didukung oleh perangkat transmisi Anda.</translation>
@@ -408,6 +417,7 @@
     <ph name="MARKUP_7" />Berbagi, membuat, dan berkolaborasi<ph name="MARKUP_8" />
     dalam file bersama orang lain, semuanya di satu tempat.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">File yang dipulihkan dari Google Drive</translation>
+<translation id="5288441970121584418">Burger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5318819489018851358">Bagikan dengan Linux</translation>
@@ -461,8 +471,6 @@
 <translation id="5833610766403489739">File ini tidak terdeteksi berada di mana. Periksa setelan lokasi download dan coba lagi.</translation>
 <translation id="5838451609423551646">Semua entri dihapus dari pilihan.</translation>
 <translation id="5838825566232597749">Internasional Workman AS</translation>
-<translation id="5850516540536751549">Jenis file ini tidak didukung. Kunjungi <ph name="BEGIN_LINK" />Chrome Webstore<ph name="END_LINK" /> untuk menemukan aplikasi yang dapat membuka jenis file ini.
-        <ph name="BEGIN_LINK_HELP" />Pelajari Lebih Lanjut<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Tidak ada yang dapat dilihat di sini...</translation>
 <translation id="5911887972742538906">Terjadi error saat menginstal aplikasi Linux.</translation>
 <translation id="5912396950572065471">Format</translation>
@@ -500,10 +508,12 @@
 <translation id="6248400709929739064">Aktifkan subtitel</translation>
 <translation id="6269630227984243955">Malaysia</translation>
 <translation id="6287852322318138013">Pilih aplikasi untuk membuka file ini</translation>
+<translation id="6321303798550928047">Melambaikan tangan</translation>
 <translation id="6339145975392024142">Internasional AS (PC)</translation>
 <translation id="6346310558342052870">Akses dibatasi</translation>
 <translation id="6356685157277930264">Jendela masukan file</translation>
 <translation id="6358884629796491903">Naga</translation>
+<translation id="6367976544441405720">Van</translation>
 <translation id="637062427944097960">File ini dibuka pada desktop yang berbeda. Pindahkan ke <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) untuk melihatnya.</translation>
 <translation id="6394388407447716302">Hanya baca</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> item</translation>
@@ -527,6 +537,7 @@
 <translation id="6650726141019353908">Kupu-kupu merah muda</translation>
 <translation id="6657585470893396449">Sandi</translation>
 <translation id="6673674183150363784">Prancis (Prancis) dengan keyboard Bépo</translation>
+<translation id="6710022688720561421">Robot</translation>
 <translation id="6710213216561001401">Sebelumnya</translation>
 <translation id="6751256176799620176">1 folder dipilih</translation>
 <translation id="6790428901817661496">Putar</translation>
@@ -560,6 +571,7 @@
 <translation id="6965382102122355670">Oke</translation>
 <translation id="6970230597523682626">Bulgaria</translation>
 <translation id="6973630695168034713">Folder</translation>
+<translation id="6976795442547527108">Singa</translation>
 <translation id="6978611942794658017">File ini dirancang untuk PC yang menggunakan software Windows. File ini tidak kompatibel dengan perangkat Anda yang menjalankan Chrome OS. Telusuri di Chrome Webstore untuk mendapatkan aplikasi pengganti yang sesuai.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Swedia</translation>
@@ -606,6 +618,7 @@
 <translation id="7532029025027028521">Transliterasi Farsi</translation>
 <translation id="7544830582642184299">Beri aplikasi Linux izin untuk mengakses file di Google Drive Anda. Perubahan akan disinkronkan ke perangkat lainnya.</translation>
 <translation id="7544853251252956727">Acak</translation>
+<translation id="7547009467130558110">Sneaker</translation>
 <translation id="7547780573915868306">Lituania</translation>
 <translation id="7547811415869834682">Belanda</translation>
 <translation id="7551643184018910560">Sematkan ke rak</translation>
@@ -620,6 +633,7 @@
 <translation id="7628656427739290098"><ph name="PERCENT" />% selesai.</translation>
 <translation id="7649070708921625228">Bantuan</translation>
 <translation id="7654209398114106148">Memindahkan <ph name="NUMBER_OF_ITEMS" /> item...</translation>
+<translation id="7655441028674523381">Akses Google Foto dengan mudah</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7663224033570512922">Hindi</translation>
 <translation id="7693909743393669729">Memformat drive akan menghapus semua data yang tersimpan di dalamnya dan menghapus semua partisi yang ada, termasuk partisi yang mungkin tidak terlihat. Tindakan ini tidak dapat diurungkan.</translation>
@@ -651,7 +665,6 @@
 <translation id="7839804798877833423">Mengambil file ini akan menggunakan sekitar <ph name="FILE_SIZE" /> data seluler.</translation>
 <translation id="7846076177841592234">Batalkan pilihan</translation>
 <translation id="7853966320808728790">BÉPO Prancis</translation>
-<translation id="7864662577698025113">Tambahkan layanan baru</translation>
 <translation id="7868774406711971383">Polandia</translation>
 <translation id="7873831373602885875">Tidak dapat menyimpan ke <ph name="FOLDER_NAME" />. Semua pengeditan akan disimpan ke <ph name="DOWNLOADS_FOLDER" /> dalam folder Download.</translation>
 <translation id="7874321682039004450">Filipina</translation>
@@ -666,13 +679,13 @@
 <translation id="7972920761225148017">Prancis (Swiss)</translation>
 <translation id="7980421588063892270">Inggris (AS) dengan keyboard Colemak</translation>
 <translation id="7982283708762922719">Tinggi</translation>
+<translation id="79907182588096956">File ini dirancang untuk PC yang menggunakan software Windows. Ini tidak kompatibel dengan perangkat Anda yang menjalankan Chrome OS. <ph name="BEGIN_LINK_HELP" />Pelajari Lebih Lanjut<ph name="END_LINK_HELP" /> cara membuka file di Chrome OS.</translation>
 <translation id="8008366997883261463">Anjing</translation>
 <translation id="8028993641010258682">Ukuran</translation>
 <translation id="803771048473350947">File</translation>
 <translation id="8038111231936746805">(default)</translation>
 <translation id="8042602468072383151">Audio <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">Rumania</translation>
-<translation id="8052887694493382350">File ini didesain untuk PC yang menggunakan software Windows. Ini tidak kompatibel dengan perangkat Anda yang menjalankan Chrome OS. <ph name="BEGIN_LINK_HELP" />Pelajari Lebih Lanjut<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Semua pengeditan akan disimpan ke <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Ulangi</translation>
 <translation id="8106045200081704138">Dibagikan kepada saya</translation>
@@ -712,6 +725,7 @@
 <translation id="8466234950814670489">Arsip Tar</translation>
 <translation id="8475647382427415476">Saat ini Google Drive tidak dapat menyinkronkan "<ph name="FILENAME" />". Google Drive akan mencoba lagi nanti.</translation>
 <translation id="8477649328507734757">Putaran</translation>
+<translation id="8484284835977497781">Pilih dari foto terbaru Anda.</translation>
 <translation id="8487700953926739672">Tersedia secara offline</translation>
 <translation id="8521441079177373948">Inggris</translation>
 <translation id="8525306231823319788">Layar penuh</translation>
@@ -744,8 +758,10 @@
 <translation id="8860454412039442620">Spreadsheet Excel</translation>
 <translation id="8866284467018526531">Transliterasi Arab</translation>
 <translation id="8900820606136623064">Magyar</translation>
+<translation id="8903931173357132290">Wisudawan</translation>
 <translation id="8919081441417203123">Denmark</translation>
 <translation id="8965697826696209160">Ruang tidak cukup.</translation>
+<translation id="8970501467542182729">File ini dirancang untuk komputer yang menggunakan software Macintosh. Ini tidak kompatibel dengan perangkat Anda yang menjalankan Chrome OS. <ph name="BEGIN_LINK_HELP" />Pelajari Lebih Lanjut<ph name="END_LINK_HELP" /> cara membuka file di Chrome OS.</translation>
 <translation id="8997962250644902079">Pinyin (Aksara Tradisional) China</translation>
 <translation id="9017798300203431059">Fonetik Rusia</translation>
 <translation id="9034924485347205037">File Linux</translation>

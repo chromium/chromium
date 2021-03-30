@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
@@ -39,6 +39,7 @@ class Rect;
 
 namespace ui {
 class Accelerator;
+class ColorProvider;
 class Compositor;
 class GestureRecognizer;
 class InputMethod;
@@ -46,6 +47,10 @@ class Layer;
 class OSExchangeData;
 class ThemeProvider;
 }  // namespace ui
+
+namespace ui_devtools {
+class PageAgentViews;
+}
 
 namespace views {
 
@@ -98,7 +103,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   using Widgets = std::set<Widget*>;
   using ShapeRects = std::vector<gfx::Rect>;
   using PaintAsActiveCallbackList = base::RepeatingClosureList;
-  using Predicate = base::RepeatingCallback<bool(Widget*)>;
 
   enum class FrameType {
     kDefault,      // Use whatever the default would be.
@@ -107,12 +111,12 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   };
 
   // Result from RunMoveLoop().
-  enum MoveLoopResult {
+  enum class MoveLoopResult {
     // The move loop completed successfully.
-    MOVE_LOOP_SUCCESSFUL,
+    kSuccessful,
 
     // The user canceled the move loop.
-    MOVE_LOOP_CANCELED
+    kCanceled
   };
 
   // Source that initiated the move loop.
@@ -711,9 +715,16 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   ui::NativeTheme* GetNativeTheme() {
     return const_cast<ui::NativeTheme*>(
-        const_cast<const Widget*>(this)->GetNativeTheme());
+        static_cast<const Widget*>(this)->GetNativeTheme());
   }
   virtual const ui::NativeTheme* GetNativeTheme() const;
+
+  // Returns the ui::ColorProvider associated with this Widget.
+  ui::ColorProvider* GetColorProvider() {
+    return const_cast<ui::ColorProvider*>(
+        static_cast<const Widget*>(this)->GetColorProvider());
+  }
+  const ui::ColorProvider* GetColorProvider() const;
 
   // Returns the FocusManager for this widget.
   // Note that all widgets in a widget hierarchy share the same focus manager.
@@ -1018,6 +1029,13 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   virtual void OnDragComplete();
 
  private:
+  // Type of ways to ignore activation changes.
+  enum class DisableActivationChangeHandlingType {
+    kNone = 0,  // Don't ignore any activation changes.
+    kIgnore,    // Ignore both activation and deactivation changes.
+    kIgnoreDeactivationOnly,  // Ignore only deactivation changes.
+  };
+
   class PaintAsActiveLockImpl;
 
   friend class ButtonTest;
@@ -1025,7 +1043,18 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   friend class PaintAsActiveLockImpl;
   friend class TextfieldTest;
   friend class ViewAuraTest;
+  friend class ui_devtools::PageAgentViews;
   friend void DisableActivationChangeHandlingForTests();
+
+  // Sets/gets the type of disabling widget activation change handling.
+  static void SetDisableActivationChangeHandling(
+      DisableActivationChangeHandlingType new_type) {
+    g_disable_activation_change_handling_ = new_type;
+  }
+  static DisableActivationChangeHandlingType
+  GetDisableActivationChangeHandling() {
+    return g_disable_activation_change_handling_;
+  }
 
   // Persists the window's restored position and "show" state using the
   // window delegate.
@@ -1057,7 +1086,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // If a descendent of |root_view_| is focused, then clear the focus.
   void ClearFocusFromWidget();
 
-  static bool g_disable_activation_change_handling_;
+  static DisableActivationChangeHandlingType
+      g_disable_activation_change_handling_;
 
   internal::NativeWidgetPrivate* native_widget_ = nullptr;
 
@@ -1174,8 +1204,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Block the widget from closing.
   bool block_close_ = false;
 
-  ScopedObserver<ui::NativeTheme, ui::NativeThemeObserver> observer_manager_{
-      this};
+  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
+      observation_{this};
 
   base::WeakPtrFactory<Widget> weak_ptr_factory_{this};
 

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/printing_section.h"
 
-#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ui/webui/settings/chromeos/cups_printers_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
@@ -12,7 +11,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -80,15 +78,6 @@ const std::vector<SearchConcept>& GetScanningAppSearchConcepts() {
   return *tags;
 }
 
-bool IsPrintManagementEnabled() {
-  return base::FeatureList::IsEnabled(
-      chromeos::features::kPrintJobManagementApp);
-}
-
-bool IsScanningAppEnabled() {
-  return base::FeatureList::IsEnabled(chromeos::features::kScanningUI);
-}
-
 }  // namespace
 
 PrintingSection::PrintingSection(Profile* profile,
@@ -98,11 +87,8 @@ PrintingSection::PrintingSection(Profile* profile,
       printers_manager_(printers_manager) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetPrintingSearchConcepts());
-  if (IsPrintManagementEnabled())
-    updater.AddSearchTags(GetPrintingManagementSearchConcepts());
-
-  if (IsScanningAppEnabled())
-    updater.AddSearchTags(GetScanningAppSearchConcepts());
+  updater.AddSearchTags(GetPrintingManagementSearchConcepts());
+  updater.AddSearchTags(GetScanningAppSearchConcepts());
 
   // Saved Printers search tags are added/removed dynamically.
   if (printers_manager_) {
@@ -119,7 +105,7 @@ PrintingSection::~PrintingSection() {
 
 void PrintingSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"printingPageTitle", IDS_SETTINGS_PRINTING},
+      {"printingPageTitle", IDS_SETTINGS_PRINT_AND_SCAN},
       {"cupsPrintersTitle", IDS_SETTINGS_PRINTING_CUPS_PRINTERS},
       {"cupsPrintersLearnMoreLabel",
        IDS_SETTINGS_PRINTING_CUPS_PRINTERS_LEARN_MORE_LABEL},
@@ -264,15 +250,13 @@ void PrintingSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"printServerConfigurationErrorMessage",
        IDS_SETTINGS_PRINTING_CUPS_PRINT_SERVER_REACHABLE_BUT_CANNOT_ADD},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddString("printingCUPSPrintLearnMoreUrl",
                          GetHelpUrlWithBoard(chrome::kCupsPrintLearnMoreURL));
   html_source->AddString(
       "printingCUPSPrintPpdLearnMoreUrl",
       GetHelpUrlWithBoard(chrome::kCupsPrintPPDLearnMoreURL));
-  html_source->AddBoolean("printManagementEnabled", IsPrintManagementEnabled());
-  html_source->AddBoolean("scanningAppEnabled", IsScanningAppEnabled());
 }
 
 void PrintingSection::AddHandlers(content::WebUI* web_ui) {
@@ -281,7 +265,7 @@ void PrintingSection::AddHandlers(content::WebUI* web_ui) {
 }
 
 int PrintingSection::GetSectionNameMessageId() const {
-  return IDS_SETTINGS_PRINTING;
+  return IDS_SETTINGS_PRINT_AND_SCAN;
 }
 
 mojom::Section PrintingSection::GetSection() const {

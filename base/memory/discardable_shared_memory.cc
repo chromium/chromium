@@ -119,7 +119,7 @@ SharedState* SharedStateFromSharedMemory(
 
 // Round up |size| to a multiple of page size.
 size_t AlignToPageSize(size_t size) {
-  return bits::Align(size, base::GetPageSize());
+  return bits::AlignUp(size, base::GetPageSize());
 }
 
 #if defined(OS_ANDROID)

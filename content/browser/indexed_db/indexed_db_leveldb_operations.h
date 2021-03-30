@@ -12,7 +12,6 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequenced_task_runner.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_factory.h"
@@ -132,13 +131,13 @@ WARN_UNUSED_RESULT leveldb::Status PutVarInt(
 template <typename DBOrTransaction>
 WARN_UNUSED_RESULT leveldb::Status GetString(DBOrTransaction* db,
                                              const base::StringPiece& key,
-                                             base::string16* found_string,
+                                             std::u16string* found_string,
                                              bool* found);
 
 WARN_UNUSED_RESULT leveldb::Status PutString(
     TransactionalLevelDBTransaction* transaction,
     const base::StringPiece& key,
-    const base::string16& value);
+    const std::u16string& value);
 
 WARN_UNUSED_RESULT leveldb::Status PutIDBKeyPath(
     TransactionalLevelDBTransaction* transaction,
@@ -216,6 +215,15 @@ template <typename Transaction>
 WARN_UNUSED_RESULT leveldb::Status SetEarliestSweepTime(
     Transaction* txn,
     base::Time earliest_sweep);
+
+WARN_UNUSED_RESULT leveldb::Status GetEarliestCompactionTime(
+    TransactionalLevelDBDatabase* db,
+    base::Time* earliest_compaction);
+
+template <typename Transaction>
+WARN_UNUSED_RESULT leveldb::Status SetEarliestCompactionTime(
+    Transaction* txn,
+    base::Time earliest_compaction);
 
 CONTENT_EXPORT const leveldb::Comparator* GetDefaultLevelDBComparator();
 

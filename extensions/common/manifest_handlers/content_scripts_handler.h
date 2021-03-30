@@ -41,7 +41,7 @@ class ContentScriptsHandler : public ManifestHandler {
   ContentScriptsHandler();
   ~ContentScriptsHandler() override;
 
-  bool Parse(Extension* extension, base::string16* error) override;
+  bool Parse(Extension* extension, std::u16string* error) override;
   bool Validate(const Extension* extension,
                 std::string* error,
                 std::vector<InstallWarning>* warnings) const override;

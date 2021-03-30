@@ -13,6 +13,7 @@ from collections import namedtuple
 from core.perfetto_binary_roller import binary_deps_manager
 from py_utils import tempfile_ext
 from tracing.value import histogram_set
+from tracing.value.histogram import Histogram
 
 
 TP_BINARY_NAME = 'trace_processor_shell'
@@ -188,8 +189,11 @@ def _PluckField(json_dict, field_path):
     return _PluckField(field_value, path_tail)
 
 
-def RunMetrics(trace_processor_path, trace_file, metric_names,
-               fetch_power_profile=False):
+def RunMetrics(trace_processor_path,
+               trace_file,
+               metric_names,
+               fetch_power_profile=False,
+               retain_all_samples=False):
   """Run TBMv3 metrics using trace processor.
 
   Args:
@@ -245,15 +249,24 @@ def RunMetrics(trace_processor_path, trace_file, metric_names,
       histogram_name = ':'.join([field.name for field in field.path_from_root])
       samples = _PluckField(metric_proto, field.path_from_root)
       scoped_histogram_name = _ScopedHistogramName(metric_name, histogram_name)
-      histograms.CreateHistogram(scoped_histogram_name, unit, samples)
-
+      hist = Histogram(scoped_histogram_name, unit)
+      if retain_all_samples:
+        hist.max_num_sample_values = float('inf')
+      for sample in samples:
+        hist.AddSample(sample)
+      histograms.AddHistogram(hist)
   return histograms
 
 
-def RunMetric(trace_processor_path, trace_file, metric_name,
-              fetch_power_profile=False):
-  return RunMetrics(trace_processor_path, trace_file, [metric_name],
-                    fetch_power_profile)
+def RunMetric(trace_processor_path,
+              trace_file,
+              metric_name,
+              fetch_power_profile=False,
+              retain_all_samples=False):
+  return RunMetrics(trace_processor_path,
+                    trace_file, [metric_name],
+                    fetch_power_profile=fetch_power_profile,
+                    retain_all_samples=retain_all_samples)
 
 
 def ConvertProtoTraceToJson(trace_processor_path, proto_file, json_path):

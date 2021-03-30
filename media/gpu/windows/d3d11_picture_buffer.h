@@ -80,12 +80,19 @@ class MEDIA_GPU_EXPORT D3D11PictureBuffer
   size_t picture_index() const { return picture_index_; }
 
   // Is this PictureBuffer backing a VideoFrame right now?
-  bool in_client_use() const { return in_client_use_; }
+  bool in_client_use() const { return in_client_use_ > 0; }
 
   // Is this PictureBuffer holding an image that's in use by the decoder?
   bool in_picture_use() const { return in_picture_use_; }
 
-  void set_in_client_use(bool use) { in_client_use_ = use; }
+  void add_client_use() {
+    in_client_use_++;
+    DCHECK_GT(in_client_use_, 0);
+  }
+  void remove_client_use() {
+    DCHECK_GT(in_client_use_, 0);
+    in_client_use_--;
+  }
   void set_in_picture_use(bool use) { in_picture_use_ = use; }
 
   const ComD3D11VideoDecoderOutputView& output_view() const {
@@ -108,7 +115,7 @@ class MEDIA_GPU_EXPORT D3D11PictureBuffer
   std::unique_ptr<Texture2DWrapper> texture_wrapper_;
   gfx::Size size_;
   bool in_picture_use_ = false;
-  bool in_client_use_ = false;
+  int in_client_use_ = 0;
   size_t picture_index_;
 
   ComD3D11VideoDecoderOutputView output_view_;

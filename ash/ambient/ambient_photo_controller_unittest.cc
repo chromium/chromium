@@ -25,7 +25,7 @@
 #include "base/hash/sha1.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/stl_util.h"
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
@@ -79,6 +79,10 @@ class AmbientPhotoControllerTest : public AmbientAshTestBase {
                               /*related_image=*/related_image,
                               loop.QuitClosure());
     loop.Run();
+  }
+
+  void ScheduleFetchBackupImages() {
+    photo_controller()->ScheduleFetchBackupImages();
   }
 };
 
@@ -282,7 +286,7 @@ TEST_F(AmbientPhotoControllerTest, ShouldDownloadBackupImagesWhenScheduled) {
   std::string expected_data = "backup data";
   SetBackupDownloadPhotoData(expected_data);
 
-  photo_controller()->ScheduleFetchBackupImages();
+  ScheduleFetchBackupImages();
 
   EXPECT_TRUE(
       photo_controller()->backup_photo_refresh_timer_for_testing().IsRunning());
@@ -308,7 +312,7 @@ TEST_F(AmbientPhotoControllerTest, ShouldDownloadBackupImagesWhenScheduled) {
 }
 
 TEST_F(AmbientPhotoControllerTest, ShouldResetTimerWhenBackupImagesFail) {
-  photo_controller()->ScheduleFetchBackupImages();
+  ScheduleFetchBackupImages();
 
   EXPECT_TRUE(
       photo_controller()->backup_photo_refresh_timer_for_testing().IsRunning());
@@ -326,7 +330,7 @@ TEST_F(AmbientPhotoControllerTest, ShouldResetTimerWhenBackupImagesFail) {
 
 TEST_F(AmbientPhotoControllerTest,
        ShouldStartDownloadBackupImagesOnAmbientModeStart) {
-  photo_controller()->ScheduleFetchBackupImages();
+  ScheduleFetchBackupImages();
 
   EXPECT_TRUE(
       photo_controller()->backup_photo_refresh_timer_for_testing().IsRunning());
@@ -356,10 +360,10 @@ TEST_F(AmbientPhotoControllerTest,
 
 TEST_F(AmbientPhotoControllerTest, ShouldNotLoadDuplicateImages) {
   testing::NiceMock<MockAmbientBackendModelObserver> mock_backend_observer;
-  ScopedObserver<AmbientBackendModel, AmbientBackendModelObserver>
-      scoped_observer{&mock_backend_observer};
+  base::ScopedObservation<AmbientBackendModel, AmbientBackendModelObserver>
+      scoped_observation{&mock_backend_observer};
 
-  scoped_observer.Add(photo_controller()->ambient_backend_model());
+  scoped_observation.Observe(photo_controller()->ambient_backend_model());
 
   // All images downloaded will be identical.
   SetDownloadPhotoData("image data");

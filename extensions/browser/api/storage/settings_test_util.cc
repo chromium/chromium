@@ -100,12 +100,8 @@ scoped_refptr<const Extension> AddExtensionWithIdAndPermissions(
 
   std::string error;
   scoped_refptr<const Extension> extension(
-      Extension::Create(base::FilePath(),
-                        Manifest::INTERNAL,
-                        manifest,
-                        Extension::NO_FLAGS,
-                        id,
-                        &error));
+      Extension::Create(base::FilePath(), mojom::ManifestLocation::kInternal,
+                        manifest, Extension::NO_FLAGS, id, &error));
   DCHECK(extension.get());
   DCHECK(error.empty());
 

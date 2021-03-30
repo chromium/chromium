@@ -54,6 +54,7 @@ bool ManifestIconDownloader::Download(
     const GURL& icon_url,
     int ideal_icon_size_in_px,
     int minimum_icon_size_in_px,
+    int maximum_icon_size_in_px,
     IconFetchCallback callback,
     bool square_only,
     const GlobalFrameRoutingId& initiator_frame_routing_id) {
@@ -63,10 +64,10 @@ bool ManifestIconDownloader::Download(
 
   web_contents->DownloadImageInFrame(
       initiator_frame_routing_id, icon_url,
-      false,                  // is_favicon
-      ideal_icon_size_in_px,  // preferred_size
-      0,                      // max_bitmap_size - 0 means no maximum size.
-      false,                  // bypass_cache
+      false,                    // is_favicon
+      ideal_icon_size_in_px,    // preferred_size
+      maximum_icon_size_in_px,  // max_bitmap_size - 0 means no maximum size.
+      false,                    // bypass_cache
       base::BindOnce(&ManifestIconDownloader::OnIconFetched,
                      ideal_icon_size_in_px, minimum_icon_size_in_px,
                      square_only,

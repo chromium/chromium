@@ -198,51 +198,6 @@ TEST_F(PrefProviderTest, DiscardObsoletePreferences) {
                                    ContentSettingsType::GEOLOCATION, false));
 }
 
-#if !defined(OS_ANDROID)
-// Tests that file system preferences are migrated.
-TEST_F(PrefProviderTest, MigrateDeprecatedFileSystemPreferences) {
-  static const char kDeprecatedNativeFileSystemReadGuardPref[] =
-      "profile.content_settings.exceptions.native_file_system_read_guard";
-  static const char kDeprecatedNativeFileSystemWriteGuardPref[] =
-      "profile.content_settings.exceptions.native_file_system_write_guard";
-  static const char kPattern[] = "[*.]example.com";
-
-  TestingProfile profile;
-  PrefService* prefs = profile.GetPrefs();
-
-  // Set some pref data. Each content setting type has the following value:
-  // {"[*.]example.com": {"setting": 1}}
-  base::DictionaryValue pref_data;
-  auto data_for_pattern = std::make_unique<base::DictionaryValue>();
-  data_for_pattern->SetInteger("setting", CONTENT_SETTING_BLOCK);
-  pref_data.SetWithoutPathExpansion(kPattern, std::move(data_for_pattern));
-  prefs->Set(kDeprecatedNativeFileSystemReadGuardPref, pref_data);
-  prefs->Set(kDeprecatedNativeFileSystemWriteGuardPref, pref_data);
-
-  // Instantiate a new PrefProvider here, because we want to test the
-  // constructor's behavior after setting the above.
-  PrefProvider provider(prefs, /*incognito=*/false,
-                        /*store_last_modified=*/true,
-                        /*restore_session=*/false);
-
-  // Check that settings have been migrated.
-  EXPECT_FALSE(prefs->HasPrefPath(kDeprecatedNativeFileSystemReadGuardPref));
-  EXPECT_FALSE(prefs->HasPrefPath(kDeprecatedNativeFileSystemReadGuardPref));
-
-  GURL primary_url("http://example.com/");
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            TestUtils::GetContentSetting(
-                &provider, primary_url, primary_url,
-                ContentSettingsType::FILE_SYSTEM_READ_GUARD, false));
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            TestUtils::GetContentSetting(
-                &provider, primary_url, primary_url,
-                ContentSettingsType::FILE_SYSTEM_WRITE_GUARD, false));
-
-  provider.ShutdownOnUIThread();
-}
-#endif  // !defined(OS_ANDROID)
-
 // Test for regression in which the PrefProvider modified the user pref store
 // of the OTR unintentionally: http://crbug.com/74466.
 TEST_F(PrefProviderTest, Incognito) {

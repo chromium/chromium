@@ -22,7 +22,7 @@
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/class_property.h"
-#include "ui/base/cursor/cursor_loader_win.h"
+#include "ui/base/cursor/win/win_cursor.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/win/event_creation_utils.h"
@@ -189,8 +189,7 @@ std::unique_ptr<corewm::Tooltip> DesktopWindowTreeHostWin::CreateTooltip() {
 }
 
 std::unique_ptr<aura::client::DragDropClient>
-DesktopWindowTreeHostWin::CreateDragDropClient(
-    DesktopNativeCursorManager* cursor_manager) {
+DesktopWindowTreeHostWin::CreateDragDropClient() {
   drag_drop_client_ = new DesktopDragDropClientWin(window(), GetHWND(), this);
   return base::WrapUnique(drag_drop_client_);
 }
@@ -408,7 +407,7 @@ bool DesktopWindowTreeHostWin::IsVisibleOnAllWorkspaces() const {
   return false;
 }
 
-bool DesktopWindowTreeHostWin::SetWindowTitle(const base::string16& title) {
+bool DesktopWindowTreeHostWin::SetWindowTitle(const std::u16string& title) {
   return message_handler_->SetTitle(title);
 }
 
@@ -423,8 +422,8 @@ Widget::MoveLoopResult DesktopWindowTreeHostWin::RunMoveLoop(
   const bool hide_on_escape =
       escape_behavior == Widget::MoveLoopEscapeBehavior::kHide;
   return message_handler_->RunMoveLoop(drag_offset, hide_on_escape)
-             ? Widget::MOVE_LOOP_SUCCESSFUL
-             : Widget::MOVE_LOOP_CANCELED;
+             ? Widget::MoveLoopResult::kSuccessful
+             : Widget::MoveLoopResult::kCanceled;
 }
 
 void DesktopWindowTreeHostWin::EndMoveLoop() {
@@ -632,10 +631,11 @@ DesktopWindowTreeHostWin::GetKeyboardLayoutMap() {
 void DesktopWindowTreeHostWin::SetCursorNative(gfx::NativeCursor cursor) {
   TRACE_EVENT1("ui,input", "DesktopWindowTreeHostWin::SetCursorNative",
                "cursor", cursor.type());
-  ui::CursorLoaderWin cursor_loader;
-  cursor_loader.SetPlatformCursor(&cursor);
 
-  message_handler_->SetCursor(cursor.platform());
+  ui::WinCursor* platform_cursor =
+      static_cast<ui::WinCursor*>(cursor.platform());
+  DCHECK(platform_cursor);
+  message_handler_->SetCursor(platform_cursor->hcursor());
 }
 
 void DesktopWindowTreeHostWin::OnCursorVisibilityChangedNative(bool show) {
@@ -747,7 +747,17 @@ int DesktopWindowTreeHostWin::GetNonClientComponent(
 void DesktopWindowTreeHostWin::GetWindowMask(const gfx::Size& size,
                                              SkPath* path) {
   if (GetWidget()->non_client_view()) {
-    GetWidget()->non_client_view()->GetWindowMask(size, path);
+    GetWidget()->non_client_view()->GetWindowMask(
+        display::win::ScreenWin::ScreenToDIPSize(GetHWND(), size), path);
+    // Convert path in DIPs to pixels.
+    if (!path->isEmpty()) {
+      const float scale =
+          display::win::ScreenWin::GetScaleFactorForHWND(GetHWND());
+      SkScalar sk_scale = SkFloatToScalar(scale);
+      SkMatrix matrix;
+      matrix.setScale(sk_scale, sk_scale);
+      path->transform(matrix);
+    }
   } else if (!window_enlargement_.IsZero()) {
     gfx::Rect bounds(WidgetSizeIsClientSize()
                          ? message_handler_->GetClientAreaBoundsInScreen()
@@ -868,7 +878,6 @@ void DesktopWindowTreeHostWin::HandleEndWMSizeMove() {
 
 void DesktopWindowTreeHostWin::HandleMove() {
   CheckForMonitorChange();
-  native_widget_delegate_->OnNativeWidgetMove();
   OnHostMovedInPixels(GetBoundsInPixels().origin());
 }
 

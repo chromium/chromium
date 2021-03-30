@@ -126,9 +126,6 @@ class CORE_EXPORT PaintLayerCompositor {
 
   void UpdatePotentialCompositingReasonsFromStyle(PaintLayer&);
 
-  // Whether the layer could ever be composited.
-  bool CanBeComposited(const PaintLayer*) const;
-
   void ClearRootLayerAttachmentDirty() { root_layer_attachment_dirty_ = false; }
 
   // FIXME: Move allocateOrClearCompositedLayerMapping to

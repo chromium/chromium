@@ -33,7 +33,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestShippingOptionViewControllerTest,
   AddAutofillProfile(michigan);
   // A Canadian address will have no shipping options.
   autofill::AutofillProfile canada = autofill::test::GetFullProfile();
-  canada.SetRawInfo(autofill::ADDRESS_HOME_COUNTRY, base::ASCIIToUTF16("CA"));
+  canada.SetRawInfo(autofill::ADDRESS_HOME_COUNTRY, u"CA");
   canada.set_use_count(50U);
   AddAutofillProfile(canada);
 
@@ -70,21 +70,19 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestShippingOptionViewControllerTest,
   WaitForAnimation();
 
   // Michigan address is selected and has standard shipping.
-  std::vector<base::string16> shipping_address_labels = GetProfileLabelValues(
+  std::vector<std::u16string> shipping_address_labels = GetProfileLabelValues(
       DialogViewID::PAYMENT_SHEET_SHIPPING_ADDRESS_SECTION);
-  EXPECT_EQ(base::ASCIIToUTF16("Jane A. Smith"), shipping_address_labels[0]);
-  EXPECT_EQ(
-      base::ASCIIToUTF16("ACME, 123 Main Street, Unit 1, Greensdale, MI 48838"),
-      shipping_address_labels[1]);
-  EXPECT_EQ(base::ASCIIToUTF16("+1 310-555-7889"), shipping_address_labels[2]);
+  EXPECT_EQ(u"Jane A. Smith", shipping_address_labels[0]);
+  EXPECT_EQ(u"ACME, 123 Main Street, Unit 1, Greensdale, MI 48838",
+            shipping_address_labels[1]);
+  EXPECT_EQ(u"+1 310-555-7889", shipping_address_labels[2]);
 
   // The shipping option section exists, and the shipping option is shown.
-  std::vector<base::string16> shipping_option_labels =
+  std::vector<std::u16string> shipping_option_labels =
       GetShippingOptionLabelValues(
           DialogViewID::PAYMENT_SHEET_SHIPPING_OPTION_SECTION);
-  EXPECT_EQ(base::ASCIIToUTF16("Standard shipping in US"),
-            shipping_option_labels[0]);
-  EXPECT_EQ(base::ASCIIToUTF16("$5.00"), shipping_option_labels[1]);
+  EXPECT_EQ(u"Standard shipping in US", shipping_option_labels[0]);
+  EXPECT_EQ(u"$5.00", shipping_option_labels[1]);
 
   // Go to the shipping address screen and select the second address (Canada).
   OpenShippingAddressSectionScreen();
@@ -101,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestShippingOptionViewControllerTest,
             request->state()->selected_shipping_option_error_profile());
 
   // The address selector has this error.
-  EXPECT_EQ(base::ASCIIToUTF16("We do not ship to this address"),
+  EXPECT_EQ(u"We do not ship to this address",
             GetLabelText(DialogViewID::WARNING_LABEL));
 
   // There is no a longer shipping option section, because no shipping options

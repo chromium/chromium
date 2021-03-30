@@ -9,7 +9,6 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "base/strings/string16.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom-forward.h"
 #include "ui/gfx/canvas.h"
@@ -93,7 +92,7 @@ gfx::ImageSkia GetDisconnectedImageForNetworkType(
     chromeos::network_config::mojom::NetworkType network_type);
 
 // Returns the label for |network| when displayed in a list.
-ASH_EXPORT base::string16 GetLabelForNetworkList(
+ASH_EXPORT std::u16string GetLabelForNetworkList(
     const chromeos::network_config::mojom::NetworkStateProperties* network);
 
 // Called periodically with the current list of network guids. Removes cached

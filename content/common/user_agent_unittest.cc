@@ -126,4 +126,15 @@ TEST(UserAgentStringTest, BuildOSCpuInfoFromOSVersionAndCpuType) {
   }
 }
 
+TEST(UserAgentStringTest, LowEntropyCpuArchitecture) {
+  std::string arch = GetLowEntropyCpuArchitecture();
+
+#if defined(OS_WIN) || defined(OS_MAC) || \
+    (defined(OS_POSIX) && !defined(OS_ANDROID))
+  EXPECT_TRUE("arm" == arch || "x86" == arch);
+#else
+  EXPECT_EQ("", arch);
+#endif
+}
+
 }  // namespace content

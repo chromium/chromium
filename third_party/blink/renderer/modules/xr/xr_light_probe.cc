@@ -97,7 +97,7 @@ void XRLightProbe::Trace(Visitor* visitor) const {
   visitor->Trace(session_);
   visitor->Trace(probe_space_);
   visitor->Trace(light_estimate_);
-  ScriptWrappable::Trace(visitor);
+  EventTargetWithInlineData::Trace(visitor);
 }
 
 }  // namespace blink

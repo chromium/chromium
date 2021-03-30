@@ -195,9 +195,6 @@ TEST_F(WebMeaningfulLayoutsTest,
 // A pending stylesheet in the head is render-blocking and will be considered
 // a pending stylesheet if a layout is triggered before it loads.
 TEST_F(WebMeaningfulLayoutsTest, LayoutWithPendingRenderBlockingStylesheet) {
-  // Render-blocking stylesheets is not a concept when the parser is blocked.
-  ScopedBlockHTMLParserOnStyleSheetsForTest scope(false);
-
   SimRequest main_resource("https://example.com/index.html", "text/html");
   SimSubresourceRequest style_resource("https://example.com/style.css",
                                        "text/css");
@@ -213,52 +210,6 @@ TEST_F(WebMeaningfulLayoutsTest, LayoutWithPendingRenderBlockingStylesheet) {
   EXPECT_FALSE(GetDocument().HaveRenderBlockingResourcesLoaded());
 
   style_resource.Complete("");
-  EXPECT_TRUE(GetDocument().HaveRenderBlockingResourcesLoaded());
-}
-
-// A pending import in the head is render-blocking and will be treated like
-// a pending stylesheet if a layout is triggered before it loads.
-TEST_F(WebMeaningfulLayoutsTest, LayoutWithPendingImportInHead) {
-  SimRequest main_resource("https://example.com/index.html", "text/html");
-  SimSubresourceRequest import_resource("https://example.com/import.html",
-                                        "text/html");
-
-  LoadURL("https://example.com/index.html");
-
-  main_resource.Complete(
-      "<html><head>"
-      "<link rel=\"import\" href=\"import.html\">"
-      "</head><body></body></html>");
-
-  GetDocument().UpdateStyleAndLayoutTree();
-  EXPECT_FALSE(GetDocument().HaveRenderBlockingResourcesLoaded());
-
-  import_resource.Complete("");
-  // Pump the HTMLImportTreeRoot::RecalcTimerFired task.
-  test::RunPendingTasks();
-  EXPECT_TRUE(GetDocument().HaveRenderBlockingResourcesLoaded());
-}
-
-// A pending import in the body is render-blocking and will be treated like
-// a pending stylesheet if a layout is triggered before it loads.
-TEST_F(WebMeaningfulLayoutsTest, LayoutWithPendingImportInBody) {
-  SimRequest main_resource("https://example.com/index.html", "text/html");
-  SimSubresourceRequest import_resource("https://example.com/import.html",
-                                        "text/html");
-
-  LoadURL("https://example.com/index.html");
-
-  main_resource.Complete(
-      "<html><head></head><body>"
-      "<link rel=\"import\" href=\"import.html\">"
-      "</body></html>");
-
-  GetDocument().UpdateStyleAndLayoutTree();
-  EXPECT_FALSE(GetDocument().HaveRenderBlockingResourcesLoaded());
-
-  import_resource.Complete("");
-  // Pump the HTMLImportTreeRoot::RecalcTimerFired task.
-  test::RunPendingTasks();
   EXPECT_TRUE(GetDocument().HaveRenderBlockingResourcesLoaded());
 }
 

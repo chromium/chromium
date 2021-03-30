@@ -5,7 +5,8 @@
 #ifndef EXTENSIONS_COMMON_MANIFEST_HANDLERS_REPLACEMENT_APPS_H_
 #define EXTENSIONS_COMMON_MANIFEST_HANDLERS_REPLACEMENT_APPS_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"
 
@@ -34,11 +35,11 @@ struct ReplacementAppsInfo : public Extension::ManifestData {
   static const std::string& GetReplacementAndroidApp(
       const Extension* extension);
 
-  bool Parse(const Extension* extension, base::string16* error);
+  bool Parse(const Extension* extension, std::u16string* error);
 
  private:
-  bool LoadWebApp(const Extension* extension, base::string16* error);
-  bool LoadAndroidApp(const Extension* extension, base::string16* error);
+  bool LoadWebApp(const Extension* extension, std::u16string* error);
+  bool LoadAndroidApp(const Extension* extension, std::u16string* error);
 
   // Optional URL of a Web app.
   GURL replacement_web_app;
@@ -55,7 +56,7 @@ class ReplacementAppsHandler : public ManifestHandler {
   ReplacementAppsHandler();
   ~ReplacementAppsHandler() override;
 
-  bool Parse(Extension* extension, base::string16* error) override;
+  bool Parse(Extension* extension, std::u16string* error) override;
 
  private:
   base::span<const char* const> Keys() const override;

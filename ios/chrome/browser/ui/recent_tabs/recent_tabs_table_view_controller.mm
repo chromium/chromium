@@ -14,7 +14,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/core/tab_restore_service.h"
-#include "components/signin/public/base/signin_pref_names.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
@@ -24,7 +23,6 @@
 #import "ios/chrome/browser/drag_and_drop/table_view_url_drag_drop_handler.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
-#include "ios/chrome/browser/policy/policy_features.h"
 #include "ios/chrome/browser/sessions/live_tab_context_browser_agent.h"
 #include "ios/chrome/browser/sessions/session_util.h"
 #include "ios/chrome/browser/sync/session_sync_service_factory.h"
@@ -32,6 +30,7 @@
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_consumer.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
 #include "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
@@ -45,7 +44,6 @@
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_activity_indicator_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_disclosure_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_illustrated_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_image_item.h"
@@ -90,7 +88,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeRecentlyClosedHeader = kItemTypeEnumZero,
   ItemTypeRecentlyClosed,
-  ItemTypeRecentlyClosedEmpty,
   ItemTypeOtherDevicesHeader,
   ItemTypeOtherDevicesSyncOff,
   ItemTypeOtherDevicesNoSessions,
@@ -274,6 +271,11 @@ API_AVAILABLE(ios(13.0))
       [[TableViewDisclosureHeaderFooterItem alloc]
           initWithType:ItemTypeRecentlyClosedHeader];
   header.text = l10n_util::GetNSString(IDS_IOS_RECENT_TABS_RECENTLY_CLOSED);
+  if (base::FeatureList::IsEnabled(kIllustratedEmptyStates) &&
+      self.tabRestoreService->entries().empty()) {
+    header.subtitleText =
+        l10n_util::GetNSString(IDS_IOS_RECENT_TABS_RECENTLY_CLOSED_EMPTY);
+  }
   [model setHeader:header
       forSectionWithIdentifier:SectionIdentifierRecentlyClosedTabs];
   header.collapsed = [self.tableViewModel
@@ -319,18 +321,6 @@ API_AVAILABLE(ios(13.0))
     recentlyClosedTab.title = base::SysUTF16ToNSString(navigationEntry.title());
     recentlyClosedTab.URL = navigationEntry.virtual_url();
     [self.tableViewModel addItem:recentlyClosedTab
-         toSectionWithIdentifier:SectionIdentifierRecentlyClosedTabs];
-  }
-  if (base::FeatureList::IsEnabled(kIllustratedEmptyStates) &&
-      self.tabRestoreService->entries().empty()) {
-    TableViewDetailTextItem* textItem = [[TableViewDetailTextItem alloc]
-        initWithType:ItemTypeRecentlyClosedEmpty];
-    textItem.accessibilityLabel =
-        l10n_util::GetNSString(IDS_IOS_RECENT_TABS_RECENTLY_CLOSED_EMPTY);
-    textItem.detailText =
-        l10n_util::GetNSString(IDS_IOS_RECENT_TABS_RECENTLY_CLOSED_EMPTY);
-    textItem.detailTextColor = [UIColor colorNamed:kTextSecondaryColor];
-    [self.tableViewModel addItem:textItem
          toSectionWithIdentifier:SectionIdentifierRecentlyClosedTabs];
   }
 }
@@ -498,8 +488,7 @@ API_AVAILABLE(ios(13.0))
         [self.tableViewModel sectionIsCollapsed:SectionIdentifierOtherDevices];
   }
 
-  if (ShouldInstallBrowserSigninPolicyHandler() &&
-      !self.browserState->GetPrefs()->GetBoolean(prefs::kSigninAllowed)) {
+  if (!signin::IsSigninAllowed(self.browserState->GetPrefs())) {
     // If sign-in is disabled, don't show an illustration or a sign-in promo.
     TableViewTextItem* disabledByOrganizationText =
         [[TableViewTextItem alloc] initWithType:ItemTypeSigninDisabled];
@@ -827,7 +816,6 @@ API_AVAILABLE(ios(13.0))
         [self.presentationDelegate showHistoryFromRecentTabs];
       }
       break;
-    case ItemTypeRecentlyClosedEmpty:
     case ItemTypeOtherDevicesSyncOff:
     case ItemTypeOtherDevicesNoSessions:
     case ItemTypeOtherDevicesSigninPromo:
@@ -869,6 +857,9 @@ API_AVAILABLE(ios(13.0))
           base::mac::ObjCCastStrict<TableViewSigninPromoCell>(cell);
       signinPromoCell.signinPromoView.imageView.hidden = YES;
       signinPromoCell.signinPromoView.textLabel.hidden = YES;
+      if (base::FeatureList::IsEnabled(kSettingsRefresh)) {
+        signinPromoCell.backgroundColor = nil;
+      }
     }
   }
   // Retrieve favicons for closed tabs and remote sessions.
@@ -905,20 +896,6 @@ API_AVAILABLE(ios(13.0))
     cell.separatorInset =
         UIEdgeInsetsMake(0, self.tableView.bounds.size.width, 0, 0);
   }
-  // Setup the cell for multiline and hide the separator.
-  if (itemTypeSelected == ItemTypeRecentlyClosedEmpty) {
-    // This cell should only exist when illustrated-empty-states is enabled.
-    DCHECK(base::FeatureList::IsEnabled(kIllustratedEmptyStates));
-    TableViewDetailTextCell* textCell =
-        base::mac::ObjCCastStrict<TableViewDetailTextCell>(cell);
-    textCell.detailTextLabel.numberOfLines = 0;
-    textCell.detailTextLabel.font =
-        [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
-    textCell.selectionStyle = UITableViewCellSelectionStyleNone;
-    textCell.separatorInset =
-        UIEdgeInsetsMake(0, tableView.bounds.size.width, 0, 0);
-  }
-
   return cell;
 }
 
@@ -1007,7 +984,6 @@ API_AVAILABLE(ios(13.0))
     }
 
     case ItemTypeRecentlyClosedHeader:
-    case ItemTypeRecentlyClosedEmpty:
     case ItemTypeOtherDevicesHeader:
     case ItemTypeOtherDevicesSyncOff:
     case ItemTypeOtherDevicesNoSessions:

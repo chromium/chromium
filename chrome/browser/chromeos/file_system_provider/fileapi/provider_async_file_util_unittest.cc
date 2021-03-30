@@ -276,9 +276,9 @@ TEST_F(FileSystemProviderProviderAsyncFileUtilTest, ReadDirectory) {
   EventLogger logger;
 
   async_file_util_->ReadDirectory(
-      CreateOperationContext(),
-      root_url_,
-      base::Bind(&EventLogger::OnReadDirectory, base::Unretained(&logger)));
+      CreateOperationContext(), root_url_,
+      base::BindRepeating(&EventLogger::OnReadDirectory,
+                          base::Unretained(&logger)));
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(logger.result());
@@ -291,7 +291,8 @@ TEST_F(FileSystemProviderProviderAsyncFileUtilTest,
 
   async_file_util_->ReadDirectory(
       CreateOperationContext(), root_url_,
-      base::Bind(&EventLogger::OnReadDirectory, base::Unretained(&logger)));
+      base::BindRepeating(&EventLogger::OnReadDirectory,
+                          base::Unretained(&logger)));
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(logger.result());
@@ -335,7 +336,8 @@ TEST_F(FileSystemProviderProviderAsyncFileUtilTest, CopyFileLocal) {
       file_url_,  // src_url
       file_url_,  // dst_url
       storage::FileSystemOperation::OPTION_NONE,
-      base::Bind(&EventLogger::OnCopyFileProgress, base::Unretained(&logger)),
+      base::BindRepeating(&EventLogger::OnCopyFileProgress,
+                          base::Unretained(&logger)),
       base::BindOnce(&EventLogger::OnStatus, base::Unretained(&logger)));
   base::RunLoop().RunUntilIdle();
 

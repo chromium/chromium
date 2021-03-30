@@ -128,3 +128,7 @@ th {
 .audio-diagnostic-dumps-info {
   max-width: 60em;
 }
+
+details[open] details summary {
+    background-color: rgb(220, 220, 220);
+}

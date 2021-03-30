@@ -119,7 +119,7 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
 
   // Access the underlying DomStorageDatabase. May be null if the database is
   // not yet open.
-  const base::SequenceBound<DomStorageDatabase>& GetDatabaseForTesting() const {
+  base::SequenceBound<DomStorageDatabase>& GetDatabaseForTesting() {
     return database_->database();
   }
 
@@ -221,6 +221,7 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   MetadataParseResult ParseNextMapId(ValueAndStatus next_map_id);
 
   void OnConnectionFinished();
+  void PurgeAllNamespaces();
   void DeleteAndRecreateDatabase(const char* histogram_name);
   void OnDBDestroyed(bool recreate_in_memory, leveldb::Status status);
 

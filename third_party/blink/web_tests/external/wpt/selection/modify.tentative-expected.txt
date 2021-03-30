@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+PASS Stop at previous word boundary when whitespaces are trimmed
+PASS Jump linefeed forward
+PASS Jump linefeed backward
+PASS Jump <br> forward
+PASS Jump <br> backward
+PASS Jump <br> forward which follows a linefeed
+FAIL Jump <br> backward which follows a linefeed assert_equals: expected Text node "foo
+" but got Element node <pre id="preLinefeedBr">foo
+<br>
+bar
+</pre>
+Harness: the test ran to completion.
+

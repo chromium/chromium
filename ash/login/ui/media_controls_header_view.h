@@ -24,14 +24,14 @@ class ASH_EXPORT MediaControlsHeaderView : public views::View {
   ~MediaControlsHeaderView() override;
 
   void SetAppIcon(const gfx::ImageSkia& img);
-  void SetAppName(const base::string16& name);
+  void SetAppName(const std::u16string& name);
 
   void SetCloseButtonVisibility(bool visible);
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
-  const base::string16& app_name_for_testing() const;
+  const std::u16string& app_name_for_testing() const;
   const views::ImageView* app_icon_for_testing() const;
   views::ImageButton* close_button_for_testing() const;
 

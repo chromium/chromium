@@ -57,7 +57,7 @@ UnregisterWorkerObserver::UnregisterWorkerObserver(
     ProcessManager* process_manager,
     const ExtensionId& extension_id)
     : extension_id_(extension_id) {
-  observer_.Add(process_manager);
+  observation_.Observe(process_manager);
 }
 
 UnregisterWorkerObserver::~UnregisterWorkerObserver() = default;

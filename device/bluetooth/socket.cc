@@ -45,7 +45,7 @@ Socket::Socket(scoped_refptr<device::BluetoothSocket> bluetooth_socket,
 Socket::~Socket() {
   ShutdownReceive();
   ShutdownSend();
-  bluetooth_socket_->Close();
+  bluetooth_socket_->Disconnect(base::DoNothing());
 }
 
 void Socket::Disconnect(DisconnectCallback callback) {

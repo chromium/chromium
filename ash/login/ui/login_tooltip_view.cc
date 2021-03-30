@@ -24,29 +24,29 @@ constexpr int kInfoIconSizeDp = 20;
 
 }  // namespace
 
-LoginTooltipView::LoginTooltipView(const base::string16& message,
+LoginTooltipView::LoginTooltipView(const std::u16string& message,
                                    views::View* anchor_view)
     : LoginBaseBubbleView(anchor_view) {
-  views::ImageView* info_icon = new views::ImageView();
-  info_icon->SetPreferredSize(gfx::Size(kInfoIconSizeDp, kInfoIconSizeDp));
-  info_icon->SetImage(gfx::CreateVectorIcon(
-      views::kInfoIcon,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary)));
-  AddChildView(info_icon);
+  info_icon_ = AddChildView(std::make_unique<views::ImageView>());
+  info_icon_->SetPreferredSize(gfx::Size(kInfoIconSizeDp, kInfoIconSizeDp));
 
-  label_ = login_views_utils::CreateBubbleLabel(message, this);
-  AddChildView(label_);
+  label_ = AddChildView(login_views_utils::CreateBubbleLabel(message, this));
 }
 
 LoginTooltipView::~LoginTooltipView() = default;
 
-void LoginTooltipView::SetText(const base::string16& message) {
-  label_->SetText(message);
-}
-
 void LoginTooltipView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kTooltip;
+}
+
+void LoginTooltipView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  info_icon_->SetImage(gfx::CreateVectorIcon(
+      views::kInfoIcon,
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorPrimary)));
+  label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary));
 }
 
 }  // namespace ash

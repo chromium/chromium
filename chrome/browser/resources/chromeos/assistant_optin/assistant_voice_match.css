@@ -2,86 +2,18 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-.content {
-  padding-inline-end: 8px;
-}
-
-#title-recording,
-#title-completed {
-  padding-bottom: 36px;
-}
-
-#no-dsp-message {
-  padding-top: 16px;
-}
-
-#footer-text {
-  color: #757575;
-}
-
-#voice-match-animation-container {
-  flex-grow: 1;
-}
-
-.centering {
-  left: 50%;
-  position: relative;
-  top: 50%;
-  transform: translate(-50%, -50%);
-}
-
-:host-context(html[dir=rtl]) .centering {
-  left: auto;
-  right: 50%;
-  transform: translate(50%, -50%);
-}
-
 #voice-match-animation {
   height: 170px;
-  width: 255px;
 }
 
-#already-setup-animation-container {
-  flex-grow: 1;
-}
-
-#already-setup-animation {
-  height: 300px;
-  width: 360px;
+#ready-img {
+  height: 288px;
 }
 
 @media screen and (max-height: 736px) {
   #voice-match-animation {
     height: 150px;
   }
-
-  #already-setup-animation {
-    height: 240px;
-  }
-}
-
-#intro-container,
-#recording-container,
-#already-setup-container {
-  display: none;
-  flex-grow: 1;
-}
-
-.container,
-.intro #intro-container,
-.already-setup #already-setup-container {
-  display: flex;
-  flex-direction: column;
-}
-
-.recording #title-completed,
-.completed #title-recording {
-  display: none;
-}
-
-.recording #recording-container,
-.completed #recording-container {
-  display: table;
 }
 
 #loading-animation {
@@ -92,18 +24,4 @@
 #loading-spinner {
   height: 100px;
   width: 100px;
-}
-
-#footer-text {
-  display: table-footer-group;
-}
-
-.intro #skip-button,
-.intro #agree-button,
-.recording #later-button {
-  display: block;
-}
-
-oobe-text-button {
-  display: none;
 }

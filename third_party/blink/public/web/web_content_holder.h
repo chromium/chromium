@@ -7,9 +7,12 @@
 
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
-#include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
+
+namespace gfx {
+class Rect;
+}  // namespace gfx
 
 namespace blink {
 
@@ -23,7 +26,7 @@ class BLINK_EXPORT WebContentHolder {
   virtual ~WebContentHolder();
 
   WebString GetValue() const;
-  WebRect GetBoundingBox() const;
+  gfx::Rect GetBoundingBox() const;
   uint64_t GetId() const;
 
 #if INSIDE_BLINK

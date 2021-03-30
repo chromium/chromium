@@ -60,80 +60,67 @@ class PRINTING_EXPORT CupsPrinter : public CupsOptionProvider {
     int top;
   };
 
+  ~CupsPrinter() override = default;
+
   // Create a printer with a connection defined by |http| and |dest|.
-  CupsPrinter(http_t* http, ScopedDestination dest);
-  CupsPrinter(CupsPrinter&& printer);
-  CupsPrinter(const CupsPrinter&) = delete;
-  CupsPrinter& operator=(const CupsPrinter&) = delete;
-  ~CupsPrinter() override;
+  static std::unique_ptr<CupsPrinter> Create(http_t* http,
+                                             ScopedDestination dest);
 
   // Returns true if this is the default printer
-  bool is_default() const;
-
-  // CupsOptionProvider
-  ipp_attribute_t* GetSupportedOptionValues(
-      const char* option_name) const override;
-  std::vector<base::StringPiece> GetSupportedOptionValueStrings(
-      const char* option_name) const override;
-  ipp_attribute_t* GetDefaultOptionValue(
-      const char* option_name) const override;
-  bool CheckOptionSupported(const char* name, const char* value) const override;
-
-  // Returns the contents of the PPD retrieved from the print server.
-  std::string GetPPD() const;
+  virtual bool is_default() const = 0;
 
   // Returns the name of the printer as configured in CUPS
-  std::string GetName() const;
+  virtual std::string GetName() const = 0;
 
-  std::string GetMakeAndModel() const;
+  virtual std::string GetMakeAndModel() const = 0;
 
   // Returns the "printer-info" option of the printer as configured in CUPS.
-  std::string GetInfo() const;
+  virtual std::string GetInfo() const = 0;
 
-  std::string GetUri() const;
+  virtual std::string GetUri() const = 0;
 
   // Lazily initialize dest info as it can require a network call
-  bool EnsureDestInfo() const;
+  virtual bool EnsureDestInfo() const = 0;
 
   // Populates |basic_info| with the relevant information about the printer
-  bool ToPrinterInfo(PrinterBasicInfo* basic_info) const;
+  virtual bool ToPrinterInfo(PrinterBasicInfo* basic_info) const = 0;
 
   // Start a print job.  Writes the id of the started job to |job_id|.  |job_id|
   // is 0 if there is an error.  |title| is not sent if empty.  |username| is
   // not sent if empty.  Check availability before using this operation.  Usage
   // on an unavailable printer is undefined.
-  ipp_status_t CreateJob(int* job_id,
-                         const std::string& title,
-                         const std::string& username,
-                         const std::vector<cups_option_t>& options);
+  virtual ipp_status_t CreateJob(int* job_id,
+                                 const std::string& title,
+                                 const std::string& username,
+                                 const std::vector<cups_option_t>& options) = 0;
 
   // Add a document to a print job.  |job_id| must be non-zero and refer to a
   // job started with CreateJob.  |docname| will be displayed in print status
   // if not empty.  |last_doc| should be true if this is the last document for
   // this print job.  |username| is not sent if empty.  |options| should be IPP
   // key value pairs for the Send-Document operation.
-  bool StartDocument(int job_id,
-                     const std::string& docname,
-                     bool last_doc,
-                     const std::string& username,
-                     const std::vector<cups_option_t>& options);
+  virtual bool StartDocument(int job_id,
+                             const std::string& docname,
+                             bool last_doc,
+                             const std::string& username,
+                             const std::vector<cups_option_t>& options) = 0;
 
   // Add data to the current document started by StartDocument.  Calling this
   // without a started document will fail.
-  bool StreamData(const std::vector<char>& buffer);
+  virtual bool StreamData(const std::vector<char>& buffer) = 0;
 
   // Finish the current document.  Another document can be added or the job can
   // be closed to complete printing.
-  bool FinishDocument();
+  virtual bool FinishDocument() = 0;
 
   // Close the job.  If the job is not closed, the documents will not be
   // printed.  |job_id| should match the id from CreateJob.  |username| is not
   // sent if empty.
-  ipp_status_t CloseJob(int job_id, const std::string& username);
+  virtual ipp_status_t CloseJob(int job_id, const std::string& username) = 0;
 
   // Cancel the print job |job_id|.  Returns true if the operation succeeded.
   // Returns false if it failed for any reason.
-  bool CancelJob(int job_id);
+  virtual bool CancelJob(int job_id) = 0;
 
   // Queries CUPS for the margins of the media named by |media_id|.
   //
@@ -142,17 +129,8 @@ class PRINTING_EXPORT CupsPrinter : public CupsOptionProvider {
   // print_media_l10n.cc.
   //
   // Returns all zeroes if the CUPS API call fails.
-  CupsMediaMargins GetMediaMarginsByName(const std::string& media_id);
-
- private:
-  // http connection owned by the CupsConnection which created this object
-  http_t* const cups_http_;
-
-  // information to identify a printer
-  ScopedDestination destination_;
-
-  // opaque object containing printer attributes and options
-  mutable ScopedDestInfo dest_info_;
+  virtual CupsMediaMargins GetMediaMarginsByName(
+      const std::string& media_id) = 0;
 };
 
 }  // namespace printing

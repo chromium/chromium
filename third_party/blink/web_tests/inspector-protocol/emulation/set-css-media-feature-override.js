@@ -49,6 +49,13 @@
   await setEmulatedMediaFeature('prefers-reduced-motion', 'reduce');
   await setEmulatedMediaFeature('prefers-reduced-motion', '__invalid__');
 
+  // Test `color-gamut`.
+  // https://drafts.csswg.org/mediaqueries-5/#color-gamut
+  await setEmulatedMediaFeature('color-gamut', '__invalid__');
+  await setEmulatedMediaFeature('color-gamut', 'p3');
+  await setEmulatedMediaFeature('color-gamut', 'rec2020');
+  await setEmulatedMediaFeature('color-gamut', '__invalid__');
+
   // Test combinations.
   await setEmulatedMediaFeatures({
     features: [

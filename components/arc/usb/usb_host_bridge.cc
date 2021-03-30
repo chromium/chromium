@@ -23,6 +23,9 @@
 namespace arc {
 namespace {
 
+// USB class codes are detailed at https://www.usb.org/defined-class-codes
+constexpr int kUsbClassMassStorage = 0x08;
+
 // Singleton factory for ArcUsbHostBridge
 class ArcUsbHostBridgeFactory
     : public internal::ArcBrowserContextKeyedServiceFactoryBase<
@@ -41,6 +44,26 @@ class ArcUsbHostBridgeFactory
   ArcUsbHostBridgeFactory() = default;
   ~ArcUsbHostBridgeFactory() override = default;
 };
+
+bool IsMassStorageInterface(const device::mojom::UsbInterfaceInfo& interface) {
+  for (const auto& alternate : interface.alternates) {
+    if (alternate->class_code == kUsbClassMassStorage)
+      return true;
+  }
+  return false;
+}
+
+bool ShouldExposeDevice(const device::mojom::UsbDeviceInfo& device_info) {
+  // ChromeOS allows mass storage devices to be detached, but we don't expose
+  // these directly to ARC.
+  for (const auto& configuration : device_info.configurations) {
+    for (const auto& interface : configuration->interfaces) {
+      if (!IsMassStorageInterface(*interface))
+        return true;
+    }
+  }
+  return false;
+}
 
 void OnDeviceOpened(mojom::UsbHostHost::OpenDeviceCallback callback,
                     base::ScopedFD fd) {
@@ -132,9 +155,9 @@ void ArcUsbHostBridge::RequestPermission(const std::string& guid,
   DCHECK(ui_delegate_);
   // Ask the authorization from the user.
   ui_delegate_->RequestUsbAccessPermission(
-      package, guid, iter->second->serial_number.value_or(base::string16()),
-      iter->second->manufacturer_name.value_or(base::string16()),
-      iter->second->product_name.value_or(base::string16()),
+      package, guid, iter->second->serial_number.value_or(std::u16string()),
+      iter->second->manufacturer_name.value_or(std::u16string()),
+      iter->second->product_name.value_or(std::u16string()),
       iter->second->vendor_id, iter->second->product_id, std::move(callback));
 }
 
@@ -193,17 +216,17 @@ void ArcUsbHostBridge::GetDeviceInfo(const std::string& guid,
 
   device::mojom::UsbDeviceInfoPtr info = iter->second->Clone();
   // b/69295049 the other side doesn't like optional strings.
-  info->manufacturer_name = info->manufacturer_name.value_or(base::string16());
-  info->product_name = info->product_name.value_or(base::string16());
-  info->serial_number = info->serial_number.value_or(base::string16());
+  info->manufacturer_name = info->manufacturer_name.value_or(std::u16string());
+  info->product_name = info->product_name.value_or(std::u16string());
+  info->serial_number = info->serial_number.value_or(std::u16string());
   for (const device::mojom::UsbConfigurationInfoPtr& cfg :
        info->configurations) {
     cfg->configuration_name =
-        cfg->configuration_name.value_or(base::string16());
+        cfg->configuration_name.value_or(std::u16string());
     for (const device::mojom::UsbInterfaceInfoPtr& iface : cfg->interfaces) {
       for (const device::mojom::UsbAlternateInterfaceInfoPtr& alt :
            iface->alternates) {
-        alt->interface_name = alt->interface_name.value_or(base::string16());
+        alt->interface_name = alt->interface_name.value_or(std::u16string());
       }
     }
   }
@@ -270,7 +293,7 @@ std::vector<std::string> ArcUsbHostBridge::GetEventReceiverPackages(
   DCHECK(ui_delegate_);
 
   std::unordered_set<std::string> receivers = ui_delegate_->GetEventPackageList(
-      device_info.guid, device_info.serial_number.value_or(base::string16()),
+      device_info.guid, device_info.serial_number.value_or(std::u16string()),
       device_info.vendor_id, device_info.product_id);
 
   return std::vector<std::string>(receivers.begin(), receivers.end());
@@ -291,6 +314,9 @@ void ArcUsbHostBridge::OnDeviceChecked(const std::string& guid, bool allowed) {
   if (iter == devices_.end())
     return;
 
+  if (!ShouldExposeDevice(*iter->second))
+    return;
+
   mojom::UsbHostInstance* usb_host_instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc_bridge_service_->usb_host(), OnDeviceAdded);
 
@@ -308,7 +334,7 @@ bool ArcUsbHostBridge::HasPermissionForDevice(
 
   return ui_delegate_->HasUsbAccessPermission(
       package, device_info.guid,
-      device_info.serial_number.value_or(base::string16()),
+      device_info.serial_number.value_or(std::u16string()),
       device_info.vendor_id, device_info.product_id);
 }
 

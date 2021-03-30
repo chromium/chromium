@@ -81,6 +81,10 @@ void BookmarkAppRegistryController::SetAppIsDisabled(
   registrar_->NotifyWebAppDisabledStateChanged(app_id, is_disabled);
 }
 
+void BookmarkAppRegistryController::UpdateAppsDisableMode() {
+  registrar_->NotifyWebAppsDisabledModeChanged();
+}
+
 void BookmarkAppRegistryController::SetAppIsLocallyInstalled(
     const web_app::AppId& app_id,
     bool is_locally_installed) {
@@ -88,6 +92,14 @@ void BookmarkAppRegistryController::SetAppIsLocallyInstalled(
                                    is_locally_installed);
   registrar_->NotifyWebAppLocallyInstalledStateChanged(app_id,
                                                        is_locally_installed);
+}
+
+// Bookmark apps are deprecated. They don't update last badging time on local
+// installs.
+void BookmarkAppRegistryController::SetAppLastBadgingTime(
+    const web_app::AppId& app_id,
+    const base::Time& time) {
+  NOTIMPLEMENTED();
 }
 
 void BookmarkAppRegistryController::SetAppLastLaunchTime(

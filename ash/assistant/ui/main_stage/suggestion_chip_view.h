@@ -7,7 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_suggestion.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 
@@ -46,8 +46,8 @@ class COMPONENT_EXPORT(ASSISTANT_UI) SuggestionChipView : public views::Button {
   void SetIcon(const gfx::ImageSkia& icon);
   const gfx::ImageSkia& GetIcon() const;
 
-  void SetText(const base::string16& text);
-  const base::string16& GetText() const;
+  void SetText(const std::u16string& text);
+  const std::u16string& GetText() const;
 
   const base::UnguessableToken& suggestion_id() const { return suggestion_id_; }
 

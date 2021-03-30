@@ -133,11 +133,12 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_FORCED_SIGNIN:
     case AccessPoint::ACCESS_POINT_ACCOUNT_RENAMED:
     case AccessPoint::ACCESS_POINT_WEB_SIGNIN:
-    case AccessPoint::ACCESS_POINT_SAFETY_CHECK:
       NOTREACHED() << "Access point " << static_cast<int>(access_point)
-                   << " is only used on Android, where"
-                   << " RecordSigninUserActionForAccessPoint is not used"
-                   << " for logging user actions.";
+                   << " is not supposed to log signin user actions.";
+      break;
+    case AccessPoint::ACCESS_POINT_SAFETY_CHECK:
+      VLOG(1) << "Signin_Signin_From* user action is not recorded "
+              << "for access point " << static_cast<int>(access_point);
       break;
     case AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED();
@@ -602,8 +603,7 @@ void LogSigninAccessPointCompleted(AccessPoint access_point,
 }
 
 void LogSigninReason(Reason reason) {
-  UMA_HISTOGRAM_ENUMERATION("Signin.SigninReason", static_cast<int>(reason),
-                            static_cast<int>(Reason::REASON_MAX));
+  UMA_HISTOGRAM_ENUMERATION("Signin.SigninReason", reason);
 }
 
 void LogSigninAccountReconciliation(int total_number_accounts,
@@ -893,10 +893,13 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromKaleidoscope"));
       break;
+    case AccessPoint::ACCESS_POINT_USER_MANAGER:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Impression_FromUserManager"));
+      break;
     case AccessPoint::ACCESS_POINT_CONTENT_AREA:
     case AccessPoint::ACCESS_POINT_EXTENSIONS:
     case AccessPoint::ACCESS_POINT_SUPERVISED_USER:
-    case AccessPoint::ACCESS_POINT_USER_MANAGER:
     case AccessPoint::ACCESS_POINT_UNKNOWN:
     case AccessPoint::ACCESS_POINT_MACHINE_LOGON:
     case AccessPoint::ACCESS_POINT_SYNC_ERROR_CARD:

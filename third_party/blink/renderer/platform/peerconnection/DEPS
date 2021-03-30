@@ -17,6 +17,7 @@ include_rules = [
     "+base/threading/thread_restrictions.h",
     "+media/base",
     "+media/capture/capture_switches.h",
+    "+media/capture/video_frame_feedback.h",
     "+media/filters/decoder_stream.h",
     "+media/media_buildflags.h",
     # This is only needed for a cast to DecoderFactory.
@@ -24,7 +25,6 @@ include_rules = [
     "+media/video/gpu_video_accelerator_factories.h",
     "+media/video/video_decode_accelerator.h",
     "+media/video/h264_parser.h",
-    "+media/video/supported_video_decoder_config.h",
     "+media/video/video_encode_accelerator.h",
     "+third_party/blink/renderer/platform/bindings/script_wrappable.h",
     "+third_party/blink/renderer/platform/heap",

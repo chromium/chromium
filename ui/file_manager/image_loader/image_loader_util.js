@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-function ImageLoaderUtil() {}
+// #import {LoadImageRequest} from './load_image_request.m.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+
+/* #export */ function ImageLoaderUtil() {}
 
 /**
  * Checks if the options on the request contain any image processing.

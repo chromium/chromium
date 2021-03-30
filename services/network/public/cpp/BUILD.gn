@@ -67,6 +67,8 @@ component("cpp") {
     "ip_address_space_util.h",
     "is_potentially_trustworthy.cc",
     "is_potentially_trustworthy.h",
+    "link_header_parser.cc",
+    "link_header_parser.h",
     "load_info_util.cc",
     "load_info_util.h",
     "net_adapters.cc",
@@ -79,8 +81,10 @@ component("cpp") {
     "network_switches.h",
     "not_implemented_url_loader_factory.cc",
     "not_implemented_url_loader_factory.h",
-    "origin_isolation_parser.cc",
-    "origin_isolation_parser.h",
+    "opaque_response_blocking.cc",
+    "opaque_response_blocking.h",
+    "origin_agent_cluster_parser.cc",
+    "origin_agent_cluster_parser.h",
     "parsed_headers.cc",
     "parsed_headers.h",
     "request_destination.cc",
@@ -89,6 +93,8 @@ component("cpp") {
     "request_mode.h",
     "resolve_host_client_base.cc",
     "resolve_host_client_base.h",
+    "self_deleting_url_loader_factory.cc",
+    "self_deleting_url_loader_factory.h",
     "session_cookie_delete_predicate.h",
     "shared_url_loader_factory.cc",
     "shared_url_loader_factory.h",
@@ -144,6 +150,7 @@ component("cpp") {
   deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//components/link_header_util",
     "//components/prefs",
     "//ipc",
     "//services/proxy_resolver/public/mojom",
@@ -167,7 +174,7 @@ component("ip_address_mojom_support") {
     "//net",
     "//services/network/public/mojom:mojom_ip_address_shared",
   ]
-  defines = [ "IS_NETWORK_CPP_BASE_IMPL" ]
+  defines = [ "IS_NETWORK_CPP_IP_ADDRESS_IMPL" ]
 }
 
 component("cookies_mojom_support") {
@@ -181,7 +188,25 @@ component("cookies_mojom_support") {
     "//net",
     "//services/network/public/mojom:cookies_mojom_shared",
   ]
-  defines = [ "IS_NETWORK_CPP_BASE_IMPL" ]
+  defines = [ "IS_NETWORK_CPP_COOKIES_IMPL" ]
+}
+
+component("network_param_mojom_support") {
+  sources = [
+    "net_ipc_param_traits.cc",
+    "net_ipc_param_traits.h",
+    "network_param_mojom_traits.cc",
+    "network_param_mojom_traits.h",
+  ]
+  deps = [
+    "//ipc",
+    "//mojo/public/cpp/base:shared_typemap_traits",
+    "//net",
+    "//services/network/public/mojom:mojom_network_param_shared",
+    "//url/ipc:url_ipc",
+    "//url/mojom:url_mojom_origin",
+  ]
+  defines = [ "IS_NETWORK_CPP_NETWORK_PARAM_IMPL" ]
 }
 
 # This component is separate from cpp_base as it is a dependency of
@@ -200,7 +225,7 @@ component("cross_origin_embedder_policy") {
     "//services/network/public/mojom:url_loader_base_shared",
   ]
 
-  defines = [ "IS_NETWORK_CPP_BASE_IMPL" ]
+  defines = [ "IS_NETWORK_CPP_CROSS_ORIGIN_IMPL" ]
 }
 
 # This component is separate from cpp_base as it is a dependency of
@@ -215,7 +240,7 @@ component("schemeful_site_mojom_support") {
     "//services/network/public/mojom:mojom_schemeful_site_shared",
     "//url/mojom:url_mojom_origin",
   ]
-  defines = [ "IS_NETWORK_CPP_BASE_IMPL" ]
+  defines = [ "IS_NETWORK_CPP_SCHEMEFUL_IMPL" ]
 }
 
 component("cpp_base") {
@@ -236,12 +261,10 @@ component("cpp_base") {
     "http_request_headers_mojom_traits.h",
     "isolation_info_mojom_traits.cc",
     "isolation_info_mojom_traits.h",
-    "isolation_opt_in_hints.cc",
-    "isolation_opt_in_hints.h",
+    "load_timing_info_mojom_traits.cc",
+    "load_timing_info_mojom_traits.h",
     "mutable_network_traffic_annotation_tag_mojom_traits.h",
     "mutable_partial_network_traffic_annotation_tag_mojom_traits.h",
-    "net_ipc_param_traits.cc",
-    "net_ipc_param_traits.h",
     "network_interface_mojom_traits.cc",
     "network_interface_mojom_traits.h",
     "network_ipc_param_traits.cc",
@@ -279,6 +302,7 @@ component("cpp_base") {
     ":crash_keys",
     ":cross_origin_embedder_policy",
     ":ip_address_mojom_support",
+    ":network_param_mojom_support",
     ":schemeful_site_mojom_support",
     "//services/network/public/mojom:url_loader_base",
     "//third_party/webrtc_overrides:webrtc_component",
@@ -292,14 +316,38 @@ component("cpp_base") {
     "//mojo/public/mojom/base",
     "//net",
     "//services/network/public/mojom:cookies_mojom",
-    "//services/network/public/mojom:mojom_shared",
+    "//services/network/public/mojom:url_loader_base",
   ]
   defines = [ "IS_NETWORK_CPP_BASE_IMPL" ]
+
+  # Since URLLoader is typedmapped in mojo and the class also uses the mojo
+  # interfaces a circular dependency exists. Allow this and ignore windows
+  # errors from it.
+  allow_circular_includes_from =
+      [ "//services/network/public/mojom:url_loader_base" ]
+  if (is_win && is_component_build) {
+    ldflags = [ "/IGNORE:4217" ]
+  }
 }
 
 mojom("test_interfaces") {
   sources = [ "network_traits_test_service.mojom" ]
   public_deps = [ "//services/network/public/mojom" ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [ "is_potentially_trustworthy_unittest.h" ]
+
+  public_deps = [
+    ":cpp",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url:url_test_support",
+  ]
 }
 
 source_set("tests") {
@@ -330,6 +378,7 @@ source_set("tests") {
     "ip_address_space_util_unittest.cc",
     "is_potentially_trustworthy_unittest.cc",
     "isolation_info_mojom_traits_unittest.cc",
+    "link_header_parser_unittest.cc",
     "mutable_network_traffic_annotation_tag_mojom_traits_unittest.cc",
     "mutable_partial_network_traffic_annotation_tag_mojom_traits_unittest.cc",
     "net_log_mojom_traits_unittest.cc",
@@ -337,8 +386,9 @@ source_set("tests") {
     "network_isolation_key_mojom_traits_unittest.cc",
     "network_mojom_traits_unittest.cc",
     "network_quality_tracker_unittest.cc",
+    "opaque_response_blocking_unittest.cc",
     "optional_trust_token_params_unittest.cc",
-    "origin_isolation_parser_unittest.cc",
+    "origin_agent_cluster_parser_unittest.cc",
     "proxy_config_mojom_traits_unittest.cc",
     "schemeful_site_mojom_traits_unittest.cc",
     "simple_url_loader_unittest.cc",
@@ -357,6 +407,7 @@ source_set("tests") {
   deps = [
     ":cpp",
     ":test_interfaces",
+    ":test_support",
     "//base",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/test_support:test_utils",

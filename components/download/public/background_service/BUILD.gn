@@ -9,6 +9,8 @@ if (is_android) {
 
 source_set("public") {
   sources = [
+    "basic_task_scheduler.cc",
+    "basic_task_scheduler.h",
     "blob_context_getter_factory.h",
     "client.cc",
     "client.h",

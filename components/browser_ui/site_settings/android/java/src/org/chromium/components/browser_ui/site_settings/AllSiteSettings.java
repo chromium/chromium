@@ -97,7 +97,7 @@ public class AllSiteSettings extends SiteSettingsPreferenceFragment
 
     private void getInfoForOrigins() {
         WebsitePermissionsFetcher fetcher = new WebsitePermissionsFetcher(
-                getSiteSettingsClient().getBrowserContextHandle(), false);
+                getSiteSettingsDelegate().getBrowserContextHandle(), false);
         fetcher.fetchPreferencesForCategory(mCategory, new ResultsPopulator());
     }
 
@@ -106,7 +106,7 @@ public class AllSiteSettings extends SiteSettingsPreferenceFragment
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Read which category we should be showing.
         BrowserContextHandle browserContextHandle =
-                getSiteSettingsClient().getBrowserContextHandle();
+                getSiteSettingsDelegate().getBrowserContextHandle();
         if (getArguments() != null) {
             mCategory = SiteSettingsCategory.createFromPreferenceKey(
                     browserContextHandle, getArguments().getString(EXTRA_CATEGORY, ""));
@@ -156,7 +156,7 @@ public class AllSiteSettings extends SiteSettingsPreferenceFragment
         for (int i = 0; i < mWebsites.size(); i++) {
             WebsitePreference preference = mWebsites.get(i);
             preference.site().clearAllStoredData(
-                    getSiteSettingsClient().getBrowserContextHandle(), () -> {
+                    getSiteSettingsDelegate().getBrowserContextHandle(), () -> {
                         if (--numLeft[0] <= 0) getInfoForOrigins();
                     });
         }
@@ -170,7 +170,7 @@ public class AllSiteSettings extends SiteSettingsPreferenceFragment
         long totalUsage = 0;
         boolean includesApps = false;
         Set<String> originsWithInstalledApp =
-                getSiteSettingsClient().getWebappSettingsClient().getOriginsWithInstalledApp();
+                getSiteSettingsDelegate().getOriginsWithInstalledApp();
         if (mWebsites != null) {
             for (WebsitePreference preference : mWebsites) {
                 totalUsage += preference.site().getTotalUsage();
@@ -243,7 +243,7 @@ public class AllSiteSettings extends SiteSettingsPreferenceFragment
             if (queryHasChanged) getInfoForOrigins();
         });
 
-        if (getSiteSettingsClient().getSiteSettingsHelpClient().isHelpAndFeedbackEnabled()) {
+        if (getSiteSettingsDelegate().isHelpAndFeedbackEnabled()) {
             MenuItem help = menu.add(
                     Menu.NONE, R.id.menu_id_site_settings_help, Menu.NONE, R.string.menu_help);
             help.setIcon(VectorDrawableCompat.create(
@@ -254,9 +254,7 @@ public class AllSiteSettings extends SiteSettingsPreferenceFragment
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_id_site_settings_help) {
-            getSiteSettingsClient()
-                    .getSiteSettingsHelpClient()
-                    .launchSettingsHelpAndFeedbackActivity(getActivity());
+            getSiteSettingsDelegate().launchSettingsHelpAndFeedbackActivity(getActivity());
 
             return true;
         }
@@ -318,7 +316,7 @@ public class AllSiteSettings extends SiteSettingsPreferenceFragment
         for (Website site : sites) {
             if (mSearch == null || mSearch.isEmpty() || site.getTitle().contains(mSearch)) {
                 websites.add(new WebsitePreference(
-                        getStyledContext(), getSiteSettingsClient(), site, mCategory));
+                        getStyledContext(), getSiteSettingsDelegate(), site, mCategory));
             }
         }
 

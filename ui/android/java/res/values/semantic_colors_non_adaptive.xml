@@ -78,6 +78,10 @@
     <color name="menu_chip_background_color_disabled_dark">@color/modern_grey_100_alpha_38</color>
     <color name="menu_chip_background_color_disabled_light">@color/white_alpha_6</color>
 
+    <!-- IPH Highlight Colors -->
+    <color name="iph_highlight_blue_dark">@color/modern_blue_600_alpha_10</color>
+    <color name="iph_highlight_blue_light">@color/modern_blue_300_alpha_50</color>
+
     <!-- Colors used for Widgets (checkboxes, switches, buttons, etc)-->
     <color name="default_control_color_active_light" tools:ignore="UnusedResources">@color/modern_blue_600</color>
     <color name="default_control_color_active_dark" tools:ignore="UnusedResources">@color/modern_blue_300</color>

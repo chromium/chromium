@@ -33,7 +33,7 @@ class ASH_EXPORT LoginUserView : public views::View,
 
     LoginDisplayStyle display_style() const;
 
-    const base::string16& displayed_name() const;
+    const std::u16string& displayed_name() const;
 
     views::View* user_label() const;
     views::View* tap_button() const;
@@ -79,11 +79,14 @@ class ASH_EXPORT LoginUserView : public views::View,
 
   const LoginUserInfo& current_user() const { return current_user_; }
 
+  void UpdateDropdownIcon();
+
   // views::View:
   const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   void Layout() override;
   void RequestFocus() override;
+  void OnThemeChanged() override;
 
  private:
   class UserImage;

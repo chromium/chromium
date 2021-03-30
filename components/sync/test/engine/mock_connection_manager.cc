@@ -10,7 +10,7 @@
 #include "base/guid.h"
 #include "base/location.h"
 #include "base/strings/stringprintf.h"
-#include "components/sync/engine_impl/syncer_proto_util.h"
+#include "components/sync/engine/syncer_proto_util.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
@@ -51,10 +51,6 @@ MockConnectionManager::MockConnectionManager()
 
 MockConnectionManager::~MockConnectionManager() {
   EXPECT_TRUE(update_queue_.empty()) << "Unfetched updates.";
-}
-
-void MockConnectionManager::SetCommitTimeRename(const string& prepend) {
-  commit_time_rename_prepended_string_ = prepend;
 }
 
 void MockConnectionManager::SetMidCommitCallback(base::OnceClosure callback) {
@@ -371,7 +367,8 @@ sync_pb::SyncEntity* MockConnectionManager::AddUpdateFromLastCommit() {
             last_commit_response().entryresponse(0).response_type());
 
   if (last_sent_commit().entries(0).deleted()) {
-    ModelType type = GetModelType(last_sent_commit().entries(0));
+    ModelType type =
+        GetModelTypeFromSpecifics(last_sent_commit().entries(0).specifics());
     AddUpdateTombstone(last_sent_commit().entries(0).id_string(), type);
   } else {
     sync_pb::SyncEntity* ent = GetUpdateResponse()->add_entries();
@@ -413,7 +410,8 @@ void MockConnectionManager::AddUpdateTombstone(const std::string& id,
 void MockConnectionManager::SetLastUpdateDeleted() {
   // Tombstones have only the ID set.  Wipe anything else.
   string id_string = GetMutableLastUpdate()->id_string();
-  ModelType type = GetModelType(*GetMutableLastUpdate());
+  ModelType type =
+      GetModelTypeFromSpecifics(GetMutableLastUpdate()->specifics());
   GetUpdateResponse()->mutable_entries()->RemoveLast();
   AddUpdateTombstone(id_string, type);
 }
@@ -484,7 +482,8 @@ bool MockConnectionManager::ProcessGetUpdates(
   sync_pb::GetUpdatesResponse* updates = &update_queue_.front();
   for (int i = 0; i < updates->entries_size(); ++i) {
     if (!updates->entries(i).deleted()) {
-      ModelType entry_type = GetModelType(updates->entries(i));
+      ModelType entry_type =
+          GetModelTypeFromSpecifics(updates->entries(i).specifics());
       EXPECT_TRUE(
           IsModelTypePresentInSpecifics(gu.from_progress_marker(), entry_type))
           << "Syncer did not request updates being provided by the test.";
@@ -551,7 +550,6 @@ bool MockConnectionManager::ProcessCommit(
     ADD_FAILURE() << "Wrong contents, found " << csm->message_contents();
     return false;
   }
-  map<string, string> changed_ids;
   const CommitMessage& commit_message = csm->commit();
   CommitResponse* commit_response = response_buffer->mutable_commit();
   commit_messages_.push_back(std::make_unique<CommitMessage>());
@@ -595,21 +593,10 @@ bool MockConnectionManager::ProcessCommit(
     }
     er->set_response_type(CommitResponse::SUCCESS);
     er->set_version(entry.version() + 1);
-    if (!commit_time_rename_prepended_string_.empty()) {
-      // Commit time rename sent down from the server.
-      er->set_name(commit_time_rename_prepended_string_ + entry.name());
-    }
-    string parent_id_string = entry.parent_id_string();
-    // Remap id's we've already assigned.
-    if (changed_ids.end() != changed_ids.find(parent_id_string)) {
-      parent_id_string = changed_ids[parent_id_string];
-      er->set_parent_id_string(parent_id_string);
-    }
     if (entry.has_version() && 0 != entry.version()) {
       er->set_id_string(id_string);  // Allows verification.
     } else {
       string new_id = base::StringPrintf("mock_server:%d", next_new_id_++);
-      changed_ids[id_string] = new_id;
       er->set_id_string(new_id);
     }
   }

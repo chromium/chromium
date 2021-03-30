@@ -42,19 +42,6 @@
       "use_goma": true
     }
   },
-  "android-mojo-webview-rel": {
-    "gn_args": {
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "strip_debug_info": true,
-      "symbol_level": 1,
-      "target_cpu": "arm64",
-      "target_os": "android",
-      "use_goma": true
-    }
-  },
   "mac-mojo-rel": {
     "gn_args": {
       "dcheck_always_on": true,

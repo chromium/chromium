@@ -14,7 +14,6 @@
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "net/base/escape.h"
 #include "net/base/net_errors.h"
@@ -282,21 +281,21 @@ std::string GetFileSystemTypeString(FileSystemType type) {
       return "External";
     case kFileSystemTypeTest:
       return "Test";
-    case kFileSystemTypeNativeLocal:
-      return "NativeLocal";
-    case kFileSystemTypeRestrictedNativeLocal:
-      return "RestrictedNativeLocal";
+    case kFileSystemTypeLocal:
+      return "Local";
+    case kFileSystemTypeRestrictedLocal:
+      return "RestrictedLocal";
     case kFileSystemTypeDragged:
       return "Dragged";
-    case kFileSystemTypeNativeMedia:
-      return "NativeMedia";
+    case kFileSystemTypeLocalMedia:
+      return "LocalMedia";
     case kFileSystemTypeDeviceMedia:
       return "DeviceMedia";
     case kFileSystemTypeSyncable:
     case kFileSystemTypeSyncableForInternalSync:
       return "Syncable";
-    case kFileSystemTypeNativeForPlatformApp:
-      return "NativeForPlatformApp";
+    case kFileSystemTypeLocalForPlatformApp:
+      return "LocalForPlatformApp";
     case kFileSystemTypeForTransientFile:
       return "TransientFile";
     case kFileSystemTypePluginPrivate:
@@ -327,16 +326,18 @@ std::string GetFileSystemTypeString(FileSystemType type) {
 }
 
 std::string FilePathToString(const base::FilePath& file_path) {
+  // TODO(pkasting): Probably this should use AsUTF8Unsafe() across platforms.
 #if defined(OS_WIN)
-  return base::UTF16ToUTF8(file_path.value());
+  return file_path.AsUTF8Unsafe();
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
   return file_path.value();
 #endif
 }
 
 base::FilePath StringToFilePath(const std::string& file_path_string) {
+  // TODO(pkasting): Probably this should use FromUTF8Unsafe() across platforms.
 #if defined(OS_WIN)
-  return base::FilePath(base::UTF8ToUTF16(file_path_string));
+  return base::FilePath::FromUTF8Unsafe(file_path_string);
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
   return base::FilePath(file_path_string);
 #endif

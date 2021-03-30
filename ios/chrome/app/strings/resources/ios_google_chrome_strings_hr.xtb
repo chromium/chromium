@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hr">
 <translation id="1282031177488366470">Pomozite poboljšati Chromeove značajke i izvedbu</translation>
+<translation id="1314663809820920746">Sve vaše oznake, povijest, zaporke i druge postavke i dalje su vam vidljive na ovom uređaju. Ako nešto promijenite, te se promjene neće sinkronizirati s vašim Google računom.</translation>
 <translation id="1479202195792305274">Chrome može provjeriti vaše zaporke kad se prijavite Google računom.</translation>
 <translation id="1504372625950710826">Chrome nije uspio provjeriti ima li ažuriranja. Provjerite internetsku vezu.</translation>
 <translation id="1682483655351012182">Sinkroniziraj podatke iz Chromea</translation>
@@ -10,6 +11,7 @@
 <translation id="2009224836393115614">Chrome nije uspio provjeriti vaše zaporke. Provjerite internetsku vezu.</translation>
 <translation id="2147651015520127414">Chrome je potvrdio da je <ph name="ISSUER" /> izdao certifikat web-lokacije.</translation>
 <translation id="2199719347983604670">Podaci s Chrome sinkronizacije</translation>
+<translation id="2342919707875585281">Chrome dijeli vašu lokaciju s web-lokacijama za koje dopustite dijeljenje.</translation>
 <translation id="2347208864470321755">Kada je ta značajka uključena, Chrome će ponuditi prijevod stranica napisanih na drugim jezicima pomoću Google prevoditelja. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="2415682770504543561">Postavljanje Chromea kao zadanog preglednika</translation>
 <translation id="2574249610672786438">Da biste vidjeli svoje kartice bez obzira na to gdje koristite Chrome, prijavite se na svim svojim uređajima</translation>
@@ -17,9 +19,9 @@
 <translation id="257708665678654955">Želite li da Google Chrome sljedeći put ponudi prijevod stranica s te web-lokacije za <ph name="LANGUAGE_NAME" />?</translation>
 <translation id="2695886661449553974">Chrome nije uspio provjeriti ima li ažuriranja. Pokušajte ponovo kasnije.</translation>
 <translation id="2732745070297234559">Chrome nije uspio provjeriti sve zaporke. Pokušajte ponovo sutra.</translation>
+<translation id="2740105938841089077">Otvaranje veza pomoću Chromea</translation>
 <translation id="2919738076569633423">Upotrebom Chromea pristajete na <ph name="BEGIN_LINK_TOS" />Uvjete pružanja usluge<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Budući da se odjavljujete s računa kojim upravlja <ph name="SIGNOUT_MANAGED_DOMAIN" />, vaši podaci iz Chromea izbrisat će se s ovog uređaja, no ostat će na vašem Google računu.</translation>
-<translation id="3148688391461398285">Chrome će vam pružiti više ako mu omogućite pristup lokaciji.</translation>
 <translation id="3167189358072330585">Vaš račun ne funkcionira na Google Chromeu. Obratite se administratoru domene ili se prijavite običnim Google računom.</translation>
 <translation id="3173834708294760622">Stranica Google Chromea</translation>
 <translation id="3196546062792660320">Chrome vam štedi vrijeme sinkronizacijom vaših računa na webu. Račune možete dodavati i uklanjati u postavkama.</translation>
@@ -28,7 +30,9 @@
 <translation id="3522659714780527202">Da biste vidjeli svoje kartice bez obzira na to gdje koristite Chrome, uključite sinkronizaciju</translation>
 <translation id="3533694711092285624">Nema nijedne spremljene zaporke. Chrome može provjeriti vaše zaporke kad ih spremite.</translation>
 <translation id="3706101708757577809">Sad možete koristiti Chrome svaki put kad dodirnete veze u porukama, dokumentima i drugim aplikacijama.</translation>
+<translation id="3720541637541300822">Zaključajte anonimne kartice pri zatvaranju Chromea</translation>
 <translation id="384394811301901750">Google Chrome trenutačno ne može upotrebljavati vaš fotoaparat</translation>
+<translation id="38949020760388809">Odaberite želite li podatke iz Chromea izbrisati s ovog uređaja ili ih zadržati.</translation>
 <translation id="3980220367029651214">Prebacujete sinkronizaciju s računa <ph name="USER_EMAIL1" /> na račun <ph name="USER_EMAIL2" />. Vašim postojećim podacima na Chromeu upravlja <ph name="DOMAIN" />. Vaši će se podaci izbrisati s ovog uređaja, no ostat će na računu <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Vaša organizacija zahtijeva da ostanete odjavljeni s Chromea.</translation>
 <translation id="3988789688219830639">Chrome nema pristup fotografijama ni videozapisima. Omogućite pristup u Postavkama iOS-a &gt; Privatnost &gt; Fotografije.</translation>
@@ -51,13 +55,15 @@
 <translation id="5854621639439811139">Savjet za Chrome. Neki se gumbi sada nalaze pri dnu zaslona, primjerice za natrag, naprijed i pretraživanje.</translation>
 <translation id="6036420186814142909">Google Chrome ima značajke koje vam mogu pomoći u upravljanju internetskim podacima i brzinom kojom se učitavaju web-stranice.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
+<translation id="6181930887571472871">Prelazak na Chrome</translation>
 <translation id="6238746320622508509">Dopustite Chromeu da zaključa vaše anonimne kartice.</translation>
 <translation id="6573431926118603307">Ovdje će se prikazati kartice koje ste otvorili u Chromeu na svojim ostalim uređajima.</translation>
 <translation id="6600954340915313787">Kopirano u Chrome</translation>
+<translation id="6634107063912726160">Kad se odjavite, Chrome neće sinkronizirati nove podatke s vašim Google računom. Ranije sinkronizirani podaci ostat će na računu.</translation>
 <translation id="6648150602980899529">Prijavljujete se računom kojim upravlja <ph name="DOMAIN" /> i dajete njegovu administratoru kontrolu nad svojim podacima na Chromeu. Vaši će se podaci trajno povezati s tim računom. Ako se odjavite iz Chromea, vaši će se podaci izbrisati s ovog uređaja, no ostat će pohranjeni na vašem Google računu.</translation>
 <translation id="6676840375528380067">Želite li izbrisati svoje podatke iz Chromea s ovog uređaja?</translation>
-<translation id="6822363243974874813">Kada ste bili odjavljeni s Chromea, s ovog uređaja izbrisane su vaše oznake, povijest, zaporke i ostale postavke. Vaš Google račun i dalje čuva vaše sinkronizirane podatke iz Chromea.</translation>
 <translation id="6822673484890854830">Chrome nije uspio provjeriti sve zaporke. Pokušajte ponovo kasnije.</translation>
+<translation id="6964931465519938134">Sad možete koristiti Chrome svaki put kad dodirnete veze u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="7124339256045485976">Ažuriranje Chromea</translation>
 <translation id="7161390184744336561">Google Chrome je zastario</translation>
 <translation id="7165736900384873061">Upotrijebite QR skener Google Chromea</translation>
@@ -67,17 +73,22 @@
 <translation id="7265369419224458312">Karticama koje ste otvorili na računalu možete pristupiti i ovdje. Samo otvorite Chrome na računalu, idite na izbornik i odaberite "Prijava na Chrome…"</translation>
 <translation id="7272930098487145294">Da bi se slike spremale, dodirnite Postavke kako biste dopustili Chromeu da dodaje vašim fotografijama</translation>
 <translation id="7400722733683201933">O programu Google Chrome</translation>
+<translation id="7501046334262221972">Da biste postavili Chrome kao svoj zadani preglednik, otvorite postavke. Dodirnite opciju Zadana aplikacija preglednika i odaberite Chrome.</translation>
 <translation id="756809126120519699">Chromeovi su podaci izbrisani</translation>
 <translation id="7626032353295482388">Dobro došli u Chrome</translation>
 <translation id="7662994914830945754">Da biste vidjeli svoje kartice bez obzira na to gdje koristite Chrome, prijavite se i uključite sinkronizaciju</translation>
 <translation id="766361182512894255">Vaša je zaporka ugrožena zbog povrede podataka. Chrome preporučuje da je odmah promijenite.</translation>
 <translation id="7698568245838009292">Chrome želi pristupiti kameri</translation>
 <translation id="7855730255114109580">Google Chrome ažuriran je</translation>
-<translation id="8045508249136869751">Da biste Chrome postavili kao zadani preglednik, otvorite Postavke, dodirnite Zadana aplikacija preglednika i odaberite Chrome.</translation>
+<translation id="8109233255338845204">Vašim računom upravlja <ph name="HOSTED_DOMAIN" />, pa će se vaši podaci iz Chromea izbrisati s ovog uređaja.</translation>
 <translation id="8160472928944011082">Ažuriranje Chromea nije moguće</translation>
 <translation id="8370517070665726704">Autorska prava <ph name="YEAR" />. Google LLC. Sva prava pridržana.</translation>
 <translation id="840168496893712993">Neki programski dodaci uzrokuju rušenje preglednika Chrome. Pokušajte ih deinstalirati.</translation>
 <translation id="8459495907675268833">Odabrani podaci uklonjeni su iz Chromea i sa sinkroniziranih uređaja. Na Google računu možda postoje drugi oblici povijesti pregledavanja, primjerice pretraživanja i aktivnosti s drugih Googleovih usluga, na stranici history.google.com.</translation>
+<translation id="850555388806794946">Da biste postavili Chrome kao zadani preglednik:
+  1. Otvorite postavke.
+  2. Dodirnite opciju Zadana aplikacija preglednika.
+  3. Odaberite Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="9135668017386497357">Ako dopustite Chromeu da sazna vašu lokaciju, Chrome će je poslati vašoj zadanoj tražilici i svim web-lokacijama koje dopustite. Web-lokacije mogu tražiti dopuštenje za vašu lokaciju kad vam žele prikazati lokalne informacije, primjerice trgovine u blizini ili vijesti.</translation>
 </translationbundle>

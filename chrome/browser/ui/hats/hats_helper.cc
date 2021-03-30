@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/hats/hats_helper.h"
 
+#include "base/callback_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/hats/hats_service.h"
@@ -21,16 +22,34 @@ HatsHelper::HatsHelper(content::WebContents* web_contents)
 
 void HatsHelper::DidFinishLoad(content::RenderFrameHost* render_frame_host,
                                const GURL& validated_url) {
-  const bool demo_enabled = base::FeatureList::IsEnabled(
-      features::kHappinessTrackingSurveysForDesktopDemo);
+  // If the demo HaTS feature is enabled display a test survey on every page
+  // load unless the "auto_prompt" parameter is explicitly set to false. The
+  // demo feature also disables client-side HaTS rate limiting, thus setting
+  // "auto_prompt" to false allows testing of non-demo surveys without
+  // triggering a demo survey on every page load.
+  const bool demo_enabled =
+      base::FeatureList::IsEnabled(
+          features::kHappinessTrackingSurveysForDesktopDemo) &&
+      base::FeatureParam<bool>(
+          &features::kHappinessTrackingSurveysForDesktopDemo, "auto_prompt",
+          true)
+          .Get();
+
   if (!render_frame_host->GetParent() &&
       (search::IsInstantNTP(web_contents()) || demo_enabled)) {
     HatsService* hats_service = HatsServiceFactory::GetForProfile(
         profile(), /*create_if_necessary=*/true);
 
     if (hats_service) {
-      hats_service->LaunchSurvey(demo_enabled ? kHatsSurveyTriggerTesting
-                                              : kHatsSurveyTriggerSatisfaction);
+      if (demo_enabled) {
+        hats_service->LaunchSurvey(kHatsSurveyTriggerTesting, base::DoNothing(),
+                                   base::DoNothing(),
+                                   {{"Test Field 1", true},
+                                    {"Test Field 2", false},
+                                    {"Test Field 3", true}});
+      } else {
+        hats_service->LaunchSurvey(kHatsSurveyTriggerSatisfaction);
+      }
     }
   }
 }

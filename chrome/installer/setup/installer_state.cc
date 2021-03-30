@@ -80,7 +80,8 @@ void InstallerState::Initialize(const base::CommandLine& command_line,
 
   const bool is_uninstall = command_line.HasSwitch(switches::kUninstall);
 
-  target_path_ = GetChromeInstallPath(system_install());
+  target_path_ = GetChromeInstallPathWithPrefs(system_install(), prefs);
+
   state_key_ = install_static::GetClientStateKeyPath();
 
   VLOG(1) << (is_uninstall ? "Uninstall Chrome" : "Install Chrome");
@@ -172,7 +173,7 @@ void InstallerState::SetStage(InstallerStage stage) const {
 void InstallerState::WriteInstallerResult(
     InstallStatus status,
     int string_resource_id,
-    const base::string16* const launch_cmd) const {
+    const std::wstring* const launch_cmd) const {
   // Use a no-rollback list since this is a best-effort deal.
   std::unique_ptr<WorkItemList> install_list(WorkItem::CreateWorkItemList());
   install_list->set_log_message("Write Installer Result");

@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_UI_TABS_TAB_RENDERER_DATA_H_
 #define CHROME_BROWSER_UI_TABS_TAB_RENDERER_DATA_H_
 
+#include <string>
+
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/tabs/tab_network_state.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
@@ -37,7 +38,7 @@ struct TabRendererData {
   gfx::ImageSkia favicon;
   scoped_refptr<ThumbnailImage> thumbnail;
   TabNetworkState network_state = TabNetworkState::kNone;
-  base::string16 title;
+  std::u16string title;
   // This corresponds to WebContents::GetVisibleUrl().
   GURL visible_url;
   // This corresponds to WebContents::GetLastCommittedUrl().

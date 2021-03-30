@@ -65,6 +65,7 @@ source_set("platform_api_comm") {
   public_deps = [
     ":offline_wire_formats_proto",
     ":platform_base",
+    ":platform_base_cancellation_flag",
     "//third_party/abseil-cpp:absl",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
@@ -129,6 +130,7 @@ source_set("platform_base") {
     "src/cpp/platform/base/byte_array.h",
     "src/cpp/platform/base/callable.h",
     "src/cpp/platform/base/exception.h",
+    "src/cpp/platform/base/feature_flags.h",
     "src/cpp/platform/base/input_stream.h",
     "src/cpp/platform/base/listeners.h",
     "src/cpp/platform/base/output_stream.h",
@@ -174,6 +176,19 @@ source_set("platform_base_logging") {
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
 
+source_set("platform_base_cancellation_flag") {
+  public_configs = [ ":nearby_include_config" ]
+  sources = [ "src/cpp/platform/base/cancellation_flag.cc" ]
+  public = [ "src/cpp/platform/base/cancellation_flag.h" ]
+  public_deps = [
+    ":platform_base",
+    ":platform_base_util",
+    "//third_party/abseil-cpp:absl",
+  ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}
+
 # src/cpp/platform/public
 
 source_set("platform_public_types") {
@@ -204,6 +219,7 @@ source_set("platform_public_types") {
     ":platform_api_platform",
     ":platform_api_types",
     ":platform_base",
+    ":platform_base_cancellation_flag",
     ":platform_base_logging",
     ":platform_base_util",
     ":platform_public_logging",
@@ -370,6 +386,7 @@ source_set("core_internal") {
     ":core_types",
     ":offline_wire_formats_proto",
     ":platform_base",
+    ":platform_base_cancellation_flag",
     ":platform_base_util",
     ":platform_public_comm",
     ":platform_public_logging",
@@ -429,6 +446,7 @@ source_set("core_internal_mediums") {
     ":core_internal_mediums_webrtc",
     ":core_types",
     ":platform_base",
+    ":platform_base_cancellation_flag",
     ":platform_base_util",
     ":platform_public_comm",
     ":platform_public_logging",

@@ -8,8 +8,26 @@ if (is_android) {
   # Pull in enable_chrome_android_internal and public_android_sdk
   import("//build/config/android/config.gni")
 }
-if (is_chromeos_ash) {
+
+if (is_chromeos_device) {
   import("//build/config/chromeos/rules.gni")
+
+  generate_runner_script("cros_update_wrapper") {
+    generated_script = "$root_build_dir/bin/cros_update_wrapper"
+    deploy_chrome = true
+  }
+
+  if (cros_boards != "") {
+    foreach(_board, string_split(cros_boards, ":")) {
+      _board_underscore = string_replace(_board, "-", "_")
+      generate_runner_script("cros_update_wrapper_${_board_underscore}") {
+        generated_script =
+            "$root_build_dir/bin/cros_update_wrapper_${_board_underscore}"
+        deploy_chrome = true
+        override_board = _board
+      }
+    }
+  }
 }
 
 group("telemetry_chrome_test") {
@@ -50,7 +68,7 @@ group("telemetry_chrome_test") {
     # CrOS currently has issues with the locally compiled version of
     # crashpad_database_util, so only include it on traditional Linux
     # platforms.
-    if (is_linux || is_chromeos_lacros) {
+    if (is_linux) {
       data_deps +=
           [ "//third_party/crashpad/crashpad/tools:crashpad_database_util" ]
     }
@@ -63,6 +81,16 @@ group("telemetry_chrome_test") {
       "//third_party/breakpad:dump_syms",
       "//third_party/crashpad/crashpad/tools:crashpad_database_util",
     ]
+  }
+
+  if (is_chromeos_device) {
+    data_deps += [ ":cros_update_wrapper" ]
+    if (cros_boards != "") {
+      foreach(_board, string_split(cros_boards, ":")) {
+        _board_underscore = string_replace(_board, "-", "_")
+        data_deps += [ ":cros_update_wrapper_${_board_underscore}" ]
+      }
+    }
   }
 
   if (is_chromeos_ash && is_chromeos_device) {
@@ -101,6 +129,7 @@ group("telemetry_chrome_test_without_chrome") {
   testonly = true
 
   data = [
+    "//build/android/pylib/",  # chromium_config.py uses pylib to look for Java
     "//components/crash/content/tools/generate_breakpad_symbols.py",
     "//testing/scripts/common.py",
     "//testing/xvfb.py",

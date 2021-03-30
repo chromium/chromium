@@ -13,6 +13,9 @@
 // avoid deadlock while waiting for actions to complete on the main thread.
 @interface CWTWebDriverAppInterface : NSObject
 
+// The background thread where this class' methods are run.
+@property(nonatomic, readonly) dispatch_queue_t executingQueue;
+
 // Loads the given URL in the tab identified by |tabID|. Returns an error if the
 // page fails to load within |timeout| seconds or if no such tab exists.
 + (NSError*)loadURL:(NSString*)URL
@@ -28,6 +31,9 @@
 // Closes the tab identified by |tabID|. Returns an error if there is no such
 // tab.
 + (NSError*)closeTabWithID:(NSString*)ID;
+
+// Opens a new tab, makes this tab the current tab, and return its id.
++ (NSString*)openNewTab;
 
 // Makes the tab identified by |ID| the current tab. Returns an error if there
 // is no such tab.
@@ -48,6 +54,12 @@
 // Takes a snapshot of the specified tab. Returns the snapshot as a base64-
 // encoded image. If no such tab exists, returns nil.
 + (NSString*)takeSnapshotOfTabWithID:(NSString*)ID;
+
+// Starts redirecting stderr output to the file with the given path.
++ (void)logStderrToFilePath:(NSString*)filePath;
+
+// Stops redirecting stderr output to a file.
++ (void)stopLoggingStderr;
 
 @end
 

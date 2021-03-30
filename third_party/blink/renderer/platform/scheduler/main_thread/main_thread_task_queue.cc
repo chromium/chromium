@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace blink {
 namespace scheduler {
@@ -146,6 +147,12 @@ void MainThreadTaskQueue::OnTaskCompleted(
   }
 }
 
+void MainThreadTaskQueue::OnTaskRunTimeReported(
+    TaskQueue::TaskTiming* task_timing) {
+  main_thread_scheduler_->task_queue_throttler()->OnTaskRunTimeReported(
+      task_queue_.get(), task_timing->start_time(), task_timing->end_time());
+}
+
 void MainThreadTaskQueue::DetachFromMainThreadScheduler() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 
@@ -203,8 +210,14 @@ WebAgentGroupScheduler* MainThreadTaskQueue::GetAgentGroupScheduler() {
 }
 
 void MainThreadTaskQueue::ClearReferencesToSchedulers() {
-  if (main_thread_scheduler_)
+  if (main_thread_scheduler_) {
     main_thread_scheduler_->OnShutdownTaskQueue(this);
+
+    if (main_thread_scheduler_->task_queue_throttler()) {
+      main_thread_scheduler_->task_queue_throttler()->ShutdownTaskQueue(
+          task_queue_.get());
+    }
+  }
   main_thread_scheduler_ = nullptr;
   agent_group_scheduler_ = nullptr;
   frame_scheduler_ = nullptr;
@@ -241,6 +254,63 @@ void MainThreadTaskQueue::SetWebSchedulingPriority(
 base::Optional<WebSchedulingPriority>
 MainThreadTaskQueue::web_scheduling_priority() const {
   return web_scheduling_priority_;
+}
+
+bool MainThreadTaskQueue::IsThrottled() const {
+  if (main_thread_scheduler_) {
+    return main_thread_scheduler_->task_queue_throttler()->IsThrottled(
+        task_queue_.get());
+  } else {
+    // When the frame detaches the task queue is removed from the throttler.
+    return false;
+  }
+}
+
+MainThreadTaskQueue::ThrottleHandle MainThreadTaskQueue::Throttle() {
+  DCHECK(CanBeThrottled());
+  return ThrottleHandle(
+      task_queue_.get()->AsWeakPtr(),
+      main_thread_scheduler_->task_queue_throttler()->AsWeakPtr());
+}
+
+void MainThreadTaskQueue::AddToBudgetPool(base::TimeTicks now,
+                                          BudgetPool* pool) {
+  pool->AddQueue(now, task_queue_.get());
+}
+
+void MainThreadTaskQueue::RemoveFromBudgetPool(base::TimeTicks now,
+                                               BudgetPool* pool) {
+  pool->RemoveQueue(now, task_queue_.get());
+}
+
+void MainThreadTaskQueue::SetImmediateWakeUpForTest() {
+  if (main_thread_scheduler_) {
+    main_thread_scheduler_->task_queue_throttler()->OnQueueNextWakeUpChanged(
+        task_queue_.get(), base::TimeTicks());
+  }
+}
+
+void MainThreadTaskQueue::WriteIntoTracedValue(
+    perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("type", queue_type_);
+  dict.Add("traits", queue_traits_);
+}
+
+void MainThreadTaskQueue::QueueTraits::WriteIntoTracedValue(
+    perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("can_be_deferred", can_be_deferred);
+  dict.Add("can_be_throttled", can_be_throttled);
+  dict.Add("can_be_intensively_throttled", can_be_intensively_throttled);
+  dict.Add("can_be_paused", can_be_paused);
+  dict.Add("can_be_frozen", can_be_frozen);
+  dict.Add("can_run_in_background", can_run_in_background);
+  dict.Add("can_run_when_virtual_time_paused",
+           can_run_when_virtual_time_paused);
+  dict.Add("can_be_paused_for_android_webview",
+           can_be_paused_for_android_webview);
+  dict.Add("prioritisation_type", prioritisation_type);
 }
 
 }  // namespace scheduler

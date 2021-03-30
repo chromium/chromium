@@ -13,7 +13,6 @@
 #include "components/storage_monitor/storage_monitor.h"
 #include "components/storage_monitor/test_storage_monitor.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_view_host.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/system_storage/storage_api_test_util.h"
 #include "extensions/browser/api/system_storage/storage_info_provider.h"
@@ -43,7 +42,7 @@ class SystemStorageEjectApiTest : public extensions::ShellApiTest {
     ShellApiTest::SetUpOnMainThread();
   }
 
-  content::RenderViewHost* GetHost() {
+  content::RenderFrameHost* GetMainFrame() {
     ExtensionTestMessageListener listener("loaded", false);
     const extensions::Extension* extension = LoadApp("system/storage_eject");
 
@@ -53,15 +52,15 @@ class SystemStorageEjectApiTest : public extensions::ShellApiTest {
 
     return extensions::ProcessManager::Get(browser_context())
         ->GetBackgroundHostForExtension(extension->id())
-        ->render_view_host();
+        ->main_frame_host();
   }
 
-  void ExecuteCmdAndCheckReply(content::RenderViewHost* host,
+  void ExecuteCmdAndCheckReply(content::RenderFrameHost* frame,
                                const std::string& js_command,
                                const std::string& ok_message) {
     ExtensionTestMessageListener listener(ok_message, false);
-    host->GetMainFrame()->ExecuteJavaScriptForTests(
-        base::ASCIIToUTF16(js_command), base::NullCallback());
+    frame->ExecuteJavaScriptForTests(base::ASCIIToUTF16(js_command),
+                                     base::NullCallback());
     EXPECT_TRUE(listener.WaitUntilSatisfied());
   }
 
@@ -88,8 +87,10 @@ class SystemStorageEjectApiTest : public extensions::ShellApiTest {
 };
 
 IN_PROC_BROWSER_TEST_F(SystemStorageEjectApiTest, EjectTest) {
-  content::RenderViewHost* host = GetHost();
-  ExecuteCmdAndCheckReply(host, "addAttachListener()", "add_attach_ok");
+  // Stash the main frame to avoid calling GetMainFrame() again as it waits for
+  // load.
+  content::RenderFrameHost* main_frame = GetMainFrame();
+  ExecuteCmdAndCheckReply(main_frame, "addAttachListener()", "add_attach_ok");
 
   // Attach / detach
   const std::string expect_attach_msg =
@@ -99,14 +100,15 @@ IN_PROC_BROWSER_TEST_F(SystemStorageEjectApiTest, EjectTest) {
   Attach();
   EXPECT_TRUE(attach_finished_listener.WaitUntilSatisfied());
 
-  ExecuteCmdAndCheckReply(host, "ejectTest()", "eject_ok");
+  ExecuteCmdAndCheckReply(main_frame, "ejectTest()", "eject_ok");
   EXPECT_EQ(kRemovableStorageData.device_id, monitor_->ejected_device());
 
   Detach();
 }
 
 IN_PROC_BROWSER_TEST_F(SystemStorageEjectApiTest, EjectBadDeviceTest) {
-  ExecuteCmdAndCheckReply(GetHost(), "ejectFailTest()", "eject_no_such_device");
+  ExecuteCmdAndCheckReply(GetMainFrame(), "ejectFailTest()",
+                          "eject_no_such_device");
 
   EXPECT_EQ("", monitor_->ejected_device());
 }

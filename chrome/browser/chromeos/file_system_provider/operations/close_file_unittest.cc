@@ -57,8 +57,8 @@ TEST_F(FileSystemProviderOperationsCloseFileTest, Execute) {
   CloseFile close_file(NULL, file_system_info_, kOpenRequestId,
                        base::BindOnce(&util::LogStatusCallback, &callback_log));
   close_file.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(close_file.Execute(kRequestId));
 
@@ -87,8 +87,8 @@ TEST_F(FileSystemProviderOperationsCloseFileTest, Execute_NoListener) {
   CloseFile close_file(NULL, file_system_info_, kOpenRequestId,
                        base::BindOnce(&util::LogStatusCallback, &callback_log));
   close_file.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_FALSE(close_file.Execute(kRequestId));
 }
@@ -100,8 +100,8 @@ TEST_F(FileSystemProviderOperationsCloseFileTest, OnSuccess) {
   CloseFile close_file(NULL, file_system_info_, kOpenRequestId,
                        base::BindOnce(&util::LogStatusCallback, &callback_log));
   close_file.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(close_file.Execute(kRequestId));
 
@@ -119,8 +119,8 @@ TEST_F(FileSystemProviderOperationsCloseFileTest, OnError) {
   CloseFile close_file(NULL, file_system_info_, kOpenRequestId,
                        base::BindOnce(&util::LogStatusCallback, &callback_log));
   close_file.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(close_file.Execute(kRequestId));
 

@@ -26,8 +26,6 @@ preprocess_if_expr("preprocess_src") {
     "action_link.css",
     "apps/common.css",
     "apps/topbutton_bar.css",
-    "bubble_button.css",
-    "bubble.css",
     "butter_bar.css",
     "chrome_shared.css",
     "dialogs.css",

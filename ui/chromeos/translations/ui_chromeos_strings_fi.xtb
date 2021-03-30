@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">Tiedosto tai hakemisto ei ole käytettävissä.</translation>
 <translation id="1363028406613469049">Raita</translation>
 <translation id="1378727793141957596">Tervetuloa Google Driveen!</translation>
+<translation id="1379911846207762492">Voit ottaa tiedostoja käyttöön offline-tilassa, jotta voit käyttää niitä ilman internetyhteyttä.</translation>
 <translation id="1383876407941801731">Haku</translation>
 <translation id="1395262318152388157">Kelaamisen liukusäädin</translation>
 <translation id="1404323374378969387">norja</translation>
@@ -76,6 +77,7 @@
 <translation id="1807938677607439181">Kaikki tiedostot</translation>
 <translation id="1810764548349082891">Esikatselu ei saatavilla</translation>
 <translation id="1812302367230252929">translitteroitu amhara</translation>
+<translation id="1813278315230285598">Palvelut</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Huomaa:<ph name="END_BOLD" /> nämä tiedostot ovat tilapäisiä ja ne voidaan poistaa automaattisesti levytilan vapauttamiseksi. <ph name="BEGIN_LINK" />Lisätietoja<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingviini</translation>
 <translation id="183183971458492120">Ladataan tietoja…</translation>
@@ -85,13 +87,14 @@
 <translation id="1853795129690976061">Tämä kansio on jaettu Linuxille</translation>
 <translation id="1864756863218646478">Tiedostoa ei löytynyt.</translation>
 <translation id="1920670151694390848">translitteroitu malajalam</translation>
+<translation id="1920798810075583923">Vesimeloni</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> alustettu</translation>
 <translation id="1931134289871235022">slovakki</translation>
 <translation id="1933345018156373194">Siirto epäonnistui odottamattoman virheen vuoksi: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">suomi</translation>
 <translation id="1942765061641586207">Kuvan resoluutio</translation>
-<translation id="1943097386230153518">Asenna uusi palvelu</translation>
 <translation id="1972984168337863910">Laajenna tiedostojen palautepaneelit</translation>
+<translation id="1984456723671657197">Tätä tiedostotyyppiä ei tueta. <ph name="BEGIN_LINK_HELP" />Lue lisää<ph name="END_LINK_HELP" /> tiedostojen avaamisesta Chrome-käyttöjärjestelmällä.</translation>
 <translation id="1995337122023280937">Siirry tiedoston sijaintiin</translation>
 <translation id="2001796770603320721">Ylläpidä Drivessa</translation>
 <translation id="2009067268969781306">Driven alustaminen poistaa kaiken sille tallennetun datan. Tätä toimintoa ei voi kumota.</translation>
@@ -118,6 +121,7 @@
 <translation id="2288278176040912387">Levysoitin</translation>
 <translation id="2291538123825441971">Avataan <ph name="NUMBER_OF_FILES" /> tiedostoa.</translation>
 <translation id="2303301624314357662">Avataan tiedostoa <ph name="FILE_NAME" />.</translation>
+<translation id="2304820083631266885">Planeetta</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> on poistettu.</translation>
 <translation id="2325650632570794183">Tätä tiedostotyyppiä ei tueta. Etsi tämäntyyppisiä tiedostoja avaava sovellus Chrome Web Storesta.</translation>
 <translation id="2326539130272988168">bulgaria</translation>
@@ -142,7 +146,6 @@
 <translation id="255937426064304553">USA (kansainvälinen)</translation>
 <translation id="2562685439590298522">Dokumentit</translation>
 <translation id="2563185590376525700">Sammakko</translation>
-<translation id="2572501073504669105">Voit ottaa tiedostoja käyttöön offline-tilassa sitä varten, jos sinulla ei ole internetyhteyttä.</translation>
 <translation id="2578394532502990878">foneettinen tamil</translation>
 <translation id="2579959351793446050">orija</translation>
 <translation id="2614589611416690597">Video, jonka tyyppi on <ph name="VIDEO_TYPE" /></translation>
@@ -186,6 +189,7 @@
 <translation id="299638574917407533">ranska (Kanada)</translation>
 <translation id="3003633581067744647">Vaihda pikkukuvanäkymään</translation>
 <translation id="3007214526293698309">Korjaa kokosuhde</translation>
+<translation id="3029114385395636667">Ota Google Docs Offline käyttöön, niin Docs, Sheets ja Slides ovat käytettävissä offline-tilassa.</translation>
 <translation id="303198083543495566">Sijainti</translation>
 <translation id="3047197340186497470">kiina (dayi)</translation>
 <translation id="3057861065630527966">Varmuuskopioi valokuvasi ja videosi.</translation>
@@ -216,14 +220,17 @@
 <translation id="3335337277364016868">Nauhoitusvuosi</translation>
 <translation id="3353984535370177728">Valitse lähetettävä kansio</translation>
 <translation id="3356580349448036450">Valmis</translation>
+<translation id="3358452157379365236">Kitara</translation>
 <translation id="3382143449143186018">nepali, InScript-näppäimistö</translation>
 <translation id="3408236822532681288">saksa (Saksa), Neo 2 ‑näppäimistö</translation>
 <translation id="3414856743105198592">Siirrettävän tietovälineen alustaminen poistaa kaikki sen tiedot. Haluatko jatkaa?</translation>
 <translation id="3437801641691368414">Luontiaika</translation>
+<translation id="343907260260897561">Pikakamera</translation>
 <translation id="3455931012307786678">viro</translation>
 <translation id="3466147780910026086">Tarkistetaan medialaitettasi…</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> kuvaa on varmuuskopioitu <ph name="BEGIN_LINK" />Google Driveen<ph name="END_LINK" />.</translation>
 <translation id="3475447146579922140">Google-laskentataulukko</translation>
+<translation id="3479552764303398839">Ei nyt</translation>
 <translation id="3486821258960016770">mongoli</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> virhettä.</translation>
 <translation id="3522708245912499433">portugali</translation>
@@ -233,6 +240,7 @@
 <translation id="3553048479571901246">Jos haluat avata tiedoston sovelluksella <ph name="APP_NAME" />, kopioi se ensin Windowsin tiedostot ‑kansioon.</translation>
 <translation id="3556731189587832921">englanti (Yhdysvallat), kansainvälinen PC-näppäimistö</translation>
 <translation id="357479282490346887">liettua</translation>
+<translation id="3592251141500063301">Tiedoston (<ph name="FILE_NAME" />) käyttöönotto offline-tilassa ei onnistunut</translation>
 <translation id="3603385196401704894">ranska (Kanada)</translation>
 <translation id="3606220979431771195">Turkki (tyyppi F)</translation>
 <translation id="3616113530831147358">Ääni</translation>
@@ -279,6 +287,7 @@
 <translation id="4124935795427217608">Yksisarvinen</translation>
 <translation id="4158739975813877944">Avaa soittolista</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> siirretty.</translation>
+<translation id="4186579485882418952">Ota Docs Offline käyttöön</translation>
 <translation id="4193154014135846272">Google-dokumentti</translation>
 <translation id="4197674956721858839">Pakkaa valitut</translation>
 <translation id="4202378258276439759">espanja (Latinalainen Amerikka)</translation>
@@ -292,6 +301,7 @@
 <translation id="4309915981827077375">Yleistiedot</translation>
 <translation id="432252891123397018">romania, vakionäppäimistö</translation>
 <translation id="4325128273762811722">sloveeni</translation>
+<translation id="4326142238881453352">Kasvitieteilijä</translation>
 <translation id="4326192123064055915">Kahvi</translation>
 <translation id="4336032328163998280">Kopiointi epäonnistui. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">soranî, arabiaan perustuva näppäimistö</translation>
@@ -327,7 +337,6 @@
 <translation id="4706042980341760088">tamil, kirjoituskonenäppäimistö</translation>
 <translation id="4711094779914110278">turkki</translation>
 <translation id="4712283082407695269">Avataan <ph name="PATH" /></translation>
-<translation id="4713544552769165154">Tämä tiedosto on tarkoitettu Macintosh-ohjelmistoa käyttävälle tietokoneelle. Tämä ei ole yhteensopiva Chrome-käyttöjärjestelmää käyttävän laitteesi kanssa. Etsi sopiva korvaava sovellus <ph name="BEGIN_LINK" />Chrome Web Storesta.<ph name="END_LINK" /> <ph name="BEGIN_LINK_HELP" />Lisätietoja<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> kuvaa on varmuuskopioitu.</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4732760563705710320">Lähetyslaitteesi ei valitettavasti tue tätä videota.</translation>
@@ -408,6 +417,7 @@
         <ph name="MARKUP_7" />Jaa, luo ja muokkaa<ph name="MARKUP_8" />
         tiedostoja yhdessä muiden käyttäjien kanssa.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google Drivesta palautetut tiedostot</translation>
+<translation id="5288441970121584418">Hampurilainen</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Tallenna</translation>
 <translation id="5318819489018851358">Jaa Linuxilla</translation>
@@ -461,8 +471,6 @@
 <translation id="5833610766403489739">Tämä tiedosto on siirretty jonnekin muualle. Tarkista lataussijainnin asetukset ja yritä uudelleen.</translation>
 <translation id="5838451609423551646">Kaikki kohteet poistettiin valinnasta.</translation>
 <translation id="5838825566232597749">Yhdysvallat, kansainvälinen Workman</translation>
-<translation id="5850516540536751549">Tätä tiedostotyyppiä ei tueta. Etsi tämäntyyppisiä tiedostoja avaava sovellus <ph name="BEGIN_LINK" />Chrome Web Storesta<ph name="END_LINK" />.
-	      <ph name="BEGIN_LINK_HELP" />Lisätietoja<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Tyhjää täynnä…</translation>
 <translation id="5911887972742538906">Linux-sovellusta asennettaessa tapahtui virhe.</translation>
 <translation id="5912396950572065471">Muoto</translation>
@@ -500,10 +508,12 @@
 <translation id="6248400709929739064">Ota tekstitykset käyttöön</translation>
 <translation id="6269630227984243955">malaiji</translation>
 <translation id="6287852322318138013">Valitse sovellus, jolla haluat avata tämän tiedoston</translation>
+<translation id="6321303798550928047">Vilkuttaa</translation>
 <translation id="6339145975392024142">US, kansainvälinen (PC)</translation>
 <translation id="6346310558342052870">Käyttö rajoitettu</translation>
 <translation id="6356685157277930264">Tiedostojen tietoikkuna</translation>
 <translation id="6358884629796491903">Lohikäärme</translation>
+<translation id="6367976544441405720">Pakettiauto</translation>
 <translation id="637062427944097960">Tämä tiedosto avattiin toisella työpöydällä. Näet tiedoston siirtymällä profiiliin <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="6394388407447716302">Vain luku</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> kohdetta</translation>
@@ -527,6 +537,7 @@
 <translation id="6650726141019353908">Vaaleanpunainen perhonen</translation>
 <translation id="6657585470893396449">Salasana</translation>
 <translation id="6673674183150363784">ranska (Ranska), Bépo-näppäimistö</translation>
+<translation id="6710022688720561421">Robotti</translation>
 <translation id="6710213216561001401">Edellinen</translation>
 <translation id="6751256176799620176">1 kansio valittu</translation>
 <translation id="6790428901817661496">Toista</translation>
@@ -560,6 +571,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6970230597523682626">bulgaria</translation>
 <translation id="6973630695168034713">Kansiot</translation>
+<translation id="6976795442547527108">Leijona</translation>
 <translation id="6978611942794658017">Tämä tiedosto on tarkoitettu tietokoneelle, joka käyttää Windowsia. Se ei ole yhteensopiva Chrome-käyttöjärjestelmää käyttävän laitteesi kanssa. Etsi sopiva korvaava sovellus Chrome Web Storesta.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">ruotsi</translation>
@@ -606,6 +618,7 @@
 <translation id="7532029025027028521">translitteroitu persia</translation>
 <translation id="7544830582642184299">Myönnä Linux-sovelluksille pääsy Google Driveesi tallennettuihin tiedostoihin. Muutokset synkronoidaan muille laitteillesi.</translation>
 <translation id="7544853251252956727">Satunnaistoisto</translation>
+<translation id="7547009467130558110">Lenkkari</translation>
 <translation id="7547780573915868306">liettua</translation>
 <translation id="7547811415869834682">hollanti</translation>
 <translation id="7551643184018910560">Kiinnitä hyllyyn</translation>
@@ -620,6 +633,7 @@
 <translation id="7628656427739290098"><ph name="PERCENT" /> % valmis</translation>
 <translation id="7649070708921625228">Ohje</translation>
 <translation id="7654209398114106148">Siirretään <ph name="NUMBER_OF_ITEMS" /> kohdetta…</translation>
+<translation id="7655441028674523381">Avaa Google Kuvat helposti</translation>
 <translation id="7658239707568436148">Peruuta</translation>
 <translation id="7663224033570512922">hindi</translation>
 <translation id="7693909743393669729">Aseman alustaminen poistaa kaiken sille tallennetun datan sekä kaikki osiot, myös näkymättömät sellaiset. Tätä toimintoa ei voi kumota.</translation>
@@ -651,7 +665,6 @@
 <translation id="7839804798877833423">Mobiiliyhteyden kautta noudettavien tiedostojen koko on noin <ph name="FILE_SIZE" />.</translation>
 <translation id="7846076177841592234">Peruuta valinta</translation>
 <translation id="7853966320808728790">Ranskalainen BÉPO</translation>
-<translation id="7864662577698025113">Lisää uusi palvelu</translation>
 <translation id="7868774406711971383">puola</translation>
 <translation id="7873831373602885875">Tallentaminen kansioon <ph name="FOLDER_NAME" /> ei onnistu. Kaikki muokkaukset tallennetaan Lataukset-kansion kohteeseen <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="7874321682039004450">filipino</translation>
@@ -666,13 +679,13 @@
 <translation id="7972920761225148017">ranska (Sveitsi)</translation>
 <translation id="7980421588063892270">englanti (Yhdysvallat), Colemak-näppäimistö</translation>
 <translation id="7982283708762922719">Korkeus</translation>
+<translation id="79907182588096956">Tämä tiedosto on tarkoitettu tietokoneelle, joka käyttää Windowsia. Se ei ole yhteensopiva Chrome-käyttöjärjestelmää käyttävän laitteesi kanssa. <ph name="BEGIN_LINK_HELP" />Lue lisää<ph name="END_LINK_HELP" /> tiedostojen avaamisesta Chrome-käyttöjärjestelmällä.</translation>
 <translation id="8008366997883261463">Jackrussellinterrieri</translation>
 <translation id="8028993641010258682">Koko</translation>
 <translation id="803771048473350947">Tiedosto</translation>
 <translation id="8038111231936746805">(oletus)</translation>
 <translation id="8042602468072383151">Äänitiedosto, jonka tyyppi on <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">romania</translation>
-<translation id="8052887694493382350">Tämä tiedosto on tarkoitettu tietokoneelle, joka käyttää Windowsia. Se ei ole yhteensopiva Chrome-käyttöjärjestelmää käyttävän laitteesi kanssa. <ph name="BEGIN_LINK_HELP" />Lue lisää<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Kaikki muokkaukset tallennetaan tänne: <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Toista</translation>
 <translation id="8106045200081704138">Jaettu minulle</translation>
@@ -712,6 +725,7 @@
 <translation id="8466234950814670489">Tar-arkisto</translation>
 <translation id="8475647382427415476">Google Drive ei onnistunut synkronoimaan tiedostoa <ph name="FILENAME" />. Google Drive yrittää myöhemmin uudelleen.</translation>
 <translation id="8477649328507734757">Pyörä</translation>
+<translation id="8484284835977497781">Valitse viimeaikaisista kuvistasi.</translation>
 <translation id="8487700953926739672">Käytettävissä offline-tilassa</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="8525306231823319788">Koko näyttö</translation>
@@ -744,8 +758,10 @@
 <translation id="8860454412039442620">Excel-laskentataulukko</translation>
 <translation id="8866284467018526531">translitteroitu arabia</translation>
 <translation id="8900820606136623064">unkari</translation>
+<translation id="8903931173357132290">Valmistunut</translation>
 <translation id="8919081441417203123">tanska</translation>
 <translation id="8965697826696209160">Tallennustila ei riitä.</translation>
+<translation id="8970501467542182729">Tämä tiedosto on tarkoitettu tietokoneelle, joka käyttää Macintosh-ohjelmistoa. Se ei ole yhteensopiva Chrome-käyttöjärjestelmää käyttävän laitteesi kanssa. <ph name="BEGIN_LINK_HELP" />Lue lisää<ph name="END_LINK_HELP" /> tiedostojen avaamisesta Chrome-käyttöjärjestelmällä.</translation>
 <translation id="8997962250644902079">kiina (perinteinen, pinyin)</translation>
 <translation id="9017798300203431059">venäjä, foneettinen</translation>
 <translation id="9034924485347205037">Linux-tiedostot</translation>

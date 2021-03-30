@@ -49,15 +49,9 @@
                 </span>
               </span>
             </div>
-            <template is="dom-if" if="[[item.metadata.isLocal]]">
-              <cr-icon-button class="icon-more-vert" id="addressMenu"
-                  on-click="onAddressMenuTap_" title="$i18n{moreActions}">
-              </cr-icon-button>
-            </template>
-            <template is="dom-if" if="[[!item.metadata.isLocal]]">
-              <cr-icon-button class="icon-external"
-                  on-click="onRemoteEditAddressTap_"></cr-icon-button>
-            </template>
+            <cr-icon-button class="icon-more-vert" id="addressMenu"
+                on-click="onAddressMenuTap_" title="$i18n{moreActions}">
+            </cr-icon-button>
           </div>
         </template>
       </div>

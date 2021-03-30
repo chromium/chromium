@@ -5,6 +5,7 @@
 #include "ash/system/bluetooth/bluetooth_detailed_view.h"
 
 #include <memory>
+#include <string>
 #include <unordered_map>
 #include <utility>
 
@@ -18,7 +19,6 @@
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tray_info_label.h"
 #include "ash/system/tray/tray_popup_utils.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "services/device/public/cpp/bluetooth/bluetooth_utils.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -300,7 +300,7 @@ int BluetoothDetailedView::AddSameTypeDevicesToScrollList(
   for (const auto& device : list) {
     const gfx::VectorIcon& icon =
         GetBluetoothDeviceIcon(device->device_type, device->connection_state);
-    base::string16 device_name =
+    std::u16string device_name =
         device::GetBluetoothDeviceNameForDisplay(device);
     HoverHighlightView* container =
         GetScrollListItemForDevice(old_device_list, device->address);

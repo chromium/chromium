@@ -13,6 +13,7 @@
 #include <va/va.h>
 #include <va/va_str.h>
 
+#include "base/callback_helpers.h"
 #include "base/files/file.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
@@ -22,9 +23,11 @@
 #include "base/strings/pattern.h"
 #include "base/strings/string_split.h"
 #include "base/test/launcher/unit_test_launcher.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_suite.h"
 #include "build/chromeos_buildflags.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
+#include "media/base/media_switches.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "media/media_buildflags.h"
 
@@ -41,12 +44,7 @@ base::Optional<VAProfile> ConvertToVAProfile(VideoCodecProfile profile) {
     {VP8PROFILE_ANY, VAProfileVP8Version0_3},
     {VP9PROFILE_PROFILE0, VAProfileVP9Profile0},
     {VP9PROFILE_PROFILE2, VAProfileVP9Profile2},
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // TODO(hiroh): Remove if-macro once libva for linux-chrome is upreved to
-    // 2.9.0 or newer.
-    // https://source.chromium.org/chromium/chromium/src/+/master:build/linux/sysroot_scripts/generated_package_lists/sid.amd64
     {AV1PROFILE_PROFILE_MAIN, VAProfileAV1Profile0},
-#endif
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
     {HEVCPROFILE_MAIN, VAProfileHEVCMain},
     {HEVCPROFILE_MAIN10, VAProfileHEVCMain10},
@@ -71,16 +69,14 @@ base::Optional<VAProfile> StringToVAProfile(const std::string& va_profile) {
     {"VAProfileVP8Version0_3", VAProfileVP8Version0_3},
     {"VAProfileVP9Profile0", VAProfileVP9Profile0},
     {"VAProfileVP9Profile2", VAProfileVP9Profile2},
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // TODO(hiroh): Remove if-macro once libva for linux-chrome is upreved to
-    // 2.9.0 or newer.
-    // https://source.chromium.org/chromium/chromium/src/+/master:build/linux/sysroot_scripts/generated_package_lists/sid.amd64
     {"VAProfileAV1Profile0", VAProfileAV1Profile0},
-#endif
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
     {"VAProfileHEVCMain", VAProfileHEVCMain},
     {"VAProfileHEVCMain10", VAProfileHEVCMain10},
 #endif
+#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+    {"VAProfileProtected", VAProfileProtected},
+#endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
   };
 
   auto it = kStringToVAProfile.find(va_profile);
@@ -89,27 +85,42 @@ base::Optional<VAProfile> StringToVAProfile(const std::string& va_profile) {
              : base::nullopt;
 }
 
-// Converts the given string to VAProfile
+// Converts the given string to VAEntrypoint
 base::Optional<VAEntrypoint> StringToVAEntrypoint(
     const std::string& va_entrypoint) {
   const std::map<std::string, VAEntrypoint> kStringToVAEntrypoint = {
-      {"VAEntrypointVLD", VAEntrypointVLD},
-      {"VAEntrypointEncSlice", VAEntrypointEncSlice},
-      {"VAEntrypointEncPicture", VAEntrypointEncPicture},
-      {"VAEntrypointEncSliceLP", VAEntrypointEncSliceLP},
-      {"VAEntrypointVideoProc", VAEntrypointVideoProc}};
+    {"VAEntrypointVLD", VAEntrypointVLD},
+    {"VAEntrypointEncSlice", VAEntrypointEncSlice},
+    {"VAEntrypointEncPicture", VAEntrypointEncPicture},
+    {"VAEntrypointEncSliceLP", VAEntrypointEncSliceLP},
+    {"VAEntrypointVideoProc", VAEntrypointVideoProc},
+#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+    {"VAEntrypointProtectedContent", VAEntrypointProtectedContent},
+#endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+  };
 
   auto it = kStringToVAEntrypoint.find(va_entrypoint);
   return it != kStringToVAEntrypoint.end()
              ? base::make_optional<VAEntrypoint>(it->second)
              : base::nullopt;
 }
+
+std::unique_ptr<base::test::ScopedFeatureList> CreateScopedFeatureList() {
+  auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
+  scoped_feature_list->InitWithFeatures(
+      /*enabled_features=*/{media::kVaapiAV1Decoder},
+      /*disabled_features=*/{});
+  return scoped_feature_list;
+}
 }  // namespace
 
 class VaapiTest : public testing::Test {
  public:
-  VaapiTest() = default;
+  VaapiTest() : scoped_feature_list_(CreateScopedFeatureList()) {}
   ~VaapiTest() override = default;
+
+ private:
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
 std::map<VAProfile, std::vector<VAEntrypoint>> ParseVainfo(
@@ -215,6 +226,18 @@ TEST_F(VaapiTest, GetSupportedEncodeProfiles) {
   }
 }
 
+#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+// Verifies that VAProfileProtected is indeed supported by the command line
+// vainfo utility.
+TEST_F(VaapiTest, VaapiProfileProtected) {
+  const auto va_info = RetrieveVAInfoOutput();
+
+  EXPECT_TRUE(base::Contains(va_info.at(VAProfileProtected),
+                             VAEntrypointProtectedContent))
+      << ", va profile: " << vaProfileStr(VAProfileProtected);
+}
+#endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+
 // Verifies that if JPEG decoding and encoding are supported by VaapiWrapper,
 // they are also supported by by the command line vainfo utility.
 TEST_F(VaapiTest, VaapiProfilesJPEG) {
@@ -279,7 +302,8 @@ TEST_F(VaapiTest, LowQualityEncodingSetting) {
     for (const auto& profile_and_entrypoints : configurations) {
       const VAProfile va_profile = profile_and_entrypoints.first;
       scoped_refptr<VaapiWrapper> wrapper = VaapiWrapper::Create(
-          VaapiWrapper::kEncode, va_profile, base::DoNothing());
+          VaapiWrapper::kEncode, va_profile, EncryptionScheme::kUnencrypted,
+          base::DoNothing());
 
       // Depending on the GPU Gen, flags and policies, we may or may not utilize
       // all entrypoints (e.g. we might always want VAEntrypointEncSliceLP if
@@ -333,10 +357,16 @@ TEST_F(VaapiTest, LowQualityEncodingSetting) {
 
 int main(int argc, char** argv) {
   base::TestSuite test_suite(argc, argv);
-
-  // PreSandboxInitialization() loads and opens the driver, queries its
-  // capabilities and fills in the VASupportedProfiles.
-  media::VaapiWrapper::PreSandboxInitialization();
+  {
+    // Enables/Disables features during PreSandboxInitialization(). We have to
+    // destruct ScopedFeatureList after it because base::TestSuite::Run()
+    // creates a ScopedFeatureList and multiple concurrent ScopedFeatureLists
+    // are not allowed.
+    auto scoped_feature_list = media::CreateScopedFeatureList();
+    // PreSandboxInitialization() loads and opens the driver, queries its
+    // capabilities and fills in the VASupportedProfiles.
+    media::VaapiWrapper::PreSandboxInitialization();
+  }
 
   return base::LaunchUnitTests(
       argc, argv,

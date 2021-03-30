@@ -29,13 +29,28 @@ async function getRedirectedCookies(location, cookie) {
     try {
       const iframe = document.createElement('iframe');
       iframe.style = 'display: none';
-      iframe.src = `${location}`;
+      iframe.src = location;
 
       iframe.addEventListener('load', (e) => {
         const win = e.target.contentWindow;
-        const iframeCookies = win.getCookies();
-        win.expireCookie(cookie);
-        resolve(iframeCookies);
+        let iframeCookie;
+        // go ask for the cookie
+        win.postMessage('getCookies', '*');
+
+        // once we get it, send a message to delete on the other
+        // side, then resolve the cookie back to httpRedirectCookieTest
+        window.addEventListener('message', (e) => {
+          if (typeof e.data == 'object' && 'cookies' in e.data) {
+            iframeCookie = e.data.cookies;
+            e.source.postMessage({'expireCookie': cookie}, '*');
+          }
+
+          // wait on the iframe to tell us it deleted the cookies before
+          // resolving, to avoid any state race conditions.
+          if (e.data == 'expired') {
+            resolve(iframeCookie);
+          }
+        });
       }, {once: true});
 
       document.documentElement.appendChild(iframe);
@@ -106,4 +121,48 @@ function httpRedirectCookieTest(cookie, expectedValue, name, location) {
         })
     },
     name);
+}
+
+// Cleans up all cookies accessible via document.cookie. This will not clean up
+// any HttpOnly cookies.
+function dropAllDomCookies() {
+  let cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    if (!Boolean(cookie))
+      continue;
+    document.cookie = `${cookie}; expires=01 Jan 1970 00:00:00 GMT`;
+  }
+  assert_equals(document.cookie, '', 'All DOM cookies were dropped.');
+}
+
+// Sets a `cookie` via the DOM, checks it against `expectedValue` via the DOM,
+// then cleans it up via the DOM. This is needed in cases where going through
+// HTTP headers may modify the cookie line (e.g. by stripping control
+// characters).
+function domCookieTest(cookie, expectedValue, name) {
+  return test(function() {
+    document.cookie = cookie;
+    let cookies = document.cookie;
+    this.add_cleanup(dropAllDomCookies);
+    assert_equals(
+        cookies, expectedValue,
+        Boolean(expectedValue) ? 'The cookie was set as expected.' :
+                                 'The cookie was rejected.');
+  }, name);
+}
+
+// Returns two arrays of control characters along with their ASCII codes. The
+// TERMINATING_CTLS should result in termination of the cookie string. The
+// remaining CTLS should result in rejection of the cookie. Control characters
+// are defined by RFC 5234 to be %x00-1F / %x7F.
+function getCtlCharacters() {
+  const termCtlCodes = [0x00 /* NUL */, 0x0A /* LF */, 0x0D /* CR */];
+  const ctlCodes = [...Array(0x20).keys()]
+                       .filter(i => termCtlCodes.indexOf(i) === -1)
+                       .concat([0x7F]);
+  return {
+    TERMINATING_CTLS:
+        termCtlCodes.map(i => ({code: i, chr: String.fromCharCode(i)})),
+    CTLS: ctlCodes.map(i => ({code: i, chr: String.fromCharCode(i)}))
+  };
 }

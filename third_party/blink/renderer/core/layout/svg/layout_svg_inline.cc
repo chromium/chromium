@@ -97,14 +97,6 @@ void LayoutSVGInline::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
   SVGLayoutSupport::MapLocalToAncestor(this, ancestor, transform_state, flags);
 }
 
-const LayoutObject* LayoutSVGInline::PushMappingToContainer(
-    const LayoutBoxModelObject* ancestor_to_stop_at,
-    LayoutGeometryMap& geometry_map) const {
-  NOT_DESTROYED();
-  return SVGLayoutSupport::PushMappingToContainer(this, ancestor_to_stop_at,
-                                                  geometry_map);
-}
-
 void LayoutSVGInline::AbsoluteQuads(Vector<FloatQuad>& quads,
                                     MapCoordinatesFlags mode) const {
   NOT_DESTROYED();

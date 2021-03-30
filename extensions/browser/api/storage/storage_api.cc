@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/strings/stringprintf.h"
+#include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -80,6 +81,8 @@ void SettingsFunction::AsyncRunWithStorage(ValueStore* storage) {
 
 ExtensionFunction::ResponseValue SettingsFunction::UseReadResult(
     ValueStore::ReadResult result) {
+  TRACE_EVENT2("browser", "SettingsFunction::UseReadResult", "extension_id",
+               extension_id(), "namespace", settings_namespace_);
   if (!result.status().ok())
     return Error(result.status().message);
 
@@ -90,13 +93,15 @@ ExtensionFunction::ResponseValue SettingsFunction::UseReadResult(
 
 ExtensionFunction::ResponseValue SettingsFunction::UseWriteResult(
     ValueStore::WriteResult result) {
+  TRACE_EVENT2("browser", "SettingsFunction::UseWriteResult", "extension_id",
+               extension_id(), "namespace", settings_namespace_);
   if (!result.status().ok())
     return Error(result.status().message);
 
   if (!result.changes().empty()) {
     observers_->Notify(FROM_HERE, &SettingsObserver::OnSettingsChanged,
                        extension_id(), settings_namespace_,
-                       ValueStoreChange::ToJson(result.changes()));
+                       ValueStoreChange::ToValue(result.PassChanges()));
   }
 
   return NoArguments();
@@ -150,6 +155,8 @@ void GetModificationQuotaLimitHeuristics(QuotaLimitHeuristics* heuristics) {
 
 ExtensionFunction::ResponseValue StorageStorageAreaGetFunction::RunWithStorage(
     ValueStore* storage) {
+  TRACE_EVENT1("browser", "StorageStorageAreaGetFunction::RunWithStorage",
+               "extension_id", extension_id());
   base::Value* input = NULL;
   if (!args_->Get(0, &input))
     return BadMessage();
@@ -193,6 +200,10 @@ ExtensionFunction::ResponseValue StorageStorageAreaGetFunction::RunWithStorage(
 
 ExtensionFunction::ResponseValue
 StorageStorageAreaGetBytesInUseFunction::RunWithStorage(ValueStore* storage) {
+  TRACE_EVENT1("browser",
+               "StorageStorageAreaGetBytesInUseFunction::RunWithStorage",
+               "extension_id", extension_id());
+
   base::Value* input = NULL;
   if (!args_->Get(0, &input))
     return BadMessage();
@@ -228,6 +239,8 @@ StorageStorageAreaGetBytesInUseFunction::RunWithStorage(ValueStore* storage) {
 
 ExtensionFunction::ResponseValue StorageStorageAreaSetFunction::RunWithStorage(
     ValueStore* storage) {
+  TRACE_EVENT1("browser", "StorageStorageAreaSetFunction::RunWithStorage",
+               "extension_id", extension_id());
   base::DictionaryValue* input = NULL;
   if (!args_->GetDictionary(0, &input))
     return BadMessage();
@@ -241,6 +254,8 @@ void StorageStorageAreaSetFunction::GetQuotaLimitHeuristics(
 
 ExtensionFunction::ResponseValue
 StorageStorageAreaRemoveFunction::RunWithStorage(ValueStore* storage) {
+  TRACE_EVENT1("browser", "StorageStorageAreaRemoveFunction::RunWithStorage",
+               "extension_id", extension_id());
   base::Value* input = NULL;
   if (!args_->Get(0, &input))
     return BadMessage();
@@ -271,6 +286,8 @@ void StorageStorageAreaRemoveFunction::GetQuotaLimitHeuristics(
 
 ExtensionFunction::ResponseValue
 StorageStorageAreaClearFunction::RunWithStorage(ValueStore* storage) {
+  TRACE_EVENT1("browser", "StorageStorageAreaClearFunction::RunWithStorage",
+               "extension_id", extension_id());
   return UseWriteResult(storage->Clear());
 }
 

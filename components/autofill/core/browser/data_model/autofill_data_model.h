@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/form_group.h"
 
@@ -93,10 +92,6 @@ class AutofillDataModel : public FormGroup {
   // Returns the validity state of the specified autofill type.
   virtual ValidityState GetValidityState(ServerFieldType type,
                                          ValidationSource source) const;
-
-  // Check for the validity of the data. Leave the field empty if the data is
-  // invalid and the relevant feature is enabled.
-  virtual bool ShouldSkipFillingOrSuggesting(ServerFieldType type) const;
 
  protected:
   // Called to update |use_count_| and |use_date_| when this data model is

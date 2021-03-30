@@ -73,15 +73,15 @@ TEST(ChannelInfoTest, ClearStage) {
 }
 
 TEST(ChannelInfoTest, GetStatsDefault) {
-  const base::string16 base_values[] = {
+  const std::wstring base_values[] = {
       L"", L"x64-stable", L"1.1-beta", L"x64-beta", L"2.0-dev", L"x64-dev",
   };
-  const base::string16 suffixes[] = {L"", L"-multi", L"-multi-chrome"};
+  const std::wstring suffixes[] = {L"", L"-multi", L"-multi-chrome"};
 
   for (const auto& base_value : base_values) {
     for (const auto& suffix : suffixes) {
       ChannelInfo ci;
-      base::string16 channel;
+      std::wstring channel;
 
       ci.set_value(base_value + suffix);
       EXPECT_EQ(L"", ci.GetStatsDefault());

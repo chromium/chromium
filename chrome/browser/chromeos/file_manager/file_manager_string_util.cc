@@ -4,19 +4,19 @@
 
 #include "chrome/browser/chromeos/file_manager/file_manager_string_util.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_features.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/crostini/crostini_features.h"
-#include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/arc/arc_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -423,6 +423,12 @@ void AddStringsForHoldingSpace(base::DictionaryValue* dict) {
              IDS_FILE_BROWSER_HOLDING_SPACE_WELCOME_TITLE);
 }
 
+void AddStringsForPhotos(base::DictionaryValue* dict) {
+  SET_STRING("PHOTOS_WELCOME_DISMISS", IDS_FILE_BROWSER_PHOTOS_WELCOME_DISMISS);
+  SET_STRING("PHOTOS_WELCOME_TEXT", IDS_FILE_BROWSER_PHOTOS_WELCOME_TEXT);
+  SET_STRING("PHOTOS_WELCOME_TITLE", IDS_FILE_BROWSER_PHOTOS_WELCOME_TITLE);
+}
+
 }  // namespace
 
 std::unique_ptr<base::DictionaryValue> GetFileManagerStrings() {
@@ -441,9 +447,8 @@ std::unique_ptr<base::DictionaryValue> GetFileManagerStrings() {
   AddStringsForZipArchiver(dict.get());
   AddStringsForSharesheet(dict.get());
   AddStringsForHoldingSpace(dict.get());
+  AddStringsForPhotos(dict.get());
 
-  SET_STRING("ADD_NEW_SERVICES_BUTTON_LABEL",
-             IDS_FILE_BROWSER_ADD_NEW_SERVICES_BUTTON_LABEL);
   SET_STRING("ALL_FILES_FILTER", IDS_FILE_BROWSER_ALL_FILES_FILTER);
   SET_STRING("ARCHIVE_MOUNT_FAILED", IDS_FILE_BROWSER_ARCHIVE_MOUNT_FAILED);
   SET_STRING("ARCHIVE_MOUNT_MESSAGE", IDS_FILE_BROWSER_ARCHIVE_MOUNT_MESSAGE);
@@ -468,6 +473,7 @@ std::unique_ptr<base::DictionaryValue> GetFileManagerStrings() {
   SET_STRING("CONFIRM_MOBILE_DATA_USE_PLURAL",
              IDS_FILE_BROWSER_CONFIRM_MOBILE_DATA_USE_PLURAL);
   SET_STRING("CONFIRM_OVERWRITE_FILE", IDS_FILE_BROWSER_CONFIRM_OVERWRITE_FILE);
+  SET_STRING("CONFIRM_EMPTY_TRASH", IDS_FILE_BROWSER_CONFIRM_EMPTY_TRASH);
   SET_STRING("CONFLICT_DIALOG_APPLY_TO_ALL",
              IDS_FILE_BROWSER_CONFLICT_DIALOG_APPLY_TO_ALL);
   SET_STRING("CONFLICT_DIALOG_KEEP_BOTH",
@@ -530,6 +536,8 @@ std::unique_ptr<base::DictionaryValue> GetFileManagerStrings() {
              IDS_FILE_BROWSER_DRAGGING_MULTIPLE_ITEMS);
   SET_STRING("DROP_TARGET_FOLDER_NO_MOVE_PERMISSION",
              IDS_FILE_BROWSER_DROP_TARGET_FOLDER_NO_MOVE_PERMISSION);
+  SET_STRING("EMPTY_TRASH_BUTTON_LABEL",
+             IDS_FILE_BROWSER_EMPTY_TRASH_BUTTON_LABEL);
   SET_STRING("ERROR_CREATING_FOLDER", IDS_FILE_BROWSER_ERROR_CREATING_FOLDER);
   SET_STRING("ERROR_HIDDEN_NAME", IDS_FILE_BROWSER_ERROR_HIDDEN_NAME);
   SET_STRING("ERROR_INVALID_CHARACTER",
@@ -653,8 +661,6 @@ std::unique_ptr<base::DictionaryValue> GetFileManagerStrings() {
              IDS_SETTINGS_CROSTINI_CONFIRM_IMPORT_DIALOG_WINDOW_MESSAGE);
   SET_STRING("IMPORT_CROSTINI_IMAGE_DIALOG_OK_LABEL",
              IDS_SETTINGS_CROSTINI_IMPORT);
-  SET_STRING("INSTALL_NEW_EXTENSION_LABEL",
-             IDS_FILE_BROWSER_INSTALL_NEW_EXTENSION_LABEL);
   SET_STRING("MANY_DIRECTORIES_SELECTED",
              IDS_FILE_BROWSER_MANY_DIRECTORIES_SELECTED);
   SET_STRING("MANY_ENTRIES_SELECTED", IDS_FILE_BROWSER_MANY_ENTRIES_SELECTED);
@@ -723,6 +729,8 @@ std::unique_ptr<base::DictionaryValue> GetFileManagerStrings() {
              IDS_FILE_BROWSER_MOVE_SOURCE_NOT_FOUND_ERROR);
   SET_STRING("MOVE_TARGET_EXISTS_ERROR",
              IDS_FILE_BROWSER_MOVE_TARGET_EXISTS_ERROR);
+  SET_STRING("MOVE_TO_TRASH_BUTTON_LABEL",
+             IDS_FILE_BROWSER_MOVE_TO_TRASH_BUTTON_LABEL);
   SET_STRING("MOVE_UNEXPECTED_ERROR", IDS_FILE_BROWSER_MOVE_UNEXPECTED_ERROR);
   SET_STRING("MULTIPART_DEVICE_UNSUPPORTED_DEFAULT_MESSAGE",
              IDS_MULTIPART_DEVICE_UNSUPPORTED_DEFAULT_MESSAGE);
@@ -740,10 +748,15 @@ std::unique_ptr<base::DictionaryValue> GetFileManagerStrings() {
   SET_STRING("NO_TASK_FOR_EXECUTABLE", IDS_FILE_BROWSER_NO_TASK_FOR_EXECUTABLE);
   SET_STRING("NO_TASK_FOR_FILE", IDS_FILE_BROWSER_NO_TASK_FOR_FILE);
   SET_STRING("OFFLINE_COLUMN_LABEL", IDS_FILE_BROWSER_OFFLINE_COLUMN_LABEL);
+  SET_STRING("OFFLINE_ENABLE_MESSAGE", IDS_FILE_BROWSER_OFFLINE_ENABLE_MESSAGE);
+  SET_STRING("OFFLINE_ENABLE_ACCEPT", IDS_FILE_BROWSER_OFFLINE_ENABLE_ACCEPT);
+  SET_STRING("OFFLINE_ENABLE_REJECT", IDS_FILE_BROWSER_OFFLINE_ENABLE_REJECT);
   SET_STRING("OFFLINE_HEADER", IDS_FILE_BROWSER_OFFLINE_HEADER);
   SET_STRING("OFFLINE_MESSAGE", IDS_FILE_BROWSER_OFFLINE_MESSAGE);
   SET_STRING("OFFLINE_MESSAGE_PLURAL", IDS_FILE_BROWSER_OFFLINE_MESSAGE_PLURAL);
   SET_STRING("OFFLINE_BANNER_MESSAGE", IDS_FILE_BROWSER_OFFLINE_BANNER_MESSAGE);
+  SET_STRING("OFFLINE_FAILURE_MESSAGE",
+             IDS_FILE_BROWSER_OFFLINE_FAILURE_MESSAGE);
   SET_STRING("OFFLINE_PROGRESS_MESSAGE",
              IDS_FILE_BROWSER_OFFLINE_PROGRESS_MESSAGE);
   SET_STRING("OFFLINE_PROGRESS_MESSAGE_PLURAL",
@@ -840,6 +853,8 @@ std::unique_ptr<base::DictionaryValue> GetFileManagerStrings() {
              IDS_FILE_BROWSER_SEARCH_A11Y_CLEAR_SEARCH);
   SET_STRING("SELECT_ALL_COMMAND_LABEL",
              IDS_FILE_BROWSER_SELECT_ALL_COMMAND_LABEL);
+  SET_STRING("SHOW_PROVIDERS_BUTTON_LABEL",
+             IDS_FILE_BROWSER_SHOW_PROVIDERS_BUTTON_LABEL);
   SET_STRING("TASKS_BUTTON_LABEL", IDS_FILE_BROWSER_TASKS_BUTTON_LABEL);
   SET_STRING("TOGGLE_HIDDEN_FILES_COMMAND_LABEL",
              IDS_FILE_BROWSER_TOGGLE_HIDDEN_FILES_COMMAND_LABEL);
@@ -954,6 +969,7 @@ std::unique_ptr<base::DictionaryValue> GetFileManagerStrings() {
              IDS_FILE_BROWSER_TIME_REMAINING_ESTIMATE_2);
   SET_STRING("TIME_TODAY", IDS_FILE_BROWSER_TIME_TODAY);
   SET_STRING("TIME_YESTERDAY", IDS_FILE_BROWSER_TIME_YESTERDAY);
+  SET_STRING("TRASH_DELETED_FOREVER", IDS_FILE_BROWSER_TRASH_DELETED_FOREVER);
   SET_STRING("TYPE_COLUMN_LABEL", IDS_FILE_BROWSER_TYPE_COLUMN_LABEL);
   SET_STRING("UNDO_DELETE_ACTION_LABEL",
              IDS_FILE_BROWSER_UNDO_DELETE_ACTION_LABEL);
@@ -1028,9 +1044,6 @@ void AddFileManagerFeatureStrings(const std::string& locale,
                    crostini::CrostiniFeatures::Get()->IsEnabled(profile));
   dict->SetBoolean("PLUGIN_VM_ENABLED",
                    plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile));
-  dict->SetBoolean(
-      "FILES_CAMERA_FOLDER_ENABLED",
-      base::FeatureList::IsEnabled(chromeos::features::kFilesCameraFolder));
   dict->SetBoolean("FILES_NG_ENABLED",
                    base::FeatureList::IsEnabled(chromeos::features::kFilesNG));
   dict->SetBoolean("COPY_IMAGE_ENABLED",
@@ -1061,12 +1074,9 @@ void AddFileManagerFeatureStrings(const std::string& locale,
   dict->SetBoolean("FILES_SINGLE_PARTITION_FORMAT_ENABLED",
                    base::FeatureList::IsEnabled(
                        chromeos::features::kFilesSinglePartitionFormat));
-  dict->SetBoolean(
-      "AUDIO_PLAYER_JS_MODULES_ENABLED",
-      base::FeatureList::IsEnabled(chromeos::features::kAudioPlayerJsModules));
-  dict->SetBoolean(
-      "VIDEO_PLAYER_JS_MODULES_ENABLED",
-      base::FeatureList::IsEnabled(chromeos::features::kVideoPlayerJsModules));
+  dict->SetBoolean("FILES_JS_MODULES_ENABLED", true);
+  dict->SetBoolean("AUDIO_PLAYER_JS_MODULES_ENABLED", true);
+  dict->SetBoolean("VIDEO_PLAYER_JS_MODULES_ENABLED", true);
 
   dict->SetString("UI_LOCALE", locale);
 }

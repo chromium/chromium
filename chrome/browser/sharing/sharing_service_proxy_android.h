@@ -20,7 +20,6 @@ class SharingServiceProxyAndroid {
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& j_guid,
       const base::android::JavaParamRef<jstring>& j_text,
-      const jint j_retries,
       const base::android::JavaParamRef<jobject>& j_runnable);
 
   void GetDeviceCandidates(

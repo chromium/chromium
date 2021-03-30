@@ -15,29 +15,22 @@ cr.define('cellularSetup', function() {
 
   /** @enum {number} */
   /* #export */ const ButtonState = {
-    HIDDEN: 1,
-    SHOWN_AND_ENABLED: 2,
-    SHOWN_BUT_DISABLED: 3,
+    ENABLED: 1,
+    DISABLED: 2,
   };
 
   /** @enum {number} */
   /* #export */ const Button = {
     BACKWARD: 1,
     CANCEL: 2,
-    DONE: 3,
-    NEXT: 4,
-    TRY_AGAIN: 5,
-    SKIP_DISCOVERY: 6,
+    FORWARD: 3,
   };
 
   /**
    * @typedef {{
    *   backward: (!cellularSetup.ButtonState|undefined),
    *   cancel: (!cellularSetup.ButtonState|undefined),
-   *   done: (!cellularSetup.ButtonState|undefined),
-   *   next: (!cellularSetup.ButtonState|undefined),
-   *   tryAgain: (!cellularSetup.ButtonState|undefined),
-   *   skipDiscovery: (!cellularSetup.ButtonState|undefined),
+   *   forward: (!cellularSetup.ButtonState|undefined),
    * }}
    */
   /* #export */ let ButtonBarState;

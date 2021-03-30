@@ -18,15 +18,16 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
-#include "chrome/browser/chromeos/borealis/borealis_features.h"
-#include "chrome/browser/chromeos/borealis/borealis_service.h"
-#include "chrome/browser/chromeos/borealis/borealis_util.h"
+#include "chrome/browser/apps/icon_standardizer.h"
+#include "chrome/browser/ash/borealis/borealis_features.h"
+#include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_util.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_test_helper.h"
 #include "chrome/browser/chromeos/crostini/crostini_test_helper.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service_factory.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_features.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_test_helper.h"
 #include "chrome/browser/extensions/chrome_app_icon.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -35,7 +36,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_test_util.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
-#include "chrome/browser/ui/app_list/icon_standardizer.h"
 #include "chrome/browser/ui/app_list/internal_app/internal_app_metadata.h"
 #include "chrome/browser/ui/app_list/md_icon_normalizer.h"
 #include "chrome/browser/ui/app_list/test/fake_app_list_model_updater.h"
@@ -128,7 +128,7 @@ scoped_refptr<extensions::Extension> MakeApp(const std::string& name,
   value.SetString("version", version);
   value.SetString("app.launch.web_url", url);
   scoped_refptr<extensions::Extension> app = extensions::Extension::Create(
-      base::FilePath(), extensions::Manifest::INTERNAL, value,
+      base::FilePath(), extensions::mojom::ManifestLocation::kInternal, value,
       extensions::Extension::WAS_INSTALLED_BY_DEFAULT, id, &err);
   EXPECT_EQ(err, "");
   return app;
@@ -260,7 +260,8 @@ class ExtensionAppTest : public AppServiceAppModelBuilderTest {
     ASSERT_TRUE(extension);
 
     base::RunLoop run_loop;
-    int size_in_dip = ash::AppListConfig::instance().grid_icon_dimension();
+    int size_in_dip =
+        ash::SharedAppListConfig::instance().default_grid_icon_dimension();
     extensions::ImageLoader::Get(profile())->LoadImageAtEveryScaleFactorAsync(
         extension, gfx::Size(size_in_dip, size_in_dip),
         base::BindOnce(
@@ -274,7 +275,7 @@ class ExtensionAppTest : public AppServiceAppModelBuilderTest {
     run_loop.Run();
 
     if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
-      output_image_skia = app_list::CreateStandardIconImage(output_image_skia);
+      output_image_skia = apps::CreateStandardIconImage(output_image_skia);
     } else {
       extensions::ChromeAppIcon::ApplyEffects(
           size_in_dip,
@@ -344,7 +345,8 @@ class WebAppBuilderTest : public AppServiceAppModelBuilderTest {
                           gfx::ImageSkia& output_image_skia) {
     std::vector<int> icon_sizes_in_px;
     apps::ScaleToSize scale_to_size_in_px;
-    int size_in_dip = ash::AppListConfig::instance().grid_icon_dimension();
+    int size_in_dip =
+        ash::SharedAppListConfig::instance().default_grid_icon_dimension();
     for (auto scale_factor : ui::GetSupportedScaleFactors()) {
       int size_in_px =
           gfx::ScaleToFlooredSize(gfx::Size(size_in_dip, size_in_dip),
@@ -611,8 +613,8 @@ TEST_F(ExtensionAppTest, LoadCompressedIcon) {
   apps::mojom::IconValuePtr dst_icon;
   apps::LoadIconFromExtension(
       apps::mojom::IconType::kCompressed,
-      ash::AppListConfig::instance().grid_icon_dimension(), profile(),
-      kPackagedApp1Id, icon_effects,
+      ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
+      profile(), kPackagedApp1Id, icon_effects,
       base::BindOnce(
           [](apps::mojom::IconValuePtr* output_icon,
              base::OnceClosure load_app_icon_callback,
@@ -670,6 +672,7 @@ class CrostiniAppTest : public AppServiceAppModelBuilderTest {
   CrostiniAppTest& operator=(const CrostiniAppTest&) = delete;
 
   void SetUp() override {
+    chromeos::DBusThreadManager::Initialize();
     AppServiceAppModelBuilderTest::SetUp();
     test_helper_ = std::make_unique<CrostiniTestHelper>(testing_profile());
     test_helper_->ReInitializeAppServiceIntegration();
@@ -680,6 +683,13 @@ class CrostiniAppTest : public AppServiceAppModelBuilderTest {
     ResetBuilder();
     test_helper_.reset();
     AppListTestBase::TearDown();
+
+    // |profile_| is initialized in AppListTestBase::SetUp but not destroyed in
+    // the ::TearDown method, but we need it to go away before shutting down
+    // DBusThreadManager to ensure all keyed services that might rely on DBus
+    // clients are destroyed.
+    profile_.reset();
+    chromeos::DBusThreadManager::Shutdown();
   }
 
  protected:
@@ -774,7 +784,8 @@ TEST_F(CrostiniAppTest, EnableAndDisableCrostini) {
   EXPECT_THAT(GetAllApps(), testing::IsEmpty());
 }
 
-TEST_F(CrostiniAppTest, AppInstallation) {
+// TODO(https://crbug.com/1194138) Disabled due to flakiness.
+TEST_F(CrostiniAppTest, DISABLED_AppInstallation) {
   // Terminal app.
   EXPECT_EQ(1u, GetModelItemCount());
 

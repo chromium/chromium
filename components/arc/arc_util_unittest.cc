@@ -22,6 +22,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/dbus/upstart/fake_upstart_client.h"
 #include "components/account_id/account_id.h"
+#include "components/arc/arc_features.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
@@ -51,6 +52,32 @@ class ScopedArcFeature {
  private:
   base::test::ScopedFeatureList feature_list;
   DISALLOW_COPY_AND_ASSIGN(ScopedArcFeature);
+};
+
+class ScopedRtVcpuFeature {
+ public:
+  ScopedRtVcpuFeature(bool dual_core_enabled, bool quad_core_enabled) {
+    std::vector<base::Feature> enabled_features;
+    std::vector<base::Feature> disabled_features;
+
+    if (dual_core_enabled)
+      enabled_features.push_back(kRtVcpuDualCore);
+    else
+      disabled_features.push_back(kRtVcpuDualCore);
+
+    if (quad_core_enabled)
+      enabled_features.push_back(kRtVcpuQuadCore);
+    else
+      disabled_features.push_back(kRtVcpuQuadCore);
+
+    feature_list.InitWithFeatures(enabled_features, disabled_features);
+  }
+  ~ScopedRtVcpuFeature() = default;
+  ScopedRtVcpuFeature(const ScopedRtVcpuFeature&) = delete;
+  ScopedRtVcpuFeature& operator=(const ScopedRtVcpuFeature&) = delete;
+
+ private:
+  base::test::ScopedFeatureList feature_list;
 };
 
 // Fake user that can be created with a specified type.
@@ -246,12 +273,51 @@ TEST_F(ArcUtilTest, IsArcVmEnabled) {
   EXPECT_TRUE(IsArcVmEnabled());
 }
 
+TEST_F(ArcUtilTest, IsArcVmRtVcpuEnabled) {
+  {
+    ScopedRtVcpuFeature feature(false, false);
+    EXPECT_FALSE(IsArcVmRtVcpuEnabled(2));
+    EXPECT_FALSE(IsArcVmRtVcpuEnabled(4));
+    EXPECT_FALSE(IsArcVmRtVcpuEnabled(8));
+  }
+  {
+    ScopedRtVcpuFeature feature(true, false);
+    EXPECT_TRUE(IsArcVmRtVcpuEnabled(2));
+    EXPECT_FALSE(IsArcVmRtVcpuEnabled(4));
+    EXPECT_FALSE(IsArcVmRtVcpuEnabled(8));
+  }
+  {
+    ScopedRtVcpuFeature feature(false, true);
+    EXPECT_FALSE(IsArcVmRtVcpuEnabled(2));
+    EXPECT_TRUE(IsArcVmRtVcpuEnabled(4));
+    EXPECT_TRUE(IsArcVmRtVcpuEnabled(8));
+  }
+  {
+    ScopedRtVcpuFeature feature(true, true);
+    EXPECT_TRUE(IsArcVmRtVcpuEnabled(2));
+    EXPECT_TRUE(IsArcVmRtVcpuEnabled(4));
+    EXPECT_TRUE(IsArcVmRtVcpuEnabled(8));
+  }
+}
+
 TEST_F(ArcUtilTest, IsArcVmDevConfIgnored) {
   EXPECT_FALSE(IsArcVmDevConfIgnored());
 
   auto* command_line = base::CommandLine::ForCurrentProcess();
   command_line->InitFromArgv({"", "--ignore-arcvm-dev-conf"});
   EXPECT_TRUE(IsArcVmDevConfIgnored());
+}
+
+TEST_F(ArcUtilTest, GetArcVmUreadaheadMode) {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->InitFromArgv({""});
+  EXPECT_EQ(ArcVmUreadaheadMode::READAHEAD, GetArcVmUreadaheadMode());
+
+  command_line->InitFromArgv({"", "--arcvm-ureadahead-mode=generate"});
+  EXPECT_EQ(ArcVmUreadaheadMode::GENERATE, GetArcVmUreadaheadMode());
+
+  command_line->InitFromArgv({"", "--arcvm-ureadahead-mode=disabled"});
+  EXPECT_EQ(ArcVmUreadaheadMode::DISABLED, GetArcVmUreadaheadMode());
 }
 
 // TODO(hidehiko): Add test for IsArcKioskMode().
@@ -267,21 +333,6 @@ TEST_F(ArcUtilTest, IsArcOptInVerificationDisabled) {
   EXPECT_TRUE(IsArcOptInVerificationDisabled());
 }
 
-TEST_F(ArcUtilTest, IsArcAppWindow) {
-  std::unique_ptr<aura::Window> window(
-      aura::test::CreateTestWindowWithId(0, nullptr));
-  EXPECT_FALSE(IsArcAppWindow(window.get()));
-
-  window->SetProperty(aura::client::kAppType,
-                      static_cast<int>(ash::AppType::CHROME_APP));
-  EXPECT_FALSE(IsArcAppWindow(window.get()));
-  window->SetProperty(aura::client::kAppType,
-                      static_cast<int>(ash::AppType::ARC_APP));
-  EXPECT_TRUE(IsArcAppWindow(window.get()));
-
-  EXPECT_FALSE(IsArcAppWindow(nullptr));
-}
-
 TEST_F(ArcUtilTest, IsArcAllowedForUser) {
   user_manager::FakeUserManager* fake_user_manager =
       new user_manager::FakeUserManager();
@@ -295,7 +346,7 @@ TEST_F(ArcUtilTest, IsArcAllowedForUser) {
       {user_manager::USER_TYPE_REGULAR, true},
       {user_manager::USER_TYPE_GUEST, false},
       {user_manager::USER_TYPE_PUBLIC_ACCOUNT, true},
-      {user_manager::USER_TYPE_SUPERVISED, false},
+      {user_manager::USER_TYPE_SUPERVISED_DEPRECATED, false},
       {user_manager::USER_TYPE_KIOSK_APP, false},
       {user_manager::USER_TYPE_CHILD, true},
       {user_manager::USER_TYPE_ARC_KIOSK_APP, true},
@@ -364,33 +415,6 @@ TEST_F(ArcUtilTest, ScaleFactorToDensity) {
 
   command_line->InitFromArgv({"", "--arc-scale=abc"});
   EXPECT_EQ(240, GetLcdDensityForDeviceScaleFactor(2.0));
-}
-
-TEST_F(ArcUtilTest, GenerateFirstStageFstab) {
-  constexpr const char kFakeCombinedBuildPropPath[] = "/path/to/build.prop";
-  constexpr const char kAnotherFakeCombinedBuildPropPath[] =
-      "/foo/bar/baz.prop";
-
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  command_line->InitFromArgv({"", "--enable-arcvm"});
-
-  std::string content;
-  base::ScopedTempDir dir;
-  ASSERT_TRUE(dir.CreateUniqueTempDir());
-  const base::FilePath fstab(dir.GetPath().Append("fstab"));
-
-  // Generate the fstab and verify the content.
-  EXPECT_TRUE(GenerateFirstStageFstab(
-      base::FilePath(kFakeCombinedBuildPropPath), fstab));
-  EXPECT_TRUE(base::ReadFileToString(fstab, &content));
-  EXPECT_NE(std::string::npos, content.find(kFakeCombinedBuildPropPath));
-
-  // Generate the fstab again with the other prop file and verify the content.
-  EXPECT_TRUE(GenerateFirstStageFstab(
-      base::FilePath(kAnotherFakeCombinedBuildPropPath), fstab));
-  EXPECT_TRUE(base::ReadFileToString(fstab, &content));
-  EXPECT_EQ(std::string::npos, content.find(kFakeCombinedBuildPropPath));
-  EXPECT_NE(std::string::npos, content.find(kAnotherFakeCombinedBuildPropPath));
 }
 
 TEST_F(ArcUtilTest, ConfigureUpstartJobs_Success) {

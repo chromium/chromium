@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_UI_CONTENT_SETTINGS_CONTENT_SETTING_IMAGE_MODEL_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model_delegate.h"
@@ -34,7 +34,7 @@ class ContentSettingImageModel {
     COOKIES = 0,
     IMAGES = 1,
     JAVASCRIPT = 2,
-    PPAPI_BROKER = 3,
+    // PPAPI_BROKER = 3, // Deprecated.
     POPUPS = 5,
     GEOLOCATION = 6,
     MIXEDSCRIPT = 7,
@@ -98,7 +98,7 @@ class ContentSettingImageModel {
   // Returns the resource ID of a string to show when the icon appears, or 0 if
   // we don't wish to show anything.
   int explanatory_string_id() const { return explanatory_string_id_; }
-  const base::string16& get_tooltip() const { return tooltip_; }
+  const std::u16string& get_tooltip() const { return tooltip_; }
   const gfx::VectorIcon* get_icon_badge() const { return icon_badge_; }
 
   ImageType image_type() const { return image_type_; }
@@ -134,7 +134,7 @@ class ContentSettingImageModel {
     icon_badge_ = &badge;
   }
 
-  void set_tooltip(const base::string16& tooltip) { tooltip_ = tooltip; }
+  void set_tooltip(const std::u16string& tooltip) { tooltip_ = tooltip; }
   void set_should_auto_open_bubble(const bool should_auto_open_bubble) {
     should_auto_open_bubble_ = should_auto_open_bubble;
   }
@@ -148,7 +148,7 @@ class ContentSettingImageModel {
   const gfx::VectorIcon* icon_;
   const gfx::VectorIcon* icon_badge_;
   int explanatory_string_id_ = 0;
-  base::string16 tooltip_;
+  std::u16string tooltip_;
   const ImageType image_type_;
   const bool image_type_should_notify_accessibility_;
   bool should_auto_open_bubble_ = false;

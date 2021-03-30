@@ -47,7 +47,7 @@ bool InitializeGLOneOffPlatform() {
   return false;
 }
 
-bool InitializeStaticGLBindings(GLImplementation implementation) {
+bool InitializeStaticGLBindings(GLImplementationParts implementation) {
 #if defined(USE_X11)
   if (!features::IsUsingOzonePlatform())
     return gl::init::InitializeStaticGLBindingsX11(implementation);
@@ -64,10 +64,10 @@ bool InitializeStaticGLBindings(GLImplementation implementation) {
         ->InitializeStaticGLBindings(implementation);
   }
 
-  switch (implementation) {
+  switch (implementation.gl) {
     case kGLImplementationMockGL:
     case kGLImplementationStubGL:
-      SetGLImplementation(implementation);
+      SetGLImplementationParts(implementation);
       InitializeStaticGLBindingsGL();
       return true;
     default:

@@ -95,12 +95,17 @@ void StandaloneTrustedVaultBackend::FetchKeys(
   // |primary_account_| is set before FetchKeys() call and this may cause
   // redundant sync error in the UI (for key retrieval), especially during the
   // browser startup. Try to find a way to avoid this issue.
-  if (!connection_ || !primary_account_.has_value() ||
-      primary_account_->gaia != account_info.gaia || !per_user_vault ||
-      !per_user_vault->keys_are_stale() ||
+  if (!connection_ || !primary_account_ || !per_user_vault ||
       !per_user_vault->local_device_registration_info().device_registered() ||
       AreConnectionRequestsThrottled(account_info.gaia)) {
-    // Keys download attempt is not needed or not possible.
+    // Keys download attempt is not possible.
+    FulfillOngoingFetchKeys();
+    return;
+  }
+  if (per_user_vault->vault_key_size() != 0 &&
+      !per_user_vault->keys_are_stale()) {
+    // There are locally available keys, which weren't marked as stale. Keys
+    // download attempt is not needed.
     FulfillOngoingFetchKeys();
     return;
   }
@@ -125,19 +130,11 @@ void StandaloneTrustedVaultBackend::FetchKeys(
     FulfillOngoingFetchKeys();
     return;
   }
-  base::Optional<TrustedVaultKeyAndVersion> last_trusted_vault_key_and_version =
-      GetLastTrustedVaultKeyAndVersion(*per_user_vault);
-  if (!last_trusted_vault_key_and_version.has_value()) {
-    // TODO(crbug.com/1094326): properly support this state (constant key case).
-    FulfillOngoingFetchKeys();
-    NOTIMPLEMENTED();
-    return;
-  }
 
   // |this| outlives |connection_| and |ongoing_connection_request_|, so it's
   // safe to use base::Unretained() here.
-  ongoing_connection_request_ = connection_->DownloadKeys(
-      *primary_account_, *last_trusted_vault_key_and_version,
+  ongoing_connection_request_ = connection_->DownloadNewKeys(
+      *primary_account_, GetLastTrustedVaultKeyAndVersion(*per_user_vault),
       std::move(key_pair),
       base::BindOnce(&StandaloneTrustedVaultBackend::OnKeysDownloaded,
                      base::Unretained(this), account_info.gaia));
@@ -181,9 +178,17 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
   }
   primary_account_ = primary_account;
   AbandonConnectionRequest();
-  if (primary_account_.has_value()) {
-    MaybeRegisterDevice(primary_account_->gaia);
+  if (!primary_account_.has_value()) {
+    return;
   }
+
+  sync_pb::LocalTrustedVaultPerUser* per_user_vault =
+      FindUserVault(primary_account->gaia);
+  if (!per_user_vault) {
+    per_user_vault = data_.add_user();
+    per_user_vault->set_gaia_id(primary_account->gaia);
+  }
+  MaybeRegisterDevice(primary_account_->gaia);
 }
 
 bool StandaloneTrustedVaultBackend::MarkKeysAsStale(
@@ -258,20 +263,23 @@ void StandaloneTrustedVaultBackend::MaybeRegisterDevice(
     // Device registration is supported only for |primary_account_|.
     return;
   }
+
+  // |per_user_vault| must be created before calling this function.
   sync_pb::LocalTrustedVaultPerUser* per_user_vault = FindUserVault(gaia_id);
-  if (!per_user_vault) {
-    // TODO(crbug.com/1102340): make non-null |per_user_vault| a precondition
-    // for this function?
-    return;
-  }
+  DCHECK(per_user_vault);
+
   base::Optional<TrustedVaultKeyAndVersion> last_trusted_vault_key_and_version =
       GetLastTrustedVaultKeyAndVersion(*per_user_vault);
-  if (!last_trusted_vault_key_and_version.has_value() ||
-      per_user_vault->keys_are_stale()) {
-    // Fresh vault key is required to register the device.
-    // TODO(crbug.com/1102340): relax this condition to support device
-    // registration without real trusted vault key.
-    NOTIMPLEMENTED();
+  if (!last_trusted_vault_key_and_version.has_value() &&
+      !base::FeatureList::IsEnabled(
+          switches::kAllowSilentTrustedVaultDeviceRegistration)) {
+    // Either vault keys should be available or registration without them should
+    // be allowed through feature flag.
+    return;
+  }
+  if (per_user_vault->keys_are_stale()) {
+    // Client already knows that existing vault keys (or their absence) isn't
+    // sufficient for device registration. Fresh keys should be obtained first.
     return;
   }
   if (per_user_vault->local_device_registration_info().device_registered()) {
@@ -313,8 +321,8 @@ void StandaloneTrustedVaultBackend::MaybeRegisterDevice(
   // |this| outlives |connection_| and |ongoing_connection_request_|, so it's
   // safe to use base::Unretained() here.
   ongoing_connection_request_ = connection_->RegisterAuthenticationFactor(
-      *primary_account_, *last_trusted_vault_key_and_version,
-      key_pair->public_key(),
+      *primary_account_, last_trusted_vault_key_and_version,
+      key_pair->public_key(), AuthenticationFactorType::kPhysicalDevice,
       base::BindOnce(&StandaloneTrustedVaultBackend::OnDeviceRegistered,
                      base::Unretained(this), gaia_id));
   DCHECK(ongoing_connection_request_);

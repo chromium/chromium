@@ -23,7 +23,7 @@ bool IsValidCjt(const std::string& print_ticket_data) {
 }
 
 std::unique_ptr<DEVMODE, base::FreeDeleter> CjtToDevMode(
-    const base::string16& printer_name,
+    const std::wstring& printer_name,
     const std::string& print_ticket) {
   std::unique_ptr<DEVMODE, base::FreeDeleter> dev_mode;
 

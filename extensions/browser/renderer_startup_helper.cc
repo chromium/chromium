@@ -127,33 +127,28 @@ void RendererStartupHelper::InitializeProcess(
 
   // Platform apps need to know the system font.
   // TODO(dbeam): this is not the system font in all cases.
-  process->Send(new ExtensionMsg_SetSystemFont(webui::GetFontFamily(),
-                                               webui::GetFontSize()));
+  renderer->SetSystemFont(webui::GetFontFamily(), webui::GetFontSize());
 
   // Scripting allowlist. This is modified by tests and must be communicated
   // to renderers.
-  process->Send(new ExtensionMsg_SetScriptingAllowlist(
-      extensions::ExtensionsClient::Get()->GetScriptingAllowlist()));
+  renderer->SetScriptingAllowlist(
+      ExtensionsClient::Get()->GetScriptingAllowlist());
 
   // If the new render process is a WebView guest process, propagate the WebView
   // partition ID to it.
   std::string webview_partition_id = WebViewGuest::GetPartitionID(process);
   if (!webview_partition_id.empty()) {
-    process->Send(new ExtensionMsg_SetWebViewPartitionID(
-        WebViewGuest::GetPartitionID(process)));
+    renderer->SetWebViewPartitionID(webview_partition_id);
   }
 
   BrowserContext* renderer_context = process->GetBrowserContext();
 
   // Load default policy_blocked_hosts and policy_allowed_hosts settings, part
   // of the ExtensionSettings policy.
-  ExtensionMsg_UpdateDefaultPolicyHostRestrictions_Params params;
   int context_id = util::GetBrowserContextId(renderer_context);
-  params.default_policy_blocked_hosts =
-      PermissionsData::GetDefaultPolicyBlockedHosts(context_id);
-  params.default_policy_allowed_hosts =
-      PermissionsData::GetDefaultPolicyAllowedHosts(context_id);
-  process->Send(new ExtensionMsg_UpdateDefaultPolicyHostRestrictions(params));
+  renderer->UpdateDefaultPolicyHostRestrictions(
+      PermissionsData::GetDefaultPolicyBlockedHosts(context_id),
+      PermissionsData::GetDefaultPolicyAllowedHosts(context_id));
 
   // Loaded extensions.
   std::vector<ExtensionMsg_Loaded_Params> loaded_extensions;
@@ -252,15 +247,9 @@ void RendererStartupHelper::OnExtensionLoaded(const Extension& extension) {
     return;
 
   // Registers the initial origin access lists to the BrowserContext
-  // asynchronously.
-  url::Origin extension_origin = url::Origin::Create(extension.url());
-  std::vector<network::mojom::CorsOriginPatternPtr> allow_list =
-      CreateCorsOriginAccessAllowList(
-          extension,
-          PermissionsData::EffectiveHostPermissionsMode::kOmitTabSpecific);
-  browser_context_->SetCorsOriginAccessListForOrigin(
-      extension_origin, std::move(allow_list),
-      CreateCorsOriginAccessBlockList(extension), base::DoNothing::Once());
+  // (and all related incognito contexts) asynchronously.
+  util::SetCorsOriginAccessListForExtension({browser_context_}, extension,
+                                            base::DoNothing::Once());
 
   // We don't need to include tab permisisons here, since the extension
   // was just loaded.
@@ -295,11 +284,7 @@ void RendererStartupHelper::OnExtensionUnloaded(const Extension& extension) {
   }
 
   // Resets registered origin access lists in the BrowserContext asynchronously.
-  url::Origin extension_origin = url::Origin::Create(extension.url());
-  browser_context_->SetCorsOriginAccessListForOrigin(
-      extension_origin, std::vector<network::mojom::CorsOriginPatternPtr>(),
-      std::vector<network::mojom::CorsOriginPatternPtr>(),
-      base::DoNothing::Once());
+  util::ResetCorsOriginAccessListForExtension(browser_context_, extension);
 
   for (auto& process_extensions_pair : pending_active_extensions_)
     process_extensions_pair.second.erase(extension.id());

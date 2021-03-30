@@ -26,6 +26,7 @@ class GraphicsContext;
 class ImageResourceObserver;
 class IntRect;
 class LayoutBox;
+class Node;
 struct PaintInfo;
 struct PhysicalOffset;
 struct PhysicalRect;

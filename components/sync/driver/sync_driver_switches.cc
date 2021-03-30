@@ -48,7 +48,7 @@ const base::Feature kSyncAllowWalletDataInTransportModeWithCustomPassphrase{
 
 // Controls whether to enable syncing of Autofill Wallet offer data.
 const base::Feature kSyncAutofillWalletOfferData{
-    "SyncAutofillWalletOfferData", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SyncAutofillWalletOfferData", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether to enable syncing of Wi-Fi configurations.
 const base::Feature kSyncWifiConfigurations{"SyncWifiConfigurations",
@@ -62,6 +62,13 @@ const base::Feature kDecoupleSyncFromAndroidMasterSync{
 // registration).
 const base::Feature kFollowTrustedVaultKeyRotation{
     "FollowTrustedVaultKeyRotation", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Allows device registration within trusted vault server without having trusted
+// vault key. Effectively disabled if kFollowTrustedVaultKeyRotation is
+// disabled.
+const base::Feature kAllowSilentTrustedVaultDeviceRegistration{
+    "AllowSilentTrustedVaultDeviceRegistration",
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Specifies how long requests to vault service shouldn't be retried after
 // encountering transient error.

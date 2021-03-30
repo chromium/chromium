@@ -76,7 +76,7 @@ public class VrCompositorSurfaceManager implements CompositorSurfaceManager {
 
     @Override
     public void shutDown() {
-        if (mSurfaceState == SurfaceState.PROVIDED) mClient.surfaceDestroyed(mSurface);
+        if (mSurfaceState == SurfaceState.PROVIDED) mClient.surfaceDestroyed(mSurface, true);
         mSurfaceState = SurfaceState.NOT_REQUESTED;
     }
 

@@ -33,9 +33,10 @@ uint32_t BufferUsageToGbmFlags(gfx::BufferUsage usage) {
     case gfx::BufferUsage::SCANOUT_VEA_CPU_READ:
       return GBM_BO_USE_LINEAR | GBM_BO_USE_SCANOUT | GBM_BO_USE_TEXTURING |
              GBM_BO_USE_HW_VIDEO_ENCODER;
-    case gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE:
-      return GBM_BO_USE_LINEAR | GBM_BO_USE_CAMERA_WRITE | GBM_BO_USE_SCANOUT |
-             GBM_BO_USE_TEXTURING | GBM_BO_USE_HW_VIDEO_ENCODER;
+    case gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE:
+      return GBM_BO_USE_LINEAR | GBM_BO_USE_CAMERA_WRITE |
+             GBM_BO_USE_TEXTURING | GBM_BO_USE_HW_VIDEO_ENCODER |
+             GBM_BO_USE_SW_READ_OFTEN;
     default:
       NOTREACHED();
       return 0;

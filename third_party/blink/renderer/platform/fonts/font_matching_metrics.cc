@@ -258,6 +258,13 @@ void FontMatchingMetrics::ReportFontFamilyLookupByGenericFamily(
       IdentifiabilityBenignCaseFoldingStringToken(resulting_font_name));
 }
 
+void FontMatchingMetrics::ReportEmojiSegmentGlyphCoverage(
+    unsigned num_clusters,
+    unsigned num_broken_clusters) {
+  total_emoji_clusters_shaped_ += num_clusters;
+  total_broken_emoji_clusters_ += num_broken_clusters;
+}
+
 void FontMatchingMetrics::PublishIdentifiabilityMetrics() {
   if (!IdentifiabilityStudySettings::Get()->IsActive())
     return;
@@ -308,19 +315,39 @@ void FontMatchingMetrics::PublishUkmMetrics() {
       .SetSystemFontFamilyFailures(ukm::GetExponentialBucketMin(
           SetIntersection(failed_font_families_, system_font_families_).size(),
           kUkmFontLoadCountBucketSpacing))
+      .SetSystemFontFamilyTotal(ukm::GetExponentialBucketMin(
+          system_font_families_.size(), kUkmFontLoadCountBucketSpacing))
       .SetWebFontFamilySuccesses(ukm::GetExponentialBucketMin(
           SetIntersection(successful_font_families_, web_font_families_).size(),
           kUkmFontLoadCountBucketSpacing))
       .SetWebFontFamilyFailures(ukm::GetExponentialBucketMin(
           SetIntersection(failed_font_families_, web_font_families_).size(),
           kUkmFontLoadCountBucketSpacing))
+      .SetWebFontFamilyTotal(ukm::GetExponentialBucketMin(
+          web_font_families_.size(), kUkmFontLoadCountBucketSpacing))
       .SetLocalFontFailures(ukm::GetExponentialBucketMin(
           local_fonts_failed_.size(), kUkmFontLoadCountBucketSpacing))
       .SetLocalFontSuccesses(ukm::GetExponentialBucketMin(
           local_fonts_succeeded_.size(), kUkmFontLoadCountBucketSpacing))
+      .SetLocalFontTotal(ukm::GetExponentialBucketMin(
+          local_fonts_succeeded_.size() + local_fonts_failed_.size(),
+          kUkmFontLoadCountBucketSpacing))
       .Record(ukm_recorder_);
   UMA_HISTOGRAM_COUNTS_10000("Blink.Fonts.FontFamilyMatchAttempts.System",
                              system_font_families_.size());
+  UMA_HISTOGRAM_COUNTS_10000(
+      "Blink.Fonts.FontMatchAttempts.System",
+      local_fonts_failed_.size() + local_fonts_succeeded_.size());
+}
+
+void FontMatchingMetrics::PublishEmojiGlyphMetrics() {
+  DCHECK_LE(total_broken_emoji_clusters_, total_emoji_clusters_shaped_);
+  if (total_emoji_clusters_shaped_) {
+    double percentage = static_cast<double>(total_broken_emoji_clusters_) /
+                        total_emoji_clusters_shaped_;
+    UMA_HISTOGRAM_PERCENTAGE("Blink.Fonts.EmojiClusterBrokenness",
+                             static_cast<int>(round(percentage * 100)));
+  }
 }
 
 void FontMatchingMetrics::OnFontLookup() {
@@ -338,6 +365,7 @@ void FontMatchingMetrics::IdentifiabilityMetricsTimerFired(TimerBase*) {
 void FontMatchingMetrics::PublishAllMetrics() {
   PublishIdentifiabilityMetrics();
   PublishUkmMetrics();
+  PublishEmojiGlyphMetrics();
 }
 
 int64_t FontMatchingMetrics::GetHashForFontData(SimpleFontData* font_data) {

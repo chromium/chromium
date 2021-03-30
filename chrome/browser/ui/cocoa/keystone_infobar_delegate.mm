@@ -77,12 +77,12 @@ bool KeystonePromotionInfoBarDelegate::ShouldExpire(
   return can_expire_ && ConfirmInfoBarDelegate::ShouldExpire(details);
 }
 
-base::string16 KeystonePromotionInfoBarDelegate::GetMessageText() const {
+std::u16string KeystonePromotionInfoBarDelegate::GetMessageText() const {
   return l10n_util::GetStringFUTF16(IDS_PROMOTE_INFOBAR_TEXT,
       l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
 }
 
-base::string16 KeystonePromotionInfoBarDelegate::GetButtonLabel(
+std::u16string KeystonePromotionInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   return l10n_util::GetStringUTF16((button == BUTTON_OK) ?
       IDS_PROMOTE_INFOBAR_PROMOTE_BUTTON : IDS_PROMOTE_INFOBAR_DONT_ASK_BUTTON);

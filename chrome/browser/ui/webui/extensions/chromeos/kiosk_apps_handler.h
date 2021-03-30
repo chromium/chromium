@@ -10,8 +10,11 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
-#include "chrome/browser/chromeos/app_mode/kiosk_app_manager_observer.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
+// TODO(https://crbug.com/1164001): move OwnerSettingsServiceAsh to forward
+// declaration when moved to chrome/browser/ash/.
+#include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 namespace base {
@@ -20,13 +23,10 @@ class ListValue;
 
 namespace chromeos {
 
-class KioskAppManager;
-class OwnerSettingsServiceChromeOS;
-
 class KioskAppsHandler : public content::WebUIMessageHandler,
                          public KioskAppManagerObserver {
  public:
-  explicit KioskAppsHandler(OwnerSettingsServiceChromeOS* service);
+  explicit KioskAppsHandler(OwnerSettingsServiceAsh* service);
   ~KioskAppsHandler() override;
 
   // content::WebUIMessageHandler overrides:
@@ -61,13 +61,13 @@ class KioskAppsHandler : public content::WebUIMessageHandler,
   // Callback for KioskAppManager::GetConsumerKioskModeStatus().
   void OnGetConsumerKioskAutoLaunchStatus(
       const std::string& callback_id,
-      chromeos::KioskAppManager::ConsumerKioskAutoLaunchStatus status);
+      KioskAppManager::ConsumerKioskAutoLaunchStatus status);
 
   KioskAppManager* kiosk_app_manager_;  // not owned.
   bool initialized_;
   bool is_kiosk_enabled_;
   bool is_auto_launch_enabled_;
-  OwnerSettingsServiceChromeOS* const owner_settings_service_;  // not owned
+  OwnerSettingsServiceAsh* const owner_settings_service_;  // not owned
   base::WeakPtrFactory<KioskAppsHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(KioskAppsHandler);

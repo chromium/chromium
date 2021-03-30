@@ -77,10 +77,27 @@ WebGLTexture* XRWebGLBinding::getReflectionCubeMap(
     return nullptr;
   }
 
+  if (session_->ended()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Cannot get a reflection cube map for a session which has ended.");
+    return nullptr;
+  }
+
+  if (session_ != light_probe->session()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "LightProbe comes from a different session than this binding");
+    return nullptr;
+  }
+
   // Determine the internal_format, format, and type that will be passed to
   // glTexImage2D for each possible light probe reflection format. The formats
   // will differ depending on whether we're using WebGL 2 or WebGL 1 with
   // extensions.
+  // Note that at this point, since we know we have a valid lightProbe, we also
+  // know that we support whatever reflectionFormat it was created with, as it
+  // would not have been created otherwise.
   switch (light_probe->ReflectionFormat()) {
     case XRLightProbe::kReflectionFormatRGBA16F:
       if (!webgl2_ && !webgl_context_->ExtensionsUtil()->IsExtensionEnabled(
@@ -155,6 +172,38 @@ WebGLTexture* XRWebGLBinding::getCameraImage(XRFrame* frame, XRView* view) {
   WebGLUnownedTexture* texture = MakeGarbageCollected<WebGLUnownedTexture>(
       webgl_context_, texture_id, GL_TEXTURE_2D);
   return texture;
+}
+
+XRWebGLDepthInformation* XRWebGLBinding::getDepthInformation(
+    XRView* view,
+    ExceptionState& exception_state) {
+  DVLOG(1) << __func__;
+
+  if (!session_->IsFeatureEnabled(device::mojom::XRSessionFeature::DEPTH)) {
+    DVLOG(2) << __func__ << ": depth sensing is not enabled on a session";
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        XRSession::kDepthSensingFeatureNotSupported);
+    return nullptr;
+  }
+
+  XRFrame* frame = view->frame();
+
+  if (!frame->IsActive()) {
+    DVLOG(2) << __func__ << ": frame is not active";
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      XRFrame::kInactiveFrame);
+    return nullptr;
+  }
+
+  if (!frame->IsAnimationFrame()) {
+    DVLOG(2) << __func__ << ": frame is not animating";
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      XRFrame::kNonAnimationFrame);
+    return nullptr;
+  }
+
+  return view->session()->GetWebGLDepthInformation(frame, exception_state);
 }
 
 void XRWebGLBinding::Trace(Visitor* visitor) const {

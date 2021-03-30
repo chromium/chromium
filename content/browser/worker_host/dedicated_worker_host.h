@@ -28,6 +28,7 @@
 #include "third_party/blink/public/mojom/wake_lock/wake_lock.mojom-forward.h"
 #include "third_party/blink/public/mojom/websockets/websocket_connector.mojom-forward.h"
 #include "third_party/blink/public/mojom/webtransport/quic_transport_connector.mojom-forward.h"
+#include "third_party/blink/public/mojom/worker/dedicated_worker_host.mojom.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host_factory.mojom.h"
 #include "third_party/blink/public/mojom/worker/subresource_loader_updater.mojom.h"
 #include "url/origin.h"
@@ -38,7 +39,6 @@
 
 namespace content {
 
-class CrossOriginEmbedderPolicyReporter;
 class DedicatedWorkerServiceImpl;
 class ServiceWorkerMainResourceHandle;
 class ServiceWorkerObjectHost;
@@ -47,19 +47,22 @@ class StoragePartitionImpl;
 // A host for a single dedicated worker. It deletes itself upon Mojo
 // disconnection from the worker in the renderer or when the RenderProcessHost
 // of the worker is destroyed. This lives on the UI thread.
-class DedicatedWorkerHost final : public RenderProcessHostObserver {
+class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
+                                  public RenderProcessHostObserver {
  public:
   DedicatedWorkerHost(
       DedicatedWorkerServiceImpl* service,
       const blink::DedicatedWorkerToken& token,
       RenderProcessHost* worker_process_host,
       base::Optional<GlobalFrameRoutingId> creator_render_frame_host_id,
+      base::Optional<blink::DedicatedWorkerToken> creator_worker_token,
       GlobalFrameRoutingId ancestor_render_frame_host_id,
       const url::Origin& creator_origin,
       const net::IsolationInfo& isolation_info,
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-          coep_reporter);
+          coep_reporter,
+      mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost> host);
   ~DedicatedWorkerHost() final;
 
   void BindBrowserInterfaceBrokerReceiver(
@@ -110,13 +113,22 @@ class DedicatedWorkerHost final : public RenderProcessHostObserver {
 
   void ReportNoBinderForInterface(const std::string& error);
 
+  // TODO(crbug.com/906991): Remove this method once PlzDedicatedWorker is
+  // enabled by default.
+  void MaybeCountWebFeature(const GURL& script_url);
+
   const net::NetworkIsolationKey& GetNetworkIsolationKey() const {
     return isolation_info_.network_isolation_key();
   }
 
   const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy()
       const {
-    return cross_origin_embedder_policy_;
+    DCHECK(worker_cross_origin_embedder_policy_.has_value());
+    return worker_cross_origin_embedder_policy_.value();
+  }
+
+  ServiceWorkerMainResourceHandle* service_worker_handle() {
+    return service_worker_handle_.get();
   }
 
  private:
@@ -172,6 +184,11 @@ class DedicatedWorkerHost final : public RenderProcessHostObserver {
 
   void OnMojoDisconnect();
 
+  // Returns true if creator and worker's COEP values are valid.
+  bool CheckCrossOriginEmbedderPolicy(
+      network::CrossOriginEmbedderPolicy creator_cross_origin_embedder_policy,
+      network::CrossOriginEmbedderPolicy worker_cross_origin_embedder_policy);
+
   DedicatedWorkerServiceImpl* const service_;
 
   // The renderer generated ID of this worker, unique across all processes.
@@ -186,6 +203,10 @@ class DedicatedWorkerHost final : public RenderProcessHostObserver {
   // The ID of the frame that directly starts this worker. This is base::nullopt
   // when this worker is nested.
   const base::Optional<GlobalFrameRoutingId> creator_render_frame_host_id_;
+
+  // The token of the dedicated worker that directly starts this worker. This is
+  // base::nullopt when this worker is created from a frame.
+  const base::Optional<blink::DedicatedWorkerToken> creator_worker_token_;
 
   // The ID of the frame that owns this worker, either directly, or (in the case
   // of nested workers) indirectly via a tree of dedicated workers.
@@ -202,10 +223,15 @@ class DedicatedWorkerHost final : public RenderProcessHostObserver {
   // frame or the worker that created this worker.
   const net::IsolationInfo isolation_info_;
 
-  // The DedicatedWorker's Cross-Origin-Embedder-Policy(COEP). It is equals to
-  // the nearest ancestor frame host's COEP:
-  // https://mikewest.github.io/corpp/#initialize-embedder-policy-for-global
-  const network::CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
+  // The frame/worker's Cross-Origin-Embedder-Policy (COEP) that directly starts
+  // this worker.
+  const network::CrossOriginEmbedderPolicy
+      creator_cross_origin_embedder_policy_;
+
+  // The DedicatedWorker's Cross-Origin-Embedder-Policy (COEP). This is set when
+  // the script's response head is loaded.
+  base::Optional<network::CrossOriginEmbedderPolicy>
+      worker_cross_origin_embedder_policy_;
 
   // This is kept alive during the lifetime of the dedicated worker, since it's
   // associated with Mojo interfaces (ServiceWorkerContainer and
@@ -216,9 +242,10 @@ class DedicatedWorkerHost final : public RenderProcessHostObserver {
   std::unique_ptr<ServiceWorkerMainResourceHandle> service_worker_handle_;
 
   BrowserInterfaceBrokerImpl<DedicatedWorkerHost, const url::Origin&> broker_{
-      this, /*policy_applier=*/nullptr};
+      this};
   mojo::Receiver<blink::mojom::BrowserInterfaceBroker> broker_receiver_{
       &broker_};
+  mojo::Receiver<blink::mojom::DedicatedWorkerHost> host_receiver_;
 
   // Indicates if subresource loaders of this worker support file URLs.
   bool file_url_support_ = false;

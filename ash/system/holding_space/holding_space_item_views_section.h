@@ -48,6 +48,10 @@ class HoldingSpaceItemViewsSection : public views::View {
   // asynchronously closed.
   void Reset();
 
+  // Returns all holding space item views in the section. Views are returned in
+  // top-to-bottom, left-to-right order (or mirrored for RTL).
+  std::vector<HoldingSpaceItemView*> GetHoldingSpaceItemViews();
+
   // views::View:
   void ChildPreferredSizeChanged(views::View* child) override;
   void ChildVisibilityChanged(views::View* child) override;

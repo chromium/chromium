@@ -12,7 +12,6 @@
 #include "ash/public/cpp/app_list/app_list_notifier.h"
 #include "base/macros.h"
 #include "base/scoped_observer.h"
-#include "base/strings/string16.h"
 
 namespace app_list {
 
@@ -31,17 +30,17 @@ class SearchMetricsObserver : ash::AppListNotifier::Observer {
   // AppListNotifier::Observer:
   void OnImpression(ash::AppListNotifier::Location location,
                     const std::vector<Result>& results,
-                    const base::string16& query) override;
+                    const std::u16string& query) override;
   void OnAbandon(ash::AppListNotifier::Location location,
                  const std::vector<Result>& results,
-                 const base::string16& query) override;
+                 const std::u16string& query) override;
   void OnLaunch(ash::AppListNotifier::Location location,
                 const Result& launched,
                 const std::vector<Result>& shown,
-                const base::string16& query) override;
+                const std::u16string& query) override;
   void OnIgnore(ash::AppListNotifier::Location location,
                 const std::vector<Result>& results,
-                const base::string16& query) override;
+                const std::u16string& query) override;
 
  private:
   ScopedObserver<ash::AppListNotifier, ash::AppListNotifier::Observer>

@@ -8,12 +8,15 @@
 #include "components/permissions/permission_manager.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/security_state/content/content_utils.h"
+#include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
+#include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
 #include "content/public/browser/browser_context.h"
 #include "weblayer/browser/host_content_settings_map_factory.h"
 #include "weblayer/browser/page_specific_content_settings_delegate.h"
 #include "weblayer/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "weblayer/browser/permissions/permission_manager_factory.h"
 #include "weblayer/browser/stateful_ssl_host_state_delegate_factory.h"
+#include "weblayer/browser/subresource_filter_profile_context_factory.h"
 
 #if defined(OS_ANDROID)
 #include "weblayer/browser/weblayer_impl_android.h"
@@ -41,15 +44,14 @@ PageInfoDelegateImpl::GetPasswordProtectionService() const {
 }
 
 void PageInfoDelegateImpl::OnUserActionOnPasswordUi(
-    content::WebContents* web_contents,
     safe_browsing::WarningAction action) {
   NOTREACHED();
 }
 
-base::string16 PageInfoDelegateImpl::GetWarningDetailText() {
+std::u16string PageInfoDelegateImpl::GetWarningDetailText() {
   // TODO(crbug.com/1052375): Implement.
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 #endif
 
@@ -71,6 +73,28 @@ void PageInfoDelegateImpl::ShowSiteSettings(const GURL& site_url) {
   // componentized.
   NOTREACHED();
 }
+
+void PageInfoDelegateImpl::OpenCookiesDialog() {
+  // TODO(crbug.com/1189159): Add support for cookies dialog.
+  NOTIMPLEMENTED();
+}
+
+void PageInfoDelegateImpl::OpenCertificateDialog(
+    net::X509Certificate* certificate) {
+  // TODO(crbug.com/1189159): Add support for certificate dialog.
+  NOTIMPLEMENTED();
+}
+
+void PageInfoDelegateImpl::OpenConnectionHelpCenterPage(
+    const ui::Event& event) {
+  // TODO(crbug.com/1189159): Add support for help pages.
+  NOTIMPLEMENTED();
+}
+
+void PageInfoDelegateImpl::OpenSafetyTipHelpCenterPage() {
+  // TODO(crbug.com/1189159): Add support for help pages.
+  NOTIMPLEMENTED();
+}
 #endif
 
 permissions::PermissionDecisionAutoBlocker*
@@ -91,12 +115,10 @@ HostContentSettingsMap* PageInfoDelegateImpl::GetContentSettings() {
 }
 
 bool PageInfoDelegateImpl::IsSubresourceFilterActivated(const GURL& site_url) {
-  // As the WebLayer does not support subresource filtering, a site
-  // will not have ads blocked as a result of this setting. Return false
-  // so we do not show the ad blocking permission.
-  // TODO(https://crbug.com/1116095): Add subresource filtering to the
-  // WebLayer.
-  return false;
+  return SubresourceFilterProfileContextFactory::GetForBrowserContext(
+             GetBrowserContext())
+      ->settings_manager()
+      ->GetSiteActivationFromMetadata(site_url);
 }
 
 bool PageInfoDelegateImpl::IsContentDisplayedInVrHeadset() {
@@ -123,7 +145,7 @@ PageInfoDelegateImpl::GetPageSpecificContentSettingsDelegate() {
 }
 
 #if defined(OS_ANDROID)
-const base::string16 PageInfoDelegateImpl::GetClientApplicationName() {
+const std::u16string PageInfoDelegateImpl::GetClientApplicationName() {
   return weblayer::GetClientApplicationName();
 }
 #endif

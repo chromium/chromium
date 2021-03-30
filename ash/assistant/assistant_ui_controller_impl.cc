@@ -4,7 +4,6 @@
 
 #include "ash/assistant/assistant_ui_controller_impl.h"
 
-#include "ash/ambient/ambient_controller.h"
 #include "ash/assistant/assistant_controller_impl.h"
 #include "ash/assistant/model/assistant_interaction_model.h"
 #include "ash/assistant/ui/assistant_ui_constants.h"
@@ -16,13 +15,13 @@
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "ash/public/cpp/toast_data.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
@@ -33,8 +32,6 @@
 namespace ash {
 
 namespace {
-
-using chromeos::assistant::features::IsAmbientAssistantEnabled;
 
 // Helpers ---------------------------------------------------------------------
 
@@ -67,9 +64,10 @@ AssistantUiControllerImpl::AssistantUiControllerImpl(
     AssistantControllerImpl* assistant_controller)
     : assistant_controller_(assistant_controller) {
   model_.AddObserver(this);
-  assistant_controller_observer_.Add(AssistantController::Get());
-  highlighter_controller_observer_.Add(Shell::Get()->highlighter_controller());
-  overview_controller_observer_.Add(Shell::Get()->overview_controller());
+  assistant_controller_observation_.Observe(AssistantController::Get());
+  highlighter_controller_observation_.Observe(
+      Shell::Get()->highlighter_controller());
+  overview_controller_observation_.Observe(Shell::Get()->overview_controller());
 }
 
 AssistantUiControllerImpl::~AssistantUiControllerImpl() {
@@ -123,13 +121,6 @@ void AssistantUiControllerImpl::ShowUi(AssistantEntryPoint entry_point) {
 
   if (!assistant_) {
     ShowToast(kUnboundServiceToastId, IDS_ASH_ASSISTANT_ERROR_GENERIC);
-    return;
-  }
-
-  if (IsAmbientAssistantEnabled() &&
-      Shell::Get()->ambient_controller()->IsShown()) {
-    model_.SetUiMode(AssistantUiMode::kAmbientUi);
-    model_.SetVisible(entry_point);
     return;
   }
 
@@ -218,11 +209,6 @@ void AssistantUiControllerImpl::OnUiVisibilityChanged(
   if (new_visibility == AssistantVisibility::kVisible) {
     // Only record the entry point when Assistant UI becomes visible.
     assistant::util::RecordAssistantEntryPoint(entry_point.value());
-
-    // Notify Assistant service of the most recent entry point.
-    assistant_->NotifyEntryIntoAssistantUi(
-        entry_point.value_or(AssistantEntryPoint::kUnspecified));
-    return;
   }
 
   if (old_visibility == AssistantVisibility::kVisible) {

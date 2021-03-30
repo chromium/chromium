@@ -14,6 +14,7 @@
 #include "cc/trees/draw_property_utils.h"
 #include "cc/trees/layer_tree_host.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/transform_util.h"
 
 namespace cc {
 
@@ -85,7 +86,7 @@ void PaintedScrollbarLayer::PushPropertiesTo(LayerImpl* layer) {
   else
     scrollbar_layer->set_thumb_ui_resource_id(0);
 
-  scrollbar_layer->set_scrollbar_painted_opacity(painted_opacity_);
+  scrollbar_layer->SetScrollbarPaintedOpacity(painted_opacity_);
 
   scrollbar_layer->set_is_overlay_scrollbar(is_overlay_);
 }
@@ -141,7 +142,7 @@ bool PaintedScrollbarLayer::UpdateInternalContentScale() {
   transform = draw_property_utils::ScreenSpaceTransform(
       this, layer_tree_host()->property_trees()->transform_tree);
 
-  gfx::Vector2dF transform_scales = MathUtil::ComputeTransform2dScaleComponents(
+  gfx::Vector2dF transform_scales = gfx::ComputeTransform2dScaleComponents(
       transform, layer_tree_host()->device_scale_factor());
   float scale = std::max(transform_scales.x(), transform_scales.y());
   // Clamp minimum scale to 1 to avoid too low scale during scale animation.

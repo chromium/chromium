@@ -39,7 +39,7 @@ class ASH_EXPORT FloatingAccessibilityDetailedController
   // DetailedViewDelegate:
   void CloseBubble() override;
   void TransitionToMainView(bool restore_focus) override;
-  base::string16 GetAccessibleNameForBubble() override;
+  std::u16string GetAccessibleNameForBubble() override;
 
   void OnAccessibilityStatusChanged();
 

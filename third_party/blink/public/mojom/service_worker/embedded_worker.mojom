@@ -25,6 +25,7 @@ import "third_party/blink/public/mojom/service_worker/service_worker_registratio
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom";
 import "third_party/blink/public/mojom/worker/worker_content_settings_proxy.mojom";
+import "third_party/blink/public/mojom/worker/worker_main_script_load_params.mojom";
 import "third_party/blink/public/mojom/web_feature/web_feature.mojom";
 import "url/mojom/url.mojom";
 
@@ -126,6 +127,11 @@ struct EmbeddedWorkerStartParams {
   // service worker restarts, but not browser restarts. It is distinct from the
   // IDs associated with the connected clients.
   int64 ukm_source_id;
+
+  // Information of the worker's main script.
+  // Valid only when the service worker is new and the script needs to be loaded
+  // from the network.
+  WorkerMainScriptLoadParams? main_script_load_params;
 };
 
 // Holds timing information about the start worker sequence for UMA.

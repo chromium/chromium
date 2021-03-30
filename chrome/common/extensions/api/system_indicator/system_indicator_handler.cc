@@ -46,7 +46,7 @@ const ExtensionIconSet* SystemIndicatorHandler::GetSystemIndicatorIcon(
 }
 
 bool SystemIndicatorHandler::Parse(Extension* extension,
-                                   base::string16* error) {
+                                   std::u16string* error) {
   const base::DictionaryValue* system_indicator_value = nullptr;
   if (!extension->manifest()->GetDictionary(
           manifest_keys::kSystemIndicator, &system_indicator_value)) {

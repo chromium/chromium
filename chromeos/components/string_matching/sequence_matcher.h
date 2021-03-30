@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 
 namespace chromeos {
 namespace string_matching {
@@ -38,8 +37,8 @@ class SequenceMatcher {
   // matching blocks. Value equal to 0 means no penalty. Values greater than 0
   // means heavier penalty will be applied to larger number of blocks. This is
   // only appled if |use_edit_distance| is false.
-  SequenceMatcher(const base::string16& first_string,
-                  const base::string16& second_string,
+  SequenceMatcher(const std::u16string& first_string,
+                  const std::u16string& second_string,
                   bool use_edit_distance,
                   double num_matching_blocks_penalty);
 
@@ -66,8 +65,8 @@ class SequenceMatcher {
   std::vector<Match> GetMatchingBlocks();
 
  private:
-  base::string16 first_string_;
-  base::string16 second_string_;
+  std::u16string first_string_;
+  std::u16string second_string_;
   double num_matching_blocks_penalty_ = 0.0;
   double edit_distance_ratio_ = -1.0;
   double block_matching_ratio_ = -1.0;

@@ -5,7 +5,8 @@
 #ifndef UI_VIEWS_LINUX_UI_STATUS_ICON_LINUX_H_
 #define UI_VIEWS_LINUX_UI_STATUS_ICON_LINUX_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "ui/views/views_export.h"
 
 namespace gfx {
@@ -30,7 +31,7 @@ class VIEWS_EXPORT StatusIconLinux {
     virtual bool HasClickAction() = 0;
 
     virtual const gfx::ImageSkia& GetImage() const = 0;
-    virtual const base::string16& GetToolTip() const = 0;
+    virtual const std::u16string& GetToolTip() const = 0;
     virtual ui::MenuModel* GetMenuModel() const = 0;
 
     // This should be called at most once by the implementation.
@@ -44,7 +45,7 @@ class VIEWS_EXPORT StatusIconLinux {
   virtual ~StatusIconLinux();
 
   virtual void SetIcon(const gfx::ImageSkia& image) = 0;
-  virtual void SetToolTip(const base::string16& tool_tip) = 0;
+  virtual void SetToolTip(const std::u16string& tool_tip) = 0;
 
   // Invoked after a call to SetContextMenu() to let the platform-specific
   // subclass update the native context menu based on the new model. The

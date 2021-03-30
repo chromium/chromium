@@ -23,11 +23,13 @@
 <translation id="169515659049020177">सिफ्ट</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">ठेगाना पट्टीको आफ्नो इनपुटमा www. तथा .com थप्नुहोस्‌, त्यसपछि पृष्ठ खोल्नुहोस्</translation>
+<translation id="1768987374400973299">स्क्रिनसट खिच्नुहोस्/रेकर्डिङ गर्नुहोस्</translation>
 <translation id="1872219238824176091">हालैको डेस्क हटाउनुहोस्</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, त्यसपछि <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> वा <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">अर्को ट्याबमा जानुहोस्</translation>
 <translation id="2010818616644390445">विन्डोको अन्तिम ट्याबमा जानुहोस्</translation>
 <translation id="2040706009561734834">लन्चर खोल्नुहोस्/बन्द गर्नुहोस्</translation>
+<translation id="2086334242442703436">इमोजी पिकर खोल्नुहोस्</translation>
 <translation id="2088054208777350526">किबोर्डका सर्टकटहरूको खोजी गर्नुहोस्</translation>
 <translation id="2125211348069077981"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="E" /> वा <ph name="F" /></translation>
 <translation id="2145908266289632567">पाठ सम्पादन</translation>
@@ -46,6 +48,7 @@
 <translation id="2480851840841871861">Google सहायक खोल्नुहोस्</translation>
 <translation id="2488661730534396940">बायाँतिरको डेस्क सक्रिय गर्नुहोस्</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516999188535378855">Diagnostics एप खोल्नुहोस्</translation>
 <translation id="2530339807289914946">वेब पृष्ठमा तलतिर स्क्रोल गर्नुहोस्</translation>
 <translation id="2530896289327917474">क्यारेट ब्राउजिङ अन वा अफ गर्नुहोस्</translation>
 <translation id="2574014812750545982">पृष्ठमा जुमको स्तर रिसेट गर्नुहोस्</translation>
@@ -110,6 +113,7 @@
 <translation id="4801989101741319327">अर्को शब्दको अन्त्यमा सार्नुहोस्</translation>
 <translation id="4866066940972151697">दायाँतिरको डेस्क सक्रिय गर्नुहोस्</translation>
 <translation id="4916163929714267752">यो लिंकलाई नयाँ विन्डोमा खोल्नुहोस्</translation>
+<translation id="492453977506755176">क्याप्चर मोड की</translation>
 <translation id="5030659775136592441">पुस्तक चिन्ह प्रबन्धक देखाउनुहोस्‌</translation>
 <translation id="5034421018520995080">पृष्ठको शीर्षभागमा जानुहोस्</translation>
 <translation id="5042305953558921026">परिदृश्य मोडको साँचो</translation>
@@ -132,6 +136,7 @@
 <translation id="5899919361772749550">विकासकर्ताका उपकरणहरू देखाउनुहोस्‌ वा लुकाउनुहोस्‌</translation>
 <translation id="5919628958418675842">गोपनीयतासम्बन्धी स्क्रिन सक्रिय वा निष्क्रिय पार्नुहोस्</translation>
 <translation id="5921745308587794300">विन्डोलाई घुमाउनुहोस्</translation>
+<translation id="5926306472221400972">फुल स्क्रिनको स्क्रिनसट खिच्नुहोस्</translation>
 <translation id="6022924867608035986">खोजबाकसको पाठ खाली गर्नुहोस्</translation>
 <translation id="6045998054441862242">उच्च कन्ट्रास्ट मोड सक्रिय गर्नुहोस्‌</translation>
 <translation id="6052614013050385269">कुनै लिंकमा दायाँ क्लिक गर्नुहोस्‌</translation>
@@ -149,6 +154,7 @@
 <translation id="6445033640292336367">ट्याबलाई यसको मूल स्थितिमा फर्काउनुहोस्</translation>
 <translation id="6474744297082284761">जुम आउट गर्नुहोस्‌ (डक गरिँदा वा पूर्ण स्क्रिनसम्बन्धी म्याग्निफायरहरूलाई सक्षम पारिँदा)</translation>
 <translation id="649811797655257835">फाइल चयन गर्नुहोस्, त्यसपछि <ph name="SPACE" /> थिच्नुहोस्</translation>
+<translation id="6551886416582667425">स्क्रिनको केही भागको स्क्रिनसट खिच्नुहोस्/रेकर्डिङ गर्नुहोस्</translation>
 <translation id="6556040137485212400">धेरै लामो समय सम्म प्रयोग नगरिएको विन्डो खोल्नुहोस्‌</translation>
 <translation id="666343722268997814">हाइलाइट गरिएको वस्तुमा दायाँ क्लिक गर्दा खुल्ने मेनु खोल्नुहोस्</translation>
 <translation id="6671538777808758331">आफ्नो खोजको अर्को परिणाममा जानुहोस्</translation>
@@ -175,6 +181,7 @@
 <translation id="7611271430932669992">पपअप र संवादहरूमा केन्द्रित गर्नुहोस्</translation>
 <translation id="7635348532214572995">एपको आइकनलाई एपको ग्रिड वरिपरि सार्नुहोस्</translation>
 <translation id="766326951329901120">क्लिपबोर्डको सामग्रीलाई सादा पाठका रूपमा टाँस्नुहोस्</translation>
+<translation id="7673453620027697230">विन्डोको स्क्रिनसट खिच्नुहोस्/रेकर्डिङ गर्नुहोस्</translation>
 <translation id="7703010453515335249">बायाँ कोष्ठक</translation>
 <translation id="7724603315864178912">काट्नुहोस्</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, त्यसपछि <ph name="SPACE" /> वा <ph name="ENTER" /></translation>

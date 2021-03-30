@@ -5,7 +5,7 @@
 #include "content/web_test/renderer/text_input_controller.h"
 
 #include "base/macros.h"
-#include "content/web_test/renderer/web_view_test_proxy.h"
+#include "content/web_test/renderer/web_frame_test_proxy.h"
 #include "gin/arguments.h"
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"
@@ -195,8 +195,9 @@ void TextInputControllerBindings::ForceTextInputStateUpdate() {
 }
 // TextInputController ---------------------------------------------------------
 
-TextInputController::TextInputController(WebViewTestProxy* web_view_test_proxy)
-    : web_view_test_proxy_(web_view_test_proxy) {}
+TextInputController::TextInputController(
+    WebFrameTestProxy* web_frame_test_proxy)
+    : web_frame_test_proxy_(web_frame_test_proxy) {}
 
 TextInputController::~TextInputController() {}
 
@@ -350,7 +351,7 @@ std::vector<int> TextInputController::SelectedRange() {
 std::vector<int> TextInputController::FirstRectForCharacterRange(
     unsigned location,
     unsigned length) {
-  blink::WebRect rect;
+  gfx::Rect rect;
   if (!view()->FocusedFrame() ||
       !view()->FocusedFrame()->FirstRectForCharacterRange(location, length,
                                                           rect)) {
@@ -358,10 +359,10 @@ std::vector<int> TextInputController::FirstRectForCharacterRange(
   }
 
   std::vector<int> int_array(4);
-  int_array[0] = rect.x;
-  int_array[1] = rect.y;
-  int_array[2] = rect.width;
-  int_array[3] = rect.height;
+  int_array[0] = rect.x();
+  int_array[1] = rect.y();
+  int_array[2] = rect.width();
+  int_array[3] = rect.height();
 
   return int_array;
 }
@@ -396,17 +397,13 @@ void TextInputController::SetComposition(const std::string& text) {
 }
 
 void TextInputController::ForceTextInputStateUpdate() {
-  // TODO(lukasza): Finish adding OOPIF support to the web tests harness.
-  RenderFrameImpl* main_frame = web_view_test_proxy_->GetMainRenderFrame();
-  CHECK(main_frame) << "WebView does not have a local main frame and"
-                    << " cannot handle input method controller tasks.";
   blink::WebFrameWidget* frame_widget =
-      main_frame->GetLocalRootWebFrameWidget();
+      web_frame_test_proxy_->GetLocalRootWebFrameWidget();
   frame_widget->ShowVirtualKeyboard();
 }
 
 blink::WebView* TextInputController::view() {
-  return web_view_test_proxy_->GetWebView();
+  return web_frame_test_proxy_->GetWebFrame()->View();
 }
 
 blink::WebInputMethodController*

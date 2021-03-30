@@ -8,7 +8,7 @@
 #include "base/callback_list.h"
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/identity/extension_token_key.h"
 #include "chrome/browser/extensions/api/identity/web_auth_flow.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
@@ -73,7 +73,9 @@ class GaiaRemoteConsentFlow
 
   // signin::AccountsCookieMutator::PartitionDelegate:
   std::unique_ptr<GaiaAuthFetcher> CreateGaiaAuthFetcherForPartition(
-      GaiaAuthConsumer* consumer) override;
+
+      GaiaAuthConsumer* consumer,
+      const gaia::GaiaSource& source) override;
   network::mojom::CookieManager* GetCookieManagerForPartition() override;
 
   // signin::IdentityManager::Observer:
@@ -97,8 +99,9 @@ class GaiaRemoteConsentFlow
   std::unique_ptr<signin::AccountsCookieMutator::SetAccountsInCookieTask>
       set_accounts_in_cookie_task_;
   base::CallbackListSubscription identity_api_set_consent_result_subscription_;
-  ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
-      scoped_observer_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      scoped_observation_{this};
 };
 
 }  // namespace extensions

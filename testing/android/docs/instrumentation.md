@@ -95,17 +95,17 @@ Several of the annotations are Android APIs from
 [android.support.test.filters](https://developer.android.com/reference/android/support/test/filters/package-summary.html)
 (starting in Android N). These are all fairly self-explanatory:
 
- - [`@SmallTest`](https://developer.android.com/reference/android/support/test/filters/SmallTest.html) (timeout: **1 minute**)
- - [`@MediumTest`](https://developer.android.com/reference/android/support/test/filters/MediumTest.html) (timeout: **3 minutes**)
- - [`@LargeTest`](https://developer.android.com/reference/android/support/test/filters/LargeTest.html) (timeout: **5 minutes**)
+ - [`@SmallTest`](https://developer.android.com/reference/android/support/test/filters/SmallTest.html) (timeout: **10 seconds**)
+ - [`@MediumTest`](https://developer.android.com/reference/android/support/test/filters/MediumTest.html) (timeout: **30 seconds**)
+ - [`@LargeTest`](https://developer.android.com/reference/android/support/test/filters/LargeTest.html) (timeout: **2 minutes**)
 
 A few additional size annotations are provided in
 [//base](https://chromium.googlesource.com/chromium/src/+/master/base):
 
  - [`@EnormousTest`](https://chromium.googlesource.com/chromium/src/+/master/base/test/android/javatests/src/org/chromium/base/test/util/EnormousTest.java)
-(timeout: **10 minutes**) Typically used for tests that require WiFi.
+(timeout: **5 minutes**) Typically used for tests that require WiFi.
  - [`@IntegrationTest`](https://chromium.googlesource.com/chromium/src/+/master/base/test/android/javatests/src/org/chromium/base/test/util/IntegrationTest.java)
-(timeout: **30 minutes**) Used for tests that run against real services.
+(timeout: **10 minutes**) Used for tests that run against real services.
  - [`@Manual`](https://chromium.googlesource.com/chromium/src/+/master/base/test/android/javatests/src/org/chromium/base/test/util/Manual.java)
 (timeout: **10 hours**) Used for manual tests.
 

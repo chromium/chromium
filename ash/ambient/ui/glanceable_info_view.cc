@@ -30,6 +30,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -42,7 +43,6 @@ constexpr int kSpacingBetweenWeatherIconAndTempDip = 8;
 constexpr int kWeatherIconSizeDip = 32;
 
 // Typography.
-constexpr SkColor kTextColor = SK_ColorWHITE;
 constexpr int kDefaultFontSizeDip = 64;
 constexpr int kWeatherTemperatureFontSizeDip = 32;
 
@@ -86,11 +86,6 @@ GlanceableInfoView::GlanceableInfoView(AmbientViewDelegate* delegate)
 }
 
 GlanceableInfoView::~GlanceableInfoView() = default;
-
-const char* GlanceableInfoView::GetClassName() const {
-  return "GlanceableInfoView";
-}
-
 void GlanceableInfoView::OnWeatherInfoUpdated() {
   Show();
 }
@@ -112,7 +107,7 @@ void GlanceableInfoView::Show() {
   temperature_->SetText(GetTemperatureText());
 }
 
-base::string16 GlanceableInfoView::GetTemperatureText() const {
+std::u16string GlanceableInfoView::GetTemperatureText() const {
   AmbientBackendModel* ambient_backend_model =
       delegate_->GetAmbientBackendModel();
   if (ambient_backend_model->show_celsius()) {
@@ -145,8 +140,10 @@ void GlanceableInfoView::InitLayout() {
       ash::tray::TimeView::ClockLayout::HORIZONTAL_CLOCK,
       Shell::Get()->system_tray_model()->clock()));
   time_view_->SetTextFont(GetTimeFontList());
-  time_view_->SetTextColor(kTextColor,
-                           /*auto_color_readability_enabled=*/false);
+  time_view_->SetTextColor(
+      ambient::util::GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kTextColorPrimary),
+      /*auto_color_readability_enabled=*/false);
   time_view_->SetTextShadowValues(text_shadow_values);
   // Remove the internal spacing in `time_view_` and adjust spacing for shadows.
   time_view_->SetBorder(views::CreateEmptyBorder(
@@ -167,11 +164,15 @@ void GlanceableInfoView::InitLayout() {
   // Inits the temp view.
   temperature_ = AddChildView(std::make_unique<views::Label>());
   temperature_->SetAutoColorReadabilityEnabled(false);
-  temperature_->SetEnabledColor(kTextColor);
+  temperature_->SetEnabledColor(ambient::util::GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary));
   temperature_->SetFontList(GetWeatherTemperatureFontList());
   temperature_->SetShadows(text_shadow_values);
   temperature_->SetBorder(views::CreateEmptyBorder(
       0, 0, GetTimeFontDescent() - GetTemperatureFontDescent(), 0));
 }
+
+BEGIN_METADATA(GlanceableInfoView, views::View)
+END_METADATA
 
 }  // namespace ash

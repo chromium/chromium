@@ -49,7 +49,7 @@ void StartCachedLoad(
 
   mojo::ScopedDataPipeProducerHandle producer;
   mojo::ScopedDataPipeConsumerHandle consumer;
-  if (CreateDataPipe(nullptr, &producer, &consumer) != MOJO_RESULT_OK) {
+  if (CreateDataPipe(nullptr, producer, consumer) != MOJO_RESULT_OK) {
     client->OnComplete(
         network::URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));
     return;
@@ -222,7 +222,6 @@ bool ProxyingURLLoaderFactoryImpl::HasCachedInputStream(
 
 void ProxyingURLLoaderFactoryImpl::CreateLoaderAndStart(
     mojo::PendingReceiver<network::mojom::URLLoader> loader,
-    int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const network::ResourceRequest& request,
@@ -252,9 +251,9 @@ void ProxyingURLLoaderFactoryImpl::CreateLoaderAndStart(
     }
   }
 
-  target_factory_->CreateLoaderAndStart(std::move(loader), routing_id,
-                                        request_id, options, request,
-                                        std::move(client), traffic_annotation);
+  target_factory_->CreateLoaderAndStart(std::move(loader), request_id, options,
+                                        request, std::move(client),
+                                        traffic_annotation);
 }
 
 void ProxyingURLLoaderFactoryImpl::Clone(

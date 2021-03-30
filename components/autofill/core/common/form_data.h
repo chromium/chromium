@@ -10,11 +10,10 @@
 #include <utility>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -24,7 +23,7 @@ class LogBuffer;
 
 // Pair of a button title (e.g. "Register") and its type (e.g.
 // INPUT_ELEMENT_SUBMIT_TYPE).
-using ButtonTitleInfo = std::pair<base::string16, mojom::ButtonTitleType>;
+using ButtonTitleInfo = std::pair<std::u16string, mojom::ButtonTitleType>;
 
 // List of button titles of a given form.
 using ButtonTitleList = std::vector<ButtonTitleInfo>;
@@ -44,6 +43,8 @@ struct FormData {
   FormData& operator=(FormData&&);
   ~FormData();
 
+  FormGlobalId global_id() const { return {host_frame, unique_renderer_id}; }
+
   // Returns true if two forms are the same, not counting the values of the
   // form elements.
   bool SameFormAs(const FormData& other) const;
@@ -59,10 +60,10 @@ struct FormData {
   bool operator<(const FormData& form) const;
 
   // The id attribute of the form.
-  base::string16 id_attribute;
+  std::u16string id_attribute;
 
   // The name attribute of the form.
-  base::string16 name_attribute;
+  std::u16string name_attribute;
 
   // NOTE: update IdentityComparator                when adding new a member.
   // NOTE: update SameFormAs()            if needed when adding new a member.
@@ -74,7 +75,7 @@ struct FormData {
   // priority given to the name_attribute. This value is used when computing
   // form signatures.
   // TODO(crbug/896689): remove this and use attributes/unique_id instead.
-  base::string16 name;
+  std::u16string name;
   // Titles of form's buttons.
   ButtonTitleList button_titles;
   // The URL (minus query parameters and fragment) containing the form.
@@ -91,11 +92,9 @@ struct FormData {
   url::Origin main_frame_origin;
   // True if this form is a form tag.
   bool is_form_tag = true;
-  // True if the form is made of unowned fields (i.e., not within a <form> tag)
-  // in what appears to be a checkout flow. This attribute is only calculated
-  // and used if features::kAutofillRestrictUnownedFieldsToFormlessCheckout is
-  // enabled, to prevent heuristics from running on formless non-checkout.
-  bool is_formless_checkout = false;
+  // Unique ID of the containing frame. A FormData must not be serialized if
+  // |host_frame| is default-initialized.
+  LocalFrameToken host_frame;
   // Unique renderer id returned by WebFormElement::UniqueRendererFormId(). It
   // is not persistent between page loads, so it is not saved and not used in
   // comparison in SameFormAs().

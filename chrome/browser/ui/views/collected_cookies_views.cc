@@ -48,6 +48,8 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -84,7 +86,7 @@ void StartNewButtonColumnSet(views::GridLayout* layout,
   layout->StartRow(views::GridLayout::kFixedSize, column_layout_id);
 }
 
-base::string16 GetAnnotationTextForSetting(ContentSetting setting) {
+std::u16string GetAnnotationTextForSetting(ContentSetting setting) {
   switch (setting) {
     case CONTENT_SETTING_BLOCK:
       return l10n_util::GetStringUTF16(IDS_COLLECTED_COOKIES_BLOCKED_AUX_TEXT);
@@ -95,7 +97,7 @@ base::string16 GetAnnotationTextForSetting(ContentSetting setting) {
           IDS_COLLECTED_COOKIES_CLEAR_ON_EXIT_AUX_TEXT);
     default:
       NOTREACHED() << "Unknown ContentSetting value: " << setting;
-      return base::string16();
+      return std::u16string();
   }
 }
 
@@ -125,21 +127,21 @@ class CookiesTreeViewDrawingProvider : public views::TreeViewDrawingProvider {
   CookiesTreeViewDrawingProvider() {}
   ~CookiesTreeViewDrawingProvider() override {}
 
-  void AnnotateNode(ui::TreeModelNode* node, const base::string16& text);
+  void AnnotateNode(ui::TreeModelNode* node, const std::u16string& text);
 
   SkColor GetTextColorForNode(views::TreeView* tree_view,
                               ui::TreeModelNode* node) override;
-  base::string16 GetAuxiliaryTextForNode(views::TreeView* tree_view,
+  std::u16string GetAuxiliaryTextForNode(views::TreeView* tree_view,
                                          ui::TreeModelNode* node) override;
   bool ShouldDrawIconForNode(views::TreeView* tree_view,
                              ui::TreeModelNode* node) override;
 
  private:
-  std::map<ui::TreeModelNode*, base::string16> annotations_;
+  std::map<ui::TreeModelNode*, std::u16string> annotations_;
 };
 
 void CookiesTreeViewDrawingProvider::AnnotateNode(ui::TreeModelNode* node,
-                                                  const base::string16& text) {
+                                                  const std::u16string& text) {
   annotations_[node] = text;
 }
 
@@ -152,7 +154,7 @@ SkColor CookiesTreeViewDrawingProvider::GetTextColorForNode(
   return color;
 }
 
-base::string16 CookiesTreeViewDrawingProvider::GetAuxiliaryTextForNode(
+std::u16string CookiesTreeViewDrawingProvider::GetAuxiliaryTextForNode(
     views::TreeView* tree_view,
     ui::TreeModelNode* node) {
   if (annotations_.find(node) != annotations_.end())
@@ -171,6 +173,7 @@ bool CookiesTreeViewDrawingProvider::ShouldDrawIconForNode(
 // A custom view that conditionally displays an infobar.
 class InfobarView : public views::View {
  public:
+  METADATA_HEADER(InfobarView);
   InfobarView() {
     info_image_ = AddChildView(std::make_unique<views::ImageView>());
     info_image_->SetImage(gfx::CreateVectorIcon(vector_icons::kInfoOutlineIcon,
@@ -196,12 +199,14 @@ class InfobarView : public views::View {
         horizontal_spacing));
     SetVisible(false);
   }
-  ~InfobarView() override {}
+  InfobarView(const InfobarView&) = delete;
+  InfobarView& operator=(const InfobarView&) = delete;
+  ~InfobarView() override = default;
 
   // Set the InfobarView label text based on content |setting| and
   // |domain_name|. Ensure InfobarView is visible.
-  void SetLabelText(ContentSetting setting, const base::string16& domain_name) {
-    base::string16 label;
+  void SetLabelText(ContentSetting setting, const std::u16string& domain_name) {
+    std::u16string label;
     switch (setting) {
       case CONTENT_SETTING_BLOCK:
         label = l10n_util::GetStringFUTF16(
@@ -230,9 +235,10 @@ class InfobarView : public views::View {
   views::ImageView* info_image_;
   // The label responsible for rendering the text.
   views::Label* label_;
-
-  DISALLOW_COPY_AND_ASSIGN(InfobarView);
 };
+
+BEGIN_METADATA(InfobarView, views::View)
+END_METADATA
 
 ///////////////////////////////////////////////////////////////////////////////
 // CollectedCookiesViews, public:
@@ -273,30 +279,6 @@ void CollectedCookiesViews::CreateAndShowForWebContents(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// CollectedCookiesViews, views::DialogDelegate implementation:
-
-base::string16 CollectedCookiesViews::GetWindowTitle() const {
-  return l10n_util::GetStringUTF16(IDS_COLLECTED_COOKIES_DIALOG_TITLE);
-}
-
-ui::ModalType CollectedCookiesViews::GetModalType() const {
-  return ui::MODAL_TYPE_CHILD;
-}
-
-bool CollectedCookiesViews::ShouldShowCloseButton() const {
-  return false;
-}
-
-void CollectedCookiesViews::DeleteDelegate() {
-  if (!destroying_) {
-    // The associated Widget is being destroyed before the owning WebContents.
-    // Tell the owner to delete |this|.
-    destroying_ = true;
-    web_contents_->RemoveUserData(UserDataKey());
-  }
-}
-
-///////////////////////////////////////////////////////////////////////////////
 // CollectedCookiesViews, views::TabbedPaneListener implementation:
 
 void CollectedCookiesViews::TabSelectedAt(int index) {
@@ -331,6 +313,9 @@ CollectedCookiesViews::CollectedCookiesViews(content::WebContents* web_contents)
     : web_contents_(web_contents) {
   SetButtons(ui::DIALOG_BUTTON_OK);
   SetButtonLabel(ui::DIALOG_BUTTON_OK, l10n_util::GetStringUTF16(IDS_DONE));
+  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetShowCloseButton(false);
+  SetTitle(IDS_COLLECTED_COOKIES_DIALOG_TITLE);
   views::GridLayout* layout =
       SetLayoutManager(std::make_unique<views::GridLayout>());
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
@@ -357,9 +342,9 @@ CollectedCookiesViews::CollectedCookiesViews(content::WebContents* web_contents)
       layout->AddView(std::make_unique<views::TabbedPane>());
 
   // NOTE: Panes must be added after |tabbed_pane| has been added to its parent.
-  base::string16 label_allowed = l10n_util::GetStringUTF16(
+  std::u16string label_allowed = l10n_util::GetStringUTF16(
       IDS_COLLECTED_COOKIES_ALLOWED_COOKIES_TAB_LABEL);
-  base::string16 label_blocked = l10n_util::GetStringUTF16(
+  std::u16string label_blocked = l10n_util::GetStringUTF16(
       IDS_COLLECTED_COOKIES_BLOCKED_COOKIES_TAB_LABEL);
   tabbed_pane->AddTab(label_allowed, CreateAllowedPane());
   tabbed_pane->AddTab(label_blocked, CreateBlockedPane());
@@ -397,6 +382,15 @@ void CollectedCookiesViews::OnDialogClosed() {
   if (status_changed_ && !web_contents_->IsBeingDestroyed()) {
     CollectedCookiesInfoBarDelegate::Create(
         InfoBarService::FromWebContents(web_contents_));
+  }
+}
+
+void CollectedCookiesViews::DeleteDelegate() {
+  if (!destroying_) {
+    // The associated Widget is being destroyed before the owning WebContents.
+    // Tell the owner to delete |this|.
+    destroying_ = true;
+    web_contents_->RemoveUserData(UserDataKey());
   }
 }
 
@@ -661,3 +655,6 @@ void CollectedCookiesViews::AddContentException(views::TreeView* tree_view,
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(CollectedCookiesViews)
+
+BEGIN_METADATA(CollectedCookiesViews, views::DialogDelegateView)
+END_METADATA

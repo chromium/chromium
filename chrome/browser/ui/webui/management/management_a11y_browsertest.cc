@@ -20,6 +20,7 @@ void ManagementA11yUIBrowserTest::InstallPowerfulPolicyEnforcedExtension() {
   extensions::ChromeTestExtensionLoader loader(browser()->profile());
   loader.set_ignore_manifest_warnings(true);
   loader.set_grant_permissions(true);
-  loader.set_location(extensions::Manifest::EXTERNAL_POLICY_DOWNLOAD);
+  loader.set_location(
+      extensions::mojom::ManifestLocation::kExternalPolicyDownload);
   loader.LoadExtension(test_data_dir_.AppendASCII("good.crx"));
 }

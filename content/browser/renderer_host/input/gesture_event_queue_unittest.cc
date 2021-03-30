@@ -30,7 +30,6 @@
 #include "ui/display/win/test/scoped_screen_win.h"
 #endif
 
-using base::TimeDelta;
 using blink::WebGestureDevice;
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
@@ -311,7 +310,7 @@ TEST_F(GestureEventQueueTest, DebounceDefersFollowingGestureEvents) {
 
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), TimeDelta::FromMilliseconds(5));
+      FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromMilliseconds(5));
   run_loop.Run();
 
   // The deferred events are correctly queued in coalescing queue.

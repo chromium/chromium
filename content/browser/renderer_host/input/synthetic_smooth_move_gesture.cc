@@ -66,14 +66,14 @@ SyntheticGesture::Result SyntheticSmoothMoveGesture::ForwardInputEvents(
   switch (params_.input_type) {
     case SyntheticSmoothMoveGestureParams::TOUCH_INPUT:
       if (!synthetic_pointer_driver_)
-        synthetic_pointer_driver_ =
-            SyntheticPointerDriver::Create(SyntheticGestureParams::TOUCH_INPUT);
+        synthetic_pointer_driver_ = SyntheticPointerDriver::Create(
+            content::mojom::GestureSourceType::kTouchInput);
       ForwardTouchInputEvents(timestamp, target);
       break;
     case SyntheticSmoothMoveGestureParams::MOUSE_DRAG_INPUT:
       if (!synthetic_pointer_driver_)
-        synthetic_pointer_driver_ =
-            SyntheticPointerDriver::Create(SyntheticGestureParams::MOUSE_INPUT);
+        synthetic_pointer_driver_ = SyntheticPointerDriver::Create(
+            content::mojom::GestureSourceType::kMouseInput);
       ForwardMouseClickInputEvents(timestamp, target);
       break;
     case SyntheticSmoothMoveGestureParams::MOUSE_WHEEL_INPUT:

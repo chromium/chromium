@@ -26,6 +26,11 @@ gen-bundle \
   -manifestURL https://test.example.org/manifest.webmanifest \
   -o hello.wbn
 
+gen-bundle \
+  -har simple.har \
+  -o simple.wbn \
+  -primaryURL https://test.example.org/ \
+
 sign-bundle \
   -i hello.wbn \
   -certificate $sxg_test_data_dir/test.example.org.public.pem.cbor \

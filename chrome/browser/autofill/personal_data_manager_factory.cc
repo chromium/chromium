@@ -78,9 +78,9 @@ KeyedService* PersonalDataManagerFactory::BuildPersonalDataManager(
   auto* history_service = HistoryServiceFactory::GetForProfile(
       profile, ServiceAccessType::EXPLICIT_ACCESS);
   service->Init(local_storage, account_storage, profile->GetPrefs(),
+                g_browser_process->local_state(),
                 IdentityManagerFactory::GetForProfile(profile),
-                autofill_validator, history_service,
-                profile->IsOffTheRecord());
+                autofill_validator, history_service, profile->IsOffTheRecord());
   return service;
 }
 

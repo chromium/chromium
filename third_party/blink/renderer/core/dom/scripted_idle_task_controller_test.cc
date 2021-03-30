@@ -110,6 +110,10 @@ class MockIdleTask : public IdleTask {
 
 class ScriptedIdleTaskControllerTest : public testing::Test {
  public:
+  ~ScriptedIdleTaskControllerTest() override {
+    execution_context_->NotifyContextDestroyed();
+  }
+
   void SetUp() override {
     execution_context_ = MakeGarbageCollected<NullExecutionContext>();
   }

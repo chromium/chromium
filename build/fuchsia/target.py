@@ -69,6 +69,10 @@ class Target(object):
     self._command_runner = None
 
   @staticmethod
+  def CreateFromArgs(args):
+    raise NotImplementedError()
+
+  @staticmethod
   def RegisterArgs(arg_parser):
     common_args = arg_parser.add_argument_group(
         'target', 'Arguments that apply to all targets.')

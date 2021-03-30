@@ -17,6 +17,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
+#include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -42,13 +43,13 @@ TEST_F(ExtensionFromUserScript, Basic) {
   test_file = test_file.AppendASCII("extensions")
                        .AppendASCII("user_script_basic.user.js");
 
-  base::string16 error;
+  std::u16string error;
   scoped_refptr<Extension> extension(
       ConvertUserScriptToExtension(test_file, GURL("http://www.google.com/foo"),
                                    extensions_dir.GetPath(), &error));
 
   ASSERT_TRUE(extension.get());
-  EXPECT_EQ(base::string16(), error);
+  EXPECT_EQ(std::u16string(), error);
 
   // Use a temp dir so that the extensions dir will clean itself up.
   base::ScopedTempDir ext_dir;
@@ -65,7 +66,7 @@ TEST_F(ExtensionFromUserScript, Basic) {
   ASSERT_EQ(1u, ContentScriptsInfo::GetContentScripts(extension.get()).size());
   const UserScript& script =
       *ContentScriptsInfo::GetContentScripts(extension.get())[0];
-  EXPECT_EQ(UserScript::DOCUMENT_IDLE, script.run_location());
+  EXPECT_EQ(mojom::RunLocation::kDocumentIdle, script.run_location());
   ASSERT_EQ(2u, script.globs().size());
   EXPECT_EQ("http://www.google.com/*", script.globs().at(0));
   EXPECT_EQ("http://www.yahoo.com/*", script.globs().at(1));
@@ -95,13 +96,13 @@ TEST_F(ExtensionFromUserScript, NoMetadata) {
   test_file = test_file.AppendASCII("extensions")
                        .AppendASCII("user_script_no_metadata.user.js");
 
-  base::string16 error;
+  std::u16string error;
   scoped_refptr<Extension> extension(ConvertUserScriptToExtension(
       test_file, GURL("http://www.google.com/foo/bar.user.js?monkey"),
       extensions_dir.GetPath(), &error));
 
   ASSERT_TRUE(extension.get());
-  EXPECT_EQ(base::string16(), error);
+  EXPECT_EQ(std::u16string(), error);
 
   // Use a temp dir so that the extensions dir will clean itself up.
   base::ScopedTempDir ext_dir;
@@ -144,13 +145,13 @@ TEST_F(ExtensionFromUserScript, NotUTF8) {
   test_file = test_file.AppendASCII("extensions")
                        .AppendASCII("user_script_not_utf8.user.js");
 
-  base::string16 error;
+  std::u16string error;
   scoped_refptr<Extension> extension(ConvertUserScriptToExtension(
       test_file, GURL("http://www.google.com/foo/bar.user.js?monkey"),
       extensions_dir.GetPath(), &error));
 
   ASSERT_FALSE(extension.get());
-  EXPECT_EQ(base::ASCIIToUTF16("User script must be UTF8 encoded."), error);
+  EXPECT_EQ(u"User script must be UTF8 encoded.", error);
 }
 
 TEST_F(ExtensionFromUserScript, RunAtDocumentStart) {
@@ -162,13 +163,13 @@ TEST_F(ExtensionFromUserScript, RunAtDocumentStart) {
   test_file = test_file.AppendASCII("extensions")
                        .AppendASCII("user_script_run_at_start.user.js");
 
-  base::string16 error;
+  std::u16string error;
   scoped_refptr<Extension> extension(
       ConvertUserScriptToExtension(test_file, GURL("http://www.google.com/foo"),
                                    extensions_dir.GetPath(), &error));
 
   ASSERT_TRUE(extension.get());
-  EXPECT_EQ(base::string16(), error);
+  EXPECT_EQ(std::u16string(), error);
 
   // Use a temp dir so that the extensions dir will clean itself up.
   base::ScopedTempDir ext_dir;
@@ -185,7 +186,7 @@ TEST_F(ExtensionFromUserScript, RunAtDocumentStart) {
   ASSERT_EQ(1u, ContentScriptsInfo::GetContentScripts(extension.get()).size());
   const UserScript& script =
       *ContentScriptsInfo::GetContentScripts(extension.get())[0];
-  EXPECT_EQ(UserScript::DOCUMENT_START, script.run_location());
+  EXPECT_EQ(mojom::RunLocation::kDocumentStart, script.run_location());
 }
 
 TEST_F(ExtensionFromUserScript, RunAtDocumentEnd) {
@@ -197,13 +198,13 @@ TEST_F(ExtensionFromUserScript, RunAtDocumentEnd) {
   test_file = test_file.AppendASCII("extensions")
                        .AppendASCII("user_script_run_at_end.user.js");
 
-  base::string16 error;
+  std::u16string error;
   scoped_refptr<Extension> extension(
       ConvertUserScriptToExtension(test_file, GURL("http://www.google.com/foo"),
                                    extensions_dir.GetPath(), &error));
 
   ASSERT_TRUE(extension.get());
-  EXPECT_EQ(base::string16(), error);
+  EXPECT_EQ(std::u16string(), error);
 
   // Use a temp dir so that the extensions dir will clean itself up.
   base::ScopedTempDir ext_dir;
@@ -220,7 +221,7 @@ TEST_F(ExtensionFromUserScript, RunAtDocumentEnd) {
   ASSERT_EQ(1u, ContentScriptsInfo::GetContentScripts(extension.get()).size());
   const UserScript& script =
       *ContentScriptsInfo::GetContentScripts(extension.get())[0];
-  EXPECT_EQ(UserScript::DOCUMENT_END, script.run_location());
+  EXPECT_EQ(mojom::RunLocation::kDocumentEnd, script.run_location());
 }
 
 TEST_F(ExtensionFromUserScript, RunAtDocumentIdle) {
@@ -233,13 +234,13 @@ TEST_F(ExtensionFromUserScript, RunAtDocumentIdle) {
                        .AppendASCII("user_script_run_at_idle.user.js");
   ASSERT_TRUE(base::PathExists(test_file)) << test_file.value();
 
-  base::string16 error;
+  std::u16string error;
   scoped_refptr<Extension> extension(
       ConvertUserScriptToExtension(test_file, GURL("http://www.google.com/foo"),
                                    extensions_dir.GetPath(), &error));
 
   ASSERT_TRUE(extension.get());
-  EXPECT_EQ(base::string16(), error);
+  EXPECT_EQ(std::u16string(), error);
 
   // Use a temp dir so that the extensions dir will clean itself up.
   base::ScopedTempDir ext_dir;
@@ -256,7 +257,7 @@ TEST_F(ExtensionFromUserScript, RunAtDocumentIdle) {
   ASSERT_EQ(1u, ContentScriptsInfo::GetContentScripts(extension.get()).size());
   const UserScript& script =
       *ContentScriptsInfo::GetContentScripts(extension.get())[0];
-  EXPECT_EQ(UserScript::DOCUMENT_IDLE, script.run_location());
+  EXPECT_EQ(mojom::RunLocation::kDocumentIdle, script.run_location());
 }
 
 }  // namespace extensions

@@ -5,25 +5,27 @@
 #ifndef CHROME_BROWSER_FLAGS_ANDROID_CHROME_FEATURE_LIST_H_
 #define CHROME_BROWSER_FLAGS_ANDROID_CHROME_FEATURE_LIST_H_
 
-#include <base/feature_list.h>
 #include <jni.h>
+
+#include "base/feature_list.h"
 
 namespace chrome {
 namespace android {
 
 // Alphabetical:
-extern const base::Feature kAdjustWebApkInstallationSpace;
+extern const base::Feature kAddToHomescreenIPH;
 extern const base::Feature kAllowNewIncognitoTabIntents;
 extern const base::Feature kAllowRemoteContextForNotifications;
-extern const base::Feature kAndroidDefaultBrowserPromo;
 extern const base::Feature kAndroidLayoutChangeTabReparenting;
 extern const base::Feature kAndroidManagedByMenuItem;
-extern const base::Feature kAndroidMultipleDisplay;
-extern const base::Feature kAndroidNightModeTabReparenting;
 extern const base::Feature kAndroidPartnerCustomizationPhenotype;
 extern const base::Feature kAndroidSearchEngineChoiceNotification;
+extern const base::Feature kAssistantIntentExperimentId;
 extern const base::Feature kAssistantIntentPageUrl;
+extern const base::Feature kAssistantIntentTranslateInfo;
+extern const base::Feature kAppLaunchpad;
 extern const base::Feature kBackgroundTaskComponentUpdate;
+extern const base::Feature kBackgroundThreadPool;
 extern const base::Feature kBentoOffline;
 extern const base::Feature kCloseTabSuggestions;
 extern const base::Feature kCriticalPersistedTabData;
@@ -55,16 +57,17 @@ extern const base::Feature kContextMenuPerformanceInfo;
 extern const base::Feature kContextMenuSearchWithGoogleLens;
 extern const base::Feature kContextMenuShopWithGoogleLens;
 extern const base::Feature kContextMenuSearchAndShopWithGoogleLens;
+extern const base::Feature kContextMenuTranslateWithGoogleLens;
 extern const base::Feature kContentSuggestionsScrollToLoad;
 extern const base::Feature kContextualSearchDebug;
-extern const base::Feature kContextualSearchDefinitions;
+extern const base::Feature kContextualSearchForceCaption;
 extern const base::Feature kContextualSearchLegacyHttpPolicy;
 extern const base::Feature kContextualSearchLiteralSearchTap;
-extern const base::Feature kContextualSearchLongpressPanelHelp;
 extern const base::Feature kContextualSearchLongpressResolve;
 extern const base::Feature kContextualSearchMlTapSuppression;
 extern const base::Feature kContextualSearchSecondTap;
 extern const base::Feature kContextualSearchTapDisableOverride;
+extern const base::Feature kContextualSearchThinWebViewImplementation;
 extern const base::Feature kContextualSearchTranslations;
 extern const base::Feature kDarkenWebsitesCheckboxInThemesSetting;
 extern const base::Feature kDirectActions;
@@ -77,13 +80,11 @@ extern const base::Feature kDownloadRename;
 extern const base::Feature kDuetTabStripIntegrationAndroid;
 extern const base::Feature kEnhancedProtectionPromoCard;
 extern const base::Feature kEphemeralTabUsingBottomSheet;
+extern const base::Feature kExperimentsForAgsa;
 extern const base::Feature kExploreSites;
 extern const base::Feature kFocusOmniboxInIncognitoTabIntents;
 extern const base::Feature kHandleMediaIntents;
 extern const base::Feature kHomepagePromoCard;
-extern const base::Feature kHomepagePromoSyntheticPromoSeenEnabled;
-extern const base::Feature kHomepagePromoSyntheticPromoSeenTracking;
-extern const base::Feature kHorizontalTabSwitcherAndroid;
 extern const base::Feature kImmersiveUiMode;
 extern const base::Feature kIncognitoScreenshot;
 extern const base::Feature kImprovedA2HS;
@@ -91,24 +92,23 @@ extern const base::Feature kInlineUpdateFlow;
 extern const base::Feature kInstantStart;
 extern const base::Feature kKitKatSupported;
 extern const base::Feature kLanguagesPreference;
-extern const base::Feature kNewPhotoPicker;
+extern const base::Feature kLensCameraAssistedSearch;
 extern const base::Feature kNotificationSuspender;
 extern const base::Feature kOfflineIndicatorV2;
+extern const base::Feature kOfflineMeasurementsBackgroundTask;
 extern const base::Feature kOmniboxSpareRenderer;
-extern const base::Feature kPhotoPickerVideoSupport;
-extern const base::Feature kPhotoPickerZoom;
+extern const base::Feature kPageAnnotationsService;
 extern const base::Feature kProbabilisticCryptidRenderer;
-extern const base::Feature kPwaInstallUseBottomSheet;
 extern const base::Feature kReachedCodeProfiler;
 extern const base::Feature kReengagementNotification;
 extern const base::Feature kReaderModeInCCT;
 extern const base::Feature kRelatedSearches;
+extern const base::Feature kRelatedSearchesUi;
 extern const base::Feature kSearchEnginePromoExistingDevice;
 extern const base::Feature kSearchEnginePromoNewDevice;
 extern const base::Feature kServiceManagerForBackgroundPrefetch;
 extern const base::Feature kServiceManagerForDownload;
 extern const base::Feature kShareButtonInTopToolbar;
-extern const base::Feature kShareByDefaultInCCT;
 extern const base::Feature kShoppingAssist;
 extern const base::Feature kSpannableInlineAutocomplete;
 extern const base::Feature kSpecialLocaleWrapper;
@@ -122,11 +122,9 @@ extern const base::Feature kTabGridLayoutAndroid;
 extern const base::Feature kTabReparenting;
 extern const base::Feature kTabSwitcherOnReturn;
 extern const base::Feature kTabToGTSAnimation;
-extern const base::Feature kTabbedAppOverflowMenuIcons;
-extern const base::Feature kTabbedAppOverflowMenuRegroup;
-extern const base::Feature kTabbedAppOverflowMenuThreeButtonActionbar;
 extern const base::Feature kTestDefaultDisabled;
 extern const base::Feature kTestDefaultEnabled;
+extern const base::Feature kThemeRefactorAndroid;
 extern const base::Feature kToolbarIphAndroid;
 extern const base::Feature kToolbarIphAndroidCohort1;
 extern const base::Feature kToolbarIphAndroidCohort2;
@@ -136,6 +134,8 @@ extern const base::Feature kToolbarIphAndroidCohort5;
 extern const base::Feature kToolbarIphAndroidCohort6;
 extern const base::Feature kToolbarIphAndroidCohort7;
 extern const base::Feature kToolbarIphAndroidCohort8;
+extern const base::Feature kToolbarMicIphAndroid;
+extern const base::Feature kToolbarUseHardwareBitmapDraw;
 extern const base::Feature kTrustedWebActivityLocationDelegation;
 extern const base::Feature kTrustedWebActivityNewDisclosure;
 extern const base::Feature kTrustedWebActivityPostMessage;

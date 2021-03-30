@@ -1,0 +1,74 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/node/node.gni")
+
+template("ts_library") {
+  node(target_name) {
+    script = "//tools/typescript/ts_library.py"
+
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "extra_deps",
+                             "sources",
+                             "definitions",
+                           ])
+
+    inputs = [ "//tools/typescript/tsconfig_base.json" ]
+    outputs = [
+      "$target_gen_dir/tsconfig.json",
+      "$target_gen_dir/tsconfig.manifest",
+      "$target_gen_dir/tsconfig.tsbuildinfo",
+    ]
+    foreach(_source, sources) {
+      _filename =
+          get_path_info(_source, "dir") + "/" + get_path_info(_source, "name")
+      outputs += [
+        "$target_gen_dir/$_filename.js",
+        "$target_gen_dir/$_filename.d.ts",
+      ]
+    }
+
+    root_dir = "."
+    if (defined(invoker.root_dir)) {
+      root_dir = invoker.root_dir
+    }
+
+    args = [
+             "--root_dir",
+             rebase_path(root_dir, root_build_dir),
+             "--gen_dir",
+             rebase_path(target_gen_dir, root_build_dir),
+             "--sources",
+           ] + sources
+
+    if (defined(definitions)) {
+      args += [ "--definitions" ] + definitions
+    }
+
+    if (defined(deps)) {
+      args += [ "--deps" ]
+      foreach(dep, deps) {
+        args +=
+            [ rebase_path(get_label_info(dep, "dir"), ".") + "/tsconfig.json" ]
+      }
+    }
+
+    if (defined(extra_deps)) {
+      if (!defined(deps)) {
+        deps = []
+      }
+      deps += extra_deps
+    }
+
+    path_mappings =
+        [ "chrome://resources/*|" +
+          rebase_path("$root_gen_dir/ui/webui/resources/*", target_gen_dir) ]
+    args += [ "--path_mappings" ] + path_mappings
+    if (defined(invoker.path_mappings)) {
+      args += invoker.path_mappings
+    }
+  }
+}

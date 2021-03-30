@@ -52,10 +52,9 @@ std::string TreeToString(const AXTree& tree) {
 }
 
 AXTreeUpdate SerializeEntireTree(AXSerializableTree& tree) {
-  std::unique_ptr<AXTreeSource<const AXNode*, AXNodeData, AXTreeData>>
-      tree_source(tree.CreateTreeSource());
-  AXTreeSerializer<const AXNode*, AXNodeData, AXTreeData> serializer(
-      tree_source.get());
+  std::unique_ptr<AXTreeSource<const AXNode*>> tree_source(
+      tree.CreateTreeSource());
+  AXTreeSerializer<const AXNode*> serializer(tree_source.get());
   AXTreeUpdate update;
   CHECK(serializer.SerializeChanges(tree.root(), &update));
   return update;
@@ -247,10 +246,9 @@ TEST(AXGeneratedTreeTest, SerializeGeneratedTrees) {
 
           // Start by serializing tree0 and unserializing it into a new
           // empty tree |dst_tree|.
-          std::unique_ptr<AXTreeSource<const AXNode*, AXNodeData, AXTreeData>>
-              tree0_source(tree0.CreateTreeSource());
-          AXTreeSerializer<const AXNode*, AXNodeData, AXTreeData> serializer(
-              tree0_source.get());
+          std::unique_ptr<AXTreeSource<const AXNode*>> tree0_source(
+              tree0.CreateTreeSource());
+          AXTreeSerializer<const AXNode*> serializer(tree0_source.get());
           AXTreeUpdate update0;
           ASSERT_TRUE(serializer.SerializeChanges(tree0.root(), &update0));
 
@@ -264,8 +262,8 @@ TEST(AXGeneratedTreeTest, SerializeGeneratedTrees) {
           EXPECT_EQ(TreeToString(tree0), TreeToString(dst_tree));
 
           // Next, pretend that tree0 turned into tree1.
-          std::unique_ptr<AXTreeSource<const AXNode*, AXNodeData, AXTreeData>>
-              tree1_source(tree1.CreateTreeSource());
+          std::unique_ptr<AXTreeSource<const AXNode*>> tree1_source(
+              tree1.CreateTreeSource());
           serializer.ChangeTreeSourceForTesting(tree1_source.get());
 
           // Invalidate a subtree rooted at one of the nodes.
@@ -345,7 +343,7 @@ TEST(AXGeneratedTreeTest, GeneratedTreesWithIgnoredNodes) {
         EXPECT_EQ(TreeToString(fat_tree), TreeToString(fat_tree1));
 
         // Capture the events generated.
-        std::map<AXNode::AXID, std::set<AXEventGenerator::Event>> actual_events;
+        std::map<AXNodeID, std::set<AXEventGenerator::Event>> actual_events;
         for (const AXEventGenerator::TargetedEvent& event : event_generator) {
           if (event.node->IsIgnored() ||
               event.event_params.event ==
@@ -370,14 +368,13 @@ TEST(AXGeneratedTreeTest, GeneratedTreesWithIgnoredNodes) {
 
         EXPECT_EQ(TreeToString(skinny_tree), TreeToString(skinny_tree1));
 
-        std::map<AXNode::AXID, std::set<AXEventGenerator::Event>>
-            expected_events;
+        std::map<AXNodeID, std::set<AXEventGenerator::Event>> expected_events;
         for (const AXEventGenerator::TargetedEvent& event :
              skinny_event_generator)
           expected_events[event.node->id()].insert(event.event_params.event);
 
         for (auto& entry : expected_events) {
-          AXNode::AXID node_id = entry.first;
+          AXNodeID node_id = entry.first;
           for (auto& event_type : entry.second) {
             EXPECT_TRUE(actual_events[node_id].find(event_type) !=
                         actual_events[node_id].end())
@@ -386,7 +383,7 @@ TEST(AXGeneratedTreeTest, GeneratedTreesWithIgnoredNodes) {
         }
 
         for (auto& entry : actual_events) {
-          AXNode::AXID node_id = entry.first;
+          AXNodeID node_id = entry.first;
           for (auto& event_type : entry.second) {
             EXPECT_TRUE(expected_events[node_id].find(event_type) !=
                         expected_events[node_id].end())
@@ -400,7 +397,7 @@ TEST(AXGeneratedTreeTest, GeneratedTreesWithIgnoredNodes) {
         // correctly.
         AXTreeUpdate skinny_tree_serialized = SerializeEntireTree(skinny_tree);
         for (size_t i = 0; i < skinny_tree_serialized.nodes.size(); i++) {
-          AXNode::AXID id = skinny_tree_serialized.nodes[i].id;
+          AXNodeID id = skinny_tree_serialized.nodes[i].id;
 
           AXNode* skinny_tree_node = skinny_tree.GetFromId(id);
           AXNode* fat_tree_node = fat_tree.GetFromId(id);

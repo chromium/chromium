@@ -105,9 +105,8 @@ void XRFrameProvider::OnSessionStarted(
       return;
     }
 
-    HeapMojoRemote<device::mojom::blink::XRFrameDataProvider,
-                   HeapMojoWrapperMode::kWithoutContextObserver>
-        data_provider(xr_->GetExecutionContext());
+    HeapMojoRemote<device::mojom::blink::XRFrameDataProvider> data_provider(
+        xr_->GetExecutionContext());
     data_provider.Bind(
         std::move(session_ptr->data_provider),
         xr_->GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI));

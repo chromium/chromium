@@ -1,0 +1,1 @@
+radioButton name='foo' nameFrom=relatedElement

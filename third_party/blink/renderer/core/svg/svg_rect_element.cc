@@ -96,16 +96,14 @@ Path SVGRectElement::AsPath() const {
       (!size.Width() && !size.Height()))
     return path;
 
-  const SVGComputedStyle& svg_style = style.SvgStyle();
-  FloatRect rect(
-      length_context.ResolveLengthPair(svg_style.X(), svg_style.Y(), style),
-      size);
+  FloatRect rect(length_context.ResolveLengthPair(style.X(), style.Y(), style),
+                 size);
   FloatPoint radii(
-      length_context.ResolveLengthPair(svg_style.Rx(), svg_style.Ry(), style));
+      length_context.ResolveLengthPair(style.Rx(), style.Ry(), style));
   if (radii.X() > 0 || radii.Y() > 0) {
-    if (svg_style.Rx().IsAuto())
+    if (style.Rx().IsAuto())
       radii.SetX(radii.Y());
-    else if (svg_style.Ry().IsAuto())
+    else if (style.Ry().IsAuto())
       radii.SetY(radii.X());
 
     path.AddRoundedRect(rect, ToFloatSize(radii));

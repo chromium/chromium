@@ -32,7 +32,7 @@ class URLRequestContext;
 
 // QuicTransportClient is the top-level API for QuicTransport in //net.
 class NET_EXPORT QuicTransportClient
-    : public quic::QuicTransportClientSession::ClientVisitor,
+    : public quic::WebTransportVisitor,
       public QuicChromiumPacketReader::Visitor,
       public QuicChromiumPacketWriter::Delegate,
       public quic::QuicSession::Visitor {
@@ -133,7 +133,7 @@ class NET_EXPORT QuicTransportClient
   void OnCanCreateNewOutgoingUnidirectionalStream() override;
 
   // QuicChromiumPacketReader::Visitor methods.
-  void OnReadError(int result, const DatagramClientSocket* socket) override;
+  bool OnReadError(int result, const DatagramClientSocket* socket) override;
   bool OnPacket(const quic::QuicReceivedPacket& packet,
                 const quic::QuicSocketAddress& local_address,
                 const quic::QuicSocketAddress& peer_address) override;
@@ -156,6 +156,11 @@ class NET_EXPORT QuicTransportClient
   }
   void OnStopSendingReceived(
       const quic::QuicStopSendingFrame& /*frame*/) override {}
+  void OnNewConnectionIdSent(
+      const quic::QuicConnectionId& /*server_connection_id*/,
+      const quic::QuicConnectionId& /*new_connecition_id*/) override {}
+  void OnConnectionIdRetired(
+      const quic::QuicConnectionId& /*server_connection_id*/) override {}
 
  private:
   // State of the connection establishment process.

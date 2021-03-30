@@ -127,11 +127,11 @@ class FeedbackPrivateApiUnittest : public FeedbackPrivateApiUnittestBase {
 
     scoped_refptr<FeedbackData> actual_feedback_data;
     EXPECT_CALL(*mock, SendFeedback(_, _))
-        .WillOnce(Invoke([&](scoped_refptr<FeedbackData> feedback_data,
-                             FeedbackService::SendFeedbackCallback callback) {
-          actual_feedback_data = feedback_data;
+        .WillOnce([&](scoped_refptr<FeedbackData> feedback_data,
+                      FeedbackService::SendFeedbackCallback callback) {
+          actual_feedback_data = std::move(feedback_data);
           std::move(callback).Run(true);
-        }));
+        });
 
     FeedbackPrivateAPI::GetFactoryInstance()
         ->Get(browser_context())

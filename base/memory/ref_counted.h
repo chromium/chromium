@@ -17,6 +17,7 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/template_util.h"
 #include "base/threading/thread_collision_warner.h"
 #include "build/build_config.h"
 
@@ -433,6 +434,9 @@ class RefCountedData
   RefCountedData() : data() {}
   RefCountedData(const T& in_value) : data(in_value) {}
   RefCountedData(T&& in_value) : data(std::move(in_value)) {}
+  template <typename... Args>
+  explicit RefCountedData(in_place_t, Args&&... args)
+      : data(std::forward<Args>(args)...) {}
 
   T data;
 

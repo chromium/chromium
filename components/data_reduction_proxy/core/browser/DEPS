@@ -4,6 +4,4 @@ include_rules = [
   "+services/network/public",
   "+services/network/test",
   "+third_party/leveldatabase",
-  "+content/public/browser",
-  "+content/public/test",
 ]

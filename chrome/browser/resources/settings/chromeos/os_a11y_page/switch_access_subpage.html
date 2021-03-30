@@ -2,17 +2,20 @@
 
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/cr_elements/md_select_css.html">
+<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_slider/cr_slider.html">
 <link rel="import" href="../../controls/settings_slider.html">
 <link rel="import" href="../../controls/settings_toggle_button.html">
 <link rel="import" href="../deep_linking_behavior.html">
 <link rel="import" href="../os_route.html">
 <link rel="import" href="../../router.html">
-<link rel="import" href="../../i18n_setup.html">
+<link rel="import" href="chrome://resources/html/load_time_data.html">
 <link rel="import" href="../../prefs/prefs_behavior.html">
 <link rel="import" href="../../settings_shared_css.html">
 <link rel="import" href="switch_access_action_assignment_dialog.html">
 <link rel="import" href="switch_access_constants.html">
-+<link rel="import" href="switch_access_subpage_browser_proxy.html">
+<link rel="import" href="switch_access_setup_guide_dialog.html">
+<link rel="import" href="switch_access_subpage_browser_proxy.html">
 
 <dom-module id="settings-switch-access-subpage">
   <template>
@@ -26,6 +29,16 @@
         text-align: end;
       }
     </style>
+    <cr-link-row hidden="[[!showSetupGuide_()]]" on-click="onSetupGuideClick_"
+        label="$i18n{switchAccessSetupGuideLabel}" id="setupGuideLink">
+    </cr-link-row>
+    <template is="dom-if"
+        if="[[showSwitchAccessSetupGuideDialog_]]" restamp>
+      <settings-switch-access-setup-guide-dialog
+          id="switchAccessSetupGuideDialog"
+          on-close="onSwitchAccessSetupGuideDialogClose_">
+      </settings-switch-access-action-assignment-dialog>
+    </template>
     <h2>$i18n{switchAssignmentHeading}</h2>
     <div class="list-frame">
         <cr-link-row on-click="onSelectAssignClick_"
@@ -94,6 +107,24 @@
             deep-link-focus-id$="[[Setting.kSwitchActionAutoScanKeyboard]]">
         </settings-slider>
       </div>
+      <template is="dom-if"
+          if="[[isSwitchAccessPointScanningEnabled_]]" restamp>
+        <div class="settings-box continuation list-item">
+          <div class="start sub-item settings-box-text" id="pointScanSpeed"
+              aria-hidden="true">
+            $i18n{switchAccessPointScanSpeedLabel}
+          </div>
+          <settings-slider id="pointScanSpeedSlider"
+              pref="{{prefs.settings.a11y.switch_access.point_scan.speed_dips_per_second}}"
+              ticks="[[pointScanSpeedRangeDipsPerSecond_]]"
+              min="[[minPointScanSpeed_]]"
+              max="[[maxPointScanSpeed_]]"
+              label-aria="$i18n{switchAccessPointScanSpeedLabel}"
+              label-min="[[minPointScanSpeed_]]"
+              label-max="[[maxPointScanSpeed_]]">
+          </settings-slider>
+        </div>
+      </template>
     </div>
   </template>
   <script src="switch_access_subpage.js"></script>

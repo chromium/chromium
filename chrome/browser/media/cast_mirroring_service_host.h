@@ -19,12 +19,12 @@
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/buildflags/buildflags.h"
+#include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/audio/public/mojom/stream_factory.mojom.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace base {
@@ -153,12 +153,12 @@ class CastMirroringServiceHost final : public mojom::MirroringServiceHost,
 
   // Used to create WebContents loopback capture streams, or system-wide desktop
   // capture streams, from the Audio Service.
-  mojo::Remote<audio::mojom::StreamFactory> audio_stream_factory_;
+  mojo::Remote<media::mojom::AudioStreamFactory> audio_stream_factory_;
 
   // Used to mute local audio from the WebContents being mirrored (in the tab
   // mirrorng case). See the comments in the implementation of
   // CreateAudioStream() for further explanation.
-  mojo::AssociatedRemote<audio::mojom::LocalMuter> web_contents_audio_muter_;
+  mojo::AssociatedRemote<media::mojom::LocalMuter> web_contents_audio_muter_;
 
   // The lifetime of the capture indicator icon on the tabstrip is tied to that
   // of |media_stream_ui_|.

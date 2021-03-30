@@ -5,59 +5,14 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/browser/resources/settings/settings.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/preprocess_if_expr.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../namespace_rewrites.gni")
 
-group("modulize") {
-  public_deps = [ ":modulize_local" ]
-
-  if (is_chromeos_ash) {
-    deps = [ "./chromeos:modulize" ]
-  }
-}
-
-js_modulizer("modulize_local") {
-  input_files = [
-    "fake_input_method_private.js",
-    "fake_language_settings_private.js",
-    "fake_settings_private.js",
-    "prefs_test_cases.js",
-    "prefs_tests.js",
-    "pref_util_tests.js",
-    "settings_slider_tests.js",
-    "settings_textarea_tests.js",
-    "settings_toggle_button_tests.js",
-    "sync_test_util.js",
-    "test_languages_browser_proxy.js",
-    "test_lifetime_browser_proxy.js",
-    "test_profile_info_browser_proxy.js",
-    "test_search_engines_browser_proxy.js",
-    "test_sync_browser_proxy.js",
-  ]
-
-  namespace_rewrites = settings_namespace_rewrites + test_namespace_rewrites + [
-                         "export_passwords_tests.run|run",
-                         "settings.buildRouterForTesting|buildRouter",
-                         "settings.defaultSettingLabel|defaultSettingLabel",
-                         "settings.FakeLanguageSettingsPrivate|FakeLanguageSettingsPrivate",
-                         "settings.FakeInputMethodPrivate|FakeInputMethodPrivate",
-                         "settings.FakeSettingsPrivate|FakeSettingsPrivate",
-                         "settings.getFakeLanguagePrefs|getFakeLanguagePrefs",
-                         "settings.kMenuCloseDelay|kMenuCloseDelay",
-                         "settings.setLanguageSettingsPrivateApiForTest|setLanguageSettingsPrivateApiForTest",
-                         "settings.setPageVisibilityForTesting|setPageVisibilityForTesting",
-                         "settings.setSearchManagerForTesting|setSearchManagerForTesting",
-                         "settings.TestLanguagesBrowserProxy|TestLanguagesBrowserProxy",
-                         "settings.TestLifetimeBrowserProxy|TestLifetimeBrowserProxy",
-                         "settings_page_test_util.getPage|getPage",
-                         "settings_page_test_util.getSection|getSection",
-                         "settings_search.createSampleSearchEngine|createSampleSearchEngine",
-                         "settings_search.TestSearchEnginesBrowserProxy|TestSearchEnginesBrowserProxy",
-                         "sync_test_util.getSyncAllPrefs|getSyncAllPrefs",
-                         "sync_test_util.setupRouterWithSyncRoutes|setupRouterWithSyncRoutes",
-                         "sync_test_util.simulateSyncStatus|simulateSyncStatus",
-                         "sync_test_util.simulateStoredAccounts|simulateStoredAccounts",
-                       ]
+preprocess_if_expr("preprocess") {
+  in_folder = "./"
+  out_folder = "$target_gen_dir"
+  in_files = [ "route_tests.js" ]
 }
 
 js_type_check("closure_compile") {
@@ -100,17 +55,19 @@ js_type_check("closure_compile") {
     #":edit_dictionary_page_test",
     #":ensure_lazy_loaded",
     #":extension_controlled_indicator_tests",
-    ":fake_input_method_private.m",
-    ":fake_language_settings_private.m",
-    ":fake_settings_private.m",
+    ":fake_input_method_private",
+    ":fake_language_settings_private",
+    ":fake_settings_private",
 
     #":help_page_v3_test",
     #":idle_load_tests",
     #":import_data_dialog_test",
     #":incompatible_applications_page_test",
+    ":languages_page_metrics_test_browser",
     ":languages_page_metrics_test_cros",
 
     #":languages_page_tests",
+    #":languages_subpage_tests",
     #":languages_tests",
     #":metrics_reporting_tests",
     #":on_startup_page_tests",
@@ -190,9 +147,9 @@ js_type_check("closure_compile") {
 
     #":test_extension_control_browser_proxy",
     ":test_hats_browser_proxy",
-    ":test_languages_browser_proxy.m",
+    ":test_languages_browser_proxy",
     ":test_languages_metrics_proxy",
-    ":test_lifetime_browser_proxy.m",
+    ":test_lifetime_browser_proxy",
     ":test_local_data_browser_proxy",
     ":test_metrics_browser_proxy",
     ":test_open_window_proxy",
@@ -201,9 +158,9 @@ js_type_check("closure_compile") {
 
     #":test_profile_info_browser_proxy",
     #":test_reset_browser_proxy",
-    ":test_search_engines_browser_proxy.m",
+    ":test_search_engines_browser_proxy",
     ":test_site_settings_prefs_browser_proxy",
-    ":test_sync_browser_proxy.m",
+    ":test_sync_browser_proxy",
     ":test_util",
 
     #":zoom_levels_tests",
@@ -213,7 +170,7 @@ js_type_check("closure_compile") {
 js_library("about_page_tests") {
   deps = [
     ":test_about_page_browser_proxy",
-    ":test_lifetime_browser_proxy.m",
+    ":test_lifetime_browser_proxy",
     "..:chai_assert",
     "//chrome/browser/resources/settings:settings",
     "//ui/webui/resources/js:load_time_data.m",
@@ -265,39 +222,44 @@ js_library("do_not_track_toggle_test") {
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
-js_library("fake_language_settings_private.m") {
-  sources = [ "$root_gen_dir/chrome/test/data/webui/settings/fake_language_settings_private.m.js" ]
+js_library("fake_language_settings_private") {
   deps = [
     "..:chai_assert",
     "..:fake_chrome_event.m",
     "..:test_browser_proxy.m",
     "//ui/webui/resources/js:cr.m",
   ]
-  extra_deps = [ ":modulize_local" ]
 }
 
-js_library("fake_input_method_private.m") {
-  sources = [ "$root_gen_dir/chrome/test/data/webui/settings/fake_input_method_private.m.js" ]
-  extra_deps = [ ":modulize_local" ]
+js_library("fake_input_method_private") {
 }
 
-js_library("fake_settings_private.m") {
-  sources = [
-    "$root_gen_dir/chrome/test/data/webui/settings/fake_settings_private.m.js",
-  ]
+js_library("fake_settings_private") {
   deps = [
     "..:chai_assert",
     "..:fake_chrome_event.m",
   ]
-  extra_deps = [ ":modulize_local" ]
 }
 
 js_library("languages_page_metrics_test_cros") {
   deps = [
-    ":fake_language_settings_private.m",
-    ":fake_settings_private.m",
-    ":test_languages_browser_proxy.m",
+    ":fake_language_settings_private",
+    ":fake_settings_private",
+    ":test_languages_browser_proxy",
     ":test_languages_metrics_proxy",
+    "..:chai_assert",
+    "..:test_util.m",
+    "//chrome/browser/resources/settings:lazy_load",
+    "//chrome/browser/resources/settings:settings",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("languages_page_metrics_test_browser") {
+  deps = [
+    ":fake_language_settings_private",
+    ":fake_settings_private",
+    ":test_languages_browser_proxy",
     "..:chai_assert",
     "..:test_util.m",
     "//chrome/browser/resources/settings:lazy_load",
@@ -326,7 +288,7 @@ js_library("privacy_page_test") {
     ":test_metrics_browser_proxy",
     ":test_privacy_page_browser_proxy",
     ":test_site_settings_prefs_browser_proxy",
-    ":test_sync_browser_proxy.m",
+    ":test_sync_browser_proxy",
     "..:chai_assert",
     "..:test_util.m",
     "//chrome/browser/resources/settings:lazy_load",
@@ -339,8 +301,11 @@ js_library("privacy_page_test") {
 
 js_library("privacy_sandbox_test") {
   deps = [
+    ":test_hats_browser_proxy",
+    ":test_metrics_browser_proxy",
     ":test_open_window_proxy",
     "..:chai_assert",
+    "..:test_util.m",
     "//chrome/browser/resources/settings:settings",
     "//chrome/browser/resources/settings/privacy_sandbox:app",
   ]
@@ -374,7 +339,7 @@ js_library("safety_check_chrome_cleaner_test") {
 js_library("safety_check_page_test") {
   deps = [
     ":test_hats_browser_proxy",
-    ":test_lifetime_browser_proxy.m",
+    ":test_lifetime_browser_proxy",
     ":test_metrics_browser_proxy",
     ":test_open_window_proxy",
     ":test_password_manager_proxy",
@@ -419,7 +384,7 @@ js_library("test_privacy_page_browser_proxy") {
 
 js_library("search_page_test") {
   deps = [
-    ":test_search_engines_browser_proxy.m",
+    ":test_search_engines_browser_proxy",
     "..:chai_assert",
     "//chrome/browser/resources/settings:settings",
   ]
@@ -450,7 +415,7 @@ js_library("security_page_test") {
   deps = [
     ":test_metrics_browser_proxy",
     ":test_privacy_page_browser_proxy",
-    ":test_sync_browser_proxy.m",
+    ":test_sync_browser_proxy",
     "..:chai_assert",
     "..:test_util.m",
     "//chrome/browser/resources/settings:lazy_load",
@@ -492,7 +457,7 @@ js_library("site_settings_page_test") {
     ":test_util",
     "..:chai_assert",
     "//chrome/browser/resources/settings:lazy_load",
-    "//ui/webui/resources/cr_elements/cr_link_row:cr_link_row.m",
+    "//ui/webui/resources/cr_elements/cr_link_row:cr_link_row",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
@@ -505,7 +470,6 @@ js_library("test_about_page_browser_proxy") {
     "//chrome/browser/resources/settings:settings",
     "//ui/webui/resources/js:cr.m",
   ]
-  extra_deps = [ ":modulize_local" ]
 }
 
 js_library("test_clear_browsing_data_browser_proxy") {
@@ -523,16 +487,14 @@ js_library("test_hats_browser_proxy") {
   ]
 }
 
-js_library("test_languages_browser_proxy.m") {
-  sources = [ "$root_gen_dir/chrome/test/data/webui/settings/test_languages_browser_proxy.m.js" ]
+js_library("test_languages_browser_proxy") {
   deps = [
-    ":fake_input_method_private.m",
-    ":fake_language_settings_private.m",
+    ":fake_input_method_private",
+    ":fake_language_settings_private",
     "..:test_browser_proxy.m",
     "//chrome/browser/resources/settings:lazy_load",
     "//ui/webui/resources/js:cr.m",
   ]
-  extra_deps = [ ":modulize_local" ]
 }
 
 js_library("test_languages_metrics_proxy") {
@@ -542,13 +504,11 @@ js_library("test_languages_metrics_proxy") {
   ]
 }
 
-js_library("test_lifetime_browser_proxy.m") {
-  sources = [ "$root_gen_dir/chrome/test/data/webui/settings/test_lifetime_browser_proxy.m.js" ]
+js_library("test_lifetime_browser_proxy") {
   deps = [
     "..:test_browser_proxy.m",
     "//chrome/browser/resources/settings:settings",
   ]
-  extra_deps = [ ":modulize_local" ]
 }
 
 js_library("test_local_data_browser_proxy") {
@@ -558,13 +518,11 @@ js_library("test_local_data_browser_proxy") {
   ]
 }
 
-js_library("test_search_engines_browser_proxy.m") {
-  sources = [ "$root_gen_dir/chrome/test/data/webui/settings/test_search_engines_browser_proxy.m.js" ]
+js_library("test_search_engines_browser_proxy") {
   deps = [
     "..:test_browser_proxy.m",
     "//chrome/browser/resources/settings:settings",
   ]
-  extra_deps = [ ":modulize_local" ]
 }
 
 js_library("test_site_settings_prefs_browser_proxy") {
@@ -575,13 +533,11 @@ js_library("test_site_settings_prefs_browser_proxy") {
   ]
 }
 
-js_library("test_sync_browser_proxy.m") {
-  sources = [ "$root_gen_dir/chrome/test/data/webui/settings/test_sync_browser_proxy.m.js" ]
+js_library("test_sync_browser_proxy") {
   deps = [
     "..:test_browser_proxy.m",
     "//chrome/browser/resources/settings:settings",
   ]
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("test_util") {

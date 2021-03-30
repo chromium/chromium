@@ -14,7 +14,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/chromeos_buildflags.h"
-#include "content/public/browser/browser_thread.h"
 #include "net/base/ip_address.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -253,7 +252,7 @@ std::string MaybeScrubIPAddress(const std::string& addr) {
 #define PORT DIGIT "*"
 
 // This is a diversion of RFC 3987
-#define SCHEME NCG("http|https|ftp|chrome|chrome-extension|android|rtsp")
+#define SCHEME NCG("http|https|ftp|chrome|chrome-extension|android|rtsp|file")
 
 #define IPRIVATE            \
   "["                       \

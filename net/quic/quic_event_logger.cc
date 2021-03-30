@@ -4,6 +4,7 @@
 
 #include "net/quic/quic_event_logger.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "net/cert/x509_certificate.h"
 #include "net/log/net_log_values.h"
 #include "net/quic/address_utils.h"
@@ -377,7 +378,7 @@ base::Value NetLogQuicStopSendingFrameParams(
     const quic::QuicStopSendingFrame* frame) {
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetIntKey("stream_id", frame->stream_id);
-  dict.SetIntKey("error_code", frame->error_code);
+  dict.SetIntKey("quic_rst_stream_error", frame->error_code);
   return dict;
 }
 

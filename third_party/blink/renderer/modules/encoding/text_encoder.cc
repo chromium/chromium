@@ -88,15 +88,15 @@ TextEncoderEncodeIntoResult* TextEncoder::encodeInto(
       TextEncoderEncodeIntoResult::Create();
 
   TextCodec::EncodeIntoResult encode_into_result_data;
-  unsigned char* destination_buffer = destination.View()->Data();
+  unsigned char* destination_buffer = destination->Data();
   if (source.Is8Bit()) {
     encode_into_result_data =
         codec_->EncodeInto(source.Characters8(), source.length(),
-                           destination_buffer, destination.View()->length());
+                           destination_buffer, destination->length());
   } else {
     encode_into_result_data =
         codec_->EncodeInto(source.Characters16(), source.length(),
-                           destination_buffer, destination.View()->length());
+                           destination_buffer, destination->length());
   }
 
   encode_into_result->setRead(encode_into_result_data.code_units_read);

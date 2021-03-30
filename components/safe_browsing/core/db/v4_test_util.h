@@ -59,6 +59,9 @@ class TestV4Database : public V4Database {
                  std::unique_ptr<StoreMap> store_map);
 
   void MarkPrefixAsBad(ListIdentifier list_id, HashPrefix prefix);
+
+  // V4Database implementation
+  int64_t GetStoreSizeInBytes(const ListIdentifier& store) const override;
 };
 
 class TestV4DatabaseFactory : public V4DatabaseFactory {

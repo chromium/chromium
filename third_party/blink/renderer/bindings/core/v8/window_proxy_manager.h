@@ -27,13 +27,14 @@ class WindowProxyManager : public GarbageCollected<WindowProxyManager> {
   v8::Isolate* GetIsolate() const { return isolate_; }
 
   void ClearForClose();
-  void CORE_EXPORT ClearForNavigation();
+  CORE_EXPORT void ClearForNavigation();
   void ClearForSwap();
   void ClearForV8MemoryPurge();
 
-  // Global proxies are passed in a vector to maintain their order: global proxy
-  // object for the main world is always first. This is needed to prevent bugs
-  // like https://crbug.com/700077 .
+  // Helpers used to transfer global proxies from the previous frame to the new
+  // frame when swapping frames. Global proxies are passed in a vector to ensure
+  // the main world is always processed first. This is needed to prevent bugs
+  // like https://crbug.com/700077.
   using GlobalProxyVector =
       Vector<std::pair<DOMWrapperWorld*, v8::Local<v8::Object>>>;
   void CORE_EXPORT ReleaseGlobalProxies(GlobalProxyVector&);
@@ -44,6 +45,8 @@ class WindowProxyManager : public GarbageCollected<WindowProxyManager> {
     window_proxy->InitializeIfNeeded();
     return window_proxy;
   }
+
+  CORE_EXPORT void ResetIsolatedWorldsForTesting();
 
  protected:
   using IsolatedWorldMap = HeapHashMap<int, Member<WindowProxy>>;
@@ -92,6 +95,8 @@ class LocalWindowProxyManager
   LocalWindowProxy* MainWorldProxyMaybeUninitialized() {
     return static_cast<LocalWindowProxy*>(window_proxy_.Get());
   }
+
+  void UpdateDocument();
 
   // Sets the given security origin to the main world's context.  Also updates
   // the security origin of the context for each isolated world.

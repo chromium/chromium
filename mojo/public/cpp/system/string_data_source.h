@@ -29,7 +29,7 @@ class MOJO_CPP_SYSTEM_EXPORT StringDataSource final
     STRING_STAYS_VALID_UNTIL_COMPLETION
   };
 
-  StringDataSource(base::StringPiece data, AsyncWritingMode mode);
+  StringDataSource(base::span<const char> data, AsyncWritingMode mode);
   ~StringDataSource() override;
 
  private:

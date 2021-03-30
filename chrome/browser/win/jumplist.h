@@ -18,7 +18,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string16.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -220,7 +219,7 @@ class JumpList : public sessions::TabRestoreServiceObserver,
   // 3) delete obsolete icon files. Any error along the way results in the old
   // JumpList being left as-is.
   static void RunUpdateJumpList(
-      const base::string16& app_id,
+      const std::wstring& app_id,
       const base::FilePath& profile_dir,
       const ShellLinkItemList& most_visited_pages,
       const ShellLinkItemList& recently_closed_pages,
@@ -233,7 +232,7 @@ class JumpList : public sessions::TabRestoreServiceObserver,
   // Creates a new JumpList along with any icons that are not in the cache,
   // and notifies the OS.
   static void CreateNewJumpListAndNotifyOS(
-      const base::string16& app_id,
+      const std::wstring& app_id,
       const base::FilePath& most_visited_icon_dir,
       const base::FilePath& recently_closed_icon_dir,
       const ShellLinkItemList& most_visited_pages,
@@ -285,7 +284,7 @@ class JumpList : public sessions::TabRestoreServiceObserver,
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   // App id to associate with the JumpList.
-  base::string16 app_id_;
+  std::wstring app_id_;
 
   // Timer for requesting delayed JumpList updates.
   base::OneShotTimer timer_;

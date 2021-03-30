@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_LOCATION_ICON_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_LOCATION_ICON_VIEW_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "components/omnibox/browser/location_bar_model.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace content {
 class WebContents;
@@ -23,6 +23,8 @@ enum SecurityLevel;
 // the URL is a chrome-extension:// URL).
 class LocationIconView : public IconLabelBubbleView {
  public:
+  METADATA_HEADER(LocationIconView);
+
   class Delegate {
    public:
     using IconFetchedCallback =
@@ -61,6 +63,8 @@ class LocationIconView : public IconLabelBubbleView {
   LocationIconView(const gfx::FontList& font_list,
                    IconLabelBubbleView::Delegate* parent_delegate,
                    Delegate* delegate);
+  LocationIconView(const LocationIconView&) = delete;
+  LocationIconView& operator=(const LocationIconView&) = delete;
   ~LocationIconView() override;
 
   // IconLabelBubbleView:
@@ -89,14 +93,14 @@ class LocationIconView : public IconLabelBubbleView {
   // - For extension URLs, returns the extension name.
   // - For chrome:// URLs, returns the short product name (e.g. Chrome).
   // - For file:// URLs, returns the text "File".
-  base::string16 GetText() const;
+  std::u16string GetText() const;
 
   // Determines whether or not text should be shown (e.g Insecure/Secure).
   // Always returns false if the text is empty or currently being edited.
   // Returns true if any of the following is true:
   // - the current page is explicitly secure or insecure.
   // - the current page has a special scheme (chrome://, extension, file://).
-  bool ShouldShowText() const;
+  bool GetShowText() const;
 
   const views::InkDrop* get_ink_drop_for_testing();
 
@@ -126,7 +130,7 @@ class LocationIconView : public IconLabelBubbleView {
   base::WeakPtrFactory<LocationIconView> icon_fetch_weak_ptr_factory_{this};
 
   // Determines whether or not a text change should be animated.
-  bool ShouldAnimateTextVisibilityChange() const;
+  bool GetAnimateTextVisibilityChange() const;
 
   // Updates visibility of the text and determines whether the transition
   // (if any) should be animated.
@@ -138,8 +142,6 @@ class LocationIconView : public IconLabelBubbleView {
 
   // Handles the arrival of an asynchronously fetched icon.
   void OnIconFetched(const gfx::Image& image);
-
-  DISALLOW_COPY_AND_ASSIGN(LocationIconView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_LOCATION_ICON_VIEW_H_

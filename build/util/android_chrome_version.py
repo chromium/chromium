@@ -18,7 +18,7 @@ a) Play Store does not support having the same version code for different
 b) Firebase project support (used by official builders) requires unique
    [version code + package name].
    We cannot add new webview package names for new channels because webview
-   packages are whitelisted by Android as webview providers.
+   packages are allowlisted by Android as webview providers.
 
 WEBVIEW_STABLE, WEBVIEW_BETA, WEBVIEW_DEV are all used for standalone webview,
 whereas the others are used for various chrome APKs.

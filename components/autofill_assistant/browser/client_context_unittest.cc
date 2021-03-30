@@ -15,7 +15,6 @@ namespace autofill_assistant {
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Eq;
-using ::testing::InSequence;
 using ::testing::NiceMock;
 using ::testing::Property;
 using ::testing::Return;
@@ -41,6 +40,10 @@ TEST_F(ClientContextTest, Initialize) {
   EXPECT_CALL(mock_client_, GetCountryCode()).WillOnce(Return("ZZ"));
   EXPECT_CALL(mock_client_, GetDeviceContext())
       .WillOnce(Return(device_context_));
+  EXPECT_CALL(mock_client_, GetWindowSize())
+      .WillOnce(Return(std::make_pair(1080, 1920)));
+  EXPECT_CALL(mock_client_, GetScreenOrientation())
+      .WillOnce(Return(ClientContextProto::PORTRAIT));
   EXPECT_CALL(mock_client_, GetChromeSignedInEmailAddress())
       .WillOnce(Return("john.doe@chromium.org"));
   EXPECT_CALL(mock_client_, IsAccessibilityEnabled()).WillOnce(Return(true));
@@ -61,6 +64,10 @@ TEST_F(ClientContextTest, Initialize) {
               Eq(ClientContextProto::SIGNED_IN));
   EXPECT_THAT(actual_client_context.accounts_matching_status(),
               Eq(ClientContextProto::UNKNOWN));
+  EXPECT_THAT(actual_client_context.window_size().width_pixels(), Eq(1080));
+  EXPECT_THAT(actual_client_context.window_size().height_pixels(), Eq(1920));
+  EXPECT_THAT(actual_client_context.screen_orientation(),
+              ClientContextProto::PORTRAIT);
 
   auto actual_device_context = actual_client_context.device_context();
   EXPECT_THAT(actual_device_context.version().sdk_int(), Eq(123));
@@ -69,19 +76,33 @@ TEST_F(ClientContextTest, Initialize) {
 }
 
 TEST_F(ClientContextTest, UpdateWithTriggerContext) {
+  // Calls expected when the constructor is called.
+  EXPECT_CALL(mock_client_, IsAccessibilityEnabled()).WillOnce(Return(false));
   EXPECT_CALL(mock_client_, GetChromeSignedInEmailAddress())
-      .WillRepeatedly(Return(""));
-  EXPECT_CALL(mock_client_, IsAccessibilityEnabled())
-      .WillRepeatedly(Return(true));
-
-  TriggerContextImpl trigger_context(/* params = */ {}, /* exp = */ "1,2,3");
-  trigger_context.SetCCT(true);
-  trigger_context.SetOnboardingShown(true);
-  trigger_context.SetDirectAction(true);
-  trigger_context.SetCallerAccountHash("some_value");
-
+      .WillOnce(Return("john.doe@chromium.org"));
+  EXPECT_CALL(mock_client_, GetWindowSize())
+      .WillOnce(Return(std::make_pair(0, 0)));
+  EXPECT_CALL(mock_client_, GetScreenOrientation())
+      .WillOnce(Return(ClientContextProto::PORTRAIT));
   ClientContextImpl client_context(&mock_client_);
-  client_context.Update(trigger_context);
+
+  // Calls expected when Update is called. We expect the previous entries to
+  // be overwritten.
+  EXPECT_CALL(mock_client_, IsAccessibilityEnabled()).WillOnce(Return(true));
+  EXPECT_CALL(mock_client_, GetChromeSignedInEmailAddress())
+      .WillOnce(Return(""));
+  EXPECT_CALL(mock_client_, GetWindowSize())
+      .WillOnce(Return(std::pair<int, int>(1080, 1920)));
+  EXPECT_CALL(mock_client_, GetScreenOrientation())
+      .WillOnce(Return(ClientContextProto::LANDSCAPE));
+  client_context.Update(
+      {std::make_unique<ScriptParameters>(std::map<std::string, std::string>{
+           {"USER_EMAIL", "example@chromium.org"}}),
+       /* exp = */ "1,2,3",
+       /* is_cct = */ true,
+       /* onboarding_shown = */ true,
+       /* is_direct_action = */ true,
+       /* initial_url = */ "https://www.example.com"});
 
   auto actual_client_context = client_context.AsProto();
   EXPECT_THAT(actual_client_context.experiment_ids(), Eq("1,2,3"));
@@ -94,6 +115,33 @@ TEST_F(ClientContextTest, UpdateWithTriggerContext) {
               Eq(ClientContextProto::NOT_SIGNED_IN));
   EXPECT_THAT(actual_client_context.accounts_matching_status(),
               Eq(ClientContextProto::ACCOUNTS_NOT_MATCHING));
+  EXPECT_THAT(actual_client_context.window_size().width_pixels(), Eq(1080));
+  EXPECT_THAT(actual_client_context.window_size().height_pixels(), Eq(1920));
+  EXPECT_THAT(actual_client_context.screen_orientation(),
+              ClientContextProto::LANDSCAPE);
+}
+
+TEST_F(ClientContextTest, WindowSizeIsClearedIfNoLongerAvailable) {
+  // When we call the context's constructor, we have a window size.
+  EXPECT_CALL(mock_client_, GetWindowSize())
+      .WillOnce(Return(std::make_pair(1080, 1920)));
+  ClientContextImpl client_context(&mock_client_);
+
+  // When we update the context, there is no window size anymore.
+  EXPECT_CALL(mock_client_, GetWindowSize()).WillOnce(Return(base::nullopt));
+  auto actual_client_context = client_context.AsProto();
+  EXPECT_THAT(actual_client_context.window_size().width_pixels(), Eq(1080));
+  EXPECT_THAT(actual_client_context.window_size().height_pixels(), Eq(1920));
+
+  client_context.Update({std::make_unique<ScriptParameters>(),
+                         /* exp = */ "1,2,3",
+                         /* is_cct = */ true,
+                         /* onboarding_shown = */ true,
+                         /* is_direct_action = */ true,
+                         /* initial_url = */ "https://www.example.com"});
+
+  actual_client_context = client_context.AsProto();
+  EXPECT_FALSE(actual_client_context.has_window_size());
 }
 
 TEST_F(ClientContextTest, AccountMatching) {
@@ -104,16 +152,25 @@ TEST_F(ClientContextTest, AccountMatching) {
   EXPECT_THAT(client_context.AsProto().accounts_matching_status(),
               Eq(ClientContextProto::UNKNOWN));
 
-  // Should match john.doe@chromium.org.
-  TriggerContextImpl trigger_context;
-  trigger_context.SetCallerAccountHash(
-      "2c8fa87717fab622bb5cc4d18135fe30dae339efd274b450022d361be92b48c3");
-  client_context.Update(trigger_context);
+  client_context.Update(
+      {std::make_unique<ScriptParameters>(std::map<std::string, std::string>{
+           {"USER_EMAIL", "john.doe@chromium.org"}}),
+       /* exp = */ std::string(),
+       /* is_cct = */ false,
+       /* onboarding_shown = */ false,
+       /* is_direct_action = */ false,
+       /* initial_url = */ "https://www.example.com"});
   EXPECT_THAT(client_context.AsProto().accounts_matching_status(),
               Eq(ClientContextProto::ACCOUNTS_MATCHING));
 
-  trigger_context.SetCallerAccountHash("different");
-  client_context.Update(trigger_context);
+  client_context.Update(
+      {std::make_unique<ScriptParameters>(std::map<std::string, std::string>{
+           {"USER_EMAIL", "lisa.doe@chromium.org"}}),
+       /* exp = */ std::string(),
+       /* is_cct = */ false,
+       /* onboarding_shown = */ false,
+       /* is_direct_action = */ false,
+       /* initial_url = */ "https://www.example.com"});
   EXPECT_THAT(client_context.AsProto().accounts_matching_status(),
               Eq(ClientContextProto::ACCOUNTS_NOT_MATCHING));
 }

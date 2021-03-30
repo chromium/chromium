@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -54,13 +55,13 @@ bool CrashClient::InitializeDatabaseOnly() {
   base::FilePath handler_path;
   base::PathService::Get(base::FILE_EXE, &handler_path);
 
-  base::FilePath database_path;
-  if (!GetVersionedDirectory(&database_path)) {
+  base::Optional<base::FilePath> database_path = GetVersionedDirectory();
+  if (!database_path) {
     LOG(ERROR) << "Failed to get the database path.";
     return false;
   }
 
-  database_ = crashpad::CrashReportDatabase::Initialize(database_path);
+  database_ = crashpad::CrashReportDatabase::Initialize(*database_path);
   if (!database_) {
     LOG(ERROR) << "Failed to initialize Crashpad database.";
     return false;

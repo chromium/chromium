@@ -18,9 +18,9 @@
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/optimization_guide/optimization_guide_session_statistic.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_model_download_observer.h"
-#include "components/optimization_guide/optimization_guide_enums.h"
+#include "components/optimization_guide/core/optimization_guide_enums.h"
+#include "components/optimization_guide/core/optimization_guide_session_statistic.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
 #include "url/origin.h"
@@ -79,7 +79,9 @@ class PredictionManager
   // Register the optimization targets that may have ShouldTargetNavigation
   // requested by consumers of the Optimization Guide.
   void RegisterOptimizationTargets(
-      const std::vector<proto::OptimizationTarget>& optimization_targets);
+      const std::vector<
+          std::pair<proto::OptimizationTarget, base::Optional<proto::Any>>>&
+          optimization_targets_and_metadata);
 
   // Adds an observer for updates to the model for |optimization_target|.
   //
@@ -87,6 +89,7 @@ class PredictionManager
   // Machine Learning Service for inference.
   void AddObserverForOptimizationTargetModel(
       proto::OptimizationTarget optimization_target,
+      const base::Optional<proto::Any>& model_metadata,
       OptimizationTargetModelObserver* observer);
 
   // Removes an observer for updates to the model for |optimization_target|.
@@ -149,10 +152,8 @@ class PredictionManager
   }
 
   // Return the optimization targets that are registered.
-  base::flat_set<optimization_guide::proto::OptimizationTarget>
-  registered_optimization_targets() const {
-    return registered_optimization_targets_;
-  }
+  base::flat_set<proto::OptimizationTarget> GetRegisteredOptimizationTargets()
+      const;
 
   // Override |clock_| for testing.
   void SetClockForTesting(const base::Clock* clock);
@@ -171,6 +172,7 @@ class PredictionManager
   // For testing purposes only.
   void OverrideTargetModelFileForTesting(
       proto::OptimizationTarget optimization_target,
+      const base::Optional<proto::Any>& model_metadata,
       const base::FilePath& file_path);
 
   // PredictionModelDownloadObserver:
@@ -318,8 +320,7 @@ class PredictionManager
       std::unique_ptr<PredictionModel> prediction_model);
 
   // Post-processing callback invoked after processing |model|.
-  void OnProcessLoadedModel(std::unique_ptr<proto::PredictionModel> model,
-                            bool success);
+  void OnProcessLoadedModel(const proto::PredictionModel& model, bool success);
 
   // Process |host_model_features| from the into host model features
   // usable by the PredictionManager. The processed host model features are
@@ -349,6 +350,7 @@ class PredictionManager
   // updated to |file_path|.
   void NotifyObserversOfNewModelPath(
       proto::OptimizationTarget optimization_target,
+      const base::Optional<proto::Any>& model_metadata,
       const base::FilePath& file_path) const;
 
   // A map of optimization target to the prediction model capable of making
@@ -362,9 +364,10 @@ class PredictionManager
                  std::unique_ptr<PredictionModelFile>>
       optimization_target_prediction_model_file_map_;
 
-  // The set of optimization targets that have been registered with the
-  // prediction manager.
-  base::flat_set<proto::OptimizationTarget> registered_optimization_targets_;
+  // The map from optimization targets to feature-provided metadata that have
+  // been registered with the prediction manager.
+  base::flat_map<proto::OptimizationTarget, base::Optional<proto::Any>>
+      registered_optimization_targets_and_metadata_;
 
   // The map from optimization target to observers that have been registered to
   // receive model updates from the prediction manager.

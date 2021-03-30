@@ -1021,47 +1021,6 @@ PASS Navigator interface: window.navigator must inherit property "plugins" with 
 PASS Navigator interface: window.navigator must inherit property "mimeTypes" with the proper type
 PASS Navigator interface: window.navigator must inherit property "javaEnabled()" with the proper type
 PASS Navigator interface: window.navigator must inherit property "hardwareConcurrency" with the proper type
-PASS PluginArray interface: existence and properties of interface object
-PASS PluginArray interface object length
-PASS PluginArray interface object name
-PASS PluginArray interface: existence and properties of interface prototype object
-PASS PluginArray interface: existence and properties of interface prototype object's "constructor" property
-PASS PluginArray interface: existence and properties of interface prototype object's @@unscopables property
-PASS PluginArray interface: operation refresh(optional boolean)
-PASS PluginArray interface: attribute length
-PASS PluginArray interface: operation item(unsigned long)
-PASS PluginArray interface: operation namedItem(DOMString)
-PASS MimeTypeArray interface: existence and properties of interface object
-PASS MimeTypeArray interface object length
-PASS MimeTypeArray interface object name
-PASS MimeTypeArray interface: existence and properties of interface prototype object
-PASS MimeTypeArray interface: existence and properties of interface prototype object's "constructor" property
-PASS MimeTypeArray interface: existence and properties of interface prototype object's @@unscopables property
-PASS MimeTypeArray interface: attribute length
-PASS MimeTypeArray interface: operation item(unsigned long)
-PASS MimeTypeArray interface: operation namedItem(DOMString)
-PASS Plugin interface: existence and properties of interface object
-PASS Plugin interface object length
-PASS Plugin interface object name
-PASS Plugin interface: existence and properties of interface prototype object
-PASS Plugin interface: existence and properties of interface prototype object's "constructor" property
-PASS Plugin interface: existence and properties of interface prototype object's @@unscopables property
-PASS Plugin interface: attribute name
-PASS Plugin interface: attribute description
-PASS Plugin interface: attribute filename
-PASS Plugin interface: attribute length
-PASS Plugin interface: operation item(unsigned long)
-PASS Plugin interface: operation namedItem(DOMString)
-PASS MimeType interface: existence and properties of interface object
-PASS MimeType interface object length
-PASS MimeType interface object name
-PASS MimeType interface: existence and properties of interface prototype object
-PASS MimeType interface: existence and properties of interface prototype object's "constructor" property
-PASS MimeType interface: existence and properties of interface prototype object's @@unscopables property
-PASS MimeType interface: attribute type
-PASS MimeType interface: attribute description
-PASS MimeType interface: attribute suffixes
-PASS MimeType interface: attribute enabledPlugin
 PASS ImageBitmap interface: existence and properties of interface object
 PASS ImageBitmap interface object length
 PASS ImageBitmap interface object name
@@ -1325,6 +1284,47 @@ PASS External must be primary interface of window.external
 PASS Stringification of window.external
 PASS External interface: window.external must inherit property "AddSearchProvider()" with the proper type
 PASS External interface: window.external must inherit property "IsSearchProviderInstalled()" with the proper type
+PASS PluginArray interface: existence and properties of interface object
+PASS PluginArray interface object length
+PASS PluginArray interface object name
+PASS PluginArray interface: existence and properties of interface prototype object
+PASS PluginArray interface: existence and properties of interface prototype object's "constructor" property
+PASS PluginArray interface: existence and properties of interface prototype object's @@unscopables property
+PASS PluginArray interface: operation refresh()
+PASS PluginArray interface: attribute length
+PASS PluginArray interface: operation item(unsigned long)
+PASS PluginArray interface: operation namedItem(DOMString)
+PASS MimeTypeArray interface: existence and properties of interface object
+PASS MimeTypeArray interface object length
+PASS MimeTypeArray interface object name
+PASS MimeTypeArray interface: existence and properties of interface prototype object
+PASS MimeTypeArray interface: existence and properties of interface prototype object's "constructor" property
+PASS MimeTypeArray interface: existence and properties of interface prototype object's @@unscopables property
+PASS MimeTypeArray interface: attribute length
+PASS MimeTypeArray interface: operation item(unsigned long)
+PASS MimeTypeArray interface: operation namedItem(DOMString)
+PASS Plugin interface: existence and properties of interface object
+PASS Plugin interface object length
+PASS Plugin interface object name
+PASS Plugin interface: existence and properties of interface prototype object
+PASS Plugin interface: existence and properties of interface prototype object's "constructor" property
+PASS Plugin interface: existence and properties of interface prototype object's @@unscopables property
+PASS Plugin interface: attribute name
+PASS Plugin interface: attribute description
+PASS Plugin interface: attribute filename
+PASS Plugin interface: attribute length
+PASS Plugin interface: operation item(unsigned long)
+PASS Plugin interface: operation namedItem(DOMString)
+PASS MimeType interface: existence and properties of interface object
+PASS MimeType interface object length
+PASS MimeType interface object name
+PASS MimeType interface: existence and properties of interface prototype object
+PASS MimeType interface: existence and properties of interface prototype object's "constructor" property
+PASS MimeType interface: existence and properties of interface prototype object's @@unscopables property
+PASS MimeType interface: attribute type
+PASS MimeType interface: attribute description
+PASS MimeType interface: attribute suffixes
+PASS MimeType interface: attribute enabledPlugin
 PASS SVGElement interface: attribute onabort
 PASS SVGElement interface: attribute onauxclick
 PASS SVGElement interface: attribute onblur

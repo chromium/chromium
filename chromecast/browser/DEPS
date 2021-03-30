@@ -57,6 +57,7 @@ include_rules = [
   "+mojo/public",
   "+net",
   "+sandbox/policy",
+  "+services/cert_verifier/public/mojom",
   "+services/media_session/public",
   "+services/metrics/public/cpp",
   "+services/network/public/cpp",
@@ -87,14 +88,8 @@ include_rules = [
   # TODO(slan): Remove this when the network service is shipped on Cast.
   "+services/network",
 
-  # Needed to insert video plane callback.
-  # TODO(halliwell): Need to re-work this dependency otherwise Cast can't run
-  # with Viz out of process.
-  "+components/viz/service/display/overlay_strategy_underlay_cast.h",
-  # TODO(guohuideng): 1. When Display Compositor is fully moved to GPU process,
-  # remove the above dependency on "overlay_strategy_underlay_cast.h".
-  # 2. Separate SetGeometry from VideoPlaneController, and get rid of the
-  # dependency on.
+  # TODO(guohuideng): Separate SetGeometry from VideoPlaneController, and get
+  # rid of the dependency on cast_renderer.h.
   "+chromecast/media/service/cast_renderer.h",
 
   # For favicon url

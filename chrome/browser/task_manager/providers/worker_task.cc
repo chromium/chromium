@@ -29,7 +29,7 @@ int GetTaskTitlePrefixMessageId(Task::Type task_type) {
   }
 }
 
-base::string16 GetTaskTitle(const GURL& script_url, Task::Type task_type) {
+std::u16string GetTaskTitle(const GURL& script_url, Task::Type task_type) {
   return l10n_util::GetStringFUTF16(GetTaskTitlePrefixMessageId(task_type),
                                     base::UTF8ToUTF16(script_url.spec()));
 }

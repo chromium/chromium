@@ -4,13 +4,11 @@
 // META: script=/serial/resources/automation.js
 
 promise_test(async (t) => {
-  await loadMojoResources([
-    '/gen/mojo/public/mojom/base/unguessable_token.mojom.js',
-    '/gen/third_party/blink/public/mojom/serial/serial.mojom.js',
-  ]);
+  const {SerialService} = await import(
+      '/gen/third_party/blink/public/mojom/serial/serial.mojom.m.js');
 
   let interceptor =
-      new MojoInterfaceInterceptor(blink.mojom.SerialService.name);
+      new MojoInterfaceInterceptor(SerialService.$interfacName);
   interceptor.oninterfacerequest = e => e.handle.close();
   interceptor.start();
 

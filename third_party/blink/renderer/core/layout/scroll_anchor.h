@@ -13,6 +13,7 @@
 namespace blink {
 
 class LayoutObject;
+class Node;
 class ScrollableArea;
 
 static const int kMaxSerializedSelectorLength = 500;

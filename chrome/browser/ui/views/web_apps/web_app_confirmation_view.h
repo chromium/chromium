@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_CONFIRMATION_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_CONFIRMATION_VIEW_H_
 
+#include <string>
+
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
@@ -23,14 +25,16 @@ class RadioButton;
 class WebAppConfirmationView : public views::DialogDelegateView,
                                public views::TextfieldController {
  public:
+  METADATA_HEADER(WebAppConfirmationView);
   WebAppConfirmationView(std::unique_ptr<WebApplicationInfo> web_app_info,
                          chrome::AppInstallationAcceptanceCallback callback);
+  WebAppConfirmationView(const WebAppConfirmationView&) = delete;
+  WebAppConfirmationView& operator=(const WebAppConfirmationView&) = delete;
   ~WebAppConfirmationView() override;
 
  private:
   // Overridden from views::WidgetDelegate:
   views::View* GetInitiallyFocusedView() override;
-  ui::ModalType GetModalType() const override;
   bool ShouldShowCloseButton() const override;
   void WindowClosing() override;
 
@@ -40,10 +44,10 @@ class WebAppConfirmationView : public views::DialogDelegateView,
 
   // Overridden from views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,
-                       const base::string16& new_contents) override;
+                       const std::u16string& new_contents) override;
 
   // Get the trimmed contents of the title text field.
-  base::string16 GetTrimmedTitle() const;
+  std::u16string GetTrimmedTitle() const;
 
   // The WebApplicationInfo that the user is editing.
   // Cleared when the dialog completes (Accept/WindowClosing).
@@ -62,8 +66,6 @@ class WebAppConfirmationView : public views::DialogDelegateView,
 
   // Textfield showing the title of the app.
   views::Textfield* title_tf_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(WebAppConfirmationView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_CONFIRMATION_VIEW_H_

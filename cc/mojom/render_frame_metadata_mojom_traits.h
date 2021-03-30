@@ -17,6 +17,19 @@ namespace mojo {
 
 template <>
 struct COMPONENT_EXPORT(CC_SHARED_MOJOM_TRAITS)
+    StructTraits<cc::mojom::DelegatedInkBrowserMetadataDataView,
+                 cc::DelegatedInkBrowserMetadata> {
+  static bool delegated_ink_is_hovering(
+      const cc::DelegatedInkBrowserMetadata& metadata) {
+    return metadata.delegated_ink_is_hovering;
+  }
+
+  static bool Read(cc::mojom::DelegatedInkBrowserMetadataDataView data,
+                   cc::DelegatedInkBrowserMetadata* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(CC_SHARED_MOJOM_TRAITS)
     StructTraits<cc::mojom::RenderFrameMetadataDataView,
                  cc::RenderFrameMetadata> {
   static SkColor root_background_color(
@@ -42,9 +55,9 @@ struct COMPONENT_EXPORT(CC_SHARED_MOJOM_TRAITS)
     return metadata.is_mobile_optimized;
   }
 
-  static bool has_delegated_ink_metadata(
+  static base::Optional<cc::DelegatedInkBrowserMetadata> delegated_ink_metadata(
       const cc::RenderFrameMetadata& metadata) {
-    return metadata.has_delegated_ink_metadata;
+    return metadata.delegated_ink_metadata;
   }
 
   static float device_scale_factor(const cc::RenderFrameMetadata& metadata) {

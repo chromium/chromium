@@ -65,7 +65,7 @@ void DemoWindow::Quit() {
   window_manager_->Quit();
 }
 
-void DemoWindow::OnBoundsChanged(const gfx::Rect& new_bounds) {
+void DemoWindow::OnBoundsChanged(const BoundsChange& change) {
   StartRendererIfNecessary();
 }
 

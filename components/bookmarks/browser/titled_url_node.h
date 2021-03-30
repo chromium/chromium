@@ -17,7 +17,7 @@ namespace bookmarks {
 class TitledUrlNode {
  public:
   // Returns the title for the node.
-  virtual const base::string16& GetTitledUrlNodeTitle() const = 0;
+  virtual const std::u16string& GetTitledUrlNodeTitle() const = 0;
 
   // Returns the URL for the node.
   virtual const GURL& GetTitledUrlNodeUrl() const = 0;

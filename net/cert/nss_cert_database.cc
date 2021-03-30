@@ -32,7 +32,7 @@
 #include "net/third_party/mozilla_security_manager/nsNSSCertificateDB.h"
 #include "net/third_party/mozilla_security_manager/nsPKCS12Blob.h"
 
-#if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "crypto/chaps_support.h"
 #endif
 
@@ -179,10 +179,20 @@ void NSSCertDatabase::ListModules(std::vector<crypto::ScopedPK11Slot>* modules,
   }
 }
 
+bool NSSCertDatabase::SetCertTrust(CERTCertificate* cert,
+                                   CertType type,
+                                   TrustBits trust_bits) {
+  bool success = psm::SetCertTrust(cert, type, trust_bits);
+  if (success)
+    NotifyObserversCertDBChanged();
+
+  return success;
+}
+
 int NSSCertDatabase::ImportFromPKCS12(
     PK11SlotInfo* slot_info,
     const std::string& data,
-    const base::string16& password,
+    const std::u16string& password,
     bool is_extractable,
     ScopedCERTCertificateList* imported_certs) {
   DVLOG(1) << __func__ << " "
@@ -200,7 +210,7 @@ int NSSCertDatabase::ImportFromPKCS12(
 }
 
 int NSSCertDatabase::ExportToPKCS12(const ScopedCERTCertificateList& certs,
-                                    const base::string16& password,
+                                    const std::u16string& password,
                                     std::string* output) const {
   return psm::nsPKCS12Blob_Export(output, certs, password);
 }
@@ -326,16 +336,6 @@ NSSCertDatabase::TrustBits NSSCertDatabase::GetCertTrust(
   }
 }
 
-bool NSSCertDatabase::SetCertTrust(CERTCertificate* cert,
-                                   CertType type,
-                                   TrustBits trust_bits) {
-  bool success = psm::SetCertTrust(cert, type, trust_bits);
-  if (success)
-    NotifyObserversCertDBChanged();
-
-  return success;
-}
-
 bool NSSCertDatabase::DeleteCertAndKey(CERTCertificate* cert) {
   if (!DeleteCertAndKeyImpl(cert))
     return false;
@@ -437,15 +437,14 @@ bool NSSCertDatabase::IsReadOnly(const CERTCertificate* cert) {
 // static
 bool NSSCertDatabase::IsHardwareBacked(const CERTCertificate* cert) {
   PK11SlotInfo* slot = cert->slot;
-  if (!slot || !PK11_IsHW(slot))
+  if (!slot)
     return false;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_LACROS)
-  // Chaps announces PK11_IsHW(slot) for all slots. However, it is possible for
-  // a key in chaps to be not truly hardware-backed, either because it has been
-  // requested to be software-backed, or because the TPM does not support the
-  // key algorithm. Chaps sets kKeyInSoftware attribute to true for private keys
-  // not wrapped by the TPM.
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  // For keys in Chaps, it's possible that they are truly hardware backed, or
+  // they can be software-backed, such as if the creator requested it, or if the
+  // TPM does not support the key algorithm. Chaps sets a kKeyInSoftware
+  // attribute to true for private keys that aren't wrapped by the TPM.
   if (crypto::IsSlotProvidedByChaps(slot)) {
     static PK11HasAttributeSetFunction pk11_has_attribute_set =
         reinterpret_cast<PK11HasAttributeSetFunction>(
@@ -462,9 +461,11 @@ bool NSSCertDatabase::IsHardwareBacked(const CERTCertificate* cert) {
         return false;
       }
     }
+    // All keys in chaps without the attribute are hardware backed.
+    return true;
   }
 #endif
-  return true;
+  return PK11_IsHW(slot);
 }
 
 void NSSCertDatabase::AddObserver(Observer* observer) {

@@ -23,11 +23,13 @@
 <translation id="169515659049020177">Maiusc</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Aggiunge www. e .com all'indirizzo inserito nella barra degli indirizzi, quindi apre la pagina</translation>
+<translation id="1768987374400973299">Acquisisci screenshot/registrazione</translation>
 <translation id="1872219238824176091">Rimuovi la scrivania corrente</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, quindi <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> o <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">Passa alla scheda successiva</translation>
 <translation id="2010818616644390445">Passa all'ultima scheda della finestra</translation>
 <translation id="2040706009561734834">Consente di aprire/chiudere Avvio app</translation>
+<translation id="2086334242442703436">Aprire il selettore di emoji</translation>
 <translation id="2088054208777350526">Cerca scorciatoie da tastiera</translation>
 <translation id="2125211348069077981"><ph name="ALT" /> <ph name="SEPARATOR" /> <ph name="E" /> o <ph name="F" /></translation>
 <translation id="2145908266289632567">Modifica del testo</translation>
@@ -46,6 +48,7 @@
 <translation id="2480851840841871861">Apri l'Assistente Google</translation>
 <translation id="2488661730534396940">Attiva la scrivania a sinistra</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516999188535378855">Aprire l'app Diagnostica</translation>
 <translation id="2530339807289914946">Scorre la pagina web verso il basso</translation>
 <translation id="2530896289327917474">Attiva o disattiva la navigazione con cursore</translation>
 <translation id="2574014812750545982">Reimposta il livello di zoom nella pagina</translation>
@@ -110,6 +113,7 @@
 <translation id="4801989101741319327">Passa alla fine della parola successiva</translation>
 <translation id="4866066940972151697">Attiva la scrivania a destra</translation>
 <translation id="4916163929714267752">Apre il link in una nuova finestra</translation>
+<translation id="492453977506755176">Tasto modalità di acquisizione</translation>
 <translation id="5030659775136592441">Consente di mostrare Gestione Preferiti</translation>
 <translation id="5034421018520995080">Passa alla parte superiore della pagina</translation>
 <translation id="5042305953558921026">Tasto modalità panoramica</translation>
@@ -132,6 +136,7 @@
 <translation id="5899919361772749550">Consente di mostrare o nascondere la console Strumenti per sviluppatori</translation>
 <translation id="5919628958418675842">Attiva o disattiva la schermata sulla privacy</translation>
 <translation id="5921745308587794300">Ruota finestra</translation>
+<translation id="5926306472221400972">Acquisisci screenshot a schermo intero</translation>
 <translation id="6022924867608035986">Cancella testo dalla casella di ricerca</translation>
 <translation id="6045998054441862242">Attiva la modalità ad alto contrasto</translation>
 <translation id="6052614013050385269">Consente di fare clic sul link con il pulsante destro del mouse</translation>
@@ -149,6 +154,7 @@
 <translation id="6445033640292336367">Ripristina la posizione originale della scheda</translation>
 <translation id="6474744297082284761">Diminuisce lo zoom (con lente d’ingrandimento ancorata o a schermo intero attiva)</translation>
 <translation id="649811797655257835">Seleziona il file, quindi premi <ph name="SPACE" /></translation>
+<translation id="6551886416582667425">Acquisisci screenshot/registrazione parziale</translation>
 <translation id="6556040137485212400">Consente di aprire la finestra rimasta inutilizzata per più tempo</translation>
 <translation id="666343722268997814">Apre il menu di scelta rapida per l'elemento evidenziato</translation>
 <translation id="6671538777808758331">Passa alla corrispondenza successiva della ricerca</translation>
@@ -175,6 +181,7 @@
 <translation id="7611271430932669992">Consente di spostare lo stato attivo su finestre di dialogo e popup</translation>
 <translation id="7635348532214572995">Sposta l'icona dell'app sulla griglia delle app</translation>
 <translation id="766326951329901120">Incolla i contenuti dagli appunti come testo normale</translation>
+<translation id="7673453620027697230">Acquisisci screenshot/registrazione della finestra</translation>
 <translation id="7703010453515335249">parentesi quadra aperta</translation>
 <translation id="7724603315864178912">Taglia</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, quindi <ph name="SPACE" /> o <ph name="ENTER" /></translation>

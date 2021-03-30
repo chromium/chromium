@@ -137,9 +137,8 @@ class ArcNotificationContentViewTest : public AshTestBase {
 
     surface_manager_ = std::make_unique<ArcNotificationSurfaceManagerImpl>();
 
-    message_center::MessageViewFactory::
-        ClearCustomNotificationViewFactoryForTest(
-            kArcNotificationCustomViewType);
+    message_center::MessageViewFactory::ClearCustomNotificationViewFactory(
+        kArcNotificationCustomViewType);
     ArcNotificationManager::SetCustomNotificationViewFactory();
   }
 
@@ -225,9 +224,8 @@ class ArcNotificationContentViewTest : public AshTestBase {
         message_center::SettingsButtonHandler::DELEGATE;
     Notification notification(
         message_center::NOTIFICATION_TYPE_CUSTOM,
-        notification_item->GetNotificationId(), base::UTF8ToUTF16("title"),
-        base::UTF8ToUTF16("message"), gfx::Image(), base::UTF8ToUTF16("arc"),
-        GURL(),
+        notification_item->GetNotificationId(), u"title", u"message",
+        gfx::Image(), u"arc", GURL(),
         message_center::NotifierId(
             message_center::NotifierType::ARC_APPLICATION, "ARC_NOTIFICATION"),
         optional_fields,
@@ -326,9 +324,8 @@ TEST_F(ArcNotificationContentViewTest, CloseButton) {
   // ARC to avoid surface shutdown issues.
   auto mc_notification = std::make_unique<Notification>(
       message_center::NOTIFICATION_TYPE_SIMPLE,
-      notification_item->GetNotificationId(), base::UTF8ToUTF16("title"),
-      base::UTF8ToUTF16("message"), gfx::Image(), base::UTF8ToUTF16("arc"),
-      GURL(),
+      notification_item->GetNotificationId(), u"title", u"message",
+      gfx::Image(), u"arc", GURL(),
       message_center::NotifierId(message_center::NotifierType::ARC_APPLICATION,
                                  "ARC_NOTIFICATION"),
       message_center::RichNotificationData(), nullptr);
@@ -347,7 +344,7 @@ TEST_F(ArcNotificationContentViewTest, CloseButton) {
 TEST_F(ArcNotificationContentViewTest, CloseButtonInMessageCenterView) {
   std::string notification_key("notification id");
 
-  message_center::MessageViewFactory::ClearCustomNotificationViewFactoryForTest(
+  message_center::MessageViewFactory::ClearCustomNotificationViewFactory(
       kArcNotificationCustomViewType);
 
   // Override MessageView factory to capture the created notification view in
@@ -370,7 +367,7 @@ TEST_F(ArcNotificationContentViewTest, CloseButtonInMessageCenterView) {
   // Show MessageCenterView and activate its widget.
   auto* unified_system_tray =
       StatusAreaWidgetTestHelper::GetStatusAreaWidget()->unified_system_tray();
-  unified_system_tray->ShowBubble(false /* show_by_click */);
+  unified_system_tray->ShowBubble();
   unified_system_tray->ActivateBubble();
 
   auto notification_item =

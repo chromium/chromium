@@ -21,7 +21,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -34,7 +33,6 @@ import org.chromium.content_public.browser.WebContents;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Features.EnableFeatures(ChromeFeatureList.HORIZONTAL_TAB_SWITCHER_ANDROID)
 public class ChromeSurveyControllerTest {
     private static final String STUDY_NAME = "HorizontalTabSwitcherStudyName";
     private static final String GROUP_NAME = "HorizontalTabSwitcherGroupName";

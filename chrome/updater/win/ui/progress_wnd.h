@@ -8,9 +8,9 @@
 #include <windows.h>
 
 #include <memory>
+#include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "base/threading/thread_checker.h"
 #include "base/win/atl.h"
 #include "chrome/updater/win/install_progress_observer.h"
@@ -29,7 +29,7 @@ class ProgressWndEvents : public CompleteWndEvents {
   // Restarts the running browsers.
   // If |restart_all_browsers| is true, all known browsers will be restarted.
   virtual bool DoRestartBrowser(bool restart_all_browsers,
-                                const std::vector<base::string16>& urls) = 0;
+                                const std::vector<std::u16string>& urls) = 0;
 
   // Initiates a reboot and returns whether it was initiated successfully.
   virtual bool DoReboot() = 0;
@@ -116,23 +116,23 @@ class ProgressWnd : public CompleteWnd, public InstallProgressObserver {
   // Overrides for InstallProgressObserver.
   // These functions are called on the thread which owns this window.
   void OnCheckingForUpdate() override;
-  void OnUpdateAvailable(const base::string16& app_id,
-                         const base::string16& app_name,
-                         const base::string16& version_string) override;
-  void OnWaitingToDownload(const base::string16& app_id,
-                           const base::string16& app_name) override;
-  void OnDownloading(const base::string16& app_id,
-                     const base::string16& app_name,
+  void OnUpdateAvailable(const std::u16string& app_id,
+                         const std::u16string& app_name,
+                         const std::u16string& version_string) override;
+  void OnWaitingToDownload(const std::u16string& app_id,
+                           const std::u16string& app_name) override;
+  void OnDownloading(const std::u16string& app_id,
+                     const std::u16string& app_name,
                      int time_remaining_ms,
                      int pos) override;
-  void OnWaitingRetryDownload(const base::string16& app_id,
-                              const base::string16& app_name,
+  void OnWaitingRetryDownload(const std::u16string& app_id,
+                              const std::u16string& app_name,
                               const base::Time& next_retry_time) override;
-  void OnWaitingToInstall(const base::string16& app_id,
-                          const base::string16& app_name,
+  void OnWaitingToInstall(const std::u16string& app_id,
+                          const std::u16string& app_name,
                           bool* can_start_install) override;
-  void OnInstalling(const base::string16& app_id,
-                    const base::string16& app_name,
+  void OnInstalling(const std::u16string& app_id,
+                    const std::u16string& app_name,
                     int time_remaining_ms,
                     int pos) override;
   void OnPause() override;
@@ -193,7 +193,7 @@ class ProgressWnd : public CompleteWnd, public InstallProgressObserver {
   std::unique_ptr<InstallStoppedWnd> install_stopped_wnd_;
 
   ProgressWndEvents* events_sink_ = nullptr;
-  std::vector<base::string16> post_install_urls_;
+  std::vector<std::u16string> post_install_urls_;
   bool is_canceled_ = false;
 
   struct ControlState {

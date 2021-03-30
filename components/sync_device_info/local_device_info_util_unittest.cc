@@ -13,7 +13,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/command_line.h"
-#include "chromeos/constants/chromeos_switches.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace syncer {

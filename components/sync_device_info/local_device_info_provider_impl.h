@@ -29,12 +29,12 @@ class LocalDeviceInfoProviderImpl : public MutableLocalDeviceInfoProvider {
   ~LocalDeviceInfoProviderImpl() override;
 
   // MutableLocalDeviceInfoProvider implementation.
-  void Initialize(const std::string& cache_guid,
-                  const std::string& client_name,
-                  const std::string& manufacturer_name,
-                  const std::string& model_name,
-                  const std::string& last_fcm_registration_token,
-                  const ModelTypeSet& last_interested_data_types) override;
+  void Initialize(
+      const std::string& cache_guid,
+      const std::string& client_name,
+      const std::string& manufacturer_name,
+      const std::string& model_name,
+      std::unique_ptr<DeviceInfo> device_info_restored_from_store) override;
   void Clear() override;
   void UpdateClientName(const std::string& client_name) override;
   version_info::Channel GetChannel() const override;
@@ -52,7 +52,7 @@ class LocalDeviceInfoProviderImpl : public MutableLocalDeviceInfoProvider {
   const DeviceInfoSyncClient* const sync_client_;
 
   std::unique_ptr<DeviceInfo> local_device_info_;
-  base::CallbackList<void(void)> callback_list_;
+  base::RepeatingClosureList closure_list_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

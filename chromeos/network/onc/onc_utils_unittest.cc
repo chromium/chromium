@@ -206,6 +206,43 @@ TEST(ONCUtils, ProxyConfigToOncProxySettings) {
   }
 }
 
+TEST(ONCUtils, SetHiddenSSIDField_WithNoValueSet) {
+  // WiFi configuration that doesn't have HiddenSSID field set.
+  std::unique_ptr<base::DictionaryValue> wifi_onc =
+      test_utils::ReadTestDictionary("wifi_clientcert_with_cert_pems.onc");
+  base::Value* wifi_fields = wifi_onc->FindKey("WiFi");
+
+  ASSERT_FALSE(wifi_fields->FindKey(::onc::wifi::kHiddenSSID));
+  SetHiddenSSIDField(wifi_fields);
+  base::Value* hidden_ssid_field =
+      wifi_fields->FindKey(::onc::wifi::kHiddenSSID);
+  ASSERT_TRUE(hidden_ssid_field);
+  EXPECT_FALSE(hidden_ssid_field->GetBool());
+}
+
+TEST(ONCUtils, SetHiddenSSIDField_WithValueSetFalse) {
+  // WiFi configuration that have HiddenSSID field set to false.
+  std::unique_ptr<base::DictionaryValue> wifi_onc =
+      test_utils::ReadTestDictionary(
+          "translation_of_shill_wifi_with_state.onc");
+  base::Value* wifi_fields = wifi_onc->FindKey("WiFi");
+
+  ASSERT_TRUE(wifi_fields->FindKey(::onc::wifi::kHiddenSSID));
+  SetHiddenSSIDField(wifi_fields);
+  EXPECT_FALSE(wifi_fields->FindKey(::onc::wifi::kHiddenSSID)->GetBool());
+}
+
+TEST(ONCUtils, SetHiddenSSIDField_WithValueSetTrue) {
+  // WiFi configuration that have HiddenSSID field set to true.
+  std::unique_ptr<base::DictionaryValue> wifi_onc =
+      test_utils::ReadTestDictionary("wifi_with_hidden_ssid.onc");
+  base::Value* wifi_fields = wifi_onc->FindKey("WiFi");
+
+  ASSERT_TRUE(wifi_fields->FindKey(::onc::wifi::kHiddenSSID));
+  SetHiddenSSIDField(wifi_fields);
+  EXPECT_TRUE(wifi_fields->FindKey(::onc::wifi::kHiddenSSID)->GetBool());
+}
+
 TEST(ONCPasswordVariable, PasswordAvailable) {
   const auto wifi_onc = test_utils::ReadTestDictionary(
       "wifi_eap_ttls_with_password_variable.onc");

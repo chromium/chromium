@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_ROW_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_ROW_VIEW_H_
 
+#include <string>
+
 #include "base/optional.h"
-#include "base/strings/string16.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 class OmniboxPopupModel;
@@ -22,13 +24,14 @@ class PrefService;
 //  - It's the header for multiple matches, it's just painted above this row.
 class OmniboxRowView : public views::View {
  public:
+  METADATA_HEADER(OmniboxRowView);
   OmniboxRowView(size_t line,
                  OmniboxPopupModel* popup_model,
                  std::unique_ptr<OmniboxResultView> result_view,
                  PrefService* pref_service);
 
   // Sets the header that appears above this row. Also shows the header.
-  void ShowHeader(int suggestion_group_id, const base::string16& header_text);
+  void ShowHeader(int suggestion_group_id, const std::u16string& header_text);
 
   // Hides the header.
   void HideHeader();

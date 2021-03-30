@@ -188,8 +188,23 @@ bool VulkanDeviceQueue::Initialize(
 
   crash_keys::vulkan_device_api_version.Set(
       VkVersionToString(vk_physical_device_properties_.apiVersion));
-  crash_keys::vulkan_device_driver_version.Set(base::StringPrintf(
-      "0x%08x", vk_physical_device_properties_.driverVersion));
+  if (vk_physical_device_properties_.vendorID == 0x10DE) {
+    // NVIDIA
+    // 10 bits = major version (up to r1023)
+    // 8 bits = minor version (up to 255)
+    // 8 bits = secondary branch version/build version (up to 255)
+    // 6 bits = tertiary branch/build version (up to 63)
+    auto version = vk_physical_device_properties_.driverVersion;
+    uint32_t major = (version >> 22) & 0x3ff;
+    uint32_t minor = (version >> 14) & 0x0ff;
+    uint32_t secondary_branch = (version >> 6) & 0x0ff;
+    uint32_t tertiary_branch = version & 0x003f;
+    crash_keys::vulkan_device_driver_version.Set(base::StringPrintf(
+        "%d.%d.%d.%d", major, minor, secondary_branch, tertiary_branch));
+  } else {
+    crash_keys::vulkan_device_driver_version.Set(
+        VkVersionToString(vk_physical_device_properties_.driverVersion));
+  }
   crash_keys::vulkan_device_vendor_id.Set(
       base::StringPrintf("0x%04x", vk_physical_device_properties_.vendorID));
   crash_keys::vulkan_device_id.Set(

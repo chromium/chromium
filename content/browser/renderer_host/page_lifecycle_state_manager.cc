@@ -202,6 +202,18 @@ void PageLifecycleStateManager::OnPageLifecycleChangedAck(
       std::move(last_acknowledged_state_);
   last_acknowledged_state_ = std::move(acknowledged_state);
 
+  if (last_acknowledged_state_->is_in_back_forward_cache)
+    did_receive_back_forward_cache_ack_ = true;
+
+  // Call |MaybeEvictFromBackForwardCache| after setting
+  // |last_acknowledged_state_|.
+  // Features which can be cleaned by the page are taken into account only
+  // after the 'pagehide' handlers have run. As we might have just received
+  // an acknowledgement from the renderer that these handlers have run, call
+  // |MaybeEvictFromBackForwardCache| in case we need to start taking these
+  // features into account.
+  render_view_host_impl_->MaybeEvictFromBackForwardCache();
+
   if (last_acknowledged_state_->is_in_back_forward_cache) {
     back_forward_cache_timeout_monitor_.reset(nullptr);
   }

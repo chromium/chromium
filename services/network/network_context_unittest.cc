@@ -166,7 +166,6 @@ namespace {
 using ::testing::Optional;
 
 constexpr char kMockHost[] = "mock.host";
-constexpr int kRouteId = 12;
 
 #if BUILDFLAG(ENABLE_REPORTING)
 const base::FilePath::CharType kFilename[] =
@@ -245,8 +244,8 @@ std::unique_ptr<TestURLLoaderClient> FetchRequest(
   auto client = std::make_unique<TestURLLoaderClient>();
   mojo::PendingRemote<mojom::URLLoader> loader;
   loader_factory->CreateLoaderAndStart(
-      loader.InitWithNewPipeAndPassReceiver(), 0 /* routing_id */,
-      0 /* request_id */, url_loader_options, request, client->CreateRemote(),
+      loader.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+      url_loader_options, request, client->CreateRemote(),
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 
   client->RunUntilComplete();
@@ -534,8 +533,8 @@ TEST_F(NetworkContextTest, DestroyContextWithLiveRequest) {
   mojo::PendingRemote<mojom::URLLoader> loader;
   TestURLLoaderClient client;
   loader_factory->CreateLoaderAndStart(
-      loader.InitWithNewPipeAndPassReceiver(), 0 /* routing_id */,
-      0 /* request_id */, 0 /* options */, request, client.CreateRemote(),
+      loader.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+      0 /* options */, request, client.CreateRemote(),
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 
   client.RunUntilResponseReceived();
@@ -698,8 +697,8 @@ TEST_F(NetworkContextTest, UnhandedProtocols) {
     ResourceRequest request;
     request.url = url;
     loader_factory->CreateLoaderAndStart(
-        loader.InitWithNewPipeAndPassReceiver(), 0 /* routing_id */,
-        0 /* request_id */, 0 /* options */, request, client.CreateRemote(),
+        loader.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+        0 /* options */, request, client.CreateRemote(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 
     client.RunUntilComplete();
@@ -954,13 +953,14 @@ class DiskCacheSizeTest : public NetworkContextTest {
 TEST_F(DiskCacheSizeTest, DiskCacheSize) {
   int64_t max_file_size = VerifyDiskCacheSize();
 
-  // Scale to 200%. The size should be twice of |max_file_size| but
-  // since max size is capped on 20% of available size, checking for the size to
-  // be between max_file_size and max_file_size*2.
   int64_t max_file_size_scaled = VerifyDiskCacheSize(200);
 
+  // After scaling to 200%, the size will in most cases be twice of
+  // |max_file_size| but it is dependent on the available size, and since we
+  // cannot guarantee available size to be the same between the 2 runs to
+  // VerifyDiskCacheSize(), only checking for the scaled size to be >=
+  // max_file_size.
   EXPECT_GE(max_file_size_scaled, max_file_size);
-  EXPECT_LE(max_file_size_scaled, 2 * max_file_size);
 }
 
 // This makes sure that network_session_configurator::ChooseCacheType is
@@ -1257,8 +1257,8 @@ TEST_F(NetworkContextTest, CertReporting) {
     mojo::PendingRemote<mojom::URLLoader> loader;
     TestURLLoaderClient client;
     loader_factory->CreateLoaderAndStart(
-        loader.InitWithNewPipeAndPassReceiver(), 0 /* routing_id */,
-        0 /* request_id */, 0 /* options */, request, client.CreateRemote(),
+        loader.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+        0 /* options */, request, client.CreateRemote(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 
     client.RunUntilComplete();
@@ -1321,8 +1321,8 @@ TEST_F(NetworkContextTest, HostResolutionFailure) {
   mojo::PendingRemote<mojom::URLLoader> loader;
   TestURLLoaderClient client;
   loader_factory->CreateLoaderAndStart(
-      loader.InitWithNewPipeAndPassReceiver(), 0 /* routing_id */,
-      0 /* request_id */, 0 /* options */, request, client.CreateRemote(),
+      loader.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+      0 /* options */, request, client.CreateRemote(),
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 
   client.RunUntilComplete();
@@ -1443,8 +1443,8 @@ TEST_F(NetworkContextTest, Referrers) {
       mojo::PendingRemote<mojom::URLLoader> loader;
       TestURLLoaderClient client;
       loader_factory->CreateLoaderAndStart(
-          loader.InitWithNewPipeAndPassReceiver(), 0 /* routing_id */,
-          0 /* request_id */, 0 /* options */, request, client.CreateRemote(),
+          loader.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+          0 /* options */, request, client.CreateRemote(),
           net::MutableNetworkTrafficAnnotationTag(
               TRAFFIC_ANNOTATION_FOR_TESTS));
 
@@ -1814,8 +1814,8 @@ TEST_F(NetworkContextTest, ClearHttpAuthCache) {
   test_clock.SetNow(start_time);
   cache->set_clock_for_testing(&test_clock);
 
-  base::string16 user = base::ASCIIToUTF16("user");
-  base::string16 password = base::ASCIIToUTF16("pass");
+  std::u16string user = u"user";
+  std::u16string password = u"pass";
   cache->Add(origin, net::HttpAuth::AUTH_SERVER, "Realm1",
              net::HttpAuth::AUTH_SCHEME_BASIC, net::NetworkIsolationKey(),
              "basic realm=Realm1", net::AuthCredentials(user, password), "/");
@@ -1881,8 +1881,8 @@ TEST_F(NetworkContextTest, ClearAllHttpAuthCache) {
   test_clock.SetNow(start_time);
   cache->set_clock_for_testing(&test_clock);
 
-  base::string16 user = base::ASCIIToUTF16("user");
-  base::string16 password = base::ASCIIToUTF16("pass");
+  std::u16string user = u"user";
+  std::u16string password = u"pass";
   cache->Add(origin, net::HttpAuth::AUTH_SERVER, "Realm1",
              net::HttpAuth::AUTH_SCHEME_BASIC, net::NetworkIsolationKey(),
              "basic realm=Realm1", net::AuthCredentials(user, password), "/");
@@ -1966,8 +1966,8 @@ TEST_F(NetworkContextTest, LookupServerBasicAuthCredentials) {
                                   ->GetSession()
                                   ->http_auth_cache();
 
-  base::string16 user = base::ASCIIToUTF16("user");
-  base::string16 password = base::ASCIIToUTF16("pass");
+  std::u16string user = u"user";
+  std::u16string password = u"pass";
   cache->Add(origin, net::HttpAuth::AUTH_SERVER, "Realm",
              net::HttpAuth::AUTH_SCHEME_BASIC, network_isolation_key1,
              "basic realm=Realm", net::AuthCredentials(user, password), "/");
@@ -2026,8 +2026,8 @@ TEST_F(NetworkContextTest, LookupProxyAuthCredentials) {
                                   ->GetSession()
                                   ->http_auth_cache();
 
-  base::string16 user = base::ASCIIToUTF16("user");
-  base::string16 password = base::ASCIIToUTF16("pass");
+  std::u16string user = u"user";
+  std::u16string password = u"pass";
   cache->Add(http_proxy, net::HttpAuth::AUTH_PROXY, "Realm",
              net::HttpAuth::AUTH_SCHEME_BASIC, net::NetworkIsolationKey(),
              "basic realm=Realm", net::AuthCredentials(user, password),
@@ -4497,8 +4497,8 @@ TEST_F(NetworkContextTest, TrustedParams) {
     mojo::PendingRemote<mojom::URLLoader> loader;
     TestURLLoaderClient client;
     loader_factory->CreateLoaderAndStart(
-        loader.InitWithNewPipeAndPassReceiver(), 0 /* routing_id */,
-        0 /* request_id */, 0 /* options */, request, client.CreateRemote(),
+        loader.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+        0 /* options */, request, client.CreateRemote(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 
     client.RunUntilComplete();
@@ -4556,8 +4556,8 @@ TEST_F(NetworkContextTest, TrustedParams_DisableSecureDns) {
     mojo::PendingRemote<mojom::URLLoader> loader;
     TestURLLoaderClient client;
     loader_factory->CreateLoaderAndStart(
-        loader.InitWithNewPipeAndPassReceiver(), 0 /* routing_id */,
-        0 /* request_id */, 0 /* options */, request, client.CreateRemote(),
+        loader.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+        0 /* options */, request, client.CreateRemote(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 
     client.RunUntilComplete();
@@ -4602,8 +4602,8 @@ TEST_F(NetworkContextTest, FactoryParams_DisableSecureDns) {
     auto client = std::make_unique<TestURLLoaderClient>();
     mojo::Remote<mojom::URLLoader> loader;
     loader_factory->CreateLoaderAndStart(
-        loader.BindNewPipeAndPassReceiver(), 0 /* routing_id */,
-        0 /* request_id */, 0 /* options */, request, client->CreateRemote(),
+        loader.BindNewPipeAndPassReceiver(), 0 /* request_id */,
+        0 /* options */, request, client->CreateRemote(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 
     client->RunUntilComplete();
@@ -5055,8 +5055,8 @@ TEST_F(NetworkContextTest, ProxyErrorClientNotifiedOfProxyConnection) {
   mojo::PendingRemote<mojom::URLLoader> loader;
   TestURLLoaderClient client;
   loader_factory->CreateLoaderAndStart(
-      loader.InitWithNewPipeAndPassReceiver(), 0 /* routing_id */,
-      0 /* request_id */, 0 /* options */, request, client.CreateRemote(),
+      loader.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+      0 /* options */, request, client.CreateRemote(),
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 
   // Confirm the the resource request failed due to an unreachable proxy.
@@ -5110,8 +5110,8 @@ TEST_F(NetworkContextTest, ProxyErrorClientNotNotifiedOfUnreachableError) {
   mojo::PendingRemote<mojom::URLLoader> loader;
   TestURLLoaderClient client;
   loader_factory->CreateLoaderAndStart(
-      loader.InitWithNewPipeAndPassReceiver(), 0 /* routing_id */,
-      0 /* request_id */, 0 /* options */, request, client.CreateRemote(),
+      loader.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+      0 /* options */, request, client.CreateRemote(),
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 
   // Confirm the the resource request failed.
@@ -5184,8 +5184,8 @@ TEST_F(NetworkContextTest, ProxyErrorClientNotifiedOfPacError) {
   mojo::PendingRemote<mojom::URLLoader> loader;
   TestURLLoaderClient client;
   loader_factory->CreateLoaderAndStart(
-      loader.InitWithNewPipeAndPassReceiver(), 0 /* routing_id */,
-      0 /* request_id */, 0 /* options */, request, client.CreateRemote(),
+      loader.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+      0 /* options */, request, client.CreateRemote(),
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 
   // Confirm the the resource request failed.
@@ -5265,8 +5265,8 @@ TEST_F(NetworkContextTest, EnsureProperProxyServerIsUsed) {
     mojo::PendingRemote<mojom::URLLoader> loader;
     TestURLLoaderClient client;
     loader_factory->CreateLoaderAndStart(
-        loader.InitWithNewPipeAndPassReceiver(), 0 /* routing_id */,
-        0 /* request_id */, 0 /* options */, request, client.CreateRemote(),
+        loader.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+        0 /* options */, request, client.CreateRemote(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 
     client.RunUntilComplete();
@@ -5381,9 +5381,8 @@ TEST_F(NetworkContextTest, HeaderClientModifiesHeaders) {
     mojo::PendingRemote<mojom::URLLoader> loader;
     TestURLLoaderClient client;
     loader_factory->CreateLoaderAndStart(
-        loader.InitWithNewPipeAndPassReceiver(), 0 /* routing_id */,
-        0 /* request_id */, mojom::kURLLoadOptionUseHeaderClient, request,
-        client.CreateRemote(),
+        loader.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+        mojom::kURLLoadOptionUseHeaderClient, request, client.CreateRemote(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 
     client.RunUntilComplete();
@@ -5405,8 +5404,8 @@ TEST_F(NetworkContextTest, HeaderClientModifiesHeaders) {
     mojo::PendingRemote<mojom::URLLoader> loader;
     TestURLLoaderClient client;
     loader_factory->CreateLoaderAndStart(
-        loader.InitWithNewPipeAndPassReceiver(), 0 /* routing_id */,
-        0 /* request_id */, 0 /* options */, request, client.CreateRemote(),
+        loader.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+        0 /* options */, request, client.CreateRemote(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 
     client.RunUntilComplete();
@@ -5449,9 +5448,8 @@ TEST_F(NetworkContextTest, HeaderClientFailsRequest) {
     mojo::PendingRemote<mojom::URLLoader> loader;
     TestURLLoaderClient client;
     loader_factory->CreateLoaderAndStart(
-        loader.InitWithNewPipeAndPassReceiver(), 0 /* routing_id */,
-        0 /* request_id */, mojom::kURLLoadOptionUseHeaderClient, request,
-        client.CreateRemote(),
+        loader.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+        mojom::kURLLoadOptionUseHeaderClient, request, client.CreateRemote(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 
     client.RunUntilComplete();
@@ -5465,9 +5463,8 @@ TEST_F(NetworkContextTest, HeaderClientFailsRequest) {
     mojo::PendingRemote<mojom::URLLoader> loader;
     TestURLLoaderClient client;
     loader_factory->CreateLoaderAndStart(
-        loader.InitWithNewPipeAndPassReceiver(), 0 /* routing_id */,
-        0 /* request_id */, mojom::kURLLoadOptionUseHeaderClient, request,
-        client.CreateRemote(),
+        loader.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+        mojom::kURLLoadOptionUseHeaderClient, request, client.CreateRemote(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 
     client.RunUntilComplete();
@@ -5600,9 +5597,8 @@ TEST_F(NetworkContextTest, HangingHeaderClientModifiesHeadersAsynchronously) {
   mojo::PendingRemote<mojom::URLLoader> loader;
   TestURLLoaderClient client;
   loader_factory->CreateLoaderAndStart(
-      loader.InitWithNewPipeAndPassReceiver(), 0 /* routing_id */,
-      0 /* request_id */, mojom::kURLLoadOptionUseHeaderClient, request,
-      client.CreateRemote(),
+      loader.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+      mojom::kURLLoadOptionUseHeaderClient, request, client.CreateRemote(),
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 
   header_client.WaitForOnBeforeSendHeaders();
@@ -5651,9 +5647,8 @@ TEST_F(NetworkContextTest, HangingHeaderClientAbortDuringOnBeforeSendHeaders) {
   mojo::PendingRemote<mojom::URLLoader> loader;
   TestURLLoaderClient client;
   loader_factory->CreateLoaderAndStart(
-      loader.InitWithNewPipeAndPassReceiver(), 0 /* routing_id */,
-      0 /* request_id */, mojom::kURLLoadOptionUseHeaderClient, request,
-      client.CreateRemote(),
+      loader.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+      mojom::kURLLoadOptionUseHeaderClient, request, client.CreateRemote(),
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 
   header_client.WaitForOnBeforeSendHeaders();
@@ -5696,9 +5691,8 @@ TEST_F(NetworkContextTest, HangingHeaderClientAbortDuringOnHeadersReceived) {
   mojo::PendingRemote<mojom::URLLoader> loader;
   TestURLLoaderClient client;
   loader_factory->CreateLoaderAndStart(
-      loader.InitWithNewPipeAndPassReceiver(), 0 /* routing_id */,
-      0 /* request_id */, mojom::kURLLoadOptionUseHeaderClient, request,
-      client.CreateRemote(),
+      loader.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+      mojom::kURLLoadOptionUseHeaderClient, request, client.CreateRemote(),
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 
   header_client.WaitForOnBeforeSendHeaders();
@@ -5781,7 +5775,6 @@ TEST_F(NetworkContextMockHostTest, MAYBE_CustomProxyUsesSpecifiedProxyList) {
 
   ResourceRequest request;
   request.url = GURL("http://does.not.resolve/echo");
-  request.render_frame_id = kRouteId;
   std::unique_ptr<TestURLLoaderClient> client =
       FetchRequest(request, network_context.get());
   std::string response;
@@ -5824,16 +5817,16 @@ TEST_F(NetworkContextTest, MaximumCount) {
   auto client1 = std::make_unique<TestURLLoaderClient>();
   mojo::PendingRemote<mojom::URLLoader> loader1;
   loader_factory->CreateLoaderAndStart(
-      loader1.InitWithNewPipeAndPassReceiver(), 0 /* routing_id */,
-      0 /* request_id */, 0 /* options */, request, client1->CreateRemote(),
+      loader1.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+      0 /* options */, request, client1->CreateRemote(),
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 
   request.url = test_server.GetURL(kPath2);
   auto client2 = std::make_unique<TestURLLoaderClient>();
   mojo::PendingRemote<mojom::URLLoader> loader2;
   loader_factory->CreateLoaderAndStart(
-      loader2.InitWithNewPipeAndPassReceiver(), 0 /* routing_id */,
-      0 /* request_id */, 0 /* options */, request, client2->CreateRemote(),
+      loader2.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+      0 /* options */, request, client2->CreateRemote(),
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 
   // A third request should fail, since the first two are outstanding and the
@@ -5842,8 +5835,8 @@ TEST_F(NetworkContextTest, MaximumCount) {
   auto client3 = std::make_unique<TestURLLoaderClient>();
   mojo::Remote<mojom::URLLoader> loader3;
   loader_factory->CreateLoaderAndStart(
-      loader3.BindNewPipeAndPassReceiver(), 0 /* routing_id */,
-      0 /* request_id */, 0 /* options */, request, client3->CreateRemote(),
+      loader3.BindNewPipeAndPassReceiver(), 0 /* request_id */, 0 /* options */,
+      request, client3->CreateRemote(),
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 
   client3->RunUntilComplete();
@@ -5861,8 +5854,8 @@ TEST_F(NetworkContextTest, MaximumCount) {
   client3 = std::make_unique<TestURLLoaderClient>();
   loader3.reset();
   loader_factory->CreateLoaderAndStart(
-      loader3.BindNewPipeAndPassReceiver(), 0 /* routing_id */,
-      0 /* request_id */, 0 /* options */, request, client3->CreateRemote(),
+      loader3.BindNewPipeAndPassReceiver(), 0 /* request_id */, 0 /* options */,
+      request, client3->CreateRemote(),
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 
   client3->RunUntilComplete();
@@ -6473,6 +6466,14 @@ class NetworkContextSplitCacheTest : public NetworkContextTest {
       request.trusted_params = ResourceRequest::TrustedParams();
       request.trusted_params->isolation_info = isolation_info;
       params->is_trusted = true;
+      // These params must be individually set, to be consistent with the
+      // IsolationInfo if its request type is a main frame navigation.
+      // TODO(crbug.com/1172314): Unify these to avoid inconsistencies.
+      if (isolation_info.request_type() ==
+          net::IsolationInfo::RequestType::kMainFrame) {
+        request.is_main_frame = true;
+        request.update_first_party_url_on_redirect = true;
+      }
     }
 
     params->automatically_assign_isolation_info =
@@ -6485,9 +6486,8 @@ class NetworkContextSplitCacheTest : public NetworkContextTest {
     auto client = std::make_unique<TestURLLoaderClient>();
     mojo::Remote<mojom::URLLoader> loader;
     loader_factory->CreateLoaderAndStart(
-        loader.BindNewPipeAndPassReceiver(), 0 /* routing_id */,
-        0 /* request_id */, mojom::kURLLoadOptionNone, request,
-        client->CreateRemote(),
+        loader.BindNewPipeAndPassReceiver(), 0 /* request_id */,
+        mojom::kURLLoadOptionNone, request, client->CreateRemote(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 
     if (expect_redirect) {
@@ -6557,10 +6557,8 @@ TEST_F(NetworkContextSplitCacheTest,
 TEST_F(NetworkContextSplitCacheTest,
        CachedUsingNetworkIsolationKeyWithFrameOrigin) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {net::features::kSplitCacheByNetworkIsolationKey,
-       net::features::kAppendFrameOriginToNetworkIsolationKey},
-      {});
+  feature_list.InitAndEnableFeature(
+      net::features::kSplitCacheByNetworkIsolationKey);
 
   GURL url = test_server()->GetURL("/resource");
   url::Origin origin_a = url::Origin::Create(GURL("http://a.test/"));
@@ -6799,12 +6797,7 @@ TEST_F(NetworkContextExpectBadMessageTest,
       FetchRequest(my_request, network_context.get(), mojom::kURLLoadOptionNone,
                    mojom::kBrowserProcessId, std::move(factory_params));
 
-  // TODO(crbug.com/1118183): This test's expectation is temporarily inverted
-  // since the the ReportBadMessage check is disabled pending investigating a
-  // number of false positives. Once this investigation is finished, we should
-  // flip the test back to expecting a bad message.
-  // AssertBadMessage();
-  EXPECT_FALSE(got_bad_message_);
+  AssertBadMessage();
 }
 
 TEST_F(NetworkContextExpectBadMessageTest,
@@ -6834,12 +6827,7 @@ TEST_F(NetworkContextExpectBadMessageTest,
       FetchRequest(my_request, network_context.get(), mojom::kURLLoadOptionNone,
                    mojom::kBrowserProcessId, std::move(factory_params));
 
-  // TODO(crbug.com/1118183): This test's expectation is temporarily inverted
-  // since the the ReportBadMessage check is disabled pending investigating a
-  // number of false positives. Once this investigation is finished, we should
-  // flip the test back to expecting a bad message.
-  // AssertBadMessage();
-  EXPECT_FALSE(got_bad_message_);
+  AssertBadMessage();
 }
 
 TEST_F(NetworkContextTest,
@@ -6896,6 +6884,282 @@ TEST_F(NetworkContextTest,
             net::ERR_TRUST_TOKEN_OPERATION_FAILED);
   EXPECT_EQ(client->completion_status().trust_token_operation_status,
             mojom::TrustTokenOperationStatus::kUnavailable);
+}
+
+TEST_F(NetworkContextTest, NoAvailableTrustTokensWhenTrustTokensAreDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kTrustTokens);
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(mojom::NetworkContextParams::New());
+
+  // Allow the store time to initialize asynchronously.
+  base::RunLoop run_loop;
+  base::Optional<std::vector<mojom::StoredTrustTokensForIssuerPtr>>
+      trust_tokens;
+  network_context->GetStoredTrustTokenCounts(base::BindLambdaForTesting(
+      [&trust_tokens,
+       &run_loop](std::vector<mojom::StoredTrustTokensForIssuerPtr> tokens) {
+        trust_tokens = std::move(tokens);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
+  ASSERT_TRUE(trust_tokens.has_value());
+  EXPECT_TRUE(trust_tokens->empty());
+}
+
+TEST_F(NetworkContextTest, GetStoredTrustTokens) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kTrustTokens);
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(mojom::NetworkContextParams::New());
+
+  base::RunLoop run_loop;
+
+  // Query Trust Tokens before adding the mock token.
+  base::Optional<std::vector<mojom::StoredTrustTokensForIssuerPtr>>
+      trust_tokens_before_adding;
+  network_context->GetStoredTrustTokenCounts(base::BindLambdaForTesting(
+      [&](std::vector<mojom::StoredTrustTokensForIssuerPtr> tokens) {
+        trust_tokens_before_adding = std::move(tokens);
+      }));
+
+  // Add a mock token.
+  network_context->trust_token_store()->ExecuteOrEnqueue(
+      base::BindLambdaForTesting([&](TrustTokenStore* store) {
+        DCHECK(store);
+        store->AddTokens(
+            *SuitableTrustTokenOrigin::Create(GURL("https://trusttoken.com")),
+            std::vector<std::string>{"token"}, "issuing key");
+      }));
+
+  // Query Trust Tokens after adding the mock token.
+  base::Optional<std::vector<mojom::StoredTrustTokensForIssuerPtr>>
+      trust_tokens_after_adding;
+  network_context->GetStoredTrustTokenCounts(base::BindLambdaForTesting(
+      [&](std::vector<mojom::StoredTrustTokensForIssuerPtr> tokens) {
+        trust_tokens_after_adding = std::move(tokens);
+        run_loop.Quit();
+      }));
+
+  // Allow the store time to initialize asynchronously and execute the
+  // operations.
+  run_loop.Run();
+
+  ASSERT_TRUE(trust_tokens_before_adding.has_value());
+  EXPECT_EQ(trust_tokens_before_adding->size(), 0ul);
+
+  ASSERT_TRUE(trust_tokens_after_adding.has_value());
+  ASSERT_EQ(trust_tokens_after_adding->size(), 1ul);
+  EXPECT_EQ(trust_tokens_after_adding.value()[0]->issuer.Serialize(),
+            "https://trusttoken.com");
+}
+
+TEST_F(NetworkContextTest, GetStoredTrustTokensReentrant) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kTrustTokens);
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(mojom::NetworkContextParams::New());
+
+  // Add a mock token.
+  base::RunLoop run_loop;
+  network_context->trust_token_store()->ExecuteOrEnqueue(
+      base::BindLambdaForTesting([&](TrustTokenStore* store) {
+        DCHECK(store);
+        store->AddTokens(
+            *SuitableTrustTokenOrigin::Create(GURL("https://trusttoken.com")),
+            std::vector<std::string>{"token"}, "issuing key");
+      }));
+
+  base::Optional<std::vector<mojom::StoredTrustTokensForIssuerPtr>>
+      trust_tokens;
+  base::Optional<std::vector<mojom::StoredTrustTokensForIssuerPtr>>
+      reentrant_trust_tokens;
+  network_context->GetStoredTrustTokenCounts(base::BindLambdaForTesting(
+      [&](std::vector<mojom::StoredTrustTokensForIssuerPtr> tokens) {
+        network_context->GetStoredTrustTokenCounts(base::BindLambdaForTesting(
+            [&](std::vector<mojom::StoredTrustTokensForIssuerPtr> tokens) {
+              reentrant_trust_tokens = std::move(tokens);
+              run_loop.Quit();
+            }));
+        trust_tokens = std::move(tokens);
+      }));
+
+  // Allow the store time to initialize asynchronously and execute the
+  // operations.
+  run_loop.Run();
+
+  ASSERT_TRUE(trust_tokens.has_value());
+  ASSERT_TRUE(reentrant_trust_tokens.has_value());
+  EXPECT_EQ(trust_tokens->size(), reentrant_trust_tokens->size());
+  EXPECT_EQ(trust_tokens.value()[0]->issuer,
+            reentrant_trust_tokens.value()[0]->issuer);
+  EXPECT_EQ(trust_tokens.value()[0]->count,
+            reentrant_trust_tokens.value()[0]->count);
+}
+
+TEST_F(NetworkContextTest,
+       DeleteStoredTrustTokensReportsErrorWhenFeatureIsDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kTrustTokens);
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(mojom::NetworkContextParams::New());
+
+  // Allow the store time to initialize asynchronously.
+  base::RunLoop run_loop;
+  base::Optional<mojom::DeleteStoredTrustTokensStatus> actual_status;
+  network_context->DeleteStoredTrustTokens(
+      url::Origin::Create(GURL("https://example.com")),
+      base::BindLambdaForTesting(
+          [&](mojom::DeleteStoredTrustTokensStatus status) {
+            actual_status = status;
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  EXPECT_THAT(
+      actual_status,
+      Optional(mojom::DeleteStoredTrustTokensStatus::kFailureFeatureDisabled));
+}
+
+TEST_F(NetworkContextTest,
+       DeleteStoredTrustTokensReportsErrorWithInvalidOrigin) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kTrustTokens);
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(mojom::NetworkContextParams::New());
+
+  // Allow the store time to initialize asynchronously.
+  base::RunLoop run_loop;
+  base::Optional<mojom::DeleteStoredTrustTokensStatus> actual_status;
+  network_context->DeleteStoredTrustTokens(
+      url::Origin::Create(GURL("ws://example.com")),
+      base::BindLambdaForTesting(
+          [&](mojom::DeleteStoredTrustTokensStatus status) {
+            actual_status = status;
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  EXPECT_THAT(
+      actual_status,
+      Optional(mojom::DeleteStoredTrustTokensStatus::kFailureInvalidOrigin));
+}
+
+TEST_F(NetworkContextTest, DeleteStoredTrustTokens) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kTrustTokens);
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(mojom::NetworkContextParams::New());
+
+  base::RunLoop run_loop;
+
+  const SuitableTrustTokenOrigin issuer_origin_to_delete =
+      *SuitableTrustTokenOrigin::Create(GURL("https://trusttoken-delete.com"));
+  const SuitableTrustTokenOrigin issuer_origin_to_keep =
+      *SuitableTrustTokenOrigin::Create(GURL("https://trusttoken-keep.com"));
+
+  // Add two mock tokens from different issuers.
+  network_context->trust_token_store()->ExecuteOrEnqueue(
+      base::BindLambdaForTesting([&](TrustTokenStore* store) {
+        DCHECK(store);
+        store->AddTokens(issuer_origin_to_delete,
+                         std::vector<std::string>{"token"}, "issuing key");
+        store->AddTokens(issuer_origin_to_keep,
+                         std::vector<std::string>{"token"}, "issuing key");
+
+        ASSERT_EQ(store->GetStoredTrustTokenCounts().size(), 2ul);
+      }));
+
+  // Delete all Trust Tokens for one of the issuers.
+  base::Optional<mojom::DeleteStoredTrustTokensStatus> delete_status;
+  network_context->DeleteStoredTrustTokens(
+      issuer_origin_to_delete.origin(),
+      base::BindLambdaForTesting(
+          [&](mojom::DeleteStoredTrustTokensStatus status) {
+            delete_status = status;
+          }));
+
+  // Query Trust Tokens after deleting one of the mock token.
+  base::Optional<base::flat_map<SuitableTrustTokenOrigin, int>> trust_tokens;
+  network_context->trust_token_store()->ExecuteOrEnqueue(
+      base::BindLambdaForTesting([&](TrustTokenStore* store) {
+        trust_tokens = store->GetStoredTrustTokenCounts();
+        run_loop.Quit();
+      }));
+
+  // Allow the store time to initialize asynchronously and execute the
+  // operations.
+  run_loop.Run();
+
+  EXPECT_THAT(
+      delete_status,
+      Optional(mojom::DeleteStoredTrustTokensStatus::kSuccessTokensDeleted));
+
+  ASSERT_TRUE(trust_tokens->contains(issuer_origin_to_keep));
+  EXPECT_EQ(trust_tokens->at(issuer_origin_to_keep), 1);
+}
+
+TEST_F(NetworkContextTest, DeleteStoredTrustTokensReentrant) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kTrustTokens);
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(mojom::NetworkContextParams::New());
+
+  base::RunLoop run_loop;
+
+  const SuitableTrustTokenOrigin issuer_origin_foo =
+      *SuitableTrustTokenOrigin::Create(GURL("https://trusttoken-foo.com"));
+  const SuitableTrustTokenOrigin issuer_origin_bar =
+      *SuitableTrustTokenOrigin::Create(GURL("https://trusttoken-bar.com"));
+
+  // Add two mock tokens from different issuers.
+  network_context->trust_token_store()->ExecuteOrEnqueue(
+      base::BindLambdaForTesting([&](TrustTokenStore* store) {
+        DCHECK(store);
+        store->AddTokens(issuer_origin_foo, std::vector<std::string>{"token"},
+                         "issuing key");
+        store->AddTokens(issuer_origin_bar, std::vector<std::string>{"token"},
+                         "issuing key");
+
+        ASSERT_EQ(store->GetStoredTrustTokenCounts().size(), 2ul);
+      }));
+
+  // Delete all Trust Tokens for both issuers simultaneously.
+  base::Optional<mojom::DeleteStoredTrustTokensStatus> delete_status_foo;
+  base::Optional<mojom::DeleteStoredTrustTokensStatus> delete_status_bar;
+  network_context->DeleteStoredTrustTokens(
+      issuer_origin_foo.origin(),
+      base::BindLambdaForTesting(
+          [&](mojom::DeleteStoredTrustTokensStatus status) {
+            delete_status_foo = status;
+            network_context->DeleteStoredTrustTokens(
+                issuer_origin_bar,
+                base::BindLambdaForTesting(
+                    [&](mojom::DeleteStoredTrustTokensStatus status) {
+                      delete_status_bar = status;
+                      run_loop.Quit();
+                    }));
+          }));
+
+  // Allow the store time to initialize asynchronously and execute the
+  // operations.
+  run_loop.Run();
+
+  EXPECT_THAT(
+      delete_status_foo,
+      Optional(mojom::DeleteStoredTrustTokensStatus::kSuccessTokensDeleted));
+
+  EXPECT_THAT(
+      delete_status_bar,
+      Optional(mojom::DeleteStoredTrustTokensStatus::kSuccessTokensDeleted));
 }
 
 }  // namespace

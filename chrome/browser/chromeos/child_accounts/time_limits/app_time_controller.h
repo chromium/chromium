@@ -67,9 +67,6 @@ class AppTimeController : public SystemClockClient::Observer,
     AppTimeController* const controller_;
   };
 
-  static bool ArePerAppTimeLimitsEnabled();
-  static bool IsAppActivityReportingEnabled();
-
   // Registers preferences
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
@@ -128,6 +125,12 @@ class AppTimeController : public SystemClockClient::Observer,
   WebTimeActivityProvider* web_time_activity_provider() {
     return web_time_activity_provider_.get();
   }
+
+  // Returns true if there is any app time limit set for current user.
+  bool HasAppTimeLimitRestriction() const;
+
+  // Returns true if there is any web time limit set for current user.
+  bool HasWebTimeLimitRestriction() const;
 
  private:
   void RegisterProfilePrefObservers(PrefService* pref_service);

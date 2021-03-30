@@ -23,11 +23,13 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Добавить www. и .com к тексту в адресной строке и открыть веб-страницу</translation>
+<translation id="1768987374400973299">Сделать скриншот/запись видео с экрана</translation>
 <translation id="1872219238824176091">Удалить текущий рабочий стол</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, затем <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> или <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">Перейти на следующую вкладку</translation>
 <translation id="2010818616644390445">Перейти на последнюю вкладку в окне</translation>
 <translation id="2040706009561734834">Открыть или закрыть панель запуска</translation>
+<translation id="2086334242442703436">Открыть окно выбора эмодзи</translation>
 <translation id="2088054208777350526">Поиск быстрых клавиш</translation>
 <translation id="2125211348069077981"><ph name="ALT" /> <ph name="SEPARATOR" /> <ph name="E" /> или <ph name="F" /></translation>
 <translation id="2145908266289632567">Редактирование текста</translation>
@@ -46,6 +48,7 @@
 <translation id="2480851840841871861">Открыть приложение "Google Ассистент"</translation>
 <translation id="2488661730534396940">Включить рабочий стол слева</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516999188535378855">Открыть приложение "Диагностика"</translation>
 <translation id="2530339807289914946">Прокрутить веб-страницу вниз</translation>
 <translation id="2530896289327917474">Включить или отключить режим активного курсора</translation>
 <translation id="2574014812750545982">Восстановить исходный масштаб страницы</translation>
@@ -110,6 +113,7 @@
 <translation id="4801989101741319327">Перейти к концу следующего слова</translation>
 <translation id="4866066940972151697">Включить рабочий стол справа</translation>
 <translation id="4916163929714267752">Открыть ссылку в новом окне</translation>
+<translation id="492453977506755176">Клавиша режима съемки</translation>
 <translation id="5030659775136592441">Открыть диспетчер закладок</translation>
 <translation id="5034421018520995080">Перейти к верхней части экрана</translation>
 <translation id="5042305953558921026">Клавиша режима обзора</translation>
@@ -132,6 +136,7 @@
 <translation id="5899919361772749550">Показать или скрыть консоль инструментов разработчика</translation>
 <translation id="5919628958418675842">Включить или отключить экран конфиденциальности</translation>
 <translation id="5921745308587794300">Повернуть окно</translation>
+<translation id="5926306472221400972">Сделать снимок всего экрана</translation>
 <translation id="6022924867608035986">Удалить текст из окна поиска</translation>
 <translation id="6045998054441862242">Включить режим высокой контрастности</translation>
 <translation id="6052614013050385269">Нажать на ссылку правой кнопкой мыши</translation>
@@ -149,6 +154,7 @@
 <translation id="6445033640292336367">Вернуть вкладку в исходное положение</translation>
 <translation id="6474744297082284761">Уменьшить масштаб (когда включена закрепленная или полноэкранная лупа)</translation>
 <translation id="649811797655257835">Выбрать файл и нажать <ph name="SPACE" /></translation>
+<translation id="6551886416582667425">Сделать скриншот/запись видео части экрана</translation>
 <translation id="6556040137485212400">Открыть окно, которое не использовалось дольше других.</translation>
 <translation id="666343722268997814">Открыть меню для выделенного объекта, нажав правую кнопку мыши</translation>
 <translation id="6671538777808758331">Перейти к следующему совпадению в строке поиска</translation>
@@ -175,6 +181,7 @@
 <translation id="7611271430932669992">Перейти к всплывающим и диалоговым окнам.</translation>
 <translation id="7635348532214572995">Переместить значок приложения по сетке</translation>
 <translation id="766326951329901120">Вставить содержимое из буфера обмена в виде обычного текста</translation>
+<translation id="7673453620027697230">Сделать скриншот/запись видео окна</translation>
 <translation id="7703010453515335249">левая скобка</translation>
 <translation id="7724603315864178912">Вырезать</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, затем <ph name="SPACE" /> или <ph name="ENTER" /></translation>

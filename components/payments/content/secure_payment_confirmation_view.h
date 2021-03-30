@@ -14,7 +14,18 @@ class WebContents;
 
 namespace payments {
 
+class PaymentUIObserver;
 class SecurePaymentConfirmationModel;
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Keep in sync with
+// src/tools/metrics/histograms/enums.xml.
+enum class SecurePaymentConfirmationAuthenticationDialogResult {
+  kCanceled = 0,
+  kAccepted = 1,
+  kClosed = 2,
+  kMaxValue = kClosed,
+};
 
 // Draws the user interface in the secure payment confirmation flow. Owned by
 // the SecurePaymentConfirmationController.
@@ -23,7 +34,8 @@ class SecurePaymentConfirmationView {
   using VerifyCallback = base::OnceCallback<void()>;
   using CancelCallback = base::OnceCallback<void()>;
 
-  static base::WeakPtr<SecurePaymentConfirmationView> Create();
+  static base::WeakPtr<SecurePaymentConfirmationView> Create(
+      const PaymentUIObserver* payment_ui_observer);
 
   virtual ~SecurePaymentConfirmationView() = 0;
 

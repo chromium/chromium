@@ -79,37 +79,37 @@ class UrlRuleUtilTest : public ::testing::Test {
   DISALLOW_COPY_AND_ASSIGN(UrlRuleUtilTest);
 };
 
-TEST_F(UrlRuleUtilTest, Blacklist) {
+TEST_F(UrlRuleUtilTest, Blocklist) {
   const flat::UrlRule* flat_rule = MakeFlatRule(
-      MakeProtoRule(proto::RULE_SEMANTICS_BLACKLIST, UrlPattern("example.com/"),
+      MakeProtoRule(proto::RULE_SEMANTICS_BLOCKLIST, UrlPattern("example.com/"),
                     proto::SOURCE_TYPE_ANY, proto::ELEMENT_TYPE_ALL, {}));
   EXPECT_EQ("example.com/", FlatUrlRuleToFilterlistString(flat_rule));
 }
 
-TEST_F(UrlRuleUtilTest, Whitelist) {
+TEST_F(UrlRuleUtilTest, Allowlist) {
   const flat::UrlRule* flat_rule = MakeFlatRule(
-      MakeProtoRule(proto::RULE_SEMANTICS_WHITELIST, UrlPattern("example.com/"),
+      MakeProtoRule(proto::RULE_SEMANTICS_ALLOWLIST, UrlPattern("example.com/"),
                     proto::SOURCE_TYPE_ANY, proto::ELEMENT_TYPE_ALL, {}));
   EXPECT_EQ("@@example.com/", FlatUrlRuleToFilterlistString(flat_rule));
 }
 
 TEST_F(UrlRuleUtilTest, LeftAnchor) {
   const flat::UrlRule* flat_rule = MakeFlatRule(
-      MakeProtoRule(proto::RULE_SEMANTICS_BLACKLIST,
+      MakeProtoRule(proto::RULE_SEMANTICS_BLOCKLIST,
                     UrlPattern("example.com/", proto::ANCHOR_TYPE_NONE,
                                proto::ANCHOR_TYPE_NONE),
                     proto::SOURCE_TYPE_ANY, proto::ELEMENT_TYPE_ALL, {}));
   EXPECT_EQ("example.com/", FlatUrlRuleToFilterlistString(flat_rule));
 
   flat_rule = MakeFlatRule(
-      MakeProtoRule(proto::RULE_SEMANTICS_BLACKLIST,
+      MakeProtoRule(proto::RULE_SEMANTICS_BLOCKLIST,
                     UrlPattern("example.com/", proto::ANCHOR_TYPE_BOUNDARY,
                                proto::ANCHOR_TYPE_NONE),
                     proto::SOURCE_TYPE_ANY, proto::ELEMENT_TYPE_ALL, {}));
   EXPECT_EQ("|example.com/", FlatUrlRuleToFilterlistString(flat_rule));
 
   flat_rule = MakeFlatRule(
-      MakeProtoRule(proto::RULE_SEMANTICS_BLACKLIST,
+      MakeProtoRule(proto::RULE_SEMANTICS_BLOCKLIST,
                     UrlPattern("example.com/", proto::ANCHOR_TYPE_SUBDOMAIN,
                                proto::ANCHOR_TYPE_NONE),
                     proto::SOURCE_TYPE_ANY, proto::ELEMENT_TYPE_ALL, {}));
@@ -118,14 +118,14 @@ TEST_F(UrlRuleUtilTest, LeftAnchor) {
 
 TEST_F(UrlRuleUtilTest, RightAnchor) {
   const flat::UrlRule* flat_rule = MakeFlatRule(
-      MakeProtoRule(proto::RULE_SEMANTICS_BLACKLIST,
+      MakeProtoRule(proto::RULE_SEMANTICS_BLOCKLIST,
                     UrlPattern("example.com", proto::ANCHOR_TYPE_NONE,
                                proto::ANCHOR_TYPE_NONE),
                     proto::SOURCE_TYPE_ANY, proto::ELEMENT_TYPE_ALL, {}));
   EXPECT_EQ("example.com", FlatUrlRuleToFilterlistString(flat_rule));
 
   flat_rule = MakeFlatRule(
-      MakeProtoRule(proto::RULE_SEMANTICS_BLACKLIST,
+      MakeProtoRule(proto::RULE_SEMANTICS_BLOCKLIST,
                     UrlPattern("example.com", proto::ANCHOR_TYPE_NONE,
                                proto::ANCHOR_TYPE_BOUNDARY),
                     proto::SOURCE_TYPE_ANY, proto::ELEMENT_TYPE_ALL, {}));
@@ -134,7 +134,7 @@ TEST_F(UrlRuleUtilTest, RightAnchor) {
 
 TEST_F(UrlRuleUtilTest, BothSidesAnchored) {
   const flat::UrlRule* flat_rule = MakeFlatRule(
-      MakeProtoRule(proto::RULE_SEMANTICS_BLACKLIST,
+      MakeProtoRule(proto::RULE_SEMANTICS_BLOCKLIST,
                     UrlPattern("example.com", proto::ANCHOR_TYPE_SUBDOMAIN,
                                proto::ANCHOR_TYPE_BOUNDARY),
                     proto::SOURCE_TYPE_ANY, proto::ELEMENT_TYPE_ALL, {}));
@@ -143,13 +143,13 @@ TEST_F(UrlRuleUtilTest, BothSidesAnchored) {
 
 TEST_F(UrlRuleUtilTest, NonRegex) {
   const flat::UrlRule* flat_rule = MakeFlatRule(
-      MakeProtoRule(proto::RULE_SEMANTICS_BLACKLIST, UrlPattern("/foo/"),
+      MakeProtoRule(proto::RULE_SEMANTICS_BLOCKLIST, UrlPattern("/foo/"),
                     proto::SOURCE_TYPE_ANY, proto::ELEMENT_TYPE_ALL, {}));
   EXPECT_EQ("/foo/*", FlatUrlRuleToFilterlistString(flat_rule));
 
-  // Show that whitelist rules work too.
+  // Show that allowlist rules work too.
   flat_rule = MakeFlatRule(
-      MakeProtoRule(proto::RULE_SEMANTICS_WHITELIST, UrlPattern("/foo/"),
+      MakeProtoRule(proto::RULE_SEMANTICS_ALLOWLIST, UrlPattern("/foo/"),
                     proto::SOURCE_TYPE_ANY, proto::ELEMENT_TYPE_ALL, {}));
   EXPECT_EQ("@@/foo/*", FlatUrlRuleToFilterlistString(flat_rule));
 
@@ -159,13 +159,13 @@ TEST_F(UrlRuleUtilTest, NonRegex) {
 
 TEST_F(UrlRuleUtilTest, Party) {
   const flat::UrlRule* flat_rule = MakeFlatRule(MakeProtoRule(
-      proto::RULE_SEMANTICS_BLACKLIST, UrlPattern("example.com/"),
+      proto::RULE_SEMANTICS_BLOCKLIST, UrlPattern("example.com/"),
       proto::SOURCE_TYPE_THIRD_PARTY, proto::ELEMENT_TYPE_ALL, {}));
   EXPECT_EQ("example.com/$third-party",
             FlatUrlRuleToFilterlistString(flat_rule));
 
   flat_rule = MakeFlatRule(MakeProtoRule(
-      proto::RULE_SEMANTICS_BLACKLIST, UrlPattern("example.com/"),
+      proto::RULE_SEMANTICS_BLOCKLIST, UrlPattern("example.com/"),
       proto::SOURCE_TYPE_FIRST_PARTY, proto::ELEMENT_TYPE_ALL, {}));
   EXPECT_EQ("example.com/$~third-party",
             FlatUrlRuleToFilterlistString(flat_rule));
@@ -173,7 +173,7 @@ TEST_F(UrlRuleUtilTest, Party) {
 
 TEST_F(UrlRuleUtilTest, MultipleOptions) {
   const flat::UrlRule* flat_rule = MakeFlatRule(MakeProtoRule(
-      proto::RULE_SEMANTICS_BLACKLIST, UrlPattern("example.com/"),
+      proto::RULE_SEMANTICS_BLOCKLIST, UrlPattern("example.com/"),
       proto::SOURCE_TYPE_THIRD_PARTY, proto::ELEMENT_TYPE_SCRIPT, {}));
   EXPECT_EQ("example.com/$third-party,script",
             FlatUrlRuleToFilterlistString(flat_rule));
@@ -182,20 +182,20 @@ TEST_F(UrlRuleUtilTest, MultipleOptions) {
 TEST_F(UrlRuleUtilTest, ElementType) {
   // Test a single type.
   const flat::UrlRule* flat_rule = MakeFlatRule(
-      MakeProtoRule(proto::RULE_SEMANTICS_BLACKLIST, UrlPattern("example.com/"),
+      MakeProtoRule(proto::RULE_SEMANTICS_BLOCKLIST, UrlPattern("example.com/"),
                     proto::SOURCE_TYPE_ANY, proto::ELEMENT_TYPE_SCRIPT, {}));
   EXPECT_EQ("example.com/$script", FlatUrlRuleToFilterlistString(flat_rule));
 
   // Test blocking every type.
   flat_rule = MakeFlatRule(
-      MakeProtoRule(proto::RULE_SEMANTICS_BLACKLIST, UrlPattern("example.com/"),
+      MakeProtoRule(proto::RULE_SEMANTICS_BLOCKLIST, UrlPattern("example.com/"),
                     proto::SOURCE_TYPE_ANY, proto::ELEMENT_TYPE_ALL, {}));
   EXPECT_EQ("example.com/", FlatUrlRuleToFilterlistString(flat_rule));
 
   // Block everything except other. This test will need to be updated as
   // proto::ElementType is changed.
   flat_rule = MakeFlatRule(MakeProtoRule(
-      proto::RULE_SEMANTICS_BLACKLIST, UrlPattern("example.com/"),
+      proto::RULE_SEMANTICS_BLOCKLIST, UrlPattern("example.com/"),
       proto::SOURCE_TYPE_ANY,
       static_cast<proto::ElementType>(proto::ELEMENT_TYPE_ALL - 1), {}));
   std::string expected =
@@ -209,13 +209,13 @@ TEST_F(UrlRuleUtilTest, ElementType) {
 TEST_F(UrlRuleUtilTest, ActivationType) {
   // Test with no activiation type.
   const flat::UrlRule* flat_rule = MakeFlatRule(
-      MakeProtoRule(proto::RULE_SEMANTICS_BLACKLIST, UrlPattern("example.com/"),
+      MakeProtoRule(proto::RULE_SEMANTICS_BLOCKLIST, UrlPattern("example.com/"),
                     proto::SOURCE_TYPE_ANY, proto::ELEMENT_TYPE_ALL, {}));
   EXPECT_EQ("example.com/", FlatUrlRuleToFilterlistString(flat_rule));
 
   // Test with a document activation type.
   auto proto_rule =
-      MakeProtoRule(proto::RULE_SEMANTICS_BLACKLIST, UrlPattern("example.com/"),
+      MakeProtoRule(proto::RULE_SEMANTICS_BLOCKLIST, UrlPattern("example.com/"),
                     proto::SOURCE_TYPE_ANY, proto::ELEMENT_TYPE_ALL, {});
   proto_rule.set_activation_types(proto::ACTIVATION_TYPE_DOCUMENT);
   flat_rule = MakeFlatRule(proto_rule);
@@ -232,13 +232,13 @@ TEST_F(UrlRuleUtilTest, ActivationType) {
 TEST_F(UrlRuleUtilTest, DomainList) {
   //  Test with no domains set.
   const flat::UrlRule* flat_rule = MakeFlatRule(
-      MakeProtoRule(proto::RULE_SEMANTICS_BLACKLIST, UrlPattern("example.com/"),
+      MakeProtoRule(proto::RULE_SEMANTICS_BLOCKLIST, UrlPattern("example.com/"),
                     proto::SOURCE_TYPE_ANY, proto::ELEMENT_TYPE_ALL, {}));
   EXPECT_EQ("example.com/", FlatUrlRuleToFilterlistString(flat_rule));
 
   // Test with domains set.
   flat_rule = MakeFlatRule(
-      MakeProtoRule(proto::RULE_SEMANTICS_BLACKLIST, UrlPattern("example.com/"),
+      MakeProtoRule(proto::RULE_SEMANTICS_BLOCKLIST, UrlPattern("example.com/"),
                     proto::SOURCE_TYPE_ANY, proto::ELEMENT_TYPE_ALL,
                     {"foo.example.com", "~bar.example.com"}));
   EXPECT_EQ("example.com/$domain=foo.example.com|~bar.example.com",

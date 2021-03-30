@@ -9,9 +9,8 @@
 #include <tuple>
 
 #include "base/macros.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
-#include "chrome/browser/chromeos/settings/device_settings_service.h"
-#include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chromeos/network/mock_network_device_handler.h"
 #include "chromeos/network/network_device_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -28,7 +27,7 @@ class DeviceDockMacAddressHandlerBaseTest : public testing::Test {
 
     device_dock_mac_address_handler_ =
         std::make_unique<DeviceDockMacAddressHandler>(
-            chromeos::CrosSettings::Get(), &network_device_handler_mock_);
+            ash::CrosSettings::Get(), &network_device_handler_mock_);
   }
 
  protected:
@@ -37,7 +36,7 @@ class DeviceDockMacAddressHandlerBaseTest : public testing::Test {
         chromeos::CrosSettingsProvider::TRUSTED);
   }
 
-  chromeos::ScopedCrosSettingsTestHelper scoped_cros_settings_test_helper_;
+  ash::ScopedCrosSettingsTestHelper scoped_cros_settings_test_helper_;
 
   testing::StrictMock<chromeos::MockNetworkDeviceHandler>
       network_device_handler_mock_;

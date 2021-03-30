@@ -75,7 +75,7 @@ TEST(BookmarkSpecificsConversionsTest, ShouldCreateSpecificsFromBookmarkNode) {
   model->SetNodeMetaInfo(node, kKey2, kValue2);
 
   sync_pb::EntitySpecifics specifics = CreateSpecificsFromBookmarkNode(
-      node, model.get(), /*force_favicon_load=*/false, /*include_guid=*/true);
+      node, model.get(), /*force_favicon_load=*/false);
   const sync_pb::BookmarkSpecifics& bm_specifics = specifics.bookmark();
   EXPECT_THAT(bm_specifics.guid(), Eq(node->guid().AsLowercaseString()));
   EXPECT_THAT(bm_specifics.legacy_canonicalized_title(), Eq(kTitle));
@@ -92,28 +92,6 @@ TEST(BookmarkSpecificsConversionsTest, ShouldCreateSpecificsFromBookmarkNode) {
 }
 
 TEST(BookmarkSpecificsConversionsTest,
-     ShouldCreateSpecificsFromBookmarkNodeWithoutGuid) {
-  const GURL kUrl("http://www.url.com");
-  const std::string kTitle = "Title";
-
-  std::unique_ptr<bookmarks::BookmarkModel> model =
-      bookmarks::TestBookmarkClient::CreateModel();
-
-  const bookmarks::BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
-  const bookmarks::BookmarkNode* node = model->AddURL(
-      /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16(kTitle),
-      kUrl);
-  ASSERT_THAT(node, NotNull());
-
-  sync_pb::EntitySpecifics specifics = CreateSpecificsFromBookmarkNode(
-      node, model.get(), /*force_favicon_load=*/false, /*include_guid=*/false);
-  const sync_pb::BookmarkSpecifics& bm_specifics = specifics.bookmark();
-  ASSERT_THAT(bm_specifics.legacy_canonicalized_title(), Eq(kTitle));
-  ASSERT_THAT(GURL(bm_specifics.url()), Eq(kUrl));
-  EXPECT_FALSE(bm_specifics.has_guid());
-}
-
-TEST(BookmarkSpecificsConversionsTest,
      ShouldCreateSpecificsFromBookmarkNodeWithIllegalTitle) {
   std::unique_ptr<bookmarks::BookmarkModel> model =
       bookmarks::TestBookmarkClient::CreateModel();
@@ -127,7 +105,7 @@ TEST(BookmarkSpecificsConversionsTest,
         GURL("http://www.url.com"));
     ASSERT_THAT(node, NotNull());
     sync_pb::EntitySpecifics specifics = CreateSpecificsFromBookmarkNode(
-        node, model.get(), /*force_favicon_load=*/false, /*include_guid=*/true);
+        node, model.get(), /*force_favicon_load=*/false);
     // Legacy clients append a space to illegal titles.
     EXPECT_THAT(specifics.bookmark().legacy_canonicalized_title(),
                 Eq(illegal_title + " "));
@@ -140,11 +118,11 @@ TEST(BookmarkSpecificsConversionsTest,
       bookmarks::TestBookmarkClient::CreateModel();
   const bookmarks::BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
   const bookmarks::BookmarkNode* node = model->AddFolder(
-      /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16("Title"));
+      /*parent=*/bookmark_bar_node, /*index=*/0, u"Title");
   ASSERT_THAT(node, NotNull());
 
   sync_pb::EntitySpecifics specifics = CreateSpecificsFromBookmarkNode(
-      node, model.get(), /*force_favicon_load=*/false, /*include_guid=*/true);
+      node, model.get(), /*force_favicon_load=*/false);
   const sync_pb::BookmarkSpecifics& bm_specifics = specifics.bookmark();
   EXPECT_FALSE(bm_specifics.has_url());
 }
@@ -160,13 +138,13 @@ TEST(BookmarkSpecificsConversionsTest,
 
   const bookmarks::BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
   const bookmarks::BookmarkNode* node = model->AddURL(
-      /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16("Title"),
+      /*parent=*/bookmark_bar_node, /*index=*/0, u"Title",
       GURL("http://www.url.com"));
   ASSERT_THAT(node, NotNull());
   ASSERT_FALSE(node->is_favicon_loaded());
   ASSERT_THAT(client_ptr->GetLoadFaviconRequestsForTest(), Eq(0));
   sync_pb::EntitySpecifics specifics = CreateSpecificsFromBookmarkNode(
-      node, model.get(), /*force_favicon_load=*/true, /*include_guid=*/true);
+      node, model.get(), /*force_favicon_load=*/true);
   EXPECT_THAT(client_ptr->GetLoadFaviconRequestsForTest(), Eq(1));
 }
 
@@ -181,13 +159,13 @@ TEST(BookmarkSpecificsConversionsTest,
 
   const bookmarks::BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
   const bookmarks::BookmarkNode* node = model->AddURL(
-      /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16("Title"),
+      /*parent=*/bookmark_bar_node, /*index=*/0, u"Title",
       GURL("http://www.url.com"));
   ASSERT_THAT(node, NotNull());
   ASSERT_FALSE(node->is_favicon_loaded());
   ASSERT_THAT(client_ptr->GetLoadFaviconRequestsForTest(), Eq(0));
   sync_pb::EntitySpecifics specifics = CreateSpecificsFromBookmarkNode(
-      node, model.get(), /*force_favicon_load=*/false, /*include_guid=*/true);
+      node, model.get(), /*force_favicon_load=*/false);
   EXPECT_THAT(client_ptr->GetLoadFaviconRequestsForTest(), Eq(0));
 }
 
@@ -585,7 +563,7 @@ TEST(BookmarkSpecificsConversionsTest, ReplaceUrlNodeWithUpdatedGUID) {
       bookmarks::TestBookmarkClient::CreateModel();
   const bookmarks::BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
   const base::GUID kGuid = base::GUID::GenerateRandomV4();
-  const base::string16 kTitle = base::ASCIIToUTF16("bar");
+  const std::u16string kTitle = u"bar";
   const GURL kUrl = GURL("http://foo.com");
   const base::Time kCreationTime = base::Time::Now();
 
@@ -619,7 +597,7 @@ TEST(BookmarkSpecificsConversionsTest, ReplaceFolderNodeWithUpdatedGUID) {
       bookmarks::TestBookmarkClient::CreateModel();
   const bookmarks::BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
   const base::GUID kGuid = base::GUID::GenerateRandomV4();
-  const base::string16 kTitle = base::ASCIIToUTF16("foobar");
+  const std::u16string kTitle = u"foobar";
 
   auto meta_info_map = std::make_unique<bookmarks::BookmarkNode::MetaInfoMap>();
   const std::string kKey = "key";
@@ -629,10 +607,10 @@ TEST(BookmarkSpecificsConversionsTest, ReplaceFolderNodeWithUpdatedGUID) {
   // Add a folder with child URLs.
   const bookmarks::BookmarkNode* original_folder =
       model->AddFolder(bookmark_bar_node, 0, kTitle, meta_info_map.get());
-  const bookmarks::BookmarkNode* url1 = model->AddURL(
-      original_folder, 0, base::ASCIIToUTF16("bar"), GURL("http://bar.com"));
-  const bookmarks::BookmarkNode* url2 = model->AddURL(
-      original_folder, 1, base::ASCIIToUTF16("foo"), GURL("http://foo.com"));
+  const bookmarks::BookmarkNode* url1 =
+      model->AddURL(original_folder, 0, u"bar", GURL("http://bar.com"));
+  const bookmarks::BookmarkNode* url2 =
+      model->AddURL(original_folder, 1, u"foo", GURL("http://foo.com"));
 
   // Replace folder1.
   const bookmarks::BookmarkNode* new_folder =

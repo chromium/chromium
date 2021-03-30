@@ -20,6 +20,7 @@
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/db/v4_update_protocol_manager.h"
 #include "components/safe_browsing/core/proto/webui.pb.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "url/gurl.h"
 
 namespace safe_browsing {
@@ -51,14 +52,14 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   //
 
   void CancelCheck(Client* client) override;
-  bool CanCheckResourceType(
-      blink::mojom::ResourceType resource_type) const override;
+  bool CanCheckRequestDestination(
+      network::mojom::RequestDestination request_destination) const override;
   bool CanCheckUrl(const GURL& url) const override;
   bool ChecksAreAlwaysAsync() const override;
   bool CheckBrowseUrl(const GURL& url,
                       const SBThreatTypeSet& threat_types,
                       Client* client) override;
-  AsyncMatch CheckCsdWhitelistUrl(const GURL& url, Client* client) override;
+  AsyncMatch CheckCsdAllowlistUrl(const GURL& url, Client* client) override;
   bool CheckDownloadUrl(const std::vector<GURL>& url_chain,
                         Client* client) override;
   // TODO(vakh): |CheckExtensionIDs| in the base class accepts a set of
@@ -71,8 +72,8 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   AsyncMatch CheckUrlForHighConfidenceAllowlist(const GURL& url,
                                                 Client* client) override;
   bool CheckUrlForSubresourceFilter(const GURL& url, Client* client) override;
-  bool MatchDownloadWhitelistString(const std::string& str) override;
-  bool MatchDownloadWhitelistUrl(const GURL& url) override;
+  bool MatchDownloadAllowlistString(const std::string& str) override;
+  bool MatchDownloadAllowlistUrl(const GURL& url) override;
   bool MatchMalwareIP(const std::string& ip_address) override;
   safe_browsing::ThreatSource GetThreatSource() const override;
   bool IsDownloadProtectionEnabled() const override;
@@ -127,8 +128,8 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
     CHECK_URL_FOR_SUBRESOURCE_FILTER,
 
     // This respresents the case when we're trying to determine if a URL is
-    // part of the CSD whitelist.
-    CHECK_CSD_WHITELIST,
+    // part of the CSD allowlist.
+    CHECK_CSD_ALLOWLIST,
 
     // TODO(vakh): Explain this.
     CHECK_HIGH_CONFIDENCE_ALLOWLIST,
@@ -196,7 +197,7 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
     // for that URL.
     ThreatMetadata url_metadata;
 
-    // The full hash that matched for a blacklisted resource URL. Used only for
+    // The full hash that matched for a blocklisted resource URL. Used only for
     // |CheckResourceUrl| case.
     FullHash matching_full_hash;
   };
@@ -208,6 +209,7 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   FRIEND_TEST_ALL_PREFIXES(V4LocalDatabaseManagerTest,
                            TestGetSeverestThreatTypeAndMetadata);
   FRIEND_TEST_ALL_PREFIXES(V4LocalDatabaseManagerTest, NotificationOnUpdate);
+  FRIEND_TEST_ALL_PREFIXES(V4LocalDatabaseManagerTest, SyncedLists);
 
   // The checks awaiting a full hash response from SafeBrowsing service.
   typedef std::unordered_set<const PendingCheck*> PendingChecks;
@@ -225,9 +227,6 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
 
   // Called when the database has been updated and schedules the next update.
   void DatabaseUpdated();
-
-  // Delete any *.store files from disk that are no longer used.
-  void DeleteUnusedStoreFiles();
 
   // Matches the full_hashes for a |check| with the hashes stored in
   // |artificially_marked_store_and_hash_prefixes_|. For each full hash match,
@@ -261,14 +260,21 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // schedules a task to perform full hash check and returns false.
   bool HandleCheck(std::unique_ptr<PendingCheck> check);
 
-  // Like HandleCheck, but for whitelists that have both full-hashes and
+  // Like HandleCheck, but for allowlists that have both full-hashes and
   // partial hashes in the DB. Returns MATCH, NO_MATCH, or ASYNC.
-  AsyncMatch HandleWhitelistCheck(std::unique_ptr<PendingCheck> check);
+  AsyncMatch HandleAllowlistCheck(std::unique_ptr<PendingCheck> check);
 
   // Computes the hashes of URLs that have artificially been marked as unsafe
   // using any of the following command line flags: "mark_as_phishing",
   // "mark_as_malware", "mark_as_uws".
   void PopulateArtificialDatabase();
+
+  // Rename *.store files on disk per |kStoreFilesToRename|.
+  void RenameOldStoreFiles();
+
+  // Renames the file at |old_path| to |new_path|.
+  static void RenameStoreFile(const base::FilePath& old_path,
+                              const base::FilePath& new_path);
 
   // Schedules a full-hash check for a given set of prefixes.
   void ScheduleFullHashCheck(std::unique_ptr<PendingCheck> check);
@@ -328,6 +334,16 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // Return true if we're enabled and have loaded real data for all of
   // these stores.
   bool AreAllStoresAvailableNow(const StoresToCheck& stores_to_check) const;
+
+  // Return the number of entries in the store. If the database isn't enabled or
+  // the database is not found, return 0.
+  int64_t GetStoreEntryCount(const ListIdentifier& store,
+                             int bytes_per_entry) const;
+
+  // Return whether the size of the store is smaller than expected.
+  bool IsStoreTooSmall(const ListIdentifier& store,
+                       int bytes_per_entry,
+                       int min_entry_count) const;
 
   // Return true if we're enabled and have loaded real data for any of
   // these stores.

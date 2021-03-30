@@ -4,9 +4,9 @@
 
 #include "chrome/browser/extensions/api/settings_private/generated_time_zone_pref_base.h"
 
+#include "chrome/browser/ash/system/timezone_resolver_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/system/timezone_resolver_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/extensions/api/settings_private.h"
 #include "components/user_manager/user_manager.h"
@@ -37,7 +37,7 @@ void GeneratedTimeZonePrefBase::OnTimeZoneResolverUpdated() {
 
 void GeneratedTimeZonePrefBase::UpdateTimeZonePrefControlledBy(
     settings_api::PrefObject* out_pref) const {
-  if (chromeos::system::TimeZoneResolverManager::
+  if (ash::system::TimeZoneResolverManager::
           IsTimeZoneResolutionPolicyControlled()) {
     out_pref->controlled_by = settings_api::CONTROLLED_BY_DEVICE_POLICY;
     out_pref->enforcement = settings_api::ENFORCEMENT_ENFORCED;

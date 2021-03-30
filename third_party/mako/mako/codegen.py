@@ -1,5 +1,5 @@
 # mako/codegen.py
-# Copyright 2006-2019 the Mako authors and contributors <see AUTHORS file>
+# Copyright 2006-2020 the Mako authors and contributors <see AUTHORS file>
 #
 # This module is part of Mako and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -7,6 +7,7 @@
 """provides functionality for rendering a parsetree constructing into module
 source code."""
 
+import json
 import re
 import time
 
@@ -176,7 +177,7 @@ class _GenerateRenderMethod(object):
         self.printer.writelines(
             '"""',
             "__M_BEGIN_METADATA",
-            compat.json.dumps(struct),
+            json.dumps(struct),
             "__M_END_METADATA\n" '"""',
         )
 

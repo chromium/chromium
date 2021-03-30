@@ -6,10 +6,21 @@ package org.chromium.chrome.browser.signin.ui;
 
 import android.content.Context;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /** Allows for launching {@link SigninActivity} in modularized code. */
 public interface SigninActivityLauncher {
+    @IntDef({SigninAccessPoint.SETTINGS, SigninAccessPoint.BOOKMARK_MANAGER,
+            SigninAccessPoint.RECENT_TABS, SigninAccessPoint.SIGNIN_PROMO,
+            SigninAccessPoint.NTP_CONTENT_SUGGESTIONS, SigninAccessPoint.AUTOFILL_DROPDOWN})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface AccessPoint {}
+
     /**
      * Launches the SigninActivity with default sign-in flow from personalized sign-in promo.
      * @param accessPoint {@link SigninAccessPoint} for starting sign-in flow.
@@ -35,9 +46,10 @@ public interface SigninActivityLauncher {
     void launchActivityForPromoAddAccountFlow(Context context, @SigninAccessPoint int accessPoint);
 
     /**
-     * Launches a {@link SigninActivity}.
+     * Launches the {@link SigninActivity} if signin is allowed.
      * @param context A {@link Context} object.
-     * @param accessPoint {@link SigninAccessPoint} enum value representing.
+     * @param accessPoint {@link SigninAccessPoint} for starting sign-in flow.
+     * @return a boolean indicating if the {@link SigninActivity} is launched.
      */
-    void launchActivity(Context context, @SigninAccessPoint int accessPoint);
+    boolean launchActivityIfAllowed(Context context, @SigninAccessPoint int accessPoint);
 }

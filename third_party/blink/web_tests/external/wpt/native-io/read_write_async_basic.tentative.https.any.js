@@ -1,13 +1,16 @@
 // META: title=NativeIO API: Written bytes are read back.
 // META: global=window,worker
+// META: script=resources/support.js
 
 'use strict';
 
 promise_test(async testCase => {
-  const file = await nativeIO.open('test_file');
+  await reserveAndCleanupCapacity(testCase);
+
+  const file = await storageFoundation.open('test_file');
   testCase.add_cleanup(async () => {
     await file.close();
-    await nativeIO.delete('test_file');
+    await storageFoundation.delete('test_file');
   });
 
   const writeSharedArrayBuffer = new SharedArrayBuffer(4);

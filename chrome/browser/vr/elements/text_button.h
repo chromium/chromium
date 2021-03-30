@@ -19,7 +19,7 @@ class TextButton : public Button {
   TextButton(float text_height, AudioDelegate* audio_delegate);
   ~TextButton() override;
 
-  void SetText(const base::string16& text);
+  void SetText(const std::u16string& text);
 
  private:
   void OnSetColors(const ButtonColors& colors) override;

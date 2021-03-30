@@ -4,6 +4,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "build/build_config.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -24,12 +25,26 @@ class PageLoadMetricsObserver
   ~PageLoadMetricsObserver() override = default;
 
   // page_load_metrics::PageLoadMetricsObserver implementation:
+  void OnFirstPaintInPage(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override {
+    on_first_paint_seen_ = true;
+    QuitRunLoopIfReady();
+  }
+
   void OnFirstContentfulPaintInPage(
       const page_load_metrics::mojom::PageLoadTiming& timing) override {
-    quit_closure_.Run();
+    on_first_contentful_paint_seen_ = true;
+    QuitRunLoopIfReady();
   }
 
  private:
+  void QuitRunLoopIfReady() {
+    if (on_first_paint_seen_ && on_first_contentful_paint_seen_)
+      quit_closure_.Run();
+  }
+
+  bool on_first_paint_seen_ = false;
+  bool on_first_contentful_paint_seen_ = false;
   base::RepeatingClosure quit_closure_;
 };
 
@@ -54,10 +69,18 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, Heartbeat) {
 
   run_loop.Run();
 
-  histogram_tester.ExpectTotalCount(
-      "PageLoad.PaintTiming.NavigationToFirstPaint", 1);
-  histogram_tester.ExpectTotalCount(
-      "PageLoad.PaintTiming.NavigationToFirstContentfulPaint", 1);
+  // Look for prefix because on Android the name would be different if the tab
+  // is not in foreground initially. This seems to happen on a slow test bot.
+  EXPECT_GE(histogram_tester
+                .GetTotalCountsForPrefix(
+                    "PageLoad.PaintTiming.NavigationToFirstPaint")
+                .size(),
+            1u);
+  EXPECT_GE(histogram_tester
+                .GetTotalCountsForPrefix(
+                    "PageLoad.PaintTiming.NavigationToFirstContentfulPaint")
+                .size(),
+            1u);
 }
 
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, UserCounter) {

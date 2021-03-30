@@ -66,7 +66,7 @@ PASS new WheelEvent('eventType', { screenX: -1 }).screenX is -1
 PASS new WheelEvent('eventType', { screenX: 2147483647 }).screenX is 2147483647
 PASS new WheelEvent('eventType', { screenX: -2147483648 }).screenX is -2147483648
 PASS new WheelEvent('eventType', { screenX: 123.45 }).screenX is 123
-PASS new WheelEvent('eventType', { screenX: -123.45 }).screenX is -123
+PASS new WheelEvent('eventType', { screenX: -123.45 }).screenX is -124
 PASS new WheelEvent('eventType', { screenX: NaN }).screenX threw exception TypeError: Failed to construct 'WheelEvent': The provided double value is non-finite..
 PASS new WheelEvent('eventType', { screenX: undefined }).screenX is 0
 PASS new WheelEvent('eventType', { screenX: null }).screenX is 0
@@ -86,7 +86,7 @@ PASS new WheelEvent('eventType', { screenY: -1 }).screenY is -1
 PASS new WheelEvent('eventType', { screenY: 2147483647 }).screenY is 2147483647
 PASS new WheelEvent('eventType', { screenY: -2147483648 }).screenY is -2147483648
 PASS new WheelEvent('eventType', { screenY: 123.45 }).screenY is 123
-PASS new WheelEvent('eventType', { screenY: -123.45 }).screenY is -123
+PASS new WheelEvent('eventType', { screenY: -123.45 }).screenY is -124
 PASS new WheelEvent('eventType', { screenY: NaN }).screenY threw exception TypeError: Failed to construct 'WheelEvent': The provided double value is non-finite..
 PASS new WheelEvent('eventType', { screenY: undefined }).screenY is 0
 PASS new WheelEvent('eventType', { screenY: null }).screenY is 0
@@ -106,7 +106,7 @@ PASS new WheelEvent('eventType', { clientX: -1 }).clientX is -1
 PASS new WheelEvent('eventType', { clientX: 2147483647 }).clientX is 2147483647
 PASS new WheelEvent('eventType', { clientX: -2147483648 }).clientX is -2147483648
 PASS new WheelEvent('eventType', { clientX: 123.45 }).clientX is 123
-PASS new WheelEvent('eventType', { clientX: -123.45 }).clientX is -123
+PASS new WheelEvent('eventType', { clientX: -123.45 }).clientX is -124
 PASS new WheelEvent('eventType', { clientX: NaN }).clientX threw exception TypeError: Failed to construct 'WheelEvent': The provided double value is non-finite..
 PASS new WheelEvent('eventType', { clientX: undefined }).clientX is 0
 PASS new WheelEvent('eventType', { clientX: null }).clientX is 0
@@ -126,7 +126,7 @@ PASS new WheelEvent('eventType', { clientY: -1 }).clientY is -1
 PASS new WheelEvent('eventType', { clientY: 2147483647 }).clientY is 2147483647
 PASS new WheelEvent('eventType', { clientY: -2147483648 }).clientY is -2147483648
 PASS new WheelEvent('eventType', { clientY: 123.45 }).clientY is 123
-PASS new WheelEvent('eventType', { clientY: -123.45 }).clientY is -123
+PASS new WheelEvent('eventType', { clientY: -123.45 }).clientY is -124
 PASS new WheelEvent('eventType', { clientY: NaN }).clientY threw exception TypeError: Failed to construct 'WheelEvent': The provided double value is non-finite..
 PASS new WheelEvent('eventType', { clientY: undefined }).clientY is 0
 PASS new WheelEvent('eventType', { clientY: null }).clientY is 0

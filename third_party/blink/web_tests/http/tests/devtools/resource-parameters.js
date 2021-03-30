@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that resources panel shows form data parameters.\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.loadHTML(`
       <form target="target-iframe" method="POST" action="http://127.0.0.1:8000/devtools/resources/post-target.cgi?queryParam1=queryValue1&amp;queryParam2=#fragmentParam1=fragmentValue1&amp;fragmentParam2=">
       <input name="formParam1" value="formValue1">

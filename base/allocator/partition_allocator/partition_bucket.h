@@ -21,7 +21,8 @@ namespace internal {
 
 template <bool thread_safe>
 struct PartitionBucket {
-  // Accessed most in hot path => goes first.
+  // Accessed most in hot path => goes first. Only nullptr for invalid buckets,
+  // may be pointing to the sentinel.
   SlotSpanMetadata<thread_safe>* active_slot_spans_head;
 
   SlotSpanMetadata<thread_safe>* empty_slot_spans_head;
@@ -79,6 +80,11 @@ struct PartitionBucket {
     return true;
   }
 
+  // Some buckets are pseudo-buckets, which are disabled because they would
+  // otherwise not fulfill alignment constraints.
+  ALWAYS_INLINE bool is_valid() const {
+    return active_slot_spans_head != nullptr;
+  }
   ALWAYS_INLINE bool is_direct_mapped() const {
     return !num_system_pages_per_slot_span;
   }
@@ -114,27 +120,6 @@ struct PartitionBucket {
   // This is where the guts of the bucket maintenance is done!
   bool SetNewActiveSlotSpan();
 
-  // Returns an offset within an allocation slot.
-  ALWAYS_INLINE size_t GetSlotOffset(size_t offset_in_slot_span) {
-    // Knowing that slots are tightly packed in a slot span, calculate an offset
-    // using an equivalent of a modulo operation.
-
-    // See the static assertion for `kReciprocalShift` above.
-    PA_DCHECK(offset_in_slot_span <= kMaxBucketed);
-    PA_DCHECK(slot_size <= kMaxBucketed);
-
-    // Calculate `decimal_part{offset_in_slot / size} * (2 ** M)` first.
-    uint64_t offset_in_slot =
-        (offset_in_slot_span * slot_size_reciprocal) & kReciprocalMask;
-
-    // (decimal_part * size) * (2 ** M) == offset_in_slot_span % size * (2 ** M)
-    // Divide by `2 ** M` using a bit shift.
-    offset_in_slot = (offset_in_slot * slot_size) >> kReciprocalShift;
-    PA_DCHECK(offset_in_slot_span % slot_size == offset_in_slot);
-
-    return static_cast<size_t>(offset_in_slot);
-  }
-
   // Returns a slot number starting from the beginning of the slot span.
   ALWAYS_INLINE size_t GetSlotNumber(size_t offset_in_slot_span) {
     // See the static assertion for `kReciprocalShift` above.
@@ -160,13 +145,11 @@ struct PartitionBucket {
   uint8_t get_system_pages_per_slot_span();
 
   // Allocates a new slot span with size |num_partition_pages| from the
-  // current extent. Metadata within this slot span will be uninitialized.
+  // current extent. Metadata within this slot span will be initialized.
   // Returns nullptr on error.
-  ALWAYS_INLINE void* AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
-                                       int flags,
-                                       uint16_t num_partition_pages,
-                                       size_t committed_size)
-      EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
+  ALWAYS_INLINE SlotSpanMetadata<thread_safe>* AllocNewSlotSpan(
+      PartitionRoot<thread_safe>* root,
+      int flags) EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
 
   // Allocates a new super page from the current extent. All slot-spans will be
   // in the decommitted state. Returns nullptr on error.

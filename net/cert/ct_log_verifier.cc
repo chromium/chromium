@@ -10,6 +10,7 @@
 
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/strings/string_piece.h"
 #include "crypto/openssl_util.h"
 #include "crypto/sha2.h"
 #include "net/cert/ct_log_verifier_util.h"
@@ -198,8 +199,8 @@ bool CTLogVerifier::VerifyConsistencyProof(
 
   // 4. Set both "fr" and "sr" to the first value in the "consistency_path"
   // array.
-  std::string fr = first_proof_node.as_string();
-  std::string sr = first_proof_node.as_string();
+  std::string fr(first_proof_node);
+  std::string sr(first_proof_node);
 
   // 5. For each subsequent value "c" in the "consistency_path" array:
   for (; iter != proof.nodes.end(); ++iter) {

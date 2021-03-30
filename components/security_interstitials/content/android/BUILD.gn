@@ -18,8 +18,5 @@ android_library("java") {
     "java/src/org/chromium/components/security_interstitials/CaptivePortalHelper.java",
     "java/src/org/chromium/components/security_interstitials/DateAndTimeSettingsHelper.java",
   ]
-  deps = [
-    "//base:base_java",
-    "//base:jni_java",
-  ]
+  deps = [ "//base:base_java" ]
 }

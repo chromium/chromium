@@ -36,7 +36,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
-#include "third_party/blink/public/mojom/feature_policy/document_policy_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/worker_timing_container.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -53,9 +53,12 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/document_load_timing.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/timing/background_tracing_helper.h"
 #include "third_party/blink/renderer/core/timing/largest_contentful_paint.h"
 #include "third_party/blink/renderer/core/timing/layout_shift.h"
 #include "third_party/blink/renderer/core/timing/measure_memory/measure_memory_controller.h"
@@ -108,13 +111,16 @@ constexpr size_t kDefaultLongTaskBufferSize = 200;
 
 Performance::Performance(
     base::TimeTicks time_origin,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    bool cross_origin_isolated_capability,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    ExecutionContext* context)
     : resource_timing_buffer_size_limit_(kDefaultResourceTimingBufferSize),
       event_timing_buffer_max_size_(kDefaultEventTimingBufferSize),
       element_timing_buffer_max_size_(kDefaultElementTimingBufferSize),
       user_timing_(nullptr),
       time_origin_(time_origin),
       tick_clock_(base::DefaultTickClock::GetInstance()),
+      cross_origin_isolated_capability_(cross_origin_isolated_capability),
       observer_filter_options_(PerformanceEntry::kInvalid),
       task_runner_(std::move(task_runner)),
       deliver_observations_timer_(task_runner_,
@@ -127,6 +133,11 @@ Performance::Performance(
   unix_at_zero_monotonic_ = ConvertSecondsToDOMHighResTimeStamp(
       base::DefaultClock::GetInstance()->Now().ToDoubleT() -
       tick_clock_->NowTicks().since_origin().InSecondsF());
+  // |context| may be null in tests.
+  if (context) {
+    background_tracing_helper_ =
+        MakeGarbageCollected<BackgroundTracingHelper>(context);
+  }
 }
 
 Performance::~Performance() = default;
@@ -151,7 +162,7 @@ EventCounts* Performance::eventCounts() {
   return nullptr;
 }
 
-ScriptPromise Performance::measureMemory(
+ScriptPromise Performance::measureUserAgentSpecificMemory(
     ScriptState* script_state,
     ExceptionState& exception_state) const {
   return MeasureMemoryController::StartMeasurement(script_state,
@@ -533,6 +544,7 @@ mojom::blink::ResourceTimingInfoPtr Performance::GenerateResourceTiming(
   result->encoded_body_size = final_response.EncodedBodyLength();
   result->decoded_body_size = final_response.DecodedBodyLength();
   result->did_reuse_connection = final_response.ConnectionReused();
+  // TODO(crbug.com/1153336) Use network::IsUrlPotentiallyTrustworthy().
   result->is_secure_context =
       SecurityOrigin::IsSecure(final_response.ResponseUrl());
   result->allow_negative_values = info.NegativeAllowed();
@@ -556,8 +568,8 @@ void Performance::AddResourceTiming(
         worker_timing_receiver,
     ExecutionContext* context) {
   auto* entry = MakeGarbageCollected<PerformanceResourceTiming>(
-      *info, time_origin_, initiator_type, std::move(worker_timing_receiver),
-      context);
+      *info, time_origin_, cross_origin_isolated_capability_, initiator_type,
+      std::move(worker_timing_receiver), context);
   NotifyObserversOfEntry(*entry);
   // https://w3c.github.io/resource-timing/#dfn-add-a-performanceresourcetiming-entry
   if (CanAddResourceTimingEntry() &&
@@ -632,11 +644,13 @@ void Performance::AddEventTimingBuffer(PerformanceEventTiming& entry) {
 }
 
 void Performance::AddLayoutShiftBuffer(LayoutShift& entry) {
+  probe::PerformanceEntryAdded(GetExecutionContext(), &entry);
   if (layout_shift_buffer_.size() < kDefaultLayoutShiftBufferSize)
     layout_shift_buffer_.push_back(&entry);
 }
 
 void Performance::AddLargestContentfulPaint(LargestContentfulPaint* entry) {
+  probe::PerformanceEntryAdded(GetExecutionContext(), entry);
   if (largest_contentful_paint_buffer_.size() <
       kDefaultLargestContenfulPaintSize) {
     largest_contentful_paint_buffer_.push_back(entry);
@@ -710,6 +724,8 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
   PerformanceMark* performance_mark = PerformanceMark::Create(
       script_state, mark_name, mark_options, exception_state);
   if (performance_mark) {
+    background_tracing_helper_->MaybeEmitBackgroundTracingPerformanceMarkEvent(
+        *performance_mark);
     GetUserTiming().AddMarkToPerformanceTimeline(*performance_mark);
     NotifyObserversOfEntry(*performance_mark);
   }
@@ -876,7 +892,17 @@ ScriptPromise Performance::profile(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  if (!execution_context->CrossOriginIsolatedCapability()) {
+  // Bypass COOP/COEP checks when the |--disable-web-security| flag is present.
+  bool web_security_enabled = true;
+  if (LocalDOMWindow* window = LocalDOMWindow::From(script_state)) {
+    if (LocalFrame* local_frame = window->GetFrame()) {
+      web_security_enabled =
+          local_frame->GetSettings()->GetWebSecurityEnabled();
+    }
+  }
+
+  if (web_security_enabled &&
+      !execution_context->CrossOriginIsolatedCapability()) {
     exception_state.ThrowSecurityError(
         "performance.profile() requires COOP+COEP (web.dev/coop-coep)");
     return ScriptPromise();
@@ -956,23 +982,28 @@ void Performance::DeliverObservationsTimerFired(TimerBase*) {
 }
 
 // static
-double Performance::ClampTimeResolution(double time_seconds) {
+double Performance::ClampTimeResolution(double time_seconds,
+                                        bool cross_origin_isolated_capability) {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(TimeClamper, clamper, ());
-  return clamper.ClampTimeResolution(time_seconds);
+  return clamper.ClampTimeResolution(time_seconds,
+                                     cross_origin_isolated_capability);
 }
 
 // static
 DOMHighResTimeStamp Performance::MonotonicTimeToDOMHighResTimeStamp(
     base::TimeTicks time_origin,
     base::TimeTicks monotonic_time,
-    bool allow_negative_value) {
+    bool allow_negative_value,
+    bool cross_origin_isolated_capability) {
   // Avoid exposing raw platform timestamps.
   if (monotonic_time.is_null() || time_origin.is_null())
     return 0.0;
 
   double clamped_time_in_seconds =
-      ClampTimeResolution(monotonic_time.since_origin().InSecondsF()) -
-      ClampTimeResolution(time_origin.since_origin().InSecondsF());
+      ClampTimeResolution(monotonic_time.since_origin().InSecondsF(),
+                          cross_origin_isolated_capability) -
+      ClampTimeResolution(time_origin.since_origin().InSecondsF(),
+                          cross_origin_isolated_capability);
   if (clamped_time_in_seconds < 0 && !allow_negative_value)
     return 0.0;
   return ConvertSecondsToDOMHighResTimeStamp(clamped_time_in_seconds);
@@ -982,21 +1013,25 @@ DOMHighResTimeStamp Performance::MonotonicTimeToDOMHighResTimeStamp(
 base::TimeDelta Performance::MonotonicTimeToTimeDelta(
     base::TimeTicks time_origin,
     base::TimeTicks monotonic_time,
-    bool allow_negative_value) {
+    bool allow_negative_value,
+    bool cross_origin_isolated_capability) {
   return base::TimeDelta::FromMillisecondsD(MonotonicTimeToDOMHighResTimeStamp(
-      time_origin, monotonic_time, allow_negative_value));
+      time_origin, monotonic_time, allow_negative_value,
+      cross_origin_isolated_capability));
 }
 
 DOMHighResTimeStamp Performance::MonotonicTimeToDOMHighResTimeStamp(
     base::TimeTicks monotonic_time) const {
   return MonotonicTimeToDOMHighResTimeStamp(time_origin_, monotonic_time,
-                                            false /* allow_negative_value */);
+                                            false /* allow_negative_value */,
+                                            cross_origin_isolated_capability_);
 }
 
 base::TimeDelta Performance::MonotonicTimeToTimeDelta(
     base::TimeTicks monotonic_time) const {
   return MonotonicTimeToTimeDelta(time_origin_, monotonic_time,
-                                  false /* allow_negative_value */);
+                                  false /* allow_negative_value */,
+                                  cross_origin_isolated_capability_);
 }
 
 DOMHighResTimeStamp Performance::now() const {
@@ -1044,6 +1079,9 @@ void Performance::Trace(Visitor* visitor) const {
   visitor->Trace(observers_);
   visitor->Trace(active_observers_);
   visitor->Trace(suspended_observers_);
+  visitor->Trace(deliver_observations_timer_);
+  visitor->Trace(resource_timing_buffer_full_timer_);
+  visitor->Trace(background_tracing_helper_);
   EventTargetWithInlineData::Trace(visitor);
 }
 

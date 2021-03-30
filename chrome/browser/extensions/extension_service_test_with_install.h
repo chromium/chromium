@@ -10,12 +10,13 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/feature_switch.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 
 namespace base {
 class FilePath;
@@ -41,7 +42,7 @@ class ExtensionServiceTestWithInstall : public ExtensionServiceTestBase,
   void InitializeExtensionService(
       const ExtensionServiceInitParams& params) override;
 
-  static std::vector<base::string16> GetErrors();
+  static std::vector<std::u16string> GetErrors();
 
   void PackCRX(const base::FilePath& dir_path,
                const base::FilePath& pem_path,
@@ -58,21 +59,21 @@ class ExtensionServiceTestWithInstall : public ExtensionServiceTestBase,
                                      const base::FilePath& pem_path,
                                      InstallState install_state,
                                      int creation_flags,
-                                     Manifest::Location install_location);
+                                     mojom::ManifestLocation install_location);
   const Extension* PackAndInstallCRX(const base::FilePath& dir_path,
                                      const base::FilePath& pem_path,
                                      InstallState install_state);
   const Extension* PackAndInstallCRX(const base::FilePath& dir_path,
                                      InstallState install_state);
   const Extension* PackAndInstallCRX(const base::FilePath& dir_path,
-                                     Manifest::Location install_location,
+                                     mojom::ManifestLocation install_location,
                                      InstallState install_state);
   const Extension* InstallCRX(const base::FilePath& path,
                               InstallState install_state,
                               int creation_flags,
                               const std::string& expected_old_name);
   const Extension* InstallCRX(const base::FilePath& path,
-                              Manifest::Location install_location,
+                              mojom::ManifestLocation install_location,
                               InstallState install_state,
                               int creation_flags);
   const Extension* InstallCRX(const base::FilePath& path,
@@ -142,7 +143,7 @@ class ExtensionServiceTestWithInstall : public ExtensionServiceTestBase,
 
  private:
   void InstallCRXInternal(const base::FilePath& crx_path,
-                          Manifest::Location install_location,
+                          mojom::ManifestLocation install_location,
                           InstallState install_state,
                           int creation_flags);
 
@@ -150,8 +151,8 @@ class ExtensionServiceTestWithInstall : public ExtensionServiceTestBase,
 
   FeatureSwitch::ScopedOverride override_external_install_prompt_;
 
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      registry_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionServiceTestWithInstall);
 };

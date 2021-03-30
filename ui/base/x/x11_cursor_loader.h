@@ -11,6 +11,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/version.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/x/x11_cursor.h"
@@ -26,7 +27,7 @@ class COMPONENT_EXPORT(UI_BASE_X) XCursorLoader {
   struct Image {
     SkBitmap bitmap;
     gfx::Point hotspot;
-    int frame_delay_ms;
+    base::TimeDelta frame_delay;
   };
 
   explicit XCursorLoader(x11::Connection* connection);

@@ -15,7 +15,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/passwords_private/password_check_delegate.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
@@ -51,8 +50,8 @@ class PasswordsPrivateDelegateImpl : public PasswordsPrivateDelegate,
   void GetSavedPasswordsList(UiEntriesCallback callback) override;
   void GetPasswordExceptionsList(ExceptionEntriesCallback callback) override;
   bool ChangeSavedPassword(const std::vector<int>& ids,
-                           const base::string16& new_username,
-                           const base::string16& new_password) override;
+                           const std::u16string& new_username,
+                           const std::u16string& new_password) override;
   void RemoveSavedPasswords(const std::vector<int>& ids) override;
   void RemovePasswordExceptions(const std::vector<int>& ids) override;
   void UndoRemoveSavedPasswordOrException() override;
@@ -124,7 +123,7 @@ class PasswordsPrivateDelegateImpl : public PasswordsPrivateDelegate,
 
   // Executes a given callback by either invoking it immediately if the class
   // has been initialized or by deferring it until initialization has completed.
-  void ExecuteFunction(const base::Closure& callback);
+  void ExecuteFunction(base::OnceClosure callback);
 
   void SendSavedPasswordsList();
   void SendPasswordExceptionsList();
@@ -185,7 +184,7 @@ class PasswordsPrivateDelegateImpl : public PasswordsPrivateDelegate,
   // initialized. Once both SetPasswordList() and SetPasswordExceptionList()
   // have been called, this class is considered initialized and can these
   // callbacks are invoked.
-  std::vector<base::Closure> pre_initialization_callbacks_;
+  std::vector<base::OnceClosure> pre_initialization_callbacks_;
   std::vector<UiEntriesCallback> get_saved_passwords_list_callbacks_;
   std::vector<ExceptionEntriesCallback> get_password_exception_list_callbacks_;
 

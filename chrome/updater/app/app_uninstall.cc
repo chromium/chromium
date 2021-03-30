@@ -4,13 +4,21 @@
 
 #include "chrome/updater/app/app_uninstall.h"
 
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/persisted_data.h"
+#include "chrome/updater/prefs.h"
 
 #if defined(OS_WIN)
 #include "chrome/updater/win/setup/uninstall.h"
@@ -29,25 +37,56 @@ class AppUninstall : public App {
 
  private:
   ~AppUninstall() override = default;
+  void Initialize() override;
   void FirstTaskRun() override;
 };
 
+void AppUninstall::Initialize() {
+}
+
 void AppUninstall::FirstTaskRun() {
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+
+  if (command_line->HasSwitch(kUninstallSwitch)) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(&Uninstall, updater_scope()),
+        base::BindOnce(&AppUninstall::Shutdown, this));
+    return;
+  }
+
 #if defined(OS_MAC)
-  // TODO(crbug.com/1114719): Implement --uninstall=self for Win.
-  const std::string uninstall_switch_value =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          kUninstallSwitch);
-  if (!uninstall_switch_value.empty()) {
+  // TODO(crbug.com/1114719): Implement --uninstall-self for Win.
+  if (command_line->HasSwitch(kUninstallSelfSwitch)) {
     base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock()}, base::BindOnce(&UninstallCandidate),
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(&UninstallCandidate, updater_scope()),
         base::BindOnce(&AppUninstall::Shutdown, this));
-  } else
+    return;
+  }
 #endif
-  {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock()}, base::BindOnce(&Uninstall, false),
-        base::BindOnce(&AppUninstall::Shutdown, this));
+
+  if (command_line->HasSwitch(kUninstallIfUnusedSwitch)) {
+    std::unique_ptr<GlobalPrefs> global_prefs = CreateGlobalPrefs();
+    const std::vector<std::string> registered_apps =
+        base::MakeRefCounted<PersistedData>(global_prefs->GetPrefService())
+            ->GetAppIds();
+    if (registered_apps.size() == 1 &&
+        base::Contains(registered_apps, kUpdaterAppId)) {
+      base::ThreadPool::PostTaskAndReplyWithResult(
+          FROM_HERE, {base::MayBlock()},
+          base::BindOnce(&Uninstall, updater_scope()),
+          base::BindOnce(
+              [](base::OnceCallback<void(int)> shutdown,
+                 std::unique_ptr<GlobalPrefs> global_prefs, int exit_code) {
+                // global_prefs is captured so that this process holds the prefs
+                // lock through uninstallation.
+                std::move(shutdown).Run(exit_code);
+              },
+              base::BindOnce(&AppUninstall::Shutdown, this),
+              std::move(global_prefs)));
+    }
   }
 }
 

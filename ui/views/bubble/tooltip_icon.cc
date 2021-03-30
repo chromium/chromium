@@ -16,7 +16,7 @@
 
 namespace views {
 
-TooltipIcon::TooltipIcon(const base::string16& tooltip, int tooltip_icon_size)
+TooltipIcon::TooltipIcon(const std::u16string& tooltip, int tooltip_icon_size)
     : tooltip_(tooltip),
       tooltip_icon_size_(tooltip_icon_size),
       mouse_inside_(false),
@@ -98,7 +98,7 @@ void TooltipIcon::ShowBubble() {
   bubble_->SetCanActivate(!mouse_inside_);
 
   bubble_->Show();
-  observer_.Add(bubble_->GetWidget());
+  observation_.Observe(bubble_->GetWidget());
 
   if (mouse_inside_) {
     View* frame = bubble_->GetWidget()->non_client_view()->frame_view();
@@ -117,7 +117,8 @@ void TooltipIcon::HideBubble() {
 }
 
 void TooltipIcon::OnWidgetDestroyed(Widget* widget) {
-  observer_.Remove(widget);
+  DCHECK(observation_.IsObservingSource(widget));
+  observation_.Reset();
 
   SetDrawAsHovered(false);
   mouse_watcher_.reset();

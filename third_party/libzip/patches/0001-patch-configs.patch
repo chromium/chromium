@@ -1,0 +1,113 @@
+From f74866358fc0b8e7b77c4603a4dd70b09e6ccbbd Mon Sep 17 00:00:00 2001
+From: mcrouse <mcrouse@google.com>
+Date: Fri, 5 Feb 2021 16:20:25 +0000
+Subject: [PATCH] patch configs for windows
+
+---
+ third_party/libzip/src/config.h  | 18 ++++++++++++++++--
+ third_party/libzip/src/zipconf.h | 12 ++++++++++--
+ 2 files changed, 26 insertions(+), 4 deletions(-)
+
+diff --git a/third_party/libzip/src/config.h b/third_party/libzip/src/config.h
+index 536e20b32e6f..15dfff401971 100644
+--- a/third_party/libzip/src/config.h
++++ b/third_party/libzip/src/config.h
+@@ -3,6 +3,9 @@
+ #ifndef _HAD_ZIPCONF_H
+ #include "zipconf.h"
+ #endif
++
++#include "build/build_config.h"
++
+ /* BEGIN DEFINES */
+ /* #undef HAVE___PROGNAME */
+ /* #undef HAVE__CLOSE */
+@@ -23,28 +26,39 @@
+ /* #undef HAVE_CRYPTO */
+ /* #undef HAVE_FICLONERANGE */
+ #define HAVE_FILENO
++#if !defined(OS_WIN)
+ #define HAVE_FSEEKO
+ #define HAVE_FTELLO
++#endif
+ /* #undef HAVE_GETPROGNAME */
+ /* #undef HAVE_GNUTLS */
+ /* #undef HAVE_LIBBZ2 */
+ /* #undef HAVE_LIBLZMA */
++/* #undef HAVE_LOCALTIME_R */
++#if !defined(OS_WIN)
+ #define HAVE_LOCALTIME_R
++#endif
+ /* #undef HAVE_MBEDTLS */
+ /* #undef HAVE_MKSTEMP */
+ /* #undef HAVE_NULLABLE */
+ /* #undef HAVE_OPENSSL */
+ /* #undef HAVE_SETMODE */
+ #define HAVE_SNPRINTF
++#if !defined(OS_WIN)
+ #define HAVE_STRCASECMP
++#endif
+ #define HAVE_STRDUP
+-/* #undef HAVE_STRICMP */
++#if defined(OS_WIN)
++#define HAVE_STRICMP
++#endif
+ #define HAVE_STRTOLL
+ #define HAVE_STRTOULL
+ /* #undef HAVE_STRUCT_TM_TM_ZONE */
+ #define HAVE_STDBOOL_H
++#if !defined(OS_WIN)
+ #define HAVE_STRINGS_H
+ #define HAVE_UNISTD_H
++#endif
+ /* #undef HAVE_WINDOWS_CRYPTO */
+ #define SIZEOF_OFF_T 8
+ #define SIZEOF_SIZE_T 8
+@@ -59,4 +73,4 @@
+ #define PACKAGE "libzip"
+ #define VERSION "1.7.3"
+ 
+-#endif /* HAD_CONFIG_H */
+\ No newline at end of file
++#endif /* HAD_CONFIG_H */
+diff --git a/third_party/libzip/src/zipconf.h b/third_party/libzip/src/zipconf.h
+index 4db748234649..f79875034709 100644
+--- a/third_party/libzip/src/zipconf.h
++++ b/third_party/libzip/src/zipconf.h
+@@ -8,12 +8,16 @@
+    based on ../cmake-zipconf.h.in.
+  */
+ 
++#include "build/build_config.h"
++
+ #define LIBZIP_VERSION "1.7.3"
+ #define LIBZIP_VERSION_MAJOR 1
+ #define LIBZIP_VERSION_MINOR 7
+ #define LIBZIP_VERSION_MICRO 3
+ 
+-/* #undef ZIP_STATIC */
++#define ZIP_STATIC
+ 
+ #define _Nullable
+ #define _Nonnull
+@@ -32,6 +36,10 @@ typedef uint32_t zip_uint32_t;
+ typedef int64_t zip_int64_t;
+ typedef uint64_t zip_uint64_t;
+ 
++#if defined(OS_WIN)
++typedef int mode_t;
++#endif
++
+ #define ZIP_INT8_MIN (-ZIP_INT8_MAX - 1)
+ #define ZIP_INT8_MAX 0x7f
+ #define ZIP_UINT8_MAX 0xff
+@@ -48,4 +56,4 @@ typedef uint64_t zip_uint64_t;
+ #define ZIP_INT64_MAX 0x7fffffffffffffffLL
+ #define ZIP_UINT64_MAX 0xffffffffffffffffULL
+ 
+-#endif /* zipconf.h */
+\ No newline at end of file
++#endif /* zipconf.h */
+-- 
+2.30.0.365.g02bc693789-goog
+

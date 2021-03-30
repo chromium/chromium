@@ -26,6 +26,10 @@ Polymer({
       reflectToAttribute: true,
     },
 
+    showLoadingIndicator: {
+      type: Boolean,
+    },
+
     /**
      * @type {?chromeos.cellularSetup.mojom.ESimProfileProperties}
      * @private

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/payments/secure_payment_confirmation_dialog_view.h"
 #include "chrome/browser/ui/views/payments/test_secure_payment_confirmation_payment_request_delegate.h"
@@ -50,18 +51,18 @@ class SecurePaymentConfirmationDialogViewTest
 
     model_.set_merchant_label(
         l10n_util::GetStringUTF16(IDS_SECURE_PAYMENT_CONFIRMATION_STORE_LABEL));
-    model_.set_merchant_value(base::UTF8ToUTF16("merchant.com"));
+    model_.set_merchant_value(u"merchant.com");
 
     model_.set_instrument_label(l10n_util::GetStringUTF16(
         IDS_PAYMENT_REQUEST_PAYMENT_METHOD_SECTION_NAME));
-    model_.set_instrument_value(base::UTF8ToUTF16("Mastercard ****4444"));
+    model_.set_instrument_value(u"Mastercard ****4444");
     instrument_icon_ =
         std::make_unique<SkBitmap>(CreateInstrumentIcon(SK_ColorBLUE));
     model_.set_instrument_icon(instrument_icon_.get());
 
     model_.set_total_label(
         l10n_util::GetStringUTF16(IDS_SECURE_PAYMENT_CONFIRMATION_TOTAL_LABEL));
-    model_.set_total_value(base::UTF8ToUTF16("$20.00 USD"));
+    model_.set_total_value(u"$20.00 USD");
 
     model_.set_verify_button_label(l10n_util::GetStringUTF16(
         IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_BUTTON_LABEL));
@@ -88,7 +89,7 @@ class SecurePaymentConfirmationDialogViewTest
   }
 
   void ExpectLabelText(
-      const base::string16& text,
+      const std::u16string& text,
       SecurePaymentConfirmationDialogView::DialogViewID view_id) {
     EXPECT_EQ(text, static_cast<views::Label*>(
                         test_delegate_->dialog_view()->GetViewByID(
@@ -161,6 +162,15 @@ class SecurePaymentConfirmationDialogViewTest
 
     EXPECT_TRUE(confirm_pressed_);
     EXPECT_FALSE(cancel_pressed_);
+
+    histogram_tester_.ExpectTotalCount(
+        "PaymentRequest.SecurePaymentConfirmation.Funnel."
+        "AuthenticationDialogResult",
+        1);
+    histogram_tester_.ExpectBucketCount(
+        "PaymentRequest.SecurePaymentConfirmation.Funnel."
+        "AuthenticationDialogResult",
+        SecurePaymentConfirmationAuthenticationDialogResult::kAccepted, 1);
   }
 
   void ClickCancelAndWait() {
@@ -171,6 +181,15 @@ class SecurePaymentConfirmationDialogViewTest
 
     EXPECT_TRUE(cancel_pressed_);
     EXPECT_FALSE(confirm_pressed_);
+
+    histogram_tester_.ExpectTotalCount(
+        "PaymentRequest.SecurePaymentConfirmation.Funnel."
+        "AuthenticationDialogResult",
+        1);
+    histogram_tester_.ExpectBucketCount(
+        "PaymentRequest.SecurePaymentConfirmation.Funnel."
+        "AuthenticationDialogResult",
+        SecurePaymentConfirmationAuthenticationDialogResult::kCanceled, 1);
   }
 
   void CloseDialogAndWait() {
@@ -181,6 +200,15 @@ class SecurePaymentConfirmationDialogViewTest
 
     EXPECT_FALSE(cancel_pressed_);
     EXPECT_FALSE(confirm_pressed_);
+
+    histogram_tester_.ExpectTotalCount(
+        "PaymentRequest.SecurePaymentConfirmation.Funnel."
+        "AuthenticationDialogResult",
+        1);
+    histogram_tester_.ExpectBucketCount(
+        "PaymentRequest.SecurePaymentConfirmation.Funnel."
+        "AuthenticationDialogResult",
+        SecurePaymentConfirmationAuthenticationDialogResult::kClosed, 1);
   }
 
   void ResetEventWaiter(DialogEvent event) {
@@ -214,6 +242,8 @@ class SecurePaymentConfirmationDialogViewTest
 
   bool confirm_pressed_ = false;
   bool cancel_pressed_ = false;
+
+  base::HistogramTester histogram_tester_;
 };
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
@@ -287,15 +317,15 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
 
   ExpectViewMatchesModel();
 
-  model_.set_title(base::UTF8ToUTF16("Test Title"));
-  model_.set_merchant_label(base::UTF8ToUTF16("Test merchant"));
-  model_.set_merchant_value(base::UTF8ToUTF16("Test merchant value"));
-  model_.set_instrument_label(base::UTF8ToUTF16("Test instrument"));
-  model_.set_instrument_value(base::UTF8ToUTF16("Test instrument value"));
-  model_.set_total_label(base::UTF8ToUTF16("Test total"));
-  model_.set_total_value(base::UTF8ToUTF16("Test total value"));
-  model_.set_verify_button_label(base::UTF8ToUTF16("Test verify"));
-  model_.set_cancel_button_label(base::UTF8ToUTF16("Test cancel"));
+  model_.set_title(u"Test Title");
+  model_.set_merchant_label(u"Test merchant");
+  model_.set_merchant_value(u"Test merchant value");
+  model_.set_instrument_label(u"Test instrument");
+  model_.set_instrument_value(u"Test instrument value");
+  model_.set_total_label(u"Test total");
+  model_.set_total_value(u"Test total value");
+  model_.set_verify_button_label(u"Test verify");
+  model_.set_cancel_button_label(u"Test cancel");
 
   test_delegate_->dialog_view()->OnModelUpdated();
 
@@ -327,6 +357,18 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
   ExpectViewMatchesModel();
 
   CloseDialogAndWait();
+}
+
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
+                       WebContentsClosed) {
+  CreateModel();
+
+  InvokeSecurePaymentConfirmationUI();
+
+  // Test passes if there is no crash.
+  ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
+  GetActiveWebContents()->Close();
+  event_waiter_->Wait();
 }
 
 }  // namespace payments

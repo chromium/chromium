@@ -201,10 +201,11 @@ TEST_F(PaymentAppProviderTest, CanMakePaymentTest) {
 }
 
 TEST_F(PaymentAppProviderTest, InvokePaymentAppTest) {
-  PaymentManager* manager1 = CreatePaymentManager(
-      GURL("https://hellopay.com/a"), GURL("https://hellopay.com/a/script.js"));
+  PaymentManager* manager1 =
+      CreatePaymentManager(GURL("https://hellopay.com/a/"),
+                           GURL("https://hellopay.com/a/script.js"));
   PaymentManager* manager2 = CreatePaymentManager(
-      GURL("https://bobpay.com/b"), GURL("https://bobpay.com/b/script.js"));
+      GURL("https://bobpay.com/b/"), GURL("https://bobpay.com/b/script.js"));
 
   PaymentHandlerStatus status;
   SetPaymentInstrument(manager1, "test_key1",
@@ -222,7 +223,8 @@ TEST_F(PaymentAppProviderTest, InvokePaymentAppTest) {
   ASSERT_EQ(2U, apps.size());
 
   int64_t bobpay_registration_id = last_sw_registration_id();
-  EXPECT_EQ(apps[bobpay_registration_id]->scope.spec(), "https://bobpay.com/b");
+  EXPECT_EQ(apps[bobpay_registration_id]->scope.spec(),
+            "https://bobpay.com/b/");
 
   payments::mojom::PaymentRequestEventDataPtr event_data =
       payments::mojom::PaymentRequestEventData::New();
@@ -238,12 +240,13 @@ TEST_F(PaymentAppProviderTest, InvokePaymentAppTest) {
 }
 
 TEST_F(PaymentAppProviderTest, GetAllPaymentAppsTest) {
-  PaymentManager* manager1 = CreatePaymentManager(
-      GURL("https://hellopay.com/a"), GURL("https://hellopay.com/a/script.js"));
+  PaymentManager* manager1 =
+      CreatePaymentManager(GURL("https://hellopay.com/a/"),
+                           GURL("https://hellopay.com/a/script.js"));
   int64_t hellopay_registration_id = last_sw_registration_id();
 
   PaymentManager* manager2 = CreatePaymentManager(
-      GURL("https://bobpay.com/b"), GURL("https://bobpay.com/b/script.js"));
+      GURL("https://bobpay.com/b/"), GURL("https://bobpay.com/b/script.js"));
   int64_t bobpay_registration_id = last_sw_registration_id();
 
   PaymentHandlerStatus status;
@@ -272,11 +275,11 @@ TEST_F(PaymentAppProviderTest, GetAllPaymentAppsTest) {
 
 TEST_F(PaymentAppProviderTest, GetAllPaymentAppsFromTheSameOriginTest) {
   PaymentManager* manager1 = CreatePaymentManager(
-      GURL("https://bobpay.com/a"), GURL("https://bobpay.com/a/script.js"));
+      GURL("https://bobpay.com/a/"), GURL("https://bobpay.com/a/script.js"));
   int64_t bobpay_a_registration_id = last_sw_registration_id();
 
   PaymentManager* manager2 = CreatePaymentManager(
-      GURL("https://bobpay.com/b"), GURL("https://bobpay.com/b/script.js"));
+      GURL("https://bobpay.com/b/"), GURL("https://bobpay.com/b/script.js"));
   int64_t bobpay_b_registration_id = last_sw_registration_id();
 
   PaymentHandlerStatus status;
@@ -304,10 +307,11 @@ TEST_F(PaymentAppProviderTest, GetAllPaymentAppsFromTheSameOriginTest) {
 }
 
 TEST_F(PaymentAppProviderTest, AbortPaymentWhenClosingOpenedWindow) {
-  PaymentManager* manager1 = CreatePaymentManager(
-      GURL("https://hellopay.com/a"), GURL("https://hellopay.com/a/script.js"));
+  PaymentManager* manager1 =
+      CreatePaymentManager(GURL("https://hellopay.com/a/"),
+                           GURL("https://hellopay.com/a/script.js"));
   PaymentManager* manager2 = CreatePaymentManager(
-      GURL("https://bobpay.com/b"), GURL("https://bobpay.com/b/script.js"));
+      GURL("https://bobpay.com/b/"), GURL("https://bobpay.com/b/script.js"));
 
   PaymentHandlerStatus status;
   SetPaymentInstrument(manager1, "test_key1",
@@ -325,7 +329,8 @@ TEST_F(PaymentAppProviderTest, AbortPaymentWhenClosingOpenedWindow) {
   ASSERT_EQ(2U, apps.size());
 
   int64_t bobpay_registration_id = last_sw_registration_id();
-  EXPECT_EQ(apps[bobpay_registration_id]->scope.spec(), "https://bobpay.com/b");
+  EXPECT_EQ(apps[bobpay_registration_id]->scope.spec(),
+            "https://bobpay.com/b/");
 
   payments::mojom::PaymentRequestEventDataPtr event_data =
       payments::mojom::PaymentRequestEventData::New();

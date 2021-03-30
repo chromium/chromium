@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "ui/base/page_transition_types.h"
@@ -28,7 +27,7 @@ namespace test_data {
 extern const int kIndex;
 extern const int kUniqueID;
 extern const int kReferrerPolicy;
-extern const base::string16 kTitle;
+extern const std::u16string kTitle;
 extern const std::string kEncodedPageState;
 extern const ui::PageTransition kTransitionType;
 extern const bool kHasPostData;
@@ -44,7 +43,6 @@ extern const std::string kExtendedInfoValue2;
 extern const int64_t kParentTaskId;
 extern const int64_t kRootTaskId;
 extern const int64_t kTaskId;
-extern const std::vector<int64_t> kChildrenTaskIds;
 
 // TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
 // function.

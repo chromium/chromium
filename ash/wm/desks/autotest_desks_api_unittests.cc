@@ -7,6 +7,7 @@
 #include "ash/public/cpp/ash_features.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/desks_util.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -32,6 +33,7 @@ class TestDesksActivationObserver : public DesksController::Observer {
   // DesksController::Observer:
   void OnDeskAdded(const Desk* desk) override {}
   void OnDeskRemoved(const Desk* desk) override {}
+  void OnDeskReordered(int old_index, int new_index) override {}
   void OnDeskActivationChanged(const Desk* activated,
                                const Desk* deactivated) override {
     ++activation_changes_;
@@ -67,7 +69,7 @@ TEST_F(AutotestDesksApiTest, ActivateDeskAtIndex) {
   auto* controller = DesksController::Get();
   while (controller->CanCreateDesks())
     EXPECT_TRUE(test_api.CreateNewDesk());
-  EXPECT_EQ(4u, controller->desks().size());
+  EXPECT_EQ(desks_util::GetMaxNumberOfDesks(), controller->desks().size());
   constexpr int kIndices[] = {1, 2, 3, 0};
   for (const int index : kIndices) {
     base::RunLoop run_loop;
@@ -81,19 +83,18 @@ TEST_F(AutotestDesksApiTest, RemoveActiveDesk) {
   AutotestDesksApi test_api;
   EXPECT_FALSE(test_api.RemoveActiveDesk(base::DoNothing()));
 
+  const size_t max_number_of_desks = desks_util::GetMaxNumberOfDesks();
   auto* controller = DesksController::Get();
   while (controller->CanCreateDesks())
     EXPECT_TRUE(test_api.CreateNewDesk());
-  EXPECT_EQ(4u, controller->desks().size());
+  EXPECT_EQ(max_number_of_desks, controller->desks().size());
   EXPECT_EQ(controller->active_desk(), controller->desks()[0].get());
 
   // List of desks that will be activated after each time we invoke
   // RemoveActiveDesk().
-  const Desk* desks_after_removal[] = {
-      controller->desks()[1].get(),
-      controller->desks()[2].get(),
-      controller->desks()[3].get(),
-  };
+  std::vector<Desk*> desks_after_removal;
+  for (size_t i = 1; i < max_number_of_desks; i++)
+    desks_after_removal.push_back(controller->desks()[i].get());
 
   for (const Desk* desk : desks_after_removal) {
     base::RunLoop run_loop;
@@ -130,19 +131,20 @@ TEST_F(EnhancedDeskAnimationsAutotestDesksApiTest,
        ActivateAdjacentDesksToTargetIndex) {
   // Create all desks possible.
   AutotestDesksApi test_api;
+  const int max_number_of_desks = desks_util::GetMaxNumberOfDesks();
   auto* controller = DesksController::Get();
   while (controller->CanCreateDesks())
     EXPECT_TRUE(test_api.CreateNewDesk());
 
   EXPECT_FALSE(
       test_api.ActivateAdjacentDesksToTargetIndex(-1, base::DoNothing()));
-  EXPECT_FALSE(
-      test_api.ActivateAdjacentDesksToTargetIndex(4, base::DoNothing()));
+  EXPECT_FALSE(test_api.ActivateAdjacentDesksToTargetIndex(max_number_of_desks,
+                                                           base::DoNothing()));
 
   // Activating already active desk does nothing.
   EXPECT_FALSE(
       test_api.ActivateAdjacentDesksToTargetIndex(0, base::DoNothing()));
-  EXPECT_EQ(4u, controller->desks().size());
+  EXPECT_EQ(desks_util::GetMaxNumberOfDesks(), controller->desks().size());
 
   // Replacing needs to be done while a current animation is underway, otherwise
   // it will have no effect.
@@ -150,16 +152,17 @@ TEST_F(EnhancedDeskAnimationsAutotestDesksApiTest,
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Activate the rightmost desk. Test that we end on that desk and that we
-  // observed 3 activation changes.
+  // observed (max_number_of_desks - 1) activation changes.
   TestDesksActivationObserver desk_activation_observer;
   {
     base::RunLoop run_loop;
-    EXPECT_TRUE(
-        test_api.ActivateAdjacentDesksToTargetIndex(3, run_loop.QuitClosure()));
+    EXPECT_TRUE(test_api.ActivateAdjacentDesksToTargetIndex(
+        max_number_of_desks - 1, run_loop.QuitClosure()));
     run_loop.Run();
   }
   EXPECT_EQ(controller->active_desk(), controller->desks().back().get());
-  EXPECT_EQ(3, desk_activation_observer.activation_changes());
+  EXPECT_EQ(max_number_of_desks - 1,
+            desk_activation_observer.activation_changes());
 
   // Activate the leftmost desk. Test that we end on that desk and that we
   // observed 3 activation changes.
@@ -171,7 +174,8 @@ TEST_F(EnhancedDeskAnimationsAutotestDesksApiTest,
     run_loop.Run();
   }
   EXPECT_EQ(controller->active_desk(), controller->desks().front().get());
-  EXPECT_EQ(3, desk_activation_observer.activation_changes());
+  EXPECT_EQ(max_number_of_desks - 1,
+            desk_activation_observer.activation_changes());
 }
 
 }  // namespace ash

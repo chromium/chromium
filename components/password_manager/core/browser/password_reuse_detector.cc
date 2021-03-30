@@ -30,8 +30,8 @@ namespace {
 constexpr size_t kMinPasswordLengthToCheck = 8;
 
 // Returns true iff |suffix_candidate| is a suffix of |str|.
-bool IsSuffix(const base::string16& str,
-              const base::string16& suffix_candidate) {
+bool IsSuffix(const std::u16string& str,
+              const std::u16string& suffix_candidate) {
   if (str.size() < suffix_candidate.size())
     return false;
   return std::equal(suffix_candidate.rbegin(), suffix_candidate.rend(),
@@ -41,7 +41,7 @@ bool IsSuffix(const base::string16& str,
 // Helper function to returns matching PasswordHashData from a list that has
 // the longest password length.
 base::Optional<PasswordHashData> FindPasswordReuse(
-    const base::string16& input,
+    const std::u16string& input,
     const std::vector<PasswordHashData>& password_hash_list) {
   base::Optional<PasswordHashData> longest_match = base::nullopt;
   size_t longest_match_size = 0;
@@ -49,7 +49,7 @@ base::Optional<PasswordHashData> FindPasswordReuse(
     if (input.size() < hash_data.length)
       continue;
     size_t offset = input.size() - hash_data.length;
-    base::string16 reuse_candidate = input.substr(offset);
+    std::u16string reuse_candidate = input.substr(offset);
     // It is possible that input matches multiple passwords in the list,
     // we only return the first match due to simplicity.
     if (CalculatePasswordHash(reuse_candidate, hash_data.salt) ==
@@ -64,8 +64,8 @@ base::Optional<PasswordHashData> FindPasswordReuse(
 
 }  // namespace
 
-bool ReverseStringLess::operator()(const base::string16& lhs,
-                                   const base::string16& rhs) const {
+bool ReverseStringLess::operator()(const std::u16string& lhs,
+                                   const std::u16string& rhs) const {
   return std::lexicographical_compare(lhs.rbegin(), lhs.rend(), rhs.rbegin(),
                                       rhs.rend());
 }
@@ -102,7 +102,7 @@ void PasswordReuseDetector::OnLoginsChanged(
 }
 
 void PasswordReuseDetector::CheckReuse(
-    const base::string16& input,
+    const std::u16string& input,
     const std::string& domain,
     PasswordReuseDetectorConsumer* consumer) {
   DCHECK(consumer);
@@ -150,7 +150,7 @@ void PasswordReuseDetector::CheckReuse(
 }
 
 base::Optional<PasswordHashData> PasswordReuseDetector::CheckGaiaPasswordReuse(
-    const base::string16& input,
+    const std::u16string& input,
     const std::string& domain) {
   if (!gaia_password_hash_data_list_.has_value() ||
       gaia_password_hash_data_list_->empty()) {
@@ -168,7 +168,7 @@ base::Optional<PasswordHashData> PasswordReuseDetector::CheckGaiaPasswordReuse(
 
 base::Optional<PasswordHashData>
 PasswordReuseDetector::CheckNonGaiaEnterprisePasswordReuse(
-    const base::string16& input,
+    const std::u16string& input,
     const std::string& domain) {
   if (!enterprise_password_hash_data_list_.has_value() ||
       enterprise_password_hash_data_list_->empty()) {
@@ -188,7 +188,7 @@ PasswordReuseDetector::CheckNonGaiaEnterprisePasswordReuse(
 }
 
 size_t PasswordReuseDetector::CheckSavedPasswordReuse(
-    const base::string16& input,
+    const std::u16string& input,
     const std::string& domain,
     std::vector<MatchingReusedCredential>* matching_reused_credentials_out) {
   const std::string registry_controlled_domain =
@@ -299,7 +299,7 @@ void PasswordReuseDetector::AddPassword(const PasswordForm& form) {
 }
 
 PasswordReuseDetector::passwords_iterator
-PasswordReuseDetector::FindFirstSavedPassword(const base::string16& input) {
+PasswordReuseDetector::FindFirstSavedPassword(const std::u16string& input) {
   // Keys in |passwords_with_matching_reused_credentials_| are ordered by
   // lexicographical order of reversed strings. In order to check a password
   // reuse a key of |passwords_with_matching_reused_credentials_| that is a
@@ -324,7 +324,7 @@ PasswordReuseDetector::FindFirstSavedPassword(const base::string16& input) {
 
 PasswordReuseDetector::passwords_iterator
 PasswordReuseDetector::FindNextSavedPassword(
-    const base::string16& input,
+    const std::u16string& input,
     PasswordReuseDetector::passwords_iterator it) {
   if (it == passwords_with_matching_reused_credentials_.begin())
     return passwords_with_matching_reused_credentials_.end();

@@ -4,6 +4,8 @@
 
 #include "remoting/protocol/pairing_host_authenticator.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/logging.h"
 #include "remoting/base/constants.h"
@@ -42,7 +44,7 @@ void PairingHostAuthenticator::Initialize(
       client_id,
       base::BindOnce(&PairingHostAuthenticator::InitializeWithPairing,
                      weak_factory_.GetWeakPtr(), preferred_initial_state,
-                     base::Passed(std::move(resume_callback))));
+                     std::move(resume_callback)));
 }
 
 PairingHostAuthenticator::~PairingHostAuthenticator() = default;

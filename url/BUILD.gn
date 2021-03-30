@@ -93,7 +93,10 @@ component("url") {
       "url_canon_icu.h",
       "url_idna_icu.cc",
     ]
-    deps += [ "//third_party/icu" ]
+    deps += [
+      "//base:i18n",
+      "//third_party/icu",
+    ]
   }
 }
 
@@ -137,8 +140,7 @@ if (is_android) {
     ]
     deps = [
       "//base:base_java",
-      "//base:jni_java",
-      "//third_party/android_deps:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
     ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
@@ -168,6 +170,24 @@ if (is_android) {
   }
 }
 
+source_set("url_test_support") {
+  testonly = true
+
+  sources = [
+    "gurl_abstract_tests.h",
+    "origin_abstract_tests.cc",
+    "origin_abstract_tests.h",
+  ]
+
+  public_deps = [
+    ":url",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
 test("url_unittests") {
   sources = [
     "gurl_unittest.cc",
@@ -183,6 +203,7 @@ test("url_unittests") {
 
   deps = [
     ":url",
+    ":url_test_support",
     "//base",
     "//base/test:test_support",
     "//testing/gmock",
@@ -269,7 +290,6 @@ if (is_android) {
       ":gurl_java",
       "//base:base_java",
       "//base:base_java_test_support",
-      "//base:jni_java",
     ]
   }
 
@@ -291,12 +311,11 @@ if (is_android) {
       ":gurl_junit_test_support",
       "//base:base_java",
       "//base:base_java_test_support",
-      "//base:jni_java",
       "//content/public/test/android:content_java_test_support",
-      "//third_party/android_deps:androidx_core_core_java",
-      "//third_party/android_deps:androidx_test_runner_java",
       "//third_party/android_support_test_runner:rules_java",
       "//third_party/android_support_test_runner:runner_java",
+      "//third_party/androidx:androidx_core_core_java",
+      "//third_party/androidx:androidx_test_runner_java",
       "//third_party/junit",
       "//third_party/mockito:mockito_java",
     ]

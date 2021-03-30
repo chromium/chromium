@@ -28,7 +28,6 @@
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
-#include "third_party/skia/include/effects/SkBlurImageFilter.h"
 
 namespace blink {
 
@@ -80,11 +79,10 @@ sk_sp<PaintFilter> FEGaussianBlur::CreateImageFilter() {
       InputEffect(0), OperatingInterpolationSpace()));
   float std_x = GetFilter()->ApplyHorizontalScale(std_x_);
   float std_y = GetFilter()->ApplyVerticalScale(std_y_);
-  PaintFilter::CropRect rect = GetCropRect();
+  base::Optional<PaintFilter::CropRect> crop_rect = GetCropRect();
   return sk_make_sp<BlurPaintFilter>(
-      SkFloatToScalar(std_x), SkFloatToScalar(std_y),
-      BlurPaintFilter::TileMode::kClampToBlack_TileMode, std::move(input),
-      &rect);
+      SkFloatToScalar(std_x), SkFloatToScalar(std_y), SkTileMode::kDecal,
+      std::move(input), base::OptionalOrNullptr(crop_rect));
 }
 
 WTF::TextStream& FEGaussianBlur::ExternalRepresentation(WTF::TextStream& ts,

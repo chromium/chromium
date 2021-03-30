@@ -24,7 +24,7 @@ class PRINTING_EXPORT PrintingContextWin : public PrintingContext {
   ~PrintingContextWin() override;
 
   // Prints the document contained in |metafile|.
-  void PrintDocument(const base::string16& device_name,
+  void PrintDocument(const std::wstring& device_name,
                      const MetafileSkia& metafile);
 
   // Initializes with predefined settings.
@@ -40,7 +40,7 @@ class PRINTING_EXPORT PrintingContextWin : public PrintingContext {
   Result UpdatePrinterSettings(bool external_preview,
                                bool show_system_dialog,
                                int page_count) override;
-  Result NewDocument(const base::string16& document_name) override;
+  Result NewDocument(const std::u16string& document_name) override;
   Result NewPage() override;
   Result PageDone() override;
   Result DocumentDone() override;
@@ -53,7 +53,7 @@ class PRINTING_EXPORT PrintingContextWin : public PrintingContext {
 
   // Reads the settings from the selected device context. Updates settings_ and
   // its margins.
-  virtual Result InitializeSettings(const base::string16& device_name,
+  virtual Result InitializeSettings(const std::wstring& device_name,
                                     DEVMODE* dev_mode);
 
   void set_context(HDC context) { context_ = context; }

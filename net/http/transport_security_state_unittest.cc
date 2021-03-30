@@ -3354,51 +3354,6 @@ TEST_F(TransportSecurityStateStaticTest, HPKPReporting) {
             mock_report_sender.latest_network_isolation_key());
 }
 
-// Tests that a histogram entry is recorded when TransportSecurityState
-// fails to send an HPKP violation report.
-TEST_F(TransportSecurityStateStaticTest, UMAOnHPKPReportingFailure) {
-  base::HistogramTester histograms;
-  const std::string histogram_name = "Net.PublicKeyPinReportSendingFailure2";
-  HostPortPair host_port_pair(kHost, kPort);
-  GURL report_uri(kReportUri);
-  // Two dummy certs to use as the server-sent and validated chains. The
-  // contents don't matter.
-  scoped_refptr<X509Certificate> cert1 =
-      ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
-  ASSERT_TRUE(cert1);
-  scoped_refptr<X509Certificate> cert2 =
-      ImportCertFromFile(GetTestCertsDirectory(), "expired_cert.pem");
-  ASSERT_TRUE(cert2);
-
-  HashValueVector good_hashes, bad_hashes;
-
-  for (size_t i = 0; kGoodPath[i]; i++)
-    EXPECT_TRUE(AddHash(kGoodPath[i], &good_hashes));
-  for (size_t i = 0; kBadPath[i]; i++)
-    EXPECT_TRUE(AddHash(kBadPath[i], &bad_hashes));
-
-  // The histogram should start off empty.
-  histograms.ExpectTotalCount(histogram_name, 0);
-
-  TransportSecurityState state;
-  EnableStaticPins(&state);
-  MockFailingCertificateReportSender mock_report_sender;
-  state.SetReportSender(&mock_report_sender);
-
-  std::string failure_log;
-  EXPECT_EQ(TransportSecurityState::PKPStatus::VIOLATED,
-            state.CheckPublicKeyPins(
-                host_port_pair, true, bad_hashes, cert1.get(), cert2.get(),
-                TransportSecurityState::ENABLE_PIN_REPORTS,
-                NetworkIsolationKey::CreateTransient(), &failure_log));
-
-  // Check that the UMA histogram was updated when the report failed to
-  // send.
-  histograms.ExpectTotalCount(histogram_name, 1);
-  histograms.ExpectBucketCount(histogram_name, -mock_report_sender.net_error(),
-                               1);
-}
-
 TEST_F(TransportSecurityStateTest, WriteSizeDecodeSize) {
   for (size_t i = 0; i < 300; ++i) {
     SCOPED_TRACE(i);

@@ -17,10 +17,10 @@ namespace web {
 class FindInPageRequestTest : public WebTest {
  protected:
   FindInPageRequestTest() {
-    auto main_frame = std::make_unique<FakeMainWebFrame>(GURL::EmptyGURL());
+    auto main_frame = FakeWebFrame::CreateMainWebFrame(GURL::EmptyGURL());
     request_.AddFrame(main_frame.get());
     auto frame_with_two_matches =
-        std::make_unique<FakeChildWebFrame>(GURL::EmptyGURL());
+        FakeWebFrame::CreateChildWebFrame(GURL::EmptyGURL());
     request_.AddFrame(frame_with_two_matches.get());
     request_.Reset(@"foo", 2);
     request_.SetMatchCountForFrame(1, kMainFakeFrameId);

@@ -11,9 +11,9 @@ using base::UTF8ToUTF16;
 using autofill::AddressRewriter;
 
 TEST(AddressRewriterTest, InvalidCountryCode) {
-  AddressRewriter ad = AddressRewriter::ForCountryCode(UTF8ToUTF16("ZZZZ"));
-  const base::string16 kSomeRandomText = UTF8ToUTF16("some random text");
-  const base::string16 kOtherRandomText = UTF8ToUTF16("other random text");
+  AddressRewriter ad = AddressRewriter::ForCountryCode(u"ZZZZ");
+  const std::u16string kSomeRandomText = u"some random text";
+  const std::u16string kOtherRandomText = u"other random text";
 
   EXPECT_EQ(ad.Rewrite(kSomeRandomText), ad.Rewrite(kSomeRandomText));
   EXPECT_EQ(ad.Rewrite(kOtherRandomText), ad.Rewrite(kOtherRandomText));
@@ -26,285 +26,243 @@ TEST(AddressRewriterTest, LastRule) {
   AddressRewriter large_rewrite =
       AddressRewriter::ForCustomRules("1\tonelongrewrite\n2\tshort\n");
 
-  EXPECT_EQ(last_rule.Rewrite(UTF8ToUTF16("3")),
-            last_rule.Rewrite(UTF8ToUTF16("4")));
+  EXPECT_EQ(last_rule.Rewrite(u"3"), last_rule.Rewrite(u"4"));
   // Checks if last rule works when previous rewrite is larger than last rule.
-  EXPECT_EQ(large_rewrite.Rewrite(UTF8ToUTF16("2")),
-            large_rewrite.Rewrite(UTF8ToUTF16("short")));
+  EXPECT_EQ(large_rewrite.Rewrite(u"2"), large_rewrite.Rewrite(u"short"));
 }
 
 TEST(AddressRewriterTest, AD) {
-  AddressRewriter ad = AddressRewriter::ForCountryCode(UTF8ToUTF16("ad"));
-  EXPECT_EQ(ad.Rewrite(UTF8ToUTF16("parroquia de andorra la vella")),
-            ad.Rewrite(UTF8ToUTF16("andorra la vella")));
-  EXPECT_EQ(ad.Rewrite(UTF8ToUTF16("principal de andorra")),
-            ad.Rewrite(UTF8ToUTF16("an")));
-  EXPECT_EQ(ad.Rewrite(UTF8ToUTF16("or")), ad.Rewrite(UTF8ToUTF16("ordino")));
+  AddressRewriter ad = AddressRewriter::ForCountryCode(u"ad");
+  EXPECT_EQ(ad.Rewrite(u"parroquia de andorra la vella"),
+            ad.Rewrite(u"andorra la vella"));
+  EXPECT_EQ(ad.Rewrite(u"principal de andorra"), ad.Rewrite(u"an"));
+  EXPECT_EQ(ad.Rewrite(u"or"), ad.Rewrite(u"ordino"));
 }
 
 TEST(AddressRewriterTest, AR) {
-  AddressRewriter ar = AddressRewriter::ForCountryCode(UTF8ToUTF16("ar"));
+  AddressRewriter ar = AddressRewriter::ForCountryCode(u"ar");
   EXPECT_EQ(ar.Rewrite(UTF8ToUTF16(
                 "tierra del fuego antartida e islas del atlantico sur")),
-            ar.Rewrite(UTF8ToUTF16("tierra del fuego")));
-  EXPECT_EQ(ar.Rewrite(UTF8ToUTF16("ciudad autonoma de buenos aires")),
-            ar.Rewrite(UTF8ToUTF16("capital federal")));
+            ar.Rewrite(u"tierra del fuego"));
+  EXPECT_EQ(ar.Rewrite(u"ciudad autonoma de buenos aires"),
+            ar.Rewrite(u"capital federal"));
 }
 
 TEST(AddressRewriterTest, AU) {
-  AddressRewriter au = AddressRewriter::ForCountryCode(UTF8ToUTF16("au"));
-  EXPECT_EQ(au.Rewrite(UTF8ToUTF16("australian capital territory")),
-            au.Rewrite(UTF8ToUTF16("act")));
-  EXPECT_EQ(au.Rewrite(UTF8ToUTF16("jervis bay territory")),
-            au.Rewrite(UTF8ToUTF16("jbt")));
+  AddressRewriter au = AddressRewriter::ForCountryCode(u"au");
+  EXPECT_EQ(au.Rewrite(u"australian capital territory"), au.Rewrite(u"act"));
+  EXPECT_EQ(au.Rewrite(u"jervis bay territory"), au.Rewrite(u"jbt"));
 }
 
 TEST(AddressRewriterTest, BE) {
-  AddressRewriter be = AddressRewriter::ForCountryCode(UTF8ToUTF16("be"));
-  EXPECT_EQ(be.Rewrite(UTF8ToUTF16("brussels hoofdstedelijk gewest")),
-            be.Rewrite(UTF8ToUTF16("region de bruxelles capitale")));
-  EXPECT_EQ(be.Rewrite(UTF8ToUTF16("arrondissement administratif de foo")),
-            be.Rewrite(UTF8ToUTF16("foo")));
+  AddressRewriter be = AddressRewriter::ForCountryCode(u"be");
+  EXPECT_EQ(be.Rewrite(u"brussels hoofdstedelijk gewest"),
+            be.Rewrite(u"region de bruxelles capitale"));
+  EXPECT_EQ(be.Rewrite(u"arrondissement administratif de foo"),
+            be.Rewrite(u"foo"));
 }
 
 TEST(AddressRewriterTest, BR) {
-  AddressRewriter br = AddressRewriter::ForCountryCode(UTF8ToUTF16("br"));
-  EXPECT_EQ(br.Rewrite(UTF8ToUTF16("rio grande do norte")),
-            br.Rewrite(UTF8ToUTF16("rn")));
+  AddressRewriter br = AddressRewriter::ForCountryCode(u"br");
+  EXPECT_EQ(br.Rewrite(u"rio grande do norte"), br.Rewrite(u"rn"));
 }
 
 TEST(AddressRewriterTest, CA) {
-  AddressRewriter ca = AddressRewriter::ForCountryCode(UTF8ToUTF16("ca"));
-  EXPECT_EQ(ca.Rewrite(UTF8ToUTF16("qc")), ca.Rewrite(UTF8ToUTF16("quebec")));
-  EXPECT_EQ(ca.Rewrite(UTF8ToUTF16("prince edward island")),
-            ca.Rewrite(UTF8ToUTF16("pei")));
-  EXPECT_EQ(ca.Rewrite(UTF8ToUTF16("prince edward island")),
-            ca.Rewrite(UTF8ToUTF16("ile du prince edouard")));
-  EXPECT_EQ(ca.Rewrite(UTF8ToUTF16("cul-de-sac")),
-            ca.Rewrite(UTF8ToUTF16("cul de sac")));
-  EXPECT_EQ(ca.Rewrite(UTF8ToUTF16("st")), ca.Rewrite(UTF8ToUTF16("street")));
-  EXPECT_EQ(ca.Rewrite(UTF8ToUTF16("sainte")),
-            ca.Rewrite(UTF8ToUTF16("saint")));
+  AddressRewriter ca = AddressRewriter::ForCountryCode(u"ca");
+  EXPECT_EQ(ca.Rewrite(u"qc"), ca.Rewrite(u"quebec"));
+  EXPECT_EQ(ca.Rewrite(u"prince edward island"), ca.Rewrite(u"pei"));
+  EXPECT_EQ(ca.Rewrite(u"prince edward island"),
+            ca.Rewrite(u"ile du prince edouard"));
+  EXPECT_EQ(ca.Rewrite(u"cul-de-sac"), ca.Rewrite(u"cul de sac"));
+  EXPECT_EQ(ca.Rewrite(u"st"), ca.Rewrite(u"street"));
+  EXPECT_EQ(ca.Rewrite(u"sainte"), ca.Rewrite(u"saint"));
 }
 
 TEST(AddressRewriterTest, CH) {
-  AddressRewriter ch = AddressRewriter::ForCountryCode(UTF8ToUTF16("ch"));
-  EXPECT_EQ(ch.Rewrite(UTF8ToUTF16("appenzell rhodes exterieures")),
-            ch.Rewrite(UTF8ToUTF16("appenzell ausserrhoden")));
-  EXPECT_EQ(ch.Rewrite(UTF8ToUTF16("prettigovia davos")),
-            ch.Rewrite(UTF8ToUTF16("prattigau davos")));
+  AddressRewriter ch = AddressRewriter::ForCountryCode(u"ch");
+  EXPECT_EQ(ch.Rewrite(u"appenzell rhodes exterieures"),
+            ch.Rewrite(u"appenzell ausserrhoden"));
+  EXPECT_EQ(ch.Rewrite(u"prettigovia davos"), ch.Rewrite(u"prattigau davos"));
 }
 
 TEST(AddressRewriterTest, CL) {
-  AddressRewriter cl = AddressRewriter::ForCountryCode(UTF8ToUTF16("cl"));
-  EXPECT_EQ(
-      cl.Rewrite(UTF8ToUTF16("aisen del general carlos ibanez del campo")),
-      cl.Rewrite(UTF8ToUTF16("xi")));
-  EXPECT_EQ(cl.Rewrite(UTF8ToUTF16("libertador general bernardo o'higgins")),
-            cl.Rewrite(UTF8ToUTF16("vi")));
-  EXPECT_EQ(cl.Rewrite(UTF8ToUTF16("metropolitana de santiago de chile")),
-            cl.Rewrite(UTF8ToUTF16("metropolitana de santiago")));
+  AddressRewriter cl = AddressRewriter::ForCountryCode(u"cl");
+  EXPECT_EQ(cl.Rewrite(u"aisen del general carlos ibanez del campo"),
+            cl.Rewrite(u"xi"));
+  EXPECT_EQ(cl.Rewrite(u"libertador general bernardo o'higgins"),
+            cl.Rewrite(u"vi"));
+  EXPECT_EQ(cl.Rewrite(u"metropolitana de santiago de chile"),
+            cl.Rewrite(u"metropolitana de santiago"));
 }
 
 TEST(AddressRewriterTest, CO) {
-  AddressRewriter co = AddressRewriter::ForCountryCode(UTF8ToUTF16("co"));
-  EXPECT_EQ(co.Rewrite(UTF8ToUTF16("columbia")),
-            co.Rewrite(UTF8ToUTF16("colombia")));
+  AddressRewriter co = AddressRewriter::ForCountryCode(u"co");
+  EXPECT_EQ(co.Rewrite(u"columbia"), co.Rewrite(u"colombia"));
 }
 
 TEST(AddressRewriterTest, DE) {
-  AddressRewriter de = AddressRewriter::ForCountryCode(UTF8ToUTF16("de"));
-  EXPECT_EQ(de.Rewrite(UTF8ToUTF16("federal republic of germany")),
-            de.Rewrite(UTF8ToUTF16("deutschland")));
-  EXPECT_EQ(de.Rewrite(UTF8ToUTF16("germany")),
-            de.Rewrite(UTF8ToUTF16("bundesrepublik deutschland")));
+  AddressRewriter de = AddressRewriter::ForCountryCode(u"de");
+  EXPECT_EQ(de.Rewrite(u"federal republic of germany"),
+            de.Rewrite(u"deutschland"));
+  EXPECT_EQ(de.Rewrite(u"germany"), de.Rewrite(u"bundesrepublik deutschland"));
 }
 
 TEST(AddressRewriterTest, DK) {
-  AddressRewriter dk = AddressRewriter::ForCountryCode(UTF8ToUTF16("dk"));
-  EXPECT_EQ(dk.Rewrite(UTF8ToUTF16("denmark")),
-            dk.Rewrite(UTF8ToUTF16("danmark")));
+  AddressRewriter dk = AddressRewriter::ForCountryCode(u"dk");
+  EXPECT_EQ(dk.Rewrite(u"denmark"), dk.Rewrite(u"danmark"));
 }
 
 TEST(AddressRewriterTest, ES) {
-  AddressRewriter es = AddressRewriter::ForCountryCode(UTF8ToUTF16("es"));
-  EXPECT_EQ(es.Rewrite(UTF8ToUTF16("balearic islands")),
-            es.Rewrite(UTF8ToUTF16("islas baleares")));
+  AddressRewriter es = AddressRewriter::ForCountryCode(u"es");
+  EXPECT_EQ(es.Rewrite(u"balearic islands"), es.Rewrite(u"islas baleares"));
 }
 
 TEST(AddressRewriterTest, FR) {
-  AddressRewriter fr = AddressRewriter::ForCountryCode(UTF8ToUTF16("fr"));
-  EXPECT_EQ(fr.Rewrite(UTF8ToUTF16("quatorzieme")),
-            fr.Rewrite(UTF8ToUTF16("14")));
+  AddressRewriter fr = AddressRewriter::ForCountryCode(u"fr");
+  EXPECT_EQ(fr.Rewrite(u"quatorzieme"), fr.Rewrite(u"14"));
 }
 
 TEST(AddressRewriterTest, GB) {
-  AddressRewriter gb = AddressRewriter::ForCountryCode(UTF8ToUTF16("gb"));
-  EXPECT_EQ(gb.Rewrite(UTF8ToUTF16("north east lincolnshire")),
-            gb.Rewrite(UTF8ToUTF16("gb-nel")));
+  AddressRewriter gb = AddressRewriter::ForCountryCode(u"gb");
+  EXPECT_EQ(gb.Rewrite(u"north east lincolnshire"), gb.Rewrite(u"gb-nel"));
 
-  EXPECT_NE(gb.Rewrite(UTF8ToUTF16("norfolk")),
-            gb.Rewrite(UTF8ToUTF16("suffolk")));
+  EXPECT_NE(gb.Rewrite(u"norfolk"), gb.Rewrite(u"suffolk"));
 }
 
 TEST(AddressRewriterTest, GR) {
-  AddressRewriter gr = AddressRewriter::ForCountryCode(UTF8ToUTF16("gr"));
-  EXPECT_EQ(gr.Rewrite(UTF8ToUTF16("aitolia kai akarnania")),
-            gr.Rewrite(UTF8ToUTF16("aitoloakarnania")));
+  AddressRewriter gr = AddressRewriter::ForCountryCode(u"gr");
+  EXPECT_EQ(gr.Rewrite(u"aitolia kai akarnania"),
+            gr.Rewrite(u"aitoloakarnania"));
 }
 
 TEST(AddressRewriterTest, HK) {
-  AddressRewriter hk = AddressRewriter::ForCountryCode(UTF8ToUTF16("hk"));
-  EXPECT_EQ(hk.Rewrite(UTF8ToUTF16("hong kong")),
-            hk.Rewrite(UTF8ToUTF16("hk")));
+  AddressRewriter hk = AddressRewriter::ForCountryCode(u"hk");
+  EXPECT_EQ(hk.Rewrite(u"hong kong"), hk.Rewrite(u"hk"));
 }
 
 TEST(AddressRewriterTest, ID) {
-  AddressRewriter id = AddressRewriter::ForCountryCode(UTF8ToUTF16("id"));
-  EXPECT_EQ(id.Rewrite(UTF8ToUTF16("nanggroe aceh darussalam")),
-            id.Rewrite(UTF8ToUTF16("aceh")));
+  AddressRewriter id = AddressRewriter::ForCountryCode(u"id");
+  EXPECT_EQ(id.Rewrite(u"nanggroe aceh darussalam"), id.Rewrite(u"aceh"));
 }
 
 TEST(AddressRewriterTest, IE) {
-  AddressRewriter ie = AddressRewriter::ForCountryCode(UTF8ToUTF16("ie"));
-  EXPECT_EQ(ie.Rewrite(UTF8ToUTF16("avenue")), ie.Rewrite(UTF8ToUTF16("ave")));
+  AddressRewriter ie = AddressRewriter::ForCountryCode(u"ie");
+  EXPECT_EQ(ie.Rewrite(u"avenue"), ie.Rewrite(u"ave"));
 }
 
 TEST(AddressRewriterTest, IN) {
-  AddressRewriter in = AddressRewriter::ForCountryCode(UTF8ToUTF16("in"));
-  EXPECT_EQ(in.Rewrite(UTF8ToUTF16("thiruvananthapuram")),
-            in.Rewrite(UTF8ToUTF16("tiruvananthapuram")));
-  EXPECT_EQ(in.Rewrite(UTF8ToUTF16("jammu & kashmir")),
-            in.Rewrite(UTF8ToUTF16("j&k")));
-  EXPECT_EQ(in.Rewrite(UTF8ToUTF16("cross-road")),
-            in.Rewrite(UTF8ToUTF16("xrd")));
-  EXPECT_EQ(in.Rewrite(UTF8ToUTF16("j & k")), in.Rewrite(UTF8ToUTF16("j&k")));
-  EXPECT_EQ(in.Rewrite(UTF8ToUTF16("i.n.d.i.a")),
-            in.Rewrite(UTF8ToUTF16("india")));
-  EXPECT_NE(in.Rewrite(UTF8ToUTF16("i\\_n\\_d\\_i\\_a")),
-            in.Rewrite(UTF8ToUTF16("india")));
+  AddressRewriter in = AddressRewriter::ForCountryCode(u"in");
+  EXPECT_EQ(in.Rewrite(u"thiruvananthapuram"),
+            in.Rewrite(u"tiruvananthapuram"));
+  EXPECT_EQ(in.Rewrite(u"jammu & kashmir"), in.Rewrite(u"j&k"));
+  EXPECT_EQ(in.Rewrite(u"cross-road"), in.Rewrite(u"xrd"));
+  EXPECT_EQ(in.Rewrite(u"j & k"), in.Rewrite(u"j&k"));
+  EXPECT_EQ(in.Rewrite(u"i.n.d.i.a"), in.Rewrite(u"india"));
+  EXPECT_NE(in.Rewrite(UTF8ToUTF16("i\\_n\\_d\\_i\\_a")), in.Rewrite(u"india"));
 }
 
 TEST(AddressRewriterTest, IT) {
-  AddressRewriter it = AddressRewriter::ForCountryCode(UTF8ToUTF16("it"));
-  EXPECT_EQ(it.Rewrite(UTF8ToUTF16("trentino alto adige")),
-            it.Rewrite(UTF8ToUTF16("trentino sudtirol")));
+  AddressRewriter it = AddressRewriter::ForCountryCode(u"it");
+  EXPECT_EQ(it.Rewrite(u"trentino alto adige"),
+            it.Rewrite(u"trentino sudtirol"));
 }
 
 TEST(AddressRewriterTest, LU) {
-  AddressRewriter lu = AddressRewriter::ForCountryCode(UTF8ToUTF16("lu"));
-  EXPECT_EQ(lu.Rewrite(UTF8ToUTF16("esplanade")),
-            lu.Rewrite(UTF8ToUTF16("espl")));
+  AddressRewriter lu = AddressRewriter::ForCountryCode(u"lu");
+  EXPECT_EQ(lu.Rewrite(u"esplanade"), lu.Rewrite(u"espl"));
 }
 
 TEST(AddressRewriterTest, MX) {
-  AddressRewriter mx = AddressRewriter::ForCountryCode(UTF8ToUTF16("mx"));
-  EXPECT_EQ(mx.Rewrite(UTF8ToUTF16("estado de mexico")),
-            mx.Rewrite(UTF8ToUTF16("mexico")));
+  AddressRewriter mx = AddressRewriter::ForCountryCode(u"mx");
+  EXPECT_EQ(mx.Rewrite(u"estado de mexico"), mx.Rewrite(u"mexico"));
 }
 
 TEST(AddressRewriterTest, MY) {
-  AddressRewriter my = AddressRewriter::ForCountryCode(UTF8ToUTF16("my"));
-  EXPECT_EQ(my.Rewrite(UTF8ToUTF16("malaysia")), my.Rewrite(UTF8ToUTF16("my")));
+  AddressRewriter my = AddressRewriter::ForCountryCode(u"my");
+  EXPECT_EQ(my.Rewrite(u"malaysia"), my.Rewrite(u"my"));
 }
 
 TEST(AddressRewriterTest, NL) {
-  AddressRewriter nl = AddressRewriter::ForCountryCode(UTF8ToUTF16("nl"));
-  EXPECT_EQ(nl.Rewrite(UTF8ToUTF16("nordholland")),
-            nl.Rewrite(UTF8ToUTF16("noord holland")));
+  AddressRewriter nl = AddressRewriter::ForCountryCode(u"nl");
+  EXPECT_EQ(nl.Rewrite(u"nordholland"), nl.Rewrite(u"noord holland"));
 }
 
 TEST(AddressRewriterTest, NZ) {
-  AddressRewriter nz = AddressRewriter::ForCountryCode(UTF8ToUTF16("nz"));
-  EXPECT_EQ(nz.Rewrite(UTF8ToUTF16("oceanbeach")),
-            nz.Rewrite(UTF8ToUTF16("ocean beach")));
+  AddressRewriter nz = AddressRewriter::ForCountryCode(u"nz");
+  EXPECT_EQ(nz.Rewrite(u"oceanbeach"), nz.Rewrite(u"ocean beach"));
 }
 
 TEST(AddressRewriterTest, PE) {
-  AddressRewriter pe = AddressRewriter::ForCountryCode(UTF8ToUTF16("pe"));
-  EXPECT_EQ(pe.Rewrite(UTF8ToUTF16("avenida")), pe.Rewrite(UTF8ToUTF16("av")));
+  AddressRewriter pe = AddressRewriter::ForCountryCode(u"pe");
+  EXPECT_EQ(pe.Rewrite(u"avenida"), pe.Rewrite(u"av"));
 }
 
 TEST(AddressRewriterTest, PH) {
-  AddressRewriter ph = AddressRewriter::ForCountryCode(UTF8ToUTF16("ph"));
-  EXPECT_EQ(ph.Rewrite(UTF8ToUTF16("philippines")),
-            ph.Rewrite(UTF8ToUTF16("ph")));
+  AddressRewriter ph = AddressRewriter::ForCountryCode(u"ph");
+  EXPECT_EQ(ph.Rewrite(u"philippines"), ph.Rewrite(u"ph"));
 }
 
 TEST(AddressRewriterTest, PL) {
-  AddressRewriter pl = AddressRewriter::ForCountryCode(UTF8ToUTF16("pl"));
-  EXPECT_EQ(pl.Rewrite(UTF8ToUTF16("warmian masurian")),
-            pl.Rewrite(UTF8ToUTF16("warminsko")));
+  AddressRewriter pl = AddressRewriter::ForCountryCode(u"pl");
+  EXPECT_EQ(pl.Rewrite(u"warmian masurian"), pl.Rewrite(u"warminsko"));
 }
 
 TEST(AddressRewriterTest, PR) {
-  AddressRewriter pr = AddressRewriter::ForCountryCode(UTF8ToUTF16("pr"));
-  EXPECT_EQ(pr.Rewrite(UTF8ToUTF16("san juan antiguo")),
-            pr.Rewrite(UTF8ToUTF16("old san juan")));
+  AddressRewriter pr = AddressRewriter::ForCountryCode(u"pr");
+  EXPECT_EQ(pr.Rewrite(u"san juan antiguo"), pr.Rewrite(u"old san juan"));
 }
 
 TEST(AddressRewriterTest, PT) {
-  AddressRewriter pt = AddressRewriter::ForCountryCode(UTF8ToUTF16("pt"));
-  EXPECT_EQ(pt.Rewrite(UTF8ToUTF16("doctor")),
-            pt.Rewrite(UTF8ToUTF16("doutor")));
+  AddressRewriter pt = AddressRewriter::ForCountryCode(u"pt");
+  EXPECT_EQ(pt.Rewrite(u"doctor"), pt.Rewrite(u"doutor"));
 }
 
 TEST(AddressRewriterTest, RO) {
-  AddressRewriter ro = AddressRewriter::ForCountryCode(UTF8ToUTF16("ro"));
-  EXPECT_EQ(ro.Rewrite(UTF8ToUTF16("romania")), ro.Rewrite(UTF8ToUTF16("ro")));
+  AddressRewriter ro = AddressRewriter::ForCountryCode(u"ro");
+  EXPECT_EQ(ro.Rewrite(u"romania"), ro.Rewrite(u"ro"));
 }
 
 TEST(AddressRewriterTest, RU) {
-  AddressRewriter ru = AddressRewriter::ForCountryCode(UTF8ToUTF16("ru"));
+  AddressRewriter ru = AddressRewriter::ForCountryCode(u"ru");
   // TODO(rogerm): UTF8 matching isnt' working as expected. Fix it!
-  EXPECT_NE(ru.Rewrite(UTF8ToUTF16("россия")),
-            ru.Rewrite(UTF8ToUTF16("russia")));
+  EXPECT_NE(ru.Rewrite(u"россия"), ru.Rewrite(u"russia"));
 }
 
 TEST(AddressRewriterTest, SE) {
-  AddressRewriter se = AddressRewriter::ForCountryCode(UTF8ToUTF16("se"));
-  EXPECT_EQ(se.Rewrite(UTF8ToUTF16("oestergoetland")),
-            se.Rewrite(UTF8ToUTF16("vastergoetland")));
+  AddressRewriter se = AddressRewriter::ForCountryCode(u"se");
+  EXPECT_EQ(se.Rewrite(u"oestergoetland"), se.Rewrite(u"vastergoetland"));
 }
 
 TEST(AddressRewriterTest, TH) {
-  AddressRewriter th = AddressRewriter::ForCountryCode(UTF8ToUTF16("th"));
+  AddressRewriter th = AddressRewriter::ForCountryCode(u"th");
   // TODO(rogerm): UTF8 matching isnt' working as expected. Fix it!
-  EXPECT_NE(th.Rewrite(UTF8ToUTF16("ประเทศไทย")),
-            th.Rewrite(UTF8ToUTF16("thailand")));
+  EXPECT_NE(th.Rewrite(u"ประเทศไทย"), th.Rewrite(u"thailand"));
 }
 
 TEST(AddressRewriterTest, TR) {
-  AddressRewriter tr = AddressRewriter::ForCountryCode(UTF8ToUTF16("tr"));
-  EXPECT_EQ(tr.Rewrite(UTF8ToUTF16("turkiye")),
-            tr.Rewrite(UTF8ToUTF16("turkey")));
+  AddressRewriter tr = AddressRewriter::ForCountryCode(u"tr");
+  EXPECT_EQ(tr.Rewrite(u"turkiye"), tr.Rewrite(u"turkey"));
 }
 
 TEST(AddressRewriterTest, US) {
-  AddressRewriter us = AddressRewriter::ForCountryCode(UTF8ToUTF16("us"));
-  EXPECT_EQ(us.Rewrite(UTF8ToUTF16("ca")),
-            us.Rewrite(UTF8ToUTF16("california")));
-  EXPECT_EQ(us.Rewrite(UTF8ToUTF16("west virginia")),
-            us.Rewrite(UTF8ToUTF16("wv")));
-  EXPECT_EQ(us.Rewrite(UTF8ToUTF16("virginia")), us.Rewrite(UTF8ToUTF16("va")));
-  EXPECT_EQ(us.Rewrite(UTF8ToUTF16("washington d c")),
-            us.Rewrite(UTF8ToUTF16("washington dc")));
+  AddressRewriter us = AddressRewriter::ForCountryCode(u"us");
+  EXPECT_EQ(us.Rewrite(u"ca"), us.Rewrite(u"california"));
+  EXPECT_EQ(us.Rewrite(u"west virginia"), us.Rewrite(u"wv"));
+  EXPECT_EQ(us.Rewrite(u"virginia"), us.Rewrite(u"va"));
+  EXPECT_EQ(us.Rewrite(u"washington d c"), us.Rewrite(u"washington dc"));
 
   // Similar names, but not the same.
-  EXPECT_NE(us.Rewrite(UTF8ToUTF16("west virginia")),
-            us.Rewrite(UTF8ToUTF16("virginia")));
-  EXPECT_NE(us.Rewrite(UTF8ToUTF16("washington")),
-            us.Rewrite(UTF8ToUTF16("washington dc")));
+  EXPECT_NE(us.Rewrite(u"west virginia"), us.Rewrite(u"virginia"));
+  EXPECT_NE(us.Rewrite(u"washington"), us.Rewrite(u"washington dc"));
 }
 
 TEST(AddressRewriterTest, VN) {
-  AddressRewriter vn = AddressRewriter::ForCountryCode(UTF8ToUTF16("vn"));
-  EXPECT_EQ(vn.Rewrite(UTF8ToUTF16("viet nam")),
-            vn.Rewrite(UTF8ToUTF16("vietnam")));
+  AddressRewriter vn = AddressRewriter::ForCountryCode(u"vn");
+  EXPECT_EQ(vn.Rewrite(u"viet nam"), vn.Rewrite(u"vietnam"));
 }
 
 TEST(AddressRewriterTest, ZA) {
-  AddressRewriter za = AddressRewriter::ForCountryCode(UTF8ToUTF16("za"));
-  EXPECT_EQ(za.Rewrite(UTF8ToUTF16("republic of south africa")),
-            za.Rewrite(UTF8ToUTF16("south africa")));
+  AddressRewriter za = AddressRewriter::ForCountryCode(u"za");
+  EXPECT_EQ(za.Rewrite(u"republic of south africa"),
+            za.Rewrite(u"south africa"));
 }

@@ -120,8 +120,8 @@ void ArcNotificationItemImpl::OnUpdatedFromAndroid(
       message_center::NOTIFICATION_TYPE_CUSTOM, notification_id_,
       base::UTF8ToUTF16(data->title), base::UTF8ToUTF16(data->message),
       gfx::Image(),
-      base::UTF8ToUTF16("arc"),  // display source
-      GURL(),                    // empty origin url, for system component
+      u"arc",  // display source
+      GURL(),  // empty origin url, for system component
       notifier_id, rich_data,
       new ArcNotificationDelegate(weak_ptr_factory_.GetWeakPtr()));
   notification->set_timestamp(base::Time::FromJavaTime(data->time));

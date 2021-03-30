@@ -9,6 +9,9 @@
 #include <windows.h>
 #endif
 
+#include <EGL/egl.h>
+#include <EGL/eglext.h>
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -22,7 +25,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/vsync_provider.h"
 #include "ui/gl/egl_timestamps.h"
-#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_surface_overlay.h"
@@ -102,6 +104,7 @@ class GL_EXPORT GLSurfaceEGL : public GLSurface {
   static EGLDisplay GetHardwareDisplay();
   static EGLDisplay InitializeDisplay(EGLDisplayPlatform native_display);
   static EGLNativeDisplayType GetNativeDisplay();
+  static DisplayType GetDisplayType();
 
   // These aren't particularly tied to surfaces, but since we already
   // have the static InitializeOneOff here, it's easiest to reuse its
@@ -125,6 +128,7 @@ class GL_EXPORT GLSurfaceEGL : public GLSurface {
   static bool IsPixelFormatFloatSupported();
   static bool IsANGLEFeatureControlSupported();
   static bool IsANGLEPowerPreferenceSupported();
+  static bool IsANGLEExternalContextAndSurfaceSupported();
 
  protected:
   ~GLSurfaceEGL() override;

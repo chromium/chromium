@@ -33,6 +33,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
 
@@ -47,6 +48,7 @@ AccountChooserDialogView::AccountChooserDialogView(
       ui::DIALOG_BUTTON_OK,
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_ACCOUNT_CHOOSER_SIGN_IN));
   set_close_on_deactivate(false);
+  SetModalType(ui::MODAL_TYPE_CHILD);
   if (controller_->ShouldShowFooter()) {
     auto* label = SetFootnoteView(std::make_unique<views::Label>(
         l10n_util::GetStringUTF16(IDS_SAVE_PASSWORD_FOOTER),
@@ -80,11 +82,7 @@ void AccountChooserDialogView::ControllerGone() {
   controller_ = nullptr;
 }
 
-ui::ModalType AccountChooserDialogView::GetModalType() const {
-  return ui::MODAL_TYPE_CHILD;
-}
-
-base::string16 AccountChooserDialogView::GetWindowTitle() const {
+std::u16string AccountChooserDialogView::GetWindowTitle() const {
   return controller_->GetAccoutChooserTitle();
 }
 
@@ -148,6 +146,9 @@ void AccountChooserDialogView::CredentialsItemPressed(
         *form, password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD);
   }
 }
+
+BEGIN_METADATA(AccountChooserDialogView, views::BubbleDialogDelegateView)
+END_METADATA
 
 AccountChooserPrompt* CreateAccountChooserPromptView(
     CredentialManagerDialogController* controller,

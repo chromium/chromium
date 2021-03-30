@@ -7,12 +7,13 @@
 #include <cstddef>
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/metrics/field_trial_params.h"
 #include "chrome/browser/chromeos/power/ml/smart_dim/metrics.h"
+#include "chrome/browser/chromeos/power/ml/smart_dim/ml_agent_util.h"
 #include "chrome/browser/chromeos/power/ml/user_activity_ukm_logger_helpers.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/machine_learning/public/mojom/graph_executor.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/model.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/tensor.mojom.h"
@@ -300,9 +301,9 @@ void SmartDimMlAgent::RequestDimDecision(
   tensor->data->set_float_list(FloatList::New());
   tensor->data->get_float_list()->value = std::vector<double>(
       std::begin(vectorized_features), std::end(vectorized_features));
-  inputs.emplace(std::string("input"), std::move(tensor));
+  inputs.emplace(std::string(kSmartDimInputNodeName), std::move(tensor));
 
-  std::vector<std::string> outputs({std::string("output")});
+  std::vector<std::string> outputs({std::string(kSmartDimOutputNodeName)});
 
   // Gets dim_threshold from finch experiment parameter, also logs status to
   // UMA.

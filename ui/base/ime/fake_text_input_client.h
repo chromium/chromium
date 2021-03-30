@@ -25,13 +25,21 @@ class FakeTextInputClient : public TextInputClient {
   ~FakeTextInputClient() override;
 
   void set_text_input_type(TextInputType text_input_type);
+  void SetTextAndSelection(const std::u16string& text, gfx::Range selection);
+
+  const std::u16string& text() const { return text_; }
+  const gfx::Range& selection() const { return selection_; }
+  const gfx::Range& composition_range() const { return composition_range_; }
+  const std::vector<ui::ImeTextSpan>& ime_text_spans() const {
+    return ime_text_spans_;
+  }
 
   // TextInputClient:
   void SetCompositionText(const CompositionText& composition) override;
   uint32_t ConfirmCompositionText(bool keep_selection) override;
   void ClearCompositionText() override;
   void InsertText(
-      const base::string16& text,
+      const std::u16string& text,
       TextInputClient::InsertTextCursorBehavior cursor_behavior) override;
   void InsertChar(const KeyEvent& event) override;
   TextInputType GetTextInputType() const override;
@@ -50,7 +58,7 @@ class FakeTextInputClient : public TextInputClient {
   bool SetEditableSelectionRange(const gfx::Range& range) override;
   bool DeleteRange(const gfx::Range& range) override;
   bool GetTextFromRange(const gfx::Range& range,
-                        base::string16* text) const override;
+                        std::u16string* text) const override;
   void OnInputMethodChanged() override;
   bool ChangeTextDirectionAndLayoutAlignment(
       base::i18n::TextDirection direction) override;
@@ -76,12 +84,16 @@ class FakeTextInputClient : public TextInputClient {
       base::Optional<gfx::Rect>* selection_bounds) override;
   void SetActiveCompositionForAccessibility(
       const gfx::Range& range,
-      const base::string16& active_composition_text,
+      const std::u16string& active_composition_text,
       bool is_composition_committed) override;
 #endif
 
  private:
   TextInputType text_input_type_;
+  std::u16string text_;
+  gfx::Range selection_;
+  gfx::Range composition_range_;
+  std::vector<ui::ImeTextSpan> ime_text_spans_;
 };
 
 }  // namespace ui

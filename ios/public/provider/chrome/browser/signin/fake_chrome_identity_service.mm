@@ -12,6 +12,7 @@
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_interaction_manager.h"
+#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service_constants.h"
 #include "ios/public/provider/chrome/browser/signin/signin_resources_provider.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -123,7 +124,6 @@ NSString* FakeGetHostedDomainForIdentity(ChromeIdentity* identity) {
 @end
 
 namespace ios {
-NSString* const kManagedIdentityEmailSuffix = @"@google.com";
 NSString* const kIdentityEmailFormat = @"%@@gmail.com";
 NSString* const kIdentityGaiaIDFormat = @"%@ID";
 
@@ -208,7 +208,7 @@ void FakeChromeIdentityService::ForgetIdentity(
     ChromeIdentity* identity,
     ForgetIdentityCallback callback) {
   [identities_ removeObject:identity];
-  FireIdentityListChanged();
+  FireIdentityListChanged(false);
   if (callback) {
     // Forgetting an identity is normally an asynchronous operation (that
     // require some network calls), this is replicated here by dispatching
@@ -326,7 +326,7 @@ void FakeChromeIdentityService::AddIdentity(ChromeIdentity* identity) {
   if (![identities_ containsObject:identity]) {
     [identities_ addObject:identity];
   }
-  FireIdentityListChanged();
+  FireIdentityListChanged(false);
 }
 
 void FakeChromeIdentityService::SetFakeMDMError(bool fakeMDMError) {

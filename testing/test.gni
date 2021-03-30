@@ -16,8 +16,10 @@ if (is_android) {
   import("//build/config/sanitizers/sanitizers.gni")
 } else if (is_fuchsia) {
   import("//build/config/chromecast_build.gni")
+  import("//build/config/coverage/coverage.gni")
   import("//build/config/fuchsia/generate_runner_scripts.gni")
   import("//build/config/fuchsia/package.gni")
+  import("//third_party/fuchsia-sdk/sdk/build/cmc.gni")
 } else if (is_chromeos_ash) {
   import("//build/config/chromeos/rules.gni")
   import("//build/config/sanitizers/sanitizers.gni")
@@ -40,11 +42,18 @@ if (is_android) {
 #   is_xctest: (iOS, optional) whether to build the executable as XCTest.
 #      Similar to the GN arg 'enable_run_ios_unittests_with_xctest' but
 #      for build targets.
+#   override_board: (ash, optional) override the 'cros_board' used in
+#      generating the test runner script.
 template("test") {
   testonly = true
   if (!is_ios) {
     assert(!defined(invoker.is_xctest) || !invoker.is_xctest,
            "is_xctest can be set only for iOS builds")
+  }
+  if (!is_chromeos_ash || cros_board == "") {
+    assert(
+        !defined(invoker.override_board),
+        "override_board can be set only for ChromeOS builds with target board")
   }
   if (is_android) {
     assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb)
@@ -76,11 +85,13 @@ template("test") {
       executable(_exec_target) {
         # Configs will always be defined since we set_defaults in BUILDCONFIG.gn.
         configs = []
-        data_deps = []
-        forward_variables_from(invoker,
-                               "*",
-                               TESTONLY_AND_VISIBILITY + _wrapper_script_vars +
-                                   [ "extra_dist_files" ])
+        forward_variables_from(
+            invoker,
+            "*",
+            TESTONLY_AND_VISIBILITY + _wrapper_script_vars + [
+                  "data_deps",
+                  "extra_dist_files",
+                ])
 
         # Thanks to the set_defaults() for test(), configs are initialized with
         # the default shared_library configs rather than executable configs.
@@ -89,6 +100,16 @@ template("test") {
           "//build/config/android:hide_all_but_jni",
         ]
         configs += [ "//build/config:executable_config" ]
+
+        if (defined(invoker.data_deps)) {
+          data_deps = invoker.data_deps
+        } else {
+          data_deps = []
+        }
+        if (!defined(data)) {
+          data = []
+        }
+        data += [ "//testing/location_tags.json" ]
 
         # Don't output to the root or else conflict with the group() below.
         output_name = rebase_path(_exec_output, root_out_dir)
@@ -223,6 +244,13 @@ template("test") {
           ":$_library_target",
         ]
       }
+
+      if (defined(invoker.data_deps)) {
+        data_deps = invoker.data_deps
+      } else {
+        data_deps = []
+      }
+      data = [ "//testing/location_tags.json" ]
     }
   } else if (is_fuchsia) {
     assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb)
@@ -230,6 +258,33 @@ template("test") {
     _output_name = invoker.target_name
     _pkg_target = "${_output_name}_pkg"
     _exec_target = "${_output_name}__exec"
+
+    # TODO(crbug.com/1019938): make minimum_capabilities.test-cmx the default
+    # and have everything added via additional_manifest_fragments
+    if (!defined(invoker.manifest)) {
+      if (!defined(invoker.additional_manifest_fragments)) {
+        manifest_fragments = [ "//build/config/fuchsia/tests-with-exec.cmx" ]
+      } else {
+        manifest_fragments =
+            [ "//build/config/fuchsia/test/minimum_capabilities.test-cmx" ]
+      }
+    } else {
+      manifest_fragments = [ invoker.manifest ]
+    }
+
+    if (defined(invoker.additional_manifest_fragments)) {
+      manifest_fragments += invoker.additional_manifest_fragments
+    }
+    if (use_clang_coverage) {
+      manifest_fragments +=
+          [ "//build/config/fuchsia/add_DebugData_service.test-cmx" ]
+    }
+    combined_manifest = "${target_name}.test-cmx"
+    cmc_merge(combined_manifest) {
+      sources = manifest_fragments
+      output_name = target_name
+    }
+    manifest = "${target_out_dir}/${combined_manifest}"
 
     fuchsia_package_runner(target_name) {
       is_test_exe = true
@@ -243,13 +298,14 @@ template("test") {
       package = ":$_pkg_target"
       package_name_override = _output_name
 
+      data = [ "//testing/location_tags.json" ]
       data_deps = [ "//testing/buildbot/filters:fuchsia_filters" ]
     }
 
     cr_fuchsia_package(_pkg_target) {
-      forward_variables_from(invoker, [ "manifest" ])
       binary = ":$_exec_target"
       package_name_override = _output_name
+      deps = [ ":$combined_manifest" ]
     }
 
     executable(_exec_target) {
@@ -274,7 +330,6 @@ template("test") {
       forward_variables_from(invoker,
                              [
                                "data",
-                               "data_deps",
                                "deps",
                                "executable_args",
                                "retries",
@@ -292,6 +347,11 @@ template("test") {
       ]
 
       wrapper_output_name = "${_wrapper_output_name}"
+
+      if (!defined(data)) {
+        data = []
+      }
+      data += [ "//testing/location_tags.json" ]
     }
 
     _resources_bundle_data = target_name + "_resources_bundle_data"
@@ -362,6 +422,12 @@ template("test") {
       generated_script = "$root_build_dir/bin/run_" + invoker.target_name
       test_exe = invoker.target_name
       runtime_deps_file = _runtime_deps_file
+
+      if (defined(invoker.override_board)) {
+        override_board = invoker.override_board
+      }
+
+      data = [ "//testing/location_tags.json" ]
     }
 
     executable(target_name) {
@@ -411,6 +477,7 @@ template("test") {
         executable = "//testing/test_env.py"
         data += [ "//testing/test_env.py" ]
       }
+      data += [ "//testing/location_tags.json" ]
 
       executable_args = [
         "@WrappedPath(../../build/lacros/test_runner.py)",
@@ -486,6 +553,7 @@ template("test") {
         executable = "//testing/test_env.py"
         data += [ "//testing/test_env.py" ]
       }
+      data += [ "//testing/location_tags.json" ]
 
       executable_args = [
         "@WrappedPath(./${_executable})",
@@ -568,7 +636,6 @@ template("script_test") {
     }
 
     data = [
-      "//.vpython",
       "//testing/test_env.py",
 
       # These aren't needed by *every* test, but they're likely needed often
@@ -578,9 +645,20 @@ template("script_test") {
 
       invoker.script,
     ]
+
+    if (defined(invoker.run_under_python2) && invoker.run_under_python2) {
+      use_vpython3 = false
+      data += [ "//.vpython" ]
+    } else {
+      use_vpython3 = true
+      data += [ "//.vpython3" ]
+    }
+
     if (defined(invoker.data)) {
       data += invoker.data
     }
+    data += [ "//testing/location_tags.json" ]
+
     data_deps = []
     if (defined(invoker.data_deps)) {
       data_deps += invoker.data_deps

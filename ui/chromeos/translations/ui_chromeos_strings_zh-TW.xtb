@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">檔案或目錄無法使用。</translation>
 <translation id="1363028406613469049">追蹤</translation>
 <translation id="1378727793141957596">歡迎使用 Google 雲端硬碟！</translation>
+<translation id="1379911846207762492">你可以將檔案設為可離線使用，以便在沒有網路連線時存取檔案。</translation>
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="1395262318152388157">播放進度控制滑桿</translation>
 <translation id="1404323374378969387">挪威文</translation>
@@ -76,6 +77,7 @@
 <translation id="1807938677607439181">所有檔案</translation>
 <translation id="1810764548349082891">無法預覽</translation>
 <translation id="1812302367230252929">阿姆哈拉文 (音譯)</translation>
+<translation id="1813278315230285598">服務</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />警告：<ph name="END_BOLD" />這些是暫存檔案，系統可能會自動將其刪除，以釋放磁碟空間。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">企鵝</translation>
 <translation id="183183971458492120">正在載入資訊...</translation>
@@ -85,13 +87,14 @@
 <translation id="1853795129690976061">已與 Linux 共用這個資料夾</translation>
 <translation id="1864756863218646478">找不到檔案。</translation>
 <translation id="1920670151694390848">馬拉雅拉姆文 (音譯)</translation>
+<translation id="1920798810075583923">西瓜</translation>
 <translation id="1924372192547904021">已格式化 <ph name="DRIVE_NAME" /></translation>
 <translation id="1931134289871235022">斯洛伐克文</translation>
 <translation id="1933345018156373194">移動失敗，發生未預期的錯誤：<ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">芬蘭文</translation>
 <translation id="1942765061641586207">影像解析度</translation>
-<translation id="1943097386230153518">安裝新服務</translation>
 <translation id="1972984168337863910">展開檔案意見回饋面板</translation>
+<translation id="1984456723671657197">系統不支援這種檔案類型。<ph name="BEGIN_LINK_HELP" />進一步瞭解<ph name="END_LINK_HELP" />如何在 Chrome 作業系統中開啟檔案。</translation>
 <translation id="1995337122023280937">前往檔案位置</translation>
 <translation id="2001796770603320721">在雲端硬碟中管理</translation>
 <translation id="2009067268969781306">若將硬碟格式化，其中儲存的所有資料都將遭到刪除。這項操作無法復原。</translation>
@@ -118,6 +121,7 @@
 <translation id="2288278176040912387">唱機</translation>
 <translation id="2291538123825441971">正在開啟 <ph name="NUMBER_OF_FILES" /> 個檔案。</translation>
 <translation id="2303301624314357662">正在開啟「<ph name="FILE_NAME" />」。</translation>
+<translation id="2304820083631266885">行星</translation>
 <translation id="2305020378527873881">「<ph name="VOLUME_NAME" />」已退出。</translation>
 <translation id="2325650632570794183">系統不支援這個檔案類型。請造訪 Chrome 線上應用程式商店，尋找是否有可開啟這類檔案的應用程式。</translation>
 <translation id="2326539130272988168">保加利亞文</translation>
@@ -142,7 +146,6 @@
 <translation id="255937426064304553">美國國際</translation>
 <translation id="2562685439590298522">文件</translation>
 <translation id="2563185590376525700">青蛙</translation>
-<translation id="2572501073504669105">你可以將檔案設定為可離線使用，以便在沒有網路連線時存取檔案。</translation>
 <translation id="2578394532502990878">泰米爾文 (拼音)</translation>
 <translation id="2579959351793446050">歐利亞文</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> 影片</translation>
@@ -186,6 +189,7 @@
 <translation id="299638574917407533">法文 (加拿大)</translation>
 <translation id="3003633581067744647">切換為縮圖檢視</translation>
 <translation id="3007214526293698309">修正比例</translation>
+<translation id="3029114385395636667">啟用 Google 文件離線版，即可離線使用文件、試算表和簡報。</translation>
 <translation id="303198083543495566">地理位置</translation>
 <translation id="3047197340186497470">中文 (大易)</translation>
 <translation id="3057861065630527966">備份您的相片和影片</translation>
@@ -216,14 +220,17 @@
 <translation id="3335337277364016868">錄音年份</translation>
 <translation id="3353984535370177728">選取要上傳的資料夾</translation>
 <translation id="3356580349448036450">完成</translation>
+<translation id="3358452157379365236">吉他</translation>
 <translation id="3382143449143186018">尼泊爾文搭配 InScript 鍵盤</translation>
 <translation id="3408236822532681288">德文 (德國) 搭配 Neo 2 鍵盤</translation>
 <translation id="3414856743105198592">將卸除式媒體格式化會清除所有資料，你要繼續嗎？</translation>
 <translation id="3437801641691368414">建立時間</translation>
+<translation id="343907260260897561">即可拍相機</translation>
 <translation id="3455931012307786678">愛沙尼亞文</translation>
 <translation id="3466147780910026086">正在掃描您的媒體裝置...</translation>
 <translation id="3468522857997926824">已將 <ph name="FILE_COUNT" /> 張相片備份到 <ph name="BEGIN_LINK" />Google 雲端硬碟<ph name="END_LINK" /></translation>
 <translation id="3475447146579922140">Google 試算表</translation>
+<translation id="3479552764303398839">現在不要</translation>
 <translation id="3486821258960016770">蒙古文</translation>
 <translation id="3495304270784461826">發生 <ph name="COUNT" /> 個錯誤。</translation>
 <translation id="3522708245912499433">葡萄牙文</translation>
@@ -233,6 +240,7 @@
 <translation id="3553048479571901246">如要使用「<ph name="APP_NAME" />」開啟檔案，請先將檔案複製到 Windows 檔案資料夾。</translation>
 <translation id="3556731189587832921">英文 (美國) 搭配國際 PC 鍵盤</translation>
 <translation id="357479282490346887">立陶宛文</translation>
+<translation id="3592251141500063301">無法將「<ph name="FILE_NAME" />」設為可離線使用</translation>
 <translation id="3603385196401704894">加拿大法文</translation>
 <translation id="3606220979431771195">土耳其文 F</translation>
 <translation id="3616113530831147358">音訊</translation>
@@ -279,6 +287,7 @@
 <translation id="4124935795427217608">獨角獸</translation>
 <translation id="4158739975813877944">開啟播放清單</translation>
 <translation id="4159731583141908892">已移動 <ph name="FILE_NAME" />。</translation>
+<translation id="4186579485882418952">啟用文件離線版</translation>
 <translation id="4193154014135846272">Google 文件</translation>
 <translation id="4197674956721858839">壓縮選取的項目</translation>
 <translation id="4202378258276439759">西班牙文 (拉丁美洲)</translation>
@@ -292,6 +301,7 @@
 <translation id="4309915981827077375">一般資訊</translation>
 <translation id="432252891123397018">羅馬尼亞文搭配標準鍵盤</translation>
 <translation id="4325128273762811722">斯洛維尼亞文</translation>
+<translation id="4326142238881453352">植物學家</translation>
 <translation id="4326192123064055915">咖啡</translation>
 <translation id="4336032328163998280">複製作業失敗，<ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">索拉尼庫爾德文搭配阿拉伯文鍵盤</translation>
@@ -327,7 +337,6 @@
 <translation id="4706042980341760088">泰米爾文搭配打字機式鍵盤</translation>
 <translation id="4711094779914110278">土耳其文</translation>
 <translation id="4712283082407695269">正在開啟「<ph name="PATH" />」</translation>
-<translation id="4713544552769165154">這個檔案是專為使用 Macintosh 軟體的電腦所設計，與搭載 Chrome 作業系統的裝置不相容。請前往 <ph name="BEGIN_LINK" />Chrome 線上應用程式商店<ph name="END_LINK" />尋找適合的替代應用程式。<ph name="BEGIN_LINK_HELP" />瞭解詳情<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">已備份 <ph name="FILE_COUNT" /> 張相片</translation>
 <translation id="4725511304875193254">柯基犬</translation>
 <translation id="4732760563705710320">很抱歉，你的投放裝置不支援這部影片。</translation>
@@ -408,6 +417,7 @@
     <ph name="MARKUP_7" />檔案集中存放，<ph name="MARKUP_8" />
     方便共用、建立檔案並與他人協同合作。<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">從 Google 雲端硬碟還原檔案</translation>
+<translation id="5288441970121584418">漢堡</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5318819489018851358">與 Linux 共用</translation>
@@ -461,8 +471,6 @@
 <translation id="5833610766403489739">這個檔案不見了！請檢查你的下載位置設定，然後再試一次。</translation>
 <translation id="5838451609423551646">從所選範圍中移除所有項目。</translation>
 <translation id="5838825566232597749">美式 Workman 國際</translation>
-<translation id="5850516540536751549">系統不支援這個檔案類型。請造訪 <ph name="BEGIN_LINK" />Chrome 線上應用程式商店<ph name="END_LINK" />，尋找是否有可開啟這類檔案的應用程式。
-    <ph name="BEGIN_LINK_HELP" />瞭解詳情<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">這裡沒有任何內容...</translation>
 <translation id="5911887972742538906">安裝 Linux 應用程式的過程中發生錯誤。</translation>
 <translation id="5912396950572065471">格式</translation>
@@ -500,10 +508,12 @@
 <translation id="6248400709929739064">啟用字幕</translation>
 <translation id="6269630227984243955">馬來文</translation>
 <translation id="6287852322318138013">選取要用來開啟這個檔案的應用程式</translation>
+<translation id="6321303798550928047">揮手</translation>
 <translation id="6339145975392024142">美式國際鍵盤 (PC)</translation>
 <translation id="6346310558342052870">權限受到限制</translation>
 <translation id="6356685157277930264">檔案狀態視窗</translation>
 <translation id="6358884629796491903">龍</translation>
+<translation id="6367976544441405720">廂型車</translation>
 <translation id="637062427944097960">這個檔案已在其他電腦上開啟。前往 <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) 查看。</translation>
 <translation id="6394388407447716302">唯讀</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> 個項目</translation>
@@ -527,6 +537,7 @@
 <translation id="6650726141019353908">粉紅蝴蝶</translation>
 <translation id="6657585470893396449">密碼</translation>
 <translation id="6673674183150363784">法文 (法國) 搭配 Bépo 鍵盤</translation>
+<translation id="6710022688720561421">機器人</translation>
 <translation id="6710213216561001401">返回</translation>
 <translation id="6751256176799620176">已選取 1 個資料夾</translation>
 <translation id="6790428901817661496">播放</translation>
@@ -560,6 +571,7 @@
 <translation id="6965382102122355670">確定</translation>
 <translation id="6970230597523682626">保加利亞文</translation>
 <translation id="6973630695168034713">資料夾</translation>
+<translation id="6976795442547527108">獅子</translation>
 <translation id="6978611942794658017">這個檔案是專為使用 Windows 軟體的 PC 電腦所設計，與搭載 Chrome 作業系統的裝置不相容。請前往 Chrome 線上應用程式商店尋找適合的替代應用程式。</translation>
 <translation id="6979158407327259162">Google 雲端硬碟</translation>
 <translation id="6989942356279143254">瑞典文</translation>
@@ -606,6 +618,7 @@
 <translation id="7532029025027028521">波斯文 (音譯)</translation>
 <translation id="7544830582642184299">授權 Linux 應用程式存取你的 Google 雲端硬碟檔案。系統會將變更內容同步至你的其他裝置。</translation>
 <translation id="7544853251252956727">隨機播放</translation>
+<translation id="7547009467130558110">運動鞋</translation>
 <translation id="7547780573915868306">立陶宛文</translation>
 <translation id="7547811415869834682">荷蘭文</translation>
 <translation id="7551643184018910560">固定至檔案櫃</translation>
@@ -620,6 +633,7 @@
 <translation id="7628656427739290098">已完成 <ph name="PERCENT" />%。</translation>
 <translation id="7649070708921625228">說明</translation>
 <translation id="7654209398114106148">正在移動 <ph name="NUMBER_OF_ITEMS" /> 個項目...</translation>
+<translation id="7655441028674523381">輕鬆存取 Google 相簿</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7663224033570512922">北印度文</translation>
 <translation id="7693909743393669729">將硬碟格式化會清除其中儲存的所有資料，並移除所有的現有分割區，包括未顯示的分割區。這項操作無法復原。</translation>
@@ -651,7 +665,6 @@
 <translation id="7839804798877833423">擷取這些檔案大約會使用 <ph name="FILE_SIZE" /> 行動數據流量。</translation>
 <translation id="7846076177841592234">全部取消選取</translation>
 <translation id="7853966320808728790">法文 BÉPO</translation>
-<translation id="7864662577698025113">新增服務</translation>
 <translation id="7868774406711971383">波蘭文</translation>
 <translation id="7873831373602885875">無法儲存到「<ph name="FOLDER_NAME" />」。系統會將所有編輯內容儲存到「下載」資料夾中的「<ph name="DOWNLOADS_FOLDER" />」。</translation>
 <translation id="7874321682039004450">菲律賓文</translation>
@@ -666,13 +679,13 @@
 <translation id="7972920761225148017">法文 (瑞士)</translation>
 <translation id="7980421588063892270">英文 (美國) 搭配 Colemak 鍵盤</translation>
 <translation id="7982283708762922719">高度</translation>
+<translation id="79907182588096956">這個檔案是專為使用 Windows 軟體的個人電腦所設計，與搭載 Chrome 作業系統的裝置不相容。<ph name="BEGIN_LINK_HELP" />進一步瞭解<ph name="END_LINK_HELP" />如何在 Chrome 作業系統中開啟檔案。</translation>
 <translation id="8008366997883261463">傑克羅素梗</translation>
 <translation id="8028993641010258682">大小</translation>
 <translation id="803771048473350947">檔案</translation>
 <translation id="8038111231936746805">(預設)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> 音訊</translation>
 <translation id="8045462269890919536">羅馬尼亞文</translation>
-<translation id="8052887694493382350">這個檔案是專為使用 Windows 軟體的個人電腦所設計。你的裝置搭載的是 Chrome 作業系統，因此與這個檔案不相容。<ph name="BEGIN_LINK_HELP" />瞭解詳情<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">所有編輯內容都會儲存到「<ph name="DOWNLOADS_FOLDER" />」。</translation>
 <translation id="8079530767338315840">重複播放</translation>
 <translation id="8106045200081704138">與我共用的項目</translation>
@@ -712,6 +725,7 @@
 <translation id="8466234950814670489">Tar 封存</translation>
 <translation id="8475647382427415476">Google 雲端硬碟目前無法同步處理「<ph name="FILENAME" />」，將於稍後再試。</translation>
 <translation id="8477649328507734757">同心圓</translation>
+<translation id="8484284835977497781">請從最近的相片中選擇。</translation>
 <translation id="8487700953926739672">可離線使用</translation>
 <translation id="8521441079177373948">英式配置</translation>
 <translation id="8525306231823319788">全螢幕</translation>
@@ -744,8 +758,10 @@
 <translation id="8860454412039442620">Excel 試算表</translation>
 <translation id="8866284467018526531">阿拉伯文 (音譯)</translation>
 <translation id="8900820606136623064">匈牙利文</translation>
+<translation id="8903931173357132290">畢業生</translation>
 <translation id="8919081441417203123">丹麥文</translation>
 <translation id="8965697826696209160">空間不足。</translation>
+<translation id="8970501467542182729">這個檔案是專為使用 Macintosh 軟體的電腦所設計，與搭載 Chrome 作業系統的裝置不相容。<ph name="BEGIN_LINK_HELP" />進一步瞭解<ph name="END_LINK_HELP" />如何在 Chrome 作業系統中開啟檔案。</translation>
 <translation id="8997962250644902079">中文 (繁體拼音)</translation>
 <translation id="9017798300203431059">俄文 (拼音)</translation>
 <translation id="9034924485347205037">Linux 檔案</translation>

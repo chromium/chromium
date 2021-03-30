@@ -80,6 +80,12 @@ class HoldingSpaceBrowserTestBase : public InProcessBrowserTest {
   // Removes the specified holding space `item`.
   void RemoveItem(const HoldingSpaceItem* item);
 
+  // Creates a file at the root of the Downloads mount point with the specified
+  // extension. If extension is omitted, the created file will have an extension
+  // of `.txt`. Returns the file path of the created file.
+  base::FilePath CreateFile(
+      const base::Optional<std::string>& extension = base::nullopt);
+
   // Returns the collection of download chips in holding space UI.
   // If holding space UI is not visible, an empty collection is returned.
   std::vector<views::View*> GetDownloadChips();
@@ -92,9 +98,19 @@ class HoldingSpaceBrowserTestBase : public InProcessBrowserTest {
   // If holding space UI is not visible, an empty collection is returned.
   std::vector<views::View*> GetScreenCaptureViews();
 
+  // Returns the holding space tray in the shelf.
+  views::View* GetTray();
+
+  // Returns the view drawn on top of the holding space tray to indicate that
+  // it is a drop target capable of handling the current drag payload.
+  views::View* GetTrayDropTargetOverlay();
+
   // Getter for the holding space tray icons in the shelf.
   views::View* GetDefaultTrayIcon();
   views::View* GetPreviewsTrayIcon();
+
+  // Returns whether the recent files bubble is shown.
+  bool RecentFilesBubbleShown() const;
 
   // Requests lock screen, waiting to return until session state is locked.
   void RequestAndAwaitLockScreen();

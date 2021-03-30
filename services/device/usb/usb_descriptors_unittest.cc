@@ -37,11 +37,11 @@ ACTION_P2(InvokeCallback, data, length) {
 }
 
 void ExpectStringDescriptors(
-    std::unique_ptr<std::map<uint8_t, base::string16>> string_map) {
+    std::unique_ptr<std::map<uint8_t, std::u16string>> string_map) {
   EXPECT_EQ(3u, string_map->size());
-  EXPECT_EQ(base::ASCIIToUTF16("String 1"), (*string_map)[1]);
-  EXPECT_EQ(base::ASCIIToUTF16("String 2"), (*string_map)[2]);
-  EXPECT_EQ(base::ASCIIToUTF16("String 3"), (*string_map)[3]);
+  EXPECT_EQ(u"String 1", (*string_map)[1]);
+  EXPECT_EQ(u"String 2", (*string_map)[2]);
+  EXPECT_EQ(u"String 3", (*string_map)[3]);
 }
 
 // clang-format off
@@ -362,16 +362,16 @@ TEST_F(UsbDescriptorsTest, StringDescriptor) {
   static const uint8_t kBuffer[] = {0x1a, 0x03, 'H', 0, 'e', 0, 'l', 0, 'l', 0,
                                     'o',  0,    ' ', 0, 'w', 0, 'o', 0, 'r', 0,
                                     'l',  0,    'd', 0, '!', 0};
-  base::string16 string;
+  std::u16string string;
   ASSERT_TRUE(ParseUsbStringDescriptor(
       std::vector<uint8_t>(kBuffer, kBuffer + sizeof(kBuffer)), &string));
-  EXPECT_EQ(base::ASCIIToUTF16("Hello world!"), string);
+  EXPECT_EQ(u"Hello world!", string);
 }
 
 TEST_F(UsbDescriptorsTest, ShortStringDescriptorHeader) {
   // The buffer is just too darn short.
   static const uint8_t kBuffer[] = {0x01};
-  base::string16 string;
+  std::u16string string;
   ASSERT_FALSE(ParseUsbStringDescriptor(
       std::vector<uint8_t>(kBuffer, kBuffer + sizeof(kBuffer)), &string));
 }
@@ -379,7 +379,7 @@ TEST_F(UsbDescriptorsTest, ShortStringDescriptorHeader) {
 TEST_F(UsbDescriptorsTest, ShortStringDescriptor) {
   // The buffer is just too darn short.
   static const uint8_t kBuffer[] = {0x01, 0x03};
-  base::string16 string;
+  std::u16string string;
   ASSERT_FALSE(ParseUsbStringDescriptor(
       std::vector<uint8_t>(kBuffer, kBuffer + sizeof(kBuffer)), &string));
 }
@@ -388,36 +388,36 @@ TEST_F(UsbDescriptorsTest, OddLengthStringDescriptor) {
   // There's an extra byte at the end of the string.
   static const uint8_t kBuffer[] = {0x0d, 0x03, 'H', 0,   'e', 0,  'l',
                                     0,    'l',  0,   'o', 0,   '!'};
-  base::string16 string;
+  std::u16string string;
   ASSERT_TRUE(ParseUsbStringDescriptor(
       std::vector<uint8_t>(kBuffer, kBuffer + sizeof(kBuffer)), &string));
-  EXPECT_EQ(base::ASCIIToUTF16("Hello"), string);
+  EXPECT_EQ(u"Hello", string);
 }
 
 TEST_F(UsbDescriptorsTest, EmptyStringDescriptor) {
   // The string is empty.
   static const uint8_t kBuffer[] = {0x02, 0x03};
-  base::string16 string;
+  std::u16string string;
   ASSERT_TRUE(ParseUsbStringDescriptor(
       std::vector<uint8_t>(kBuffer, kBuffer + sizeof(kBuffer)), &string));
-  EXPECT_EQ(base::string16(), string);
+  EXPECT_EQ(std::u16string(), string);
 }
 
 TEST_F(UsbDescriptorsTest, OneByteStringDescriptor) {
   // The string is only one byte.
   static const uint8_t kBuffer[] = {0x03, 0x03, '?'};
-  base::string16 string;
+  std::u16string string;
   ASSERT_TRUE(ParseUsbStringDescriptor(
       std::vector<uint8_t>(kBuffer, kBuffer + sizeof(kBuffer)), &string));
-  EXPECT_EQ(base::string16(), string);
+  EXPECT_EQ(std::u16string(), string);
 }
 
 TEST_F(UsbDescriptorsTest, ReadStringDescriptors) {
-  std::unique_ptr<std::map<uint8_t, base::string16>> string_map(
-      new std::map<uint8_t, base::string16>());
-  (*string_map)[1] = base::string16();
-  (*string_map)[2] = base::string16();
-  (*string_map)[3] = base::string16();
+  std::unique_ptr<std::map<uint8_t, std::u16string>> string_map(
+      new std::map<uint8_t, std::u16string>());
+  (*string_map)[1] = std::u16string();
+  (*string_map)[2] = std::u16string();
+  (*string_map)[3] = std::u16string();
 
   scoped_refptr<MockUsbDeviceHandle> device_handle(
       new MockUsbDeviceHandle(nullptr));

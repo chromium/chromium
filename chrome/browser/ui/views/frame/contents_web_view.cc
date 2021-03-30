@@ -11,6 +11,7 @@
 #include "ui/base/theme_provider.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/views/background.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
@@ -30,6 +31,11 @@ void ContentsWebView::SetStatusBubble(StatusBubbleViews* status_bubble) {
   DCHECK(!status_bubble_ || status_bubble_->base_view() == this);
   if (status_bubble_)
     status_bubble_->Reposition();
+  OnPropertyChanged(&status_bubble_, views::kPropertyEffectsNone);
+}
+
+StatusBubbleViews* ContentsWebView::GetStatusBubble() const {
+  return status_bubble_;
 }
 
 bool ContentsWebView::GetNeedsNotificationWhenVisibleBoundsChange() const {
@@ -147,3 +153,7 @@ void ContentsWebView::RenderViewReady() {
   UpdateBackgroundColor();
   WebView::RenderViewReady();
 }
+
+BEGIN_METADATA(ContentsWebView, views::WebView)
+ADD_PROPERTY_METADATA(StatusBubbleViews*, StatusBubble)
+END_METADATA

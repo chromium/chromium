@@ -4,6 +4,13 @@
 
 #include "base/files/file_path.h"
 
+// file_path.h is a widely included header and its size has significant impact
+// on build time. Try not to raise this limit unless necessary. See
+// https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
+#ifndef NACL_TC_REV
+#pragma clang max_tokens_here 340000
+#endif
+
 #include <string.h>
 #include <algorithm>
 
@@ -15,6 +22,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 
 #if defined(OS_APPLE)
@@ -287,6 +295,16 @@ bool FilePath::AppendRelativePath(const FilePath& child,
   }
 #endif  // defined(FILE_PATH_USES_DRIVE_LETTERS)
 
+  // The first 2 components for network paths are [<2-Separators>, <hostname>].
+  // Use case-insensitive comparison for the hostname.
+  // https://tools.ietf.org/html/rfc3986#section-3.2.2
+  if (IsNetwork() && parent_components.size() > 1) {
+    if (*parent_comp++ != *child_comp++ ||
+        !base::EqualsCaseInsensitiveASCII(*parent_comp++, *child_comp++)) {
+      return false;
+    }
+  }
+
   while (parent_comp != parent_components.end()) {
     if (*parent_comp != *child_comp)
       return false;
@@ -542,6 +560,11 @@ bool FilePath::IsAbsolute() const {
   return IsPathAbsolute(path_);
 }
 
+bool FilePath::IsNetwork() const {
+  return path_.length() > 1 && FilePath::IsSeparator(path_[0]) &&
+         FilePath::IsSeparator(path_[1]);
+}
+
 bool FilePath::EndsWithSeparator() const {
   if (empty())
     return false;
@@ -595,7 +618,7 @@ bool FilePath::ReferencesParent() const {
 
 #if defined(OS_WIN)
 
-string16 FilePath::LossyDisplayName() const {
+std::u16string FilePath::LossyDisplayName() const {
   return AsString16(path_);
 }
 
@@ -607,7 +630,7 @@ std::string FilePath::AsUTF8Unsafe() const {
   return WideToUTF8(value());
 }
 
-string16 FilePath::AsUTF16Unsafe() const {
+std::u16string FilePath::AsUTF16Unsafe() const {
   return WideToUTF16(value());
 }
 
@@ -626,7 +649,7 @@ FilePath FilePath::FromUTF16Unsafe(StringPiece16 utf16) {
 // See file_path.h for a discussion of the encoding of paths on POSIX
 // platforms.  These encoding conversion functions are not quite correct.
 
-string16 FilePath::LossyDisplayName() const {
+std::u16string FilePath::LossyDisplayName() const {
   return WideToUTF16(SysNativeMBToWide(path_));
 }
 
@@ -644,7 +667,7 @@ std::string FilePath::AsUTF8Unsafe() const {
 #endif
 }
 
-string16 FilePath::AsUTF16Unsafe() const {
+std::u16string FilePath::AsUTF16Unsafe() const {
 #if defined(SYSTEM_NATIVE_UTF8)
   return UTF8ToUTF16(value());
 #else
@@ -684,7 +707,7 @@ void FilePath::WriteToPickle(Pickle* pickle) const {
 
 bool FilePath::ReadFromPickle(PickleIterator* iter) {
 #if defined(OS_WIN)
-  base::string16 path;
+  std::u16string path;
   if (!iter->ReadString16(&path))
     return false;
   path_ = UTF16ToWide(path);
@@ -1278,9 +1301,8 @@ int FilePath::CompareIgnoreCase(StringPieceType string1,
     // succeed, fall back to strcmp. This can occur when the input string is
     // invalid UTF-8.
     if (!cfstring1 || !cfstring2) {
-      int comparison =
-          memcmp(string1.as_string().c_str(), string2.as_string().c_str(),
-                 std::min(string1.length(), string2.length()));
+      int comparison = memcmp(string1.data(), string2.data(),
+                              std::min(string1.length(), string2.length()));
       if (comparison < 0)
         return -1;
       if (comparison > 0)
@@ -1301,12 +1323,11 @@ int FilePath::CompareIgnoreCase(StringPieceType string1,
 // Generic Posix system comparisons.
 int FilePath::CompareIgnoreCase(StringPieceType string1,
                                 StringPieceType string2) {
-  // Specifically need null termianted strings for this API call.
-  int comparison = strcasecmp(string1.as_string().c_str(),
-                              string2.as_string().c_str());
-  if (comparison < 0)
+  size_t rlen = std::min(string1.size(), string2.size());
+  int comparison = strncasecmp(string1.data(), string2.data(), rlen);
+  if (comparison < 0 || (comparison == 0 && string1.size() < string2.size()))
     return -1;
-  if (comparison > 0)
+  if (comparison > 0 || (comparison == 0 && string1.size() > string2.size()))
     return 1;
   return 0;
 }
@@ -1338,6 +1359,10 @@ void FilePath::StripTrailingSeparatorsInternal() {
 
 FilePath FilePath::NormalizePathSeparators() const {
   return NormalizePathSeparatorsTo(kSeparators[0]);
+}
+
+void FilePath::WriteIntoTracedValue(perfetto::TracedValue context) const {
+  perfetto::WriteIntoTracedValue(std::move(context), value());
 }
 
 FilePath FilePath::NormalizePathSeparatorsTo(CharType separator) const {

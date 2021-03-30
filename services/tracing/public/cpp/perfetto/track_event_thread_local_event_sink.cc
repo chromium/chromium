@@ -16,6 +16,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_log.h"
 #include "base/trace_event/traced_value.h"
+#include "base/tracing/tracing_tls.h"
 #include "build/build_config.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/perfetto/producer_client.h"
@@ -120,6 +121,11 @@ void WriteDebugAnnotations(
         annotation->set_string_value(value.as_string ? value.as_string
                                                      : "NULL");
         break;
+      case TRACE_VALUE_TYPE_PROTO: {
+        auto data = value.as_proto->SerializeAsArray();
+        annotation->AppendRawProtoBytes(data.data(), data.size());
+      } break;
+
       default:
         NOTREACHED() << "Don't know how to serialize this value";
         break;
@@ -133,6 +139,8 @@ ChromeThreadDescriptor::ThreadType GetThreadType(
     return ChromeThreadDescriptor::THREAD_MAIN;
   } else if (base::MatchPattern(thread_name, "Chrome*IOThread")) {
     return ChromeThreadDescriptor::THREAD_IO;
+  } else if (base::MatchPattern(thread_name, "NetworkService")) {
+    return ChromeThreadDescriptor::THREAD_NETWORK_SERVICE;
   } else if (base::MatchPattern(thread_name, "ThreadPoolForegroundWorker*")) {
     return ChromeThreadDescriptor::THREAD_POOL_FG_WORKER;
   } else if (base::MatchPattern(thread_name, "ThreadPoolBackgroundWorker*")) {
@@ -244,11 +252,9 @@ void TrackEventThreadLocalEventSink::AddLegacyTraceEvent(
 base::trace_event::TrackEventHandle
 TrackEventThreadLocalEventSink::AddTypedTraceEvent(
     base::trace_event::TraceEvent* trace_event) {
-  DCHECK(!TraceEventDataSource::GetInstance()
-              ->GetThreadIsInTraceEventTLS()
-              ->Get());
+  DCHECK(!base::tracing::GetThreadIsInTraceEventTLS()->Get());
   // Cleared in OnTrackEventCompleted().
-  TraceEventDataSource::GetInstance()->GetThreadIsInTraceEventTLS()->Set(true);
+  base::tracing::GetThreadIsInTraceEventTLS()->Set(true);
 
   DCHECK(!pending_trace_packet_);
   UpdateIncrementalStateIfNeeded(trace_event);
@@ -300,18 +306,15 @@ void TrackEventThreadLocalEventSink::OnTrackEventCompleted() {
 
   pending_trace_packet_ = perfetto::TraceWriter::TracePacketHandle();
 
-  DCHECK(
-      TraceEventDataSource::GetInstance()->GetThreadIsInTraceEventTLS()->Get());
-  TraceEventDataSource::GetInstance()->GetThreadIsInTraceEventTLS()->Set(false);
+  DCHECK(base::tracing::GetThreadIsInTraceEventTLS()->Get());
+  base::tracing::GetThreadIsInTraceEventTLS()->Set(false);
 }
 
 base::trace_event::TracePacketHandle
 TrackEventThreadLocalEventSink::AddTracePacket() {
-  DCHECK(!TraceEventDataSource::GetInstance()
-              ->GetThreadIsInTraceEventTLS()
-              ->Get());
+  DCHECK(!base::tracing::GetThreadIsInTraceEventTLS()->Get());
   // Cleared in OnTracePacketCompleted().
-  TraceEventDataSource::GetInstance()->GetThreadIsInTraceEventTLS()->Set(true);
+  base::tracing::GetThreadIsInTraceEventTLS()->Set(true);
 
   DCHECK(!pending_trace_packet_);
 
@@ -325,9 +328,8 @@ TrackEventThreadLocalEventSink::AddTracePacket() {
 }
 
 void TrackEventThreadLocalEventSink::OnTracePacketCompleted() {
-  DCHECK(
-      TraceEventDataSource::GetInstance()->GetThreadIsInTraceEventTLS()->Get());
-  TraceEventDataSource::GetInstance()->GetThreadIsInTraceEventTLS()->Set(false);
+  DCHECK(base::tracing::GetThreadIsInTraceEventTLS()->Get());
+  base::tracing::GetThreadIsInTraceEventTLS()->Set(false);
 }
 
 void TrackEventThreadLocalEventSink::UpdateIncrementalStateIfNeeded(
@@ -890,7 +892,7 @@ void TrackEventThreadLocalEventSink::EmitCounterTrackDescriptor(
 
   CounterDescriptor* counter = track_descriptor->set_counter();
   if (counter_type != CounterDescriptor::COUNTER_UNSPECIFIED) {
-    counter->set_type(CounterDescriptor::COUNTER_THREAD_TIME_NS);
+    counter->set_type(counter_type);
   }
   if (unit_multiplier) {
     counter->set_unit_multiplier(unit_multiplier);

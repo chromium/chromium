@@ -4,7 +4,7 @@
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
 
-import {reportPromise} from '../../../../base/js/test_error_reporting.m.js';
+import {reportPromise} from '../../../common/js/test_error_reporting.m.js';
 
 import {MetadataItem} from './metadata_item.m.js';
 import {MetadataModel} from './metadata_model.m.js';

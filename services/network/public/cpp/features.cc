@@ -57,6 +57,13 @@ const base::Feature kPauseBrowserInitiatedHeavyTrafficForP2P{
     "PauseBrowserInitiatedHeavyTrafficForP2P",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
+// When kPauseLowPriorityBrowserRequestsOnWeakSignal is enabled, then a subset
+// of the browser initiated requests may be deferred if the device is using
+// cellular connection and the signal quality is low. Android only.
+const base::Feature kPauseLowPriorityBrowserRequestsOnWeakSignal{
+    "PauseLowPriorityBrowserRequestsOnWeakSignal",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When kCORBProtectionSniffing is enabled CORB sniffs additional same-origin
 // resources if they look sensitive.
 const base::Feature kCORBProtectionSniffing{"CORBProtectionSniffing",
@@ -67,6 +74,13 @@ const base::Feature kCORBProtectionSniffing{"CORBProtectionSniffing",
 // network contention with high priority requests that may arrive soon.
 const base::Feature kProactivelyThrottleLowPriorityRequests{
     "ProactivelyThrottleLowPriorityRequests",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables Cross-Origin-Embedder-Policy: cors-or-credentialless.
+// https://github.com/mikewest/credentiallessness
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const base::Feature kCrossOriginEmbedderPolicyCredentialless{
+    "CrossOriginEmbedderPolicyCredentialless",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables Cross-Origin Opener Policy (COOP).
@@ -96,14 +110,6 @@ const base::Feature kCrossOriginOpenerPolicyAccessReporting{
 // https://github.com/mikewest/coop-by-default/
 const base::Feature kCrossOriginOpenerPolicyByDefault{
     "CrossOriginOpenerPolicyByDefault", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enables Cross-Origin Embedder Policy (COEP).
-// https://html.spec.whatwg.org/#coep
-// Currently this feature is enabled for all platforms (including webview).
-// TODO(https://crbug.com/1140432): Remove this flag after M88 Stable + 1 week =
-// 2021-02-01.
-const base::Feature kCrossOriginEmbedderPolicy{
-    "CrossOriginEmbedderPolicy", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables the most recent developments on the crossOriginIsolated property.
 // https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/crossOriginIsolated
@@ -157,12 +163,6 @@ const base::Feature kRequestInitiatorSiteLockEnfocement = {
     "RequestInitiatorSiteLockEnfocement",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
-// When the CertVerifierService is enabled, certificate verification will not be
-// performed in the network service, but will instead be brokered to a separate
-// cert verification service potentially running in a different process.
-const base::Feature kCertVerifierService{"CertVerifierService",
-                                         base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables preprocessing requests with the Trust Tokens API Fetch flags set,
 // and handling their responses, according to the protocol.
 // (See https://github.com/WICG/trust-token-api.)
@@ -202,6 +202,9 @@ const base::FeatureParam<TrustTokenOriginTrialSpec>
 // Determines whether Trust Tokens issuance requests should be diverted, at the
 // corresponding issuers' request, to the operating system instead of sent
 // to the issuers' servers.
+//
+// WARNING: If you rename this param, you must update the corresponding flag
+// entry in about_flags.cc.
 const base::FeatureParam<bool> kPlatformProvidedTrustTokenIssuance{
     &kTrustTokens, "PlatformProvidedTrustTokenIssuance", false};
 

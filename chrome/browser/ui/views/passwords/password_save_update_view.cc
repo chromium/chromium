@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
-#include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/passwords/credentials_item_view.h"
@@ -148,9 +147,9 @@ void BuildCredentialRows(
 }
 
 // Create a vector which contains only the values in |items| and no elements.
-std::vector<base::string16> ToValues(
+std::vector<std::u16string> ToValues(
     const password_manager::ValueElementVector& items) {
-  std::vector<base::string16> passwords;
+  std::vector<std::u16string> passwords;
   passwords.reserve(items.size());
   for (auto& pair : items)
     passwords.push_back(pair.first);
@@ -177,13 +176,13 @@ std::unique_ptr<views::ToggleImageButton> CreatePasswordViewButton(
 // even just |PasswordForm.username_value|.
 std::unique_ptr<views::EditableCombobox> CreateUsernameEditableCombobox(
     const password_manager::PasswordForm& form) {
-  std::vector<base::string16> usernames = {form.username_value};
+  std::vector<std::u16string> usernames = {form.username_value};
   for (const password_manager::ValueElementPair& other_possible_username_pair :
        form.all_possible_usernames) {
     if (other_possible_username_pair.first != form.username_value)
       usernames.push_back(other_possible_username_pair.first);
   }
-  base::EraseIf(usernames, [](const base::string16& username) {
+  base::EraseIf(usernames, [](const std::u16string& username) {
     return username.empty();
   });
   bool display_arrow = !usernames.empty();
@@ -206,11 +205,11 @@ std::unique_ptr<views::EditableCombobox> CreatePasswordEditableCombobox(
     const password_manager::PasswordForm& form,
     bool are_passwords_revealed) {
   DCHECK(!form.IsFederatedCredential());
-  std::vector<base::string16> passwords =
+  std::vector<std::u16string> passwords =
       form.all_possible_passwords.empty()
-          ? std::vector<base::string16>(/*n=*/1, form.password_value)
+          ? std::vector<std::u16string>(/*n=*/1, form.password_value)
           : ToValues(form.all_possible_passwords);
-  base::EraseIf(passwords, [](const base::string16& password) {
+  base::EraseIf(passwords, [](const std::u16string& password) {
     return password.empty();
   });
   bool display_arrow = !passwords.empty();
@@ -224,22 +223,6 @@ std::unique_ptr<views::EditableCombobox> CreatePasswordEditableCombobox(
   combobox->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_PASSWORD_LABEL));
   return combobox;
-}
-
-std::unique_ptr<views::View> CreateHeaderImage(int image_id) {
-  auto image_view = std::make_unique<NonAccessibleImageView>();
-  image_view->SetImage(
-      *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(image_id));
-  gfx::Size preferred_size = image_view->GetPreferredSize();
-  if (preferred_size.width()) {
-    float scale =
-        static_cast<float>(ChromeLayoutProvider::Get()->GetDistanceMetric(
-            views::DISTANCE_BUBBLE_PREFERRED_WIDTH)) /
-        preferred_size.width();
-    preferred_size = gfx::ScaleToRoundedSize(preferred_size, scale);
-    image_view->SetImageSize(preferred_size);
-  }
-  return image_view;
 }
 
 }  // namespace
@@ -370,14 +353,13 @@ gfx::ImageSkia PasswordSaveUpdateView::GetWindowIcon() {
 void PasswordSaveUpdateView::AddedToWidget() {
   static_cast<views::Label*>(GetBubbleFrameView()->title())
       ->SetAllowCharacterBreak(true);
+
+  SetBubbleHeader(IDR_SAVE_PASSWORD_MULTI_DEVICE,
+                  IDR_SAVE_PASSWORD_MULTI_DEVICE_DARK);
 }
 
 void PasswordSaveUpdateView::OnThemeChanged() {
   PasswordBubbleViewBase::OnThemeChanged();
-  int id = color_utils::IsDark(GetBubbleFrameView()->GetBackgroundColor())
-               ? IDR_SAVE_PASSWORD_MULTI_DEVICE_DARK
-               : IDR_SAVE_PASSWORD_MULTI_DEVICE;
-  GetBubbleFrameView()->SetHeaderView(CreateHeaderImage(id));
   if (password_view_button_) {
     auto* theme = GetNativeTheme();
     const SkColor icon_color =
@@ -407,11 +389,11 @@ void PasswordSaveUpdateView::TogglePasswordVisibility() {
 void PasswordSaveUpdateView::UpdateUsernameAndPasswordInModel() {
   if (!username_dropdown_ && !password_dropdown_)
     return;
-  base::string16 new_username = controller_.pending_password().username_value;
-  base::string16 new_password = controller_.pending_password().password_value;
+  std::u16string new_username = controller_.pending_password().username_value;
+  std::u16string new_password = controller_.pending_password().password_value;
   if (username_dropdown_) {
     new_username = username_dropdown_->GetText();
-    base::TrimString(new_username, base::ASCIIToUTF16(" "), &new_username);
+    base::TrimString(new_username, u" ", &new_username);
   }
   if (password_dropdown_)
     new_password = password_dropdown_->GetText();

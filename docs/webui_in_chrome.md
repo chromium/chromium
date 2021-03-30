@@ -72,7 +72,6 @@ js_library("hello_world") {
 }
 
 js_type_check("closure_compile") {
-  uses_js_modules = true
   deps = [ ":hello_world" ]
 }
 ```
@@ -254,7 +253,7 @@ do that, some small changes are needed to your code.  First, we need to add a ne
   HelloWorldDialog();
   // ui::WebDialogDelegate:
   ui::ModalType GetDialogModalType() const override;
-  base::string16 GetDialogTitle() const override;
+  std::u16string GetDialogTitle() const override;
   GURL GetDialogContentURL() const override;
   void GetWebUIMessageHandlers(
       std::vector<content::WebUIMessageHandler*>* handlers) const override;
@@ -287,8 +286,8 @@ ui::ModalType HelloWorldDialog::GetDialogModalType() const {
   return ui::MODAL_TYPE_NONE;
 }
 
-base::string16 HelloWorldDialog::GetDialogTitle() const {
-  return base::UTF8ToUTF16("Hello world");
+std::u16string HelloWorldDialog::GetDialogTitle() const {
+  return u"Hello world";
 }
 
 GURL HelloWorldDialog::GetDialogContentURL() const {

@@ -1,0 +1,4498 @@
+[
+    {
+        "duration": "22.0",
+        "name": "blink_perf.accessibility/build-table.html"
+    },
+    {
+        "duration": "18.0",
+        "name": "blink_perf.accessibility/focus-links.html"
+    },
+    {
+        "duration": "24.0",
+        "name": "blink_perf.accessibility/line-breaks.html"
+    },
+    {
+        "duration": "23.0",
+        "name": "blink_perf.accessibility/many-text-changes-deep-block-subtree.html"
+    },
+    {
+        "duration": "24.0",
+        "name": "blink_perf.accessibility/many-text-changes-deep-hidden-subtree.html"
+    },
+    {
+        "duration": "21.0",
+        "name": "blink_perf.accessibility/many-text-changes-deep-inline-subtree.html"
+    },
+    {
+        "duration": "26.0",
+        "name": "blink_perf.accessibility/many-text-changes-small-wait-between.html"
+    },
+    {
+        "duration": "18.0",
+        "name": "blink_perf.accessibility/textarea-append.html"
+    },
+    {
+        "duration": "13.0",
+        "name": "blink_perf.bindings/append-child.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.bindings/create-element.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.bindings/document-implementation.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.bindings/dom-attribute-on-prototoype.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.bindings/first-child.html"
+    },
+    {
+        "duration": "8.0",
+        "name": "blink_perf.bindings/gc-forest.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.bindings/gc-mini-tree.html"
+    },
+    {
+        "duration": "13.0",
+        "name": "blink_perf.bindings/gc-tree.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.bindings/get-attribute-rare.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.bindings/get-attribute.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.bindings/get-element-by-id.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.bindings/get-elements-by-tag-name.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.bindings/id-getter.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.bindings/id-setter.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.bindings/indexed-getter.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.bindings/insert-before.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.bindings/named-property-enumerator.html"
+    },
+    {
+        "duration": "20.0",
+        "name": "blink_perf.bindings/node-list-access.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.bindings/node-type.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.bindings/post-message.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.bindings/sequence-conversion-array.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.bindings/sequence-conversion-custom-iterator.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.bindings/serialize-array.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.bindings/serialize-long-string.html"
+    },
+    {
+        "duration": "6.0",
+        "name": "blink_perf.bindings/serialize-map.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.bindings/serialize-nested-array.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.bindings/set-attribute-rare.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.bindings/set-attribute.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.bindings/structured-clone-json-deserialize.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.bindings/structured-clone-json-serialize.html"
+    },
+    {
+        "duration": "7.0",
+        "name": "blink_perf.bindings/structured-clone-long-string-deserialize.html"
+    },
+    {
+        "duration": "7.0",
+        "name": "blink_perf.bindings/structured-clone-long-string-serialize.html"
+    },
+    {
+        "duration": "11.0",
+        "name": "blink_perf.bindings/typed-array-construct-from-array.html"
+    },
+    {
+        "duration": "11.0",
+        "name": "blink_perf.bindings/typed-array-construct-from-same-type.html"
+    },
+    {
+        "duration": "11.0",
+        "name": "blink_perf.bindings/typed-array-construct-from-typed.html"
+    },
+    {
+        "duration": "11.0",
+        "name": "blink_perf.bindings/typed-array-set-from-typed.html"
+    },
+    {
+        "duration": "11.0",
+        "name": "blink_perf.bindings/undefined-first-child.html"
+    },
+    {
+        "duration": "11.0",
+        "name": "blink_perf.bindings/undefined-get-element-by-id.html"
+    },
+    {
+        "duration": "11.0",
+        "name": "blink_perf.bindings/undefined-id-getter.html"
+    },
+    {
+        "duration": "6.0",
+        "name": "blink_perf.bindings/worker-structured-clone-different-payloads.html"
+    },
+    {
+        "duration": "17.0",
+        "name": "blink_perf.bindings/worker-structured-clone-json-from-worker.html"
+    },
+    {
+        "duration": "17.0",
+        "name": "blink_perf.bindings/worker-structured-clone-json-roundtrip.html"
+    },
+    {
+        "duration": "17.0",
+        "name": "blink_perf.bindings/worker-structured-clone-json-to-worker.html"
+    },
+    {
+        "duration": "7.0",
+        "name": "blink_perf.bindings/worker-structured-clone-workerDOM-DBMon-from-worker.html"
+    },
+    {
+        "duration": "6.0",
+        "name": "blink_perf.bindings/worker-structured-clone-workerDOM-Map-from-worker.html"
+    },
+    {
+        "duration": "14.0",
+        "name": "blink_perf.bindings/worker-text-encoded-transferable-from-worker.html"
+    },
+    {
+        "duration": "14.0",
+        "name": "blink_perf.bindings/worker-text-encoded-transferable-roundtrip.html"
+    },
+    {
+        "duration": "14.0",
+        "name": "blink_perf.bindings/worker-text-encoded-transferable-to-worker.html"
+    },
+    {
+        "duration": "11.0",
+        "name": "blink_perf.bindings/worker-transferable-from-worker.html"
+    },
+    {
+        "duration": "11.0",
+        "name": "blink_perf.bindings/worker-transferable-roundtrip.html"
+    },
+    {
+        "duration": "11.0",
+        "name": "blink_perf.bindings/worker-transferable-to-worker.html"
+    },
+    {
+        "duration": "17.0",
+        "name": "blink_perf.css/AttributeDescendantSelector.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.css/CSSLogicalDirection.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.css/CSSPropertySetterGetter.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.css/CSSPropertySetterGetterMethods.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.css/CSSPropertyUpdateValue.html"
+    },
+    {
+        "duration": "7.0",
+        "name": "blink_perf.css/ChangeStyleCSSVariableRecalc.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.css/ChangeStyleChildClassSelector.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.css/ChangeStyleChildElementSelectors.html"
+    },
+    {
+        "duration": "7.0",
+        "name": "blink_perf.css/ChangeStyleCustomPropertyDeclaration.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.css/ChangeStyleElementSelector.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.css/ChangeStyleGrandChildElementSelector.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.css/ChangeStyleMultipleClassSelector.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.css/ChangeStyleMultipleQualifiedDataAttributesWithValuesSelector.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.css/ChangeStyleNestedPseudoSelector.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.css/ChangeStylePairOfNthChildSelector.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.css/ChangeStylePartialAttributeMatchingSelector.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.css/ChangeStyleQualifiedDataAttributeSelector.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.css/ChangeStyleQualifiedDataAttributeWithValueSelector.html"
+    },
+    {
+        "duration": "7.0",
+        "name": "blink_perf.css/ChangeStyleShallowTree.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.css/ChangeStyleSingleClassSelector.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.css/ChangeStyleSingleNthChildSelector.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.css/ChangeStyleSinglePseudoSelector.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.css/ChangeStyleUniversalSelector.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.css/ChangeStyleUnqualifiedDataAttributeSelector.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.css/ChangeStyleUnqualifiedDataAttributeWithValueSelector.html"
+    },
+    {
+        "duration": "13.0",
+        "name": "blink_perf.css/ClassDescendantSelector.html"
+    },
+    {
+        "duration": "11.0",
+        "name": "blink_perf.css/ClassInvalidation.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.css/CustomPropertiesCascade.html"
+    },
+    {
+        "duration": "6.0",
+        "name": "blink_perf.css/CustomPropertiesDependency.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.css/CustomPropertiesNonRootInheritance.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.css/CustomPropertiesPendingSubstitution.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.css/CustomPropertiesRootInheritance.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.css/CustomPropertiesVarAlias.html"
+    },
+    {
+        "duration": "6.0",
+        "name": "blink_perf.css/ExplicitInheritance.html"
+    },
+    {
+        "duration": "12.0",
+        "name": "blink_perf.css/FocusUpdate.html"
+    },
+    {
+        "duration": "6.0",
+        "name": "blink_perf.css/LoadBootstrapBlog.html"
+    },
+    {
+        "duration": "6.0",
+        "name": "blink_perf.css/LoadMaterializeStarterPage.html"
+    },
+    {
+        "duration": "6.0",
+        "name": "blink_perf.css/LoadSemanticPageExample.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.css/PseudoClassSelectors.html"
+    },
+    {
+        "duration": "14.0",
+        "name": "blink_perf.css/SelectorCountScaling.html"
+    },
+    {
+        "duration": "16.0",
+        "name": "blink_perf.dom/custom-element-default-style-with-shadow.html"
+    },
+    {
+        "duration": "14.0",
+        "name": "blink_perf.dom/custom-element-default-style.html"
+    },
+    {
+        "duration": "18.0",
+        "name": "blink_perf.dom/long-sibling-list.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.dom/modify-element-classname.html"
+    },
+    {
+        "duration": "6.0",
+        "name": "blink_perf.dom/modify-element-id.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.dom/modify-element-title.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.dom/select-multiple-add.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.dom/select-single-add.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.dom/select-single-remove.html"
+    },
+    {
+        "duration": "13.0",
+        "name": "blink_perf.events/EventsDispatching.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.events/EventsDispatchingInDeeplyNestedV1ShadowTrees.html"
+    },
+    {
+        "duration": "17.0",
+        "name": "blink_perf.events/EventsDispatchingInV1ShadowTrees.html"
+    },
+    {
+        "duration": "13.0",
+        "name": "blink_perf.events/hit-test-lots-of-layers.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.events/is-input-pending-default-events.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.events/is-input-pending-include-continuous-events.html"
+    },
+    {
+        "duration": "16.0",
+        "name": "blink_perf.image_decoder/decode-gif.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.image_decoder/decode-jpeg-h1v1.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.image_decoder/decode-jpeg-h1v2.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.image_decoder/decode-jpeg-h2v1.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.image_decoder/decode-jpeg-h2v2.html"
+    },
+    {
+        "duration": "15.0",
+        "name": "blink_perf.image_decoder/decode-lossless-webp.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.image_decoder/decode-lossy-webp.html"
+    },
+    {
+        "duration": "11.0",
+        "name": "blink_perf.image_decoder/decode-png-palette-opaque.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.image_decoder/decode-png-palette.html"
+    },
+    {
+        "duration": "13.0",
+        "name": "blink_perf.image_decoder/decode-png.html"
+    },
+    {
+        "duration": "13.0",
+        "name": "blink_perf.layout/ArabicLineLayout.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.layout/Shapes/MultipleShapes.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/SimpleTextPathLineLayout.html"
+    },
+    {
+        "duration": "16.0",
+        "name": "blink_perf.layout/abspos.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/add-remove-inline-floats.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.layout/animate-abspos-deep.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/attach-inlines-2.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/attach-inlines.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.layout/auto-grid-lots-of-data.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.layout/auto-grid-lots-of-spanning-data.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/chapter-reflow-once-random.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/chapter-reflow-once.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/chapter-reflow-thrice.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/chapter-reflow-twice.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/chapter-reflow.html"
+    },
+    {
+        "duration": "7.0",
+        "name": "blink_perf.layout/character_fallback.html"
+    },
+    {
+        "duration": "7.0",
+        "name": "blink_perf.layout/contain-content-style-change.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.layout/culled-inline-bounding-rects.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.layout/culled-inline-hittest.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/deeply-nested-grid.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/editing_append.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/editing_append_single_line.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/editing_delete.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/editing_insert.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/editing_prepend.html"
+    },
+    {
+        "duration": "12.0",
+        "name": "blink_perf.layout/fit-content-change-available-size-blocks.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/fit-content-change-available-size-text.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.layout/fixed-grid-lots-of-data.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.layout/fixed-grid-lots-of-stretched-data.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/flexbox-column-nowrap.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/flexbox-column-wrap.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/flexbox-deeply-nested-column-flow.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/flexbox-hittest.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/flexbox-input.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.layout/flexbox-lots-of-data.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/flexbox-row-nowrap.html"
+    },
+    {
+        "duration": "11.0",
+        "name": "blink_perf.layout/flexbox-row-stretch-height-definite.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/flexbox-row-stretch-height-indefinite.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/flexbox-row-wrap.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/flexbox-with-stretch-layout.html"
+    },
+    {
+        "duration": "12.0",
+        "name": "blink_perf.layout/flexbox_with_list_item.html"
+    },
+    {
+        "duration": "8.0",
+        "name": "blink_perf.layout/floats_100_100.html"
+    },
+    {
+        "duration": "8.0",
+        "name": "blink_perf.layout/floats_100_100_nested.html"
+    },
+    {
+        "duration": "8.0",
+        "name": "blink_perf.layout/floats_10_1000.html"
+    },
+    {
+        "duration": "6.0",
+        "name": "blink_perf.layout/floats_20_100.html"
+    },
+    {
+        "duration": "6.0",
+        "name": "blink_perf.layout/floats_20_100_nested.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.layout/floats_2_100.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.layout/floats_2_100_nested.html"
+    },
+    {
+        "duration": "6.0",
+        "name": "blink_perf.layout/floats_50_100.html"
+    },
+    {
+        "duration": "6.0",
+        "name": "blink_perf.layout/floats_50_100_nested.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/floats_show_hide.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.layout/hindi-line-layout.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.layout/hittest-block-children.html"
+    },
+    {
+        "duration": "6.0",
+        "name": "blink_perf.layout/japanese-kokoro-insert.html"
+    },
+    {
+        "duration": "14.0",
+        "name": "blink_perf.layout/large-grid.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/large-spanning-grid-item.html"
+    },
+    {
+        "duration": "13.0",
+        "name": "blink_perf.layout/large-table-with-collapsed-borders-and-colspans-wider-than-table.html"
+    },
+    {
+        "duration": "13.0",
+        "name": "blink_perf.layout/large-table-with-collapsed-borders-and-colspans.html"
+    },
+    {
+        "duration": "13.0",
+        "name": "blink_perf.layout/large-table-with-collapsed-borders-and-no-colspans.html"
+    },
+    {
+        "duration": "14.0",
+        "name": "blink_perf.layout/latin-ebook-resize.html"
+    },
+    {
+        "duration": "6.0",
+        "name": "blink_perf.layout/latin-ebook.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.layout/layers_overlap_2d.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.layout/layers_overlap_3d.html"
+    },
+    {
+        "duration": "0.0",
+        "name": "blink_perf.layout/line-layout-fit-content-break-word.html"
+    },
+    {
+        "duration": "0.0",
+        "name": "blink_perf.layout/line-layout-fit-content.html"
+    },
+    {
+        "duration": "11.0",
+        "name": "blink_perf.layout/line-layout-line-height.html"
+    },
+    {
+        "duration": "13.0",
+        "name": "blink_perf.layout/line-layout-repeat-append-select.html"
+    },
+    {
+        "duration": "8.0",
+        "name": "blink_perf.layout/line-layout-repeat-append.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/line-layout.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.layout/long-line-nowrap-collapse.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.layout/long-line-nowrap-spans-collapse.html"
+    },
+    {
+        "duration": "6.0",
+        "name": "blink_perf.layout/long-line-nowrap.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/many-block-children-auto-inline-size.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/many-block-children-fixed-inline-size.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/multicol/balance-forced-breaks.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/multicol/deeply-nested-tables.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/multicol/fixed-height-with-spanner-and-nested-tables.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/multicol/lots-of-small-nested-unbreakable-blocks-autofill.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/multicol/lots-of-small-unbreakable-blocks-autofill.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/multicol/lots-of-text-autofill.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/multicol/lots-of-text-balanced-orphans-widows.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/multicol/lots-of-text-balanced.html"
+    },
+    {
+        "duration": "35.0",
+        "name": "blink_perf.layout/multicol/nested-forced-breaks.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/multicol/tall-content-short-columns-realistic.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/multicol/tall-content-short-columns.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/nested-blocks-with-percent-height-and-max-height.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/nested-grid-lots-of-tracks.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/nested-grid.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/nested-percent-height-tables.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.layout/ruby.html"
+    },
+    {
+        "duration": "56.0",
+        "name": "blink_perf.layout/subtree-detaching.html"
+    },
+    {
+        "duration": "6.0",
+        "name": "blink_perf.layout/vertical-japanese-kokoro-insert.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.layout/word-break-break-all.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.layout/word-break-break-word.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.layout/word-wrap-break-word.html"
+    },
+    {
+        "duration": "13.0",
+        "name": "blink_perf.owp_storage/blob-perf-files.html"
+    },
+    {
+        "duration": "11.0",
+        "name": "blink_perf.owp_storage/blob-perf-ipc.html"
+    },
+    {
+        "duration": "8.0",
+        "name": "blink_perf.owp_storage/blob-perf-shm.html"
+    },
+    {
+        "duration": "11.0",
+        "name": "blink_perf.owp_storage/blob-perf-tiny.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.owp_storage/idb-load-docs.html"
+    },
+    {
+        "duration": "14.0",
+        "name": "blink_perf.paint/appending-text.html"
+    },
+    {
+        "duration": "15.0",
+        "name": "blink_perf.paint/color-changes.html"
+    },
+    {
+        "duration": "14.0",
+        "name": "blink_perf.paint/complex-content-slow-scroll.html"
+    },
+    {
+        "duration": "14.0",
+        "name": "blink_perf.paint/complex-iframe-filtered.html"
+    },
+    {
+        "duration": "38.0",
+        "name": "blink_perf.paint/contain-update-layer-tree.html"
+    },
+    {
+        "duration": "15.0",
+        "name": "blink_perf.paint/containment-resize.html"
+    },
+    {
+        "duration": "13.0",
+        "name": "blink_perf.paint/fixed-and-many-layers-scroll.html"
+    },
+    {
+        "duration": "15.0",
+        "name": "blink_perf.paint/large-table-background-change.html"
+    },
+    {
+        "duration": "13.0",
+        "name": "blink_perf.paint/large-table-collapsed-border-change.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.paint/modify-selection.html"
+    },
+    {
+        "duration": "11.0",
+        "name": "blink_perf.paint/move-text-with-mask.html"
+    },
+    {
+        "duration": "12.0",
+        "name": "blink_perf.paint/paint-offset-changes.html"
+    },
+    {
+        "duration": "13.0",
+        "name": "blink_perf.paint/transform-changes.html"
+    },
+    {
+        "duration": "13.0",
+        "name": "blink_perf.parser/css-parser-yui.html"
+    },
+    {
+        "duration": "16.0",
+        "name": "blink_perf.parser/declarative-shadow-dom-cloning.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.parser/declarative-shadow-dom.html"
+    },
+    {
+        "duration": "6.0",
+        "name": "blink_perf.parser/html-parser-threaded.html"
+    },
+    {
+        "duration": "15.0",
+        "name": "blink_perf.parser/html-parser.html"
+    },
+    {
+        "duration": "60.0",
+        "name": "blink_perf.parser/html5-full-render.html"
+    },
+    {
+        "duration": "18.0",
+        "name": "blink_perf.parser/iframe-append-remove.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.parser/innerHTML-setter-siblings.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.parser/innerHTML-setter.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.parser/query-selector-all-attribute-complex.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.parser/query-selector-all-attribute.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.parser/query-selector-all-class-deep.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.parser/query-selector-all-class-first.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.parser/query-selector-all-class-last.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.parser/query-selector-all-class.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.parser/query-selector-all-deep.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.parser/query-selector-all-first.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.parser/query-selector-all-id-deep.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.parser/query-selector-all-id-first.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.parser/query-selector-all-id-last.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.parser/query-selector-all-last.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.parser/query-selector-deep.html"
+    },
+    {
+        "duration": "13.0",
+        "name": "blink_perf.parser/query-selector-first.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.parser/query-selector-id-deep.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.parser/query-selector-id-last.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.parser/query-selector-last.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.parser/simple-url.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.parser/textarea-parsing.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.parser/tiny-innerHTML.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.parser/url-parser.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.parser/xml-parser.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.shadow_dom/declarative-api.html"
+    },
+    {
+        "duration": "0.0",
+        "name": "blink_perf.shadow_dom/imperative-api-appendchild.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.shadow_dom/imperative-api-assign.html"
+    },
+    {
+        "duration": "0.0",
+        "name": "blink_perf.shadow_dom/imperative-api-assigned-elements.html"
+    },
+    {
+        "duration": "0.0",
+        "name": "blink_perf.shadow_dom/imperative-api-assigned-slot.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.shadow_dom/imperative-api-custom-detail-summary-large.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.shadow_dom/imperative-api-custom-detail-summary.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.shadow_dom/imperative-api-detail-summary-large.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.shadow_dom/imperative-api-detail-summary.html"
+    },
+    {
+        "duration": "0.0",
+        "name": "blink_perf.shadow_dom/imperative-api-insertbefore.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.shadow_dom/imperative-api.html"
+    },
+    {
+        "duration": "14.0",
+        "name": "blink_perf.shadow_dom/shadow-dom-overhead.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.shadow_dom/shadow-style-share-attr-selectors.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.shadow_dom/shadow-style-share-media-query.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.shadow_dom/shadow-style-share-with-distribution.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.shadow_dom/shadow-style-share.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.shadow_dom/style-sheet-insert.html"
+    },
+    {
+        "duration": "8.0",
+        "name": "blink_perf.shadow_dom/v1-distribution-disconnected-and-reconnected.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.shadow_dom/v1-distribution.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.shadow_dom/v1-host-child-append.html"
+    },
+    {
+        "duration": "8.0",
+        "name": "blink_perf.shadow_dom/v1-large-deep-distribution.html"
+    },
+    {
+        "duration": "11.0",
+        "name": "blink_perf.shadow_dom/v1-large-deep-layout.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.shadow_dom/v1-large-shallow-append-layout.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.shadow_dom/v1-large-shallow-distribution.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.shadow_dom/v1-large-shallow-layout.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.shadow_dom/v1-large-shallow-prepend-layout.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.shadow_dom/v1-mutate-deep-tree-then-re-layout.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.shadow_dom/v1-mutate-deep-tree-then-slot-assigned-nodes.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.shadow_dom/v1-mutate-deep-tree-then-slot-flatten.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.shadow_dom/v1-mutate-shallow-tree-then-re-layout.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.shadow_dom/v1-mutate-shallow-tree-then-slot-assigned-nodes.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.shadow_dom/v1-mutate-shallow-tree-then-slot-flatten.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.shadow_dom/v1-slot-append.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.shadow_dom/v1-small-deep-distribution.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.shadow_dom/v1-small-deep-layout.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.shadow_dom/v1-small-shallow-distribution.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.shadow_dom/v1-small-shallow-layout.html"
+    },
+    {
+        "duration": "8.0",
+        "name": "blink_perf.svg/AzLizardBenjiPark.html"
+    },
+    {
+        "duration": "6.0",
+        "name": "blink_perf.svg/Bamboo.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.svg/Cactus.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.svg/Cowboy.html"
+    },
+    {
+        "duration": "0.0",
+        "name": "blink_perf.svg/Cowboy_transform.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.svg/CrawFishGanson.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.svg/Debian.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.svg/DropsOnABlade.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.svg/FlowerFromMyGarden.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.svg/FoodLeifLodahl.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.svg/France.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.svg/FrancoBolloGnomeEzechi.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.svg/GearFlowers.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.svg/HarveyRayner.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.svg/HereGear.html"
+    },
+    {
+        "duration": "6.0",
+        "name": "blink_perf.svg/MtSaintHelens.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.svg/Samurai.html"
+    },
+    {
+        "duration": "0.0",
+        "name": "blink_perf.svg/SierpinskiCarpet.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.svg/SvgCubics.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.svg/SvgHitTesting.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.svg/SvgNestedUse.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.svg/UnderTheSee.html"
+    },
+    {
+        "duration": "4.0",
+        "name": "blink_perf.svg/WorldIso.html"
+    },
+    {
+        "duration": "5.0",
+        "name": "blink_perf.svg/Worldcup.html"
+    },
+    {
+        "duration": "22.0",
+        "name": "blink_perf.webaudio/audio-buffer-source-node.html"
+    },
+    {
+        "duration": "130.0",
+        "name": "blink_perf.webaudio/audio-worklet-node.html"
+    },
+    {
+        "duration": "142.0",
+        "name": "blink_perf.webaudio/biquad-filter-node.html"
+    },
+    {
+        "duration": "147.0",
+        "name": "blink_perf.webaudio/gain-node.html"
+    },
+    {
+        "duration": "59.0",
+        "name": "blink_perf.webaudio/panner-node.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "blink_perf.webgl/binding-draw-arrays.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "blink_perf.webgl_fast_call/binding-draw-arrays.html"
+    },
+    {
+        "duration": "37.0",
+        "name": "dromaeo/http://dromaeo.com?dom-attr"
+    },
+    {
+        "duration": "35.0",
+        "name": "dromaeo/http://dromaeo.com?dom-modify"
+    },
+    {
+        "duration": "50.0",
+        "name": "dromaeo/http://dromaeo.com?dom-query"
+    },
+    {
+        "duration": "30.0",
+        "name": "dromaeo/http://dromaeo.com?dom-traverse"
+    },
+    {
+        "duration": "6.0",
+        "name": "dummy_benchmark.noisy_benchmark_1/dummy_page.html"
+    },
+    {
+        "duration": "6.0",
+        "name": "dummy_benchmark.stable_benchmark_1/dummy_page.html"
+    },
+    {
+        "duration": "0.0",
+        "name": "jetstream/JetStream"
+    },
+    {
+        "duration": "235.0",
+        "name": "jetstream2/JetStream2"
+    },
+    {
+        "duration": "33.0",
+        "name": "kraken/http://krakenbenchmark.mozilla.org/kraken-1.1/driver.html"
+    },
+    {
+        "duration": "13.0",
+        "name": "loading.mobile/58Pic"
+    },
+    {
+        "duration": "23.0",
+        "name": "loading.mobile/58Pic_3g"
+    },
+    {
+        "duration": "18.0",
+        "name": "loading.mobile/Amazon"
+    },
+    {
+        "duration": "33.0",
+        "name": "loading.mobile/Amazon_3g"
+    },
+    {
+        "duration": "17.0",
+        "name": "loading.mobile/BOLNoticias"
+    },
+    {
+        "duration": "28.0",
+        "name": "loading.mobile/BOLNoticias_3g"
+    },
+    {
+        "duration": "17.0",
+        "name": "loading.mobile/Baidu"
+    },
+    {
+        "duration": "25.0",
+        "name": "loading.mobile/Baidu_3g"
+    },
+    {
+        "duration": "14.0",
+        "name": "loading.mobile/Bradesco"
+    },
+    {
+        "duration": "7.0",
+        "name": "loading.mobile/Bradesco_3g"
+    },
+    {
+        "duration": "16.0",
+        "name": "loading.mobile/Dailymotion"
+    },
+    {
+        "duration": "7.0",
+        "name": "loading.mobile/Dailymotion_3g"
+    },
+    {
+        "duration": "15.0",
+        "name": "loading.mobile/Dawn"
+    },
+    {
+        "duration": "7.0",
+        "name": "loading.mobile/Dawn_3g"
+    },
+    {
+        "duration": "15.0",
+        "name": "loading.mobile/DevOpera_cold"
+    },
+    {
+        "duration": "19.0",
+        "name": "loading.mobile/DevOpera_cold_3g"
+    },
+    {
+        "duration": "20.0",
+        "name": "loading.mobile/DevOpera_hot"
+    },
+    {
+        "duration": "20.0",
+        "name": "loading.mobile/DevOpera_hot_3g"
+    },
+    {
+        "duration": "17.0",
+        "name": "loading.mobile/DevOpera_warm"
+    },
+    {
+        "duration": "17.0",
+        "name": "loading.mobile/DevOpera_warm_3g"
+    },
+    {
+        "duration": "16.0",
+        "name": "loading.mobile/Dramaq"
+    },
+    {
+        "duration": "51.0",
+        "name": "loading.mobile/Dramaq_3g"
+    },
+    {
+        "duration": "15.0",
+        "name": "loading.mobile/EnquiryIndianRail"
+    },
+    {
+        "duration": "17.0",
+        "name": "loading.mobile/EnquiryIndianRail_3g"
+    },
+    {
+        "duration": "18.0",
+        "name": "loading.mobile/Facebook"
+    },
+    {
+        "duration": "9.0",
+        "name": "loading.mobile/Facebook_3g"
+    },
+    {
+        "duration": "15.0",
+        "name": "loading.mobile/FlipBoard_cold"
+    },
+    {
+        "duration": "39.0",
+        "name": "loading.mobile/FlipBoard_cold_3g"
+    },
+    {
+        "duration": "20.0",
+        "name": "loading.mobile/FlipBoard_hot"
+    },
+    {
+        "duration": "21.0",
+        "name": "loading.mobile/FlipBoard_hot_3g"
+    },
+    {
+        "duration": "20.0",
+        "name": "loading.mobile/FlipBoard_warm"
+    },
+    {
+        "duration": "19.0",
+        "name": "loading.mobile/FlipBoard_warm_3g"
+    },
+    {
+        "duration": "16.0",
+        "name": "loading.mobile/FlipKart_cold"
+    },
+    {
+        "duration": "7.0",
+        "name": "loading.mobile/FlipKart_cold_3g"
+    },
+    {
+        "duration": "19.0",
+        "name": "loading.mobile/FlipKart_hot"
+    },
+    {
+        "duration": "21.0",
+        "name": "loading.mobile/FlipKart_hot_3g"
+    },
+    {
+        "duration": "17.0",
+        "name": "loading.mobile/FlipKart_warm"
+    },
+    {
+        "duration": "7.0",
+        "name": "loading.mobile/FlipKart_warm_3g"
+    },
+    {
+        "duration": "15.0",
+        "name": "loading.mobile/FranceTVInfo"
+    },
+    {
+        "duration": "22.0",
+        "name": "loading.mobile/FranceTVInfo_3g"
+    },
+    {
+        "duration": "9.0",
+        "name": "loading.mobile/G1"
+    },
+    {
+        "duration": "9.0",
+        "name": "loading.mobile/G1_3g"
+    },
+    {
+        "duration": "14.0",
+        "name": "loading.mobile/GSShop"
+    },
+    {
+        "duration": "7.0",
+        "name": "loading.mobile/GSShop_3g"
+    },
+    {
+        "duration": "15.0",
+        "name": "loading.mobile/GoogleBrazil"
+    },
+    {
+        "duration": "20.0",
+        "name": "loading.mobile/GoogleBrazil_3g"
+    },
+    {
+        "duration": "17.0",
+        "name": "loading.mobile/GoogleIndia"
+    },
+    {
+        "duration": "9.0",
+        "name": "loading.mobile/GoogleIndia_3g"
+    },
+    {
+        "duration": "16.0",
+        "name": "loading.mobile/GoogleIndonesia"
+    },
+    {
+        "duration": "20.0",
+        "name": "loading.mobile/GoogleIndonesia_3g"
+    },
+    {
+        "duration": "18.0",
+        "name": "loading.mobile/GoogleRedirectToGoogleJapan"
+    },
+    {
+        "duration": "21.0",
+        "name": "loading.mobile/GoogleRedirectToGoogleJapan_3g"
+    },
+    {
+        "duration": "15.0",
+        "name": "loading.mobile/Hongkiat"
+    },
+    {
+        "duration": "29.0",
+        "name": "loading.mobile/Hongkiat_3g"
+    },
+    {
+        "duration": "16.0",
+        "name": "loading.mobile/KapanLagi"
+    },
+    {
+        "duration": "7.0",
+        "name": "loading.mobile/KapanLagi_3g"
+    },
+    {
+        "duration": "17.0",
+        "name": "loading.mobile/Kaskus"
+    },
+    {
+        "duration": "7.0",
+        "name": "loading.mobile/Kaskus_3g"
+    },
+    {
+        "duration": "17.0",
+        "name": "loading.mobile/LocalMoxie"
+    },
+    {
+        "duration": "7.0",
+        "name": "loading.mobile/LocalMoxie_3g"
+    },
+    {
+        "duration": "14.0",
+        "name": "loading.mobile/Locanto"
+    },
+    {
+        "duration": "16.0",
+        "name": "loading.mobile/Locanto_3g"
+    },
+    {
+        "duration": "14.0",
+        "name": "loading.mobile/OLX"
+    },
+    {
+        "duration": "25.0",
+        "name": "loading.mobile/OLX_3g"
+    },
+    {
+        "duration": "17.0",
+        "name": "loading.mobile/QQNews"
+    },
+    {
+        "duration": "29.0",
+        "name": "loading.mobile/QQNews_3g"
+    },
+    {
+        "duration": "14.0",
+        "name": "loading.mobile/SlideShare"
+    },
+    {
+        "duration": "23.0",
+        "name": "loading.mobile/SlideShare_3g"
+    },
+    {
+        "duration": "15.0",
+        "name": "loading.mobile/Suumo_cold"
+    },
+    {
+        "duration": "15.0",
+        "name": "loading.mobile/Suumo_cold_3g"
+    },
+    {
+        "duration": "19.0",
+        "name": "loading.mobile/Suumo_hot"
+    },
+    {
+        "duration": "20.0",
+        "name": "loading.mobile/Suumo_hot_3g"
+    },
+    {
+        "duration": "17.0",
+        "name": "loading.mobile/Suumo_warm"
+    },
+    {
+        "duration": "17.0",
+        "name": "loading.mobile/Suumo_warm_3g"
+    },
+    {
+        "duration": "13.0",
+        "name": "loading.mobile/Thairath"
+    },
+    {
+        "duration": "7.0",
+        "name": "loading.mobile/Thairath_3g"
+    },
+    {
+        "duration": "15.0",
+        "name": "loading.mobile/TheStar"
+    },
+    {
+        "duration": "7.0",
+        "name": "loading.mobile/TheStar_3g"
+    },
+    {
+        "duration": "19.0",
+        "name": "loading.mobile/TribunNews"
+    },
+    {
+        "duration": "36.0",
+        "name": "loading.mobile/TribunNews_3g"
+    },
+    {
+        "duration": "13.0",
+        "name": "loading.mobile/Twitter"
+    },
+    {
+        "duration": "17.0",
+        "name": "loading.mobile/Twitter_3g"
+    },
+    {
+        "duration": "15.0",
+        "name": "loading.mobile/VoiceMemos_cold"
+    },
+    {
+        "duration": "17.0",
+        "name": "loading.mobile/VoiceMemos_cold_3g"
+    },
+    {
+        "duration": "7.0",
+        "name": "loading.mobile/VoiceMemos_hot"
+    },
+    {
+        "duration": "7.0",
+        "name": "loading.mobile/VoiceMemos_hot_3g"
+    },
+    {
+        "duration": "7.0",
+        "name": "loading.mobile/VoiceMemos_warm"
+    },
+    {
+        "duration": "7.0",
+        "name": "loading.mobile/VoiceMemos_warm_3g"
+    },
+    {
+        "duration": "15.0",
+        "name": "loading.mobile/Wikipedia"
+    },
+    {
+        "duration": "20.0",
+        "name": "loading.mobile/Wikipedia_3g"
+    },
+    {
+        "duration": "17.0",
+        "name": "loading.mobile/YahooNews"
+    },
+    {
+        "duration": "9.0",
+        "name": "loading.mobile/YahooNews_3g"
+    },
+    {
+        "duration": "16.0",
+        "name": "loading.mobile/Youtube"
+    },
+    {
+        "duration": "30.0",
+        "name": "loading.mobile/Youtube_3g"
+    },
+    {
+        "duration": "15.0",
+        "name": "media.mobile/mse.html?media=aac_audio.mp4"
+    },
+    {
+        "duration": "16.0",
+        "name": "media.mobile/mse.html?media=aac_audio.mp4,h264_video.mp4"
+    },
+    {
+        "duration": "15.0",
+        "name": "media.mobile/mse.html?media=h264_video.mp4"
+    },
+    {
+        "duration": "15.0",
+        "name": "media.mobile/mse.html?media=tulip2.vp9.webm"
+    },
+    {
+        "duration": "137.0",
+        "name": "media.mobile/video.html?src=boat_1080p60fps_vp9.webm"
+    },
+    {
+        "duration": "138.0",
+        "name": "media.mobile/video.html?src=foodmarket_720p30fps.mp4"
+    },
+    {
+        "duration": "32.0",
+        "name": "media.mobile/video.html?src=tulip2.m4a&type=audio"
+    },
+    {
+        "duration": "32.0",
+        "name": "media.mobile/video.html?src=tulip2.mp3&type=audio"
+    },
+    {
+        "duration": "12.0",
+        "name": "media.mobile/video.html?src=tulip2.mp3&type=audio&seek"
+    },
+    {
+        "duration": "32.0",
+        "name": "media.mobile/video.html?src=tulip2.mp4"
+    },
+    {
+        "duration": "32.0",
+        "name": "media.mobile/video.html?src=tulip2.mp4&busyjs"
+    },
+    {
+        "duration": "35.0",
+        "name": "media.mobile/video.html?src=tulip2.ogg&type=audio"
+    },
+    {
+        "duration": "15.0",
+        "name": "media.mobile/video.html?src=tulip2.ogg&type=audio&seek"
+    },
+    {
+        "duration": "32.0",
+        "name": "media.mobile/video.html?src=tulip2.vp9.webm"
+    },
+    {
+        "duration": "22.0",
+        "name": "media.mobile/video.html?src=tulip2.vp9.webm&background"
+    },
+    {
+        "duration": "33.0",
+        "name": "media.mobile/video.html?src=tulip2.vp9.webm_WiFi"
+    },
+    {
+        "duration": "45.0",
+        "name": "octane/Octane"
+    },
+    {
+        "duration": "28.0",
+        "name": "rasterize_and_record_micro.top_25/file://static_top_25/amazon.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "rasterize_and_record_micro.top_25/file://static_top_25/blogger.html"
+    },
+    {
+        "duration": "22.0",
+        "name": "rasterize_and_record_micro.top_25/file://static_top_25/booking.html"
+    },
+    {
+        "duration": "11.0",
+        "name": "rasterize_and_record_micro.top_25/file://static_top_25/cnn.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "rasterize_and_record_micro.top_25/file://static_top_25/ebay.html"
+    },
+    {
+        "duration": "15.0",
+        "name": "rasterize_and_record_micro.top_25/file://static_top_25/espn.html"
+    },
+    {
+        "duration": "21.0",
+        "name": "rasterize_and_record_micro.top_25/file://static_top_25/facebook.html"
+    },
+    {
+        "duration": "26.0",
+        "name": "rasterize_and_record_micro.top_25/file://static_top_25/gmail.html"
+    },
+    {
+        "duration": "23.0",
+        "name": "rasterize_and_record_micro.top_25/file://static_top_25/google.html"
+    },
+    {
+        "duration": "22.0",
+        "name": "rasterize_and_record_micro.top_25/file://static_top_25/googlecalendar.html"
+    },
+    {
+        "duration": "11.0",
+        "name": "rasterize_and_record_micro.top_25/file://static_top_25/googledocs.html"
+    },
+    {
+        "duration": "22.0",
+        "name": "rasterize_and_record_micro.top_25/file://static_top_25/googleimagesearch.html"
+    },
+    {
+        "duration": "14.0",
+        "name": "rasterize_and_record_micro.top_25/file://static_top_25/googleplus.html"
+    },
+    {
+        "duration": "21.0",
+        "name": "rasterize_and_record_micro.top_25/file://static_top_25/linkedin.html"
+    },
+    {
+        "duration": "9.0",
+        "name": "rasterize_and_record_micro.top_25/file://static_top_25/pinterest.html"
+    },
+    {
+        "duration": "12.0",
+        "name": "rasterize_and_record_micro.top_25/file://static_top_25/techcrunch.html"
+    },
+    {
+        "duration": "25.0",
+        "name": "rasterize_and_record_micro.top_25/file://static_top_25/twitter.html"
+    },
+    {
+        "duration": "10.0",
+        "name": "rasterize_and_record_micro.top_25/file://static_top_25/weather.html"
+    },
+    {
+        "duration": "0.0",
+        "name": "rasterize_and_record_micro.top_25/file://static_top_25/wikipedia.html"
+    },
+    {
+        "duration": "11.0",
+        "name": "rasterize_and_record_micro.top_25/file://static_top_25/wordpress.html"
+    },
+    {
+        "duration": "19.0",
+        "name": "rasterize_and_record_micro.top_25/file://static_top_25/yahooanswers.html"
+    },
+    {
+        "duration": "25.0",
+        "name": "rasterize_and_record_micro.top_25/file://static_top_25/yahoogames.html"
+    },
+    {
+        "duration": "32.0",
+        "name": "rasterize_and_record_micro.top_25/file://static_top_25/yahoonews.html"
+    },
+    {
+        "duration": "12.0",
+        "name": "rasterize_and_record_micro.top_25/file://static_top_25/yahoosports.html"
+    },
+    {
+        "duration": "28.0",
+        "name": "rasterize_and_record_micro.top_25/file://static_top_25/youtube.html"
+    },
+    {
+        "duration": "32.0",
+        "name": "rendering.mobile/accu_weather_2018"
+    },
+    {
+        "duration": "31.0",
+        "name": "rendering.mobile/accu_weather_mobile_pinch_2018"
+    },
+    {
+        "duration": "27.0",
+        "name": "rendering.mobile/amazon_2018"
+    },
+    {
+        "duration": "33.0",
+        "name": "rendering.mobile/amazon_mobile_2018"
+    },
+    {
+        "duration": "31.0",
+        "name": "rendering.mobile/analog_clock_svg"
+    },
+    {
+        "duration": "30.0",
+        "name": "rendering.mobile/androidpolice_mobile_2018"
+    },
+    {
+        "duration": "35.0",
+        "name": "rendering.mobile/animometer_webgl"
+    },
+    {
+        "duration": "34.0",
+        "name": "rendering.mobile/animometer_webgl_attrib_arrays"
+    },
+    {
+        "duration": "35.0",
+        "name": "rendering.mobile/animometer_webgl_multi_draw"
+    },
+    {
+        "duration": "33.0",
+        "name": "rendering.mobile/aquarium"
+    },
+    {
+        "duration": "14.0",
+        "name": "rendering.mobile/aquarium_20k"
+    },
+    {
+        "duration": "30.0",
+        "name": "rendering.mobile/background_color_animation"
+    },
+    {
+        "duration": "30.0",
+        "name": "rendering.mobile/background_color_animation_with_gradient"
+    },
+    {
+        "duration": "23.0",
+        "name": "rendering.mobile/baidu_mobile_2018"
+    },
+    {
+        "duration": "31.0",
+        "name": "rendering.mobile/balls_css_key_frame_animations"
+    },
+    {
+        "duration": "14.0",
+        "name": "rendering.mobile/balls_css_key_frame_animations_composited_transform"
+    },
+    {
+        "duration": "30.0",
+        "name": "rendering.mobile/balls_css_transition_2_properties"
+    },
+    {
+        "duration": "30.0",
+        "name": "rendering.mobile/balls_css_transition_40_properties"
+    },
+    {
+        "duration": "30.0",
+        "name": "rendering.mobile/balls_css_transition_all_properties"
+    },
+    {
+        "duration": "30.0",
+        "name": "rendering.mobile/balls_javascript_canvas"
+    },
+    {
+        "duration": "30.0",
+        "name": "rendering.mobile/balls_javascript_css"
+    },
+    {
+        "duration": "31.0",
+        "name": "rendering.mobile/balls_svg_animations"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/basic_stream"
+    },
+    {
+        "duration": "26.0",
+        "name": "rendering.mobile/bing_mobile_2018"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/blob"
+    },
+    {
+        "duration": "23.0",
+        "name": "rendering.mobile/blogspot_2018"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/blogspot_mobile_2018"
+    },
+    {
+        "duration": "21.0",
+        "name": "rendering.mobile/blur_rotating_background"
+    },
+    {
+        "duration": "20.0",
+        "name": "rendering.mobile/boingboing_mobile_2018"
+    },
+    {
+        "duration": "19.0",
+        "name": "rendering.mobile/booking.com_2018"
+    },
+    {
+        "duration": "16.0",
+        "name": "rendering.mobile/booking.com_mobile_2018"
+    },
+    {
+        "duration": "24.0",
+        "name": "rendering.mobile/bouncing_balls_15"
+    },
+    {
+        "duration": "24.0",
+        "name": "rendering.mobile/bouncing_balls_shadow"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/bouncing_clipped_rectangles"
+    },
+    {
+        "duration": "24.0",
+        "name": "rendering.mobile/bouncing_gradient_circles"
+    },
+    {
+        "duration": "24.0",
+        "name": "rendering.mobile/bouncing_png_images"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/bouncing_svg_images"
+    },
+    {
+        "duration": "27.0",
+        "name": "rendering.mobile/camera_to_webgl"
+    },
+    {
+        "duration": "24.0",
+        "name": "rendering.mobile/canvas2d_to_texture.html"
+    },
+    {
+        "duration": "41.0",
+        "name": "rendering.mobile/canvas_05000_pixels_per_second"
+    },
+    {
+        "duration": "41.0",
+        "name": "rendering.mobile/canvas_10000_pixels_per_second"
+    },
+    {
+        "duration": "41.0",
+        "name": "rendering.mobile/canvas_20000_pixels_per_second"
+    },
+    {
+        "duration": "39.0",
+        "name": "rendering.mobile/canvas_40000_pixels_per_second"
+    },
+    {
+        "duration": "37.0",
+        "name": "rendering.mobile/canvas_60000_pixels_per_second"
+    },
+    {
+        "duration": "38.0",
+        "name": "rendering.mobile/canvas_75000_pixels_per_second"
+    },
+    {
+        "duration": "37.0",
+        "name": "rendering.mobile/canvas_90000_pixels_per_second"
+    },
+    {
+        "duration": "24.0",
+        "name": "rendering.mobile/canvas_animation_no_clear"
+    },
+    {
+        "duration": "24.0",
+        "name": "rendering.mobile/canvas_arcs"
+    },
+    {
+        "duration": "24.0",
+        "name": "rendering.mobile/canvas_font_cycler"
+    },
+    {
+        "duration": "24.0",
+        "name": "rendering.mobile/canvas_lines"
+    },
+    {
+        "duration": "24.0",
+        "name": "rendering.mobile/canvas_to_blob"
+    },
+    {
+        "duration": "24.0",
+        "name": "rendering.mobile/canvas_to_canvas_draw"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/capitolvolkswagen_mobile_2018"
+    },
+    {
+        "duration": "21.0",
+        "name": "rendering.mobile/card_expansion"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/card_expansion_animated"
+    },
+    {
+        "duration": "23.0",
+        "name": "rendering.mobile/card_expansion_images_text"
+    },
+    {
+        "duration": "21.0",
+        "name": "rendering.mobile/card_flying"
+    },
+    {
+        "duration": "21.0",
+        "name": "rendering.mobile/cats_unscaled"
+    },
+    {
+        "duration": "19.0",
+        "name": "rendering.mobile/cats_viewport_width"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/cc_poster_circle"
+    },
+    {
+        "duration": "26.0",
+        "name": "rendering.mobile/cc_scroll_text_only"
+    },
+    {
+        "duration": "27.0",
+        "name": "rendering.mobile/chip_tune"
+    },
+    {
+        "duration": "19.0",
+        "name": "rendering.mobile/cnn_2018"
+    },
+    {
+        "duration": "20.0",
+        "name": "rendering.mobile/cnn_article_mobile_2018"
+    },
+    {
+        "duration": "19.0",
+        "name": "rendering.mobile/cnn_mobile_2018"
+    },
+    {
+        "duration": "23.0",
+        "name": "rendering.mobile/cnn_mobile_pinch_2018"
+    },
+    {
+        "duration": "20.0",
+        "name": "rendering.mobile/cnn_pathological_2018"
+    },
+    {
+        "duration": "24.0",
+        "name": "rendering.mobile/compositor_heavy_animation"
+    },
+    {
+        "duration": "23.0",
+        "name": "rendering.mobile/coordinated_animation"
+    },
+    {
+        "duration": "9.0",
+        "name": "rendering.mobile/core_scroll_header_panel"
+    },
+    {
+        "duration": "24.0",
+        "name": "rendering.mobile/crafty_mind"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/css_animations_many_keyframes"
+    },
+    {
+        "duration": "24.0",
+        "name": "rendering.mobile/css_animations_simultaneous_inline_style"
+    },
+    {
+        "duration": "24.0",
+        "name": "rendering.mobile/css_animations_simultaneous_new_element"
+    },
+    {
+        "duration": "24.0",
+        "name": "rendering.mobile/css_animations_simultaneous_style_element"
+    },
+    {
+        "duration": "24.0",
+        "name": "rendering.mobile/css_animations_simultaneous_updating_class"
+    },
+    {
+        "duration": "24.0",
+        "name": "rendering.mobile/css_animations_staggered_infinite_iterations"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/css_animations_staggered_inline_style"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/css_animations_staggered_new_element"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/css_animations_staggered_style_element"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/css_animations_staggered_updating_class"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/css_animations_triggered_inline_style"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/css_animations_triggered_new_element"
+    },
+    {
+        "duration": "24.0",
+        "name": "rendering.mobile/css_animations_triggered_style_element"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/css_animations_triggered_updating_class"
+    },
+    {
+        "duration": "27.0",
+        "name": "rendering.mobile/css_opacity_plus_n_layers_0"
+    },
+    {
+        "duration": "27.0",
+        "name": "rendering.mobile/css_opacity_plus_n_layers_75"
+    },
+    {
+        "duration": "27.0",
+        "name": "rendering.mobile/css_opacity_plus_n_layers_99"
+    },
+    {
+        "duration": "24.0",
+        "name": "rendering.mobile/css_transitions_inline_style"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/css_transitions_new_element"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/css_transitions_staggered_inline_style"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/css_transitions_staggered_new_element"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/css_transitions_staggered_style_element"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/css_transitions_staggered_updating_class"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/css_transitions_style_element"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/css_transitions_triggered_inline_style"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/css_transitions_triggered_new_element"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/css_transitions_triggered_style_element"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/css_transitions_triggered_updating_class"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/css_transitions_updating_class"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/css_value_type_color"
+    },
+    {
+        "duration": "21.0",
+        "name": "rendering.mobile/css_value_type_filter"
+    },
+    {
+        "duration": "21.0",
+        "name": "rendering.mobile/css_value_type_length"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/css_value_type_length_complex"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/css_value_type_length_simple"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/css_value_type_path"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/css_value_type_shadow"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/css_value_type_transform_complex"
+    },
+    {
+        "duration": "21.0",
+        "name": "rendering.mobile/css_value_type_transform_simple"
+    },
+    {
+        "duration": "26.0",
+        "name": "rendering.mobile/deviantart_mobile_2018"
+    },
+    {
+        "duration": "16.0",
+        "name": "rendering.mobile/digg_mobile_2018"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/docs_paper.html"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/docs_resume.html"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/docs_table.html"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/draw_image"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/draw_image_not_pixel_aligned"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/dynamic_canvas_to_hw_accelerated_canvas.html"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/dynamic_cube_map"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/dynamic_webgl_to_hw_accelerated_canvas.html"
+    },
+    {
+        "duration": "24.0",
+        "name": "rendering.mobile/earth"
+    },
+    {
+        "duration": "17.0",
+        "name": "rendering.mobile/ebay_2018"
+    },
+    {
+        "duration": "14.0",
+        "name": "rendering.mobile/ebay_mobile_2018"
+    },
+    {
+        "duration": "19.0",
+        "name": "rendering.mobile/ebay_mobile_pinch_2018"
+    },
+    {
+        "duration": "29.0",
+        "name": "rendering.mobile/ebay_scroll_2018"
+    },
+    {
+        "duration": "24.0",
+        "name": "rendering.mobile/effect_games"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/espn_2018"
+    },
+    {
+        "duration": "16.0",
+        "name": "rendering.mobile/espn_mobile_2018"
+    },
+    {
+        "duration": "16.0",
+        "name": "rendering.mobile/espn_pathological_2018"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/extra_large_texture_uploads"
+    },
+    {
+        "duration": "16.0",
+        "name": "rendering.mobile/facebook_2018"
+    },
+    {
+        "duration": "20.0",
+        "name": "rendering.mobile/facebook_mobile_2018"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/falling_particle_simulation_cpu.html"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/falling_particle_simulation_gpu.html"
+    },
+    {
+        "duration": "11.0",
+        "name": "rendering.mobile/famo_us_twitter_demo"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/fill_clear_rect.html"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/fill_shapes"
+    },
+    {
+        "duration": "23.0",
+        "name": "rendering.mobile/filter_terrain_svg"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/flickr_scroll_2018"
+    },
+    {
+        "duration": "23.0",
+        "name": "rendering.mobile/font_wipe"
+    },
+    {
+        "duration": "15.0",
+        "name": "rendering.mobile/forecast.io_mobile_2018"
+    },
+    {
+        "duration": "30.0",
+        "name": "rendering.mobile/geo_apis"
+    },
+    {
+        "duration": "30.0",
+        "name": "rendering.mobile/get_image_data_cpu.html"
+    },
+    {
+        "duration": "27.0",
+        "name": "rendering.mobile/get_image_data_gpu.html"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/gmail_2018"
+    },
+    {
+        "duration": "19.0",
+        "name": "rendering.mobile/google_calendar_2018"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/google_docs_2018"
+    },
+    {
+        "duration": "23.0",
+        "name": "rendering.mobile/google_image_search_2018"
+    },
+    {
+        "duration": "27.0",
+        "name": "rendering.mobile/google_image_search_mobile_2018"
+    },
+    {
+        "duration": "23.0",
+        "name": "rendering.mobile/google_news_ios"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/google_news_mobile_2018"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/google_plus_2018"
+    },
+    {
+        "duration": "38.0",
+        "name": "rendering.mobile/google_plus_mobile_2018"
+    },
+    {
+        "duration": "27.0",
+        "name": "rendering.mobile/google_search_mobile_pinch_2018"
+    },
+    {
+        "duration": "21.0",
+        "name": "rendering.mobile/google_web_search_2018"
+    },
+    {
+        "duration": "26.0",
+        "name": "rendering.mobile/google_web_search_mobile_2018"
+    },
+    {
+        "duration": "27.0",
+        "name": "rendering.mobile/gpu_bound_shader.html"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/gsp.ro_mobile_2018"
+    },
+    {
+        "duration": "30.0",
+        "name": "rendering.mobile/guardian_pathological_2018"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/guimark_vector_chart"
+    },
+    {
+        "duration": "27.0",
+        "name": "rendering.mobile/gws_boogie_expansion"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/gws_google_expansion"
+    },
+    {
+        "duration": "27.0",
+        "name": "rendering.mobile/hakim"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/horizontal_vertical_expansion"
+    },
+    {
+        "duration": "27.0",
+        "name": "rendering.mobile/hw_accelerated_canvas_to_sw_canvas.html"
+    },
+    {
+        "duration": "42.0",
+        "name": "rendering.mobile/idle_power_blank"
+    },
+    {
+        "duration": "35.0",
+        "name": "rendering.mobile/ie_chalkboard"
+    },
+    {
+        "duration": "34.0",
+        "name": "rendering.mobile/ie_pirate_mark"
+    },
+    {
+        "duration": "29.0",
+        "name": "rendering.mobile/infinite_scroll_element_n_layers_0"
+    },
+    {
+        "duration": "29.0",
+        "name": "rendering.mobile/infinite_scroll_element_n_layers_75"
+    },
+    {
+        "duration": "29.0",
+        "name": "rendering.mobile/infinite_scroll_element_n_layers_99"
+    },
+    {
+        "duration": "29.0",
+        "name": "rendering.mobile/infinite_scroll_root_fixed_n_layers_0"
+    },
+    {
+        "duration": "29.0",
+        "name": "rendering.mobile/infinite_scroll_root_fixed_n_layers_75"
+    },
+    {
+        "duration": "29.0",
+        "name": "rendering.mobile/infinite_scroll_root_fixed_n_layers_99"
+    },
+    {
+        "duration": "29.0",
+        "name": "rendering.mobile/infinite_scroll_root_n_layers_0"
+    },
+    {
+        "duration": "29.0",
+        "name": "rendering.mobile/infinite_scroll_root_n_layers_75"
+    },
+    {
+        "duration": "29.0",
+        "name": "rendering.mobile/infinite_scroll_root_n_layers_99"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/infinite_scrolling"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/jarro_doverson"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/jpeg_decoding_rgb_and_gpu_rasterization"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/jpeg_decoding_yuv_and_gpu_rasterization"
+    },
+    {
+        "duration": "32.0",
+        "name": "rendering.mobile/js_full_screen_invalidation"
+    },
+    {
+        "duration": "30.0",
+        "name": "rendering.mobile/js_opacity_plus_n_layers_0"
+    },
+    {
+        "duration": "30.0",
+        "name": "rendering.mobile/js_opacity_plus_n_layers_75"
+    },
+    {
+        "duration": "30.0",
+        "name": "rendering.mobile/js_opacity_plus_n_layers_99"
+    },
+    {
+        "duration": "30.0",
+        "name": "rendering.mobile/js_paint_plus_n_layers_0"
+    },
+    {
+        "duration": "30.0",
+        "name": "rendering.mobile/js_paint_plus_n_layers_75"
+    },
+    {
+        "duration": "30.0",
+        "name": "rendering.mobile/js_paint_plus_n_layers_99"
+    },
+    {
+        "duration": "31.0",
+        "name": "rendering.mobile/js_poster_circle"
+    },
+    {
+        "duration": "24.0",
+        "name": "rendering.mobile/js_scroll_text_only"
+    },
+    {
+        "duration": "27.0",
+        "name": "rendering.mobile/kevs_3d"
+    },
+    {
+        "duration": "27.0",
+        "name": "rendering.mobile/keyframed_animations"
+    },
+    {
+        "duration": "27.0",
+        "name": "rendering.mobile/large_texture_uploads"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/latimes_pathological_2018"
+    },
+    {
+        "duration": "23.0",
+        "name": "rendering.mobile/linkedin_2018"
+    },
+    {
+        "duration": "45.0",
+        "name": "rendering.mobile/linkedin_mobile_2018"
+    },
+    {
+        "duration": "37.0",
+        "name": "rendering.mobile/linkedin_mobile_pinch_2018"
+    },
+    {
+        "duration": "34.0",
+        "name": "rendering.mobile/linkedin_pathological_2018"
+    },
+    {
+        "duration": "20.0",
+        "name": "rendering.mobile/list_animation_simple"
+    },
+    {
+        "duration": "26.0",
+        "name": "rendering.mobile/list_recycle_transform"
+    },
+    {
+        "duration": "65.0",
+        "name": "rendering.mobile/lost_crypt"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/main_0fps_impl_60fps"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/main_0fps_impl_60fps_no_update"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/main_0fps_impl_60fps_no_update_jank"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/main_0fps_with_jank_impl_0fps"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/main_15fps_impl_0fps"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/main_15fps_with_jank_impl_0fps"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/main_30fps_impl_0fps"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/main_30fps_impl_60fps"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/main_60fps_impl_0fps"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/main_60fps_impl_60fps"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/main_60fps_impl_60fps_no_update"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/main_60fps_impl_60fps_no_update_jank"
+    },
+    {
+        "duration": "44.0",
+        "name": "rendering.mobile/main_60fps_with_extreme_jank_impl_0fps"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/main_60fps_with_jank_and_delay_impl_60fps"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/main_60fps_with_jank_impl_0fps"
+    },
+    {
+        "duration": "31.0",
+        "name": "rendering.mobile/main_animations_half_presented"
+    },
+    {
+        "duration": "30.0",
+        "name": "rendering.mobile/man_in_blue"
+    },
+    {
+        "duration": "29.0",
+        "name": "rendering.mobile/many_images"
+    },
+    {
+        "duration": "31.0",
+        "name": "rendering.mobile/many_planets_deep"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/maps_perf_test"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/mask_transition_animation"
+    },
+    {
+        "duration": "21.0",
+        "name": "rendering.mobile/masonry"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/medium_texture_uploads"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/megi_dish"
+    },
+    {
+        "duration": "60.0",
+        "name": "rendering.mobile/microgame_fps"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/microsoft_asteroid_belt"
+    },
+    {
+        "duration": "12.0",
+        "name": "rendering.mobile/microsoft_fireflies"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/microsoft_fish_ie_tank"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/microsoft_performance"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/microsoft_snow"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/microsoft_speed_reading"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/microsoft_tweet_map"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/microsoft_video_city"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/microsoft_worker_fountains"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/mix_10k"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/mix_blend_mode_animation_difference"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/mix_blend_mode_animation_hue"
+    },
+    {
+        "duration": "27.0",
+        "name": "rendering.mobile/mix_blend_mode_animation_propagating_isolation"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/mix_blend_mode_animation_screen"
+    },
+    {
+        "duration": "34.0",
+        "name": "rendering.mobile/mlb_mobile_2018"
+    },
+    {
+        "duration": "21.0",
+        "name": "rendering.mobile/mobile_news_sandbox"
+    },
+    {
+        "duration": "29.0",
+        "name": "rendering.mobile/motion_mark_canvas_fill_shapes"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/motion_mark_canvas_stroke_shapes"
+    },
+    {
+        "duration": "27.0",
+        "name": "rendering.mobile/motionmark_anim_design_15"
+    },
+    {
+        "duration": "26.0",
+        "name": "rendering.mobile/motionmark_anim_focus_25"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/motionmark_anim_images_50"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/motionmark_anim_leaves_250"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/motionmark_anim_multiply_175"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/motionmark_anim_suits_125"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/motionmark_html_composited_transforms_125"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/motionmark_html_css_bouncing_blend_circles_25"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/motionmark_html_css_bouncing_circles_250"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/motionmark_html_css_bouncing_clipped_rects_100"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/motionmark_html_css_bouncing_filter_circles_15"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/motionmark_html_css_bouncing_gradient_circles_250"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/motionmark_html_css_bouncing_svg_images_50"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/motionmark_html_css_bouncing_tagged_images_225"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/motionmark_html_dom_particles_svg_masks_25"
+    },
+    {
+        "duration": "24.0",
+        "name": "rendering.mobile/motionmark_html_focus_20_15"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/motionmark_html_leaves_20_50"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/motionmark_svg_bouncing_circles_250"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/motionmark_svg_bouncing_clipped_rects_100"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/motionmark_svg_bouncing_gradient_circles_200"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/motionmark_svg_bouncing_png_images_200"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/motionmark_svg_bouncing_svg_images_50"
+    },
+    {
+        "duration": "31.0",
+        "name": "rendering.mobile/new_tilings"
+    },
+    {
+        "duration": "27.0",
+        "name": "rendering.mobile/no_op_raf"
+    },
+    {
+        "duration": "24.0",
+        "name": "rendering.mobile/no_op_scroll"
+    },
+    {
+        "duration": "23.0",
+        "name": "rendering.mobile/no_op_settimeout"
+    },
+    {
+        "duration": "24.0",
+        "name": "rendering.mobile/no_op_touch_handler"
+    },
+    {
+        "duration": "30.0",
+        "name": "rendering.mobile/nvidia_vertex_buffer_object"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/nyc_gov_scroll_2018"
+    },
+    {
+        "duration": "33.0",
+        "name": "rendering.mobile/nytimes_mobile_2018"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/nytimes_scroll_2018"
+    },
+    {
+        "duration": "26.0",
+        "name": "rendering.mobile/off_screen_main_60fps"
+    },
+    {
+        "duration": "26.0",
+        "name": "rendering.mobile/off_screen_main_60fps_jank"
+    },
+    {
+        "duration": "26.0",
+        "name": "rendering.mobile/overlay_background_color_css_transitions_page"
+    },
+    {
+        "duration": "11.0",
+        "name": "rendering.mobile/paper_button"
+    },
+    {
+        "duration": "15.0",
+        "name": "rendering.mobile/paper_calculator"
+    },
+    {
+        "duration": "11.0",
+        "name": "rendering.mobile/paper_calculator_hit_test"
+    },
+    {
+        "duration": "11.0",
+        "name": "rendering.mobile/paper_checkbox"
+    },
+    {
+        "duration": "15.0",
+        "name": "rendering.mobile/paper_fab"
+    },
+    {
+        "duration": "15.0",
+        "name": "rendering.mobile/paper_icon_button"
+    },
+    {
+        "duration": "15.0",
+        "name": "rendering.mobile/paper_shadow"
+    },
+    {
+        "duration": "15.0",
+        "name": "rendering.mobile/paper_tabs"
+    },
+    {
+        "duration": "15.0",
+        "name": "rendering.mobile/paper_toggle_button"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/parallax_effect"
+    },
+    {
+        "duration": "35.0",
+        "name": "rendering.mobile/particles"
+    },
+    {
+        "duration": "29.0",
+        "name": "rendering.mobile/pbs_pathological_2018"
+    },
+    {
+        "duration": "20.0",
+        "name": "rendering.mobile/physical_simulation"
+    },
+    {
+        "duration": "35.0",
+        "name": "rendering.mobile/pinterest_2018"
+    },
+    {
+        "duration": "32.0",
+        "name": "rendering.mobile/pinterest_mobile_2018"
+    },
+    {
+        "duration": "15.0",
+        "name": "rendering.mobile/polymer_topeka"
+    },
+    {
+        "duration": "34.0",
+        "name": "rendering.mobile/put_and_create_imagebitmap_from_imagedata"
+    },
+    {
+        "duration": "30.0",
+        "name": "rendering.mobile/put_get_image_data"
+    },
+    {
+        "duration": "30.0",
+        "name": "rendering.mobile/put_image_data.html"
+    },
+    {
+        "duration": "27.0",
+        "name": "rendering.mobile/raf"
+    },
+    {
+        "duration": "27.0",
+        "name": "rendering.mobile/raf_animation"
+    },
+    {
+        "duration": "27.0",
+        "name": "rendering.mobile/raf_canvas"
+    },
+    {
+        "duration": "27.0",
+        "name": "rendering.mobile/raf_touch_animation"
+    },
+    {
+        "duration": "29.0",
+        "name": "rendering.mobile/recode_pathological_2018"
+    },
+    {
+        "duration": "29.0",
+        "name": "rendering.mobile/reddit_mobile_2018"
+    },
+    {
+        "duration": "33.0",
+        "name": "rendering.mobile/runway_2019"
+    },
+    {
+        "duration": "34.0",
+        "name": "rendering.mobile/san_angeles"
+    },
+    {
+        "duration": "16.0",
+        "name": "rendering.mobile/second_batch_js_heavy"
+    },
+    {
+        "duration": "16.0",
+        "name": "rendering.mobile/second_batch_js_light"
+    },
+    {
+        "duration": "16.0",
+        "name": "rendering.mobile/second_batch_js_medium"
+    },
+    {
+        "duration": "29.0",
+        "name": "rendering.mobile/sfgate_mobile_2018"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/sheets_render.html"
+    },
+    {
+        "duration": "27.0",
+        "name": "rendering.mobile/silk_finance"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/simple_text_page"
+    },
+    {
+        "duration": "21.0",
+        "name": "rendering.mobile/simple_touch_drag"
+    },
+    {
+        "duration": "66.0",
+        "name": "rendering.mobile/skelebuddies_wasm_2020"
+    },
+    {
+        "duration": "31.0",
+        "name": "rendering.mobile/slashdot_mobile_2018"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/slide_drawer"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/small_texture_uploads"
+    },
+    {
+        "duration": "29.0",
+        "name": "rendering.mobile/smash_cat"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/spielzeugz"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/static_canvas_to_hw_accelerated_canvas.html"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/static_webgl_to_hw_accelerated_canvas.html"
+    },
+    {
+        "duration": "21.0",
+        "name": "rendering.mobile/sticky_using_webkit"
+    },
+    {
+        "duration": "26.0",
+        "name": "rendering.mobile/stress_hidey_bars"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/stroke_shapes"
+    },
+    {
+        "duration": "36.0",
+        "name": "rendering.mobile/svg_icon_raster"
+    },
+    {
+        "duration": "19.0",
+        "name": "rendering.mobile/swipe_action"
+    },
+    {
+        "duration": "21.0",
+        "name": "rendering.mobile/swipe_to_dismiss"
+    },
+    {
+        "duration": "21.0",
+        "name": "rendering.mobile/sync_scroll_offset"
+    },
+    {
+        "duration": "31.0",
+        "name": "rendering.mobile/techcrunch_2018"
+    },
+    {
+        "duration": "24.0",
+        "name": "rendering.mobile/techcrunch_mobile_2018"
+    },
+    {
+        "duration": "41.0",
+        "name": "rendering.mobile/text_05000_pixels_per_second"
+    },
+    {
+        "duration": "41.0",
+        "name": "rendering.mobile/text_10000_pixels_per_second"
+    },
+    {
+        "duration": "40.0",
+        "name": "rendering.mobile/text_20000_pixels_per_second"
+    },
+    {
+        "duration": "39.0",
+        "name": "rendering.mobile/text_40000_pixels_per_second"
+    },
+    {
+        "duration": "37.0",
+        "name": "rendering.mobile/text_60000_pixels_per_second"
+    },
+    {
+        "duration": "38.0",
+        "name": "rendering.mobile/text_75000_pixels_per_second"
+    },
+    {
+        "duration": "38.0",
+        "name": "rendering.mobile/text_90000_pixels_per_second"
+    },
+    {
+        "duration": "37.0",
+        "name": "rendering.mobile/text_constant_full_page_raster_05000_pixels_per_second"
+    },
+    {
+        "duration": "37.0",
+        "name": "rendering.mobile/text_constant_full_page_raster_10000_pixels_per_second"
+    },
+    {
+        "duration": "37.0",
+        "name": "rendering.mobile/text_constant_full_page_raster_20000_pixels_per_second"
+    },
+    {
+        "duration": "34.0",
+        "name": "rendering.mobile/text_constant_full_page_raster_40000_pixels_per_second"
+    },
+    {
+        "duration": "32.0",
+        "name": "rendering.mobile/text_constant_full_page_raster_60000_pixels_per_second"
+    },
+    {
+        "duration": "33.0",
+        "name": "rendering.mobile/text_constant_full_page_raster_75000_pixels_per_second"
+    },
+    {
+        "duration": "32.0",
+        "name": "rendering.mobile/text_constant_full_page_raster_90000_pixels_per_second"
+    },
+    {
+        "duration": "41.0",
+        "name": "rendering.mobile/text_hover_05000_pixels_per_second"
+    },
+    {
+        "duration": "41.0",
+        "name": "rendering.mobile/text_hover_10000_pixels_per_second"
+    },
+    {
+        "duration": "41.0",
+        "name": "rendering.mobile/text_hover_20000_pixels_per_second"
+    },
+    {
+        "duration": "39.0",
+        "name": "rendering.mobile/text_hover_40000_pixels_per_second"
+    },
+    {
+        "duration": "37.0",
+        "name": "rendering.mobile/text_hover_60000_pixels_per_second"
+    },
+    {
+        "duration": "34.0",
+        "name": "rendering.mobile/text_hover_75000_pixels_per_second"
+    },
+    {
+        "duration": "32.0",
+        "name": "rendering.mobile/text_hover_90000_pixels_per_second"
+    },
+    {
+        "duration": "24.0",
+        "name": "rendering.mobile/theverge_article_mobile_2018"
+    },
+    {
+        "duration": "23.0",
+        "name": "rendering.mobile/theverge_mobile_2018"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/throughput_scrolling_active_handler"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/throughput_scrolling_composited"
+    },
+    {
+        "duration": "31.0",
+        "name": "rendering.mobile/throughput_scrolling_passive_handler"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/throughput_scrolling_uncomposited"
+    },
+    {
+        "duration": "58.0",
+        "name": "rendering.mobile/tiny_racing_v3_wasm_2020"
+    },
+    {
+        "duration": "31.0",
+        "name": "rendering.mobile/toBlob_duration.html"
+    },
+    {
+        "duration": "29.0",
+        "name": "rendering.mobile/toBlob_duration_jpeg.html"
+    },
+    {
+        "duration": "29.0",
+        "name": "rendering.mobile/toBlob_small_canvas_in_worker.html"
+    },
+    {
+        "duration": "26.0",
+        "name": "rendering.mobile/toggle_drawer"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/touch_handler_scrolling"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/transfer_from_imageBitmap.html"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/transform_transitions"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/transform_transitions_js_block"
+    },
+    {
+        "duration": "29.0",
+        "name": "rendering.mobile/twitch_2018"
+    },
+    {
+        "duration": "30.0",
+        "name": "rendering.mobile/twitch_mobile_pinch_2018"
+    },
+    {
+        "duration": "26.0",
+        "name": "rendering.mobile/twitter_2018"
+    },
+    {
+        "duration": "33.0",
+        "name": "rendering.mobile/twitter_mobile_2018"
+    },
+    {
+        "duration": "25.0",
+        "name": "rendering.mobile/update_history_state"
+    },
+    {
+        "duration": "22.0",
+        "name": "rendering.mobile/usatoday_mobile_2018"
+    },
+    {
+        "duration": "23.0",
+        "name": "rendering.mobile/vertical_expansion"
+    },
+    {
+        "duration": "29.0",
+        "name": "rendering.mobile/video_to_hw_accelerated_canvas"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/video_to_sub_texture"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/video_to_sub_texture_flip_and_premultiply"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/video_to_sub_texture_flip_y"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/video_to_sub_texture_premultiply"
+    },
+    {
+        "duration": "29.0",
+        "name": "rendering.mobile/video_to_texture"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/web_animation_value_type_color"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/web_animation_value_type_length_3d"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/web_animation_value_type_length_complex"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/web_animation_value_type_length_simple"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/web_animation_value_type_path"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/web_animation_value_type_shadow"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/web_animation_value_type_transform_complex"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/web_animation_value_type_transform_simple"
+    },
+    {
+        "duration": "30.0",
+        "name": "rendering.mobile/web_animations_many_keyframes"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/web_animations_set_current_time"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/web_animations_simultaneous"
+    },
+    {
+        "duration": "29.0",
+        "name": "rendering.mobile/web_animations_staggered_chaining"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/web_animations_staggered_infinite_iterations"
+    },
+    {
+        "duration": "29.0",
+        "name": "rendering.mobile/web_animations_staggered_triggering_page"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/webgl_to_texture"
+    },
+    {
+        "duration": "23.0",
+        "name": "rendering.mobile/webp_decoding_rgb_and_gpu_rasterization"
+    },
+    {
+        "duration": "23.0",
+        "name": "rendering.mobile/webp_decoding_yuv_and_gpu_rasterization"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/wikipedia_2018"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/wikipedia_delayed_scroll_start_2018"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/wikipedia_mobile_2018"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/wordpress_2018"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/wordpress_mobile_2018"
+    },
+    {
+        "duration": "28.0",
+        "name": "rendering.mobile/worldjournal_mobile_2018"
+    },
+    {
+        "duration": "32.0",
+        "name": "rendering.mobile/wow_wiki_pathological_2018"
+    },
+    {
+        "duration": "39.0",
+        "name": "rendering.mobile/wowwiki_mobile_2018"
+    },
+    {
+        "duration": "29.0",
+        "name": "rendering.mobile/wsj_mobile_2018"
+    },
+    {
+        "duration": "27.0",
+        "name": "rendering.mobile/yahoo_answers_2018"
+    },
+    {
+        "duration": "29.0",
+        "name": "rendering.mobile/yahoo_answers_mobile_2018"
+    },
+    {
+        "duration": "21.0",
+        "name": "rendering.mobile/yahoo_news_2018"
+    },
+    {
+        "duration": "24.0",
+        "name": "rendering.mobile/yahoo_news_mobile_2018"
+    },
+    {
+        "duration": "24.0",
+        "name": "rendering.mobile/yahoo_sports_2018"
+    },
+    {
+        "duration": "21.0",
+        "name": "rendering.mobile/yahoo_sports_pathological_2018"
+    },
+    {
+        "duration": "10.0",
+        "name": "rendering.mobile/youtube_2018"
+    },
+    {
+        "duration": "18.0",
+        "name": "rendering.mobile/youtube_mobile_2018"
+    },
+    {
+        "duration": "24.0",
+        "name": "rendering.mobile/zdnet_pathological_2018"
+    },
+    {
+        "duration": "21.0",
+        "name": "rendering.mobile/zoom_in_animation"
+    },
+    {
+        "duration": "22.0",
+        "name": "speedometer-future/http://browserbench.org/Speedometer/"
+    },
+    {
+        "duration": "20.0",
+        "name": "speedometer/http://browserbench.org/Speedometer/"
+    },
+    {
+        "duration": "34.0",
+        "name": "speedometer2-future/Speedometer2"
+    },
+    {
+        "duration": "38.0",
+        "name": "speedometer2-pcscan/Speedometer2"
+    },
+    {
+        "duration": "32.0",
+        "name": "speedometer2/Speedometer2"
+    },
+    {
+        "duration": "80.0",
+        "name": "startup.mobile/cct:coldish:bbc"
+    },
+    {
+        "duration": "83.0",
+        "name": "startup.mobile/intent:coldish:bbc"
+    },
+    {
+        "duration": "55.0",
+        "name": "startup.mobile/intent:warm:bbc"
+    },
+    {
+        "duration": "52.0",
+        "name": "startup.mobile/maps_pwa:with_http_cache"
+    },
+    {
+        "duration": "26.0",
+        "name": "system_health.common_mobile/background:media:imgur:2019"
+    },
+    {
+        "duration": "38.0",
+        "name": "system_health.common_mobile/background:news:nytimes:2019"
+    },
+    {
+        "duration": "25.0",
+        "name": "system_health.common_mobile/background:search:google:2019"
+    },
+    {
+        "duration": "24.0",
+        "name": "system_health.common_mobile/background:social:facebook:2019"
+    },
+    {
+        "duration": "33.0",
+        "name": "system_health.common_mobile/background:tools:gmail:2019"
+    },
+    {
+        "duration": "64.0",
+        "name": "system_health.common_mobile/browse:chrome:newtab:2019"
+    },
+    {
+        "duration": "30.0",
+        "name": "system_health.common_mobile/browse:chrome:omnibox:2019"
+    },
+    {
+        "duration": "74.0",
+        "name": "system_health.common_mobile/browse:media:facebook_photos:2019"
+    },
+    {
+        "duration": "50.0",
+        "name": "system_health.common_mobile/browse:media:flickr_infinite_scroll:2019"
+    },
+    {
+        "duration": "46.0",
+        "name": "system_health.common_mobile/browse:media:googleplaystore:2019"
+    },
+    {
+        "duration": "74.0",
+        "name": "system_health.common_mobile/browse:media:imgur:2019"
+    },
+    {
+        "duration": "54.0",
+        "name": "system_health.common_mobile/browse:media:youtube:2019"
+    },
+    {
+        "duration": "10.0",
+        "name": "system_health.common_mobile/browse:news:cricbuzz:2019"
+    },
+    {
+        "duration": "42.0",
+        "name": "system_health.common_mobile/browse:news:globo:2019"
+    },
+    {
+        "duration": "49.0",
+        "name": "system_health.common_mobile/browse:news:nytimes:2019"
+    },
+    {
+        "duration": "37.0",
+        "name": "system_health.common_mobile/browse:news:qq:2019"
+    },
+    {
+        "duration": "54.0",
+        "name": "system_health.common_mobile/browse:news:reddit:2019"
+    },
+    {
+        "duration": "47.0",
+        "name": "system_health.common_mobile/browse:news:toi:2019"
+    },
+    {
+        "duration": "53.0",
+        "name": "system_health.common_mobile/browse:news:washingtonpost:2019"
+    },
+    {
+        "duration": "29.0",
+        "name": "system_health.common_mobile/browse:search:amp:2018"
+    },
+    {
+        "duration": "31.0",
+        "name": "system_health.common_mobile/browse:search:amp:sxg:2019"
+    },
+    {
+        "duration": "54.0",
+        "name": "system_health.common_mobile/browse:shopping:amazon:2019"
+    },
+    {
+        "duration": "53.0",
+        "name": "system_health.common_mobile/browse:shopping:avito:2019"
+    },
+    {
+        "duration": "55.0",
+        "name": "system_health.common_mobile/browse:shopping:flipkart:2019"
+    },
+    {
+        "duration": "57.0",
+        "name": "system_health.common_mobile/browse:shopping:lazada:2019"
+    },
+    {
+        "duration": "10.0",
+        "name": "system_health.common_mobile/browse:social:facebook:2019"
+    },
+    {
+        "duration": "80.0",
+        "name": "system_health.common_mobile/browse:social:facebook_infinite_scroll:2018"
+    },
+    {
+        "duration": "84.0",
+        "name": "system_health.common_mobile/browse:social:instagram:2019"
+    },
+    {
+        "duration": "63.0",
+        "name": "system_health.common_mobile/browse:social:tumblr_infinite_scroll:2018"
+    },
+    {
+        "duration": "74.0",
+        "name": "system_health.common_mobile/browse:social:twitter:2019"
+    },
+    {
+        "duration": "70.0",
+        "name": "system_health.common_mobile/browse:tech:discourse_infinite_scroll:2018"
+    },
+    {
+        "duration": "47.0",
+        "name": "system_health.common_mobile/browse:tools:maps:2019"
+    },
+    {
+        "duration": "25.0",
+        "name": "system_health.common_mobile/load:chrome:blank"
+    },
+    {
+        "duration": "26.0",
+        "name": "system_health.common_mobile/load:games:bubbles:2020"
+    },
+    {
+        "duration": "30.0",
+        "name": "system_health.common_mobile/load:games:lazors"
+    },
+    {
+        "duration": "31.0",
+        "name": "system_health.common_mobile/load:games:spychase:2018"
+    },
+    {
+        "duration": "27.0",
+        "name": "system_health.common_mobile/load:media:dailymotion:2019"
+    },
+    {
+        "duration": "27.0",
+        "name": "system_health.common_mobile/load:media:facebook_feed:mobile:2020"
+    },
+    {
+        "duration": "26.0",
+        "name": "system_health.common_mobile/load:media:facebook_photos:2019"
+    },
+    {
+        "duration": "27.0",
+        "name": "system_health.common_mobile/load:media:facebook_photos:mobile:2020"
+    },
+    {
+        "duration": "28.0",
+        "name": "system_health.common_mobile/load:media:flickr:2018"
+    },
+    {
+        "duration": "27.0",
+        "name": "system_health.common_mobile/load:media:google_images:2018"
+    },
+    {
+        "duration": "29.0",
+        "name": "system_health.common_mobile/load:media:imgur:2018"
+    },
+    {
+        "duration": "27.0",
+        "name": "system_health.common_mobile/load:media:soundcloud:2018"
+    },
+    {
+        "duration": "21.0",
+        "name": "system_health.common_mobile/load:media:youtube:2018"
+    },
+    {
+        "duration": "27.0",
+        "name": "system_health.common_mobile/load:news:bbc:2019"
+    },
+    {
+        "duration": "29.0",
+        "name": "system_health.common_mobile/load:news:cnn:2020"
+    },
+    {
+        "duration": "27.0",
+        "name": "system_health.common_mobile/load:news:irctc:2019"
+    },
+    {
+        "duration": "29.0",
+        "name": "system_health.common_mobile/load:news:nytimes:2019"
+    },
+    {
+        "duration": "27.0",
+        "name": "system_health.common_mobile/load:news:qq:2019"
+    },
+    {
+        "duration": "27.0",
+        "name": "system_health.common_mobile/load:news:reddit:2019"
+    },
+    {
+        "duration": "27.0",
+        "name": "system_health.common_mobile/load:news:washingtonpost:2019"
+    },
+    {
+        "duration": "27.0",
+        "name": "system_health.common_mobile/load:news:wikipedia:2018"
+    },
+    {
+        "duration": "27.0",
+        "name": "system_health.common_mobile/load:search:amazon:2019"
+    },
+    {
+        "duration": "27.0",
+        "name": "system_health.common_mobile/load:search:baidu:2018"
+    },
+    {
+        "duration": "27.0",
+        "name": "system_health.common_mobile/load:search:ebay:2018"
+    },
+    {
+        "duration": "27.0",
+        "name": "system_health.common_mobile/load:search:google:2018"
+    },
+    {
+        "duration": "27.0",
+        "name": "system_health.common_mobile/load:search:taobao:2019"
+    },
+    {
+        "duration": "21.0",
+        "name": "system_health.common_mobile/load:search:yahoo:2018"
+    },
+    {
+        "duration": "21.0",
+        "name": "system_health.common_mobile/load:search:yandex:2018"
+    },
+    {
+        "duration": "27.0",
+        "name": "system_health.common_mobile/load:social:instagram:2019"
+    },
+    {
+        "duration": "28.0",
+        "name": "system_health.common_mobile/load:social:pinterest:2019"
+    },
+    {
+        "duration": "27.0",
+        "name": "system_health.common_mobile/load:social:twitter:2019"
+    },
+    {
+        "duration": "26.0",
+        "name": "system_health.common_mobile/load:tools:docs:2019"
+    },
+    {
+        "duration": "27.0",
+        "name": "system_health.common_mobile/load:tools:drive:2019"
+    },
+    {
+        "duration": "38.0",
+        "name": "system_health.common_mobile/load:tools:dropbox:2019"
+    },
+    {
+        "duration": "35.0",
+        "name": "system_health.common_mobile/load:tools:gmail:2019"
+    },
+    {
+        "duration": "28.0",
+        "name": "system_health.common_mobile/load:tools:stackoverflow:2018"
+    },
+    {
+        "duration": "27.0",
+        "name": "system_health.common_mobile/load:tools:weather:2019"
+    },
+    {
+        "duration": "7.0",
+        "name": "system_health.common_mobile/long_running:tools:gmail-background"
+    },
+    {
+        "duration": "7.0",
+        "name": "system_health.common_mobile/long_running:tools:gmail-foreground"
+    },
+    {
+        "duration": "30.0",
+        "name": "system_health.memory_mobile/background:media:imgur:2019"
+    },
+    {
+        "duration": "43.0",
+        "name": "system_health.memory_mobile/background:news:nytimes:2019"
+    },
+    {
+        "duration": "29.0",
+        "name": "system_health.memory_mobile/background:search:google:2019"
+    },
+    {
+        "duration": "28.0",
+        "name": "system_health.memory_mobile/background:social:facebook:2019"
+    },
+    {
+        "duration": "37.0",
+        "name": "system_health.memory_mobile/background:tools:gmail:2019"
+    },
+    {
+        "duration": "67.0",
+        "name": "system_health.memory_mobile/browse:chrome:newtab:2019"
+    },
+    {
+        "duration": "37.0",
+        "name": "system_health.memory_mobile/browse:chrome:omnibox:2019"
+    },
+    {
+        "duration": "71.0",
+        "name": "system_health.memory_mobile/browse:media:facebook_photos:2019"
+    },
+    {
+        "duration": "52.0",
+        "name": "system_health.memory_mobile/browse:media:flickr_infinite_scroll:2019"
+    },
+    {
+        "duration": "47.0",
+        "name": "system_health.memory_mobile/browse:media:googleplaystore:2019"
+    },
+    {
+        "duration": "75.0",
+        "name": "system_health.memory_mobile/browse:media:imgur:2019"
+    },
+    {
+        "duration": "62.0",
+        "name": "system_health.memory_mobile/browse:media:youtube:2019"
+    },
+    {
+        "duration": "3.0",
+        "name": "system_health.memory_mobile/browse:news:cricbuzz:2019"
+    },
+    {
+        "duration": "39.0",
+        "name": "system_health.memory_mobile/browse:news:globo:2019"
+    },
+    {
+        "duration": "53.0",
+        "name": "system_health.memory_mobile/browse:news:nytimes:2019"
+    },
+    {
+        "duration": "40.0",
+        "name": "system_health.memory_mobile/browse:news:qq:2019"
+    },
+    {
+        "duration": "53.0",
+        "name": "system_health.memory_mobile/browse:news:reddit:2019"
+    },
+    {
+        "duration": "43.0",
+        "name": "system_health.memory_mobile/browse:news:toi:2019"
+    },
+    {
+        "duration": "61.0",
+        "name": "system_health.memory_mobile/browse:news:washingtonpost:2019"
+    },
+    {
+        "duration": "30.0",
+        "name": "system_health.memory_mobile/browse:search:amp:2018"
+    },
+    {
+        "duration": "32.0",
+        "name": "system_health.memory_mobile/browse:search:amp:sxg:2019"
+    },
+    {
+        "duration": "57.0",
+        "name": "system_health.memory_mobile/browse:shopping:amazon:2019"
+    },
+    {
+        "duration": "50.0",
+        "name": "system_health.memory_mobile/browse:shopping:avito:2019"
+    },
+    {
+        "duration": "52.0",
+        "name": "system_health.memory_mobile/browse:shopping:flipkart:2019"
+    },
+    {
+        "duration": "54.0",
+        "name": "system_health.memory_mobile/browse:shopping:lazada:2019"
+    },
+    {
+        "duration": "3.0",
+        "name": "system_health.memory_mobile/browse:social:facebook:2019"
+    },
+    {
+        "duration": "80.0",
+        "name": "system_health.memory_mobile/browse:social:facebook_infinite_scroll:2018"
+    },
+    {
+        "duration": "86.0",
+        "name": "system_health.memory_mobile/browse:social:instagram:2019"
+    },
+    {
+        "duration": "69.0",
+        "name": "system_health.memory_mobile/browse:social:tumblr_infinite_scroll:2018"
+    },
+    {
+        "duration": "83.0",
+        "name": "system_health.memory_mobile/browse:social:twitter:2019"
+    },
+    {
+        "duration": "3.0",
+        "name": "system_health.memory_mobile/browse:tech:discourse_infinite_scroll:2018"
+    },
+    {
+        "duration": "48.0",
+        "name": "system_health.memory_mobile/browse:tools:maps:2019"
+    },
+    {
+        "duration": "28.0",
+        "name": "system_health.memory_mobile/load:chrome:blank"
+    },
+    {
+        "duration": "27.0",
+        "name": "system_health.memory_mobile/load:games:bubbles:2020"
+    },
+    {
+        "duration": "30.0",
+        "name": "system_health.memory_mobile/load:games:lazors"
+    },
+    {
+        "duration": "33.0",
+        "name": "system_health.memory_mobile/load:games:spychase:2018"
+    },
+    {
+        "duration": "29.0",
+        "name": "system_health.memory_mobile/load:media:dailymotion:2019"
+    },
+    {
+        "duration": "28.0",
+        "name": "system_health.memory_mobile/load:media:facebook_feed:mobile:2020"
+    },
+    {
+        "duration": "28.0",
+        "name": "system_health.memory_mobile/load:media:facebook_photos:2019"
+    },
+    {
+        "duration": "28.0",
+        "name": "system_health.memory_mobile/load:media:facebook_photos:mobile:2020"
+    },
+    {
+        "duration": "29.0",
+        "name": "system_health.memory_mobile/load:media:flickr:2018"
+    },
+    {
+        "duration": "29.0",
+        "name": "system_health.memory_mobile/load:media:google_images:2018"
+    },
+    {
+        "duration": "30.0",
+        "name": "system_health.memory_mobile/load:media:imgur:2018"
+    },
+    {
+        "duration": "28.0",
+        "name": "system_health.memory_mobile/load:media:soundcloud:2018"
+    },
+    {
+        "duration": "25.0",
+        "name": "system_health.memory_mobile/load:media:youtube:2018"
+    },
+    {
+        "duration": "29.0",
+        "name": "system_health.memory_mobile/load:news:bbc:2019"
+    },
+    {
+        "duration": "31.0",
+        "name": "system_health.memory_mobile/load:news:cnn:2020"
+    },
+    {
+        "duration": "29.0",
+        "name": "system_health.memory_mobile/load:news:irctc:2019"
+    },
+    {
+        "duration": "31.0",
+        "name": "system_health.memory_mobile/load:news:nytimes:2019"
+    },
+    {
+        "duration": "29.0",
+        "name": "system_health.memory_mobile/load:news:qq:2019"
+    },
+    {
+        "duration": "29.0",
+        "name": "system_health.memory_mobile/load:news:reddit:2019"
+    },
+    {
+        "duration": "26.0",
+        "name": "system_health.memory_mobile/load:news:washingtonpost:2019"
+    },
+    {
+        "duration": "25.0",
+        "name": "system_health.memory_mobile/load:news:wikipedia:2018"
+    },
+    {
+        "duration": "29.0",
+        "name": "system_health.memory_mobile/load:search:amazon:2019"
+    },
+    {
+        "duration": "30.0",
+        "name": "system_health.memory_mobile/load:search:baidu:2018"
+    },
+    {
+        "duration": "28.0",
+        "name": "system_health.memory_mobile/load:search:ebay:2018"
+    },
+    {
+        "duration": "28.0",
+        "name": "system_health.memory_mobile/load:search:google:2018"
+    },
+    {
+        "duration": "26.0",
+        "name": "system_health.memory_mobile/load:search:taobao:2019"
+    },
+    {
+        "duration": "24.0",
+        "name": "system_health.memory_mobile/load:search:yahoo:2018"
+    },
+    {
+        "duration": "25.0",
+        "name": "system_health.memory_mobile/load:search:yandex:2018"
+    },
+    {
+        "duration": "29.0",
+        "name": "system_health.memory_mobile/load:social:instagram:2019"
+    },
+    {
+        "duration": "29.0",
+        "name": "system_health.memory_mobile/load:social:pinterest:2019"
+    },
+    {
+        "duration": "25.0",
+        "name": "system_health.memory_mobile/load:social:twitter:2019"
+    },
+    {
+        "duration": "27.0",
+        "name": "system_health.memory_mobile/load:tools:docs:2019"
+    },
+    {
+        "duration": "28.0",
+        "name": "system_health.memory_mobile/load:tools:drive:2019"
+    },
+    {
+        "duration": "40.0",
+        "name": "system_health.memory_mobile/load:tools:dropbox:2019"
+    },
+    {
+        "duration": "37.0",
+        "name": "system_health.memory_mobile/load:tools:gmail:2019"
+    },
+    {
+        "duration": "29.0",
+        "name": "system_health.memory_mobile/load:tools:stackoverflow:2018"
+    },
+    {
+        "duration": "25.0",
+        "name": "system_health.memory_mobile/load:tools:weather:2019"
+    },
+    {
+        "duration": "5.0",
+        "name": "system_health.memory_mobile/long_running:tools:gmail-background"
+    },
+    {
+        "duration": "5.0",
+        "name": "system_health.memory_mobile/long_running:tools:gmail-foreground"
+    },
+    {
+        "duration": "14.0",
+        "name": "tracing.tracing_with_background_memory_infra/Facebook"
+    },
+    {
+        "duration": "13.0",
+        "name": "tracing.tracing_with_background_memory_infra/Wikipedia"
+    },
+    {
+        "duration": "12.0",
+        "name": "tracing.tracing_with_background_memory_infra/http://www.amazon.com"
+    },
+    {
+        "duration": "12.0",
+        "name": "tracing.tracing_with_background_memory_infra/http://www.ask.com/"
+    },
+    {
+        "duration": "12.0",
+        "name": "tracing.tracing_with_background_memory_infra/http://www.bing.com/"
+    },
+    {
+        "duration": "12.0",
+        "name": "tracing.tracing_with_background_memory_infra/http://www.yahoo.com/"
+    },
+    {
+        "duration": "14.0",
+        "name": "tracing.tracing_with_background_memory_infra/http://www.youtube.com"
+    },
+    {
+        "duration": "15.0",
+        "name": "tracing.tracing_with_background_memory_infra/https://www.google.com/#hl=en&q=barack+obama"
+    },
+    {
+        "duration": "14.0",
+        "name": "tracing.tracing_with_background_memory_infra/https://www.google.com/calendar/"
+    },
+    {
+        "duration": "91.0",
+        "name": "v8.browsing_mobile-future/browse:chrome:newtab:2019"
+    },
+    {
+        "duration": "57.0",
+        "name": "v8.browsing_mobile-future/browse:chrome:omnibox:2019"
+    },
+    {
+        "duration": "98.0",
+        "name": "v8.browsing_mobile-future/browse:media:facebook_photos:2019"
+    },
+    {
+        "duration": "75.0",
+        "name": "v8.browsing_mobile-future/browse:media:flickr_infinite_scroll:2019"
+    },
+    {
+        "duration": "67.0",
+        "name": "v8.browsing_mobile-future/browse:media:googleplaystore:2019"
+    },
+    {
+        "duration": "98.0",
+        "name": "v8.browsing_mobile-future/browse:media:imgur:2019"
+    },
+    {
+        "duration": "82.0",
+        "name": "v8.browsing_mobile-future/browse:media:youtube:2019"
+    },
+    {
+        "duration": "33.0",
+        "name": "v8.browsing_mobile-future/browse:news:cricbuzz:2019"
+    },
+    {
+        "duration": "65.0",
+        "name": "v8.browsing_mobile-future/browse:news:globo:2019"
+    },
+    {
+        "duration": "78.0",
+        "name": "v8.browsing_mobile-future/browse:news:nytimes:2019"
+    },
+    {
+        "duration": "64.0",
+        "name": "v8.browsing_mobile-future/browse:news:qq:2019"
+    },
+    {
+        "duration": "82.0",
+        "name": "v8.browsing_mobile-future/browse:news:reddit:2019"
+    },
+    {
+        "duration": "72.0",
+        "name": "v8.browsing_mobile-future/browse:news:toi:2019"
+    },
+    {
+        "duration": "81.0",
+        "name": "v8.browsing_mobile-future/browse:news:washingtonpost:2019"
+    },
+    {
+        "duration": "50.0",
+        "name": "v8.browsing_mobile-future/browse:search:amp:2018"
+    },
+    {
+        "duration": "52.0",
+        "name": "v8.browsing_mobile-future/browse:search:amp:sxg:2019"
+    },
+    {
+        "duration": "79.0",
+        "name": "v8.browsing_mobile-future/browse:shopping:amazon:2019"
+    },
+    {
+        "duration": "76.0",
+        "name": "v8.browsing_mobile-future/browse:shopping:avito:2019"
+    },
+    {
+        "duration": "79.0",
+        "name": "v8.browsing_mobile-future/browse:shopping:flipkart:2019"
+    },
+    {
+        "duration": "83.0",
+        "name": "v8.browsing_mobile-future/browse:shopping:lazada:2019"
+    },
+    {
+        "duration": "86.0",
+        "name": "v8.browsing_mobile-future/browse:social:facebook:2019"
+    },
+    {
+        "duration": "101.0",
+        "name": "v8.browsing_mobile-future/browse:social:facebook_infinite_scroll:2018"
+    },
+    {
+        "duration": "106.0",
+        "name": "v8.browsing_mobile-future/browse:social:instagram:2019"
+    },
+    {
+        "duration": "91.0",
+        "name": "v8.browsing_mobile-future/browse:social:tumblr_infinite_scroll:2018"
+    },
+    {
+        "duration": "95.0",
+        "name": "v8.browsing_mobile-future/browse:social:twitter:2019"
+    },
+    {
+        "duration": "33.0",
+        "name": "v8.browsing_mobile-future/browse:tech:discourse_infinite_scroll:2018"
+    },
+    {
+        "duration": "68.0",
+        "name": "v8.browsing_mobile-future/browse:tools:maps:2019"
+    },
+    {
+        "duration": "95.0",
+        "name": "v8.browsing_mobile/browse:chrome:newtab:2019"
+    },
+    {
+        "duration": "53.0",
+        "name": "v8.browsing_mobile/browse:chrome:omnibox:2019"
+    },
+    {
+        "duration": "101.0",
+        "name": "v8.browsing_mobile/browse:media:facebook_photos:2019"
+    },
+    {
+        "duration": "79.0",
+        "name": "v8.browsing_mobile/browse:media:flickr_infinite_scroll:2019"
+    },
+    {
+        "duration": "71.0",
+        "name": "v8.browsing_mobile/browse:media:googleplaystore:2019"
+    },
+    {
+        "duration": "102.0",
+        "name": "v8.browsing_mobile/browse:media:imgur:2019"
+    },
+    {
+        "duration": "77.0",
+        "name": "v8.browsing_mobile/browse:media:youtube:2019"
+    },
+    {
+        "duration": "15.0",
+        "name": "v8.browsing_mobile/browse:news:cricbuzz:2019"
+    },
+    {
+        "duration": "52.0",
+        "name": "v8.browsing_mobile/browse:news:globo:2019"
+    },
+    {
+        "duration": "81.0",
+        "name": "v8.browsing_mobile/browse:news:nytimes:2019"
+    },
+    {
+        "duration": "67.0",
+        "name": "v8.browsing_mobile/browse:news:qq:2019"
+    },
+    {
+        "duration": "77.0",
+        "name": "v8.browsing_mobile/browse:news:reddit:2019"
+    },
+    {
+        "duration": "76.0",
+        "name": "v8.browsing_mobile/browse:news:toi:2019"
+    },
+    {
+        "duration": "79.0",
+        "name": "v8.browsing_mobile/browse:news:washingtonpost:2019"
+    },
+    {
+        "duration": "54.0",
+        "name": "v8.browsing_mobile/browse:search:amp:2018"
+    },
+    {
+        "duration": "56.0",
+        "name": "v8.browsing_mobile/browse:search:amp:sxg:2019"
+    },
+    {
+        "duration": "60.0",
+        "name": "v8.browsing_mobile/browse:shopping:amazon:2019"
+    },
+    {
+        "duration": "59.0",
+        "name": "v8.browsing_mobile/browse:shopping:avito:2019"
+    },
+    {
+        "duration": "61.0",
+        "name": "v8.browsing_mobile/browse:shopping:flipkart:2019"
+    },
+    {
+        "duration": "86.0",
+        "name": "v8.browsing_mobile/browse:shopping:lazada:2019"
+    },
+    {
+        "duration": "36.0",
+        "name": "v8.browsing_mobile/browse:social:facebook:2019"
+    },
+    {
+        "duration": "105.0",
+        "name": "v8.browsing_mobile/browse:social:facebook_infinite_scroll:2018"
+    },
+    {
+        "duration": "110.0",
+        "name": "v8.browsing_mobile/browse:social:instagram:2019"
+    },
+    {
+        "duration": "89.0",
+        "name": "v8.browsing_mobile/browse:social:tumblr_infinite_scroll:2018"
+    },
+    {
+        "duration": "91.0",
+        "name": "v8.browsing_mobile/browse:social:twitter:2019"
+    },
+    {
+        "duration": "99.0",
+        "name": "v8.browsing_mobile/browse:tech:discourse_infinite_scroll:2018"
+    },
+    {
+        "duration": "72.0",
+        "name": "v8.browsing_mobile/browse:tools:maps:2019"
+    },
+    {
+        "duration": "21.0",
+        "name": "webrtc/10s_datachannel_transfer"
+    },
+    {
+        "duration": "21.0",
+        "name": "webrtc/canvas_capture_peer_connection"
+    },
+    {
+        "duration": "31.0",
+        "name": "webrtc/codec_constraints_h264"
+    },
+    {
+        "duration": "31.0",
+        "name": "webrtc/codec_constraints_vp8"
+    },
+    {
+        "duration": "31.0",
+        "name": "webrtc/codec_constraints_vp9"
+    },
+    {
+        "duration": "21.0",
+        "name": "webrtc/hd_local_stream_10s"
+    },
+    {
+        "duration": "20.0",
+        "name": "webrtc/insertable_streams_video_processing_camera_canvas2d_video"
+    },
+    {
+        "duration": "20.0",
+        "name": "webrtc/insertable_streams_video_processing_camera_noop_video"
+    },
+    {
+        "duration": "20.0",
+        "name": "webrtc/insertable_streams_video_processing_camera_webgl_pc"
+    },
+    {
+        "duration": "20.0",
+        "name": "webrtc/insertable_streams_video_processing_camera_webgl_video"
+    },
+    {
+        "duration": "20.0",
+        "name": "webrtc/insertable_streams_video_processing_pc_webgl_video"
+    },
+    {
+        "duration": "20.0",
+        "name": "webrtc/insertable_streams_video_processing_video_webgl_video"
+    },
+    {
+        "duration": "31.0",
+        "name": "webrtc/multiple_peerconnections"
+    },
+    {
+        "duration": "33.0",
+        "name": "webrtc/pause_play_peerconnections"
+    },
+    {
+        "duration": "60.0",
+        "name": "components_perftests/_gtest_"
+    }
+]

@@ -23,7 +23,8 @@ void PerformHitTheWallAnimation(aura::Window* root, bool going_left);
 // tree offscreen in the direction of the target desk indicated by |going_left|.
 // After this function, |window| can be moved safely immediately to the target
 // desk without having to wait for the animation to finish, since we're
-// animating a completely separate layer tree.
+// animating a completely separate layer tree. |window| cannot be visible on all
+// desks.
 // Note: This animation should not be performed on windows in overview.
 void PerformWindowMoveToDeskAnimation(aura::Window* window, bool going_left);
 

@@ -145,6 +145,7 @@ class NET_EXPORT SpdySessionPool
                   const spdy::SettingsMap& initial_settings,
                   const base::Optional<GreasedHttp2Frame>& greased_http2_frame,
                   bool http2_end_stream_with_data_frame,
+                  bool enable_priority_update,
                   SpdySessionPool::TimeFunc time_func,
                   NetworkQualityEstimator* network_quality_estimator);
   ~SpdySessionPool() override;
@@ -160,15 +161,19 @@ class NET_EXPORT SpdySessionPool
   // Create a new SPDY session from an existing socket.  There must
   // not already be a session for the given key.
   //
-  // Returns the new SpdySession. Note that the SpdySession begins reading from
-  // |client_socket_handle| on a subsequent event loop iteration, so it may be
-  // closed immediately afterwards if the first read of |client_socket_handle|
-  // fails.
-  base::WeakPtr<SpdySession> CreateAvailableSessionFromSocketHandle(
+  // Returns OK on success and sets |*session| to point to the new SpdySession.
+  // Returns a net error code on failure, in which case the value of |*session|
+  // is undefined.
+  //
+  // Note that the SpdySession begins reading from |client_socket_handle| on a
+  // subsequent event loop iteration, so it may be closed immediately afterwards
+  // if the first read of |client_socket_handle| fails.
+  int CreateAvailableSessionFromSocketHandle(
       const SpdySessionKey& key,
       bool is_trusted_proxy,
       std::unique_ptr<ClientSocketHandle> client_socket_handle,
-      const NetLogWithSource& net_log);
+      const NetLogWithSource& net_log,
+      base::WeakPtr<SpdySession>* session);
 
   // Just like the above method, except it takes a SocketStream instead of a
   // ClientSocketHandle, and separate connect timing information. When this
@@ -309,16 +314,22 @@ class NET_EXPORT SpdySessionPool
     network_quality_estimator_ = network_quality_estimator;
   }
 
+  // Returns the stored DNS aliases for the session key.
+  std::vector<std::string> GetDnsAliasesForSessionKey(
+      const SpdySessionKey& key) const;
+
  private:
   friend class SpdySessionPoolPeer;  // For testing.
 
-  typedef std::set<SpdySession*> SessionSet;
-  typedef std::vector<base::WeakPtr<SpdySession> > WeakSessionList;
-  typedef std::map<SpdySessionKey, base::WeakPtr<SpdySession>>
-      AvailableSessionMap;
-  typedef std::multimap<IPEndPoint, SpdySessionKey> AliasMap;
+  using SessionSet = std::set<SpdySession*>;
+  using WeakSessionList = std::vector<base::WeakPtr<SpdySession>>;
+  using AvailableSessionMap =
+      std::map<SpdySessionKey, base::WeakPtr<SpdySession>>;
+  using AliasMap = std::multimap<IPEndPoint, SpdySessionKey>;
+  using DnsAliasesBySessionKeyMap =
+      std::map<SpdySessionKey, std::vector<std::string>>;
+  using RequestSet = std::set<SpdySessionRequest*>;
 
-  typedef std::set<SpdySessionRequest*> RequestSet;
   struct RequestInfoForKey {
     RequestInfoForKey();
     ~RequestInfoForKey();
@@ -333,7 +344,7 @@ class NET_EXPORT SpdySessionPool
     std::list<base::RepeatingClosure> deferred_callbacks;
   };
 
-  typedef std::map<SpdySessionKey, RequestInfoForKey> SpdySessionRequestMap;
+  using SpdySessionRequestMap = std::map<SpdySessionKey, RequestInfoForKey>;
 
   // Removes |request| from |spdy_session_request_map_|.
   void RemoveRequestForSpdySession(SpdySessionRequest* request);
@@ -341,17 +352,22 @@ class NET_EXPORT SpdySessionPool
   // Returns true iff |session| is in |available_sessions_|.
   bool IsSessionAvailable(const base::WeakPtr<SpdySession>& session) const;
 
-  // Map the given key to the given session. There must not already be
-  // a mapping for |key|.
+  // Map the given key to the given session. There must not already be a
+  // mapping for `key`. Also adds an entry for `key` and `dns_aliases` in
+  // `dns_aliases_by_session_key_`. If there are already DNS aliases for the
+  // given key, replaces them.
   void MapKeyToAvailableSession(const SpdySessionKey& key,
-                                const base::WeakPtr<SpdySession>& session);
+                                const base::WeakPtr<SpdySession>& session,
+                                std::vector<std::string> dns_aliases);
 
   // Returns an iterator into |available_sessions_| for the given key,
   // which may be equal to |available_sessions_.end()|.
   AvailableSessionMap::iterator LookupAvailableSessionByKey(
       const SpdySessionKey& key);
 
-  // Remove the mapping of the given key, which must exist.
+  // Remove the mapping of the given key, which must exist. Also erases the
+  // key-value pair of SpdySessionKey and DNS aliases from the
+  // `dns_aliases_by_session_key_` map.
   void UnmapKey(const SpdySessionKey& key);
 
   // Remove all aliases for |key| from the aliases table.
@@ -378,7 +394,8 @@ class NET_EXPORT SpdySessionPool
   base::WeakPtr<SpdySession> InsertSession(
       const SpdySessionKey& key,
       std::unique_ptr<SpdySession> new_session,
-      const NetLogWithSource& source_net_log);
+      const NetLogWithSource& source_net_log,
+      std::vector<std::string> dns_aliases);
 
   // If a session with the specified |key| exists, invokes
   // OnSpdySessionAvailable on all matching members of
@@ -411,6 +428,9 @@ class NET_EXPORT SpdySessionPool
 
   // A map of IPEndPoint aliases for sessions.
   AliasMap aliases_;
+
+  // A map of DNS alias vectors by session keys.
+  DnsAliasesBySessionKeyMap dns_aliases_by_session_key_;
 
   // The index of all unclaimed pushed streams of all SpdySessions in this pool.
   Http2PushPromiseIndex push_promise_index_;
@@ -450,7 +470,14 @@ class NET_EXPORT SpdySessionPool
   // If unset, the HEADERS frame will have the END_STREAM flag set on.
   // This is useful in conjuction with |greased_http2_frame_| so that a frame
   // of reserved type can be sent out even on requests without a body.
-  bool http2_end_stream_with_data_frame_;
+  const bool http2_end_stream_with_data_frame_;
+
+  // If true, enable sending PRIORITY_UPDATE frames until SETTINGS frame
+  // arrives.  After SETTINGS frame arrives, do not send PRIORITY_UPDATE frames
+  // any longer if SETTINGS_DEPRECATE_HTTP2_PRIORITIES is missing or has zero 0,
+  // but continue and also stop sending HTTP/2-style priority information in
+  // HEADERS frames and PRIORITY frames if it has value 1.
+  const bool enable_priority_update_;
 
   SpdySessionRequestMap spdy_session_request_map_;
 

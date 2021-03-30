@@ -59,13 +59,10 @@ VIEWS_EXPORT extern const ui::ClassProperty<LayoutAlignment*>* const
     kCrossAxisAlignmentKey;
 
 // Property indicating whether a view should be ignored by a layout. Supported
-// by LayoutManagerBase and View::DefaultFillLayout
+// by View::DefaultFillLayout.
+// TODO(kylixrd): Revisit using for FillLayout.
 VIEWS_EXPORT extern const ui::ClassProperty<bool>* const
     kViewIgnoredByLayoutKey;
-
-// Property indicating whether a view would can be visible based on the criteria
-// outlined in LayoutManagerBase::CanBeVisible().
-VIEWS_EXPORT extern const ui::ClassProperty<bool>* const kViewCanBeVisibleKey;
 
 }  // namespace views
 

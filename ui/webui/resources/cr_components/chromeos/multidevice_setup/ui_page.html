@@ -1,5 +1,5 @@
 <link rel="import" href="../../../html/polymer.html">
-
+<link rel="import" href="chrome://resources/html/load_time_data.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="icons.html">
 <link rel="import" href="multidevice_setup_shared_css.html">
@@ -7,6 +7,39 @@
 <dom-module id="ui-page">
   <template>
     <style include="multidevice-setup-shared">
+      :host {
+        --multidevice-setup-dialog-height: var(--oobe-oobe-dialog-height-base);
+        --multidevice-setup-dialog-width: var(--oobe-oobe-dialog-width-base);
+        --multidevice-setup-dialog-content-padding: 40px;
+      }
+
+      :host-context([orientation=horizontal]) {
+        --multidevice-setup-dialog-content-direction: row;
+        --multidevice-setup-dialog-item-alignment: unset;
+        --multidevice-setup-text-alignment: start;
+        --multidevice-setup-dialog-content-width: calc(
+            var(--multidevice-setup-dialog-width) -
+            4 * var(--multidevice-setup-dialog-content-padding) -
+            var(--multidevice-setup-dialog-header-width));
+        /* Header takes 40% of the width remaining after applying padding */
+        --multidevice-setup-dialog-header-width: clamp(302px,
+            calc(0.4 * (var(--multidevice-setup-dialog-width) -
+            4 * var(--multidevice-setup-dialog-content-padding))) , 346px);
+      }
+
+      :host-context([orientation=vertical]) {
+        --multidevice-setup-dialog-content-direction: column;
+        --multidevice-setup-dialog-item-alignment: center;
+        --multidevice-setup-text-alignment: center;
+        --multidevice-setup-dialog-content-width: calc(
+            var(--multidevice-setup-dialog-width) -
+            2 * var(--multidevice-setup-dialog-content-padding));
+        /* Header takes 60% of the width remaining after applying padding */
+        --multidevice-setup-dialog-header-width: clamp(346px,
+            calc(0.6 * (var(--multidevice-setup-dialog-width) -
+            2 * var(--multidevice-setup-dialog-content-padding))) , 520px);
+      }
+
       iron-icon {
         --iron-icon-width: 32px;
         --iron-icon-height: 32px;
@@ -14,29 +47,96 @@
 
       h1 {
         color: var(--google-grey-900);
-        font-family: 'Google Sans';
+        font-family: 'Google Sans', Roboto, sans-serif;
         font-size: 28px;
         font-weight: normal;
         line-height: 28px;
         margin: 0;
-        padding-top: 36px;
+        padding-top: 40px;
       }
 
       #message-container {
-        box-sizing: border-box;
         min-height: 32px;
         padding-top: 16px;
       }
+
+      :host-context([new-layout]) #message-container {
+        color: var(--google-grey-700);
+        line-height: 18px;
+        overflow-wrap: break-word;
+        text-align: var(--multidevice-setup-text-alignment);
+      }
+
+      :host-context([new-layout]) #main-container {
+        align-items: var(--multidevice-setup-dialog-item-alignment);
+        display: flex;
+        flex-direction: var(--multidevice-setup-dialog-content-direction);
+        height: 100%;
+      }
+
+      :host-context([new-layout]) #header-container {
+        align-items: var(--multidevice-setup-dialog-item-alignment);
+        display: flex;
+        flex-direction: column;
+        padding-bottom: 0;
+        padding-inline-end: var(--multidevice-setup-dialog-content-padding);
+        padding-inline-start: var(--multidevice-setup-dialog-content-padding);
+        padding-top: var(--multidevice-setup-dialog-content-padding);
+        width: var(--multidevice-setup-dialog-header-width);
+      }
+
+      :host-context([new-layout][screen=oobe]) #header-container,
+      :host-context([new-layout][screen=gaia-signin]) #header-container {
+        padding-top: calc(var(--multidevice-setup-dialog-content-padding)
+          + 2 * clamp(20px, calc(var(--multidevice-setup-dialog-height)
+          * 0.035), 40px) + 34px);
+      }
+
+      :host-context([new-layout]) #additional-content-container {
+        border: transparent;
+        display: flex;
+        flex: 1;
+        padding-bottom: 0;
+        padding-inline-end: var(--multidevice-setup-dialog-content-padding);
+        padding-inline-start: var(--multidevice-setup-dialog-content-padding);
+        padding-top: 0;
+        width: var(--multidevice-setup-dialog-content-width);
+      }
+
+      :host-context([new-layout][orientation=vertical])
+          #additional-content-container {
+        margin-top: 40px;
+      }
+
+      :host-context([new-layout][orientation=horizontal][screen=oobe])
+          #additional-content-container,
+      :host-context([new-layout][orientation=horizontal][screen=gaia-signin])
+          #additional-content-container {
+        margin-top: 80px;
+      }
+
+      :host-context([new-layout][screen=oobe]) #additional-content-container,
+      :host-context([new-layout][screen=gaia-signin])
+          #additional-content-container {
+        overflow-y: auto;
+      }
+
+      :host-context([new-layout]) h1 {
+        text-align: var(--multidevice-setup-text-alignment);
+      }
     </style>
-    <iron-icon icon="[[computeIconIdentifier_(iconName)]]"></iron-icon>
-    <h1>[[headerText]]</h1>
-    <div id="message-container">
-      <slot name="message"></slot>
-    </div>
-    <div id="additional-content-container">
-      <slot name="additional-content"></slot>
+    <div id="main-container">
+      <div id="header-container">
+        <iron-icon icon="[[computeIconIdentifier_(iconName)]]"></iron-icon>
+        <h1>[[headerText]]</h1>
+        <div id="message-container">
+          <slot name="message"></slot>
+        </div>
+      </div>
+      <div id="additional-content-container">
+        <slot name="additional-content"></slot>
+      </div>
     </div>
   </template>
-  <script src="ui_page.js">
-  </script>
+  <script src="ui_page.js"></script>
 </dom-module>

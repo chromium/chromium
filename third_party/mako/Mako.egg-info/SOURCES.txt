@@ -33,7 +33,7 @@ doc/_static/docs.css
 doc/_static/doctools.js
 doc/_static/documentation_options.js
 doc/_static/file.png
-doc/_static/jquery-3.2.1.js
+doc/_static/jquery-3.5.1.js
 doc/_static/jquery.js
 doc/_static/language_data.js
 doc/_static/minus.png

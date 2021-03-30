@@ -8,8 +8,12 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/util/values/values_util.h"
+#include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/net/prediction_options.h"
+#include "chrome/browser/prefetch/pref_names.h"
+#include "chrome/browser/prefetch/search_prefetch/back_forward_search_prefetch_url_loader.h"
 #include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/prefetch/search_prefetch/full_body_search_prefetch_request.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_url_loader.h"
@@ -24,8 +28,11 @@
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
 #include "components/omnibox/browser/omnibox_log.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
+#include "net/base/load_flags.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "url/origin.h"
 
 namespace {
@@ -74,9 +81,20 @@ void RecordFinalStatus(SearchPrefetchStatus status) {
 
 }  // namespace
 
+// static
+void SearchPrefetchService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  // Some loss in this pref (especially following a browser crash) is well
+  // tolerated and helps ensure the pref service isn't slammed.
+  registry->RegisterDictionaryPref(prefetch::prefs::kCachePrefPath,
+                                   PrefRegistry::LOSSY_PREF);
+}
+
 SearchPrefetchService::SearchPrefetchService(Profile* profile)
     : profile_(profile) {
   DCHECK(!profile_->IsOffTheRecord());
+
+  if (LoadFromPrefs())
+    SaveToPrefs();
 }
 
 SearchPrefetchService::~SearchPrefetchService() = default;
@@ -134,7 +152,7 @@ bool SearchPrefetchService::MaybePrefetchURL(const GURL& url) {
                                 base::Unretained(this)));
   }
 
-  base::string16 search_terms;
+  std::u16string search_terms;
 
   // Extract the terms directly to make sure this string will match the URL
   // interception string logic.
@@ -204,7 +222,7 @@ void SearchPrefetchService::OnURLOpenedFromOmnibox(OmniboxLog* log) {
   if (!default_search)
     return;
 
-  base::string16 match_search_terms;
+  std::u16string match_search_terms;
 
   default_search->ExtractSearchTermsFromURL(
       opened_url, template_url_service->search_terms_data(),
@@ -220,14 +238,16 @@ void SearchPrefetchService::OnURLOpenedFromOmnibox(OmniboxLog* log) {
 
 base::Optional<SearchPrefetchStatus>
 SearchPrefetchService::GetSearchPrefetchStatusForTesting(
-    base::string16 search_terms) {
+    std::u16string search_terms) {
   if (prefetches_.find(search_terms) == prefetches_.end())
     return base::nullopt;
   return prefetches_[search_terms]->current_status();
 }
 
 std::unique_ptr<SearchPrefetchURLLoader>
-SearchPrefetchService::TakePrefetchResponse(const GURL& url) {
+SearchPrefetchService::TakePrefetchResponseFromMemoryCache(
+    const network::ResourceRequest& tentative_resource_request) {
+  const GURL& navigation_url = tentative_resource_request.url;
   SearchPrefetchServingReasonRecorder recorder;
 
   auto* template_url_service =
@@ -248,15 +268,16 @@ SearchPrefetchService::TakePrefetchResponse(const GURL& url) {
   auto* content_settings =
       HostContentSettingsMapFactory::GetForProfile(profile_);
   if (!content_settings ||
-      content_settings->GetContentSetting(
-          url, url, ContentSettingsType::JAVASCRIPT) == CONTENT_SETTING_BLOCK) {
+      content_settings->GetContentSetting(navigation_url, navigation_url,
+                                          ContentSettingsType::JAVASCRIPT) ==
+          CONTENT_SETTING_BLOCK) {
     recorder.reason_ = SearchPrefetchServingReason::kJavascriptDisabled;
     return nullptr;
   }
 
-  base::string16 search_terms;
+  std::u16string search_terms;
   template_url_service->GetDefaultSearchProvider()->ExtractSearchTermsFromURL(
-      url, template_url_service->search_terms_data(), &search_terms);
+      navigation_url, template_url_service->search_terms_data(), &search_terms);
 
   if (search_terms.length() == 0) {
     recorder.reason_ = SearchPrefetchServingReason::kNotDefaultSearchWithTerms;
@@ -274,7 +295,7 @@ SearchPrefetchService::TakePrefetchResponse(const GURL& url) {
   // checks should address this by clearing prefetches on user changes to
   // default search, it is paramount to never serve content from one origin to
   // another.
-  if (url::Origin::Create(url) !=
+  if (url::Origin::Create(navigation_url) !=
       url::Origin::Create(iter->second->prefetch_url())) {
     recorder.reason_ =
         SearchPrefetchServingReason::kPrefetchWasForDifferentOrigin;
@@ -292,6 +313,34 @@ SearchPrefetchService::TakePrefetchResponse(const GURL& url) {
     return nullptr;
   }
 
+  // POST requests are not supported since they are non-idempotent. Only support
+  // GET.
+  if (tentative_resource_request.method !=
+      net::HttpRequestHeaders::kGetMethod) {
+    recorder.reason_ = SearchPrefetchServingReason::kPostReloadOrLink;
+    return nullptr;
+  }
+
+  // If the client requests disabling, bypassing, or validating cache, don't
+  // return a prefetch.
+  // These are used mostly for reloads and dev tools.
+  if (tentative_resource_request.load_flags & net::LOAD_BYPASS_CACHE ||
+      tentative_resource_request.load_flags & net::LOAD_DISABLE_CACHE ||
+      tentative_resource_request.load_flags & net::LOAD_VALIDATE_CACHE) {
+    recorder.reason_ = SearchPrefetchServingReason::kPostReloadOrLink;
+    return nullptr;
+  }
+
+  // Link clicks should not be served with a prefetch due to results page nth
+  // page matching the URL pattern of the DSE.
+  if (ui::PageTransitionCoreTypeIs(
+          static_cast<ui::PageTransition>(
+              tentative_resource_request.transition_type),
+          ui::PAGE_TRANSITION_LINK)) {
+    recorder.reason_ = SearchPrefetchServingReason::kPostReloadOrLink;
+    return nullptr;
+  }
+
   if (iter->second->current_status() != SearchPrefetchStatus::kComplete &&
       iter->second->current_status() !=
           SearchPrefetchStatus::kCanBeServedAndUserClicked) {
@@ -302,17 +351,33 @@ SearchPrefetchService::TakePrefetchResponse(const GURL& url) {
   std::unique_ptr<SearchPrefetchURLLoader> response =
       iter->second->TakeSearchPrefetchURLLoader();
 
+  AddCacheEntry(navigation_url, iter->second->prefetch_url());
+
   DeletePrefetch(search_terms);
 
   return response;
 }
 
+std::unique_ptr<SearchPrefetchURLLoader>
+SearchPrefetchService::TakePrefetchResponseFromDiskCache(
+    const GURL& navigation_url) {
+  if (prefetch_cache_.find(navigation_url) == prefetch_cache_.end()) {
+    return nullptr;
+  }
+
+  return std::make_unique<BackForwardSearchPrefetchURLLoader>(
+      profile_, BaseSearchPrefetchRequest::NetworkAnnotationForPrefetch(),
+      prefetch_cache_[navigation_url].first);
+}
+
 void SearchPrefetchService::ClearPrefetches() {
   prefetches_.clear();
   prefetch_expiry_timers_.clear();
+  prefetch_cache_.clear();
+  SaveToPrefs();
 }
 
-void SearchPrefetchService::DeletePrefetch(base::string16 search_terms) {
+void SearchPrefetchService::DeletePrefetch(std::u16string search_terms) {
   DCHECK(prefetches_.find(search_terms) != prefetches_.end());
   DCHECK(prefetch_expiry_timers_.find(search_terms) !=
          prefetch_expiry_timers_.end());
@@ -354,7 +419,7 @@ void SearchPrefetchService::OnResultChanged(
       }
       bool should_cancel_request = true;
       for (const auto& match : result) {
-        base::string16 match_search_terms;
+        std::u16string match_search_terms;
         default_search->ExtractSearchTermsFromURL(
             match.destination_url, template_url_service->search_terms_data(),
             &match_search_terms);
@@ -417,4 +482,143 @@ void SearchPrefetchService::OnTemplateURLServiceChanged() {
 
   template_url_service_data_ = template_url_service_data;
   ClearPrefetches();
+}
+
+void SearchPrefetchService::ClearCacheEntry(const GURL& navigation_url) {
+  if (prefetch_cache_.find(navigation_url) == prefetch_cache_.end()) {
+    return;
+  }
+
+  prefetch_cache_.erase(navigation_url);
+  SaveToPrefs();
+}
+
+void SearchPrefetchService::UpdateServeTime(const GURL& navigation_url) {
+  if (prefetch_cache_.find(navigation_url) == prefetch_cache_.end())
+    return;
+
+  prefetch_cache_[navigation_url].second = base::Time::Now();
+  SaveToPrefs();
+}
+
+void SearchPrefetchService::AddCacheEntry(const GURL& navigation_url,
+                                          const GURL& prefetch_url) {
+  if (navigation_url == prefetch_url) {
+    return;
+  }
+
+  prefetch_cache_.emplace(navigation_url,
+                          std::make_pair(prefetch_url, base::Time::Now()));
+
+  if (prefetch_cache_.size() <= SearchPrefetchMaxCacheEntries()) {
+    SaveToPrefs();
+    return;
+  }
+
+  GURL url_to_remove;
+  base::Time earliest_time = base::Time::Now();
+  for (const auto& entry : prefetch_cache_) {
+    base::Time last_used_time = entry.second.second;
+    if (last_used_time < earliest_time) {
+      earliest_time = last_used_time;
+      url_to_remove = entry.first;
+    }
+  }
+  ClearCacheEntry(url_to_remove);
+  SaveToPrefs();
+}
+
+bool SearchPrefetchService::LoadFromPrefs() {
+  prefetch_cache_.clear();
+  const base::DictionaryValue* dictionary =
+      profile_->GetPrefs()->GetDictionary(prefetch::prefs::kCachePrefPath);
+  DCHECK(dictionary);
+
+  auto* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile_);
+  if (!template_url_service ||
+      !template_url_service->GetDefaultSearchProvider()) {
+    return dictionary->size() > 0;
+  }
+
+  for (const auto& element : *dictionary) {
+    GURL navigation_url(element.first);
+    if (!navigation_url.is_valid()) {
+      continue;
+    }
+
+    if (!element.second) {
+      continue;
+    }
+
+    base::Value::ConstListView const prefetch_url_and_time =
+        base::Value::AsListValue(*element.second).GetList();
+
+    if (prefetch_url_and_time.size() != 2 ||
+        !prefetch_url_and_time[0].is_string() ||
+        !prefetch_url_and_time[1].is_string()) {
+      continue;
+    }
+
+    std::string prefetch_url;
+    if (!prefetch_url_and_time[0].GetAsString(&prefetch_url)) {
+      continue;
+    }
+
+    // Make sure we are only mapping same origin in case of corrupted prefs.
+    if (url::Origin::Create(navigation_url) !=
+        url::Origin::Create(GURL(prefetch_url))) {
+      continue;
+    }
+
+    // Don't redirect same URL.
+    if (navigation_url == prefetch_url) {
+      continue;
+    }
+
+    // Make sure the navigation URL is still a search URL.
+    std::u16string search_terms;
+    template_url_service->GetDefaultSearchProvider()->ExtractSearchTermsFromURL(
+        navigation_url, template_url_service->search_terms_data(),
+        &search_terms);
+
+    if (search_terms.size() == 0) {
+      continue;
+    }
+
+    base::Optional<base::Time> last_update =
+        util::ValueToTime(prefetch_url_and_time[1]);
+    if (!last_update) {
+      continue;
+    }
+
+    // This time isn't valid.
+    if (last_update.value() > base::Time::Now()) {
+      continue;
+    }
+
+    prefetch_cache_.emplace(
+        navigation_url,
+        std::make_pair(GURL(prefetch_url), last_update.value()));
+  }
+  return dictionary->size() > prefetch_cache_.size();
+}
+
+void SearchPrefetchService::SaveToPrefs() const {
+  base::DictionaryValue dictionary;
+  for (const auto& element : prefetch_cache_) {
+    std::string navigation_url = element.first.spec();
+    std::string prefetch_url = element.second.first.spec();
+    auto time =
+        std::make_unique<base::Value>(util::TimeToValue(element.second.second));
+    base::ListValue value;
+    value.AppendString(prefetch_url);
+    value.Append(std::move(time));
+    dictionary.SetKey(std::move(navigation_url), std::move(value));
+  }
+  profile_->GetPrefs()->Set(prefetch::prefs::kCachePrefPath, dictionary);
+}
+
+bool SearchPrefetchService::LoadFromPrefsForTesting() {
+  return LoadFromPrefs();
 }

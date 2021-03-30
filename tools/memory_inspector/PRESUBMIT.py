@@ -11,13 +11,16 @@ details on the presubmit API built into depot_tools.
 
 def _CommonChecks(input_api, output_api):
   output = []
-  blacklist = [r'classification_rules.*']
-  output.extend(input_api.canned_checks.RunPylint(
-      input_api, output_api, black_list=blacklist,
-      extra_paths_list=[
-          input_api.os_path.join(input_api.PresubmitLocalPath(), '..', '..',
-                                 'build', 'android')
-      ]))
+  files_to_skip = [r'classification_rules.*']
+  output.extend(
+      input_api.canned_checks.RunPylint(input_api,
+                                        output_api,
+                                        files_to_skip=files_to_skip,
+                                        extra_paths_list=[
+                                            input_api.os_path.join(
+                                                input_api.PresubmitLocalPath(),
+                                                '..', '..', 'build', 'android')
+                                        ]))
   output.extend(input_api.canned_checks.RunUnitTests(
       input_api,
       output_api,

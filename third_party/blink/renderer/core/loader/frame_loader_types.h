@@ -33,11 +33,6 @@ namespace blink {
 
 enum ShouldSendReferrer { kMaybeSendReferrer, kNeverSendReferrer };
 
-enum ReasonForCallingAllowPlugins {
-  kAboutToInstantiatePlugin,
-  kNotAboutToInstantiatePlugin
-};
-
 enum LoadStartType {
   kNavigationToDifferentDocument,
   kNavigationWithinSameDocument

@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "components/infobars/android/infobar_android.h"
+#include "components/translate/content/android/translate_utils.h"
 #include "components/translate/core/browser/translate_infobar_delegate.h"
 #include "components/translate/core/browser/translate_step.h"
 #include "components/translate/core/common/translate_errors.h"
@@ -47,6 +48,11 @@ class TranslateCompactInfoBar
   // Returns true if the current tab is an incognito tab.
   jboolean IsIncognito(JNIEnv* env,
                        const base::android::JavaParamRef<jobject>& obj);
+
+  // Returns codes of the content languages in Java format.
+  base::android::ScopedJavaLocalRef<jobjectArray> GetContentLanguagesCodes(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj);
 
   // TranslateInfoBarDelegate::Observer implementation.
   void OnTranslateStepChanged(translate::TranslateStep step,
@@ -92,7 +98,6 @@ class TranslateCompactInfoBar
     FLAG_NEVER_SITE = 1 << 4,
     FLAG_EXPAND_MENU = 1 << 5,
   };
-
   DISALLOW_COPY_AND_ASSIGN(TranslateCompactInfoBar);
 };
 

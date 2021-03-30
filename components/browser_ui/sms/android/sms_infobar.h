@@ -33,7 +33,7 @@ class SmsInfoBar : public infobars::ConfirmInfoBar {
   // |infobar_service|.
   static void Create(content::WebContents* web_contents,
                      infobars::InfoBarManager* manager,
-                     const url::Origin& origin,
+                     const std::vector<url::Origin>& origin_list,
                      const std::string& one_time_code,
                      base::OnceClosure on_confirm,
                      base::OnceClosure on_cancel);

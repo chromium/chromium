@@ -33,7 +33,7 @@
 namespace views {
 
 LabelButton::LabelButton(PressedCallback callback,
-                         const base::string16& text,
+                         const std::u16string& text,
                          int button_context)
     : Button(std::move(callback)),
       cached_normal_font_list_(
@@ -90,11 +90,11 @@ void LabelButton::SetImageModel(ButtonState for_state,
     UpdateImage();
 }
 
-const base::string16& LabelButton::GetText() const {
+const std::u16string& LabelButton::GetText() const {
   return label_->GetText();
 }
 
-void LabelButton::SetText(const base::string16& text) {
+void LabelButton::SetText(const std::u16string& text) {
   SetTextInternal(text);
 }
 
@@ -246,6 +246,9 @@ gfx::Size LabelButton::CalculatePreferredSize() const {
   // Account for the label only when the button is not shrinking down to hide
   // the label entirely.
   if (!shrinking_down_label_) {
+    if (!label_->GetMultiLine() && max_size_.width() > 0)
+      label_->SetMaximumWidthSingleLine(max_size_.width() - size.width());
+
     const gfx::Size preferred_label_size = label_->GetPreferredSize();
     size.Enlarge(preferred_label_size.width(), 0);
     size.SetToMax(
@@ -509,7 +512,7 @@ void LabelButton::StateChanged(ButtonState old_state) {
   VisualStateChanged();
 }
 
-void LabelButton::SetTextInternal(const base::string16& text) {
+void LabelButton::SetTextInternal(const std::u16string& text) {
   SetAccessibleName(text);
   label_->SetText(text);
 
@@ -530,7 +533,7 @@ void LabelButton::ClearTextIfShrunkDown() {
       height() <= preferred_size.height()) {
     // Once the button shrinks down to its preferred size (that disregards the
     // current text), we finish the operation by clearing the text.
-    SetText(base::string16());
+    SetText(std::u16string());
   }
 }
 
@@ -610,7 +613,7 @@ void LabelButton::FlipCanvasOnPaintForRTLUIChanged() {
 }
 
 BEGIN_METADATA(LabelButton, Button)
-ADD_PROPERTY_METADATA(base::string16, Text)
+ADD_PROPERTY_METADATA(std::u16string, Text)
 ADD_PROPERTY_METADATA(gfx::HorizontalAlignment, HorizontalAlignment)
 ADD_PROPERTY_METADATA(gfx::Size, MinSize)
 ADD_PROPERTY_METADATA(gfx::Size, MaxSize)

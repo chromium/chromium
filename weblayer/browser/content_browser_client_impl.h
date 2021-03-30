@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/content_browser_client.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 
@@ -23,8 +24,6 @@ class FeatureListCreator;
 class SafeBrowsingService;
 struct MainParams;
 
-blink::UserAgentMetadata GetUserAgentMetadata();
-
 class ContentBrowserClientImpl : public content::ContentBrowserClient {
  public:
   explicit ContentBrowserClientImpl(MainParams* params);
@@ -35,6 +34,41 @@ class ContentBrowserClientImpl : public content::ContentBrowserClient {
       const content::MainFunctionParams& parameters) override;
   std::string GetApplicationLocale() override;
   std::string GetAcceptLangs(content::BrowserContext* context) override;
+  bool AllowAppCache(const GURL& manifest_url,
+                     const GURL& site_for_cookies,
+                     const base::Optional<url::Origin>& top_frame_origin,
+                     content::BrowserContext* context) override;
+  content::AllowServiceWorkerResult AllowServiceWorker(
+      const GURL& scope,
+      const GURL& site_for_cookies,
+      const base::Optional<url::Origin>& top_frame_origin,
+      const GURL& script_url,
+      content::BrowserContext* context) override;
+  bool AllowSharedWorker(const GURL& worker_url,
+                         const GURL& site_for_cookies,
+                         const base::Optional<url::Origin>& top_frame_origin,
+                         const std::string& name,
+                         const url::Origin& constructor_origin,
+                         content::BrowserContext* context,
+                         int render_process_id,
+                         int render_frame_id) override;
+  void AllowWorkerFileSystem(
+      const GURL& url,
+      content::BrowserContext* browser_context,
+      const std::vector<content::GlobalFrameRoutingId>& render_frames,
+      base::OnceCallback<void(bool)> callback) override;
+  bool AllowWorkerIndexedDB(
+      const GURL& url,
+      content::BrowserContext* browser_context,
+      const std::vector<content::GlobalFrameRoutingId>& render_frames) override;
+  bool AllowWorkerCacheStorage(
+      const GURL& url,
+      content::BrowserContext* browser_context,
+      const std::vector<content::GlobalFrameRoutingId>& render_frames) override;
+  bool AllowWorkerWebLocks(
+      const GURL& url,
+      content::BrowserContext* browser_context,
+      const std::vector<content::GlobalFrameRoutingId>& render_frames) override;
   content::WebContentsViewDelegate* GetWebContentsViewDelegate(
       content::WebContents* web_contents) override;
   bool CanShutdownGpuProcessNowOnIOThread() override;
@@ -44,15 +78,15 @@ class ContentBrowserClientImpl : public content::ContentBrowserClient {
   std::string GetProduct() override;
   std::string GetUserAgent() override;
   blink::UserAgentMetadata GetUserAgentMetadata() override;
-  void OverrideWebkitPrefs(content::RenderViewHost* render_view_host,
+  void OverrideWebkitPrefs(content::WebContents* web_contents,
                            blink::web_pref::WebPreferences* prefs) override;
   void ConfigureNetworkContextParams(
       content::BrowserContext* context,
       bool in_memory,
       const base::FilePath& relative_partition_path,
       network::mojom::NetworkContextParams* network_context_params,
-      network::mojom::CertVerifierCreationParams* cert_verifier_creation_params)
-      override;
+      cert_verifier::mojom::CertVerifierCreationParams*
+          cert_verifier_creation_params) override;
   void OnNetworkServiceCreated(
       network::mojom::NetworkService* network_service) override;
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
@@ -116,12 +150,15 @@ class ContentBrowserClientImpl : public content::ContentBrowserClient {
   void RenderProcessWillLaunch(content::RenderProcessHost* host) override;
   scoped_refptr<content::QuotaPermissionContext> CreateQuotaPermissionContext()
       override;
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_ANDROID)
   void GetAdditionalMappedFilesForChildProcess(
       const base::CommandLine& command_line,
       int child_process_id,
       content::PosixFileDescriptorInfo* mappings) override;
-#endif  // defined(OS_LINUX) || defined(OS_ANDROID)
+#endif  // defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) ||
+        // defined(OS_ANDROID)
   void AppendExtraCommandLineSwitches(base::CommandLine* command_line,
                                       int child_process_id) override;
 #if defined(OS_ANDROID)

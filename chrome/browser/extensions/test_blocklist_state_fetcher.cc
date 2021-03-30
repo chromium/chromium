@@ -22,7 +22,6 @@ class DummySharedURLLoaderFactory : public network::SharedURLLoaderFactory {
   // network::URLLoaderFactory implementation:
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& request,
@@ -87,7 +86,7 @@ bool TestBlocklistStateFetcher::HandleFetcher(const std::string& id) {
   if (base::Contains(verdicts_, id))
     response.set_verdict(verdicts_[id]);
   else
-    response.set_verdict(ClientCRXListInfoResponse::NOT_IN_BLACKLIST);
+    response.set_verdict(ClientCRXListInfoResponse::NOT_IN_BLOCKLIST);
 
   std::string response_str;
   response.SerializeToString(&response_str);

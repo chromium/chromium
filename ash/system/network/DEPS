@@ -10,4 +10,8 @@ specific_include_rules = {
     "+chromeos",
     "+dbus",
   ],
+  "cellular_setup_notifier_unittest.cc": [
+    "+chromeos",
+    "+dbus",
+  ],
 }

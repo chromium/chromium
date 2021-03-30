@@ -235,33 +235,32 @@ public abstract class PersistedTabData implements UserData {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     protected void save() {
         if (mIsTabSaveEnabledSupplier != null && mIsTabSaveEnabledSupplier.get()) {
-            byte[] serialized = serializeAndLog();
-            if (serialized == null) {
-                return;
-            }
-            mPersistedTabDataStorage.save(mTab.getId(), mPersistedTabDataId, serialized);
+            mPersistedTabDataStorage.save(mTab.getId(), mPersistedTabDataId,
+                    getOomAndMetricsWrapper(getSerializeSupplier()));
         }
     }
 
     /**
-     * @return {@link PersistedTabData} in serialized form.
+     * @return {@link Supplier} for {@link PersistedTabData} in serialized form.
      */
-    abstract byte[] serialize();
+    abstract Supplier<byte[]> getSerializeSupplier();
 
     @VisibleForTesting
-    protected byte[] serializeAndLog() {
-        byte[] res;
-        try (TraceEvent e = TraceEvent.scoped("PersistedTabData.Serialize")) {
-            res = serialize();
-        } catch (OutOfMemoryError oe) {
-            Log.e(TAG, "Out of memory error when attempting to save PersistedTabData");
-            res = null;
-        }
-        // TODO(crbug.com/1162293) convert to enum histogram and differentiate null/not null/out of
-        // memory
-        RecordHistogram.recordBooleanHistogram(
-                "Tabs.PersistedTabData.Serialize." + getUmaTag(), res != null);
-        return res;
+    protected Supplier<byte[]> getOomAndMetricsWrapper(Supplier<byte[]> serializeSupplier) {
+        return () -> {
+            byte[] res;
+            try (TraceEvent e = TraceEvent.scoped("PersistedTabData.Serialize")) {
+                res = serializeSupplier.get();
+            } catch (OutOfMemoryError oe) {
+                Log.e(TAG, "Out of memory error when attempting to save PersistedTabData");
+                res = null;
+            }
+            // TODO(crbug.com/1162293) convert to enum histogram and differentiate null/not null/out
+            // of memory
+            RecordHistogram.recordBooleanHistogram(
+                    "Tabs.PersistedTabData.Serialize." + getUmaTag(), res != null);
+            return res;
+        };
     }
 
     /**

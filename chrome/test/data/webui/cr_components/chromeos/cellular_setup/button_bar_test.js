@@ -8,7 +8,7 @@
 
 // #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {ButtonState, Button, ButtonBarState, CellularSetupPageName} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.m.js';
-// #import {assertFalse, assertTrue} from '../../../chai_assert.js';
+// #import {assertEquals, assertFalse, assertTrue} from '../../../chai_assert.js';
 // clang-format on
 
 suite('CellularSetupButtonBarTest', function() {
@@ -31,10 +31,7 @@ suite('CellularSetupButtonBarTest', function() {
     buttonBar.buttonState = {
       backward: state,
       cancel: state,
-      next: state,
-      tryAgain: state,
-      done: state,
-      skipDiscovery: state,
+      forward: state,
     };
     Polymer.dom.flush();
   }
@@ -64,32 +61,59 @@ suite('CellularSetupButtonBarTest', function() {
   }
 
   test('individual buttons appear if enabled', function() {
-    setStateForAllButtons(cellularSetup.ButtonState.SHOWN_AND_ENABLED);
+    setStateForAllButtons(cellularSetup.ButtonState.ENABLED);
     assertTrue(isButtonShownAndEnabled(buttonBar.$$('#backward')));
     assertTrue(isButtonShownAndEnabled(buttonBar.$$('#cancel')));
-    assertTrue(isButtonShownAndEnabled(buttonBar.$$('#tryAgain')));
-    assertTrue(isButtonShownAndEnabled(buttonBar.$$('#next')));
-    assertTrue(isButtonShownAndEnabled(buttonBar.$$('#done')));
-    assertTrue(isButtonShownAndEnabled(buttonBar.$$('#skipDiscovery')));
+    assertTrue(isButtonShownAndEnabled(buttonBar.$$('#forward')));
   });
 
   test('individual buttons appear but are diabled', function() {
-    setStateForAllButtons(cellularSetup.ButtonState.SHOWN_BUT_DISABLED);
+    setStateForAllButtons(cellularSetup.ButtonState.DISABLED);
     assertTrue(isButtonShownAndDisabled(buttonBar.$$('#backward')));
     assertTrue(isButtonShownAndDisabled(buttonBar.$$('#cancel')));
-    assertTrue(isButtonShownAndDisabled(buttonBar.$$('#tryAgain')));
-    assertTrue(isButtonShownAndDisabled(buttonBar.$$('#next')));
-    assertTrue(isButtonShownAndDisabled(buttonBar.$$('#done')));
-    assertTrue(isButtonShownAndDisabled(buttonBar.$$('#skipDiscovery')));
+    assertTrue(isButtonShownAndDisabled(buttonBar.$$('#forward')));
   });
 
   test('individual buttons are hidden', function() {
-    setStateForAllButtons(cellularSetup.ButtonState.HIDDEN);
+    setStateForAllButtons(undefined);
     assertTrue(isButtonHidden(buttonBar.$$('#backward')));
     assertTrue(isButtonHidden(buttonBar.$$('#cancel')));
-    assertTrue(isButtonHidden(buttonBar.$$('#tryAgain')));
-    assertTrue(isButtonHidden(buttonBar.$$('#next')));
-    assertTrue(isButtonHidden(buttonBar.$$('#done')));
-    assertTrue(isButtonHidden(buttonBar.$$('#skipDiscovery')));
+    assertTrue(isButtonHidden(buttonBar.$$('#forward')));
   });
+
+  test('default focus is on last button if all are enabled', function() {
+    setStateForAllButtons(cellularSetup.ButtonState.ENABLED);
+    buttonBar.focusDefaultButton();
+
+    Polymer.dom.flush();
+
+    assertEquals(buttonBar.shadowRoot.activeElement, buttonBar.$$('#forward'));
+  });
+
+  test('default focus is on first button if rest are hidden', function() {
+    buttonBar.buttonState = {
+      backward: cellularSetup.ButtonState.ENABLED,
+    };
+    buttonBar.focusDefaultButton();
+
+    Polymer.dom.flush();
+
+    assertEquals(buttonBar.shadowRoot.activeElement, buttonBar.$$('#backward'));
+  });
+
+  test(
+      'default focus is on first button if rest are visible but disabled',
+      function() {
+        buttonBar.buttonState = {
+          backward: cellularSetup.ButtonState.ENABLED,
+          cancel: cellularSetup.ButtonState.DISABLED,
+          forward: cellularSetup.ButtonState.DISABLED,
+        };
+        buttonBar.focusDefaultButton();
+
+        Polymer.dom.flush();
+
+        assertEquals(
+            buttonBar.shadowRoot.activeElement, buttonBar.$$('#backward'));
+      });
 });

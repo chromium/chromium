@@ -33,7 +33,7 @@ ash::ShelfItemDelegate::AppMenuItems GetAppMenuItems(
 IN_PROC_BROWSER_TEST_F(BrowserShortcutLauncherItemControllerTest, AppMenu) {
   BrowserShortcutLauncherItemController* controller =
       ChromeLauncherController::instance()
-          ->GetBrowserShortcutLauncherItemController();
+          ->GetBrowserShortcutLauncherItemControllerForTesting();
   ASSERT_TRUE(controller);
 
   // InProcessBrowserTest's default browser window is shown with a blank tab.
@@ -41,7 +41,7 @@ IN_PROC_BROWSER_TEST_F(BrowserShortcutLauncherItemControllerTest, AppMenu) {
   EXPECT_EQ(1U, browser_list->size());
   auto items = GetAppMenuItems(controller, ui::EF_NONE);
   ASSERT_EQ(1U, items.size());
-  EXPECT_EQ(base::ASCIIToUTF16("about:blank"), items[0].title);
+  EXPECT_EQ(u"about:blank", items[0].title);
 
   // Browsers are not listed in the menu if their windows have not been shown.
   Browser* browser1 =
@@ -57,8 +57,8 @@ IN_PROC_BROWSER_TEST_F(BrowserShortcutLauncherItemControllerTest, AppMenu) {
   EXPECT_EQ(2U, browser_list->size());
   items = GetAppMenuItems(controller, ui::EF_NONE);
   ASSERT_EQ(2U, items.size());
-  EXPECT_EQ(base::ASCIIToUTF16("about:blank"), items[0].title);
-  EXPECT_EQ(base::ASCIIToUTF16("New Tab"), items[1].title);
+  EXPECT_EQ(u"about:blank", items[0].title);
+  EXPECT_EQ(u"New Tab", items[1].title);
 
   // Browsers are listed with the title of their active contents.
   ui_test_utils::NavigateToURL(browser(),
@@ -72,15 +72,15 @@ IN_PROC_BROWSER_TEST_F(BrowserShortcutLauncherItemControllerTest, AppMenu) {
   EXPECT_EQ(1, browser1->tab_strip_model()->active_index());
   items = GetAppMenuItems(controller, ui::EF_NONE);
   ASSERT_EQ(2U, items.size());
-  EXPECT_EQ(base::ASCIIToUTF16("0"), items[0].title);
-  EXPECT_EQ(base::ASCIIToUTF16("2"), items[1].title);
+  EXPECT_EQ(u"0", items[0].title);
+  EXPECT_EQ(u"2", items[1].title);
 
   // Shift-click will list all tabs in the applicable browsers.
   items = GetAppMenuItems(controller, ui::EF_SHIFT_DOWN);
   ASSERT_EQ(items.size(), 3U);
-  EXPECT_EQ(base::ASCIIToUTF16("0"), items[0].title);
-  EXPECT_EQ(base::ASCIIToUTF16("1"), items[1].title);
-  EXPECT_EQ(base::ASCIIToUTF16("2"), items[2].title);
+  EXPECT_EQ(u"0", items[0].title);
+  EXPECT_EQ(u"1", items[1].title);
+  EXPECT_EQ(u"2", items[2].title);
 
   // Close the window and wait for all asynchronous window teardown.
   CloseBrowserSynchronously(browser1);

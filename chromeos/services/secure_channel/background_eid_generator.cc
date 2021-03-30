@@ -7,6 +7,7 @@
 #include <cstring>
 #include <memory>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
@@ -115,7 +116,24 @@ std::string BackgroundEidGenerator::IdentifyRemoteDeviceByAdvertisement(
               return eid.data == service_data_without_flags;
             });
 
-        return eid_it != eids.end();
+        bool success = eid_it != eids.end();
+        std::stringstream ss;
+        ss << "BackgroundEidGenerator::IdentifyRemoteDeviceByAdvertisement: "
+           << (success ? "Identified " : "Failed to identify ")
+           << "the following remote device from advertisement service data 0x"
+           << base::HexEncode(service_data_without_flags.data(),
+                              service_data_without_flags.size())
+           << ": "
+           << "\n  device_name: " << remote_device.name()
+           << "\n  device_id: " << remote_device.GetDeviceId()
+           << "\n  beacon seeds: ";
+        for (const auto& seed : remote_device.beacon_seeds()) {
+          ss << "\n    " << seed;
+        }
+        ss << "\n  eids: " << DataWithTimestamp::ToDebugString(eids);
+        PA_LOG(VERBOSE) << ss.str();
+
+        return success;
       });
 
   // Return empty string if no matching device is found.

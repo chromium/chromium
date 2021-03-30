@@ -57,8 +57,7 @@ NonLoadablePluginPlaceholder::CreateFlashDeprecatedPlaceholder(
     const blink::WebPluginParams& params) {
   return CreateNonLoadablePlaceholderHelper(
       render_frame, params,
-      l10n_util::GetStringFUTF8(IDS_PLUGIN_DEPRECATED,
-                                base::ASCIIToUTF16("Adobe Flash Player")));
+      l10n_util::GetStringFUTF8(IDS_PLUGIN_DEPRECATED, u"Adobe Flash Player"));
 }
 
 // static

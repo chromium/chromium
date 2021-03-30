@@ -10,9 +10,11 @@
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id_allocator.h"
+#include "components/viz/common/surfaces/subtree_capture_id_allocator.h"
 #include "components/viz/service/main/viz_compositor_thread_runner_impl.h"
 #include "content/browser/compositor/image_transport_factory.h"
 #include "gpu/command_buffer/common/context_result.h"
+#include "gpu/ipc/client/gpu_channel_host.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/viz/privileged/mojom/compositing/display_private.mojom.h"
 #include "services/viz/privileged/mojom/compositing/external_begin_frame_controller.mojom.h"
@@ -70,6 +72,7 @@ class VizProcessTransportFactory : public ui::ContextFactory,
   gpu::GpuMemoryBufferManager* GetGpuMemoryBufferManager() override;
   cc::TaskGraphRunner* GetTaskGraphRunner() override;
   viz::FrameSinkId AllocateFrameSinkId() override;
+  viz::SubtreeCaptureId AllocateSubtreeCaptureId() override;
   viz::HostFrameSinkManager* GetHostFrameSinkManager() override;
 
   // ImageTransportFactory implementation.
@@ -139,6 +142,7 @@ class VizProcessTransportFactory : public ui::ContextFactory,
   base::flat_map<ui::Compositor*, CompositorData> compositor_data_map_;
 
   viz::FrameSinkIdAllocator frame_sink_id_allocator_;
+  viz::SubtreeCaptureIdAllocator subtree_capture_id_allocator_;
   viz::HostFrameSinkManager* const host_frame_sink_manager_;
 
   scoped_refptr<base::SingleThreadTaskRunner> const resize_task_runner_;

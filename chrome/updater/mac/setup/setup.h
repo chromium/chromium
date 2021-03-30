@@ -5,6 +5,8 @@
 #ifndef CHROME_UPDATER_MAC_SETUP_SETUP_H_
 #define CHROME_UPDATER_MAC_SETUP_SETUP_H_
 
+#include "chrome/updater/updater_scope.h"
+
 namespace updater {
 
 namespace setup_exit_codes {
@@ -20,6 +22,9 @@ constexpr int kFailedToDeleteFolder = 11;
 
 // Failed to delete the updater's data folder.
 constexpr int kFailedToDeleteDataFolder = 12;
+
+// Failed to get versioned updater folder path.
+constexpr int kFailedToGetVersionedUpdaterFolderPath = 13;
 
 // Failed to remove the active(unversioned) update service job from Launchd.
 constexpr int kFailedToRemoveActiveUpdateServiceJobFromLaunchd = 20;
@@ -66,17 +71,17 @@ constexpr int kFailedAwaitingLaunchdUpdateServiceInternalJob = 44;
 // Sets up the candidate updater by copying the bundle, creating launchd plists
 // for administration service and XPC service tasks, and start the corresponding
 // launchd jobs.
-int Setup();
+int Setup(UpdaterScope scope);
 
 // Uninstalls this version of the updater.
-int UninstallCandidate();
+int UninstallCandidate(UpdaterScope scope);
 
 // Sets up this version of the Updater as the active version.
-int PromoteCandidate();
+int PromoteCandidate(UpdaterScope scope);
 
 // Removes the launchd plists for scheduled tasks and xpc service. Deletes the
 // updater bundle from its installed location.
-int Uninstall(bool is_machine);
+int Uninstall(UpdaterScope scope);
 
 }  // namespace updater
 

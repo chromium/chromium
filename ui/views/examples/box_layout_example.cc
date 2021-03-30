@@ -5,9 +5,9 @@
 #include "ui/views/examples/box_layout_example.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -33,7 +33,7 @@ BoxLayoutExample::BoxLayoutExample() : LayoutExampleBase("Box Layout") {}
 BoxLayoutExample::~BoxLayoutExample() = default;
 
 void BoxLayoutExample::ContentsChanged(Textfield* textfield,
-                                       const base::string16& new_contents) {
+                                       const std::u16string& new_contents) {
   if (textfield == between_child_spacing_) {
     UpdateLayoutManager();
   } else if (textfield == default_flex_) {
@@ -56,36 +56,31 @@ void BoxLayoutExample::ContentsChanged(Textfield* textfield,
 void BoxLayoutExample::CreateAdditionalControls() {
   constexpr const char* kOrientationValues[2] = {"Horizontal", "Vertical"};
   orientation_ = CreateAndAddCombobox(
-      base::ASCIIToUTF16("Orientation"), kOrientationValues,
-      base::size(kOrientationValues),
+      u"Orientation", kOrientationValues, base::size(kOrientationValues),
       base::BindRepeating(&LayoutExampleBase::RefreshLayoutPanel,
                           base::Unretained(this), true));
 
   constexpr const char* kMainAxisValues[3] = {"Start", "Center", "End"};
   main_axis_alignment_ = CreateAndAddCombobox(
-      base::ASCIIToUTF16("Main axis"), kMainAxisValues,
-      base::size(kMainAxisValues),
+      u"Main axis", kMainAxisValues, base::size(kMainAxisValues),
       base::BindRepeating(&BoxLayoutExample::MainAxisAlignmentChanged,
                           base::Unretained(this)));
 
   constexpr const char* kCrossAxisValues[4] = {"Stretch", "Start", "Center",
                                                "End"};
   cross_axis_alignment_ = CreateAndAddCombobox(
-      base::ASCIIToUTF16("Cross axis"), kCrossAxisValues,
-      base::size(kCrossAxisValues),
+      u"Cross axis", kCrossAxisValues, base::size(kCrossAxisValues),
       base::BindRepeating(&BoxLayoutExample::CrossAxisAlignmentChanged,
                           base::Unretained(this)));
 
-  between_child_spacing_ =
-      CreateAndAddTextfield(base::ASCIIToUTF16("Child spacing"));
-  default_flex_ = CreateAndAddTextfield(base::ASCIIToUTF16("Default flex"));
-  min_cross_axis_size_ =
-      CreateAndAddTextfield(base::ASCIIToUTF16("Min cross axis"));
+  between_child_spacing_ = CreateAndAddTextfield(u"Child spacing");
+  default_flex_ = CreateAndAddTextfield(u"Default flex");
+  min_cross_axis_size_ = CreateAndAddTextfield(u"Min cross axis");
 
-  CreateMarginsTextFields(base::ASCIIToUTF16("Insets"), &border_insets_);
+  CreateMarginsTextFields(u"Insets", &border_insets_);
 
   collapse_margins_ = CreateAndAddCheckbox(
-      base::ASCIIToUTF16("Collapse margins"),
+      u"Collapse margins",
       base::BindRepeating(&LayoutExampleBase::RefreshLayoutPanel,
                           base::Unretained(this), true));
 

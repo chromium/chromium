@@ -37,14 +37,15 @@ namespace cord_internal {
 // ideally a 'nice' size aligning with allocation and cacheline sizes like 32.
 // kMaxFlatSize is bounded by the size resulting in a computed tag no greater
 // than MAX_FLAT_TAG. MAX_FLAT_TAG provides for additional 'high' tag values.
-static constexpr size_t kFlatOverhead = offsetof(CordRep, data);
+static constexpr size_t kFlatOverhead = offsetof(CordRep, storage);
 static constexpr size_t kMinFlatSize = 32;
 static constexpr size_t kMaxFlatSize = 4096;
 static constexpr size_t kMaxFlatLength = kMaxFlatSize - kFlatOverhead;
 static constexpr size_t kMinFlatLength = kMinFlatSize - kFlatOverhead;
 
-constexpr size_t AllocatedSizeToTagUnchecked(size_t size) {
-  return (size <= 1024) ? size / 8 : 128 + size / 32 - 1024 / 32;
+constexpr uint8_t AllocatedSizeToTagUnchecked(size_t size) {
+  return static_cast<uint8_t>((size <= 1024) ? size / 8
+                                             : 128 + size / 32 - 1024 / 32);
 }
 
 static_assert(kMinFlatSize / 8 >= FLAT, "");
@@ -65,7 +66,7 @@ inline size_t RoundUpForTag(size_t size) {
 // undefined if the size exceeds the maximum size that can be encoded in
 // a tag, i.e., if size is larger than TagToAllocatedSize(<max tag>).
 inline uint8_t AllocatedSizeToTag(size_t size) {
-  const size_t tag = AllocatedSizeToTagUnchecked(size);
+  const uint8_t tag = AllocatedSizeToTagUnchecked(size);
   assert(tag <= MAX_FLAT_TAG);
   return tag;
 }
@@ -104,7 +105,8 @@ struct CordRepFlat : public CordRep {
   // Flat CordReps are allocated and constructed with raw ::operator new and
   // placement new, and must be destructed and deallocated accordingly.
   static void Delete(CordRep*rep) {
-    assert(rep->tag >= FLAT);
+    assert(rep->tag >= FLAT && rep->tag <= MAX_FLAT_TAG);
+
 #if defined(__cpp_sized_deallocation)
     size_t size = TagToAllocatedSize(rep->tag);
     rep->~CordRep();
@@ -115,12 +117,27 @@ struct CordRepFlat : public CordRep {
 #endif
   }
 
+  // Returns a pointer to the data inside this flat rep.
+  char* Data() { return storage; }
+  const char* Data() const { return storage; }
+
   // Returns the maximum capacity (payload size) of this instance.
   size_t Capacity() const { return TagToLength(tag); }
 
   // Returns the allocated size (payload + overhead) of this instance.
   size_t AllocatedSize() const { return TagToAllocatedSize(tag); }
 };
+
+// Now that CordRepFlat is defined, we can define CordRep's helper casts:
+inline CordRepFlat* CordRep::flat() {
+  assert(tag >= FLAT && tag <= MAX_FLAT_TAG);
+  return reinterpret_cast<CordRepFlat*>(this);
+}
+
+inline const CordRepFlat* CordRep::flat() const {
+  assert(tag >= FLAT && tag <= MAX_FLAT_TAG);
+  return reinterpret_cast<const CordRepFlat*>(this);
+}
 
 }  // namespace cord_internal
 ABSL_NAMESPACE_END

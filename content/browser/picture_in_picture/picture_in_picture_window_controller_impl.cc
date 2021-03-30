@@ -12,7 +12,6 @@
 #include "content/browser/media/session/media_session_impl.h"
 #include "content/browser/picture_in_picture/picture_in_picture_session.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/common/media/media_player_delegate_messages.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/web_contents.h"
@@ -186,7 +185,7 @@ bool PictureInPictureWindowControllerImpl::TogglePlayPause() {
 PictureInPictureResult PictureInPictureWindowControllerImpl::StartSession(
     PictureInPictureServiceImpl* service,
     const MediaPlayerId& player_id,
-    mojo::PendingRemote<media::mojom::MediaPlayer> player_remote,
+    mojo::PendingAssociatedRemote<media::mojom::MediaPlayer> player_remote,
     const viz::SurfaceId& surface_id,
     const gfx::Size& natural_size,
     bool show_play_pause_button,

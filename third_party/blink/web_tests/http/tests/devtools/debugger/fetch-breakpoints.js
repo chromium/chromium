@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests fetch() breakpoints.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.evaluateInPagePromise(`
       function sendRequest(url)
       {
@@ -12,6 +12,7 @@
       }
   `);
 
+  await TestRunner.showPanel('sources');
   SourcesTestRunner.runDebuggerTestSuite([
     function testFetchBreakpoint(next) {
       SDK.domDebuggerManager.addXHRBreakpoint('foo', true);

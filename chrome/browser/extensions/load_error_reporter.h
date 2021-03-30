@@ -11,7 +11,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/single_thread_task_runner.h"
-#include "base/strings/string16.h"
 
 namespace base {
 class FilePath;
@@ -59,10 +58,10 @@ class LoadErrorReporter {
 
   // Report an error. Errors always go to VLOG(1). Optionally, they can also
   // cause a noisy alert box.
-  void ReportError(const base::string16& message, bool be_noisy);
+  void ReportError(const std::u16string& message, bool be_noisy);
 
   // Get the errors that have been reported so far.
-  const std::vector<base::string16>* GetErrors();
+  const std::vector<std::u16string>* GetErrors();
 
   // Clear the list of errors reported so far.
   void ClearErrors();
@@ -78,7 +77,7 @@ class LoadErrorReporter {
   ~LoadErrorReporter();
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
-  std::vector<base::string16> errors_;
+  std::vector<std::u16string> errors_;
   bool enable_noisy_errors_;
 
   base::ObserverList<Observer>::Unchecked observers_;

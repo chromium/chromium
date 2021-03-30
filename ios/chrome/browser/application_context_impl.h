@@ -18,8 +18,11 @@ class CommandLine;
 class SequencedTaskRunner;
 }
 
-class ApplicationBreadcrumbsLogger;
+namespace breadcrumbs {
 class BreadcrumbManager;
+}
+
+class ApplicationBreadcrumbsLogger;
 class BreadcrumbPersistentStorageManager;
 
 namespace network {
@@ -63,7 +66,6 @@ class ApplicationContextImpl : public ApplicationContext {
   metrics::MetricsService* GetMetricsService() override;
   ukm::UkmRecorder* GetUkmRecorder() override;
   variations::VariationsService* GetVariationsService() override;
-  rappor::RapporServiceImpl* GetRapporServiceImpl() override;
   net::NetLog* GetNetLog() override;
   net_log::NetExportFileWriter* GetNetExportFileWriter() override;
   network_time::NetworkTimeTracker* GetNetworkTimeTracker() override;
@@ -91,7 +93,7 @@ class ApplicationContextImpl : public ApplicationContext {
 
   // Breadcrumb manager used to store application wide breadcrumb events. Will
   // be null if breadcrumbs feature is not enabled.
-  std::unique_ptr<BreadcrumbManager> breadcrumb_manager_;
+  std::unique_ptr<breadcrumbs::BreadcrumbManager> breadcrumb_manager_;
   // Logger which observers and logs application wide events to
   // |breadcrumb_manager_|. Will be null if breadcrumbs feature is not enabled.
   std::unique_ptr<ApplicationBreadcrumbsLogger> application_breadcrumbs_logger_;

@@ -252,6 +252,14 @@ class ServiceConnection {
       mojom::CrosHealthdDiagnosticsService::RunHttpsLatencyRoutineCallback
           callback) = 0;
 
+  // Requests that cros_healthd runs the video conferencing routine. See
+  // src/chromeos/service/cros_healthd/public/mojom/cros_healthd.mojom for
+  // details.
+  virtual void RunVideoConferencingRoutine(
+      const base::Optional<std::string>& stun_server_hostname,
+      mojom::CrosHealthdDiagnosticsService::RunVideoConferencingRoutineCallback
+          callback) = 0;
+
   // Subscribes to cros_healthd's Bluetooth-related events. See
   // src/chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom for
   // details.
@@ -270,6 +278,14 @@ class ServiceConnection {
   // details.
   virtual void AddPowerObserver(
       mojo::PendingRemote<mojom::CrosHealthdPowerObserver>
+          pending_observer) = 0;
+
+  // Subscribes to cros_healthd's network-related events. See
+  // src/chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom for
+  // details.
+  virtual void AddNetworkObserver(
+      mojo::PendingRemote<
+          chromeos::network_health::mojom::NetworkEventsObserver>
           pending_observer) = 0;
 
   // Gathers pieces of information about the platform. See

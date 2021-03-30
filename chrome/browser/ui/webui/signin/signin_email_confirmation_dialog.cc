@@ -143,8 +143,8 @@ ui::ModalType SigninEmailConfirmationDialog::GetDialogModalType() const {
   return ui::MODAL_TYPE_WINDOW;
 }
 
-base::string16 SigninEmailConfirmationDialog::GetDialogTitle() const {
-  return base::string16();
+std::u16string SigninEmailConfirmationDialog::GetDialogTitle() const {
+  return std::u16string();
 }
 
 GURL SigninEmailConfirmationDialog::GetDialogContentURL() const {

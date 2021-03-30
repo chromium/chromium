@@ -48,7 +48,11 @@
 namespace blink {
 
 LinkImport::LinkImport(HTMLLinkElement* owner)
-    : LinkResource(owner), child_(nullptr) {}
+    : LinkResource(owner), child_(nullptr) {
+  // TODO(crbug.com/937746): Anything caught by this DCHECK is using the
+  // now-removed HTML Imports feature.
+  DCHECK(false) << "HTML Imports has been removed.";
+}
 
 LinkImport::~LinkImport() = default;
 

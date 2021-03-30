@@ -11,8 +11,6 @@
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/strings/nullable_string16.h"
-#include "base/strings/string16.h"
 #include "sql/database.h"
 
 namespace base {
@@ -26,7 +24,7 @@ namespace storage {
 class FilesystemProxy;
 
 using LegacyDomStorageValuesMap =
-    std::map<base::string16, base::NullableString16>;
+    std::map<std::u16string, base::Optional<std::u16string>>;
 
 // Represents a SQLite based backing for DOM storage data. This
 // class is designed to be used on a single thread.
@@ -36,17 +34,16 @@ class LegacyDomStorageDatabase {
                            std::unique_ptr<FilesystemProxy> filesystem_proxy);
   virtual ~LegacyDomStorageDatabase();  // virtual for unit testing
 
-  // Reads all the key, value pairs stored in the database and returns
-  // them. |result| is assumed to be empty and any duplicate keys will
-  // be overwritten. If the database exists on disk then it will be
-  // opened. If it does not exist then it will not be created and
-  // |result| will be unmodified.
+  // Reads all the key, value pairs stored in the database and returns them.
+  // |result| is assumed to be empty and any duplicate keys will be overwritten.
+  // If the database exists on disk then it will be opened. If it does not exist
+  // then it will not be created and |result| will be unmodified.
   void ReadAllValues(LegacyDomStorageValuesMap* result);
 
-  // Updates the backing database. Will remove all keys before updating
-  // the database if |clear_all_first| is set. Then all entries in
-  // |changes| will be examined - keys mapped to a null NullableString16
-  // will be removed and all others will be inserted/updated as appropriate.
+  // Updates the backing database. Will remove all keys before updating the
+  // database if |clear_all_first| is set. Then all entries in |changes| will be
+  // examined - keys mapped to a nullopt value will be removed and all others
+  // will be inserted/updated as appropriate.
   bool CommitChanges(bool clear_all_first,
                      const LegacyDomStorageValuesMap& changes);
 

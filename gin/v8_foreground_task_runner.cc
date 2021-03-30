@@ -37,12 +37,24 @@ void V8ForegroundTaskRunner::PostDelayedTask(std::unique_ptr<v8::Task> task,
       base::TimeDelta::FromSecondsD(delay_in_seconds));
 }
 
+void V8ForegroundTaskRunner::PostNonNestableDelayedTask(
+    std::unique_ptr<v8::Task> task,
+    double delay_in_seconds) {
+  task_runner_->PostNonNestableDelayedTask(
+      FROM_HERE, base::BindOnce(&v8::Task::Run, std::move(task)),
+      base::TimeDelta::FromSecondsD(delay_in_seconds));
+}
+
 void V8ForegroundTaskRunner::PostIdleTask(std::unique_ptr<v8::IdleTask> task) {
   DCHECK(IdleTasksEnabled());
   idle_task_runner()->PostIdleTask(std::move(task));
 }
 
 bool V8ForegroundTaskRunner::NonNestableTasksEnabled() const {
+  return true;
+}
+
+bool V8ForegroundTaskRunner::NonNestableDelayedTasksEnabled() const {
   return true;
 }
 

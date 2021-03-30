@@ -4,31 +4,18 @@
 
 # Expectations for CompositeAfterPaint
 # See: https://docs.google.com/document/d/1QCM912Dr6u38DqyQqd7pxQxDy8FFOoWMMDq7uAXqKdA/view
-http/tests/devtools/tracing/* [ Skip ]
 
 virtual/composite-after-paint/* [ Skip ]
-
-virtual/layout_ng_block_frag/* [ Skip ]
-virtual/layout_ng_fragment_traversal/* [ Skip ]
-virtual/prefer_compositing_to_lcd_text/compositing/overflow/* [ Skip ]
 virtual/stable/* [ Skip ]
-
-# For now we track the failures of the base tests of the following virtual suites.
-virtual/exotic-color-space/images/* [ Skip ]
-virtual/gpu-rasterization/images/* [ Skip ]
-virtual/threaded/printing/* [ Skip ]
-virtual/threaded/http/tests/devtools/tracing/* [ Skip ]
-virtual/controls-refresh-hc/* [ Skip ]
 
 # They test Layer::ScrollsWithRespectTo() which is for pre-CompositeAfterPaint only.
 compositing/overflow/scrolls-with-respect-to-nested.html [ Skip ]
 compositing/overflow/scrolls-with-respect-to-transform.html [ Skip ]
 compositing/overflow/scrolls-with-respect-to.html [ Skip ]
 
-# We don't repaint when opacity changes from zero to non-zero, so it's not feasible
-# to detect that as a first paint. Won't fix.
-external/wpt/paint-timing/fcp-only/fcp-opacity.html [ Skip ]
-external/wpt/paint-timing/fcp-only/fcp-pseudo-element-opacity.html [ Skip ]
+# We don't repaint when opacity changes from zero to non-zero, so miss the FCP.
+crbug.com/1184903 external/wpt/paint-timing/fcp-only/fcp-opacity.html [ Timeout ]
+crbug.com/1184903 external/wpt/paint-timing/fcp-only/fcp-pseudo-element-opacity.html [ Timeout ]
 
 # Can't rebaseline because the file path is too long.
 virtual/compositor_threaded_scrollbar_scrolling/paint/invalidation/scroll/sticky/invalidate-after-composited-scroll-with-sticky.html [ Skip ]
@@ -38,17 +25,13 @@ crbug.com/802915 css3/blending/isolation-should-include-non-local-background.htm
 crbug.com/918155 virtual/prefer_compositing_to_lcd_text/scrollbars/overlay-scrollbar-over-child-layer-nested-2.html [ Pass ]
 crbug.com/918155 virtual/prefer_compositing_to_lcd_text/scrollbars/overlay-scrollbar-over-child-layer-nested.html [ Pass ]
 paint/invalidation/compositing/subpixel-offset-scaled-transform-composited.html [ Pass ]
+external/wpt/css/css-break/transform-000.html [ Pass ]
+external/wpt/css/css-break/transform-001.html [ Pass ]
+external/wpt/css/css-break/transform-002.html [ Pass ]
 crbug.com/1135676 external/wpt/css/css-ui/resize-child-will-change-transform.html [ Pass ]
+crbug.com/148499 external/wpt/svg/extensibility/foreignObject/will-change-in-foreign-object-paint-order.html [ Pass ]
 
-# Raster invalidation doesn't work for huge layers.
-paint/invalidation/raster-under-invalidation-checking.html [ Failure ]
-
-# No composited scrolling for overflow:hidden (on marquee).
-compositing/overflow/do-not-repaint-if-scrolling-composited-layers.html [ Failure ]
-
-paint/invalidation/media-audio-no-spurious-repaints.html [ Failure ]
-
-# Outline paints incorrectly with columns. Needs LayoutNGBlockFragment.
+# Outline paints incorrectly with columns. Needs LayoutNGBlockFragmentation.
 crbug.com/1047358 paint/pagination/composited-paginated-outlined-box.html [ Failure ]
 
 compositing/gestures/gesture-tapHighlight-composited-img.html [ Pass Failure ]
@@ -61,16 +44,23 @@ crbug.com/1108972 fullscreen/compositor-touch-hit-rects-fullscreen-video-control
 crbug.com/1123189 virtual/threaded-composited-iframes/external/wpt/is-input-pending/security/cross-origin-subframe-masked-pointer-events-mixed-2.sub.html [ Failure ]
 crbug.com/1123189 virtual/threaded-composited-iframes/external/wpt/is-input-pending/security/cross-origin-subframe-complex-clip.sub.html [ Failure ]
 
-crbug.com/1124979 compositing/video/video-controls-layer-creation.html [ Pass Failure ]
+# Fixed-position element gets composited/decomposited on overlap change during scroll.
+crbug.com/1099379 compositing/squashing/squash-above-fixed-1.html [ Failure ]
+crbug.com/1099379 compositing/squashing/squash-above-fixed-3.html [ Failure ]
 
-crbug.com/1150468 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/* [ Skip ]
-crbug.com/1150468 virtual/composite-bgcolor-animation-hidpi/external/wpt/css/css-backgrounds/hidpi/* [ Skip ]
-
+# FragmentClip hierarchy issue. Will be fixed by LayoutNGBlockFragmentation.
 crbug.com/1157199 external/wpt/css/css-paint-api/column-count-crash.https.html [ Crash ]
 crbug.com/1157199 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/column-count-crash.https.html [ Crash ]
 
-# [css-counter-styles]
-# Need to implement predefined counter style 'simp-chinese-informal' as a
-# custom counter style.
-crbug.com/687225 fast/css/content-counter-large-negative-cjk.html [ Failure ]
+# These tests expect fragment stitching when composited, which isn't correct rendering.
+crbug.com/1058792 fast/multicol/composited-layer-with-transform.html [ Skip ]
+crbug.com/1058792 fast/multicol/composited-with-child-layer-vertical-rl.html [ Skip ]
 
+# Needs to meet requirement of DevTools for trace events.
+crbug.com/1191032 http/tests/devtools/tracing/frame-model-instrumentation.js [ Failure ]
+crbug.com/1191032 http/tests/devtools/tracing/timeline-paint/paint-profiler-update.js [ Timeout ]
+crbug.com/1191032 virtual/threaded/http/tests/devtools/tracing/timeline-paint/paint-profiler-update.js [ Timeout ]
+
+crbug.com/1191162 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/composited-under-clip-under-multicol.html [ Failure ]
+crbug.com/1191162 virtual/layout_ng_block_frag/fast/multicol/composited-relpos-clipped.html [ Failure ]
+crbug.com/1191162 virtual/layout_ng_block_frag/fast/multicol/composited-relpos-in-clipped.html [ Failure ]

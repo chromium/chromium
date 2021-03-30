@@ -148,7 +148,7 @@ NSString* BuildMessage(NSArray<NSString*>* messageComponents) {
 
   // The remaining states are valid HTTPS, or HTTPS with minor errors.
 
-  base::string16 issuerName(
+  std::u16string issuerName(
       base::UTF8ToUTF16(status.certificate->issuer().GetDisplayName()));
   // Have certificateDetails be an empty string to help building the message.
   NSString* certificateDetails = @"";

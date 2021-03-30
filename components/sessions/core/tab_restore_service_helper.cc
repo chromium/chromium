@@ -104,6 +104,14 @@ base::Optional<SessionID> TabRestoreServiceHelper::CreateHistoricalTab(
   if (closing_contexts_.find(context) != closing_contexts_.end())
     return base::nullopt;
 
+  // Save the Window as well as the Tab if this is the last tab of an appp
+  // browser to ensure the tab will reopen in the correct app window.
+  if (context && context->GetTabCount() == 1 &&
+      !context->GetAppName().empty()) {
+    BrowserClosing(context);
+    return base::nullopt;
+  }
+
   auto local_tab = std::make_unique<Tab>();
   PopulateTab(local_tab.get(), index, context, live_tab);
   if (local_tab->navigations.empty())

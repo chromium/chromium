@@ -21,6 +21,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
@@ -36,6 +37,7 @@ import java.util.List;
  * Test for DownloadForegroundService.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class DownloadForegroundServiceTest {
     private static final int FAKE_DOWNLOAD_ID1 = 1;
     private static final int FAKE_DOWNLOAD_ID2 = 2;

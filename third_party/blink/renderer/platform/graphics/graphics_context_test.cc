@@ -215,7 +215,7 @@ TEST_F(GraphicsContextDarkModeTest, InvertBrightness) {
   EXPECT_EQ(SK_ColorWHITE, bitmap_.getColor(0, 0));
   EXPECT_EQ(SK_ColorBLACK, bitmap_.getColor(1, 0));
   EXPECT_EQ(SK_ColorCYAN, bitmap_.getColor(2, 0));
-  EXPECT_EQ(0xffd8d8d8, bitmap_.getColor(3, 0));
+  EXPECT_EQ(0xffe1e1e1, bitmap_.getColor(3, 0));
 }
 
 // Invert lightness (in HSL space).
@@ -230,7 +230,7 @@ TEST_F(GraphicsContextDarkModeTest, InvertLightness) {
   EXPECT_EQ(SK_ColorWHITE, bitmap_.getColor(0, 0));
   EXPECT_EQ(SK_ColorBLACK, bitmap_.getColor(1, 0));
   EXPECT_EQ(SK_ColorRED, bitmap_.getColor(2, 0));
-  EXPECT_EQ(0xffd8d8d8, bitmap_.getColor(3, 0));
+  EXPECT_EQ(0xffe1e1e1, bitmap_.getColor(3, 0));
 }
 
 // Invert lightness plus grayscale.
@@ -244,8 +244,8 @@ TEST_F(GraphicsContextDarkModeTest, InvertLightnessPlusGrayscale) {
 
   EXPECT_EQ(SK_ColorWHITE, bitmap_.getColor(0, 0));
   EXPECT_EQ(SK_ColorBLACK, bitmap_.getColor(1, 0));
-  EXPECT_EQ(0xffe2e2e2, bitmap_.getColor(2, 0));
-  EXPECT_EQ(0xffd8d8d8, bitmap_.getColor(3, 0));
+  EXPECT_EQ(0xffe6e6e6, bitmap_.getColor(2, 0));
+  EXPECT_EQ(0xffe1e1e1, bitmap_.getColor(3, 0));
 }
 
 TEST_F(GraphicsContextDarkModeTest, InvertLightnessPlusContrast) {
@@ -259,7 +259,7 @@ TEST_F(GraphicsContextDarkModeTest, InvertLightnessPlusContrast) {
   EXPECT_EQ(SK_ColorWHITE, bitmap_.getColor(0, 0));
   EXPECT_EQ(SK_ColorBLACK, bitmap_.getColor(1, 0));
   EXPECT_EQ(SK_ColorRED, bitmap_.getColor(2, 0));
-  EXPECT_EQ(0xffe7e7e7, bitmap_.getColor(3, 0));
+  EXPECT_EQ(0xfff1f1f1, bitmap_.getColor(3, 0));
 }
 
 }  // namespace

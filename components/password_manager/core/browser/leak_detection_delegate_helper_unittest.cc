@@ -123,7 +123,7 @@ TEST_F(LeakDetectionDelegateHelperTest, SavedLeakedCredentials) {
   SetGetLoginByPasswordConsumerInvocation(std::move(password_forms));
   SetOnShowLeakDetectionNotificationExpectation(IsSaved(true), IsReused(false),
                                                 CompromisedSitesCount(1));
-  EXPECT_CALL(*store_, AddCompromisedCredentialsImpl);
+  EXPECT_CALL(*store_, AddInsecureCredentialImpl);
   InitiateGetCredentialLeakType();
 }
 
@@ -137,7 +137,7 @@ TEST_F(LeakDetectionDelegateHelperTest,
   SetGetLoginByPasswordConsumerInvocation(std::move(password_forms));
   SetOnShowLeakDetectionNotificationExpectation(IsSaved(true), IsReused(true),
                                                 CompromisedSitesCount(2));
-  EXPECT_CALL(*store_, AddCompromisedCredentialsImpl).Times(2);
+  EXPECT_CALL(*store_, AddInsecureCredentialImpl).Times(2);
   InitiateGetCredentialLeakType();
 }
 
@@ -152,7 +152,7 @@ TEST_F(LeakDetectionDelegateHelperTest,
   SetGetLoginByPasswordConsumerInvocation(std::move(password_forms));
   SetOnShowLeakDetectionNotificationExpectation(IsSaved(true), IsReused(true),
                                                 CompromisedSitesCount(1));
-  EXPECT_CALL(*store_, AddCompromisedCredentialsImpl);
+  EXPECT_CALL(*store_, AddInsecureCredentialImpl);
   InitiateGetCredentialLeakType();
 }
 
@@ -175,7 +175,7 @@ TEST_F(LeakDetectionDelegateHelperTest, ReusedPasswordOnOtherOrigin) {
   SetGetLoginByPasswordConsumerInvocation(std::move(password_forms));
   SetOnShowLeakDetectionNotificationExpectation(IsSaved(false), IsReused(true),
                                                 CompromisedSitesCount(1));
-  EXPECT_CALL(*store_, AddCompromisedCredentialsImpl);
+  EXPECT_CALL(*store_, AddInsecureCredentialImpl);
   InitiateGetCredentialLeakType();
 }
 
@@ -199,14 +199,14 @@ TEST_F(LeakDetectionDelegateHelperTest, SaveLeakedCredentials) {
        CreateForm(kLeakedOrigin, kOtherUsername, kLeakedPassword)});
   SetOnShowLeakDetectionNotificationExpectation(IsSaved(true), IsReused(true),
                                                 CompromisedSitesCount(2));
-  EXPECT_CALL(*store_, AddCompromisedCredentialsImpl(CompromisedCredentials(
+  EXPECT_CALL(*store_, AddInsecureCredentialImpl(InsecureCredential(
                            GetSignonRealm(GURL(kLeakedOrigin)),
                            ASCIIToUTF16(kLeakedUsername), base::Time::Now(),
-                           CompromiseType::kLeaked, IsMuted(false))));
-  EXPECT_CALL(*store_, AddCompromisedCredentialsImpl(CompromisedCredentials(
+                           InsecureType::kLeaked, IsMuted(false))));
+  EXPECT_CALL(*store_, AddInsecureCredentialImpl(InsecureCredential(
                            GetSignonRealm(GURL(kOtherOrigin)),
                            ASCIIToUTF16(kLeakedUsername), base::Time::Now(),
-                           CompromiseType::kLeaked, IsMuted(false))));
+                           InsecureType::kLeaked, IsMuted(false))));
   InitiateGetCredentialLeakType();
 }
 
@@ -218,10 +218,10 @@ TEST_F(LeakDetectionDelegateHelperTest, SaveLeakedCredentialsCanonicalized) {
                                                 CompromisedSitesCount(1));
 
   EXPECT_CALL(*store_,
-              AddCompromisedCredentialsImpl(CompromisedCredentials(
+              AddInsecureCredentialImpl(InsecureCredential(
                   GetSignonRealm(GURL(kOtherOrigin)),
                   ASCIIToUTF16(kLeakedUsernameNonCanonicalized),
-                  base::Time::Now(), CompromiseType::kLeaked, IsMuted(false))));
+                  base::Time::Now(), InsecureType::kLeaked, IsMuted(false))));
   InitiateGetCredentialLeakType();
 }
 
@@ -260,8 +260,8 @@ TEST_F(LeakDetectionDelegateHelperWithTwoStoreTest, SavedLeakedCredentials) {
 
   InitiateGetCredentialLeakType();
 
-  EXPECT_FALSE(profile_store_->compromised_credentials().empty());
-  EXPECT_FALSE(account_store_->compromised_credentials().empty());
+  EXPECT_FALSE(profile_store_->insecure_credentials().empty());
+  EXPECT_FALSE(account_store_->insecure_credentials().empty());
 }
 
 }  // namespace password_manager

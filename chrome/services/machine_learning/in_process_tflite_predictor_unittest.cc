@@ -6,10 +6,14 @@
 
 #include <string>
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/path_service.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,17 +39,20 @@ class InProcessTFLitePredictorTest : public ::testing::Test {
   InProcessTFLitePredictorTest() = default;
   ~InProcessTFLitePredictorTest() override = default;
 
-  // Returns TFLite test model path
+  // Returns TFLite test model path.
   std::string GetTFLiteTestPath() {
-    // Location of generated test data (<(PROGRAM_DIR)/test_data).
-    base::FilePath g_gen_test_data_directory;
+    base::FilePath model_file_path;
 
-    base::PathService::Get(chrome::DIR_GEN_TEST_DATA,
-                           &g_gen_test_data_directory);
-    g_gen_test_data_directory =
-        g_gen_test_data_directory.Append("simple_test.tflite");
+    EXPECT_TRUE(
+        base::PathService::Get(base::DIR_SOURCE_ROOT, &model_file_path));
 
-    return g_gen_test_data_directory.value().c_str();
+    model_file_path = model_file_path.Append(FILE_PATH_LITERAL("components"))
+                          .Append(FILE_PATH_LITERAL("test"))
+                          .Append(FILE_PATH_LITERAL("data"))
+                          .Append(FILE_PATH_LITERAL("optimization_guide"))
+                          .Append(FILE_PATH_LITERAL("simple_test.tflite"));
+    EXPECT_TRUE(base::PathExists(model_file_path));
+    return model_file_path.AsUTF8Unsafe();
   }
 };
 

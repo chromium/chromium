@@ -14,8 +14,6 @@ function getEmptyPrinter_() {
     printerAddress: '',
     printerDescription: '',
     printerId: '',
-    printerManufacturer: '',
-    printerModel: '',
     printerMakeAndModel: '',
     printerName: '',
     printerPPDPath: '',
@@ -100,8 +98,6 @@ Polymer({
     const newPrinter =
         /** @type {CupsPrinterInfo}  */ (Object.assign({}, this.newPrinter));
 
-    newPrinter.printerManufacturer = info.manufacturer;
-    newPrinter.printerModel = info.model;
     newPrinter.printerMakeAndModel = info.makeAndModel;
     newPrinter.printerPpdReference.userSuppliedPpdUrl =
         info.ppdRefUserSuppliedPpdUrl;

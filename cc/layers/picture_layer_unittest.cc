@@ -160,8 +160,7 @@ TEST(PictureLayerTest, ClearVisibleRectWhenNoTiling) {
   gfx::Size layer_size(50, 50);
   FakeContentLayerClient client;
   client.set_bounds(layer_size);
-  client.add_draw_image(CreateDiscardablePaintImage(layer_size), gfx::Point(),
-                        PaintFlags());
+  client.add_draw_image(CreateDiscardablePaintImage(layer_size), gfx::Point());
   scoped_refptr<PictureLayer> layer = PictureLayer::Create(&client);
   layer->SetBounds(gfx::Size(10, 10));
 

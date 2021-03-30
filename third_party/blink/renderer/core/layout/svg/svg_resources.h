@@ -22,6 +22,8 @@
 
 #include "third_party/blink/renderer/core/svg/svg_resource_client.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -62,10 +64,10 @@ class SVGElementResourceClient final
  public:
   explicit SVGElementResourceClient(SVGElement*);
 
-  void ResourceContentChanged(InvalidationModeMask) override;
-  void ResourceElementChanged() override;
+  void ResourceContentChanged(SVGResource*) override;
 
-  void FilterPrimitiveChanged(SVGFilterPrimitiveStandardAttributes& primitive,
+  void FilterPrimitiveChanged(SVGResource*,
+                              SVGFilterPrimitiveStandardAttributes& primitive,
                               const QualifiedName& attribute) override;
 
   void UpdateFilterData(CompositorFilterOperations&);

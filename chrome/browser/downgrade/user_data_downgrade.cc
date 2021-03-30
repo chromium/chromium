@@ -26,7 +26,7 @@ base::Version GetVersionFromFileName(const base::FilePath& path) {
 #if defined(OS_WIN)
   // On Windows, for Unicode-aware applications, native pathnames are wchar_t
   // arrays encoded in UTF-16.
-  return base::Version(base::UTF16ToUTF8(path.BaseName().value()));
+  return base::Version(base::WideToUTF8(path.BaseName().value()));
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
   // On most platforms, native pathnames are char arrays, and the encoding
   // may or may not be specified.  On Mac OS X, native pathnames are encoded

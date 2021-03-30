@@ -31,6 +31,7 @@ class PrivacySection : public OsSettingsSection {
 
  private:
   // OsSettingsSection:
+  void AddHandlers(content::WebUI* web_ui) override;
   void AddLoadTimeData(content::WebUIDataSource* html_source) override;
   int GetSectionNameMessageId() const override;
   mojom::Section GetSection() const override;

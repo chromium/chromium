@@ -8,7 +8,7 @@ header("Access-Control-Allow-Methods: $methods");
 header('Access-Control-Allow-Headers: content-type');
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
   echo 'replied to options with Access-Control-Allow headers';
-  http_response_code(400);
+  http_response_code(204);
 } else {
   echo 'post data: ' . file_get_contents('php://input');
 }

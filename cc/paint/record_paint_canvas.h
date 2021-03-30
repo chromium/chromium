@@ -46,6 +46,8 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
   void translate(SkScalar dx, SkScalar dy) override;
   void scale(SkScalar sx, SkScalar sy) override;
   void rotate(SkScalar degrees) override;
+  // TODO(crbug.com/1167153): The concat and setMatrix methods that take an
+  // SkMatrix should be removed in favor of the SkM44 versions.
   void concat(const SkMatrix& matrix) override;
   void setMatrix(const SkMatrix& matrix) override;
   void concat(const SkM44& matrix) override;
@@ -81,10 +83,12 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
   void drawImage(const PaintImage& image,
                  SkScalar left,
                  SkScalar top,
+                 const SkSamplingOptions&,
                  const PaintFlags* flags) override;
   void drawImageRect(const PaintImage& image,
                      const SkRect& src,
                      const SkRect& dst,
+                     const SkSamplingOptions&,
                      const PaintFlags* flags,
                      SkCanvas::SrcRectConstraint constraint) override;
   void drawSkottie(scoped_refptr<SkottieWrapper> skottie,

@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+// clang-format on
+
 cr.define('multidevice_setup', function() {
   /** @interface */
-  class BrowserProxy {
+  /* #export */ class BrowserProxy {
     /**
      * Requests profile information; namely, a dictionary containing the user's
      * e-mail address and profile photo.
@@ -20,7 +24,7 @@ cr.define('multidevice_setup', function() {
   }
 
   /** @implements {multidevice_setup.BrowserProxy} */
-  class BrowserProxyImpl {
+  /* #export */ class BrowserProxyImpl {
     /** @override */
     getProfileInfo() {
       return cr.sendWithPromise('getProfileInfo');
@@ -34,6 +38,7 @@ cr.define('multidevice_setup', function() {
 
   cr.addSingletonGetter(BrowserProxyImpl);
 
+  // #cr_define_end
   return {
     BrowserProxy: BrowserProxy,
     BrowserProxyImpl: BrowserProxyImpl,

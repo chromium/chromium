@@ -42,11 +42,11 @@ using storage::ScopedTextBlob;
 namespace sync_file_system {
 
 namespace {
-const std::string kParent = "foo";
-const std::string kFile   = "foo/file";
-const std::string kDir    = "foo/dir";
-const std::string kChild  = "foo/dir/bar";
-const std::string kOther  = "bar";
+const char kParent[] = "foo";
+const char kFile[] = "foo/file";
+const char kDir[] = "foo/dir";
+const char kChild[] = "foo/dir/bar";
+const char kOther[] = "bar";
 }  // namespace
 
 class SyncableFileOperationRunnerTest : public testing::Test {
@@ -117,8 +117,8 @@ class SyncableFileOperationRunnerTest : public testing::Test {
 
   FileSystemOperation::WriteCallback GetWriteCallback(
       const base::Location& location) {
-    return base::Bind(&SyncableFileOperationRunnerTest::DidWrite,
-                      weak_factory_.GetWeakPtr(), location);
+    return base::BindRepeating(&SyncableFileOperationRunnerTest::DidWrite,
+                               weak_factory_.GetWeakPtr(), location);
   }
 
   void DidWrite(const base::Location& location,

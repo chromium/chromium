@@ -14,10 +14,13 @@ class OmniboxTriggeredFeatureService {
  public:
   // The list of features used for counterfactual slicing.
   // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
+  // numeric values should never be reused. When adding an entry here, a
+  // corresponding entry should be added in the UMA histograms.
   enum class Feature {
     kRichAutocompletion = 0,
-    kMaxValue = kRichAutocompletion,
+    kBookmarkPaths = 1,
+    kShortBookmarkSuggestionsByTotalInputLength = 2,
+    kMaxValue = kShortBookmarkSuggestionsByTotalInputLength,
   };
   using Features = std::set<Feature>;
 

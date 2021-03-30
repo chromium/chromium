@@ -21,6 +21,7 @@ class CastCdmOriginProvider;
 
 namespace content {
 class DesktopCapturerLacros;
+class AndroidOverlaySyncHelper;
 }  // namespace content
 
 namespace crosapi {
@@ -91,6 +92,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncCallRestrictions {
   // TODO(159346933) Remove once the origin isolation logic is moved outside of
   // cast media service.
   friend class chromecast::CastCdmOriginProvider;
+  // Android requires synchronous processing when overlay surfaces are
+  // destroyed, else behavior is undefined.
+  friend class content::AndroidOverlaySyncHelper;
   // END ALLOWED USAGE.
 
 #if ENABLE_SYNC_CALL_RESTRICTIONS

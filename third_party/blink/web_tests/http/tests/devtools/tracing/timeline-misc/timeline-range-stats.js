@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that aggregated summary in Timeline is properly computed.\n`);
-  await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   var mainThread = 1;
@@ -61,7 +61,7 @@
       dur: 1000,
       'tid': mainThread,
       'pid': pid,
-      args: {beginData: {}, endData: {}}
+      args: {beginData: {}, endData: {'layoutRoots':[]}}
     },
 
     {
@@ -102,7 +102,7 @@
       'dur': 1000,
       'tid': mainThread,
       'pid': pid,
-      args: {beginData: {}, endData: {}}
+      args: {beginData: {}, endData: {'layoutRoots':[]}}
     },
   ];
 

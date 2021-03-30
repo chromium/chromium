@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/threading/thread_checker.h"
 #include "net/base/auth.h"
 #include "net/base/completion_once_callback.h"
@@ -71,7 +70,7 @@ class NET_EXPORT NetworkDelegate {
   void NotifyResponseStarted(URLRequest* request, int net_error);
   void NotifyCompleted(URLRequest* request, bool started, int net_error);
   void NotifyURLRequestDestroyed(URLRequest* request);
-  void NotifyPACScriptError(int line_number, const base::string16& error);
+  void NotifyPACScriptError(int line_number, const std::u16string& error);
   bool CanGetCookies(const URLRequest& request,
                      bool allowed_from_caller);
   bool CanSetCookie(const URLRequest& request,
@@ -196,7 +195,7 @@ class NET_EXPORT NetworkDelegate {
 
   // Corresponds to ProxyResolverJSBindings::OnError.
   virtual void OnPACScriptError(int line_number,
-                                const base::string16& error) = 0;
+                                const std::u16string& error) = 0;
 
   // Called when reading cookies to allow the network delegate to block access
   // to the cookie. This method will never be invoked when

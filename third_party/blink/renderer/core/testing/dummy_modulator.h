@@ -40,6 +40,7 @@ class DummyModulator : public Modulator {
   bool ImportMapsEnabled() const override;
 
   void FetchTree(const KURL&,
+                 ModuleType,
                  ResourceFetcher*,
                  mojom::blink::RequestContextType context_type,
                  network::mojom::RequestDestination destination,
@@ -57,10 +58,10 @@ class DummyModulator : public Modulator {
       mojom::blink::RequestContextType context_type,
       network::mojom::RequestDestination destination,
       ModuleTreeClient*) override;
-  ModuleScript* GetFetchedModuleScript(const KURL&) override;
+  ModuleScript* GetFetchedModuleScript(const KURL&, ModuleType) override;
   KURL ResolveModuleSpecifier(const String&, const KURL&, String*) override;
   bool HasValidContext() override;
-  void ResolveDynamically(const String& specifier,
+  void ResolveDynamically(const ModuleRequest& module_request,
                           const KURL&,
                           const ReferrerScriptInfo&,
                           ScriptPromiseResolver*) override;
@@ -68,14 +69,16 @@ class DummyModulator : public Modulator {
   ScriptValue CreateSyntaxError(const String& message) const override;
   void RegisterImportMap(const ImportMap*,
                          ScriptValue error_to_rethrow) override;
-  bool IsAcquiringImportMaps() const override;
-  void ClearIsAcquiringImportMaps() override;
+  AcquiringImportMapsState GetAcquiringImportMapsState() const override;
+  void SetAcquiringImportMapsState(AcquiringImportMapsState) override;
   ModuleImportMeta HostGetImportMetaProperties(
       v8::Local<v8::Module>) const override;
   const ImportMap* GetImportMapForTest() const override;
   ScriptValue InstantiateModule(v8::Local<v8::Module>, const KURL&) override;
   Vector<ModuleRequest> ModuleRequestsFromModuleRecord(
       v8::Local<v8::Module>) override;
+  ModuleType ModuleTypeFromRequest(
+      const ModuleRequest& module_request) const override;
   ModuleScriptFetcher* CreateModuleScriptFetcher(
       ModuleScriptCustomFetchType,
       base::PassKey<ModuleScriptLoader>) override;

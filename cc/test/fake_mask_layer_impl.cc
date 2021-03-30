@@ -4,6 +4,8 @@
 
 #include "cc/test/fake_mask_layer_impl.h"
 
+#include <memory>
+
 #include "base/memory/ptr_util.h"
 
 namespace cc {
@@ -27,7 +29,7 @@ std::unique_ptr<FakeMaskLayerImpl> FakeMaskLayerImpl::Create(
 void FakeMaskLayerImpl::GetContentsResourceId(viz::ResourceId* resource_id,
                                               gfx::Size* resource_size,
                                               gfx::SizeF* mask_uv_size) const {
-  *resource_id = 0;
+  *resource_id = viz::kInvalidResourceId;
   *resource_size = resource_size_;
   *mask_uv_size = gfx::SizeF(1.0f, 1.0f);
 }

@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
-#include "components/no_state_prefetch/renderer/prerender_helper.h"
+#include "components/no_state_prefetch/renderer/no_state_prefetch_helper.h"
 #include "components/safe_browsing/content/renderer/renderer_url_loader_throttle.h"
 #include "content/public/renderer/render_thread.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
@@ -16,7 +16,7 @@ namespace weblayer {
 
 URLLoaderThrottleProvider::URLLoaderThrottleProvider(
     blink::ThreadSafeBrowserInterfaceBrokerProxy* broker,
-    content::URLLoaderThrottleProviderType type)
+    blink::URLLoaderThrottleProviderType type)
     : type_(type) {
   DETACH_FROM_THREAD(thread_checker_);
   broker->GetInterface(safe_browsing_remote_.InitWithNewPipeAndPassReceiver());
@@ -32,7 +32,7 @@ URLLoaderThrottleProvider::URLLoaderThrottleProvider(
   }
 }
 
-std::unique_ptr<content::URLLoaderThrottleProvider>
+std::unique_ptr<blink::URLLoaderThrottleProvider>
 URLLoaderThrottleProvider::Clone() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (safe_browsing_remote_)
@@ -44,34 +44,34 @@ URLLoaderThrottleProvider::~URLLoaderThrottleProvider() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
-std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
+blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>>
 URLLoaderThrottleProvider::CreateThrottles(
     int render_frame_id,
     const blink::WebURLRequest& request) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
+  blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
 
   bool is_frame_resource =
       blink::IsRequestDestinationFrame(request.GetRequestDestination());
 
   DCHECK(!is_frame_resource ||
-         type_ == content::URLLoaderThrottleProviderType::kFrame);
+         type_ == blink::URLLoaderThrottleProviderType::kFrame);
 
   if (!is_frame_resource) {
     if (safe_browsing_remote_)
       safe_browsing_.Bind(std::move(safe_browsing_remote_));
-    throttles.push_back(
+    throttles.emplace_back(
         std::make_unique<safe_browsing::RendererURLLoaderThrottle>(
             safe_browsing_.get(), render_frame_id));
   }
 
-  if (type_ == content::URLLoaderThrottleProviderType::kFrame &&
+  if (type_ == blink::URLLoaderThrottleProviderType::kFrame &&
       !is_frame_resource) {
     auto throttle =
-        prerender::PrerenderHelper::MaybeCreateThrottle(render_frame_id);
+        prerender::NoStatePrefetchHelper::MaybeCreateThrottle(render_frame_id);
     if (throttle)
-      throttles.push_back(std::move(throttle));
+      throttles.emplace_back(std::move(throttle));
   }
 
   return throttles;

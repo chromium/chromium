@@ -4,18 +4,19 @@
 
 #include "chromeos/settings/system_settings_provider.h"
 
+#include <string>
+
+#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/settings/cros_settings_names.h"
 
 namespace chromeos {
 namespace {
 // TODO(olsen): PerUserTimeZoneEnabled and FineGrainedTimeZoneDetectionEnabled
-// are duplicated in chrome/browser/chromeos/system/timezone_util.cc, which
+// are duplicated in chrome/browser/ash/system/timezone_util.cc, which
 // is not visible from this package. Try to re-unify these functions by moving
 // timezone_util to src/chromeos too (out of src/chrome/browser).
 

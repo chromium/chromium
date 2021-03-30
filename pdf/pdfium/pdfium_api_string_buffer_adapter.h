@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/numerics/safe_math.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 
 namespace chrome_pdf {
 
@@ -20,7 +19,7 @@ namespace internal {
 
 // Helper to deal with the fact that many PDFium APIs write the null-terminator
 // into string buffers that are passed to them, but the PDF code likes to use
-// std::strings / base::string16s, where one should not count on the internal
+// std::strings / std::u16strings, where one should not count on the internal
 // string buffers to be null-terminated.
 template <class StringType>
 class PDFiumAPIStringBufferAdapter {
@@ -63,7 +62,7 @@ class PDFiumAPIStringBufferAdapter {
 
 // Helper to deal with the fact that many PDFium APIs write the null-terminator
 // into string buffers that are passed to them, but the PDF code likes to use
-// std::strings / base::string16s, where one should not count on the internal
+// std::strings / std::u16strings, where one should not count on the internal
 // string buffers to be null-terminated. This version is suitable for APIs that
 // work in terms of number of bytes instead of the number of characters. Though
 // for std::strings, PDFiumAPIStringBufferAdapter is equivalent.
@@ -75,17 +74,17 @@ class PDFiumAPIStringBufferSizeInBytesAdapter {
   // character in bytes.
   // |check_expected_size| whether to check the actual number of bytes
   // written into |str| against |expected_size| when calling Close().
-  PDFiumAPIStringBufferSizeInBytesAdapter(base::string16* str,
+  PDFiumAPIStringBufferSizeInBytesAdapter(std::u16string* str,
                                           size_t expected_size,
                                           bool check_expected_size);
   ~PDFiumAPIStringBufferSizeInBytesAdapter();
 
   // Returns a pointer to |str_|'s buffer. The buffer's size is large enough to
-  // hold |expected_size_| + sizeof(base::char16) bytes, so the PDFium API that
+  // hold |expected_size_| + sizeof(char16_t) bytes, so the PDFium API that
   // uses the pointer has space to write a null-terminator.
   void* GetData();
 
-  // Resizes |str_| to |actual_size| - sizeof(base::char16) bytes, thereby
+  // Resizes |str_| to |actual_size| - sizeof(char16_t) bytes, thereby
   // removing the extra null-terminator. This must be called prior to the
   // adapter's destruction. The pointer returned by GetData() should be
   // considered invalid.
@@ -97,7 +96,7 @@ class PDFiumAPIStringBufferSizeInBytesAdapter {
   }
 
  private:
-  PDFiumAPIStringBufferAdapter<base::string16> adapter_;
+  PDFiumAPIStringBufferAdapter<std::u16string> adapter_;
 };
 
 template <class AdapterType,
@@ -136,23 +135,23 @@ StringType CallPDFiumStringBufferApi(
 // Helper function to call PDFium APIs where the output buffer is expected to
 // hold UTF-16 data, and the buffer length is specified in bytes.
 template <typename BufferType>
-base::string16 CallPDFiumWideStringBufferApi(
+std::u16string CallPDFiumWideStringBufferApi(
     base::RepeatingCallback<unsigned long(BufferType*, unsigned long)> api,
     bool check_expected_size) {
   using adapter_type = internal::PDFiumAPIStringBufferSizeInBytesAdapter;
-  return internal::CallPDFiumStringBufferApi<adapter_type, base::string16>(
+  return internal::CallPDFiumStringBufferApi<adapter_type, std::u16string>(
       api, check_expected_size);
 }
 
 // Variant of CallPDFiumWideStringBufferApi() that distinguishes between API
 // call failures and empty string return values.
 template <typename BufferType>
-base::Optional<base::string16> CallPDFiumWideStringBufferApiAndReturnOptional(
+base::Optional<std::u16string> CallPDFiumWideStringBufferApiAndReturnOptional(
     base::RepeatingCallback<unsigned long(BufferType*, unsigned long)> api,
     bool check_expected_size) {
   using adapter_type = internal::PDFiumAPIStringBufferSizeInBytesAdapter;
   return internal::CallPDFiumStringBufferApiAndReturnOptional<adapter_type,
-                                                              base::string16>(
+                                                              std::u16string>(
       api, check_expected_size);
 }
 

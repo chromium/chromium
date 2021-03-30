@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "base/macros.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/statistics_recorder.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -51,12 +51,14 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "components/autofill/core/common/renderer_id.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/driver/test_sync_service.h"
+#include "components/translate/core/common/language_detection_details.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/webdata/common/web_data_results.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -120,13 +122,6 @@ FieldSignature Collapse(FieldSignature sig) {
   return FieldSignature(sig.value() % 1021);
 }
 
-// Returns numbers which are distinct from each other within the scope of one
-// test.
-FormRendererId MakeFormRendererId() {
-  static uint32_t counter = 10;
-  return FormRendererId(counter++);
-}
-
 struct AddressProfileImportRequirementExpectations {
   AddressImportRequirements requirement;
   bool fulfilled;
@@ -136,7 +131,7 @@ void VerifyDeveloperEngagementUkm(
     const ukm::TestUkmRecorder* ukm_recorder,
     const FormData& form,
     const bool is_for_credit_card,
-    const std::set<FormType>& form_types,
+    const DenseSet<FormType>& form_types,
     const std::vector<int64_t>& expected_metric_values) {
   int expected_metric_value = 0;
   for (const auto it : expected_metric_values)
@@ -196,7 +191,7 @@ void VerifySubmitFormUkm(const ukm::TestUkmRecorder* ukm_recorder,
                          AutofillMetrics::AutofillFormSubmittedState state,
                          bool is_for_credit_card,
                          bool has_upi_vpa_field,
-                         const std::set<FormType>& form_types) {
+                         const DenseSet<FormType>& form_types) {
   VerifyUkm(ukm_recorder, form, UkmFormSubmittedType::kEntryName,
             {{{UkmFormSubmittedType::kAutofillFormSubmittedStateName, state},
               {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
@@ -297,8 +292,9 @@ void TestAddressProfileImportCountrySpecificFieldRequirements(
 }
 
 void CreateSimpleForm(const GURL& origin, FormData& form) {
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(origin);
@@ -520,7 +516,7 @@ void AutofillMetricsTest::OnDidGetRealPan(
 
   // Fake user response.
   payments::FullCardRequest::UserProvidedUnmaskDetails details;
-  details.cvc = base::ASCIIToUTF16("123");
+  details.cvc = u"123";
   full_card_request->OnUnmaskPromptAccepted(details);
 
   payments::PaymentsClient::UnmaskResponseDetails response;
@@ -545,7 +541,7 @@ void AutofillMetricsTest::RecreateCreditCards(
     masked_server_credit_card.set_guid("10000000-0000-0000-0000-000000000002");
     masked_server_credit_card.set_instrument_id(1);
     masked_server_credit_card.SetNetworkForMaskedCard(kDiscoverCard);
-    masked_server_credit_card.SetNumber(ASCIIToUTF16("9424"));
+    masked_server_credit_card.SetNumber(u"9424");
     personal_data_->AddServerCreditCard(masked_server_credit_card);
   }
   if (include_full_server_credit_card) {
@@ -569,7 +565,7 @@ void AutofillMetricsTest::AddMaskedServerCreditCardWithOffer(
   masked_server_credit_card.set_guid(guid);
   masked_server_credit_card.set_instrument_id(id);
   masked_server_credit_card.SetNetworkForMaskedCard(kDiscoverCard);
-  masked_server_credit_card.SetNumber(ASCIIToUTF16("9424"));
+  masked_server_credit_card.SetNumber(u"9424");
   personal_data_->AddServerCreditCard(masked_server_credit_card);
 
   AutofillOfferData offer_data;
@@ -656,7 +652,7 @@ TEST_F(AutofillMetricsTest, NumberOfAutofilledFieldsAtSubmission) {
                                      .value = "2345678901",
                                      .form_control_type = "tel",
                                      .is_autofilled = true}},
-                         .unique_renderer_id = MakeFormRendererId(),
+                         .unique_renderer_id = test::MakeFormRendererId(),
                          .main_frame_origin = url::Origin::Create(
                              autofill_client_.form_origin())});
 
@@ -730,7 +726,7 @@ TEST_F(AutofillMetricsTest, QualityMetrics) {
                                      .value = "2345678901",
                                      .form_control_type = "tel",
                                      .is_autofilled = true}},
-                         .unique_renderer_id = MakeFormRendererId(),
+                         .unique_renderer_id = test::MakeFormRendererId(),
                          .main_frame_origin = url::Origin::Create(
                              autofill_client_.form_origin())});
 
@@ -1557,8 +1553,9 @@ TEST_F(AutofillMetricsTest,
        QualityMetrics_LoggedCorrecltyForRationalizationOk) {
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
 
@@ -1638,8 +1635,9 @@ TEST_F(AutofillMetricsTest,
        QualityMetrics_LoggedCorrecltyForRationalizationGood) {
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
 
@@ -1706,8 +1704,9 @@ TEST_F(AutofillMetricsTest, LogHiddenRepresentationalFieldSkipDecision) {
 
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -1772,7 +1771,7 @@ TEST_F(AutofillMetricsTest, LogHiddenRepresentationalFieldSkipDecision) {
         {UkmLogHiddenRepresentationalFieldSkipDecisionType::kFieldSignatureName,
          field_signature[0].value()},
         {UkmLogHiddenRepresentationalFieldSkipDecisionType::kFieldTypeGroupName,
-         ADDRESS_HOME},
+         static_cast<int64_t>(FieldTypeGroup::kAddressHome)},
         {UkmLogHiddenRepresentationalFieldSkipDecisionType::
              kFieldOverallTypeName,
          ADDRESS_HOME_LINE1},
@@ -1791,7 +1790,7 @@ TEST_F(AutofillMetricsTest, LogHiddenRepresentationalFieldSkipDecision) {
         {UkmLogHiddenRepresentationalFieldSkipDecisionType::kFieldSignatureName,
          field_signature[1].value()},
         {UkmLogHiddenRepresentationalFieldSkipDecisionType::kFieldTypeGroupName,
-         ADDRESS_HOME},
+         static_cast<int64_t>(FieldTypeGroup::kAddressHome)},
         {UkmLogHiddenRepresentationalFieldSkipDecisionType::
              kFieldOverallTypeName,
          ADDRESS_HOME_CITY},
@@ -1810,7 +1809,7 @@ TEST_F(AutofillMetricsTest, LogHiddenRepresentationalFieldSkipDecision) {
         {UkmLogHiddenRepresentationalFieldSkipDecisionType::kFieldSignatureName,
          field_signature[2].value()},
         {UkmLogHiddenRepresentationalFieldSkipDecisionType::kFieldTypeGroupName,
-         ADDRESS_HOME},
+         static_cast<int64_t>(FieldTypeGroup::kAddressHome)},
         {UkmLogHiddenRepresentationalFieldSkipDecisionType::
              kFieldOverallTypeName,
          ADDRESS_HOME_STATE},
@@ -1829,7 +1828,7 @@ TEST_F(AutofillMetricsTest, LogHiddenRepresentationalFieldSkipDecision) {
         {UkmLogHiddenRepresentationalFieldSkipDecisionType::kFieldSignatureName,
          field_signature[3].value()},
         {UkmLogHiddenRepresentationalFieldSkipDecisionType::kFieldTypeGroupName,
-         ADDRESS_HOME},
+         static_cast<int64_t>(FieldTypeGroup::kAddressHome)},
         {UkmLogHiddenRepresentationalFieldSkipDecisionType::
              kFieldOverallTypeName,
          ADDRESS_HOME_COUNTRY},
@@ -1861,8 +1860,9 @@ void AddFieldSuggestionToForm(
 TEST_F(AutofillMetricsTest, LogRepeatedAddressTypeRationalized) {
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -1872,17 +1872,17 @@ TEST_F(AutofillMetricsTest, LogRepeatedAddressTypeRationalized) {
   FormFieldData field;
   field.form_control_type = "text";
 
-  field.label = ASCIIToUTF16("fullname");
-  field.name = ASCIIToUTF16("fullname");
+  field.label = u"fullname";
+  field.name = u"fullname";
   form.fields.push_back(field);
 
-  field.label = ASCIIToUTF16("Street 1");
-  field.name = ASCIIToUTF16("street1");
+  field.label = u"Street 1";
+  field.name = u"street1";
   form.fields.push_back(field);
   field_signature[0] = Collapse(CalculateFieldSignatureForField(field));
 
-  field.label = ASCIIToUTF16("Street 2");
-  field.name = ASCIIToUTF16("street2");
+  field.label = u"Street 2";
+  field.name = u"street2";
   form.fields.push_back(field);
   field_signature[1] = Collapse(CalculateFieldSignatureForField(field));
 
@@ -1927,7 +1927,7 @@ TEST_F(AutofillMetricsTest, LogRepeatedAddressTypeRationalized) {
         {UkmLogRepeatedServerTypePredictionRationalized::kFieldSignatureName,
          field_signature[0].value()},
         {UkmLogRepeatedServerTypePredictionRationalized::kFieldTypeGroupName,
-         ADDRESS_HOME},
+         static_cast<int64_t>(FieldTypeGroup::kAddressHome)},
         {UkmLogRepeatedServerTypePredictionRationalized::
              kFieldOldOverallTypeName,
          ADDRESS_HOME_STREET_ADDRESS},
@@ -1947,7 +1947,7 @@ TEST_F(AutofillMetricsTest, LogRepeatedAddressTypeRationalized) {
         {UkmLogRepeatedServerTypePredictionRationalized::kFieldSignatureName,
          field_signature[1].value()},
         {UkmLogRepeatedServerTypePredictionRationalized::kFieldTypeGroupName,
-         ADDRESS_HOME},
+         static_cast<int64_t>(FieldTypeGroup::kAddressHome)},
         {UkmLogRepeatedServerTypePredictionRationalized::
              kFieldOldOverallTypeName,
          ADDRESS_HOME_STREET_ADDRESS},
@@ -1968,8 +1968,9 @@ TEST_F(AutofillMetricsTest, LogRepeatedAddressTypeRationalized) {
 TEST_F(AutofillMetricsTest, LogRepeatedStateCountryTypeRationalized) {
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -1979,22 +1980,22 @@ TEST_F(AutofillMetricsTest, LogRepeatedStateCountryTypeRationalized) {
   FormFieldData field;
   field.form_control_type = "text";
 
-  field.label = ASCIIToUTF16("Country");
-  field.name = ASCIIToUTF16("country");
+  field.label = u"Country";
+  field.name = u"country";
   form.fields.push_back(field);
   field_signature[0] = Collapse(CalculateFieldSignatureForField(field));
 
-  field.label = ASCIIToUTF16("fullname");
-  field.name = ASCIIToUTF16("fullname");
+  field.label = u"fullname";
+  field.name = u"fullname";
   form.fields.push_back(field);
 
-  field.label = ASCIIToUTF16("State");
-  field.name = ASCIIToUTF16("state");
+  field.label = u"State";
+  field.name = u"state";
   form.fields.push_back(field);
   field_signature[2] = Collapse(CalculateFieldSignatureForField(field));
 
-  field.label = ASCIIToUTF16("State");
-  field.name = ASCIIToUTF16("state");
+  field.label = u"State";
+  field.name = u"state";
   field.is_focusable = false;
   field.form_control_type = "select-one";
   form.fields.push_back(field);
@@ -2045,7 +2046,7 @@ TEST_F(AutofillMetricsTest, LogRepeatedStateCountryTypeRationalized) {
         {UkmLogRepeatedServerTypePredictionRationalized::kFieldSignatureName,
          field_signature[0].value()},
         {UkmLogRepeatedServerTypePredictionRationalized::kFieldTypeGroupName,
-         ADDRESS_HOME},
+         static_cast<int64_t>(FieldTypeGroup::kAddressHome)},
         {UkmLogRepeatedServerTypePredictionRationalized::
              kFieldOldOverallTypeName,
          ADDRESS_HOME_COUNTRY},
@@ -2065,7 +2066,7 @@ TEST_F(AutofillMetricsTest, LogRepeatedStateCountryTypeRationalized) {
         {UkmLogRepeatedServerTypePredictionRationalized::kFieldSignatureName,
          field_signature[1].value()},
         {UkmLogRepeatedServerTypePredictionRationalized::kFieldTypeGroupName,
-         ADDRESS_HOME},
+         static_cast<int64_t>(FieldTypeGroup::kAddressHome)},
         {UkmLogRepeatedServerTypePredictionRationalized::
              kFieldOldOverallTypeName,
          ADDRESS_HOME_COUNTRY},
@@ -2085,7 +2086,7 @@ TEST_F(AutofillMetricsTest, LogRepeatedStateCountryTypeRationalized) {
         {UkmLogRepeatedServerTypePredictionRationalized::kFieldSignatureName,
          field_signature[2].value()},
         {UkmLogRepeatedServerTypePredictionRationalized::kFieldTypeGroupName,
-         ADDRESS_HOME},
+         static_cast<int64_t>(FieldTypeGroup::kAddressHome)},
         {UkmLogRepeatedServerTypePredictionRationalized::
              kFieldOldOverallTypeName,
          ADDRESS_HOME_COUNTRY},
@@ -2108,8 +2109,9 @@ TEST_F(AutofillMetricsTest,
        QualityMetrics_LoggedCorrecltyForRationalizationBad) {
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
 
@@ -2175,8 +2177,9 @@ TEST_F(AutofillMetricsTest,
        QualityMetrics_LoggedCorrecltyForOnlyFillWhenFocusedField) {
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
 
@@ -2483,8 +2486,9 @@ TEST_P(QualityMetricsTest, Classification) {
 
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -2659,8 +2663,9 @@ TEST_F(AutofillMetricsTest, TimingMetrics) {
   base::HistogramTester histogram_tester;
 
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin =
@@ -2701,8 +2706,9 @@ TEST_F(AutofillMetricsTest, TimingMetrics) {
 TEST_F(AutofillMetricsTest, QualityMetrics_NoSubmission) {
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -2891,8 +2897,9 @@ TEST_F(AutofillMetricsTest, QualityMetrics_NoSubmission) {
 // on autocomplete attributes present on the fields.
 TEST_F(AutofillMetricsTest, QualityMetrics_BasedOnAutocomplete) {
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("MyForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"MyForm";
   form.url = GURL("http://myform.com/form.html");
   form.action = GURL("http://myform.com/submit.html");
   form.main_frame_origin =
@@ -2922,11 +2929,11 @@ TEST_F(AutofillMetricsTest, QualityMetrics_BasedOnAutocomplete) {
   std::unique_ptr<TestFormStructure> form_structure =
       std::make_unique<TestFormStructure>(form);
   TestFormStructure* form_structure_ptr = form_structure.get();
-  form_structure->DetermineHeuristicTypes();
-  ASSERT_TRUE(autofill_manager_->mutable_form_structures_for_test()
-                  ->emplace(form_structure_ptr->unique_renderer_id(),
-                            std::move(form_structure))
-                  .second);
+  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
+  ASSERT_TRUE(
+      autofill_manager_->mutable_form_structures_for_test()
+          ->emplace(form_structure_ptr->global_id(), std::move(form_structure))
+          .second);
 
   AutofillQueryResponse response;
   auto* form_suggestion = response.add_form_suggestions();
@@ -3007,8 +3014,9 @@ TEST_F(AutofillMetricsTest, QualityMetrics_BasedOnAutocomplete) {
 TEST_F(AutofillMetricsTest, UpiVirtualPaymentAddress) {
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin =
@@ -3059,8 +3067,9 @@ TEST_F(AutofillMetricsTest, UpiVirtualPaymentAddress) {
 TEST_F(AutofillMetricsTest, SaneMetricsWithCacheMismatch) {
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin =
@@ -3161,8 +3170,9 @@ TEST_F(AutofillMetricsTest, SaneMetricsWithCacheMismatch) {
 TEST_F(AutofillMetricsTest, StoredProfileCountAutofillableFormSubmission) {
   // Construct a fillable form.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin =
@@ -3196,8 +3206,9 @@ TEST_F(AutofillMetricsTest, StoredProfileCountAutofillableFormSubmission) {
 TEST_F(AutofillMetricsTest, StoredProfileCountNonAutofillableFormSubmission) {
   // Construct a non-fillable form.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin =
@@ -3229,7 +3240,7 @@ TEST_F(AutofillMetricsTest, StoredProfileCountNonAutofillableFormSubmission) {
 TEST_F(AutofillMetricsTest, TypeOfEditedAutofilledFieldsUkmLogging) {
   // Construct a fillable form.
   FormData form;
-  form.name = ASCIIToUTF16("TestForm");
+  form.name = u"TestForm";
   form.url = GURL("https://example.test/form.html");
   form.action = GURL("https://example.test/submit.html");
   form.main_frame_origin =
@@ -3290,7 +3301,7 @@ TEST_F(AutofillMetricsTest, TypeOfEditedAutofilledFieldsUkmLogging) {
 TEST_F(AutofillMetricsTest, TypeOfEditedAutofilledFieldsUmaLogging) {
   // Construct a fillable form.
   FormData form;
-  form.name = ASCIIToUTF16("TestForm");
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin =
@@ -3367,8 +3378,9 @@ TEST_F(AutofillMetricsTest, TypeOfEditedAutofilledFieldsUmaLogging) {
 TEST_F(AutofillMetricsTest, NumberOfEditedAutofilledFields) {
   // Construct a fillable form.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin =
@@ -3422,8 +3434,9 @@ TEST_F(AutofillMetricsTest, NumberOfEditedAutofilledFields) {
 TEST_F(AutofillMetricsTest, NumberOfEditedAutofilledFields_NoSubmission) {
   // Construct a fillable form.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -3472,8 +3485,9 @@ TEST_F(AutofillMetricsTest, NumberOfEditedAutofilledFields_NoSubmission) {
 TEST_F(AutofillMetricsTest, DeveloperEngagement) {
   // Start with a non-fillable form.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -3564,8 +3578,9 @@ TEST_F(AutofillMetricsTest,
        UkmDeveloperEngagement_LogFillableFormParsedWithoutTypeHints) {
   // Start with a non-fillable form.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -3598,7 +3613,7 @@ TEST_F(AutofillMetricsTest,
 
     VerifyDeveloperEngagementUkm(
         test_ukm_recorder_, forms.back(), /*is_for_credit_card=*/false,
-        {FormType::ADDRESS_FORM},
+        {FormType::kAddressForm},
         {AutofillMetrics::FILLABLE_FORM_PARSED_WITHOUT_TYPE_HINTS});
   }
 }
@@ -3608,8 +3623,9 @@ TEST_F(AutofillMetricsTest,
 TEST_F(AutofillMetricsTest,
        UkmDeveloperEngagement_LogFillableFormParsedWithTypeHints) {
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -3649,7 +3665,7 @@ TEST_F(AutofillMetricsTest,
 
     VerifyDeveloperEngagementUkm(
         test_ukm_recorder_, forms.back(), /*is_for_credit_card=*/false,
-        {FormType::ADDRESS_FORM},
+        {FormType::kAddressForm},
         {AutofillMetrics::FILLABLE_FORM_PARSED_WITH_TYPE_HINTS});
   }
 }
@@ -3658,8 +3674,9 @@ TEST_F(AutofillMetricsTest,
 // developer engagement.
 TEST_F(AutofillMetricsTest, UkmDeveloperEngagement_LogUpiVpaTypeHint) {
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -3685,7 +3702,7 @@ TEST_F(AutofillMetricsTest, UkmDeveloperEngagement_LogUpiVpaTypeHint) {
     VerifyDeveloperEngagementUkm(
         test_ukm_recorder_, forms.back(), /*is_for_credit_card=*/false,
         /* UPI VPA has Unknown form type.*/
-        {FormType::ADDRESS_FORM, FormType::UNKNOWN_FORM_TYPE},
+        {FormType::kAddressForm, FormType::kUnknownFormType},
         {AutofillMetrics::FILLABLE_FORM_PARSED_WITH_TYPE_HINTS,
          AutofillMetrics::FORM_CONTAINS_UPI_VPA_HINT});
     PurgeUKM();
@@ -3828,12 +3845,12 @@ TEST_F(AutofillMetricsTest, LogStoredCreditCardWithNicknameMetrics) {
     for (int i = 0; i < num_cards_of_type; ++i) {
       // Create a card with a nickname.
       CreditCard card_with_nickname = test::GetRandomCreditCard(record_type);
-      card_with_nickname.SetNickname(ASCIIToUTF16("Valid nickname"));
+      card_with_nickname.SetNickname(u"Valid nickname");
 
       // Create a card that doesn't have a nickname.
       CreditCard card_without_nickname = test::GetRandomCreditCard(record_type);
       // Set nickname to empty.
-      card_without_nickname.SetNickname(ASCIIToUTF16(""));
+      card_without_nickname.SetNickname(u"");
 
       // Add the cards to the personal data manager in the appropriate way.
       auto& repo =
@@ -3904,7 +3921,8 @@ TEST_F(AutofillMetricsTest, AutofillProfileIsEnabledAtStartup) {
   personal_data_->SetAutofillProfileEnabled(true);
   personal_data_->Init(scoped_refptr<AutofillWebDataService>(nullptr),
                        /*account_database=*/nullptr,
-                       autofill_client_.GetPrefs(),
+                       /*pref_service=*/autofill_client_.GetPrefs(),
+                       /*local_state=*/autofill_client_.GetPrefs(),
                        /*identity_manager=*/nullptr,
                        /*client_profile_validator=*/nullptr,
                        /*history_service=*/nullptr,
@@ -3919,7 +3937,8 @@ TEST_F(AutofillMetricsTest, AutofillProfileIsDisabledAtStartup) {
   personal_data_->SetAutofillProfileEnabled(false);
   personal_data_->Init(scoped_refptr<AutofillWebDataService>(nullptr),
                        /*account_database=*/nullptr,
-                       autofill_client_.GetPrefs(),
+                       /*pref_service=*/autofill_client_.GetPrefs(),
+                       /*local_state=*/autofill_client_.GetPrefs(),
                        /*identity_manager=*/nullptr,
                        /*client_profile_validator=*/nullptr,
                        /*history_service=*/nullptr,
@@ -3934,7 +3953,8 @@ TEST_F(AutofillMetricsTest, AutofillCreditCardIsEnabledAtStartup) {
   personal_data_->SetAutofillCreditCardEnabled(true);
   personal_data_->Init(scoped_refptr<AutofillWebDataService>(nullptr),
                        /*account_database=*/nullptr,
-                       autofill_client_.GetPrefs(),
+                       /*pref_service=*/autofill_client_.GetPrefs(),
+                       /*local_state=*/autofill_client_.GetPrefs(),
                        /*identity_manager=*/nullptr,
                        /*client_profile_validator=*/nullptr,
                        /*history_service=*/nullptr,
@@ -3949,7 +3969,8 @@ TEST_F(AutofillMetricsTest, AutofillCreditCardIsDisabledAtStartup) {
   personal_data_->SetAutofillCreditCardEnabled(false);
   personal_data_->Init(scoped_refptr<AutofillWebDataService>(nullptr),
                        /*account_database=*/nullptr,
-                       autofill_client_.GetPrefs(),
+                       /*pref_service=*/autofill_client_.GetPrefs(),
+                       /*local_state=*/autofill_client_.GetPrefs(),
                        /*identity_manager=*/nullptr,
                        /*client_profile_validator=*/nullptr,
                        /*history_service=*/nullptr,
@@ -3962,8 +3983,9 @@ TEST_F(AutofillMetricsTest, AutofillCreditCardIsDisabledAtStartup) {
 TEST_F(AutofillMetricsTest, AddressSuggestionsCount) {
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("https://example.com/form.html");
   form.action = GURL("https://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -4035,8 +4057,9 @@ TEST_F(AutofillMetricsTest, AddressSuggestionsCount) {
 TEST_F(AutofillMetricsTest, CompanyNameSuggestions) {
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("https://example.com/form.html");
   form.action = GURL("https://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -4076,8 +4099,9 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
 
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("https://example.com/form.html");
   form.action = GURL("https://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -4132,8 +4156,8 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
     std::string guid("10000000-0000-0000-0000-000000000001");  // local card
     external_delegate_->OnQuery(0, form, form.fields.front(), gfx::RectF());
     external_delegate_->DidAcceptSuggestion(
-        ASCIIToUTF16("Test"),
-        autofill_manager_->MakeFrontendIDForTest(guid, std::string()), 0);
+        u"Test", autofill_manager_->MakeFrontendIDForTest(guid, std::string()),
+        0);
     EXPECT_EQ(1,
               user_action_tester.GetActionCount("Autofill_SelectedSuggestion"));
   }
@@ -4153,7 +4177,7 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
     base::UserActionTester user_action_tester;
     std::string guid("10000000-0000-0000-0000-000000000001");  // local card
     external_delegate_->OnQuery(0, form, form.fields.front(), gfx::RectF());
-    external_delegate_->DidAcceptSuggestion(base::string16(),
+    external_delegate_->DidAcceptSuggestion(std::u16string(),
                                             POPUP_ITEM_ID_CLEAR_FORM, 0);
     EXPECT_EQ(1, user_action_tester.GetActionCount("Autofill_ClearedForm"));
   }
@@ -4174,8 +4198,8 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
     std::string guid("10000000-0000-0000-0000-000000000001");  // local card
     external_delegate_->OnQuery(0, form, form.fields.front(), gfx::RectF());
     external_delegate_->DidAcceptSuggestion(
-        ASCIIToUTF16("Test"),
-        autofill_manager_->MakeFrontendIDForTest(guid, std::string()), 0);
+        u"Test", autofill_manager_->MakeFrontendIDForTest(guid, std::string()),
+        0);
     EXPECT_EQ(1,
               user_action_tester.GetActionCount("Autofill_SelectedSuggestion"));
   }
@@ -4256,14 +4280,15 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
   VerifySubmitFormUkm(test_ukm_recorder_, form,
                       AutofillMetrics::NON_FILLABLE_FORM_OR_NEW_DATA,
                       /*is_for_credit_card=*/true, /* has_upi_vpa_field=*/false,
-                      {FormType::CREDIT_CARD_FORM});
+                      {FormType::kCreditCardForm});
 }
 
 // Test that the UPI Checkout flow form submit is correctly logged
 TEST_F(AutofillMetricsTest, UpiVpaUkmTest) {
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -4282,7 +4307,7 @@ TEST_F(AutofillMetricsTest, UpiVpaUkmTest) {
                         /*is_for_credit_card=*/false,
                         /* has_upi_vpa_field */ true,
                         /* UPI VPA has Unknown form type.*/
-                        {FormType::ADDRESS_FORM, FormType::UNKNOWN_FORM_TYPE});
+                        {FormType::kAddressForm, FormType::kUnknownFormType});
     PurgeUKM();
   }
 }
@@ -4294,8 +4319,9 @@ TEST_F(AutofillMetricsTest, ProfileCheckoutFlowUserActions) {
 
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("https://example.com/form.html");
   form.action = GURL("https://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -4349,8 +4375,8 @@ TEST_F(AutofillMetricsTest, ProfileCheckoutFlowUserActions) {
     std::string guid(kTestGuid);  // local profile.
     external_delegate_->OnQuery(0, form, form.fields.front(), gfx::RectF());
     external_delegate_->DidAcceptSuggestion(
-        ASCIIToUTF16("Test"),
-        autofill_manager_->MakeFrontendIDForTest(std::string(), guid), 0);
+        u"Test", autofill_manager_->MakeFrontendIDForTest(std::string(), guid),
+        0);
     EXPECT_EQ(1,
               user_action_tester.GetActionCount("Autofill_SelectedSuggestion"));
   }
@@ -4424,7 +4450,7 @@ TEST_F(AutofillMetricsTest, ProfileCheckoutFlowUserActions) {
   VerifySubmitFormUkm(test_ukm_recorder_, form,
                       AutofillMetrics::NON_FILLABLE_FORM_OR_NEW_DATA,
                       /*is_for_credit_card=*/false,
-                      /* has_upi_vpa_field=*/false, {FormType::ADDRESS_FORM});
+                      /* has_upi_vpa_field=*/false, {FormType::kAddressForm});
 }
 
 // Tests that the Autofill_PolledCreditCardSuggestions user action is only
@@ -4436,8 +4462,9 @@ TEST_F(AutofillMetricsTest, PolledCreditCardSuggestions_DebounceLogs) {
 
   // Set up the form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://www.foo.com/");
 
   FormFieldData field;
@@ -4497,8 +4524,9 @@ TEST_F(AutofillMetricsTest, QueriedCreditCardFormIsSecure) {
 
   // Set up the form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -4517,7 +4545,8 @@ TEST_F(AutofillMetricsTest, QueriedCreditCardFormIsSecure) {
 
   {
     // Simulate having seen this insecure form on page load.
-    form.unique_renderer_id = MakeFormRendererId();
+    form.host_frame = test::GetLocalFrameToken();
+    form.unique_renderer_id = test::MakeFormRendererId();
     form.url = GURL("http://example.com/form.html");
     form.action = GURL("http://example.com/submit.html");
     // In order to test that the QueriedCreditCardFormIsSecure is logged as
@@ -4548,7 +4577,8 @@ TEST_F(AutofillMetricsTest, QueriedCreditCardFormIsSecure) {
   {
     // Simulate having seen this secure form on page load.
     autofill_manager_->Reset();
-    form.unique_renderer_id = MakeFormRendererId();
+    form.host_frame = test::GetLocalFrameToken();
+    form.unique_renderer_id = test::MakeFormRendererId();
     form.url = GURL("https://example.com/form.html");
     form.action = GURL("https://example.com/submit.html");
     form.main_frame_origin =
@@ -4572,8 +4602,9 @@ TEST_F(AutofillMetricsTest, PolledProfileSuggestions_DebounceLogs) {
 
   // Set up the form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("https://example.com/form.html");
   form.action = GURL("https://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -4630,8 +4661,9 @@ TEST_F(AutofillMetricsTest, PolledProfileSuggestions_DebounceLogs) {
 TEST_P(AutofillMetricsIFrameTest, CreditCardParsedFormEvents) {
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -4663,8 +4695,9 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardParsedFormEvents) {
 TEST_P(AutofillMetricsIFrameTest, CreditCardInteractedFormEvents) {
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -4720,8 +4753,9 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardInteractedFormEvents) {
 TEST_P(AutofillMetricsIFrameTest, CreditCardPopupSuppressedFormEvents) {
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -4779,8 +4813,9 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardPopupSuppressedFormEvents) {
 TEST_P(AutofillMetricsIFrameTest, CreditCardShownFormEvents) {
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -4862,8 +4897,9 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSelectedFormEvents) {
                       true /* include_full_server_credit_card */);
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -4944,8 +4980,9 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardFilledFormEvents) {
                       true /* include_full_server_credit_card */);
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -5197,8 +5234,9 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanDuration) {
                       false /* include_full_server_credit_card */);
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -5267,8 +5305,9 @@ TEST_F(AutofillMetricsTest,
 
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -5310,8 +5349,9 @@ TEST_P(AutofillMetricsIFrameTest,
 
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
 
@@ -5355,8 +5395,9 @@ TEST_P(AutofillMetricsIFrameTest,
 
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
 
@@ -5401,8 +5442,9 @@ TEST_P(AutofillMetricsIFrameTest,
 
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -5448,8 +5490,9 @@ TEST_P(AutofillMetricsIFrameTest,
 
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -5495,8 +5538,9 @@ TEST_P(AutofillMetricsIFrameTest,
 
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -5555,8 +5599,9 @@ TEST_F(AutofillMetricsTest, ShouldNotLogFormEventNoCardForAddressForm) {
   RecreateProfile(/*is_server=*/false);
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -5597,8 +5642,9 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSubmittedFormEvents) {
                       true /* include_full_server_credit_card */);
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -5644,7 +5690,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSubmittedFormEvents) {
                         AutofillMetrics::NON_FILLABLE_FORM_OR_NEW_DATA,
                         /*is_for_credit_card=*/true,
                         /* has_upi_vpa_field=*/false,
-                        {FormType::CREDIT_CARD_FORM});
+                        {FormType::kCreditCardForm});
   }
 
   // Reset the autofill manager state and purge UKM logs.
@@ -5688,7 +5734,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSubmittedFormEvents) {
                         AutofillMetrics::NON_FILLABLE_FORM_OR_NEW_DATA,
                         /*is_for_credit_card=*/true,
                         /* has_upi_vpa_field=*/false,
-                        {FormType::CREDIT_CARD_FORM});
+                        {FormType::kCreditCardForm});
   }
 
   // Reset the autofill manager state and purge UKM logs.
@@ -5736,7 +5782,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSubmittedFormEvents) {
                         AutofillMetrics::NON_FILLABLE_FORM_OR_NEW_DATA,
                         /*is_for_credit_card=*/true,
                         /* has_upi_vpa_field=*/false,
-                        {FormType::CREDIT_CARD_FORM});
+                        {FormType::kCreditCardForm});
   }
 
   // Reset the autofill manager state and purge UKM logs.
@@ -5782,7 +5828,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSubmittedFormEvents) {
                         AutofillMetrics::NON_FILLABLE_FORM_OR_NEW_DATA,
                         /*is_for_credit_card=*/true,
                         /* has_upi_vpa_field=*/false,
-                        {FormType::CREDIT_CARD_FORM});
+                        {FormType::kCreditCardForm});
   }
 
   // Reset the autofill manager state and purge UKM logs.
@@ -5829,7 +5875,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSubmittedFormEvents) {
                         AutofillMetrics::NON_FILLABLE_FORM_OR_NEW_DATA,
                         /*is_for_credit_card=*/true,
                         /* has_upi_vpa_field=*/false,
-                        {FormType::CREDIT_CARD_FORM});
+                        {FormType::kCreditCardForm});
   }
 
   // Reset the autofill manager state and purge UKM logs.
@@ -5875,7 +5921,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSubmittedFormEvents) {
                         AutofillMetrics::NON_FILLABLE_FORM_OR_NEW_DATA,
                         /*is_for_credit_card=*/true,
                         /* has_upi_vpa_field=*/false,
-                        {FormType::CREDIT_CARD_FORM});
+                        {FormType::kCreditCardForm});
   }
 
   // Reset the autofill manager state and purge UKM logs.
@@ -5903,7 +5949,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSubmittedFormEvents) {
                         AutofillMetrics::NON_FILLABLE_FORM_OR_NEW_DATA,
                         /*is_for_credit_card=*/true,
                         /* has_upi_vpa_field=*/false,
-                        {FormType::CREDIT_CARD_FORM});
+                        {FormType::kCreditCardForm});
 
     autofill_manager_->OnFormSubmitted(form, false,
                                        SubmissionSource::FORM_SUBMISSION);
@@ -5916,7 +5962,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSubmittedFormEvents) {
           {UkmFormSubmittedType::kIsForCreditCardName, true},
           {UkmFormSubmittedType::kHasUpiVpaFieldName, false},
           {UkmFormSubmittedType::kFormTypesName,
-           AutofillMetrics::FormTypesToBitVector({FormType::CREDIT_CARD_FORM})},
+           AutofillMetrics::FormTypesToBitVector({FormType::kCreditCardForm})},
           {UkmFormSubmittedType::kFormSignatureName,
            Collapse(CalculateFormSignature(form)).value()}},
          {{UkmFormSubmittedType::kAutofillFormSubmittedStateName,
@@ -5925,7 +5971,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSubmittedFormEvents) {
           {UkmFormSubmittedType::kIsForCreditCardName, true},
           {UkmFormSubmittedType::kHasUpiVpaFieldName, false},
           {UkmFormSubmittedType::kFormTypesName,
-           AutofillMetrics::FormTypesToBitVector({FormType::CREDIT_CARD_FORM})},
+           AutofillMetrics::FormTypesToBitVector({FormType::kCreditCardForm})},
           {UkmFormSubmittedType::kFormSignatureName,
            Collapse(CalculateFormSignature(form)).value()}}});
 
@@ -6079,7 +6125,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSubmittedFormEvents) {
                         AutofillMetrics::NON_FILLABLE_FORM_OR_NEW_DATA,
                         /*is_for_credit_card=*/true,
                         /* has_upi_vpa_field=*/false,
-                        {FormType::CREDIT_CARD_FORM});
+                        {FormType::kCreditCardForm});
   }
 }
 
@@ -6092,8 +6138,9 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardWillSubmitFormEvents) {
                       true /* include_full_server_credit_card */);
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -6409,7 +6456,7 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
 
   // Set up our form data.
   FormData form;
-  form.name = ASCIIToUTF16("TestForm");
+  form.name = u"TestForm";
   form.url = GURL("https://example.com/form.html");
   form.action = GURL("https://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -6660,8 +6707,9 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
 TEST_F(AutofillMetricsTest, MixedParsedFormEvents) {
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -6704,8 +6752,9 @@ TEST_F(AutofillMetricsTest, MixedParsedFormEvents) {
 TEST_F(AutofillMetricsTest, AddressParsedFormEvents) {
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -6739,7 +6788,7 @@ TEST_F(AutofillMetricsTest, AddressParsedFormEvents) {
       test_ukm_recorder_, form, UkmFormEventType::kEntryName,
       {{{UkmFormEventType::kAutofillFormEventName, FORM_EVENT_DID_PARSE_FORM},
         {UkmFormEventType::kFormTypesName,
-         AutofillMetrics::FormTypesToBitVector({FormType::ADDRESS_FORM})},
+         AutofillMetrics::FormTypesToBitVector({FormType::kAddressForm})},
         {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}}});
 }
 
@@ -6747,8 +6796,9 @@ TEST_F(AutofillMetricsTest, AddressParsedFormEvents) {
 TEST_F(AutofillMetricsTest, AddressInteractedFormEvents) {
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -6786,7 +6836,7 @@ TEST_F(AutofillMetricsTest, AddressInteractedFormEvents) {
         {{{UkmFormEventType::kAutofillFormEventName,
            FORM_EVENT_INTERACTED_ONCE},
           {UkmFormEventType::kFormTypesName,
-           AutofillMetrics::FormTypesToBitVector({FormType::ADDRESS_FORM})},
+           AutofillMetrics::FormTypesToBitVector({FormType::kAddressForm})},
           {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}}});
   }
 
@@ -6813,7 +6863,7 @@ TEST_F(AutofillMetricsTest, AddressInteractedFormEvents) {
         {{{UkmFormEventType::kAutofillFormEventName,
            FORM_EVENT_INTERACTED_ONCE},
           {UkmFormEventType::kFormTypesName,
-           AutofillMetrics::FormTypesToBitVector({FormType::ADDRESS_FORM})},
+           AutofillMetrics::FormTypesToBitVector({FormType::kAddressForm})},
           {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}}});
   }
 }
@@ -6824,8 +6874,9 @@ TEST_F(AutofillMetricsTest, AddressSuppressedFormEvents) {
   RecreateProfile(/*is_server=*/false);
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -6864,12 +6915,12 @@ TEST_F(AutofillMetricsTest, AddressSuppressedFormEvents) {
         {{{UkmFormEventType::kAutofillFormEventName,
            FORM_EVENT_POPUP_SUPPRESSED},
           {UkmFormEventType::kFormTypesName,
-           AutofillMetrics::FormTypesToBitVector({FormType::ADDRESS_FORM})},
+           AutofillMetrics::FormTypesToBitVector({FormType::kAddressForm})},
           {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}},
          {{UkmFormEventType::kAutofillFormEventName,
            FORM_EVENT_POPUP_SUPPRESSED_ONCE},
           {UkmFormEventType::kFormTypesName,
-           AutofillMetrics::FormTypesToBitVector({FormType::ADDRESS_FORM})},
+           AutofillMetrics::FormTypesToBitVector({FormType::kAddressForm})},
           {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}}});
   }
 
@@ -6897,17 +6948,17 @@ TEST_F(AutofillMetricsTest, AddressSuppressedFormEvents) {
         {{{UkmFormEventType::kAutofillFormEventName,
            FORM_EVENT_POPUP_SUPPRESSED},
           {UkmFormEventType::kFormTypesName,
-           AutofillMetrics::FormTypesToBitVector({FormType::ADDRESS_FORM})},
+           AutofillMetrics::FormTypesToBitVector({FormType::kAddressForm})},
           {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}},
          {{UkmFormEventType::kAutofillFormEventName,
            FORM_EVENT_POPUP_SUPPRESSED_ONCE},
           {UkmFormEventType::kFormTypesName,
-           AutofillMetrics::FormTypesToBitVector({FormType::ADDRESS_FORM})},
+           AutofillMetrics::FormTypesToBitVector({FormType::kAddressForm})},
           {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}},
          {{UkmFormEventType::kAutofillFormEventName,
            FORM_EVENT_POPUP_SUPPRESSED},
           {UkmFormEventType::kFormTypesName,
-           AutofillMetrics::FormTypesToBitVector({FormType::ADDRESS_FORM})},
+           AutofillMetrics::FormTypesToBitVector({FormType::kAddressForm})},
           {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}}});
   }
 }
@@ -6918,8 +6969,9 @@ TEST_F(AutofillMetricsTest, AddressShownFormEvents) {
   RecreateProfile(/*is_server=*/false);
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -6957,12 +7009,12 @@ TEST_F(AutofillMetricsTest, AddressShownFormEvents) {
         {{{UkmFormEventType::kAutofillFormEventName,
            FORM_EVENT_SUGGESTIONS_SHOWN},
           {UkmFormEventType::kFormTypesName,
-           AutofillMetrics::FormTypesToBitVector({FormType::ADDRESS_FORM})},
+           AutofillMetrics::FormTypesToBitVector({FormType::kAddressForm})},
           {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}},
          {{UkmFormEventType::kAutofillFormEventName,
            FORM_EVENT_SUGGESTIONS_SHOWN_ONCE},
           {UkmFormEventType::kFormTypesName,
-           AutofillMetrics::FormTypesToBitVector({FormType::ADDRESS_FORM})},
+           AutofillMetrics::FormTypesToBitVector({FormType::kAddressForm})},
           {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}}});
   }
 
@@ -6989,17 +7041,17 @@ TEST_F(AutofillMetricsTest, AddressShownFormEvents) {
         {{{UkmFormEventType::kAutofillFormEventName,
            FORM_EVENT_SUGGESTIONS_SHOWN},
           {UkmFormEventType::kFormTypesName,
-           AutofillMetrics::FormTypesToBitVector({FormType::ADDRESS_FORM})},
+           AutofillMetrics::FormTypesToBitVector({FormType::kAddressForm})},
           {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}},
          {{UkmFormEventType::kAutofillFormEventName,
            FORM_EVENT_SUGGESTIONS_SHOWN_ONCE},
           {UkmFormEventType::kFormTypesName,
-           AutofillMetrics::FormTypesToBitVector({FormType::ADDRESS_FORM})},
+           AutofillMetrics::FormTypesToBitVector({FormType::kAddressForm})},
           {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}},
          {{UkmFormEventType::kAutofillFormEventName,
            FORM_EVENT_SUGGESTIONS_SHOWN},
           {UkmFormEventType::kFormTypesName,
-           AutofillMetrics::FormTypesToBitVector({FormType::ADDRESS_FORM})},
+           AutofillMetrics::FormTypesToBitVector({FormType::kAddressForm})},
           {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}}});
   }
 
@@ -7030,8 +7082,9 @@ TEST_F(AutofillMetricsTest, AddressFilledFormEvents) {
   RecreateProfile(/*is_server=*/false);
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -7073,12 +7126,12 @@ TEST_F(AutofillMetricsTest, AddressFilledFormEvents) {
         {{{UkmFormEventType::kAutofillFormEventName,
            FORM_EVENT_LOCAL_SUGGESTION_FILLED},
           {UkmFormEventType::kFormTypesName,
-           AutofillMetrics::FormTypesToBitVector({FormType::ADDRESS_FORM})},
+           AutofillMetrics::FormTypesToBitVector({FormType::kAddressForm})},
           {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}},
          {{UkmFormEventType::kAutofillFormEventName,
            FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE},
           {UkmFormEventType::kFormTypesName,
-           AutofillMetrics::FormTypesToBitVector({FormType::ADDRESS_FORM})},
+           AutofillMetrics::FormTypesToBitVector({FormType::kAddressForm})},
           {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}}});
   }
 
@@ -7150,8 +7203,9 @@ TEST_F(AutofillMetricsTest, AddressSubmittedFormEvents) {
   RecreateProfile(/*is_server=*/false);
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -7189,7 +7243,7 @@ TEST_F(AutofillMetricsTest, AddressSubmittedFormEvents) {
     VerifySubmitFormUkm(test_ukm_recorder_, form,
                         AutofillMetrics::NON_FILLABLE_FORM_OR_NEW_DATA,
                         /*is_for_credit_card=*/false,
-                        /* has_upi_vpa_field=*/false, {FormType::ADDRESS_FORM});
+                        /* has_upi_vpa_field=*/false, {FormType::kAddressForm});
   }
 
   // Reset the autofill manager state and purge UKM logs.
@@ -7218,7 +7272,7 @@ TEST_F(AutofillMetricsTest, AddressSubmittedFormEvents) {
     VerifySubmitFormUkm(test_ukm_recorder_, form,
                         AutofillMetrics::NON_FILLABLE_FORM_OR_NEW_DATA,
                         /*is_for_credit_card=*/false,
-                        /* has_upi_vpa_field=*/false, {FormType::ADDRESS_FORM});
+                        /* has_upi_vpa_field=*/false, {FormType::kAddressForm});
   }
 
   // Reset the autofill manager state and purge UKM logs.
@@ -7363,8 +7417,9 @@ TEST_F(AutofillMetricsTest, AddressWillSubmitFormEvents) {
   RecreateProfile(/*is_server=*/false);
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -7548,8 +7603,9 @@ TEST_F(AutofillMetricsTest, AddressWillSubmitFormEvents) {
 TEST_F(AutofillMetricsTest, RecordStandalonePhoneField) {
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -7572,8 +7628,9 @@ TEST_F(AutofillMetricsTest, RecordStandalonePhoneField) {
 TEST_F(AutofillMetricsTest, CreditCardFormEventsAreSegmented) {
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -7684,8 +7741,9 @@ TEST_F(AutofillMetricsTest, CreditCardFormEventsAreSegmented) {
 TEST_F(AutofillMetricsTest, AddressFormEventsAreSegmented) {
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -7794,8 +7852,9 @@ TEST_F(AutofillMetricsTest, DaysSinceLastUse_Profile) {
 TEST_F(AutofillMetricsTest, AutofillFormSubmittedState) {
   // Start with a form with insufficiently many fields.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -7819,7 +7878,7 @@ TEST_F(AutofillMetricsTest, AutofillFormSubmittedState) {
 
     VerifyDeveloperEngagementUkm(
         test_ukm_recorder_, form, /*is_for_credit_card=*/false,
-        {FormType::ADDRESS_FORM, FormType::UNKNOWN_FORM_TYPE},
+        {FormType::kAddressForm, FormType::kUnknownFormType},
         {AutofillMetrics::FILLABLE_FORM_PARSED_WITHOUT_TYPE_HINTS});
   }
 
@@ -7846,7 +7905,7 @@ TEST_F(AutofillMetricsTest, AutofillFormSubmittedState) {
          {UkmFormSubmittedType::kHasUpiVpaFieldName, false},
          {UkmFormSubmittedType::kFormTypesName,
           AutofillMetrics::FormTypesToBitVector(
-              {FormType::ADDRESS_FORM, FormType::UNKNOWN_FORM_TYPE})},
+              {FormType::kAddressForm, FormType::kUnknownFormType})},
          {UkmFormSubmittedType::kFormSignatureName,
           Collapse(CalculateFormSignature(form)).value()}});
     VerifyUkm(test_ukm_recorder_, form, UkmFormSubmittedType::kEntryName,
@@ -7858,8 +7917,8 @@ TEST_F(AutofillMetricsTest, AutofillFormSubmittedState) {
   }
 
   // Non fillable form.
-  form.fields[0].value = ASCIIToUTF16("Unknown Person");
-  form.fields[1].value = ASCIIToUTF16("unknown.person@gmail.com");
+  form.fields[0].value = u"Unknown Person";
+  form.fields[1].value = u"unknown.person@gmail.com";
   forms.front() = form;
 
   {
@@ -7881,7 +7940,7 @@ TEST_F(AutofillMetricsTest, AutofillFormSubmittedState) {
          {UkmFormSubmittedType::kHasUpiVpaFieldName, false},
          {UkmFormSubmittedType::kFormTypesName,
           AutofillMetrics::FormTypesToBitVector(
-              {FormType::ADDRESS_FORM, FormType::UNKNOWN_FORM_TYPE})},
+              {FormType::kAddressForm, FormType::kUnknownFormType})},
          {UkmFormSubmittedType::kFormSignatureName,
           Collapse(CalculateFormSignature(form)).value()}});
     VerifyUkm(test_ukm_recorder_, form, UkmFormSubmittedType::kEntryName,
@@ -7893,9 +7952,9 @@ TEST_F(AutofillMetricsTest, AutofillFormSubmittedState) {
   }
 
   // Fillable form.
-  form.fields[0].value = ASCIIToUTF16("Elvis Aaron Presley");
-  form.fields[1].value = ASCIIToUTF16("theking@gmail.com");
-  form.fields[2].value = ASCIIToUTF16("12345678901");
+  form.fields[0].value = u"Elvis Aaron Presley";
+  form.fields[1].value = u"theking@gmail.com";
+  form.fields[2].value = u"12345678901";
   forms.front() = form;
 
   // Autofilled none with no suggestions shown.
@@ -7920,7 +7979,7 @@ TEST_F(AutofillMetricsTest, AutofillFormSubmittedState) {
          {UkmFormSubmittedType::kHasUpiVpaFieldName, false},
          {UkmFormSubmittedType::kFormTypesName,
           AutofillMetrics::FormTypesToBitVector(
-              {FormType::ADDRESS_FORM, FormType::UNKNOWN_FORM_TYPE})},
+              {FormType::kAddressForm, FormType::kUnknownFormType})},
          {UkmFormSubmittedType::kFormSignatureName,
           Collapse(CalculateFormSignature(form)).value()}});
 
@@ -7966,7 +8025,7 @@ TEST_F(AutofillMetricsTest, AutofillFormSubmittedState) {
          {UkmFormSubmittedType::kHasUpiVpaFieldName, false},
          {UkmFormSubmittedType::kFormTypesName,
           AutofillMetrics::FormTypesToBitVector(
-              {FormType::ADDRESS_FORM, FormType::UNKNOWN_FORM_TYPE})},
+              {FormType::kAddressForm, FormType::kUnknownFormType})},
          {UkmFormSubmittedType::kFormSignatureName,
           Collapse(CalculateFormSignature(form)).value()}});
     VerifyUkm(test_ukm_recorder_, form, UkmFormSubmittedType::kEntryName,
@@ -8001,7 +8060,7 @@ TEST_F(AutofillMetricsTest, AutofillFormSubmittedState) {
          {UkmFormSubmittedType::kHasUpiVpaFieldName, false},
          {UkmFormSubmittedType::kFormTypesName,
           AutofillMetrics::FormTypesToBitVector(
-              {FormType::ADDRESS_FORM, FormType::UNKNOWN_FORM_TYPE})},
+              {FormType::kAddressForm, FormType::kUnknownFormType})},
          {UkmFormSubmittedType::kFormSignatureName,
           Collapse(CalculateFormSignature(form)).value()}});
     VerifyUkm(test_ukm_recorder_, form, UkmFormSubmittedType::kEntryName,
@@ -8037,7 +8096,7 @@ TEST_F(AutofillMetricsTest, AutofillFormSubmittedState) {
          {UkmFormSubmittedType::kHasUpiVpaFieldName, false},
          {UkmFormSubmittedType::kFormTypesName,
           AutofillMetrics::FormTypesToBitVector(
-              {FormType::ADDRESS_FORM, FormType::UNKNOWN_FORM_TYPE})},
+              {FormType::kAddressForm, FormType::kUnknownFormType})},
          {UkmFormSubmittedType::kFormSignatureName,
           Collapse(CalculateFormSignature(form)).value()}});
     VerifyUkm(test_ukm_recorder_, form, UkmFormSubmittedType::kEntryName,
@@ -8049,7 +8108,7 @@ TEST_F(AutofillMetricsTest, AutofillFormSubmittedState) {
   }
 
   // Clear out the third field's value.
-  form.fields[2].value = base::string16();
+  form.fields[2].value = std::u16string();
   forms.front() = form;
 }
 
@@ -8059,8 +8118,9 @@ TEST_F(
     AutofillMetricsTest,
     AutofillFormSubmittedState_DontCountUnfilledFieldsWithOnlyFillWhenFocused) {
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -8086,15 +8146,15 @@ TEST_F(
     autofill_manager_->OnFormsSeen(forms);
     VerifyDeveloperEngagementUkm(
         test_ukm_recorder_, form, /*is_for_credit_card=*/false,
-        {FormType::ADDRESS_FORM},
+        {FormType::kAddressForm},
         {AutofillMetrics::FILLABLE_FORM_PARSED_WITHOUT_TYPE_HINTS});
     histogram_tester.ExpectTotalCount("Autofill.FormSubmittedState", 0);
 
-    form.fields[0].value = ASCIIToUTF16("Elvis Aaron Presley");
+    form.fields[0].value = u"Elvis Aaron Presley";
     form.fields[0].is_autofilled = true;
-    form.fields[1].value = ASCIIToUTF16("theking@gmail.com");
+    form.fields[1].value = u"theking@gmail.com";
     form.fields[1].is_autofilled = true;
-    form.fields[2].value = ASCIIToUTF16("12345678901");
+    form.fields[2].value = u"12345678901";
     form.fields[2].is_autofilled = true;
 
     autofill_manager_->OnFormSubmitted(form, false,
@@ -8115,7 +8175,7 @@ TEST_F(
          {UkmFormSubmittedType::kIsForCreditCardName, false},
          {UkmFormSubmittedType::kHasUpiVpaFieldName, false},
          {UkmFormSubmittedType::kFormTypesName,
-          AutofillMetrics::FormTypesToBitVector({FormType::ADDRESS_FORM})},
+          AutofillMetrics::FormTypesToBitVector({FormType::kAddressForm})},
          {UkmFormSubmittedType::kFormSignatureName,
           Collapse(CalculateFormSignature(form)).value()}});
     VerifyUkm(test_ukm_recorder_, form, UkmFormSubmittedType::kEntryName,
@@ -8131,7 +8191,7 @@ TEST_F(AutofillMetricsTest, LogUserHappinessMetric_PasswordForm) {
   {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogUserHappinessMetric(
-        AutofillMetrics::USER_DID_AUTOFILL, PASSWORD_FIELD,
+        AutofillMetrics::USER_DID_AUTOFILL, FieldTypeGroup::kPasswordField,
         security_state::SecurityLevel::SECURITY_LEVEL_COUNT,
         /*profile_form_bitmask=*/0);
     histogram_tester.ExpectBucketCount("Autofill.UserHappiness",
@@ -8146,7 +8206,7 @@ TEST_F(AutofillMetricsTest, LogUserHappinessMetric_PasswordForm) {
   {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogUserHappinessMetric(
-        AutofillMetrics::USER_DID_AUTOFILL, USERNAME_FIELD,
+        AutofillMetrics::USER_DID_AUTOFILL, FieldTypeGroup::kUsernameField,
         security_state::SecurityLevel::SECURITY_LEVEL_COUNT,
         /*profile_form_bitmask=*/0);
     histogram_tester.ExpectBucketCount("Autofill.UserHappiness",
@@ -8163,7 +8223,7 @@ TEST_F(AutofillMetricsTest, LogUserHappinessMetric_UnknownForm) {
   {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogUserHappinessMetric(
-        AutofillMetrics::USER_DID_AUTOFILL, NO_GROUP,
+        AutofillMetrics::USER_DID_AUTOFILL, FieldTypeGroup::kNoGroup,
         security_state::SecurityLevel::SECURITY_LEVEL_COUNT,
         /*profile_form_bitmask=*/0);
     histogram_tester.ExpectBucketCount("Autofill.UserHappiness",
@@ -8178,7 +8238,7 @@ TEST_F(AutofillMetricsTest, LogUserHappinessMetric_UnknownForm) {
   {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogUserHappinessMetric(
-        AutofillMetrics::USER_DID_AUTOFILL, TRANSACTION,
+        AutofillMetrics::USER_DID_AUTOFILL, FieldTypeGroup::kTransaction,
         security_state::SecurityLevel::SECURITY_LEVEL_COUNT,
         /*profile_form_bitmask=*/0);
     histogram_tester.ExpectBucketCount("Autofill.UserHappiness",
@@ -8195,8 +8255,9 @@ TEST_F(AutofillMetricsTest, LogUserHappinessMetric_UnknownForm) {
 TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_EmptyForm) {
   // Load a fillable form.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -8222,8 +8283,9 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_CreditCardForm) {
 
   // Load a fillable form.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("https://example.com/form.html");
   form.action = GURL("https://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -8392,8 +8454,9 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_CreditCardForm) {
 TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_AddressForm) {
   // Load a fillable form.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -8600,7 +8663,8 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_AddressForm) {
          Collapse(CalculateFormSignature(form)).value()}}});
   VerifyUkm(
       test_ukm_recorder_, form, UkmTextFieldDidChangeType::kEntryName,
-      {{{UkmTextFieldDidChangeType::kFieldTypeGroupName, NAME},
+      {{{UkmTextFieldDidChangeType::kFieldTypeGroupName,
+         static_cast<int64_t>(FieldTypeGroup::kName)},
         {UkmTextFieldDidChangeType::kHeuristicTypeName, NAME_FULL},
         {UkmTextFieldDidChangeType::kServerTypeName, NO_SERVER_DATA},
         {UkmTextFieldDidChangeType::kHtmlFieldTypeName, HTML_TYPE_UNSPECIFIED},
@@ -8612,7 +8676,8 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_AddressForm) {
          Collapse(CalculateFieldSignatureForField(form.fields[0])).value()},
         {UkmTextFieldDidChangeType::kFormSignatureName,
          Collapse(CalculateFormSignature(form)).value()}},
-       {{UkmTextFieldDidChangeType::kFieldTypeGroupName, NAME},
+       {{UkmTextFieldDidChangeType::kFieldTypeGroupName,
+         static_cast<int64_t>(FieldTypeGroup::kName)},
         {UkmTextFieldDidChangeType::kHeuristicTypeName, NAME_FULL},
         {UkmTextFieldDidChangeType::kServerTypeName, NO_SERVER_DATA},
         {UkmTextFieldDidChangeType::kHtmlFieldTypeName, HTML_TYPE_UNSPECIFIED},
@@ -8624,7 +8689,8 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_AddressForm) {
          Collapse(CalculateFieldSignatureForField(form.fields[0])).value()},
         {UkmTextFieldDidChangeType::kFormSignatureName,
          Collapse(CalculateFormSignature(form)).value()}},
-       {{UkmTextFieldDidChangeType::kFieldTypeGroupName, EMAIL},
+       {{UkmTextFieldDidChangeType::kFieldTypeGroupName,
+         static_cast<int64_t>(FieldTypeGroup::kEmail)},
         {UkmTextFieldDidChangeType::kHeuristicTypeName, EMAIL_ADDRESS},
         {UkmTextFieldDidChangeType::kServerTypeName, NO_SERVER_DATA},
         {UkmTextFieldDidChangeType::kHtmlFieldTypeName, HTML_TYPE_UNSPECIFIED},
@@ -8647,8 +8713,9 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
 
   // Load a fillable form.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -8665,22 +8732,23 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
 
   // Fill additional form.
   FormData second_form = form;
-  second_form.unique_renderer_id = MakeFormRendererId();
+  second_form.host_frame = test::GetLocalFrameToken();
+  second_form.unique_renderer_id = test::MakeFormRendererId();
   test::CreateTestFormField("Second Phone", "second_phone", "", "text", &field);
   second_form.fields.push_back(field);
 
   std::vector<FormData> second_forms(1, second_form);
 
   // Fill the field values for form submission.
-  form.fields[0].value = ASCIIToUTF16("Elvis Aaron Presley");
-  form.fields[1].value = ASCIIToUTF16("theking@gmail.com");
-  form.fields[2].value = ASCIIToUTF16("12345678901");
+  form.fields[0].value = u"Elvis Aaron Presley";
+  form.fields[1].value = u"theking@gmail.com";
+  form.fields[2].value = u"12345678901";
 
   // Fill the field values for form submission.
-  second_form.fields[0].value = ASCIIToUTF16("Elvis Aaron Presley");
-  second_form.fields[1].value = ASCIIToUTF16("theking@gmail.com");
-  second_form.fields[2].value = ASCIIToUTF16("12345678901");
-  second_form.fields[3].value = ASCIIToUTF16("51512345678");
+  second_form.fields[0].value = u"Elvis Aaron Presley";
+  second_form.fields[1].value = u"theking@gmail.com";
+  second_form.fields[2].value = u"12345678901";
+  second_form.fields[3].value = u"51512345678";
 
   // Expect only form load metrics to be logged if the form is submitted without
   // user interaction.
@@ -8863,7 +8931,7 @@ TEST_F(AutofillMetricsTest, FormFillDurationFromInteraction_CreditCardForm) {
   {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogFormFillDurationFromInteraction(
-        {CREDIT_CARD_FORM}, true /* used_autofill */,
+        {FormType::kCreditCardForm}, true /* used_autofill */,
         base::TimeDelta::FromMilliseconds(2000));
     histogram_tester.ExpectTimeBucketCount(
         "Autofill.FillDuration.FromInteraction.WithAutofill.CreditCard",
@@ -8876,7 +8944,7 @@ TEST_F(AutofillMetricsTest, FormFillDurationFromInteraction_CreditCardForm) {
   {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogFormFillDurationFromInteraction(
-        {CREDIT_CARD_FORM}, false /* used_autofill */,
+        {FormType::kCreditCardForm}, false /* used_autofill */,
         base::TimeDelta::FromMilliseconds(2000));
     histogram_tester.ExpectTimeBucketCount(
         "Autofill.FillDuration.FromInteraction.WithoutAutofill.CreditCard",
@@ -8890,7 +8958,7 @@ TEST_F(AutofillMetricsTest, FormFillDurationFromInteraction_CreditCardForm) {
   {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogFormFillDurationFromInteraction(
-        {UNKNOWN_FORM_TYPE}, false /* used_autofill */,
+        {FormType::kUnknownFormType}, false /* used_autofill */,
         base::TimeDelta::FromMilliseconds(2000));
     histogram_tester.ExpectTotalCount(
         "Autofill.FillDuration.FromInteraction.WithAutofill.CreditCard", 0);
@@ -8904,7 +8972,7 @@ TEST_F(AutofillMetricsTest, FormFillDurationFromInteraction_AddressForm) {
   {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogFormFillDurationFromInteraction(
-        {ADDRESS_FORM}, true /* used_autofill */,
+        {FormType::kAddressForm}, true /* used_autofill */,
         base::TimeDelta::FromMilliseconds(2000));
     histogram_tester.ExpectTimeBucketCount(
         "Autofill.FillDuration.FromInteraction.WithAutofill.Address",
@@ -8917,7 +8985,7 @@ TEST_F(AutofillMetricsTest, FormFillDurationFromInteraction_AddressForm) {
   {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogFormFillDurationFromInteraction(
-        {ADDRESS_FORM}, false /* used_autofill */,
+        {FormType::kAddressForm}, false /* used_autofill */,
         base::TimeDelta::FromMilliseconds(2000));
     histogram_tester.ExpectTimeBucketCount(
         "Autofill.FillDuration.FromInteraction.WithoutAutofill.Address",
@@ -8931,7 +8999,7 @@ TEST_F(AutofillMetricsTest, FormFillDurationFromInteraction_AddressForm) {
   {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogFormFillDurationFromInteraction(
-        {UNKNOWN_FORM_TYPE}, false /* used_autofill */,
+        {FormType::kUnknownFormType}, false /* used_autofill */,
         base::TimeDelta::FromMilliseconds(2000));
     histogram_tester.ExpectTotalCount(
         "Autofill.FillDuration.FromInteraction.WithAutofill.Address", 0);
@@ -8945,7 +9013,7 @@ TEST_F(AutofillMetricsTest, FormFillDurationFromInteraction_PasswordForm) {
   {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogFormFillDurationFromInteraction(
-        {PASSWORD_FORM}, true /* used_autofill */,
+        {FormType::kPasswordForm}, true /* used_autofill */,
         base::TimeDelta::FromMilliseconds(2000));
     histogram_tester.ExpectTimeBucketCount(
         "Autofill.FillDuration.FromInteraction.WithAutofill.Password",
@@ -8958,7 +9026,7 @@ TEST_F(AutofillMetricsTest, FormFillDurationFromInteraction_PasswordForm) {
   {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogFormFillDurationFromInteraction(
-        {PASSWORD_FORM}, false /* used_autofill */,
+        {FormType::kPasswordForm}, false /* used_autofill */,
         base::TimeDelta::FromMilliseconds(2000));
     histogram_tester.ExpectTimeBucketCount(
         "Autofill.FillDuration.FromInteraction.WithoutAutofill.Password",
@@ -8972,7 +9040,7 @@ TEST_F(AutofillMetricsTest, FormFillDurationFromInteraction_PasswordForm) {
   {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogFormFillDurationFromInteraction(
-        {UNKNOWN_FORM_TYPE}, false /* used_autofill */,
+        {FormType::kUnknownFormType}, false /* used_autofill */,
         base::TimeDelta::FromMilliseconds(2000));
     histogram_tester.ExpectTotalCount(
         "Autofill.FillDuration.FromInteraction.WithAutofill.Password", 0);
@@ -8986,7 +9054,7 @@ TEST_F(AutofillMetricsTest, FormFillDurationFromInteraction_UnknownForm) {
   {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogFormFillDurationFromInteraction(
-        {UNKNOWN_FORM_TYPE}, true /* used_autofill */,
+        {FormType::kUnknownFormType}, true /* used_autofill */,
         base::TimeDelta::FromMilliseconds(2000));
     histogram_tester.ExpectTimeBucketCount(
         "Autofill.FillDuration.FromInteraction.WithAutofill.Unknown",
@@ -8999,7 +9067,7 @@ TEST_F(AutofillMetricsTest, FormFillDurationFromInteraction_UnknownForm) {
   {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogFormFillDurationFromInteraction(
-        {UNKNOWN_FORM_TYPE}, false /* used_autofill */,
+        {FormType::kUnknownFormType}, false /* used_autofill */,
         base::TimeDelta::FromMilliseconds(2000));
     histogram_tester.ExpectTimeBucketCount(
         "Autofill.FillDuration.FromInteraction.WithoutAutofill.Unknown",
@@ -9013,7 +9081,7 @@ TEST_F(AutofillMetricsTest, FormFillDurationFromInteraction_UnknownForm) {
   {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogFormFillDurationFromInteraction(
-        {ADDRESS_FORM}, false /* used_autofill */,
+        {FormType::kAddressForm}, false /* used_autofill */,
         base::TimeDelta::FromMilliseconds(2000));
     histogram_tester.ExpectTotalCount(
         "Autofill.FillDuration.FromInteraction.WithAutofill.Unknown", 0);
@@ -9027,7 +9095,8 @@ TEST_F(AutofillMetricsTest, FormFillDurationFromInteraction_MultipleForms) {
   {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogFormFillDurationFromInteraction(
-        {CREDIT_CARD_FORM, ADDRESS_FORM, PASSWORD_FORM, UNKNOWN_FORM_TYPE},
+        {FormType::kCreditCardForm, FormType::kAddressForm,
+         FormType::kPasswordForm, FormType::kUnknownFormType},
         true /* used_autofill */, base::TimeDelta::FromMilliseconds(2000));
     histogram_tester.ExpectTimeBucketCount(
         "Autofill.FillDuration.FromInteraction.WithAutofill.CreditCard",
@@ -9047,7 +9116,8 @@ TEST_F(AutofillMetricsTest, FormFillDurationFromInteraction_MultipleForms) {
   {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogFormFillDurationFromInteraction(
-        {CREDIT_CARD_FORM, ADDRESS_FORM, PASSWORD_FORM, UNKNOWN_FORM_TYPE},
+        {FormType::kCreditCardForm, FormType::kAddressForm,
+         FormType::kPasswordForm, FormType::kUnknownFormType},
         false /* used_autofill */, base::TimeDelta::FromMilliseconds(2000));
     histogram_tester.ExpectTimeBucketCount(
         "Autofill.FillDuration.FromInteraction.WithoutAutofill.CreditCard",
@@ -9070,8 +9140,9 @@ TEST_F(AutofillMetricsTest, ProfileActionOnFormSubmitted) {
 
   // Load a fillable form.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -9112,32 +9183,32 @@ TEST_F(AutofillMetricsTest, ProfileActionOnFormSubmitted) {
   std::vector<FormData> fourth_forms(1, fourth_form);
 
   // Fill the field values for the first form submission.
-  form.fields[0].value = ASCIIToUTF16("Albert Canuck");
-  form.fields[1].value = ASCIIToUTF16("can@gmail.com");
-  form.fields[2].value = ASCIIToUTF16("12345678901");
-  form.fields[3].value = ASCIIToUTF16("1234 McGill street.");
-  form.fields[4].value = ASCIIToUTF16("Montreal");
-  form.fields[5].value = ASCIIToUTF16("Canada");
-  form.fields[6].value = ASCIIToUTF16("Quebec");
-  form.fields[7].value = ASCIIToUTF16("A1A 1A1");
+  form.fields[0].value = u"Albert Canuck";
+  form.fields[1].value = u"can@gmail.com";
+  form.fields[2].value = u"12345678901";
+  form.fields[3].value = u"1234 McGill street.";
+  form.fields[4].value = u"Montreal";
+  form.fields[5].value = u"Canada";
+  form.fields[6].value = u"Quebec";
+  form.fields[7].value = u"A1A 1A1";
 
   // Fill the field values for the second form submission (same as first form).
   second_form.fields = form.fields;
 
   // Fill the field values for the third form submission.
-  third_form.fields[0].value = ASCIIToUTF16("Jean-Paul Canuck");
-  third_form.fields[1].value = ASCIIToUTF16("can2@gmail.com");
-  third_form.fields[2].value = ASCIIToUTF16("");
-  third_form.fields[3].value = ASCIIToUTF16("1234 McGill street.");
-  third_form.fields[4].value = ASCIIToUTF16("Montreal");
-  third_form.fields[5].value = ASCIIToUTF16("Canada");
-  third_form.fields[6].value = ASCIIToUTF16("Quebec");
-  third_form.fields[7].value = ASCIIToUTF16("A1A 1A1");
+  third_form.fields[0].value = u"Jean-Paul Canuck";
+  third_form.fields[1].value = u"can2@gmail.com";
+  third_form.fields[2].value = u"";
+  third_form.fields[3].value = u"1234 McGill street.";
+  third_form.fields[4].value = u"Montreal";
+  third_form.fields[5].value = u"Canada";
+  third_form.fields[6].value = u"Quebec";
+  third_form.fields[7].value = u"A1A 1A1";
 
   // Fill the field values for the fourth form submission (same as third form
   // plus phone info).
   fourth_form.fields = third_form.fields;
-  fourth_form.fields[2].value = ASCIIToUTF16("12345678901");
+  fourth_form.fields[2].value = u"12345678901";
 
   // Expect to log NEW_PROFILE_CREATED for the metric since a new profile is
   // submitted.
@@ -9197,23 +9268,24 @@ class AutofillMetricsParseQueryResponseTest : public testing::Test {
  public:
   void SetUp() override {
     FormData form;
-    form.unique_renderer_id = MakeFormRendererId();
+    form.host_frame = test::GetLocalFrameToken();
+    form.unique_renderer_id = test::MakeFormRendererId();
     form.url = GURL("http://foo.com");
     form.main_frame_origin = url::Origin::Create(GURL("http://foo_root.com"));
     FormFieldData field;
     field.form_control_type = "text";
 
-    field.label = ASCIIToUTF16("fullname");
-    field.name = ASCIIToUTF16("fullname");
+    field.label = u"fullname";
+    field.name = u"fullname";
     form.fields.push_back(field);
 
-    field.label = ASCIIToUTF16("address");
-    field.name = ASCIIToUTF16("address");
+    field.label = u"address";
+    field.name = u"address";
     form.fields.push_back(field);
 
     // Checkable fields should be ignored in parsing.
     FormFieldData checkable_field;
-    checkable_field.label = ASCIIToUTF16("radio_button");
+    checkable_field.label = u"radio_button";
     checkable_field.form_control_type = "radio";
     checkable_field.check_status =
         FormFieldData::CheckStatus::kCheckableButUnchecked;
@@ -9222,12 +9294,12 @@ class AutofillMetricsParseQueryResponseTest : public testing::Test {
     owned_forms_.push_back(std::make_unique<FormStructure>(form));
     forms_.push_back(owned_forms_.back().get());
 
-    field.label = ASCIIToUTF16("email");
-    field.name = ASCIIToUTF16("email");
+    field.label = u"email";
+    field.name = u"email";
     form.fields.push_back(field);
 
-    field.label = ASCIIToUTF16("password");
-    field.name = ASCIIToUTF16("password");
+    field.label = u"password";
+    field.name = u"password";
     field.form_control_type = "password";
     form.fields.push_back(field);
 
@@ -9351,8 +9423,9 @@ TEST_F(AutofillMetricsTest, NonsecureCreditCardForm) {
 
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   GURL frame_origin("http://example_root.com/form.html");
@@ -9410,8 +9483,9 @@ TEST_F(AutofillMetricsTest,
 
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("https://example.com/form.html");
   // Form action needs to be secure on secure page, otherwise this triggers
   // mixed form warnings and no suggestions are offered.
@@ -9490,7 +9564,7 @@ TEST_F(AutofillMetricsTest, RecordDeveloperEngagementMetric) {
 
   AutofillMetrics::LogDeveloperEngagementUkm(
       test_ukm_recorder_, autofill_client_.GetUkmSourceId(), url, true,
-      {FormType::CREDIT_CARD_FORM}, form_structure_metric, form_signature);
+      {FormType::kCreditCardForm}, form_structure_metric, form_signature);
   auto entries = test_ukm_recorder_->GetEntriesByName(
       UkmDeveloperEngagementType::kEntryName);
   EXPECT_EQ(1u, entries.size());
@@ -9504,7 +9578,7 @@ TEST_F(AutofillMetricsTest, RecordDeveloperEngagementMetric) {
         entry, UkmDeveloperEngagementType::kIsForCreditCardName, true);
     test_ukm_recorder_->ExpectEntryMetric(
         entry, UkmDeveloperEngagementType::kFormTypesName,
-        AutofillMetrics::FormTypesToBitVector({FormType::CREDIT_CARD_FORM}));
+        AutofillMetrics::FormTypesToBitVector({FormType::kCreditCardForm}));
     test_ukm_recorder_->ExpectEntryMetric(
         entry, UkmDeveloperEngagementType::kFormSignatureName,
         form_signature.value());
@@ -9537,8 +9611,9 @@ TEST_F(AutofillMetricsTest, DISABLED_AutofillSuggestionShownTest) {
                       false /* include_masked_server_credit_card */,
                       false /* include_full_server_credit_card */);
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example_cc.com/form.html");
   form.action = GURL("http://example_cc.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -9572,13 +9647,11 @@ TEST_F(AutofillMetricsTest, DISABLED_AutofillSuggestionShownTest) {
 }
 
 TEST_F(AutofillMetricsTest, DynamicFormMetrics) {
-  scoped_feature_list_.InitAndDisableFeature(
-      features::kAutofillRestrictUnownedFieldsToFormlessCheckout);
-
   // Set up our form data.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   FormFieldData field;
@@ -9646,7 +9719,7 @@ TEST_F(AutofillMetricsTest, LogUserHappinessBySecurityLevel) {
   {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogUserHappinessBySecurityLevel(
-        AutofillMetrics::USER_DID_AUTOFILL, CREDIT_CARD_FORM,
+        AutofillMetrics::USER_DID_AUTOFILL, FormType::kCreditCardForm,
         security_state::SecurityLevel::SECURE);
     histogram_tester.ExpectBucketCount(
         "Autofill.UserHappiness.CreditCard.SECURE",
@@ -9656,7 +9729,7 @@ TEST_F(AutofillMetricsTest, LogUserHappinessBySecurityLevel) {
   {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogUserHappinessBySecurityLevel(
-        AutofillMetrics::SUGGESTIONS_SHOWN, ADDRESS_FORM,
+        AutofillMetrics::SUGGESTIONS_SHOWN, FormType::kAddressForm,
         security_state::SecurityLevel::DANGEROUS);
     histogram_tester.ExpectBucketCount(
         "Autofill.UserHappiness.Address.DANGEROUS",
@@ -9666,7 +9739,7 @@ TEST_F(AutofillMetricsTest, LogUserHappinessBySecurityLevel) {
   {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogUserHappinessBySecurityLevel(
-        AutofillMetrics::FIELD_WAS_AUTOFILLED, PASSWORD_FORM,
+        AutofillMetrics::FIELD_WAS_AUTOFILLED, FormType::kPasswordForm,
         security_state::SecurityLevel::WARNING);
     histogram_tester.ExpectBucketCount(
         "Autofill.UserHappiness.Password.WARNING",
@@ -9676,7 +9749,7 @@ TEST_F(AutofillMetricsTest, LogUserHappinessBySecurityLevel) {
   {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogUserHappinessBySecurityLevel(
-        AutofillMetrics::USER_DID_AUTOFILL_ONCE, UNKNOWN_FORM_TYPE,
+        AutofillMetrics::USER_DID_AUTOFILL_ONCE, FormType::kUnknownFormType,
         security_state::SecurityLevel::SECURE);
     histogram_tester.ExpectBucketCount("Autofill.UserHappiness.Unknown.SECURE",
                                        AutofillMetrics::USER_DID_AUTOFILL_ONCE,
@@ -9689,7 +9762,8 @@ TEST_F(AutofillMetricsTest, LogUserHappinessBySecurityLevel) {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogUserHappinessBySecurityLevel(
         AutofillMetrics::SUBMITTED_FILLABLE_FORM_AUTOFILLED_SOME,
-        CREDIT_CARD_FORM, security_state::SecurityLevel::SECURITY_LEVEL_COUNT);
+        FormType::kCreditCardForm,
+        security_state::SecurityLevel::SECURITY_LEVEL_COUNT);
     histogram_tester.ExpectTotalCount("Autofill.UserHappiness.CreditCard.OTHER",
                                       0);
   }
@@ -9700,8 +9774,9 @@ TEST_F(AutofillMetricsTest, LogUserHappinessBySecurityLevel) {
 TEST_F(AutofillMetricsTest, LogUserHappinessBySecurityLevel_FromFormEvents) {
   // Load a fillable form.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -9744,7 +9819,7 @@ TEST_F(AutofillMetricsTest, LogUserHappinessBySecurityLevel_FromFormEvents) {
 TEST_F(AutofillMetricsTest, LogUserHappinessByProfileFormType_AddressOnly) {
   base::HistogramTester histogram_tester;
   AutofillMetrics::LogUserHappinessMetric(
-      AutofillMetrics::USER_DID_TYPE, {FormType::ADDRESS_FORM},
+      AutofillMetrics::USER_DID_TYPE, {FormType::kAddressForm},
       security_state::SecurityLevel::NONE,
       data_util::DetermineGroups({ADDRESS_HOME_CITY, ADDRESS_HOME_STATE,
                                   ADDRESS_HOME_DEPENDENT_LOCALITY}));
@@ -9773,7 +9848,7 @@ TEST_F(AutofillMetricsTest, LogUserHappinessByProfileFormType_AddressOnly) {
 TEST_F(AutofillMetricsTest, LogUserHappinessByProfileFormType_ContactOnly) {
   base::HistogramTester histogram_tester;
   AutofillMetrics::LogUserHappinessMetric(
-      AutofillMetrics::USER_DID_TYPE, {FormType::ADDRESS_FORM},
+      AutofillMetrics::USER_DID_TYPE, {FormType::kAddressForm},
       security_state::SecurityLevel::NONE,
       data_util::DetermineGroups({NAME_FIRST, NAME_LAST, EMAIL_ADDRESS}));
 
@@ -9802,7 +9877,7 @@ TEST_F(AutofillMetricsTest,
        LogUserHappinessByProfileFormType_AddressPlusPhone) {
   base::HistogramTester histogram_tester;
   AutofillMetrics::LogUserHappinessMetric(
-      AutofillMetrics::USER_DID_TYPE, {FormType::ADDRESS_FORM},
+      AutofillMetrics::USER_DID_TYPE, {FormType::kAddressForm},
       security_state::SecurityLevel::NONE,
       data_util::DetermineGroups(
           {NAME_FULL, ADDRESS_HOME_ZIP, PHONE_HOME_CITY_AND_NUMBER}));
@@ -9835,7 +9910,7 @@ TEST_F(AutofillMetricsTest,
        LogUserHappinessByProfileFormType_AddressPlusEmail) {
   base::HistogramTester histogram_tester;
   AutofillMetrics::LogUserHappinessMetric(
-      AutofillMetrics::USER_DID_TYPE, {FormType::ADDRESS_FORM},
+      AutofillMetrics::USER_DID_TYPE, {FormType::kAddressForm},
       security_state::SecurityLevel::NONE,
       data_util::DetermineGroups({NAME_FULL, ADDRESS_HOME_ZIP, EMAIL_ADDRESS}));
 
@@ -9867,7 +9942,7 @@ TEST_F(AutofillMetricsTest,
        LogUserHappinessByProfileFormType_AddressPlusEmailPlusPhone) {
   base::HistogramTester histogram_tester;
   AutofillMetrics::LogUserHappinessMetric(
-      AutofillMetrics::USER_DID_TYPE, {FormType::ADDRESS_FORM},
+      AutofillMetrics::USER_DID_TYPE, {FormType::kAddressForm},
       security_state::SecurityLevel::NONE,
       data_util::DetermineGroups({NAME_FULL, ADDRESS_HOME_ZIP, EMAIL_ADDRESS,
                                   PHONE_HOME_WHOLE_NUMBER}));
@@ -9898,7 +9973,7 @@ TEST_F(AutofillMetricsTest,
 TEST_F(AutofillMetricsTest, LogUserHappinessByProfileFormType_Other) {
   base::HistogramTester histogram_tester;
   AutofillMetrics::LogUserHappinessMetric(
-      AutofillMetrics::USER_DID_TYPE, {FormType::ADDRESS_FORM},
+      AutofillMetrics::USER_DID_TYPE, {FormType::kAddressForm},
       security_state::SecurityLevel::NONE,
       data_util::DetermineGroups({NAME_FIRST, NAME_MIDDLE, NAME_LAST}));
 
@@ -9926,7 +10001,7 @@ TEST_F(AutofillMetricsTest, LogUserHappinessByProfileFormType_Other) {
 TEST_F(AutofillMetricsTest, LogUserHappinessByProfileFormType_PhoneOnly) {
   base::HistogramTester histogram_tester;
   AutofillMetrics::LogUserHappinessMetric(
-      AutofillMetrics::USER_DID_TYPE, {FormType::ADDRESS_FORM},
+      AutofillMetrics::USER_DID_TYPE, {FormType::kAddressForm},
       security_state::SecurityLevel::NONE,
       data_util::DetermineGroups({PHONE_HOME_NUMBER}));
 
@@ -9954,7 +10029,7 @@ TEST_F(AutofillMetricsTest,
        LogUserHappinessByProfileFormType_FormsLoadedNotLogged) {
   base::HistogramTester histogram_tester;
   AutofillMetrics::LogUserHappinessMetric(
-      AutofillMetrics::FORMS_LOADED, {FormType::ADDRESS_FORM},
+      AutofillMetrics::FORMS_LOADED, {FormType::kAddressForm},
       security_state::SecurityLevel::NONE,
       data_util::DetermineGroups({NAME_FIRST, NAME_MIDDLE, NAME_LAST}));
 
@@ -9981,7 +10056,7 @@ TEST_F(AutofillMetricsTest,
        LogUserHappinessByProfileFormType_NoAddressFormType) {
   base::HistogramTester histogram_tester;
   AutofillMetrics::LogUserHappinessMetric(AutofillMetrics::FORMS_LOADED,
-                                          {FormType::CREDIT_CARD_FORM},
+                                          {FormType::kCreditCardForm},
                                           security_state::SecurityLevel::NONE,
                                           /*profile_form_bitmask=*/0);
 
@@ -9989,92 +10064,6 @@ TEST_F(AutofillMetricsTest,
   const std::string histograms = histogram_tester.GetAllHistogramsRecorded();
   EXPECT_THAT(histograms,
               Not(AnyOf(HasSubstr("Autofill.UserHappiness.Address"))));
-}
-
-// Tests that the LogSaveCardPromptMetricBySecurityLevel are recorded correctly.
-TEST_F(AutofillMetricsTest, LogSaveCardPromptMetricBySecurityLevel) {
-  {
-    base::HistogramTester histogram_tester;
-    AutofillMetrics::LogSaveCardPromptMetricBySecurityLevel(
-        AutofillMetrics::SAVE_CARD_PROMPT_SHOWN_DEPRECATED,
-        /*is_uploading=*/true, security_state::SecurityLevel::SECURE);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.SaveCreditCardPrompt.Upload.SECURE",
-        AutofillMetrics::SAVE_CARD_PROMPT_SHOWN_DEPRECATED, 1);
-  }
-
-  {
-    base::HistogramTester histogram_tester;
-    AutofillMetrics::LogSaveCardPromptMetricBySecurityLevel(
-        AutofillMetrics::SAVE_CARD_PROMPT_END_DENIED, /*is_uploading=*/false,
-        security_state::SecurityLevel::DANGEROUS);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.SaveCreditCardPrompt.Local.DANGEROUS",
-        AutofillMetrics::SAVE_CARD_PROMPT_END_DENIED, 1);
-  }
-
-  {
-    base::HistogramTester histogram_tester;
-    AutofillMetrics::LogSaveCardPromptMetricBySecurityLevel(
-        AutofillMetrics::SAVE_CARD_PROMPT_END_ACCEPTED, /*is_uploading=*/true,
-        security_state::SecurityLevel::WARNING);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.SaveCreditCardPrompt.Upload.WARNING",
-        AutofillMetrics::SAVE_CARD_PROMPT_END_ACCEPTED, 1);
-  }
-
-  {
-    base::HistogramTester histogram_tester;
-    AutofillMetrics::LogSaveCardPromptMetricBySecurityLevel(
-        AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_SHOWING,
-        /*is_uploading=*/false, security_state::SecurityLevel::SECURE);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.SaveCreditCardPrompt.Local.SECURE",
-        AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_SHOWING, 1);
-  }
-
-  {
-    // No metric should be recorded if the security level is
-    // SECURITY_LEVEL_COUNT.
-    base::HistogramTester histogram_tester;
-    AutofillMetrics::LogSaveCardPromptMetricBySecurityLevel(
-        AutofillMetrics::SAVE_CARD_PROMPT_CVC_FIX_FLOW_SHOWN,
-        /*is_uploading=*/true,
-        security_state::SecurityLevel::SECURITY_LEVEL_COUNT);
-    histogram_tester.ExpectTotalCount(
-        "Autofill.SaveCreditCardPrompt.Upload.OTHER", 0);
-  }
-}
-
-// Verify that we correctly log LogSaveCardPromptMetricBySecurityLevel from the
-// save card prompt metrics.
-TEST_F(AutofillMetricsTest,
-       LogSaveCardPromptMetricBySecurityLevel_FromSaveCardPromptMetric) {
-  {
-    base::HistogramTester histogram_tester;
-    AutofillMetrics::LogSaveCardPromptMetric(
-        AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_SHOWING,
-        /*is_uploading=*/true, /*is_reshow=*/false,
-        AutofillClient::SaveCreditCardOptions(),
-        /*previous_save_credit_card_prompt_user_decision=*/1,
-        security_state::SecurityLevel::SECURE, SyncSigninState::kSignedOut);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.SaveCreditCardPrompt.Upload.SECURE",
-        AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_SHOWING, 1);
-  }
-
-  {
-    base::HistogramTester histogram_tester;
-    AutofillMetrics::LogSaveCardPromptMetric(
-        AutofillMetrics::SAVE_CARD_PROMPT_SHOWN_DEPRECATED,
-        /*is_uploading=*/false,
-        /*is_reshow=*/true, AutofillClient::SaveCreditCardOptions(),
-        /*previous_save_credit_card_prompt_user_decision=*/0,
-        security_state::SecurityLevel::SECURE, SyncSigninState::kSignedOut);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.SaveCreditCardPrompt.Local.SECURE",
-        AutofillMetrics::SAVE_CARD_PROMPT_SHOWN_DEPRECATED, 1);
-  }
 }
 
 // Verify that we don't log Autofill.WebOTP.OneTimeCode.FromAutocomplete if the
@@ -10090,8 +10079,9 @@ TEST_F(AutofillMetricsTest, FrameHasNoForm) {
 // autocomplete="one-time-code".
 TEST_F(AutofillMetricsTest, FrameHasAutocompleteOneTimeCode) {
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -10122,8 +10112,9 @@ TEST_F(AutofillMetricsTest, FrameHasAutocompleteOneTimeCode) {
 // autocomplete="one-time-code".
 TEST_F(AutofillMetricsTest, FrameDoesNotHaveAutocompleteOneTimeCode) {
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -10149,8 +10140,9 @@ TEST_F(AutofillMetricsTest, FrameDoesNotHaveAutocompleteOneTimeCode) {
 // autocomplete attribute but there are at least 3 fields in the form.
 TEST_F(AutofillMetricsTest, FrameHasPhoneNumberFieldWithoutAutocomplete) {
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -10183,8 +10175,9 @@ TEST_F(AutofillMetricsTest, FrameHasPhoneNumberFieldWithoutAutocomplete) {
 // autocomplete attribute and there are less than 3 fields in the form.
 TEST_F(AutofillMetricsTest, FrameHasSinglePhoneNumberFieldWithoutAutocomplete) {
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -10231,8 +10224,9 @@ TEST_F(AutofillMetricsTest, FrameHasPhoneNumberFieldWithAutocomplete) {
 // field.
 TEST_F(AutofillMetricsTest, FrameDoesNotHavePhoneNumberField) {
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -10592,38 +10586,6 @@ TEST_F(AutofillMetricsTest, LogIsAutofillEnabledAtPageLoad_BySyncState) {
   }
 }
 
-// Verify that we correctly log FormEvent metrics with the appropriate sync
-// state.
-TEST_F(AutofillMetricsTest, LogSaveCardPromptMetric_BySyncState) {
-  {
-    base::HistogramTester histogram_tester;
-    AutofillMetrics::LogSaveCardPromptMetric(
-        AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_SHOWING,
-        /*is_uploading=*/true, /*is_reshow=*/false,
-        AutofillClient::SaveCreditCardOptions(),
-        /*previous_save_credit_card_prompt_user_decision=*/1,
-        security_state::SecurityLevel::SECURE, SyncSigninState::kSignedIn);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.SaveCreditCardPrompt.Upload.FirstShow.SignedIn",
-        AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_SHOWING, 1);
-  }
-
-  {
-    base::HistogramTester histogram_tester;
-    AutofillMetrics::LogSaveCardPromptMetric(
-        AutofillMetrics::SAVE_CARD_PROMPT_SHOWN_DEPRECATED,
-        /*is_uploading=*/false,
-        /*is_reshow=*/true, AutofillClient::SaveCreditCardOptions(),
-        /*previous_save_credit_card_prompt_user_decision=*/0,
-        security_state::SecurityLevel::SECURE,
-        SyncSigninState::kSignedInAndSyncFeatureEnabled);
-    histogram_tester.ExpectBucketCount(
-        "Autofill.SaveCreditCardPrompt.Local.Reshows."
-        "SignedInAndSyncFeatureEnabled",
-        AutofillMetrics::SAVE_CARD_PROMPT_SHOWN_DEPRECATED, 1);
-  }
-}
-
 TEST_F(AutofillMetricsTest, LogServerCardLinkClicked) {
   {
     base::HistogramTester histogram_tester;
@@ -10667,8 +10629,9 @@ TEST_P(AutofillMetricsFunnelTest, LogFunnelMetrics) {
 
   // Load a fillable form.
   FormData form;
-  form.unique_renderer_id = MakeFormRendererId();
-  form.name = ASCIIToUTF16("TestForm");
+  form.host_frame = test::GetLocalFrameToken();
+  form.unique_renderer_id = test::MakeFormRendererId();
+  form.name = u"TestForm";
   form.url = GURL("http://example.com/form.html");
   form.action = GURL("http://example.com/submit.html");
   form.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -10822,8 +10785,8 @@ void AutofillMetricsKeyMetricsTest::SetUp() {
   RecreateProfile(/*is_server=*/false);
 
   // Load a fillable form.
-  form_.unique_renderer_id = MakeFormRendererId();
-  form_.name = ASCIIToUTF16("TestForm");
+  form_.unique_renderer_id = test::MakeFormRendererId();
+  form_.name = u"TestForm";
   form_.url = GURL("http://example.com/form.html");
   form_.action = GURL("http://example.com/submit.html");
   form_.main_frame_origin = url::Origin::Create(autofill_client_.form_origin());
@@ -11045,6 +11008,9 @@ TEST_F(AutofillMetricsTest, PageLanguageMetricsExpectedCase) {
   CreateSimpleForm(autofill_client_.form_origin(), form);
 
   // Set up language state.
+  translate::LanguageDetectionDetails language_detection_details;
+  language_detection_details.adopted_language = "ub";
+  autofill_manager_->OnLanguageDetermined(language_detection_details);
   autofill_client_.GetLanguageState()->SetOriginalLanguage("ub");
   autofill_client_.GetLanguageState()->SetCurrentLanguage("ub");
   int language_code = 'u' * 256 + 'b';
@@ -11067,7 +11033,10 @@ TEST_F(AutofillMetricsTest, PageLanguageMetricsInvalidLanguage) {
   CreateSimpleForm(autofill_client_.form_origin(), form);
 
   // Set up language state.
-  autofill_client_.GetLanguageState()->SetOriginalLanguage("!ab");
+  translate::LanguageDetectionDetails language_detection_details;
+  language_detection_details.adopted_language = "en";
+  autofill_manager_->OnLanguageDetermined(language_detection_details);
+  autofill_client_.GetLanguageState()->SetOriginalLanguage("en");
   autofill_client_.GetLanguageState()->SetCurrentLanguage("other");
 
   // Simulate form submission.

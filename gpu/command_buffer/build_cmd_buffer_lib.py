@@ -1127,7 +1127,7 @@ static_assert(offsetof(%(cmd_name)s::Result, %(field_name)s) == %(offset)d,
           return error::kUnknownCommand;
         """)
     if func.IsES31():
-      f.write("""if (!feature_info_->IsWebGL2ComputeContext())
+      f.write("""if (!feature_info_->IsES31ForTestingContext())
           return error::kUnknownCommand;
         """)
     if func.GetCmdArgs():

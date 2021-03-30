@@ -6,34 +6,20 @@ syntax = "proto2";
 
 package feedwire;
 
-option optimize_for = LITE_RUNTIME;
-
-// UNUSED_IN_CHROME import
-// "components/feed/core/proto/v2/wire/capability.proto";
 import "components/feed/core/proto/v2/wire/chrome_feed_response_metadata.proto";
 import "components/feed/core/proto/v2/wire/data_operation.proto";
-// UNUSED_IN_CHROME import "components/feed/core/proto/v2/wire/feed_id.proto";
-// UNUSED_IN_CHROME import
-// "components/feed/core/proto/v2/wire/response_status_code.proto";
+import "components/feed/core/proto/v2/wire/server_experiment_data.proto";
 
-// A feed response is  a series of directives to manipulate backend storage,
-// similar to database commands.  Individual data operations contain all the
-// necessary information to manipulate the client state.
+option optimize_for = LITE_RUNTIME;
+
 message FeedResponse {
-  // DataOperations are applied on the client in order in which they are
-  // received.
   repeated DataOperation data_operation = 1;
-  // Metadata for the entire FeedResponse.
   optional FeedResponseMetadata feed_response_metadata = 2;
-
-  // UNUSED_IN_CHROME repeated Capability server_capabilities = 3;
-  // UNUSED_IN_CHROME optional ResponseStatusCode response_status_code = 4;
 }
-
 message FeedResponseMetadata {
-  // UNUSED_IN_CHROME optional int64 response_time_ms = 1;
-  // UNUSED_IN_CHROME optional bytes event_id = 2;
-  // UNUSED_IN_CHROME optional FeedId feed_id = 3;
-  // UNUSED_IN_CHROME optional bool pinned_content_fulfilled = 4;
+  optional int64 response_time_ms = 1;
+  optional bytes event_id = 2;
+  optional bool pinned_content_fulfilled = 4;
+  optional ServerExperimentData server_experiment_data = 5;
   optional ChromeFeedResponseMetadata chrome_feed_response_metadata = 326233599;
 }

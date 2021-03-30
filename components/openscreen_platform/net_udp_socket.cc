@@ -137,6 +137,7 @@ void NetUdpSocket::Bind() {
   }
 
   local_endpoint_ = openscreen_platform::ToOpenScreenEndPoint(local_endpoint);
+  client_->OnBound(this);
   DoRead();
 }
 

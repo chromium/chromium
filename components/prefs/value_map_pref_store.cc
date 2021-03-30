@@ -30,7 +30,7 @@ void ValueMapPrefStore::RemoveObserver(PrefStore::Observer* observer) {
 }
 
 bool ValueMapPrefStore::HasObservers() const {
-  return observers_.might_have_observers();
+  return !observers_.empty();
 }
 
 void ValueMapPrefStore::SetValue(const std::string& key,

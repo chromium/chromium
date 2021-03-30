@@ -22,7 +22,8 @@ namespace content {
 namespace {
 
 const char kDefaultImpressionOrigin[] = "https://impression.test/";
-const char kDefaultConversionOrigin[] = "https://conversion.test/";
+const char kDefaultConversionOrigin[] = "https://sub.conversion.test/";
+const char kDefaultConversionDestination[] = "https://conversion.test/";
 const char kDefaultReportOrigin[] = "https://report.test/";
 
 // Default expiry time for impressions for testing.
@@ -30,9 +31,59 @@ const int64_t kExpiryTime = 30;
 
 }  // namespace
 
-bool ConversionDisallowingContentBrowserClient::AllowConversionMeasurement(
-    BrowserContext* context) {
+bool ConversionDisallowingContentBrowserClient::IsConversionMeasurementAllowed(
+    content::BrowserContext* browser_context) {
   return false;
+}
+
+bool ConversionDisallowingContentBrowserClient::
+    IsConversionMeasurementOperationAllowed(
+        content::BrowserContext* browser_context,
+        ConversionMeasurementOperation operation,
+        const url::Origin* impression_origin,
+        const url::Origin* conversion_origin,
+        const url::Origin* reporting_origin) {
+  return false;
+}
+
+ConfigurableConversionTestBrowserClient::
+    ConfigurableConversionTestBrowserClient() = default;
+ConfigurableConversionTestBrowserClient::
+    ~ConfigurableConversionTestBrowserClient() = default;
+
+bool ConfigurableConversionTestBrowserClient::
+    IsConversionMeasurementOperationAllowed(
+        content::BrowserContext* browser_context,
+        ConversionMeasurementOperation operation,
+        const url::Origin* impression_origin,
+        const url::Origin* conversion_origin,
+        const url::Origin* reporting_origin) {
+  if (!!blocked_impression_origin_ != !!impression_origin ||
+      !!blocked_conversion_origin_ != !!conversion_origin ||
+      !!blocked_reporting_origin_ != !!reporting_origin) {
+    return true;
+  }
+
+  // Allow the operation if any rule doesn't match.
+  if ((impression_origin &&
+       *blocked_impression_origin_ != *impression_origin) ||
+      (conversion_origin &&
+       *blocked_conversion_origin_ != *conversion_origin) ||
+      (reporting_origin && *blocked_reporting_origin_ != *reporting_origin)) {
+    return true;
+  }
+
+  return false;
+}
+
+void ConfigurableConversionTestBrowserClient::
+    BlockConversionMeasurementInContext(
+        base::Optional<url::Origin> impression_origin,
+        base::Optional<url::Origin> conversion_origin,
+        base::Optional<url::Origin> reporting_origin) {
+  blocked_impression_origin_ = impression_origin;
+  blocked_conversion_origin_ = conversion_origin;
+  blocked_reporting_origin_ = reporting_origin;
 }
 
 ConfigurableStorageDelegate::ConfigurableStorageDelegate() = default;
@@ -62,6 +113,10 @@ int ConfigurableStorageDelegate::GetMaxImpressionsPerOrigin() const {
 int ConfigurableStorageDelegate::GetMaxConversionsPerOrigin() const {
   return max_conversions_per_origin_;
 }
+ConversionStorage::Delegate::RateLimitConfig
+ConfigurableStorageDelegate::GetRateLimits() const {
+  return rate_limits_;
+}
 
 ConversionManager* TestManagerProvider::GetManager(
     WebContents* web_contents) const {
@@ -80,6 +135,8 @@ void TestConversionManager::HandleImpression(
 void TestConversionManager::HandleConversion(
     const StorableConversion& conversion) {
   num_conversions_++;
+
+  last_conversion_destination_ = conversion.conversion_destination();
 }
 
 void TestConversionManager::GetActiveImpressionsForWebUI(
@@ -167,19 +224,24 @@ ImpressionBuilder& ImpressionBuilder::SetReportingOrigin(
   return *this;
 }
 
+ImpressionBuilder& ImpressionBuilder::SetImpressionId(
+    base::Optional<int64_t> impression_id) {
+  impression_id_ = impression_id;
+  return *this;
+}
+
 StorableImpression ImpressionBuilder::Build() const {
-  return StorableImpression(impression_data_, impression_origin_,
-                            conversion_origin_, reporting_origin_,
-                            impression_time_,
-                            impression_time_ + expiry_ /* expiry_time */,
-                            base::nullopt /* impression_id */);
+  return StorableImpression(
+      impression_data_, impression_origin_, conversion_origin_,
+      reporting_origin_, impression_time_,
+      impression_time_ + expiry_ /* expiry_time */, impression_id_);
 }
 
 StorableConversion DefaultConversion() {
   StorableConversion conversion(
       "111" /* conversion_data */,
-      url::Origin::Create(
-          GURL(kDefaultConversionOrigin)) /* conversion_origin */,
+      net::SchemefulSite(
+          GURL(kDefaultConversionDestination)) /* conversion_destination */,
       url::Origin::Create(GURL(kDefaultReportOrigin)) /* reporting_origin */);
   return conversion;
 }

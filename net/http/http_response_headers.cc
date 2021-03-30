@@ -241,7 +241,7 @@ void HttpResponseHeaders::Persist(base::Pickle* pickle,
     --k;
 
     std::string header_name = base::ToLowerASCII(
-        base::StringPiece(parsed_[i].name_begin, parsed_[i].name_end));
+        base::MakeStringPiece(parsed_[i].name_begin, parsed_[i].name_end));
     if (filter_headers.find(header_name) == filter_headers.end()) {
       // Make sure there is a null after the value.
       blob.append(parsed_[i].name_begin, parsed_[k].value_end);
@@ -279,7 +279,8 @@ void HttpResponseHeaders::Update(const HttpResponseHeaders& new_headers) {
     while (++k < new_parsed.size() && new_parsed[k].is_continuation()) {}
     --k;
 
-    base::StringPiece name(new_parsed[i].name_begin, new_parsed[i].name_end);
+    auto name =
+        base::MakeStringPiece(new_parsed[i].name_begin, new_parsed[i].name_end);
     if (ShouldUpdateHeader(name)) {
       std::string name_lower = base::ToLowerASCII(name);
       updated_headers.insert(name_lower);
@@ -309,7 +310,7 @@ void HttpResponseHeaders::MergeWithHeaders(const std::string& raw_headers,
     --k;
 
     std::string name = base::ToLowerASCII(
-        base::StringPiece(parsed_[i].name_begin, parsed_[i].name_end));
+        base::MakeStringPiece(parsed_[i].name_begin, parsed_[i].name_end));
     if (headers_to_remove.find(name) == headers_to_remove.end()) {
       // It's ok to preserve this header in the final result.
       new_raw_headers.append(parsed_[i].name_begin, parsed_[k].value_end);
@@ -631,7 +632,7 @@ HttpVersion HttpResponseHeaders::ParseVersion(
   // TODO: (1*DIGIT apparently means one or more digits, but we only handle 1).
   // TODO: handle leading zeros, which is allowed by the rfc1616 sec 3.1.
 
-  if (!base::StartsWith(base::StringPiece(line_begin, line_end), "http",
+  if (!base::StartsWith(base::MakeStringPiece(line_begin, line_end), "http",
                         base::CompareCase::INSENSITIVE_ASCII)) {
     DVLOG(1) << "missing status line";
     return HttpVersion();
@@ -719,7 +720,7 @@ void HttpResponseHeaders::ParseStatusLine(
   }
   raw_headers_.push_back(' ');
   raw_headers_.append(code, p);
-  base::StringToInt(base::StringPiece(code, p), &response_code_);
+  base::StringToInt(base::MakeStringPiece(code, p), &response_code_);
 
   // Skip whitespace.
   while (p < line_end && *p == ' ')
@@ -741,7 +742,8 @@ size_t HttpResponseHeaders::FindHeader(size_t from,
   for (size_t i = from; i < parsed_.size(); ++i) {
     if (parsed_[i].is_continuation())
       continue;
-    base::StringPiece name(parsed_[i].name_begin, parsed_[i].name_end);
+    auto name =
+        base::MakeStringPiece(parsed_[i].name_begin, parsed_[i].name_end);
     if (base::EqualsCaseInsensitiveASCII(search, name))
       return i;
   }
@@ -763,9 +765,9 @@ bool HttpResponseHeaders::GetCacheControlDirective(base::StringPiece directive,
                          base::CompareCase::INSENSITIVE_ASCII) &&
         value[directive_size] == '=') {
       int64_t seconds;
-      base::StringToInt64(
-          base::StringPiece(value.begin() + directive_size + 1, value.end()),
-          &seconds);
+      base::StringToInt64(base::MakeStringPiece(
+                              value.begin() + directive_size + 1, value.end()),
+                          &seconds);
       *result = TimeDelta::FromSeconds(seconds);
       return true;
     }
@@ -781,7 +783,7 @@ void HttpResponseHeaders::AddHeader(std::string::const_iterator name_begin,
   // If the header can be coalesced, then we should split it up.
   if (values_begin == values_end ||
       HttpUtil::IsNonCoalescingHeader(
-          base::StringPiece(name_begin, name_end))) {
+          base::MakeStringPiece(name_begin, name_end))) {
     AddToParsed(name_begin, name_end, values_begin, values_end);
   } else {
     HttpUtil::ValuesIterator it(values_begin, values_end, ',',
@@ -924,8 +926,8 @@ bool HttpResponseHeaders::IsRedirect(std::string* location) const {
   } while (parsed_[i].value_begin == parsed_[i].value_end);
 
   if (location) {
-    base::StringPiece location_strpiece(parsed_[i].value_begin,
-                                        parsed_[i].value_end);
+    auto location_strpiece =
+        base::MakeStringPiece(parsed_[i].value_begin, parsed_[i].value_end);
     // Escape any non-ASCII characters to preserve them.  The server should
     // only be returning ASCII here, but for compat we need to do this.
     //

@@ -50,7 +50,7 @@ import java.io.IOException;
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().build();
+            ChromeRenderTestRule.Builder.withPublicCorpus().setRevision(1).build();
 
     @Before
     public void setUp() {
@@ -108,7 +108,7 @@ import java.io.IOException;
         Assert.assertEquals("InfoBar should not be shown before signing in", 0,
                 mSyncTestRule.getInfoBars().size());
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        SyncTestUtil.waitForSyncActive();
+        SyncTestUtil.waitForSyncFeatureActive();
         mFakeProfileSyncService.setEngineInitialized(true);
         mFakeProfileSyncService.setAuthError(GoogleServiceAuthError.State.NONE);
         mFakeProfileSyncService.setPassphraseRequiredForPreferredDataTypes(false);

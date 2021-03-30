@@ -13,15 +13,26 @@
 #include "base/optional.h"
 #include "base/process/process_metrics.h"
 #include "base/run_loop.h"
+#include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/sys_string_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/scoped_running_on_chromeos.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
+#if defined(OS_WIN)
+#include "base/win/com_init_util.h"
+#include "base/win/scoped_bstr.h"
+#include "base/win/scoped_com_initializer.h"
+#include "base/win/scoped_variant.h"
+#include "base/win/wmi.h"
+#endif  // defined(OS_WIN)
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest-death-test.h"
@@ -174,15 +185,40 @@ TEST_F(SysInfoTest, Uptime) {
 TEST_F(SysInfoTest, HardwareModelNameFormatMacAndiOS) {
   std::string hardware_model = SysInfo::HardwareModelName();
   ASSERT_FALSE(hardware_model.empty());
-  // Check that the model is of the expected format "Foo,Bar" where "Bar" is
+
+  // Check that the model is of the expected format, which is different on iOS
+  // simulators and real iOS / MacOS devices.
+#if defined(OS_IOS) && TARGET_OS_SIMULATOR
+  // On iOS simulators, the device model looks like "iOS Simulator (Foo[,Bar])"
+  // where Foo is either "Unknown", "iPhone" or "iPad", and Bar, if present, is
+  // a number.
+  EXPECT_TRUE(base::MatchPattern(hardware_model, "iOS Simulator (*)"))
+      << hardware_model;
+  std::vector<StringPiece> mainPieces =
+      SplitStringPiece(hardware_model, "()", KEEP_WHITESPACE, SPLIT_WANT_ALL);
+  ASSERT_EQ(3u, mainPieces.size()) << hardware_model;
+  std::vector<StringPiece> modelPieces =
+      SplitStringPiece(mainPieces[1], ",", KEEP_WHITESPACE, SPLIT_WANT_ALL);
+  ASSERT_GE(modelPieces.size(), 1u) << hardware_model;
+  if (modelPieces.size() == 1u) {
+    EXPECT_TRUE(modelPieces[0] == "Unknown" || modelPieces[0] == "iPhone" ||
+                modelPieces[0] == "iPad")
+        << hardware_model;
+  } else {
+    int value;
+    EXPECT_TRUE(StringToInt(modelPieces[1], &value)) << hardware_model;
+  }
+#else
+  // The expected format is "Foo,Bar" where Foo is "iPhone" or "iPad" and Bar is
   // a number.
   std::vector<StringPiece> pieces =
       SplitStringPiece(hardware_model, ",", KEEP_WHITESPACE, SPLIT_WANT_ALL);
   ASSERT_EQ(2u, pieces.size()) << hardware_model;
   int value;
   EXPECT_TRUE(StringToInt(pieces[1], &value)) << hardware_model;
+#endif  // defined(OS_IOS) && TARGET_OS_SIMULATOR
 }
-#endif
+#endif  // defined(OS_APPLE)
 
 TEST_F(SysInfoTest, GetHardwareInfo) {
   test::TaskEnvironment task_environment;
@@ -207,14 +243,63 @@ TEST_F(SysInfoTest, GetHardwareInfo) {
 #endif
   EXPECT_EQ(hardware_info->manufacturer.empty(), empty_result_expected);
   EXPECT_EQ(hardware_info->model.empty(), empty_result_expected);
+}
 
 #if defined(OS_WIN)
-  EXPECT_FALSE(hardware_info->serial_number.empty());
-#else
-  // TODO(crbug.com/907518): Implement support on other platforms.
-  EXPECT_EQ(hardware_info->serial_number, std::string());
-#endif
+TEST_F(SysInfoTest, GetHardwareInfoWMIMatchRegistry) {
+  base::win::ScopedCOMInitializer com_initializer;
+  test::TaskEnvironment task_environment;
+  base::Optional<SysInfo::HardwareInfo> hardware_info;
+
+  auto callback = base::BindOnce(
+      [](base::Optional<SysInfo::HardwareInfo>* target_info,
+         SysInfo::HardwareInfo info) { *target_info = std::move(info); },
+      &hardware_info);
+  SysInfo::GetHardwareInfo(std::move(callback));
+  task_environment.RunUntilIdle();
+
+  ASSERT_TRUE(hardware_info.has_value());
+
+  Microsoft::WRL::ComPtr<IWbemServices> wmi_services;
+  EXPECT_TRUE(base::win::CreateLocalWmiConnection(true, &wmi_services));
+
+  static constexpr wchar_t query_computer_system[] =
+      L"SELECT Manufacturer,Model FROM Win32_ComputerSystem";
+
+  Microsoft::WRL::ComPtr<IEnumWbemClassObject> enumerator_computer_system;
+  HRESULT hr = wmi_services->ExecQuery(
+      base::win::ScopedBstr(L"WQL").Get(),
+      base::win::ScopedBstr(query_computer_system).Get(),
+      WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY, nullptr,
+      &enumerator_computer_system);
+  EXPECT_FALSE(FAILED(hr) || !enumerator_computer_system.Get());
+
+  Microsoft::WRL::ComPtr<IWbemClassObject> class_object;
+  ULONG items_returned = 0;
+  hr = enumerator_computer_system->Next(WBEM_INFINITE, 1, &class_object,
+                                        &items_returned);
+  EXPECT_FALSE(FAILED(hr) || !items_returned);
+
+  base::win::ScopedVariant manufacturerVar;
+  std::wstring manufacturer;
+  hr = class_object->Get(L"Manufacturer", 0, manufacturerVar.Receive(), nullptr,
+                         nullptr);
+  if (SUCCEEDED(hr) && manufacturerVar.type() == VT_BSTR) {
+    manufacturer.assign(V_BSTR(manufacturerVar.ptr()),
+                        ::SysStringLen(V_BSTR(manufacturerVar.ptr())));
+  }
+  base::win::ScopedVariant modelVar;
+  std::wstring model;
+  hr = class_object->Get(L"Model", 0, modelVar.Receive(), nullptr, nullptr);
+  if (SUCCEEDED(hr) && modelVar.type() == VT_BSTR) {
+    model.assign(V_BSTR(modelVar.ptr()),
+                 ::SysStringLen(V_BSTR(modelVar.ptr())));
+  }
+
+  EXPECT_TRUE(hardware_info->manufacturer == base::SysWideToUTF8(manufacturer));
+  EXPECT_TRUE(hardware_info->model == base::SysWideToUTF8(model));
 }
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 

@@ -13,7 +13,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #import "chrome/updater/app/server/mac/service_protocol.h"
 #import "chrome/updater/mac/xpc_service_names.h"
-#include "chrome/updater/service_scope.h"
+#include "chrome/updater/updater_scope.h"
 
 // Interface to communicate with the XPC Update Service Internal.
 @interface CRUUpdateServiceInternalProxyImpl
@@ -90,13 +90,13 @@
 
 namespace updater {
 
-UpdateServiceInternalProxy::UpdateServiceInternalProxy(ServiceScope scope)
+UpdateServiceInternalProxy::UpdateServiceInternalProxy(UpdaterScope scope)
     : callback_runner_(base::SequencedTaskRunnerHandle::Get()) {
   switch (scope) {
-    case ServiceScope::kSystem:
+    case UpdaterScope::kSystem:
       client_.reset([[CRUUpdateServiceInternalProxyImpl alloc] initPrivileged]);
       break;
-    case ServiceScope::kUser:
+    case UpdaterScope::kUser:
       client_.reset([[CRUUpdateServiceInternalProxyImpl alloc] init]);
       break;
   }

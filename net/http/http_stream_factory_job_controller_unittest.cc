@@ -300,6 +300,9 @@ class HttpStreamFactoryJobControllerTest : public TestWithTaskEnvironment {
       bool alt_job_retried_on_non_default_network);
   void TestMainJobSucceedsAfterAltJobFailed(
       bool alt_job_retried_on_non_default_network);
+  void TestMainJobSucceedsAfterIgnoredError(int net_error,
+                                            bool expect_broken = false,
+                                            std::string alternate_host = "");
   void TestAltJobSucceedsAfterMainJobSucceeded(
       bool alt_job_retried_on_non_default_network);
   void TestOnStreamFailedForBothJobs(
@@ -721,7 +724,7 @@ TEST_F(HttpStreamFactoryJobControllerTest, CancelJobsBeforeBinding) {
   crypto_client_stream_factory_.set_handshake_mode(
       MockCryptoClientStream::COLD_START);
   quic_data_ = std::make_unique<MockQuicData>(version_);
-  quic_data_->AddRead(SYNCHRONOUS, OK);
+  quic_data_->AddRead(SYNCHRONOUS, ERR_CONNECTION_CLOSED);
 
   tcp_data_ = std::make_unique<SequencedSocketData>();
   tcp_data_->set_connect_data(MockConnect(ASYNC, OK));
@@ -1075,7 +1078,7 @@ TEST_F(HttpStreamFactoryJobControllerTest,
     quic_data_->AddWrite(SYNCHRONOUS,
                          client_maker_.MakeInitialSettingsPacket(1));
   }
-  quic_data_->AddRead(ASYNC, OK);
+  quic_data_->AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   HttpRequestInfo request_info;
   request_info.method = "GET";
@@ -1558,12 +1561,12 @@ TEST_F(HttpStreamFactoryJobControllerTest,
   TestMainJobSucceedsAfterAltJobFailed(true);
 }
 
-// Verifies that if the alternative job fails due to a connection change event,
-// then the alternative service is not marked as broken.
-TEST_F(HttpStreamFactoryJobControllerTest,
-       MainJobSucceedsAfterConnectionChanged) {
+void HttpStreamFactoryJobControllerTest::TestMainJobSucceedsAfterIgnoredError(
+    int net_error,
+    bool expect_broken,
+    std::string alternate_host) {
   quic_data_ = std::make_unique<MockQuicData>(version_);
-  quic_data_->AddConnect(SYNCHRONOUS, ERR_NETWORK_CHANGED);
+  quic_data_->AddConnect(SYNCHRONOUS, net_error);
   tcp_data_ = std::make_unique<SequencedSocketData>();
   tcp_data_->set_connect_data(MockConnect(SYNCHRONOUS, OK));
   SSLSocketDataProvider ssl_data(ASYNC, OK);
@@ -1577,7 +1580,10 @@ TEST_F(HttpStreamFactoryJobControllerTest,
   Initialize(request_info);
 
   url::SchemeHostPort server(request_info.url);
-  AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
+  if (alternate_host.empty()) {
+    alternate_host = server.host();
+  }
+  AlternativeService alternative_service(kProtoQUIC, alternate_host, 443);
   SetAlternativeService(request_info, alternative_service);
 
   request_ =
@@ -1594,10 +1600,40 @@ TEST_F(HttpStreamFactoryJobControllerTest,
   request_.reset();
 
   // Verify that the alternate protocol is not marked as broken.
-  VerifyBrokenAlternateProtocolMapping(request_info, false);
-  histogram_tester.ExpectUniqueSample("Net.AlternateServiceFailed",
-                                      -ERR_NETWORK_CHANGED, 1);
+  VerifyBrokenAlternateProtocolMapping(request_info, expect_broken);
+  if (expect_broken) {
+    histogram_tester.ExpectUniqueSample("Net.AlternateServiceFailed",
+                                        -net_error, 1);
+  }
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+}
+
+// Verifies that if the alternative job fails due to a connection change event,
+// then the alternative service is not marked as broken.
+TEST_F(HttpStreamFactoryJobControllerTest,
+       MainJobSucceedsAfterConnectionChanged) {
+  TestMainJobSucceedsAfterIgnoredError(ERR_NETWORK_CHANGED);
+}
+
+// Verifies that if the alternative job fails due to a disconnected network,
+// then the alternative service is not marked as broken.
+TEST_F(HttpStreamFactoryJobControllerTest,
+       MainJobSucceedsAfterInternetDisconnected) {
+  TestMainJobSucceedsAfterIgnoredError(ERR_INTERNET_DISCONNECTED);
+}
+
+// Verifies that if the alternative job fails due to a DNS failure,
+// then the alternative service is not marked as broken.
+TEST_F(HttpStreamFactoryJobControllerTest, MainJobSucceedsAfterDnsFailure) {
+  TestMainJobSucceedsAfterIgnoredError(ERR_NAME_NOT_RESOLVED);
+}
+
+// Verifies that if the alternative job fails due to a DNS failure on a
+// different name, then the alternative service is marked as broken.
+TEST_F(HttpStreamFactoryJobControllerTest,
+       MainJobSucceedsAfterDnsFailureWithAlternateName) {
+  TestMainJobSucceedsAfterIgnoredError(ERR_NAME_NOT_RESOLVED, true,
+                                       "alternate.google.com");
 }
 
 // Regression test for crbug/621069.
@@ -2062,7 +2098,7 @@ TEST_F(HttpStreamFactoryJobControllerTest, PreconnectToHostWithValidAltSvc) {
     quic_data_->AddWrite(SYNCHRONOUS,
                          client_maker_.MakeInitialSettingsPacket(1));
   }
-  quic_data_->AddRead(ASYNC, OK);
+  quic_data_->AddRead(ASYNC, ERR_CONNECTION_CLOSED);
 
   HttpRequestInfo request_info;
   request_info.method = "GET";
@@ -2749,7 +2785,7 @@ TEST_P(HttpStreamFactoryJobControllerMisdirectedRequestRetry,
       quic_data_->AddWrite(SYNCHRONOUS,
                            client_maker_.MakeInitialSettingsPacket(1));
     }
-    quic_data_->AddRead(ASYNC, OK);
+    quic_data_->AddRead(ASYNC, ERR_CONNECTION_CLOSED);
   }
   tcp_data_ = std::make_unique<SequencedSocketData>();
   tcp_data_->set_connect_data(MockConnect(SYNCHRONOUS, OK));

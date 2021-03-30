@@ -89,7 +89,7 @@ std::vector<TabAlertState> GetTabAlertStatesForContents(
   return states;
 }
 
-base::string16 GetTabAlertStateText(const TabAlertState alert_state) {
+std::u16string GetTabAlertStateText(const TabAlertState alert_state) {
   switch (alert_state) {
     case TabAlertState::AUDIO_PLAYING:
       return l10n_util::GetStringUTF16(
@@ -128,7 +128,7 @@ base::string16 GetTabAlertStateText(const TabAlertState alert_state) {
           IDS_TOOLTIP_TAB_ALERT_STATE_VR_PRESENTING);
   }
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 TabMutedReason GetTabAudioMutedReason(content::WebContents* contents) {

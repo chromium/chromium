@@ -51,9 +51,9 @@ bool WebTestSpellChecker::SpellCheckWord(const blink::WebString& text,
   *misspelled_offset = 0;
   *misspelled_length = 0;
 
-  // Convert to a base::string16 because we store base::string16 instances in
+  // Convert to a std::u16string because we store std::u16string instances in
   // misspelled_words_ and blink::WebString has no find().
-  base::string16 string_text = text.Utf16();
+  std::u16string string_text = text.Utf16();
   int skipped_length = 0;
 
   while (!string_text.empty()) {
@@ -64,14 +64,14 @@ bool WebTestSpellChecker::SpellCheckWord(const blink::WebString& text,
     // (This is a simple version of our SpellCheckWordIterator class.)
     // If the given string doesn't include any ASCII characters, we can treat
     // the string as valid one.
-    base::string16::iterator first_char =
+    std::u16string::iterator first_char =
         std::find_if(string_text.begin(), string_text.end(), IsASCIIAlpha);
     if (first_char == string_text.end())
       return true;
     int word_offset = std::distance(string_text.begin(), first_char);
     int max_word_length = static_cast<int>(string_text.length()) - word_offset;
     int word_length;
-    base::string16 word;
+    std::u16string word;
 
     // Look up our misspelled-word table to check if the extracted word is a
     // known misspelled word, and return the offset and the length of the
@@ -97,7 +97,7 @@ bool WebTestSpellChecker::SpellCheckWord(const blink::WebString& text,
     if (*misspelled_length > 0)
       break;
 
-    base::string16::iterator last_char = std::find_if(
+    std::u16string::iterator last_char = std::find_if(
         string_text.begin() + word_offset, string_text.end(), IsNotASCIIAlpha);
     if (last_char == string_text.end())
       word_length = static_cast<int>(string_text.length()) - word_offset;
@@ -167,7 +167,7 @@ bool WebTestSpellChecker::InitializeIfNeeded() {
   misspelled_words_.clear();
   for (size_t i = 0; i < base::size(misspelled_words); ++i)
     misspelled_words_.push_back(
-        base::string16(misspelled_words[i],
+        std::u16string(misspelled_words[i],
                        misspelled_words[i] + strlen(misspelled_words[i])));
 
   // Mark as initialized to prevent this object from being initialized twice

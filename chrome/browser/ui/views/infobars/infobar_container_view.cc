@@ -17,11 +17,14 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/skia_paint_util.h"
 #include "ui/views/bubble/bubble_border.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
 class ContentShadow : public views::View {
  public:
+  METADATA_HEADER(ContentShadow);
   ContentShadow();
 
  protected:
@@ -49,10 +52,10 @@ void ContentShadow::OnPaint(gfx::Canvas* canvas) {
                                            &cc::PaintCanvas::drawRect, canvas);
 }
 
-}  // namespace
+BEGIN_METADATA(ContentShadow, views::View)
+END_METADATA
 
-// static
-const char InfoBarContainerView::kViewClassName[] = "InfoBarContainerView";
+}  // namespace
 
 InfoBarContainerView::InfoBarContainerView(Delegate* delegate)
     : infobars::InfoBarContainer(delegate),
@@ -81,10 +84,6 @@ void InfoBarContainerView::Layout() {
   // shadow is drawn outside the container bounds).
   content_shadow_->SetBounds(0, top, width(),
                              content_shadow_->GetPreferredSize().height());
-}
-
-const char* InfoBarContainerView::GetClassName() const {
-  return kViewClassName;
 }
 
 void InfoBarContainerView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -142,3 +141,6 @@ void InfoBarContainerView::PlatformSpecificInfoBarStateChanged(
     infobar->SchedulePaint();
   }
 }
+
+BEGIN_METADATA(InfoBarContainerView, views::AccessiblePaneView)
+END_METADATA

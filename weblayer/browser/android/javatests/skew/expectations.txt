@@ -4,12 +4,15 @@
 # Lines tagged with "impl_lte_$VERSION" will be active when testing trunk client
 # with versions less than or equal to $VERSION of the implementation.
 #
-# tags: [ impl_lte_83 client_lte_83 client_lte_84 ]
+# tags: [ impl_lte_83 client_lte_83 client_lte_84 client_lte_87 client_lte_88 client_lte_89 ]
 # results: [ Skip ]
+# conflicts_allowed: True
 
-# ---------------------------------------------
-# Tests against older WebLayer implementations.
-# ---------------------------------------------
+# The test was fixed for tip of tree tests in crrev.com/c/2691313, however the change will not be merged into M89
+crbug.com/1172938 [ client_lte_89 ] org.chromium.weblayer.test.NavigationTest#testServedFromBackForwardCache [ Skip ]
+
+# Changes were landed in crrev.com/c/2683084 which modified the test. The CL was not cherry picked into M87.
+crbug.com/1174169 [ client_lte_87 ] org.chromium.weblayer.test.NavigationTest#testLoadError [ Skip ]
 
 # ExternalNavigationTests are testing intent launching that changed after M83.
 [ impl_lte_83 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentInNewTabLaunchedOnLinkClick [ Skip ]
@@ -30,9 +33,8 @@ crbug.com/1077243 [ impl_lte_83 ] org.chromium.weblayer.test.FullscreenCallbackT
 
 crbug.com/1096570 [ impl_lte_83 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentWithNoRedirectLaunched [ Skip ]
 
-# -------------------------------------
-# Tests against older WebLayer clients.
-# -------------------------------------
+# The test was changed in the main branch in crrev.com/c/2377987 and the changes won't be merged into M88
+crbug.com/1155565 [ client_lte_88 ] org.chromium.weblayer.test.CookieManagerTest#testSetCookieNotSet [ Skip ]
 
 # Intentionally changed in M84, https://crrev.com/c/2130790.
 crbug.com/1078973 [ client_lte_83 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentLaunchedViaOnLoad [ Skip ]

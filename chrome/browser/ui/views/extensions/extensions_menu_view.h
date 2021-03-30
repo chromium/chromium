@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_VIEW_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/auto_reset.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace views {
 class Button;
@@ -32,6 +34,7 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
                            public TabStripModelObserver,
                            public ToolbarActionsModel::Observer {
  public:
+  METADATA_HEADER(ExtensionsMenuView);
   ExtensionsMenuView(views::View* anchor_view,
                      Browser* browser,
                      ExtensionsContainer* extensions_container,
@@ -62,6 +65,9 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
   static std::vector<ExtensionsMenuItemView*>
   GetSortedItemsForSectionForTesting(
       ToolbarActionViewController::PageInteractionStatus status);
+
+  // WidgetDelegate:
+  std::u16string GetAccessibleWindowTitle() const override;
 
   // TabStripModelObserver:
   void TabChangedAt(content::WebContents* contents,

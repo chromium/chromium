@@ -5,10 +5,10 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_BUILTIN_PROVIDER_H_
 #define COMPONENTS_OMNIBOX_BROWSER_BUILTIN_PROVIDER_H_
 
+#include <string>
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/strings/string16.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 
@@ -28,12 +28,12 @@ class BuiltinProvider : public AutocompleteProvider {
  private:
   ~BuiltinProvider() override;
 
-  typedef std::vector<base::string16> Builtins;
+  typedef std::vector<std::u16string> Builtins;
 
   static const int kRelevance;
 
-  void AddMatch(const base::string16& match_string,
-                const base::string16& inline_completion,
+  void AddMatch(const std::u16string& match_string,
+                const std::u16string& inline_completion,
                 const ACMatchClassifications& styles);
 
   // Returns true if |matches_| contains a match that should be allowed to be

@@ -22,6 +22,8 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 
+import java.util.List;
+
 /**
  * Interface for the Tab Switcher.
  */
@@ -113,8 +115,9 @@ public interface TabSwitcher {
         /**
          * Called by the StartSurfaceLayout when the system back button is pressed.
          * @return Whether or not the TabSwitcher consumed the event.
+         * @param isOnHomepage Whether the Start surface is showing.
          */
-        boolean onBackPressed();
+        boolean onBackPressed(boolean isOnHomepage);
 
         /**
          * Enable recording the first meaningful paint event of the Grid Tab Switcher.
@@ -127,6 +130,17 @@ public interface TabSwitcher {
          * @param activityCreationTimeMs {@link SystemClock#elapsedRealtime} at activity creation.
          */
         void onOverviewShownAtLaunch(long activityCreationTimeMs);
+
+        /**
+         * @return Whether any dialog is opened.
+         */
+        boolean isDialogVisible();
+
+        /**
+         * Shows the TabSelectionEditor.
+         */
+        @VisibleForTesting
+        default void showTabSelectionEditor(List<Tab> tabs) {}
     }
 
     /**

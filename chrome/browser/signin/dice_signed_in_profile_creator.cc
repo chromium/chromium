@@ -4,53 +4,24 @@
 
 #include "chrome/browser/signin/dice_signed_in_profile_creator.h"
 
+#include <string>
+
 #include "base/check.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/no_destructor.h"
-#include "base/scoped_observer.h"
-#include "base/strings/string16.h"
+#include "base/scoped_observation.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
-#include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
-namespace {
-
-// A helper class to watch identity manager lifetime.
-class DiceSignedInProfileCreatorShutdownNotifierFactory
-    : public BrowserContextKeyedServiceShutdownNotifierFactory {
- public:
-  static DiceSignedInProfileCreatorShutdownNotifierFactory* GetInstance() {
-    static base::NoDestructor<DiceSignedInProfileCreatorShutdownNotifierFactory>
-        factory;
-    return factory.get();
-  }
-
-  DiceSignedInProfileCreatorShutdownNotifierFactory(
-      const DiceSignedInProfileCreatorShutdownNotifierFactory&) = delete;
-  DiceSignedInProfileCreatorShutdownNotifierFactory& operator=(
-      const DiceSignedInProfileCreatorShutdownNotifierFactory&) = delete;
-
- private:
-  friend class base::NoDestructor<
-      DiceSignedInProfileCreatorShutdownNotifierFactory>;
-
-  DiceSignedInProfileCreatorShutdownNotifierFactory()
-      : BrowserContextKeyedServiceShutdownNotifierFactory(
-            "DiceSignedInProfileCreatorShutdownNotifier") {
-    DependsOn(IdentityManagerFactory::GetInstance());
-  }
-  ~DiceSignedInProfileCreatorShutdownNotifierFactory() override = default;
-};
-
-}  // namespace
+const void* const
+    DiceSignedInProfileCreator::kGuestSigninTokenTransferredUserDataKey =
+        &DiceSignedInProfileCreator::kGuestSigninTokenTransferredUserDataKey;
 
 // Waits until the tokens are loaded and calls the callback. The callback is
 // called immediately if the tokens are already loaded, and called with nullptr
@@ -74,23 +45,21 @@ class TokensLoadedCallbackRunner : public signin::IdentityManager::Observer {
 
   // signin::IdentityManager::Observer implementation:
   void OnRefreshTokensLoaded() override {
-    shutdown_subscription_ = {};
-    scoped_identity_manager_observer_.RemoveAll();
+    scoped_identity_manager_observer_.Reset();
     std::move(callback_).Run(profile_);
   }
 
-  void OnShutdown() {
-    scoped_identity_manager_observer_.RemoveAll();
-    shutdown_subscription_ = {};
+  void OnIdentityManagerShutdown(signin::IdentityManager* manager) override {
+    scoped_identity_manager_observer_.Reset();
     std::move(callback_).Run(nullptr);
   }
 
   Profile* profile_;
   signin::IdentityManager* identity_manager_;
-  ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
       scoped_identity_manager_observer_{this};
   base::OnceCallback<void(Profile*)> callback_;
-  base::CallbackListSubscription shutdown_subscription_;
 };
 
 // static
@@ -118,37 +87,50 @@ TokensLoadedCallbackRunner::TokensLoadedCallbackRunner(
   DCHECK(identity_manager_);
   DCHECK(callback_);
   DCHECK(!identity_manager_->AreRefreshTokensLoaded());
-
-  // To catch the case where the profile is destroyed before the tokens are
-  // loaded.
-  shutdown_subscription_ =
-      DiceSignedInProfileCreatorShutdownNotifierFactory::GetInstance()
-          ->Get(profile)
-          ->Subscribe(base::Bind(&TokensLoadedCallbackRunner::OnShutdown,
-                                 base::Unretained(this)));
-  scoped_identity_manager_observer_.Add(identity_manager_);
+  scoped_identity_manager_observer_.Observe(identity_manager_);
 }
 
 DiceSignedInProfileCreator::DiceSignedInProfileCreator(
     Profile* source_profile,
     CoreAccountId account_id,
-    const base::string16& local_profile_name,
+    const std::u16string& local_profile_name,
     base::Optional<size_t> icon_index,
+    bool use_guest_profile,
     base::OnceCallback<void(Profile*)> callback)
     : source_profile_(source_profile),
       account_id_(account_id),
       callback_(std::move(callback)) {
-  ProfileAttributesStorage& storage =
-      g_browser_process->profile_manager()->GetProfileAttributesStorage();
-  if (!icon_index.has_value())
-    icon_index = storage.ChooseAvatarIconIndexForNewProfile();
-  base::string16 name = local_profile_name.empty()
-                            ? storage.ChooseNameForNewProfile(*icon_index)
-                            : local_profile_name;
-  ProfileManager::CreateMultiProfileAsync(
-      name, profiles::GetDefaultAvatarIconUrl(*icon_index),
-      base::BindRepeating(&DiceSignedInProfileCreator::OnNewProfileCreated,
-                          weak_pointer_factory_.GetWeakPtr()));
+  // Passing the sign-in token to an ephemeral Guest profile is part of the
+  // experiment to surface a Guest mode link in the DiceWebSigninIntercept
+  // and is only used to sign in to the web through account consistency and
+  // does NOT enable sync or any other browser level functionality.
+  // TODO(https://crbug.com/1125474): Revise the comment after ephemeral Guest
+  // profiles are finalized.
+  if (use_guest_profile) {
+    DCHECK(Profile::IsEphemeralGuestProfileEnabled());
+    // Make sure the callback is not called synchronously.
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ProfileManager::CreateProfileAsync,
+                       base::Unretained(g_browser_process->profile_manager()),
+                       ProfileManager::GetGuestProfilePath(),
+                       base::BindRepeating(
+                           &DiceSignedInProfileCreator::OnNewProfileCreated,
+                           weak_pointer_factory_.GetWeakPtr()),
+                       std::u16string(), std::string()));
+  } else {
+    ProfileAttributesStorage& storage =
+        g_browser_process->profile_manager()->GetProfileAttributesStorage();
+    if (!icon_index.has_value())
+      icon_index = storage.ChooseAvatarIconIndexForNewProfile();
+    std::u16string name = local_profile_name.empty()
+                              ? storage.ChooseNameForNewProfile(*icon_index)
+                              : local_profile_name;
+    ProfileManager::CreateMultiProfileAsync(
+        name, profiles::GetDefaultAvatarIconUrl(*icon_index),
+        base::BindRepeating(&DiceSignedInProfileCreator::OnNewProfileCreated,
+                            weak_pointer_factory_.GetWeakPtr()));
+  }
 }
 
 DiceSignedInProfileCreator::DiceSignedInProfileCreator(
@@ -230,6 +212,8 @@ void DiceSignedInProfileCreator::OnNewProfileTokensLoaded(
   auto* new_profile_accounts_mutator =
       IdentityManagerFactory::GetForProfile(new_profile)->GetAccountsMutator();
   accounts_mutator->MoveAccount(new_profile_accounts_mutator, account_id_);
+  if (new_profile->IsEphemeralGuestProfile())
+    GuestSigninTokenTransferredUserData::Set(new_profile);
   if (callback_)
     std::move(callback_).Run(new_profile);
 }

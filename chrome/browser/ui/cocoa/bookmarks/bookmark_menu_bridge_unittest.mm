@@ -6,8 +6,9 @@
 
 #import <AppKit/AppKit.h>
 
+#include <string>
+
 #include "base/guid.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -106,7 +107,7 @@ TEST_F(BookmarkMenuBridgeTest, TestBookmarkMenuAutoSeparator) {
   // a new separator and the new bookmark.
   const BookmarkNode* parent = model->bookmark_bar_node();
   const char* url = "http://www.zim-bop-a-dee.com/";
-  model->AddURL(parent, 0, ASCIIToUTF16("Bookmark"), GURL(url));
+  model->AddURL(parent, 0, u"Bookmark", GURL(url));
   UpdateRootMenu();
   EXPECT_EQ(2, [menu_ numberOfItems]);
   // Remove the new bookmark and reload and we should have 0 items again
@@ -139,7 +140,7 @@ TEST_F(BookmarkMenuBridgeTest, TestClearBookmarkMenu) {
 // Test invalidation
 TEST_F(BookmarkMenuBridgeTest, TestInvalidation) {
   BookmarkModel* model = bridge_->GetBookmarkModel();
-  model->AddURL(model->bookmark_bar_node(), 0, base::ASCIIToUTF16("Google"),
+  model->AddURL(model->bookmark_bar_node(), 0, u"Google",
                 GURL("https://google.com"));
   bridge_->BookmarkModelLoaded(model, false);
 
@@ -158,7 +159,7 @@ TEST_F(BookmarkMenuBridgeTest, TestInvalidation) {
 
   const BookmarkNode* parent = model->bookmark_bar_node();
   const char* url = "http://www.zim-bop-a-dee.com/";
-  model->AddURL(parent, 0, ASCIIToUTF16("Bookmark"), GURL(url));
+  model->AddURL(parent, 0, u"Bookmark", GURL(url));
 
   EXPECT_FALSE(menu_is_valid());
   UpdateRootMenu();
@@ -168,7 +169,7 @@ TEST_F(BookmarkMenuBridgeTest, TestInvalidation) {
 // Test that AddNodeToMenu() properly adds bookmark nodes as menus,
 // including the recursive case.
 TEST_F(BookmarkMenuBridgeTest, TestAddNodeToMenu) {
-  base::string16 empty;
+  std::u16string empty;
 
   BookmarkModel* model = bridge_->GetBookmarkModel();
   const BookmarkNode* root = model->bookmark_bar_node();
@@ -242,7 +243,7 @@ TEST_F(BookmarkMenuBridgeTest, TestAddNodeToMenu) {
 
 // Makes sure our internal map of BookmarkNode to NSMenuItem works.
 TEST_F(BookmarkMenuBridgeTest, TestGetMenuItemForNode) {
-  base::string16 empty;
+  std::u16string empty;
   BookmarkModel* model = bridge_->GetBookmarkModel();
   EXPECT_TRUE(model);
   const BookmarkNode* bookmark_bar = model->bookmark_bar_node();
@@ -266,14 +267,14 @@ TEST_F(BookmarkMenuBridgeTest, TestGetMenuItemForNode) {
   // Since the folder is currently empty, a single node is added saying (empty).
   EXPECT_NSEQ(@"(empty)", [[submenu itemAtIndex:0] title]);
 
-  model->AddURL(folder, 0, ASCIIToUTF16("Test Item"), GURL("http://test"));
+  model->AddURL(folder, 0, u"Test Item", GURL("http://test"));
   UpdateRootMenu();
   // There will be a new submenu each time, Cocoa will update it if needed.
   bridge_->UpdateMenu([[menu_ itemAtIndex:1] submenu], folder);
 
   EXPECT_TRUE(MenuItemForNode(bridge_.get(), folder->children().front().get()));
 
-  model->AddURL(folder, 1, ASCIIToUTF16("Test 2"), GURL("http://second-test"));
+  model->AddURL(folder, 1, u"Test 2", GURL("http://second-test"));
 
   UpdateRootMenu();
   base::scoped_nsobject<NSMenu> old_menu(
@@ -346,8 +347,7 @@ TEST_F(BookmarkMenuBridgeTest, TestFaviconLoading) {
   EXPECT_TRUE(model && root);
 
   const BookmarkNode* node =
-      model->AddURL(root, 0, ASCIIToUTF16("Test Item"),
-                    GURL("http://favicon-test"));
+      model->AddURL(root, 0, u"Test Item", GURL("http://favicon-test"));
   UpdateRootMenu();
   NSMenuItem* item = [menu_ itemWithTitle:@"Test Item"];
   EXPECT_TRUE([item image]);
@@ -362,13 +362,12 @@ TEST_F(BookmarkMenuBridgeTest, TestChangeTitle) {
   EXPECT_TRUE(model && root);
 
   const BookmarkNode* node =
-      model->AddURL(root, 0, ASCIIToUTF16("Test Item"),
-                    GURL("http://title-test"));
+      model->AddURL(root, 0, u"Test Item", GURL("http://title-test"));
   UpdateRootMenu();
   NSMenuItem* item = [menu_ itemWithTitle:@"Test Item"];
   EXPECT_TRUE([item image]);
 
-  model->SetTitle(node, ASCIIToUTF16("New Title"));
+  model->SetTitle(node, u"New Title");
 
   item = [menu_ itemWithTitle:@"Test Item"];
   EXPECT_FALSE(item);

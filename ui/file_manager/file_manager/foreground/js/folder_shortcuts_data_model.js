@@ -2,8 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.m.js';
+// #import {util} from '../../common/js/util.m.js';
+// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
+// #import {AsyncUtil} from '../../common/js/async_util.m.js';
+// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+// #import {metrics} from '../../common/js/metrics.m.js';
+// #import {xfm} from '../../common/js/xfm.m.js';
+// clang-format on
+
 /**
- * The drive mount path used in the storage. It must be '/drive'.
+ * The drive mount path used in the xfm.storage. It must be '/drive'.
  * @type {string}
  */
 const STORED_DRIVE_MOUNT_PATH = '/drive';
@@ -11,9 +21,9 @@ const STORED_DRIVE_MOUNT_PATH = '/drive';
 /**
  * Model for the folder shortcuts. This object is cr.ui.ArrayDataModel-like
  * object with additional methods for the folder shortcut feature.
- * This uses chrome.storage as backend. Items are always sorted by URL.
+ * This uses xfm.storage as backend. Items are always sorted by URL.
  */
-class FolderShortcutsDataModel extends cr.EventTarget {
+/* #export */ class FolderShortcutsDataModel extends cr.EventTarget {
   /**
    * @param {!FilteredVolumeManager} volumeManager Volume manager instance.
    */
@@ -34,8 +44,8 @@ class FolderShortcutsDataModel extends cr.EventTarget {
     // Load the shortcuts. Runs within the queue.
     this.load_();
 
-    // Listening for changes in the storage.
-    chrome.storage.onChanged.addListener((changes, namespace) => {
+    // Listening for changes in the xfm.storage.
+    xfm.storage.onChanged.addListener((changes, namespace) => {
       if (!(FolderShortcutsDataModel.NAME in changes) || namespace !== 'sync') {
         return;
       }
@@ -132,7 +142,7 @@ class FolderShortcutsDataModel extends cr.EventTarget {
           }
         }
         // Not adding to the model nor to the |unresolvablePaths_| means
-        // that it will be removed from the storage permanently after the
+        // that it will be removed from the xfm.storage permanently after the
         // next call to save_().
       };
 
@@ -188,10 +198,10 @@ class FolderShortcutsDataModel extends cr.EventTarget {
    */
   load_() {
     this.queue_.run(callback => {
-      chrome.storage.sync.get(FolderShortcutsDataModel.NAME, value => {
+      xfm.storage.sync.get(FolderShortcutsDataModel.NAME, value => {
         if (chrome.runtime.lastError) {
           console.error(
-              'Failed to load shortcut paths from chrome.storage: ' +
+              'Failed to load shortcut paths from xfm.storage: ' +
               chrome.runtime.lastError.message);
           callback();
           return;
@@ -215,7 +225,7 @@ class FolderShortcutsDataModel extends cr.EventTarget {
   reload_() {
     let shortcutPaths;
     this.queue_.run(callback => {
-      chrome.storage.sync.get(FolderShortcutsDataModel.NAME, value => {
+      xfm.storage.sync.get(FolderShortcutsDataModel.NAME, value => {
         const shortcutPaths = value[FolderShortcutsDataModel.NAME] || [];
         this.processEntries_(shortcutPaths);  // Runs within a queue.
         callback();
@@ -392,7 +402,7 @@ class FolderShortcutsDataModel extends cr.EventTarget {
   }
 
   /**
-   * Saves the current array to chrome.storage.
+   * Saves the current array to xfm.storage.
    * @private
    */
   save_() {
@@ -412,7 +422,7 @@ class FolderShortcutsDataModel extends cr.EventTarget {
 
     const prefs = {};
     prefs[FolderShortcutsDataModel.NAME] = paths;
-    chrome.storage.sync.set(prefs, () => {});
+    xfm.storage.sync.set(prefs, () => {});
   }
 
   /**
@@ -537,7 +547,7 @@ class FolderShortcutsDataModel extends cr.EventTarget {
 }
 
 /**
- * Key name in chrome.storage. The array are stored with this name.
+ * Key name in xfm.storage. The array are stored with this name.
  * @type {string}
  * @const
  */

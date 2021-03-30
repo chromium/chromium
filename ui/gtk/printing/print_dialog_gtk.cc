@@ -192,7 +192,7 @@ PrintDialogGtk::~PrintDialogGtk() {
       parent->RemoveObserver(this);
       gtk::ClearAuraTransientParent(dialog_, parent);
     }
-    gtk_widget_destroy(dialog_);
+    gtk::GtkWindowDestroy(dialog_);
     dialog_ = nullptr;
   }
   if (gtk_settings_) {
@@ -371,8 +371,12 @@ void PrintDialogGtk::ShowDialog(
   gtk::SetGtkTransientForAura(dialog_, parent_view);
   if (parent_view)
     parent_view->AddObserver(this);
+#if BUILDFLAG(GTK_VERSION) >= 4
+  gtk_window_set_hide_on_close(GTK_WINDOW(dialog_), true);
+#else
   g_signal_connect(dialog_, "delete-event",
                    G_CALLBACK(gtk_widget_hide_on_delete), nullptr);
+#endif
 
   // Handle the case when the existing |gtk_settings_| has "selection" selected
   // as the page range, but |has_selection| is false.
@@ -408,7 +412,7 @@ void PrintDialogGtk::ShowDialog(
 }
 
 void PrintDialogGtk::PrintDocument(const printing::MetafilePlayer& metafile,
-                                   const base::string16& document_name) {
+                                   const std::u16string& document_name) {
   // This runs on the print worker thread, does not block the UI thread.
   DCHECK(!owning_task_runner()->RunsTasksInCurrentSequence());
 
@@ -533,7 +537,7 @@ static void OnJobCompletedThunk(GtkPrintJob* print_job,
   static_cast<PrintDialogGtk*>(user_data)->OnJobCompleted(print_job, error);
 }
 void PrintDialogGtk::SendDocumentToPrinter(
-    const base::string16& document_name) {
+    const std::u16string& document_name) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
 
   // If |printer_| is nullptr then somehow the GTK printer list changed out

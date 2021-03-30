@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_CHROMEOS_CROSTINI_CROSTINI_SHELF_UTILS_H_
 
 #include <string>
-#include "base/strings/string16.h"
 #include "base/strings/string_piece_forward.h"
 
 class Profile;
@@ -40,7 +39,7 @@ bool IsCrostiniShelfAppId(const Profile* profile,
                           base::StringPiece shelf_app_id);
 
 // Returns the title for the specified app.
-base::string16 GetCrostiniShelfTitle(base::StringPiece shelf_app_id);
+std::u16string GetCrostiniShelfTitle(base::StringPiece shelf_app_id);
 
 }  // namespace crostini
 

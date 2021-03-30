@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/ntp_tiles/section_type.h"
 #include "components/ntp_tiles/tile_title_source.h"
 #include "url/gurl.h"
@@ -27,7 +26,7 @@ namespace ntp_tiles {
 class PopularSites {
  public:
   struct Site {
-    Site(const base::string16& title,
+    Site(const std::u16string& title,
          const GURL& url,
          const GURL& favicon_url,
          const GURL& large_icon_url,
@@ -35,7 +34,7 @@ class PopularSites {
     Site(const Site& other);
     ~Site();
 
-    base::string16 title;
+    std::u16string title;
     GURL url;
     GURL favicon_url;
     GURL large_icon_url;

@@ -32,9 +32,9 @@ Polymer({
     },
 
     /** A11y text descriptor for this control. */
-    alt: {
+    ariaLabel: {
       type: String,
-      observer: 'onAltChange_',
+      observer: 'onAriaLabelChange_',
     },
 
     tabIndex: {
@@ -66,10 +66,10 @@ Polymer({
   },
 
   /** @private */
-  onAltChange_() {
-    if (this.alt) {
+  onAriaLabelChange_() {
+    if (this.ariaLabel) {
       this.$.icon.removeAttribute('aria-labelledby');
-      this.$.icon.setAttribute('aria-label', this.alt);
+      this.$.icon.setAttribute('aria-label', this.ariaLabel);
     } else {
       this.$.icon.removeAttribute('aria-label');
       this.$.icon.setAttribute('aria-labelledby', 'label');
@@ -105,3 +105,4 @@ Polymer({
     }
   },
 });
+/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');

@@ -12,18 +12,6 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
-enum class IncognitoModePrefs {
-  // Incognito mode enabled. Users may open pages in both Incognito mode and
-  // normal mode (usually the default behaviour).
-  kEnabled = 0,
-  // Incognito mode disabled. Users may not open pages in Incognito mode.
-  // Only normal mode is available for browsing.
-  kDisabled,
-  // Incognito mode forced. Users may open pages *ONLY* in Incognito mode.
-  // Normal mode is not available for browsing.
-  kForced,
-};
-
 // Registers all prefs that will be used via the local state PrefService.
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 

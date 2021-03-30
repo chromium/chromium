@@ -91,25 +91,25 @@ class PaymentsProfileComparator : public autofill::AutofillProfileComparator {
 
   // Returns a localized string to be displayed in UI indicating what action,
   // if any, must be taken for the given profile to be used as contact info.
-  base::string16 GetStringForMissingContactFields(
+  std::u16string GetStringForMissingContactFields(
       const autofill::AutofillProfile& profile) const;
 
   // Returns a localized string to be displayed as the title of a piece of UI,
   // indicating what action must be taken for the given profile to be used as
   // contact info.
-  base::string16 GetTitleForMissingContactFields(
+  std::u16string GetTitleForMissingContactFields(
       const autofill::AutofillProfile& profile) const;
 
   // Returns a localized string to be displayed in UI indicating what action,
   // if any, must be taken for the given profile to be used as a shipping
   // address.
-  base::string16 GetStringForMissingShippingFields(
+  std::u16string GetStringForMissingShippingFields(
       const autofill::AutofillProfile& profile) const;
 
   // Returns a localized string to be displayed as the title of a piece of UI,
   // indicating what action must be taken for the given profile to be used as
   // shipping address.
-  base::string16 GetTitleForMissingShippingFields(
+  std::u16string GetTitleForMissingShippingFields(
       const autofill::AutofillProfile& profile) const;
 
   void RecordMissingFieldsOfShippingProfile(
@@ -126,8 +126,8 @@ class PaymentsProfileComparator : public autofill::AutofillProfileComparator {
       const autofill::AutofillProfile& profile) const;
   ProfileFields GetRequiredProfileFieldsForContact() const;
   ProfileFields GetRequiredProfileFieldsForShipping() const;
-  base::string16 GetStringForMissingFields(ProfileFields fields) const;
-  base::string16 GetTitleForMissingFields(ProfileFields fields) const;
+  std::u16string GetStringForMissingFields(ProfileFields fields) const;
+  std::u16string GetTitleForMissingFields(ProfileFields fields) const;
   bool AreRequiredAddressFieldsPresent(
       const autofill::AutofillProfile& profile) const;
 

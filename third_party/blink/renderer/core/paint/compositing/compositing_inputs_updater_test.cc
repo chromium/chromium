@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/compositing/compositing_inputs_updater.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
@@ -75,9 +76,8 @@ TEST_F(CompositingInputsUpdaterTest,
       ->SetInlineStyleProperty(CSSPropertyID::kOverflow, "scroll");
 
   // Before we update compositing inputs, validate that the current ancestor
-  // overflow no longer has a scrollable area.
-  GetDocument().View()->UpdateLifecycleToLayoutClean(
-      DocumentUpdateReason::kTest);
+  // overflow no longer has a scrollable area after style update.
+  GetDocument().UpdateStyleAndLayoutTree();
   EXPECT_FALSE(
       sticky->Layer()->AncestorScrollContainerLayer()->GetScrollableArea());
   EXPECT_EQ(sticky->Layer()->AncestorScrollContainerLayer(),
@@ -143,18 +143,10 @@ TEST_F(CompositingInputsUpdaterTest,
       ->SetNeedsCompositingInputsUpdate();
 
   UpdateAllLifecyclePhasesForTest();
-  if (RuntimeEnabledFeatures::CompositingOptimizationsEnabled()) {
-    EXPECT_EQ(IntRect(8, 33, 200, 200),
-              target->Layer()->ClippedAbsoluteBoundingBox());
-    EXPECT_EQ(IntRect(8, 33, 200, 200),
-              target->Layer()->UnclippedAbsoluteBoundingBox());
-
-  } else {
-    EXPECT_EQ(IntRect(8, 8, 200, 200),
-              target->Layer()->ClippedAbsoluteBoundingBox());
-    EXPECT_EQ(IntRect(8, 8, 200, 200),
-              target->Layer()->UnclippedAbsoluteBoundingBox());
-  }
+  EXPECT_EQ(IntRect(8, 33, 200, 200),
+            target->Layer()->ClippedAbsoluteBoundingBox());
+  EXPECT_EQ(IntRect(8, 33, 200, 200),
+            target->Layer()->UnclippedAbsoluteBoundingBox());
 }
 
 TEST_F(CompositingInputsUpdaterTest, ClipPathAncestor) {
@@ -213,6 +205,33 @@ TEST_F(CompositingInputsUpdaterTest, LayoutContainmentLayer) {
   EXPECT_EQ(parent, child->NearestContainedLayoutLayer());
   EXPECT_EQ(grandchild, grandchild->NearestContainedLayoutLayer());
   EXPECT_EQ(grandchild, greatgrandchild->NearestContainedLayoutLayer());
+}
+
+TEST_F(CompositingInputsUpdaterTest,
+       DescendantHasDirectOrScrollingCompositingReason) {
+  SetBodyInnerHTML("<div id='target' style='contain: strict'>TARGET</div>");
+
+  PaintLayer* target = GetPaintLayerByElementId("target");
+  EXPECT_FALSE(target->HasCompositedLayerMapping());
+  EXPECT_FALSE(GetLayoutView()
+                   .Layer()
+                   ->DescendantHasDirectOrScrollingCompositingReason());
+
+  // Add compositing reason on target, which should schedule compositing inputs
+  // update using |target| as the CompositingInputsRoot.
+  GetDocument().getElementById("target")->setAttribute(
+      html_names::kStyleAttr, "contain: strict; will-change: opacity");
+  GetDocument().View()->UpdateLifecycleToLayoutClean(
+      DocumentUpdateReason::kTest);
+  EXPECT_TRUE(target->NeedsCompositingInputsUpdate());
+  EXPECT_FALSE(GetLayoutView().Layer()->ChildNeedsCompositingInputsUpdate());
+  EXPECT_EQ(target, GetLayoutView().Compositor()->GetCompositingInputsRoot());
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(target->HasCompositedLayerMapping());
+  EXPECT_TRUE(GetLayoutView()
+                  .Layer()
+                  ->DescendantHasDirectOrScrollingCompositingReason());
 }
 
 }  // namespace blink

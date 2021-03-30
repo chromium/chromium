@@ -22,7 +22,7 @@
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
 
-base::string16 GetDefaultSearchEngineName(TemplateURLService* service) {
+std::u16string GetDefaultSearchEngineName(TemplateURLService* service) {
   DCHECK(service);
   const TemplateURL* const default_provider =
       service->GetDefaultSearchProvider();
@@ -30,13 +30,13 @@ base::string16 GetDefaultSearchEngineName(TemplateURLService* service) {
     // TODO(cpu): bug 1187517. It is possible to have no default provider.
     // returning an empty string is a stopgap measure for the crash
     // http://code.google.com/p/chromium/issues/detail?id=2573
-    return base::string16();
+    return std::u16string();
   }
   return default_provider->short_name();
 }
 
 GURL GetDefaultSearchURLForSearchTerms(TemplateURLService* service,
-                                       const base::string16& terms) {
+                                       const std::u16string& terms) {
   DCHECK(service);
   const TemplateURL* default_provider = service->GetDefaultSearchProvider();
   if (!default_provider)

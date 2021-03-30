@@ -270,6 +270,7 @@ bool operator!=(const PositionTemplate<Strategy>& a,
 }
 
 CORE_EXPORT PositionInFlatTree ToPositionInFlatTree(const Position&);
+CORE_EXPORT PositionInFlatTree ToPositionInFlatTree(const PositionInFlatTree&);
 CORE_EXPORT Position ToPositionInDOMTree(const Position&);
 CORE_EXPORT Position ToPositionInDOMTree(const PositionInFlatTree&);
 

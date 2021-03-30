@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_CELLULAR_SETUP_MOBILE_SETUP_DIALOG_H_
 
 #include "base/macros.h"
+#include "chrome/browser/ui/ash/network/network_connect_delegate_chromeos.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 
 namespace chromeos {
@@ -30,6 +31,8 @@ class MobileSetupDialog : public SystemWebDialogDelegate {
 
  private:
   friend void OpenCellularSetupDialog(const std::string& cellular_network_guid);
+  friend void NetworkConnectDelegateChromeOS::ShowCarrierAccountDetail(
+      const std::string& network_id);
   static void ShowByNetworkId(const std::string& network_id);
 
   DISALLOW_COPY_AND_ASSIGN(MobileSetupDialog);

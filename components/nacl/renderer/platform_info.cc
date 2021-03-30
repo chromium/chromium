@@ -47,7 +47,7 @@ std::string GetCpuFeatures() {
   //
   // Care must be taken to avoid instructions which aren't supported by
   // the NaCl sandbox. Ideally the translator would do this, but there's
-  // no point in not doing the whitelist here.
+  // no point in not doing the allowlist here.
   //
   // TODO(jfb) Some features are missing, either because the NaCl
   //           sandbox doesn't support them, because base::CPU doesn't

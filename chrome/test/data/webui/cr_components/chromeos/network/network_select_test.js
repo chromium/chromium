@@ -12,7 +12,12 @@ suite('NetworkSelectTest', function() {
   /** @type {!NetworkSelect|undefined} */
   let networkSelect;
 
-  setup(function() {
+  setup(async function() {
+    // The OOBE host uses polyfill which requires the test to wait until HTML
+    // imports have finished loading before initiating any tests. The Polymer 3
+    // version of the test does not use the OOBE host so this line should not
+    // execute.
+    /* #ignore */ await cr.ui.Oobe.waitForOobeToLoad();
     networkSelect = document.createElement('network-select');
     document.body.appendChild(networkSelect);
     Polymer.dom.flush();
@@ -29,5 +34,21 @@ suite('NetworkSelectTest', function() {
 
     paperProgress = networkSelect.$$('paper-progress');
     assertTrue(!!paperProgress);
+  });
+
+  test('Disable Wi-Fi scan', function() {
+    // When |networkSelect| is attached to the DOM, it should schedule periodic
+    // Wi-Fi scans.
+    assertTrue(networkSelect.scanIntervalId_ !== null);
+
+    // Setting |enableWifiScans| to false should clear the scheduled scans.
+    networkSelect.enableWifiScans = false;
+    Polymer.dom.flush();
+    assertTrue(networkSelect.scanIntervalId_ === null);
+
+    // Setting |enableWifiScans| back to true should re-schedule them.
+    networkSelect.enableWifiScans = true;
+    Polymer.dom.flush();
+    assertTrue(networkSelect.scanIntervalId_ !== null);
   });
 });

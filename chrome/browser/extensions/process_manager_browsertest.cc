@@ -39,7 +39,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
-#include "content/public/common/navigation_policy.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
@@ -58,8 +57,8 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chromeos/constants/chromeos_switches.h"
+#include "ash/constants/ash_switches.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #endif
 
 namespace extensions {
@@ -718,18 +717,18 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   const auto activity =
       std::make_pair(Activity::NETWORK, base::NumberToString(kRequestId));
 
-  pm->OnNetworkRequestStarted(frame_host, kRequestId);
+  pm->NetworkRequestStarted(frame_host, kRequestId);
   EXPECT_EQ(baseline_keepalive + 1, pm->GetLazyKeepaliveCount(extension.get()));
   EXPECT_EQ(1u,
             pm->GetLazyKeepaliveActivities(extension.get()).count(activity));
-  pm->OnNetworkRequestDone(frame_host, kRequestId);
+  pm->NetworkRequestDone(frame_host, kRequestId);
   EXPECT_EQ(baseline_keepalive, pm->GetLazyKeepaliveCount(extension.get()));
   EXPECT_EQ(0u,
             pm->GetLazyKeepaliveActivities(extension.get()).count(activity));
 
   // Simulate only a request completion for this ID and ensure it doesn't result
   // in keepalive decrement.
-  pm->OnNetworkRequestDone(frame_host, 2);
+  pm->NetworkRequestDone(frame_host, 2);
   EXPECT_EQ(baseline_keepalive, pm->GetLazyKeepaliveCount(extension.get()));
   EXPECT_EQ(baseline_activities_count,
             pm->GetLazyKeepaliveActivities(extension.get()).size());
@@ -1762,7 +1761,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, HostedAppAlerts) {
   EXPECT_EQ(extension, pm->GetExtensionForWebContents(tab));
   javascript_dialogs::AppModalDialogManager* js_dialog_manager =
       javascript_dialogs::AppModalDialogManager::GetInstance();
-  base::string16 hosted_app_title = base::ASCIIToUTF16("hosted_app");
+  std::u16string hosted_app_title = u"hosted_app";
   EXPECT_EQ(hosted_app_title, js_dialog_manager->GetTitle(
                                   tab, tab->GetLastCommittedURL().GetOrigin()));
 

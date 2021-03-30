@@ -9,7 +9,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/common/scoped_worker_based_extensions_channel.h"
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
 
@@ -31,33 +30,12 @@ class ExecuteScriptApiTestBase : public ExtensionApiTest {
 class ExecuteScriptApiTest : public ExecuteScriptApiTestBase,
                              public testing::WithParamInterface<ContextType> {
  protected:
-  ExecuteScriptApiTest() {
-    // Service Workers are currently only available on certain channels, so set
-    // the channel for those tests.
-    if (GetParam() == ContextType::kServiceWorker)
-      current_channel_ = std::make_unique<ScopedWorkerBasedExtensionsChannel>();
+  bool RunTest(const char* extension_name, bool allow_file_access = false) {
+    return RunExtensionTest(
+        {.name = extension_name},
+        {.allow_file_access = allow_file_access,
+         .load_as_service_worker = GetParam() == ContextType::kServiceWorker});
   }
-
-  bool RunTest(const std::string& extension_name) {
-    int browser_test_flags = kFlagNone;
-    if (GetParam() == ContextType::kServiceWorker)
-      browser_test_flags |= kFlagRunAsServiceWorkerBasedExtension;
-
-    return RunExtensionTestWithFlags(extension_name, browser_test_flags,
-                                     kFlagNone);
-  }
-
-  bool RunTestWithFileAccess(const std::string& extension_name) {
-    int browser_test_flags = kFlagEnableFileAccess;
-    if (GetParam() == ContextType::kServiceWorker)
-      browser_test_flags |= kFlagRunAsServiceWorkerBasedExtension;
-
-    return RunExtensionTestWithFlags(extension_name, browser_test_flags,
-                                     kFlagNone);
-  }
-
- private:
-  std::unique_ptr<ScopedWorkerBasedExtensionsChannel> current_channel_;
 };
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
@@ -78,10 +56,7 @@ IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptBadEncoding) {
 
 // If failing, mark disabled and update http://crbug.com/92105.
 IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptInFrame) {
-  // TODO(https://crbug.com/1146173): This test is being run with
-  // file access to prevent flakiness for the SW version. It should
-  // be reverted to run without file access when this bug is fixed.
-  ASSERT_TRUE(RunTestWithFileAccess("executescript/in_frame")) << message_;
+  ASSERT_TRUE(RunTest("executescript/in_frame")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptByFrameId) {
@@ -89,14 +64,17 @@ IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptByFrameId) {
 }
 
 IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptPermissions) {
-  // TODO(https://crbug.com/1146173): This test is being run with
-  // file access to prevent flakiness for the SW version. It should
-  // be reverted to run without file access when this bug is fixed.
-  ASSERT_TRUE(RunTestWithFileAccess("executescript/permissions")) << message_;
+  ASSERT_TRUE(RunTest("executescript/permissions")) << message_;
 }
 
 // If failing, mark disabled and update http://crbug.com/84760.
 IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptFileAfterClose) {
+  // TODO(https://crbug.com/1166287): Flaky for Service Worker-based
+  // extension on ASAN bots.
+#if defined(ADDRESS_SANITIZER)
+  if (GetParam() == ContextType::kServiceWorker)
+    return;
+#endif
   ASSERT_TRUE(RunTest("executescript/file_after_close")) << message_;
 }
 
@@ -161,7 +139,9 @@ IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, InjectScriptInFileFrameAllowed) {
   ui_test_utils::NavigateToURL(browser(), net::FilePathToFileURL(test_file));
 
   SetCustomArg("ALLOWED");
-  ASSERT_TRUE(RunTestWithFileAccess("executescript/file_access")) << message_;
+  ASSERT_TRUE(RunTest("executescript/file_access",
+                      /*allow_file_access=*/true))
+      << message_;
 }
 
 // Ensure that an extension can't inject a script in a file frame if it doesn't

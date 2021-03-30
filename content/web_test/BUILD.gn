@@ -42,8 +42,12 @@ mojom("web_test_common_mojom") {
 static_library("web_test_common") {
   testonly = true
   sources = [
+    "common/tracked_dictionary.cc",
+    "common/tracked_dictionary.h",
     "common/web_test_constants.cc",
     "common/web_test_constants.h",
+    "common/web_test_runtime_flags.cc",
+    "common/web_test_runtime_flags.h",
     "common/web_test_string_util.cc",
     "common/web_test_string_util.h",
     "common/web_test_switches.cc",
@@ -164,6 +168,7 @@ static_library("web_test_browser") {
     "//content/public/browser",  # For component builds.
     "//content/shell:content_shell_lib",
     "//content/test:blink_test_browser_support",
+    "//content/test:mojo_bindings_web_test_mojom",
     "//content/test:mojo_web_test_bindings",
     "//content/test:test_support",
     "//device/bluetooth:fake_bluetooth",
@@ -255,8 +260,6 @@ static_library("web_test_renderer") {
     "renderer/test_websocket_handshake_throttle_provider.h",
     "renderer/text_input_controller.cc",
     "renderer/text_input_controller.h",
-    "renderer/tracked_dictionary.cc",
-    "renderer/tracked_dictionary.h",
     "renderer/web_ax_object_proxy.cc",
     "renderer/web_ax_object_proxy.h",
     "renderer/web_frame_test_proxy.cc",
@@ -269,12 +272,8 @@ static_library("web_test_renderer") {
     "renderer/web_test_grammar_checker.h",
     "renderer/web_test_render_thread_observer.cc",
     "renderer/web_test_render_thread_observer.h",
-    "renderer/web_test_runtime_flags.cc",
-    "renderer/web_test_runtime_flags.h",
     "renderer/web_test_spell_checker.cc",
     "renderer/web_test_spell_checker.h",
-    "renderer/web_view_test_proxy.cc",
-    "renderer/web_view_test_proxy.h",
   ]
   deps = [
     ":web_test_common",

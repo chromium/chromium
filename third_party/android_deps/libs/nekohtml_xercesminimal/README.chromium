@@ -1,0 +1,13 @@
+Name: xercesMinimal
+Short Name: xercesMinimal
+URL: http://nekohtml.sourceforge.net/index.html
+Version: 1.9.6.2
+License: Apache 2.0
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+Only contains necessary framework & Xerces2 classes
+
+Local Modifications:
+No modifications.

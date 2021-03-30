@@ -50,8 +50,6 @@ class MockAssistant : public Assistant {
 
   MOCK_METHOD1(SendAssistantFeedback, void(const AssistantFeedback&));
 
-  MOCK_METHOD1(NotifyEntryIntoAssistantUi, void(AssistantEntryPoint));
-
   MOCK_METHOD0(StopAlarmTimerRinging, void());
   MOCK_METHOD1(CreateTimer, void(base::TimeDelta));
 

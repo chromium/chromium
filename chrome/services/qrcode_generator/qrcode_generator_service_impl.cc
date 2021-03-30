@@ -9,8 +9,8 @@
 #include <utility>
 
 #include "base/strings/string_util.h"
-#include "chrome/common/qr_code_generator/dino_image.h"
-#include "chrome/common/qr_code_generator/qr_code_generator.h"
+#include "components/qr_code_generator/dino_image.h"
+#include "components/qr_code_generator/qr_code_generator.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -114,7 +114,9 @@ void QRCodeGeneratorServiceImpl::DrawDino(SkCanvas* canvas,
   dest_rect.offset(delta_x, delta_y);
   SkRect dino_bounds;
   dino_bitmap_.getBounds(&dino_bounds);
-  canvas->drawBitmapRect(dino_bitmap_, dino_bounds, dest_rect, nullptr);
+  canvas->drawImageRect(dino_bitmap_.asImage(), dino_bounds, dest_rect,
+                        SkSamplingOptions(), nullptr,
+                        SkCanvas::kStrict_SrcRectConstraint);
 }
 
 // Draws QR locators at three corners of |canvas|.
@@ -266,10 +268,14 @@ void QRCodeGeneratorServiceImpl::GenerateQRCode(
   input[data_size - 1] = 0;
 
   QRCodeGenerator qr;
+  // The QR version (i.e. size) must be >= 5 because otherwise the dino painted
+  // over the middle covers too much of the code to be decodable.
+  constexpr int kMinimumQRVersion = 5;
   base::Optional<QRCodeGenerator::GeneratedCode> qr_data =
       qr.Generate(base::span<const uint8_t>(
-          reinterpret_cast<const uint8_t*>(request->data.data()),
-          request->data.size()));
+                      reinterpret_cast<const uint8_t*>(request->data.data()),
+                      request->data.size()),
+                  kMinimumQRVersion);
   if (!qr_data || qr_data->data.data() == nullptr ||
       qr_data->data.size() == 0) {
     // The above check should have caught the too-long-URL case.

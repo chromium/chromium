@@ -69,8 +69,8 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
   // Creates and returns the DragDropClient implementation to use. Return value
   // is owned by DesktopNativeWidgetAura and lives as long as
   // DesktopWindowTreeHost.
-  virtual std::unique_ptr<aura::client::DragDropClient> CreateDragDropClient(
-      DesktopNativeCursorManager* cursor_manager) = 0;
+  virtual std::unique_ptr<aura::client::DragDropClient>
+  CreateDragDropClient() = 0;
 
   // Creates the ScreenPositionClient to use for the WindowTreeHost. Default
   // implementation creates DesktopScreenPositionClient.
@@ -138,7 +138,7 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
   virtual bool IsVisibleOnAllWorkspaces() const = 0;
 
   // Returns true if the title changed.
-  virtual bool SetWindowTitle(const base::string16& title) = 0;
+  virtual bool SetWindowTitle(const std::u16string& title) = 0;
 
   virtual void ClearNativeFocus() = 0;
 

@@ -22,7 +22,7 @@ struct BLINK_COMMON_EXPORT
   static int64_t id(const blink::IndexedDBDatabaseMetadata& metadata) {
     return metadata.id;
   }
-  static const base::string16& name(
+  static const std::u16string& name(
       const blink::IndexedDBDatabaseMetadata& metadata) {
     return metadata.name;
   }
@@ -64,7 +64,7 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::IDBIndexMetadataDataView,
   static int64_t id(const blink::IndexedDBIndexMetadata& metadata) {
     return metadata.id;
   }
-  static const base::string16& name(
+  static const std::u16string& name(
       const blink::IndexedDBIndexMetadata& metadata) {
     return metadata.name;
   }
@@ -97,7 +97,7 @@ struct BLINK_COMMON_EXPORT
         reinterpret_cast<const uint8_t*>(key.binary().data()),
         key.binary().size());
   }
-  static const base::string16& string(const blink::IndexedDBKey& key) {
+  static const std::u16string& string(const blink::IndexedDBKey& key) {
     return key.string();
   }
   static double date(const blink::IndexedDBKey& key) { return key.date(); }
@@ -147,7 +147,7 @@ struct BLINK_COMMON_EXPORT
   static int64_t id(const blink::IndexedDBObjectStoreMetadata& metadata) {
     return metadata.id;
   }
-  static const base::string16& name(
+  static const std::u16string& name(
       const blink::IndexedDBObjectStoreMetadata& metadata) {
     return metadata.name;
   }

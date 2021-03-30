@@ -66,7 +66,7 @@ ClipboardRecentContentGeneric::GetRecentURLFromClipboard() {
   } else {
     // Fall back to unicode / UTF16, as some URLs may use international domain
     // names, not punycode.
-    base::string16 gurl_string16;
+    std::u16string gurl_string16;
     clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, &data_dst,
                         &gurl_string16);
     base::TrimWhitespace(gurl_string16, base::TrimPositions::TRIM_ALL,
@@ -83,12 +83,12 @@ ClipboardRecentContentGeneric::GetRecentURLFromClipboard() {
   return url;
 }
 
-base::Optional<base::string16>
+base::Optional<std::u16string>
 ClipboardRecentContentGeneric::GetRecentTextFromClipboard() {
   if (GetClipboardContentAge() > MaximumAgeOfClipboard())
     return base::nullopt;
 
-  base::string16 text_from_clipboard;
+  std::u16string text_from_clipboard;
   ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
       ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
   ui::Clipboard::GetForCurrentThread()->ReadText(

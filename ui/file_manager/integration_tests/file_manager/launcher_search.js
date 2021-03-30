@@ -33,18 +33,8 @@
     await remoteCall.callRemoteTestUtil(
         'launcherSearchOpenResult', null, [fileURLs[0]]);
 
-    // Files app opens Gallery for images, so check Gallery app has been
-    // launched.
-    const galleryAppId = await galleryApp.waitForWindow('gallery.html');
-
-    // Check the image is displayed.
-    const imageNameNoExtension = imageName.split('.')[0];
-
-    // Check: the slide image element should appear.
-    chrome.test.assertTrue(
-        !!await galleryApp.waitForSlideImage(
-            galleryAppId, 0, 0, imageNameNoExtension),
-        'Failed to find the slide image element');
+    // Files app opens the MediaApp for images, so wait for it.
+    await waitForMediaApp();
   };
 
   const hostedDocument = Object.assign(

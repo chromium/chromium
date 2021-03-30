@@ -1,0 +1,6 @@
+specific_include_rules = {
+  # Testing
+  "speech_monitor\.(cc|h)": [
+    "+content/public/browser/tts_controller.h",
+  ],
+}

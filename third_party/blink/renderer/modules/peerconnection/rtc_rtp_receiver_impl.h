@@ -151,7 +151,7 @@ class MODULES_EXPORT RTCRtpReceiverImpl : public RTCRtpReceiverPlatform {
 };
 
 class MODULES_EXPORT RTCRtpReceiverOnlyTransceiver
-    : public RTCRtpTransceiverPlatform {
+    : public RTCRtpPlanBTransceiverPlatform {
  public:
   RTCRtpReceiverOnlyTransceiver(
       std::unique_ptr<RTCRtpReceiverPlatform> receiver);

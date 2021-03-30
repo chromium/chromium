@@ -15,7 +15,6 @@
 #include "base/task/post_task.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/permissions/crowd_deny_preload_data.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_state.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -161,8 +160,18 @@ ContextualNotificationPermissionUiSelector::
 
 void ContextualNotificationPermissionUiSelector::EvaluatePerSiteTriggers(
     const url::Origin& origin) {
-  base::Optional<Decision> decision = GetDecisionBasedOnSiteReputation(
-      CrowdDenyPreloadData::GetInstance()->GetReputationDataForSite(origin));
+  CrowdDenyPreloadData::GetInstance()->GetReputationDataForSiteAsync(
+      origin,
+      base::BindOnce(
+          &ContextualNotificationPermissionUiSelector::OnSiteReputationReady,
+          weak_factory_.GetWeakPtr(), origin));
+}
+
+void ContextualNotificationPermissionUiSelector::OnSiteReputationReady(
+    const url::Origin& origin,
+    const CrowdDenyPreloadData::SiteReputation* reputation) {
+  base::Optional<Decision> decision =
+      GetDecisionBasedOnSiteReputation(reputation);
 
   // If the PreloadData suggests this is an unacceptable site, ping Safe
   // Browsing to verify; but do not ping if it is not warranted.

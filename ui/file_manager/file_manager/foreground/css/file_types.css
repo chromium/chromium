@@ -276,14 +276,10 @@ body.files-ng [file-type-icon='downloads'] {
   background-image: none;
 }
 
-[file-type-icon='camera-folder'] {
-  -webkit-mask-image: url(../images/filetype/filetype_folder.svg);
+body.files-ng [file-type-icon='camera-folder'] {
+  -webkit-mask-image: url(../images/volumes/camera.svg);
   background-color: currentColor;
   background-image: none;
-}
-
-body.camera-folder-enabled [file-type-icon='camera-folder'] {
-  -webkit-mask-image: url(../images/volumes/camera.svg);
 }
 
 .tree-row > .file-row > [volume-type-icon='drive'] {

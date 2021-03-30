@@ -51,7 +51,7 @@ int WINAPI wWinMain(HINSTANCE instance,
   base::CommandLine chrome_command_line(chrome_dir.Append(kChromeExecutable));
 
   // Forward all command line arguments.
-  const std::vector<base::string16>& argv =
+  const std::vector<std::wstring>& argv =
       base::CommandLine::ForCurrentProcess()->argv();
   // The first one is always the current executable path.
   CHECK(argv.size() > 0);

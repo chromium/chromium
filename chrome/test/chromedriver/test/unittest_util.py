@@ -128,3 +128,15 @@ def FilterTests(all_tests, gtest_filter):
     else:
       tests += [test]
   return tests
+
+
+class AddSuccessTextTestResult(unittest.runner.TextTestResult):
+
+  def __init__(self, stream, descriptions, verbosity):
+    super(AddSuccessTextTestResult, self).__init__(
+            stream, descriptions, verbosity)
+    self.successes = []
+
+  def addSuccess(self, test):
+    super(AddSuccessTextTestResult, self).addSuccess(test)
+    self.successes.append(test)

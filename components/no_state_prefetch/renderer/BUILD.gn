@@ -6,8 +6,8 @@ static_library("renderer") {
   sources = [
     "no_state_prefetch_client.cc",
     "no_state_prefetch_client.h",
-    "prerender_helper.cc",
-    "prerender_helper.h",
+    "no_state_prefetch_helper.cc",
+    "no_state_prefetch_helper.h",
     "prerender_observer.h",
     "prerender_observer_list.cc",
     "prerender_observer_list.h",

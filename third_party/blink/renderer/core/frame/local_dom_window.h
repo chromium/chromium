@@ -64,6 +64,7 @@ class External;
 class FrameConsole;
 class History;
 class IdleRequestOptions;
+class ImpressionParams;
 class MediaQueryList;
 class MessageEvent;
 class Modulator;
@@ -156,7 +157,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void AddInspectorIssue(mojom::blink::InspectorIssueInfoPtr) final;
   EventTarget* ErrorEventTarget() final { return this; }
   String OutgoingReferrer() const final;
-  network::mojom::ReferrerPolicy GetReferrerPolicy() const final;
   CoreProbeSink* GetProbeSink() final;
   const BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() const final;
   FrameOrWorkerScheduler* GetScheduler() final;
@@ -165,10 +165,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
     return GetTrustedTypesForWorld(*GetCurrentWorld());
   }
   ScriptWrappable* ToScriptWrappable() final { return this; }
-  void CountPotentialFeaturePolicyViolation(
-      mojom::blink::FeaturePolicyFeature) const final;
-  void ReportFeaturePolicyViolation(
-      mojom::blink::FeaturePolicyFeature,
+  void ReportPermissionsPolicyViolation(
+      mojom::blink::PermissionsPolicyFeature,
       mojom::blink::PolicyDisposition,
       const String& message = g_empty_string) const final;
   void ReportDocumentPolicyViolation(
@@ -309,8 +307,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   const Vector<String>& originPolicyIds() const;
   void SetOriginPolicyIds(const Vector<String>&);
 
-  // https://github.com/whatwg/html/pull/5545
-  bool originIsolated() const;
+  // https://html.spec.whatwg.org/C/#dom-originagentcluster
+  bool originAgentCluster() const;
 
   // Idle callback extensions
   int requestIdleCallback(V8IdleRequestCallback*, const IdleRequestOptions*);
@@ -345,6 +343,20 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
                   const String& url_string,
                   const AtomicString& target,
                   const String& features,
+                  ExceptionState&);
+
+  DOMWindow* open(v8::Isolate*,
+                  const String& url_string,
+                  const AtomicString& target,
+                  const String& features,
+                  bool unused,
+                  ExceptionState&);
+
+  DOMWindow* open(v8::Isolate*,
+                  const String& url_string,
+                  const AtomicString& target,
+                  const String& features,
+                  const ImpressionParams* impression_params,
                   ExceptionState&);
 
   FrameConsole* GetFrameConsole() const;
@@ -511,7 +523,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   // Tracks which features have already been potentially violated in this
   // document. This helps to count them only once per page load.
-  // We don't use std::bitset to avoid to include feature_policy.mojom-blink.h.
+  // We don't use std::bitset to avoid to include
+  // permissions_policy.mojom-blink.h.
   mutable Vector<bool> potentially_violated_features_;
 
   // Token identifying the LocalFrame that this window was associated with at
@@ -523,6 +536,13 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // this document, to avoid reporting duplicates. The value stored comes
   // from |DocumentPolicyViolationReport::MatchId()|.
   mutable HashSet<unsigned> document_policy_violation_reports_sent_;
+
+  // A list of the most recently recorded source frame UKM source IDs for the
+  // PostMessage.Incoming.Frame UKM event, in order to partially deduplicate
+  // logged events. Its size is limited to 20. See SchedulePostMessage() where
+  // this UKM is logged.
+  // TODO(crbug.com/1112491): Remove when no longer needed.
+  Deque<ukm::SourceId> post_message_ukm_recorded_source_ids_;
 };
 
 template <>

@@ -10,11 +10,16 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/blocklist.h"
 #include "chrome/browser/extensions/extension_management.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using extensions::mojom::ManifestLocation;
 
 namespace extensions {
 
@@ -25,7 +30,7 @@ class StandardManagementPolicyProviderTest : public testing::Test {
         provider_(settings_.get()) {}
 
  protected:
-  scoped_refptr<const Extension> CreateExtension(Manifest::Location location) {
+  scoped_refptr<const Extension> CreateExtension(ManifestLocation location) {
     return ExtensionBuilder("test").SetLocation(location).Build();
   }
 
@@ -40,25 +45,25 @@ class StandardManagementPolicyProviderTest : public testing::Test {
 // Tests the behavior of the ManagementPolicy provider methods for an
 // extension required by policy.
 TEST_F(StandardManagementPolicyProviderTest, RequiredExtension) {
-  auto extension = CreateExtension(Manifest::EXTERNAL_POLICY_DOWNLOAD);
+  auto extension = CreateExtension(ManifestLocation::kExternalPolicyDownload);
 
-  base::string16 error16;
+  std::u16string error16;
   EXPECT_TRUE(provider_.UserMayLoad(extension.get(), &error16));
-  EXPECT_EQ(base::string16(), error16);
+  EXPECT_EQ(std::u16string(), error16);
 
   // We won't check the exact wording of the error, but it should say
   // something.
   EXPECT_FALSE(provider_.UserMayModifySettings(extension.get(), &error16));
-  EXPECT_NE(base::string16(), error16);
+  EXPECT_NE(std::u16string(), error16);
   EXPECT_TRUE(provider_.MustRemainEnabled(extension.get(), &error16));
-  EXPECT_NE(base::string16(), error16);
+  EXPECT_NE(std::u16string(), error16);
 
   // Component/policy extensions can modify and disable policy extensions, while
   // all others cannot.
-  auto component = CreateExtension(Manifest::COMPONENT);
+  auto component = CreateExtension(ManifestLocation::kComponent);
   auto policy = extension;
-  auto policy2 = CreateExtension(Manifest::EXTERNAL_POLICY);
-  auto internal = CreateExtension(Manifest::INTERNAL);
+  auto policy2 = CreateExtension(ManifestLocation::kExternalPolicy);
+  auto internal = CreateExtension(ManifestLocation::kInternal);
   EXPECT_TRUE(provider_.ExtensionMayModifySettings(component.get(),
                                                    policy.get(), nullptr));
   EXPECT_TRUE(provider_.ExtensionMayModifySettings(policy2.get(), policy.get(),
@@ -70,22 +75,22 @@ TEST_F(StandardManagementPolicyProviderTest, RequiredExtension) {
 // Tests the behavior of the ManagementPolicy provider methods for a component
 // extension.
 TEST_F(StandardManagementPolicyProviderTest, ComponentExtension) {
-  auto extension = CreateExtension(Manifest::COMPONENT);
+  auto extension = CreateExtension(ManifestLocation::kComponent);
 
-  base::string16 error16;
+  std::u16string error16;
   EXPECT_TRUE(provider_.UserMayLoad(extension.get(), &error16));
-  EXPECT_EQ(base::string16(), error16);
+  EXPECT_EQ(std::u16string(), error16);
 
   EXPECT_FALSE(provider_.UserMayModifySettings(extension.get(), &error16));
-  EXPECT_NE(base::string16(), error16);
+  EXPECT_NE(std::u16string(), error16);
   EXPECT_TRUE(provider_.MustRemainEnabled(extension.get(), &error16));
-  EXPECT_NE(base::string16(), error16);
+  EXPECT_NE(std::u16string(), error16);
 
   // No extension can modify or disable component extensions.
   auto component = extension;
-  auto component2 = CreateExtension(Manifest::COMPONENT);
-  auto policy = CreateExtension(Manifest::EXTERNAL_POLICY);
-  auto internal = CreateExtension(Manifest::INTERNAL);
+  auto component2 = CreateExtension(ManifestLocation::kComponent);
+  auto policy = CreateExtension(ManifestLocation::kExternalPolicy);
+  auto internal = CreateExtension(ManifestLocation::kInternal);
   EXPECT_FALSE(provider_.ExtensionMayModifySettings(component2.get(),
                                                     component.get(), nullptr));
   EXPECT_FALSE(provider_.ExtensionMayModifySettings(policy.get(),
@@ -97,27 +102,54 @@ TEST_F(StandardManagementPolicyProviderTest, ComponentExtension) {
 // Tests the behavior of the ManagementPolicy provider methods for a regular
 // extension.
 TEST_F(StandardManagementPolicyProviderTest, NotRequiredExtension) {
-  auto extension = CreateExtension(Manifest::INTERNAL);
+  auto extension = CreateExtension(ManifestLocation::kInternal);
 
-  base::string16 error16;
+  std::u16string error16;
   EXPECT_TRUE(provider_.UserMayLoad(extension.get(), &error16));
-  EXPECT_EQ(base::string16(), error16);
+  EXPECT_EQ(std::u16string(), error16);
   EXPECT_TRUE(provider_.UserMayModifySettings(extension.get(), &error16));
-  EXPECT_EQ(base::string16(), error16);
+  EXPECT_EQ(std::u16string(), error16);
   EXPECT_FALSE(provider_.MustRemainEnabled(extension.get(), &error16));
-  EXPECT_EQ(base::string16(), error16);
+  EXPECT_EQ(std::u16string(), error16);
 
   // All extension types can modify or disable internal extensions.
-  auto component = CreateExtension(Manifest::COMPONENT);
-  auto policy = CreateExtension(Manifest::EXTERNAL_POLICY);
+  auto component = CreateExtension(ManifestLocation::kComponent);
+  auto policy = CreateExtension(ManifestLocation::kExternalPolicy);
   auto internal = extension;
-  auto external_pref = CreateExtension(Manifest::EXTERNAL_PREF);
+  auto external_pref = CreateExtension(ManifestLocation::kExternalPref);
   EXPECT_TRUE(provider_.ExtensionMayModifySettings(component.get(),
                                                    internal.get(), nullptr));
   EXPECT_TRUE(provider_.ExtensionMayModifySettings(policy.get(), internal.get(),
                                                    nullptr));
   EXPECT_TRUE(provider_.ExtensionMayModifySettings(external_pref.get(),
                                                    internal.get(), nullptr));
+}
+
+// Tests the behavior of the ManagementPolicy provider methods for a theme
+// extension with and without a set policy theme.
+TEST_F(StandardManagementPolicyProviderTest, ThemeExtension) {
+  auto extension =
+      ExtensionBuilder("testTheme")
+          .SetLocation(ManifestLocation::kInternal)
+          .SetManifestKey("theme", std::make_unique<base::DictionaryValue>())
+          .Build();
+  std::u16string error16;
+
+  EXPECT_EQ(extension->GetType(), Manifest::TYPE_THEME);
+  EXPECT_TRUE(provider_.UserMayLoad(extension.get(), &error16));
+  EXPECT_EQ(std::u16string(), error16);
+
+  // Setting policy theme prevents users from loading an extension theme.
+  profile_.GetTestingPrefService()->SetManagedPref(
+      prefs::kPolicyThemeColor, std::make_unique<base::Value>(100));
+
+  EXPECT_FALSE(provider_.UserMayLoad(extension.get(), &error16));
+  EXPECT_NE(std::u16string(), error16);
+
+  // Unsetting policy theme allows users to load an extension theme.
+  profile_.GetTestingPrefService()->RemoveManagedPref(prefs::kPolicyThemeColor);
+
+  EXPECT_TRUE(provider_.UserMayLoad(extension.get(), &error16));
 }
 
 }  // namespace extensions

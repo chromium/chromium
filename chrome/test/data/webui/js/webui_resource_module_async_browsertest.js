@@ -93,7 +93,7 @@ TEST_F('UtilModuleTest', 'All', function() {
 var LoadTimeDataModuleTest = class extends WebUIResourceModuleAsyncTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=js/load_time_data_test.js';
+    return 'chrome://test/test_loader.html?module=js/load_time_data_test.m.js';
   }
 };
 
@@ -120,5 +120,16 @@ var ColorUtilsModuleTest = class extends WebUIResourceModuleAsyncTest {
 };
 
 TEST_F('ColorUtilsModuleTest', 'All', function() {
+  mocha.run();
+});
+
+var CustomElementModuleTest = class extends WebUIResourceModuleAsyncTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://test/test_loader.html?module=js/custom_element_test.js';
+  }
+};
+
+TEST_F('CustomElementModuleTest', 'All', function() {
   mocha.run();
 });

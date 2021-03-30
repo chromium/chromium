@@ -15,6 +15,7 @@
 <translation id="2036868001356139588">Trvanie časovača</translation>
 <translation id="2050339315714019657">Na výšku</translation>
 <translation id="2064538373111010176">Aktívny fotoaparát: <ph name="CAMERA" /></translation>
+<translation id="2144806332417375165">Vlastné parametre videa</translation>
 <translation id="229579744168541441">Exportovať na disk</translation>
 <translation id="2501278716633472235">Prejsť späť</translation>
 <translation id="2501853267655415902">Zaznamenávanie bolo zastavené</translation>
@@ -33,7 +34,6 @@
 <translation id="3259149966178251584">Rozlíšenie fotoaparátu</translation>
 <translation id="3517926952904427380">Nepodarilo sa nasnímať portrétovú fotku</translation>
 <translation id="3569311554794739032">Naozaj chcete odstrániť <ph name="FILE" />?</translation>
-<translation id="3750315947605636967">Fotoaparát používa iná aplikácia</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Skenovať čiarový kód</translation>
 <translation id="3892148308691398805">Kopírovať text</translation>
@@ -76,10 +76,12 @@ Ak sa týka kvality obrázkov či videí, priložte ukážku fotky alebo videa a
 <translation id="7337660886763914220">Chyby systému súborov.</translation>
 <translation id="7450541714075000668">Text bol skopírovaný</translation>
 <translation id="7557677699350329807">Prepnúť na ďalší fotoaparát</translation>
+<translation id="7607002721634913082">Pozastavené</translation>
 <translation id="7608223098072244877">4 na 4</translation>
 <translation id="7649070708921625228">Pomocník</translation>
 <translation id="7658239707568436148">Zrušiť</translation>
 <translation id="7670511624014457267">60 sním./s</translation>
+<translation id="7974782136796202581">Zobraziť možnosti posunutia, naklonenia a priblíženia</translation>
 <translation id="7983668134180549431">Bol rozpoznaný text.</translation>
 <translation id="8067883171444229417">Prehrať video</translation>
 <translation id="8131740175452115882">Potvrdiť</translation>

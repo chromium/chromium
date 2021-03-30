@@ -5,10 +5,10 @@
 #ifndef SERVICES_MEDIA_SESSION_PUBLIC_CPP_MEDIA_IMAGE_H_
 #define SERVICES_MEDIA_SESSION_PUBLIC_CPP_MEDIA_IMAGE_H_
 
+#include <string>
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
@@ -51,7 +51,7 @@ struct COMPONENT_EXPORT(MEDIA_SESSION_BASE_CPP) MediaImage {
   // any string and doesn't have to be a valid image MIME type at this point.
   // It is up to the consumer of the object to check if the type matches a
   // supported type.
-  base::string16 type;
+  std::u16string type;
 
   // Empty if the parsing failed, the field was not present or empty.
   // The special value "any" is represented by gfx::Size(0, 0).

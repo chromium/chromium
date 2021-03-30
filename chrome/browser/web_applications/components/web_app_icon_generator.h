@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -53,15 +52,15 @@ SizeToBitmap ConstrainBitmapsToSizes(const std::vector<SkBitmap>& bitmaps,
 // |icon_letter| into a rounded background of |color|.
 SkBitmap GenerateBitmap(SquareSizePx output_size,
                         SkColor color,
-                        base::char16 icon_letter);
+                        char16_t icon_letter);
 
 // Returns the first letter from |app_url| that will be painted on the generated
 // icon.
-base::char16 GenerateIconLetterFromUrl(const GURL& app_url);
+char16_t GenerateIconLetterFromUrl(const GURL& app_url);
 
 // Returns the first letter from |app_name| that will be painted on the
 // generated icon.
-base::char16 GenerateIconLetterFromAppName(const base::string16& app_name);
+char16_t GenerateIconLetterFromAppName(const std::u16string& app_name);
 
 // Resize icons to the accepted sizes, and generate any that are missing.
 // Note that |icon_letter| is the first letter of app name if available
@@ -72,7 +71,7 @@ base::char16 GenerateIconLetterFromAppName(const base::string16& app_name);
 SizeToBitmap ResizeIconsAndGenerateMissing(
     const std::vector<SkBitmap>& icons,
     const std::set<SquareSizePx>& sizes_to_generate,
-    base::char16 icon_letter,
+    char16_t icon_letter,
     SkColor* generated_icon_color,
     bool* is_generated_icon);
 

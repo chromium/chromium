@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "build/build_config.h"
+#include "components/password_manager/core/browser/android_affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/credentials_filter.h"
 #include "components/password_manager/core/browser/multi_store_form_fetcher.h"
@@ -123,8 +124,8 @@ void FormFetcherImpl::Fetch() {
   password_store->GetSiteStats(form_digest_.url.GetOrigin(), this);
 
   // The desktop bubble needs this information.
-  password_store->GetMatchingCompromisedCredentials(form_digest_.signon_realm,
-                                                    this);
+  password_store->GetMatchingInsecureCredentials(form_digest_.signon_realm,
+                                                 this);
 #endif
 }
 
@@ -137,9 +138,9 @@ const std::vector<InteractionsStats>& FormFetcherImpl::GetInteractionsStats()
   return interactions_stats_;
 }
 
-base::span<const CompromisedCredentials>
-FormFetcherImpl::GetCompromisedCredentials() const {
-  return compromised_credentials_;
+base::span<const InsecureCredential> FormFetcherImpl::GetInsecureCredentials()
+    const {
+  return insecure_credentials_;
 }
 
 std::vector<const PasswordForm*> FormFetcherImpl::GetNonFederatedMatches()
@@ -156,7 +157,7 @@ bool FormFetcherImpl::IsBlocklisted() const {
 }
 
 bool FormFetcherImpl::IsMovingBlocked(const autofill::GaiaIdHash& destination,
-                                      const base::string16& username) const {
+                                      const std::u16string& username) const {
   NOTREACHED();
   return false;
 }
@@ -195,7 +196,7 @@ std::unique_ptr<FormFetcher> FormFetcherImpl::Clone() {
       &result->preferred_match_);
 
   result->interactions_stats_ = interactions_stats_;
-  result->compromised_credentials_ = compromised_credentials_;
+  result->insecure_credentials_ = insecure_credentials_;
   result->state_ = state_;
   result->need_to_refetch_ = need_to_refetch_;
 
@@ -203,6 +204,21 @@ std::unique_ptr<FormFetcher> FormFetcherImpl::Clone() {
 }
 
 void FormFetcherImpl::ProcessPasswordStoreResults(
+    std::vector<std::unique_ptr<PasswordForm>> results) {
+  if (client_->GetProfilePasswordStore()->affiliated_match_helper()) {
+    client_->GetProfilePasswordStore()
+        ->affiliated_match_helper()
+        ->InjectAffiliationAndBrandingInformation(
+            std::move(results),
+            AndroidAffiliationService::StrategyOnCacheMiss::FAIL,
+            base::BindOnce(&FormFetcherImpl::FindMatchesAndNotifyConsumers,
+                           weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    FindMatchesAndNotifyConsumers(std::move(results));
+  }
+}
+
+void FormFetcherImpl::FindMatchesAndNotifyConsumers(
     std::vector<std::unique_ptr<PasswordForm>> results) {
   DCHECK_EQ(State::WAITING, state_);
   state_ = State::NOT_WAITING;
@@ -224,7 +240,8 @@ void FormFetcherImpl::SplitResults(
   for (auto& form : forms) {
     if (form->blocked_by_user) {
       // Ignore PSL matches for blocklisted entries.
-      if (!form->is_public_suffix_match) {
+      if (!form->is_public_suffix_match &&
+          form->scheme == form_digest_.scheme) {
         is_blocklisted_ = true;
       }
     } else if (form->IsFederatedCredential()) {
@@ -276,9 +293,9 @@ void FormFetcherImpl::ProcessMigratedForms(
   ProcessPasswordStoreResults(std::move(forms));
 }
 
-void FormFetcherImpl::OnGetCompromisedCredentials(
-    std::vector<CompromisedCredentials> compromised_credentials) {
-  compromised_credentials_ = std::move(compromised_credentials);
+void FormFetcherImpl::OnGetInsecureCredentials(
+    std::vector<InsecureCredential> insecure_credentials) {
+  insecure_credentials_ = std::move(insecure_credentials);
 }
 
 }  // namespace password_manager

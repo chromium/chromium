@@ -124,6 +124,14 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
   return nil;
 }
 
+UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
+  for (UIWindow* window in UIApplication.sharedApplication.windows) {
+    if ([window.accessibilityIdentifier isEqualToString:accessibility_id])
+      return window;
+  }
+  return nil;
+}
+
 }  // namespace
 
 @implementation ChromeMatchersAppInterface
@@ -422,9 +430,8 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
 
 + (id<GREYMatcher>)bookmarksNavigationBarBackButton {
   UINavigationBar* navBar = base::mac::ObjCCastStrict<UINavigationBar>(
-      SubviewWithAccessibilityIdentifier(
-          kBookmarkNavigationBarIdentifier,
-          [[UIApplication sharedApplication] keyWindow]));
+      SubviewWithAccessibilityIdentifier(kBookmarkNavigationBarIdentifier,
+                                         GetAnyKeyWindow()));
   return grey_allOf(grey_buttonTitle(navBar.backItem.title),
                     grey_ancestor(grey_kindOfClass([UINavigationBar class])),
                     nil);
@@ -573,13 +580,25 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
 
 + (id<GREYMatcher>)settingsMenuBackButton {
   UINavigationBar* navBar = base::mac::ObjCCastStrict<UINavigationBar>(
-      SubviewWithAccessibilityIdentifier(
-          @"SettingNavigationBar",
-          [[UIApplication sharedApplication] keyWindow]));
+      SubviewWithAccessibilityIdentifier(@"SettingNavigationBar",
+                                         GetAnyKeyWindow()));
   return grey_allOf(grey_anyOf(grey_buttonTitle(navBar.backItem.title),
                                grey_buttonTitle(@"Back"), nil),
                     grey_ancestor(grey_kindOfClass([UINavigationBar class])),
                     nil);
+}
+
++ (id<GREYMatcher>)settingsMenuBackButtonInWindowWithNumber:(int)windowNumber {
+  UINavigationBar* navBar = base::mac::ObjCCastStrict<UINavigationBar>(
+      SubviewWithAccessibilityIdentifier(
+          @"SettingNavigationBar", WindowWithAccessibilityIdentifier([NSString
+                                       stringWithFormat:@"%d", windowNumber])));
+  return grey_allOf(
+      grey_anyOf(grey_accessibilityLabel(navBar.backItem.title),
+                 grey_accessibilityLabel(@"Back"), grey_buttonTitle(@"Back"),
+                 grey_descendant(grey_buttonTitle(navBar.backItem.title)), nil),
+      grey_kindOfClassName(@"_UIButtonBarButton"),
+      grey_ancestor(grey_kindOfClass([UINavigationBar class])), nil);
 }
 
 + (id<GREYMatcher>)settingsMenuPrivacyButton {
@@ -836,6 +855,18 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
   return grey_accessibilityID(kTabGridRemoteTabsPageButtonIdentifier);
 }
 
++ (id<GREYMatcher>)tabGridBackground {
+  return grey_accessibilityID(kGridBackgroundIdentifier);
+}
+
++ (id<GREYMatcher>)regularTabGrid {
+  return grey_accessibilityID(kRegularTabGridIdentifier);
+}
+
++ (id<GREYMatcher>)incognitoTabGrid {
+  return grey_accessibilityID(kIncognitoTabGridIdentifier);
+}
+
 + (id<GREYMatcher>)tabGridCloseButtonForCellAtIndex:(unsigned int)index {
   return grey_allOf(
       grey_ancestor(grey_accessibilityID(IdentifierForCellAtIndex(index))),
@@ -1019,6 +1050,17 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
                         grey_accessibilityTrait(UIAccessibilityTraitHeader),
                         grey_kindOfClassName(@"LPLinkView"), nil)),
                     nil);
+}
+
++ (id<GREYMatcher>)manualFallbackSuggestPasswordMatcher {
+  return grey_accessibilityID(
+      manual_fill::SuggestPasswordAccessibilityIdentifier);
+}
+
++ (id<GREYMatcher>)useSuggestedPasswordMatcher {
+  return grey_allOf(
+      [self buttonWithAccessibilityLabelID:IDS_IOS_USE_SUGGESTED_PASSWORD],
+      grey_interactable(), nullptr);
 }
 
 @end

@@ -24,23 +24,6 @@ namespace base { class FilePath; }
 
 namespace profiles {
 
-// Different actions to perform after the user manager selects a profile as well
-// as actions to perform when user manager window opens. The former have a
-// USER_MANAGER_SELECT_PROFILE_ prefix and the later a USER_MANAGER_OPEN_
-// prefix.
-enum UserManagerAction {
-  USER_MANAGER_OPEN_CREATE_USER_PAGE,
-  USER_MANAGER_SELECT_PROFILE_NO_ACTION,
-  USER_MANAGER_SELECT_PROFILE_TASK_MANAGER,
-  USER_MANAGER_SELECT_PROFILE_ABOUT_CHROME,
-  USER_MANAGER_SELECT_PROFILE_CHROME_SETTINGS,
-};
-
-extern const char kUserManagerOpenCreateUserPage[];
-extern const char kUserManagerSelectProfileTaskManager[];
-extern const char kUserManagerSelectProfileAboutChrome[];
-extern const char kUserManagerSelectProfileChromeSettings[];
-
 // Returns the path of the profile connected to the given email.  If no profile
 // is found an empty file path is returned.
 base::FilePath GetPathOfProfileWithEmail(ProfileManager* profile_manager,
@@ -92,30 +75,8 @@ void SwitchToGuestProfile(ProfileManager::CreateCallback callback);
 // one and the current window is a guest window.
 bool HasProfileSwitchTargets(Profile* profile);
 
-// Closes all browser windows that belong to the guest profile and opens the
-// user manager.
-void CloseGuestProfileWindows();
-
-// Closes and locks all the browser windows for |profile| and opens the user
-// manager.
-void LockProfile(Profile* profile);
-
-// Close all the browser windows for |profile| and opens the user manager.
+// Close all the browser windows for |profile|.
 void CloseProfileWindows(Profile* profile);
-
-// Returns whether lock is available to this profile.
-bool IsLockAvailable(Profile* profile);
-
-// Creates or reuses the system profile needed by the user manager.
-// |profile_path_to_focus| could be used to specify which user should be
-// focused. Depending on the value of |user_manager_action|, executes an action
-// once the user manager displays or after a profile is opened. |callback| is
-// run with the custom url to be displayed, as well as a pointer to the guest
-// profile.
-void CreateSystemProfileForUserManager(
-    const base::FilePath& profile_path_to_focus,
-    profiles::UserManagerAction user_manager_action,
-    base::RepeatingCallback<void(Profile*, const std::string&)> callback);
 
 // Converts from modes in the avatar menu to modes understood by
 // ProfileMenuView.

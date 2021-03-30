@@ -103,7 +103,7 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegateView,
   void UpdateSpacingAndMargins();
 
   void AddViewForLabelAndField(ui::DialogModelField* model_field,
-                               const base::string16& label_text,
+                               const std::u16string& label_text,
                                std::unique_ptr<views::View> field,
                                const gfx::FontList& field_font);
 

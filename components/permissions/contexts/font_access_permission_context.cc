@@ -5,13 +5,14 @@
 #include "components/permissions/contexts/font_access_permission_context.h"
 
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
 FontAccessPermissionContext::FontAccessPermissionContext(
     content::BrowserContext* browser_context)
     : PermissionContextBase(browser_context,
                             ContentSettingsType::FONT_ACCESS,
-                            blink::mojom::FeaturePolicyFeature::kNotFound) {}
+                            blink::mojom::PermissionsPolicyFeature::kNotFound) {
+}
 
 FontAccessPermissionContext::~FontAccessPermissionContext() = default;
 

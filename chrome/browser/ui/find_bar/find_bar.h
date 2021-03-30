@@ -9,7 +9,8 @@
 #ifndef CHROME_BROWSER_UI_FIND_BAR_FIND_BAR_H_
 #define CHROME_BROWSER_UI_FIND_BAR_FIND_BAR_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "ui/gfx/geometry/rect.h"
 
 class FindBarController;
@@ -56,11 +57,11 @@ class FindBar {
 
   // Set the text in the find box.
   virtual void SetFindTextAndSelectedRange(
-      const base::string16& find_text,
+      const std::u16string& find_text,
       const gfx::Range& selected_range) = 0;
 
   // Gets the search string currently visible in the find box.
-  virtual base::string16 GetFindText() const = 0;
+  virtual std::u16string GetFindText() const = 0;
 
   // Gets the selection.
   virtual gfx::Range GetSelectedRange() const = 0;
@@ -69,7 +70,7 @@ class FindBar {
   // specified |result|.
   virtual void UpdateUIForFindResult(
       const find_in_page::FindNotificationDetails& result,
-      const base::string16& find_text) = 0;
+      const std::u16string& find_text) = 0;
 
   // No match was found; play an audible alert.
   virtual void AudibleAlert() = 0;
@@ -105,10 +106,10 @@ class FindBarTesting {
                                     bool* fully_visible) const = 0;
 
   // Gets the search string currently selected in the Find box.
-  virtual base::string16 GetFindSelectedText() const = 0;
+  virtual std::u16string GetFindSelectedText() const = 0;
 
   // Gets the match count text (ie. 1 of 3) visible in the Find box.
-  virtual base::string16 GetMatchCountText() const = 0;
+  virtual std::u16string GetMatchCountText() const = 0;
 
   // Gets the pixel width of the FindBar contents.
   virtual int GetContentsWidth() const = 0;

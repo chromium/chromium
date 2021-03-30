@@ -8,10 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/optional.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string16.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/gfx/geometry/insets.h"
@@ -20,6 +18,7 @@
 #include "ui/views/animation/ink_drop_observer.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace gfx {
@@ -41,6 +40,8 @@ class ImageView;
 class IconLabelBubbleView : public views::InkDropObserver,
                             public views::LabelButton {
  public:
+  METADATA_HEADER(IconLabelBubbleView);
+
   static constexpr int kTrailingPaddingPreMd = 2;
 
   class Delegate {
@@ -58,6 +59,26 @@ class IconLabelBubbleView : public views::InkDropObserver,
     virtual SkColor GetIconLabelBubbleBackgroundColor() const = 0;
   };
 
+  // A view that draws the separator.
+  class SeparatorView : public views::View {
+   public:
+    METADATA_HEADER(SeparatorView);
+    explicit SeparatorView(IconLabelBubbleView* owner);
+    SeparatorView(const SeparatorView&) = delete;
+    SeparatorView& operator=(const SeparatorView&) = delete;
+
+    // views::View:
+    void OnPaint(gfx::Canvas* canvas) override;
+    void OnThemeChanged() override;
+
+    // Updates the opacity based on the ink drop's state.
+    void UpdateOpacity();
+
+   private:
+    // Weak.
+    IconLabelBubbleView* owner_;
+  };
+
   IconLabelBubbleView(const gfx::FontList& font_list, Delegate* delegate);
   ~IconLabelBubbleView() override;
 
@@ -68,7 +89,7 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // Returns true when the label should be visible.
   virtual bool ShouldShowLabel() const;
 
-  void SetLabel(const base::string16& label);
+  void SetLabel(const std::u16string& label);
   void SetFontList(const gfx::FontList& font_list);
 
   const views::ImageView* GetImageView() const { return image(); }
@@ -172,34 +193,11 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // the animation is set to fully shown or fully hidden.
   void ResetSlideAnimation(bool show);
 
-  // Returns true iff the slide animation has started, has not ended and is
-  // currently paused.
-  bool is_animation_paused() const { return is_animation_paused_; }
-
   // Slide animation for label.
   gfx::SlideAnimation slide_animation_{this};
 
  private:
   class HighlightPathGenerator;
-
-  // A view that draws the separator.
-  class SeparatorView : public views::View {
-   public:
-    explicit SeparatorView(IconLabelBubbleView* owner);
-
-    // views::View:
-    void OnPaint(gfx::Canvas* canvas) override;
-    void OnThemeChanged() override;
-
-    // Updates the opacity based on the ink drop's state.
-    void UpdateOpacity();
-
-   private:
-    // Weak.
-    IconLabelBubbleView* owner_;
-
-    DISALLOW_COPY_AND_ASSIGN(SeparatorView);
-  };
 
   // Spacing between the image and the label.
   int GetInternalSpacing() const;
@@ -217,9 +215,6 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // Padding after the separator. If this separator is shown, this includes the
   // separator width.
   int GetEndPaddingWithSeparator() const;
-
-  // views::View:
-  const char* GetClassName() const override;
 
   // Disables highlights and calls Show on the slide animation, should not be
   // called directly, use AnimateIn() instead, which handles label visibility.

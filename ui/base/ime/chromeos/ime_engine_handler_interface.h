@@ -50,20 +50,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) IMEEngineHandlerInterface {
           flags(flags),
           focus_reason(focus_reason),
           should_do_learning(should_do_learning) {}
-    InputContext(int id,
-                 TextInputType type,
-                 TextInputMode mode,
-                 int flags,
-                 TextInputClient::FocusReason focus_reason,
-                 bool should_do_learning)
-        : id(id),
-          type(type),
-          mode(mode),
-          flags(flags),
-          focus_reason(focus_reason),
-          should_do_learning(should_do_learning) {}
-    // Unique ID representing this input context
-    int id;
     TextInputType type;
     TextInputMode mode;
     // Flags for web input fields. Please refer to WebTextInputType.
@@ -77,10 +63,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) IMEEngineHandlerInterface {
 
   virtual ~IMEEngineHandlerInterface() = default;
 
-  // Called when the Chrome input field get the focus.
+  // Called when an input field gains focus.
   virtual void FocusIn(const InputContext& input_context) = 0;
 
-  // Called when the Chrome input field lose the focus.
+  // Called when the currently focused input field loses the focus.
   virtual void FocusOut() = 0;
 
   // Called when the IME is enabled.
@@ -102,7 +88,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) IMEEngineHandlerInterface {
   // selection range, |anchor_pos| represents opposite index from |cursor_pos|.
   // Otherwise |anchor_pos| is equal to |cursor_pos|. If not all surrounding
   // text is given |offset_pos| indicates the starting offset of |text|.
-  virtual void SetSurroundingText(const base::string16& text,
+  virtual void SetSurroundingText(const std::u16string& text,
                                   uint32_t cursor_pos,
                                   uint32_t anchor_pos,
                                   uint32_t offset_pos) = 0;

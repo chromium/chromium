@@ -4,18 +4,16 @@
 
 #import "ios/chrome/browser/ui/overlays/infobar_banner/confirm/confirm_infobar_banner_overlay_mediator.h"
 
+#include <string>
+
 #include "base/feature_list.h"
-#include "base/strings/string16.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/infobars/core/infobar.h"
-#include "components/infobars/core/infobar_feature.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #include "ios/chrome/browser/infobars/test/fake_infobar_delegate.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/confirm_infobar_banner_overlay_request_config.h"
 #include "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/ui/infobars/banners/test/fake_infobar_banner_consumer.h"
-#import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
 
@@ -26,16 +24,7 @@
 using confirm_infobar_overlays::ConfirmBannerRequestConfig;
 
 // Test fixture for ConfirmInfobarBannerOverlayMediator.
-class ConfirmInfobarBannerOverlayMediatorTest : public PlatformTest {
- public:
-  ConfirmInfobarBannerOverlayMediatorTest() {
-    feature_list_.InitWithFeatures({kIOSInfobarUIReboot},
-                                   {kInfobarUIRebootOnlyiOS13});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
+using ConfirmInfobarBannerOverlayMediatorTest = PlatformTest;
 
 // Tests that a ConfirmInfobarBannerOverlayMediator correctly sets up its
 // consumer with a title and display message.
@@ -43,8 +32,7 @@ TEST_F(ConfirmInfobarBannerOverlayMediatorTest,
        SetUpConsumerWithTitleAndMessage) {
   // Create an InfoBarIOS with a ConfirmInfoBarDelegate.
   std::unique_ptr<FakeInfobarDelegate> passed_delegate =
-      std::make_unique<FakeInfobarDelegate>(base::ASCIIToUTF16("title"),
-                                            base::ASCIIToUTF16("message"));
+      std::make_unique<FakeInfobarDelegate>(u"title", u"message");
   FakeInfobarDelegate* delegate = passed_delegate.get();
   InfoBarIOS infobar(InfobarType::kInfobarTypeConfirm,
                      std::move(passed_delegate));

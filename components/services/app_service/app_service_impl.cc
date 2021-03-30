@@ -110,8 +110,7 @@ AppServiceImpl::AppServiceImpl(const base::FilePath& profile_dir,
       should_write_preferred_apps_to_file_(false),
       writing_preferred_apps_(false),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::ThreadPool(), base::MayBlock(),
-           base::TaskPriority::BEST_EFFORT,
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
       read_completed_for_testing_(std::move(read_completed_for_testing)),
       write_completed_for_testing_(std::move(write_completed_for_testing)) {
@@ -192,12 +191,13 @@ void AppServiceImpl::Launch(apps::mojom::AppType app_type,
                             const std::string& app_id,
                             int32_t event_flags,
                             apps::mojom::LaunchSource launch_source,
-                            int64_t display_id) {
+                            apps::mojom::WindowInfoPtr window_info) {
   auto iter = publishers_.find(app_type);
   if (iter == publishers_.end()) {
     return;
   }
-  iter->second->Launch(app_id, event_flags, launch_source, display_id);
+  iter->second->Launch(app_id, event_flags, launch_source,
+                       std::move(window_info));
 }
 void AppServiceImpl::LaunchAppWithFiles(apps::mojom::AppType app_type,
                                         const std::string& app_id,
@@ -219,13 +219,13 @@ void AppServiceImpl::LaunchAppWithIntent(
     int32_t event_flags,
     apps::mojom::IntentPtr intent,
     apps::mojom::LaunchSource launch_source,
-    int64_t display_id) {
+    apps::mojom::WindowInfoPtr window_info) {
   auto iter = publishers_.find(app_type);
   if (iter == publishers_.end()) {
     return;
   }
   iter->second->LaunchAppWithIntent(app_id, event_flags, std::move(intent),
-                                    launch_source, display_id);
+                                    launch_source, std::move(window_info));
 }
 
 void AppServiceImpl::SetPermission(apps::mojom::AppType app_type,
@@ -405,6 +405,16 @@ void AppServiceImpl::RemovePreferredAppForFilter(
   }
 
   LogPreferredAppUpdateAction(PreferredAppsUpdateAction::kDeleteForFilter);
+}
+
+void AppServiceImpl::SetResizeLocked(apps::mojom::AppType app_type,
+                                     const std::string& app_id,
+                                     mojom::OptionalBool locked) {
+  auto iter = publishers_.find(app_type);
+  if (iter == publishers_.end()) {
+    return;
+  }
+  iter->second->SetResizeLocked(app_id, locked);
 }
 
 PreferredAppsList& AppServiceImpl::GetPreferredAppsForTesting() {

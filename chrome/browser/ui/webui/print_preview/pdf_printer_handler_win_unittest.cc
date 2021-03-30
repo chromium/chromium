@@ -28,11 +28,11 @@ namespace {
 
 void ExecuteCancelledSelectFileDialog(
     ui::SelectFileDialog::Type type,
-    const base::string16& title,
+    const std::u16string& title,
     const base::FilePath& default_path,
     const std::vector<ui::FileFilterSpec>& filter,
     int file_type_index,
-    const base::string16& default_extension,
+    const std::wstring& default_extension,
     HWND owner,
     ui::OnSelectFileExecutedCallback on_select_file_executed_callback) {
   // Send an empty result to simulate a cancelled dialog.
@@ -60,7 +60,7 @@ class FakePdfPrinterHandler : public PdfPrinterHandler {
     run_loop_.Quit();
   }
 
-  void StartPrintToPdf(const base::string16& job_title) {
+  void StartPrintToPdf(const std::u16string& job_title) {
     StartPrint(job_title, base::Value(), nullptr, base::DoNothing());
     run_loop_.Run();
   }
@@ -80,7 +80,7 @@ class FakePdfPrinterHandler : public PdfPrinterHandler {
         this, nullptr /*policy already checked*/,
         base::BindRepeating(&ExecuteCancelledSelectFileDialog));
     select_file_dialog_->SelectFile(
-        ui::SelectFileDialog::SELECT_SAVEAS_FILE, base::string16(),
+        ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
         default_filename, &file_type_info, 0, base::FilePath::StringType(),
         platform_util::GetTopLevel(preview_web_contents_->GetNativeView()),
         nullptr);
@@ -117,17 +117,17 @@ class PdfPrinterHandlerWinTest : public BrowserWithTestWindowTest {
 };
 
 TEST_F(PdfPrinterHandlerWinTest, TestSaveAsPdf) {
-  pdf_printer_->StartPrintToPdf(L"111111111111111111111.html");
+  pdf_printer_->StartPrintToPdf(u"111111111111111111111.html");
   EXPECT_TRUE(pdf_printer_->save_failed());
 }
 
 TEST_F(PdfPrinterHandlerWinTest, TestSaveAsPdfLongFileName) {
   pdf_printer_->StartPrintToPdf(
-      L"11111111111111111111111111111111111111111111111111111111111111111111111"
-      L"11111111111111111111111111111111111111111111111111111111111111111111111"
-      L"11111111111111111111111111111111111111111111111111111111111111111111111"
-      L"11111111111111111111111111111111111111111111111111111111111111111111111"
-      L"1111111111111111111111111111111111111111111111111.html");
+      u"11111111111111111111111111111111111111111111111111111111111111111111111"
+      u"11111111111111111111111111111111111111111111111111111111111111111111111"
+      u"11111111111111111111111111111111111111111111111111111111111111111111111"
+      u"11111111111111111111111111111111111111111111111111111111111111111111111"
+      u"1111111111111111111111111111111111111111111111111.html");
   EXPECT_TRUE(pdf_printer_->save_failed());
 }
 

@@ -4,14 +4,17 @@
 
 #include "ash/wm/overview/overview_highlight_controller.h"
 
-#include "ash/magnifier/docked_magnifier_controller_impl.h"
-#include "ash/magnifier/magnification_controller.h"
+#include "ash/accessibility/magnifier/docked_magnifier_controller_impl.h"
+#include "ash/accessibility/magnifier/magnification_controller.h"
+#include "ash/public/cpp/ash_features.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/desks/expanded_state_new_desk_button.h"
 #include "ash/wm/desks/new_desk_button.h"
+#include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_view.h"
@@ -164,6 +167,14 @@ bool OverviewHighlightController::MaybeCloseHighlightedView() {
   return true;
 }
 
+bool OverviewHighlightController::MaybeSwapHighlightedView(bool right) {
+  if (!features::IsBentoEnabled() || !highlighted_view_)
+    return false;
+
+  highlighted_view_->MaybeSwapHighlightedView(right);
+  return true;
+}
+
 OverviewItem* OverviewHighlightController::GetHighlightedItem() const {
   if (!highlighted_view_)
     return nullptr;
@@ -205,15 +216,27 @@ OverviewHighlightController::GetTraversableViews() const {
   for (auto& grid : overview_session_->grid_list()) {
     auto* bar_view = grid->desks_bar_view();
     if (bar_view) {
+      const bool is_zero_state = bar_view->IsZeroState();
       // The desk items are always traversable from left to right, even in RTL
       // languages.
-      for (auto* mini_view : bar_view->mini_views()) {
-        traversable_views.push_back(mini_view);
-        traversable_views.push_back(mini_view->desk_name_view());
+      if (is_zero_state) {
+        traversable_views.push_back(bar_view->zero_state_default_desk_button());
+        traversable_views.push_back(bar_view->zero_state_new_desk_button());
+      } else {
+        for (auto* mini_view : bar_view->mini_views()) {
+          traversable_views.push_back(mini_view);
+          traversable_views.push_back(mini_view->desk_name_view());
+        }
       }
 
-      if (bar_view->new_desk_button()->GetEnabled())
+      if (features::IsBentoEnabled()) {
+        auto* new_desk_button =
+            bar_view->expanded_state_new_desk_button()->new_desk_button();
+        if (!is_zero_state && new_desk_button->GetEnabled())
+          traversable_views.push_back(new_desk_button);
+      } else if (bar_view->new_desk_button()->GetEnabled()) {
         traversable_views.push_back(bar_view->new_desk_button());
+      }
     }
 
     for (auto& item : grid->window_list())

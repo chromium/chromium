@@ -7,13 +7,13 @@
 
 #include <stdint.h>
 #include <memory>
+#include <string>
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string16.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
 #include "components/services/storage/indexed_db/scopes/disjoint_range_lock_manager.h"
@@ -53,7 +53,7 @@ class CONTENT_EXPORT IndexedDBOriginState {
  public:
   using TearDownCallback = base::RepeatingCallback<void(leveldb::Status)>;
   using OriginDBMap =
-      base::flat_map<base::string16, std::unique_ptr<IndexedDBDatabase>>;
+      base::flat_map<std::u16string, std::unique_ptr<IndexedDBDatabase>>;
 
   // Maximum time interval between runs of the IndexedDBSweeper. Sweeping only
   // occurs after backing store close.
@@ -64,6 +64,17 @@ class CONTENT_EXPORT IndexedDBOriginState {
   // origin. Sweeping only occurs after backing store close.
   // Visible for testing.
   static constexpr const base::TimeDelta kMaxEarliestOriginSweepFromNow =
+      base::TimeDelta::FromDays(3);
+
+  // Maximum time interval between runs of the IndexedDBCompactionTask.
+  // Compaction only occurs after backing store close.
+  // Visible for testing.
+  static constexpr const base::TimeDelta kMaxEarliestGlobalCompactionFromNow =
+      base::TimeDelta::FromHours(1);
+  // Maximum time interval between runs of the IndexedDBCompactionTask for a
+  // given origin. Compaction only occurs after backing store close.
+  // Visible for testing.
+  static constexpr const base::TimeDelta kMaxEarliestOriginCompactionFromNow =
       base::TimeDelta::FromDays(3);
 
   enum class ClosingState {
@@ -79,13 +90,15 @@ class CONTENT_EXPORT IndexedDBOriginState {
   };
 
   // Calling |destruct_myself| should destruct this object.
-  // |earliest_global_sweep_time| is expected to outlive this object.
+  // |earliest_global_sweep_time| and |earliest_global_compaction_time| are
+  // expected to outlive this object.
   IndexedDBOriginState(
       url::Origin origin,
       bool persist_for_incognito,
       base::Clock* clock,
       TransactionalLevelDBFactory* transactional_leveldb_factory,
       base::Time* earliest_global_sweep_time,
+      base::Time* earliest_global_compaction_time,
       std::unique_ptr<DisjointRangeLockManager> lock_manager,
       TasksAvailableCallback notify_tasks_callback,
       TearDownCallback tear_down_callback,
@@ -159,10 +172,14 @@ class CONTENT_EXPORT IndexedDBOriginState {
   FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTestWithMockTime,
                            TombstoneSweeperTiming);
 
+  // Test needs access to ShouldRunCompaction.
+  FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTestWithMockTime,
+                           CompactionTaskTiming);
+
   // Test needs access to CompactionKillSwitchWorks.
   FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTest, CompactionKillSwitchWorks);
 
-  IndexedDBDatabase* AddDatabase(const base::string16& name,
+  IndexedDBDatabase* AddDatabase(const std::u16string& name,
                                  std::unique_ptr<IndexedDBDatabase> database);
 
   // Returns a new handle to this factory. If this object was in its closing
@@ -184,6 +201,9 @@ class CONTENT_EXPORT IndexedDBOriginState {
   // time.
   bool ShouldRunTombstoneSweeper();
 
+  // Executes database operations, and if |true| is returned by this function,
+  // then the current time will be written to the database as the last
+  // compaction time.
   bool ShouldRunCompaction();
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -208,6 +228,7 @@ class CONTENT_EXPORT IndexedDBOriginState {
   // This is safe because it is owned by IndexedDBFactoryImpl, which owns this
   // object.
   base::Time* earliest_global_sweep_time_;
+  base::Time* earliest_global_compaction_time_;
   ClosingState closing_stage_ = ClosingState::kNotClosing;
   base::OneShotTimer close_timer_;
   const std::unique_ptr<DisjointRangeLockManager> lock_manager_;

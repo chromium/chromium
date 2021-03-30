@@ -38,7 +38,7 @@ typedef base::OnceCallback<void(const std::string&,
     LoadKeymapCallback;
 
 KeyboardCode AlphanumericKeyboardCode(xkb_keysym_t xkb_keysym,
-                                      base::char16 character) {
+                                      char16_t character) {
   // Plain ASCII letters and digits map directly to VKEY values.
   if ((character >= '0') && (character <= '9')) {
     int zero = ((xkb_keysym >= XKB_KEY_KP_0) && (xkb_keysym <= XKB_KEY_KP_9))
@@ -70,14 +70,14 @@ struct PrintableSubEntry {
   DomCode dom_code;
   bool test_shift : 1;
   bool test_altgr : 1;
-  base::char16 shift_character;
-  base::char16 altgr_character;
+  char16_t shift_character;
+  char16_t altgr_character;
   KeyboardCode key_code;
 };
 
 // The two designated Unicode "not-a-character" values are used as sentinels.
-const base::char16 kNone = 0xFFFE;
-const base::char16 kAny = 0xFFFF;
+const char16_t kNone = 0xFFFE;
+const char16_t kAny = 0xFFFF;
 
 // U+0021 exclamation mark
 const PrintableSubEntry kU0021[] = {
@@ -483,7 +483,7 @@ const PrintableSubEntry kU017E[] = {
 
 // Table mapping unshifted characters to PrintableSubEntry tables.
 struct PrintableMultiEntry {
-  base::char16 plain_character;
+  char16_t plain_character;
   const PrintableSubEntry* subtable;
   size_t subtable_size;
 };
@@ -552,7 +552,7 @@ const PrintableMultiEntry kMultiMap[] = {
 
 // Table mapping unshifted characters to VKEY values.
 struct PrintableSimpleEntry {
-  base::char16 plain_character;
+  char16_t plain_character;
   KeyboardCode key_code;
 };
 
@@ -952,7 +952,7 @@ KeyboardCode XkbKeyboardLayoutEngine::DifficultKeyboardCode(
     xkb_keycode_t xkb_keycode,
     xkb_mod_mask_t xkb_flags,
     xkb_keysym_t xkb_keysym,
-    base::char16 character) const {
+    char16_t character) const {
   // Get the layout interpretation without modifiers, so that
   // e.g. Ctrl+D correctly generates VKEY_D.
   xkb_keysym_t plain_keysym;
@@ -974,13 +974,13 @@ KeyboardCode XkbKeyboardLayoutEngine::DifficultKeyboardCode(
   const PrintableMultiEntry* multi_end = kMultiMap + base::size(kMultiMap);
   const PrintableMultiEntry* multi =
       std::lower_bound(kMultiMap, multi_end, plain_character,
-                       [](const PrintableMultiEntry& e, base::char16 c) {
-        return e.plain_character < c;
-      });
+                       [](const PrintableMultiEntry& e, char16_t c) {
+                         return e.plain_character < c;
+                       });
   if ((multi != multi_end) && (multi->plain_character == plain_character)) {
-    const base::char16 kNonCharacter = kAny;
-    base::char16 shift_character = kNonCharacter;
-    base::char16 altgr_character = kNonCharacter;
+    const char16_t kNonCharacter = kAny;
+    char16_t shift_character = kNonCharacter;
+    char16_t altgr_character = kNonCharacter;
     for (size_t i = 0; i < multi->subtable_size; ++i) {
       if (multi->subtable[i].dom_code != dom_code)
         continue;
@@ -1008,20 +1008,19 @@ KeyboardCode XkbKeyboardLayoutEngine::DifficultKeyboardCode(
   const PrintableSimpleEntry* simple_end = kSimpleMap + base::size(kSimpleMap);
   const PrintableSimpleEntry* simple =
       std::lower_bound(kSimpleMap, simple_end, plain_character,
-                       [](const PrintableSimpleEntry& e, base::char16 c) {
-        return e.plain_character < c;
-      });
+                       [](const PrintableSimpleEntry& e, char16_t c) {
+                         return e.plain_character < c;
+                       });
   if ((simple != simple_end) && (simple->plain_character == plain_character))
     return simple->key_code;
 
   return VKEY_UNKNOWN;
 }
 
-base::char16 XkbKeyboardLayoutEngine::XkbSubCharacter(
-    xkb_keycode_t xkb_keycode,
-    xkb_mod_mask_t base_flags,
-    base::char16 base_character,
-    xkb_mod_mask_t flags) const {
+char16_t XkbKeyboardLayoutEngine::XkbSubCharacter(xkb_keycode_t xkb_keycode,
+                                                  xkb_mod_mask_t base_flags,
+                                                  char16_t base_character,
+                                                  xkb_mod_mask_t flags) const {
   if (flags == base_flags)
     return base_character;
   xkb_keysym_t keysym;

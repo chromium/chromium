@@ -59,7 +59,8 @@ WebRtcAudioSink::WebRtcAudioSink(
                                              std::move(main_task_runner))),
       fifo_(ConvertToBaseRepeatingCallback(
           CrossThreadBindRepeating(&WebRtcAudioSink::DeliverRebufferedAudio,
-                                   CrossThreadUnretained(this)))) {
+                                   CrossThreadUnretained(this)))),
+      num_preferred_channels_(-1) {
   SendLogMessage(base::StringPrintf("WebRtcAudioSink({label=%s})",
                                     adapter_->label().c_str()));
 }
@@ -101,8 +102,8 @@ void WebRtcAudioSink::OnData(const media::AudioBus& audio_bus,
   // No thread check: OnData might be called on different threads (but not
   // concurrently).
   TRACE_EVENT2(TRACE_DISABLED_BY_DEFAULT("mediastream"),
-               "WebRtcAudioSink::OnData", "this", this, "frames",
-               audio_bus.frames());
+               "WebRtcAudioSink::OnData", "this", static_cast<void*>(this),
+               "frames", audio_bus.frames());
 
   // TODO(crbug.com/1054769): Better to let |fifo_| handle the estimated capture
   // time and let it return a corrected interpolated capture time to
@@ -152,9 +153,9 @@ void WebRtcAudioSink::DeliverRebufferedAudio(const media::AudioBus& audio_bus,
       last_estimated_capture_time_ + media::AudioTimestampHelper::FramesToTime(
                                          frame_delay, params_.sample_rate());
 
-  adapter_->DeliverPCMToWebRtcSinks(interleaved_data_.get(),
-                                    params_.sample_rate(), audio_bus.channels(),
-                                    audio_bus.frames(), estimated_capture_time);
+  num_preferred_channels_ = adapter_->DeliverPCMToWebRtcSinks(
+      interleaved_data_.get(), params_.sample_rate(), audio_bus.channels(),
+      audio_bus.frames(), estimated_capture_time);
 }
 
 namespace {
@@ -189,7 +190,7 @@ WebRtcAudioSink::Adapter::~Adapter() {
   }
 }
 
-void WebRtcAudioSink::Adapter::DeliverPCMToWebRtcSinks(
+int WebRtcAudioSink::Adapter::DeliverPCMToWebRtcSinks(
     const int16_t* audio_data,
     int sample_rate,
     size_t number_of_channels,
@@ -203,11 +204,15 @@ void WebRtcAudioSink::Adapter::DeliverPCMToWebRtcSinks(
   const int64_t capture_timestamp_us = timestamp_aligner_.TranslateTimestamp(
       estimated_capture_time.since_origin().InMicroseconds());
 
+  int num_preferred_channels = -1;
   for (webrtc::AudioTrackSinkInterface* sink : sinks_) {
     sink->OnData(audio_data, sizeof(int16_t) * 8, sample_rate,
                  number_of_channels, number_of_frames,
                  capture_timestamp_us / rtc::kNumMicrosecsPerMillisec);
+    num_preferred_channels =
+        std::max(num_preferred_channels, sink->NumPreferredChannels());
   }
+  return num_preferred_channels;
 }
 
 std::string WebRtcAudioSink::Adapter::kind() const {

@@ -16,6 +16,7 @@ class HTMLPictureElement final : public HTMLElement {
   explicit HTMLPictureElement(Document&);
 
   void SourceOrMediaChanged();
+  void SourceAttributeChanged();
   void RemoveListenerFromSourceChildren();
   void AddListenerToSourceChildren();
 

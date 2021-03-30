@@ -14,7 +14,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
-#include "third_party/blink/public/common/feature_policy/feature_policy.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom-forward.h"
 #include "ui/base/page_transition_types.h"
 
@@ -273,9 +273,9 @@ class NavigationSimulator {
   virtual void SetIsSignedExchangeInnerResponse(
       bool is_signed_exchange_inner_response) = 0;
 
-  // Simulate receiving Feature-Policy headers.
-  virtual void SetFeaturePolicyHeader(
-      blink::ParsedFeaturePolicy feature_policy_header) = 0;
+  // Simulate receiving Permissions-Policy headers.
+  virtual void SetPermissionsPolicyHeader(
+      blink::ParsedPermissionsPolicy permissions_policy_header) = 0;
 
   // Provides the contents mime type to be set at commit. It should be
   // specified before calling |ReadyToCommit| or |Commit|.
@@ -304,6 +304,12 @@ class NavigationSimulator {
   // Sets the SSLInfo to be set on the response. This should be called before
   // Commit().
   virtual void SetSSLInfo(const net::SSLInfo& ssl_info) = 0;
+
+  // Sets the DNS aliases to be received in the URLResponseHead. The aliases
+  // are what would be read from DNS CNAME records, and the alias chain should
+  // be preserved in reverse order, from canonical name (i.e. address record
+  // name) through to query name. This method should be called before Commit().
+  virtual void SetResponseDnsAliases(std::vector<std::string> aliases) = 0;
 
   // --------------------------------------------------------------------------
 

@@ -25,12 +25,15 @@ std::unique_ptr<wl_egl_window, EGLWindowDeleter> CreateWaylandEglWindow(
       window->root_surface()->surface(), size.width(), size.height()));
 }
 
-GLSurfaceWayland::GLSurfaceWayland(WaylandEglWindowPtr egl_window)
+GLSurfaceWayland::GLSurfaceWayland(WaylandEglWindowPtr egl_window,
+                                   WaylandWindow* window)
     : NativeViewGLSurfaceEGL(
           reinterpret_cast<EGLNativeWindowType>(egl_window.get()),
           nullptr),
-      egl_window_(std::move(egl_window)) {
+      egl_window_(std::move(egl_window)),
+      window_(window) {
   DCHECK(egl_window_);
+  DCHECK(window_);
 }
 
 bool GLSurfaceWayland::Resize(const gfx::Size& size,
@@ -46,28 +49,49 @@ bool GLSurfaceWayland::Resize(const gfx::Size& size,
 
 EGLConfig GLSurfaceWayland::GetConfig() {
   if (!config_) {
-    GLint config_attribs[] = {EGL_BUFFER_SIZE,
-                              32,
-                              EGL_ALPHA_SIZE,
-                              8,
-                              EGL_BLUE_SIZE,
-                              8,
-                              EGL_GREEN_SIZE,
-                              8,
-                              EGL_RED_SIZE,
-                              8,
-                              EGL_RENDERABLE_TYPE,
-                              EGL_OPENGL_ES2_BIT,
-                              EGL_SURFACE_TYPE,
-                              EGL_WINDOW_BIT,
-                              EGL_NONE};
+    EGLint config_attribs[] = {EGL_BUFFER_SIZE,
+                               32,
+                               EGL_ALPHA_SIZE,
+                               8,
+                               EGL_BLUE_SIZE,
+                               8,
+                               EGL_GREEN_SIZE,
+                               8,
+                               EGL_RED_SIZE,
+                               8,
+                               EGL_RENDERABLE_TYPE,
+                               EGL_OPENGL_ES2_BIT,
+                               EGL_SURFACE_TYPE,
+                               EGL_WINDOW_BIT,
+                               EGL_NONE};
     config_ = ChooseEGLConfig(GetDisplay(), config_attribs);
   }
   return config_;
 }
 
+gfx::SwapResult GLSurfaceWayland::SwapBuffers(PresentationCallback callback) {
+  UpdateVisualSize();
+  return gl::NativeViewGLSurfaceEGL::SwapBuffers(std::move(callback));
+}
+
+gfx::SwapResult GLSurfaceWayland::PostSubBuffer(int x,
+                                                int y,
+                                                int width,
+                                                int height,
+                                                PresentationCallback callback) {
+  UpdateVisualSize();
+  return gl::NativeViewGLSurfaceEGL::PostSubBuffer(x, y, width, height,
+                                                   std::move(callback));
+}
+
 GLSurfaceWayland::~GLSurfaceWayland() {
   Destroy();
+}
+
+void GLSurfaceWayland::UpdateVisualSize() {
+  window_->ui_task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&WaylandWindow::UpdateVisualSize,
+                                base::Unretained(window_), size_));
 }
 
 }  // namespace ui

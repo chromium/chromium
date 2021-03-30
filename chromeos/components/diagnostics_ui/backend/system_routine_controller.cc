@@ -15,7 +15,11 @@
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "chromeos/components/diagnostics_ui/backend/cros_healthd_helpers.h"
+#include "chromeos/components/diagnostics_ui/backend/histogram_util.h"
+#include "chromeos/components/diagnostics_ui/backend/routine_log.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
+#include "content/public/browser/device_service.h"
+#include "services/device/public/mojom/wake_lock_provider.mojom.h"
 
 namespace chromeos {
 namespace diagnostics {
@@ -31,11 +35,14 @@ constexpr uint32_t kCpuFloatingPointDurationInSeconds = 60;
 constexpr uint32_t kCpuPrimeDurationInSeconds = 60;
 constexpr uint32_t kCpuStressDurationInSeconds = 60;
 constexpr uint32_t kExpectedMemoryDurationInSeconds = 1000;
+constexpr uint32_t kLanConnectivityDurationInSeconds = 1;
 constexpr uint32_t kRoutineResultRefreshIntervalInSeconds = 1;
 
 constexpr char kChargePercentKey[] = "chargePercent";
 constexpr char kDischargePercentKey[] = "dischargePercent";
 constexpr char kResultDetailsKey[] = "resultDetails";
+
+const char kWakeLockReason[] = "DiagnosticsMemoryRoutine";
 
 mojom::RoutineResultInfoPtr ConstructStandardRoutineResultInfoPtr(
     mojom::RoutineType type,
@@ -97,6 +104,8 @@ uint32_t GetExpectedRoutineDurationInSeconds(mojom::RoutineType routine_type) {
       return kCpuPrimeDurationInSeconds;
     case mojom::RoutineType::kCpuStress:
       return kCpuCacheDurationInSeconds;
+    case mojom::RoutineType::kLanConnectivity:
+      return kLanConnectivityDurationInSeconds;
     case mojom::RoutineType::kMemory:
       return kExpectedMemoryDurationInSeconds;
   }
@@ -124,6 +133,7 @@ bool IsKnownRoutine(healthd::DiagnosticRoutineEnum routine_enum) {
     case healthd::DiagnosticRoutineEnum::kCpuCache:
     case healthd::DiagnosticRoutineEnum::kCpuStress:
     case healthd::DiagnosticRoutineEnum::kFloatingPointAccuracy:
+    case healthd::DiagnosticRoutineEnum::kLanConnectivity:
     case healthd::DiagnosticRoutineEnum::kMemory:
     case healthd::DiagnosticRoutineEnum::kPrimeSearch:
       return true;
@@ -140,12 +150,12 @@ bool IsKnownRoutine(healthd::DiagnosticRoutineEnum routine_enum) {
     case healthd::DiagnosticRoutineEnum::kHttpFirewall:
     case healthd::DiagnosticRoutineEnum::kHttpsFirewall:
     case healthd::DiagnosticRoutineEnum::kHttpsLatency:
-    case healthd::DiagnosticRoutineEnum::kLanConnectivity:
     case healthd::DiagnosticRoutineEnum::kNvmeSelfTest:
     case healthd::DiagnosticRoutineEnum::kNvmeWearLevel:
     case healthd::DiagnosticRoutineEnum::kSignalStrength:
     case healthd::DiagnosticRoutineEnum::kSmartctlCheck:
     case healthd::DiagnosticRoutineEnum::kUrandom:
+    case healthd::DiagnosticRoutineEnum::kVideoConferencing:
       return false;
   }
 }
@@ -163,6 +173,8 @@ mojom::RoutineType DiagnosticRoutineEnumToRoutineType(
       return mojom::RoutineType::kCpuStress;
     case healthd::DiagnosticRoutineEnum::kFloatingPointAccuracy:
       return mojom::RoutineType::kCpuFloatingPoint;
+    case healthd::DiagnosticRoutineEnum::kLanConnectivity:
+      return mojom::RoutineType::kLanConnectivity;
     case healthd::DiagnosticRoutineEnum::kMemory:
       return mojom::RoutineType::kMemory;
     case healthd::DiagnosticRoutineEnum::kPrimeSearch:
@@ -180,12 +192,12 @@ mojom::RoutineType DiagnosticRoutineEnumToRoutineType(
     case healthd::DiagnosticRoutineEnum::kHttpFirewall:
     case healthd::DiagnosticRoutineEnum::kHttpsFirewall:
     case healthd::DiagnosticRoutineEnum::kHttpsLatency:
-    case healthd::DiagnosticRoutineEnum::kLanConnectivity:
     case healthd::DiagnosticRoutineEnum::kNvmeSelfTest:
     case healthd::DiagnosticRoutineEnum::kNvmeWearLevel:
     case healthd::DiagnosticRoutineEnum::kSignalStrength:
     case healthd::DiagnosticRoutineEnum::kSmartctlCheck:
     case healthd::DiagnosticRoutineEnum::kUrandom:
+    case healthd::DiagnosticRoutineEnum::kVideoConferencing:
       NOTREACHED() << "DiagnosticRoutineEnumToRoutineType called with "
                       "unsupported routine.";
       return mojom::RoutineType::kBatteryCharge;
@@ -194,22 +206,31 @@ mojom::RoutineType DiagnosticRoutineEnumToRoutineType(
 
 }  // namespace
 
-SystemRoutineController::SystemRoutineController() {
+SystemRoutineController::SystemRoutineController()
+    : SystemRoutineController(/*routine_log_ptr=*/nullptr) {}
+
+SystemRoutineController::SystemRoutineController(RoutineLog* routine_log_ptr)
+    : routine_log_ptr_(routine_log_ptr) {
   inflight_routine_timer_ = std::make_unique<base::OneShotTimer>();
 }
 
 SystemRoutineController::~SystemRoutineController() {
-  if (!inflight_routine_runner_) {
-    return;
+  if (inflight_routine_runner_) {
+    // Since SystemRoutineController is torn down at the same time as the
+    // frontend, there's no guarantee that the disconnect handler will be
+    // called. If there's a routine inflight, cancel it but do not pass a
+    // callback.
+    BindCrosHealthdDiagnosticsServiceIfNeccessary();
+    diagnostics_service_->GetRoutineUpdate(
+        inflight_routine_id_, healthd::DiagnosticRoutineCommandEnum::kCancel,
+        /*should_include_output=*/false, base::DoNothing());
+    if (IsLoggingEnabled()) {
+      routine_log_ptr_->LogRoutineCancelled();
+    }
   }
 
-  // Since SystemRoutineController is torn down at the same time as the
-  // frontend, there's no guarantee that the disconnect handler will be called.
-  // If there's a routine inflight, cancel it but do not pass a callback.
-  BindCrosHealthdDiagnosticsServiceIfNeccessary();
-  diagnostics_service_->GetRoutineUpdate(
-      inflight_routine_id_, healthd::DiagnosticRoutineCommandEnum::kCancel,
-      /*should_include_output=*/false, base::DoNothing());
+  // Emit the total number of routines run.
+  metrics::EmitRoutineRunCount(routine_count_);
 }
 
 void SystemRoutineController::RunRoutine(
@@ -225,6 +246,8 @@ void SystemRoutineController::RunRoutine(
     return;
   }
 
+  ++routine_count_;
+
   inflight_routine_runner_ =
       mojo::Remote<mojom::RoutineRunner>(std::move(runner));
   inflight_routine_runner_.set_disconnect_handler(base::BindOnce(
@@ -238,7 +261,7 @@ void SystemRoutineController::GetSupportedRoutines(
   BindCrosHealthdDiagnosticsServiceIfNeccessary();
   diagnostics_service_->GetAvailableRoutines(
       base::BindOnce(&SystemRoutineController::OnAvailableRoutinesFetched,
-                     base::Unretained(this), std::move(callback)));
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void SystemRoutineController::BindInterface(
@@ -266,45 +289,55 @@ void SystemRoutineController::ExecuteRoutine(mojom::RoutineType routine_type) {
       diagnostics_service_->RunBatteryChargeRoutine(
           kBatteryDurationInSeconds, kBatteryChargeMinimumPercent,
           base::BindOnce(&SystemRoutineController::OnPowerRoutineStarted,
-                         base::Unretained(this), routine_type));
+                         weak_factory_.GetWeakPtr(), routine_type));
 
-      return;
+      break;
     case mojom::RoutineType::kBatteryDischarge:
       diagnostics_service_->RunBatteryDischargeRoutine(
           kBatteryDurationInSeconds, kBatteryDischargeMaximumPercent,
           base::BindOnce(&SystemRoutineController::OnPowerRoutineStarted,
-                         base::Unretained(this), routine_type));
+                         weak_factory_.GetWeakPtr(), routine_type));
 
-      return;
+      break;
     case mojom::RoutineType::kCpuCache:
       diagnostics_service_->RunCpuCacheRoutine(
           healthd::NullableUint32::New(kCpuCacheDurationInSeconds),
           base::BindOnce(&SystemRoutineController::OnRoutineStarted,
-                         base::Unretained(this), routine_type));
-      return;
+                         weak_factory_.GetWeakPtr(), routine_type));
+      break;
     case mojom::RoutineType::kCpuFloatingPoint:
       diagnostics_service_->RunFloatingPointAccuracyRoutine(
           healthd::NullableUint32::New(kCpuFloatingPointDurationInSeconds),
           base::BindOnce(&SystemRoutineController::OnRoutineStarted,
-                         base::Unretained(this), routine_type));
-      return;
+                         weak_factory_.GetWeakPtr(), routine_type));
+      break;
     case mojom::RoutineType::kCpuPrime:
       diagnostics_service_->RunPrimeSearchRoutine(
           healthd::NullableUint32::New(kCpuPrimeDurationInSeconds),
           base::BindOnce(&SystemRoutineController::OnRoutineStarted,
-                         base::Unretained(this), routine_type));
-      return;
+                         weak_factory_.GetWeakPtr(), routine_type));
+      break;
     case mojom::RoutineType::kCpuStress:
       diagnostics_service_->RunCpuStressRoutine(
           healthd::NullableUint32::New(kCpuStressDurationInSeconds),
           base::BindOnce(&SystemRoutineController::OnRoutineStarted,
-                         base::Unretained(this), routine_type));
-      return;
+                         weak_factory_.GetWeakPtr(), routine_type));
+      break;
+    case mojom::RoutineType::kLanConnectivity:
+      diagnostics_service_->RunLanConnectivityRoutine(
+          base::BindOnce(&SystemRoutineController::OnRoutineStarted,
+                         weak_factory_.GetWeakPtr(), routine_type));
+      break;
     case mojom::RoutineType::kMemory:
+      AcquireWakeLock();
       diagnostics_service_->RunMemoryRoutine(
           base::BindOnce(&SystemRoutineController::OnRoutineStarted,
-                         base::Unretained(this), routine_type));
-      return;
+                         weak_factory_.GetWeakPtr(), routine_type));
+      memory_routine_start_timestamp_ = base::Time::Now();
+      break;
+  }
+  if (IsLoggingEnabled()) {
+    routine_log_ptr_->LogRoutineStarted(routine_type);
   }
 }
 
@@ -360,7 +393,7 @@ void SystemRoutineController::ContinuePowerRoutine(
       inflight_routine_id_, healthd::DiagnosticRoutineCommandEnum::kContinue,
       /*should_include_output=*/true,
       base::BindOnce(&SystemRoutineController::OnPowerRoutineContinued,
-                     base::Unretained(this), routine_type));
+                     weak_factory_.GetWeakPtr(), routine_type));
 }
 
 void SystemRoutineController::OnPowerRoutineContinued(
@@ -393,7 +426,7 @@ void SystemRoutineController::CheckRoutineStatus(
       inflight_routine_id_, healthd::DiagnosticRoutineCommandEnum::kGetStatus,
       should_include_output,
       base::BindOnce(&SystemRoutineController::OnRoutineStatusUpdated,
-                     base::Unretained(this), routine_type));
+                     weak_factory_.GetWeakPtr(), routine_type));
 }
 
 void SystemRoutineController::OnRoutineStatusUpdated(
@@ -502,7 +535,7 @@ void SystemRoutineController::ScheduleCheckRoutineStatus(
   inflight_routine_timer_->Start(
       FROM_HERE, base::TimeDelta::FromSeconds(duration_in_seconds),
       base::BindOnce(&SystemRoutineController::CheckRoutineStatus,
-                     base::Unretained(this), routine_type));
+                     weak_factory_.GetWeakPtr(), routine_type));
 }
 
 void SystemRoutineController::ParsePowerRoutineResult(
@@ -604,6 +637,15 @@ void SystemRoutineController::OnStandardRoutineResult(
   auto result_info =
       ConstructStandardRoutineResultInfoPtr(routine_type, result);
   SendRoutineResult(std::move(result_info));
+  metrics::EmitRoutineResult(routine_type, result);
+  if (routine_type == mojom::RoutineType::kMemory) {
+    ReleaseWakeLock();
+    metrics::EmitMemoryRoutineDuration(base::Time::Now() -
+                                       memory_routine_start_timestamp_);
+  }
+  if (IsLoggingEnabled()) {
+    routine_log_ptr_->LogRoutineCompleted(routine_type, result);
+  }
 }
 
 void SystemRoutineController::OnPowerRoutineResult(
@@ -615,6 +657,10 @@ void SystemRoutineController::OnPowerRoutineResult(
   auto result_info = ConstructPowerRoutineResultInfoPtr(
       routine_type, result, percent_change, seconds_elapsed);
   SendRoutineResult(std::move(result_info));
+  metrics::EmitRoutineResult(routine_type, result);
+  if (IsLoggingEnabled()) {
+    routine_log_ptr_->LogRoutineCompleted(routine_type, result);
+  }
 }
 
 void SystemRoutineController::SendRoutineResult(
@@ -630,7 +676,7 @@ void SystemRoutineController::BindCrosHealthdDiagnosticsServiceIfNeccessary() {
         diagnostics_service_.BindNewPipeAndPassReceiver());
     diagnostics_service_.set_disconnect_handler(base::BindOnce(
         &SystemRoutineController::OnDiagnosticsServiceDisconnected,
-        base::Unretained(this)));
+        weak_factory_.GetWeakPtr()));
   }
 }
 
@@ -643,13 +689,29 @@ void SystemRoutineController::OnInflightRoutineRunnerDisconnected() {
   // already disconnected.
   inflight_routine_runner_.reset();
 
+  // Stop `inflight_routine_timer_` so that we do not attempt to fetch the
+  // status of a cancelled routine.
+  inflight_routine_timer_->Stop();
+
+  // Release `wake_lock_` if necessary.
+  if (wake_lock_) {
+    ReleaseWakeLock();
+  }
+
   // Make a best effort attempt to remove the routine.
   BindCrosHealthdDiagnosticsServiceIfNeccessary();
   diagnostics_service_->GetRoutineUpdate(
       inflight_routine_id_, healthd::DiagnosticRoutineCommandEnum::kCancel,
       /*should_include_output=*/false,
       base::BindOnce(&SystemRoutineController::OnRoutineCancelAttempted,
-                     base::Unretained(this)));
+                     weak_factory_.GetWeakPtr()));
+
+  // Reset `inflight_routine_id_` to maintain invariant.
+  inflight_routine_id_ = kInvalidRoutineId;
+
+  if (IsLoggingEnabled()) {
+    routine_log_ptr_->LogRoutineCancelled();
+  }
 }
 
 void SystemRoutineController::OnRoutineCancelAttempted(
@@ -662,6 +724,31 @@ void SystemRoutineController::OnRoutineCancelAttempted(
     DVLOG(2) << "Failed to cancel routine.";
     return;
   }
+}
+
+bool SystemRoutineController::IsLoggingEnabled() const {
+  return routine_log_ptr_ != nullptr;
+}
+
+void SystemRoutineController::AcquireWakeLock() {
+  if (!wake_lock_) {
+    if (!wake_lock_provider_) {
+      content::GetDeviceService().BindWakeLockProvider(
+          wake_lock_provider_.BindNewPipeAndPassReceiver());
+    }
+
+    wake_lock_provider_->GetWakeLockWithoutContext(
+        device::mojom::WakeLockType::kPreventDisplaySleepAllowDimming,
+        device::mojom::WakeLockReason::kOther, kWakeLockReason,
+        wake_lock_.BindNewPipeAndPassReceiver());
+  }
+
+  wake_lock_->RequestWakeLock();
+}
+
+void SystemRoutineController::ReleaseWakeLock() {
+  DCHECK(wake_lock_);
+  wake_lock_->CancelWakeLock();
 }
 
 }  // namespace diagnostics

@@ -6,10 +6,12 @@
 
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/keyboard_util.h"
+#include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/app_types.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/shell.h"
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/exo/input_trace.h"
 #include "components/exo/keyboard_delegate.h"
@@ -95,6 +97,52 @@ bool IsImeSupportedSurface(Surface* surface) {
     }
   }
   return false;
+}
+
+// Returns true if the surface can consume ash accelerators.
+bool CanConsumeAshAccelerators(Surface* surface) {
+  aura::Window* window = surface->window();
+  for (; window; window = window->parent()) {
+    const auto app_type =
+        static_cast<ash::AppType>(window->GetProperty(aura::client::kAppType));
+    // TODO(fukino): Always returning false for Lacros window is a short-term
+    // solution. In reality, Lacros can consume ash accelerator's key
+    // combination when it is a deprecated ash accelerator or the window is
+    // running PWA. We need to let the wayland client dynamically decrlare
+    // whether it want to consume ash accelerators' key combinations.
+    // crbug.com/1174025.
+    if (app_type == ash::AppType::LACROS)
+      return false;
+  }
+  return true;
+}
+
+// Returns true if an accelerator is an ash accelerator which can be handled
+// before sending it to client and it is actually processed by ash-chrome.
+bool ProcessAshAcceleratorIfPossible(Surface* surface, ui::KeyEvent* event) {
+  // Process ash accelerators before sending it to client only when the client
+  // should not consume ash accelerators. (e.g. Lacros-chrome)
+  if (CanConsumeAshAccelerators(surface))
+    return false;
+
+  // Ctrl-N (new window), Shift-Ctrl-N (new incognite window), Ctrl-T (new tab),
+  // and Shit-Ctrl-T (restore tab) need to be sent to the active client even
+  // when the active window is lacros-chrome, since the ash-chrome does not
+  // handle these new-window requests properly at this moment.
+  // TODO(fukino): Remove this workaround once ash-chrome has an implementation
+  // to handle new-window requests when lacros-chrome browser window is active.
+  // crbug.com/1172189.
+  const ui::Accelerator kAppHandlingAccelerators[] = {
+      {ui::VKEY_N, ui::EF_CONTROL_DOWN},
+      {ui::VKEY_N, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN},
+      {ui::VKEY_T, ui::EF_CONTROL_DOWN},
+      {ui::VKEY_T, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN},
+  };
+  ui::Accelerator accelerator(*event);
+  if (base::Contains(kAppHandlingAccelerators, accelerator))
+    return false;
+
+  return ash::AcceleratorController::Get()->Process(accelerator);
 }
 
 }  // namespace
@@ -184,13 +232,8 @@ void Keyboard::OnKeyEvent(ui::KeyEvent* event) {
   if (!focus_)
     return;
 
-  // If the event target is not an exo::Surface, let another handler process the
-  // event. This check may not be necessary once https://crbug.com/624168 is
-  // resolved.
-  if (!GetShellMainSurface(static_cast<aura::Window*>(event->target())) &&
-      !Surface::AsSurface(static_cast<aura::Window*>(event->target()))) {
-    return;
-  }
+  DCHECK(GetShellRootSurface(static_cast<aura::Window*>(event->target())) ||
+         Surface::AsSurface(static_cast<aura::Window*>(event->target())));
 
   // Ignore synthetic key repeat events.
   if (event->is_repeat()) {
@@ -204,11 +247,15 @@ void Keyboard::OnKeyEvent(ui::KeyEvent* event) {
 
   TRACE_EXO_INPUT_EVENT(event);
 
-  // Process reserved accelerators before sending it to client.
-  if (ProcessAcceleratorIfReserved(focus_, event)) {
-    // Discard a key press event if it's a reserved accelerator and it's
-    // enabled.
+  // Process reserved accelerators or ash accelerators which need to be handled
+  // before sending it to client.
+  if (ProcessAcceleratorIfReserved(focus_, event) ||
+      ProcessAshAcceleratorIfPossible(focus_, event)) {
+    // Discard a key press event if the corresponding accelerator is handled.
     event->SetHandled();
+    // The current focus might have been reset while processing accelerators.
+    if (!focus_)
+      return;
   }
 
   // When IME ate a key event, we use the event only for tracking key states and

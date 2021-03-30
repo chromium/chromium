@@ -82,8 +82,9 @@ BrowserInstantController::BrowserInstantController(Browser* browser)
     search_engine_base_url_tracker_ =
         std::make_unique<SearchEngineBaseURLTracker>(
             template_url_service, std::make_unique<UIThreadSearchTermsData>(),
-            base::Bind(&BrowserInstantController::OnSearchEngineBaseURLChanged,
-                       base::Unretained(this)));
+            base::BindRepeating(
+                &BrowserInstantController::OnSearchEngineBaseURLChanged,
+                base::Unretained(this)));
   }
 }
 
@@ -98,8 +99,9 @@ void BrowserInstantController::OnSearchEngineBaseURLChanged(
     if (!contents)
       continue;
 
-    bool is_ntp = contents->GetMainFrame()->GetSiteInstance()->GetSiteURL() ==
-                  GURL(chrome::kChromeUINewTabPageURL);
+    GURL site_url = contents->GetMainFrame()->GetSiteInstance()->GetSiteURL();
+    bool is_ntp = site_url == GURL(chrome::kChromeUINewTabPageURL) ||
+                  site_url == GURL(chrome::kChromeUINewTabPageThirdPartyURL);
 
     if (!is_ntp) {
       InstantService* instant_service =

@@ -1,0 +1,12 @@
+<!--
+@BLINK-ALLOW:focusable
+@BLINK-ALLOW:id*
+TODO(crbug.com/1175353) Results are not identical to the <select> outside the <canvas>.
+-->
+<div id="control">
+  <select><option>1<option>2</select>
+</div>
+
+<canvas id="canvas" width="300" height="300">
+  <select><option>1<option>2</select>
+</canvas>

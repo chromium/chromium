@@ -1,0 +1,57 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "content/browser/file_system_access/file_system_access_data_transfer_token_impl.h"
+
+#include <utility>
+
+#include "base/files/file_path.h"
+#include "base/unguessable_token.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom.h"
+
+namespace content {
+
+FileSystemAccessDataTransferTokenImpl::FileSystemAccessDataTransferTokenImpl(
+    FileSystemAccessManagerImpl* manager,
+    FileSystemAccessManagerImpl::PathType path_type,
+    const base::FilePath& file_path,
+    int renderer_process_id,
+    mojo::PendingReceiver<blink::mojom::FileSystemAccessDataTransferToken>
+        receiver)
+    : manager_(manager),
+      path_type_(path_type),
+      file_path_(file_path),
+      renderer_process_id_(renderer_process_id),
+      token_(base::UnguessableToken::Create()) {
+  DCHECK(manager_);
+
+  receivers_.set_disconnect_handler(base::BindRepeating(
+      &FileSystemAccessDataTransferTokenImpl::OnMojoDisconnect,
+      base::Unretained(this)));
+
+  receivers_.Add(this, std::move(receiver));
+}
+
+FileSystemAccessDataTransferTokenImpl::
+    ~FileSystemAccessDataTransferTokenImpl() = default;
+
+void FileSystemAccessDataTransferTokenImpl::GetInternalId(
+    GetInternalIdCallback callback) {
+  std::move(callback).Run(token_);
+}
+
+void FileSystemAccessDataTransferTokenImpl::Clone(
+    mojo::PendingReceiver<blink::mojom::FileSystemAccessDataTransferToken>
+        clone_receiver) {
+  receivers_.Add(this, std::move(clone_receiver));
+}
+
+void FileSystemAccessDataTransferTokenImpl::OnMojoDisconnect() {
+  if (receivers_.empty()) {
+    manager_->RemoveDataTransferToken(token_);
+  }
+}
+
+}  // namespace content

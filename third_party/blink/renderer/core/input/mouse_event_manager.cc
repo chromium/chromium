@@ -371,8 +371,6 @@ WebInputEventResult MouseEventManager::DispatchMouseClickIfNeeded(
   const bool should_dispatch_click_event =
       click_count_ > 0 && !context_menu_event && mouse_down_element_ &&
       mouse_release_target &&
-      mouse_release_target->CanParticipateInFlatTree() &&
-      mouse_down_element_->CanParticipateInFlatTree() &&
       mouse_down_element_->isConnected();
   if (!should_dispatch_click_event)
     return WebInputEventResult::kNotHandled;
@@ -399,8 +397,7 @@ WebInputEventResult MouseEventManager::DispatchMouseClickIfNeeded(
                         click_target_node != old_click_target_node);
 
   const bool click_element_still_in_flat_tree =
-      (click_element_ && click_element_->CanParticipateInFlatTree() &&
-       click_element_->isConnected());
+      (click_element_ && click_element_->isConnected());
   UMA_HISTOGRAM_BOOLEAN("Event.ClickNotFiredDueToDomManipulation",
                         !click_element_still_in_flat_tree);
   DCHECK_EQ(click_element_ == mouse_down_element_,
@@ -691,11 +688,8 @@ WebInputEventResult MouseEventManager::HandleMousePressEvent(
 
   mouse_down_ = event.Event();
 
-  if (RuntimeEnabledFeatures::TextFragmentIdentifiersEnabled(
-          frame_->DomWindow())) {
-    if (frame_->View())
-      frame_->View()->DismissFragmentAnchor();
-  }
+  if (frame_->View())
+    frame_->View()->DismissFragmentAnchor();
 
   if (frame_->GetDocument()->IsSVGDocument() &&
       frame_->GetDocument()->AccessSVGExtensions().ZoomAndPanEnabled()) {
@@ -713,6 +707,12 @@ WebInputEventResult MouseEventManager::HandleMousePressEvent(
   // because we don't want to do it until we know we didn't hit a widget.
   if (single_click)
     FocusDocumentView();
+
+  // |SelectionController| calls |PositionForPoint()| which requires
+  // |kPrePaintClean|. |FocusDocumentView| above is the last possible
+  // modifications before we call |SelectionController|.
+  if (LocalFrameView* frame_view = frame_->View())
+    frame_view->UpdateLifecycleToPrePaintClean(DocumentUpdateReason::kInput);
 
   Node* inner_node = event.InnerNode();
 
@@ -853,6 +853,11 @@ WebInputEventResult MouseEventManager::HandleMouseDraggedEvent(
     if (!layout_object || !IsListBox(layout_object))
       return WebInputEventResult::kNotHandled;
   }
+
+  // |SelectionController| calls |PositionForPoint()| which requires
+  // |kPrePaintClean|.
+  if (LocalFrameView* frame_view = frame_->View())
+    frame_view->UpdateLifecycleToPrePaintClean(DocumentUpdateReason::kInput);
 
   mouse_down_may_start_drag_ = false;
 

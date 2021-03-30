@@ -16,7 +16,7 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 import {ChromeCleanupProxy, ChromeCleanupProxyImpl} from '../chrome_cleanup_page/chrome_cleanup_proxy.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, SafetyCheckInteractions} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
-import {Router} from '../router.m.js';
+import {Router} from '../router.js';
 
 import {SafetyCheckCallbackConstants, SafetyCheckChromeCleanerStatus} from './safety_check_browser_proxy.js';
 import {SafetyCheckIconStatus} from './safety_check_child.js';
@@ -196,15 +196,14 @@ Polymer({
     switch (this.status_) {
       case SafetyCheckChromeCleanerStatus.INFECTED:
         this.logUserInteraction_(
-            SafetyCheckInteractions
-                .SAFETY_CHECK_CHROME_CLEANER_REVIEW_INFECTED_STATE,
+            SafetyCheckInteractions.CHROME_CLEANER_REVIEW_INFECTED_STATE,
             'Settings.SafetyCheck.ChromeCleanerReviewInfectedState');
         // Navigate to Chrome cleaner UI.
         this.navigateToFoilPage_();
         break;
       case SafetyCheckChromeCleanerStatus.REBOOT_REQUIRED:
         this.logUserInteraction_(
-            SafetyCheckInteractions.SAFETY_CHECK_CHROME_CLEANER_REBOOT,
+            SafetyCheckInteractions.CHROME_CLEANER_REBOOT,
             'Settings.SafetyCheck.ChromeCleanerReboot');
         this.chromeCleanupBrowserProxy_.restartComputer();
         break;
@@ -239,7 +238,7 @@ Polymer({
   onRowClick_: function() {
     if (this.isRowClickable_()) {
       this.logUserInteraction_(
-          SafetyCheckInteractions.SAFETY_CHECK_CHROME_CLEANER_CARET_NAVIGATION,
+          SafetyCheckInteractions.CHROME_CLEANER_CARET_NAVIGATION,
           'Settings.SafetyCheck.ChromeCleanerCaretNavigation');
       this.navigateToFoilPage_();
     }

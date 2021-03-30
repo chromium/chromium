@@ -25,15 +25,13 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
-import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton;
@@ -45,7 +43,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 // clang-format off
-@Features.EnableFeatures({ChromeFeatureList.SAFE_BROWSING_SECTION_UI})
 public class SafeBrowsingSettingsFragmentTest {
     // clang-format on
     private static final String ASSERT_SAFE_BROWSING_STATE_RADIO_BUTTON_GROUP =
@@ -89,7 +86,6 @@ public class SafeBrowsingSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"SafeBrowsing"})
-    @Features.EnableFeatures(ChromeFeatureList.SAFE_BROWSING_ENHANCED_PROTECTION_ENABLED)
     public void testOnStartup() {
         launchSettingsActivity();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -113,7 +109,6 @@ public class SafeBrowsingSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"SafeBrowsing"})
-    @Features.EnableFeatures(ChromeFeatureList.SAFE_BROWSING_ENHANCED_PROTECTION_ENABLED)
     public void testCheckRadioButtons() {
         launchSettingsActivity();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -149,7 +144,6 @@ public class SafeBrowsingSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"SafeBrowsing"})
-    @Features.EnableFeatures(ChromeFeatureList.SAFE_BROWSING_ENHANCED_PROTECTION_ENABLED)
     public void testCheckNoProtectionRadioButtonsCancel() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
@@ -189,7 +183,6 @@ public class SafeBrowsingSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"SafeBrowsing"})
-    @Features.EnableFeatures(ChromeFeatureList.SAFE_BROWSING_ENHANCED_PROTECTION_ENABLED)
     public void testCheckNoProtectionRadioButtonsConfirm() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
@@ -228,7 +221,6 @@ public class SafeBrowsingSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"SafeBrowsing"})
-    @Features.EnableFeatures(ChromeFeatureList.SAFE_BROWSING_ENHANCED_PROTECTION_ENABLED)
     public void testCheckNoProtectionConfirmationIfAlreadyInNoProtectionMode() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
@@ -245,16 +237,6 @@ public class SafeBrowsingSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"SafeBrowsing"})
-    @Features.DisableFeatures(ChromeFeatureList.SAFE_BROWSING_ENHANCED_PROTECTION_ENABLED)
-    public void testEnhancedProtectionDisabled() {
-        launchSettingsActivity();
-        Assert.assertNull(getEnhancedProtectionButton());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"SafeBrowsing"})
-    @Features.EnableFeatures(ChromeFeatureList.SAFE_BROWSING_ENHANCED_PROTECTION_ENABLED)
     public void testEnhancedProtectionAuxButtonClicked() {
         launchSettingsActivity();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -269,7 +251,6 @@ public class SafeBrowsingSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"SafeBrowsing"})
-    @Features.EnableFeatures(ChromeFeatureList.SAFE_BROWSING_ENHANCED_PROTECTION_ENABLED)
     public void testStandardProtectionAuxButtonClicked() {
         launchSettingsActivity();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -284,7 +265,6 @@ public class SafeBrowsingSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"SafeBrowsing"})
-    @Features.EnableFeatures(ChromeFeatureList.SAFE_BROWSING_ENHANCED_PROTECTION_ENABLED)
     @Policies.Add({ @Policies.Item(key = "SafeBrowsingEnabled", string = "true") })
     public void testSafeBrowsingManaged() {
         TestThreadUtils.runOnUiThreadBlocking(
@@ -306,7 +286,6 @@ public class SafeBrowsingSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"SafeBrowsing"})
-    @Features.EnableFeatures(ChromeFeatureList.SAFE_BROWSING_ENHANCED_PROTECTION_ENABLED)
     @Policies.Add({ @Policies.Item(key = "SafeBrowsingProtectionLevel", string = "2") })
     public void testSafeBrowsingProtectionLevelManagedEnhanced() {
         TestThreadUtils.runOnUiThreadBlocking(
@@ -325,7 +304,6 @@ public class SafeBrowsingSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"SafeBrowsing"})
-    @Features.EnableFeatures(ChromeFeatureList.SAFE_BROWSING_ENHANCED_PROTECTION_ENABLED)
     @Policies.Add({ @Policies.Item(key = "SafeBrowsingProtectionLevel", string = "1") })
     public void testSafeBrowsingProtectionLevelManagedStandard() {
         TestThreadUtils.runOnUiThreadBlocking(
@@ -340,7 +318,6 @@ public class SafeBrowsingSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"SafeBrowsing"})
-    @Features.EnableFeatures(ChromeFeatureList.SAFE_BROWSING_ENHANCED_PROTECTION_ENABLED)
     @Policies.Add({ @Policies.Item(key = "SafeBrowsingProtectionLevel", string = "0") })
     public void testSafeBrowsingProtectionLevelManagedDisabled() {
         TestThreadUtils.runOnUiThreadBlocking(

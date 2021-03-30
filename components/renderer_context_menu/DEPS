@@ -9,4 +9,5 @@ include_rules = [
   # This directory contains build flags and does not pull all of PPAPI in.
   "+ppapi/buildflags",
   "+third_party/blink/public/common",
+  "+third_party/blink/public/mojom/context_menu/context_menu.mojom.h",
 ]

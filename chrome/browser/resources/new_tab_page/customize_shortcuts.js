@@ -11,7 +11,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BrowserProxy} from './browser_proxy.js';
+import {NewTabPageProxy} from './new_tab_page_proxy.js';
 
 /** Element that lets the user configure shortcut settings. */
 class CustomizeShortcutsElement extends PolymerElement {
@@ -35,7 +35,7 @@ class CustomizeShortcutsElement extends PolymerElement {
 
   constructor() {
     super();
-    const {callbackRouter, handler} = BrowserProxy.getInstance();
+    const {callbackRouter, handler} = NewTabPageProxy.getInstance();
     /** @private {!newTabPage.mojom.PageCallbackRouter} */
     this.callbackRouter_ = callbackRouter;
     /** @private {newTabPage.mojom.PageHandlerRemote} */

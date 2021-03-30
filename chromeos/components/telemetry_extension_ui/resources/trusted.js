@@ -943,6 +943,10 @@ class SystemEventsProxy {
     this.messagePipe.sendMessage(
         dpsl_internal.Message.SYSTEM_EVENTS_SERVICE_EVENTS,
         /** @type {!dpsl_internal.Event} */ ({type: type}));
+
+    this.messagePipe.sendMessage(
+        dpsl_internal.Message.DPSL_EVENTS_SERVICE_EVENTS,
+        /** @type {!dpsl_internal.Event} */ ({type: type}));
   }
 }
 

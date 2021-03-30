@@ -4,10 +4,13 @@
 
 #include "chrome/browser/chromeos/guest_os/guest_os_external_protocol_handler.h"
 
+#include "base/callback_helpers.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/borealis/borealis_app_launcher.h"
+#include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_files.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service_factory.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_files.h"
 #include "chrome/browser/profiles/profile.h"
 #include "ui/display/display.h"
 
@@ -64,6 +67,11 @@ void Launch(Profile* profile, const GURL& url) {
     case VmType::ApplicationList_VmType_PLUGIN_VM:
       plugin_vm::LaunchPluginVmApp(profile, registration->app_id(),
                                    {url.spec()}, base::DoNothing());
+      break;
+
+    case VmType::ApplicationList_VmType_BOREALIS:
+      borealis::BorealisService::GetForProfile(profile)->AppLauncher().Launch(
+          registration->app_id(), {url.spec()}, base::DoNothing());
       break;
 
     default:

@@ -22,7 +22,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="Session.Background.TotalDuration" units="ms"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -36,7 +36,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Session.ClosedTabCounts" units="operations"
-    expires_after="2021-04-19">
+    expires_after="2021-09-19">
   <owner>rohitrao@chromium.org</owner>
   <owner>marq@chromium.org</owner>
   <summary>
@@ -60,7 +60,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Session.OpenedTabCounts" units="operations"
-    expires_after="2021-04-19">
+    expires_after="2021-09-19">
   <owner>rohitrao@chromium.org</owner>
   <owner>marq@chromium.org</owner>
   <summary>
@@ -135,26 +135,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     when Chrome leaves the screen. This is generally straightforward. Chrome
     leaves the screen when the screen goes blank or shows the lock screen, when
     Chrome clicks a link that opens in another app, or when the user switches to
-    the app switcher. Note that, unlike on desktop, even if Chrome is playing
-    media in the background, the session is still terminated when Chrome leaves
-    the screen.
-
-    iOS continued: These are some edge cases to be aware of: (i) OS overlays.
-    These can appear, for examples, when a link is clicked that could go to a
-    non-Google app that has not yet been set to default and the OS asks whether
-    to open the link in the app by default, or when a user has set the OS to
-    block certain sites or types of sites by default and require authentication
-    to access them. This authentication prompt is an OS overlay. At the time of
-    writing this description, we're not sure if displaying an overlay will end
-    the session. (ii) full-screen media playing. Because media is played through
-    iOS's technology stack, if the user takes media that's playing within Chrome
-    and displayed it full-screen, the session ends because no part of Chrome is
-    on the screen anymore. (iii) multi-window support. Not yet launched as of
-    M-85. Sessions end and immediately restart when a user switches from a
-    single-window to a multi-window view and vice versa, and also ends when
-    resizing the Chrome window. The end is because Chrome is considered no
-    longer active during the time the OS animates the windows to change their
-    sizes.
+    another app in the app switcher. Note that, unlike on desktop, even if
+    Chrome is playing media in the background or in picture-in-picture mode, the
+    session is still terminated when Chrome leaves the screen. Also note that if
+    Chrome starts in Safe Mode, the session will only start when the user quits
+    Safe Mode. When multiple windows are used, the session is considered ongoing
+    as long as there is at least one foreground Chrome window. This was revised
+    in M-89 to support multiple windows. In M-87 and M-88, nothing was logged
+    due to a bug. Before M-86, a similar metric was recorded, with some
+    differences in edge cases. See the old histogram description for more
+    details.
 
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
@@ -313,7 +303,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Session.TotalDuration.TouchMode" units="times"
-    expires_after="2021-05-09">
+    expires_after="2021-09-12">
   <owner>collinbaker@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -421,7 +411,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Session.WebStates.AllSerializedCertPolicyCachesSize"
     units="KB" expires_after="2021-06-10">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
     The size of all cert policy caches for all open tabs. Recorded when
@@ -436,7 +426,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Removed 10/2020.
   </obsolete>
   <owner>ajuma@chromium.org</owner>
-  <owner>eugenebut@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
     Number of forward navigation items when navigation was committed/finished.
@@ -453,7 +442,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Removed 10/2020.
   </obsolete>
   <owner>ajuma@chromium.org</owner>
-  <owner>eugenebut@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
     True if navigation manager has forward navigation items when navigation was
@@ -466,8 +454,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Session.WebStates.NavigationItem" units="KB"
-    expires_after="2021-05-01">
-  <owner>eugenebut@chromium.org</owner>
+    expires_after="2021-09-05">
+  <owner>djean@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <summary>
     Recorded when CRWNavigationItemStorage encodes the data, which happens on
@@ -477,7 +465,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Session.WebStates.ReadFromFileTime" units="ms"
-    expires_after="2021-06-10">
+    expires_after="2021-08-09">
   <owner>justincohen@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
@@ -488,7 +476,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Session.WebStates.SerializedCertPolicyCacheSize" units="KB"
     expires_after="2021-06-10">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
     The size of a single cert policy cache for one tab. Recorded when
@@ -498,7 +486,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Session.WebStates.SerializedSize" units="KB"
-    expires_after="2021-06-10">
+    expires_after="2021-08-09">
   <owner>justincohen@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
@@ -584,6 +572,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     remains inactive in a subsequent browsing session the time continues to
     accrue. Visible tabs report a value of 0 for this. This is recorded at the
     moment the tab is restored during a session restore.
+  </summary>
+</histogram>
+
+<histogram name="SessionRestore.UnrecoverableWriteErrorCount"
+    units="operations" expires_after="2021-09-19">
+  <owner>sky@chromium.org</owner>
+  <owner>davidbienvenu@chromium.org</owner>
+  <summary>
+    Recorded when SessionService is shutdown (which generally corresponds to
+    when chrome is shutdown). The count is the number of times a write error
+    happened at a time when it could not immediately be handled.
   </summary>
 </histogram>
 

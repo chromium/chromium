@@ -5,8 +5,11 @@
 #include "components/subresource_filter/content/browser/profile_interaction_manager.h"
 
 #include "base/logging.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/subresource_filter/content/browser/ads_intervention_manager.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
+#include "components/subresource_filter/content/browser/subresource_filter_client.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
 #include "content/public/browser/navigation_controller.h"
@@ -114,6 +117,31 @@ mojom::ActivationLevel ProfileInteractionManager::OnPageActivationComputed(
   }
 
   return effective_activation_level;
+}
+
+void ProfileInteractionManager::MaybeShowNotification(
+    SubresourceFilterClient* client) {
+  const GURL& top_level_url = web_contents()->GetLastCommittedURL();
+  if (profile_context_->settings_manager()->ShouldShowUIForSite(
+          top_level_url)) {
+    client->ShowNotification();
+
+    // TODO(https://crbug.com/1103176): Plumb the actual frame reference here
+    // (it comes from
+    // ContentSubresourceFilterThrottleManager::DidDisallowFirstSubresource,
+    // which comes from a specific frame).
+    content_settings::PageSpecificContentSettings* content_settings =
+        content_settings::PageSpecificContentSettings::GetForFrame(
+            web_contents()->GetMainFrame());
+    content_settings->OnContentBlocked(ContentSettingsType::ADS);
+
+    ContentSubresourceFilterThrottleManager::LogAction(
+        SubresourceFilterAction::kUIShown);
+    profile_context_->settings_manager()->OnDidShowUI(top_level_url);
+  } else {
+    ContentSubresourceFilterThrottleManager::LogAction(
+        SubresourceFilterAction::kUISuppressed);
+  }
 }
 
 }  // namespace subresource_filter

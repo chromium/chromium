@@ -15,7 +15,6 @@
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/lazy_instance.h"
-#include "base/strings/string16.h"
 #include "extensions/common/manifest.h"
 
 namespace extensions {
@@ -34,7 +33,7 @@ class ManifestHandler {
   // Returns true on success or false on failure; if false, |error| will
   // be set to a failure message.
   // This does not perform any IO operations.
-  virtual bool Parse(Extension* extension, base::string16* error) = 0;
+  virtual bool Parse(Extension* extension, std::u16string* error) = 0;
 
   // Validate that files associated with this manifest key exist.
   // Validation takes place after parsing. May also append a series of
@@ -43,7 +42,7 @@ class ManifestHandler {
   //
   // Otherwise, returns false, and a description of the error is
   // returned in |error|.
-  // TODO(yoz): Change error to base::string16. See crbug.com/71980.
+  // TODO(yoz): Change error to std::u16string. See crbug.com/71980.
   virtual bool Validate(const Extension* extension,
                         std::string* error,
                         std::vector<InstallWarning>* warnings) const;
@@ -88,7 +87,7 @@ class ManifestHandler {
 
   // Call Parse on all registered manifest handlers that should parse
   // this extension.
-  static bool ParseExtension(Extension* extension, base::string16* error);
+  static bool ParseExtension(Extension* extension, std::u16string* error);
 
   // Call Validate on all registered manifest handlers for this extension. This
   // may perform IO operations.
@@ -146,7 +145,7 @@ class ManifestHandlerRegistry {
 
   void Finalize();
 
-  bool ParseExtension(Extension* extension, base::string16* error);
+  bool ParseExtension(Extension* extension, std::u16string* error);
   bool ValidateExtension(const Extension* extension,
                          std::string* error,
                          std::vector<InstallWarning>* warnings);

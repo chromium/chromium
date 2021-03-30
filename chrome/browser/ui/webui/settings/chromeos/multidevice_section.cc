@@ -4,12 +4,13 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/multidevice_section.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/android_sms/android_sms_service.h"
-#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
+#include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/nearby_share/shared_resources.h"
 #include "chrome/browser/ui/webui/settings/chromeos/multidevice_handler.h"
@@ -21,7 +22,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
 #include "chromeos/components/phonehub/url_constants.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
 #include "chromeos/services/multidevice_setup/public/cpp/url_provider.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
@@ -35,6 +35,8 @@
 namespace chromeos {
 namespace settings {
 namespace {
+
+using FeatureState = multidevice_setup::mojom::FeatureState;
 
 const std::vector<SearchConcept>& GetMultiDeviceOptedInSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags(
@@ -234,7 +236,7 @@ void AddEasyUnlockStrings(content::WebUIDataSource* html_source) {
       {"easyUnlockUnlockDeviceAndAllowSignin",
        IDS_SETTINGS_EASY_UNLOCK_UNLOCK_DEVICE_AND_ALLOW_SIGNIN},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
 bool IsOptedIn(multidevice_setup::mojom::HostStatus host_status) {
@@ -257,7 +259,8 @@ MultiDeviceSection::MultiDeviceSection(
       phone_hub_manager_(phone_hub_manager),
       android_sms_service_(android_sms_service),
       pref_service_(pref_service) {
-  if (base::FeatureList::IsEnabled(::features::kNearbySharing)) {
+  if (NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
+          profile)) {
     pref_change_registrar_.Init(pref_service_);
     pref_change_registrar_.Add(
         ::prefs::kNearbySharingEnabledPrefName,
@@ -312,14 +315,10 @@ void MultiDeviceSection::AddLoadTimeData(
        IDS_SETTINGS_MULTIDEVICE_WIFI_SYNC_CHROME_SYNC_LABEL},
       {"multideviceWifiSyncLearnMoreLabel",
        IDS_SETTINGS_MULTIDEVICE_WIFI_SYNC_LEARN_MORE_LABEL},
-      {"multideviceNotificationAccessSetupAckTitle",
-       IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_ACK_TITLE},
       {"multideviceNotificationAccessSetupConnectingTitle",
        IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_CONNECTING_TITLE},
       {"multideviceNotificationAccessSetupAwaitingResponseTitle",
        IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_AWAITING_RESPONSE_TITLE},
-      {"multideviceNotificationAccessSetupAwaitingResponseSummary",
-       IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_AWAITING_RESPONSE_SUMMARY},
       {"multideviceNotificationAccessSetupInstructions",
        IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_INSTRUCTIONS},
       {"multideviceNotificationAccessSetupCompletedTitle",
@@ -352,7 +351,7 @@ void MultiDeviceSection::AddLoadTimeData(
       {"multideviceForgetDeviceDisconnect",
        IDS_SETTINGS_MULTIDEVICE_FORGET_THIS_DEVICE_DISCONNECT},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddBoolean(
       "multideviceAllowedByPolicy",
@@ -418,9 +417,16 @@ void MultiDeviceSection::AddLoadTimeData(
                                  ui::GetChromeOSDeviceName()));
   html_source->AddString(
       "multidevicePhoneHubNotificationsItemSummary",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_NOTIFICATIONS_SUMMARY,
-          ui::GetChromeOSDeviceName()));
+      ui::SubstituteChromeOSDeviceType(
+          IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_NOTIFICATIONS_SUMMARY));
+  html_source->AddString(
+      "multideviceNotificationAccessSetupAckTitle",
+      ui::SubstituteChromeOSDeviceType(
+          IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_ACK_TITLE));
+  html_source->AddString(
+      "multideviceNotificationAccessSetupAwaitingResponseSummary",
+      ui::SubstituteChromeOSDeviceType(
+          IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_AWAITING_RESPONSE_SUMMARY));
   html_source->AddString(
       "multideviceNotificationAccessSetupAccessProhibitedSummary",
       l10n_util::GetStringFUTF16(
@@ -443,8 +449,16 @@ void MultiDeviceSection::AddLoadTimeData(
           GetHelpUrlWithBoard(phonehub::kPhoneHubLearnMoreLink)));
 
   AddEasyUnlockStrings(html_source);
+
+  // We still need to register strings even if Nearby Share is not supported.
+  // For example, the HTML is always built but only displayed if Nearby Share is
+  // supported.
   ::settings::AddNearbyShareData(html_source);
   RegisterNearbySharedStrings(html_source);
+  html_source->AddBoolean(
+      "isNearbyShareSupported",
+      NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
+          profile()));
 }
 
 void MultiDeviceSection::AddHandlers(content::WebUI* web_ui) {
@@ -551,16 +565,10 @@ void MultiDeviceSection::OnHostStatusChanged(
         host_status_with_device) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.RemoveSearchTags(GetMultiDeviceOptedOutSearchConcepts());
-  updater.RemoveSearchTags(GetMultiDeviceOptedInPhoneHubSearchConcepts());
-  updater.RemoveSearchTags(GetMultiDeviceOptedInWifiSyncSearchConcepts());
   updater.RemoveSearchTags(GetMultiDeviceOptedInSearchConcepts());
 
   if (IsOptedIn(host_status_with_device.first)) {
     updater.AddSearchTags(GetMultiDeviceOptedInSearchConcepts());
-    if (features::IsPhoneHubEnabled())
-      updater.AddSearchTags(GetMultiDeviceOptedInPhoneHubSearchConcepts());
-    if (features::IsWifiSyncAndroidEnabled())
-      updater.AddSearchTags(GetMultiDeviceOptedInWifiSyncSearchConcepts());
   } else {
     updater.AddSearchTags(GetMultiDeviceOptedOutSearchConcepts());
   }
@@ -571,11 +579,17 @@ void MultiDeviceSection::OnFeatureStatesChanged(
         feature_states_map) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.RemoveSearchTags(GetSmartLockOptionsSearchConcepts());
+  updater.RemoveSearchTags(GetMultiDeviceOptedInPhoneHubSearchConcepts());
+  updater.RemoveSearchTags(GetMultiDeviceOptedInWifiSyncSearchConcepts());
 
   if (feature_states_map.at(multidevice_setup::mojom::Feature::kSmartLock) ==
       multidevice_setup::mojom::FeatureState::kEnabledByUser) {
     updater.AddSearchTags(GetSmartLockOptionsSearchConcepts());
   }
+  if (IsFeatureSupported(multidevice_setup::mojom::Feature::kPhoneHub))
+    updater.AddSearchTags(GetMultiDeviceOptedInPhoneHubSearchConcepts());
+  if (IsFeatureSupported(multidevice_setup::mojom::Feature::kWifiSync))
+    updater.AddSearchTags(GetMultiDeviceOptedInWifiSyncSearchConcepts());
 }
 
 void MultiDeviceSection::OnNearbySharingEnabledChanged() {
@@ -588,6 +602,14 @@ void MultiDeviceSection::OnNearbySharingEnabledChanged() {
     updater.RemoveSearchTags(GetNearbyShareOnSearchConcepts());
     updater.AddSearchTags(GetNearbyShareOffSearchConcepts());
   }
+}
+
+bool MultiDeviceSection::IsFeatureSupported(
+    multidevice_setup::mojom::Feature feature) {
+  const FeatureState feature_state =
+      multidevice_setup_client_->GetFeatureState(feature);
+  return feature_state != FeatureState::kNotSupportedByPhone &&
+         feature_state != FeatureState::kNotSupportedByChromebook;
 }
 
 }  // namespace settings

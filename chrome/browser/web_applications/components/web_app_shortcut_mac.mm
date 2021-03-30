@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <list>
 #include <map>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
@@ -32,7 +33,6 @@
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/process/process_handle.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -158,6 +158,8 @@ bool g_app_shims_allow_update_and_launch_in_tests = false;
 namespace web_app {
 
 namespace {
+
+WebAppAutoLoginUtil* g_auto_login_util_for_testing = nullptr;
 
 // UMA metric name for creating shortcut result.
 constexpr const char* kCreateShortcutResult = "Apps.CreateShortcuts.Mac.Result";
@@ -364,7 +366,7 @@ class BundleInfoPlist {
     return GURL(base::SysNSStringToUTF8(
         [plist_ valueForKey:app_mode::kCrAppModeShortcutURLKey]));
   }
-  base::string16 GetTitle() const {
+  std::u16string GetTitle() const {
     return base::SysNSStringToUTF16(
         [plist_ valueForKey:app_mode::kCrAppModeShortcutNameKey]);
   }
@@ -625,7 +627,7 @@ bool UpdateAppShortcutsSubdirLocalizedName(
     return false;
 
   base::FilePath directory_name = apps_directory.BaseName().RemoveExtension();
-  base::string16 localized_name =
+  std::u16string localized_name =
       shell_integration::GetAppShortcutsSubdirName();
   NSDictionary* strings_dict = @{
     base::mac::FilePathToNSString(directory_name) :
@@ -768,6 +770,31 @@ void SetChromeAppsFolderForTesting(const base::FilePath& path) {
   *GetOverriddenApplicationsFolder() = path;
 }
 
+// static
+WebAppAutoLoginUtil* WebAppAutoLoginUtil::GetInstance() {
+  if (g_auto_login_util_for_testing)
+    return g_auto_login_util_for_testing;
+
+  static base::NoDestructor<WebAppAutoLoginUtil> instance;
+  return instance.get();
+}
+
+// static
+void WebAppAutoLoginUtil::SetInstanceForTesting(
+    WebAppAutoLoginUtil* auto_login_util) {
+  g_auto_login_util_for_testing = auto_login_util;
+}
+
+void WebAppAutoLoginUtil::AddToLoginItems(const base::FilePath& app_bundle_path,
+                                          bool hide_on_startup) {
+  base::mac::AddToLoginItems(app_bundle_path, hide_on_startup);
+}
+
+void WebAppAutoLoginUtil::RemoveFromLoginItems(
+    const base::FilePath& app_bundle_path) {
+  base::mac::RemoveFromLoginItems(app_bundle_path);
+}
+
 WebAppShortcutCreator::WebAppShortcutCreator(const base::FilePath& app_data_dir,
                                              const ShortcutInfo* shortcut_info)
     : app_data_dir_(app_data_dir), info_(shortcut_info) {
@@ -810,7 +837,7 @@ base::FilePath WebAppShortcutCreator::GetShortcutBasename(
     return GetFallbackBasename();
 
   // Strip all preceding '.'s from the path.
-  base::string16 title = info_->title;
+  std::u16string title = info_->title;
   size_t first_non_dot = 0;
   while (first_non_dot < title.size() && title[first_non_dot] == '.')
     first_non_dot += 1;
@@ -1001,6 +1028,11 @@ bool WebAppShortcutCreator::CreateShortcuts(
   std::vector<base::FilePath> updated_app_paths;
   if (!UpdateShortcuts(true /* create_if_needed */, &updated_app_paths))
     return false;
+  if (creation_locations.in_startup) {
+    // Only add the first app to run at OS login.
+    WebAppAutoLoginUtil::GetInstance()->AddToLoginItems(updated_app_paths[0],
+                                                        false);
+  }
   if (creation_reason == SHORTCUT_CREATION_BY_USER)
     RevealAppShimInFinder(updated_app_paths[0]);
   RecordCreateShortcut(CreateShortcutResult::kSuccess);
@@ -1313,6 +1345,18 @@ void LaunchShim(LaunchShimUpdateBehavior update_behavior,
       std::move(shortcut_info));
 }
 
+// Removes the app shim from the list of Login Items.
+void RemoveAppShimFromLoginItems(const std::string& app_id) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  const std::string bundle_id = GetBundleIdentifier(app_id);
+  auto bundle_infos = SearchForBundlesById(bundle_id);
+  for (const auto& bundle_info : bundle_infos) {
+    WebAppAutoLoginUtil::GetInstance()->RemoveFromLoginItems(
+        bundle_info.bundle_path());
+  }
+}
+
 namespace internals {
 
 bool CreatePlatformShortcuts(const base::FilePath& app_data_path,
@@ -1337,6 +1381,8 @@ bool DeletePlatformShortcuts(const base::FilePath& app_data_path,
   auto bundle_infos = SearchForBundlesById(bundle_id);
   bool result = true;
   for (const auto& bundle_info : bundle_infos) {
+    WebAppAutoLoginUtil::GetInstance()->RemoveFromLoginItems(
+        bundle_info.bundle_path());
     if (!base::DeletePathRecursively(bundle_info.bundle_path()))
       result = false;
   }
@@ -1349,12 +1395,14 @@ void DeleteMultiProfileShortcutsForApp(const std::string& app_id) {
   const std::string bundle_id = GetBundleIdentifier(app_id);
   auto bundle_infos = SearchForBundlesById(bundle_id);
   for (const auto& bundle_info : bundle_infos) {
+    WebAppAutoLoginUtil::GetInstance()->RemoveFromLoginItems(
+        bundle_info.bundle_path());
     base::DeletePathRecursively(bundle_info.bundle_path());
   }
 }
 
 void UpdatePlatformShortcuts(const base::FilePath& app_data_path,
-                             const base::string16& old_app_title,
+                             const std::u16string& old_app_title,
                              const ShortcutInfo& shortcut_info) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
@@ -1381,6 +1429,8 @@ void DeleteAllShortcutsForProfile(const base::FilePath& profile_path) {
       continue;
     if (!info.IsForProfile(profile_path))
       continue;
+    WebAppAutoLoginUtil::GetInstance()->RemoveFromLoginItems(
+        info.bundle_path());
     base::DeletePathRecursively(info.bundle_path());
   }
 }

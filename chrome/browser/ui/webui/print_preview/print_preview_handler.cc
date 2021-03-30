@@ -16,7 +16,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/i18n/number_formatting.h"
 #include "base/json/json_reader.h"
 #include "base/lazy_instance.h"
@@ -25,6 +24,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/account_manager_facade_factory.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/bad_message.h"
 #include "chrome/browser/browser_process.h"
@@ -80,12 +80,11 @@
 #include "third_party/icu/source/i18n/unicode/ulocdata.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/account_manager/account_manager_util.h"
-#include "chrome/browser/chromeos/drive/drive_integration_service.h"
+#include "chrome/browser/ash/account_manager/account_manager_util.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #endif
 
@@ -225,8 +224,7 @@ UserActionBuckets DetermineUserAction(const base::Value& settings) {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (base::FeatureList::IsEnabled(chromeos::features::kPrintSaveToDrive) &&
-      settings.FindBoolKey(kSettingPrintToGoogleDrive).value_or(false)) {
+  if (settings.FindBoolKey(kSettingPrintToGoogleDrive).value_or(false)) {
     return UserActionBuckets::kPrintToGoogleDriveCros;
   }
 #endif
@@ -712,13 +710,13 @@ void PrintPreviewHandler::HandleSignin(const base::ListValue* /*args*/) {
   DCHECK(profile);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::IsAccountManagerAvailable(profile)) {
+  if (ash::IsAccountManagerAvailable(profile)) {
     // Chrome OS Account Manager is enabled on this Profile and hence, all
     // account management flows will go through native UIs and not through a
     // tabbed browser window.
-    chromeos::InlineLoginDialogChromeOS::ShowDeprecated(
-        account_manager::AccountManagerFacade::AccountAdditionSource::
-            kPrintPreviewDialog);
+    ::GetAccountManagerFacade(profile->GetPath().value())
+        ->ShowAddAccountDialog(account_manager::AccountManagerFacade::
+                                   AccountAdditionSource::kPrintPreviewDialog);
     return;
   }
 #endif
@@ -780,14 +778,14 @@ void PrintPreviewHandler::GetLocaleInformation(base::Value* settings) {
 
   // Getting the number formatting based on the locale and writing to
   // dictionary.
-  base::string16 number_format = base::FormatDouble(123456.78, 2);
+  std::u16string number_format = base::FormatDouble(123456.78, 2);
   size_t thousands_pos = number_format.find('3') + 1;
-  base::string16 thousands_delimiter = number_format.substr(thousands_pos, 1);
+  std::u16string thousands_delimiter = number_format.substr(thousands_pos, 1);
   if (number_format[thousands_pos] == '4')
     thousands_delimiter.clear();
   size_t decimal_pos = number_format.find('6') + 1;
   DCHECK_NE(number_format[decimal_pos], '7');
-  base::string16 decimal_delimiter = number_format.substr(decimal_pos, 1);
+  std::u16string decimal_delimiter = number_format.substr(decimal_pos, 1);
   settings->SetStringKey(kDecimalDelimiter, decimal_delimiter);
   settings->SetStringKey(kThousandsDelimiter, thousands_delimiter);
   settings->SetIntKey(kUnitType, system);
@@ -887,13 +885,11 @@ void PrintPreviewHandler::SendInitialSettings(
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (base::FeatureList::IsEnabled(chromeos::features::kPrintSaveToDrive)) {
-    drive::DriveIntegrationService* drive_service =
-        drive::DriveIntegrationServiceFactory::GetForProfile(
-            Profile::FromWebUI(web_ui()));
-    initial_settings.SetBoolKey(kIsDriveMounted,
-                                drive_service && drive_service->IsMounted());
-  }
+  drive::DriveIntegrationService* drive_service =
+      drive::DriveIntegrationServiceFactory::GetForProfile(
+          Profile::FromWebUI(web_ui()));
+  initial_settings.SetBoolKey(kIsDriveMounted,
+                              drive_service && drive_service->IsMounted());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   ResolveJavascriptCallback(base::Value(callback_id), initial_settings);
@@ -1082,9 +1078,7 @@ PrinterHandler* PrintPreviewHandler::GetPrinterHandler(
   }
 #if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
   if (printer_type == PrinterType::kPrivet &&
-      (base::FeatureList::IsEnabled(features::kForceEnablePrivetPrinting) ||
-       GetPrefs()->GetBoolean(
-           prefs::kCloudPrintDeprecationWarningsSuppressed))) {
+      GetPrefs()->GetBoolean(prefs::kForceEnablePrivetPrinting)) {
     if (!privet_printer_handler_) {
       privet_printer_handler_ =
           PrinterHandler::CreateForPrivetPrinters(Profile::FromWebUI(web_ui()));
@@ -1156,8 +1150,7 @@ void PrintPreviewHandler::RegisterForGaiaCookieChanges() {
   DCHECK(!identity_manager_);
   cloud_print_enabled_ =
       !base::Contains(printer_type_deny_list_, PrinterType::kCloud) &&
-      GetPrefs()->GetBoolean(prefs::kCloudPrintSubmitEnabled) &&
-      GetPrefs()->GetBoolean(prefs::kCloudPrintDeprecationWarningsSuppressed);
+      GetPrefs()->GetBoolean(prefs::kCloudPrintSubmitEnabled);
 
   if (!cloud_print_enabled_)
     return;

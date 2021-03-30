@@ -169,6 +169,10 @@ static_library("test_support") {
     "//third_party/libxml:xml_reader",
   ]
 
+  if (enable_base_tracing) {
+    public_deps += [ "//third_party/perfetto:perfetto_test_support" ]
+  }
+
   if (is_win) {
     sources += [
       "async_results_test_values_win.h",
@@ -261,6 +265,8 @@ static_library("test_support") {
     sources += [
       "../fuchsia/test_component_context_for_process.cc",
       "../fuchsia/test_component_context_for_process.h",
+      "../fuchsia/test_component_controller.cc",
+      "../fuchsia/test_component_controller.h",
     ]
   }
 
@@ -404,15 +410,6 @@ shared_library("test_shared_library") {
   deps = [ ":native_library_test_utils" ]
 }
 
-static_library("run_all_base_unittests") {
-  # Only targets in base should depend on this, targets outside base
-  # should depend on run_all_unittests above.
-  visibility = [ "//base/*" ]
-  testonly = true
-  sources = [ "run_all_base_unittests.cc" ]
-  deps = [ ":test_support" ]
-}
-
 if (is_linux || is_chromeos) {
   source_set("fontconfig_util_linux") {
     sources = [
@@ -488,8 +485,8 @@ if (is_android) {
       "//base:base_java",
       "//base:base_java_test_support",
       "//testing/android/native_test:native_main_runner_java",
-      "//third_party/android_deps:androidx_annotation_annotation_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
     ]
     srcjar_deps = [ ":test_support_java_aidl" ]
     sources = [

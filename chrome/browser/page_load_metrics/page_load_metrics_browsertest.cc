@@ -31,10 +31,12 @@
 #include "chrome/browser/page_load_metrics/observers/service_worker_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/session_restore_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
-#include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
+#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/prefetch/no_state_prefetch/prerender_test_utils.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
 #include "chrome/browser/sessions/session_service_factory.h"
@@ -53,9 +55,9 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
-#include "components/no_state_prefetch/browser/prerender_handle.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/no_state_prefetch/browser/prerender_histograms.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
 #include "components/no_state_prefetch/common/prerender_origin.h"
 #include "components/page_load_metrics/browser/observers/core/uma_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/use_counter_page_load_metrics_observer.h"
@@ -195,16 +197,16 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
 
   // Triggers nostate prefetch of |url|.
   void TriggerNoStatePrefetch(const GURL& url) {
-    prerender::PrerenderManager* prerender_manager =
-        prerender::PrerenderManagerFactory::GetForBrowserContext(
+    prerender::NoStatePrefetchManager* no_state_prefetch_manager =
+        prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
             browser()->profile());
-    ASSERT_TRUE(prerender_manager);
+    ASSERT_TRUE(no_state_prefetch_manager);
 
-    prerender::test_utils::TestPrerenderContentsFactory*
-        prerender_contents_factory =
-            new prerender::test_utils::TestPrerenderContentsFactory();
-    prerender_manager->SetPrerenderContentsFactoryForTest(
-        prerender_contents_factory);
+    prerender::test_utils::TestNoStatePrefetchContentsFactory*
+        no_state_prefetch_contents_factory =
+            new prerender::test_utils::TestNoStatePrefetchContentsFactory();
+    no_state_prefetch_manager->SetNoStatePrefetchContentsFactoryForTest(
+        no_state_prefetch_contents_factory);
 
     content::SessionStorageNamespace* storage_namespace =
         browser()
@@ -215,13 +217,13 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(storage_namespace);
 
     std::unique_ptr<prerender::test_utils::TestPrerender> test_prerender =
-        prerender_contents_factory->ExpectPrerenderContents(
+        no_state_prefetch_contents_factory->ExpectNoStatePrefetchContents(
             prerender::FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
 
-    std::unique_ptr<prerender::PrerenderHandle> prerender_handle =
-        prerender_manager->AddPrerenderFromOmnibox(url, storage_namespace,
-                                                   gfx::Size(640, 480));
-    ASSERT_EQ(prerender_handle->contents(), test_prerender->contents());
+    std::unique_ptr<prerender::NoStatePrefetchHandle> no_state_prefetch_handle =
+        no_state_prefetch_manager->AddPrerenderFromOmnibox(
+            url, storage_namespace, gfx::Size(640, 480));
+    ASSERT_EQ(no_state_prefetch_handle->contents(), test_prerender->contents());
 
     // The final status may be either  FINAL_STATUS_NOSTATE_PREFETCH_FINISHED or
     // FINAL_STATUS_RECENTLY_VISITED.
@@ -1937,14 +1939,14 @@ class SessionRestorePageLoadMetricsBrowserTest
     SessionStartupPref::SetStartupPref(
         profile, SessionStartupPref(SessionStartupPref::LAST));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    SessionServiceTestHelper helper(
-        SessionServiceFactory::GetForProfile(profile));
+    SessionServiceTestHelper helper(profile);
     helper.SetForceBrowserNotAliveWithNoWindows(true);
-    helper.ReleaseService();
 #endif
 
-    std::unique_ptr<ScopedKeepAlive> keep_alive(new ScopedKeepAlive(
-        KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED));
+    auto keep_alive = std::make_unique<ScopedKeepAlive>(
+        KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED);
+    auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+        profile, ProfileKeepAliveOrigin::kBrowserWindow);
     CloseBrowserSynchronously(browser);
 
     // Create a new window, which should trigger session restore.
@@ -3143,19 +3145,22 @@ class PageLoadMetricsBrowserTestWithBackForwardCache
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PageLoadMetricsBrowserTest::SetUpCommandLine(command_line);
-    feature_list.InitAndEnableFeatureWithParameters(
-        features::kBackForwardCache,
-        // Set a very long TTL before expiration (longer than the test timeout)
-        // so tests that are expecting deletion don't pass when they shouldn't.
-        //
-        // TODO(hajimehoshi): This value is used in various places. Define a
-        // constant and use it.
-        //
-        // Some features like the outstanding network requests are expected to
-        // appear in almost any output. Filter them out to make the tests
-        // simpler.
-        {{"TimeToLiveInBackForwardCacheInSeconds", "3600"},
-         {"ignore_outstanding_network_request_for_testing", "true"}});
+    feature_list.InitWithFeaturesAndParameters(
+        {{features::kBackForwardCache,
+          // Set a very long TTL before expiration (longer than the test
+          // timeout) so tests that are expecting deletion don't pass when they
+          // shouldn't.
+          //
+          // TODO(hajimehoshi): This value is used in various places. Define a
+          // constant and use it.
+          //
+          // Some features like the outstanding network requests are expected to
+          // appear in almost any output. Filter them out to make the tests
+          // simpler.
+          {{"TimeToLiveInBackForwardCacheInSeconds", "3600"},
+           {"ignore_outstanding_network_request_for_testing", "true"}}}},
+        // Allow BackForwardCache for all devices regardless of their memory.
+        {features::kBackForwardCacheMemoryControls});
   }
 
  private:

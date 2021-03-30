@@ -215,6 +215,7 @@ cast_source_set("browser_base") {
     "//chromecast/media/base:media_codec_support",
     "//chromecast/media/base:video_plane_controller",
     "//chromecast/media/cdm:cdm_origin_provider",
+    "//chromecast/media/common:media_pipeline_backend_manager",
     "//chromecast/media/service",
     "//chromecast/media/service/mojom",
     "//chromecast/net",
@@ -251,6 +252,7 @@ cast_source_set("browser_base") {
     "//media/mojo/services",
     "//mojo/public/cpp/bindings",
     "//net",
+    "//services/cert_verifier/public/mojom",
     "//services/media_session/public/mojom",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/network/public/mojom",
@@ -414,8 +416,9 @@ cast_source_set("browser_base") {
     ]
     if (use_aura) {
       sources += [
-        "accessibility/accessibility_manager.cc",
         "accessibility/accessibility_manager.h",
+        "accessibility/accessibility_manager_impl.cc",
+        "accessibility/accessibility_manager_impl.h",
         "accessibility/accessibility_sound_player.h",
         "accessibility/accessibility_sound_proxy.cc",
         "accessibility/accessibility_sound_proxy.h",
@@ -443,6 +446,8 @@ cast_source_set("browser_base") {
       "//components/zoom",
       "//extensions/browser",
       "//extensions/browser:core_api_provider",
+      "//extensions/browser/api/messaging",
+      "//extensions/browser/updater",
       "//extensions/common",
       "//extensions/common/api",
       "//google_apis:google_apis",
@@ -464,6 +469,10 @@ cast_source_set("browser_base") {
       "webview/cast_app_controller.h",
       "webview/cast_app_rpc_instance.cc",
       "webview/cast_app_rpc_instance.h",
+      "webview/cast_content_window_embedded.cc",
+      "webview/cast_content_window_embedded.h",
+      "webview/cast_window_embedder.cc",
+      "webview/cast_window_embedder.h",
       "webview/js_channel_service.cc",
       "webview/js_channel_service.h",
       "webview/platform_views_grpc_service.cc",
@@ -488,11 +497,13 @@ cast_source_set("browser_base") {
     deps += [
       ":web_contents_provider",
       "//chromecast/browser/webview/proto",
+      "//chromecast/ui:back_gesture_router",
       "//components/exo",
       "//components/exo/wayland",
       "//content/public/browser",
       "//services/viz/privileged/mojom/compositing",
       "//third_party/grpc:grpc++",
+      "//ui/base/dragdrop/mojom",
       "//ui/display/manager",
     ]
   }
@@ -662,6 +673,10 @@ cast_source_set("unittests") {
       "//ui/aura:test_support",
       "//ui/events:test_support",
     ]
+  }
+
+  if ((is_linux || is_chromeos) && use_ozone) {
+    deps += [ "//chromecast/browser/webview:unittests" ]
   }
 }
 

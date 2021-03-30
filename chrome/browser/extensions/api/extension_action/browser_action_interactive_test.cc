@@ -40,6 +40,7 @@
 #include "extensions/browser/notification_types.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
@@ -94,7 +95,7 @@ class PopupHostWatcher : public content::NotificationObserver {
     const ExtensionHost* host =
         content::Details<const ExtensionHost>(details).ptr();
     DCHECK(host);
-    if (host->extension_host_type() != VIEW_TYPE_EXTENSION_POPUP)
+    if (host->extension_host_type() != mojom::ViewType::kExtensionPopup)
       return;
 
     ++(type == NOTIFICATION_EXTENSION_HOST_CREATED ? created_ : destroyed_);
@@ -104,7 +105,7 @@ class PopupHostWatcher : public content::NotificationObserver {
 
  private:
   content::NotificationRegistrar registrar_;
-  base::Closure quit_closure_;
+  base::RepeatingClosure quit_closure_;
   int created_ = 0;
   int destroyed_ = 0;
 
@@ -274,9 +275,10 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, TestOpenPopupIncognito) {
   content::WindowedNotificationObserver frame_observer(
       content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
       content::NotificationService::AllSources());
-  ASSERT_TRUE(RunExtensionSubtest("browser_action/open_popup",
-                                  "open_popup_succeeds.html",
-                                  kFlagEnableIncognito, kFlagUseIncognito))
+  ASSERT_TRUE(RunExtensionTest({.name = "browser_action/open_popup",
+                                .page_url = "open_popup_succeeds.html",
+                                .open_in_incognito = true},
+                               {.allow_in_incognito = true}))
       << message_;
   frame_observer.Wait();
   // Non-Aura Linux uses a singleton for the popup, so it looks like all windows
@@ -298,8 +300,9 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, TestOpenPopupIncognito) {
 IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
                        TestOpenPopupIncognitoFromBackground) {
   const Extension* extension =
-      LoadExtensionIncognito(test_data_dir_.AppendASCII("browser_action").
-          AppendASCII("open_popup_background"));
+      LoadExtension(test_data_dir_.AppendASCII("browser_action")
+                        .AppendASCII("open_popup_background"),
+                    {.allow_in_incognito = true});
   ASSERT_TRUE(extension);
   ExtensionTestMessageListener listener(false);
   listener.set_extension_id(extension->id());

@@ -261,7 +261,8 @@ void SerialConnection::CreatePipe(
   options.element_num_bytes = 1;
   options.capacity_num_bytes = buffer_size_;
 
-  CHECK_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(&options, producer, consumer));
+  CHECK_EQ(MOJO_RESULT_OK,
+           mojo::CreateDataPipe(&options, *producer, *consumer));
 }
 
 void SerialConnection::SetUpReceiveDataPipe() {

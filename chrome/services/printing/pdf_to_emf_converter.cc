@@ -12,6 +12,7 @@
 #include "base/containers/span.h"
 #include "base/lazy_instance.h"
 #include "base/stl_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "pdf/pdf.h"
 #include "printing/emf_win.h"
@@ -40,7 +41,7 @@ void PreCacheFontCharacters(const LOGFONT* logfont,
   memcpy(logfont_mojo.data(), logfont, sizeof(LOGFONT));
 
   g_converter_clients.Get().front()->PreCacheFontCharacters(
-      logfont_mojo, base::string16(text, text_length));
+      logfont_mojo, base::WideToUTF16({text, text_length}));
 }
 
 void OnConvertedClientDisconnected() {

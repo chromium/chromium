@@ -32,11 +32,7 @@
                   android:taskAffinity=".CastWebContentsActivity"
                   android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
                   android:excludeFromRecents="false"
-                  {% if cast_build_enable_background_activities == "true" %}
                   android:noHistory="false">
-                  {% else %}
-                  android:noHistory="true">
-                  {% endif %}
         </activity>
 
         <!-- The following service entries exist in order to allow us to

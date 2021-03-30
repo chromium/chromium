@@ -8,26 +8,57 @@
 #include <stdint.h>
 #include <string>
 
-#include "base/strings/string16.h"
+#include "base/time/time.h"
 
 // Requires cleanup. See crbug.com/800374.
 enum SpeechRecognizerStatus {
   SPEECH_RECOGNIZER_OFF = 0,
+  // Ready for SpeechRecognizer::Start() to be called.
   SPEECH_RECOGNIZER_READY,
+  // Beginning to listen for speech, but have not received any yet.
   SPEECH_RECOGNIZER_RECOGNIZING,
+  // Sounds are being recognized.
   SPEECH_RECOGNIZER_IN_SPEECH,
-  SPEECH_RECOGNIZER_STOPPING,
-  SPEECH_RECOGNIZER_NETWORK_ERROR,
+  // There was an error.
+  SPEECH_RECOGNIZER_ERROR,
 };
 
-// Delegate for speech recognizer. All methods are called from the UI
-// thread.
+// Delegate for speech recognizer. All methods are called from the thread on
+// which this delegate was constructed.
 class SpeechRecognizerDelegate {
  public:
+  // The timing information for the recognized speech text.
+  struct TranscriptTiming {
+    TranscriptTiming();
+    TranscriptTiming(const TranscriptTiming&) = delete;
+    TranscriptTiming& operator=(const TranscriptTiming&) = delete;
+    ~TranscriptTiming();
+
+    // Describes the time that elapsed between the start of speech recognition
+    // session and the first audio input that corresponds to the transcription
+    // result.
+    base::TimeDelta audio_start_time;
+
+    // Describes the time that elapsed between the start of speech recognition
+    // and the last audio input that corresponds to the transcription result.
+    base::TimeDelta audio_end_time;
+
+    // Describes the time that elapsed between the start of speech recognition
+    // and the audio input corresponding to each word in the transcription
+    // result. The vector will have the same number of TimeDeltas as the
+    // transcription result.
+    std::vector<base::TimeDelta> word_offsets;
+  };
+
   // Receive a speech recognition result. |is_final| indicated whether the
   // result is an intermediate or final result. If |is_final| is true, then the
   // recognizer stops and no more results will be returned.
-  virtual void OnSpeechResult(const base::string16& query, bool is_final) = 0;
+  // May include word timing information in |timing| if the speech recognizer is
+  // an on device speech recognizer.
+  virtual void OnSpeechResult(
+      const std::u16string& text,
+      bool is_final,
+      const base::Optional<TranscriptTiming>& timing) = 0;
 
   // Invoked regularly to indicate the average sound volume.
   virtual void OnSpeechSoundLevelChanged(int16_t level) = 0;
@@ -35,11 +66,6 @@ class SpeechRecognizerDelegate {
   // Invoked when the state of speech recognition is changed.
   virtual void OnSpeechRecognitionStateChanged(
       SpeechRecognizerStatus new_state) = 0;
-
-  // Get the OAuth2 scope and token to pass to the speech recognizer. Does not
-  // modify the arguments if no auth token is available or allowed.
-  virtual void GetSpeechAuthParameters(std::string* auth_scope,
-                                       std::string* auth_token) = 0;
 
  protected:
   virtual ~SpeechRecognizerDelegate() {}

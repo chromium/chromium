@@ -17,9 +17,9 @@
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
 #include "media/base/android_overlay_mojo_factory.h"
+#include "media/base/supported_video_decoder_config.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/services/mojo_media_client.h"
-#include "media/video/supported_video_decoder_config.h"
 
 namespace gpu {
 class GpuMemoryBufferFactory;

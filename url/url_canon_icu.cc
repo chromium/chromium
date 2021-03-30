@@ -80,7 +80,7 @@ ICUCharsetConverter::ICUCharsetConverter(UConverter* converter)
 
 ICUCharsetConverter::~ICUCharsetConverter() = default;
 
-void ICUCharsetConverter::ConvertFromUTF16(const base::char16* input,
+void ICUCharsetConverter::ConvertFromUTF16(const char16_t* input,
                                            int input_len,
                                            CanonOutput* output) {
   // Install our error handler. It will be called for character that can not

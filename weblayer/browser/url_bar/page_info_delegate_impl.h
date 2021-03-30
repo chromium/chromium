@@ -5,7 +5,8 @@
 #ifndef WEBLAYER_BROWSER_URL_BAR_PAGE_INFO_DELEGATE_IMPL_H_
 #define WEBLAYER_BROWSER_URL_BAR_PAGE_INFO_DELEGATE_IMPL_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "build/build_config.h"
 #include "components/browsing_data/content/local_shared_objects_container.h"
 #include "components/page_info/page_info_delegate.h"
@@ -26,9 +27,8 @@ class PageInfoDelegateImpl : public PageInfoDelegate {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   safe_browsing::PasswordProtectionService* GetPasswordProtectionService()
       const override;
-  void OnUserActionOnPasswordUi(content::WebContents* web_contents,
-                                safe_browsing::WarningAction action) override;
-  base::string16 GetWarningDetailText() override;
+  void OnUserActionOnPasswordUi(safe_browsing::WarningAction action) override;
+  std::u16string GetWarningDetailText() override;
 #endif
   permissions::PermissionResult GetPermissionStatus(
       ContentSettingsType type,
@@ -37,6 +37,10 @@ class PageInfoDelegateImpl : public PageInfoDelegate {
 #if !defined(OS_ANDROID)
   bool CreateInfoBarDelegate() override;
   void ShowSiteSettings(const GURL& site_url) override;
+  void OpenCookiesDialog() override;
+  void OpenCertificateDialog(net::X509Certificate* certificate) override;
+  void OpenConnectionHelpCenterPage(const ui::Event& event) override;
+  void OpenSafetyTipHelpCenterPage() override;
 #endif
 
   permissions::PermissionDecisionAutoBlocker* GetPermissionDecisionAutoblocker()
@@ -51,7 +55,7 @@ class PageInfoDelegateImpl : public PageInfoDelegate {
   security_state::VisibleSecurityState GetVisibleSecurityState() override;
 
 #if defined(OS_ANDROID)
-  const base::string16 GetClientApplicationName() override;
+  const std::u16string GetClientApplicationName() override;
 #endif
 
  private:

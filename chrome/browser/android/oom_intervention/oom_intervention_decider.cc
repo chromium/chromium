@@ -16,11 +16,15 @@ namespace {
 
 const char kOomInterventionDecider[] = "oom_intervention.decider";
 
-// Pref path for blacklist. If a hostname is in the blacklist we never trigger
-// intervention on the host.
+// Deprecated: Replaced with `kBlocklist`.
+// TODO(https://crbug.com/1169828): Remove this after M92 once existing
+// clients have migrated to the new pref.
 const char kBlacklist[] = "oom_intervention.blacklist";
+// Pref path for blocklist. If a hostname is in the blocklist we never trigger
+// intervention on the host.
+const char kBlocklist[] = "oom_intervention.blocklist";
 // Pref path for declined host list. If a hostname is in the declined host list
-// we don't trigger intervention until a OOM crash happends on the host.
+// we don't trigger intervention until a OOM crash happens on the host.
 const char kDeclinedHostList[] = "oom_intervention.declined_host_list";
 // Pref path for OOM detected host list. When an OOM crash is observed on
 // a host the hostname is added to the list.
@@ -38,14 +42,17 @@ class DelegateImpl : public OomInterventionDecider::Delegate {
 }  // namespace
 
 const size_t OomInterventionDecider::kMaxListSize = 10;
-const size_t OomInterventionDecider::kMaxBlacklistSize = 6;
+const size_t OomInterventionDecider::kMaxBlocklistSize = 6;
 
 // static
 void OomInterventionDecider::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterListPref(kBlacklist);
+  registry->RegisterListPref(kBlocklist);
   registry->RegisterListPref(kDeclinedHostList);
   registry->RegisterListPref(kOomDetectedHostList);
+
+  // Continue to register the old preference to migrate its value.
+  registry->RegisterListPref(kBlacklist);
 }
 
 // static
@@ -107,7 +114,7 @@ void OomInterventionDecider::OnInterventionDeclined(const std::string& host) {
     return;
 
   if (IsInList(kDeclinedHostList, host)) {
-    AddToList(kBlacklist, host);
+    AddToList(kBlocklist, host);
   } else {
     AddToList(kDeclinedHostList, host);
   }
@@ -120,7 +127,7 @@ void OomInterventionDecider::OnOomDetected(const std::string& host) {
 }
 
 void OomInterventionDecider::ClearData() {
-  prefs_->ClearPref(kBlacklist);
+  prefs_->ClearPref(kBlocklist);
   prefs_->ClearPref(kDeclinedHostList);
   prefs_->ClearPref(kOomDetectedHostList);
 }
@@ -129,6 +136,14 @@ void OomInterventionDecider::OnPrefInitialized(bool success) {
   if (!success)
     return;
 
+  // Migrate `kBlacklist` to `kBlocklist`.
+  auto* old_pref_value = prefs_->GetList(kBlacklist);
+  if (!old_pref_value->GetList().empty()) {
+    prefs_->Set(kBlocklist, *old_pref_value);
+    ListPrefUpdate update(prefs_, kBlacklist);
+    update->ClearList();
+  }
+
   if (delegate_->WasLastShutdownClean())
     return;
 
@@ -136,16 +151,16 @@ void OomInterventionDecider::OnPrefInitialized(bool success) {
       prefs_->GetList(kDeclinedHostList)->GetList();
   if (!declined_list.empty()) {
     const std::string& last_declined = declined_list.back().GetString();
-    if (!IsInList(kBlacklist, last_declined))
+    if (!IsInList(kBlocklist, last_declined))
       AddToList(kOomDetectedHostList, last_declined);
   }
 }
 
 bool OomInterventionDecider::IsOptedOut(const std::string& host) const {
-  if (prefs_->GetList(kBlacklist)->GetList().size() >= kMaxBlacklistSize)
+  if (prefs_->GetList(kBlocklist)->GetList().size() >= kMaxBlocklistSize)
     return true;
 
-  return IsInList(kBlacklist, host);
+  return IsInList(kBlocklist, host);
 }
 
 bool OomInterventionDecider::IsInList(const char* list_name,

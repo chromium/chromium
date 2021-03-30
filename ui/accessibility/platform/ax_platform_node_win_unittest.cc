@@ -37,7 +37,7 @@ using base::win::ScopedVariant;
 
 namespace ui {
 
-const base::string16 AXPlatformNodeWinTest::kEmbeddedCharacterAsString = {
+const std::u16string AXPlatformNodeWinTest::kEmbeddedCharacterAsString = {
     ui::AXPlatformNodeBase::kEmbeddedCharacter};
 
 namespace {
@@ -289,7 +289,7 @@ AXPlatformNode* AXPlatformNodeWinTest::AXPlatformNodeFromNode(AXNode* node) {
 }
 
 template <typename T>
-ComPtr<T> AXPlatformNodeWinTest::QueryInterfaceFromNodeId(AXNode::AXID id) {
+ComPtr<T> AXPlatformNodeWinTest::QueryInterfaceFromNodeId(AXNodeID id) {
   return QueryInterfaceFromNode<T>(GetNodeFromTree(id));
 }
 
@@ -325,7 +325,7 @@ AXPlatformNodeWinTest::GetIRawElementProviderSimpleFromChildIndex(
 Microsoft::WRL::ComPtr<IRawElementProviderSimple>
 AXPlatformNodeWinTest::GetIRawElementProviderSimpleFromTree(
     const ui::AXTreeID tree_id,
-    const AXNode::AXID node_id) {
+    const AXNodeID node_id) {
   return QueryInterfaceFromNode<IRawElementProviderSimple>(
       GetNodeFromTree(tree_id, node_id));
 }
@@ -453,7 +453,7 @@ AXPlatformNodeWinTest::GetFragmentRoot() {
 }
 
 AXPlatformNodeWinTest::PatternSet
-AXPlatformNodeWinTest::GetSupportedPatternsFromNodeId(AXNode::AXID id) {
+AXPlatformNodeWinTest::GetSupportedPatternsFromNodeId(AXNodeID id) {
   ComPtr<IRawElementProviderSimple> raw_element_provider_simple =
       QueryInterfaceFromNodeId<IRawElementProviderSimple>(id);
   PatternSet supported_patterns;
@@ -517,6 +517,7 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleDetachedObject) {
 TEST_F(AXPlatformNodeWinTest, IAccessibleHitTest) {
   AXNodeData root;
   root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
   root.relative_bounds.bounds = gfx::RectF(0, 0, 40, 40);
 
   AXNodeData node1;
@@ -559,6 +560,7 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleHitTest) {
 TEST_F(AXPlatformNodeWinTest, IAccessibleHitTestDoesNotLoopForever) {
   AXNodeData root;
   root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
   root.relative_bounds.bounds = gfx::RectF(0, 0, 40, 40);
 
   AXNodeData node1;
@@ -605,6 +607,7 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleName) {
 TEST_F(AXPlatformNodeWinTest, IAccessibleDescription) {
   AXNodeData root;
   root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
   root.AddStringAttribute(ax::mojom::StringAttribute::kDescription,
                           "Description");
   Init(root);
@@ -641,6 +644,7 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleAccValue) {
 TEST_F(AXPlatformNodeWinTest, IAccessibleShortcut) {
   AXNodeData root;
   root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
   root.AddStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts,
                           "Shortcut");
   Init(root);
@@ -994,6 +998,7 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleSelectionTableCellMultipleSelected) {
 TEST_F(AXPlatformNodeWinTest, IAccessibleRole) {
   AXNodeData root;
   root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
   root.child_ids.push_back(2);
 
   AXNodeData child;
@@ -1029,6 +1034,7 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleRole) {
 TEST_F(AXPlatformNodeWinTest, IAccessibleLocation) {
   AXNodeData root;
   root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
   root.relative_bounds.bounds = gfx::RectF(10, 40, 800, 600);
   Init(root);
 
@@ -1061,6 +1067,7 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleLocation) {
 TEST_F(AXPlatformNodeWinTest, IAccessibleChildAndParent) {
   AXNodeData root;
   root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
   root.child_ids.push_back(2);
   root.child_ids.push_back(3);
 
@@ -1162,6 +1169,7 @@ TEST_F(AXPlatformNodeWinTest, IAccessible2IndexInParent) {
   AXNodeData root;
   root.id = 1;
   root.child_ids.push_back(2);
+  root.role = ax::mojom::Role::kRootWebArea;
   root.child_ids.push_back(3);
 
   AXNodeData left;
@@ -1853,7 +1861,7 @@ TEST_F(AXPlatformNodeWinTest, IAccessible2GetNRelations) {
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
 
-  std::vector<AXNode::AXID> describedby_ids = {1, 2, 3};
+  std::vector<AXNodeID> describedby_ids = {1, 2, 3};
   root.AddIntListAttribute(ax::mojom::IntListAttribute::kDescribedbyIds,
                            describedby_ids);
 
@@ -1899,7 +1907,7 @@ TEST_F(AXPlatformNodeWinTest, IAccessible2GetNRelations) {
 
   EXPECT_HRESULT_SUCCEEDED(
       describedby_relation->get_relationType(relation_type.Receive()));
-  EXPECT_EQ(L"describedBy", base::string16(relation_type.Get()));
+  EXPECT_EQ(L"describedBy", std::wstring(relation_type.Get()));
 
   relation_type.Reset();
 
@@ -1922,7 +1930,7 @@ TEST_F(AXPlatformNodeWinTest, IAccessible2GetNRelations) {
       ax_child1->get_relation(0, &description_for_relation));
   EXPECT_HRESULT_SUCCEEDED(
       description_for_relation->get_relationType(relation_type.Receive()));
-  EXPECT_EQ(L"descriptionFor", base::string16(relation_type.Get()));
+  EXPECT_EQ(L"descriptionFor", std::wstring(relation_type.Get()));
   relation_type.Reset();
 
   EXPECT_HRESULT_SUCCEEDED(description_for_relation->get_nTargets(&n_targets));
@@ -1939,7 +1947,7 @@ TEST_F(AXPlatformNodeWinTest, IAccessible2GetNRelations) {
       ax_child2->get_relation(0, &description_for_relation));
   EXPECT_HRESULT_SUCCEEDED(
       description_for_relation->get_relationType(relation_type.Receive()));
-  EXPECT_EQ(L"descriptionFor", base::string16(relation_type.Get()));
+  EXPECT_EQ(L"descriptionFor", std::wstring(relation_type.Get()));
   relation_type.Reset();
 
   EXPECT_HRESULT_SUCCEEDED(description_for_relation->get_nTargets(&n_targets));
@@ -1999,7 +2007,7 @@ TEST_F(AXPlatformNodeWinTest,
 
   EXPECT_HRESULT_SUCCEEDED(
       controls_relation->get_relationType(relation_type.Receive()));
-  EXPECT_EQ(L"controllerFor", base::string16(relation_type.Get()));
+  EXPECT_EQ(L"controllerFor", std::wstring(relation_type.Get()));
 
   relation_type.Reset();
 
@@ -2024,7 +2032,7 @@ TEST_F(AXPlatformNodeWinTest,
   EXPECT_HRESULT_SUCCEEDED(ax_child2->get_relation(0, &controlled_by_relation));
   EXPECT_HRESULT_SUCCEEDED(
       controlled_by_relation->get_relationType(relation_type.Receive()));
-  EXPECT_EQ(L"controlledBy", base::string16(relation_type.Get()));
+  EXPECT_EQ(L"controlledBy", std::wstring(relation_type.Get()));
   relation_type.Reset();
 
   EXPECT_HRESULT_SUCCEEDED(controlled_by_relation->get_nTargets(&n_targets));
@@ -2038,7 +2046,7 @@ TEST_F(AXPlatformNodeWinTest,
   EXPECT_HRESULT_SUCCEEDED(ax_child2->get_relation(1, &controlled_by_relation));
   EXPECT_HRESULT_SUCCEEDED(
       controlled_by_relation->get_relationType(relation_type.Receive()));
-  EXPECT_EQ(L"controlledBy", base::string16(relation_type.Get()));
+  EXPECT_EQ(L"controlledBy", std::wstring(relation_type.Get()));
   relation_type.Reset();
 
   EXPECT_HRESULT_SUCCEEDED(controlled_by_relation->get_nTargets(&n_targets));
@@ -2063,7 +2071,7 @@ TEST_F(AXPlatformNodeWinTest, DISABLED_TestRelationTargetsOfType) {
   AXNodeData child2;
   child2.id = 3;
   child2.role = ax::mojom::Role::kStaticText;
-  std::vector<AXNode::AXID> labelledby_ids = {1, 4};
+  std::vector<AXNodeID> labelledby_ids = {1, 4};
   child2.AddIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds,
                              labelledby_ids);
 
@@ -2869,9 +2877,9 @@ TEST_F(AXPlatformNodeWinTest, UnlabeledImageAttributes) {
 
     ScopedBstr attributes_bstr;
     ASSERT_EQ(S_OK, ia2_child->get_attributes(attributes_bstr.Receive()));
-    base::string16 attributes(attributes_bstr.Get());
+    std::wstring attributes(attributes_bstr.Get());
 
-    std::vector<base::string16> attribute_vector = base::SplitString(
+    std::vector<std::wstring> attribute_vector = base::SplitString(
         attributes, L";", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
     EXPECT_TRUE(
         base::Contains(attribute_vector, L"roledescription:Unlabeled image"));
@@ -3556,13 +3564,13 @@ TEST_F(AXPlatformNodeWinTest, ITableProviderGetColumnHeaders) {
   AXNodeData column_header;
   column_header.id = 3;
   column_header.role = ax::mojom::Role::kColumnHeader;
-  column_header.SetName(L"column_header");
+  column_header.SetName(u"column_header");
   row1.child_ids.push_back(column_header.id);
 
   AXNodeData row_header;
   row_header.id = 4;
   row_header.role = ax::mojom::Role::kRowHeader;
-  row_header.SetName(L"row_header");
+  row_header.SetName(u"row_header");
   row1.child_ids.push_back(row_header.id);
 
   Init(root, row1, column_header, row_header);
@@ -3639,19 +3647,19 @@ TEST_F(AXPlatformNodeWinTest, ITableProviderGetColumnHeadersMultipleHeaders) {
   AXNodeData header_r1c1;
   header_r1c1.id = 5;
   header_r1c1.role = ax::mojom::Role::kColumnHeader;
-  header_r1c1.SetName(L"header_r1c1");
+  header_r1c1.SetName(u"header_r1c1");
   row1.child_ids.push_back(header_r1c1.id);
 
   AXNodeData header_r1c2;
   header_r1c2.id = 6;
   header_r1c2.role = ax::mojom::Role::kColumnHeader;
-  header_r1c2.SetName(L"header_r1c2");
+  header_r1c2.SetName(u"header_r1c2");
   row1.child_ids.push_back(header_r1c2.id);
 
   AXNodeData header_r1c3;
   header_r1c3.id = 7;
   header_r1c3.role = ax::mojom::Role::kColumnHeader;
-  header_r1c3.SetName(L"header_r1c3");
+  header_r1c3.SetName(u"header_r1c3");
   row1.child_ids.push_back(header_r1c3.id);
 
   // <tr aria-label="row2">
@@ -3660,19 +3668,19 @@ TEST_F(AXPlatformNodeWinTest, ITableProviderGetColumnHeadersMultipleHeaders) {
   AXNodeData cell_r2c1;
   cell_r2c1.id = 8;
   cell_r2c1.role = ax::mojom::Role::kCell;
-  cell_r2c1.SetName(L"cell_r2c1");
+  cell_r2c1.SetName(u"cell_r2c1");
   row2.child_ids.push_back(cell_r2c1.id);
 
   AXNodeData cell_r2c2;
   cell_r2c2.id = 9;
   cell_r2c2.role = ax::mojom::Role::kCell;
-  cell_r2c2.SetName(L"cell_r2c2");
+  cell_r2c2.SetName(u"cell_r2c2");
   row2.child_ids.push_back(cell_r2c2.id);
 
   AXNodeData cell_r2c3;
   cell_r2c3.id = 10;
   cell_r2c3.role = ax::mojom::Role::kCell;
-  cell_r2c3.SetName(L"cell_r2c3");
+  cell_r2c3.SetName(u"cell_r2c3");
   row2.child_ids.push_back(cell_r2c3.id);
 
   // <tr aria-label="row3">
@@ -3681,13 +3689,13 @@ TEST_F(AXPlatformNodeWinTest, ITableProviderGetColumnHeadersMultipleHeaders) {
   AXNodeData cell_r3c1;
   cell_r3c1.id = 11;
   cell_r3c1.role = ax::mojom::Role::kCell;
-  cell_r3c1.SetName(L"cell_r3c1");
+  cell_r3c1.SetName(u"cell_r3c1");
   row3.child_ids.push_back(cell_r3c1.id);
 
   AXNodeData header_r3c2;
   header_r3c2.id = 12;
   header_r3c2.role = ax::mojom::Role::kColumnHeader;
-  header_r3c2.SetName(L"header_r3c2");
+  header_r3c2.SetName(u"header_r3c2");
   row3.child_ids.push_back(header_r3c2.id);
 
   Init(root, row1, row2, row3, header_r1c1, header_r1c2, header_r1c3, cell_r2c1,
@@ -3722,13 +3730,13 @@ TEST_F(AXPlatformNodeWinTest, ITableProviderGetRowHeaders) {
   AXNodeData column_header;
   column_header.id = 3;
   column_header.role = ax::mojom::Role::kColumnHeader;
-  column_header.SetName(L"column_header");
+  column_header.SetName(u"column_header");
   row1.child_ids.push_back(column_header.id);
 
   AXNodeData row_header;
   row_header.id = 4;
   row_header.role = ax::mojom::Role::kRowHeader;
-  row_header.SetName(L"row_header");
+  row_header.SetName(u"row_header");
   row1.child_ids.push_back(row_header.id);
 
   Init(root, row1, column_header, row_header);
@@ -3784,13 +3792,13 @@ TEST_F(AXPlatformNodeWinTest, ITableItemProviderGetColumnHeaderItems) {
   AXNodeData column_header_1;
   column_header_1.id = 3;
   column_header_1.role = ax::mojom::Role::kColumnHeader;
-  column_header_1.SetName(L"column_header_1");
+  column_header_1.SetName(u"column_header_1");
   row1.child_ids.push_back(column_header_1.id);
 
   AXNodeData column_header_2;
   column_header_2.id = 4;
   column_header_2.role = ax::mojom::Role::kColumnHeader;
-  column_header_2.SetName(L"column_header_2");
+  column_header_2.SetName(u"column_header_2");
   row1.child_ids.push_back(column_header_2.id);
 
   AXNodeData row2;
@@ -3847,7 +3855,7 @@ TEST_F(AXPlatformNodeWinTest, ITableItemProviderGetRowHeaderItems) {
   AXNodeData row_header_1;
   row_header_1.id = 3;
   row_header_1.role = ax::mojom::Role::kRowHeader;
-  row_header_1.SetName(L"row_header_1");
+  row_header_1.SetName(u"row_header_1");
   row1.child_ids.push_back(row_header_1.id);
 
   AXNodeData cell;
@@ -3863,7 +3871,7 @@ TEST_F(AXPlatformNodeWinTest, ITableItemProviderGetRowHeaderItems) {
   AXNodeData row_header_2;
   row_header_2.id = 6;
   row_header_2.role = ax::mojom::Role::kRowHeader;
-  row_header_2.SetName(L"row_header_2");
+  row_header_2.SetName(u"row_header_2");
   row2.child_ids.push_back(row_header_2.id);
 
   Init(root, row1, row_header_1, cell, row2, row_header_2);
@@ -4151,7 +4159,7 @@ TEST_F(AXPlatformNodeWinTest, UIAGetControllerForPropertyId) {
   tab.id = 2;
   tab.role = ax::mojom::Role::kTab;
   tab.SetName("tab");
-  std::vector<AXNode::AXID> controller_ids = {3, 4};
+  std::vector<AXNodeID> controller_ids = {3, 4};
   tab.AddIntListAttribute(ax::mojom::IntListAttribute::kControlsIds,
                           controller_ids);
 
@@ -4191,7 +4199,7 @@ TEST_F(AXPlatformNodeWinTest, UIAGetControllerForPropertyId) {
 
 TEST_F(AXPlatformNodeWinTest, UIAGetDescribedByPropertyId) {
   AXNodeData root;
-  std::vector<AXNode::AXID> describedby_ids = {2, 3, 4};
+  std::vector<AXNodeID> describedby_ids = {2, 3, 4};
   root.AddIntListAttribute(ax::mojom::IntListAttribute::kDescribedbyIds,
                            describedby_ids);
   root.id = 1;
@@ -4292,7 +4300,7 @@ TEST_F(AXPlatformNodeWinTest, UIAItemStatusPropertyId) {
 
 TEST_F(AXPlatformNodeWinTest, UIAGetFlowsToPropertyId) {
   AXNodeData root;
-  std::vector<AXNode::AXID> flowto_ids = {2, 3, 4};
+  std::vector<AXNodeID> flowto_ids = {2, 3, 4};
   root.AddIntListAttribute(ax::mojom::IntListAttribute::kFlowtoIds, flowto_ids);
   root.id = 1;
   root.role = ax::mojom::Role::kMarquee;
@@ -4749,6 +4757,8 @@ TEST_F(AXPlatformNodeWinTest, GetPropertyValue_IsControlElement) {
 
 TEST_F(AXPlatformNodeWinTest, UIAGetProviderOptions) {
   AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
   Init(root_data);
 
   ComPtr<IRawElementProviderSimple> root_node =
@@ -4765,6 +4775,8 @@ TEST_F(AXPlatformNodeWinTest, UIAGetProviderOptions) {
 
 TEST_F(AXPlatformNodeWinTest, UIAGetHostRawElementProvider) {
   AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
   Init(root_data);
 
   ComPtr<IRawElementProviderSimple> root_node =
@@ -4779,6 +4791,7 @@ TEST_F(AXPlatformNodeWinTest, UIAGetHostRawElementProvider) {
 TEST_F(AXPlatformNodeWinTest, UIAGetBoundingRectangle) {
   AXNodeData root_data;
   root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
   root_data.relative_bounds.bounds = gfx::RectF(10, 20, 30, 50);
   Init(root_data);
 
@@ -4799,6 +4812,7 @@ TEST_F(AXPlatformNodeWinTest, UIAGetFragmentRoot) {
   // overrides the method.
   AXNodeData root_data;
   root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
 
   AXNodeData element1_data;
   element1_data.id = 2;
@@ -4837,6 +4851,7 @@ TEST_F(AXPlatformNodeWinTest, UIAGetFragmentRoot) {
 TEST_F(AXPlatformNodeWinTest, UIAGetEmbeddedFragmentRoots) {
   AXNodeData root_data;
   root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
   Init(root_data);
 
   ComPtr<IRawElementProviderFragment> root_provider =
@@ -4851,6 +4866,7 @@ TEST_F(AXPlatformNodeWinTest, UIAGetEmbeddedFragmentRoots) {
 TEST_F(AXPlatformNodeWinTest, UIAGetRuntimeId) {
   AXNodeData root_data;
   root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
   Init(root_data);
 
   ComPtr<IRawElementProviderFragment> root_provider =
@@ -4867,13 +4883,15 @@ TEST_F(AXPlatformNodeWinTest, UIAGetRuntimeId) {
   LONG array_upper_bound;
   EXPECT_HRESULT_SUCCEEDED(
       ::SafeArrayGetUBound(runtime_id.Get(), 1, &array_upper_bound));
-  EXPECT_EQ(1, array_upper_bound);
+  EXPECT_EQ(3, array_upper_bound);
 
   int* array_data;
   EXPECT_HRESULT_SUCCEEDED(::SafeArrayAccessData(
       runtime_id.Get(), reinterpret_cast<void**>(&array_data)));
   EXPECT_EQ(UiaAppendRuntimeId, array_data[0]);
   EXPECT_NE(-1, array_data[1]);
+  EXPECT_NE(-1, array_data[2]);
+  EXPECT_NE(-1, array_data[3]);
 
   EXPECT_HRESULT_SUCCEEDED(::SafeArrayUnaccessData(runtime_id.Get()));
 }
@@ -4994,6 +5012,7 @@ TEST_F(AXPlatformNodeWinTest, UIAIWindowProviderNotSupported) {
 TEST_F(AXPlatformNodeWinTest, UIANavigate) {
   AXNodeData root_data;
   root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
 
   AXNodeData element1_data;
   element1_data.id = 2;
@@ -5228,25 +5247,25 @@ TEST_F(AXPlatformNodeWinTest, ComputeUIAControlType) {
   root.role = ax::mojom::Role::kRootWebArea;
 
   AXNodeData child1;
-  AXNode::AXID child1_id = 2;
+  AXNodeID child1_id = 2;
   child1.id = child1_id;
   child1.role = ax::mojom::Role::kTable;
   root.child_ids.push_back(child1_id);
 
   AXNodeData child2;
-  AXNode::AXID child2_id = 3;
+  AXNodeID child2_id = 3;
   child2.id = child2_id;
   child2.role = ax::mojom::Role::kLayoutTable;
   root.child_ids.push_back(child2_id);
 
   AXNodeData child3;
-  AXNode::AXID child3_id = 4;
+  AXNodeID child3_id = 4;
   child3.id = child3_id;
   child3.role = ax::mojom::Role::kTextField;
   root.child_ids.push_back(child3_id);
 
   AXNodeData child4;
-  AXNode::AXID child4_id = 5;
+  AXNodeID child4_id = 5;
   child4.id = child4_id;
   child4.role = ax::mojom::Role::kSearchBox;
   root.child_ids.push_back(child4_id);
@@ -5357,6 +5376,7 @@ TEST_F(AXPlatformNodeWinTest, UIALocalizedLandmarkType) {
 TEST_F(AXPlatformNodeWinTest, IRawElementProviderSimple2ShowContextMenu) {
   AXNodeData root_data;
   root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
 
   AXNodeData element1_data;
   element1_data.id = 2;
@@ -5389,6 +5409,8 @@ TEST_F(AXPlatformNodeWinTest, IRawElementProviderSimple2ShowContextMenu) {
 
 TEST_F(AXPlatformNodeWinTest, UIAErrorHandling) {
   AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
   Init(root);
 
   ComPtr<IRawElementProviderSimple> simple_provider =
@@ -5605,26 +5627,26 @@ TEST_F(AXPlatformNodeWinTest, UIAErrorHandling) {
 }
 
 TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
-  constexpr AXNode::AXID root_id = 1;
-  constexpr AXNode::AXID text_field_with_combo_box_id = 2;
-  constexpr AXNode::AXID meter_id = 3;
-  constexpr AXNode::AXID group_with_scroll_id = 4;
-  constexpr AXNode::AXID checkbox_id = 5;
-  constexpr AXNode::AXID link_id = 6;
-  constexpr AXNode::AXID table_without_header_id = 7;
-  constexpr AXNode::AXID table_without_header_cell_id = 8;
-  constexpr AXNode::AXID table_with_header_id = 9;
-  constexpr AXNode::AXID table_with_header_row_1_id = 10;
-  constexpr AXNode::AXID table_with_header_column_header_id = 11;
-  constexpr AXNode::AXID table_with_header_row_2_id = 12;
-  constexpr AXNode::AXID table_with_header_cell_id = 13;
-  constexpr AXNode::AXID grid_without_header_id = 14;
-  constexpr AXNode::AXID grid_without_header_cell_id = 15;
-  constexpr AXNode::AXID grid_with_header_id = 16;
-  constexpr AXNode::AXID grid_with_header_row_1_id = 17;
-  constexpr AXNode::AXID grid_with_header_column_header_id = 18;
-  constexpr AXNode::AXID grid_with_header_row_2_id = 19;
-  constexpr AXNode::AXID grid_with_header_cell_id = 20;
+  constexpr AXNodeID root_id = 1;
+  constexpr AXNodeID text_field_with_combo_box_id = 2;
+  constexpr AXNodeID meter_id = 3;
+  constexpr AXNodeID group_with_scroll_id = 4;
+  constexpr AXNodeID checkbox_id = 5;
+  constexpr AXNodeID link_id = 6;
+  constexpr AXNodeID table_without_header_id = 7;
+  constexpr AXNodeID table_without_header_cell_id = 8;
+  constexpr AXNodeID table_with_header_id = 9;
+  constexpr AXNodeID table_with_header_row_1_id = 10;
+  constexpr AXNodeID table_with_header_column_header_id = 11;
+  constexpr AXNodeID table_with_header_row_2_id = 12;
+  constexpr AXNodeID table_with_header_cell_id = 13;
+  constexpr AXNodeID grid_without_header_id = 14;
+  constexpr AXNodeID grid_without_header_cell_id = 15;
+  constexpr AXNodeID grid_with_header_id = 16;
+  constexpr AXNodeID grid_with_header_row_1_id = 17;
+  constexpr AXNodeID grid_with_header_column_header_id = 18;
+  constexpr AXNodeID grid_with_header_row_2_id = 19;
+  constexpr AXNodeID grid_with_header_cell_id = 20;
 
   AXTreeUpdate update;
   update.tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
@@ -5776,6 +5798,7 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
 TEST_F(AXPlatformNodeWinTest, GetPatternProviderExpandCollapsePattern) {
   ui::AXNodeData root;
   root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
 
   ui::AXNodeData list_box;
   ui::AXNodeData list_item;
@@ -5894,6 +5917,7 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderExpandCollapsePattern) {
 TEST_F(AXPlatformNodeWinTest, GetPatternProviderInvokePattern) {
   ui::AXNodeData root;
   root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
 
   ui::AXNodeData link;
   ui::AXNodeData generic_container;
@@ -5960,6 +5984,7 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderInvokePattern) {
 TEST_F(AXPlatformNodeWinTest, IExpandCollapsePatternProviderAction) {
   ui::AXNodeData root;
   root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
 
   ui::AXNodeData combo_box_grouping_has_popup;
   ui::AXNodeData combo_box_grouping_expanded;
@@ -6129,6 +6154,7 @@ TEST_F(AXPlatformNodeWinTest, IExpandCollapsePatternProviderAction) {
 TEST_F(AXPlatformNodeWinTest, IInvokeProviderInvoke) {
   ui::AXNodeData root;
   root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
 
   ui::AXNodeData button;
   ui::AXNodeData button_disabled;

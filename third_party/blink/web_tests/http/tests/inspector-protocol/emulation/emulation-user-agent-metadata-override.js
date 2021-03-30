@@ -41,9 +41,9 @@
   testRunner.log('navigator.userAgent == ' + await session.evaluate('navigator.userAgent'));
   testRunner.log('brands == ' + await session.evaluate('JSON.stringify(navigator.userAgentData.brands)'));
   testRunner.log('is mobile?' + await session.evaluate('navigator.userAgentData.mobile'));
-  testRunner.log(JSON.stringify(await session.evaluateAsync(
+  testRunner.log(await session.evaluateAsync(
       'navigator.userAgentData.getHighEntropyValues(' +
-          '["platform", "platformVersion", "architecture", "model", "uaFullVersion"])')));
+          '["platform", "platformVersion", "architecture", "model", "uaFullVersion"])'));
   await printHeader('sec-ch-ua');
   await printHeader('sec-ch-ua-full-version');
   await printHeader('sec-ch-ua-arch');
@@ -64,6 +64,34 @@
   printHeaderFromList('sec-ch-ua-platform-version', navHeaders);
   printHeaderFromList('sec-ch-ua-mobile', navHeaders);
   printHeaderFromList('sec-ch-ua-model', navHeaders);
+
+  // Tests to make sure that not passing in brand and fullVersion uses defaults
+  testRunner.log('');
+  testRunner.log('Testing defaulting of brand and fullVersion');
+
+  await dp.Emulation.setUserAgentOverride({
+    userAgent: 'Electric Typewriter',
+    userAgentMetadata: {
+      platform: 'Electric Typewriter',
+      platformVersion: '1970',
+      architecture: 'Electronic',
+      model: 'With erase tape',
+      mobile: true
+    }
+  });
+  testRunner.log('navigator.userAgent == ' + await session.evaluate('navigator.userAgent'));
+  testRunner.log('brands == ' + await session.evaluate('JSON.stringify(navigator.userAgentData.brands)'));
+  testRunner.log('is mobile?' + await session.evaluate('navigator.userAgentData.mobile'));
+  testRunner.log(await session.evaluateAsync(
+      'navigator.userAgentData.getHighEntropyValues(' +
+          '["platform", "platformVersion", "architecture", "model", "uaFullVersion"])'));
+  await printHeader('sec-ch-ua');
+  await printHeader('sec-ch-ua-full-version');
+  await printHeader('sec-ch-ua-arch');
+  await printHeader('sec-ch-ua-platform');
+  await printHeader('sec-ch-ua-platform-version');
+  await printHeader('sec-ch-ua-mobile');
+  await printHeader('sec-ch-ua-model');
 
   function printHeaderFromList(name, headers) {
     let logged = false;

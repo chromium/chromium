@@ -12,14 +12,13 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/files/file_descriptor_watcher_posix.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/single_thread_task_runner.h"
+#include "remoting/host/input_monitor/local_input_monitor_x11_common.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
-#include "ui/events/devices/x11/xinput_util.h"
 #include "ui/events/event.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
@@ -74,10 +73,7 @@ class LocalMouseInputMonitorX11 : public LocalPointerInputMonitor {
     // Used to send mouse event notifications.
     LocalInputMonitor::PointerMoveCallback on_mouse_move_;
 
-    // Controls watching X events.
-    std::unique_ptr<base::FileDescriptorWatcher::Controller> controller_;
-
-    std::unique_ptr<x11::Connection> connection_;
+    x11::Connection* connection_ = nullptr;
 
     DISALLOW_COPY_AND_ASSIGN(Core);
   };
@@ -128,59 +124,45 @@ void LocalMouseInputMonitorX11::Core::Stop() {
                                base::BindOnce(&Core::StopOnInputThread, this));
 }
 
-LocalMouseInputMonitorX11::Core::~Core() {
-  DCHECK(!connection_);
-}
+LocalMouseInputMonitorX11::Core::~Core() = default;
 
 void LocalMouseInputMonitorX11::Core::StartOnInputThread() {
   DCHECK(input_task_runner_->BelongsToCurrentThread());
   DCHECK(!connection_);
 
-  // TODO(jamiewalch): We should pass the connection in.
-  connection_ = std::make_unique<x11::Connection>();
+  connection_ = x11::Connection::Get();
+  connection_->AddEventObserver(this);
 
   if (!connection_->xinput().present()) {
-    LOG(ERROR) << "X Record extension not available.";
+    LOG(ERROR) << "X Input extension not available.";
     return;
   }
   // Let the server know the client XInput version.
   connection_->xinput().XIQueryVersion(
       {x11::Input::major_version, x11::Input::minor_version});
 
-  x11::Input::XIEventMask mask;
-  ui::SetXinputMask(&mask, x11::Input::RawDeviceEvent::RawMotion);
+  auto mask = CommonXIEventMaskForRootWindow();
   connection_->xinput().XISelectEvents(
       {connection_->default_root(),
        {{x11::Input::DeviceId::AllMaster, {mask}}}});
   connection_->Flush();
-
-  // Register OnConnectionData() to be called every time there is
-  // something to read from |connection_|.
-  controller_ = base::FileDescriptorWatcher::WatchReadable(
-      connection_->GetFd(),
-      base::BindRepeating(&Core::OnConnectionData, base::Unretained(this)));
-
-  // Fetch pending events if any.
-  OnConnectionData();
 }
 
 void LocalMouseInputMonitorX11::Core::StopOnInputThread() {
   DCHECK(input_task_runner_->BelongsToCurrentThread());
-  controller_.reset();
-  connection_.reset();
-}
-
-void LocalMouseInputMonitorX11::Core::OnConnectionData() {
-  DCHECK(input_task_runner_->BelongsToCurrentThread());
-  connection_->DispatchAll();
+  connection_->RemoveEventObserver(this);
 }
 
 void LocalMouseInputMonitorX11::Core::OnEvent(const x11::Event& event) {
   DCHECK(input_task_runner_->BelongsToCurrentThread());
 
   auto* raw = event.As<x11::Input::RawDeviceEvent>();
-  DCHECK(raw);
-  DCHECK(raw->opcode == x11::Input::RawDeviceEvent::RawMotion);
+  // The X server may send unsolicited MappingNotify events without having
+  // selected them.
+  if (!raw)
+    return;
+  if (raw->opcode != x11::Input::RawDeviceEvent::RawMotion)
+    return;
 
   connection_->QueryPointer({connection_->default_root()})
       .OnResponse(base::BindOnce(

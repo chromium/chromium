@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "extensions/common/permissions/permissions_data.h"
 #include "services/network/public/mojom/cors_origin_pattern.mojom.h"
 
 namespace extensions {
@@ -18,9 +17,7 @@ class Extension;
 // for the passed |extension|. Returned vector will be used to register the list
 // to network::NetworkContext and blink::SecurityPolicy.
 std::vector<network::mojom::CorsOriginPatternPtr>
-CreateCorsOriginAccessAllowList(
-    const Extension& extension,
-    PermissionsData::EffectiveHostPermissionsMode mode);
+CreateCorsOriginAccessAllowList(const Extension& extension);
 
 // Creates a CorsOriginPatternPtr vector that contains blocked origin list
 // for the passed |extension|. Returned vector will be used to register the list

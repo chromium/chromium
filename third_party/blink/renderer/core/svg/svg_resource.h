@@ -6,8 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_RESOURCE_H_
 
 #include "base/macros.h"
-#include "third_party/blink/renderer/core/svg/svg_external_document_cache.h"
-#include "third_party/blink/renderer/core/svg/svg_resource_client.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -20,7 +18,10 @@ class Document;
 class Element;
 class IdTargetObserver;
 class LayoutSVGResourceContainer;
-class SVGResourcesCycleSolver;
+class QualifiedName;
+class SVGFilterPrimitiveStandardAttributes;
+class SVGResourceClient;
+class SVGResourceDocumentContent;
 class TreeScope;
 
 // A class tracking a reference to an SVG resource (an element that constitutes
@@ -76,7 +77,7 @@ class SVGResource : public GarbageCollected<SVGResource> {
   // Run cycle-checking for this SVGResourceClient -> SVGResource
   // reference. Used internally by the cycle-checking, and shouldn't be called
   // directly in general.
-  bool FindCycle(SVGResourceClient&, SVGResourcesCycleSolver&) const;
+  bool FindCycle(SVGResourceClient&) const;
 
   void AddClient(SVGResourceClient&);
   void RemoveClient(SVGResourceClient&);
@@ -87,7 +88,7 @@ class SVGResource : public GarbageCollected<SVGResource> {
   SVGResource();
 
   void InvalidateCycleCache();
-  void NotifyElementChanged();
+  void NotifyContentChanged();
 
   Member<Element> target_;
 
@@ -114,7 +115,8 @@ class LocalSVGResource final : public SVGResource {
 
   void Unregister();
 
-  void NotifyContentChanged(InvalidationModeMask);
+  using SVGResource::NotifyContentChanged;
+
   void NotifyFilterPrimitiveChanged(
       SVGFilterPrimitiveStandardAttributes& primitive,
       const QualifiedName& attribute);
@@ -145,7 +147,7 @@ class ExternalSVGResource final : public SVGResource, public ResourceClient {
   void NotifyFinished(Resource*) override;
   String DebugName() const override;
 
-  Member<SVGExternalDocumentCache::Entry> cache_entry_;
+  Member<SVGResourceDocumentContent> document_content_;
   KURL url_;
 };
 

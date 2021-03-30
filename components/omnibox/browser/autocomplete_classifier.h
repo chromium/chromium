@@ -6,10 +6,10 @@
 #define COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_CLASSIFIER_H_
 
 #include <memory>
+#include <string>
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -49,13 +49,13 @@ class AutocompleteClassifier : public KeyedService {
   // possibly-NULL outparam that, if non-NULL, will be set to the navigational
   // URL (if any) in case of an accidental search; see comments on
   // AutocompleteResult::alternate_nav_url_ in autocomplete.h.
-  void Classify(const base::string16& text,
-                bool prefer_keyword,
-                bool allow_exact_keyword_match,
-                metrics::OmniboxEventProto::PageClassification
-                    page_classification,
-                AutocompleteMatch* match,
-                GURL* alternate_nav_url);
+  void Classify(
+      const std::u16string& text,
+      bool prefer_keyword,
+      bool allow_exact_keyword_match,
+      metrics::OmniboxEventProto::PageClassification page_classification,
+      AutocompleteMatch* match,
+      GURL* alternate_nav_url);
 
  private:
   std::unique_ptr<AutocompleteController> controller_;

@@ -66,7 +66,7 @@ TEST_F(ExternalFileURLUtilTest, FilePathToExternalFileURL) {
             ExternalFileURLToVirtualPath(FileSystemURLToExternalFileURL(url)));
 
   // Path with multi byte characters.
-  base::string16 utf16_string;
+  std::u16string utf16_string;
   utf16_string.push_back(0x307b);  // HIRAGANA_LETTER_HO
   utf16_string.push_back(0x3052);  // HIRAGANA_LETTER_GE
   url = CreateExpectedURL(

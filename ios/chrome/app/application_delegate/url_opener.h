@@ -9,6 +9,7 @@
 
 @class AppState;
 @protocol ConnectionInformation;
+class PrefService;
 @protocol StartupInformation;
 @protocol TabOpening;
 @class URLOpenerParams;
@@ -23,14 +24,16 @@
         applicationActive:(BOOL)applicationActive
                 tabOpener:(id<TabOpening>)tabOpener
     connectionInformation:(id<ConnectionInformation>)connectionInformation
-       startupInformation:(id<StartupInformation>)startupInformation;
+       startupInformation:(id<StartupInformation>)startupInformation
+              prefService:(PrefService*)prefService;
 
 // Handles open URL at application startup.
 + (void)handleLaunchOptions:(URLOpenerParams*)options
                   tabOpener:(id<TabOpening>)tabOpener
       connectionInformation:(id<ConnectionInformation>)connectionInformation
          startupInformation:(id<StartupInformation>)startupInformation
-                   appState:(AppState*)appState;
+                   appState:(AppState*)appState
+                prefService:(PrefService*)prefService;
 @end
 
 #endif  // IOS_CHROME_APP_APPLICATION_DELEGATE_URL_OPENER_H_

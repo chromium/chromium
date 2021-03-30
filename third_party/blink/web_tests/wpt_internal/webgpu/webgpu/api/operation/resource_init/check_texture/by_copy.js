@@ -38,7 +38,7 @@ export const checkContentsByTextureCopy = (t, params, texture, state, subresourc
     commandEncoder.copyTextureToTexture(
       { texture, mipLevel: level, origin: { x: 0, y: 0, z: slice } },
       { texture: dst, mipLevel: 0 },
-      { width, height, depth: 1 }
+      { width, height, depthOrArrayLayers: 1 }
     );
 
     t.queue.submit([commandEncoder.finish()]);

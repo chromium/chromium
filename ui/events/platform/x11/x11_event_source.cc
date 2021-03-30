@@ -201,8 +201,9 @@ x11::Time X11EventSource::GetCurrentServerTime() {
   };
 
   auto& events = connection_->events();
-  events.erase(std::remove_if(events.begin(), events.end(), pred),
-               events.end());
+  auto it = std::find_if(events.begin(), events.end(), pred);
+  if (it != events.end())
+    *it = x11::Event();
   return time;
 }
 

@@ -38,7 +38,7 @@ class CrostiniPackageNotification
                               NotificationType notification_type,
                               PackageOperationStatus status,
                               const ContainerId& container_id,
-                              const base::string16& app_name,
+                              const std::u16string& app_name,
                               const std::string& notification_id,
                               CrostiniPackageService* installer_service);
   ~CrostiniPackageNotification() override;
@@ -55,7 +55,7 @@ class CrostiniPackageNotification
   void Close(bool by_user) override;
 
   void Click(const base::Optional<int>& button_index,
-             const base::Optional<base::string16>& reply) override;
+             const base::Optional<std::u16string>& reply) override;
 
   // GuestOsRegistryService::Observer:
   void OnRegistryUpdated(
@@ -79,22 +79,22 @@ class CrostiniPackageNotification
     NotificationSettings();
     NotificationSettings(const NotificationSettings& rhs);
     ~NotificationSettings();
-    base::string16 source;
-    base::string16 queued_title;
-    base::string16 queued_body;
-    base::string16 progress_title;
-    base::string16 progress_body;
-    base::string16 success_title;
-    base::string16 success_body;
-    base::string16 failure_title;
-    base::string16 failure_body;
+    std::u16string source;
+    std::u16string queued_title;
+    std::u16string queued_body;
+    std::u16string progress_title;
+    std::u16string progress_body;
+    std::u16string success_title;
+    std::u16string success_body;
+    std::u16string failure_title;
+    std::u16string failure_body;
   };
 
   void UpdateDisplayedNotification();
 
   static NotificationSettings GetNotificationSettingsForTypeAndAppName(
       NotificationType notification_type,
-      const base::string16& app_name);
+      const std::u16string& app_name);
 
   const NotificationType notification_type_;
   PackageOperationStatus current_status_;

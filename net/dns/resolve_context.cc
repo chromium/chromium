@@ -20,11 +20,14 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "net/base/features.h"
+#include "net/base/ip_address.h"
 #include "net/base/network_change_notifier.h"
 #include "net/dns/dns_server_iterator.h"
 #include "net/dns/dns_session.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/host_cache.h"
+#include "net/dns/public/dns_over_https_server_config.h"
+#include "net/dns/public/doh_provider_entry.h"
 
 namespace net {
 
@@ -48,6 +51,28 @@ const size_t kRttBucketCount = 350;
 const int kRttPercentile = 99;
 // Number of samples to seed the histogram with.
 const base::HistogramBase::Count kNumSeeds = 2;
+
+DohProviderEntry::List FindDohProvidersMatchingServerConfig(
+    DnsOverHttpsServerConfig server_config) {
+  DohProviderEntry::List matching_entries;
+  for (const DohProviderEntry* entry : DohProviderEntry::GetList()) {
+    if (entry->dns_over_https_template == server_config.server_template)
+      matching_entries.push_back(entry);
+  }
+
+  return matching_entries;
+}
+
+DohProviderEntry::List FindDohProvidersAssociatedWithAddress(
+    IPAddress server_address) {
+  DohProviderEntry::List matching_entries;
+  for (const DohProviderEntry* entry : DohProviderEntry::GetList()) {
+    if (entry->ip_addresses.count(server_address) > 0)
+      matching_entries.push_back(entry);
+  }
+
+  return matching_entries;
+}
 
 base::TimeDelta GetDefaultFallbackPeriod(const DnsConfig& config) {
   NetworkChangeNotifier::ConnectionType type =
@@ -465,27 +490,18 @@ void ResolveContext::RecordRttForUma(size_t server_index,
   std::string provider_id =
       GetDohProviderIdForUma(server_index, is_doh_server, session);
 
+  // Skip metrics for SecureNotValidated queries unless the provider is tagged
+  // for extra logging.
+  if (query_type == "SecureNotValidated" &&
+      !GetProviderUseExtraLogging(server_index, is_doh_server, session)) {
+    return;
+  }
+
   if (rv == OK || rv == ERR_NAME_NOT_RESOLVED) {
     base::UmaHistogramMediumTimes(
         base::StringPrintf("Net.DNS.DnsTransaction.%s.%s.SuccessTime",
                            query_type.c_str(), provider_id.c_str()),
         rtt);
-    if (query_type == "SecureValidated") {
-      DCHECK(is_doh_server);
-
-      // Only for SecureValidated requests, record the ratio between successful
-      // RTT and the base fallback period for the server. Note that RTT could be
-      // much longer than the fallback period as previous attempts are often
-      // allowed to continue in parallel with new attempts made by the
-      // transaction. Scale the ratio up by 10 for sub-integer granularity.
-      // TODO(crbug.com/1105138): Remove after determining good fallback period
-      // logic.
-      int fallback_period_ratio =
-          base::ClampFloor(rtt / base_fallback_period * 10);
-      UMA_HISTOGRAM_COUNTS_1000(
-          "Net.DNS.DnsTransaction.SecureValidated.SuccessTimeoutRatio",
-          fallback_period_ratio);
-    }
   } else {
     base::UmaHistogramMediumTimes(
         base::StringPrintf("Net.DNS.DnsTransaction.%s.%s.FailureTime",
@@ -521,6 +537,30 @@ std::string ResolveContext::GetDohProviderIdForUma(size_t server_index,
 
   return GetDohProviderIdForHistogramFromNameserver(
       session->config().nameservers[server_index]);
+}
+
+bool ResolveContext::GetProviderUseExtraLogging(size_t server_index,
+                                                bool is_doh_server,
+                                                const DnsSession* session) {
+  DCHECK(IsCurrentSession(session));
+
+  DohProviderEntry::List matching_entries;
+  if (is_doh_server) {
+    DnsOverHttpsServerConfig server_config =
+        session->config().dns_over_https_servers[server_index];
+    matching_entries = FindDohProvidersMatchingServerConfig(server_config);
+  } else {
+    IPAddress server_address =
+        session->config().nameservers[server_index].address();
+    matching_entries = FindDohProvidersAssociatedWithAddress(server_address);
+  }
+
+  // Use extra logging if any matching provider entries have
+  // `LoggingLevel::kExtra` set.
+  return std::any_of(
+      matching_entries.begin(), matching_entries.end(), [&](const auto* entry) {
+        return entry->logging_level == DohProviderEntry::LoggingLevel::kExtra;
+      });
 }
 
 void ResolveContext::NotifyDohStatusObserversOfSessionChanged() {

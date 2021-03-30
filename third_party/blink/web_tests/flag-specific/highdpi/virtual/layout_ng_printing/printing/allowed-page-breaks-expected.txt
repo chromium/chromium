@@ -1,0 +1,14 @@
+Test for allowed page breaks
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+
+FAIL: expected page number of "page1" is 1. Was 0
+FAIL: expected page number of "page2" is 2. Was 1
+FAIL: expected page number of "page3-1" is 3. Was 2
+PASS: page number of "page3-2" is 3
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

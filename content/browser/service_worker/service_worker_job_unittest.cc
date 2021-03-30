@@ -46,6 +46,7 @@
 #include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/service_worker/embedded_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
@@ -574,7 +575,12 @@ class FailStartInstanceClient : public FakeEmbeddedWorkerInstanceClient {
       : FakeEmbeddedWorkerInstanceClient(helper) {}
 
   void StartWorker(blink::mojom::EmbeddedWorkerStartParamsPtr params) override {
-    // Don't save the Mojo ptrs. The connection breaks.
+    // Call Disconnect to break the Mojo connection immediately.
+    // This makes sure the error code becomes kErrorStartWorkerFailed. Otherwise
+    // the error code might be kNetworkError when PlzServiceWorker is enabled
+    // because the URLLoader bound to params->main_script_load_params can get
+    // destroyed before the service worker stops.
+    Disconnect();
   }
 };
 
@@ -1421,6 +1427,9 @@ class ServiceWorkerUpdateJobTest : public ServiceWorkerJobTest {
   void SetUp() override {
     update_helper_ = new UpdateJobTestHelper();
     helper_.reset(update_helper_);
+    // Reset the mock loader because this test creates a storage partition and
+    // it makes GetLoaderFactoryForUpdateCheck() work correctly.
+    helper_->context_wrapper()->SetLoaderFactoryForUpdateCheckForTest(nullptr);
 
     // Create a StoragePartition with the testing browser context so that the
     // ServiceWorkerUpdateChecker can find the BrowserContext through it.
@@ -2011,21 +2020,8 @@ TEST_F(ServiceWorkerUpdateJobTest, ActivateCancelsOnShutdown) {
   runner->RunUntilIdle();
 }
 
-class ServiceWorkerUpdateJobTestWithCrossOriginIsolation
-    : public ServiceWorkerUpdateJobTest {
- public:
-  ServiceWorkerUpdateJobTestWithCrossOriginIsolation() {
-    feature_list_.InitAndEnableFeature(
-        ::network::features::kCrossOriginEmbedderPolicy);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Update job should handle the COEP header appropriately.
-TEST_F(ServiceWorkerUpdateJobTestWithCrossOriginIsolation,
-       Update_CrossOriginEmbedderPolicyValue) {
+TEST_F(ServiceWorkerUpdateJobTest, Update_CrossOriginEmbedderPolicyValue) {
   const GURL kNewVersionOrigin("https://newversion/");
   const char kHeadersWithRequireCorp[] = R"(HTTP/1.1 200 OK
 Content-Type: application/javascript
@@ -2045,7 +2041,18 @@ Cross-Origin-Embedder-Policy: none
   scoped_refptr<ServiceWorkerRegistration> registration =
       update_helper_->SetupInitialRegistration(kNewVersionOrigin);
   ASSERT_TRUE(registration.get());
-  EXPECT_FALSE(registration->active_version()->cross_origin_embedder_policy());
+  if (base::FeatureList::IsEnabled(features::kPlzServiceWorker)) {
+    // COEP is populated here because the worker's script is loaded as a part of
+    // the start worker sequence before registration and the response header is
+    // reflected to the version at that point
+    EXPECT_EQ(CrossOriginEmbedderPolicyNone(),
+              registration->active_version()->cross_origin_embedder_policy());
+  } else {
+    // COEP is not set to the version because the script is not loaded before
+    // starting the worker.
+    EXPECT_FALSE(
+        registration->active_version()->cross_origin_embedder_policy());
+  }
 
   registration->AddListener(update_helper_);
 

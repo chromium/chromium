@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+PASS the windowControlsOverlay object should exist on the navigator object
+PASS visible should be a member of the windowControlsOverlay object
+PASS visible should be false
+PASS getBoundingClientRect should be a method of the windowControlsOverlay object
+PASS getBoundingClientRect return type should be DOMRect
+PASS getBoundingClientRect should return a empty DOMRect
+PASS ongeometrychange should be a member of the windowControlsOverlay object
+Harness: the test ran to completion.
+

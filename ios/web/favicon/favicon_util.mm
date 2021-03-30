@@ -19,16 +19,11 @@
 
 namespace web {
 
-bool ExtractFaviconURL(const base::DictionaryValue* favicon_url_message,
+bool ExtractFaviconURL(const base::ListValue* favicons,
                        const GURL& page_origin,
                        std::vector<web::FaviconURL>* urls) {
-  const base::Value* favicons_value = favicon_url_message->FindKey("favicons");
-  if (!favicons_value || !favicons_value->is_list()) {
-    DLOG(WARNING) << "JS message parameter not found: favicons";
-    return false;
-  }
   BOOL has_favicon = NO;
-  for (const base::Value& favicon : favicons_value->GetList()) {
+  for (const base::Value& favicon : *favicons) {
     if (!favicon.is_dict())
       return false;
 

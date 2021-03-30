@@ -8,6 +8,7 @@
 #include <jni.h>
 
 #include <memory>
+#include <string>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
@@ -15,7 +16,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
-#include "base/strings/string16.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/toolbar/chrome_location_bar_model_delegate.h"
 #include "chrome/browser/vr/assets_load_status.h"
@@ -244,7 +244,7 @@ class VrShell : VoiceResultDelegate,
   content::WebContents* GetActiveWebContents() const override;
   bool ShouldDisplayURL() const override;
 
-  void OnVoiceResults(const base::string16& result) override;
+  void OnVoiceResults(const std::u16string& result) override;
 
   void OnAssetsLoaded(AssetsLoadStatus status,
                       std::unique_ptr<Assets> assets,

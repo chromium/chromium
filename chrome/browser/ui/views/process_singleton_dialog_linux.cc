@@ -10,8 +10,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 
-bool ShowProcessSingletonDialog(const base::string16& message,
-                                const base::string16& relaunch_text) {
+bool ShowProcessSingletonDialog(const std::u16string& message,
+                                const std::u16string& relaunch_text) {
   bool result = chrome::ShowMessageBoxWithButtonText(
                     NULL,
                     l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),

@@ -69,29 +69,6 @@ public class ScreenshotShareSheetSaveDelegateTest {
     @Test
     @MediumTest
     @UiThreadTest
-    public void testSaveWithPermission() {
-        mPermissionDelegate.setHasPermission(true);
-        mScreenshotShareSheetSaveDelegate.save();
-
-        Assert.assertTrue(mPermissionDelegate.calledHasPermission());
-        Assert.assertFalse(mPermissionDelegate.calledCanRequestPermission());
-    }
-
-    @Test
-    @MediumTest
-    @UiThreadTest
-    public void testSaveWithoutPermissionCanAsk() {
-        mPermissionDelegate.setHasPermission(false);
-        mPermissionDelegate.setCanRequestPermission(true);
-        mScreenshotShareSheetSaveDelegate.save();
-
-        Assert.assertTrue(mPermissionDelegate.calledHasPermission());
-        Assert.assertTrue(mPermissionDelegate.calledCanRequestPermission());
-    }
-
-    @Test
-    @MediumTest
-    @UiThreadTest
     public void testSaveWithoutPermissionCanNotAsk() {
         mPermissionDelegate.setHasPermission(false);
         mPermissionDelegate.setCanRequestPermission(false);

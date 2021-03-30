@@ -1,0 +1,47 @@
+<style>
+  :host {
+    align-items: center;
+    display: flex;
+    height: var(--thumbnail-max-height);
+    justify-content: center;
+    width: var(--thumbnail-max-width);
+  }
+
+  a {
+    position: relative;
+  }
+
+  :host(:not([is-clickable])) a {
+    cursor: default;
+    pointer-events: none;
+  }
+
+  img {
+    border-radius: var(--image-border-radius);
+    max-height: var(--thumbnail-max-height);
+    max-width: var(--thumbnail-max-width);
+  }
+
+  :host([is-bookmark]) #bookmark-icon {
+    -webkit-mask-image: url(chrome://resources/images/icon_bookmark.svg);
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: var(--cr-icon-size);
+    background-color: var(--google-blue-600);
+    height: var(--cr-icon-size);
+    left: 10px;
+    position: absolute;
+    top: 10px;
+    width: var(--cr-icon-size);
+  }
+
+  :host-context([dir='rtl']):host([is-bookmark]) #bookmark-icon {
+    left: unset;
+    right: 10px;
+  }
+</style>
+<a href$="[[page.url.url]]">
+  <img title="[[decodeMojoString16(page.title)]]"
+      src$="[[getThumbnailSrc_(page.thumbnailUrl)]]">
+  <div id="bookmark-icon"></div>
+</a>

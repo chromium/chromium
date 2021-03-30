@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.components.site_engagement.SiteEngagementService;
 
 /**
  * Test for the Site Engagement Service Java binding.
@@ -40,7 +41,7 @@ public class SiteEngagementServiceTest {
             public void run() {
                 final String url = "https://www.example.com";
                 SiteEngagementService service =
-                        SiteEngagementService.getForProfile(Profile.fromWebContents(
+                        SiteEngagementService.getForBrowserContext(Profile.fromWebContents(
                                 mActivityTestRule.getActivity().getActivityTab().getWebContents()));
 
                 Assert.assertEquals(0.0, service.getScore(url), 0);
@@ -68,14 +69,14 @@ public class SiteEngagementServiceTest {
                         mActivityTestRule.getActivity().getActivityTab().getWebContents());
 
                 Assert.assertEquals(
-                        0.0, SiteEngagementService.getForProfile(profile).getScore(url), 0);
-                SiteEngagementService.getForProfile(profile).resetBaseScoreForUrl(url, 5.0);
+                        0.0, SiteEngagementService.getForBrowserContext(profile).getScore(url), 0);
+                SiteEngagementService.getForBrowserContext(profile).resetBaseScoreForUrl(url, 5.0);
                 Assert.assertEquals(
-                        5.0, SiteEngagementService.getForProfile(profile).getScore(url), 0);
+                        5.0, SiteEngagementService.getForBrowserContext(profile).getScore(url), 0);
 
-                SiteEngagementService.getForProfile(profile).resetBaseScoreForUrl(url, 2.0);
+                SiteEngagementService.getForBrowserContext(profile).resetBaseScoreForUrl(url, 2.0);
                 Assert.assertEquals(
-                        2.0, SiteEngagementService.getForProfile(profile).getScore(url), 0);
+                        2.0, SiteEngagementService.getForBrowserContext(profile).getScore(url), 0);
             }
         });
     }

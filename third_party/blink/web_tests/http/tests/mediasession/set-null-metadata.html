@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<title>MediaSession Mojo Test</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script type="module">
+import {MediaSessionServiceMock} from './resources/mediasessionservice-mock.js';
+
+async_test(function(t) {
+  const m = new MediaSessionServiceMock();
+  m.setMetadataCallback(t.step_func(function(receivedMetadata) {
+    assert_equals(receivedMetadata, null);
+    t.done();
+  }));
+  window.navigator.mediaSession.metadata = null;
+}, "test that null MediaMetadata is correctly propagated");
+
+</script>

@@ -5,7 +5,8 @@
 #ifndef PDF_DOCUMENT_ATTACHMENT_INFO_H_
 #define PDF_DOCUMENT_ATTACHMENT_INFO_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 
 namespace chrome_pdf {
 
@@ -17,18 +18,18 @@ struct DocumentAttachmentInfo {
   ~DocumentAttachmentInfo();
 
   // The attachment's name.
-  base::string16 name;
+  std::u16string name;
 
   // The attachment's size in bytes.
   uint32_t size_bytes = 0;
 
   // The creation date of the attachment. It stores the arbitrary string saved
   // in field "CreationDate".
-  base::string16 creation_date;
+  std::u16string creation_date;
 
   // Last modified date of the attachment. It stores the arbitrary string saved
   // in field "ModDate".
-  base::string16 modified_date;
+  std::u16string modified_date;
 
   // The flag that indicates whether the attachment can be retrieved
   // successfully.

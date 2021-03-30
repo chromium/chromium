@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/indexeddb/idb_metadata.h"
 
+#include <utility>
+
 namespace blink {
 
 constexpr int64_t IDBIndexMetadata::kInvalidId;

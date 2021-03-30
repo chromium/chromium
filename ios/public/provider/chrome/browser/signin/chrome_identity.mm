@@ -27,6 +27,11 @@
   return nil;
 }
 
+- (NSString*)userGivenName {
+  NOTREACHED();
+  return nil;
+}
+
 - (NSString*)hashedGaiaID {
   NOTREACHED();
   return nil;

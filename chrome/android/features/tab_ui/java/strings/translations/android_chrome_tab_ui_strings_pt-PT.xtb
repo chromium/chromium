@@ -4,10 +4,13 @@
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> dos seus separadores não foram utilizados recentemente. Pretende fechá-los?</translation>
 <translation id="1181037720776840403">Remover</translation>
 <translation id="125153950246128346">Toque para ver outro separador.</translation>
+<translation id="1302104331113804646">Definições de monitorização de preços</translation>
+<translation id="1378979118429748177">Receba notificações quando os preços descerem.</translation>
 <translation id="1657719826150349398">Mover o separador para baixo</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> separador}other{<ph name="TABS_COUNT_MANY" /> separadores}}</translation>
 <translation id="2277224997687551299">Editar nome do grupo</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Remova <ph name="TABS_COUNT_ONE" /> separador selecionado do grupo.}other{Remova <ph name="TABS_COUNT_MANY" /> separadores selecionados do grupo.}}</translation>
+<translation id="2479148705183875116">Aceder às Definições</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Reduza <ph name="TABS_COUNT_ONE" /> separador.}other{Reduza o grupo de separadores com <ph name="TABS_COUNT_MANY" /> separadores.}}</translation>
 <translation id="2569352796411618312">Sugestão: <ph name="NUMBER_OF_TABS" /> dos seus separadores não foram utilizados recentemente. Pretende fechá-los?</translation>
 <translation id="257674075312929031">Grupo</translation>
@@ -15,13 +18,16 @@
 <translation id="2671423594960767771">Partilhar grupo</translation>
 <translation id="2759453070259087442">Expanda o grupo de separadores <ph name="TITLE_OF_GROUP" /> com <ph name="NUMBER_OF_TABS" /> separadores.</translation>
 <translation id="2977480621796371840">Remover do grupo</translation>
+<translation id="3291470810748040983">Receberá um alerta quando existir um preço inferior num separador aberto.</translation>
 <translation id="3328308545011660196">Sugestão: <ph name="NUMBER_OF_TABS" /> separadores parecem estar relacionados. Pretende agrupá-los?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Reduza <ph name="TABS_COUNT_ONE" /> separador.}other{Reduza o grupo de separadores <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> separadores.}}</translation>
+<translation id="3882834874697329510">Para receber um alerta quando existir um preço inferior num separador aberto, ative as notificações nas Definições.</translation>
+<translation id="3940195383040445971">Monitorize os preços nos separadores.</translation>
+<translation id="3996880007329611795">Receber notificações</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> separadores parecem estar relacionados. Pretende agrupá-los?</translation>
 <translation id="4212246570487010370">Continue a navegar</translation>
 <translation id="4450893287417543264">Não mostrar de novo</translation>
 <translation id="4648718555153979859">Os separadores estão agrupados aqui.</translation>
-<translation id="4922064041913095674">Veja qual dos itens nos seus separadores abertos tem um melhor preço.</translation>
 <translation id="492284538114688557">Descida do preço detetada</translation>
 <translation id="5007392906805964215">Rever</translation>
 <translation id="5073204694187207510">Ocultar grelha em ecrã inteiro</translation>
@@ -30,6 +36,7 @@
 <translation id="5533021382642990449">Mostrar mais tarde</translation>
 <translation id="5558362125926932819">Feche o grupo de separadores com <ph name="NUMBER_OF_TABS" /> separadores.</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> separadores agrupados</translation>
+<translation id="575494663145460764">Pretende obter alertas para descidas de preços?</translation>
 <translation id="58326064309361797">Arraste os separadores para os agrupar.</translation>
 <translation id="5846292395804797011">Feche o grupo <ph name="TITLE_OF_GROUP" /> com <ph name="NUMBER_OF_TABS" /> separadores.</translation>
 <translation id="6040143037577758943">Fechar</translation>
@@ -41,6 +48,7 @@
 <translation id="6856809498882026482">Ocultar modo de seleção múltipla</translation>
 <translation id="7151209024774799310">Remover separadores do grupo</translation>
 <translation id="7204204600596740190">Modo de seleção múltipla</translation>
+<translation id="7352298686197644113">Veja qual dos itens nos seus separadores abertos tem um preço mais baixo.</translation>
 <translation id="753732157349120914">Comutador de separadores</translation>
 <translation id="7559245342362162951">Mostrar os separadores do grupo numa grelha em ecrã inteiro</translation>
 <translation id="7792771145871471484">Reveja as sugestões.</translation>
@@ -52,7 +60,10 @@
 <translation id="8304833501377495048">Não mostrar a Faixa de separadores novamente?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Fechar <ph name="TABS_COUNT_ONE" /> separador selecionado}other{Fechar <ph name="TABS_COUNT_MANY" /> separadores selecionados}}</translation>
 <translation id="8557923272772633250">Expandir o grupo de separadores com <ph name="NUMBER_OF_TABS" /> separadores</translation>
+<translation id="860282621117673749">Alertas de descida do preço</translation>
+<translation id="8714939927607906138">Preço mais baixo</translation>
 <translation id="8749939518995770034">Faixa de separadores fechada</translation>
+<translation id="8820741577754260431">Veja as descidas de preços nos seus separadores.</translation>
 <translation id="9150694013019234766">Alterne entre separadores no grupo de separadores junto à parte inferior do ecrã.</translation>
 <translation id="9169594135889675189">Adicionar um novo separador ao grupo</translation>
 <translation id="959682366969460160">Organize-se</translation>

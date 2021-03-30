@@ -2,53 +2,38 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-#value-prop-view {
+#animation-container-horizontal-mode,
+#animation-container-vertical-mode {
+  display: none;
+}
+
+:host-context([orientation=horizontal]) #animation-container-horizontal-mode,
+:host-context([orientation=vertical]) #animation-container-vertical-mode {
   display: block;
-  height: 232px;
-  margin: auto;
+}
+
+:host-context([orientation=vertical]) oobe-adaptive-dialog {
+  --oobe-adaptive-dialog-content-top-padding: 0;
+}
+
+#animation-container-horizontal-mode {
+  transform: translateX(-20px);
+}
+
+#intro-title-text {
+  color: var(--oobe-header-text-color);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 22px;
+  padding-bottom: 8px;
 }
 
 #intro-text {
   padding: 0 8px 16px 0;
 }
 
-#column-container {
-  flex-direction: column;
-}
-
-#consents-container {
-  padding-inline-start: 24px;
-}
-
-@media screen and (min-width: 600px) {
-  #column-container {
-    flex-direction: row;
-  }
-
-  #value-prop-container {
-    align-items: center;
-    border-inline-end: 1px solid rgb(218, 220, 224);
-    width: 50%;
-  }
-
-  #consents-container {
-    width: 50%;
-  }
-}
-
-#user-name {
-  color: #757575;
-  padding-inline-start: 8px;
-}
-
 #footer-text {
-  color: #757575;
   padding-top: 16px;
-}
-
-#user-image {
-  border-radius: 50%;
-  height: 20px;
 }
 
 #overlay-text {
@@ -76,4 +61,49 @@
 
 oobe-text-button[disabled] {
   pointer-events: none;
+}
+
+oobe-adaptive-dialog {
+  --oobe-dialog-content-padding-top: 0;
+}
+
+#user-name {
+  color: #757575;
+  padding-inline-start: 8px;
+}
+
+#user-image {
+  border-radius: 50%;
+  height: 20px;
+}
+
+#value-prop-view-old {
+  display: block;
+  height: 232px;
+  margin: auto;
+  transform: translateX(-10px);
+}
+
+:host-context(html:not([new-layout])) #consents-container {
+  padding-inline-start: 24px;
+}
+
+#column-container {
+  flex-direction: column;
+}
+
+@media screen and (min-width: 600px) {
+  #column-container {
+    flex-direction: row;
+  }
+
+  #value-prop-container {
+    align-items: center;
+    border-inline-end: 1px solid var(--google-grey-300);
+    width: 50%;
+  }
+
+  :host-context(html:not([new-layout])) #consents-container {
+    width: 50%;
+  }
 }

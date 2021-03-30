@@ -23,9 +23,9 @@ import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.ProfileDataSource;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.core.browser.javatests.R;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.FakeProfileDataSource;
+import org.chromium.components.signin.test.util.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
@@ -119,6 +119,13 @@ public class AccountManagerTestRule implements TestRule {
     }
 
     /**
+     * Removes an account with the given account email.
+     */
+    public void removeAccount(String accountEmail) {
+        mFakeAccountManagerFacade.removeAccount(AccountUtils.createAccountFromName(accountEmail));
+    }
+
+    /**
      * Waits for the AccountTrackerService to seed system accounts.
      */
     public void waitForSeeding() {
@@ -144,13 +151,13 @@ public class AccountManagerTestRule implements TestRule {
      *
      * This method invokes native code. It shouldn't be called in a Robolectric test.
      */
-    public void removeAccountAndWaitForSeeding(String accountName) {
-        mFakeAccountManagerFacade.removeAccount(AccountUtils.createAccountFromName(accountName));
+    public void removeAccountAndWaitForSeeding(String accountEmail) {
+        removeAccount(accountEmail);
         waitForSeeding();
     }
 
     /**
-     * Add and sign in an account with the default name.
+     * Adds and signs in an account with the default name without sync consent.
      *
      * This method does not enable sync.
      */
@@ -163,7 +170,7 @@ public class AccountManagerTestRule implements TestRule {
     }
 
     /**
-     * Add and sign in an account with the default name.
+     * Adds and signs in an account with the default name and enables sync.
      *
      * This method invokes native code. It shouldn't be called in a Robolectric test.
      */
@@ -173,7 +180,7 @@ public class AccountManagerTestRule implements TestRule {
     }
 
     /**
-     * Add and sign in an account with the default name.
+     * Adds and signs in an account with the default name and enables sync.
      *
      * This method invokes native code. It shouldn't be called in a Robolectric test.
      *

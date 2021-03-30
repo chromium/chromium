@@ -21,6 +21,7 @@
         margin-inline-start: var(--nearby-page-space-inline);
         padding-block-end: 16px;
         padding-block-start: var(--nearby-page-space-block);
+        position: relative;
       }
 
       #contentContainer {
@@ -32,17 +33,27 @@
       }
 
       #pageTitle {
+        color: var(--cr-primary-text-color);
+        font-family: 'Google Sans';
         font-size: 16px;
-        font-weight: bold;
+        font-weight: normal;
         line-height: 24px;
         margin: 0;
       }
 
       #pageSubTitle {
+        color: var(--cr-secondary-text-color);
         font-size: 14px;
         font-weight: inherit;
         line-height: 20px;
         margin: 0;
+      }
+
+      #a11yAnnouncedPageSubTitle {
+        bottom: 16px;
+        clip: rect(0,0,0,0); /* Make invisible. Read on screen readers only. */
+        font-size: 14px;
+        position: absolute; /* Position directly over subtitle it replaces. */
       }
 
       #actions {
@@ -57,15 +68,22 @@
       #utilityButton {
         margin-inline-end: auto;
       }
+      #utilityButton iron-icon {
+        --iron-icon-fill-color: var(--text-color);
+        margin-inline-end: 8px;
+      }
     </style>
     <div id="pageContainer" role="dialog" aria-modal="true"
-        aria-labelledby="[[getDialogAriaLabelledBy_(subTitleAriaHidden)]]">
+        aria-labelledby="[[getDialogAriaLabelledBy_(a11yAnnouncedSubTitle)]]">
       <div id="header">
         <h1 id="pageTitle">[[title]]</h1>
         <h2 id="pageSubTitle"
-            aria-hidden$="[[getSubTitleAriaHidden_(subTitleAriaHidden)]]">
+            aria-hidden$="[[getSubTitleAriaHidden_(a11yAnnouncedSubTitle)]]">
           [[subTitle]]
         </h2>
+        <div id="a11yAnnouncedPageSubTitle" aria-live="polite">
+          [[a11yAnnouncedSubTitle]]
+        </div>
       </div>
 
       <div id="contentContainer">
@@ -77,7 +95,10 @@
           <template is="dom-if" if="[[utilityButtonLabel]]">
             <cr-button id="utilityButton" class="cancel-button"
                 on-click="onUtilityClick_" aria-label="[[utilityButtonLabel]]">
-              [[utilityButtonLabel]]
+              <template is="dom-if" if="[[utilityButtonOpenInNew]]">
+                <iron-icon id="openInNewIcon" icon="cr:open-in-new"></iron-icon>
+              </template>
+              <span>[[utilityButtonLabel]]</span>
             </cr-button>
           </template>
           <template is="dom-if" if="[[cancelButtonLabel]]">

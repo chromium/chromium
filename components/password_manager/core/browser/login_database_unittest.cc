@@ -58,8 +58,8 @@ PasswordStoreChangeList AddChangeForForm(const PasswordForm& form) {
 PasswordStoreChangeList UpdateChangeForForm(const PasswordForm& form,
                                             const bool password_changed) {
   return PasswordStoreChangeList(
-      1,
-      PasswordStoreChange(PasswordStoreChange::UPDATE, form, password_changed));
+      1, PasswordStoreChange(PasswordStoreChange::UPDATE, form,
+                             FormPrimaryKey(1), password_changed));
 }
 
 PasswordStoreChangeList RemoveChangeForForm(const PasswordForm& form) {
@@ -70,18 +70,18 @@ PasswordStoreChangeList RemoveChangeForForm(const PasswordForm& form) {
 void GenerateExamplePasswordForm(PasswordForm* form) {
   form->url = GURL("http://accounts.google.com/LoginAuth");
   form->action = GURL("http://accounts.google.com/Login");
-  form->username_element = ASCIIToUTF16("Email");
-  form->username_value = ASCIIToUTF16("test@gmail.com");
-  form->password_element = ASCIIToUTF16("Passwd");
-  form->password_value = ASCIIToUTF16("test");
-  form->submit_element = ASCIIToUTF16("signIn");
+  form->username_element = u"Email";
+  form->username_value = u"test@gmail.com";
+  form->password_element = u"Passwd";
+  form->password_value = u"test";
+  form->submit_element = u"signIn";
   form->signon_realm = "http://www.google.com/";
   form->scheme = PasswordForm::Scheme::kHtml;
   form->times_used = 1;
-  form->form_data.name = ASCIIToUTF16("form_name");
+  form->form_data.name = u"form_name";
   form->date_synced = base::Time::Now();
   form->date_last_used = base::Time::Now();
-  form->display_name = ASCIIToUTF16("Mr. Smith");
+  form->display_name = u"Mr. Smith";
   form->icon_url = GURL("https://accounts.google.com/Icon");
   form->federation_origin =
       url::Origin::Create(GURL("https://accounts.google.com/"));
@@ -146,7 +146,7 @@ bool AddZeroClickableLogin(LoginDatabase* db,
   form.username_element = ASCIIToUTF16(unique_string);
   form.username_value = ASCIIToUTF16(unique_string);
   form.password_element = ASCIIToUTF16(unique_string);
-  form.submit_element = ASCIIToUTF16("signIn");
+  form.submit_element = u"signIn";
   form.signon_realm = form.url.spec();
   form.display_name = ASCIIToUTF16(unique_string);
   form.icon_url = origin;
@@ -161,14 +161,14 @@ bool AddZeroClickableLogin(LoginDatabase* db,
 MATCHER(IsGoogle1Account, "") {
   return arg.url.spec() == "https://accounts.google.com/ServiceLogin" &&
          arg.action.spec() == "https://accounts.google.com/ServiceLoginAuth" &&
-         arg.username_value == ASCIIToUTF16("theerikchen") &&
+         arg.username_value == u"theerikchen" &&
          arg.scheme == PasswordForm::Scheme::kHtml;
 }
 
 MATCHER(IsGoogle2Account, "") {
   return arg.url.spec() == "https://accounts.google.com/ServiceLogin" &&
          arg.action.spec() == "https://accounts.google.com/ServiceLoginAuth" &&
-         arg.username_value == ASCIIToUTF16("theerikchen2") &&
+         arg.username_value == u"theerikchen2" &&
          arg.scheme == PasswordForm::Scheme::kHtml;
 }
 
@@ -207,8 +207,8 @@ class LoginDatabaseTest : public testing::Test {
     // Simple non-html auth form.
     PasswordForm non_html_auth;
     non_html_auth.url = GURL("http://example.com");
-    non_html_auth.username_value = ASCIIToUTF16("test@gmail.com");
-    non_html_auth.password_value = ASCIIToUTF16("test");
+    non_html_auth.username_value = u"test@gmail.com";
+    non_html_auth.password_value = u"test";
     non_html_auth.signon_realm = "http://example.com/Realm";
     non_html_auth.scheme = scheme;
     non_html_auth.date_created = now;
@@ -216,10 +216,10 @@ class LoginDatabaseTest : public testing::Test {
     // Simple password form.
     PasswordForm html_form(non_html_auth);
     html_form.action = GURL("http://example.com/login");
-    html_form.username_element = ASCIIToUTF16("username");
-    html_form.username_value = ASCIIToUTF16("test2@gmail.com");
-    html_form.password_element = ASCIIToUTF16("password");
-    html_form.submit_element = ASCIIToUTF16("");
+    html_form.username_element = u"username";
+    html_form.username_value = u"test2@gmail.com";
+    html_form.password_element = u"password";
+    html_form.submit_element = u"";
     html_form.signon_realm = "http://example.com/";
     html_form.scheme = PasswordForm::Scheme::kHtml;
     html_form.date_created = now;
@@ -260,8 +260,8 @@ class LoginDatabaseTest : public testing::Test {
 
     PasswordForm ip_form;
     ip_form.url = GURL(origin);
-    ip_form.username_value = ASCIIToUTF16("test@gmail.com");
-    ip_form.password_value = ASCIIToUTF16("test");
+    ip_form.username_value = u"test@gmail.com";
+    ip_form.password_value = u"test";
     ip_form.signon_realm = origin;
     ip_form.scheme = scheme;
     ip_form.date_created = now;
@@ -301,7 +301,7 @@ TEST_F(LoginDatabaseTest, Logins) {
   // correctly.
   PasswordStoreChangeList changes = db().AddLogin(form);
   ASSERT_EQ(AddChangeForForm(form), changes);
-  EXPECT_EQ(1, changes[0].primary_key());
+  EXPECT_EQ(1, changes[0].primary_key().value());
   EXPECT_TRUE(db().GetAutofillableLogins(&result));
   ASSERT_EQ(1U, result.size());
   EXPECT_EQ(form, *result[0]);
@@ -310,7 +310,7 @@ TEST_F(LoginDatabaseTest, Logins) {
 
   EXPECT_EQ(db().GetAllLogins(&key_to_form_map), FormRetrievalResult::kSuccess);
   EXPECT_EQ(1U, key_to_form_map.size());
-  EXPECT_EQ(form, *key_to_form_map[1]);
+  EXPECT_EQ(form, *key_to_form_map[FormPrimaryKey(1)]);
   key_to_form_map.clear();
 
   // Match against an exact copy.
@@ -322,7 +322,7 @@ TEST_F(LoginDatabaseTest, Logins) {
   // The example site changes...
   PasswordForm form2(form);
   form2.url = GURL("http://www.google.com/new/accounts/LoginAuth");
-  form2.submit_element = ASCIIToUTF16("reallySignIn");
+  form2.submit_element = u"reallySignIn";
 
   // Match against an inexact copy
   EXPECT_TRUE(db().GetLogins(PasswordStore::FormDigest(form2), &result));
@@ -349,7 +349,7 @@ TEST_F(LoginDatabaseTest, Logins) {
   // Let's imagine the user logs into the secure site.
   changes = db().AddLogin(form4);
   ASSERT_EQ(AddChangeForForm(form4), changes);
-  EXPECT_EQ(2, changes[0].primary_key());
+  EXPECT_EQ(2, changes[0].primary_key().value());
   EXPECT_TRUE(db().GetAutofillableLogins(&result));
   EXPECT_EQ(2U, result.size());
   result.clear();
@@ -362,7 +362,7 @@ TEST_F(LoginDatabaseTest, Logins) {
   // The user chose to forget the original but not the new.
   EXPECT_TRUE(db().RemoveLogin(form, &changes));
   ASSERT_EQ(1U, changes.size());
-  EXPECT_EQ(1, changes[0].primary_key());
+  EXPECT_EQ(1, changes[0].primary_key().value());
   EXPECT_TRUE(db().GetAutofillableLogins(&result));
   EXPECT_EQ(1U, result.size());
   result.clear();
@@ -373,7 +373,7 @@ TEST_F(LoginDatabaseTest, Logins) {
 
   // User changes their password.
   PasswordForm form5(form4);
-  form5.password_value = ASCIIToUTF16("test6");
+  form5.password_value = u"test6";
   const base::Time kNow = base::Time::Now();
   form5.date_last_used = kNow;
 
@@ -397,7 +397,7 @@ TEST_F(LoginDatabaseTest, Logins) {
   // Make sure everything can disappear.
   EXPECT_TRUE(db().RemoveLogin(form4, &changes));
   ASSERT_EQ(1U, changes.size());
-  EXPECT_EQ(2, changes[0].primary_key());
+  EXPECT_EQ(2, changes[0].primary_key().value());
   EXPECT_TRUE(db().GetAutofillableLogins(&result));
   EXPECT_EQ(0U, result.size());
   EXPECT_TRUE(db().IsEmpty());
@@ -419,7 +419,7 @@ TEST_F(LoginDatabaseTest, AddLoginReturnsPrimaryKey) {
   PasswordStoreChangeList change_list = db().AddLogin(form);
   ASSERT_EQ(1U, change_list.size());
   EXPECT_EQ(AddChangeForForm(form), change_list);
-  EXPECT_EQ(1, change_list[0].primary_key());
+  EXPECT_EQ(1, change_list[0].primary_key().value());
 }
 
 TEST_F(LoginDatabaseTest, RemoveLoginsByPrimaryKey) {
@@ -437,7 +437,7 @@ TEST_F(LoginDatabaseTest, RemoveLoginsByPrimaryKey) {
   // correctly.
   PasswordStoreChangeList change_list = db().AddLogin(form);
   ASSERT_EQ(1U, change_list.size());
-  int primary_key = change_list[0].primary_key();
+  FormPrimaryKey primary_key = change_list[0].primary_key();
   EXPECT_EQ(AddChangeForForm(form), change_list);
   EXPECT_TRUE(db().GetAutofillableLogins(&result));
   ASSERT_EQ(1U, result.size());
@@ -445,7 +445,7 @@ TEST_F(LoginDatabaseTest, RemoveLoginsByPrimaryKey) {
   result.clear();
 
   // RemoveLoginByPrimaryKey() doesn't decrypt or fill the password value.
-  form.password_value = ASCIIToUTF16("");
+  form.password_value = u"";
 
   EXPECT_TRUE(db().RemoveLoginByPrimaryKey(primary_key, &change_list));
   EXPECT_EQ(RemoveChangeForForm(form), change_list);
@@ -463,7 +463,7 @@ TEST_F(LoginDatabaseTest, ShouldNotRecyclePrimaryKeys) {
   // Add the form.
   PasswordStoreChangeList change_list = db().AddLogin(form);
   ASSERT_EQ(1U, change_list.size());
-  int primary_key1 = change_list[0].primary_key();
+  FormPrimaryKey primary_key1 = change_list[0].primary_key();
   change_list.clear();
   // Delete the form
   EXPECT_TRUE(db().RemoveLoginByPrimaryKey(primary_key1, &change_list));
@@ -485,11 +485,11 @@ TEST_F(LoginDatabaseTest, TestPublicSuffixDomainMatching) {
   PasswordForm form;
   form.url = GURL("https://foo.com/");
   form.action = GURL("https://foo.com/login");
-  form.username_element = ASCIIToUTF16("username");
-  form.username_value = ASCIIToUTF16("test@gmail.com");
-  form.password_element = ASCIIToUTF16("password");
-  form.password_value = ASCIIToUTF16("test");
-  form.submit_element = ASCIIToUTF16("");
+  form.username_element = u"username";
+  form.username_value = u"test@gmail.com";
+  form.password_element = u"password";
+  form.password_value = u"test";
+  form.submit_element = u"";
   form.signon_realm = "https://foo.com/";
   form.scheme = PasswordForm::Scheme::kHtml;
 
@@ -524,8 +524,8 @@ TEST_F(LoginDatabaseTest, TestFederatedMatching) {
   PasswordForm form;
   form.url = GURL("https://foo.com/");
   form.action = GURL("https://foo.com/login");
-  form.username_value = ASCIIToUTF16("test@gmail.com");
-  form.password_value = ASCIIToUTF16("test");
+  form.username_value = u"test@gmail.com";
+  form.password_value = u"test";
   form.signon_realm = "https://foo.com/";
   form.scheme = PasswordForm::Scheme::kHtml;
 
@@ -534,7 +534,7 @@ TEST_F(LoginDatabaseTest, TestFederatedMatching) {
   form2.url = GURL("https://mobile.foo.com/");
   form2.action = GURL("https://mobile.foo.com/login");
   form2.signon_realm = "federation://mobile.foo.com/accounts.google.com";
-  form2.username_value = ASCIIToUTF16("test1@gmail.com");
+  form2.username_value = u"test1@gmail.com";
   form2.type = PasswordForm::Type::kApi;
   form2.federation_origin =
       url::Origin::Create(GURL("https://accounts.google.com/"));
@@ -575,7 +575,7 @@ TEST_F(LoginDatabaseTest, TestFederatedMatchingLocalhost) {
   form.signon_realm = "federation://localhost/accounts.google.com";
   form.federation_origin =
       url::Origin::Create(GURL("https://accounts.google.com/"));
-  form.username_value = ASCIIToUTF16("test@gmail.com");
+  form.username_value = u"test@gmail.com";
   form.type = PasswordForm::Type::kApi;
   form.scheme = PasswordForm::Scheme::kHtml;
 
@@ -636,8 +636,8 @@ TEST_F(LoginDatabaseTest, TestPublicSuffixDomainMatchingShouldMatchingApply) {
   // Saved password form on Google sign-in page.
   PasswordForm form;
   form.url = GURL("https://accounts.google.com/");
-  form.username_value = ASCIIToUTF16("test@gmail.com");
-  form.password_value = ASCIIToUTF16("test");
+  form.username_value = u"test@gmail.com";
+  form.password_value = u"test";
   form.signon_realm = "https://accounts.google.com/";
   form.scheme = PasswordForm::Scheme::kHtml;
 
@@ -679,8 +679,8 @@ TEST_F(LoginDatabaseTest, TestFederatedMatchingWithoutPSLMatching) {
   PasswordForm form;
   form.url = GURL("https://accounts.google.com/");
   form.action = GURL("https://accounts.google.com/login");
-  form.username_value = ASCIIToUTF16("test@gmail.com");
-  form.password_value = ASCIIToUTF16("test");
+  form.username_value = u"test@gmail.com";
+  form.password_value = u"test";
   form.signon_realm = "https://accounts.google.com/";
   form.scheme = PasswordForm::Scheme::kHtml;
 
@@ -689,7 +689,7 @@ TEST_F(LoginDatabaseTest, TestFederatedMatchingWithoutPSLMatching) {
   form2.url = GURL("https://some.other.google.com/");
   form2.action = GURL("https://some.other.google.com/login");
   form2.signon_realm = "federation://some.other.google.com/accounts.google.com";
-  form2.username_value = ASCIIToUTF16("test1@gmail.com");
+  form2.username_value = u"test1@gmail.com";
   form2.type = PasswordForm::Type::kApi;
   form2.federation_origin =
       url::Origin::Create(GURL("https://accounts.google.com/"));
@@ -724,7 +724,7 @@ TEST_F(LoginDatabaseTest, TestFederatedPSLMatching) {
   form.url = GURL("https://psl.example.com/");
   form.action = GURL("https://psl.example.com/login");
   form.signon_realm = "federation://psl.example.com/accounts.google.com";
-  form.username_value = ASCIIToUTF16("test1@gmail.com");
+  form.username_value = u"test1@gmail.com";
   form.type = PasswordForm::Type::kApi;
   form.federation_origin =
       url::Origin::Create(GURL("https://accounts.google.com/"));
@@ -758,11 +758,11 @@ TEST_F(LoginDatabaseTest, TestPublicSuffixDomainMatchingDifferentSites) {
   PasswordForm form;
   form.url = GURL("https://foo.com/");
   form.action = GURL("https://foo.com/login");
-  form.username_element = ASCIIToUTF16("username");
-  form.username_value = ASCIIToUTF16("test@gmail.com");
-  form.password_element = ASCIIToUTF16("password");
-  form.password_value = ASCIIToUTF16("test");
-  form.submit_element = ASCIIToUTF16("");
+  form.username_element = u"username";
+  form.username_value = u"test@gmail.com";
+  form.password_element = u"password";
+  form.password_value = u"test";
+  form.submit_element = u"";
   form.signon_realm = "https://foo.com/";
   form.scheme = PasswordForm::Scheme::kHtml;
 
@@ -792,11 +792,11 @@ TEST_F(LoginDatabaseTest, TestPublicSuffixDomainMatchingDifferentSites) {
   // Add baz.com desktop site.
   form.url = GURL("https://baz.com/login/");
   form.action = GURL("https://baz.com/login/");
-  form.username_element = ASCIIToUTF16("email");
-  form.username_value = ASCIIToUTF16("test@gmail.com");
-  form.password_element = ASCIIToUTF16("password");
-  form.password_value = ASCIIToUTF16("test");
-  form.submit_element = ASCIIToUTF16("");
+  form.username_element = u"email";
+  form.username_value = u"test@gmail.com";
+  form.password_element = u"password";
+  form.password_value = u"test";
+  form.submit_element = u"";
   form.signon_realm = "https://baz.com/";
   form.scheme = PasswordForm::Scheme::kHtml;
 
@@ -839,11 +839,11 @@ TEST_F(LoginDatabaseTest, TestPublicSuffixDomainMatchingRegexp) {
   PasswordForm form;
   form.url = GURL("http://foo.com/");
   form.action = GURL("http://foo.com/login");
-  form.username_element = ASCIIToUTF16("username");
-  form.username_value = ASCIIToUTF16("test@gmail.com");
-  form.password_element = ASCIIToUTF16("password");
-  form.password_value = ASCIIToUTF16("test");
-  form.submit_element = ASCIIToUTF16("");
+  form.username_element = u"username";
+  form.username_value = u"test@gmail.com";
+  form.password_element = u"password";
+  form.password_value = u"test";
+  form.submit_element = u"";
   form.signon_realm = "http://foo.com/";
   form.scheme = PasswordForm::Scheme::kHtml;
 
@@ -947,7 +947,7 @@ static bool AddTimestampedLogin(LoginDatabase* db,
   form.username_element = ASCIIToUTF16(unique_string);
   form.username_value = ASCIIToUTF16(unique_string);
   form.password_element = ASCIIToUTF16(unique_string);
-  form.submit_element = ASCIIToUTF16("signIn");
+  form.submit_element = u"signIn";
   form.signon_realm = url;
   form.display_name = ASCIIToUTF16(unique_string);
   form.icon_url = GURL("https://accounts.google.com/Icon");
@@ -1010,8 +1010,8 @@ TEST_F(LoginDatabaseTest, ClearPrivateData_SavedPasswords) {
   db().RemoveLoginsCreatedBetween(now, base::Time(), &changes);
   ASSERT_EQ(2U, changes.size());
   // The 3rd and the 4th should have been deleted.
-  EXPECT_EQ(3, changes[0].primary_key());
-  EXPECT_EQ(4, changes[1].primary_key());
+  EXPECT_EQ(3, changes[0].primary_key().value());
+  EXPECT_EQ(4, changes[1].primary_key().value());
 
   // Should have deleted two logins.
   EXPECT_TRUE(db().GetAutofillableLogins(&result));
@@ -1022,8 +1022,8 @@ TEST_F(LoginDatabaseTest, ClearPrivateData_SavedPasswords) {
   db().RemoveLoginsCreatedBetween(base::Time(), back_30_days, &changes);
   ASSERT_EQ(2U, changes.size());
   // The 1st and the 5th should have been deleted.
-  EXPECT_EQ(1, changes[0].primary_key());
-  EXPECT_EQ(5, changes[1].primary_key());
+  EXPECT_EQ(1, changes[0].primary_key().value());
+  EXPECT_EQ(5, changes[1].primary_key().value());
 
   // Should have deleted two logins.
   EXPECT_TRUE(db().GetAutofillableLogins(&result));
@@ -1034,7 +1034,7 @@ TEST_F(LoginDatabaseTest, ClearPrivateData_SavedPasswords) {
   db().RemoveLoginsCreatedBetween(base::Time(), base::Time(), &changes);
   ASSERT_EQ(1U, changes.size());
   // The 2nd should have been deleted.
-  EXPECT_EQ(2, changes[0].primary_key());
+  EXPECT_EQ(2, changes[0].primary_key().value());
 
   // Verify nothing is left.
   EXPECT_TRUE(db().GetAutofillableLogins(&result));
@@ -1098,15 +1098,15 @@ TEST_F(LoginDatabaseTest, BlocklistedLogins) {
   PasswordForm form;
   form.url = GURL("http://accounts.google.com/LoginAuth");
   form.action = GURL("http://accounts.google.com/Login");
-  form.username_element = ASCIIToUTF16("Email");
-  form.password_element = ASCIIToUTF16("Passwd");
-  form.submit_element = ASCIIToUTF16("signIn");
+  form.username_element = u"Email";
+  form.password_element = u"Passwd";
+  form.submit_element = u"signIn";
   form.signon_realm = "http://www.google.com/";
   form.blocked_by_user = true;
   form.scheme = PasswordForm::Scheme::kHtml;
   form.date_synced = base::Time::Now();
   form.date_last_used = base::Time::Now();
-  form.display_name = ASCIIToUTF16("Mr. Smith");
+  form.display_name = u"Mr. Smith";
   form.icon_url = GURL("https://accounts.google.com/Icon");
   form.federation_origin =
       url::Origin::Create(GURL("https://accounts.google.com/"));
@@ -1141,9 +1141,9 @@ TEST_F(LoginDatabaseTest, VectorSerialization) {
   EXPECT_THAT(output, Eq(vec));
 
   // Normal data.
-  vec.push_back({ASCIIToUTF16("first"), ASCIIToUTF16("id1")});
-  vec.push_back({ASCIIToUTF16("second"), ASCIIToUTF16("id2")});
-  vec.push_back({ASCIIToUTF16("third"), ASCIIToUTF16("id3")});
+  vec.push_back({u"first", u"id1"});
+  vec.push_back({u"second", u"id2"});
+  vec.push_back({u"third", u"id3"});
 
   temp = SerializeValueElementPairs(vec);
   output = DeserializeValueElementPairs(temp);
@@ -1180,8 +1180,8 @@ TEST_F(LoginDatabaseTest, UpdateIncompleteCredentials) {
   PasswordForm incomplete_form;
   incomplete_form.url = GURL("http://accounts.google.com/LoginAuth");
   incomplete_form.signon_realm = "http://accounts.google.com/";
-  incomplete_form.username_value = ASCIIToUTF16("my_username");
-  incomplete_form.password_value = ASCIIToUTF16("my_password");
+  incomplete_form.username_value = u"my_username";
+  incomplete_form.password_value = u"my_password";
   incomplete_form.date_last_used = base::Time::Now();
   incomplete_form.blocked_by_user = false;
   incomplete_form.scheme = PasswordForm::Scheme::kHtml;
@@ -1192,9 +1192,9 @@ TEST_F(LoginDatabaseTest, UpdateIncompleteCredentials) {
   encountered_form.url = GURL("http://accounts.google.com/LoginAuth");
   encountered_form.signon_realm = "http://accounts.google.com/";
   encountered_form.action = GURL("http://accounts.google.com/Login");
-  encountered_form.username_element = ASCIIToUTF16("Email");
-  encountered_form.password_element = ASCIIToUTF16("Passwd");
-  encountered_form.submit_element = ASCIIToUTF16("signIn");
+  encountered_form.username_element = u"Email";
+  encountered_form.password_element = u"Passwd";
+  encountered_form.submit_element = u"signIn";
 
   // Get matches for encountered_form.
   EXPECT_TRUE(
@@ -1247,8 +1247,8 @@ TEST_F(LoginDatabaseTest, UpdateOverlappingCredentials) {
   PasswordForm incomplete_form;
   incomplete_form.url = GURL("http://accounts.google.com/LoginAuth");
   incomplete_form.signon_realm = "http://accounts.google.com/";
-  incomplete_form.username_value = ASCIIToUTF16("my_username");
-  incomplete_form.password_value = ASCIIToUTF16("my_password");
+  incomplete_form.username_value = u"my_username";
+  incomplete_form.password_value = u"my_password";
   incomplete_form.date_last_used = base::Time::Now();
   incomplete_form.blocked_by_user = false;
   incomplete_form.scheme = PasswordForm::Scheme::kHtml;
@@ -1259,9 +1259,9 @@ TEST_F(LoginDatabaseTest, UpdateOverlappingCredentials) {
   // version from a different browser.
   PasswordForm complete_form = incomplete_form;
   complete_form.action = GURL("http://accounts.google.com/Login");
-  complete_form.username_element = ASCIIToUTF16("username_element");
-  complete_form.password_element = ASCIIToUTF16("password_element");
-  complete_form.submit_element = ASCIIToUTF16("submit");
+  complete_form.username_element = u"username_element";
+  complete_form.password_element = u"password_element";
+  complete_form.submit_element = u"submit";
 
   // An update fails because the primary key for |complete_form| is different.
   EXPECT_EQ(PasswordStoreChangeList(), db().UpdateLogin(complete_form));
@@ -1274,7 +1274,7 @@ TEST_F(LoginDatabaseTest, UpdateOverlappingCredentials) {
   result.clear();
 
   // Simulate the user changing their password.
-  complete_form.password_value = ASCIIToUTF16("new_password");
+  complete_form.password_value = u"new_password";
   complete_form.date_synced = base::Time::Now();
   EXPECT_EQ(UpdateChangeForForm(complete_form, /*password_changed=*/true),
             db().UpdateLogin(complete_form));
@@ -1297,8 +1297,8 @@ TEST_F(LoginDatabaseTest, DoubleAdd) {
   PasswordForm form;
   form.url = GURL("http://accounts.google.com/LoginAuth");
   form.signon_realm = "http://accounts.google.com/";
-  form.username_value = ASCIIToUTF16("my_username");
-  form.password_value = ASCIIToUTF16("my_password");
+  form.username_value = u"my_username";
+  form.password_value = u"my_password";
   form.blocked_by_user = false;
   form.scheme = PasswordForm::Scheme::kHtml;
   EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
@@ -1316,8 +1316,8 @@ TEST_F(LoginDatabaseTest, AddWrongForm) {
   // |origin| shouldn't be empty.
   form.url = GURL();
   form.signon_realm = "http://accounts.google.com/";
-  form.username_value = ASCIIToUTF16("my_username");
-  form.password_value = ASCIIToUTF16("my_password");
+  form.username_value = u"my_username";
+  form.password_value = u"my_password";
   form.blocked_by_user = false;
   form.scheme = PasswordForm::Scheme::kHtml;
   EXPECT_EQ(PasswordStoreChangeList(), db().AddLogin(form));
@@ -1332,26 +1332,26 @@ TEST_F(LoginDatabaseTest, UpdateLogin) {
   PasswordForm form;
   form.url = GURL("http://accounts.google.com/LoginAuth");
   form.signon_realm = "http://accounts.google.com/";
-  form.username_value = ASCIIToUTF16("my_username");
-  form.password_value = ASCIIToUTF16("my_password");
+  form.username_value = u"my_username";
+  form.password_value = u"my_password";
   form.blocked_by_user = false;
   form.scheme = PasswordForm::Scheme::kHtml;
   form.date_last_used = base::Time::Now();
   EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
 
   form.action = GURL("http://accounts.google.com/login");
-  form.password_value = ASCIIToUTF16("my_new_password");
-  form.all_possible_usernames.push_back(ValueElementPair(
-      ASCIIToUTF16("my_new_username"), ASCIIToUTF16("new_username_id")));
+  form.password_value = u"my_new_password";
+  form.all_possible_usernames.push_back(
+      ValueElementPair(u"my_new_username", u"new_username_id"));
   form.times_used = 20;
-  form.submit_element = ASCIIToUTF16("submit_element");
+  form.submit_element = u"submit_element";
   form.date_synced = base::Time::Now();
   form.date_created = base::Time::Now() - base::TimeDelta::FromDays(1);
   form.date_last_used = base::Time::Now() + base::TimeDelta::FromDays(1);
   form.blocked_by_user = true;
   form.scheme = PasswordForm::Scheme::kBasic;
   form.type = PasswordForm::Type::kGenerated;
-  form.display_name = ASCIIToUTF16("Mr. Smith");
+  form.display_name = u"Mr. Smith";
   form.icon_url = GURL("https://accounts.google.com/Icon");
   form.federation_origin =
       url::Origin::Create(GURL("https://accounts.google.com/"));
@@ -1361,7 +1361,7 @@ TEST_F(LoginDatabaseTest, UpdateLogin) {
   PasswordStoreChangeList changes = db().UpdateLogin(form);
   EXPECT_EQ(UpdateChangeForForm(form, /*password_changed=*/true), changes);
   ASSERT_EQ(1U, changes.size());
-  EXPECT_EQ(1, changes[0].primary_key());
+  EXPECT_EQ(1, changes[0].primary_key().value());
 
   // When we retrieve the form from the store, it should have |in_store| set.
   form.in_store = PasswordForm::Store::kProfileStore;
@@ -1376,22 +1376,22 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithoutPassword) {
   PasswordForm form;
   form.url = GURL("http://accounts.google.com/LoginAuth");
   form.signon_realm = "http://accounts.google.com/";
-  form.username_value = ASCIIToUTF16("my_username");
-  form.password_value = ASCIIToUTF16("my_password");
+  form.username_value = u"my_username";
+  form.password_value = u"my_password";
   form.blocked_by_user = false;
   form.scheme = PasswordForm::Scheme::kHtml;
   form.date_last_used = base::Time::Now();
   EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
 
   form.action = GURL("http://accounts.google.com/login");
-  form.all_possible_usernames.push_back(ValueElementPair(
-      ASCIIToUTF16("my_new_username"), ASCIIToUTF16("new_username_id")));
+  form.all_possible_usernames.push_back(
+      ValueElementPair(u"my_new_username", u"new_username_id"));
   form.times_used = 20;
-  form.submit_element = ASCIIToUTF16("submit_element");
+  form.submit_element = u"submit_element";
   form.date_synced = base::Time::Now();
   form.date_created = base::Time::Now() - base::TimeDelta::FromDays(1);
   form.date_last_used = base::Time::Now() + base::TimeDelta::FromDays(1);
-  form.display_name = ASCIIToUTF16("Mr. Smith");
+  form.display_name = u"Mr. Smith";
   form.icon_url = GURL("https://accounts.google.com/Icon");
   form.skip_zero_click = true;
   form.moving_blocked_for_list.push_back(GaiaIdHash::FromGaiaId("gaia_id"));
@@ -1399,7 +1399,7 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithoutPassword) {
   PasswordStoreChangeList changes = db().UpdateLogin(form);
   EXPECT_EQ(UpdateChangeForForm(form, /*password_changed=*/false), changes);
   ASSERT_EQ(1U, changes.size());
-  EXPECT_EQ(1, changes[0].primary_key());
+  EXPECT_EQ(1, changes[0].primary_key().value());
 
   // When we retrieve the form from the store, it should have |in_store| set.
   form.in_store = PasswordForm::Store::kProfileStore;
@@ -1415,8 +1415,8 @@ TEST_F(LoginDatabaseTest, RemoveWrongForm) {
   // |origin| shouldn't be empty.
   form.url = GURL("http://accounts.google.com/LoginAuth");
   form.signon_realm = "http://accounts.google.com/";
-  form.username_value = ASCIIToUTF16("my_username");
-  form.password_value = ASCIIToUTF16("my_password");
+  form.username_value = u"my_username";
+  form.password_value = u"my_password";
   form.blocked_by_user = false;
   form.scheme = PasswordForm::Scheme::kHtml;
   // The form isn't in the database.
@@ -1432,13 +1432,13 @@ namespace {
 void AddMetricsTestData(LoginDatabase* db) {
   PasswordForm password_form;
   password_form.url = GURL("http://example.com");
-  password_form.username_value = ASCIIToUTF16("test1@gmail.com");
-  password_form.password_value = ASCIIToUTF16("test");
+  password_form.username_value = u"test1@gmail.com";
+  password_form.password_value = u"test";
   password_form.signon_realm = "http://example.com/";
   password_form.times_used = 0;
   EXPECT_EQ(AddChangeForForm(password_form), db->AddLogin(password_form));
 
-  password_form.username_value = ASCIIToUTF16("test2@gmail.com");
+  password_form.username_value = u"test2@gmail.com";
   password_form.times_used = 1;
   EXPECT_EQ(AddChangeForForm(password_form), db->AddLogin(password_form));
 
@@ -1447,7 +1447,7 @@ void AddMetricsTestData(LoginDatabase* db) {
   password_form.times_used = 3;
   EXPECT_EQ(AddChangeForForm(password_form), db->AddLogin(password_form));
 
-  password_form.username_value = ASCIIToUTF16("test3@gmail.com");
+  password_form.username_value = u"test3@gmail.com";
   password_form.type = PasswordForm::Type::kGenerated;
   password_form.times_used = 2;
   EXPECT_EQ(AddChangeForForm(password_form), db->AddLogin(password_form));
@@ -1461,32 +1461,32 @@ void AddMetricsTestData(LoginDatabase* db) {
   password_form.url = GURL("http://fourth.example.com/");
   password_form.signon_realm = "http://fourth.example.com/";
   password_form.type = PasswordForm::Type::kManual;
-  password_form.username_value = ASCIIToUTF16("");
+  password_form.username_value = u"";
   password_form.times_used = 10;
   password_form.scheme = PasswordForm::Scheme::kHtml;
   EXPECT_EQ(AddChangeForForm(password_form), db->AddLogin(password_form));
 
   password_form.url = GURL("https://fifth.example.com/");
   password_form.signon_realm = "https://fifth.example.com/";
-  password_form.password_value = ASCIIToUTF16("");
+  password_form.password_value = u"";
   password_form.blocked_by_user = true;
   EXPECT_EQ(AddChangeForForm(password_form), db->AddLogin(password_form));
 
   password_form.url = GURL("https://sixth.example.com/");
   password_form.signon_realm = "https://sixth.example.com/";
-  password_form.username_value = ASCIIToUTF16("my_username");
-  password_form.password_value = ASCIIToUTF16("my_password");
+  password_form.username_value = u"my_username";
+  password_form.password_value = u"my_password";
   password_form.blocked_by_user = false;
   EXPECT_EQ(AddChangeForForm(password_form), db->AddLogin(password_form));
 
   password_form.url = GURL();
   password_form.signon_realm = "android://hash@com.example.android/";
-  password_form.username_value = ASCIIToUTF16("JohnDoe");
-  password_form.password_value = ASCIIToUTF16("my_password");
+  password_form.username_value = u"JohnDoe";
+  password_form.password_value = u"my_password";
   password_form.blocked_by_user = false;
   EXPECT_EQ(AddChangeForForm(password_form), db->AddLogin(password_form));
 
-  password_form.username_value = ASCIIToUTF16("JaneDoe");
+  password_form.username_value = u"JaneDoe";
   EXPECT_EQ(AddChangeForForm(password_form), db->AddLogin(password_form));
 
   password_form.url = GURL("http://rsolomakhin.github.io/autofill/");
@@ -1512,14 +1512,14 @@ void AddMetricsTestData(LoginDatabase* db) {
   StatisticsTable& stats_table = db->stats_table();
   InteractionsStats stats;
   stats.origin_domain = GURL("https://example.com");
-  stats.username_value = base::ASCIIToUTF16("user1");
+  stats.username_value = u"user1";
   stats.dismissal_count = 10;
   stats.update_time = base::Time::FromTimeT(1);
   EXPECT_TRUE(stats_table.AddRow(stats));
-  stats.username_value = base::ASCIIToUTF16("user2");
+  stats.username_value = u"user2";
   stats.dismissal_count = 1;
   EXPECT_TRUE(stats_table.AddRow(stats));
-  stats.username_value = base::ASCIIToUTF16("user3");
+  stats.username_value = u"user3";
   stats.dismissal_count = 10;
   EXPECT_TRUE(stats_table.AddRow(stats));
   stats.origin_domain = GURL("https://foo.com");
@@ -1624,8 +1624,6 @@ TEST_F(LoginDatabaseTest, ReportMetricsTest) {
       "PasswordManager.TimesPasswordUsed.Overall.WithoutCustomPassphrase", 3,
       2);
 
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.EmptyUsernames.CountInDatabase", 1, 1);
   histogram_tester.ExpectUniqueSample("PasswordManager.InaccessiblePasswords",
                                       0, 1);
 #if !defined(OS_IOS) && !defined(OS_ANDROID)
@@ -1746,8 +1744,6 @@ TEST_F(LoginDatabaseTest, ReportAccountStoreMetricsTest) {
       3, 2);
 
   histogram_tester.ExpectUniqueSample(
-      "PasswordManager.AccountStore.EmptyUsernames.CountInDatabase", 1, 1);
-  histogram_tester.ExpectUniqueSample(
       "PasswordManager.AccountStore.InaccessiblePasswords", 0, 1);
 }
 
@@ -1756,29 +1752,29 @@ TEST_F(LoginDatabaseTest, DuplicatesMetrics_NoDuplicates) {
   PasswordForm password_form;
   password_form.signon_realm = "http://example1.com/";
   password_form.url = GURL("http://example1.com/");
-  password_form.username_element = ASCIIToUTF16("userelem_1");
-  password_form.username_value = ASCIIToUTF16("username_1");
-  password_form.password_value = ASCIIToUTF16("password_1");
+  password_form.username_element = u"userelem_1";
+  password_form.username_value = u"username_1";
+  password_form.password_value = u"password_1";
   ASSERT_EQ(AddChangeForForm(password_form), db().AddLogin(password_form));
 
   // Different username -> no duplicate.
   password_form.signon_realm = "http://example2.com/";
   password_form.url = GURL("http://example2.com/");
-  password_form.username_value = ASCIIToUTF16("username_1");
+  password_form.username_value = u"username_1";
   ASSERT_EQ(AddChangeForForm(password_form), db().AddLogin(password_form));
-  password_form.username_value = ASCIIToUTF16("username_2");
+  password_form.username_value = u"username_2";
   ASSERT_EQ(AddChangeForForm(password_form), db().AddLogin(password_form));
 
   // Blocklisted forms don't count as duplicates (neither against other
   // blocklisted forms nor against actual saved credentials).
   password_form.signon_realm = "http://example3.com/";
   password_form.url = GURL("http://example3.com/");
-  password_form.username_value = ASCIIToUTF16("username_1");
+  password_form.username_value = u"username_1";
   ASSERT_EQ(AddChangeForForm(password_form), db().AddLogin(password_form));
   password_form.blocked_by_user = true;
-  password_form.username_value = ASCIIToUTF16("username_2");
+  password_form.username_value = u"username_2";
   ASSERT_EQ(AddChangeForForm(password_form), db().AddLogin(password_form));
-  password_form.username_value = ASCIIToUTF16("username_3");
+  password_form.username_value = u"username_3";
   ASSERT_EQ(AddChangeForForm(password_form), db().AddLogin(password_form));
 
   base::HistogramTester histogram_tester;
@@ -1798,14 +1794,14 @@ TEST_F(LoginDatabaseTest, DuplicatesMetrics_ExactDuplicates) {
   PasswordForm password_form;
   password_form.signon_realm = "http://example1.com/";
   password_form.url = GURL("http://example1.com/");
-  password_form.username_element = ASCIIToUTF16("userelem_1");
-  password_form.username_value = ASCIIToUTF16("username_1");
+  password_form.username_element = u"userelem_1";
+  password_form.username_value = u"username_1";
   ASSERT_EQ(AddChangeForForm(password_form), db().AddLogin(password_form));
-  password_form.username_element = ASCIIToUTF16("userelem_2");
+  password_form.username_element = u"userelem_2";
   ASSERT_EQ(AddChangeForForm(password_form), db().AddLogin(password_form));
   // The number of "identical" credentials doesn't matter; we count the *sets*
   // of duplicates.
-  password_form.username_element = ASCIIToUTF16("userelem_3");
+  password_form.username_element = u"userelem_3";
   ASSERT_EQ(AddChangeForForm(password_form), db().AddLogin(password_form));
 
   // Similarly, origin doesn't make forms "different" either.
@@ -1832,20 +1828,20 @@ TEST_F(LoginDatabaseTest, DuplicatesMetrics_MismatchedDuplicates) {
   PasswordForm password_form;
   password_form.signon_realm = "http://example1.com/";
   password_form.url = GURL("http://example1.com/");
-  password_form.username_element = ASCIIToUTF16("userelem_1");
-  password_form.username_value = ASCIIToUTF16("username_1");
-  password_form.password_element = ASCIIToUTF16("passelem_1");
-  password_form.password_value = ASCIIToUTF16("password_1");
+  password_form.username_element = u"userelem_1";
+  password_form.username_value = u"username_1";
+  password_form.password_element = u"passelem_1";
+  password_form.password_value = u"password_1";
   ASSERT_EQ(AddChangeForForm(password_form), db().AddLogin(password_form));
   // Note: password_value is not part of the unique key, so we need to change
   // some other value to be able to insert the duplicate into the DB.
-  password_form.password_element = ASCIIToUTF16("passelem_2");
-  password_form.password_value = ASCIIToUTF16("password_2");
+  password_form.password_element = u"passelem_2";
+  password_form.password_value = u"password_2";
   ASSERT_EQ(AddChangeForForm(password_form), db().AddLogin(password_form));
   // The number of "identical" credentials doesn't matter; we count the *sets*
   // of duplicates.
-  password_form.password_element = ASCIIToUTF16("passelem_3");
-  password_form.password_value = ASCIIToUTF16("password_3");
+  password_form.password_element = u"passelem_3";
+  password_form.password_value = u"password_3";
   ASSERT_EQ(AddChangeForForm(password_form), db().AddLogin(password_form));
 
   base::HistogramTester histogram_tester;
@@ -1999,7 +1995,7 @@ TEST_F(LoginDatabaseTest, EncryptionEnabled) {
     ASSERT_TRUE(db.Init());
     EXPECT_EQ(AddChangeForForm(password_form), db.AddLogin(password_form));
   }
-  base::string16 decrypted_pw;
+  std::u16string decrypted_pw;
   ASSERT_TRUE(OSCrypt::DecryptString16(
       GetColumnValuesFromDatabase<std::string>(file, "password_value").at(0),
       &decrypted_pw));
@@ -2049,11 +2045,11 @@ TEST_F(LoginDatabaseTest, HandleObfuscationMix) {
     // Add plain-text (old) entries.
     db.disable_encryption();
     GenerateExamplePasswordForm(&password_form);
-    password_form.username_value = ASCIIToUTF16("other_username");
+    password_form.username_value = u"other_username";
     password_form.password_value = ASCIIToUTF16(k_plain_text_pw1);
     EXPECT_EQ(AddChangeForForm(password_form), db.AddLogin(password_form));
     GenerateExamplePasswordForm(&password_form);
-    password_form.username_value = ASCIIToUTF16("other_username2");
+    password_form.username_value = u"other_username2";
     password_form.password_value = ASCIIToUTF16(k_plain_text_pw2);
     EXPECT_EQ(AddChangeForForm(password_form), db.AddLogin(password_form));
   }
@@ -2357,7 +2353,7 @@ PasswordForm LoginDatabaseUndecryptableLoginsTest::AddDummyLogin(
     const GURL& origin,
     bool should_be_corrupted) {
   // Create a dummy password form.
-  const base::string16 unique_string16 = ASCIIToUTF16(unique_string);
+  const std::u16string unique_string16 = ASCIIToUTF16(unique_string);
   PasswordForm form;
   form.url = origin;
   form.username_element = unique_string16;
@@ -2491,8 +2487,7 @@ TEST_F(LoginDatabaseTest, GetLoginsByPassword) {
   std::vector<std::unique_ptr<PasswordForm>> result;
   PrimaryKeyToFormMap key_to_form_map;
 
-  const base::string16 duplicated_password =
-      base::ASCIIToUTF16("duplicated_password");
+  const std::u16string duplicated_password = u"duplicated_password";
 
   // Insert first logins.
   PasswordForm form1;
@@ -2511,7 +2506,7 @@ TEST_F(LoginDatabaseTest, GetLoginsByPassword) {
   GenerateExamplePasswordForm(&form2);
   form2.url = GURL("https://myrandomsite.com/login.php");
   form2.signon_realm = form2.url.GetOrigin().spec();
-  form2.password_value = base::ASCIIToUTF16("my-unique-random-password");
+  form2.password_value = u"my-unique-random-password";
   changes = db().AddLogin(form2);
   ASSERT_EQ(AddChangeForForm(form2), changes);
 
@@ -2539,8 +2534,8 @@ TEST_F(LoginDatabaseTest, EncryptedPasswordAdd) {
   form.url = GURL("http://0.com");
   form.signon_realm = "http://www.example.com/";
   form.action = GURL("http://www.example.com/action");
-  form.password_element = base::ASCIIToUTF16("pwd");
-  form.password_value = base::ASCIIToUTF16("example");
+  form.password_element = u"pwd";
+  form.password_value = u"example";
   password_manager::PasswordStoreChangeList changes = db().AddLogin(form);
   ASSERT_EQ(1u, changes.size());
   ASSERT_FALSE(changes[0].form().encrypted_password.empty());
@@ -2553,12 +2548,12 @@ TEST_F(LoginDatabaseTest, EncryptedPasswordAddWithReplaceSemantics) {
   form.url = GURL("http://0.com");
   form.signon_realm = "http://www.example.com/";
   form.action = GURL("http://www.example.com/action");
-  form.password_element = base::ASCIIToUTF16("pwd");
-  form.password_value = base::ASCIIToUTF16("example");
+  form.password_element = u"pwd";
+  form.password_value = u"example";
 
   ignore_result(db().AddLogin(form));
 
-  form.password_value = base::ASCIIToUTF16("secret");
+  form.password_value = u"secret";
 
   password_manager::PasswordStoreChangeList changes = db().AddLogin(form);
   ASSERT_EQ(2u, changes.size());
@@ -2573,12 +2568,12 @@ TEST_F(LoginDatabaseTest, EncryptedPasswordUpdate) {
   form.url = GURL("http://0.com");
   form.signon_realm = "http://www.example.com/";
   form.action = GURL("http://www.example.com/action");
-  form.password_element = base::ASCIIToUTF16("pwd");
-  form.password_value = base::ASCIIToUTF16("example");
+  form.password_element = u"pwd";
+  form.password_value = u"example";
 
   ignore_result(db().AddLogin(form));
 
-  form.password_value = base::ASCIIToUTF16("secret");
+  form.password_value = u"secret";
 
   password_manager::PasswordStoreChangeList changes = db().UpdateLogin(form);
   ASSERT_EQ(1u, changes.size());
@@ -2591,8 +2586,8 @@ TEST_F(LoginDatabaseTest, GetLoginsEncryptedPassword) {
   form.url = GURL("http://0.com");
   form.signon_realm = "http://www.example.com/";
   form.action = GURL("http://www.example.com/action");
-  form.password_element = base::ASCIIToUTF16("pwd");
-  form.password_value = base::ASCIIToUTF16("example");
+  form.password_element = u"pwd";
+  form.password_value = u"example";
   password_manager::PasswordStoreChangeList changes = db().AddLogin(form);
   ASSERT_EQ(1u, changes.size());
   ASSERT_FALSE(changes[0].form().encrypted_password.empty());
@@ -2602,6 +2597,73 @@ TEST_F(LoginDatabaseTest, GetLoginsEncryptedPassword) {
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_FALSE(forms[0]->encrypted_password.empty());
+}
+
+TEST_F(LoginDatabaseTest, RemovingLoginRemovesInsecureCredentials) {
+  PasswordForm form;
+  GenerateExamplePasswordForm(&form);
+
+  ignore_result(db().AddLogin(form));
+  InsecureCredential credential1{form.signon_realm, form.username_value,
+                                 base::Time(), InsecureType::kLeaked,
+                                 IsMuted(false)};
+  InsecureCredential credential2 = credential1;
+  credential2.insecure_type = InsecureType::kPhished;
+
+  db().insecure_credentials_table().AddRow(credential1);
+  db().insecure_credentials_table().AddRow(credential2);
+
+  EXPECT_THAT(db().insecure_credentials_table().GetAllRows(),
+              testing::ElementsAre(credential1, credential2));
+
+  EXPECT_TRUE(db().RemoveLogin(form, nullptr));
+  EXPECT_THAT(db().insecure_credentials_table().GetAllRows(),
+              testing::IsEmpty());
+}
+
+// Test retrieving password forms by supplied signon_realm and username.
+TEST_F(LoginDatabaseTest, GetLoginsBySignonRealmAndUsername) {
+  std::string signon_realm = "https://test.com";
+  std::u16string username1 = u"username1";
+  std::u16string username2 = u"username2";
+
+  // Insert first login.
+  PasswordForm form1;
+  GenerateExamplePasswordForm(&form1);
+  form1.signon_realm = signon_realm;
+  form1.username_value = username1;
+  ASSERT_EQ(AddChangeForForm(form1), db().AddLogin(form1));
+
+  PasswordForm form2;
+  GenerateExamplePasswordForm(&form2);
+  form2.signon_realm = signon_realm;
+  form2.username_value = username2;
+  ASSERT_EQ(AddChangeForForm(form2), db().AddLogin(form2));
+
+  PrimaryKeyToFormMap key_to_form_map;
+  // Check if there is exactly one form with this signon_realm & username1.
+  EXPECT_EQ(FormRetrievalResult::kSuccess,
+            db().GetLoginsBySignonRealmAndUsername(signon_realm, username1,
+                                                   key_to_form_map));
+  EXPECT_THAT(key_to_form_map, testing::ElementsAre(testing::Pair(
+                                   FormPrimaryKey(1), Pointee(form1))));
+
+  // Insert another form with the same username as form1.
+  PasswordForm form3;
+  GenerateExamplePasswordForm(&form3);
+  form3.signon_realm = signon_realm;
+  form3.username_value = username1;
+  form3.username_element = u"another_element";
+  ASSERT_EQ(AddChangeForForm(form3), db().AddLogin(form3));
+
+  // Check if there are exactly two forms with given username and signon_realm.
+  EXPECT_EQ(FormRetrievalResult::kSuccess,
+            db().GetLoginsBySignonRealmAndUsername(signon_realm, username1,
+                                                   key_to_form_map));
+  EXPECT_THAT(
+      key_to_form_map,
+      testing::ElementsAre(testing::Pair(FormPrimaryKey(1), Pointee(form1)),
+                           testing::Pair(FormPrimaryKey(3), Pointee(form3))));
 }
 
 class LoginDatabaseForAccountStoreTest : public testing::Test {

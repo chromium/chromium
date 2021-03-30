@@ -72,7 +72,7 @@ class CORE_EXPORT ExecutionContextLifecycleStateObserver
   void SetExecutionContext(ExecutionContext*) override;
 
  protected:
-  virtual ~ExecutionContextLifecycleStateObserver();
+  ~ExecutionContextLifecycleStateObserver() override;
 
  private:
 #if DCHECK_IS_ON()

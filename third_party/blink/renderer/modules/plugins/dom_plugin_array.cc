@@ -20,6 +20,7 @@
 
 #include "third_party/blink/renderer/modules/plugins/dom_plugin_array.h"
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
@@ -62,7 +63,14 @@ DOMPlugin* DOMPluginArray::item(unsigned index) {
   return dom_plugins_[index];
 }
 
+bool DOMPluginArray::ShouldReturnEmptyPluginData() const {
+  return DOMMimeTypeArray::ShouldReturnEmptyPluginData(
+      DomWindow() ? DomWindow()->GetFrame() : nullptr);
+}
+
 DOMPlugin* DOMPluginArray::namedItem(const AtomicString& property_name) {
+  if (ShouldReturnEmptyPluginData())
+    return nullptr;
   PluginData* data = GetPluginData();
   if (!data)
     return nullptr;
@@ -79,6 +87,8 @@ DOMPlugin* DOMPluginArray::namedItem(const AtomicString& property_name) {
 
 void DOMPluginArray::NamedPropertyEnumerator(Vector<String>& property_names,
                                              ExceptionState&) const {
+  if (ShouldReturnEmptyPluginData())
+    return;
   PluginData* data = GetPluginData();
   if (!data)
     return;
@@ -96,6 +106,8 @@ bool DOMPluginArray::NamedPropertyQuery(const AtomicString& property_name,
 }
 
 void DOMPluginArray::refresh(bool reload) {
+  if (ShouldReturnEmptyPluginData())
+    return;
   if (!DomWindow())
     return;
 
@@ -122,6 +134,10 @@ PluginData* DOMPluginArray::GetPluginData() const {
 }
 
 void DOMPluginArray::UpdatePluginData() {
+  if (ShouldReturnEmptyPluginData()) {
+    dom_plugins_.clear();
+    return;
+  }
   PluginData* data = GetPluginData();
   if (!data) {
     dom_plugins_.clear();

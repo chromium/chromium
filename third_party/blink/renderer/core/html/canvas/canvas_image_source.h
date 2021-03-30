@@ -65,6 +65,7 @@ class CORE_EXPORT CanvasImageSource {
   virtual bool IsSVGSource() const { return false; }
   virtual bool IsImageBitmap() const { return false; }
   virtual bool IsOffscreenCanvas() const { return false; }
+  virtual bool IsVideoFrame() const { return false; }
 
   virtual FloatSize ElementSize(const FloatSize& default_object_size,
                                 const RespectImageOrientationEnum) const = 0;

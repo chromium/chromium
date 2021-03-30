@@ -21,7 +21,8 @@ void GvrDeviceProvider::Initialize(
                                  mojo::PendingRemote<mojom::XRRuntime>)>
         add_device_callback,
     base::RepeatingCallback<void(mojom::XRDeviceId)> remove_device_callback,
-    base::OnceClosure initialization_complete) {
+    base::OnceClosure initialization_complete,
+    XrFrameSinkClientFactory xr_frame_sink_client_factory) {
   // We only expose GvrDevice if
   //  - we could potentially install VRServices to support presentation, and
   //  - this build is a bundle and, thus, supports installing the VR module.

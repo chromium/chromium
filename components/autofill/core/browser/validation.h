@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "base/strings/string_piece_forward.h"
 #include "components/autofill/core/browser/field_types.h"
 
@@ -35,69 +34,69 @@ bool IsValidCreditCardExpirationYear(int year, const base::Time& now);
 
 // Returns true if |text| looks like a valid credit card number.
 // Uses the Luhn formula to validate the number.
-bool IsValidCreditCardNumber(const base::string16& text);
+bool IsValidCreditCardNumber(const std::u16string& text);
 
 // Returns true if |number| has correct length according to card network.
-bool HasCorrectLength(const base::string16& number);
+bool HasCorrectLength(const std::u16string& number);
 
 // Returns true if |number| passes the validation by Luhn formula.
-bool PassesLuhnCheck(const base::string16& number);
+bool PassesLuhnCheck(const std::u16string& number);
 
 // Returns true if |code| looks like a valid credit card security code
 // for the given credit card network.
-bool IsValidCreditCardSecurityCode(const base::string16& code,
+bool IsValidCreditCardSecurityCode(const std::u16string& code,
                                    const base::StringPiece card_network);
 
 // Returns true if |text| is a supported card type and a valid credit card
 // number. |error_message| can't be null and will be filled with the appropriate
 // error message.
 bool IsValidCreditCardNumberForBasicCardNetworks(
-    const base::string16& text,
+    const std::u16string& text,
     const std::set<std::string>& supported_basic_card_networks,
-    base::string16* error_message);
+    std::u16string* error_message);
 
 // Returns true if |text| looks like a valid e-mail address.
-bool IsValidEmailAddress(const base::string16& text);
+bool IsValidEmailAddress(const std::u16string& text);
 
 // Returns true if |text| is a valid US state name or abbreviation.  It is case
 // insensitive.  Valid for US states only.
-bool IsValidState(const base::string16& text);
+bool IsValidState(const std::u16string& text);
 
 // Returns whether the number contained in |text| is possible phone number,
 // either in international format, or in the national format associated with
 // |country_code|. Callers should cache the result as the parsing is expensive.
-bool IsPossiblePhoneNumber(const base::string16& text,
+bool IsPossiblePhoneNumber(const std::u16string& text,
                            const std::string& country_code);
 
 // Returns true if |text| looks like a valid zip code.
 // Valid for US zip codes only.
-bool IsValidZip(const base::string16& text);
+bool IsValidZip(const std::u16string& text);
 
 // Returns true if |text| looks like an SSN, with or without separators.
-bool IsSSN(const base::string16& text);
+bool IsSSN(const std::u16string& text);
 
 // Returns whether |value| is valid for the given |type|. If not null,
 // |error_message| is populated when the function returns false.
-bool IsValidForType(const base::string16& value,
+bool IsValidForType(const std::u16string& value,
                     ServerFieldType type,
-                    base::string16* error_message);
+                    std::u16string* error_message);
 
 // Returns the expected CVC length based on the |card_network|.
 size_t GetCvcLengthForCardNetwork(const base::StringPiece card_network);
 
 // Returns true if |value| appears to be a UPI Virtual Payment Address.
 // https://upipayments.co.in/virtual-payment-address-vpa/
-bool IsUPIVirtualPaymentAddress(const base::string16& value);
+bool IsUPIVirtualPaymentAddress(const std::u16string& value);
 
 // Returns true if |value| appears to be an International Bank Account Number
 // (IBAN). See https://en.wikipedia.org/wiki/International_Bank_Account_Number
-bool IsInternationalBankAccountNumber(const base::string16& value);
+bool IsInternationalBankAccountNumber(const std::u16string& value);
 
 // Return true if |value| is a 3 or 4 digit number.
-bool IsPlausibleCreditCardCVCNumber(const base::string16& value);
+bool IsPlausibleCreditCardCVCNumber(const std::u16string& value);
 
 // Returns true if the value is a 4 digit year in this century.
-bool IsPlausible4DigitExpirationYear(const base::string16& value);
+bool IsPlausible4DigitExpirationYear(const std::u16string& value);
 
 }  // namespace autofill
 

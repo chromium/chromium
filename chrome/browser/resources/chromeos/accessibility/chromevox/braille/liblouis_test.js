@@ -22,7 +22,6 @@ ChromeVoxLibLouisTest = class extends ChromeVoxE2ETest {
   }
 };
 
-
 function assertEqualsUint8Array(expected, actual) {
   const asArray = [];
   const uint8array = new Uint8Array(actual);

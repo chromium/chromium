@@ -222,12 +222,6 @@ void BluetoothDevice::WatchAdvertisementsCallback(
   if (!watch_advertisements_resolver_)
     return;
 
-  if (!watch_advertisements_resolver_->GetExecutionContext() ||
-      watch_advertisements_resolver_->GetExecutionContext()
-          ->IsContextDestroyed()) {
-    return;
-  }
-
   // https://webbluetoothcg.github.io/web-bluetooth/#dom-bluetoothdevice-watchadvertisements
   // 2.2.2. If the UA fails to enable scanning, queue a task to perform the
   // following steps, and abort these steps:

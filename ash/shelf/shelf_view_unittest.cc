@@ -242,6 +242,23 @@ class ShelfItemSelectionTracker : public ShelfItemDelegate {
   DISALLOW_COPY_AND_ASSIGN(ShelfItemSelectionTracker);
 };
 
+// A ShelfItemDelegate to generate empty shelf context menu.
+class EmptyContextMenuBuilder : public ShelfItemDelegate {
+ public:
+  EmptyContextMenuBuilder() : ShelfItemDelegate(ShelfID()) {}
+  EmptyContextMenuBuilder(const EmptyContextMenuBuilder&) = delete;
+  EmptyContextMenuBuilder& operator=(const EmptyContextMenuBuilder&) = delete;
+  ~EmptyContextMenuBuilder() override = default;
+
+  // ShelfItemDelegate:
+  void GetContextMenu(int64_t display_id,
+                      GetContextMenuCallback callback) override {
+    std::move(callback).Run(std::make_unique<ui::SimpleMenuModel>(nullptr));
+  }
+  void ExecuteCommand(bool, int64_t, int32_t, int64_t) override {}
+  void Close() override {}
+};
+
 TEST_F(ShelfObserverIconTest, AddRemove) {
   ShelfItem item;
   item.id = ShelfID("foo");
@@ -587,19 +604,6 @@ const char*
         ShelfButtonPressedMetricTracker::
             kTimeBetweenWindowMinimizedAndActivatedActionsHistogramName;
 
-class ShelfViewTextDirectionTest : public ShelfViewTest,
-                                   public testing::WithParamInterface<bool> {
- public:
-  ShelfViewTextDirectionTest() : scoped_locale_(GetParam() ? "he" : "") {}
-  virtual ~ShelfViewTextDirectionTest() = default;
-
- private:
-  // Restores locale to the default when destructor is called.
-  base::test::ScopedRestoreICUDefaultLocale scoped_locale_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfViewTextDirectionTest);
-};
-
 class ShelfViewDragToPinTest : public ShelfViewTest {
  public:
   ShelfViewDragToPinTest() {
@@ -634,12 +638,21 @@ TEST_F(ShelfViewTest, EnforceDragType) {
   EXPECT_TRUE(test_api_->SameDragType(TYPE_APP, TYPE_APP));
   EXPECT_FALSE(test_api_->SameDragType(TYPE_APP, TYPE_PINNED_APP));
   EXPECT_FALSE(test_api_->SameDragType(TYPE_APP, TYPE_BROWSER_SHORTCUT));
+  EXPECT_FALSE(
+      test_api_->SameDragType(TYPE_APP, TYPE_UNPINNED_BROWSER_SHORTCUT));
 
   EXPECT_TRUE(test_api_->SameDragType(TYPE_PINNED_APP, TYPE_PINNED_APP));
   EXPECT_TRUE(test_api_->SameDragType(TYPE_PINNED_APP, TYPE_BROWSER_SHORTCUT));
+  EXPECT_FALSE(
+      test_api_->SameDragType(TYPE_PINNED_APP, TYPE_UNPINNED_BROWSER_SHORTCUT));
 
   EXPECT_TRUE(
       test_api_->SameDragType(TYPE_BROWSER_SHORTCUT, TYPE_BROWSER_SHORTCUT));
+  EXPECT_TRUE(test_api_->SameDragType(TYPE_UNPINNED_BROWSER_SHORTCUT,
+                                      TYPE_UNPINNED_BROWSER_SHORTCUT));
+
+  // No test for TYPE_BROWSER_SHORTCUT and TYPE_UNPINNED_BROWSER_SHORTCUT,
+  // because they should be mutually exclusive.
 }
 
 // Check that model changes are handled correctly while a shelf icon is being
@@ -1592,7 +1605,7 @@ TEST_F(ShelfViewTest, InProgressItemDragPreventsContextMenuShow) {
 
   // Return the context menu model.
   auto menu_model = std::make_unique<ui::SimpleMenuModel>(nullptr);
-  menu_model->AddItem(203, base::ASCIIToUTF16("item"));
+  menu_model->AddItem(203, u"item");
   ASSERT_TRUE(
       item_delegate->RunPendingContextMenuCallback(std::move(menu_model)));
 
@@ -1668,7 +1681,7 @@ TEST_F(ShelfViewTest, CompletedItemDragPreventsContextMenuShow) {
 
   // Return the context menu model.
   auto menu_model = std::make_unique<ui::SimpleMenuModel>(nullptr);
-  menu_model->AddItem(203, base::ASCIIToUTF16("item"));
+  menu_model->AddItem(203, u"item");
   ASSERT_TRUE(
       item_delegate->RunPendingContextMenuCallback(std::move(menu_model)));
 
@@ -1732,7 +1745,7 @@ TEST_F(ShelfViewTest, DragAppAfterContextMenuIsShownInAlwaysShownShelf) {
   EXPECT_TRUE(item_delegate->HasPendingContextMenuCallback());
 
   auto menu_model = std::make_unique<ui::SimpleMenuModel>(nullptr);
-  menu_model->AddItem(203, base::ASCIIToUTF16("item"));
+  menu_model->AddItem(203, u"item");
   ASSERT_TRUE(
       item_delegate->RunPendingContextMenuCallback(std::move(menu_model)));
 
@@ -1804,7 +1817,7 @@ TEST_F(ShelfViewTest, DragAppAfterContextMenuIsShownInAutoHideShelf) {
   EXPECT_TRUE(item_delegate->HasPendingContextMenuCallback());
 
   auto menu_model = std::make_unique<ui::SimpleMenuModel>(nullptr);
-  menu_model->AddItem(203, base::ASCIIToUTF16("item"));
+  menu_model->AddItem(203, u"item");
   ASSERT_TRUE(
       item_delegate->RunPendingContextMenuCallback(std::move(menu_model)));
 
@@ -1862,7 +1875,7 @@ TEST_F(ShelfViewTest, DragStateIsClearedIfAnotherTouchIsAddedWithContextMenu) {
   EXPECT_TRUE(item_delegate->HasPendingContextMenuCallback());
 
   auto menu_model = std::make_unique<ui::SimpleMenuModel>(nullptr);
-  menu_model->AddItem(203, base::ASCIIToUTF16("item"));
+  menu_model->AddItem(203, u"item");
   ASSERT_TRUE(
       item_delegate->RunPendingContextMenuCallback(std::move(menu_model)));
 
@@ -1933,7 +1946,7 @@ TEST_F(ShelfViewTest,
   EXPECT_TRUE(item_delegate->HasPendingContextMenuCallback());
 
   auto menu_model = std::make_unique<ui::SimpleMenuModel>(nullptr);
-  menu_model->AddItem(203, base::ASCIIToUTF16("item"));
+  menu_model->AddItem(203, u"item");
   ASSERT_TRUE(
       item_delegate->RunPendingContextMenuCallback(std::move(menu_model)));
 
@@ -2248,10 +2261,7 @@ TEST_P(ShelfViewVisibleBoundsTest, ItemsAreInBounds) {
   CheckAllItemsAreInBounds();
 }
 
-INSTANTIATE_TEST_SUITE_P(LtrRtl, ShelfViewTextDirectionTest, testing::Bool());
-INSTANTIATE_TEST_SUITE_P(VisibleBounds,
-                         ShelfViewVisibleBoundsTest,
-                         testing::Bool());
+INSTANTIATE_TEST_SUITE_P(LtrRtl, ShelfViewVisibleBoundsTest, testing::Bool());
 
 namespace {
 
@@ -2617,6 +2627,45 @@ TEST_F(ShelfViewInkDropTest, ShelfButtonWithoutMenuPressRelease) {
             browser_button_ink_drop_->GetTargetInkDropState());
   EXPECT_THAT(browser_button_ink_drop_->GetAndResetRequestedStates(),
               ElementsAre(views::InkDropState::ACTION_TRIGGERED));
+}
+
+// Verifies the shelf view's behavior when opening an empty context menu.
+TEST_F(ShelfViewInkDropTest, ShowEmptyShelfAppContextMenu) {
+  InitBrowserButtonInkDrop();
+
+  // Set the shelf item delegate to generate an empty context menu. Note that if
+  // we do not specify the shelf item delegate, a default context menu which is
+  // non-empty is created.
+  const int browser_shortcut_index =
+      ShelfModel::Get()->GetItemIndexForType(TYPE_BROWSER_SHORTCUT);
+  model_->SetShelfItemDelegate(model_->items()[browser_shortcut_index].id,
+                               std::make_unique<EmptyContextMenuBuilder>());
+
+  // Right mouse click at the browser button.
+  const gfx::Rect button_bounds_in_screen =
+      browser_button_->GetBoundsInScreen();
+  const gfx::Point button_bounds_center = button_bounds_in_screen.CenterPoint();
+  GetEventGenerator()->MoveMouseTo(button_bounds_center);
+  GetEventGenerator()->ClickRightButton();
+
+  // Verify that the context menu does not show and the inkdrop is hidden.
+  auto* shelf_view = GetPrimaryShelf()->GetShelfViewForTesting();
+  EXPECT_FALSE(shelf_view->IsShowingMenu());
+  EXPECT_EQ(views::InkDropState::HIDDEN,
+            browser_button_ink_drop_->GetTargetInkDropState());
+
+  // Press a point outside of the browser button. Then move the mouse without
+  // release.
+  gfx::Point press_point(button_bounds_in_screen.right() + 5,
+                         button_bounds_center.y());
+  GetEventGenerator()->MoveMouseTo(press_point);
+  GetEventGenerator()->PressLeftButton();
+  press_point.Offset(/*x_delta=*/0, /*y_delta=*/-10);
+  GetEventGenerator()->MoveMouseTo(press_point);
+
+  // Verify that the browser button is not the mouse handler, which means that
+  // the browser button is not under drag.
+  EXPECT_FALSE(shelf_view->IsDraggedView(browser_button_));
 }
 
 // Tests that dragging outside of a shelf item transitions ink drop states

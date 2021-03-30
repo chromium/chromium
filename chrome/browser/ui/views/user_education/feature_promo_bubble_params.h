@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_FEATURE_PROMO_BUBBLE_PARAMS_H_
 
 #include <memory>
+#include <string>
 
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -35,7 +35,7 @@ struct FeaturePromoBubbleParams {
   // TODO(crbug.com/1143971): enable filling placeholders in
   // |body_string_specifier| with context-specific information then
   // remove this.
-  base::string16 body_text_raw;
+  std::u16string body_text_raw;
 
   // Title shown larger at top of bubble. Optional.
   base::Optional<int> title_string_specifier;

@@ -18,10 +18,11 @@ namespace {
 void DrawInternal(cc::PaintCanvas* canvas,
                   const FloatRect& dest_rect,
                   const FloatRect& src_rect,
+                  const SkSamplingOptions& sampling,
                   const PaintFlags& flags,
                   Image::ImageClampingMode clamping_mode,
                   const PaintImage& image) {
-  canvas->drawImageRect(image, src_rect, dest_rect, &flags,
+  canvas->drawImageRect(image, src_rect, dest_rect, sampling, &flags,
                         WebCoreClampingModeToSkiaRectConstraint(clamping_mode));
 }
 }  // namespace
@@ -30,16 +31,19 @@ void PaintWorkletDeferredImage::Draw(cc::PaintCanvas* canvas,
                                      const PaintFlags& flags,
                                      const FloatRect& dest_rect,
                                      const FloatRect& src_rect,
+                                     const SkSamplingOptions& sampling,
                                      RespectImageOrientationEnum,
                                      ImageClampingMode clamping_mode,
                                      ImageDecodingMode) {
-  DrawInternal(canvas, dest_rect, src_rect, flags, clamping_mode, image_);
+  DrawInternal(canvas, dest_rect, src_rect, sampling, flags, clamping_mode,
+               image_);
 }
 
 void PaintWorkletDeferredImage::DrawTile(GraphicsContext& context,
                                          const FloatRect& src_rect,
                                          RespectImageOrientationEnum) {
-  DrawInternal(context.Canvas(), FloatRect(), src_rect, context.FillFlags(),
+  DrawInternal(context.Canvas(), FloatRect(), src_rect,
+               context.ImageSamplingOptions(), context.FillFlags(),
                kClampImageToSourceRect, image_);
 }
 

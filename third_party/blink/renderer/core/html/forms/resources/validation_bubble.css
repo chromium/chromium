@@ -134,6 +134,7 @@
   grid-column: 2;
   margin-top: 3px;
   margin-bottom: 4px;
+  white-space: pre-line;
 }
 
 #sub-message {

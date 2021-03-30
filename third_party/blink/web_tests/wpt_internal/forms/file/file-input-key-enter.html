@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<title>INPUT TYPE=FILE and key events - Enter key</title>
+<input type="file">
+<script type="module">
+import {mockFileChooserFactory} from '../resources/mock-file-chooser.js';
+
+promise_test(async _ => {
+  const promise = new Promise(
+      resolve => mockFileChooserFactory.addEventListener('open', resolve));
+
+  const file = document.querySelector('input');
+  file.focus();
+  // Despite the name, 'keyDown' simulates a full down/press/up sequence.
+  eventSender.keyDown('Enter', []);
+
+  const openEvent = await promise;
+  assert_equals(openEvent.detail, 'kOpen');
+}, 'pressing Enter key with focus on a file input launches a file chooser');
+</script>

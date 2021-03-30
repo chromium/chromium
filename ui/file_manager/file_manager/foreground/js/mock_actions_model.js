@@ -2,12 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-class MockActionModel {
+// clang-format off
+// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+// #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+// clang-format on
+
+/* #export */ class MockActionModel extends cr.EventTarget {
   /**
    * @param {string} title
    * @param {Array<!Entry>} entries
    */
   constructor(title, entries) {
+    super();
+
     this.title = title;
     this.entries = entries;
     this.actionsModel = null;
@@ -20,11 +27,11 @@ class MockActionModel {
   onCanExecute() {}
 
   onExecute() {
-    cr.dispatchSimpleEvent('invalidated', this.actionsModel);
+    cr.dispatchSimpleEvent(this, 'invalidated', true);
   }
 }
 
-class MockActionsModel extends cr.EventTarget {
+/* #export */ class MockActionsModel extends cr.EventTarget {
   constructor(actions) {
     super();
 

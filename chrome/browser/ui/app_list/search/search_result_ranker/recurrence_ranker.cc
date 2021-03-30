@@ -44,8 +44,6 @@ void SaveProtoToDisk(const base::FilePath& filepath,
                      const RecurrenceRankerProto& proto) {
   std::string proto_str;
   if (!proto.SerializeToString(&proto_str)) {
-    LogSerializationStatus(model_identifier,
-                           SerializationStatus::kToProtoError);
     return;
   }
 
@@ -57,12 +55,8 @@ void SaveProtoToDisk(const base::FilePath& filepath,
         filepath, proto_str, "RecurrenceRanker");
   }
   if (!write_result) {
-    LogSerializationStatus(model_identifier,
-                           SerializationStatus::kModelWriteError);
     return;
   }
-
-  LogSerializationStatus(model_identifier, SerializationStatus::kSaveOk);
 }
 
 // Try to load a |RecurrenceRankerProto| from the given filepath. If it fails,
@@ -74,19 +68,14 @@ std::unique_ptr<RecurrenceRankerProto> LoadProtoFromDisk(
                                                 base::BlockingType::MAY_BLOCK);
   std::string proto_str;
   if (!base::ReadFileToString(filepath, &proto_str)) {
-    LogSerializationStatus(model_identifier,
-                           SerializationStatus::kModelReadError);
     return nullptr;
   }
 
   auto proto = std::make_unique<RecurrenceRankerProto>();
   if (!proto->ParseFromString(proto_str)) {
-    LogSerializationStatus(model_identifier,
-                           SerializationStatus::kFromProtoError);
     return nullptr;
   }
 
-  LogSerializationStatus(model_identifier, SerializationStatus::kLoadOk);
   return proto;
 }
 
@@ -179,8 +168,6 @@ RecurrenceRanker::RecurrenceRanker(const std::string& model_identifier,
     // Ephemeral users have no persistent storage, so we don't try and load the
     // proto from disk. Instead, we fall back on using a default (frecency)
     // predictor, which is still useful with only data from the current session.
-    LogInitializationStatus(model_identifier_,
-                            InitializationStatus::kEphemeralUser);
     predictor_ = std::make_unique<DefaultPredictor>(
         RecurrencePredictorConfigProto::DefaultPredictorConfig(),
         model_identifier_);
@@ -203,8 +190,6 @@ void RecurrenceRanker::OnLoadProtoFromDiskComplete(
     std::unique_ptr<RecurrenceRankerProto> proto) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   load_from_disk_completed_ = true;
-  LogInitializationStatus(model_identifier_,
-                          InitializationStatus::kInitialized);
 
   // If OnLoadFromDisk returned nullptr, no saved ranker proto was available on
   // disk, and there is nothing to load. Save a blank ranker to prevent metrics
@@ -221,28 +206,17 @@ void RecurrenceRanker::OnLoadProtoFromDiskComplete(
     // clean slate. This is not always an error: it is expected if, for example,
     // a RecurrenceRanker instance is rolled out in one release, and then
     // reconfigured in the next.
-    LogInitializationStatus(model_identifier_,
-                            InitializationStatus::kHashMismatch);
     return;
   }
 
   if (proto->has_predictor())
     predictor_->FromProto(proto->predictor());
-  else
-    LogSerializationStatus(model_identifier_,
-                           SerializationStatus::kPredictorMissingError);
 
   if (proto->has_targets())
     targets_->FromProto(proto->targets());
-  else
-    LogSerializationStatus(model_identifier_,
-                           SerializationStatus::kTargetsMissingError);
 
   if (proto->has_conditions())
     conditions_->FromProto(proto->conditions());
-  else
-    LogSerializationStatus(model_identifier_,
-                           SerializationStatus::kConditionsMissingError);
 }
 
 void RecurrenceRanker::Record(const std::string& target,
@@ -250,7 +224,6 @@ void RecurrenceRanker::Record(const std::string& target,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!load_from_disk_completed_)
     return;
-  LogUsage(model_identifier_, Usage::kRecord);
 
   predictor_->Train(targets_->Update(target), conditions_->Update(condition));
   MaybeSave();
@@ -261,7 +234,6 @@ void RecurrenceRanker::RenameTarget(const std::string& target,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!load_from_disk_completed_)
     return;
-  LogUsage(model_identifier_, Usage::kRenameTarget);
 
   targets_->Rename(target, new_target);
   MaybeSave();
@@ -273,7 +245,6 @@ void RecurrenceRanker::RemoveTarget(const std::string& target) {
   // loading is complete, resulting in the remove getting dropped.
   if (!load_from_disk_completed_)
     return;
-  LogUsage(model_identifier_, Usage::kRemoveTarget);
 
   targets_->Remove(target);
   MaybeSave();
@@ -284,7 +255,6 @@ void RecurrenceRanker::RenameCondition(const std::string& condition,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!load_from_disk_completed_)
     return;
-  LogUsage(model_identifier_, Usage::kRenameCondition);
 
   conditions_->Rename(condition, new_condition);
   MaybeSave();
@@ -294,7 +264,6 @@ void RecurrenceRanker::RemoveCondition(const std::string& condition) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!load_from_disk_completed_)
     return;
-  LogUsage(model_identifier_, Usage::kRemoveCondition);
 
   conditions_->Remove(condition);
   MaybeSave();
@@ -305,7 +274,7 @@ std::map<std::string, float> RecurrenceRanker::Rank(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!load_from_disk_completed_)
     return {};
-  LogUsage(model_identifier_, Usage::kRank);
+
   // Special case the default predictor, and return the scores from the target
   // frecency store.
   if (predictor_->GetPredictorName() == DefaultPredictor::kPredictorName)

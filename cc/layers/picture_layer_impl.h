@@ -236,31 +236,32 @@ class CC_EXPORT PictureLayerImpl
   // will change transform.
   bool HasWillChangeTransformHint() const;
 
-  PictureLayerImpl* twin_layer_;
+  PictureLayerImpl* twin_layer_ = nullptr;
 
-  std::unique_ptr<PictureLayerTilingSet> tilings_;
+  std::unique_ptr<PictureLayerTilingSet> tilings_ =
+      CreatePictureLayerTilingSet();
   scoped_refptr<RasterSource> raster_source_;
   Region invalidation_;
 
   // Ideal scales are calcuated from the transforms applied to the layer. They
   // represent the best known scale from the layer to the final output.
   // Page scale is from user pinch/zoom.
-  float ideal_page_scale_;
+  float ideal_page_scale_ = 0.f;
   // Device scale is from screen dpi, and it comes from device scale facter.
-  float ideal_device_scale_;
+  float ideal_device_scale_ = 0.f;
   // Source scale comes from javascript css scale.
-  float ideal_source_scale_;
+  float ideal_source_scale_ = 0.f;
   // Contents scale = device scale * page scale * source scale.
-  float ideal_contents_scale_;
+  float ideal_contents_scale_ = 0.f;
 
   // Raster scales are set from ideal scales. They are scales we choose to
   // raster at. They may not match the ideal scales at times to avoid raster for
   // performance reasons.
-  float raster_page_scale_;
-  float raster_device_scale_;
-  float raster_source_scale_;
-  float raster_contents_scale_;
-  float low_res_raster_contents_scale_;
+  float raster_page_scale_ = 0.f;
+  float raster_device_scale_ = 0.f;
+  float raster_source_scale_ = 0.f;
+  float raster_contents_scale_ = 0.f;
+  float low_res_raster_contents_scale_ = 0.f;
 
   bool is_backdrop_filter_mask_ : 1;
 
@@ -269,7 +270,8 @@ class CC_EXPORT PictureLayerImpl
 
   bool nearest_neighbor_ : 1;
 
-  LCDTextDisallowedReason lcd_text_disallowed_reason_;
+  LCDTextDisallowedReason lcd_text_disallowed_reason_ =
+      LCDTextDisallowedReason::kNone;
 
   // The intrinsic size of the directly composited image. A directly composited
   // image is an image which is the only thing drawn into a layer. In these
@@ -280,7 +282,7 @@ class CC_EXPORT PictureLayerImpl
   // time raster scales were calculated. This will be the same as
   // |raster_source_scale_| if no adjustments were made in
   // |CalculateDirectlyCompositedImageRasterScale()|.
-  float directly_composited_image_initial_raster_scale_;
+  float directly_composited_image_initial_raster_scale_ = 0.f;
 
   // Use this instead of |visible_layer_rect()| for tiling calculations. This
   // takes external viewport and transform for tile priority into account.
@@ -303,7 +305,7 @@ class CC_EXPORT PictureLayerImpl
   PaintWorkletRecordMap paint_worklet_records_;
 
   gfx::Size content_bounds_;
-  TileSizeCalculator tile_size_calculator_;
+  TileSizeCalculator tile_size_calculator_{this};
 
   // Denotes an area that is damaged and needs redraw. This is in the layer's
   // space.

@@ -190,7 +190,14 @@ your CL touches. For your CL to land, you need an approval from an owner for
 each file you've changed, unless you are an owner of some files, in which case
 you don't need separate owner approval for those files.
 
-## 17. Implement feedback from your reviewers
+## 17. Start Your Review
+
+Click on the `Start Review` button to begin the actual review process.  Until
+you press this button, nobody will look at your change.  Once pressed, you'll
+have the opportunity to include an additional message in the notification sent
+to your reviewers.
+
+## 18. Implement feedback from your reviewers
 
 Then go through this commit checklist again. Reply to all comments from the
 reviewers on Gerrit and mark all resolved issues as resolved (clicking `Done` or
@@ -205,7 +212,7 @@ to the next step automatically after approval. This feature is useful if your
 reviewer is in a different time zone and you want to land the CL sooner. Setting
 this flag also puts the onus on your reviewer to land the CL.
 
-## 18. Land your CL
+## 19. Land your CL
 
 Once you have obtained a Looks Good To Me (LGTM), which is reflected by a
 Code-Review+1 in Gerrit, from at least one owner for each file, then you have
@@ -222,7 +229,7 @@ unnoticed during the code review process. Consider monitoring the
 the Sheriff or anyone else brings any failures to your attention, revert the CL
 first and ask questions later. Gerrit can automatically generate revert CLs.
 
-## 19. Cleanup
+## 20. Cleanup
 
 After your CL is landed, you can use `git rebase-update` or `git cl archive` to
 clean up your local branches. These commands will automatically delete merged

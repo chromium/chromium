@@ -1,3 +1,5 @@
 Tests inspect mode.
 DOM.inspectNodeRequested: div
+Number of nodeHighlightRequested events: 1
+Overlay.nodeHighlightRequested: div
 

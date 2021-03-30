@@ -513,7 +513,7 @@ TEST_F(CastMediaSinkServiceImplTest, TestOnChannelOpenFailed) {
   EXPECT_TRUE(media_sink_service_impl_.GetSinks().empty());
 }
 
-TEST_F(CastMediaSinkServiceImplTest, TestOnChannelErrorRetry) {
+TEST_F(CastMediaSinkServiceImplTest, TestSuccessOnChannelErrorRetry) {
   auto cast_sink = CreateCastSink(1);
   net::IPEndPoint ip_endpoint1 = CreateIPEndPoint(1);
   cast_channel::MockCastSocket socket;
@@ -526,8 +526,6 @@ TEST_F(CastMediaSinkServiceImplTest, TestOnChannelErrorRetry) {
   media_sink_service_impl_.OnChannelOpenSucceeded(
       cast_sink, &socket, CastMediaSinkServiceImpl::SinkSource::kMdns);
 
-  // Sink is removed on |OnError|, but we will retry.
-  EXPECT_CALL(observer_, OnSinkRemoved(cast_sink));
   EXPECT_CALL(*mock_cast_socket_service_, OpenSocketInternal(ip_endpoint1, _))
       .WillRepeatedly(Invoke([&](const auto& ip_endpoint1, auto open_cb) {
         std::move(open_cb).Run(&socket);
@@ -535,13 +533,38 @@ TEST_F(CastMediaSinkServiceImplTest, TestOnChannelErrorRetry) {
   media_sink_service_impl_.OnError(socket,
                                    cast_channel::ChannelError::PING_TIMEOUT);
 
-  EXPECT_TRUE(media_sink_service_impl_.GetSinks().empty());
-
-  // Retry succeeds and sink is added back.
+  // Retry succeeds and the sink stays around.
   EXPECT_CALL(observer_, OnSinkAddedOrUpdated(cast_sink));
   mock_time_task_runner_->FastForwardUntilNoTasksRemain();
-
   EXPECT_EQ(1u, media_sink_service_impl_.GetSinks().size());
+}
+
+TEST_F(CastMediaSinkServiceImplTest, TestFailureOnChannelErrorRetry) {
+  auto cast_sink = CreateCastSink(1);
+  net::IPEndPoint ip_endpoint1 = CreateIPEndPoint(1);
+  cast_channel::MockCastSocket socket;
+  socket.set_id(1);
+  socket.SetIPEndpoint(ip_endpoint1);
+  EXPECT_CALL(socket, ready_state())
+      .WillOnce(Return(cast_channel::ReadyState::OPEN));
+
+  EXPECT_CALL(observer_, OnSinkAddedOrUpdated(cast_sink));
+  media_sink_service_impl_.OnChannelOpenSucceeded(
+      cast_sink, &socket, CastMediaSinkServiceImpl::SinkSource::kMdns);
+
+  // Set the error state to indicate that opening a channel failed.
+  socket.SetErrorState(ChannelError::CONNECT_ERROR);
+  EXPECT_CALL(*mock_cast_socket_service_, OpenSocketInternal(ip_endpoint1, _))
+      .WillRepeatedly(Invoke([&](const auto& ip_endpoint1, auto open_cb) {
+        std::move(open_cb).Run(&socket);
+      }));
+  media_sink_service_impl_.OnError(socket,
+                                   cast_channel::ChannelError::PING_TIMEOUT);
+
+  // After failed attempts, the sink is removed.
+  EXPECT_CALL(observer_, OnSinkRemoved(cast_sink));
+  mock_time_task_runner_->FastForwardUntilNoTasksRemain();
+  EXPECT_TRUE(media_sink_service_impl_.GetSinks().empty());
 }
 
 TEST_F(CastMediaSinkServiceImplTest,

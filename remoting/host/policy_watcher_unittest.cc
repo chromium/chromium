@@ -324,6 +324,7 @@ class PolicyWatcherTest : public testing::Test {
     dict.SetBoolean(key::kRemoteAccessHostAllowFileTransfer, true);
     dict.SetBoolean(key::kRemoteAccessHostEnableUserInterface, true);
     dict.SetBoolean(key::kRemoteAccessHostAllowRemoteAccessConnections, true);
+    dict.SetInteger(key::kRemoteAccessHostMaximumSessionDurationMinutes, 0);
 #endif
 
     ASSERT_THAT(&dict, IsPolicies(&GetDefaultValues()))

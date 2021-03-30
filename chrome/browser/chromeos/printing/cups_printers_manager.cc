@@ -15,6 +15,7 @@
 #include "base/scoped_observer.h"
 #include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/chromeos/printing/automatic_usb_printer_configurer.h"
 #include "chrome/browser/chromeos/printing/cups_printer_status_creator.h"
 #include "chrome/browser/chromeos/printing/enterprise_printers_provider.h"
@@ -33,7 +34,6 @@
 #include "chrome/browser/chromeos/printing/usb_printer_detector.h"
 #include "chrome/browser/chromeos/printing/usb_printer_notification_controller.h"
 #include "chrome/browser/chromeos/printing/zeroconf_printer_detector.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/printing/cups_printer_status.h"
@@ -129,8 +129,6 @@ class CupsPrintersManagerImpl
     print_servers_manager_->AddObserver(this);
 
     user_printers_allowed_.Init(prefs::kUserPrintersAllowed, pref_service);
-    send_username_and_filename_.Init(
-        prefs::kPrintingSendUsernameAndFilenameEnabled, pref_service);
   }
 
   ~CupsPrintersManagerImpl() override = default;
@@ -144,12 +142,6 @@ class CupsPrintersManagerImpl
       LOG(WARNING) << "Attempting to retrieve printers when "
                       "UserPrintersAllowed is set to false";
       return {};
-    }
-
-    if (send_username_and_filename_.GetValue()) {
-      // If |send_username_and_filename_| is set, only return printers with a
-      // secure protocol over which we can send username and filename.
-      return printers_.GetSecurePrinters(printer_class);
     }
 
     // Without user data there is not need to filter out non-enterprise or
@@ -406,8 +398,6 @@ class CupsPrintersManagerImpl
                             PrinterStatusCallback cb,
                             PrinterQueryResult result,
                             const ::printing::PrinterStatus& printer_status,
-                            const std::string& make,
-                            const std::string& model,
                             const std::string& make_and_model,
                             const std::vector<std::string>& document_formats,
                             bool ipp_everywhere) {
@@ -600,7 +590,7 @@ class CupsPrintersManagerImpl
         // Detected printer does not supports ipp-over-usb, so we cannot set it
         // up automatically. We have to move it to the discovered class.
         if (printer.IsUsbProtocol()) {
-          printer.set_manufacturer(
+          printer.set_usb_printer_manufacturer(
               ppd_resolution_tracker_.GetManufacturer(detected_printer_id));
         }
         printers_.Insert(PrinterClass::kDiscovered, printer);
@@ -776,10 +766,6 @@ class CupsPrintersManagerImpl
 
   // Holds the current value of the pref |UserPrintersAllowed|.
   BooleanPrefMember user_printers_allowed_;
-
-  // Holds the current value of the pref
-  // |PrintingSendUsernameAndFilenameEnabled|.
-  BooleanPrefMember send_username_and_filename_;
 
   base::WeakPtrFactory<CupsPrintersManagerImpl> weak_ptr_factory_{this};
 };

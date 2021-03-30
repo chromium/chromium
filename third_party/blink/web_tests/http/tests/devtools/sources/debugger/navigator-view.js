@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Tests scripts panel file selectors.\n`);
-  await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('sdk_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadTestModule('sdk_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.addIframe(
       'resources/post-message-listener.html', {name: 'childframe'});

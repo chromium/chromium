@@ -86,11 +86,20 @@ void LayoutNGTableRow::RemoveChild(LayoutObject* child) {
   LayoutNGMixin<LayoutBlock>::RemoveChild(child);
 }
 
+void LayoutNGTableRow::WillBeRemovedFromTree() {
+  NOT_DESTROYED();
+  if (LayoutNGTable* table = Table())
+    table->TableGridStructureChanged();
+  LayoutNGMixin<LayoutBlock>::WillBeRemovedFromTree();
+}
+
 void LayoutNGTableRow::StyleDidChange(StyleDifference diff,
                                       const ComputedStyle* old_style) {
   NOT_DESTROYED();
   if (LayoutNGTable* table = Table()) {
     if ((old_style && !old_style->BorderVisuallyEqual(StyleRef())) ||
+        (old_style && old_style->GetWritingDirection() !=
+                          StyleRef().GetWritingDirection()) ||
         (diff.TextDecorationOrColorChanged() &&
          StyleRef().HasBorderColorReferencingCurrentColor())) {
       table->GridBordersChanged();
@@ -125,6 +134,15 @@ void LayoutNGTableRow::AddVisualOverflowFromBlockChildren() {
         child->VisualOverflowRectForPropagation();
     AddSelfVisualOverflow(child_visual_overflow_rect);
   }
+}
+
+PositionWithAffinity LayoutNGTableRow::PositionForPoint(
+    const PhysicalOffset& offset) const {
+  NOT_DESTROYED();
+  DCHECK_GE(GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::kPrePaintClean);
+  // LayoutBlock::PositionForPoint is wrong for rows.
+  return LayoutBox::PositionForPoint(offset);
 }
 
 unsigned LayoutNGTableRow::RowIndex() const {

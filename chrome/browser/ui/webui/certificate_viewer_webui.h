@@ -48,7 +48,7 @@ class CertificateViewerDialog : public ui::WebDialogDelegate {
 
   // ui::WebDialogDelegate:
   ui::ModalType GetDialogModalType() const override;
-  base::string16 GetDialogTitle() const override;
+  std::u16string GetDialogTitle() const override;
   GURL GetDialogContentURL() const override;
   void GetWebUIMessageHandlers(
       std::vector<content::WebUIMessageHandler*>* handlers) const override;
@@ -64,7 +64,7 @@ class CertificateViewerDialog : public ui::WebDialogDelegate {
   net::ScopedCERTCertificateList nss_certs_;
 
   // The title of the certificate viewer dialog, Certificate Viewer: CN.
-  base::string16 title_;
+  std::u16string title_;
 
   content::WebUI* webui_ = nullptr;
   ConstrainedWebDialogDelegate* delegate_ = nullptr;

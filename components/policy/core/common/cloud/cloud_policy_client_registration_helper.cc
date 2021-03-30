@@ -58,7 +58,7 @@ void CloudPolicyClientRegistrationHelper::IdentityManagerHelper::
 
   signin::ScopeSet scopes;
   scopes.insert(GaiaConstants::kDeviceManagementServiceOAuth);
-  scopes.insert(GaiaConstants::kOAuthWrapBridgeUserInfoScope);
+  scopes.insert(GaiaConstants::kGoogleUserInfoEmail);
 
   access_token_fetcher_ = identity_manager->CreateAccessTokenFetcherForAccount(
       account_id, "cloud_policy", scopes,

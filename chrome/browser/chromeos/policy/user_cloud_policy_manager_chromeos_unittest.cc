@@ -24,9 +24,9 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/policy/user_cloud_policy_token_forwarder.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/policy/cloud/cloud_policy_test_utils.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -136,7 +136,7 @@ class UserCloudPolicyManagerChromeOSTest
         task_runner_(base::MakeRefCounted<base::TestMockTimeTaskRunner>()),
         profile_(nullptr),
         signin_profile_(nullptr),
-        user_manager_(new chromeos::FakeChromeUserManager()),
+        user_manager_(new ash::FakeChromeUserManager()),
         user_manager_enabler_(base::WrapUnique(user_manager_)),
         test_signin_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -162,8 +162,8 @@ class UserCloudPolicyManagerChromeOSTest
             GetIdentityTestEnvironmentFactories();
     profile_ = profile_manager_->CreateTestingProfile(
         chrome::kInitialProfile,
-        std::unique_ptr<sync_preferences::PrefServiceSyncable>(),
-        base::UTF8ToUTF16(""), 0, std::string(), std::move(factories));
+        std::unique_ptr<sync_preferences::PrefServiceSyncable>(), u"", 0,
+        std::string(), std::move(factories));
     identity_test_env_profile_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_);
 
@@ -283,7 +283,7 @@ class UserCloudPolicyManagerChromeOSTest
       // Issue the access token with the former.
       signin::ScopeSet scopes;
       scopes.insert(GaiaConstants::kDeviceManagementServiceOAuth);
-      scopes.insert(GaiaConstants::kOAuthWrapBridgeUserInfoScope);
+      scopes.insert(GaiaConstants::kGoogleUserInfoEmail);
 
       identity_test_env()
           ->WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
@@ -378,7 +378,7 @@ class UserCloudPolicyManagerChromeOSTest
       identity_test_env_profile_adaptor_;
   user_manager::UserType user_type_ = user_manager::UserType::USER_TYPE_REGULAR;
 
-  chromeos::FakeChromeUserManager* user_manager_;
+  ash::FakeChromeUserManager* user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
   // This is automatically checked in TearDown() to ensure that we get a
   // fatal error iff |fatal_error_expected_| is true.
@@ -1163,7 +1163,7 @@ class UserCloudPolicyManagerChromeOSChildTest
   void IssueOAuth2AccessToken(base::TimeDelta token_lifetime) {
     signin::ScopeSet scopes;
     scopes.insert(GaiaConstants::kDeviceManagementServiceOAuth);
-    scopes.insert(GaiaConstants::kOAuthWrapBridgeUserInfoScope);
+    scopes.insert(GaiaConstants::kGoogleUserInfoEmail);
     identity_test_env()
         ->WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
             kOAuthToken, task_runner_->Now() + token_lifetime,

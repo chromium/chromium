@@ -304,6 +304,20 @@ XboxControllerMac::ControllerType ControllerTypeFromIds(uint16_t vendor_id,
   return XboxControllerMac::UNKNOWN_CONTROLLER;
 }
 
+bool ControllerNeedsXboxOneInit(XboxControllerMac::ControllerType type) {
+  switch (type) {
+    case XboxControllerMac::XBOX_ONE_CONTROLLER_2013:
+    case XboxControllerMac::XBOX_ONE_CONTROLLER_2015:
+    case XboxControllerMac::XBOX_ONE_ELITE_CONTROLLER:
+    case XboxControllerMac::XBOX_ONE_ELITE_CONTROLLER_2:
+    case XboxControllerMac::XBOX_ONE_S_CONTROLLER:
+    case XboxControllerMac::XBOX_ADAPTIVE_CONTROLLER:
+      return true;
+    default:
+      return false;
+  }
+}
+
 }  // namespace
 
 XboxControllerMac::XboxControllerMac(Delegate* delegate)
@@ -532,17 +546,14 @@ XboxControllerMac::OpenDeviceResult XboxControllerMac::OpenDevice(
         return OPEN_FAILED;
       read_buffer_.reset(new uint8_t[max_packet_size]);
       read_buffer_size_ = max_packet_size;
-      QueueRead();
+      if (!QueueRead())
+        return OPEN_FAILED;
     } else if (i == control_endpoint_) {
       if (direction != kUSBOut)
         return OPEN_FAILED;
-      if (controller_type_ == XBOX_ONE_CONTROLLER_2013 ||
-          controller_type_ == XBOX_ONE_CONTROLLER_2015 ||
-          controller_type_ == XBOX_ONE_ELITE_CONTROLLER ||
-          controller_type_ == XBOX_ONE_ELITE_CONTROLLER_2 ||
-          controller_type_ == XBOX_ONE_S_CONTROLLER ||
-          controller_type_ == XBOX_ADAPTIVE_CONTROLLER)
-        WriteXboxOneInit();
+
+      if (ControllerNeedsXboxOneInit(controller_type_) && !WriteXboxOneInit())
+        return OPEN_FAILED;
     }
   }
 
@@ -571,9 +582,8 @@ void XboxControllerMac::SetLEDPattern(LEDPattern pattern) {
           ->WritePipeAsync(interface_, control_endpoint_, buffer,
                            (UInt32)length, WriteComplete, buffer);
   if (kr != KERN_SUCCESS) {
+    DLOG(ERROR) << "Write error: Failed to send Xbox 360 LED command.";
     delete[] buffer;
-    IOError();
-    return;
   }
 }
 
@@ -666,6 +676,7 @@ void XboxControllerMac::GotData(void* context, IOReturn result, void* arg0) {
   if (result != kIOReturnSuccess) {
     // This will happen if the device was disconnected. The gamepad has
     // probably been destroyed by a meteorite.
+    DLOG(ERROR) << "Read error: Failed to read from the device.";
     controller->IOError();
     return;
   }
@@ -676,17 +687,18 @@ void XboxControllerMac::GotData(void* context, IOReturn result, void* arg0) {
     controller->ProcessXboxOnePacket(bytes_read);
 
   // Queue up another read.
-  controller->QueueRead();
+  if (!controller->QueueRead())
+    controller->IOError();
 }
 
 void XboxControllerMac::ProcessXbox360Packet(size_t length) {
   if (length < kXbox360HeaderBytes)
     return;
-  DCHECK(length <= read_buffer_size_);
-  if (length > read_buffer_size_) {
-    IOError();
+
+  DCHECK_LE(length, read_buffer_size_);
+  if (length > read_buffer_size_)
     return;
-  }
+
   uint8_t* buffer = read_buffer_.get();
 
   if (buffer[1] != length)
@@ -724,11 +736,11 @@ void XboxControllerMac::ProcessXbox360Packet(size_t length) {
 void XboxControllerMac::ProcessXboxOnePacket(size_t length) {
   if (length < kXboxOneHeaderBytes)
     return;
-  DCHECK(length <= read_buffer_size_);
-  if (length > read_buffer_size_) {
-    IOError();
+
+  DCHECK_LE(length, read_buffer_size_);
+  if (length > read_buffer_size_)
     return;
-  }
+
   uint8_t* buffer = read_buffer_.get();
   uint8_t type = buffer[0];
   bool needs_ack = (buffer[1] == 0x30);
@@ -767,13 +779,14 @@ void XboxControllerMac::ProcessXboxOnePacket(size_t length) {
   }
 }
 
-void XboxControllerMac::QueueRead() {
+bool XboxControllerMac::QueueRead() {
   kern_return_t kr =
       (*interface_)
           ->ReadPipeAsync(interface_, read_endpoint_, read_buffer_.get(),
                           read_buffer_size_, GotData, this);
   if (kr != KERN_SUCCESS)
-    IOError();
+    DLOG(ERROR) << "Read error: Failed to queue next read.";
+  return kr == KERN_SUCCESS;
 }
 
 void XboxControllerMac::IOError() {
@@ -804,13 +817,12 @@ void XboxControllerMac::WriteXbox360Rumble(uint8_t strong_magnitude,
           ->WritePipeAsync(interface_, control_endpoint_, buffer,
                            (UInt32)length, WriteComplete, buffer);
   if (kr != KERN_SUCCESS) {
+    DLOG(ERROR) << "Write error: Failed to send Xbox 360 rumble command.";
     delete[] buffer;
-    IOError();
-    return;
   }
 }
 
-void XboxControllerMac::WriteXboxOneInit() {
+bool XboxControllerMac::WriteXboxOneInit() {
   const UInt8 length = 5;
 
   // This buffer will be released in WriteComplete when WritePipeAsync
@@ -826,10 +838,12 @@ void XboxControllerMac::WriteXboxOneInit() {
           ->WritePipeAsync(interface_, control_endpoint_, buffer,
                            (UInt32)length, WriteComplete, buffer);
   if (kr != KERN_SUCCESS) {
+    DLOG(ERROR)
+        << "Write error: Failed to send Xbox One initialization packet.";
     delete[] buffer;
-    IOError();
-    return;
+    return false;
   }
+  return true;
 }
 
 void XboxControllerMac::WriteXboxOneRumble(uint8_t strong_magnitude,
@@ -862,9 +876,8 @@ void XboxControllerMac::WriteXboxOneRumble(uint8_t strong_magnitude,
           ->WritePipeAsync(interface_, control_endpoint_, buffer,
                            (UInt32)length, WriteComplete, buffer);
   if (kr != KERN_SUCCESS) {
+    DLOG(ERROR) << "Write error: Failed to send Xbox One rumble command.";
     delete[] buffer;
-    IOError();
-    return;
   }
 }
 
@@ -894,9 +907,8 @@ void XboxControllerMac::WriteXboxOneAckGuide(uint8_t sequence_number) {
           ->WritePipeAsync(interface_, control_endpoint_, buffer,
                            (UInt32)length, WriteComplete, buffer);
   if (kr != KERN_SUCCESS) {
+    DLOG(ERROR) << "Write error: Failed to send Xbox One mode report reply.";
     delete[] buffer;
-    IOError();
-    return;
   }
 }
 

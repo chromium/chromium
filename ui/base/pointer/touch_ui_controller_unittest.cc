@@ -5,7 +5,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/pointer/touch_ui_controller.h"

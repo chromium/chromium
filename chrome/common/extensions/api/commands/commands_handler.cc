@@ -67,7 +67,7 @@ CommandsHandler::CommandsHandler() {
 CommandsHandler::~CommandsHandler() {
 }
 
-bool CommandsHandler::Parse(Extension* extension, base::string16* error) {
+bool CommandsHandler::Parse(Extension* extension, std::u16string* error) {
   if (!extension->manifest()->HasKey(keys::kCommands)) {
     std::unique_ptr<CommandsInfo> commands_info(new CommandsInfo);
     MaybeSetBrowserActionDefault(extension, commands_info.get());
@@ -110,7 +110,7 @@ bool CommandsHandler::Parse(Extension* extension, base::string16* error) {
 
       if (keybindings_found > kMaxCommandsWithKeybindingPerExtension &&
           !PermissionsParser::HasAPIPermission(
-              extension, APIPermission::kCommandsAccessibility)) {
+              extension, mojom::APIPermissionID::kCommandsAccessibility)) {
         *error = ErrorUtils::FormatErrorMessageUTF16(
             manifest_errors::kInvalidKeyBindingTooMany,
             base::NumberToString(kMaxCommandsWithKeybindingPerExtension));
@@ -151,9 +151,7 @@ void CommandsHandler::MaybeSetBrowserActionDefault(const Extension* extension,
       !info->browser_action_command.get()) {
     info->browser_action_command.reset(
         new Command(manifest_values::kBrowserActionCommandEvent,
-                    base::string16(),
-                    std::string(),
-                    false));
+                    std::u16string(), std::string(), false));
   }
 }
 

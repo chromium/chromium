@@ -12,7 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/no_destructor.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
@@ -128,7 +128,8 @@ class ShadowController::Impl :
   void CreateShadowForWindow(aura::Window* window);
 
   aura::Env* const env_;
-  ScopedObserver<aura::Window, aura::WindowObserver> observer_manager_;
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
+      observation_manager_{this};
 
   std::unique_ptr<ShadowControllerDelegate> delegate_;
 
@@ -146,14 +147,14 @@ ShadowController::Impl* ShadowController::Impl::GetInstance(aura::Env* env) {
 }
 
 bool ShadowController::Impl::IsShadowVisibleForWindow(aura::Window* window) {
-  if (!observer_manager_.IsObserving(window))
+  if (!observation_manager_.IsObservingSource(window))
     return false;
   ui::Shadow* shadow = GetShadowForWindow(window);
   return shadow && shadow->layer()->visible();
 }
 
 void ShadowController::Impl::UpdateShadowForWindow(aura::Window* window) {
-  DCHECK(observer_manager_.IsObserving(window));
+  DCHECK(observation_manager_.IsObservingSource(window));
   HandlePossibleShadowVisibilityChange(window);
 }
 
@@ -162,7 +163,7 @@ void ShadowController::Impl::OnWindowInitialized(aura::Window* window) {
   // root window. That must be checked in the first visibility change
   DCHECK(!window->parent());
   DCHECK(!window->TargetVisibility());
-  observer_manager_.Add(window);
+  observation_manager_.AddObservation(window);
 }
 
 void ShadowController::Impl::OnWindowParentChanged(aura::Window* window,
@@ -198,7 +199,7 @@ void ShadowController::Impl::OnWindowVisibilityChanging(aura::Window* window,
   // which clips to the root window bounds; filling any rounded corners the
   // window may have.
   if (window->IsRootWindow()) {
-    observer_manager_.Remove(window);
+    observation_manager_.RemoveObservation(window);
     return;
   }
 
@@ -217,7 +218,7 @@ void ShadowController::Impl::OnWindowBoundsChanged(
 
 void ShadowController::Impl::OnWindowDestroyed(aura::Window* window) {
   window->ClearProperty(kShadowLayerKey);
-  observer_manager_.Remove(window);
+  observation_manager_.RemoveObservation(window);
 }
 
 void ShadowController::Impl::OnWindowActivated(ActivationReason reason,
@@ -286,7 +287,7 @@ void ShadowController::Impl::CreateShadowForWindow(aura::Window* window) {
 }
 
 ShadowController::Impl::Impl(aura::Env* env)
-    : env_(env), observer_manager_(this) {
+    : env_(env), observation_manager_(this) {
   GetInstances()->insert(this);
   env_->AddObserver(this);
 }

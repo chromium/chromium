@@ -20,6 +20,8 @@ struct ReservedTexture {
   WGPUTexture texture;
   uint32_t id;
   uint32_t generation;
+  uint32_t deviceId;
+  uint32_t deviceGeneration;
 };
 
 class WebGPUInterface : public InterfaceBase {
@@ -32,34 +34,35 @@ class WebGPUInterface : public InterfaceBase {
   // Flush all commands.
   virtual void FlushCommands() = 0;
 
-  // Flush all commands on the device client.
-  virtual void FlushCommands(DawnDeviceClientID device_client_id) = 0;
-
   // Ensure the awaiting flush flag is set on the device client. Returns false
   // if a flush has already been indicated, or a flush is not needed (there may
   // be no commands to flush). Returns true if the caller should schedule a
   // flush.
-  virtual void EnsureAwaitingFlush(DawnDeviceClientID device_client_id,
-                                   bool* needs_flush) = 0;
+  virtual void EnsureAwaitingFlush(bool* needs_flush) = 0;
 
   // If the awaiting flush flag is set, flushes commands. Otherwise, does
   // nothing.
-  virtual void FlushAwaitingCommands(DawnDeviceClientID device_client_id) = 0;
+  virtual void FlushAwaitingCommands() = 0;
 
-  virtual WGPUDevice GetDevice(DawnDeviceClientID device_client_id) = 0;
-  virtual ReservedTexture ReserveTexture(
-      DawnDeviceClientID device_client_id) = 0;
-  virtual bool RequestAdapterAsync(
+  // Disconnect. All commands should become a no-op and server-side resources
+  // can be freed.
+  virtual void DisconnectContextAndDestroyServer() = 0;
+
+  virtual ReservedTexture ReserveTexture(WGPUDevice device) = 0;
+  virtual void RequestAdapterAsync(
       PowerPreference power_preference,
       base::OnceCallback<void(int32_t,
                               const WGPUDeviceProperties&,
                               const char*)> request_adapter_callback) = 0;
-  virtual bool RequestDeviceAsync(
+  virtual void RequestDeviceAsync(
       uint32_t adapter_service_id,
       const WGPUDeviceProperties& requested_device_properties,
-      base::OnceCallback<void(bool, DawnDeviceClientID)>
-          request_device_callback) = 0;
-  virtual void RemoveDevice(DawnDeviceClientID device_client_id) = 0;
+      base::OnceCallback<void(WGPUDevice)> request_device_callback) = 0;
+
+  // Gets or creates a usable WGPUDevice synchronously. It really should not
+  // be used, and the async request adapter and request device APIs should be
+  // used instead.
+  virtual WGPUDevice DeprecatedEnsureDefaultDeviceSync() = 0;
 
 // Include the auto-generated part of this class. We split this because
 // it means we can easily edit the non-auto generated parts right here in

@@ -18,12 +18,11 @@ android_library("java") {
   srcjar_deps = [ ":autofill_aidl" ]
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//components/autofill/android:autofill_java",
     "//components/autofill/core/common/mojom:mojo_types_java",
     "//components/version_info/android:version_constants_java",
     "//content/public/android:content_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

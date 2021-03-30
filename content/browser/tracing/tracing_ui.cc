@@ -76,7 +76,9 @@ bool BeginRecording(const std::string& data64,
   if (stream_format == kStreamFormatProtobuf) {
     if (g_tracing_session)
       delete g_tracing_session;
-    g_tracing_session = perfetto::Tracing::NewTrace().release();
+    g_tracing_session =
+        perfetto::Tracing::NewTrace(perfetto::BackendType::kCustomBackend)
+            .release();
     g_tracing_session->Setup(tracing::GetDefaultPerfettoConfig(trace_config));
 
     auto shared_callback = base::MakeRefCounted<

@@ -90,5 +90,6 @@ cr.define('cr.ui', function() {
       ListItem.prototype, 'listIndex', cr.getPropertyDescriptor('listIndex'));
 
   // #cr_define_end
+  console.warn('crbug/1173575, non-JS module files deprecated.');
   return {ListItem: ListItem};
 });

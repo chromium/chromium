@@ -30,6 +30,7 @@ class API_AVAILABLE(macos(10.12.2)) RemoteCommandCenterDelegate {
   void SetIsPreviousEnabled(bool value);
   void SetIsPlayPauseEnabled(bool value);
   void SetIsStopEnabled(bool value);
+  void SetIsSeekToEnabled(bool value);
 
   // Called by |remote_command_center_delegate_cocoa_| when the event happens.
   void OnNext();
@@ -38,6 +39,7 @@ class API_AVAILABLE(macos(10.12.2)) RemoteCommandCenterDelegate {
   void OnPlayPause();
   void OnStop();
   void OnPlay();
+  void OnSeekTo(const base::TimeDelta& time);
 
  private:
   // Used to track which commands we're already listening for.
@@ -46,6 +48,7 @@ class API_AVAILABLE(macos(10.12.2)) RemoteCommandCenterDelegate {
     kPlayPause,
     kNextTrack,
     kPreviousTrack,
+    kSeekTo,
   };
 
   bool ShouldSetCommandEnabled(Command command, bool will_enable);

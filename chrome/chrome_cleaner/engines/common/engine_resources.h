@@ -24,13 +24,6 @@ void InitializePUPDataWithCatalog(Engine::Name engine);
 // available.
 int GetProtectedFilesDigestResourceId();
 
-// Returns ID of the "TEXT" resource that contains seralized UwEMatcher
-// messages (see uwe_matcher.proto). Returns zero if not available.
-//
-// Each engine has its own UwEMatcher resource because the resource will
-// contain engine-specific UwS ID's.
-int GetUwEMatchersResourceID();
-
 // Returns IDs of the "LIBRARY" resources for |engine| that are embedded into
 // the executable.
 std::unordered_map<std::wstring, int> GetEmbeddedLibraryResourceIds(

@@ -107,6 +107,15 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
     }
 
     @Override
+    public boolean areIntentLaunchesAllowedInHiddenTabsForNavigation(NavigationParams params) {
+        NavigationImpl navigation =
+                mTab.getNavigationControllerImpl().getNavigationImplFromId(params.navigationId);
+        if (navigation == null) return false;
+
+        return navigation.areIntentLaunchesAllowedInBackground();
+    }
+
+    @Override
     public Activity getActivity() {
         return ContextUtils.activityFromContext(mTab.getBrowser().getContext());
     }
@@ -166,10 +175,6 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
     }
 
     static void closeTab(TabImpl tab) {
-        // Prior to 84 the client was not equipped to handle the case of WebLayer initiating the
-        // last tab being closed, so we simply short-circuit out here in that case.
-        if (WebLayerFactoryImpl.getClientMajorVersion() < 84) return;
-
         tab.getBrowser().destroyTab(tab);
     }
 }

@@ -8,6 +8,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/optional.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -39,15 +41,28 @@ class QuotaSettingsTest : public testing::Test {
   QuotaSettingsTest() = default;
   void SetUp() override { ASSERT_TRUE(data_dir_.CreateUniqueTempDir()); }
 
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::TaskEnvironment task_environment_;
+  // Synchronous proxy to GetNominalDynamicSettings().
+  base::Optional<QuotaSettings> GetSettings(
+      bool is_incognito,
+      QuotaDeviceInfoHelper* device_info_helper) {
+    base::Optional<QuotaSettings> quota_settings;
+    base::RunLoop run_loop;
+    GetNominalDynamicSettings(
+        profile_path(), is_incognito, device_info_helper,
+        base::BindLambdaForTesting([&](base::Optional<QuotaSettings> settings) {
+          quota_settings = std::move(settings);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    return quota_settings;
+  }
+
   const base::FilePath& profile_path() const { return data_dir_.GetPath(); }
 
- private:
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir data_dir_;
-  QuotaSettings quota_settings_;
-  DISALLOW_COPY_AND_ASSIGN(QuotaSettingsTest);
+  base::test::TaskEnvironment task_environment_;
 };
 
 class QuotaSettingsIncognitoTest : public QuotaSettingsTest {
@@ -64,24 +79,15 @@ class QuotaSettingsIncognitoTest : public QuotaSettingsTest {
   }
 
   void GetAndTestSettings(const int64_t physical_memory_amount) {
-    bool callback_executed = false;
-    GetNominalDynamicSettings(
-        profile_path(), true, device_info_helper(),
-        base::BindLambdaForTesting([&](base::Optional<QuotaSettings> settings) {
-          callback_executed = true;
-          EXPECT_LE(physical_memory_amount *
-                        GetIncognitoQuotaRatioLowerBound_ForTesting(),
-                    settings->pool_size);
-          EXPECT_GE(physical_memory_amount *
-                        GetIncognitoQuotaRatioUpperBound_ForTesting(),
-                    settings->pool_size);
-        }));
-    task_environment_.RunUntilIdle();
-    EXPECT_TRUE(callback_executed);
-  }
-
-  MockQuotaDeviceInfoHelper* device_info_helper() {
-    return &device_info_helper_;
+    base::Optional<QuotaSettings> settings =
+        GetSettings(true, &device_info_helper_);
+    ASSERT_TRUE(settings.has_value());
+    EXPECT_LE(
+        physical_memory_amount * GetIncognitoQuotaRatioLowerBound_ForTesting(),
+        settings->pool_size);
+    EXPECT_GE(
+        physical_memory_amount * GetIncognitoQuotaRatioUpperBound_ForTesting(),
+        settings->pool_size);
   }
 
  private:
@@ -93,19 +99,76 @@ TEST_F(QuotaSettingsTest, Default) {
   ON_CALL(device_info_helper, AmountOfTotalDiskSpace(_))
       .WillByDefault(::testing::Return(2000));
 
-  bool callback_executed = false;
-  GetNominalDynamicSettings(
-      profile_path(), false, &device_info_helper,
-      base::BindLambdaForTesting([&](base::Optional<QuotaSettings> settings) {
-        callback_executed = true;
-        ASSERT_NE(settings, base::nullopt);
-        // 1600 = 2000 * default PoolSizeRatio (0.8)
-        EXPECT_EQ(settings->pool_size, 1600);
-        // 1200 = 1600 * default PerHostRatio (.75)
-        EXPECT_EQ(settings->per_host_quota, 1200);
-      }));
-  task_environment_.RunUntilIdle();
-  EXPECT_TRUE(callback_executed);
+  base::Optional<QuotaSettings> settings =
+      GetSettings(false, &device_info_helper);
+  ASSERT_TRUE(settings.has_value());
+  // 1600 = 2000 * default PoolSizeRatio (0.8)
+  EXPECT_EQ(settings->pool_size, 1600);
+  // 1200 = 1600 * default PerHostRatio (.75)
+  EXPECT_EQ(settings->per_host_quota, 1200);
+}
+
+TEST_F(QuotaSettingsTest, FeatureParamsWithLargeFixedQuota) {
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      features::kStorageQuotaSettings, {{"MustRemainAvailableBytes", "500"},
+                                        {"MustRemainAvailableRatio", "0.01"},
+                                        {"PoolSizeBytes", "2000"},
+                                        {"PoolSizeRatio", "0.8"},
+                                        {"ShouldRemainAvailableBytes", "600"},
+                                        {"ShouldRemainAvailableRatio", "0.1"}});
+
+  MockQuotaDeviceInfoHelper device_info_helper;
+  ON_CALL(device_info_helper, AmountOfTotalDiskSpace(_))
+      .WillByDefault(::testing::Return(2000));
+
+  base::Optional<QuotaSettings> settings =
+      GetSettings(false, &device_info_helper);
+  ASSERT_TRUE(settings.has_value());
+
+  EXPECT_EQ(settings->pool_size, 1600);
+  EXPECT_EQ(settings->must_remain_available, 20);
+  EXPECT_EQ(settings->should_remain_available, 200);
+}
+
+TEST_F(QuotaSettingsTest, FeatureParamsWithSmallFixedQuota) {
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      features::kStorageQuotaSettings, {{"MustRemainAvailableBytes", "5"},
+                                        {"MustRemainAvailableRatio", "0.01"},
+                                        {"PoolSizeBytes", "20"},
+                                        {"PoolSizeRatio", "0.8"},
+                                        {"ShouldRemainAvailableBytes", "60"},
+                                        {"ShouldRemainAvailableRatio", "0.1"}});
+
+  MockQuotaDeviceInfoHelper device_info_helper;
+  ON_CALL(device_info_helper, AmountOfTotalDiskSpace(_))
+      .WillByDefault(::testing::Return(2000));
+
+  base::Optional<QuotaSettings> settings =
+      GetSettings(false, &device_info_helper);
+  ASSERT_TRUE(settings.has_value());
+
+  EXPECT_EQ(settings->pool_size, 20);
+  EXPECT_EQ(settings->must_remain_available, 5);
+  EXPECT_EQ(settings->should_remain_available, 60);
+}
+
+TEST_F(QuotaSettingsTest, FeatureParamsWithoutFixedQuota) {
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      features::kStorageQuotaSettings, {{"MustRemainAvailableRatio", "0.01"},
+                                        {"PoolSizeRatio", "0.8"},
+                                        {"ShouldRemainAvailableRatio", "0.1"}});
+
+  MockQuotaDeviceInfoHelper device_info_helper;
+  ON_CALL(device_info_helper, AmountOfTotalDiskSpace(_))
+      .WillByDefault(::testing::Return(2000));
+
+  base::Optional<QuotaSettings> settings =
+      GetSettings(false, &device_info_helper);
+  ASSERT_TRUE(settings.has_value());
+
+  EXPECT_EQ(settings->pool_size, 1600);
+  EXPECT_EQ(settings->must_remain_available, 20);
+  EXPECT_EQ(settings->should_remain_available, 200);
 }
 
 TEST_F(QuotaSettingsIncognitoTest, IncognitoDynamicQuota_LowPhysicalMemory) {

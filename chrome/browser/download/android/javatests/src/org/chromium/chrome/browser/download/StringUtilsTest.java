@@ -14,6 +14,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -27,6 +28,7 @@ import org.chromium.components.offline_items_collection.OfflineItemProgressUnit;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Features.DisableFeatures(ChromeFeatureList.DOWNLOAD_FILE_PROVIDER)
+@Batch(Batch.UNIT_TESTS)
 public class StringUtilsTest {
     @Test
     @SmallTest

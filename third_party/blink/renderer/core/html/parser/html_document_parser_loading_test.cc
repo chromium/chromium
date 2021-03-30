@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -15,33 +16,31 @@ namespace blink {
 
 class HTMLDocumentParserSimTest : public SimTest {
  protected:
-  HTMLDocumentParserSimTest() {
+  HTMLDocumentParserSimTest()
+      : original_threaded_parsing_(
+            Document::ThreadedParsingEnabledForTesting()) {
     ResetDiscardedTokenCountForTesting();
     Document::SetThreadedParsingEnabledForTesting(true);
   }
+  ~HTMLDocumentParserSimTest() override {
+    Document::SetThreadedParsingEnabledForTesting(original_threaded_parsing_);
+  }
+
+ private:
+  bool original_threaded_parsing_;
 };
 
 class HTMLDocumentParserLoadingTest
     : public HTMLDocumentParserSimTest,
-      public testing::WithParamInterface<ParserSynchronizationPolicy> {
+      public testing::WithParamInterface<ParserSynchronizationPolicy>,
+      private ScopedForceSynchronousHTMLParsingForTest {
  protected:
-  HTMLDocumentParserLoadingTest() {
-    if (GetParam() == ParserSynchronizationPolicy::kForceSynchronousParsing) {
-      Document::SetThreadedParsingEnabledForTesting(false);
-    } else {
-      Document::SetThreadedParsingEnabledForTesting(true);
-    }
-
-    if (GetParam() == ParserSynchronizationPolicy::kAllowDeferredParsing) {
-      RuntimeEnabledFeatures::SetForceSynchronousHTMLParsingEnabled(true);
-    } else {
-      RuntimeEnabledFeatures::SetForceSynchronousHTMLParsingEnabled(false);
-    }
-
+  HTMLDocumentParserLoadingTest()
+      : ScopedForceSynchronousHTMLParsingForTest(GetParam() !=
+                                                 kAllowAsynchronousParsing) {
+    Document::SetThreadedParsingEnabledForTesting(GetParam() !=
+                                                  kForceSynchronousParsing);
     platform_->SetAutoAdvanceNowToPendingTasks(false);
-  }
-  static bool SheetInHeadBlocksParser() {
-    return RuntimeEnabledFeatures::BlockHTMLParserOnStyleSheetsEnabled();
   }
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform_;
@@ -162,58 +161,6 @@ TEST_P(HTMLDocumentParserLoadingTest, IFrameDoesNotRenterParser) {
 }
 
 TEST_P(HTMLDocumentParserLoadingTest,
-       PauseParsingForExternalStylesheetsInHead) {
-  SimRequest main_resource("https://example.com/test.html", "text/html");
-  SimSubresourceRequest css_head_resource("https://example.com/testHead.css",
-                                          "text/css");
-
-  LoadURL("https://example.com/test.html");
-
-  main_resource.Complete(R"HTML(
-    <!DOCTYPE html>
-    <html><head>
-    <link rel=stylesheet href=testHead.css>
-    </head><body>
-    <div id="bodyDiv"></div>
-    </body></html>
-  )HTML");
-
-  platform_->RunUntilIdle();
-  EXPECT_EQ(SheetInHeadBlocksParser(),
-            !GetDocument().getElementById("bodyDiv"));
-  css_head_resource.Complete("");
-  platform_->RunUntilIdle();
-  EXPECT_TRUE(GetDocument().getElementById("bodyDiv"));
-}
-
-TEST_P(HTMLDocumentParserLoadingTest,
-       BlockingParsingForExternalStylesheetsImportedInHead) {
-  SimRequest main_resource("https://example.com/test.html", "text/html");
-  SimSubresourceRequest css_head_resource("https://example.com/testHead.css",
-                                          "text/css");
-
-  LoadURL("https://example.com/test.html");
-
-  main_resource.Complete(R"HTML(
-    <!DOCTYPE html>
-    <html><head>
-    <style>
-    @import 'testHead.css'
-    </style>
-    </head><body>
-    <div id="bodyDiv"></div>
-    </body></html>
-  )HTML");
-
-  platform_->RunUntilIdle();
-  EXPECT_EQ(SheetInHeadBlocksParser(),
-            !GetDocument().getElementById("bodyDiv"));
-  css_head_resource.Complete("");
-  platform_->RunUntilIdle();
-  EXPECT_TRUE(GetDocument().getElementById("bodyDiv"));
-}
-
-TEST_P(HTMLDocumentParserLoadingTest,
        ShouldPauseParsingForExternalStylesheetsInBody) {
   SimRequest main_resource("https://example.com/test.html", "text/html");
   SimSubresourceRequest css_head_resource("https://example.com/testHead.css",
@@ -235,7 +182,7 @@ TEST_P(HTMLDocumentParserLoadingTest,
   )HTML");
 
   platform_->RunUntilIdle();
-  EXPECT_EQ(SheetInHeadBlocksParser(), !GetDocument().getElementById("before"));
+  EXPECT_TRUE(GetDocument().getElementById("before"));
   EXPECT_FALSE(GetDocument().getElementById("after"));
 
   // Completing the head css should progress parsing past #before.
@@ -277,7 +224,7 @@ TEST_P(HTMLDocumentParserLoadingTest,
   )HTML");
 
   platform_->RunUntilIdle();
-  EXPECT_EQ(SheetInHeadBlocksParser(), !GetDocument().getElementById("before"));
+  EXPECT_TRUE(GetDocument().getElementById("before"));
   EXPECT_FALSE(GetDocument().getElementById("after1"));
   EXPECT_FALSE(GetDocument().getElementById("after2"));
   EXPECT_FALSE(GetDocument().getElementById("after3"));
@@ -287,7 +234,7 @@ TEST_P(HTMLDocumentParserLoadingTest,
       "<div id=\"after2\"></div>");
 
   platform_->RunUntilIdle();
-  EXPECT_EQ(SheetInHeadBlocksParser(), !GetDocument().getElementById("before"));
+  EXPECT_TRUE(GetDocument().getElementById("before"));
   EXPECT_FALSE(GetDocument().getElementById("after1"));
   EXPECT_FALSE(GetDocument().getElementById("after2"));
   EXPECT_FALSE(GetDocument().getElementById("after3"));
@@ -299,12 +246,12 @@ TEST_P(HTMLDocumentParserLoadingTest,
   )HTML");
 
   platform_->RunUntilIdle();
-  EXPECT_EQ(SheetInHeadBlocksParser(), !GetDocument().getElementById("before"));
+  EXPECT_TRUE(GetDocument().getElementById("before"));
   EXPECT_FALSE(GetDocument().getElementById("after1"));
   EXPECT_FALSE(GetDocument().getElementById("after2"));
   EXPECT_FALSE(GetDocument().getElementById("after3"));
 
-  // Completing the head css should progress parsing past #before.
+  // Completing the head css shouldn't change anything.
   css_head_resource.Complete("");
   platform_->RunUntilIdle();
   EXPECT_TRUE(GetDocument().getElementById("before"));
@@ -359,11 +306,9 @@ TEST_P(HTMLDocumentParserLoadingTest,
   )HTML");
 
   platform_->RunUntilIdle();
-  EXPECT_EQ(SheetInHeadBlocksParser(), !GetDocument().getElementById("before"));
-  EXPECT_EQ(SheetInHeadBlocksParser(), !GetDocument().getElementById("after"));
+  EXPECT_TRUE(GetDocument().getElementById("before"));
+  EXPECT_TRUE(GetDocument().getElementById("after"));
 
-  // Completing the head css should progress parsing past both #before and
-  // #after.
   css_head_resource.Complete("");
   platform_->RunUntilIdle();
   EXPECT_TRUE(GetDocument().getElementById("before"));
@@ -394,7 +339,7 @@ TEST_P(HTMLDocumentParserLoadingTest,
   )HTML");
 
   platform_->RunUntilIdle();
-  EXPECT_EQ(SheetInHeadBlocksParser(), !GetDocument().getElementById("before"));
+  EXPECT_TRUE(GetDocument().getElementById("before"));
   EXPECT_FALSE(GetDocument().getElementById("after"));
 
   // Completing the head css should progress parsing past #before.
@@ -435,7 +380,7 @@ TEST_P(HTMLDocumentParserLoadingTest,
   )HTML");
 
   platform_->RunUntilIdle();
-  EXPECT_EQ(SheetInHeadBlocksParser(), !GetDocument().getElementById("before"));
+  EXPECT_TRUE(GetDocument().getElementById("before"));
   EXPECT_FALSE(GetDocument().getElementById("after"));
 
   // Completing the head css should progress parsing past #before.
@@ -447,64 +392,6 @@ TEST_P(HTMLDocumentParserLoadingTest,
   // Completing the body resource and pumping the tasks should continue parsing
   // and create the "after" div.
   css_body_resource.Complete("");
-  platform_->RunUntilIdle();
-  EXPECT_TRUE(GetDocument().getElementById("before"));
-  EXPECT_TRUE(GetDocument().getElementById("after"));
-}
-
-TEST_P(HTMLDocumentParserLoadingTest,
-       PendingHeadStylesheetBlockingParserForBodyInlineStyle) {
-  SimRequest main_resource("https://example.com/test.html", "text/html");
-  SimSubresourceRequest css_head_resource("https://example.com/testHead.css",
-                                          "text/css");
-
-  LoadURL("https://example.com/test.html");
-
-  main_resource.Complete(R"HTML(
-    <!DOCTYPE html>
-    <html><head>
-    <link rel=stylesheet href=testHead.css>
-    </head><body>
-    <div id="before"></div>
-    <style>
-    </style>
-    <div id="after"></div>
-    </body></html>
-  )HTML");
-
-  platform_->RunUntilIdle();
-  EXPECT_EQ(SheetInHeadBlocksParser(), !GetDocument().getElementById("before"));
-  EXPECT_EQ(SheetInHeadBlocksParser(), !GetDocument().getElementById("after"));
-  css_head_resource.Complete("");
-  platform_->RunUntilIdle();
-  EXPECT_TRUE(GetDocument().getElementById("before"));
-  EXPECT_TRUE(GetDocument().getElementById("after"));
-}
-
-TEST_P(HTMLDocumentParserLoadingTest,
-       PendingHeadStylesheetBlockingParserForBodyShadowDom) {
-  SimRequest main_resource("https://example.com/test.html", "text/html");
-  SimSubresourceRequest css_head_resource("https://example.com/testHead.css",
-                                          "text/css");
-
-  LoadURL("https://example.com/test.html");
-
-  // The marquee tag has a shadow DOM that synchronously applies a stylesheet.
-  main_resource.Complete(R"HTML(
-    <!DOCTYPE html>
-    <html><head>
-    <link rel=stylesheet href=testHead.css>
-    </head><body>
-    <div id="before"></div>
-    <marquee>Marquee</marquee>
-    <div id="after"></div>
-    </body></html>
-  )HTML");
-
-  platform_->RunUntilIdle();
-  EXPECT_EQ(SheetInHeadBlocksParser(), !GetDocument().getElementById("before"));
-  EXPECT_EQ(SheetInHeadBlocksParser(), !GetDocument().getElementById("after"));
-  css_head_resource.Complete("");
   platform_->RunUntilIdle();
   EXPECT_TRUE(GetDocument().getElementById("before"));
   EXPECT_TRUE(GetDocument().getElementById("after"));

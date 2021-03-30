@@ -59,8 +59,8 @@ TEST_F(FileSystemProviderOperationsAddWatcherTest, Execute) {
       NULL, file_system_info_, base::FilePath(kEntryPath), true /* recursive */,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   add_watcher.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(add_watcher.Execute(kRequestId));
 
@@ -92,8 +92,8 @@ TEST_F(FileSystemProviderOperationsAddWatcherTest, Execute_NoListener) {
       NULL, file_system_info_, base::FilePath(kEntryPath), true /* recursive */,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   add_watcher.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_FALSE(add_watcher.Execute(kRequestId));
 }
@@ -106,8 +106,8 @@ TEST_F(FileSystemProviderOperationsAddWatcherTest, OnSuccess) {
       NULL, file_system_info_, base::FilePath(kEntryPath), true /* recursive */,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   add_watcher.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(add_watcher.Execute(kRequestId));
 
@@ -126,8 +126,8 @@ TEST_F(FileSystemProviderOperationsAddWatcherTest, OnError) {
       NULL, file_system_info_, base::FilePath(kEntryPath), true /* recursive */,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   add_watcher.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(add_watcher.Execute(kRequestId));
 

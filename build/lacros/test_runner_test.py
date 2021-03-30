@@ -81,6 +81,7 @@ class TestRunnerTest(unittest.TestCase):
           '--user-data-dir=/tmp/ash-data',
           '--enable-wayland-server',
           '--no-startup-window',
+          '--use-fake-ml-service-for-test',
       ]
       if command == 'lacros_chrome_browsertests':
         expected_ash_chrome_args.append(

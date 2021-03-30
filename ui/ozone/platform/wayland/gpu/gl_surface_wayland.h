@@ -29,7 +29,7 @@ class GLSurfaceWayland : public gl::NativeViewGLSurfaceEGL {
  public:
   using WaylandEglWindowPtr = std::unique_ptr<wl_egl_window, EGLWindowDeleter>;
 
-  explicit GLSurfaceWayland(WaylandEglWindowPtr egl_window);
+  GLSurfaceWayland(WaylandEglWindowPtr egl_window, WaylandWindow* window);
 
   // gl::GLSurface:
   bool Resize(const gfx::Size& size,
@@ -37,11 +37,20 @@ class GLSurfaceWayland : public gl::NativeViewGLSurfaceEGL {
               const gfx::ColorSpace& color_space,
               bool has_alpha) override;
   EGLConfig GetConfig() override;
+  gfx::SwapResult SwapBuffers(PresentationCallback callback) override;
+  gfx::SwapResult PostSubBuffer(int x,
+                                int y,
+                                int width,
+                                int height,
+                                PresentationCallback callback) override;
 
  private:
   ~GLSurfaceWayland() override;
 
+  void UpdateVisualSize();
+
   WaylandEglWindowPtr egl_window_;
+  WaylandWindow* const window_;
 
   DISALLOW_COPY_AND_ASSIGN(GLSurfaceWayland);
 };

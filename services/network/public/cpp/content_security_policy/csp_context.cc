@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 
 #include "services/network/public/cpp/content_security_policy/csp_context.h"
+
+#include "base/containers/contains.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
+#include "url/url_util.h"
 
 namespace network {
 
@@ -30,15 +33,17 @@ bool ShouldCheckPolicy(const mojom::ContentSecurityPolicyPtr& policy,
 CSPContext::CSPContext() = default;
 CSPContext::~CSPContext() = default;
 
-bool CSPContext::IsAllowedByCsp(mojom::CSPDirectiveName directive_name,
-                                const GURL& url,
-                                bool has_followed_redirect,
-                                bool is_response_check,
-                                const mojom::SourceLocationPtr& source_location,
-                                CheckCSPDisposition check_csp_disposition,
-                                bool is_form_submission) {
+bool CSPContext::IsAllowedByCsp(
+    const std::vector<mojom::ContentSecurityPolicyPtr>& policies,
+    mojom::CSPDirectiveName directive_name,
+    const GURL& url,
+    bool has_followed_redirect,
+    bool is_response_check,
+    const mojom::SourceLocationPtr& source_location,
+    CheckCSPDisposition check_csp_disposition,
+    bool is_form_submission) {
   bool allow = true;
-  for (const auto& policy : policies_) {
+  for (const auto& policy : policies) {
     if (ShouldCheckPolicy(policy, check_csp_disposition)) {
       allow &= CheckContentSecurityPolicy(
           policy, directive_name, url, has_followed_redirect, is_response_check,
@@ -52,7 +57,15 @@ bool CSPContext::IsAllowedByCsp(mojom::CSPDirectiveName directive_name,
 }
 
 bool CSPContext::SchemeShouldBypassCSP(const base::StringPiece& scheme) {
-  return false;
+  // Blink uses its SchemeRegistry to check if a scheme should be bypassed.
+  // It can't be used on the browser process. It is used for two things:
+  // 1) Bypassing the "chrome-extension" scheme when chrome is built with the
+  //    extensions support.
+  // 2) Bypassing arbitrary scheme for testing purpose only in blink and in V8.
+  // TODO(arthursonzogni): url::GetBypassingCSPScheme() is used instead of the
+  // blink::SchemeRegistry. It contains 1) but not 2).
+  const auto& bypassing_schemes = url::GetCSPBypassingSchemes();
+  return base::Contains(bypassing_schemes, scheme);
 }
 
 void CSPContext::SanitizeDataForUseInCspViolation(

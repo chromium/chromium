@@ -15,6 +15,7 @@
 <translation id="2036868001356139588">Laikmačio trukmė</translation>
 <translation id="2050339315714019657">Stačias</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> aktyvus</translation>
+<translation id="2144806332417375165">Tinkinti vaizdo įrašų parametrai</translation>
 <translation id="229579744168541441">Eksportuoti į diską</translation>
 <translation id="2501278716633472235">Grįžti</translation>
 <translation id="2501853267655415902">Įrašas sustabdytas</translation>
@@ -33,7 +34,6 @@
 <translation id="3259149966178251584">Fotoaparato skyra</translation>
 <translation id="3517926952904427380">Nepavyko nufotografuoti portretinės nuotraukos</translation>
 <translation id="3569311554794739032">Ar tikrai norite pašalinti „<ph name="FILE" />“?</translation>
-<translation id="3750315947605636967">Jūsų fotoaparatą naudoja kita programa</translation>
 <translation id="3810838688059735925">Vaizdo</translation>
 <translation id="3838931309141338733">Nuskaityti brūkšninį kodą</translation>
 <translation id="3892148308691398805">Kopijuoti tekstą</translation>
@@ -76,10 +76,12 @@ Jei atsiliepimas susijęs su vaizdo arba vaizdo įrašo kokybe, pridėkite nuotr
 <translation id="7337660886763914220">Failų sistemos klaidos.</translation>
 <translation id="7450541714075000668">Tekstas nukopijuotas</translation>
 <translation id="7557677699350329807">Perjungti į kitą fotoaparatą</translation>
+<translation id="7607002721634913082">Pristabdyta</translation>
 <translation id="7608223098072244877">4 iš 4</translation>
 <translation id="7649070708921625228">Pagalba</translation>
 <translation id="7658239707568436148">Atšaukti</translation>
 <translation id="7670511624014457267">60 KPS</translation>
+<translation id="7974782136796202581">Rodyti pastūmimo, pakreipimo ir mastelio keitimo parinktis</translation>
 <translation id="7983668134180549431">Aptiktas tekstas.</translation>
 <translation id="8067883171444229417">Leisti vaizdo įrašą</translation>
 <translation id="8131740175452115882">Patvirtinti</translation>

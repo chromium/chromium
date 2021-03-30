@@ -40,7 +40,7 @@ WebRtcLocalEventLogManager::~WebRtcLocalEventLogManager() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
-bool WebRtcLocalEventLogManager::PeerConnectionAdded(
+bool WebRtcLocalEventLogManager::OnPeerConnectionAdded(
     const PeerConnectionKey& key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(io_task_sequence_checker_);
 
@@ -59,7 +59,7 @@ bool WebRtcLocalEventLogManager::PeerConnectionAdded(
   return true;
 }
 
-bool WebRtcLocalEventLogManager::PeerConnectionRemoved(
+bool WebRtcLocalEventLogManager::OnPeerConnectionRemoved(
     const PeerConnectionKey& key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(io_task_sequence_checker_);
 

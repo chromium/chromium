@@ -82,7 +82,9 @@ class ChromePromptChannel {
     kRequestUnknownField = 7,
     kUndisplayableFilePath = 8,
     kUndisplayableRegistryKey = 9,
-    kUndisplayableExtension = 10,
+    DEPRECATED_kUndisplayableExtension = 10,
+    kDeprecatedRequest = 11,
+    kDeprecatedFieldInRequest = 12,
   };
 
   static int32_t GetErrorCodeInt(ErrorCategory category,
@@ -149,10 +151,6 @@ class ChromePromptChannel {
   // Handles |request| and sends a PromptUserResponse in reply.
   void HandlePromptUserRequest(
       const chrome_cleaner::PromptUserRequest& request);
-
-  // Handles |request| and sends a RemoveExtensionsResponse in reply.
-  void HandleRemoveExtensionsRequest(
-      const chrome_cleaner::RemoveExtensionsRequest& request);
 
   // Closes request_read_handle_ and request_write_handle_, which will trigger
   // an error handler in ServiceChromePromptRequests.

@@ -41,7 +41,9 @@ namespace blink {
 
 WorkerPerformance::WorkerPerformance(WorkerGlobalScope* context)
     : Performance(context->TimeOrigin(),
-                  context->GetTaskRunner(TaskType::kPerformanceTimeline)),
+                  context->CrossOriginIsolatedCapability(),
+                  context->GetTaskRunner(TaskType::kPerformanceTimeline),
+                  context),
       execution_context_(context) {}
 
 void WorkerPerformance::Trace(Visitor* visitor) const {

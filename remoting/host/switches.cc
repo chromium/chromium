@@ -45,6 +45,7 @@ const char kCheckAccessibilityPermissionSwitchName[] =
     "check-accessibility-permission";
 const char kCheckScreenRecordingPermissionSwitchName[] =
     "check-screen-recording-permission";
+const char kListAudioDevicesSwitchName[] = "list-audio-devices";
 #endif  // defined OS_APPLE
 
 }  // namespace remoting

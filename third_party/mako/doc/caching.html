@@ -12,7 +12,7 @@
     
                 Caching
              &mdash;
-    Mako 1.0.14 Documentation
+    Mako 1.1.4 Documentation
 
         </title>
 
@@ -32,7 +32,7 @@
 
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="Mako 1.0.14 Documentation" href="index.html" />
+    <link rel="top" title="Mako 1.1.4 Documentation" href="index.html" />
         <link rel="next" title="Changelog" href="changelog.html" />
         <link rel="prev" title="The Unicode Chapter" href="unicode.html" />
     <!-- end layout.mako headers -->
@@ -56,7 +56,7 @@
 
 
 <div id="docs-header">
-    <h1>Mako 1.0.14 Documentation</h1>
+    <h1>Mako 1.1.4 Documentation</h1>
 
     <div id="docs-search">
     Search:
@@ -68,7 +68,7 @@
     </div>
 
     <div id="docs-version-header">
-        Release: <span class="version-num">1.0.14</span>
+        Release: <span class="version-num">1.1.4</span>
 
     </div>
 
@@ -92,7 +92,7 @@
     </div>
 
     <div id="docs-navigation-banner">
-        <a href="index.html">Mako 1.0.14 Documentation</a>
+        <a href="index.html">Mako 1.1.4 Documentation</a>
         » 
                 Caching
             
@@ -166,7 +166,7 @@ argument to the <code class="docutils literal notranslate"><span class="pre">&lt
 </div>
 <p>The above template, after being executed the first time, will
 store its content within a cache that by default is scoped
-within memory. Subsequent calls to the template’s <a class="reference internal" href="usage.html#mako.template.Template.render" title="mako.template.Template.render"><code class="xref py py-meth docutils literal notranslate"><span class="pre">render()</span></code></a>
+within memory. Subsequent calls to the template’s <a class="reference internal" href="usage.html#mako.template.Template.render" title="mako.template.Template.render"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Template.render()</span></code></a>
 method will return content directly from the cache. When the
 <a class="reference internal" href="usage.html#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> object itself falls out of scope, its corresponding
 cache is garbage collected along with the template.</p>
@@ -225,7 +225,7 @@ when the template renders.  Defaults to <code class="docutils literal notranslat
 e.g.:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">lookup</span> <span class="o">=</span> <span class="n">TemplateLookup</span><span class="p">(</span>
                 <span class="n">directories</span><span class="o">=</span><span class="s1">&#39;/path/to/templates&#39;</span><span class="p">,</span>
-                <span class="n">cache_enabled</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="n">cache_enabled</span> <span class="o">=</span> <span class="kc">False</span>
                 <span class="p">)</span></pre></div>
 </div>
 </li>
@@ -371,7 +371,7 @@ sections programmatically:</p>
 <span class="n">template</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">invalidate</span><span class="p">(</span><span class="s1">&#39;somekey&#39;</span><span class="p">)</span></pre></div>
 </div>
 <p>You can access any special method or attribute of the <a class="reference internal" href="#mako.cache.CacheImpl" title="mako.cache.CacheImpl"><code class="xref py py-class docutils literal notranslate"><span class="pre">CacheImpl</span></code></a>
-itself using the <a class="reference internal" href="#mako.cache.Cache.impl" title="mako.cache.Cache.impl"><code class="xref py py-attr docutils literal notranslate"><span class="pre">impl</span></code></a> attribute:</p>
+itself using the <a class="reference internal" href="#mako.cache.Cache.impl" title="mako.cache.Cache.impl"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Cache.impl</span></code></a> attribute:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">template</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">impl</span><span class="o">.</span><span class="n">do_something_special</span><span class="p">()</span></pre></div>
 </div>
 <p>Note that using implementation-specific methods will mean you can’t
@@ -414,14 +414,14 @@ which accomplishes essentially the same task.</p>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">invalidate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
 <span class="c1"># optional - register the class locally</span>
 <span class="n">register_plugin</span><span class="p">(</span><span class="s2">&quot;simple&quot;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;SimpleCacheImpl&quot;</span><span class="p">)</span></pre></div>
 </div>
 <p>Enabling the above plugin in a template would look like:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">t</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s2">&quot;mytemplate&quot;</span><span class="p">,</span>
-             <span class="nb">file</span><span class="o">=</span><span class="s2">&quot;mytemplate.html&quot;</span><span class="p">,</span>
+             <span class="n">file</span><span class="o">=</span><span class="s2">&quot;mytemplate.html&quot;</span><span class="p">,</span>
              <span class="n">cache_impl</span><span class="o">=</span><span class="s1">&#39;simple&#39;</span><span class="p">)</span></pre></div>
 </div>
 <div class="section" id="guidelines-for-writing-cache-plugins">
@@ -466,9 +466,34 @@ conflicts with generated modules don’t occur.</p></li>
 </div>
 <div class="section" id="api-reference">
 <h2>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<table class="longtable docutils">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head">Object Name</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="nowrap"><p><a class="reference internal" href="#mako.ext.beaker_cache.BeakerCacheImpl"><code class="sig-name descname">BeakerCacheImpl</code></a></p></td>
+<td><p>Bases: <a class="reference internal" href="#mako.cache.CacheImpl" title="mako.cache.CacheImpl"><code class="xref py py-class docutils literal notranslate"><span class="pre">mako.cache.CacheImpl</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td class="nowrap"><p><a class="reference internal" href="#mako.cache.Cache"><code class="sig-name descname">Cache</code></a></p></td>
+<td><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p></td>
+</tr>
+<tr class="row-even"><td class="nowrap"><p><a class="reference internal" href="#mako.cache.CacheImpl"><code class="sig-name descname">CacheImpl</code></a></p></td>
+<td><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p></td>
+</tr>
+<tr class="row-odd"><td class="nowrap"><p><a class="reference internal" href="#mako.cache.register_plugin"><code class="sig-name descname">register_plugin</code></a></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
 <dt id="mako.cache.Cache">
-<em class="property">class </em><code class="sig-prename descclassname">mako.cache.</code><code class="sig-name descname">Cache</code><span class="sig-paren">(</span><em class="sig-param">template</em>, <em class="sig-param">*args</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.cache.Cache" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">mako.cache.</code><code class="sig-name descname">Cache</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">template</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.cache.Cache" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Represents a data content cache made available to the module
 space of a specific <a class="reference internal" href="usage.html#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> object.</p>
@@ -484,9 +509,9 @@ a number of backends (i.e. file, memory, memcached, etc.)</p>
 <p>The construction of a <a class="reference internal" href="#mako.cache.Cache" title="mako.cache.Cache"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cache</span></code></a> is part of the mechanics
 of a <a class="reference internal" href="usage.html#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a>, and programmatic access to this
 cache is typically via the <code class="xref py py-attr docutils literal notranslate"><span class="pre">Template.cache</span></code> attribute.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="mako.cache.Cache.get">
-<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.cache.Cache.get" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.cache.Cache"><code class="docutils literal notranslate"><span class="pre">mako.cache.Cache.</span></code></a><code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kw</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.cache.Cache.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve a value from the cache.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -501,16 +526,16 @@ values will use that same backend.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mako.cache.Cache.get_or_create">
-<code class="sig-name descname">get_or_create</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">creation_function</em>, <em class="sig-param">**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.cache.Cache.get_or_create" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.cache.Cache"><code class="docutils literal notranslate"><span class="pre">mako.cache.Cache.</span></code></a><code class="sig-name descname">get_or_create</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">creation_function</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kw</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.cache.Cache.get_or_create" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve a value from the cache, using the given creation function
 to generate a new value.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="mako.cache.Cache.id">
-<code class="sig-name descname">id</code><em class="property"> = None</em><a class="headerlink" href="#mako.cache.Cache.id" title="Permalink to this definition">¶</a></dt>
+<em class="property">attribute </em><a class="reference internal" href="#mako.cache.Cache"><code class="docutils literal notranslate"><span class="pre">mako.cache.Cache.</span></code></a><code class="sig-name descname">id</code><em class="property"> = None</em><a class="headerlink" href="#mako.cache.Cache.id" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the ‘id’ that identifies this cache.</p>
 <p>This is a value that should be globally unique to the
 <a class="reference internal" href="usage.html#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> associated with this cache, and can
@@ -518,17 +543,17 @@ be used by a caching system to name a local container
 for data specific to this template.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="mako.cache.Cache.impl">
-<code class="sig-name descname">impl</code><em class="property"> = None</em><a class="headerlink" href="#mako.cache.Cache.impl" title="Permalink to this definition">¶</a></dt>
+<em class="property">attribute </em><a class="reference internal" href="#mako.cache.Cache"><code class="docutils literal notranslate"><span class="pre">mako.cache.Cache.</span></code></a><code class="sig-name descname">impl</code><em class="property"> = None</em><a class="headerlink" href="#mako.cache.Cache.impl" title="Permalink to this definition">¶</a></dt>
 <dd><p>Provide the <a class="reference internal" href="#mako.cache.CacheImpl" title="mako.cache.CacheImpl"><code class="xref py py-class docutils literal notranslate"><span class="pre">CacheImpl</span></code></a> in use by this <a class="reference internal" href="#mako.cache.Cache" title="mako.cache.Cache"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cache</span></code></a>.</p>
 <p>This accessor allows a <a class="reference internal" href="#mako.cache.CacheImpl" title="mako.cache.CacheImpl"><code class="xref py py-class docutils literal notranslate"><span class="pre">CacheImpl</span></code></a> with additional
 methods beyond that of <a class="reference internal" href="#mako.cache.Cache" title="mako.cache.Cache"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cache</span></code></a> to be used programmatically.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mako.cache.Cache.invalidate">
-<code class="sig-name descname">invalidate</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.cache.Cache.invalidate" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.cache.Cache"><code class="docutils literal notranslate"><span class="pre">mako.cache.Cache.</span></code></a><code class="sig-name descname">invalidate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kw</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.cache.Cache.invalidate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Invalidate a value in the cache.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -543,16 +568,16 @@ values will use that same backend.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mako.cache.Cache.invalidate_body">
-<code class="sig-name descname">invalidate_body</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mako.cache.Cache.invalidate_body" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.cache.Cache"><code class="docutils literal notranslate"><span class="pre">mako.cache.Cache.</span></code></a><code class="sig-name descname">invalidate_body</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mako.cache.Cache.invalidate_body" title="Permalink to this definition">¶</a></dt>
 <dd><p>Invalidate the cached content of the “body” method for this
 template.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mako.cache.Cache.invalidate_closure">
-<code class="sig-name descname">invalidate_closure</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.cache.Cache.invalidate_closure" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.cache.Cache"><code class="docutils literal notranslate"><span class="pre">mako.cache.Cache.</span></code></a><code class="sig-name descname">invalidate_closure</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.cache.Cache.invalidate_closure" title="Permalink to this definition">¶</a></dt>
 <dd><p>Invalidate a nested <code class="docutils literal notranslate"><span class="pre">&lt;%def&gt;</span></code> within this template.</p>
 <p>Caching of nested defs is a blunt tool as there is no
 management of scope – nested defs that use cache tags
@@ -561,23 +586,23 @@ template, else their content will be overwritten by
 each other.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mako.cache.Cache.invalidate_def">
-<code class="sig-name descname">invalidate_def</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.cache.Cache.invalidate_def" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.cache.Cache"><code class="docutils literal notranslate"><span class="pre">mako.cache.Cache.</span></code></a><code class="sig-name descname">invalidate_def</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.cache.Cache.invalidate_def" title="Permalink to this definition">¶</a></dt>
 <dd><p>Invalidate the cached content of a particular <code class="docutils literal notranslate"><span class="pre">&lt;%def&gt;</span></code> within this
 template.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mako.cache.Cache.put">
-<code class="sig-name descname">put</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">value</em>, <em class="sig-param">**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.cache.Cache.put" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.cache.Cache"><code class="docutils literal notranslate"><span class="pre">mako.cache.Cache.</span></code></a><code class="sig-name descname">put</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kw</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.cache.Cache.put" title="Permalink to this definition">¶</a></dt>
 <dd><p>A synonym for <a class="reference internal" href="#mako.cache.Cache.set" title="mako.cache.Cache.set"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Cache.set()</span></code></a>.</p>
 <p>This is here for backwards compatibility.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mako.cache.Cache.set">
-<code class="sig-name descname">set</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">value</em>, <em class="sig-param">**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.cache.Cache.set" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.cache.Cache"><code class="docutils literal notranslate"><span class="pre">mako.cache.Cache.</span></code></a><code class="sig-name descname">set</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kw</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.cache.Cache.set" title="Permalink to this definition">¶</a></dt>
 <dd><p>Place a value in the cache.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -590,9 +615,9 @@ template.</p>
 </dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="mako.cache.Cache.starttime">
-<code class="sig-name descname">starttime</code><em class="property"> = None</em><a class="headerlink" href="#mako.cache.Cache.starttime" title="Permalink to this definition">¶</a></dt>
+<em class="property">attribute </em><a class="reference internal" href="#mako.cache.Cache"><code class="docutils literal notranslate"><span class="pre">mako.cache.Cache.</span></code></a><code class="sig-name descname">starttime</code><em class="property"> = None</em><a class="headerlink" href="#mako.cache.Cache.starttime" title="Permalink to this definition">¶</a></dt>
 <dd><p>Epochal time value for when the owning <a class="reference internal" href="usage.html#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> was
 first compiled.</p>
 <p>A cache implementation may wish to invalidate data earlier than
@@ -604,14 +629,14 @@ the filesystem.</p>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="mako.cache.CacheImpl">
-<em class="property">class </em><code class="sig-prename descclassname">mako.cache.</code><code class="sig-name descname">CacheImpl</code><span class="sig-paren">(</span><em class="sig-param">cache</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.cache.CacheImpl" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">mako.cache.</code><code class="sig-name descname">CacheImpl</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cache</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.cache.CacheImpl" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Provide a cache implementation for use by <a class="reference internal" href="#mako.cache.Cache" title="mako.cache.Cache"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cache</span></code></a>.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="mako.cache.CacheImpl.get">
-<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.cache.CacheImpl.get" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.cache.CacheImpl"><code class="docutils literal notranslate"><span class="pre">mako.cache.CacheImpl.</span></code></a><code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kw</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.cache.CacheImpl.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve a value from the cache.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -623,9 +648,9 @@ the filesystem.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mako.cache.CacheImpl.get_or_create">
-<code class="sig-name descname">get_or_create</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">creation_function</em>, <em class="sig-param">**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.cache.CacheImpl.get_or_create" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.cache.CacheImpl"><code class="docutils literal notranslate"><span class="pre">mako.cache.CacheImpl.</span></code></a><code class="sig-name descname">get_or_create</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">creation_function</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kw</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.cache.CacheImpl.get_or_create" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve a value from the cache, using the given creation function
 to generate a new value.</p>
 <p>This function <em>must</em> return a value, either from
@@ -645,9 +670,9 @@ a new value.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mako.cache.CacheImpl.invalidate">
-<code class="sig-name descname">invalidate</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.cache.CacheImpl.invalidate" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.cache.CacheImpl"><code class="docutils literal notranslate"><span class="pre">mako.cache.CacheImpl.</span></code></a><code class="sig-name descname">invalidate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kw</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.cache.CacheImpl.invalidate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Invalidate a value in the cache.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -659,16 +684,16 @@ a new value.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="mako.cache.CacheImpl.pass_context">
-<code class="sig-name descname">pass_context</code><em class="property"> = False</em><a class="headerlink" href="#mako.cache.CacheImpl.pass_context" title="Permalink to this definition">¶</a></dt>
+<em class="property">attribute </em><a class="reference internal" href="#mako.cache.CacheImpl"><code class="docutils literal notranslate"><span class="pre">mako.cache.CacheImpl.</span></code></a><code class="sig-name descname">pass_context</code><em class="property"> = False</em><a class="headerlink" href="#mako.cache.CacheImpl.pass_context" title="Permalink to this definition">¶</a></dt>
 <dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the <a class="reference internal" href="runtime.html#mako.runtime.Context" title="mako.runtime.Context"><code class="xref py py-class docutils literal notranslate"><span class="pre">Context</span></code></a> will be passed to
-<a class="reference internal" href="#mako.cache.CacheImpl.get_or_create" title="mako.cache.CacheImpl.get_or_create"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_or_create</span></code></a> as the name <code class="docutils literal notranslate"><span class="pre">'context'</span></code>.</p>
+<a class="reference internal" href="#mako.cache.CacheImpl.get_or_create" title="mako.cache.CacheImpl.get_or_create"><code class="xref py py-meth docutils literal notranslate"><span class="pre">CacheImpl.get_or_create()</span></code></a> as the name <code class="docutils literal notranslate"><span class="pre">'context'</span></code>.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mako.cache.CacheImpl.set">
-<code class="sig-name descname">set</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">value</em>, <em class="sig-param">**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.cache.CacheImpl.set" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.cache.CacheImpl"><code class="docutils literal notranslate"><span class="pre">mako.cache.CacheImpl.</span></code></a><code class="sig-name descname">set</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kw</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.cache.CacheImpl.set" title="Permalink to this definition">¶</a></dt>
 <dd><p>Place a value in the cache.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -683,23 +708,26 @@ a new value.</p></li>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="mako.cache.register_plugin">
-<code class="sig-prename descclassname">mako.cache.</code><code class="sig-name descname">register_plugin</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">modulepath</em>, <em class="sig-param">objname</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.cache.register_plugin" title="Permalink to this definition">¶</a></dt>
+<em class="property">function </em><code class="sig-prename descclassname">mako.cache.</code><code class="sig-name descname">register_plugin</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">modulepath</span></em>, <em class="sig-param"><span class="n">objname</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.cache.register_plugin" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="mako.ext.beaker_cache.BeakerCacheImpl">
-<em class="property">class </em><code class="sig-prename descclassname">mako.ext.beaker_cache.</code><code class="sig-name descname">BeakerCacheImpl</code><span class="sig-paren">(</span><em class="sig-param">cache</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.ext.beaker_cache.BeakerCacheImpl" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">mako.ext.beaker_cache.</code><code class="sig-name descname">BeakerCacheImpl</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cache</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.ext.beaker_cache.BeakerCacheImpl" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#mako.cache.CacheImpl" title="mako.cache.CacheImpl"><code class="xref py py-class docutils literal notranslate"><span class="pre">mako.cache.CacheImpl</span></code></a></p>
-<p>Bases: <a class="reference internal" href="#mako.cache.CacheImpl" title="mako.cache.CacheImpl"><code class="xref py py-class docutils literal notranslate"><span class="pre">mako.cache.CacheImpl</span></code></a></p>
 <p>A <a class="reference internal" href="#mako.cache.CacheImpl" title="mako.cache.CacheImpl"><code class="xref py py-class docutils literal notranslate"><span class="pre">CacheImpl</span></code></a> provided for the Beaker caching system.</p>
 <p>This plugin is used by default, based on the default
 value of <code class="docutils literal notranslate"><span class="pre">'beaker'</span></code> for the <code class="docutils literal notranslate"><span class="pre">cache_impl</span></code> parameter of the
 <a class="reference internal" href="usage.html#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> or <a class="reference internal" href="usage.html#mako.lookup.TemplateLookup" title="mako.lookup.TemplateLookup"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateLookup</span></code></a> classes.</p>
-<dl class="method">
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#mako.ext.beaker_cache.BeakerCacheImpl" title="mako.ext.beaker_cache.BeakerCacheImpl"><code class="xref py py-class docutils literal notranslate"><span class="pre">mako.ext.beaker_cache.BeakerCacheImpl</span></code></a> (<a class="reference internal" href="#mako.cache.CacheImpl" title="mako.cache.CacheImpl"><code class="xref py py-class docutils literal notranslate"><span class="pre">mako.cache.CacheImpl</span></code></a>)</p>
+</div>
+<dl class="py method">
 <dt id="mako.ext.beaker_cache.BeakerCacheImpl.get">
-<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.ext.beaker_cache.BeakerCacheImpl.get" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.ext.beaker_cache.BeakerCacheImpl"><code class="docutils literal notranslate"><span class="pre">mako.ext.beaker_cache.BeakerCacheImpl.</span></code></a><code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kw</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.ext.beaker_cache.BeakerCacheImpl.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve a value from the cache.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -711,9 +739,9 @@ value of <code class="docutils literal notranslate"><span class="pre">'beaker'</
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mako.ext.beaker_cache.BeakerCacheImpl.get_or_create">
-<code class="sig-name descname">get_or_create</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">creation_function</em>, <em class="sig-param">**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.ext.beaker_cache.BeakerCacheImpl.get_or_create" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.ext.beaker_cache.BeakerCacheImpl"><code class="docutils literal notranslate"><span class="pre">mako.ext.beaker_cache.BeakerCacheImpl.</span></code></a><code class="sig-name descname">get_or_create</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">creation_function</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kw</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.ext.beaker_cache.BeakerCacheImpl.get_or_create" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve a value from the cache, using the given creation function
 to generate a new value.</p>
 <p>This function <em>must</em> return a value, either from
@@ -733,9 +761,9 @@ a new value.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mako.ext.beaker_cache.BeakerCacheImpl.invalidate">
-<code class="sig-name descname">invalidate</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">**kw</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.ext.beaker_cache.BeakerCacheImpl.invalidate" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.ext.beaker_cache.BeakerCacheImpl"><code class="docutils literal notranslate"><span class="pre">mako.ext.beaker_cache.BeakerCacheImpl.</span></code></a><code class="sig-name descname">invalidate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kw</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.ext.beaker_cache.BeakerCacheImpl.invalidate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Invalidate a value in the cache.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -764,7 +792,7 @@ a new value.</p></li>
 
     <div id="docs-copyright">
         &copy; Copyright the Mako authors and contributors.
-        Documentation generated using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2
+        Documentation generated using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.4.3
         with Mako templates.
     </div>
 </div>
@@ -779,7 +807,7 @@ a new value.</p></li>
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
           URL_ROOT:    './',
-          VERSION:     '1.0.14',
+          VERSION:     '1.1.4',
           COLLAPSE_MODINDEX: false,
           FILE_SUFFIX: '.html'
       };
@@ -791,7 +819,6 @@ a new value.</p></li>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
     <!-- end iterate through sphinx environment script_files -->
 
     <script type="text/javascript" src="_static/detectmobile.js"></script>

@@ -26,7 +26,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
@@ -41,6 +40,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -313,9 +313,10 @@ class NetworkContextConfigurationBrowserTest
   content::StoragePartition* GetStoragePartitionForContextType(
       NetworkContextType network_context_type) {
     const auto kOnDiskConfig = content::StoragePartitionConfig::Create(
-        "foo", /*partition_name=*/"", /*in_memory=*/false);
+        browser()->profile(), "foo", /*partition_name=*/"",
+        /*in_memory=*/false);
     const auto kInMemoryConfig = content::StoragePartitionConfig::Create(
-        "foo", /*partition_name=*/"", /*in_memory=*/true);
+        browser()->profile(), "foo", /*partition_name=*/"", /*in_memory=*/true);
 
     switch (network_context_type) {
       case NetworkContextType::kSystem:
@@ -335,10 +336,19 @@ class NetworkContextConfigurationBrowserTest
       case NetworkContextType::kInMemoryApp:
         return content::BrowserContext::GetStoragePartition(
             browser()->profile(), kInMemoryConfig);
-      case NetworkContextType::kOnDiskAppWithIncognitoProfile:
+      case NetworkContextType::kOnDiskAppWithIncognitoProfile: {
         DCHECK(incognito_);
+        // Note: Even though we are requesting an on-disk config, the function
+        // will return an in-memory config because incognito profiles are not
+        // supposed to to use on-disk storage.
+        const auto kIncognitoConfig = content::StoragePartitionConfig::Create(
+            incognito_->profile(), "foo", /*partition_name=*/"",
+            /*in_memory=*/false);
+        DCHECK(kIncognitoConfig.in_memory());
+
         return content::BrowserContext::GetStoragePartition(
-            incognito_->profile(), kOnDiskConfig);
+            incognito_->profile(), kIncognitoConfig);
+      }
     }
     NOTREACHED();
     return nullptr;
@@ -682,70 +692,6 @@ class NetworkContextConfigurationBrowserTest
 
   void UpdateChromePolicy(const policy::PolicyMap& policy_map) {
     provider_.UpdateChromePolicy(policy_map);
-  }
-
-  enum class WayToEnableSSLConfig { kViaPrefs, kViaPolicy };
-
-  // This helper function enables the kSSLVersionMin pref and tests that this
-  // pref is respected. kSSLVersionMin can be set in two ways: over prefs
-  // directly or over a policy. |way_to_enable| is used to determine the way to
-  // set the pref.
-  void TestEnablingSSLVersionMin(WayToEnableSSLConfig way_to_enable) {
-    // Start a TLS 1.0 server.
-    net::EmbeddedTestServer ssl_server(net::EmbeddedTestServer::TYPE_HTTPS);
-    net::SSLServerConfig ssl_config;
-    ssl_config.version_min = net::SSL_PROTOCOL_VERSION_TLS1;
-    ssl_config.version_max = net::SSL_PROTOCOL_VERSION_TLS1;
-    ssl_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK, ssl_config);
-    ssl_server.AddDefaultHandlers(GetChromeTestDataDir());
-    ASSERT_TRUE(ssl_server.Start());
-
-    std::unique_ptr<network::ResourceRequest> request =
-        std::make_unique<network::ResourceRequest>();
-    request->url = ssl_server.GetURL("/echo");
-    content::SimpleURLLoaderTestHelper simple_loader_helper;
-    std::unique_ptr<network::SimpleURLLoader> simple_loader =
-        network::SimpleURLLoader::Create(std::move(request),
-                                         TRAFFIC_ANNOTATION_FOR_TESTS);
-    simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-        loader_factory(), simple_loader_helper.GetCallback());
-    simple_loader_helper.WaitForCallback();
-    ASSERT_TRUE(simple_loader_helper.response_body());
-    EXPECT_EQ(*simple_loader_helper.response_body(), "Echo");
-
-    if (way_to_enable == WayToEnableSSLConfig::kViaPrefs) {
-      // Disallow TLS 1.0 via prefs.
-      g_browser_process->local_state()->SetString(prefs::kSSLVersionMin,
-                                                  switches::kSSLVersionTLSv11);
-    } else {
-      // Disallow TLS 1.0 via policy.
-      policy::PolicyMap values;
-      values.Set(policy::key::kSSLVersionMin, policy::POLICY_LEVEL_MANDATORY,
-                 policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_CLOUD,
-                 base::Value(switches::kSSLVersionTLSv11), nullptr);
-      base::RunLoop run_loop;
-      PrefChangeRegistrar pref_change_registrar;
-      pref_change_registrar.Init(g_browser_process->local_state());
-      pref_change_registrar.Add(prefs::kSSLVersionMin, run_loop.QuitClosure());
-      UpdateChromePolicy(values);
-      run_loop.Run();
-    }
-
-    g_browser_process->system_network_context_manager()
-        ->FlushSSLConfigManagerForTesting();
-
-    // With the new prefs, requests to the server should be blocked.
-    request = std::make_unique<network::ResourceRequest>();
-    request->url = ssl_server.GetURL("/echo");
-    content::SimpleURLLoaderTestHelper simple_loader_helper2;
-    simple_loader = network::SimpleURLLoader::Create(
-        std::move(request), TRAFFIC_ANNOTATION_FOR_TESTS);
-    simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-        loader_factory(), simple_loader_helper2.GetCallback());
-    simple_loader_helper2.WaitForCallback();
-    EXPECT_FALSE(simple_loader_helper2.response_body());
-    EXPECT_EQ(net::ERR_SSL_VERSION_OR_CIPHER_MISMATCH,
-              simple_loader->NetError());
   }
 
  private:
@@ -1312,52 +1258,6 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, Hsts) {
   }
 }
 
-// Check that the SSLConfig is hooked up. PRE_SSLConfig checks that changing
-// local_state() after start modifies the SSLConfig, SSLConfig makes sure the
-// (now modified) initial value of local_state() is respected.
-IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, PRE_SSLConfig) {
-  if (IsRestartStateWithInProcessNetworkService())
-    return;
-  TestEnablingSSLVersionMin(WayToEnableSSLConfig::kViaPrefs);
-}
-
-IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, SSLConfig) {
-  if (IsRestartStateWithInProcessNetworkService())
-    return;
-  // Start a TLS 1.0 server.
-  net::EmbeddedTestServer ssl_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  net::SSLServerConfig ssl_config;
-  ssl_config.version_min = net::SSL_PROTOCOL_VERSION_TLS1;
-  ssl_config.version_max = net::SSL_PROTOCOL_VERSION_TLS1;
-  ssl_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK, ssl_config);
-  ASSERT_TRUE(ssl_server.Start());
-
-  // Making a request should fail, since PRE_SSLConfig saved a pref to disallow
-  // TLS 1.0.
-  std::unique_ptr<network::ResourceRequest> request =
-      std::make_unique<network::ResourceRequest>();
-  request->url = ssl_server.GetURL("/echo");
-  content::SimpleURLLoaderTestHelper simple_loader_helper;
-  std::unique_ptr<network::SimpleURLLoader> simple_loader =
-      network::SimpleURLLoader::Create(std::move(request),
-                                       TRAFFIC_ANNOTATION_FOR_TESTS);
-  simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      loader_factory(), simple_loader_helper.GetCallback());
-  simple_loader_helper.WaitForCallback();
-  EXPECT_FALSE(simple_loader_helper.response_body());
-  EXPECT_EQ(net::ERR_SSL_VERSION_OR_CIPHER_MISMATCH, simple_loader->NetError());
-}
-
-// This test does the same as
-// 'NetworkContextConfigurationBrowserTest.PRE_SSLConfig' but with the
-// difference that the SSLVersionMin is set via a policy (not via the prefs).
-IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
-                       SSLVersionMinSetViaPolicy) {
-  if (IsRestartStateWithInProcessNetworkService())
-    return;
-  TestEnablingSSLVersionMin(WayToEnableSSLConfig::kViaPolicy);
-}
-
 IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, ProxyConfig) {
   if (IsRestartStateWithInProcessNetworkService())
     return;
@@ -1373,8 +1273,13 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
   MakeLongLivedRequestThatHangsUntilShutdown();
 }
 
+#if defined(OS_CHROMEOS)
+#define MAYBE_UserAgentAndLanguagePrefs DISABLED_UserAgentAndLanguagePrefs
+#else
+#define MAYBE_UserAgentAndLanguagePrefs UserAgentAndLanguagePrefs
+#endif
 IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
-                       UserAgentAndLanguagePrefs) {
+                       MAYBE_UserAgentAndLanguagePrefs) {
   if (IsRestartStateWithInProcessNetworkService())
     return;
   // The system and SafeBrowsing network contexts aren't associated with any
@@ -1391,7 +1296,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
   ASSERT_TRUE(FetchHeaderEcho("accept-language", &accept_language));
   EXPECT_EQ(system ? kNoAcceptLanguage : "en-US,en;q=0.9", accept_language);
   ASSERT_TRUE(FetchHeaderEcho("user-agent", &user_agent));
-  EXPECT_EQ(::GetUserAgent(), user_agent);
+  EXPECT_EQ(embedder_support::GetUserAgent(), user_agent);
 
   // Change AcceptLanguages preferences, and check that headers are updated.
   // First, A single language.
@@ -1402,7 +1307,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
   ASSERT_TRUE(FetchHeaderEcho("accept-language", &accept_language2));
   EXPECT_EQ(system ? kNoAcceptLanguage : "zu", accept_language2);
   ASSERT_TRUE(FetchHeaderEcho("user-agent", &user_agent2));
-  EXPECT_EQ(::GetUserAgent(), user_agent2);
+  EXPECT_EQ(embedder_support::GetUserAgent(), user_agent2);
 
   // Second, a single language with locale.
   browser()->profile()->GetPrefs()->SetString(language::prefs::kAcceptLanguages,
@@ -1412,7 +1317,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
   ASSERT_TRUE(FetchHeaderEcho("accept-language", &accept_language3));
   EXPECT_EQ(system ? kNoAcceptLanguage : "zu-ZA,zu;q=0.9", accept_language3);
   ASSERT_TRUE(FetchHeaderEcho("user-agent", &user_agent3));
-  EXPECT_EQ(::GetUserAgent(), user_agent3);
+  EXPECT_EQ(embedder_support::GetUserAgent(), user_agent3);
 
   // Third, a list with multiple languages. Incognito mode should return only
   // the first.
@@ -1430,7 +1335,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
               accept_language4);
   }
   ASSERT_TRUE(FetchHeaderEcho("user-agent", &user_agent4));
-  EXPECT_EQ(::GetUserAgent(), user_agent4);
+  EXPECT_EQ(embedder_support::GetUserAgent(), user_agent4);
 }
 
 // First part of testing enable referrers. Check that referrers are enabled by

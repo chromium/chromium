@@ -10,7 +10,7 @@ namespace ntp_tiles {
 // The source where the displayed title of an NTP tile originates from.
 //
 // These values must stay in sync with the NTPTileTitleSource enums in
-// enums.xml AND in chrome/browser/resources/local_ntp/most_visited_single.js.
+// enums.xml.
 //
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.suggestions.tile

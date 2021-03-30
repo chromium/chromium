@@ -7,12 +7,20 @@
 
 #include "base/component_export.h"
 #include "base/optional.h"
+#include "build/build_config.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
+
+#if defined(OS_FUCHSIA)
+#include "ui/gfx/geometry/insets.h"
+#endif  // defined(OS_FUCHSIA)
 
 namespace gfx {
 class Rect;
 class Size;
 }  // namespace gfx
+
+class SkPath;
 
 namespace ui {
 
@@ -28,11 +36,36 @@ enum class PlatformWindowState {
 
 class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
  public:
+  struct COMPONENT_EXPORT(PLATFORM_WINDOW) BoundsChange {
+    BoundsChange();
+    BoundsChange(const gfx::Rect& bounds);
+    ~BoundsChange();
+
+    // The dimensions of the window, in physical window coordinates.
+    gfx::Rect bounds;
+
+#if defined(OS_FUCHSIA)
+    // The widths of border regions which are obscured by overlapping
+    // platform UI elements like onscreen keyboards.
+    //
+    // As an example, the overlap from an onscreen keyboard covering
+    // the bottom of the Window would be represented like this:
+    //
+    // +------------------------+                ---
+    // |                        |                 |
+    // |        content         |                 |
+    // |                        |                 | window
+    // +------------------------+  ---            |
+    // |    onscreen keyboard   |   |  overlap    |
+    // +------------------------+  ---           ---
+    gfx::Insets system_ui_overlap;
+#endif  // defined(OS_FUCHSIA)
+  };
+
   PlatformWindowDelegate();
   virtual ~PlatformWindowDelegate();
 
-  // Note that |new_bounds| is in physical screen coordinates.
-  virtual void OnBoundsChanged(const gfx::Rect& new_bounds) = 0;
+  virtual void OnBoundsChanged(const BoundsChange& change) = 0;
 
   // Note that |damaged_region| is in the platform-window's coordinates, in
   // physical pixels.
@@ -62,6 +95,18 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   // Requests size constraints for the PlatformWindow.
   virtual base::Optional<gfx::Size> GetMinimumSizeForWindow();
   virtual base::Optional<gfx::Size> GetMaximumSizeForWindow();
+
+  // Returns a mask to be used to clip the window for the size of
+  // |WindowTreeHost::GetBoundsInPixels|.
+  // This is used to create the non-rectangular window shape.
+  virtual SkPath GetWindowMaskForWindowShapeInPixels();
+
+  // Called while dragging maximized window when SurfaceFrame associated with
+  // this window is locked to normal state or unlocked from previously locked
+  // state. This function is used by chromeos for syncing
+  // `chromeos::kFrameRestoreLookKey` window property
+  // with lacros-chrome.
+  virtual void OnSurfaceFrameLockingChanged(bool lock);
 
   // Called when the location of mouse pointer entered the window.  This is
   // different from ui::ET_MOUSE_ENTERED which may not be generated when mouse

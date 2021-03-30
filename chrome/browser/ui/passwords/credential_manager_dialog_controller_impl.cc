@@ -61,7 +61,7 @@ CredentialManagerDialogControllerImpl::GetLocalForms() const {
   return local_credentials_;
 }
 
-base::string16 CredentialManagerDialogControllerImpl::GetAccoutChooserTitle()
+std::u16string CredentialManagerDialogControllerImpl::GetAccoutChooserTitle()
     const {
   return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_ACCOUNT_CHOOSER_TITLE);
 }
@@ -70,7 +70,7 @@ bool CredentialManagerDialogControllerImpl::ShouldShowSignInButton() const {
   return local_credentials_.size() == 1;
 }
 
-base::string16 CredentialManagerDialogControllerImpl::GetAutoSigninPromoTitle()
+std::u16string CredentialManagerDialogControllerImpl::GetAutoSigninPromoTitle()
     const {
   int message_id = IsSyncingAutosignSetting(profile_)
                        ? IDS_AUTO_SIGNIN_FIRST_RUN_TITLE_MANY_DEVICES
@@ -78,7 +78,7 @@ base::string16 CredentialManagerDialogControllerImpl::GetAutoSigninPromoTitle()
   return l10n_util::GetStringUTF16(message_id);
 }
 
-base::string16 CredentialManagerDialogControllerImpl::GetAutoSigninText()
+std::u16string CredentialManagerDialogControllerImpl::GetAutoSigninText()
     const {
   return l10n_util::GetStringFUTF16(
       IDS_AUTO_SIGNIN_FIRST_RUN_TEXT,

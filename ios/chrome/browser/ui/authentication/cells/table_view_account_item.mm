@@ -16,18 +16,14 @@
 #endif
 
 namespace {
-// Padding used between the image and text.
-const CGFloat kHorizontalPaddingBetweenImageAndText = 10;
 
 // Padding used between the text and error icon.
 const CGFloat kHorizontalPaddingBetweenTextAndError = 5;
 
-// Image fixed horizontal size.
-const CGFloat kHorizontalImageFixedSize = 40;
+// Size of the error icon image.
+const CGFloat KErrorIconImageSize = 18;
 
-// Error icon fixed horizontal size.
-const CGFloat kHorizontalErrorIconFixedSize = 25;
-}
+}  // namespace
 
 @implementation TableViewAccountItem
 
@@ -117,7 +113,7 @@ const CGFloat kHorizontalErrorIconFixedSize = 25;
   _imageView.layer.masksToBounds = YES;
   _imageView.contentMode = UIViewContentModeScaleAspectFit;
   // Creates the image rounded corners.
-  _imageView.layer.cornerRadius = kHorizontalImageFixedSize / 2.0f;
+  _imageView.layer.cornerRadius = kTableViewIconImageSize / 2.0f;
   [contentView addSubview:_imageView];
 
   _errorIcon = [[UIImageView alloc] init];
@@ -151,8 +147,8 @@ const CGFloat kHorizontalErrorIconFixedSize = 25;
 
   _textLeadingAnchorConstraint = [_textLabel.leadingAnchor
       constraintEqualToAnchor:_imageView.trailingAnchor];
-  _errorIconWidthConstraint = [_errorIcon.widthAnchor
-      constraintEqualToConstant:kHorizontalErrorIconFixedSize];
+  _errorIconWidthConstraint =
+      [_errorIcon.widthAnchor constraintEqualToConstant:KErrorIconImageSize];
   [NSLayoutConstraint activateConstraints:@[
     // Set leading anchors.
     [_imageView.leadingAnchor
@@ -162,10 +158,10 @@ const CGFloat kHorizontalErrorIconFixedSize = 25;
         constraintEqualToAnchor:_textLabel.leadingAnchor],
 
     // Fix image widths.
-    [_imageView.widthAnchor
-        constraintEqualToConstant:kHorizontalImageFixedSize],
+    [_imageView.widthAnchor constraintEqualToConstant:kTableViewIconImageSize],
     [_imageView.heightAnchor constraintEqualToAnchor:_imageView.widthAnchor],
     _errorIconWidthConstraint,
+    [_errorIcon.heightAnchor constraintEqualToAnchor:_errorIcon.widthAnchor],
 
     // Set vertical anchors.
     [_imageView.centerYAnchor
@@ -198,7 +194,7 @@ const CGFloat kHorizontalErrorIconFixedSize = 25;
     // Set trailing anchors.
     [_errorIcon.trailingAnchor
         constraintEqualToAnchor:contentView.trailingAnchor
-                       constant:-kHorizontalPaddingBetweenImageAndText],
+                       constant:-kTableViewTrailingContentPadding],
     [_detailTextLabel.trailingAnchor
         constraintEqualToAnchor:_errorIcon.leadingAnchor
                        constant:-kHorizontalPaddingBetweenTextAndError],
@@ -227,13 +223,13 @@ const CGFloat kHorizontalErrorIconFixedSize = 25;
   // Adjust the leading margin depending on existence of image.
   if (_imageView.image) {
     _textLeadingAnchorConstraint.constant =
-        kHorizontalPaddingBetweenImageAndText;
+        kTableViewOneLabelCellVerticalSpacing;
   } else {
     _textLeadingAnchorConstraint.constant = 0;
   }
 
   if (_errorIcon.image) {
-    _errorIconWidthConstraint.constant = kHorizontalErrorIconFixedSize;
+    _errorIconWidthConstraint.constant = KErrorIconImageSize;
   } else {
     _errorIconWidthConstraint.constant = 0;
   }

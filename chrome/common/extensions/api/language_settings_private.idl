@@ -84,6 +84,7 @@ namespace languageSettingsPrivate {
   };
 
   callback GetLanguageListCallback = void (Language[] languages);
+  callback GetAlwaysTranslateLanguagesCallback = void (DOMString[] languageCodes);
   callback GetInputMethodListsCallback = void (InputMethodLists lists);
   callback GetSpellcheckWordsCallback = void (DOMString[] words);
   callback GetTranslateTargetLanguageCallback = void (DOMString languageCode);
@@ -108,6 +109,13 @@ namespace languageSettingsPrivate {
     // Moves a language inside the language list.
     static void moveLanguage(DOMString languageCode, MoveType moveType);
 
+    // Gets languages that should always be automatically translated.
+    static void getAlwaysTranslateLanguages(GetAlwaysTranslateLanguagesCallback callback);
+
+    // Sets whether a given language should always be automatically translated.
+    static void setLanguageAlwaysTranslateState(
+      DOMString languageCode, boolean alwaysTranslate);
+
     // Gets the current status of the chosen spell check dictionaries.
     static void getSpellcheckDictionaryStatuses(
         GetSpellcheckDictionaryStatusesCallback callback);
@@ -124,6 +132,9 @@ namespace languageSettingsPrivate {
     // Gets the translate target language (in most cases, the display locale).
     static void getTranslateTargetLanguage(
         GetTranslateTargetLanguageCallback callback);
+
+    // Sets the translate target language given a language code.
+    static void setTranslateTargetLanguage(DOMString languageCode);
 
     // Gets all supported input methods, including third-party IMEs.
     // Chrome OS only.

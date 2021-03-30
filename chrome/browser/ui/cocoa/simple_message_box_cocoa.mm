@@ -19,9 +19,9 @@
 
 namespace chrome {
 
-MessageBoxResult ShowMessageBoxCocoa(const base::string16& message,
+MessageBoxResult ShowMessageBoxCocoa(const std::u16string& message,
                                      MessageBoxType type,
-                                     const base::string16& checkbox_text) {
+                                     const std::u16string& checkbox_text) {
   startup_metric_utils::SetNonBrowserUIDisplayed();
   if (internal::g_should_skip_message_box_for_test)
     return MESSAGE_BOX_RESULT_YES;

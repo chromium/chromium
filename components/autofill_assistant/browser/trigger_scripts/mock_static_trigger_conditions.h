@@ -15,11 +15,13 @@ class MockStaticTriggerConditions : public StaticTriggerConditions {
   MockStaticTriggerConditions();
   ~MockStaticTriggerConditions() override;
 
-  MOCK_METHOD4(Init,
-               void(Client* client,
-                    const GURL& url,
-                    TriggerContext* trigger_context,
-                    base::OnceCallback<void(void)> callback));
+  MOCK_METHOD5(
+      Init,
+      void(WebsiteLoginManager* website_login_manager,
+           base::RepeatingCallback<bool(void)> is_first_time_user_callback,
+           const GURL& url,
+           TriggerContext* trigger_context,
+           base::OnceCallback<void(void)> callback));
   MOCK_METHOD1(set_is_first_time_user, void(bool));
   MOCK_CONST_METHOD0(is_first_time_user, bool());
   MOCK_CONST_METHOD0(has_stored_login_credentials, bool());

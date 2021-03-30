@@ -7,18 +7,10 @@
 
 namespace content {
 
-mojom::InitiatorCSPInfoPtr CreateInitiatorCSPInfo() {
-  return mojom::InitiatorCSPInfo::New(
-      network::mojom::CSPDisposition::CHECK,
-      std::vector<network::mojom::ContentSecurityPolicyPtr>() /* empty */
-  );
-}
-
 mojom::CommonNavigationParamsPtr CreateCommonNavigationParams() {
   auto common_params = mojom::CommonNavigationParams::New();
   common_params->referrer = blink::mojom::Referrer::New();
   common_params->navigation_start = base::TimeTicks::Now();
-  common_params->initiator_csp_info = CreateInitiatorCSPInfo();
   common_params->source_location = network::mojom::SourceLocation::New();
 
   return common_params;

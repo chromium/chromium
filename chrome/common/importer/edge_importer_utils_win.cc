@@ -9,36 +9,34 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "base/win/windows_version.h"
 #include "chrome/common/importer/importer_test_registry_overrider_win.h"
 
 namespace {
 
-const base::char16 kEdgeSettingsMainKey[] = L"MicrosoftEdge\\Main";
-
-const base::char16 kEdgePackageName[] =
-    L"microsoft.microsoftedge_8wekyb3d8bbwe";
+const wchar_t kEdgeSettingsMainKey[] = L"MicrosoftEdge\\Main";
 
 // We assume at the moment that the package name never changes for Edge.
-base::string16 GetEdgePackageName() {
-  return kEdgePackageName;
+std::wstring GetEdgePackageName() {
+  return L"microsoft.microsoftedge_8wekyb3d8bbwe";
 }
 
-base::string16 GetEdgeRegistryKey(const base::string16& key_name) {
-  base::string16 registry_key =
-      L"Software\\Classes\\Local Settings\\"
-      L"Software\\Microsoft\\Windows\\CurrentVersion\\AppContainer\\"
-      L"Storage\\";
+std::wstring GetEdgeRegistryKey(const std::wstring& key_name) {
+  std::wstring registry_key =
+      L"Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\"
+      L"CurrentVersion\\AppContainer\\Storage\\";
   registry_key += GetEdgePackageName();
   registry_key += L"\\";
   registry_key += key_name;
   return registry_key;
 }
 
-base::string16 GetPotentiallyOverridenEdgeKey(
-    const base::string16& desired_key_path) {
-  base::string16 test_registry_override(
+std::wstring GetPotentiallyOverridenEdgeKey(
+    const std::wstring& desired_key_path) {
+  std::wstring test_registry_override(
       ImporterTestRegistryOverrider::GetTestRegistryOverride());
   return test_registry_override.empty() ? GetEdgeRegistryKey(desired_key_path)
                                         : test_registry_override;
@@ -48,7 +46,7 @@ base::string16 GetPotentiallyOverridenEdgeKey(
 
 namespace importer {
 
-base::string16 GetEdgeSettingsKey() {
+std::wstring GetEdgeSettingsKey() {
   return GetPotentiallyOverridenEdgeKey(kEdgeSettingsMainKey);
 }
 
@@ -59,10 +57,8 @@ base::FilePath GetEdgeDataFilePath() {
     return base::FilePath();
 
   base::FilePath base_path(buffer);
-  base::string16 rel_path = L"Packages\\";
-  rel_path += GetEdgePackageName();
-  rel_path += L"\\AC\\MicrosoftEdge\\User\\Default";
-  return base_path.Append(rel_path);
+  return base_path.Append(L"Packages\\" + GetEdgePackageName() +
+                          L"\\AC\\MicrosoftEdge\\User\\Default");
 }
 
 bool IsEdgeFavoritesLegacyMode() {

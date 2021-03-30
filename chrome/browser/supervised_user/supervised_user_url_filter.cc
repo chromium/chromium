@@ -534,9 +534,9 @@ bool SupervisedUserURLFilter::GetFilteringBehaviorForSubFrameURLWithAsyncChecks(
   return RunAsyncChecker(url, std::move(callback));
 }
 
-std::map<std::string, base::string16>
+std::map<std::string, std::u16string>
 SupervisedUserURLFilter::GetMatchingAllowlistTitles(const GURL& url) const {
-  std::map<std::string, base::string16> allowlists;
+  std::map<std::string, std::u16string> allowlists;
 
   std::set<URLMatcherConditionSet::ID> matching_ids =
       contents_->url_matcher.MatchURL(url);
@@ -667,6 +667,57 @@ void SupervisedUserURLFilter::SetBlockingTaskRunnerForTesting(
     const scoped_refptr<base::TaskRunner>& task_runner) {
   blocking_task_runner_ = task_runner;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+SupervisedUserURLFilter::WebFilterType
+SupervisedUserURLFilter::GetWebFilterType() const {
+  // If the default filtering behavior is not block, it means the web filter
+  // was set to either "allow all sites" or "try to block mature sites".
+  if (default_behavior_ == BLOCK)
+    return WebFilterType::kCertainSites;
+
+  bool safe_sites_enabled = HasAsyncURLChecker() || HasDenylist();
+  return safe_sites_enabled ? WebFilterType::kTryToBlockMatureSites
+                            : WebFilterType::kAllowAllSites;
+}
+
+SupervisedUserURLFilter::ManagedSiteList
+SupervisedUserURLFilter ::GetManagedSiteList() const {
+  if (url_map_.empty() && host_map_.empty()) {
+    return ManagedSiteList::kEmpty;
+  }
+
+  bool approved_list = false;
+  bool blocked_list = false;
+  for (const auto& it : url_map_) {
+    if (approved_list && blocked_list)
+      break;
+    if (it.second) {
+      approved_list = true;
+    } else {
+      blocked_list = true;
+    }
+  }
+
+  for (const auto& it : host_map_) {
+    if (approved_list && blocked_list)
+      break;
+    if (it.second) {
+      approved_list = true;
+    } else {
+      blocked_list = true;
+    }
+  }
+
+  if (approved_list && blocked_list) {
+    return ManagedSiteList::kBoth;
+  } else if (approved_list) {
+    return ManagedSiteList::kApprovedListOnly;
+  } else {
+    return ManagedSiteList::kBlockedListOnly;
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 bool SupervisedUserURLFilter::RunAsyncChecker(
     const GURL& url,

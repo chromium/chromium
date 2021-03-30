@@ -28,6 +28,7 @@
 #include "media/base/mock_media_log.h"
 #include "media/formats/webm/webm_stream_parser.h"
 #include "ui/aura/window.h"
+#include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point.h"
@@ -180,18 +181,65 @@ IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, RecordFullscreen) {
   FinishVideoRecordingTest(&test_api);
 }
 
-// This test is currently disabled since it will always fail on the bots for
-// now, since audio is not captured on the bots, and currently window recording
-// captures no video frames, so the resulting video file will always be empty.
-// TODO(crbug.com/1143930): Re-enable this once window capture is working.
-IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, DISABLED_RecordWindow) {
+IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, RecordWindow) {
   ash::CaptureModeTestApi test_api;
   test_api.StartForWindow(/*for_video=*/true);
   auto* generator = GetEventGenerator();
   // Move the mouse cursor above the browser window to select it for window
-  // capture.
-  generator->MoveMouseTo(GetBrowserWindow()->GetBoundsInScreen().CenterPoint());
+  // capture (make sure it doesn't hover over the capture bar).
+  generator->MoveMouseTo(GetBrowserWindow()->GetBoundsInScreen().top_center());
   FinishVideoRecordingTest(&test_api);
+}
+
+IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, RecordWindowMultiDisplay) {
+  display::test::DisplayManagerTestApi(ash::ShellTestApi().display_manager())
+      .UpdateDisplay("300x200,301+0-400x400");
+
+  ash::CaptureModeTestApi capture_mode_test_api;
+  capture_mode_test_api.StartForWindow(/*for_video=*/true);
+  auto* generator = GetEventGenerator();
+  // Move the mouse cursor above the browser window to select it for window
+  // capture (make sure it doesn't hover over the capture bar).
+  generator->MoveMouseTo(GetBrowserWindow()->GetBoundsInScreen().top_center());
+  capture_mode_test_api.PerformCapture();
+  capture_mode_test_api.FlushRecordingServiceForTesting();
+
+  // Moves the browser window to the display at the given |screen_point|.
+  auto move_browser_to_display_at_point = [&](const gfx::Point& screen_point) {
+    auto* screen = display::Screen::GetScreen();
+    aura::Window* new_root =
+        screen->GetWindowAtScreenPoint(screen_point)->GetRootWindow();
+    auto* browser_window = GetBrowserWindow();
+    EXPECT_NE(new_root, browser_window->GetRootWindow());
+    auto* target_container =
+        new_root->GetChildById(browser_window->parent()->id());
+    DCHECK(target_container);
+    target_container->AddChild(browser_window);
+    EXPECT_EQ(new_root, browser_window->GetRootWindow());
+  };
+
+  // Record for a little bit, then move the window to the secondary display.
+  WaitForMilliseconds(600);
+  move_browser_to_display_at_point(gfx::Point(320, 50));
+  capture_mode_test_api.FlushRecordingServiceForTesting();
+
+  // Record for a little bit, then resize the browser window.
+  WaitForMilliseconds(600);
+  GetBrowserWindow()->SetBounds(gfx::Rect(310, 10, 300, 300));
+  capture_mode_test_api.FlushRecordingServiceForTesting();
+
+  // Record for a little bit, then move the browser window back to the smaller
+  // display.
+  WaitForMilliseconds(600);
+  move_browser_to_display_at_point(gfx::Point(0, 0));
+  capture_mode_test_api.FlushRecordingServiceForTesting();
+
+  // Record for a little bit, then end recording. The output video file should
+  // still be valid.
+  WaitForMilliseconds(600);
+  capture_mode_test_api.StopVideoRecording();
+  const base::FilePath video_path = WaitForVideoFileToBeSaved();
+  VerifyVideoFileAndDelete(video_path);
 }
 
 IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, RecordRegion) {

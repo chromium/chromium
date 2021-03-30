@@ -19,9 +19,12 @@
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
+#include "third_party/blink/public/mojom/worker/worker_main_script_load_params.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
+
+class ServiceWorkerNewScriptFetcher;
 
 // Handles the initial registration of a Service Worker and the
 // subsequent update of existing registrations.
@@ -69,7 +72,6 @@ class ServiceWorkerRegisterJob : public ServiceWorkerRegisterJobBase {
   // ServiceWorkerRegisterJobBase implementation:
   void Start() override;
   void Abort() override;
-  void WillShutDown() override;
   bool Equals(ServiceWorkerRegisterJobBase* job) const override;
   RegistrationJobType GetType() const override;
 
@@ -115,8 +117,6 @@ class ServiceWorkerRegisterJob : public ServiceWorkerRegisterJobBase {
       scoped_refptr<ServiceWorkerRegistration> registration);
 
   bool IsUpdateCheckNeeded() const;
-  void TriggerUpdateCheck(
-      scoped_refptr<network::SharedURLLoaderFactory> loader_factory);
 
   // Refer ServiceWorkerUpdateChecker::UpdateStatusCallback for the meaning of
   // the parameters.
@@ -131,13 +131,22 @@ class ServiceWorkerRegisterJob : public ServiceWorkerRegisterJobBase {
   void ContinueWithUninstallingRegistration(
       scoped_refptr<ServiceWorkerRegistration> existing_registration,
       blink::ServiceWorkerStatusCode status);
-  void ContinueWithRegistrationForSameScriptUrl(
+  void ContinueWithRegistrationWithSameRegistrationOptions(
       scoped_refptr<ServiceWorkerRegistration> existing_registration,
       blink::ServiceWorkerStatusCode status);
   void UpdateAndContinue();
 
-  // Creates a new ServiceWorkerVersion for [[Update]].
-  void CreateNewVersionForUpdate();
+  // PlzServiceWorker:
+  // Starts script loading before starting the worker. This is called only when
+  // the job type is REGISTRATION_JOB and the worker doesn't need an
+  // byte-for-byte check.
+  void StartScriptFetchForNewWorker(
+      scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
+      scoped_refptr<ServiceWorkerVersion> version);
+  void OnScriptFetchCompleted(
+      scoped_refptr<ServiceWorkerVersion> version,
+      blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params);
+
   // Starts a service worker for [[Update]]. The script comparison has finished
   // at this point. It starts install phase.
   void StartWorkerForUpdate(scoped_refptr<ServiceWorkerVersion> version);
@@ -169,7 +178,10 @@ class ServiceWorkerRegisterJob : public ServiceWorkerRegisterJobBase {
   // The ServiceWorkerContextCore object must outlive this.
   ServiceWorkerContextCore* const context_;
 
+  // Valid when the worker is being updated.
   std::unique_ptr<ServiceWorkerUpdateChecker> update_checker_;
+  // Valid when the worker is new.
+  std::unique_ptr<ServiceWorkerNewScriptFetcher> new_script_fetcher_;
 
   RegistrationJobType job_type_;
   const GURL scope_;
@@ -186,7 +198,6 @@ class ServiceWorkerRegisterJob : public ServiceWorkerRegisterJobBase {
       outside_fetch_client_settings_object_;
   std::vector<RegistrationCallback> callbacks_;
   Phase phase_;
-  bool is_shutting_down_;
   Internal internal_;
   bool is_promise_resolved_;
   bool should_uninstall_on_failure_;

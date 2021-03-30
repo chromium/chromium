@@ -40,26 +40,26 @@ void ShowSingletonTabRespectRef(Browser* browser, const GURL& url) {
   Navigate(&params);
 }
 
-void ShowSingletonTabOverwritingNTP(Browser* browser, NavigateParams params) {
+void ShowSingletonTabOverwritingNTP(Browser* browser, NavigateParams* params) {
   DCHECK(browser);
-  DCHECK_EQ(params.disposition, WindowOpenDisposition::SINGLETON_TAB);
+  DCHECK_EQ(params->disposition, WindowOpenDisposition::SINGLETON_TAB);
   content::WebContents* contents =
       browser->tab_strip_model()->GetActiveWebContents();
   if (contents) {
     const GURL& contents_url = contents->GetVisibleURL();
     if (contents_url == chrome::kChromeUINewTabURL ||
         search::IsInstantNTP(contents) || contents_url == url::kAboutBlankURL) {
-      int tab_index = GetIndexOfExistingTab(browser, params);
+      int tab_index = GetIndexOfExistingTab(browser, *params);
       if (tab_index < 0) {
-        params.disposition = WindowOpenDisposition::CURRENT_TAB;
+        params->disposition = WindowOpenDisposition::CURRENT_TAB;
       } else {
-        params.switch_to_singleton_tab =
+        params->switch_to_singleton_tab =
             browser->tab_strip_model()->GetWebContentsAt(tab_index);
       }
     }
   }
 
-  Navigate(&params);
+  Navigate(params);
 }
 
 NavigateParams GetSingletonTabNavigateParams(Browser* browser,

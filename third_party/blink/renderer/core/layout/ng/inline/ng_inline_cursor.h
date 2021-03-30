@@ -96,6 +96,9 @@ class CORE_EXPORT NGInlineCursorPosition {
   // True if the current position is a list marker.
   bool IsListMarker() const { return item_->IsListMarker(); }
 
+  // True if the current position is a box for "float"
+  bool IsFloating() const { return item_->IsFloating(); }
+
   // True if the current position is hidden for paint. It is error to call at
   // end.
   bool IsHiddenForPaint() const { return item_->IsHiddenForPaint(); }
@@ -585,8 +588,13 @@ class CORE_EXPORT NGInlineCursor {
    public:
     CulledInlineTraversal() = default;
 
-    explicit operator bool() const { return current_object_; }
-    void Reset() { current_object_ = nullptr; }
+    const LayoutInline* GetLayoutInline() const { return layout_inline_; }
+
+    explicit operator bool() const { return layout_inline_; }
+    void Reset() { layout_inline_ = nullptr; }
+
+    bool UseFragmentTree() const { return use_fragment_tree_; }
+    void SetUseFragmentTree(const LayoutInline& layout_inline);
 
     // Returns first/next |LayoutObject| that contribute to |layout_inline|.
     const LayoutObject* MoveToFirstFor(const LayoutInline& layout_inline);
@@ -597,6 +605,7 @@ class CORE_EXPORT NGInlineCursor {
 
     const LayoutObject* current_object_ = nullptr;
     const LayoutInline* layout_inline_ = nullptr;
+    bool use_fragment_tree_ = false;
   };
 
   void MoveToFirstForCulledInline(const LayoutInline& layout_inline);

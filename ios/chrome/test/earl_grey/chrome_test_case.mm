@@ -11,8 +11,10 @@
 #include "base/command_line.h"
 #include "base/ios/ios_util.h"
 #include "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case_app_interface.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -108,9 +110,6 @@ void ResetAuthentication() {
   [ChromeTestCaseAppInterface resetAuthentication];
 }
 
-void RemoveInfoBarsAndPresentedState() {
-  [ChromeTestCaseAppInterface removeInfoBarsAndPresentedState];
-}
 }  // namespace
 
 GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
@@ -207,11 +206,19 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
 // Tear down called once per test, to close all tabs and menus, and clear the
 // tracked tests accounts. It also makes sure mock authentication is running.
 - (void)tearDown {
+  // Clear multiwindow root and any extra windows.
+  [ChromeEarlGrey closeAllExtraWindows];
+  [EarlGrey setRootMatcherForSubsequentInteractions:nil];
+
   [[AppLaunchManager sharedManager] removeObserver:self];
 
   if (_tearDownHandler) {
     _tearDownHandler();
   }
+
+  // EG syncs with WKWebView loading. Stops all loadings to prevent these from
+  // failing rest of tearDown actions.
+  [ChromeEarlGrey stopAllWebStatesLoading];
 
   // Clear any remaining test accounts and signed in users.
   [ChromeEarlGrey signOutAndClearIdentities];
@@ -242,12 +249,20 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
 }
 
 + (void)removeAnyOpenMenusAndInfoBars {
-  RemoveInfoBarsAndPresentedState();
-  // After programatically removing UI elements, allow Earl Grey's
-  // UI synchronization to become idle, so subsequent steps won't start before
-  // the UI is in a good state.
-  [[GREYUIThreadExecutor sharedInstance]
-      drainUntilIdleWithTimeout:kDrainTimeout];
+  NSUUID* uuid = [NSUUID UUID];
+  // Removes all the UI elements.
+  [ChromeTestCaseAppInterface
+      removeInfoBarsAndPresentedStateWithCompletionUUID:uuid];
+  ConditionBlock condition = ^{
+    return [ChromeTestCaseAppInterface isCompletionInvokedWithUUID:uuid];
+  };
+  NSString* errorMessage =
+      @"+[ChromeTestCaseAppInterface "
+      @"removeInfoBarsAndPresentedStateWithCompletionUUID:] completion failed";
+  // Waits until the UI elements are removed.
+  bool completionInvoked = base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, condition);
+  GREYAssertTrue(completionInvoked, errorMessage);
 }
 
 + (void)closeAllTabs {
@@ -350,6 +365,11 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
 
   // Enforce the assumption that the tests are runing in portrait.
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+
+  // Clear multiwindow root and any extra windows. Once in |setUpForTestCase|
+  // (in case of crashes) and on every |tearDown|.
+  [ChromeEarlGrey closeAllExtraWindows];
+  [EarlGrey setRootMatcherForSubsequentInteractions:nil];
 }
 
 // Resets the application state.

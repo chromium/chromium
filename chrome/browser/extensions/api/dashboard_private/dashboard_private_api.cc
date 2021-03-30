@@ -136,7 +136,7 @@ void DashboardPrivateShowPermissionPromptForDelegatedInstallFunction::
 
   install_prompt_.reset(new ExtensionInstallPrompt(web_contents));
   install_prompt_->ShowDialog(
-      base::Bind(
+      base::BindOnce(
           &DashboardPrivateShowPermissionPromptForDelegatedInstallFunction::
               OnInstallPromptDone,
           this),

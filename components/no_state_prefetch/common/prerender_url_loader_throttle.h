@@ -12,8 +12,8 @@
 #include "base/timer/timer.h"
 #include "components/no_state_prefetch/common/prerender_canceler.mojom.h"
 #include "net/base/request_priority.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
-#include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 
 namespace prerender {
 
@@ -39,6 +39,7 @@ class PrerenderURLLoaderThrottle
   void DetachFromCurrentSequence() override;
   void WillStartRequest(network::ResourceRequest* request,
                         bool* defer) override;
+  const char* NameForLoggingWillStartRequest() override;
   void WillRedirectRequest(
       net::RedirectInfo* redirect_info,
       const network::mojom::URLResponseHead& response_head,
@@ -56,7 +57,7 @@ class PrerenderURLLoaderThrottle
 
   bool deferred_ = false;
   int redirect_count_ = 0;
-  blink::mojom::ResourceType resource_type_;
+  network::mojom::RequestDestination request_destination_;
 
   mojo::PendingRemote<prerender::mojom::PrerenderCanceler> canceler_;
 

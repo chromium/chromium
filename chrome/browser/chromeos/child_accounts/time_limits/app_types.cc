@@ -39,6 +39,8 @@ std::string AppTypeToString(apps::mojom::AppType app_type) {
       return "Remote";
     case apps::mojom::AppType::kBorealis:
       return "Borealis";
+    case apps::mojom::AppType::kSystemWeb:
+      return "SystemWeb";
   }
   NOTREACHED();
 }

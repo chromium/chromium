@@ -9,7 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
 
@@ -50,8 +50,8 @@ class FieldCandidates {
   std::vector<FieldCandidate> field_candidates_;
 };
 
-// A map from the field's unique name to its possible candidates.
-using FieldCandidatesMap = base::flat_map<FieldRendererId, FieldCandidates>;
+// A map from the field's global ID to its possible candidates.
+using FieldCandidatesMap = base::flat_map<FieldGlobalId, FieldCandidates>;
 
 }  // namespace autofill
 

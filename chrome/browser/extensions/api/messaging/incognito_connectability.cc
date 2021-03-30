@@ -4,10 +4,11 @@
 
 #include "chrome/browser/extensions/api/messaging/incognito_connectability.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/lazy_instance.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/messaging/incognito_connectability_infobar_delegate.h"
 #include "chrome/browser/infobars/infobar_service.h"
@@ -106,9 +107,9 @@ void IncognitoConnectability::Query(const Extension* extension,
           l10n_util::GetStringFUTF16(template_id,
                                      base::UTF8ToUTF16(origin.spec()),
                                      base::UTF8ToUTF16(extension->name())),
-          base::Bind(&IncognitoConnectability::OnInteractiveResponse,
-                     weak_factory_.GetWeakPtr(), extension->id(), origin,
-                     infobar_service));
+          base::BindOnce(&IncognitoConnectability::OnInteractiveResponse,
+                         weak_factory_.GetWeakPtr(), extension->id(), origin,
+                         infobar_service));
       break;
     }
 
@@ -124,8 +125,7 @@ void IncognitoConnectability::Query(const Extension* extension,
 IncognitoConnectability::TabContext::TabContext() : infobar(nullptr) {
 }
 
-IncognitoConnectability::TabContext::~TabContext() {
-}
+IncognitoConnectability::TabContext::~TabContext() = default;
 
 void IncognitoConnectability::OnInteractiveResponse(
     const std::string& extension_id,

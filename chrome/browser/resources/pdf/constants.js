@@ -18,6 +18,25 @@ export const DisplayAnnotationsAction = {
 };
 
 /**
+ * @typedef {{
+ *   author: string,
+ *   canSerializeDocument: boolean,
+ *   creationDate: string,
+ *   creator: string,
+ *   fileSize: string,
+ *   keywords: string,
+ *   linearized: boolean,
+ *   modDate: string,
+ *   pageSize: string,
+ *   producer: string,
+ *   subject: string,
+ *   title: string,
+ *   version: string,
+ * }}
+ */
+export let DocumentMetadata;
+
+/**
  * Enumeration of page fitting types.
  * @enum {string}
  */

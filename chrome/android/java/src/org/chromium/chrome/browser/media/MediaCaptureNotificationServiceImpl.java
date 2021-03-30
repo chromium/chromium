@@ -14,8 +14,8 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
-import org.chromium.chrome.browser.document.ChromeIntentUtil;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
@@ -173,7 +173,8 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
                                 NotificationUmaTracker.SystemNotificationType.MEDIA_CAPTURE,
                                 NOTIFICATION_NAMESPACE, notificationId));
 
-        Intent tabIntent = ChromeIntentUtil.createBringTabToFrontIntent(notificationId);
+        Intent tabIntent = IntentHandler.createTrustedBringTabToFrontIntent(
+                notificationId, IntentHandler.BringToFrontSource.NOTIFICATION);
         PendingIntentProvider contentIntent = tabIntent == null
                 ? null
                 : PendingIntentProvider.getActivity(appContext, notificationId, tabIntent, 0);

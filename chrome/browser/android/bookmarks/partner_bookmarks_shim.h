@@ -8,12 +8,12 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 
 #include "base/android/jni_weak_ref.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/string_search.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -76,7 +76,7 @@ class PartnerBookmarksShim : public base::SupportsUserData::Data {
 
   // Renames a given bookmark.
   void RenameBookmark(const bookmarks::BookmarkNode* node,
-                      const base::string16& title);
+                      const std::u16string& title);
 
   // For Loaded/Changed/ShimBeingDeleted notifications
   class Observer {
@@ -96,7 +96,7 @@ class PartnerBookmarksShim : public base::SupportsUserData::Data {
 
   // PartnerBookmarksShim versions of BookmarkModel/BookmarkNode methods
   const bookmarks::BookmarkNode* GetNodeByID(int64_t id) const;
-  base::string16 GetTitle(const bookmarks::BookmarkNode* node) const;
+  std::u16string GetTitle(const bookmarks::BookmarkNode* node) const;
 
   bool IsPartnerBookmark(const bookmarks::BookmarkNode* node) const;
   const bookmarks::BookmarkNode* GetPartnerBookmarksRoot() const;
@@ -111,17 +111,17 @@ class PartnerBookmarksShim : public base::SupportsUserData::Data {
   // titles are considered indistinguishable.
   class NodeRenamingMapKey {
    public:
-    NodeRenamingMapKey(const GURL& url, const base::string16& provider_title);
+    NodeRenamingMapKey(const GURL& url, const std::u16string& provider_title);
     ~NodeRenamingMapKey();
     const GURL& url() const { return url_; }
-    const base::string16& provider_title() const { return provider_title_; }
+    const std::u16string& provider_title() const { return provider_title_; }
     friend bool operator<(const NodeRenamingMapKey& a,
                           const NodeRenamingMapKey& b);
    private:
     GURL url_;
-    base::string16 provider_title_;
+    std::u16string provider_title_;
   };
-  typedef std::map<NodeRenamingMapKey, base::string16> NodeRenamingMap;
+  typedef std::map<NodeRenamingMapKey, std::u16string> NodeRenamingMap;
 
   // PartnerBookmarksShim version of BookmarkUtils methods
   void GetPartnerBookmarksMatchingProperties(

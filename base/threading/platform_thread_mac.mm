@@ -18,6 +18,7 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
+#include "base/mac/mac_util.h"
 #include "base/mac/mach_logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/threading/thread_id_name_manager.h"
@@ -66,8 +67,28 @@ void PlatformThread::SetName(const std::string& name) {
 }
 
 // Whether optimized realt-time thread config should be used for audio.
-const Feature kOptimizedRealtimeThreadingMac{"OptimizedRealtimeThreadingMac",
-                                             FEATURE_DISABLED_BY_DEFAULT};
+const Feature kOptimizedRealtimeThreadingMac {
+  "OptimizedRealtimeThreadingMac",
+#if defined(OS_MAC)
+      FEATURE_ENABLED_BY_DEFAULT
+#else
+      FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
+
+namespace {
+
+bool IsOptimizedRealtimeThreadingMacEnabled() {
+#if defined(OS_MAC)
+  // There is some platform bug on 10.14.
+  if (mac::IsOS10_14())
+    return false;
+#endif
+
+  return FeatureList::IsEnabled(kOptimizedRealtimeThreadingMac);
+}
+
+}  // namespace
 
 // Fine-tuning optimized realt-time thread config:
 // Whether or not the thread should be preeptible.
@@ -115,7 +136,7 @@ void PlatformThread::InitializeOptimizedRealtimeThreadingFeature() {
   if (FeatureList::GetInstance()) {
     g_time_constraints.store(TimeConstraints::ReadFromFeatureParams());
     g_use_optimized_realtime_threading.store(
-        FeatureList::IsEnabled(kOptimizedRealtimeThreadingMac));
+        IsOptimizedRealtimeThreadingMacEnabled());
   }
 }
 

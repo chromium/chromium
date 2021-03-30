@@ -4,10 +4,13 @@
 <translation id="1075622780330595106">உங்கள் <ph name="NUMBER_OF_TABS" /> தாவல்கள் சமீபத்தில் பயன்படுத்தவில்லை. அவற்றை மூடவா?</translation>
 <translation id="1181037720776840403">அகற்று</translation>
 <translation id="125153950246128346">வேறொரு தாவலைப் பார்க்க, தட்டவும்</translation>
+<translation id="1302104331113804646">விலையைக் கண்காணிப்பதற்கான அமைப்புகள்</translation>
+<translation id="1378979118429748177">விலைச் சரிவின்போது அறிவிப்பு அனுப்பப்படும்</translation>
 <translation id="1657719826150349398">தாவலைக் கீழே நகர்த்து</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> தாவல்}other{<ph name="TABS_COUNT_MANY" /> தாவல்கள்}}</translation>
 <translation id="2277224997687551299">குழுவின் பெயரை மாற்று</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{தேர்ந்தெடுத்த <ph name="TABS_COUNT_ONE" /> தாவலைக் குழுவிலிருந்து அகற்றும்.}other{தேர்ந்தெடுத்த <ph name="TABS_COUNT_MANY" /> தாவல்களைக் குழுவிலிருந்து அகற்றும்.}}</translation>
+<translation id="2479148705183875116">அமைப்புகளுக்குச் செல்லவும்</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> தாவலைச் சுருக்கும்.}other{<ph name="TABS_COUNT_MANY" /> தாவல்கள் உள்ள தாவல் குழுவைச் சுருக்கும்.}}</translation>
 <translation id="2569352796411618312">பரிந்துரை: உங்களின் <ph name="NUMBER_OF_TABS" /> தாவல்கள் சமீபத்தில் பயன்படுத்தவில்லை. அவற்றை மூட வேண்டுமா?</translation>
 <translation id="257674075312929031">குழு</translation>
@@ -15,13 +18,16 @@
 <translation id="2671423594960767771">குழுவைப் பகிர்</translation>
 <translation id="2759453070259087442"><ph name="NUMBER_OF_TABS" /> தாவல்கள் உள்ள <ph name="TITLE_OF_GROUP" /> தாவல் குழுவை விரிவாக்கும்.</translation>
 <translation id="2977480621796371840">குழுவிலிருந்து அகற்று</translation>
+<translation id="3291470810748040983">திறந்திருக்கும் தாவலில் குறைவான விலை இருக்கும்போது விழிப்பூட்டலைப் பெறுவீர்கள்</translation>
 <translation id="3328308545011660196">பரிந்துரை: <ph name="NUMBER_OF_TABS" /> தாவல்கள் தொடர்புடையவையாகத் தெரிகின்றன. அவற்றைக் குழுவாக்கவா?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> தாவலைச் சுருக்கும்.}other{<ph name="TABS_COUNT_MANY" /> தாவல்கள் உள்ள <ph name="TITLE_OF_GROUP" /> தாவல் குழுவைச் சுருக்கும்.}}</translation>
+<translation id="3882834874697329510">திறந்திருக்கும் தாவலில் குறைவான விலை இருக்கும்போது விழிப்பூட்டலைப் பெற, அமைப்புகளில் அறிவிப்புகளை இயக்குங்கள்.</translation>
+<translation id="3940195383040445971">தாவல்களில் விலையைக் கண்காணித்தல்</translation>
+<translation id="3996880007329611795">அறிவிப்பைப் பெறுக</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> தாவல்கள் தொடர்புடையவையாகத் தெரிகின்றன. அவற்றைக் குழுவாக்கவா?</translation>
 <translation id="4212246570487010370">உலாவலைத் தொடர்க</translation>
 <translation id="4450893287417543264">மீண்டும் காட்டாதே</translation>
 <translation id="4648718555153979859">உங்கள் தாவல்கள் இங்கு குழுவாக்கப்பட்டுள்ளன</translation>
-<translation id="4922064041913095674">திறந்திருக்கும் தாவல்களில் எந்தப் பொருள் நல்ல விலையில் கிடைக்கிறது எனப் பார்க்கலாம்</translation>
 <translation id="492284538114688557">விலைச் சரிவு கண்டறியப்பட்டது</translation>
 <translation id="5007392906805964215">சரிபார்</translation>
 <translation id="5073204694187207510">முழுத்திரை கட்டத்தை மூடு</translation>
@@ -30,6 +36,7 @@
 <translation id="5533021382642990449">பின்னர் காட்டு</translation>
 <translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> தாவல்கள் உள்ள தாவல் குழுவை மூடும்</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> தாவல்கள் குழுவாக்கப்பட்டுள்ளன</translation>
+<translation id="575494663145460764">விலைச் சரிவு குறித்து விழிப்பூட்டல்களைப் பெற வேண்டுமா?</translation>
 <translation id="58326064309361797">தாவல்களை இழுப்பதன் மூலம் அவற்றைக் குழுவாக்கலாம்</translation>
 <translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> தாவல்கள் உள்ள <ph name="TITLE_OF_GROUP" /> குழுவை மூடும்</translation>
 <translation id="6040143037577758943">மூடு</translation>
@@ -41,6 +48,7 @@
 <translation id="6856809498882026482">பல தேர்வுப் பயன்முறையை மறைக்கும்</translation>
 <translation id="7151209024774799310">குழுவிலிருந்து தாவல்களை அகற்று</translation>
 <translation id="7204204600596740190">பல தேர்வுப் பயன்முறை</translation>
+<translation id="7352298686197644113">திறந்திருக்கும் தாவல்களில் எந்தப் பொருள் குறைவான விலையில் கிடைக்கிறது எனப் பார்க்கலாம்</translation>
 <translation id="753732157349120914">தாவல் மாற்றி</translation>
 <translation id="7559245342362162951">குழு தாவல்களை முழுத்திரை கட்டத்தில் காட்டு</translation>
 <translation id="7792771145871471484">பரிந்துரைகளை சரிபார்க்கும்.</translation>
@@ -52,7 +60,10 @@
 <translation id="8304833501377495048">தாவல் பட்டையை மீண்டும் காட்டவா?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{தேர்ந்தெடுத்த <ph name="TABS_COUNT_ONE" /> தாவலை மூடும்}other{தேர்ந்தெடுத்த <ph name="TABS_COUNT_MANY" /> தாவல்களை மூடும்}}</translation>
 <translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> தாவல்கள் உள்ள தாவல் குழுவை விரிவாக்கும்.</translation>
+<translation id="860282621117673749">விலைச் சரிவு குறித்த விழிப்பூட்டல்கள்</translation>
+<translation id="8714939927607906138">குறைவான விலை</translation>
 <translation id="8749939518995770034">மூடப்பட்டுள்ள தாவல் பட்டை</translation>
+<translation id="8820741577754260431">தாவல்களில் விலைச் சரிவு குறித்துக் காட்டப்படும்</translation>
 <translation id="9150694013019234766">திரையின் கீழ்ப்பகுதிக்கு அருகில் உங்கள் தாவல் குழுவிலுள்ள தாவல்களுக்கு இடையே மாறலாம்</translation>
 <translation id="9169594135889675189">குழுவில் புதிய தாவலைச் சேர்</translation>
 <translation id="959682366969460160">ஒருங்கமைப்புடன் இருக்கலாம்</translation>

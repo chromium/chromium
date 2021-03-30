@@ -41,7 +41,7 @@ uint32_t CreateNamedPipe(const std::string& pipe_name,
   security_attributes.bInheritHandle = FALSE;
 
   base::win::ScopedHandle temp_handle(::CreateNamedPipe(
-      base::ASCIIToUTF16(pipe_name).c_str(), open_mode,
+      base::ASCIIToWide(pipe_name).c_str(), open_mode,
       PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_REJECT_REMOTE_CLIENTS, 1,
       kBufferSize, kBufferSize, kTimeOutMilliseconds, &security_attributes));
 
@@ -84,10 +84,9 @@ ProcessLaunchResult LaunchNativeMessagingHostProcess(
   // BUILTIN_ADMINISTRATORS and denies access by anyone else.
   // Local admins need access because the privileged host process will run
   // as a local admin which may not be the same user as the current user.
-  std::string user_sid_ascii = base::UTF16ToASCII(user_sid);
-  std::string security_descriptor = base::StringPrintf(
-      "O:%sG:%sD:(A;;GA;;;%s)(A;;GA;;;BA)", user_sid_ascii.c_str(),
-      user_sid_ascii.c_str(), user_sid_ascii.c_str());
+  std::string security_descriptor =
+      base::StringPrintf("O:%lsG:%lsD:(A;;GA;;;%ls)(A;;GA;;;BA)",
+                         user_sid.c_str(), user_sid.c_str(), user_sid.c_str());
 
   ScopedSd sd = ConvertSddlToSd(security_descriptor);
   if (!sd) {

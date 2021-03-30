@@ -27,30 +27,6 @@
 
 namespace {
 
-// Waits until a view is deleted.
-class ViewDeletedWaiter : public views::ViewObserver {
- public:
-  explicit ViewDeletedWaiter(views::View* view) {
-    DCHECK(view);
-    observation_.Observe(view);
-  }
-  ~ViewDeletedWaiter() override = default;
-
-  // Waits until the view is deleted.
-  void Wait() { run_loop_.Run(); }
-
- private:
-  // ViewObserver:
-  void OnViewIsDeleting(views::View* observed_view) override {
-    // Reset the observation before the view is actually deleted.
-    observation_.Reset();
-    run_loop_.Quit();
-  }
-
-  base::RunLoop run_loop_;
-  base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
-};
-
 // Waits until the widget bounds change.
 class WidgetBoundsChangeWaiter : public views::WidgetObserver {
  public:
@@ -88,6 +64,12 @@ class ProfilePickerInteractiveUiTest : public ProfilePickerTestBase {
     bool control = false;
     bool shift = false;
     bool command = true;
+    // Mac needs the widget to get focused (once again) for
+    // SendKeyPressToWindowSync to work. A test-only particularity, pressing the
+    // keybinding manually right in the run of the test actually replaces the
+    // need of this call.
+    ASSERT_TRUE(
+        ui_test_utils::ShowAndFocusNativeWindow(widget()->GetNativeWindow()));
 #else
     // Use Ctrl-Shift-W on other platforms.
     bool control = true;
@@ -99,11 +81,28 @@ class ProfilePickerInteractiveUiTest : public ProfilePickerTestBase {
         command));
   }
 
-  void WaitForPickerClosed() {
-    if (!ProfilePicker::IsOpen())
-      return;
-    ViewDeletedWaiter(view()).Wait();
-    ASSERT_FALSE(ProfilePicker::IsOpen());
+  void SendBackKeyboardCommand() {
+    // Close window using keyboard.
+#if defined(OS_MAC)
+    // Use Cmd-[ on Mac.
+    bool alt = false;
+    bool command = true;
+    ui::KeyboardCode key = ui::VKEY_OEM_4;
+    // Mac needs the widget to get focused (once again) for
+    // SendKeyPressToWindowSync to work. A test-only particularity, pressing the
+    // keybinding manually right in the run of the test actually replaces the
+    // need of this call.
+    ASSERT_TRUE(
+        ui_test_utils::ShowAndFocusNativeWindow(widget()->GetNativeWindow()));
+#else
+    // Use Ctrl-left on other platforms.
+    bool alt = true;
+    bool command = false;
+    ui::KeyboardCode key = ui::VKEY_LEFT;
+#endif
+    ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+        widget()->GetNativeWindow(), key, /*control=*/false,
+        /*shift=*/false, alt, command));
   }
 };
 
@@ -195,4 +194,46 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
   EXPECT_TRUE(ProfilePicker::IsOpen());
   SendCloseWindowKeyboardCommand();
   WaitForPickerClosed();
+}
+
+// Checks that both the signin web view and the main picker view are able to
+// process a back keyboard event.
+// Flaky on all platforms. http://crbug.com/1173544
+IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
+                       DISABLED_NavigateBackWithKeyboard) {
+  // Simulate walking through the flow starting at the picker so that navigating
+  // back to the picker makes sense.
+  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
+  WaitForLayoutWithoutToolbar();
+  WaitForFirstPaint(web_contents(), GURL("chrome://profile-picker"));
+  web_contents()->GetController().LoadURL(
+      GURL("chrome://profile-picker/new-profile"), content::Referrer(),
+      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
+  WaitForFirstPaint(web_contents(),
+                    GURL("chrome://profile-picker/new-profile"));
+
+  // Simulate a click on the signin button.
+  base::MockCallback<base::OnceCallback<void(bool)>> switch_finished_callback;
+  EXPECT_CALL(switch_finished_callback, Run(true));
+  ProfilePicker::SwitchToSignIn(SK_ColorRED, switch_finished_callback.Get());
+
+  // Switch to the signin webview.
+  WaitForLayoutWithToolbar();
+  WaitForFirstPaint(web_contents(),
+                    GaiaUrls::GetInstance()->signin_chrome_sync_dice());
+
+  // Navigate back with the keyboard.
+  SendBackKeyboardCommand();
+
+  WaitForLayoutWithoutToolbar();
+  WaitForFirstPaint(web_contents(),
+                    GURL("chrome://profile-picker/new-profile"));
+
+  // Navigate again back with the keyboard.
+  SendBackKeyboardCommand();
+  WaitForFirstPaint(web_contents(), GURL("chrome://profile-picker"));
+
+  // Navigating back once again does nothing.
+  SendBackKeyboardCommand();
+  EXPECT_EQ(web_contents()->GetController().GetPendingEntry(), nullptr);
 }

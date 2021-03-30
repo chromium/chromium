@@ -75,6 +75,15 @@ void BindHandwritingRecognizerRequestor(
   chromeos::machine_learning::HandwritingRecognizerManager::GetInstance()
       ->AddReceiver(std::move(receiver));
 }
+
+void BindMachineLearningService(
+    content::RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<
+        chromeos::machine_learning::mojom::MachineLearningService> receiver) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  chromeos::machine_learning::ServiceConnection::GetInstance()
+      ->BindMachineLearningService(std::move(receiver));
+}
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 void BindTtsStreamFactory(
@@ -125,11 +134,13 @@ void PopulateChromeFrameBindersForExtension(
     binder_map->Add<
         chromeos::machine_learning::mojom::HandwritingRecognizerRequestor>(
         base::BindRepeating(&BindHandwritingRecognizerRequestor));
+    binder_map->Add<chromeos::machine_learning::mojom::MachineLearningService>(
+        base::BindRepeating(&BindMachineLearningService));
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if BUILDFLAG(PLATFORM_CFM)
-  if (chromeos::cfm::features::IsCfmMojoEnabled() &&
+  if (base::FeatureList::IsEnabled(chromeos::cfm::features::kMojoServices) &&
       chromeos::cfm::IsChromeboxForMeetingsAppId(extension->id())) {
     binder_map->Add<chromeos::cfm::mojom::CfmServiceContext>(
         base::BindRepeating(

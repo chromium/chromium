@@ -272,7 +272,7 @@ void ImageReaderGLOwner::UpdateTexImage() {
   AImage* image = nullptr;
   int acquire_fence_fd = -1;
   media_status_t return_code = AMEDIA_OK;
-  DCHECK_GT(max_images_, static_cast<int32_t>(image_refs_.size()));
+
   if (max_images_ - image_refs_.size() < 2) {
     // acquireNextImageAsync is required here since as per the spec calling
     // AImageReader_acquireLatestImage with less than two images of margin, that
@@ -345,6 +345,11 @@ ImageReaderGLOwner::GetAHardwareBuffer() {
   loader_.AImage_getHardwareBuffer(current_image_ref_->image(), &buffer);
   if (!buffer)
     return nullptr;
+
+  // TODO(1179206): We suspect that buffer is already freed here and it causes
+  // crash later. Trying to crash earlier.
+  base::AndroidHardwareBufferCompat::GetInstance().Acquire(buffer);
+  base::AndroidHardwareBufferCompat::GetInstance().Release(buffer);
 
   return std::make_unique<ScopedHardwareBufferImpl>(
       weak_factory_.GetWeakPtr(), current_image_ref_->image(),

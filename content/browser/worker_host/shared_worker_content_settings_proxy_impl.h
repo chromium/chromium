@@ -5,10 +5,10 @@
 #ifndef CONTENT_BROWSER_WORKER_HOST_SHARED_WORKER_CONTENT_SETTINGS_PROXY_IMPL_H_
 #define CONTENT_BROWSER_WORKER_HOST_SHARED_WORKER_CONTENT_SETTINGS_PROXY_IMPL_H_
 
+#include <string>
+
 #include "base/callback.h"
-#include "base/strings/string16.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/resource_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/worker/worker_content_settings_proxy.mojom.h"

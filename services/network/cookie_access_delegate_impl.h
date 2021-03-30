@@ -51,6 +51,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieAccessDelegateImpl
       const std::set<net::SchemefulSite>& party_context) const override;
   bool IsInNontrivialFirstPartySet(
       const net::SchemefulSite& site) const override;
+  base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>
+  RetrieveFirstPartySets() const override;
 
  private:
   const mojom::CookieAccessDelegateType type_;

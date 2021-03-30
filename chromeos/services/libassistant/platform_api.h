@@ -7,25 +7,37 @@
 
 #include "libassistant/shared/public/platform_api.h"
 
+#include <memory>
+
+#include "chromeos/services/libassistant/network_provider_impl.h"
+#include "chromeos/services/libassistant/public/mojom/audio_output_delegate.mojom.h"
+#include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+
 namespace chromeos {
 namespace libassistant {
+
+class AudioOutputProviderImpl;
+class FakeAuthProvider;
+class FileProviderImpl;
+class NetworkProviderImpl;
+class SystemProviderImpl;
 
 // Implementation of the Libassistant PlatformApi.
 // The components that haven't been migrated to this mojom service will still be
 // implemented chromeos/service/assistant/platform (and simply be exposed here).
 class PlatformApi : public assistant_client::PlatformApi {
  public:
-  PlatformApi() = default;
+  PlatformApi();
   PlatformApi(const PlatformApi&) = delete;
   PlatformApi& operator=(const PlatformApi&) = delete;
-  ~PlatformApi() override = default;
+  ~PlatformApi() override;
+
+  void Bind(
+      mojo::PendingRemote<mojom::AudioOutputDelegate> audio_output_delegate,
+      mojom::PlatformDelegate* platform_delegate);
 
   PlatformApi& SetAudioInputProvider(assistant_client::AudioInputProvider*);
-  PlatformApi& SetAudioOutputProvider(assistant_client::AudioOutputProvider*);
-  PlatformApi& SetAuthProvider(assistant_client::AuthProvider*);
-  PlatformApi& SetFileProvider(assistant_client::FileProvider*);
-  PlatformApi& SetNetworkProvider(assistant_client::NetworkProvider*);
-  PlatformApi& SetSystemProvider(assistant_client::SystemProvider*);
 
   // assistant_client::PlatformApi implementation:
   assistant_client::AudioInputProvider& GetAudioInputProvider() override;
@@ -36,14 +48,14 @@ class PlatformApi : public assistant_client::PlatformApi {
   assistant_client::SystemProvider& GetSystemProvider() override;
 
  private:
-  // The below are all owned by the browser side |PlatformApiImpl|,
-  // which outlives us.
+  // This is owned by |AudioInputController|.
   assistant_client::AudioInputProvider* audio_input_provider_ = nullptr;
-  assistant_client::AudioOutputProvider* audio_output_provider_ = nullptr;
-  assistant_client::AuthProvider* auth_provider_ = nullptr;
-  assistant_client::FileProvider* file_provider_ = nullptr;
-  assistant_client::NetworkProvider* network_provider_ = nullptr;
-  assistant_client::SystemProvider* system_provider_ = nullptr;
+
+  std::unique_ptr<AudioOutputProviderImpl> audio_output_provider_;
+  std::unique_ptr<FakeAuthProvider> fake_auth_provider_;
+  std::unique_ptr<FileProviderImpl> file_provider_;
+  std::unique_ptr<NetworkProviderImpl> network_provider_;
+  std::unique_ptr<SystemProviderImpl> system_provider_;
 };
 
 }  // namespace libassistant

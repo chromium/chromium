@@ -70,36 +70,38 @@ DEFINE_TEXT_PROTO_FUZZER(
     Persistent<AudioDecoder> audio_decoder = AudioDecoder::Create(
         script_state, audio_decoder_init, IGNORE_EXCEPTION_FOR_TESTING);
 
-    for (auto& invocation : proto.invocations()) {
-      switch (invocation.Api_case()) {
-        case wc_fuzzer::AudioDecoderApiInvocation::kConfigure:
-          audio_decoder->configure(
-              MakeAudioDecoderConfig(invocation.configure()),
-              IGNORE_EXCEPTION_FOR_TESTING);
-          break;
-        case wc_fuzzer::AudioDecoderApiInvocation::kDecode:
-          audio_decoder->decode(
-              MakeEncodedAudioChunk(invocation.decode().chunk()),
-              IGNORE_EXCEPTION_FOR_TESTING);
-          break;
-        case wc_fuzzer::AudioDecoderApiInvocation::kFlush: {
-          // TODO(https://crbug.com/1119253): Fuzz whether to await resolution
-          // of the flush promise.
-          audio_decoder->flush(IGNORE_EXCEPTION_FOR_TESTING);
-          break;
+    if (audio_decoder) {
+      for (auto& invocation : proto.invocations()) {
+        switch (invocation.Api_case()) {
+          case wc_fuzzer::AudioDecoderApiInvocation::kConfigure:
+            audio_decoder->configure(
+                MakeAudioDecoderConfig(invocation.configure()),
+                IGNORE_EXCEPTION_FOR_TESTING);
+            break;
+          case wc_fuzzer::AudioDecoderApiInvocation::kDecode:
+            audio_decoder->decode(
+                MakeEncodedAudioChunk(invocation.decode().chunk()),
+                IGNORE_EXCEPTION_FOR_TESTING);
+            break;
+          case wc_fuzzer::AudioDecoderApiInvocation::kFlush: {
+            // TODO(https://crbug.com/1119253): Fuzz whether to await resolution
+            // of the flush promise.
+            audio_decoder->flush(IGNORE_EXCEPTION_FOR_TESTING);
+            break;
+          }
+          case wc_fuzzer::AudioDecoderApiInvocation::kReset:
+            audio_decoder->reset(IGNORE_EXCEPTION_FOR_TESTING);
+            break;
+          case wc_fuzzer::AudioDecoderApiInvocation::kClose:
+            audio_decoder->close(IGNORE_EXCEPTION_FOR_TESTING);
+            break;
+          case wc_fuzzer::AudioDecoderApiInvocation::API_NOT_SET:
+            break;
         }
-        case wc_fuzzer::AudioDecoderApiInvocation::kReset:
-          audio_decoder->reset(IGNORE_EXCEPTION_FOR_TESTING);
-          break;
-        case wc_fuzzer::AudioDecoderApiInvocation::kClose:
-          audio_decoder->close(IGNORE_EXCEPTION_FOR_TESTING);
-          break;
-        case wc_fuzzer::AudioDecoderApiInvocation::API_NOT_SET:
-          break;
-      }
 
-      // Give other tasks a chance to run (e.g. calling our output callback).
-      base::RunLoop().RunUntilIdle();
+        // Give other tasks a chance to run (e.g. calling our output callback).
+        base::RunLoop().RunUntilIdle();
+      }
     }
   }
 

@@ -123,7 +123,8 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerSkipSheetTest, NoSkipWithoutUserGesture) {
       content::ExecJs(GetActiveWebContents(),
                       "testPaymentMethods([ "
                       " {supportedMethods: 'https://kylepay.com/webpay'}])",
-                      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+                      content::EXECUTE_SCRIPT_NO_USER_GESTURE |
+                          content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
   WaitForObservedEvent();
   EXPECT_TRUE(content::ExecJs(GetActiveWebContents(), "abort()"));
 
@@ -131,10 +132,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerSkipSheetTest, NoSkipWithoutUserGesture) {
       histogram_tester.GetAllSamples("PaymentRequest.Events");
   ASSERT_EQ(1U, buckets.size());
 
-  // TODO(crbug.com/1122198): EVENT_SHOWN is not always logged on Android.
-#if !defined(OS_ANDROID)
   EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_SHOWN);
-#endif
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SKIPPED_SHOW);
   EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_AVAILABLE_METHOD_OTHER);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SELECTED_OTHER);
@@ -191,11 +189,12 @@ IN_PROC_BROWSER_TEST_P(AlwaysAllowJustInTimePaymentAppTest,
   base::HistogramTester histogram_tester;
   ResetEventWaiterForSingleEvent(GetParam() ? TestEvent::kPaymentCompleted
                                             : TestEvent::kAppListReady);
-  EXPECT_TRUE(
-      content::ExecJs(GetActiveWebContents(),
-                      "testPaymentMethods([ "
-                      " {supportedMethods: 'basic-card'}, "
-                      " {supportedMethods: 'https://kylepay.com/webpay'}])"));
+  content::ExecuteScriptAsync(GetActiveWebContents(), R"(
+    testPaymentMethods([
+      {supportedMethods: 'basic-card'},
+      {supportedMethods: 'https://kylepay.com/webpay'}
+    ]);
+  )");
   WaitForObservedEvent();
 
   if (GetParam()) {
@@ -225,11 +224,12 @@ IN_PROC_BROWSER_TEST_P(AlwaysAllowJustInTimePaymentAppTest,
   base::HistogramTester histogram_tester;
   ResetEventWaiterForSingleEvent(TestEvent::kAppListReady);
 
-  EXPECT_TRUE(
-      content::ExecJs(GetActiveWebContents(),
-                      "testPaymentMethods([ "
-                      " {supportedMethods: 'basic-card'}, "
-                      " {supportedMethods: 'https://kylepay.com/webpay'}])"));
+  content::ExecuteScriptAsync(GetActiveWebContents(), R"(
+    testPaymentMethods([
+      {supportedMethods: 'basic-card'},
+      {supportedMethods: 'https://kylepay.com/webpay'}
+    ]);
+  )");
   WaitForObservedEvent();
 
   // Regardless whether AlwaysJIT is disabled, beceause there is a complete

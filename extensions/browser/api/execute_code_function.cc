@@ -7,6 +7,7 @@
 
 #include "extensions/browser/api/execute_code_function.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
@@ -15,6 +16,9 @@
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_resource.h"
+#include "extensions/common/mojom/action_type.mojom-shared.h"
+#include "extensions/common/mojom/css_origin.mojom-shared.h"
+#include "extensions/common/mojom/run_location.mojom-shared.h"
 
 namespace {
 
@@ -77,48 +81,54 @@ bool ExecuteCodeFunction::Execute(const std::string& code_string,
 
   DCHECK(!(ShouldInsertCSS() && ShouldRemoveCSS()));
 
-  auto action_type = UserScript::ActionType::ADD_JAVASCRIPT;
+  auto action_type = mojom::ActionType::kAddJavascript;
   if (ShouldInsertCSS())
-    action_type = UserScript::ActionType::ADD_CSS;
+    action_type = mojom::ActionType::kAddCss;
   else if (ShouldRemoveCSS())
-    action_type = UserScript::ActionType::REMOVE_CSS;
+    action_type = mojom::ActionType::kRemoveCss;
 
   ScriptExecutor::FrameScope frame_scope =
       details_->all_frames.get() && *details_->all_frames
           ? ScriptExecutor::INCLUDE_SUB_FRAMES
           : ScriptExecutor::SPECIFIED_FRAMES;
 
-  int frame_id = details_->frame_id.get() ? *details_->frame_id
-                                          : ExtensionApiFrameIdMap::kTopFrameId;
+  root_frame_id_ = details_->frame_id.get()
+                       ? *details_->frame_id
+                       : ExtensionApiFrameIdMap::kTopFrameId;
 
   ScriptExecutor::MatchAboutBlank match_about_blank =
       details_->match_about_blank.get() && *details_->match_about_blank
           ? ScriptExecutor::MATCH_ABOUT_BLANK
           : ScriptExecutor::DONT_MATCH_ABOUT_BLANK;
 
-  UserScript::RunLocation run_at = UserScript::UNDEFINED;
+  mojom::RunLocation run_at = mojom::RunLocation::kUndefined;
   switch (details_->run_at) {
     case api::extension_types::RUN_AT_NONE:
     case api::extension_types::RUN_AT_DOCUMENT_IDLE:
-      run_at = UserScript::DOCUMENT_IDLE;
+      run_at = mojom::RunLocation::kDocumentIdle;
       break;
     case api::extension_types::RUN_AT_DOCUMENT_START:
-      run_at = UserScript::DOCUMENT_START;
+      run_at = mojom::RunLocation::kDocumentStart;
       break;
     case api::extension_types::RUN_AT_DOCUMENT_END:
-      run_at = UserScript::DOCUMENT_END;
+      run_at = mojom::RunLocation::kDocumentEnd;
       break;
   }
-  CHECK_NE(UserScript::UNDEFINED, run_at);
+  CHECK_NE(mojom::RunLocation::kUndefined, run_at);
 
-  base::Optional<CSSOrigin> css_origin;
-  if (details_->css_origin == api::extension_types::CSS_ORIGIN_USER)
-    css_origin = CSS_ORIGIN_USER;
-  else if (details_->css_origin == api::extension_types::CSS_ORIGIN_AUTHOR)
-    css_origin = CSS_ORIGIN_AUTHOR;
+  mojom::CSSOrigin css_origin = mojom::CSSOrigin::kAuthor;
+  switch (details_->css_origin) {
+    case api::extension_types::CSS_ORIGIN_NONE:
+    case api::extension_types::CSS_ORIGIN_AUTHOR:
+      css_origin = mojom::CSSOrigin::kAuthor;
+      break;
+    case api::extension_types::CSS_ORIGIN_USER:
+      css_origin = mojom::CSSOrigin::kUser;
+      break;
+  }
 
   executor->ExecuteScript(
-      host_id_, action_type, code_string, frame_scope, {frame_id},
+      host_id_, action_type, code_string, frame_scope, {root_frame_id_},
       match_about_blank, run_at,
       IsWebView() ? ScriptExecutor::WEB_VIEW_PROCESS
                   : ScriptExecutor::DEFAULT_PROCESS,
@@ -183,19 +193,52 @@ bool ExecuteCodeFunction::LoadFile(const std::string& file,
   return true;
 }
 
-void ExecuteCodeFunction::OnExecuteCodeFinished(const std::string& error,
-                                                const GURL& on_url,
-                                                const base::ListValue& result) {
-  if (!error.empty()) {
-    Respond(Error(error));
+void ExecuteCodeFunction::OnExecuteCodeFinished(
+    std::vector<ScriptExecutor::FrameResult> results) {
+  DCHECK(!results.empty());
+
+  auto root_frame_result =
+      std::find_if(results.begin(), results.end(),
+                   [root_frame_id = root_frame_id_](const auto& frame_result) {
+                     return frame_result.frame_id == root_frame_id;
+                   });
+
+  DCHECK(root_frame_result != results.end());
+
+  // We just error out if we never injected in the root frame.
+  // TODO(devlin): That's a bit odd, because other injections may have
+  // succeeded. It seems like it might be worth passing back the values
+  // anyway.
+  if (!root_frame_result->error.empty()) {
+    // If the frame never responded (e.g. the frame was removed or didn't
+    // exist), we provide a different error message for backwards
+    // compatibility.
+    if (!root_frame_result->frame_responded) {
+      root_frame_result->error =
+          root_frame_id_ == ExtensionApiFrameIdMap::kTopFrameId
+              ? "The tab was closed."
+              : "The frame was removed.";
+    }
+
+    Respond(Error(std::move(root_frame_result->error)));
     return;
   }
 
-  // insertCSS and removeCSS don't have a result argument.
-  Respond(ShouldInsertCSS() || ShouldRemoveCSS()
-              ? NoArguments()
-              : OneArgument(
-                    base::Value::FromUniquePtrValue(result.CreateDeepCopy())));
+  if (ShouldInsertCSS() || ShouldRemoveCSS()) {
+    // insertCSS and removeCSS don't have a result argument.
+    Respond(NoArguments());
+    return;
+  }
+
+  // Place the root frame result at the beginning.
+  std::iter_swap(root_frame_result, results.begin());
+  base::Value result_list(base::Value::Type::LIST);
+  for (auto& result : results) {
+    if (result.error.empty())
+      result_list.Append(std::move(result.value));
+  }
+
+  Respond(OneArgument(std::move(result_list)));
 }
 
 }  // namespace extensions

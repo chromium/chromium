@@ -191,6 +191,11 @@ class WebViewUnitTest : public views::test::WidgetTest {
         content::WebContents::CreateParams(browser_context_.get()));
   }
 
+  std::unique_ptr<content::WebContents> CreateTestWebContents() const {
+    return content::WebContentsTester::CreateTestWebContents(
+        browser_context_.get(), /*site_instnace=*/nullptr);
+  }
+
  private:
   std::unique_ptr<content::RenderViewHostTestEnabler> rvh_enabler_;
   std::unique_ptr<content::TestBrowserContext> browser_context_;
@@ -321,7 +326,11 @@ TEST_F(WebViewUnitTest, DetachedWebViewDestructor) {
 // Test that the specified crashed overlay view is shown when a WebContents
 // is in a crashed state.
 TEST_F(WebViewUnitTest, CrashedOverlayView) {
-  const std::unique_ptr<content::WebContents> web_contents(CreateWebContents());
+  const std::unique_ptr<content::WebContents> web_contents =
+      CreateTestWebContents();
+  content::WebContentsTester* tester =
+      content::WebContentsTester::For(web_contents.get());
+
   std::unique_ptr<WebView> web_view(
       new WebView(web_contents->GetBrowserContext()));
   View* contents_view = top_level_widget()->GetContentsView();
@@ -335,18 +344,21 @@ TEST_F(WebViewUnitTest, CrashedOverlayView) {
   // Normally when a renderer crashes, the WebView will learn about it
   // automatically via WebContentsObserver. Since this is a test
   // WebContents, simulate that by calling SetIsCrashed and then
-  // explicitly calling RenderViewDeleted on the WebView to trigger it
+  // explicitly calling RenderFrameDeleted on the WebView to trigger it
   // to swap in the crashed overlay view.
-  web_contents->SetIsCrashed(base::TERMINATION_STATUS_PROCESS_CRASHED, -1);
+  tester->SetIsCrashed(base::TERMINATION_STATUS_PROCESS_CRASHED, -1);
   EXPECT_TRUE(web_contents->IsCrashed());
   static_cast<content::WebContentsObserver*>(web_view.get())
-      ->RenderViewDeleted(nullptr);
+      ->RenderFrameDeleted(web_contents->GetMainFrame());
   EXPECT_TRUE(crashed_overlay_view->IsDrawn());
 }
 
 // Test that a crashed overlay view isn't deleted if it's owned by client.
 TEST_F(WebViewUnitTest, CrashedOverlayViewOwnedbyClient) {
-  const std::unique_ptr<content::WebContents> web_contents(CreateWebContents());
+  const std::unique_ptr<content::WebContents> web_contents =
+      CreateTestWebContents();
+  content::WebContentsTester* tester =
+      content::WebContentsTester::For(web_contents.get());
   std::unique_ptr<WebView> web_view(
       new WebView(web_contents->GetBrowserContext()));
   View* contents_view = top_level_widget()->GetContentsView();
@@ -359,10 +371,10 @@ TEST_F(WebViewUnitTest, CrashedOverlayViewOwnedbyClient) {
   EXPECT_FALSE(crashed_overlay_view->IsDrawn());
 
   // Simulate a renderer crash (see above).
-  web_contents->SetIsCrashed(base::TERMINATION_STATUS_PROCESS_CRASHED, -1);
+  tester->SetIsCrashed(base::TERMINATION_STATUS_PROCESS_CRASHED, -1);
   EXPECT_TRUE(web_contents->IsCrashed());
   static_cast<content::WebContentsObserver*>(web_view.get())
-      ->RenderViewDeleted(nullptr);
+      ->RenderFrameDeleted(web_contents->GetMainFrame());
   EXPECT_TRUE(crashed_overlay_view->IsDrawn());
 
   web_view->SetCrashedOverlayView(nullptr);

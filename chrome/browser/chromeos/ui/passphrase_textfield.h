@@ -8,15 +8,18 @@
 #include <string>
 
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace chromeos {
 
 class PassphraseTextfield : public views::Textfield {
  public:
+  METADATA_HEADER(PassphraseTextfield);
   PassphraseTextfield();
 
   // If show_fake is true, then the text field will show a fake password.
   void SetShowFake(bool show_fake);
+  bool GetShowFake() const;
 
   // Override views::Textfield so that when focus is gained, then clear out the
   // fake password if appropriate. Replace it when focus is lost if the user has
@@ -27,8 +30,7 @@ class PassphraseTextfield : public views::Textfield {
   // Returns the passphrase. If it's unchanged, then returns an empty string.
   std::string GetPassphrase();
 
-  bool changed() const { return changed_; }
-  bool show_fake() const { return show_fake_; }
+  bool GetChanged() const;
 
  private:
   void SetFakePassphrase();

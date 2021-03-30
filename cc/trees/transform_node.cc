@@ -35,8 +35,7 @@ TransformNode::TransformNode()
       delegates_to_parent_for_backface(false),
       will_change_transform(false),
       node_or_ancestors_will_change_transform(false),
-      maximum_animation_scale(kNotScaled),
-      starting_animation_scale(kNotScaled) {}
+      maximum_animation_scale(kInvalidScale) {}
 
 TransformNode::TransformNode(const TransformNode&) = default;
 
@@ -74,7 +73,6 @@ bool TransformNode::operator==(const TransformNode& other) const {
          scroll_offset == other.scroll_offset &&
          snap_amount == other.snap_amount &&
          maximum_animation_scale == other.maximum_animation_scale &&
-         starting_animation_scale == other.starting_animation_scale &&
          visible_frame_element_id == other.visible_frame_element_id;
 }
 #endif  // DCHECK_IS_ON()

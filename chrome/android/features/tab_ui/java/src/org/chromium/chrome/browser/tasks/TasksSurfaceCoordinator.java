@@ -18,8 +18,8 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
-import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.ntp.IncognitoCookieControlsManager;
+import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvi
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -47,9 +48,12 @@ public class TasksSurfaceCoordinator implements TasksSurface {
 
     public TasksSurfaceCoordinator(ChromeActivity activity, ScrimCoordinator scrimCoordinator,
             PropertyModel propertyModel, @TabSwitcherType int tabSwitcherType,
-            Supplier<Tab> parentTabSupplier, boolean hasMVTiles, boolean hasTrendyTerms) {
+            Supplier<Tab> parentTabSupplier, boolean hasMVTiles, boolean hasTrendyTerms,
+            WindowAndroid windowAndroid) {
         mView = (TasksView) LayoutInflater.from(activity).inflate(R.layout.tasks_view_layout, null);
-        mView.initialize(activity.getLifecycleDispatcher());
+        mView.initialize(activity.getLifecycleDispatcher(),
+                parentTabSupplier.hasValue() ? parentTabSupplier.get().isIncognito() : false,
+                windowAndroid);
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(propertyModel, mView, TasksViewBinder::bind);
         mPropertyModel = propertyModel;
@@ -96,6 +100,7 @@ public class TasksSurfaceCoordinator implements TasksSurface {
             LinearLayout mvTilesLayout = mView.findViewById(R.id.mv_tiles_layout);
             mMostVisitedList = new MostVisitedListCoordinator(
                     activity, mvTilesLayout, mPropertyModel, parentTabSupplier);
+            mMostVisitedList.initialize();
         }
     }
 
@@ -104,7 +109,7 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     public void initialize() {
         assert LibraryLoader.getInstance().isInitialized();
 
-        if (mMostVisitedList != null) mMostVisitedList.initialize();
+        if (mMostVisitedList != null) mMostVisitedList.initWithNative();
         mMediator.initialize();
     }
 
@@ -151,7 +156,7 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     }
 
     @Override
-    public void onFinishNativeInitialization(Context context, FakeboxDelegate fakeboxDelegate) {
+    public void onFinishNativeInitialization(Context context, OmniboxStub omniboxStub) {
         if (mTabSwitcher != null) {
             ChromeActivity activity = (ChromeActivity) context;
             mTabSwitcher.initWithNative(activity, activity.getTabContentManager(),
@@ -159,7 +164,7 @@ public class TasksSurfaceCoordinator implements TasksSurface {
                     activity.getModalDialogManager());
         }
 
-        mMediator.initWithNative(fakeboxDelegate);
+        mMediator.initWithNative(omniboxStub);
 
         if (mHasTrendyTerm && mTabSwitcher != null) {
             mTabSwitcher.getController().addOverviewModeObserver(mMediator);

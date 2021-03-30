@@ -42,7 +42,7 @@ class RenderTextTestApi {
     render_text_->Draw(canvas, select_all);
   }
 
-  const base::string16& GetLayoutText() {
+  const std::u16string& GetLayoutText() {
     return render_text_->GetLayoutText();
   }
 
@@ -64,6 +64,10 @@ class RenderTextTestApi {
 
   const std::vector<internal::Line>& lines() const {
     return render_text_->GetShapedText()->lines();
+  }
+
+  const Vector2d& display_offset() const {
+    return render_text_->display_offset_;
   }
 
   SelectionModel EdgeSelectionModel(VisualCursorDirection direction) {

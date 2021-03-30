@@ -23,11 +23,13 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /> 鍵</translation>
 <translation id="1733525068429116555">為你在網址列中輸入的字串加上 www. 和 .com 並開啟網頁</translation>
+<translation id="1768987374400973299">擷取/錄製螢幕畫面</translation>
 <translation id="1872219238824176091">移除目前的桌面</translation>
 <translation id="1920446759863417809">按下 <ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> 鍵，然後按下 <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> 鍵或 <ph name="LEFT" /> 鍵</translation>
 <translation id="1996162290124031907">前往下一個分頁</translation>
 <translation id="2010818616644390445">前往視窗中的最後一個分頁</translation>
 <translation id="2040706009561734834">開啟/關閉啟動器</translation>
+<translation id="2086334242442703436">開啟表情符號挑選器</translation>
 <translation id="2088054208777350526">搜尋鍵盤快速鍵</translation>
 <translation id="2125211348069077981"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="E" /> 或 <ph name="F" /> 鍵</translation>
 <translation id="2145908266289632567">文字編輯</translation>
@@ -46,6 +48,7 @@
 <translation id="2480851840841871861">開啟 Google 助理</translation>
 <translation id="2488661730534396940">啟用左側的桌面</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516999188535378855">開啟診斷應用程式</translation>
 <translation id="2530339807289914946">向下捲動網頁</translation>
 <translation id="2530896289327917474">開啟或關閉鍵盤瀏覽功能</translation>
 <translation id="2574014812750545982">重設網頁的縮放比例</translation>
@@ -111,6 +114,7 @@
 <translation id="4801989101741319327">移至下一個字詞的結尾</translation>
 <translation id="4866066940972151697">啟用右側的桌面</translation>
 <translation id="4916163929714267752">在新視窗開啟連結</translation>
+<translation id="492453977506755176">擷取模式鍵</translation>
 <translation id="5030659775136592441">顯示書籤管理員</translation>
 <translation id="5034421018520995080">前往頁面頂端</translation>
 <translation id="5042305953558921026">總覽模式按鍵</translation>
@@ -133,6 +137,7 @@
 <translation id="5899919361772749550">顯示或隱藏開發人員工具控制台</translation>
 <translation id="5919628958418675842">開啟或關閉隱私保護畫面</translation>
 <translation id="5921745308587794300">旋轉視窗</translation>
+<translation id="5926306472221400972">擷取全螢幕畫面</translation>
 <translation id="6022924867608035986">清除搜尋框文字</translation>
 <translation id="6045998054441862242">開啟高對比模式</translation>
 <translation id="6052614013050385269">以滑鼠右鍵按一下連結</translation>
@@ -150,6 +155,7 @@
 <translation id="6445033640292336367">讓分頁回到原始位置</translation>
 <translation id="6474744297082284761">縮小 (固定時「或」全螢幕放大鏡已啟用時)</translation>
 <translation id="649811797655257835">選取檔案，然後按下 <ph name="SPACE" /> 鍵</translation>
+<translation id="6551886416582667425">擷取/錄製部分螢幕畫面</translation>
 <translation id="6556040137485212400">開啟最久未使用的視窗</translation>
 <translation id="666343722268997814">針對醒目顯示的項目開啟滑鼠右鍵選單</translation>
 <translation id="6671538777808758331">前往下一個相符的搜尋結果</translation>
@@ -176,6 +182,7 @@
 <translation id="7611271430932669992">將焦點移至彈出式視窗和對話方塊</translation>
 <translation id="7635348532214572995">將應用程式圖示沿著應用程式格線四周移動</translation>
 <translation id="766326951329901120">以純文字貼上剪貼簿中的內容</translation>
+<translation id="7673453620027697230">擷取/錄製視窗畫面</translation>
 <translation id="7703010453515335249">左方括號</translation>
 <translation id="7724603315864178912">剪下</translation>
 <translation id="7730490981846175479">按下 <ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> 鍵，然後按下 <ph name="SPACE" /> 或 <ph name="ENTER" /> 鍵</translation>

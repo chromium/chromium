@@ -27,8 +27,10 @@ LauncherAppServiceAppUpdater::LauncherAppServiceAppUpdater(
 LauncherAppServiceAppUpdater::~LauncherAppServiceAppUpdater() = default;
 
 void LauncherAppServiceAppUpdater::OnAppUpdate(const apps::AppUpdate& update) {
-  if (!update.ReadinessChanged() && !update.PausedChanged())
+  if (!update.ReadinessChanged() && !update.PausedChanged() &&
+      !update.ShowInShelfChanged()) {
     return;
+  }
 
   const std::string& app_id = update.AppId();
   if (update.ReadinessChanged()) {
@@ -47,17 +49,50 @@ void LauncherAppServiceAppUpdater::OnAppUpdate(const apps::AppUpdate& update) {
           delegate()->OnAppUninstalled(browser_context(), app_id);
         }
         return;
+      case apps::mojom::Readiness::kDisabledByPolicy:
+        if (update.ShowInShelfChanged()) {
+          OnShowInShelfChanged(app_id, (update.ShowInShelf() ==
+                                        apps::mojom::OptionalBool::kTrue));
+        } else {
+          delegate()->OnAppUpdated(browser_context(), app_id);
+        }
+        return;
       default:
         delegate()->OnAppUpdated(browser_context(), app_id);
         return;
     }
   }
 
-  if (update.PausedChanged())
+  if (update.PausedChanged()) {
     delegate()->OnAppUpdated(browser_context(), app_id);
+    return;
+  }
+
+  if (update.ShowInShelfChanged() &&
+      update.Readiness() == apps::mojom::Readiness::kDisabledByPolicy) {
+    OnShowInShelfChanged(
+        app_id, (update.ShowInShelf() == apps::mojom::OptionalBool::kTrue));
+  }
 }
 
 void LauncherAppServiceAppUpdater::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
   Observe(nullptr);
+}
+
+void LauncherAppServiceAppUpdater::OnShowInShelfChanged(
+    const std::string& app_id,
+    bool show_in_shelf) {
+  std::set<std::string>::const_iterator it = installed_apps_.find(app_id);
+  if (show_in_shelf) {
+    if (it == installed_apps_.end()) {
+      installed_apps_.insert(app_id);
+      delegate()->OnAppInstalled(browser_context(), app_id);
+    }
+  } else {
+    if (it != installed_apps_.end()) {
+      installed_apps_.erase(it);
+      delegate()->OnAppUninstalledPrepared(browser_context(), app_id);
+    }
+  }
 }

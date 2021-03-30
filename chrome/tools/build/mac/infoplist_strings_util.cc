@@ -53,8 +53,8 @@ std::string LoadStringFromDataPack(ui::DataPack* data_pack,
   if (data_pack->GetTextEncodingType() == ui::DataPack::UTF8)
     return (std::string)data;
   if (data_pack->GetTextEncodingType() == ui::DataPack::UTF16) {
-    return base::UTF16ToUTF8(base::string16(
-        reinterpret_cast<const base::char16*>(data.data()), data.length() / 2));
+    return base::UTF16ToUTF8(std::u16string(
+        reinterpret_cast<const char16_t*>(data.data()), data.length() / 2));
   }
 
   LOG(FATAL) << "requested string " << resource_id_str

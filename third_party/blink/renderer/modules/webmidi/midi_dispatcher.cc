@@ -101,8 +101,13 @@ void MIDIDispatcher::SetOutputPortState(uint32_t port,
 void MIDIDispatcher::SessionStarted(midi::mojom::blink::Result result) {
   TRACE_EVENT0("midi", "MIDIDispatcher::OnSessionStarted");
 
+  // We always have a valid instance in `client_` in the production code, but
+  // just in case to be robust for mojo injections and code changes in the
+  // future. Other methods protect accesses to `client_` by `initialized_` flag
+  // that is set below.
+  SECURITY_CHECK(client_);
+
   DCHECK(!initialized_);
-  DCHECK(client_);
   initialized_ = true;
 
   if (result == midi::mojom::blink::Result::OK) {

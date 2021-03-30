@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
@@ -70,13 +71,13 @@ class PendingAppInstallTask {
   virtual void Install(content::WebContents* web_contents,
                        ResultCallback result_callback);
 
-  // Install directly from a fully specified WebApplicationInfo struct. Used
-  // by system apps.
-  virtual void InstallFromInfo(ResultCallback result_callback);
-
   const ExternalInstallOptions& install_options() { return install_options_; }
 
  private:
+  // Install directly from a fully specified WebApplicationInfo struct. Used
+  // by system apps.
+  void InstallFromInfo(ResultCallback result_callback);
+
   void OnWebContentsReady(content::WebContents* web_contents,
                           ResultCallback result_callback,
                           WebAppUrlLoader::Result prepare_for_load_result);

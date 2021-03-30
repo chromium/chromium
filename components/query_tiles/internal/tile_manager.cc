@@ -276,7 +276,7 @@ class TileManagerImpl : public TileManager {
   }
 
   void OnQuerySelected(const base::Optional<std::string>& parent_tile_id,
-                       const base::string16& query_text) override {
+                       const std::u16string& query_text) override {
     if (!tile_group_)
       return;
 

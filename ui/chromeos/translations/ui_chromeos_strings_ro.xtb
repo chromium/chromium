@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">Fișierul sau directorul nu este utilizabil.</translation>
 <translation id="1363028406613469049">Melodia</translation>
 <translation id="1378727793141957596">Bun venit la Disc Google!</translation>
+<translation id="1379911846207762492">Poți face fișiere disponibile offline pentru a le accesa când nu ai conexiune la internet.</translation>
 <translation id="1383876407941801731">Caută</translation>
 <translation id="1395262318152388157">Glisor pentru căutare</translation>
 <translation id="1404323374378969387">Norvegiană</translation>
@@ -76,6 +77,7 @@
 <translation id="1807938677607439181">Toate fișierele</translation>
 <translation id="1810764548349082891">Nicio previzualizare disponibilă</translation>
 <translation id="1812302367230252929">Amharică, transliterație</translation>
+<translation id="1813278315230285598">Servicii</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Atenție:<ph name="END_BOLD" /> aceste fișiere sunt temporare și pot fi șterse automat pentru a elibera spațiu pe disc. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pinguin</translation>
 <translation id="183183971458492120">Se încarcă informațiile…</translation>
@@ -85,13 +87,14 @@
 <translation id="1853795129690976061">Linux are acces la acest dosar</translation>
 <translation id="1864756863218646478">Fișierul nu a putut fi găsit.</translation>
 <translation id="1920670151694390848">Malayalam, transliterație</translation>
+<translation id="1920798810075583923">Pepene verde</translation>
 <translation id="1924372192547904021">S-a formatat <ph name="DRIVE_NAME" /></translation>
 <translation id="1931134289871235022">Slovacă</translation>
 <translation id="1933345018156373194">Mutarea nu a reușit, eroare neprevăzută: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Finlandeză</translation>
 <translation id="1942765061641586207">Rezoluția imaginii</translation>
-<translation id="1943097386230153518">Instalează un serviciu nou</translation>
 <translation id="1972984168337863910">Extinde panourile cu feedback privind fișierele</translation>
+<translation id="1984456723671657197">Acest tip de fișier nu este acceptat. <ph name="BEGIN_LINK_HELP" />Află mai multe<ph name="END_LINK_HELP" /> despre deschiderea fișierelor în sistemul de operare Chrome.</translation>
 <translation id="1995337122023280937">Accesează locația fișierului</translation>
 <translation id="2001796770603320721">Gestionează în Drive</translation>
 <translation id="2009067268969781306">Formatarea unității va șterge toate datele stocate pe unitate. Această acțiune nu poate fi anulată.</translation>
@@ -118,6 +121,7 @@
 <translation id="2288278176040912387">Picup</translation>
 <translation id="2291538123825441971">Se deschid <ph name="NUMBER_OF_FILES" /> fișiere.</translation>
 <translation id="2303301624314357662">Se deschide <ph name="FILE_NAME" />.</translation>
+<translation id="2304820083631266885">Planetă</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> a fost scos.</translation>
 <translation id="2325650632570794183">Acest tip de fișier nu este acceptat. Vă rugăm să accesați Magazinul web Chrome pentru a găsi o aplicație care poate deschide acest tip de fișier.</translation>
 <translation id="2326539130272988168">Bulgară</translation>
@@ -142,7 +146,6 @@
 <translation id="255937426064304553">S.U.A. internațională</translation>
 <translation id="2562685439590298522">Documente</translation>
 <translation id="2563185590376525700">Broască</translation>
-<translation id="2572501073504669105">Poți face fișiere disponibile offline pentru a le accesa când nu ai conexiune la internet.</translation>
 <translation id="2578394532502990878">Tamilă fonetică</translation>
 <translation id="2579959351793446050">Odia</translation>
 <translation id="2614589611416690597">Videoclip <ph name="VIDEO_TYPE" /></translation>
@@ -186,6 +189,7 @@
 <translation id="299638574917407533">Franceză (Canada)</translation>
 <translation id="3003633581067744647">Comută la afișarea cu miniaturi</translation>
 <translation id="3007214526293698309">Remediază raportul de dimensiuni</translation>
+<translation id="3029114385395636667">Activează Documente Google Offline pentru a folosi offline Documente, Foi de calcul și Prezentări.</translation>
 <translation id="303198083543495566">Geografie</translation>
 <translation id="3047197340186497470">Chineză Dayi</translation>
 <translation id="3057861065630527966">Fă backup pentru fotografii și videoclipuri</translation>
@@ -216,14 +220,17 @@
 <translation id="3335337277364016868">Anul înregistrării</translation>
 <translation id="3353984535370177728">Selectați un dosar de încărcat</translation>
 <translation id="3356580349448036450">Finalizat</translation>
+<translation id="3358452157379365236">Chitară</translation>
 <translation id="3382143449143186018">Nepaleză cu tastatură InScript</translation>
 <translation id="3408236822532681288">Germană (Germania) cu tastatură Neo 2</translation>
 <translation id="3414856743105198592">Formatarea suportului media amovibil va șterge toate datele. Doriți să continuați?</translation>
 <translation id="3437801641691368414">Ora creării</translation>
+<translation id="343907260260897561">Cameră foto instantanee</translation>
 <translation id="3455931012307786678">Estoniană</translation>
 <translation id="3466147780910026086">Se scanează dispozitivul media...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> fotografii cu backup pe <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="3475447146579922140">Foaie de calcul Google</translation>
+<translation id="3479552764303398839">Nu acum</translation>
 <translation id="3486821258960016770">Mongolă</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> erori.</translation>
 <translation id="3522708245912499433">Portugheză</translation>
@@ -233,6 +240,7 @@
 <translation id="3553048479571901246">Pentru a deschide fișiere cu <ph name="APP_NAME" />, mai întâi copiază-le în dosarul cu fișiere Windows.</translation>
 <translation id="3556731189587832921">Engleză (S.U.A.) cu tastatură internațională pentru PC</translation>
 <translation id="357479282490346887">Lituaniană</translation>
+<translation id="3592251141500063301"><ph name="FILE_NAME" /> nu a devenit disponibil offline</translation>
 <translation id="3603385196401704894">Franceză canadiană</translation>
 <translation id="3606220979431771195">Turcă-F</translation>
 <translation id="3616113530831147358">Audio</translation>
@@ -279,6 +287,7 @@
 <translation id="4124935795427217608">Unicorn</translation>
 <translation id="4158739975813877944">Deschide playlistul</translation>
 <translation id="4159731583141908892">Mutate: <ph name="FILE_NAME" />.</translation>
+<translation id="4186579485882418952">Activează funcția offline</translation>
 <translation id="4193154014135846272">Document Google</translation>
 <translation id="4197674956721858839">Arhivați fișierele selectate</translation>
 <translation id="4202378258276439759">Spaniolă (America Latină)</translation>
@@ -292,6 +301,7 @@
 <translation id="4309915981827077375">Informații generale</translation>
 <translation id="432252891123397018">Tastatură română standard</translation>
 <translation id="4325128273762811722">Slovenă</translation>
+<translation id="4326142238881453352">Botanist</translation>
 <translation id="4326192123064055915">Cafea</translation>
 <translation id="4336032328163998280">Operația de copiere nu a reușit. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">Tastatură kurdă sorani bazată pe arabă</translation>
@@ -327,7 +337,6 @@
 <translation id="4706042980341760088">Tastatură tamilă tip mașină de scris</translation>
 <translation id="4711094779914110278">Turcă</translation>
 <translation id="4712283082407695269">Se deschide „<ph name="PATH" />”</translation>
-<translation id="4713544552769165154">Acest fișier este creat pentru un computer care folosește software Macintosh. Nu este compatibil cu dispozitivul tău, care rulează sistemul de operare Chrome. Caută o aplicație adecvată similară în <ph name="BEGIN_LINK" />Magazinul web Chrome<ph name="END_LINK" />.<ph name="BEGIN_LINK_HELP" />Află mai multe<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">S-a făcut backup pentru <ph name="FILE_COUNT" /> fotografii</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4732760563705710320">Ne pare rău. Acest videoclip nu este acceptat de dispozitivul tău de proiecție.</translation>
@@ -408,6 +417,7 @@
     <ph name="MARKUP_7" />Trimite și creează fișiere. Colaborează<ph name="MARKUP_8" />
     cu alte persoane la realizarea fișierelor. Totul într-un singur loc.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Fișiere recuperate din Google Drive</translation>
+<translation id="5288441970121584418">Burger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Salvează</translation>
 <translation id="5318819489018851358">Trimite cu Linux</translation>
@@ -461,8 +471,6 @@
 <translation id="5833610766403489739">Fișierul nu poate fi găsit. Verificați setarea locației de descărcare și încercați din nou.</translation>
 <translation id="5838451609423551646">S-au eliminat toate intrările din selecție.</translation>
 <translation id="5838825566232597749">Tastatură S.U.A. Workman internațională</translation>
-<translation id="5850516540536751549">Acest tip de fișier nu este acceptat. Accesați <ph name="BEGIN_LINK" />Magazinul web Chrome<ph name="END_LINK" /> pentru a găsi o aplicație care poate deschide acest tip de fișier.
-    <ph name="BEGIN_LINK_HELP" />Aflați mai multe<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Nimic de văzut aici...</translation>
 <translation id="5911887972742538906">A apărut o eroare în timpul instalării aplicației Linux.</translation>
 <translation id="5912396950572065471">Format</translation>
@@ -500,10 +508,12 @@
 <translation id="6248400709929739064">Activează subtitrările</translation>
 <translation id="6269630227984243955">Malaieză</translation>
 <translation id="6287852322318138013">Selectați o aplicație pentru deschiderea acestui fișier</translation>
+<translation id="6321303798550928047">Semn cu mâna</translation>
 <translation id="6339145975392024142">S.U.A. internațională (PC)</translation>
 <translation id="6346310558342052870">Acces restricționat</translation>
 <translation id="6356685157277930264">Fereastra cu feedback pentru fișiere</translation>
 <translation id="6358884629796491903">Dragon</translation>
+<translation id="6367976544441405720">Camionetă</translation>
 <translation id="637062427944097960">Acest fișier a fost deschis pe alt desktop. Pentru a-l vedea, treceți la <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="6394388407447716302">Numai în citire</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> elemente</translation>
@@ -527,6 +537,7 @@
 <translation id="6650726141019353908">Fluture roz</translation>
 <translation id="6657585470893396449">Parolă</translation>
 <translation id="6673674183150363784">Franceză (Franța) cu tastatură Bépo</translation>
+<translation id="6710022688720561421">Robot</translation>
 <translation id="6710213216561001401">Înapoi</translation>
 <translation id="6751256176799620176">Un dosar selectat</translation>
 <translation id="6790428901817661496">Redă</translation>
@@ -560,6 +571,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6970230597523682626">Bulgară</translation>
 <translation id="6973630695168034713">Dosare</translation>
+<translation id="6976795442547527108">Leu</translation>
 <translation id="6978611942794658017">Acest fișier este destinat pentru un PC ce utilizează software-ul Windows. Acesta nu este compatibil cu dispozitivul tău care rulează sistemul de operare Chrome. Caută o aplicație de înlocuire potrivită în Magazinul web Chrome.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Suedeză</translation>
@@ -606,6 +618,7 @@
 <translation id="7532029025027028521">Persană, transliterație</translation>
 <translation id="7544830582642184299">Acordă aplicațiilor Linux permisiunea de a accesa fișiere din Google Drive. Modificările se vor sincroniza cu celelalte dispozitive care îți aparțin.</translation>
 <translation id="7544853251252956727">Redă aleatoriu</translation>
+<translation id="7547009467130558110">Adidas</translation>
 <translation id="7547780573915868306">Lituaniană</translation>
 <translation id="7547811415869834682">Neerlandeză</translation>
 <translation id="7551643184018910560">Fixați în raft</translation>
@@ -620,6 +633,7 @@
 <translation id="7628656427739290098"><ph name="PERCENT" /> % finalizat</translation>
 <translation id="7649070708921625228">Ajutor</translation>
 <translation id="7654209398114106148">Se mută <ph name="NUMBER_OF_ITEMS" /> elemente…</translation>
+<translation id="7655441028674523381">Accesează simplu Google Foto</translation>
 <translation id="7658239707568436148">Anulează</translation>
 <translation id="7663224033570512922">Hindi</translation>
 <translation id="7693909743393669729">Formatarea unității va șterge toate datele stocate pe unitate și va elimina toate partițiile existente, inclusiv partițiile care nu sunt vizibile. Această acțiune nu poate fi anulată.</translation>
@@ -651,7 +665,6 @@
 <translation id="7839804798877833423">Preluarea acestor fișiere va utiliza aproximativ <ph name="FILE_SIZE" /> din datele mobile.</translation>
 <translation id="7846076177841592234">Anulează selecția</translation>
 <translation id="7853966320808728790">Franceză BÉPO</translation>
-<translation id="7864662577698025113">Adaugă un serviciu nou</translation>
 <translation id="7868774406711971383">Poloneză</translation>
 <translation id="7873831373602885875">Nu se poate salva în <ph name="FOLDER_NAME" />. Toate editările vor fi salvate în <ph name="DOWNLOADS_FOLDER" /> în dosarul Descărcări.</translation>
 <translation id="7874321682039004450">Filipineză</translation>
@@ -666,13 +679,13 @@
 <translation id="7972920761225148017">Franceză (Elveția)</translation>
 <translation id="7980421588063892270">Engleză (S.U.A.) cu tastatură Colemak</translation>
 <translation id="7982283708762922719">Înălțime</translation>
+<translation id="79907182588096956">Fișierul este creat pentru un PC care folosește software Windows. Acesta nu este compatibil cu dispozitivul tău care rulează sistemul de operare Chrome. <ph name="BEGIN_LINK_HELP" />Află mai multe<ph name="END_LINK_HELP" /> despre deschiderea fișierelor în sistemul de operare Chrome.</translation>
 <translation id="8008366997883261463">Terier</translation>
 <translation id="8028993641010258682">Dimensiune</translation>
 <translation id="803771048473350947">Fișier</translation>
 <translation id="8038111231936746805">(prestabilit)</translation>
 <translation id="8042602468072383151">Fișier audio <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">Română</translation>
-<translation id="8052887694493382350">Acest fișier este conceput pentru un PC care folosește software-ul Windows. Acesta nu este compatibil cu dispozitivul tău care rulează sistemul de operare Chrome. <ph name="BEGIN_LINK_HELP" />Află mai multe<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Toate modificările vor fi salvate în <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Repetă</translation>
 <translation id="8106045200081704138">Cu acces permis pentru mine</translation>
@@ -712,6 +725,7 @@
 <translation id="8466234950814670489">Arhivă .tar</translation>
 <translation id="8475647382427415476">Momentan, Google Drive nu a putut sincroniza „<ph name="FILENAME" />”. Google Drive va încerca din nou mai târziu.</translation>
 <translation id="8477649328507734757">Cercuri</translation>
+<translation id="8484284835977497781">Alege dintre fotografiile recente.</translation>
 <translation id="8487700953926739672">Disponibil offline</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="8525306231823319788">Ecran complet</translation>
@@ -744,8 +758,10 @@
 <translation id="8860454412039442620">Foaie de calcul Excel</translation>
 <translation id="8866284467018526531">Arabă, transliterație</translation>
 <translation id="8900820606136623064">Maghiară</translation>
+<translation id="8903931173357132290">Absolvent</translation>
 <translation id="8919081441417203123">Daneză</translation>
 <translation id="8965697826696209160">Nu există spațiu suficient.</translation>
+<translation id="8970501467542182729">Fișierul este creat pentru un computer care folosește software Macintosh. Acesta nu este compatibil cu dispozitivul tău care rulează sistemul de operare Chrome. <ph name="BEGIN_LINK_HELP" />Află mai multe<ph name="END_LINK_HELP" /> despre deschiderea fișierelor în sistemul de operare Chrome.</translation>
 <translation id="8997962250644902079">Chineză (tradițională) Pinyin</translation>
 <translation id="9017798300203431059">Rusă fonetică</translation>
 <translation id="9034924485347205037">Fișiere Linux</translation>

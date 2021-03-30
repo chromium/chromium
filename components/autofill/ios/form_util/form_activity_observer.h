@@ -44,12 +44,12 @@ class FormActivityObserver {
   // It is in a JSON format and can be decoded by autofill::ExtractFormsData.
   // It is a list (for compatibility reason) containing 0 or 1 dictionary.
   // The dictionary has some element containing some form attributes (HTML or
-  // computed ('name', 'action', 'is_formless_checkout'...) and a 'field'
-  // element containing a list of dictionaries, each representing a field of the
-  // form and contianing some attributes ('name', 'type',...).
-  // |sender_frame| is the WebFrame that sent the form submission message.
-  // |sender_frame| can be null if frame messaging is not enabled (see
-  // web::WebState::ScriptCommandCallback comment for details).
+  // computed ('name', 'action', ...) and a 'field' element containing a list of
+  // dictionaries, each representing a field of the form and containing some
+  // attributes ('name', 'type', ...). |sender_frame| is the WebFrame that sent
+  // the form submission message. |sender_frame| can be null if frame messaging
+  // is not enabled (see web::WebState::ScriptCommandCallback comment for
+  // details).
   // TODO(crbug.com/881811): remove |form_in_main_frame| once frame messaging is
   // fully enabled.
   // TODO(crbug.com/881816): Update comment once WebFrame cannot be null.

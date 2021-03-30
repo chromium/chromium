@@ -21,8 +21,6 @@ class BrowserContext;
 class WebContents;
 }  // namespace content
 
-class NavigationPredictorRendererWarmupClient;
-
 // Keyed service that can be used to receive notifications about the URLs for
 // the next predicted navigation.
 class NavigationPredictorKeyedService : public KeyedService {
@@ -136,6 +134,25 @@ class NavigationPredictorKeyedService : public KeyedService {
   // Removes |observer| as the observer for next predicted navigation.
   void RemoveObserver(Observer* observer);
 
+  // Notifies |this| that the visibility of web contents tracked by |client| has
+  // changed or if user starts a new navigation corresponding to |web_contents|.
+  // Might be called more than once with the same |is_in_foreground| and
+  // |web_contents| in case user starts a new navigation with same
+  // |web_contents|.
+  void OnWebContentsVisibilityChanged(content::WebContents* web_contents,
+                                      bool is_in_foreground);
+
+  // Notifies |this| that the web contents tracked by |client| has destroyed.
+  void OnWebContentsDestroyed(content::WebContents* web_contents);
+
+  // Overrides the tick clock used by |this| for testing.
+  void SetTickClockForTesting(const base::TickClock* tick_clock);
+
+  // Returns true if the browser app is likely to be in foreground and being
+  // interacted by the user. This is heuristically computed by observing loading
+  // and visibility of web contents.
+  bool IsBrowserAppLikelyInForeground() const;
+
  private:
   // List of observers are currently registered to receive notifications for the
   // next predicted navigations.
@@ -147,9 +164,11 @@ class NavigationPredictorKeyedService : public KeyedService {
   // Manages preconnecting to the user's default search engine.
   SearchEnginePreconnector search_engine_preconnector_;
 
-  // Manages warming up a spare renderer based on predictions.
-  std::unique_ptr<NavigationPredictorRendererWarmupClient>
-      renderer_warmup_client_;
+  std::unordered_set<content::WebContents*> visible_web_contents_;
+
+  base::TimeTicks last_web_contents_state_change_time_;
+
+  const base::TickClock* tick_clock_;
 
   DISALLOW_COPY_AND_ASSIGN(NavigationPredictorKeyedService);
 };

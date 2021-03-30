@@ -13,15 +13,17 @@
 <translation id="1272079795634619415">Դադարեցնել</translation>
 <translation id="1289742167380433257">Թրաֆիկը խնայելու համար այս էջի պատկերները Google-ի կողմից օպտիմալացվել են։</translation>
 <translation id="129382876167171263">Կայքերի կողմից պահված ֆայլերը կցուցադրվեն այստեղ</translation>
+<translation id="1317194122196776028">Հեռացնել այս կայքը</translation>
 <translation id="1364532808393826295"><ph name="APP_NAME" /> – <ph name="NOTIFICATION_MESSAGE" /></translation>
 <translation id="1369915414381695676"><ph name="SITE_NAME" /> կայքն ավելացվել է</translation>
 <translation id="1383876407941801731">Որոնում</translation>
 <translation id="1384959399684842514">Ներբեռնումը դադարեցվել է</translation>
 <translation id="1415402041810619267">URL-ը կրճատվել է</translation>
-<translation id="1431402976894535801">Արգելափակել ձեր ներկայության մասին տեղեկությունների հասանելիությունը կայքերի համար</translation>
 <translation id="1446450296470737166">Տրամադրել ամբողջական հսկողություն MIDI սարքերի նկատմամբ</translation>
 <translation id="1509960214886564027">Շատ կայքերում գործառույթները կարող են չաշխատել։</translation>
 <translation id="1620510694547887537">Տեսախցիկ</translation>
+<translation id="1644574205037202324">Պատմություն</translation>
+<translation id="1647582022260550163">Իսկապե՞ս ուզում եք վերակայել թույլտվությունները և մաքրել քուքիներն ու մյուս տվյալները։</translation>
 <translation id="1660204651932907780">Թույլ տալ կայքերին նվագարկել ձայն (խորհուրդ է տրվում)</translation>
 <translation id="1677097821151855053">Քուքիները և կայքի այլ տվյալներ օգտագործվում են ձեզ հիշելու համար։ Դա անհրաժեշտ է, որպեսզի, օրինակ, դուք կարողանաք հաշիվ մտնել կամ ձեզ անհատականացված գովազդ ցուցադրվի։ Բոլոր կայքերի քուքիները կարող եք կառավարել <ph name="BEGIN_LINK" />Քուքիների կարգավորումներ<ph name="END_LINK" /> բաժնում։</translation>
 <translation id="1688867105868176567">Ջնջե՞լ կայքի տվյալները</translation>
@@ -39,7 +41,6 @@
 <translation id="1994173015038366702">Կայքի URL</translation>
 <translation id="2025115093177348061">Լրացված իրականություն</translation>
 <translation id="2030769033451695672">Հպեք՝ <ph name="URL_OF_THE_CURRENT_TAB" /> վերադառնալու համար</translation>
-<translation id="2054665754582400095">Տվյալներ ձեր ներկայության մասին</translation>
 <translation id="2079545284768500474">Հետարկել</translation>
 <translation id="2091887806945687916">Ձայն</translation>
 <translation id="2107397443965016585">Հարցնել՝ նախքան թույլատրելը կայքերին նվագարկել պաշտպանված բովանդակություն (խորհուրդ է տրվում)</translation>
@@ -82,7 +83,6 @@
 <translation id="3114012059975132928">Տեսանվագարկիչ</translation>
 <translation id="3115898365077584848">Ցուցադրել տեղեկությունները</translation>
 <translation id="3123473560110926937">Արգելափակված է որոշ կայքերում</translation>
-<translation id="3165371858310906303">Հարցնել, երբ որևէ կայք ուզենա տեղեկություններ ստանալ ձեր ներկայության մասին</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> պահված տվյալներ</translation>
 <translation id="321187648315454507">Որպեսզի <ph name="APP_NAME" />-ին թույլատրեք ձեզ ծանուցումներ ուղարկել, միացրեք նաև ծանուցումները <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />։</translation>
 <translation id="3227137524299004712">Խոսափող</translation>
@@ -93,7 +93,6 @@
 <translation id="3386292677130313581">Հարցնել՝ նախքան ձեր տեղադրությունը կայքերին հասանելի դարձնելը (խորհուրդ է տրվում)</translation>
 <translation id="3538390592868664640">Արգելել կայքերին ստեղծել շրջակայքի եռաչափ քարտեզը և հետագծել տեսախցիկի դիրքը</translation>
 <translation id="3586500876634962664">Տեսախցիկի և խոսափողի օգտագործում</translation>
-<translation id="3587482841069643663">Բոլորը</translation>
 <translation id="358794129225322306">Թույլ տալ կայքին ավտոմատ ներբեռնել մեկից ավել ֆայլեր։</translation>
 <translation id="3594780231884063836">Անջատել տեսանյութի ձայնը</translation>
 <translation id="3596414637720633074">Արգելափակել կողմնակի կայքերի քուքիները ինկոգնիտո ռեժիմում</translation>
@@ -101,9 +100,11 @@
 <translation id="3744111561329211289">Ֆոնային համաժամացում</translation>
 <translation id="3763247130972274048">10 վ առաջ/հետ անցնելու համար կրկնակի հպեք տեսանյութի աջ/ձախ մասում</translation>
 <translation id="381841723434055211">Հեռախոսահամարներ</translation>
+<translation id="3835233591525155343">Սարքի օգտագործում</translation>
 <translation id="385051799172605136">Հետ</translation>
 <translation id="3859306556332390985">Որոնել դեպի առաջ</translation>
 <translation id="3955193568934677022">Թույլ տալ կայքերին նվագարկել պաշտպանված բովանդակությունը (խորհուրդ է տրվում)</translation>
+<translation id="3967822245660637423">Ներբեռնումն ավարտվեց</translation>
 <translation id="3987993985790029246">Պատճենել հղումը</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
 <translation id="4002066346123236978">Վերնագիր</translation>
@@ -117,6 +118,7 @@
 <translation id="429312253194641664">Կայքում մեդիա ֆայլ է նվագարկվում</translation>
 <translation id="42981349822642051">Ընդարձակել</translation>
 <translation id="4336434711095810371">Մաքրել բոլոր տվյալները</translation>
+<translation id="4402755511846832236">Արգելել կայքերին տեղեկանալ, երբ դուք ակտիվորեն օգտագործում եք այս սարքը</translation>
 <translation id="4433925000917964731">Էջի Lite տարբերակը տրամադրվել է Google-ի կողմից</translation>
 <translation id="4434045419905280838">Ելնող պատուհաններ և վերահղում</translation>
 <translation id="445467742685312942">Թույլատրել կայքերին նվագարկել պաշտպանված բովանդակություն</translation>
@@ -129,6 +131,7 @@
 <translation id="4670064810192446073">Վիրտուալ իրականություն</translation>
 <translation id="4708011789095599544">Մաքրե՞լ այս կայքի քուքիներն ու մյուս տվյալները։</translation>
 <translation id="4751476147751820511">Շարժման և լուսավորության տվիչներ</translation>
+<translation id="4836046166855586901">Հարցնել, երբ որևէ կայք ուզում է տեղեկանալ, երբ դուք ակտիվորեն օգտագործում եք այս սարքը</translation>
 <translation id="4883854917563148705">Կառավարվող կարգավորումները հնարավոր չէ վերակայել</translation>
 <translation id="4887024562049524730">Կայքերի համար թույլտվություն խնդրել՝ օգտագործելու վիրտուալ իրականության ձեր սարքերն ու տվյալները (խորհուրդ է տրվում)</translation>
 <translation id="4962975101802056554">Չեղարկել սարքի բոլոր թույլտվությունները</translation>
@@ -140,6 +143,7 @@
 <translation id="5063480226653192405">Վիճակագրություն</translation>
 <translation id="5100237604440890931">Կոծկված - ընդլայնելու համար սեղմեք</translation>
 <translation id="5123685120097942451">Ինկոգնիտո ներդիր</translation>
+<translation id="5186036860380548585">Գործողությունը հասանելի է էկրանի վերին մասում</translation>
 <translation id="5197729504361054390">Ձեր ընտրած կոնտակտները հասանելի կդառնան <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> կայքին:</translation>
 <translation id="528192093759286357">Լիաէկրան ռեժիմից դուրս գալու համար քաշեք վերևից և հպեք «Հետ» կոճակին:</translation>
 <translation id="5300589172476337783">Ցույց տալ</translation>
@@ -278,6 +282,7 @@
 <translation id="8447861592752582886">Արգելել սարքի օգտագործումը</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 օգտագործվող քուքի}one{# օգտագործվող քուքի}other{# օգտագործվող քուքի}}</translation>
 <translation id="8463851957836045671">Կայքը բեռնվում է արագ</translation>
+<translation id="8487700953926739672">Մատչելի է անցանց ռեժիմում</translation>
 <translation id="851751545965956758">Արգելել կայքերին միանալ սարքերին</translation>
 <translation id="8525306231823319788">Լիաէկրան</translation>
 <translation id="857943718398505171">Թույլատրված է (հանձնարարելի)</translation>
@@ -300,10 +305,12 @@
 <translation id="894871326938397531">Դուրս գա՞լ ինկոգնիտո ռեժիմից</translation>
 <translation id="8958424370300090006">Արգելափակել քուքիները կոնկրետ կայքի համար:</translation>
 <translation id="8959122750345127698">Նավարկումն անհասանելի է՝ <ph name="URL" /></translation>
+<translation id="8986362086234534611">Հեռացնել</translation>
 <translation id="9019902583201351841">Կառավարվում է ձեր ծնողների կողմից</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{«<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}one{«<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}other{«<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}}</translation>
 <translation id="913657688200966289">Միացնել <ph name="APP_NAME" />-ի թույլտվությունները <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />։</translation>
+<translation id="930525582205581608">Հեռացնե՞լ այս կայքը</translation>
 <translation id="965817943346481315">Արգելափակել, եթե կայքը հոգնեցնող կամ մոլորեցնող գովազդ է ցուցադրում (խորհուրդ է տրվում)</translation>
 <translation id="967624055006145463">Պահված տվյալներ</translation>
 </translationbundle>

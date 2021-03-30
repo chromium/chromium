@@ -7,11 +7,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_params.h"
 #include "ui/views/layout/box_layout.h"
-
-// static
-const char
-    PageActionIconContainerView::kPageActionIconContainerViewClassName[] =
-        "PageActionIconContainerView";
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 PageActionIconContainerView::PageActionIconContainerView(
     const PageActionIconParams& params)
@@ -28,10 +24,6 @@ PageActionIconContainerView::PageActionIconContainerView(
 
 PageActionIconContainerView::~PageActionIconContainerView() = default;
 
-const char* PageActionIconContainerView::GetClassName() const {
-  return kPageActionIconContainerViewClassName;
-}
-
 void PageActionIconContainerView::ChildPreferredSizeChanged(
     views::View* child) {
   PreferredSizeChanged();
@@ -40,3 +32,6 @@ void PageActionIconContainerView::ChildPreferredSizeChanged(
 void PageActionIconContainerView::AddPageActionIcon(views::View* icon) {
   AddChildView(icon);
 }
+
+BEGIN_METADATA(PageActionIconContainerView, views::View)
+END_METADATA

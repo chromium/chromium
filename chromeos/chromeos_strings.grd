@@ -21,7 +21,6 @@
     <output filename="chromeos_strings_es-419.pak" type="data_package" lang="es-419" />
     <output filename="chromeos_strings_et.pak" type="data_package" lang="et" />
     <output filename="chromeos_strings_fa.pak" type="data_package" lang="fa" />
-    <output filename="chromeos_strings_fake-bidi.pak" type="data_package" lang="fake-bidi" />
     <output filename="chromeos_strings_fi.pak" type="data_package" lang="fi" />
     <output filename="chromeos_strings_fil.pak" type="data_package" lang="fil" />
     <output filename="chromeos_strings_fr.pak" type="data_package" lang="fr" />
@@ -31,6 +30,7 @@
     <output filename="chromeos_strings_hr.pak" type="data_package" lang="hr" />
     <output filename="chromeos_strings_hu.pak" type="data_package" lang="hu" />
     <output filename="chromeos_strings_id.pak" type="data_package" lang="id" />
+    <output filename="chromeos_strings_is.pak" type="data_package" lang="is" />
     <output filename="chromeos_strings_it.pak" type="data_package" lang="it" />
     <output filename="chromeos_strings_ja.pak" type="data_package" lang="ja" />
     <output filename="chromeos_strings_kn.pak" type="data_package" lang="kn" />
@@ -62,6 +62,10 @@
     <output filename="chromeos_strings_vi.pak" type="data_package" lang="vi" />
     <output filename="chromeos_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
     <output filename="chromeos_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+
+    <!-- Pseudolocales -->
+    <output filename="chromeos_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="chromeos_strings_en-XA.pak" type="data_package" lang="en-XA" />
   </outputs>
   <translations>
     <file path="strings/chromeos_strings_af.xtb" lang="af" />
@@ -146,7 +150,7 @@
     <file path="strings/chromeos_strings_zh-TW.xtb" lang="zh-TW" />
     <file path="strings/chromeos_strings_zu.xtb" lang="zu" />
   </translations>
-  <release seq="1" allow_pseudo="false">
+  <release seq="1">
     <messages fallback_to_english="true">
       <message name="IDS_ASSISTANT_SCREEN_CONTEXT_QUERY_FALLBACK_TEXT" desc="Message shown in Assistant UI when a query for content related to the screen context returns no results.">
         I can't find anything on your screen I can help with.
@@ -184,6 +188,12 @@ Try tapping the mic to ask me anything.
       <!-- Status tray enterprise management. -->
       <message name="IDS_ASH_ENTERPRISE_DEVICE_MANAGED_BY" desc="Text for notifications showing that this device is enterprise managed. Used when the manager is available. MANAGER can be a domain or an email address.">
         This <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is managed by <ph name="MANAGER">$2<ex>acmecorp.com</ex></ph>.
+      </message>
+      <message name="IDS_ASH_SHORT_MANAGED_BY" desc="A short version of text showing that this device is enterprise managed. Used when the manager is available. MANAGER can be a domain or an email address.">
+        Managed by <ph name="MANAGER">$1<ex>acmecorp.com</ex></ph>
+      </message>
+      <message name="IDS_ASH_SHORT_MANAGED_BY_MULTIPLE" desc="A short version of text showing that this device is managed by two entities. Used when the managers is available. FIRST_MANAGER and SECOND_MANAGER can be domains or email addresses.">
+        Managed by <ph name="FIRST_MANAGER">$1<ex>acmecorp.com</ex></ph> and <ph name="SECOND_MANAGER">$2<ex>rusticbakery.com</ex></ph>
       </message>
       <message name="IDS_ASH_ENTERPRISE_DEVICE_MANAGED" desc="Text for notifications showing that this device is enterprise managed. Used when the manager is not available (e.g. Active Directory).">
         This <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is enterprise managed
@@ -322,10 +332,14 @@ Try tapping the mic to ask me anything.
         Unknown error.
       </message>
       <message name="IDS_REQUEST_PIN_DIALOG_ATTEMPTS_LEFT" desc="The text displayed in the certificate provider PIN request dialog about the number of attempts left">
-        <ph name="ATTEMPTS_LEFT">$1<ex>3</ex></ph> attempts left
+        {ATTEMPTS_LEFT, plural,
+        =1 {{0} attempt left}
+        other {{0} attempts left}}
       </message>
       <message name="IDS_REQUEST_PIN_DIALOG_ERROR_ATTEMPTS" desc="The text displayed in the certificate provider PIN request dialog when the previous login attempt was unsuccessful but there are more attempts remaining. Includes the reason for the previous failure.">
-        <ph name="ERROR_MESSAGE">$1<ex>Invalid PIN.</ex></ph> <ph name="ATTEMPTS_LEFT">$2<ex>3</ex></ph> attempts left
+        {ATTEMPTS_LEFT, plural,
+        =1 {<ph name="ERROR_MESSAGE">{1}<ex>Invalid PIN.</ex></ph> {0} attempt left}
+        other {<ph name="ERROR_MESSAGE">{1}<ex>Invalid PIN.</ex></ph> {0} attempts left}}
       </message>
 
       <!-- Print Management App -->
@@ -349,9 +363,6 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_PRINT_MANAGEMENT_TITLE" desc="The title of the print management app.">
         Print jobs
-      </message>
-      <message name="IDS_PRINT_MANAGEMENT_APP_NAME" desc="The app name of the print management app.">
-        Print Jobs
       </message>
       <message name="IDS_PRINT_MANAGEMENT_CLEAR_ALL_HISTORY_BUTTON_TEXT" desc="The label for the button that clears the print job history.">
         Clear all history
@@ -469,15 +480,6 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SCANNING_APP_SCANNER_DROPDOWN_LABEL" desc="The label for the dropdown that displays connected scanners.">
         Scanner
       </message>
-      <message name="IDS_SCANNING_APP_NO_SCANNERS_HELP_LINK_LABEL" desc="The help label link displayed below the scanner dropdown when no scanners are available.">
-        Learn more
-      </message>
-      <message name="IDS_SCANNING_APP_NO_SCANNERS_HELP_TEXT" desc="The help text displayed below the scanner dropdown when no scanners are available.">
-        Can't connect to scanners?
-      </message>
-      <message name="IDS_SCANNING_APP_NO_SCANNERS_TEXT" desc="The text displayed in the scanner dropdown when no scanners are available.">
-        No available scanners
-      </message>
       <message name="IDS_SCANNING_APP_SOURCE_DROPDOWN_LABEL" desc="The label for the dropdown that displays available scan sources (e.g. flatbed, document feeder, etc.).">
         Source
       </message>
@@ -548,7 +550,7 @@ Try tapping the mic to ask me anything.
         More settings
       </message>
       <message name="IDS_SCANNING_APP_SCAN_PREVIEW_HELPER_TEXT" desc="The text displayed in the scan preview that explains how to scan a document.">
-        Place your document on the scanner and select <ph name="SPAN_BEGIN">&lt;span id="boldHelperText"&gt;</ph>Scan<ph name="SPAN_END">&lt;/span&gt;</ph> to get started
+        Place your document on the scanner and select Scan to get started
       </message>
       <message name="IDS_SCANNING_APP_SCAN_BUTTON_TEXT" desc="The text displayed for the button that starts a scan.">
         Scan
@@ -564,17 +566,14 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_SCANNING_APP_FILE_SAVED_TEXT" desc="The text displayed in the Scanning App when a scan job is completed and the file is saved.">
         {COUNT, plural,
-        =1 {Scanned file saved}
-        other {Scanned files saved}}
+        =1 {Your file has been successfully scanned and saved to <ph name="LINK_BEGIN">&lt;a id="folderLink"&gt;</ph><ph name="FOLDER_NAME">$1<ex>My files</ex></ph><ph name="LINK_END">&lt;/a&gt;</ph>.}
+        other {Your files have been successfully scanned and saved to <ph name="LINK_BEGIN">&lt;a id="folderLink"&gt;</ph><ph name="FOLDER_NAME">$1<ex>My files</ex></ph><ph name="LINK_END">&lt;/a&gt;</ph>.}}
       </message>
       <message name="IDS_SCANNING_APP_DONE_BUTTON_TEXT" desc="The text displayed for the button the user clicks to return to the intial Scanning App page after a scan job is completed.">
         Done
       </message>
       <message name="IDS_SCANNING_APP_CANCEL_BUTTON_TEXT" desc="The text displayed for the button to cancel an ongoing scan job.">
         Cancel
-      </message>
-      <message name="IDS_SCANNING_APP_SHOW_FILE_LOCATION_LABEL" desc="The label for the button that opens the Files app. The Files app will open with the user's saved scan file highlighted.">
-        Show file location
       </message>
       <message name="IDS_SCANNING_APP_START_SCAN_FAILED_TOAST" desc="The error message displayed when a scan job fails to start.">
         Couldn't start scanning
@@ -608,6 +607,27 @@ Try tapping the mic to ask me anything.
         =1 {Scanning completed. 1 page scanned}
         other {Scanning completed. {NUMBER_OF_PAGES} pages scanned}}
       </message>
+      <message name="IDS_SCANNING_APP_SCANNING_IMAGES_ARIA_LABEL" desc="The text read by the screen reader announcing progress updates for an ongoing scan job.">
+        Scanning page <ph name="PAGE_NUM">$1<ex>2</ex></ph>. <ph name="PERCENTAGE_VALUE">$2<ex>50</ex></ph>% completed.
+      </message>
+      <message name="IDS_SCANNING_APP_SCANNERS_LOADING_TEXT" desc="The text displayed while the app is searching for available scanners">
+        Looking for scanners
+      </message>
+      <message name="IDS_SCANNING_APP_NO_SCANNERS_TEXT" desc="The text displayed when there are no available scanners found for scanning">
+        No scanners available
+      </message>
+      <message name="IDS_SCANNING_APP_NO_SCANNERS_SUBTEXT" desc="The subtext displayed when there are no available scanners found for scanning">
+        Make sure the scanner is turned on and available via your network or a direct connection
+      </message>
+      <message name="IDS_SCANNING_APP_LEARN_MORE_BUTTON_LABEL" desc="The label for the button that leads to a help support article to learn more about scanning.">
+        Learn more
+      </message>
+      <message name="IDS_SCANNING_APP_RETRY_BUTTON_LABEL" desc="The label for the button that retries searching for available scanners.">
+        Retry
+      </message>
+      <message name="IDS_SCANNING_APP_EDIT_BUTTON_LABEL" desc="The label for the button that opens the Media app for editing scanned files.">
+        Edit
+      </message>
 
       <!-- Diagnostics App -->
       <message name="IDS_DIAGNOSTICS_TITLE" desc="The title of the diagnostics app.">
@@ -618,6 +638,18 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_DIAGNOSTICS_BATTERY_TITLE" desc="The title of the diagnostics battery section which shows users' information about their computer battery.">
         Battery
+      </message>
+      <message name="IDS_DIAGNOSTICS_BATTERY_CHARGING" desc="The title of the diagnostics battery section which shows users' information about their computer battery.">
+        Charging, <ph name="TIME_VALUE">$1<ex>2 hours and 18 minutes</ex></ph> until full
+      </message>
+      <message name="IDS_DIAGNOSTICS_BATTERY_DISCHARGING" desc="The title of the diagnostics battery section which shows users' information about their computer battery.">
+        <ph name="TIME_VALUE">$1<ex>2 hours and 18 minutes</ex></ph> left
+      </message>
+      <message name="IDS_DIAGNOSTICS_BATTERY_CALCULATING_TEXT" desc="Battery status text indicating transitionary state where battery values are being calculated.">
+        Calculating...
+      </message>
+      <message name="IDS_DIAGNOSTICS_BATTERY_FULL_TEXT" desc="Battery status text indicating the battery is fully charged.">
+        Battery full
       </message>
       <message name="IDS_DIAGNOSTICS_CPU_TITLE" desc="The title of the diagnostics CPU section which shows users' information about their computer CPU usage.">
         CPU
@@ -653,16 +685,16 @@ Try tapping the mic to ask me anything.
         Remaining charge
       </message>
       <message name="IDS_DIAGNOSTICS_SESSION_LOG_LABEL" desc="The label for the button that opens the session log for the diagnostics app.">
-        Save Session log
-      </message>
-      <message name="IDS_DIAGNOSTICS_USED_MEMORY_LABEL" desc="The label for the progress bar that displays the amount of used memory on a users' device." translateable="false">
-        Used memory
+        Save session log
       </message>
       <message name="IDS_DIAGNOSTICS_BATTERY_CHIP_TEXT" desc="The text for a battery's full charge capacity represented in milliamp hours.">
         <ph name="CHARGE_VALUE">$1<ex>6000</ex></ph>mAh Battery
       </message>
-      <message name="IDS_DIAGNOSTICS_CPU_CHIP_TEXT" desc="The text that displays the CPU name and thread count.">
-        <ph name="CPU_NAME">$1<ex>Intel(R) Celeron(R) N4020 CPU @ 1,10Ghz</ex></ph> (<ph name="THREAD_COUNT">$2<ex>8</ex></ph> threads)
+      <message name="IDS_DIAGNOSTICS_CPU_CHIP_TEXT" desc="The text that displays the CPU name, thread count, and max CPU speed.">
+        <ph name="CPU_NAME">$1<ex>Intel(R) Celeron(R) N4020 CPU @ 1,10Ghz</ex></ph> (<ph name="THREAD_COUNT">$2<ex>8</ex></ph> threads, <ph name="CPU_MAX_CLOCK_SPEED">$3<ex>3.90</ex></ph>GHz)
+      </message>
+      <message name="IDS_DIAGNOSTICS_BATTERY_FULL_MESSAGE" desc="The message shown when the battery is full and the charge test can not be run.">
+        To test battery charging rate, let your battery drain for a short period
       </message>
       <message name="IDS_DIAGNOSTICS_BATTERY_HEALTH_LABEL" desc="The label for a battery's health.">
         Battery health
@@ -670,29 +702,35 @@ Try tapping the mic to ask me anything.
       <message name="IDS_DIAGNOSTICS_BATTERY_HEALTH_TEXT" desc="The text for the battery's health percentage.">
         <ph name="PERCENTAGE_VALUE">$1<ex>92</ex></ph>%
       </message>
-      <message name="IDS_DIAGNOSTICS_CPU_SPEED_LABEL" desc="The label for CPU speed.">
-        CPU Speed
+      <message name="IDS_DIAGNOSTICS_CPU_SPEED_LABEL" desc="The label for the current CPU speed.">
+        Current speed
       </message>
       <message name="IDS_DIAGNOSTICS_CPU_TEMPERATURE_TEXT" desc="The text for the current CPU temperature in Celsius.">
         <ph name="TEMPERATURE_C">$1<ex>25</ex></ph>° C
       </message>
       <message name="IDS_DIANOSTICS_LEARN_MORE_LABEL" desc="The label for the button that links to a help support article to learn more about the test routines being run.">
-        Learn more in the Help Center
+        Learn more in Help Center
+      </message>
+      <message name="IDS_DIAGNOSTICS_LEARN_MORE_LABEL_SHORT" desc="The label for the text link that leads to a help support article to learn more about the test routines being run.">
+        Learn more
       </message>
       <message name="IDS_DIAGNOSTICS_DEVICE_INFO_TEXT" desc="The text that displays the device's name and milestone version.">
-        (<ph name="BOARD_NAME">$1<ex>Atlas</ex></ph>, version <ph name="MILESTONE_VERSION">$2<ex>88</ex></ph>)
+        <ph name="BOARD_NAME">$1<ex>Atlas</ex></ph>, version <ph name="MILESTONE_VERSION">$2<ex>88</ex></ph>
+      </message>
+      <message name="IDS_DIAGNOSTICS_VERSION_INFO_TEXT" desc="The text that displays the device's milestone version. Substring of 'Atlas, version 88'">
+        version <ph name="MILESTONE_VERSION">$1<ex>88</ex></ph>
       </message>
       <message name="IDS_DIAGNOSTICS_BATTERY_HEALTH_TOOLTIP_TEXT" desc="The tooltip that states that battery capacity declines with usage.">
-        Batteries capacity declines with usage
+        Battery capacity declines with usage
       </message>
-      <message name="IDS_DIAGNOSTICS_CYCLE_COUNT_TOOLTIP_TEXT" desc="The tooltip that states that a battery is considered consumed once it reaches its cycle count limit.">
-        The battery is considered consumed once it reaches the limit
+      <message name="IDS_DIAGNOSTICS_CYCLE_COUNT_TOOLTIP_TEXT" desc="The tooltip that explains that cycle count is the number of times the battery has gone through a full charging cycle.">
+        The number of times your battery has gone through a full charging cycle
       </message>
       <message name="IDS_DIAGNOSTICS_CURRENT_NOW_TOOLTIP_TEXT" desc="The tooltip that states the current rate at which a user's device is charging or discharging.">
         The rate at which the device is currently charging or discharging
       </message>
       <message name="IDS_DIAGNOSTICS_CPU_USAGE_TOOLTIP_TEXT" desc="The tooltip for CPU usage.">
-        This measures the CPU usage, and is an aggregation of all cores
+        This is an aggregation of all cores
       </message>
       <message name="IDS_DIANOSTICS_ROUTINE_NAME_TEXT" desc="The text that informs the user which test is currently running.">
         Running <ph name="TEST_NAME">$1<ex>Charging rate</ex></ph> test...
@@ -719,10 +757,10 @@ Try tapping the mic to ask me anything.
         Memory
       </message>
       <message name="IDS_CHARGE_TEST_RESULT" desc="The result text for charging routine.">
-        Charged <ph name="RATE">$1<ex>10%</ex></ph> in <ph name="NUM_SECONDS">$1<ex>10</ex></ph> seconds.
+        Charged <ph name="RATE">$1<ex>10%</ex></ph> in <ph name="NUM_SECONDS">$2<ex>10</ex></ph> seconds.
       </message>
       <message name="IDS_DISCHARGE_TEST_RESULT" desc="The result text for discharging routine.">
-        Discharged <ph name="RATE">$1<ex>10%</ex></ph> in <ph name="NUM_SECONDS">$1<ex>10</ex></ph> seconds.
+        Discharged <ph name="RATE">$1<ex>10%</ex></ph> in <ph name="NUM_SECONDS">$2<ex>10</ex></ph> seconds.
       </message>
       <message name="IDS_DIAGNOSTICS_TEST_FAILURE_TEXT" desc="The text displayed when a test fails.">
         Test failed
@@ -739,17 +777,23 @@ Try tapping the mic to ask me anything.
       <message name="IDS_DIAGNOSTICS_TEST_SUCCESS_BADGE_TEXT" desc="The text displayed to indicate that a test passed.">
         SUCCESS
       </message>
+      <message name="IDS_DIAGNOSTICS_TEST_QUEUED_BADGE_TEXT" desc="The text displayed to indicate that a test is currently queued.">
+        QUEUED
+      </message>
+      <message name="IDS_DIAGNOSTICS_TEST_STOPPED_BADGE_TEXT" desc="The text displayed to indicate that a test has been stopped.">
+        STOPPED
+      </message>
       <message name="IDS_DIAGNOSTICS_TEST_RUNNING_TEXT" desc="The text displayed while a test is running.">
         Test running
       </message>
       <message name="IDS_DIAGNOSTICS_HIDE_REPORT_TEXT" desc="The text for the button that closes the test summary report.">
-        Hide Report
+        Hide report
       </message>
       <message name="IDS_DIAGNOSTICS_SEE_REPORT_TEXT" desc="The text for the button that shows the test summary report">
-        See Report
+        See report
       </message>
       <message name="IDS_DIANOSTICS_ROUTINE_ENTRY_TEXT" desc="The text that shows the name of a test.">
-        <ph name="TEST_NAME">$1<ex>Stress</ex></ph> Test
+        <ph name="TEST_NAME">$1<ex>Stress</ex></ph> test
       </message>
       <message name="IDS_DIAGNOSTICS_CHARGE_RUN_TESTS_BUTTON_TEXT" desc="The text for the button used to run the battery charge test.">
         Run Charge test
@@ -769,11 +813,35 @@ Try tapping the mic to ask me anything.
       <message name="IDS_DIAGNOSTICS_STOP_TEST_BUTTON_TEXT" desc="The text for the button used to stop a test.">
         Stop test
       </message>
-      <message name="IDS_DIAGNOSTICS_CPU_SPEED_TEXT" desc="The text that displays the CPU speed. GHz is an SI unit for gigahertz.">
-        <ph name="CURRENT">$1<ex>1.6</ex></ph>GHz / <ph name="MAX">$2<ex>1.9</ex></ph>GHz
+      <message name="IDS_DIAGNOSTICS_CPU_SPEED_TEXT" desc="The text that displays the current CPU speed. GHz is an SI unit for gigahertz.">
+        <ph name="CURRENT">$1<ex>1.6</ex></ph>GHz
       </message>
-      <message name="IDS_DIAGNOSTICS_TOTAL_MEMORY_LABEL" desc="The label for the total amount of memory on a device." translateable="false">
-        Total Memory
+      <message name="IDS_DIAGNOSTICS_MEMORY_AVAILABLE_TEXT" desc="The text that displays the amount of memory available on a users' device.">
+        <ph name="AVAILABLE_MEMORY">$1<ex>13.12</ex></ph> GB of <ph name="TOTAL_MEMORY">$2<ex>16</ex></ph> GB available
+      </message>
+      <message name="IDS_DIAGNOSTICS_CANCELLED_TEST_TEXT" desc="The text that displays the test that was cancelled.">
+        <ph name="TEST_NAME">$1<ex>Stress</ex></ph> test has been cancelled
+      </message>
+      <message name="IDS_DIAGNOSTICS_SESSION_LOG_TOAST_TEXT_SUCCESS" desc="The text shown when the session log is successfully saved to the users' device.">
+        Download complete
+      </message>
+      <message name="IDS_DIAGNOSTICS_SESSION_LOG_TOAST_TEXT_FAILURE" desc="The text shown when the session log download fails.">
+        Download failed
+      </message>
+      <message name="IDS_DIAGNOSTICS_SELECT_DIALOG_TITLE" desc="The text used as the title of the select dialog used for choosing the folder to save the session log to.">
+        Select a folder to save to
+      </message>
+      <message name="IDS_DIAGNOSTICS_ROUTINE_REMAINING_MIN" desc="The text used to describe the status of running routine, specifically on how many more minutes are remaining. MIN_REMAINING is assumed to be greater than 1.">
+        About <ph name="MIN_REMAINING">$1<ex>3</ex></ph> minutes remaining
+      </message>
+      <message name="IDS_DIAGNOSTICS_ROUTINE_REMAINING_MIN_FINAL" desc="The text used to describe the status of running routine, specifically when there are less than a minute left.">
+        Less than a minute remaining
+      </message>
+      <message name="IDS_DIAGNOSTICS_ROUTINE_REMAINING_MIN_FINAL_LARGE" desc="The text used to describe the status of running routine, specifically when a large routine is taking longer than expected.">
+        Just a few more minutes...
+      </message>
+      <message name="IDS_DIAGNOSTICS_CPU_BANNER_MESSAGE" desc="The text shown while a user is running their CPU test.">
+        Running a CPU test may affect your system performance
       </message>
 
       <!-- Quick Answers -->
@@ -785,6 +853,9 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_QUICK_ANSWERS_TRANSLATION_TITLE_TEXT" desc="The title text format string used for Quick Answers translation result card. The first placeholder contains the source text in foreign language and the second placeholder contains the detected source language name displayed in system locale.">
         <ph name="QUERY_TEXT">$1<ex>prodotto</ex></ph> · <ph name="SOURCE_LANGUAGE_NAME">$2<ex>Italian</ex></ph>
+      </message>
+      <message name="IDS_QUICK_ANSWERS_UNIT_CONVERSION_RESULT_TEXT" desc="The result text format string used for Quick Answers unit conversion result card. The first placeholder contains the value of result unit and the second placeholder contains the display name of the result unit.">
+        <ph name="VALUE">$1<ex>220.462</ex></ph> <ph name="DISPLAY_NAME">$2<ex>pounds</ex></ph>
       </message>
 
     <!-- Common Network type strings -->
@@ -823,7 +894,6 @@ Try tapping the mic to ask me anything.
       </message>
 
       <!-- Open Network (ONC)-->
-      <!-- TODO(crbug.com/1142857) strings are in process of being moved here from //chrome/app/ -->
       <message name="IDS_ONC_MAC_ADDRESS" desc="ONC Property label for MacAddress">
         MAC address
       </message>
@@ -832,6 +902,282 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_ONC_WIFI_SIGNAL_STRENGTH" desc="ONC Property label for WiFi.SignalStrength">
         Signal strength
+      </message>
+      <message name="IDS_ONC_IPV4_ADDRESS" desc="ONC Property label for ipv4-IPAddress">
+        IP address
+      </message>
+      <message name="IDS_ONC_IPV4_GATEWAY" desc="ONC Property label for ipv4-Gateway">
+        Gateway
+      </message>
+      <message name="IDS_ONC_IPV4_NETMASK" desc="ONC Property label for ipv4-netmask">
+        Subnet mask
+      </message>
+      <message name="IDS_ONC_IPV6_ADDRESS" desc="ONC Property label for ipv6-Address">
+        IPv6 address
+      </message>
+      <message name="IDS_ONC_CONNECTED" desc="Settings > Internet, text in network summary when a network is connected.">
+        Connected
+      </message>
+      <message name="IDS_ONC_CONNECTING" desc="Settings > Internet, text in network summary when a network is connecting.">
+        Connecting
+      </message>
+      <message name="IDS_ONC_PORTAL_STATE" desc="Settings > Internet, label in network details page for the captive portal state.">
+        Portal State
+      </message>
+      <message name="IDS_ONC_PORTAL_STATE_UNKNOWN" desc="Settings > Internet, label when the captive portal state is unknown">
+        Unknown
+      </message>
+      <message name="IDS_ONC_PORTAL_STATE_ONLINE" desc="Settings > Internet, label when the captive portal state is online and there is no portal state is detected">
+        Online
+      </message>
+      <message name="IDS_ONC_PORTAL_STATE_NO_INTERNET" desc="Settings > Internet, text in network details page when no internet connection is available.">
+        No internet
+      </message>
+      <message name="IDS_ONC_NOT_CONNECTED" desc="Settings > Internet, text in network summary when a network is not connecting or connected.">
+        Not Connected
+      </message>
+      <message name="IDS_ONC_PORTAL_STATE_PORTAL" desc="Settings > Internet, text in network details page when a portal state was detected.">
+        Captive portal detected
+      </message>
+      <message name="IDS_ONC_PORTAL_STATE_PORTAL_SUSPECTED" desc="Settings > Internet, text in network details page when a portal state is suspected.">
+        Captive portal suspected
+      </message>
+      <message name="IDS_ONC_PORTAL_STATE_PROXY_AUTH" desc="Settings > Internet, text in network details page when a portal state was detected.">
+        Proxy authentication required
+      </message>
+      <message name="IDS_ONC_WIFI_FREQUENCY" desc="ONC Property label for WiFi.Frequency">
+        Frequency
+      </message>
+      <message name="IDS_ONC_WIFI_PASSWORD" desc="ONC Property label for WiFi.Password">
+        Password
+      </message>
+      <message name="IDS_ONC_WIFI_SECURITY" desc="ONC Property label for WiFi.Security">
+        Security
+      </message>
+      <message name="IDS_ONC_WIFI_SECURITY_NONE" desc="In settings > Internet, a string specifying security type = none.">
+        None
+      </message>
+      <message name="IDS_ONC_WIFI_SECURITY_PSK" desc="In settings > Internet, a string specifying security type = PSK (either WPA-PSK or RSN-PSK).">
+        PSK (WPA or RSN)
+      </message>
+      <message name="IDS_ONC_WIFI_SECURITY_WEP" desc="In settings > Internet, a string specifying security type = WEP.">
+        WEP
+      </message>
+      <message name="IDS_ONC_WIFI_SECURITY_EAP" desc="In settings > Internet, a string specifying security type = EAP (802.1X).">
+        EAP
+      </message>
+      <message name="IDS_ONC_WIFI_SSID" desc="ONC Property label for WiFi.SSID">
+        SSID
+      </message>
+      <message name="IDS_ONC_WIFI_BSSID" desc="Settings > Network > Wifi Network Detail Page > label for BSSID property. BSSID is a a unique 48 bit identifier for a wireless access point.">
+        BSSID
+      </message>
+      <message name="IDS_ONC_VPN_HOST" desc="ONC Property label for VPN.Host">
+        Server hostname
+      </message>
+      <message name="IDS_ONC_VPN_TYPE" desc="ONC Property label for VPN.Type">
+        Provider type
+      </message>
+      <message name="IDS_ONC_VPN_IPSEC_GROUP" desc="ONC Property label for VPN.IPSec.Group">
+        Group name
+      </message>
+      <message name="IDS_ONC_VPN_THIRD_PARTY_VPN_PROVIDER_NAME" desc="ONC Property label for VPN.ThirdPartyVPN.ProviderName">
+        Provider name
+      </message>
+      <message name="IDS_ONC_VPN_OPENVPN_OTP" desc="ONC Property label for VPN.OpenVPN.OTP">
+        OTP
+      </message>
+      <message name="IDS_ONC_VPN_TYPE_L2TP_IPSEC" desc="ONC Property label for VPN.Type.L2TP-IPSec">
+        L2TP/IPsec
+      </message>
+      <message name="IDS_ONC_VPN_TYPE_L2TP_IPSEC_PSK" desc="ONC Property label for configuring VPN.Type.L2TP-IPSec with AuthenticationType = PSK">
+        L2TP/IPsec + pre-shared key
+      </message>
+      <message name="IDS_ONC_VPN_TYPE_L2TP_IPSEC_CERT" desc="ONC Property label for configuring VPN.Type.L2TP-IPSec  with AuthenticationType = Cert">
+        L2TP/IPsec + user certificate
+      </message>
+      <message name="IDS_ONC_VPN_OPENVPN_EXTRA_HOSTS" desc="ONC Property label for VPN.OpenVPN.ExtraHosts">
+        Extra hosts
+      </message>
+      <message name="IDS_ONC_VPN_IPSEC_PSK" desc="ONC Property label for VPN.IPSec.PSK">
+        Pre-shared key
+      </message>
+      <message name="IDS_ONC_VPN_PASSWORD" desc="ONC Property label for VPN.OpenVPN.Password or VPN.L2TP.Password">
+        Password
+      </message>
+      <message name="IDS_ONC_VPN_USERNAME" desc="ONC Property label for VPN.OpenVPN.Username or VPN.L2TP.Username">
+        Username
+      </message>
+      <message name="IDS_ONC_VPN_TYPE_OPENVPN" desc="Label for OpenVPN entry of provider type dropdown in Join VPN Network dialog in OS Settings. Note: OpenVPN is a brand name.">
+        OpenVPN
+      </message>
+      <message name="IDS_ONC_VPN_TYPE_ARCVPN" desc="ONC Property label for VPN.Type.ARCVPN">
+        Android VPN
+      </message>
+      <message name="IDS_ONC_CELLULAR_ACTIVATION_STATE" desc="ONC Property label for Cellular.ActivationState">
+        Activation status
+      </message>
+      <message name="IDS_ONC_CELLULAR_ACTIVATION_STATE_NOT_ACTIVATED" desc="ONC Property value when Cellular.ActivationStat = NotActivated">
+        Not activated
+      </message>
+      <message name="IDS_ONC_CELLULAR_ACTIVATION_STATE_ACTIVATED" desc="ONC Property value when Cellular.ActivationState = Activated">
+        Activated
+      </message>
+      <message name="IDS_ONC_CELLULAR_ACTIVATION_STATE_ACTIVATING" desc="ONC Property value when Cellular.ActivationState = Activating">
+        Activating
+      </message>
+      <message name="IDS_ONC_CELLULAR_ACTIVATION_STATE_PARTIALLY_ACTIVATED" desc="ONC Property value when Cellular.ActivationState = PartiallyActivated">
+        Partially activated
+      </message>
+      <message name="IDS_ONC_CELLULAR_ACTIVATION_STATE_NO_SERVICE" desc="ONC Property value when Cellular.ActivationState = NoService">
+        No service
+      </message>
+      <message name="IDS_ONC_CELLULAR_APN_AUTHENTICATION" desc="ONC Property label for APN-Authentication">
+        Authentication
+      </message>
+      <message name="IDS_ONC_CELLULAR_APN_ACCESS_POINT_NAME" desc="ONC Property label for APN-AccessPointName">
+        Access point name
+      </message>
+      <message name="IDS_ONC_CELLULAR_APN_ACCESS_POINT_NAME_NONE" desc="ONC Property label for APN-AccessPointName = none (or empty)">
+        None
+      </message>
+      <message name="IDS_ONC_CELLULAR_APN_USERNAME" desc="ONC Property label for APN-Username">
+        Username
+      </message>
+      <message name="IDS_ONC_CELLULAR_APN_PASSWORD" desc="ONC Property label for APN-Password">
+        Password
+      </message>
+      <message name="IDS_ONC_CELLULAR_APN_ATTACH" desc="ONC Property label for APN-Attach APN that is required by some cellular network providers in order to connect">
+        Attach APN
+      </message>
+      <message name="IDS_ONC_CELLULAR_APN_ATTACH_TOOLTIP_TEXT" desc="Text for help tooltip present in the Attach APN setting row informing users that the associated toggle may be required by some cellular network providers in order to connect">
+        Your carrier may require this option to connect to their network. Contact your carrier for details.
+      </message>
+      <message name="IDS_ONC_CELLULAR_SERVING_OPERATOR_NAME" desc="ONC Property label for Cellular.ServingOperator.Name">
+        Operator
+      </message>
+      <message name="IDS_ONC_CELLULAR_SERVING_OPERATOR_CODE" desc="ONC Property label for Cellular.ServingOperator.Code">
+        Operator code
+      </message>
+      <message name="IDS_ONC_CELLULAR_FAMILY" desc="ONC Property label for Cellular.Family">
+        Family
+      </message>
+      <message name="IDS_ONC_CELLULAR_FIRMWARE_REVISION" desc="ONC Property label for Cellular.FirmwareRevision">
+        Firmware revision
+      </message>
+      <message name="IDS_ONC_CELLULAR_HARDWARE_REVISION" desc="ONC Property label for Cellular.HardwareRevision">
+        Hardware revision
+      </message>
+      <message name="IDS_ONC_CELLULAR_HOME_PROVIDER_CODE" desc="ONC Property label for Cellular.HomeProvider.Code">
+        Home provider code
+      </message>
+      <message name="IDS_ONC_CELLULAR_HOME_PROVIDER_COUNTRY" desc="ONC Property label for Cellular.HomeProvider.Country">
+        Home provider country
+      </message>
+      <message name="IDS_ONC_CELLULAR_HOME_PROVIDER_NAME" desc="ONC Property label for Cellular.HomeProvider.Name">
+        Home provider name
+      </message>
+      <message name="IDS_ONC_CELLULAR_MANUFACTURER" desc="ONC Property label for Cellular.Manufacturer">
+        Manufacturer
+      </message>
+      <message name="IDS_ONC_CELLULAR_MODEL_ID" desc="ONC Property label for Cellular.ModelID">
+        Model ID
+      </message>
+      <message name="IDS_ONC_CELLULAR_NETWORK_TECHNOLOGY" desc="ONC Property label for Cellular.NetworkTechnology">
+        Technology
+      </message>
+      <message name="IDS_ONC_CELLULAR_ROAMING_STATE" desc="ONC Property label for Cellular.RoamingState">
+        Roaming status
+      </message>
+      <message name="IDS_ONC_CELLULAR_ROAMING_STATE_HOME" desc="ONC Property value when OncCellular.RoamingState = Home">
+        Home network, not roaming
+      </message>
+      <message name="IDS_ONC_CELLULAR_ROAMING_STATE_ROAMING" desc="ONC Property value when OncCellular.RoamingState = Roaming">
+        Roaming
+      </message>
+      <message name="IDS_ONC_EAP_ANONYMOUS_IDENTITY" desc="ONC Property label for EAP.AnonymousIdentity">
+        Anonymous Identity
+      </message>
+      <message name="IDS_ONC_EAP_IDENTITY" desc="ONC Property label for EAP.Identity">
+        Identity
+      </message>
+      <message name="IDS_ONC_EAP_INNER" desc="ONC Property label for EAP.Inner (Phase 2 authentication)">
+        EAP Phase 2 authentication
+      </message>
+      <message name="IDS_ONC_EAP_INNER_AUTOMATIC" desc="ONC Property value for EAP.Inner = Automatic">
+        Automatic
+      </message>
+      <message name="IDS_ONC_EAP_INNER_MD5" desc="ONC Property value for EAP.Inner = MD5">
+        EAP-MD5
+      </message>
+      <message name="IDS_ONC_EAP_INNER_MSCHAP" desc="ONC Property value for EAP.Inner = MSCHAP">
+        MSCHAP
+      </message>
+      <message name="IDS_ONC_EAP_INNER_MSCHAPV2" desc="ONC Property value for EAP.Inner = MSCHAPv2">
+        MSCHAPv2
+      </message>
+      <message name="IDS_ONC_EAP_INNER_PAP" desc="ONC Property value for EAP.Inner = PAP">
+        PAP
+      </message>
+      <message name="IDS_ONC_EAP_INNER_CHAP" desc="ONC Property value for EAP.Inner = CHAP">
+        CHAP
+      </message>
+      <message name="IDS_ONC_EAP_INNER_GTC" desc="ONC Property value for EAP.Inner = GTC">
+        GTC
+      </message>
+      <message name="IDS_ONC_EAP_OUTER" desc="ONC Property label for EAP.Outer (Method)">
+        EAP method
+      </message>
+      <message name="IDS_ONC_EAP_OUTER_LEAP" desc="ONC Property value for EAP.Outer = LEAP">
+        LEAP
+      </message>
+      <message name="IDS_ONC_EAP_OUTER_PEAP" desc="ONC Property value for EAP.Outer = PEAP">
+        PEAP
+      </message>
+      <message name="IDS_ONC_EAP_OUTER_TLS" desc="ONC Property value for EAP.Outer = TLS">
+        EAP-TLS
+      </message>
+      <message name="IDS_ONC_EAP_OUTER_TTLS" desc="ONC Property value for EAP.Outer = TTLS">
+        EAP-TTLS
+      </message>
+      <message name="IDS_ONC_EAP_SERVER_CA" desc="ONC Property label for EAP Server CA Certificate">
+        Server CA certificate
+      </message>
+      <message name="IDS_ONC_EAP_SUBJECT_MATCH" desc="ONC Property label for EAP.SubjectMatch">
+        Subject match
+      </message>
+      <message name="IDS_ONC_EAP_USER_CERT" desc="ONC Property label for EAP User Certs">
+        User certificate
+      </message>
+      <message name="IDS_ONC_TETHER_BATTERY_PERCENTAGE" desc="Settings > Internet > Title of section which displays the battery percentage of another device which provides a tether hotspot for the current device to connect to.">
+        Battery
+      </message>
+      <message name="IDS_ONC_TETHER_BATTERY_PERCENTAGE_VALUE" desc="Settings > Internet > Text contents of section which displays the battery percentage of another device which provides a tether hotspot for the current device to connect to.">
+        <ph name="BATTERY_PERCENTAGE">$1<ex>100</ex></ph>%
+      </message>
+      <message name="IDS_ONC_TETHER_SIGNAL_STRENGTH" desc="Settings > Internet > Title of section which displays the cellular signal strength of another device which provides a tether hotspot for the current device to connect to. The signal strength is displayed as a string (e.g., Strong)">
+        Signal strength
+      </message>
+      <message name="IDS_ONC_TETHER_SIGNAL_STRENGTH_WEAK" desc="Settings > Internet > Label used to describe the signal strength of a device's cellular connection when the signal is weak. The strength value is 1 on a scale from 1 (min) to 5 (max).">
+        Weak
+      </message>
+      <message name="IDS_ONC_TETHER_SIGNAL_STRENGTH_OKAY" desc="Settings > Internet > Label used to describe the signal strength of a device's cellular connection when the signal is okay. The strength value is 2 on a scale from 1 (min) to 5 (max).">
+        Okay
+      </message>
+      <message name="IDS_ONC_TETHER_SIGNAL_STRENGTH_GOOD" desc="Settings > Internet > Label used to describe the signal strength of a device's cellular connection when the signal is good. The strength value is 3 on a scale from 1 (min) to 5 (max).">
+        Fine
+      </message>
+      <message name="IDS_ONC_TETHER_SIGNAL_STRENGTH_STRONG" desc="Settings > Internet > Label used to describe the signal strength of a device's cellular connection when the signal is strong. The strength value is 4 on a scale from 1 (min) to 5 (max).">
+        Strong
+      </message>
+      <message name="IDS_ONC_TETHER_SIGNAL_STRENGTH_VERY_STRONG" desc="Settings > Internet > Label used to describe the signal strength of a device's cellular connection when the signal is very strong. The strength value is 5 on a scale from 1 (min) to 5 (max).">
+        Very strong
+      </message>
+      <message name="IDS_ONC_TETHER_CARRIER" desc="Settings > Internet > Title of section which displays the name of the cellular provider (e.g., Verizon) of another device which provides a tether hotspot for the current device to connect to. To be clear, the current device does not have cellular service; instead, another device has it and can provide data to the current device via a Wi-Fi hotspot.">
+        Cellular provider
+      </message>
+      <message name="IDS_ONC_TETHER_CARRIER_UNKNOWN" desc="Settings > Internet > Text displayed in the settings UI in place of a cellular provider when the actual name of the provider is unknown. In this context, the cellular provider refers to the carrier which provides mobile data service to another device which can start a tether hotspot to provide a data connection to the current device.">
+        Unknown carrier
       </message>
 
       <!-- Network Health display strings -->
@@ -862,10 +1208,19 @@ Try tapping the mic to ask me anything.
       <message name="IDS_NETWORK_HEALTH_STATE_ONLINE" desc="Network State - Online. This state is when a network device is connected to a network and can access the internet.">
         Online
       </message>
+      <message name="IDS_NETWORK_HEALTH_OPEN_IN_SETTINGS" desc="Link label to view the current network in the settings app">
+        Open in settings
+      </message>
 
       <!-- Network / Connectivity Diagnostics -->
       <message name="IDS_CONNECTIVITY_DIAGNOSTICS_TITLE" desc="The label for connectivity diagnostics application that shows potential issues with the network connections">
         Connectivity Diagnostics
+      </message>
+      <message name="IDS_CONNECTIVITY_DIAGNOSTICS_NETWORK_DEVICES" desc="The label for the network devices section of the connectivity diagnostics app">
+        Network Devices
+      </message>
+      <message name="IDS_CONNECTIVITY_DIAGNOSTICS_DIAGNOSTIC_ROUTINES" desc="The label for the diagnostic routines section of the connectivity diagnostics app">
+        Diagnostic Routines
       </message>
       <message name="IDS_CONNECTIVITY_DIAGNOSTICS_RERUN_ROUTINES" desc="Label for connectivity diagnostics application rerun routines button">
         Rerun Routines
@@ -875,6 +1230,24 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_CONNECTIVITY_DIAGNOSTICS_SEND_FEEDBACK" desc="Label for connectivity diagnostics application send feedback button">
         Send Feedback
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_CONNECTION_GROUP" desc="Label for the group of network diagnostic routines about the device's internet connection">
+        Connection
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_WIFI_GROUP" desc="Label for the group of network diagnostic routines about the device's Wi-Fi connection">
+        Wi-Fi
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_GATEWAY_GROUP" desc="Label for the group of network diagnostic routines about the device's network gateway">
+        Gateway
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_FIREWALL_GROUP" desc="Label for the group of network diagnostic routines about the device's network firewall">
+        Firewall
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_DNS_GROUP" desc="Label for the group of network diagnostic routines about the device's network DNS (domain name servers)">
+        DNS
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_GOOGLE_SERVICES_GROUP" desc="Label for the group of network diagnostic routines about connecting to Google services">
+        Google Services
       </message>
       <message name="IDS_NETWORK_DIAGNOSTICS_LAN_CONNECTIVITY" desc="Label for Network diagnostics `LAN connectivity` test. This test determines if the device is connected to a Local Area Network (LAN)">
         Lan Connectivity
@@ -908,6 +1281,9 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_NETWORK_DIAGNOSTICS_CAPTIVE_PORTAL" desc="Label for Network diagnostics `Captive Portal` test. This test ensures that the device's internet connection is not gated by a captive portal">
         Captive Portal
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_VIDEO_CONFERENCING" desc="Label for Network diagnostics `Video Conferencing` test. This test ensures that the device can communicate with Google's video conferencing servers">
+        Video Conferencing
       </message>
       <message name="IDS_NETWORK_DIAGNOSTICS_PASSED" desc="Label shown when a Network diagnostics routine passed">
         Passed
@@ -1025,6 +1401,20 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_NETWORK_DIAGNOSTICS_CAPTIVE_PORTAL_PROBLEM_NO_INTERNET" desc="Error message shown when no network portal is detected, but there is no internet connection">
         No internet
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_VIDEO_CONFERENCING_PROBLEM_UPD_FAILURE" desc="Error message shown when there are failed UDP requests to the video conferencing servers">
+        UDP request failures
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_VIDEO_CONFERENCING_PROBLEM_TCP_FAILURE" desc="Error message shown when there are failed TCP requests to the video conferencing servers">
+        TCP request failures
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_VIDEO_CONFERENCING_PROBLEM_MEDIA_FAILURE" desc="Error message shown when a connection cannot be established to the video conferencing media servers">
+        Unable to connect to media servers
+      </message>
+
+      <!-- Personalization App -->
+      <message name="IDS_PERSONALIZATION_APP_TITLE" desc="Name of the system web app for personalizing ChromeOS.">
+        Wallpaper
       </message>
     </messages>
   </release>

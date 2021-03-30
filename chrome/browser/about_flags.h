@@ -15,7 +15,6 @@
 
 #include "base/command_line.h"
 #include "base/metrics/histogram_base.h"
-#include "base/strings/string16.h"
 #include "components/flags_ui/feature_entry.h"
 #include "components/flags_ui/flags_state.h"
 
@@ -29,6 +28,10 @@ class FlagsStorage;
 }
 
 namespace about_flags {
+
+// Returns true if the FeatureEntry should not be shown.
+bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
+                                       const flags_ui::FeatureEntry& entry);
 
 // Reads the state from |flags_storage| and adds the command line flags
 // belonging to the active feature entries to |command_line|.
@@ -45,15 +48,6 @@ void ConvertFlagsToSwitches(flags_ui::FlagsStorage* flags_storage,
 std::vector<std::string> RegisterAllFeatureVariationParameters(
     flags_ui::FlagsStorage* flags_storage,
     base::FeatureList* feature_list);
-
-// Compares a set of switches of the two provided command line objects and
-// returns true if they are the same and false otherwise.
-// If |out_difference| is not NULL, it's filled with set_symmetric_difference
-// between sets.
-bool AreSwitchesIdenticalToCurrentCommandLine(
-    const base::CommandLine& new_cmdline,
-    const base::CommandLine& active_cmdline,
-    std::set<base::CommandLine::StringType>* out_difference);
 
 // Gets the list of feature entries. Entries that are available for the current
 // platform are appended to |supported_entries|; all other entries are appended
@@ -104,15 +98,22 @@ void ResetAllFlags(flags_ui::FlagsStorage* flags_storage);
 
 // Sends UMA stats about experimental flag usage. This should be called once per
 // startup.
-void RecordUMAStatistics(flags_ui::FlagsStorage* flags_storage);
+void RecordUMAStatistics(flags_ui::FlagsStorage* flags_storage,
+                         const std::string& histogram_name);
 
 namespace testing {
 
-// Returns the global set of feature entries.
-const flags_ui::FeatureEntry* GetFeatureEntries(size_t* count);
+// This class sets the testing feature entries to the feature entries passed in
+// to Init. It clears the testing feature entries on destruction, so
+// the feature entries return to their non test values.
+class ScopedFeatureEntries final {
+ public:
+  explicit ScopedFeatureEntries(
+      const std::vector<flags_ui::FeatureEntry>& entries);
+  ~ScopedFeatureEntries();
+};
 
-// Sets the global set of feature entries.
-void SetFeatureEntries(const std::vector<flags_ui::FeatureEntry>& entries);
+const flags_ui::FeatureEntry* GetFeatureEntries(size_t* count);
 
 }  // namespace testing
 

@@ -12,6 +12,7 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/angle/include/platform/PlatformMethods.h"
@@ -155,9 +156,9 @@ bool InitializePlatform(EGLDisplay display) {
   if (!angle_get_platform(static_cast<EGLDisplayType>(display),
                           g_PlatformMethodNames, g_NumPlatformMethods, nullptr,
                           &platformMethods))
-    platformMethods->currentTime = ANGLEPlatformImpl_currentTime;
-  platformMethods->addTraceEvent = ANGLEPlatformImpl_addTraceEvent;
+    return false;
   platformMethods->currentTime = ANGLEPlatformImpl_currentTime;
+  platformMethods->addTraceEvent = ANGLEPlatformImpl_addTraceEvent;
   platformMethods->getTraceCategoryEnabledFlag =
       ANGLEPlatformImpl_getTraceCategoryEnabledFlag;
   platformMethods->histogramBoolean = ANGLEPlatformImpl_histogramBoolean;

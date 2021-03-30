@@ -1,0 +1,173 @@
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @fileoverview Earcons library that uses EarconEngine to play back
+ * auditory cues.
+ */
+
+export class Earcons extends AbstractEarcons {
+  constructor() {
+    super();
+
+    /**
+     * @type {EarconEngine}
+     * @private
+     */
+    this.engine_ = new EarconEngine();
+
+    /** @private {boolean} */
+    this.shouldPan_ = true;
+
+    if (chrome.audio) {
+      chrome.audio.getDevices(
+          {isActive: true, streamTypes: [chrome.audio.StreamType.OUTPUT]},
+          this.updateShouldPanForDevices_.bind(this));
+      chrome.audio.onDeviceListChanged.addListener(
+          this.updateShouldPanForDevices_.bind(this));
+    } else {
+      this.shouldPan_ = false;
+    }
+  }
+
+  /**
+   * @return {string} The human-readable name of the earcon set.
+   */
+  getName() {
+    return 'ChromeVox earcons';
+  }
+
+  /**
+   * Plays the specified earcon sound.
+   * @param {Earcon} earcon An earcon identifier.
+   * @param {Object=} opt_location A location associated with the earcon such as
+   *     a control's bounding rectangle.
+   * @override
+   */
+  playEarcon(earcon, opt_location) {
+    if (!this.enabled) {
+      return;
+    }
+    if (localStorage['enableEarconLogging'] === 'true') {
+      LogStore.getInstance().writeTextLog(earcon, LogStore.LogType.EARCON);
+      console.log('Earcon ' + earcon);
+    }
+    if (ChromeVoxState.instance.currentRange &&
+        ChromeVoxState.instance.currentRange.isValid()) {
+      const node = ChromeVoxState.instance.currentRange.start.node;
+      const rect = opt_location || node.location;
+      const container = node.root.location;
+      if (this.shouldPan_) {
+        this.engine_.setPositionForRect(rect, container);
+      } else {
+        this.engine_.resetPan();
+      }
+    }
+    switch (earcon) {
+      case Earcon.ALERT_MODAL:
+      case Earcon.ALERT_NONMODAL:
+        this.engine_.onAlert();
+        break;
+      case Earcon.BUTTON:
+        this.engine_.onButton();
+        break;
+      case Earcon.CHECK_OFF:
+        this.engine_.onCheckOff();
+        break;
+      case Earcon.CHECK_ON:
+        this.engine_.onCheckOn();
+        break;
+      case Earcon.CHROMEVOX_LOADED:
+        this.engine_.cancelProgressPersistent();
+        break;
+      case Earcon.CHROMEVOX_LOADING:
+        this.engine_.startProgressPersistent();
+        break;
+      case Earcon.EDITABLE_TEXT:
+        this.engine_.onTextField();
+        break;
+      case Earcon.INVALID_KEYPRESS:
+        this.engine_.onWrap();
+        break;
+      case Earcon.LINK:
+        this.engine_.onLink();
+        break;
+      case Earcon.LISTBOX:
+        this.engine_.onSelect();
+        break;
+      case Earcon.LIST_ITEM:
+      case Earcon.LONG_DESC:
+      case Earcon.MATH:
+      case Earcon.OBJECT_CLOSE:
+      case Earcon.OBJECT_ENTER:
+      case Earcon.OBJECT_EXIT:
+      case Earcon.OBJECT_OPEN:
+      case Earcon.OBJECT_SELECT:
+        // TODO(dmazzoni): decide if we want new earcons for these
+        // or not. We may choose to not have earcons for some of these.
+        break;
+      case Earcon.PAGE_FINISH_LOADING:
+        this.engine_.cancelProgress();
+        break;
+      case Earcon.PAGE_START_LOADING:
+        this.engine_.startProgress();
+        break;
+      case Earcon.POP_UP_BUTTON:
+        this.engine_.onPopUpButton();
+        break;
+      case Earcon.RECOVER_FOCUS:
+        // TODO(dmazzoni): decide if we want new earcons for this.
+        break;
+      case Earcon.SELECTION:
+        this.engine_.onSelection();
+        break;
+      case Earcon.SELECTION_REVERSE:
+        this.engine_.onSelectionReverse();
+        break;
+      case Earcon.SKIP:
+        this.engine_.onSkim();
+        break;
+      case Earcon.SLIDER:
+        this.engine_.onSlider();
+        break;
+      case Earcon.SMART_STICKY_MODE_OFF:
+        this.engine_.onSmartStickyModeOff();
+        break;
+      case Earcon.SMART_STICKY_MODE_ON:
+        this.engine_.onSmartStickyModeOn();
+        break;
+      case Earcon.NO_POINTER_ANCHOR:
+        this.engine_.onNoPointerAnchor();
+        break;
+      case Earcon.WRAP:
+      case Earcon.WRAP_EDGE:
+        this.engine_.onWrap();
+        break;
+    }
+  }
+
+  /**
+   * @override
+   */
+  cancelEarcon(earcon) {
+    switch (earcon) {
+      case Earcon.PAGE_START_LOADING:
+        this.engine_.cancelProgress();
+        break;
+    }
+  }
+
+  /**
+   * Updates |this.shouldPan_| based on whether internal speakers are active
+   * or not.
+   * @param {Array<chrome.audio.AudioDeviceInfo>} devices
+   * @private
+   */
+  updateShouldPanForDevices_(devices) {
+    this.shouldPan_ = !devices.some((device) => {
+      return device.isActive &&
+          device.deviceType === chrome.audio.DeviceType.INTERNAL_SPEAKER;
+    });
+  }
+}

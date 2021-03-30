@@ -64,34 +64,6 @@ void RemoteFrameClientImpl::Detached(FrameDetachType type) {
   web_frame_->SetCoreFrame(nullptr);
 }
 
-base::UnguessableToken RemoteFrameClientImpl::GetDevToolsFrameToken() const {
-  if (web_frame_->Client()) {
-    return web_frame_->Client()->GetDevToolsFrameToken();
-  }
-  return base::UnguessableToken::Create();
-}
-
-void RemoteFrameClientImpl::Navigate(
-    const ResourceRequest& request,
-    blink::WebLocalFrame* initiator_frame,
-    bool should_replace_current_entry,
-    bool is_opener_navigation,
-    bool initiator_frame_has_download_sandbox_flag,
-    bool initiator_frame_is_ad,
-    mojo::PendingRemote<mojom::blink::BlobURLToken> blob_url_token,
-    const base::Optional<WebImpression>& impression) {
-  bool blocking_downloads_in_sandbox_enabled =
-      RuntimeEnabledFeatures::BlockingDownloadsInSandboxEnabled();
-  if (web_frame_->Client()) {
-    web_frame_->Client()->Navigate(
-        WrappedResourceRequest(request), initiator_frame,
-        should_replace_current_entry, is_opener_navigation,
-        initiator_frame_has_download_sandbox_flag,
-        blocking_downloads_in_sandbox_enabled, initiator_frame_is_ad,
-        std::move(blob_url_token), impression);
-  }
-}
-
 unsigned RemoteFrameClientImpl::BackForwardLength() {
   // TODO(creis,japhet): This method should return the real value for the
   // session history length. For now, return static value for the initial
@@ -100,59 +72,9 @@ unsigned RemoteFrameClientImpl::BackForwardLength() {
   return 2;
 }
 
-void RemoteFrameClientImpl::FrameRectsChanged(
-    const IntRect& local_frame_rect,
-    const IntRect& screen_space_rect) {
-  web_frame_->Client()->FrameRectsChanged(local_frame_rect, screen_space_rect);
-}
-
-void RemoteFrameClientImpl::ZoomLevelChanged(double zoom_level) {
-  web_frame_->Client()->ZoomLevelChanged(zoom_level);
-}
-
-void RemoteFrameClientImpl::UpdateCaptureSequenceNumber(
-    uint32_t sequence_number) {
-  web_frame_->Client()->UpdateCaptureSequenceNumber(sequence_number);
-}
-
-void RemoteFrameClientImpl::PageScaleFactorChanged(
-    float page_scale_factor,
-    bool is_pinch_gesture_active) {
-  web_frame_->Client()->PageScaleFactorChanged(page_scale_factor,
-                                               is_pinch_gesture_active);
-}
-
-void RemoteFrameClientImpl::DidChangeScreenInfo(
-    const ScreenInfo& original_screen_info) {
-  web_frame_->Client()->DidChangeScreenInfo(original_screen_info);
-}
-
-void RemoteFrameClientImpl::DidChangeRootWindowSegments(
-    const std::vector<gfx::Rect>& root_widget_window_segments) {
-  web_frame_->Client()->DidChangeRootWindowSegments(
-      root_widget_window_segments);
-}
-
-void RemoteFrameClientImpl::DidChangeVisibleViewportSize(
-    const gfx::Size& visible_viewport_size) {
-  web_frame_->Client()->DidChangeVisibleViewportSize(visible_viewport_size);
-}
-
-void RemoteFrameClientImpl::SynchronizeVisualProperties() {
-  web_frame_->Client()->SynchronizeVisualProperties();
-}
-
 AssociatedInterfaceProvider*
 RemoteFrameClientImpl::GetRemoteAssociatedInterfaces() {
   return web_frame_->Client()->GetRemoteAssociatedInterfaces();
-}
-
-viz::FrameSinkId RemoteFrameClientImpl::GetFrameSinkId() {
-  return web_frame_->Client()->GetFrameSinkId();
-}
-
-void RemoteFrameClientImpl::WasEvicted() {
-  return web_frame_->Client()->WasEvicted();
 }
 
 }  // namespace blink

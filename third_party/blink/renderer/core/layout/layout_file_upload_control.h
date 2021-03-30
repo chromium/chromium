@@ -23,7 +23,6 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
-#include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
 
 namespace blink {
 
@@ -46,9 +45,6 @@ class CORE_EXPORT LayoutFileUploadControl final : public LayoutBlockFlow {
   String FileTextValue() const;
 
   HTMLInputElement* UploadButton() const;
-
-  PhysicalRect OverflowClipRect(const PhysicalOffset&,
-                                OverlayScrollbarClipBehavior) const override;
 
   static const int kAfterButtonSpacing = 4;
 

@@ -46,8 +46,7 @@ GaiaRemoteConsentFlow::GaiaRemoteConsentFlow(
       profile_(profile),
       account_id_(token_key.account_info.account_id),
       resolution_data_(resolution_data),
-      web_flow_started_(false),
-      scoped_observer_(this) {}
+      web_flow_started_(false) {}
 
 GaiaRemoteConsentFlow::~GaiaRemoteConsentFlow() {
   if (web_flow_)
@@ -94,7 +93,7 @@ void GaiaRemoteConsentFlow::OnSetAccountsComplete(
               base::BindRepeating(&GaiaRemoteConsentFlow::OnConsentResultSet,
                                   base::Unretained(this)));
 
-  scoped_observer_.Add(IdentityManagerFactory::GetForProfile(profile_));
+  scoped_observation_.Observe(IdentityManagerFactory::GetForProfile(profile_));
   web_flow_->Start();
   web_flow_started_ = true;
 }
@@ -145,9 +144,10 @@ void GaiaRemoteConsentFlow::OnAuthFlowFailure(WebAuthFlow::Failure failure) {
 
 std::unique_ptr<GaiaAuthFetcher>
 GaiaRemoteConsentFlow::CreateGaiaAuthFetcherForPartition(
-    GaiaAuthConsumer* consumer) {
+    GaiaAuthConsumer* consumer,
+    const gaia::GaiaSource& source) {
   return std::make_unique<GaiaAuthFetcher>(
-      consumer, gaia::GaiaSource::kChrome,
+      consumer, source,
       web_flow_->GetGuestPartition()->GetURLLoaderFactoryForBrowserProcess());
 }
 
@@ -186,7 +186,8 @@ void GaiaRemoteConsentFlow::SetAccountsInCookie() {
   if (IdentityAPI::GetFactoryInstance()
           ->Get(profile_)
           ->AreExtensionsRestrictedToPrimaryAccount()) {
-    CoreAccountId primary_account_id = identity_manager->GetPrimaryAccountId();
+    CoreAccountId primary_account_id =
+        identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync);
     accounts.push_back(primary_account_id);
   } else {
     auto chrome_accounts_with_refresh_tokens =
@@ -211,6 +212,7 @@ void GaiaRemoteConsentFlow::SetAccountsInCookie() {
               this,
               {gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
                accounts},
+              gaia::GaiaSource::kChrome,
               base::BindOnce(&GaiaRemoteConsentFlow::OnSetAccountsComplete,
                              base::Unretained(this)));
 }

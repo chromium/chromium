@@ -170,9 +170,9 @@ void ExpectMiscellaneousDebugRecord(
 
     size_t bytes_used;
     if (misc_debug_record->Unicode) {
-      base::string16 observed_data_utf16(
-          reinterpret_cast<const base::char16*>(misc_debug_record->Data));
-      bytes_used = (observed_data_utf16.size() + 1) * sizeof(base::char16);
+      std::u16string observed_data_utf16(
+          reinterpret_cast<const char16_t*>(misc_debug_record->Data));
+      bytes_used = (observed_data_utf16.size() + 1) * sizeof(char16_t);
       observed_data = base::UTF16ToUTF8(observed_data_utf16);
     } else {
       observed_data = reinterpret_cast<const char*>(misc_debug_record->Data);
@@ -256,9 +256,9 @@ void ExpectModule(const MINIDUMP_MODULE* expected,
   EXPECT_EQ(reserved1, 0u);
 
   EXPECT_NE(observed_module.ModuleNameRva, 0u);
-  base::string16 observed_module_name_utf16 =
+  std::u16string observed_module_name_utf16 =
       MinidumpStringAtRVAAsString(file_contents, observed_module.ModuleNameRva);
-  base::string16 expected_module_name_utf16 =
+  std::u16string expected_module_name_utf16 =
       base::UTF8ToUTF16(expected_module_name);
   EXPECT_EQ(observed_module_name_utf16, expected_module_name_utf16);
 
@@ -321,9 +321,9 @@ void ExpectModuleWithBuildIDCv(const MINIDUMP_MODULE* expected,
   EXPECT_EQ(reserved1, 0u);
 
   EXPECT_NE(observed->ModuleNameRva, 0u);
-  base::string16 observed_module_name_utf16 =
+  std::u16string observed_module_name_utf16 =
       MinidumpStringAtRVAAsString(file_contents, observed->ModuleNameRva);
-  base::string16 expected_module_name_utf16 =
+  std::u16string expected_module_name_utf16 =
       base::UTF8ToUTF16(expected_module_name);
   EXPECT_EQ(observed_module_name_utf16, expected_module_name_utf16);
 

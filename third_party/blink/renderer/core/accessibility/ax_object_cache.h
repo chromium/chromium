@@ -45,7 +45,6 @@ class HTMLFrameOwnerElement;
 class HTMLSelectElement;
 class IntPoint;
 class LayoutRect;
-class LineLayoutItem;
 class LocalFrameView;
 
 class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
@@ -115,8 +114,7 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual void HandleTextMarkerDataAdded(Node* start, Node* end) = 0;
   virtual void HandleTextFormControlChanged(Node*) = 0;
   virtual void HandleValueChanged(Node*) = 0;
-  virtual void HandleUpdateActiveMenuOption(LayoutObject*,
-                                            int option_index) = 0;
+  virtual void HandleUpdateActiveMenuOption(Node*) = 0;
   virtual void DidShowMenuListPopup(LayoutObject*) = 0;
   virtual void DidHideMenuListPopup(LayoutObject*) = 0;
   virtual void HandleLoadComplete(Document*) = 0;
@@ -144,7 +142,7 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
                                      Element*,
                                      const LayoutRect&) = 0;
 
-  virtual void InlineTextBoxesUpdated(LineLayoutItem) = 0;
+  virtual void InlineTextBoxesUpdated(LayoutObject*) = 0;
 
   // Called when the scroll offset changes.
   virtual void HandleScrollPositionChanged(LocalFrameView*) = 0;

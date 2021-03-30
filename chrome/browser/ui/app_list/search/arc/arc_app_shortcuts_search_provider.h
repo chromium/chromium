@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_ARC_ARC_APP_SHORTCUTS_SEARCH_PROVIDER_H_
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_ARC_ARC_APP_SHORTCUTS_SEARCH_PROVIDER_H_
 
+#include <string>
 #include <vector>
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
 #include "components/arc/mojom/app.mojom-forward.h"
 
@@ -26,7 +26,7 @@ class ArcAppShortcutsSearchProvider : public SearchProvider {
   ~ArcAppShortcutsSearchProvider() override;
 
   // SearchProvider:
-  void Start(const base::string16& query) override;
+  void Start(const std::u16string& query) override;
   ash::AppListSearchResultType ResultType() override;
 
  private:

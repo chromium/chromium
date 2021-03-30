@@ -22,6 +22,7 @@ ch-viewport-width
 ch-width
 clipboard-read
 clipboard-write
+conversion-measurement
 cross-origin-isolated
 display-capture
 document-domain
@@ -35,6 +36,7 @@ geolocation
 gyroscope
 hid
 idle-detection
+interest-cohort
 magnetometer
 microphone
 midi

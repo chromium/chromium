@@ -207,10 +207,12 @@ void Status::UnrefNonInlined(uintptr_t rep) {
   }
 }
 
-uintptr_t Status::NewRep(absl::StatusCode code, absl::string_view msg,
-                         std::unique_ptr<status_internal::Payloads> payloads) {
+uintptr_t Status::NewRep(
+    absl::StatusCode code, absl::string_view msg,
+    std::unique_ptr<status_internal::Payloads> payloads) {
   status_internal::StatusRep* rep = new status_internal::StatusRep(
-      code, std::string(msg.data(), msg.size()), std::move(payloads));
+      code, std::string(msg.data(), msg.size()),
+      std::move(payloads));
   return PointerToRep(rep);
 }
 
@@ -236,8 +238,9 @@ absl::StatusCode Status::code() const {
 void Status::PrepareToModify() {
   ABSL_RAW_CHECK(!ok(), "PrepareToModify shouldn't be called on OK status.");
   if (IsInlined(rep_)) {
-    rep_ = NewRep(static_cast<absl::StatusCode>(raw_code()),
-                  absl::string_view(), nullptr);
+    rep_ =
+        NewRep(static_cast<absl::StatusCode>(raw_code()), absl::string_view(),
+               nullptr);
     return;
   }
 
@@ -248,7 +251,8 @@ void Status::PrepareToModify() {
     if (rep->payloads) {
       payloads = absl::make_unique<status_internal::Payloads>(*rep->payloads);
     }
-    rep_ = NewRep(rep->code, message(), std::move(payloads));
+    rep_ = NewRep(rep->code, message(),
+                  std::move(payloads));
     UnrefNonInlined(rep_i);
   }
 }
@@ -287,20 +291,26 @@ bool Status::EqualsSlow(const absl::Status& a, const absl::Status& b) {
   return true;
 }
 
-std::string Status::ToStringSlow() const {
+std::string Status::ToStringSlow(StatusToStringMode mode) const {
   std::string text;
   absl::StrAppend(&text, absl::StatusCodeToString(code()), ": ", message());
-  status_internal::StatusPayloadPrinter printer =
-      status_internal::GetStatusPayloadPrinter();
-  this->ForEachPayload([&](absl::string_view type_url,
-                           const absl::Cord& payload) {
-    absl::optional<std::string> result;
-    if (printer) result = printer(type_url, payload);
-    absl::StrAppend(
-        &text, " [", type_url, "='",
-        result.has_value() ? *result : absl::CHexEscape(std::string(payload)),
-        "']");
-  });
+
+  const bool with_payload = (mode & StatusToStringMode::kWithPayload) ==
+                      StatusToStringMode::kWithPayload;
+
+  if (with_payload) {
+    status_internal::StatusPayloadPrinter printer =
+        status_internal::GetStatusPayloadPrinter();
+    this->ForEachPayload([&](absl::string_view type_url,
+                             const absl::Cord& payload) {
+      absl::optional<std::string> result;
+      if (printer) result = printer(type_url, payload);
+      absl::StrAppend(
+          &text, " [", type_url, "='",
+          result.has_value() ? *result : absl::CHexEscape(std::string(payload)),
+          "']");
+    });
+  }
 
   return text;
 }

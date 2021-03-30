@@ -11,7 +11,7 @@ import {AboutPageBrowserProxyImpl, LifetimeBrowserProxyImpl, PromoteUpdaterStatu
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../chai_assert.js';
 
 import {TestAboutPageBrowserProxy} from './test_about_page_browser_proxy.js';
-import {TestLifetimeBrowserProxy} from './test_lifetime_browser_proxy.m.js';
+import {TestLifetimeBrowserProxy} from './test_lifetime_browser_proxy.js';
 
 // clang-format on
 

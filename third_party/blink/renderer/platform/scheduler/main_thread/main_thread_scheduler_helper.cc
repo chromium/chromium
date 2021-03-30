@@ -42,7 +42,7 @@ MainThreadSchedulerHelper::DefaultMainThreadTaskQueue() {
 
 const scoped_refptr<base::SingleThreadTaskRunner>&
 MainThreadSchedulerHelper::DefaultTaskRunner() {
-  return default_task_queue_->GetTaskRunnerWithDefaultTaskType();
+  return default_task_runner();
 }
 
 scoped_refptr<MainThreadTaskQueue>
@@ -59,25 +59,11 @@ scoped_refptr<base::SingleThreadTaskRunner>
 MainThreadSchedulerHelper::DeprecatedDefaultTaskRunner() {
   // TODO(hajimehoshi): Introduce a different task queue from the default task
   // queue and return the task runner created from it.
-  return DefaultTaskRunner();
+  return default_task_runner();
 }
 
 scoped_refptr<MainThreadTaskQueue> MainThreadSchedulerHelper::NewTaskQueue(
     const MainThreadTaskQueue::QueueCreationParams& params) {
-#if DCHECK_IS_ON()
-  // This check is to ensure that we only create one queue with kCompositor
-  // prioritisation type, ie one compositor task queue, since elsewhere we
-  // assume there is only one when making priority decisions.
-  if (params.queue_traits.prioritisation_type ==
-      MainThreadTaskQueue::QueueTraits::PrioritisationType::kCompositor) {
-    DCHECK(
-        !created_compositor_task_queue_ ||
-        params.queue_traits.prioritisation_type !=
-            MainThreadTaskQueue::QueueTraits::PrioritisationType::kCompositor);
-    created_compositor_task_queue_ = true;
-  }
-#endif  // DCHECK_IS_ON()
-
   scoped_refptr<MainThreadTaskQueue> task_queue =
       sequence_manager_->CreateTaskQueueWithType<MainThreadTaskQueue>(
           params.spec, params, main_thread_scheduler_);

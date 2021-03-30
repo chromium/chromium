@@ -12,7 +12,7 @@ export const KEY_CAMERA_DIRECTORY_HANDLE = 'CameraDirectoryHandle';
 const idb = new Promise((resolve, reject) => {
   const request = indexedDB.open(DB_NAME);
   request.onerror = () => {
-    reject(new Error(request.error));
+    reject(request.error);
   };
   request.onupgradeneeded = () => {
     const db = request.result;
@@ -35,7 +35,7 @@ export async function get(key) {
   const objStore = transaction.objectStore(DB_STORE);
   const request = objStore.get(key);
   return new Promise((resolve, reject) => {
-    request.onerror = () => reject(new Error(request.error));
+    request.onerror = () => reject(request.error);
     request.onsuccess = () => {
       const entry = request.result;
       if (entry === undefined) {
@@ -58,7 +58,7 @@ export async function set(key, obj) {
   const objStore = transaction.objectStore(DB_STORE);
   const request = objStore.put({id: key, value: obj});
   return new Promise((resolve, reject) => {
-    request.onerror = () => reject(new Error(request.error));
+    request.onerror = () => reject(request.error);
     request.onsuccess = () => resolve();
   });
 }

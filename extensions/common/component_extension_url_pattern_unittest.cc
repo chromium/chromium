@@ -22,7 +22,7 @@ TEST(ComponentExtensionUrlPattern, AllUrls) {
   // the "<all_urls>" meta-pattern.
   auto all_urls = ExtensionBuilder("all urls")
                       .AddPermission("<all_urls>")
-                      .SetLocation(Manifest::COMPONENT)
+                      .SetLocation(mojom::ManifestLocation::kComponent)
                       .Build();
   std::string error;
   EXPECT_FALSE(all_urls->permissions_data()->CanAccessPage(
@@ -39,7 +39,7 @@ TEST(ComponentExtensionUrlPattern, ChromeVoxExtension) {
   // "<all_urls>" meta-pattern because it's whitelisted.
   auto all_urls = ExtensionBuilder("all urls")
                       .AddPermission("<all_urls>")
-                      .SetLocation(Manifest::COMPONENT)
+                      .SetLocation(mojom::ManifestLocation::kComponent)
                       .SetID(extension_misc::kChromeVoxExtensionId)
                       .Build();
   std::string error;
@@ -53,7 +53,7 @@ TEST(ComponentExtensionUrlPattern, ExplicitChromeUrl) {
   // scheme is OK.
   auto chrome_urls = ExtensionBuilder("chrome urls")
                          .AddPermission(content::GetWebUIURLString("*/*"))
-                         .SetLocation(Manifest::COMPONENT)
+                         .SetLocation(mojom::ManifestLocation::kComponent)
                          .Build();
   std::string error;
   EXPECT_TRUE(chrome_urls->permissions_data()->CanAccessPage(

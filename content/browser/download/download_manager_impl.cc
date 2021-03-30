@@ -115,6 +115,16 @@ StoragePartitionImpl* GetStoragePartition(BrowserContext* context,
       BrowserContext::GetStoragePartition(context, site_instance));
 }
 
+// TODO(acolwell): Update DownloadManager and related code to pass around
+// StoragePartitionConfig objects instead of site URLs.
+StoragePartitionImpl* GetStoragePartitionForSiteUrl(BrowserContext* context,
+                                                    const GURL& site_url) {
+  auto partition_config = SiteInfo::GetStoragePartitionConfigForUrl(
+      context, site_url, /*is_site_url=*/true);
+  return static_cast<StoragePartitionImpl*>(
+      BrowserContext::GetStoragePartition(context, partition_config));
+}
+
 void OnDownloadStarted(
     download::DownloadItemImpl* download,
     download::DownloadUrlParameters::OnStartedCallback on_started) {
@@ -1290,7 +1300,7 @@ void DownloadManagerImpl::BeginResourceDownloadOnChecksComplete(
         std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
             FileURLLoaderFactory::Create(
                 browser_context_->GetPath(),
-                browser_context_->GetSharedCorsOriginAccessList(),
+                BrowserContext::GetSharedCorsOriginAccessList(browser_context_),
                 // USER_VISIBLE because download should progress
                 // even when there is high priority work to do.
                 base::TaskPriority::USER_VISIBLE));
@@ -1301,9 +1311,7 @@ void DownloadManagerImpl::BeginResourceDownloadOnChecksComplete(
                                         base::flat_set<std::string>()));
   } else if (rfh && params->url().SchemeIsFileSystem()) {
     StoragePartitionImpl* storage_partition =
-        static_cast<StoragePartitionImpl*>(
-            BrowserContext::GetStoragePartitionForSite(browser_context_,
-                                                       site_url));
+        GetStoragePartitionForSiteUrl(browser_context_, site_url);
 
     pending_url_loader_factory =
         std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
@@ -1336,9 +1344,7 @@ void DownloadManagerImpl::BeginResourceDownloadOnChecksComplete(
     }
   } else {
     StoragePartitionImpl* storage_partition =
-        static_cast<StoragePartitionImpl*>(
-            BrowserContext::GetStoragePartitionForSite(browser_context_,
-                                                       site_url));
+        GetStoragePartitionForSiteUrl(browser_context_, site_url);
     pending_url_loader_factory =
         CreatePendingSharedURLLoaderFactory(storage_partition, rfh, true);
   }
@@ -1369,7 +1375,7 @@ void DownloadManagerImpl::BeginDownloadInternal(
   // a new factory if we don't have one already.
   if (!blob_url_loader_factory && params->url().SchemeIsBlob()) {
     blob_url_loader_factory = ChromeBlobStorageContext::URLLoaderFactoryForUrl(
-        BrowserContext::GetStoragePartitionForSite(browser_context_, site_url),
+        GetStoragePartitionForSiteUrl(browser_context_, site_url),
         params->url());
   }
 

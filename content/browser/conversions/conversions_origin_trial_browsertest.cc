@@ -86,6 +86,17 @@ IN_PROC_BROWSER_TEST_F(ConversionsOriginTrialBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ConversionsOriginTrialBrowserTest,
+                       OriginTrialDisabled_FeatureNotDetected) {
+  // Navigate to a page without an OT token.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), GURL("https://example.test/page_with_impression_creator.html")));
+
+  EXPECT_EQ(false, EvalJs(shell(),
+                          "document.featurePolicy.features().includes('"
+                          "conversion-measurement')"));
+}
+
+IN_PROC_BROWSER_TEST_F(ConversionsOriginTrialBrowserTest,
                        OriginTrialEnabled_ImpressionRegistered) {
   EXPECT_TRUE(NavigateToURL(
       shell(), GURL("https://example.test/impression_with_origin_trial.html")));

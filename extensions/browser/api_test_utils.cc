@@ -39,7 +39,7 @@ namespace api_test_utils {
 SendResponseHelper::SendResponseHelper(ExtensionFunction* function) {
   function->set_has_callback(true);
   function->set_response_callback(
-      base::Bind(&SendResponseHelper::OnResponse, base::Unretained(this)));
+      base::BindOnce(&SendResponseHelper::OnResponse, base::Unretained(this)));
 }
 
 SendResponseHelper::~SendResponseHelper() {}

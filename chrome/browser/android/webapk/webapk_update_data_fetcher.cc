@@ -6,6 +6,7 @@
 
 #include <jni.h>
 #include <set>
+#include <string>
 #include <vector>
 
 #include "base/android/build_info.h"
@@ -13,14 +14,13 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/chrome_jni_headers/WebApkUpdateDataFetcher_jni.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/webapps/android/webapps_icon_utils.h"
-#include "components/webapps/android/webapps_utils.h"
-#include "components/webapps/installable/installable_manager.h"
+#include "components/webapps/browser/android/webapps_icon_utils.h"
+#include "components/webapps/browser/android/webapps_utils.h"
+#include "components/webapps/browser/installable/installable_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -143,14 +143,14 @@ void WebApkUpdateDataFetcher::OnDidGetInstallableData(
   // observing too. It is based on our assumption that it is invalid for
   // web developers to change the Web Manifest location. When it does
   // change, we will treat the new Web Manifest as the one of another WebAPK.
-  if (!data.NoBlockingErrors() || data.manifest->IsEmpty() ||
+  if (!data.NoBlockingErrors() || data.manifest.IsEmpty() ||
       web_manifest_url_ != data.manifest_url ||
       !webapps::WebappsUtils::AreWebManifestUrlsWebApkCompatible(
-          *data.manifest)) {
+          data.manifest)) {
     return;
   }
 
-  info_.UpdateFromManifest(*data.manifest);
+  info_.UpdateFromManifest(data.manifest);
   info_.manifest_url = data.manifest_url;
   info_.best_primary_icon_url = data.primary_icon_url;
   primary_icon_ = *data.primary_icon;
@@ -241,8 +241,8 @@ void WebApkUpdateDataFetcher::OnGotIconMurmur2Hashes(
         (info_.share_target->enctype ==
          blink::mojom::ManifestShareTarget_Enctype::kMultipartFormData);
 
-    std::vector<base::string16> file_names;
-    std::vector<std::vector<base::string16>> accepts;
+    std::vector<std::u16string> file_names;
+    std::vector<std::vector<std::u16string>> accepts;
     for (auto& f : info_.share_target->params.files) {
       file_names.push_back(f.name);
       accepts.push_back(f.accept);
@@ -256,7 +256,7 @@ void WebApkUpdateDataFetcher::OnGotIconMurmur2Hashes(
   // Wraps the shortcut info in a 2D vector for convenience.
   // The inner vector represents a shortcut items, with the following fields:
   // <name>, <short name>, <launch url>, <icon url>, <icon hash>.
-  std::vector<std::vector<base::string16>> shortcuts;
+  std::vector<std::vector<std::u16string>> shortcuts;
   DCHECK_EQ(info_.shortcut_items.size(), info_.best_shortcut_icon_urls.size());
 
   for (size_t i = 0; i < info_.shortcut_items.size(); i++) {
@@ -272,7 +272,7 @@ void WebApkUpdateDataFetcher::OnGotIconMurmur2Hashes(
     }
 
     shortcuts.push_back({shortcut.name,
-                         shortcut.short_name.value_or(base::string16()),
+                         shortcut.short_name.value_or(std::u16string()),
                          base::UTF8ToUTF16(shortcut.url.spec()),
                          base::UTF8ToUTF16(chosen_icon_url.spec()),
                          base::UTF8ToUTF16(chosen_icon_hash),

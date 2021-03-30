@@ -67,15 +67,16 @@ void BubbleView::SetIcon(const gfx::VectorIcon& icon) {
   icon_->SetImageSize(gfx::Size(kIconSize, kIconSize));
 }
 
-void BubbleView::SetText(const base::string16& text) {
+void BubbleView::SetText(const std::u16string& text) {
   if (!text_) {
     text_ = AddChildView(std::make_unique<views::Label>());
     text_->SetEnabledColor(gfx::kGoogleGrey700);
     text_->SetElideBehavior(gfx::NO_ELIDE);
     constexpr int kLabelFontSizeDelta = 1;
     text_->SetFontList(
-        ui::ResourceBundle::GetSharedInstance().GetFontListWithDelta(
-            kLabelFontSizeDelta, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
+        ui::ResourceBundle::GetSharedInstance().GetFontListForDetails(
+            ui::ResourceBundle::FontDetails(std::string(), kLabelFontSizeDelta,
+                                            gfx::Font::Weight::MEDIUM)));
   }
   text_->SetText(text);
 }

@@ -41,7 +41,7 @@ class UnifiedEventTargeter : public aura::WindowTargeter {
             static_cast<aura::Window*>(nullptr), dst_root_);
       }
       ignore_result(
-          dst_root_->GetHost()->event_sink()->OnEventFromSource(event));
+          dst_root_->GetHost()->GetEventSink()->OnEventFromSource(event));
 
       // Reset the source host.
       delegate_->SetCurrentEventTargeterSourceHost(nullptr);
@@ -103,9 +103,9 @@ void AshWindowTreeHostUnified::OnCursorVisibilityChangedNative(bool show) {
     host->AsWindowTreeHost()->OnCursorVisibilityChanged(show);
 }
 
-void AshWindowTreeHostUnified::OnBoundsChanged(const gfx::Rect& bounds) {
+void AshWindowTreeHostUnified::OnBoundsChanged(const BoundsChange& bounds) {
   if (platform_window())
-    OnHostResizedInPixels(bounds.size());
+    OnHostResizedInPixels(bounds.bounds.size());
 }
 
 void AshWindowTreeHostUnified::OnWindowDestroying(aura::Window* window) {

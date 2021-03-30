@@ -54,12 +54,8 @@ class PrimaryAccountObserver : public signin::IdentityManager::Observer {
   ~PrimaryAccountObserver() override;
 
   // signin::IdentityManager::Observer implementation.
-  void OnPrimaryAccountSet(
-      const CoreAccountInfo& primary_account_info) override;
-  void OnPrimaryAccountCleared(
-      const CoreAccountInfo& previous_primary_account_info) override;
-  void OnUnconsentedPrimaryAccountChanged(
-      const CoreAccountInfo& unconsented_primary_account_info) override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
 
  private:
   void UpdatePrimaryAccountIfNeeded();
@@ -89,24 +85,14 @@ PrimaryAccountObserver::~PrimaryAccountObserver() {
   identity_manager_->RemoveObserver(this);
 }
 
-void PrimaryAccountObserver::OnPrimaryAccountSet(
-    const CoreAccountInfo& primary_account_info) {
-  UpdatePrimaryAccountIfNeeded();
-}
-
-void PrimaryAccountObserver::OnPrimaryAccountCleared(
-    const CoreAccountInfo& previous_primary_account_info) {
-  UpdatePrimaryAccountIfNeeded();
-}
-
-void PrimaryAccountObserver::OnUnconsentedPrimaryAccountChanged(
-    const CoreAccountInfo& unconsented_primary_account_info) {
+void PrimaryAccountObserver::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
   UpdatePrimaryAccountIfNeeded();
 }
 
 void PrimaryAccountObserver::UpdatePrimaryAccountIfNeeded() {
-  CoreAccountInfo primary_account = identity_manager_->GetPrimaryAccountInfo(
-      signin::ConsentLevel::kNotRequired);
+  CoreAccountInfo primary_account =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   if (primary_account == primary_account_) {
     return;
   }
@@ -161,7 +147,8 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
   std::unique_ptr<TrustedVaultConnection> connection;
   GURL trusted_vault_service_gurl =
       ExtractTrustedVaultServiceURLFromCommandLine();
-  if (trusted_vault_service_gurl.is_valid()) {
+  if (base::FeatureList::IsEnabled(switches::kFollowTrustedVaultKeyRotation) &&
+      trusted_vault_service_gurl.is_valid()) {
     connection = std::make_unique<TrustedVaultConnectionImpl>(
         trusted_vault_service_gurl, url_loader_factory->Clone(),
         std::make_unique<TrustedVaultAccessTokenFetcherImpl>(
@@ -183,7 +170,15 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
       backend_task_runner_, backend_, identity_manager);
 }
 
-StandaloneTrustedVaultClient::~StandaloneTrustedVaultClient() = default;
+StandaloneTrustedVaultClient::~StandaloneTrustedVaultClient() {
+  if (backend_) {
+    // |backend_| needs to be destroyed inside backend sequence, not the current
+    // one. Destroy |primary_account_observer_| that owns pointer to |backend_|
+    // as well and release |backend_| in |backend_task_runner_|.
+    primary_account_observer_.reset();
+    backend_task_runner_->ReleaseSoon(FROM_HERE, std::move(backend_));
+  }
+}
 
 void StandaloneTrustedVaultClient::AddObserver(Observer* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

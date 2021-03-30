@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -18,8 +18,9 @@
 
 namespace chromeos {
 namespace settings {
-
 namespace {
+
+using ::ash::AccessibilityManager;
 
 void RecordShowShelfNavigationButtonsValueChange(bool enabled) {
   base::UmaHistogramBoolean(

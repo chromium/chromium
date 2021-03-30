@@ -15,13 +15,12 @@ js_type_check("closure_compile") {
     ":viewer-error-screen",
     ":viewer-page-indicator",
     ":viewer-page-selector",
-    ":viewer-password-screen",
+    ":viewer-password-dialog",
     ":viewer-pdf-sidenav",
-    ":viewer-pdf-toolbar",
     ":viewer-pdf-toolbar-new",
+    ":viewer-properties-dialog",
     ":viewer-thumbnail",
     ":viewer-thumbnail-bar",
-    ":viewer-toolbar-dropdown",
     ":viewer-zoom-button",
     ":viewer-zoom-toolbar",
   ]
@@ -32,6 +31,7 @@ js_type_check("closure_compile") {
       ":viewer-form-warning",
       ":viewer-ink-host",
       ":viewer-pen-options",
+      ":viewer-toolbar-dropdown",
     ]
   }
 }
@@ -109,10 +109,11 @@ js_library("viewer-page-indicator") {
 js_library("viewer-page-selector") {
 }
 
-js_library("viewer-password-screen") {
+js_library("viewer-password-dialog") {
   deps = [
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
     "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
-    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 
@@ -126,25 +127,12 @@ js_library("viewer-pdf-sidenav") {
   ]
 }
 
-js_library("viewer-pdf-toolbar") {
-  deps = [
-    ":viewer-annotations-bar",
-    ":viewer-bookmark",
-    ":viewer-download-controls",
-    ":viewer-page-selector",
-    ":viewer-toolbar-dropdown",
-    "..:constants",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:promise_resolver.m",
-  ]
-  externs_list = [ "$externs_path/pending.js" ]
-}
-
 js_library("viewer-pdf-toolbar-new") {
   deps = [
+    ":viewer-annotations-bar",
     ":viewer-annotations-mode-dialog",
     ":viewer-download-controls",
+    ":viewer-page-selector",
     "..:metrics",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
@@ -152,6 +140,14 @@ js_library("viewer-pdf-toolbar-new") {
 }
 
 js_library("viewer-pen-options") {
+}
+
+js_library("viewer-properties-dialog") {
+  deps = [
+    "..:constants",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+  ]
 }
 
 js_library("viewer-thumbnail") {
@@ -202,13 +198,12 @@ html_to_js("web_components") {
     "viewer-error-screen.js",
     "viewer-page-indicator.js",
     "viewer-page-selector.js",
-    "viewer-password-screen.js",
+    "viewer-password-dialog.js",
     "viewer-pdf-sidenav.js",
-    "viewer-pdf-toolbar.js",
     "viewer-pdf-toolbar-new.js",
+    "viewer-properties-dialog.js",
     "viewer-thumbnail.js",
     "viewer-thumbnail-bar.js",
-    "viewer-toolbar-dropdown.js",
     "viewer-zoom-button.js",
     "viewer-zoom-toolbar.js",
   ]
@@ -219,6 +214,7 @@ html_to_js("web_components") {
       "viewer-form-warning.js",
       "viewer-ink-host.js",
       "viewer-pen-options.js",
+      "viewer-toolbar-dropdown.js",
     ]
   }
 }

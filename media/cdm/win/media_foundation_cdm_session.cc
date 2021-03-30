@@ -30,8 +30,6 @@ MF_MEDIAKEYSESSION_TYPE ToMFSessionType(CdmSessionType session_type) {
       return MF_MEDIAKEYSESSION_TYPE_TEMPORARY;
     case CdmSessionType::kPersistentLicense:
       return MF_MEDIAKEYSESSION_TYPE_PERSISTENT_LICENSE;
-    case CdmSessionType::kPersistentUsageRecord:
-      return MF_MEDIAKEYSESSION_TYPE_PERSISTENT_USAGE_RECORD;
   }
 }
 
@@ -282,7 +280,7 @@ bool MediaFoundationCdmSession::SetSessionId() {
     return false;
   }
 
-  auto session_id_str = base::UTF16ToUTF8(session_id.get());
+  auto session_id_str = base::WideToUTF8(session_id.get());
   if (session_id_str.empty()) {
     bool success = std::move(session_id_cb_).Run("");
     DCHECK(!success) << "Empty session ID should not be accepted";

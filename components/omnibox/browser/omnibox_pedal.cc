@@ -45,15 +45,15 @@ bool EraseTokenSubsequence(OmniboxPedal::Tokens* from,
 }  // namespace
 
 OmniboxPedal::LabelStrings::LabelStrings(int id_hint,
-                                         int id_hint_short,
                                          int id_suggestion_contents,
                                          int id_accessibility_suffix,
                                          int id_accessibility_hint)
     : hint(l10n_util::GetStringUTF16(id_hint)),
-      hint_short(l10n_util::GetStringUTF16(id_hint_short)),
       suggestion_contents(l10n_util::GetStringUTF16(id_suggestion_contents)),
-      id_accessibility_suffix(id_accessibility_suffix),
+      accessibility_suffix(l10n_util::GetStringUTF16(id_accessibility_suffix)),
       accessibility_hint(l10n_util::GetStringUTF16(id_accessibility_hint)) {}
+
+OmniboxPedal::LabelStrings::LabelStrings() = default;
 
 OmniboxPedal::LabelStrings::LabelStrings(const LabelStrings&) = default;
 
@@ -109,8 +109,8 @@ namespace trace_event {
 size_t EstimateMemoryUsage(const OmniboxPedal::LabelStrings& self) {
   size_t total = 0;
   total += base::trace_event::EstimateMemoryUsage(self.hint);
-  total += base::trace_event::EstimateMemoryUsage(self.hint_short);
   total += base::trace_event::EstimateMemoryUsage(self.suggestion_contents);
+  total += base::trace_event::EstimateMemoryUsage(self.accessibility_suffix);
   total += base::trace_event::EstimateMemoryUsage(self.accessibility_hint);
   return total;
 }
@@ -128,12 +128,29 @@ const OmniboxPedal::LabelStrings& OmniboxPedal::GetLabelStrings() const {
   return strings_;
 }
 
+void OmniboxPedal::SetLabelStrings(const base::Value& ui_strings) {
+  DCHECK(ui_strings.is_dict());
+  // The pedal_processor tool ensures that this dictionary is either omitted,
+  //  or else included with all these keys populated.
+  ui_strings.FindKey("button_text")->GetAsString(&strings_.hint);
+  ui_strings.FindKey("description_text")
+      ->GetAsString(&strings_.suggestion_contents);
+  ui_strings.FindKey("spoken_button_focus_announcement")
+      ->GetAsString(&strings_.accessibility_hint);
+  ui_strings.FindKey("spoken_suggestion_description_suffix")
+      ->GetAsString(&strings_.accessibility_suffix);
+}
+
 bool OmniboxPedal::IsNavigation() const {
   return !url_.is_empty();
 }
 
 const GURL& OmniboxPedal::GetNavigationUrl() const {
   return url_;
+}
+
+void OmniboxPedal::SetNavigationUrl(const GURL& url) {
+  url_ = url;
 }
 
 void OmniboxPedal::Execute(OmniboxPedal::ExecutionContext& context) const {
@@ -180,8 +197,13 @@ bool OmniboxPedal::IsConceptMatch(const Tokens& match_sequence) const {
 
 void OmniboxPedal::OpenURL(OmniboxPedal::ExecutionContext& context,
                            const GURL& url) const {
+  // destination_url_entered_without_scheme is used to determine whether
+  // navigations typed without a scheme and upgraded to HTTPS should fall back
+  // to HTTP. The URL might have been entered without a scheme, but pedal
+  // destination URLs don't need a fallback so it's fine to pass false here.
   context.controller_.OnAutocompleteAccept(
       url, nullptr, WindowOpenDisposition::CURRENT_TAB,
       ui::PAGE_TRANSITION_GENERATED, AutocompleteMatchType::PEDAL,
-      context.match_selection_timestamp_);
+      context.match_selection_timestamp_,
+      /*destination_url_entered_without_scheme=*/false);
 }

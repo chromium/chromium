@@ -10,12 +10,16 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/unsafe_shared_memory_pool.h"
 #include "base/win/scoped_handle.h"
 #include "gpu/gpu_export.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "ui/gfx/color_space.h"
 
 namespace gpu {
+
+class GpuMemoryBufferManager;
 
 // Implementation of GPU memory buffer based on dxgi textures.
 class GPU_EXPORT GpuMemoryBufferImplDXGI : public GpuMemoryBufferImpl {
@@ -30,7 +34,9 @@ class GPU_EXPORT GpuMemoryBufferImplDXGI : public GpuMemoryBufferImpl {
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
-      DestructionCallback callback);
+      DestructionCallback callback,
+      gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
+      scoped_refptr<base::UnsafeSharedMemoryPool> pool);
 
   static base::OnceClosure AllocateForTesting(
       const gfx::Size& size,
@@ -45,14 +51,29 @@ class GPU_EXPORT GpuMemoryBufferImplDXGI : public GpuMemoryBufferImpl {
   gfx::GpuMemoryBufferType GetType() const override;
   gfx::GpuMemoryBufferHandle CloneHandle() const override;
 
+  HANDLE GetHandle() const;
+
  private:
   GpuMemoryBufferImplDXGI(gfx::GpuMemoryBufferId id,
                           const gfx::Size& size,
                           gfx::BufferFormat format,
                           DestructionCallback callback,
-                          base::win::ScopedHandle dxgi_handle);
+                          base::win::ScopedHandle dxgi_handle,
+                          GpuMemoryBufferManager* gpu_memory_buffer_manager,
+                          scoped_refptr<base::UnsafeSharedMemoryPool> pool,
+                          base::UnsafeSharedMemoryRegion region);
 
   base::win::ScopedHandle dxgi_handle_;
+  GpuMemoryBufferManager* gpu_memory_buffer_manager_;
+
+  // Used to create and store shared memory for data, copied via request to
+  // gpu process.
+  scoped_refptr<base::UnsafeSharedMemoryPool> shared_memory_pool_;
+  std::unique_ptr<base::UnsafeSharedMemoryPool::Handle> shared_memory_handle_;
+
+  // Used to store shared memory passed from the capturer.
+  base::UnsafeSharedMemoryRegion unowned_region_;
+  base::WritableSharedMemoryMapping unowned_mapping_;
 
   DISALLOW_COPY_AND_ASSIGN(GpuMemoryBufferImplDXGI);
 };

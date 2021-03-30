@@ -11,17 +11,20 @@
 #include "base/component_export.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/assistant/public/cpp/assistant_settings.h"
+#include "chromeos/services/libassistant/public/mojom/authentication_state_observer.mojom.h"
+#include "chromeos/services/libassistant/public/mojom/service_controller.mojom-shared.h"
 #include "services/media_session/public/mojom/media_session.mojom-shared.h"
 
 namespace chromeos {
 namespace assistant {
+
+class AuthenticationStateObserver;
 
 // Interface class that defines all assistant functionalities.
 class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerService
     : public Assistant {
  public:
   class StateObserver;
-  class CommunicationErrorObserver;
 
   struct UserInfo {
     UserInfo(const std::string& gaia_id, const std::string& access_token)
@@ -31,23 +34,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerService
     std::string access_token;
   };
 
-  enum State {
-    // Initial state, the service is created but not started yet.
-    STOPPED = 0,
-    // Start has been called but libassistant creation is still in progress.
-    // Calling |assistant_manager()| will still return a nullptr.
-    STARTING = 1,
-    // The service is started, libassistant has been created, but libassistant
-    // is not ready yet to take requests.
-    STARTED = 2,
-    // The service is fully running and ready to take requests.
-    RUNNING = 3
-  };
-
-  enum class CommunicationErrorType {
-    AuthenticationError,
-    Other,
-  };
+  using State = chromeos::libassistant::mojom::ServiceState;
 
   ~AssistantManagerService() override = default;
 
@@ -69,9 +56,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerService
   // will switch the mode back to normal.
   virtual void SetUser(const base::Optional<UserInfo>& user) = 0;
 
-  // Enable/disable ambient mode for Assistant.
-  virtual void EnableAmbientMode(bool enabled) = 0;
-
   // Turn on / off all listening, including hotword and voice query.
   virtual void EnableListening(bool enable) = 0;
 
@@ -87,12 +71,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerService
   // Return a pointer of AssistantSettings.
   virtual AssistantSettings* GetAssistantSettings() = 0;
 
-  // Add/Remove an observer that is invoked when there is a communication
-  // error with the Assistant service.
-  virtual void AddCommunicationErrorObserver(
-      CommunicationErrorObserver* observer) = 0;
-  virtual void RemoveCommunicationErrorObserver(
-      const CommunicationErrorObserver* observer) = 0;
+  virtual void AddAuthenticationStateObserver(
+      AuthenticationStateObserver* observer) = 0;
 
   // Add/Remove an observer that is invoked when there is a change in the
   // |AssistantManagerService::State| value.
@@ -118,20 +98,21 @@ class AssistantManagerService::StateObserver : public base::CheckedObserver {
   virtual void OnStateChanged(AssistantManagerService::State new_state) = 0;
 };
 
-// Observes communication errors when communicating with the Assistant backend.
-class AssistantManagerService::CommunicationErrorObserver
-    : public base::CheckedObserver {
+class AuthenticationStateObserver
+    : public ::chromeos::libassistant::mojom::AuthenticationStateObserver {
  public:
-  CommunicationErrorObserver() = default;
+  AuthenticationStateObserver();
+  ~AuthenticationStateObserver() override;
 
-  virtual void OnCommunicationError(CommunicationErrorType error) = 0;
-
- protected:
-  ~CommunicationErrorObserver() override = default;
+  mojo::PendingRemote<
+      ::chromeos::libassistant::mojom::AuthenticationStateObserver>
+  BindNewPipeAndPassRemote();
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(CommunicationErrorObserver);
+  mojo::Receiver<::chromeos::libassistant::mojom::AuthenticationStateObserver>
+      receiver_{this};
 };
+
 }  // namespace assistant
 }  // namespace chromeos
 

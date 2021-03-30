@@ -34,7 +34,7 @@ class IndexedDBFakeBackingStore : public IndexedDBBackingStore {
   ~IndexedDBFakeBackingStore() override;
 
   leveldb::Status DeleteDatabase(
-      const base::string16& name,
+      const std::u16string& name,
       TransactionalLevelDBTransaction* transaction) override;
 
   leveldb::Status PutRecord(IndexedDBBackingStore::Transaction* transaction,

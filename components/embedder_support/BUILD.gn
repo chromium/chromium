@@ -11,20 +11,49 @@ static_library("embedder_support") {
   ]
 }
 
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "origin_trials/origin_trial_policy_impl_unittest.cc" ]
+# Target for general utilities that are only used in the browser process.
+static_library("browser_util") {
+  sources = [
+    "content_settings_utils.cc",
+    "content_settings_utils.h",
+    "user_agent_utils.cc",
+    "user_agent_utils.h",
+  ]
 
   deps = [
+    ":embedder_support",
+    "//build:branding_buildflags",
+    "//components/content_settings/core/browser:browser",
+    "//components/version_info",
+    "//content/public/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "origin_trials/component_updater_utils_unittest.cc",
+    "origin_trials/origin_trial_policy_impl_unittest.cc",
+    "user_agent_utils_unittest.cc",
+  ]
+
+  deps = [
+    ":browser_util",
     "//base",
     "//base/test:test_support",
+    "//components/component_updater/installer_policies",
     "//components/embedder_support",
     "//components/embedder_support/origin_trials",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/version_info:version_info",
+    "//content/public/common",
     "//mojo/core/embedder:embedder",
     "//net:net",
     "//net/traffic_annotation:test_support",
     "//services/network:test_support",
     "//testing/gtest",
+    "//third_party/blink/public/common:headers",
     "//third_party/blink/public/mojom:mojom_platform_headers",
   ]
 

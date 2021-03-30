@@ -33,8 +33,7 @@
 
 #include "base/optional.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_drag_drop_token.mojom-blink.h"
-#include "third_party/blink/public/mojom/file_system_access/native_file_system_transfer_token.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom-blink.h"
 #include "third_party/blink/public/platform/web_drag_data.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
@@ -60,7 +59,8 @@ class CORE_EXPORT DataObjectItem final
   static DataObjectItem* CreateFromFileWithFileSystemId(
       File*,
       const String& file_system_id,
-      scoped_refptr<NativeFileSystemDropData> native_file_entry = nullptr);
+      scoped_refptr<FileSystemAccessDropData> file_system_access_entry =
+          nullptr);
   static DataObjectItem* CreateFromURL(const String& url, const String& title);
   static DataObjectItem* CreateFromHTML(const String& html,
                                         const KURL& base_url);
@@ -95,9 +95,9 @@ class CORE_EXPORT DataObjectItem final
   bool HasFileSystemId() const;
   String FileSystemId() const;
 
-  bool HasNativeFileSystemEntry() const;
-  mojo::PendingRemote<mojom::blink::NativeFileSystemDragDropToken>
-  CloneNativeFileSystemEntryToken() const;
+  bool HasFileSystemAccessEntry() const;
+  mojo::PendingRemote<mojom::blink::FileSystemAccessDataTransferToken>
+  CloneFileSystemAccessEntryToken() const;
 
   void Trace(Visitor*) const;
 
@@ -107,7 +107,7 @@ class CORE_EXPORT DataObjectItem final
     kInternalSource,
   };
 
-  scoped_refptr<NativeFileSystemDropData> native_file_system_entry_;
+  scoped_refptr<FileSystemAccessDropData> file_system_access_entry_;
   DataSource source_;
   ItemKind kind_;
   String type_;

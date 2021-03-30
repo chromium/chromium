@@ -47,8 +47,8 @@ source_set("prefs") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
-    "//chromeos/constants",
     "//chromeos/services/multidevice_setup/public/mojom",
     "//components/prefs:prefs",
   ]
@@ -61,6 +61,7 @@ source_set("first_run_field_trial") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chromeos",
     "//components/variations/proto",

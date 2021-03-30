@@ -16,7 +16,6 @@
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "device/fido/fido_constants.h"
@@ -42,7 +41,7 @@ struct TestExpectation {
   pin::PINEntryError error = pin::PINEntryError::kNoError;
   uint32_t min_pin_length = kMinPinLength;
   int attempts = 8;
-  base::string16 pin = base::UTF8ToUTF16(kTestPIN);
+  std::u16string pin = base::UTF8ToUTF16(kTestPIN);
 };
 
 struct TestCase {
@@ -84,7 +83,7 @@ class TestAuthTokenRequesterDelegate : public AuthTokenRequester::Delegate {
     DCHECK_EQ(min_pin_length, expectations_.front().min_pin_length);
     DCHECK_EQ(attempts, expectations_.front().attempts);
 
-    base::string16 pin = expectations_.front().pin;
+    std::u16string pin = expectations_.front().pin;
     expectations_.pop_front();
     std::move(provide_pin_cb).Run(pin);
   }
@@ -392,7 +391,7 @@ TEST_F(AuthTokenRequesterTest, PINInvalid) {
                UserVerificationAvailability::kNotSupported,
                true,
                {{.reason = pin::PINEntryReason::kChallenge,
-                 .pin = base::string16({0xd800, 0xd800, 0xd800, 0xd800})},
+                 .pin = std::u16string({0xd800, 0xd800, 0xd800, 0xd800})},
                 {pin::PINEntryReason::kChallenge,
                  pin::PINEntryError::kInvalidCharacters}}});
 }
@@ -403,14 +402,14 @@ TEST_F(AuthTokenRequesterTest, PINTooShort) {
   config.ctap2_versions = {std::begin(kCtap2Versions2_1),
                            std::end(kCtap2Versions2_1)};
   auto state = base::MakeRefCounted<VirtualFidoDevice::State>();
-  RunTestCase(std::move(config), state,
-              TestCase{ClientPinAvailability::kSupportedAndPinSet,
-                       UserVerificationAvailability::kNotSupported,
-                       true,
-                       {{.reason = pin::PINEntryReason::kChallenge,
-                         .pin = base::UTF8ToUTF16("まどか")},
-                        {pin::PINEntryReason::kChallenge,
-                         pin::PINEntryError::kTooShort}}});
+  RunTestCase(
+      std::move(config), state,
+      TestCase{
+          ClientPinAvailability::kSupportedAndPinSet,
+          UserVerificationAvailability::kNotSupported,
+          true,
+          {{.reason = pin::PINEntryReason::kChallenge, .pin = u"まどか"},
+           {pin::PINEntryReason::kChallenge, pin::PINEntryError::kTooShort}}});
 }
 
 TEST_F(AuthTokenRequesterTest, UVLockedPINFallback) {

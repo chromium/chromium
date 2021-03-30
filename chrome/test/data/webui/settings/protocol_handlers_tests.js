@@ -6,6 +6,7 @@
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {TestSiteSettingsPrefsBrowserProxy} from 'chrome://test/settings/test_site_settings_prefs_browser_proxy.js';
+import {isChildVisible} from '../test_util.m.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for protocol_handlers. */
@@ -90,6 +91,44 @@ suite('ProtocolHandlers', function() {
       flush();
     });
   }
+
+  test('redesign, radio visible', function() {
+    loadTimeData.overrideValues({
+      enableContentSettingsRedesign: true,
+    });
+    return initPage().then(function() {
+      assertTrue(isChildVisible(testElement, '#protcolHandlersRadio'));
+    });
+  });
+
+  test('redesign, set protocol handlers default called', () => {
+    loadTimeData.overrideValues({
+      enableContentSettingsRedesign: true,
+    });
+    return initPage().then(() => {
+      testElement.$$('#protcolHandlersRadioBlock').click();
+      return browserProxy.whenCalled('setProtocolHandlerDefault');
+    });
+  });
+
+  test('no redesign, radio invisible', function() {
+    loadTimeData.overrideValues({
+      enableContentSettingsRedesign: false,
+    });
+    return initPage().then(function() {
+      assertFalse(isChildVisible(testElement, '#protcolHandlersRadio'));
+    });
+  });
+
+  test('no redesign, set protocol handlers default called', () => {
+    loadTimeData.overrideValues({
+      enableContentSettingsRedesign: false,
+    });
+    return initPage().then(() => {
+      testElement.$$('cr-toggle').click();
+      return browserProxy.whenCalled('setProtocolHandlerDefault');
+    });
+  });
 
   test('empty list', function() {
     return initPage().then(function() {

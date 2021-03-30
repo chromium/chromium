@@ -61,7 +61,7 @@ void SystemTrayNotifier::RemoveScreenCaptureObserver(
 void SystemTrayNotifier::NotifyScreenCaptureStart(
     base::RepeatingClosure stop_callback,
     base::RepeatingClosure source_callback,
-    const base::string16& sharing_app_name) {
+    const std::u16string& sharing_app_name) {
   for (auto& observer : screen_capture_observers_)
     observer.OnScreenCaptureStart(stop_callback, source_callback,
                                   sharing_app_name);
@@ -83,7 +83,7 @@ void SystemTrayNotifier::RemoveScreenShareObserver(
 
 void SystemTrayNotifier::NotifyScreenShareStart(
     base::RepeatingClosure stop_callback,
-    const base::string16& helper_name) {
+    const std::u16string& helper_name) {
   for (auto& observer : screen_share_observers_)
     observer.OnScreenShareStart(stop_callback, helper_name);
 }

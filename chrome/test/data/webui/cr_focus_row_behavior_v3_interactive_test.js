@@ -15,7 +15,7 @@ GEN('#include "content/public/test/browser_test.h"');
 var CrFocusRowBehaviorV3Test = class extends PolymerInteractiveUITest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_focus_row_behavior_test.m.js';
+    return 'chrome://test/test_loader.html?module=cr_focus_row_behavior_test.js';
   }
 
   /** @override */

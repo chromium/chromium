@@ -25,7 +25,7 @@ using testing::UnorderedElementsAre;
 
 TEST(PrivacyBudgetUkmEntryFilterStandaloneTest,
      BlocksIdentifiabilityMetricsByDefault) {
-  IdentifiabilityStudyState::ResetStateForTesting();
+  IdentifiabilityStudyState::ResetGlobalStudySettingsForTesting();
   TestingPrefServiceSimple pref_service;
   prefs::RegisterPrivacyBudgetPrefs(pref_service.registry());
   auto settings = std::make_unique<IdentifiabilityStudyState>(&pref_service);
@@ -43,7 +43,7 @@ TEST(PrivacyBudgetUkmEntryFilterStandaloneTest,
 }
 
 TEST(PrivacyBudgetUkmEntryFilterStandaloneTest, AllowsOtherMetricsByDefault) {
-  IdentifiabilityStudyState::ResetStateForTesting();
+  IdentifiabilityStudyState::ResetGlobalStudySettingsForTesting();
   TestingPrefServiceSimple pref_service;
   prefs::RegisterPrivacyBudgetPrefs(pref_service.registry());
   auto settings = std::make_unique<IdentifiabilityStudyState>(&pref_service);
@@ -61,7 +61,7 @@ TEST(PrivacyBudgetUkmEntryFilterStandaloneTest, AllowsOtherMetricsByDefault) {
 }
 
 TEST(PrivacyBudgetUkmEntryFilterStandaloneTest, BlockListedMetrics) {
-  IdentifiabilityStudyState::ResetStateForTesting();
+  IdentifiabilityStudyState::ResetGlobalStudySettingsForTesting();
   constexpr uint64_t kBlockedSurface = 1;
   constexpr uint64_t kUnblockedSurface = 2;
 
@@ -96,7 +96,7 @@ TEST(PrivacyBudgetUkmEntryFilterStandaloneTest, BlockListedMetrics) {
 }
 
 TEST(PrivacyBudgetUkmEntryFilterStandaloneTest, AppliesMetadata) {
-  IdentifiabilityStudyState::ResetStateForTesting();
+  IdentifiabilityStudyState::ResetGlobalStudySettingsForTesting();
   TestingPrefServiceSimple pref_service;
   prefs::RegisterPrivacyBudgetPrefs(pref_service.registry());
   test::ScopedPrivacyBudgetConfig::Parameters parameters;

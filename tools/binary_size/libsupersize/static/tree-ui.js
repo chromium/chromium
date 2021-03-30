@@ -454,9 +454,17 @@ const newTreeElement = (() => {
   }
 
   window.supersize.treeReady.then((message) => {
-    document.querySelector('#group-by-container')
-            .toggleAttribute('disabled', !message.isMultiContainer);
-    displayTree(message);
+    if (message.isMultiContainer) {
+      document.getElementById('group-by-container').checked = true;
+      // Fire a change event manually, to reload the tree otherwise it does not
+      // fire on its own. No need to display the tree since it is going to get
+      // reloaded anyways.
+      document.getElementById('options').dispatchEvent(new Event('change'));
+    } else {
+      document.querySelector('#group-by-container')
+        .toggleAttribute('disabled', true);
+      displayTree(message);
+    }
   });
   window.supersize.worker.setOnProgressHandler(displayTree);
 

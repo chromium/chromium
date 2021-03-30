@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_paths.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
@@ -21,13 +22,12 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/chromeos/policy/affiliated_cloud_policy_invalidator.h"
 #include "chrome/browser/chromeos/policy/device_local_account.h"
 #include "chrome/browser/chromeos/policy/device_local_account_external_data_service.h"
 #include "chrome/browser/chromeos/policy/device_local_account_policy_store.h"
-#include "chrome/browser/chromeos/settings/device_settings_service.h"
 #include "chrome/common/chrome_content_client.h"
-#include "chromeos/constants/chromeos_paths.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/settings/cros_settings_provider.h"
@@ -54,7 +54,7 @@ namespace {
 
 // Device local accounts are always affiliated.
 std::string GetDeviceDMToken(
-    chromeos::DeviceSettingsService* device_settings_service,
+    ash::DeviceSettingsService* device_settings_service,
     const std::vector<std::string>& user_affiliation_ids) {
   return device_settings_service->policy_data()->request_token();
 }
@@ -63,7 +63,7 @@ std::string GetDeviceDMToken(
 // doesn't have credentials in device settings (i.e. is not
 // enterprise-enrolled).
 std::unique_ptr<CloudPolicyClient> CreateClient(
-    chromeos::DeviceSettingsService* device_settings_service,
+    ash::DeviceSettingsService* device_settings_service,
     DeviceManagementService* device_management_service,
     scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory) {
   const em::PolicyData* policy_data = device_settings_service->policy_data();
@@ -128,7 +128,7 @@ DeviceLocalAccountPolicyBroker::DeviceLocalAccountPolicyBroker(
     const base::FilePath& component_policy_cache_path,
     std::unique_ptr<DeviceLocalAccountPolicyStore> store,
     scoped_refptr<DeviceLocalAccountExternalDataManager> external_data_manager,
-    const base::Closure& policy_update_callback,
+    const base::RepeatingClosure& policy_update_callback,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     const scoped_refptr<base::SequencedTaskRunner>& resource_cache_task_runner,
     AffiliatedInvalidationServiceProvider* invalidation_service_provider)
@@ -184,7 +184,7 @@ bool DeviceLocalAccountPolicyBroker::HasInvalidatorForTest() const {
 }
 
 void DeviceLocalAccountPolicyBroker::ConnectIfPossible(
-    chromeos::DeviceSettingsService* device_settings_service,
+    ash::DeviceSettingsService* device_settings_service,
     DeviceManagementService* device_management_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   if (core_.client())
@@ -251,8 +251,8 @@ void DeviceLocalAccountPolicyBroker::CreateComponentCloudPolicyService(
 
 DeviceLocalAccountPolicyService::DeviceLocalAccountPolicyService(
     chromeos::SessionManagerClient* session_manager_client,
-    chromeos::DeviceSettingsService* device_settings_service,
-    chromeos::CrosSettings* cros_settings,
+    ash::DeviceSettingsService* device_settings_service,
+    ash::CrosSettings* cros_settings,
     AffiliatedInvalidationServiceProvider* invalidation_service_provider,
     scoped_refptr<base::SequencedTaskRunner> store_background_task_runner,
     scoped_refptr<base::SequencedTaskRunner> extension_cache_task_runner,
@@ -273,7 +273,7 @@ DeviceLocalAccountPolicyService::DeviceLocalAccountPolicyService(
       url_loader_factory_(url_loader_factory),
       local_accounts_subscription_(cros_settings_->AddSettingsObserver(
           chromeos::kAccountsPrefDeviceLocalAccounts,
-          base::Bind(
+          base::BindRepeating(
               &DeviceLocalAccountPolicyService::UpdateAccountListIfNonePending,
               base::Unretained(this)))),
       component_policy_cache_root_(base::PathService::CheckedGet(
@@ -467,8 +467,9 @@ void DeviceLocalAccountPolicyService::UpdateAccountList() {
           component_policy_cache_root_.Append(
               GetCacheSubdirectoryForAccountID(it->account_id)),
           std::move(store), external_data_manager,
-          base::Bind(&DeviceLocalAccountPolicyService::NotifyPolicyUpdated,
-                     base::Unretained(this), it->user_id),
+          base::BindRepeating(
+              &DeviceLocalAccountPolicyService::NotifyPolicyUpdated,
+              base::Unretained(this), it->user_id),
           base::ThreadTaskRunnerHandle::Get(), resource_cache_task_runner_,
           invalidation_service_provider_));
     }

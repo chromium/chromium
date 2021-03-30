@@ -76,6 +76,9 @@ below:
       <output filename="blink_strings_zh-HK.pak" type="data_package" lang="zh-HK" />
       <output filename="blink_strings_zu.pak" type="data_package" lang="zu" />
     </if>
+    <if expr="chromeos or lacros">
+      <output filename="blink_strings_is.pak" type="data_package" lang="is" />
+    </if>
     <output filename="blink_strings_am.pak" type="data_package" lang="am" />
     <output filename="blink_strings_ar.pak" type="data_package" lang="ar" />
     <output filename="blink_strings_bg.pak" type="data_package" lang="bg" />
@@ -91,7 +94,6 @@ below:
     <output filename="blink_strings_es-419.pak" type="data_package" lang="es-419" />
     <output filename="blink_strings_et.pak" type="data_package" lang="et" />
     <output filename="blink_strings_fa.pak" type="data_package" lang="fa" />
-    <output filename="blink_strings_fake-bidi.pak" type="data_package" lang="fake-bidi" />
     <output filename="blink_strings_fi.pak" type="data_package" lang="fi" />
     <output filename="blink_strings_fil.pak" type="data_package" lang="fil" />
     <output filename="blink_strings_fr.pak" type="data_package" lang="fr" />
@@ -132,6 +134,10 @@ below:
     <output filename="blink_strings_vi.pak" type="data_package" lang="vi" />
     <output filename="blink_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
     <output filename="blink_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+
+    <!-- Pseudolocales -->
+    <output filename="blink_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="blink_strings_en-XA.pak" type="data_package" lang="en-XA" />
   </outputs>
   <translations>
     <file path="translations/blink_strings_af.xtb" lang="af" />
@@ -216,7 +222,7 @@ below:
     <file path="translations/blink_strings_zh-TW.xtb" lang="zh-TW" />
     <file path="translations/blink_strings_zu.xtb" lang="zu" />
   </translations>
-  <release seq="1" allow_pseudo="false">
+  <release seq="1">
     <messages fallback_to_english="true">
       <!-- TODO add all of your "string table" messages here.  Remember to
       change nontranslateable parts of the messages into placeholders (using the
@@ -598,6 +604,9 @@ below:
       <!-- https://w3c.github.io/html-aam/#el-meter -->
       <message name="IDS_AX_ROLE_METER" desc="Accessibility role description for a meter, for example a temperature indicator or progress bar">
           meter
+      </message>
+      <message name="IDS_AX_ROLE_MONTH" desc="Accessibility role description for a month input">
+        month picker
       </message>
       <message name="IDS_AX_ROLE_NAVIGATIONAL_LINK" desc="Accessibility role description for group of navigational links.">
         navigation

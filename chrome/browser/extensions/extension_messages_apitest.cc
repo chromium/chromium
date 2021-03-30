@@ -171,8 +171,8 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingExternal) {
   ASSERT_TRUE(LoadExtension(
       shared_test_data_dir().AppendASCII("messaging").AppendASCII("receiver")));
 
-  ASSERT_TRUE(RunExtensionTestWithFlags("messaging/connect_external", kFlagNone,
-                                        kFlagUseRootExtensionsDir))
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "messaging/connect_external", .use_extensions_root_dir = true}))
       << message_;
 }
 
@@ -1215,8 +1215,13 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingOnUnload) {
       LoadExtension(test_data_dir_.AppendASCII("messaging/on_unload"));
   ExtensionTestMessageListener listener("listening", false);
   ASSERT_TRUE(extension);
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("example.com", "/empty.html"));
+  // Open a new tab to example.com. Since we'll be closing it later, we need
+  // to make sure there's still a tab around to extend the life of the
+  // browser.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), embedded_test_server()->GetURL("example.com", "/empty.html"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_TRUE(listener.WaitUntilSatisfied());
   ExtensionHost* background_host =
       ProcessManager::Get(profile())->GetBackgroundHostForExtension(

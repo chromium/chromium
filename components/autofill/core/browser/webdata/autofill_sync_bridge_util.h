@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "components/sync/engine/entity_data.h"
 #include "components/sync/model/entity_change.h"
-#include "components/sync/model/entity_data.h"
 
 namespace autofill {
 

@@ -2,6 +2,7 @@ This tests for a crash when removing a selection ends with a fully selected tabl
 
 foo
 
-		
+	
+	
 
 foo	bar	baz

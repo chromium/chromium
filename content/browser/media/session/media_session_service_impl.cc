@@ -15,8 +15,7 @@ namespace content {
 
 MediaSessionServiceImpl::MediaSessionServiceImpl(
     RenderFrameHost* render_frame_host)
-    : render_frame_process_id_(render_frame_host->GetProcess()->GetID()),
-      render_frame_routing_id_(render_frame_host->GetRoutingID()),
+    : render_frame_host_id_(render_frame_host->GetGlobalFrameRoutingId()),
       playback_state_(blink::mojom::MediaSessionPlaybackState::NONE) {
   MediaSessionImpl* session = GetMediaSession();
   if (session)
@@ -38,9 +37,12 @@ void MediaSessionServiceImpl::Create(
   impl->Bind(std::move(receiver));
 }
 
-RenderFrameHost* MediaSessionServiceImpl::GetRenderFrameHost() {
-  return RenderFrameHost::FromID(render_frame_process_id_,
-                                 render_frame_routing_id_);
+GlobalFrameRoutingId MediaSessionServiceImpl::GetRenderFrameHostId() const {
+  return render_frame_host_id_;
+}
+
+RenderFrameHost* MediaSessionServiceImpl::GetRenderFrameHost() const {
+  return RenderFrameHost::FromID(GetRenderFrameHostId());
 }
 
 void MediaSessionServiceImpl::DidFinishNavigation() {
@@ -98,6 +100,22 @@ void MediaSessionServiceImpl::SetMetadata(
   MediaSessionImpl* session = GetMediaSession();
   if (session)
     session->OnMediaSessionMetadataChanged(this);
+}
+
+void MediaSessionServiceImpl::SetMicrophoneState(
+    media_session::mojom::MicrophoneState microphone_state) {
+  microphone_state_ = microphone_state;
+  MediaSessionImpl* session = GetMediaSession();
+  if (session)
+    session->OnMediaSessionInfoChanged(this);
+}
+
+void MediaSessionServiceImpl::SetCameraState(
+    media_session::mojom::CameraState camera_state) {
+  camera_state_ = camera_state;
+  MediaSessionImpl* session = GetMediaSession();
+  if (session)
+    session->OnMediaSessionInfoChanged(this);
 }
 
 void MediaSessionServiceImpl::EnableAction(

@@ -276,15 +276,15 @@ void FindInPage::ClearActiveFindMatch() {
 }
 
 void WebLocalFrameImpl::SetTickmarks(const WebElement& target,
-                                     const WebVector<WebRect>& tickmarks) {
+                                     const WebVector<gfx::Rect>& tickmarks) {
   find_in_page_->SetTickmarks(target, tickmarks);
 }
 
 void FindInPage::SetTickmarks(const WebElement& target,
-                              const WebVector<WebRect>& tickmarks) {
+                              const WebVector<gfx::Rect>& tickmarks) {
   Vector<IntRect> tickmarks_converted(SafeCast<wtf_size_t>(tickmarks.size()));
   for (wtf_size_t i = 0; i < tickmarks.size(); ++i)
-    tickmarks_converted[i] = tickmarks[i];
+    tickmarks_converted[i] = IntRect(tickmarks[i]);
 
   LayoutBox* box;
   if (target.IsNull())

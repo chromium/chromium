@@ -23,6 +23,7 @@
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_format_utils.h"
+#include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/single_release_callback.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/context_support.h"
@@ -386,7 +387,7 @@ bool Buffer::ProduceTransferableResource(
     bool secure_output_only,
     viz::TransferableResource* resource) {
   TRACE_EVENT1("exo", "Buffer::ProduceTransferableResource", "buffer_id",
-               gfx_buffer());
+               static_cast<const void*>(gfx_buffer()));
   DCHECK(attach_count_);
 
   // If textures are lost, destroy them to ensure that we create new ones below.
@@ -402,7 +403,7 @@ bool Buffer::ProduceTransferableResource(
       context_factory->SharedMainThreadRasterContextProvider();
   if (!context_provider) {
     DLOG(WARNING) << "Failed to acquire a context provider";
-    resource->id = 0;
+    resource->id = viz::kInvalidResourceId;
     resource->size = gfx::Size();
     return false;
   }
@@ -425,7 +426,8 @@ bool Buffer::ProduceTransferableResource(
 
   if (release_contents_callback_.IsCancelled())
     TRACE_EVENT_ASYNC_BEGIN1("exo", kBufferInUse, gpu_memory_buffer_.get(),
-                             "buffer_id", gfx_buffer());
+                             "buffer_id",
+                             static_cast<const void*>(gfx_buffer()));
 
   // Cancel pending contents release callback.
   release_contents_callback_.Reset(
@@ -485,15 +487,15 @@ bool Buffer::ProduceTransferableResource(
 void Buffer::OnAttach() {
   DLOG_IF(WARNING, attach_count_)
       << "Reattaching a buffer that is already attached to another surface.";
-  TRACE_EVENT2("exo", "Buffer::OnAttach", "buffer_id", gfx_buffer(), "count",
-               attach_count_);
+  TRACE_EVENT2("exo", "Buffer::OnAttach", "buffer_id",
+               static_cast<const void*>(gfx_buffer()), "count", attach_count_);
   ++attach_count_;
 }
 
 void Buffer::OnDetach() {
   DCHECK_GT(attach_count_, 0u);
-  TRACE_EVENT2("exo", "Buffer::OnAttach", "buffer_id", gfx_buffer(), "count",
-               attach_count_);
+  TRACE_EVENT2("exo", "Buffer::OnAttach", "buffer_id",
+               static_cast<const void*>(gfx_buffer()), "count", attach_count_);
   --attach_count_;
 
   // Release buffer if no longer attached to a surface and content has been
@@ -532,7 +534,8 @@ void Buffer::ReleaseContentsTexture(std::unique_ptr<Texture> texture,
 }
 
 void Buffer::ReleaseContents() {
-  TRACE_EVENT1("exo", "Buffer::ReleaseContents", "buffer_id", gfx_buffer());
+  TRACE_EVENT1("exo", "Buffer::ReleaseContents", "buffer_id",
+               static_cast<const void*>(gfx_buffer()));
 
   // Cancel callback to indicate that buffer has been released.
   release_contents_callback_.Cancel();

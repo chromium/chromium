@@ -19,6 +19,7 @@
 #include "chrome/browser/media/midi_sysex_permission_context.h"
 #include "chrome/browser/media/webrtc/camera_pan_tilt_zoom_permission_context.h"
 #include "chrome/browser/media/webrtc/media_stream_device_permission_context.h"
+#include "chrome/browser/nfc/chrome_nfc_permission_context_delegate.h"
 #include "chrome/browser/notifications/notification_permission_context.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
@@ -45,12 +46,12 @@
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/geolocation/geolocation_permission_context_delegate_android.h"
-#include "chrome/browser/nfc/nfc_permission_context_android.h"
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
+#include "components/permissions/contexts/nfc_permission_context_android.h"
 #else
 #include "chrome/browser/geolocation/geolocation_permission_context_delegate.h"
-#include "chrome/browser/nfc/nfc_permission_context.h"
 #include "components/permissions/contexts/geolocation_permission_context.h"
+#include "components/permissions/contexts/nfc_permission_context.h"
 #endif
 
 namespace {
@@ -111,12 +112,15 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
   permission_contexts[ContentSettingsType::WAKE_LOCK_SYSTEM] =
       std::make_unique<WakeLockPermissionContext>(
           profile, ContentSettingsType::WAKE_LOCK_SYSTEM);
+  auto nfc_delegate = std::make_unique<ChromeNfcPermissionContextDelegate>();
 #if !defined(OS_ANDROID)
   permission_contexts[ContentSettingsType::NFC] =
-      std::make_unique<NfcPermissionContext>(profile);
+      std::make_unique<permissions::NfcPermissionContext>(
+          profile, std::move(nfc_delegate));
 #else
   permission_contexts[ContentSettingsType::NFC] =
-      std::make_unique<NfcPermissionContextAndroid>(profile);
+      std::make_unique<permissions::NfcPermissionContextAndroid>(
+          profile, std::move(nfc_delegate));
 #endif
   permission_contexts[ContentSettingsType::VR] =
       std::make_unique<permissions::WebXrPermissionContext>(

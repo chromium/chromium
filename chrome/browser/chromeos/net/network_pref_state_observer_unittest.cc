@@ -9,8 +9,7 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -21,10 +20,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/proxy_config/proxy_prefs.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -32,7 +29,7 @@
 namespace {
 const char kUserId[] = "test@example.com";
 const char kNetworkId[] = "wifi1_guid";  // Matches FakeShillManagerClient
-}
+}  // namespace
 
 namespace chromeos {
 
@@ -62,13 +59,11 @@ class NetworkPrefStateObserverTest : public testing::Test {
 
  protected:
   Profile* LoginAndReturnProfile() {
-    fake_user_manager_->AddUser(AccountId::FromUserEmail(kUserId));
-    fake_user_manager_->LoginUser(AccountId::FromUserEmail(kUserId));
+    AccountId account_id = AccountId::FromUserEmail(kUserId);
+    fake_user_manager_->AddUser(account_id);
+    fake_user_manager_->LoginUser(account_id);
     Profile* profile = profile_manager_.CreateTestingProfile(kUserId);
-    content::NotificationService::current()->Notify(
-        chrome::NOTIFICATION_LOGIN_USER_PROFILE_PREPARED,
-        content::NotificationService::AllSources(),
-        content::Details<Profile>(profile));
+    session_manager_.NotifyUserProfileLoaded(account_id);
     base::RunLoop().RunUntilIdle();
     return profile;
   }
@@ -77,6 +72,7 @@ class NetworkPrefStateObserverTest : public testing::Test {
   FakeChromeUserManager* fake_user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
   TestingProfileManager profile_manager_;
+  session_manager::SessionManager session_manager_;
   std::unique_ptr<NetworkPrefStateObserver> network_pref_state_observer_;
 
  private:

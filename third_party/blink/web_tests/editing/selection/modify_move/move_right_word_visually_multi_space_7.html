@@ -51,7 +51,7 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr">    אבצ|    abc    דעפ     </div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr">    \u05D0\u05D1\u05E6    abc |   \u05D3\u05E2\u05E4     </div>',
+  '<div contenteditable dir="ltr">    \u05D0\u05D1\u05E6 |   abc    \u05D3\u05E2\u05E4     </div>',
   '7-7 right word');
 
 selection_test(
@@ -93,7 +93,7 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr">    אבצ    abc|    דעפ     </div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr">    \u05D0\u05D1\u05E6    abc    \u05D3\u05E2\u05E4|     </div>',
+  '<div contenteditable dir="ltr">    \u05D0\u05D1\u05E6    abc |   \u05D3\u05E2\u05E4     </div>',
   '7-14 right word');
 
 selection_test(

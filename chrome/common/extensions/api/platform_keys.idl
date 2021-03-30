@@ -151,9 +151,10 @@ namespace platformKeys {
     // operation before a sign. It is possible to pass "none" as the hash name,
     // in which case the sign function will apply PKCS#1 v1.5 padding and but
     // not hash the given data.
-    // <p>Currently, this function only supports the "RSASSA-PKCS1-v1_5"
-    // algorithm with one of the hashing algorithms "none", "SHA-1", "SHA-256",
-    // "SHA-384", and "SHA-512".</p>
+    // <p>Currently, this function supports the "ECDSA" algorithm with
+    // named-curve P-256 and "RSASSA-PKCS1-v1_5" algorithm with one of the
+    // hashing algorithms "none", "SHA-1", "SHA-256", "SHA-384", and
+    // "SHA-512".</p>
     [nocompile] static void getKeyPairBySpki(ArrayBuffer publicKeySpkiDer,
                                              object parameters,
                                              GetKeyPairCallback callback);
@@ -178,4 +179,3 @@ namespace platformKeys {
                                            VerificationCallback callback);
   };
 };
-

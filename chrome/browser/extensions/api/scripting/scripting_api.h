@@ -9,12 +9,7 @@
 
 #include "chrome/common/extensions/api/scripting.h"
 #include "extensions/browser/extension_function.h"
-
-class GURL;
-
-namespace base {
-class ListValue;
-}
+#include "extensions/browser/script_executor.h"
 
 namespace extensions {
 
@@ -44,9 +39,7 @@ class ScriptingExecuteScriptFunction : public ExtensionFunction {
                std::string* error);
 
   // Invoked when script execution is complete.
-  void OnScriptExecuted(const std::string& error,
-                        const GURL& frame_url,
-                        const base::ListValue& result);
+  void OnScriptExecuted(std::vector<ScriptExecutor::FrameResult> frame_results);
 
   api::scripting::ScriptInjection injection_;
 };
@@ -76,11 +69,28 @@ class ScriptingInsertCSSFunction : public ExtensionFunction {
                std::string* error);
 
   // Called when the CSS insertion is complete.
-  void OnCSSInserted(const std::string& error,
-                     const GURL& frame_url,
-                     const base::ListValue& result);
+  void OnCSSInserted(std::vector<ScriptExecutor::FrameResult> results);
 
   api::scripting::CSSInjection injection_;
+};
+
+class ScriptingRemoveCSSFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("scripting.removeCSS", SCRIPTING_REMOVECSS)
+
+  ScriptingRemoveCSSFunction();
+  ScriptingRemoveCSSFunction(const ScriptingRemoveCSSFunction&) = delete;
+  ScriptingRemoveCSSFunction& operator=(const ScriptingRemoveCSSFunction&) =
+      delete;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  ~ScriptingRemoveCSSFunction() override;
+
+  // Called when the CSS removal is complete.
+  void OnCSSRemoved(std::vector<ScriptExecutor::FrameResult> results);
 };
 
 }  // namespace extensions

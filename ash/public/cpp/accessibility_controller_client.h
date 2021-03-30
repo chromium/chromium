@@ -8,6 +8,10 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/time/time.h"
 
+namespace aura {
+class Window;
+}  // namespace aura
+
 namespace ax {
 namespace mojom {
 enum class Gesture;
@@ -21,9 +25,9 @@ class Rect;
 }  // namespace gfx
 
 namespace ash {
-
 enum class AccessibilityAlert;
 enum class SelectToSpeakPanelAction;
+enum class Sound;
 
 // Interface for Ash to request accessibility service from its client, Chrome.
 class ASH_PUBLIC_EXPORT AccessibilityControllerClient {
@@ -37,9 +41,9 @@ class ASH_PUBLIC_EXPORT AccessibilityControllerClient {
 
   // Plays an earcon. Earcons are brief and distinctive sounds that indicate
   // that their mapped event has occurred. The |sound_key| enums can be found in
-  // chromeos/audio/chromeos_sounds.h. This method exists because the browser
-  // owns all media playback.
-  virtual void PlayEarcon(int sound_key) = 0;
+  // ash/components/audio/sounds.h. This method exists because the browser owns
+  // all media playback.
+  virtual void PlayEarcon(Sound sound_key) = 0;
 
   // Initiates play of shutdown sound and returns sound duration. This method
   // exists because the browser owns all media playback.
@@ -98,6 +102,8 @@ class ASH_PUBLIC_EXPORT AccessibilityControllerClient {
   // floating control panel, with an optional value.
   virtual void OnSelectToSpeakPanelAction(SelectToSpeakPanelAction action,
                                           double value) = 0;
+
+  virtual void SetA11yOverrideWindow(aura::Window* a11y_override_window) = 0;
 };
 
 }  // namespace ash

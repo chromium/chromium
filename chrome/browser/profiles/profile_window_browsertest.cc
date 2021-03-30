@@ -28,8 +28,8 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/find_bar/find_bar_state.h"
 #include "chrome/browser/ui/find_bar/find_bar_state_factory.h"
+#include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
-#include "chrome/browser/ui/user_manager.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
@@ -101,22 +101,6 @@ class EmptyAcceleratorHandler : public ui::AcceleratorProvider {
   }
 };
 
-base::FilePath CreateTestingProfile(const std::string& name,
-                                    const std::string& relative_path) {
-  ProfileManager* manager = g_browser_process->profile_manager();
-  ProfileAttributesStorage& storage = manager->GetProfileAttributesStorage();
-  size_t starting_number_of_profiles = storage.GetNumberOfProfiles();
-
-  base::FilePath profile_path =
-      manager->user_data_dir().AppendASCII(relative_path);
-  storage.AddProfile(profile_path, base::ASCIIToUTF16(name), std::string(),
-                     base::string16(), false, 0u, std::string(),
-                     EmptyAccountId());
-
-  EXPECT_EQ(starting_number_of_profiles + 1u, storage.GetNumberOfProfiles());
-  return profile_path;
-}
-
 }  // namespace
 
 class ProfileWindowBrowserTest : public InProcessBrowserTest {
@@ -171,7 +155,14 @@ class ProfileWindowCountBrowserTest
   Profile* profile_ = nullptr;
 };
 
-IN_PROC_BROWSER_TEST_P(ProfileWindowCountBrowserTest, CountProfileWindows) {
+// TODO(crbug.com/1186994): Test is flaky on Linux Dbg.
+#if defined(OS_LINUX) && !defined(NDEBUG)
+#define MAYBE_CountProfileWindows DISABLED_CountProfileWindows
+#else
+#define MAYBE_CountProfileWindows CountProfileWindows
+#endif
+IN_PROC_BROWSER_TEST_P(ProfileWindowCountBrowserTest,
+                       MAYBE_CountProfileWindows) {
   DCHECK_EQ(0, GetWindowCount());
 
   // Create a browser and check the count.
@@ -289,8 +280,7 @@ IN_PROC_BROWSER_TEST_P(GuestProfileWindowBrowserTest,
   Browser* guest_browser = CreateGuestBrowser();
   Profile* guest_profile = guest_browser->profile();
 
-  base::string16 fip_text =
-      base::ASCIIToUTF16("first guest session search text");
+  std::u16string fip_text = u"first guest session search text";
   FindBarStateFactory::GetForBrowserContext(guest_profile)
       ->SetLastSearchText(fip_text);
 
@@ -307,6 +297,7 @@ IN_PROC_BROWSER_TEST_P(GuestProfileWindowBrowserTest,
   guest_browser = chrome::FindAnyBrowser(guest_profile, true);
   EXPECT_TRUE(guest_browser);
   CloseBrowserSynchronously(guest_browser);
+  content::RunAllTasksUntilIdle();
 
   // Open a new guest browser window. Since this is a separate session, the find
   // in page text should have been cleared (along with all other browsing data).
@@ -321,7 +312,7 @@ IN_PROC_BROWSER_TEST_P(GuestProfileWindowBrowserTest,
         guest_profile, chrome::startup::IS_NOT_PROCESS_STARTUP,
         chrome::startup::IS_NOT_FIRST_RUN, true /*always_create*/);
   }
-  EXPECT_EQ(base::string16(),
+  EXPECT_EQ(std::u16string(),
             FindBarStateFactory::GetForBrowserContext(guest_profile)
                 ->GetSearchPrepopulateText());
 }
@@ -367,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, OpenBrowserWindowForProfile) {
       Profile::CreateStatus::CREATE_STATUS_INITIALIZED);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(num_browsers + 1, BrowserList::GetInstance()->size());
-  EXPECT_FALSE(UserManager::IsShowing());
+  EXPECT_FALSE(ProfilePicker::IsOpen());
 }
 
 // TODO(crbug.com/935746): Test is flaky on Win and Linux.
@@ -381,20 +372,22 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, OpenBrowserWindowForProfile) {
 IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest,
                        MAYBE_OpenBrowserWindowForProfileWithSigninRequired) {
   Profile* profile = browser()->profile();
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(g_browser_process->profile_manager()
-                  ->GetProfileAttributesStorage()
-                  .GetProfileAttributesWithPath(profile->GetPath(), &entry));
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+  ASSERT_NE(entry, nullptr);
   entry->SetIsSigninRequired(true);
   size_t num_browsers = BrowserList::GetInstance()->size();
   base::RunLoop run_loop;
-  UserManager::AddOnUserManagerShownCallbackForTesting(run_loop.QuitClosure());
+  ProfilePicker::AddOnProfilePickerOpenedCallbackForTesting(
+      run_loop.QuitClosure());
   profiles::OpenBrowserWindowForProfile(
       ProfileManager::CreateCallback(), true, false, false, profile,
       Profile::CreateStatus::CREATE_STATUS_INITIALIZED);
   run_loop.Run();
   EXPECT_EQ(num_browsers, BrowserList::GetInstance()->size());
-  EXPECT_TRUE(UserManager::IsShowing());
+  EXPECT_TRUE(ProfilePicker::IsOpen());
 }
 
 class ProfileWindowWebUIBrowserTest : public WebUIBrowserTest {
@@ -414,41 +407,3 @@ class ProfileWindowWebUIBrowserTest : public WebUIBrowserTest {
         FILE_PATH_LITERAL("profile_window_browsertest.js")));
   }
 };
-
-IN_PROC_BROWSER_TEST_F(ProfileWindowWebUIBrowserTest,
-                       UserManagerFocusSingleProfile) {
-  std::string url_to_test;
-  base::RunLoop run_loop;
-  profiles::CreateSystemProfileForUserManager(
-      browser()->profile()->GetPath(),
-      profiles::USER_MANAGER_SELECT_PROFILE_NO_ACTION,
-      base::BindRepeating(
-          &ProfileWindowWebUIBrowserTest::OnSystemProfileCreated,
-          base::Unretained(this), &url_to_test, run_loop.QuitClosure()));
-  run_loop.Run();
-
-  ui_test_utils::NavigateToURL(browser(), GURL(url_to_test));
-  EXPECT_TRUE(RunJavascriptTest("testNoPodFocused"));
-}
-
-// This test is flaky, see https://crbug.com/611619.
-IN_PROC_BROWSER_TEST_F(ProfileWindowWebUIBrowserTest,
-                       DISABLED_UserManagerFocusMultipleProfiles) {
-  // The profile names are meant to sort differently by ICU collation and by
-  // naive sorting. See crbug/596280.
-  base::FilePath expected_path = CreateTestingProfile("#abc", "Profile 1");
-  CreateTestingProfile("?abc", "Profile 2");
-
-  std::string url_to_test;
-  base::RunLoop run_loop;
-  profiles::CreateSystemProfileForUserManager(
-      expected_path, profiles::USER_MANAGER_SELECT_PROFILE_NO_ACTION,
-      base::BindRepeating(
-          &ProfileWindowWebUIBrowserTest::OnSystemProfileCreated,
-          base::Unretained(this), &url_to_test, run_loop.QuitClosure()));
-  run_loop.Run();
-
-  ui_test_utils::NavigateToURL(browser(), GURL(url_to_test));
-  EXPECT_TRUE(RunJavascriptTest("testPodFocused",
-                                base::Value(expected_path.AsUTF8Unsafe())));
-}

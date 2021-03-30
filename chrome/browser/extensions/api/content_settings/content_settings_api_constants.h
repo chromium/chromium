@@ -23,10 +23,6 @@ extern const char kSecondaryPatternKey[];
 extern const char kIncognitoContextError[];
 extern const char kIncognitoSessionOnlyError[];
 extern const char kInvalidUrlError[];
-extern const char kSettingPluginContentSettingsIsDisallowed[];
-extern const char kSettingPluginContentSettingsResourceIdentifierIsDisallowed[];
-extern const char kSettingPluginContentSettingsGetIsDisallowed[];
-extern const char kSettingPluginContentSettingsClearIsDisallowed[];
 }  // namespace content_settings_api_constants
 }  // namespace extensions
 

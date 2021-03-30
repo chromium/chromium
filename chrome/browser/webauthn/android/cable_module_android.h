@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_WEBAUTHN_ANDROID_CABLE_MODULE_ANDROID_H_
 #define CHROME_BROWSER_WEBAUTHN_ANDROID_CABLE_MODULE_ANDROID_H_
 
+#include "base/optional.h"
+#include "components/sync_device_info/device_info.h"
+
 namespace webauthn {
 namespace authenticator {
 
@@ -15,7 +18,14 @@ namespace authenticator {
 // dropped.)
 void RegisterForCloudMessages();
 
+// GetSyncDataIfRegistered returns a structure containing values to advertise in
+// Sync that will let other Chrome instances contact this device to perform
+// security key transactions, or it returns |nullopt| if that information is
+// not yet ready.
+base::Optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>
+GetSyncDataIfRegistered();
+
 }  // namespace authenticator
 }  // namespace webauthn
 
-#endif
+#endif  // CHROME_BROWSER_WEBAUTHN_ANDROID_CABLE_MODULE_ANDROID_H_

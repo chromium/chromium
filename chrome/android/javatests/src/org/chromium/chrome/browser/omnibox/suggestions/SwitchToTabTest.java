@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -39,6 +40,7 @@ import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
+import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
@@ -50,6 +52,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
@@ -255,8 +258,7 @@ public class SwitchToTabTest {
     @Test
     @MediumTest
     @EnableFeatures("OmniboxTabSwitchSuggestions")
-    public void
-    testSwitchToTabSuggestion() throws InterruptedException {
+    public void testSwitchToTabSuggestion() throws InterruptedException {
         mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
                 InstrumentationRegistry.getInstrumentation().getContext(),
                 ServerCertificate.CERT_OK);
@@ -363,6 +365,10 @@ public class SwitchToTabTest {
         mActivityTestRule.loadUrlInNewTab(testHttpsUrl3);
         Assert.assertNotEquals(mActivityTestRule.getActivity().getActivityTab(), aboutTab);
 
+        // Send Chrome to the background so Launch Cause Metrics are gathered (and this is more
+        // realistic).
+        ChromeApplicationTestUtils.fireHomeScreenIntent(mActivityTestRule.getActivity());
+
         final SearchActivity searchActivity = startSearchActivity();
         CriteriaHelper.pollUiThread(() -> {
             Tab tab = mActivityTestRule.getActivity().getActivityTab();
@@ -386,6 +392,10 @@ public class SwitchToTabTest {
             Criteria.checkThat(
                     tab.getWindowAndroid().getActivityState(), Matchers.is(ActivityState.RESUMED));
             Assert.assertEquals(tab, aboutTab);
+            Criteria.checkThat(RecordHistogram.getHistogramValueCountForTesting(
+                                       LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM,
+                                       LaunchCauseMetrics.LaunchCause.HOME_SCREEN_WIDGET),
+                    Matchers.is(1));
         }, SEARCH_ACTIVITY_MAX_TIME_TO_POLL, DEFAULT_POLLING_INTERVAL);
     }
 }

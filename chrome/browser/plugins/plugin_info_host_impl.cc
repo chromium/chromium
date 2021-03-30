@@ -135,8 +135,6 @@ PluginInfoHostImpl::Context::Context(int render_process_id, Profile* profile)
       plugin_prefs_(PluginPrefs::GetForProfile(profile)) {
   allow_outdated_plugins_.Init(prefs::kPluginsAllowOutdated,
                                profile->GetPrefs());
-  run_all_flash_in_allow_mode_.Init(prefs::kRunAllFlashInAllowMode,
-                                    profile->GetPrefs());
 }
 
 PluginInfoHostImpl::Context::~Context() {}
@@ -144,7 +142,6 @@ PluginInfoHostImpl::Context::~Context() {}
 void PluginInfoHostImpl::Context::ShutdownOnUIThread() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   allow_outdated_plugins_.Destroy();
-  run_all_flash_in_allow_mode_.Destroy();
 }
 
 PluginInfoHostImpl::PluginInfoHostImpl(int render_process_id, Profile* profile)
@@ -152,8 +149,8 @@ PluginInfoHostImpl::PluginInfoHostImpl(int render_process_id, Profile* profile)
   shutdown_subscription_ =
       PluginInfoHostImplShutdownNotifierFactory::GetInstance()
           ->Get(profile)
-          ->Subscribe(base::Bind(&PluginInfoHostImpl::ShutdownOnUIThread,
-                                 base::Unretained(this)));
+          ->Subscribe(base::BindRepeating(
+              &PluginInfoHostImpl::ShutdownOnUIThread, base::Unretained(this)));
 }
 
 void PluginInfoHostImpl::ShutdownOnUIThread() {
@@ -166,7 +163,6 @@ void PluginInfoHostImpl::ShutdownOnUIThread() {
 void PluginInfoHostImpl::RegisterUserPrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kPluginsAllowOutdated, false);
-  registry->RegisterBooleanPref(prefs::kRunAllFlashInAllowMode, false);
 }
 
 PluginInfoHostImpl::~PluginInfoHostImpl() {}
@@ -207,18 +203,8 @@ void PluginInfoHostImpl::PluginsLoaded(
         plugin_metadata->identifier(), &output->status);
   }
 
-  if (output->status == chrome::mojom::PluginStatus::kNotFound) {
-    // Check to see if the component updater can fetch an implementation.
-    std::unique_ptr<component_updater::ComponentInfo> cus_plugin_info =
-        g_browser_process->component_updater()->GetComponentForMimeType(
-            params.mime_type);
-    ComponentPluginLookupDone(params, std::move(output), std::move(callback),
-                              std::move(plugin_metadata),
-                              std::move(cus_plugin_info));
-  } else {
-    GetPluginInfoFinish(params, std::move(output), std::move(callback),
-                        std::move(plugin_metadata));
-  }
+  GetPluginInfoFinish(params, std::move(output), std::move(callback),
+                      std::move(plugin_metadata));
 }
 
 void PluginInfoHostImpl::Context::DecidePluginStatus(
@@ -295,8 +281,7 @@ void PluginInfoHostImpl::Context::DecidePluginStatus(
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   if (plugin_setting == CONTENT_SETTING_ASK ||
-      (plugin_setting == CONTENT_SETTING_ALLOW &&
-       !run_all_flash_in_allow_mode_.GetValue())) {
+      plugin_setting == CONTENT_SETTING_ALLOW) {
     *status = chrome::mojom::PluginStatus::kPlayImportantContent;
   } else if (plugin_setting == CONTENT_SETTING_BLOCK) {
     *status = is_managed ? chrome::mojom::PluginStatus::kBlockedByPolicy
@@ -369,30 +354,6 @@ bool PluginInfoHostImpl::Context::FindEnabledPlugin(
     *plugin_metadata = PluginFinder::GetInstance()->GetPluginMetadata(*plugin);
 
   return enabled;
-}
-
-void PluginInfoHostImpl::ComponentPluginLookupDone(
-    const GetPluginInfo_Params& params,
-    chrome::mojom::PluginInfoPtr output,
-    GetPluginInfoCallback callback,
-    std::unique_ptr<PluginMetadata> plugin_metadata,
-    std::unique_ptr<component_updater::ComponentInfo> cus_plugin_info) {
-  if (cus_plugin_info) {
-    output->status = chrome::mojom::PluginStatus::kComponentUpdateRequired;
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-    if (cus_plugin_info->version != base::Version("0")) {
-      output->status = chrome::mojom::PluginStatus::kRestartRequired;
-    }
-#endif
-    // Component Updater wouldn't provide a deprecated plugin.
-    bool plugin_is_deprecated = false;
-    plugin_metadata = std::make_unique<PluginMetadata>(
-        cus_plugin_info->id, cus_plugin_info->name, false, GURL(), GURL(),
-        base::ASCIIToUTF16(cus_plugin_info->id), std::string(),
-        plugin_is_deprecated);
-  }
-  GetPluginInfoFinish(params, std::move(output), std::move(callback),
-                      std::move(plugin_metadata));
 }
 
 void PluginInfoHostImpl::GetPluginInfoFinish(

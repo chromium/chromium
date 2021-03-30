@@ -4,7 +4,8 @@
 
 #include "content/browser/plugin_list.h"
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -41,12 +42,10 @@ class PluginListTest : public testing::Test {
   PluginListTest()
       : foo_plugin_(base::ASCIIToUTF16(kFooName),
                     base::FilePath(kFooPath),
-                    base::ASCIIToUTF16("1.2.3"),
-                    base::ASCIIToUTF16("foo")),
-        bar_plugin_(base::ASCIIToUTF16("Bar Plugin"),
-                    base::FilePath(kBarPath),
-                    base::ASCIIToUTF16("2.3.4"),
-                    base::ASCIIToUTF16("bar")) {}
+                    u"1.2.3",
+                    u"foo"),
+        bar_plugin_(u"Bar Plugin", base::FilePath(kBarPath), u"2.3.4", u"bar") {
+  }
 
   void SetUp() override {
     plugin_list_.RegisterInternalPlugin(bar_plugin_, false);
@@ -71,8 +70,8 @@ TEST_F(PluginListTest, GetPlugins) {
 
 TEST_F(PluginListTest, BadPluginDescription) {
   WebPluginInfo plugin_3043(
-      base::string16(), base::FilePath(FILE_PATH_LITERAL("/myplugin.3.0.43")),
-      base::string16(), base::string16());
+      std::u16string(), base::FilePath(FILE_PATH_LITERAL("/myplugin.3.0.43")),
+      std::u16string(), std::u16string());
   // Simulate loading of the plugins.
   plugin_list_.RegisterInternalPlugin(plugin_3043, false);
   // Now we should have them in the state we specified above.

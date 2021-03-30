@@ -18,6 +18,7 @@
 #include "base/containers/span.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
+#include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/api_permission_set.h"
 
@@ -37,7 +38,7 @@ class PermissionsInfo {
                            base::span<const Alias> aliases);
 
   // Returns the permission with the given |id|, and NULL if it doesn't exist.
-  const APIPermissionInfo* GetByID(APIPermission::ID id) const;
+  const APIPermissionInfo* GetByID(mojom::APIPermissionID id) const;
 
   // Returns the permission with the given |name|, and NULL if none
   // exists.

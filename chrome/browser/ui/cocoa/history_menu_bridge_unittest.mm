@@ -82,11 +82,11 @@ class HistoryMenuBridgeTest : public BrowserWithTestWindowTest {
     bridge_->ClearMenuSection(menu, tag);
   }
 
-  void AddItemToBridgeMenu(HistoryMenuBridge::HistoryItem* item,
+  void AddItemToBridgeMenu(std::unique_ptr<HistoryMenuBridge::HistoryItem> item,
                            NSMenu* menu,
                            NSInteger tag,
                            NSInteger index) {
-    bridge_->AddItemToMenu(item, menu, tag, index);
+    bridge_->AddItemToMenu(std::move(item), menu, tag, index);
   }
 
   NSMenuItem* AddItemToMenu(NSMenu* menu,
@@ -104,9 +104,9 @@ class HistoryMenuBridgeTest : public BrowserWithTestWindowTest {
     return item;
   }
 
-  HistoryMenuBridge::HistoryItem* CreateItem(const base::string16& title) {
-    HistoryMenuBridge::HistoryItem* item =
-        new HistoryMenuBridge::HistoryItem();
+  std::unique_ptr<HistoryMenuBridge::HistoryItem> CreateItem(
+      const std::u16string& title) {
+    auto item = std::make_unique<HistoryMenuBridge::HistoryItem>();
     item->title = title;
     item->url = GURL(title);
     return item;
@@ -153,6 +153,11 @@ class HistoryMenuBridgeTest : public BrowserWithTestWindowTest {
 
   void CancelFaviconRequest(HistoryMenuBridge::HistoryItem* item) {
     bridge_->CancelFaviconRequest(item);
+  }
+
+  const std::map<NSMenuItem*, std::unique_ptr<HistoryMenuBridge::HistoryItem>>&
+  menu_item_map() {
+    return bridge_->menu_item_map_;
   }
 
   CocoaTestHelper cocoa_test_helper_;
@@ -213,20 +218,15 @@ TEST_F(HistoryMenuBridgeTest, ClearHistoryMenuEmpty) {
 TEST_F(HistoryMenuBridgeTest, AddItemToMenu) {
   NSMenu* menu = [[[NSMenu alloc] initWithTitle:@"history foo"] autorelease];
 
-  const base::string16 short_url = base::ASCIIToUTF16("http://foo/");
-  const base::string16 long_url = base::ASCIIToUTF16(
-      "http://super-duper-long-url--."
-      "that.cannot.possibly.fit.even-in-80-columns"
-      "or.be.reasonably-displayed-in-a-menu"
-      "without.looking-ridiculous.com/"); // 140 chars total
+  const std::u16string short_url = u"http://foo/";
+  const std::u16string long_url =
+      base::ASCIIToUTF16("http://super-duper-long-url--."
+                         "that.cannot.possibly.fit.even-in-80-columns"
+                         "or.be.reasonably-displayed-in-a-menu"
+                         "without.looking-ridiculous.com/");  // 140 chars total
 
-  // HistoryItems are owned by the HistoryMenuBridge when AddItemToBridgeMenu()
-  // is called, which places them into the |menu_item_map_|, which owns them.
-  HistoryMenuBridge::HistoryItem* item1 = CreateItem(short_url);
-  AddItemToBridgeMenu(item1, menu, 100, 0);
-
-  HistoryMenuBridge::HistoryItem* item2 = CreateItem(long_url);
-  AddItemToBridgeMenu(item2, menu, 101, 1);
+  AddItemToBridgeMenu(CreateItem(short_url), menu, 100, 0);
+  AddItemToBridgeMenu(CreateItem(long_url), menu, 101, 1);
 
   EXPECT_EQ(2, [menu numberOfItems]);
 
@@ -278,6 +278,11 @@ TEST_F(HistoryMenuBridgeTest, RecentlyClosedTabs) {
   EXPECT_TRUE(hist2);
   EXPECT_EQ(42, hist2->session_id.id());
   EXPECT_NSEQ(@"Apple", [item2 title]);
+
+  EXPECT_EQ(2u, menu_item_map().size());
+  ClearMenuSection(menu, HistoryMenuBridge::kRecentlyClosed);
+  EXPECT_EQ(0u, menu_item_map().size());
+  EXPECT_EQ(0u, [[menu itemArray] count]);
 }
 
 // Test that the menu is created for a mix of windows and tabs.
@@ -348,13 +353,20 @@ TEST_F(HistoryMenuBridgeTest, RecentlyClosedTabsAndWindows) {
   EXPECT_EQ(51, hist4->tabs[0]->session_id.id());
   EXPECT_EQ(52, hist4->tabs[1]->session_id.id());
   EXPECT_EQ(53, hist4->tabs[2]->session_id.id());
+
+  // 9 items from |entries|, plus 2 "Restore All Tabs" items, one for each
+  // window entry.
+  EXPECT_EQ(11u, menu_item_map().size());
+  ClearMenuSection(menu, HistoryMenuBridge::kRecentlyClosed);
+  EXPECT_EQ(0u, menu_item_map().size());
+  EXPECT_EQ(0u, [[menu itemArray] count]);
 }
 
 // Tests that we properly request an icon from the FaviconService.
 TEST_F(HistoryMenuBridgeTest, GetFaviconForHistoryItem) {
   // Create a fake item.
   HistoryMenuBridge::HistoryItem item;
-  item.title = base::ASCIIToUTF16("Title");
+  item.title = u"Title";
   item.url = GURL("http://google.com");
 
   // Request the icon.

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+PASS Changes to networkState when inserting and removing a <source>
+Harness: the test ran to completion.
+

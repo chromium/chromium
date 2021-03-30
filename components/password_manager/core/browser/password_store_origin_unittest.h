@@ -33,11 +33,11 @@ PasswordFormData CreateTestPasswordFormDataByOrigin(const char* origin_url) {
                            origin_url,
                            origin_url,
                            "login_element",
-                           L"submit_element",
-                           L"username_element",
-                           L"password_element",
-                           L"username_value",
-                           L"password_value",
+                           u"submit_element",
+                           u"username_element",
+                           u"password_element",
+                           u"username_value",
+                           u"password_value",
                            true,
                            1};
   return data;

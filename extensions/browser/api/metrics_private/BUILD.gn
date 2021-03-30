@@ -19,7 +19,11 @@ source_set("metrics_private") {
     "//build/config/compiler:no_size_t_to_int_warning",
   ]
 
-  deps = [ "//extensions/common/api" ]
+  deps = [
+    "//components/variations",
+    "//extensions/browser/api",
+    "//extensions/common/api",
+  ]
 
   public_deps = [ "//extensions/browser:browser_sources" ]
 }

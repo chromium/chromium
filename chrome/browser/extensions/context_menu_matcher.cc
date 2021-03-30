@@ -57,7 +57,7 @@ ContextMenuMatcher::ContextMenuMatcher(
 
 void ContextMenuMatcher::AppendExtensionItems(
     const MenuItem::ExtensionKey& extension_key,
-    const base::string16& selection_text,
+    const std::u16string& selection_text,
     int* index,
     bool is_action_menu) {
   DCHECK_GE(*index, 0);
@@ -107,7 +107,7 @@ void ContextMenuMatcher::AppendExtensionItems(
   } else {
     int menu_id = ConvertToExtensionsCustomCommandId(*index);
     (*index)++;
-    base::string16 title;
+    std::u16string title;
     MenuItem::List submenu_items;
 
     if (items.size() > 1 || items[0]->type() != MenuItem::NORMAL) {
@@ -170,16 +170,16 @@ void ContextMenuMatcher::Clear() {
   extension_menu_models_.clear();
 }
 
-base::string16 ContextMenuMatcher::GetTopLevelContextMenuTitle(
+std::u16string ContextMenuMatcher::GetTopLevelContextMenuTitle(
     const MenuItem::ExtensionKey& extension_key,
-    const base::string16& selection_text) {
+    const std::u16string& selection_text) {
   const Extension* extension = NULL;
   MenuItem::List items;
   bool can_cross_incognito;
   GetRelevantExtensionTopLevelItems(
       extension_key, &extension, &can_cross_incognito, &items);
 
-  base::string16 title;
+  std::u16string title;
 
   if (items.empty() ||
       items.size() > 1 ||
@@ -291,7 +291,7 @@ MenuItem::List ContextMenuMatcher::GetRelevantExtensionItems(
 void ContextMenuMatcher::RecursivelyAppendExtensionItems(
     const MenuItem::List& items,
     bool can_cross_incognito,
-    const base::string16& selection_text,
+    const std::u16string& selection_text,
     ui::SimpleMenuModel* menu_model,
     int* index,
     bool is_action_menu_top_level) {
@@ -330,8 +330,8 @@ void ContextMenuMatcher::RecursivelyAppendExtensionItems(
       ++num_visible_items;
 
     extension_item_map_[menu_id] = item->id();
-    base::string16 title = item->TitleWithReplacement(selection_text,
-                                                kMaxExtensionItemTitleLength);
+    std::u16string title = item->TitleWithReplacement(
+        selection_text, kMaxExtensionItemTitleLength);
     if (item->type() == MenuItem::NORMAL) {
       MenuItem::List children =
           GetRelevantExtensionItems(item->children(), can_cross_incognito);

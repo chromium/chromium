@@ -10,9 +10,10 @@
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 ContentSettingDomainListView::ContentSettingDomainListView(
-    const base::string16& title,
+    const std::u16string& title,
     const std::set<std::string>& domains) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
@@ -27,3 +28,6 @@ ContentSettingDomainListView::ContentSettingDomainListView(
     list_view->AddLabel(base::UTF8ToUTF16(domain));
   AddChildView(list_view.release());
 }
+
+BEGIN_METADATA(ContentSettingDomainListView, views::View)
+END_METADATA

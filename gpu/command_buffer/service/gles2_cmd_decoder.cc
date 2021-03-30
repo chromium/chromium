@@ -3612,13 +3612,12 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
     return gpu::ContextResult::kFatalFailure;
   }
 
-  // Only create webgl2-compute for passthrough cmd decoder.
-  if (attrib_helper.context_type == CONTEXT_TYPE_WEBGL2_COMPUTE) {
+  // Only create ES 3.1 contexts with the passthrough cmd decoder.
+  if (attrib_helper.context_type == CONTEXT_TYPE_OPENGLES31_FOR_TESTING) {
     // Must not destroy ContextGroup if it is not initialized.
     group_ = nullptr;
-    LOG(ERROR)
-        << "ContextResult::kFatalFailure: "
-           "webgl2-compute is not supported on validating command decoder.";
+    LOG(ERROR) << "ContextResult::kFatalFailure: "
+                  "ES 3.1 is not supported on validating command decoder.";
     return gpu::ContextResult::kFatalFailure;
   }
 
@@ -4272,11 +4271,6 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
       feature_info_->feature_flags().oes_compressed_etc1_rgb8_texture;
   caps.texture_format_etc1_npot =
       caps.texture_format_etc1 && !workarounds().etc1_power_of_two_only;
-  // Whether or not a texture will be bound to an EGLImage is
-  // dependent on whether we are using the sync mailbox manager.
-  caps.disable_one_component_textures =
-      mailbox_manager()->UsesSync() &&
-      workarounds().avoid_one_component_egl_images;
   caps.texture_rectangle = feature_info_->feature_flags().arb_texture_rectangle;
   caps.texture_usage = feature_info_->feature_flags().angle_texture_usage;
   caps.texture_storage = feature_info_->feature_flags().ext_texture_storage;
@@ -12186,137 +12180,6 @@ GLuint GLES2DecoderImpl::DoGetMaxValueInBufferCHROMIUM(
   return max_vertex_accessed;
 }
 
-namespace {
-// Copied from angle/src/libANGLE/validationES2.cpp
-// As we removed shader source string validation in blink level.
-// Addressing http://crbug.com/1108588
-
-// Return true if a character belongs to the ASCII subset as defined in GLSL
-// ES 1.0 spec section 3.1.
-bool IsValidESSLCharacter(unsigned char c) {
-  // Printing characters are valid except " $ ` @ \ ' DEL.
-  if (c >= 32 && c <= 126 && c != '"' && c != '$' && c != '`' && c != '@' &&
-      c != '\\' && c != '\'') {
-    return true;
-  }
-
-  // Horizontal tab, line feed, vertical tab, form feed, carriage return are
-  // also valid.
-  if (c >= 9 && c <= 13) {
-    return true;
-  }
-
-  return false;
-}
-
-bool IsValidESSLShaderSourceString(const char* str,
-                                   size_t len,
-                                   bool lineContinuationAllowed) {
-  enum class ParseState {
-    // Have not seen an ASCII non-whitespace character yet on
-    // this line. Possible that we might see a preprocessor
-    // directive.
-    BEGINING_OF_LINE,
-
-    // Have seen at least one ASCII non-whitespace character
-    // on this line.
-    MIDDLE_OF_LINE,
-
-    // Handling a preprocessor directive. Passes through all
-    // characters up to the end of the line. Disables comment
-    // processing.
-    IN_PREPROCESSOR_DIRECTIVE,
-
-    // Handling a single-line comment. The comment text is
-    // replaced with a single space.
-    IN_SINGLE_LINE_COMMENT,
-
-    // Handling a multi-line comment. Newlines are passed
-    // through to preserve line numbers.
-    IN_MULTI_LINE_COMMENT
-  };
-
-  ParseState state = ParseState::BEGINING_OF_LINE;
-  size_t pos = 0;
-
-  while (pos < len) {
-    char c = str[pos];
-    char next = pos + 1 < len ? str[pos + 1] : 0;
-
-    // Check for newlines
-    if (c == '\n' || c == '\r') {
-      if (state != ParseState::IN_MULTI_LINE_COMMENT) {
-        state = ParseState::BEGINING_OF_LINE;
-      }
-
-      pos++;
-      continue;
-    }
-
-    switch (state) {
-      case ParseState::BEGINING_OF_LINE:
-        if (c == ' ') {
-          // Maintain the BEGINING_OF_LINE state until a non-space is seen
-          pos++;
-        } else if (c == '#') {
-          state = ParseState::IN_PREPROCESSOR_DIRECTIVE;
-          pos++;
-        } else {
-          // Don't advance, re-process this character with the MIDDLE_OF_LINE
-          // state
-          state = ParseState::MIDDLE_OF_LINE;
-        }
-        break;
-
-      case ParseState::MIDDLE_OF_LINE:
-        if (c == '/' && next == '/') {
-          state = ParseState::IN_SINGLE_LINE_COMMENT;
-          pos++;
-        } else if (c == '/' && next == '*') {
-          state = ParseState::IN_MULTI_LINE_COMMENT;
-          pos++;
-        } else if (lineContinuationAllowed && c == '\\' &&
-                   (next == '\n' || next == '\r')) {
-          // Skip line continuation characters
-        } else if (!IsValidESSLCharacter(c)) {
-          return false;
-        }
-        pos++;
-        break;
-
-      case ParseState::IN_PREPROCESSOR_DIRECTIVE:
-        // Line-continuation characters may not be permitted.
-        // Otherwise, just pass it through. Do not parse comments in this state.
-        if (!lineContinuationAllowed && c == '\\') {
-          return false;
-        }
-        pos++;
-        break;
-
-      case ParseState::IN_SINGLE_LINE_COMMENT:
-        // Line-continuation characters are processed before comment processing.
-        // Advance string if a new line character is immediately behind
-        // line-continuation character.
-        if (c == '\\' && (next == '\n' || next == '\r')) {
-          pos++;
-        }
-        pos++;
-        break;
-
-      case ParseState::IN_MULTI_LINE_COMMENT:
-        if (c == '*' && next == '/') {
-          state = ParseState::MIDDLE_OF_LINE;
-          pos++;
-        }
-        pos++;
-        break;
-    }
-  }
-
-  return true;
-}
-}  // namespace
-
 void GLES2DecoderImpl::DoShaderSource(
     GLuint client_id, GLsizei count, const char** data, const GLint* length) {
   std::string str;
@@ -12332,13 +12195,8 @@ void GLES2DecoderImpl::DoShaderSource(
   while (len > 0 && str[len - 1] == '\0') {
     len -= 1;
   }
-  if (!IsValidESSLShaderSourceString(
-          str.data(), len, feature_info_->IsWebGL2OrES3OrHigherContext())) {
-    const char* func_name = "glShaderSource";
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, func_name,
-                       "Shader source contains invalid characters.");
-    return;
-  }
+  // Delegate validation of the incoming shader source to ANGLE's
+  // shader translator.
   Shader* shader = GetShaderInfoNotProgram(client_id, "glShaderSource");
   if (!shader) {
     return;

@@ -46,7 +46,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_LAYER_CLIPPER_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/paint/clip_rects_cache.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -58,8 +59,7 @@ class PaintLayer;
 
 enum ShouldRespectOverflowClipType {
   kIgnoreOverflowClip,
-  kRespectOverflowClip,
-  kIgnoreOverflowClipAndScroll
+  kRespectOverflowClip
 };
 
 class ClipRectsContext {
@@ -69,7 +69,6 @@ class ClipRectsContext {
   ClipRectsContext(
       const PaintLayer* root,
       const FragmentData* fragment,
-      ClipRectsCacheSlot slot,
       OverlayScrollbarClipBehavior overlay_scrollbar_clip_behavior =
           kIgnoreOverlayScrollbarSize,
       ShouldRespectOverflowClipType root_layer_clip_behavior =
@@ -78,16 +77,10 @@ class ClipRectsContext {
       : root_layer(root),
         root_fragment(fragment),
         overlay_scrollbar_clip_behavior(overlay_scrollbar_clip_behavior),
-        cache_slot_(slot),
         sub_pixel_accumulation(sub_pixel_accumulation),
         respect_overflow_clip(root_layer_clip_behavior) {}
 
-  bool UsesCache() const { return cache_slot_ != kUncachedClipRects; }
-
-  ClipRectsCacheSlot CacheSlot() const { return cache_slot_; }
-
   bool ShouldRespectRootLayerClip() const;
-  bool ShouldIgnoreRootLayerClipAndScroll() const;
 
   const PaintLayer* root_layer;
   const FragmentData* root_fragment;
@@ -96,7 +89,6 @@ class ClipRectsContext {
  private:
   friend class PaintLayerClipper;
 
-  ClipRectsCacheSlot cache_slot_;
   PhysicalOffset sub_pixel_accumulation;
   ShouldRespectOverflowClipType respect_overflow_clip;
 };
@@ -165,14 +157,15 @@ class ClipRectsContext {
 // #container and #fixed are siblings in the paint tree but #container does
 // clip #fixed. This is the reason why we compute the painting clip rects during
 // a layout tree walk and cache them for painting.
+
+class ClipRect;
+class ClipRects;
+
 class CORE_EXPORT PaintLayerClipper {
   DISALLOW_NEW();
 
  public:
   explicit PaintLayerClipper(const PaintLayer&, bool use_geometry_mapper);
-
-  void ClearClipRectsIncludingDescendants();
-  void ClearClipRectsIncludingDescendants(ClipRectsCacheSlot);
 
   // Returns the background clip rect of the layer in the local coordinate
   // space. Only looks for clips up to the given ancestor.
@@ -201,16 +194,7 @@ class CORE_EXPORT PaintLayerClipper {
                       const PhysicalOffset* offset_from_root = nullptr) const;
 
  private:
-  void ClearCache(ClipRectsCacheSlot);
-  ClipRects& GetClipRects(const ClipRectsContext&) const;
-
   void CalculateClipRects(const ClipRectsContext&, ClipRects&) const;
-  ClipRects* ClipRectsIfCached(const ClipRectsContext&) const;
-  ClipRects& StoreClipRectsInCache(const ClipRectsContext&,
-                                   ClipRects* parent_clip_rects,
-                                   const ClipRects&) const;
-
-  void GetOrCalculateClipRects(const ClipRectsContext&, ClipRects&) const;
 
   ALWAYS_INLINE bool ShouldClipOverflowAlongEitherAxis(
       const ClipRectsContext&) const;

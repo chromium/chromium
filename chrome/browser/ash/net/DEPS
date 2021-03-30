@@ -1,0 +1,7 @@
+include_rules = [
+  "+chromeos/login",
+  "+chromeos/network",
+  "+components/country_codes",
+  "+components/user_manager",
+  "+third_party/cros_system_api",
+]

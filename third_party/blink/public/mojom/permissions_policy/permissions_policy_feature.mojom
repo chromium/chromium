@@ -1,0 +1,136 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// These values map to the features which can be controlled by Permissions Policy.
+//
+// Features are listed in
+// https://github.com/w3c/webappsec-permissions-policy/blob/master/features.md.
+// Not all listed features are supported in Blink, and many are gated by runtime
+// flags. See renderer/core/permissions_policy/permissions_policy_features.json5 for the
+// feature names which will be recognized in policy declarations.
+enum PermissionsPolicyFeature {
+  kNotFound = 0,
+  // Controls access to media autoplay.
+  kAutoplay = 1,
+  // Controls access to video input devices.
+  kCamera = 2,
+  // Controls whether navigator.requestMediaKeySystemAccess is allowed.
+  kEncryptedMedia = 3,
+  // Controls whether Element.requestFullscreen is allowed.
+  kFullscreen = 4,
+  // Controls access to Geolocation interface.
+  kGeolocation = 5,
+  // Controls access to audio input devices.
+  kMicrophone = 6,
+  // Controls access to requestMIDIAccess method.
+  kMidiFeature = 7,
+  // Controls access to PaymentRequest interface.
+  kPayment = 8,
+  // Controls access to document.domain attribute.
+  kDocumentDomain = 11,
+  // Controls use of synchronous XMLHTTPRequest API.
+  kSyncXHR = 13,
+  // Controls access to the WebUSB API.
+  kUsb = 14,
+  // The following features control access to the corresponding sensor classes.
+  // Fusion sensor APIs (e.g. LinearAcceleration, OrientationSensor-based
+  // classes)require all of the features that are inputs into that API to be
+  // enabled for the feature to be allowed.
+  kAccelerometer = 17,
+  kAmbientLightSensor = 18,
+  kGyroscope = 19,
+  kMagnetometer = 20,
+  // Controls access to Picture-in-Picture.
+  kPictureInPicture = 26,
+  // Controls the ability to block and interfere with vertical scrolling.
+  kVerticalScroll = 27,
+  // Controls access to Screen Wake Lock
+  kScreenWakeLock = 31,
+  // Sample Origin Trial enabled feature. This is used only for testing.
+  kFrobulate = 41,
+  // Controls access to Serial
+  kSerial = 42,
+  // Controls access to WebHID.
+  kHid = 43,
+  // Controls access to Idle Detection
+  kIdleDetection = 44,
+  // Allow execution while not in the viewport.
+  kExecutionWhileOutOfViewport = 50,
+  // Allow execution while not rendered.
+  kExecutionWhileNotRendered = 51,
+
+  // When disallowed, a frame without user activation cannot acquire focus.
+  kFocusWithoutUserActivation = 52,
+
+  // Client Hints
+  kClientHintDPR = 53,
+  kClientHintDeviceMemory = 54,
+  kClientHintDownlink = 55,
+  kClientHintECT = 56,
+  kClientHintLang = 57,
+  kClientHintRTT = 58,
+  kClientHintUA = 59,
+  kClientHintUAArch = 60,
+  kClientHintUAModel = 61,
+  kClientHintUAPlatform = 62,
+  kClientHintViewportWidth = 63,
+  kClientHintWidth = 64,
+
+  // Controls use of WebXR API.
+  kWebXr = 66,
+
+  // Web Authentication (https://w3c.github.io/webauthn/#sctn-iframe-guidance)
+  kPublicKeyCredentialsGet = 67,
+
+  //Additional Client Hint
+  kClientHintUAMobile = 69,
+
+  // Storage Access API
+  kStorageAccessAPI = 70,
+
+  // Client Hint for the full browser version.
+  kClientHintUAFullVersion = 71,
+
+  // Trust Token API redemption and request signing operations
+  kTrustTokenRedemption = 72,
+
+  // Controls use of Conversion Measurement API
+  kConversionMeasurement = 73,
+
+  // Client Hint for UA platform version.
+  kClientHintUAPlatformVersion = 74,
+
+  // cross-origin isolated permission
+  kCrossOriginIsolated = 75,
+
+  // Controls use of Clipboard API Read.
+  kClipboardRead = 76,
+
+  // Controls use of Clipboard API Write.
+  kClipboardWrite = 77,
+
+  // Controls use of Web Share API.
+  kWebShare = 78,
+
+  // Controls access to gamepads interface
+  kGamepad = 79,
+
+  // Controls use of WebOTP API.
+  kOTPCredentials = 80,
+
+  // Controls access to getDisplayMedia() and getCurrentBrowsingContextMedia().
+  kDisplayCapture = 81,
+
+  // Controls the access to the interest cohort as well as the eligibility for
+  // the navigation history entry to be included in the interest cohort
+  // computation. (https://github.com/WICG/floc)
+  kInterestCohort = 82,
+
+  // Don't change assigned numbers of any item, and don't reuse removed slots.
+  // Add new features at the end of the enum.
+  // Also, run update_permissions_policy_enum.py in
+  // chromium/src/tools/metrics/histograms/ to update the UMA mapping.
+};

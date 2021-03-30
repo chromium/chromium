@@ -1,10 +1,10 @@
     <style include="cr-shared-style settings-shared iron-flex">
       .content-settings-header,
-      #notificationRadioGroup {
+      .radio-group {
         padding: 0 var(--cr-section-padding);
       }
 
-      #notificationSubHeading {
+      .radio-group-sub-heading {
         padding-bottom: 10px;
       }
 
@@ -30,7 +30,7 @@
         focus-config="[[focusConfig_]]">
       <div route-path="default">
         <cr-link-row id="clearBrowsingData"
-            class="hr" start-icon="cr:delete"
+            start-icon="cr:delete"
             label="$i18n{clearBrowsingData}"
             sub-label="$i18n{clearBrowsingDataDescription}"
             on-click="onClearBrowsingDataTap_"></cr-link-row>
@@ -49,15 +49,21 @@
             sub-label="$i18n{permissionsPageDescription}"
             on-click="onPermissionsPageClick_"
             role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
-        <cr-link-row id="privacySandboxLinkRow"
-            start-icon="settings20:experiment"
-            class="hr"
-            label="$i18n{privacySandboxTitle}"
-            sub-label="$i18n{privacySandboxTitle}"
-            on-click="onPrivacySandboxClick_"
-            hidden="[[!enablePrivacySandboxSettings_]]"
-            external
-            role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
+        <template is="dom-if" if="[[enablePrivacySandboxSettings_]]">
+          <cr-link-row id="privacySandboxLinkRow"
+              start-icon="settings20:experiment"
+              class="hr"
+              label="$i18n{privacySandboxTitle}"
+              sub-label="[[computePrivacySandboxSublabel_(
+                  prefs.privacy_sandbox.apis_enabled.*)]]"
+              on-click="onPrivacySandboxClick_"
+              external
+              role-description="$i18n{subpageArrowRoleDescription}">
+          </cr-link-row>
+          <a id="privacySandboxLink" href="privacySandbox"
+              target="_blank" tabindex="-1" aria-disabled="true"
+              role="none"></a>
+        </template>
       </div>
 
 <if expr="use_nss_certs">
@@ -95,8 +101,7 @@
             associated-control="[[$$('#securityLinkRow')]]"
             learn-more-url="$i18n{safeBrowsingHelpCenterURL}">
           <settings-security-page prefs="{{prefs}}"
-              focus-config="[[focusConfig_]]"
-              sync-status="[[syncStatus]]">
+              focus-config="[[focusConfig_]]">
           </settings-security-page>
         </settings-subpage>
       </template>
@@ -114,8 +119,8 @@
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-                <h2>$i18n{siteSettingsAutomaticDownloadsDescription}</h2>
+            <div class="content-settings-header secondary">
+                $i18n{siteSettingsAutomaticDownloadsDescription}
             </div>
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.AUTOMATIC_DOWNLOADS]]"
@@ -124,9 +129,7 @@
                 allow-option-icon="cr:file-download"
                 block-option-label
                     ="$i18n{siteSettingsAutomaticDownloadsBlocked}"
-                block-option-icon="settings:block">
-            <!-- TODO(https://crbug.com/1033607): use corresponding block
-                  icons instead of generic ones throughout this page -->
+                block-option-icon="settings:file-download-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
                 category="[[ContentSettingsTypes.AUTOMATIC_DOWNLOADS]]"
@@ -158,8 +161,8 @@
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsBackgroundSyncDescription}</h2>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsBackgroundSyncDescription}
             </div>
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.BACKGROUND_SYNC]]"
@@ -167,7 +170,7 @@
                     "$i18n{siteSettingsBackgroundSyncAllowed}"
                 allow-option-icon="cr:sync"
                 block-option-label="$i18n{siteSettingsBackgroundSyncBlocked}"
-                block-option-icon="settings:block">
+                block-option-icon="settings:sync-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
                 category="[[ContentSettingsTypes.BACKGROUND_SYNC]]"
@@ -201,8 +204,8 @@
           <media-picker label="$i18n{siteSettingsCameraLabel}" type="camera">
           </media-picker>
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsCameraDescription}</h2>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsCameraDescription}
             </div>
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.CAMERA]]"
@@ -212,7 +215,7 @@
                 block-option-label="$i18n{siteSettingsCameraBlocked}"
                 block-option-sub-label=
                     "$i18n{siteSettingsCameraBlockedSubLabel}"
-                block-option-icon="settings:block">
+                block-option-icon="settings:videocam-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
                 category="[[ContentSettingsTypes.CAMERA]]" read-only-list
@@ -264,15 +267,15 @@
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsImagesDescription}</h2>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsImagesDescription}
             </div>
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.IMAGES]]"
                 allow-option-label="$i18n{siteSettingsImagesAllowed}"
                 allow-option-icon="settings:photo"
                 block-option-label="$i18n{siteSettingsImagesBlocked}"
-                block-option-icon="settings:block">
+                block-option-icon="settings:photo-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
                 category="[[ContentSettingsTypes.IMAGES]]"
@@ -301,7 +304,10 @@
             page-title="$i18n{siteSettingsCategoryInsecureContent}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
-          <div class="cr-row first">
+          <div class="content-settings-header secondary">
+            $i18n{siteSettingsInsecureContentDescription}
+          </div>
+          <div class="cr-row first secondary">
             $i18n{siteSettingsInsecureContentBlock}
           </div>
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
@@ -329,18 +335,18 @@
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsLocationDescription}</h2>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsLocationDescription}
             </div>
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.GEOLOCATION]]"
                 allow-option-label=
                     "$i18n{siteSettingsLocationAllowed}"
-                allow-option-icon="settings20:location-on"
+                allow-option-icon="settings:location-on"
                 block-option-label="$i18n{siteSettingsLocationBlocked}"
                 block-option-sub-label=
                     "$i18n{siteSettingsLocationBlockedSubLabel}"
-                block-option-icon="settings:block">
+                block-option-icon="settings:location-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
                 category="[[ContentSettingsTypes.GEOLOCATION]]" read-only-list
@@ -376,8 +382,8 @@
       <template is="dom-if" route-path="/content/zoomLevels" no-search>
         <settings-subpage page-title="$i18n{siteSettingsCategoryZoomLevels}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsZoomLevelsDescription}</h2>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsZoomLevelsDescription}
             </div>
           </template>
           <zoom-levels></zoom-levels>
@@ -385,7 +391,36 @@
       </template>
       <template is="dom-if" route-path="/content/pdfDocuments" no-search>
         <settings-subpage page-title="$i18n{siteSettingsPdfDocuments}">
-          <settings-pdf-documents prefs="{{prefs}}"></settings-pdf-documents>
+          <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
+            <div class="radio-group">
+              <div class="secondary">$i18n{siteSettingsPdfsDescription}</div>
+              <h2>$i18n{siteSettingsDefaultBehavior}</h2>
+              <div class="secondary radio-sub-heading">
+                $i18n{siteSettingsDefaultBehaviorDescription}
+              </div>
+              <settings-radio-group
+                  pref="{{prefs.plugins.always_open_pdf_externally}}"
+                  selectable-elements="settings-collapse-radio-button">
+                <settings-collapse-radio-button no-collapse
+                    pref="[[prefs.plugins.always_open_pdf_externally]]"
+                    label="$i18n{siteSettingsPdfsAllowed}"
+                    name="true"
+                    disabled$="[[isGuest_]]"
+                    icon="cr:file-download">
+                </settings-collapse-radio-button>
+                <settings-collapse-radio-button no-collapse
+                    pref="[[prefs.plugins.always_open_pdf_externally]]"
+                    label="$i18n{siteSettingsPdfsBlocked}"
+                    name="false"
+                    disabled$="[[isGuest_]]"
+                    icon="settings:open-in-browser">
+                </settings-collapse-radio-button>
+              </settings-radio-group>
+            </div>
+          </template>
+          <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
+            <settings-pdf-documents prefs="{{prefs}}"></settings-pdf-documents>
+          </template>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/javascript" no-search>
@@ -393,15 +428,15 @@
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsJavascriptDescription}</h2>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsJavascriptDescription}
             </div>
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.JAVASCRIPT]]"
                 allow-option-label="$i18n{siteSettingsJavascriptAllowed}"
                 allow-option-icon="settings:code"
                 block-option-label="$i18n{siteSettingsJavascriptBlocked}"
-                block-option-icon="settings:block">
+                block-option-icon="settings:code-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
                 category="[[ContentSettingsTypes.JAVASCRIPT]]"
@@ -430,15 +465,15 @@
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsSoundDescription}</h2>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsSoundDescription}
             </div>
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.SOUND]]"
                 allow-option-label="$i18n{siteSettingsSoundAllowed}"
                 allow-option-icon="settings:volume-up"
                 block-option-label="$i18n{siteSettingsSoundBlocked}"
-                block-option-icon="settings:block">
+                block-option-icon="settings:volume-up-off">
             </settings-category-default-radio-group>
           </template>
           <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
@@ -483,8 +518,8 @@
           <media-picker label="$i18n{siteSettingsMicrophoneLabel}" type="mic">
           </media-picker>
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsMicDescription}</h2>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsMicDescription}
             </div>
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.MIC]]"
@@ -493,7 +528,7 @@
                 allow-option-icon="cr:mic"
                 block-option-label="$i18n{siteSettingsMicBlocked}"
                 block-option-sub-label="$i18n{siteSettingsMicBlockedSubLabel}"
-                block-option-icon="settings:block">
+                block-option-icon="settings:mic-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
                 category="[[ContentSettingsTypes.MIC]]" read-only-list
@@ -523,8 +558,8 @@
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsMotionSensorsDescription}</h2>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsMotionSensorsDescription}
             </div>
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.SENSORS]]"
@@ -533,7 +568,7 @@
                 block-option-label="$i18n{siteSettingsMotionSensorsBlocked}"
                 block-option-sub-label=
                     "$i18n{siteSettingsMotionSensorsBlockedSubLabel}"
-                block-option-icon="settings:block">
+                block-option-icon="settings:sensors-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
                 category="[[ContentSettingsTypes.SENSORS]]" read-only-list
@@ -562,10 +597,13 @@
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div id="notificationRadioGroup">
-              <h2>$i18n{siteSettingsNotificationsDescription}</h2>
+            <div id="notificationRadioGroup" class="radio-group">
+              <div class="secondary">
+                $i18n{siteSettingsNotificationsDescription}
+              </div>
               <h2>$i18n{siteSettingsDefaultBehavior}</h2>
-              <div id="notificationSubHeading" class="secondary">
+              <div id="notificationSubHeading"
+                class="secondary radio-sub-heading">
                 $i18n{siteSettingsDefaultBehaviorDescription}
               </div>
               <settings-radio-group
@@ -582,8 +620,9 @@
                   <settings-collapse-radio-button no-collapse class="two-line"
                       name="[[notificationSettingEnum_.QUIETER_MESSAGING]]"
                       pref="[[prefs.generated.notification]]"
-                      label="$i18n{siteSettingsNotificationsAllowed}"
-                      sub-label="$i18n{siteSettingsNotificationsPartial}"
+                      label="$i18n{siteSettingsNotificationsPartial}"
+                      sub-label=
+                          "$i18n{siteSettingsNotificationsPartialSubLabel}"
                       icon="settings:notifications">
                   </settings-collapse-radio-button>
                 </template>
@@ -592,7 +631,7 @@
                     pref="[[prefs.generated.notification]]"
                     label="$i18n{siteSettingsNotificationsBlocked}"
                     sub-label="$i18n{siteSettingsNotificationsBlockedSubLabel}"
-                    icon="settings:block">
+                    icon="settings:notifications-off">
                 </settings-collapse-radio-button>
               </settings-radio-group>
             </div>
@@ -641,15 +680,15 @@
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsPopupsDescription}</h2>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsPopupsDescription}
             </div>
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.POPUPS]]"
                 allow-option-label="$i18n{siteSettingsPopupsAllowed}"
                 allow-option-icon="cr:open-in-new"
                 block-option-label="$i18n{siteSettingsPopupsBlocked}"
-                block-option-icon="settings:block">
+                block-option-icon="settings:open-in-new-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
                 category="[[ContentSettingsTypes.POPUPS]]"
@@ -680,15 +719,15 @@
               search-label="$i18n{siteSettingsAllSitesSearch}"
               search-term="{{searchFilter_}}">
             <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-              <div class="content-settings-header">
-                <h2>$i18n{siteSettingsAdsDescription}</h2>
+              <div class="content-settings-header secondary">
+                $i18n{siteSettingsAdsDescription}
               </div>
               <settings-category-default-radio-group
                   category="[[ContentSettingsTypes.ADS]]"
                   allow-option-label="$i18n{siteSettingsAdsAllowed}"
                   allow-option-icon="settings:ads"
                   block-option-label="$i18n{siteSettingsAdsBlocked}"
-                  block-option-icon="settings:block">
+                  block-option-icon="settings:ads-off">
               </settings-category-default-radio-group>
               <category-setting-exceptions
                   category="[[ContentSettingsTypes.ADS]]"
@@ -720,8 +759,8 @@
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsMidiDescription}</h2>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsMidiDescription}
             </div>
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.MIDI_DEVICES]]"
@@ -729,7 +768,7 @@
                     "$i18n{siteSettingsMidiAllowed}"
                 allow-option-icon="settings:midi"
                 block-option-label="$i18n{siteSettingsMidiBlocked}"
-                block-option-icon="settings:block">
+                block-option-icon="settings:midi-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
                 category="[[ContentSettingsTypes.MIDI_DEVICES]]" read-only-list
@@ -757,15 +796,15 @@
       <template is="dom-if" route-path="/content/usbDevices" no-search>
         <settings-subpage page-title="$i18n{siteSettingsUsbDevices}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsUsbDescription}</h2>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsUsbDescription}
             </div>
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.USB_DEVICES]]"
                 allow-option-label="$i18n{siteSettingsUsbAllowed}"
                 allow-option-icon="settings:usb"
                 block-option-label="$i18n{siteSettingsUsbBlocked}"
-                block-option-icon="settings:block">
+                block-option-icon="settings:usb-off">
             </settings-category-default-radio-group>
           </template>
           <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
@@ -785,8 +824,8 @@
       <template is="dom-if" route-path="/content/serialPorts" no-search>
         <settings-subpage page-title="$i18n{siteSettingsSerialPorts}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsSerialPortsDescription}</h2>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsSerialPortsDescription}
             </div>
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.SERIAL_PORTS]]"
@@ -794,7 +833,7 @@
                     "$i18n{siteSettingsSerialPortsAllowed}"
                 allow-option-icon="settings:serial-port"
                 block-option-label="$i18n{siteSettingsSerialPortsBlocked}"
-                block-option-icon="settings:block">
+                block-option-icon="settings:serial-port-off">
             </settings-category-default-radio-group>
           </template>
           <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
@@ -814,12 +853,28 @@
       <template is="dom-if" if="[[enableWebBluetoothNewPermissionsBackend_]]">
         <template is="dom-if" route-path="/content/bluetoothDevices" no-search>
           <settings-subpage page-title="$i18n{siteSettingsBluetoothDevices}">
-            <category-default-setting
-                toggle-off-label="$i18n{siteSettingsBluetoothDevicesBlock}"
-                toggle-on-label=
-                    "$i18n{siteSettingsBluetoothDevicesAskRecommended}"
-                category="[[ContentSettingsTypes.BLUETOOTH_DEVICES]]">
-            </category-default-setting>
+            <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
+              <div class="content-settings-header secondary">
+                $i18n{siteSettingsBluetoothDevicesDescription}
+              </div>
+              <settings-category-default-radio-group
+                    category="[[ContentSettingsTypes.BLUETOOTH_DEVICES]]"
+                    allow-option-label=
+                        "$i18n{siteSettingsBluetoothDevicesAllowed}"
+                    allow-option-icon="settings:bluetooth"
+                    block-option-label=
+                        "$i18n{siteSettingsBluetoothDevicesBlocked}"
+                    block-option-icon="settings:bluetooth-off">
+            </settings-category-default-radio-group>
+            </template>
+            <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
+              <category-default-setting
+                  toggle-off-label="$i18n{siteSettingsBluetoothDevicesBlock}"
+                  toggle-on-label=
+                      "$i18n{siteSettingsBluetoothDevicesAskRecommended}"
+                  category="[[ContentSettingsTypes.BLUETOOTH_DEVICES]]">
+              </category-default-setting>
+            </template>
             <chooser-exception-list
                 category="[[ContentSettingsTypes.BLUETOOTH_DEVICES]]"
                 chooser-type="[[ChooserType.BLUETOOTH_DEVICES]]">
@@ -831,8 +886,8 @@
         <settings-subpage
             page-title="$i18n{siteSettingsFileSystemWrite}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsFileSystemWriteDescription}</h2>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsFileSystemWriteDescription}
             </div>
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.FILE_SYSTEM_WRITE]]"
@@ -841,7 +896,7 @@
                 allow-option-icon="settings:save-original"
                 block-option-label=
                     "$i18n{siteSettingsFileSystemWriteBlocked}"
-                block-option-icon="settings:block">
+                block-option-icon="settings:file-editing-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
                 category="[[ContentSettingsTypes.FILE_SYSTEM_WRITE]]"
@@ -870,12 +925,28 @@
       </template>
       <template is="dom-if" route-path="/content/hidDevices" no-search>
         <settings-subpage page-title="$i18n{siteSettingsHidDevices}">
-          <category-default-setting
-              toggle-off-label="$i18n{siteSettingsHidDevicesBlock}"
-              toggle-on-label=
-                  "$i18n{siteSettingsHidDevicesAskRecommended}"
-              category="[[ContentSettingsTypes.HID_DEVICES]]">
-          </category-default-setting>
+          <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsHidDevicesDescription}
+            </div>
+            <settings-category-default-radio-group
+                category="[[ContentSettingsTypes.HID_DEVICES]]"
+                allow-option-label=
+                    "$i18n{siteSettingsHidDevicesAllowed}"
+                allow-option-icon="settings:hid-device"
+                block-option-label=
+                    "$i18n{siteSettingsHidDevicesBlocked}"
+                block-option-icon="settings:hid-device-off">
+            </settings-category-default-radio-group>
+          </template>
+          <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
+            <category-default-setting
+                toggle-off-label="$i18n{siteSettingsHidDevicesBlock}"
+                toggle-on-label=
+                    "$i18n{siteSettingsHidDevicesAskRecommended}"
+                category="[[ContentSettingsTypes.HID_DEVICES]]">
+            </category-default-setting>
+          </template>
           <chooser-exception-list
               category="[[ContentSettingsTypes.HID_DEVICES]]"
               chooser-type="[[ChooserType.HID_DEVICES]]">
@@ -909,22 +980,84 @@
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
 </if>
-          <settings-toggle-button
-              pref="{{prefs.webkit.webprefs.encrypted_media_enabled}}"
-              label="[[getProtectedContentLabel_(
-                  prefs.webkit.webprefs.encrypted_media_enabled.value)]]"
-              disabled$="[[isGuest_]]">
-          </settings-toggle-button>
+          <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
+            <div class="radio-group">
+              <div class="secondary">
+                $i18n{siteSettingsProtectedContentDescription}
+              </div>
+              <h2>$i18n{siteSettingsDefaultBehavior}</h2>
+              <div class="secondary radio-sub-heading">
+                $i18n{siteSettingsDefaultBehaviorDescription}
+              </div>
+              <settings-radio-group
+                pref="{{prefs.webkit.webprefs.encrypted_media_enabled}}"
+                selectable-elements="settings-collapse-radio-button">
+                <settings-collapse-radio-button no-collapse
+                    pref="[[prefs.webkit.webprefs.encrypted_media_enabled]]"
+                    label="$i18n{siteSettingsProtectedContentAllowed}"
+                    name="true"
+                    disabled$="[[isGuest_]]"
+                    icon="settings:protected-content">
+                </settings-collapse-radio-button>
+                <settings-collapse-radio-button no-collapse
+                    pref="[[prefs.webkit.webprefs.encrypted_media_enabled]]"
+                    label="$i18n{siteSettingsProtectedContentBlocked}"
+                    name="false"
+                    disabled$="[[isGuest_]]"
+                    icon="settings:protected-content-off">
+                </settings-collapse-radio-button>
+              </settings-radio-group>
+            </div>
+          </template>
+          <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
+            <settings-toggle-button
+                pref="{{prefs.webkit.webprefs.encrypted_media_enabled}}"
+                label="[[getProtectedContentLabel_(
+                    prefs.webkit.webprefs.encrypted_media_enabled.value)]]"
+                disabled$="[[isGuest_]]">
+            </settings-toggle-button>
+          </template>
 <if expr="chromeos or is_win">
-          <div class="cr-row first two-line cr-padded-text">
-            $i18n{siteSettingsProtectedContentIdentifiersExplanation}
-          </div>
-          <settings-toggle-button
-              pref="{{prefs.settings.privacy.drm_enabled}}"
-              label="[[getProtectedContentIdentifiersLabel_(
-                  prefs.settings.privacy.drm_enabled.value)]]"
-              disabled$="[[isGuest_]]">
-          </settings-toggle-button>
+          <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
+             <div class="radio-group">
+              <div class="secondary">
+                $i18n{siteSettingsProtectedContentDescription}
+              </div>
+              <h2>$i18n{siteSettingsDefaultBehavior}</h2>
+              <div class="secondary radio-sub-heading">
+                $i18n{siteSettingsDefaultBehaviorDescription}
+              </div>
+              <settings-radio-group
+                pref="{{prefs.settings.privacy.drm_enabled}}"
+                selectable-elements="settings-collapse-radio-button">
+                <settings-collapse-radio-button no-collapse
+                    pref="[[prefs.settings.privacy.drm_enabled]]"
+                    label="$i18n{siteSettingsProtectedContentAllowed}"
+                    name="true"
+                    disabled$="[[isGuest_]]"
+                    icon="settings:protected-content">
+                </settings-collapse-radio-button>
+                <settings-collapse-radio-button no-collapse
+                    pref="[[prefs.settings.privacy.drm_enabled]]"
+                    label="$i18n{siteSettingsProtectedContentBlocked}"
+                    name="false"
+                    disabled$="[[isGuest_]]"
+                    icon="settings:protected-content-off">
+                </settings-collapse-radio-button>
+              </settings-radio-group>
+            </div>
+          </template>
+          <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
+            <div class="cr-row first two-line cr-padded-text">
+              $i18n{siteSettingsProtectedContentIdentifiersExplanation}
+            </div>
+            <settings-toggle-button
+                pref="{{prefs.settings.privacy.drm_enabled}}"
+                label="[[getProtectedContentIdentifiersLabel_(
+                    prefs.settings.privacy.drm_enabled.value)]]"
+                disabled$="[[isGuest_]]">
+            </settings-toggle-button>
+          </template>
 </if>
 <if expr="chromeos">
           <template is="dom-if"
@@ -956,15 +1089,15 @@
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsClipboardDescription}</h2>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsClipboardDescription}
             </div>
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.CLIPBOARD]]"
                 allow-option-label="$i18n{siteSettingsClipboardAllowed}"
                 allow-option-icon="settings:clipboard"
                 block-option-label="$i18n{siteSettingsClipboardBlocked}"
-                block-option-icon="settings:block">
+                block-option-icon="settings:clipboard-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
                 category="[[ContentSettingsTypes.CLIPBOARD]]"
@@ -994,8 +1127,8 @@
               search-label="$i18n{siteSettingsAllSitesSearch}"
               search-term="{{searchFilter_}}">
             <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-              <div class="content-settings-header">
-                <h2>$i18n{siteSettingsPaymentHandlersDescription}</h2>
+              <div class="content-settings-header secondary">
+                $i18n{siteSettingsPaymentHandlersDescription}
               </div>
               <settings-category-default-radio-group
                   category="[[ContentSettingsTypes.PAYMENT_HANDLER]]"
@@ -1003,7 +1136,7 @@
                       "$i18n{siteSettingsPaymentHandlersAllowed}"
                   allow-option-icon="settings:payment-handler"
                   block-option-label="$i18n{siteSettingsPaymentHandlersBlocked}"
-                  block-option-icon="settings:block">
+                  block-option-icon="settings:payment-handler-off">
               </settings-category-default-radio-group>
               <category-setting-exceptions
                   category="[[ContentSettingsTypes.PAYMENT_HANDLER]]"
@@ -1057,15 +1190,15 @@
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsVrDescription}</h2>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsVrDescription}
             </div>
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.VR]]"
                 allow-option-label="$i18n{siteSettingsVrAllowed}"
                 allow-option-icon="settings:vr-headset"
                 block-option-label="$i18n{siteSettingsVrBlocked}"
-                block-option-icon="settings:block">
+                block-option-icon="settings:vr-headset-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
                 category="[[ContentSettingsTypes.VR]]"
@@ -1097,15 +1230,15 @@
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsArDescription}</h2>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsArDescription}
             </div>
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.AR]]"
                 allow-option-label="$i18n{siteSettingsArAllowed}"
                 allow-option-icon="settings:vr-headset"
                 block-option-label="$i18n{siteSettingsArBlocked}"
-                block-option-icon="settings:block">
+                block-option-icon="settings:vr-headset-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
                 category="[[ContentSettingsTypes.AR]]"
@@ -1136,17 +1269,37 @@
         <settings-subpage page-title="$i18n{siteSettingsIdleDetection}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
-          <category-default-setting
-              toggle-off-label="$i18n{siteSettingsIdleDetectionBlock}"
-              toggle-on-label="$i18n{siteSettingsIdleDetectionAsk}"
-              category="[[ContentSettingsTypes.IDLE_DETECTION]]">
-          </category-default-setting>
-          <category-setting-exceptions
-              category="[[ContentSettingsTypes.IDLE_DETECTION]]"
-              block-header="$i18n{siteSettingsBlock}"
-              allow-header="$i18n{siteSettingsAllow}"
-              search-filter="[[searchFilter_]]">
-          </category-setting-exceptions>
+          <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsDeviceUseDescription}
+            </div>
+            <settings-category-default-radio-group
+                category="[[ContentSettingsTypes.IDLE_DETECTION]]"
+                allow-option-label="$i18n{siteSettingsDeviceUseAllowed}"
+                allow-option-icon="settings:devices"
+                block-option-label="$i18n{siteSettingsDeviceUseBlocked}"
+                block-option-icon="settings:devices-off">
+            </settings-category-default-radio-group>
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.IDLE_DETECTION]]"
+                allow-header="$i18n{siteSettingsDeviceUseAllowedExceptions}"
+                block-header="$i18n{siteSettingsDeviceUseBlockedExceptions}"
+                search-filter="[[searchFilter_IDLE_DETECTION]]">
+            </category-setting-exceptions>
+          </template>
+          <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
+            <category-default-setting
+                toggle-off-label="$i18n{siteSettingsIdleDetectionBlock}"
+                toggle-on-label="$i18n{siteSettingsIdleDetectionAsk}"
+                category="[[ContentSettingsTypes.IDLE_DETECTION]]">
+            </category-default-setting>
+            <category-setting-exceptions
+                category="[[ContentSettingsTypes.IDLE_DETECTION]]"
+                block-header="$i18n{siteSettingsBlock}"
+                allow-header="$i18n{siteSettingsAllow}"
+                search-filter="[[searchFilter_]]">
+            </category-setting-exceptions>
+          </template>
         </settings-subpage>
       </template>
       <template is="dom-if" if="[[enableExperimentalWebPlatformFeatures_]]">
@@ -1174,17 +1327,37 @@
           <settings-subpage page-title="$i18n{fonts}"
               search-label="$i18n{siteSettingsAllSitesSearch}"
               search-term="{{searchFilter_}}">
-            <category-default-setting
-                toggle-off-label="$i18n{siteSettingsFontAccessBlock}"
-                toggle-on-label="$i18n{siteSettingsFontAccessAsk}"
-                category="[[ContentSettingsTypes.FONT_ACCESS]]">
-            </category-default-setting>
-            <category-setting-exceptions
-                category="[[ContentSettingsTypes.FONT_ACCESS]]"
-                block-header="$i18n{siteSettingsBlock}"
-                allow-header="$i18n{siteSettingsAllow}"
-                search-filter="[[searchFilter_]]">
-            </category-setting-exceptions>
+            <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
+              <div class="content-settings-header secondary">
+                $i18n{siteSettingsFontsDescription}
+              </div>
+              <settings-category-default-radio-group
+                  category="[[ContentSettingsTypes.FONT_ACCESS]]"
+                  allow-option-label="$i18n{siteSettingsFontsAllowed}"
+                  allow-option-icon="settings:font-access"
+                  block-option-label="$i18n{siteSettingsFontsBlocked}"
+                  block-option-icon="settings:font-access-off">
+              </settings-category-default-radio-group>
+              <category-setting-exceptions
+                  category="[[ContentSettingsTypes.FONT_ACCESS]]"
+                  block-header="$i18n{siteSettingsFontsBlockedExceptions}"
+                  allow-header="$i18n{siteSettingsFontsAllowedExceptions}"
+                  search-filter="[[searchFilter_]]">
+              </category-setting-exceptions>
+            </template>
+            <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
+              <category-default-setting
+                  toggle-off-label="$i18n{siteSettingsFontAccessBlock}"
+                  toggle-on-label="$i18n{siteSettingsFontAccessAsk}"
+                  category="[[ContentSettingsTypes.FONT_ACCESS]]">
+              </category-default-setting>
+              <category-setting-exceptions
+                  category="[[ContentSettingsTypes.FONT_ACCESS]]"
+                  block-header="$i18n{siteSettingsBlock}"
+                  allow-header="$i18n{siteSettingsAllow}"
+                  search-filter="[[searchFilter_]]">
+              </category-setting-exceptions>
+            </template>
           </settings-subpage>
         </template>
       </template>

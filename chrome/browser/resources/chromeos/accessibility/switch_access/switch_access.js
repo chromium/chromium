@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {Commands} from './commands.js';
-import {NavigationManager} from './navigation_manager.js';
 import {Navigator} from './navigator.js';
 import {KeyboardRootNode} from './nodes/keyboard_node.js';
 import {PreferenceManager} from './preference_manager.js';
@@ -21,8 +20,8 @@ export class SwitchAccess {
     SwitchAccess.instance = new SwitchAccess();
 
     chrome.automation.getDesktop((desktop) => {
-      // NavigationManager must be initialized first.
-      Navigator.setSingletonInstance(new NavigationManager(desktop));
+      // Navigator must be initialized first.
+      Navigator.initializeSingletonInstance(desktop);
 
       Commands.initialize();
       KeyboardRootNode.startWatchingVisibility();
@@ -42,6 +41,9 @@ export class SwitchAccess {
         'enable-experimental-accessibility-switch-access-text', (result) => {
           this.enableImprovedTextInput_ = result;
         });
+
+    /* @private {!SAConstants.Mode} */
+    this.mode_ = SAConstants.Mode.ITEM_SCAN;
   }
 
   /**
@@ -53,6 +55,16 @@ export class SwitchAccess {
     return this.enableImprovedTextInput_;
   }
 
+  /** @return {!SAConstants.Mode} */
+  get mode() {
+    return this.mode_;
+  }
+
+  /** @param {!SAConstants.Mode} newMode */
+  set mode(newMode) {
+    this.mode_ = newMode;
+  }
+
   /**
    * Helper function to robustly find a node fitting a given FindParams, even if
    * that node has not yet been created.
@@ -61,7 +73,7 @@ export class SwitchAccess {
    * @param {!function(!AutomationNode): void} foundCallback
    */
   static findNodeMatching(findParams, foundCallback) {
-    const desktop = Navigator.instance.desktopNode;
+    const desktop = Navigator.byItem.desktopNode;
     // First, check if the node is currently in the tree.
     let node = desktop.find(findParams);
     if (node) {
@@ -102,8 +114,7 @@ export class SwitchAccess {
    */
   static error(errorType, errorString, shouldRecover = false) {
     if (shouldRecover) {
-      setTimeout(
-          Navigator.instance.moveToValidNode.bind(Navigator.instance), 0);
+      setTimeout(Navigator.byItem.moveToValidNode.bind(Navigator.byItem), 0);
     }
     const errorTypeCountForUMA = Object.keys(SAConstants.ErrorType).length;
     chrome.metricsPrivate.recordEnumerationValue(

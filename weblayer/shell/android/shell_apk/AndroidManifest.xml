@@ -29,6 +29,7 @@
             </intent-filter>
         </activity>
         <activity android:name="InstrumentationActivity"
+                  android:theme="@style/Theme.AppCompat.DayNight"
                   android:windowSoftInputMode="adjustResize">
             <!-- Add these intent filters so tests can resolve these intents. -->
             <intent-filter>
@@ -52,6 +53,10 @@
               <data android:host="weblayertest" android:scheme="weblayer" />
           </intent-filter>
       </activity>
+
+      <!-- Enable BGF, which is still in development. Don't enable this in production apps. -->
+      <meta-data
+          android:name="org.chromium.weblayer.ENABLE_BACKGROUND_FETCH" android:value="true"/>
 
       {% if weblayer_package is defined %}
             <meta-data android:name="org.chromium.weblayer.WebLayerPackage"

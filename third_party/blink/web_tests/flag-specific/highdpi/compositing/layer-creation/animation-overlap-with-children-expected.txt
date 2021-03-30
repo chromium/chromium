@@ -1,0 +1,71 @@
+Should be composited
+Should not be composited
+Should be composited
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='to-animate' class='container animating'",
+      "bounds": [393, 318],
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV class='composited banner'",
+      "bounds": [375, 75],
+      "contentsOpaque": true,
+      "backgroundColor": "#C0C0C0",
+      "transform": 3
+    },
+    {
+      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV class='test1 box')",
+      "position": [7, 22],
+      "bounds": [151, 151],
+      "backgroundColor": "#FFA500",
+      "transform": 3
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV class='box'",
+      "position": [27, 345],
+      "bounds": [150, 150],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF"
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [12, 12, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [9, 9, 0, 1]
+      ]
+    }
+  ]
+}
+

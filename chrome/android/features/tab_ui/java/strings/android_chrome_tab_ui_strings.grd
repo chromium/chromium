@@ -166,7 +166,7 @@
     <file lang="zh-TW" path="translations/android_chrome_tab_ui_strings_zh-TW.xtb" />
     <file lang="zu" path="translations/android_chrome_tab_ui_strings_zu.xtb" />
   </translations>
-  <release allow_pseudo="false" seq="1">
+  <release seq="1">
     <messages fallback_to_english="true">
       <!-- In-Product Help strings -->
       <message name="IDS_IPH_TAB_GROUPS_QUICKLY_COMPARE_PAGES_TEXT" desc="When Chrome detects that the user is searching or comparing multiple pages (e.g. while comparison shopping), this in-product help text appears at the bottom of the screen. The text informs the user that they can longpress on a link to open it as a new tab within a tab group.">
@@ -379,10 +379,47 @@
         Price drop spotted
       </message>
       <message name="IDS_PRICE_DROP_SPOTTED_CONTENT" desc="This text shows below 'Price drop spotted'. It describes what will happen when clicking 'Show me' button.">
-        See which item in your open tabs has a better price
+        See which item in your open tabs has a lower price
       </message>
       <message name="IDS_PRICE_DROP_SPOTTED_SHOW_ME" desc="This text button shows below 'Price drop spotted'. When user clicks on the text button, it scrolls the users to the first tab that has a price drop.">
         Show me
+      </message>
+      <message name="IDS_PRICE_DROP_SPOTTED_LOWER_PRICE" desc="This text shows on the blue tooltip that appears on a tab where we have detected a price drop in that tab. 'Lower' is an adjective.">
+        Lower price
+      </message>
+
+      <!-- Price Alerts Card strings -->
+      <message name="IDS_PRICE_DROP_ALERTS_CARD_TITLE" desc="This text shows on the price drop alerts message card if any item in the open tabs has a price drop. It familiarizes users with the feature getting price drop alerts.">
+        Get alerts for price drops?
+      </message>
+      <message name="IDS_PRICE_DROP_ALERTS_CARD_GET_NOTIFIED_CONTENT" desc="This text shows below 'Get alerts for price drops?'. It describes what will happen when clicking 'Get notified' button.">
+        You'll get an alert when there's a lower price in an open tab
+      </message>
+      <message name="IDS_PRICE_DROP_ALERTS_CARD_GET_NOTIFIED" desc="This text button shows below 'Get alerts for price drops?'. When user clicks on the text button, the price drop notifications feature will be turned on.">
+        Get notified
+      </message>
+      <message name="IDS_PRICE_DROP_ALERTS_CARD_GO_TO_SETTINGS_CONTENT" desc="This text shows below 'Get alerts for price drops?'. It asks users to turn on notifications in Android settings to get the price drop notifications.">
+        To get an alert when there's a lower price in an open tab, turn on notifications in Settings.
+      </message>
+      <message name="IDS_PRICE_DROP_ALERTS_CARD_GO_TO_SETTINGS" desc="This text button shows below 'Get alerts for price drops?'. When user clicks on the text button, we send them to the Android notification settings.">
+        Go to Settings
+      </message>
+
+      <!-- Price Tracking Settings Dialog strings -->
+      <message name="IDS_PRICE_TRACKING_SETTINGS" desc="When users click the menu item 'Track prices' in tab switcher, a dialog will pop up and this text is the title of the dialog.">
+        Price tracking settings
+      </message>
+      <message name="IDS_TRACK_PRICES_ON_TABS" desc="This text shows in the price tracking settings dialog. It tells users the switch on the side can be used to turn on/off the 'Track prices on tabs' feature.">
+        Track prices on tabs
+      </message>
+      <message name="IDS_TRACK_PRICES_ON_TABS_DESCRIPTION" desc="This text shows below 'Track prices on tabs'. It describes what will happen when turning on this feature.">
+        See price drops on your tabs
+      </message>
+      <message name="IDS_PRICE_DROP_ALERTS" desc="This text shows in the price tracking settings dialog. It tells users the switch on the side can be used to turn on/off the 'Price drop alerts' feature.">
+        Price drop alerts
+      </message>
+      <message name="IDS_PRICE_DROP_ALERTS_DESCRIPTION" desc="This text shows below 'Price drop alerts'. It describes what will happen when turning on this feature.">
+        Get notified when prices drop
       </message>
     </messages>
   </release>

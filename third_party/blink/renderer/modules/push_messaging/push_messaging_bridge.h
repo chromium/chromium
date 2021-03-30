@@ -47,9 +47,7 @@ class PushMessagingBridge final : public GarbageCollected<PushMessagingBridge>,
   void DidGetPermissionState(ScriptPromiseResolver* resolver,
                              mojom::blink::PermissionStatus status);
 
-  HeapMojoRemote<mojom::blink::PermissionService,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      permission_service_;
+  HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
 
   DISALLOW_COPY_AND_ASSIGN(PushMessagingBridge);
 };

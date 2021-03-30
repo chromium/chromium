@@ -184,7 +184,6 @@ class PnaclComponentInstallerPolicy : public ComponentInstallerPolicy {
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
-  std::vector<std::string> GetMimeTypes() const override;
 
   DISALLOW_COPY_AND_ASSIGN(PnaclComponentInstallerPolicy);
 };
@@ -247,10 +246,6 @@ std::string PnaclComponentInstallerPolicy::GetName() const {
 update_client::InstallerAttributes
 PnaclComponentInstallerPolicy::GetInstallerAttributes() const {
   return update_client::InstallerAttributes();
-}
-
-std::vector<std::string> PnaclComponentInstallerPolicy::GetMimeTypes() const {
-  return std::vector<std::string>();
 }
 
 }  // namespace

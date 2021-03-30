@@ -7,7 +7,8 @@
 
 #include <stddef.h>
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "base/time/time.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
@@ -21,7 +22,7 @@ class AutocompleteResult;
 // The data to log (via the metrics service) when the user selects an item from
 // the omnibox popup.
 struct OmniboxLog {
-  OmniboxLog(const base::string16& text,
+  OmniboxLog(const std::u16string& text,
              bool just_deleted_text,
              metrics::OmniboxInputType input_type,
              bool in_keyword_mode,
@@ -40,7 +41,7 @@ struct OmniboxLog {
   ~OmniboxLog();
 
   // The user's input text in the omnibox.
-  base::string16 text;
+  std::u16string text;
 
   // Whether the user deleted text immediately before selecting an omnibox
   // suggestion.  This is usually the result of pressing backspace or delete.
@@ -93,7 +94,7 @@ struct OmniboxLog {
   // The number of extra characters the user would have to manually type
   // if they were not given the opportunity to select this match.  Only
   // set for matches that are allowed to be the default match (i.e., are
-  // inlineable).  Set to base::string16::npos if the match is not allowed
+  // inlineable).  Set to std::u16string::npos if the match is not allowed
   // to be the default match.
   size_t completed_length;
 

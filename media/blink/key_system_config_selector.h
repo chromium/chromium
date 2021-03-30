@@ -15,8 +15,10 @@
 #include "base/memory/weak_ptr.h"
 #include "media/base/eme_constants.h"
 #include "media/blink/media_blink_export.h"
+#include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_media_key_system_media_capability.h"
 #include "third_party/blink/public/platform/web_vector.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 
 namespace blink {
 
@@ -33,8 +35,34 @@ class MediaPermission;
 
 class MEDIA_BLINK_EXPORT KeySystemConfigSelector {
  public:
-  KeySystemConfigSelector(KeySystems* key_systems,
-                          MediaPermission* media_permission);
+  // This is to facilitate testing, it abstracts the calls we are making into
+  // blink::WebLocalFrame so we can override them for testing without
+  // implementing the entire interface for blink::WebLocalFrame.
+  class MEDIA_BLINK_EXPORT WebLocalFrameDelegate {
+   public:
+    explicit WebLocalFrameDelegate(blink::WebLocalFrame* web_frame)
+        : web_frame_(web_frame) {}
+
+    virtual ~WebLocalFrameDelegate() = default;
+
+    // Delegate to blink::WebLocalFrame.
+    virtual bool IsCrossOriginToMainFrame();
+
+    // Delegate to blink::WebContentSettingsClient within blink::WebLocalFrame.
+    virtual bool AllowStorageAccessSync(
+        blink::WebContentSettingsClient::StorageType storage_type);
+
+   private:
+    // The pointer below will always be valid for the lifetime of this object
+    // because it is held by KeySystemConfigSelector whose chain of ownership is
+    // the same as RenderFrameImpl.
+    blink::WebLocalFrame* web_frame_;
+  };
+
+  KeySystemConfigSelector(
+      KeySystems* key_systems,
+      MediaPermission* media_permission,
+      std::unique_ptr<WebLocalFrameDelegate> web_frame_delegate);
 
   ~KeySystemConfigSelector();
 
@@ -43,7 +71,6 @@ class MEDIA_BLINK_EXPORT KeySystemConfigSelector {
   // user settings. See https://crbug.com/760720
   enum class Status {
     kSupported,
-    kUnsupportedPlatform,
     kUnsupportedKeySystem,
     kUnsupportedConfigs,
   };
@@ -110,7 +137,14 @@ class MEDIA_BLINK_EXPORT KeySystemConfigSelector {
           encryption_scheme);
 
   KeySystems* const key_systems_;
+
+  // This object is unowned but its pointer is always valid. It has the same
+  // lifetime as RenderFrameImpl, and |this| also has the same lifetime
+  // as RenderFrameImpl. RenderFrameImpl owns content::MediaFactory which owns
+  // WebEncryptedMediaClientImpl which owns |this|.
   MediaPermission* media_permission_;
+
+  std::unique_ptr<WebLocalFrameDelegate> web_frame_delegate_;
 
   // A callback used to check whether a media type is supported. Only set in
   // tests. If null the implementation will check the support using MimeUtil.

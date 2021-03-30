@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">该文件或目录无法使用。</translation>
 <translation id="1363028406613469049">曲目</translation>
 <translation id="1378727793141957596">欢迎使用 Google 云端硬盘！</translation>
+<translation id="1379911846207762492">您可将文件设为“可离线使用”，以便在未联网的情况下访问。</translation>
 <translation id="1383876407941801731">搜索</translation>
 <translation id="1395262318152388157">进度滑块</translation>
 <translation id="1404323374378969387">挪威语</translation>
@@ -76,6 +77,7 @@
 <translation id="1807938677607439181">所有文件</translation>
 <translation id="1810764548349082891">无法预览</translation>
 <translation id="1812302367230252929">阿姆哈拉语音译</translation>
+<translation id="1813278315230285598">服务</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />警告<ph name="END_BOLD" />：这些文件是临时文件，系统可能会自动删除这些文件以释放磁盘空间。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">企鹅</translation>
 <translation id="183183971458492120">正在加载信息…</translation>
@@ -85,13 +87,14 @@
 <translation id="1853795129690976061">已与 Linux 共享此文件夹</translation>
 <translation id="1864756863218646478">找不到该文件。</translation>
 <translation id="1920670151694390848">马拉雅拉姆语音译</translation>
+<translation id="1920798810075583923">西瓜</translation>
 <translation id="1924372192547904021">已将“<ph name="DRIVE_NAME" />”格式化</translation>
 <translation id="1931134289871235022">斯洛伐克语</translation>
 <translation id="1933345018156373194">移动失败，出现了意外的错误：<ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">芬兰语</translation>
 <translation id="1942765061641586207">图片分辨率</translation>
-<translation id="1943097386230153518">安装新服务</translation>
 <translation id="1972984168337863910">展开文件反馈面板</translation>
+<translation id="1984456723671657197">此文件类型不受支持。<ph name="BEGIN_LINK_HELP" />详细了解<ph name="END_LINK_HELP" />如何在 Chrome 操作系统中打开文件。</translation>
 <translation id="1995337122023280937">转到文件位置</translation>
 <translation id="2001796770603320721">在云端硬盘中管理</translation>
 <translation id="2009067268969781306">将驱动器格式化会删除其中存储的所有数据。此操作无法撤消。</translation>
@@ -118,6 +121,7 @@
 <translation id="2288278176040912387">电唱机</translation>
 <translation id="2291538123825441971">正在打开 <ph name="NUMBER_OF_FILES" /> 个文件。</translation>
 <translation id="2303301624314357662">正在打开文件“<ph name="FILE_NAME" />”</translation>
+<translation id="2304820083631266885">星球</translation>
 <translation id="2305020378527873881">已移除 <ph name="VOLUME_NAME" />。</translation>
 <translation id="2325650632570794183">不支持此文件类型。请访问 Chrome 网上应用店，找到能打开此文件类型的应用。</translation>
 <translation id="2326539130272988168">保加利亚语</translation>
@@ -142,7 +146,6 @@
 <translation id="255937426064304553">美国英语（国际）</translation>
 <translation id="2562685439590298522">文档</translation>
 <translation id="2563185590376525700">青蛙</translation>
-<translation id="2572501073504669105">您可将文件设为“可离线使用”，以便在无互联网连接的情况下访问。</translation>
 <translation id="2578394532502990878">泰米尔语注音</translation>
 <translation id="2579959351793446050">奥里亚语</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> 视频</translation>
@@ -186,6 +189,7 @@
 <translation id="299638574917407533">法语（加拿大）</translation>
 <translation id="3003633581067744647">切换到缩略图视图</translation>
 <translation id="3007214526293698309">更正宽高比</translation>
+<translation id="3029114385395636667">若要离线使用 Google 文档、表格及幻灯片，请启用 Google 文档的离线功能。</translation>
 <translation id="303198083543495566">地理位置</translation>
 <translation id="3047197340186497470">中文大易</translation>
 <translation id="3057861065630527966">备份您的照片和视频</translation>
@@ -216,14 +220,17 @@
 <translation id="3335337277364016868">录制年份</translation>
 <translation id="3353984535370177728">选择要上传的文件夹</translation>
 <translation id="3356580349448036450">已完成</translation>
+<translation id="3358452157379365236">吉他</translation>
 <translation id="3382143449143186018">尼泊尔语 InScript 键盘</translation>
 <translation id="3408236822532681288">德语（德国）Neo 2 键盘</translation>
 <translation id="3414856743105198592">格式化可移动设备会删除其中的所有数据。您要继续吗？</translation>
 <translation id="3437801641691368414">创建时间</translation>
+<translation id="343907260260897561">拍立得相机</translation>
 <translation id="3455931012307786678">爱沙尼亚语</translation>
 <translation id="3466147780910026086">正在扫描您的媒体设备…</translation>
 <translation id="3468522857997926824">已将 <ph name="FILE_COUNT" /> 张照片备份到 <ph name="BEGIN_LINK" />Google 云端硬盘<ph name="END_LINK" /></translation>
 <translation id="3475447146579922140">Google 电子表格</translation>
+<translation id="3479552764303398839">以后再说</translation>
 <translation id="3486821258960016770">蒙古语</translation>
 <translation id="3495304270784461826"><ph name="COUNT" />个错误。</translation>
 <translation id="3522708245912499433">葡萄牙语</translation>
@@ -233,6 +240,7 @@
 <translation id="3553048479571901246">如需使用 <ph name="APP_NAME" /> 打开文件，请先将文件复制到“Windows 文件”文件夹。</translation>
 <translation id="3556731189587832921">英语（美国）国际 PC 键盘</translation>
 <translation id="357479282490346887">立陶宛语</translation>
+<translation id="3592251141500063301">无法将文件“<ph name="FILE_NAME" />”设为“可离线使用”</translation>
 <translation id="3603385196401704894">加拿大法语</translation>
 <translation id="3606220979431771195">土耳其语 F</translation>
 <translation id="3616113530831147358">音频</translation>
@@ -279,6 +287,7 @@
 <translation id="4124935795427217608">独角兽</translation>
 <translation id="4158739975813877944">打开播放列表</translation>
 <translation id="4159731583141908892">已移动 <ph name="FILE_NAME" />。</translation>
+<translation id="4186579485882418952">启用离线功能</translation>
 <translation id="4193154014135846272">Google 文档</translation>
 <translation id="4197674956721858839">压缩选择</translation>
 <translation id="4202378258276439759">西班牙语（拉丁美洲）</translation>
@@ -292,6 +301,7 @@
 <translation id="4309915981827077375">基本信息</translation>
 <translation id="432252891123397018">俄语标准键盘</translation>
 <translation id="4325128273762811722">斯洛文尼亚语</translation>
+<translation id="4326142238881453352">植物学家</translation>
 <translation id="4326192123064055915">咖啡</translation>
 <translation id="4336032328163998280">复制操作失败。<ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">索拉尼库尔德语（阿拉伯语字母）键盘</translation>
@@ -327,7 +337,6 @@
 <translation id="4706042980341760088">泰米尔语打字机键盘</translation>
 <translation id="4711094779914110278">土耳其语</translation>
 <translation id="4712283082407695269">正在打开“<ph name="PATH" />”</translation>
-<translation id="4713544552769165154">此文件适用于采用Macintosh软件的计算机，不适用于运行Chrome操作系统的设备。请在<ph name="BEGIN_LINK" />Chrome网上应用店<ph name="END_LINK" />中搜索合适的替代应用。<ph name="BEGIN_LINK_HELP" />了解详情<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">已备份 <ph name="FILE_COUNT" /> 张照片</translation>
 <translation id="4725511304875193254">柯基犬</translation>
 <translation id="4732760563705710320">抱歉，您的投射设备不支持此视频。</translation>
@@ -403,6 +412,7 @@
 <translation id="5257456363153333584">蜻蜓</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />可随时随地访问文件，即使处于离线状态也没关系。<ph name="MARKUP_2" />Google 云端硬盘上的文件是最新的，并可通过任意设备访问。<ph name="MARKUP_3" /><ph name="MARKUP_4" />可确保文件安全。<ph name="MARKUP_5" />无论您的设备出现什么状况，您的文件都会安全地存储在 Google 云端硬盘上。<ph name="MARKUP_6" /><ph name="MARKUP_7" />文件集中存储，方便您与他人在同一个地方共享、创建和协作处理<ph name="MARKUP_8" />文件。<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">从 Google 云端硬盘恢复的文件</translation>
+<translation id="5288441970121584418">汉堡包</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5318819489018851358">与 Linux 共享</translation>
@@ -456,8 +466,6 @@
 <translation id="5833610766403489739">此文件已移至其他位置。请查看您的下载位置设置并重试。</translation>
 <translation id="5838451609423551646">已取消选择所有条目。</translation>
 <translation id="5838825566232597749">美式 Workman 国际</translation>
-<translation id="5850516540536751549">不支持此文件类型。请在<ph name="BEGIN_LINK" />Chrome网上应用店<ph name="END_LINK" />中查找可打开此类文件的应用。
-    <ph name="BEGIN_LINK_HELP" />了解详情<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">此处没有可显示的内容…</translation>
 <translation id="5911887972742538906">安装 Linux 应用时出错。</translation>
 <translation id="5912396950572065471">格式</translation>
@@ -495,10 +503,12 @@
 <translation id="6248400709929739064">启用字幕</translation>
 <translation id="6269630227984243955">马来语</translation>
 <translation id="6287852322318138013">选择用于打开此文件的应用</translation>
+<translation id="6321303798550928047">挥手</translation>
 <translation id="6339145975392024142">美式国际 (PC) 键盘</translation>
 <translation id="6346310558342052870">访问权限受限</translation>
 <translation id="6356685157277930264">文件反馈窗口</translation>
 <translation id="6358884629796491903">龙</translation>
+<translation id="6367976544441405720">客货车</translation>
 <translation id="637062427944097960">此文件已在其他桌面打开。请转至<ph name="USER_NAME" />(<ph name="MAIL_ADDRESS" />)查看此文件。</translation>
 <translation id="6394388407447716302">只读</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> 项内容</translation>
@@ -522,6 +532,7 @@
 <translation id="6650726141019353908">粉蝴蝶</translation>
 <translation id="6657585470893396449">密码</translation>
 <translation id="6673674183150363784">法语（法国）Bépo 键盘</translation>
+<translation id="6710022688720561421">机器人</translation>
 <translation id="6710213216561001401">上一项</translation>
 <translation id="6751256176799620176">已选择 1 个文件夹</translation>
 <translation id="6790428901817661496">播放</translation>
@@ -555,6 +566,7 @@
 <translation id="6965382102122355670">确定</translation>
 <translation id="6970230597523682626">保加利亚语</translation>
 <translation id="6973630695168034713">文件夹</translation>
+<translation id="6976795442547527108">狮子</translation>
 <translation id="6978611942794658017">此文件适用于采用 Windows 软件的 PC，不适用于运行 Chrome 操作系统的设备。请在 Chrome 网上应用店中搜索合适的替代应用。</translation>
 <translation id="6979158407327259162">Google 云端硬盘</translation>
 <translation id="6989942356279143254">瑞典语</translation>
@@ -601,6 +613,7 @@
 <translation id="7532029025027028521">波斯语音译</translation>
 <translation id="7544830582642184299">授权 Linux 应用访问您 Google 云端硬盘中的文件。相关更改会同步到您的其他设备。</translation>
 <translation id="7544853251252956727">随机播放</translation>
+<translation id="7547009467130558110">运动鞋</translation>
 <translation id="7547780573915868306">立陶宛语</translation>
 <translation id="7547811415869834682">荷兰语</translation>
 <translation id="7551643184018910560">固定到任务栏</translation>
@@ -615,6 +628,7 @@
 <translation id="7628656427739290098">已完成 <ph name="PERCENT" />%。</translation>
 <translation id="7649070708921625228">帮助</translation>
 <translation id="7654209398114106148">正在移动 <ph name="NUMBER_OF_ITEMS" /> 项内容…</translation>
+<translation id="7655441028674523381">轻松访问 Google 相册</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7663224033570512922">印地语</translation>
 <translation id="7693909743393669729">将 U 盘格式化会清空其中存储的所有数据，并会移除所有现有分区（包括未必可见的分区）。此操作无法撤消。</translation>
@@ -646,7 +660,6 @@
 <translation id="7839804798877833423">抓取这些文件将使用约 <ph name="FILE_SIZE" /> 移动数据。</translation>
 <translation id="7846076177841592234">取消选择</translation>
 <translation id="7853966320808728790">法语 BÉPO</translation>
-<translation id="7864662577698025113">添加新服务</translation>
 <translation id="7868774406711971383">波兰语</translation>
 <translation id="7873831373602885875">无法保存到<ph name="FOLDER_NAME" />。所有修改都会保存到“下载内容”文件夹中的<ph name="DOWNLOADS_FOLDER" />。</translation>
 <translation id="7874321682039004450">菲律宾语</translation>
@@ -661,13 +674,13 @@
 <translation id="7972920761225148017">法语（瑞士）</translation>
 <translation id="7980421588063892270">英语（美国）Colemak 键盘</translation>
 <translation id="7982283708762922719">高度</translation>
+<translation id="79907182588096956">此文件适用于运行 Windows 软件的 PC，不适用于运行 Chrome 操作系统的设备。<ph name="BEGIN_LINK_HELP" />详细了解<ph name="END_LINK_HELP" />如何在 Chrome 操作系统中打开文件。</translation>
 <translation id="8008366997883261463">杰克罗素梗犬</translation>
 <translation id="8028993641010258682">大小</translation>
 <translation id="803771048473350947">文件</translation>
 <translation id="8038111231936746805">（默认）</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> 音频</translation>
 <translation id="8045462269890919536">罗马尼亚语</translation>
-<translation id="8052887694493382350">此文件适用于运行 Windows 软件的 PC，不适用于运行 Chrome 操作系统的设备。<ph name="BEGIN_LINK_HELP" />了解详情<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">所有修改都会保存到<ph name="DOWNLOADS_FOLDER" />。</translation>
 <translation id="8079530767338315840">重复播放</translation>
 <translation id="8106045200081704138">与我共享</translation>
@@ -707,6 +720,7 @@
 <translation id="8466234950814670489">Tar 归档</translation>
 <translation id="8475647382427415476">Google 云端硬盘暂时无法同步“<ph name="FILENAME" />”，将在稍后重试。</translation>
 <translation id="8477649328507734757">同心圆</translation>
+<translation id="8484284835977497781">从您的近期照片中选择。</translation>
 <translation id="8487700953926739672">可离线使用</translation>
 <translation id="8521441079177373948">英国英语</translation>
 <translation id="8525306231823319788">全屏</translation>
@@ -739,8 +753,10 @@
 <translation id="8860454412039442620">Excel 电子表格</translation>
 <translation id="8866284467018526531">阿拉伯语音译</translation>
 <translation id="8900820606136623064">匈牙利语</translation>
+<translation id="8903931173357132290">毕业</translation>
 <translation id="8919081441417203123">丹麦语</translation>
 <translation id="8965697826696209160">空间不足。</translation>
+<translation id="8970501467542182729">此文件适用于运行 Macintosh 软件的计算机，不适用于运行 Chrome 操作系统的设备。<ph name="BEGIN_LINK_HELP" />详细了解<ph name="END_LINK_HELP" />如何在 Chrome 操作系统中打开文件。</translation>
 <translation id="8997962250644902079">中文（繁体）拼音</translation>
 <translation id="9017798300203431059">俄语（注音）</translation>
 <translation id="9034924485347205037">Linux 文件</translation>

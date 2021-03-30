@@ -102,7 +102,7 @@
     </path>
   </svg>
   <div id="status-container" role="status" aria-atomic="false">
-    <div id="title">[[getTitle_(state_)]]</div>
+    <div id="title">[[getTitle_(state_, error_)]]</div>
 
     <!-- Message containers. Depending on the current state, only one of them
       is visible. -->
@@ -112,7 +112,7 @@
     </div>
     <div id="configure-message" hidden="[[!eq_(state_, State.CONFIGURE)]]">
       <div id="configure-message-title">[[getConfigureMessageTitle_()]]</div>
-      <cr-input label="Username" id="username" type="text"
+      <cr-input label="$i18n{usernameLabel}" id="username" type="text"
           value="{{username_}}" maxlength="[[MAX_USERNAME_LENGTH]]"
           invalid="[[!eq_(usernameError_, '')]]"
           error-message="[[usernameError_]]">
@@ -182,11 +182,19 @@
         hidden="[[!showNextButton_(state_)]]">
       $i18n{next}
     </cr-button>
-    <cr-button id="install" class="action-button"
-        on-click="onInstallButtonClick_" aria-describedby="title"
-        aria-details="prompt-message" hidden="[[!showInstallButton_(state_)]]"
-        disabled="[[disableInstallButton_(state_, username_, usernameError_)]]">
+    <cr-button
+      id="install" class="action-button"
+      on-click="onInstallButtonClick_" aria-describedby="title"
+      aria-details="prompt-message"
+      hidden="[[!showInstallButton_(state_, error_)]]"
+      disabled="[[disableInstallButton_(state_, username_, usernameError_)]]">
       [[getInstallButtonLabel_(state_)]]
+    </cr-button>
+    <cr-button id="settings" class="action-button"
+               on-click="onSettingsButtonClick_" aria-describedby="title"
+               aria-details="prompt-message"
+               hidden="[[!showSettingsButton_(state_, error_)]]">
+      $i18n{settings}
     </cr-button>
   </div>
 </div>

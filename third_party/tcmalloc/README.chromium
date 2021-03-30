@@ -1,8 +1,8 @@
 Name: tcmalloc
 Short Name: gperftools
-URL: http://gperftools.googlecode.com/
-Version: unknown
-Revision: 144
+URL: http://github.com/gperftools/gperftools
+Version: 2.7
+Revision: Unknown
 Security Critical: yes
 License: BSD
 
@@ -24,64 +24,18 @@ Contents:
 
     Vanilla sources from upstream:
 
-      http://gperftools.googlecode.com/svn/trunk
+      http://github.com/gperftools/gperftools
 
-    The current revision is:
-
-      Last Changed Rev: 144
-      Last Changed Date: 2012-02-04 00:10:11 +0000 (Sat, 04 Feb 2012)
-
-
+    The current revision is 2.7, pulled in July 2018.
 
 HOWTOs:
 
-  Take a new version from upstream:
-
-    1)  Grab the revision:
-
-        $ svn export [-r {tcmalloc-rev}] \
-          http://gperftools.googlecode.com/svn/trunk \
-          vendor-{tcmalloc-rev}
-
-    2)  Check for added or deleted files:
-
-        $ diff -q -r -x .svn vendor vendor-{tcmalloc-rev}
-
-    3)  Copy the new revision on top of the checked-in vendor branch:
-
-        $ cp -r vendor-{tcmalloc-rev}/* vendor
-
-        C:\> xcopy /e/y/i vendor-{tcmalloc-rev}\* vendor
-
-    4)  Make all vendor files non-executable.
-
-        $ find . -executable -type f -exec chmod a-x {} \;
-
-    5)  "svn add" or "svn rm" added or removed files (based on your
-        "diff -q -r" output from above)
-
-    6)  Create the CL, upload, check it in:
-
-        $ gcl change CL
-        $ gcl upload CL
-        $ gcl commit CL
-
-        Note the revision number since you're going to want to merge
-        that to the local chromium branch.
-
-  Merge a new upstream version with our local patched copy:
-
-    1)  Merge the local revision to chromium/src
-
-        $ svn merge -c {chrome-rev} svn://chrome-svn/chrome/trunk/src/third_party/tcmalloc/vendor/src chromium/src
-
-    2)  Resolve any conflicts
-
-    3)  Create the CL, upload, check in:
-
-        $ gcl change CL
-        $ gcl upload CL
-        $ gcl commit CL
+  1. Pull from upstream
+    $ git clone https://gitbub.com/gperftools/gperftools vendor
+  2. Checkout and remove git metadata
+     $ cd vendor && git checkout gperftools-2.7 && rm .rf .git
+  3. Mirror the src folder
+     $ cd  .. && rsync -av --delete vendor/src chromium/src
 
 
 Modifications:
@@ -123,3 +77,5 @@ Modifications:
 - Precompute the pointer mask for doubly linked free lists instead of computing it on each access.
 - Move spinlock to function static variable to fix static initializer check error.
 - Enable ASLR support on both Linux and ChromeOS
+- Remove unused base::subtle::Acquire_Store/Release_Load (https://github.com/gperftools/gperftools/pull/1249)
+- Fix thread-safety annotations (https://github.com/gperftools/gperftools/pull/1251)

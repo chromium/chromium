@@ -83,4 +83,5 @@
     <color name="preference_highlighted_bg_color">@color/preference_highlighted_bg_color_light</color>
     <color name="menu_chip_background_color">@color/menu_chip_background_color_light</color>
     <color name="menu_chip_background_color_disabled">@color/menu_chip_background_color_disabled_light</color>
+    <color name="iph_highlight_blue">@color/iph_highlight_blue_light</color>
 </resources>

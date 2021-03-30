@@ -10,8 +10,13 @@
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+#include "third_party/perfetto/include/perfetto/test/traced_value_test_support.h"  // no-presubmit-check
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 #if defined(OS_POSIX) || defined(OS_FUCHSIA)
 #include "base/test/scoped_locale.h"
@@ -394,70 +399,77 @@ TEST_F(FilePathTest, StripTrailingSeparators) {
   }
 }
 
-TEST_F(FilePathTest, IsAbsolute) {
-  const struct UnaryBooleanTestData cases[] = {
-    { FPL(""),       false },
-    { FPL("a"),      false },
-    { FPL("c:"),     false },
-    { FPL("c:a"),    false },
-    { FPL("a/b"),    false },
-    { FPL("//"),     true },
-    { FPL("//a"),    true },
-    { FPL("c:a/b"),  false },
-    { FPL("?:/a"),   false },
+TEST_F(FilePathTest, IsAbsoluteOrNetwork) {
+  const struct {
+    FilePath::StringPieceType input;
+    bool expected_is_absolute;
+    bool expected_is_network;
+  } cases[] = {
+    { FPL(""),       false, false },
+    { FPL("a"),      false, false },
+    { FPL("c:"),     false, false },
+    { FPL("c:a"),    false, false },
+    { FPL("a/b"),    false, false },
+    { FPL("//"),     true,  true },
+    { FPL("//a"),    true,  true },
+    { FPL("c:a/b"),  false, false },
+    { FPL("?:/a"),   false, false },
 #if defined(FILE_PATH_USES_DRIVE_LETTERS)
-    { FPL("/"),      false },
-    { FPL("/a"),     false },
-    { FPL("/."),     false },
-    { FPL("/.."),    false },
-    { FPL("c:/"),    true },
-    { FPL("c:/a"),   true },
-    { FPL("c:/."),   true },
-    { FPL("c:/.."),  true },
-    { FPL("C:/a"),   true },
-    { FPL("d:/a"),   true },
+    { FPL("/"),      false, false },
+    { FPL("/a"),     false, false },
+    { FPL("/."),     false, false },
+    { FPL("/.."),    false, false },
+    { FPL("c:/"),    true,  false },
+    { FPL("c:/a"),   true,  false },
+    { FPL("c:/."),   true,  false },
+    { FPL("c:/.."),  true,  false },
+    { FPL("C:/a"),   true,  false },
+    { FPL("d:/a"),   true,  false },
 #else  // FILE_PATH_USES_DRIVE_LETTERS
-    { FPL("/"),      true },
-    { FPL("/a"),     true },
-    { FPL("/."),     true },
-    { FPL("/.."),    true },
-    { FPL("c:/"),    false },
+    { FPL("/"),      true,  false },
+    { FPL("/a"),     true,  false },
+    { FPL("/."),     true,  false },
+    { FPL("/.."),    true,  false },
+    { FPL("c:/"),    false, false },
 #endif  // FILE_PATH_USES_DRIVE_LETTERS
 #if defined(FILE_PATH_USES_WIN_SEPARATORS)
-    { FPL("a\\b"),   false },
-    { FPL("\\\\"),   true },
-    { FPL("\\\\a"),  true },
-    { FPL("a\\b"),   false },
-    { FPL("\\\\"),   true },
-    { FPL("//a"),    true },
-    { FPL("c:a\\b"), false },
-    { FPL("?:\\a"),  false },
+    { FPL("a\\b"),   false, false },
+    { FPL("\\\\"),   true,  true },
+    { FPL("\\\\a"),  true,  true },
+    { FPL("a\\b"),   false, false },
+    { FPL("\\\\"),   true,  true },
+    { FPL("//a"),    true,  true },
+    { FPL("c:a\\b"), false, false },
+    { FPL("?:\\a"),  false, false },
 #if defined(FILE_PATH_USES_DRIVE_LETTERS)
-    { FPL("\\"),     false },
-    { FPL("\\a"),    false },
-    { FPL("\\."),    false },
-    { FPL("\\.."),   false },
-    { FPL("c:\\"),   true },
-    { FPL("c:\\"),   true },
-    { FPL("c:\\a"),  true },
-    { FPL("c:\\."),  true },
-    { FPL("c:\\.."), true },
-    { FPL("C:\\a"),  true },
-    { FPL("d:\\a"),  true },
+    { FPL("\\"),     false, false },
+    { FPL("\\a"),    false, false },
+    { FPL("\\."),    false, false },
+    { FPL("\\.."),   false, false },
+    { FPL("c:\\"),   true,  false },
+    { FPL("c:\\"),   true,  false },
+    { FPL("c:\\a"),  true,  false },
+    { FPL("c:\\."),  true,  false },
+    { FPL("c:\\.."), true,  false },
+    { FPL("C:\\a"),  true,  false },
+    { FPL("d:\\a"),  true,  false },
 #else  // FILE_PATH_USES_DRIVE_LETTERS
-    { FPL("\\"),     true },
-    { FPL("\\a"),    true },
-    { FPL("\\."),    true },
-    { FPL("\\.."),   true },
-    { FPL("c:\\"),   false },
+    { FPL("\\"),     true,  false },
+    { FPL("\\a"),    true,  false },
+    { FPL("\\."),    true,  false },
+    { FPL("\\.."),   true,  false },
+    { FPL("c:\\"),   false, false },
 #endif  // FILE_PATH_USES_DRIVE_LETTERS
 #endif  // FILE_PATH_USES_WIN_SEPARATORS
   };
 
   for (size_t i = 0; i < base::size(cases); ++i) {
     FilePath input(cases[i].input);
-    bool observed = input.IsAbsolute();
-    EXPECT_EQ(cases[i].expected, observed) <<
+    bool observed_is_absolute = input.IsAbsolute();
+    EXPECT_EQ(cases[i].expected_is_absolute, observed_is_absolute) <<
+              "i: " << i << ", input: " << input.value();
+    bool observed_is_network = input.IsNetwork();
+    EXPECT_EQ(cases[i].expected_is_network, observed_is_network) <<
               "i: " << i << ", input: " << input.value();
   }
 }
@@ -619,6 +631,24 @@ TEST_F(FilePathTest, AppendRelativePathTest) {
     { { FPL("\\foo\\bar"),    FPL("\\foo2\\bar\\baz") },  FPL("")},
     { { FPL("\\foo\\bar"),    FPL("\\foo\\bar2\\baz") },  FPL("")},
 #endif  // FILE_PATH_USES_WIN_SEPARATORS
+
+    // For network paths, the hosts are compared ignoring case, while the rest
+    // of the path is compared using case.
+    { { FPL("//FOO/bar/"),    FPL("//foo/bar/baz") },     FPL("baz")},
+    { { FPL("//foo/BAR/"),    FPL("//foo/bar/baz") },     FPL("")},
+    // For non-network paths, the first component is not a host and should be
+    // compared using case.
+    { { FPL("/FOO/bar/"),     FPL("/foo/bar/baz") },      FPL("")},
+    // Degenerate case when parent has no hostname.
+    { { FPL("//"),            FPL("//foo") },             FPL("foo")},
+#if defined(FILE_PATH_USES_WIN_SEPARATORS)
+    // Network path tests but using Windows path separators.
+    { { FPL("\\\\FOO\\bar"),  FPL("\\\\foo\\bar\\baz") }, FPL("baz")},
+    { { FPL("\\\\fOO\\Bar"),  FPL("\\\\foo\\bar\\baz") }, FPL("")},
+    { { FPL("\\FOO\\bar"),    FPL("\\foo\\bar\\baz") },   FPL("")},
+    { { FPL("\\\\"),          FPL("\\\\foo") },           FPL("foo")},
+#endif  // FILE_PATH_USES_WIN_SEPARATORS
+
   };
 
   const FilePath base(FPL("blah"));
@@ -1309,6 +1339,12 @@ TEST_F(FilePathTest, PrintToOstream) {
   ss << fp;
   EXPECT_EQ("foo", ss.str());
 }
+
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+TEST_F(FilePathTest, TracedValueSupport) {
+  EXPECT_EQ(perfetto::TracedValueToString(FilePath(FPL("foo"))), "foo");
+}
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 // Test GetHFSDecomposedForm should return empty result for invalid UTF-8
 // strings.

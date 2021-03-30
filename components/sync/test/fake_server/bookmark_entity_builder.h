@@ -9,7 +9,7 @@
 #include <string>
 
 #include "components/sync/base/model_type.h"
-#include "components/sync/engine_impl/loopback_server/loopback_server_entity.h"
+#include "components/sync/engine/loopback_server/loopback_server_entity.h"
 #include "url/gurl.h"
 
 namespace fake_server {

@@ -1,18 +1,10 @@
 include_rules = [
+  "+components/account_id/account_id.h",
   "+components/services/app_service/public/cpp",
   "+content/public",
 ]
 
 specific_include_rules = {
-  "app_registry_cache_wrapper\.cc": [
-    "+components/account_id/account_id.h",
-  ],
-  "app_registry_cache\.h": [
-    "+components/account_id/account_id.h",
-  ],
-  "app_update\.h": [
-    "+components/account_id/account_id.h",
-  ],
   "instance_registry\.h": [
     "+ash/public/cpp/shelf_types.h",
   ],

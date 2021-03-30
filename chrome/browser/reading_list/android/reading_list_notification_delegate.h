@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_READING_LIST_ANDROID_READING_LIST_NOTIFICATION_DELEGATE_H_
 #define CHROME_BROWSER_READING_LIST_ANDROID_READING_LIST_NOTIFICATION_DELEGATE_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 
 class ReadingListNotificationDelegate {
  public:
@@ -18,10 +19,10 @@ class ReadingListNotificationDelegate {
       const ReadingListNotificationDelegate&) = delete;
 
   // Gets the weekly notification title.
-  virtual base::string16 getNotificationTitle() = 0;
+  virtual std::u16string getNotificationTitle() = 0;
 
   // Gets the weekly notification subtitle.
-  virtual base::string16 getNotificationSubTitle(int unread_size) = 0;
+  virtual std::u16string getNotificationSubTitle(int unread_size) = 0;
 
   // Opens the reading list UI.
   virtual void OpenReadingListPage() = 0;

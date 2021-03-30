@@ -22,13 +22,94 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="SubresourceFilter.Actions2" enum="SubresourceFilterActions2"
-    expires_after="2021-06-20">
+    expires_after="2021-08-22">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Counts of various UI and user action events related to the
     SubresourceFilter. This will be triggered when portions of the UI are shown
     or interacted with.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.CnameAlias.Browser.HadAliases"
+    units="BooleanHadAliases" expires_after="2021-06-18">
+  <owner>cammie@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Records whether or not a given NavigationRequest has a nonempty vector of
+    CNAME aliases. Only recorded if
+    features::kSendCnameAliasesToSubresourceFilterFromBrowser is enabled.
+    Recorded in a method called in the SubframeNavigationFilteringThrottle's
+    destructor.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.CnameAlias.Browser.InvalidCount"
+    units="count" expires_after="2021-06-18">
+  <owner>cammie@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Counts the number of invalid CNAME aliases seen for a NavigationRequest by
+    the SubframeNavigationFilteringThrottle. Only recorded if
+    features::kSendCnameAliasesToSubresourceFilterFromBrowser is enabled and the
+    request has a nonempty vector of CNAME aliases. Recorded in a method called
+    in the SubframeNavigationFilteringThrottle's destructor.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.CnameAlias.Browser.ListLength"
+    units="length" expires_after="2021-06-18">
+  <owner>cammie@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Records the lengths of each CNAME aliases vector passed to the
+    SubframeNavigationFilteringThrottle, not including empty alias vectors. Only
+    recorded if features::kSendCnameAliasesToSubresourceFilterFromBrowser is
+    enabled and the request has a nonempty vector of CNAME aliases. Recorded in
+    a method called in the SubframeNavigationFilteringThrottle's destructor.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.CnameAlias.Browser.RedundantCount"
+    units="count" expires_after="2021-06-18">
+  <owner>cammie@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Counts the number of CNAME aliases seen by the
+    SubframeNavigationFilteringThrottle that match the host of the requested
+    URL. Only recorded if
+    features::kSendCnameAliasesToSubresourceFilterFromBrowser is enabled and the
+    request has a nonempty vector of CNAME aliases. Recorded in a method called
+    in the SubframeNavigationFilteringThrottle's destructor.
+  </summary>
+</histogram>
+
+<histogram
+    name="SubresourceFilter.CnameAlias.Browser.WasAdTaggedBasedOnAliasCount"
+    units="count" expires_after="2021-06-18">
+  <owner>cammie@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Counts the number of CNAME aliases seen for a given NavigationRequest for
+    which LoadPolicy::kWouldDisallow was returned due to an alias match. Only
+    recorded if features::kSendCnameAliasesToSubresourceFilterFromBrowser is
+    enabled and the request has a nonempty vector of CNAME aliases. Recorded in
+    a method called in the SubframeNavigationFilteringThrottle's destructor.
+  </summary>
+</histogram>
+
+<histogram
+    name="SubresourceFilter.CnameAlias.Browser.WasBlockedBasedOnAliasCount"
+    units="count" expires_after="2021-06-18">
+  <owner>cammie@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Counts the number of CNAME aliases seen for a given NavigationRequest for
+    which LoadPolicy::kDisallow was returned due to an alias match. Only
+    recorded if features::kSendCnameAliasesToSubresourceFilterFromBrowser is
+    enabled and the request has a nonempty vector of CNAME aliases. Recorded in
+    a method called in the SubframeNavigationFilteringThrottle's destructor.
   </summary>
 </histogram>
 
@@ -162,7 +243,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceFilter.DocumentLoad.SubframeFilteringDelay.Allowed"
-    units="microseconds" expires_after="M92">
+    units="microseconds" expires_after="2021-08-09">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -230,7 +311,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceFilter.IndexRuleset.Verify.Status"
-    enum="SubresourceFilterVerifyStatus" expires_after="2021-06-06">
+    enum="SubresourceFilterVerifyStatus" expires_after="2021-08-08">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -268,7 +349,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="SubresourceFilter.MainFrameLoad.RulesetIsAvailableAnyActivationLevel"
-    enum="BooleanAvailable" expires_after="2021-05-16">
+    enum="BooleanAvailable" expires_after="2021-08-09">
   <owner>alexmt@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
@@ -329,7 +410,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceFilter.PageLoad.ActivationDecision"
-    enum="SubresourceFilterActivationDecision" expires_after="2021-06-20">
+    enum="SubresourceFilterActivationDecision" expires_after="2021-08-22">
   <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -340,7 +421,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceFilter.PageLoad.ActivationList"
-    enum="ActivationList" expires_after="2021-05-09">
+    enum="ActivationList" expires_after="2021-09-12">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -350,7 +431,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceFilter.PageLoad.ActivationState"
-    enum="SubresourceFilterActivationState" expires_after="2021-05-09">
+    enum="SubresourceFilterActivationState" expires_after="2021-09-12">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -383,7 +464,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceFilter.PageLoad.NumSubresourceLoads.Disallowed"
-    units="resource loads" expires_after="M92">
+    units="resource loads" expires_after="2021-08-09">
   <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -407,7 +488,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceFilter.PageLoad.NumSubresourceLoads.MatchedRules"
-    units="resource loads" expires_after="M92">
+    units="resource loads" expires_after="2021-08-09">
   <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -498,7 +579,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceFilter.SafeBrowsing.TotalCheckTime" units="ms"
-    expires_after="M92">
+    expires_after="2021-08-08">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -565,8 +646,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="SubresourceRedirect.Blink.Ineligibility"
+    enum="BlinkSubresourceRedirectIneligibility" expires_after="2021-08-09">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Records the different reasons subresource redirect was disabled by Blink.
+    Recorded for each subresource that was disabled by Blink.
+  </summary>
+</histogram>
+
 <histogram name="SubresourceRedirect.BypassDuration" units="ms"
-    expires_after="M90">
+    expires_after="M92">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -579,7 +670,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceRedirect.CompressionAttempt.ResponseCode"
-    enum="HttpResponseCode" expires_after="2021-06-20">
+    enum="HttpResponseCode" expires_after="2021-08-22">
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -591,7 +682,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceRedirect.CompressionAttempt.ServerResponded"
-    enum="Boolean" expires_after="M90">
+    enum="Boolean" expires_after="M92">
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -602,7 +693,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceRedirect.CompressionFetchTimeout" enum="Boolean"
-    expires_after="M90">
+    expires_after="M92">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -612,7 +703,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceRedirect.DidCompress.BytesSaved" units="bytes"
-    expires_after="M90">
+    expires_after="2021-08-08">
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -622,7 +713,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceRedirect.DidCompress.CompressionPercent" units="%"
-    expires_after="M90">
+    expires_after="2021-08-08">
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -632,7 +723,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceRedirect.ImageCompressionNotificationInfoBar"
-    enum="HttpsImageCompressionInfoBarAction" expires_after="2021-06-06">
+    enum="HttpsImageCompressionInfoBarAction" expires_after="2021-08-09">
   <owner>rajendrant@chromium.org</owner>
   <owner>src/components/data_reduction_proxy/OWNERS</owner>
   <summary>
@@ -652,8 +743,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult"
+    enum="SubresourceRedirectRedirectResult" expires_after="M92">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Records the different results possible for subresource redirection, such as
+    redirectable or different reasons of ineligibility. Recorded once for each
+    image request.
+  </summary>
+</histogram>
+
 <histogram name="SubresourceRedirect.PageLoad.BypassResult" enum="Boolean"
-    expires_after="M90">
+    expires_after="M92">
   <obsolete>
     Replaced by SubresourceRedirect.LitePagesService.BypassResult on 11/2020
   </obsolete>
@@ -731,7 +833,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceRedirect.RobotsRulesFetcher.ResponseCode"
-    units="ms" expires_after="M92">
+    units="HttpResponseCode" expires_after="M92">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>

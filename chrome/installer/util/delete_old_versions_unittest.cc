@@ -5,6 +5,7 @@
 #include "chrome/installer/util/delete_old_versions.h"
 
 #include <set>
+#include <string>
 
 #include "base/check.h"
 #include "base/files/file.h"
@@ -14,7 +15,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/path_service.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/version.h"
 #include "chrome/installer/test/alternate_version_generator.h"
@@ -37,11 +37,10 @@ class DeleteOldVersionsTest : public testing::Test {
   // |name| in |install_dir_|. Depending on |direction|, the version of the
   // created executable is higher or lower than the version of the current
   // executable.
-  base::string16 CreateExecutable(const base::string16& name,
-                                  Direction direction) {
+  std::wstring CreateExecutable(const std::wstring& name, Direction direction) {
     base::FilePath current_exe_path;
     if (!base::PathService::Get(base::FILE_EXE, &current_exe_path))
-      return base::string16();
+      return std::wstring();
 
     return upgrade_test::GenerateAlternatePEFileVersion(
         current_exe_path, install_dir().Append(name), direction);
@@ -49,7 +48,7 @@ class DeleteOldVersionsTest : public testing::Test {
 
   // Creates in |install_dir_| a directory named |name| containing a subset of
   // dummy files impersonating a Chrome version directory.
-  bool CreateVersionDirectory(const base::string16& name) {
+  bool CreateVersionDirectory(const std::wstring& name) {
     static constexpr char kDummyContent[] = "dummy";
     const base::FilePath version_dir_path(install_dir().Append(name));
 
@@ -84,7 +83,7 @@ class DeleteOldVersionsTest : public testing::Test {
 
   // Adds to |file_path_set| all files and directories that are expected to be
   // found in the version directory |version| before any attempt to delete it.
-  void AddVersionFiles(const base::string16& version,
+  void AddVersionFiles(const std::wstring& version,
                        FilePathSet* file_path_set) {
     file_path_set->insert(base::FilePath(version));
     file_path_set->insert(base::FilePath(version).Append(L"chrome.dll"));
@@ -133,7 +132,7 @@ TEST_F(DeleteOldVersionsTest, DeleteNewExecutablesWithoutMatchingDirectory) {
 
 // A directory without a matching executable should be deleted.
 TEST_F(DeleteOldVersionsTest, DeleteDirectoryWithoutMatchingExecutable) {
-  static constexpr base::char16 kVersion[] = L"48.0.0.0";
+  static constexpr wchar_t kVersion[] = L"48.0.0.0";
   ASSERT_TRUE(CreateVersionDirectory(kVersion));
 
   DeleteOldVersions(install_dir());
@@ -143,7 +142,7 @@ TEST_F(DeleteOldVersionsTest, DeleteDirectoryWithoutMatchingExecutable) {
 // A pair of matching old executable/version directory that is not in use should
 // be deleted.
 TEST_F(DeleteOldVersionsTest, DeleteOldExecutableWithMatchingDirectory) {
-  const base::string16 version_a =
+  const std::wstring version_a =
       CreateExecutable(installer::kChromeOldExe, Direction::PREVIOUS_VERSION);
   ASSERT_FALSE(version_a.empty());
   ASSERT_TRUE(CreateVersionDirectory(version_a));
@@ -155,11 +154,11 @@ TEST_F(DeleteOldVersionsTest, DeleteOldExecutableWithMatchingDirectory) {
 // chrome.exe, new_chrome.exe and their matching version directories should
 // never be deleted.
 TEST_F(DeleteOldVersionsTest, DeleteNewExecutablesWithMatchingDirectory) {
-  const base::string16 version_a =
+  const std::wstring version_a =
       CreateExecutable(installer::kChromeExe, Direction::PREVIOUS_VERSION);
   ASSERT_FALSE(version_a.empty());
   ASSERT_TRUE(CreateVersionDirectory(version_a));
-  const base::string16 version_b =
+  const std::wstring version_b =
       CreateExecutable(installer::kChromeNewExe, Direction::NEXT_VERSION);
   ASSERT_FALSE(version_b.empty());
   ASSERT_TRUE(CreateVersionDirectory(version_b));
@@ -180,11 +179,11 @@ TEST_F(DeleteOldVersionsTest, DeleteNewExecutablesWithMatchingDirectory) {
 // should be deleted.
 TEST_F(DeleteOldVersionsTest,
        DeleteNewExecutablesWithMatchingDirectoryAndOldExecutables) {
-  const base::string16 version_a =
+  const std::wstring version_a =
       CreateExecutable(installer::kChromeExe, Direction::PREVIOUS_VERSION);
   ASSERT_FALSE(version_a.empty());
   ASSERT_TRUE(CreateVersionDirectory(version_a));
-  const base::string16 version_b =
+  const std::wstring version_b =
       CreateExecutable(installer::kChromeNewExe, Direction::NEXT_VERSION);
   ASSERT_FALSE(version_b.empty());
   ASSERT_TRUE(CreateVersionDirectory(version_b));
@@ -205,7 +204,7 @@ TEST_F(DeleteOldVersionsTest,
 
 // No file should be deleted for a given version if the executable is in use.
 TEST_F(DeleteOldVersionsTest, DeleteVersionWithExecutableInUse) {
-  const base::string16 version_a =
+  const std::wstring version_a =
       CreateExecutable(installer::kChromeOldExe, Direction::PREVIOUS_VERSION);
   ASSERT_FALSE(version_a.empty());
   ASSERT_TRUE(CreateVersionDirectory(version_a));
@@ -225,7 +224,7 @@ TEST_F(DeleteOldVersionsTest, DeleteVersionWithExecutableInUse) {
 // No file should be deleted for a given version if a .dll file in the version
 // directory is in use.
 TEST_F(DeleteOldVersionsTest, DeleteVersionWithVersionDirectoryDllInUse) {
-  const base::string16 version_a =
+  const std::wstring version_a =
       CreateExecutable(installer::kChromeOldExe, Direction::PREVIOUS_VERSION);
   ASSERT_FALSE(version_a.empty());
   ASSERT_TRUE(CreateVersionDirectory(version_a));
@@ -245,7 +244,7 @@ TEST_F(DeleteOldVersionsTest, DeleteVersionWithVersionDirectoryDllInUse) {
 // No file should be deleted for a given version if a .exe file in the version
 // directory is in use.
 TEST_F(DeleteOldVersionsTest, DeleteVersionWithVersionDirectoryExeInUse) {
-  const base::string16 version_a =
+  const std::wstring version_a =
       CreateExecutable(installer::kChromeOldExe, Direction::PREVIOUS_VERSION);
   ASSERT_FALSE(version_a.empty());
   ASSERT_TRUE(CreateVersionDirectory(version_a));
@@ -267,11 +266,11 @@ TEST_F(DeleteOldVersionsTest, DeleteVersionWithVersionDirectoryExeInUse) {
 // directory v1 and a file named old_chrome.exe with a matching directory v2,
 // old_chrome.exe and v2 should be deleted but chrome.exe and v1 shouldn't.
 TEST_F(DeleteOldVersionsTest, TypicalAfterRenameState) {
-  const base::string16 version_a =
+  const std::wstring version_a =
       CreateExecutable(installer::kChromeOldExe, Direction::PREVIOUS_VERSION);
   ASSERT_FALSE(version_a.empty());
   ASSERT_TRUE(CreateVersionDirectory(version_a));
-  const base::string16 version_b =
+  const std::wstring version_b =
       CreateExecutable(installer::kChromeExe, Direction::NEXT_VERSION);
   ASSERT_FALSE(version_b.empty());
   ASSERT_TRUE(CreateVersionDirectory(version_b));

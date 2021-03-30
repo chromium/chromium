@@ -1,0 +1,35 @@
+<style>
+  :host {
+    display: inline-flex;
+    flex-direction: column;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  [name$='Caption'] {
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: var(--caption-max-lines);
+    display: -webkit-box;
+    line-height: 20px;
+    overflow: hidden;
+  }
+
+  [name='primaryCaption'] {
+    --caption-max-lines: 2;
+    font-size: 0.875rem;  /* 14px */
+    margin-top: 12px;
+  }
+
+  [name='secondaryCaption'] {
+    --caption-max-lines: 1;
+    color: var(--cr-secondary-text-color);
+  }
+</style>
+<a href$="[[url.url]]">
+  <slot name="main"></slot>
+  <slot name="primaryCaption"></slot>
+  <slot name="secondaryCaption"></slot>
+</a>

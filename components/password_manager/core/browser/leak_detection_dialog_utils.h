@@ -5,10 +5,10 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_LEAK_DETECTION_DIALOG_UTILS_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_LEAK_DETECTION_DIALOG_UTILS_H_
 
+#include <string>
 #include <type_traits>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/types/strong_alias.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "ui/gfx/range/range.h"
@@ -58,27 +58,27 @@ bool IsPasswordUsedOnOtherSites(CredentialLeakType leak_type);
 bool IsSyncingPasswordsNormally(CredentialLeakType leak_type);
 
 // Returns the label for the leak dialog accept button.
-base::string16 GetAcceptButtonLabel(
+std::u16string GetAcceptButtonLabel(
     password_manager::CredentialLeakType leak_type);
 
 // Returns the label for the leak dialog cancel button.
-base::string16 GetCancelButtonLabel();
+std::u16string GetCancelButtonLabel();
 
 // Returns the leak dialog message based on leak type.
-base::string16 GetDescription(password_manager::CredentialLeakType leak_type,
+std::u16string GetDescription(password_manager::CredentialLeakType leak_type,
                               const GURL& origin);
 
 // Returns the leak dialog message based on leak type and count of leaked sites.
-base::string16 GetDescriptionWithCount(
+std::u16string GetDescriptionWithCount(
     password_manager::CredentialLeakType leak_type,
     const GURL& origin,
     CompromisedSitesCount saved_sites);
 
 // Returns the leak dialog title based on leak type.
-base::string16 GetTitle(password_manager::CredentialLeakType leak_type);
+std::u16string GetTitle(password_manager::CredentialLeakType leak_type);
 
 // Returns the leak dialog tooltip shown on (?) click.
-base::string16 GetLeakDetectionTooltip();
+std::u16string GetLeakDetectionTooltip();
 
 // Checks whether the leak dialog should prompt user to password checkup.
 bool ShouldCheckPasswords(password_manager::CredentialLeakType leak_type);

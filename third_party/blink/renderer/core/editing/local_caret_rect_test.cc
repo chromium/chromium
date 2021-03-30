@@ -39,6 +39,10 @@ class ParameterizedLocalCaretRectTest
   bool LayoutNGEnabled() const {
     return RuntimeEnabledFeatures::LayoutNGEnabled();
   }
+
+  LocalCaretRect LocalCaretRectOf(const Position& position) {
+    return LocalCaretRectOfPosition(PositionWithAffinity(position));
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(All, ParameterizedLocalCaretRectTest, testing::Bool());
@@ -61,6 +65,46 @@ TEST_P(ParameterizedLocalCaretRectTest, DOMAndFlatTrees) {
 
   EXPECT_FALSE(caret_rect_from_dom_tree.IsEmpty());
   EXPECT_EQ(caret_rect_from_dom_tree, caret_rect_from_flat_tree);
+}
+
+// http://crbug.com/1174101
+TEST_P(ParameterizedLocalCaretRectTest, EmptyInlineFlex) {
+  LoadAhem();
+  InsertStyleElement(R"CSS(
+    div { font: 10px/15px Ahem; width: 100px; }
+    i {
+        display: inline-flex;
+        width: 30px; height: 30px;
+        border: solid 10px red;
+    })CSS");
+  // |ComputeInlinePosition(AfterChildren:<div>)=AfterChildren:<b>
+  // When removing <i>, we have <b>@0
+  SetBodyContent(
+      "<div id=target contenteditable>"
+      "ab<i contenteditable=false><b></b></i></div>");
+  const auto& target = *GetElementById("target");
+  const auto& ab = *To<Text>(target.firstChild());
+  const auto& inline_flex = *ab.nextSibling();
+  const LocalCaretRect before_ab =
+      LocalCaretRect(ab.GetLayoutObject(), {0, 32, 1, 10});
+  const LocalCaretRect before_inline_flex =
+      // LayoutNG is correct. legacy layout places caret inside inline-flex.
+      LayoutNGEnabled()
+          ? LocalCaretRect(ab.GetLayoutObject(), {20, 32, 1, 10})
+          : LocalCaretRect(inline_flex.GetLayoutObject(), {10, 10, 1, 50});
+  const LocalCaretRect after_inline_flex =
+      // LayoutNG is correct. legacy layout places caret inside inline-flex.
+      LayoutNGEnabled()
+          ? LocalCaretRect(inline_flex.GetLayoutObject(), {49, 0, 1, 50})
+          : LocalCaretRect(inline_flex.GetLayoutObject(), {59, 10, 1, 50});
+
+  EXPECT_EQ(before_ab, LocalCaretRectOf(Position(target, 0)));
+  EXPECT_EQ(before_inline_flex, LocalCaretRectOf(Position(target, 1)));
+  EXPECT_EQ(after_inline_flex, LocalCaretRectOf(Position(target, 2)));
+  EXPECT_EQ(before_ab, LocalCaretRectOf(Position::BeforeNode(target)));
+  EXPECT_EQ(after_inline_flex, LocalCaretRectOf(Position::AfterNode(target)));
+  EXPECT_EQ(after_inline_flex,
+            LocalCaretRectOf(Position::LastPositionInNode(target)));
 }
 
 TEST_P(ParameterizedLocalCaretRectTest, SimpleText) {
@@ -993,6 +1037,32 @@ TEST_P(ParameterizedLocalCaretRectTest, AfterIneditableInline) {
   const Position position = Position::LastPositionInNode(*div);
   EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(30, 0, 1, 10)),
             LocalCaretRectOfPosition(PositionWithAffinity(position)));
+}
+
+// https://crbug.com/1155399
+TEST_P(ParameterizedLocalCaretRectTest, OptionWithDisplayContents) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { font: 10px/10px Ahem; width: 300px }"
+      "option { display: contents; }");
+  SetBodyContent("<option>a</option>");
+  const Element* body = GetDocument().body();
+  const Element* option = GetDocument().QuerySelector("option");
+  LocalCaretRect empty;
+  LocalCaretRect start(body->GetLayoutObject(), PhysicalRect(0, 0, 1, 10));
+  LocalCaretRect end(body->GetLayoutObject(), PhysicalRect(299, 0, 1, 10));
+
+  // LocalCaretRectOfPosition shouldn't crash
+  for (const Position& p : {Position::BeforeNode(*body), Position(body, 0)})
+    EXPECT_EQ(start, LocalCaretRectOfPosition(PositionWithAffinity(p)));
+  for (const Position& p :
+       {Position::BeforeNode(*option), Position(option, 0), Position(option, 1),
+        Position::LastPositionInNode(*option), Position::AfterNode(*option)})
+    EXPECT_EQ(empty, LocalCaretRectOfPosition(PositionWithAffinity(p)));
+  for (const Position& p :
+       {Position(body, 1), Position::LastPositionInNode(*body),
+        Position::AfterNode(*body)})
+    EXPECT_EQ(end, LocalCaretRectOfPosition(PositionWithAffinity(p)));
 }
 
 }  // namespace blink

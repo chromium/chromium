@@ -12,8 +12,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/chromeos/arc/arc_util.h"
-#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
@@ -165,7 +165,7 @@ class ArcAppPermissionDialogViewBrowserTest
   }
 
   const std::string& guid() const { return guid_; }
-  const base::string16& serial_number() const { return serial_number_; }
+  const std::u16string& serial_number() const { return serial_number_; }
   uint16_t vendor_id() const { return vendor_id_; }
   uint16_t product_id() const { return product_id_; }
 
@@ -176,9 +176,9 @@ class ArcAppPermissionDialogViewBrowserTest
 
   // USB flow test related.
   const std::string guid_ = "TestGuidXXXXXX";
-  const base::string16 serial_number_ = base::UTF8ToUTF16("TestSerialNumber");
-  const base::string16 manufacturer_string_ = base::UTF8ToUTF16("Factory");
-  const base::string16 product_string_ = base::UTF8ToUTF16("Product");
+  const std::u16string serial_number_ = u"TestSerialNumber";
+  const std::u16string manufacturer_string_ = u"Factory";
+  const std::u16string product_string_ = u"Product";
   uint16_t vendor_id_ = 123;
   uint16_t product_id_ = 456;
 

@@ -57,6 +57,13 @@
 #define MULT16_32_Q15(a,b) ADD32(SHL(MULT16_16((a),SHR((b),16)),1), SHR(MULT16_16SU((a),((b)&0x0000ffff)),15))
 #endif
 
+/** 32x32 multiplication, followed by a 16-bit shift right. Results fits in 32 bits */
+#if OPUS_FAST_INT64
+#define MULT32_32_Q16(a,b) ((opus_val32)SHR((opus_int64)(a)*(opus_int64)(b),16))
+#else
+#define MULT32_32_Q16(a,b) (ADD32(ADD32(ADD32((opus_val32)(SHR32(((opus_uint32)((a)&0x0000ffff)*(opus_uint32)((b)&0x0000ffff)),16)), MULT16_16SU(SHR32(a,16),((b)&0x0000ffff))), MULT16_16SU(SHR32(b,16),((a)&0x0000ffff))), SHL32(MULT16_16(SHR32(a,16),SHR32(b,16)),16)))
+#endif
+
 /** 32x32 multiplication, followed by a 31-bit shift right. Results fits in 32 bits */
 #if OPUS_FAST_INT64
 #define MULT32_32_Q31(a,b) ((opus_val32)SHR((opus_int64)(a)*(opus_int64)(b),31))
@@ -102,9 +109,9 @@
 
 #define SATURATE16(x) (EXTRACT16((x)>32767 ? 32767 : (x)<-32768 ? -32768 : (x)))
 
-/** Shift by a and round-to-neareast 32-bit value. Result is a 16-bit value */
+/** Shift by a and round-to-nearest 32-bit value. Result is a 16-bit value */
 #define ROUND16(x,a) (EXTRACT16(PSHR32((x),(a))))
-/** Shift by a and round-to-neareast 32-bit value. Result is a saturated 16-bit value */
+/** Shift by a and round-to-nearest 32-bit value. Result is a saturated 16-bit value */
 #define SROUND16(x,a) EXTRACT16(SATURATE(PSHR32(x,a), 32767));
 
 /** Divide by two */
@@ -130,6 +137,9 @@
 
 /** 16x16 multiplication where the result fits in 16 bits */
 #define MULT16_16_16(a,b)     ((((opus_val16)(a))*((opus_val16)(b))))
+
+/** 32x32 multiplication where the result fits in 32 bits */
+#define MULT32_32_32(a,b)     ((((opus_val32)(a))*((opus_val32)(b))))
 
 /* (opus_val32)(opus_val16) gives TI compiler a hint that it's 16x16->32 multiply */
 /** 16x16 multiplication where the result fits in 32 bits */

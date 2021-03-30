@@ -210,7 +210,11 @@ public class MediaStoreUtils {
          * destroy the pending item record and any data related to it.
          */
         public void abandon() {
-            mContext.getContentResolver().delete(mUri, null, null);
+            try {
+                mContext.getContentResolver().delete(mUri, null, null);
+            } catch (Exception e) {
+                Log.e(TAG, "Unable to delete pending session.", e);
+            }
         }
 
         @Override

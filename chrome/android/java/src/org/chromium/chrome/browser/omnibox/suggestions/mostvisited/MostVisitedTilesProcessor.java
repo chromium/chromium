@@ -24,10 +24,10 @@ import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionView;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionViewProperties;
-import org.chromium.chrome.browser.suggestions.tile.TileView;
-import org.chromium.chrome.browser.suggestions.tile.TileViewBinder;
-import org.chromium.chrome.browser.suggestions.tile.TileViewProperties;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
+import org.chromium.components.browser_ui.widget.tile.TileView;
+import org.chromium.components.browser_ui.widget.tile.TileViewBinder;
+import org.chromium.components.browser_ui.widget.tile.TileViewProperties;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -142,8 +142,7 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
         }
 
         model.set(BaseCarouselSuggestionViewProperties.TILES, tileList);
-        model.set(BaseCarouselSuggestionViewProperties.TITLE,
-                mContext.getResources().getString(R.string.most_visited_tiles_header));
+        model.set(BaseCarouselSuggestionViewProperties.SHOW_TITLE, false);
     }
 
     /**

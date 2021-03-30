@@ -281,8 +281,8 @@ class TimezoneSettingsBaseImpl : public chromeos::system::TimezoneSettings {
 
   // TimezoneSettings implementation:
   const icu::TimeZone& GetTimezone() override;
-  base::string16 GetCurrentTimezoneID() override;
-  void SetTimezoneFromID(const base::string16& timezone_id) override;
+  std::u16string GetCurrentTimezoneID() override;
+  void SetTimezoneFromID(const std::u16string& timezone_id) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   const std::vector<std::unique_ptr<icu::TimeZone>>& GetTimezoneList()
@@ -347,12 +347,12 @@ const icu::TimeZone& TimezoneSettingsBaseImpl::GetTimezone() {
   return *timezone_.get();
 }
 
-base::string16 TimezoneSettingsBaseImpl::GetCurrentTimezoneID() {
+std::u16string TimezoneSettingsBaseImpl::GetCurrentTimezoneID() {
   return chromeos::system::TimezoneSettings::GetTimezoneID(GetTimezone());
 }
 
 void TimezoneSettingsBaseImpl::SetTimezoneFromID(
-    const base::string16& timezone_id) {
+    const std::u16string& timezone_id) {
   std::unique_ptr<icu::TimeZone> timezone(icu::TimeZone::createTimeZone(
       icu::UnicodeString(timezone_id.c_str(), timezone_id.size())));
   SetTimezone(*timezone);
@@ -483,7 +483,7 @@ TimezoneSettings* TimezoneSettings::GetInstance() {
 }
 
 // static
-base::string16 TimezoneSettings::GetTimezoneID(const icu::TimeZone& timezone) {
+std::u16string TimezoneSettings::GetTimezoneID(const icu::TimeZone& timezone) {
   icu::UnicodeString id;
   return base::i18n::UnicodeStringToString16(timezone.getID(id));
 }

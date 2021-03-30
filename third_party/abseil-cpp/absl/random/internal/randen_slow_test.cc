@@ -17,6 +17,7 @@
 #include <cstring>
 
 #include "gtest/gtest.h"
+#include "absl/base/internal/endian.h"
 #include "absl/random/internal/randen_traits.h"
 
 namespace {
@@ -56,7 +57,7 @@ TEST(RandenSlowTest, Default) {
 
   uint64_t* id = d.state;
   for (const auto& elem : kGolden) {
-    EXPECT_EQ(elem, *id++);
+    EXPECT_EQ(absl::little_endian::FromHost64(elem), *id++);
   }
 }
 

@@ -98,8 +98,8 @@ scoped_refptr<Extension> CreateTestExtension(const std::string& name,
 
   std::string error;
   scoped_refptr<Extension> extension(
-      Extension::Create(path, Manifest::INTERNAL, manifest, Extension::NO_FLAGS,
-                        extension_id, &error));
+      Extension::Create(path, mojom::ManifestLocation::kInternal, manifest,
+                        Extension::NO_FLAGS, extension_id, &error));
   EXPECT_TRUE(extension.get()) << error;
   return extension;
 }
@@ -126,8 +126,9 @@ scoped_refptr<Extension> CreateWebStoreExtension() {
   path = path.AppendASCII("web_store");
 
   std::string error;
-  scoped_refptr<Extension> extension(Extension::Create(
-      path, Manifest::COMPONENT, *manifest, Extension::NO_FLAGS, &error));
+  scoped_refptr<Extension> extension(
+      Extension::Create(path, mojom::ManifestLocation::kComponent, *manifest,
+                        Extension::NO_FLAGS, &error));
   EXPECT_TRUE(extension.get()) << error;
   return extension;
 }
@@ -338,13 +339,12 @@ class ExtensionProtocolsTestBase : public testing::Test {
  private:
   GetResult LoadURL(const GURL& url,
                     network::mojom::RequestDestination destination) {
-    constexpr int32_t kRoutingId = 81;
     constexpr int32_t kRequestId = 28;
 
     mojo::PendingRemote<network::mojom::URLLoader> loader;
     network::TestURLLoaderClient client;
     loader_factory_->CreateLoaderAndStart(
-        loader.InitWithNewPipeAndPassReceiver(), kRoutingId, kRequestId,
+        loader.InitWithNewPipeAndPassReceiver(), kRequestId,
         network::mojom::kURLLoadOptionNone,
         CreateResourceRequest("GET", destination, url), client.CreateRemote(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
@@ -586,7 +586,8 @@ TEST_F(ExtensionProtocolsTest, MetadataFolder) {
   base::FilePath extension_dir = GetTestPath("metadata_folder");
   std::string error;
   scoped_refptr<Extension> extension = file_util::LoadExtension(
-      extension_dir, Manifest::INTERNAL, Extension::NO_FLAGS, &error);
+      extension_dir, mojom::ManifestLocation::kInternal, Extension::NO_FLAGS,
+      &error);
   ASSERT_NE(extension.get(), nullptr) << "error: " << error;
 
   // Loading "/test.html" should succeed.
@@ -804,7 +805,7 @@ TEST_F(ExtensionProtocolsTest, MimeTypesForKnownFiles) {
       ExtensionBuilder()
           .SetManifest(std::move(manifest))
           .SetPath(unpacked_path)
-          .SetLocation(Manifest::INTERNAL)
+          .SetLocation(mojom::ManifestLocation::kInternal)
           .Build();
   ASSERT_TRUE(extension);
 
@@ -847,7 +848,8 @@ TEST_F(ExtensionProtocolsTest, MAYBE_ExtensionRequestsNotAborted) {
       GetTestPath("common").AppendASCII("background_script");
   std::string error;
   scoped_refptr<Extension> extension = file_util::LoadExtension(
-      extension_dir, Manifest::INTERNAL, Extension::NO_FLAGS, &error);
+      extension_dir, mojom::ManifestLocation::kInternal, Extension::NO_FLAGS,
+      &error);
   ASSERT_TRUE(extension.get()) << error;
 
   SimulateSystemSuspendForRequests();

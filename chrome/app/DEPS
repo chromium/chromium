@@ -1,4 +1,5 @@
 include_rules = [
+  "+ash/constants",
   "+ash/public",
   "+chrome/browser",
   "+chrome/child",
@@ -9,7 +10,6 @@ include_rules = [
   "+chrome/profiling/profiling_main.h",
   "+chrome/renderer/chrome_content_renderer_client.h",
   "+chrome/utility/chrome_content_utility_client.h",
-  "+chromeos/constants",
   "+chromeos/dbus/constants",
   "+chromeos/hugepage_text/hugepage_text.h",
   "+chromeos/lacros",

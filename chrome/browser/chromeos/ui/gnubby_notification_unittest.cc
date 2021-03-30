@@ -54,7 +54,7 @@ class GnubbyNotificationTest : public BrowserWithTestWindowTest {
 };
 
 TEST_F(GnubbyNotificationTest, OneNotificationsTest) {
-  base::string16 expected_title =
+  std::u16string expected_title =
       l10n_util::GetStringUTF16(IDS_GNUBBY_NOTIFICATION_TITLE);
   gnubby_notification_->ShowNotification();
   auto notification = GetNotification();
@@ -64,7 +64,7 @@ TEST_F(GnubbyNotificationTest, OneNotificationsTest) {
 }
 
 TEST_F(GnubbyNotificationTest, TwoNotificationsTest) {
-  base::string16 expected_title =
+  std::u16string expected_title =
       l10n_util::GetStringUTF16(IDS_GNUBBY_NOTIFICATION_TITLE);
   gnubby_notification_->ShowNotification();
   gnubby_notification_->DismissNotification();

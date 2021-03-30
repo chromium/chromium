@@ -61,10 +61,10 @@ base::FilePath ColumnFilePath(sql::Statement& statement, int col) {
 void BindFilePath(sql::Statement& statement,
                   const base::FilePath& path,
                   int col) {
-  statement.BindString16(col, path.value());
+  statement.BindString(col, path.AsUTF8Unsafe());
 }
 base::FilePath ColumnFilePath(sql::Statement& statement, int col) {
-  return base::FilePath(statement.ColumnString16(col));
+  return base::FilePath::FromUTF8Unsafe(statement.ColumnString(col));
 }
 
 #endif

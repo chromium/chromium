@@ -48,7 +48,6 @@ public class GoogleAccountsTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(86)
     public void testBasic() throws Exception {
         GoogleAccountsCallbackImpl callback = new GoogleAccountsCallbackImpl();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -65,7 +64,6 @@ public class GoogleAccountsTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(86)
     public void testRequestHeader() throws Exception {
         GoogleAccountsCallbackImpl callback = new GoogleAccountsCallbackImpl();
         TestThreadUtils.runOnUiThreadBlocking(() -> {

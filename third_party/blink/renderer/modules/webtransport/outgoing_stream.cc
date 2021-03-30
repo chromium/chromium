@@ -245,7 +245,7 @@ ScriptPromise OutgoingStream::SinkWrite(ScriptState* script_state,
         array_buffer->ByteLength());
   } else {
     DCHECK(buffer_source.IsArrayBufferView());
-    const auto* array_buffer_view = buffer_source.GetAsArrayBufferView().View();
+    const auto* array_buffer_view = buffer_source.GetAsArrayBufferView().Get();
     data = base::span<const uint8_t>(
         static_cast<const uint8_t*>(array_buffer_view->BaseAddress()),
         array_buffer_view->byteLength());

@@ -5,16 +5,16 @@
 #ifndef CHROME_UPDATER_WIN_NET_PROXY_INFO_H_
 #define CHROME_UPDATER_WIN_NET_PROXY_INFO_H_
 
-#include "base/strings/string16.h"
+#include <string>
 
 namespace updater {
 
 struct ProxyInfo {
   ProxyInfo();
   ProxyInfo(bool auto_detect,
-            const base::string16& auto_config_url,
-            const base::string16& proxy,
-            const base::string16& proxy_bypass);
+            const std::wstring& auto_config_url,
+            const std::wstring& proxy,
+            const std::wstring& proxy_bypass);
   ~ProxyInfo();
 
   ProxyInfo(const ProxyInfo& proxy_info);
@@ -27,14 +27,14 @@ struct ProxyInfo {
   bool auto_detect = false;
 
   // The url of the proxy auto configuration (PAC) script, if known.
-  base::string16 auto_config_url;
+  std::wstring auto_config_url;
 
   // Named proxy information.
   // The proxy string is usually something as "http=foo:80;https=bar:8080".
   // According to the documentation for WINHTTP_PROXY_INFO, multiple proxies
   // are separated by semicolons or whitespace.
-  base::string16 proxy;
-  base::string16 proxy_bypass;
+  std::wstring proxy;
+  std::wstring proxy_bypass;
 };
 
 }  // namespace updater

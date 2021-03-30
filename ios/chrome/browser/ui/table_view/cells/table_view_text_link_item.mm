@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_link_item.h"
 
+#include "base/ios/ns_range.h"
 #include "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
@@ -104,13 +105,12 @@
   // Remove link delimiter from text and get ranges for links. Must be parsed
   // before being added to the controller because modifying the label text
   // clears all added links.
-  NSRange otherBrowsingDataRange;
   if (URL.is_valid()) {
-    self.textLabel.text =
-        ParseStringWithLink(self.textLabel.text, &otherBrowsingDataRange);
-    DCHECK(otherBrowsingDataRange.location != NSNotFound &&
-           otherBrowsingDataRange.length);
-    [labelLinkController addLinkWithRange:otherBrowsingDataRange url:URL];
+    // TODO(crbug.com/1184151): Move to use AttributedStringFromStringWithLink.
+    const StringWithTag parsedString = ParseStringWithLink(self.textLabel.text);
+    DCHECK(parsedString.range != NSMakeRange(NSNotFound, 0));
+    self.textLabel.text = parsedString.string;
+    [labelLinkController addLinkWithRange:parsedString.range url:URL];
   }
   [self.labelLinkControllers addObject:labelLinkController];
 }

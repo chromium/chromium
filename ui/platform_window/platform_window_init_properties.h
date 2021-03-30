@@ -39,6 +39,12 @@ enum class PlatformWindowOpacity {
   kTranslucentWindow,
 };
 
+enum class PlatformWindowShadowType {
+  kDefault,
+  kNone,
+  kDrop,
+};
+
 class WorkspaceExtensionDelegate;
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
@@ -51,7 +57,9 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
   PlatformWindowInitProperties();
 
   // Initializes properties with the specified |bounds|.
-  explicit PlatformWindowInitProperties(const gfx::Rect& bounds);
+  explicit PlatformWindowInitProperties(
+      const gfx::Rect& bounds,
+      bool enable_compositing_based_throttling = false);
 
   PlatformWindowInitProperties(PlatformWindowInitProperties&& props);
 
@@ -83,6 +91,8 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
 
   WorkspaceExtensionDelegate* workspace_extension_delegate = nullptr;
 
+  PlatformWindowShadowType shadow_type = PlatformWindowShadowType::kDefault;
+
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   bool prefer_dark_theme = false;
   gfx::ImageSkia* icon = nullptr;
@@ -97,6 +107,8 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
 
   X11ExtensionDelegate* x11_extension_delegate = nullptr;
 #endif
+
+  bool enable_compositing_based_throttling = false;
 };
 
 }  // namespace ui

@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Verify that automapping is able to map ambiguous resources based on the selected project folder.\n`);
-  await TestRunner.loadModule('bindings_test_runner');
+  await TestRunner.loadTestModule('bindings_test_runner');
 
   var automappingTest = new BindingsTestRunner.AutomappingTest(new Workspace.Workspace());
 

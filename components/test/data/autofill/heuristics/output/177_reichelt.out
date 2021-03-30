@@ -1,0 +1,13 @@
+UNKNOWN_TYPE |  |  |  | _1-default
+NAME_HONORIFIC_PREFIX |  | Anrede: |  | _1-default
+NAME_FIRST |  | Vorname: |  | _1-default
+NAME_LAST |  | Nachname: |  | _1-default
+UNKNOWN_TYPE |  |  |  | _1-default
+UNKNOWN_TYPE |  |  |  | _1-default
+ADDRESS_HOME_LINE1 |  | Straße mit Hausnummer: |  | _1-default
+ADDRESS_HOME_ZIP |  | Postleitzahl/Ort: |  | _1-default
+ADDRESS_HOME_CITY |  |  |  | _1-default
+ADDRESS_HOME_COUNTRY |  | Land:* |  | _1-default
+EMAIL_ADDRESS |  | E-Mail: |  | _1-default
+PHONE_HOME_WHOLE_NUMBER |  | Telefon: |  | _1-default
+UNKNOWN_TYPE |  | Fax: |  | _1-default

@@ -10,8 +10,11 @@
 
 @class NSString;
 
-class BreadcrumbManager;
 class BreadcrumbManagerKeyedService;
+
+namespace breadcrumbs {
+class BreadcrumbManager;
+}
 
 namespace web {
 class WebState;
@@ -56,10 +59,12 @@ void ClearStateForWebStateList(WebStateList* web_state_list);
 
 // Starts listening for breadcrumbs logged to |breadcrumb_manager|. Collected
 // breadcrumbs will be attached to crash reports.
-void MonitorBreadcrumbManager(BreadcrumbManager* breadcrumb_manager);
+void MonitorBreadcrumbManager(
+    breadcrumbs::BreadcrumbManager* breadcrumb_manager);
 
 // Stops listening for breadcrumbs logged to |breadcrumb_manager|.
-void StopMonitoringBreadcrumbManager(BreadcrumbManager* breadcrumb_manager);
+void StopMonitoringBreadcrumbManager(
+    breadcrumbs::BreadcrumbManager* breadcrumb_manager);
 
 // Starts listening for breadcrumbs logged to |breadcrumb_manager_service|.
 // Collected breadcrumbs will be attached to crash reports.

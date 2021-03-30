@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests layer compositing reasons in Layers Panel`);
-  await TestRunner.loadModule('layers_test_runner');
+  await TestRunner.loadModule('panels/layers'); await TestRunner.loadTestModule('layers_test_runner');
   await TestRunner.navigatePromise(TestRunner.url('resources/compositing-reasons.html'));
 
   async function dumpCompositingReasons(layer) {

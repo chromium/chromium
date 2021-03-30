@@ -52,6 +52,7 @@ namespace ResetDevice = usb::ResetDevice;
 namespace SetInterfaceAlternateSetting = usb::SetInterfaceAlternateSetting;
 
 using content::BrowserThread;
+using device::mojom::UsbClaimInterfaceResult;
 using device::mojom::UsbControlTransferParams;
 using device::mojom::UsbControlTransferRecipient;
 using device::mojom::UsbControlTransferType;
@@ -409,7 +410,7 @@ bool UsbPermissionCheckingFunction::HasDevicePermission(
   std::unique_ptr<UsbDevicePermission::CheckParam> param =
       UsbDevicePermission::CheckParam::ForUsbDevice(extension(), device);
   if (extension()->permissions_data()->CheckAPIPermissionWithParam(
-          APIPermission::kUsbDevice, param.get())) {
+          mojom::APIPermissionID::kUsbDevice, param.get())) {
     return true;
   }
 
@@ -591,7 +592,7 @@ ExtensionFunction::ResponseAction UsbFindDevicesFunction::Run() {
       UsbDevicePermission::CheckParam::ForDeviceWithAnyInterfaceClass(
           extension(), vendor_id_, product_id_, interface_id);
   if (!extension()->permissions_data()->CheckAPIPermissionWithParam(
-          APIPermission::kUsbDevice, param.get())) {
+          mojom::APIPermissionID::kUsbDevice, param.get())) {
     return RespondNow(Error(kErrorPermissionDenied));
   }
 
@@ -630,7 +631,7 @@ void UsbFindDevicesFunction::OnGetDevicesComplete(
         UsbDevicePermission::CheckParam::ForUsbDevice(extension(),
                                                       *device_info);
     if (!extension()->permissions_data()->CheckAPIPermissionWithParam(
-            APIPermission::kUsbDevice, param.get())) {
+            mojom::APIPermissionID::kUsbDevice, param.get())) {
       barrier_.Run();
     } else {
       mojo::Remote<device::mojom::UsbDevice> device;
@@ -757,7 +758,8 @@ ExtensionFunction::ResponseAction UsbGetUserSelectedDevicesFunction::Run() {
 
   prompt_->AskForUsbDevices(
       extension(), browser_context(), multiple, std::move(filters),
-      base::Bind(&UsbGetUserSelectedDevicesFunction::OnDevicesChosen, this));
+      base::BindOnce(&UsbGetUserSelectedDevicesFunction::OnDevicesChosen,
+                     this));
   return RespondLater();
 }
 
@@ -1037,12 +1039,13 @@ ExtensionFunction::ResponseAction UsbClaimInterfaceFunction::Run() {
   device->ClaimInterface(
       parameters->interface_number,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          base::BindOnce(&UsbClaimInterfaceFunction::OnComplete, this), false));
+          base::BindOnce(&UsbClaimInterfaceFunction::OnComplete, this),
+          UsbClaimInterfaceResult::kFailure));
   return RespondLater();
 }
 
-void UsbClaimInterfaceFunction::OnComplete(bool success) {
-  if (success) {
+void UsbClaimInterfaceFunction::OnComplete(UsbClaimInterfaceResult result) {
+  if (result == UsbClaimInterfaceResult::kSuccess) {
     Respond(NoArguments());
   } else {
     Respond(Error(kErrorCannotClaimInterface));

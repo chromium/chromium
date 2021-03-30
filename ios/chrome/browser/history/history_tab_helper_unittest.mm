@@ -178,7 +178,7 @@ TEST_F(HistoryTabHelperTest, EmptyTitleOverwritesPreviousTitle) {
   EXPECT_EQ(base::UTF8ToUTF16(test_title), latest_row_result_.title());
 
   // Set the empty title and make sure the title is updated.
-  item->SetTitle(base::string16());
+  item->SetTitle(std::u16string());
   helper->UpdateHistoryPageTitle(*item);
   QueryURL(test_url);
   EXPECT_NE(base::UTF8ToUTF16(test_title), latest_row_result_.title());

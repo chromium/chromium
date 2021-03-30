@@ -5,8 +5,9 @@
 #ifndef ASH_SYSTEM_SCREEN_SECURITY_SCREEN_CAPTURE_OBSERVER_H_
 #define ASH_SYSTEM_SCREEN_SECURITY_SCREEN_CAPTURE_OBSERVER_H_
 
+#include <string>
+
 #include "base/callback.h"
-#include "base/strings/string16.h"
 
 namespace ash {
 
@@ -20,7 +21,7 @@ class ScreenCaptureObserver {
   virtual void OnScreenCaptureStart(
       const base::RepeatingClosure& stop_callback,
       const base::RepeatingClosure& source_callback,
-      const base::string16& screen_capture_status) = 0;
+      const std::u16string& screen_capture_status) = 0;
 
   // Called when screen capture is stopped.
   virtual void OnScreenCaptureStop() = 0;

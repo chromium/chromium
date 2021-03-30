@@ -23,7 +23,9 @@
 /android_system_sdk/*.jar
 /android_tools_internal/
 /android_webview_glue/src
-/androidx/lib/
+/androidx/BUILD.gn
+/androidx/additional_readme_paths.json
+/androidx/libs/
 /angle
 /angle_dx11
 /apache-portable-runtime/src
@@ -54,6 +56,7 @@
 /checkstyle/*.jar
 /chromeos_login_manager
 /chromeos_text_input
+/chromevox/third_party/sre/src
 /chromite
 /cld_2/src
 /cld_3/src
@@ -72,6 +75,7 @@
 /eigen3/src
 /elfutils/src
 /emoji-segmenter/src
+/emoji-metadata/src
 /espresso/lib/
 /expat/src
 /eyesfree/src
@@ -118,7 +122,7 @@
 /jacoco/lib/
 /javalang/src/
 /jdk/current
-/jdk/extras
+/jdk/extras/java_8
 /jsr-305/src
 /junit/src
 /khronos_glcts
@@ -179,6 +183,7 @@
 /openh264/src
 /openscreen/src
 /openxr/src
+/ots/src
 /pdfsqueeze
 /pdfium
 /pefile
@@ -239,7 +244,6 @@
 /vulkan_memory_allocator
 /wayland/src
 /wayland-protocols/src
-/wds/src
 /webdriver/pylib
 /webdriver/python/selenium
 /webgl
@@ -261,6 +265,5 @@
 /xdg-utils
 /xstream/lib/
 /xulrunner-sdk
-/zstd
 /zstd-linux-arm64
 /zstd-linux-x64

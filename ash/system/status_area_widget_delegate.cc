@@ -209,10 +209,12 @@ gfx::Rect StatusAreaWidgetDelegate::GetTargetBounds() const {
 }
 
 void StatusAreaWidgetDelegate::UpdateLayout(bool animate) {
-  if (animate)
+  if (animate) {
     StatusAreaWidgetDelegateAnimationSettings settings(layer());
-
-  Layout();
+    Layout();
+  } else {
+    Layout();
+  }
 }
 
 void StatusAreaWidgetDelegate::ChildPreferredSizeChanged(View* child) {
@@ -221,8 +223,17 @@ void StatusAreaWidgetDelegate::ChildPreferredSizeChanged(View* child) {
   if (new_size == current_size)
     return;
   // Need to re-layout the shelf when trays or items are added/removed.
-  StatusAreaWidgetDelegateAnimationSettings settings(layer());
-
+  // don't run uring login or unlock if the shelf container is animating.
+  std::unique_ptr<StatusAreaWidgetDelegateAnimationSettings> settings;
+  if (!shelf_->shelf_widget()
+           ->GetNativeWindow()
+           ->parent()
+           ->layer()
+           ->GetAnimator()
+           ->is_animating()) {
+    settings =
+        std::make_unique<StatusAreaWidgetDelegateAnimationSettings>(layer());
+  }
   shelf_->shelf_layout_manager()->LayoutShelf(/*animate=*/false);
 }
 

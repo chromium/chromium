@@ -502,13 +502,6 @@ void CommandBufferStub::OnAsyncFlush(
   CommandBuffer::State pre_state = command_buffer_->GetState();
   UpdateActiveUrl();
 
-  MailboxManager* mailbox_manager =
-      channel_->gpu_channel_manager()->mailbox_manager();
-  if (mailbox_manager->UsesSync()) {
-    for (const auto& sync_token : sync_token_fences)
-      mailbox_manager->PullTextureUpdates(sync_token);
-  }
-
   {
     auto* gr_shader_cache = channel_->gpu_channel_manager()->gr_shader_cache();
     base::Optional<raster::GrShaderCache::ScopedCacheUse> cache_use;
@@ -589,11 +582,6 @@ void CommandBufferStub::OnSignalQuery(uint32_t query_id, uint32_t id) {
 void CommandBufferStub::OnFenceSyncRelease(uint64_t release) {
   SyncToken sync_token(CommandBufferNamespace::GPU_IO, command_buffer_id_,
                        release);
-  MailboxManager* mailbox_manager =
-      channel_->gpu_channel_manager()->mailbox_manager();
-  if (mailbox_manager->UsesSync() && MakeCurrent())
-    mailbox_manager->PushTextureUpdates(sync_token);
-
   command_buffer_->SetReleaseCount(release);
   sync_point_client_state_->ReleaseFenceSync(release);
 }

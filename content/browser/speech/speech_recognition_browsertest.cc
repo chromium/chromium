@@ -133,7 +133,7 @@ std::string MakeGoodResponse() {
   blink::mojom::SpeechRecognitionResultPtr result =
       blink::mojom::SpeechRecognitionResult::New();
   result->hypotheses.push_back(blink::mojom::SpeechRecognitionHypothesis::New(
-      base::UTF8ToUTF16("Pictures of the moon"), 1.0F));
+      u"Pictures of the moon", 1.0F));
   proto_result->set_final(!result->is_provisional);
   for (size_t i = 0; i < result->hypotheses.size(); ++i) {
     proto::SpeechRecognitionAlternative* proto_alternative =

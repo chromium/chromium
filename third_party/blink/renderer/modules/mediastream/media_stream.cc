@@ -556,6 +556,7 @@ void MediaStream::Trace(Visitor* visitor) const {
   visitor->Trace(video_tracks_);
   visitor->Trace(descriptor_);
   visitor->Trace(observers_);
+  visitor->Trace(scheduled_event_timer_);
   visitor->Trace(scheduled_events_);
   EventTargetWithInlineData::Trace(visitor);
   ExecutionContextClient::Trace(visitor);

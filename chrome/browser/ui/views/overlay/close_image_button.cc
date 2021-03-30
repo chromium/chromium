@@ -10,6 +10,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/vector_icons.h"
 
 namespace {
@@ -33,7 +34,7 @@ CloseImageButton::CloseImageButton(PressedCallback callback)
                                  kCloseIconColor));
 
   // Accessibility.
-  const base::string16 close_button_label(
+  const std::u16string close_button_label(
       l10n_util::GetStringUTF16(IDS_PICTURE_IN_PICTURE_CLOSE_CONTROL_TEXT));
   SetAccessibleName(close_button_label);
   SetTooltipText(close_button_label);
@@ -55,5 +56,8 @@ void CloseImageButton::SetPosition(
       gfx::Point(size.width() - kCloseButtonSize - kCloseButtonMargin,
                  kCloseButtonMargin));
 }
+
+BEGIN_METADATA(CloseImageButton, views::ImageButton)
+END_METADATA
 
 }  // namespace views

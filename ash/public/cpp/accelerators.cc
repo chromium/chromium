@@ -63,6 +63,8 @@ const AcceleratorData kAcceleratorData[] = {
     {false, ui::VKEY_SLEEP, ui::EF_NONE, LOCK_RELEASED},
     {true, ui::VKEY_POWER, ui::EF_NONE, POWER_PRESSED},
     {false, ui::VKEY_POWER, ui::EF_NONE, POWER_RELEASED},
+    {true, ui::VKEY_ESCAPE, ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN,
+     OPEN_DIAGNOSTICS},
     {true, ui::VKEY_M, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, OPEN_FILE_MANAGER},
     {true, ui::VKEY_OEM_2, ui::EF_CONTROL_DOWN, OPEN_GET_HELP},
     {true, ui::VKEY_OEM_2, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
@@ -195,19 +197,23 @@ const AcceleratorData kAcceleratorData[] = {
     // IME mode change key.
     {true, ui::VKEY_MODECHANGE, ui::EF_NONE, SWITCH_TO_NEXT_IME},
 
+    // Emoji picker shortcut.
+    {true, ui::VKEY_SPACE, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN,
+     SHOW_EMOJI_PICKER},
+
     // Debugging shortcuts that need to be available to end-users in
     // release builds.
     {true, ui::VKEY_U, kDebugModifier, PRINT_UI_HIERARCHIES},
 
     // Virtual Desks shortcuts.
     // Desk activation:
-    {true, ui::VKEY_OEM_4, ui::EF_COMMAND_DOWN, DESKS_ACTIVATE_DESK},
-    {true, ui::VKEY_OEM_6, ui::EF_COMMAND_DOWN, DESKS_ACTIVATE_DESK},
+    {true, ui::VKEY_OEM_4, ui::EF_COMMAND_DOWN, DESKS_ACTIVATE_DESK_LEFT},
+    {true, ui::VKEY_OEM_6, ui::EF_COMMAND_DOWN, DESKS_ACTIVATE_DESK_RIGHT},
     // Moving windows to desks:
     {true, ui::VKEY_OEM_4, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-     DESKS_MOVE_ACTIVE_ITEM},
+     DESKS_MOVE_ACTIVE_ITEM_LEFT},
     {true, ui::VKEY_OEM_6, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-     DESKS_MOVE_ACTIVE_ITEM},
+     DESKS_MOVE_ACTIVE_ITEM_RIGHT},
     // TODO(afakhry): Implement activating and moving windows to a desk by
     // its index directly.
 
@@ -242,15 +248,15 @@ const AcceleratorData kEnableWithNewMappingAcceleratorData[] = {
 
     // Desk activation:
     {true, ui::VKEY_LEFT, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
-     DESKS_ACTIVATE_DESK},
+     DESKS_ACTIVATE_DESK_LEFT},
     {true, ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
-     DESKS_ACTIVATE_DESK},
+     DESKS_ACTIVATE_DESK_RIGHT},
 
     // Moving windows to desks:
     {true, ui::VKEY_LEFT, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN,
-     DESKS_MOVE_ACTIVE_ITEM},
+     DESKS_MOVE_ACTIVE_ITEM_LEFT},
     {true, ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN,
-     DESKS_MOVE_ACTIVE_ITEM},
+     DESKS_MOVE_ACTIVE_ITEM_RIGHT},
 
     // Snap
     {true, ui::VKEY_OEM_COMMA,

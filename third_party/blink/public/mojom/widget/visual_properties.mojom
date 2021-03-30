@@ -7,13 +7,13 @@ module blink.mojom;
 import "cc/mojom/browser_controls_params.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 import "third_party/blink/public/mojom/manifest/display_mode.mojom";
-import "third_party/blink/public/mojom/widget/screen_info.mojom";
+import "third_party/blink/public/mojom/widget/screen_infos.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // See public/common/widget/visual_properties.h
 struct VisualProperties {
-  // Information about the screen (dpi, depth, etc..).
-  ScreenInfo screen_info;
+  // Info about all screens, including the one currently showing the widget.
+  ScreenInfos screen_infos;
 
   // Whether or not blink should be in auto-resize mode.
   bool auto_resize_enabled = false;

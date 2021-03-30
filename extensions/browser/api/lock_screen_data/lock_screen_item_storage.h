@@ -15,7 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/sequenced_task_runner.h"
 #include "extensions/browser/api/lock_screen_data/data_item.h"
 #include "extensions/browser/extension_registry.h"
@@ -308,8 +308,8 @@ class LockScreenItemStorage : public ExtensionRegistryObserver {
 
   SessionLockedState session_locked_state_ = SessionLockedState::kUnknown;
 
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   // The deprecated (shared) lock screen data value store cache. Items in this
   // value store should be migrated to |value_store_cache_|.

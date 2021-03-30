@@ -4,13 +4,14 @@
 
 #include "chromecast/metrics/cast_metrics_service_client.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/guid.h"
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -174,6 +175,10 @@ bool CastMetricsServiceClient::GetBrand(std::string* brand_code) {
 #endif  // defined(OS_ANDROID) || defined(OS_FUCHSIA)
 }
 
+bool CastMetricsServiceClient::IsExtendedStableChannel() {
+  return false;  // Not supported on Chromecast.
+}
+
 std::string CastMetricsServiceClient::GetVersionString() {
   int build_number;
   if (!base::StringToInt(CAST_BUILD_INCREMENTAL, &build_number))
@@ -294,7 +299,7 @@ void CastMetricsServiceClient::SetForceClientId(const std::string& client_id) {
 void CastMetricsServiceClient::InitializeMetricsService() {
   DCHECK(!metrics_state_manager_);
   metrics_state_manager_ = ::metrics::MetricsStateManager::Create(
-      pref_service_, this, base::string16(),
+      pref_service_, this, std::wstring(),
       base::BindRepeating(&CastMetricsServiceClient::StoreClientInfo,
                           base::Unretained(this)),
       base::BindRepeating(&CastMetricsServiceClient::LoadClientInfo,

@@ -3,18 +3,18 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {FakeSettingsPrivatePref} from 'chrome://test/settings/fake_settings_private.m.js';
+import {FakeSettingsPrivatePref} from 'chrome://test/settings/fake_settings_private.js';
 // clang-format on
 
 /**
- * @type {Array<{pref: settings.FakeSettingsPrivatePref,
+ * @type {Array<{pref: FakeSettingsPrivatePref,
  *               nextValues: Array<*>}>}
  * Test cases containing preference data. Each test case has a pref with an
  * initial value, and two "next" values used to change the pref. Intentionally,
  * for a given pref, not every "next" value is different from the previous
  * value; this tests what happens when stale changes are reported.
  */
-/* #export */ const prefsTestCases = [
+export const prefsTestCases = [
   {
     pref: {
       key: 'top_level_pref',

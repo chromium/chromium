@@ -7,6 +7,7 @@
 #include "ipc/ipc_message_attachment.h"
 #include "ipc/ipc_message_attachment_set.h"
 #include "ipc/native_handle_type_converters.h"
+#include "mojo/public/cpp/bindings/lib/message_fragment.h"
 #include "mojo/public/cpp/bindings/lib/serialization.h"
 #include "mojo/public/cpp/bindings/lib/serialization_forward.h"
 
@@ -16,91 +17,87 @@ namespace internal {
 // static
 void UnmappedNativeStructSerializerImpl::Serialize(
     const native::NativeStructPtr& input,
-    Buffer* buffer,
-    native::internal::NativeStruct_Data::BufferWriter* writer,
-    SerializationContext* context) {
+    MessageFragment<native::internal::NativeStruct_Data>& fragment) {
   if (!input)
     return;
 
-  writer->Allocate(buffer);
-
-  Array_Data<uint8_t>::BufferWriter data_writer;
+  fragment.Allocate();
+  MessageFragment<Array_Data<uint8_t>> data_fragment(fragment.message());
   const mojo::internal::ContainerValidateParams data_validate_params(0, false,
                                                                      nullptr);
-  mojo::internal::Serialize<ArrayDataView<uint8_t>>(
-      input->data, buffer, &data_writer, &data_validate_params, context);
-  writer->data()->data.Set(data_writer.data());
+  mojo::internal::Serialize<ArrayDataView<uint8_t>>(input->data, data_fragment,
+                                                    &data_validate_params);
+  fragment->data.Set(data_fragment.data());
 
-  mojo::internal::Array_Data<mojo::internal::Pointer<
-      native::internal::SerializedHandle_Data>>::BufferWriter handles_writer;
+  MessageFragment<Array_Data<Pointer<native::internal::SerializedHandle_Data>>>
+      handles_fragment(fragment.message());
   const mojo::internal::ContainerValidateParams handles_validate_params(
       0, false, nullptr);
   mojo::internal::Serialize<
       mojo::ArrayDataView<::mojo::native::SerializedHandleDataView>>(
-      input->handles, buffer, &handles_writer, &handles_validate_params,
-      context);
-  writer->data()->handles.Set(handles_writer.is_null() ? nullptr
-                                                       : handles_writer.data());
+      input->handles, handles_fragment, &handles_validate_params);
+  fragment->handles.Set(handles_fragment.is_null() ? nullptr
+                                                   : handles_fragment.data());
 }
 
 // static
 bool UnmappedNativeStructSerializerImpl::Deserialize(
     native::internal::NativeStruct_Data* input,
     native::NativeStructPtr* output,
-    SerializationContext* context) {
+    Message* message) {
   if (!input) {
     output->reset();
     return true;
   }
 
-  native::NativeStructDataView data_view(input, context);
+  native::NativeStructDataView data_view(input, message);
   return StructTraits<::mojo::native::NativeStructDataView,
                       native::NativeStructPtr>::Read(data_view, output);
 }
 
 // static
 void UnmappedNativeStructSerializerImpl::SerializeMessageContents(
-    IPC::Message* message,
-    Buffer* buffer,
-    native::internal::NativeStruct_Data::BufferWriter* writer,
-    SerializationContext* context) {
-  writer->Allocate(buffer);
+    IPC::Message* ipc_message,
+    MessageFragment<native::internal::NativeStruct_Data>& fragment) {
+  fragment.Allocate();
 
   // Allocate a uint8 array, initialize its header, and copy the Pickle in.
-  Array_Data<uint8_t>::BufferWriter data_writer;
-  data_writer.Allocate(message->payload_size(), buffer);
-  memcpy(data_writer->storage(), message->payload(), message->payload_size());
-  writer->data()->data.Set(data_writer.data());
+  MessageFragment<Array_Data<uint8_t>> data_fragment(fragment.message());
+  data_fragment.AllocateArrayData(ipc_message->payload_size());
+  memcpy(data_fragment->storage(), ipc_message->payload(),
+         ipc_message->payload_size());
+  fragment->data.Set(data_fragment.data());
 
-  if (message->attachment_set()->empty()) {
-    writer->data()->handles.Set(nullptr);
+  if (ipc_message->attachment_set()->empty()) {
+    fragment->handles.Set(nullptr);
     return;
   }
 
-  mojo::internal::Array_Data<mojo::internal::Pointer<
-      native::internal::SerializedHandle_Data>>::BufferWriter handles_writer;
-  auto* attachments = message->attachment_set();
-  handles_writer.Allocate(attachments->size(), buffer);
+  MessageFragment<Array_Data<Pointer<native::internal::SerializedHandle_Data>>>
+      handles_fragment(fragment.message());
+  auto* attachments = ipc_message->attachment_set();
+  handles_fragment.AllocateArrayData(attachments->size());
   for (unsigned i = 0; i < attachments->size(); ++i) {
-    native::internal::SerializedHandle_Data::BufferWriter handle_writer;
-    handle_writer.Allocate(buffer);
+    MessageFragment<native::internal::SerializedHandle_Data> handle_fragment(
+        fragment.message());
+    handle_fragment.Allocate();
 
     auto attachment = attachments->GetAttachmentAt(i);
     ScopedHandle handle = attachment->TakeMojoHandle();
     internal::Serializer<ScopedHandle, ScopedHandle>::Serialize(
-        handle, &handle_writer->the_handle, context);
-    handle_writer->type = static_cast<int32_t>(
+        handle, &handle_fragment->the_handle, &fragment.message());
+    handle_fragment->type = static_cast<int32_t>(
         mojo::ConvertTo<native::SerializedHandleType>(attachment->GetType()));
-    handles_writer.data()->at(i).Set(handle_writer.data());
+    handles_fragment->at(i).Set(handle_fragment.data());
   }
-  writer->data()->handles.Set(handles_writer.data());
+  fragment->handles.Set(handles_fragment.data());
 }
 
 // static
 bool UnmappedNativeStructSerializerImpl::DeserializeMessageAttachments(
     native::internal::NativeStruct_Data* data,
-    SerializationContext* context,
-    IPC::Message* message) {
+    Message* message,
+    IPC::Message* ipc_message) {
   if (data->handles.is_null())
     return true;
 
@@ -111,12 +108,12 @@ bool UnmappedNativeStructSerializerImpl::DeserializeMessageAttachments(
       return false;
     ScopedHandle handle;
     internal::Serializer<ScopedHandle, ScopedHandle>::Deserialize(
-        &handle_data->the_handle, &handle, context);
+        &handle_data->the_handle, &handle, message);
     auto attachment = IPC::MessageAttachment::CreateFromMojoHandle(
         std::move(handle),
         mojo::ConvertTo<IPC::MessageAttachment::Type>(
             static_cast<native::SerializedHandleType>(handle_data->type)));
-    message->attachment_set()->AddAttachment(std::move(attachment));
+    ipc_message->attachment_set()->AddAttachment(std::move(attachment));
   }
   return true;
 }

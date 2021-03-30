@@ -16,8 +16,10 @@
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/main/scene_controller.h"
 #import "ios/chrome/browser/ui/main/scene_controller_testing.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
@@ -52,7 +54,7 @@ BOOL IsIncognitoMode() {
 void OpenNewTab() {
   @autoreleasepool {  // Make sure that all internals are deallocated.
     OpenNewTabCommand* command = [OpenNewTabCommand command];
-    if (GetForegroundActiveSceneController().isTabSwitcherActive) {
+    if (GetForegroundActiveSceneController().mainCoordinator.isTabGridActive) {
       // The TabGrid is currently presented.
       Browser* browser =
           GetForegroundActiveScene().interfaceProvider.mainInterface.browser;
@@ -78,16 +80,18 @@ NSURL* SimulateExternalAppURLOpening() {
 void SimulateAddAccountFromWeb() {
   id<ApplicationCommands, BrowserCommands> handler =
       chrome_test_util::HandlerForActiveBrowser();
-  [handler showAddAccountFromViewController:(UIViewController*)
-                                                GetForegroundActiveScene()
-                                                    .interfaceProvider
-                                                    .mainInterface.bvc];
+  ShowSigninCommand* command = [[ShowSigninCommand alloc]
+      initWithOperation:AUTHENTICATION_OPERATION_ADD_ACCOUNT
+            accessPoint:signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN];
+  UIViewController* baseViewController = base::mac::ObjCCast<UIViewController>(
+      GetForegroundActiveScene().interfaceProvider.mainInterface.bvc);
+  [handler showSignin:command baseViewController:baseViewController];
 }
 
 void OpenNewIncognitoTab() {
   @autoreleasepool {  // Make sure that all internals are deallocated.
     OpenNewTabCommand* command = [OpenNewTabCommand incognitoTabCommand];
-    if (GetForegroundActiveSceneController().isTabSwitcherActive) {
+    if (GetForegroundActiveSceneController().mainCoordinator.isTabGridActive) {
       // The TabGrid is currently presented.
       Browser* browser = GetForegroundActiveScene()
                              .interfaceProvider.incognitoInterface.browser;

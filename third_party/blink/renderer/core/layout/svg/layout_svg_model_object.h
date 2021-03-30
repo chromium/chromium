@@ -65,9 +65,6 @@ class LayoutSVGModelObject : public LayoutObject {
   void MapAncestorToLocal(const LayoutBoxModelObject* ancestor,
                           TransformState&,
                           MapCoordinatesFlags) const final;
-  const LayoutObject* PushMappingToContainer(
-      const LayoutBoxModelObject* ancestor_to_stop_at,
-      LayoutGeometryMap&) const final;
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
   SVGElement* GetElement() const {

@@ -91,7 +91,7 @@ class AgentImpl : public ::fuchsia::modular::Agent {
     const std::string component_id_;
     AgentImpl* agent_impl_ = nullptr;
     sys::OutgoingDirectory outgoing_directory_;
-    std::unique_ptr<base::fuchsia::ServiceProviderImpl> service_provider_;
+    std::unique_ptr<base::ServiceProviderImpl> service_provider_;
     std::vector<base::RepeatingCallback<bool()>> keepalive_callbacks_;
 
     DISALLOW_COPY_AND_ASSIGN(ComponentStateBase);
@@ -126,7 +126,7 @@ class AgentImpl : public ::fuchsia::modular::Agent {
   const CreateComponentStateCallback create_component_state_callback_;
 
   // Binds this Agent implementation into the |outgoing_directory|.
-  base::fuchsia::ScopedServiceBinding<::fuchsia::modular::Agent> agent_binding_;
+  base::ScopedServiceBinding<::fuchsia::modular::Agent> agent_binding_;
 
   // Owns the ComponentState instances for each connected component.
   base::flat_map<std::string, std::unique_ptr<ComponentStateBase>>

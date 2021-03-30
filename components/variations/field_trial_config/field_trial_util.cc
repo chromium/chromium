@@ -48,24 +48,12 @@ bool HasDeviceLevelMismatch(const FieldTrialTestingExperiment& experiment) {
          base::SysInfo::IsLowEndDevice();
 }
 
-// Gets current form factor and converts it from enum DeviceFormFactor to enum
-// Study_FormFactor.
-Study::FormFactor _GetCurrentFormFactor() {
-  switch (ui::GetDeviceFormFactor()) {
-    case ui::DEVICE_FORM_FACTOR_PHONE:
-      return Study::PHONE;
-    case ui::DEVICE_FORM_FACTOR_TABLET:
-      return Study::TABLET;
-    case ui::DEVICE_FORM_FACTOR_DESKTOP:
-      return Study::DESKTOP;
-  }
-}
-
 // Returns true if the experiment config has a missing form_factors or it
 // contains the current system's form_factor. Otherwise, it is False.
-bool HasFormFactor(const FieldTrialTestingExperiment& experiment) {
+bool HasFormFactor(const FieldTrialTestingExperiment& experiment,
+                   Study::FormFactor current_form_factor) {
   for (size_t i = 0; i < experiment.form_factors_size; ++i) {
-    if (experiment.form_factors[i] == _GetCurrentFormFactor())
+    if (experiment.form_factors[i] == current_form_factor)
       return true;
   }
   return experiment.form_factors_size == 0;
@@ -141,6 +129,7 @@ void ChooseExperiment(
     const FieldTrialTestingStudy& study,
     const VariationsSeedProcessor::UIStringOverrideCallback& callback,
     Study::Platform platform,
+    Study::FormFactor current_form_factor,
     base::FeatureList* feature_list) {
   const auto& command_line = *base::CommandLine::ForCurrentProcess();
   const FieldTrialTestingExperiment* chosen_experiment = nullptr;
@@ -148,7 +137,8 @@ void ChooseExperiment(
     const FieldTrialTestingExperiment* experiment = study.experiments + i;
     if (HasPlatform(*experiment, platform)) {
       if (!chosen_experiment && !HasDeviceLevelMismatch(*experiment) &&
-          HasFormFactor(*experiment) && HasMinOSVersion(*experiment)) {
+          HasFormFactor(*experiment, current_form_factor) &&
+          HasMinOSVersion(*experiment)) {
         chosen_experiment = experiment;
       }
 
@@ -197,11 +187,13 @@ void AssociateParamsFromFieldTrialConfig(
     const FieldTrialTestingConfig& config,
     const VariationsSeedProcessor::UIStringOverrideCallback& callback,
     Study::Platform platform,
+    Study::FormFactor current_form_factor,
     base::FeatureList* feature_list) {
   for (size_t i = 0; i < config.studies_size; ++i) {
     const FieldTrialTestingStudy& study = config.studies[i];
     if (study.experiments_size > 0) {
-      ChooseExperiment(study, callback, platform, feature_list);
+      ChooseExperiment(study, callback, platform, current_form_factor,
+                       feature_list);
     } else {
       DLOG(ERROR) << "Unexpected empty study: " << study.name;
     }
@@ -211,9 +203,10 @@ void AssociateParamsFromFieldTrialConfig(
 void AssociateDefaultFieldTrialConfig(
     const VariationsSeedProcessor::UIStringOverrideCallback& callback,
     Study::Platform platform,
+    Study::FormFactor current_form_factor,
     base::FeatureList* feature_list) {
   AssociateParamsFromFieldTrialConfig(kFieldTrialConfig, callback, platform,
-                                      feature_list);
+                                      current_form_factor, feature_list);
 }
 
 }  // namespace variations

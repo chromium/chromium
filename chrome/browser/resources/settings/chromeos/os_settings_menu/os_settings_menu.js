@@ -53,7 +53,6 @@ Polymer({
   currentRouteChanged(newRoute) {
     const urlSearchQuery =
         settings.Router.getInstance().getQueryParameters().get('search');
-
     // If the route navigated to by a search result is in the advanced
     // section, the advanced menu will expand.
     if (urlSearchQuery && settings.routes.ADVANCED &&

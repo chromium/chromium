@@ -10,35 +10,36 @@
 namespace blink {
 
 TEST(BorderValueTest, BorderValueWidth) {
-  const float kTolerance = 1.0f / kBorderWidthDenominator;
+  const float kTolerance = LayoutUnit::Epsilon();
+  const LayoutUnit kMaxForBorderWidth = BorderValue::MaxWidth();
   BorderValue border;
 
-  border.SetWidth(1.0f);
+  border.SetWidth(LayoutUnit(1.0f));
   EXPECT_FLOAT_EQ(1.0f, border.Width());
-  border.SetWidth(1.25f);
+  border.SetWidth(LayoutUnit(1.25f));
   EXPECT_FLOAT_EQ(1.25f, border.Width());
-  border.SetWidth(1.1f);
+  border.SetWidth(LayoutUnit(1.1f));
   EXPECT_NEAR(border.Width(), 1.1f, kTolerance);
-  border.SetWidth(1.33f);
+  border.SetWidth(LayoutUnit(1.33f));
   EXPECT_NEAR(border.Width(), 1.33f, kTolerance);
-  border.SetWidth(1.3333f);
+  border.SetWidth(LayoutUnit(1.3333f));
   EXPECT_NEAR(border.Width(), 1.3333f, kTolerance);
-  border.SetWidth(1.53434f);
+  border.SetWidth(LayoutUnit(1.53434f));
   EXPECT_NEAR(border.Width(), 1.53434f, kTolerance);
-  border.SetWidth(345634);
+  border.SetWidth(LayoutUnit(345634));
   EXPECT_NEAR(border.Width(), 345634.0f, kTolerance);
-  border.SetWidth(345634.12335f);
+  border.SetWidth(LayoutUnit(345634.12335f));
   EXPECT_NEAR(border.Width(), 345634.12335f, kTolerance);
 
-  border.SetWidth(0);
+  border.SetWidth(LayoutUnit(0));
   EXPECT_EQ(0, border.Width());
-  border.SetWidth(1);
+  border.SetWidth(LayoutUnit(1));
   EXPECT_EQ(1, border.Width());
-  border.SetWidth(100);
+  border.SetWidth(LayoutUnit(100));
   EXPECT_EQ(100, border.Width());
-  border.SetWidth(1000);
+  border.SetWidth(LayoutUnit(1000));
   EXPECT_EQ(1000, border.Width());
-  border.SetWidth(10000);
+  border.SetWidth(LayoutUnit(10000));
   EXPECT_EQ(10000, border.Width());
   border.SetWidth(kMaxForBorderWidth / 2);
   EXPECT_EQ(kMaxForBorderWidth / 2, border.Width());
@@ -48,9 +49,9 @@ TEST(BorderValueTest, BorderValueWidth) {
   EXPECT_EQ(kMaxForBorderWidth, border.Width());
   border.SetWidth(kMaxForBorderWidth + 1);
   EXPECT_EQ(kMaxForBorderWidth, border.Width());
-  border.SetWidth(INT_MAX / 2);
+  border.SetWidth(LayoutUnit::Max() / 2);
   EXPECT_EQ(kMaxForBorderWidth, border.Width());
-  border.SetWidth(INT_MAX);
+  border.SetWidth(LayoutUnit::Max());
   EXPECT_EQ(kMaxForBorderWidth, border.Width());
 }
 

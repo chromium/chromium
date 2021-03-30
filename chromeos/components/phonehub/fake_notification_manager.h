@@ -38,11 +38,11 @@ class FakeNotificationManager : public NotificationManager {
 
   struct InlineReplyMetadata {
     InlineReplyMetadata(int64_t notification_id,
-                        const base::string16& inline_reply_text);
+                        const std::u16string& inline_reply_text);
     ~InlineReplyMetadata();
 
     int64_t notification_id;
-    base::string16 inline_reply_text;
+    std::u16string inline_reply_text;
   };
 
   const std::vector<InlineReplyMetadata>& inline_replies() const {
@@ -53,7 +53,7 @@ class FakeNotificationManager : public NotificationManager {
   // NotificationManager:
   void DismissNotification(int64_t notification_id) override;
   void SendInlineReply(int64_t notification_id,
-                       const base::string16& inline_reply_text) override;
+                       const std::u16string& inline_reply_text) override;
 
   std::vector<int64_t> dismissed_notification_ids_;
   std::vector<InlineReplyMetadata> inline_replies_;

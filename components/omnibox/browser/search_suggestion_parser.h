@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -60,7 +59,7 @@ class SearchSuggestionParser {
 
     bool from_keyword() const { return from_keyword_; }
 
-    const base::string16& match_contents() const { return match_contents_; }
+    const std::u16string& match_contents() const { return match_contents_; }
     const ACMatchClassifications& match_contents_class() const {
       return match_contents_class_;
     }
@@ -93,7 +92,7 @@ class SearchSuggestionParser {
 
    protected:
     // The contents to be displayed and its style info.
-    base::string16 match_contents_;
+    std::u16string match_contents_;
     ACMatchClassifications match_contents_class_;
 
     // True if the result came from a keyword suggestion.
@@ -128,19 +127,19 @@ class SearchSuggestionParser {
 
   class SuggestResult : public Result {
    public:
-    SuggestResult(const base::string16& suggestion,
+    SuggestResult(const std::u16string& suggestion,
                   AutocompleteMatchType::Type type,
                   std::vector<int> subtypes,
                   bool from_keyword,
                   int relevance,
                   bool relevance_from_server,
-                  const base::string16& input_text);
-    SuggestResult(const base::string16& suggestion,
+                  const std::u16string& input_text);
+    SuggestResult(const std::u16string& suggestion,
                   AutocompleteMatchType::Type type,
                   std::vector<int> subtypes,
-                  const base::string16& match_contents,
-                  const base::string16& match_contents_prefix,
-                  const base::string16& annotation,
+                  const std::u16string& match_contents,
+                  const std::u16string& match_contents_prefix,
+                  const std::u16string& annotation,
                   const std::string& additional_query_params,
                   const std::string& deletion_url,
                   const std::string& image_dominant_color,
@@ -149,17 +148,17 @@ class SearchSuggestionParser {
                   int relevance,
                   bool relevance_from_server,
                   bool should_prefetch,
-                  const base::string16& input_text);
+                  const std::u16string& input_text);
     SuggestResult(const SuggestResult& result);
     ~SuggestResult() override;
 
     SuggestResult& operator=(const SuggestResult& rhs);
 
-    const base::string16& suggestion() const { return suggestion_; }
-    const base::string16& match_contents_prefix() const {
+    const std::u16string& suggestion() const { return suggestion_; }
+    const std::u16string& match_contents_prefix() const {
       return match_contents_prefix_;
     }
-    const base::string16& annotation() const { return annotation_; }
+    const std::u16string& annotation() const { return annotation_; }
     const std::string& additional_query_params() const {
       return additional_query_params_;
     }
@@ -186,7 +185,7 @@ class SearchSuggestionParser {
     // |allow_bolding_all| is false and |match_contents_class_| would have all
     // of |match_contents_| bolded, do nothing.
     void ClassifyMatchContents(const bool allow_bolding_all,
-                               const base::string16& input_text);
+                               const std::u16string& input_text);
 
     // Result:
     int CalculateRelevance(const AutocompleteInput& input,
@@ -194,18 +193,18 @@ class SearchSuggestionParser {
 
    private:
     // The search terms to be used for this suggestion.
-    base::string16 suggestion_;
+    std::u16string suggestion_;
 
     // The contents to be displayed as prefix of match contents.
     // Used for tail suggestions to display a leading ellipsis (or some
     // equivalent character) to indicate omitted text.
     // Only used to pass this information to about:omnibox's "Additional Info".
-    base::string16 match_contents_prefix_;
+    std::u16string match_contents_prefix_;
 
     // Optional annotation for the |match_contents_| for disambiguation.
     // This may be displayed in the autocomplete match contents, but is defined
     // separately to facilitate different formatting.
-    base::string16 annotation_;
+    std::u16string annotation_;
 
     // Optional additional parameters to be added to the search URL.
     std::string additional_query_params_;
@@ -237,49 +236,49 @@ class SearchSuggestionParser {
                      const GURL& url,
                      AutocompleteMatchType::Type type,
                      std::vector<int> subtypes,
-                     const base::string16& description,
+                     const std::u16string& description,
                      const std::string& deletion_url,
                      bool from_keyword,
                      int relevance,
                      bool relevance_from_server,
-                     const base::string16& input_text);
+                     const std::u16string& input_text);
     NavigationResult(const NavigationResult& other);
     ~NavigationResult() override;
 
     const GURL& url() const { return url_; }
-    const base::string16& description() const { return description_; }
+    const std::u16string& description() const { return description_; }
     const ACMatchClassifications& description_class() const {
       return description_class_;
     }
-    const base::string16& formatted_url() const { return formatted_url_; }
+    const std::u16string& formatted_url() const { return formatted_url_; }
 
     // Fills in |match_contents_| and |match_contents_class_| to reflect how
     // the URL should be displayed and bolded against the current |input_text|.
     // If |allow_bolding_nothing| is false and |match_contents_class_| would
     // result in an entirely unbolded |match_contents_|, do nothing.
     void CalculateAndClassifyMatchContents(const bool allow_bolding_nothing,
-                                           const base::string16& input_text);
+                                           const std::u16string& input_text);
 
     // Result:
     int CalculateRelevance(const AutocompleteInput& input,
                            bool keyword_provider_requested) const override;
 
    private:
-    void ClassifyDescription(const base::string16& input_text);
+    void ClassifyDescription(const std::u16string& input_text);
 
     // The suggested url for navigation.
     GURL url_;
 
     // The properly formatted ("fixed up") URL string with equivalent meaning
     // to the one in |url_|.
-    base::string16 formatted_url_;
+    std::u16string formatted_url_;
 
     // The suggested navigational result description; generally the site name.
-    base::string16 description_;
+    std::u16string description_;
     ACMatchClassifications description_class_;
   };
 
-  typedef std::map<int, base::string16> HeadersMap;
+  typedef std::map<int, std::u16string> HeadersMap;
   typedef std::vector<SuggestResult> SuggestResults;
   typedef std::vector<NavigationResult> NavigationResults;
   typedef std::vector<base::Value> ExperimentStats;

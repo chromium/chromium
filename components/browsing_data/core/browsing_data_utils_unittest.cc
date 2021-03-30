@@ -94,7 +94,7 @@ TEST_F(BrowsingDataUtilsTest, AutofillCounterResult) {
                            test_case.num_credit_cards, test_case.num_addresses,
                            test_case.num_suggestions));
 
-    base::string16 output = browsing_data::GetCounterTextFromResult(&result);
+    std::u16string output = browsing_data::GetCounterTextFromResult(&result);
     EXPECT_EQ(output, base::ASCIIToUTF16(test_case.expected_output));
   }
 }
@@ -146,7 +146,7 @@ TEST_F(BrowsingDataUtilsTest, PasswordsCounterResult) {
     SCOPED_TRACE(base::StringPrintf(
         "Test params: %d password(s), %d account password(s), %d is_synced",
         input.num_passwords, input.num_account_passwords, input.is_synced));
-    base::string16 output = browsing_data::GetCounterTextFromResult(&result);
+    std::u16string output = browsing_data::GetCounterTextFromResult(&result);
     EXPECT_EQ(output, base::ASCIIToUTF16(test_case.expected_output));
   }
   store->ShutdownOnUIThread();
@@ -187,7 +187,7 @@ TEST_F(BrowsingDataUtilsTest, HistoryCounterResult) {
     SCOPED_TRACE(
         base::StringPrintf("Test params: %d history, %d has_synced_visits",
                            test_case.num_history, test_case.has_sync_visits));
-    base::string16 output = browsing_data::GetCounterTextFromResult(&result);
+    std::u16string output = browsing_data::GetCounterTextFromResult(&result);
     EXPECT_EQ(output, base::ASCIIToUTF16(test_case.expected_output));
   }
 }

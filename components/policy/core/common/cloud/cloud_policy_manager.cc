@@ -42,6 +42,10 @@ CloudPolicyManager::CloudPolicyManager(
 
 CloudPolicyManager::~CloudPolicyManager() {}
 
+bool CloudPolicyManager::IsClientRegistered() const {
+  return client() && client()->is_registered();
+}
+
 void CloudPolicyManager::Init(SchemaRegistry* registry) {
   ConfigurationPolicyProvider::Init(registry);
 

@@ -24,6 +24,7 @@
 אם האפשרות '<ph name="SERVICE_SCRIPT_NAME" />' כבר מסומנת, יש להסיר את הסימון ואז לסמן מחדש.</translation>
 <translation id="225614027745146050">ברוכים הבאים</translation>
 <translation id="2320166752086256636">הסתרת מקלדת</translation>
+<translation id="2333212046079545895">‏Copyright 2021 Google LLC. כל הזכויות שמורות.</translation>
 <translation id="2359808026110333948">המשך</translation>
 <translation id="2366718077645204424">לא ניתן להשיג את המארח. הסיבה לכך יכולה להיות תצורת הרשת שבה נעשה שימוש.</translation>
 <translation id="2370754117186920852">המארח <ph name="OPTIONAL_OFFLINE_REASON" /> נראה לאחרונה אונליין <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -51,7 +52,7 @@
 <translation id="3423542133075182604">תהליך תקשורת מרוחקת למפתח אבטחה</translation>
 <translation id="3581045510967524389">לא ניתן היה להתחבר לרשת. יש לבדוק שהמכשיר שלך אונליין.</translation>
 <translation id="3596628256176442606">‏שירות זה מאפשר חיבורים נכנסים מלקוחות Chromoting.</translation>
-<translation id="369442766917958684">במצב לא מקוון.</translation>
+<translation id="369442766917958684">במצב אופליין.</translation>
 <translation id="3695446226812920698">איך עושים זאת</translation>
 <translation id="3776024066357219166">‏הפעילות של Chrome Remote Desktop הסתיימה.</translation>
 <translation id="3897092660631435901">תפריט</translation>
@@ -71,6 +72,7 @@
 <translation id="4405930547258349619">ספריית ליבה</translation>
 <translation id="443560535555262820">פתיחת העדפות הנגישות</translation>
 <translation id="4450893287417543264">אין להציג שוב</translation>
+<translation id="4512952200932940229">‏זכויות יוצרים 2021 The Chromium Authors. כל הזכויות שמורות.</translation>
 <translation id="4513946894732546136">משוב</translation>
 <translation id="4563926062592110512">לקוח שהתנתק: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4635770493235256822">מכשירים מרוחקים</translation>
@@ -129,8 +131,7 @@
 <translation id="7067321367069083429">המסך פועל כמסך מגע</translation>
 <translation id="7116737094673640201">‏ברוך בואך אל Chrome Remote Desktop</translation>
 <translation id="7144878232160441200">יש לנסות שוב</translation>
-<translation id="724402108658370587">‏Copyright 2020 Google LLC. כל הזכויות שמורות.</translation>
-<translation id="7312846573060934304">המארח במצב לא מקוון.</translation>
+<translation id="7312846573060934304">המארח במצב אופליין.</translation>
 <translation id="7319983568955948908">הפסקת השיתוף</translation>
 <translation id="7401733114166276557">Chrome Remote Desktop</translation>
 <translation id="7434397035092923453">נדחתה גישה עבור לקוח: <ph name="CLIENT_USERNAME" />.</translation>
@@ -155,7 +156,6 @@
 <translation id="8073845705237259513">‏כדי להשתמש ב-Chrome Remote Desktop, עליך להוסיף חשבון Google למכשיר שלך.</translation>
 <translation id="809687642899217504">המחשבים שלי</translation>
 <translation id="8116630183974937060">אירעה שגיאת רשת. יש לבדוק שהמכשיר מחובר לרשת ולנסות שוב.</translation>
-<translation id="8187079423890319756">‏Copyright 2013 The Chromium Authors. כל הזכויות שמורות.</translation>
 <translation id="8295077433896346116">‏כדי להשתמש ב-<ph name="PRODUCT_NAME" />, יש להעניק הרשאת 'נגישות' כדי שניתן יהיה לשלוט במחשב ה-Mac הזה באמצעות קלט מהמחשב המרוחק.
 
 כדי להעניק את ההרשאה הזו, יש ללחוץ על '<ph name="BUTTON_NAME" />' למטה. אחרי הלחיצה, תיפתח חלונית לבחירת העדפות. בקטע 'נגישות', יש לסמן את התיבה שלצד '<ph name="SERVICE_SCRIPT_NAME" />'.
@@ -174,6 +174,7 @@
 <translation id="8743328882720071828">האם ברצונך לאפשר ל-<ph name="CLIENT_USERNAME" /> לראות את המחשב שלך ולשלוט בו?</translation>
 <translation id="8747048596626351634">‏ההפעלה קרסה או שלא התחילה. אם ‎~/.chrome-remote-desktop-session קיים במחשב המרוחק, יש לוודא שהוא מפעיל תהליך ארוך טווח בחזית. לדוגמה: סביבת המחשב או מנהל החלונות.</translation>
 <translation id="8804164990146287819">מדיניות פרטיות</translation>
+<translation id="8906511416443321782">‏נדרשת גישה למיקרופון כדי להקליט אודיו ולשדר אותו ללקוח Chrome Remote Desktop.</translation>
 <translation id="9111855907838866522">התחברת למכשיר המרוחק שלך. כדי לפתוח את התפריט יש להקיש במסך עם ארבע אצבעות.</translation>
 <translation id="9126115402994542723">אין לבקש שוב קוד אימות בעת התחברות למארח הזה ממכשיר זה.</translation>
 <translation id="916856682307586697">‏הפעלת ה-XSession שמוגדר כברירת מחדל</translation>

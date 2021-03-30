@@ -264,7 +264,7 @@ TEST(SocketPermissionTest, Match) {
 
 TEST(SocketPermissionTest, IPC) {
   const APIPermissionInfo* permission_info =
-      PermissionsInfo::GetInstance()->GetByID(APIPermission::kSocket);
+      PermissionsInfo::GetInstance()->GetByID(mojom::APIPermissionID::kSocket);
 
   {
     IPC::Message m;
@@ -306,7 +306,7 @@ TEST(SocketPermissionTest, IPC) {
 
 TEST(SocketPermissionTest, Value) {
   const APIPermissionInfo* permission_info =
-      PermissionsInfo::GetInstance()->GetByID(APIPermission::kSocket);
+      PermissionsInfo::GetInstance()->GetByID(mojom::APIPermissionID::kSocket);
 
   std::unique_ptr<APIPermission> permission1(
       permission_info->CreateAPIPermission());

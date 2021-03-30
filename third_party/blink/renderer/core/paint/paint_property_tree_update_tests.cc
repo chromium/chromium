@@ -1246,45 +1246,6 @@ TEST_P(PaintPropertyTreeUpdateTest, SVGForeignObjectOverflowChange) {
             properties->OverflowClip()->UnsnappedClipRect().Rect());
 }
 
-TEST_P(PaintPropertyTreeBuilderTest, OmitOverflowClipOnSelectionChange) {
-  SetBodyInnerHTML(R"HTML(
-    <div id="target" style="overflow: hidden">
-      <img style="width: 50px; height: 50px">
-    </div>
-  )HTML");
-
-  EXPECT_FALSE(PaintPropertiesForElement("target")->OverflowClip());
-
-  GetDocument().GetFrame()->Selection().SelectAll();
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(PaintPropertiesForElement("target")->OverflowClip());
-
-  GetDocument().GetFrame()->Selection().Clear();
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(PaintPropertiesForElement("target")->OverflowClip());
-}
-
-TEST_P(PaintPropertyTreeBuilderTest, OmitOverflowClipOnCaretChange) {
-  SetBodyInnerHTML(R"HTML(
-    <div id="target" contentEditable="true" style="overflow: hidden">
-      <img style="width: 50px; height: 50px">
-    </div>
-  )HTML");
-
-  GetDocument().GetPage()->GetFocusController().SetActive(true);
-  GetDocument().GetPage()->GetFocusController().SetFocused(true);
-  auto* target = GetDocument().getElementById("target");
-  EXPECT_FALSE(PaintPropertiesForElement("target")->OverflowClip());
-
-  target->focus();
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(PaintPropertiesForElement("target")->OverflowClip());
-
-  target->blur();
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(PaintPropertiesForElement("target")->OverflowClip());
-}
-
 TEST_P(PaintPropertyTreeUpdateTest,
        FragmentClipUpdateOnMulticolContainerWidthChange) {
   SetBodyInnerHTML(R"HTML(
@@ -1846,6 +1807,93 @@ TEST_P(PaintPropertyTreeUpdateTest, StartSVGAnimation) {
   UpdateAllLifecyclePhasesForTest();
   ASSERT_EQ(properties, PaintPropertiesForElement("line"));
   EXPECT_TRUE(properties->Transform()->HasDirectCompositingReasons());
+}
+
+TEST_P(PaintPropertyTreeUpdateTest, ScrollNonStackingContextContainingStacked) {
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    return;
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #scroller { width: 200px; height: 200px; overflow: scroll;
+                  background: white; }
+      #content { height: 1000px; background: blue; }
+    </style>
+    <div id="scroller">
+      <div id="content" style="position: relative"></div>
+    </div>
+  )HTML");
+
+  auto* scroller = GetDocument().getElementById("scroller");
+  auto* content = GetDocument().getElementById("content");
+  auto* paint_artifact_compositor =
+      GetDocument().View()->GetPaintArtifactCompositor();
+  ASSERT_TRUE(paint_artifact_compositor);
+  ASSERT_FALSE(paint_artifact_compositor->NeedsUpdate());
+
+  // We need PaintArtifactCompositor update on scroll because the scroller is
+  // not a stacking context but contains stacked descendants.
+  scroller->setScrollTop(100);
+  UpdateAllLifecyclePhasesExceptPaint();
+  EXPECT_TRUE(paint_artifact_compositor->NeedsUpdate());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(paint_artifact_compositor->NeedsUpdate());
+
+  // Remove "position:relative" from |content|.
+  content->setAttribute(html_names::kStyleAttr, "");
+  UpdateAllLifecyclePhasesForTest();
+
+  // No need of PaintArtifactCompositor update because the scroller no longer
+  // has stacked descendants.
+  scroller->setScrollTop(110);
+  UpdateAllLifecyclePhasesExceptPaint();
+  EXPECT_FALSE(paint_artifact_compositor->NeedsUpdate());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(paint_artifact_compositor->NeedsUpdate());
+
+  // Make scroller a stacking context with stacked contents.
+  scroller->setAttribute(html_names::kStyleAttr,
+                         "position: absolute; will-change: transform");
+  content->setAttribute(html_names::kStyleAttr, "position: absolute");
+  UpdateAllLifecyclePhasesForTest();
+
+  // No need of PaintArtifactCompositor update because the scroller is a
+  // stacking context.
+  scroller->setScrollTop(120);
+  UpdateAllLifecyclePhasesExceptPaint();
+  EXPECT_FALSE(paint_artifact_compositor->NeedsUpdate());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(paint_artifact_compositor->NeedsUpdate());
+}
+
+TEST_P(PaintPropertyTreeUpdateTest, ScrollOriginChange) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      ::-webkit-scrollbar {width: 20px; height: 20px}
+    </style>
+    <div id="container" style="width: 100px; height: 100px; overflow: scroll;
+                               writing-mode: vertical-rl">
+      <div id="child1" style="width: 100px"></div>
+      <div id="child2" style="width: 0"></div>
+    </div>
+  )HTML");
+
+  auto* container_properties = PaintPropertiesForElement("container");
+  ASSERT_TRUE(container_properties);
+  auto* child1 = GetLayoutObjectByElementId("child1");
+  auto* child2 = GetLayoutObjectByElementId("child2");
+  EXPECT_EQ(FloatSize(-20, 0),
+            container_properties->ScrollTranslation()->Translation2D());
+  EXPECT_EQ(PhysicalOffset(), child1->FirstFragment().PaintOffset());
+  EXPECT_EQ(PhysicalOffset(), child2->FirstFragment().PaintOffset());
+
+  To<Element>(child2->GetNode())
+      ->setAttribute(html_names::kStyleAttr, "width: 100px");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(FloatSize(-120, 0),
+            container_properties->ScrollTranslation()->Translation2D());
+  EXPECT_EQ(PhysicalOffset(100, 0), child1->FirstFragment().PaintOffset());
+  EXPECT_EQ(PhysicalOffset(), child2->FirstFragment().PaintOffset());
 }
 
 }  // namespace blink

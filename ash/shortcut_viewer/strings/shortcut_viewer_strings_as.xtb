@@ -23,11 +23,13 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">ঠিকনাৰ বাৰত আপোনাৰ ইনপুটৰ সৈতে www. আৰু .com লিখক, তাৰপিছত পৃষ্ঠাটো খোলক</translation>
+<translation id="1768987374400973299">স্ক্ৰীনশ্বট লওক/ৰেকৰ্ডিং কৰক</translation>
 <translation id="1872219238824176091">বৰ্তমানৰ ডেস্কটো আঁতৰাওক</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, তাৰপাছত <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> বা <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">পৰৱৰ্তী টেবলৈ যাওক</translation>
 <translation id="2010818616644390445">ৱিণ্ড’ৰ শেহতীয়া টেবটোলৈ যাওক</translation>
 <translation id="2040706009561734834">লঞ্চাৰ খোলক/বন্ধ কৰক</translation>
+<translation id="2086334242442703436">ইম’জি বাছনি কৰোঁতা খোলক</translation>
 <translation id="2088054208777350526">কীব‘ৰ্ড শ্বৰ্টকাট সন্ধান কৰক</translation>
 <translation id="2125211348069077981"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="E" /> বা <ph name="F" /></translation>
 <translation id="2145908266289632567">পাঠ সম্পাদনা</translation>
@@ -46,6 +48,7 @@
 <translation id="2480851840841871861">Google Assistant খোলক</translation>
 <translation id="2488661730534396940">বাওঁফালৰ ডেস্কটো সক্রিয় কৰক</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516999188535378855">Diagnostics এপ্‌টো খোলক</translation>
 <translation id="2530339807289914946">ৱেব পৃষ্ঠাটো তললৈ স্ক্ৰল কৰক</translation>
 <translation id="2530896289327917474">কেৰেট ব্ৰাউজিং অন অথবা অফ কৰক</translation>
 <translation id="2574014812750545982">পৃষ্ঠাটোত জুমৰ স্তৰ ৰিছেট কৰক</translation>
@@ -110,6 +113,7 @@
 <translation id="4801989101741319327">পৰৱর্তী শব্দৰ শেষলৈ আঁতৰাওক</translation>
 <translation id="4866066940972151697">সোঁফালে থকা ডেস্কটো সক্রিয় কৰক</translation>
 <translation id="4916163929714267752">নতুন ৱিণ্ড’ত লিংকটো খোলক</translation>
+<translation id="492453977506755176">কেপচাৰ ম'ডৰ কী</translation>
 <translation id="5030659775136592441">বুকমার্ক পৰিচালকক দেখুৱাওক</translation>
 <translation id="5034421018520995080">পৃষ্ঠাৰ শীৰ্ষলৈ যাওক</translation>
 <translation id="5042305953558921026">অৱলোকন ম’ডলৈ যাবলৈ কী</translation>
@@ -132,6 +136,7 @@
 <translation id="5899919361772749550">বিকাশকর্তাৰ সঁজুলিৰ কনছ’ল দেখুৱাওক বা লুকুৱাওক</translation>
 <translation id="5919628958418675842">গোপনীয়তাৰ স্ক্ৰীনখন অন অথবা অফ কৰক</translation>
 <translation id="5921745308587794300">ৱিণ্ড' ঘূৰাওক</translation>
+<translation id="5926306472221400972">সম্পূৰ্ণ স্ক্ৰীনৰ স্ক্ৰীনশ্বট লওক</translation>
 <translation id="6022924867608035986">সন্ধান বাকচৰ পাঠ মচক</translation>
 <translation id="6045998054441862242">উচ্চ বৈষাদৃশ্যৰ ম’ডটো অন কৰক</translation>
 <translation id="6052614013050385269">কোনো লিংকত মাউছৰ সোঁফালৰ বুটামটোৰে ক্লিক কৰক</translation>
@@ -149,6 +154,7 @@
 <translation id="6445033640292336367">টেবটোক তাৰ প্ৰকৃত স্থানলৈ উভতাই নিয়ে</translation>
 <translation id="6474744297082284761">জুম আউট কৰক (ডক কৰা বা পূৰ্ণস্ক্ৰীণত বস্তুবোৰ ডাঙৰকৈ দেখুওৱা সুবিধা সক্ষম কৰিলে)</translation>
 <translation id="649811797655257835">ফাইলটো বাছনি কৰি <ph name="SPACE" /> টিপক</translation>
+<translation id="6551886416582667425">আংশিক স্ক্ৰীনশ্বট লওক/ৰেকৰ্ডিং কৰক</translation>
 <translation id="6556040137485212400">সকলোতকৈ বেছি সময় ধৰি ব্যৱহাৰ নকৰা ৱিণ্ড’খন খোলক</translation>
 <translation id="666343722268997814">হাইলাইট কৰা বস্তুবোৰ পাবলৈ সোঁফালে ক্লিক কৰি পোৱা মেনুখন খোলক</translation>
 <translation id="6671538777808758331">আপোনাৰ সন্ধানৰ বাবে মিল থকা পূর্বৱৰ্তী ফলাফললৈ যাওক</translation>
@@ -175,6 +181,7 @@
 <translation id="7611271430932669992">পপআপ আৰু ডায়েলগলৈ ফ’কাছ স্থানান্তৰ কৰক</translation>
 <translation id="7635348532214572995">এপৰ গ্ৰীডত এটা এপ্‌ চিহ্ন স্থানান্তৰ কৰক</translation>
 <translation id="766326951329901120">ক্লিপব’ৰ্ডৰ পৰা সমল সাধাৰণ পাঠ হিচাপে পেষ্ট কৰক</translation>
+<translation id="7673453620027697230">ৱিণ্ড'ৰ স্ক্ৰীনশ্বট লওক/ৰেকৰ্ডিং কৰক</translation>
 <translation id="7703010453515335249">বাওঁ-বন্ধনী</translation>
 <translation id="7724603315864178912">কাট কৰক</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, তাৰপাছত <ph name="SPACE" /> বা <ph name="ENTER" /></translation>

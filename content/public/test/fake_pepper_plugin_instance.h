@@ -37,7 +37,7 @@ class FakePepperPluginInstance : public PepperPluginInstance {
   bool IsRectTopmost(const gfx::Rect& rect) override;
   int MakePendingFileRefRendererHost(const base::FilePath& path) override;
   void SetEmbedProperty(PP_Var key, PP_Var value) override;
-  void SetSelectedText(const base::string16& selected_text) override;
+  void SetSelectedText(const std::u16string& selected_text) override;
   void SetLinkUnderCursor(const std::string& url) override;
   void SetTextInputType(ui::TextInputType type) override;
   void PostMessageToJavaScript(PP_Var message) override;

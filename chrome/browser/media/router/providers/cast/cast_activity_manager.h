@@ -206,6 +206,7 @@ class CastActivityManager : public CastActivityManagerBase,
   };
 
   void DoLaunchSession(DoLaunchSessionParams params);
+  void SetPendingLaunch(DoLaunchSessionParams params);
   void OnActivityStopped(const std::string& route_id);
 
   // Removes an activity, terminating any associated connections, then

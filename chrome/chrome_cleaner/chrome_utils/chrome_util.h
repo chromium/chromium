@@ -31,9 +31,9 @@ bool RetrieveChromeVersionAndInstalledDomain(std::wstring* chrome_version,
 // path exists.
 bool RetrieveChromeExePathFromCommandLine(base::FilePath* chrome_exe_path);
 
-// Search for all Chrome executable paths, for example
+// Search for all Chrome executable path directories, for example
 // "C:\Program Files\Google\Chrome\Application".
-void ListChromeExePaths(std::set<base::FilePath>* paths);
+void ListChromeExeDirectories(std::set<base::FilePath>* paths);
 
 // Search for all Chrome versioned installation paths, for example
 // "C:\Program Files\Google\Chrome\Application\68.0.3440.84".

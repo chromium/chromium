@@ -34,6 +34,7 @@ source_set("url_loading") {
     "//ios/chrome/browser/crash_report:crash_report_internal",
     "//ios/chrome/browser/feature_engagement",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/prerender",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/snapshots",

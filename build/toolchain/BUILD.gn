@@ -4,6 +4,7 @@
 
 import("//build/toolchain/concurrent_links.gni")
 import("//build/toolchain/goma.gni")
+import("//build/toolchain/rbe.gni")
 
 declare_args() {
   # Pool for non goma tasks.
@@ -11,7 +12,7 @@ declare_args() {
 }
 
 if (current_toolchain == default_toolchain) {
-  if (action_pool_depth == -1 || use_goma) {
+  if (action_pool_depth == -1 || (use_goma || use_rbe)) {
     action_pool_depth = exec_script("get_cpu_count.py", [], "value")
   }
 

@@ -116,14 +116,14 @@ const std::string& GetEncryptionKeyInternal() {
 }  // namespace
 
 // static
-bool OSCrypt::EncryptString16(const base::string16& plaintext,
+bool OSCrypt::EncryptString16(const std::u16string& plaintext,
                               std::string* ciphertext) {
   return EncryptString(base::UTF16ToUTF8(plaintext), ciphertext);
 }
 
 // static
 bool OSCrypt::DecryptString16(const std::string& ciphertext,
-                              base::string16* plaintext) {
+                              std::u16string* plaintext) {
   std::string utf8;
   if (!DecryptString(ciphertext, &utf8))
     return false;
@@ -236,10 +236,8 @@ bool OSCrypt::Init(PrefService* local_state) {
 void OSCrypt::SetRawEncryptionKey(const std::string& raw_key) {
   DCHECK(!g_use_mock_key) << "Mock key in use.";
   DCHECK(!raw_key.empty()) << "Bad key.";
-  if (raw_key != GetEncryptionKeyFactory()) {
-    DCHECK(GetEncryptionKeyFactory().empty()) << "Key already set.";
-    GetEncryptionKeyFactory().assign(raw_key);
-  }
+  DCHECK(GetEncryptionKeyFactory().empty()) << "Key already set.";
+  GetEncryptionKeyFactory().assign(raw_key);
 }
 
 // static

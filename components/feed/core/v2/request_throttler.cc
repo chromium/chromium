@@ -6,18 +6,28 @@
 
 #include <vector>
 
+#include "base/logging.h"
 #include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/prefs.h"
 #include "components/prefs/pref_service.h"
 
 namespace feed {
 namespace {
+// Returns the maximum number of requests per day for this request type.
+// -1 indicates there is no limit.
 int GetMaxRequestsPerDay(NetworkRequestType request_type) {
   switch (request_type) {
     case NetworkRequestType::kFeedQuery:
       return GetFeedConfig().max_feed_query_requests_per_day;
     case NetworkRequestType::kUploadActions:
       return GetFeedConfig().max_action_upload_requests_per_day;
+    case NetworkRequestType::kNextPage:
+      return GetFeedConfig().max_next_page_requests_per_day;
+    case NetworkRequestType::kListWebFeeds:
+      return -1;
+    case NetworkRequestType::kUnfollowWebFeed:
+    case NetworkRequestType::kFollowWebFeed:
+      return -1;
   }
 }
 
@@ -40,6 +50,8 @@ bool RequestThrottler::RequestQuota(NetworkRequestType request_type) {
   ResetCountersIfDayChanged();
 
   const int max_requests_per_day = GetMaxRequestsPerDay(request_type);
+  if (max_requests_per_day == -1)
+    return true;
 
   // Fetch request counts from prefs. There's an entry for each request type.
   // We may need to resize the list.

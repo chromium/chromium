@@ -14,7 +14,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "ipc/ipc_message.h"
 #include "net/http/http_request_headers.h"
-#include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 
@@ -40,7 +40,7 @@ void WebSocketSBHandshakeThrottle::ThrottleHandshake(
   safe_browsing_->CreateCheckerAndCheck(
       render_frame_id_, url_checker_.BindNewPipeAndPassReceiver(), url, "GET",
       net::HttpRequestHeaders(), load_flags,
-      blink::mojom::ResourceType::kSubResource, false /* has_user_gesture */,
+      network::mojom::RequestDestination::kEmpty, false /* has_user_gesture */,
       false /* originated_from_service_worker */,
       base::BindOnce(&WebSocketSBHandshakeThrottle::OnCheckResult,
                      weak_factory_.GetWeakPtr()));

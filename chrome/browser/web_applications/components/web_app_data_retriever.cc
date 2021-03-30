@@ -15,9 +15,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/web_applications/components/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
-#include "chrome/common/chrome_render_frame.mojom.h"
-#include "components/webapps/installable/installable_data.h"
-#include "components/webapps/installable/installable_manager.h"
+#include "components/webapps/browser/installable/installable_data.h"
+#include "components/webapps/browser/installable/installable_manager.h"
+#include "components/webapps/common/web_page_metadata_agent.mojom.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -60,23 +60,23 @@ void WebAppDataRetriever::GetWebApplicationInfo(
         base::UTF8ToUTF16(default_web_application_info_->start_url.spec());
   }
 
-  mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> chrome_render_frame;
+  mojo::AssociatedRemote<webapps::mojom::WebPageMetadataAgent> metadata_agent;
   web_contents->GetMainFrame()->GetRemoteAssociatedInterfaces()->GetInterface(
-      &chrome_render_frame);
+      &metadata_agent);
 
   // Set the error handler so that we can run |get_web_app_info_callback_| if
   // the WebContents or the RenderFrameHost are destroyed and the connection
   // to ChromeRenderFrame is lost.
-  chrome_render_frame.set_disconnect_handler(
+  metadata_agent.set_disconnect_handler(
       base::BindOnce(&WebAppDataRetriever::CallCallbackOnError,
                      weak_ptr_factory_.GetWeakPtr()));
   // Bind the InterfacePtr into the callback so that it's kept alive
   // until there's either a connection error or a response.
-  auto* web_page_metadata_proxy = chrome_render_frame.get();
+  auto* web_page_metadata_proxy = metadata_agent.get();
   web_page_metadata_proxy->GetWebPageMetadata(
       base::BindOnce(&WebAppDataRetriever::OnGetWebPageMetadata,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(chrome_render_frame), entry->GetUniqueID()));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(metadata_agent),
+                     entry->GetUniqueID()));
 }
 
 void WebAppDataRetriever::CheckInstallabilityAndRetrieveManifest(
@@ -139,10 +139,9 @@ void WebAppDataRetriever::RenderProcessGone(base::TerminationStatus status) {
 }
 
 void WebAppDataRetriever::OnGetWebPageMetadata(
-    mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
-        chrome_render_frame,
+    mojo::AssociatedRemote<webapps::mojom::WebPageMetadataAgent> metadata_agent,
     int last_committed_nav_entry_unique_id,
-    chrome::mojom::WebPageMetadataPtr web_page_metadata) {
+    webapps::mojom::WebPageMetadataPtr web_page_metadata) {
   if (ShouldStopRetrieval())
     return;
 
@@ -182,17 +181,17 @@ void WebAppDataRetriever::OnDidPerformInstallableCheck(
 
   Observe(nullptr);
 
-  DCHECK(data.manifest);
-  DCHECK(data.manifest_url.is_valid() || data.manifest->IsEmpty());
+  DCHECK(data.manifest_url.is_valid() || data.manifest.IsEmpty());
 
   const bool is_installable = data.NoBlockingErrors();
   DCHECK(!is_installable || data.valid_manifest);
   base::Optional<blink::Manifest> opt_manifest;
-  if (!data.manifest->IsEmpty())
-    opt_manifest = *data.manifest;
+  if (!data.manifest.IsEmpty())
+    opt_manifest = data.manifest;
 
   std::move(check_installability_callback_)
-      .Run(std::move(opt_manifest), data.valid_manifest, is_installable);
+      .Run(std::move(opt_manifest), data.manifest_url, data.valid_manifest,
+           is_installable);
 }
 
 void WebAppDataRetriever::OnIconsDownloaded(bool success, IconsMap icons_map) {
@@ -215,7 +214,8 @@ void WebAppDataRetriever::CallCallbackOnError() {
     std::move(get_web_app_info_callback_).Run(nullptr);
   } else if (check_installability_callback_) {
     std::move(check_installability_callback_)
-        .Run(base::nullopt, /*valid_manifest_for_web_app=*/false,
+        .Run(/*manifest=*/base::nullopt, /*manifest_url=*/GURL(),
+             /*valid_manifest_for_web_app=*/false,
              /*is_installable=*/false);
   } else if (get_icons_callback_) {
     std::move(get_icons_callback_).Run(IconsMap{});

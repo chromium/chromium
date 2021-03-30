@@ -13,9 +13,8 @@
 WebRtcSignalingMessenger::WebRtcSignalingMessenger(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : token_fetcher_(identity_manager),
-      send_message_express_(&token_fetcher_, url_loader_factory),
-      receive_messages_express_(&token_fetcher_, url_loader_factory) {}
+    : identity_manager_(identity_manager),
+      url_loader_factory_(url_loader_factory) {}
 
 WebRtcSignalingMessenger::~WebRtcSignalingMessenger() = default;
 
@@ -43,7 +42,25 @@ void WebRtcSignalingMessenger::SendMessage(
   inbox_message->set_message_type(
       chrome_browser_nearby_sharing_instantmessaging::InboxMessage::BASIC);
 
-  send_message_express_.SendMessage(request, std::move(callback));
+  // We tie the lifetime of the SendMessageExpress object to the lifetime of the
+  // mojo call. Once the call completes, we allow the unique_ptr to go out of
+  // scope in the lambda cleaning up all resources.
+  auto send_message_express = std::make_unique<SendMessageExpress>(
+      identity_manager_, url_loader_factory_);
+  // The call to SendMessage is done on the raw pointer so we can std::move the
+  // unique_ptr into the bind closure without 'use-after-move' warnings.
+  auto* send_message_express_ptr = send_message_express.get();
+  send_message_express_ptr->SendMessage(
+      request,
+      base::BindOnce(
+          [](SendMessageCallback cb,
+             std::unique_ptr<SendMessageExpress> send_message, bool success) {
+            // Complete the original mojo call.
+            std::move(cb).Run(success);
+            // Intentionally let |send_message| go out of scope and delete the
+            // object.
+          },
+          std::move(callback), std::move(send_message_express)));
 }
 
 void WebRtcSignalingMessenger::StartReceivingMessages(
@@ -52,49 +69,10 @@ void WebRtcSignalingMessenger::StartReceivingMessages(
     mojo::PendingRemote<sharing::mojom::IncomingMessagesListener>
         incoming_messages_listener,
     StartReceivingMessagesCallback callback) {
-  NS_LOG(INFO) << __func__ << ": self_id=" << self_id
-               << ", location hint=" << location_hint->location
-               << ", location format=" << location_hint->format;
-
-  chrome_browser_nearby_sharing_instantmessaging::ReceiveMessagesExpressRequest
-      request = BuildReceiveRequest(self_id, std::move(location_hint));
-
-  incoming_messages_listener_.reset();
-  incoming_messages_listener_.Bind(std::move(incoming_messages_listener));
-
-  // base::Unretained is safe since |this| owns |receive_messages_express_|.
-  receive_messages_express_.StartReceivingMessages(
-      request,
-      base::BindRepeating(&WebRtcSignalingMessenger::OnMessageReceived,
-                          base::Unretained(this)),
-      base::BindOnce(&WebRtcSignalingMessenger::OnStartedReceivingMessages,
-                     base::Unretained(this), std::move(callback)));
-}
-
-void WebRtcSignalingMessenger::StopReceivingMessages() {
-  NS_LOG(VERBOSE) << __func__;
-  incoming_messages_listener_.reset();
-  receive_messages_express_.StopReceivingMessages();
-}
-
-void WebRtcSignalingMessenger::OnStartedReceivingMessages(
-    StartReceivingMessagesCallback callback,
-    bool success) {
-  if (success) {
-    NS_LOG(VERBOSE) << __func__ << ": started receiving messages successfully";
-  } else {
-    NS_LOG(ERROR) << __func__ << ": failed to start receiving messages";
-    incoming_messages_listener_.reset();
-  }
-
-  std::move(callback).Run(success);
-}
-
-void WebRtcSignalingMessenger::OnMessageReceived(const std::string& message) {
-  if (!incoming_messages_listener_) {
-    NS_LOG(WARNING) << __func__ << ": no listener available to receive message";
-    return;
-  }
-
-  incoming_messages_listener_->OnMessage(message);
+  // Starts a self owned mojo pipe for the receive session that can be stopped
+  // with the remote returned in the start callback. Resources will be cleaned
+  // up when the mojo pipe goes down.
+  ReceiveMessagesExpress::StartReceiveSession(
+      self_id, std::move(location_hint), std::move(incoming_messages_listener),
+      std::move(callback), identity_manager_, url_loader_factory_);
 }

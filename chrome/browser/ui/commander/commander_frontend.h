@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_UI_COMMANDER_COMMANDER_FRONTEND_H_
 
 #include <memory>
+#include <string>
 
-#include "base/strings/string16.h"
 
 class Browser;
 

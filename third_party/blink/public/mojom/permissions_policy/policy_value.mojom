@@ -1,0 +1,28 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// This enum defines the types of parameters used to specify a document policy.
+// TODO(crbug.com/1119481): Add the following types: inc/dec int, inc double, set.
+enum PolicyValueType {
+  kNull,
+  kBool,
+  kDecDouble,
+  // Valid enum value range depends on specific feature definition in
+  // /third_party/blink/renderer/core/permissions_policy/document_policy_features.json5.
+  // The range check is performed upon parsing of document policy in
+  // /third_party/blink/renderer/core/permissions_policy/document_policy_parser.cc.
+  kEnum,
+};
+
+// This union includes all the types that can be used to specify a policy's
+// parameter.
+// TODO(crbug.com/1119481): Add the following types: inc/dec int, inc double, set.
+union PolicyValue {
+  bool null_value;
+  bool bool_value;
+  double dec_double_value;
+  int32 enum_value;
+};

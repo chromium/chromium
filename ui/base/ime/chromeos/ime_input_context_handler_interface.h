@@ -8,25 +8,33 @@
 #include <stdint.h>
 
 #include <string>
+
 #include "base/component_export.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/base/ime/text_input_client.h"
 #include "ui/events/event.h"
 
 namespace ui {
 
 struct SurroundingTextInfo {
-  base::string16 surrounding_text;
+  std::u16string surrounding_text;
   gfx::Range selection_range;
 };
 
+// All strings related to IME operations should be UTF-16 encoded and all
+// indices/ranges relative to those strings should be UTF-16 code units.
 class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) IMEInputContextHandlerInterface {
  public:
   // Called when the engine commit a text.
-  virtual void CommitText(const std::string& text) = 0;
+  virtual void CommitText(
+      const std::u16string& text,
+      TextInputClient::InsertTextCursorBehavior cursor_behavior) = 0;
 
   // Called when the engine changes the composition range.
   // Returns true if the operation was successful.
+  // If |text_spans| is empty, then this function uses a default span that
+  // spans across the new composition range.
   virtual bool SetCompositionRange(
       uint32_t before,
       uint32_t after,

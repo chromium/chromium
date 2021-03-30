@@ -295,7 +295,7 @@ TEST_F(ImeControllerImplTest, OnKeyboardLayoutNameChanged) {
 
 TEST_F(ImeControllerImplTest, ShowModeIndicator) {
   ImeControllerImpl* controller = Shell::Get()->ime_controller();
-  base::string16 text = base::ASCIIToUTF16("US");
+  std::u16string text = u"US";
 
   gfx::Rect cursor1_bounds(100, 100, 1, 20);
   controller->ShowModeIndicator(cursor1_bounds, text);

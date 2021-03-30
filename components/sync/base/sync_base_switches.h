@@ -19,8 +19,6 @@ extern const base::Feature kSyncE2ELatencyMeasurement;
 extern const base::Feature kSyncCustomSharingMessageNudgeDelay;
 extern const base::FeatureParam<int> kSyncSharingMessageNudgeDelayMilliseconds;
 
-extern const base::Feature kSyncResetEntitiesStateOnCommitFailure;
-
 }  // namespace switches
 
 #endif  // COMPONENTS_SYNC_BASE_SYNC_BASE_SWITCHES_H_

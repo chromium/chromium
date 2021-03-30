@@ -1,0 +1,27 @@
+<style>
+  :host {
+    display: flex;
+    flex-direction: column;
+  }
+
+  #button {
+    font-size: 32px;
+    height: 36px;
+    margin: 0;
+    padding: 0;
+    width: 36px;
+  }
+
+  #button.emoji-group-active {
+    --cr-icon-button-fill-color: var(--cr-checked-color);
+  }
+</style>
+
+<cr-icon-button
+    id="button"
+    iron-icon="[[icon]]"
+    class$="[[_className(active)]]"
+    on-click="handleClick"
+    aria-label="[[name]]"
+    >
+</cr-icon-button>

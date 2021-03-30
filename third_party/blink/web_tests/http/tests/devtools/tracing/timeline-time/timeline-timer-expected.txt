@@ -15,7 +15,7 @@ TimerInstall Properties:
     startTime : <number>
     type : "TimerInstall"
 }
-Text details for TimerInstall: timeline-timer.js:14
+Text details for TimerInstall: test://evaluations/0/timeline-timer.js:14
 TimerInstall Properties:
 {
     data : {
@@ -31,7 +31,7 @@ TimerInstall Properties:
     startTime : <number>
     type : "TimerInstall"
 }
-Text details for TimerInstall: timeline-timer.js:15
+Text details for TimerInstall: test://evaluations/0/timeline-timer.js:15
 TimerFire Properties:
 {
     data : {
@@ -43,7 +43,7 @@ TimerFire Properties:
     startTime : <number>
     type : "TimerFire"
 }
-Text details for TimerFire: timeline-timer.js:14
+Text details for TimerFire: test://evaluations/0/timeline-timer.js:14
 TimerFire Properties:
 {
     data : {
@@ -55,7 +55,7 @@ TimerFire Properties:
     startTime : <number>
     type : "TimerFire"
 }
-Text details for TimerFire: timeline-timer.js:15
+Text details for TimerFire: test://evaluations/0/timeline-timer.js:15
 TimerFire Properties:
 {
     data : {
@@ -67,7 +67,7 @@ TimerFire Properties:
     startTime : <number>
     type : "TimerFire"
 }
-Text details for TimerFire: timeline-timer.js:15
+Text details for TimerFire: test://evaluations/0/timeline-timer.js:15
 TimerRemove Properties:
 {
     data : {
@@ -81,7 +81,7 @@ TimerRemove Properties:
     startTime : <number>
     type : "TimerRemove"
 }
-Text details for TimerRemove: timeline-timer.js:22
+Text details for TimerRemove: test://evaluations/0/timeline-timer.js:22
 FunctionCall Properties:
 {
     data : {

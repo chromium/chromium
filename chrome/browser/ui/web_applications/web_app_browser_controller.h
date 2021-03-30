@@ -12,7 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/scoped_observer.h"
-#include "base/strings/string16.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
@@ -23,7 +22,7 @@
 #include "ui/gfx/image/image_skia.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/installable/digital_asset_links/digital_asset_links_handler.h"
+#include "components/digital_asset_links/digital_asset_links_handler.h"  // nogncheck
 #endif
 
 class Browser;
@@ -58,9 +57,9 @@ class WebAppBrowserController : public AppBrowserController,
   gfx::ImageSkia GetWindowIcon() const override;
   base::Optional<SkColor> GetThemeColor() const override;
   base::Optional<SkColor> GetBackgroundColor() const override;
-  base::string16 GetTitle() const override;
-  base::string16 GetAppShortName() const override;
-  base::string16 GetFormattedUrlOrigin() const override;
+  std::u16string GetTitle() const override;
+  std::u16string GetAppShortName() const override;
+  std::u16string GetFormattedUrlOrigin() const override;
   GURL GetAppStartUrl() const override;
   bool IsUrlInAppScope(const GURL& url) const override;
   WebAppBrowserController* AsWebAppBrowserController() override;

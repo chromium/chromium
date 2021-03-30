@@ -36,62 +36,65 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "url/gurl.h"
 
+using base::FilePath;
 using extension_test_util::LoadManifest;
 using extension_test_util::LoadManifestStrict;
-using base::FilePath;
+using extensions::mojom::ManifestLocation;
 
 namespace extensions {
 
 // We persist location values in the preferences, so this is a sanity test that
 // someone doesn't accidentally change them.
 TEST(ExtensionTest, LocationValuesTest) {
-  ASSERT_EQ(0, Manifest::INVALID_LOCATION);
-  ASSERT_EQ(1, Manifest::INTERNAL);
-  ASSERT_EQ(2, Manifest::EXTERNAL_PREF);
-  ASSERT_EQ(3, Manifest::EXTERNAL_REGISTRY);
-  ASSERT_EQ(4, Manifest::UNPACKED);
-  ASSERT_EQ(5, Manifest::COMPONENT);
-  ASSERT_EQ(6, Manifest::EXTERNAL_PREF_DOWNLOAD);
-  ASSERT_EQ(7, Manifest::EXTERNAL_POLICY_DOWNLOAD);
-  ASSERT_EQ(8, Manifest::COMMAND_LINE);
-  ASSERT_EQ(9, Manifest::EXTERNAL_POLICY);
+  ASSERT_EQ(0, static_cast<int>(ManifestLocation::kInvalidLocation));
+  ASSERT_EQ(1, static_cast<int>(ManifestLocation::kInternal));
+  ASSERT_EQ(2, static_cast<int>(ManifestLocation::kExternalPref));
+  ASSERT_EQ(3, static_cast<int>(ManifestLocation::kExternalRegistry));
+  ASSERT_EQ(4, static_cast<int>(ManifestLocation::kUnpacked));
+  ASSERT_EQ(5, static_cast<int>(ManifestLocation::kComponent));
+  ASSERT_EQ(6, static_cast<int>(ManifestLocation::kExternalPrefDownload));
+  ASSERT_EQ(7, static_cast<int>(ManifestLocation::kExternalPolicyDownload));
+  ASSERT_EQ(8, static_cast<int>(ManifestLocation::kCommandLine));
+  ASSERT_EQ(9, static_cast<int>(ManifestLocation::kExternalPolicy));
+  ASSERT_EQ(10, static_cast<int>(ManifestLocation::kExternalComponent));
 }
 
 TEST(ExtensionTest, LocationPriorityTest) {
-  for (int i = 0; i < Manifest::NUM_LOCATIONS; i++) {
-    Manifest::Location loc = static_cast<Manifest::Location>(i);
+  for (int i = 0; i <= static_cast<int>(ManifestLocation::kMaxValue); i++) {
+    ManifestLocation loc = static_cast<ManifestLocation>(i);
 
-    // INVALID is not a valid location.
-    if (loc == Manifest::INVALID_LOCATION)
+    // kInvalidLocation is not a valid location.
+    if (loc == ManifestLocation::kInvalidLocation)
       continue;
 
     // Comparing a location that has no rank will hit a CHECK. Do a
     // compare with every valid location, to be sure each one is covered.
 
     // Check that no install source can override a componenet extension.
-    ASSERT_EQ(Manifest::COMPONENT,
-              Manifest::GetHigherPriorityLocation(Manifest::COMPONENT, loc));
-    ASSERT_EQ(Manifest::COMPONENT,
-              Manifest::GetHigherPriorityLocation(loc, Manifest::COMPONENT));
+    ASSERT_EQ(
+        ManifestLocation::kComponent,
+        Manifest::GetHigherPriorityLocation(ManifestLocation::kComponent, loc));
+    ASSERT_EQ(
+        ManifestLocation::kComponent,
+        Manifest::GetHigherPriorityLocation(loc, ManifestLocation::kComponent));
 
     // Check that any source can override a user install. This might change
     // in the future, in which case this test should be updated.
-    ASSERT_EQ(loc,
-              Manifest::GetHigherPriorityLocation(Manifest::INTERNAL, loc));
-    ASSERT_EQ(loc,
-              Manifest::GetHigherPriorityLocation(loc, Manifest::INTERNAL));
+    ASSERT_EQ(loc, Manifest::GetHigherPriorityLocation(
+                       ManifestLocation::kInternal, loc));
+    ASSERT_EQ(loc, Manifest::GetHigherPriorityLocation(
+                       loc, ManifestLocation::kInternal));
   }
 
   // Check a few interesting cases that we know can happen:
-  ASSERT_EQ(Manifest::EXTERNAL_POLICY_DOWNLOAD,
+  ASSERT_EQ(ManifestLocation::kExternalPolicyDownload,
             Manifest::GetHigherPriorityLocation(
-                Manifest::EXTERNAL_POLICY_DOWNLOAD,
-                Manifest::EXTERNAL_PREF));
+                ManifestLocation::kExternalPolicyDownload,
+                ManifestLocation::kExternalPref));
 
-  ASSERT_EQ(Manifest::EXTERNAL_PREF,
+  ASSERT_EQ(ManifestLocation::kExternalPref,
             Manifest::GetHigherPriorityLocation(
-                Manifest::INTERNAL,
-                Manifest::EXTERNAL_PREF));
+                ManifestLocation::kInternal, ManifestLocation::kExternalPref));
 }
 
 TEST(ExtensionTest, EnsureNewLinesInExtensionNameAreCollapsed) {
@@ -171,7 +174,7 @@ TEST(ExtensionTest, RTLNameInLTRLocale) {
         ExtensionBuilder().SetManifest(manifest.Build()).Build();
     ASSERT_TRUE(extension);
     const int kResourceId = IDS_EXTENSION_PERMISSIONS_PROMPT_TITLE;
-    const base::string16 expected_utf16 = base::WideToUTF16(expected);
+    const std::u16string expected_utf16 = base::WideToUTF16(expected);
     EXPECT_EQ(l10n_util::GetStringFUTF16(kResourceId, expected_utf16),
               l10n_util::GetStringFUTF16(kResourceId,
                                          base::UTF8ToUTF16(extension->name())));

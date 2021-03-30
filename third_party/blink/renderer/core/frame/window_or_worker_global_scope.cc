@@ -42,7 +42,6 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/page_dismissal_scope.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
-#include "third_party/blink/renderer/core/imagebitmap/image_bitmap_factories.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -143,11 +142,6 @@ int WindowOrWorkerGlobalScope::setTimeout(
   ExecutionContext* execution_context = event_target.GetExecutionContext();
   if (!IsAllowed(execution_context, false, g_empty_string))
     return 0;
-  if (timeout >= 0 && execution_context->IsWindow()) {
-    // FIXME: Crude hack that attempts to pass idle time to V8. This should
-    // be done using the scheduler instead.
-    V8GCForContextDispose::Instance().NotifyIdle();
-  }
   auto* action = MakeGarbageCollected<ScheduledAction>(
       script_state, execution_context, handler, arguments);
   return DOMTimer::Install(execution_context, action,
@@ -166,11 +160,6 @@ int WindowOrWorkerGlobalScope::setTimeout(ScriptState* script_state,
   // performance issue.
   if (handler.IsEmpty())
     return 0;
-  if (timeout >= 0 && execution_context->IsWindow()) {
-    // FIXME: Crude hack that attempts to pass idle time to V8. This should
-    // be done using the scheduler instead.
-    V8GCForContextDispose::Instance().NotifyIdle();
-  }
   auto* action = MakeGarbageCollected<ScheduledAction>(
       script_state, execution_context, handler);
   return DOMTimer::Install(execution_context, action,
@@ -220,30 +209,6 @@ void WindowOrWorkerGlobalScope::clearInterval(EventTarget& event_target,
                                               int timeout_id) {
   if (ExecutionContext* context = event_target.GetExecutionContext())
     DOMTimer::RemoveByID(context, timeout_id);
-}
-
-ScriptPromise WindowOrWorkerGlobalScope::createImageBitmap(
-    ScriptState* script_state,
-    EventTarget&,
-    const ImageBitmapSourceUnion& bitmap_source,
-    const ImageBitmapOptions* options,
-    ExceptionState& exception_state) {
-  return ImageBitmapFactories::CreateImageBitmap(script_state, bitmap_source,
-                                                 options, exception_state);
-}
-
-ScriptPromise WindowOrWorkerGlobalScope::createImageBitmap(
-    ScriptState* script_state,
-    EventTarget&,
-    const ImageBitmapSourceUnion& bitmap_source,
-    int sx,
-    int sy,
-    int sw,
-    int sh,
-    const ImageBitmapOptions* options,
-    ExceptionState& exception_state) {
-  return ImageBitmapFactories::CreateImageBitmap(
-      script_state, bitmap_source, sx, sy, sw, sh, options, exception_state);
 }
 
 bool WindowOrWorkerGlobalScope::crossOriginIsolated(

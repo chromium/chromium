@@ -12,10 +12,7 @@ source_set("js") {
     "//ios/web/public/deprecated",
   ]
 
-  sources = [
-    "crw_js_injection_manager.mm",
-    "crw_js_injection_receiver.mm",
-  ]
+  sources = [ "crw_js_injection_receiver.mm" ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
 }

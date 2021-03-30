@@ -6,6 +6,8 @@
 #define WEBLAYER_BROWSER_SAFE_BROWSING_CLIENT_SIDE_DETECTION_HOST_DELEGATE_H_
 
 #include "components/safe_browsing/content/browser/client_side_detection_host.h"
+#include "components/safe_browsing/core/proto/csd.pb.h"
+#include "url/gurl.h"
 
 namespace weblayer {
 
@@ -24,6 +26,8 @@ class ClientSideDetectionHostDelegate
       override;
   safe_browsing::ClientSideDetectionService* GetClientSideDetectionService()
       override;
+  void AddReferrerChain(safe_browsing::ClientPhishingRequest* verdict,
+                        GURL current_url) override;
 
  private:
   content::WebContents* web_contents_;

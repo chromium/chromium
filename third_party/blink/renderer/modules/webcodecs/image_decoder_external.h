@@ -13,17 +13,18 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
 
 namespace blink {
 
+class DOMException;
 class ExceptionState;
 class ScriptState;
-class ImageBitmapOptions;
-class ImageDecoder;
+class ImageDecodeOptions;
 class ImageDecoderInit;
-class ImageFrameExternal;
-class ImageTrackExternal;
+class ImageDecodeResult;
+class ImageTrackList;
 class ReadableStreamBytesConsumer;
 class ScriptPromiseResolver;
 class SegmentReader;
@@ -43,19 +44,16 @@ class MODULES_EXPORT ImageDecoderExternal final
   ImageDecoderExternal(ScriptState*, const ImageDecoderInit*, ExceptionState&);
   ~ImageDecoderExternal() override;
 
-  static bool canDecodeType(String type);
-
-  using ImageTrackList = HeapVector<Member<ImageTrackExternal>>;
+  static ScriptPromise isTypeSupported(ScriptState*, String type);
 
   // image_decoder.idl implementation.
-  ScriptPromise decode(uint32_t frame_index, bool complete_frames_only);
+  ScriptPromise decode(const ImageDecodeOptions* options = nullptr);
   ScriptPromise decodeMetadata();
-  void selectTrack(uint32_t track_id, ExceptionState&);
-  uint32_t frameCount() const;
+  void reset(DOMException* exception = nullptr);
+  void close();
   String type() const;
-  uint32_t repetitionCount() const;
   bool complete() const;
-  const ImageTrackList tracks() const;
+  ImageTrackList& tracks() const;
 
   // BytesConsumer::Client implementation.
   void OnStateChange() override;
@@ -70,6 +68,9 @@ class MODULES_EXPORT ImageDecoderExternal final
   // ScriptWrappable override.
   bool HasPendingActivity() const override;
 
+  // Called by ImageTrack to change the current track.
+  void UpdateSelectedTrack();
+
  private:
   void CreateImageDecoder();
 
@@ -80,6 +81,10 @@ class MODULES_EXPORT ImageDecoderExternal final
   // Returns false if the decoder was constructed with an ArrayBuffer or
   // ArrayBufferView that has since been neutered.
   bool HasValidEncodedData() const;
+
+  void AbortPendingDecodes(DOMException* exception);
+
+  scoped_refptr<media::VideoFrame> MaybeDecodeToYuv();
 
   Member<ScriptState> script_state_;
 
@@ -92,20 +97,24 @@ class MODULES_EXPORT ImageDecoderExternal final
 
   // Construction parameters.
   Member<const ImageDecoderInit> init_data_;
-  Member<const ImageBitmapOptions> options_;
+  ImageDecoder::AlphaOption alpha_option_ = ImageDecoder::kAlphaPremultiplied;
+  ColorBehavior color_behavior_ = ColorBehavior::Tag();
+  SkISize desired_size_;
 
-  // Copy of |preferAnimation| from |init_data_|. Will be modified based on
-  // calls to selectTrack().
+  // Copy of |preferAnimation| from |init_data_|.
   base::Optional<bool> prefer_animation_;
+
+  // Currently configured AnimationOption for |decoder_|.
+  ImageDecoder::AnimationOption animation_option_ =
+      ImageDecoder::AnimationOption::kUnspecified;
 
   bool data_complete_ = false;
 
+  bool closed_ = false;
+
   std::unique_ptr<ImageDecoder> decoder_;
   String mime_type_;
-  uint32_t frame_count_ = 0u;
-  uint32_t repetition_count_ = 0u;
-  base::Optional<uint32_t> selected_track_id_;
-  ImageTrackList tracks_;
+  Member<ImageTrackList> tracks_;
 
   // Pending decode() requests.
   struct DecodeRequest : public GarbageCollected<DecodeRequest> {
@@ -117,7 +126,7 @@ class MODULES_EXPORT ImageDecoderExternal final
     Member<ScriptPromiseResolver> resolver;
     uint32_t frame_index;
     bool complete_frames_only;
-    Member<ImageFrameExternal> result;
+    Member<ImageDecodeResult> result;
     Member<DOMException> exception;
   };
   HeapVector<Member<DecodeRequest>> pending_decodes_;

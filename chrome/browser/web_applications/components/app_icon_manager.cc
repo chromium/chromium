@@ -27,36 +27,6 @@ void WrapReadCompressedIconCallback(
 
 }  // namespace
 
-IconBitmaps::IconBitmaps() = default;
-
-IconBitmaps::~IconBitmaps() = default;
-
-IconBitmaps::IconBitmaps(const IconBitmaps&) = default;
-
-IconBitmaps::IconBitmaps(IconBitmaps&&) = default;
-
-void IconBitmaps::SetBitmapsForPurpose(
-    IconPurpose purpose,
-    std::map<SquareSizePx, SkBitmap> bitmaps) {
-  switch (purpose) {
-    case IconPurpose::ANY:
-      any = std::move(bitmaps);
-      return;
-    case IconPurpose::MONOCHROME:
-      // TODO (crbug.com/1114638): Monochrome support.
-      NOTREACHED();
-      return;
-    case IconPurpose::MASKABLE:
-      maskable = std::move(bitmaps);
-      return;
-  }
-}
-
-bool IconBitmaps::empty() {
-  // TODO (crbug.com/1114638): Check Monochrome if supported.
-  return any.empty() && maskable.empty();
-}
-
 void AppIconManager::ReadSmallestIconAny(const AppId& app_id,
                                          SquareSizePx min_icon_size,
                                          ReadIconCallback callback) const {

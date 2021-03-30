@@ -12,7 +12,9 @@
 #include "base/memory/singleton.h"
 #include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/aura/client/focus_client.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/types/display_snapshot.h"
@@ -117,11 +119,21 @@ void WMHelperChromeOS::OnDragEntered(const ui::DropTargetEvent& event) {
     observer.OnDragEntered(event);
 }
 
-int WMHelperChromeOS::OnDragUpdated(const ui::DropTargetEvent& event) {
-  int valid_operation = ui::DragDropTypes::DRAG_NONE;
-  for (DragDropObserver& observer : drag_drop_observers_)
-    valid_operation = valid_operation | observer.OnDragUpdated(event);
-  return valid_operation;
+aura::client::DragUpdateInfo WMHelperChromeOS::OnDragUpdated(
+    const ui::DropTargetEvent& event) {
+  aura::client::DragUpdateInfo drag_info(
+      ui::DragDropTypes::DRAG_NONE,
+      ui::DataTransferEndpoint(ui::EndpointType::kUnknownVm));
+
+  for (DragDropObserver& observer : drag_drop_observers_) {
+    auto observer_drag_info = observer.OnDragUpdated(event);
+    drag_info.drag_operation =
+        drag_info.drag_operation | observer_drag_info.drag_operation;
+    if (observer_drag_info.data_endpoint.type() !=
+        drag_info.data_endpoint.type())
+      drag_info.data_endpoint = observer_drag_info.data_endpoint;
+  }
+  return drag_info;
 }
 
 void WMHelperChromeOS::OnDragExited() {
@@ -129,12 +141,16 @@ void WMHelperChromeOS::OnDragExited() {
     observer.OnDragExited();
 }
 
-int WMHelperChromeOS::OnPerformDrop(const ui::DropTargetEvent& event,
-                                    std::unique_ptr<ui::OSExchangeData> data) {
-  int valid_operation = ui::DragDropTypes::DRAG_NONE;
-  for (DragDropObserver& observer : drag_drop_observers_)
-    valid_operation = valid_operation | observer.OnPerformDrop(event);
-  return valid_operation;
+ui::mojom::DragOperation WMHelperChromeOS::OnPerformDrop(
+    const ui::DropTargetEvent& event,
+    std::unique_ptr<ui::OSExchangeData> data) {
+  auto operation = ui::mojom::DragOperation::kNone;
+  for (DragDropObserver& observer : drag_drop_observers_) {
+    auto observer_op = observer.OnPerformDrop(event);
+    if (observer_op != ui::mojom::DragOperation::kNone)
+      operation = observer_op;
+  }
+  return operation;
 }
 
 void WMHelperChromeOS::AddVSyncParameterObserver(

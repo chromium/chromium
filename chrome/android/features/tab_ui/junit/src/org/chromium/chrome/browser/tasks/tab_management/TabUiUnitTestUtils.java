@@ -59,6 +59,10 @@ public class TabUiUnitTestUtils {
         doReturn(id).when(criticalPersistedTabData).getRootId();
         doReturn(urlString).when(tab).getUrlString();
         doReturn(title).when(tab).getTitle();
+
+        GURL gurl = mock(GURL.class);
+        doReturn(urlString).when(gurl).getSpec();
+        doReturn(gurl).when(tab).getOriginalUrl();
         return tab;
     }
 
@@ -94,6 +98,7 @@ public class TabUiUnitTestUtils {
         doReturn(visibleUrl).when(gurl).getSpec();
         doReturn(gurl).when(webContents).getVisibleUrl();
         doReturn(webContents).when(tab).getWebContents();
+        doReturn(GURL.emptyGURL()).when(tab).getOriginalUrl();
         return tab;
     }
 }

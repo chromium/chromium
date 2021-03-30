@@ -8,6 +8,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/post_task.h"
+#include "base/tracing/tracing_tls.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_producer.h"
@@ -112,9 +113,9 @@ class ProducerEndpoint : public perfetto::ProducerEndpoint,
     // We need to make sure the CommitData IPC is sent off without triggering
     // any trace events, as that could stall waiting for SMB chunks to be freed
     // up which requires the tracing service to receive the IPC.
-    if (!TraceEventDataSource::GetThreadIsInTraceEventTLS()->Get()) {
-      AutoThreadLocalBoolean thread_is_in_trace_event(
-          TraceEventDataSource::GetThreadIsInTraceEventTLS());
+    if (!base::tracing::GetThreadIsInTraceEventTLS()->Get()) {
+      base::tracing::AutoThreadLocalBoolean thread_is_in_trace_event(
+          base::tracing::GetThreadIsInTraceEventTLS());
       producer_host_->CommitData(commit, std::move(commit_callback));
       return;
     }
@@ -418,7 +419,7 @@ class ConsumerEndpoint : public perfetto::ConsumerEndpoint,
     mojo::ScopedDataPipeProducerHandle producer_handle;
     mojo::ScopedDataPipeConsumerHandle consumer_handle;
     MojoResult result =
-        mojo::CreateDataPipe(nullptr, &producer_handle, &consumer_handle);
+        mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle);
     if (result != MOJO_RESULT_OK) {
       OnTracingFailed();
       return;
@@ -433,7 +434,8 @@ class ConsumerEndpoint : public perfetto::ConsumerEndpoint,
       if (data_source.config().has_chrome_config() &&
           data_source.config().chrome_config().convert_to_legacy_json()) {
         tracing_session_host_->DisableTracingAndEmitJson(
-            /*agent_label_filter=*/"", std::move(producer_handle),
+            data_source.config().chrome_config().json_agent_label_filter(),
+            std::move(producer_handle),
             data_source.config().chrome_config().privacy_filtering_enabled(),
             base::BindOnce(&ConsumerEndpoint::OnReadBuffersComplete,
                            base::Unretained(this)));

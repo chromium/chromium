@@ -9,7 +9,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.NewTabTileViewPro
 import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -39,7 +38,7 @@ public class NewTabTileMediator {
             RecordUserAction.record("MobileNewTabOpened.NewTabTile");
         });
 
-        mTabModelSelectorObserver = new EmptyTabModelSelectorObserver() {
+        mTabModelSelectorObserver = new TabModelSelectorObserver() {
             @Override
             public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
                 model.set(IS_INCOGNITO, newModel.isIncognito());

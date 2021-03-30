@@ -37,6 +37,26 @@ var MockTts = function() {
    * @private
    */
   this.options_ = null;
+
+  /**
+   * Whether TTS events will be queued instead of sent immediately.
+   * @private {boolean}
+   */
+  this.waitToSendEvents_ = false;
+
+  /**
+   * TTS engine events waiting to be sent. Each entry in the array is an array
+   * of two elements: [options, event], where |options| is the TTS options
+   * during the time of that event, and |event| is the event isself.
+   * @private {!Array<!Array<!Object>>}
+   */
+  this.pendingEvents_ = [];
+
+  /**
+   * @enum {string}
+   * @see https://developer.chrome.com/extensions/tts#type-EventType
+   */
+  this.EventType = chrome.tts.EventType;
 };
 
 MockTts.prototype = {
@@ -47,7 +67,7 @@ MockTts.prototype = {
     this.currentlySpeaking_ = true;
     if (options && options.onEvent) {
       this.options_ = options;
-      this.options_.onEvent({type: 'start', charIndex: 0});
+      this.sendEvent({type: this.EventType.START, charIndex: 0});
     }
     if (this.speechCallbackStack_.length > 0) {
       this.speechCallbackStack_.pop()(utterance);
@@ -57,7 +77,7 @@ MockTts.prototype = {
     this.pendingUtterances_ = [];
     this.currentlySpeaking_ = false;
     if (this.options_) {
-      this.options_.onEvent({type: 'end'});
+      this.sendEvent({type: this.EventType.END});
     }
   },
   /**
@@ -68,14 +88,14 @@ MockTts.prototype = {
   speakUntilCharIndex(nextStartIndex) {
     this.currentlySpeaking_ = true;
     if (this.options_) {
-      this.options_.onEvent({type: 'word', charIndex: nextStartIndex});
+      this.sendEvent({type: this.EventType.WORD, charIndex: nextStartIndex});
     }
   },
   stop() {
     this.pendingUtterances_ = [];
     this.currentlySpeaking_ = false;
     if (this.options_) {
-      this.options_.onEvent({type: 'cancelled'});
+      this.sendEvent({type: this.EventType.INTERRUPTED});
       this.options_ = null;
     }
   },
@@ -97,5 +117,25 @@ MockTts.prototype = {
   },
   getOptions() {
     return this.options_;
+  },
+  sendEvent(event) {
+    if (!this.options_) {
+      return;
+    }
+    if (this.waitToSendEvents_) {
+      // Queue event if set to wait on events.
+      this.pendingEvents_.push([this.options_, event]);
+      return;
+    }
+    this.options_.onEvent(event);
+  },
+  setWaitToSendEvents(waitToSendEvents) {
+    this.waitToSendEvents_ = waitToSendEvents;
+  },
+  sendPendingEvents() {
+    while (this.pendingEvents_.length > 0) {
+      const [options, event] = this.pendingEvents_.pop();
+      options.onEvent(event);
+    }
   }
 };

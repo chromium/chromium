@@ -170,7 +170,7 @@ InspectorMemoryAgent::GetSamplingProfileById(uint32_t id) {
   for (const auto* module : module_cache.GetModules()) {
     modules->emplace_back(
         protocol::Memory::Module::create()
-            .setName(module->GetDebugBasename().value().c_str())
+            .setName(module->GetDebugBasename().AsUTF16Unsafe().c_str())
             .setUuid(module->GetId().c_str())
             .setBaseAddress(
                 String::Format("0x%" PRIxPTR, module->GetBaseAddress()))

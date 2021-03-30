@@ -28,6 +28,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_GRAPHICS_SVG_IMAGE_H_
 
 #include "base/macros.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
@@ -43,6 +44,7 @@ namespace blink {
 class Document;
 class LayoutSVGRoot;
 class LocalFrame;
+class Node;
 class Page;
 class PaintController;
 class SVGImageChromeClient;
@@ -161,6 +163,7 @@ class CORE_EXPORT SVGImage final : public Image {
             const cc::PaintFlags&,
             const FloatRect& dst_rect,
             const FloatRect& src_rect,
+            const SkSamplingOptions&,
             RespectImageOrientationEnum,
             ImageClampingMode,
             ImageDecodingMode) override;
@@ -213,6 +216,7 @@ class CORE_EXPORT SVGImage final : public Image {
   Persistent<SVGImageChromeClient> chrome_client_;
   Persistent<Page> page_;
   std::unique_ptr<PaintController> paint_controller_;
+  std::unique_ptr<scheduler::WebAgentGroupScheduler> agent_group_scheduler_;
 
   // When an SVG image has no intrinsic size, the size depends on the default
   // object size, which in turn depends on the container. One SVGImage may

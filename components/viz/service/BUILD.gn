@@ -24,10 +24,14 @@ viz_component("service") {
     "display/bsp_walk_action.h",
     "display/damage_frame_annotator.cc",
     "display/damage_frame_annotator.h",
+    "display/delegated_ink_handler.cc",
+    "display/delegated_ink_handler.h",
     "display/delegated_ink_point_renderer_base.cc",
     "display/delegated_ink_point_renderer_base.h",
     "display/delegated_ink_point_renderer_skia.cc",
     "display/delegated_ink_point_renderer_skia.h",
+    "display/delegated_ink_trail_data.cc",
+    "display/delegated_ink_trail_data.h",
     "display/direct_renderer.cc",
     "display/direct_renderer.h",
     "display/display.cc",
@@ -37,6 +41,14 @@ viz_component("service") {
     "display/display_damage_tracker.h",
     "display/display_resource_provider.cc",
     "display/display_resource_provider.h",
+    "display/display_resource_provider_gl.cc",
+    "display/display_resource_provider_gl.h",
+    "display/display_resource_provider_null.cc",
+    "display/display_resource_provider_null.h",
+    "display/display_resource_provider_skia.cc",
+    "display/display_resource_provider_skia.h",
+    "display/display_resource_provider_software.cc",
+    "display/display_resource_provider_software.h",
     "display/display_scheduler.cc",
     "display/display_scheduler.h",
     "display/display_scheduler_base.cc",
@@ -59,6 +71,8 @@ viz_component("service") {
     "display/gl_renderer_draw_cache.h",
     "display/layer_quad.cc",
     "display/layer_quad.h",
+    "display/null_renderer.cc",
+    "display/null_renderer.h",
     "display/output_surface.cc",
     "display/output_surface.h",
     "display/output_surface_client.h",
@@ -163,6 +177,8 @@ viz_component("service") {
     "hit_test/hit_test_manager.cc",
     "hit_test/hit_test_manager.h",
     "surfaces/latest_local_surface_id_lookup_delegate.h",
+    "surfaces/pending_copy_output_request.cc",
+    "surfaces/pending_copy_output_request.h",
     "surfaces/referenced_surface_tracker.cc",
     "surfaces/referenced_surface_tracker.h",
     "surfaces/surface.cc",
@@ -179,6 +195,14 @@ viz_component("service") {
     "surfaces/surface_observer.h",
     "surfaces/surface_reference.cc",
     "surfaces/surface_reference.h",
+    "surfaces/surface_saved_frame.cc",
+    "surfaces/surface_saved_frame.h",
+    "surfaces/surface_saved_frame_storage.cc",
+    "surfaces/surface_saved_frame_storage.h",
+    "transitions/surface_animation_manager.cc",
+    "transitions/surface_animation_manager.h",
+    "transitions/transferable_resource_tracker.cc",
+    "transitions/transferable_resource_tracker.h",
     "viz_service_export.h",
   ]
 
@@ -192,6 +216,7 @@ viz_component("service") {
     "//cc/base",
     "//cc/paint",
     "//components/crash/core/common:crash_key",
+    "//components/power_scheduler",
     "//gpu/command_buffer/client:gles2_cmd_helper",
     "//gpu/command_buffer/client:gles2_implementation",
     "//gpu/command_buffer/client:raster",
@@ -213,6 +238,7 @@ viz_component("service") {
     "//skia:skcms",
     "//third_party/libyuv",
     "//ui/display/types",
+    "//ui/gfx/animation/keyframe",
   ]
 
   public_deps = [
@@ -277,6 +303,7 @@ viz_component("service") {
       "display/overlay_strategy_underlay_cast.cc",
       "display/overlay_strategy_underlay_cast.h",
     ]
+    deps += [ "//media/gpu:buildflags" ]
   }
 
   if (is_android) {
@@ -435,11 +462,18 @@ viz_source_set("gpu_service_dependencies") {
     sources += [
       "display_embedder/skia_output_device_vulkan.cc",
       "display_embedder/skia_output_device_vulkan.h",
-      "display_embedder/skia_output_device_vulkan_secondary_cb.cc",
-      "display_embedder/skia_output_device_vulkan_secondary_cb.h",
     ]
 
     public_deps += [ "//gpu/vulkan" ]
+
+    if (is_android) {
+      sources += [
+        "display_embedder/skia_output_device_vulkan_secondary_cb.cc",
+        "display_embedder/skia_output_device_vulkan_secondary_cb.h",
+        "display_embedder/skia_output_device_vulkan_secondary_cb_offscreen.cc",
+        "display_embedder/skia_output_device_vulkan_secondary_cb_offscreen.h",
+      ]
+    }
 
     if (use_x11 || ozone_platform_x11) {
       sources += [
@@ -495,7 +529,9 @@ viz_source_set("unit_tests") {
     "display/delegated_ink_point_pixel_test_helper.cc",
     "display/delegated_ink_point_pixel_test_helper.h",
     "display/display_damage_tracker_unittest.cc",
-    "display/display_resource_provider_unittest.cc",
+    "display/display_resource_provider_gl_unittest.cc",
+    "display/display_resource_provider_skia_unittest.cc",
+    "display/display_resource_provider_software_unittest.cc",
     "display/display_scheduler_unittest.cc",
     "display/display_unittest.cc",
     "display/draw_polygon_unittest.cc",
@@ -531,6 +567,8 @@ viz_source_set("unit_tests") {
     "main/viz_main_impl_unittest.cc",
     "surfaces/referenced_surface_tracker_unittest.cc",
     "surfaces/surface_unittest.cc",
+    "transitions/surface_animation_manager_unittest.cc",
+    "transitions/transferable_resource_tracker_unittest.cc",
   ]
 
   if (enable_gl_backend_tests) {
@@ -670,7 +708,6 @@ if (is_android) {
   android_library("service_java") {
     deps = [
       "//base:base_java",
-      "//base:jni_java",
       "//ui/android:ui_no_recycler_view_java",
     ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

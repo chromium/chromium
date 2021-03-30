@@ -22,7 +22,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="MultiDevice.BetterTogetherSuite.MultiDeviceFeatureState"
-    enum="MultiDevice_FeatureState" expires_after="2021-06-06">
+    enum="MultiDevice_FeatureState" expires_after="2021-08-08">
   <owner>vecore@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -33,7 +33,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MultiDevice.DeviceSyncService.FindEligibleDevices.Result"
-    enum="BooleanSuccess" expires_after="2021-06-06">
+    enum="BooleanSuccess" expires_after="2021-08-08">
   <owner>vecore@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>Result of trying to find eligible devices.</summary>
@@ -42,7 +42,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="MultiDevice.DeviceSyncService.FindEligibleDevices.Result.FailureReason"
     enum="MultiDevice_DeviceSyncService_DeviceSyncRequestFailureReason"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>vecore@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -53,7 +53,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="MultiDevice.DeviceSyncService.ForceEnrollmentNow.Result"
     enum="MultiDevice_DeviceSyncService_ForceCryptAuthOperationResult"
-    expires_after="2021-02-02">
+    expires_after="2022-02-02">
   <owner>vecore@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>Result for when ForceEnrollmentNow is called.</summary>
@@ -61,7 +61,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="MultiDevice.DeviceSyncService.ForceSyncNow.Result"
     enum="MultiDevice_DeviceSyncService_ForceCryptAuthOperationResult"
-    expires_after="2021-04-04">
+    expires_after="2021-08-09">
   <owner>vecore@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>Result for when ForceSyncNow is called.</summary>
@@ -69,7 +69,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="MultiDevice.DeviceSyncService.SetSoftwareFeatureState.Disable.FailedFeature"
-    enum="MultiDevice_DeviceSyncService_Features" expires_after="2021-04-04">
+    enum="MultiDevice_DeviceSyncService_Features" expires_after="2021-08-09">
   <owner>vecore@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -79,14 +79,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="MultiDevice.DeviceSyncService.SetSoftwareFeatureState.Enable.FailedFeature"
-    enum="MultiDevice_DeviceSyncService_Features" expires_after="2021-04-04">
+    enum="MultiDevice_DeviceSyncService_Features" expires_after="2021-08-09">
   <owner>vecore@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>Breaks down which features failed when attempted to enable.</summary>
 </histogram>
 
 <histogram name="MultiDevice.DeviceSyncService.SetSoftwareFeatureState.Result"
-    enum="BooleanSuccess" expires_after="2021-05-09">
+    enum="BooleanSuccess" expires_after="2021-09-12">
   <owner>vecore@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>Result of enabling and disabling features for devices.</summary>
@@ -95,7 +95,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="MultiDevice.DeviceSyncService.SetSoftwareFeatureState.Result.FailureReason"
     enum="MultiDevice_DeviceSyncService_DeviceSyncRequestFailureReason"
-    expires_after="2021-04-04">
+    expires_after="2021-08-09">
   <owner>vecore@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -106,7 +106,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="MultiDevice.ForgetHostConfirmed"
     enum="MultiDevice_VerifyAndForgetHostConfirmationState"
-    expires_after="2021-04-04">
+    expires_after="2021-08-09">
   <owner>vecore@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -115,7 +115,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MultiDevice.PostOOBESetupFlow.PageShown"
-    enum="MultiDevice_PostOOBESetupFlow_Page" expires_after="2021-06-06">
+    enum="MultiDevice_PostOOBESetupFlow_Page" expires_after="2021-08-09">
   <owner>vecore@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -132,7 +132,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="MultiDevice.SecureChannel.BLE.GattConnectionToAuthentication.EffectiveSuccessRateWithRetries"
-    enum="BooleanSuccess" expires_after="2021-04-04">
+    enum="BooleanSuccess" expires_after="2021-08-09">
   <owner>vecore@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -145,7 +145,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="MultiDevice.SecureChannel.BLE.Performance.ConnectionToAuthenticationDuration.Background"
-    units="ms" expires_after="2021-06-20">
+    units="ms" expires_after="2021-08-22">
   <owner>vecore@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -161,7 +161,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="MultiDevice.SecureChannel.BLE.Performance.ReceiveAdvertisementToConnectionDuration.Background"
-    units="ms" expires_after="2021-06-06">
+    units="ms" expires_after="2021-08-09">
   <owner>vecore@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -177,7 +177,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="MultiDevice.SecureChannel.BLE.Performance.StartScanToAuthenticationDuration.Background"
-    units="ms" expires_after="2021-06-06">
+    units="ms" expires_after="2021-08-08">
   <owner>vecore@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -194,7 +194,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="MultiDevice.SecureChannel.BLE.Performance.StartScanToConnectionDuration.Background"
-    units="ms" expires_after="2021-04-04">
+    units="ms" expires_after="2021-08-09">
   <owner>vecore@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -210,7 +210,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="MultiDevice.SecureChannel.BLE.Performance.StartScanToReceiveAdvertisementDuration.Background"
-    units="ms" expires_after="2021-06-06">
+    units="ms" expires_after="2021-08-08">
   <owner>vecore@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -226,7 +226,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="MultiDevice.SecureChannel.BLE.ReceiveAdvertisementToAuthentication.EffectiveSuccessRateWithRetries"
-    enum="BooleanSuccess" expires_after="2021-06-13">
+    enum="BooleanSuccess" expires_after="2021-08-15">
   <owner>vecore@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -238,7 +238,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="MultiDevice.SecureChannel.BLE.ReceiveAdvertisementToGattConnection.EffectiveSuccessRateWithRetries"
-    enum="BooleanSuccess" expires_after="2021-04-04">
+    enum="BooleanSuccess" expires_after="2021-08-09">
   <owner>vecore@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -274,6 +274,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="MultiDevice.SecureChannel.Nearby.DisconnectionReason"
+    enum="MultiDeviceNearbyDisconnectionReason" expires_after="2022-01-01">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Tracks reasons why a Nearby Connection established via SecureChannel ends up
+    disconnecting. Includes a &quot;Disconnection requested by client&quot;
+    value emitted during intentional disconnections as well as several error
+    enum values.
+
+    Emitted when a connection fails to become established, or emitted after it
+    is already established when it becomes disconnected.
+  </summary>
+</histogram>
+
 <histogram name="MultiDevice.SecureChannel.Nearby.EffectiveConnectionResult"
     enum="BooleanSuccess" expires_after="2021-11-30">
   <owner>khorimoto@chromium.org</owner>
@@ -301,6 +316,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="MultiDevice.SecureChannel.Nearby.OperationResult.{Function}"
+    enum="NearbyConnectionsStatus" expires_after="2022-01-01">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of invoking Nearby Connection's {Function} API function
+    within SecureChannel.
+
+    Emitted when the API call returns.
+  </summary>
+  <token key="Function">
+    <variant name="AcceptConnection"/>
+    <variant name="DisconnectFromEndpoint"/>
+    <variant name="InjectEndpoint"/>
+    <variant name="RequestConnection"/>
+    <variant name="SendPayload"/>
+    <variant name="StartDiscovery"/>
+    <variant name="StopDiscovery"/>
+  </token>
+</histogram>
+
 <histogram name="MultiDevice.SecureChannel.Nearby.SendMessageResult"
     enum="BooleanSuccess" expires_after="2021-11-30">
   <owner>khorimoto@chromium.org</owner>
@@ -326,8 +362,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="MultiDevice.Setup.HasDuplicateEligibleHostDeviceNames"
+    enum="BooleanDuplicate" expires_after="2021-08-22">
+  <owner>nohle@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not the list of eligible host phones has duplicate
+    devices names. This list is shown to users during multi-device setup, and
+    duplicate device names can cause confusion. Metric emitted when the user
+    starts multi-device setup.
+  </summary>
+</histogram>
+
 <histogram name="MultiDevice.Setup.HostStatus"
-    enum="MultiDevice_Setup_HostStatus" expires_after="2021-06-06">
+    enum="MultiDevice_Setup_HostStatus" expires_after="2021-08-08">
   <owner>vecore@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -338,7 +386,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MultiDevice.Setup.HostVerifier.DoesHostHaveCryptoData"
-    enum="Boolean" expires_after="2021-06-06">
+    enum="Boolean" expires_after="2021-08-09">
   <owner>nohle@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -353,7 +401,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="MultiDevice.VerifyButtonClicked"
     enum="MultiDevice_VerifyAndForgetHostConfirmationState"
-    expires_after="2021-04-04">
+    expires_after="2021-08-09">
   <owner>vecore@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -361,8 +409,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="MultiDevice.WifiSync.MultiDeviceFeatureState"
-    enum="MultiDevice_FeatureState" expires_after="2021-09-01">
+<histogram name="WifiSync.MultiDeviceFeatureState"
+    enum="MultiDevice_FeatureState" expires_after="2022-03-01">
   <owner>cvandermerwe@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>

@@ -1,0 +1,157 @@
+{
+  // All document policy (https://w3c.github.io/webappsec-permissions-policy/document-policy.html)
+  // features are defined here.
+  // All Features have to be defined in DocumentPolicyFeature enum as well
+  // (defined in third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom).
+  // The enum value has to have the same name as the feature name here.
+
+  parameters: {
+    // document_policy_name: "FEATURE_NAME" is used to specify the policy name
+    // which gets parsed from the header or the policy attribute.
+    document_policy_name: {},
+    // value type allowed in mojom::PolicyValueType which is defined in
+    // third_party/blink/public/mojom/permissions_policy/policy_value.mojom.
+    value_type: {},
+    // valid c++ expression strings, e.g. true/false, 1.0, -1.
+    // or use reserved keyword 'min'/'max'.
+    default_value: {},
+    // "depends_on" specifies relationship to runtime features defined
+    // in "runtime_enabled_features.json5":
+    // depends_on: ["feature1", "feature2", ...]
+    // * If the depends_on features are *only* runtime features, the feature is
+    //   available if any of the runtime features are enabled.
+    // * If the depends_on list includes origin trial features, the feature is
+    //   available if any of the origin trial features are enabled.
+    depends_on: {
+      default: [],
+      valid_type: "list",
+    },
+    // "default_value_behind_flag" specifies default_value override values
+    // based on different runtime flags set.
+    //
+    // When multiple flags are set, default_value correspond to the first
+    // flag in the list will be used, e.g.
+    //   default_value_behind_flag: [
+    //    ["A", 1.0],
+    //    ["B", 2.0],
+    //   ]
+    // 1.0 will be used as default value when both flag A and B are set.
+    //
+    // Note: the runtime flags here refer to features defined in
+    // "third_party/blink/public/common/features.h", instead of those defined in
+    // "runtime_enabled_features.json5" because the latter is only available
+    // on renderer side, while default_value is needed from browser side as
+    // well.
+    default_value_behind_flag: {
+      default: [],
+      valid_type: "list",
+    }
+  },
+
+  data: [
+    {
+      name: "Default",
+      document_policy_name: "*",
+      value_type: "Bool",
+      default_value: "true",
+      depends_on: []
+    },
+    {
+      name: "FontDisplay",
+      document_policy_name: "font-display-late-swap",
+      value_type: "Bool",
+      default_value: "true",
+      depends_on: ["ExperimentalPolicies"],
+    },
+    {
+      name: "LosslessImagesMaxBpp",
+      document_policy_name: "lossless-images-max-bpp",
+      value_type: "DecDouble",
+      default_value: "max",
+      depends_on: ["ExperimentalPolicies"],
+    },
+    {
+      // The ForceLoadAtTop policy lets pages opt-out of scrolling that
+      // automatically happens on page load. This includes fragment scrolls,
+      // text fragment scrolls (i.e. this provides an opt-out for the Scroll To
+      // Text feature), and scroll restoration.
+      name: "ForceLoadAtTop",
+      document_policy_name: "force-load-at-top",
+      value_type: "Bool",
+      default_value: "false",
+    },
+    {
+      name: "LosslessImagesStrictMaxBpp",
+      document_policy_name: "lossless-images-strict-max-bpp",
+      value_type: "DecDouble",
+      default_value: "max",
+      depends_on: ["ExperimentalPolicies"],
+    },
+    {
+      name: "LossyImagesMaxBpp",
+      document_policy_name: "lossy-images-max-bpp",
+      value_type: "DecDouble",
+      default_value: "max",
+      depends_on: ["ExperimentalPolicies"],
+    },
+    {
+      name: "OversizedImages",
+      document_policy_name: "oversized-images",
+      value_type: "DecDouble",
+      default_value: "max",
+      depends_on: ["ExperimentalPolicies"],
+    },
+    {
+      name: "UnsizedMedia",
+      document_policy_name: "unsized-media",
+      value_type: "Bool",
+      default_value: "true",
+      depends_on: ["ExperimentalPolicies"],
+    },
+    {
+      name: "LayoutAnimations",
+      document_policy_name: "layout-animations",
+      value_type: "Bool",
+      default_value: "true",
+      depends_on: ["ExperimentalPolicies"],
+    },
+    {
+      name: "DocumentWrite",
+      document_policy_name: "document-write",
+      value_type: "Bool",
+      default_value: "true",
+      depends_on: ["ExperimentalPolicies"],
+    },
+    {
+      name: "SyncScript",
+      document_policy_name: "sync-script",
+      value_type: "Bool",
+      default_value: "true",
+      depends_on: ["ExperimentalPolicies"],
+    },
+    {
+      name: "JSProfiling",
+      document_policy_name: "js-profiling",
+      value_type: "Bool",
+      default_value: "false",
+      depends_on: ["ExperimentalJSProfiler"],
+    },
+    {
+      name: "SyncXHR",
+      document_policy_name: "sync-xhr",
+      value_type: "Bool",
+      default_value: "true",
+      depends_on: ["DocumentPolicySyncXHR"],
+    },
+    {
+      name: "DocumentDomain",
+      document_policy_name: "document-domain",
+      value_type: "Bool",
+      default_value: "true",
+      depends_on: ["DocumentPolicyDocumentDomain"],
+      default_value_behind_flag: [
+        ["DisableDocumentDomainByDefault", "false"],
+      ],
+    }
+  ],
+}

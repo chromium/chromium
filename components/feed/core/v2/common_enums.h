@@ -28,12 +28,12 @@ enum class FeedEngagementType {
 // in sync with FeedUserActionType in enums.xml.
 // Note: Most of these have a corresponding UserMetricsAction reported here.
 // Exceptions are described below.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.feed.v2
 enum class FeedUserActionType {
   // User tapped on card, opening the article in the same tab.
   kTappedOnCard = 0,
-  // This is not an actual user action, so there will be no UserMetricsAction
-  // reported for this.
-  kShownCard = 1,
+  // DEPRECATED: This was never reported.
+  kShownCard_DEPRECATED = 1,
   // User tapped on 'Send Feedback' in the back of card menu.
   kTappedSendFeedback = 2,
   // Discover feed header menu 'Learn More' tapped.
@@ -62,23 +62,34 @@ enum class FeedUserActionType {
   kTappedTurnOff = 15,
   // Discover feed header menu 'Manage Activity' tapped.
   kTappedManageActivity = 16,
-  // User added article to 'Read Later' list.
+  // User added article to 'Read Later' list. iOS only.
   kAddedToReadLater = 17,
   // User closed the back of card menu.
   kClosedContextMenu = 18,
   // Ephemeral change committed, likely due to dismissing an 'undo' snackbar.
   kEphemeralChangeCommited = 19,
   // User opened a Dialog. e.g. Report content Dialog. User action not reported
-  // here.
+  // here. iOS only.
   kOpenedDialog = 20,
-  // User closed a Dialog. e.g. Report content Dialog.
+  // User closed a Dialog. e.g. Report content Dialog. iOS only.
   kClosedDialog = 21,
   // User action caused a snackbar to be shown. User action not reported here.
+  // iOS only.
   kShowSnackbar = 22,
-  // User opened the native back of card menu.
-  kOpenedNativeContextMenu = 23,
+  // User opened back of card menu in the native action sheet. iOS only.
+  kOpenedNativeActionSheet = 23,
+  // User opened back of card menu in the native context menu. iOS only.
+  kOpenedNativeContextMenu = 24,
+  // User closed back of card menu in the native context menu. iOS only.
+  kClosedNativeContextMenu = 25,
+  // User opened back of card menu in the native pull-down menu. iOS only.
+  kOpenedNativePulldownMenu = 26,
+  // User closed back of card menu in the native pull-down menu. iOS only.
+  kClosedNativePulldownMenu = 27,
+  // User tapped feed header menu item 'Manage reactions'.
+  kTappedManageReactions = 28,
   // Highest enumerator. Recommended by Histogram metrics best practices.
-  kMaxValue = kOpenedNativeContextMenu,
+  kMaxValue = kTappedManageReactions,
 };
 
 }  // namespace feed

@@ -63,6 +63,13 @@
 - (void)addItemWithTitle:(NSString*)title
                   action:(ProceduralBlock)actionBlock
                    style:(UIAlertActionStyle)style {
+  [self addItemWithTitle:title action:actionBlock style:style enabled:YES];
+}
+
+- (void)addItemWithTitle:(NSString*)title
+                  action:(ProceduralBlock)actionBlock
+                   style:(UIAlertActionStyle)style
+                 enabled:(BOOL)enabled {
   if (self.visible ||
       (style == UIAlertActionStyleCancel && self.cancelButtonAdded)) {
     return;
@@ -82,6 +89,8 @@
                                  actionBlock();
                                [weakSelf alertDismissed];
                              }];
+
+  alertAction.enabled = enabled;
 
   [self.alertController addAction:alertAction];
 }

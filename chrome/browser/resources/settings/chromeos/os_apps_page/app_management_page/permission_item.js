@@ -5,7 +5,7 @@ Polymer({
   is: 'app-management-permission-item',
 
   behaviors: [
-    app_management.StoreClient,
+    app_management.AppManagementStoreClient,
   ],
 
   properties: {
@@ -116,7 +116,6 @@ Polymer({
     if (app === undefined || permissionType === undefined) {
       return false;
     }
-
     assert(app);
 
     return app_management.util.getPermissionValueBool(app, permissionType);
@@ -154,7 +153,6 @@ Polymer({
     let newPermission;
 
     let newBoolState = false;  // to keep the closure compiler happy.
-
     switch (app_management.util.getPermission(this.app_, this.permissionType)
                 .valueType) {
       case PermissionValueType.kBool:
@@ -170,7 +168,6 @@ Polymer({
       default:
         assertNotReached();
     }
-
     app_management.BrowserProxy.getInstance().handler.setPermission(
         this.app_.id, newPermission);
 
@@ -204,7 +201,6 @@ Polymer({
       default:
         assertNotReached();
     }
-
     assert(newPermissionValue !== undefined);
     return app_management.util.createPermission(
         app_management.util.permissionTypeHandle(app, permissionType),

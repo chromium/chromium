@@ -4,6 +4,7 @@
 
 #include "components/performance_manager/graph/frame_node_impl.h"
 
+#include "base/test/gmock_callback_support.h"
 #include "base/test/gtest_util.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -223,6 +224,53 @@ TEST_F(FrameNodeImplTest, ObserverWorks) {
   graph()->RemoveFrameNodeObserver(&obs);
 }
 
+// This is an end-to-end test of the logic that explodes when recursive
+// notifications are dispatched during node creation and removal. There are
+// other tests of the individual pieces of logic in NodeBase and
+// ObservedProperty.
+TEST_F(FrameNodeImplDeathTest, SetPropertyDuringNodeCreation) {
+  MockObserver obs;
+  graph()->AddFrameNodeObserver(&obs);
+
+  auto process = CreateNode<ProcessNodeImpl>();
+  auto page = CreateNode<PageNodeImpl>();
+
+  // Modifying a property during node addition should explode.
+  bool set_property = true;
+  EXPECT_CALL(obs, OnFrameNodeAdded(_))
+      .WillOnce(Invoke([&](const FrameNode* frame_node) {
+        if (set_property) {
+          auto* impl = FrameNodeImpl::FromNode(frame_node);
+          impl->SetIsAdFrame(true);
+        }
+      }));
+  EXPECT_DCHECK_DEATH(auto frame =
+                          CreateFrameNodeAutoId(process.get(), page.get()));
+
+  // Now create the node but don't modify a property so that the mock
+  // expectation is satisfied.
+  set_property = false;
+  auto frame = CreateFrameNodeAutoId(process.get(), page.get());
+
+  // Modifying a property during node removal should explode.
+  set_property = true;
+  EXPECT_CALL(obs, OnBeforeFrameNodeRemoved(_))
+      .WillOnce(Invoke([&](const FrameNode* frame_node) {
+        if (set_property) {
+          auto* impl = FrameNodeImpl::FromNode(frame_node);
+          impl->SetIsAdFrame(true);
+        }
+      }));
+  EXPECT_DCHECK_DEATH(frame.reset());
+
+  // Now remove the node but don't modify a property so that the mock
+  // expectation is satisfied.
+  set_property = false;
+  frame.reset();
+
+  graph()->RemoveFrameNodeObserver(&obs);
+}
+
 TEST_F(FrameNodeImplTest, IsAdFrame) {
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>();
@@ -231,12 +279,18 @@ TEST_F(FrameNodeImplTest, IsAdFrame) {
   MockObserver obs;
   graph()->AddFrameNodeObserver(&obs);
 
+  // Observer will be notified once when IsAdFrame goes from false to true, and
+  // again when it goes from true to false.
+  EXPECT_CALL(obs, OnIsAdFrameChanged(frame_node.get())).Times(2);
+
   EXPECT_FALSE(frame_node->is_ad_frame());
-  EXPECT_CALL(obs, OnIsAdFrameChanged(frame_node.get()));
-  frame_node->SetIsAdFrame();
+  frame_node->SetIsAdFrame(true);
   EXPECT_TRUE(frame_node->is_ad_frame());
-  frame_node->SetIsAdFrame();
+  frame_node->SetIsAdFrame(true);
   EXPECT_TRUE(frame_node->is_ad_frame());
+
+  frame_node->SetIsAdFrame(false);
+  EXPECT_FALSE(frame_node->is_ad_frame());
 
   graph()->RemoveFrameNodeObserver(&obs);
 }

@@ -147,6 +147,7 @@ rootWebArea
 ++++++++++++++++inlineTextBox name='B'
 ++++++none ignored
 ++++++++genericContainer ignored
-++++++++++genericContainer
-++++++++++++staticText name='Alphabet'
-++++++++++++++inlineTextBox name='Alphabet'
+++++++++++genericContainer ignored
+++++++++++++genericContainer
+++++++++++++++staticText name='Alphabet'
+++++++++++++++++inlineTextBox name='Alphabet'

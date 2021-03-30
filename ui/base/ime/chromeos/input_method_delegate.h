@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 
 namespace chromeos {
 namespace input_method {
@@ -23,7 +22,7 @@ class InputMethodDelegate {
   virtual std::string GetHardwareKeyboardLayouts() const = 0;
 
   // Retrieves localized string for |resource_id|.
-  virtual base::string16 GetLocalizedString(int resource_id) const = 0;
+  virtual std::u16string GetLocalizedString(int resource_id) const = 0;
 
   // Set hardware layout string for testting purpose.
   virtual void SetHardwareKeyboardLayoutForTesting(
@@ -33,7 +32,7 @@ class InputMethodDelegate {
   // current application locale.
   // Examples: "fi"    => "Finnish"
   //           "en-US" => "English (United States)"
-  virtual base::string16 GetDisplayLanguageName(
+  virtual std::u16string GetDisplayLanguageName(
       const std::string& language_code) const = 0;
 
  private:

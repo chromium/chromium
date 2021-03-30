@@ -5,15 +5,17 @@
 #ifndef SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_COMPOSITOR_FRAME_METADATA_MOJOM_TRAITS_H_
 #define SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_COMPOSITOR_FRAME_METADATA_MOJOM_TRAITS_H_
 
+#include <memory>
 #include <vector>
 
 #include "build/build_config.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "services/viz/public/cpp/compositing/begin_frame_args_mojom_traits.h"
-#include "services/viz/public/cpp/compositing/delegated_ink_metadata_mojom_traits.h"
+#include "services/viz/public/cpp/compositing/compositor_frame_transition_directive_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/frame_deadline_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/surface_range_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_metadata.mojom-shared.h"
+#include "ui/gfx/mojom/delegated_ink_metadata_mojom_traits.h"
 #include "ui/gfx/mojom/display_color_spaces_mojom_traits.h"
 #include "ui/gfx/mojom/overlay_transform_mojom_traits.h"
 
@@ -121,9 +123,14 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
     return metadata.display_transform_hint;
   }
 
-  static const std::unique_ptr<viz::DelegatedInkMetadata>&
+  static const std::unique_ptr<gfx::DelegatedInkMetadata>&
   delegated_ink_metadata(const viz::CompositorFrameMetadata& metadata) {
     return metadata.delegated_ink_metadata;
+  }
+
+  static const std::vector<viz::CompositorFrameTransitionDirective>&
+  transition_directives(const viz::CompositorFrameMetadata& metadata) {
+    return metadata.transition_directives;
   }
 
   static bool Read(viz::mojom::CompositorFrameMetadataDataView data,

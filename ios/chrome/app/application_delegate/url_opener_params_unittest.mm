@@ -18,7 +18,13 @@
 typedef PlatformTest URLOpenerParamsTest;
 
 // Simple test for initWithUIOpenURLContext:.
-TEST_F(URLOpenerParamsTest, initWithUIOpenURLContext) {
+// TODO(crbug.com/1172529): The test fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_initWithUIOpenURLContext initWithUIOpenURLContext
+#else
+#define MAYBE_initWithUIOpenURLContext DISABLED_initWithUIOpenURLContext
+#endif
+TEST_F(URLOpenerParamsTest, MAYBE_initWithUIOpenURLContext) {
   if (@available(iOS 13, *)) {
     NSURL* url = [NSURL URLWithString:@"https://url.test"];
     NSString* source = @"source";

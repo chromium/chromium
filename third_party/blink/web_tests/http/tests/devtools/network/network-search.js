@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Tests search in network requests\n`);
-  await TestRunner.loadModule('network_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('network');
 
   function initArgs(method, url, async, payload) {
@@ -81,7 +81,8 @@
     const link = lastResult.listItemElement.getElementsByClassName('devtools-link')[0];
     link.click();
     const requestNode = await networkItemSelected();
-    TestRunner.addResult(`Selected Node Name: ${requestNode._request.name().trimMiddle(100)}, URL: ${requestNode._request.url()}`);
+    const requestName = requestNode._request.name();
+    TestRunner.addResult(`Selected Node Name: ${requestName.substr(requestName.length - 100)}, URL: ${requestNode._request.url()}`);
     TestRunner.completeTest();
   }
 })();

@@ -4,20 +4,23 @@
 <link rel="import" href="chrome://resources/cr_elements/hidden_style_css.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
+<link rel="import" href="chrome://resources/html/load_time_data.html">
+<link rel="import" href="../../search_settings.html">
+<link rel="import" href="../os_page_visibility.html">
 <link rel="import" href="main_page_behavior.html">
 <link rel="import" href="settings_idle_load.html">
-<link rel="import" href="../os_a11y_page/os_a11y_page.html">
 <link rel="import" href="../os_apps_page/android_apps_browser_proxy.html">
 <link rel="import" href="../os_apps_page/os_apps_page.html">
 <link rel="import" href="../os_people_page/os_people_page.html">
 <link rel="import" href="../os_privacy_page/os_privacy_page.html">
+<link rel="import" href="../os_printing_page/os_printing_page.html">
 <link rel="import" href="../os_search_page/os_search_page.html">
 <link rel="import" href="../personalization_page/personalization_page.html">
 <link rel="import" href="../../settings_page/settings_section.html">
 <link rel="import" href="../../settings_page_css.html">
 <link rel="import" href="../bluetooth_page/bluetooth_page.html">
-<link rel="import" href="../crostini_page/crostini_page.html">
 <link rel="import" href="../os_route.html">
 <link rel="import" href="../../router.html">
 <link rel="import" href="../device_page/device_page.html">
@@ -25,6 +28,7 @@
 <link rel="import" href="../kerberos_page/kerberos_page.html">
 <link rel="import" href="../multidevice_page/multidevice_page.html">
 <link rel="import" href="../on_startup_page/on_startup_page.html">
+<link rel="import" href="chrome://resources/html/assert.html">
 
 <dom-module id="os-settings-page">
   <template>
@@ -202,14 +206,6 @@
               show-plugin-vm="[[showPluginVm]]">
           </os-settings-apps-page>
         </settings-section>
-        <template is="dom-if" if="[[showCrostini]]" restamp>
-          <settings-section page-title="$i18n{crostiniPageTitle}"
-              section="crostini">
-            <settings-crostini-page prefs="{{prefs}}"
-                allow-crostini="[[allowCrostini_]]">
-            </settings-crostini-page>
-          </settings-section>
-        </template>
         <template is="dom-if" if="[[showStartup]]">
           <settings-section page-title="$i18n{onStartupPageTitle}"
               section="onstartup">
@@ -268,6 +264,14 @@
             <os-settings-printing-page prefs="{{prefs}}">
             </os-settings-printing-page>
           </settings-section>
+          <template is="dom-if" if="[[showCrostini]]" restamp>
+            <settings-section page-title="$i18n{crostiniPageTitle}"
+                section="crostini">
+              <settings-crostini-page prefs="{{prefs}}"
+                  allow-crostini="[[allowCrostini_]]">
+              </settings-crostini-page>
+            </settings-section>
+          </template>
           <settings-section page-title="$i18n{a11yPageTitle}"
               section="osAccessibility">
             <os-settings-a11y-page prefs="{{prefs}}">

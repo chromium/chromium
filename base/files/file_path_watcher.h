@@ -110,6 +110,11 @@ class BASE_EXPORT FilePathWatcher {
   // Returns true if the platform and OS version support recursive watches.
   static bool RecursiveWatchAvailable();
 
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  // Whether there are outstanding inotify watches.
+  static bool HasWatchesForTest();
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+
   // Starts watching |path| (and its descendants if |type| is kRecursive) for
   // changes. |callback| will be run on the caller's sequence to report such
   // changes. Returns true if the watch was started successfully and |callback|

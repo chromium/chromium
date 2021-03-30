@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom.h"
@@ -37,9 +38,18 @@ class NativeIOFileHost;
 // sequences, if desired.
 class NativeIOHost : public blink::mojom::NativeIOHost {
  public:
-  explicit NativeIOHost(NativeIOManager* manager,
-                        const url::Origin& origin,
-                        base::FilePath root_path);
+  using DeleteAllDataCallback =
+      base::OnceCallback<void(base::File::Error result, NativeIOHost* host)>;
+
+  // `allow_set_length_ipc` gates NativeIOFileHost::SetLength(), which works
+  // around a sandboxing limitation on macOS < 10.15. This is plumbed as a flag
+  // all the from NativeIOManager to facilitate testing.
+  explicit NativeIOHost(const url::Origin& origin,
+                        base::FilePath root_path,
+#if defined(OS_MAC)
+                        bool allow_set_length_ipc,
+#endif  // defined(OS_MAC)
+                        NativeIOManager* manager);
 
   NativeIOHost(const NativeIOHost&) = delete;
   NativeIOHost& operator=(const NativeIOHost&) = delete;
@@ -59,6 +69,13 @@ class NativeIOHost : public blink::mojom::NativeIOHost {
   // The origin served by this host.
   const url::Origin& origin() const { return origin_; }
 
+  // True if this host's data is currently being deleted.
+  bool delete_all_data_in_progress() const {
+    return !delete_all_data_callbacks_.empty();
+  }
+
+  bool is_incognito_mode() const { return root_path_.empty(); }
+
   // blink::mojom::NativeIOHost:
   void OpenFile(
       const std::string& name,
@@ -70,6 +87,12 @@ class NativeIOHost : public blink::mojom::NativeIOHost {
   void RenameFile(const std::string& old_name,
                   const std::string& new_name,
                   RenameFileCallback callback) override;
+  void RequestCapacityChange(int64_t capacity_delta,
+                             RequestCapacityChangeCallback callback) override;
+
+  // Removes all data stored for the host's origin from disk. All mojo
+  // connections for open files are closed.
+  void DeleteAllData(DeleteAllDataCallback callback);
 
   // Called when one of the open files for this origin closes.
   //
@@ -86,12 +109,12 @@ class NativeIOHost : public blink::mojom::NativeIOHost {
       const std::string& name,
       mojo::PendingReceiver<blink::mojom::NativeIOFileHost> file_host_receiver,
       OpenFileCallback callback,
-      base::File file);
+      std::pair<base::File, int64_t> result);
 
   // Called after the file I/O part of DeleteFile() completed.
   void DidDeleteFile(const std::string& name,
                      DeleteFileCallback callback,
-                     blink::mojom::NativeIOErrorPtr delete_error);
+                     std::pair<blink::mojom::NativeIOErrorPtr, int64_t> result);
 
   // Called after the file I/O part of RenameFile() completed.
   void DidRenameFile(const std::string& old_name,
@@ -99,15 +122,32 @@ class NativeIOHost : public blink::mojom::NativeIOHost {
                      RenameFileCallback callback,
                      blink::mojom::NativeIOErrorPtr rename_error);
 
+  // Called after the file I/O part of DeleteAllData() completed.
+  void DidDeleteAllData(base::File::Error error);
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  // The origin served by this host.
+  const url::Origin origin_;
+
+  // Deletion requests issued during an ongoing deletion are coalesced with that
+  // deletion request. All coalesced callbacks are stored and invoked
+  // together.
+  std::vector<DeleteAllDataCallback> delete_all_data_callbacks_;
+
   // The directory holding all the files for this origin.
   const base::FilePath root_path_;
+
+#if defined(OS_MAC)
+  const bool allow_set_length_ipc_;
+#endif  // defined(OS_MAC)
 
   // Raw pointer use is safe because NativeIOManager owns this NativeIOHost, and
   // therefore is guaranteed to outlive it.
   NativeIOManager* const manager_;
 
-  // The origin served by this host.
-  const url::Origin origin_;
+  // Schedules all operations involving file I/O done by this NativeIOHost.
+  const scoped_refptr<base::TaskRunner> file_task_runner_;
 
   // All receivers for frames and workers whose origin is `origin_` associated
   // with the StoragePartition that owns `manager_`.
@@ -123,10 +163,6 @@ class NativeIOHost : public blink::mojom::NativeIOHost {
   // This map's keys must not overlap with the contents of |io_pending_files_|.
   std::map<std::string, std::unique_ptr<NativeIOFileHost>> open_file_hosts_;
 
-  // Schedules all operations involving file I/O done by this NativeIOHost.
-  const scoped_refptr<base::TaskRunner> file_task_runner_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<NativeIOHost> weak_factory_{this};
 };
 

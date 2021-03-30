@@ -27,15 +27,28 @@
 
 namespace cc {
 namespace {
+// In a future CL, convert DrawImage to explicitly take sampling instead of
+// quality
+SkFilterQuality sampling_to_quality(const SkSamplingOptions& sampling) {
+  if (sampling.useCubic) {
+    return kHigh_SkFilterQuality;
+  }
+  if (sampling.mipmap != SkMipmapMode::kNone) {
+    return kMedium_SkFilterQuality;
+  }
+  return sampling.filter == SkFilterMode::kLinear ? kLow_SkFilterQuality
+                                                  : kNone_SkFilterQuality;
+}
+
 DrawImage CreateDrawImage(const PaintImage& image,
                           const PaintFlags* flags,
+                          const SkSamplingOptions& sampling,
                           const SkMatrix& matrix) {
   if (!image)
     return DrawImage();
   return DrawImage(image, flags->useDarkModeForImage(),
                    SkIRect::MakeWH(image.width(), image.height()),
-                   flags ? flags->getFilterQuality() : kLow_SkFilterQuality,
-                   matrix);
+                   sampling_to_quality(sampling), matrix);
 }
 
 bool IsScaleAdjustmentIdentity(const SkSize& scale_adjustment) {
@@ -67,7 +80,6 @@ SkRect MapRect(const SkMatrix& matrix, const SkRect& src) {
   M(ClipRectOp)       \
   M(ClipRRectOp)      \
   M(ConcatOp)         \
-  M(Concat44Op)       \
   M(CustomDataOp)     \
   M(DrawColorOp)      \
   M(DrawDRRectOp)     \
@@ -90,7 +102,6 @@ SkRect MapRect(const SkMatrix& matrix, const SkRect& src) {
   M(SaveLayerAlphaOp) \
   M(ScaleOp)          \
   M(SetMatrixOp)      \
-  M(SetMatrix44Op)    \
   M(SetNodeIdOp)      \
   M(TranslateOp)
 
@@ -257,8 +268,6 @@ std::string PaintOpTypeToString(PaintOpType type) {
       return "ClipRRect";
     case PaintOpType::Concat:
       return "Concat";
-    case PaintOpType::Concat44:
-      return "Concat44";
     case PaintOpType::CustomData:
       return "CustomData";
     case PaintOpType::DrawColor:
@@ -303,8 +312,6 @@ std::string PaintOpTypeToString(PaintOpType type) {
       return "Scale";
     case PaintOpType::SetMatrix:
       return "SetMatrix";
-    case PaintOpType::SetMatrix44:
-      return "SetMatrix44";
     case PaintOpType::SetNodeId:
       return "SetNodeId";
     case PaintOpType::Translate:
@@ -428,20 +435,10 @@ size_t ClipRRectOp::Serialize(const PaintOp* base_op,
 }
 
 size_t ConcatOp::Serialize(const PaintOp* base_op,
-                           void* memory,
-                           size_t size,
-                           const SerializeOptions& options) {
-  auto* op = static_cast<const ConcatOp*>(base_op);
-  PaintOpWriter helper(memory, size, options);
-  helper.Write(op->matrix);
-  return helper.size();
-}
-
-size_t Concat44Op::Serialize(const PaintOp* base_op,
                              void* memory,
                              size_t size,
                              const SerializeOptions& options) {
-  auto* op = static_cast<const Concat44Op*>(base_op);
+  auto* op = static_cast<const ConcatOp*>(base_op);
   PaintOpWriter helper(memory, size, options);
   helper.Write(op->matrix);
   return helper.size();
@@ -495,7 +492,7 @@ size_t DrawImageOp::Serialize(const PaintOp* base_op,
   helper.Write(*serialized_flags);
 
   SkSize scale_adjustment = SkSize::Make(1.f, 1.f);
-  helper.Write(CreateDrawImage(op->image, serialized_flags,
+  helper.Write(CreateDrawImage(op->image, serialized_flags, op->sampling,
                                options.canvas->getTotalMatrix()),
                &scale_adjustment);
   helper.AlignMemory(alignof(SkScalar));
@@ -504,6 +501,7 @@ size_t DrawImageOp::Serialize(const PaintOp* base_op,
 
   helper.Write(op->left);
   helper.Write(op->top);
+  helper.Write(op->sampling);
   return helper.size();
 }
 
@@ -519,20 +517,21 @@ size_t DrawImageRectOp::Serialize(const PaintOp* base_op,
   helper.Write(*serialized_flags);
 
   // This adjustment mirrors DiscardableImageMap::GatherDiscardableImage logic.
-  SkMatrix matrix = options.canvas->getTotalMatrix();
-  matrix.postConcat(
-      SkMatrix::MakeRectToRect(op->src, op->dst, SkMatrix::kFill_ScaleToFit));
+  SkMatrix matrix =
+      SkMatrix::RectToRect(op->src, op->dst) * options.canvas->getTotalMatrix();
   // Note that we don't request subsets here since the GpuImageCache has no
   // optimizations for using subsets.
   SkSize scale_adjustment = SkSize::Make(1.f, 1.f);
-  helper.Write(CreateDrawImage(op->image, serialized_flags, matrix),
-               &scale_adjustment);
+  helper.Write(
+      CreateDrawImage(op->image, serialized_flags, op->sampling, matrix),
+      &scale_adjustment);
   helper.AlignMemory(alignof(SkScalar));
   helper.Write(scale_adjustment.width());
   helper.Write(scale_adjustment.height());
 
   helper.Write(op->src);
   helper.Write(op->dst);
+  helper.Write(op->sampling);
   helper.Write(op->constraint);
   return helper.size();
 }
@@ -594,6 +593,7 @@ size_t DrawPathOp::Serialize(const PaintOp* base_op,
     serialized_flags = &op->flags;
   helper.Write(*serialized_flags);
   helper.Write(op->path);
+  helper.Write(op->sk_path_fill_type);
   return helper.size();
 }
 
@@ -741,40 +741,13 @@ size_t ScaleOp::Serialize(const PaintOp* base_op,
   return helper.size();
 }
 
-// Just a helper for moving SkMatrix -> SkM44 here, these early-outs might not
-// be necessary
-bool IsSkM44Identity(const SkM44& m) {
-  return m == SkM44();
-}
-
 size_t SetMatrixOp::Serialize(const PaintOp* base_op,
-                              void* memory,
-                              size_t size,
-                              const SerializeOptions& options) {
-  auto* op = static_cast<const SetMatrixOp*>(base_op);
-  PaintOpWriter helper(memory, size, options);
-
-  // TODO(aaronhk) take out this early out and see if there's a perf regression
-  if (IsSkM44Identity(options.original_ctm)) {
-    helper.Write(op->matrix);
-  } else {
-    helper.Write(options.original_ctm.asM33() * op->matrix);
-  }
-  return helper.size();
-}
-
-size_t SetMatrix44Op::Serialize(const PaintOp* base_op,
                                 void* memory,
                                 size_t size,
                                 const SerializeOptions& options) {
-  auto* op = static_cast<const SetMatrix44Op*>(base_op);
+  auto* op = static_cast<const SetMatrixOp*>(base_op);
   PaintOpWriter helper(memory, size, options);
-
-  if (IsSkM44Identity(options.original_ctm)) {
-    helper.Write(op->matrix);
-  } else {
-    helper.Write(options.original_ctm * op->matrix);
-  }
+  helper.Write(options.original_ctm * op->matrix);
   return helper.size();
 }
 
@@ -905,26 +878,6 @@ PaintOp* ConcatOp::Deserialize(const volatile void* input,
   }
 
   UpdateTypeAndSkip(op);
-  PaintOpReader::FixupMatrixPostSerialization(&op->matrix);
-  return op;
-}
-
-PaintOp* Concat44Op::Deserialize(const volatile void* input,
-                                 size_t input_size,
-                                 void* output,
-                                 size_t output_size,
-                                 const DeserializeOptions& options) {
-  DCHECK_GE(output_size, sizeof(Concat44Op));
-  Concat44Op* op = new (output) Concat44Op;
-
-  PaintOpReader helper(input, input_size, options);
-  helper.Read(&op->matrix);
-  if (!helper.valid() || !op->IsValid()) {
-    op->~Concat44Op();
-    return nullptr;
-  }
-
-  UpdateTypeAndSkip(op);
   return op;
 }
 
@@ -1005,6 +958,7 @@ PaintOp* DrawImageOp::Deserialize(const volatile void* input,
 
   helper.Read(&op->left);
   helper.Read(&op->top);
+  helper.Read(&op->sampling);
   if (!helper.valid() || !op->IsValid()) {
     op->~DrawImageOp();
     return nullptr;
@@ -1031,6 +985,7 @@ PaintOp* DrawImageRectOp::Deserialize(const volatile void* input,
 
   helper.Read(&op->src);
   helper.Read(&op->dst);
+  helper.Read(&op->sampling);
   helper.Read(&op->constraint);
   if (!helper.valid() || !op->IsValid()) {
     op->~DrawImageRectOp();
@@ -1112,6 +1067,8 @@ PaintOp* DrawPathOp::Deserialize(const volatile void* input,
   PaintOpReader helper(input, input_size, options);
   helper.Read(&op->flags);
   helper.Read(&op->path);
+  helper.Read(&op->sk_path_fill_type);
+  op->path.setFillType(static_cast<SkPathFillType>(op->sk_path_fill_type));
   if (!helper.valid() || !op->IsValid()) {
     op->~DrawPathOp();
     return nullptr;
@@ -1369,26 +1326,6 @@ PaintOp* SetMatrixOp::Deserialize(const volatile void* input,
   }
 
   UpdateTypeAndSkip(op);
-  PaintOpReader::FixupMatrixPostSerialization(&op->matrix);
-  return op;
-}
-
-PaintOp* SetMatrix44Op::Deserialize(const volatile void* input,
-                                    size_t input_size,
-                                    void* output,
-                                    size_t output_size,
-                                    const DeserializeOptions& options) {
-  DCHECK_GE(output_size, sizeof(SetMatrix44Op));
-  SetMatrix44Op* op = new (output) SetMatrix44Op;
-
-  PaintOpReader helper(input, input_size, options);
-  helper.Read(&op->matrix);
-  if (!helper.valid() || !op->IsValid()) {
-    op->~SetMatrix44Op();
-    return nullptr;
-  }
-
-  UpdateTypeAndSkip(op);
   return op;
 }
 
@@ -1468,12 +1405,6 @@ void ClipRRectOp::Raster(const ClipRRectOp* op,
 }
 
 void ConcatOp::Raster(const ConcatOp* op,
-                      SkCanvas* canvas,
-                      const PlaybackParams& params) {
-  canvas->concat(op->matrix);
-}
-
-void Concat44Op::Raster(const Concat44Op* op,
                         SkCanvas* canvas,
                         const PlaybackParams& params) {
   canvas->concat(op->matrix);
@@ -1523,15 +1454,14 @@ void DrawImageOp::RasterWithFlags(const DrawImageOp* op,
     if (!sk_image)
       sk_image = op->image.GetSwSkImage();
 
-    canvas->drawImage(sk_image.get(), op->left, op->top, &paint);
+    canvas->drawImage(sk_image.get(), op->left, op->top, op->sampling, &paint);
     return;
   }
 
   // Dark mode is applied only for OOP raster during serialization.
   DrawImage draw_image(
       op->image, false, SkIRect::MakeWH(op->image.width(), op->image.height()),
-      flags ? flags->getFilterQuality() : kNone_SkFilterQuality,
-      canvas->getTotalMatrix());
+      sampling_to_quality(op->sampling), canvas->getTotalMatrix());
   auto scoped_result = params.image_provider->GetRasterContent(draw_image);
   if (!scoped_result)
     return;
@@ -1551,8 +1481,11 @@ void DrawImageOp::RasterWithFlags(const DrawImageOp* op,
     canvas->scale(1.f / scale_adjustment.width(),
                   1.f / scale_adjustment.height());
   }
-  paint.setFilterQuality(decoded_image.filter_quality());
-  canvas->drawImage(decoded_image.image().get(), op->left, op->top, &paint);
+  canvas->drawImage(
+      decoded_image.image().get(), op->left, op->top,
+      SkSamplingOptions(decoded_image.filter_quality(),
+                        SkSamplingOptions::kMedium_asMipmapLinear),
+      &paint);
 }
 
 void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
@@ -1577,8 +1510,7 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
 
     DCHECK(IsScaleAdjustmentIdentity(op->scale_adjustment));
     SkAutoCanvasRestore save_restore(canvas, true);
-    canvas->concat(
-        SkMatrix::MakeRectToRect(op->src, op->dst, SkMatrix::kFill_ScaleToFit));
+    canvas->concat(SkMatrix::RectToRect(op->src, op->dst));
     canvas->clipRect(op->src);
     canvas->saveLayer(&op->src, &paint);
     // Compositor thread animations can cause PaintWorklet jobs to be dispatched
@@ -1601,23 +1533,21 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
       }
       if (!sk_image)
         sk_image = op->image.GetSwSkImage();
-      c->drawImageRect(sk_image.get(), adjusted_src, op->dst, &p,
+      c->drawImageRect(sk_image.get(), adjusted_src, op->dst, op->sampling, &p,
                        op->constraint);
     });
     return;
   }
 
-  SkMatrix matrix;
-  matrix.setRectToRect(op->src, op->dst, SkMatrix::kFill_ScaleToFit);
-  matrix.postConcat(canvas->getTotalMatrix());
+  SkMatrix matrix =
+      canvas->getTotalMatrix() * SkMatrix::RectToRect(op->src, op->dst);
 
   SkIRect int_src_rect;
   op->src.roundOut(&int_src_rect);
 
   // Dark mode is applied only for OOP raster during serialization.
-  DrawImage draw_image(
-      op->image, false, int_src_rect,
-      flags ? flags->getFilterQuality() : kNone_SkFilterQuality, matrix);
+  DrawImage draw_image(op->image, false, int_src_rect,
+                       sampling_to_quality(op->sampling), matrix);
   auto scoped_result = params.image_provider->GetRasterContent(draw_image);
   if (!scoped_result)
     return;
@@ -1635,10 +1565,11 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
   adjusted_src = AdjustSrcRectForScale(adjusted_src, scale_adjustment);
   flags->DrawToSk(canvas, [op, &decoded_image, adjusted_src](SkCanvas* c,
                                                              const SkPaint& p) {
-    SkPaint paint_with_filter_quality(p);
-    paint_with_filter_quality.setFilterQuality(decoded_image.filter_quality());
-    c->drawImageRect(decoded_image.image().get(), adjusted_src, op->dst,
-                     &paint_with_filter_quality, op->constraint);
+    c->drawImageRect(
+        decoded_image.image().get(), adjusted_src, op->dst,
+        SkSamplingOptions(decoded_image.filter_quality(),
+                          SkSamplingOptions::kMedium_asMipmapLinear),
+        &p, op->constraint);
   });
 }
 
@@ -1780,12 +1711,6 @@ void ScaleOp::Raster(const ScaleOp* op,
 }
 
 void SetMatrixOp::Raster(const SetMatrixOp* op,
-                         SkCanvas* canvas,
-                         const PlaybackParams& params) {
-  canvas->setMatrix(SkM44(op->matrix) * params.original_ctm);
-}
-
-void SetMatrix44Op::Raster(const SetMatrix44Op* op,
                            SkCanvas* canvas,
                            const PlaybackParams& params) {
   canvas->setMatrix(op->matrix * params.original_ctm);
@@ -1961,14 +1886,6 @@ bool ClipRRectOp::AreEqual(const PaintOp* base_left,
 bool ConcatOp::AreEqual(const PaintOp* base_left, const PaintOp* base_right) {
   auto* left = static_cast<const ConcatOp*>(base_left);
   auto* right = static_cast<const ConcatOp*>(base_right);
-  DCHECK(left->IsValid());
-  DCHECK(right->IsValid());
-  return AreSkMatricesEqual(left->matrix, right->matrix);
-}
-
-bool Concat44Op::AreEqual(const PaintOp* base_left, const PaintOp* base_right) {
-  auto* left = static_cast<const Concat44Op*>(base_left);
-  auto* right = static_cast<const Concat44Op*>(base_right);
   DCHECK(left->IsValid());
   DCHECK(right->IsValid());
   return AreSkM44sEqual(left->matrix, right->matrix);
@@ -2239,17 +2156,6 @@ bool SetMatrixOp::AreEqual(const PaintOp* base_left,
   auto* right = static_cast<const SetMatrixOp*>(base_right);
   DCHECK(left->IsValid());
   DCHECK(right->IsValid());
-  if (!AreSkMatricesEqual(left->matrix, right->matrix))
-    return false;
-  return true;
-}
-
-bool SetMatrix44Op::AreEqual(const PaintOp* base_left,
-                             const PaintOp* base_right) {
-  auto* left = static_cast<const SetMatrix44Op*>(base_left);
-  auto* right = static_cast<const SetMatrix44Op*>(base_right);
-  DCHECK(left->IsValid());
-  DCHECK(right->IsValid());
   if (!AreSkM44sEqual(left->matrix, right->matrix))
     return false;
   return true;
@@ -2484,6 +2390,8 @@ bool PaintOp::QuickRejectDraw(const PaintOp* op, const SkCanvas* canvas) {
   SkRect rect;
   if (!PaintOp::GetBounds(op, &rect))
     return false;
+  if (!rect.isFinite())
+    return true;
 
   if (op->IsPaintOpWithFlags()) {
     SkPaint paint = static_cast<const PaintOpWithFlags*>(op)->flags.ToSkPaint();
@@ -2614,14 +2522,23 @@ AnnotateOp::~AnnotateOp() = default;
 
 DrawImageOp::DrawImageOp() : PaintOpWithFlags(kType) {}
 
+DrawImageOp::DrawImageOp(const PaintImage& image, SkScalar left, SkScalar top)
+    : PaintOpWithFlags(kType, PaintFlags()),
+      image(image),
+      left(left),
+      top(top),
+      sampling(SkSamplingOptions()) {}
+
 DrawImageOp::DrawImageOp(const PaintImage& image,
                          SkScalar left,
                          SkScalar top,
+                         const SkSamplingOptions& sampling,
                          const PaintFlags* flags)
     : PaintOpWithFlags(kType, flags ? *flags : PaintFlags()),
       image(image),
       left(left),
-      top(top) {}
+      top(top),
+      sampling(sampling) {}
 
 bool DrawImageOp::HasDiscardableImages() const {
   return image && !image.IsTextureBacked();
@@ -2634,12 +2551,25 @@ DrawImageRectOp::DrawImageRectOp() : PaintOpWithFlags(kType) {}
 DrawImageRectOp::DrawImageRectOp(const PaintImage& image,
                                  const SkRect& src,
                                  const SkRect& dst,
+                                 SkCanvas::SrcRectConstraint constraint)
+    : PaintOpWithFlags(kType, PaintFlags()),
+      image(image),
+      src(src),
+      dst(dst),
+      sampling(SkSamplingOptions()),
+      constraint(constraint) {}
+
+DrawImageRectOp::DrawImageRectOp(const PaintImage& image,
+                                 const SkRect& src,
+                                 const SkRect& dst,
+                                 const SkSamplingOptions& sampling,
                                  const PaintFlags* flags,
                                  SkCanvas::SrcRectConstraint constraint)
     : PaintOpWithFlags(kType, flags ? *flags : PaintFlags()),
       image(image),
       src(src),
       dst(dst),
+      sampling(sampling),
       constraint(constraint) {}
 
 bool DrawImageRectOp::HasDiscardableImages() const {

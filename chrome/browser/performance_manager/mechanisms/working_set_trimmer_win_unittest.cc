@@ -9,11 +9,11 @@
 #include <psapi.h>
 
 #include <cstring>
+#include <string>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/process/process_handle.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/multiprocess_test.h"
@@ -27,13 +27,13 @@ namespace performance_manager {
 namespace {
 
 constexpr char kTestProcessIdSwitchName[] = "test_test_process_id";
-constexpr base::char16 kBufferInitializedEventName[] =
+constexpr wchar_t kBufferInitializedEventName[] =
     L"RCEmptyWorkingSetTestBufferInitialized";
-constexpr base::char16 kChildProcessExitEventName[] =
+constexpr wchar_t kChildProcessExitEventName[] =
     L"RCEmptyWorkingSetTestChildProcessExit";
 
-base::win::ScopedHandle CreateEvent(const base::string16& name,
-                                    const base::string16& test_process_id) {
+base::win::ScopedHandle CreateEvent(const std::wstring& name,
+                                    const std::wstring& test_process_id) {
   base::win::ScopedHandle event(::CreateEvent(
       nullptr, TRUE, FALSE, (L"Local\\" + name + test_process_id).c_str()));
   DCHECK(event.IsValid());
@@ -53,7 +53,7 @@ size_t GetWorkingSetSizeMb(base::ProcessHandle handle) {
 }
 
 MULTIPROCESS_TEST_MAIN(ProcessWithLargeWorkingSet) {
-  const base::string16 test_process_id =
+  const std::wstring test_process_id =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueNative(
           kTestProcessIdSwitchName);
 
@@ -105,8 +105,8 @@ class WorkingSetTrimmerTest : public GraphTestHarness {
     GraphTestHarness::TearDown();
   }
 
-  const base::string16 test_process_id_ =
-      base::NumberToString16(base::GetCurrentProcId());
+  const std::wstring test_process_id_ =
+      base::NumberToWString(base::GetCurrentProcId());
   base::Process child_process_;
   TestNodeWrapper<ProcessNodeImpl> process_node_ =
       CreateNode<ProcessNodeImpl>();

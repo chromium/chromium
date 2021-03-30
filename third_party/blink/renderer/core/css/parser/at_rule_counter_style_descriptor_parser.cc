@@ -7,23 +7,13 @@
 #include "third_party/blink/renderer/core/css/css_string_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 
 namespace blink {
 
 namespace {
-
-CSSValue* ConsumeCounterStyleName(CSSParserTokenRange& range,
-                                  const CSSParserContext& context) {
-  // <counter-style-name> is a <custom-ident> that is not an ASCII
-  // case-insensitive match for "none".
-  CSSCustomIdentValue* name =
-      css_parsing_utils::ConsumeCustomIdent(range, context);
-  if (!name || EqualIgnoringASCIICase(name->Value(), "none"))
-    return nullptr;
-  return name;
-}
 
 CSSValue* ConsumeCounterStyleSymbol(CSSParserTokenRange& range,
                                     const CSSParserContext& context) {
@@ -64,12 +54,32 @@ CSSValue* ConsumeCounterStyleSystem(CSSParserTokenRange& range,
 
   if (CSSValue* ident =
           css_parsing_utils::ConsumeIdent<CSSValueID::kExtends>(range)) {
-    CSSValue* extended = ConsumeCounterStyleName(range, context);
+    CSSValue* extended =
+        css_parsing_utils::ConsumeCounterStyleName(range, context);
     if (!extended)
       return nullptr;
     return MakeGarbageCollected<CSSValuePair>(
         ident, extended, CSSValuePair::kKeepIdenticalValues);
   }
+
+  // Internal keywords for predefined counter styles that use special
+  // algorithms. For example, 'simp-chinese-informal'.
+  if (context.Mode() == kUASheetMode) {
+    if (CSSValue* ident = css_parsing_utils::ConsumeIdent<
+            CSSValueID::kInternalHebrew,
+            CSSValueID::kInternalSimpChineseInformal,
+            CSSValueID::kInternalSimpChineseFormal,
+            CSSValueID::kInternalTradChineseInformal,
+            CSSValueID::kInternalTradChineseFormal,
+            CSSValueID::kInternalKoreanHangulFormal,
+            CSSValueID::kInternalKoreanHanjaInformal,
+            CSSValueID::kInternalKoreanHanjaFormal,
+            CSSValueID::kInternalLowerArmenian,
+            CSSValueID::kInternalUpperArmenian,
+            CSSValueID::kInternalEthiopicNumeric>(range))
+      return ident;
+  }
+
   return nullptr;
 }
 
@@ -216,7 +226,8 @@ CSSValue* ConsumeCounterStyleSpeakAs(CSSParserTokenRange& range,
           CSSValueID::kAuto, CSSValueID::kBullets, CSSValueID::kNumbers,
           CSSValueID::kWords, CSSValueID::kSpellOut>(range))
     return ident;
-  if (CSSValue* name = ConsumeCounterStyleName(range, context))
+  if (CSSValue* name =
+          css_parsing_utils::ConsumeCounterStyleName(range, context))
     return name;
   return nullptr;
 }
@@ -254,7 +265,7 @@ CSSValue* AtRuleDescriptorParser::ParseAtCounterStyleDescriptor(
       break;
     case AtRuleDescriptorID::Fallback:
       range.ConsumeWhitespace();
-      parsed_value = ConsumeCounterStyleName(range, context);
+      parsed_value = css_parsing_utils::ConsumeCounterStyleName(range, context);
       break;
     case AtRuleDescriptorID::Symbols:
       range.ConsumeWhitespace();

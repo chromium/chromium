@@ -82,11 +82,9 @@ class SigninManagerAndroidTest : public ::testing::Test {
         BookmarkModelFactory::GetForBrowserContext(profile());
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
 
-    bookmark_model->AddURL(bookmark_model->bookmark_bar_node(), 0,
-                           base::ASCIIToUTF16("Example 1"),
+    bookmark_model->AddURL(bookmark_model->bookmark_bar_node(), 0, u"Example 1",
                            GURL("https://example.org/1"));
-    bookmark_model->AddURL(bookmark_model->bookmark_bar_node(), 1,
-                           base::ASCIIToUTF16("Example 2"),
+    bookmark_model->AddURL(bookmark_model->bookmark_bar_node(), 1, u"Example 2",
                            GURL("https://example.com/2"));
 
     return bookmark_model;
@@ -138,8 +136,7 @@ TEST_F(SigninManagerAndroidTest, DISABLED_DeleteGoogleServiceWorkerCaches) {
   // be able to observe deletions.
   // Add service workers.
   auto helper = base::MakeRefCounted<browsing_data::CannedCacheStorageHelper>(
-      content::BrowserContext::GetDefaultStoragePartition(profile())
-          ->GetCacheStorageContext());
+      content::BrowserContext::GetDefaultStoragePartition(profile()));
 
   for (const TestCase& test_case : kTestCases)
     helper->Add(url::Origin::Create(GURL(test_case.worker_url)));

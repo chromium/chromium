@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/ui/open_in/open_in_mediator.h"
 
-#import <UIKit/UIKit.h>
-
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/open_in/open_in_tab_helper.h"
 #import "ios/chrome/browser/ui/open_in/open_in_controller.h"
@@ -25,21 +23,25 @@
   // A map associating webStates with their OpenInControllers.
   std::map<web::WebState*, OpenInController*> _openInControllersForWebStates;
 }
+
 // The Browser that accesses the WebStateList.
 @property(nonatomic, assign) Browser* browser;
+
 // The WebStateList that this mediator listens for newly added Webstates.
 @property(nonatomic, assign) WebStateList* webStateList;
+
+// The base view controller from which to present UI.
+@property(nonatomic, weak) UIViewController* baseViewController;
 
 @end
 
 @implementation OpenInMediator
 
-@synthesize browser = _browser;
-@synthesize webStateList = _webStateList;
-
-- (instancetype)initWithBrowser:(Browser*)browser {
+- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
+                                   browser:(Browser*)browser {
   self = [super init];
   if (self) {
+    _baseViewController = baseViewController;
     _browser = browser;
     _webStateList = browser->GetWebStateList();
     // Set the delegates for all existing webstates in the |_webStateList|.
@@ -91,9 +93,10 @@
               suggestedFileName:(NSString*)suggestedFileName {
   if (!_openInControllersForWebStates[webState]) {
     OpenInController* openInController = [[OpenInController alloc]
-        initWithURLLoaderFactory:webState->GetBrowserState()
-                                     ->GetSharedURLLoaderFactory()
-                        webState:webState];
+        initWithBaseViewController:_baseViewController
+                  URLLoaderFactory:webState->GetBrowserState()
+                                       ->GetSharedURLLoaderFactory()
+                          webState:webState];
     openInController.browser = _browser;
     _openInControllersForWebStates[webState] = openInController;
   }

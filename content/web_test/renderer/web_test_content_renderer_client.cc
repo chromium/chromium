@@ -21,7 +21,6 @@
 #include "content/web_test/renderer/test_websocket_handshake_throttle_provider.h"
 #include "content/web_test/renderer/web_frame_test_proxy.h"
 #include "content/web_test/renderer/web_test_render_thread_observer.h"
-#include "content/web_test/renderer/web_view_test_proxy.h"
 #include "media/base/audio_latency.h"
 #include "media/base/mime_util.h"
 #include "media/media_buildflags.h"
@@ -50,17 +49,10 @@ namespace content {
 
 namespace {
 
-RenderViewImpl* CreateWebViewTestProxy(
-    AgentSchedulingGroup& agent_scheduling_group,
-    CompositorDependencies* compositor_deps,
-    const mojom::CreateViewParams& params) {
-  return new WebViewTestProxy(
-      agent_scheduling_group, compositor_deps, params,
-      WebTestRenderThreadObserver::GetInstance()->test_runner());
-}
-
 RenderFrameImpl* CreateWebFrameTestProxy(RenderFrameImpl::CreateParams params) {
-  return new WebFrameTestProxy(std::move(params));
+  return new WebFrameTestProxy(
+      std::move(params),
+      WebTestRenderThreadObserver::GetInstance()->test_runner());
 }
 
 blink::WebFrameWidget* CreateWebTestWebFrameWidget(
@@ -92,7 +84,6 @@ blink::WebFrameWidget* CreateWebTestWebFrameWidget(
 WebTestContentRendererClient::WebTestContentRendererClient() {
   // Web tests subclass these types, so we inject factory methods to replace
   // the creation of the production type with the subclasses.
-  RenderViewImpl::InstallCreateHook(CreateWebViewTestProxy);
   RenderFrameImpl::InstallCreateHook(CreateWebFrameTestProxy);
   create_widget_callback_ = base::BindRepeating(&CreateWebTestWebFrameWidget);
   blink::InstallCreateWebFrameWidgetHook(&create_widget_callback_);
@@ -139,7 +130,7 @@ void WebTestContentRendererClient::RenderFrameCreated(
   // override is not needed.
 }
 
-std::unique_ptr<content::WebSocketHandshakeThrottleProvider>
+std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
 WebTestContentRendererClient::CreateWebSocketHandshakeThrottleProvider() {
   return std::make_unique<TestWebSocketHandshakeThrottleProvider>();
 }

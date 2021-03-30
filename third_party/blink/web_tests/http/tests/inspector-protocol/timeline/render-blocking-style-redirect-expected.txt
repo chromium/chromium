@@ -1,0 +1,4 @@
+Tests redirected style traces.
+css-edit-redirected-css.css: dynamically_injected_non_blocking
+css-redirect.php: dynamically_injected_non_blocking
+

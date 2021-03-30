@@ -15,7 +15,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 #include "base/supports_user_data.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"

@@ -4,16 +4,9 @@
 
 // https://github.com/WICG/web-codecs
 
-
-enum VideoEncoderAccelerationPreference {
-  "allow",
-  "deny",
-  "require"
-};
-
 dictionary VideoEncoderConfig {
   required DOMString codec;
-  VideoEncoderAccelerationPreference acceleration = "allow";
+  HardwarePreference hardwareAcceleration = "allow";
 
   unsigned long long bitrate;
 
@@ -21,4 +14,13 @@ dictionary VideoEncoderConfig {
 
   required unsigned long width;
   required unsigned long height;
+
+  // Hint about the pixel aspect ratio of the content.
+  unsigned long displayWidth;
+  unsigned long displayHeight;
+
+  AvcEncoderConfig avc;
+
+  // Same as in WebRTC SVC (https://w3c.github.io/webrtc-svc/)
+  DOMString scalabilityMode;
 };

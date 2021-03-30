@@ -5,7 +5,7 @@
 // clang-format off
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-// #import {FileOperationManager} from '../../../externs/background/file_operation_manager.m.js';
+// #import {FileOperationManager} from '../../externs/background/file_operation_manager.m.js';
 // clang-format on
 
 /* #ignore */ 'use strict';
@@ -102,5 +102,6 @@
   willUseTrash() {}
   deleteEntries() {}
   restoreDeleted() {}
+  emptyTrash() {}
   zipSelection() {}
 }

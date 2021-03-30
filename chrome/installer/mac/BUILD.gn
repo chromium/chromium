@@ -3,10 +3,11 @@
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
-import("//build/config/mac/base_rules.gni")
+import("//build/config/mac/mac_sdk.gni")
 import("//build/util/branding.gni")
 import("//build/util/version.gni")
 import("//chrome/process_version_rc_template.gni")
+import("//testing/test.gni")
 import("mac_signing_sources.gni")
 
 if (is_chrome_branded) {
@@ -132,7 +133,14 @@ copy("copies") {
   outputs = [ "$_packaging_dir/{{source_file_part}}" ]
 }
 
-group("mac_signing_tests") {
+script_test("mac_signing_tests") {
+  run_under_python2 = true
+  script = "//testing/scripts/run_isolated_script_test.py"
+
+  args = [ "@WrappedPath(" + rebase_path(
+               "//chrome/installer/mac/signing/run_mac_signing_tests.py",
+               root_build_dir) + ")" ]
+
   data = mac_signing_sources + [
            "signing/commands_test.py",
            "signing/model_test.py",
@@ -144,12 +152,6 @@ group("mac_signing_tests") {
            "signing/signing_test.py",
            "signing/test_common.py",
            "signing/test_config.py",
-
-           # The run_isolated_script_test.py script and its dependencies.
-           "//testing/scripts/run_isolated_script_test.py",
-           "//testing/scripts/common.py",
-           "//testing/xvfb.py",
-           "//testing/test_env.py",
            "//third_party/catapult/third_party/typ/",
          ]
 }

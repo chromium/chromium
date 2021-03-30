@@ -22,7 +22,7 @@ ServiceProcessHost::Options& ServiceProcessHost::Options::WithDisplayName(
 }
 
 ServiceProcessHost::Options& ServiceProcessHost::Options::WithDisplayName(
-    const base::string16& name) {
+    const std::u16string& name) {
   display_name = name;
   return *this;
 }

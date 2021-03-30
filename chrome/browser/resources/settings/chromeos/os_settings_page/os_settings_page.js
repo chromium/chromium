@@ -6,8 +6,6 @@
  * @fileoverview
  * 'os-settings-page' is the settings page containing the actual OS settings.
  */
-(function() {
-'use strict';
 
 Polymer({
   is: 'os-settings-page',
@@ -371,4 +369,3 @@ Polymer({
     return bool.toString();
   },
 });
-})();

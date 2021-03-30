@@ -55,7 +55,7 @@ DesktopCaptureChooseDesktopMediaFunction::Run() {
   // |web_contents| is the WebContents for which the stream is created, and will
   // also be used to determine where to show the picker's UI.
   content::WebContents* web_contents = NULL;
-  base::string16 target_name;
+  std::u16string target_name;
   GURL origin;
   if (params->target_tab) {
     if (!params->target_tab->url) {

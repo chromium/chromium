@@ -38,7 +38,6 @@ LLVM_BOOTSTRAP_INSTALL_DIR = os.path.join(THIRD_PARTY_DIR,
 LLVM_INSTRUMENTED_DIR = os.path.join(THIRD_PARTY_DIR, 'llvm-instrumented')
 LLVM_PROFDATA_FILE = os.path.join(LLVM_INSTRUMENTED_DIR, 'profdata.prof')
 CHROME_TOOLS_SHIM_DIR = os.path.join(LLVM_DIR, 'llvm', 'tools', 'chrometools')
-COMPILER_RT_BUILD_DIR = os.path.join(LLVM_BUILD_DIR, 'compiler-rt')
 LLVM_BUILD_TOOLS_DIR = os.path.abspath(
     os.path.join(LLVM_DIR, '..', 'llvm-build-tools'))
 ANDROID_NDK_DIR = os.path.join(
@@ -176,8 +175,9 @@ def GetCommitDescription(commit):
   """Get the output of `git describe`.
 
   Needs to be called from inside the git repository dir."""
+  git_exe = 'git.bat' if sys.platform.startswith('win') else 'git'
   return subprocess.check_output(
-      ['git', 'describe', '--long', '--abbrev=8', commit]).rstrip()
+      [git_exe, 'describe', '--long', '--abbrev=8', commit]).rstrip()
 
 
 def DeleteChromeToolsShim():
@@ -317,9 +317,9 @@ def MaybeDownloadHostGcc(args):
   """Download a modern GCC host compiler on Linux."""
   if not sys.platform.startswith('linux') or args.gcc_toolchain:
     return
-  gcc_dir = os.path.join(LLVM_BUILD_TOOLS_DIR, 'gcc530trusty')
+  gcc_dir = os.path.join(LLVM_BUILD_TOOLS_DIR, 'gcc-10.2.0-trusty')
   if not os.path.exists(gcc_dir):
-    DownloadAndUnpack(CDS_URL + '/tools/gcc530trusty.tgz', gcc_dir)
+    DownloadAndUnpack(CDS_URL + '/tools/gcc-10.2.0-trusty.tgz', gcc_dir)
   args.gcc_toolchain = gcc_dir
 
 
@@ -379,6 +379,7 @@ def CopyLibstdcpp(args, build_dir):
   # The two fuzzer tests are weird in that they copy the fuzzer binary from bin/
   # into the test tree under a different name. To make the relative rpath in
   # them work, copy libstdc++ to the copied location for now.
+  # There is also a compiler-rt test that copies llvm-symbolizer out of bin/.
   # TODO(thakis): Instead, make the upstream lit.local.cfg.py for these 2 tests
   # check if the binary contains an rpath and if so disable the tests.
   for d in ['lib',
@@ -386,6 +387,17 @@ def CopyLibstdcpp(args, build_dir):
             'test/tools/llvm-opt-fuzzer/lib']:
     EnsureDirExists(os.path.join(build_dir, d))
     CopyFile(libstdcpp, os.path.join(build_dir, d))
+
+  sanitizer_common_tests = os.path.join(build_dir,
+                                 'projects/compiler-rt/test/sanitizer_common')
+  if os.path.exists(sanitizer_common_tests):
+    for d in ['asan-i386-Linux', 'asan-x86_64-Linux', 'lsan-i386-Linux',
+              'lsan-x86_64-Linux', 'msan-x86_64-Linux', 'tsan-x86_64-Linux',
+              'ubsan-i386-Linux', 'ubsan-x86_64-Linux']:
+      libpath = os.path.join(sanitizer_common_tests, d, 'Output', 'lib')
+      EnsureDirExists(libpath)
+      CopyFile(libstdcpp, libpath)
+
 
 def gn_arg(v):
   if v == 'True':
@@ -417,6 +429,8 @@ def main():
                       help='do not build anything')
   parser.add_argument('--skip-checkout', action='store_true',
                       help='do not create or update any checkouts')
+  parser.add_argument('--build-dir',
+                      help='Override build directory')
   parser.add_argument('--extra-tools', nargs='*', default=[],
                       help='select additional chrome tools to build')
   parser.add_argument('--use-system-cmake', action='store_true',
@@ -425,6 +439,13 @@ def main():
   parser.add_argument('--with-android', type=gn_arg, nargs='?', const=True,
                       help='build the Android ASan runtime (linux only)',
                       default=sys.platform.startswith('linux'))
+  parser.add_argument('--with-fuchsia',
+                      type=gn_arg,
+                      nargs='?',
+                      const=True,
+                      help='build the Fuchsia runtimes (linux and mac only)',
+                      default=sys.platform.startswith('linux')
+                      or sys.platform.startswith('darwin'))
   parser.add_argument('--without-android', action='store_false',
                       help='don\'t build Android ASan runtime (linux only)',
                       dest='with_android')
@@ -445,17 +466,15 @@ def main():
     print('for how to install the NDK, or pass --without-android.')
     return 1
 
-  if args.llvm_force_head_revision:
-    # Don't build fuchsia runtime on ToT bots at all.
-    args.with_fuchsia = False
-
   if args.with_fuchsia and not os.path.exists(FUCHSIA_SDK_DIR):
     print('Fuchsia SDK not found at ' + FUCHSIA_SDK_DIR)
     print('The Fuchsia SDK is needed to build libclang_rt for Fuchsia.')
     print('Install the Fuchsia SDK by adding fuchsia to the ')
     print('target_os section in your .gclient and running hooks, ')
     print('or pass --without-fuchsia.')
-    print('https://chromium.googlesource.com/chromium/src/+/master/docs/fuchsia_build_instructions.md')
+    print(
+        'https://chromium.googlesource.com/chromium/src/+/master/docs/fuchsia/build_instructions.md'
+    )
     print('for general Fuchsia build instructions.')
     return 1
 
@@ -485,7 +504,11 @@ def main():
   if sys.platform == 'darwin':
     isysroot = subprocess.check_output(['xcrun', '--show-sdk-path']).rstrip()
 
-  global CLANG_REVISION, PACKAGE_VERSION
+  global CLANG_REVISION, PACKAGE_VERSION, LLVM_BUILD_DIR
+
+  if args.build_dir:
+    LLVM_BUILD_DIR = args.build_dir
+
   if args.llvm_force_head_revision:
     checkout_revision = GetLatestLLVMCommit()
   else:
@@ -561,7 +584,6 @@ def main():
     base_cmake_args += [
         '-DLLVM_LOCAL_RPATH=' + os.path.join(args.gcc_toolchain, 'lib64')
     ]
-
 
   if sys.platform == 'darwin':
     # For libc++, we only want the headers.
@@ -669,11 +691,7 @@ def main():
     CopyLibstdcpp(args, LLVM_BOOTSTRAP_INSTALL_DIR)
     RunCommand(['ninja'], msvc_arch='x64')
     if args.run_tests:
-      test_targets = [ 'check-all' ]
-      if sys.platform == 'darwin':
-        # TODO(crbug.com/731375): Run check-all on Darwin too.
-        test_targets = [ 'check-llvm', 'check-clang', 'check-builtins' ]
-      RunCommand(['ninja'] + test_targets, msvc_arch='x64')
+      RunCommand(['ninja', 'check-all'], msvc_arch='x64')
     RunCommand(['ninja', 'install'], msvc_arch='x64')
 
     if sys.platform == 'win32':
@@ -724,8 +742,6 @@ def main():
     if cc is not None:  instrument_args.append('-DCMAKE_C_COMPILER=' + cc)
     if cxx is not None: instrument_args.append('-DCMAKE_CXX_COMPILER=' + cxx)
     if lld is not None: instrument_args.append('-DCMAKE_LINKER=' + lld)
-    if args.thinlto:
-      instrument_args.append('-DLLVM_ENABLE_LTO=Thin')
 
     RunCommand(['cmake'] + instrument_args + [os.path.join(LLVM_DIR, 'llvm')],
                msvc_arch='x64')
@@ -792,8 +808,8 @@ def main():
         '-DDARWIN_iossim_ARCHS=i386;x86_64;arm64',
     ])
     if args.bootstrap:
-      # mac/arm64 needs MacOSX11.0.sdk. System Xcode (+ SDK) on the chrome bots
-      # is something much older.
+      # mac/arm64 needs MacOSX11.0.sdk. System Xcode (+ SDK) may be something
+      # else, so use the hermetic Xcode.
       # Options:
       # - temporarily set system Xcode to Xcode 12 beta while running this
       #   script, (cf build/swarming_xcode_install.py, but it looks unused)
@@ -805,11 +821,11 @@ def main():
       #   LLVM build without it being system Xcode.
       #
       # The last option seems best, so let's go with that. We need to pass
-      # -isysroot to the 11.0 SDK and -B to the /usr/bin so that the new ld64 is
+      # -isysroot to the SDK and -B to the /usr/bin so that the new ld64 is
       # used.
       # The compiler-rt build overrides -isysroot flags set via cflags, and we
       # only need to use the 11 SDK for the compiler-rt build. So set only
-      # DARWIN_macosx_CACHED_SYSROOT to the 11.0 SDK and use the regular SDK
+      # DARWIN_macosx_CACHED_SYSROOT to the 11 SDK and use the regular SDK
       # for the rest of the build. (The new ld is used for all links.)
       sys.path.insert(1, os.path.join(CHROMIUM_DIR, 'build'))
       import mac_toolchain
@@ -817,12 +833,12 @@ def main():
       mac_toolchain.InstallXcodeBinaries(LLVM_XCODE)
       isysroot_11 = os.path.join(LLVM_XCODE, 'Contents', 'Developer',
                                  'Platforms', 'MacOSX.platform', 'Developer',
-                                 'SDKs', 'MacOSX11.0.sdk')
+                                 'SDKs', 'MacOSX11.1.sdk')
       xcode_bin = os.path.join(LLVM_XCODE, 'Contents', 'Developer',
                                'Toolchains', 'XcodeDefault.xctoolchain', 'usr',
                                'bin')
       # Include an arm64 slice for libclang_rt.osx.a. This requires using
-      # MacOSX11.0.sdk (via -isysroot, via DARWIN_macosx_CACHED_SYSROOT) and
+      # MacOSX11.x.sdk (via -isysroot, via DARWIN_macosx_CACHED_SYSROOT) and
       # the new ld, via -B
       compiler_rt_args.extend([
           # We don't need 32-bit intel support for macOS, we only ship 64-bit.
@@ -925,10 +941,11 @@ def main():
 
   # Do an out-of-tree build of compiler-rt for 32-bit Win clang_rt.profile.lib.
   if sys.platform == 'win32':
-    if os.path.isdir(COMPILER_RT_BUILD_DIR):
-      RmTree(COMPILER_RT_BUILD_DIR)
-    os.makedirs(COMPILER_RT_BUILD_DIR)
-    os.chdir(COMPILER_RT_BUILD_DIR)
+    compiler_rt_build_dir = os.path.join(LLVM_BUILD_DIR, 'compiler-rt')
+    if os.path.isdir(compiler_rt_build_dir):
+      RmTree(compiler_rt_build_dir)
+    os.makedirs(compiler_rt_build_dir)
+    os.chdir(compiler_rt_build_dir)
     if args.bootstrap:
       # The bootstrap compiler produces 64-bit binaries by default.
       cflags += ['-m32']
@@ -954,7 +971,7 @@ def main():
     RunCommand(['ninja', 'compiler-rt'], msvc_arch='x86')
 
     # Copy select output to the main tree.
-    rt_lib_src_dir = os.path.join(COMPILER_RT_BUILD_DIR, 'lib', 'clang',
+    rt_lib_src_dir = os.path.join(compiler_rt_build_dir, 'lib', 'clang',
                                   RELEASE_VERSION, 'lib', platform)
     # Static and dynamic libraries:
     CopyDirectoryContents(rt_lib_src_dir, rt_lib_dst_dir)
@@ -978,6 +995,13 @@ def main():
           '--target=' + target_triple,
           '--sysroot=%s/sysroot' % toolchain_dir,
           '--gcc-toolchain=' + toolchain_dir,
+          # android_ndk/toolchains/llvm/prebuilt/linux-x86_64/aarch64-linux-android/bin/ld
+          # depends on a newer version of libxml2.so than what's available on
+          # the bots. To make things work, use our just-built lld as linker.
+          '-fuse-ld=lld',
+          # Clang defaults to compiler-rt when targeting android after
+          # a478b0a199f4. Stick with libgcc for now. (crbug.com/1184398).
+          '--rtlib=libgcc',
       ]
       android_args = base_cmake_args + [
         '-DCMAKE_C_COMPILER=' + os.path.join(LLVM_BUILD_DIR, 'bin/clang'),
@@ -1069,6 +1093,27 @@ def main():
         os.makedirs(fuchsia_lib_dst_dir)
       CopyFile(os.path.join(build_dir, 'lib', target_spec, builtins_a),
                fuchsia_lib_dst_dir)
+
+      # Build the Fuchsia profile runtime.
+      if target_arch == 'x86_64':
+        fuchsia_args.extend([
+            '-DCOMPILER_RT_BUILD_BUILTINS=OFF',
+            '-DCOMPILER_RT_BUILD_PROFILE=ON',
+            '-DCMAKE_CXX_COMPILER_TARGET=%s-fuchsia' % target_arch,
+            '-DCMAKE_CXX_COMPILER_WORKS=ON',
+        ])
+        profile_build_dir = os.path.join(LLVM_BUILD_DIR,
+                                         'fuchsia-profile-' + target_arch)
+        if not os.path.exists(profile_build_dir):
+          os.mkdir(os.path.join(profile_build_dir))
+        os.chdir(profile_build_dir)
+        RunCommand(['cmake'] +
+                   fuchsia_args +
+                   [COMPILER_RT_DIR])
+        profile_a = 'libclang_rt.profile.a'
+        RunCommand(['ninja', profile_a])
+        CopyFile(os.path.join(profile_build_dir, 'lib', target_spec, profile_a),
+                              fuchsia_lib_dst_dir)
 
   # Run tests.
   if args.run_tests or args.llvm_force_head_revision:

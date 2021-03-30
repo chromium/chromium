@@ -24,9 +24,10 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/language_code.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -67,7 +68,9 @@ class FormStructure {
 
   // Runs several heuristics against the form fields to determine their possible
   // types.
-  void DetermineHeuristicTypes(LogManager* log_manager = nullptr);
+  void DetermineHeuristicTypes(
+      AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+      LogManager* log_manager);
 
   // Encodes the proto |upload| request from this FormStructure, and stores
   // the (single) FormSignature and the signatures of the fields to be uploaded
@@ -79,6 +82,7 @@ class FormStructure {
       bool form_was_autofilled,
       const std::string& login_form_signature,
       bool observed_submission,
+      bool is_raw_metadata_uploading_enabled,
       autofill::AutofillUploadContents* upload,
       std::vector<FormSignature>* encoded_signatures) const;
 
@@ -104,9 +108,6 @@ class FormStructure {
   // their fields' predicted types.
   static std::vector<FormDataPredictions> GetFieldTypePredictions(
       const std::vector<FormStructure*>& form_structures);
-
-  // Returns whether sending autofill field metadata to the server is enabled.
-  static bool IsAutofillFieldMetadataEnabled();
 
   // Creates FormStructure that has bare minimum information for uploading
   // votes, namely form and field signatures. Warning: do not use for Autofill
@@ -200,7 +201,7 @@ class FormStructure {
   // empty set if the form doesn't reference the given type or if all inputs
   // are accepted (e.g., <input type="text" autocomplete="region">).
   // All returned values are standardized to upper case.
-  std::set<base::string16> PossibleValues(ServerFieldType type);
+  std::set<std::u16string> PossibleValues(ServerFieldType type);
 
   // Rationalize phone number fields in a given section, that is only fill
   // the fields that are considered composing a first complete phone number.
@@ -229,11 +230,11 @@ class FormStructure {
     return fields_.end();
   }
 
-  const base::string16& form_name() const { return form_name_; }
+  const std::u16string& form_name() const { return form_name_; }
 
-  const base::string16& id_attribute() const { return id_attribute_; }
+  const std::u16string& id_attribute() const { return id_attribute_; }
 
-  const base::string16& name_attribute() const { return name_attribute_; }
+  const std::u16string& name_attribute() const { return name_attribute_; }
 
   const GURL& source_url() const { return source_url_; }
 
@@ -282,7 +283,7 @@ class FormStructure {
   FormData ToFormData() const;
 
   // Returns the possible form types.
-  std::set<FormType> GetFormTypes() const;
+  DenseSet<FormType> GetFormTypes() const;
 
   bool passwords_were_revealed() const { return passwords_were_revealed_; }
   void set_passwords_were_revealed(bool passwords_were_revealed) {
@@ -358,7 +359,7 @@ class FormStructure {
   // empty of these or returns an empty string:
   // - Form name
   // - Name for Autofill of first field
-  base::string16 GetIdentifierForRefill() const;
+  std::u16string GetIdentifierForRefill() const;
 
   int developer_engagement_metrics() const {
     return developer_engagement_metrics_;
@@ -384,6 +385,8 @@ class FormStructure {
     value_from_dynamic_change_form_ = v;
   }
 
+  FormGlobalId global_id() const { return {host_frame_, unique_renderer_id_}; }
+  LocalFrameToken host_frame() const { return host_frame_; }
   FormRendererId unique_renderer_id() const { return unique_renderer_id_; }
 
   bool ShouldSkipFieldVisibleForTesting(const FormFieldData& field) const {
@@ -494,6 +497,7 @@ class FormStructure {
       std::vector<FormSignature>* queried_form_signatures) const;
 
   void EncodeFormForUpload(
+      bool is_raw_metadata_uploading_enabled,
       autofill::AutofillUploadContents* upload,
       std::vector<FormSignature>* encoded_signatures) const;
 
@@ -518,47 +522,25 @@ class FormStructure {
   // Further processes the extracted |fields_|.
   void ProcessExtractedFields();
 
-  // Tries to set |parseable_name| fields by stripping the given offsets from
-  // both sides of the |name| fields.
-  // Sets |parseable_name| to |name| if the sum of offsets is bigger than
-  // |name|.
-  // Sets all |parseable_name| to |name| without modification and returns
-  // false if a name fails the |IsValidParseableName()| check after stripping.
-  bool SetStrippedParseableNames(size_t offset_left, size_t offset_right);
+  // Extracts the parseable field name by removing a common affix.
+  void ExtractParseableFieldNames();
 
-  // Returns true if |string| is a valid parseable_name. Current criterion
-  // is the |autofill::kParseableNameValidationRe| regex.
-  static bool IsValidParseableName(base::string16 string);
-
-  // Returns the length of the longest common prefix found within |strings|
-  // if |findCommonSuffix| is false. Otherwise returns longest common suffix.
-  static size_t FindLongestCommonAffixLength(
-      const std::vector<base::StringPiece16>& strings,
-      bool findCommonSuffix = false);
-
-  // Returns the longest common prefix found within |strings|. Strings below a
-  // threshold length defined by |kMinCommonNamePrefixLength| are excluded
-  // when performing this check; this is needed because an exceptional
-  // field may be missing a prefix which is otherwise consistently applied.
-  // For instance, a framework may only apply a prefix to those fields
-  // which are bound when POSTing.
-  //
-  // Soon to be replaced by FindLongestCommonPrefixLength
-  static base::string16 FindLongestCommonPrefix(
-      const std::vector<base::string16>& strings);
+  // Extract parseable field labels by potentially splitting labels between
+  // adjacent fields.
+  void ExtractParseableFieldLabels();
 
   // The language detected for this form's page, before any translations
   // performed by Chrome.
   LanguageCode current_page_language_;
 
   // The id attribute of the form.
-  base::string16 id_attribute_;
+  std::u16string id_attribute_;
 
   // The name attribute of the form.
-  base::string16 name_attribute_;
+  std::u16string name_attribute_;
 
   // The name of the form.
-  base::string16 form_name_;
+  std::u16string form_name_;
 
   // The titles of form's buttons.
   ButtonTitleList button_titles_;
@@ -617,12 +599,6 @@ class FormStructure {
   // True if the form is a <form>.
   bool is_form_tag_ = true;
 
-  // True if the form is made of unowned fields (i.e., not within a <form> tag)
-  // in what appears to be a checkout flow. This attribute is only calculated
-  // and used if features::kAutofillRestrictUnownedFieldsToFormlessCheckout is
-  // enabled, to prevent heuristics from running on formless non-checkout.
-  bool is_formless_checkout_ = false;
-
   // True if all form fields are password fields.
   bool all_fields_are_passwords_ = false;
 
@@ -671,6 +647,10 @@ class FormStructure {
 
   bool value_from_dynamic_change_form_ = false;
 
+  // An unique identifier of the fame.
+  LocalFrameToken host_frame_;
+
+  // An identifier that is unique among the form from the same frame.
   FormRendererId unique_renderer_id_;
 
   DISALLOW_COPY_AND_ASSIGN(FormStructure);

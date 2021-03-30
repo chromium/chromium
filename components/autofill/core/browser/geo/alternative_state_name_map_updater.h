@@ -10,43 +10,59 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map.h"
+#include "components/autofill/core/browser/personal_data_manager_observer.h"
 
 class PrefService;
 
 namespace autofill {
+
+class PersonalDataManager;
 
 using CountryToStateNamesListMapping =
     std::map<AlternativeStateNameMap::CountryCode,
              std::vector<AlternativeStateNameMap::StateName>>;
 
 // The AlternativeStateNameMap is a singleton to map between canonical state
-// names and alternative representations. This class encapsulates all aspects
-// about loading state data from disk and adding it to the
-// AlternativeStateNameMap.
-class AlternativeStateNameMapUpdater {
+// names and alternative representations. This class acts as an observer to the
+// PersonalDataManager and encapsulates all aspects about loading state data
+// from disk and adding it to the AlternativeStateNameMap.
+class AlternativeStateNameMapUpdater : public PersonalDataManagerObserver {
  public:
-  AlternativeStateNameMapUpdater();
-  ~AlternativeStateNameMapUpdater();
+  AlternativeStateNameMapUpdater(PrefService* local_state,
+                                 PersonalDataManager* personal_data_manager);
+  ~AlternativeStateNameMapUpdater() override;
   AlternativeStateNameMapUpdater(const AlternativeStateNameMapUpdater&) =
       delete;
   AlternativeStateNameMapUpdater& operator=(
       const AlternativeStateNameMapUpdater&) = delete;
 
-  // Creates and posts jobs to the |task_runner_| for reading the state data
-  // files and populating AlternativeStateNameMap. Once all files are read and
-  // the data is incorporated into AlternativeStateNameMap, |done_callback| is
-  // fired. |country_to_state_names_map| specifies which state data of which
-  // countries to load.
-  // Each call to LoadStatesData triggers loading state data files, so requests
-  // should be batched up.
-  void LoadStatesData(CountryToStateNamesListMapping country_to_state_names_map,
-                      PrefService* pref_service,
-                      base::OnceClosure done_callback);
+  // PersonalDataManagerObserver:
+  void OnPersonalDataFinishedProfileTasks() override;
+
+  // Extracts the country and state values from the profiles and adds them to
+  // the AlternativeStateNameMap.
+  void PopulateAlternativeStateNameMap(
+      base::OnceClosure callback = base::DoNothing());
+
+  // Getter method for |is_alternative_state_name_map_populated_|.
+  bool is_alternative_state_name_map_populated() const {
+    return is_alternative_state_name_map_populated_;
+  }
 
 #if defined(UNIT_TEST)
+  // A wrapper around |LoadStatesData| used for testing purposes.
+  void LoadStatesDataForTesting(
+      CountryToStateNamesListMapping country_to_state_names_map,
+      PrefService* pref_service,
+      base::OnceClosure done_callback) {
+    LoadStatesData(std::move(country_to_state_names_map), pref_service,
+                   std::move(done_callback));
+  }
+
   // A wrapper around |ProcessLoadedStateFileContent| used for testing purposes.
   void ProcessLoadedStateFileContentForTesting(
       const std::vector<AlternativeStateNameMap::StateName>&
@@ -63,11 +79,11 @@ class AlternativeStateNameMapUpdater {
       const std::vector<AlternativeStateNameMap::StateName>&
           stripped_alternative_state_names,
       const AlternativeStateNameMap::StateName&
-          stripped_state_values_from_profile) {
+          stripped_state_value_from_profile) {
     return ContainsState(stripped_alternative_state_names,
-                         stripped_state_values_from_profile);
+                         stripped_state_value_from_profile);
   }
-#endif
+#endif  // defined(UNIT_TEST)
 
  private:
   // Compares |stripped_state_value_from_profile| with the entries in
@@ -76,7 +92,18 @@ class AlternativeStateNameMapUpdater {
       const std::vector<AlternativeStateNameMap::StateName>&
           stripped_alternative_state_names,
       const AlternativeStateNameMap::StateName&
-          stripped_state_values_from_profile);
+          stripped_state_value_from_profile);
+
+  // Creates and posts jobs to the |task_runner_| for reading the state data
+  // files and populating AlternativeStateNameMap. Once all files are read and
+  // the data is incorporated into AlternativeStateNameMap, |done_callback| is
+  // fired. |country_to_state_names_map| specifies which state data of which
+  // countries to load.
+  // Each call to LoadStatesData triggers loading state data files, so requests
+  // should be batched up.
+  void LoadStatesData(CountryToStateNamesListMapping country_to_state_names_map,
+                      PrefService* pref_service,
+                      base::OnceClosure done_callback);
 
   // Each entry in |state_values_from_profiles| is compared with the states
   // |data| read from the files and then inserted into the
@@ -91,14 +118,33 @@ class AlternativeStateNameMapUpdater {
   std::vector<AlternativeStateNameMap::StateName> ExtractAllStateNames(
       const StateEntry& state_entry);
 
+  // Lazily initializes and returns |task_runner_|.
+  scoped_refptr<base::SequencedTaskRunner>& GetTaskRunner();
+
   // TaskRunner for reading files from disk.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  // A pointer to an instance of PersonalDataManager used to fetch the profiles
+  // data and register this class as an obsever.
+  PersonalDataManager* const personal_data_manager_ = nullptr;
+
+  // The browser local_state that stores the states data installation path.
+  PrefService* const local_state_ = nullptr;
 
   // In case of concurrent requests to load states data, the callbacks are
   // queued in |pending_init_done_callbacks_| and triggered once the
   // |number_pending_init_tasks_| returns to 0.
   std::vector<base::OnceClosure> pending_init_done_callbacks_;
   int number_pending_init_tasks_ = 0;
+
+  // False, if the AlternativeStateNameMap has not been populated yet.
+  bool is_alternative_state_name_map_populated_ = false;
+
+  // Keeps track of all the state values from the current profile that have been
+  // parsed.
+  std::set<std::pair<AlternativeStateNameMap::CountryCode,
+                     AlternativeStateNameMap::StateName>>
+      parsed_state_values_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

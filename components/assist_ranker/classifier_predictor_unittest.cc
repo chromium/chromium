@@ -72,7 +72,7 @@ const base::FeatureParam<std::string> kTestRankerUrl{
 
 PredictorConfig ClassifierPredictorTest::GetConfig() {
   return PredictorConfig("model_name", "logging_name", "uma_prefix", LOG_NONE,
-                         GetEmptyWhitelist(), &kTestRankerQuery,
+                         GetEmptyAllowlist(), &kTestRankerQuery,
                          &kTestRankerUrl, 0);
 }
 

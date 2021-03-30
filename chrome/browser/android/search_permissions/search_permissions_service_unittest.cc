@@ -43,11 +43,11 @@ class TestSearchEngineDelegate
  public:
   TestSearchEngineDelegate()
       : dse_origin_(url::Origin::Create(GURL(kGoogleURL))) {}
-  base::string16 GetDSEName() override {
+  std::u16string GetDSEName() override {
     if (dse_origin_.host().find("google") != std::string::npos)
-      return base::ASCIIToUTF16("Google");
+      return u"Google";
 
-    return base::ASCIIToUTF16("Example");
+    return u"Example";
   }
 
   url::Origin GetDSEOrigin() override { return dse_origin_; }

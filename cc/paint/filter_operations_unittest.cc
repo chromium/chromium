@@ -55,7 +55,7 @@ TEST(FilterOperationsTest, MapRectDropShadowReferenceFilter) {
       FilterOperation::CreateReferenceFilter(sk_make_sp<DropShadowPaintFilter>(
           SkIntToScalar(3), SkIntToScalar(8), SkIntToScalar(4),
           SkIntToScalar(9), SK_ColorBLACK,
-          SkDropShadowImageFilter::kDrawShadowAndForeground_ShadowMode,
+          DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground,
           nullptr)));
   EXPECT_EQ(gfx::Rect(-9, -19, 34, 64),
             ops.MapRect(gfx::Rect(0, 0, 10, 10), SkMatrix::I()));
@@ -71,7 +71,7 @@ TEST(FilterOperationsTest, MapRectReverseDropShadowReferenceFilter) {
       FilterOperation::CreateReferenceFilter(sk_make_sp<DropShadowPaintFilter>(
           SkIntToScalar(3), SkIntToScalar(8), SkIntToScalar(4),
           SkIntToScalar(9), SK_ColorBLACK,
-          SkDropShadowImageFilter::kDrawShadowAndForeground_ShadowMode,
+          DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground,
           nullptr)));
   EXPECT_EQ(gfx::Rect(-15, -35, 34, 64),
             ops.MapRectReverse(gfx::Rect(0, 0, 10, 10), SkMatrix::I()));
@@ -222,8 +222,7 @@ TEST(FilterOperationsTest, MapRectTypeConversionDoesNotOverflow) {
       FilterOperation::CreateReferenceFilter(sk_make_sp<XfermodePaintFilter>(
           SkBlendMode::kSrcOver,
           sk_make_sp<OffsetPaintFilter>(-big_offset, -big_offset, nullptr),
-          sk_make_sp<OffsetPaintFilter>(big_offset, big_offset, nullptr),
-          nullptr)));
+          sk_make_sp<OffsetPaintFilter>(big_offset, big_offset, nullptr))));
   gfx::Rect rect = ops.MapRect(gfx::Rect(-10, -10, 20, 20), SkMatrix::I());
   EXPECT_GT(rect.width(), 0);
   EXPECT_GT(rect.height(), 0);
@@ -699,10 +698,10 @@ TEST(FilterOperationsTest, BlendSaturatingBrightnessWithNull) {
 }
 
 TEST(FilterOperationsTest, BlendReferenceFilters) {
-  sk_sp<PaintFilter> from_filter(sk_make_sp<BlurPaintFilter>(
-      1.f, 1.f, BlurPaintFilter::TileMode::kClampToBlack_TileMode, nullptr));
-  sk_sp<PaintFilter> to_filter(sk_make_sp<BlurPaintFilter>(
-      2.f, 2.f, BlurPaintFilter::TileMode::kClampToBlack_TileMode, nullptr));
+  sk_sp<PaintFilter> from_filter(
+      sk_make_sp<BlurPaintFilter>(1.f, 1.f, SkTileMode::kDecal, nullptr));
+  sk_sp<PaintFilter> to_filter(
+      sk_make_sp<BlurPaintFilter>(2.f, 2.f, SkTileMode::kDecal, nullptr));
   FilterOperation from =
       FilterOperation::CreateReferenceFilter(std::move(from_filter));
   FilterOperation to =
@@ -722,8 +721,8 @@ TEST(FilterOperationsTest, BlendReferenceFilters) {
 }
 
 TEST(FilterOperationsTest, BlendReferenceWithNull) {
-  sk_sp<PaintFilter> image_filter(sk_make_sp<BlurPaintFilter>(
-      1.f, 1.f, BlurPaintFilter::TileMode::kClampToBlack_TileMode, nullptr));
+  sk_sp<PaintFilter> image_filter(
+      sk_make_sp<BlurPaintFilter>(1.f, 1.f, SkTileMode::kDecal, nullptr));
   FilterOperation filter =
       FilterOperation::CreateReferenceFilter(std::move(image_filter));
   FilterOperation null_filter = FilterOperation::CreateReferenceFilter(nullptr);
@@ -917,8 +916,8 @@ TEST(FilterOperationsTest, HasFilterOfType) {
 
   filters.Append(FilterOperation::CreateGrayscaleFilter(0.5f));
   filters.Append(FilterOperation::CreateBlurFilter(20));
-  sk_sp<PaintFilter> filter(sk_make_sp<BlurPaintFilter>(
-      1.f, 1.f, BlurPaintFilter::TileMode::kClampToBlack_TileMode, nullptr));
+  sk_sp<PaintFilter> filter(
+      sk_make_sp<BlurPaintFilter>(1.f, 1.f, SkTileMode::kDecal, nullptr));
   filters.Append(FilterOperation::CreateReferenceFilter(std::move(filter)));
 
   EXPECT_TRUE(filters.HasFilterOfType(FilterOperation::GRAYSCALE));

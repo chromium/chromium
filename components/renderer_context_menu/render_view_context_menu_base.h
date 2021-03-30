@@ -15,12 +15,12 @@
 
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 #include "components/renderer_context_menu/context_menu_content_type.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
 #include "content/public/browser/context_menu_params.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -47,7 +47,7 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
     virtual void UpdateMenuItem(int command_id,
                                 bool enabled,
                                 bool hidden,
-                                const base::string16& title) {}
+                                const std::u16string& title) {}
 
     // Recreates the menu using the |menu_model_|.
     virtual void RebuildMenu(){}
@@ -94,14 +94,14 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
   void MenuClosed(ui::SimpleMenuModel* source) override;
 
   // RenderViewContextMenuProxy implementation.
-  void AddMenuItem(int command_id, const base::string16& title) override;
+  void AddMenuItem(int command_id, const std::u16string& title) override;
   void AddMenuItemWithIcon(int command_id,
-                           const base::string16& title,
+                           const std::u16string& title,
                            const ui::ImageModel& icon) override;
-  void AddCheckItem(int command_id, const base::string16& title) override;
+  void AddCheckItem(int command_id, const std::u16string& title) override;
   void AddSeparator() override;
   void AddSubMenu(int command_id,
-                  const base::string16& label,
+                  const std::u16string& label,
                   ui::MenuModel* model) override;
   void AddSubMenuWithStringIdAndIcon(int command_id,
                                      int message_id,
@@ -110,10 +110,11 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
   void UpdateMenuItem(int command_id,
                       bool enabled,
                       bool hidden,
-                      const base::string16& title) override;
+                      const std::u16string& title) override;
   void UpdateMenuIcon(int command_id, const ui::ImageModel& icon) override;
   void RemoveMenuItem(int command_id) override;
   void RemoveAdjacentSeparators() override;
+  void RemoveSeparatorBeforeMenuItem(int command_id) override;
   content::RenderViewHost* GetRenderViewHost() const override;
   content::WebContents* GetWebContents() const override;
   content::BrowserContext* GetBrowserContext() const override;
@@ -185,7 +186,7 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
   const int render_frame_id_;
 
   // Renderer's frame token.
-  const base::UnguessableToken render_frame_token_;
+  const blink::LocalFrameToken render_frame_token_;
 
   // The RenderFrameHost's IDs.
   const int render_process_id_;

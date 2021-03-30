@@ -75,9 +75,13 @@ OffloadingVideoDecoder::~OffloadingVideoDecoder() {
     offload_task_runner_->DeleteSoon(FROM_HERE, std::move(helper_));
 }
 
-std::string OffloadingVideoDecoder::GetDisplayName() const {
+bool OffloadingVideoDecoder::IsOptimizedForRTC() const {
+  return helper_->decoder()->IsOptimizedForRTC();
+}
+
+VideoDecoderType OffloadingVideoDecoder::GetDecoderType() const {
   // This call is expected to be static and safe to call from any thread.
-  return helper_->decoder()->GetDisplayName();
+  return helper_->decoder()->GetDecoderType();
 }
 
 void OffloadingVideoDecoder::Initialize(const VideoDecoderConfig& config,

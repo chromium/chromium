@@ -88,15 +88,16 @@ void BluetoothAdapterProfileBlueZ::RemoveDelegate(
   DVLOG(1) << device_path.value() << " No delegates left, unregistering.";
 
   // No users left, release the profile.
-  auto copyable_callback =
-      base::AdaptCallbackForRepeating(std::move(unregistered_callback));
+  auto split_callback =
+      base::SplitOnceCallback(std::move(unregistered_callback));
   bluez::BluezDBusManager::Get()
       ->GetBluetoothProfileManagerClient()
       ->UnregisterProfile(
-          object_path_, copyable_callback,
+          object_path_, std::move(split_callback.first),
           base::BindOnce(
               &BluetoothAdapterProfileBlueZ::OnUnregisterProfileError,
-              weak_ptr_factory_.GetWeakPtr(), copyable_callback));
+              weak_ptr_factory_.GetWeakPtr(),
+              std::move(split_callback.second)));
 }
 
 void BluetoothAdapterProfileBlueZ::OnUnregisterProfileError(

@@ -89,22 +89,30 @@ void LatencyUkmReporter::ReportCompositorLatencyUkm(
     CompositorFrameReporter::FrameReportType report_type,
     const std::vector<CompositorFrameReporter::StageData>& stage_history,
     const CompositorFrameReporter::ActiveTrackers& active_trackers,
-    const viz::FrameTimingDetails& viz_breakdown) {
+    const CompositorFrameReporter::ProcessedBlinkBreakdown&
+        processed_blink_breakdown,
+    const CompositorFrameReporter::ProcessedVizBreakdown&
+        processed_viz_breakdown) {
   if (ukm_manager_ &&
       compositor_latency_sampling_controller_->ShouldRecordNextEvent()) {
-    ukm_manager_->RecordCompositorLatencyUKM(report_type, stage_history,
-                                             active_trackers, viz_breakdown);
+    ukm_manager_->RecordCompositorLatencyUKM(
+        report_type, stage_history, active_trackers, processed_blink_breakdown,
+        processed_viz_breakdown);
   }
 }
 
 void LatencyUkmReporter::ReportEventLatencyUkm(
     const EventMetrics::List& events_metrics,
     const std::vector<CompositorFrameReporter::StageData>& stage_history,
-    const viz::FrameTimingDetails& viz_breakdown) {
+    const CompositorFrameReporter::ProcessedBlinkBreakdown&
+        processed_blink_breakdown,
+    const CompositorFrameReporter::ProcessedVizBreakdown&
+        processed_viz_breakdown) {
   if (ukm_manager_ &&
       event_latency_sampling_controller_->ShouldRecordNextEvent()) {
     ukm_manager_->RecordEventLatencyUKM(events_metrics, stage_history,
-                                        viz_breakdown);
+                                        processed_blink_breakdown,
+                                        processed_viz_breakdown);
   }
 }
 

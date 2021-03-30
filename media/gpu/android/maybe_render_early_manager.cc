@@ -89,18 +89,18 @@ class MaybeRenderEarlyManagerImpl : public MaybeRenderEarlyManager {
 
     // Give the image group to |gpu_impl_|.  Note that we don't drop our ref to
     // |image_group| on this thread.  It can only be constructed here.
-    gpu_impl_.Post(FROM_HERE, &GpuMaybeRenderEarlyImpl::SetCodecImageGroup,
-                   std::move(image_group));
+    gpu_impl_.AsyncCall(&GpuMaybeRenderEarlyImpl::SetCodecImageGroup)
+        .WithArgs(std::move(image_group));
   }
 
   void AddCodecImage(
       scoped_refptr<CodecImageHolder> codec_image_holder) override {
-    gpu_impl_.Post(FROM_HERE, &GpuMaybeRenderEarlyImpl::AddCodecImage,
-                   std::move(codec_image_holder));
+    gpu_impl_.AsyncCall(&GpuMaybeRenderEarlyImpl::AddCodecImage)
+        .WithArgs(std::move(codec_image_holder));
   }
 
   void MaybeRenderEarly() override {
-    gpu_impl_.Post(FROM_HERE, &GpuMaybeRenderEarlyImpl::MaybeRenderEarly);
+    gpu_impl_.AsyncCall(&GpuMaybeRenderEarlyImpl::MaybeRenderEarly);
   }
 
  private:

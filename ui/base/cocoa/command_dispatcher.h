@@ -16,11 +16,11 @@
 
 // CommandDispatcher guides the processing of key events to ensure key commands
 // are executed in the appropriate order. In particular, it allows a first
-// responder implementing CommandDispatcherTarget to handle an event
-// asynchronously and return unhandled events via -redispatchKeyEvent:. An
-// NSWindow can use CommandDispatcher by implementing CommandDispatchingWindow
-// and overriding -[NSWindow performKeyEquivalent:] and -[NSWindow sendEvent:]
-// to call the respective CommandDispatcher methods.
+// responder  to handle an event asynchronously and return unhandled events
+// via -redispatchKeyEvent:. An NSWindow can use CommandDispatcher by
+// implementing CommandDispatchingWindow and overriding
+// -[NSWindow performKeyEquivalent:] and -[NSWindow sendEvent:] to call the
+// respective CommandDispatcher methods.
 COMPONENT_EXPORT(UI_BASE)
 @interface CommandDispatcher : NSObject
 

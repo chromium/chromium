@@ -22,19 +22,20 @@ std::unique_ptr<RenderFrameHostImpl> RenderFrameHostFactory::Create(
     FrameTree* frame_tree,
     FrameTreeNode* frame_tree_node,
     int32_t routing_id,
-    const base::UnguessableToken& frame_token,
+    mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
+    const blink::LocalFrameToken& frame_token,
     bool renderer_initiated_creation,
-    RenderFrameHostImpl::LifecycleState lifecycle_state) {
+    RenderFrameHostImpl::LifecycleStateImpl lifecycle_state) {
   if (factory_) {
     return factory_->CreateRenderFrameHost(
         site_instance, std::move(render_view_host), delegate, frame_tree,
-        frame_tree_node, routing_id, frame_token, renderer_initiated_creation,
-        lifecycle_state);
+        frame_tree_node, routing_id, std::move(frame_remote), frame_token,
+        renderer_initiated_creation, lifecycle_state);
   }
   return base::WrapUnique(new RenderFrameHostImpl(
       site_instance, std::move(render_view_host), delegate, frame_tree,
-      frame_tree_node, routing_id, frame_token, renderer_initiated_creation,
-      lifecycle_state));
+      frame_tree_node, routing_id, std::move(frame_remote), frame_token,
+      renderer_initiated_creation, lifecycle_state));
 }
 
 // static

@@ -36,7 +36,7 @@ STDMETHODIMP RdpDesktopSession::Connect(
       new RdpClient(task_runner, task_runner,
                     ScreenResolution(webrtc::DesktopSize(width, height),
                                      webrtc::DesktopVector(dpi_x, dpi_y)),
-                    base::UTF16ToUTF8(terminal_id), port_number, this));
+                    base::WideToUTF8(terminal_id), port_number, this));
   return S_OK;
 }
 

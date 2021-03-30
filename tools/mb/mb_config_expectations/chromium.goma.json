@@ -79,13 +79,6 @@
       "use_goma": true
     }
   },
-  "Chromium Linux Goma Staging": {
-    "gn_args": {
-      "is_component_build": false,
-      "is_debug": false,
-      "use_goma": true
-    }
-  },
   "Chromium Mac Goma RBE Staging": {
     "gn_args": {
       "is_component_build": false,
@@ -109,13 +102,6 @@
     }
   },
   "Chromium Mac Goma RBE ToT": {
-    "gn_args": {
-      "is_component_build": false,
-      "is_debug": false,
-      "use_goma": true
-    }
-  },
-  "Chromium Mac Goma Staging": {
     "gn_args": {
       "is_component_build": false,
       "is_debug": false,
@@ -153,21 +139,13 @@
     "gn_args": {
       "ios_code_signing_identity_description": "Apple Development",
       "ios_enable_code_signing": false,
+      "ios_set_attributes_for_xcode_project_generation": false,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
       "target_cpu": "arm64",
       "target_environment": "device",
       "target_os": "ios",
-      "use_goma": true
-    }
-  },
-  "CrWinGomaStaging": {
-    "gn_args": {
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 1,
-      "target_cpu": "x86",
       "use_goma": true
     }
   },

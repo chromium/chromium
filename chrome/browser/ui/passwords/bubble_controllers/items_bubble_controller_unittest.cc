@@ -105,14 +105,14 @@ ItemsBubbleControllerTest::GetCurrentForms() {
   password_manager::PasswordForm form1;
   form1.url = GURL(kSiteOrigin);
   form1.signon_realm = kSiteOrigin;
-  form1.username_value = base::ASCIIToUTF16("User1");
-  form1.password_value = base::ASCIIToUTF16("123456");
+  form1.username_value = u"User1";
+  form1.password_value = u"123456";
 
   password_manager::PasswordForm form2;
   form2.url = GURL(kSiteOrigin);
   form2.signon_realm = kSiteOrigin;
-  form2.username_value = base::ASCIIToUTF16("User2");
-  form2.password_value = base::ASCIIToUTF16("654321");
+  form2.username_value = u"User2";
+  form2.password_value = u"654321";
 
   std::vector<std::unique_ptr<password_manager::PasswordForm>> forms;
   forms.push_back(std::make_unique<password_manager::PasswordForm>(form1));
@@ -146,8 +146,8 @@ TEST_F(ItemsBubbleControllerTest, OnPasswordActionAddPassword) {
   password_manager::PasswordForm form;
   form.url = GURL(kSiteOrigin);
   form.signon_realm = kSiteOrigin;
-  form.username_value = base::ASCIIToUTF16("User");
-  form.password_value = base::ASCIIToUTF16("123456");
+  form.username_value = u"User";
+  form.password_value = u"123456";
 
   EXPECT_CALL(*GetStore(), AddLogin(form));
 
@@ -161,8 +161,8 @@ TEST_F(ItemsBubbleControllerTest, OnPasswordActionRemovePassword) {
   password_manager::PasswordForm form;
   form.url = GURL(kSiteOrigin);
   form.signon_realm = kSiteOrigin;
-  form.username_value = base::ASCIIToUTF16("User");
-  form.password_value = base::ASCIIToUTF16("123456");
+  form.username_value = u"User";
+  form.password_value = u"123456";
 
   EXPECT_CALL(*GetStore(), RemoveLogin(form));
 

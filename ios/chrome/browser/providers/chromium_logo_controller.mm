@@ -12,6 +12,7 @@
 
 @implementation ChromiumLogoController
 
+@synthesize doodleObserver = _doodleObserver;
 @synthesize showingLogo = _showingLogo;
 @synthesize view = _view;
 
@@ -24,6 +25,10 @@
 
 - (void)fetchDoodle {
   // Do nothing.
+}
+
+- (BOOL)isShowingDoodle {
+  return false;
 }
 
 - (id<LogoAnimationControllerOwner>)logoAnimationControllerOwner {

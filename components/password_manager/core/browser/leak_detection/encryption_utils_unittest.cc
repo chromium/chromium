@@ -66,7 +66,7 @@ TEST(EncryptionUtils, HashUsername) {
 
 TEST(EncryptionUtils, BucketizeUsername) {
   EXPECT_THAT(BucketizeUsername("jonsnow"),
-              ElementsAreArray({0x3D, 0x70, 0xD3, 0x60}));
+              ElementsAreArray({0x3D, 0x70, 0xD3, 0x40}));
 }
 
 TEST(EncryptionUtils, ScryptHashUsernameAndPassword) {
@@ -77,21 +77,21 @@ TEST(EncryptionUtils, ScryptHashUsernameAndPassword) {
                                 -56,  -82, -38, 31,   114,  61,  -7,  103,
                                 76,   91,  52,  -52,  47,   -22, 107, 77,
                                 118,  123, -14, -125, -123, 85,  115, -3};
-  std::string result = ScryptHashUsernameAndPassword("user", "password123");
+  std::string result = *ScryptHashUsernameAndPassword("user", "password123");
   EXPECT_THAT(result, ElementsAreArray(kExpected));
 }
 
 TEST(EncryptionUtils, EncryptAndDecrypt) {
   constexpr char kRandomString[] = "very_secret";
   std::string key;
-  std::string cipher = CipherEncrypt(kRandomString, &key);
+  std::string cipher = *CipherEncrypt(kRandomString, &key);
   SCOPED_TRACE(testing::Message()
                << "key=" << testing::PrintToString(StringAsArray(key)));
 
   EXPECT_NE(kRandomString, cipher);
   EXPECT_NE(std::string(), key);
   EXPECT_THAT(CalculateECCurveHash(kRandomString),
-              ElementsAreArray(CipherDecrypt(cipher, key)));
+              ElementsAreArray(*CipherDecrypt(cipher, key)));
 }
 
 TEST(EncryptionUtils, EncryptAndDecryptWithPredefinedKey) {
@@ -109,10 +109,10 @@ TEST(EncryptionUtils, EncryptAndDecryptWithPredefinedKey) {
                              -112, -64, 58,  -64, 76,   -35, -117, -23, -100,
                              25,   63,  37,  114, 74,   88};
 
-  std::string cipher = CipherEncryptWithKey(kRandomString, kKey);
+  std::string cipher = *CipherEncryptWithKey(kRandomString, kKey);
   EXPECT_THAT(cipher, ElementsAreArray(kEncrypted));
   EXPECT_THAT(CalculateECCurveHash(kRandomString),
-              ElementsAreArray(CipherDecrypt(cipher, kKey)));
+              ElementsAreArray(*CipherDecrypt(cipher, kKey)));
 }
 
 TEST(EncryptionUtils, CipherIsCommutative) {
@@ -120,31 +120,31 @@ TEST(EncryptionUtils, CipherIsCommutative) {
 
   // Client encrypts the string.
   std::string key_client;
-  std::string cipher = CipherEncrypt(kRandomString, &key_client);
+  std::string cipher = *CipherEncrypt(kRandomString, &key_client);
   SCOPED_TRACE(testing::Message()
                << "key_client="
                << testing::PrintToString(StringAsArray(key_client)));
 
   // Server encrypts the result.
   std::string key_server;
-  cipher = CipherReEncrypt(cipher, &key_server);
+  cipher = *CipherReEncrypt(cipher, &key_server);
   SCOPED_TRACE(testing::Message()
                << "key_server="
                << testing::PrintToString(StringAsArray(key_server)));
 
-  EXPECT_THAT(CipherEncryptWithKey(kRandomString, key_server),
-              ElementsAreArray(CipherDecrypt(cipher, key_client)));
+  EXPECT_THAT(*CipherEncryptWithKey(kRandomString, key_server),
+              ElementsAreArray(*CipherDecrypt(cipher, key_client)));
 }
 
 TEST(EncryptionUtils, CreateNewKey) {
-  const std::string key = CreateNewKey();
+  const std::string key = *CreateNewKey();
   SCOPED_TRACE(testing::Message()
                << "key=" << testing::PrintToString(StringAsArray(key)));
   constexpr char kRandomString[] = "very_secret";
 
-  std::string cipher = CipherEncryptWithKey(kRandomString, key);
+  std::string cipher = *CipherEncryptWithKey(kRandomString, key);
   EXPECT_THAT(CalculateECCurveHash(kRandomString),
-              ElementsAreArray(CipherDecrypt(cipher, key)));
+              ElementsAreArray(*CipherDecrypt(cipher, key)));
 }
 
 }  // namespace password_manager

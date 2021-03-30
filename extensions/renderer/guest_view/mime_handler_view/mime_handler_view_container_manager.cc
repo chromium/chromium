@@ -14,9 +14,10 @@
 #include "base/strings/string_util.h"
 #include "content/public/common/webplugininfo.h"
 #include "content/public/renderer/render_frame.h"
+#include "content/public/renderer/render_thread.h"
 #include "extensions/common/mojom/guest_view.mojom.h"
-#include "extensions/renderer/guest_view/mime_handler_view/mime_handler_view_container.h"
 #include "extensions/renderer/guest_view/mime_handler_view/mime_handler_view_frame_container.h"
+#include "ipc/ipc_sync_channel.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -32,6 +33,17 @@ using RenderFrameMap =
 RenderFrameMap* GetRenderFrameMap() {
   static base::NoDestructor<RenderFrameMap> instance;
   return instance.get();
+}
+
+mojom::GuestView* GetGuestView() {
+  static base::NoDestructor<mojo::AssociatedRemote<mojom::GuestView>>
+      guest_view;
+  if (!*guest_view) {
+    content::RenderThread::Get()->GetChannel()->GetRemoteAssociatedInterface(
+        guest_view.get());
+  }
+
+  return guest_view->get();
 }
 
 }  // namespace
@@ -110,8 +122,8 @@ void MimeHandlerViewContainerManager::
     // This is the one injected by HTML string. Return true so that the
     // HTMLPlugInElement creates a child frame to be used as the outer
     // WebContents frame.
-    MimeHandlerViewContainer::GuestView()->ReadyToCreateMimeHandlerView(
-        render_frame()->GetRoutingID(), false);
+    GetGuestView()->ReadyToCreateMimeHandlerView(render_frame()->GetRoutingID(),
+                                                 false);
   }
 }
 
@@ -305,8 +317,8 @@ bool MimeHandlerViewContainerManager::IsManagedByContainerManager(
       base::ToUpperASCII(plugin_element.GetAttribute("internalid").Utf8()) ==
           internal_id_) {
     plugin_element_ = plugin_element;
-    MimeHandlerViewContainer::GuestView()->ReadyToCreateMimeHandlerView(
-        render_frame()->GetRoutingID(), true);
+    GetGuestView()->ReadyToCreateMimeHandlerView(render_frame()->GetRoutingID(),
+                                                 true);
   }
   return plugin_element_ == plugin_element;
 }

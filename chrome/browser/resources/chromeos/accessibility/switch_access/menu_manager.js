@@ -71,7 +71,7 @@ export class MenuManager {
     MenuManager.instance.actionNode_ = null;
     MenuManager.instance.displayedActions_ = null;
     MenuManager.instance.displayedLocation_ = null;
-    Navigator.instance.exitIfInGroup(MenuManager.instance.menuAutomationNode_);
+    Navigator.byItem.exitIfInGroup(MenuManager.instance.menuAutomationNode_);
     MenuManager.instance.menuAutomationNode_ = null;
 
     chrome.accessibilityPrivate.updateSwitchAccessBubble(
@@ -171,7 +171,7 @@ export class MenuManager {
     this.menuAutomationNode_ = node;
     this.clickHandler_.setNodes(this.menuAutomationNode_);
     this.clickHandler_.start();
-    Navigator.instance.jumpToSwitchAccessMenu();
+    Navigator.byItem.jumpToSwitchAccessMenu();
   }
 
   /**

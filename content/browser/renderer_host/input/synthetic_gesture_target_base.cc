@@ -8,7 +8,6 @@
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/renderer_host/ui_events_helper.h"
-#include "content/common/input_messages.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/events/blink/web_input_event_traits.h"
 #include "ui/events/event.h"
@@ -146,7 +145,7 @@ int SyntheticGestureTargetBase::GetMouseWheelMinimumGranularity() const {
 
 void SyntheticGestureTargetBase::WaitForTargetAck(
     SyntheticGestureParams::GestureType type,
-    SyntheticGestureParams::GestureSourceType source,
+    content::mojom::GestureSourceType source,
     base::OnceClosure callback) const {
   host_->WaitForInputProcessed(type, source, std::move(callback));
 }

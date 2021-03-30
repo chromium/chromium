@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/ios/ios_util.h"
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -14,6 +15,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/crl_set_remover.h"
+#include "components/component_updater/installer_policies/autofill_states_component_installer.h"
 #include "components/component_updater/installer_policies/on_device_head_suggest_component_installer.h"
 #include "components/component_updater/installer_policies/safety_tips_component_installer.h"
 #include "components/feature_engagement/public/event_constants.h"
@@ -26,11 +28,13 @@
 #import "components/previous_session_info/previous_session_info.h"
 #include "components/ukm/ios/features.h"
 #include "components/web_resource/web_resource_pref_names.h"
+#include "ios/chrome/app/app_metrics_app_state_agent.h"
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
 #import "ios/chrome/app/blocking_scene_commands.h"
 #import "ios/chrome/app/content_suggestions_scheduler_app_state_agent.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
 #import "ios/chrome/app/memory_monitor.h"
+#import "ios/chrome/app/safe_mode_app_state_agent.h"
 #import "ios/chrome/app/spotlight/spotlight_manager.h"
 #include "ios/chrome/app/startup/chrome_app_startup_parameters.h"
 #include "ios/chrome/app/startup/chrome_main_starter.h"
@@ -54,7 +58,7 @@
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_persistent_storage_manager.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/features.h"
-#include "ios/chrome/browser/crash_report/breakpad_helper.h"
+#include "ios/chrome/browser/crash_report/crash_helper.h"
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #include "ios/chrome/browser/crash_report/crash_loop_detection_util.h"
 #include "ios/chrome/browser/crash_report/crash_report_helper.h"
@@ -79,6 +83,7 @@
 #import "ios/chrome/browser/search_engines/extension_search_engine_data_updater.h"
 #include "ios/chrome/browser/search_engines/search_engines_util.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/sessions/scene_util.h"
 #import "ios/chrome/browser/share_extension/share_extension_service.h"
 #import "ios/chrome/browser/share_extension/share_extension_service_factory.h"
 #include "ios/chrome/browser/signin/authentication_service_delegate.h"
@@ -94,7 +99,7 @@
 #import "ios/chrome/browser/ui/main/browser_view_wrangler.h"
 #import "ios/chrome/browser/ui/main/scene_delegate.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
-#include "ios/chrome/browser/ui/util/multi_window_support.h"
+#include "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/webui/chrome_web_ui_ios_controller_factory.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -183,6 +188,8 @@ void RegisterComponentsForUpdate() {
   RegisterOnDeviceHeadSuggestComponent(
       cus, GetApplicationContext()->GetApplicationLocale());
   RegisterSafetyTipsComponent(cus);
+  RegisterAutofillStatesComponent(cus,
+                                  GetApplicationContext()->GetLocalState());
 }
 
 // The delay, in seconds, for cleaning external files.
@@ -329,8 +336,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 // Helper methods to initialize the application to a specific stage.
 // Setting |_browserInitializationStage| to a specific stage requires the
 // corresponding function to return YES.
-// Initializes the application to INITIALIZATION_STAGE_BASIC, which is the
-// minimum initialization needed in all cases.
+// Initializes the application to the minimum initialization needed in all
+// cases.
 - (void)startUpBrowserBasicInitialization;
 // Initializes the application to INITIALIZATION_STAGE_BACKGROUND, which is
 // needed by background handlers.
@@ -368,12 +375,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 // This function starts up to only what is needed at each stage of the
 // initialization. It is possible to continue initialization later.
 - (void)startUpBrowserToStage:(BrowserInitializationStageType)stage {
-  if (_browserInitializationStage < INITIALIZATION_STAGE_BASIC &&
-      stage >= INITIALIZATION_STAGE_BASIC) {
-    [self startUpBrowserBasicInitialization];
-    _browserInitializationStage = INITIALIZATION_STAGE_BASIC;
-  }
-
   if (_browserInitializationStage < INITIALIZATION_STAGE_BACKGROUND &&
       stage >= INITIALIZATION_STAGE_BACKGROUND) {
     [self startUpBrowserBackgroundInitialization];
@@ -484,18 +485,19 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // browser state.
   BOOL needRestoration = NO;
   if (isPostCrashLaunch) {
-    if (IsMultiwindowSupported()) {
-      NSSet<NSString*>* sessions =
+    NSSet<NSString*>* sessions = nil;
+    if (@available(ios 13, *)) {
+      sessions =
           [[PreviousSessionInfo sharedInstance] connectedSceneSessionsIDs];
-      needRestoration =
-          [CrashRestoreHelper moveAsideSessions:sessions
-                                forBrowserState:chromeBrowserState];
     } else {
-      needRestoration = [CrashRestoreHelper
-          moveAsideSessionInformationForBrowserState:chromeBrowserState];
+      sessions = [NSSet setWithObjects:SessionIdentifierForScene(nil), nil];
     }
+
+    needRestoration = [CrashRestoreHelper moveAsideSessions:sessions
+                                            forBrowserState:chromeBrowserState];
   }
-  if (!IsMultipleScenesSupported() && IsMultiwindowSupported()) {
+  if (!base::ios::IsMultipleScenesSupported() &&
+      base::ios::IsMultiwindowSupported()) {
     NSSet<NSString*>* previousSessions =
         [PreviousSessionInfo sharedInstance].connectedSceneSessionsIDs;
     DCHECK(previousSessions.count <= 1);
@@ -598,6 +600,13 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [self startUpAfterFirstWindowCreated];
 }
 
+- (void)appState:(AppState*)appState
+    didTransitionToInitStage:(InitStage)initStage {
+  if (initStage == InitStageStart) {
+    [self startUpBrowserBasicInitialization];
+  }
+}
+
 #pragma mark - Property implementation.
 
 - (void)setAppState:(AppState*)appState {
@@ -606,12 +615,14 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [appState addObserver:self];
 
   // Create app state agents.
+  [appState addAgent:[[AppMetricsAppStateAgent alloc] init]];
   [appState addAgent:[[ContentSuggestionsSchedulerAppAgent alloc] init]];
   [appState addAgent:[[IncognitoUsageAppStateAgent alloc] init]];
+  [appState addAgent:[[SafeModeAppAgent alloc] init]];
 
   // Create the window accessibility agent only when multuple windows are
   // possible.
-  if (IsMultipleScenesSupported()) {
+  if (base::ios::IsMultipleScenesSupported()) {
     [appState addAgent:[[WindowAccessibityChangeNotifierAppAgent alloc] init]];
   }
 }
@@ -647,21 +658,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
 - (void)resetFirstUserActionRecorder {
   _firstUserActionRecorder.reset();
-}
-
-- (BOOL)canLaunchInIncognito {
-  NSUserDefaults* standardDefaults = [NSUserDefaults standardUserDefaults];
-  if (![standardDefaults boolForKey:kIncognitoCurrentKey])
-    return NO;
-  // If the application crashed in incognito mode, don't stay in incognito
-  // mode, since the prompt to restore should happen in non-incognito
-  // context.
-  if ([self mustShowRestoreInfobar])
-    return NO;
-  // If there are no incognito tabs, then ensure the app starts in normal mode,
-  // since the UI isn't supposed to ever put the user in incognito mode without
-  // any incognito tabs.
-  return !(self.otrBrowser->GetWebStateList()->empty());
 }
 
 - (void)expireFirstUserActionRecorderAfterDelay:(NSTimeInterval)delay {
@@ -733,23 +729,17 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 }
 
 - (void)orientationDidChange:(NSNotification*)notification {
-  crash_keys::SetCurrentOrientation(
-      [[UIApplication sharedApplication] statusBarOrientation],
-      [[UIDevice currentDevice] orientation]);
+  crash_keys::SetCurrentOrientation(GetInterfaceOrientation(),
+                                    [[UIDevice currentDevice] orientation]);
 }
 
 - (void)registerForOrientationChangeNotifications {
-  // Register to both device orientation and UI orientation did change
-  // notification as these two events may be triggered independantely.
+  // Register device orientation. UI orientation will be registered by
+  // each window BVC. These two events may be triggered independantely.
   [[NSNotificationCenter defaultCenter]
       addObserver:self
          selector:@selector(orientationDidChange:)
              name:UIDeviceOrientationDidChangeNotification
-           object:nil];
-  [[NSNotificationCenter defaultCenter]
-      addObserver:self
-         selector:@selector(orientationDidChange:)
-             name:UIApplicationDidChangeStatusBarOrientationNotification
            object:nil];
 }
 
@@ -823,7 +813,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [[DeferredInitializationRunner sharedInstance]
       enqueueBlockNamed:kCleanupCrashReports
                   block:^{
-                    breakpad_helper::CleanupCrashReports();
+                    bool afterUpgrade = [self isFirstLaunchAfterUpgrade];
+                    crash_helper::CleanupCrashReports(afterUpgrade);
                   }];
 }
 
@@ -844,10 +835,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 }
 
 - (void)scheduleStartupCleanupTasks {
-  // Cleanup crash reports if this is the first run after an update.
-  if ([self isFirstLaunchAfterUpgrade]) {
-    [self scheduleCrashReportCleanup];
-  }
+  [self scheduleCrashReportCleanup];
 
   // ClearSessionCookies() is not synchronous.
   if (cookie_util::ShouldClearSessionCookies()) {

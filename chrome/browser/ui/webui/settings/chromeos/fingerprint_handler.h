@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_FINGERPRINT_HANDLER_H_
 
 #include "base/containers/flat_map.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -79,9 +79,9 @@ class FingerprintHandler : public ::settings::SettingsPageUIHandler,
 
   mojo::Remote<device::mojom::Fingerprint> fp_service_;
   mojo::Receiver<device::mojom::FingerprintObserver> receiver_{this};
-  ScopedObserver<session_manager::SessionManager,
-                 session_manager::SessionManagerObserver>
-      session_observer_{this};
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_observation_{this};
 
   base::WeakPtrFactory<FingerprintHandler> weak_ptr_factory_{this};
 

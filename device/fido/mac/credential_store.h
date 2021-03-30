@@ -33,6 +33,8 @@ struct COMPONENT_EXPORT(FIDO) Credential {
   Credential(base::ScopedCFTypeRef<SecKeyRef> private_key,
              std::vector<uint8_t> credential_id);
   ~Credential();
+  Credential(const Credential&) = delete;
+  Credential& operator=(const Credential&) = delete;
   Credential(Credential&& other);
   Credential& operator=(Credential&& other);
 
@@ -44,10 +46,6 @@ struct COMPONENT_EXPORT(FIDO) Credential {
   // metadata with a profile-specific metadata secret. See |CredentialMetadata|
   // for more information.
   std::vector<uint8_t> credential_id;
-
- private:
-  Credential(const Credential&) = delete;
-  Credential& operator=(const Credential&) = delete;
 };
 
 // TouchIdCredentialStore allows operations on Touch ID platform authenticator

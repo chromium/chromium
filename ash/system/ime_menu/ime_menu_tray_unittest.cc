@@ -55,7 +55,7 @@ class ImeMenuTrayTest : public AshTestBase {
   bool IsVisible() { return GetTray()->GetVisible(); }
 
   // Returns the label text of the tray.
-  const base::string16& GetTrayText() { return GetTray()->label_->GetText(); }
+  const std::u16string& GetTrayText() { return GetTray()->label_->GetText(); }
 
   // Returns true if the background color of the tray is active.
   bool IsTrayBackgroundActive() { return GetTray()->is_active(); }
@@ -134,23 +134,23 @@ TEST_F(ImeMenuTrayTest, TrayLabelTest) {
 
   ImeInfo info1;
   info1.id = "ime1";
-  info1.name = UTF8ToUTF16("English");
-  info1.short_name = UTF8ToUTF16("US");
+  info1.name = u"English";
+  info1.short_name = u"US";
   info1.third_party = false;
 
   ImeInfo info2;
   info2.id = "ime2";
-  info2.name = UTF8ToUTF16("English UK");
-  info2.short_name = UTF8ToUTF16("UK");
+  info2.name = u"English UK";
+  info2.short_name = u"UK";
   info2.third_party = true;
 
   // Changes the input method to "ime1".
   SetCurrentIme("ime1", {info1, info2});
-  EXPECT_EQ(UTF8ToUTF16("US"), GetTrayText());
+  EXPECT_EQ(u"US", GetTrayText());
 
   // Changes the input method to a third-party IME extension.
   SetCurrentIme("ime2", {info1, info2});
-  EXPECT_EQ(UTF8ToUTF16("UK*"), GetTrayText());
+  EXPECT_EQ(u"UK*", GetTrayText());
 }
 
 // Tests that IME menu tray changes background color when tapped/clicked. And
@@ -202,30 +202,30 @@ TEST_F(ImeMenuTrayTest, RefreshImeWithListViewCreated) {
 
   ImeInfo info1, info2, info3;
   info1.id = "ime1";
-  info1.name = UTF8ToUTF16("English");
-  info1.short_name = UTF8ToUTF16("US");
+  info1.name = u"English";
+  info1.short_name = u"US";
   info1.third_party = false;
 
   info2.id = "ime2";
-  info2.name = UTF8ToUTF16("English UK");
-  info2.short_name = UTF8ToUTF16("UK");
+  info2.name = u"English UK";
+  info2.short_name = u"UK";
   info2.third_party = true;
 
   info3.id = "ime3";
-  info3.name = UTF8ToUTF16("Pinyin");
-  info3.short_name = UTF8ToUTF16("拼");
+  info3.name = u"Pinyin";
+  info3.short_name = u"拼";
   info3.third_party = false;
 
   std::vector<ImeInfo> ime_info_list{info1, info2, info3};
 
   // Switch to ime1.
   SetCurrentIme("ime1", ime_info_list);
-  EXPECT_EQ(UTF8ToUTF16("US"), GetTrayText());
+  EXPECT_EQ(u"US", GetTrayText());
   ExpectValidImeList(ime_info_list, info1);
 
   // Switch to ime3.
   SetCurrentIme("ime3", ime_info_list);
-  EXPECT_EQ(UTF8ToUTF16("拼"), GetTrayText());
+  EXPECT_EQ(u"拼", GetTrayText());
   ExpectValidImeList(ime_info_list, info3);
 
   // Closes the menu before quitting.

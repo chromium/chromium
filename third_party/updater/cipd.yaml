@@ -1,0 +1,6 @@
+package: chromium/third_party/updater
+description: CIPD Dependency for Stable macOS Updater that can be bundled into the main app.
+install_mode: copy
+data:
+  - dir: ChromiumUpdater.app
+  - dir: GoogleUpdater.app

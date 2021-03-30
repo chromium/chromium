@@ -4,6 +4,7 @@
 
 #include "components/payments/content/android/journey_logger_android.h"
 
+#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "components/payments/content/android/jni_headers/JourneyLogger_jni.h"
 #include "components/ukm/content/source_url_recorder.h"
@@ -14,6 +15,7 @@ namespace {
 
 using ::base::android::ConvertJavaStringToUTF8;
 using ::base::android::JavaParamRef;
+using base::android::JavaRef;
 
 }  // namespace
 
@@ -55,14 +57,54 @@ void JourneyLoggerAndroid::SetHasEnrolledInstrumentValue(
   journey_logger_.SetHasEnrolledInstrumentValue(jvalue);
 }
 
-void JourneyLoggerAndroid::SetEventOccurred(
+void JourneyLoggerAndroid::SetSkippedShow(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller) {
+  journey_logger_.SetSkippedShow();
+}
+
+void JourneyLoggerAndroid::SetShown(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller) {
+  journey_logger_.SetShown();
+}
+
+void JourneyLoggerAndroid::SetReceivedInstrumentDetails(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller) {
+  journey_logger_.SetReceivedInstrumentDetails();
+}
+
+void JourneyLoggerAndroid::SetPayClicked(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller) {
+  journey_logger_.SetPayClicked();
+}
+
+void JourneyLoggerAndroid::SetSelectedMethod(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,
-    jint jevent) {
-  DCHECK_GE(jevent, 0);
-  DCHECK_LE(static_cast<unsigned int>(jevent),
-            static_cast<unsigned int>(JourneyLogger::Event::EVENT_ENUM_MAX));
-  journey_logger_.SetEventOccurred(static_cast<JourneyLogger::Event>(jevent));
+    jint jPaymentMethodCategory) {
+  DCHECK_GE(jPaymentMethodCategory, 0);
+  DCHECK_LE(static_cast<unsigned int>(jPaymentMethodCategory),
+            static_cast<unsigned int>(
+                JourneyLogger::PaymentMethodCategory::kMaxValue));
+  journey_logger_.SetSelectedMethod(
+      static_cast<JourneyLogger::PaymentMethodCategory>(
+          jPaymentMethodCategory));
+}
+
+void JourneyLoggerAndroid::SetAvailableMethod(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller,
+    jint jPaymentMethodCategory) {
+  DCHECK_GE(jPaymentMethodCategory, 0);
+  DCHECK_LE(static_cast<unsigned int>(jPaymentMethodCategory),
+            static_cast<unsigned int>(
+                JourneyLogger::PaymentMethodCategory::kMaxValue));
+  journey_logger_.SetAvailableMethod(
+      static_cast<JourneyLogger::PaymentMethodCategory>(
+          jPaymentMethodCategory));
 }
 
 void JourneyLoggerAndroid::SetRequestedInformation(
@@ -76,18 +118,18 @@ void JourneyLoggerAndroid::SetRequestedInformation(
                                           requested_phone, requested_name);
 }
 
-void JourneyLoggerAndroid::SetRequestedPaymentMethodTypes(
+void JourneyLoggerAndroid::SetRequestedPaymentMethods(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,
-    jboolean requested_basic_card,
-    jboolean requested_method_google,
-    jboolean requested_method_other) {
-  // TODO(crbug.com/1110320) : secure=payment-confirmation payment method is not
-  // implemented on Android yet.
-  journey_logger_.SetRequestedPaymentMethodTypes(
-      requested_basic_card, requested_method_google,
-      /*requested_method_secure_payment_confirmation=*/false,
-      requested_method_other);
+    const base::android::JavaParamRef<jintArray>& jmethods) {
+  std::vector<int> int_methods;
+  base::android::JavaIntArrayToIntVector(env, jmethods, &int_methods);
+  std::vector<JourneyLogger::PaymentMethodCategory> method_categories;
+  for (auto& int_method : int_methods) {
+    method_categories.push_back(
+        static_cast<JourneyLogger::PaymentMethodCategory>(int_method));
+  }
+  journey_logger_.SetRequestedPaymentMethods(method_categories);
 }
 
 void JourneyLoggerAndroid::SetCompleted(

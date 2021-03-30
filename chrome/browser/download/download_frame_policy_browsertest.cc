@@ -143,7 +143,7 @@ class DownloadFramePolicyBrowserTest
         {subresource_filter::testing::CreateSuffixRule("ad_script.js"),
          subresource_filter::testing::CreateSuffixRule("disallow.zip")});
     embedded_test_server()->ServeFilesFromSourceDirectory(
-        "chrome/test/data/ad_tagging");
+        "components/test/data/ad_tagging");
     content::SetupCrossSiteRedirector(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
   }

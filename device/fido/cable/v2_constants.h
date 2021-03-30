@@ -12,7 +12,7 @@ namespace cablev2 {
 // UUID and a 4-byte UUID.
 constexpr size_t kAdvertSize = 16 + 4;
 // kNonceSize is the number of bytes of nonce in the BLE advert.
-constexpr size_t kNonceSize = 8;
+constexpr size_t kNonceSize = 10;
 // kClientNonceSize is the number of bytes of nonce sent by the client, via the
 // tunnel server, for a pairing-based handshake.
 constexpr size_t kClientNonceSize = 16;

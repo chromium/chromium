@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/system/sys_info.h"
 
 // Enables the feature completely with a few skipped checks to make local
 // testing easier.
@@ -26,9 +27,19 @@ bool SearchPrefetchServiceIsEnabled() {
 }
 
 bool SearchPrefetchServicePrefetchingIsEnabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-             kSearchPrefetchServiceCommandLineFlag) ||
-         base::FeatureList::IsEnabled(kSearchPrefetchServicePrefetching);
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kSearchPrefetchServiceCommandLineFlag)) {
+    return true;
+  }
+
+  if (!base::FeatureList::IsEnabled(kSearchPrefetchServicePrefetching)) {
+    return false;
+  }
+
+  return base::SysInfo::AmountOfPhysicalMemoryMB() >
+         base::GetFieldTrialParamByFeatureAsInt(
+             kSearchPrefetchServicePrefetching, "device_memory_threshold_MB",
+             3000);
 }
 
 base::TimeDelta SearchPrefetchCachingLimit() {
@@ -72,4 +83,9 @@ bool SearchPrefetchShouldCancelUneededInflightRequests() {
 bool StreamSearchPrefetchResponses() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kSearchPrefetchServicePrefetching, "stream_responses", true);
+}
+
+size_t SearchPrefetchMaxCacheEntries() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      kSearchPrefetchServicePrefetching, "cache_size", 10);
 }

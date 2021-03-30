@@ -10,7 +10,7 @@
 namespace history {
 
 HistoryMatch::HistoryMatch()
-    : input_location(base::string16::npos),
+    : input_location(std::u16string::npos),
       match_in_scheme(false),
       match_in_subdomain(false),
       innermost_match(true) {}

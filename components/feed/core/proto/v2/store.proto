@@ -14,16 +14,19 @@ option optimize_for = LITE_RUNTIME;
 
 // Actual data stored by the client.
 // This data is sourced from the wire protocol, which is converted upon receipt.
-// This would replace both Journal and Content stores.
 //
 // This is the 'value' in the key/value store.
 // Keys are defined as:
+// [Key format]                     -> [Record field]
 // S/<stream-id>                    -> stream_data
 // T/<stream-id>/<sequence-number>  -> stream_structures
-// c/<content-id>                   -> content
-// a/<id>                           -> action
-// s/<content-id>                   -> shared_state
+// c/<stream-id>/<content-id>       -> content
+// s/<stream-id>/<content-id>       -> shared_state
+// a/<action-id>                    -> action
 // m                                -> metadata
+// subs                             -> subscribed_web_feeds
+// recommendedIndex                 -> recommended_web_feed_index
+// R/<web_feed_id>                  -> recommended_web_feed
 message Record {
   oneof data {
     StreamData stream_data = 1;
@@ -32,6 +35,9 @@ message Record {
     StoredAction local_action = 4;
     StreamSharedState shared_state = 5;
     Metadata metadata = 6;
+    SubscribedWebFeeds subscribed_web_feeds = 7;
+    WebFeedInfo recommended_web_feed = 8;
+    RecommendedWebFeedIndex recommended_web_feed_index = 9;
   }
 }
 
@@ -51,6 +57,8 @@ message StreamData {
   bool logging_enabled = 8;
   // Has the privacy notice been fulfilled?
   bool privacy_notice_fulfilled = 9;
+  // Stream ID. Should match the id value stored in the record's key.
+  string stream_id = 10;
 
   reserved 3, 5;
 }
@@ -63,16 +71,33 @@ message Metadata {
     int64 expiry_time_ms = 2;
   }
 
+  // Metadata about a specific stream.
+  message StreamMetadata {
+    string stream_id = 1;
+    // If this stream has been viewed before, this timestamp matches the
+    // 'StreamData.last_added_time_millis' value of that stream. This is used to
+    // determine whether the user has already seen a stored stream's data.
+    int64 view_time_millis = 2;
+  }
+
   // Token used to read or write to the same storage.
   bytes consistency_token = 1;
   // ID for the next pending action.
   int32 next_action_id = 2;
   // The most recent session identifier.
   SessionID session_id = 3;
+  // Schema version number. Schema versions:
+  // 0: Initial version.
+  // 1: Current version. Added <stream-id> to the key patterns of "content" and
+  // "shared_state"
+  //    records.
+  int32 stream_schema_version = 4;
+  repeated StreamMetadata stream_metadata = 5;
 }
 
 // A set of StreamStructures that should be applied to a stream.
 message StreamStructureSet {
+  // Stream ID. Should match the id value stored in the record's key.
   string stream_id = 1;
   int32 sequence_number = 2;
   repeated StreamStructure structures = 3;
@@ -118,6 +143,8 @@ message StreamStructure {
   Type type = 4;
   // Set iff type=CONTENT
   ContentInfo content_info = 5;
+  // Is this the root of the stream?
+  bool is_root = 6;
 }
 
 message DataOperation {
@@ -138,6 +165,8 @@ message Content {
   // Opaque content. The UI layer knows how to parse and render this as a slice.
   bytes frame = 2;
   repeated feedwire.PrefetchMetadata prefetch_metadata = 3;
+  // Stream ID. Should match the id value stored in the record's key.
+  string stream_id = 4;
 }
 
 // This represents a shared state item.
@@ -145,6 +174,8 @@ message StreamSharedState {
   feedwire.ContentId content_id = 1;
   // Opaque data required to render content.
   bytes shared_state_data = 2;
+  // Stream ID. Should match the id value stored in the record's key.
+  string stream_id = 3;
 }
 
 // A stored action awaiting upload.
@@ -157,4 +188,56 @@ message StoredAction {
   int32 upload_attempt_count = 2;
   // The action to upload.
   feedwire.FeedAction action = 3;
+}
+
+// List of web feeds for which the user is subscribed.
+message SubscribedWebFeeds {
+  repeated WebFeedInfo feeds = 1;
+  // The unix timestamp in milliseconds that this data was updated from the
+  // server.
+  int64 update_time_millis = 2;
+}
+
+message RecommendedWebFeedIndex {
+  message Entry {
+    string web_feed_id = 1;
+    repeated UriMatcher matchers = 2;
+  }
+  repeated Entry entries = 1;
+  // The unix timestamp in milliseconds that this data was updated from the
+  // server.
+  int64 update_time_millis = 2;
+}
+
+// Data to allow matching URI.
+message UriMatcher {
+  // Simple String comparing, will use to match against the domain part of the
+  // hostname string and ignore the subdomains. For example: "foo.com" should
+  // match "https://www.foo.com/..." and "https://foo.com/..." but should not
+  // match "https://foo.com.br/...".
+  string domain_match = 1;
+}
+
+// Reference to an image.
+message Image {
+  string url = 1;
+}
+
+// See http://go/chrome-web-feed-api.
+message WebFeedInfo {
+  enum State {
+    STATE_UNSPECIFIED = 0;
+    INACTIVE = 1;
+    ACTIVE = 2;
+  }
+  string web_feed_id = 1;
+  string title = 2;
+  string subtitle = 3;
+  string detail_text = 4;
+  string visit_uri = 5;
+  string rss_uri = 6;
+  Image favicon = 7;
+  int64 follower_count = 8;
+  State state = 9;
+  repeated UriMatcher uri_matchers = 10;
 }

@@ -355,6 +355,70 @@ TEST_F(CommandDispatcherTest, NoTargetRegisteredForSelector) {
   EXPECT_TRUE(exception_caught);
 }
 
+// Tests that an exception is not thrown when prepareForShutdown was called
+// before the target was removed.
+TEST_F(CommandDispatcherTest,
+       PrepareForShutdownLetsStopDispatchingForSelectorFailSilently) {
+  id dispatcher = [[CommandDispatcher alloc] init];
+  CommandDispatcherTestSimpleTarget* target =
+      [[CommandDispatcherTestSimpleTarget alloc] init];
+
+  // Check stopDispatchingForSelector:
+  [dispatcher startDispatchingToTarget:target forSelector:@selector(show)];
+  [dispatcher prepareForShutdown];
+  [dispatcher stopDispatchingForSelector:@selector(show)];
+  bool exception_caught = false;
+  @try {
+    [dispatcher show];
+  } @catch (NSException* exception) {
+    exception_caught = true;
+  }
+
+  EXPECT_FALSE(exception_caught);
+}
+
+TEST_F(CommandDispatcherTest,
+       PrepareForShutdownLetsStopDispatchingForProtocolFailSilently) {
+  id dispatcher = [[CommandDispatcher alloc] init];
+  CommandDispatcherTestSimpleTarget* target =
+      [[CommandDispatcherTestSimpleTarget alloc] init];
+
+  // Check stopDispatchingForProtocol:
+  [dispatcher startDispatchingToTarget:target
+                           forProtocol:@protocol(HideProtocol)];
+  [dispatcher prepareForShutdown];
+  [dispatcher stopDispatchingForProtocol:@protocol(HideProtocol)];
+  bool exception_caught = false;
+  @try {
+    [dispatcher hide];
+  } @catch (NSException* exception) {
+    exception_caught = true;
+  }
+
+  EXPECT_FALSE(exception_caught);
+}
+
+TEST_F(CommandDispatcherTest,
+       PrepareForShutdownLetsStopDispatchingToTargetFailSilently) {
+  id dispatcher = [[CommandDispatcher alloc] init];
+  CommandDispatcherTestSimpleTarget* target =
+      [[CommandDispatcherTestSimpleTarget alloc] init];
+
+  // Check stopDispatchingToTarget:
+  [dispatcher startDispatchingToTarget:target
+                           forProtocol:@protocol(HideProtocol)];
+  [dispatcher prepareForShutdown];
+  [dispatcher stopDispatchingToTarget:target];
+  bool exception_caught = false;
+  @try {
+    [dispatcher hide];
+  } @catch (NSException* exception) {
+    exception_caught = true;
+  }
+
+  EXPECT_FALSE(exception_caught);
+}
+
 // Tests that -respondsToSelector returns YES for methods once they are
 // dispatched for.
 // Tests handler methods with no arguments.

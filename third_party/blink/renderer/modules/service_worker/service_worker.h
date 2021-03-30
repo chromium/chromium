@@ -115,14 +115,10 @@ class MODULES_EXPORT ServiceWorker final
   // |host_| keeps the Mojo connection to the
   // browser-side ServiceWorkerObjectHost, whose lifetime is bound
   // to |host_| via the Mojo connection.
-  HeapMojoAssociatedRemote<mojom::blink::ServiceWorkerObjectHost,
-                           HeapMojoWrapperMode::kWithoutContextObserver>
-      host_;
+  HeapMojoAssociatedRemote<mojom::blink::ServiceWorkerObjectHost> host_;
   // Receives messages from the content::ServiceWorkerObjectHost in the browser
   // process.
-  HeapMojoAssociatedReceiver<mojom::blink::ServiceWorkerObject,
-                             ServiceWorker,
-                             HeapMojoWrapperMode::kWithoutContextObserver>
+  HeapMojoAssociatedReceiver<mojom::blink::ServiceWorkerObject, ServiceWorker>
       receiver_;
 };
 

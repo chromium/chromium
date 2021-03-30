@@ -199,8 +199,8 @@ class TestPowerSource : public base::PowerMonitorSource {
     base::RunLoop().RunUntilIdle();
   }
 
- private:
-  bool IsOnBatteryPowerImpl() final { return false; }
+  // base::PowerMonitorSource override:
+  bool IsOnBatteryPower() final { return false; }
 };
 
 class H264VideoToolboxEncoderTest : public ::testing::Test {

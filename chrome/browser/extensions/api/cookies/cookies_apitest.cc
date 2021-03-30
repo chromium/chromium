@@ -6,7 +6,6 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/common/scoped_worker_based_extensions_channel.h"
 #include "net/cookies/cookie_util.h"
 
 namespace extensions {
@@ -21,43 +20,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ReadFromDocument) {
 
 class CookiesApiTest : public ExtensionApiTest,
                        public testing::WithParamInterface<ContextType> {
- public:
-  CookiesApiTest() {
-    // Service Workers are currently only available on certain channels, so set
-    // the channel for those tests.
-    if (GetParam() == ContextType::kServiceWorker)
-      current_channel_ = std::make_unique<ScopedWorkerBasedExtensionsChannel>();
-  }
-
  protected:
-  bool RunTest(const std::string& extension_name) {
-    return RunTestWithFlags(extension_name, kFlagNone);
+  bool RunTest(const char* extension_name,
+               bool allow_in_incognito = false,
+               const char* custom_arg = nullptr) {
+    return RunExtensionTest(
+        {.name = extension_name, .custom_arg = custom_arg},
+        {.allow_in_incognito = allow_in_incognito,
+         .load_as_service_worker = GetParam() == ContextType::kServiceWorker});
   }
-
-  bool RunTestIncognito(const std::string& extension_name) {
-    return RunTestWithFlags(extension_name, kFlagEnableIncognito);
-  }
-
-  bool RunTestWithArg(const std::string& extension_name,
-                      const char* custom_arg) {
-    int browser_test_flags = kFlagNone;
-    if (GetParam() == ContextType::kServiceWorker)
-      browser_test_flags |= kFlagRunAsServiceWorkerBasedExtension;
-
-    return RunExtensionTestWithFlagsAndArg(extension_name, custom_arg,
-                                           browser_test_flags, kFlagNone);
-  }
-
-  bool RunTestWithFlags(const std::string& extension_name,
-                        int browser_test_flags) {
-    if (GetParam() == ContextType::kServiceWorker)
-      browser_test_flags |= kFlagRunAsServiceWorkerBasedExtension;
-
-    return RunExtensionTestWithFlags(extension_name, browser_test_flags,
-                                     kFlagNone);
-  }
-
-  std::unique_ptr<ScopedWorkerBasedExtensionsChannel> current_channel_;
 };
 
 INSTANTIATE_TEST_SUITE_P(EventPage,
@@ -68,11 +39,11 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ::testing::Values(ContextType::kServiceWorker));
 
 IN_PROC_BROWSER_TEST_P(CookiesApiTest, Cookies) {
-  ASSERT_TRUE(RunTestWithArg(
-      "cookies/api",
-      net::cookie_util::IsCookiesWithoutSameSiteMustBeSecureEnabled()
-          ? "true"
-          : "false"))
+  ASSERT_TRUE(
+      RunTest("cookies/api", /*allow_in_incognito=*/false,
+              net::cookie_util::IsCookiesWithoutSameSiteMustBeSecureEnabled()
+                  ? "true"
+                  : "false"))
       << message_;
 }
 
@@ -86,7 +57,9 @@ IN_PROC_BROWSER_TEST_P(CookiesApiTest, CookiesEventsSpanning) {
   // ignored and we won't be notified about a newly set cookie for which we want
   // to test whether the storeId is set correctly.
   OpenURLOffTheRecord(browser()->profile(), GURL("chrome://newtab/"));
-  ASSERT_TRUE(RunTestIncognito("cookies/events_spanning")) << message_;
+  ASSERT_TRUE(RunTest("cookies/events_spanning",
+                      /*allow_in_incognito=*/true))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(CookiesApiTest, CookiesNoPermission) {

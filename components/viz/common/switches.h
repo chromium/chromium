@@ -19,12 +19,17 @@ VIZ_COMMON_EXPORT extern const char kDeJellyScreenWidth[];
 VIZ_COMMON_EXPORT extern const char kDeadlineToSynchronizeSurfaces[];
 VIZ_COMMON_EXPORT extern const char kDisableFrameRateLimit[];
 VIZ_COMMON_EXPORT extern const char kDoubleBufferCompositing[];
+VIZ_COMMON_EXPORT extern const char kDraw1Point12Ms[];
+VIZ_COMMON_EXPORT extern const char kDraw2Points6Ms[];
+VIZ_COMMON_EXPORT extern const char kDraw1Point6Ms[];
+VIZ_COMMON_EXPORT extern const char kDraw2Points3Ms[];
+VIZ_COMMON_EXPORT extern const char kDrawPredictedInkPoint[];
 VIZ_COMMON_EXPORT extern const char kEnableDeJelly[];
 VIZ_COMMON_EXPORT extern const char kEnableHardwareOverlays[];
 VIZ_COMMON_EXPORT extern const char kEnableVizDevTools[];
 VIZ_COMMON_EXPORT extern const char kEnableVizHitTestDebug[];
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 VIZ_COMMON_EXPORT extern const char
     kPlatformDisallowsChromeOSDirectVideoDecoder[];
 #endif

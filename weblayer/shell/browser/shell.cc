@@ -39,10 +39,6 @@ Shell::Shell(std::unique_ptr<Browser> browser)
     tab()->AddObserver(this);
     tab()->GetNavigationController()->AddObserver(this);
 #if !defined(OS_ANDROID)  // Android does this in Java.
-
-    // TODO: how will tests work with this on android? can we get to the
-    // concrete type?
-
     static_cast<TabImpl*>(tab())->profile()->SetDownloadDelegate(this);
 #endif
   }
@@ -52,6 +48,9 @@ Shell::~Shell() {
   if (tab()) {
     tab()->GetNavigationController()->RemoveObserver(this);
     tab()->RemoveObserver(this);
+#if !defined(OS_ANDROID)  // Android does this in Java.
+    static_cast<TabImpl*>(tab())->profile()->SetDownloadDelegate(nullptr);
+#endif
   }
   PlatformCleanUp();
 

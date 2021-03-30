@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
-import org.chromium.chrome.browser.app.ChromeActivity;
+import android.app.Activity;
+
 import org.chromium.chrome.browser.compositor.bottombar.OverlayContentDelegate;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
+import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanelInterface;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 
 /**
@@ -20,7 +22,7 @@ public interface ContextualSearchManagementDelegate {
     /**
      * @return The ChromeActivity that associated with the manager.
      */
-    ChromeActivity getChromeActivity();
+    Activity getActivity();
 
     /**
      * Promotes the current Content View Core in the Contextual Search Panel to its own Tab.
@@ -31,7 +33,7 @@ public interface ContextualSearchManagementDelegate {
      * Sets the handle to the ContextualSearchPanel.
      * @param panel The ContextualSearchPanel.
      */
-    void setContextualSearchPanel(ContextualSearchPanel panel);
+    void setContextualSearchPanel(ContextualSearchPanelInterface panel);
 
     /**
      * Gets whether the device is running in compatibility mode for Contextual Search.
@@ -88,6 +90,22 @@ public interface ContextualSearchManagementDelegate {
      * Called when the privacy Opt-in in the panel has been accepted.
      */
     void onPromoOptIn();
+
+    /** Returns whether the In-Panel-Help is currently enabled. */
+    boolean isPanelHelpEnabled();
+
+    /**
+     * Called when the Help section of the panel has its OK button clicked.
+     */
+    void onPanelHelpOkClicked();
+
+    /**
+     * Notifies that a Related Searches suggestion has been clicked.
+     * @param suggestionIndex The 0-based index into the list of suggestions provided by the
+     *        panel and presented in the UI. E.g. if the user clicked the second chip this value
+     *        would be 1.
+     */
+    void onRelatedSearchesSuggestionClicked(int suggestionIndex);
 
     /**
      * @return A {@link ScrimCoordinator} to fade the status bar in and out.

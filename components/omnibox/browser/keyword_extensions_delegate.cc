@@ -22,7 +22,7 @@ bool KeywordExtensionsDelegate::IsEnabledExtension(
 bool KeywordExtensionsDelegate::Start(const AutocompleteInput& input,
                                       bool minimal_changes,
                                       const TemplateURL* template_url,
-                                      const base::string16& remaining_input) {
+                                      const std::u16string& remaining_input) {
   return false;
 }
 
@@ -35,4 +35,4 @@ void KeywordExtensionsDelegate::MaybeEndExtensionKeywordMode() {
 
 void KeywordExtensionsDelegate::DeleteSuggestion(
     const TemplateURL* template_url,
-    const base::string16& suggestion_text) {}
+    const std::u16string& suggestion_text) {}

@@ -47,6 +47,37 @@ class P2PTrustedSocketManagerClientImpl
   mojo::Remote<network::mojom::P2PTrustedSocketManager> socket_manager_;
 };
 
+class MdnsResponderFactory
+    : public location::nearby::connections::mojom::MdnsResponderFactory {
+ public:
+  explicit MdnsResponderFactory(Profile* profile) : profile_(profile) {}
+
+  void CreateMdnsResponder(mojo::PendingReceiver<network::mojom::MdnsResponder>
+                               responder_receiver) override {
+    auto* partition =
+        content::BrowserContext::GetDefaultStoragePartition(profile_);
+    if (!partition) {
+      LOG(ERROR) << "MdnsResponderFactory::" << __func__
+                 << ": GetDefaultStoragePartition(profile) failed.";
+      // When |responder_receiver| goes out of scope the pipe will disconnect.
+      return;
+    }
+
+    auto* network_context = partition->GetNetworkContext();
+    if (!network_context) {
+      LOG(ERROR) << "MdnsResponderFactory::" << __func__
+                 << ": GetNetworkContext() failed.";
+      // When |responder_receiver| goes out of scope the pipe will disconnect.
+      return;
+    }
+
+    network_context->CreateMdnsResponder(std::move(responder_receiver));
+  }
+
+ private:
+  Profile* profile_;
+};
+
 }  // namespace
 
 NearbyConnectionsDependenciesProvider::NearbyConnectionsDependenciesProvider(
@@ -104,7 +135,6 @@ NearbyConnectionsDependenciesProvider::GetWebRtcDependencies() {
   MojoPipe<network::mojom::P2PTrustedSocketManagerClient> socket_manager_client;
   MojoPipe<network::mojom::P2PTrustedSocketManager> trusted_socket_manager;
   MojoPipe<network::mojom::P2PSocketManager> socket_manager;
-  MojoPipe<network::mojom::MdnsResponder> mdns_responder;
 
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<P2PTrustedSocketManagerClientImpl>(
@@ -118,8 +148,10 @@ NearbyConnectionsDependenciesProvider::GetWebRtcDependencies() {
       std::move(trusted_socket_manager.receiver),
       std::move(socket_manager.receiver));
 
-  // Create mdns responder.
-  network_context->CreateMdnsResponder(std::move(mdns_responder.receiver));
+  MojoPipe<location::nearby::connections::mojom::MdnsResponderFactory>
+      mdns_responder_factory_pipe;
+  mojo::MakeSelfOwnedReceiver(std::make_unique<MdnsResponderFactory>(profile_),
+                              std::move(mdns_responder_factory_pipe.receiver));
 
   // Create ice config fetcher.
   auto url_loader_factory = profile_->GetURLLoaderFactory();
@@ -134,7 +166,8 @@ NearbyConnectionsDependenciesProvider::GetWebRtcDependencies() {
                               std::move(messenger.receiver));
 
   return location::nearby::connections::mojom::WebRtcDependencies::New(
-      std::move(socket_manager.remote), std::move(mdns_responder.remote),
+      std::move(socket_manager.remote),
+      std::move(mdns_responder_factory_pipe.remote),
       std::move(ice_config_fetcher.remote), std::move(messenger.remote));
 }
 

@@ -17,6 +17,7 @@
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
+#include "base/strings/string_piece.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
@@ -147,6 +148,8 @@ class MockHttpStream : public HttpStream {
     static const base::NoDestructor<std::vector<std::string>> nullvector_result;
     return *nullvector_result;
   }
+
+  base::StringPiece GetAcceptChViaAlps() const override { return {}; }
 
   // Methods to tweak/observer mock behavior:
   void set_stall_reads_forever() { stall_reads_forever_ = true; }

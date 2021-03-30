@@ -9,7 +9,8 @@
 #ifndef NET_PROXY_RESOLUTION_PAC_FILE_FETCHER_H_
 #define NET_PROXY_RESOLUTION_PAC_FILE_FETCHER_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -46,7 +47,7 @@ class NET_EXPORT_PRIVATE PacFileFetcher {
   //
   // Only one fetch is allowed to be outstanding at a time.
   virtual int Fetch(const GURL& url,
-                    base::string16* utf16_text,
+                    std::u16string* utf16_text,
                     CompletionOnceCallback callback,
                     const NetworkTrafficAnnotationTag traffic_annotation) = 0;
 

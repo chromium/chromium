@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/host/host_display_client.h"
 #include "components/viz/host/host_frame_sink_client.h"
@@ -50,7 +51,8 @@ class DemoHost : public viz::HostFrameSinkClient {
 
   // viz::HostFrameSinkClient:
   void OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override;
-  void OnFrameTokenChanged(uint32_t frame_token) override;
+  void OnFrameTokenChanged(uint32_t frame_token,
+                           base::TimeTicks activation_time) override;
 
   const gfx::AcceleratedWidget widget_;
   gfx::Size size_;

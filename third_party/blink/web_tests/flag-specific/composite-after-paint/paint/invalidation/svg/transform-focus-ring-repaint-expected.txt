@@ -10,6 +10,7 @@
       "name": "LayoutNGBlockFlow (positioned) DIV id='target'",
       "position": [-2, -2],
       "bounds": [404, 544],
+      "contentsOpaqueForText": true,
       "backfaceVisibility": "hidden",
       "invalidations": [
         [0, 0, 404, 544]
@@ -19,6 +20,7 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV",
       "bounds": [440, 300],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#0000FF",
       "transform": 3
     }

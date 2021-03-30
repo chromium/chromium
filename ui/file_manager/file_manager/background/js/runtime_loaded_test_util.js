@@ -1228,3 +1228,12 @@ test.util.sync.reload = () => {
 test.util.sync.progressCenterNeverNotifyCompleted = () => {
   window.background.progressCenter.neverNotifyCompleted();
 };
+
+/**
+ * Waits for the background page to initialize.
+ * @param {function()} callback Callback function called when background page
+ *      has finished initializing.
+ */
+test.util.async.waitForBackgroundReady = callback => {
+  window.background.ready(callback);
+};

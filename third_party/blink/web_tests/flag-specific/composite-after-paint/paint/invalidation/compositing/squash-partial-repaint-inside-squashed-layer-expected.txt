@@ -17,6 +17,7 @@
       "name": "LayoutNGBlockFlow (positioned) DIV class='box middle'",
       "position": [180, 180],
       "bounds": [262, 200],
+      "contentsOpaqueForText": true,
       "invalidations": [
         [80, 80, 182, 29]
       ]

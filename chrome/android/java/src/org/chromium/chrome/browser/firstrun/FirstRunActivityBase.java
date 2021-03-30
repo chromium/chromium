@@ -9,13 +9,19 @@ import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.metrics.UmaUtils;
+import org.chromium.chrome.browser.policy.PolicyServiceFactory;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
+import org.chromium.components.policy.PolicyService;
 
 /** Base class for First Run Experience. */
 public abstract class FirstRunActivityBase extends AsyncInitializationActivity {
@@ -41,6 +47,22 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity {
     public static final boolean DEFAULT_METRICS_AND_CRASH_REPORTING = true;
 
     private boolean mNativeInitialized;
+
+    private final FirstRunAppRestrictionInfo mFirstRunAppRestrictionInfo;
+    private final OneshotSupplierImpl<PolicyService> mPolicyServiceSupplier;
+    private final PolicyLoadListener mPolicyLoadListener;
+
+    private final long mStartTime;
+    private long mNativeInitializedTime;
+
+    public FirstRunActivityBase() {
+        mFirstRunAppRestrictionInfo = FirstRunAppRestrictionInfo.takeMaybeInitialized();
+        mPolicyServiceSupplier = new OneshotSupplierImpl<>();
+        mPolicyLoadListener =
+                new PolicyLoadListener(mFirstRunAppRestrictionInfo, mPolicyServiceSupplier);
+        mStartTime = SystemClock.elapsedRealtime();
+        mPolicyLoadListener.onAvailable(this::onPolicyLoadListenerAvailable);
+    }
 
     @Override
     protected boolean requiresFirstRunToBeCompleted(Intent intent) {
@@ -77,6 +99,18 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity {
     public void finishNativeInitialization() {
         super.finishNativeInitialization();
         mNativeInitialized = true;
+        mNativeInitializedTime = SystemClock.elapsedRealtime();
+        RecordHistogram.recordTimesHistogram(
+                "MobileFre.NativeInitialized", mNativeInitializedTime - mStartTime);
+        mPolicyServiceSupplier.set(PolicyServiceFactory.getGlobalPolicyService());
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        mPolicyLoadListener.destroy();
+        mFirstRunAppRestrictionInfo.destroy();
     }
 
     protected void flushPersistentData() {
@@ -123,6 +157,26 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity {
             Log.e(TAG, "Unable to send PendingIntent.", e);
         }
         return false;
+    }
+
+    protected FirstRunAppRestrictionInfo getFirstRunAppRestrictionInfo() {
+        return mFirstRunAppRestrictionInfo;
+    }
+
+    protected void onPolicyLoadListenerAvailable(boolean onDevicePolicyFound) {
+        long delayAfterNative = Math.max(0, SystemClock.elapsedRealtime() - mNativeInitializedTime);
+        String histogramName = onDevicePolicyFound
+                ? "MobileFre.PolicyServiceInitDelayAfterNative.WithPolicy"
+                : "MobileFre.PolicyServiceInitDelayAfterNative.WithoutPolicy";
+        RecordHistogram.recordTimesHistogram(histogramName, delayAfterNative);
+    }
+
+    /**
+     * @return PolicyLoadListener used to indicate if policy initialization is complete.
+     * @see PolicyLoadListener for return value expectation.
+     */
+    public OneshotSupplier<Boolean> getPolicyLoadListener() {
+        return mPolicyLoadListener;
     }
 
     /**

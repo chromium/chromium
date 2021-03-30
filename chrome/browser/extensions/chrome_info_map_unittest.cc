@@ -29,11 +29,9 @@ scoped_refptr<Extension> LoadManifest(const std::string& dir,
 
   std::string error;
   scoped_refptr<Extension> extension =
-      Extension::Create(path,
-                        Manifest::INVALID_LOCATION,
+      Extension::Create(path, mojom::ManifestLocation::kInvalidLocation,
                         *static_cast<base::DictionaryValue*>(result.get()),
-                        Extension::NO_FLAGS,
-                        &error);
+                        Extension::NO_FLAGS, &error);
   EXPECT_TRUE(extension.get()) << error;
 
   return extension;

@@ -274,17 +274,19 @@ class ExternalFileURLLoader : public network::mojom::URLLoader {
     head_.content_length = size;
     isolated_file_system_scope_ = std::move(isolated_file_system_scope);
 
-    mojo::DataPipe pipe(kDefaultPipeSize);
-    if (!pipe.consumer_handle.is_valid() || !pipe.producer_handle.is_valid()) {
+    mojo::ScopedDataPipeProducerHandle producer_handle;
+    mojo::ScopedDataPipeConsumerHandle consumer_handle;
+    if (mojo::CreateDataPipe(kDefaultPipeSize, producer_handle,
+                             consumer_handle) != MOJO_RESULT_OK) {
       CompleteWithError(net::ERR_FAILED);
       return;
     }
     head_.response_start = base::TimeTicks::Now();
     client_->OnReceiveResponse(head_.Clone());
-    client_->OnStartLoadingResponseBody(std::move(pipe.consumer_handle));
+    client_->OnStartLoadingResponseBody(std::move(consumer_handle));
 
     data_producer_ = std::make_unique<FileSystemReaderDataPipeProducer>(
-        std::move(pipe.producer_handle), std::move(stream_reader), size,
+        std::move(producer_handle), std::move(stream_reader), size,
         base::BindOnce(&ExternalFileURLLoader::OnFileWritten,
                        weak_ptr_factory_.GetWeakPtr()));
     data_producer_->Write();
@@ -343,7 +345,7 @@ ExternalFileURLLoaderFactory::ExternalFileURLLoaderFactory(
     void* profile_id,
     int render_process_host_id,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver)
-    : content::NonNetworkURLLoaderFactoryBase(std::move(factory_receiver)),
+    : network::SelfDeletingURLLoaderFactory(std::move(factory_receiver)),
       profile_id_(profile_id),
       render_process_host_id_(render_process_host_id) {}
 
@@ -351,7 +353,6 @@ ExternalFileURLLoaderFactory::~ExternalFileURLLoaderFactory() = default;
 
 void ExternalFileURLLoaderFactory::CreateLoaderAndStart(
     mojo::PendingReceiver<network::mojom::URLLoader> loader,
-    int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const network::ResourceRequest& request,
@@ -378,7 +379,8 @@ ExternalFileURLLoaderFactory::Create(void* profile_id,
   mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
 
   // The ExternalFileURLLoaderFactory will delete itself when there are no more
-  // receivers - see the NonNetworkURLLoaderFactoryBase::OnDisconnect method.
+  // receivers - see the network::SelfDeletingURLLoaderFactory::OnDisconnect
+  // method.
   new ExternalFileURLLoaderFactory(
       profile_id, render_process_host_id,
       pending_remote.InitWithNewPipeAndPassReceiver());

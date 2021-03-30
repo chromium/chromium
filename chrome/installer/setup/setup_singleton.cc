@@ -5,12 +5,12 @@
 #include "chrome/installer/setup/setup_singleton.h"
 
 #include <functional>
+#include <string>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "chrome/installer/setup/installer_state.h"
@@ -26,8 +26,8 @@ std::unique_ptr<SetupSingleton> SetupSingleton::Acquire(
   DCHECK(original_state);
   DCHECK(installer_state);
 
-  const base::string16 sync_primitive_name_suffix(
-      base::NumberToString16(std::hash<base::FilePath::StringType>()(
+  const std::wstring sync_primitive_name_suffix(
+      base::NumberToWString(std::hash<base::FilePath::StringType>()(
           installer_state->target_path().value())));
 
   base::win::ScopedHandle setup_mutex(::CreateMutex(

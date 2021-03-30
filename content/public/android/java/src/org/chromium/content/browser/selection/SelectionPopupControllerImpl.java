@@ -7,9 +7,6 @@ package org.chromium.content.browser.selection;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.SearchManager;
-import android.content.ClipData;
-import android.content.ClipDescription;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -19,11 +16,7 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.os.Handler;
 import android.provider.Browser;
-import android.text.Spanned;
 import android.text.TextUtils;
-import android.text.style.CharacterStyle;
-import android.text.style.ParagraphStyle;
-import android.text.style.UpdateAppearance;
 import android.view.ActionMode;
 import android.view.HapticFeedbackConstants;
 import android.view.Menu;
@@ -63,6 +56,7 @@ import org.chromium.content_public.browser.ImeEventObserver;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.MenuSourceType;
 import org.chromium.ui.base.ViewAndroidDelegate;
@@ -514,7 +508,10 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
             return;
         }
 
-        if (!supportsFloatingActionMode() && !canPaste() && mNonSelectionCallback == null) return;
+        if (!supportsFloatingActionMode() && !Clipboard.getInstance().canPaste()
+                && mNonSelectionCallback == null) {
+            return;
+        }
         destroyPastePopup();
         PastePopupMenu.PastePopupMenuDelegate delegate =
                 new PastePopupMenu.PastePopupMenuDelegate() {
@@ -532,7 +529,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
                     @Override
                     public boolean canPaste() {
-                        return SelectionPopupControllerImpl.this.canPaste();
+                        return Clipboard.getInstance().canPaste();
                     }
 
                     @Override
@@ -796,8 +793,9 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         Context windowContext = mWindowAndroid.getContext().get();
         if (mClassificationResult != null && mAdditionalMenuItemProvider != null
                 && windowContext != null) {
-            mAdditionalMenuItemProvider.addMenuItems(
-                    windowContext, menu, mClassificationResult.textClassification);
+            mAdditionalMenuItemProvider.addMenuItems(windowContext, menu,
+                    mClassificationResult.textClassification,
+                    mClassificationResult.additionalIcons);
         }
 
         if (!hasSelection() || isSelectionPassword()) return;
@@ -806,7 +804,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     }
 
     private void removeActionMenuItemsIfNecessary(Menu menu) {
-        if (!isFocusedNodeEditable() || !canPaste()) {
+        if (!isFocusedNodeEditable() || !Clipboard.getInstance().canPaste()) {
             menu.removeItem(R.id.select_action_menu_paste);
             menu.removeItem(R.id.select_action_menu_paste_as_plain_text);
         }
@@ -843,51 +841,19 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         }
     }
 
-    private boolean canPaste() {
-        ClipboardManager clipMgr =
-                (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
-        return clipMgr.hasPrimaryClip();
-    }
-
-    // Check if this Spanned is formatted text.
-    private boolean hasStyleSpan(Spanned spanned) {
-        // Only check against those three classes below, which could affect text appearance, since
-        // there are other kind of classes won't affect appearance.
-        Class<?>[] styleClasses = {
-                CharacterStyle.class, ParagraphStyle.class, UpdateAppearance.class};
-        for (Class<?> clazz : styleClasses) {
-            if (spanned.nextSpanTransition(-1, spanned.length(), clazz) < spanned.length()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // Check if need to show "paste as plain text" option.
-    // Don't show "paste as plain text" when "paste" and "paste as plain text" would do exactly the
-    // same.
+    /**
+     * Check if need to show "paste as plain text" option.
+     * "paste as plain text" option needs clibpoard content is rich text, and editor supports rich
+     * text as well.
+     */
     @VisibleForTesting
     public boolean canPasteAsPlainText() {
-        // String resource "paste_as_plain_text" only exist in O.
-        // Also this is an O feature, we need to make it consistant with TextView.
+        // String resource "paste_as_plain_text" only exist in O+.
+        // Also this is an O feature, we need to make it consistent with TextView.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return false;
         if (!mCanEditRichly) return false;
-        ClipboardManager clipMgr =
-                (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
-        if (!clipMgr.hasPrimaryClip()) return false;
 
-        ClipData clipData = clipMgr.getPrimaryClip();
-        ClipDescription description = clipData.getDescription();
-        CharSequence text = clipData.getItemAt(0).getText();
-        boolean isPlainType = description.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN);
-        // On Android, Spanned could be copied to Clipboard as plain_text MIME type, but in some
-        // cases, Spanned could have text format, we need to show "paste as plain text" when
-        // that happens.
-        if (isPlainType && (text instanceof Spanned)) {
-            Spanned spanned = (Spanned) text;
-            if (hasStyleSpan(spanned)) return true;
-        }
-        return description.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML);
+        return Clipboard.getInstance().canPasteAsPlainText();
     }
 
     private void updateAssistMenuItem(Menu menu) {

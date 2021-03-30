@@ -13,17 +13,18 @@
 #include <vector>
 
 #include "ui/accessibility/ax_enums.mojom-forward.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/views/views_export.h"
+
+namespace aura {
+class Window;
+}  // namespace aura
 
 namespace base {
 template <typename T>
 class NoDestructor;
 }  // namespace base
-
-namespace aura {
-class Window;
-}  // namespace aura
 
 namespace views {
 class AXAuraObjWrapper;
@@ -61,9 +62,9 @@ class VIEWS_EXPORT AXAuraObjCache : public aura::client::FocusChangeObserver {
   void CreateOrReplace(std::unique_ptr<AXAuraObjWrapper> obj);
 
   // Gets an id given an Aura view.
-  int32_t GetID(View* view) const;
-  int32_t GetID(Widget* widget) const;
-  int32_t GetID(aura::Window* window) const;
+  ui::AXNodeID GetID(View* view) const;
+  ui::AXNodeID GetID(Widget* widget) const;
+  ui::AXNodeID GetID(aura::Window* window) const;
 
   // Removes an entry from this cache based on an Aura view.
   void Remove(View* view);
@@ -77,7 +78,7 @@ class VIEWS_EXPORT AXAuraObjCache : public aura::client::FocusChangeObserver {
   void RemoveViewSubtree(View* view);
 
   // Lookup a cached entry based on an id.
-  AXAuraObjWrapper* Get(int32_t id);
+  AXAuraObjWrapper* Get(ui::AXNodeID id);
 
   // Get all top level windows this cache knows about. Under classic ash and
   // SingleProcessMash this is a list of per-display root windows.
@@ -98,6 +99,13 @@ class VIEWS_EXPORT AXAuraObjCache : public aura::client::FocusChangeObserver {
   // Notifies this cache of a change in root window.
   void OnRootWindowObjDestroyed(aura::Window* window);
 
+  // Sets a window to take a11y focus. This is for windows that need to work
+  // with accessibility clients that consume accessibility APIs, but cannot take
+  // real focus themselves. |a11y_override_window_| will be set to null when
+  // destroyed, or can be set back to null using this function.
+  // TODO(sammiequon): Merge this with set_focused_widget_for_testing().
+  void SetA11yOverrideWindow(aura::Window* a11y_override_window);
+
   void SetDelegate(Delegate* delegate) { delegate_ = delegate; }
 
   // Changes the behavior of GetFocusedView() so that it only considers
@@ -109,6 +117,7 @@ class VIEWS_EXPORT AXAuraObjCache : public aura::client::FocusChangeObserver {
 
  private:
   friend class base::NoDestructor<AXAuraObjCache>;
+  class A11yOverrideWindowObserver;
 
   View* GetFocusedView();
 
@@ -119,22 +128,31 @@ class VIEWS_EXPORT AXAuraObjCache : public aura::client::FocusChangeObserver {
   template <typename AuraViewWrapper, typename AuraView>
   AXAuraObjWrapper* CreateInternal(
       AuraView* aura_view,
-      std::map<AuraView*, int32_t>* aura_view_to_id_map);
+      std::map<AuraView*, ui::AXNodeID>* aura_view_to_id_map);
 
   template <typename AuraView>
-  int32_t GetIDInternal(
+  ui::AXNodeID GetIDInternal(
       AuraView* aura_view,
-      const std::map<AuraView*, int32_t>& aura_view_to_id_map) const;
+      const std::map<AuraView*, ui::AXNodeID>& aura_view_to_id_map) const;
 
   template <typename AuraView>
   void RemoveInternal(AuraView* aura_view,
-                      std::map<AuraView*, int32_t>* aura_view_to_id_map);
+                      std::map<AuraView*, ui::AXNodeID>* aura_view_to_id_map);
 
-  std::map<views::View*, int32_t> view_to_id_map_;
-  std::map<views::Widget*, int32_t> widget_to_id_map_;
-  std::map<aura::Window*, int32_t> window_to_id_map_;
+  // The window that should take a11y focus. This is for a window that needs to
+  // work with accessiblity features, but cannot take real focus. Gets set to
+  // null if the window is destroyed.
+  aura::Window* a11y_override_window_ = nullptr;
 
-  std::map<int32_t, std::unique_ptr<AXAuraObjWrapper>> cache_;
+  // Observes |a11y_override_window_| for destruction and sets it to null in
+  // that case.
+  std::unique_ptr<A11yOverrideWindowObserver> a11y_override_window_observer_;
+
+  std::map<views::View*, ui::AXNodeID> view_to_id_map_;
+  std::map<views::Widget*, ui::AXNodeID> widget_to_id_map_;
+  std::map<aura::Window*, ui::AXNodeID> window_to_id_map_;
+
+  std::map<ui::AXNodeID, std::unique_ptr<AXAuraObjWrapper>> cache_;
 
   Delegate* delegate_ = nullptr;
 

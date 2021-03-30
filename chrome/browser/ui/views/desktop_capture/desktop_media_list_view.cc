@@ -21,6 +21,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/views/view_utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/aura/window.h"
@@ -54,8 +55,7 @@ gfx::ImageSkia LoadDefaultIcon(aura::Window* window) {
 #endif
 
 DesktopMediaSourceView* AsDesktopMediaSourceView(views::View* view) {
-  DCHECK_EQ(DesktopMediaSourceView::kDesktopMediaSourceViewClassName,
-            view->GetClassName());
+  DCHECK(views::IsViewClass<DesktopMediaSourceView>(view));
   return static_cast<DesktopMediaSourceView*>(view);
 }
 
@@ -65,7 +65,7 @@ DesktopMediaListView::DesktopMediaListView(
     DesktopMediaListController* controller,
     DesktopMediaSourceViewStyle generic_style,
     DesktopMediaSourceViewStyle single_style,
-    const base::string16& accessible_name)
+    const std::u16string& accessible_name)
     : controller_(controller),
       single_style_(single_style),
       generic_style_(generic_style),
@@ -192,7 +192,7 @@ void DesktopMediaListView::OnSourceRemoved(size_t index) {
   DesktopMediaSourceView* view = AsDesktopMediaSourceView(children()[index]);
   DCHECK(view);
 
-  bool was_selected = view->is_selected();
+  bool was_selected = view->GetSelected();
   RemoveChildView(view);
   delete view;
 
@@ -239,7 +239,7 @@ void DesktopMediaListView::SetStyle(DesktopMediaSourceViewStyle* style) {
 DesktopMediaSourceView* DesktopMediaListView::GetSelectedView() {
   const auto i = std::find_if(
       children().cbegin(), children().cend(),
-      [](View* v) { return AsDesktopMediaSourceView(v)->is_selected(); });
+      [](View* v) { return AsDesktopMediaSourceView(v)->GetSelected(); });
   return (i == children().cend()) ? nullptr : AsDesktopMediaSourceView(*i);
 }
 

@@ -4,7 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Tests how switch to next file with the same name and different extension feature works.\n`);
-  await TestRunner.loadModule('sdk_test_runner');
+  await TestRunner.loadTestModule('sdk_test_runner');
+  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
 
   var files = [

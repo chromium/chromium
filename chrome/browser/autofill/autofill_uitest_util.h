@@ -24,6 +24,7 @@ void AddTestAutofillData(Profile* base_profile,
                          const AutofillProfile& profile,
                          const CreditCard& card);
 void WaitForPersonalDataChange(Profile* base_profile);
+void WaitForPersonalDataManagerToBeLoaded(Profile* base_profile);
 
 }  // namespace autofill
 

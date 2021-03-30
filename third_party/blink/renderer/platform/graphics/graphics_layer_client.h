@@ -36,6 +36,7 @@ class GraphicsContext;
 class GraphicsLayer;
 class IntRect;
 class ScrollableArea;
+class PaintArtifactCompositor;
 
 enum GraphicsLayerPaintingPhaseFlags {
   kGraphicsLayerPaintBackground = (1 << 0),
@@ -54,9 +55,13 @@ class PLATFORM_EXPORT GraphicsLayerClient {
  public:
   virtual ~GraphicsLayerClient() = default;
 
+  // Used only when CullRectUpdate is not enabled.
   virtual IntRect ComputeInterestRect(
       const GraphicsLayer*,
       const IntRect& previous_interest_rect) const = 0;
+  // Used when CullRectUpdate is enabled.
+  virtual IntRect PaintableRegion(const GraphicsLayer*) const = 0;
+
   virtual LayoutSize SubpixelAccumulation() const { return LayoutSize(); }
   // Returns whether the client needs to be repainted with respect to the given
   // graphics layer.
@@ -71,6 +76,8 @@ class PLATFORM_EXPORT GraphicsLayerClient {
   virtual bool IsTrackingRasterInvalidations() const { return false; }
 
   virtual void GraphicsLayersDidChange() {}
+
+  virtual PaintArtifactCompositor* GetPaintArtifactCompositor() = 0;
 
   virtual String DebugName(const GraphicsLayer*) const = 0;
 

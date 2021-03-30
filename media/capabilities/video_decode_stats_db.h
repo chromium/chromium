@@ -72,7 +72,7 @@ class MEDIA_EXPORT VideoDecodeStatsDB {
     uint64_t frames_power_efficient;
   };
 
-  virtual ~VideoDecodeStatsDB();
+  virtual ~VideoDecodeStatsDB() = default;
 
   // Run asynchronous initialization of database. Initialization must complete
   // before calling other APIs. Initialization must be RE-RUN after calling
@@ -101,22 +101,6 @@ class MEDIA_EXPORT VideoDecodeStatsDB {
 
   // Clear all statistics from the DB.
   virtual void ClearStats(base::OnceClosure clear_done_cb) = 0;
-
-  // Tracking down root cause of crash probable UAF (https://crbug/865321).
-  // We will CHECK if a |dependent_db_| is found to be set during destruction.
-  // Dependent DB should always be destroyed and unhooked before |this|.
-  void set_dependent_db(VideoDecodeStatsDB* dependent) {
-    // One of these should be non-null.
-    CHECK(!dependent_db_ || !dependent);
-    // They shouldn't already match.
-    CHECK(dependent_db_ != dependent);
-
-    dependent_db_ = dependent;
-  }
-
- private:
-  // See set_dependent_db().
-  VideoDecodeStatsDB* dependent_db_ = nullptr;
 };
 
 MEDIA_EXPORT bool operator==(const VideoDecodeStatsDB::VideoDescKey& x,

@@ -29,6 +29,7 @@ class Layer;
 
 namespace gfx {
 class Animation;
+class AnimationCurve;
 class Rect;
 class Transform;
 }
@@ -375,7 +376,7 @@ class COMPOSITOR_EXPORT LayerAnimator : public base::RefCounted<LayerAnimator>,
       base::TimeTicks monotonic_time,
       int target_property,
       base::TimeTicks animation_start_time,
-      std::unique_ptr<cc::AnimationCurve> curve) override {}
+      std::unique_ptr<gfx::AnimationCurve> curve) override {}
   void NotifyLocalTimeUpdated(
       base::Optional<base::TimeDelta> local_time) override {}
 

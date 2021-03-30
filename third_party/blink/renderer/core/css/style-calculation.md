@@ -110,7 +110,7 @@ of `CSSSelector`s.
 If there are no custom style callbacks or animations
 [`StyleForLayoutObject`](https://cs.chromium.org/?q=symbol:%5Eblink::Element::StyleForLayoutObject$)
 leads to
-[`StyleResolver::StyleForElement`](https://cs.chromium.org/?q=symbol:%5Eblink::StyleResolver::StyleForElement$)
+[`StyleResolver::ResolveStyle`](https://cs.chromium.org/?q=symbol:%5Eblink::StyleResolver::ResolveStyle$)
 which is where the bulk of the work occurs. First by finding all of the rules
 which match the element and then using that and other info to compute the final
 style.

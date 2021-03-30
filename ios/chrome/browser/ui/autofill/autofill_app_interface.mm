@@ -371,7 +371,7 @@ class SaveCardInfobarEGTestHelper
 
 + (NSString*)exampleProfileName {
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
-  base::string16 name =
+  std::u16string name =
       profile.GetInfo(autofill::AutofillType(autofill::NAME_FULL),
                       GetApplicationContext()->GetApplicationLocale());
   return base::SysUTF16ToNSString(name);

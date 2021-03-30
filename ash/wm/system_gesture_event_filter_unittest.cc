@@ -9,7 +9,6 @@
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/window_factory.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "base/time/time.h"
@@ -17,6 +16,7 @@
 #include "ui/aura/env.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/test/test_windows.h"
+#include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/hit_test.h"
 #include "ui/display/manager/display_manager.h"
@@ -455,8 +455,8 @@ TEST_F(SystemGestureEventFilterTest,
 
   aura::test::EventCountDelegate delegate;
   delegate.set_window_component(HTCLIENT);
-  std::unique_ptr<aura::Window> child =
-      window_factory::NewWindow(&delegate, aura::client::WINDOW_TYPE_CONTROL);
+  std::unique_ptr<aura::Window> child = std::make_unique<aura::Window>(
+      &delegate, aura::client::WINDOW_TYPE_CONTROL);
   child->Init(ui::LAYER_TEXTURED);
   parent->AddChild(child.get());
   child->SetBounds(gfx::Rect(100, 100));

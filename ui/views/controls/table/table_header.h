@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "ui/gfx/font_list.h"
 #include "ui/views/controls/table/table_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/views_export.h"
 
@@ -18,8 +19,7 @@ namespace views {
 // Views used to render the header for the table.
 class VIEWS_EXPORT TableHeader : public views::View {
  public:
-  // Internal class name.
-  static const char kViewClassName[];
+  METADATA_HEADER(TableHeader);
 
   // Amount the text is padded on the left/right side.
   static const int kHorizontalPadding;
@@ -28,6 +28,8 @@ class VIEWS_EXPORT TableHeader : public views::View {
   static const int kSortIndicatorWidth;
 
   explicit TableHeader(TableView* table);
+  TableHeader(const TableHeader&) = delete;
+  TableHeader& operator=(const TableHeader&) = delete;
   ~TableHeader() override;
 
   const gfx::FontList& font_list() const { return font_list_; }
@@ -37,7 +39,6 @@ class VIEWS_EXPORT TableHeader : public views::View {
 
   // views::View overrides.
   void OnPaint(gfx::Canvas* canvas) override;
-  const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   bool GetNeedsNotificationWhenVisibleBoundsChange() const override;
   void OnVisibleBoundsChanged() override;
@@ -88,8 +89,6 @@ class VIEWS_EXPORT TableHeader : public views::View {
 
   // If non-null a resize is in progress.
   std::unique_ptr<ColumnResizeDetails> resize_details_;
-
-  DISALLOW_COPY_AND_ASSIGN(TableHeader);
 };
 
 }  // namespace views

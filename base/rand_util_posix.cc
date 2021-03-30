@@ -17,11 +17,9 @@
 #include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && !defined(OS_NACL)
 #include "third_party/lss/linux_syscall_support.h"
-#endif
-
-#if !defined(OS_IOS) && !defined(OS_NACL)
+#elif defined(OS_MAC)
 // TODO(crbug.com/995996): Waiting for this header to appear in the iOS SDK.
 // (See below.)
 #include <sys/random.h>

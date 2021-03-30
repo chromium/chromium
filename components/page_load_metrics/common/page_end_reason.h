@@ -17,7 +17,7 @@ namespace page_load_metrics {
 enum PageEndReason {
   // Page lifetime has not yet ended (page is still active). Pages that
   // become hidden are logged in END_HIDDEN, so we expect low numbers in this
-  // bucket from the end of May 2020, i.e. in Navigation.PageEndReason2.
+  // bucket from the end of May 2020.
   END_NONE = 0,
 
   // The page was reloaded, possibly by the user.
@@ -53,8 +53,13 @@ enum PageEndReason {
   END_OTHER = 9,
 
   // The page became hidden but is still active. Added end of May 2020 for
-  // Navigation.PageEndReason2.
+  // Navigation.PageEndReason2. Deprecated Jan 2021 with
+  // Navigation.PageEndReason3.
   END_HIDDEN = 10,
+
+  // The page load has not yet ended but we need to flush the metrics because
+  // the app has entered the background.
+  END_APP_ENTER_BACKGROUND = 11,
 
   PAGE_END_REASON_COUNT
 };

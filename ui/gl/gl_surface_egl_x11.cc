@@ -5,47 +5,13 @@
 #include "ui/gl/gl_surface_egl_x11.h"
 
 #include "base/stl_util.h"
-#include "base/threading/thread_task_runner_handle.h"
-#include "ui/base/x/x11_display_util.h"
 #include "ui/base/x/x11_util.h"
-#include "ui/gfx/x/randr.h"
+#include "ui/base/x/x11_xrandr_interval_only_vsync_provider.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"
 #include "ui/gl/egl_util.h"
 
 namespace gl {
-
-namespace {
-
-class XrandrIntervalOnlyVSyncProvider : public gfx::VSyncProvider {
- public:
-  explicit XrandrIntervalOnlyVSyncProvider()
-      : interval_(base::TimeDelta::FromSeconds(1 / 60.)) {}
-
-  void GetVSyncParameters(UpdateVSyncCallback callback) override {
-    if (++calls_since_last_update_ >= kCallsBetweenUpdates) {
-      calls_since_last_update_ = 0;
-      interval_ = ui::GetPrimaryDisplayRefreshIntervalFromXrandr();
-    }
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), base::TimeTicks(), interval_));
-  }
-
-  bool GetVSyncParametersIfAvailable(base::TimeTicks* timebase,
-                                     base::TimeDelta* interval) override {
-    return false;
-  }
-  bool SupportGetVSyncParametersIfAvailable() const override { return false; }
-  bool IsHWClock() const override { return false; }
-
- private:
-  base::TimeDelta interval_;
-  static const int kCallsBetweenUpdates = 100;
-  int calls_since_last_update_ = kCallsBetweenUpdates;
-};
-
-}  // namespace
 
 NativeViewGLSurfaceEGLX11::NativeViewGLSurfaceEGLX11(x11::Window window)
     : NativeViewGLSurfaceEGL(static_cast<uint32_t>(window), nullptr) {}
@@ -55,6 +21,9 @@ bool NativeViewGLSurfaceEGLX11::Initialize(GLSurfaceFormat format) {
     return false;
 
   auto* connection = x11::Connection::Get();
+  // Synchronize the Xlib display to ensure ANGLE's CreateWindow request
+  // completes before we make our QueryTree request below.
+  connection->GetXlibDisplay(x11::XlibDisplayType::kSyncing);
   // Query all child windows and store them. ANGLE creates a child window when
   // eglCreateWindowSurface is called on X11 and expose events from this window
   // need to be received by this class.  Since ANGLE is using a separate
@@ -110,7 +79,7 @@ x11::Connection* NativeViewGLSurfaceEGLX11::GetXNativeConnection() const {
 
 std::unique_ptr<gfx::VSyncProvider>
 NativeViewGLSurfaceEGLX11::CreateVsyncProviderInternal() {
-  return std::make_unique<XrandrIntervalOnlyVSyncProvider>();
+  return std::make_unique<ui::XrandrIntervalOnlyVSyncProvider>();
 }
 
 void NativeViewGLSurfaceEGLX11::OnEvent(const x11::Event& x11_event) {

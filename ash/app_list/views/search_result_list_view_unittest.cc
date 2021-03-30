@@ -15,6 +15,7 @@
 #include "ash/app_list/test/test_search_result.h"
 #include "ash/app_list/views/search_result_view.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
+#include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -80,7 +81,7 @@ class SearchResultListViewTest : public views::test::WidgetTest {
     assistant_result->set_result_type(
         ash::AppListSearchResultType::kAssistantText);
     assistant_result->set_display_type(ash::SearchResultDisplayType::kList);
-    assistant_result->set_title(base::UTF8ToUTF16("assistant result"));
+    assistant_result->set_title(u"assistant result");
     results->Add(std::move(assistant_result));
 
     RunPendingMessages();
@@ -94,7 +95,7 @@ class SearchResultListViewTest : public views::test::WidgetTest {
       result->set_display_type(ash::SearchResultDisplayType::kList);
       result->set_title(base::UTF8ToUTF16(base::StringPrintf("Result %d", i)));
       if (i < 2)
-        result->set_details(base::ASCIIToUTF16("Detail"));
+        result->set_details(u"Detail");
       results->Add(std::move(result));
     }
 
@@ -133,6 +134,7 @@ class SearchResultListViewTest : public views::test::WidgetTest {
   }
 
  private:
+  TestAppListColorProvider color_provider_;  // Needed by AppListView.
   AppListTestViewDelegate view_delegate_;
   std::unique_ptr<SearchResultListView> view_;
   views::Widget* widget_;
@@ -145,12 +147,10 @@ TEST_F(SearchResultListViewTest, SpokenFeedback) {
 
   // Result 0 has a detail text. Expect that the detail is appended to the
   // accessibility name.
-  EXPECT_EQ(base::ASCIIToUTF16("Result 0, Detail"),
-            GetResultViewAt(0)->ComputeAccessibleName());
+  EXPECT_EQ(u"Result 0, Detail", GetResultViewAt(0)->ComputeAccessibleName());
 
   // Result 2 has no detail text.
-  EXPECT_EQ(base::ASCIIToUTF16("Result 2"),
-            GetResultViewAt(2)->ComputeAccessibleName());
+  EXPECT_EQ(u"Result 2", GetResultViewAt(2)->ComputeAccessibleName());
 }
 
 TEST_F(SearchResultListViewTest, ModelObservers) {
@@ -189,7 +189,7 @@ TEST_F(SearchResultListViewTest, HidesAssistantResultWhenTilesVisible) {
   // Assistant result should be set and visible.
   for (const auto* view : GetAssistantResultViews()) {
     EXPECT_TRUE(view->GetVisible());
-    EXPECT_EQ(view->result()->title(), base::UTF8ToUTF16("assistant result"));
+    EXPECT_EQ(view->result()->title(), u"assistant result");
   }
 
   // Add a tile result

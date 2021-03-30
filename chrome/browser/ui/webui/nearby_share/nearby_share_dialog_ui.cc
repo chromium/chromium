@@ -16,6 +16,7 @@
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_impl.h"
 #include "chrome/browser/nearby_sharing/text_attachment.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/nearby_share/shared_resources.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -38,8 +39,8 @@ namespace nearby_share {
 NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
   Profile* profile = Profile::FromWebUI(web_ui);
-  // Nearby Share is not available to incognito or guest profiles.
-  DCHECK(profile->IsRegularProfile());
+  DCHECK(NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
+      profile));
 
   nearby_service_ = NearbySharingServiceFactory::GetForBrowserContext(profile);
 
@@ -71,6 +72,8 @@ NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
       "nearbyShareContactVisibilityNumUnreachable",
       IDS_NEARBY_CONTACT_VISIBILITY_NUM_UNREACHABLE);
   web_ui->AddMessageHandler(std::move(plural_string_handler));
+  // Add the metrics handler to write uma stats.
+  web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
 
   content::WebUIDataSource::Add(profile, html_source);
 
@@ -134,8 +137,9 @@ void NearbyShareDialogUI::SetAttachmentFromQueryParameter(const GURL& url) {
            {"phone", TextAttachment::Type::kPhoneNumber},
            {"text", TextAttachment::Type::kText}}) {
     if (net::GetValueForKeyInQuery(url, text_type.first, &value)) {
-      attachments.push_back(
-          std::make_unique<TextAttachment>(text_type.second, value));
+      attachments.push_back(std::make_unique<TextAttachment>(
+          text_type.second, value, /*title=*/base::nullopt,
+          /*mime_type=*/base::nullopt));
       SetAttachments(std::move(attachments));
       return;
     }

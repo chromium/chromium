@@ -157,44 +157,49 @@ GrGLFunction<R GR_GL_FUNCTION_TYPE(Args...)> bind_slow_on_mac(
 
 template <bool droppable_call = false, typename R, typename... Args>
 GrGLFunction<R GR_GL_FUNCTION_TYPE(Args...)> bind_with_flush_on_mac(
-    R(GL_BINDING_CALL* func)(Args...)) {
+    R(GL_BINDING_CALL* func)(Args...),
+    bool is_angle) {
 #if defined(OS_APPLE)
-  return [func](Args... args) {
-    // Conditional may be optimized out because droppable_call is set at compile
-    // time.
-    if (!droppable_call || !HasInitializedNullDrawGLBindings()) {
-      // If running on Apple silicon, regardless of the architecture, disable
-      // this workaround.  See https://crbug.com/1131312.
-      static const bool needs_flush =
-          base::mac::GetCPUType() == base::mac::CPUType::kIntel;
-      if (needs_flush) {
-        TRACE_EVENT0(
-            "gpu", "CreateGrGLInterface - bind_with_flush_on_mac - beforefunc")
-        glFlush();
+  // If running on Apple silicon or ANGLE, regardless of the architecture,
+  // disable this workaround.  See https://crbug.com/1131312.
+  const bool needs_flush =
+      base::mac::GetCPUType() == base::mac::CPUType::kIntel && !is_angle;
+  if (needs_flush) {
+    return [func](Args... args) {
+      // Conditional may be optimized out because droppable_call is set at
+      // compile time.
+      if (!droppable_call || !HasInitializedNullDrawGLBindings()) {
+        {
+          TRACE_EVENT0(
+              "gpu",
+              "CreateGrGLInterface - bind_with_flush_on_mac - beforefunc");
+          glFlush();
+        }
+        func(args...);
+        {
+          TRACE_EVENT0(
+              "gpu",
+              "CreateGrGLInterface - bind_with_flush_on_mac - afterfunc");
+          glFlush();
+        }
       }
-      func(args...);
-      if (needs_flush) {
-        TRACE_EVENT0("gpu",
-                     "CreateGrGLInterface - bind_with_flush_on_mac - afterfunc")
-        glFlush();
-      }
-    }
-  };
-#else
-  return maybe_drop_call<droppable_call>(func);
+    };
+  }
 #endif
+  return maybe_drop_call<droppable_call>(func);
 }
 
 template <bool droppable_call = false, typename R, typename... Args>
 GrGLFunction<R GR_GL_FUNCTION_TYPE(Args...)> bind_slow_with_flush_on_mac(
     R(GL_BINDING_CALL* func)(Args...),
-    gl::ProgressReporter* progress_reporter) {
+    gl::ProgressReporter* progress_reporter,
+    bool is_angle) {
   if (!progress_reporter) {
-    return bind_with_flush_on_mac<droppable_call>(func);
+    return bind_with_flush_on_mac<droppable_call>(func, is_angle);
   }
-  return [func, progress_reporter](Args... args) {
+  return [func, progress_reporter, is_angle](Args... args) {
     gl::ScopedProgressReporter scoped_reporter(progress_reporter);
-    return bind_with_flush_on_mac<droppable_call>(func)(args...);
+    return bind_with_flush_on_mac<droppable_call>(func, is_angle)(args...);
   };
 }
 
@@ -305,8 +310,8 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   functions->fBlendFunc = gl->glBlendFuncFn;
   functions->fBufferData = gl->glBufferDataFn;
   functions->fBufferSubData = gl->glBufferSubDataFn;
-  functions->fClear =
-      bind_slow_with_flush_on_mac<true>(gl->glClearFn, progress_reporter);
+  functions->fClear = bind_slow_with_flush_on_mac<true>(
+      gl->glClearFn, progress_reporter, version_info.is_angle);
   functions->fClearColor = gl->glClearColorFn;
   functions->fClearStencil = gl->glClearStencilFn;
   functions->fClearTexImage = gl->glClearTexImageFn;
@@ -315,7 +320,7 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   functions->fCompileShader =
       bind_slow(gl->glCompileShaderFn, progress_reporter);
   functions->fCompressedTexImage2D = bind_slow_with_flush_on_mac(
-      gl->glCompressedTexImage2DFn, progress_reporter);
+      gl->glCompressedTexImage2DFn, progress_reporter, version_info.is_angle);
   functions->fCompressedTexSubImage2D =
       bind_slow(gl->glCompressedTexSubImage2DFn, progress_reporter);
   functions->fCopyTexSubImage2D =
@@ -347,8 +352,8 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   functions->fDeleteQueries = gl->glDeleteQueriesFn;
   functions->fDeleteSamplers = gl->glDeleteSamplersFn;
   functions->fDeleteShader = bind_slow(gl->glDeleteShaderFn, progress_reporter);
-  functions->fDeleteTextures =
-      bind_slow_with_flush_on_mac(gl->glDeleteTexturesFn, progress_reporter);
+  functions->fDeleteTextures = bind_slow_with_flush_on_mac(
+      gl->glDeleteTexturesFn, progress_reporter, version_info.is_angle);
   functions->fDepthMask = gl->glDepthMaskFn;
   functions->fDisable = gl->glDisableFn;
   functions->fDisableVertexAttribArray = gl->glDisableVertexAttribArrayFn;
@@ -463,16 +468,16 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   functions->fStencilOpSeparate = gl->glStencilOpSeparateFn;
   functions->fTexBuffer = gl->glTexBufferFn;
   functions->fTexBufferRange = gl->glTexBufferRangeFn;
-  functions->fTexImage2D =
-      bind_slow_with_flush_on_mac(gl->glTexImage2DFn, progress_reporter);
+  functions->fTexImage2D = bind_slow_with_flush_on_mac(
+      gl->glTexImage2DFn, progress_reporter, version_info.is_angle);
   functions->fTexParameterf = gl->glTexParameterfFn;
   functions->fTexParameterfv = gl->glTexParameterfvFn;
   functions->fTexParameteri = gl->glTexParameteriFn;
   functions->fTexParameteriv = gl->glTexParameterivFn;
-  functions->fTexStorage2D =
-      bind_slow_with_flush_on_mac(gl->glTexStorage2DEXTFn, progress_reporter);
-  functions->fTexSubImage2D =
-      bind_slow_with_flush_on_mac(gl->glTexSubImage2DFn, progress_reporter);
+  functions->fTexStorage2D = bind_slow_with_flush_on_mac(
+      gl->glTexStorage2DEXTFn, progress_reporter, version_info.is_angle);
+  functions->fTexSubImage2D = bind_slow_with_flush_on_mac(
+      gl->glTexSubImage2DFn, progress_reporter, version_info.is_angle);
 
   // GL 4.5 or GL_ARB_texture_barrier or GL_NV_texture_barrier
   // functions->fTextureBarrier = gl->glTextureBarrierFn;
@@ -526,53 +531,26 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   functions->fGetRenderbufferParameteriv =
       gl->glGetRenderbufferParameterivEXTFn;
   functions->fBindFramebuffer = bind_slow_with_flush_on_mac(
-      gl->glBindFramebufferEXTFn, progress_reporter);
+      gl->glBindFramebufferEXTFn, progress_reporter, version_info.is_angle);
   functions->fFramebufferTexture2D = gl->glFramebufferTexture2DEXTFn;
   functions->fCheckFramebufferStatus = gl->glCheckFramebufferStatusEXTFn;
   functions->fDeleteFramebuffers = bind_slow_with_flush_on_mac(
-      gl->glDeleteFramebuffersEXTFn, progress_reporter);
-  functions->fRenderbufferStorage =
-      bind_with_flush_on_mac(gl->glRenderbufferStorageEXTFn);
+      gl->glDeleteFramebuffersEXTFn, progress_reporter, version_info.is_angle);
+  functions->fRenderbufferStorage = bind_with_flush_on_mac(
+      gl->glRenderbufferStorageEXTFn, version_info.is_angle);
   functions->fGenRenderbuffers = gl->glGenRenderbuffersEXTFn;
-  functions->fDeleteRenderbuffers =
-      bind_with_flush_on_mac(gl->glDeleteRenderbuffersEXTFn);
+  functions->fDeleteRenderbuffers = bind_with_flush_on_mac(
+      gl->glDeleteRenderbuffersEXTFn, version_info.is_angle);
   functions->fFramebufferRenderbuffer = gl->glFramebufferRenderbufferEXTFn;
   functions->fBindRenderbuffer = gl->glBindRenderbufferEXTFn;
-  functions->fRenderbufferStorageMultisample =
-      bind_with_flush_on_mac(gl->glRenderbufferStorageMultisampleFn);
+  functions->fRenderbufferStorageMultisample = bind_with_flush_on_mac(
+      gl->glRenderbufferStorageMultisampleFn, version_info.is_angle);
   functions->fFramebufferTexture2DMultisample =
       gl->glFramebufferTexture2DMultisampleEXTFn;
-  functions->fRenderbufferStorageMultisampleES2EXT =
-      bind_with_flush_on_mac(gl->glRenderbufferStorageMultisampleEXTFn);
-  functions->fBlitFramebuffer = bind_with_flush_on_mac(gl->glBlitFramebufferFn);
-
-  functions->fMatrixLoadf = gl->glMatrixLoadfEXTFn;
-  functions->fMatrixLoadIdentity = gl->glMatrixLoadIdentityEXTFn;
-  functions->fPathCommands = gl->glPathCommandsNVFn;
-  functions->fPathParameteri = gl->glPathParameteriNVFn;
-  functions->fPathParameterf = gl->glPathParameterfNVFn;
-  functions->fGenPaths = gl->glGenPathsNVFn;
-  functions->fDeletePaths = gl->glDeletePathsNVFn;
-  functions->fIsPath = gl->glIsPathNVFn;
-  functions->fPathStencilFunc = gl->glPathStencilFuncNVFn;
-  functions->fStencilFillPath = gl->glStencilFillPathNVFn;
-  functions->fStencilStrokePath = gl->glStencilStrokePathNVFn;
-  functions->fStencilFillPathInstanced = gl->glStencilFillPathInstancedNVFn;
-  functions->fStencilStrokePathInstanced = gl->glStencilStrokePathInstancedNVFn;
-  functions->fCoverFillPath = gl->glCoverFillPathNVFn;
-  functions->fCoverStrokePath = gl->glCoverStrokePathNVFn;
-  functions->fCoverFillPathInstanced = gl->glCoverFillPathInstancedNVFn;
-  functions->fCoverStrokePathInstanced = gl->glCoverStrokePathInstancedNVFn;
-  functions->fStencilThenCoverFillPath = gl->glStencilThenCoverFillPathNVFn;
-  functions->fStencilThenCoverStrokePath = gl->glStencilThenCoverStrokePathNVFn;
-  functions->fStencilThenCoverFillPathInstanced =
-      gl->glStencilThenCoverFillPathInstancedNVFn;
-  functions->fStencilThenCoverStrokePathInstanced =
-      gl->glStencilThenCoverStrokePathInstancedNVFn;
-  functions->fProgramPathFragmentInputGen =
-      gl->glProgramPathFragmentInputGenNVFn;
-  functions->fBindFragmentInputLocation =
-      gl->glBindFragmentInputLocationCHROMIUMFn;
+  functions->fRenderbufferStorageMultisampleES2EXT = bind_with_flush_on_mac(
+      gl->glRenderbufferStorageMultisampleEXTFn, version_info.is_angle);
+  functions->fBlitFramebuffer =
+      bind_with_flush_on_mac(gl->glBlitFramebufferFn, version_info.is_angle);
 
   functions->fCoverageModulation = gl->glCoverageModulationNVFn;
 
@@ -588,8 +566,6 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
 
   functions->fInvalidateFramebuffer = gl->glInvalidateFramebufferFn;
   functions->fInvalidateSubFramebuffer = gl->glInvalidateSubFramebufferFn;
-
-  functions->fGetProgramResourceLocation = gl->glGetProgramResourceLocationFn;
 
   // GL_NV_bindless_texture
   // functions->fGetTextureHandle = gl->glGetTextureHandleNVFn;

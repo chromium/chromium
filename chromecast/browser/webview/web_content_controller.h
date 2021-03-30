@@ -79,8 +79,6 @@ class WebContentController
   void MainFrameWasResized(bool width_changed) override;
   void FrameSizeChanged(content::RenderFrameHost* render_frame_host,
                         const gfx::Size& frame_size) override;
-  void RenderViewCreated(content::RenderViewHost* render_view_host) override;
-  void RenderViewDeleted(content::RenderViewHost* render_view_host) override;
 
   static void RegisterRenderWidgetInputObserverFromRenderFrameHost(
       WebContentController* web_content_controller,
@@ -117,6 +115,9 @@ class WebContentController
   void HandleClearCookies(int64_t id);
   void HandleGetTitle(int64_t id);
   void HandleResize(const gfx::Size& size);
+  void HandleSetInsets(const gfx::Insets& insets);
+  void HandleGetUserAgent(int64_t id);
+
   viz::SurfaceId GetSurfaceId();
   void ChannelModified(content::RenderFrameHost* frame,
                        const std::string& channel,

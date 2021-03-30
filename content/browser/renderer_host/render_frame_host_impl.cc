@@ -32,9 +32,10 @@
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/current_thread.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/optional_trace_event.h"
 #include "base/trace_event/trace_conversion_helper.h"
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
@@ -49,6 +50,7 @@
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/contacts/contacts_manager_impl.h"
+#include "content/browser/coop_coep_cross_origin_isolated_info.h"
 #include "content/browser/data_url_loader_factory.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/protocol/audits.h"
@@ -57,7 +59,7 @@
 #include "content/browser/download/mhtml_generation_manager.h"
 #include "content/browser/file_system/file_system_manager_impl.h"
 #include "content/browser/file_system/file_system_url_loader_factory.h"
-#include "content/browser/file_system_access/native_file_system_manager_impl.h"
+#include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/generic_sensor/sensor_provider_proxy_impl.h"
 #include "content/browser/geolocation/geolocation_service_impl.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
@@ -83,6 +85,7 @@
 #include "content/browser/presentation/presentation_service_impl.h"
 #include "content/browser/push_messaging/push_messaging_manager.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
+#include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/cookie_utils.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
@@ -94,7 +97,8 @@
 #include "content/browser/renderer_host/input/input_router.h"
 #include "content/browser/renderer_host/input/timeout_monitor.h"
 #include "content/browser/renderer_host/ipc_utils.h"
-#include "content/browser/renderer_host/keep_alive_handle_factory.h"
+#include "content/browser/renderer_host/media/peer_connection_tracker_host.h"
+#include "content/browser/renderer_host/modal_close_listener_host.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -120,6 +124,7 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/url_loader_factory_params_helper.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
+#include "content/browser/web_package/subresource_web_bundle_navigation_info.h"
 #include "content/browser/web_package/web_bundle_handle.h"
 #include "content/browser/web_package/web_bundle_handle_tracker.h"
 #include "content/browser/web_package/web_bundle_navigation_info.h"
@@ -128,6 +133,8 @@
 #include "content/browser/webauth/authenticator_impl.h"
 #include "content/browser/webauth/webauth_request_security_checker.h"
 #include "content/browser/webid/federated_auth_request_impl.h"
+#include "content/browser/webid/federated_auth_response_impl.h"
+#include "content/browser/webid/flags.h"
 #include "content/browser/websockets/websocket_connector_impl.h"
 #include "content/browser/webtransport/quic_transport_connector_impl.h"
 #include "content/browser/webui/url_data_manager_backend.h"
@@ -146,7 +153,6 @@
 #include "content/common/render_message_filter.mojom.h"
 #include "content/common/renderer.mojom.h"
 #include "content/common/state_transitions.h"
-#include "content/common/unfreezable_frame_messages.h"
 #include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_context.h"
@@ -173,7 +179,6 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/isolated_world_ids.h"
-#include "content/public/common/navigation_policy.h"
 #include "content/public/common/network_service_util.h"
 #include "content/public/common/origin_util.h"
 #include "content/public/common/page_visibility_state.h"
@@ -193,6 +198,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_constants.h"
 #include "services/device/public/cpp/device_features.h"
 #include "services/device/public/mojom/sensor_provider.mojom.h"
@@ -202,6 +208,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "services/network/public/cpp/not_implemented_url_loader_factory.h"
 #include "services/network/public/cpp/trust_token_operation_authorization.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
@@ -214,13 +221,13 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
-#include "third_party/blink/public/common/feature_policy/document_policy_features.h"
-#include "third_party/blink/public/common/feature_policy/feature_policy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/loader/inter_process_time_ticks_converter.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
+#include "third_party/blink/public/common/permissions_policy/document_policy_features.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/appcache/appcache.mojom.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
@@ -241,9 +248,9 @@
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom.h"
 #include "third_party/blink/public/mojom/usb/web_usb_service.mojom.h"
 #include "third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom.h"
+#include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_tree.h"
-#include "ui/accessibility/ax_tree_id_registry.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/quad_f.h"
@@ -266,7 +273,9 @@
 #include "content/browser/renderer_host/popup_menu_helper_mac.h"
 #endif
 
-using base::TimeDelta;
+#if BUILDFLAG(ENABLE_PLUGINS)
+#include "content/browser/plugin_service_impl.h"
+#endif
 
 namespace content {
 
@@ -279,6 +288,7 @@ int RenderFrameHostImpl::max_accessibility_resets_ = 0;
 int RenderFrameHostImpl::max_accessibility_resets_ = 4;
 #endif  // AX_FAIL_FAST_BUILD
 
+// TODO(crbug.com/1181748): This should use absl::variant
 struct RenderFrameHostOrProxy {
   RenderFrameHostImpl* const frame;
   RenderFrameProxyHost* const proxy;
@@ -314,6 +324,8 @@ int g_next_accessibility_reset_token = 1;
 // WebView, WebLayer, Fuchsia web.ContextProvider and CastOS content shell.
 bool g_allow_injecting_javascript = false;
 
+const char kDotGoogleDotCom[] = ".google.com";
+
 typedef std::unordered_map<GlobalFrameRoutingId,
                            RenderFrameHostImpl*,
                            GlobalFrameRoutingIdHasher>
@@ -321,9 +333,9 @@ typedef std::unordered_map<GlobalFrameRoutingId,
 base::LazyInstance<RoutingIDFrameMap>::DestructorAtExit g_routing_id_frame_map =
     LAZY_INSTANCE_INITIALIZER;
 
-using TokenFrameMap = std::unordered_map<base::UnguessableToken,
+using TokenFrameMap = std::unordered_map<blink::LocalFrameToken,
                                          RenderFrameHostImpl*,
-                                         base::UnguessableTokenHash>;
+                                         blink::LocalFrameToken::Hasher>;
 base::LazyInstance<TokenFrameMap>::Leaky g_token_frame_map =
     LAZY_INSTANCE_INITIALIZER;
 
@@ -423,6 +435,8 @@ class BackForwardCacheMessageFilter : public mojo::MessageFilter {
  private:
   // mojo::MessageFilter overrides.
   bool WillDispatch(mojo::Message* message) override {
+    if (!render_frame_host_->render_view_host())
+      return false;
     if (render_frame_host_->render_view_host()
             ->GetPageLifecycleStateManager()
             ->RendererExpectedToSendChannelAssociatedIpcs() ||
@@ -589,20 +603,23 @@ RenderFrameHostOrProxy LookupRenderFrameHostOrProxy(int process_id,
 
 RenderFrameHostOrProxy LookupRenderFrameHostOrProxy(
     int process_id,
-    const base::UnguessableToken& frame_token) {
-  auto it = g_token_frame_map.Get().find(frame_token);
-  RenderFrameHostImpl* rfh = nullptr;
-  RenderFrameProxyHost* proxy = nullptr;
-  if (it != g_token_frame_map.Get().end()) {
+    const blink::FrameToken& frame_token) {
+  if (frame_token.Is<blink::LocalFrameToken>()) {
+    auto it = g_token_frame_map.Get().find(
+        frame_token.GetAs<blink::LocalFrameToken>());
     // The check against |process_id| isn't strictly necessary, but represents
     // an extra level of protection against a renderer trying to force a frame
     // token.
-    rfh =
-        process_id == it->second->GetProcess()->GetID() ? it->second : nullptr;
-  } else {
-    proxy = RenderFrameProxyHost::FromFrameToken(process_id, frame_token);
+    if (it == g_token_frame_map.Get().end() ||
+        process_id != it->second->GetProcess()->GetID()) {
+      return RenderFrameHostOrProxy(nullptr, nullptr);
+    }
+    return RenderFrameHostOrProxy(it->second, nullptr);
   }
-  return RenderFrameHostOrProxy(rfh, proxy);
+  DCHECK(frame_token.Is<blink::RemoteFrameToken>());
+  return RenderFrameHostOrProxy(
+      nullptr, RenderFrameProxyHost::FromFrameToken(
+                   process_id, frame_token.GetAs<blink::RemoteFrameToken>()));
 }
 
 // Takes the lower 31 bits of the metric-name-hash of a Mojo interface |name|.
@@ -665,94 +682,22 @@ void OnDataURLRetrieved(
   StartDownload(std::move(parameters), nullptr);
 }
 
-void RecordWebPlatformSecurityMetrics(RenderFrameHostImpl* rfh,
-                                      NavigationRequest* navigation_request) {
-  ContentBrowserClient* client = GetContentClient()->browser();
-  if (rfh->cross_origin_opener_policy().value ==
-      network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin) {
-    client->LogWebFeatureForCurrentPage(
-        rfh, blink::mojom::WebFeature::kCrossOriginOpenerPolicySameOrigin);
-  }
-  if (rfh->cross_origin_opener_policy().value ==
-      network::mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopups) {
-    client->LogWebFeatureForCurrentPage(
-        rfh, blink::mojom::WebFeature::
-                 kCrossOriginOpenerPolicySameOriginAllowPopups);
-  }
-
-  if (rfh->cross_origin_embedder_policy().value ==
-      network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp) {
-    client->LogWebFeatureForCurrentPage(
-        rfh, blink::mojom::WebFeature::kCrossOriginEmbedderPolicyRequireCorp);
-  }
-
-  if (rfh->cross_origin_opener_policy().value ==
-      network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep) {
-    client->LogWebFeatureForCurrentPage(
-        rfh, blink::mojom::WebFeature::kCoopAndCoepIsolated);
-  }
-
-  if (rfh->cross_origin_opener_policy().reporting_endpoint ||
-      rfh->cross_origin_opener_policy().report_only_reporting_endpoint) {
-    client->LogWebFeatureForCurrentPage(
-        rfh, blink::mojom::WebFeature::kCrossOriginOpenerPolicyReporting);
-  }
-
-  // Record iframes embedded in cross-origin contexts without a CSP
-  // frame-ancestor directive.
-  bool is_embedded_in_cross_origin_context = false;
-  RenderFrameHostImpl* parent = rfh->frame_tree_node()->parent();
-  while (parent) {
-    if (!parent->GetLastCommittedOrigin().IsSameOriginWith(
-            rfh->GetLastCommittedOrigin())) {
-      is_embedded_in_cross_origin_context = true;
-      break;
-    }
-    parent = parent->frame_tree_node()->parent();
-  }
-
-  bool has_embedding_control = false;
-  if (!navigation_request->response()) {
-    // This navigation did not result in a network request. The embedding of
-    // the frame is not controlled by network headers.
-    has_embedding_control = true;
-  } else {
-    // Check if the request has a CSP frame-ancestor directive.
-    for (const auto& csp : navigation_request->response()
-                               ->parsed_headers->content_security_policy) {
-      if (csp->header->type ==
-              network::mojom::ContentSecurityPolicyType::kEnforce &&
-          csp->directives.contains(
-              network::mojom::CSPDirectiveName::FrameAncestors)) {
-        has_embedding_control = true;
-        break;
-      }
-    }
-  }
-
-  if (is_embedded_in_cross_origin_context && !has_embedding_control &&
-      !navigation_request->IsErrorPage()) {
-    client->LogWebFeatureForCurrentPage(
-        rfh,
-        blink::mojom::WebFeature::kCrossOriginSubframeWithoutEmbeddingControl);
-  }
-}
-
 // Subframe navigations can optionally have associated Trust Tokens operations
 // (https://github.com/wicg/trust-token-api). If the operation's type is
 // "redemption" or "signing" (as opposed to "issuance"), the parent's frame
-// needs to have the trust-token-redemption Feature Policy feature enabled.
-bool ParentNeedsTrustTokenFeaturePolicy(
+// needs to have the trust-token-redemption Permissions Policy feature enabled.
+bool ParentNeedsTrustTokenPermissionsPolicy(
     const mojom::BeginNavigationParams& begin_params) {
   if (!begin_params.trust_token_params)
     return false;
 
-  return network::DoesTrustTokenOperationRequireFeaturePolicy(
+  return network::DoesTrustTokenOperationRequirePermissionsPolicy(
       begin_params.trust_token_params->type);
 }
 
-// Analyzes trusted sources of a frame's trust-token-redemption Feature Policy
-// feature to see if the feature is definitely disabled or potentially enabled.
+// Analyzes trusted sources of a frame's trust-token-redemption Permissions
+// Policy feature to see if the feature is definitely disabled or potentially
+// enabled.
 //
 // This information will be bound to a URLLoaderFactory; if the answer is
 // "definitely disabled," the network service will report a bad message if it
@@ -767,55 +712,60 @@ DetermineWhetherToForbidTrustTokenRedemption(
     const RenderFrameHostImpl* parent,
     const mojom::CommitNavigationParams& commit_params,
     const url::Origin& subframe_origin) {
-  // For main frame loads, the frame's feature policy is determined entirely by
-  // response headers, which are provided by the renderer.
+  // For main frame loads, the frame's permissions policy is determined entirely
+  // by response headers, which are provided by the renderer.
   if (!parent)
     return network::mojom::TrustTokenRedemptionPolicy::kPotentiallyPermit;
 
-  const blink::FeaturePolicy* parent_policy = parent->feature_policy();
-  blink::ParsedFeaturePolicy container_policy =
+  const blink::PermissionsPolicy* parent_policy = parent->permissions_policy();
+  blink::ParsedPermissionsPolicy container_policy =
       commit_params.frame_policy.container_policy;
 
-  auto subframe_policy = blink::FeaturePolicy::CreateFromParentPolicy(
+  auto subframe_policy = blink::PermissionsPolicy::CreateFromParentPolicy(
       parent_policy, container_policy, subframe_origin);
 
   if (subframe_policy->IsFeatureEnabled(
-          blink::mojom::FeaturePolicyFeature::kTrustTokenRedemption)) {
+          blink::mojom::PermissionsPolicyFeature::kTrustTokenRedemption)) {
     return network::mojom::TrustTokenRedemptionPolicy::kPotentiallyPermit;
   }
   return network::mojom::TrustTokenRedemptionPolicy::kForbid;
 }
 
 // When a frame creates its initial subresource loaders, it needs to know
-// whether the trust-token-redemption Feature Policy feature will be enabled
+// whether the trust-token-redemption Permissions Policy feature will be enabled
 // after the commit finishes, which is a little involved (see
 // DetermineWhetherToForbidTrustTokenRedemption). In contrast, if it needs to
 // make this decision once the frame has committted---for instance, to create
 // more loaders after the network service crashes---it can directly consult the
-// current Feature Policy state to determine whether the feature is enabled.
+// current Permissions Policy state to determine whether the feature is enabled.
 network::mojom::TrustTokenRedemptionPolicy
 DetermineAfterCommitWhetherToForbidTrustTokenRedemption(
     RenderFrameHostImpl* impl) {
   return impl->IsFeatureEnabled(
-             blink::mojom::FeaturePolicyFeature::kTrustTokenRedemption)
+             blink::mojom::PermissionsPolicyFeature::kTrustTokenRedemption)
              ? network::mojom::TrustTokenRedemptionPolicy::kPotentiallyPermit
              : network::mojom::TrustTokenRedemptionPolicy::kForbid;
 }
 
-// Returns the string corresponding to LifecycleState, used for logging crash
-// keys.
-const char* LifecycleStateToString(RenderFrameHostImpl::LifecycleState state) {
-  using LifecycleState = RenderFrameHostImpl::LifecycleState;
+// Returns the string corresponding to LifecycleStateImpl, used for logging
+// crash keys.
+const char* LifecycleStateImplToString(
+    RenderFrameHostImpl::LifecycleStateImpl state) {
+  using LifecycleStateImpl = RenderFrameHostImpl::LifecycleStateImpl;
   switch (state) {
-    case LifecycleState::kSpeculative:
+    case LifecycleStateImpl::kSpeculative:
       return "Speculative";
-    case LifecycleState::kActive:
+    case LifecycleStateImpl::kPrerendering:
+      return "Prerendering";
+    case LifecycleStateImpl::kPendingCommit:
+      return "PendingCommit";
+    case LifecycleStateImpl::kActive:
       return "Active";
-    case LifecycleState::kInBackForwardCache:
+    case LifecycleStateImpl::kInBackForwardCache:
       return "InBackForwardCache";
-    case LifecycleState::kRunningUnloadHandlers:
+    case LifecycleStateImpl::kRunningUnloadHandlers:
       return "RunningUnloadHandlers";
-    case LifecycleState::kReadyToBeDeleted:
+    case LifecycleStateImpl::kReadyToBeDeleted:
       return "ReadyToDeleted";
   }
 }
@@ -826,39 +776,144 @@ void VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
     NavigationRequest* navigation_request,
     const mojom::DidCommitProvisionalLoadParams& params) {
   DCHECK(navigation_request);
+  DCHECK(!navigation_request->IsSameDocument());
+  DCHECK(!navigation_request->IsServedFromBackForwardCache());
 
   // Ignore for now cases where the NavigationRequest is in an unexpectedly
-  // early state.  See also the NavigationRequestBrowserTest.VerifySameDocument
-  // test.
+  // early state. Triggered by the following tests:
+  // NavigationBrowserTest.OpenerNavigation_DownloadPolicy,
+  // WebContentsImplBrowserTest.NewNamedWindow.
   if (navigation_request->state() < NavigationRequest::WILL_PROCESS_RESPONSE)
     return;
 
-  // Ignore for now opaque |renderer_side_origin| origins.  This effectively
-  // ignores the following scenarios:
-  // - error frames (i.e. navigation_request->GetNetErrorCode() != net::OK;
-  //   see also the NavigationBrowserTest.FailedNavigation test)
-  // - sandboxed frames (see also https://crbug.com/1145139#c5)
-  // - comparison of precursor origins
+  // Check if both the renderer and browser expect an opaque origin. This
+  // effectively ignores the following:
+  // - precursor origins
   // - TODO(https://crbug.com/1041376): mismatched nonces (even if precursor
   //   origins would have matched)
   const url::Origin& renderer_side_origin = params.origin;
-  if (renderer_side_origin.opaque())
-    return;
-
-  // Ignore about:blank navigations, because browser-side calculated the origin
-  // based on the initiator of the navigation, but renderer-side takes the
-  // origin from the frame parent or opener.  Example scenario (exercised by
-  // FrameNavigationEntry_RecreatedSubframeToBlank) starts with a.com(data:) and
-  // has the subframe navigate itself to about:blank.
-  if (navigation_request->GetURL().IsAboutBlank())
-    return;
-
   url::Origin browser_side_origin =
       navigation_request->GetOriginForURLLoaderFactory();
-  DCHECK_EQ(browser_side_origin, renderer_side_origin);
+  if (renderer_side_origin.opaque() && browser_side_origin.opaque())
+    return;
+
+#if defined(OS_ANDROID)
+  // TODO(lukasza): Investigate why about:blank navigations on Android sometimes
+  // have an opaque, unique `browser_side_origin` that doesn't match a regular,
+  // tuple `renderer_side_origin` - see webview_cts_tests,
+  // android.webkit.cts.WebViewTest#testJavascriptInterfaceForClientPopup on
+  // android-pie-arm64-rel.
+  if (navigation_request->GetURL().IsAboutBlank())
+    return;
+#endif
+
+  DCHECK_EQ(browser_side_origin, renderer_side_origin)
+      << "; navigation_request->GetURL() = " << navigation_request->GetURL();
+}
+
+// Enum used for Navigation.VerifyDidCommitParams histogram, to indicate which
+// DidCommitProvisionalLoadParams differ when comparing browser- vs
+// renderer-calculated values.
+// Do NOT delete or reorder existing entries.
+enum class VerifyDidCommitParamsDifference {
+  kIntendedAsNewEntry = 0,
+  kMethod = 1,
+  kURLIsUnreachable = 2,
+  kBaseURL = 3,
+  kPostID = 4,
+  kIsOverridingUserAgent = 5,
+  kHTTPStatusCode = 6,
+  kShouldUpdateHistory = 7,
+  kGesture = 8,
+  kMaxValue = kGesture,
+};
+
+bool ValidateCSPAttribute(const std::string& value) {
+  if (!base::IsStringASCII(value))
+    return false;
+  if (value.find('\n') != std::string::npos ||
+      value.find('\r') != std::string::npos) {
+    return false;
+  }
+  return true;
+}
+
+perfetto::protos::pbzero::FrameDeleteIntention FrameDeleteIntentionToProto(
+    mojom::FrameDeleteIntention intent) {
+  using ProtoLevel = perfetto::protos::pbzero::FrameDeleteIntention;
+  switch (intent) {
+    case mojom::FrameDeleteIntention::kNotMainFrame:
+      return ProtoLevel::FRAME_DELETE_INTENTION_NOT_MAIN_FRAME;
+    case mojom::FrameDeleteIntention::kSpeculativeMainFrameForShutdown:
+      return ProtoLevel::
+          FRAME_DELETE_INTENTION_SPECULATIVE_MAIN_FRAME_FOR_SHUTDOWN;
+    case mojom::FrameDeleteIntention::
+        kSpeculativeMainFrameForNavigationCancelled:
+      return ProtoLevel::
+          FRAME_DELETE_INTENTION_SPECULATIVE_MAIN_FRAME_FOR_NAVIGATION_CANCELLED;
+  }
+  // All cases should've been handled by the switch case above.
+  NOTREACHED();
+  return ProtoLevel::FRAME_DELETE_INTENTION_NOT_MAIN_FRAME;
+}
+
+void WriteRenderFrameImplDeletion(perfetto::EventContext& ctx,
+                                  RenderFrameHostImpl* rfh,
+                                  mojom::FrameDeleteIntention intent) {
+  auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+  auto* data = event->set_render_frame_impl_deletion();
+  data->set_has_pending_commit(rfh->HasPendingCommitNavigation());
+  data->set_has_pending_cross_document_commit(
+      rfh->HasPendingCommitForCrossDocumentNavigation());
+  data->set_frame_tree_node_id(rfh->GetFrameTreeNodeId());
+  data->set_intent(FrameDeleteIntentionToProto(intent));
 }
 
 }  // namespace
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+class PepperPluginInstanceHost : public mojom::PepperPluginInstanceHost {
+ public:
+  PepperPluginInstanceHost(
+      int32_t instance_id,
+      RenderFrameHostImpl* frame_host,
+      mojo::PendingAssociatedRemote<mojom::PepperPluginInstance> instance,
+      mojo::PendingAssociatedReceiver<mojom::PepperPluginInstanceHost> host)
+      : instance_id_(instance_id),
+        frame_host_(frame_host),
+        receiver_(this, std::move(host)),
+        remote_(std::move(instance)) {
+    frame_host_->delegate()->OnPepperInstanceCreated(frame_host_, instance_id);
+    remote_.set_disconnect_handler(
+        base::BindOnce(&RenderFrameHostImpl::PepperInstanceClosed,
+                       base::Unretained(frame_host), instance_id_));
+  }
+  ~PepperPluginInstanceHost() override = default;
+
+  // mojom::PepperPluginInstanceHost overrides.
+  void StartsPlayback() override {
+    frame_host_->delegate()->OnPepperStartsPlayback(frame_host_, instance_id_);
+  }
+
+  void StopsPlayback() override {
+    frame_host_->delegate()->OnPepperStopsPlayback(frame_host_, instance_id_);
+  }
+
+  void InstanceCrashed(const base::FilePath& plugin_path,
+                       base::ProcessId plugin_pid) override {
+    frame_host_->delegate()->OnPepperPluginCrashed(frame_host_, plugin_path,
+                                                   plugin_pid);
+  }
+
+  void SetVolume(double volume) { remote_->SetVolume(volume); }
+
+ private:
+  int32_t const instance_id_;
+  RenderFrameHostImpl* const frame_host_;
+  mojo::AssociatedReceiver<mojom::PepperPluginInstanceHost> receiver_;
+  mojo::AssociatedRemote<mojom::PepperPluginInstance> remote_;
+};
+#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 class RenderFrameHostImpl::DroppedInterfaceRequestLogger
     : public blink::mojom::BrowserInterfaceBroker {
@@ -898,28 +953,23 @@ struct PendingNavigation {
   mojom::BeginNavigationParamsPtr begin_navigation_params;
   scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory;
   mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client;
-  mojo::PendingRemote<blink::mojom::NavigationInitiator> navigation_initiator;
 
   PendingNavigation(
       mojom::CommonNavigationParamsPtr common_params,
       mojom::BeginNavigationParamsPtr begin_navigation_params,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
-      mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
-      mojo::PendingRemote<blink::mojom::NavigationInitiator>
-          navigation_initiator);
+      mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client);
 };
 
 PendingNavigation::PendingNavigation(
     mojom::CommonNavigationParamsPtr common_params,
     mojom::BeginNavigationParamsPtr begin_navigation_params,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
-    mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
-    mojo::PendingRemote<blink::mojom::NavigationInitiator> navigation_initiator)
+    mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client)
     : common_params(std::move(common_params)),
       begin_navigation_params(std::move(begin_navigation_params)),
       blob_url_loader_factory(std::move(blob_url_loader_factory)),
-      navigation_client(std::move(navigation_client)),
-      navigation_initiator(std::move(navigation_initiator)) {}
+      navigation_client(std::move(navigation_client)) {}
 
 // static
 RenderFrameHost* RenderFrameHost::FromID(GlobalFrameRoutingId id) {
@@ -936,7 +986,7 @@ RenderFrameHost* RenderFrameHost::FromID(int render_process_id,
 // static
 RenderFrameHost* RenderFrameHost::FromFrameToken(
     int process_id,
-    const base::UnguessableToken& token) {
+    const blink::LocalFrameToken& token) {
   return RenderFrameHostImpl::FromFrameToken(process_id, token);
 }
 
@@ -963,7 +1013,7 @@ RenderFrameHostImpl* RenderFrameHostImpl::FromID(int render_process_id,
 // static
 RenderFrameHostImpl* RenderFrameHostImpl::FromFrameToken(
     int process_id,
-    const base::UnguessableToken& frame_token) {
+    const blink::LocalFrameToken& frame_token) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto it = g_token_frame_map.Get().find(frame_token);
   if (it == g_token_frame_map.Get().end())
@@ -985,8 +1035,8 @@ RenderFrameHost* RenderFrameHost::FromAXTreeID(ui::AXTreeID ax_tree_id) {
 RenderFrameHostImpl* RenderFrameHostImpl::FromAXTreeID(
     ui::AXTreeID ax_tree_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  ui::AXTreeIDRegistry::FrameID frame_id =
-      ui::AXTreeIDRegistry::GetInstance()->GetFrameID(ax_tree_id);
+  ui::AXActionHandlerRegistry::FrameID frame_id =
+      ui::AXActionHandlerRegistry::GetInstance()->GetFrameID(ax_tree_id);
   return RenderFrameHostImpl::FromID(frame_id.first, frame_id.second);
 }
 
@@ -994,7 +1044,7 @@ RenderFrameHostImpl* RenderFrameHostImpl::FromAXTreeID(
 RenderFrameHostImpl* RenderFrameHostImpl::FromOverlayRoutingToken(
     const base::UnguessableToken& token) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto it = g_token_frame_map.Get().find(token);
+  auto it = g_token_frame_map.Get().find(blink::LocalFrameToken(token));
   return it == g_token_frame_map.Get().end() ? nullptr : it->second;
 }
 
@@ -1013,9 +1063,10 @@ RenderFrameHostImpl::RenderFrameHostImpl(
     FrameTree* frame_tree,
     FrameTreeNode* frame_tree_node,
     int32_t routing_id,
-    const base::UnguessableToken& frame_token,
-    bool renderer_initiated_creation,
-    LifecycleState lifecycle_state)
+    mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
+    const blink::LocalFrameToken& frame_token,
+    bool renderer_initiated_creation_of_main_frame,
+    LifecycleStateImpl lifecycle_state)
     : render_view_host_(std::move(render_view_host)),
       delegate_(delegate),
       site_instance_(static_cast<SiteInstanceImpl*>(site_instance)),
@@ -1027,22 +1078,30 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       beforeunload_timeout_delay_(RenderViewHostImpl::kUnloadTimeout),
       last_navigation_previews_state_(
           blink::PreviewsTypes::PREVIEWS_UNSPECIFIED),
-      waiting_for_init_(renderer_initiated_creation),
+      frame_(std::move(frame_remote)),
+      waiting_for_init_(renderer_initiated_creation_of_main_frame),
       push_messaging_manager_(
           nullptr,
-          base::OnTaskRunnerDeleter(base::CreateSequencedTaskRunner(
-              {ServiceWorkerContext::GetCoreThreadId()}))),
+          base::OnTaskRunnerDeleter(
+
+              BrowserThread::GetTaskRunnerForThread(
+                  ServiceWorkerContext::GetCoreThreadId()))),
       frame_token_(frame_token),
-      keep_alive_timeout_(base::TimeDelta::FromSeconds(30)),
+      keep_alive_handle_factory_(agent_scheduling_group_.GetProcess(),
+                                 base::TimeDelta::FromSeconds(
+                                     kKeepAliveHandleFactoryTimeoutInSeconds)),
       subframe_unload_timeout_(RenderViewHostImpl::kUnloadTimeout),
       media_device_id_salt_base_(
           BrowserContext::CreateRandomMediaDeviceIDSalt()),
       lifecycle_state_(lifecycle_state) {
   DCHECK(delegate_);
-  DCHECK(lifecycle_state_ == LifecycleState::kSpeculative ||
-         lifecycle_state_ == LifecycleState::kActive);
+  DCHECK(lifecycle_state_ == LifecycleStateImpl::kSpeculative ||
+         lifecycle_state_ == LifecycleStateImpl::kPrerendering ||
+         lifecycle_state_ == LifecycleStateImpl::kActive);
+  // Only main frames have `waiting_for_init_` set.
+  DCHECK(!waiting_for_init_ || !parent_);
 
-  agent_scheduling_group().AddRoute(routing_id_, this);
+  GetAgentSchedulingGroup().AddRoute(routing_id_, this);
   g_routing_id_frame_map.Get().emplace(
       GlobalFrameRoutingId(GetProcess()->GetID(), routing_id_), this);
   g_token_frame_map.Get().insert(std::make_pair(frame_token_, this));
@@ -1055,6 +1114,17 @@ RenderFrameHostImpl::RenderFrameHostImpl(
 
     // New child frames should inherit the nav_entry_id of their parent.
     set_nav_entry_id(parent_->nav_entry_id());
+  }
+
+  if (blink::features::IsPrerender2Enabled()) {
+    if (frame_tree_->is_prerendering()) {
+      // TODO(https://crbug.com/1132752): Check the prerendering page is
+      // same-origin to the prerender trigger page.
+      broker_.ApplyMojoBinderPolicies(
+          MojoBinderPolicyApplier::CreateForSameOriginPrerendering(
+              base::BindOnce(&RenderFrameHostImpl::CancelPrerendering,
+                             base::Unretained(this))));
+    }
   }
 
   // The initial empty document inherits its policy container from its creator.
@@ -1070,23 +1140,36 @@ RenderFrameHostImpl::RenderFrameHostImpl(
   // cannot use DidCommitProvisionalLoad to set the policy container, since we
   // could run into a race condition. Hence we need to set the policy container
   // immediately when creating the RenderFrameHost here.
-  if (lifecycle_state_ != LifecycleState::kSpeculative) {
+  if (lifecycle_state_ != LifecycleStateImpl::kSpeculative) {
     // Creating a RFH in kActive state implies that it is the RFH for a
     // newly-created FTN, which should not have committed a real load yet.
     DCHECK(!frame_tree_node_->has_committed_real_load());
+
     if (parent_) {
-      policy_container_host_ = parent_->policy_container_host()->Clone();
+      SetPolicyContainerHost(parent_->policy_container_host()->Clone());
     } else if (frame_tree_node_->opener()) {
-      policy_container_host_ = frame_tree_node_->opener()
-                                   ->current_frame_host()
-                                   ->policy_container_host()
-                                   ->Clone();
+      SetPolicyContainerHost(frame_tree_node_->opener()
+                                 ->current_frame_host()
+                                 ->policy_container_host()
+                                 ->Clone());
     } else {
-      policy_container_host_ = std::make_unique<PolicyContainerHost>();
+      SetPolicyContainerHost(base::MakeRefCounted<PolicyContainerHost>());
     }
+
+    // The initial empty document gets its sandbox flags from either:
+    // 1. The parent + iframe.sandbox for <iframe>.
+    // 2. The opener for popup, when "allow-popups-to-escape-sandbox" isn't set.
+    //
+    // Both are already computed and stored in the FrameTreeNode. So only a copy
+    // is needed here.
+    active_sandbox_flags_ = frame_tree_node_->active_sandbox_flags();
   }
 
-  SetUpMojoIfNeeded();
+  if (!base::FeatureList::IsEnabled(
+          features::kBlockInsecurePrivateNetworkRequests)) {
+    private_network_request_policy_ = network::mojom::
+        PrivateNetworkRequestPolicy::kWarnFromInsecureToMorePrivate;
+  }
 
   unload_event_monitor_timeout_ =
       std::make_unique<TimeoutMonitor>(base::BindRepeating(
@@ -1097,11 +1180,15 @@ RenderFrameHostImpl::RenderFrameHostImpl(
 
   // Local roots are:
   // - main frames; or
-  // - subframes in a different SiteInstance from their parent.
+  // - subframes that use a proxy to talk to their parent.
   //
   // Local roots require a RenderWidget for input/layout/painting.
-  if (!parent_ || IsCrossProcessSubframe()) {
-    if (!parent_) {
+  // Note: We cannot use is_local_root() here because this block sets up the
+  // fields that are used by that method.
+  const bool setup_local_render_widget_host =
+      is_main_frame() || RequiresProxyToParent();
+  if (setup_local_render_widget_host) {
+    if (is_main_frame()) {
       // For main frames, the RenderWidgetHost is owned by the RenderViewHost.
       // TODO(https://crbug.com/545684): Once RenderViewHostImpl has-a
       // RenderWidgetHostImpl, the main render frame should probably start
@@ -1114,13 +1201,9 @@ RenderFrameHostImpl::RenderFrameHostImpl(
           site_instance->GetProcess()->GetNextRoutingID();
       DCHECK_EQ(nullptr, GetLocalRenderWidgetHost());
       owned_render_widget_host_ = RenderWidgetHostFactory::Create(
-          frame_tree_->render_widget_delegate(), agent_scheduling_group_,
-          widget_routing_id, /*hidden=*/true,
+          frame_tree_, frame_tree_->render_widget_delegate(),
+          agent_scheduling_group_, widget_routing_id, /*hidden=*/true,
           /*renderer_initiated_creation=*/false);
-#if defined(OS_ANDROID)
-      owned_render_widget_host_->SetForceEnableZoom(
-          delegate_->GetOrCreateWebPreferences().force_enable_zoom);
-#endif  // defined(OS_ANDROID)
     }
 
     if (is_main_frame())
@@ -1129,7 +1212,10 @@ RenderFrameHostImpl::RenderFrameHostImpl(
     GetLocalRenderWidgetHost()->input_router()->SetFrameTreeNodeId(
         frame_tree_node_->frame_tree_node_id());
   }
-  ResetFeaturePolicy();
+  // Verify is_local_root() now indicates whether this frame is a local root or
+  // not. It is safe to use this method anywhere beyond this point.
+  DCHECK_EQ(setup_local_render_widget_host, is_local_root());
+  ResetPermissionsPolicy();
 
   // New RenderFrameHostImpl are put in their own virtual browsing context
   // group. Then, they can inherit from:
@@ -1163,18 +1249,14 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   ClearWebUI();
 
   SetLastCommittedSiteInfo(GURL());
-  if (last_committed_document_priority_) {
-    GetProcess()->UpdateFrameWithPriority(last_committed_document_priority_,
-                                          base::nullopt);
-  }
 
   g_token_frame_map.Get().erase(frame_token_);
 
   site_instance_->RemoveObserver(this);
   GetProcess()->RemoveObserver(this);
 
-  const bool was_created = render_frame_created_;
-  render_frame_created_ = false;
+  const bool was_created = is_render_frame_created();
+  render_frame_state_ = RenderFrameState::kDeleted;
   if (was_created)
     delegate_->RenderFrameDeleted(this);
 
@@ -1196,20 +1278,21 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   //    associated RenderView will clean up the resources associated with the
   //    main RenderFrame.
   // 2. The RenderFrame can be unloaded. In this case, the browser sends a
-  //    UnfreezableFrameMsg_Unload for the RenderFrame to replace itself with a
-  //    RenderFrameProxy and release its associated resources.
-  //    |lifecycle_state_| is advanced to LifeCycleState::kRunningUnloadHandlers
-  //    to track that this IPC is in flight.
+  //    mojom::FrameNavigationControl::UnloadFrame message for the RenderFrame
+  //    to replace itself with a RenderFrameProxy and release its associated
+  //    resources. |lifecycle_state_| is advanced to
+  //    LifecycleStateImpl::kRunningUnloadHandlers to track that this IPC is in
+  //    flight.
   // 3. The RenderFrame can be detached, as part of removing a subtree (due to
   //    navigation, unload, or DOM mutation). In this case, the browser sends
-  //    a UnfreezableFrameMsg_Delete for the RenderFrame to detach itself and
-  //    release its associated resources. If the subframe contains an unload
-  //    handler, |lifecycle_state_| is advanced to
-  //    LifeCycleState::kRunningUnloadHandlers to track that the detach is in
-  //    progress; otherwise, it is advanced directly to
-  //    LifeCycleState::kReadyToBeDeleted.
+  //    a mojom::FrameNavigationControl::Delete message for the RenderFrame
+  //    to detach itself and release its associated resources. If the subframe
+  //    contains an unload handler, |lifecycle_state_| is advanced to
+  //    LifecycleStateImpl::kRunningUnloadHandlers to track that the detach is
+  //    in progress; otherwise, it is advanced directly to
+  //    LifecycleStateImpl::kReadyToBeDeleted.
   //
-  // For BackForwardCache case:
+  // For BackForwardCache or Prerender case:
   //
   // Deleting the BackForwardCache::Entry deletes immediately all the
   // Render{View,Frame,FrameProxy}Host. This will destroy the main RenderFrame
@@ -1232,9 +1315,9 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   //
   // TODO(dcheng): Due to how frame detach is signalled today, there are some
   // bugs in this area. In particular, subtree detach is reported from the
-  // bottom up, so the replicated UnfreezableFrameMsg_Delete messages actually
-  // operate on a node-by-node basis rather than detaching an entire subtree at
-  // once...
+  // bottom up, so the replicated mojom::FrameNavigationControl::Delete
+  // messages actually operate on a node-by-node basis rather than detaching an
+  // entire subtree at once...
   //
   // Note that this logic is fairly subtle. It needs to include all subframes
   // and all speculative frames, but it should exclude case #1 (a main
@@ -1255,10 +1338,12 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   // *always* first be unassociated from its corresponding RFHM. Thus, it
   // follows that |GetMainFrame()| will never return the speculative main frame
   // being deleted, since it must have already been unset.
-  if (was_created && render_view_host_->GetMainFrame() != this)
-    CHECK(IsPendingDeletion() || IsInBackForwardCache());
+  if (was_created && render_view_host_->GetMainFrame() != this) {
+    CHECK(IsPendingDeletion() || IsInBackForwardCache() ||
+          lifecycle_state() == LifecycleStateImpl::kPrerendering);
+  }
 
-  agent_scheduling_group().RemoveRoute(routing_id_);
+  GetAgentSchedulingGroup().RemoveRoute(routing_id_);
   g_routing_id_frame_map.Get().erase(
       GlobalFrameRoutingId(GetProcess()->GetID(), routing_id_));
 
@@ -1297,7 +1382,7 @@ int RenderFrameHostImpl::GetRoutingID() {
   return routing_id_;
 }
 
-const base::UnguessableToken& RenderFrameHostImpl::GetFrameToken() {
+const blink::LocalFrameToken& RenderFrameHostImpl::GetFrameToken() {
   return frame_token_;
 }
 
@@ -1305,7 +1390,7 @@ ui::AXTreeID RenderFrameHostImpl::GetAXTreeID() {
   return ax_tree_id();
 }
 
-const base::UnguessableToken& RenderFrameHostImpl::GetTopFrameToken() {
+const blink::LocalFrameToken& RenderFrameHostImpl::GetTopFrameToken() {
   RenderFrameHostImpl* frame = this;
   while (frame->parent_) {
     frame = frame->parent_;
@@ -1325,8 +1410,8 @@ void RenderFrameHostImpl::AudioContextPlaybackStopped(int audio_context_id) {
 void RenderFrameHostImpl::DidEnterBackForwardCache() {
   TRACE_EVENT0("navigation", "RenderFrameHostImpl::EnterBackForwardCache");
   DCHECK(IsBackForwardCacheEnabled());
-  DCHECK_EQ(lifecycle_state_, LifecycleState::kActive);
-  SetLifecycleState(LifecycleState::kInBackForwardCache);
+  DCHECK_EQ(lifecycle_state(), LifecycleStateImpl::kActive);
+  SetLifecycleState(LifecycleStateImpl::kInBackForwardCache);
   // Pages in the back-forward cache are automatically evicted after a certain
   // time.
   if (!GetParent())
@@ -1354,7 +1439,7 @@ void RenderFrameHostImpl::DidEnterBackForwardCache() {
 void RenderFrameHostImpl::WillLeaveBackForwardCache() {
   TRACE_EVENT0("navigation", "RenderFrameHostImpl::LeaveBackForwardCache");
   DCHECK(IsBackForwardCacheEnabled());
-  DCHECK_EQ(lifecycle_state_, LifecycleState::kInBackForwardCache);
+  DCHECK_EQ(lifecycle_state(), LifecycleStateImpl::kInBackForwardCache);
   if (back_forward_cache_eviction_timer_.IsRunning())
     back_forward_cache_eviction_timer_.Stop();
   for (auto& child : children_)
@@ -1386,7 +1471,7 @@ void RenderFrameHostImpl::StartBackForwardCacheEvictionTimer() {
       BackForwardCacheImpl::GetTimeToLiveInBackForwardCache();
 
   back_forward_cache_eviction_timer_.SetTaskRunner(
-      frame_tree()->controller()->GetBackForwardCache().GetTaskRunner());
+      frame_tree()->controller().GetBackForwardCache().GetTaskRunner());
 
   back_forward_cache_eviction_timer_.Start(
       FROM_HERE, evict_after,
@@ -1395,8 +1480,9 @@ void RenderFrameHostImpl::StartBackForwardCacheEvictionTimer() {
                      BackForwardCacheMetrics::NotRestoredReason::kTimeout));
 }
 
-void RenderFrameHostImpl::DisableBackForwardCache(base::StringPiece reason) {
-  back_forward_cache_disabled_reasons_.insert(reason.as_string());
+void RenderFrameHostImpl::DisableBackForwardCache(
+    BackForwardCache::DisabledReason reason) {
+  back_forward_cache_disabled_reasons_.insert(reason);
   MaybeEvictFromBackForwardCache();
 }
 
@@ -1500,7 +1586,7 @@ RenderProcessHost* RenderFrameHostImpl::GetProcess() {
   return agent_scheduling_group_.GetProcess();
 }
 
-AgentSchedulingGroupHost& RenderFrameHostImpl::agent_scheduling_group() {
+AgentSchedulingGroupHost& RenderFrameHostImpl::GetAgentSchedulingGroup() {
   return agent_scheduling_group_;
 }
 
@@ -1557,9 +1643,30 @@ size_t RenderFrameHostImpl::GetFrameDepth() {
 }
 
 bool RenderFrameHostImpl::IsCrossProcessSubframe() {
-  if (!parent_)
+  if (is_main_frame() || GetSiteInstance() == parent_->GetSiteInstance())
+    return false;
+  return GetSiteInstance()->GetProcess() !=
+         parent_->GetSiteInstance()->GetProcess();
+}
+
+bool RenderFrameHostImpl::RequiresProxyToParent() {
+  if (is_main_frame())
     return false;
   return GetSiteInstance() != parent_->GetSiteInstance();
+}
+
+RenderFrameHost::CrossOriginIsolationStatus
+RenderFrameHostImpl::GetCrossOriginIsolationStatus() {
+  ProcessLock process_lock = GetSiteInstance()->GetProcessLock();
+  if (process_lock.is_invalid() ||
+      !process_lock.coop_coep_cross_origin_isolated_info().is_isolated()) {
+    // Cross-origin isolated frames must be hosted in cross-origin isolated
+    // processes.
+    return RenderFrameHost::CrossOriginIsolationStatus::kNotIsolated;
+  }
+  // TODO(crbug.com/1159832): Check the document policy once it's available to
+  // find out if this frame is actually isolated.
+  return RenderFrameHost::CrossOriginIsolationStatus::kMaybeIsolated;
 }
 
 const GURL& RenderFrameHostImpl::GetLastCommittedURL() {
@@ -1592,10 +1699,8 @@ RenderFrameHostImpl::GetPendingIsolationInfoForSubresources() {
 
 void RenderFrameHostImpl::GetCanonicalUrlForSharing(
     mojom::Frame::GetCanonicalUrlForSharingCallback callback) {
-  // TODO(https://crbug.com/859110): Remove this once frame_ can no longer be
-  // null.
-  if (IsRenderFrameLive()) {
-    frame_->GetCanonicalUrlForSharing(std::move(callback));
+  if (IsRenderFrameCreated()) {
+    GetMojomFrameInRenderer()->GetCanonicalUrlForSharing(std::move(callback));
   } else {
     std::move(callback).Run(base::nullopt);
   }
@@ -1603,21 +1708,18 @@ void RenderFrameHostImpl::GetCanonicalUrlForSharing(
 
 void RenderFrameHostImpl::GetSerializedHtmlWithLocalLinks(
     const base::flat_map<GURL, base::FilePath>& url_map,
-    const base::flat_map<base::UnguessableToken, base::FilePath>&
-        frame_token_map,
+    const base::flat_map<blink::FrameToken, base::FilePath>& frame_token_map,
     bool save_with_empty_url,
     mojo::PendingRemote<mojom::FrameHTMLSerializerHandler> serializer_handler) {
-  // TODO(https://crbug.com/859110): Remove once frame_ can no longer be null.
-  if (!IsRenderFrameLive())
+  if (!IsRenderFrameCreated())
     return;
-
-  frame_->GetSerializedHtmlWithLocalLinks(url_map, frame_token_map,
-                                          save_with_empty_url,
-                                          std::move(serializer_handler));
+  GetMojomFrameInRenderer()->GetSerializedHtmlWithLocalLinks(
+      url_map, frame_token_map, save_with_empty_url,
+      std::move(serializer_handler));
 }
 
 void RenderFrameHostImpl::SetWantErrorMessageStackTrace() {
-  GetNavigationControl()->SetWantErrorMessageStackTrace();
+  GetMojomFrameInRenderer()->SetWantErrorMessageStackTrace();
 }
 
 void RenderFrameHostImpl::ExecuteMediaPlayerActionAtLocation(
@@ -1680,7 +1782,7 @@ void RenderFrameHostImpl::MarkIsolatedWorldsAsRequiringSeparateURLLoaderFactory(
         CreateURLLoaderFactoriesForIsolatedWorlds(
             FindLatestNavigationRequestThatIsStillCommitting(),
             isolated_world_origins);
-    GetNavigationControl()->UpdateSubresourceLoaderFactories(
+    GetMojomFrameInRenderer()->UpdateSubresourceLoaderFactories(
         std::move(subresource_loader_factories));
   }
 }
@@ -1739,8 +1841,8 @@ void RenderFrameHostImpl::AddMessageToConsole(
 }
 
 void RenderFrameHostImpl::ExecuteJavaScriptMethod(
-    const base::string16& object_name,
-    const base::string16& method_name,
+    const std::u16string& object_name,
+    const std::u16string& method_name,
     base::Value arguments,
     JavaScriptResultCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -1748,23 +1850,23 @@ void RenderFrameHostImpl::ExecuteJavaScriptMethod(
   CHECK(CanExecuteJavaScript());
 
   const bool wants_result = !callback.is_null();
-  GetNavigationControl()->JavaScriptMethodExecuteRequest(
+  GetMojomFrameInRenderer()->JavaScriptMethodExecuteRequest(
       object_name, method_name, std::move(arguments), wants_result,
       std::move(callback));
 }
 
-void RenderFrameHostImpl::ExecuteJavaScript(const base::string16& javascript,
+void RenderFrameHostImpl::ExecuteJavaScript(const std::u16string& javascript,
                                             JavaScriptResultCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(CanExecuteJavaScript());
 
   const bool wants_result = !callback.is_null();
-  GetNavigationControl()->JavaScriptExecuteRequest(javascript, wants_result,
-                                                   std::move(callback));
+  GetMojomFrameInRenderer()->JavaScriptExecuteRequest(javascript, wants_result,
+                                                      std::move(callback));
 }
 
 void RenderFrameHostImpl::ExecuteJavaScriptInIsolatedWorld(
-    const base::string16& javascript,
+    const std::u16string& javascript,
     JavaScriptResultCallback callback,
     int32_t world_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -1772,25 +1874,25 @@ void RenderFrameHostImpl::ExecuteJavaScriptInIsolatedWorld(
   DCHECK_LE(world_id, ISOLATED_WORLD_ID_MAX);
 
   const bool wants_result = !callback.is_null();
-  GetNavigationControl()->JavaScriptExecuteRequestInIsolatedWorld(
+  GetMojomFrameInRenderer()->JavaScriptExecuteRequestInIsolatedWorld(
       javascript, wants_result, world_id, std::move(callback));
 }
 
 void RenderFrameHostImpl::ExecuteJavaScriptForTests(
-    const base::string16& javascript,
+    const std::u16string& javascript,
     JavaScriptResultCallback callback,
     int32_t world_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   const bool has_user_gesture = false;
   const bool wants_result = !callback.is_null();
-  GetNavigationControl()->JavaScriptExecuteRequestForTests(  // IN-TEST
+  GetMojomFrameInRenderer()->JavaScriptExecuteRequestForTests(  // IN-TEST
       javascript, wants_result, has_user_gesture, world_id,
       std::move(callback));
 }
 
 void RenderFrameHostImpl::ExecuteJavaScriptWithUserGestureForTests(
-    const base::string16& javascript,
+    const std::u16string& javascript,
     int32_t world_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -1802,7 +1904,7 @@ void RenderFrameHostImpl::ExecuteJavaScriptWithUserGestureForTests(
       blink::mojom::UserActivationNotificationType::kTest);
 
   const bool has_user_gesture = true;
-  GetNavigationControl()->JavaScriptExecuteRequestForTests(  // IN-TEST
+  GetMojomFrameInRenderer()->JavaScriptExecuteRequestForTests(  // IN-TEST
       javascript, false, has_user_gesture, world_id, base::NullCallback());
 }
 
@@ -1825,6 +1927,7 @@ RenderViewHost* RenderFrameHostImpl::GetRenderViewHost() {
 }
 
 service_manager::InterfaceProvider* RenderFrameHostImpl::GetRemoteInterfaces() {
+  DCHECK(IsRenderFrameCreated());
   return remote_interfaces_.get();
 }
 
@@ -1833,8 +1936,8 @@ RenderFrameHostImpl::GetRemoteAssociatedInterfaces() {
   if (!remote_associated_interfaces_) {
     mojo::AssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
         remote_interfaces;
-    if (agent_scheduling_group().GetChannel()) {
-      agent_scheduling_group().GetRemoteRouteProvider()->GetRoute(
+    if (GetAgentSchedulingGroup().GetChannel()) {
+      GetAgentSchedulingGroup().GetRemoteRouteProvider()->GetRoute(
           GetRoutingID(), remote_interfaces.BindNewEndpointAndPassReceiver());
     } else {
       // The channel may not be initialized in some tests environments. In this
@@ -1876,12 +1979,12 @@ PageVisibilityState RenderFrameHostImpl::GetVisibilityState() {
 }
 
 bool RenderFrameHostImpl::Send(IPC::Message* message) {
-  return agent_scheduling_group().Send(message);
+  return GetAgentSchedulingGroup().Send(message);
 }
 
 bool RenderFrameHostImpl::OnMessageReceived(const IPC::Message& msg) {
   // Only process messages if the RenderFrame is alive.
-  if (!render_frame_created_)
+  if (!is_render_frame_created())
     return false;
 
   // Crash reports triggered by IPC messages for this frame should be associated
@@ -1891,14 +1994,7 @@ bool RenderFrameHostImpl::OnMessageReceived(const IPC::Message& msg) {
   if (delegate_->OnMessageReceived(this, msg))
     return true;
 
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(RenderFrameHostImpl, msg)
-    IPC_MESSAGE_HANDLER(FrameHostMsg_Unload_ACK, OnUnloadACK)
-    IPC_MESSAGE_HANDLER(FrameHostMsg_ContextMenu, OnContextMenu)
-  IPC_END_MESSAGE_MAP()
-
-  // No further actions here, since we may have been deleted.
-  return handled;
+  return false;
 }
 
 void RenderFrameHostImpl::OnAssociatedInterfaceRequest(
@@ -1927,7 +2023,7 @@ void RenderFrameHostImpl::OnAssociatedInterfaceRequest(
 void RenderFrameHostImpl::AccessibilityPerformAction(
     const ui::AXActionData& action_data) {
   // Don't perform any Accessibility action on an inactive frame.
-  if (IsInactiveAndDisallowReactivation() || !render_accessibility_)
+  if (IsInactiveAndDisallowActivation() || !render_accessibility_)
     return;
 
   if (action_data.action == ax::mojom::Action::kHitTest) {
@@ -1957,7 +2053,7 @@ bool RenderFrameHostImpl::AccessibilityViewHasFocus() {
 
 void RenderFrameHostImpl::AccessibilityViewSetFocus() {
   // Don't update Accessibility for inactive frames.
-  if (IsInactiveAndDisallowReactivation())
+  if (IsInactiveAndDisallowActivation())
     return;
 
   RenderWidgetHostView* view = render_view_host_->GetWidget()->GetView();
@@ -2027,7 +2123,7 @@ RenderFrameHostImpl::AccessibilityGetNativeViewAccessible() {
   // If this method is called when the document is in BackForwardCache, evict
   // the document to avoid ignoring any accessibility related events which the
   // document might not expect.
-  if (IsInactiveAndDisallowReactivation())
+  if (IsInactiveAndDisallowActivation())
     return nullptr;
 
   RenderWidgetHostViewBase* view = static_cast<RenderWidgetHostViewBase*>(
@@ -2042,7 +2138,7 @@ RenderFrameHostImpl::AccessibilityGetNativeViewAccessibleForWindow() {
   // If this method is called when the frame is in BackForwardCache, evict
   // the frame to avoid ignoring any accessibility related events which are not
   // expected.
-  if (IsInactiveAndDisallowReactivation())
+  if (IsInactiveAndDisallowActivation())
     return nullptr;
 
   RenderWidgetHostViewBase* view = static_cast<RenderWidgetHostViewBase*>(
@@ -2056,7 +2152,7 @@ WebContents* RenderFrameHostImpl::AccessibilityWebContents() {
   // If this method is called when the frame is in BackForwardCache, evict
   // the frame to avoid ignoring any accessibility related events which are not
   // expected.
-  if (IsInactiveAndDisallowReactivation())
+  if (IsInactiveAndDisallowActivation())
     return nullptr;
   return delegate()->GetAsWebContents();
 }
@@ -2070,7 +2166,7 @@ void RenderFrameHostImpl::AccessibilityHitTest(
   // This is called by BrowserAccessibilityManager. During teardown it's
   // possible that render_accessibility_ is null but the corresponding
   // BrowserAccessibilityManager still exists and could call this.
-  if (IsInactiveAndDisallowReactivation() || !render_accessibility_) {
+  if (IsInactiveAndDisallowActivation() || !render_accessibility_) {
     if (opt_callback)
       std::move(opt_callback).Run(nullptr, 0);
     return;
@@ -2095,9 +2191,17 @@ RenderFrameHostImpl::AccessibilityGetWebContentsAccessibility() {
   return view->GetWebContentsAccessibility();
 }
 
+void RenderFrameHostImpl::SetPolicyContainerHost(
+    scoped_refptr<PolicyContainerHost> policy_container_host) {
+  policy_container_host_ = std::move(policy_container_host);
+  policy_container_host_->AssociateWithFrameToken(GetFrameToken());
+}
+
 void RenderFrameHostImpl::RenderProcessExited(
     RenderProcessHost* host,
     const ChildProcessTerminationInfo& info) {
+  ++renderer_exit_count_;
+
   if (base::FeatureList::IsEnabled(features::kCrashReporting))
     MaybeGenerateCrashReport(info.status, info.exit_code);
 
@@ -2122,7 +2226,7 @@ void RenderFrameHostImpl::RenderProcessExited(
            iter(&smart_clip_callbacks_);
        !iter.IsAtEnd(); iter.Advance()) {
     std::move(*iter.GetCurrentValue())
-        .Run(base::string16(), base::string16(), gfx::Rect());
+        .Run(std::u16string(), std::u16string(), gfx::Rect());
   }
   smart_clip_callbacks_.Clear();
 #endif  // defined(OS_ANDROID)
@@ -2141,7 +2245,7 @@ void RenderFrameHostImpl::RenderProcessExited(
   if (IsPendingDeletion()) {
     // If the process has died, we don't need to wait for the ACK. Complete the
     // deletion immediately.
-    SetLifecycleState(LifecycleState::kReadyToBeDeleted);
+    SetLifecycleState(LifecycleStateImpl::kReadyToBeDeleted);
     DCHECK(children_.empty());
     PendingDeletionCheckCompleted();
     // |this| is deleted. Don't add any more code at this point in the function.
@@ -2187,50 +2291,6 @@ void RenderFrameHostImpl::RenderProcessGone(
     OnAudibleStateChanged(false);
 }
 
-void RenderFrameHostImpl::ReportContentSecurityPolicyViolation(
-    network::mojom::CSPViolationPtr violation_params) {
-  GetAssociatedLocalFrame()->ReportContentSecurityPolicyViolation(
-      std::move(violation_params));
-}
-
-void RenderFrameHostImpl::SanitizeDataForUseInCspViolation(
-    bool is_redirect,
-    network::mojom::CSPDirectiveName directive,
-    GURL* blocked_url,
-    network::mojom::SourceLocation* source_location) const {
-  DCHECK(blocked_url);
-  DCHECK(source_location);
-  GURL source_location_url(source_location->url);
-
-  // The main goal of this is to avoid leaking information between potentially
-  // separate renderers, in the event of one of them being compromised.
-  // See https://crbug.com/633306.
-  bool sanitize_blocked_url = true;
-  bool sanitize_source_location = true;
-
-  // There is no need to sanitize data when it is same-origin with the current
-  // url of the renderer.
-  if (url::Origin::Create(*blocked_url)
-          .IsSameOriginWith(last_committed_origin_))
-    sanitize_blocked_url = false;
-  if (url::Origin::Create(source_location_url)
-          .IsSameOriginWith(last_committed_origin_))
-    sanitize_source_location = false;
-
-  // When a renderer tries to do a form submission, it already knows the url of
-  // the blocked url, except when it is redirected.
-  if (!is_redirect && directive == network::mojom::CSPDirectiveName::FormAction)
-    sanitize_blocked_url = false;
-
-  if (sanitize_blocked_url)
-    *blocked_url = blocked_url->GetOrigin();
-  if (sanitize_source_location) {
-    source_location->url = source_location_url.GetOrigin().spec();
-    source_location->line = 0u;
-    source_location->column = 0u;
-  }
-}
-
 void RenderFrameHostImpl::PerformAction(const ui::AXActionData& data) {
   AccessibilityPerformAction(data);
 }
@@ -2239,22 +2299,9 @@ bool RenderFrameHostImpl::RequiresPerformActionPointInPixels() const {
   return true;
 }
 
-bool RenderFrameHostImpl::SchemeShouldBypassCSP(
-    const base::StringPiece& scheme) {
-  // Blink uses its SchemeRegistry to check if a scheme should be bypassed.
-  // It can't be used on the browser process. It is used for two things:
-  // 1) Bypassing the "chrome-extension" scheme when chrome is built with the
-  //    extensions support.
-  // 2) Bypassing arbitrary scheme for testing purpose only in blink and in V8.
-  // TODO(arthursonzogni): url::GetBypassingCSPScheme() is used instead of the
-  // blink::SchemeRegistry. It contains 1) but not 2).
-  const auto& bypassing_schemes = url::GetCSPBypassingSchemes();
-  return base::Contains(bypassing_schemes, scheme);
-}
-
 bool RenderFrameHostImpl::CreateRenderFrame(
     int previous_routing_id,
-    const base::Optional<base::UnguessableToken>& opener_frame_token,
+    const base::Optional<blink::FrameToken>& opener_frame_token,
     int parent_routing_id,
     int previous_sibling_routing_id) {
   TRACE_EVENT0("navigation", "RenderFrameHostImpl::CreateRenderFrame");
@@ -2264,7 +2311,7 @@ bool RenderFrameHostImpl::CreateRenderFrame(
   // initialized it) or may not (we have our own process or the old process
   // crashed) have been initialized. Calling Init() multiple times will be
   // ignored, so this is safe.
-  if (!agent_scheduling_group().Init())
+  if (!GetAgentSchedulingGroup().Init())
     return false;
 
   DCHECK(GetProcess()->IsInitializedAndNotDead());
@@ -2278,8 +2325,9 @@ bool RenderFrameHostImpl::CreateRenderFrame(
   params->opener_frame_token = opener_frame_token;
   params->parent_routing_id = parent_routing_id;
   params->previous_sibling_routing_id = previous_sibling_routing_id;
-  params->replication_state = frame_tree_node()->current_replication_state();
-  params->frame_token = frame_token_;
+  params->replication_state =
+      frame_tree_node()->current_replication_state().Clone();
+  params->token = frame_token_;
   params->devtools_frame_token = frame_tree_node()->devtools_frame_token();
 
   // If this is a new RenderFrameHost for a frame that has already committed a
@@ -2293,12 +2341,12 @@ bool RenderFrameHostImpl::CreateRenderFrame(
         policy_container_host()->CreatePolicyContainerForBlink();
 
   // Normally, the replication state contains effective frame policy, excluding
-  // sandbox flags and feature policy attributes that were updated but have not
-  // taken effect. However, a new RenderFrame should use the pending frame
+  // sandbox flags and permissions policy attributes that were updated but have
+  // not taken effect. However, a new RenderFrame should use the pending frame
   // policy, since it is being created as part of the navigation that will
   // commit it. (I.e., the RenderFrame needs to know the policy to use when
   // initializing the new document once it commits).
-  params->replication_state.frame_policy =
+  params->replication_state->frame_policy =
       frame_tree_node()->pending_frame_policy();
 
   // If we switched BrowsingInstances because of the COOP header, we should
@@ -2314,9 +2362,9 @@ bool RenderFrameHostImpl::CreateRenderFrame(
             features::kClearCrossBrowsingContextGroupMainFrameName)));
 
   if (should_clear_browsing_instance_name) {
-    params->replication_state.name = "";
+    params->replication_state->name = "";
     // The "swaps" only affect main frames, that have an empty unique name.
-    DCHECK(params->replication_state.unique_name.empty());
+    DCHECK(params->replication_state->unique_name.empty());
   }
 
   params->frame_owner_properties =
@@ -2342,24 +2390,17 @@ bool RenderFrameHostImpl::CreateRenderFrame(
   }
 
   if (auto* rwh = GetLocalRenderWidgetHost()) {
-    params->widget_params = mojom::CreateFrameWidgetParams::New();
-    params->widget_params->routing_id =
-        GetLocalRenderWidgetHost()->GetRoutingID();
-    params->widget_params->visual_properties =
-        GetLocalRenderWidgetHost()->GetInitialVisualProperties();
-
-    std::tie(params->widget_params->widget_host,
-             params->widget_params->widget) = rwh->BindNewWidgetInterfaces();
-    std::tie(params->widget_params->frame_widget_host,
-             params->widget_params->frame_widget) =
-        rwh->BindNewFrameWidgetInterfaces();
+    params->widget_params = rwh->BindAndGenerateCreateFrameWidgetParams();
   }
+  mojo::PendingAssociatedRemote<mojom::Frame> pending_frame_remote;
+  params->frame = pending_frame_remote.InitWithNewEndpointAndPassReceiver();
+  SetMojomFrameRemote(std::move(pending_frame_remote));
 
   // https://crbug.com/1006814. The renderer needs at least one of these IDs to
   // be able to insert the new frame in the frame tree.
   DCHECK(params->previous_routing_id != MSG_ROUTING_NONE ||
          params->parent_routing_id != MSG_ROUTING_NONE);
-  agent_scheduling_group().CreateFrame(std::move(params));
+  GetAgentSchedulingGroup().CreateFrame(std::move(params));
 
   if (previous_routing_id != MSG_ROUTING_NONE) {
     RenderFrameProxyHost* proxy = RenderFrameProxyHost::FromID(
@@ -2382,7 +2423,18 @@ bool RenderFrameHostImpl::CreateRenderFrame(
   return true;
 }
 
-void RenderFrameHostImpl::DeleteRenderFrame(FrameDeleteIntention intent) {
+void RenderFrameHostImpl::SetMojomFrameRemote(
+    mojo::PendingAssociatedRemote<mojom::Frame> frame_remote) {
+  DCHECK(!frame_);
+  frame_.Bind(std::move(frame_remote));
+}
+
+void RenderFrameHostImpl::DeleteRenderFrame(
+    mojom::FrameDeleteIntention intent) {
+  TRACE_EVENT("navigation", "RenderFrameHostImpl::DeleteRenderFrame",
+              [&](perfetto::EventContext ctx) {
+                WriteRenderFrameImplDeletion(ctx, this, intent);
+              });
   if (IsPendingDeletion())
     return;
 
@@ -2391,15 +2443,15 @@ void RenderFrameHostImpl::DeleteRenderFrame(FrameDeleteIntention intent) {
   bool wait_for_unload_handlers =
       has_unload_handlers() && !IsInBackForwardCache();
 
-  if (render_frame_created_) {
-    Send(new UnfreezableFrameMsg_Delete(routing_id_, intent));
+  if (IsRenderFrameCreated()) {
+    GetMojomFrameInRenderer()->Delete(intent);
 
     if (!frame_tree_node_->IsMainFrame() && IsCurrent()) {
-      DCHECK_NE(lifecycle_state(), LifecycleState::kSpeculative);
+      DCHECK_NE(lifecycle_state(), LifecycleStateImpl::kSpeculative);
       // Documents from the page in the BackForwardCache don't run their unload
       // handlers, even if they have one. As a result, this should never delay
       // process shutdown.
-      DCHECK_NE(lifecycle_state(), LifecycleState::kInBackForwardCache);
+      DCHECK_NE(lifecycle_state(), LifecycleStateImpl::kInBackForwardCache);
 
       // If this document has unload handlers (and isn't speculative or in the
       // back-forward cache), ensure that they have a chance to execute by
@@ -2419,21 +2471,27 @@ void RenderFrameHostImpl::DeleteRenderFrame(FrameDeleteIntention intent) {
     }
   }
 
-  LifecycleState lifecycle_state = wait_for_unload_handlers
-                                       ? LifecycleState::kRunningUnloadHandlers
-                                       : LifecycleState::kReadyToBeDeleted;
+  LifecycleStateImpl lifecycle_state =
+      wait_for_unload_handlers ? LifecycleStateImpl::kRunningUnloadHandlers
+                               : LifecycleStateImpl::kReadyToBeDeleted;
   SetLifecycleState(lifecycle_state);
 }
 
 void RenderFrameHostImpl::RenderFrameCreated() {
+  // In https://crbug.com/1146573 a WebContentsObserver was causing the frame to
+  // be reinitialized during deletion. It is not valid to re-enter navigation
+  // code like that and it led to an invalid state. This is not a DCHECK because
+  // the corruption will not be visible until later, making the bug very
+  // difficult to understand.
+  CHECK_NE(render_frame_state_, RenderFrameState::kDeleting);
   // We should not create new RenderFrames while our delegate is being destroyed
   // (e.g., via a WebContentsObserver during WebContents shutdown).  This seems
   // to have caused crashes in https://crbug.com/717650.
   CHECK(!delegate_->IsBeingDestroyed());
+  DCHECK_NE(render_frame_state_, RenderFrameState::kCreated);
 
-  bool was_created = render_frame_created_;
-  DCHECK(!was_created);
-  render_frame_created_ = true;
+  const RenderFrameState old_render_frame_state = render_frame_state_;
+  render_frame_state_ = RenderFrameState::kCreated;
 
   // Clear all the user data associated with this RenderFrameHost when its
   // RenderFrame is recreated after a crash. Checking
@@ -2445,15 +2503,18 @@ void RenderFrameHostImpl::RenderFrameCreated() {
   // Clearing of user data should be called before RenderFrameCreated to ensure:
   // - a) new new state set in RenderFrameCreated doesn't get deleted.
   // - b) the old state is not leaked to a new RenderFrameHost.
-  if (was_render_frame_ever_created_)
+  if (old_render_frame_state == RenderFrameState::kDeleted)
     document_associated_data_.ClearAllUserData();
-  was_render_frame_ever_created_ = true;
 
   // Initialize the RenderWidgetHost which marks it and the RenderViewHost as
   // live before calling to the `delegate_`.
   if (GetLocalRenderWidgetHost()) {
     GetLocalRenderWidgetHost()->input_router()->SetFrameTreeNodeId(
         frame_tree_node_->frame_tree_node_id());
+#if defined(OS_ANDROID)
+    GetLocalRenderWidgetHost()->SetForceEnableZoom(
+        delegate_->GetOrCreateWebPreferences().force_enable_zoom);
+#endif  // defined(OS_ANDROID)
     GetLocalRenderWidgetHost()->RendererWidgetCreated(
         /*for_frame_widget=*/true);
   }
@@ -2464,6 +2525,14 @@ void RenderFrameHostImpl::RenderFrameCreated() {
 
   delegate_->RenderFrameCreated(this);
 
+  if (IsRenderFrameLive() && is_main_frame()) {
+    NavigationEntry* entry = frame_tree_->controller().GetPendingEntry();
+    if (entry && entry->IsViewSourceMode()) {
+      // Put the renderer in view source mode.
+      GetAssociatedLocalFrame()->EnableViewSourceMode();
+    }
+  }
+
   if (enabled_bindings_)
     GetFrameBindingsControl()->AllowBindings(enabled_bindings_);
 
@@ -2472,21 +2541,30 @@ void RenderFrameHostImpl::RenderFrameCreated() {
 }
 
 void RenderFrameHostImpl::RenderFrameDeleted() {
-  bool was_created = render_frame_created_;
-  render_frame_created_ = false;
+  // In https://crbug.com/1146573 a WebContentsObserver was causing the frame to
+  // be reinitialized during deletion. It is not valid to re-enter navigation
+  // code like that and it led to an invalid state. This is not a DCHECK because
+  // the corruption will cause a crash but later, making the bug very
+  // difficult to understand.
+  CHECK_NE(render_frame_state_, RenderFrameState::kDeleting);
+  bool was_created = is_render_frame_created();
+  render_frame_state_ = RenderFrameState::kDeleting;
 
   // If the current status is different than the new status, the delegate
   // needs to be notified.
   if (was_created) {
     delegate_->RenderFrameDeleted(this);
   }
+
   if (web_ui_) {
+    web_ui_->RenderFrameDeleted();
     web_ui_->InvalidateMojoConnection();
   }
+  render_frame_state_ = RenderFrameState::kDeleted;
 }
 
 void RenderFrameHostImpl::SwapIn() {
-  GetNavigationControl()->SwapIn();
+  GetAssociatedLocalFrame()->SwapInImmediately();
 }
 
 void RenderFrameHostImpl::Init() {
@@ -2500,7 +2578,13 @@ void RenderFrameHostImpl::Init() {
 
   GetLocalRenderWidgetHost()->Init();
 
-  ResumeBlockedRequestsForFrame();
+  // TODO(danakj): We only blocked the main frame, so we should only need to
+  // resume that?
+  ForEachFrame(this,
+               base::BindRepeating([](RenderFrameHostImpl* render_frame_host) {
+                 if (render_frame_host->IsRenderFrameCreated())
+                   render_frame_host->frame_->ResumeBlockedRequests();
+               }));
 
   if (pending_navigate_) {
     frame_tree_node()->navigator().OnBeginNavigation(
@@ -2508,7 +2592,6 @@ void RenderFrameHostImpl::Init() {
         std::move(pending_navigate_->begin_navigation_params),
         std::move(pending_navigate_->blob_url_loader_factory),
         std::move(pending_navigate_->navigation_client),
-        std::move(pending_navigate_->navigation_initiator),
         EnsurePrefetchedSignedExchangeCache(),
         MaybeCreateWebBundleHandleTracker());
     pending_navigate_.reset();
@@ -2534,8 +2617,8 @@ void RenderFrameHostImpl::PropagateEmbeddingTokenToParentFrame() {
   // See RenderFrameHost::GetEmbeddingToken for more details.
   RenderFrameProxyHost* target_render_frame_proxy = nullptr;
 
-  if (IsCrossProcessSubframe()) {
-    // Cross-process subframes should have a remote parent frame.
+  if (RequiresProxyToParent()) {
+    // This subframe should have a remote parent frame.
     target_render_frame_proxy =
         frame_tree_node()->render_manager()->GetProxyToParent();
     DCHECK(target_render_frame_proxy);
@@ -2566,12 +2649,16 @@ void RenderFrameHostImpl::OnAudibleStateChanged(bool is_audible) {
 
 void RenderFrameHostImpl::DidAddMessageToConsole(
     blink::mojom::ConsoleMessageLevel log_level,
-    const base::string16& message,
+    const std::u16string& message,
     int32_t line_no,
-    const base::string16& source_id,
-    const base::Optional<base::string16>& untrusted_stack_trace) {
+    const base::Optional<std::u16string>& source_id,
+    const base::Optional<std::u16string>& untrusted_stack_trace) {
+  std::u16string updated_source_id;
+  if (source_id.has_value())
+    updated_source_id = *source_id;
   if (delegate_->DidAddMessageToConsole(this, log_level, message, line_no,
-                                        source_id, untrusted_stack_trace)) {
+                                        updated_source_id,
+                                        untrusted_stack_trace)) {
     return;
   }
 
@@ -2585,20 +2672,45 @@ void RenderFrameHostImpl::DidAddMessageToConsole(
       GetSiteInstance()->GetBrowserContext()->IsOffTheRecord();
 
   LogConsoleMessage(log_level, message, line_no, is_builtin_component,
-                    is_off_the_record, source_id);
+                    is_off_the_record, updated_source_id);
+}
+
+void RenderFrameHostImpl::FrameSizeChanged(const gfx::Size& frame_size) {
+  frame_size_ = frame_size;
+  delegate_->FrameSizeChanged(this, frame_size);
+}
+
+void RenderFrameHostImpl::DidActivateForPrerendering() {
+  DCHECK(blink::features::IsPrerender2Enabled());
+  if (!is_notifying_activation_for_prerendering_) {
+    mojo::ReportBadMessage("RFHI: DidActivateForPrerendering is unexpected");
+    return;
+  }
+  is_notifying_activation_for_prerendering_ = false;
+
+  // The renderer calls `DidActivateForPrerendering()` to notify that it fired
+  // the prerenderingchange event on a document. The browser now runs any
+  // binders that were deferred during prerendering. This corresponds to the
+  // following steps of the activate algorithm:
+  //
+  // https://jeremyroman.github.io/alternate-loading-modes/#prerendering-browsing-context-activate
+  // Step 8.3.4. "For each steps in doc's post-prerendering activation steps
+  // list:"
+  // Step 8.3.4.1. "Run steps."
+  broker_.ReleaseMojoBinderPolicies();
 }
 
 void RenderFrameHostImpl::OnCreateChildFrame(
     int new_routing_id,
+    mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker_receiver,
-    mojo::PendingAssociatedReceiver<blink::mojom::PolicyContainerHost>
-        policy_container_host_receiver,
+    blink::mojom::PolicyContainerBindParamsPtr policy_container_bind_params,
     blink::mojom::TreeScopeType scope,
     const std::string& frame_name,
     const std::string& frame_unique_name,
     bool is_created_by_script,
-    const base::UnguessableToken& frame_token,
+    const blink::LocalFrameToken& frame_token,
     const base::UnguessableToken& devtools_frame_token,
     const blink::FramePolicy& frame_policy,
     const blink::mojom::FrameOwnerProperties& frame_owner_properties,
@@ -2606,7 +2718,7 @@ void RenderFrameHostImpl::OnCreateChildFrame(
   // TODO(lukasza): Call ReceivedBadMessage when |frame_unique_name| is empty.
   DCHECK(!frame_unique_name.empty());
   DCHECK(browser_interface_broker_receiver.is_valid());
-  DCHECK(policy_container_host_receiver.is_valid());
+  DCHECK(policy_container_bind_params->receiver.is_valid());
   if (owner_type == blink::mojom::FrameOwnerElementType::kNone) {
     // Any child frame must have a HTMLFrameOwnerElement in its parent document
     // and therefore the corresponding type of kNone (specific to main frames)
@@ -2615,22 +2727,31 @@ void RenderFrameHostImpl::OnCreateChildFrame(
         GetProcess(), bad_message::RFH_CHILD_FRAME_NEEDS_OWNER_ELEMENT_TYPE);
   }
 
-  DCHECK(frame_token);
   DCHECK(devtools_frame_token);
 
   // The RenderFrame corresponding to this host sent an IPC message to create a
-  // child, but by the time we get here, it's possible for the RenderFrameHost
-  // to become pending deletion, or for its process to have disconnected (maybe
-  // due to browser shutdown). Ignore such messages.
-  if (IsInactiveAndDisallowReactivation() || !render_frame_created_)
+  // child, but by the time we get here, it's possible for its process to have
+  // disconnected (maybe due to browser shutdown). Ignore such messages.
+  if (!is_render_frame_created())
     return;
+
+  // Only active and prerendered documents are allowed to create child
+  // frames.
+  if (lifecycle_state() != LifecycleStateImpl::kPrerendering) {
+    // The RenderFrame corresponding to this host sent an IPC message to create
+    // a child, but by the time we get here, it's possible for the
+    // RenderFrameHost to become inactive. Ignore such messages.
+    if (IsInactiveAndDisallowActivation())
+      return;
+  }
 
   // |new_routing_id|, |browser_interface_broker_receiver| and
   // |devtools_frame_token| were generated on the browser's IO thread and not
   // taken from the renderer process.
   frame_tree_->AddFrame(this, GetProcess()->GetID(), new_routing_id,
+                        std::move(frame_remote),
                         std::move(browser_interface_broker_receiver),
-                        std::move(policy_container_host_receiver), scope,
+                        std::move(policy_container_bind_params), scope,
                         frame_name, frame_unique_name, is_created_by_script,
                         frame_token, devtools_frame_token, frame_policy,
                         frame_owner_properties, was_discarded_, owner_type);
@@ -2638,10 +2759,10 @@ void RenderFrameHostImpl::OnCreateChildFrame(
 
 void RenderFrameHostImpl::CreateChildFrame(
     int new_routing_id,
+    mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker_receiver,
-    mojo::PendingAssociatedReceiver<blink::mojom::PolicyContainerHost>
-        policy_container_host_receiver,
+    blink::mojom::PolicyContainerBindParamsPtr policy_container_bind_params,
     blink::mojom::TreeScopeType scope,
     const std::string& frame_name,
     const std::string& frame_unique_name,
@@ -2649,7 +2770,7 @@ void RenderFrameHostImpl::CreateChildFrame(
     const blink::FramePolicy& frame_policy,
     blink::mojom::FrameOwnerPropertiesPtr frame_owner_properties,
     const blink::mojom::FrameOwnerElementType owner_type) {
-  base::UnguessableToken frame_token;
+  blink::LocalFrameToken frame_token;
   base::UnguessableToken devtools_frame_token;
   if (!static_cast<RenderProcessHostImpl*>(GetProcess())
            ->TakeFrameTokensForFrameRoutingID(new_routing_id, frame_token,
@@ -2661,11 +2782,12 @@ void RenderFrameHostImpl::CreateChildFrame(
 
   // TODO(crbug.com/1145708). The interface exposed to tests should
   // match the mojo interface.
-  OnCreateChildFrame(
-      new_routing_id, std::move(browser_interface_broker_receiver),
-      std::move(policy_container_host_receiver), scope, frame_name,
-      frame_unique_name, is_created_by_script, frame_token,
-      devtools_frame_token, frame_policy, *frame_owner_properties, owner_type);
+  OnCreateChildFrame(new_routing_id, std::move(frame_remote),
+                     std::move(browser_interface_broker_receiver),
+                     std::move(policy_container_bind_params), scope, frame_name,
+                     frame_unique_name, is_created_by_script, frame_token,
+                     devtools_frame_token, frame_policy,
+                     *frame_owner_properties, owner_type);
 }
 
 void RenderFrameHostImpl::DidNavigate(
@@ -2678,6 +2800,20 @@ void RenderFrameHostImpl::DidNavigate(
   // The URL is set regardless of whether it's for a net error or not.
   frame_tree_node_->SetCurrentURL(params.url);
   SetLastCommittedOrigin(params.origin);
+
+  // For urn: resources served from WebBundles, use the Bundle's origin.
+  url::Origin origin =
+      (params.url.SchemeIs(url::kUrnScheme) &&
+       navigation_request->GetWebBundleURL().is_valid())
+          ? url::Origin::Create(navigation_request->GetWebBundleURL())
+          : GetLastCommittedOrigin();
+  // TODO(https://crbug.com/1164508): Remove this check once origin is computed
+  // correctly by the browser side.
+  if (!origin.IsSameOriginWith(
+          GetIsolationInfoForSubresources().frame_origin().value())) {
+    isolation_info_ =
+        ComputeIsolationInfoInternal(origin, isolation_info_.request_type());
+  }
 
   // Separately, update the frame's last successful URL except for net error
   // pages, since those do not end up in the correct process after transfers
@@ -2699,6 +2835,11 @@ void RenderFrameHostImpl::DidNavigate(
   last_http_method_ = params.method;
   last_post_id_ = params.post_id;
 
+  // TODO(arthursonzogni): Stop relying on DidCommitProvisionalLoadParams. Use
+  // the NavigationRequest instead. The browser process doesn't need to rely on
+  // the renderer process.
+  last_http_status_code_ = params.http_status_code;
+
   if (did_create_new_document)
     DidCommitNewDocument(params, navigation_request);
 
@@ -2710,12 +2851,12 @@ void RenderFrameHostImpl::DidNavigate(
   // FrameTreeNode::replication_state_ needs to be refreshed with the actual
   // values.
   if (!navigation_request->IsSameDocument()) {
-    // Feature policy's inheritance from parent frame's feature policy is
-    // through accessing parent frame's security context(either remote or local)
-    // when initializing child's security context, so the update to proxies is
-    // needed.
+    // Permissions policy's inheritance from parent frame's permissions policy
+    // is through accessing parent frame's security context(either remote or
+    // local) when initializing child's security context, so the update to
+    // proxies is needed.
     frame_tree_node()->UpdateFramePolicyHeaders(active_sandbox_flags_,
-                                                feature_policy_header_);
+                                                permissions_policy_header_);
     // Document policy's inheritance from parent frame's required document
     // policy is done at |HTMLFrameOwnerElement::UpdateRequiredPolicy|. Parent
     // frame owns both parent's required document policy and child frame's frame
@@ -2768,21 +2909,6 @@ RenderFrameHostImpl::ComputeIsolationInfoForSubresourcesForPendingCommit(
                                       net::IsolationInfo::RequestType::kOther);
 }
 
-net::IsolationInfo RenderFrameHostImpl::GetIsolationInfoForViewSource() const {
-  // Make sure a subframe has the mode set accordingly so that the
-  // cache can match it correctly.
-  net::IsolationInfo::RequestType view_source_request_type =
-      is_main_frame() ? net::IsolationInfo::RequestType::kMainFrame
-                      : net::IsolationInfo::RequestType::kSubFrame;
-
-  // Use fields from isolation_info_ to avoid computing them again.
-  DCHECK(!isolation_info_.IsEmpty());
-  return net::IsolationInfo::Create(view_source_request_type,
-                                    isolation_info_.top_frame_origin().value(),
-                                    isolation_info_.frame_origin().value(),
-                                    isolation_info_.site_for_cookies());
-}
-
 net::SiteForCookies RenderFrameHostImpl::ComputeSiteForCookies() {
   return isolation_info_.site_for_cookies();
 }
@@ -2830,9 +2956,7 @@ net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoInternal(
     if (top_frame_site != cur_site) {
       party_context.insert(cur_site);
     }
-    if (!candidate_site_for_cookies.IsEquivalent(net::SiteForCookies(cur_site)))
-      candidate_site_for_cookies = net::SiteForCookies();
-    candidate_site_for_cookies.MarkIfCrossScheme(cur_origin);
+    candidate_site_for_cookies.CompareWithFrameTreeSiteAndRevise(cur_site);
   }
 
   return net::IsolationInfo::Create(request_type, top_frame_origin,
@@ -2846,7 +2970,6 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
   // a navigation yet.
   DCHECK(!has_committed_any_navigation_);
   DCHECK(GetLastCommittedOrigin().opaque());
-  DCHECK(isolation_info_.IsEmpty());
 
   // Calculate and set |new_frame_origin|.
   bool new_frame_should_be_sandboxed =
@@ -2860,19 +2983,27 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
       new_frame_origin, net::IsolationInfo::RequestType::kOther);
   SetLastCommittedOrigin(new_frame_origin);
 
-  // Construct the frame's feature policy only once we know its initial
-  // committed origin. It's necessary to wait for the origin because the feature
-  // policy's state depends on the origin, so the FeaturePolicy object could be
-  // configured incorrectly if it were initialized before knowing the value of
-  // |last_committed_origin_|. More at crbug.com/1112959.
-  ResetFeaturePolicy();
+  // Apply private network request policy according to our new origin.
+  if (GetContentClient()->browser()->ShouldAllowInsecurePrivateNetworkRequests(
+          GetBrowserContext(), new_frame_origin)) {
+    private_network_request_policy_ =
+        network::mojom::PrivateNetworkRequestPolicy::kAllow;
+  }
+
+  // Construct the frame's permissions policy only once we know its initial
+  // committed origin. It's necessary to wait for the origin because the
+  // permissions policy's state depends on the origin, so the PermissionsPolicy
+  // object could be configured incorrectly if it were initialized before
+  // knowing the value of |last_committed_origin_|. More at crbug.com/1112959.
+  ResetPermissionsPolicy();
 }
 
 FrameTreeNode* RenderFrameHostImpl::AddChild(
     std::unique_ptr<FrameTreeNode> child,
     int process_id,
     int frame_routing_id,
-    const base::UnguessableToken& frame_token) {
+    mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
+    const blink::LocalFrameToken& frame_token) {
   // Child frame must always be created in the same process as the parent.
   CHECK_EQ(process_id, GetProcess()->GetID());
 
@@ -2880,7 +3011,7 @@ FrameTreeNode* RenderFrameHostImpl::AddChild(
   // frames in the same SiteInstance as the current frame, and they can swap to
   // a different one if they navigate away.
   child->render_manager()->InitChild(GetSiteInstance(), frame_routing_id,
-                                     frame_token);
+                                     std::move(frame_remote), frame_token);
 
   // Other renderer processes in this BrowsingInstance may need to find out
   // about the new frame.  Create a proxy for the child frame in all
@@ -2906,10 +3037,10 @@ void RenderFrameHostImpl::RemoveChild(FrameTreeNode* child) {
       std::unique_ptr<FrameTreeNode> node_to_delete(std::move(*iter));
       children_.erase(iter);
       node_to_delete->current_frame_host()->DeleteRenderFrame(
-          FrameDeleteIntention::kNotMainFrame);
+          mojom::FrameDeleteIntention::kNotMainFrame);
       // Speculative RenderFrameHosts are deleted by the FrameTreeNode's
-      // RenderFrameHostManager's destructor. RenderFrameProxyHosts send
-      // UnfreezableFrameMsg_Delete automatically in the destructor.
+      // RenderFrameHostManager's destructor. RenderFrameProxyHosts disconnect
+      // the mojo channel automatically in the destructor.
       // TODO(dcheng): This is horribly confusing. Refactor this logic so it's
       // more understandable.
       node_to_delete.reset();
@@ -2930,28 +3061,33 @@ void RenderFrameHostImpl::ResetChildren() {
   // than messaging each child's current frame host...
   for (auto& child : children)
     child->current_frame_host()->DeleteRenderFrame(
-        FrameDeleteIntention::kNotMainFrame);
+        mojom::FrameDeleteIntention::kNotMainFrame);
 }
 
 void RenderFrameHostImpl::SetLastCommittedUrl(const GURL& url) {
   last_committed_url_ = url;
 }
 
-void RenderFrameHostImpl::UpdateRenderProcessHostFramePriorities() {
-  const auto new_committed_document_priority =
-      delegate_->IsFrameLowPriority(this)
-          ? RenderProcessHostImpl::FramePriority::kLow
-          : RenderProcessHostImpl::FramePriority::kNormal;
-  if (last_committed_document_priority_ != new_committed_document_priority) {
-    GetProcess()->UpdateFrameWithPriority(last_committed_document_priority_,
-                                          new_committed_document_priority);
-    last_committed_document_priority_ = new_committed_document_priority;
-  }
-}
-
 void RenderFrameHostImpl::Detach() {
-  if (lifecycle_state() == LifecycleState::kSpeculative)
+  // Detach() can be called in both speculative and pending-commit states.
+  // - a speculative RenderFrameHost as a result of its associated Frame being
+  //   detached (i.e., the Frame in the renderer with a provisional_frame_ field
+  //   that points to `this`'s LocalFrame). We don't expect it to self-detach
+  //   otherwise.
+  // - a pending commit RenderFrameHost might detach itself due to unload events
+  //   running that remove it from the tree when swapping it in.
+  //
+  // In both cases speculative and pending-commit RenderFrameHosts, it's OK to
+  // early-return. The logical FrameTreeNode is going to be torn down as well,
+  // and the speculative / pending commit RenderFrameHost (which is still
+  // strongly owned by the RenderFrameHostManager via unique_ptr) will be torn
+  // down then. If we do proceed, this ends up with a use-after-free, since
+  // StartPendingDeletionOnSubtree() will ResetNavigationsForPendingDeletion(),
+  // which deletes `this`.
+  if (lifecycle_state() == LifecycleStateImpl::kSpeculative ||
+      lifecycle_state() == LifecycleStateImpl::kPendingCommit) {
     return;
+  }
 
   if (!parent_) {
     bad_message::ReceivedBadMessage(GetProcess(),
@@ -2979,15 +3115,15 @@ void RenderFrameHostImpl::Detach() {
     // deletion and is waiting on one of its children to run its unload
     // handler. While running it, it can request its parent to detach itself.
     // See test: SitePerProcessBrowserTest.PartialUnloadHandler.
-    if (lifecycle_state_ != LifecycleState::kReadyToBeDeleted)
-      SetLifecycleState(LifecycleState::kReadyToBeDeleted);
+    if (lifecycle_state() != LifecycleStateImpl::kReadyToBeDeleted)
+      SetLifecycleState(LifecycleStateImpl::kReadyToBeDeleted);
     PendingDeletionCheckCompleted();  // Can delete |this|.
     return;
   }
 
   // This frame is being removed by the renderer, and it has already executed
   // its unload handler.
-  SetLifecycleState(LifecycleState::kReadyToBeDeleted);
+  SetLifecycleState(LifecycleStateImpl::kReadyToBeDeleted);
 
   // Before completing the removal, we still need to wait for all of its
   // descendant frames to execute unload handlers. Start executing those
@@ -3019,16 +3155,7 @@ void RenderFrameHostImpl::DidFocusFrame() {
   // For RenderFrameHost in BackForwardCache, it is safe to ignore this IPC as
   // there is a renderer side check (see Document::IsFocusedAllowed) which
   // returns false.
-  if (lifecycle_state_ != LifecycleState::kActive)
-    return;
-
-  // We need to handle receiving this IPC from a frame that is inside a portal
-  // despite there being a renderer side check (see Document::IsFocusAllowed).
-  // This is because the IPC to notify a page that it is inside a portal (see
-  // WebContentsImpl::NotifyInsidePortal) may race with portal activation, and
-  // we may run into a situation where a frame inside a portal doesn't know it's
-  // inside a portal yet and allows focus.
-  if (InsidePortal())
+  if (lifecycle_state() != LifecycleStateImpl::kActive)
     return;
 
   delegate_->SetFocusedFrame(frame_tree_node_, GetSiteInstance());
@@ -3036,20 +3163,6 @@ void RenderFrameHostImpl::DidFocusFrame() {
 
 void RenderFrameHostImpl::DidCallFocus() {
   delegate_->DidCallFocus();
-}
-
-void RenderFrameHostImpl::DidAddContentSecurityPolicies(
-    std::vector<network::mojom::ContentSecurityPolicyPtr> policies) {
-  TRACE_EVENT1("navigation",
-               "RenderFrameHostImpl::OnDidAddContentSecurityPolicies",
-               "frame_tree_node", frame_tree_node_->frame_tree_node_id());
-
-  std::vector<network::mojom::ContentSecurityPolicyHeaderPtr> headers;
-  for (auto& policy : policies) {
-    headers.push_back(policy->header.Clone());
-    AddContentSecurityPolicy(std::move(policy));
-  }
-  frame_tree_node()->AddContentSecurityPolicies(std::move(headers));
 }
 
 void RenderFrameHostImpl::CancelInitialHistoryLoad() {
@@ -3076,7 +3189,7 @@ void RenderFrameHostImpl::OnSchedulerTrackedFeatureUsed(
 
 bool RenderFrameHostImpl::IsFrozen() {
   // TODO(crbug.com/1081920): Account for non-bfcache freezing here as well.
-  return lifecycle_state_ == LifecycleState::kInBackForwardCache;
+  return lifecycle_state() == LifecycleStateImpl::kInBackForwardCache;
 }
 
 void RenderFrameHostImpl::DidCommitProvisionalLoad(
@@ -3098,16 +3211,6 @@ void RenderFrameHostImpl::DidCommitBackForwardCacheNavigation(
   std::unique_ptr<NavigationRequest> owned_request = std::move(request->second);
   navigation_requests_.erase(committing_navigation_request);
 
-  // During a normal (uncached) navigation, is_loading_ is set to true in
-  // CommitNavigation(). When navigating to a document in the BackForwardCache,
-  // CommitNavigation() is never called, so we have to set is_loading_ to true
-  // ourselves.
-  //
-  // If is_start_loading_ is set to false, DidCommitNavigationInternal will
-  // re-fire the DidStartLoading event, which we don't want since it has already
-  // been fired.
-  is_loading_ = true;
-
   DidCommitNavigationInternal(std::move(owned_request), std::move(params),
                               /*same_document_params=*/nullptr);
 
@@ -3119,6 +3222,11 @@ void RenderFrameHostImpl::DidCommitBackForwardCacheNavigation(
 void RenderFrameHostImpl::DidCommitSameDocumentNavigation(
     mojom::DidCommitProvisionalLoadParamsPtr params,
     mojom::DidCommitSameDocumentNavigationParamsPtr same_document_params) {
+  TRACE_EVENT2("navigation",
+               "RenderFrameHostImpl::DidCommitSameDocumentNavigation",
+               "frame_tree_node", frame_tree_node_->frame_tree_node_id(), "url",
+               params->url.possibly_invalid_spec());
+
   ScopedActiveURL scoped_active_url(params->url,
                                     frame_tree()->root()->current_origin());
   ScopedCommitStateResetter commit_state_resetter(this);
@@ -3131,27 +3239,33 @@ void RenderFrameHostImpl::DidCommitSameDocumentNavigation(
   // See https://crbug.com/805705 and https://crbug.com/930132.
   // TODO(ahemery): Investigate to see if this can be removed when the
   // NavigationClient interface is implemented.
+  //
   // If this is called when the frame is in BackForwardCache, evict the frame
   // to avoid ignoring the renderer-initiated navigation, which the frame
   // might not expect.
-  if (IsInactiveAndDisallowReactivation())
+  //
+  // If this is called when the frame is in Prerendering, do not cancel
+  // Prerendering as prerendered frames can be navigated, including
+  // same-document navigations like push/replaceState.
+  if (lifecycle_state() != LifecycleStateImpl::kPrerendering &&
+      IsInactiveAndDisallowActivation()) {
     return;
-
-  TRACE_EVENT2("navigation",
-               "RenderFrameHostImpl::DidCommitSameDocumentNavigation",
-               "frame_tree_node", frame_tree_node_->frame_tree_node_id(), "url",
-               params->url.possibly_invalid_spec());
+  }
 
   // Check if the navigation matches a stored same-document NavigationRequest.
   // In that case it is browser-initiated.
+  auto request_entry =
+      same_document_navigation_requests_.find(params->navigation_token);
   bool is_browser_initiated =
-      same_document_navigation_request_ &&
-      (same_document_navigation_request_->commit_params().navigation_token ==
-       params->navigation_token);
-  if (!DidCommitNavigationInternal(
-          is_browser_initiated ? std::move(same_document_navigation_request_)
-                               : nullptr,
-          std::move(params), std::move(same_document_params))) {
+      (request_entry != same_document_navigation_requests_.end());
+  std::unique_ptr<NavigationRequest> request =
+      is_browser_initiated ? std::move(request_entry->second) : nullptr;
+  same_document_navigation_requests_.erase(params->navigation_token);
+  if (!MaybeInterceptCommitCallback(request.get(), &params, nullptr)) {
+    return;
+  }
+  if (!DidCommitNavigationInternal(std::move(request), std::move(params),
+                                   std::move(same_document_params))) {
     return;
   }
 
@@ -3181,24 +3295,37 @@ GlobalFrameRoutingId RenderFrameHostImpl::GetGlobalFrameRoutingId() {
 
 bool RenderFrameHostImpl::HasPendingCommitNavigation() const {
   return HasPendingCommitForCrossDocumentNavigation() ||
-         same_document_navigation_request_;
+         !same_document_navigation_requests_.empty();
 }
 
 bool RenderFrameHostImpl::HasPendingCommitForCrossDocumentNavigation() const {
   return !navigation_requests_.empty();
 }
 
+NavigationRequest* RenderFrameHostImpl::GetSameDocumentNavigationRequest(
+    const base::UnguessableToken& token) {
+  auto request = same_document_navigation_requests_.find(token);
+  return (request == same_document_navigation_requests_.end())
+             ? nullptr
+             : request->second.get();
+}
+
 void RenderFrameHostImpl::ResetNavigationRequests() {
-  same_document_navigation_request_.reset();
   navigation_requests_.clear();
+  same_document_navigation_requests_.clear();
 }
 
 void RenderFrameHostImpl::SetNavigationRequest(
     std::unique_ptr<NavigationRequest> navigation_request) {
   DCHECK(navigation_request);
+
+  is_loading_ = true;
+
   if (NavigationTypeUtils::IsSameDocument(
           navigation_request->common_params().navigation_type)) {
-    same_document_navigation_request_ = std::move(navigation_request);
+    same_document_navigation_requests_[navigation_request->commit_params()
+                                           .navigation_token] =
+        std::move(navigation_request);
     return;
   }
   navigation_requests_[navigation_request.get()] =
@@ -3228,12 +3355,12 @@ void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
   is_waiting_for_unload_ack_ = true;
 
   if (proxy) {
-    SetLifecycleState(LifecycleState::kRunningUnloadHandlers);
-    if (IsRenderFrameLive()) {
-      Send(new UnfreezableFrameMsg_Unload(
-          routing_id_, proxy->GetRoutingID(), is_loading,
-          proxy->frame_tree_node()->current_replication_state(),
-          proxy->GetFrameToken()));
+    SetLifecycleState(LifecycleStateImpl::kRunningUnloadHandlers);
+    if (IsRenderFrameCreated()) {
+      GetMojomFrameInRenderer()->Unload(
+          proxy->GetRoutingID(), is_loading,
+          proxy->frame_tree_node()->current_replication_state().Clone(),
+          proxy->GetFrameToken());
       // Remember that a RenderFrameProxy was created as part of processing the
       // Unload message above.
       proxy->SetRenderFrameProxyCreated(true);
@@ -3245,8 +3372,9 @@ void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
 
     // The unload handlers already ran for this document during the
     // local<->local swap. Hence, there is no need to send
-    // UnfreezableFrameMsg_Unload here. It can be marked at completed.
-    SetLifecycleState(LifecycleState::kReadyToBeDeleted);
+    // mojom::FrameNavigationControl::Unload here. It can be marked at
+    // completed.
+    SetLifecycleState(LifecycleStateImpl::kReadyToBeDeleted);
   }
 
   if (web_ui())
@@ -3261,12 +3389,19 @@ void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
   // |this| is potentially deleted. Do not add code after this.
 }
 
+void RenderFrameHostImpl::SwapOuterDelegateFrame(RenderFrameProxyHost* proxy) {
+  GetMojomFrameInRenderer()->Unload(
+      proxy->GetRoutingID(), /*is_loading=*/false,
+      frame_tree_node()->current_replication_state().Clone(),
+      proxy->GetFrameToken());
+}
+
 void RenderFrameHostImpl::DetachFromProxy() {
   if (IsPendingDeletion())
     return;
 
   // Start pending deletion on this frame and its children.
-  DeleteRenderFrame(FrameDeleteIntention::kNotMainFrame);
+  DeleteRenderFrame(mojom::FrameDeleteIntention::kNotMainFrame);
   StartPendingDeletionOnSubtree();
   frame_tree()->FrameUnloading(frame_tree_node_);
 
@@ -3415,7 +3550,7 @@ void RenderFrameHostImpl::ProcessBeforeUnloadCompletedFromFrame(
   // OnDialogClosed, but there may be some cases that Blink returns !proceed
   // without showing the dialog. We also update the address bar here to be safe.
   if (!proceed)
-    delegate_->DidCancelLoading();
+    frame_tree_->DidCancelLoading();
 }
 
 bool RenderFrameHostImpl::IsWaitingForUnloadACK() const {
@@ -3431,6 +3566,11 @@ bool RenderFrameHostImpl::BeforeUnloadTimedOut() const {
 }
 
 void RenderFrameHostImpl::OnUnloadACK() {
+  // Give the tests a chance to override this sequence.
+  if (unload_ack_callback_ && unload_ack_callback_.Run()) {
+    return;
+  }
+
   if (frame_tree_node_->render_manager()->is_attaching_inner_delegate()) {
     // This RFH was unloaded while attaching an inner delegate. The RFH
     // will stay around but it will no longer be associated with a RenderFrame.
@@ -3447,8 +3587,8 @@ void RenderFrameHostImpl::OnUnloadACK() {
   if (do_not_delete_for_testing_)
     return;
 
-  DCHECK_EQ(LifecycleState::kRunningUnloadHandlers, lifecycle_state_);
-  SetLifecycleState(LifecycleState::kReadyToBeDeleted);
+  DCHECK_EQ(LifecycleStateImpl::kRunningUnloadHandlers, lifecycle_state());
+  SetLifecycleState(LifecycleStateImpl::kReadyToBeDeleted);
   PendingDeletionCheckCompleted();  // Can delete |this|.
 }
 
@@ -3476,57 +3616,20 @@ void RenderFrameHostImpl::SetSubframeUnloadTimeoutForTesting(
   subframe_unload_timeout_ = timeout;
 }
 
-void RenderFrameHostImpl::OnContextMenu(
-    const UntrustworthyContextMenuParams& params) {
-  if (IsInactiveAndDisallowReactivation())
-    return;
-
-  // Validate the URLs in |params|.  If the renderer can't request the URLs
-  // directly, don't show them in the context menu.
-  ContextMenuParams validated_params(params);
-  validated_params.page_url = GetMainFrame()->GetLastCommittedURL();
-  if (GetParent())  // Only populate |frame_url| for subframes.
-    validated_params.frame_url = GetLastCommittedURL();
-
-  // We don't validate |unfiltered_link_url| so that this field can be used
-  // when users want to copy the original link URL.
-  RenderProcessHost* process = GetProcess();
-  process->FilterURL(true, &validated_params.link_url);
-  process->FilterURL(true, &validated_params.src_url);
-  process->FilterURL(false, &validated_params.page_url);
-  process->FilterURL(true, &validated_params.frame_url);
-
-  // It is necessary to transform the coordinates to account for nested
-  // RenderWidgetHosts, such as with out-of-process iframes.
-  gfx::Point original_point(validated_params.x, validated_params.y);
-  gfx::Point transformed_point =
-      static_cast<RenderWidgetHostViewBase*>(GetView())
-          ->TransformPointToRootCoordSpace(original_point);
-  validated_params.x = transformed_point.x();
-  validated_params.y = transformed_point.y();
-
-  if (validated_params.selection_start_offset < 0) {
-    bad_message::ReceivedBadMessage(
-        GetProcess(), bad_message::RFH_NEGATIVE_SELECTION_START_OFFSET);
-  }
-
-  delegate_->ShowContextMenu(this, validated_params);
-}
-
 #if defined(OS_ANDROID)
 void RenderFrameHostImpl::RequestSmartClipExtract(
     ExtractSmartClipDataCallback callback,
     gfx::Rect rect) {
   int32_t callback_id = smart_clip_callbacks_.Add(
       std::make_unique<ExtractSmartClipDataCallback>(std::move(callback)));
-  frame_->ExtractSmartClipData(
+  GetMojomFrameInRenderer()->ExtractSmartClipData(
       rect, base::BindOnce(&RenderFrameHostImpl::OnSmartClipDataExtracted,
                            base::Unretained(this), callback_id));
 }
 
 void RenderFrameHostImpl::OnSmartClipDataExtracted(int32_t callback_id,
-                                                   const base::string16& text,
-                                                   const base::string16& html,
+                                                   const std::u16string& text,
+                                                   const std::u16string& html,
                                                    const gfx::Rect& clip_rect) {
   std::move(*smart_clip_callbacks_.Lookup(callback_id))
       .Run(text, html, clip_rect);
@@ -3535,40 +3638,40 @@ void RenderFrameHostImpl::OnSmartClipDataExtracted(int32_t callback_id,
 #endif  // defined(OS_ANDROID)
 
 void RenderFrameHostImpl::RunModalAlertDialog(
-    const base::string16& alert_message,
+    const std::u16string& alert_message,
     RunModalAlertDialogCallback response_callback) {
   auto dialog_closed_callback = base::BindOnce(
       [](RunModalAlertDialogCallback response_callback, bool success,
-         const base::string16& response) {
+         const std::u16string& response) {
         // The response string is unused but we use a generic mechanism for
         // closing the javascript dialog that returns two arguments.
         std::move(response_callback).Run();
       },
       std::move(response_callback));
-  RunJavaScriptDialog(alert_message, base::string16(),
+  RunJavaScriptDialog(alert_message, std::u16string(),
                       JAVASCRIPT_DIALOG_TYPE_ALERT,
                       std::move(dialog_closed_callback));
 }
 
 void RenderFrameHostImpl::RunModalConfirmDialog(
-    const base::string16& alert_message,
+    const std::u16string& alert_message,
     RunModalConfirmDialogCallback response_callback) {
   auto dialog_closed_callback = base::BindOnce(
       [](RunModalConfirmDialogCallback response_callback, bool success,
-         const base::string16& response) {
+         const std::u16string& response) {
         // The response string is unused but we use a generic mechanism for
         // closing the javascript dialog that returns two arguments.
         std::move(response_callback).Run(success);
       },
       std::move(response_callback));
-  RunJavaScriptDialog(alert_message, base::string16(),
+  RunJavaScriptDialog(alert_message, std::u16string(),
                       JAVASCRIPT_DIALOG_TYPE_CONFIRM,
                       std::move(dialog_closed_callback));
 }
 
 void RenderFrameHostImpl::RunModalPromptDialog(
-    const base::string16& alert_message,
-    const base::string16& default_value,
+    const std::u16string& alert_message,
+    const std::u16string& default_value,
     RunModalPromptDialogCallback response_callback) {
   RunJavaScriptDialog(alert_message, default_value,
                       JAVASCRIPT_DIALOG_TYPE_PROMPT,
@@ -3576,15 +3679,15 @@ void RenderFrameHostImpl::RunModalPromptDialog(
 }
 
 void RenderFrameHostImpl::RunJavaScriptDialog(
-    const base::string16& message,
-    const base::string16& default_prompt,
+    const std::u16string& message,
+    const std::u16string& default_prompt,
     JavaScriptDialogType dialog_type,
     JavaScriptDialogCallback ipc_response_callback) {
   // Don't show the dialog if it's triggered on a non-active RenderFrameHost.
   // This happens when the RenderFrameHost is pending deletion or in the
   // back-forward cache.
-  if (lifecycle_state_ != LifecycleState::kActive) {
-    std::move(ipc_response_callback).Run(true, base::string16());
+  if (lifecycle_state() != LifecycleStateImpl::kActive) {
+    std::move(ipc_response_callback).Run(true, std::u16string());
     return;
   }
 
@@ -3650,7 +3753,7 @@ void RenderFrameHostImpl::RunBeforeUnloadConfirm(
 
   auto ipc_callback_wrapper = base::BindOnce(
       [](RunBeforeUnloadConfirmCallback response_callback, bool success,
-         const base::string16& response) {
+         const std::u16string& response) {
         // The response string is unused but we use a generic mechanism for
         // closing the javascript dialog that returns two arguments.
         std::move(response_callback).Run(success);
@@ -3700,7 +3803,7 @@ void RenderFrameHostImpl::RequestClose() {
 }
 
 void RenderFrameHostImpl::ShowCreatedWindow(
-    const base::UnguessableToken& opener_frame_token,
+    const blink::LocalFrameToken& opener_frame_token,
     WindowOpenDisposition disposition,
     const gfx::Rect& initial_rect,
     bool user_gesture,
@@ -3767,12 +3870,12 @@ void RenderFrameHostImpl::DownloadURL(
         })");
   std::unique_ptr<download::DownloadUrlParameters> parameters(
       new download::DownloadUrlParameters(blink_parameters->url,
-                                          GetProcess()->GetID(),
-                                          GetRoutingID(), traffic_annotation));
-  parameters->set_content_initiated(true);
+                                          GetProcess()->GetID(), GetRoutingID(),
+                                          traffic_annotation));
+  parameters->set_content_initiated(!blink_parameters->is_context_menu_save);
   parameters->set_suggested_name(
-      blink_parameters->suggested_name.value_or(base::string16()));
-  parameters->set_prompt(false);
+      blink_parameters->suggested_name.value_or(std::u16string()));
+  parameters->set_prompt(blink_parameters->is_context_menu_save);
   parameters->set_cross_origin_redirects(
       blink_parameters->cross_origin_redirects);
   parameters->set_referrer(
@@ -3820,35 +3923,22 @@ BrowserContext* RenderFrameHostImpl::GetBrowserContext() {
 
 // TODO(crbug.com/1091720): Would be better to do this directly in the chrome
 // layer.  See referenced bug for further details.
-void RenderFrameHostImpl::ReportHeavyAdIssue(
-    blink::mojom::HeavyAdResolutionStatus resolution,
-    blink::mojom::HeavyAdReason reason) {
-  auto issue =
-      devtools_instrumentation::GetHeavyAdIssue(this, resolution, reason);
-  devtools_instrumentation::ReportBrowserInitiatedIssue(this, issue.get());
+void RenderFrameHostImpl::ReportInspectorIssue(
+    blink::mojom::InspectorIssueInfoPtr info) {
+  devtools_instrumentation::BuildAndReportBrowserInitiatedIssue(
+      this, std::move(info));
 }
 
-void RenderFrameHostImpl::AsValueInto(
-    base::trace_event::TracedValue* traced_value) {
-  traced_value->SetPointer("this", this);
-  traced_value->SetInteger("process_id", GetProcess()->GetID());
-  traced_value->SetInteger("render_frame_id", GetRoutingID());
-  traced_value->SetString("lifecycle_state",
-                          LifecycleStateToString(lifecycle_state_));
-  traced_value->SetString(
-      "origin", base::trace_event::ValueToString(GetLastCommittedOrigin()));
-  traced_value->SetString(
-      "url", base::trace_event::ValueToString(GetLastCommittedURL()));
-  traced_value->SetInteger("frame_tree_node_id",
-                           frame_tree_node_->frame_tree_node_id());
-  traced_value->SetInteger("site_instance_id", GetSiteInstance()->GetId());
-  traced_value->SetInteger("browsing_instance_id",
-                           GetSiteInstance()->GetBrowsingInstanceId());
-  traced_value->BeginDictionary("parent");
-  if (GetParent()) {
-    GetParent()->AsValueInto(traced_value);
-  }
-  traced_value->EndDictionary();
+void RenderFrameHostImpl::WriteIntoTracedValue(perfetto::TracedValue context) {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("process", GetProcess());
+  dict.Add("routing_id", GetRoutingID());
+  dict.Add("lifecycle_state", LifecycleStateImplToString(lifecycle_state()));
+  dict.Add("origin", GetLastCommittedOrigin());
+  dict.Add("url", GetLastCommittedURL());
+  dict.Add("frame_tree_node_id", frame_tree_node_->frame_tree_node_id());
+  dict.Add("site_instance", GetSiteInstance());
+  dict.Add("parent", GetParent());
 }
 
 StoragePartition* RenderFrameHostImpl::GetStoragePartition() {
@@ -3875,7 +3965,7 @@ bool RenderFrameHostImpl::HasCommittingNavigationRequestForOrigin(
     }
   }
 
-  // Note: this function excludes |same_document_navigation_request_|, which
+  // Note: this function excludes |same_document_navigation_requests_|, which
   // should be ok since these cannot change the origin.
   return false;
 }
@@ -3930,7 +4020,7 @@ void RenderFrameHostImpl::AllowBindings(int bindings_flags) {
 
   enabled_bindings_ |= bindings_flags;
 
-  if (render_frame_created_) {
+  if (is_render_frame_created()) {
     GetFrameBindingsControl()->AllowBindings(enabled_bindings_);
     if (web_ui_ && enabled_bindings_ & BINDINGS_POLICY_WEB_UI)
       web_ui_->SetupMojoConnection();
@@ -3979,9 +4069,9 @@ void RenderFrameHostImpl::DetachForTesting() {
 }
 
 bool RenderFrameHostImpl::IsFeatureEnabled(
-    blink::mojom::FeaturePolicyFeature feature) {
-  return feature_policy_ && feature_policy_->IsFeatureEnabledForOrigin(
-                                feature, GetLastCommittedOrigin());
+    blink::mojom::PermissionsPolicyFeature feature) {
+  return permissions_policy_ && permissions_policy_->IsFeatureEnabledForOrigin(
+                                    feature, GetLastCommittedOrigin());
 }
 
 void RenderFrameHostImpl::ViewSource() {
@@ -3992,10 +4082,9 @@ void RenderFrameHostImpl::FlushNetworkAndNavigationInterfacesForTesting() {
   DCHECK(network_service_disconnect_handler_holder_);
   network_service_disconnect_handler_holder_.FlushForTesting();  // IN-TEST
 
-  if (!navigation_control_)
-    GetNavigationControl();
-  DCHECK(navigation_control_);
-  navigation_control_.FlushForTesting();  // IN-TEST
+  DCHECK(IsRenderFrameCreated());
+  DCHECK(frame_);
+  frame_.FlushForTesting();  // IN-TEST
 }
 
 void RenderFrameHostImpl::PrepareForInnerWebContentsAttach(
@@ -4037,7 +4126,7 @@ void RenderFrameHostImpl::UpdateSubresourceLoaderFactories() {
                   latest_nav_request_still_committing,
                   isolated_worlds_requiring_separate_url_loader_factory_),
               bypass_redirect_checks);
-  GetNavigationControl()->UpdateSubresourceLoaderFactories(
+  GetMojomFrameInRenderer()->UpdateSubresourceLoaderFactories(
       std::move(subresource_loader_factories));
 }
 
@@ -4055,8 +4144,11 @@ void RenderFrameHostImpl::NotifyUserActivation(
   GetAssociatedLocalFrame()->NotifyUserActivation(notification_type);
 }
 
+// TODO(https://crbug.com/1170277):  Move this IPC to LocalMainFrameHost
+// interface
 void RenderFrameHostImpl::DidAccessInitialDocument() {
-  delegate_->DidAccessInitialDocument();
+  if (is_main_frame())
+    frame_tree_->DidAccessInitialMainDocument();
 }
 
 void RenderFrameHostImpl::DidChangeName(const std::string& name,
@@ -4095,7 +4187,7 @@ RenderFrameHostImpl* RenderFrameHostImpl::FindAndVerifyChild(
 }
 
 RenderFrameHostImpl* RenderFrameHostImpl::FindAndVerifyChild(
-    const base::UnguessableToken& child_frame_token,
+    const blink::FrameToken& child_frame_token,
     bad_message::BadMessageReason reason) {
   auto child_frame_or_proxy =
       LookupRenderFrameHostOrProxy(GetProcess()->GetID(), child_frame_token);
@@ -4130,13 +4222,13 @@ RenderFrameHostImpl* RenderFrameHostImpl::FindAndVerifyChildInternal(
 }
 
 void RenderFrameHostImpl::UpdateTitle(
-    const base::Optional<::base::string16>& title,
+    const base::Optional<::std::u16string>& title,
     base::i18n::TextDirection title_direction) {
   // This message should only be sent for top-level frames.
   if (!is_main_frame())
     return;
 
-  base::string16 received_title;
+  std::u16string received_title;
   if (title.has_value())
     received_title = title.value();
 
@@ -4159,15 +4251,10 @@ void RenderFrameHostImpl::UpdateEncoding(const std::string& encoding_name) {
       base::GetCanonicalEncodingNameByAliasName(encoding_name);
 }
 
-void RenderFrameHostImpl::FrameSizeChanged(const gfx::Size& frame_size) {
-  frame_size_ = frame_size;
-  delegate_->FrameSizeChanged(this, frame_size);
-}
-
 void RenderFrameHostImpl::FullscreenStateChanged(
     bool is_fullscreen,
     blink::mojom::FullscreenOptionsPtr options) {
-  if (IsInactiveAndDisallowReactivation())
+  if (IsInactiveAndDisallowActivation())
     return;
   delegate_->FullscreenStateChanged(this, is_fullscreen, std::move(options));
 }
@@ -4185,11 +4272,11 @@ void RenderFrameHostImpl::UnregisterProtocolHandler(const std::string& scheme,
 }
 
 void RenderFrameHostImpl::DidDisplayInsecureContent() {
-  delegate_->DidDisplayInsecureContent();
+  frame_tree_->controller().ssl_manager()->DidDisplayMixedContent();
 }
 
 void RenderFrameHostImpl::DidContainInsecureFormAction() {
-  delegate_->DidContainInsecureFormAction();
+  frame_tree_->controller().ssl_manager()->DidContainInsecureFormAction();
 }
 
 void RenderFrameHostImpl::DocumentAvailableInMainFrame(
@@ -4199,7 +4286,7 @@ void RenderFrameHostImpl::DocumentAvailableInMainFrame(
         GetProcess(), bad_message::RFH_INVALID_CALL_FROM_NOT_MAIN_FRAME);
     return;
   }
-  delegate_->DocumentAvailableInMainFrame();
+  delegate_->DocumentAvailableInMainFrame(this);
 
   if (!uses_temporary_zoom_level)
     return;
@@ -4216,7 +4303,7 @@ void RenderFrameHostImpl::DocumentAvailableInMainFrame(
 void RenderFrameHostImpl::SetNeedsOcclusionTracking(bool needs_tracking) {
   // Do not update the parent on behalf of inactive RenderFrameHost. See also
   // https://crbug.com/972566.
-  if (IsInactiveAndDisallowReactivation())
+  if (IsInactiveAndDisallowActivation())
     return;
 
   RenderFrameProxyHost* proxy =
@@ -4326,6 +4413,13 @@ void RenderFrameHostImpl::SetCreateNewPopupCallbackForTesting(
   create_new_popup_widget_callback_ = callback;
 }
 
+void RenderFrameHostImpl::SetUnloadACKCallbackForTesting(
+    const UnloadACKCallbackForTesting& callback) {
+  // This DCHECK aims to avoid unexpected replacement of a callback.
+  DCHECK(!unload_ack_callback_ || !callback);
+  unload_ack_callback_ = callback;
+}
+
 void RenderFrameHostImpl::DidBlockNavigation(
     const GURL& blocked_url,
     const GURL& initiator_url,
@@ -4345,15 +4439,19 @@ void RenderFrameHostImpl::DispatchLoad() {
   TRACE_EVENT1("navigation", "RenderFrameHostImpl::DispatchLoad",
                "frame_tree_node", frame_tree_node_->frame_tree_node_id());
 
-  // Don't forward the load event to the parent on behalf of inactive
-  // RenderFrameHost. This can happen in a race where this inactive
-  // RenderFrameHost finishes loading just after the frame navigates away.
-  // See https://crbug.com/626802.
-  if (IsInactiveAndDisallowReactivation())
-    return;
+  // Only active and prerendered documents are allowed to dispatch load events
+  // to the parent.
+  if (lifecycle_state() != LifecycleStateImpl::kPrerendering) {
+    // Don't forward the load event to the parent on behalf of inactive
+    // RenderFrameHost. This can happen in a race where this inactive
+    // RenderFrameHost finishes loading just after the frame navigates away.
+    // See https://crbug.com/626802.
+    if (IsInactiveAndDisallowActivation())
+      return;
+  }
 
-  // We should never be receiving this message from a speculative RFH.
-  DCHECK(IsCurrent());
+  DCHECK(lifecycle_state() == LifecycleStateImpl::kActive ||
+         lifecycle_state() == LifecycleStateImpl::kPrerendering);
 
   // Only frames with an out-of-process parent frame should be sending this
   // message.
@@ -4370,7 +4468,31 @@ void RenderFrameHostImpl::DispatchLoad() {
 
 void RenderFrameHostImpl::GoToEntryAtOffset(int32_t offset,
                                             bool has_user_gesture) {
-  delegate_->OnGoToEntryAtOffset(this, offset, has_user_gesture);
+  OPTIONAL_TRACE_EVENT2("content", "RenderFrameHostImpl::GoToEntryAtOffset",
+                        "render_frame_host", this, "offset", offset);
+
+  // Non-user initiated navigations coming from the renderer should be ignored
+  // if there is an ongoing browser-initiated navigation.
+  // See https://crbug.com/879965.
+  // TODO(arthursonzogni): See if this should check for ongoing navigations in
+  // the frame(s) affected by the session history navigation, rather than just
+  // the main frame.
+  if (Navigator::ShouldIgnoreIncomingRendererRequest(
+          frame_tree_->root()->navigation_request(), has_user_gesture)) {
+    return;
+  }
+
+  // All frames are allowed to navigate the global history.
+  if (delegate_->IsAllowedToGoToEntryAtOffset(offset)) {
+    if (IsSandboxed(network::mojom::WebSandboxFlags::kTopNavigation)) {
+      // Keep track of whether this is a session history from a sandboxed iframe
+      // with top level navigation disallowed.
+      frame_tree_->controller().GoToOffsetInSandboxedFrame(
+          offset, GetFrameTreeNodeId());
+    } else {
+      frame_tree_->controller().GoToOffset(offset);
+    }
+  }
 }
 
 void RenderFrameHostImpl::HandleAccessibilityFindInPageResult(
@@ -4378,7 +4500,7 @@ void RenderFrameHostImpl::HandleAccessibilityFindInPageResult(
   // Only update FindInPageResult on active RenderFrameHost. Note that, it is
   // safe to ignore this call for BackForwardCache, as we terminate the
   // FindInPage session once the page enters BackForwardCache.
-  if (lifecycle_state_ != LifecycleState::kActive)
+  if (lifecycle_state() != LifecycleStateImpl::kActive)
     return;
 
   ui::AXMode accessibility_mode = delegate_->GetAccessibilityMode();
@@ -4397,7 +4519,7 @@ void RenderFrameHostImpl::HandleAccessibilityFindInPageTermination() {
   // Only update FindInPageTermination on active RenderFrameHost. Note that, it
   // is safe to ignore this call for BackForwardCache, as we terminate the
   // FindInPage session once the page enters BackForwardCache.
-  if (lifecycle_state_ != LifecycleState::kActive)
+  if (lifecycle_state() != LifecycleStateImpl::kActive)
     return;
 
   ui::AXMode accessibility_mode = delegate_->GetAccessibilityMode();
@@ -4419,15 +4541,19 @@ void RenderFrameHostImpl::DocumentOnLoadCompleted() {
 
 void RenderFrameHostImpl::ForwardResourceTimingToParent(
     blink::mojom::ResourceTimingInfoPtr timing) {
-  // Don't forward the resource timing of the parent on behalf of inactive
-  // RenderFrameHost. This can happen in a race where this RenderFrameHost
-  // finishes loading just after the frame navigates away. See
-  // https://crbug.com/626802.
-  if (IsInactiveAndDisallowReactivation())
-    return;
+  // Only active and prerendered documents are allowed to forward the resource
+  // timing information to the parent.
+  if (lifecycle_state() != LifecycleStateImpl::kPrerendering) {
+    // Don't forward the resource timing of the parent on behalf of inactive
+    // RenderFrameHost. This can happen in a race where this RenderFrameHost
+    // finishes loading just after the frame navigates away. See
+    // https://crbug.com/626802.
+    if (IsInactiveAndDisallowActivation())
+      return;
+  }
 
-  // We should never be receiving this message from a speculative RFH.
-  DCHECK(IsCurrent());
+  DCHECK(lifecycle_state() == LifecycleStateImpl::kActive ||
+         lifecycle_state() == LifecycleStateImpl::kPrerendering);
 
   RenderFrameProxyHost* proxy =
       frame_tree_node()->render_manager()->GetProxyToParent();
@@ -4463,9 +4589,8 @@ void RenderFrameHostImpl::UpdateBrowserControlsState(
 }
 
 bool RenderFrameHostImpl::Reload() {
-  NavigationControllerImpl* controller = static_cast<NavigationControllerImpl*>(
-      frame_tree_node_->navigator().GetController());
-  return controller->ReloadFrame(frame_tree_node_);
+  return frame_tree_node_->navigator().controller().ReloadFrame(
+      frame_tree_node_);
 }
 
 void RenderFrameHostImpl::SendAccessibilityEventsToManager(
@@ -4477,24 +4602,35 @@ void RenderFrameHostImpl::SendAccessibilityEventsToManager(
   }
 }
 
-bool RenderFrameHostImpl::IsInactiveAndDisallowReactivation() {
+bool RenderFrameHostImpl::IsInactiveAndDisallowActivation() {
+  TRACE_EVENT1("navigation",
+               "RenderFrameHostImpl::IsInactiveAndDisallowActivation",
+               "render_frame_host", this);
+
   switch (lifecycle_state_) {
-    case LifecycleState::kRunningUnloadHandlers:
-    case LifecycleState::kReadyToBeDeleted:
+    case LifecycleStateImpl::kRunningUnloadHandlers:
+    case LifecycleStateImpl::kReadyToBeDeleted:
       return true;
-    case LifecycleState::kInBackForwardCache:
+    case LifecycleStateImpl::kInBackForwardCache:
       EvictFromBackForwardCacheWithReason(
           BackForwardCacheMetrics::NotRestoredReason::kIgnoreEventAndEvict);
       return true;
-    case LifecycleState::kSpeculative:
-      // We do not expect speculative RenderFrameHosts to generate events that
-      // require an active/inactive check. Don't crash the browser process in
-      // case it comes from a compromised renderer, but kill the renderer to
-      // avoid further confusion.
+    case LifecycleStateImpl::kPrerendering:
+      CancelPrerendering();
+      return true;
+    case LifecycleStateImpl::kSpeculative:
+    case LifecycleStateImpl::kPendingCommit:
+      // We do not expect speculative or pending commit RenderFrameHosts to
+      // generate events that require an active/inactive check. Don't crash the
+      // browser process in case it comes from a compromised renderer, but kill
+      // the renderer to avoid further confusion.
+      // TODO(https://crbug.com/1191469): Understand the expected behaviour to
+      // disallow activation for kPendingCommit RenderFrameHosts and update
+      // accordingly.
       bad_message::ReceivedBadMessage(
           GetProcess(), bad_message::RFH_INACTIVE_CHECK_FROM_SPECULATIVE_RFH);
       return false;
-    case LifecycleState::kActive:
+    case LifecycleStateImpl::kActive:
       return false;
   }
 }
@@ -4515,7 +4651,8 @@ void RenderFrameHostImpl::EvictFromBackForwardCacheWithReason(
 void RenderFrameHostImpl::EvictFromBackForwardCacheWithReasons(
     const BackForwardCacheCanStoreDocumentResult& can_store) {
   TRACE_EVENT2("navigation", "RenderFrameHostImpl::EvictFromBackForwardCache",
-               "can_store", can_store.ToString(), "rfh", this);
+               "can_store", can_store.ToString(), "rfh",
+               static_cast<void*>(this));
   DCHECK(IsBackForwardCacheEnabled());
 
   if (is_evicted_from_back_forward_cache_)
@@ -4540,7 +4677,8 @@ void RenderFrameHostImpl::EvictFromBackForwardCacheWithReasons(
     // TODO(carlscab): We should no longer get into this branch thanks to
     // https://crrev.com/c/2352815. Lets keep this old code for now just in case
     // and replace with a CHECK once we are confident that is the case.
-    base::debug::DumpWithoutCrashing();
+    // TODO(yuzus, 1163843): Call |DumpWithoutCrashing| when race condition bug
+    // is fixed.
     BackForwardCacheMetrics::RecordEvictedAfterDocumentRestored(
         BackForwardCacheMetrics::EvictedAfterDocumentRestoredReason::
             kByJavaScript);
@@ -4548,7 +4686,7 @@ void RenderFrameHostImpl::EvictFromBackForwardCacheWithReasons(
     // A document is evicted from the BackForwardCache, but it has already been
     // restored. The current document should be reloaded, because it is not
     // salvageable.
-    frame_tree()->controller()->Reload(ReloadType::NORMAL, false);
+    frame_tree()->controller().Reload(ReloadType::NORMAL, false);
     return;
   }
 
@@ -4580,7 +4718,7 @@ void RenderFrameHostImpl::EvictFromBackForwardCacheWithReasons(
   top_document->is_evicted_from_back_forward_cache_ = true;
   frame_tree()
       ->controller()
-      ->GetBackForwardCache()
+      .GetBackForwardCache()
       .PostTaskToDestroyEvictedFrames();
 }
 
@@ -4771,7 +4909,7 @@ void RenderFrameHostImpl::FocusedElementChanged(
       focus_type);
 }
 
-void RenderFrameHostImpl::TextSelectionChanged(const base::string16& text,
+void RenderFrameHostImpl::TextSelectionChanged(const std::u16string& text,
                                                uint32_t offset,
                                                const gfx::Range& range) {
   has_selection_ = !text.empty();
@@ -4788,7 +4926,7 @@ void RenderFrameHostImpl::UpdateUserActivationState(
   // Don't update UserActivationState for non-active RenderFrameHost. In case
   // of BackForwardCache, this is only called for tests and it is safe to ignore
   // such requests.
-  if (lifecycle_state_ != LifecycleState::kActive)
+  if (lifecycle_state() != LifecycleStateImpl::kActive)
     return;
 
   frame_tree_node_->UpdateUserActivationState(update_type, notification_type);
@@ -4813,7 +4951,7 @@ void RenderFrameHostImpl::BubbleLogicalScrollInParentFrame(
     blink::mojom::ScrollDirection direction,
     ui::ScrollGranularity granularity) {
   // Do not update the parent on behalf of inactive RenderFrameHost.
-  if (IsInactiveAndDisallowReactivation())
+  if (IsInactiveAndDisallowActivation())
     return;
 
   RenderFrameProxyHost* proxy =
@@ -4890,6 +5028,46 @@ void RenderFrameHostImpl::ShowPopupMenu(
 #endif
 }
 
+void RenderFrameHostImpl::ShowContextMenu(
+    mojo::PendingAssociatedRemote<blink::mojom::ContextMenuClient>
+        context_menu_client,
+    const blink::UntrustworthyContextMenuParams& params) {
+  if (IsInactiveAndDisallowActivation())
+    return;
+
+  // Validate the URLs in |params|.  If the renderer can't request the URLs
+  // directly, don't show them in the context menu.
+  ContextMenuParams validated_params(params);
+  validated_params.page_url = GetMainFrame()->GetLastCommittedURL();
+  if (GetParent())  // Only populate |frame_url| for subframes.
+    validated_params.frame_url = GetLastCommittedURL();
+
+  // We don't validate |unfiltered_link_url| so that this field can be used
+  // when users want to copy the original link URL.
+  RenderProcessHost* process = GetProcess();
+  process->FilterURL(true, &validated_params.link_url);
+  process->FilterURL(true, &validated_params.src_url);
+  process->FilterURL(false, &validated_params.page_url);
+  process->FilterURL(true, &validated_params.frame_url);
+
+  // It is necessary to transform the coordinates to account for nested
+  // RenderWidgetHosts, such as with out-of-process iframes.
+  gfx::Point original_point(validated_params.x, validated_params.y);
+  gfx::Point transformed_point =
+      static_cast<RenderWidgetHostViewBase*>(GetView())
+          ->TransformPointToRootCoordSpace(original_point);
+  validated_params.x = transformed_point.x();
+  validated_params.y = transformed_point.y();
+
+  if (validated_params.selection_start_offset < 0) {
+    bad_message::ReceivedBadMessage(
+        GetProcess(), bad_message::RFH_NEGATIVE_SELECTION_START_OFFSET);
+  }
+
+  delegate_->ShowContextMenu(this, std::move(context_menu_client),
+                             validated_params);
+}
+
 void RenderFrameHostImpl::DidLoadResourceFromMemoryCache(
     const GURL& url,
     const std::string& http_method,
@@ -4900,7 +5078,7 @@ void RenderFrameHostImpl::DidLoadResourceFromMemoryCache(
 }
 
 void RenderFrameHostImpl::DidChangeFrameOwnerProperties(
-    const base::UnguessableToken& child_frame_token,
+    const blink::FrameToken& child_frame_token,
     blink::mojom::FrameOwnerPropertiesPtr properties) {
   auto* child =
       FindAndVerifyChild(child_frame_token, bad_message::RFH_OWNER_PROPERTY);
@@ -4922,14 +5100,21 @@ void RenderFrameHostImpl::DidChangeFrameOwnerProperties(
 }
 
 void RenderFrameHostImpl::DidChangeOpener(
-    const base::Optional<base::UnguessableToken>& opener_frame_token) {
+    const base::Optional<blink::LocalFrameToken>& opener_frame_token) {
   frame_tree_node_->render_manager()->DidChangeOpener(opener_frame_token,
                                                       GetSiteInstance());
 }
 
 void RenderFrameHostImpl::DidChangeCSPAttribute(
-    const base::UnguessableToken& child_frame_token,
+    const blink::FrameToken& child_frame_token,
     network::mojom::ContentSecurityPolicyPtr parsed_csp_attribute) {
+  if (parsed_csp_attribute &&
+      !ValidateCSPAttribute(parsed_csp_attribute->header->header_value)) {
+    bad_message::ReceivedBadMessage(GetProcess(),
+                                    bad_message::RFH_CSP_ATTRIBUTE);
+    return;
+  }
+
   auto* child =
       FindAndVerifyChild(child_frame_token, bad_message::RFH_CSP_ATTRIBUTE);
   if (!child)
@@ -4939,11 +5124,11 @@ void RenderFrameHostImpl::DidChangeCSPAttribute(
 }
 
 void RenderFrameHostImpl::DidChangeFramePolicy(
-    const base::UnguessableToken& child_frame_token,
+    const blink::FrameToken& child_frame_token,
     const blink::FramePolicy& frame_policy) {
-  // Ensure that a frame can only update sandbox flags or feature policy for its
-  // immediate children.  If this is not the case, the renderer is considered
-  // malicious and is killed.
+  // Ensure that a frame can only update sandbox flags or permissions policy for
+  // its immediate children.  If this is not the case, the renderer is
+  // considered malicious and is killed.
   RenderFrameHostImpl* child = FindAndVerifyChild(
       // TODO(iclelland): Rename this message
       child_frame_token, bad_message::RFH_SANDBOX_FLAGS);
@@ -4965,7 +5150,7 @@ void RenderFrameHostImpl::DidChangeFramePolicy(
 void RenderFrameHostImpl::CapturePaintPreviewOfSubframe(
     const gfx::Rect& clip_rect,
     const base::UnguessableToken& guid) {
-  if (IsInactiveAndDisallowReactivation())
+  if (IsInactiveAndDisallowActivation())
     return;
   // This should only be called on a subframe.
   if (is_main_frame()) {
@@ -4977,9 +5162,30 @@ void RenderFrameHostImpl::CapturePaintPreviewOfSubframe(
   delegate()->CapturePaintPreviewOfCrossProcessSubframe(clip_rect, guid, this);
 }
 
+void RenderFrameHostImpl::SetModalCloseListener(
+    mojo::PendingRemote<blink::mojom::ModalCloseListener> listener) {
+  ModalCloseListenerHost::GetOrCreateForCurrentDocument(this)->SetListener(
+      std::move(listener));
+}
+
 void RenderFrameHostImpl::BindBrowserInterfaceBrokerReceiver(
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker> receiver) {
   DCHECK(receiver.is_valid());
+  if (blink::features::IsPrerender2Enabled()) {
+    if (frame_tree()->is_prerendering()) {
+      // RenderFrameHostImpl will rebind the receiver end of
+      // BrowserInterfaceBroker if it receives a new one sent from renderer
+      // processes. It happens when renderer processes navigate to a new
+      // document, see RenderFrameImpl::DidCommitNavigation() and
+      // RenderFrameHostImpl::DidCommitNavigation().
+      // So before binding a new receiver end of BrowserInterfaceBroker,
+      // RenderFrameHostImpl should drop all deferred binders to avoid
+      // connecting Mojo pipes with old documents.
+      auto* applier = broker_.GetMojoBinderPolicyApplier();
+      DCHECK(applier) << "prerendering pages should have a policy applier";
+      applier->DropDeferredBinders();
+    }
+  }
   broker_receiver_.Bind(std::move(receiver));
   broker_receiver_.SetFilter(std::make_unique<ActiveURLMessageFilter>(this));
 }
@@ -4988,6 +5194,9 @@ void RenderFrameHostImpl::BindDomOperationControllerHostReceiver(
     mojo::PendingAssociatedReceiver<mojom::DomAutomationControllerHost>
         receiver) {
   DCHECK(receiver.is_valid());
+  // DOM automation controller is reinstalled after a cross-document navigation,
+  // which can reuse the frame.
+  dom_automation_controller_receiver_.reset();
   dom_automation_controller_receiver_.Bind(std::move(receiver));
   dom_automation_controller_receiver_.SetFilter(
       CreateMessageFilterForAssociatedReceiver(
@@ -4996,12 +5205,12 @@ void RenderFrameHostImpl::BindDomOperationControllerHostReceiver(
 
 void RenderFrameHostImpl::SetKeepAliveTimeoutForTesting(
     base::TimeDelta timeout) {
-  keep_alive_timeout_ = timeout;
-  if (keep_alive_handle_factory_)
-    keep_alive_handle_factory_->SetTimeout(keep_alive_timeout_);
+  keep_alive_handle_factory_.set_timeout(timeout);
 }
 
 void RenderFrameHostImpl::UpdateState(const blink::PageState& state) {
+  OPTIONAL_TRACE_EVENT1("content", "RenderFrameHostImpl::UpdateState",
+                        "render_frame_host", this);
   // TODO(creis): Verify the state's ISN matches the last committed FNE.
 
   // Without this check, the renderer can trick the browser into using
@@ -5012,10 +5221,10 @@ void RenderFrameHostImpl::UpdateState(const blink::PageState& state) {
     return;
   }
 
-  delegate_->UpdateStateForFrame(this, state);
+  frame_tree_->controller().UpdateStateForFrame(this, state);
 }
 
-void RenderFrameHostImpl::OpenURL(mojom::OpenURLParamsPtr params) {
+void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
   // Verify and unpack the Mojo payload.
   GURL validated_url;
   scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory;
@@ -5029,9 +5238,7 @@ void RenderFrameHostImpl::OpenURL(mojom::OpenURLParamsPtr params) {
 
   frame_tree_node_->navigator().RequestOpenURL(
       this, validated_url,
-      params->initiator_frame_token.has_value()
-          ? &(params->initiator_frame_token.value())
-          : nullptr,
+      base::OptionalOrNullptr(params->initiator_frame_token),
       GetProcess()->GetID(), params->initiator_origin, params->post_body,
       params->extra_headers, params->referrer.To<content::Referrer>(),
       params->disposition, params->should_replace_current_entry,
@@ -5138,7 +5345,7 @@ void RenderFrameHostImpl::CreateNewWindow(
   // Ignore window creation when sent from a frame that's not current or
   // created.
   bool can_create_window =
-      IsCurrent() && render_frame_created_ &&
+      IsCurrent() && is_render_frame_created() &&
       GetContentClient()->browser()->CanCreateWindow(
           this, GetLastCommittedURL(), GetMainFrame()->GetLastCommittedURL(),
           last_committed_origin_, params->window_container_type,
@@ -5146,6 +5353,12 @@ void RenderFrameHostImpl::CreateNewWindow(
           params->frame_name, params->disposition, *params->features,
           effective_transient_activation_state, params->opener_suppressed,
           &no_javascript_access);
+
+  // Disallow window creation in prerendered pages.
+  if (blink::features::IsPrerender2Enabled() &&
+      frame_tree()->is_prerendering()) {
+    can_create_window = false;
+  }
 
   bool was_consumed = false;
   if (can_create_window) {
@@ -5206,16 +5419,30 @@ void RenderFrameHostImpl::CreateNewWindow(
   } else {
     // The documents are cross origin, leave COOP of the popup to the default
     // unsafe-none.
-    // Then set the popup to noopener if the top level COOP is same origin.
-    if (top_level_opener->cross_origin_opener_policy().value ==
-        network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin) {
-      DCHECK(base::FeatureList::IsEnabled(
-          network::features::kCrossOriginOpenerPolicy));
-      params->opener_suppressed = true;
-      // The frame name should not be forwarded to a noopener popup.
-      // TODO(https://crbug.com/1060691) This should be applied to all
-      // popups opened with noopener.
-      params->frame_name.clear();
+    switch (top_level_opener->cross_origin_opener_policy().value) {
+      // Those values are explicitly listed here, to force creator of new
+      // values to make an explicit decision in the future.
+      // See regression: https://crbug.com/1181673
+      case network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone:
+      case network::mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopups:
+        break;
+
+      // See https://html.spec.whatwg.org/#browsing-context-names (step 8)
+      // ```
+      // If current's top-level browsing context's active document's
+      // cross-origin opener policy's value is "same-origin" or
+      // "same-origin-plus-COEP", then [...] set noopener to true, name to
+      // "_blank", and windowType to "new with no opener".
+      // ```
+      case network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin:
+      case network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
+        DCHECK(base::FeatureList::IsEnabled(
+            network::features::kCrossOriginOpenerPolicy));
+        params->opener_suppressed = true;
+        // The frame name should not be forwarded to a noopener popup.
+        // TODO(https://crbug.com/1060691) This should be applied to all
+        // popups opened with noopener.
+        params->frame_name.clear();
     }
   }
 
@@ -5280,37 +5507,15 @@ void RenderFrameHostImpl::CreateNewWindow(
             isolation_info_.network_isolation_key()));
   }
 
-  if (main_frame->waiting_for_init_) {
-    // Need to check |waiting_for_init_| as some paths inside CreateNewWindow
-    // call above (eg if WebContentsDelegate::IsWebContentsCreationOverridden()
-    // returns true) will resume requests by calling RenderFrameHostImpl::Init.
-    main_frame->frame_->BlockRequests();
-  }
+  mojo::PendingAssociatedRemote<mojom::Frame> pending_frame_remote;
+  mojo::PendingAssociatedReceiver<mojom::Frame> pending_frame_receiver =
+      pending_frame_remote.InitWithNewEndpointAndPassReceiver();
+  main_frame->SetMojomFrameRemote(std::move(pending_frame_remote));
 
   mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
       browser_interface_broker;
   main_frame->BindBrowserInterfaceBrokerReceiver(
       browser_interface_broker.InitWithNewPipeAndPassReceiver());
-
-  mojo::PendingAssociatedRemote<blink::mojom::FrameWidget> blink_frame_widget;
-  mojo::PendingAssociatedReceiver<blink::mojom::FrameWidget>
-      blink_frame_widget_receiver =
-          blink_frame_widget.InitWithNewEndpointAndPassReceiver();
-
-  mojo::PendingAssociatedRemote<blink::mojom::FrameWidgetHost>
-      blink_frame_widget_host;
-  mojo::PendingAssociatedReceiver<blink::mojom::FrameWidgetHost>
-      blink_frame_widget_host_receiver =
-          blink_frame_widget_host.InitWithNewEndpointAndPassReceiver();
-
-  mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget;
-  mojo::PendingAssociatedReceiver<blink::mojom::Widget> blink_widget_receiver =
-      blink_widget.InitWithNewEndpointAndPassReceiver();
-
-  mojo::PendingAssociatedRemote<blink::mojom::WidgetHost> blink_widget_host;
-  mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost>
-      blink_widget_host_receiver =
-          blink_widget_host.InitWithNewEndpointAndPassReceiver();
 
   // With this path, RenderViewHostImpl::CreateRenderView is never called
   // because RenderView is already created on the renderer side. Thus we need to
@@ -5320,41 +5525,37 @@ void RenderFrameHostImpl::CreateNewWindow(
       page_broadcast_receiver =
           page_broadcast.InitWithNewEndpointAndPassReceiver();
 
-  // TODO(danakj): The main frame's RenderWidgetHost has no RenderWidgetHostView
-  // yet here. It seems like it should though? In the meantime we send some
-  // nonsense with a semi-valid but incorrect ScreenInfo (it needs a
-  // RenderWidgetHostView to be correct). An updates VisualProperties will get
-  // to the RenderWidget eventually.
-  blink::VisualProperties visual_properties;
-  main_frame->GetLocalRenderWidgetHost()->GetScreenInfo(
-      &visual_properties.screen_info);
-  main_frame->GetLocalRenderWidgetHost()->BindFrameWidgetInterfaces(
-      std::move(blink_frame_widget_host_receiver),
-      std::move(blink_frame_widget));
-  main_frame->GetLocalRenderWidgetHost()->BindWidgetInterfaces(
-      std::move(blink_widget_host_receiver), std::move(blink_widget));
+  auto widget_params =
+      main_frame->GetLocalRenderWidgetHost()
+          ->BindAndGenerateCreateFrameWidgetParamsForNewWindow();
+
   main_frame->render_view_host()->BindPageBroadcast(std::move(page_broadcast));
 
   bool wait_for_debugger =
       devtools_instrumentation::ShouldWaitForDebuggerInWindowOpen();
   mojom::CreateNewWindowReplyPtr reply = mojom::CreateNewWindowReply::New(
       main_frame->GetRenderViewHost()->GetRoutingID(),
-      main_frame->GetRoutingID(), main_frame->GetFrameToken(),
-      main_frame->GetLocalRenderWidgetHost()->GetRoutingID(), visual_properties,
-      std::move(blink_frame_widget_host),
-      std::move(blink_frame_widget_receiver), std::move(blink_widget_host),
-      std::move(blink_widget_receiver), std::move(page_broadcast_receiver),
-      std::move(browser_interface_broker), cloned_namespace->id(),
-      main_frame->GetDevToolsFrameToken(), wait_for_debugger,
+      main_frame->GetFrameToken(), main_frame->GetRoutingID(),
+      std::move(pending_frame_receiver), std::move(widget_params),
+      std::move(page_broadcast_receiver), std::move(browser_interface_broker),
+      cloned_namespace->id(), main_frame->GetDevToolsFrameToken(),
+      wait_for_debugger,
       main_frame->policy_container_host()->CreatePolicyContainerForBlink());
 
   std::move(callback).Run(mojom::CreateNewWindowStatus::kSuccess,
                           std::move(reply));
 
+  // When `waiting_for_init_` is true, the browser waits for the renderer to
+  // request to show the window (which becomes a call to Init() on the new
+  // window's `main_frame`) before servicing subresource requests. We ensure
+  // this is the first message received by the remote frame (instead of plumbing
+  // it with the CreateNewWindow IPC).
+  if (main_frame->waiting_for_init_)
+    main_frame->GetMojomFrameInRenderer()->BlockRequests();
+
   // The mojom reply callback with kSuccess causes the renderer to create the
   // renderer-side objects.
-  main_frame->render_view_host()->DispatchRenderViewCreated();
-  main_frame->RenderFrameCreated();
+  main_frame->render_view_host()->RenderViewCreated(main_frame);
 }
 
 void RenderFrameHostImpl::CreatePortal(
@@ -5401,11 +5602,12 @@ void RenderFrameHostImpl::CreatePortal(
 
   // Since the portal is newly created and has yet to commit a navigation, this
   // state is trivial.
-  const FrameReplicationState& initial_replicated_state =
+  const blink::mojom::FrameReplicationState& initial_replicated_state =
       proxy_host->frame_tree_node()->current_replication_state();
   DCHECK(initial_replicated_state.origin.opaque());
 
-  std::move(callback).Run(proxy_host->GetRoutingID(), initial_replicated_state,
+  std::move(callback).Run(proxy_host->GetRoutingID(),
+                          initial_replicated_state.Clone(),
                           (*it)->portal_token(), proxy_host->GetFrameToken(),
                           (*it)->GetDevToolsFrameToken());
 }
@@ -5420,13 +5622,19 @@ void RenderFrameHostImpl::AdoptPortal(const blink::PortalToken& portal_token,
   }
   DCHECK_EQ(portal->owner_render_frame_host(), this);
   RenderFrameProxyHost* proxy_host = portal->CreateProxyAndAttachPortal();
-  std::move(callback).Run(
-      proxy_host->GetRoutingID(),
+
+  // |frame_sink_id| should be set to the associated frame. See
+  // https://crbug.com/966119 for details.
+  viz::FrameSinkId frame_sink_id =
       static_cast<RenderWidgetHostViewBase*>(proxy_host->frame_tree_node()
                                                  ->render_manager()
                                                  ->GetRenderWidgetHostView())
-          ->GetFrameSinkId(),
-      proxy_host->frame_tree_node()->current_replication_state(),
+          ->GetFrameSinkId();
+  proxy_host->GetAssociatedRemoteFrame()->SetFrameSinkId(frame_sink_id);
+
+  std::move(callback).Run(
+      proxy_host->GetRoutingID(),
+      proxy_host->frame_tree_node()->current_replication_state().Clone(),
       proxy_host->GetFrameToken(), portal->GetDevToolsFrameToken());
 }
 
@@ -5450,8 +5658,8 @@ void RenderFrameHostImpl::CreateNewPopupWidget(
     create_new_popup_widget_callback_.Run(widget);
 }
 
-void RenderFrameHostImpl::IssueKeepAliveHandle(
-    mojo::PendingReceiver<blink::mojom::KeepAliveHandle> receiver) {
+void RenderFrameHostImpl::GetKeepAliveHandleFactory(
+    mojo::PendingReceiver<blink::mojom::KeepAliveHandleFactory> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (GetProcess()->IsKeepAliveRefCountDisabled())
     return;
@@ -5460,12 +5668,7 @@ void RenderFrameHostImpl::IssueKeepAliveHandle(
     return;
   }
 
-  if (!keep_alive_handle_factory_) {
-    keep_alive_handle_factory_ =
-        std::make_unique<KeepAliveHandleFactory>(GetProcess());
-    keep_alive_handle_factory_->SetTimeout(keep_alive_timeout_);
-  }
-  keep_alive_handle_factory_->Create(std::move(receiver));
+  keep_alive_handle_factory_.Bind(std::move(receiver));
 }
 
 // TODO(ahemery): Move checks to mojo bad message reporting.
@@ -5474,16 +5677,22 @@ void RenderFrameHostImpl::BeginNavigation(
     mojom::BeginNavigationParamsPtr begin_params,
     mojo::PendingRemote<blink::mojom::BlobURLToken> blob_url_token,
     mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
-    mojo::PendingRemote<blink::mojom::NavigationInitiator>
-        navigation_initiator) {
+    mojo::PendingRemote<blink::mojom::PolicyContainerHostKeepAliveHandle>
+        initiator_policy_container_host_keep_alive_handle) {
   if (frame_tree_node_->render_manager()->is_attaching_inner_delegate()) {
     // Avoid starting any new navigations since this frame is in the process of
     // attaching an inner delegate.
     return;
   }
 
-  if (IsInactiveAndDisallowReactivation())
-    return;
+  // Only active and prerendered documents are allowed to start navigation in
+  // their frame.
+  if (lifecycle_state() != LifecycleStateImpl::kPrerendering) {
+    // If this is reached in case the RenderFrameHost is in BackForwardCache
+    // evict the document from BackForwardCache.
+    if (IsInactiveAndDisallowActivation())
+      return;
+  }
 
   TRACE_EVENT2("navigation", "RenderFrameHostImpl::BeginNavigation",
                "frame_tree_node", frame_tree_node_->frame_tree_node_id(), "url",
@@ -5498,20 +5707,29 @@ void RenderFrameHostImpl::BeginNavigation(
   // If the request is bearing Trust Tokens parameters:
   // - it must not be a main-frame navigation, and
   // - for certain Trust Tokens operations, the frame's parent needs the
-  // trust-token-redemption Feature Policy feature.
+  // trust-token-redemption Permissions Policy feature.
   if (begin_params->trust_token_params && !GetParent()) {
     mojo::ReportBadMessage("RFHI: Trust Token params in main frame nav");
     return;
   }
   if (begin_params->trust_token_params &&
-      ParentNeedsTrustTokenFeaturePolicy(*begin_params)) {
+      ParentNeedsTrustTokenPermissionsPolicy(*begin_params)) {
     RenderFrameHostImpl* parent = GetParent();
     if (!parent->IsFeatureEnabled(
-            blink::mojom::FeaturePolicyFeature::kTrustTokenRedemption)) {
+            blink::mojom::PermissionsPolicyFeature::kTrustTokenRedemption)) {
       mojo::ReportBadMessage(
-          "RFHI: Mandatory Trust Tokens Feature Policy feature is absent");
+          "RFHI: Mandatory Trust Tokens Permissions Policy feature is absent");
       return;
     }
+  }
+
+  // Only urn: URL is allowed for navigation to a resource in
+  // <link rel="webbundle">.
+  if (begin_params->web_bundle_token &&
+      !common_params->url.SchemeIs(url::kUrnScheme)) {
+    bad_message::ReceivedBadMessage(
+        GetProcess(), bad_message::WEB_BUNDLE_INVALID_NAVIGATION_URL);
+    return;
   }
 
   GetProcess()->FilterURL(true, &begin_params->searchable_form_url);
@@ -5548,22 +5766,33 @@ void RenderFrameHostImpl::BeginNavigation(
   if (waiting_for_init_) {
     pending_navigate_ = std::make_unique<PendingNavigation>(
         std::move(validated_params), std::move(begin_params),
-        std::move(blob_url_loader_factory), std::move(navigation_client),
-        std::move(navigation_initiator));
+        std::move(blob_url_loader_factory), std::move(navigation_client));
     return;
   }
+
+  // We can discard the parameter
+  // |initiator_policy_container_host_keep_alive_handle|. This is just needed to
+  // ensure that the PolicyContainerHost of the initiator RenderFrameHost
+  // can still be retrieved even if the RenderFrameHost has been deleted in
+  // between. Since the NavigationRequest will be created synchronously as a
+  // result of this function's execution, we don't need to pass
+  // |initiator_policy_container_host_keep_alive_handle| along.
 
   frame_tree_node()->navigator().OnBeginNavigation(
       frame_tree_node(), std::move(validated_params), std::move(begin_params),
       std::move(blob_url_loader_factory), std::move(navigation_client),
-      std::move(navigation_initiator), EnsurePrefetchedSignedExchangeCache(),
+      EnsurePrefetchedSignedExchangeCache(),
       MaybeCreateWebBundleHandleTracker());
 }
 
 void RenderFrameHostImpl::SubresourceResponseStarted(
     const GURL& url,
     net::CertStatus cert_status) {
-  delegate_->SubresourceResponseStarted(url, cert_status);
+  OPTIONAL_TRACE_EVENT1(
+      "content", "RenderFrameHostImpl::SubresourceResponseStarted", "url", url);
+  frame_tree_->controller().ssl_manager()->DidStartResourceResponse(
+      url, cert_status);
+  delegate_->SubresourceResponseStarted();
 }
 
 void RenderFrameHostImpl::ResourceLoadComplete(
@@ -5600,7 +5829,7 @@ void RenderFrameHostImpl::HandleAXEvents(
   accessibility_reset_token_ = 0;
 
   ui::AXMode accessibility_mode = delegate_->GetAccessibilityMode();
-  if (accessibility_mode.is_mode_off() || IsInactiveAndDisallowReactivation()) {
+  if (accessibility_mode.is_mode_off() || IsInactiveAndDisallowActivation()) {
     std::move(callback).Run();
     return;
   }
@@ -5649,7 +5878,7 @@ void RenderFrameHostImpl::HandleAXEvents(
 
 void RenderFrameHostImpl::HandleAXLocationChanges(
     std::vector<mojom::LocationChangesPtr> changes) {
-  if (accessibility_reset_token_ || IsInactiveAndDisallowReactivation())
+  if (accessibility_reset_token_ || IsInactiveAndDisallowActivation())
     return;
 
   ui::AXMode accessibility_mode = delegate_->GetAccessibilityMode();
@@ -5717,9 +5946,9 @@ CanCommitStatus RenderFrameHostImpl::CanCommitOriginAndUrl(
 
   // Verify that if this RenderFrameHost is for a WebUI it is not committing a
   // URL which is not allowed in a WebUI process. As we are at the commit stage,
-  // set |origin_requests_isolation| = false.
+  // set |origin_isolation_request| to kNone.
   if (!Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
-          this, UrlInfo(url, false /* origin_requests_isolation */),
+          this, UrlInfo(url, UrlInfo::OriginIsolationRequest::kNone, origin),
           /* is_renderer_initiated_check */ true)) {
     return CanCommitStatus::CANNOT_COMMIT_URL;
   }
@@ -5757,7 +5986,7 @@ CanCommitStatus RenderFrameHostImpl::CanCommitOriginAndUrl(
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   const CanCommitStatus can_commit_status = policy->CanCommitOriginAndUrl(
       GetProcess()->GetID(), GetSiteInstance()->GetIsolationContext(), origin,
-      UrlInfo(url, false /* origin_requests_isolation */),
+      UrlInfo(url, UrlInfo::OriginIsolationRequest::kNone, origin),
       GetSiteInstance()->GetCoopCoepCrossOriginIsolatedInfo());
   if (can_commit_status != CanCommitStatus::CAN_COMMIT_ORIGIN_AND_URL) {
     LogCanCommitOriginAndUrlFailureReason("cpspi_disallowed_commit");
@@ -6018,15 +6247,17 @@ void RenderFrameHostImpl::StartPendingDeletionOnSubtree() {
           local_ancestor = rfh;
       }
 
-      local_ancestor->DeleteRenderFrame(FrameDeleteIntention::kNotMainFrame);
+      local_ancestor->DeleteRenderFrame(
+          mojom::FrameDeleteIntention::kNotMainFrame);
       if (local_ancestor != child) {
         // In case of BackForwardCache, page is evicted directly from the cache
         // and deleted immediately, without waiting for unload handlers.
         bool wait_for_unload_handlers =
             child->has_unload_handlers() && !child->IsInBackForwardCache();
-        LifecycleState child_lifecycle_state =
-            wait_for_unload_handlers ? LifecycleState::kRunningUnloadHandlers
-                                     : LifecycleState::kReadyToBeDeleted;
+        LifecycleStateImpl child_lifecycle_state =
+            wait_for_unload_handlers
+                ? LifecycleStateImpl::kRunningUnloadHandlers
+                : LifecycleStateImpl::kReadyToBeDeleted;
         child->SetLifecycleState(child_lifecycle_state);
       }
 
@@ -6036,7 +6267,7 @@ void RenderFrameHostImpl::StartPendingDeletionOnSubtree() {
 }
 
 void RenderFrameHostImpl::PendingDeletionCheckCompleted() {
-  if (lifecycle_state_ == LifecycleState::kReadyToBeDeleted &&
+  if (lifecycle_state() == LifecycleStateImpl::kReadyToBeDeleted &&
       children_.empty()) {
     if (is_waiting_for_unload_ack_)
       OnUnloaded();
@@ -6101,7 +6332,7 @@ void RenderFrameHostImpl::AdvanceFocus(blink::mojom::FocusType type,
   DCHECK(!source_proxy ||
          (source_proxy->GetProcess()->GetID() == GetProcess()->GetID()));
 
-  base::Optional<base::UnguessableToken> frame_token;
+  base::Optional<blink::RemoteFrameToken> frame_token;
   if (source_proxy)
     frame_token = source_proxy->GetFrameToken();
 
@@ -6111,7 +6342,7 @@ void RenderFrameHostImpl::AdvanceFocus(blink::mojom::FocusType type,
 void RenderFrameHostImpl::JavaScriptDialogClosed(
     JavaScriptDialogCallback dialog_closed_callback,
     bool success,
-    const base::string16& user_input) {
+    const std::u16string& user_input) {
   GetProcess()->SetBlocked(false);
   std::move(dialog_closed_callback).Run(success, user_input);
   // If executing as part of beforeunload event handling, there may have been
@@ -6169,12 +6400,6 @@ void RenderFrameHostImpl::CommitNavigation(
   DCHECK(!IsRendererDebugURL(common_params->url));
   DCHECK(navigation_request);
 
-  if (base::FeatureList::IsEnabled(blink::features::kPrerender2)) {
-    is_prerendering_ = navigation_request->IsPrerendering();
-    // TODO(https://crbug.com/1132752): If the frame is for prerendering, enable
-    // Mojo capability control.
-  }
-
   bool is_same_document =
       NavigationTypeUtils::IsSameDocument(common_params->navigation_type);
   bool is_mhtml_subframe = navigation_request->IsForMhtmlSubframe();
@@ -6222,11 +6447,12 @@ void RenderFrameHostImpl::CommitNavigation(
   // debug issues with browser-side security checks. https://crbug.com/931895.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   const ProcessLock process_lock = GetSiteInstance()->GetProcessLock();
-  if (process_lock != ProcessLock::CreateForErrorPage() &&
-      common_params->url.IsStandard() &&
-      !policy->CanAccessDataForOrigin(GetProcess()->GetID(),
-                                      common_params->url) &&
-      !is_mhtml_subframe) {
+  if (!process_lock.is_error_page() && common_params->url.IsStandard() &&
+      !is_mhtml_subframe &&
+      // TODO(https://crbug.com/888079): Replace `common_params().url` with
+      // the origin to commit calculated on the browser side.
+      !policy->CanAccessDataForOrigin(
+          GetProcess()->GetID(), url::Origin::Create(common_params->url))) {
     base::debug::SetCrashKeyString(
         base::debug::AllocateCrashKeyString("lock_url",
                                             base::debug::CrashKeySize::Size64),
@@ -6248,12 +6474,20 @@ void RenderFrameHostImpl::CommitNavigation(
   const bool is_first_navigation = !has_committed_any_navigation_;
   has_committed_any_navigation_ = true;
 
-  // If this is NOT for same-document navigation, existing |web_bundle_handle_|
-  // should be reset to the new one. Otherwise the existing one should be kept
-  // around so that the subresource requests keep being served from the
-  // WebBundleURLLoaderFactory held by the handle.
-  if (!is_same_document)
+  if (!is_same_document) {
+    // If this is NOT for same-document navigation, existing
+    // |web_bundle_handle_| should be reset to the new one. Otherwise the
+    // existing one should be kept around so that the subresource requests keep
+    // being served from the WebBundleURLLoaderFactory held by the handle.
     web_bundle_handle_ = std::move(web_bundle_handle);
+
+    // Similarly, reset |subresource_web_bundle_navigation_info_| to the new one
+    // if this is NOT for same-document navigation. For same-document
+    // navigation, |navigation_request| doesn't have bundle information so
+    // existing one should be kept around.
+    subresource_web_bundle_navigation_info_ =
+        navigation_request->GetSubresourceWebBundleNavigationInfo();
+  }
 
   UpdatePermissionsForNavigation(*common_params, *commit_params);
 
@@ -6380,6 +6614,13 @@ void RenderFrameHostImpl::CommitNavigation(
       }
     }
 
+    if (navigation_request->IsMhtmlOrSubframe()) {
+      // MHTML frames are not allowed to make any network requests - all their
+      // subresource requests should be fulfilled from the MHTML archive.
+      pending_default_factory =
+          network::NotImplementedURLLoaderFactory::Create();
+    }
+
     if (!pending_default_factory) {
       // Otherwise default to a Network Service-backed loader from the
       // appropriate NetworkContext.
@@ -6447,7 +6688,7 @@ void RenderFrameHostImpl::CommitNavigation(
           url::kFileScheme,
           FileURLLoaderFactory::Create(
               browser_context->GetPath(),
-              browser_context->GetSharedCorsOriginAccessList(),
+              BrowserContext::GetSharedCorsOriginAccessList(browser_context),
               file_factory_priority));
     }
 
@@ -6503,14 +6744,15 @@ void RenderFrameHostImpl::CommitNavigation(
 
   if (is_same_document) {
     DCHECK_EQ(frame_tree_node()->current_frame_host(), this);
-    DCHECK(same_document_navigation_request_);
+    const base::UnguessableToken& navigation_token =
+        commit_params->navigation_token;
+    DCHECK(GetSameDocumentNavigationRequest(navigation_token));
     bool should_replace_current_entry =
         common_params->should_replace_current_entry;
-    GetNavigationControl()->CommitSameDocumentNavigation(
+    GetMojomFrameInRenderer()->CommitSameDocumentNavigation(
         std::move(common_params), std::move(commit_params),
         base::BindOnce(&RenderFrameHostImpl::OnSameDocumentCommitProcessed,
-                       base::Unretained(this),
-                       same_document_navigation_request_->GetNavigationId(),
+                       base::Unretained(this), navigation_token,
                        should_replace_current_entry));
   } else {
     // Pass the controller service worker info if we have one.
@@ -6585,7 +6827,7 @@ void RenderFrameHostImpl::CommitNavigation(
     if (!GetParent() && frame_tree_node_->current_frame_host() == this) {
       if (NavigationEntryImpl* last_committed_entry =
               NavigationEntryImpl::FromNavigationEntry(
-                  frame_tree()->controller()->GetLastCommittedEntry())) {
+                  frame_tree()->controller().GetLastCommittedEntry())) {
         if (last_committed_entry->back_forward_cache_metrics()) {
           last_committed_entry->back_forward_cache_metrics()
               ->RecordFeatureUsage(this);
@@ -6615,11 +6857,14 @@ void RenderFrameHostImpl::CommitNavigation(
     if (IsURLHandledByNetworkStack(common_params->url))
       last_navigation_previews_state_ = common_params->previews_state;
 
-    DCHECK(navigation_request->policy_container_host());
     blink::mojom::PolicyContainerPtr policy_container =
-        navigation_request->policy_container_host()
-            ->CreatePolicyContainerForBlink();
+        navigation_request->CreatePolicyContainerForBlink();
 
+    // TODO(crbug.com/1126305): Once the Prerender2 moves to use the MPArch, we
+    // need to check the relevant FrameTree to know the precise prerendering
+    // state to update commit_params.is_prerendering here.
+    // Current design doesn't capture the cases NavigationRequest is created via
+    // CreateRendererInitiated or CreateForCommit.
     SendCommitNavigation(
         navigation_client, navigation_request, std::move(common_params),
         std::move(commit_params), std::move(head), std::move(response_body),
@@ -6628,6 +6873,7 @@ void RenderFrameHostImpl::CommitNavigation(
         std::move(subresource_overrides), std::move(controller),
         std::move(container_info), std::move(prefetch_loader_factory),
         std::move(policy_container), devtools_navigation_token);
+    frame_tree_node_->navigator().LogCommitNavigationSent();
 
     // |remote_object| is an associated interface ptr, so calls can't be made on
     // it until its request endpoint is sent. Now that the request endpoint was
@@ -6641,8 +6887,6 @@ void RenderFrameHostImpl::CommitNavigation(
               std::move(remote_object), sent_state));
     }
   }
-
-  is_loading_ = true;
 }
 
 void RenderFrameHostImpl::FailedNavigation(
@@ -6651,6 +6895,7 @@ void RenderFrameHostImpl::FailedNavigation(
     const mojom::CommitNavigationParams& commit_params,
     bool has_stale_copy_in_cache,
     int error_code,
+    int extended_error_code,
     const base::Optional<std::string>& error_page_content) {
   TRACE_EVENT2("navigation", "RenderFrameHostImpl::FailedNavigation",
                "frame_tree_node", frame_tree_node_->frame_tree_node_id(),
@@ -6684,16 +6929,18 @@ void RenderFrameHostImpl::FailedNavigation(
   mojom::NavigationClient* navigation_client =
       navigation_request->GetCommitNavigationClient();
 
+  blink::mojom::PolicyContainerPtr policy_container =
+      navigation_request->CreatePolicyContainerForBlink();
+
   SendCommitFailedNavigation(
       navigation_client, navigation_request, common_params.Clone(),
       commit_params.Clone(), has_stale_copy_in_cache, error_code,
-      error_page_content, std::move(subresource_loader_factories));
+      extended_error_code, error_page_content,
+      std::move(subresource_loader_factories), std::move(policy_container));
 
   // TODO(crbug/1129537): support UKM source creation for failed navigations
   // too.
 
-  // An error page is expected to commit, hence why is_loading_ is set to true.
-  is_loading_ = true;
   dom_content_loaded_ = false;
   has_committed_any_navigation_ = true;
   DCHECK(navigation_request && navigation_request->IsNavigationStarted() &&
@@ -6713,7 +6960,7 @@ void RenderFrameHostImpl::HandleRendererDebugURL(const GURL& url) {
     frame_tree_node()->DidStartLoading(true, was_loading);
   }
 
-  GetNavigationControl()->HandleRendererDebugURL(url);
+  GetMojomFrameInRenderer()->HandleRendererDebugURL(url);
 
   // Ensure that the renderer process is marked as used after processing a
   // renderer debug URL, since this process is now unsafe to be reused by sites
@@ -6820,17 +7067,30 @@ void RenderFrameHostImpl::SetUpMojoIfNeeded() {
       GetProcess()->GetStoragePartition()->GetFileSystemContext(),
       ChromeBlobStorageContext::GetFor(GetProcess()->GetBrowserContext())));
 
-  mojo::PendingRemote<mojom::FrameFactory> frame_factory;
-  GetProcess()->BindReceiver(frame_factory.InitWithNewPipeAndPassReceiver());
-  mojo::Remote<mojom::FrameFactory>(std::move(frame_factory))
-      ->CreateFrame(routing_id_, frame_.BindNewPipeAndPassReceiver());
+#if BUILDFLAG(ENABLE_PLUGINS)
+  associated_registry_->AddInterface(base::BindRepeating(
+      [](RenderFrameHostImpl* impl,
+         mojo::PendingAssociatedReceiver<mojom::PepperHost> receiver) {
+        impl->pepper_host_receiver_.Bind(std::move(receiver));
+        impl->pepper_host_receiver_.SetFilter(
+            impl->CreateMessageFilterForAssociatedReceiver(
+                mojom::PepperHost::Name_));
+      },
+      base::Unretained(this)));
+#endif
 
-  // TODO(http://crbug.com/1014212): Change to DCHECK.
-  CHECK(frame_);
+  associated_registry_->AddInterface(base::BindRepeating(
+      [](RenderFrameHostImpl* impl,
+         mojo::PendingAssociatedReceiver<media::mojom::MediaPlayerHost>
+             receiver) {
+        impl->delegate()->CreateMediaPlayerHostForRenderFrameHost(
+            impl, std::move(receiver));
+      },
+      base::Unretained(this)));
 
   mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
       remote_interfaces;
-  frame_->GetInterfaceProvider(
+  GetMojomFrameInRenderer()->GetInterfaceProvider(
       remote_interfaces.InitWithNewPipeAndPassReceiver());
 
   remote_interfaces_ = std::make_unique<service_manager::InterfaceProvider>(
@@ -6847,10 +7107,10 @@ void RenderFrameHostImpl::InvalidateMojoConnection() {
   frame_.reset();
   frame_bindings_control_.reset();
   frame_host_associated_receiver_.reset();
+  back_forward_cache_controller_host_associated_receiver_.reset();
   local_frame_.reset();
   local_main_frame_.reset();
   high_priority_local_frame_.reset();
-  navigation_control_.reset();
   find_in_page_.reset();
   render_accessibility_.reset();
 
@@ -6870,7 +7130,8 @@ void RenderFrameHostImpl::InvalidateMojoConnection() {
 }
 
 bool RenderFrameHostImpl::IsFocused() {
-  if (!GetRenderWidgetHost()->is_focused() || !frame_tree_->GetFocusedFrame())
+  if (!GetMainFrame()->GetRenderWidgetHost()->is_focused() ||
+      !frame_tree_->GetFocusedFrame())
     return false;
 
   RenderFrameHostImpl* focused_rfh =
@@ -6881,7 +7142,7 @@ bool RenderFrameHostImpl::IsFocused() {
 bool RenderFrameHostImpl::CreateWebUI(const GURL& dest_url,
                                       int entry_bindings) {
   // Verify expectation that WebUI should not be created for error pages.
-  DCHECK_NE(GetSiteInstance()->GetSiteInfo(), SiteInfo::CreateForErrorPage());
+  DCHECK(!GetSiteInstance()->GetSiteInfo().is_error_page());
 
   WebUI::TypeID new_web_ui_type =
       WebUIControllerFactoryRegistry::GetInstance()->GetWebUIType(
@@ -6925,7 +7186,7 @@ bool RenderFrameHostImpl::CreateWebUI(const GURL& dest_url,
 
   // Since this is new WebUI instance, this RenderFrameHostImpl should not
   // have had any bindings. Verify that and grant the required bindings.
-  DCHECK_EQ(0, GetEnabledBindings());
+  DCHECK_EQ(BINDINGS_POLICY_NONE, GetEnabledBindings());
   AllowBindings(web_ui_->GetBindings());
 
   return true;
@@ -7000,19 +7261,11 @@ void RenderFrameHostImpl::ClearFocusedElement() {
   GetAssociatedLocalFrame()->ClearFocusedElement();
 }
 
-void RenderFrameHostImpl::ResumeBlockedRequestsForFrame() {
-  ForEachFrame(this,
-               base::BindRepeating([](RenderFrameHostImpl* render_frame_host) {
-                 if (render_frame_host->frame_)
-                   render_frame_host->frame_->ResumeBlockedRequests();
-               }));
-}
-
 void RenderFrameHostImpl::BindDevToolsAgent(
     mojo::PendingAssociatedRemote<blink::mojom::DevToolsAgentHost> host,
     mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> receiver) {
-  GetNavigationControl()->BindDevToolsAgent(std::move(host),
-                                            std::move(receiver));
+  GetMojomFrameInRenderer()->BindDevToolsAgent(std::move(host),
+                                               std::move(receiver));
 }
 
 bool RenderFrameHostImpl::IsSameSiteInstance(
@@ -7044,14 +7297,15 @@ void RenderFrameHostImpl::UpdateAccessibilityMode() {
   render_accessibility_->SetMode(ax_mode.mode());
 }
 
-void RenderFrameHostImpl::RequestAXTreeSnapshot(AXTreeSnapshotCallback callback,
-                                                ui::AXMode ax_mode) {
+void RenderFrameHostImpl::RequestAXTreeSnapshot(
+    AXTreeSnapshotCallback callback,
+    mojom::SnapshotAccessibilityTreeParamsPtr params) {
   // TODO(https://crbug.com/859110): Remove once frame_ can no longer be null.
-  if (!IsRenderFrameLive())
+  if (!IsRenderFrameCreated())
     return;
 
-  frame_->SnapshotAccessibilityTree(
-      ax_mode.mode(),
+  GetMojomFrameInRenderer()->SnapshotAccessibilityTree(
+      std::move(params),
       base::BindOnce(&RenderFrameHostImpl::RequestAXTreeSnapshotCallback,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -7059,7 +7313,6 @@ void RenderFrameHostImpl::RequestAXTreeSnapshot(AXTreeSnapshotCallback callback,
 void RenderFrameHostImpl::GetSavableResourceLinksFromRenderer() {
   if (!IsRenderFrameLive())
     return;
-
   GetAssociatedLocalFrame()->GetSavableResourceLinks(
       base::BindOnce(&RenderFrameHostImpl::GetSavableResourceLinksCallback,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -7072,7 +7325,7 @@ void RenderFrameHostImpl::SetAccessibilityCallbackForTesting(
 
 void RenderFrameHostImpl::UpdateAXTreeData() {
   ui::AXMode accessibility_mode = delegate_->GetAccessibilityMode();
-  if (accessibility_mode.is_mode_off() || IsInactiveAndDisallowReactivation()) {
+  if (accessibility_mode.is_mode_off() || IsInactiveAndDisallowActivation()) {
     return;
   }
 
@@ -7114,12 +7367,12 @@ void RenderFrameHostImpl::InsertVisualStateCallback(
 }
 
 bool RenderFrameHostImpl::IsRenderFrameCreated() {
-  return render_frame_created_;
+  return is_render_frame_created();
 }
 
 bool RenderFrameHostImpl::IsRenderFrameLive() {
   bool is_live =
-      GetProcess()->IsInitializedAndNotDead() && render_frame_created_;
+      GetProcess()->IsInitializedAndNotDead() && is_render_frame_created();
 
   // Sanity check: the RenderView should always be live if the RenderFrame is.
   DCHECK(!is_live || render_view_host_->IsRenderViewLive());
@@ -7128,19 +7381,15 @@ bool RenderFrameHostImpl::IsRenderFrameLive() {
 }
 
 bool RenderFrameHostImpl::IsCurrent() {
-  RenderFrameHostImpl* rfh = this;
-  // Check this RenderFrameHost and all its ancestors to see if they are the
-  // current ones in their respective FrameTreeNodes.
-  // It is important to check for all ancestors as when navigation commits a new
-  // RenderFrameHost may replace one of the parents, swapping out the old with
-  // its entire subtree but |this| will still be a current one in its
-  // FrameTreeNode.
-  while (rfh) {
-    if (rfh->frame_tree_node()->current_frame_host() != rfh)
-      return false;
-    rfh = rfh->GetParent();
-  }
-  return true;
+  // When the document is transitioning away from kActive/kPrerendering to a
+  // yet-to-be-determined state, the RenderFrameHostManager has already
+  // updated its current RenderFrameHost, and the old document is no longer
+  // the current one. In that case, return false.
+  if (has_pending_lifecycle_state_update_)
+    return false;
+
+  // Only documents in the LifecycleStateImpl::kActive are considered current.
+  return lifecycle_state() == LifecycleStateImpl::kActive;
 }
 
 size_t RenderFrameHostImpl::GetProxyCount() {
@@ -7173,6 +7422,13 @@ bool RenderFrameHostImpl::CanAccessFilesOfPageState(
 void RenderFrameHostImpl::GrantFileAccessFromPageState(
     const blink::PageState& state) {
   GrantFileAccess(GetProcess()->GetID(), state.GetReferencedFiles());
+}
+
+void RenderFrameHostImpl::SetHasPendingLifecycleStateUpdate() {
+  DCHECK(!has_pending_lifecycle_state_update_);
+  for (auto& child : children_)
+    child->current_frame_host()->SetHasPendingLifecycleStateUpdate();
+  has_pending_lifecycle_state_update_ = true;
 }
 
 void RenderFrameHostImpl::GrantFileAccessFromResourceRequestBody(
@@ -7283,36 +7539,30 @@ void RenderFrameHostImpl::
   // |coep_reporter_receiver| is optional.
   DCHECK(out_trust_token_redemption_policy);
 
-  bool have_successful_request =
-      navigation_request && navigation_request->GetNetErrorCode() == net::OK;
-  bool have_failed_request =
-      navigation_request && navigation_request->GetNetErrorCode() != net::OK;
   CrossOriginEmbedderPolicyReporter* coep_reporter = nullptr;
 
-  if (have_successful_request) {
+  if (navigation_request) {
     // Return values based on the |navigation_request|.
     *out_main_world_origin = navigation_request->GetOriginForURLLoaderFactory();
-    *out_isolation_info = navigation_request->isolation_info_for_subresources();
     *out_client_security_state = navigation_request->BuildClientSecurityState();
-    coep_reporter = navigation_request->coep_reporter();
-    *out_trust_token_redemption_policy =
-        DetermineWhetherToForbidTrustTokenRedemption(
-            GetParent(), navigation_request->commit_params(),
-            *out_main_world_origin);
-  } else if (have_failed_request) {
-    // Some return values should always be the same for error pages.  Some
-    // return values may be based on the |navigation_request|.
 
-    // Error page will commit in an opaque origin.
-    // TODO(lukasza): https://crbug.com/888079: Use this origin when sending the
-    // commit IPC and setting |last_committed_origin_|.
-    url::Origin error_page_origin = url::Origin();
-    *out_main_world_origin = error_page_origin;
-    *out_isolation_info = net::IsolationInfo::CreateTransient();
-    *out_client_security_state = navigation_request->BuildClientSecurityState();
-    coep_reporter = nullptr;
-    *out_trust_token_redemption_policy =
-        network::mojom::TrustTokenRedemptionPolicy::kForbid;
+    // TODO(lukasza): Consider pushing the ok-vs-error differentiation into
+    // NavigationRequest methods (e.g. into |isolation_info_for_subresources|
+    // and/or |coep_reporter| methods).
+    if (navigation_request->GetNetErrorCode() == net::OK) {
+      *out_isolation_info =
+          navigation_request->isolation_info_for_subresources();
+      coep_reporter = navigation_request->coep_reporter();
+      *out_trust_token_redemption_policy =
+          DetermineWhetherToForbidTrustTokenRedemption(
+              GetParent(), navigation_request->commit_params(),
+              *out_main_world_origin);
+    } else {
+      *out_isolation_info = net::IsolationInfo::CreateTransient();
+      coep_reporter = nullptr;
+      *out_trust_token_redemption_policy =
+          network::mojom::TrustTokenRedemptionPolicy::kForbid;
+    }
   } else {
     // Use properties of the last committed navigation.
     *out_main_world_origin = last_committed_origin_;
@@ -7458,7 +7708,7 @@ int RenderFrameHost::GetFrameTreeNodeIdForRoutingId(int process_id,
 // static
 RenderFrameHost* RenderFrameHost::FromPlaceholderToken(
     int render_process_id,
-    const base::UnguessableToken& placeholder_frame_token) {
+    const blink::RemoteFrameToken& placeholder_frame_token) {
   RenderFrameProxyHost* rfph = RenderFrameProxyHost::FromFrameToken(
       render_process_id, placeholder_frame_token);
   FrameTreeNode* node = rfph ? rfph->frame_tree_node() : nullptr;
@@ -7516,7 +7766,7 @@ void RenderFrameHostImpl::AccessibilityHitTestCallback(
           ? frame_or_proxy.proxy->frame_tree_node()->current_frame_host()
           : frame_or_proxy.frame;
 
-  if (!hit_frame || hit_frame->IsInactiveAndDisallowReactivation()) {
+  if (!hit_frame || hit_frame->IsInactiveAndDisallowActivation()) {
     if (opt_callback)
       std::move(opt_callback).Run(nullptr, 0);
     return;
@@ -7558,8 +7808,8 @@ void RenderFrameHostImpl::RequestAXTreeSnapshotCallback(
 
 void RenderFrameHostImpl::CreatePaymentManager(
     mojo::PendingReceiver<payments::mojom::PaymentManager> receiver) {
-  if (!IsFeatureEnabled(blink::mojom::FeaturePolicyFeature::kPayment)) {
-    mojo::ReportBadMessage("Feature policy blocks Payment");
+  if (!IsFeatureEnabled(blink::mojom::PermissionsPolicyFeature::kPayment)) {
+    mojo::ReportBadMessage("Permissions policy blocks Payment");
     return;
   }
   GetProcess()->CreatePaymentManagerForOrigin(GetLastCommittedOrigin(),
@@ -7574,7 +7824,9 @@ void RenderFrameHostImpl::CreatePaymentManager(
 
 void RenderFrameHostImpl::CreateWebBluetoothService(
     mojo::PendingReceiver<blink::mojom::WebBluetoothService> receiver) {
-  BackForwardCache::DisableForRenderFrameHost(this, "WebBluetooth");
+  BackForwardCache::DisableForRenderFrameHost(
+      this, BackForwardCacheDisable::DisabledReason(
+                BackForwardCacheDisable::DisabledReasonId::kWebBluetooth));
   // RFHI owns |web_bluetooth_services_| and |web_bluetooth_service| owns the
   // |receiver_| which may run the error handler. |receiver_| can't run the
   // error handler after it's destroyed so it can't run after the RFHI is
@@ -7607,17 +7859,19 @@ void RenderFrameHostImpl::DeleteWebBluetoothService(
 
 void RenderFrameHostImpl::CreateWebUsbService(
     mojo::PendingReceiver<blink::mojom::WebUsbService> receiver) {
-  BackForwardCache::DisableForRenderFrameHost(this, "WebUSB");
+  BackForwardCache::DisableForRenderFrameHost(
+      this, BackForwardCacheDisable::DisabledReason(
+                BackForwardCacheDisable::DisabledReasonId::kWebUSB));
   GetContentClient()->browser()->CreateWebUsbService(this, std::move(receiver));
 }
 
-void RenderFrameHostImpl::ResetFeaturePolicy() {
+void RenderFrameHostImpl::ResetPermissionsPolicy() {
   RenderFrameHostImpl* parent_frame_host = GetParent();
-  const blink::FeaturePolicy* parent_policy =
-      parent_frame_host ? parent_frame_host->feature_policy() : nullptr;
-  blink::ParsedFeaturePolicy container_policy =
+  const blink::PermissionsPolicy* parent_policy =
+      parent_frame_host ? parent_frame_host->permissions_policy() : nullptr;
+  blink::ParsedPermissionsPolicy container_policy =
       frame_tree_node()->effective_frame_policy().container_policy;
-  feature_policy_ = blink::FeaturePolicy::CreateFromParentPolicy(
+  permissions_policy_ = blink::PermissionsPolicy::CreateFromParentPolicy(
       parent_policy, container_policy, last_committed_origin_);
 }
 
@@ -7664,26 +7918,55 @@ void RenderFrameHostImpl::BindScreenEnumerationReceiver(
 }
 
 void RenderFrameHostImpl::BindPrerenderProcessor(
-    RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::PrerenderProcessor> pending_receiver) {
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kPrerender2));
-  DCHECK_EQ(render_frame_host, this);
+  DCHECK(blink::features::IsPrerender2Enabled());
   prerender_processor_receivers_.Add(
       std::make_unique<PrerenderProcessor>(*this), std::move(pending_receiver));
 }
 
-bool RenderFrameHostImpl::IsPrerendering() const {
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kPrerender2));
-  return is_prerendering_;
+void RenderFrameHostImpl::CancelPrerendering() {
+  DCHECK(blink::features::IsPrerender2Enabled());
+  // This function is called from MojoBinderPolicyApplier, which should only be
+  // active during prerendering. It would be an error to call this while not
+  // prerendering, as it could mean an interface request is never resolved for
+  // an active page.
+  DCHECK(frame_tree()->is_prerendering());
+  auto* storage_partition_impl =
+      static_cast<StoragePartitionImpl*>(GetStoragePartition());
+  PrerenderHostRegistry* prerender_host_registry =
+      storage_partition_impl->GetPrerenderHostRegistry();
+  DCHECK(prerender_host_registry);
+  const int frame_tree_node_id = frame_tree()->root()->frame_tree_node_id();
+  // TODO(https://crbug.com/1126305): Pass a FinalStatus to CancelPrerendering()
+  // method when MojoInterface control, or IsInactiveAndDisallowActivation are
+  // called.
+  prerender_host_registry->AbandonHostAsync(
+      frame_tree_node_id, PrerenderHost::FinalStatus::kDestroyed);
 }
 
-void RenderFrameHostImpl::OnPrerenderedPageActivated() {
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kPrerender2));
-  DCHECK(is_prerendering_);
-  is_prerendering_ = false;
+void RenderFrameHostImpl::ActivateForPrerendering() {
+  DCHECK(blink::features::IsPrerender2Enabled());
 
-  // TODO(https://crbug.com/1132752): Inform `broker_` that the prerendered
-  // frame is activated.
+  // RenderFrameHostManager will swap the RenderFrameHostImpl and set the new
+  // one to kActive for the MPArch case.
+  if (blink::features::IsPrerenderWebContentsEnabled()) {
+    // Update the |lifecycle_state_| to kActive on activation.
+    DCHECK_EQ(lifecycle_state(), LifecycleStateImpl::kPrerendering);
+    SetLifecycleState(LifecycleStateImpl::kActive);
+  }
+
+  // TODO(https://crbug.com/1186796): Loosen the policies of the mojo capability
+  // control during dispatching the prerenderingchange event in the Blink.
+
+  DCHECK(!is_notifying_activation_for_prerendering_);
+  is_notifying_activation_for_prerendering_ = true;
+
+  // Notify the renderer of activation to update the prerendering state and
+  // dispatch the prerenderingchange event.
+  GetAssociatedLocalFrame()->ActivateForPrerendering();
+
+  for (auto& child : children_)
+    child->current_frame_host()->ActivateForPrerendering();
 }
 
 void RenderFrameHostImpl::BindMediaInterfaceFactoryReceiver(
@@ -7746,11 +8029,6 @@ void RenderFrameHostImpl::BindMediaMetricsProviderReceiver(
       std::move(receiver));
 }
 
-void RenderFrameHostImpl::CreateMediaPlayerHost(
-    mojo::PendingReceiver<media::mojom::MediaPlayerHost> receiver) {
-  delegate_->CreateMediaPlayerHostForRenderFrameHost(this, std::move(receiver));
-}
-
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)
 void RenderFrameHostImpl::BindMediaRemoterFactoryReceiver(
     mojo::PendingReceiver<media::mojom::RemoterFactory> receiver) {
@@ -7805,6 +8083,7 @@ void RenderFrameHostImpl::CreateDedicatedWorkerHostFactory(
       std::make_unique<DedicatedWorkerHostFactoryImpl>(
           worker_process_id,
           /*creator_render_frame_host_id=*/GetGlobalFrameRoutingId(),
+          /*creator_worker_token=*/base::nullopt,
           /*ancestor_render_frame_host_id=*/GetGlobalFrameRoutingId(),
           last_committed_origin_, isolation_info_,
           cross_origin_embedder_policy_, std::move(coep_reporter)),
@@ -7821,8 +8100,8 @@ void RenderFrameHostImpl::BindNFCReceiver(
 #if !defined(OS_ANDROID)
 void RenderFrameHostImpl::BindSerialService(
     mojo::PendingReceiver<blink::mojom::SerialService> receiver) {
-  if (!IsFeatureEnabled(blink::mojom::FeaturePolicyFeature::kSerial)) {
-    mojo::ReportBadMessage("Feature policy blocks access to Serial.");
+  if (!IsFeatureEnabled(blink::mojom::PermissionsPolicyFeature::kSerial)) {
+    mojo::ReportBadMessage("Permissions policy blocks access to Serial.");
     return;
   }
 
@@ -7849,8 +8128,10 @@ IdleManager* RenderFrameHostImpl::GetIdleManager() {
 
 void RenderFrameHostImpl::BindIdleManager(
     mojo::PendingReceiver<blink::mojom::IdleManager> receiver) {
-  if (!IsFeatureEnabled(blink::mojom::FeaturePolicyFeature::kIdleDetection)) {
-    mojo::ReportBadMessage("Feature policy blocks access to IdleDetection.");
+  if (!IsFeatureEnabled(
+          blink::mojom::PermissionsPolicyFeature::kIdleDetection)) {
+    mojo::ReportBadMessage(
+        "Permissions policy blocks access to IdleDetection.");
     return;
   }
 
@@ -7927,8 +8208,14 @@ void RenderFrameHostImpl::BindWebOTPServiceReceiver(
 
 void RenderFrameHostImpl::BindFederatedAuthRequestReceiver(
     mojo::PendingReceiver<blink::mojom::FederatedAuthRequest> receiver) {
-  DCHECK(base::FeatureList::IsEnabled(features::kWebID));
+  DCHECK(IsWebIDEnabled());
   FederatedAuthRequestImpl::Create(this, std::move(receiver));
+}
+
+void RenderFrameHostImpl::BindFederatedAuthResponseReceiver(
+    mojo::PendingReceiver<blink::mojom::FederatedAuthResponse> receiver) {
+  DCHECK(IsWebIDEnabled());
+  FederatedAuthResponseImpl::Create(this, std::move(receiver));
 }
 
 void RenderFrameHostImpl::BindRestrictedCookieManager(
@@ -7936,8 +8223,7 @@ void RenderFrameHostImpl::BindRestrictedCookieManager(
   static_cast<StoragePartitionImpl*>(GetProcess()->GetStoragePartition())
       ->CreateRestrictedCookieManager(
           network::mojom::RestrictedCookieManagerRole::SCRIPT,
-          GetLastCommittedOrigin(), isolation_info_.site_for_cookies(),
-          ComputeTopFrameOrigin(GetLastCommittedOrigin()),
+          GetLastCommittedOrigin(), GetIsolationInfoForSubresources(),
           /* is_service_worker = */ false, GetProcess()->GetID(), routing_id(),
           std::move(receiver), CreateCookieAccessObserver());
 }
@@ -8046,13 +8332,13 @@ void RenderFrameHostImpl::GetFontAccessManager(
                      std::move(receiver));
 }
 
-void RenderFrameHostImpl::GetNativeFileSystemManager(
-    mojo::PendingReceiver<blink::mojom::NativeFileSystemManager> receiver) {
+void RenderFrameHostImpl::GetFileSystemAccessManager(
+    mojo::PendingReceiver<blink::mojom::FileSystemAccessManager> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto* storage_partition =
       static_cast<StoragePartitionImpl*>(GetProcess()->GetStoragePartition());
-  auto* manager = storage_partition->GetNativeFileSystemManager();
-  manager->BindReceiver(NativeFileSystemManagerImpl::BindingContext(
+  auto* manager = storage_partition->GetFileSystemAccessManager();
+  manager->BindReceiver(FileSystemAccessManagerImpl::BindingContext(
                             GetLastCommittedOrigin(), GetLastCommittedURL(),
                             GetGlobalFrameRoutingId()),
                         std::move(receiver));
@@ -8069,13 +8355,16 @@ void RenderFrameHostImpl::CreateIDBFactory(
   GetProcess()->BindIndexedDB(GetLastCommittedOrigin(), std::move(receiver));
 }
 
+void RenderFrameHostImpl::CreateBucketManagerHost(
+    mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver) {
+  GetProcess()->BindBucketManagerHost(GetLastCommittedOrigin(),
+                                      std::move(receiver));
+}
+
 void RenderFrameHostImpl::CreatePermissionService(
     mojo::PendingReceiver<blink::mojom::PermissionService> receiver) {
-  if (!permission_service_context_)
-    permission_service_context_ =
-        std::make_unique<PermissionServiceContext>(this);
-
-  permission_service_context_->CreateService(std::move(receiver));
+  PermissionServiceContext::GetOrCreateForCurrentDocument(this)->CreateService(
+      std::move(receiver));
 }
 
 void RenderFrameHostImpl::GetAuthenticator(
@@ -8171,6 +8460,17 @@ RenderFrameHostImpl::CreateNavigationRequestForCommit(
     web_bundle_navigation_info = web_bundle_handle_->navigation_info()->Clone();
   }
 
+  std::unique_ptr<SubresourceWebBundleNavigationInfo>
+      subresource_web_bundle_navigation_info;
+  if (is_same_document && subresource_web_bundle_navigation_info_) {
+    // Propagate |subresource_web_bundle_navigation_info_| to NavigationRequest
+    // for same-document navigation. This will be passed to
+    // FrameNavigationEntry, and will be used for subsequent history
+    // navigations.
+    subresource_web_bundle_navigation_info =
+        subresource_web_bundle_navigation_info_->Clone();
+  }
+
   std::string method = "GET";
   if (is_same_document && !is_same_document_history_api_navigation) {
     // Preserve the HTTP method used by the last navigation if this is a
@@ -8195,7 +8495,8 @@ RenderFrameHostImpl::CreateNavigationRequestForCommit(
       std::move(referrer), transition, should_replace_current_entry, method,
       gesture, is_overriding_user_agent, redirects, original_request_url,
       page_state, std::move(coep_reporter),
-      std::move(web_bundle_navigation_info), http_status_code);
+      std::move(web_bundle_navigation_info),
+      std::move(subresource_web_bundle_navigation_info), http_status_code);
 }
 
 void RenderFrameHostImpl::BeforeUnloadTimeout() {
@@ -8206,14 +8507,14 @@ void RenderFrameHostImpl::BeforeUnloadTimeout() {
 }
 
 void RenderFrameHostImpl::SetLastCommittedSiteInfo(const GURL& url) {
-  // Since |url| has already committed, |origin_requests_isolation| below should
-  // be set to false.
+  // Since |url| has already committed, |origin_isolation_request| below should
+  // be set to kNone.
   SiteInfo site_info =
       url.is_empty()
           ? SiteInfo()
-          : SiteInstanceImpl::ComputeSiteInfo(
+          : SiteInfo::Create(
                 GetSiteInstance()->GetIsolationContext(),
-                UrlInfo(url, false /* origin_requests_isolation */),
+                UrlInfo(url, UrlInfo::OriginIsolationRequest::kNone),
                 GetSiteInstance()->GetCoopCoepCrossOriginIsolatedInfo());
 
   if (last_committed_site_info_ == site_info)
@@ -8221,7 +8522,7 @@ void RenderFrameHostImpl::SetLastCommittedSiteInfo(const GURL& url) {
 
   if (!last_committed_site_info_.site_url().is_empty()) {
     RenderProcessHostImpl::RemoveFrameWithSite(
-        frame_tree()->controller()->GetBrowserContext(), GetProcess(),
+        frame_tree()->controller().GetBrowserContext(), GetProcess(),
         last_committed_site_info_);
   }
 
@@ -8229,54 +8530,19 @@ void RenderFrameHostImpl::SetLastCommittedSiteInfo(const GURL& url) {
 
   if (!last_committed_site_info_.site_url().is_empty()) {
     RenderProcessHostImpl::AddFrameWithSite(
-        frame_tree()->controller()->GetBrowserContext(), GetProcess(),
+        frame_tree()->controller().GetBrowserContext(), GetProcess(),
         last_committed_site_info_);
   }
 }
 
 #if defined(OS_ANDROID)
-
-class RenderFrameHostImpl::JavaInterfaceProvider
-    : public service_manager::mojom::InterfaceProvider {
- public:
-  using BindCallback =
-      base::RepeatingCallback<void(const std::string&,
-                                   mojo::ScopedMessagePipeHandle)>;
-
-  JavaInterfaceProvider(
-      const BindCallback& bind_callback,
-      mojo::PendingReceiver<service_manager::mojom::InterfaceProvider> receiver)
-      : bind_callback_(bind_callback), receiver_(this, std::move(receiver)) {}
-  ~JavaInterfaceProvider() override = default;
-
- private:
-  // service_manager::mojom::InterfaceProvider:
-  void GetInterface(const std::string& interface_name,
-                    mojo::ScopedMessagePipeHandle handle) override {
-    bind_callback_.Run(interface_name, std::move(handle));
-  }
-
-  const BindCallback bind_callback_;
-  mojo::Receiver<service_manager::mojom::InterfaceProvider> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(JavaInterfaceProvider);
-};
-
 base::android::ScopedJavaLocalRef<jobject>
 RenderFrameHostImpl::GetJavaRenderFrameHost() {
   RenderFrameHostAndroid* render_frame_host_android =
       static_cast<RenderFrameHostAndroid*>(
           GetUserData(kRenderFrameHostAndroidKey));
   if (!render_frame_host_android) {
-    mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
-        interface_provider_remote;
-    java_interface_registry_ = std::make_unique<JavaInterfaceProvider>(
-        base::BindRepeating(
-            &RenderFrameHostImpl::ForwardGetInterfaceToRenderFrame,
-            weak_ptr_factory_.GetWeakPtr()),
-        interface_provider_remote.InitWithNewPipeAndPassReceiver());
-    render_frame_host_android =
-        new RenderFrameHostAndroid(this, std::move(interface_provider_remote));
+    render_frame_host_android = new RenderFrameHostAndroid(this);
     SetUserData(kRenderFrameHostAndroidKey,
                 base::WrapUnique(render_frame_host_android));
   }
@@ -8293,12 +8559,6 @@ service_manager::InterfaceProvider* RenderFrameHostImpl::GetJavaInterfaces() {
     java_interfaces_->Bind(std::move(provider));
   }
   return java_interfaces_.get();
-}
-
-void RenderFrameHostImpl::ForwardGetInterfaceToRenderFrame(
-    const std::string& interface_name,
-    mojo::ScopedMessagePipeHandle pipe) {
-  GetRemoteInterfaces()->GetInterfaceByName(interface_name, std::move(pipe));
 }
 #endif
 
@@ -8331,10 +8591,9 @@ void RenderFrameHostImpl::SetVisibilityForChildViews(bool visible) {
       visible));
 }
 
-mojom::FrameNavigationControl* RenderFrameHostImpl::GetNavigationControl() {
-  if (!navigation_control_)
-    GetRemoteAssociatedInterfaces()->GetInterface(&navigation_control_);
-  return navigation_control_.get();
+mojom::Frame* RenderFrameHostImpl::GetMojomFrameInRenderer() {
+  DCHECK(frame_);
+  return frame_.get();
 }
 
 bool RenderFrameHostImpl::ShouldBypassSecurityChecksForErrorPage(
@@ -8344,7 +8603,7 @@ bool RenderFrameHostImpl::ShouldBypassSecurityChecksForErrorPage(
     *should_commit_unreachable_url = false;
 
   if (SiteIsolationPolicy::IsErrorPageIsolationEnabled(is_main_frame())) {
-    if (GetSiteInstance()->GetSiteInfo() == SiteInfo::CreateForErrorPage()) {
+    if (GetSiteInstance()->GetSiteInfo().is_error_page()) {
       if (should_commit_unreachable_url)
         *should_commit_unreachable_url = true;
 
@@ -8382,12 +8641,16 @@ RenderFrameHostImpl::CreateMessageFilterForAssociatedReceiver(
 network::mojom::ClientSecurityStatePtr
 RenderFrameHostImpl::BuildClientSecurityState() const {
   auto client_security_state = network::mojom::ClientSecurityState::New();
-  client_security_state->is_web_secure_context = is_web_secure_context_;
-  client_security_state->cross_origin_embedder_policy =
-      cross_origin_embedder_policy_;
-  client_security_state->ip_address_space = ip_address_space_;
+
+  const PolicyContainerPolicies& policies = policy_container_host_->policies();
+  client_security_state->is_web_secure_context = policies.is_web_secure_context;
+  client_security_state->ip_address_space = policies.ip_address_space;
+
   client_security_state->private_network_request_policy =
       private_network_request_policy_;
+  client_security_state->cross_origin_embedder_policy =
+      cross_origin_embedder_policy_;
+
   return client_security_state;
 }
 
@@ -8517,9 +8780,6 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
   // banned URLs into the navigation controller in the first place.
   process->FilterURL(false, &params->url);
   process->FilterURL(true, &params->referrer->url);
-  for (auto& redirect : params->redirects) {
-    process->FilterURL(false, &redirect);
-  }
 
   // Without this check, the renderer can trick the browser into using
   // filenames it can't access in a future session restore.
@@ -8627,7 +8887,9 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   if (navigation_request &&
       navigation_request->common_params().url != params->url &&
       is_same_document_navigation) {
-    same_document_navigation_request_ = std::move(navigation_request);
+    same_document_navigation_requests_[navigation_request->commit_params()
+                                           .navigation_token] =
+        std::move(navigation_request);
   }
 
   // Set is loading to true now if it has not been set yet. This happens for
@@ -8649,21 +8911,33 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     // create one in order to properly issue DidFinishNavigation calls to
     // WebContentsObservers.
     DCHECK(is_initial_empty_commit || is_same_document_navigation);
+
+    // Fill the redirect chain for the NavigationRequest. Since this is only for
+    // initial empty commits or same-document navigation, we should just push
+    // the client-redirect URL (if it is a client redirect) and the final URL.
+    std::vector<GURL> redirects;
+    if (is_same_document_navigation &&
+        same_document_params->is_client_redirect) {
+      // If it is a same-document navigation, it might be a client redirect, in
+      // which case we should put the previous URL at the front of the redirect
+      // chain.
+      redirects.push_back(GetLastCommittedURL());
+    }
+    redirects.push_back(params->url);
+
     // TODO(https://crbug.com/1131832): Do not use |params| to get the values,
     // depend on values known at commit time instead.
     navigation_request = CreateNavigationRequestForCommit(
         params->url, params->origin, params->referrer.Clone(),
         params->transition, params->should_replace_current_entry,
-        params->gesture, params->redirects, params->original_request_url,
-        params->page_state, is_same_document_navigation,
+        params->gesture, redirects, params->url, params->page_state,
+        is_same_document_navigation,
         same_document_params &&
             same_document_params->is_history_api_navigation);
   }
 
   DCHECK(navigation_request);
   DCHECK(navigation_request->IsNavigationStarted());
-  VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
-      navigation_request.get(), *params);
   VerifyThatBrowserAndRendererCalculatedDidCommitParamsMatch(
       navigation_request.get(), *params, same_document_params.Clone());
 
@@ -8677,8 +8951,6 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
                                            NavigationGestureUser);
 
   UpdateSiteURL(params->url, params->url_is_unreachable);
-  if (!is_same_document_navigation)
-    UpdateRenderProcessHostFramePriorities();
 
   // TODO(arthursonzogni): Updating this flag for same-document or bfcache
   // navigation isn't right. This should be moved to DidCommitNewDocument().
@@ -8686,9 +8958,12 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
 
   isolation_info_ = navigation_request->isolation_info_for_subresources();
 
+  // Navigations in the same document, or navigations that activate an existing
+  // bfcached or prerendered document, do not create a new document.
   bool created_new_document =
       !is_same_document_navigation &&
-      !navigation_request->IsServedFromBackForwardCache();
+      !navigation_request->IsServedFromBackForwardCache() &&
+      !navigation_request->IsPrerenderedPageActivation();
 
   // TODO(crbug.com/936696): Remove this after we have RenderDocument.
   // IsWaitingToCommit can be false inside DidCommitNavigationInternal only in
@@ -8703,7 +8978,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
 
   if (navigated_to_new_document) {
     TRACE_EVENT1("content", "DidCommitProvisionalLoad_StateResetForNewDocument",
-                 "render_frame_host", this);
+                 "render_frame_host", static_cast<void*>(this));
 
     if (navigation_request->IsInMainFrame()) {
       render_view_host_->ResetPerPageState();
@@ -8711,13 +8986,15 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     last_committed_cross_document_navigation_id_ =
         navigation_request->GetNavigationId();
 
-    if (IsCurrent() && !committed_speculative_rfh_before_navigation_commit_) {
-      // Clear all the user data associated with the non speculative
-      // RenderFrameHost when the navigation is a cross-document navigation not
-      // served from the back-forward cache. Make sure the data doesn't get
-      // cleared for the cases when the RenderFrameHost commits before the
-      // navigation commits. This happens when the current RenderFrameHost
-      // crashes before navigating to a new URL.
+    if (lifecycle_state() != LifecycleStateImpl::kPendingCommit &&
+        !committed_speculative_rfh_before_navigation_commit_) {
+      DCHECK_NE(lifecycle_state(), LifecycleStateImpl::kSpeculative);
+      // Clear all the user data associated with the non-pending commit
+      // RenderFrameHosts because the navigation has created a new document.
+      // Make sure the data doesn't get cleared for the cases when the
+      // RenderFrameHost commits before the navigation commits. This happens
+      // when the current RenderFrameHost crashes before navigating to a new
+      // URL.
       document_associated_data_.ClearAllUserData();
     }
 
@@ -8763,10 +9040,11 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   // early post-crash CommitPending() call.
   committed_speculative_rfh_before_navigation_commit_ = false;
 
-  // TODO(arthursonzogni): Updating this flag for same-document or bfcache
-  // navigation doesn't seem right. This should likely be executed in
+  // TODO(arthursonzogni): Updating this flag for same-document, bfcache, or
+  // prerender navigation doesn't seem right. This should likely be executed in
   // DidCommitNewDocument().
-  if (IsBackForwardCacheEnabled()) {
+  if (IsBackForwardCacheEnabled() ||
+      blink::features::IsPrerenderMPArchEnabled()) {
     // Store the Commit params so they can be reused if the page is ever
     // restored from the BackForwardCache.
     last_commit_params_ = std::move(params);
@@ -8775,10 +9053,6 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   return true;
 }
 
-// TODO(arthursonzogni): Below, many NavigationRequest's objects are passed from
-// the navigation to the new document. Consider grouping them in a single
-// struct.
-//
 // TODO(arthursonzogni): Investigate what must be done when
 // navigation_request->IsWaitingToCommit() is false here.
 void RenderFrameHostImpl::DidCommitNewDocument(
@@ -8788,10 +9062,16 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   // new ones.
   DCHECK(!navigation_request->IsServedFromBackForwardCache());
 
-  ResetFeaturePolicy();
-  active_sandbox_flags_ = params.sandbox_flags;
-  feature_policy_header_ = params.feature_policy_header;
-  feature_policy_->SetHeaderPolicy(params.feature_policy_header);
+  ResetPermissionsPolicy();
+  // There are two type of navigations committing new documents:
+  // 1. The regular ones. They can change sandbox_flags.
+  // 2. The synchronous re-navigation to about:blank. A second about:blank
+  //    document commits on top of initial one. No properties are changed,
+  //    including sandbox_flags.
+  if (navigation_request->IsWaitingToCommit())
+    active_sandbox_flags_ = navigation_request->SandboxFlagsToCommit();
+  permissions_policy_header_ = params.permissions_policy_header;
+  permissions_policy_->SetHeaderPolicy(params.permissions_policy_header);
   document_policy_ = blink::DocumentPolicy::CreateWithHeaderPolicy({
       params.document_policy_header,  // document_policy_header
       {},                             // endpoint_map
@@ -8806,29 +9086,38 @@ void RenderFrameHostImpl::DidCommitNewDocument(
 
   dom_content_loaded_ = false;
 
-  is_error_page_ = (navigation_request->GetNetErrorCode() != net::OK);
-
   DCHECK(params.embedding_token.has_value());
   SetEmbeddingToken(params.embedding_token.value());
-
-  // TODO(arthursonzogni): Stop relying on DidCommitProvisionalLoadParams. Use
-  // the NavigationRequest instead. The browser process doesn't need to rely on
-  // the renderer process.
-  last_http_status_code_ = params.http_status_code;
 
   renderer_reported_scheduler_tracked_features_ = 0;
   browser_reported_scheduler_tracked_features_ = 0;
 
+  // TODO(https://crbug.com/888079): The origin computed from the browser must
+  // match the one reported from the renderer process.
+  VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(navigation_request,
+                                                             params);
+
+  TakeNewDocumentPropertiesFromNavigation(navigation_request);
+
+  CrossOriginOpenerPolicyReporter::InstallAccessMonitorsIfNeeded(
+      frame_tree_node_);
+
+  // Reset the salt so that media device IDs are reset for the new document
+  // if necessary.
+  media_device_id_salt_base_ = BrowserContext::CreateRandomMediaDeviceIDSalt();
+
+  accessibility_fatal_error_count_ = 0;
+}
+
+// TODO(arthursonzogni): Below, many NavigationRequest's objects are passed from
+// the navigation to the new document. Consider grouping them in a single
+// struct.
+void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
+    NavigationRequest* navigation_request) {
+  is_error_page_ = (navigation_request->GetNetErrorCode() != net::OK);
+
   cross_origin_opener_policy_ =
       navigation_request->coop_status().current_coop();
-  if (navigation_request->IsWaitingToCommit()) {
-    is_web_secure_context_ = navigation_request->is_web_secure_context();
-    ip_address_space_ = navigation_request->ip_address_space();
-    private_network_request_policy_ =
-        navigation_request->private_network_request_policy();
-    cross_origin_embedder_policy_ =
-        navigation_request->cross_origin_embedder_policy();
-  }
 
   coop_reporter_ = navigation_request->coop_status().TakeCoopReporter();
   virtual_browsing_context_group_ =
@@ -8837,15 +9126,6 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   // Store the required CSP (it will be used by the AncestorThrottle if
   // this frame embeds a subframe when that subframe navigates).
   required_csp_ = navigation_request->TakeRequiredCSP();
-
-  // TODO(https://crbug.com/1041376): The sandbox flags computed from the
-  // browser must match with the ones computed from the renderer process.
-  // Ultimately, the one from the browser process should supersede the
-  // renderer one. The browser will just "push" the correct value.
-  if (navigation_request->state() >=
-      NavigationRequest::NavigationState::WILL_PROCESS_RESPONSE) {
-    DCHECK_EQ(params.sandbox_flags, navigation_request->SandboxFlagsToCommit());
-  }
 
   coep_reporter_ = navigation_request->TakeCoepReporter();
   if (coep_reporter_) {
@@ -8859,15 +9139,6 @@ void RenderFrameHostImpl::DidCommitNewDocument(
         FROM_HERE,
         base::BindOnce(&RenderFrameHostImpl::BindReportingObserver,
                        weak_ptr_factory_.GetWeakPtr(), std::move(receiver)));
-  }
-
-  // We move the PolicyContainerHost of |navigation_request| into the
-  // RenderFrameHost unless this is the initial, "fake" navigation to
-  // about:blank (because otherwise we would overwrite the PolicyContainerHost
-  // of the new document, inherited at RenderFrameHost creation time, with an
-  // empty PolicyContainerHost).
-  if (navigation_request->IsWaitingToCommit()) {
-    policy_container_host_ = navigation_request->TakePolicyContainerHost();
   }
 
   // Set the state whether this navigation is to an MHTML document, since there
@@ -8897,37 +9168,50 @@ void RenderFrameHostImpl::DidCommitNewDocument(
           frame_tree_node_->IsMainFrame(), navigation_request->common_params(),
           data_url_as_string);
 
-  RecordWebPlatformSecurityMetrics(this, navigation_request);
-
-  CrossOriginOpenerPolicyReporter::InstallAccessMonitorsIfNeeded(
-      frame_tree_node_);
-
-  // Reset the salt so that media device IDs are reset for the new document
-  // if necessary.
-  media_device_id_salt_base_ = BrowserContext::CreateRandomMediaDeviceIDSalt();
-
   // If we still have a PeakGpuMemoryTracker, then the loading it was observing
   // never completed. Cancel it's callback so that we don't report partial
   // loads to UMA.
-  if (loading_mem_tracker_)
+  if (loading_mem_tracker_) {
     loading_mem_tracker_->Cancel();
+  }
+
   // Main Frames will create the tracker, which will be triggered after we
   // receive DidStopLoading.
-  // TODO(arthursonzogni): Updating this flag for same-document or bfcache
-  // navigation isn't right. This should be moved to DidCommitNewDocument().
   loading_mem_tracker_ = navigation_request->TakePeakGpuMemoryTracker();
 
-  accessibility_fatal_error_count_ = 0;
+  // Only take some properties if this is not the synchronous initial
+  // `about:blank` navigation, because the values set at construction time
+  // should remain unmodified.
+  if (!navigation_request->IsWaitingToCommit()) {
+    return;
+  }
+
+  private_network_request_policy_ =
+      navigation_request->private_network_request_policy();
+  cross_origin_embedder_policy_ =
+      navigation_request->cross_origin_embedder_policy();
+
+  // We move the PolicyContainerHost of |navigation_request| into the
+  // RenderFrameHost unless this is the initial, "fake" navigation to
+  // about:blank (because otherwise we would overwrite the PolicyContainerHost
+  // of the new document, inherited at RenderFrameHost creation time, with an
+  // empty PolicyContainerHost).
+  SetPolicyContainerHost(navigation_request->TakePolicyContainerHost());
+
+  if (navigation_request->response())
+    last_response_head_ = navigation_request->response()->Clone();
 }
 
 void RenderFrameHostImpl::OnSameDocumentCommitProcessed(
-    int64_t navigation_id,
+    const base::UnguessableToken& navigation_token,
     bool should_replace_current_entry,
     blink::mojom::CommitResult result) {
-  // If the NavigationRequest was deleted, another navigation commit started to
-  // be processed. Let the latest commit go through and stop doing anything.
-  if (!same_document_navigation_request_ ||
-      same_document_navigation_request_->GetNavigationId() != navigation_id) {
+  auto request = same_document_navigation_requests_.find(navigation_token);
+  if (request == same_document_navigation_requests_.end()) {
+    // OnSameDocumentCommitProcessed will be called after DidCommitNavigation on
+    // successfull same-document commits, so |request| should already be deleted
+    // by the time we got here.
+    DCHECK_EQ(result, blink::mojom::CommitResult::Ok);
     return;
   }
 
@@ -8935,62 +9219,14 @@ void RenderFrameHostImpl::OnSameDocumentCommitProcessed(
     // The navigation could not be committed as a same-document navigation.
     // Restart the navigation cross-document.
     frame_tree_node_->navigator().RestartNavigationAsCrossDocument(
-        std::move(same_document_navigation_request_));
+        std::move(request->second));
+    return;
   }
 
-  if (result == blink::mojom::CommitResult::Aborted)
-    same_document_navigation_request_.reset();
-}
-
-std::unique_ptr<base::trace_event::TracedValue>
-RenderFrameHostImpl::CommitAsTracedValue(
-    const mojom::DidCommitProvisionalLoadParams& params) const {
-  auto value = std::make_unique<base::trace_event::TracedValue>();
-
-  // TODO(nasko): Move the process lock into RenderProcessHost.
-  value->SetString(
-      "process lock",
-      ChildProcessSecurityPolicyImpl::GetInstance()
-          ->GetProcessLock(agent_scheduling_group_.GetProcess()->GetID())
-          .ToString());
-
-  value->SetInteger("item_sequence_number", params.item_sequence_number);
-  value->SetInteger("document_sequence_number",
-                    params.document_sequence_number);
-  value->SetString("url", params.url.spec());
-  if (!params.base_url.is_empty()) {
-    value->SetString("base_url", params.base_url.possibly_invalid_spec());
-  }
-  value->SetInteger("transition", params.transition);
-  value->BeginDictionary("referrer");
-  value->SetString("url", params.referrer->url.spec());
-  value->SetInteger("policy", static_cast<int>(params.referrer->policy));
-  value->EndDictionary();
-  value->SetBoolean("should_update_history", params.should_update_history);
-  value->SetString("contents_mime_type", params.contents_mime_type);
-
-  value->SetBoolean("intended_as_new_entry", params.intended_as_new_entry);
-  value->SetBoolean("did_create_new_entry", params.did_create_new_entry);
-  value->SetBoolean("should_replace_current_entry",
-                    params.should_replace_current_entry);
-  value->SetString("method", params.method);
-  value->SetInteger("post_id", params.post_id);
-  value->SetInteger("http_status_code", params.http_status_code);
-  value->SetBoolean("url_is_unreachable", params.url_is_unreachable);
-  value->SetString("original_request_url", params.original_request_url.spec());
-  value->SetBoolean("is_overriding_user_agent",
-                    params.is_overriding_user_agent);
-  value->SetBoolean("history_list_was_cleared",
-                    params.history_list_was_cleared);
-  value->SetString("origin", params.origin.GetDebugString());
-  value->SetBoolean("has_potentially_trustworthy_unique_origin",
-                    params.has_potentially_trustworthy_unique_origin);
-  value->SetInteger("request_id", params.request_id);
-  value->SetString("navigation_token", params.navigation_token.ToString());
-  if (params.embedding_token)
-    value->SetString("embedding_token", params.embedding_token->ToString());
-
-  return value;
+  DCHECK_EQ(result, blink::mojom::CommitResult::Aborted);
+  // Note: if the commit was successful, the NavigationRequest is moved in
+  // DidCommitSameDocumentNavigation.
+  same_document_navigation_requests_.erase(navigation_token);
 }
 
 void RenderFrameHostImpl::MaybeGenerateCrashReport(
@@ -8999,9 +9235,11 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
   if (!last_committed_url_.SchemeIsHTTPOrHTTPS())
     return;
 
-  // Only generate reports for local root frames.
-  if (!frame_tree_node_->IsMainFrame() && !IsCrossProcessSubframe())
+  // Only generate reports for local root frames that are in a different
+  // process than their parent.
+  if (!is_main_frame() && !IsCrossProcessSubframe())
     return;
+  DCHECK(is_local_root());
 
   // Check the termination status to see if a crash occurred (and potentially
   // determine the |reason| for the crash).
@@ -9080,16 +9318,18 @@ void RenderFrameHostImpl::SendCommitFailedNavigation(
     mojom::CommitNavigationParamsPtr commit_params,
     bool has_stale_copy_in_cache,
     int32_t error_code,
+    int32_t extended_error_code,
     const base::Optional<std::string>& error_page_content,
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
-        subresource_loader_factories) {
+        subresource_loader_factories,
+    blink::mojom::PolicyContainerPtr policy_container) {
   DCHECK(navigation_client && navigation_request);
   DCHECK_NE(GURL(), common_params->url);
   navigation_client->CommitFailedNavigation(
       std::move(common_params), std::move(commit_params),
-      has_stale_copy_in_cache, error_code,
+      has_stale_copy_in_cache, error_code, extended_error_code,
       navigation_request->GetResolveErrorInfo(), error_page_content,
-      std::move(subresource_loader_factories),
+      std::move(subresource_loader_factories), std::move(policy_container),
       BuildCommitFailedNavigationCallback(navigation_request));
 }
 
@@ -9104,16 +9344,17 @@ void RenderFrameHostImpl::DidCommitNavigation(
   // BackForwardCacheImpl::CanStoreRenderFrameHost prevents placing the pages
   // with in-flight navigation requests in the back-forward cache and it's not
   // possible to start/commit a new one after the RenderFrameHost is in the
-  // BackForwardCache (see the check IsInactiveAndDisallowReactivation in
+  // BackForwardCache (see the check IsInactiveAndDisallowActivation in
   // RFH::DidCommitSameDocumentNavigation() and RFH::BeginNavigation()) so it
   // isn't possible to get a DidCommitNavigation IPC from the renderer in
   // kInBackForwardCache state.
   DCHECK(!IsInBackForwardCache());
 
   std::unique_ptr<NavigationRequest> request;
-  // A `committing_navigation_request` is not present only in the case of
-  // committing an initial empty document in a frame. In all other cases it
-  // should be non-null and present in the map of NavigationRequests.
+  // TODO(https://crbug.com/778318): a `committing_navigation_request` is not
+  // present if and only if this is a synchronous re-navigation to about:blank
+  // initiated by Blink. In all other cases it should be non-null and present in
+  // the map of NavigationRequests.
   if (committing_navigation_request) {
     committing_navigation_request->IgnoreCommitInterfaceDisconnection();
     if (!MaybeInterceptCommitCallback(committing_navigation_request, &params,
@@ -9145,8 +9386,7 @@ void RenderFrameHostImpl::DidCommitNavigation(
   RenderProcessHost* process = GetProcess();
 
   TRACE_EVENT2("navigation", "RenderFrameHostImpl::DidCommitProvisionalLoad",
-               "rfh", base::trace_event::ToTracedValue(this), "params",
-               CommitAsTracedValue(*params));
+               "rfh", this, "params", params);
 
   // If we're waiting for a cross-site beforeunload completion callback from
   // this renderer and we receive a Navigate message from the main frame, then
@@ -9310,11 +9550,11 @@ bool RenderFrameHostImpl::MaybeInterceptCommitCallback(
 }
 
 void RenderFrameHostImpl::PostMessageEvent(
-    const base::Optional<base::UnguessableToken>& source_token,
-    const base::string16& source_origin,
-    const base::string16& target_origin,
+    const base::Optional<blink::RemoteFrameToken>& source_token,
+    const std::u16string& source_origin,
+    const std::u16string& target_origin,
     blink::TransferableMessage message) {
-  DCHECK(render_frame_created_);
+  DCHECK(is_render_frame_created());
 
   GetAssociatedLocalFrame()->PostMessageEvent(
       source_token, source_origin, target_origin, std::move(message));
@@ -9354,7 +9594,7 @@ RenderFrameHostImpl::MaybeCreateWebBundleHandleTracker() {
 }
 
 RenderWidgetHostImpl* RenderFrameHostImpl::GetLocalRenderWidgetHost() const {
-  if (!parent_)
+  if (is_main_frame())
     return render_view_host_->GetWidget();
   else
     return owned_render_widget_host_.get();
@@ -9418,6 +9658,11 @@ void RenderFrameHostImpl::LogCannotCommitUrlCrashKeys(
       base::debug::AllocateCrashKeyString("is_cross_process_subframe",
                                           base::debug::CrashKeySize::Size32),
       bool_to_crash_key(IsCrossProcessSubframe()));
+
+  base::debug::SetCrashKeyString(
+      base::debug::AllocateCrashKeyString("is_local_root",
+                                          base::debug::CrashKeySize::Size32),
+      bool_to_crash_key(is_local_root()));
 
   base::debug::SetCrashKeyString(
       base::debug::AllocateCrashKeyString("site_lock",
@@ -9540,14 +9785,11 @@ const std::string CalculateMethod(
 }
 
 bool DoBaseURLExpectationsMatch(const GURL& renderer_base_url,
-                                const net::Error& net_error_code) {
+                                bool is_error_page) {
   // base_url value is currently only used in the browser side to check if a
   // navigation results in an error page or not in
-  // NavigationRequest::DidCommitNavigation. This can be known by just checking
-  // for the net error code value instead, as all navigations that result in an
-  // error page should be known by the browser side before committing.
-  if (renderer_base_url == kUnreachableWebDataURL &&
-      net_error_code == net::OK) {
+  // NavigationRequest::DidCommitNavigation.
+  if (renderer_base_url == kUnreachableWebDataURL && !is_error_page) {
     return false;
   }
   // Note: base_url might be set in |params| in other cases (e.g. if a page has
@@ -9559,10 +9801,11 @@ bool DoBaseURLExpectationsMatch(const GURL& renderer_base_url,
 
 bool CalculateURLIsUnreachable(
     NavigationRequest* request,
+    bool is_error_page,
     bool is_loaded_from_load_data_with_base_url_and_unreachable_url) {
   // url_is_unreachable should only be true in two cases:
   // 1) The navigation is for an error page
-  if (request->GetNetErrorCode() != net::OK)
+  if (is_error_page)
     return true;
   // 2) This is a main frame navigation to a data: URL document with a base_url
   // (either an initial load or a same-document navigation).
@@ -9588,10 +9831,15 @@ int CalculateHTTPStatusCode(NavigationRequest* request,
   // committed navigation.
   if (request->IsSameDocument())
     return last_http_status_code;
-  // Navigations that are served from the back/forward cache will always have
-  // the HTTP status code set to 200.
-  if (request->IsServedFromBackForwardCache())
+  // Navigations that are served from the back/forward cache or that are
+  // prerendered will always have the HTTP status code set to 200.
+  //
+  // TODO(https://crbug.com/1170277): Navigations should actually return the
+  // last HTTP status code of the RenderFrameHost.
+  if (request->IsServedFromBackForwardCache() ||
+      request->IsPrerenderedPageActivation()) {
     return 200;
+  }
   // The HTTP status code is not set if we never received any HTTP response for
   // the navigation.
   const int request_response_code = request->commit_params().http_response_code;
@@ -9608,6 +9856,11 @@ bool ShouldVerify(const std::string& param) {
   return GetFieldTrialParamByFeatureAsBool(features::kVerifyDidCommitParams,
                                            param, false);
 #endif
+}
+
+void LogVerifyDidCommitParamsDifference(
+    VerifyDidCommitParamsDifference difference) {
+  UMA_HISTOGRAM_ENUMERATION("Navigation.VerifyDidCommitParams", difference);
 }
 
 void RenderFrameHostImpl::
@@ -9632,14 +9885,22 @@ void RenderFrameHostImpl::
   // - is_overriding_user_agent
   // - http_status_code
   // - should_update_history
+  // - gesture
   // TODO(crbug.com/1131832): Verify more params.
   const GURL& browser_base_url = request->common_params().base_url_for_data_url;
+  // We can know if we're going to be in an error page after this navigation
+  // if the net error code is not net::OK, or if we're doing a same-document
+  // navigation on an error page (only possible for renderer-initiated
+  // navigations).
+  const bool is_error_page = (request->GetNetErrorCode() != net::OK ||
+                              (is_error_page_ && request->IsSameDocument()));
 
   const bool browser_url_is_unreachable = CalculateURLIsUnreachable(
-      request, is_loaded_from_load_data_with_base_url_and_unreachable_url_);
+      request, is_error_page,
+      is_loaded_from_load_data_with_base_url_and_unreachable_url_);
 
   const bool base_url_expectations_match =
-      DoBaseURLExpectationsMatch(params.base_url, request->GetNetErrorCode());
+      DoBaseURLExpectationsMatch(params.base_url, is_error_page);
 
   const bool is_same_document_navigation = !!same_document_params;
   const bool is_same_document_history_api_navigation =
@@ -9670,6 +9931,12 @@ void RenderFrameHostImpl::
   const bool browser_should_update_history =
       !browser_url_is_unreachable && browser_http_status_code != 404;
 
+  // Gesture will always be set to the CommonNavigationParams'
+  // has_user_gesture value.
+  const bool browser_gesture = request->common_params().has_user_gesture;
+  const bool renderer_gesture =
+      (params.gesture == NavigationGesture::NavigationGestureUser);
+
   if ((!ShouldVerify("intended_as_new_entry") ||
        request->commit_params().intended_as_new_entry ==
            params.intended_as_new_entry) &&
@@ -9683,7 +9950,8 @@ void RenderFrameHostImpl::
       (!ShouldVerify("http_status_code") ||
        browser_http_status_code == params.http_status_code) &&
       (!ShouldVerify("should_update_history") ||
-       browser_should_update_history == params.should_update_history)) {
+       browser_should_update_history == params.should_update_history) &&
+      (!ShouldVerify("gesture") || browser_gesture == renderer_gesture)) {
     return;
   }
 
@@ -9755,6 +10023,10 @@ void RenderFrameHostImpl::
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "renderer_suh",
                         params.should_update_history);
 
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "browser_gesture", browser_gesture);
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "renderer_gesture",
+                        renderer_gesture);
+
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_same_document",
                         is_same_document_navigation);
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_history_api",
@@ -9765,13 +10037,14 @@ void RenderFrameHostImpl::
                         !frame_tree_node_->IsMainFrame());
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_form_submission",
                         request->IsFormSubmission());
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_error_page", is_error_page);
   SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", "net_error",
                           request->GetNetErrorCode());
 
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_server_redirect",
                         request->WasServerRedirect());
   SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", "redirects_size",
-                          params.redirects.size());
+                          request->GetRedirectChain().size());
 
   SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", "entry_offset",
                           request->GetNavigationEntryOffset());
@@ -9796,10 +10069,10 @@ void RenderFrameHostImpl::
                         params.url == kUnreachableWebDataURL);
 
   SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", "original_req_url",
-                             params.original_request_url.spec());
-  SCOPED_CRASH_KEY_BOOL(
-      "VerifyDidCommit", "original_same_doc",
-      params.original_request_url.EqualsIgnoringRef(GetLastCommittedURL()));
+                             request->commit_params().original_url.spec());
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "original_same_doc",
+                        request->commit_params().original_url.EqualsIgnoringRef(
+                            GetLastCommittedURL()));
 
   SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", "last_committed_url",
                              GetLastCommittedURL().spec());
@@ -9832,11 +10105,53 @@ void RenderFrameHostImpl::
             params.intended_as_new_entry);
   DCHECK_EQ(browser_method, params.method);
   DCHECK_EQ(browser_url_is_unreachable, params.url_is_unreachable);
+  DCHECK(base_url_expectations_match);
   DCHECK_EQ(browser_post_id, params.post_id);
   DCHECK_EQ(browser_is_overriding_user_agent, params.is_overriding_user_agent);
   DCHECK_EQ(browser_http_status_code, params.http_status_code);
   DCHECK_EQ(browser_should_update_history, params.should_update_history);
-  DCHECK(base_url_expectations_match);
+  DCHECK_EQ(browser_gesture, renderer_gesture);
+
+  // Log histograms to trigger Chrometto slow reports, allowing us to see traces
+  // to analyze what happened in these navigations.
+  if (request->commit_params().intended_as_new_entry !=
+      params.intended_as_new_entry) {
+    LogVerifyDidCommitParamsDifference(
+        VerifyDidCommitParamsDifference::kIntendedAsNewEntry);
+  }
+  if (browser_method != params.method) {
+    LogVerifyDidCommitParamsDifference(
+        VerifyDidCommitParamsDifference::kMethod);
+  }
+  if (browser_url_is_unreachable != params.url_is_unreachable) {
+    LogVerifyDidCommitParamsDifference(
+        VerifyDidCommitParamsDifference::kURLIsUnreachable);
+  }
+  if (!base_url_expectations_match) {
+    LogVerifyDidCommitParamsDifference(
+        VerifyDidCommitParamsDifference::kBaseURL);
+  }
+  if (browser_post_id != params.post_id) {
+    LogVerifyDidCommitParamsDifference(
+        VerifyDidCommitParamsDifference::kPostID);
+  }
+  if (browser_is_overriding_user_agent != params.is_overriding_user_agent) {
+    LogVerifyDidCommitParamsDifference(
+        VerifyDidCommitParamsDifference::kIsOverridingUserAgent);
+  }
+  if (browser_http_status_code != params.http_status_code) {
+    LogVerifyDidCommitParamsDifference(
+        VerifyDidCommitParamsDifference::kHTTPStatusCode);
+  }
+  if (browser_should_update_history != params.should_update_history) {
+    LogVerifyDidCommitParamsDifference(
+        VerifyDidCommitParamsDifference::kShouldUpdateHistory);
+  }
+  if (browser_gesture != renderer_gesture) {
+    LogVerifyDidCommitParamsDifference(
+        VerifyDidCommitParamsDifference::kGesture);
+  }
+
   base::debug::DumpWithoutCrashing();
 }
 
@@ -9849,7 +10164,7 @@ void RenderFrameHostImpl::MaybeEvictFromBackForwardCache() {
     top_document = parent;
 
   auto can_store =
-      frame_tree()->controller()->GetBackForwardCache().CanStorePageNow(
+      frame_tree()->controller().GetBackForwardCache().CanStorePageNow(
           top_document);
   TRACE_EVENT1("navigation",
                "RenderFrameHostImpl::MaybeEvictFromBackForwardCache",
@@ -9882,7 +10197,7 @@ void RenderFrameHostImpl::LogCannotCommitOriginCrashKeys(
   base::debug::SetCrashKeyString(
       base::debug::AllocateCrashKeyString("lifecycle_state",
                                           base::debug::CrashKeySize::Size32),
-      LifecycleStateToString(lifecycle_state_));
+      LifecycleStateImplToString(lifecycle_state()));
 
   base::debug::SetCrashKeyString(
       base::debug::AllocateCrashKeyString("is_current",
@@ -9893,6 +10208,11 @@ void RenderFrameHostImpl::LogCannotCommitOriginCrashKeys(
       base::debug::AllocateCrashKeyString("is_cross_process_subframe",
                                           base::debug::CrashKeySize::Size32),
       bool_to_crash_key(IsCrossProcessSubframe()));
+
+  base::debug::SetCrashKeyString(
+      base::debug::AllocateCrashKeyString("is_local_root",
+                                          base::debug::CrashKeySize::Size32),
+      bool_to_crash_key(is_local_root()));
 
   if (navigation_request && navigation_request->IsNavigationStarted()) {
     base::debug::SetCrashKeyString(
@@ -9943,7 +10263,7 @@ void RenderFrameHostImpl::EnableMojoJsBindings() {
 
 BackForwardCacheMetrics* RenderFrameHostImpl::GetBackForwardCacheMetrics() {
   NavigationEntryImpl* navigation_entry =
-      frame_tree()->controller()->GetEntryWithUniqueID(nav_entry_id());
+      frame_tree()->controller().GetEntryWithUniqueID(nav_entry_id());
   if (!navigation_entry)
     return nullptr;
   return navigation_entry->back_forward_cache_metrics();
@@ -10008,12 +10328,12 @@ RenderFrameHostImpl::PerformMakeCredentialWebAuthSecurityChecks(
   return blink::mojom::AuthenticatorStatus::SUCCESS;
 }
 
-void RenderFrameHostImpl::IsClipboardPasteAllowed(
+void RenderFrameHostImpl::IsClipboardPasteContentAllowed(
     const ui::ClipboardFormatType& data_type,
     const std::string& data,
-    IsClipboardPasteAllowedCallback callback) {
-  delegate_->IsClipboardPasteAllowed(GetLastCommittedURL(), data_type, data,
-                                     std::move(callback));
+    IsClipboardPasteContentAllowedCallback callback) {
+  delegate_->IsClipboardPasteContentAllowed(GetLastCommittedURL(), data_type,
+                                            data, std::move(callback));
 }
 
 RenderFrameHostImpl* RenderFrameHostImpl::ParentOrOuterDelegateFrame() {
@@ -10051,35 +10371,56 @@ RenderFrameHostImpl::GetWebAuthRequestSecurityChecker() {
 }
 
 bool RenderFrameHostImpl::IsInBackForwardCache() {
-  return lifecycle_state_ == LifecycleState::kInBackForwardCache;
+  return lifecycle_state() == LifecycleStateImpl::kInBackForwardCache;
 }
 
 bool RenderFrameHostImpl::IsPendingDeletion() {
-  return lifecycle_state_ == LifecycleState::kRunningUnloadHandlers ||
-         lifecycle_state_ == LifecycleState::kReadyToBeDeleted;
+  return lifecycle_state() == LifecycleStateImpl::kRunningUnloadHandlers ||
+         lifecycle_state() == LifecycleStateImpl::kReadyToBeDeleted;
+}
+
+void RenderFrameHostImpl::SetLifecycleStateToPendingCommit() {
+  // Update the |lifecycle_state_| to kPendingCommit when navigation
+  // commits in the renderer process and this is when the speculative
+  // RenderFrameHost is associated with the navigation for the first time and is
+  // not considered speculative anymore.
+  DCHECK(children_.empty());
+  SetLifecycleState(LifecycleStateImpl::kPendingCommit);
 }
 
 void RenderFrameHostImpl::SetLifecycleStateToActive() {
-  // If the RenderFrameHost is restored from BackForwardCache, update states of
-  // all the children to kActive. This is called from
-  // RenderFrameHostManager::SetRenderFrameHost which happens after commit.
-  if (IsInBackForwardCache()) {
+  // If the RenderFrameHost is restored from BackForwardCache or is part of a
+  // prerender activation, update states of all the children to kActive. This is
+  // called from RenderFrameHostManager::SetRenderFrameHost which happens after
+  // commit.
+  if (IsInBackForwardCache() ||
+      lifecycle_state() == LifecycleStateImpl::kPrerendering) {
     for (auto& child : children_) {
-      DCHECK_EQ(child->current_frame_host()->lifecycle_state_,
-                LifecycleState::kInBackForwardCache);
+      DCHECK_EQ(lifecycle_state_,
+                child->current_frame_host()->lifecycle_state_);
       child->current_frame_host()->SetLifecycleStateToActive();
     }
   }
 
-  SetLifecycleState(LifecycleState::kActive);
+  SetLifecycleState(LifecycleStateImpl::kActive);
 }
 
-void RenderFrameHostImpl::SetLifecycleState(LifecycleState state) {
-  TRACE_EVENT2("content", "RenderFrameHostImpl::SetLifecycleState",
-               "render_frame_host", base::trace_event::ToTracedValue(this),
-               "new_state", LifecycleStateToString(state));
+void RenderFrameHostImpl::SetLifecycleStateToPrerendering() {
+  // Update the |lifecycle_state_| to kPrerendering on navigation commit
+  // when a speculative RenderFrameHost is created for navigation is in pending
+  // commit state inside prerendered frame tree. This should happen before
+  // activation.
+  DCHECK(frame_tree()->is_prerendering());
+  DCHECK(children_.empty());
+  SetLifecycleState(LifecycleStateImpl::kPrerendering);
+}
+
+void RenderFrameHostImpl::SetLifecycleState(LifecycleStateImpl state) {
+  TRACE_EVENT2("content", "RenderFrameHostImpl::SetLifecycleStateImpl",
+               "render_frame_host", this, "new_state",
+               LifecycleStateImplToString(state));
 #if DCHECK_IS_ON()
-  static const base::NoDestructor<StateTransitions<LifecycleState>>
+  static const base::NoDestructor<StateTransitions<LifecycleStateImpl>>
       allowed_transitions(
           // For a graph of state transitions, see
           // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/render-frame-host-lifecycle-state.png
@@ -10087,29 +10428,52 @@ void RenderFrameHostImpl::SetLifecycleState(LifecycleState state) {
 
           // RenderFrameHost is only set speculative during its creation and no
           // transitions happen to this state during its lifetime.
-          StateTransitions<LifecycleState>({
-              {LifecycleState::kSpeculative,
-               {LifecycleState::kActive, LifecycleState::kReadyToBeDeleted}},
+          StateTransitions<LifecycleStateImpl>({
+              {LifecycleStateImpl::kSpeculative,
+               {LifecycleStateImpl::kActive, LifecycleStateImpl::kPendingCommit,
+                LifecycleStateImpl::kReadyToBeDeleted}},
 
-              {LifecycleState::kActive,
-               {LifecycleState::kInBackForwardCache,
-                LifecycleState::kRunningUnloadHandlers,
-                LifecycleState::kReadyToBeDeleted}},
+              {LifecycleStateImpl::kPendingCommit,
+               {LifecycleStateImpl::kPrerendering, LifecycleStateImpl::kActive,
+                LifecycleStateImpl::kReadyToBeDeleted}},
 
-              {LifecycleState::kInBackForwardCache,
-               {LifecycleState::kActive, LifecycleState::kReadyToBeDeleted}},
+              {LifecycleStateImpl::kPrerendering,
+               {LifecycleStateImpl::kActive,
+                LifecycleStateImpl::kRunningUnloadHandlers,
+                LifecycleStateImpl::kReadyToBeDeleted}},
 
-              {LifecycleState::kRunningUnloadHandlers,
-               {LifecycleState::kReadyToBeDeleted}},
+              {LifecycleStateImpl::kActive,
+               {LifecycleStateImpl::kInBackForwardCache,
+                LifecycleStateImpl::kRunningUnloadHandlers,
+                LifecycleStateImpl::kReadyToBeDeleted}},
 
-              {LifecycleState::kReadyToBeDeleted, {}},
+              {LifecycleStateImpl::kInBackForwardCache,
+               {LifecycleStateImpl::kActive,
+                LifecycleStateImpl::kReadyToBeDeleted}},
+
+              {LifecycleStateImpl::kRunningUnloadHandlers,
+               {LifecycleStateImpl::kReadyToBeDeleted}},
+
+              {LifecycleStateImpl::kReadyToBeDeleted, {}},
           }));
-  DCHECK_STATE_TRANSITION(allowed_transitions, /*old_state=*/lifecycle_state_,
+  DCHECK_STATE_TRANSITION(allowed_transitions,
+                          /*old_state=*/lifecycle_state_,
                           /*new_state*/ state);
 #endif  // DCHECK_IS_ON()
 
-  LifecycleState old_state = lifecycle_state_;
+  LifecycleStateImpl old_state = lifecycle_state_;
   lifecycle_state_ = state;
+
+  // Unset the |has_pending_lifecycle_state_update_| value once the
+  // LifecycleStateImpl is updated.
+  if (has_pending_lifecycle_state_update_) {
+    DCHECK(IsInBackForwardCache() || IsPendingDeletion() ||
+           old_state == LifecycleStateImpl::kPrerendering)
+        << "Transitioned to unexpected state with resetting "
+           "|has_pending_lifecycle_state_update_|\n ";
+    has_pending_lifecycle_state_update_ = false;
+  }
+
   // Notify the delegate about change in |lifecycle_state_|.
   delegate_->RenderFrameHostStateChanged(this, old_state, lifecycle_state_);
 }
@@ -10130,16 +10494,55 @@ void RenderFrameHostImpl::RecordDocumentCreatedUkmEvent(
       !is_main_frame() &&
       !GetMainFrame()->GetLastCommittedOrigin().IsSameOriginWith(origin);
 
+  // Compares the subframe site with the main frame site. In the case of
+  // nested subframes such as A(B(A)), the bottom-most frame A is expected to
+  // have |is_cross_site_frame| set to false, even though this frame is cross-
+  // site from its parent frame B. This value is only used in manual analysis.
+  bool is_cross_site_frame =
+      !is_main_frame() &&
+      (net::SchemefulSite(origin) !=
+       net::SchemefulSite(GetMainFrame()->GetLastCommittedOrigin()));
+
   ukm::builders::DocumentCreated(document_ukm_source_id)
       .SetNavigationSourceId(GetPageUkmSourceId())
       .SetIsMainFrame(is_main_frame())
       .SetIsCrossOriginFrame(is_cross_origin_frame)
+      .SetIsCrossSiteFrame(is_cross_site_frame)
       .Record(ukm_recorder);
 }
 
 void RenderFrameHostImpl::BindReportingObserver(
     mojo::PendingReceiver<blink::mojom::ReportingObserver> receiver) {
   GetAssociatedLocalFrame()->BindReportingObserver(std::move(receiver));
+}
+
+mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
+RenderFrameHostImpl::CreateURLLoaderNetworkObserver() {
+  return static_cast<StoragePartitionImpl*>(GetStoragePartition())
+      ->CreateURLLoaderNetworkObserverForFrame(GetProcess()->GetID(),
+                                               GetRoutingID());
+}
+
+PeerConnectionTrackerHost& RenderFrameHostImpl::GetPeerConnectionTrackerHost() {
+  if (!peer_connection_tracker_host_) {
+    peer_connection_tracker_host_ =
+        std::make_unique<PeerConnectionTrackerHost>(this);
+  }
+  return *peer_connection_tracker_host_.get();
+}
+
+void RenderFrameHostImpl::BindPeerConnectionTrackerHost(
+    mojo::PendingReceiver<blink::mojom::PeerConnectionTrackerHost> receiver) {
+  GetPeerConnectionTrackerHost().BindReceiver(std::move(receiver));
+}
+
+void RenderFrameHostImpl::EnableWebRtcEventLogOutput(int lid,
+                                                     int output_period_ms) {
+  GetPeerConnectionTrackerHost().StartEventLog(lid, output_period_ms);
+}
+
+void RenderFrameHostImpl::DisableWebRtcEventLogOutput(int lid) {
+  GetPeerConnectionTrackerHost().StopEventLog(lid);
 }
 
 mojo::PendingRemote<network::mojom::CookieAccessObserver>
@@ -10154,9 +10557,60 @@ void RenderFrameHostImpl::Clone(
   cookie_observers_.Add(this, std::move(observer));
 }
 
+#if BUILDFLAG(ENABLE_PLUGINS)
+void RenderFrameHostImpl::InstanceCreated(
+    int32_t instance_id,
+    mojo::PendingAssociatedRemote<mojom::PepperPluginInstance> instance,
+    mojo::PendingAssociatedReceiver<mojom::PepperPluginInstanceHost> host) {
+  pepper_instance_map_.emplace(
+      instance_id,
+      std::make_unique<PepperPluginInstanceHost>(
+          instance_id, this, std::move(instance), std::move(host)));
+}
+
+void RenderFrameHostImpl::BindHungDetectorHost(
+    mojo::PendingReceiver<mojom::PepperHungDetectorHost> hung_host,
+    int32_t plugin_child_id,
+    const base::FilePath& path) {
+  pepper_hung_detectors_.Add(this, std::move(hung_host),
+                             {plugin_child_id, path});
+}
+
+void RenderFrameHostImpl::GetPluginInfo(const GURL& url,
+                                        const url::Origin& main_frame_origin,
+                                        const std::string& mime_type,
+                                        GetPluginInfoCallback callback) {
+  bool allow_wildcard = true;
+  WebPluginInfo info;
+  std::string actual_mime_type;
+  bool found = PluginServiceImpl::GetInstance()->GetPluginInfo(
+      GetProcess()->GetID(), routing_id_, url, main_frame_origin, mime_type,
+      allow_wildcard, nullptr, &info, &actual_mime_type);
+  std::move(callback).Run(found, info, actual_mime_type);
+}
+
+void RenderFrameHostImpl::PluginHung(bool is_hung) {
+  const HungDetectorContext& context = pepper_hung_detectors_.current_context();
+  delegate()->OnPepperPluginHung(this, context.plugin_child_id,
+                                 context.plugin_path, is_hung);
+}
+
+void RenderFrameHostImpl::PepperInstanceClosed(int32_t instance_id) {
+  delegate()->OnPepperInstanceDeleted(this, instance_id);
+  pepper_instance_map_.erase(instance_id);
+}
+
+void RenderFrameHostImpl::PepperSetVolume(int32_t instance_id, double volume) {
+  auto plugin_instance_host = pepper_instance_map_.find(instance_id);
+  DCHECK(plugin_instance_host != pepper_instance_map_.end());
+  plugin_instance_host->second->SetVolume(volume);
+}
+
+#endif  // BUILDFLAG(ENABLE_PLUGINS)
+
 void RenderFrameHostImpl::OnCookiesAccessed(
     network::mojom::CookieAccessDetailsPtr details) {
-  EmitSameSiteCookiesDeprecationWarning(this, details);
+  EmitCookieWarningsAndMetrics(this, details);
 
   CookieAccessDetails allowed;
   CookieAccessDetails blocked;
@@ -10176,11 +10630,12 @@ void RenderFrameHostImpl::SetEmbeddingToken(
   embedding_token_ = embedding_token;
 
   // The AXTreeID of a frame is backed by its embedding token, so we need to
-  // update its AXTreeID, as well as the associated mapping in AXTreeIDRegistry.
+  // update its AXTreeID, as well as the associated mapping in
+  // AXActionHandlerRegistry.
   ui::AXTreeID ax_tree_id = ui::AXTreeID::FromToken(embedding_token);
   SetAXTreeID(ax_tree_id);
-  ui::AXTreeIDRegistry::GetInstance()->SetFrameIDForAXTreeID(
-      ui::AXTreeIDRegistry::FrameID(GetProcess()->GetID(), routing_id_),
+  ui::AXActionHandlerRegistry::GetInstance()->SetFrameIDForAXTreeID(
+      ui::AXActionHandlerRegistry::FrameID(GetProcess()->GetID(), routing_id_),
       ax_tree_id);
 
   // Also important to notify the delegate so that the relevant observers can
@@ -10194,15 +10649,94 @@ void RenderFrameHostImpl::SetEmbeddingToken(
   // or the main frame of an inner web contents (i.e. would need to send it to
   // the RenderFrameProxyHost for the outer web contents owning the inner one).
   PropagateEmbeddingTokenToParentFrame();
+
+  // The accessibility tree for the outermost root frame contains references
+  // to the focused frame via its AXTreeID, so ensure that we update that.
+  if (GetOutermostMainFrame() != this)
+    GetOutermostMainFrame()->UpdateAXTreeData();
 }
 
 bool RenderFrameHostImpl::DocumentUsedWebOTP() {
   return document_used_web_otp_;
 }
 
+void RenderFrameHostImpl::SetFrameTreeNode(FrameTreeNode& frame_tree_node) {
+  frame_tree_node_ = &frame_tree_node;
+  frame_tree_ = frame_tree_node_->frame_tree();
+}
+
+void RenderFrameHostImpl::SetFrameTree(FrameTree& frame_tree) {
+  DCHECK_EQ(frame_tree_node_->frame_tree(), &frame_tree);
+  frame_tree_ = &frame_tree;
+}
+
+void RenderFrameHostImpl::SetPolicyContainerForEarlyCommitAfterCrash(
+    scoped_refptr<PolicyContainerHost> policy_container_host) {
+  DCHECK_EQ(lifecycle_state(), LifecycleStateImpl::kSpeculative);
+  DCHECK(!policy_container_host_);
+  SetPolicyContainerHost(std::move(policy_container_host));
+}
+
+void RenderFrameHostImpl::OnDidRunInsecureContent(const GURL& security_origin,
+                                                  const GURL& target_url) {
+  OPTIONAL_TRACE_EVENT2("content", "RenderFrameHostImpl::DidRunInsecureContent",
+                        "security_origin", security_origin, "target_url",
+                        target_url);
+
+  // TODO(nick, estark): Should we call FilterURL using this frame's process on
+  // these parameters? |target_url| seems unused, except for a log message. And
+  // |security_origin| might be replaceable with the origin of the main frame.
+
+  LOG(WARNING) << security_origin << " ran insecure content from "
+               << target_url.possibly_invalid_spec();
+  RecordAction(base::UserMetricsAction("SSL.RanInsecureContent"));
+  if (base::EndsWith(security_origin.spec(), kDotGoogleDotCom,
+                     base::CompareCase::INSENSITIVE_ASCII)) {
+    RecordAction(base::UserMetricsAction("SSL.RanInsecureContentGoogle"));
+  }
+  frame_tree_->controller().ssl_manager()->DidRunMixedContent(security_origin);
+}
+
+void RenderFrameHostImpl::OnDidRunContentWithCertificateErrors() {
+  OPTIONAL_TRACE_EVENT0(
+      "content", "RenderFrameHostImpl::OnDidRunContentWithCertificateErrors");
+  // For RenderFrameHosts that are inactive and going to be discarded, we can
+  // disregard this message; there's no need to update the UI if the UI will
+  // never be shown again.
+  //
+  // We still process this message for pending-commit RenderFrameHosts. This can
+  // happen when a subframe's main resource has a certificate error. The
+  // origin for the last committed navigation entry will get marked as having
+  // run insecure content and that will carry over to the navigation entry for
+  // the pending-commit RenderFrameHost when it commits.
+  //
+  // Generally our approach for active content with certificate errors follows
+  // our approach for mixed content (DidRunInsecureContent): when a page loads
+  // active insecure content, such as a script or iframe, the top-level origin
+  // gets marked as insecure and that applies to any navigation entry using the
+  // same renderer process with that same top-level origin.
+  //
+  // We shouldn't be receiving this message for speculative RenderFrameHosts
+  // i.e., before the renderer is told to commit the navigation.
+  DCHECK_NE(lifecycle_state(), LifecycleStateImpl::kSpeculative);
+  if (lifecycle_state() != LifecycleStateImpl::kPendingCommit &&
+      IsInactiveAndDisallowActivation()) {
+    return;
+  }
+  frame_tree_->controller().ssl_manager()->DidRunContentWithCertErrors(
+      GetMainFrame()->GetLastCommittedOrigin().GetURL());
+}
+
+void RenderFrameHostImpl::OnDidDisplayContentWithCertificateErrors() {
+  OPTIONAL_TRACE_EVENT0(
+      "content",
+      "RenderFrameHostImpl::OnDidDisplayContentWithCertificateErrors");
+  frame_tree_->controller().ssl_manager()->DidDisplayContentWithCertErrors();
+}
+
 std::ostream& operator<<(std::ostream& o,
-                         const RenderFrameHostImpl::LifecycleState& s) {
-  return o << LifecycleStateToString(s);
+                         const RenderFrameHostImpl::LifecycleStateImpl& s) {
+  return o << LifecycleStateImplToString(s);
 }
 
 }  // namespace content

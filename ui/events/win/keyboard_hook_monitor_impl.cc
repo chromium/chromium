@@ -1,0 +1,60 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ui/events/win/keyboard_hook_monitor_impl.h"
+
+namespace ui {
+
+KeyboardHookMonitorImpl::KeyboardHookMonitorImpl() = default;
+
+KeyboardHookMonitorImpl::~KeyboardHookMonitorImpl() = default;
+
+void KeyboardHookMonitorImpl::AddObserver(KeyboardHookObserver* observer) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  observers_.AddObserver(observer);
+}
+
+void KeyboardHookMonitorImpl::RemoveObserver(KeyboardHookObserver* observer) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  observers_.RemoveObserver(observer);
+}
+
+bool KeyboardHookMonitorImpl::IsActive() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return is_hook_active_;
+}
+
+void KeyboardHookMonitorImpl::NotifyHookRegistered() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(!is_hook_active_);
+
+  is_hook_active_ = true;
+  for (auto& observer : observers_) {
+    observer.OnHookRegistered();
+  }
+}
+
+void KeyboardHookMonitorImpl::NotifyHookUnregistered() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(is_hook_active_);
+
+  is_hook_active_ = false;
+  for (auto& observer : observers_) {
+    observer.OnHookUnregistered();
+  }
+}
+
+// static
+KeyboardHookMonitor* KeyboardHookMonitor::GetInstance() {
+  return reinterpret_cast<KeyboardHookMonitor*>(
+      KeyboardHookMonitorImpl::GetInstance());
+}
+
+// static
+KeyboardHookMonitorImpl* KeyboardHookMonitorImpl::GetInstance() {
+  static base::NoDestructor<KeyboardHookMonitorImpl> instance;
+  return instance.get();
+}
+
+}  // namespace ui

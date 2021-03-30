@@ -11,7 +11,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/common/chrome_paths.h"
@@ -30,8 +30,8 @@ namespace extensions {
 class ExtensionUnloadedObserver : public ExtensionRegistryObserver {
  public:
   explicit ExtensionUnloadedObserver(ExtensionRegistry* registry)
-      : unloaded_count_(0), observer_(this) {
-    observer_.Add(registry);
+      : unloaded_count_(0) {
+    observation_.Observe(registry);
   }
 
   size_t unloaded_count() const { return unloaded_count_; }
@@ -46,7 +46,8 @@ class ExtensionUnloadedObserver : public ExtensionRegistryObserver {
 
  private:
   size_t unloaded_count_;
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver> observer_;
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionUnloadedObserver);
 };

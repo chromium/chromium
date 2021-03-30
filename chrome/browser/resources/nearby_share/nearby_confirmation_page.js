@@ -139,6 +139,14 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /**
+     * @private {?nearbyShare.mojom.TransferStatus}
+     */
+    lastTransferStatus_: {
+      type: nearbyShare.mojom.TransferStatus,
+      value: null,
+    },
   },
 
   listeners: {
@@ -149,6 +157,19 @@ Polymer({
 
   /** @private {?TransferUpdateListener} */
   transferUpdateListener_: null,
+
+  /**
+   * @return {!Object} The transferStatus, errorTitle, and errorDescription.
+   * @public
+   */
+  getTransferInfoForTesting() {
+    return {
+      confirmationToken: this.confirmationToken_,
+      transferStatus: this.lastTransferStatus_,
+      errorTitle: this.errorTitle_,
+      errorDescription: this.errorDescription_,
+    };
+  },
 
   /**
    * @param {?nearbyShare.mojom.TransferUpdateListenerPendingReceiver}
@@ -172,6 +193,7 @@ Polymer({
     if (token) {
       this.confirmationToken_ = token;
     }
+    this.lastTransferStatus_ = status;
 
     switch (status) {
       case nearbyShare.mojom.TransferStatus.kAwaitingLocalConfirmation:

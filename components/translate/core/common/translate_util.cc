@@ -52,4 +52,9 @@ bool IsTFLiteLanguageDetectionEnabled() {
   return base::FeatureList::IsEnabled(kTFLiteLanguageDetectionEnabled);
 }
 
+float GetTFLiteLanguageDetectionThreshold() {
+  return base::GetFieldTrialParamByFeatureAsDouble(
+      kTFLiteLanguageDetectionEnabled, "reliability_threshold", .7);
+}
+
 }  // namespace translate

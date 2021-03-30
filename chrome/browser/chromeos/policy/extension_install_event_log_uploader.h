@@ -10,11 +10,11 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/policy/install_event_log_uploader_base.h"
-#include "chrome/browser/policy/messaging_layer/public/report_client.h"
-#include "chrome/browser/policy/messaging_layer/public/report_queue.h"
-#include "chrome/browser/policy/messaging_layer/util/status.h"
-#include "chrome/browser/policy/messaging_layer/util/statusor.h"
-#include "chrome/browser/policy/messaging_layer/util/task_runner_context.h"
+#include "components/reporting/client/report_queue.h"
+#include "components/reporting/client/report_queue_provider.h"
+#include "components/reporting/util/status.h"
+#include "components/reporting/util/statusor.h"
+#include "components/reporting/util/task_runner_context.h"
 
 namespace enterprise_management {
 class ExtensionInstallReportRequest;
@@ -80,9 +80,10 @@ class ExtensionInstallEventLogUploader : public InstallEventLogUploaderBase {
   // Ensures that only one ReportQueueBuilder is working at one time.
   class ReportQueueBuilderLeaderTracker;
 
-  // ReportQueueBuilder builds a ReportQueue and uses |set_report_queue_cb|
-  // to set it in the ExtensionInstallEventLogUploader. ReportQueueBuilder
-  // ensures that only one ReportQueue is built for ExtensionInstallLogUploader.
+  // ReportQueueBuilder instantiates a ReportQueue and uses
+  // |set_report_queue_cb| to set it in the ExtensionInstallEventLogUploader.
+  // ReportQueueBuilder ensures that only one ReportQueue instance is
+  // built for ExtensionInstallLogUploader.
   // TODO: For testing there ideally there would be a way to capture the
   // ReportQueueConfiguration prior to passing it to the ReportQueue.
   class ReportQueueBuilder : public reporting::TaskRunnerContext<bool> {
@@ -90,7 +91,6 @@ class ExtensionInstallEventLogUploader : public InstallEventLogUploaderBase {
     using SetReportQueueCallback =
         base::OnceCallback<void(std::unique_ptr<reporting::ReportQueue>,
                                 base::OnceCallback<void()>)>;
-
 
     ReportQueueBuilder(
         SetReportQueueCallback set_report_queue_cb,
@@ -115,8 +115,8 @@ class ExtensionInstallEventLogUploader : public InstallEventLogUploaderBase {
     void OnReportQueueConfigResult(ReportQueueConfigResult report_queue_result);
 
     // |BuildReportQueue| uses the |report_queue_config| to build a ReportQueue
-    // with ReportClient::CreateReportQueue. Sets |OnReportQueueResult| as the
-    // completion callback for |CreateReportQueue|.
+    // with ReportQueueProvider::CreateQueue. Sets |OnReportQueueResult| as
+    // the completion callback for |ReportQueueProvider::CreateQueue|.
     void BuildReportQueue(std::unique_ptr<::reporting::ReportQueueConfiguration>
                               report_queue_config);
 
@@ -173,8 +173,8 @@ class ExtensionInstallEventLogUploader : public InstallEventLogUploaderBase {
   // The delegate that provides serialized logs to be uploaded.
   Delegate* delegate_ = nullptr;
 
-  // ReportQueueBuilderLeaderTracker for building the ReportQueue, passed to
-  // each ReportQueueBuilder in order to track which is the leader.
+  // ReportQueueBuilderLeaderTracker for building the ReportQueue,
+  // passed to each ReportQueueBuilder in order to track which is the leader.
   scoped_refptr<ReportQueueBuilderLeaderTracker> leader_tracker_;
 
   // SequencedTaskRunenr for building the ReportQueue.

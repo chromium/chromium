@@ -28,6 +28,7 @@ const char kDeviceName2[] = "DeviceName2";
 const char kNearbySharingServiceName[] = "NearbySharing";
 const device::BluetoothUUID kNearbySharingServiceUuid =
     device::BluetoothUUID("a82efa21-ae5c-3dde-9bbc-f16da7b16c5a");
+const base::TimeDelta kStaleDeviceTimeout = base::TimeDelta::FromSeconds(20);
 }  // namespace
 
 class BluetoothClassicMediumTest : public testing::Test {
@@ -133,8 +134,8 @@ class BluetoothClassicMediumTest : public testing::Test {
     return device_info;
   }
 
- private:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 TEST_F(BluetoothClassicMediumTest, TestDiscovery_StartDiscoveryIsIdempotent) {
@@ -183,6 +184,38 @@ TEST_F(BluetoothClassicMediumTest,
   EXPECT_EQ(kDeviceName2, last_device_discovered_->GetName());
 
   EXPECT_NE(first_device_discovered, last_device_discovered_);
+
+  StopDiscovery();
+}
+
+TEST_F(BluetoothClassicMediumTest, TestDiscovery_StaleDeviceRemoved) {
+  StartDiscovery();
+
+  bool device_lost_called = false;
+  on_device_lost_callback_ =
+      base::BindOnce([](bool* called) { *called = true; }, &device_lost_called);
+
+  task_environment_.FastForwardBy(0.75 * kStaleDeviceTimeout);
+  EXPECT_FALSE(device_lost_called);
+
+  NotifyDeviceAdded(kDeviceAddress1, kDeviceName1);
+  EXPECT_TRUE(bluetooth_classic_medium_->GetRemoteDevice(kDeviceAddress1));
+  EXPECT_EQ(last_device_discovered_,
+            bluetooth_classic_medium_->GetRemoteDevice(kDeviceAddress1));
+  EXPECT_EQ(kDeviceName1, last_device_discovered_->GetName());
+  expected_last_device_lost_ = last_device_discovered_;
+
+  // Trigger an adapter event before the device times out. Verify that the
+  // device's time is renewed.
+  task_environment_.FastForwardBy(0.75 * kStaleDeviceTimeout);
+  EXPECT_FALSE(device_lost_called);
+  NotifyDeviceChanged(kDeviceAddress1, kDeviceName2);
+  task_environment_.FastForwardBy(0.75 * kStaleDeviceTimeout);
+  EXPECT_FALSE(device_lost_called);
+
+  // Wait for the device to time out. Verify that it is reported lost.
+  task_environment_.FastForwardBy(1.5 * kStaleDeviceTimeout);
+  EXPECT_TRUE(device_lost_called);
 
   StopDiscovery();
 }
@@ -253,7 +286,7 @@ TEST_F(BluetoothClassicMediumTest, TestConnectToService_Success) {
       kDeviceAddress1, kNearbySharingServiceUuid);
 
   auto bluetooth_socket = bluetooth_classic_medium_->ConnectToService(
-      *last_device_discovered_, kNearbySharingServiceUuid.value());
+      *last_device_discovered_, kNearbySharingServiceUuid.value(), nullptr);
   EXPECT_EQ(last_device_discovered_, bluetooth_socket->GetRemoteDevice());
 
   EXPECT_TRUE(bluetooth_socket->Close().Ok());
@@ -270,7 +303,7 @@ TEST_F(BluetoothClassicMediumTest, TestConnectToService_Failure) {
       kDeviceAddress1, kNearbySharingServiceUuid);
 
   EXPECT_FALSE(bluetooth_classic_medium_->ConnectToService(
-      *last_device_discovered_, kNearbySharingServiceUuid.value()));
+      *last_device_discovered_, kNearbySharingServiceUuid.value(), nullptr));
 }
 
 TEST_F(BluetoothClassicMediumTest, TestListenForService_Success) {

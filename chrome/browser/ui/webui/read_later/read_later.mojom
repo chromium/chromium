@@ -53,7 +53,8 @@ interface PageHandler {
 
 // WebUI-side handler for requests from the browser.
 interface Page {
-  // Callback when any item in read later is
-  // changed/removed.
-  ItemsChanged();
+  // Callback when any item in read later is changed/removed. `entries` is a
+  // collection of all read later entries by read/unread status. This data
+  // structure is always present, even if the read/unread lists are empty.
+  ItemsChanged(ReadLaterEntriesByStatus entries);
 };

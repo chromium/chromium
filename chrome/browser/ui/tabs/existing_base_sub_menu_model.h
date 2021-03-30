@@ -13,6 +13,10 @@
 
 class TabStripModel;
 
+namespace content {
+class WebContents;
+}
+
 // Base class for creating submenus for the tab context menu. This enforces the
 // format of the submenu as follows:
 // - guaranteed unique IDs for different submenus
@@ -46,16 +50,18 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
 
  protected:
   struct MenuItemInfo {
-    explicit MenuItemInfo(const base::string16 menu_text);
-    MenuItemInfo(const base::string16& menu_text, ui::ImageModel menu_image);
+    explicit MenuItemInfo(const std::u16string menu_text);
+    MenuItemInfo(const std::u16string& menu_text, ui::ImageModel menu_image);
     MenuItemInfo(const MenuItemInfo& menu_item_info);
     ~MenuItemInfo();
 
     // The text for an entry in the sub menu.
-    const base::string16 text;
+    const std::u16string text;
 
     // The optional image for an entry in the sub menu.
     base::Optional<ui::ImageModel> image;
+
+    bool may_have_mnemonics = true;
   };
 
   // Helper method to create consistent submenus.|new_text| is the label to add
@@ -85,12 +91,12 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
     return parent_delegate_;
   }
   TabStripModel* model() { return model_; }
-  int context_index() const { return context_index_; }
+  int GetContextIndex() const;
 
  private:
   ui::SimpleMenuModel::Delegate* parent_delegate_;
   TabStripModel* model_;
-  int context_index_;
+  content::WebContents* context_contents_;
   int min_command_id_;
   DISALLOW_COPY_AND_ASSIGN(ExistingBaseSubMenuModel);
 };

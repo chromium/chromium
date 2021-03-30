@@ -3,6 +3,7 @@
  **/ import { assert } from './util/util.js';
 
 export class SkipTestCase extends Error {}
+export class UnexpectedPassError extends Error {}
 
 // A Fixture is a class used to instantiate each test case at run time.
 // A new instance of the Fixture is created for every single test case
@@ -40,10 +41,12 @@ export class Fixture {
 
     // Loop to exhaust the eventualExpectations in case they chain off each other.
     while (this.eventualExpectations.length) {
-      const previousExpectations = this.eventualExpectations;
-      this.eventualExpectations = [];
-
-      await Promise.all(previousExpectations);
+      const p = this.eventualExpectations.shift();
+      try {
+        await p;
+      } catch (ex) {
+        this.rec.threw(ex);
+      }
     }
   }
 

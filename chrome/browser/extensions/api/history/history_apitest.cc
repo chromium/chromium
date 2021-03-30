@@ -88,8 +88,9 @@ IN_PROC_BROWSER_TEST_F(HistoryApiTest, Incognito) {
   Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
   ExtensionTestMessageListener regular_listener("regular ready", false);
   ExtensionTestMessageListener incognito_listener("incognito ready", false);
-  const Extension* extension = LoadExtensionWithFlags(
-      test_data_dir_.AppendASCII("history/incognito"), kFlagEnableIncognito);
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("history/incognito"),
+                    {.allow_in_incognito = true});
   ASSERT_TRUE(extension);
   ASSERT_TRUE(regular_listener.WaitUntilSatisfied());
   ASSERT_TRUE(incognito_listener.WaitUntilSatisfied());

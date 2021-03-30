@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult('Tests that console messages with invalid stacktraces will still be rendered, crbug.com/826210\n');
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   var consoleView = Console.ConsoleView.instance();

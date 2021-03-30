@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/toolbar/test_toolbar_action_view_controller.h"
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_delegate.h"
 #include "ui/gfx/image/image.h"
@@ -14,7 +15,7 @@ TestToolbarActionViewController::TestToolbarActionViewController(
     const std::string& id)
     : id_(id) {
   // Needs a non-empty accessible name to pass accessibility checks.
-  SetAccessibleName(base::ASCIIToUTF16("Default name"));
+  SetAccessibleName(u"Default name");
 }
 
 TestToolbarActionViewController::~TestToolbarActionViewController() {
@@ -35,16 +36,16 @@ gfx::Image TestToolbarActionViewController::GetIcon(
   return gfx::Image();
 }
 
-base::string16 TestToolbarActionViewController::GetActionName() const {
+std::u16string TestToolbarActionViewController::GetActionName() const {
   return action_name_;
 }
 
-base::string16 TestToolbarActionViewController::GetAccessibleName(
+std::u16string TestToolbarActionViewController::GetAccessibleName(
     content::WebContents* web_contents) const {
   return accessible_name_;
 }
 
-base::string16 TestToolbarActionViewController::GetTooltip(
+std::u16string TestToolbarActionViewController::GetTooltip(
     content::WebContents* web_contents) const {
   return tooltip_;
 }
@@ -102,19 +103,19 @@ void TestToolbarActionViewController::ShowPopup(bool by_user) {
 }
 
 void TestToolbarActionViewController::SetActionName(
-    const base::string16& name) {
+    const std::u16string& name) {
   action_name_ = name;
   UpdateDelegate();
 }
 
 void TestToolbarActionViewController::SetAccessibleName(
-    const base::string16& name) {
+    const std::u16string& name) {
   accessible_name_ = name;
   UpdateDelegate();
 }
 
 void TestToolbarActionViewController::SetTooltip(
-    const base::string16& tooltip) {
+    const std::u16string& tooltip) {
   tooltip_ = tooltip;
   UpdateDelegate();
 }

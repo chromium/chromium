@@ -13,7 +13,9 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/containers/circular_deque.h"
 #include "base/macros.h"
+#include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/idempotency.h"
 #include "net/base/ip_endpoint.h"
@@ -23,7 +25,6 @@
 #include "net/http/http_response_info.h"
 #include "net/http/http_stream.h"
 #include "net/log/net_log_with_source.h"
-#include "net/third_party/quiche/src/common/platform/api/quiche_string_piece.h"
 #include "net/third_party/quiche/src/quic/core/http/quic_spdy_stream.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_header_block.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -46,10 +47,10 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
     // Returns true if the stream is still connected.
     bool IsOpen() { return stream_ != nullptr; }
 
-    // Reads initial headers into |header_block| and returns the length of
-    // the HEADERS frame which contained them. If headers are not available,
-    // returns ERR_IO_PENDING and will invoke |callback| asynchronously when
-    // the headers arrive.
+    // Reads initial or 103 Early Hints headers into |header_block| and returns
+    // the length of the HEADERS frame which contained them. If headers are not
+    // available, returns ERR_IO_PENDING and will invoke |callback|
+    // asynchronously when the headers arrive.
     // TODO(rch): Invoke |callback| when there is a stream or connection error
     // instead of calling OnClose() or OnError().
     int ReadInitialHeaders(spdy::Http2HeaderBlock* header_block,
@@ -127,6 +128,10 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
     bool IsDoneReading() const;
     bool IsFirstStream() const;
 
+    base::TimeTicks first_early_hints_time() const {
+      return first_early_hints_time_;
+    }
+
     // TODO(rch): Move these test-only methods to a peer, or else remove.
     void OnPromiseHeaderList(quic::QuicStreamId promised_id,
                              size_t frame_len,
@@ -147,6 +152,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
     explicit Handle(QuicChromiumClientStream* stream);
 
     // Methods invoked by the stream.
+    void OnEarlyHintsAvailable();
     void OnInitialHeadersAvailable();
     void OnTrailingHeadersAvailable();
     void OnDataAvailable();
@@ -171,8 +177,9 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
 
     bool may_invoke_callbacks_;  // True when callbacks may be invoked.
 
-    // Callback to be invoked when ReadHeaders completes asynchronously.
+    // Callback to be invoked when ReadInitialHeaders completes asynchronously.
     CompletionOnceCallback read_headers_callback_;
+    // Provided by the owner of this handle when ReadInitialHeaders is called.
     spdy::Http2HeaderBlock* read_headers_buffer_;
 
     // Callback to be invoked when ReadBody completes asynchronously.
@@ -199,6 +206,9 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
     int net_error_;
 
     NetLogWithSource net_log_;
+
+    // The time at which the first 103 Early Hints response is received.
+    base::TimeTicks first_early_hints_time_;
 
     base::WeakPtrFactory<Handle> weak_factory_{this};
 
@@ -280,6 +290,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
   // True if this stream is the first data stream created on this session.
   bool IsFirstStream();
 
+  int DeliverEarlyHints(spdy::Http2HeaderBlock* header_block);
+
   int DeliverInitialHeaders(spdy::Http2HeaderBlock* header_block);
 
   bool DeliverTrailingHeaders(spdy::Http2HeaderBlock* header_block,
@@ -309,9 +321,10 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
   // during connection migration.
   bool can_migrate_to_cellular_network_;
 
-  // True if initial headers have arrived.
+  // True if non-informational (non-1xx) initial headers have arrived.
   bool initial_headers_arrived_;
-  // True if initial headers have been delivered to the handle..
+  // True if non-informational (non-1xx) initial headers have been delivered to
+  // the handle.
   bool headers_delivered_;
   // Stores the initial header until they are delivered to the handle.
   spdy::Http2HeaderBlock initial_headers_;
@@ -320,6 +333,19 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
 
   // Length of the HEADERS frame containing trailing headers.
   size_t trailing_headers_frame_len_;
+
+  struct EarlyHints {
+    EarlyHints(spdy::Http2HeaderBlock headers, size_t frame_len)
+        : headers(std::move(headers)), frame_len(frame_len) {}
+    EarlyHints(EarlyHints&& other) = default;
+    EarlyHints& operator=(EarlyHints&& other) = default;
+    EarlyHints(const EarlyHints& other) = delete;
+    EarlyHints& operator=(const EarlyHints& other) = delete;
+
+    spdy::Http2HeaderBlock headers;
+    size_t frame_len = 0;
+  };
+  base::circular_deque<EarlyHints> early_hints_;
 
   base::WeakPtrFactory<QuicChromiumClientStream> weak_factory_{this};
 

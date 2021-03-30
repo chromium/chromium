@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import '../settings_shared_css.m.js';
+import '../settings_shared_css.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
@@ -12,31 +12,36 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '../route.js';
-import '../prefs/prefs.m.js';
+import '../prefs/prefs.js';
 import './password_check_edit_dialog.js';
 import './password_check_edit_disclaimer_dialog.js';
 import './password_check_list_item.js';
 import './password_remove_confirmation_dialog.js';
+// <if expr="chromeos">
+import '../controls/password_prompt_dialog.js';
+// </if>
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+// <if expr="chromeos">
+import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+// </if>
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from '../people_page/sync_browser_proxy.m.js';
-import {PrefsBehavior} from '../prefs/prefs_behavior.m.js';
-import {Route, Router, RouteObserverBehavior} from '../router.m.js';
+import {SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from '../people_page/sync_browser_proxy.js';
+import {PrefsBehavior} from '../prefs/prefs_behavior.js';
 import {routes} from '../route.js';
+import {Route, RouteObserverBehavior, Router} from '../router.js';
 
-import {PasswordCheckBehavior} from './password_check_behavior.js';
-import {PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
 // <if expr="chromeos">
-import '../controls/password_prompt_dialog.m.js';
-import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {BlockingRequestManager} from './blocking_request_manager.js';
 // </if>
+import {PasswordCheckBehavior} from './password_check_behavior.js';
+import {PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
+
 
 const CheckState = chrome.passwordsPrivate.PasswordCheckState;
 
@@ -112,15 +117,15 @@ Polymer({
     /** @private */
     showCompromisedCredentialsBody_: {
       type: Boolean,
-      computed: 'computeShowCompromisedCredentialsBody_(isSignedOut_, ' +
-          'leakedPasswords, passwordsWeaknessCheckEnabled)',
+      computed: 'computeShowCompromisedCredentialsBody_(' +
+          'isSignedOut_, leakedPasswords)',
     },
 
     /** @private */
     showNoCompromisedPasswordsLabel_: {
       type: Boolean,
-      computed: 'computeShowNoCompromisedPasswordsLabel_(syncStatus_, ' +
-          'prefs.*, status, leakedPasswords, passwordsWeaknessCheckEnabled)',
+      computed: 'computeShowNoCompromisedPasswordsLabel_(' +
+          'syncStatus_, prefs.*, status, leakedPasswords)',
     },
 
     /** @private */
@@ -132,8 +137,8 @@ Polymer({
     /** @private */
     iconHaloClass_: {
       type: String,
-      computed: 'computeIconHaloClass_(status, isSignedOut_, ' +
-          'leakedPasswords, weakPasswords)',
+      computed: 'computeIconHaloClass_(' +
+          'status, isSignedOut_, leakedPasswords, weakPasswords)',
     },
 
     /**
@@ -311,7 +316,7 @@ Polymer({
    * @private
    */
   hasWeakCredentials_() {
-    return this.passwordsWeaknessCheckEnabled && !!this.weakPasswords.length;
+    return !!this.weakPasswords.length;
   },
 
   /**
@@ -493,13 +498,9 @@ Polymer({
       case CheckState.OFFLINE:
         return this.i18n('checkPasswordsErrorOffline');
       case CheckState.SIGNED_OUT:
-        // When user is signed out and |passwordsWeaknessCheckEnabled| is
-        // true, we run the password weakness check. Since it works very fast,
-        // we always shows "Checked passwords" in this case.
-        return this.i18n(
-            this.passwordsWeaknessCheckEnabled ?
-                'checkedPasswords' :
-                'checkPasswordsErrorSignedOut');
+        // When user is signed out we run the password weakness check. Since it
+        // works very fast, we always shows "Checked passwords" in this case.
+        return this.i18n('checkedPasswords');
       case CheckState.NO_PASSWORDS:
         return this.i18n('checkPasswordsErrorNoPasswords');
       case CheckState.QUOTA_LIMIT:
@@ -532,8 +533,7 @@ Polymer({
   showsTimestamp_() {
     return !!this.status.elapsedTimeSinceLastCheck &&
         (this.status.state === CheckState.IDLE ||
-         (this.status.state === CheckState.SIGNED_OUT &&
-          this.passwordsWeaknessCheckEnabled));
+         this.status.state === CheckState.SIGNED_OUT);
   },
 
   /**
@@ -555,13 +555,9 @@ Polymer({
       case CheckState.OTHER_ERROR:
         return this.i18n('checkPasswordsAgainAfterError');
       case CheckState.SIGNED_OUT:
-        // When |passwordsWeaknessCheckEnabled| is true, we should allow signed
-        // out users to click the "Check again" button to run the passwords
-        // weakness check.
-        return this.i18n(
-            this.passwordsWeaknessCheckEnabled ?
-                'checkPasswordsAgain' :
-                'checkPasswordsAgainAfterError');
+        // We should allow signed out users to click the "Check again" button to
+        // run the passwords weakness check.
+        return this.i18n('checkPasswordsAgain');
       case CheckState.QUOTA_LIMIT:
         return '';  // Undefined behavior. Don't show any misleading text.
     }
@@ -591,11 +587,8 @@ Polymer({
       case CheckState.RUNNING:
       case CheckState.OFFLINE:
       case CheckState.OTHER_ERROR:
-        return false;
       case CheckState.SIGNED_OUT:
-        // When |passwordsWeaknessCheckEnabled| is true, we should allow signed
-        // out users to run the passwords weakness check.
-        return !this.passwordsWeaknessCheckEnabled && this.isSignedOut_;
+        return false;
       case CheckState.NO_PASSWORDS:
       case CheckState.QUOTA_LIMIT:
         return true;
@@ -645,6 +638,7 @@ Polymer({
     switch (this.status.state) {
       case CheckState.IDLE:
       case CheckState.RUNNING:
+      case CheckState.SIGNED_OUT:
         return false;
       case CheckState.CANCELED:
       case CheckState.OFFLINE:
@@ -652,10 +646,6 @@ Polymer({
       case CheckState.QUOTA_LIMIT:
       case CheckState.OTHER_ERROR:
         return true;
-      case CheckState.SIGNED_OUT:
-        // If |passwordsWeaknessCheckEnabled| is true and user is signed out,
-        // this is not an error and we can run the password weakness check.
-        return !this.passwordsWeaknessCheckEnabled;
     }
     assertNotReached(
         'Not specified whether to state is an error: ' + this.status.state);
@@ -684,7 +674,7 @@ Polymer({
       case CheckState.SIGNED_OUT:
         // Shows "No security issues found" if user is signed out and doesn't
         // have insecure credentials.
-        return this.passwordsWeaknessCheckEnabled;
+        return true;
     }
     assertNotReached(
         'Not specified whether to show passwords for state: ' +
@@ -693,16 +683,12 @@ Polymer({
 
   /**
    * Returns a localized and pluralized string of the passwords count, depending
-   * on whether the weak check feature is enabled, whether the user is signed in
-   * and whether other compromised passwords exist.
+   * on whether the user is signed in and whether other compromised passwords
+   * exist.
    * @return {string}
    * @private
    */
   getPasswordsCount_() {
-    if (!this.passwordsWeaknessCheckEnabled) {
-      return this.compromisedPasswordsCount;
-    }
-
     return this.isSignedOut_ && this.leakedPasswords.length === 0 ?
         this.weakPasswordsCount :
         this.insecurePasswordsCount;
@@ -725,16 +711,11 @@ Polymer({
   },
 
   /**
-   * Returns true iff the leak check was performed at least once before.
+   * Returns true iff the leak or weak check was performed at least once before.
    * @return {boolean}
    * @private
    */
   waitsForFirstCheck_() {
-    // We don't run the compromise check if user is signed out and don't need to
-    // wait for the first check.
-    if (this.passwordsWeaknessCheckEnabled && this.isSignedOut_) {
-      return false;
-    }
     return !this.status.elapsedTimeSinceLastCheck;
   },
 
@@ -776,12 +757,8 @@ Polymer({
    * @private
    */
   computeShowCompromisedCredentialsBody_() {
-    // Always shows compromised credetnials section if
-    // |passwordsWeaknessCheckEnabled| is true and user is signed out.
-    if (this.passwordsWeaknessCheckEnabled && this.isSignedOut_) {
-      return true;
-    }
-    return this.hasLeakedCredentials_();
+    // Always shows compromised credetnials section if user is signed out.
+    return this.isSignedOut_ || this.hasLeakedCredentials_();
   },
 
   /**

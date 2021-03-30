@@ -15,6 +15,7 @@
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/win/events_win_utils.h"
+#include "ui/events/win/keyboard_hook_monitor_impl.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace ui {
@@ -131,6 +132,8 @@ class ModifierKeyboardHookWinImpl : public KeyboardHookWinBase {
 
   void ClearModifierStates();
 
+  KeyboardHookMonitorImpl* GetKeyboardHookMonitor();
+
   static ModifierKeyboardHookWinImpl* instance_;
 
   // Tracks the last non-located key down seen in order to determine if the
@@ -165,12 +168,16 @@ ModifierKeyboardHookWinImpl::~ModifierKeyboardHookWinImpl() {
 
   DCHECK_EQ(instance_, this);
   instance_ = nullptr;
+
+  KeyboardHookMonitorImpl::GetInstance()->NotifyHookUnregistered();
 }
 
 bool ModifierKeyboardHookWinImpl::Register() {
   // Only one instance of this class can be registered at a time.
   DCHECK(!instance_);
   instance_ = this;
+
+  KeyboardHookMonitorImpl::GetInstance()->NotifyHookRegistered();
 
   return KeyboardHookWinBase::Register(reinterpret_cast<HOOKPROC>(
       &ModifierKeyboardHookWinImpl::ProcessKeyEvent));
@@ -320,6 +327,7 @@ std::unique_ptr<KeyboardHook> KeyboardHook::CreateModifierKeyboardHook(
   return keyboard_hook;
 }
 
+// static
 std::unique_ptr<KeyboardHookWinBase>
 KeyboardHookWinBase::CreateModifierKeyboardHookForTesting(
     base::Optional<base::flat_set<DomCode>> dom_codes,

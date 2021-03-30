@@ -15,8 +15,8 @@
 #include "base/macros.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/numerics/ranges.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
@@ -41,7 +41,8 @@ void RemoveDuplicates(Mixer::SortedResults* results) {
     // both of these, so insert concat(id, display_type).
     const std::string display_type = base::NumberToString(
         static_cast<int>(sort_data.result->display_type()));
-    if (!seen.insert(base::StrCat({sort_data.result->id(), display_type}))
+    if (!seen.insert(
+                 base::JoinString({sort_data.result->id(), display_type}, "-"))
              .second)
       continue;
 
@@ -136,7 +137,7 @@ void Mixer::AddProviderToGroup(size_t group_id, SearchProvider* provider) {
   groups_[group_id]->AddProvider(provider);
 }
 
-void Mixer::MixAndPublish(size_t num_max_results, const base::string16& query) {
+void Mixer::MixAndPublish(size_t num_max_results, const std::u16string& query) {
   FetchResults(query);
 
   SortedResults results;
@@ -189,7 +190,7 @@ void Mixer::MixAndPublish(size_t num_max_results, const base::string16& query) {
   model_updater_->PublishSearchResults(new_results);
 }
 
-void Mixer::FetchResults(const base::string16& query) {
+void Mixer::FetchResults(const std::u16string& query) {
   if (search_result_ranker_)
     search_result_ranker_->FetchRankings(query);
   for (const auto& group : groups_)

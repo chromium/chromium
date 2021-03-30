@@ -30,7 +30,7 @@ class VideoFileParser;
 // information on the file format. Several restrictions and notes apply, see the
 // implementation file.
 // Example Y4M videos can be found in http://media.xiph.org/video/derf.
-// Example MJPEG videos can be found in media/data/test/bear.mjpeg.
+// Example MJPEG videos can be found in media/test/data/bear.mjpeg.
 // Restrictions: Y4M videos should have .y4m file extension and MJPEG videos
 // should have .mjpeg file extension.
 class CAPTURE_EXPORT FileVideoCaptureDevice : public VideoCaptureDevice {

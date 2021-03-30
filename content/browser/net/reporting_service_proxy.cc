@@ -119,7 +119,7 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
     QueueReport(url, group, "csp-violation", std::move(body));
   }
 
-  void QueueFeaturePolicyViolationReport(
+  void QueuePermissionsPolicyViolationReport(
       const GURL& url,
       const std::string& policy_id,
       const std::string& disposition,
@@ -138,7 +138,8 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
       body->SetInteger("lineNumber", line_number);
     if (column_number)
       body->SetInteger("columnNumber", column_number);
-    QueueReport(url, "default", "feature-policy-violation", std::move(body));
+    QueueReport(url, "default", "permissions-policy-violation",
+                std::move(body));
   }
 
   void QueueDocumentPolicyViolationReport(

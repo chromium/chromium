@@ -22,6 +22,10 @@ namespace ash {
 AppListTestApi::AppListTestApi() = default;
 AppListTestApi::~AppListTestApi() = default;
 
+bool AppListTestApi::HasApp(const std::string& app_id) {
+  return Shell::Get()->app_list_controller()->GetModel()->FindItem(app_id);
+}
+
 std::vector<std::string> AppListTestApi::GetTopLevelViewIdList() {
   std::vector<std::string> id_list;
   AppListView* app_list_view =

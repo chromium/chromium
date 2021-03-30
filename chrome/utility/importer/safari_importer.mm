@@ -7,11 +7,11 @@
 #include "chrome/utility/importer/safari_importer.h"
 
 #include <map>
+#include <string>
 #include <vector>
 
 #include "base/files/file_util.h"
 #include "base/mac/foundation_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -52,14 +52,14 @@ void SafariImporter::StartImport(const importer::SourceProfile& source_profile,
 }
 
 void SafariImporter::ImportBookmarks() {
-  base::string16 toolbar_name =
+  std::u16string toolbar_name =
       bridge_->GetLocalizedString(IDS_BOOKMARK_BAR_FOLDER_NAME);
   std::vector<ImportedBookmarkEntry> bookmarks;
   ParseBookmarks(toolbar_name, &bookmarks);
 
   // Write bookmarks into profile.
   if (!bookmarks.empty() && !cancelled()) {
-    const base::string16& first_folder_name =
+    const std::u16string& first_folder_name =
         bridge_->GetLocalizedString(IDS_BOOKMARK_GROUP_FROM_SAFARI);
     bridge_->AddBookmarks(bookmarks, first_folder_name);
   }
@@ -141,9 +141,9 @@ void SafariImporter::LoadFaviconData(
 
 void SafariImporter::RecursiveReadBookmarksFolder(
     NSDictionary* bookmark_folder,
-    const std::vector<base::string16>& parent_path_elements,
+    const std::vector<std::u16string>& parent_path_elements,
     bool is_in_toolbar,
-    const base::string16& toolbar_name,
+    const std::u16string& toolbar_name,
     std::vector<ImportedBookmarkEntry>* out_bookmarks) {
   DCHECK(bookmark_folder);
 
@@ -188,7 +188,7 @@ void SafariImporter::RecursiveReadBookmarksFolder(
     return;
   }
 
-  std::vector<base::string16> path_elements(parent_path_elements);
+  std::vector<std::u16string> path_elements(parent_path_elements);
   // Create a folder for the toolbar, but not for the bookmarks menu.
   if (path_elements.empty() && [title isEqualToString:@"BookmarksBar"]) {
     is_in_toolbar = true;
@@ -241,7 +241,7 @@ void SafariImporter::RecursiveReadBookmarksFolder(
 }
 
 void SafariImporter::ParseBookmarks(
-    const base::string16& toolbar_name,
+    const std::u16string& toolbar_name,
     std::vector<ImportedBookmarkEntry>* bookmarks) {
   DCHECK(bookmarks);
 
@@ -260,7 +260,7 @@ void SafariImporter::ParseBookmarks(
     return;
 
   // Recursively read in bookmarks.
-  std::vector<base::string16> parent_path_elements;
+  std::vector<std::u16string> parent_path_elements;
   RecursiveReadBookmarksFolder(bookmarks_dict, parent_path_elements, false,
                                toolbar_name, bookmarks);
 }

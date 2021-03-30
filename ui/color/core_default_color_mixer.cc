@@ -4,6 +4,7 @@
 
 #include "ui/color/color_mixers.h"
 
+#include "base/logging.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
@@ -19,26 +20,24 @@ namespace {
 // TODO(pkasting): Construct colors from contrast ratios
 // TODO(pkasting): Construct palette from accent, key, tint/bg, shade/fg colors
 
-ColorMixer& AddMixerForDarkMode(ColorProvider* provider) {
+ColorMixer& AddMixerForDarkMode(ColorProvider* provider, bool high_contrast) {
   ColorMixer& mixer = provider->AddMixer();
-  mixer.AddSet(
-      {kColorSetCoreDefaults,
-       {
-           {kColorAccent, gfx::kGoogleBlue300},
-           {kColorAlertHighSeverity, gfx::kGoogleRed300},
-           {kColorAlertLowSeverity, gfx::kGoogleGreen300},
-           {kColorAlertMediumSeverity, gfx::kGoogleYellow300},
-           {kColorMidground, gfx::kGoogleGrey800},
-           {kColorPrimaryBackground, SkColorSetRGB(0x29, 0x2A, 0x2D)},
-           {kColorPrimaryForeground, gfx::kGoogleGrey200},
-           {kColorSecondaryForeground, gfx::kGoogleGrey500},
-           {kColorSubtleEmphasisBackground, SkColorSetRGB(0x32, 0x36, 0x39)},
-           {kColorTextSelectionBackground, gfx::kGoogleBlue800},
-       }});
+  mixer.AddSet({kColorSetCoreDefaults,
+                {
+                    {kColorAccent, gfx::kGoogleBlue300},
+                    {kColorAlertHighSeverity, gfx::kGoogleRed300},
+                    {kColorAlertLowSeverity, gfx::kGoogleGreen300},
+                    {kColorAlertMediumSeverity, gfx::kGoogleYellow300},
+                    {kColorItemHighlight, gfx::kGoogleBlue400},
+                    {kColorMidground, gfx::kGoogleGrey800},
+                    {kColorPrimaryBackground, SkColorSetRGB(0x29, 0x2A, 0x2D)},
+                    {kColorPrimaryForeground, gfx::kGoogleGrey200},
+                    {kColorSecondaryForeground, gfx::kGoogleGrey500},
+                }});
   return mixer;
 }
 
-ColorMixer& AddMixerForLightMode(ColorProvider* provider) {
+ColorMixer& AddMixerForLightMode(ColorProvider* provider, bool high_contrast) {
   ColorMixer& mixer = provider->AddMixer();
   mixer.AddSet({kColorSetCoreDefaults,
                 {
@@ -46,26 +45,46 @@ ColorMixer& AddMixerForLightMode(ColorProvider* provider) {
                     {kColorAlertHighSeverity, gfx::kGoogleRed600},
                     {kColorAlertLowSeverity, gfx::kGoogleGreen700},
                     {kColorAlertMediumSeverity, gfx::kGoogleYellow700},
+                    {kColorItemHighlight, gfx::kGoogleBlue500},
                     {kColorMidground, gfx::kGoogleGrey300},
                     {kColorPrimaryBackground, SK_ColorWHITE},
                     {kColorPrimaryForeground, gfx::kGoogleGrey900},
                     {kColorSecondaryForeground, gfx::kGoogleGrey700},
-                    {kColorSubtleEmphasisBackground, gfx::kGoogleGrey050},
-                    {kColorTextSelectionBackground, gfx::kGoogleBlue200},
                 }});
+
   return mixer;
 }
 
 }  // namespace
 
-void AddCoreDefaultColorMixer(ColorProvider* provider, bool dark_window) {
-  ColorMixer& mixer = dark_window ? AddMixerForDarkMode(provider)
-                                  : AddMixerForLightMode(provider);
+void AddCoreDefaultColorMixer(ColorProvider* provider,
+                              bool dark_window,
+                              bool high_contrast) {
+  DVLOG(2) << "Adding CoreDefaultColorMixer to ColorProvider for "
+           << (dark_window ? "Dark" : "Light")
+           << (high_contrast ? " High Contrast" : "") << " window.";
+  ColorMixer& mixer = dark_window
+                          ? AddMixerForDarkMode(provider, high_contrast)
+                          : AddMixerForLightMode(provider, high_contrast);
   mixer[kColorDisabledForeground] = BlendForMinContrast(
       gfx::kGoogleGrey600, kColorPrimaryBackground, kColorPrimaryForeground);
+  mixer[kColorEndpointBackground] =
+      GetColorWithMaxContrast(kColorEndpointForeground);
+  mixer[kColorEndpointForeground] =
+      GetColorWithMaxContrast(kColorPrimaryBackground);
   mixer[kColorItemSelectionBackground] =
-      BlendForMinContrastWithSelf(kColorPrimaryBackground, 1.67f);
-  // TODO(pkasting): High contrast?
+      AlphaBlend(kColorAccent, kColorPrimaryBackground, 0x3C);
+  mixer[kColorMenuSelectionBackground] =
+      AlphaBlend(kColorEndpointForeground, kColorPrimaryBackground,
+                 gfx::kGoogleGreyAlpha200);
+  mixer[kColorSubtleAccent] = AlphaBlend(kColorAccent, kColorPrimaryBackground,
+                                         gfx::kGoogleGreyAlpha400);
+  mixer[kColorSubtleEmphasisBackground] =
+      BlendTowardMaxContrast(kColorPrimaryBackground, gfx::kGoogleGreyAlpha100);
+  mixer[kColorTextSelectionBackground] = AlphaBlend(
+      kColorAccent, kColorPrimaryBackground, gfx::kGoogleGreyAlpha500);
+  mixer[kColorTextSelectionForeground] =
+      GetColorWithMaxContrast(kColorTextSelectionBackground);
 }
 
 }  // namespace ui

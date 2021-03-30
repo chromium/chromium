@@ -14,44 +14,24 @@ VERSION = (
 )
 v.close()
 
-readme = open(os.path.join(os.path.dirname(__file__), "README.rst")).read()
+readme = os.path.join(os.path.dirname(__file__), "README.rst")
 
-if sys.version_info < (2, 6):
-    raise Exception("Mako requires Python 2.6 or higher.")
-
-markupsafe_installs = (
-    sys.version_info >= (2, 6) and sys.version_info < (3, 0)
-) or sys.version_info >= (3, 3)
-
-install_requires = []
-
-if markupsafe_installs:
-    install_requires.append("MarkupSafe>=0.9.2")
-
-try:
-    import argparse  # noqa
-except ImportError:
-    install_requires.append("argparse")
+install_requires = ["MarkupSafe>=0.9.2"]
 
 
-class PyTest(TestCommand):
-    user_options = [("pytest-args=", "a", "Arguments to pass to py.test")]
-
-    def initialize_options(self):
-        TestCommand.initialize_options(self)
-        self.pytest_args = []
-
-    def finalize_options(self):
-        TestCommand.finalize_options(self)
-        self.test_args = []
-        self.test_suite = True
+class UseTox(TestCommand):
+    RED = 31
+    RESET_SEQ = "\033[0m"
+    BOLD_SEQ = "\033[1m"
+    COLOR_SEQ = "\033[1;%dm"
 
     def run_tests(self):
-        # import here, cause outside the eggs aren't loaded
-        import pytest
-
-        errno = pytest.main(self.pytest_args)
-        sys.exit(errno)
+        sys.stderr.write(
+            "%s%spython setup.py test is deprecated by PyPA.  Please invoke "
+            "'tox' with no arguments for a basic test run.\n%s"
+            % (self.COLOR_SEQ % self.RED, self.BOLD_SEQ, self.RESET_SEQ)
+        )
+        sys.exit(1)
 
 
 setup(
@@ -59,7 +39,8 @@ setup(
     version=VERSION,
     description="A super-fast templating language that borrows the \
  best ideas from the existing templating languages.",
-    long_description=readme,
+    long_description=open(readme).read(),
+    python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "License :: OSI Approved :: MIT License",
@@ -67,6 +48,9 @@ setup(
         "Intended Audience :: Developers",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
         "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
@@ -77,16 +61,13 @@ setup(
     url="https://www.makotemplates.org/",
     project_urls={
         "Documentation": "https://docs.makotemplates.org",
-        "Issue Tracker": "https://github.com/sqlalchemy/mako"
+        "Issue Tracker": "https://github.com/sqlalchemy/mako",
     },
     license="MIT",
     packages=find_packages(".", exclude=["examples*", "test*"]),
-    tests_require=["pytest", "mock"],
-    cmdclass={"test": PyTest},
+    cmdclass={"test": UseTox},
     zip_safe=False,
-    python_requires=">=2.6",
     install_requires=install_requires,
-    extras_require={},
     entry_points="""
       [python.templating.engines]
       mako = mako.ext.turbogears:TGPlugin
@@ -99,12 +80,20 @@ setup(
       css+mako = mako.ext.pygmentplugin:MakoCssLexer
 
       [babel.extractors]
-      mako = mako.ext.babelplugin:extract
+      mako = mako.ext.babelplugin:extract [babel]
 
       [lingua.extractors]
-      mako = mako.ext.linguaplugin:LinguaMakoExtractor
+      mako = mako.ext.linguaplugin:LinguaMakoExtractor [lingua]
 
       [console_scripts]
       mako-render = mako.cmd:cmdline
       """,
+    extras_require={
+        'babel': [
+            'Babel',
+        ],
+        'lingua': [
+            'lingua',
+        ],
+    },
 )

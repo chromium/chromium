@@ -119,7 +119,8 @@ class GLOzoneEGLScenic : public GLOzoneEGL {
   }
 
  protected:
-  bool LoadGLES2Bindings(gl::GLImplementation implementation) override {
+  bool LoadGLES2Bindings(
+      const gl::GLImplementationParts& implementation) override {
     return LoadDefaultEGLGLES2Bindings(implementation);
   }
 
@@ -183,8 +184,9 @@ ScenicSurfaceFactory::GetAllowedGLImplementations() {
   };
 }
 
-GLOzone* ScenicSurfaceFactory::GetGLOzone(gl::GLImplementation implementation) {
-  switch (implementation) {
+GLOzone* ScenicSurfaceFactory::GetGLOzone(
+    const gl::GLImplementationParts& implementation) {
+  switch (implementation.gl) {
     case gl::kGLImplementationSwiftShaderGL:
     case gl::kGLImplementationEGLGLES2:
     case gl::kGLImplementationEGLANGLE:
@@ -243,6 +245,7 @@ void ScenicSurfaceFactory::CreateNativePixmapAsync(
 #if BUILDFLAG(ENABLE_VULKAN)
 std::unique_ptr<gpu::VulkanImplementation>
 ScenicSurfaceFactory::CreateVulkanImplementation(
+    bool use_swiftshader,
     bool allow_protected_memory,
     bool enforce_protected_memory) {
   return std::make_unique<ui::VulkanImplementationScenic>(

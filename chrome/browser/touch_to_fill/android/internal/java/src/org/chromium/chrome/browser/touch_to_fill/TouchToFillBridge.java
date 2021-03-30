@@ -4,9 +4,12 @@
 
 package org.chromium.chrome.browser.touch_to_fill;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -20,16 +23,21 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
     private long mNativeView;
     private final TouchToFillComponent mTouchToFillComponent;
 
-    private TouchToFillBridge(long nativeView, WindowAndroid windowAndroid) {
+    private TouchToFillBridge(long nativeView, WindowAndroid windowAndroid,
+            BottomSheetController bottomSheetController) {
         mNativeView = nativeView;
         mTouchToFillComponent = new TouchToFillCoordinator();
-        mTouchToFillComponent.initialize(windowAndroid.getContext().get(),
-                BottomSheetControllerProvider.from(windowAndroid), this);
+        mTouchToFillComponent.initialize(
+                windowAndroid.getContext().get(), bottomSheetController, this);
     }
 
     @CalledByNative
-    private static TouchToFillBridge create(long nativeView, WindowAndroid windowAndroid) {
-        return new TouchToFillBridge(nativeView, windowAndroid);
+    private static @Nullable TouchToFillBridge create(
+            long nativeView, WindowAndroid windowAndroid) {
+        BottomSheetController bottomSheetController =
+                BottomSheetControllerProvider.from(windowAndroid);
+        if (bottomSheetController == null) return null;
+        return new TouchToFillBridge(nativeView, windowAndroid, bottomSheetController);
     }
 
     @CalledByNative
@@ -45,9 +53,10 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
     @CalledByNative
     private static void insertCredential(Credential[] credentials, int index, String username,
             String password, String formattedUsername, String originUrl,
-            boolean isPublicSuffixMatch, boolean isAffiliationBasedMatch) {
+            boolean isPublicSuffixMatch, boolean isAffiliationBasedMatch,
+            long lastUsedMsSinceEpoch) {
         credentials[index] = new Credential(username, password, formattedUsername, originUrl,
-                isPublicSuffixMatch, isAffiliationBasedMatch);
+                isPublicSuffixMatch, isAffiliationBasedMatch, lastUsedMsSinceEpoch);
     }
 
     @CalledByNative
@@ -62,14 +71,14 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
 
     @Override
     public void onManagePasswordsSelected() {
-        assert mNativeView != 0 : "The native side is already dismissed";
-        TouchToFillBridgeJni.get().onManagePasswordsSelected(mNativeView);
+        if (mNativeView != 0) TouchToFillBridgeJni.get().onManagePasswordsSelected(mNativeView);
     }
 
     @Override
     public void onCredentialSelected(Credential credential) {
-        assert mNativeView != 0 : "The native side is already dismissed";
-        TouchToFillBridgeJni.get().onCredentialSelected(mNativeView, credential);
+        if (mNativeView != 0) {
+            TouchToFillBridgeJni.get().onCredentialSelected(mNativeView, credential);
+        }
     }
 
     @NativeMethods

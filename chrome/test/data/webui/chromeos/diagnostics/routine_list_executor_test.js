@@ -61,13 +61,12 @@ export function fakeRoutineListExecutorTestSuite() {
       routineTypes.push(routine.type);
 
       // Add the "running" callback to the list.
-      let status = new ResultStatusItem(routine.type);
-      status.progress = ExecutionProgress.kRunning;
+      let status =
+          new ResultStatusItem(routine.type, ExecutionProgress.kRunning);
       expectedCallbacks.push(status);
 
       // Add the "completed" callback to the list.
-      status = new ResultStatusItem(routine.type);
-      status.progress = ExecutionProgress.kCompleted;
+      status = new ResultStatusItem(routine.type, ExecutionProgress.kCompleted);
       status.result = routine.result;
       expectedCallbacks.push(status);
     });

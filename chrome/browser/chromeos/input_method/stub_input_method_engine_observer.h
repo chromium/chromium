@@ -20,6 +20,7 @@ class StubInputMethodEngineObserver : public InputMethodEngineBase::Observer {
   void OnActivate(const std::string& engine_id) override {}
   void OnDeactivated(const std::string& engine_id) override {}
   void OnFocus(
+      int context_id,
       const ui::IMEEngineHandlerInterface::InputContext& context) override {}
   void OnBlur(int context_id) override {}
   void OnKeyEvent(
@@ -33,7 +34,7 @@ class StubInputMethodEngineObserver : public InputMethodEngineBase::Observer {
   void OnMenuItemActivated(const std::string& engine_id,
                            const std::string& menu_id) override {}
   void OnSurroundingTextChanged(const std::string& engine_id,
-                                const base::string16& text,
+                                const std::u16string& text,
                                 int cursor_pos,
                                 int anchor_pos,
                                 int offset) override {}

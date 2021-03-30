@@ -211,7 +211,7 @@ bool XPSModule::InitImpl() {
   return true;
 }
 
-HRESULT XPSModule::OpenProvider(const base::string16& printer_name,
+HRESULT XPSModule::OpenProvider(const std::wstring& printer_name,
                                 DWORD version,
                                 HPTPROVIDER* provider) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
@@ -409,9 +409,9 @@ std::string GetDriverInfo(HANDLE printer) {
         FileVersionInfo::CreateFileVersionInfo(
             base::FilePath(info_6.get()->pDriverPath)));
     if (version_info.get()) {
-      info[1] = base::WideToUTF8(version_info->file_version());
-      info[2] = base::WideToUTF8(version_info->product_name());
-      info[3] = base::WideToUTF8(version_info->product_version());
+      info[1] = base::UTF16ToUTF8(version_info->file_version());
+      info[2] = base::UTF16ToUTF8(version_info->product_name());
+      info[3] = base::UTF16ToUTF8(version_info->product_version());
     }
   }
 
@@ -425,7 +425,7 @@ std::string GetDriverInfo(HANDLE printer) {
 }
 
 std::unique_ptr<DEVMODE, base::FreeDeleter> XpsTicketToDevMode(
-    const base::string16& printer_name,
+    const std::wstring& printer_name,
     const std::string& print_ticket) {
   std::unique_ptr<DEVMODE, base::FreeDeleter> dev_mode;
   ScopedXPSInitializer xps_initializer;
@@ -469,7 +469,7 @@ bool IsDevModeWithColor(const DEVMODE* devmode) {
 
 std::unique_ptr<DEVMODE, base::FreeDeleter> CreateDevModeWithColor(
     HANDLE printer,
-    const base::string16& printer_name,
+    const std::wstring& printer_name,
     bool color) {
   std::unique_ptr<DEVMODE, base::FreeDeleter> default_ticket =
       CreateDevMode(printer, nullptr);
@@ -569,7 +569,7 @@ std::unique_ptr<DEVMODE, base::FreeDeleter> CreateDevMode(HANDLE printer,
 
 std::unique_ptr<DEVMODE, base::FreeDeleter> PromptDevMode(
     HANDLE printer,
-    const base::string16& printer_name,
+    const std::wstring& printer_name,
     DEVMODE* in,
     HWND window,
     bool* canceled) {

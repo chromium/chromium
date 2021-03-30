@@ -41,7 +41,7 @@ class MockResultDelegate : public FullCardRequest::ResultDelegate,
   MOCK_METHOD3(OnFullCardRequestSucceeded,
                void(const payments::FullCardRequest&,
                     const CreditCard&,
-                    const base::string16&));
+                    const std::u16string&));
   MOCK_METHOD1(OnFullCardRequestFailed,
                void(payments::FullCardRequest::FailureType));
 };
@@ -88,7 +88,8 @@ class FullCardRequestTest : public testing::Test {
     request_ = std::make_unique<FullCardRequest>(
         &autofill_client_, payments_client_.get(), &personal_data_);
     personal_data_.SetAccountInfoForPayments(
-        autofill_client_.GetIdentityManager()->GetPrimaryAccountInfo());
+        autofill_client_.GetIdentityManager()->GetPrimaryAccountInfo(
+            signin::ConsentLevel::kSync));
     // Silence the warning from PaymentsClient about matching sync and Payments
     // server types.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(

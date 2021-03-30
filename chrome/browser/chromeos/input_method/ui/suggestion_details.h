@@ -5,13 +5,14 @@
 #ifndef CHROME_BROWSER_CHROMEOS_INPUT_METHOD_UI_SUGGESTION_DETAILS_H_
 #define CHROME_BROWSER_CHROMEOS_INPUT_METHOD_UI_SUGGESTION_DETAILS_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 
 namespace ui {
 namespace ime {
 
 struct SuggestionDetails {
-  base::string16 text;
+  std::u16string text;
   size_t confirmed_length = 0;
   bool show_annotation = false;
   bool show_setting_link = false;

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
-#include "chrome/browser/chromeos/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_webui_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 

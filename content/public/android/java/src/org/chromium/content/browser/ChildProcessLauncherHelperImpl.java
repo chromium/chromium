@@ -15,27 +15,28 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.BuildConfig;
 import org.chromium.base.Callback;
 import org.chromium.base.ChildBindingState;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.CpuFeatures;
+import org.chromium.base.EarlyTraceEvent;
 import org.chromium.base.JavaExceptionReporter;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.base.library_loader.Linker;
+import org.chromium.base.library_loader.LibraryLoader.MultiProcessMediator;
 import org.chromium.base.process_launcher.ChildConnectionAllocator;
 import org.chromium.base.process_launcher.ChildProcessConnection;
 import org.chromium.base.process_launcher.ChildProcessConstants;
 import org.chromium.base.process_launcher.ChildProcessLauncher;
 import org.chromium.base.process_launcher.FileDescriptorInfo;
 import org.chromium.base.task.PostTask;
-import org.chromium.content.app.ChromiumLinkerParams;
+import org.chromium.build.BuildConfig;
 import org.chromium.content.app.SandboxedProcessService;
 import org.chromium.content.common.ContentSwitchUtils;
 import org.chromium.content_public.browser.ChildProcessImportance;
@@ -120,6 +121,10 @@ public final class ChildProcessLauncherHelperImpl {
     // Tracks reporting exception from child process to avoid reporting it more than once.
     private boolean mReportedException;
 
+    // Enables early Java tracing in child process before native is initialized.
+    private static final String TRACE_EARLY_JAVA_IN_CHILD_SWITCH =
+            "--" + EarlyTraceEvent.TRACE_EARLY_JAVA_IN_CHILD_SWITCH;
+
     private final ChildProcessLauncher.Delegate mLauncherDelegate =
             new ChildProcessLauncher.Delegate() {
                 @Override
@@ -146,10 +151,8 @@ public final class ChildProcessLauncherHelperImpl {
                             ContentChildProcessConstants.EXTRA_CPU_COUNT, CpuFeatures.getCount());
                     connectionBundle.putLong(
                             ContentChildProcessConstants.EXTRA_CPU_FEATURES, CpuFeatures.getMask());
-                    if (LibraryLoader.getInstance().useChromiumLinker()) {
-                        connectionBundle.putBundle(Linker.EXTRA_LINKER_SHARED_RELROS,
-                                Linker.getInstance().getSharedRelros());
-                    }
+                    LibraryLoader.getInstance().getMediator().putSharedRelrosToBundle(
+                            connectionBundle);
                 }
 
                 @Override
@@ -236,6 +239,10 @@ public final class ChildProcessLauncherHelperImpl {
         String processType =
                 ContentSwitchUtils.getSwitchValue(commandLine, ContentSwitches.SWITCH_PROCESS_TYPE);
 
+        if (TraceEvent.enabled()) {
+            commandLine = Arrays.copyOf(commandLine, commandLine.length + 1);
+            commandLine[commandLine.length - 1] = TRACE_EARLY_JAVA_IN_CHILD_SWITCH;
+        }
         boolean sandboxed = true;
         if (!ContentSwitches.SWITCH_RENDERER_PROCESS.equals(processType)) {
             if (ContentSwitches.SWITCH_GPU_PROCESS.equals(processType)) {
@@ -318,11 +325,14 @@ public final class ChildProcessLauncherHelperImpl {
             public void run() {
                 ChildConnectionAllocator allocator =
                         getConnectionAllocator(context, true /* sandboxed */);
+                boolean bindWaiveCpu = ContentFeatureList.isEnabled(
+                        ContentFeatureList.BINDING_MANAGEMENT_WAIVE_CPU);
                 if (ChildProcessConnection.supportVariableConnections()) {
-                    sBindingManager = new BindingManager(context, sSandboxedChildConnectionRanking);
+                    sBindingManager = new BindingManager(
+                            context, sSandboxedChildConnectionRanking, bindWaiveCpu);
                 } else {
                     sBindingManager = new BindingManager(context, allocator.getNumberOfServices(),
-                            sSandboxedChildConnectionRanking);
+                            sSandboxedChildConnectionRanking, bindWaiveCpu);
                 }
             }
         });
@@ -568,7 +578,7 @@ public final class ChildProcessLauncherHelperImpl {
                     // Nothing to add.
                     break;
                 case ChildProcessImportance.MODERATE:
-                    connection.addModerateBinding();
+                    connection.addModerateBinding(false);
                     break;
                 case ChildProcessImportance.IMPORTANT:
                     connection.addStrongBinding();
@@ -593,7 +603,7 @@ public final class ChildProcessLauncherHelperImpl {
                         // Nothing to remove.
                         break;
                     case ChildProcessImportance.MODERATE:
-                        connection.removeModerateBinding();
+                        connection.removeModerateBinding(false);
                         break;
                     case ChildProcessImportance.IMPORTANT:
                         connection.removeStrongBinding();
@@ -638,36 +648,13 @@ public final class ChildProcessLauncherHelperImpl {
         }
     }
 
-    private static boolean sLinkerInitialized;
-    private static long sLinkerLoadAddress;
-    private static void initLinker() {
-        assert LauncherThread.runningOnLauncherThread();
-        if (sLinkerInitialized) return;
-        if (LibraryLoader.getInstance().useChromiumLinker()) {
-            sLinkerLoadAddress = Linker.getInstance().getBaseLoadAddress();
-            if (sLinkerLoadAddress == 0) {
-                Log.i(TAG, "Shared RELRO support disabled!");
-            }
-        }
-        sLinkerInitialized = true;
-    }
-
-    private static ChromiumLinkerParams getLinkerParamsForNewConnection() {
-        assert LauncherThread.runningOnLauncherThread();
-
-        initLinker();
-        assert sLinkerInitialized;
-        if (sLinkerLoadAddress == 0) return null;
-
-        return new ChromiumLinkerParams(sLinkerLoadAddress);
-    }
-
     private static Bundle populateServiceBundle(Bundle bundle) {
         ChildProcessCreationParamsImpl.addIntentExtras(bundle);
         bundle.putBoolean(ChildProcessConstants.EXTRA_BIND_TO_CALLER,
                 ChildProcessCreationParamsImpl.getBindToCallerCheck());
-        ChromiumLinkerParams linkerParams = getLinkerParamsForNewConnection();
-        if (linkerParams != null) linkerParams.populateBundle(bundle);
+        MultiProcessMediator m = LibraryLoader.getInstance().getMediator();
+        m.ensureInitializedInMainProcess();
+        m.putLoadAddressToBundle(bundle);
         return bundle;
     }
 

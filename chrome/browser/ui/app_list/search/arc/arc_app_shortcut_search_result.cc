@@ -12,7 +12,7 @@
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
-#include "chrome/browser/chromeos/arc/icon_decode_request.h"
+#include "chrome/browser/ash/arc/icon_decode_request.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/app_service/app_service_app_icon_loader.h"
@@ -21,6 +21,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 
 namespace app_list {
 
@@ -45,7 +46,7 @@ ArcAppShortcutSearchResult::ArcAppShortcutSearchResult(
   SetIsRecommendation(is_recommendation);
 
   const int icon_dimension =
-      ash::AppListConfig::instance().search_tile_icon_dimension();
+      ash::SharedAppListConfig::instance().search_tile_icon_dimension();
   if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
     DCHECK(data_->icon);
     apps::ArcRawIconPngDataToImageSkia(
@@ -71,7 +72,8 @@ ArcAppShortcutSearchResult::ArcAppShortcutSearchResult(
 
   badge_icon_loader_ = std::make_unique<AppServiceAppIconLoader>(
       profile_,
-      ash::AppListConfig::instance().search_tile_badge_icon_dimension(), this);
+      ash::SharedAppListConfig::instance().search_tile_badge_icon_dimension(),
+      this);
   badge_icon_loader_->FetchImage(GetAppId());
 }
 
@@ -85,7 +87,7 @@ void ArcAppShortcutSearchResult::Open(int event_flags) {
 void ArcAppShortcutSearchResult::OnAppImageUpdated(
     const std::string& app_id,
     const gfx::ImageSkia& image) {
-  SetBadgeIcon(image);
+  SetBadgeIcon(ui::ImageModel::FromImageSkia(image));
 }
 
 std::string ArcAppShortcutSearchResult::GetAppId() const {
@@ -96,13 +98,13 @@ std::string ArcAppShortcutSearchResult::GetAppId() const {
   return arc_prefs->GetAppIdByPackageName(data_->package_name.value());
 }
 
-base::string16 ArcAppShortcutSearchResult::ComputeAccessibleName() const {
+std::u16string ArcAppShortcutSearchResult::ComputeAccessibleName() const {
   const ArcAppListPrefs* arc_prefs = ArcAppListPrefs::Get(profile_);
   DCHECK(arc_prefs);
   std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
       arc_prefs->GetApp(GetAppId());
   if (!app_info.get())
-    return base::string16();
+    return std::u16string();
 
   return l10n_util::GetStringFUTF16(IDS_APP_ACTION_SHORTCUT_ACCESSIBILITY_NAME,
                                     base::UTF8ToUTF16(data_->short_label),

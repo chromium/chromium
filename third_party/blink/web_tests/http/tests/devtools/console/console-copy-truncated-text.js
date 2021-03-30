@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that console copies truncated text in messages properly.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   var longUrl = 'www.' + 'z123456789'.repeat(15) + '.com';
@@ -196,7 +196,7 @@
     async function onSearch() {
       var matches = consoleView.element
         .childTextNodes()
-        .filter(node => node.parentElement.classList.contains('highlighted-search-result'))
+        .filter(node => node.parentElement && node.parentElement.classList.contains('highlighted-search-result'))
         .map(node => node.parentElement);
       TestRunner.addResult('Highlighted ' + matches.length + ' matches');
 

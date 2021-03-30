@@ -41,6 +41,10 @@ class ArcContainerClientAdapterTest : public testing::Test {
   content::BrowserTaskEnvironment browser_task_environment_;
 };
 
+void OnMiniInstanceStarted(bool result) {
+  DCHECK(result);
+}
+
 // b/164816080 This test ensures that a new container instance that is
 // created while handling the shutting down of the previous instance,
 // doesn't incorrectly receive the shutdown event as well.
@@ -91,6 +95,38 @@ TEST_F(ArcContainerClientAdapterTest,
   EXPECT_FALSE(child_observer.stopped_called());
 }
 
+TEST_F(ArcContainerClientAdapterTest, StartArc_DisableMediaStoreMaintenance) {
+  StartParams start_params;
+  start_params.disable_media_store_maintenance = true;
+  client_adapter()->StartMiniArc(std::move(start_params),
+                                 base::BindOnce(&OnMiniInstanceStarted));
+  const auto& request = chromeos::FakeSessionManagerClient::Get()
+                            ->last_start_arc_mini_container_request();
+  EXPECT_TRUE(request.has_disable_media_store_maintenance());
+  EXPECT_TRUE(request.disable_media_store_maintenance());
+}
+
+TEST_F(ArcContainerClientAdapterTest, StartArc_DisableDownloadProviderDefault) {
+  StartParams start_params;
+  client_adapter()->StartMiniArc(std::move(start_params),
+                                 base::BindOnce(&OnMiniInstanceStarted));
+  const auto& request = chromeos::FakeSessionManagerClient::Get()
+                            ->last_start_arc_mini_container_request();
+  EXPECT_TRUE(request.has_disable_download_provider());
+  EXPECT_FALSE(request.disable_download_provider());
+}
+
+TEST_F(ArcContainerClientAdapterTest, StartArc_DisableDownloadProviderOn) {
+  StartParams start_params;
+  start_params.disable_download_provider = true;
+  client_adapter()->StartMiniArc(std::move(start_params),
+                                 base::BindOnce(&OnMiniInstanceStarted));
+  const auto& request = chromeos::FakeSessionManagerClient::Get()
+                            ->last_start_arc_mini_container_request();
+  EXPECT_TRUE(request.has_disable_download_provider());
+  EXPECT_TRUE(request.disable_download_provider());
+}
+
 struct DalvikMemoryProfileTestParam {
   // Requested profile.
   StartParams::DalvikMemoryProfile profile;
@@ -120,9 +156,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ArcContainerClientAdapterDalvikMemoryProfileTest,
                          ::testing::ValuesIn(kDalvikMemoryProfileTestCases));
 
-void OnMiniInstanceStarted(bool result) {
-  DCHECK(result);
-}
 
 TEST_P(ArcContainerClientAdapterDalvikMemoryProfileTest, Profile) {
   const auto& test_param = GetParam();

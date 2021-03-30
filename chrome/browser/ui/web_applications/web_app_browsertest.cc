@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -13,6 +14,13 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/browser_app_launcher.h"
+#include "chrome/browser/browser_features.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/devtools/protocol/browser_handler.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -37,14 +45,19 @@
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/components/external_install_options.h"
+#include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
+#include "chrome/browser/web_applications/components/install_finalizer.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/test/web_app_install_observer.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/background_color_change_waiter.h"
@@ -55,6 +68,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -69,6 +83,7 @@
 namespace {
 
 constexpr const char kExampleURL[] = "http://example.org/";
+constexpr const char kExampleManifestURL[] = "http://example.org/manifest";
 
 constexpr char kLaunchWebAppDisplayModeHistogram[] = "Launch.WebAppDisplayMode";
 
@@ -125,8 +140,8 @@ class WebAppBrowserTest : public WebAppControllerBrowserTest {
     static int index = 0;
 
     base::HistogramTester tester;
-    const std::string base_url = "https://example.com/path";
-    const GURL app_url(base_url + base::NumberToString(index++));
+    const GURL app_url = https_server()->GetURL(
+        base::StringPrintf("/web_apps/basic.html?index=%d", index++));
     auto web_app_info = std::make_unique<WebApplicationInfo>();
     web_app_info->start_url = app_url;
     web_app_info->scope = app_url;
@@ -137,37 +152,29 @@ class WebAppBrowserTest : public WebAppControllerBrowserTest {
 
     AppId app_id = InstallWebApp(std::move(web_app_info));
     Browser* app_browser = LaunchWebAppBrowser(app_id);
+    DCHECK(app_browser->is_type_app());
     DCHECK(app_browser->app_controller());
     tester.ExpectUniqueSample(
         kLaunchWebAppDisplayModeHistogram,
         display_override_mode ? *display_override_mode : display_mode, 1);
 
-    NavigateToURLAndWait(app_browser, app_url);
+    content::WebContents* const web_contents =
+        app_browser->tab_strip_model()->GetActiveWebContents();
+    EXPECT_TRUE(WaitForLoadStop(web_contents));
+    EXPECT_EQ(app_url, web_contents->GetVisibleURL());
 
     bool matches;
+    const bool result = app_browser->app_controller()->HasMinimalUiButtons();
     EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        app_browser->tab_strip_model()->GetActiveWebContents(),
+        web_contents,
         "window.domAutomationController.send(window.matchMedia('(display-mode: "
         "minimal-ui)').matches)",
         &matches));
-    EXPECT_EQ(app_browser->app_controller()->HasMinimalUiButtons(), matches);
+    EXPECT_EQ(result, matches);
     CloseAndWait(app_browser);
 
-    return matches;
+    return result;
   }
-};
-
-// A dedicated test fixture for DisplayOverride, which requires a command line
-// switch to enable manifest parsing.
-class WebAppBrowserTest_DisplayOverride : public WebAppBrowserTest {
- public:
-  WebAppBrowserTest_DisplayOverride() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kWebAppManifestDisplayOverride);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // A dedicated test fixture for WindowControlsOverlay, which requires a command
@@ -176,9 +183,7 @@ class WebAppBrowserTest_WindowControlsOverlay : public WebAppBrowserTest {
  public:
   WebAppBrowserTest_WindowControlsOverlay() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kWebAppManifestDisplayOverride,
-         features::kWebAppWindowControlsOverlay},
-        {});
+        {features::kWebAppWindowControlsOverlay}, {});
   }
 
  private:
@@ -195,7 +200,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ThemeColor) {
     manifest.scope = GURL(kExampleURL);
     manifest.theme_color = theme_color;
     auto web_app_info = std::make_unique<WebApplicationInfo>();
-    web_app::UpdateWebAppInfoFromManifest(manifest, web_app_info.get());
+    web_app::UpdateWebAppInfoFromManifest(manifest, GURL(kExampleManifestURL),
+                                          web_app_info.get());
 
     AppId app_id = InstallWebApp(std::move(web_app_info));
     Browser* app_browser = LaunchWebAppBrowser(app_id);
@@ -223,7 +229,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, BackgroundColor) {
   manifest.scope = GURL(kExampleURL);
   manifest.background_color = SkColorSetA(SK_ColorBLUE, 0xF0);
   auto web_app_info = std::make_unique<WebApplicationInfo>();
-  web_app::UpdateWebAppInfoFromManifest(manifest, web_app_info.get());
+  web_app::UpdateWebAppInfoFromManifest(manifest, GURL(kExampleManifestURL),
+                                        web_app_info.get());
   AppId app_id = InstallWebApp(std::move(web_app_info));
 
   auto* provider = WebAppProviderBase::GetProviderBase(profile());
@@ -370,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WithoutMinimalUiButtons) {
                                    /*open_as_window=*/false));
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_DisplayOverride, DisplayOverride) {
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, DisplayOverride) {
   GURL test_url = https_server()->GetURL(
       "/banners/"
       "manifest_test_page.html?manifest=manifest_display_override.json");
@@ -387,8 +394,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_DisplayOverride, DisplayOverride) {
   EXPECT_EQ(DisplayMode::kStandalone, app_display_mode_override[1]);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_DisplayOverride,
-                       WithMinimalUiButtons) {
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
+                       WithMinimalUiButtons_DisplayOverride) {
   EXPECT_TRUE(HasMinimalUiButtons(DisplayMode::kStandalone,
                                   DisplayMode::kBrowser,
                                   /*open_as_window=*/true));
@@ -404,8 +411,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_DisplayOverride,
                                   /*open_as_window=*/false));
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_DisplayOverride,
-                       WithoutMinimalUiButtons) {
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
+                       WithoutMinimalUiButtons_DisplayOverride) {
   EXPECT_FALSE(HasMinimalUiButtons(DisplayMode::kMinimalUi,
                                    DisplayMode::kStandalone,
                                    /*open_as_window=*/true));
@@ -660,7 +667,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, CopyURL) {
   chrome::ExecuteCommand(app_browser, IDC_COPY_URL);
 
   ui::Clipboard* const clipboard = ui::Clipboard::GetForCurrentThread();
-  base::string16 result;
+  std::u16string result;
   clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
                       &result);
   EXPECT_EQ(result, base::UTF8ToUTF16(kExampleURL));
@@ -690,7 +697,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, NoTabSelectedMenuCrash) {
   Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
 
   app_browser->tab_strip_model()->CloseAllTabs();
-  auto app_menu_model = std::make_unique<WebAppMenuModel>(nullptr, app_browser);
+  auto app_menu_model = std::make_unique<WebAppMenuModel>(
+      /*provider=*/nullptr, app_browser);
   app_menu_model->Init();
 }
 
@@ -700,7 +708,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, UninstallMenuOption) {
   const AppId app_id = InstallPWA(app_url);
   Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
 
-  auto app_menu_model = std::make_unique<WebAppMenuModel>(nullptr, app_browser);
+  auto app_menu_model = std::make_unique<WebAppMenuModel>(
+      /*provider=*/nullptr, app_browser);
   app_menu_model->Init();
   ui::MenuModel* model = app_menu_model.get();
   int index = -1;
@@ -763,7 +772,14 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ShortcutMenuOptionsForCrashedTab) {
       NavigateAndAwaitInstallabilityCheck(browser(), GetInstallableAppURL()));
   content::WebContents* tab_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  tab_contents->SetIsCrashed(base::TERMINATION_STATUS_PROCESS_CRASHED, -1);
+
+  {
+    content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
+    content::RenderFrameDeletedObserver crash_observer(
+        tab_contents->GetMainFrame());
+    tab_contents->GetMainFrame()->GetProcess()->Shutdown(1);
+    crash_observer.WaitUntilDeleted();
+  }
   ASSERT_TRUE(tab_contents->IsCrashed());
 
   EXPECT_EQ(GetAppMenuCommandState(IDC_CREATE_SHORTCUT, browser()), kDisabled);
@@ -846,7 +862,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, CannotInstallOverWindowPwa) {
             kEnabled);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, CannotInstallOverPolicyPwa) {
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, CanInstallWithPolicyPwa) {
   ExternalInstallOptions options = CreateInstallOptions(GetInstallableAppURL());
   options.install_source = ExternalInstallSource::kExternalPolicy;
   PendingAppManagerInstall(profile(), options);
@@ -855,11 +871,36 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, CannotInstallOverPolicyPwa) {
   Browser* const new_browser =
       NavigateInNewWindowAndAwaitInstallabilityCheck(GetInstallableAppURL());
 
-  EXPECT_EQ(GetAppMenuCommandState(IDC_CREATE_SHORTCUT, new_browser),
-            kDisabled);
+  EXPECT_EQ(GetAppMenuCommandState(IDC_CREATE_SHORTCUT, new_browser), kEnabled);
   EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, new_browser), kNotPresent);
   EXPECT_EQ(GetAppMenuCommandState(IDC_OPEN_IN_PWA_WINDOW, new_browser),
             kEnabled);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
+                       CannotUninstallPolicyWebAppAfterUserInstall) {
+  GURL install_url = GetInstallableAppURL();
+  ExternalInstallOptions options = CreateInstallOptions(install_url);
+  options.install_source = ExternalInstallSource::kExternalPolicy;
+  PendingAppManagerInstall(profile(), options);
+
+  auto* provider = WebAppProvider::Get(browser()->profile());
+  ExternallyInstalledWebAppPrefs prefs(browser()->profile()->GetPrefs());
+  AppId app_id = prefs.LookupAppId(install_url).value();
+
+  EXPECT_FALSE(
+      provider->install_finalizer().CanUserUninstallExternalApp(app_id));
+
+  InstallWebAppFromPage(browser(), install_url);
+
+  // Performing a user install on the page should not override the "policy"
+  // install source.
+  EXPECT_FALSE(
+      provider->install_finalizer().CanUserUninstallExternalApp(app_id));
+  const WebApp& web_app =
+      *provider->registrar().AsWebAppRegistrar()->GetAppById(app_id);
+  EXPECT_TRUE(web_app.IsSynced());
+  EXPECT_TRUE(web_app.IsPolicyInstalledApp());
 }
 
 // Tests that the command for OpenActiveTabInPwaWindow is available for secure
@@ -901,7 +942,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ReparentShortcutApp) {
   web_app_info->scope = app_url.GetWithoutFilename();
   web_app_info->display_mode = DisplayMode::kBrowser;
   web_app_info->open_as_window = false;
-  web_app_info->title = base::ASCIIToUTF16("A Shortcut App");
+  web_app_info->title = u"A Shortcut App";
   const AppId app_id = InstallWebApp(std::move(web_app_info));
 
   NavigateToURLAndWait(browser(), app_url);
@@ -964,18 +1005,17 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, EmptyTitlesDoNotDisplayUrl) {
   content::WebContents* const web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
-  EXPECT_EQ(base::string16(), app_browser->GetWindowTitleForCurrentTab(false));
+  EXPECT_EQ(std::u16string(), app_browser->GetWindowTitleForCurrentTab(false));
   NavigateToURLAndWait(app_browser,
                        https_server()->GetURL("app.site.com", "/simple.html"));
-  EXPECT_EQ(base::ASCIIToUTF16("OK"),
-            app_browser->GetWindowTitleForCurrentTab(false));
+  EXPECT_EQ(u"OK", app_browser->GetWindowTitleForCurrentTab(false));
 }
 
 // Ensure that web app windows display the app title instead of the page
 // title when off scope.
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, OffScopeUrlsDisplayAppTitle) {
   const GURL app_url = GetSecureAppURL();
-  const base::string16 app_title = base::ASCIIToUTF16("A Web App");
+  const std::u16string app_title = u"A Web App";
 
   auto web_app_info = std::make_unique<WebApplicationInfo>();
   web_app_info->start_url = app_url;
@@ -989,8 +1029,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, OffScopeUrlsDisplayAppTitle) {
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 
   // When we are within scope, show the page title.
-  EXPECT_EQ(base::ASCIIToUTF16("Google"),
-            app_browser->GetWindowTitleForCurrentTab(false));
+  EXPECT_EQ(u"Google", app_browser->GetWindowTitleForCurrentTab(false));
 
   NavigateToURLAndWait(app_browser,
                        https_server()->GetURL("app.site.com", "/simple.html"));
@@ -1005,7 +1044,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, InScopeHttpUrlsDisplayAppTitle) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url =
       embedded_test_server()->GetURL("app.site.com", "/simple.html");
-  const base::string16 app_title = base::ASCIIToUTF16("A Web App");
+  const std::u16string app_title = u"A Web App";
 
   auto web_app_info = std::make_unique<WebApplicationInfo>();
   web_app_info->start_url = app_url;
@@ -1036,7 +1075,7 @@ class WebAppBrowserTest_PrefixInTitle : public WebAppBrowserTest {
 // Ensure that web app windows display the app title as a prefix.
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_PrefixInTitle, PrefixExistsInTitle) {
   const GURL app_url = GetSecureAppURL();
-  const base::string16 app_title = base::ASCIIToUTF16("A Web App");
+  const std::u16string app_title = u"A Web App";
 
   auto web_app_info = std::make_unique<WebApplicationInfo>();
   web_app_info->start_url = app_url;
@@ -1050,7 +1089,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_PrefixInTitle, PrefixExistsInTitle) {
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 
   // The page title should be the combination of app name and title.
-  EXPECT_EQ(base::ASCIIToUTF16("A Web App - Google"),
+  EXPECT_EQ(u"A Web App - Google",
             app_browser->GetWindowTitleForCurrentTab(false));
 }
 
@@ -1058,7 +1097,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_PrefixInTitle, PrefixExistsInTitle) {
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_PrefixInTitle,
                        EmptyTitlesDisplayAppName) {
   const GURL app_url = https_server()->GetURL("app.site.com", "/empty.html");
-  const base::string16 app_title = base::ASCIIToUTF16("A Web App");
+  const std::u16string app_title = u"A Web App";
   auto web_app_info = std::make_unique<WebApplicationInfo>();
   web_app_info->start_url = app_url;
   web_app_info->scope = app_url.GetWithoutFilename();
@@ -1107,8 +1146,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_AppNameInsteadOfOrigin,
   const AppId app_id = InstallPWA(app_url);
   Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
   EXPECT_TRUE(app_browser->app_controller()->HasTitlebarAppOriginText());
-  EXPECT_EQ(app_browser->app_controller()->GetLaunchFlashText(),
-            base::UTF8ToUTF16("A Web App"));
+  EXPECT_EQ(app_browser->app_controller()->GetLaunchFlashText(), u"A Web App");
 }
 
 // Check that a subframe on a regular web page can navigate to a URL that
@@ -1184,7 +1222,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PopupLocationBar) {
   const AppId app_id = InstallPWA(app_url);
 
   Browser* const popup_browser = web_app::CreateWebApplicationWindow(
-      profile(), app_id, WindowOpenDisposition::NEW_POPUP);
+      profile(), app_id, WindowOpenDisposition::NEW_POPUP, /*restore_id=*/0);
 
   EXPECT_TRUE(
       popup_browser->CanSupportWindowFeature(Browser::FEATURE_LOCATIONBAR));
@@ -1236,6 +1274,39 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_RemoveStatusBar, RemoveStatusBar) {
   const AppId app_id = InstallPwaForCurrentUrl();
   Browser* const app_browser = LaunchWebAppBrowser(app_id);
   EXPECT_EQ(nullptr, app_browser->GetStatusBubbleForTesting());
+}
+
+class WebAppBrowserTest_NoDestroyProfile : public WebAppBrowserTest {
+ public:
+  WebAppBrowserTest_NoDestroyProfile() {
+    // This test only makes sense when DestroyProfileOnBrowserClose is
+    // disabled.
+    feature_list_.InitAndDisableFeature(
+        features::kDestroyProfileOnBrowserClose);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Check that no web app is launched during shutdown.
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_NoDestroyProfile, Shutdown) {
+  const GURL app_url = GetSecureAppURL();
+  const AppId app_id = InstallPWA(app_url);
+  apps::AppLaunchParams params(
+      app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+      WindowOpenDisposition::NEW_WINDOW,
+      apps::mojom::AppLaunchSource::kSourceTest);
+
+  BrowserHandler handler(nullptr, std::string());
+  handler.Close();
+  ui_test_utils::WaitForBrowserToClose();
+
+  content::WebContents* const web_contents =
+      apps::AppServiceProxyFactory::GetForProfile(profile())
+          ->BrowserAppLauncher()
+          ->LaunchAppWithParams(std::move(params));
+  EXPECT_EQ(web_contents, nullptr);
 }
 
 }  // namespace web_app

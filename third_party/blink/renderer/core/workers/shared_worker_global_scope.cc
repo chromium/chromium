@@ -59,12 +59,8 @@ SharedWorkerGlobalScope::SharedWorkerGlobalScope(
     SharedWorkerThread* thread,
     base::TimeTicks time_origin,
     const SharedWorkerToken& token,
-    const base::UnguessableToken& appcache_host_id,
-    ukm::SourceId ukm_source_id)
-    : WorkerGlobalScope(std::move(creation_params),
-                        thread,
-                        time_origin,
-                        ukm_source_id),
+    const base::UnguessableToken& appcache_host_id)
+    : WorkerGlobalScope(std::move(creation_params), thread, time_origin),
       token_(token) {
   appcache_host_ = MakeGarbageCollected<ApplicationCacheHostForWorker>(
       appcache_host_id, GetBrowserInterfaceBroker(),
@@ -82,7 +78,7 @@ void SharedWorkerGlobalScope::Initialize(
     const KURL& response_url,
     network::mojom::ReferrerPolicy response_referrer_policy,
     network::mojom::IPAddressSpace response_address_space,
-    const Vector<CSPHeaderAndType>& response_csp_headers,
+    Vector<network::mojom::blink::ContentSecurityPolicyPtr> response_csp,
     const Vector<String>* response_origin_trial_tokens,
     int64_t appcache_id) {
   // Step 12.3. "Set worker global scope's url to response's url."
@@ -110,12 +106,12 @@ void SharedWorkerGlobalScope::Initialize(
   // https://w3c.github.io/webappsec-csp/#initialize-global-object-csp
   // These should be called after SetAddressSpace() to correctly override the
   // address space by the "treat-as-public-address" CSP directive.
-  Vector<CSPHeaderAndType> csp_headers =
+  Vector<network::mojom::blink::ContentSecurityPolicyPtr> csp_headers =
       response_url.ProtocolIsAbout() || response_url.ProtocolIsData() ||
               response_url.ProtocolIs("blob")
-          ? OutsideContentSecurityPolicyHeaders()
-          : response_csp_headers;
-  InitContentSecurityPolicyFromVector(csp_headers);
+          ? mojo::Clone(OutsideContentSecurityPolicies())
+          : std::move(response_csp);
+  InitContentSecurityPolicyFromVector(std::move(csp_headers));
   BindContentSecurityPolicyToExecutionContext();
 
   OriginTrialContext::AddTokens(this, response_origin_trial_tokens);
@@ -262,8 +258,9 @@ void SharedWorkerGlobalScope::DidFetchClassicScript(
   Initialize(classic_script_loader->ResponseURL(), response_referrer_policy,
              classic_script_loader->ResponseAddressSpace(),
              classic_script_loader->GetContentSecurityPolicy()
-                 ? classic_script_loader->GetContentSecurityPolicy()->Headers()
-                 : Vector<CSPHeaderAndType>(),
+                 ? mojo::Clone(classic_script_loader->GetContentSecurityPolicy()
+                                   ->GetParsedPolicies())
+                 : Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
              classic_script_loader->OriginTrialTokens(),
              classic_script_loader->AppCacheID());
 

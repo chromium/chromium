@@ -10,5 +10,4 @@ monochrome_android_manifest_jinja_variables = [
   "min_sdk_version=24",
   "sandboxed_service_exported=true",
   use_32bit_abi_jinja_variable,
-  "enable_isolated_splits=$enable_isolated_splits",
 ]

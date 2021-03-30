@@ -8,6 +8,8 @@
 #include <stdint.h>
 
 #include "base/containers/id_map.h"
+#include "base/supports_user_data.h"
+#include "content/browser/browser_interface_broker_impl.h"
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/common/content_export.h"
@@ -21,7 +23,10 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/associated_interfaces/associated_interfaces.mojom.h"
+#include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
+#include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-forward.h"
 
 namespace IPC {
 class ChannelProxy;
@@ -31,6 +36,7 @@ class Message;
 namespace content {
 
 class AgentSchedulingGroupHostFactory;
+class BrowserMessageFilter;
 class RenderProcessHost;
 class SiteInstance;
 
@@ -43,7 +49,8 @@ class SiteInstance;
 // An AgentSchedulingGroupHost is stored as (and owned by) UserData on the
 // RenderProcessHost.
 class CONTENT_EXPORT AgentSchedulingGroupHost
-    : public RenderProcessHostObserver,
+    : public base::SupportsUserData,
+      public RenderProcessHostObserver,
       public IPC::Listener,
       public mojom::AgentSchedulingGroupHost,
       public mojom::RouteProvider,
@@ -60,6 +67,8 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   // Should not be called explicitly. Use `CreateIfNeeded()` instead.
   explicit AgentSchedulingGroupHost(RenderProcessHost& process);
   ~AgentSchedulingGroupHost() override;
+
+  void AddFilter(BrowserMessageFilter* filter);
 
   RenderProcessHost* GetProcess();
   // Ensure that the process this AgentSchedulingGroupHost belongs to is alive.
@@ -84,18 +93,23 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   void DestroyView(int32_t routing_id,
                    mojom::AgentSchedulingGroup::DestroyViewCallback callback);
   void CreateFrameProxy(
+      const blink::RemoteFrameToken& token,
       int32_t routing_id,
-      int32_t render_view_routing_id,
-      const base::Optional<base::UnguessableToken>& opener_frame_token,
+      const base::Optional<blink::FrameToken>& opener_frame_token,
+      int32_t view_routing_id,
       int32_t parent_routing_id,
-      const FrameReplicationState& replicated_state,
-      const base::UnguessableToken& frame_token,
+      blink::mojom::FrameReplicationStatePtr replicated_state,
       const base::UnguessableToken& devtools_frame_token);
+
+  void ReportNoBinderForInterface(const std::string& error);
 
   static void set_agent_scheduling_group_host_factory_for_testing(
       AgentSchedulingGroupHostFactory* asgh_factory);
   static AgentSchedulingGroupHostFactory*
   get_agent_scheduling_group_host_factory_for_testing();
+
+  // mojom::AgentSchedulingGroupHost overrides.
+  void DidUnloadRenderFrame(const blink::LocalFrameToken& frame_token) override;
 
  private:
   enum class LifecycleState {
@@ -170,6 +184,18 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   // calls from the (renderer-side) `AgentSchedulingGroup`.
   mojo::AssociatedReceiver<mojom::AgentSchedulingGroupHost> receiver_;
 
+  // BrowserInterfaceBroker implementation through which this
+  // AgentSchedulingGroupHost exposes ASG-scoped Mojo services to the
+  // currently active document.
+  // TODO(crbug.com/1132752): Enable capability control for Prerender2 by
+  // initializing BrowserInterfaceBrokerImpl with a non-null
+  // MojoBinderPolicyApplier pointer.
+  BrowserInterfaceBrokerImpl<AgentSchedulingGroupHost,
+                             AgentSchedulingGroupHost*>
+      broker_{this};
+  mojo::Receiver<blink::mojom::BrowserInterfaceBroker> broker_receiver_{
+      &broker_};
+
   // The `mojom::RouteProvider` mojo pair to setup
   // `blink::AssociatedInterfaceProvider` routes between this and the
   // renderer-side `AgentSchedulingGroup`.
@@ -183,6 +209,7 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   mojo::AssociatedReceiverSet<blink::mojom::AssociatedInterfaceProvider,
                               int32_t>
       associated_interface_provider_receivers_;
+
   LifecycleState state_{LifecycleState::kNewborn};
 };
 

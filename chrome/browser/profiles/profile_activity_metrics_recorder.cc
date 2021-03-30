@@ -34,11 +34,17 @@ int GetMetricsBucketIndex(const Profile* profile) {
   if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile())
     return 0;
 
-  ProfileAttributesEntry* entry;
-  if (!g_browser_process->profile_manager() ||
-      !g_browser_process->profile_manager()
-           ->GetProfileAttributesStorage()
-           .GetProfileAttributesWithPath(profile->GetPath(), &entry)) {
+  if (!g_browser_process->profile_manager()) {
+    VLOG(1) << "Failed to read profile bucket index because profile manager "
+               "doesn't exist.";
+    return -1;
+  }
+
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+  if (!entry) {
     // This can happen if the profile is deleted.
     VLOG(1) << "Failed to read profile bucket index because attributes entry "
                "doesn't exist.";
@@ -102,10 +108,11 @@ void RecordAccountMetrics(const Profile* profile) {
   if (profile->IsEphemeralGuestProfile())
     return;
 
-  ProfileAttributesEntry* entry;
-  if (!g_browser_process->profile_manager()
-           ->GetProfileAttributesStorage()
-           .GetProfileAttributesWithPath(profile->GetPath(), &entry)) {
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+  if (!entry) {
     // This can happen if the profile is deleted / for guest profile.
     return;
   }

@@ -4,10 +4,12 @@
 
 package org.chromium.weblayer_private.payments;
 
+import android.text.TextUtils;
+
 import androidx.annotation.Nullable;
 
+import org.chromium.components.payments.AbortReason;
 import org.chromium.components.payments.BrowserPaymentRequest;
-import org.chromium.components.payments.Event;
 import org.chromium.components.payments.JourneyLogger;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppFactoryDelegate;
@@ -18,6 +20,7 @@ import org.chromium.components.payments.PaymentRequestSpec;
 import org.chromium.components.payments.PaymentResponseHelper;
 import org.chromium.components.payments.PaymentResponseHelperInterface;
 import org.chromium.payments.mojom.PaymentDetails;
+import org.chromium.payments.mojom.PaymentErrorReason;
 import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.payments.mojom.PaymentValidationErrors;
 
@@ -127,7 +130,7 @@ public class WebLayerPaymentRequestService implements BrowserPaymentRequest {
                 + "available app.";
         PaymentApp selectedPaymentApp = mAvailableApps.get(0);
         if (mShouldSkipAppSelector) {
-            mJourneyLogger.setEventOccurred(Event.SKIPPED_SHOW);
+            mJourneyLogger.setSkippedShow();
             PaymentResponseHelperInterface paymentResponseHelper = new PaymentResponseHelper(
                     selectedPaymentApp.handlesShippingAddress(), mSpec.getPaymentOptions());
             mPaymentRequestService.invokePaymentApp(selectedPaymentApp, paymentResponseHelper);
@@ -151,5 +154,21 @@ public class WebLayerPaymentRequestService implements BrowserPaymentRequest {
     @Override
     public boolean hasAnyCompleteApp() {
         return !mAvailableApps.isEmpty() && mAvailableApps.get(0).isComplete();
+    }
+
+    // Implements BrowserPaymentRequest:
+    @Override
+    public void onInstrumentDetailsError(String errorMessage) {
+        assert !TextUtils.isEmpty(errorMessage);
+        mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
+        disconnectFromClientWithDebugMessage(errorMessage);
+    }
+
+    private void disconnectFromClientWithDebugMessage(String debugMessage) {
+        if (mPaymentRequestService != null) {
+            mPaymentRequestService.disconnectFromClientWithDebugMessage(
+                    debugMessage, PaymentErrorReason.USER_CANCEL);
+        }
+        close();
     }
 }

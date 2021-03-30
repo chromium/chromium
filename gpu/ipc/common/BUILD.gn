@@ -86,9 +86,12 @@ source_set("ipc_common_sources") {
 
   if (is_win) {
     sources += [
+      "dxgi_helpers.cc",
+      "dxgi_helpers.h",
       "gpu_memory_buffer_impl_dxgi.cc",
       "gpu_memory_buffer_impl_dxgi.h",
     ]
+    libs = [ "d3d11.lib" ]
   }
   if (is_linux || is_chromeos || use_ozone) {
     sources += [
@@ -120,8 +123,10 @@ source_set("ipc_common_sources") {
   deps = [
     "//base",
     "//components/viz/common:resource_format",
+    "//gpu/command_buffer/client:client_sources",
     "//gpu/command_buffer/common:common_sources",
     "//gpu/config:config_sources",
+    "//third_party/libyuv",
     "//ui/base",
     "//ui/gfx:color_space",
     "//ui/gfx/geometry",
@@ -240,6 +245,9 @@ mojom("interfaces") {
   }
   if (use_x11) {
     enabled_features += [ "use_x11" ]
+  }
+  if (is_win || is_chromeos || is_chromeos_lacros) {
+    enabled_features += [ "has_gpu_revision_info" ]
   }
 
   shared_cpp_typemaps = [
@@ -479,6 +487,9 @@ mojom("gpu_preferences_interface") {
   enabled_features = []
   if (use_ozone) {
     enabled_features += [ "use_ozone" ]
+  }
+  if (is_chromeos_ash || is_chromeos_lacros) {
+    enabled_features += [ "is_chromeos_device" ]
   }
 
   cpp_typemaps = [

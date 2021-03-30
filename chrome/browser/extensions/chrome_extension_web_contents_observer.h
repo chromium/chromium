@@ -7,9 +7,10 @@
 
 #include <stdint.h>
 
+#include <string>
+
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/common/stack_frame.h"
@@ -42,6 +43,8 @@ class ChromeExtensionWebContentsObserver
   // ExtensionWebContentsObserver:
   void InitializeRenderFrame(
       content::RenderFrameHost* render_frame_host) override;
+  std::unique_ptr<ExtensionFrameHost> CreateExtensionFrameHost(
+      content::WebContents* web_contents) override;
 
   // content::WebContentsObserver overrides.
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
@@ -53,8 +56,8 @@ class ChromeExtensionWebContentsObserver
   // Adds a message to the extensions ErrorConsole.
   void OnDetailedConsoleMessageAdded(
       content::RenderFrameHost* render_frame_host,
-      const base::string16& message,
-      const base::string16& source,
+      const std::u16string& message,
+      const std::u16string& source,
       const StackTrace& stack_trace,
       int32_t severity_level);
 

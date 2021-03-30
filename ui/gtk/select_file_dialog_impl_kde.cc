@@ -58,7 +58,7 @@ class SelectFileDialogImplKDE : public SelectFileDialogImpl {
   // SelectFileDialog implementation.
   // |params| is user data we pass back via the Listener interface.
   void SelectFileImpl(Type type,
-                      const base::string16& title,
+                      const std::u16string& title,
                       const base::FilePath& default_path,
                       const FileTypeInfo* file_types,
                       int file_type_index,
@@ -252,7 +252,7 @@ bool SelectFileDialogImplKDE::IsRunning(gfx::NativeWindow parent_window) const {
 // We ignore |default_extension|.
 void SelectFileDialogImplKDE::SelectFileImpl(
     Type type,
-    const base::string16& title,
+    const std::u16string& title,
     const base::FilePath& default_path,
     const FileTypeInfo* file_types,
     int file_type_index,

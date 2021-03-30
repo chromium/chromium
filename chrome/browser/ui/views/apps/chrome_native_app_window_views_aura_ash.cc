@@ -19,10 +19,10 @@
 #include "base/logging.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/chromeos/note_taking_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
-#include "chrome/browser/ui/app_list/icon_standardizer.h"
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_context_menu.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -33,6 +33,7 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
+#include "components/full_restore/full_restore_utils.h"
 #include "components/session_manager/core/session_manager.h"
 #include "extensions/browser/app_window/app_delegate.h"
 #include "extensions/common/constants.h"
@@ -88,8 +89,7 @@ void ChromeNativeAppWindowViewsAuraAsh::InitializeWindow(
     const AppWindow::CreateParams& create_params) {
   ChromeNativeAppWindowViewsAura::InitializeWindow(app_window, create_params);
   aura::Window* window = GetNativeWindow();
-  window->SetProperty(aura::client::kAppType,
-                      static_cast<int>(ash::AppType::CHROME_APP));
+
   // Fullscreen doesn't always imply immersive mode (see
   // ShouldEnableImmersive()).
   window->SetProperty(chromeos::kImmersiveImpliedByFullscreen, false);
@@ -137,6 +137,19 @@ void ChromeNativeAppWindowViewsAuraAsh::OnBeforeWidgetInit(
     DCHECK_EQ(ui::SHOW_STATE_DEFAULT, init_params->show_state);
     init_params->show_state = ui::SHOW_STATE_MAXIMIZED;
   }
+
+  const int32_t restore_window_id =
+      full_restore::FetchRestoreWindowId(app_window()->extension_id());
+  init_params->init_properties_container.SetProperty(
+      full_restore::kWindowIdKey, app_window()->session_id().id());
+  init_params->init_properties_container.SetProperty(
+      full_restore::kRestoreWindowIdKey, restore_window_id);
+  init_params->init_properties_container.SetProperty(
+      full_restore::kAppIdKey, app_window()->extension_id());
+  init_params->init_properties_container.SetProperty(
+      aura::client::kAppType, static_cast<int>(ash::AppType::CHROME_APP));
+
+  full_restore::ModifyWidgetParams(restore_window_id, init_params);
 }
 
 std::unique_ptr<views::NonClientFrameView>
@@ -166,7 +179,7 @@ gfx::ImageSkia ChromeNativeAppWindowViewsAuraAsh::GetWindowIcon() {
 
   const gfx::ImageSkia& image_skia =
       ChromeNativeAppWindowViews::GetWindowIcon();
-  return !image_skia.isNull() ? app_list::CreateStandardIconImage(image_skia)
+  return !image_skia.isNull() ? apps::CreateStandardIconImage(image_skia)
                               : gfx::ImageSkia();
 }
 
@@ -553,9 +566,9 @@ gfx::Image ChromeNativeAppWindowViewsAuraAsh::GetCustomImage() {
     return ChromeNativeAppWindowViews::GetCustomImage();
 
   gfx::Image image = ChromeNativeAppWindowViews::GetCustomImage();
-  return !image.IsEmpty() ? gfx::Image(app_list::CreateStandardIconImage(
-                                image.AsImageSkia()))
-                          : gfx::Image();
+  return !image.IsEmpty()
+             ? gfx::Image(apps::CreateStandardIconImage(image.AsImageSkia()))
+             : gfx::Image();
 }
 
 gfx::Image ChromeNativeAppWindowViewsAuraAsh::GetAppIconImage() {

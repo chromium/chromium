@@ -15,6 +15,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './file_path.mojom-lite.js';
 import './color_mode_select.js';
 import './file_type_select.js';
+import './loading_page.js';
 import './page_size_select.js';
 import './resolution_select.js';
 import './scan_done_section.js';
@@ -33,13 +34,13 @@ import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/po
 import {getScanService} from './mojo_interface_provider.js';
 import {AppState, ScannerArr} from './scanning_app_types.js';
 import {colorModeFromString, fileTypeFromString, pageSizeFromString, tokenToString} from './scanning_app_util.js';
-import {ScanningBrowserProxyImpl} from './scanning_browser_proxy.js';
+import {ScanningBrowserProxy, ScanningBrowserProxyImpl} from './scanning_browser_proxy.js';
 
 /**
- * The default save directory for completed scans.
+ * URL for the Scanning help page.
  * @const {string}
  */
-const DEFAULT_SAVE_DIRECTORY = '/home/chronos/user/MyFiles';
+const HELP_PAGE_LINK = 'http://support.google.com/chromebook?p=chrome_scanning';
 
 /**
  * @fileoverview
@@ -63,6 +64,9 @@ Polymer({
 
   /** @private {!Map<string, !mojoBase.mojom.UnguessableToken>} */
   scannerIds_: new Map(),
+
+  /** @private {?ScanningBrowserProxy}*/
+  browserProxy_: null,
 
   properties: {
     /** @private {!ScannerArr} */
@@ -97,6 +101,24 @@ Polymer({
 
     /** @type {string} */
     selectedResolution: String,
+
+    /**
+     * Used to indicate where scanned files are saved when a scan is complete.
+     * @type {string}
+     */
+    selectedFolder: String,
+
+    /**
+     * Map of a ScanSource's name to its corresponding SourceType. Used for
+     * fetching the SourceType setting for scan job metrics.
+     * @private {!Map<string, !chromeos.scanning.mojom.SourceType>}
+     */
+    sourceTypeMap_: {
+      type: Object,
+      value() {
+        return new Map();
+      },
+    },
 
     /**
      * Used to determine when certain parts of the app should be shown or hidden
@@ -181,11 +203,13 @@ Polymer({
     },
 
     /**
-     * The file path of the last scanned page of a successful scan job. Used to
-     * open the Files app with the correct file highlighted.
-     * @private {?mojoBase.mojom.FilePath}
+     * The file paths of the scanned pages of a successful scan job.
+     * @private {!Array<!mojoBase.mojom.FilePath>}
      */
-    lastScannedFilePath_: Object,
+    scannedFilePaths_: {
+      type: Array,
+      value: () => [],
+    },
 
     /**
      * The key to retrieve the appropriate string to display in the toast.
@@ -207,14 +231,27 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /**
+     * Indicates whether the More settings section is expanded.
+     * @private {boolean}
+     */
+    opened_: {
+      type: Boolean,
+      value: false,
+      reflectToAttribute: true,
+    },
   },
 
   /** @override */
   created() {
     this.scanService_ = getScanService();
-    this.selectedFilePath = DEFAULT_SAVE_DIRECTORY;
-
-    ScanningBrowserProxyImpl.getInstance().initialize();
+    this.browserProxy_ = ScanningBrowserProxyImpl.getInstance();
+    this.browserProxy_.initialize();
+    this.browserProxy_.getMyFilesPath().then(
+        /* @type {string} */ (myFilesPath) => {
+          this.selectedFilePath = myFilesPath;
+        });
   },
 
   /** @override */
@@ -269,15 +306,15 @@ Polymer({
   /**
    * Overrides chromeos.scanning.mojom.ScanJobObserverInterface.
    * @param {boolean} success
-   * @param {!mojoBase.mojom.FilePath} lastScannedFilePath
+   * @param {!Array<!mojoBase.mojom.FilePath>} scannedFilePaths
    */
-  onScanComplete(success, lastScannedFilePath) {
+  onScanComplete(success, scannedFilePaths) {
     if (!success || this.objectUrls_.length == 0) {
       this.$.scanFailedDialog.showModal();
       return;
     }
 
-    this.lastScannedFilePath_ = lastScannedFilePath;
+    this.scannedFilePaths_ = scannedFilePaths;
     this.setAppState_(AppState.DONE);
   },
 
@@ -319,6 +356,8 @@ Polymer({
    */
   onCapabilitiesReceived_(response) {
     this.capabilities_ = response.capabilities;
+    this.capabilities_.sources.forEach(
+        (source) => this.sourceTypeMap_.set(source.name, source.type));
     this.selectedFileType = chromeos.scanning.mojom.FileType.kPdf.toString();
     this.setAppState_(AppState.READY);
   },
@@ -328,11 +367,16 @@ Polymer({
    * @private
    */
   onScannersReceived_(response) {
-    this.setAppState_(AppState.GOT_SCANNERS);
+    if (response.scanners.length === 0) {
+      this.setAppState_(AppState.NO_SCANNERS);
+      return;
+    }
+
     for (const scanner of response.scanners) {
       this.scannerIds_.set(tokenToString(scanner.id), scanner.id);
     }
 
+    this.setAppState_(AppState.GOT_SCANNERS);
     this.scanners_ = response.scanners;
   },
 
@@ -367,13 +411,18 @@ Polymer({
       return;
     }
 
+    const fileType = fileTypeFromString(this.selectedFileType);
+    const colorMode = colorModeFromString(this.selectedColorMode);
+    const pageSize = pageSizeFromString(this.selectedPageSize);
+    const resolution = Number(this.selectedResolution)
+
     const settings = {
-      'sourceName': this.selectedSource,
-      'scanToPath': {'path': this.selectedFilePath},
-      'fileType': fileTypeFromString(this.selectedFileType),
-      'colorMode': colorModeFromString(this.selectedColorMode),
-      'pageSize': pageSizeFromString(this.selectedPageSize),
-      'resolutionDpi': Number(this.selectedResolution),
+      sourceName: this.selectedSource,
+      scanToPath: {path: this.selectedFilePath},
+      fileType: fileType,
+      colorMode: colorMode,
+      pageSize: pageSize,
+      resolutionDpi: resolution,
     };
 
     if (!this.scanJobObserverReceiver_) {
@@ -393,6 +442,15 @@ Polymer({
             /*@type {!{success: boolean}}*/ (response) => {
               this.onStartScanResponse_(response);
             });
+
+    const scanJobSettingsForMetrics = {
+      sourceType: this.sourceTypeMap_.get(this.selectedSource),
+      fileType: fileType,
+      colorMode: colorMode,
+      pageSize: pageSize,
+      resolution: resolution,
+    };
+    this.browserProxy_.recordScanJobSettings(scanJobSettingsForMetrics);
   },
 
   /** @private */
@@ -421,12 +479,11 @@ Polymer({
   },
 
   /**
-   * @param {boolean} opened Whether the section is expanded or not.
    * @return {string} Icon name.
    * @private
    */
-  getArrowIcon_(opened) {
-    return opened ? 'cr:expand-less' : 'cr:expand-more';
+  getArrowIcon_() {
+    return this.opened_ ? 'cr:expand-less' : 'cr:expand-more';
   },
 
   /**
@@ -465,7 +522,9 @@ Polymer({
   setAppState_(newState) {
     switch (newState) {
       case (AppState.GETTING_SCANNERS):
-        assert(this.appState_ === AppState.GETTING_SCANNERS);
+        assert(
+            this.appState_ === AppState.GETTING_SCANNERS ||
+            this.appState_ === AppState.NO_SCANNERS);
         break;
       case (AppState.GOT_SCANNERS):
         assert(this.appState_ === AppState.GETTING_SCANNERS);
@@ -496,6 +555,9 @@ Polymer({
       case (AppState.CANCELING):
         assert(this.appState_ === AppState.SCANNING);
         break;
+      case (AppState.NO_SCANNERS):
+        assert(this.appState_ === AppState.GETTING_SCANNERS);
+        break;
     }
 
     this.appState_ = newState;
@@ -503,7 +565,8 @@ Polymer({
 
   /** @private */
   onAppStateChange_() {
-    this.scannersLoaded_ = this.appState_ !== AppState.GETTING_SCANNERS;
+    this.scannersLoaded_ = this.appState_ !== AppState.GETTING_SCANNERS &&
+        this.appState_ !== AppState.NO_SCANNERS;
     this.settingsDisabled_ = this.appState_ !== AppState.READY;
     this.showCancelButton_ = this.appState_ === AppState.SCANNING ||
         this.appState_ === AppState.CANCELING;
@@ -555,6 +618,31 @@ Polymer({
   onDialogGetHelpClick_() {
     this.$.scanFailedDialog.close();
     this.setAppState_(AppState.READY);
-    window.open('http://support.google.com/chromebook?p=chrome_scanning');
+    window.open(HELP_PAGE_LINK);
+  },
+
+  /**
+   * @return {number}
+   * @private
+   */
+  getNumFilesSaved_() {
+    return this.selectedFileType ===
+            chromeos.scanning.mojom.FileType.kPdf.toString() ?
+        1 :
+        this.pageNumber_;
+  },
+
+  /** @private */
+  onRetryClick_() {
+    this.setAppState_(AppState.GETTING_SCANNERS);
+    this.scanService_.getScanners().then(
+        /*@type {!{scanners: !ScannerArr}}*/ (response) => {
+          this.onScannersReceived_(response);
+        });
+  },
+
+  /** @private */
+  onLearnMoreClick_() {
+    window.open(HELP_PAGE_LINK);
   },
 });

@@ -19,9 +19,11 @@
 }
 
 - (void)saveSession:(__weak SessionIOSFactory*)factory
-          directory:(NSString*)directory
+          sessionID:(NSString*)sessionID
+          directory:(const base::FilePath&)directory
         immediately:(BOOL)immediately {
-  NSString* sessionPath = [[self class] sessionPathForDirectory:directory];
+  NSString* sessionPath = [[self class] sessionPathForSessionID:sessionID
+                                                      directory:directory];
   NSData* data =
       [NSKeyedArchiver archivedDataWithRootObject:[factory sessionForSaving]
                             requiringSecureCoding:NO

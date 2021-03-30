@@ -48,8 +48,7 @@ bool SpellingPanelVisible() {
 void ShowSpellingPanel(bool show) {
 }
 
-void UpdateSpellingPanelWithMisspelledWord(const base::string16& word) {
-}
+void UpdateSpellingPanelWithMisspelledWord(const std::u16string& word) {}
 
 void PlatformSupportsLanguage(PlatformSpellChecker* spell_checker_instance,
                               const std::string& current_language,
@@ -66,33 +65,32 @@ void SetLanguage(PlatformSpellChecker* spell_checker_instance,
 void DisableLanguage(PlatformSpellChecker* spell_checker_instance,
                      const std::string& lang_to_disable) {}
 
-bool CheckSpelling(const base::string16& word_to_check, int tag) {
+bool CheckSpelling(const std::u16string& word_to_check, int tag) {
   return true;
 }
 
-void FillSuggestionList(const base::string16& wrong_word,
-                        std::vector<base::string16>* optional_suggestions) {
-}
+void FillSuggestionList(const std::u16string& wrong_word,
+                        std::vector<std::u16string>* optional_suggestions) {}
 
 void AddWord(PlatformSpellChecker* spell_checker_instance,
-             const base::string16& word) {}
+             const std::u16string& word) {}
 
 void RemoveWord(PlatformSpellChecker* spell_checker_instance,
-                const base::string16& word) {}
+                const std::u16string& word) {}
 
 int GetDocumentTag() {
   return 1;
 }
 
 void IgnoreWord(PlatformSpellChecker* spell_checker_instance,
-                const base::string16& word) {}
+                const std::u16string& word) {}
 
 void CloseDocumentWithTag(int tag) {
 }
 
 void RequestTextCheck(PlatformSpellChecker* spell_checker_instance,
                       int document_tag,
-                      const base::string16& text,
+                      const std::u16string& text,
                       TextCheckCompleteCallback callback) {}
 
 }  // namespace spellcheck_platform

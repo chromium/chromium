@@ -6,20 +6,22 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/public/cpp/app_types.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/chromeos/arc/arc_util.h"
-#include "chrome/browser/chromeos/borealis/borealis_service.h"
-#include "chrome/browser/chromeos/borealis/borealis_window_manager.h"
-#include "chrome/browser/chromeos/crosapi/browser_util.h"
+#include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_window_manager.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/chromeos/crostini/crostini_features.h"
 #include "chrome/browser/chromeos/crostini/crostini_shelf_utils.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_arc_tracker.h"
@@ -30,6 +32,7 @@
 #include "chrome/browser/ui/ash/launcher/arc_app_window.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/browser/ui/ash/launcher/crostini_app_window.h"
+#include "chrome/browser/ui/ash/launcher/lacros_app_window.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/browser.h"
@@ -38,7 +41,6 @@
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/account_id/account_id.h"
-#include "components/arc/arc_util.h"
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/services/app_service/public/cpp/instance.h"
@@ -158,11 +160,11 @@ void AppServiceAppWindowLauncherController::ActiveUserChanged(
 void AppServiceAppWindowLauncherController::AdditionalUserAddedToSession(
     Profile* profile) {
   // Each users InstanceRegister needs to be observed.
-  proxy_ = apps::AppServiceProxyFactory::GetForProfile(profile);
-  proxy_->InstanceRegistry().AddObserver(this);
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
+  proxy->InstanceRegistry().AddObserver(this);
   profile_list_.push_back(profile);
 
-  app_service_instance_helper_->AdditionalUserAddedToSession(profile);
+  app_service_instance_helper_->AdditionalUserAddedToSession();
 }
 
 void AppServiceAppWindowLauncherController::OnWindowInitialized(
@@ -211,7 +213,7 @@ void AppServiceAppWindowLauncherController::OnWindowVisibilityChanged(
     return;
 
   if (arc_tracker_)
-    arc_tracker_->OnWindowVisibilityChanged(window);
+    arc_tracker_->HandleWindowVisibilityChanged(window);
 
   ash::ShelfID shelf_id = GetShelfId(window);
   if (shelf_id.IsNull())
@@ -413,6 +415,7 @@ void AppServiceAppWindowLauncherController::AddWindowToShelf(
   if (base::Contains(aura_window_to_app_window_, window))
     return;
 
+  // TODO(jamescook): Clean up this block. The code is repetitive.
   AppWindowBase* app_window;
   if (arc::GetWindowTaskId(window) != arc::kNoTaskId) {
     std::unique_ptr<ArcAppWindow> app_window_ptr =
@@ -421,6 +424,11 @@ void AppServiceAppWindowLauncherController::AddWindowToShelf(
             arc::ArcAppShelfId::FromString(shelf_id.app_id),
             views::Widget::GetWidgetForNativeWindow(window), this,
             owner()->profile());
+    app_window = app_window_ptr.get();
+    aura_window_to_app_window_[window] = std::move(app_window_ptr);
+  } else if (crosapi::browser_util::IsLacrosWindow(window)) {
+    auto app_window_ptr = std::make_unique<LacrosAppWindow>(
+        shelf_id, views::Widget::GetWidgetForNativeWindow(window));
     app_window = app_window_ptr.get();
     aura_window_to_app_window_[window] = std::move(app_window_ptr);
   } else if (crostini_tracker_ &&
@@ -464,7 +472,7 @@ AppServiceAppWindowLauncherController::GetArcWindows() {
   std::vector<aura::Window*> arc_windows;
   std::copy_if(window_list_.begin(), window_list_.end(),
                std::inserter(arc_windows, arc_windows.end()),
-               [](aura::Window* w) { return arc::IsArcAppWindow(w); });
+               [](aura::Window* w) { return ash::IsArcWindow(w); });
   return arc_windows;
 }
 
@@ -519,13 +527,16 @@ void AppServiceAppWindowLauncherController::RegisterWindow(
       OnItemDelegateDiscarded(item_controller);
     }
   } else if (plugin_vm::IsPluginVmAppWindow(window)) {
-    // Set an icon for the Plugin VM app window, and set fullscreen properties.
+    // Set an icon for the Plugin VM app window.
     static_cast<exo::ShellSurfaceBase*>(
         views::Widget::GetWidgetForNativeWindow(window)->widget_delegate())
         ->SetIcon(*ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
             IDR_LOGO_PLUGIN_VM_DEFAULT_192));
-    exo::SetShellUseImmersiveForFullscreen(window, false);
-    window->SetProperty(chromeos::kEscHoldToExitFullscreen, true);
+    // Set fullscreen properties.
+    if (base::FeatureList::IsEnabled(ash::features::kPluginVmFullscreen)) {
+      exo::SetShellUseImmersiveForFullscreen(window, false);
+      window->SetProperty(chromeos::kEscHoldToExitFullscreen, true);
+    }
   } else if (borealis::BorealisWindowManager::IsBorealisWindow(window)) {
     // Set fullscreen properties for Borealis.
     window->SetProperty(chromeos::kEscHoldToExitFullscreen, true);

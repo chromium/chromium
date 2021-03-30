@@ -15,13 +15,18 @@ namespace cc {
 
 FakeContentLayerClient::ImageData::ImageData(PaintImage img,
                                              const gfx::Point& point,
+                                             const SkSamplingOptions& sampling,
                                              const PaintFlags& flags)
-    : image(std::move(img)), point(point), flags(flags) {}
+    : image(std::move(img)), point(point), sampling(sampling), flags(flags) {}
 
 FakeContentLayerClient::ImageData::ImageData(PaintImage img,
                                              const gfx::Transform& transform,
+                                             const SkSamplingOptions& sampling,
                                              const PaintFlags& flags)
-    : image(std::move(img)), transform(transform), flags(flags) {}
+    : image(std::move(img)),
+      transform(transform),
+      sampling(sampling),
+      flags(flags) {}
 
 FakeContentLayerClient::ImageData::ImageData(const ImageData& other) = default;
 
@@ -55,8 +60,7 @@ FakeContentLayerClient::PaintContentsToDisplayList() {
     if (!it->transform.IsIdentity()) {
       display_list->StartPaint();
       display_list->push<SaveOp>();
-      display_list->push<ConcatOp>(
-          static_cast<SkMatrix>(it->transform.matrix()));
+      display_list->push<ConcatOp>(it->transform.GetMatrixAsSkM44());
       display_list->EndPaintOfPairedBegin();
     }
 
@@ -66,7 +70,10 @@ FakeContentLayerClient::PaintContentsToDisplayList() {
                                    SkClipOp::kIntersect, false);
     display_list->push<DrawImageOp>(
         it->image, static_cast<float>(it->point.x()),
-        static_cast<float>(it->point.y()), &it->flags);
+        static_cast<float>(it->point.y()),
+        SkSamplingOptions(it->flags.getFilterQuality(),
+                          SkSamplingOptions::kMedium_asMipmapLinear),
+        &it->flags);
     display_list->push<RestoreOp>();
     display_list->EndPaintOfUnpaired(PaintableRegion());
 

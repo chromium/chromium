@@ -4,8 +4,9 @@
 
 (async function() {
   TestRunner.addResult(`Verify that GoTo source dialog filters out mapped uiSourceCodes.\n`);
-  await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('bindings_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadTestModule('bindings_test_runner');
+  await TestRunner.loadLegacyModule('quick_open');
   await TestRunner.addScriptTag('resources/foo.js');
 
   var testMapping = BindingsTestRunner.initializeTestMapping();
@@ -38,7 +39,6 @@
   ]);
 
   function dumpGoToSourceDialog(next) {
-    QuickOpen.QuickOpen.show('');
     TestRunner.addSnifferPromise(QuickOpen.QuickOpen.prototype, '_providerLoadedForTest').then(provider => {
       var keys = [];
       for (var i = 0; i < provider.itemCount(); ++i)
@@ -48,5 +48,6 @@
       UI.Dialog._instance.hide();
       next();
     });
+    QuickOpen.QuickOpen.show('');
   }
 })();

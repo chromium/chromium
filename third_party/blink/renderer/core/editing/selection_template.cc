@@ -408,10 +408,13 @@ SelectionInDOMTree ConvertToSelectionInDOMTree(
 
 SelectionInFlatTree ConvertToSelectionInFlatTree(
     const SelectionInDOMTree& selection) {
+  const PositionInFlatTree& base = ToPositionInFlatTree(selection.Base());
+  const PositionInFlatTree& extent = ToPositionInFlatTree(selection.Extent());
+  if (!base.IsConnected() || !extent.IsConnected())
+    return SelectionInFlatTree();
   return SelectionInFlatTree::Builder()
       .SetAffinity(selection.Affinity())
-      .SetBaseAndExtent(ToPositionInFlatTree(selection.Base()),
-                        ToPositionInFlatTree(selection.Extent()))
+      .SetBaseAndExtent(base, extent)
       .Build();
 }
 

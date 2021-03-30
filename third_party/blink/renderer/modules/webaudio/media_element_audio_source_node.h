@@ -113,8 +113,12 @@ class MediaElementAudioSourceHandler final : public AudioHandler {
   bool is_origin_tainted_;
 };
 
-class MediaElementAudioSourceNode final : public AudioNode,
-                                          public AudioSourceProviderClient {
+// -----------------------------------------------------------------------------
+
+class MediaElementAudioSourceNode final
+    : public AudioNode,
+      public AudioSourceProviderClient,
+      public ActiveScriptWrappable<MediaElementAudioSourceNode> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -126,7 +130,6 @@ class MediaElementAudioSourceNode final : public AudioNode,
 
   MediaElementAudioSourceNode(AudioContext&, HTMLMediaElement&);
 
-  void Trace(Visitor*) const override;
   MediaElementAudioSourceHandler& GetMediaElementAudioSourceHandler() const;
 
   HTMLMediaElement* mediaElement() const;
@@ -141,6 +144,10 @@ class MediaElementAudioSourceNode final : public AudioNode,
   // InspectorHelperMixin
   void ReportDidCreate() final;
   void ReportWillBeDestroyed() final;
+
+  // GC
+  bool HasPendingActivity() const final;
+  void Trace(Visitor*) const override;
 
  private:
   Member<HTMLMediaElement> media_element_;

@@ -15,6 +15,7 @@
 <translation id="2036868001356139588">Nedtellervarighet</translation>
 <translation id="2050339315714019657">Stående</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> er aktivt</translation>
+<translation id="2144806332417375165">Egendefinerte videoparametre</translation>
 <translation id="229579744168541441">Eksportér til disk</translation>
 <translation id="2501278716633472235">Gå tilbake</translation>
 <translation id="2501853267655415902">Opptaket er stoppet</translation>
@@ -33,7 +34,6 @@ Apper med lagringstillatelser har tilgang til bildene og videoene dine.</transla
 <translation id="3259149966178251584">Kameraoppløsning</translation>
 <translation id="3517926952904427380">Kunne ikke ta bilde i stående format</translation>
 <translation id="3569311554794739032">Er du sikker på at du vil fjerne <ph name="FILE" />?</translation>
-<translation id="3750315947605636967">Kameraet ditt brukes av en annen app</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Skann strekkoden</translation>
 <translation id="3892148308691398805">Kopiér teksten</translation>
@@ -76,10 +76,12 @@ Hvis tilbakemeldingen din gjelder bilde- eller videokvalitet, ber vi deg legge v
 <translation id="7337660886763914220">Filsystemfeil.</translation>
 <translation id="7450541714075000668">Teksten er kopiert</translation>
 <translation id="7557677699350329807">Bytt til neste kamera</translation>
+<translation id="7607002721634913082">Satt på pause</translation>
 <translation id="7608223098072244877">4 ganger 4</translation>
 <translation id="7649070708921625228">Hjelp</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7670511624014457267">60 bilder per sekund</translation>
+<translation id="7974782136796202581">Vis alternativer for panorering, vipping og zooming</translation>
 <translation id="7983668134180549431">Oppdaget tekst.</translation>
 <translation id="8067883171444229417">Spill av videoen</translation>
 <translation id="8131740175452115882">Bekreft</translation>

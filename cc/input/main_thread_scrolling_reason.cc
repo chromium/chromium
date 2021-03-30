@@ -32,16 +32,10 @@ void MainThreadScrollingReason::AddToTracedValue(
 
   if (reasons & kHasBackgroundAttachmentFixedObjects)
     traced_value.AppendString("Has background-attachment:fixed");
-  if (reasons & kHasNonLayerViewportConstrainedObjects)
-    traced_value.AppendString("Has non-layer viewport-constrained objects");
   if (reasons & kThreadedScrollingDisabled)
     traced_value.AppendString("Threaded scrolling is disabled");
   if (reasons & kScrollbarScrolling)
     traced_value.AppendString("Scrollbar scrolling");
-  if (reasons & kFrameOverlay)
-    traced_value.AppendString("Frame overlay");
-  if (reasons & kHandlingScrollFromMainThread)
-    traced_value.AppendString("Handling scroll from main thread");
   if (reasons & kNotOpaqueForTextAndLCDText)
     traced_value.AppendString("Not opaque for text and LCD text");
   if (reasons & kCantPaintScrollingBackgroundAndLCDText)
@@ -56,12 +50,8 @@ void MainThreadScrollingReason::AddToTracedValue(
     traced_value.AppendString("No scrolling layer");
   if (reasons & kNotScrollable)
     traced_value.AppendString("Not scrollable");
-  if (reasons & kContinuingMainThreadScroll)
-    traced_value.AppendString("Continuing main thread scroll");
   if (reasons & kNonInvertibleTransform)
     traced_value.AppendString("Non-invertible transform");
-  if (reasons & kPageBasedScrolling)
-    traced_value.AppendString("Page-based scrolling");
   if (reasons & kWheelEventHandlerRegion)
     traced_value.AppendString("Wheel event handler region");
   if (reasons & kTouchEventHandlerRegion)

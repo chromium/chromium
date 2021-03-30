@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/optional.h"
+#include "chrome/browser/permissions/crowd_deny_preload_data.h"
 #include "chrome/browser/permissions/crowd_deny_safe_browsing_request.h"
 #include "components/permissions/notification_permission_ui_selector.h"
 
@@ -51,8 +52,14 @@ class ContextualNotificationPermissionUiSelector
       CrowdDenySafeBrowsingRequest::Verdict verdict);
   void Notify(const Decision& decision);
 
+  void OnSiteReputationReady(
+      const url::Origin& origin,
+      const CrowdDenyPreloadData::SiteReputation* reputation);
+
   base::Optional<CrowdDenySafeBrowsingRequest> safe_browsing_request_;
   DecisionMadeCallback callback_;
+  base::WeakPtrFactory<ContextualNotificationPermissionUiSelector>
+      weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_PERMISSIONS_CONTEXTUAL_NOTIFICATION_PERMISSION_UI_SELECTOR_H_

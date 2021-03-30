@@ -4,7 +4,7 @@
 
 #include "ui/accessibility/ax_assistant_structure.h"
 
-#include <string>
+#include <utility>
 
 #include "base/logging.h"
 #include "base/optional.h"
@@ -32,15 +32,6 @@ bool HasFocusableChild(const AXNode* node) {
     }
   }
   return false;
-}
-
-bool HasOnlyTextChildren(const AXNode* node) {
-  for (size_t i = 0; i < node->GetUnignoredChildCount(); ++i) {
-    AXNode* child = node->GetUnignoredChildAtIndex(i);
-    if (!child->IsText())
-      return false;
-  }
-  return true;
 }
 
 // TODO(muyuanli): share with BrowserAccessibility.
@@ -99,11 +90,11 @@ bool IsLeaf(const AXNode* node) {
   }
 }
 
-base::string16 GetInnerText(const AXNode* node) {
+std::u16string GetInnerText(const AXNode* node) {
   if (node->IsText()) {
     return node->data().GetString16Attribute(ax::mojom::StringAttribute::kName);
   }
-  base::string16 text;
+  std::u16string text;
   for (size_t i = 0; i < node->GetUnignoredChildCount(); ++i) {
     AXNode* child = node->GetUnignoredChildAtIndex(i);
     text += GetInnerText(child);
@@ -111,8 +102,8 @@ base::string16 GetInnerText(const AXNode* node) {
   return text;
 }
 
-base::string16 GetValue(const AXNode* node, bool show_password) {
-  base::string16 value =
+std::u16string GetValue(const AXNode* node) {
+  std::u16string value =
       node->data().GetString16Attribute(ax::mojom::StringAttribute::kValue);
 
   if (value.empty() &&
@@ -122,52 +113,27 @@ base::string16 GetValue(const AXNode* node, bool show_password) {
     value = GetInnerText(node);
   }
 
-  if (node->data().HasState(ax::mojom::State::kProtected)) {
-    if (!show_password) {
-      value = base::string16(value.size(), kSecurePasswordBullet);
-    }
-  }
+  // Always obscure passwords.
+  if (node->data().HasState(ax::mojom::State::kProtected))
+    value = std::u16string(value.size(), kSecurePasswordBullet);
 
   return value;
 }
 
-bool HasOnlyTextAndImageChildren(const AXNode* node) {
-  for (size_t i = 0; i < node->GetUnignoredChildCount(); ++i) {
-    AXNode* child = node->GetUnignoredChildAtIndex(i);
-    if (!child->IsText() && !ui::IsImage(child->data().role)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-bool IsFocusable(const AXNode* node) {
-  if (node->data().role == ax::mojom::Role::kIframe ||
-      node->data().role == ax::mojom::Role::kIframePresentational ||
-      ((node->data().role == ax::mojom::Role::kRootWebArea ||
-        node->data().role == ax::mojom::Role::kPdfRoot) &&
-       node->GetUnignoredParent())) {
-    return node->data().HasStringAttribute(ax::mojom::StringAttribute::kName);
-  }
-  return node->data().HasState(ax::mojom::State::kFocusable);
-}
-
-base::string16 GetText(const AXNode* node, bool show_password) {
+std::u16string GetText(const AXNode* node) {
   if (node->data().role == ax::mojom::Role::kPdfRoot ||
       node->data().role == ax::mojom::Role::kIframe ||
       node->data().role == ax::mojom::Role::kIframePresentational) {
-    return base::string16();
+    return std::u16string();
   }
 
-  ax::mojom::NameFrom name_from = static_cast<ax::mojom::NameFrom>(
-      node->data().GetIntAttribute(ax::mojom::IntAttribute::kNameFrom));
-  if (ui::IsListItem(node->data().role) &&
-      name_from == ax::mojom::NameFrom::kContents) {
-    if (!node->children().empty() && !HasOnlyTextChildren(node))
-      return base::string16();
+  ax::mojom::NameFrom name_from = node->data().GetNameFrom();
+
+  if (!ui::IsLeaf(node) && name_from == ax::mojom::NameFrom::kContents) {
+    return std::u16string();
   }
 
-  base::string16 value = GetValue(node, show_password);
+  std::u16string value = GetValue(node);
 
   if (!value.empty()) {
     if (node->data().HasState(ax::mojom::State::kEditable))
@@ -194,13 +160,13 @@ base::string16 GetText(const AXNode* node, bool show_password) {
         base::StringPrintf("#%02X%02X%02X", red, green, blue));
   }
 
-  base::string16 text =
+  std::u16string text =
       node->data().GetString16Attribute(ax::mojom::StringAttribute::kName);
-  base::string16 description = node->data().GetString16Attribute(
+  std::u16string description = node->data().GetString16Attribute(
       ax::mojom::StringAttribute::kDescription);
   if (!description.empty()) {
     if (!text.empty())
-      text += base::ASCIIToUTF16(" ");
+      text += u" ";
     text += description;
   }
 
@@ -212,21 +178,20 @@ base::string16 GetText(const AXNode* node, bool show_password) {
     return text;
   }
 
-  if (text.empty() &&
-      (HasOnlyTextChildren(node) ||
-       (IsFocusable(node) && HasOnlyTextAndImageChildren(node)))) {
+  if (text.empty() && IsLeaf(node)) {
     for (size_t i = 0; i < node->GetUnignoredChildCount(); ++i) {
       AXNode* child = node->GetUnignoredChildAtIndex(i);
-      text += GetText(child, show_password);
+      text += GetText(child);
     }
   }
 
   if (text.empty() && (ui::IsLink(node->data().role) ||
                        node->data().role == ax::mojom::Role::kImage)) {
-    base::string16 url =
+    std::u16string url =
         node->data().GetString16Attribute(ax::mojom::StringAttribute::kUrl);
     text = AXUrlBaseText(url);
   }
+
   return text;
 }
 
@@ -282,7 +247,6 @@ AssistantNode* AddChild(AssistantTree* tree) {
 
 struct WalkAXTreeConfig {
   bool should_select_leaf;
-  const bool show_password;
 };
 
 void WalkAXTreeDepthFirst(const AXNode* node,
@@ -292,7 +256,7 @@ void WalkAXTreeDepthFirst(const AXNode* node,
                           WalkAXTreeConfig* config,
                           AssistantTree* assistant_tree,
                           AssistantNode* result) {
-  result->text = GetText(node, config->show_password);
+  result->text = GetText(node);
   result->class_name =
       AXRoleToAndroidClassName(node->data().role, node->GetUnignoredParent());
   result->role = AXRoleToString(node->data().role);
@@ -345,8 +309,7 @@ void WalkAXTreeDepthFirst(const AXNode* node,
     }
 
     if (config->should_select_leaf) {
-      end_selection =
-          static_cast<int32_t>(GetText(node, config->show_password).length());
+      end_selection = static_cast<int32_t>(GetText(node).length());
     }
 
     if (unignored_selection.focus_object_id == node->id()) {
@@ -357,6 +320,14 @@ void WalkAXTreeDepthFirst(const AXNode* node,
       result->selection =
           base::make_optional<gfx::Range>(start_selection, end_selection);
   }
+
+  result->html_tag =
+      node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
+  node->GetHtmlAttribute("id", &result->html_id);
+  result->html_class =
+      node->GetStringAttribute(ax::mojom::StringAttribute::kClassName);
+  result->css_display =
+      node->GetStringAttribute(ax::mojom::StringAttribute::kDisplay);
 
   for (size_t i = 0; i < node->GetUnignoredChildCount(); ++i) {
     AXNode* child = node->GetUnignoredChildAtIndex(i);
@@ -381,8 +352,7 @@ AssistantTree::AssistantTree(const AssistantTree& other) {
     nodes.emplace_back(std::make_unique<AssistantNode>(*node));
 }
 
-std::unique_ptr<AssistantTree> CreateAssistantTree(const AXTreeUpdate& update,
-                                                   bool show_password) {
+std::unique_ptr<AssistantTree> CreateAssistantTree(const AXTreeUpdate& update) {
   auto tree = std::make_unique<AXSerializableTree>();
   auto assistant_tree = std::make_unique<AssistantTree>();
   auto* root = AddChild(assistant_tree.get());
@@ -390,14 +360,13 @@ std::unique_ptr<AssistantTree> CreateAssistantTree(const AXTreeUpdate& update,
     LOG(FATAL) << tree->error();
   WalkAXTreeConfig config{
       false,         // should_select_leaf
-      show_password  // show_password
   };
   WalkAXTreeDepthFirst(tree->root(), gfx::Rect(), update, tree.get(), &config,
                        assistant_tree.get(), root);
   return assistant_tree;
 }
 
-base::string16 AXUrlBaseText(base::string16 url) {
+std::u16string AXUrlBaseText(std::u16string url) {
   // Given a url like http://foo.com/bar/baz.png, just return the
   // base text, e.g., "baz".
   int trailing_slashes = 0;

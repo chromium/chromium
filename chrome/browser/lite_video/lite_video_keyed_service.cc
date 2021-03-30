@@ -7,7 +7,6 @@
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequenced_task_runner.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/lite_video/lite_video_decider.h"
@@ -16,7 +15,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/blocklist/opt_out_blocklist/sql/opt_out_store_sql.h"
-#include "components/optimization_guide/optimization_guide_decider.h"
+#include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -41,8 +40,8 @@ void LiteVideoKeyedService::Initialize(const base::FilePath& profile_path) {
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
 
   opt_out_store = std::make_unique<blocklist::OptOutStoreSQL>(
-      base::CreateSingleThreadTaskRunner({content::BrowserThread::UI}),
-      background_task_runner, profile_path.Append(kLiteVideoOptOutDBFilename));
+      content::GetUIThreadTaskRunner({}), background_task_runner,
+      profile_path.Append(kLiteVideoOptOutDBFilename));
 
   optimization_guide::OptimizationGuideDecider* opt_guide_decider = nullptr;
   if (lite_video::features::LiteVideoUseOptimizationGuide()) {

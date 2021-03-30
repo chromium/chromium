@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAcce
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
+import org.chromium.chrome.browser.password_manager.ConfirmationDialogHelper;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -30,6 +31,8 @@ import org.chromium.ui.base.WindowAndroid;
  * fields.
  */
 class ManualFillingCoordinator implements ManualFillingComponent {
+    private final ManualFillingComponentSupplier mComponentSupplier =
+            new ManualFillingComponentSupplier();
     private final ManualFillingMediator mMediator = new ManualFillingMediator();
     private ObserverList<Observer> mObserverList = new ObserverList<>();
 
@@ -46,17 +49,23 @@ class ManualFillingCoordinator implements ManualFillingComponent {
         }
         sheetStub.setLayoutResource(R.layout.keyboard_accessory_sheet);
         initialize(windowAndroid, new KeyboardAccessoryCoordinator(mMediator, barStub),
-                new AccessorySheetCoordinator(sheetStub), sheetController);
+                new AccessorySheetCoordinator(sheetStub), sheetController,
+                new ConfirmationDialogHelper(windowAndroid.getContext()));
+        mComponentSupplier.set(this);
+        mComponentSupplier.attach(windowAndroid.getUnownedUserDataHost());
     }
 
     @VisibleForTesting
     void initialize(WindowAndroid windowAndroid, KeyboardAccessoryCoordinator accessoryBar,
-            AccessorySheetCoordinator accessorySheet, BottomSheetController sheetController) {
-        mMediator.initialize(accessoryBar, accessorySheet, windowAndroid, sheetController);
+            AccessorySheetCoordinator accessorySheet, BottomSheetController sheetController,
+            ConfirmationDialogHelper confirmationHelper) {
+        mMediator.initialize(
+                accessoryBar, accessorySheet, windowAndroid, sheetController, confirmationHelper);
     }
 
     @Override
     public void destroy() {
+        mComponentSupplier.destroy();
         for (Observer observer : mObserverList) observer.onDestroy();
         mMediator.destroy();
     }
@@ -137,6 +146,11 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     @Override
     public boolean removeObserver(Observer observer) {
         return mObserverList.addObserver(observer);
+    }
+
+    @Override
+    public void confirmOperation(String title, String message, Runnable confirmedCallback) {
+        mMediator.confirmOperation(title, message, confirmedCallback);
     }
 
     @VisibleForTesting

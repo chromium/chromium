@@ -14,9 +14,9 @@
 #include "net/cert/cert_net_fetcher.h"
 #include "net/cert/cert_verifier.h"
 #include "services/cert_verifier/cert_net_url_loader/cert_net_fetcher_url_loader.h"
+#include "services/cert_verifier/cert_verifier_creation.h"
 #include "services/cert_verifier/cert_verifier_service.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
-#include "services/network/public/cpp/cert_verifier/cert_verifier_creation.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace cert_verifier {
@@ -24,14 +24,14 @@ namespace {
 
 void GetNewCertVerifierImpl(
     mojo::PendingReceiver<mojom::CertVerifierService> receiver,
-    network::mojom::CertVerifierCreationParamsPtr creation_params,
+    mojom::CertVerifierCreationParamsPtr creation_params,
     scoped_refptr<CertNetFetcherURLLoader>* cert_net_fetcher_ptr) {
   scoped_refptr<CertNetFetcherURLLoader> cert_net_fetcher;
 
   // Sometimes the cert_net_fetcher isn't used by CreateCertVerifier.
   // But losing the last ref without calling Shutdown() will cause a CHECK
   // failure, so keep a ref.
-  if (network::IsUsingCertNetFetcher())
+  if (IsUsingCertNetFetcher())
     cert_net_fetcher = base::MakeRefCounted<CertNetFetcherURLLoader>();
 
   // Create a new CertVerifier to back our service. This will be instantiated
@@ -39,7 +39,7 @@ void GetNewCertVerifierImpl(
   // better in the network process, and will give us NetLog visibility if
   // running in the network process.
   std::unique_ptr<net::CertVerifier> cert_verifier =
-      network::CreateCertVerifier(creation_params.get(), cert_net_fetcher);
+      CreateCertVerifier(creation_params.get(), cert_net_fetcher);
 
   // As an optimization, if the CertNetFetcher isn't used by the CertVerifier,
   // shut it down immediately.
@@ -67,14 +67,14 @@ CertVerifierServiceFactoryImpl::~CertVerifierServiceFactoryImpl() = default;
 
 void CertVerifierServiceFactoryImpl::GetNewCertVerifier(
     mojo::PendingReceiver<mojom::CertVerifierService> receiver,
-    network::mojom::CertVerifierCreationParamsPtr creation_params) {
+    mojom::CertVerifierCreationParamsPtr creation_params) {
   GetNewCertVerifierImpl(std::move(receiver), std::move(creation_params),
                          nullptr);
 }
 
 void CertVerifierServiceFactoryImpl::GetNewCertVerifierForTesting(
     mojo::PendingReceiver<mojom::CertVerifierService> receiver,
-    network::mojom::CertVerifierCreationParamsPtr creation_params,
+    mojom::CertVerifierCreationParamsPtr creation_params,
     scoped_refptr<CertNetFetcherURLLoader>* cert_net_fetcher_ptr) {
   GetNewCertVerifierImpl(std::move(receiver), std::move(creation_params),
                          cert_net_fetcher_ptr);

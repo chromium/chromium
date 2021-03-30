@@ -20,7 +20,7 @@ GenerationConfirmationBubbleController::GenerationConfirmationBubbleController(
               ? metrics_util::AUTOMATIC_GENERATED_PASSWORD_CONFIRMATION
               : metrics_util::MANUAL_GENERATED_PASSWORD_CONFIRMATION),
       dismissal_reason_(metrics_util::NO_DIRECT_INTERACTION) {
-  base::string16 link = l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_LINK);
+  std::u16string link = l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_LINK);
   size_t offset = 0;
   save_confirmation_text_ = l10n_util::GetStringFUTF16(
       IDS_MANAGE_PASSWORDS_CONFIRM_GENERATED_TEXT, link, &offset);
@@ -41,7 +41,7 @@ void GenerationConfirmationBubbleController::
     delegate_->NavigateToPasswordManagerAccountDashboard(referrer);
 }
 
-base::string16 GenerationConfirmationBubbleController::GetTitle() const {
+std::u16string GenerationConfirmationBubbleController::GetTitle() const {
   return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_CONFIRM_SAVED_TITLE);
 }
 

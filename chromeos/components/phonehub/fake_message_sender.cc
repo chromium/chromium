@@ -31,7 +31,7 @@ void FakeMessageSender::SendDismissNotificationRequest(
 
 void FakeMessageSender::SendNotificationInlineReplyRequest(
     int64_t notification_id,
-    const base::string16& reply_text) {
+    const std::u16string& reply_text) {
   notification_inline_reply_requests_.push_back(
       std::make_pair(notification_id, reply_text));
 }
@@ -84,7 +84,7 @@ int64_t FakeMessageSender::GetRecentDismissNotificationRequest() const {
   return dismiss_notification_requests_.back();
 }
 
-const std::pair<int64_t, base::string16>
+const std::pair<int64_t, std::u16string>
 FakeMessageSender::GetRecentNotificationInlineReplyRequest() const {
   return notification_inline_reply_requests_.back();
 }

@@ -54,14 +54,13 @@ enum FileSystemType {
   // Should be used only for testing.
   kFileSystemTypeTest,
 
-  // Indicates a local filesystem where we can access files using native
-  // local path.
-  kFileSystemTypeNativeLocal,
+  // Indicates a local filesystem where we can access files using local path.
+  kFileSystemTypeLocal,
 
-  // Indicates a local filesystem where we can access files using native
-  // local path, but with restricted access.
-  // Restricted native local file system is in read-only mode.
-  kFileSystemTypeRestrictedNativeLocal,
+  // Indicates a local filesystem where we can access files using local path,
+  // but with restricted access.
+  // Restricted local file system is in read-only mode.
+  kFileSystemTypeRestrictedLocal,
 
   // Indicates a transient, isolated file system for dragged files (which could
   // contain multiple dragged paths in the virtual root).
@@ -69,7 +68,7 @@ enum FileSystemType {
 
   // Indicates media filesystem which we can access with same manner to
   // regular filesystem.
-  kFileSystemTypeNativeMedia,
+  kFileSystemTypeLocalMedia,
 
   // Indicates media filesystem to which we need special protocol to access,
   // such as MTP or PTP.
@@ -88,9 +87,9 @@ enum FileSystemType {
 
   // Indicates an external filesystem accessible by file paths from platform
   // Apps. As of writing, on non Chrome OS platform, this is merely a
-  // kFileSystemTypeNativeLocal. On Chrome OS, the path is parsed by
+  // kFileSystemTypeLocal. On Chrome OS, the path is parsed by
   // the handlers of kFileSystemTypeExternal.
-  kFileSystemTypeNativeForPlatformApp,
+  kFileSystemTypeLocalForPlatformApp,
 
   // Indicates an isolated filesystem which is supposed to contain one
   // temporary which is supposed to go away when the last reference of

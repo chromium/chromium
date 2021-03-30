@@ -35,8 +35,7 @@ class CONTENT_EXPORT HidDelegate {
     virtual void OnHidManagerConnectionError() = 0;
 
     // Event forwarded from permissions::ChooserContextBase::PermissionObserver:
-    virtual void OnPermissionRevoked(const url::Origin& requesting_origin,
-                                     const url::Origin& embedding_origin) = 0;
+    virtual void OnPermissionRevoked(const url::Origin& origin) = 0;
   };
 
   // Shows a chooser for the user to select a HID device. |callback| will be
@@ -48,18 +47,13 @@ class CONTENT_EXPORT HidDelegate {
       HidChooser::Callback callback) = 0;
 
   // Returns whether the main frame owned by |web_contents| has permission to
-  // request access to a device. |requesting_origin| is the origin of the
-  // frame that would make the request.
-  virtual bool CanRequestDevicePermission(
-      WebContents* web_contents,
-      const url::Origin& requesting_origin) = 0;
+  // request access to a device.
+  virtual bool CanRequestDevicePermission(WebContents* web_contents) = 0;
 
   // Returns whether the main frame owned by |web_contents| has permission to
-  // access |device|. |requesting_origin| is the origin of the frame making
-  // the request.
+  // access |device|.
   virtual bool HasDevicePermission(
       WebContents* web_contents,
-      const url::Origin& requesting_origin,
       const device::mojom::HidDeviceInfo& device) = 0;
 
   // Returns an open connection to the HidManager interface owned by the

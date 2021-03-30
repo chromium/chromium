@@ -72,17 +72,14 @@ int GetValidatorOptions(Extension* extension) {
 
   // Component extensions can specify an insecure object-src directive. This
   // should be safe because non-NPAPI plugins should load in a sandboxed process
-  // and only allow communication via postMessage. Flash is an exception since
-  // it allows scripting into the embedder page, but even then it should
-  // disallow cross-origin scripting. At some point we may want to consider
-  // allowing this publicly.
+  // and only allow communication via postMessage.
   if (extensions::Manifest::IsComponentLocation(extension->location()))
     options |= csp_validator::OPTIONS_ALLOW_INSECURE_OBJECT_SRC;
 
   return options;
 }
 
-base::string16 GetInvalidManifestKeyError(base::StringPiece key) {
+std::u16string GetInvalidManifestKeyError(base::StringPiece key) {
   return ErrorUtils::FormatErrorMessageUTF16(errors::kInvalidManifestKey, key);
 }
 
@@ -164,7 +161,7 @@ CSPHandler::CSPHandler() = default;
 
 CSPHandler::~CSPHandler() = default;
 
-bool CSPHandler::Parse(Extension* extension, base::string16* error) {
+bool CSPHandler::Parse(Extension* extension, std::u16string* error) {
   const char* key = extension->GetType() == Manifest::TYPE_PLATFORM_APP
                         ? keys::kPlatformAppContentSecurityPolicy
                         : keys::kContentSecurityPolicy;
@@ -201,7 +198,7 @@ bool CSPHandler::Parse(Extension* extension, base::string16* error) {
 }
 
 bool CSPHandler::ParseCSPDictionary(Extension* extension,
-                                    base::string16* error) {
+                                    std::u16string* error) {
   // keys::kSandboxedPagesCSP shouldn't be used when using
   // keys::kContentSecurityPolicy as a dictionary.
   if (extension->manifest()->HasPath(keys::kSandboxedPagesCSP)) {
@@ -222,7 +219,7 @@ bool CSPHandler::ParseCSPDictionary(Extension* extension,
 
 bool CSPHandler::ParseExtensionPagesCSP(
     Extension* extension,
-    base::string16* error,
+    std::u16string* error,
     base::StringPiece manifest_key,
     bool secure_only,
     const base::Value* content_security_policy) {
@@ -266,7 +263,7 @@ bool CSPHandler::ParseExtensionPagesCSP(
 }
 
 bool CSPHandler::ParseSandboxCSP(Extension* extension,
-                                 base::string16* error,
+                                 std::u16string* error,
                                  base::StringPiece manifest_key,
                                  const base::Value* sandbox_csp) {
   if (!sandbox_csp) {
@@ -301,7 +298,7 @@ bool CSPHandler::SetExtensionPagesCSP(Extension* extension,
                                       bool secure_only,
                                       std::string content_security_policy) {
   if (secure_only) {
-    base::string16 error;
+    std::u16string error;
     DCHECK(csp_validator::DoesCSPDisallowRemoteCode(content_security_policy,
                                                     manifest_key, &error));
   } else {

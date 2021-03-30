@@ -46,7 +46,7 @@
 #include "components/history/core/browser/page_usage_data.h"
 #include "components/history/core/browser/sync/typed_url_sync_bridge.h"
 #include "components/history/core/browser/url_utils.h"
-#include "components/sync/model_impl/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/url_formatter/url_formatter.h"
 #include "net/base/escape.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -169,7 +169,7 @@ constexpr int kDSTRoundingOffsetHours = 4;
 
 }  // namespace
 
-base::string16 FormatUrlForRedirectComparison(const GURL& url) {
+std::u16string FormatUrlForRedirectComparison(const GURL& url) {
   url::Replacements<char> remove_port;
   remove_port.ClearPort();
   return url_formatter::FormatUrl(
@@ -282,11 +282,6 @@ HistoryBackend::~HistoryBackend() {
 
 #if DCHECK_IS_ON()
   HistoryPathsTracker::GetInstance()->RemovePath(history_dir_);
-#endif
-
-#if defined(OS_ANDROID)
-  if (backend_client_ && !history_dir_.empty())
-    backend_client_->OnHistoryBackendDestroyed(this, history_dir_);
 #endif
 }
 
@@ -461,6 +456,38 @@ void HistoryBackend::UpdateWithPageEndTime(ContextID context_id,
   VisitID visit_id = tracker_.GetLastVisit(context_id, nav_entry_id, url);
   UpdateVisitDuration(visit_id, end_ts);
 }
+
+void HistoryBackend::SetFlocAllowed(ContextID context_id,
+                                    int nav_entry_id,
+                                    const GURL& url) {
+  TRACE_EVENT0("browser", "HistoryBackend::SetFlocAllowed");
+
+  if (!db_)
+    return;
+
+  VisitID visit_id = tracker_.GetLastVisit(context_id, nav_entry_id, url);
+
+  VisitRow visit_row;
+  if (db_->GetRowForVisit(visit_id, &visit_row)) {
+    visit_row.floc_allowed = true;
+    db_->UpdateVisitRow(visit_row);
+    ScheduleCommit();
+  }
+}
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+void HistoryBackend::AddContentAnnotationsForVisit(
+    VisitID visit_id,
+    const VisitContentAnnotations& content_annotations) {
+  TRACE_EVENT0("browser", "HistoryBackend::AddContentAnnotationsForVisit");
+
+  if (!db_)
+    return;
+
+  db_->AddContentAnnotationsForVisit(visit_id, content_annotations);
+  ScheduleCommit();
+}
+#endif
 
 void HistoryBackend::UpdateVisitDuration(VisitID visit_id, const Time end_ts) {
   if (!db_)
@@ -664,6 +691,14 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
           FormatUrlForRedirectComparison(redirects[0]) ==
               FormatUrlForRedirectComparison(redirects[1])) {
         transfer_typed_credit_from_first_to_second_url = true;
+      } else if (ui::PageTransitionCoreTypeIs(
+                     request_transition, ui::PAGE_TRANSITION_FORM_SUBMIT)) {
+        // If this is a form submission, the user was on the previous page and
+        // we should have saved the title and favicon already. Don't overwrite
+        // it with the redirected page. For example, a page titled "Create X"
+        // should not be updated to "Newly Created Item" on a successful POST
+        // when the new page is titled "Newly Created Item".
+        redirects.erase(redirects.begin());
       }
     }
 
@@ -855,13 +890,6 @@ void HistoryBackend::InitImpl(
   // Start expiring old stuff.
   expirer_.StartExpiringOldStuff(TimeDelta::FromDays(kExpireDaysThreshold));
 
-#if defined(OS_ANDROID)
-  if (backend_client_) {
-    backend_client_->OnHistoryBackendInitialized(this, db_.get(),
-                                                 favicon_db_ptr, history_dir_);
-  }
-#endif
-
   LOCAL_HISTOGRAM_TIMES("History.InitTime", TimeTicks::Now() - beginning_time);
 }
 
@@ -899,7 +927,7 @@ std::pair<URLID, VisitID> HistoryBackend::AddPageVisit(
     VisitSource visit_source,
     bool should_increment_typed_count,
     bool floc_allowed,
-    base::Optional<base::string16> title) {
+    base::Optional<std::u16string> title) {
   // See if this URL is already in the DB.
   URLRow url_info(url);
   URLID url_id = db_->GetRowForURL(url, &url_info);
@@ -1028,7 +1056,7 @@ bool HistoryBackend::IsExpiredVisitTime(const base::Time& time) {
 }
 
 void HistoryBackend::SetPageTitle(const GURL& url,
-                                  const base::string16& title) {
+                                  const std::u16string& title) {
   TRACE_EVENT0("browser", "HistoryBackend::SetPageTitle");
 
   if (!db_)
@@ -1073,7 +1101,7 @@ void HistoryBackend::SetPageTitle(const GURL& url,
 }
 
 void HistoryBackend::AddPageNoVisitForBookmark(const GURL& url,
-                                               const base::string16& title) {
+                                               const std::u16string& title) {
   TRACE_EVENT0("browser", "HistoryBackend::AddPageNoVisitForBookmark");
 
   if (!db_)
@@ -1278,21 +1306,29 @@ DomainDiversityResults HistoryBackend::GetDomainDiversity(
   return result;
 }
 
-HistoryLastVisitToHostResult HistoryBackend::GetLastVisitToHost(
-    const GURL& host,
-    base::Time begin_time,
-    base::Time end_time) {
+HistoryLastVisitResult HistoryBackend::GetLastVisitToHost(const GURL& host,
+                                                          base::Time begin_time,
+                                                          base::Time end_time) {
   base::Time last_visit;
   return {
       db_ && db_->GetLastVisitToHost(host, begin_time, end_time, &last_visit),
       last_visit};
 }
 
+HistoryLastVisitResult HistoryBackend::GetLastVisitToURL(const GURL& url,
+                                                         base::Time end_time) {
+  base::Time last_visit;
+  return {
+      db_ && db_->GetLastVisitToURL(url, end_time, &last_visit),
+      last_visit,
+  };
+}
+
 // Keyword visits --------------------------------------------------------------
 
 void HistoryBackend::SetKeywordSearchTermsForURL(const GURL& url,
                                                  KeywordID keyword_id,
-                                                 const base::string16& term) {
+                                                 const std::u16string& term) {
   TRACE_EVENT0("browser", "HistoryBackend::SetKeywordSearchTermsForURL");
 
   if (!db_)
@@ -1338,7 +1374,7 @@ void HistoryBackend::DeleteKeywordSearchTermForURL(const GURL& url) {
 }
 
 void HistoryBackend::DeleteMatchingURLsForKeyword(KeywordID keyword_id,
-                                                  const base::string16& term) {
+                                                  const std::u16string& term) {
   TRACE_EVENT0("browser", "HistoryBackend::DeleteMatchingURLsForKeyword");
 
   if (!db_)
@@ -1430,7 +1466,7 @@ void HistoryBackend::RemoveDownloads(const std::set<uint32_t>& ids) {
   DCHECK_GE(ids.size(), num_downloads_deleted);
 }
 
-QueryResults HistoryBackend::QueryHistory(const base::string16& text_query,
+QueryResults HistoryBackend::QueryHistory(const std::u16string& text_query,
                                           const QueryOptions& options) {
   QueryResults query_results;
   base::TimeTicks beginning_time = base::TimeTicks::Now();
@@ -1477,6 +1513,11 @@ void HistoryBackend::QueryHistoryBasic(const QueryOptions& options,
     url_result.set_visit_time(visit.visit_time);
     url_result.set_floc_allowed(visit.floc_allowed);
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+    url_result.set_content_annotations(
+        db_->GetContentAnnotationsForVisit(visit.visit_id));
+#endif
+
     // Set whether the visit was blocked for a managed user by looking at the
     // transition type.
     url_result.set_blocked_visit(
@@ -1493,7 +1534,7 @@ void HistoryBackend::QueryHistoryBasic(const QueryOptions& options,
 }
 
 // Text-based querying of history.
-void HistoryBackend::QueryHistoryText(const base::string16& text_query,
+void HistoryBackend::QueryHistoryText(const std::u16string& text_query,
                                       const QueryOptions& options,
                                       QueryResults* result) {
   URLRows text_matches;
@@ -1510,6 +1551,12 @@ void HistoryBackend::QueryHistoryText(const base::string16& text_query,
       URLResult url_result(text_match);
       url_result.set_visit_time(visits[j].visit_time);
       url_result.set_floc_allowed(visits[j].floc_allowed);
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+      url_result.set_content_annotations(
+          db_->GetContentAnnotationsForVisit(visits[j].visit_id));
+#endif
+
       matching_visits.push_back(url_result);
     }
   }
@@ -1792,6 +1839,14 @@ bool HistoryBackend::SetOnDemandFavicons(const GURL& page_url,
 void HistoryBackend::SetFaviconsOutOfDateForPage(const GURL& page_url) {
   if (favicon_backend_ &&
       favicon_backend_->SetFaviconsOutOfDateForPage(page_url)) {
+    ScheduleCommit();
+  }
+}
+
+void HistoryBackend::SetFaviconsOutOfDateBetween(base::Time begin,
+                                                 base::Time end) {
+  if (favicon_backend_ &&
+      favicon_backend_->SetFaviconsOutOfDateBetween(begin, end)) {
     ScheduleCommit();
   }
 }

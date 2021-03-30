@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
+#include "third_party/blink/renderer/core/streams/writable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -41,9 +42,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 
@@ -1415,12 +1414,7 @@ void ReadableStream::InitInternal(ScriptState* script_state,
     }
 
     // 6. If typeString is "bytes",
-    if (type_string == V8AtomicString(isolate, "bytes")) {
-      if (!RuntimeEnabledFeatures::ReadableByteStreamEnabled()) {
-        exception_state.ThrowRangeError("bytes type is not yet implemented");
-        return;
-      }
-
+    if (type_string->StringEquals(V8AtomicString(isolate, "bytes"))) {
       UseCounter::Count(ExecutionContext::From(script_state),
                         WebFeature::kReadableStreamWithByteSource);
 
@@ -1577,8 +1571,8 @@ void ReadableStream::Serialize(ScriptState* script_state,
 
   // 5. Let writable be a new WritableStream in the current Realm.
   // 6. Perform ! SetUpCrossRealmTransformWritable(writable, port1).
-  auto* writable =
-      CreateCrossRealmTransformWritable(script_state, port, exception_state);
+  auto* writable = CreateCrossRealmTransformWritable(
+      script_state, port, /*optimizer=*/nullptr, exception_state);
   if (exception_state.HadException()) {
     return;
   }

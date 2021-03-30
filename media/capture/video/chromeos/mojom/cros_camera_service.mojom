@@ -12,6 +12,8 @@ import "media/capture/video/chromeos/mojom/camera_common.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
 // CameraClientType indicates the type of a CameraHalClient.
+// It should be kept in sync with the ChromeOSCameraClientType enum in
+// tools/metrics/histograms/enums.xml
 [Extensible]
 enum CameraClientType{
   UNKNOWN = 0,
@@ -19,6 +21,8 @@ enum CameraClientType{
   CHROME = 2,
   ANDROID = 3,
   PLUGINVM = 4,
+  ASH_CHROME = 5,
+  LACROS_CHROME = 6,
 };
 
 // CameraPrivacySwitchState indicates the state of the camera privacy switch.

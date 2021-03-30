@@ -103,12 +103,12 @@
     DOMRectReadOnly boundingBox(Element element);
 
     [RaisesException] void setMarker(Document document, Range range, DOMString markerType);
-    [RaisesException] unsigned long markerCountForNode(Node node, DOMString markerType);
-    unsigned long activeMarkerCountForNode(Node node);
-    [RaisesException] Range markerRangeForNode(Node node, DOMString markerType, unsigned long index);
-    [RaisesException] DOMString markerDescriptionForNode(Node node, DOMString markerType, unsigned long index);
-    [RaisesException] unsigned long markerBackgroundColorForNode(Node node, DOMString markerType, unsigned long index);
-    [RaisesException] unsigned long markerUnderlineColorForNode(Node node, DOMString markerType, unsigned long index);
+    [RaisesException] unsigned long markerCountForNode(Text text, DOMString markerType);
+    unsigned long activeMarkerCountForNode(Text text);
+    [RaisesException] Range markerRangeForNode(Text text, DOMString markerType, unsigned long index);
+    [RaisesException] DOMString markerDescriptionForNode(Text text, DOMString markerType, unsigned long index);
+    [RaisesException] unsigned long markerBackgroundColorForNode(Text text, DOMString markerType, unsigned long index);
+    [RaisesException] unsigned long markerUnderlineColorForNode(Text text, DOMString markerType, unsigned long index);
     [RaisesException] void addTextMatchMarker(Range range, DOMString matchStatus);
     [RaisesException] void addCompositionMarker(Range range, DOMString underlineColorValue, DOMString thicknessValue, DOMString underlineStyleValue, DOMString textColorValue, DOMString backgroundColorValue);
     [RaisesException] void addActiveSuggestionMarker(Range range, DOMString underlineColorValue, DOMString thicknessValue, DOMString backgroundColorValue);
@@ -291,8 +291,6 @@
     [RaisesException] DOMRect selectionBounds();
     readonly attribute DOMString textAffinity;
 
-    boolean loseSharedGraphicsContext3D();
-
     [RaisesException] void forceCompositingUpdate(Document document);
 
     void setForcedColorsAndDarkPreferredColorScheme(Document document);
@@ -325,6 +323,7 @@
 
     boolean isInCanvasFontCache(Document document, DOMString fontString);
     unsigned long canvasFontCacheMaxFonts();
+    void forceLoseCanvasContext(HTMLCanvasElement canvas, DOMString contextType);
 
     DictionaryTest dictionaryTest();
     RecordTest recordTest();
@@ -447,4 +446,7 @@
     [RaisesException] void setIsAdSubframe(HTMLIFrameElement iframe);
 
     [RaisesException, CallWith=ScriptState] ReadableStream createReadableStream(long queueSize, DOMString optimizer);
+    // The return value consists of a WritableStream (.stream) and a promise of
+    // a sink object (.sink).
+    [RaisesException, CallWith=ScriptState] any createWritableStreamAndSink(long queueSize, DOMString optimizer);
 };

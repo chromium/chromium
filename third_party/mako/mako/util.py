@@ -1,14 +1,17 @@
 # mako/util.py
-# Copyright 2006-2019 the Mako authors and contributors <see AUTHORS file>
+# Copyright 2006-2020 the Mako authors and contributors <see AUTHORS file>
 #
 # This module is part of Mako and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
+from __future__ import absolute_import
 
+from ast import parse
 import codecs
 import collections
 import operator
 import os
 import re
+import timeit
 
 from mako import compat
 
@@ -180,7 +183,7 @@ class LRUCache(dict):
         def __init__(self, key, value):
             self.key = key
             self.value = value
-            self.timestamp = compat.time_func()
+            self.timestamp = timeit.default_timer()
 
         def __repr__(self):
             return repr(self.value)
@@ -191,7 +194,7 @@ class LRUCache(dict):
 
     def __getitem__(self, key):
         item = dict.__getitem__(self, key)
-        item.timestamp = compat.time_func()
+        item.timestamp = timeit.default_timer()
         return item.value
 
     def values(self):
@@ -256,9 +259,7 @@ def parse_encoding(fp):
         m = _PYTHON_MAGIC_COMMENT_re.match(line1.decode("ascii", "ignore"))
         if not m:
             try:
-                import parser
-
-                parser.suite(line1.decode("ascii", "ignore"))
+                parse(line1.decode("ascii", "ignore"))
             except (ImportError, SyntaxError):
                 # Either it's a real syntax error, in which case the source
                 # is not valid python source, or line2 is a continuation of

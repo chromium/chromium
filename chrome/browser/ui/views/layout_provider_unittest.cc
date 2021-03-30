@@ -222,8 +222,9 @@ TEST_F(LayoutProviderTest, RequestFontBySize) {
   gfx::FontList title_font = rb.GetFontListWithDelta(kTitle - kBase);
   gfx::FontList body1_font = rb.GetFontListWithDelta(kBody1 - kBase);
   gfx::FontList body2_font = rb.GetFontListWithDelta(kBody2 - kBase);
-  gfx::FontList button_font = rb.GetFontListWithDelta(
-      kButton - kBase, gfx::Font::NORMAL, kButtonWeight);
+  gfx::FontList button_font =
+      rb.GetFontListForDetails(ui::ResourceBundle::FontDetails(
+          std::string(), kButton - kBase, kButtonWeight));
 
   // The following checks on leading don't need to match the spec. Instead, it
   // means Label::SetLineHeight() needs to be used to increase it. But what we
@@ -388,7 +389,7 @@ TEST_F(LayoutProviderTest, ExplicitTypographyLineHeight) {
     EXPECT_EQ(kHarmonyHeights[i].line_height,
               views::style::GetLineHeight(kHarmonyHeights[i].context, kStyle));
 
-    views::Label label(base::ASCIIToUTF16("test"), kHarmonyHeights[i].context);
+    views::Label label(u"test", kHarmonyHeights[i].context);
     label.SizeToPreferredSize();
     EXPECT_EQ(kHarmonyHeights[i].line_height, label.height());
   }
@@ -399,7 +400,7 @@ TEST_F(LayoutProviderTest, ExplicitTypographyLineHeight) {
   EXPECT_EQ(kBodyLineHeight,
             views::style::GetLineHeight(views::style::CONTEXT_LABEL, kStyle));
   views::StyledLabel styled_label;
-  styled_label.SetText(base::ASCIIToUTF16("test"));
+  styled_label.SetText(u"test");
   constexpr int kStyledLabelWidth = 200;  // Enough to avoid wrapping.
   styled_label.SizeToFit(kStyledLabelWidth);
   EXPECT_EQ(kBodyLineHeight, styled_label.height());

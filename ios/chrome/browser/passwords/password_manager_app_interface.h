@@ -16,9 +16,8 @@
 // Clears any credentials that were stored during a test run.
 + (void)clearCredentials;
 
-// Executes the javascript to fetch credentials in a background tab. There must
-// be two tabs open before calling this method.
-+ (void)getCredentialsInTabAtIndex:(int)index;
+// Returns the number of stored credentials.
++ (int)storedCredentialsCount;
 
 @end
 

@@ -398,9 +398,9 @@ class PortForwardingController::Connection
       content::BrowserThread::UI>;
   friend class base::DeleteHelper<Connection>;
 
-  typedef std::map<int, std::string> ForwardingMap;
-  typedef base::Callback<void(PortStatus)> CommandCallback;
-  typedef std::map<int, CommandCallback> CommandCallbackMap;
+  using ForwardingMap = std::map<int, std::string>;
+  using CommandCallback = base::OnceCallback<void(PortStatus)>;
+  using CommandCallbackMap = std::map<int, CommandCallback>;
 
   void SerializeChanges(const std::string& method,
                         const ForwardingMap& old_map,
@@ -491,9 +491,8 @@ void PortForwardingController::Connection::SendCommand(
   int id = ++command_id_;
 
   if (method == kBindMethod) {
-    pending_responses_[id] =
-        base::Bind(&Connection::ProcessBindResponse,
-                   base::Unretained(this), port);
+    pending_responses_[id] = base::BindOnce(&Connection::ProcessBindResponse,
+                                            base::Unretained(this), port);
   } else {
     auto it = port_status_.find(port);
     if (it != port_status_.end() && it->second == kStatusError) {
@@ -502,9 +501,8 @@ void PortForwardingController::Connection::SendCommand(
       return;
     }
 
-    pending_responses_[id] =
-        base::Bind(&Connection::ProcessUnbindResponse,
-                   base::Unretained(this), port);
+    pending_responses_[id] = base::BindOnce(&Connection::ProcessUnbindResponse,
+                                            base::Unretained(this), port);
   }
 
   web_socket_->SendFrame(SerializeCommand(id, method, std::move(params)));
@@ -521,7 +519,7 @@ bool PortForwardingController::Connection::ProcessResponse(
   if (it == pending_responses_.end())
     return false;
 
-  it->second.Run(error_code ? kStatusError : kStatusOK);
+  std::move(it->second).Run(error_code ? kStatusError : kStatusOK);
   pending_responses_.erase(it);
   return true;
 }
@@ -592,14 +590,14 @@ void PortForwardingController::Connection::OnFrameRead(
   std::string destination_host = tokens[0];
 
   device_->OpenSocket(*connection_id,
-                      base::Bind(&SocketTunnel::StartTunnel, profile_,
-                                 destination_host, destination_port));
+                      base::BindOnce(&SocketTunnel::StartTunnel, profile_,
+                                     destination_host, destination_port));
 }
 
 PortForwardingController::PortForwardingController(Profile* profile)
     : profile_(profile), pref_service_(profile->GetPrefs()) {
   pref_change_registrar_.Init(pref_service_);
-  base::Closure callback = base::Bind(
+  base::RepeatingClosure callback = base::BindRepeating(
       &PortForwardingController::OnPrefsChange, base::Unretained(this));
   pref_change_registrar_.Add(prefs::kDevToolsPortForwardingEnabled, callback);
   pref_change_registrar_.Add(prefs::kDevToolsPortForwardingConfig, callback);

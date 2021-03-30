@@ -71,7 +71,7 @@ UntrustedSource::UntrustedSource(Profile* profile)
   // |one_google_bar_service_| is null in incognito, or when the feature is
   // disabled.
   if (one_google_bar_service_) {
-    one_google_bar_service_observer_.Add(one_google_bar_service_);
+    one_google_bar_service_observation_.Observe(one_google_bar_service_);
   }
 }
 
@@ -117,11 +117,14 @@ void UntrustedSource::StartDataRequest(
         one_google_bar_service_->SetAdditionalQueryParams(query_params);
     one_google_bar_callbacks_.push_back(std::move(callback));
     if (one_google_bar_service_->one_google_bar_data().has_value() &&
-        !wait_for_refresh) {
+        !wait_for_refresh &&
+        base::FeatureList::IsEnabled(ntp_features::kCacheOneGoogleBar)) {
       OnOneGoogleBarDataUpdated();
     }
-    one_google_bar_load_start_time_ = base::TimeTicks::Now();
-    one_google_bar_service_->Refresh();
+    if (one_google_bar_callbacks_.size() == 1) {
+      one_google_bar_load_start_time_ = base::TimeTicks::Now();
+      one_google_bar_service_->Refresh();
+    }
     return;
   }
   if (path == "one_google_bar.js") {
@@ -164,7 +167,7 @@ void UntrustedSource::StartDataRequest(
           url::DecodeURLMode::kUTF8OrIsomorphic, &output);
       params.insert(
           {url.query().substr(key.begin, key.len),
-           base::UTF16ToUTF8(base::string16(output.data(), output.length()))});
+           base::UTF16ToUTF8(std::u16string(output.data(), output.length()))});
     }
     // Extract desired values.
     ServeBackgroundImage(
@@ -262,14 +265,15 @@ void UntrustedSource::OnOneGoogleBarDataUpdated() {
     html = FormatTemplate(IDR_NEW_TAB_PAGE_UNTRUSTED_ONE_GOOGLE_BAR_HTML,
                           replacements);
   }
+  auto html_ref_counted = base::RefCountedString::TakeString(&html);
   for (auto& callback : one_google_bar_callbacks_) {
-    std::move(callback).Run(base::RefCountedString::TakeString(&html));
+    std::move(callback).Run(html_ref_counted);
   }
   one_google_bar_callbacks_.clear();
 }
 
 void UntrustedSource::OnOneGoogleBarServiceShuttingDown() {
-  one_google_bar_service_observer_.RemoveAll();
+  one_google_bar_service_observation_.Reset();
   one_google_bar_service_ = nullptr;
 }
 

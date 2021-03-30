@@ -50,9 +50,6 @@ public abstract class RemoteFragmentImpl extends IRemoteFragment.Stub {
     }
 
     public final View getView() {
-        if (WebLayerFactoryImpl.getClientMajorVersion() < 84) {
-            return null;
-        }
         try {
             return ObjectWrapper.unwrap(mClient.getView(), View.class);
         } catch (RemoteException e) {
@@ -61,9 +58,6 @@ public abstract class RemoteFragmentImpl extends IRemoteFragment.Stub {
     }
 
     public void removeFragmentFromFragmentManager() {
-        if (WebLayerFactoryImpl.getClientMajorVersion() < 87) {
-            return;
-        }
         try {
             mClient.removeFragmentFromFragmentManager();
         } catch (RemoteException e) {
@@ -202,13 +196,6 @@ public abstract class RemoteFragmentImpl extends IRemoteFragment.Stub {
     }
 
     // IRemoteFragment implementation below.
-
-    @Override
-    @Deprecated
-    public final IObjectWrapper deprecatedHandleOnCreateView() {
-        StrictModeWorkaround.apply();
-        return ObjectWrapper.wrap(onCreateView());
-    }
 
     @Override
     public final IObjectWrapper handleOnCreateView(

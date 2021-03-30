@@ -33,7 +33,6 @@ TestSharedURLLoaderFactory::~TestSharedURLLoaderFactory() {}
 
 void TestSharedURLLoaderFactory::CreateLoaderAndStart(
     mojo::PendingReceiver<mojom::URLLoader> loader,
-    int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const ResourceRequest& request,
@@ -41,7 +40,7 @@ void TestSharedURLLoaderFactory::CreateLoaderAndStart(
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   num_created_loaders_++;
   url_loader_factory_->CreateLoaderAndStart(
-      std::move(loader), routing_id, request_id, options, std::move(request),
+      std::move(loader), request_id, options, std::move(request),
       std::move(client), traffic_annotation);
 }
 

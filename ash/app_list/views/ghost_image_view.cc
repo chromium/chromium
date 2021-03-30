@@ -6,7 +6,6 @@
 
 #include <algorithm>
 #include <memory>
-#include <vector>
 
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item_list.h"
@@ -67,7 +66,11 @@ void GhostImageView::Init(AppListItemView* drag_view,
     num_items_ = std::min(FolderImage::kNumFolderTopItems,
                           folder_item->item_list()->item_count());
 
-    // Create an outline for each item within the folder icon.
+    std::vector<gfx::Rect> top_icon_bounds = FolderImage::GetTopIconsBounds(
+        drag_view->GetAppListConfig(), icon_bounds_, num_items_.value());
+
+    // Create an outline, and calculate position for each item within the folder
+    // icon.
     for (size_t i = 0; i < num_items_.value(); i++) {
       gfx::ImageSkia inner_icon_outline =
           gfx::ImageSkiaOperations::CreateResizedImage(
@@ -76,6 +79,9 @@ void GhostImageView::Init(AppListItemView* drag_view,
               skia::ImageOperations::RESIZE_BEST,
               drag_view->GetAppListConfig().item_icon_in_folder_icon_size());
       inner_folder_icon_outlines_.push_back(GetIconOutline(inner_icon_outline));
+      inner_folder_icon_origins_.push_back(
+          gfx::Point(top_icon_bounds[i].x() - kGhostImagePadding,
+                     top_icon_bounds[i].y() - kGhostImagePadding));
     }
   } else {
     // Create outline of app icon and set |outline_| to it.
@@ -142,15 +148,11 @@ void GhostImageView::OnPaint(gfx::Canvas* canvas) {
                                 ghost_radius - kGhostCircleStrokeWidth / 2);
     canvas->ClipPath(outer_circle_mask, true);
 
-    // Returns the bounds for each inner icon in the folder icon.
-    std::vector<gfx::Rect> top_icon_bounds = FolderImage::GetTopIconsBounds(
-        AppListConfig::instance(), icon_bounds_, num_items_.value());
-
     // Draw ghost items within the ghost folder circle.
     for (size_t i = 0; i < num_items_.value(); i++) {
       canvas->DrawImageInt(inner_folder_icon_outlines_[i],
-                           top_icon_bounds[i].x() - kGhostImagePadding,
-                           top_icon_bounds[i].y() - kGhostImagePadding);
+                           inner_folder_icon_origins_[i].x(),
+                           inner_folder_icon_origins_[i].y());
     }
   } else {
     canvas->DrawImageInt(outline_, icon_bounds_.x() - kGhostImagePadding,
@@ -247,12 +249,13 @@ gfx::ImageSkia GhostImageView::GetIconOutline(
     SkIPoint thick_inner_blur_offset;
     preview.extractAlpha(&thick_inner_blur, &paint, &thick_inner_blur_offset);
 
+    SkSamplingOptions sampling;
     // Mask out the inner blur.
     paint.setMaskFilter(nullptr);
     paint.setBlendMode(SkBlendMode::kDstOut);
     canvas = std::make_unique<SkCanvas>(thick_inner_blur);
-    canvas->drawBitmap(preview, -thick_inner_blur_offset.fX,
-                       -thick_inner_blur_offset.fY, &paint);
+    canvas->drawImage(preview.asImage(), -thick_inner_blur_offset.fX,
+                      -thick_inner_blur_offset.fY, sampling, &paint);
     canvas->drawRect(
         SkRect{0, 0, -thick_inner_blur_offset.fX, thick_inner_blur.height()},
         paint);
@@ -264,14 +267,14 @@ gfx::ImageSkia GhostImageView::GetIconOutline(
     paint.setBlendMode(SkBlendMode::kPlus);
     canvas = std::make_unique<SkCanvas>(preview);
     canvas->drawColor(0, SkBlendMode::kClear);
-    canvas->drawBitmap(thick_inner_blur, thick_inner_blur_offset.fX,
-                       thick_inner_blur_offset.fY, &paint);
-    canvas->drawBitmap(thick_outer_blur, outer_blur_offset.fX,
-                       outer_blur_offset.fY, &paint);
+    canvas->drawImage(thick_inner_blur.asImage(), thick_inner_blur_offset.fX,
+                      thick_inner_blur_offset.fY, sampling, &paint);
+    canvas->drawImage(thick_outer_blur.asImage(), outer_blur_offset.fX,
+                      outer_blur_offset.fY, sampling, &paint);
 
     // Draw the bright outline.
-    canvas->drawBitmap(bright_outline, bright_outline_offset.fX,
-                       bright_outline_offset.fY, &paint);
+    canvas->drawImage(bright_outline.asImage(), bright_outline_offset.fX,
+                      bright_outline_offset.fY, sampling, &paint);
 
     // Cleanup bitmaps.
     canvas.reset();

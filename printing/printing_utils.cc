@@ -88,9 +88,9 @@ gfx::Size DimensionsToMicrons(base::StringPiece value) {
 
 }  // namespace
 
-base::string16 SimplifyDocumentTitleWithLength(const base::string16& title,
+std::u16string SimplifyDocumentTitleWithLength(const std::u16string& title,
                                                size_t length) {
-  base::string16 no_controls(title);
+  std::u16string no_controls(title);
   no_controls.erase(
       std::remove_if(no_controls.begin(), no_controls.end(), &u_iscntrl),
       no_controls.end());
@@ -99,23 +99,22 @@ base::string16 SimplifyDocumentTitleWithLength(const base::string16& title,
       "\\", "/", "<", ">", ":", "\"", "'", "|", "?", "*", "~",
   };
   for (const char* c : kCharsToReplace) {
-    base::ReplaceChars(no_controls, base::ASCIIToUTF16(c),
-                       base::ASCIIToUTF16("_"), &no_controls);
+    base::ReplaceChars(no_controls, base::ASCIIToUTF16(c), u"_", &no_controls);
   }
 
-  base::string16 result;
+  std::u16string result;
   gfx::ElideString(no_controls, length, &result);
   return result;
 }
 
-base::string16 FormatDocumentTitleWithOwnerAndLength(
-    const base::string16& owner,
-    const base::string16& title,
+std::u16string FormatDocumentTitleWithOwnerAndLength(
+    const std::u16string& owner,
+    const std::u16string& title,
     size_t length) {
-  const base::string16 separator = base::ASCIIToUTF16(": ");
+  const std::u16string separator = u": ";
   DCHECK_LT(separator.size(), length);
 
-  base::string16 short_title =
+  std::u16string short_title =
       SimplifyDocumentTitleWithLength(owner, length - separator.size());
   short_title += separator;
   if (short_title.size() < length) {
@@ -126,12 +125,12 @@ base::string16 FormatDocumentTitleWithOwnerAndLength(
   return short_title;
 }
 
-base::string16 SimplifyDocumentTitle(const base::string16& title) {
+std::u16string SimplifyDocumentTitle(const std::u16string& title) {
   return SimplifyDocumentTitleWithLength(title, kMaxDocumentTitleLength);
 }
 
-base::string16 FormatDocumentTitleWithOwner(const base::string16& owner,
-                                            const base::string16& title) {
+std::u16string FormatDocumentTitleWithOwner(const std::u16string& owner,
+                                            const std::u16string& title) {
   return FormatDocumentTitleWithOwnerAndLength(owner, title,
                                                kMaxDocumentTitleLength);
 }

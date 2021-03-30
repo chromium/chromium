@@ -51,6 +51,10 @@ GetPhaseAndIdForTraceLog(bool explicit_track, uint64_t track_uuid, char phase) {
 
 }  // namespace
 
+namespace trace_event_internal {
+const perfetto::Track kDefaultTrack{};
+}  // namespace trace_event_internal
+
 namespace base {
 namespace trace_event {
 
@@ -114,10 +118,10 @@ namespace trace_event_internal {
 base::trace_event::TrackEventHandle CreateTrackEvent(
     char phase,
     const unsigned char* category_group_enabled,
-    const char* name,
-    unsigned int flags,
+    perfetto::StaticString name,
     base::TimeTicks ts,
-    uint64_t track_uuid) {
+    uint64_t track_uuid,
+    bool explicit_track) {
   DCHECK(phase == TRACE_EVENT_PHASE_BEGIN || phase == TRACE_EVENT_PHASE_END ||
          phase == TRACE_EVENT_PHASE_INSTANT);
   DCHECK(category_group_enabled);
@@ -132,20 +136,24 @@ base::trace_event::TrackEventHandle CreateTrackEvent(
   // Provide events emitted onto different tracks as NESTABLE_ASYNC events to
   // TraceLog, so that e.g. ETW export is aware of them not being a sync event
   // for the current thread.
-  bool explicit_track = track_uuid != perfetto::Track().uuid;
   auto phase_and_id_for_trace_log =
       GetPhaseAndIdForTraceLog(explicit_track, track_uuid, phase);
 
   if (!trace_log->ShouldAddAfterUpdatingState(
-          phase_and_id_for_trace_log.first, category_group_enabled, name,
+          phase_and_id_for_trace_log.first, category_group_enabled, name.value,
           phase_and_id_for_trace_log.second, thread_id, nullptr)) {
     return base::trace_event::TrackEventHandle();
   }
 
+  unsigned int flags = TRACE_EVENT_FLAG_NONE;
   if (ts.is_null()) {
     ts = TRACE_TIME_TICKS_NOW();
   } else {
     flags |= TRACE_EVENT_FLAG_EXPLICIT_TIMESTAMP;
+  }
+
+  if (phase == TRACE_EVENT_PHASE_INSTANT && !explicit_track) {
+    flags |= TRACE_EVENT_SCOPE_THREAD;
   }
 
   // Only emit thread time / instruction count for events on the default track
@@ -159,7 +167,7 @@ base::trace_event::TrackEventHandle CreateTrackEvent(
 
   base::trace_event::TraceEvent event(
       thread_id, ts, thread_now, thread_instruction_now, phase,
-      category_group_enabled, name, trace_event_internal::kGlobalScope,
+      category_group_enabled, name.value, trace_event_internal::kGlobalScope,
       trace_event_internal::kNoId, trace_event_internal::kNoId, nullptr, flags);
 
   return g_typed_event_callback(&event);

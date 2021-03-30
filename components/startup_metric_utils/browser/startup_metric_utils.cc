@@ -572,23 +572,6 @@ void RecordBrowserWindowFirstPaint(base::TimeTicks ticks) {
                                       g_application_start_ticks, ticks);
 }
 
-void RecordBrowserWindowFirstPaintCompositingEnded(
-    const base::TimeTicks ticks) {
-  DCHECK(!g_application_start_ticks.is_null());
-
-  static bool is_first_call = true;
-  if (!is_first_call || ticks.is_null())
-    return;
-  is_first_call = false;
-  if (!ShouldLogStartupHistogram())
-    return;
-
-  UmaHistogramWithTraceAndTemperature(
-      &base::UmaHistogramLongTimes100,
-      "Startup.BrowserWindow.FirstPaint.CompositingEnded",
-      g_application_start_ticks, ticks);
-}
-
 base::TimeTicks MainEntryPointTicks() {
   return g_chrome_main_entry_ticks;
 }
@@ -623,6 +606,22 @@ void RecordWebFooterCreation(base::TimeTicks ticks) {
       &base::UmaHistogramMediumTimes,
       "Startup.WebFooterExperiment.WebFooterCreation",
       g_application_start_ticks, ticks);
+}
+
+void RecordExternalStartupMetric(const std::string& histogram_name,
+                                 base::TimeTicks completion_ticks,
+                                 bool set_non_browser_ui_displayed) {
+  DCHECK(!g_application_start_ticks.is_null());
+
+  if (!ShouldLogStartupHistogram())
+    return;
+
+  UmaHistogramWithTraceAndTemperature(&base::UmaHistogramMediumTimes,
+                                      histogram_name, g_application_start_ticks,
+                                      completion_ticks);
+
+  if (set_non_browser_ui_displayed)
+    SetNonBrowserUIDisplayed();
 }
 
 void OnMemoryPressureBeforeFirstNonEmptyPaint(

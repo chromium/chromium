@@ -43,9 +43,6 @@ class SigninStatusMetricsProvider : public SigninStatusMetricsProviderBase,
   // Update the sign-in status when a IdentityManager is created.
   void OnIdentityManagerCreated(signin::IdentityManager* identity_manager);
 
-  // Update the sign-in status when a IdentityManager is shut down.
-  void OnIdentityManagerShutdown(signin::IdentityManager* identity_manager);
-
   // Updates the initial sign-in status. For testing purpose only.
   void UpdateInitialSigninStatusForTesting(size_t total_count,
                                            size_t signed_in_count);
@@ -70,8 +67,10 @@ class SigninStatusMetricsProvider : public SigninStatusMetricsProviderBase,
       bool is_test);
 
   // IdentityManager::Observer:
-  void OnPrimaryAccountSet(const CoreAccountInfo& account_info) override;
-  void OnPrimaryAccountCleared(const CoreAccountInfo& account_info) override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
 
   // Obtain sign-in status and add observers.
   void Initialize();

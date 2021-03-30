@@ -26,6 +26,7 @@
 #include "build/chromeos_buildflags.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/content_switches_internal.h"
+#include "content/common/partition_alloc_support.h"
 #include "content/common/skia_utils.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
@@ -248,6 +249,9 @@ int RendererMain(const MainFunctionParams& parameters) {
 #if BUILDFLAG(MOJO_RANDOM_DELAYS_ENABLED)
     mojo::BeginRandomMojoDelays();
 #endif
+
+    internal::PartitionAllocSupport::Get()->ReconfigureAfterTaskRunnerInit(
+        switches::kRendererProcess);
 
     base::HighResolutionTimerManager hi_res_timer_manager;
 

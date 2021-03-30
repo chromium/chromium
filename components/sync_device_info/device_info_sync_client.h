@@ -33,6 +33,10 @@ class DeviceInfoSyncClient {
   // not initialized yet.
   virtual base::Optional<ModelTypeSet> GetInterestedDataTypes() const = 0;
 
+  // Return registration information for using a phone-as-a-security-key.
+  virtual base::Optional<DeviceInfo::PhoneAsASecurityKeyInfo>
+  GetPhoneAsASecurityKeyInfo() const = 0;
+
  private:
   DISALLOW_COPY_AND_ASSIGN(DeviceInfoSyncClient);
 };

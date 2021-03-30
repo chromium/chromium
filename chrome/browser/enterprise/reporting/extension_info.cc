@@ -13,6 +13,8 @@
 #include "extensions/common/manifest_url_handlers.h"
 #include "extensions/common/permissions/permissions_data.h"
 
+using extensions::mojom::ManifestLocation;
+
 namespace em = ::enterprise_management;
 
 namespace enterprise_reporting {
@@ -20,26 +22,26 @@ namespace enterprise_reporting {
 namespace {
 
 em::Extension_InstallType GetExtensionInstallType(
-    extensions::Manifest::Location extension_location) {
+    ManifestLocation extension_location) {
   switch (extension_location) {
-    case extensions::Manifest::INTERNAL:
+    case ManifestLocation::kInternal:
       return em::Extension_InstallType_TYPE_NORMAL;
-    case extensions::Manifest::UNPACKED:
-    case extensions::Manifest::COMMAND_LINE:
+    case ManifestLocation::kUnpacked:
+    case ManifestLocation::kCommandLine:
       return em::Extension_InstallType_TYPE_DEVELOPMENT;
-    case extensions::Manifest::EXTERNAL_PREF:
-    case extensions::Manifest::EXTERNAL_REGISTRY:
-    case extensions::Manifest::EXTERNAL_PREF_DOWNLOAD:
+    case ManifestLocation::kExternalPref:
+    case ManifestLocation::kExternalRegistry:
+    case ManifestLocation::kExternalPrefDownload:
       return em::Extension_InstallType_TYPE_SIDELOAD;
-    case extensions::Manifest::EXTERNAL_POLICY:
-    case extensions::Manifest::EXTERNAL_POLICY_DOWNLOAD:
+    case ManifestLocation::kExternalPolicy:
+    case ManifestLocation::kExternalPolicyDownload:
       return em::Extension_InstallType_TYPE_ADMIN;
-    case extensions::Manifest::NUM_LOCATIONS:
+    default:
       NOTREACHED();
       FALLTHROUGH;
-    case extensions::Manifest::INVALID_LOCATION:
-    case extensions::Manifest::COMPONENT:
-    case extensions::Manifest::EXTERNAL_COMPONENT:
+    case ManifestLocation::kInvalidLocation:
+    case ManifestLocation::kComponent:
+    case ManifestLocation::kExternalComponent:
       return em::Extension_InstallType_TYPE_OTHER;
   }
 }

@@ -27,7 +27,7 @@
 
 namespace {
 
-base::string16 GetDisplayUsername(const base::string16& username) {
+std::u16string GetDisplayUsername(const std::u16string& username) {
   return username.empty()
              ? l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_EMPTY_LOGIN)
              : username;
@@ -67,7 +67,7 @@ PasswordCheckManager::PasswordCheckManager(Profile* profile, Observer* observer)
   observed_bulk_leak_check_service_.Add(
       BulkLeakCheckServiceFactory::GetForProfile(profile));
 
-  // Instructs the presenter and provider to initialize and built their caches.
+  // Instructs the presenter and provider to initialize and build their caches.
   // This will soon after invoke OnCompromisedCredentialsChanged(). Calls to
   // GetCompromisedCredentials() that might happen until then will return an
   // empty list.
@@ -109,7 +109,7 @@ base::Time PasswordCheckManager::GetLastCheckTimestamp() {
 }
 
 int PasswordCheckManager::GetCompromisedCredentialsCount() const {
-  return insecure_credentials_manager_.GetCompromisedCredentials().size();
+  return insecure_credentials_manager_.GetInsecureCredentials().size();
 }
 
 int PasswordCheckManager::GetSavedPasswordsCount() const {
@@ -119,7 +119,7 @@ int PasswordCheckManager::GetSavedPasswordsCount() const {
 std::vector<CompromisedCredentialForUI>
 PasswordCheckManager::GetCompromisedCredentials() const {
   std::vector<CredentialWithPassword> credentials =
-      insecure_credentials_manager_.GetCompromisedCredentials();
+      insecure_credentials_manager_.GetInsecureCredentials();
   std::vector<CompromisedCredentialForUI> ui_credentials;
   ui_credentials.reserve(credentials.size());
   for (const auto& credential : credentials) {
@@ -175,7 +175,7 @@ void PasswordCheckManager::OnSavedPasswordsChanged(
   }
 }
 
-void PasswordCheckManager::OnCompromisedCredentialsChanged(
+void PasswordCheckManager::OnInsecureCredentialsChanged(
     password_manager::InsecureCredentialsManager::CredentialsView credentials) {
   if (AreScriptsRefreshed()) {
     FulfillPrecondition(kKnownCredentialsFetched);
@@ -216,7 +216,7 @@ void PasswordCheckManager::OnCredentialDone(
   }
   if (is_leaked) {
     // TODO(crbug.com/1092444): Trigger single-credential update.
-    insecure_credentials_manager_.SaveCompromisedCredential(credential);
+    insecure_credentials_manager_.SaveInsecureCredential(credential);
   }
 }
 
@@ -310,8 +310,17 @@ PasswordCheckUIStatus PasswordCheckManager::GetUIStatus(State state) const {
 bool PasswordCheckManager::CanUseAccountCheck() const {
   SyncState sync_state = password_manager_util::GetPasswordSyncState(
       ProfileSyncServiceFactory::GetForProfile(profile_));
-  return sync_state == SyncState::SYNCING_NORMAL_ENCRYPTION ||
-         sync_state == SyncState::ACCOUNT_PASSWORDS_ACTIVE_NORMAL_ENCRYPTION;
+  switch (sync_state) {
+    case SyncState::kNotSyncing:
+      ABSL_FALLTHROUGH_INTENDED;
+    case SyncState::kSyncingWithCustomPassphrase:
+      return false;
+
+    case SyncState::kSyncingNormalEncryption:
+      ABSL_FALLTHROUGH_INTENDED;
+    case SyncState::kAccountPasswordsActiveNormalEncryption:
+      return true;
+  }
 }
 
 bool PasswordCheckManager::AreScriptsRefreshed() const {
@@ -347,12 +356,18 @@ bool PasswordCheckManager::ShouldFetchPasswordScripts() const {
 
   // Password change scripts are using password generation, so automatic
   // password change should not be offered to non sync users.
-  if (sync_state == password_manager::NOT_SYNCING) {
-    return false;
-  }
+  switch (sync_state) {
+    case SyncState::kNotSyncing:
+      return false;
 
-  return base::FeatureList::IsEnabled(
-      password_manager::features::kPasswordScriptsFetching);
+    case SyncState::kSyncingWithCustomPassphrase:
+      ABSL_FALLTHROUGH_INTENDED;
+    case SyncState::kSyncingNormalEncryption:
+      ABSL_FALLTHROUGH_INTENDED;
+    case SyncState::kAccountPasswordsActiveNormalEncryption:
+      return base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordScriptsFetching);
+  }
 }
 
 bool PasswordCheckManager::IsPreconditionFulfilled(

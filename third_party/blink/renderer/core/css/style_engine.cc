@@ -32,6 +32,7 @@
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
+#include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/counter_style_map.h"
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/css/css_font_family_value.h"
@@ -69,6 +70,7 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
@@ -76,6 +78,8 @@
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/imports/html_imports_controller.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -113,14 +117,13 @@ StyleEngine::StyleEngine(Document& document)
       is_html_import_(document.IsHTMLImport()),
       document_style_sheet_collection_(
           MakeGarbageCollected<DocumentStyleSheetCollection>(document)),
+      resolver_(MakeGarbageCollected<StyleResolver>(document)),
       owner_color_scheme_(mojom::blink::ColorScheme::kLight) {
   if (document.GetFrame()) {
     // We don't need to create CSSFontSelector for imported document or
     // HTMLTemplateElement's document, because those documents have no frame.
-    // Likewise for the StyleResolver.
     font_selector_ = CreateCSSFontSelectorFor(document);
     font_selector_->RegisterForInvalidationCallbacks(this);
-    resolver_ = MakeGarbageCollected<StyleResolver>(document);
     if (const auto* owner = document.GetFrame()->Owner())
       owner_color_scheme_ = owner->GetColorScheme();
   }
@@ -245,8 +248,7 @@ void StyleEngine::AddPendingSheet(StyleEngineContext& context) {
 
   context.AddingPendingSheet(GetDocument());
 
-  if (context.AddedPendingSheetBeforeBody() &&
-      !RuntimeEnabledFeatures::BlockHTMLParserOnStyleSheetsEnabled()) {
+  if (context.AddedPendingSheetBeforeBody()) {
     pending_render_blocking_stylesheets_++;
   } else {
     pending_parser_blocking_stylesheets_++;
@@ -260,8 +262,7 @@ void StyleEngine::RemovePendingSheet(Node& style_sheet_candidate_node,
   if (style_sheet_candidate_node.isConnected())
     SetNeedsActiveStyleUpdate(style_sheet_candidate_node.GetTreeScope());
 
-  if (context.AddedPendingSheetBeforeBody() &&
-      !RuntimeEnabledFeatures::BlockHTMLParserOnStyleSheetsEnabled()) {
+  if (context.AddedPendingSheetBeforeBody()) {
     DCHECK_GT(pending_render_blocking_stylesheets_, 0);
     pending_render_blocking_stylesheets_--;
   } else {
@@ -471,7 +472,9 @@ void StyleEngine::MediaQueryAffectingValueChanged(MediaValueChange change) {
 void StyleEngine::UpdateActiveStyleSheetsInImport(
     StyleEngine& root_engine,
     DocumentStyleSheetCollector& parent_collector) {
-  DCHECK(RuntimeEnabledFeatures::HTMLImportsEnabled());
+  // TODO(crbug.com/937746): Anything caught by this DCHECK is using the
+  // now-removed HTML Imports feature.
+  DCHECK(false) << "HTML Imports has been removed.";
   DCHECK(IsHTMLImport());
   HeapVector<Member<StyleSheet>> sheets_for_list;
   ImportedDocumentStyleSheetCollector subcollector(parent_collector,
@@ -538,16 +541,22 @@ void StyleEngine::UpdateActiveStyleSheets() {
       active_tree_scopes_.erase(tree_scope);
   }
 
-  if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled()) {
-    CounterStyleMap::ResolveAllReferences(GetDocument(), active_tree_scopes_);
-  }
-
   probe::ActiveStyleSheetsUpdated(document_);
 
   dirty_tree_scopes_.clear();
   document_scope_dirty_ = false;
   tree_scopes_removed_ = false;
   user_style_dirty_ = false;
+}
+
+void StyleEngine::UpdateCounterStyles() {
+  if (!counter_styles_need_update_)
+    return;
+  DCHECK(RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled());
+  CounterStyleMap::MarkAllDirtyCounterStyles(GetDocument(),
+                                             active_tree_scopes_);
+  CounterStyleMap::ResolveAllReferences(GetDocument(), active_tree_scopes_);
+  counter_styles_need_update_ = false;
 }
 
 void StyleEngine::UpdateViewport() {
@@ -807,7 +816,7 @@ CSSStyleSheet* StyleEngine::ParseSheet(Element& element,
   CSSStyleSheet* style_sheet = nullptr;
   style_sheet = CSSStyleSheet::CreateInline(element, NullURL(), start_position,
                                             GetDocument().Encoding());
-  style_sheet->Contents()->ParseStringAtPosition(text, start_position);
+  style_sheet->Contents()->ParseString(text);
   return style_sheet;
 }
 
@@ -851,6 +860,7 @@ void StyleEngine::InvalidateStyleAndLayoutForFontUpdates() {
     root->MarkSubtreeNeedsStyleRecalcForFontUpdates();
   }
 
+  // TODO(xiaochengh): Move layout invalidation after style update.
   if (LayoutView* layout_view = GetDocument().GetLayoutView()) {
     TRACE_EVENT0("blink", "LayoutObject::InvalidateSubtreeForFontUpdates");
     layout_view->InvalidateSubtreeLayoutForFontUpdates();
@@ -859,6 +869,13 @@ void StyleEngine::InvalidateStyleAndLayoutForFontUpdates() {
 
 void StyleEngine::MarkFontsNeedUpdate() {
   fonts_need_update_ = true;
+  GetDocument().ScheduleLayoutTreeUpdateIfNeeded();
+}
+
+void StyleEngine::MarkCounterStylesNeedUpdate() {
+  counter_styles_need_update_ = true;
+  if (LayoutView* layout_view = GetDocument().GetLayoutView())
+    layout_view->SetNeedsMarkerOrCounterUpdate();
   GetDocument().ScheduleLayoutTreeUpdateIfNeeded();
 }
 
@@ -1374,6 +1391,17 @@ void StyleEngine::EnsureUAStyleForPseudoElement(PseudoId pseudo_id) {
   }
 }
 
+void StyleEngine::EnsureUAStyleForForcedColors() {
+  DCHECK(!IsHTMLImport());
+  DCHECK(global_rule_set_);
+  if (CSSDefaultStyleSheets::Instance()
+          .EnsureDefaultStyleSheetForForcedColors()) {
+    global_rule_set_->MarkDirty();
+    if (GetDocument().IsActive())
+      UpdateActiveStyle();
+  }
+}
+
 bool StyleEngine::HasRulesForId(const AtomicString& id) const {
   DCHECK(!IsHTMLImport());
   DCHECK(global_rule_set_);
@@ -1544,8 +1572,8 @@ void StyleEngine::ApplyUserRuleSetChanges(
   }
 
   if (changed_rule_flags & kCounterStyleRules) {
-    if (change == kActiveSheetsChanged)
-      user_counter_style_map_.Clear();
+    if (change == kActiveSheetsChanged && user_counter_style_map_)
+      user_counter_style_map_->Dispose();
 
     for (auto* it = new_style_sheets.begin(); it != new_style_sheets.end();
          it++) {
@@ -1554,11 +1582,7 @@ void StyleEngine::ApplyUserRuleSetChanges(
         EnsureUserCounterStyleMap().AddCounterStyles(*it->second);
     }
 
-    if (CounterStyleMap* doc_map =
-            CounterStyleMap::GetAuthorCounterStyleMap(GetDocument()))
-      doc_map->ResetReferences();
-
-    // TODO(crbug.com/687225): Trigger style/Layout invalidations.
+    MarkCounterStylesNeedUpdate();
   }
 
   if (changed_rule_flags & (kPropertyRules | kScrollTimelineRules)) {
@@ -1624,7 +1648,8 @@ void StyleEngine::ApplyRuleSetChanges(
   if (changed_rule_flags & kKeyframesRules)
     ScopedStyleResolver::KeyframesRulesAdded(tree_scope);
 
-  // TODO(crbug.com/687725): Style/layout invalidation for counter style rules.
+  if (changed_rule_flags & kCounterStyleRules)
+    MarkCounterStylesNeedUpdate();
 
   if ((changed_rule_flags & kPropertyRules) || rebuild_at_property_registry) {
     // @property rules are (for now) ignored in shadow trees, per spec.
@@ -1779,6 +1804,7 @@ void StyleEngine::EnvironmentVariableChanged() {
 }
 
 void StyleEngine::MarkForWhitespaceReattachment() {
+  DCHECK(GetDocument().InStyleRecalc());
   for (auto element : whitespace_reattach_set_) {
     if (element->NeedsReattachLayoutTree() || !element->GetLayoutObject())
       continue;
@@ -1829,7 +1855,7 @@ void StyleEngine::NodeWillBeRemoved(Node& node) {
 void StyleEngine::ChildrenRemoved(ContainerNode& parent) {
   if (!parent.isConnected())
     return;
-  if (in_dom_removal_) {
+  if (InDOMRemoval()) {
     // This is necessary for nested removals. There are elements which
     // removes parts of its UA shadow DOM as part of being removed which means
     // we do a removal from within another removal where isConnected() is not
@@ -1839,10 +1865,10 @@ void StyleEngine::ChildrenRemoved(ContainerNode& parent) {
     // TODO(crbug.com/888448): TextFieldInputType::ListAttributeTargetChanged
     return;
   }
-  style_invalidation_root_.ChildrenRemoved(parent);
-  style_recalc_root_.ChildrenRemoved(parent);
+  style_invalidation_root_.SubtreeModified(parent);
+  style_recalc_root_.SubtreeModified(parent);
   DCHECK(!layout_tree_rebuild_root_.GetRootNode());
-  layout_tree_rebuild_root_.ChildrenRemoved(parent);
+  layout_tree_rebuild_root_.SubtreeModified(parent);
 }
 
 void StyleEngine::CollectMatchingUserRules(
@@ -1895,9 +1921,6 @@ bool StyleEngine::AddUserFontFaceRules(const RuleSet& rule_set) {
 }
 
 void StyleEngine::AddUserKeyframeRules(const RuleSet& rule_set) {
-  if (RuntimeEnabledFeatures::CSSKeyframesMemoryReductionEnabled())
-    return;
-
   const HeapVector<Member<StyleRuleKeyframes>> keyframes_rules =
       rule_set.KeyframesRules();
   for (unsigned i = 0; i < keyframes_rules.size(); ++i)
@@ -1905,8 +1928,6 @@ void StyleEngine::AddUserKeyframeRules(const RuleSet& rule_set) {
 }
 
 void StyleEngine::AddUserKeyframeStyle(StyleRuleKeyframes* rule) {
-  DCHECK(!RuntimeEnabledFeatures::CSSKeyframesMemoryReductionEnabled());
-
   AtomicString animation_name(rule->GetName());
 
   if (rule->IsVendorPrefixed()) {
@@ -1943,11 +1964,6 @@ void StyleEngine::AddScrollTimelineRules(const RuleSet& rule_set) {
 
 StyleRuleKeyframes* StyleEngine::KeyframeStylesForAnimation(
     const AtomicString& animation_name) {
-  if (RuntimeEnabledFeatures::CSSKeyframesMemoryReductionEnabled()) {
-    return ScopedStyleResolver::KeyframeStylesForAnimationFromActiveSheets(
-        animation_name, active_user_style_sheets_);
-  }
-
   if (keyframes_rule_map_.IsEmpty())
     return nullptr;
 
@@ -1981,15 +1997,36 @@ scoped_refptr<StyleInitialData> StyleEngine::MaybeCreateAndGetInitialData() {
   return initial_data_;
 }
 
-void StyleEngine::UpdateStyleAndLayoutTreeForContainer(Element& container) {
+void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
+    Element& container,
+    const LogicalSize& logical_size,
+    LogicalAxes contained_axes) {
   DCHECK(!style_recalc_root_.GetRootNode());
   DCHECK(!container.NeedsStyleRecalc());
   DCHECK(!in_container_query_style_recalc_);
 
   base::AutoReset<bool> cq_recalc(&in_container_query_style_recalc_, true);
 
+  WritingMode writing_mode = container.ComputedStyleRef().GetWritingMode();
+  PhysicalSize physical_size = ToPhysicalSize(logical_size, writing_mode);
+  PhysicalAxes physical_axes = ToPhysicalAxes(contained_axes, writing_mode);
+
+  if (auto* evaluator = container.GetContainerQueryEvaluator()) {
+    if (!evaluator->ContainerChanged(physical_size, physical_axes))
+      return;
+  } else {
+    container.SetContainerQueryEvaluator(
+        MakeGarbageCollected<ContainerQueryEvaluator>(physical_size,
+                                                      physical_axes));
+  }
+
   style_recalc_root_.Update(nullptr, &container);
-  RecalcStyle({StyleRecalcChange::kRecalcContainerQueryDependent});
+  RecalcStyle({StyleRecalcChange::kRecalcContainerQueryDependent},
+              StyleRecalcContext());
+
+  // Nodes are marked for whitespace reattachment for DOM removal only. This set
+  // should have been cleared before layout.
+  DCHECK(!NeedsWhitespaceReattachment());
 
   if (container.ChildNeedsReattachLayoutTree()) {
     DCHECK(layout_tree_rebuild_root_.GetRootNode());
@@ -2002,15 +2039,18 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(Element& container) {
     }
     RebuildLayoutTree();
   }
+
+  GetDocument().GetLayoutView()->UpdateMarkersAndCountersAfterStyleChange();
 }
 
-void StyleEngine::RecalcStyle(StyleRecalcChange change) {
+void StyleEngine::RecalcStyle(StyleRecalcChange change,
+                              const StyleRecalcContext& style_recalc_context) {
   DCHECK(GetDocument().documentElement());
   Element& root_element = style_recalc_root_.RootElement();
   Element* parent = FlatTreeTraversal::ParentElement(root_element);
 
   SelectorFilterRootScope filter_scope(parent);
-  root_element.RecalcStyle(change);
+  root_element.RecalcStyle(change, style_recalc_context);
 
   for (ContainerNode* ancestor = root_element.GetStyleRecalcParent(); ancestor;
        ancestor = ancestor->GetStyleRecalcParent()) {
@@ -2021,6 +2061,17 @@ void StyleEngine::RecalcStyle(StyleRecalcChange change) {
   style_recalc_root_.Clear();
   if (!parent || IsA<HTMLBodyElement>(root_element))
     PropagateWritingModeAndDirectionToHTMLRoot();
+}
+
+void StyleEngine::RecalcStyle() {
+  Element& root_element = style_recalc_root_.RootElement();
+
+  auto style_recalc_context =
+      RuntimeEnabledFeatures::CSSContainerQueriesEnabled()
+          ? StyleRecalcContext::FromAncestors(root_element)
+          : StyleRecalcContext();
+
+  RecalcStyle({}, style_recalc_context);
 }
 
 void StyleEngine::ClearEnsuredDescendantStyles(Element& root) {
@@ -2125,7 +2176,7 @@ void StyleEngine::UpdateStyleInvalidationRoot(ContainerNode* ancestor,
                                               Node* dirty_node) {
   DCHECK(!IsHTMLImport());
   if (GetDocument().IsActive()) {
-    if (in_dom_removal_) {
+    if (InDOMRemoval()) {
       ancestor = nullptr;
       dirty_node = document_;
     }
@@ -2148,7 +2199,7 @@ void StyleEngine::UpdateStyleRecalcRoot(ContainerNode* ancestor,
     return;
   }
   DCHECK(!InRebuildLayoutTree());
-  if (in_dom_removal_) {
+  if (InDOMRemoval()) {
     ancestor = nullptr;
     dirty_node = document_;
   }
@@ -2157,9 +2208,24 @@ void StyleEngine::UpdateStyleRecalcRoot(ContainerNode* ancestor,
 
 void StyleEngine::UpdateLayoutTreeRebuildRoot(ContainerNode* ancestor,
                                               Node* dirty_node) {
-  DCHECK(!in_dom_removal_);
-  if (GetDocument().IsActive())
-    layout_tree_rebuild_root_.Update(ancestor, dirty_node);
+  DCHECK(!InDOMRemoval());
+  if (!GetDocument().IsActive())
+    return;
+  if (InRebuildLayoutTree()) {
+    DCHECK(allow_mark_for_reattach_from_rebuild_layout_tree_);
+    return;
+  }
+  DCHECK(GetDocument().InStyleRecalc());
+  DCHECK(dirty_node);
+  if (!ancestor && !dirty_node->NeedsReattachLayoutTree() &&
+      !dirty_node->ChildNeedsReattachLayoutTree()) {
+    // The StyleTraversalRoot requires the root node to be dirty or child-dirty.
+    // When we mark for whitespace re-attachment, we only mark the ancestor
+    // chain. Use the parent as the dirty node if the dirty_node is not dirty.
+    dirty_node = dirty_node->GetReattachParent();
+    DCHECK(dirty_node && dirty_node->ChildNeedsReattachLayoutTree());
+  }
+  layout_tree_rebuild_root_.Update(ancestor, dirty_node);
 }
 
 bool StyleEngine::SupportsDarkColorScheme() {
@@ -2375,16 +2441,43 @@ CounterStyleMap& StyleEngine::EnsureUserCounterStyleMap() {
 const CounterStyle& StyleEngine::FindCounterStyleAcrossScopes(
     const AtomicString& name,
     const TreeScope* scope) const {
+  CounterStyleMap* target_map = nullptr;
   while (scope) {
     if (CounterStyleMap* map =
-            CounterStyleMap::GetAuthorCounterStyleMap(*scope))
-      return map->FindCounterStyleAcrossScopes(name);
+            CounterStyleMap::GetAuthorCounterStyleMap(*scope)) {
+      target_map = map;
+      break;
+    }
     scope = scope->ParentTreeScope();
   }
-  if (user_counter_style_map_)
-    return user_counter_style_map_->FindCounterStyleAcrossScopes(name);
-  return CounterStyleMap::GetUACounterStyleMap()->FindCounterStyleAcrossScopes(
-      name);
+  if (!target_map && user_counter_style_map_)
+    target_map = user_counter_style_map_;
+  if (!target_map)
+    target_map = CounterStyleMap::GetUACounterStyleMap();
+  if (CounterStyle* result = target_map->FindCounterStyleAcrossScopes(name))
+    return *result;
+  return CounterStyle::GetDecimal();
+}
+
+void StyleEngine::ChangeRenderingForHTMLSelect(HTMLSelectElement& select) {
+  // TODO(crbug.com/1191353): SetForceReattachLayoutTree() should be the correct
+  // way to create a new layout tree for a select element that changes rendering
+  // and not style, but the code for updating the selected index relies on the
+  // layout tree to be deleted. To work around that, we do a synchronous
+  // DetachLayoutTree as if the subtree is taken out of the flat tree.
+  // DetachLayoutTree will clear dirty bits which means we also need to simulate
+  // that we are in a dom removal to make the style recalc root be updated
+  // correctly.
+  StyleEngine::DOMRemovalScope removal_scope(*this);
+  auto& element = To<Element>(select);
+  element.DetachLayoutTree();
+  // If the recalc root is in this subtree, DetachLayoutTree() above clears the
+  // bits and we need to update the root. Otherwise the AssertRootNodeInvariants
+  // will fail for SetNeedsStyleRecalc below.
+  style_recalc_root_.SubtreeModified(element);
+  element.SetNeedsStyleRecalc(
+      kLocalStyleChange,
+      StyleChangeReasonForTracing::Create(style_change_reason::kControl));
 }
 
 void StyleEngine::Trace(Visitor* visitor) const {

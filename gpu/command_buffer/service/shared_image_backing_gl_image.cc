@@ -101,7 +101,10 @@ SharedImageRepresentationGLTexturePassthroughImpl::
         scoped_refptr<gles2::TexturePassthrough> texture_passthrough)
     : SharedImageRepresentationGLTexturePassthrough(manager, backing, tracker),
       client_(client),
-      texture_passthrough_(std::move(texture_passthrough)) {}
+      texture_passthrough_(std::move(texture_passthrough)) {
+  // TODO(https://crbug.com/1172769): Remove this CHECK.
+  CHECK(texture_passthrough_);
+}
 
 SharedImageRepresentationGLTexturePassthroughImpl::
     ~SharedImageRepresentationGLTexturePassthroughImpl() {
@@ -265,8 +268,7 @@ SharedImageRepresentationOverlayImpl::~SharedImageRepresentationOverlayImpl() =
     default;
 
 bool SharedImageRepresentationOverlayImpl::BeginReadAccess(
-    std::vector<gfx::GpuFence>* acquire_fences,
-    std::vector<gfx::GpuFence>* release_fences) {
+    std::vector<gfx::GpuFence>* acquire_fences) {
   auto* gl_backing = static_cast<SharedImageBackingGLImage*>(backing());
   std::unique_ptr<gfx::GpuFence> fence = gl_backing->GetLastWriteGpuFence();
   if (fence)
@@ -274,7 +276,10 @@ bool SharedImageRepresentationOverlayImpl::BeginReadAccess(
   return true;
 }
 
-void SharedImageRepresentationOverlayImpl::EndReadAccess() {}
+void SharedImageRepresentationOverlayImpl::EndReadAccess(
+    gfx::GpuFenceHandle release_fence) {
+  DCHECK(release_fence.is_null());
+}
 
 gl::GLImage* SharedImageRepresentationOverlayImpl::GetGLImage() {
   return gl_image_.get();
@@ -530,6 +535,37 @@ SharedImageBackingGLImage::ProduceSkia(
   return std::make_unique<SharedImageRepresentationSkiaImpl>(
       manager, this, gl_client, std::move(context_state),
       cached_promise_texture_, tracker);
+}
+
+SharedImageRepresentationMemoryImpl::SharedImageRepresentationMemoryImpl(
+    SharedImageManager* manager,
+    SharedImageBacking* backing,
+    MemoryTypeTracker* tracker,
+    scoped_refptr<gl::GLImageMemory> image_memory)
+    : SharedImageRepresentationMemory(manager, backing, tracker),
+      image_memory_(std::move(image_memory)) {}
+
+SharedImageRepresentationMemoryImpl::~SharedImageRepresentationMemoryImpl() =
+    default;
+
+SkPixmap SharedImageRepresentationMemoryImpl::BeginReadAccess() {
+  SkImageInfo info = SkImageInfo::Make(
+      backing()->size().width(), backing()->size().height(),
+      viz::ResourceFormatToClosestSkColorType(true, backing()->format()),
+      backing()->alpha_type(), backing()->color_space().ToSkColorSpace());
+  return SkPixmap(info, image_memory_->memory(), image_memory_->stride());
+}
+
+std::unique_ptr<SharedImageRepresentationMemory>
+SharedImageBackingGLImage::ProduceMemory(SharedImageManager* manager,
+                                         MemoryTypeTracker* tracker) {
+  gl::GLImageMemory* image_memory =
+      gl::GLImageMemory::FromGLImage(image_.get());
+  if (!image_memory)
+    return nullptr;
+
+  return std::make_unique<SharedImageRepresentationMemoryImpl>(
+      manager, this, tracker, base::WrapRefCounted(image_memory));
 }
 
 std::unique_ptr<SharedImageRepresentationGLTexture>

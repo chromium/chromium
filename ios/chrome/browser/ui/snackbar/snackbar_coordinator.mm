@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -39,6 +40,12 @@
   CGRect bottomToolbarFrame = bottomToolbarGuide.constrainedView.frame;
   [self showSnackbarMessage:message
                bottomOffset:bottomToolbarFrame.size.height];
+}
+
+- (void)showSnackbarMessage:(MDCSnackbarMessage*)message
+             withHapticType:(UINotificationFeedbackType)type {
+  TriggerHapticFeedbackForNotification(type);
+  [self showSnackbarMessage:message];
 }
 
 - (void)showSnackbarMessage:(MDCSnackbarMessage*)message

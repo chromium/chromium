@@ -23,6 +23,7 @@
 #include "extensions/browser/updater/request_queue.h"
 #include "extensions/browser/updater/safe_manifest_parser.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_request_headers.h"
@@ -84,7 +85,7 @@ class ExtensionDownloader {
   // Check AddPendingExtensionWithVersion with the version set as "0.0.0.0".
   bool AddPendingExtension(const std::string& id,
                            const GURL& update_url,
-                           Manifest::Location install_source,
+                           mojom::ManifestLocation install_source,
                            bool is_corrupt_reinstall,
                            int request_id,
                            ManifestFetchData::FetchPriority fetch_priority);
@@ -107,7 +108,7 @@ class ExtensionDownloader {
   bool AddPendingExtensionWithVersion(
       const std::string& id,
       const GURL& update_url,
-      Manifest::Location install_source,
+      mojom::ManifestLocation install_source,
       bool is_corrupt_reinstall,
       int request_id,
       ManifestFetchData::FetchPriority fetch_priority,
@@ -244,7 +245,7 @@ class ExtensionDownloader {
     int request_id{0};
     GURL update_url;
     // The extensions in current ManifestFetchData are all force installed
-    // (Manifest::Location::EXTERNAL_POLICY_DOWNLOAD) or not. In a
+    // (mojom::ManifestLocation::kExternalPolicyDownload) or not. In a
     // ManifestFetchData we would have either all the extensions as force
     // installed or we would none extensions as force installed.
     bool is_force_installed{false};
@@ -260,7 +261,7 @@ class ExtensionDownloader {
   bool AddExtensionData(const std::string& id,
                         const base::Version& version,
                         Manifest::Type extension_type,
-                        Manifest::Location extension_location,
+                        mojom::ManifestLocation extension_location,
                         const GURL& extension_update_url,
                         const ExtraParams& extra,
                         int request_id,

@@ -59,12 +59,6 @@ OobeTypes.DemoCountryDsc;
 OobeTypes.A11yStatuses;
 
 /**
- * OOBE screen object (which is created in ui/login/screen.js )
- * @typedef {!Object}
- */
-OobeTypes.Screen;
-
-/**
  * Timezone ID.
  * @typedef {!String}
  */
@@ -82,7 +76,7 @@ OobeTypes.TimezoneDsc;
 
 /**
  * OOBE configuration, allows automation during OOBE.
- * Keys are also listed in chrome/browser/chromeos/login/configuration_keys.h
+ * Keys are also listed in chrome/browser/ash/login/configuration_keys.h
  * @typedef {{
  *   language: (string|undefined),
  *   inputMethod: (string|undefined),
@@ -100,37 +94,21 @@ OobeTypes.TimezoneDsc;
 OobeTypes.OobeConfiguration;
 
 /**
- * Specifies the type of the information that is requested by the security token
- * PIN dialog.
- * Must be kept in sync with chromeos/constants/security_token_pin_types.h.
- * @enum {number}
+ * Parameters passed to show PIN setup screen
+ * @typedef {{
+ *   auth_token: string,
+ * }}
  */
-OobeTypes.SecurityTokenPinDialogType = {
-  PIN: 0,
-  PUK: 1,
-};
-
-/**
- * Specifies the type of the error that is displayed in the security token PIN
- * dialog.
- * Must be kept in sync with chromeos/constants/security_token_pin_types.h.
- * @enum {number}
- */
-OobeTypes.SecurityTokenPinDialogErrorType = {
-  NONE: 0,
-  UNKNOWN: 1,
-  INVALID_PIN: 2,
-  INVALID_PUK: 3,
-  MAX_ATTEMPTS_EXCEEDED: 4,
-};
+OobeTypes.PinSetupScreenParameters;
 
 /**
  * Configuration of the security token PIN dialog.
  * @typedef {{
- *   codeType: OobeTypes.SecurityTokenPinDialogType,
  *   enableUserInput: boolean,
- *   errorLabel: OobeTypes.SecurityTokenPinDialogErrorType,
  *   attemptsLeft: number,
+ *   hasError: boolean,
+ *   formattedError: string,
+ *   formattedAttemptsLeft: string,
  * }}
  */
 OobeTypes.SecurityTokenPinDialogParameters;

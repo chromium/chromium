@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/csspaint/paint_worklet_proxy_client.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/css/cssom/cross_thread_color_value.h"
@@ -52,7 +53,8 @@ PaintWorkletProxyClient::PaintWorkletProxyClient(
     PaintWorklet* paint_worklet,
     base::WeakPtr<PaintWorkletPaintDispatcher> paint_dispatcher,
     scoped_refptr<base::SingleThreadTaskRunner> compositor_host_queue)
-    : paint_dispatcher_(std::move(paint_dispatcher)),
+    : Supplement(nullptr),
+      paint_dispatcher_(std::move(paint_dispatcher)),
       compositor_host_queue_(std::move(compositor_host_queue)),
       worklet_id_(worklet_id),
       state_(RunState::kUninitialized),
@@ -135,7 +137,7 @@ void PaintWorkletProxyClient::RegisterCSSPaintDefinition(
         CrossThreadBindOnce(
             &PaintWorklet::RegisterMainThreadDocumentPaintDefinition,
             paint_worklet_, name, definition->NativeInvalidationProperties(),
-            WTF::Passed(std::move(passed_custom_properties)),
+            std::move(passed_custom_properties),
             definition->InputArgumentTypes(),
             definition->GetPaintRenderingContext2DSettings()->alpha()));
   }

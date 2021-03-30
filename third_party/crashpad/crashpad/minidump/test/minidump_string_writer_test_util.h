@@ -20,8 +20,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
-
 namespace crashpad {
 
 struct MinidumpUTF8String;
@@ -66,10 +64,10 @@ const MinidumpUTF8String* MinidumpUTF8StringAtRVA(
     const std::string& file_contents,
     RVA rva);
 
-//! \brief Returns the contents of a MINIDUMP_STRING as a `string16`.
+//! \brief Returns the contents of a MINIDUMP_STRING as a `std::u16string`.
 //!
 //! This function uses MinidumpStringAtRVA() to obtain a MINIDUMP_STRING, and
-//! returns the string data as a `string16`.
+//! returns the string data as a `std::u16string`.
 //!
 //! \param[in] file_contents The contents of the minidump file.
 //! \param[in] rva The offset within the minidump file of the desired
@@ -79,7 +77,7 @@ const MinidumpUTF8String* MinidumpUTF8StringAtRVA(
 //!     failure, raises a Google Test assertion and returns an empty string.
 //!
 //! \sa MinidumpUTF8StringAtRVAAsString()
-base::string16 MinidumpStringAtRVAAsString(const std::string& file_contents,
+std::u16string MinidumpStringAtRVAAsString(const std::string& file_contents,
                                            RVA rva);
 
 //! \brief Returns the contents of a MinidumpUTF8String as a `std::string`.

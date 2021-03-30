@@ -19,10 +19,8 @@
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
-#include "content/browser/service_worker/service_worker_database.h"
 #include "content/browser/service_worker/service_worker_host.h"
 #include "content/browser/service_worker/service_worker_registration.h"
-#include "content/browser/service_worker/service_worker_storage.h"
 #include "content/common/frame.mojom.h"
 #include "content/common/frame_messages.h"
 #include "content/common/frame_messages.mojom.h"
@@ -31,6 +29,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
@@ -45,63 +44,6 @@
 namespace content {
 
 namespace {
-
-// A mock SharedURLLoaderFactory that always fails to start.
-// TODO(bashi): Make this factory not to fail when unit tests actually need
-// this to be working.
-class MockSharedURLLoaderFactory final
-    : public network::SharedURLLoaderFactory {
- public:
-  MockSharedURLLoaderFactory() = default;
-
-  // network::mojom::URLLoaderFactory:
-  void CreateLoaderAndStart(
-      mojo::PendingReceiver<network::mojom::URLLoader> receiver,
-      int32_t routing_id,
-      int32_t request_id,
-      uint32_t options,
-      const network::ResourceRequest& url_request,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
-      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
-      override {
-    mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
-        ->OnComplete(
-            network::URLLoaderCompletionStatus(net::ERR_NOT_IMPLEMENTED));
-  }
-  void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
-      override {
-    NOTREACHED();
-  }
-
-  // network::SharedURLLoaderFactory:
-  std::unique_ptr<network::PendingSharedURLLoaderFactory> Clone() override {
-    NOTREACHED();
-    return nullptr;
-  }
-
- private:
-  friend class base::RefCounted<MockSharedURLLoaderFactory>;
-
-  ~MockSharedURLLoaderFactory() override = default;
-
-  DISALLOW_COPY_AND_ASSIGN(MockSharedURLLoaderFactory);
-};
-
-// Returns MockSharedURLLoaderFactory.
-class MockPendingSharedURLLoaderFactory final
-    : public network::PendingSharedURLLoaderFactory {
- public:
-  MockPendingSharedURLLoaderFactory() = default;
-  ~MockPendingSharedURLLoaderFactory() override = default;
-
- protected:
-  scoped_refptr<network::SharedURLLoaderFactory> CreateFactory() override {
-    return base::MakeRefCounted<MockSharedURLLoaderFactory>();
-  }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockPendingSharedURLLoaderFactory);
-};
 
 // The minimal DidCommitProvisionalLoadParams passing mojom validation.
 mojom::DidCommitProvisionalLoadParamsPtr
@@ -150,9 +92,11 @@ class FakeNavigationClient : public mojom::NavigationClient {
       mojom::CommitNavigationParamsPtr commit_params,
       bool has_stale_copy_in_cache,
       int error_code,
+      int extended_error_code,
       const net::ResolveErrorInfo& resolve_error_info,
       const base::Optional<std::string>& error_page_content,
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle> subresource_loaders,
+      blink::mojom::PolicyContainerPtr policy_container,
       CommitFailedNavigationCallback callback) override {
     std::move(callback).Run(MinimalDidCommitNavigationLoadParams(), nullptr);
   }
@@ -427,8 +371,7 @@ scoped_refptr<ServiceWorkerRegistration> CreateNewServiceWorkerRegistration(
   // * Default run loop doesn't execute nested tasks. Tests will hang when
   //   default run loop is used.
   // TODO(bashi): Figure out a way to avoid using nested loop as it's
-  // problematic especially on the IO thread. This function is called on the IO
-  // thread when ServiceWorkerOnUI is disabled.
+  // problematic.
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   registry->CreateNewRegistration(
       options,
@@ -586,7 +529,7 @@ void MockServiceWorkerResourceReader::ReadData(
   options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
   options.element_num_bytes = 1;
   options.capacity_num_bytes = expected_max_data_bytes_;
-  mojo::CreateDataPipe(&options, &body_, &consumer);
+  mojo::CreateDataPipe(&options, body_, consumer);
   std::move(callback).Run(std::move(std::move(consumer)));
 }
 
@@ -810,12 +753,13 @@ ServiceWorkerUpdateCheckTestUtils::CreateUpdateCheckerPausedState(
     ServiceWorkerUpdatedScriptLoader::WriterState body_writer_state,
     scoped_refptr<network::MojoToNetPendingBuffer> pending_network_buffer,
     uint32_t consumed_size) {
-  mojo::PendingRemote<network::mojom::URLLoaderClient> network_loader_client;
+  mojo::Remote<network::mojom::URLLoaderClient> network_loader_client;
   mojo::PendingReceiver<network::mojom::URLLoaderClient>
       network_loader_client_receiver =
-          network_loader_client.InitWithNewPipeAndPassReceiver();
+          network_loader_client.BindNewPipeAndPassReceiver();
   return std::make_unique<ServiceWorkerSingleScriptUpdateChecker::PausedState>(
       std::move(cache_writer), /*network_loader=*/nullptr,
+      std::move(network_loader_client),
       std::move(network_loader_client_receiver),
       std::move(pending_network_buffer), consumed_size, network_loader_state,
       body_writer_state);
@@ -861,8 +805,8 @@ void ServiceWorkerUpdateCheckTestUtils::
   if (!diff_data_block.empty()) {
     mojo::ScopedDataPipeConsumerHandle network_consumer;
     // Create a data pipe which has the new block sent from the network.
-    ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, out_body_handle,
-                                                   &network_consumer));
+    ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, *out_body_handle,
+                                                   network_consumer));
     uint32_t written_size = diff_data_block.size();
     ASSERT_EQ(MOJO_RESULT_OK,
               (*out_body_handle)

@@ -177,7 +177,7 @@ def MakeHistogramSetWithDiagnostics(histograms_file,
   subprocess.check_call(cmd)
 
 
-def MakeListOfPoints(charts, bot, test_name, buildername,
+def MakeListOfPoints(charts, bot, test_name, project, buildbucket, buildername,
                      buildnumber, supplemental_columns,
                      perf_dashboard_machine_group,
                      revisions_dict=None):
@@ -223,6 +223,9 @@ def MakeListOfPoints(charts, bot, test_name, buildername,
       result['supplemental_columns'].update(revision_columns)
       result['supplemental_columns'].update(
           _GetStdioUriColumn(test_name, buildername, buildnumber))
+      result['supplemental_columns'].update(
+          _GetBuildStatusUriColumn(project, buildbucket, buildername,
+                                   buildnumber))
       result['supplemental_columns'].update(supplemental_columns)
 
       result['value'] = trace_values[0]
@@ -239,7 +242,8 @@ def MakeListOfPoints(charts, bot, test_name, buildername,
   return results
 
 
-def MakeDashboardJsonV1(chart_json, revision_dict, test_name, bot, buildername,
+def MakeDashboardJsonV1(chart_json, revision_dict, test_name, bot, project,
+                        buildbucket, buildername,
                         buildnumber, supplemental_dict, is_ref,
                         perf_dashboard_machine_group):
   """Generates Dashboard JSON in the new Telemetry format.
@@ -277,6 +281,8 @@ def MakeDashboardJsonV1(chart_json, revision_dict, test_name, bot, buildername,
 
   supplemental.update(
       _GetStdioUriColumn(test_name, buildername, buildnumber))
+  supplemental.update(
+      _GetBuildStatusUriColumn(project, buildbucket, buildername, buildnumber))
 
   # TODO(sullivan): The android recipe sends "test_name.reference"
   # while the desktop one just sends "test_name" for ref builds. Need
@@ -311,11 +317,13 @@ def _MakeStdioUrl(test_name, buildername, buildnumber):
 
 
 def _MakeBuildStatusUrl(project, buildbucket, buildername, buildnumber):
-  # Note: this construction only works for LUCI but it's ok because we are
-  # converting all perf bots to LUCI (crbug.com/803137).
-  if not (project and buildbucket and buildnumber and buildnumber):
+  if not (buildername and buildnumber):
     return None
-  return 'https://ci.chromium.org/p/%s/builders/%s/%s/%s' % (
+  if not project:
+    project = 'chrome'
+  if not buildbucket:
+    buildbucket = 'ci'
+  return 'https://ci.chromium.org/ui/p/%s/builders/%s/%s/%s' % (
       urllib.quote(project),
       urllib.quote(buildbucket),
       urllib.quote(buildername),
@@ -328,6 +336,14 @@ def _GetStdioUriColumn(test_name, buildername, buildnumber):
   if not url:
     return {}
   return _CreateLinkColumn('stdio_uri', 'Buildbot stdio', url)
+
+
+def _GetBuildStatusUriColumn(project, buildbucket, buildername, buildnumber):
+  """Gets a supplemental column containing buildbot status link."""
+  url = _MakeBuildStatusUrl(project, buildbucket, buildername, buildnumber)
+  if not url:
+    return {}
+  return _CreateLinkColumn('build_uri', 'Buildbot status page', url)
 
 
 def _CreateLinkColumn(name, label, url):

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that the console can preserve log messages across navigations. Bug 53359\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   SDK.consoleModel.addMessage(new SDK.ConsoleMessage(

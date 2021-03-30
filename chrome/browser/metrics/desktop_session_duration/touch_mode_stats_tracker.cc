@@ -65,8 +65,14 @@ void TouchModeStatsTracker::OnSessionEnded(base::TimeDelta session_length,
                                            base::TimeTicks session_end) {
   // If we end in touch mode, we must count the time from
   // last_touch_mode_switch_in_session_ to session_end.
-  if (touch_ui_controller_->touch_ui()) {
-    DCHECK_GE(session_end, last_touch_mode_switch_in_session_);
+  //
+  // |session_end| may be slightly less than
+  // |last_touch_mode_switch_in_session_| because an OnSessionEnded()
+  // call may happen slightly after the session end time. Assuming the
+  // difference is small, the touch mode time left unaccounted for is small.
+  // Accept this error and ignore this time. See crbug.com/1165462.
+  if (touch_ui_controller_->touch_ui() &&
+      session_end >= last_touch_mode_switch_in_session_) {
     touch_mode_duration_in_session_ +=
         session_end - last_touch_mode_switch_in_session_;
   }

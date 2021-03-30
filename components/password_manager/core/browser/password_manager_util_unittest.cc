@@ -242,10 +242,10 @@ TEST(PasswordManagerUtil, FindBestMatches) {
 }
 
 TEST(PasswordManagerUtil, FindBestMatchesInProfileAndAccountStores) {
-  const base::string16 kUsername1 = base::ASCIIToUTF16("Username1");
-  const base::string16 kPassword1 = base::ASCIIToUTF16("Password1");
-  const base::string16 kUsername2 = base::ASCIIToUTF16("Username2");
-  const base::string16 kPassword2 = base::ASCIIToUTF16("Password2");
+  const std::u16string kUsername1 = u"Username1";
+  const std::u16string kPassword1 = u"Password1";
+  const std::u16string kUsername2 = u"Username2";
+  const std::u16string kPassword2 = u"Password2";
 
   PasswordForm form;
   form.is_public_suffix_match = false;
@@ -297,7 +297,7 @@ TEST(PasswordManagerUtil, FindBestMatchesInProfileAndAccountStores) {
 TEST(PasswordManagerUtil, GetMatchForUpdating_MatchUsername) {
   PasswordForm stored = GetTestCredential();
   PasswordForm parsed = GetTestCredential();
-  parsed.password_value = base::ASCIIToUTF16("new_password");
+  parsed.password_value = u"new_password";
 
   EXPECT_EQ(&stored, GetMatchForUpdating(parsed, {&stored}));
 }
@@ -305,7 +305,7 @@ TEST(PasswordManagerUtil, GetMatchForUpdating_MatchUsername) {
 TEST(PasswordManagerUtil, GetMatchForUpdating_RejectUnknownUsername) {
   PasswordForm stored = GetTestCredential();
   PasswordForm parsed = GetTestCredential();
-  parsed.username_value = base::ASCIIToUTF16("other_username");
+  parsed.username_value = u"other_username";
 
   EXPECT_EQ(nullptr, GetMatchForUpdating(parsed, {&stored}));
 }
@@ -331,7 +331,7 @@ TEST(PasswordManagerUtil, GetMatchForUpdating_MatchUsernamePSLAnotherPassword) {
   PasswordForm stored = GetTestCredential();
   stored.is_public_suffix_match = true;
   PasswordForm parsed = GetTestCredential();
-  parsed.password_value = base::ASCIIToUTF16("new_password");
+  parsed.password_value = u"new_password";
 
   EXPECT_EQ(nullptr, GetMatchForUpdating(parsed, {&stored}));
 }
@@ -352,7 +352,7 @@ TEST(PasswordManagerUtil,
   PasswordForm stored = GetTestCredential();
   stored.is_public_suffix_match = true;
   PasswordForm parsed = GetTestCredential();
-  parsed.new_password_value = base::ASCIIToUTF16("new_password");
+  parsed.new_password_value = u"new_password";
   parsed.password_value.clear();
 
   EXPECT_EQ(nullptr, GetMatchForUpdating(parsed, {&stored}));
@@ -388,14 +388,14 @@ TEST(PasswordManagerUtil, GetMatchForUpdating_EmptyUsernameCMAPI) {
 
 TEST(PasswordManagerUtil, GetMatchForUpdating_EmptyUsernamePickFirst) {
   PasswordForm stored1 = GetTestCredential();
-  stored1.username_value = base::ASCIIToUTF16("Adam");
-  stored1.password_value = base::ASCIIToUTF16("Adam_password");
+  stored1.username_value = u"Adam";
+  stored1.password_value = u"Adam_password";
   PasswordForm stored2 = GetTestCredential();
-  stored2.username_value = base::ASCIIToUTF16("Ben");
-  stored2.password_value = base::ASCIIToUTF16("Ben_password");
+  stored2.username_value = u"Ben";
+  stored2.password_value = u"Ben_password";
   PasswordForm stored3 = GetTestCredential();
-  stored3.username_value = base::ASCIIToUTF16("Cindy");
-  stored3.password_value = base::ASCIIToUTF16("Cindy_password");
+  stored3.username_value = u"Cindy";
+  stored3.password_value = u"Cindy_password";
 
   PasswordForm parsed = GetTestCredential();
   parsed.username_value.clear();

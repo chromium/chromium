@@ -30,33 +30,30 @@ class IOBuffer;
 class MTPDeviceAsyncDelegate {
  public:
   // A callback to be called when GetFileInfo method call succeeds.
-  typedef base::OnceCallback<void(const base::File::Info& file_info)>
-      GetFileInfoSuccessCallback;
+  using GetFileInfoSuccessCallback =
+      base::OnceCallback<void(const base::File::Info& file_info)>;
 
   // A callback to be called when CreateDirectory method call succeeds.
-  typedef base::RepeatingClosure CreateDirectorySuccessCallback;
+  using CreateDirectorySuccessCallback = base::OnceClosure;
 
   // A callback to be called when ReadDirectory method call succeeds.
-  typedef base::RepeatingCallback<
-      void(storage::AsyncFileUtil::EntryList file_list, bool has_more)>
-      ReadDirectorySuccessCallback;
+  using ReadDirectorySuccessCallback =
+      base::RepeatingCallback<void(storage::AsyncFileUtil::EntryList file_list,
+                                   bool has_more)>;
 
   // A callback to be called when GetFileInfo/ReadDirectory/CreateSnapshot
   // method call fails.
-  typedef base::RepeatingCallback<void(base::File::Error error)> ErrorCallback;
+  using ErrorCallback = base::OnceCallback<void(base::File::Error error)>;
 
   // A callback to be called when CreateSnapshotFile method call succeeds.
-  // TODO: consider make this a OnceCallback. Right now it is repeating because
-  // it is used in SnapshotRequestInfo, which is owned by SnapshotFileDetails,
-  // and SnapshotFileDetails needs const access to SnapshotRequestInfo.
-  typedef base::RepeatingCallback<void(const base::File::Info& file_info,
-                                       const base::FilePath& local_path)>
-      CreateSnapshotFileSuccessCallback;
+  using CreateSnapshotFileSuccessCallback =
+      base::OnceCallback<void(const base::File::Info& file_info,
+                              const base::FilePath& local_path)>;
 
   // A callback to be called when ReadBytes method call succeeds.
-  typedef base::OnceCallback<void(const base::File::Info& file_info,
-                                  int bytes_read)>
-      ReadBytesSuccessCallback;
+  using ReadBytesSuccessCallback =
+      base::OnceCallback<void(const base::File::Info& file_info,
+                              int bytes_read)>;
 
   struct ReadBytesRequest {
     ReadBytesRequest(uint32_t file_id,
@@ -64,7 +61,7 @@ class MTPDeviceAsyncDelegate {
                      int64_t offset,
                      int buf_len,
                      ReadBytesSuccessCallback success_callback,
-                     const ErrorCallback& error_callback);
+                     ErrorCallback error_callback);
     ReadBytesRequest(ReadBytesRequest&& other);
     ~ReadBytesRequest();
 
@@ -79,22 +76,22 @@ class MTPDeviceAsyncDelegate {
   // A callback to be called to create a temporary file. Path to the temporary
   // file is returned as base::FilePath. The caller is responsible to manage
   // life time of the temporary file.
-  typedef base::Callback<base::FilePath()> CreateTemporaryFileCallback;
+  typedef base::OnceCallback<base::FilePath()> CreateTemporaryFileCallback;
 
   // A callback to be called when CopyFileLocal method call succeeds.
-  typedef base::Closure CopyFileLocalSuccessCallback;
+  using CopyFileLocalSuccessCallback = base::OnceClosure;
 
   // A callback to be called when MoveFileLocal method call succeeds.
-  typedef base::Closure MoveFileLocalSuccessCallback;
+  using MoveFileLocalSuccessCallback = base::OnceClosure;
 
   // A callback to be called when CopyFileFromLocal method call succeeds.
-  typedef base::Closure CopyFileFromLocalSuccessCallback;
+  using CopyFileFromLocalSuccessCallback = base::OnceClosure;
 
   // A callback to be called when DeleteFile method call succeeds.
-  typedef base::Closure DeleteFileSuccessCallback;
+  using DeleteFileSuccessCallback = base::OnceClosure;
 
   // A callback to be called when DeleteDirectory method call succeeds.
-  typedef base::Closure DeleteDirectorySuccessCallback;
+  using DeleteDirectorySuccessCallback = base::OnceClosure;
 
   typedef storage::AsyncFileUtil::CopyFileProgressCallback
       CopyFileProgressCallback;
@@ -103,33 +100,31 @@ class MTPDeviceAsyncDelegate {
   // callback asynchronously when complete.
   virtual void GetFileInfo(const base::FilePath& file_path,
                            GetFileInfoSuccessCallback success_callback,
-                           const ErrorCallback& error_callback) = 0;
+                           ErrorCallback error_callback) = 0;
 
   // Creates a directory to |directory_path|. When |exclusive| is true, this
   // returns base::File::FILE_ERROR_EXISTS if a directory already exists for
   // |directory_path|. When |recursive| is true, the directory is created
   // recursively to |directory_path|.
-  virtual void CreateDirectory(
-      const base::FilePath& directory_path,
-      const bool exclusive,
-      const bool recursive,
-      const CreateDirectorySuccessCallback& success_callback,
-      const ErrorCallback& error_callback) = 0;
+  virtual void CreateDirectory(const base::FilePath& directory_path,
+                               const bool exclusive,
+                               const bool recursive,
+                               CreateDirectorySuccessCallback success_callback,
+                               ErrorCallback error_callback) = 0;
 
   // Enumerates the |root| directory contents and invokes the appropriate
   // callback asynchronously when complete.
-  virtual void ReadDirectory(
-      const base::FilePath& root,
-      const ReadDirectorySuccessCallback& success_callback,
-      const ErrorCallback& error_callback) = 0;
+  virtual void ReadDirectory(const base::FilePath& root,
+                             ReadDirectorySuccessCallback success_callback,
+                             ErrorCallback error_callback) = 0;
 
   // Copy the contents of |device_file_path| to |local_path|. Invokes the
   // appropriate callback asynchronously when complete.
   virtual void CreateSnapshotFile(
       const base::FilePath& device_file_path,
       const base::FilePath& local_path,
-      const CreateSnapshotFileSuccessCallback& success_callback,
-      const ErrorCallback& error_callback) = 0;
+      CreateSnapshotFileSuccessCallback success_callback,
+      ErrorCallback error_callback) = 0;
 
   // Platform-specific implementations that are streaming don't create a local
   // snapshot file. Blobs are instead FileSystemURL backed and read in a stream.
@@ -143,7 +138,7 @@ class MTPDeviceAsyncDelegate {
                          int64_t offset,
                          int buf_len,
                          ReadBytesSuccessCallback success_callback,
-                         const ErrorCallback& error_callback) = 0;
+                         ErrorCallback error_callback) = 0;
 
   // Returns true if storage is opened for read only.
   virtual bool IsReadOnly() const = 0;
@@ -153,37 +148,36 @@ class MTPDeviceAsyncDelegate {
   virtual void CopyFileLocal(
       const base::FilePath& source_file_path,
       const base::FilePath& device_file_path,
-      const CreateTemporaryFileCallback& create_temporary_file_callback,
-      const CopyFileProgressCallback& progress_callback,
-      const CopyFileLocalSuccessCallback& success_callback,
-      const ErrorCallback& error_callback) = 0;
+      CreateTemporaryFileCallback create_temporary_file_callback,
+      CopyFileProgressCallback progress_callback,
+      CopyFileLocalSuccessCallback success_callback,
+      ErrorCallback error_callback) = 0;
 
   // Moves a file |source_file_path| to |device_file_path|.
   // |create_temporary_file_callback| can be used to create a temporary file.
   virtual void MoveFileLocal(
       const base::FilePath& source_file_path,
       const base::FilePath& device_file_path,
-      const CreateTemporaryFileCallback& create_temporary_file_callback,
-      const MoveFileLocalSuccessCallback& success_callback,
-      const ErrorCallback& error_callback) = 0;
+      CreateTemporaryFileCallback create_temporary_file_callback,
+      MoveFileLocalSuccessCallback success_callback,
+      ErrorCallback error_callback) = 0;
 
   // Copies a file from |source_file_path| to |device_file_path|.
   virtual void CopyFileFromLocal(
       const base::FilePath& source_file_path,
       const base::FilePath& device_file_path,
-      const CopyFileFromLocalSuccessCallback& success_callback,
-      const ErrorCallback& error_callback) = 0;
+      CopyFileFromLocalSuccessCallback success_callback,
+      ErrorCallback error_callback) = 0;
 
   // Deletes a file at |file_path|.
   virtual void DeleteFile(const base::FilePath& file_path,
-                          const DeleteFileSuccessCallback& success_callback,
-                          const ErrorCallback& error_callback) = 0;
+                          DeleteFileSuccessCallback success_callback,
+                          ErrorCallback error_callback) = 0;
 
   // Deletes a directory at |file_path|. The directory must be empty.
-  virtual void DeleteDirectory(
-      const base::FilePath& file_path,
-      const DeleteDirectorySuccessCallback& success_callback,
-      const ErrorCallback& error_callback) = 0;
+  virtual void DeleteDirectory(const base::FilePath& file_path,
+                               DeleteDirectorySuccessCallback success_callback,
+                               ErrorCallback error_callback) = 0;
 
   // Adds watcher to |file_path| as |origin|.
   virtual void AddWatcher(

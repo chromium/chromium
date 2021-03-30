@@ -375,7 +375,7 @@ IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, DISABLED_DragAndDropToInput) {
   content::DropData dropdata;
   dropdata.did_originate_from_renderer = true;
   dropdata.url = GURL(url::kAboutBlankURL);
-  dropdata.url_title = base::string16(base::ASCIIToUTF16("Drop me"));
+  dropdata.url_title = std::u16string(u"Drop me");
 
   // Drag url into input in webview.
 

@@ -49,7 +49,7 @@ class ServiceWorkerContextAdapter
   void RegisterServiceWorker(
       const GURL& script_url,
       const blink::mojom::ServiceWorkerRegistrationOptions& options,
-      ResultCallback callback) override;
+      StatusCodeCallback callback) override;
   void UnregisterServiceWorker(const GURL& scope,
                                ResultCallback callback) override;
   content::ServiceWorkerExternalRequestResult StartingExternalRequest(
@@ -58,26 +58,19 @@ class ServiceWorkerContextAdapter
   content::ServiceWorkerExternalRequestResult FinishedExternalRequest(
       int64_t service_worker_version_id,
       const std::string& request_uuid) override;
-  void CountExternalRequestsForTest(
-      const url::Origin& origin,
-      CountExternalRequestsCallback callback) override;
+  size_t CountExternalRequestsForTest(const url::Origin& origin) override;
   bool MaybeHasRegistrationForOrigin(const url::Origin& origin) override;
-  void GetInstalledRegistrationOrigins(
-      base::Optional<std::string> host_filter,
-      GetInstalledRegistrationOriginsCallback callback) override;
   void GetAllOriginsInfo(GetUsageInfoCallback callback) override;
   void DeleteForOrigin(const url::Origin& origin_url,
                        ResultCallback callback) override;
-  void PerformStorageCleanup(base::OnceClosure callback) override;
   void CheckHasServiceWorker(const GURL& url,
                              CheckHasServiceWorkerCallback callback) override;
   void CheckOfflineCapability(const GURL& url,
                               CheckOfflineCapabilityCallback callback) override;
   void ClearAllServiceWorkersForTest(base::OnceClosure callback) override;
-  void StartWorkerForScope(
-      const GURL& scope,
-      StartWorkerCallback info_callback,
-      StartWorkerFailureCallback failure_callback) override;
+  void StartWorkerForScope(const GURL& scope,
+                           StartWorkerCallback info_callback,
+                           StatusCodeCallback failure_callback) override;
   void StartServiceWorkerAndDispatchMessage(
       const GURL& scope,
       blink::TransferableMessage message,

@@ -10,6 +10,8 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/bind.h"
@@ -33,14 +35,14 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
+#include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
+#include "chrome/browser/ash/arc/fileapi/arc_media_view_util.h"
+#include "chrome/browser/ash/drive/drivefs_test_support.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_util.h"
-#include "chrome/browser/chromeos/arc/fileapi/arc_media_view_util.h"
 #include "chrome/browser/chromeos/base/locale_util.h"
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"
 #include "chrome/browser/chromeos/crostini/crostini_pref_names.h"
-#include "chrome/browser/chromeos/drive/drivefs_test_support.h"
-#include "chrome/browser/chromeos/drive/file_system_util.h"
 #include "chrome/browser/chromeos/extensions/file_manager/event_router.h"
 #include "chrome/browser/chromeos/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
@@ -50,7 +52,6 @@
 #include "chrome/browser/chromeos/file_manager/mount_test_util.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/chromeos/file_manager/volume_manager.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/smb_client/smb_service.h"
 #include "chrome/browser/chromeos/smb_client/smb_service_factory.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -63,7 +64,7 @@
 #include "chrome/browser/ui/views/extensions/extension_dialog.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
-#include "chrome/browser/web_applications/system_web_app_manager.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -71,10 +72,9 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/components/drivefs/drivefs_host.h"
 #include "chromeos/components/drivefs/fake_drivefs.h"
+#include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/components/smbfs/smbfs_host.h"
 #include "chromeos/components/smbfs/smbfs_mounter.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -189,7 +189,8 @@ struct AddEntriesMessage {
     CROSTINI_VOLUME,
     USB_VOLUME,
     ANDROID_FILES_VOLUME,
-    DOCUMENTS_PROVIDER_VOLUME,
+    GENERIC_DOCUMENTS_PROVIDER_VOLUME,
+    PHOTOS_DOCUMENTS_PROVIDER_VOLUME,
     MEDIA_VIEW_AUDIO,
     MEDIA_VIEW_IMAGES,
     MEDIA_VIEW_VIDEOS,
@@ -240,7 +241,9 @@ struct AddEntriesMessage {
     else if (value == "android_files")
       *volume = ANDROID_FILES_VOLUME;
     else if (value == "documents_provider")
-      *volume = DOCUMENTS_PROVIDER_VOLUME;
+      *volume = GENERIC_DOCUMENTS_PROVIDER_VOLUME;
+    else if (value == "photos_documents_provider")
+      *volume = PHOTOS_DOCUMENTS_PROVIDER_VOLUME;
     else if (value == "media_view_audio")
       *volume = MEDIA_VIEW_AUDIO;
     else if (value == "media_view_images")
@@ -728,18 +731,20 @@ std::ostream& operator<<(std::ostream& out,
 
   PRINT_IF_NOT_DEFAULT(arc)
   PRINT_IF_NOT_DEFAULT(browser)
-  PRINT_IF_NOT_DEFAULT(documents_provider)
   PRINT_IF_NOT_DEFAULT(drive_dss_pin)
   PRINT_IF_NOT_DEFAULT(files_swa)
+  PRINT_IF_NOT_DEFAULT(generic_documents_provider)
   PRINT_IF_NOT_DEFAULT(media_swa)
   PRINT_IF_NOT_DEFAULT(mount_volumes)
   PRINT_IF_NOT_DEFAULT(native_smb)
   PRINT_IF_NOT_DEFAULT(offline)
+  PRINT_IF_NOT_DEFAULT(photos_documents_provider)
   PRINT_IF_NOT_DEFAULT(single_partition_format)
   PRINT_IF_NOT_DEFAULT(smbfs)
   PRINT_IF_NOT_DEFAULT(tablet_mode)
   PRINT_IF_NOT_DEFAULT(zip)
   PRINT_IF_NOT_DEFAULT(zip_no_nacl)
+  PRINT_IF_NOT_DEFAULT(enable_js_modules)
 
 #undef PRINT_IF_NOT_DEFAULT
 
@@ -1014,8 +1019,8 @@ class FakeTestVolume : public LocalTestVolume {
     // Revoke name() mount point first, then re-add its mount point.
     GetMountPoints()->RevokeFileSystem(name());
     const bool added = GetMountPoints()->RegisterFileSystem(
-        name(), storage::kFileSystemTypeNativeLocal,
-        storage::FileSystemMountOption(), root_path());
+        name(), storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
+        root_path());
     if (!added)
       return false;
 
@@ -1164,6 +1169,16 @@ class DriveFsTestVolume : public TestVolume {
     ASSERT_TRUE(UpdateModifiedTime(entry));
   }
 
+  void DisplayConfirmDialog(drivefs::mojom::DialogReasonPtr reason) {
+    fake_drivefs_helper_->fake_drivefs().DisplayConfirmDialog(
+        std::move(reason), base::BindOnce(&DriveFsTestVolume::OnDialogResult,
+                                          base::Unretained(this)));
+  }
+
+  drivefs::mojom::DialogResult last_dialog_result() {
+    return last_dialog_result_;
+  }
+
  private:
   base::RepeatingCallback<std::unique_ptr<drivefs::DriveFsBootstrapListener>()>
   CreateDriveFsBootstrapListener() {
@@ -1258,6 +1273,12 @@ class DriveFsTestVolume : public TestVolume {
   base::FilePath GetComputerPath(const std::string& computer_name) {
     return GetComputerGrandRoot().Append(computer_name);
   }
+
+  void OnDialogResult(drivefs::mojom::DialogResult result) {
+    last_dialog_result_ = result;
+  }
+
+  drivefs::mojom::DialogResult last_dialog_result_;
 
   // Profile associated with this volume: not owned.
   Profile* profile_ = nullptr;
@@ -1639,21 +1660,15 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     command_line->AppendSwitchASCII(chromeos::switches::kShillStub, "clear=1");
   }
 
-  // TODO(crbug.com/937746): See crbug.com/1081581 for context, but
-  // the FilesApp does not work when custom elements v0 are enabled.
-  // Make sure they are disabled here. Remove this once WCv0 features
-  // are removed completely.
-  command_line->AppendSwitchASCII(switches::kDisableBlinkFeatures,
-                                  "ShadowDOMV0,CustomElementsV0,HTMLImports");
-
   std::vector<base::Feature> enabled_features;
   std::vector<base::Feature> disabled_features;
 
   // Make sure to run the ARC storage UI toast tests.
   enabled_features.push_back(arc::kUsbStorageUIFeature);
 
-  // Use Trash in tests.
-  enabled_features.push_back(chromeos::features::kFilesTrash);
+  // FileManager tests exist for the deprecated video player app, which will be
+  // removed, along with the kVideoPlayerAppHidden flag by m93.
+  disabled_features.push_back(ash::features::kVideoPlayerAppHidden);
 
   if (options.files_swa) {
     enabled_features.push_back(chromeos::features::kFilesSWA);
@@ -1663,12 +1678,6 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
 
   if (options.arc) {
     arc::SetArcAvailableCommandLineForTesting(command_line);
-  }
-
-  if (options.documents_provider) {
-    enabled_features.push_back(arc::kEnableDocumentsProviderInFilesAppFeature);
-  } else {
-    disabled_features.push_back(arc::kEnableDocumentsProviderInFilesAppFeature);
   }
 
   if (options.unified_media_view) {
@@ -1694,6 +1703,9 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
   if (options.drive_dss_pin) {
     enabled_features.push_back(
         chromeos::features::kDriveFsBidirectionalNativeMessaging);
+  } else {
+    disabled_features.push_back(
+        chromeos::features::kDriveFsBidirectionalNativeMessaging);
   }
 
   if (options.enable_sharesheet) {
@@ -1706,10 +1718,22 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     enabled_features.push_back(chromeos::features::kFilesSinglePartitionFormat);
   }
 
+  if (options.enable_trash) {
+    enabled_features.push_back(chromeos::features::kFilesTrash);
+  } else {
+    disabled_features.push_back(chromeos::features::kFilesTrash);
+  }
+
   if (options.enable_holding_space) {
     enabled_features.push_back(ash::features::kTemporaryHoldingSpace);
   } else {
     disabled_features.push_back(ash::features::kTemporaryHoldingSpace);
+  }
+
+  if (options.enable_js_modules) {
+    enabled_features.push_back(chromeos::features::kFilesJsModules);
+  } else {
+    disabled_features.push_back(chromeos::features::kFilesJsModules);
   }
 
   if (command_line->HasSwitch("devtools-code-coverage") &&
@@ -1746,9 +1770,9 @@ void FileManagerBrowserTestBase::SetUpInProcessBrowserTestFixture() {
   if (GetOptions().guest_mode == IN_GUEST_MODE)
     return;
 
-  create_drive_integration_service_ =
-      base::Bind(&FileManagerBrowserTestBase::CreateDriveIntegrationService,
-                 base::Unretained(this));
+  create_drive_integration_service_ = base::BindRepeating(
+      &FileManagerBrowserTestBase::CreateDriveIntegrationService,
+      base::Unretained(this));
   service_factory_for_test_ = std::make_unique<
       drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>(
       &create_drive_integration_service_);
@@ -1823,15 +1847,23 @@ void FileManagerBrowserTestBase::SetUpOnMainThread() {
           arc::ArcServiceManager::Get()->arc_bridge_service()->file_system());
       ASSERT_TRUE(arc_file_system_instance_->InitCalled());
 
-      if (options.documents_provider) {
-        // Though we can have multiple DocumentsProvider volumes, only one
-        // volume is created and mounted for now.
-        documents_provider_volume_ =
+      if (options.generic_documents_provider) {
+        generic_documents_provider_volume_ =
             std::make_unique<DocumentsProviderTestVolume>(
                 arc_file_system_instance_.get(), "com.example.documents",
                 "root", false /* read_only */);
         if (options.mount_volumes) {
-          documents_provider_volume_->Mount(profile());
+          generic_documents_provider_volume_->Mount(profile());
+        }
+      }
+      if (options.photos_documents_provider) {
+        photos_documents_provider_volume_ =
+            std::make_unique<DocumentsProviderTestVolume>(
+                "Google Photos", arc_file_system_instance_.get(),
+                "com.google.android.apps.photos.photoprovider",
+                "com.google.android.apps.photos", false /* read_only */);
+        if (options.mount_volumes) {
+          photos_documents_provider_volume_->Mount(profile());
         }
       }
     } else {
@@ -2161,11 +2193,19 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
             LOG(FATAL) << "Add entry: but no Android files volume.";
           }
           break;
-        case AddEntriesMessage::DOCUMENTS_PROVIDER_VOLUME:
-          if (documents_provider_volume_) {
-            documents_provider_volume_->CreateEntry(*message.entries[i]);
+        case AddEntriesMessage::GENERIC_DOCUMENTS_PROVIDER_VOLUME:
+          if (generic_documents_provider_volume_) {
+            generic_documents_provider_volume_->CreateEntry(
+                *message.entries[i]);
           } else {
             LOG(FATAL) << "Add entry: but no DocumentsProvider volume.";
+          }
+          break;
+        case AddEntriesMessage::PHOTOS_DOCUMENTS_PROVIDER_VOLUME:
+          if (photos_documents_provider_volume_) {
+            photos_documents_provider_volume_->CreateEntry(*message.entries[i]);
+          } else {
+            LOG(FATAL) << "Add entry: but no Photos DocumentsProvider volume.";
           }
           break;
         case AddEntriesMessage::MEDIA_VIEW_AUDIO:
@@ -2599,6 +2639,11 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
+  if (name == "isTrashEnabled") {
+    *output = options.enable_trash ? "true" : "false";
+    return;
+  }
+
   if (name == "switchLanguage") {
     std::string language;
     ASSERT_TRUE(value.GetString("language", &language));
@@ -2618,7 +2663,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
 
   if (name == "runLauncherSearch") {
     app_list::LauncherSearchProvider search_provider(profile());
-    base::string16 query;
+    std::u16string query;
     ASSERT_TRUE(value.GetString("query", &query));
 
     search_provider.Start(query);
@@ -2702,6 +2747,21 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
         ->DropFailedPluginVmDirectoryNotShared();
     return;
   }
+
+  if (name == "displayEnableDocsOfflineDialog") {
+    drive_volume_->DisplayConfirmDialog(drivefs::mojom::DialogReason::New(
+        drivefs::mojom::DialogReason::Type::kEnableDocsOffline,
+        base::FilePath()));
+    return;
+  }
+
+  if (name == "getLastDriveDialogResult") {
+    base::JSONWriter::Write(
+        base::Value(static_cast<int32_t>(drive_volume_->last_dialog_result())),
+        output);
+    return;
+  }
+
   FAIL() << "Unknown test message: " << name;
 }
 

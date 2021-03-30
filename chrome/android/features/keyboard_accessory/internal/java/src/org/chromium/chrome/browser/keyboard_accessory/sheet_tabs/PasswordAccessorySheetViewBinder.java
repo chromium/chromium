@@ -147,7 +147,7 @@ class PasswordAccessorySheetViewBinder {
             bindTextView(password, info.getFields().get(1));
 
             // Set the default icon for username, then try to get a better one.
-            FaviconHelper faviconHelper = new FaviconHelper(username.getContext());
+            FaviconHelper faviconHelper = FaviconHelper.create(username.getContext());
             setIconForBitmap(username, faviconHelper.getDefaultIcon(info.getOrigin()));
             faviconHelper.fetchFavicon(info.getOrigin(), icon -> setIconForBitmap(username, icon));
 

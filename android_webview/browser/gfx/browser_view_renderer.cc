@@ -146,6 +146,11 @@ void BrowserViewRenderer::SetCurrentCompositorFrameConsumer(
   }
   current_compositor_frame_consumer_ = compositor_frame_consumer;
   if (current_compositor_frame_consumer_) {
+    // Previous renderer will evict CompositorFrame, compositor needs to submit
+    // next frames with new local surface id.
+    if (compositor_)
+      compositor_->WasEvicted();
+
     RootFrameSinkGetter root_sink_getter;
     if (root_frame_sink_proxy_)
       root_sink_getter = root_frame_sink_proxy_->GetRootFrameSinkCallback();
@@ -165,6 +170,13 @@ void BrowserViewRenderer::RegisterWithWebContents(
 void BrowserViewRenderer::TrimMemory() {
   DCHECK(ui_task_runner_->BelongsToCurrentThread());
   TRACE_EVENT0("android_webview", "BrowserViewRenderer::TrimMemory");
+
+  // Trimming memory might destroy HardwareRenderer which will evict
+  // CompositorFrame, compositor needs to submit next frames with new local
+  // surface id.
+  if (compositor_)
+    compositor_->WasEvicted();
+
   // Just set the memory limit to 0 and drop all tiles. This will be reset to
   // normal levels in the next DrawGL call.
   if (!offscreen_pre_raster_)

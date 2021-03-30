@@ -6,8 +6,6 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
@@ -22,8 +20,8 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "ui/views/layout/flex_layout.h"
-
-const char WebAppFrameToolbarView::kViewClassName[] = "WebAppFrameToolbarView";
+#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/views/view_utils.h"
 
 WebAppFrameToolbarView::WebAppFrameToolbarView(views::Widget* widget,
                                                BrowserView* browser_view)
@@ -72,10 +70,10 @@ WebAppFrameToolbarView::WebAppFrameToolbarView(views::Widget* widget,
 
   UpdateStatusIconsVisibility();
 
-  DCHECK(!browser_view_->toolbar_button_provider() ||
-         browser_view_->toolbar_button_provider()
-                 ->GetAsAccessiblePaneView()
-                 ->GetClassName() == GetClassName())
+  DCHECK(
+      !browser_view_->toolbar_button_provider() ||
+      views::IsViewClass<WebAppFrameToolbarView>(
+          browser_view_->toolbar_button_provider()->GetAsAccessiblePaneView()))
       << "This should be the first ToolbarButtorProvider or a replacement for "
          "an existing instance of this class during a window frame refresh.";
   browser_view_->SetToolbarButtonProvider(this);
@@ -108,6 +106,11 @@ void WebAppFrameToolbarView::SetPaintAsActive(bool active) {
     return;
   paint_as_active_ = active;
   UpdateChildrenColor();
+  OnPropertyChanged(&paint_as_active_, views::kPropertyEffectsNone);
+}
+
+bool WebAppFrameToolbarView::GetPaintAsActive() const {
+  return paint_as_active_;
 }
 
 std::pair<int, int> WebAppFrameToolbarView::LayoutInContainer(
@@ -141,8 +144,9 @@ std::pair<int, int> WebAppFrameToolbarView::LayoutInContainer(
 }
 
 BrowserActionsContainer* WebAppFrameToolbarView::GetBrowserActionsContainer() {
-  CHECK(!base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu));
-  return right_container_->browser_actions_container();
+  // TODO(devlin): Keep cleaning this up. https://crbug.com/1165609.
+  NOTREACHED();
+  return nullptr;
 }
 
 ExtensionsToolbarContainer*
@@ -159,9 +163,7 @@ gfx::Size WebAppFrameToolbarView::GetToolbarButtonSize() const {
 }
 
 views::View* WebAppFrameToolbarView::GetDefaultExtensionDialogAnchorView() {
-  if (base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu))
-    return right_container_->extensions_container()->extensions_button();
-  return GetAppMenuButton();
+  return right_container_->extensions_container()->extensions_button();
 }
 
 PageActionIconView* WebAppFrameToolbarView::GetPageActionIconView(
@@ -223,21 +225,9 @@ ReloadButton* WebAppFrameToolbarView::GetReloadButton() {
   return left_container_ ? left_container_->reload_button() : nullptr;
 }
 
-views::View* WebAppFrameToolbarView::GetLeftContainerForTesting() {
-  return left_container_;
-}
-
-views::View* WebAppFrameToolbarView::GetRightContainerForTesting() {
-  return right_container_;
-}
-
 PageActionIconController*
 WebAppFrameToolbarView::GetPageActionIconControllerForTesting() {
   return right_container_->page_action_icon_controller();
-}
-
-const char* WebAppFrameToolbarView::GetClassName() const {
-  return kViewClassName;
 }
 
 void WebAppFrameToolbarView::ChildPreferredSizeChanged(views::View* child) {
@@ -268,3 +258,7 @@ void WebAppFrameToolbarView::UpdateChildrenColor() {
       foreground_color,
       paint_as_active_ ? active_background_color_ : inactive_background_color_);
 }
+
+BEGIN_METADATA(WebAppFrameToolbarView, views::AccessiblePaneView)
+ADD_PROPERTY_METADATA(bool, PaintAsActive)
+END_METADATA

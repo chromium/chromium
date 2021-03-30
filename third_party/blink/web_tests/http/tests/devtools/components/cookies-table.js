@@ -154,5 +154,7 @@
     TestRunner.completeTest();
   }
 
-  self.runtime.loadModulePromise('cookie_table').then(run);
+  await self.runtime.loadModulePromise('cookie_table');
+  await TestRunner.loadLegacyModule('cookie_table');
+  run();
 })();

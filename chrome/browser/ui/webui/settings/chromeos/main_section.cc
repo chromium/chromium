@@ -4,17 +4,18 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/main_section.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "base/feature_list.h"
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/number_formatting.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/policy/minimum_version_policy_handler.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
@@ -28,7 +29,6 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/os_settings_resources.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -48,7 +48,7 @@ void AddSearchInSettingsStrings(content::WebUIDataSource* html_source) {
       {"searchResultSelected", IDS_OS_SEARCH_RESULT_ROW_A11Y_RESULT_SELECTED},
       {"clearSearch", IDS_CLEAR_SEARCH},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddString(
       "searchNoOsResultsHelp",
@@ -69,7 +69,7 @@ void AddUpdateRequiredEolStrings(content::WebUIDataSource* html_source) {
 
   // |eol_return_banner_text| contains the update required end of life banner
   // text which is left empty when the banner should not be shown.
-  base::string16 eol_return_banner_text;
+  std::u16string eol_return_banner_text;
   if (device_managed && handler->ShouldShowUpdateRequiredEolBanner()) {
     base::Optional<int> days = handler->GetTimeRemainingInDays();
     // We only need to show the banner if less than equal to one week remains to
@@ -78,9 +78,9 @@ void AddUpdateRequiredEolStrings(content::WebUIDataSource* html_source) {
       // |days| could have value equal to zero if we are very close to the
       // deadline.
       int days_remaining = days.value() ? days.value() : 1;
-      base::string16 domain_name =
+      std::u16string domain_name =
           base::UTF8ToUTF16(connector->GetEnterpriseDomainManager());
-      base::string16 link_url =
+      std::u16string link_url =
           base::UTF8ToUTF16(chrome::kChromeUIManagementURL);
       if (days_remaining == 7) {
         eol_return_banner_text = l10n_util::GetStringFUTF16(
@@ -157,7 +157,7 @@ void MainSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"large", IDS_SETTINGS_LARGE_FONT},
       {"veryLarge", IDS_SETTINGS_VERY_LARGE_FONT},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   // This handler is for chrome://os-settings.
   html_source->AddBoolean("isOSSettings", true);
@@ -254,6 +254,10 @@ std::unique_ptr<PluralStringHandler> MainSection::CreatePluralStringHandler() {
   plural_string_handler->AddLocalizedString(
       "nearbyShareContactVisibilityNumUnreachable",
       IDS_NEARBY_CONTACT_VISIBILITY_NUM_UNREACHABLE);
+
+  plural_string_handler->AddLocalizedString(
+      "lockScreenNumberFingerprints",
+      IDS_SETTINGS_PEOPLE_LOCK_SCREEN_NUM_FINGERPRINTS);
   return plural_string_handler;
 }
 

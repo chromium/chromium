@@ -255,6 +255,31 @@ TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureInvalidFile) {
   content::RunAllTasksUntilIdle();
 }
 
+TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureInvalidXYClip) {
+  LoadHTML("<body></body>");
+
+  mojom::PaintPreviewCaptureParamsPtr params =
+      mojom::PaintPreviewCaptureParams::New();
+  auto token = base::UnguessableToken::Create();
+  params->guid = token;
+  params->clip_rect = gfx::Rect(1000000, 1000000, 10, 10);
+  params->is_main_frame = true;
+  params->capture_links = true;
+  params->max_capture_size = 0;
+  base::FilePath skp_path = MakeTestFilePath("test.skp");
+  base::File skp_file(skp_path,
+                      base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+  params->file = std::move(skp_file);
+
+  content::RenderFrame* frame = GetFrame();
+  PaintPreviewRecorderImpl paint_preview_recorder(frame);
+  paint_preview_recorder.CapturePaintPreview(
+      std::move(params),
+      base::BindOnce(&OnCaptureFinished,
+                     mojom::PaintPreviewStatus::kCaptureFailed, nullptr));
+  content::RunAllTasksUntilIdle();
+}
+
 TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureMainFrameAndLocalFrame) {
   LoadHTML(
       "<!doctype html>"
@@ -278,7 +303,7 @@ TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureLocalFrame) {
   LoadHTML(
       "<!doctype html>"
       "<body style='min-height:1000px;'>"
-      "  <iframe style='width: 500px, height: 500px'"
+      "  <iframe style='width: 500px; height: 500px'"
       "          srcdoc=\"<div style='width: 100px; height: 100px;"
       "          background-color: #000000'>&nbsp;</div>\"></iframe>"
       "</body>");
@@ -291,6 +316,48 @@ TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureLocalFrame) {
 
   EXPECT_TRUE(out_response->embedding_token.has_value());
   EXPECT_EQ(out_response->content_id_to_embedding_token.size(), 0U);
+}
+
+TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureUnclippedLocalFrame) {
+  LoadHTML(
+      "<!doctype html>"
+      "<body style='min-height:1000px;'>"
+      "  <iframe style='width: 500px; height: 500px'"
+      "          srcdoc=\"<div style='width: 500px; height: 100px;"
+      "          background-color: #00FF00'>&nbsp;</div>"
+      "          <div style='width: 500px; height: 900px;"
+      "          background-color: #FF0000'>&nbsp;</div>\"></iframe>"
+      "</body>");
+  auto out_response = mojom::PaintPreviewCaptureResponse::New();
+  auto* child_web_frame =
+      GetFrame()->GetWebFrame()->FirstChild()->ToWebLocalFrame();
+  auto* child_frame = content::RenderFrame::FromWebFrame(child_web_frame);
+  ASSERT_TRUE(child_frame);
+
+  child_web_frame->SetScrollOffset(gfx::ScrollOffset(0, 400));
+
+  base::FilePath skp_path = RunCapture(child_frame, &out_response, false);
+
+  EXPECT_TRUE(out_response->embedding_token.has_value());
+  EXPECT_EQ(out_response->content_id_to_embedding_token.size(), 0U);
+
+  sk_sp<SkPicture> pic;
+  {
+    base::ScopedAllowBlockingForTesting scope;
+    FileRStream rstream(base::File(
+        skp_path, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ));
+    pic = SkPicture::MakeFromStream(&rstream, nullptr);
+  }
+  EXPECT_EQ(pic->cullRect().width(), child_web_frame->DocumentSize().width());
+  EXPECT_EQ(pic->cullRect().height(), child_web_frame->DocumentSize().height());
+
+  SkBitmap bitmap;
+  ASSERT_TRUE(bitmap.tryAllocN32Pixels(pic->cullRect().width(),
+                                       pic->cullRect().height()));
+  SkCanvas canvas(bitmap);
+  canvas.drawPicture(pic);
+  EXPECT_EQ(bitmap.getColor(50, 50), 0xFF00FF00U);
+  EXPECT_EQ(bitmap.getColor(50, 800), 0xFFFF0000U);
 }
 
 TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureCustomClipRect) {
@@ -337,6 +404,73 @@ TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureCustomClipRect) {
   EXPECT_EQ(out_response->links[0]->rect.y(), 20);
   EXPECT_EQ(out_response->links[0]->rect.width(), 40);
   EXPECT_EQ(out_response->links[0]->rect.height(), 30);
+}
+
+TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureWithClamp) {
+  LoadHTML(
+      "<!doctype html>"
+      "<body>"
+      "  <div style='width: 600px; height: 600px; background-color: #0000ff;'>"
+      "     <div style='width: 300px; height: 300px; background-color: "
+      "          #ffff00; position: relative; left: 150px; top: 150px'></div>"
+      "  </div>"
+      "  <a style='position: absolute; left: 160px; top: 170px; width: 40px; "
+      "   height: 30px;' href='http://www.example.com'>Foo</a>"
+      "</body>");
+
+  auto out_response = mojom::PaintPreviewCaptureResponse::New();
+  content::RenderFrame* frame = GetFrame();
+  const size_t kLarge = 1000000;
+  gfx::Rect clip_rect = gfx::Rect(0, 0, kLarge, kLarge);
+  base::FilePath skp_path = RunCapture(frame, &out_response, true, clip_rect);
+
+  EXPECT_TRUE(out_response->embedding_token.has_value());
+  EXPECT_EQ(frame->GetWebFrame()->GetEmbeddingToken(),
+            out_response->embedding_token.value());
+  EXPECT_EQ(out_response->content_id_to_embedding_token.size(), 0U);
+
+  sk_sp<SkPicture> pic;
+  {
+    base::ScopedAllowBlockingForTesting scope;
+    FileRStream rstream(base::File(
+        skp_path, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ));
+    pic = SkPicture::MakeFromStream(&rstream, nullptr);
+  }
+  EXPECT_LT(pic->cullRect().height(), kLarge);
+  EXPECT_LT(pic->cullRect().width(), kLarge);
+}
+
+TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureFullIfWidthHeightAre0) {
+  LoadHTML(
+      "<!doctype html>"
+      "<body>"
+      "  <div style='width: 600px; height: 600px; background-color: #0000ff;'>"
+      "     <div style='width: 300px; height: 300px; background-color: "
+      "          #ffff00; position: relative; left: 150px; top: 150px'></div>"
+      "  </div>"
+      "  <a style='position: absolute; left: 160px; top: 170px; width: 40px; "
+      "   height: 30px;' href='http://www.example.com'>Foo</a>"
+      "</body>");
+
+  auto out_response = mojom::PaintPreviewCaptureResponse::New();
+  content::RenderFrame* frame = GetFrame();
+  gfx::Rect clip_rect = gfx::Rect(1, 1, 0, 0);
+  base::FilePath skp_path = RunCapture(frame, &out_response, true, clip_rect);
+
+  EXPECT_TRUE(out_response->embedding_token.has_value());
+  EXPECT_EQ(frame->GetWebFrame()->GetEmbeddingToken(),
+            out_response->embedding_token.value());
+  EXPECT_EQ(out_response->content_id_to_embedding_token.size(), 0U);
+
+  sk_sp<SkPicture> pic;
+  {
+    base::ScopedAllowBlockingForTesting scope;
+    FileRStream rstream(base::File(
+        skp_path, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ));
+    pic = SkPicture::MakeFromStream(&rstream, nullptr);
+  }
+  EXPECT_GT(pic->cullRect().height(), 0U);
+  EXPECT_GT(pic->cullRect().width(), 0U);
 }
 
 TEST_F(PaintPreviewRecorderRenderViewTest, CaptureWithTranslate) {

@@ -8,9 +8,9 @@
 #import <UIKit/UIKit.h>
 
 #include <memory>
+#include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_controller.h"
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_view.h"
 
@@ -31,8 +31,8 @@ class CardExpirationDateFixFlowViewBridge
   CardExpirationDateFixFlowController* GetController();
 
   // Called when the user confirms the expirationn date.
-  void OnConfirmedExpirationDate(const base::string16& month,
-                                 const base::string16& year);
+  void OnConfirmedExpirationDate(const std::u16string& month,
+                                 const std::u16string& year);
 
   // Called when the user cancels the fix flow.
   void OnDismissed();

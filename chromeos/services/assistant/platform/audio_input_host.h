@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,77 +7,22 @@
 
 #include <string>
 
-#include "base/component_export.h"
-#include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
-#include "chromeos/dbus/power/power_manager_client.h"
-
-namespace chromeos {
-class CrasAudioHandler;
-}  // namespace chromeos
-
 namespace chromeos {
 namespace assistant {
 
-class AudioInputImpl;
-
 // Class that provides the bridge between the ChromeOS UI thread and the
 // Libassistant audio input class.
-// The goal is that |AudioInputImpl| no longer depends on any external events.
-// This will allow us to move it to the Libassistant mojom service (at which
-// point this class will talk to the Libassistant mojom service).
-class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioInputHost
-    : public chromeos::PowerManagerClient::Observer {
+class AudioInputHost {
  public:
-  AudioInputHost(AudioInputImpl* audio_input,
-                 CrasAudioHandler* cras_audio_handler,
-                 chromeos::PowerManagerClient* power_manager_client);
-  AudioInputHost(AudioInputHost&) = delete;
-  AudioInputHost& operator=(AudioInputHost&) = delete;
-  ~AudioInputHost() override;
+  virtual ~AudioInputHost() = default;
 
   // Called when the mic state associated with the interaction is changed.
-  void SetMicState(bool mic_open);
-
-  // Setting the input device to use for audio capture.
-  void SetDeviceId(const std::string& device_id);
+  virtual void SetMicState(bool mic_open) = 0;
 
   // Called when hotword enabled status changed.
-  void OnHotwordEnabled(bool enable);
+  virtual void OnHotwordEnabled(bool enable) = 0;
 
-  // Setting the hotword input device with hardware based hotword detection.
-  void SetHotwordDeviceId(const std::string& device_id);
-
-  // Setting the hotword locale for the input device with DSP support.
-  void SetDspHotwordLocale(std::string pref_locale);
-
-  void OnConversationTurnStarted();
-  void OnConversationTurnFinished();
-
- private:
-  void SetDspHotwordLocaleCallback(std::string pref_locale, bool success);
-
-  uint64_t GetDspNodeId() const;
-
-  // chromeos::PowerManagerClient::Observer overrides:
-  void LidEventReceived(chromeos::PowerManagerClient::LidState state,
-                        base::TimeTicks timestamp) override;
-
-  void OnInitialLidStateReceived(
-      base::Optional<chromeos::PowerManagerClient::SwitchStates> switch_states);
-
-  // Owned by |PlatformApiImpl| which also owns |this|.
-  AudioInputImpl* const audio_input_;
-  CrasAudioHandler* const cras_audio_handler_;
-  chromeos::PowerManagerClient* const power_manager_client_;
-  base::ScopedObservation<chromeos::PowerManagerClient,
-                          chromeos::PowerManagerClient::Observer>
-      power_manager_client_observer_;
-
-  // Hotword input device used for hardware based hotword detection.
-  std::string hotword_device_id_;
-
-  base::WeakPtrFactory<AudioInputHost> weak_factory_{this};
+  virtual void OnConversationTurnStarted() = 0;
 };
 
 }  // namespace assistant

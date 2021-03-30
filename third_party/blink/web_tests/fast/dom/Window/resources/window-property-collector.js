@@ -78,8 +78,8 @@ function emitExpectedResult(path, expected)
       return;
 
     // Skip proposed multi-screen properties that will be moved off of the Screen interface.
-    // TODO(crbug.com/1116528): Use a dictionary, not the Screen interface, for proposed multi-screen info:
-    // https://github.com/webscreens/window-placement
+    // TODO(crbug.com/1116528): Move permission-gated attributes to an interface
+    // that inherits from Screen: https://github.com/webscreens/window-placement
     if (propertyPath == "screen.id" || propertyPath == "screen.internal" ||
         propertyPath == "screen.left" || propertyPath == "screen.primary" ||
         propertyPath == "screen.scaleFactor" || propertyPath == "screen.top" ||

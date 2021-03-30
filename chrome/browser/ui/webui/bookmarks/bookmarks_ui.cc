@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_message_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
@@ -38,7 +37,7 @@ namespace {
 void AddLocalizedString(content::WebUIDataSource* source,
                         const std::string& message,
                         int id) {
-  base::string16 str = l10n_util::GetStringUTF16(id);
+  std::u16string str = l10n_util::GetStringUTF16(id);
   base::Erase(str, '&');
   source->AddString(message, str);
 }

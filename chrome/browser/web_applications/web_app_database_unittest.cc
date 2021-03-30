@@ -157,10 +157,16 @@ class WebAppDatabaseTest : public WebAppTest {
       apps::UrlHandlerInfo url_handler;
       url_handler.origin =
           url::Origin::Create(GURL("https://app-" + suffix_str + ".com/"));
+      url_handler.has_origin_wildcard = true;
       url_handlers.push_back(std::move(url_handler));
     }
 
     return url_handlers;
+  }
+
+  static blink::mojom::CaptureLinks CreateCaptureLinks(uint32_t suffix) {
+    return static_cast<blink::mojom::CaptureLinks>(
+        suffix % static_cast<uint32_t>(blink::mojom::CaptureLinks::kMaxValue));
   }
 
   static std::vector<WebApplicationShortcutsMenuItemInfo>
@@ -240,6 +246,11 @@ class WebAppDatabaseTest : public WebAppTest {
     app->SetUserDisplayMode(random.next_bool() ? DisplayMode::kBrowser
                                                : DisplayMode::kStandalone);
 
+    const base::Time last_badging_time =
+        base::Time::UnixEpoch() +
+        base::TimeDelta::FromMilliseconds(random.next_uint());
+    app->SetLastBadgingTime(last_badging_time);
+
     const base::Time last_launch_time =
         base::Time::UnixEpoch() +
         base::TimeDelta::FromMilliseconds(random.next_uint());
@@ -267,7 +278,7 @@ class WebAppDatabaseTest : public WebAppTest {
       app->SetLaunchQueryParams(base::NumberToString(random.next_uint()));
 
     const RunOnOsLoginMode run_on_os_login_modes[3] = {
-        RunOnOsLoginMode::kUndefined, RunOnOsLoginMode::kWindowed,
+        RunOnOsLoginMode::kNotRun, RunOnOsLoginMode::kWindowed,
         RunOnOsLoginMode::kMinimized};
     app->SetRunOnOsLoginMode(run_on_os_login_modes[random.next_uint(3)]);
 
@@ -302,6 +313,7 @@ class WebAppDatabaseTest : public WebAppTest {
       app->SetShareTarget(CreateShareTarget(random.next_uint()));
     app->SetProtocolHandlers(CreateProtocolHandlers(random.next_uint()));
     app->SetUrlHandlers(CreateUrlHandlers(random.next_uint()));
+    app->SetCaptureLinks(CreateCaptureLinks(random.next_uint()));
 
     const int num_additional_search_terms = random.next_uint(8);
     std::vector<std::string> additional_search_terms(
@@ -316,6 +328,7 @@ class WebAppDatabaseTest : public WebAppTest {
         CreateShortcutsMenuItemInfos(base_url, random.next_uint()));
     app->SetDownloadedShortcutsMenuIconsSizes(
         CreateDownloadedShortcutsMenuIconsSizes());
+    app->SetManifestUrl(GURL(base_url + "manifest" + seed_str + ".json"));
 
     if (IsChromeOs()) {
       auto chromeos_data = base::make_optional<WebAppChromeOsData>();
@@ -323,6 +336,7 @@ class WebAppDatabaseTest : public WebAppTest {
       chromeos_data->show_in_search = random.next_bool();
       chromeos_data->show_in_management = random.next_bool();
       chromeos_data->is_disabled = random.next_bool();
+      chromeos_data->oem_installed = random.next_bool();
       app->SetWebAppChromeOsData(std::move(chromeos_data));
     }
 
@@ -596,11 +610,13 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_TRUE(app->additional_search_terms().empty());
   EXPECT_TRUE(app->protocol_handlers().empty());
   EXPECT_TRUE(app->url_handlers().empty());
+  EXPECT_TRUE(app->last_badging_time().is_null());
   EXPECT_TRUE(app->last_launch_time().is_null());
   EXPECT_TRUE(app->install_time().is_null());
   EXPECT_TRUE(app->shortcuts_menu_item_infos().empty());
   EXPECT_TRUE(app->downloaded_shortcuts_menu_icons_sizes().empty());
-  EXPECT_EQ(app->run_on_os_login_mode(), RunOnOsLoginMode::kUndefined);
+  EXPECT_EQ(app->run_on_os_login_mode(), RunOnOsLoginMode::kNotRun);
+  EXPECT_TRUE(app->manifest_url().is_empty());
   controller().RegisterApp(std::move(app));
 
   Registry registry = database_factory().ReadRegistry();
@@ -621,6 +637,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
     EXPECT_TRUE(chromeos_data->show_in_search);
     EXPECT_TRUE(chromeos_data->show_in_management);
     EXPECT_FALSE(chromeos_data->is_disabled);
+    EXPECT_FALSE(chromeos_data->oem_installed);
   } else {
     EXPECT_FALSE(chromeos_data.has_value());
   }
@@ -638,6 +655,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_TRUE(app_copy->scope().is_empty());
   EXPECT_FALSE(app_copy->theme_color().has_value());
   EXPECT_FALSE(app_copy->background_color().has_value());
+  EXPECT_TRUE(app_copy->last_badging_time().is_null());
   EXPECT_TRUE(app_copy->last_launch_time().is_null());
   EXPECT_TRUE(app_copy->install_time().is_null());
   EXPECT_TRUE(app_copy->icon_infos().empty());
@@ -655,7 +673,8 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_TRUE(app_copy->url_handlers().empty());
   EXPECT_TRUE(app_copy->shortcuts_menu_item_infos().empty());
   EXPECT_TRUE(app_copy->downloaded_shortcuts_menu_icons_sizes().empty());
-  EXPECT_EQ(app_copy->run_on_os_login_mode(), RunOnOsLoginMode::kUndefined);
+  EXPECT_EQ(app_copy->run_on_os_login_mode(), RunOnOsLoginMode::kNotRun);
+  EXPECT_TRUE(app_copy->manifest_url().is_empty());
 }
 
 TEST_F(WebAppDatabaseTest, WebAppWithManyIcons) {
@@ -754,5 +773,53 @@ TEST_F(WebAppDatabaseTest, WebAppWithShareTargetRoundTrip) {
   Registry registry = database_factory().ReadRegistry();
   EXPECT_TRUE(IsRegistryEqual(mutable_registrar().registry(), registry));
 }
+
+TEST_F(WebAppDatabaseTest, WebAppWithCaptureLinksRoundTrip) {
+  controller().Init();
+
+  const std::string base_url = "https://example.com/path";
+  auto app = CreateWebApp(base_url, 0);
+  auto app_id = app->app_id();
+
+  app->SetCaptureLinks(blink::mojom::CaptureLinks::kExistingClientNavigate);
+
+  controller().RegisterApp(std::move(app));
+
+  Registry registry = database_factory().ReadRegistry();
+  EXPECT_TRUE(IsRegistryEqual(mutable_registrar().registry(), registry));
+}
+
+TEST_F(WebAppDatabaseTest, WebAppWithUrlHandlersRoundTrip) {
+  controller().Init();
+
+  const std::string base_url = "https://example.com/path";
+  auto app = CreateWebApp(base_url, 0);
+  auto app_id = app->app_id();
+
+  app->SetUrlHandlers(CreateUrlHandlers(1));
+
+  controller().RegisterApp(std::move(app));
+
+  Registry registry = database_factory().ReadRegistry();
+  EXPECT_TRUE(IsRegistryEqual(mutable_registrar().registry(), registry));
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(WebAppDatabaseTest, WebAppOemInstalledRoundTrip) {
+  controller().Init();
+
+  const std::string base_url = "https://example.com/path";
+  auto app = CreateWebApp(base_url, 0);
+
+  auto chromeos_data = base::make_optional<WebAppChromeOsData>();
+  chromeos_data->oem_installed = true;
+  app->SetWebAppChromeOsData(std::move(chromeos_data));
+
+  controller().RegisterApp(std::move(app));
+
+  Registry registry = database_factory().ReadRegistry();
+  EXPECT_TRUE(IsRegistryEqual(mutable_registrar().registry(), registry));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace web_app

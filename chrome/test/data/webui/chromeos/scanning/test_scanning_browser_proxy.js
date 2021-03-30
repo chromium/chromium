@@ -4,7 +4,7 @@
 
 import {ScanningBrowserProxy, SelectedPath} from 'chrome://scanning/scanning_browser_proxy.js';
 
-import {assertEquals} from '../../chai_assert.js';
+import {assertArrayEquals, assertEquals} from '../../chai_assert.js';
 import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
 
 /**
@@ -18,6 +18,10 @@ export class TestScanningBrowserProxy extends TestBrowserProxy {
       'requestScanToLocation',
       'showFileInLocation',
       'getPluralString',
+      'recordScanJobSettings',
+      'getMyFilesPath',
+      'openFilesInMediaApp',
+      'recordScanCompleteAction',
     ]);
 
     /** @private {?SelectedPath} */
@@ -25,6 +29,12 @@ export class TestScanningBrowserProxy extends TestBrowserProxy {
 
     /** @private {?string} */
     this.pathToFile_ = null;
+
+    /** @private {string} */
+    this.myFilesPath_ = '';
+
+    /** @private {!Array<string>} */
+    this.filePaths_ = [];
   }
 
   /** @override */
@@ -54,8 +64,33 @@ export class TestScanningBrowserProxy extends TestBrowserProxy {
   getPluralString(name, count) {
     this.methodCalled('getPluralString');
     return Promise.resolve(
-        count === 1 ? 'Scanned file saved!' : 'Scanned files saved!');
+        count === 1 ?
+            'Your file has been successfully scanned and saved to ' +
+                '<a id="folderLink">$1</a>.' :
+            'Your files have been successfully scanned and saved to ' +
+                '<a id="folderLink">$1</a>.');
   }
+
+  /** @override */
+  recordScanJobSettings() {}
+
+  /** @override */
+  getMyFilesPath() {
+    this.methodCalled('getMyFilesPath');
+    return Promise.resolve(this.myFilesPath_);
+  }
+
+  /**
+   * @param {!Array<string>} filePaths
+   * @override
+   */
+  openFilesInMediaApp(filePaths) {
+    this.methodCalled('openFilesInMediaApp');
+    assertArrayEquals(this.filePaths_, filePaths);
+  }
+
+  /** @override */
+  recordScanCompleteAction() {}
 
   /** @param {!SelectedPath} selectedPath */
   setSelectedPath(selectedPath) {
@@ -65,5 +100,15 @@ export class TestScanningBrowserProxy extends TestBrowserProxy {
   /** @param {string} pathToFile */
   setPathToFile(pathToFile) {
     this.pathToFile_ = pathToFile;
+  }
+
+  /** @param {string} myFilesPath */
+  setMyFilesPath(myFilesPath) {
+    this.myFilesPath_ = myFilesPath;
+  }
+
+  /** @param {!Array<string>} filePaths */
+  setFilePaths(filePaths) {
+    this.filePaths_ = filePaths;
   }
 }

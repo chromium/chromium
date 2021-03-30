@@ -1,1 +1,0 @@
-Ensure pressing non-enter/space keys with focus on an INPUT element with TYPE=FILE and WEBKITDIRECTORY does not launch a file chooser. Automated test fails if 'FileChooser: opened' was logged.

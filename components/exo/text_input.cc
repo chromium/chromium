@@ -73,7 +73,7 @@ void TextInput::Resync() {
     input_method_->OnCaretBoundsChanged(this);
 }
 
-void TextInput::SetSurroundingText(const base::string16& text,
+void TextInput::SetSurroundingText(const std::u16string& text,
                                    uint32_t cursor_pos,
                                    uint32_t anchor) {
   surrounding_text_ = text;
@@ -132,17 +132,17 @@ void TextInput::ClearCompositionText() {
   delegate_->SetCompositionText(composition_);
 }
 
-void TextInput::InsertText(const base::string16& text,
+void TextInput::InsertText(const std::u16string& text,
                            InsertTextCursorBehavior cursor_behavior) {
   // TODO(crbug.com/1155331): Handle |cursor_behavior| correctly.
   delegate_->Commit(text);
 }
 
 void TextInput::InsertChar(const ui::KeyEvent& event) {
-  base::char16 ch = event.GetCharacter();
+  char16_t ch = event.GetCharacter();
   if (u_isprint(ch)) {
     InsertText(
-        base::string16(1, ch),
+        std::u16string(1, ch),
         ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
     return;
   }
@@ -251,7 +251,7 @@ bool TextInput::DeleteRange(const gfx::Range& range) {
 }
 
 bool TextInput::GetTextFromRange(const gfx::Range& range,
-                                 base::string16* text) const {
+                                 std::u16string* text) const {
   gfx::Range text_range;
   if (!GetTextRange(&text_range) || !text_range.Contains(range))
     return false;

@@ -52,7 +52,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantOnboardingSuggestionView
   const gfx::ImageSkia& GetIcon() const;
 
   // Returns the text for the suggestion.
-  const base::string16& GetText() const;
+  const std::u16string& GetText() const;
 
  private:
   void InitLayout(const chromeos::assistant::AssistantSuggestion& suggestion);

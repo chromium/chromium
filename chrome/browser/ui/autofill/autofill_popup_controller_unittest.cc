@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -62,7 +63,10 @@ class MockAutofillClient : public autofill::TestAutofillClient {
   MockAutofillClient() : prefs_(autofill::test::PrefServiceForTesting()) {}
   ~MockAutofillClient() override = default;
 
-  PrefService* GetPrefs() override { return prefs_.get(); }
+  PrefService* GetPrefs() override {
+    return const_cast<PrefService*>(base::as_const(*this).GetPrefs());
+  }
+  const PrefService* GetPrefs() const override { return prefs_.get(); }
 
  private:
   std::unique_ptr<PrefService> prefs_;
@@ -106,9 +110,9 @@ class MockAutofillExternalDelegate : public AutofillExternalDelegate {
       : AutofillExternalDelegate(autofill_manager, autofill_driver) {}
   ~MockAutofillExternalDelegate() override = default;
 
-  void DidSelectSuggestion(const base::string16& value,
+  void DidSelectSuggestion(const std::u16string& value,
                            int identifier) override {}
-  bool RemoveSuggestion(const base::string16& value, int identifier) override {
+  bool RemoveSuggestion(const std::u16string& value, int identifier) override {
     return true;
   }
   base::WeakPtr<AutofillExternalDelegate> GetWeakPtr() {
@@ -500,10 +504,10 @@ TEST_F(AutofillPopupControllerUnitTest, UpdateDataListValues) {
                                    PopupType::kUnspecified);
 
   // Add one data list entry.
-  base::string16 value1 = ASCIIToUTF16("data list value 1");
-  std::vector<base::string16> data_list_values{value1};
-  base::string16 label1 = ASCIIToUTF16("data list label 1");
-  std::vector<base::string16> data_list_labels{label1};
+  std::u16string value1 = u"data list value 1";
+  std::vector<std::u16string> data_list_values{value1};
+  std::u16string label1 = u"data list label 1";
+  std::vector<std::u16string> data_list_labels{label1};
 
   autofill_popup_controller_->UpdateDataListValues(data_list_values,
                                                    data_list_labels);
@@ -514,26 +518,26 @@ TEST_F(AutofillPopupControllerUnitTest, UpdateDataListValues) {
   EXPECT_EQ(value1, result0.value);
   EXPECT_EQ(value1, autofill_popup_controller_->GetSuggestionValueAt(0));
   EXPECT_EQ(label1, result0.label);
-  EXPECT_EQ(base::string16(), result0.additional_label);
+  EXPECT_EQ(std::u16string(), result0.additional_label);
   EXPECT_EQ(label1, autofill_popup_controller_->GetSuggestionLabelAt(0));
   EXPECT_EQ(POPUP_ITEM_ID_DATALIST_ENTRY, result0.frontend_id);
 
   Suggestion result1 = autofill_popup_controller_->GetSuggestionAt(1);
-  EXPECT_EQ(base::string16(), result1.value);
-  EXPECT_EQ(base::string16(), result1.label);
-  EXPECT_EQ(base::string16(), result1.additional_label);
+  EXPECT_EQ(std::u16string(), result1.value);
+  EXPECT_EQ(std::u16string(), result1.label);
+  EXPECT_EQ(std::u16string(), result1.additional_label);
   EXPECT_EQ(POPUP_ITEM_ID_SEPARATOR, result1.frontend_id);
 
   Suggestion result2 = autofill_popup_controller_->GetSuggestionAt(2);
-  EXPECT_EQ(base::string16(), result2.value);
-  EXPECT_EQ(base::string16(), result2.label);
-  EXPECT_EQ(base::string16(), result2.additional_label);
+  EXPECT_EQ(std::u16string(), result2.value);
+  EXPECT_EQ(std::u16string(), result2.label);
+  EXPECT_EQ(std::u16string(), result2.additional_label);
   EXPECT_EQ(1, result2.frontend_id);
 
   // Add two data list entries (which should replace the current one).
-  base::string16 value2 = ASCIIToUTF16("data list value 2");
+  std::u16string value2 = u"data list value 2";
   data_list_values.push_back(value2);
-  base::string16 label2 = ASCIIToUTF16("data list label 2");
+  std::u16string label2 = u"data list label 2";
   data_list_labels.push_back(label2);
 
   autofill_popup_controller_->UpdateDataListValues(data_list_values,
@@ -544,12 +548,12 @@ TEST_F(AutofillPopupControllerUnitTest, UpdateDataListValues) {
   EXPECT_EQ(value1, autofill_popup_controller_->GetSuggestionAt(0).value);
   EXPECT_EQ(value1, autofill_popup_controller_->GetSuggestionValueAt(0));
   EXPECT_EQ(label1, autofill_popup_controller_->GetSuggestionAt(0).label);
-  EXPECT_EQ(base::string16(),
+  EXPECT_EQ(std::u16string(),
             autofill_popup_controller_->GetSuggestionAt(0).additional_label);
   EXPECT_EQ(value2, autofill_popup_controller_->GetSuggestionAt(1).value);
   EXPECT_EQ(value2, autofill_popup_controller_->GetSuggestionValueAt(1));
   EXPECT_EQ(label2, autofill_popup_controller_->GetSuggestionAt(1).label);
-  EXPECT_EQ(base::string16(),
+  EXPECT_EQ(std::u16string(),
             autofill_popup_controller_->GetSuggestionAt(1).additional_label);
   EXPECT_EQ(POPUP_ITEM_ID_SEPARATOR,
             autofill_popup_controller_->GetSuggestionAt(2).frontend_id);
@@ -572,10 +576,10 @@ TEST_F(AutofillPopupControllerUnitTest, PopupsWithOnlyDataLists) {
                                    PopupType::kUnspecified);
 
   // Replace the datalist element with a new one.
-  base::string16 value1 = ASCIIToUTF16("data list value 1");
-  std::vector<base::string16> data_list_values{value1};
-  base::string16 label1 = ASCIIToUTF16("data list label 1");
-  std::vector<base::string16> data_list_labels{label1};
+  std::u16string value1 = u"data list value 1";
+  std::vector<std::u16string> data_list_values{value1};
+  std::u16string label1 = u"data list label 1";
+  std::vector<std::u16string> data_list_labels{label1};
 
   autofill_popup_controller_->UpdateDataListValues(data_list_values,
                                                    data_list_labels);
@@ -583,7 +587,7 @@ TEST_F(AutofillPopupControllerUnitTest, PopupsWithOnlyDataLists) {
   ASSERT_EQ(1, autofill_popup_controller_->GetLineCount());
   EXPECT_EQ(value1, autofill_popup_controller_->GetSuggestionAt(0).value);
   EXPECT_EQ(label1, autofill_popup_controller_->GetSuggestionAt(0).label);
-  EXPECT_EQ(base::string16(),
+  EXPECT_EQ(std::u16string(),
             autofill_popup_controller_->GetSuggestionAt(0).additional_label);
   EXPECT_EQ(POPUP_ITEM_ID_DATALIST_ENTRY,
             autofill_popup_controller_->GetSuggestionAt(0).frontend_id);

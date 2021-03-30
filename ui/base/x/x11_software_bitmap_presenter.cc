@@ -106,7 +106,7 @@ bool X11SoftwareBitmapPresenter::CompositeBitmap(x11::Connection* connection,
                                  kPremul_SkAlphaType);
   if (!fg_bitmap.installPixels(image_info, const_cast<void*>(data), 4 * width))
     return false;
-  canvas.drawBitmap(fg_bitmap, 0, 0);
+  canvas.drawImage(fg_bitmap.asImage(), 0, 0);
   canvas.flush();
 
   connection->PutImage({x11::ImageFormat::ZPixmap, widget, gc, width, height, x,

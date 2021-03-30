@@ -12,6 +12,8 @@
 namespace gl {
 class GLSurface;
 }
+
+namespace gles2_conform_support {
 namespace egl {
 class Config;
 
@@ -37,5 +39,6 @@ class Surface : public base::RefCountedThreadSafe<Surface> {
 };
 
 }  // namespace egl
+}  // namespace gles2_conform_support
 
 #endif  // GPU_GLES2_CONFORM_TEST_SURFACE_H_

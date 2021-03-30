@@ -5,8 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTOFILL_CARD_UNMASK_PROMPT_VIEW_BRIDGE_H_
 #define IOS_CHROME_BROWSER_UI_AUTOFILL_CARD_UNMASK_PROMPT_VIEW_BRIDGE_H_
 
+#include <string>
+
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_controller.h"
 
@@ -32,7 +33,7 @@ class CardUnmaskPromptViewBridge : public CardUnmaskPromptView {
   void Show() override;
   void ControllerGone() override;
   void DisableAndWaitForVerification() override;
-  void GotVerificationResult(const base::string16& error_message,
+  void GotVerificationResult(const std::u16string& error_message,
                              bool allow_retry) override;
 
   CardUnmaskPromptController* GetController();

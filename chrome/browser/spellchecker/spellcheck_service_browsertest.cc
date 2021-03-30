@@ -314,7 +314,7 @@ class SpellcheckServiceHostBrowserTest : public SpellcheckServiceBrowserTest {
   }
 
   bool spelling_service_done_called_ = false;
-  base::string16 word_;
+  std::u16string word_;
 
   DISALLOW_COPY_AND_ASSIGN(SpellcheckServiceHostBrowserTest);
 };
@@ -477,17 +477,6 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceHostBrowserTest, RequestDictionary) {
 
   RequestDictionary();
   EXPECT_TRUE(GetEnableSpellcheckState());
-}
-
-// When the renderer notifies that it corrected a word, the render process
-// host should record UMA stats about the correction.
-IN_PROC_BROWSER_TEST_F(SpellcheckServiceHostBrowserTest, NotifyChecked) {
-  const char kMisspellRatio[] = "SpellCheck.MisspellRatio";
-
-  base::HistogramTester tester;
-  tester.ExpectTotalCount(kMisspellRatio, 0);
-  NotifyChecked();
-  tester.ExpectTotalCount(kMisspellRatio, 1);
 }
 
 #if BUILDFLAG(USE_RENDERER_SPELLCHECKER)
@@ -779,7 +768,7 @@ const std::vector<std::string> kSpellcheckDictionariesAfter = {
 // spellcheck language preferences for the test profile.
 IN_PROC_BROWSER_TEST_F(SpellcheckServiceWindowsHybridBrowserTestDelayInit,
                        PRE_WindowsHybridSpellcheckDelayInit) {
-  GetPrefs()->SetString(language::prefs::kAcceptLanguages, kAcceptLanguages);
+  GetPrefs()->SetString(language::prefs::kSelectedLanguages, kAcceptLanguages);
   base::Value spellcheck_dictionaries_list(base::Value::Type::LIST);
   for (const auto& dictionary : kSpellcheckDictionariesBefore) {
     spellcheck_dictionaries_list.Append(std::move(dictionary));

@@ -29,7 +29,7 @@ class AutoSignInBubbleController : public PasswordBubbleControllerBase {
 
  private:
   // PasswordBubbleControllerBase methods:
-  base::string16 GetTitle() const override;
+  std::u16string GetTitle() const override;
   void ReportInteractions() override;
 
   password_manager::PasswordForm pending_password_;

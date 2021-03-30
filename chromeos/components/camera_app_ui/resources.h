@@ -6,9 +6,6 @@
 #define CHROMEOS_COMPONENTS_CAMERA_APP_UI_RESOURCES_H_
 
 #include "chromeos/components/camera_app_ui/resources/strings/grit/chromeos_camera_app_strings.h"
-#include "chromeos/grit/chromeos_camera_app_resources.h"
-#include "chromeos/grit/chromeos_camera_app_resources_map.h"
-#include "mojo/public/js/grit/mojo_bindings_resources.h"
 
 namespace chromeos {
 
@@ -49,6 +46,7 @@ const struct {
     {"delete_confirmation_msg", IDS_DELETE_CONFIRMATION_MSG},
     {"switch_take_photo_button", IDS_SWITCH_TAKE_PHOTO_BUTTON},
     {"label_switch_take_photo_button", IDS_LABEL_SWITCH_TAKE_PHOTO_BUTTON},
+    {"open_ptz_panel_button", IDS_OPEN_PTZ_PANEL_BUTTON},
     {"toggle_grid_button", IDS_TOGGLE_GRID_BUTTON},
     {"take_photo_button", IDS_TAKE_PHOTO_BUTTON},
     {"error_msg_no_camera", IDS_ERROR_MSG_NO_CAMERA},
@@ -64,14 +62,21 @@ const struct {
     {"expert_save_metadata", IDS_EXPERT_SAVE_METADATA},
     {"expert_print_performance_logs", IDS_EXPERT_PRINT_PERFORMANCE_LOGS},
     {"expert_scan_barcode", IDS_EXPERT_SCAN_BARCODE},
+    {"expert_custom_video_parameters", IDS_EXPERT_CUSTOM_VIDEO_PARAMETERS},
+    {"tilt_up_button", IDS_TILT_UP_BUTTON},
+    {"pan_right_button", IDS_PAN_RIGHT_BUTTON},
+    {"tilt_down_button", IDS_TILT_DOWN_BUTTON},
+    {"pan_left_button", IDS_PAN_LEFT_BUTTON},
+    {"zoom_in_button", IDS_ZOOM_IN_BUTTON},
+    {"zoom_out_button", IDS_ZOOM_OUT_BUTTON},
     {"snackbar_link_copied", IDS_SNACKBAR_LINK_COPIED},
     {"snackbar_text_copied", IDS_SNACKBAR_TEXT_COPIED},
     {"error_msg_expert_mode_not_supported",
      IDS_ERROR_MSG_EXPERT_MODE_NOT_SUPPORTED},
     {"feedback_button", IDS_FEEDBACK_BUTTON},
     {"error_msg_take_photo_failed", IDS_ERROR_MSG_TAKE_PHOTO_FAILED},
-    {"error_msg_take_portrait_photo_failed",
-     IDS_ERROR_MSG_TAKE_PORTRAIT_PHOTO_FAILED},
+    {"error_msg_take_portrait_bokeh_photo_failed",
+     IDS_ERROR_MSG_TAKE_PORTRAIT_BOKEH_PHOTO_FAILED},
     {"description", IDS_DESCRIPTION},
     {"label_grid_3x3", IDS_LABEL_GRID_3X3},
     {"take_photo_cancel_button", IDS_TAKE_PHOTO_CANCEL_BUTTON},
@@ -97,10 +102,10 @@ const struct {
     {"switch_take_square_photo_button", IDS_SWITCH_TAKE_SQUARE_PHOTO_BUTTON},
     {"label_switch_take_square_photo_button",
      IDS_LABEL_SWITCH_TAKE_SQUARE_PHOTO_BUTTON},
-    {"switch_take_portrait_photo_button",
-     IDS_SWITCH_TAKE_PORTRAIT_PHOTO_BUTTON},
-    {"label_switch_take_portrait_photo_button",
-     IDS_LABEL_SWITCH_TAKE_PORTRAIT_PHOTO_BUTTON},
+    {"switch_take_portrait_bokeh_photo_button",
+     IDS_SWITCH_TAKE_PORTRAIT_BOKEH_PHOTO_BUTTON},
+    {"label_switch_take_portrait_bokeh_photo_button",
+     IDS_LABEL_SWITCH_TAKE_PORTRAIT_BOKEH_PHOTO_BUTTON},
     {"confirm_review_button", IDS_CONFIRM_REVIEW_BUTTON},
     {"cancel_review_button", IDS_CANCEL_REVIEW_BUTTON},
     {"play_result_video_button", IDS_PLAY_RESULT_VIDEO_BUTTON},
@@ -112,37 +117,7 @@ const struct {
     {"banner_title", IDS_BANNER_TITLE},
     {"banner_msg", IDS_BANNER_MSG},
     {"banner_close_button", IDS_BANNER_CLOSE_BUTTON},
-    {"error_msg_camera_being_used", IDS_ERROR_MSG_CAMERA_BEING_USED},
-};
-
-const struct {
-  const char* path;
-  int id;
-} kGritResourceMap[] = {
-    {"js/browser_proxy/browser_proxy.js", IDR_CAMERA_WEBUI_BROWSER_PROXY_JS},
-    {"js/preload_images.js", IDR_CAMERA_PRELOAD_IMAGES_JS},
-    {"js/window_controller/window_controller.js",
-     IDR_CAMERA_MOJO_WINDOW_CONTROLLER_JS},
-    {"js/mojo/camera_intent.mojom-lite.js",
-     IDR_CAMERA_CAMERA_INTENT_MOJOM_LITE_JS},
-    {"js/mojo/image_capture.mojom-lite.js",
-     IDR_CAMERA_IMAGE_CAPTURE_MOJOM_LITE_JS},
-    {"js/mojo/camera_common.mojom-lite.js",
-     IDR_CAMERA_CAMERA_COMMON_MOJOM_LITE_JS},
-    {"js/mojo/camera_metadata.mojom-lite.js",
-     IDR_CAMERA_CAMERA_METADATA_MOJOM_LITE_JS},
-    {"js/mojo/camera_metadata_tags.mojom-lite.js",
-     IDR_CAMERA_CAMERA_METADATA_TAGS_MOJOM_LITE_JS},
-    {"js/mojo/camera_app.mojom-lite.js", IDR_CAMERA_CAMERA_APP_MOJOM_LITE_JS},
-    {"js/mojo/mojo_bindings_lite.js", IDR_MOJO_MOJO_BINDINGS_LITE_JS},
-    {"js/mojo/camera_app_helper.mojom-lite.js",
-     IDR_CAMERA_CAMERA_APP_HELPER_MOJOM_LITE_JS},
-    {"js/mojo/time.mojom-lite.js", IDR_CAMERA_TIME_MOJOM_LITE_JS},
-    {"js/mojo/idle_manager.mojom-lite.js",
-     IDR_CAMERA_IDLE_MANAGER_MOJOM_LITE_JS},
-    {"js/mojo/camera_app.mojom-lite.js", IDR_CAMERA_CAMERA_APP_MOJOM_LITE_JS},
-    {"js/mojo/geometry.mojom-lite.js", IDR_CAMERA_GEOMETRY_MOJOM_LITE_JS},
-    {"js/mojo/range.mojom-lite.js", IDR_CAMERA_RANGE_MOJOM_LITE_JS},
+    {"error_msg_camera_paused", IDS_ERROR_MSG_CAMERA_PAUSED},
 };
 
 }  // namespace chromeos

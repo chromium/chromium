@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {browserProxy} from './browser_proxy/browser_proxy.js';
+import * as animate from './animation.js';
 import * as dom from './dom.js';
-import * as util from './util.js';
+import * as loadTimeData from './models/load_time_data.js';
 
 /**
  * Updates the toast message.
@@ -15,12 +15,11 @@ function update(message, spoken) {
   // TTS speaks changes of on-screen aria-live elements. Force content changes
   // and clear content once inactive to avoid stale content being read out.
   const element = dom.get('#toast', HTMLElement);
-  util.animateCancel(element);  // Cancel the active toast if any.
-  element.textContent = '';     // Force to reiterate repeated messages.
+  element.textContent = '';  // Force reiterate the same message for a11y.
   element.textContent = message;
 
   element.classList.toggle('spoken', spoken);
-  util.animateOnce(element, () => element.textContent = '');
+  animate.play(element);
 }
 
 /**
@@ -38,7 +37,7 @@ export function showDebugMessage(message) {
  *     label.
  */
 export function show(label, ...substitutions) {
-  update(browserProxy.getI18nMessage(label, ...substitutions), false);
+  update(loadTimeData.getI18nMessage(label, ...substitutions), false);
 }
 
 /**
@@ -48,5 +47,5 @@ export function show(label, ...substitutions) {
  *     label.
  */
 export function speak(label, ...substitutions) {
-  update(browserProxy.getI18nMessage(label, ...substitutions), true);
+  update(loadTimeData.getI18nMessage(label, ...substitutions), true);
 }

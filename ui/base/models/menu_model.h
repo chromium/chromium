@@ -5,9 +5,10 @@
 #ifndef UI_BASE_MODELS_MENU_MODEL_H_
 #define UI_BASE_MODELS_MENU_MODEL_H_
 
+#include <string>
+
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "ui/base/models/menu_model_delegate.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/gfx/native_widget_types.h"
@@ -64,15 +65,15 @@ class COMPONENT_EXPORT(UI_BASE) MenuModel
   virtual int GetCommandIdAt(int index) const = 0;
 
   // Returns the label of the item at the specified index.
-  virtual base::string16 GetLabelAt(int index) const = 0;
+  virtual std::u16string GetLabelAt(int index) const = 0;
 
   // Returns the secondary label of the item at the specified index. Secondary
   // label is shown below the label.
-  virtual base::string16 GetSecondaryLabelAt(int index) const;
+  virtual std::u16string GetSecondaryLabelAt(int index) const;
 
   // Returns the minor text of the item at the specified index. The minor text
   // is rendered to the right of the label and using the font GetLabelFontAt().
-  virtual base::string16 GetMinorTextAt(int index) const;
+  virtual std::u16string GetMinorTextAt(int index) const;
 
   // Returns the minor icon of the item at the specified index. The minor icon
   // is rendered to the left of the minor text.
@@ -83,6 +84,10 @@ class COMPONENT_EXPORT(UI_BASE) MenuModel
   // returns true, the label, sublabel and icon of the menu item will be
   // updated each time the menu is shown.
   virtual bool IsItemDynamicAt(int index) const = 0;
+
+  // Returns whether the menu item at the specified index has a user-set title,
+  // in which case it should always be treated as plain text.
+  virtual bool MayHaveMnemonicsAt(int index) const;
 
   // Returns the font list used for the label at the specified index.
   // If NULL, then the default font list should be used.

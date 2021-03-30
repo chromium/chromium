@@ -355,7 +355,7 @@ void WebRtcRemoteEventLogManager::DisableForBrowserContext(
   ManageUploadSchedule();
 }
 
-bool WebRtcRemoteEventLogManager::PeerConnectionAdded(
+bool WebRtcRemoteEventLogManager::OnPeerConnectionAdded(
     const PeerConnectionKey& key) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
@@ -369,7 +369,7 @@ bool WebRtcRemoteEventLogManager::PeerConnectionAdded(
   return result.second;
 }
 
-bool WebRtcRemoteEventLogManager::PeerConnectionRemoved(
+bool WebRtcRemoteEventLogManager::OnPeerConnectionRemoved(
     const PeerConnectionKey& key) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
@@ -389,7 +389,7 @@ bool WebRtcRemoteEventLogManager::PeerConnectionRemoved(
   return true;
 }
 
-bool WebRtcRemoteEventLogManager::PeerConnectionSessionIdSet(
+bool WebRtcRemoteEventLogManager::OnPeerConnectionSessionIdSet(
     const PeerConnectionKey& key,
     const std::string& session_id) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());

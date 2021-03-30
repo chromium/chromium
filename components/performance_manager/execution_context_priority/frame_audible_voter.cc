@@ -38,7 +38,7 @@ FrameAudibleVoter::FrameAudibleVoter() = default;
 FrameAudibleVoter::~FrameAudibleVoter() = default;
 
 void FrameAudibleVoter::SetVotingChannel(VotingChannel voting_channel) {
-  voting_channel_.SetVotingChannel(std::move(voting_channel));
+  voting_channel_ = std::move(voting_channel);
 }
 
 void FrameAudibleVoter::OnFrameNodeAdded(const FrameNode* frame_node) {

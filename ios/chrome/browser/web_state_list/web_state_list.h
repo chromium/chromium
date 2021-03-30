@@ -259,6 +259,14 @@ class WebStateList {
                                     bool use_group,
                                     int n) const;
 
+  // Returns the wrapper of the currently active WebState or null if there
+  // is none.
+  WebStateWrapper* GetActiveWebStateWrapper() const;
+
+  // Returns the wrapper of the WebState at the specified index. It is invalid
+  // to call this with an index such that |ContainsIndex(index)| returns false.
+  WebStateWrapper* GetWebStateWrapperAt(int index) const;
+
   // The WebStateList delegate.
   WebStateListDelegate* delegate_ = nullptr;
 

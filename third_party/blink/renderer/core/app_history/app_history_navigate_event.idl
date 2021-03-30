@@ -1,0 +1,21 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/app-history/
+[
+  Exposed=Window,
+  RuntimeEnabled=AppHistory
+] interface AppHistoryNavigateEvent : Event {
+  [CallWith=ExecutionContext] constructor(DOMString type, optional AppHistoryNavigateEventInit eventInit = {});
+
+  readonly attribute boolean canRespond;
+  readonly attribute boolean userInitiated;
+  readonly attribute boolean hashChange;
+  // readonly attribute AppHistoryEntry destination;
+  // readonly attribute AbortSignal signal;
+  readonly attribute FormData? formData;
+  // readonly attribute any info;
+
+  [CallWith=ScriptState, RaisesException] void respondWith(Promise<any> newNavigationAction);
+};

@@ -11,25 +11,34 @@
 #include "base/containers/flat_map.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
+#include "components/system_media_controls/system_media_controls_observer.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/media_keys_listener_manager.h"
 #include "ui/base/accelerators/media_keys_listener.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
+namespace system_media_controls {
+class SystemMediaControls;
+}  // namespace system_media_controls
+
 namespace content {
 
-class HardwareKeyMediaController;
+class ActiveMediaSessionController;
 class SystemMediaControlsNotifier;
 
 // Listens for media keys and decides which listeners receive which events. In
-// particular, it owns one of its delegates (HardwareKeyMediaController), and
-// only propagates to the HardwareKeyMediaController if no other delegates are
+// particular, it owns one of its delegates (ActiveMediaSessionController), and
+// only propagates to the ActiveMediaSessionController if no other delegates are
 // listening to a particular media key.
 class CONTENT_EXPORT MediaKeysListenerManagerImpl
     : public MediaKeysListenerManager,
-      public ui::MediaKeysListener::Delegate {
+      public ui::MediaKeysListener::Delegate,
+      public system_media_controls::SystemMediaControlsObserver {
  public:
   MediaKeysListenerManagerImpl();
+  MediaKeysListenerManagerImpl(const MediaKeysListenerManagerImpl&) = delete;
+  MediaKeysListenerManagerImpl& operator=(const MediaKeysListenerManagerImpl&) =
+      delete;
   ~MediaKeysListenerManagerImpl() override;
 
   // MediaKeysListenerManager implementation.
@@ -44,14 +53,21 @@ class CONTENT_EXPORT MediaKeysListenerManagerImpl
   // ui::MediaKeysListener::Delegate:
   void OnMediaKeysAccelerator(const ui::Accelerator& accelerator) override;
 
+  // system_media_controls::SystemMediaControlsObserver:
+  void OnServiceReady() override {}
+  void OnNext() override;
+  void OnPrevious() override;
+  void OnPlay() override;
+  void OnPause() override;
+  void OnPlayPause() override;
+  void OnStop() override;
+  void OnSeekTo(const base::TimeDelta& time) override;
+
   // Informs the MediaKeysListener whether or not media is playing.
-  // TODO(https://crbug.com/974035): Once the MediaKeysListenerManager has been
-  // refactored to work with system media controls this should no longer be
-  // needed and should be deleted.
   void SetIsMediaPlaying(bool is_playing);
 
-  HardwareKeyMediaController* hardware_key_media_controller_for_testing() {
-    return hardware_key_media_controller_.get();
+  ActiveMediaSessionController* active_media_session_controller_for_testing() {
+    return active_media_session_controller_.get();
   }
   void SetMediaKeysListenerForTesting(
       std::unique_ptr<ui::MediaKeysListener> media_keys_listener) {
@@ -60,57 +76,74 @@ class CONTENT_EXPORT MediaKeysListenerManagerImpl
 
  private:
   // ListeningData tracks which delegates are listening to a particular key. We
-  // track the HardwareKeyMediaController separately from the other listeners as
-  // it is treated differently.
+  // track the ActiveMediaSessionController separately from the other listeners
+  // as it is treated differently.
   struct ListeningData {
     ListeningData();
     ~ListeningData();
 
-    // True if the HardwareKeyMediaController is listening for this key.
-    bool hardware_key_media_controller_listening;
+    // True if the ActiveMediaSessionController is listening for this key.
+    bool active_media_session_controller_listening = false;
 
-    // Contains non-HardwareKeyMediaController listeners.
+    // Contains non-ActiveMediaSessionController listeners.
     base::ObserverList<ui::MediaKeysListener::Delegate> listeners;
 
    private:
     DISALLOW_COPY_AND_ASSIGN(ListeningData);
   };
 
+  void MaybeSendKeyCode(ui::KeyboardCode key_code);
+
   // Creates/Starts any OS-specific services needed for listening to media keys.
   void EnsureAuxiliaryServices();
 
-  void EnsureMediaKeysListener();
+  // Creates the SystemMediaControls or MediaKeysListener instance for listening
+  // for media control events.
+  void StartListeningForMediaKeysIfNecessary();
+
   ListeningData* GetOrCreateListeningData(ui::KeyboardCode key_code);
 
   // Starts/stops watching media keys based on the current state.
-  void UpdateKeyListening();
+  void UpdateWhichKeysAreListenedFor();
+
+  // Enables different controls on the system media controls based on current
+  // state.
+  void UpdateSystemMediaControlsEnabledControls();
+
+  void UpdateMediaKeysListener();
 
   // True if we should listen for a key with the given listening data.
   bool ShouldListenToKey(const ListeningData& listening_data) const;
 
-  // True if any delegates besides the HardwareKeyMediaController are listening
-  // to any media keys.
+  // True if any delegates besides the ActiveMediaSessionController are
+  // listening to any media keys.
   bool AnyDelegatesListening() const;
 
-  // True if the HardwareKeyMediaController is allowed to receive events.
-  bool CanHardwareKeyMediaControllerReceiveEvents() const;
+  // True if the ActiveMediaSessionController is allowed to receive events.
+  bool CanActiveMediaSessionControllerReceiveEvents() const;
+
+  // True if the ActiveMediaSessionController is allowed to receive events and
+  // is listening for the event for the given key.
+  bool ShouldActiveMediaSessionControllerReceiveKey(
+      ui::KeyboardCode key_code) const;
 
   base::flat_map<ui::KeyboardCode, std::unique_ptr<ListeningData>>
       delegate_map_;
+  std::unique_ptr<system_media_controls::SystemMediaControls>
+      system_media_controls_;
   std::unique_ptr<ui::MediaKeysListener> media_keys_listener_;
-  std::unique_ptr<HardwareKeyMediaController> hardware_key_media_controller_;
+  std::unique_ptr<ActiveMediaSessionController>
+      active_media_session_controller_;
   std::unique_ptr<SystemMediaControlsNotifier> system_media_controls_notifier_;
 
   // False if media key handling has been explicitly disabled by a call to
   // |DisableInternalMediaKeyHandling()|.
-  bool media_key_handling_enabled_;
+  bool media_key_handling_enabled_ = true;
 
   // True if auxiliary services have already been started.
-  bool auxiliary_services_started_;
+  bool auxiliary_services_started_ = false;
 
   bool is_media_playing_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaKeysListenerManagerImpl);
 };
 
 }  // namespace content

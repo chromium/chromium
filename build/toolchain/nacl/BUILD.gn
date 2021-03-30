@@ -46,10 +46,10 @@ if (host_os == "win") {
   scriptsuffix = ""
 }
 
-# When the compilers are run via goma or ccache rather than directly by
-# GN/Ninja, the goma/ccache wrapper handles .bat files but gets confused
+# When the compilers are run via goma, rbe or ccache rather than directly by
+# GN/Ninja, the rbe/goma/ccache wrapper handles .bat files but gets confused
 # by being given the scriptprefix.
-if (host_os == "win" && !use_goma && cc_wrapper == "") {
+if (host_os == "win" && !use_goma && !use_rbe && cc_wrapper == "") {
   compiler_scriptprefix = scriptprefix
 } else {
   compiler_scriptprefix = ""
@@ -66,6 +66,12 @@ template("pnacl_toolchain") {
         rebase_path("${nacl_toolchain_dir}/${toolchain_package}/bin/pnacl-",
                     root_build_dir)
 
+    if (host_os == "win") {
+      # Flip the slashes so that copy/paste of the commands works.
+      # This is also done throughout build\toolchain\win\BUILD.gn
+      toolprefix = string_replace(toolprefix, "/", "\\")
+    }
+
     cc = compiler_scriptprefix + toolprefix + "clang" + scriptsuffix
     cxx = compiler_scriptprefix + toolprefix + "clang++" + scriptsuffix
     ar = toolprefix + "ar" + scriptsuffix
@@ -78,6 +84,7 @@ template("pnacl_toolchain") {
                            [
                              "executable_extension",
                              "is_clang_analysis_supported",
+                             "extra_cppflags",
                            ])
 
     # Note this is not the usual "ld = cxx" because "ld" uses are
@@ -108,6 +115,10 @@ pnacl_toolchain("newlib_pnacl") {
 pnacl_toolchain("newlib_pnacl_nonsfi") {
   executable_extension = ""
   strip = "strip"
+
+  # This macro is embedded on nonsfi toolchains but reclient can't figure
+  # that out itself, so we make it explicit.
+  extra_cppflags = "-D__native_client_nonsfi__"
 }
 
 template("nacl_glibc_toolchain") {
@@ -125,6 +136,12 @@ template("nacl_glibc_toolchain") {
                                invoker.toolchain_tuple + "-",
                            root_build_dir)
 
+  if (host_os == "win") {
+    # Flip the slashes so that copy/paste of the commands works.
+    # This is also done throughout build\toolchain\win\BUILD.gn
+    toolprefix = string_replace(toolprefix, "/", "\\")
+  }
+
   nacl_toolchain("glibc_" + toolchain_cpu) {
     cc = toolprefix + "gcc" + toolsuffix
     cxx = toolprefix + "g++" + toolsuffix
@@ -136,6 +153,9 @@ template("nacl_glibc_toolchain") {
 
     toolchain_args = {
       current_cpu = toolchain_cpu
+
+      # reclient does not support gcc.
+      use_rbe = false
       is_clang = false
       is_nacl_glibc = true
       use_lld = false
@@ -177,6 +197,12 @@ template("nacl_clang_toolchain") {
                                invoker.toolchain_tuple + "-",
                            root_build_dir)
 
+  if (host_os == "win") {
+    # Flip the slashes so that copy/paste of the commands works.
+    # This is also done throughout build\toolchain\win\BUILD.gn
+    toolprefix = string_replace(toolprefix, "/", "\\")
+  }
+
   nacl_toolchain("clang_newlib_" + toolchain_cpu) {
     cc = toolprefix + "clang" + toolsuffix
     cxx = toolprefix + "clang++" + toolsuffix
@@ -203,6 +229,12 @@ template("nacl_irt_toolchain") {
   toolprefix = rebase_path("${nacl_toolchain_dir}/${toolchain_package}/bin/" +
                                invoker.toolchain_tuple + "-",
                            root_build_dir)
+
+  if (host_os == "win") {
+    # Flip the slashes so that copy/paste of the commands works.
+    # This is also done throughout build\toolchain\win\BUILD.gn
+    toolprefix = string_replace(toolprefix, "/", "\\")
+  }
 
   link_irt = rebase_path("//native_client/build/link_irt.py", root_build_dir)
 

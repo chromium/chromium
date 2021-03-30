@@ -356,13 +356,7 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, PromiseBasedAPI) {
          });)";
   test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
   ResultCatcher catcher;
-  // TODO(https://crbug.com/1146173): We shouldn't have to use the
-  // kEnableFileAccess flag here, but without it the extension gets reloaded to
-  // remove the file access that unpacked extensions are given by default. This
-  // reload can lead to a flaky failure related to registering service workers.
-  ASSERT_TRUE(LoadExtensionWithFlags(
-      test_dir.UnpackedPath(),
-      kFlagIgnoreManifestWarnings | kFlagEnableFileAccess));
+  ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
@@ -428,8 +422,7 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, MV2PromisesNotSupported) {
          });)";
   test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
   ResultCatcher catcher;
-  ASSERT_TRUE(LoadExtensionWithFlags(test_dir.UnpackedPath(),
-                                     kFlagIgnoreManifestWarnings));
+  ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 

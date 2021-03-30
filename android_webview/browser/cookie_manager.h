@@ -31,7 +31,7 @@ class CanonicalCookie;
 
 namespace android_webview {
 
-// CookieManager creates and owns Webview's CookieStore, in addition to handling
+// CookieManager creates and owns WebView's CookieStore, in addition to handling
 // calls into the CookieStore from Java.
 //
 // Since Java calls can be made on the IO Thread, and must synchronously return
@@ -44,10 +44,11 @@ namespace android_webview {
 // Network Service is initialized. 2) The CookieManager is not used until after
 // the Network Service is initialized (during content initialization).
 //
-// Case 2) is straightforward: Once the NetworkContext and the
-// network::mojom::CookieManager are created, the AwContentBrowserClient calls
-// PassMojoCookieManagerToAwCookieManager, which ends up calling
-// CookieManager::SwapMojoCookieManagerAsync, setting the |mojo_cookie_manager_|
+// Case 2) is straightforward: When the
+// ContentBrowserClient::ConfigureNetworkContextParams was called
+// AwContentBrowserClient will finally call
+// CookieManager::SwapMojoCookieManagerAsync by calling
+// CookieManager::SetMojoCookieManager, setting the |mojo_cookie_manager_|
 // member of CookieManager (the AW one; it's an unfortunately overloaded term).
 //
 // In case 1), the CookieManager creates a provisional CookieStore

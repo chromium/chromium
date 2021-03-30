@@ -19,19 +19,19 @@ void WebFontRendering::AddSideloadedFontForTesting(sk_sp<SkTypeface> typeface) {
 }
 
 // static
-void WebFontRendering::SetMenuFontMetrics(const wchar_t* family_name,
+void WebFontRendering::SetMenuFontMetrics(const WebString& family_name,
                                           int32_t font_height) {
   FontCache::SetMenuFontMetrics(family_name, font_height);
 }
 
 // static
-void WebFontRendering::SetSmallCaptionFontMetrics(const wchar_t* family_name,
+void WebFontRendering::SetSmallCaptionFontMetrics(const WebString& family_name,
                                                   int32_t font_height) {
   FontCache::SetSmallCaptionFontMetrics(family_name, font_height);
 }
 
 // static
-void WebFontRendering::SetStatusFontMetrics(const wchar_t* family_name,
+void WebFontRendering::SetStatusFontMetrics(const WebString& family_name,
                                             int32_t font_height) {
   FontCache::SetStatusFontMetrics(family_name, font_height);
 }

@@ -39,8 +39,8 @@ void UserManager::UserSessionStateObserver::ActiveUserHashChanged(
 UserManager::UserSessionStateObserver::~UserSessionStateObserver() {}
 
 UserManager::UserAccountData::UserAccountData(
-    const base::string16& display_name,
-    const base::string16& given_name,
+    const std::u16string& display_name,
+    const std::u16string& given_name,
     const std::string& locale)
     : display_name_(display_name), given_name_(given_name), locale_(locale) {}
 
@@ -129,8 +129,8 @@ UserType UserManager::CalculateUserType(const AccountId& account_id,
   if (is_child)
     return USER_TYPE_CHILD;
 
-  if (IsSupervisedAccountId(account_id))
-    return USER_TYPE_SUPERVISED;
+  if (IsDeprecatedSupervisedAccountId(account_id))
+    return USER_TYPE_SUPERVISED_DEPRECATED;
 
   if (account_id.GetAccountType() == AccountType::ACTIVE_DIRECTORY)
     return USER_TYPE_ACTIVE_DIRECTORY;

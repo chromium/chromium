@@ -71,7 +71,7 @@ InlineLoginDialogChromeOSOnboarding* InlineLoginDialogChromeOSOnboarding::Show(
   DCHECK(base::FeatureList::IsEnabled(supervised_users::kEduCoexistenceFlowV2));
 
   base::UmaHistogramEnumeration(
-      InlineLoginDialogChromeOS::kAccountAdditionSource,
+      account_manager::AccountManagerFacade::kAccountAdditionSource,
       ::account_manager::AccountManagerFacade::AccountAdditionSource::
           kOnboarding);
 
@@ -87,9 +87,7 @@ InlineLoginDialogChromeOSOnboarding* InlineLoginDialogChromeOSOnboarding::Show(
 InlineLoginDialogChromeOSOnboarding::InlineLoginDialogChromeOSOnboarding(
     const gfx::Size& size,
     base::OnceCallback<void(void)> dialog_closed_callback)
-    : InlineLoginDialogChromeOS(false /*is_arc_source*/),
-      size_(size),
-      dialog_closed_callback_(std::move(dialog_closed_callback)) {
+    : size_(size), dialog_closed_callback_(std::move(dialog_closed_callback)) {
   set_modal_type(ui::MODAL_TYPE_CHILD);
 }
 

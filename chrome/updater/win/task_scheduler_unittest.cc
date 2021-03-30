@@ -7,6 +7,7 @@
 #include <taskschd.h>
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/command_line.h"
@@ -14,7 +15,6 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/test_timeouts.h"
@@ -22,7 +22,7 @@
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_variant.h"
 #include "base/win/windows_version.h"
-#include "chrome/updater/updater_version.h"
+#include "chrome/updater/updater_branding.h"
 #include "chrome/updater/win/test/test_executables.h"
 #include "chrome/updater/win/test/test_strings.h"
 #include "chrome/updater/win/util.h"
@@ -42,7 +42,7 @@ const wchar_t kTaskDescription1[] =
 const wchar_t kTaskDescription2[] =
     L"Task 2 used only for Chrome Updater unit testing.";
 // A command-line switch used in testing.
-const char kTestSwitch[] = "a_switch";
+const char kUnitTestSwitch[] = "a_switch";
 
 class TaskSchedulerTests : public testing::Test {
  public:
@@ -102,9 +102,9 @@ TEST_F(TaskSchedulerTests, RunAProgramNow) {
 
   // Create a unique name for a shared event to be waited for in this process
   // and signaled in the test process to confirm it was scheduled and ran.
-  const base::string16 event_name =
+  const std::wstring event_name =
       base::StrCat({kTestProcessExecutableName, L"-",
-                    base::NumberToString16(::GetCurrentProcessId())});
+                    base::NumberToWString(::GetCurrentProcessId())});
   base::WaitableEvent event(base::win::ScopedHandle(
       ::CreateEvent(nullptr, FALSE, FALSE, event_name.c_str())));
   ASSERT_NE(event.handle(), nullptr);
@@ -206,7 +206,7 @@ TEST_F(TaskSchedulerTests, GetTaskNameList) {
                                     TaskScheduler::TRIGGER_TYPE_HOURLY, false));
   EXPECT_TRUE(task_scheduler_->IsTaskRegistered(kTaskName2));
 
-  std::vector<base::string16> task_names;
+  std::vector<std::wstring> task_names;
   EXPECT_TRUE(task_scheduler_->GetTaskNameList(&task_names));
   EXPECT_TRUE(base::Contains(task_names, kTaskName1));
   EXPECT_TRUE(base::Contains(task_names, kTaskName2));
@@ -227,7 +227,7 @@ TEST_F(TaskSchedulerTests, GetTasksIncludesHidden) {
 
   EXPECT_TRUE(task_scheduler_->IsTaskRegistered(kTaskName1));
 
-  std::vector<base::string16> task_names;
+  std::vector<std::wstring> task_names;
   EXPECT_TRUE(task_scheduler_->GetTaskNameList(&task_names));
   EXPECT_TRUE(base::Contains(task_names, kTaskName1));
 
@@ -255,7 +255,7 @@ TEST_F(TaskSchedulerTests, GetTaskInfoExecActions) {
 
   base::CommandLine command_line2(
       executable_path.Append(kTestProcessExecutableName));
-  command_line2.AppendSwitch(kTestSwitch);
+  command_line2.AppendSwitch(kUnitTestSwitch);
   EXPECT_TRUE(task_scheduler_->RegisterTask(
       kTaskName2, kTaskDescription2, command_line2,
       TaskScheduler::TRIGGER_TYPE_HOURLY, false));

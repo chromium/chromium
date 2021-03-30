@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/critical_closure.h"
 #import "base/ios/crb_protocol_observers.h"
+#import "base/ios/ios_util.h"
 #include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
@@ -30,7 +31,6 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/browsing_data/sessions_storage_util.h"
 #include "ios/chrome/browser/chrome_constants.h"
-#include "ios/chrome/browser/crash_report/breakpad_helper.h"
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #include "ios/chrome/browser/crash_report/crash_loop_detection_util.h"
 #include "ios/chrome/browser/crash_report/features.h"
@@ -38,8 +38,6 @@
 #include "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/geolocation/omnibox_geolocation_config.h"
 #import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/metrics/ios_profile_session_durations_service.h"
-#import "ios/chrome/browser/metrics/ios_profile_session_durations_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signed_in_accounts_view_controller.h"
@@ -48,17 +46,18 @@
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/help_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/browser/ui/main/scene_delegate.h"
 #import "ios/chrome/browser/ui/safe_mode/safe_mode_coordinator.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
-#import "ios/chrome/browser/ui/util/multi_window_support.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/chrome/browser/web_state_list/session_metrics.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_metrics_browser_agent.h"
 #include "ios/net/cookies/cookie_store_ios.h"
 #include "ios/net/cookies/system_cookie_util.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#import "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
 #include "ios/public/provider/chrome/browser/distribution/app_distribution_provider.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_provider.h"
 #include "ios/web/public/thread/web_task_traits.h"
@@ -100,8 +99,6 @@ const NSTimeInterval kMemoryFootprintRecordingTimeInterval = 5;
   // Variables backing properties of same name.
   SafeModeCoordinator* _safeModeCoordinator;
 
-  // Start of the current session, used for UMA.
-  base::TimeTicks _sessionStartTime;
   // YES if the app is currently in the process of terminating.
   BOOL _appIsTerminating;
   // Whether the application is currently in the background.
@@ -133,7 +130,7 @@ const NSTimeInterval kMemoryFootprintRecordingTimeInterval = 5;
 
 // This method is the first to be called when user launches the application.
 // Depending on the background tasks history, the state of the application is
-// either INITIALIZATION_STAGE_BASIC or INITIALIZATION_STAGE_BACKGROUND so this
+// INITIALIZATION_STAGE_BACKGROUND so this
 // step cannot be included in the |startUpBrowserToStage:| method.
 - (void)initializeUI;
 // Saves the current launch details to user defaults.
@@ -156,6 +153,13 @@ const NSTimeInterval kMemoryFootprintRecordingTimeInterval = 5;
 
 // Agents attached to this app state.
 @property(nonatomic, strong) NSMutableArray<id<AppStateAgent>>* agents;
+
+// Operational blocks to be run by the local runloop that are queued by the
+// init stage agents.
+@property(nonatomic, strong) NSMutableArray* stageQueue;
+
+// Redefined internaly as readwrite.
+@property(nonatomic, assign, readwrite) InitStage initStage;
 
 @end
 
@@ -182,7 +186,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
     // Subscribe to scene-related notifications when using scenes.
     // Note these are also sent when not using scenes, so avoid subscribing to
     // them unless necessary.
-    if (IsSceneStartupSupported()) {
+    if (base::ios::IsSceneStartupSupported()) {
       if (@available(iOS 13, *)) {
         // Subscribe to scene connection notifications.
         [[NSNotificationCenter defaultCenter]
@@ -192,6 +196,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
                  object:nil];
       }
     }
+
+    _stageQueue = [NSMutableArray new];
   }
   return self;
 }
@@ -228,9 +234,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 - (void)applicationDidEnterBackground:(UIApplication*)application
                          memoryHelper:(MemoryWarningHelper*)memoryHelper {
   if ([self isInSafeMode]) {
-    // Force a crash when backgrounding and in safe mode, so users don't get
-    // stuck in safe mode.
-    breakpad_helper::SetEnabled(false);
     exit(0);
     return;
   }
@@ -383,11 +386,9 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
                        tabSwitcher:(id<TabSwitching>)tabSwitcher
              connectionInformation:
                  (id<ConnectionInformation>)connectionInformation {
-  DCHECK(!IsSceneStartupSupported());
+  DCHECK(!base::ios::IsSceneStartupSupported());
   DCHECK([_browserLauncher browserInitializationStage] ==
          INITIALIZATION_STAGE_FOREGROUND);
-
-  _sessionStartTime = base::TimeTicks::Now();
 
   id<BrowserInterface> currentInterface =
       _browserLauncher.interfaceProvider.currentInterface;
@@ -415,17 +416,15 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
     [HandlerForProtocol(dispatcher, HelpCommands) showHelpBubbleIfEligible];
   }
 
-  IOSProfileSessionDurationsService* psdService =
-      IOSProfileSessionDurationsServiceFactory::GetForBrowserState(
-          currentInterface.browserState);
-  if (psdService)
-    psdService->OnSessionStarted(_sessionStartTime);
-
   [MetricsMediator logStartupDuration:self.startupInformation
                 connectionInformation:connectionInformation];
 }
 
 - (void)applicationWillTerminate:(UIApplication*)application {
+  if (!_applicationInBackground) {
+    base::UmaHistogramBoolean(
+        "Stability.IOS.UTE.AppWillTerminateWasCalledInForeground", true);
+  }
   if (_appIsTerminating) {
     // Previous handling of this method spun the runloop, resulting in
     // recursive calls; this does not appear to happen with the new shutdown
@@ -435,11 +434,18 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   }
   _appIsTerminating = YES;
 
+  [_appCommandDispatcher prepareForShutdown];
+
   // Cancel any in-flight distribution notifications.
   CHECK(ios::GetChromeBrowserProvider());
   ios::GetChromeBrowserProvider()
       ->GetAppDistributionProvider()
       ->CancelDistributionNotifications();
+
+  if (IsDiscoverFeedEnabled()) {
+    // Stop the Discover feed so it disconnects its services.
+    ios::GetChromeBrowserProvider()->GetDiscoverFeedProvider()->StopFeed();
+  }
 
   // Halt the tabs, so any outstanding requests get cleaned up, without actually
   // closing the tabs. Set the BVC to inactive to cancel all the dialogs.
@@ -456,7 +462,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   }
 
   // Trigger UI teardown on iOS 12.
-  if (!IsSceneStartupSupported()) {
+  if (!base::ios::IsSceneStartupSupported()) {
     self.mainSceneState.activationLevel = SceneActivationLevelUnattached;
   }
 
@@ -468,6 +474,19 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
     API_AVAILABLE(ios(13)) {
   NSMutableArray<NSString*>* sessionIDs =
       [NSMutableArray arrayWithCapacity:sceneSessions.count];
+  // This method is invoked by iOS to inform the application that the sessions
+  // for "closed windows" is garbage collected and that any data associated with
+  // them by the application needs to be deleted.
+  //
+  // Usually Chrome uses -[SceneState sceneSessionID] as identifier to properly
+  // support devices that do not support multi-window (and which use a constant
+  // identifier). For devices that do not support multi-window the session is
+  // saved at a constant path, so it is harmnless to delete files at a path
+  // derived from -persistentIdentifier (since there won't be files deleted).
+  // For devices that do support multi-window, there is data to delete once the
+  // session is garbage collected.
+  //
+  // Thus it is always correct to use -persistentIdentifier here.
   for (UISceneSession* session in sceneSessions) {
     [sessionIDs addObject:session.persistentIdentifier];
   }
@@ -488,11 +507,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 
   id<BrowserInterface> currentInterface =
       _browserLauncher.interfaceProvider.currentInterface;
-  base::TimeDelta duration = base::TimeTicks::Now() - _sessionStartTime;
-  UMA_HISTOGRAM_LONG_TIMES("Session.TotalDuration", duration);
-  UMA_HISTOGRAM_CUSTOM_TIMES("Session.TotalDurationMax1Day", duration,
-                             base::TimeDelta::FromMilliseconds(1),
-                             base::TimeDelta::FromHours(24), 50);
 
   // Record session metrics (currentInterface.browserState may be null during
   // tests).
@@ -514,14 +528,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
           ->RecordAndClearSessionMetrics(MetricsToRecordFlags::kNoMetrics);
     }
   }
-
-  if (currentInterface.browserState) {
-    IOSProfileSessionDurationsService* psdService =
-        IOSProfileSessionDurationsServiceFactory::GetForBrowserState(
-            currentInterface.browserState);
-    if (psdService)
-      psdService->OnSessionEnded(duration);
-  }
 }
 
 - (BOOL)requiresHandlingAfterLaunchWithOptions:(NSDictionary*)launchOptions
@@ -529,7 +535,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   [_browserLauncher setLaunchOptions:launchOptions];
   self.shouldPerformAdditionalDelegateHandling = YES;
 
-  [_browserLauncher startUpBrowserToStage:INITIALIZATION_STAGE_BASIC];
+  [self startInitStages];
+
   if (!stateBackground) {
     [self initializeUI];
   }
@@ -555,6 +562,13 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   [agent setAppState:self];
 }
 
+- (void)queueTransitionToNextInitStage {
+  __weak AppState* weakSelf = self;
+  [_stageQueue addObject:(^{
+                 [weakSelf advanceToNextInitStage];
+               })];
+}
+
 #pragma mark - Multiwindow-related
 
 - (SceneState*)foregroundActiveScene {
@@ -568,7 +582,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 }
 
 - (NSArray<SceneState*>*)connectedScenes {
-  if (IsSceneStartupSupported()) {
+  if (base::ios::IsSceneStartupSupported()) {
     if (@available(iOS 13, *)) {
       NSMutableArray* sceneStates = [[NSMutableArray alloc] init];
       NSSet* connectedScenes =
@@ -605,6 +619,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 
 #pragma mark - SafeModeCoordinatorDelegate Implementation
 
+// TODO(crbug.com/1178809): Handle this with an app state agent when
+// transitioning out of safe mode.
 - (void)coordinatorDidExitSafeMode:(nonnull SafeModeCoordinator*)coordinator {
   [self stopSafeMode];
   [_browserLauncher startUpBrowserToStage:INITIALIZATION_STAGE_FOREGROUND];
@@ -617,7 +633,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 #pragma mark - Internal methods.
 
 - (void)startSafeMode {
-  if (!IsSceneStartupSupported()) {
+  if (!base::ios::IsSceneStartupSupported()) {
     self.mainSceneState.activationLevel = SceneActivationLevelForegroundActive;
   }
   DCHECK(self.foregroundActiveScene);
@@ -633,7 +649,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 
   [self.safeModeCoordinator start];
 
-  if (IsMultipleScenesSupported()) {
+  if (base::ios::IsMultipleScenesSupported()) {
     _safeModeBlocker =
         std::make_unique<ScopedUIBlocker>(self.foregroundActiveScene);
   }
@@ -651,15 +667,19 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   _userInteracted = YES;
   [self saveLaunchDetailsToDefaults];
 
+  // TODO(crbug.com/1178809): Move this logic to the safe mode agent.
   if ([SafeModeCoordinator shouldStart]) {
     self.inSafeMode = YES;
-    if (!IsMultiwindowSupported()) {
+    if (!base::ios::IsMultiwindowSupported()) {
       // Start safe mode immediately. Otherwise it should only start when a
       // scene is connected and activates to allow displaying the safe mode UI.
       [self startSafeMode];
     }
     return;
   }
+
+  // TODO(crbug.com/1178809): Move the logic below to a Final Init Stage agent
+  // to make sure that the logic is only executed when getting out of safe mode.
 
   // Don't add code here. Add it in MainController's
   // -startUpBrowserForegroundInitialization.
@@ -690,6 +710,41 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 
   // Start recording info about this session.
   [[PreviousSessionInfo sharedInstance] beginRecordingCurrentSession];
+}
+
+// Advances to the next init stage.
+- (void)advanceToNextInitStage {
+  // The app is done with all init stages, nothing to do.
+  if (self.initStage == InitStageFinal)
+    return;
+
+  InitStage newInitStage = static_cast<InitStage>(self.initStage + 1);
+
+  [self.observers appState:self willTransitionToInitStage:newInitStage];
+  self.initStage = newInitStage;
+  [self.observers appState:self didTransitionToInitStage:self.initStage];
+}
+
+// Starts the transition through init stages.
+- (void)startInitStages {
+  __weak AppState* weakSelf = self;
+  [_stageQueue addObject:(^{
+                 [weakSelf.observers appState:weakSelf
+                     willTransitionToInitStage:InitStageStart];
+                 [weakSelf.observers appState:weakSelf
+                     didTransitionToInitStage:InitStageStart];
+               })];
+  [self executeInitStageQueue];
+}
+
+// Executes the blocks in the init stage queue until the queue is empty. This
+// will also execute the new blocks that are queued on the fly.
+- (void)executeInitStageQueue {
+  while ([_stageQueue count] > 0) {
+    void (^stageBlock)() = [_stageQueue objectAtIndex:0];
+    stageBlock();
+    [_stageQueue removeObjectAtIndex:0];
+  }
 }
 
 #pragma mark - UIBlockerManager
@@ -734,6 +789,9 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
         // Safe mode can only be started when there's a window, so the actual
         // safe mode has been postponed until now.
         [self startSafeMode];
+      } else {
+        [MetricsMediator logStartupDuration:self.startupInformation
+                      connectionInformation:sceneState.controller];
       }
     }
     sceneState.presentingModalOverlay =
@@ -742,7 +800,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 }
 
 - (void)sceneWillConnect:(NSNotification*)notification {
-  DCHECK(IsSceneStartupSupported());
+  DCHECK(base::ios::IsSceneStartupSupported());
   if (@available(iOS 13, *)) {
     UIWindowScene* scene =
         base::mac::ObjCCastStrict<UIWindowScene>(notification.object);

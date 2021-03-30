@@ -27,6 +27,7 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/switches.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/display/display_switches.h"
@@ -215,6 +216,7 @@ class TouchSelectionControllerClientAuraCAPFeatureTest
                                         ? switches::kEnableBlinkFeatures
                                         : switches::kDisableBlinkFeatures,
                                     "CompositeAfterPaint");
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 };
 
@@ -377,7 +379,7 @@ class TouchSelectionControllerClientAuraSiteIsolationTest
     aura::Window* shell_window = shell()->window();
     aura::Window* content_window = view->GetNativeView();
     aura::Window::ConvertPointToTarget(content_window, shell_window, &point);
-    ui::EventSink* sink = content_window->GetHost()->event_sink();
+    ui::EventSink* sink = content_window->GetHost()->GetEventSink();
     ui::TouchEvent touch(type, point, ui::EventTimeForNow(),
                          ui::PointerDetails(ui::EventPointerType::kTouch, 0));
     ui::EventDispatchDetails details = sink->OnEventFromSource(&touch);
@@ -911,6 +913,7 @@ class TouchSelectionControllerClientAuraScaleFactorCAPFeatureTest
                                         ? switches::kEnableBlinkFeatures
                                         : switches::kDisableBlinkFeatures,
                                     "CompositeAfterPaint");
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 };
 

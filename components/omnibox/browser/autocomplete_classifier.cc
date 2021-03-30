@@ -69,7 +69,7 @@ int AutocompleteClassifier::DefaultOmniboxProviders() {
 }
 
 void AutocompleteClassifier::Classify(
-    const base::string16& text,
+    const std::u16string& text,
     bool prefer_keyword,
     bool allow_exact_keyword_match,
     metrics::OmniboxEventProto::PageClassification page_classification,

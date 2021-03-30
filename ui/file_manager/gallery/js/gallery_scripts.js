@@ -13,6 +13,8 @@
 // <include src="../../file_manager/foreground/js/metrics_start.js">
 
 // <include src="../../file_manager/common/js/lru_cache.js">
+// <include src="../../file_manager/common/js/storage_adapter.js">
+// <include src="../../file_manager/common/js/xfm.js">
 // <include src="../../image_loader/load_image_request.js">
 // <include src="../../image_loader/image_loader_client.js">
 
@@ -44,12 +46,12 @@
 
 // <include src="../../file_manager/common/js/async_util.js">
 // <include src="../../file_manager/common/js/file_type.js">
-// <include src="../../base/js/app_util.js">
+// <include src="../../file_manager/common/js/app_util.js">
 
 /* TODO(tapted): Remove the util.js dependency */
 // <include src="../../file_manager/common/js/util.js">
 
-// <include src="../../base/js/volume_manager_types.js">
+// <include src="../../file_manager/common/js/volume_manager_types.js">
 // <include
 // src="../../file_manager/foreground/js/metadata/content_metadata_provider.js">
 // <include src="../../file_manager/foreground/js/metadata/exif_constants.js">
@@ -69,7 +71,7 @@
 // src="../../file_manager/foreground/js/ui/file_manager_dialog_base.js">
 // <include src="../../file_manager/foreground/js/ui/files_alert_dialog.js">
 // <include src="../../file_manager/foreground/js/ui/files_confirm_dialog.js">
-// <include src="../../base/js/filtered_volume_manager.js">
+// <include src="../../file_manager/common/js/filtered_volume_manager.js">
 
 // <include src="image_editor/image_util.js">
 // <include src="image_editor/viewport.js">

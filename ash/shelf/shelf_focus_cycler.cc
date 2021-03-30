@@ -15,7 +15,6 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_delegate.h"
 #include "ash/system/tray/system_tray_notifier.h"
-#include "chromeos/constants/chromeos_switches.h"
 
 namespace ash {
 

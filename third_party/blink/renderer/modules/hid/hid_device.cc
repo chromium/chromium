@@ -43,10 +43,10 @@ Vector<uint8_t> ConvertBufferSource(
                   base::checked_cast<wtf_size_t>(
                       buffer.GetAsArrayBuffer()->ByteLength()));
   } else {
-    vector.Append(static_cast<uint8_t*>(
-                      buffer.GetAsArrayBufferView().View()->BaseAddress()),
-                  base::checked_cast<wtf_size_t>(
-                      buffer.GetAsArrayBufferView().View()->byteLength()));
+    vector.Append(
+        static_cast<uint8_t*>(buffer.GetAsArrayBufferView()->BaseAddress()),
+        base::checked_cast<wtf_size_t>(
+            buffer.GetAsArrayBufferView()->byteLength()));
   }
   return vector;
 }
@@ -184,6 +184,7 @@ HIDCollectionInfo* ToHIDCollectionInfo(
   HIDCollectionInfo* result = HIDCollectionInfo::Create();
   result->setUsage(collection.usage->usage);
   result->setUsagePage(collection.usage->usage_page);
+  result->setType(collection.collection_type);
 
   HeapVector<Member<HIDReportInfo>> input_reports;
   for (const auto& report : collection.input_reports)
@@ -319,7 +320,7 @@ ScriptPromise HIDDevice::sendReport(ScriptState* script_state,
 
   size_t data_size = data.IsArrayBuffer()
                          ? data.GetAsArrayBuffer()->ByteLength()
-                         : data.GetAsArrayBufferView().View()->byteLength();
+                         : data.GetAsArrayBufferView()->byteLength();
 
   if (!base::CheckedNumeric<wtf_size_t>(data_size).IsValid()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -352,7 +353,7 @@ ScriptPromise HIDDevice::sendFeatureReport(
 
   size_t data_size = data.IsArrayBuffer()
                          ? data.GetAsArrayBuffer()->ByteLength()
-                         : data.GetAsArrayBufferView().View()->byteLength();
+                         : data.GetAsArrayBufferView()->byteLength();
 
   if (!base::CheckedNumeric<wtf_size_t>(data_size).IsValid()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -504,8 +505,14 @@ HIDReportItem* HIDDevice::ToHIDReportItem(
   HIDReportItem* result = HIDReportItem::Create();
   result->setIsAbsolute(!report_item.is_relative);
   result->setIsArray(!report_item.is_variable);
+  result->setIsBufferedBytes(report_item.is_buffered_bytes);
+  result->setIsConstant(report_item.is_constant);
+  result->setIsLinear(!report_item.is_non_linear);
   result->setIsRange(report_item.is_range);
+  result->setIsVolatile(report_item.is_volatile);
   result->setHasNull(report_item.has_null_position);
+  result->setHasPreferredState(!report_item.no_preferred_state);
+  result->setWrap(report_item.wrap);
   result->setReportSize(report_item.report_size);
   result->setReportCount(report_item.report_count);
   result->setUnitExponent(

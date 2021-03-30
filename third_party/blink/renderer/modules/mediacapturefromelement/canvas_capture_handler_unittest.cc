@@ -11,7 +11,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_capturer_source.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
@@ -20,6 +19,7 @@
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "ui/gfx/geometry/size.h"
 
 using base::test::RunOnceClosure;
 using ::testing::_;
@@ -53,7 +53,7 @@ class CanvasCaptureHandlerTest
     MediaStreamComponent* component = nullptr;
     canvas_capture_handler_ = CanvasCaptureHandler::CreateCanvasCaptureHandler(
         /*LocalFrame =*/nullptr,
-        blink::WebSize(kTestCanvasCaptureWidth, kTestCanvasCaptureHeight),
+        gfx::Size(kTestCanvasCaptureWidth, kTestCanvasCaptureHeight),
         kTestCanvasCaptureFramesPerSecond,
         blink::scheduler::GetSingleThreadTaskRunnerForTesting(), &component);
     component_ = component;
@@ -71,8 +71,10 @@ class CanvasCaptureHandlerTest
   // Necessary callbacks and MOCK_METHODS for VideoCapturerSource.
   MOCK_METHOD2(DoOnDeliverFrame,
                void(scoped_refptr<media::VideoFrame>, base::TimeTicks));
-  void OnDeliverFrame(scoped_refptr<media::VideoFrame> video_frame,
-                      base::TimeTicks estimated_capture_time) {
+  void OnDeliverFrame(
+      scoped_refptr<media::VideoFrame> video_frame,
+      std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
+      base::TimeTicks estimated_capture_time) {
     DoOnDeliverFrame(std::move(video_frame), estimated_capture_time);
   }
 
@@ -93,11 +95,13 @@ class CanvasCaptureHandlerTest
         SkImage::MakeFromBitmap(testBitmap));
   }
 
-  void OnVerifyDeliveredFrame(bool opaque,
-                              int expected_width,
-                              int expected_height,
-                              scoped_refptr<media::VideoFrame> video_frame,
-                              base::TimeTicks estimated_capture_time) {
+  void OnVerifyDeliveredFrame(
+      bool opaque,
+      int expected_width,
+      int expected_height,
+      scoped_refptr<media::VideoFrame> video_frame,
+      std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
+      base::TimeTicks estimated_capture_time) {
     if (opaque)
       EXPECT_EQ(media::PIXEL_FORMAT_I420, video_frame->format());
     else

@@ -1,0 +1,41 @@
+This is a testharness.js-based test.
+FAIL Async iterator instances should have the correct list of properties s.values is not a function
+FAIL Async-iterating a push source promise_test: Unhandled rejection with value: object "TypeError: s is not async iterable"
+FAIL Async-iterating a pull source promise_test: Unhandled rejection with value: object "TypeError: s is not async iterable"
+FAIL Async-iterating a push source with undefined values promise_test: Unhandled rejection with value: object "TypeError: s is not async iterable"
+FAIL Async-iterating a pull source with undefined values promise_test: Unhandled rejection with value: object "TypeError: s is not async iterable"
+FAIL Async-iterating a pull source manually promise_test: Unhandled rejection with value: object "TypeError: s.values is not a function"
+FAIL Async-iterating an errored stream throws assert_equals: expected (string) "e" but got (object) object "TypeError: s is not async iterable"
+FAIL Async-iterating a closed stream never executes the loop body, but works fine promise_test: Unhandled rejection with value: object "TypeError: s is not async iterable"
+FAIL Async-iterating an empty but not closed/errored stream never executes the loop body and stalls the async function promise_test: Unhandled rejection with value: object "TypeError: s is not async iterable"
+FAIL Async-iterating a partially consumed stream promise_test: Unhandled rejection with value: object "TypeError: s is not async iterable"
+FAIL Cancellation behavior when throwing inside loop body; preventCancel = false assert_array_equals: cancel() should be called lengths differ, expected array ["pull", "cancel", undefined] length 3, got [] length 0
+FAIL Cancellation behavior when throwing inside loop body; preventCancel = true assert_array_equals: cancel() should not be called lengths differ, expected array ["pull"] length 1, got [] length 0
+FAIL Cancellation behavior when breaking inside loop body; preventCancel = false assert_array_equals: cancel() should be called lengths differ, expected array ["pull", "cancel", undefined] length 3, got [] length 0
+FAIL Cancellation behavior when breaking inside loop body; preventCancel = true assert_array_equals: cancel() should not be called lengths differ, expected array ["pull"] length 1, got [] length 0
+FAIL Cancellation behavior when returning inside loop body; preventCancel = false assert_array_equals: cancel() should be called lengths differ, expected array ["pull", "cancel", undefined] length 3, got [] length 0
+FAIL Cancellation behavior when returning inside loop body; preventCancel = true assert_array_equals: cancel() should not be called lengths differ, expected array ["pull"] length 1, got [] length 0
+FAIL Cancellation behavior when manually calling return(); preventCancel = false promise_test: Unhandled rejection with value: object "TypeError: s.values is not a function"
+FAIL Cancellation behavior when manually calling return(); preventCancel = true promise_test: Unhandled rejection with value: object "TypeError: s.values is not a function"
+FAIL next() rejects if the stream errors promise_test: Unhandled rejection with value: object "TypeError: s[Symbol.asyncIterator] is not a function"
+FAIL return() does not rejects if the stream has not errored yet promise_test: Unhandled rejection with value: object "TypeError: s[Symbol.asyncIterator] is not a function"
+FAIL return() rejects if the stream has errored promise_test: Unhandled rejection with value: object "TypeError: s[Symbol.asyncIterator] is not a function"
+FAIL next() that succeeds; next() that reports an error; next() promise_test: Unhandled rejection with value: object "TypeError: s[Symbol.asyncIterator] is not a function"
+FAIL next() that succeeds; next() that reports an error(); next() [no awaiting] promise_test: Unhandled rejection with value: object "TypeError: s[Symbol.asyncIterator] is not a function"
+FAIL next() that succeeds; next() that reports an error(); return() promise_test: Unhandled rejection with value: object "TypeError: s[Symbol.asyncIterator] is not a function"
+FAIL next() that succeeds; next() that reports an error(); return() [no awaiting] promise_test: Unhandled rejection with value: object "TypeError: s[Symbol.asyncIterator] is not a function"
+FAIL next() that succeeds; return() promise_test: Unhandled rejection with value: object "TypeError: s[Symbol.asyncIterator] is not a function"
+FAIL next() that succeeds; return() [no awaiting] promise_test: Unhandled rejection with value: object "TypeError: s[Symbol.asyncIterator] is not a function"
+FAIL return(); next() promise_test: Unhandled rejection with value: object "TypeError: rs.values is not a function"
+FAIL return(); next() [no awaiting] promise_test: Unhandled rejection with value: object "TypeError: rs.values is not a function"
+FAIL return(); return() promise_test: Unhandled rejection with value: object "TypeError: rs.values is not a function"
+FAIL return(); return() [no awaiting] promise_test: Unhandled rejection with value: object "TypeError: rs.values is not a function"
+FAIL values() throws if there's already a lock s.values is not a function
+FAIL Acquiring a reader after exhaustively async-iterating a stream promise_test: Unhandled rejection with value: object "TypeError: s is not async iterable"
+FAIL Acquiring a reader after return()ing from a stream that errors promise_test: Unhandled rejection with value: object "TypeError: s[Symbol.asyncIterator] is not a function"
+FAIL Acquiring a reader after partially async-iterating a stream promise_test: Unhandled rejection with value: object "TypeError: s is not async iterable"
+FAIL Acquiring a reader and reading the remaining chunks after partially async-iterating a stream with preventCancel = true promise_test: Unhandled rejection with value: object "TypeError: s.values(...) is not a function or its return value is not async iterable"
+FAIL return() should unlock the stream synchronously when preventCancel = false rs.values is not a function
+FAIL return() should unlock the stream synchronously when preventCancel = true rs.values is not a function
+Harness: the test ran to completion.
+

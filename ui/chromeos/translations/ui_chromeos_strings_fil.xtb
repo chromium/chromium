@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">Hindi nagagamit ang file o ang direktoryo.</translation>
 <translation id="1363028406613469049">Track</translation>
 <translation id="1378727793141957596">Maligayang pagdating sa Google Drive!</translation>
+<translation id="1379911846207762492">Puwede mong gawing available offline ang mga file para ma-access ang mga ito kapag wala kang koneksyon sa internet.</translation>
 <translation id="1383876407941801731">Hanapin</translation>
 <translation id="1395262318152388157">Slider ng seek bar</translation>
 <translation id="1404323374378969387">Norwegian</translation>
@@ -76,6 +77,7 @@
 <translation id="1807938677607439181">Lahat ng file</translation>
 <translation id="1810764548349082891">Walang available na preview</translation>
 <translation id="1812302367230252929">Amharic Transliteration</translation>
+<translation id="1813278315230285598">Services</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Mag-ingat:<ph name="END_BOLD" /> Ang mga file na ito ay pansamantala at maaaring awtomatikong tanggalin upang magbakante ng espasyo sa disk.  <ph name="BEGIN_LINK" />Matuto Pa<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Penguin</translation>
 <translation id="183183971458492120">Nilo-load ang impormasyon...</translation>
@@ -85,13 +87,14 @@
 <translation id="1853795129690976061">Nakabahagi ang folder na ito sa Linux</translation>
 <translation id="1864756863218646478">Hindi mahanap ang file.</translation>
 <translation id="1920670151694390848">Malayalam Transliteration</translation>
+<translation id="1920798810075583923">Pakwan</translation>
 <translation id="1924372192547904021">Na-format ang <ph name="DRIVE_NAME" /></translation>
 <translation id="1931134289871235022">Slovak</translation>
 <translation id="1933345018156373194">Hindi nailipat, nagkaroon ng hindi inaasahang error: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Finnish</translation>
 <translation id="1942765061641586207">Resolution ng larawan</translation>
-<translation id="1943097386230153518">Mag-install ng bagong serbisyo</translation>
 <translation id="1972984168337863910">I-expand ang mga panel ng feedback ng mga file</translation>
+<translation id="1984456723671657197">Hindi sinusuportahan ang ganitong uri ng file. <ph name="BEGIN_LINK_HELP" />Matuto Pa<ph name="END_LINK_HELP" /> tungkol sa pagbubukas ng mga file sa Chrome OS.</translation>
 <translation id="1995337122023280937">Pumunta sa lokasyon ng file</translation>
 <translation id="2001796770603320721">Pamahalaan sa Drive</translation>
 <translation id="2009067268969781306">Kapag nag-format ng drive, made-delete ang lahat ng data na naka-store doon. Hindi puwedeng i-undo ang pagkilos na ito.</translation>
@@ -118,6 +121,7 @@
 <translation id="2288278176040912387">Record player</translation>
 <translation id="2291538123825441971">Binubuksan ang <ph name="NUMBER_OF_FILES" /> (na) file.</translation>
 <translation id="2303301624314357662">Binubuksan ang file na <ph name="FILE_NAME" />.</translation>
+<translation id="2304820083631266885">Planeta</translation>
 <translation id="2305020378527873881">Na-eject ang <ph name="VOLUME_NAME" />.</translation>
 <translation id="2325650632570794183">Hindi sinusuportahan ang uri ng file na ito. Pakibisita ang Chrome Web Store upang makahanap ng app na makakapagbukas ng ganitong uri ng file.</translation>
 <translation id="2326539130272988168">Bulgarian</translation>
@@ -142,7 +146,6 @@
 <translation id="255937426064304553">US international</translation>
 <translation id="2562685439590298522">Docs</translation>
 <translation id="2563185590376525700">Palaka</translation>
-<translation id="2572501073504669105">Puwede mong gawing available offline ang mga file para ma-access ang mga ito kapag wala kang koneksyon sa internet.</translation>
 <translation id="2578394532502990878">Tamil Phonetic</translation>
 <translation id="2579959351793446050">Odia</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> na video</translation>
@@ -186,6 +189,7 @@
 <translation id="299638574917407533">French (Canada)</translation>
 <translation id="3003633581067744647">Lumipat sa thumbnail view</translation>
 <translation id="3007214526293698309">Itakda ang ratio</translation>
+<translation id="3029114385395636667">I-enable ang Google Docs Offline para gumawa ng Docs, Sheets, at Slides na available offline.</translation>
 <translation id="303198083543495566">Heograpiya</translation>
 <translation id="3047197340186497470">Chinese Dayi</translation>
 <translation id="3057861065630527966">I-back up ang iyong mga larawan at video</translation>
@@ -216,14 +220,17 @@
 <translation id="3335337277364016868">Taon kung kailan na-record</translation>
 <translation id="3353984535370177728">Pumili ng folder na i-a-upload</translation>
 <translation id="3356580349448036450">Kumpleto na</translation>
+<translation id="3358452157379365236">Gitara</translation>
 <translation id="3382143449143186018">Nepali na may InScript keyboard</translation>
 <translation id="3408236822532681288">German (Germany) na may Neo 2 keyboard</translation>
 <translation id="3414856743105198592">Buburahin ng pag-format sa naaalis na media ang lahat ng data. Nais mo bang magpatuloy?</translation>
 <translation id="3437801641691368414">Oras ng pagkakagawa</translation>
+<translation id="343907260260897561">Instant Camera</translation>
 <translation id="3455931012307786678">Estonian</translation>
 <translation id="3466147780910026086">Sina-scan ang iyong media device...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> (na) larawan ang na-back up sa <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="3475447146579922140">Spreadsheet ng Google</translation>
+<translation id="3479552764303398839">Hindi ngayon</translation>
 <translation id="3486821258960016770">Mongolian</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> (na) error.</translation>
 <translation id="3522708245912499433">Portuguese</translation>
@@ -233,6 +240,7 @@
 <translation id="3553048479571901246">Para makapagbukas ng mga file gamit ang <ph name="APP_NAME" />, kopyahin muna ang mga ito sa folder ng mga Windows file.</translation>
 <translation id="3556731189587832921">English (US) na may International PC keyboard</translation>
 <translation id="357479282490346887">Lithuanian</translation>
+<translation id="3592251141500063301">Hindi magawang available offline ang <ph name="FILE_NAME" /></translation>
 <translation id="3603385196401704894">Canadian French</translation>
 <translation id="3606220979431771195">Turkish-F</translation>
 <translation id="3616113530831147358">Audio</translation>
@@ -279,6 +287,7 @@
 <translation id="4124935795427217608">Unicorn</translation>
 <translation id="4158739975813877944">Buksan ang play list</translation>
 <translation id="4159731583141908892">Inilipat ang <ph name="FILE_NAME" />.</translation>
+<translation id="4186579485882418952">I-enable ang Offline</translation>
 <translation id="4193154014135846272">Dokumento ng Google</translation>
 <translation id="4197674956721858839">Pagpili ng zip</translation>
 <translation id="4202378258276439759">Spanish (Latin America)</translation>
@@ -292,6 +301,7 @@
 <translation id="4309915981827077375">Pangkalahatang impormasyon</translation>
 <translation id="432252891123397018">Romanian na may Standard keyboard</translation>
 <translation id="4325128273762811722">Slovenian</translation>
+<translation id="4326142238881453352">Botanist</translation>
 <translation id="4326192123064055915">Kape</translation>
 <translation id="4336032328163998280">Nabigo ang pagkopya. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">Sorani Kurdish na may Arabic-based keyboard</translation>
@@ -327,7 +337,6 @@
 <translation id="4706042980341760088">Tamil na may Typewriter keyboard</translation>
 <translation id="4711094779914110278">Turkish</translation>
 <translation id="4712283082407695269">Binubuksan ang "<ph name="PATH" />"</translation>
-<translation id="4713544552769165154">Idinisenyo ang file na ito para sa computer na gumagamit ng Macintosh software. Hindi ito tugma sa iyong device na nagpapatakbo ng Chrome OS. Mangyaring maghanap sa <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> para sa isang naaangkop na pamalit na app. <ph name="BEGIN_LINK_HELP" />Matuto Pa<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> (na) larawan ang na-back up</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4732760563705710320">Paumanhin, hindi sinusuportahan ang video na ito ng iyong cast device.</translation>
@@ -391,6 +400,7 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Huwag munang alisin ang iyong device!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Maaaring magsanhi ng pagkawala ng data ang pag-aalis sa iyong device habang ginagamit ito.  Mangyaring maghintay hanggang matapos ang operasyon, pagkatapos ay i-eject ang device gamit ang Files app.</translation>
+<translation id="5159560892333415631">Alisin ang laman ng Trash</translation>
 <translation id="5163869187418756376">Nabigo ang pagbabahagi. Suriin ang iyong koneksyon at subukang muli sa ibang pagkakataon.</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
 <translation id="5170477580121653719">Natitirang espasyo sa Google Drive: <ph name="SPACE_AVAILABLE" />.</translation>
@@ -408,7 +418,9 @@
     <ph name="MARKUP_7" />Magbahagi, gumawa at mag-collaborate<ph name="MARKUP_8" />
     sa mga file kasama ng iba pa, lahat sa iisang lugar.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Mga nabawing file mula sa Google Drive</translation>
+<translation id="5288441970121584418">Burger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
+<translation id="5299998344490869684">Sigurado ka bang gusto mong alisin ang laman ng Trash?</translation>
 <translation id="5317780077021120954">I-save</translation>
 <translation id="5318819489018851358">Ibahagi sa Linux</translation>
 <translation id="5323213332664049067">Latin American</translation>
@@ -461,8 +473,6 @@
 <translation id="5833610766403489739">Nawala ang file na ito. Pakitingnan ang iyong setting ng lokasyon ng pag-download at subukan ulit.</translation>
 <translation id="5838451609423551646">Inalis ang lahat ng entry sa pagpipilian.</translation>
 <translation id="5838825566232597749">US Workman international</translation>
-<translation id="5850516540536751549">Hindi sinusuportahan ang uri ng file na ito. Pakibisita ang <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> upang maghanap ng app na makakapagbukas sa ganitong uri ng file.
-    <ph name="BEGIN_LINK_HELP" />Matuto Pa<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Walang itong laman...</translation>
 <translation id="5911887972742538906">Nagkaroon ng error habang ini-install ang iyong Linux application.</translation>
 <translation id="5912396950572065471">Format</translation>
@@ -500,10 +510,12 @@
 <translation id="6248400709929739064">I-enable ang mga subtitle</translation>
 <translation id="6269630227984243955">Malay</translation>
 <translation id="6287852322318138013">Pumili ng isang app upang buksan ang file na ito</translation>
+<translation id="6321303798550928047">Kumakaway</translation>
 <translation id="6339145975392024142">US international (PC)</translation>
 <translation id="6346310558342052870">Pinaghihigpitan ang access</translation>
 <translation id="6356685157277930264">Window ng feedback ng mga file</translation>
 <translation id="6358884629796491903">Dragon</translation>
+<translation id="6367976544441405720">Van</translation>
 <translation id="637062427944097960">Ang file na ito na binuksan sa ibang desktop. Ilipat sa <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) upang tingnan ito.</translation>
 <translation id="6394388407447716302">Read-only</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> (na) item</translation>
@@ -527,6 +539,7 @@
 <translation id="6650726141019353908">Pink na paru-paro</translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="6673674183150363784">French (France) na may Bépo keyboard</translation>
+<translation id="6710022688720561421">Robot</translation>
 <translation id="6710213216561001401">Nauna</translation>
 <translation id="6751256176799620176">1 folder ang napili</translation>
 <translation id="6790428901817661496">I-play</translation>
@@ -560,6 +573,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6970230597523682626">Bulgarian</translation>
 <translation id="6973630695168034713">Mga Folder</translation>
+<translation id="6976795442547527108">Leon</translation>
 <translation id="6978611942794658017">Idinisenyo ang file na ito para sa isang PC na gumagamit ng Windows software. Hindi ito tugma sa iyong device na nagpapatakbo ng Chrome OS. Mangyaring maghanap sa Chrome Web Store ng naaangkop na pamalit na app.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Swedish</translation>
@@ -606,6 +620,7 @@
 <translation id="7532029025027028521">Persian Transliteration</translation>
 <translation id="7544830582642184299">Bigyan ang mga Linux app ng pahintulot na ma-access ang mga file sa iyong Google Drive. Masi-sync sa iba mo pang device ang mga pagbabago.</translation>
 <translation id="7544853251252956727">I-shuffle</translation>
+<translation id="7547009467130558110">Sneaker</translation>
 <translation id="7547780573915868306">Lithuanian</translation>
 <translation id="7547811415869834682">Dutch</translation>
 <translation id="7551643184018910560">I-pin sa shelf</translation>
@@ -620,6 +635,7 @@
 <translation id="7628656427739290098">Kumpleto na nang <ph name="PERCENT" />%.</translation>
 <translation id="7649070708921625228">Tulong</translation>
 <translation id="7654209398114106148">Inililipat ang <ph name="NUMBER_OF_ITEMS" /> (na) item...</translation>
+<translation id="7655441028674523381">Madaling i-access ang Google Photos</translation>
 <translation id="7658239707568436148">Kanselahin</translation>
 <translation id="7663224033570512922">Hindi</translation>
 <translation id="7693909743393669729">Kapag nag-format ng drive, mabubura ang lahat ng data na naka-store dito at maaalis ang lahat ng kasalukuyang partition, kasama ang mga partition na posibleng hindi nakikita. Hindi maa-undo ang pagkilos na ito.</translation>
@@ -651,7 +667,6 @@
 <translation id="7839804798877833423">Ang pagkuha sa mga file na ito ay gagamit ng humigit-kumulang <ph name="FILE_SIZE" /> (na) mobile data.</translation>
 <translation id="7846076177841592234">Kanselahin ang pinili</translation>
 <translation id="7853966320808728790">French na BÉPO</translation>
-<translation id="7864662577698025113">Magdagdag ng bagong serbisyo</translation>
 <translation id="7868774406711971383">Polish</translation>
 <translation id="7873831373602885875">Hindi maaaring mag-save sa <ph name="FOLDER_NAME" />. Mase-save ang lahat ng pag-edit sa <ph name="DOWNLOADS_FOLDER" /> sa folder na Mga Download.</translation>
 <translation id="7874321682039004450">Filipino</translation>
@@ -666,13 +681,13 @@
 <translation id="7972920761225148017">French (Switzerland)</translation>
 <translation id="7980421588063892270">English (US) na may Colemak keyboard</translation>
 <translation id="7982283708762922719">Taas</translation>
+<translation id="79907182588096956">Idinisenyo ang file na ito para sa isang PC na gumagamit ng Windows software. Hindi ito compatible sa iyong device na gumagamit ng Chrome OS. <ph name="BEGIN_LINK_HELP" />Matuto Pa<ph name="END_LINK_HELP" /> tungkol sa pagbubukas ng mga file sa Chrome OS.</translation>
 <translation id="8008366997883261463">Aso</translation>
 <translation id="8028993641010258682">Laki</translation>
 <translation id="803771048473350947">File</translation>
 <translation id="8038111231936746805">(default)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> na audio</translation>
 <translation id="8045462269890919536">Romanian</translation>
-<translation id="8052887694493382350">Idinisenyo ang file na ito para sa PC na gumagamit ng Windows software. Hindi ito compatible sa iyong device na tumatakbo sa Chrome OS. <ph name="BEGIN_LINK_HELP" />Matuto Pa<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Mase-save ang lahat ng pag-edit sa <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Ulitin</translation>
 <translation id="8106045200081704138">Ibinahagi sa akin</translation>
@@ -712,6 +727,7 @@
 <translation id="8466234950814670489">Archive na Tar</translation>
 <translation id="8475647382427415476">Hindi na-sync ng Google Drive ang "<ph name="FILENAME" />" sa ngayon. Susubukang muli ng Google Drive sa ibang pagkakataon.</translation>
 <translation id="8477649328507734757">Spin</translation>
+<translation id="8484284835977497781">Pumili sa iyong mga kamakailang larawan.</translation>
 <translation id="8487700953926739672">Available sa offline</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="8525306231823319788">Buong screen</translation>
@@ -744,8 +760,10 @@
 <translation id="8860454412039442620">Spreadsheet ng Excel</translation>
 <translation id="8866284467018526531">Arabic Transliteration</translation>
 <translation id="8900820606136623064">Hungarian</translation>
+<translation id="8903931173357132290">Nagtapos</translation>
 <translation id="8919081441417203123">Danish</translation>
 <translation id="8965697826696209160">Walang sapat na espasyo.</translation>
+<translation id="8970501467542182729">Idinisenyo ang file na ito para sa isang computer na gumagamit ng Macintosh software. Hindi ito compatible sa iyong device na gumagamit ng Chrome OS. <ph name="BEGIN_LINK_HELP" />Matuto Pa<ph name="END_LINK_HELP" /> tungkol sa pagbubukas ng mga file sa Chrome OS.</translation>
 <translation id="8997962250644902079">Chinese (Traditional) Pinyin</translation>
 <translation id="9017798300203431059">Russian phonetic</translation>
 <translation id="9034924485347205037">Mga Linux file</translation>
@@ -767,6 +785,7 @@
 <translation id="9154418932169119429">Hindi available offline ang larawang ito.</translation>
 <translation id="9172592259078059678">Gujarati Transliteration</translation>
 <translation id="9173120999827300720">English (US) na may International keyboard</translation>
+<translation id="9174050671906956834">Tuluyang made-delete ang mga item sa trash pagkalipas ng 30 araw.</translation>
 <translation id="9189836632794948435">Kazakh</translation>
 <translation id="9213073329713032541">Matagumpay na nasimulan ang pag-install.</translation>
 <translation id="9219103736887031265">Mga Larawan</translation>

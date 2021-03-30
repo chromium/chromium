@@ -22,6 +22,7 @@ TEST(AXEventMojomTraitsTest, RoundTrip) {
   input.event_type = ax::mojom::Event::kTextChanged;
   input.id = 111;
   input.event_from = ax::mojom::EventFrom::kUser;
+  input.event_from_action = ax::mojom::Action::kDoDefault;
   ui::AXEventIntent editing_intent;
   editing_intent.command = ax::mojom::Command::kDelete;
   editing_intent.input_event_type =
@@ -40,6 +41,7 @@ TEST(AXEventMojomTraitsTest, RoundTrip) {
   EXPECT_EQ(ax::mojom::Event::kTextChanged, output.event_type);
   EXPECT_EQ(111, output.id);
   EXPECT_EQ(ax::mojom::EventFrom::kUser, output.event_from);
+  EXPECT_EQ(ax::mojom::Action::kDoDefault, output.event_from_action);
   EXPECT_THAT(output.event_intents, testing::ContainerEq(event_intents));
   EXPECT_EQ(222, output.action_request_id);
 }

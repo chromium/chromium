@@ -543,6 +543,8 @@ void CueTimeline::DidMoveToNewDocument(Document& /*old_document*/) {
 
 void CueTimeline::Trace(Visitor* visitor) const {
   visitor->Trace(media_element_);
+  visitor->Trace(cue_event_timer_);
+  visitor->Trace(cue_timestamp_event_timer_);
 }
 
 }  // namespace blink

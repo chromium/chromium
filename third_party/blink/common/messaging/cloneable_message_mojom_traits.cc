@@ -24,7 +24,7 @@ bool StructTraits<blink::mojom::CloneableMessage::DataView,
   if (!data.ReadEncodedMessage(&message_view) || !data.ReadBlobs(&out->blobs) ||
       !data.ReadLockedAgentClusterId(&locked_agent_cluster_id) ||
       !data.ReadSenderOrigin(&out->sender_origin) ||
-      !data.ReadNativeFileSystemTokens(&out->native_file_system_tokens)) {
+      !data.ReadFileSystemAccessTokens(&out->file_system_access_tokens)) {
     return false;
   }
 

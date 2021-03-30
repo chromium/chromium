@@ -7,13 +7,13 @@
 #include <utility>
 
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
-#include "content/browser/cache_storage/cache_storage_manager.h"
-#include "content/browser/cache_storage/legacy/legacy_cache_storage_manager.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/test/mock_quota_manager.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"
@@ -32,17 +32,29 @@ class MockBGFQuotaManagerProxy : public storage::MockQuotaManagerProxy {
 
   // Ignore quota client, it is irrelevant for these tests.
   void RegisterClient(
+      mojo::PendingRemote<storage::mojom::QuotaClient> client,
+      storage::QuotaClientType client_type,
+      const std::vector<blink::mojom::StorageType>& storage_types) override {}
+  void RegisterLegacyClient(
       scoped_refptr<storage::QuotaClient> client,
       storage::QuotaClientType client_type,
       const std::vector<blink::mojom::StorageType>& storage_types) override {}
 
-  void GetUsageAndQuota(base::SequencedTaskRunner* original_task_runner,
-                        const url::Origin& origin,
-                        blink::mojom::StorageType type,
-                        UsageAndQuotaCallback callback) override {
-    DCHECK(original_task_runner);
-    std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk, /* usage= */ 0,
-                            kBackgroundFetchMaxQuotaBytes);
+  void GetUsageAndQuota(
+      const url::Origin& origin,
+      blink::mojom::StorageType type,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      UsageAndQuotaCallback callback) override {
+    DCHECK(callback_task_runner);
+
+    // While this DCHECK is true, the PostTask() below isn't strictly necessary.
+    // The callback could be Run() directly.
+    DCHECK(callback_task_runner->RunsTasksInCurrentSequence());
+
+    callback_task_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), blink::mojom::QuotaStatusCode::kOk,
+                       /* usage= */ 0, kBackgroundFetchMaxQuotaBytes));
   }
 
  protected:
@@ -55,11 +67,10 @@ BackgroundFetchTestDataManager::BackgroundFetchTestDataManager(
     BrowserContext* browser_context,
     StoragePartition* storage_partition,
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context)
-    : BackgroundFetchDataManager(
-          browser_context,
-          service_worker_context,
-          storage_partition->GetCacheStorageContextImplForTesting(),  // IN-TEST
-          /* quota_manager_proxy= */ nullptr),
+    : BackgroundFetchDataManager(browser_context,
+                                 storage_partition,
+                                 service_worker_context,
+                                 /* quota_manager_proxy= */ nullptr),
       browser_context_(browser_context),
       storage_partition_(storage_partition) {}
 
@@ -90,8 +101,8 @@ void BackgroundFetchTestDataManager::InitializeOnCoreThread() {
   mojo::PendingRemote<storage::mojom::BlobStorageContext> remote;
 
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  base::PostTaskAndReply(
-      FROM_HERE, {BrowserThread::IO},
+  GetIOThreadTaskRunner({})->PostTaskAndReply(
+      FROM_HERE,
       base::BindOnce(&ChromeBlobStorageContext::BindMojoContext,
                      blob_storage_context_,
                      remote.InitWithNewPipeAndPassReceiver()),

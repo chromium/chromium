@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
 <translation id="1282031177488366470">Bidra till att förbättra Chromes funktioner och prestanda</translation>
+<translation id="1314663809820920746">Bokmärken, lösenord, historik och andra inställningar finns fortfarande kvar på enheten. Om du ändrar något synkroniseras inte detta med Google-kontot.</translation>
 <translation id="1479202195792305274">Chrome kan kontrollera dina lösenord när du loggar in med Google-kontot.</translation>
 <translation id="1504372625950710826">Chrome kunde inte söka efter uppdateringar. Testa att kontrollera internetanslutningen.</translation>
 <translation id="1682483655351012182">Synkronisera data i Chrome</translation>
@@ -10,6 +11,7 @@
 <translation id="2009224836393115614">Chrome kunde inte kontrollera dina lösenord. Testa att kontrollera internetanslutningen.</translation>
 <translation id="2147651015520127414">Chrome har verifierat att <ph name="ISSUER" /> har utfärdat webbplatsens certifikat.</translation>
 <translation id="2199719347983604670">Data från Chrome sync</translation>
+<translation id="2342919707875585281">Chrome delar din plats med webbplatser du tillåter.</translation>
 <translation id="2347208864470321755">När den här funktionen har aktiverats visas alternativet i Chrome att översätta sidor som är skrivna på andra språk med hjälp av Google Översätt. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="2415682770504543561">Använd Chrome som standard</translation>
 <translation id="2574249610672786438">Logga in på alla dina enheter om du vill ha samma flikar tillgängliga på alla enheter där du använder Chrome</translation>
@@ -17,9 +19,9 @@
 <translation id="257708665678654955">Vill du att Google Chrome ska översätta sidor skrivna på <ph name="LANGUAGE_NAME" /> på den här webbplatsen nästa gång?</translation>
 <translation id="2695886661449553974">Chrome kunde inte söka efter uppdateringar. Försök igen senare.</translation>
 <translation id="2732745070297234559">Chrome kunde inte kontrollera alla lösenord. Försök igen i morgon.</translation>
+<translation id="2740105938841089077">Öppna länkar i Chrome</translation>
 <translation id="2919738076569633423">Genom att använda Chrome godkänner du <ph name="BEGIN_LINK_TOS" />användarvillkoren<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Din data i Chrome raderas från den här enheten eftersom du loggar ut från ett konto som hanteras av <ph name="SIGNOUT_MANAGED_DOMAIN" />. Din data finns kvar i Google-kontot.</translation>
-<translation id="3148688391461398285">Ange din plats och få en bättre upplevelse när du använder Chrome.</translation>
 <translation id="3167189358072330585">Kontot fungerar inte på Google Chrome. Kontakta domänadministratören eller logga in med ett vanligt Google-konto.</translation>
 <translation id="3173834708294760622">Google Chrome-sida</translation>
 <translation id="3196546062792660320">Med Chrome sparar du tid genom att dina konton blir tillgängliga på nätet. Du kan lägga till och ta bort konton i inställningarna.</translation>
@@ -28,7 +30,9 @@
 <translation id="3522659714780527202">Aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter där du använder Chrome</translation>
 <translation id="3533694711092285624">Det finns inga sparade lösenord. Chrome kan bara kontrollera dina lösenord om du sparar dem.</translation>
 <translation id="3706101708757577809">Nu kan du använda Chrome varje gång du trycker på länkar i meddelanden, dokument och andra appar.</translation>
+<translation id="3720541637541300822">Lås inkognitoflikar när du stänger Chrome</translation>
 <translation id="384394811301901750">Google Chrome kan inte använda kameran just nu</translation>
+<translation id="38949020760388809">Välj om din data i Chrome ska raderas från den här enheten eller vara kvar.</translation>
 <translation id="3980220367029651214">Du håller på att byta synkroniseringskonto från <ph name="USER_EMAIL1" /> till <ph name="USER_EMAIL2" />. Befintlig data i Chrome hanteras av <ph name="DOMAIN" />. Åtgärden raderar din data från den här enheten men den finns kvar på <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Organisationen kräver att du inte loggar in i Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome har inte åtkomst till dina foton eller videor. Aktivera åtkomst i iOS-inställningar &gt; Sekretess &gt; Foton.</translation>
@@ -51,13 +55,15 @@
 <translation id="5854621639439811139">Tips för Chrome. Vissa knappar finns nu längst ned på skärmen, till exempel bakåtknappen, framåtknappen och Sök.</translation>
 <translation id="6036420186814142909">I Google Chrome finns det funktioner som du kan använda för att hantera dina internetuppgifter och inläsningshastigheten för webbsidor.
 <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
+<translation id="6181930887571472871">Byt till Chrome</translation>
 <translation id="6238746320622508509">Låt Chrome låsa inkognitoflikarna.</translation>
 <translation id="6573431926118603307">Här visas flikar som du har öppnat i Chrome på andra enheter.</translation>
 <translation id="6600954340915313787">Kopierat till Chrome</translation>
+<translation id="6634107063912726160">När du har loggat ut synkroniseras ingen mer data med ditt Google-konto i Chrome. Data som redan har synkroniserats finns kvar i kontot.</translation>
 <translation id="6648150602980899529">Du håller på att logga in med ett konto som hanteras av <ph name="DOMAIN" /> vilket ger administratören kontroll över data i Chrome. Din data kopplas permanent till det här kontot. Om du loggar ut från Chrome raderas all din data från enheten, men den lagras fortfarande på Google-kontot.</translation>
 <translation id="6676840375528380067">Vill du rensa din data i Chrome från den här enheten?</translation>
-<translation id="6822363243974874813">När du loggades ut från Chrome rensades bokmärken, historiken, lösenord och andra inställningar från enheten. Din synkroniserade Chrome-data finns fortfarande kvar i kontot.</translation>
 <translation id="6822673484890854830">Chrome kunde inte kontrollera alla lösenord. Försök igen senare.</translation>
+<translation id="6964931465519938134">Nu kan du använda Chrome varje gång du trycker på länkar i meddelanden, dokument och andra appar.</translation>
 <translation id="7124339256045485976">Håll Chrome uppdaterad</translation>
 <translation id="7161390184744336561">Google Chrome-versionen är inaktuell</translation>
 <translation id="7165736900384873061">Börja använda Google Chrome som QR-skanner</translation>
@@ -67,17 +73,22 @@
 <translation id="7265369419224458312">Använd flikar som du öppnar på datorn även här. Du behöver bara öppna Chrome på datorn, öppna menyn och välja Logga in i Chrome …</translation>
 <translation id="7272930098487145294">Om du vill spara bilder trycker du på Inställningar och låter Chrome lägga till dina foton</translation>
 <translation id="7400722733683201933">Om Google Chrome</translation>
+<translation id="7501046334262221972">Öppna inställningarna för att välja Chrome som standardwebbläsare. Tryck på Standardwebbläsarapp och välj sedan Chrome.</translation>
 <translation id="756809126120519699">Data i Chrome har rensats</translation>
 <translation id="7626032353295482388">Välkommen till Chrome</translation>
 <translation id="7662994914830945754">Logga in och aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter där du använder Chrome</translation>
 <translation id="766361182512894255">Ditt lösenord har läckt ut vid ett dataintrång. Du rekommenderas att ändra lösenordet nu.</translation>
 <translation id="7698568245838009292">Chrome vill ha tillgång till kameran</translation>
 <translation id="7855730255114109580">Google Chrome behöver inte uppdateras</translation>
-<translation id="8045508249136869751">Så här använder du Chrome som standard: Öppna inställningarna, tryck på Standardwebbläsarapp och välj Chrome.</translation>
+<translation id="8109233255338845204">Eftersom ditt konto hanteras av <ph name="HOSTED_DOMAIN" /> raderas din data i Chrome från enheten.</translation>
 <translation id="8160472928944011082">Uppdatering inte möjlig</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Med ensamrätt.</translation>
 <translation id="840168496893712993">Några tillägg har fått Chrome att krascha. Testa att avinstallera dem.</translation>
 <translation id="8459495907675268833">Den data som markerades har tagits bort från Chrome och från synkroniserade enheter. Det kan finnas andra former av webbhistorik i Google-kontot på history.google.com, t.ex. sökningar och aktivitet på andra tjänster från Google.</translation>
+<translation id="850555388806794946">Så här använder du Chrome som standard:
+  1. Öppna inställningarna
+  2. Tryck på Standardwebbläsarapp
+  3. Välj Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="9135668017386497357">När du ger Chrome åtkomst till din plats skickas den från Chrome till din standardsökmotor och alla webbplatser som du ger behörighet till. Webbplatser kan fråga efter din plats när det finns lokal information att visa, till exempel butiker i närheten eller nyheter.</translation>
 </translationbundle>

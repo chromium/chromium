@@ -28,6 +28,7 @@ class SafeBrowsingNavigationObserverManager;
 struct NavigationEvent {
   NavigationEvent();
   NavigationEvent(NavigationEvent&& nav_event);
+  NavigationEvent(const NavigationEvent& nav_event);
   NavigationEvent& operator=(NavigationEvent&& nav_event);
   ~NavigationEvent();
 

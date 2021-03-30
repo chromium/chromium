@@ -1,91 +1,77 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="cr-shared-style">
+  cr-button,
+  cr-checkbox {
+    margin: 5px 0;
+  }
 
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_radio_button/cr_radio_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_radio_group/cr_radio_group.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="network_ui_browser_proxy.html">
+  cr-radio-group {
+    --cr-radio-group-item-padding: 6px;
+  }
 
-<dom-module id="network-logs-ui">
-  <template>
-    <style include="cr-shared-style">
-      cr-button,
-      cr-checkbox {
-        margin: 5px 0;
-      }
+  .error {
+    color: red;
+  }
 
-      cr-radio-group {
-        --cr-radio-group-item-padding: 6px;
-      }
+  .indented {
+    margin-inline-start: 10px;
+  }
 
-      .error {
-        color: red;
-      }
+  #storeResult {
+    margin: 10px 0;
+    white-space: pre-wrap;
+  }
+</style>
+<div>
+  <h2>$i18n{networkLogsTab}</h2>
+  <p>$i18n{networkLogsDescription}</p>
+  <span>$i18nRaw{deviceLogLinkText}</span>
+  <h3>Options</h3>
+  <div class="indented">
+    <cr-checkbox checked="{{systemLogs_}}">
+      $i18n{networkLogsSystemLogs}
+    </cr-checkbox>
+    <div class="indented">
+      <cr-checkbox class="indented" checked="{{filterPII_}}"
+          disabled="[[!systemLogs_]]">
+        $i18n{networkLogsFilterPii}
+      </cr-checkbox>
+    </div>
+    <cr-checkbox checked="{{policies_}}">
+      $i18n{networkLogsPolicies}
+    </cr-checkbox>
+    <cr-checkbox checked="{{debugLogs_}}">
+      $i18n{networkLogsDebugLogs}
+    </cr-checkbox>
+    <div class="indented">
+      <cr-checkbox checked="{{chromeLogs_}}" class="indented"
+          disabled="[[!debugLogs_]]">
+        $i18n{networkLogsChromeLogs}
+      </cr-checkbox>
+    </div>
+  </div>
+  <cr-button on-click="onStore_"
+      disabled="[[!validOptions_(systemLogs_, policies_, debugLogs_)]]">
+    $i18n{networkLogsStoreButton}
+  </cr-button>
+  <div id="storeResult"></div>
 
-      .indented {
-        margin-inline-start: 10px;
-      }
-
-      #storeResult {
-        margin: 10px 0;
-        white-space: pre-wrap;
-      }
-    </style>
-    <div>
-      <h2>$i18n{networkLogsTab}</h2>
-      <p>$i18n{networkLogsDescription}</p>
-      <span>$i18nRaw{deviceLogLinkText}</span>
-      <h3>Options</h3>
-      <div class="indented">
-        <cr-checkbox checked="{{systemLogs_}}">
-          $i18n{networkLogsSystemLogs}
-        </cr-checkbox>
-        <div class="indented">
-          <cr-checkbox class="indented" checked="{{filterPII_}}"
-              disabled="[[!systemLogs_]]">
-            $i18n{networkLogsFilterPii}
-          </cr-checkbox>
-        </div>
-        <cr-checkbox checked="{{policies_}}">
-          $i18n{networkLogsPolicies}
-        </cr-checkbox>
-        <cr-checkbox checked="{{debugLogs_}}">
-          $i18n{networkLogsDebugLogs}
-        </cr-checkbox>
-        <div class="indented">
-          <cr-checkbox checked="{{chromeLogs_}}" class="indented"
-              disabled="[[!debugLogs_]]">
-            $i18n{networkLogsChromeLogs}
-          </cr-checkbox>
-        </div>
-      </div>
-      <cr-button on-click="onStore_"
-          disabled="[[!validOptions_(systemLogs_, policies_, debugLogs_)]]">
-        $i18n{networkLogsStoreButton}
-      </cr-button>
-      <div id="storeResult"></div>
-
-      <h2>$i18n{networkLogsDebuggingTitle}</h2>
-      <p>$i18n{networkLogsDebuggingDescription}</p>
-      <cr-radio-group selected="{{shillDebugging_}}">
-        <cr-radio-button name="unknown" disabled>
-          $i18n{networkLogsDebuggingUnknown}
-        </cr-radio-button>
-        <cr-radio-button name="none">
-          $i18n{networkLogsDebuggingNone}
-        </cr-radio-button>
-        <cr-radio-button name="wifi">
-          $i18n{OncTypeWiFi}
-        </cr-radio-button>
-        <cr-radio-button name="cellular">
-          $i18n{OncTypeCellular}
-        </cr-radio-button>
-        <cr-radio-button name="ethernet">
-          $i18n{OncTypeEthernet}
-        </cr-radio-button>
-      </cr-radio-group>
-  </template>
-  <script src="network_logs_ui.js"></script>
-</dom-module>
+  <h2>$i18n{networkLogsDebuggingTitle}</h2>
+  <p>$i18n{networkLogsDebuggingDescription}</p>
+  <cr-radio-group selected="{{shillDebugging_}}">
+    <cr-radio-button name="unknown" disabled>
+      $i18n{networkLogsDebuggingUnknown}
+    </cr-radio-button>
+    <cr-radio-button name="none">
+      $i18n{networkLogsDebuggingNone}
+    </cr-radio-button>
+    <cr-radio-button name="wifi">
+      $i18n{OncTypeWiFi}
+    </cr-radio-button>
+    <cr-radio-button name="cellular">
+      $i18n{OncTypeCellular}
+    </cr-radio-button>
+    <cr-radio-button name="ethernet">
+      $i18n{OncTypeEthernet}
+    </cr-radio-button>
+  </cr-radio-group>
+</div>

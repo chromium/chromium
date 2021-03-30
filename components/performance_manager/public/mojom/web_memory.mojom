@@ -5,8 +5,8 @@
 module performance_manager.mojom;
 
 // All WebMemory* structs below are used for reporting the memory usage of the
-// page via the performance.measureMemory Web API. These structs roughly follow
-// the structs defined by the specification of the API:
+// page via the performance.measureUserAgentSpecificMemory Web API. These
+// structs roughly follow the structs defined by the specification of the API:
 // https://wicg.github.io/performance-measure-memory/
 //
 // The renderer process invokes the OnWebMemoryMeasurementRequested method of
@@ -30,6 +30,7 @@ struct WebMemoryAttribution {
   // Specifies the scope (or type) of the context.
   enum Scope {
     kCrossOriginAggregated, // Dummy scope for cross-origin iframes.
+    kDedicatedWorker,
     kWindow,
     // TODO(1085129): Add worker scopes once they are implemented.
   };
@@ -47,14 +48,21 @@ struct WebMemoryAttribution {
   string? id;
 };
 
+// The amount of memory used by a breakdown.
+struct WebMemoryUsage {
+  uint64 bytes;
+};
+
 // Describes a memory region and attributes it to a set of contexts.
 // Usually the set consists of a single context. If there are multiple
 // contexts then this means that the memory may be owned by any of them.
 struct WebMemoryBreakdownEntry {
-  uint64 bytes;
-  array<WebMemoryAttribution> attribution;
+  // The memory used in this breakdown. It is null for breakdowns that did not
+  // have a memory measurement (for example a frame that was added after the
+  // measurement started).
+  WebMemoryUsage? memory;
 
-  // TODO(1085129): Add memory types once they are implemented.
+  array<WebMemoryAttribution> attribution;
 };
 
 // The result of the MeasureMemory function.
@@ -66,5 +74,17 @@ struct WebMemoryMeasurement {
     kDefault,
     kEager
   };
+
+  // A breakdown of memory used for all ExecutionContexts that were measured.
   array<WebMemoryBreakdownEntry> breakdown;
+
+  // Memory that is used by V8 contexts that are no longer attached to any
+  // ExecutionContext.
+  WebMemoryUsage? detached_memory;
+
+  // Memory that is not associated with any particular V8 context.
+  WebMemoryUsage? shared_memory;
+
+  // Memory used by Blink.
+  WebMemoryUsage? blink_memory;
 };

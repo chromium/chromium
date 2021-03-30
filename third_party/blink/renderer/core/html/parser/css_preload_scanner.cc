@@ -47,13 +47,16 @@ void CSSPreloadScanner::Reset() {
 }
 
 template <typename Char>
-void CSSPreloadScanner::ScanCommon(const Char* begin,
-                                   const Char* end,
-                                   const SegmentedString& source,
-                                   PreloadRequestStream& requests,
-                                   const KURL& predicted_base_element_url) {
+void CSSPreloadScanner::ScanCommon(
+    const Char* begin,
+    const Char* end,
+    const SegmentedString& source,
+    PreloadRequestStream& requests,
+    const KURL& predicted_base_element_url,
+    const PreloadRequest::ExclusionInfo* exclusion_info) {
   requests_ = &requests;
   predicted_base_element_url_ = &predicted_base_element_url;
+  exclusion_info_ = exclusion_info;
 
   for (const Char* it = begin; it != end && state_ != kDoneParsingImportRules;
        ++it)
@@ -64,29 +67,34 @@ void CSSPreloadScanner::ScanCommon(const Char* begin,
 
   requests_ = nullptr;
   predicted_base_element_url_ = nullptr;
+  exclusion_info_ = nullptr;
 }
 
-void CSSPreloadScanner::Scan(const HTMLToken::DataVector& data,
-                             const SegmentedString& source,
-                             PreloadRequestStream& requests,
-                             const KURL& predicted_base_element_url) {
+void CSSPreloadScanner::Scan(
+    const HTMLToken::DataVector& data,
+    const SegmentedString& source,
+    PreloadRequestStream& requests,
+    const KURL& predicted_base_element_url,
+    const PreloadRequest::ExclusionInfo* exclusion_info) {
   ScanCommon(data.data(), data.data() + data.size(), source, requests,
-             predicted_base_element_url);
+             predicted_base_element_url, exclusion_info);
 }
 
-void CSSPreloadScanner::Scan(const String& tag_name,
-                             const SegmentedString& source,
-                             PreloadRequestStream& requests,
-                             const KURL& predicted_base_element_url) {
+void CSSPreloadScanner::Scan(
+    const String& tag_name,
+    const SegmentedString& source,
+    PreloadRequestStream& requests,
+    const KURL& predicted_base_element_url,
+    const PreloadRequest::ExclusionInfo* exclusion_info) {
   if (tag_name.Is8Bit()) {
     const LChar* begin = tag_name.Characters8();
     ScanCommon(begin, begin + tag_name.length(), source, requests,
-               predicted_base_element_url);
+               predicted_base_element_url, exclusion_info);
     return;
   }
   const UChar* begin = tag_name.Characters16();
   ScanCommon(begin, begin + tag_name.length(), source, requests,
-             predicted_base_element_url);
+             predicted_base_element_url, exclusion_info);
 }
 
 void CSSPreloadScanner::SetReferrerPolicy(
@@ -252,7 +260,7 @@ void CSSPreloadScanner::EmitRule(const SegmentedString& source) {
         fetch_initiator_type_names::kCSS, position, url,
         *predicted_base_element_url_, ResourceType::kCSSStyleSheet,
         referrer_policy_, PreloadRequest::kBaseUrlIsReferrer,
-        ResourceFetcher::kImageNotImageSet);
+        ResourceFetcher::kImageNotImageSet, exclusion_info_);
     if (request) {
       // FIXME: Should this be including the charset in the preload request?
       requests_->push_back(std::move(request));

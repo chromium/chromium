@@ -265,9 +265,8 @@ AbortCallback FakeProvidedFileSystem::ReadFile(
     current_length--;
   }
 
-  return base::Bind(&FakeProvidedFileSystem::AbortMany,
-                    weak_ptr_factory_.GetWeakPtr(),
-                    task_ids);
+  return base::BindOnce(&FakeProvidedFileSystem::AbortMany,
+                        weak_ptr_factory_.GetWeakPtr(), task_ids);
 }
 
 AbortCallback FakeProvidedFileSystem::CreateDirectory(
@@ -441,8 +440,8 @@ AbortCallback FakeProvidedFileSystem::PostAbortableTask(
   const int task_id =
       tracker_.PostTask(base::ThreadTaskRunnerHandle::Get().get(), FROM_HERE,
                         std::move(callback));
-  return base::Bind(
-      &FakeProvidedFileSystem::Abort, weak_ptr_factory_.GetWeakPtr(), task_id);
+  return base::BindOnce(&FakeProvidedFileSystem::Abort,
+                        weak_ptr_factory_.GetWeakPtr(), task_id);
 }
 
 void FakeProvidedFileSystem::Abort(int task_id) {

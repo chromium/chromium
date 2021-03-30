@@ -22,16 +22,16 @@ textarea {
   border-color: -internal-light-dark(#767676, #858585);
 }
 
-a:-webkit-any-link:focus {
+a:-webkit-any-link:focus-visible {
   outline-offset: 1px;
 }
 
-input:focus, textarea:focus, select:focus {
+input:focus-visible, textarea:focus-visible, select:focus-visible {
   outline-offset: 0;
 }
 
-input[type="checkbox" i]:focus,
-input[type="radio" i]:focus {
+input[type="checkbox" i]:focus-visible,
+input[type="radio" i]:focus-visible {
   outline-offset: 2px;
 }
 
@@ -163,10 +163,10 @@ input[type="week" i]::-webkit-calendar-picker-indicator {
   width: 1.2em;
 }
 
-input[type="date" i]::-webkit-calendar-picker-indicator:focus,
-input[type="datetime-local" i]::-webkit-calendar-picker-indicator:focus,
-input[type="month" i]::-webkit-calendar-picker-indicator:focus,
-input[type="week" i]::-webkit-calendar-picker-indicator:focus {
+input[type="date" i]::-webkit-calendar-picker-indicator:focus-visible,
+input[type="datetime-local" i]::-webkit-calendar-picker-indicator:focus-visible,
+input[type="month" i]::-webkit-calendar-picker-indicator:focus-visible,
+input[type="week" i]::-webkit-calendar-picker-indicator:focus-visible {
   outline: solid 2px -webkit-focus-ring-color;
   outline-offset: -2px;
 }
@@ -187,7 +187,7 @@ input[type="time" i]::-webkit-calendar-picker-indicator {
   width: 1.05em;
 }
 
-input[type="time" i]::-webkit-calendar-picker-indicator:focus {
+input[type="time" i]::-webkit-calendar-picker-indicator:focus-visible {
   outline: solid 2px -webkit-focus-ring-color;
   outline-offset: -2px;
 }
@@ -236,15 +236,15 @@ select:-internal-list-box option:checked:disabled:hover {
   color: -internal-light-dark(gray, #aaa) !important;
 }
 
-input::-webkit-datetime-edit-ampm-field:focus,
-input::-webkit-datetime-edit-day-field:focus,
-input::-webkit-datetime-edit-hour-field:focus,
-input::-webkit-datetime-edit-millisecond-field:focus,
-input::-webkit-datetime-edit-minute-field:focus,
-input::-webkit-datetime-edit-month-field:focus,
-input::-webkit-datetime-edit-second-field:focus,
-input::-webkit-datetime-edit-week-field:focus,
-input::-webkit-datetime-edit-year-field:focus {
+input::-webkit-datetime-edit-ampm-field:focus-visible,
+input::-webkit-datetime-edit-day-field:focus-visible,
+input::-webkit-datetime-edit-hour-field:focus-visible,
+input::-webkit-datetime-edit-millisecond-field:focus-visible,
+input::-webkit-datetime-edit-minute-field:focus-visible,
+input::-webkit-datetime-edit-month-field:focus-visible,
+input::-webkit-datetime-edit-second-field:focus-visible,
+input::-webkit-datetime-edit-week-field:focus-visible,
+input::-webkit-datetime-edit-year-field:focus-visible {
     background-color: -internal-light-dark(highlight, #99C8FF);
     color: -internal-light-dark(highlighttext, #000000);
     outline: none;

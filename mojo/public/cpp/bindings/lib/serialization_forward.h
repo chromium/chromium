@@ -9,6 +9,7 @@
 #include "mojo/public/cpp/bindings/array_traits.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/lib/buffer.h"
+#include "mojo/public/cpp/bindings/lib/message_fragment.h"
 #include "mojo/public/cpp/bindings/lib/template_util.h"
 #include "mojo/public/cpp/bindings/map_traits.h"
 #include "mojo/public/cpp/bindings/string_traits.h"
@@ -58,17 +59,14 @@ bool Deserialize(DataType&& input, InputUserType* output, Args&&... args) {
 
 template <typename MojomType,
           typename InputUserType,
-          typename BufferWriterType,
+          typename FragmentType,
           typename... Args,
           typename std::enable_if<
               IsOptionalWrapper<InputUserType>::value>::type* = nullptr>
-void Serialize(InputUserType&& input,
-               Buffer* buffer,
-               BufferWriterType* writer,
-               Args&&... args) {
+void Serialize(InputUserType&& input, FragmentType& fragment, Args&&... args) {
   if (!input)
     return;
-  Serialize<MojomType>(*input, buffer, writer, std::forward<Args>(args)...);
+  Serialize<MojomType>(*input, fragment, std::forward<Args>(args)...);
 }
 
 template <typename MojomType,

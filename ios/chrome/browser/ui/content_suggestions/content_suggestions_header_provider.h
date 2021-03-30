@@ -8,7 +8,8 @@
 // Object providing a header view for the content suggestions.
 @protocol ContentSuggestionsHeaderProvider
 
-- (nullable UIView*)headerForWidth:(CGFloat)width;
+- (nullable UIView*)headerForWidth:(CGFloat)width
+                    safeAreaInsets:(UIEdgeInsets)safeAreaInsets;
 
 @end
 

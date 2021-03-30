@@ -33,20 +33,7 @@ class CONTENT_EXPORT BackgroundTracingConfigImpl
     CATEGORY_PRESET_UNSET,
     CUSTOM_CATEGORY_PRESET,
     CUSTOM_TRACE_CONFIG,
-    BENCHMARK,
-    BENCHMARK_DEEP,
-    BENCHMARK_GPU,
-    BENCHMARK_IPC,
     BENCHMARK_STARTUP,
-    BENCHMARK_BLINK_GC,
-    BENCHMARK_MEMORY_HEAVY,
-    BENCHMARK_MEMORY_LIGHT,
-    BENCHMARK_EXECUTION_METRIC,
-    BENCHMARK_NAVIGATION,
-    BENCHMARK_RENDERERS,
-    BENCHMARK_SERVICEWORKER,
-    BENCHMARK_POWER,
-    BLINK_STYLE,
   };
 
   CategoryPreset category_preset() const { return category_preset_; }
@@ -118,6 +105,8 @@ class CONTENT_EXPORT BackgroundTracingConfigImpl
   void SetBufferSizeLimits(const base::DictionaryValue* dict);
   int GetMaximumTraceBufferSizeKb() const;
 
+  // A trace config extracted from the "trace_config" field of the input
+  // dictionnary.
   base::trace_event::TraceConfig trace_config_;
   CategoryPreset category_preset_;
   std::vector<std::unique_ptr<BackgroundTracingRule>> rules_;

@@ -4,8 +4,8 @@
 
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_tab_helper.h"
 
-#include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
+#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
@@ -26,14 +26,14 @@ void NoStatePrefetchTabHelper::DidFinishNavigation(
     return;
   }
 
-  PrerenderManager* prerender_manager =
-      PrerenderManagerFactory::GetForBrowserContext(
+  NoStatePrefetchManager* no_state_prefetch_manager =
+      NoStatePrefetchManagerFactory::GetForBrowserContext(
           web_contents()->GetBrowserContext());
-  if (!prerender_manager)
+  if (!no_state_prefetch_manager)
     return;
-  if (prerender_manager->IsWebContentsPrerendering(web_contents()))
+  if (no_state_prefetch_manager->IsWebContentsPrerendering(web_contents()))
     return;
-  prerender_manager->RecordNavigation(navigation_handle->GetURL());
+  no_state_prefetch_manager->RecordNavigation(navigation_handle->GetURL());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(NoStatePrefetchTabHelper)

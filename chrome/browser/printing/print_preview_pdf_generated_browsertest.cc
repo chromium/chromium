@@ -41,7 +41,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/printing/common/print.mojom.h"
-#include "components/printing/common/print_messages.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "content/public/test/browser_test.h"
@@ -64,7 +63,6 @@
 #endif
 
 using content::WebContents;
-using content::WebContentsObserver;
 
 namespace printing {
 
@@ -117,21 +115,25 @@ struct PrintPreviewSettings {
   bool source_is_pdf;
 };
 
-// Observes the print preview webpage. Once it observes the PreviewPageCount
-// message, will send a sequence of commands to the print preview dialog and
+// Implements PrintPreviewUI::TestDelegate. Once DidGetPreviewPageCount() is
+// called, will send a sequence of commands to the print preview dialog and
 // change the settings of the preview dialog.
-class PrintPreviewObserver : public WebContentsObserver {
+class PrintPreviewDelegate : printing::PrintPreviewUI::TestDelegate {
  public:
-  PrintPreviewObserver(Browser* browser,
+  PrintPreviewDelegate(Browser* browser,
                        WebContents* dialog,
                        const base::FilePath& pdf_file_save_path)
-      : WebContentsObserver(dialog),
-        browser_(browser),
+      : browser_(browser),
         state_(kWaitingToSendSaveAsPdf),
         failed_setting_("None"),
-        pdf_file_save_path_(pdf_file_save_path) {}
-
-  ~PrintPreviewObserver() override {}
+        pdf_file_save_path_(pdf_file_save_path) {
+    printing::PrintPreviewUI::SetDelegateForTesting(this);
+  }
+  PrintPreviewDelegate(const PrintPreviewDelegate&) = delete;
+  PrintPreviewDelegate& operator=(const PrintPreviewDelegate&) = delete;
+  ~PrintPreviewDelegate() override {
+    printing::PrintPreviewUI::SetDelegateForTesting(nullptr);
+  }
 
   // Sets closure for the observer so that it can end the loop.
   void set_quit_closure(base::OnceClosure closure) {
@@ -142,13 +144,6 @@ class PrintPreviewObserver : public WebContentsObserver {
   void EndLoop() {
     base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                   std::move(quit_closure_));
-  }
-
-  bool OnMessageReceived(const IPC::Message& message) override {
-    IPC_BEGIN_MESSAGE_MAP(PrintPreviewObserver, message)
-      IPC_MESSAGE_HANDLER(PrintHostMsg_DidStartPreview, OnDidStartPreview)
-    IPC_END_MESSAGE_MAP()
-    return false;
   }
 
   // Gets the web contents for the print preview dialog so that the UI and
@@ -206,7 +201,7 @@ class PrintPreviewObserver : public WebContentsObserver {
       // Called by |GetUI()->handler_|, it is a callback function that call
       // |EndLoop| when an attempt to save the PDF has been made.
       GetUI()->SetPdfSavedClosureForTesting(base::BindOnce(
-          &PrintPreviewObserver::EndLoop, base::Unretained(this)));
+          &PrintPreviewDelegate::EndLoop, base::Unretained(this)));
       ASSERT_FALSE(pdf_file_save_path_.empty());
       GetUI()->SetSelectedFileForTesting(pdf_file_save_path_);
       return;
@@ -231,21 +226,21 @@ class PrintPreviewObserver : public WebContentsObserver {
   // listens for 'UILoadedForTest' and 'UIFailedLoadingForTest.'
   class UIDoneLoadingMessageHandler : public content::WebUIMessageHandler {
    public:
-    explicit UIDoneLoadingMessageHandler(PrintPreviewObserver* observer)
-        : observer_(observer) {}
+    explicit UIDoneLoadingMessageHandler(PrintPreviewDelegate* delegate)
+        : delegate_(delegate) {}
 
     ~UIDoneLoadingMessageHandler() override {}
 
-    // When a setting has been set succesfully, this is called and the observer
+    // When a setting has been set successfully, this is called and the delegate
     // is told to send the next setting to be set.
     void HandleDone(const base::ListValue* /* args */) {
-      observer_->ManipulatePreviewSettings();
+      delegate_->ManipulatePreviewSettings();
     }
 
     // Ends the test because a setting was not set successfully. Called when
     // this class hears 'UIFailedLoadingForTest.'
     void HandleFailure(const base::ListValue* /* args */) {
-      FAIL() << "Failed to set: " << observer_->GetFailedSetting();
+      FAIL() << "Failed to set: " << delegate_->GetFailedSetting();
     }
 
     // Allows this class to listen for the 'UILoadedForTest' and
@@ -267,19 +262,11 @@ class PrintPreviewObserver : public WebContentsObserver {
     }
 
    private:
-    PrintPreviewObserver* const observer_;
-
-    DISALLOW_COPY_AND_ASSIGN(UIDoneLoadingMessageHandler);
+    PrintPreviewDelegate* const delegate_;
   };
 
-  // Called when the observer gets the IPC message with the preview document's
-  // properties.
-  void OnDidStartPreview(const mojom::DidStartPreviewParams& params,
-                         const printing::mojom::PreviewIds& ids) {
-    WebContents* web_contents = GetDialog();
-    ASSERT_TRUE(web_contents);
-    Observe(web_contents);
-
+  // PrintPreviewUI::TestDelegate:
+  void DidGetPreviewPageCount(uint32_t page_count) override {
     PrintPreviewUI* ui = GetUI();
     ASSERT_TRUE(ui);
     ASSERT_TRUE(ui->web_ui());
@@ -288,24 +275,18 @@ class PrintPreviewObserver : public WebContentsObserver {
         std::make_unique<UIDoneLoadingMessageHandler>(this));
     ui->SendEnableManipulateSettingsForTest();
   }
-
-  void DidCloneToNewWebContents(WebContents* old_web_contents,
-                                WebContents* new_web_contents) override {
-    Observe(new_web_contents);
-  }
+  void DidRenderPreviewPage(content::WebContents* preview_dialog) override {}
 
   Browser* browser_;
   base::OnceClosure quit_closure_;
   std::unique_ptr<PrintPreviewSettings> settings_;
 
-  // State of the observer. The state indicates what message to send
-  // next. The state advances whenever the message handler calls
-  // ManipulatePreviewSettings() on the observer.
+  // |state_| that indicates what message to send next. The state advances
+  // whenever the message handler calls ManipulatePreviewSettings() on the
+  // delegate.
   State state_;
   std::string failed_setting_;
   const base::FilePath pdf_file_save_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintPreviewObserver);
 };
 
 class PrintPreviewPdfGeneratedBrowserTest : public InProcessBrowserTest {
@@ -317,14 +298,14 @@ class PrintPreviewPdfGeneratedBrowserTest : public InProcessBrowserTest {
   // for all the settings to be set, then save the preview to PDF.
   void NavigateAndPrint(const base::FilePath::StringType& file_name,
                           const PrintPreviewSettings& settings) {
-    print_preview_observer_->SetPrintPreviewSettings(settings);
+    print_preview_delegate_->SetPrintPreviewSettings(settings);
     base::FilePath path(file_name);
     GURL gurl = net::FilePathToFileURL(base::MakeAbsoluteFilePath(path));
 
     ui_test_utils::NavigateToURL(browser(), gurl);
 
     base::RunLoop loop;
-    print_preview_observer_->set_quit_closure(loop.QuitClosure());
+    print_preview_delegate_->set_quit_closure(loop.QuitClosure());
     chrome::Print(browser());
     loop.Run();
 
@@ -461,31 +442,17 @@ class PrintPreviewPdfGeneratedBrowserTest : public InProcessBrowserTest {
     std::cerr.flush();
   }
 
-  // Duplicates the tab that was created when the browser opened. This is done
-  // so that the observer can listen to the duplicated tab as soon as possible
-  // and start listening for messages related to print preview.
-  void DuplicateTab() {
+  void CreatePreviewDelegate() {
     WebContents* tab =
         browser()->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(tab);
-
-    print_preview_observer_ = std::make_unique<PrintPreviewObserver>(
+    print_preview_delegate_ = std::make_unique<PrintPreviewDelegate>(
         browser(), tab, pdf_file_save_path_);
-    chrome::DuplicateTab(browser());
-
-    WebContents* initiator =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    ASSERT_TRUE(initiator);
-    ASSERT_NE(tab, initiator);
   }
 
-  // Resets the test so that another web page can be printed. It also deletes
-  // the duplicated tab as it isn't needed anymore.
+  // Resets the test so that another web page can be printed.
   void Reset() {
     png_output_.clear();
-    ASSERT_EQ(2, browser()->tab_strip_model()->count());
-    chrome::CloseTab(browser());
-    ASSERT_EQ(1, browser()->tab_strip_model()->count());
   }
 
   // Creates a temporary directory to store a text file that will be used for
@@ -554,7 +521,7 @@ class PrintPreviewPdfGeneratedBrowserTest : public InProcessBrowserTest {
                                       &png_output_));
   }
 
-  std::unique_ptr<PrintPreviewObserver> print_preview_observer_;
+  std::unique_ptr<PrintPreviewDelegate> print_preview_delegate_;
   base::FilePath pdf_file_save_path_;
 
   // Vector for storing the PNG to be sent to the layout test framework.
@@ -615,7 +582,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewPdfGeneratedBrowserTest,
     cmd = base::UTF8ToWide(input);
 #endif
 
-    DuplicateTab();
+    CreatePreviewDelegate();
     PrintPreviewSettings settings(
         true, "", false, false, mojom::MarginType::kDefaultMargins,
         cmd.find(file_extension) != base::FilePath::StringType::npos);

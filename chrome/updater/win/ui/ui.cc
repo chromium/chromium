@@ -8,6 +8,7 @@
 #include <functional>
 
 #include "base/logging.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/win/ui/constants.h"
 #include "chrome/updater/win/ui/util.h"
 #include "chrome/updater/win/util.h"
@@ -61,7 +62,7 @@ OmahaWnd::OmahaWnd(int dialog_id, WTL::CMessageLoop* message_loop, HWND parent)
       is_complete_(false),
       is_close_enabled_(true),
       events_sink_(nullptr),
-      is_machine_(false) {
+      scope_(UpdaterScope::kUser) {
   DCHECK(message_loop);
 }
 

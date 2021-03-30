@@ -34,7 +34,4 @@
     constructor(DOMString type, optional SpeechRecognitionEventInit initDict = {});
     readonly attribute unsigned long resultIndex;
     readonly attribute SpeechRecognitionResultList? results;
-
-    [Measure] readonly attribute Document? interpretation;
-    [Measure] readonly attribute Document? emma;
 };

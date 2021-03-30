@@ -6,9 +6,9 @@
 #define CHROME_INSTALLER_UTIL_EXPERIMENT_STORAGE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/win/scoped_handle.h"
 
 namespace installer {
@@ -115,11 +115,11 @@ class ExperimentStorage {
 
   // Decodes |encoded_metrics| into |metrics|, return true on success. Returns
   // false if the encoding is malformed.
-  static bool DecodeMetrics(base::StringPiece16 encoded_metrics,
+  static bool DecodeMetrics(base::WStringPiece encoded_metrics,
                             ExperimentMetrics* metrics);
 
   // Returns the encoded form of |metrics|.
-  static base::string16 EncodeMetrics(const ExperimentMetrics& metrics);
+  static std::wstring EncodeMetrics(const ExperimentMetrics& metrics);
 
   // Loads the per-install experiment metrics into |metrics|. Returns true if a
   // value was read or if none was found, in which case |metrics| is set to the

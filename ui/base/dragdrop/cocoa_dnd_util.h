@@ -7,10 +7,10 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include <string>
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/strings/string16.h"
 
 class GURL;
 
@@ -36,7 +36,7 @@ COMPONENT_EXPORT(UI_BASE) extern NSString* const kChromeDragImageHTMLPboardType;
 // will also attempt to convert filenames in |pboard| to file URLs.
 COMPONENT_EXPORT(UI_BASE)
 BOOL PopulateURLAndTitleFromPasteboard(GURL* url,
-                                       base::string16* title,
+                                       std::u16string* title,
                                        NSPasteboard* pboard,
                                        BOOL convert_filenames);
 

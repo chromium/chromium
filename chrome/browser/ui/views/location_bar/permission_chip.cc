@@ -4,45 +4,33 @@
 
 #include "chrome/browser/ui/views/location_bar/permission_chip.h"
 
-#include "base/command_line.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_bubble_view.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_style.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
+#include "components/permissions/request_type.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/vector_icons/vector_icons.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
-#include "ui/gfx/color_palette.h"
-#include "ui/gfx/color_utils.h"
-#include "ui/gfx/favicon_size.h"
-#include "ui/gfx/paint_vector_icon.h"
-#include "ui/views/background.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button_controller.h"
-#include "ui/views/controls/image_view.h"
-#include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/flex_layout.h"
-#include "ui/views/layout/layout_provider.h"
-#include "ui/views/style/typography.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
-bool IsCameraPermission(permissions::PermissionRequestType type) {
-  return type ==
-         permissions::PermissionRequestType::PERMISSION_MEDIASTREAM_CAMERA;
+bool IsCameraPermission(permissions::RequestType type) {
+  return type == permissions::RequestType::kCameraStream;
 }
 
-bool IsCameraOrMicPermission(permissions::PermissionRequestType type) {
+bool IsCameraOrMicPermission(permissions::RequestType type) {
   return IsCameraPermission(type) ||
-         type == permissions::PermissionRequestType::PERMISSION_MEDIASTREAM_MIC;
+         type == permissions::RequestType::kMicStream;
 }
 }  // namespace
 
@@ -77,32 +65,21 @@ class BubbleButtonController : public views::ButtonController {
   BubbleOwnerDelegate* bubble_owner_ = nullptr;
 };
 
-PermissionChip::PermissionChip(Browser* browser)
-    : views::AnimationDelegateViews(this), browser_(browser) {
+PermissionChip::PermissionChip(Browser* browser) : browser_(browser) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
   SetVisible(false);
 
   chip_button_ =
-      AddChildView(std::make_unique<views::MdTextButton>(base::BindRepeating(
+      AddChildView(std::make_unique<OmniboxChipButton>(base::BindRepeating(
           &PermissionChip::ChipButtonPressed, base::Unretained(this))));
-  chip_button_->SetProminent(true);
-  chip_button_->SetCornerRadius(GetIconSize());
-  chip_button_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  chip_button_->SetElideBehavior(gfx::ElideBehavior::FADE_TAIL);
-  chip_button_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-  // Equalizing padding on the left, right and between icon and label.
-  chip_button_->SetImageLabelSpacing(
-      GetLayoutInsets(LOCATION_BAR_ICON_INTERIOR_PADDING).left());
-  chip_button_->SetCustomPadding(
-      gfx::Insets(GetLayoutConstant(LOCATION_BAR_CHILD_INTERIOR_PADDING),
-                  GetLayoutInsets(LOCATION_BAR_ICON_INTERIOR_PADDING).left()));
 
   chip_button_->SetButtonController(std::make_unique<BubbleButtonController>(
       chip_button_, this,
       std::make_unique<views::Button::DefaultButtonControllerDelegate>(
           chip_button_)));
 
-  animation_ = std::make_unique<gfx::SlideAnimation>(this);
+  chip_button_->SetExpandAnimationEndedCallback(base::BindRepeating(
+      &PermissionChip::ExpandAnimationEnded, base::Unretained(this)));
 }
 
 PermissionChip::~PermissionChip() {
@@ -115,6 +92,7 @@ void PermissionChip::DisplayRequest(
     permissions::PermissionPrompt::Delegate* delegate) {
   DCHECK(delegate);
   delegate_ = delegate;
+  requested_time_ = base::TimeTicks::Now();
 
   const std::vector<permissions::PermissionRequest*>& requests =
       delegate_->Requests();
@@ -123,28 +101,31 @@ void PermissionChip::DisplayRequest(
   // update delegate to contain only one request at a time.
   DCHECK(requests.size() == 1u || requests.size() == 2u);
   if (requests.size() == 2) {
-    DCHECK(IsCameraOrMicPermission(requests[0]->GetPermissionRequestType()));
-    DCHECK(IsCameraOrMicPermission(requests[1]->GetPermissionRequestType()));
-    DCHECK_NE(requests[0]->GetPermissionRequestType(),
-              requests[1]->GetPermissionRequestType());
+    DCHECK(IsCameraOrMicPermission(requests[0]->GetRequestType()));
+    DCHECK(IsCameraOrMicPermission(requests[1]->GetRequestType()));
+    DCHECK_NE(requests[0]->GetRequestType(), requests[1]->GetRequestType());
   }
 
   chip_button_->SetText(GetPermissionMessage());
-  UpdatePermissionIconAndTextColor();
+  chip_button_->SetIcon(&GetPermissionIconId());
 
-  SetVisible(true);
-  // TODO(olesiamarukhno): Add tests for animation logic.
-  animation_->Reset();
-  if (!delegate_->WasCurrentRequestAlreadyDisplayed()) {
-    AnimateExpand();
+  Show(ShouldBubbleStartOpen());
+
+  if (!ShouldBubbleStartOpen()) {
+    AnnouncePermissionRequested();
+    // In case the user didn't hear the initial alert, reannounce permission
+    // again with a 2 minute delay.
+    constexpr auto kDelayBeforeReannouncingRequest =
+        base::TimeDelta::FromMinutes(2);
+    announce_timer_.Start(FROM_HERE, kDelayBeforeReannouncingRequest, this,
+                          &PermissionChip::AnnouncePermissionRequested);
   }
-  requested_time_ = base::TimeTicks::Now();
-  PreferredSizeChanged();
 }
 
 void PermissionChip::FinalizeRequest() {
   SetVisible(false);
   timer_.AbandonAndStop();
+  announce_timer_.AbandonAndStop();
   delegate_ = nullptr;
   if (prompt_bubble_)
     prompt_bubble_->GetWidget()->Close();
@@ -155,43 +136,21 @@ void PermissionChip::FinalizeRequest() {
 void PermissionChip::Reshow() {
   if (GetVisible())
     return;
-
-  SetVisible(true);
-  // TODO(olesiamarukhno): Add tests for animation logic.
-  animation_->Reset();
-  if (!delegate_->WasCurrentRequestAlreadyDisplayed())
-    AnimateExpand();
-  PreferredSizeChanged();
+  Show(/*always_open_bubble=*/false);
 }
 
 void PermissionChip::Hide() {
   SetVisible(false);
 }
 
-void PermissionChip::AnimateCollapse() {
-  constexpr auto kAnimationDuration = base::TimeDelta::FromMilliseconds(250);
-  animation_->SetSlideDuration(kAnimationDuration);
-  animation_->Hide();
+bool PermissionChip::GetActiveRequest() const {
+  return !!delegate_;
 }
 
-void PermissionChip::AnimateExpand() {
-  constexpr auto kAnimationDuration = base::TimeDelta::FromMilliseconds(350);
-  animation_->SetSlideDuration(kAnimationDuration);
-  animation_->Show();
-}
-
-bool PermissionChip::HasActiveRequest() {
-  return delegate_;
-}
-
-gfx::Size PermissionChip::CalculatePreferredSize() const {
-  const int fixed_width = GetIconSize() + chip_button_->GetInsets().width();
-  const int collapsable_width =
-      chip_button_->GetPreferredSize().width() - fixed_width;
-  const int width =
-      std::round(collapsable_width * animation_->GetCurrentValue()) +
-      fixed_width;
-  return gfx::Size(width, GetHeightForWidth(width));
+void PermissionChip::ExpandAnimationEnded() {
+  StartCollapseTimer();
+  if (ShouldBubbleStartOpen())
+    OpenBubble();
 }
 
 void PermissionChip::OnMouseEntered(const ui::MouseEvent& event) {
@@ -199,28 +158,11 @@ void PermissionChip::OnMouseEntered(const ui::MouseEvent& event) {
   StartCollapseTimer();
 }
 
-void PermissionChip::OnThemeChanged() {
-  View::OnThemeChanged();
-  UpdatePermissionIconAndTextColor();
-}
-
-void PermissionChip::AnimationEnded(const gfx::Animation* animation) {
-  DCHECK_EQ(animation, animation_.get());
-  is_collapsed_ = animation->GetCurrentValue() != 1.0;
-  if (animation->GetCurrentValue() == 1.0)
-    StartCollapseTimer();
-}
-
-void PermissionChip::AnimationProgressed(const gfx::Animation* animation) {
-  DCHECK_EQ(animation, animation_.get());
-  PreferredSizeChanged();
-}
-
 void PermissionChip::OnWidgetDestroying(views::Widget* widget) {
   DCHECK_EQ(widget, prompt_bubble_->GetWidget());
   widget->RemoveObserver(this);
   prompt_bubble_ = nullptr;
-  AnimateCollapse();
+  chip_button_->AnimateCollapse();
 }
 
 void PermissionChip::OpenBubble() {
@@ -228,6 +170,9 @@ void PermissionChip::OpenBubble() {
   // deactivation.
   DCHECK(!prompt_bubble_);
 
+  // If the user opens the bubble, they must know about the pending request so
+  // we don't need to announce it again later.
+  announce_timer_.AbandonAndStop();
   prompt_bubble_ = new PermissionPromptBubbleView(
       browser_, delegate_, requested_time_, PermissionPromptStyle::kChip);
   prompt_bubble_->Show();
@@ -236,6 +181,45 @@ void PermissionChip::OpenBubble() {
 
 bool PermissionChip::IsBubbleShowing() const {
   return prompt_bubble_ != nullptr;
+}
+
+bool PermissionChip::ShouldBubbleStartOpen() const {
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kPermissionChipGestureSensitive)) {
+    auto requests = delegate_->Requests();
+    const bool has_gesture =
+        std::any_of(requests.begin(), requests.end(), [](auto* request) {
+          return request->GetGestureType() ==
+                 permissions::PermissionRequestGestureType::GESTURE;
+        });
+    if (has_gesture)
+      return true;
+  }
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kPermissionChipRequestTypeSensitive)) {
+    // Notifications and geolocation are targeted here because they are usually
+    // not necessary for the website to function correctly, so they can safely
+    // be given less prominence.
+    auto requests = delegate_->Requests();
+    const bool is_geolocation_or_notifications =
+        std::any_of(requests.begin(), requests.end(), [](auto* request) {
+          auto request_type = request->GetRequestType();
+          return request_type == permissions::RequestType::kNotifications ||
+                 request_type == permissions::RequestType::kGeolocation;
+        });
+    if (!is_geolocation_or_notifications)
+      return true;
+  }
+  return false;
+}
+
+void PermissionChip::Show(bool always_open_bubble) {
+  SetVisible(true);
+  // TODO(olesiamarukhno): Add tests for animation logic.
+  chip_button_->ResetAnimation();
+  if (!delegate_->WasCurrentRequestAlreadyDisplayed() || always_open_bubble)
+    chip_button_->AnimateExpand();
+  PreferredSizeChanged();
 }
 
 void PermissionChip::ChipButtonPressed() {
@@ -253,7 +237,7 @@ void PermissionChip::Collapse() {
   if (IsMouseHovered() || prompt_bubble_) {
     StartCollapseTimer();
   } else {
-    AnimateCollapse();
+    chip_button_->AnimateCollapse();
   }
 }
 
@@ -264,39 +248,21 @@ void PermissionChip::StartCollapseTimer() {
                &PermissionChip::Collapse);
 }
 
-int PermissionChip::GetIconSize() const {
-  return GetLayoutConstant(LOCATION_BAR_ICON_SIZE);
-}
-
-void PermissionChip::UpdatePermissionIconAndTextColor() {
-  if (!delegate_)
-    return;
-
-  // Set label and icon color to be the same color.
-  SkColor enabled_text_color =
-      views::style::GetColor(*chip_button_, views::style::CONTEXT_BUTTON_MD,
-                             views::style::STYLE_DIALOG_BUTTON_DEFAULT);
-
-  chip_button_->SetEnabledTextColors(enabled_text_color);
-  chip_button_->SetImageModel(
-      views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(GetPermissionIconId(), enabled_text_color,
-                                     GetIconSize()));
-}
-
-const gfx::VectorIcon& PermissionChip::GetPermissionIconId() {
+const gfx::VectorIcon& PermissionChip::GetPermissionIconId() const {
   auto requests = delegate_->Requests();
   if (requests.size() == 1)
-    return requests[0]->GetIconId();
+    return permissions::GetIconId(requests[0]->GetRequestType());
 
   // When we have two requests, it must be microphone & camera. Then we need to
   // use the icon from the camera request.
-  return IsCameraPermission(requests[0]->GetPermissionRequestType())
-             ? requests[0]->GetIconId()
-             : requests[1]->GetIconId();
+  return IsCameraPermission(requests[0]->GetRequestType())
+             ? permissions::GetIconId(requests[0]->GetRequestType())
+             : permissions::GetIconId(requests[1]->GetRequestType());
 }
 
-base::string16 PermissionChip::GetPermissionMessage() {
+std::u16string PermissionChip::GetPermissionMessage() const {
+  if (!delegate_)
+    return std::u16string();
   auto requests = delegate_->Requests();
 
   return requests.size() == 1
@@ -304,3 +270,13 @@ base::string16 PermissionChip::GetPermissionMessage() {
              : l10n_util::GetStringUTF16(
                    IDS_MEDIA_CAPTURE_VIDEO_AND_AUDIO_PERMISSION_CHIP);
 }
+
+void PermissionChip::AnnouncePermissionRequested() {
+  GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
+      IDS_PERMISSIONS_REQUESTED_SCREENREADER_ANNOUNCEMENT));
+}
+
+BEGIN_METADATA(PermissionChip, views::View)
+ADD_READONLY_PROPERTY_METADATA(bool, ActiveRequest)
+ADD_READONLY_PROPERTY_METADATA(std::u16string, PermissionMessage)
+END_METADATA

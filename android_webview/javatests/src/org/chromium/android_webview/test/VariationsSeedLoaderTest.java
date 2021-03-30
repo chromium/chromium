@@ -403,8 +403,6 @@ public class VariationsSeedLoaderTest {
                     VariationsServiceMetricsHelper.fromBundle(new Bundle());
             metrics.setJobInterval(threeWeeksMs);
             metrics.setJobQueueTime(twoWeeksMs);
-            metrics.setSeedFetchResult(200);
-            metrics.setSeedFetchTime(nineMinutesMs);
             MockVariationsSeedServer.setMetricsBundle(metrics.toBundle());
 
             runTestLoaderBlocking();
@@ -414,11 +412,6 @@ public class VariationsSeedLoaderTest {
             assertSingleRecordInHistogram(
                     VariationsSeedLoader.DOWNLOAD_JOB_QUEUE_TIME_HISTOGRAM_NAME,
                     (int) TimeUnit.MILLISECONDS.toMinutes(twoWeeksMs));
-            assertSingleRecordInHistogram(
-                    VariationsSeedLoader.DOWNLOAD_JOB_FETCH_RESULT_HISTOGRAM_NAME, 200);
-            assertSingleRecordInHistogram(
-                    VariationsSeedLoader.DOWNLOAD_JOB_FETCH_TIME_HISTOGRAM_NAME,
-                    (int) nineMinutesMs);
         } finally {
             MockVariationsSeedServer.setMetricsBundle(null);
         }

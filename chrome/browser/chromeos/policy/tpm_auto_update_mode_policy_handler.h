@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/chromeos/ui/tpm_auto_update_notification.h"
 
 class PrefRegistrySimple;
@@ -52,7 +52,7 @@ class TPMAutoUpdateModePolicyHandler {
   using ShowNotificationCallback = base::RepeatingCallback<void(
       chromeos::TpmAutoUpdateUserNotification notification_type)>;
 
-  TPMAutoUpdateModePolicyHandler(chromeos::CrosSettings* cros_settings,
+  TPMAutoUpdateModePolicyHandler(ash::CrosSettings* cros_settings,
                                  PrefService* local_state);
   ~TPMAutoUpdateModePolicyHandler();
 
@@ -96,7 +96,7 @@ class TPMAutoUpdateModePolicyHandler {
 
   void ShowTPMUpdateOnNextRebootNotification();
 
-  chromeos::CrosSettings* cros_settings_;
+  ash::CrosSettings* cros_settings_;
 
   PrefService* local_state_;
 

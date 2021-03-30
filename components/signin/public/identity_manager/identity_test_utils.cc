@@ -24,12 +24,13 @@
 #include "google_apis/gaia/gaia_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/components/account_manager/account_manager.h"
+#include "ash/components/account_manager/account_manager.h"
 #include "components/account_manager_core/account.h"
 #endif
 
 #if defined(OS_ANDROID)
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate_android.h"
+#include "components/signin/public/android/test_support_jni_headers/AccountManagerFacadeUtil_jni.h"
 #endif
 
 namespace signin {
@@ -60,7 +61,7 @@ void UpdateRefreshTokenForAccount(
     ProfileOAuth2TokenService* token_service,
     AccountTrackerService* account_tracker_service,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    chromeos::AccountManager* account_manager,
+    ash::AccountManager* account_manager,
 #endif
     IdentityManager* identity_manager,
     const CoreAccountId& account_id,
@@ -116,7 +117,7 @@ AccountInfo EnsureAccountExists(AccountTrackerService* account_tracker_service,
 
 CoreAccountInfo SetPrimaryAccount(IdentityManager* identity_manager,
                                   const std::string& email) {
-  DCHECK(!identity_manager->HasPrimaryAccount());
+  DCHECK(!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
   PrimaryAccountManager* primary_account_manager =
       identity_manager->GetPrimaryAccountManager();
   DCHECK(!primary_account_manager->HasPrimaryAccount(ConsentLevel::kSync));
@@ -128,13 +129,13 @@ CoreAccountInfo SetPrimaryAccount(IdentityManager* identity_manager,
   primary_account_manager->SetSyncPrimaryAccountInfo(account_info);
 
   DCHECK(primary_account_manager->HasPrimaryAccount(ConsentLevel::kSync));
-  DCHECK(identity_manager->HasPrimaryAccount());
-  return identity_manager->GetPrimaryAccountInfo();
+  DCHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
 }
 
 CoreAccountInfo SetUnconsentedPrimaryAccount(IdentityManager* identity_manager,
                                              const std::string& email) {
-  DCHECK(!identity_manager->HasPrimaryAccount(ConsentLevel::kNotRequired));
+  DCHECK(!identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
 
   AccountInfo account_info =
       EnsureAccountExists(identity_manager->GetAccountTrackerService(), email);
@@ -144,35 +145,37 @@ CoreAccountInfo SetUnconsentedPrimaryAccount(IdentityManager* identity_manager,
       identity_manager->GetPrimaryAccountManager();
   primary_account_manager->SetUnconsentedPrimaryAccountInfo(account_info);
 
-  DCHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kNotRequired));
-  DCHECK_EQ(account_info.gaia,
-            identity_manager
-                ->GetPrimaryAccountInfo(signin::ConsentLevel::kNotRequired)
-                .gaia);
-  return identity_manager->GetPrimaryAccountInfo(
-      signin::ConsentLevel::kNotRequired);
+  DCHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
+  DCHECK_EQ(
+      account_info.gaia,
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .gaia);
+  return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
 }
 
 void SetRefreshTokenForPrimaryAccount(IdentityManager* identity_manager,
                                       const std::string& token_value) {
-  DCHECK(identity_manager->HasPrimaryAccount());
-  CoreAccountId account_id = identity_manager->GetPrimaryAccountId();
+  DCHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  CoreAccountId account_id =
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync);
   SetRefreshTokenForAccount(identity_manager, account_id, token_value);
 }
 
 void SetInvalidRefreshTokenForPrimaryAccount(
     IdentityManager* identity_manager) {
-  DCHECK(identity_manager->HasPrimaryAccount());
-  CoreAccountId account_id = identity_manager->GetPrimaryAccountId();
+  DCHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  CoreAccountId account_id =
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync);
 
   SetInvalidRefreshTokenForAccount(identity_manager, account_id);
 }
 
 void RemoveRefreshTokenForPrimaryAccount(IdentityManager* identity_manager) {
-  if (!identity_manager->HasPrimaryAccount())
+  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync))
     return;
 
-  CoreAccountId account_id = identity_manager->GetPrimaryAccountId();
+  CoreAccountId account_id =
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync);
 
   RemoveRefreshTokenForAccount(identity_manager, account_id);
 }
@@ -198,7 +201,14 @@ void RevokeSyncConsent(IdentityManager* identity_manager) {
   DCHECK(identity_manager->GetPrimaryAccountMutator());
   base::RunLoop run_loop;
   TestIdentityManagerObserver signout_observer(identity_manager);
-  signout_observer.SetOnPrimaryAccountClearedCallback(run_loop.QuitClosure());
+  signout_observer.SetOnPrimaryAccountChangedCallback(base::BindOnce(
+      [](base::RunLoop* run_loop, PrimaryAccountChangeEvent event) {
+        if (event.GetEventTypeFor(ConsentLevel::kSync) ==
+            PrimaryAccountChangeEvent::Type::kCleared) {
+          run_loop->Quit();
+        }
+      },
+      &run_loop));
   identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
       signin_metrics::SIGNOUT_TEST,
       signin_metrics::SignoutDelete::IGNORE_METRIC);
@@ -212,7 +222,7 @@ void ClearPrimaryAccount(IdentityManager* identity_manager) {
   // synchronously with IdentityManager.
   NOTREACHED();
 #else
-  if (!identity_manager->HasPrimaryAccount(ConsentLevel::kNotRequired))
+  if (!identity_manager->HasPrimaryAccount(ConsentLevel::kSignin))
     return;
 
   DCHECK(identity_manager->GetPrimaryAccountMutator());
@@ -220,7 +230,14 @@ void ClearPrimaryAccount(IdentityManager* identity_manager) {
       identity_manager->HasPrimaryAccount(ConsentLevel::kSync);
   base::RunLoop run_loop;
   TestIdentityManagerObserver signout_observer(identity_manager);
-  signout_observer.SetOnPrimaryAccountClearedCallback(run_loop.QuitClosure());
+  signout_observer.SetOnPrimaryAccountChangedCallback(base::BindOnce(
+      [](base::RunLoop* run_loop, PrimaryAccountChangeEvent event) {
+        if (event.GetEventTypeFor(ConsentLevel::kSignin) ==
+            PrimaryAccountChangeEvent::Type::kCleared) {
+          run_loop->Quit();
+        }
+      },
+      &run_loop));
   identity_manager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
       signin_metrics::SIGNOUT_TEST,
       signin_metrics::SignoutDelete::IGNORE_METRIC);
@@ -290,7 +307,7 @@ void SetRefreshTokenForAccount(IdentityManager* identity_manager,
       identity_manager->GetTokenService(),
       identity_manager->GetAccountTrackerService(),
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      identity_manager->GetChromeOSAccountManager(),
+      identity_manager->GetAshAccountManager(),
 #endif
       identity_manager, account_id,
       token_value.empty() ? "refresh_token_for_" + account_id.ToString() + "_" +
@@ -304,7 +321,7 @@ void SetInvalidRefreshTokenForAccount(IdentityManager* identity_manager,
 
                                identity_manager->GetAccountTrackerService(),
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-                               identity_manager->GetChromeOSAccountManager(),
+                               identity_manager->GetAshAccountManager(),
 #endif
                                identity_manager, account_id,
                                GaiaConstants::kInvalidRefreshToken);
@@ -324,7 +341,7 @@ void RemoveRefreshTokenForAccount(IdentityManager* identity_manager,
   const AccountInfo& account_info =
       identity_manager->GetAccountTrackerService()->GetAccountInfo(account_id);
 
-  identity_manager->GetChromeOSAccountManager()->RemoveAccount(
+  identity_manager->GetAshAccountManager()->RemoveAccount(
       account_manager::AccountKey{account_info.gaia,
                                   account_manager::AccountType::kGaia});
 #else
@@ -416,9 +433,9 @@ void DisableAccessTokenFetchRetries(IdentityManager* identity_manager) {
 }
 
 #if defined(OS_ANDROID)
-void DisableInteractionWithSystemAccounts() {
-  ProfileOAuth2TokenServiceDelegateAndroid::
-      set_disable_interaction_with_system_accounts();
+void SetUpMockAccountManagerFacade() {
+  Java_AccountManagerFacadeUtil_setUpMockFacade(
+      base::android::AttachCurrentThread());
 }
 #endif
 

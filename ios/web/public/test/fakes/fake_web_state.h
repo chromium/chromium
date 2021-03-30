@@ -12,7 +12,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 #include "ios/web/public/deprecated/url_verification_constants.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
@@ -57,13 +56,13 @@ class FakeWebState : public WebState {
   CRWSessionStorage* BuildSessionStorage() override;
   CRWJSInjectionReceiver* GetJSInjectionReceiver() const override;
   void LoadData(NSData* data, NSString* mime_type, const GURL& url) override;
-  void ExecuteJavaScript(const base::string16& javascript) override;
-  void ExecuteJavaScript(const base::string16& javascript,
+  void ExecuteJavaScript(const std::u16string& javascript) override;
+  void ExecuteJavaScript(const std::u16string& javascript,
                          JavaScriptResultCallback callback) override;
   void ExecuteUserJavaScript(NSString* javaScript) override;
   const std::string& GetContentsMimeType() const override;
   bool ContentIsHTML() const override;
-  const base::string16& GetTitle() const override;
+  const std::u16string& GetTitle() const override;
   bool IsLoading() const override;
   double GetLoadingProgress() const override;
   bool IsVisible() const override;
@@ -98,7 +97,7 @@ class FakeWebState : public WebState {
   // Setters for test data.
   void SetBrowserState(BrowserState* browser_state);
   void SetJSInjectionReceiver(CRWJSInjectionReceiver* injection_receiver);
-  void SetTitle(const base::string16& title);
+  void SetTitle(const std::u16string& title);
   void SetContentIsHTML(bool content_is_html);
   void SetContentsMimeType(const std::string& mime_type);
   void SetLoading(bool is_loading);
@@ -129,7 +128,7 @@ class FakeWebState : public WebState {
       NSURLResponse* response,
       bool for_main_frame,
       base::OnceCallback<void(WebStatePolicyDecider::PolicyDecision)> callback);
-  base::string16 GetLastExecutedJavascript() const;
+  std::u16string GetLastExecutedJavascript() const;
   NSData* GetLastLoadedData() const;
   bool IsClosed() const;
 
@@ -156,8 +155,8 @@ class FakeWebState : public WebState {
   bool can_take_snapshot_;
   bool is_closed_;
   GURL url_;
-  base::string16 title_;
-  base::string16 last_executed_javascript_;
+  std::u16string title_;
+  std::u16string last_executed_javascript_;
   URLVerificationTrustLevel trust_level_;
   bool content_is_html_;
   std::string mime_type_;

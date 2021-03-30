@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_CHROMEOS_INPUT_METHOD_UI_ASSISTIVE_DELEGATE_H_
 #define CHROME_BROWSER_CHROMEOS_INPUT_METHOD_UI_ASSISTIVE_DELEGATE_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "ui/chromeos/ui_chromeos_export.h"
 
 namespace ui {

@@ -270,18 +270,18 @@ GetBrowserType(const std::string& socket) {
   return AndroidDeviceManager::BrowserInfo::kTypeOther;
 }
 
-void ReceivedResponse(const AndroidDeviceManager::DeviceInfoCallback& callback,
+void ReceivedResponse(AndroidDeviceManager::DeviceInfoCallback callback,
                       int result,
                       const std::string& response) {
   AndroidDeviceManager::DeviceInfo device_info;
   if (result < 0) {
-    callback.Run(device_info);
+    std::move(callback).Run(device_info);
     return;
   }
   std::vector<std::string> outputs = base::SplitStringUsingSubstr(
       response, kSeparator, base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (outputs.size() != 5) {
-    callback.Run(device_info);
+    std::move(callback).Run(device_info);
     return;
   }
   device_info.connected = true;
@@ -329,7 +329,7 @@ void ReceivedResponse(const AndroidDeviceManager::DeviceInfoCallback& callback,
   std::sort(device_info.browser_info.begin(),
             device_info.browser_info.end(),
             &BrowserCompare);
-  callback.Run(device_info);
+  std::move(callback).Run(device_info);
 }
 
 }  // namespace
@@ -357,7 +357,8 @@ std::string AndroidDeviceManager::GetBrowserName(const std::string& socket,
 
 // static
 void AndroidDeviceManager::QueryDeviceInfo(RunCommandCallback command_callback,
-                                           const DeviceInfoCallback& callback) {
+                                           DeviceInfoCallback callback) {
   std::move(command_callback)
-      .Run(kAllCommands, base::BindOnce(&ReceivedResponse, callback));
+      .Run(kAllCommands,
+           base::BindOnce(&ReceivedResponse, std::move(callback)));
 }

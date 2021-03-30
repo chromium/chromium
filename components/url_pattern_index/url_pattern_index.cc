@@ -241,9 +241,9 @@ class UrlRuleFlatBufferConverter {
     static_assert(flat::OptionFlag_ANY <= std::numeric_limits<uint8_t>::max(),
                   "Option flags can not be stored in uint8_t.");
 
-    if (rule_.semantics() == proto::RULE_SEMANTICS_WHITELIST) {
-      options_ |= flat::OptionFlag_IS_WHITELIST;
-    } else if (rule_.semantics() != proto::RULE_SEMANTICS_BLACKLIST) {
+    if (rule_.semantics() == proto::RULE_SEMANTICS_ALLOWLIST) {
+      options_ |= flat::OptionFlag_IS_ALLOWLIST;
+    } else if (rule_.semantics() != proto::RULE_SEMANTICS_BLOCKLIST) {
       return false;  // Unsupported semantics.
     }
 
@@ -659,9 +659,9 @@ const flat::UrlRule* FindMatchInFlatUrlPatternIndex(
   const flat::UrlRule* max_priority_rule = nullptr;
 
   for (uint64_t ngram : ngrams) {
-    const size_t slot_index = prober.FindSlot(
-        ngram, base::strict_cast<size_t>(hash_table->size()),
-        [hash_table, empty_slot](NGram ngram, size_t slot_index) {
+    const uint32_t slot_index = prober.FindSlot(
+        ngram, hash_table->size(),
+        [hash_table, empty_slot](NGram ngram, uint32_t slot_index) {
           const flat::NGramToRules* entry = hash_table->Get(slot_index);
           DCHECK_NE(entry, nullptr);
           return entry == empty_slot || entry->ngram() == ngram;

@@ -186,7 +186,7 @@ typedef InProcessBrowserTest CustomizationLocaleTest;
 
 IN_PROC_BROWSER_TEST_F(CustomizationLocaleTest, CheckAvailableLocales) {
   for (size_t i = 0; i < languages_available.size(); ++i) {
-    LanguageSwitchedWaiter waiter(base::Bind(&VerifyLanguageSwitched));
+    LanguageSwitchedWaiter waiter(base::BindOnce(&VerifyLanguageSwitched));
     locale_util::SwitchLanguage(languages_available[i], true, true,
                                 waiter.Callback(),
                                 ProfileManager::GetActiveUserProfile());

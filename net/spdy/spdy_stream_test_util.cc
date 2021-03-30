@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/stl_util.h"
+#include "base/strings/string_piece.h"
 #include "net/spdy/spdy_stream.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,6 +24,9 @@ ClosingDelegate::ClosingDelegate(
 ClosingDelegate::~ClosingDelegate() = default;
 
 void ClosingDelegate::OnHeadersSent() {}
+
+void ClosingDelegate::OnEarlyHintsReceived(
+    const spdy::Http2HeaderBlock& headers) {}
 
 void ClosingDelegate::OnHeadersReceived(
     const spdy::Http2HeaderBlock& response_headers,
@@ -61,6 +65,12 @@ void StreamDelegateBase::OnHeadersSent() {
   stream_id_ = stream_->stream_id();
   EXPECT_NE(stream_id_, 0u);
   send_headers_completed_ = true;
+}
+
+void StreamDelegateBase::OnEarlyHintsReceived(
+    const spdy::Http2HeaderBlock& headers) {
+  EXPECT_EQ(stream_->type() != SPDY_PUSH_STREAM, send_headers_completed_);
+  early_hints_.push_back(headers.Clone());
 }
 
 void StreamDelegateBase::OnHeadersReceived(
@@ -144,7 +154,7 @@ void StreamDelegateSendImmediate::OnHeadersReceived(
                                         pushed_request_headers);
   if (data_.data()) {
     scoped_refptr<StringIOBuffer> buf =
-        base::MakeRefCounted<StringIOBuffer>(data_.as_string());
+        base::MakeRefCounted<StringIOBuffer>(std::string(data_));
     stream()->SendData(buf.get(), buf->size(), MORE_DATA_TO_SEND);
   }
 }
@@ -153,7 +163,7 @@ StreamDelegateWithBody::StreamDelegateWithBody(
     const base::WeakPtr<SpdyStream>& stream,
     base::StringPiece data)
     : StreamDelegateBase(stream),
-      buf_(base::MakeRefCounted<StringIOBuffer>(data.as_string())) {}
+      buf_(base::MakeRefCounted<StringIOBuffer>(std::string(data))) {}
 
 StreamDelegateWithBody::~StreamDelegateWithBody() = default;
 
@@ -173,6 +183,18 @@ void StreamDelegateCloseOnHeaders::OnHeadersReceived(
     const spdy::Http2HeaderBlock& response_headers,
     const spdy::Http2HeaderBlock* pushed_request_headers) {
   stream()->Cancel(ERR_ABORTED);
+}
+
+StreamDelegateDetectEOF::StreamDelegateDetectEOF(
+    const base::WeakPtr<SpdyStream>& stream)
+    : StreamDelegateBase(stream) {}
+
+StreamDelegateDetectEOF::~StreamDelegateDetectEOF() = default;
+
+void StreamDelegateDetectEOF::OnDataReceived(
+    std::unique_ptr<SpdyBuffer> buffer) {
+  if (!buffer)
+    eof_detected_ = true;
 }
 
 }  // namespace test

@@ -17,8 +17,14 @@
  */
 
 // eslint-disable-next-line prefer-const
+import '//resources/cr_elements/shared_vars_css.m.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 Polymer({
   is: 'settings-section',
+
+  _template: html`{__html_template__}`,
 
   properties: {
     /**

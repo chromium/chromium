@@ -27,7 +27,7 @@ TabGroup* TabGroupModel::AddTabGroup(
   auto tab_group = std::make_unique<TabGroup>(
       controller_, id,
       visual_data.value_or(
-          tab_groups::TabGroupVisualData(base::string16(), GetNextColor())));
+          tab_groups::TabGroupVisualData(std::u16string(), GetNextColor())));
   groups_[id] = std::move(tab_group);
 
   return groups_[id].get();

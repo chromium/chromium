@@ -31,7 +31,7 @@ class ChromeIdentityServiceObserverBridge
 
  private:
   // ios::ChromeIdentityService::Observer implementation.
-  void OnIdentityListChanged() override;
+  void OnIdentityListChanged(bool keychainReload) override;
   void OnAccessTokenRefreshFailed(ChromeIdentity* identity,
                                   NSDictionary* user_info) override;
   void OnProfileUpdate(ChromeIdentity* identity) override;

@@ -44,8 +44,8 @@ class OSCryptTest : public testing::Test {
 };
 
 TEST_F(OSCryptTest, String16EncryptionDecryption) {
-  base::string16 plaintext;
-  base::string16 result;
+  std::u16string plaintext;
+  std::u16string result;
   std::string utf8_plaintext;
   std::string utf8_result;
   std::string ciphertext;
@@ -56,25 +56,24 @@ TEST_F(OSCryptTest, String16EncryptionDecryption) {
   EXPECT_EQ(plaintext, result);
 
   // Test a simple string.
-  plaintext = base::ASCIIToUTF16("hello");
+  plaintext = u"hello";
   EXPECT_TRUE(OSCrypt::EncryptString16(plaintext, &ciphertext));
   EXPECT_TRUE(OSCrypt::DecryptString16(ciphertext, &result));
   EXPECT_EQ(plaintext, result);
 
   // Test a 16-byte aligned string.  This previously hit a boundary error in
   // base::OSCrypt::Crypt() on Mac.
-  plaintext = base::ASCIIToUTF16("1234567890123456");
+  plaintext = u"1234567890123456";
   EXPECT_TRUE(OSCrypt::EncryptString16(plaintext, &ciphertext));
   EXPECT_TRUE(OSCrypt::DecryptString16(ciphertext, &result));
   EXPECT_EQ(plaintext, result);
 
   // Test Unicode.
-  base::char16 wchars[] = { 0xdbeb, 0xdf1b, 0x4e03, 0x6708, 0x8849,
-                            0x661f, 0x671f, 0x56db, 0x597c, 0x4e03,
-                            0x6708, 0x56db, 0x6708, 0xe407, 0xdbaf,
-                            0xdeb5, 0x4ec5, 0x544b, 0x661f, 0x671f,
-                            0x65e5, 0x661f, 0x671f, 0x4e94, 0xd8b1,
-                            0xdce1, 0x7052, 0x5095, 0x7c0b, 0xe586, 0};
+  char16_t wchars[] = {0xdbeb, 0xdf1b, 0x4e03, 0x6708, 0x8849, 0x661f, 0x671f,
+                       0x56db, 0x597c, 0x4e03, 0x6708, 0x56db, 0x6708, 0xe407,
+                       0xdbaf, 0xdeb5, 0x4ec5, 0x544b, 0x661f, 0x671f, 0x65e5,
+                       0x661f, 0x671f, 0x4e94, 0xd8b1, 0xdce1, 0x7052, 0x5095,
+                       0x7c0b, 0xe586, 0};
   plaintext = wchars;
   utf8_plaintext = base::UTF16ToUTF8(plaintext);
   EXPECT_EQ(plaintext, base::UTF8ToUTF16(utf8_plaintext));

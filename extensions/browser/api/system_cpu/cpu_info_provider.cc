@@ -7,9 +7,9 @@
 #include "base/system/sys_info.h"
 #include "build/chromeos_buildflags.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/system/cpu_temperature_reader.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace extensions {
 
@@ -45,7 +45,7 @@ bool CpuInfoProvider::QueryInfo() {
   if (!QueryCpuTimePerProcessor(&info_.processors))
     info_.processors.clear();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   using CPUTemperatureInfo =
       chromeos::system::CPUTemperatureReader::CPUTemperatureInfo;
   std::vector<CPUTemperatureInfo> cpu_temp_info =
@@ -55,7 +55,7 @@ bool CpuInfoProvider::QueryInfo() {
   for (const CPUTemperatureInfo& info : cpu_temp_info) {
     info_.temperatures.push_back(info.temp_celsius);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
   return true;
 }

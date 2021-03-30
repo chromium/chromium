@@ -56,8 +56,8 @@ PermissionPromptAndroid::~PermissionPromptAndroid() {
   }
 }
 
-void PermissionPromptAndroid::UpdateAnchorPosition() {
-  NOTREACHED() << "UpdateAnchorPosition is not implemented";
+void PermissionPromptAndroid::UpdateAnchor() {
+  NOTIMPLEMENTED();
 }
 
 permissions::PermissionPrompt::TabSwitchingBehavior
@@ -101,14 +101,12 @@ static bool IsValidMediaRequestGroup(
   if (requests.size() < 2)
     return false;
   return (
-      (requests[0]->GetPermissionRequestType() ==
-           permissions::PermissionRequestType::PERMISSION_MEDIASTREAM_MIC &&
-       requests[1]->GetPermissionRequestType() ==
-           permissions::PermissionRequestType::PERMISSION_MEDIASTREAM_CAMERA) ||
-      (requests[0]->GetPermissionRequestType() ==
-           permissions::PermissionRequestType::PERMISSION_MEDIASTREAM_CAMERA &&
-       requests[1]->GetPermissionRequestType() ==
-           permissions::PermissionRequestType::PERMISSION_MEDIASTREAM_MIC));
+      (requests[0]->GetRequestType() == permissions::RequestType::kMicStream &&
+       requests[1]->GetRequestType() ==
+           permissions::RequestType::kCameraStream) ||
+      (requests[0]->GetRequestType() ==
+           permissions::RequestType::kCameraStream &&
+       requests[1]->GetRequestType() == permissions::RequestType::kMicStream));
 }
 
 static bool IsValidARCameraAccessRequestGroup(
@@ -116,14 +114,12 @@ static bool IsValidARCameraAccessRequestGroup(
   if (requests.size() < 2)
     return false;
   return (
-      (requests[0]->GetPermissionRequestType() ==
-           permissions::PermissionRequestType::PERMISSION_AR &&
-       requests[1]->GetPermissionRequestType() ==
-           permissions::PermissionRequestType::PERMISSION_MEDIASTREAM_CAMERA) ||
-      (requests[0]->GetPermissionRequestType() ==
-           permissions::PermissionRequestType::PERMISSION_MEDIASTREAM_CAMERA &&
-       requests[1]->GetPermissionRequestType() ==
-           permissions::PermissionRequestType::PERMISSION_AR));
+      (requests[0]->GetRequestType() == permissions::RequestType::kArSession &&
+       requests[1]->GetRequestType() ==
+           permissions::RequestType::kCameraStream) ||
+      (requests[0]->GetRequestType() ==
+           permissions::RequestType::kCameraStream &&
+       requests[1]->GetRequestType() == permissions::RequestType::kArSession));
 }
 
 // Grouped permission requests can only be Mic+Camera, Camera+Mic,
@@ -139,17 +135,17 @@ int PermissionPromptAndroid::GetIconId() const {
   const std::vector<permissions::PermissionRequest*>& requests =
       delegate_->Requests();
   if (requests.size() == 1)
-    return requests[0]->GetIconId();
+    return permissions::GetIconId(requests[0]->GetRequestType());
   CheckValidRequestGroup(requests);
   return IDR_ANDROID_INFOBAR_MEDIA_STREAM_CAMERA;
 }
 
-base::string16 PermissionPromptAndroid::GetMessageText() const {
+std::u16string PermissionPromptAndroid::GetMessageText() const {
   const std::vector<permissions::PermissionRequest*>& requests =
       delegate_->Requests();
   if (requests.size() == 1) {
-    if (requests[0]->GetContentSettingsType() ==
-        ContentSettingsType::STORAGE_ACCESS) {
+    if (requests[0]->GetRequestType() ==
+        permissions::RequestType::kStorageAccess) {
       return l10n_util::GetStringFUTF16(
           IDS_STORAGE_ACCESS_INFOBAR_TEXT,
           url_formatter::FormatUrlForSecurityDisplay(

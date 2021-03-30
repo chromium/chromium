@@ -12,8 +12,6 @@
 enum BrowserInitializationStageType {
   // This state is before any initialization in MainController.
   INITIALIZATION_STAGE_NONE = 0,
-  // Initialization state after |didFinishLaunchingWithOptions|.
-  INITIALIZATION_STAGE_BASIC,
   // Initialization state needed by background handlers.
   INITIALIZATION_STAGE_BACKGROUND,
   // Full initialization of the browser.

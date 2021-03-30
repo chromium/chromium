@@ -15,6 +15,7 @@
 <translation id="2036868001356139588">टाइमर का कुल समय</translation>
 <translation id="2050339315714019657">पोर्ट्रेट</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> चालू है</translation>
+<translation id="2144806332417375165">कस्टम वीडियो पैरामीटर</translation>
 <translation id="229579744168541441">डिस्क में ले जाएं</translation>
 <translation id="2501278716633472235">वापस जाएं</translation>
 <translation id="2501853267655415902">रिकॉर्डिंग रुक गई है</translation>
@@ -33,7 +34,6 @@
 <translation id="3259149966178251584">कैमरे का रिज़ॉल्यूशन</translation>
 <translation id="3517926952904427380">पोर्ट्रेट फ़ोटो नहीं ली जा सकी</translation>
 <translation id="3569311554794739032">क्या आप वाकई <ph name="FILE" /> को हटाना चाहते हैं?</translation>
-<translation id="3750315947605636967">कोई दूसरा ऐप्लिकेशन आपके कैमरे का इस्तेमाल कर रहा है</translation>
 <translation id="3810838688059735925">वीडियो</translation>
 <translation id="3838931309141338733">बारकोड स्कैन करें</translation>
 <translation id="3892148308691398805">टेक्स्ट कॉपी करें</translation>
@@ -76,10 +76,12 @@
 <translation id="7337660886763914220">फ़ाइल सिस्टम की गड़बड़ियां.</translation>
 <translation id="7450541714075000668">टेक्स्ट कॉपी किया गया</translation>
 <translation id="7557677699350329807">अगले कैमरे का इस्तेमाल करें</translation>
+<translation id="7607002721634913082">रोका गया</translation>
 <translation id="7608223098072244877">4 गुणा 4</translation>
 <translation id="7649070708921625228">सहायता</translation>
 <translation id="7658239707568436148">अभी नहीं</translation>
 <translation id="7670511624014457267">60 FPS (फ़्रेम प्रति सेकंड)</translation>
+<translation id="7974782136796202581">पैन करने, झुकाने, और ज़ूम करने के विकल्प दिखाएं</translation>
 <translation id="7983668134180549431">टेक्स्ट पहचाना गया.</translation>
 <translation id="8067883171444229417">वीडियो चलाएं</translation>
 <translation id="8131740175452115882">पुष्टि करें</translation>

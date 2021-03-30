@@ -5,10 +5,13 @@
 #ifndef ASH_CHILD_ACCOUNTS_PARENT_ACCESS_CONTROLLER_IMPL_H_
 #define ASH_CHILD_ACCOUNTS_PARENT_ACCESS_CONTROLLER_IMPL_H_
 
+#include <string>
+
 #include "ash/login/ui/pin_request_view.h"
 #include "ash/login/ui/pin_request_widget.h"
 #include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/account_id/account_id.h"
 
@@ -44,6 +47,17 @@ class ASH_EXPORT ParentAccessControllerImpl : public ParentAccessController,
     kMaxValue = kReauhLoginScreen,
   };
 
+  // Result of the parent access code validation. These values are persisted to
+  // metrics. Entries should not be reordered and numeric values should never be
+  // reused.
+  enum class UMAValidationResult {
+    kValid = 0,
+    kInvalid = 1,
+    kNoConfig = 2,
+    kInternalError = 3,
+    kMaxValue = kInternalError,
+  };
+
   // Histogram to log actions that originated in parent access dialog.
   static constexpr char kUMAParentAccessCodeAction[] =
       "Supervision.ParentAccessCode.Action";
@@ -51,6 +65,12 @@ class ASH_EXPORT ParentAccessControllerImpl : public ParentAccessController,
   // Histogram to log context in which parent access code was used.
   static constexpr char kUMAParentAccessCodeUsage[] =
       "Supervision.ParentAccessCode.Usage";
+
+  // Returns the name of the UMA histogram used to log parent access code
+  // validation result for a given |action|. If no |action| specified, returns
+  // the name of the aggregated histogram.
+  static std::string GetUMAParentCodeValidationResultHistorgam(
+      base::Optional<SupervisedAction> action);
 
   ParentAccessControllerImpl();
   ParentAccessControllerImpl(const ParentAccessControllerImpl&) = delete;

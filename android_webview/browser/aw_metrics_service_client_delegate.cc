@@ -6,6 +6,7 @@
 
 #include "android_webview/browser/aw_browser_process.h"
 #include "android_webview/browser/lifecycle/aw_contents_lifecycle_notifier.h"
+#include "android_webview/browser/metrics/renderer_process_metrics_provider.h"
 #include "android_webview/browser/metrics/visibility_metrics_provider.h"
 #include "android_webview/browser/page_load_metrics/aw_page_load_metrics_provider.h"
 #include "components/metrics/metrics_service.h"
@@ -21,6 +22,8 @@ void AwMetricsServiceClientDelegate::RegisterAdditionalMetricsProviders(
       std::make_unique<AwPageLoadMetricsProvider>());
   service->RegisterMetricsProvider(std::make_unique<VisibilityMetricsProvider>(
       AwBrowserProcess::GetInstance()->visibility_metrics_logger()));
+  service->RegisterMetricsProvider(
+      std::make_unique<RendererProcessMetricsProvider>());
 }
 
 void AwMetricsServiceClientDelegate::AddWebViewAppStateObserver(

@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBAUTHN_TRANSPORT_UTILS_H_
 #define CHROME_BROWSER_UI_WEBAUTHN_TRANSPORT_UTILS_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "chrome/browser/webauthn/authenticator_transport.h"
 
 namespace gfx {
@@ -18,7 +19,7 @@ enum class TransportSelectionContext {
 };
 
 // Returns the human readable name shown for |transport| in the given |context|.
-base::string16 GetTransportHumanReadableName(AuthenticatorTransport transport,
+std::u16string GetTransportHumanReadableName(AuthenticatorTransport transport,
                                              TransportSelectionContext context);
 
 // Returns the vector icon to show next to the |transport| in the manual

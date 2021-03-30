@@ -1,0 +1,6 @@
+Tests render blocking status in script traces.
+Recording started
+Tracing complete
+empty.js?dynamic: non_blocking
+empty.js?dynamicNonAsync: blocking
+

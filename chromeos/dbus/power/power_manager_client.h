@@ -20,6 +20,7 @@
 #include "base/power_monitor/power_observer.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
+#include "chromeos/dbus/power_manager/peripheral_battery_status.pb.h"
 #include "chromeos/dbus/power_manager/policy.pb.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
@@ -102,12 +103,21 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
 
     // Called when peripheral device battery status is received.
     // |path| is the sysfs path for the battery of the peripheral device.
-    // |name| is the human readble name of the device.
+    // |name| is the human-readable name of the device.
     // |level| within [0, 100] represents the device battery level and -1
     // means an unknown level or device is disconnected.
-    virtual void PeripheralBatteryStatusReceived(const std::string& path,
-                                                 const std::string& name,
-                                                 int level) {}
+    // |status| charging status, primarily for peripheral chargers.
+    // Note that peripherals and peripheral chargers may be separate
+    // (such as stylus vs. internal stylus charger), and have two distinct
+    // charge levels.
+    // |active_update| true if peripheral event triggered update, false
+    // if due to periodic poll or restart, and value may be stale.
+    virtual void PeripheralBatteryStatusReceived(
+        const std::string& path,
+        const std::string& name,
+        int level,
+        power_manager::PeripheralBatteryStatus_ChargeStatus status,
+        bool active_update) {}
 
     // Called when updated information about the power supply is available.
     // The status is automatically updated periodically, but
@@ -362,5 +372,10 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::PowerManagerClient;
+}
 
 #endif  // CHROMEOS_DBUS_POWER_POWER_MANAGER_CLIENT_H_

@@ -55,7 +55,8 @@ TEST(AtomicHTMLTokenTest, EmptyAttributeValueFromCompactHTMLToken) {
   token.BeginAttributeValue(8);
   token.EndAttributeValue(8);
 
-  AtomicHTMLToken atoken(CompactHTMLToken(&token, TextPosition()));
+  AtomicHTMLToken atoken(
+      CompactHTMLToken(&token, TextPosition::MinimumPosition()));
 
   const blink::Attribute* attribute_b = atoken.GetAttributeItem(
       QualifiedName(AtomicString(), "b", AtomicString()));

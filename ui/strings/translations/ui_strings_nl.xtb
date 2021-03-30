@@ -222,7 +222,7 @@
 <translation id="7848989271541991537">Verplaatst naar pagina <ph name="PAGE_NUMBER" />, rij <ph name="ROW_NUMBER" />, kolom <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="7879499977785298635">Niet blokkeren</translation>
 <translation id="7907591526440419938">Bestand openen</translation>
-<translation id="7952747673138230804">Chrome OS geeft suggesties weer voor nieuwe content die je kunt bekijken. Stuurt alleen statistieken om de kwaliteit te verbeteren als je ervoor hebt gekozen gebruiksgegevens te delen. <ph name="MANAGE_SETTINGS" /></translation>
+<translation id="7952747673138230804">Chrome OS toont suggesties voor nieuwe content die je kunt bekijken. Stuurt alleen statistieken om de kwaliteit te verbeteren als je ervoor hebt gekozen gebruiksgegevens te delen. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7969046989155602842">Command</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Meer dan één ongelezen melding}other{Meer dan # ongelezen meldingen}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{over 1 m}other{over # m}}</translation>
@@ -247,7 +247,7 @@
 <translation id="8394908167088220973">Media afspelen/onderbreken</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 j}other{# j}}</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" />-bestand (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
-<translation id="8649597172973390955">Plank altijd weergegeven</translation>
+<translation id="8649597172973390955">Plank altijd zichtbaar</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" />  KB/s</translation>
 <translation id="8685326675965865247">Zoek op je apparaat, in apps en instellingen en op internet. Gebruik de pijltoetsen om te navigeren in je apps.</translation>
 <translation id="8725488761726303204">+ nog <ph name="NUMBER" /></translation>

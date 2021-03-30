@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/web/web_state_printer.h"
+#import "ios/chrome/browser/web/print/web_state_printer.h"
 
 // Interface for printing.
 @interface PrintController : NSObject <WebStatePrinter>

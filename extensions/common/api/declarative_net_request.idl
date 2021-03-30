@@ -325,7 +325,8 @@ namespace declarativeNetRequest {
   };
 
   dictionary MatchedRulesFilter {
-    // If specified, only matches rules for the given tab.
+    // If specified, only matches rules for the given tab. Matches rules not
+    // associated with any active tab if set to -1.
     long? tabId;
 
     // If specified, only matches rules after the given timestamp.
@@ -462,21 +463,22 @@ namespace declarativeNetRequest {
     // extension updates.</li>
     // <li>Static rules specified as part of the extension package can not be
     // removed using this function.</li>
-    // <li>$(ref:MAX_NUMBER_OF_DYNAMIC_RULES) is the maximum number of dynamic
-    // rules an extension can add.</li>
+    // <li>$(ref:MAX_NUMBER_OF_DYNAMIC_AND_SESSION_RULES) is the maximum number
+    // of combined dynamic and session rules an extension can add.</li>
     // </ul>
     // |callback|: Called once the update is complete or has failed. In case of
     // an error, $(ref:runtime.lastError) will be set and no change will be made
     // to the rule set. This can happen for multiple reasons, such as invalid
     // rule format, duplicate rule ID, rule count limit exceeded, internal
     // errors, and others.
-    static void updateDynamicRules(UpdateRuleOptions options,
-                                   optional EmptyCallback callback);
+    [supportsPromises] static void updateDynamicRules(
+        UpdateRuleOptions options,
+        optional EmptyCallback callback);
 
     // Returns the current set of dynamic rules for the extension.
     // |callback|: Called with the set of dynamic rules. An error might be
     // raised in case of transient internal errors.
-    static void getDynamicRules(GetRulesCallback callback);
+    [supportsPromises] static void getDynamicRules(GetRulesCallback callback);
 
     // Modifies the current set of session scoped rules for the extension.
     // The rules with IDs listed in <code>options.removeRuleIds</code> are first
@@ -487,23 +489,20 @@ namespace declarativeNetRequest {
     // specified rules are added and removed, or an error is returned.</li>
     // <li>These rules are not persisted across sessions and are backed in
     // memory.</li>
-    // <li>$(ref:MAX_NUMBER_OF_DYNAMIC_OR_SESSION_RULES) is the maximum number
-    // of combined dynamic or session rules an extension can add.</li>
+    // <li>$(ref:MAX_NUMBER_OF_DYNAMIC_AND_SESSION_RULES) is the maximum number
+    // of combined dynamic and session rules an extension can add.</li>
     // </ul>
     // |callback|: Called once the update is complete or has failed. In case of
     // an error, $(ref:runtime.lastError) will be set and no change will be made
     // to the rule set. This can happen for multiple reasons, such as invalid
     // rule format, duplicate rule ID, rule count limit exceeded, and others.
-    // <!-- TODO(crbug.com/1043200): Add documentation once implementation is
-    // complete. -->
-    [nodoc] static void updateSessionRules(UpdateRuleOptions options,
-                                   optional EmptyCallback callback);
+    [supportsPromises] static void updateSessionRules(
+        UpdateRuleOptions options,
+        optional EmptyCallback callback);
 
     // Returns the current set of session scoped rules for the extension.
     // |callback|: Called with the set of session scoped rules.
-    // <!-- TODO(crbug.com/1043200): Add documentation once implementation is
-    // complete. -->
-    [nodoc] static void getSessionRules(GetRulesCallback callback);
+    [supportsPromises] static void getSessionRules(GetRulesCallback callback);
 
     // Updates the set of enabled static rulesets for the extension. The
     // rulesets with IDs listed in <code>options.disableRulesetIds</code> are
@@ -517,13 +516,15 @@ namespace declarativeNetRequest {
     // $(ref:runtime.lastError) will be set and no change will be made to set of
     // enabled rulesets. This can happen for multiple reasons, such as invalid
     // ruleset IDs, rule count limit exceeded, or internal errors.
-    static void updateEnabledRulesets(UpdateRulesetOptions options,
-                                      optional EmptyCallback callback);
+    [supportsPromises] static void updateEnabledRulesets(
+        UpdateRulesetOptions options,
+        optional EmptyCallback callback);
 
     // Returns the ids for the current set of enabled static rulesets.
     // |callback|: Called with a list of ids, where each id corresponds to an
     // enabled static $(ref:Ruleset).
-    static void getEnabledRulesets(GetEnabledRulesetsCallback callback);
+    [supportsPromises] static void getEnabledRulesets(
+        GetEnabledRulesetsCallback callback);
 
     // Returns all rules matched for the extension. Callers can optionally
     // filter the list of matched rules by specifying a |filter|. This method is
@@ -538,13 +539,14 @@ namespace declarativeNetRequest {
     // case of an error, $(ref:runtime.lastError) will be set and no rules will
     // be returned. This can happen for multiple reasons, such as insufficient
     // permissions, or exceeding the quota.
-    static void getMatchedRules(optional MatchedRulesFilter filter,
-                                GetMatchedRulesCallback callback);
+    [supportsPromises] static void getMatchedRules(
+        optional MatchedRulesFilter filter,
+        GetMatchedRulesCallback callback);
 
     // Configures if the action count for tabs should be displayed as the
     // extension action's badge text and provides a way for that action count to
     // be incremented.
-    static void setExtensionActionOptions(
+    [supportsPromises] static void setExtensionActionOptions(
         ExtensionActionOptions options,
         optional EmptyCallback callback);
 
@@ -553,12 +555,13 @@ namespace declarativeNetRequest {
     // |regexOptions|: The regular expression to check.
     // |callback|: Called with details consisting of whether the regular
     // expression is supported and the reason if not.
-    static void isRegexSupported(RegexOptions regexOptions,
-                                 IsRegexSupportedCallback callback);
+    [supportsPromises] static void isRegexSupported(
+        RegexOptions regexOptions,
+        IsRegexSupportedCallback callback);
 
     // Returns the number of static rules an extension can enable before the
     // <a href="#global-rule-limit">global static rule limit</a> is reached.
-    static void getAvailableStaticRuleCount(
+    [supportsPromises] static void getAvailableStaticRuleCount(
         GetAvailableStaticRuleCountCallback callback);
   };
 
@@ -569,14 +572,12 @@ namespace declarativeNetRequest {
     [value=30000] static long GUARANTEED_MINIMUM_STATIC_RULES();
 
     // The maximum number of dynamic rules that an extension can add.
-    [value=5000] static long MAX_NUMBER_OF_DYNAMIC_RULES();
+    [nodoc, deprecated="Use $(ref:MAX_NUMBER_OF_DYNAMIC_AND_SESSION_RULES) instead", value=5000]
+    static long MAX_NUMBER_OF_DYNAMIC_RULES();
 
-    // The maximum number of combined dynamic or session scoped rules an
+    // The maximum number of combined dynamic and session scoped rules an
     // extension can add.
-    // <!--TODO(crbug.com/1043200): Add documentation once implementation is
-    // complete. Also deprecate MAX_NUMBER_OF_DYNAMIC_RULES.
-    // -->
-    [nodoc, value=5000] static long MAX_NUMBER_OF_DYNAMIC_OR_SESSION_RULES();
+    [value=5000] static long MAX_NUMBER_OF_DYNAMIC_AND_SESSION_RULES();
 
     // Time interval within which <code>MAX_GETMATCHEDRULES_CALLS_PER_INTERVAL
     // getMatchedRules</code> calls can be made, specified in minutes.
@@ -602,10 +603,7 @@ namespace declarativeNetRequest {
     [value="_dynamic"] static DOMString DYNAMIC_RULESET_ID();
 
     // Ruleset ID for the session-scoped rules added by the extension.
-    // <!-- TODO(crbug.com/1043200): Add documentation once implementation is
-    // complete. Also describe it in MatchedRule.rulesetId.
-    // -->
-    [nodoc, value="_session"] static DOMString SESSION_RULESET_ID();
+    [value="_session"] static DOMString SESSION_RULESET_ID();
   };
 
   interface Events {

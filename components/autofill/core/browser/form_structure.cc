@@ -16,6 +16,7 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
@@ -38,6 +39,8 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/field_candidates.h"
 #include "components/autofill/core/browser/form_parsing/form_field.h"
+#include "components/autofill/core/browser/form_processing/label_processing_util.h"
+#include "components/autofill/core/browser/form_processing/name_processing_util.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
 #include "components/autofill/core/browser/rationalization_util.h"
@@ -49,6 +52,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/autofill/core/common/autofill_util.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_predictions.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -70,29 +74,6 @@ constexpr char kShippingMode[] = "shipping";
 
 // Default section name for the fields.
 constexpr char kDefaultSection[] = "-default";
-
-// Only removing common name prefixes if we have a minimum number of fields and
-// a minimum prefix length. These values are chosen to avoid cases such as two
-// fields with "address1" and "address2" and be effective against web frameworks
-// which prepend prefixes such as "ctl01$ctl00$MainContentRegion$" on all
-// fields.
-constexpr int kCommonNamePrefixRemovalFieldThreshold = 3;
-constexpr int kMinCommonNamePrefixLength = 16;
-
-// Affix removal configuration. Only remove short affixes if they are common
-// to all field names and there is at least the minimum number of fields.
-// If no affix common to all field names is found, search for a long
-// prefix common to a subset of the fields. This case helps include cases of
-// prefixes prepended by web frameworks.
-//
-// Minimum required number of available fields for trying to remove affixes.
-constexpr int kCommonNameAffixRemovalFieldNumberThreshold = 3;
-// Minimum required length for affixes common to all field names.
-constexpr int kMinCommonNameAffixLength = 3;
-// Minimum required length for prefixes common to a subset of the field names.
-constexpr int kMinCommonNameLongPrefixLength = 16;
-// Regex for checking if |parseable_name| is valid after stripping affixes.
-constexpr char kParseableNameValidationRe[] = "\\D";
 
 // Returns true if the scheme given by |url| is one for which autofill is
 // allowed to activate. By default this only returns true for HTTP and HTTPS.
@@ -441,7 +422,7 @@ void EncodeRandomizedValue(const RandomizedEncoder& encoder,
       encoder.Encode(form_signature, field_signature, data_type, data_value));
   if (include_checksum) {
     DCHECK(data_type == RandomizedEncoder::FORM_URL);
-    output->set_checksum(StrToHash32Bit(data_value.data()));
+    output->set_checksum(StrToHash32Bit(data_value));
   }
 }
 
@@ -580,14 +561,12 @@ void EncodeFieldMetadataForQuery(const FormFieldData& field,
 // For example, for Autofill to support fields of type
 // "PHONE_HOME_COUNTRY_CODE", there would need to be at least one other field
 // of type "PHONE_HOME_NUMBER" or "PHONE_HOME_CITY_AND_NUMBER".
-const std::unordered_map<ServerFieldType, ServerFieldTypeSet>&
-GetTypeRelationshipMap() {
-  // Initialized and cached on first use.
-  static const auto* const rules =
-      new std::unordered_map<ServerFieldType, ServerFieldTypeSet>(
+const auto& GetTypeRelationshipMap() {
+  static const auto rules =
+      base::MakeFixedFlatMap<ServerFieldType, ServerFieldTypeSet>(
           {{PHONE_HOME_COUNTRY_CODE,
             {PHONE_HOME_NUMBER, PHONE_HOME_CITY_AND_NUMBER}}});
-  return *rules;
+  return rules;
 }
 
 }  // namespace
@@ -651,15 +630,12 @@ FormStructure::FormStructure(const FormData& form)
       target_url_(form.action),
       main_frame_origin_(form.main_frame_origin),
       is_form_tag_(form.is_form_tag),
-      is_formless_checkout_(form.is_formless_checkout),
       all_fields_are_passwords_(!form.fields.empty()),
       form_parsed_timestamp_(AutofillTickClock::NowTicks()),
-      passwords_were_revealed_(false),
-      password_symbol_vote_(0),
-      developer_engagement_metrics_(0),
+      host_frame_(form.host_frame),
       unique_renderer_id_(form.unique_renderer_id) {
   // Copy the form fields.
-  std::map<base::string16, size_t> unique_names;
+  std::map<std::u16string, size_t> unique_names;
   for (const FormFieldData& field : form.fields) {
     if (!ShouldSkipField(field))
       ++active_field_count_;
@@ -672,9 +648,8 @@ FormStructure::FormStructure(const FormData& form)
     // Generate a unique name for this field by appending a counter to the name.
     // Make sure to prepend the counter with a non-numeric digit so that we are
     // guaranteed to avoid collisions.
-    base::string16 unique_name =
-        field.name + base::ASCIIToUTF16("_") +
-        base::NumberToString16(++unique_names[field.name]);
+    std::u16string unique_name =
+        field.name + u"_" + base::NumberToString16(++unique_names[field.name]);
     fields_.push_back(std::make_unique<AutofillField>(field, unique_name));
   }
 
@@ -693,14 +668,15 @@ FormStructure::FormStructure(
 
 FormStructure::~FormStructure() = default;
 
-void FormStructure::DetermineHeuristicTypes(LogManager* log_manager) {
+void FormStructure::DetermineHeuristicTypes(
+    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    LogManager* log_manager) {
   const auto determine_heuristic_types_start_time =
       AutofillTickClock::NowTicks();
 
   // First, try to detect field types based on each field's |autocomplete|
   // attribute value.
-  if (!was_parsed_for_autocomplete_attributes_)
-    ParseFieldTypesFromAutocompleteAttributes();
+  ParseFieldTypesFromAutocompleteAttributes();
 
   // Then if there are enough active fields, and if we are dealing with either a
   // proper <form> or a <form>-less checkout, run the heuristics and server
@@ -709,7 +685,7 @@ void FormStructure::DetermineHeuristicTypes(LogManager* log_manager) {
     const FieldCandidatesMap field_type_map = FormField::ParseFormFields(
         fields_, current_page_language_, is_form_tag_, log_manager);
     for (const auto& field : fields_) {
-      const auto iter = field_type_map.find(field->unique_renderer_id);
+      const auto iter = field_type_map.find(field->global_id());
       if (iter != field_type_map.end()) {
         field->set_heuristic_type(iter->second.BestHeuristicType());
       }
@@ -736,6 +712,10 @@ void FormStructure::DetermineHeuristicTypes(LogManager* log_manager) {
         1 << AutofillMetrics::FORM_CONTAINS_UPI_VPA_HINT;
   }
 
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillParsingPatternsLanguageDetection)) {
+    RationalizeRepeatedFields(form_interactions_ukm_logger);
+  }
   RationalizeFieldTypePredictions();
 
   AutofillMetrics::LogDetermineHeuristicTypesTiming(
@@ -747,6 +727,7 @@ bool FormStructure::EncodeUploadRequest(
     bool form_was_autofilled,
     const std::string& login_form_signature,
     bool observed_submission,
+    bool is_raw_metadata_uploading_enabled,
     AutofillUploadContents* upload,
     std::vector<FormSignature>* encoded_signatures) const {
   DCHECK(AllTypesCaptured(*this, available_field_types));
@@ -779,8 +760,8 @@ bool FormStructure::EncodeUploadRequest(
                                  upload);
   }
 
-  if (IsAutofillFieldMetadataEnabled()) {
-    upload->set_action_signature(StrToHash64Bit(target_url_.host()));
+  if (is_raw_metadata_uploading_enabled) {
+    upload->set_action_signature(StrToHash64Bit(target_url_.host_piece()));
     if (!form_name().empty())
       upload->set_form_name(base::UTF16ToUTF8(form_name()));
     for (const ButtonTitleInfo& e : button_titles_) {
@@ -799,7 +780,8 @@ bool FormStructure::EncodeUploadRequest(
   if (IsMalformed())
     return false;  // Malformed form, skip it.
 
-  EncodeFormForUpload(upload, encoded_signatures);
+  EncodeFormForUpload(is_raw_metadata_uploading_enabled, upload,
+                      encoded_signatures);
   return true;
 }
 
@@ -913,6 +895,12 @@ void FormStructure::ProcessQueryResponse(
       std::vector<AutofillQueryResponse::FormSuggestion::FieldSuggestion::
                       FieldPrediction>
           server_predictions;
+
+      if (current_field.has_primary_type_prediction()) {
+        field->set_server_type_prediction_is_override(
+            current_field.primary_type_prediction_is_override());
+      }
+
       if (current_field.predictions_size() == 0) {
         AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
             field_prediction;
@@ -984,13 +972,6 @@ std::vector<FormDataPredictions> FormStructure::GetFieldTypePredictions(
     forms.push_back(form);
   }
   return forms;
-}
-
-// static
-bool FormStructure::IsAutofillFieldMetadataEnabled() {
-  const std::string group_name =
-      base::FieldTrialList::FindFullName("AutofillFieldMetadata");
-  return base::StartsWith(group_name, "Enabled", base::CompareCase::SENSITIVE);
 }
 
 std::unique_ptr<FormStructure> FormStructure::CreateForPasswordManagerUpload(
@@ -1065,7 +1046,7 @@ bool FormStructure::ShouldBeParsed(LogManager* log_manager) const {
   }
 
   // Rule out search forms.
-  static const base::string16 kUrlSearchActionPattern =
+  static const std::u16string kUrlSearchActionPattern =
       base::UTF8ToUTF16(kUrlSearchActionRe);
   if (MatchesPattern(base::UTF8ToUTF16(target_url_.path_piece()),
                      kUrlSearchActionPattern)) {
@@ -1092,10 +1073,7 @@ bool FormStructure::ShouldBeParsed(LogManager* log_manager) const {
 
 bool FormStructure::ShouldRunHeuristics() const {
   return active_field_count() >= kMinRequiredFieldsForHeuristics &&
-         HasAllowedScheme(source_url_) &&
-         (is_form_tag_ || is_formless_checkout_ ||
-          !base::FeatureList::IsEnabled(
-              features::kAutofillRestrictUnownedFieldsToFormlessCheckout));
+         HasAllowedScheme(source_url_);
 }
 
 bool FormStructure::ShouldBeQueried() const {
@@ -1113,14 +1091,14 @@ void FormStructure::RetrieveFromCache(
     const FormStructure& cached_form,
     const bool should_keep_cached_value,
     const bool only_server_and_autofill_state) {
-  std::map<FieldRendererId, const AutofillField*> cached_fields_by_id;
+  std::map<FieldGlobalId, const AutofillField*> cached_fields_by_id;
   for (size_t i = 0; i < cached_form.field_count(); ++i) {
     auto* const field = cached_form.field(i);
-    cached_fields_by_id[field->unique_renderer_id] = field;
+    cached_fields_by_id[field->global_id()] = field;
   }
   for (auto& field : *this) {
     const AutofillField* cached_field = nullptr;
-    const auto& it = cached_fields_by_id.find(field->unique_renderer_id);
+    const auto& it = cached_fields_by_id.find(field->global_id());
     if (it != cached_fields_by_id.end())
       cached_field = it->second;
 
@@ -1170,10 +1148,12 @@ void FormStructure::RetrieveFromCache(
           // default values are equivalent to empty fields.
           // Since a website can prefill country and state values basedw on
           // GeoIp, the mechanism is deactivated for state and country fields.
-          field->value = base::string16();
+          field->value = std::u16string();
         }
       }
       field->set_server_type(cached_field->server_type());
+      field->set_server_type_prediction_is_override(
+          cached_field->server_type_prediction_is_override());
       field->set_previously_autofilled(cached_field->previously_autofilled());
 
       // Only retrieve an overall prediction from cache if a server prediction
@@ -1357,6 +1337,9 @@ void FormStructure::LogQualityMetricsBasedOnAutocomplete(
 }
 
 void FormStructure::ParseFieldTypesFromAutocompleteAttributes() {
+  if (was_parsed_for_autocomplete_attributes_)
+    return;
+
   has_author_specified_types_ = false;
   has_author_specified_sections_ = false;
   has_author_specified_upi_vpa_hint_ = false;
@@ -1464,8 +1447,8 @@ void FormStructure::ParseFieldTypesFromAutocompleteAttributes() {
   was_parsed_for_autocomplete_attributes_ = true;
 }
 
-std::set<base::string16> FormStructure::PossibleValues(ServerFieldType type) {
-  std::set<base::string16> values;
+std::set<std::u16string> FormStructure::PossibleValues(ServerFieldType type) {
+  std::set<std::u16string> values;
   AutofillType target_type(type);
   for (const auto& field : fields_) {
     if (field->Type().GetStorableType() != target_type.GetStorableType() ||
@@ -1479,12 +1462,12 @@ std::set<base::string16> FormStructure::PossibleValues(ServerFieldType type) {
       break;
     }
 
-    for (const base::string16& val : field->option_values) {
+    for (const std::u16string& val : field->option_values) {
       if (!val.empty())
         values.insert(base::i18n::ToUpper(val));
     }
 
-    for (const base::string16& content : field->option_contents) {
+    for (const std::u16string& content : field->option_contents) {
       if (!content.empty())
         values.insert(base::i18n::ToUpper(content));
     }
@@ -1526,8 +1509,8 @@ FormData FormStructure::ToFormData() const {
   data.action = target_url_;
   data.main_frame_origin = main_frame_origin_;
   data.is_form_tag = is_form_tag_;
-  data.is_formless_checkout = is_formless_checkout_;
-  data.unique_renderer_id = unique_renderer_id_;
+  data.host_frame = host_frame();
+  data.unique_renderer_id = unique_renderer_id();
 
   for (const auto& field : fields_) {
     data.fields.push_back(*field);
@@ -1828,7 +1811,7 @@ bool FormStructure::FieldShouldBeRationalizedToCountry(size_t upper_index) {
   for (int field_index = upper_index - 1; field_index >= 0; --field_index) {
     if (fields_[field_index]->IsVisible() &&
         AutofillType(fields_[field_index]->Type().GetStorableType()).group() ==
-            ADDRESS_HOME &&
+            FieldTypeGroup::kAddressHome &&
         fields_[field_index]->section == fields_[upper_index]->section) {
       return false;
     }
@@ -1968,19 +1951,7 @@ void FormStructure::RationalizeRepeatedFields(
 void FormStructure::RationalizeFieldTypePredictions() {
   RationalizeCreditCardFieldPredictions();
   for (const auto& field : fields_) {
-    if (base::FeatureList::IsEnabled(features::kAutofillOffNoServerData) &&
-        !field->should_autocomplete && field->server_type() == NO_SERVER_DATA &&
-        field->heuristic_type() != CREDIT_CARD_VERIFICATION_CODE) {
-      // When the field has autocomplete off, and the server returned no
-      // prediction, then assume Autofill is not useful for the current field.
-      // Special case for CVC (crbug.com/968036). We never send votes for CVC
-      // fields, but we still fill them when the user inputs them via the CVC
-      // prompt. Since Autofill doesn't trigger from a CVC field, we can keep
-      // the client-side predictions for this type.
-      field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
-    } else {
-      field->SetTypeTo(field->Type());
-    }
+    field->SetTypeTo(field->Type());
   }
   RationalizeTypeRelationships();
 }
@@ -2008,17 +1979,11 @@ void FormStructure::EncodeFormForQuery(
     if (is_rich_query_enabled_) {
       EncodeFieldMetadataForQuery(*field, added_field->mutable_metadata());
     }
-
-    if (IsAutofillFieldMetadataEnabled()) {
-      added_field->set_control_type(field->form_control_type);
-
-      if (!field->name.empty())
-        added_field->set_name(base::UTF16ToUTF8(field->name));
-    }
   }
 }
 
 void FormStructure::EncodeFormForUpload(
+    bool is_raw_metadata_uploading_enabled,
     AutofillUploadContents* upload,
     std::vector<FormSignature>* encoded_signatures) const {
   DCHECK(!IsMalformed());
@@ -2081,7 +2046,7 @@ void FormStructure::EncodeFormForUpload(
           added_field->mutable_randomized_field_metadata());
     }
 
-    if (IsAutofillFieldMetadataEnabled()) {
+    if (is_raw_metadata_uploading_enabled) {
       added_field->set_type(field->form_control_type);
 
       if (!field->name.empty())
@@ -2127,17 +2092,17 @@ void FormStructure::IdentifySectionsWithNewMethod() {
     if (base::FeatureList::IsEnabled(
             features::kAutofillNameSectionsWithRendererIds)) {
       return base::StrCat(
-          {field.name, base::ASCIIToUTF16("_"),
-           base::NumberToString16(field.unique_renderer_id.value())});
+          {field.name, u"_", base::ASCIIToUTF16(field.host_frame.ToString()),
+           u"_", base::NumberToString16(field.unique_renderer_id.value())});
     } else {
       return field.unique_name();
     }
   };
 
-  base::string16 current_section = get_section_name(*fields_.front());
+  std::u16string current_section = get_section_name(*fields_.front());
 
   // Keep track of the types we've seen in this section.
-  std::set<ServerFieldType> seen_types;
+  ServerFieldTypeSet seen_types;
   ServerFieldType previous_type = UNKNOWN_TYPE;
 
   // Boolean flag that is set to true when a field in the current section
@@ -2145,12 +2110,12 @@ void FormStructure::IdentifySectionsWithNewMethod() {
   bool previous_autocomplete_section_present = false;
 
   bool is_hidden_section = false;
-  base::string16 last_visible_section;
+  std::u16string last_visible_section;
   for (const auto& field : fields_) {
     const ServerFieldType current_type = field->Type().GetStorableType();
     // All credit card fields belong to the same section that's different
     // from address sections.
-    if (AutofillType(current_type).group() == CREDIT_CARD) {
+    if (AutofillType(current_type).group() == FieldTypeGroup::kCreditCard) {
       field->section = "credit-card";
       continue;
     }
@@ -2160,7 +2125,7 @@ void FormStructure::IdentifySectionsWithNewMethod() {
     // Forms often ask for multiple phone numbers -- e.g. both a daytime and
     // evening phone number.  Our phone number detection is also generally a
     // little off.  Hence, ignore this field type as a signal here.
-    if (AutofillType(current_type).group() == PHONE_HOME)
+    if (AutofillType(current_type).group() == FieldTypeGroup::kPhoneHome)
       already_saw_current_type = false;
 
     if (is_enabled_autofill_redundant_name_sectioning) {
@@ -2277,13 +2242,19 @@ void FormStructure::IdentifySectionsWithNewMethod() {
   // This simplifies the section-aware logic in autofill_manager.cc.
   for (const auto& field : fields_) {
     FieldTypeGroup field_type_group = field->Type().group();
-    if (field_type_group == CREDIT_CARD)
+    if (field_type_group == FieldTypeGroup::kCreditCard)
       field->section = field->section + "-cc";
     else
       field->section = field->section + "-default";
   }
+
+  // Since this function has changed the sections, subsequent calls to
+  // ParseFieldTypesFromAutocompleteAttributes(), which modifies the
+  // sections, too, should not be no-ops.
+  was_parsed_for_autocomplete_attributes_ = false;
 }
 
+// TODO(crbug/1153539): Make sectioning less stateful, less std::string-based.
 void FormStructure::IdentifySections(bool has_author_specified_sections) {
   if (fields_.empty())
     return;
@@ -2303,27 +2274,27 @@ void FormStructure::IdentifySections(bool has_author_specified_sections) {
     if (base::FeatureList::IsEnabled(
             features::kAutofillNameSectionsWithRendererIds)) {
       return base::StrCat(
-          {field.name, base::ASCIIToUTF16("_"),
-           base::NumberToString16(field.unique_renderer_id.value())});
+          {field.name, u"_", base::ASCIIToUTF16(field.host_frame.ToString()),
+           u"_", base::NumberToString16(field.unique_renderer_id.value())});
     } else {
       return field.unique_name();
     }
   };
 
   if (!has_author_specified_sections) {
-    base::string16 current_section = get_section_name(*fields_.front());
+    std::u16string current_section = get_section_name(*fields_.front());
 
     // Keep track of the types we've seen in this section.
-    std::set<ServerFieldType> seen_types;
+    ServerFieldTypeSet seen_types;
     ServerFieldType previous_type = UNKNOWN_TYPE;
 
     bool is_hidden_section = false;
-    base::string16 last_visible_section;
+    std::u16string last_visible_section;
     for (const auto& field : fields_) {
       const ServerFieldType current_type = field->Type().GetStorableType();
       // All credit card fields belong to the same section that's different
       // from address sections.
-      if (AutofillType(current_type).group() == CREDIT_CARD) {
+      if (AutofillType(current_type).group() == FieldTypeGroup::kCreditCard) {
         field->section = "credit-card";
         continue;
       }
@@ -2333,7 +2304,7 @@ void FormStructure::IdentifySections(bool has_author_specified_sections) {
       // Forms often ask for multiple phone numbers -- e.g. both a daytime and
       // evening phone number.  Our phone number detection is also generally a
       // little off.  Hence, ignore this field type as a signal here.
-      if (AutofillType(current_type).group() == PHONE_HOME)
+      if (AutofillType(current_type).group() == FieldTypeGroup::kPhoneHome)
         already_saw_current_type = false;
 
       if (is_enabled_autofill_redundant_name_sectioning) {
@@ -2415,11 +2386,16 @@ void FormStructure::IdentifySections(bool has_author_specified_sections) {
   // This simplifies the section-aware logic in autofill_manager.cc.
   for (const auto& field : fields_) {
     FieldTypeGroup field_type_group = field->Type().group();
-    if (field_type_group == CREDIT_CARD)
+    if (field_type_group == FieldTypeGroup::kCreditCard)
       field->section = field->section + "-cc";
     else
       field->section = field->section + "-default";
   }
+
+  // Since this function has changed the sections, subsequent calls to
+  // ParseFieldTypesFromAutocompleteAttributes(), which modifies the
+  // sections, too, should not be no-ops.
+  was_parsed_for_autocomplete_attributes_ = false;
 }
 
 bool FormStructure::ShouldSkipField(const FormFieldData& field) const {
@@ -2427,195 +2403,83 @@ bool FormStructure::ShouldSkipField(const FormFieldData& field) const {
 }
 
 void FormStructure::ProcessExtractedFields() {
+  // Extracts the |parseable_name_| by removing common affixes from the
+  // field names.
+  ExtractParseableFieldNames();
+
+  // TODO(crbug/1165780): Remove once shared labels are launched.
   if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillLabelAffixRemoval)) {
-    // Updates the field name parsed by heuristics if several criteria are met.
-    // Several fields must be present in the form.
-    if (field_count() < kCommonNameAffixRemovalFieldNumberThreshold)
-      return;
+          features::kAutofillEnableSupportForParsingWithSharedLabels)) {
+    // Extracts the |parsable_label_| for each field.
+    ExtractParseableFieldLabels();
+  }
+}
 
-    std::vector<base::StringPiece16> names;
-    names.reserve(field_count());
-    for (const auto& field : *this)
-      names.push_back(field->name);
+void FormStructure::ExtractParseableFieldLabels() {
+  std::vector<base::StringPiece16> field_labels;
+  field_labels.reserve(field_count());
+  for (const auto& field : *this) {
+    // Skip fields that are not a text input or not visible.
+    if (!field->IsTextInputElement() || !field->IsVisible()) {
+      continue;
+    }
+    field_labels.push_back(field->label);
+  }
 
-    int longest_prefix_length = FindLongestCommonAffixLength(names, false);
-    int longest_suffix_length = FindLongestCommonAffixLength(names, true);
-
-    // Don't remove the common affix if it's not long enough.
-    if (longest_prefix_length < kMinCommonNameAffixLength)
-      longest_prefix_length = 0;
-
-    if (longest_suffix_length < kMinCommonNameAffixLength)
-      longest_suffix_length = 0;
-
-    bool success =
-        SetStrippedParseableNames(longest_prefix_length, longest_suffix_length);
-
-    // Don't search for inconsistent prefix if valid affixes are found.
-    if (success && longest_prefix_length + longest_suffix_length > 0)
-      return;
-
-    // Functionality for stripping a prefix only common to a subset
-    // of field names.
-    // This is needed because an exceptional field may be missing a prefix
-    // which is otherwise consistently applied--for instance, a framework
-    // may only apply a prefix to those fields which are bound when POSTing.
-    names.clear();
-    for (const auto& field : *this)
-      if (field->name.size() > kMinCommonNameLongPrefixLength)
-        names.push_back(field->name);
-
-    if (names.size() < kCommonNamePrefixRemovalFieldThreshold)
-      return;
-
-    const int longest_long_prefix_length =
-        FindLongestCommonAffixLength(names, false);
-
-    if (longest_long_prefix_length >= kMinCommonNameLongPrefixLength)
-      SetStrippedParseableNames(longest_long_prefix_length, 0);
-
+  // Determine the parsable labels and write them back.
+  base::Optional<std::vector<std::u16string>> parsable_labels =
+      GetParseableLabels(field_labels);
+  // If not single label was split, the function can return, because the
+  // |parsable_label_| is assigned to |label| by default.
+  if (!parsable_labels.has_value()) {
     return;
   }
 
-  // Update the field name parsed by heuristics if several criteria are met.
-  // Several fields must be present in the form.
-  if (field_count() < kCommonNamePrefixRemovalFieldThreshold)
-    return;
+  size_t idx = 0;
+  for (auto& field : *this) {
+    if (!field->IsTextInputElement() || !field->IsVisible()) {
+      // For those fields, set the original label.
+      field->set_parseable_label(field->label);
+      continue;
+    }
+    DCHECK(idx < parsable_labels->size());
+    field->set_parseable_label(parsable_labels->at(idx++));
+  }
+}
 
-  // Find the longest common prefix within all the field names.
-  std::vector<base::string16> names;
+void FormStructure::ExtractParseableFieldNames() {
+  // Create a vector of string pieces containing the field names.
+  std::vector<base::StringPiece16> names;
   names.reserve(field_count());
-  for (const auto& field : *this)
-    names.push_back(field->name);
+  for (const auto& field : *this) {
+    names.push_back(base::StringPiece16(field->name));
+  }
 
-  const base::string16 longest_prefix = FindLongestCommonPrefix(names);
-  if (longest_prefix.size() < kMinCommonNamePrefixLength)
-    return;
-
-  // The name without the prefix will be used for heuristics parsing.
+  // Determine the parseable names and write them into the corresponding field.
+  std::vector<std::u16string> parseable_names = GetParseableNames(names);
+  DCHECK_EQ(parseable_names.size(), field_count());
+  size_t idx = 0;
   for (auto& field : *this) {
-    if (field->name.size() > longest_prefix.size()) {
-      field->set_parseable_name(
-          field->name.substr(longest_prefix.size(), field->name.size()));
-    }
+    field->set_parseable_name(parseable_names.at(idx++));
   }
 }
 
-bool FormStructure::SetStrippedParseableNames(size_t offset_left,
-                                              size_t offset_right) {
-  // Keeps track if all stripped strings are valid according to
-  // |IsValidParseableName()|. If at least one string is invalid,
-  // all |parseable_name| are reset to |name|.
-  bool should_keep = true;
-  for (auto& field : *this) {
-    // This check allows to only strip affixes from long enough strings.
-    if (field->name.size() > offset_right + offset_left) {
-      field->set_parseable_name(field->name.substr(
-          offset_left, field->name.size() - offset_right - offset_left));
-    } else {
-      field->set_parseable_name(field->name);
-    }
-
-    should_keep &= IsValidParseableName(field->parseable_name());
-    if (!should_keep)
-      break;
-  }
-
-  // Reset if some stripped string was invalid.
-  if (!should_keep) {
-    for (auto& field : *this)
-      field->set_parseable_name(field->name);
-  }
-
-  return should_keep;
-}
-
-bool FormStructure::IsValidParseableName(
-    base::string16 candidateParseableName) {
-  static const base::string16 kParseableNameValidationPattern =
-      base::UTF8ToUTF16(kParseableNameValidationRe);
-  if (MatchesPattern(candidateParseableName, kParseableNameValidationPattern))
-    return true;
-
-  return false;
-}
-
-// static
-size_t FormStructure::FindLongestCommonAffixLength(
-    const std::vector<base::StringPiece16>& strings,
-    bool findCommonSuffix) {
-  if (strings.empty())
-    return 0;
-
-  // Go through each character of the first string until there is a mismatch at
-  // the same position in any other string. Adapted from http://goo.gl/YGukMM.
-  for (size_t affix_len = 0; affix_len < strings[0].size(); affix_len++) {
-    size_t base_string_index =
-        findCommonSuffix ? strings[0].size() - affix_len - 1 : affix_len;
-    for (size_t i = 1; i < strings.size(); i++) {
-      size_t compared_string_index =
-          findCommonSuffix ? strings[i].size() - affix_len - 1 : affix_len;
-      if (affix_len >= strings[i].size() ||
-          strings[i][compared_string_index] != strings[0][base_string_index]) {
-        // Mismatch found.
-        return affix_len;
-      }
-    }
-  }
-  return strings[0].size();
-}
-
-// static
-base::string16 FormStructure::FindLongestCommonPrefix(
-    const std::vector<base::string16>& strings) {
-  if (strings.empty())
-    return base::string16();
-
-  std::vector<base::string16> filtered_strings;
-
-  // Any strings less than kMinCommonNamePrefixLength are neither modified
-  // nor considered when processing for a common prefix.
-  std::copy_if(
-      strings.begin(), strings.end(), std::back_inserter(filtered_strings),
-      [](base::string16 s) { return s.size() >= kMinCommonNamePrefixLength; });
-
-  if (filtered_strings.empty())
-    return base::string16();
-
-  // Go through each character of the first string until there is a mismatch at
-  // the same position in any other string. Adapted from http://goo.gl/YGukMM.
-  for (size_t prefix_len = 0; prefix_len < filtered_strings[0].size();
-       prefix_len++) {
-    for (size_t i = 1; i < filtered_strings.size(); i++) {
-      if (prefix_len >= filtered_strings[i].size() ||
-          filtered_strings[i].at(prefix_len) !=
-              filtered_strings[0].at(prefix_len)) {
-        // Mismatch found.
-        return filtered_strings[i].substr(0, prefix_len);
-      }
-    }
-  }
-  return filtered_strings[0];
-}
-
-std::set<FormType> FormStructure::GetFormTypes() const {
-  std::set<FormType> form_types;
+DenseSet<FormType> FormStructure::GetFormTypes() const {
+  DenseSet<FormType> form_types;
   for (const auto& field : fields_) {
-    form_types.insert(
-        FormTypes::FieldTypeGroupToFormType(field->Type().group()));
+    form_types.insert(FieldTypeGroupToFormType(field->Type().group()));
   }
   return form_types;
 }
 
-base::string16 FormStructure::GetIdentifierForRefill() const {
+std::u16string FormStructure::GetIdentifierForRefill() const {
   if (!form_name().empty())
     return form_name();
 
   if (field_count() && !field(0)->unique_name().empty())
     return field(0)->unique_name();
 
-  return base::string16();
+  return std::u16string();
 }
 
 void FormStructure::set_randomized_encoder(
@@ -2625,7 +2489,7 @@ void FormStructure::set_randomized_encoder(
 
 void FormStructure::RationalizeTypeRelationships() {
   // Create a local set of all the types for faster lookup.
-  std::unordered_set<ServerFieldType> types;
+  ServerFieldTypeSet types;
   for (const auto& field : fields_) {
     types.insert(field->Type().GetStorableType());
   }
@@ -2634,21 +2498,11 @@ void FormStructure::RationalizeTypeRelationships() {
 
   for (const auto& field : fields_) {
     ServerFieldType field_type = field->Type().GetStorableType();
-    const auto& ruleset_iterator = type_relationship_rules.find(field_type);
+    const auto* ruleset_iterator = type_relationship_rules.find(field_type);
     if (ruleset_iterator != type_relationship_rules.end()) {
       // We have relationship rules for this type. Verify that at least one of
       // the required related type is present.
-      bool found = false;
-      for (ServerFieldType required_type : ruleset_iterator->second) {
-        if (types.find(required_type) != types.end()) {
-          // Found a required type, we can break as we only need one required
-          // type to respect the rule.
-          found = true;
-          break;
-        }
-      }
-
-      if (!found) {
+      if (!types.contains_any(ruleset_iterator->second)) {
         // No required type was found, the current field failed the relationship
         // requirements for its type. Disabling Autofill for this field.
         field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
@@ -2664,6 +2518,7 @@ std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
                           base::NumberToString(
                               HashFormSignature(form.form_signature()))});
   buffer << "\n Form name: " << form.form_name();
+  buffer << "\n Host frame: " << form.host_frame().ToString();
   buffer << "\n Unique renderer Id: " << form.unique_renderer_id().value();
   buffer << "\n Target URL:" << form.target_url();
   for (size_t i = 0; i < form.field_count(); ++i) {
@@ -2675,6 +2530,7 @@ std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
                    " - ",
                    base::NumberToString(
                        HashFieldSignature(field->GetFieldSignature())),
+                   ", host frame: ", field->host_frame.ToString(),
                    ", unique renderer id: ",
                    base::NumberToString(field->unique_renderer_id.value())});
     buffer << "\n  Name: " << field->parseable_name();
@@ -2694,7 +2550,7 @@ std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
     buffer << "\n  Section: " << field->section;
 
     constexpr size_t kMaxLabelSize = 100;
-    const base::string16 truncated_label =
+    const std::u16string truncated_label =
         field->label.substr(0, std::min(field->label.length(), kMaxLabelSize));
     buffer << "\n  Label: " << truncated_label;
 
@@ -2712,6 +2568,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
                           base::NumberToString(
                               HashFormSignature(form.form_signature()))});
   buffer << Tr{} << "Form name:" << form.form_name();
+  buffer << Tr{} << "Host frame:" << form.host_frame().ToString();
   buffer << Tr{} << "Unique renderer id:" << form.unique_renderer_id().value();
   buffer << Tr{} << "Target URL:" << form.target_url();
   for (size_t i = 0; i < form.field_count(); ++i) {
@@ -2726,6 +2583,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
                    " - ",
                    base::NumberToString(
                        HashFieldSignature(field->GetFieldSignature())),
+                   ", host frame: ", field->host_frame.ToString(),
                    ", unique renderer id: ",
                    base::NumberToString(field->unique_renderer_id.value())});
     buffer << Tr{} << "Name:" << field->parseable_name();
@@ -2745,7 +2603,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
     buffer << Tr{} << "Section:" << field->section;
 
     constexpr size_t kMaxLabelSize = 100;
-    const base::string16 truncated_label =
+    const std::u16string truncated_label =
         field->label.substr(0, std::min(field->label.length(), kMaxLabelSize));
     buffer << Tr{} << "Label:" << truncated_label;
 

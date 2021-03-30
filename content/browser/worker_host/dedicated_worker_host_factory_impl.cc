@@ -38,6 +38,7 @@ DedicatedWorkerServiceImpl* GetDedicatedWorkerServiceImplForRenderProcessHost(
 DedicatedWorkerHostFactoryImpl::DedicatedWorkerHostFactoryImpl(
     int worker_process_id,
     base::Optional<GlobalFrameRoutingId> creator_render_frame_host_id,
+    base::Optional<blink::DedicatedWorkerToken> creator_worker_token,
     GlobalFrameRoutingId ancestor_render_frame_host_id,
     const url::Origin& creator_origin,
     const net::IsolationInfo& isolation_info,
@@ -46,19 +47,24 @@ DedicatedWorkerHostFactoryImpl::DedicatedWorkerHostFactoryImpl(
         coep_reporter)
     : worker_process_id_(worker_process_id),
       creator_render_frame_host_id_(creator_render_frame_host_id),
+      creator_worker_token_(creator_worker_token),
       ancestor_render_frame_host_id_(ancestor_render_frame_host_id),
       creator_origin_(creator_origin),
       isolation_info_(isolation_info),
       cross_origin_embedder_policy_(cross_origin_embedder_policy),
       coep_reporter_(std::move(coep_reporter)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK((creator_render_frame_host_id_ && !creator_worker_token_) ||
+         (!creator_render_frame_host_id_ && creator_worker_token_));
 }
 
 DedicatedWorkerHostFactoryImpl::~DedicatedWorkerHostFactoryImpl() = default;
 
 void DedicatedWorkerHostFactoryImpl::CreateWorkerHost(
     const blink::DedicatedWorkerToken& token,
+    const GURL& script_url,
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker> broker_receiver,
+    mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost> host_receiver,
     base::OnceCallback<void(const network::CrossOriginEmbedderPolicy&)>
         callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -92,9 +98,11 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHost(
 
   auto* host = new DedicatedWorkerHost(
       service, token, worker_process_host, creator_render_frame_host_id_,
-      ancestor_render_frame_host_id_, creator_origin_, isolation_info_,
-      cross_origin_embedder_policy_, std::move(coep_reporter));
+      creator_worker_token_, ancestor_render_frame_host_id_, creator_origin_,
+      isolation_info_, cross_origin_embedder_policy_, std::move(coep_reporter),
+      std::move(host_receiver));
   host->BindBrowserInterfaceBrokerReceiver(std::move(broker_receiver));
+  host->MaybeCountWebFeature(script_url);
 }
 
 // PlzDedicatedWorker:
@@ -132,16 +140,19 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
       coep_reporter;
   coep_reporter_->Clone(coep_reporter.InitWithNewPipeAndPassReceiver());
 
+  mojo::PendingRemote<blink::mojom::DedicatedWorkerHost> pending_remote_host;
   auto* host = new DedicatedWorkerHost(
       service, token, worker_process_host, creator_render_frame_host_id_,
-      ancestor_render_frame_host_id_, creator_origin_, isolation_info_,
-      cross_origin_embedder_policy_, std::move(coep_reporter));
+      creator_worker_token_, ancestor_render_frame_host_id_, creator_origin_,
+      isolation_info_, cross_origin_embedder_policy_, std::move(coep_reporter),
+      pending_remote_host.InitWithNewPipeAndPassReceiver());
   mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker;
   host->BindBrowserInterfaceBrokerReceiver(
       broker.InitWithNewPipeAndPassReceiver());
   mojo::Remote<blink::mojom::DedicatedWorkerHostFactoryClient> remote_client(
       std::move(client));
-  remote_client->OnWorkerHostCreated(std::move(broker));
+  remote_client->OnWorkerHostCreated(std::move(broker),
+                                     std::move(pending_remote_host));
   host->StartScriptLoad(script_url, credentials_mode,
                         std::move(outside_fetch_client_settings_object),
                         std::move(blob_url_token), std::move(remote_client));

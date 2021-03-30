@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">Liste öğesi</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">İki parmağınızı sağa kaydırın</translation>
-<translation id="1016393160682012902">İşlevini öğrenmek için bir qwerty tuşuna, yenilenebilir braille tuşuna basabilir veya dokunma hareketi yapabilirsiniz. Çıkmak için control+w tuş kombinasyonuna ya da escape tuşuna basın.</translation>
 <translation id="1022586497894531524">ChromeVox sözlü geri bildirimini ilk kez mi kullanıyorsunuz? Bu hızlı eğiticide, ChromeVox'ı kullanmaya başlamak için gereken temel bilgiler açıklanmaktadır.</translation>
 <translation id="1025074108959230262">Sabit mod devre dışı bırakıldı</translation>
 <translation id="1031961866430398710">sonra</translation>
@@ -150,6 +149,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="2045055672832940894">Önceki denetim yok</translation>
 <translation id="2045606329038304310">Form alanı kontrolü</translation>
 <translation id="2063539687800151747">Yazıt</translation>
+<translation id="2074531330963286860">Kullanılabilir işlemler mevcut. Görüntülemek için Ara ve Nokta tuşlarına basın</translation>
 <translation id="2086961585857038472">Sonraki Kelime</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">tr</translation>
@@ -975,6 +975,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="827266600368092403">Seçimi başlat veya bitir</translation>
 <translation id="827422111966801947">Çivit Mavisi</translation>
 <translation id="8276439074553447000">Odaklanabilir önceki öğeye atla</translation>
+<translation id="8279039817939141096">İşlevini öğrenmek için bir qwerty tuşuna, yenilenebilir braille tuşuna basabilir veya dokunma hareketi yapabilirsiniz. Çıkmak için control+w, boşluk+Z tuş kombinasyonuna veya escape tuşuna basın ya da iki parmakla sola kaydırın.</translation>
 <translation id="8283603667300770666">Sonraki form alanı</translation>
 <translation id="8310185481635255431">Sonraki bağlantı yok</translation>
 <translation id="831207808878314375">Tanım</translation>

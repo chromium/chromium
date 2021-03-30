@@ -30,7 +30,7 @@ UsbInternalsUI::UsbInternalsUI(content::WebUI* web_ui)
       {"usb_manager_test.mojom-webui.js",
        IDR_USB_DEVICE_MANAGER_TEST_MOJOM_WEBUI_JS},
   };
-  webui::AddResourcePathsBulk(source, kPaths);
+  source->AddResourcePaths(kPaths);
 
   webui::SetupWebUIDataSource(
       source,

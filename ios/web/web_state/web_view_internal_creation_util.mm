@@ -7,6 +7,7 @@
 #include "base/check_op.h"
 #include "base/strings/sys_string_conversions.h"
 #import "ios/web/public/web_client.h"
+#import "ios/web/web_state/crw_web_view.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -43,13 +44,15 @@ WKWebView* BuildWKWebViewForQueries(WKWebViewConfiguration* configuration,
 WKWebView* BuildWKWebView(CGRect frame,
                           WKWebViewConfiguration* configuration,
                           BrowserState* browser_state,
-                          UserAgentType user_agent_type) {
+                          UserAgentType user_agent_type,
+                          id<CRWInputViewProvider> input_view_provider) {
   VerifyWKWebViewCreationPreConditions(browser_state, configuration);
 
   GetWebClient()->PreWebViewCreation();
 
-  WKWebView* web_view =
-      [[WKWebView alloc] initWithFrame:frame configuration:configuration];
+  CRWWebView* web_view = [[CRWWebView alloc] initWithFrame:frame
+                                             configuration:configuration];
+  web_view.inputViewProvider = input_view_provider;
 
   // Set the user agent type.
   if (user_agent_type != web::UserAgentType::NONE) {
@@ -72,7 +75,7 @@ WKWebView* BuildWKWebView(CGRect frame,
                           WKWebViewConfiguration* configuration,
                           BrowserState* browser_state) {
   return BuildWKWebView(frame, configuration, browser_state,
-                        UserAgentType::MOBILE);
+                        UserAgentType::MOBILE, nil);
 }
 
 }  // namespace web

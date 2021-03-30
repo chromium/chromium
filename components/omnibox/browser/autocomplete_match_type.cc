@@ -57,35 +57,43 @@ std::string AutocompleteMatchType::ToString(AutocompleteMatchType::Type type) {
   return strings[type];
 }
 
-static const wchar_t kAccessibilityLabelPrefixEndSentinal[] =
-    L"\uFFFC";  // Embedded object character.
+// static
+bool AutocompleteMatchType::FromInteger(int value, Type* result) {
+  DCHECK(result);
 
-static int AccessibilityLabelPrefixLength(base::string16 accessibility_label) {
-  const base::string16 sentinal =
-      base::WideToUTF16(kAccessibilityLabelPrefixEndSentinal);
-  auto length = accessibility_label.find(sentinal);
-  return length == base::string16::npos ? 0 : static_cast<int>(length);
+  if (value < Type::URL_WHAT_YOU_TYPED || value >= Type::NUM_TYPES) {
+    return false;
+  }
+
+  *result = static_cast<Type>(value);
+  return true;
 }
 
-// Gets the localized string |message_id| and places the |replacement| inside.
+static constexpr char16_t kAccessibilityLabelPrefixEndSentinel[] =
+    u"\uFFFC";  // Embedded object character.
+
+static int AccessibilityLabelPrefixLength(std::u16string accessibility_label) {
+  auto length = accessibility_label.find(kAccessibilityLabelPrefixEndSentinel);
+  return length == std::u16string::npos ? 0 : static_cast<int>(length);
+}
+
+// Places the |replacement| inside the given format string.
 // It also adjusts |label_prefix_length|, if non-nullptr.
-base::string16 AddAdditionalMessaging(int message_id,
-                                      base::string16 replacement,
+std::u16string AddAdditionalMessaging(const std::u16string& format,
+                                      const std::u16string& replacement,
                                       int* label_prefix_length) {
-  DCHECK(message_id != 0);
   if (label_prefix_length) {
-    const base::string16 sentinal =
-        base::WideToUTF16(kAccessibilityLabelPrefixEndSentinal);
-    *label_prefix_length += AccessibilityLabelPrefixLength(
-        l10n_util::GetStringFUTF16(message_id, sentinal));
+    *label_prefix_length +=
+        AccessibilityLabelPrefixLength(l10n_util::FormatString(
+            format, {kAccessibilityLabelPrefixEndSentinel}, nullptr));
   }
-  return l10n_util::GetStringFUTF16(message_id, replacement);
+  return l10n_util::FormatString(format, {replacement}, nullptr);
 }
 
 // Returns the base label for this match, without handling the positional or
 // secondary button messaging.
-base::string16 GetAccessibilityBaseLabel(const AutocompleteMatch& match,
-                                         const base::string16& match_text,
+std::u16string GetAccessibilityBaseLabel(const AutocompleteMatch& match,
+                                         const std::u16string& match_text,
                                          int* label_prefix_length) {
   // Types with a message ID of zero get |text| returned as-is.
   static constexpr int message_ids[] = {
@@ -139,9 +147,8 @@ base::string16 GetAccessibilityBaseLabel(const AutocompleteMatch& match,
   // TODO(skare) http://crbug.com/951109: format as string in grd so this isn't
   // special-cased.
   if (match.type == AutocompleteMatchType::DOCUMENT_SUGGESTION) {
-    base::string16 doc_string = match.contents + base::ASCIIToUTF16(", ") +
-                                match.description + base::ASCIIToUTF16(", ") +
-                                match_text;
+    std::u16string doc_string =
+        match.contents + u", " + match.description + u", " + match_text;
     return doc_string;
   }
 
@@ -149,9 +156,7 @@ base::string16 GetAccessibilityBaseLabel(const AutocompleteMatch& match,
   if (!message)
     return match_text;
 
-  const base::string16 sentinal =
-      base::WideToUTF16(kAccessibilityLabelPrefixEndSentinal);
-  base::string16 description;
+  std::u16string description;
   bool has_description = false;
   switch (message) {
     case IDS_ACC_AUTOCOMPLETE_SEARCH_HISTORY:
@@ -202,10 +207,10 @@ base::string16 GetAccessibilityBaseLabel(const AutocompleteMatch& match,
   if (label_prefix_length) {
     *label_prefix_length =
         has_description
-            ? AccessibilityLabelPrefixLength(
-                  l10n_util::GetStringFUTF16(message, sentinal, description))
-            : AccessibilityLabelPrefixLength(
-                  l10n_util::GetStringFUTF16(message, sentinal));
+            ? AccessibilityLabelPrefixLength(l10n_util::GetStringFUTF16(
+                  message, kAccessibilityLabelPrefixEndSentinel, description))
+            : AccessibilityLabelPrefixLength(l10n_util::GetStringFUTF16(
+                  message, kAccessibilityLabelPrefixEndSentinel));
   }
 
   return has_description
@@ -214,23 +219,23 @@ base::string16 GetAccessibilityBaseLabel(const AutocompleteMatch& match,
 }
 
 // static
-base::string16 AutocompleteMatchType::ToAccessibilityLabel(
+std::u16string AutocompleteMatchType::ToAccessibilityLabel(
     const AutocompleteMatch& match,
-    const base::string16& match_text,
+    const std::u16string& match_text,
     size_t match_index,
     size_t total_matches,
-    int additional_message_id,
+    const std::u16string& additional_message_format,
     int* label_prefix_length) {
   if (label_prefix_length)
     *label_prefix_length = 0;
 
   // Start with getting the base label.
-  base::string16 result =
+  std::u16string result =
       GetAccessibilityBaseLabel(match, match_text, label_prefix_length);
 
   // Add the additional message, if applicable.
-  if (additional_message_id != 0) {
-    result = AddAdditionalMessaging(additional_message_id, result,
+  if (!additional_message_format.empty()) {
+    result = AddAdditionalMessaging(additional_message_format, result,
                                     label_prefix_length);
   }
 

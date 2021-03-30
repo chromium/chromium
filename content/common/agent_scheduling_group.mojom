@@ -5,217 +5,23 @@
 module content.mojom;
 
 import "content/common/associated_interfaces.mojom";
+import "content/common/frame.mojom";
 import "content/common/native_types.mojom";
-import "ipc/constants.mojom";
-import "mojo/public/mojom/base/generic_pending_receiver.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
-import "third_party/blink/public/mojom/browser_interface_broker.mojom";
-import "third_party/blink/public/mojom/frame/frame_owner_properties.mojom";
-import "third_party/blink/public/mojom/frame/policy_container.mojom";
-import "third_party/blink/public/mojom/page/page.mojom";
-import "third_party/blink/public/mojom/page/widget.mojom";
-import "third_party/blink/public/mojom/renderer_preferences.mojom";
-import "third_party/blink/public/mojom/webpreferences/web_preferences.mojom";
-import "third_party/blink/public/mojom/widget/visual_properties.mojom";
-
-// A View (i.e. a "main frame") can be created for a few different cases, these
-// values are used to specify which it is.
-enum ViewWidgetType {
-  // A standard view that's the top-level widget in a frame hierarchy.
-  kTopLevel,
-  // A GuestView used to render contents inside a <webview> element.
-  kGuestView,
-  // A view used to render contents inside a <portal> element.
-  kPortal
-};
-
-struct CreateViewParams {
-  // Renderer-wide preferences.
-  blink.mojom.RendererPreferences renderer_preferences;
-
-  // Preferences for this view.
-  blink.mojom.WebPreferences web_preferences;
-
-  // The ID of the view to be created.
-  int32 view_id = IPC.mojom.kRoutingIdNone;
-
-  // The ID of the main frame hosted in the view, or None if creating a view to
-  // host a main frame proxy. If this is None, then |proxy_routing_id| should be
-  // set to something other than None. The |main_frame_widget_routing_id| is
-  // None if this is None.
-  int32 main_frame_routing_id = IPC.mojom.kRoutingIdNone;
-
-  // The ID of the widget for the main frame. The |main_frame_routing_id| is
-  // None if this is None.
-  int32 main_frame_widget_routing_id = IPC.mojom.kRoutingIdNone;
-
-  // This is null precisely when |main_frame_routing_id| is MSG_ROUTING_NONE,
-  // that is, when creating a RenderView for a remote main frame.
-  pending_remote<blink.mojom.BrowserInterfaceBroker>?
-      main_frame_interface_broker;
-
-  // The communication interfaces for the WebFrameWidget in blink. All should
-  // be set if there is a |main_frame_routing_id|.
-  pending_associated_remote<blink.mojom.FrameWidgetHost>? frame_widget_host;
-  pending_associated_receiver<blink.mojom.FrameWidget>? frame_widget;
-  pending_associated_remote<blink.mojom.WidgetHost>? widget_host;
-  pending_associated_receiver<blink.mojom.Widget>? widget;
-
-  // The session storage namespace ID this view should use.
-  string session_storage_namespace_id;
-
-  // The frame token of the opener RenderFrame or RenderFrameProxy, if we need
-  // to set one (base::nullopt otherwise).
-  mojo_base.mojom.UnguessableToken? opener_frame_token;
-
-  // Carries replicated information, such as frame name and sandbox flags, for
-  // this view's main frame, which will be a proxy when |main_frame_routing_id|
-  // is None (due to site isolation), or a RenderFrame in all other cases.
-  FrameReplicationState replicated_frame_state;
-
-  // This represents the frame token for the MainFrame. It will be always set.
-  // If |main_frame_routing_id| is set, it will store a unique identifier for
-  // the  LocalFrame<-->RenderFrameHostImpl mapping.
-  // If |proxy_routing_id| is set, it will store a unique identifier for
-  // the RemoteFrame<-->RenderFrameProxyHost mapping.
-  mojo_base.mojom.UnguessableToken main_frame_frame_token;
-
-  // Used for devtools instrumentation and trace-ability. The token is
-  // propagated to Blink's LocalFrame and both Blink and content/
-  // can tag calls and requests with this instrumentation token in order to
-  // attribute them to the context frame.
-  // |devtools_main_frame_token| is only defined by the browser and is never
-  // sent back from the renderer in the control calls.
-  mojo_base.mojom.UnguessableToken devtools_main_frame_token;
-
-  // The ID of the proxy object for the main frame in this view. It is only
-  // used if |main_frame_routing_id| is None, and exactly one of the two
-  // should be set to an id other than None at any time.
-  int32 proxy_routing_id = IPC.mojom.kRoutingIdNone;
-
-  // Whether the RenderView should initially be hidden.
-  bool hidden;
-
-  // When true, all RenderWidgets under this RenderView will never be shown to
-  // the user, and thus never composited, and will not need to produce pixels
-  // for display. This allows the renderer to optimize and avoid resources used
-  // for displaying graphical output.
-  bool never_composited;
-
-  // Whether the window associated with this view was created with an opener.
-  bool window_was_created_with_opener;
-
-  // Whether or not the frame has previously committed a real load.
-  bool has_committed_real_load;
-
-  // Initial state for the main frame RenderWidget.
-  // TODO(danakj): This should be optional and not included when there is no
-  // main_frame_widget_routing_id.
-  blink.mojom.VisualProperties visual_properties;
-
-  // Whether lookup of frames in the created RenderView (e.g. lookup via
-  // window.open or via <a target=...>) should be renderer-wide (i.e. going
-  // beyond the usual opener-relationship-based BrowsingInstance boundaries).
-  bool renderer_wide_named_frame_lookup;
-
-  // Indicates whether the view is a regular top-level widget or some other
-  // nested "main frame" widget type.
-  ViewWidgetType type;
-
-  // Endpoint for any messages that are broadcast to all views in a WebContents.
-  pending_associated_receiver<blink.mojom.PageBroadcast> blink_page_broadcast;
-
-  // The policy container for the main frame to be created. This is null when
-  // creating a RenderView for a remote main frame, or when the main frame has
-  // no policy container yet (for example, because it is a speculative
-  // RenderFrameHost), and the policy container will be sent during
-  // CommitNavigation.
-  blink.mojom.PolicyContainer? policy_container;
-};
-
-struct CreateFrameWidgetParams {
-  // Gives the routing ID for the RenderWidget that will be attached to the
-  // new RenderFrame.
-  int32 routing_id;
-
-  // The communication interfaces for the WebFrameWidget in blink.
-  pending_associated_remote<blink.mojom.FrameWidgetHost> frame_widget_host;
-  pending_associated_receiver<blink.mojom.FrameWidget> frame_widget;
-  pending_associated_remote<blink.mojom.WidgetHost> widget_host;
-  pending_associated_receiver<blink.mojom.Widget> widget;
-
-  // The initial visual properties of the widget.
-  blink.mojom.VisualProperties visual_properties;
-};
-
-struct CreateFrameParams {
-  // Specifies the routing ID of the new RenderFrame object.
-  int32 routing_id;
-
-  // If a valid |previous_routing_id| is provided, the new frame will be
-  // configured to replace either the previous frame or the previous proxy on
-  // commit.
-  int32 previous_routing_id;
-
-  // The frame token. It is a unique identifier for
-  // the LocalFrame<-->RenderFrameHostImpl mapping.
-  mojo_base.mojom.UnguessableToken frame_token;
-
-  // Specifies the new frame's opener.  The opener will be null if this is
-  // base::nullopt.
-  mojo_base.mojom.UnguessableToken? opener_frame_token;
-
-  // The new frame should be created as a child of the object
-  // identified by |parent_routing_id| or as top level if that is
-  // MSG_ROUTING_NONE.
-  int32 parent_routing_id;
-
-  // Identifies the previous sibling of the new frame, so that the new frame is
-  // inserted into the correct place in the frame tree.  If this is
-  // MSG_ROUTING_NONE, the frame will be created as the leftmost child of its
-  // parent frame, in front of any other children.
-  int32 previous_sibling_routing_id;
-
-  pending_remote<blink.mojom.BrowserInterfaceBroker> interface_broker;
-
-  // When the new frame has a parent, |replication_state| holds the new frame's
-  // properties replicated from the process rendering the parent frame, such as
-  // the new frame's sandbox flags.
-  FrameReplicationState replication_state;
-
-  // Used for devtools instrumentation and trace-ability. The token is
-  // propagated to Blink's LocalFrame and both Blink and content/
-  // can tag calls and requests with this instrumentation token in order to
-  // attribute them to the context frame.
-  // |devtools_frame_token| is only defined by the browser and is never
-  // sent back from the renderer in the control calls.
-  mojo_base.mojom.UnguessableToken devtools_frame_token;
-
-  // When the new frame has a parent, |frame_owner_properties| holds the
-  // properties of the HTMLFrameOwnerElement from the parent process.
-  // Note that unlike FrameReplicationState, this is not replicated for remote
-  // frames.
-  blink.mojom.FrameOwnerProperties frame_owner_properties;
-
-  // Specifies properties for a new RenderWidget that will be attached to the
-  // new RenderFrame (if one is needed).
-  CreateFrameWidgetParams? widget_params;
-
-  // Whether or not the frame has previously committed a real load.
-  bool has_committed_real_load;
-
-  // The policy container for the frame to be created. This can be null if we
-  // could not determine a policy container yet, for example in case of a
-  // speculative RenderFrameHost. In that case, the final policy container will
-  // be sent along CommitNavigation.
-  blink.mojom.PolicyContainer? policy_container;
-};
-
+import "third_party/blink/public/mojom/frame/frame_replication_state.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
 // Interface for general communication between the renderer process's
 // AgentSchedulingGroup and the browser process's AgentSchedulingGroupHost.
 // Implemented by AgentSchedulingGroupHost (in the browser process).
 interface AgentSchedulingGroupHost {
+  // Acknowledge a RenderFrame was unloaded due to NavigationControl::Unload().
+  // This is not simply a reply callback on NavigationControl::Unload() because
+  // it needs to be invoked after the AssociatedReceiver (owned by RenderFrame)
+  // is already destroyed. This timing is required to ensure that any scheduled
+  // postMessages are dispatched prior to acknowledging the unload (which tears
+  // down the browser-side RFHI by removing it from the pending delete list)
+  DidUnloadRenderFrame(blink.mojom.LocalFrameToken frame_token);
 };
 
 // Interface for general communication between the browser process's
@@ -248,23 +54,30 @@ interface AgentSchedulingGroup {
   // Tells the renderer to create a new RenderFrame.
   CreateFrame(CreateFrameParams params);
 
-  // Tells the renderer to create a new RenderFrameProxy object with
-  // |routing_id|.  |render_view_routing_id| identifies the
-  // RenderView to be associated with this proxy. The new proxy's opener should
-  // be set to the object identified by |opener_frame_token|, or to null if that
-  // is base::nullopt.  The new proxy should be created as a child of the
-  // object identified by |parent_routing_id| or as top level if that is
-  // MSG_ROUTING_NONE.
-  // |proxy_frame_token| is used uniquely identify the
-  // RemoteFrame <--> RenderFrameProxyHost mapping.
-  // |devtools_frame_token| is used for devtools instrumentation
-  // and trace-ability. It is defined by the browser and is never
-  // sent back from the renderer in the control calls.
-  CreateFrameProxy(int32 routing_id, int32 render_view_routing_id,
-                   mojo_base.mojom.UnguessableToken? opener_frame_token,
-                   int32 parent_routing_id,
-                   FrameReplicationState replication_state,
-                   mojo_base.mojom.UnguessableToken proxy_frame_token,
+  // Tells the renderer to create a new RenderFrameProxy.
+  //
+  // `token`: The frame token. Used to map between RemoteFrame and
+  //     RenderFrameProxyHost.
+  // `routing_id`: The legacy IPC routing ID.
+  // `opener_frame_token`: Frame token that identifies the opener frame if one
+  //     exists, or base::nullopt otherwise.
+  // `view_routing_id`: routing ID of the RenderView for this RenderFrameProxy.
+  //     Must not be `MSG_ROUTING_NONE`.
+  // `parent_routing_id`: `MSG_ROUTING_NONE` for a top-level RenderFrameProxy;
+  //     otherwise, Identifies the parent frame of the RenderFrameProxy.
+  // `devtools_frame_token`: Used for devtools instrumentation and
+  //    trace-ability. The token is shared across all frames (local or remotes)
+  //    representing the same logical frame tree node, and is used by Blink and
+  //    content to tag calls and requests for instrumentation purposes,
+  //    allowing them to be attributed to a context frame.
+  //
+  //    Must not be used to look up a RenderFrameHostImpl or
+  //    RenderFrameProxyHost in the browser process, as the token is shared,
+  //    making the mapping ambiguous and non-authoritative.
+  CreateFrameProxy(blink.mojom.RemoteFrameToken token, int32 routing_id,
+                   blink.mojom.FrameToken? opener_frame_token,
+                   int32 view_routing_id, int32 parent_routing_id,
+                   blink.mojom.FrameReplicationState replication_state,
                    mojo_base.mojom.UnguessableToken devtools_frame_token);
 
 };

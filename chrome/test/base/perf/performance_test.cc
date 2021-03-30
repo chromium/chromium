@@ -20,7 +20,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/wallpaper_controller_observer.h"
 #include "ash/public/cpp/wallpaper_types.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client.h"
+#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "components/user_manager/user_names.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -37,11 +37,11 @@ class TestWallpaperObserver : public ash::WallpaperControllerObserver {
  public:
   explicit TestWallpaperObserver(base::OnceClosure closure)
       : closure_(std::move(closure)) {
-    WallpaperControllerClient::Get()->AddObserver(this);
+    WallpaperControllerClientImpl::Get()->AddObserver(this);
   }
 
   ~TestWallpaperObserver() override {
-    WallpaperControllerClient::Get()->RemoveObserver(this);
+    WallpaperControllerClientImpl::Get()->RemoveObserver(this);
   }
 
   // ash::WallpaperControllerObserver:
@@ -68,7 +68,7 @@ void CreateAndSetWallpaper() {
 
   base::RunLoop run_loop;
   TestWallpaperObserver observer(run_loop.QuitClosure());
-  WallpaperControllerClient::Get()->SetCustomWallpaper(
+  WallpaperControllerClientImpl::Get()->SetCustomWallpaper(
       user_manager::StubAccountId(), /*wallpaper_files_id=*/"dummyid",
       /*file_name=*/"dummyfilename", ash::WALLPAPER_LAYOUT_CENTER_CROPPED,
       image, /*preview_mode=*/false);

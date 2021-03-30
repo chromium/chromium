@@ -10,14 +10,14 @@
 #include <memory>
 #include <vector>
 
-#include "base/location.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "pdf/paint_aggregator.h"
 #include "pdf/ppapi_migration/callback.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace base {
-class TimeDelta;
+class Location;
 }  // namespace base
 
 namespace gfx {
@@ -69,8 +69,8 @@ class PaintManager {
     //
     // Calling Invalidate/Scroll is not allowed while inside an OnPaint
     virtual void OnPaint(const std::vector<gfx::Rect>& paint_rects,
-                         std::vector<PaintReadyRect>* ready,
-                         std::vector<gfx::Rect>* pending) = 0;
+                         std::vector<PaintReadyRect>& ready,
+                         std::vector<gfx::Rect>& pending) = 0;
 
     // Schedules work to be executed on a main thread after a specific delay.
     // The `result` parameter will be passed as the argument to the `callback`.
@@ -78,11 +78,10 @@ class PaintManager {
     // not always needed. `delay` should be no longer than `INT32_MAX`
     // milliseconds for the Pepper plugin implementation to prevent integer
     // overflow.
-    virtual void ScheduleTaskOnMainThread(
-        base::TimeDelta delay,
-        ResultCallback callback,
-        int32_t result,
-        const base::Location& from_here = base::Location::Current()) = 0;
+    virtual void ScheduleTaskOnMainThread(const base::Location& from_here,
+                                          ResultCallback callback,
+                                          int32_t result,
+                                          base::TimeDelta delay) = 0;
 
    protected:
     // You shouldn't be doing deleting through this interface.
@@ -92,8 +91,9 @@ class PaintManager {
   // The Client is a non-owning pointer and must remain valid (normally the
   // object implementing the Client interface will own the paint manager).
   //
-  // You will need to call SetSize before this class will do anything. Normally
-  // you do this from the ViewChanged method of your plugin instance.
+  // You will need to call SetSize() before this class will do anything.
+  // Normally you do this from UpdateGeometryOnViewChanged() of your plugin
+  // instance.
   explicit PaintManager(Client* client);
   PaintManager(const PaintManager&) = delete;
   PaintManager& operator=(const PaintManager&) = delete;

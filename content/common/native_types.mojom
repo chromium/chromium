@@ -8,12 +8,6 @@ module content.mojom;
 // ParamTraits for serialization. All of these should eventually be converted to
 // proper mojom definitions.
 
-[Native]
-struct FrameOwnerProperties;
-
-[Native]
-struct FrameReplicationState;
-
 // NOTE: This type is only mapped and usable on Mac.
 [Native]
 enum ScrollbarButtonsPlacement;
@@ -22,31 +16,10 @@ enum ScrollbarButtonsPlacement;
 [Native]
 enum ScrollerStyle;
 
-[Native]
-enum V8CacheOptions;
-
 // TODO(rockot): This should most likely be defined by network service mojom,
 // but the network service doesn't exist yet.
 [Native]
 enum NetworkConnectionType;
-
-[Native]
-struct WebCursor;
-
-[Native]
-struct SyntheticSmoothDrag;
-
-[Native]
-struct SyntheticSmoothScroll;
-
-[Native]
-struct SyntheticPinch;
-
-[Native]
-struct SyntheticTap;
-
-[Native]
-struct SyntheticPointerAction;
 
 [Native]
 enum SystemThemeColor;

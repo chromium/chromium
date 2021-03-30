@@ -94,7 +94,7 @@ class MultilineExample::RenderTextView : public View {
     return height;
   }
 
-  void SetText(const base::string16& new_contents) {
+  void SetText(const std::u16string& new_contents) {
     // Color and style the text inside |test_range| to test colors and styles.
     const size_t range_max = new_contents.length();
     gfx::Range color_range = ClampRange(gfx::Range(1, 21), range_max);
@@ -132,10 +132,10 @@ MultilineExample::MultilineExample()
 MultilineExample::~MultilineExample() = default;
 
 void MultilineExample::CreateExampleView(View* container) {
-  const base::string16 kTestString = base::WideToUTF16(
-      L"qwerty"
-      L"\x627\x644\x631\x626\x64A\x633\x64A\x629"
-      L"asdfgh");
+  const std::u16string kTestString =
+      u"qwerty"
+      u"\x627\x644\x631\x626\x64A\x633\x64A\x629"
+      u"asdfgh";
 
   auto render_text_view = std::make_unique<RenderTextView>();
   render_text_view->SetText(kTestString);
@@ -151,7 +151,7 @@ void MultilineExample::CreateExampleView(View* container) {
           [](MultilineExample* example) {
             example->label_->SetText(example->label_checkbox_->GetChecked()
                                          ? example->textfield_->GetText()
-                                         : base::string16());
+                                         : std::u16string());
           },
           base::Unretained(this)));
   label_checkbox->SetChecked(true);
@@ -200,7 +200,7 @@ void MultilineExample::CreateExampleView(View* container) {
 }
 
 void MultilineExample::ContentsChanged(Textfield* sender,
-                                       const base::string16& new_contents) {
+                                       const std::u16string& new_contents) {
   render_text_view_->SetText(new_contents);
   if (label_checkbox_->GetChecked())
     label_->SetText(new_contents);

@@ -19,8 +19,6 @@ config("compat_config") {
 
   if (crashpad_is_mac || crashpad_is_ios) {
     include_dirs += [ "mac" ]
-  } else {
-    include_dirs += [ "non_mac" ]
   }
 
   if (crashpad_is_ios) {
@@ -39,10 +37,6 @@ config("compat_config") {
     include_dirs += [ "win" ]
   } else {
     include_dirs += [ "non_win" ]
-  }
-
-  if (!crashpad_is_linux && !crashpad_is_android && !crashpad_is_fuchsia) {
-    include_dirs += [ "non_elf" ]
   }
 }
 
@@ -81,12 +75,7 @@ compat_target("compat") {
       "mac/sys/resource.h",
     ]
   } else {
-    sources += [
-      "non_mac/mach-o/loader.h",
-      "non_mac/mach/mach.h",
-      "non_mac/mach/machine.h",
-      "non_mac/mach/vm_prot.h",
-    ]
+    sources += [ "non_mac/mach/mach.h" ]
   }
 
   if (crashpad_is_ios) {
@@ -150,10 +139,6 @@ compat_target("compat") {
     ]
   }
 
-  if (!crashpad_is_linux && !crashpad_is_android && !crashpad_is_fuchsia) {
-    sources += [ "non_elf/elf.h" ]
-  }
-
   public_configs = [
     ":compat_config",
     "..:crashpad_config",
@@ -165,15 +150,7 @@ compat_target("compat") {
 
   deps = [ "../util:no_cfi_icall" ]
 
-  if (!crashpad_is_mac) {
-    deps += [ "../third_party/xnu" ]
-  }
-
   if (crashpad_is_win) {
     deps += [ "../third_party/getopt" ]
-  }
-
-  if (!crashpad_is_linux && !crashpad_is_android && !crashpad_is_fuchsia) {
-    deps += [ "../third_party/glibc" ]
   }
 }

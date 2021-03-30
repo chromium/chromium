@@ -65,7 +65,7 @@ class TaskManagerTableModel
 
   // ui::TableModel:
   int RowCount() override;
-  base::string16 GetText(int row, int column) override;
+  std::u16string GetText(int row, int column) override;
   gfx::ImageSkia GetIcon(int row) override;
   void SetObserver(ui::TableModelObserver* observer) override;
   int CompareValues(int row1, int row2, int column_id) override;

@@ -61,8 +61,6 @@ class FrameNodeImpl
       public TypedNodeBase<FrameNodeImpl, FrameNode, FrameNodeObserver>,
       public mojom::DocumentCoordinationUnit {
  public:
-  using PassKey = base::PassKey<FrameNodeImpl>;
-
   static const char kDefaultPriorityReason[];
   static constexpr NodeTypeEnum Type() { return NodeTypeEnum::kFrame; }
 
@@ -86,8 +84,7 @@ class FrameNodeImpl
   void SetNetworkAlmostIdle() override;
   void SetLifecycleState(LifecycleState state) override;
   void SetHasNonEmptyBeforeUnload(bool has_nonempty_beforeunload) override;
-  void SetViewportIntersection(const gfx::Rect& viewport_intersection) override;
-  void SetIsAdFrame() override;
+  void SetIsAdFrame(bool is_ad_frame) override;
   void SetHadFormInteraction() override;
   void OnNonPersistentNotificationCreated() override;
   void OnFirstContentfulPaint(
@@ -100,7 +97,7 @@ class FrameNodeImpl
   // Partial FrameNodbase::TimeDelta time_since_navigatione implementation:
   bool IsMainFrame() const override;
 
-  // Getters for const properties. These can be called from any thread.
+  // Getters for const properties.
   FrameNodeImpl* parent_frame_node() const;
   PageNodeImpl* page_node() const;
   ProcessNodeImpl* process_node() const;
@@ -134,6 +131,7 @@ class FrameNodeImpl
   void SetIsHoldingWebLock(bool is_holding_weblock);
   void SetIsHoldingIndexedDBLock(bool is_holding_indexeddb_lock);
   void SetIsAudible(bool is_audible);
+  void SetViewportIntersection(const gfx::Rect& viewport_intersection);
   void SetVisibility(Visibility visibility);
 
   // Invoked when a navigation is committed in the frame.
@@ -146,9 +144,8 @@ class FrameNodeImpl
   // Invoked to set the frame priority, and the reason behind it.
   void SetPriorityAndReason(const PriorityAndReason& priority_and_reason);
 
-  base::WeakPtr<FrameNodeImpl> GetWeakPtr() {
-    return weak_factory_.GetWeakPtr();
-  }
+  base::WeakPtr<FrameNodeImpl> GetWeakPtrOnUIThread();
+  base::WeakPtr<FrameNodeImpl> GetWeakPtr();
 
   void SeverOpenedPagesAndMaybeReparentForTesting() {
     SeverOpenedPagesAndMaybeReparent();
@@ -167,8 +164,6 @@ class FrameNodeImpl
       base::PassKey<execution_context::ExecutionContextAccess> key) {
     return &execution_context_;
   }
-
-  static PassKey CreatePassKeyForTesting() { return PassKey(); }
 
  private:
   friend class ExecutionContextPriorityAccess;
@@ -197,6 +192,8 @@ class FrameNodeImpl
   bool IsHoldingWebLock() const override;
   bool IsHoldingIndexedDBLock() const override;
   const base::flat_set<const WorkerNode*> GetChildWorkerNodes() const override;
+  bool VisitChildDedicatedWorkers(
+      const WorkerNodeVisitor& visitor) const override;
   const PriorityAndReason& GetPriorityAndReason() const override;
   bool HadFormInteraction() const override;
   bool IsAudible() const override;
@@ -299,7 +296,6 @@ class FrameNodeImpl
       &FrameNodeObserver::OnFrameLifecycleStateChanged>
       lifecycle_state_{LifecycleState::kRunning};
 
-  // This is a one way switch. Once marked an ad-frame, always an ad-frame.
   ObservedProperty::
       NotifiesOnlyOnChanges<bool, &FrameNodeObserver::OnIsAdFrameChanged>
           is_ad_frame_{false};
@@ -368,7 +364,9 @@ class FrameNodeImpl
   // Inline storage for ExecutionContext.
   std::unique_ptr<NodeAttachedData> execution_context_;
 
-  base::WeakPtrFactory<FrameNodeImpl> weak_factory_{this};
+  base::WeakPtr<FrameNodeImpl> weak_this_;
+  base::WeakPtrFactory<FrameNodeImpl> weak_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
 
   DISALLOW_COPY_AND_ASSIGN(FrameNodeImpl);
 };

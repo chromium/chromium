@@ -264,9 +264,8 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     public void onReadLater(GURL url, String title) {
         BookmarkModel bookmarkModel = new BookmarkModel();
         bookmarkModel.finishLoadingBookmarkModel(() -> {
-            // TODO(https://crbug.com/783819): Convert BookmarkUtils#addToReadingList to GURL.
-            BookmarkUtils.addToReadingList(url.getSpec(), title, mSnackbarManagerSupplier.get(),
-                    bookmarkModel, mTab.getContext());
+            BookmarkUtils.addToReadingList(
+                    url, title, mSnackbarManagerSupplier.get(), bookmarkModel, mTab.getContext());
             TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
                     .notifyEvent(EventConstants.READ_LATER_CONTEXT_MENU_TAPPED);
             bookmarkModel.destroy();

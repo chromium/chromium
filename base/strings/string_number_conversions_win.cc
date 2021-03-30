@@ -39,7 +39,6 @@ std::wstring NumberToWString(double value) {
   return internal::DoubleToStringT<std::wstring>(value);
 }
 
-#if defined(BASE_STRING16_IS_STD_U16STRING)
 namespace internal {
 
 template <>
@@ -74,6 +73,5 @@ bool StringToDouble(WStringPiece input, double* output) {
   return internal::StringToDoubleImpl(
       input, reinterpret_cast<const uint16_t*>(input.data()), *output);
 }
-#endif  // defined(BASE_STRING16_IS_STD_U16STRING)
 
 }  // namespace base

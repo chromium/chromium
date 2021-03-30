@@ -131,11 +131,6 @@ SafetyTipsComponentInstallerPolicy::GetInstallerAttributes() const {
   return update_client::InstallerAttributes();
 }
 
-std::vector<std::string> SafetyTipsComponentInstallerPolicy::GetMimeTypes()
-    const {
-  return std::vector<std::string>();
-}
-
 void RegisterSafetyTipsComponent(ComponentUpdateService* cus) {
   DVLOG(1) << "Registering Safety Tips component.";
 

@@ -22,18 +22,13 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/painter.h"
 
 namespace payments {
 
 namespace {
-
-// This event is used to run the Button callback when its event parameter
-// doesn't matter, only the sender.
-class DummyEvent : public ui::Event {
- public:
-  DummyEvent() : ui::Event(ui::ET_UNKNOWN, base::TimeTicks(), 0) {}
-};
 
 // This class is the actual sheet that gets pushed on the view_stack_. It
 // implements views::FocusTraversable to trap focus within its hierarchy. This
@@ -45,6 +40,7 @@ class DummyEvent : public ui::Event {
 // this SheetView's RequestFocus() is called.
 class SheetView : public views::View, public views::FocusTraversable {
  public:
+  METADATA_HEADER(SheetView);
   explicit SheetView(const base::RepeatingCallback<void(bool*)>&
                          enter_key_accelerator_callback)
       : enter_key_accelerator_callback_(enter_key_accelerator_callback) {
@@ -129,11 +125,16 @@ class SheetView : public views::View, public views::FocusTraversable {
   base::RepeatingCallback<void(bool*)> enter_key_accelerator_callback_;
 };
 
+BEGIN_METADATA(SheetView, views::View)
+END_METADATA
+
 // A scroll view that displays a separator on the bounds where content is
 // scrolled out of view. For example, if the view can be scrolled up to reveal
 // more content, the top of the content area will display a separator.
 class BorderedScrollView : public views::ScrollView {
  public:
+  METADATA_HEADER(BorderedScrollView);
+
   // The painter used by the scroll view to display the border.
   class BorderedScrollViewBorderPainter : public views::Painter {
    public:
@@ -151,12 +152,12 @@ class BorderedScrollView : public views::ScrollView {
     gfx::Size GetMinimumSize() const override { return gfx::Size(0, 2); }
 
     void Paint(gfx::Canvas* canvas, const gfx::Size& size) override {
-      if (scroll_view_->HasTopBorder()) {
+      if (scroll_view_->GetTopBorder()) {
         canvas->Draw1pxLine(gfx::PointF(), gfx::PointF(size.width(), 0),
                             color_);
       }
 
-      if (scroll_view_->HasBottomBorder()) {
+      if (scroll_view_->GetBottomBorder()) {
         canvas->Draw1pxLine(gfx::PointF(0, size.height() - 1),
                             gfx::PointF(size.width(), size.height() - 1),
                             color_);
@@ -180,9 +181,9 @@ class BorderedScrollView : public views::ScrollView {
         gfx::Insets(1, 0)));
   }
 
-  bool HasTopBorder() const { return GetVisibleRect().y() > 0; }
+  bool GetTopBorder() const { return GetVisibleRect().y() > 0; }
 
-  bool HasBottomBorder() const {
+  bool GetBottomBorder() const {
     return GetVisibleRect().bottom() < contents()->height();
   }
 
@@ -192,6 +193,11 @@ class BorderedScrollView : public views::ScrollView {
     SchedulePaint();
   }
 };
+
+BEGIN_METADATA(BorderedScrollView, views::ScrollView)
+ADD_READONLY_PROPERTY_METADATA(bool, TopBorder)
+ADD_READONLY_PROPERTY_METADATA(bool, BottomBorder)
+END_METADATA
 
 }  // namespace
 
@@ -287,12 +293,20 @@ std::unique_ptr<views::View> PaymentRequestSheetController::CreateView() {
 }
 
 void PaymentRequestSheetController::UpdateContentView() {
+  // Do not update the view if the payment request is being aborted.
+  if (!is_active_)
+    return;
+
   content_view_->RemoveAllChildViews(true);
   FillContentView(content_view_);
   RelayoutPane();
 }
 
 void PaymentRequestSheetController::UpdateHeaderView() {
+  // Do not update the view if the payment request is being aborted.
+  if (!is_active_)
+    return;
+
   header_view_->RemoveAllChildViews(true);
   PopulateSheetHeaderView(
       ShouldShowHeaderBackArrow(), CreateHeaderContentView(header_view_),
@@ -318,6 +332,10 @@ void PaymentRequestSheetController::UpdateFocus(views::View* focused_view) {
 }
 
 void PaymentRequestSheetController::RelayoutPane() {
+  // Do not update the view if the payment request is being aborted.
+  if (!is_active_)
+    return;
+
   content_view_->Layout();
   pane_->SizeToPreferredSize();
   // Now that the content and its surrounding pane are updated, force a Layout
@@ -329,7 +347,7 @@ bool PaymentRequestSheetController::ShouldShowPrimaryButton() {
   return true;
 }
 
-base::string16 PaymentRequestSheetController::GetPrimaryButtonLabel() {
+std::u16string PaymentRequestSheetController::GetPrimaryButtonLabel() {
   const bool continue_button =
       state()->selected_app() &&
       state()->selected_app()->type() != PaymentApp::Type::AUTOFILL;
@@ -337,7 +355,7 @@ base::string16 PaymentRequestSheetController::GetPrimaryButtonLabel() {
       continue_button ? IDS_PAYMENTS_CONTINUE_BUTTON : IDS_PAYMENTS_PAY_BUTTON);
 }
 
-views::Button::PressedCallback
+PaymentRequestSheetController::ButtonCallback
 PaymentRequestSheetController::GetPrimaryButtonCallback() {
   return base::BindRepeating(
       [](const base::WeakPtr<PaymentRequestDialogView>& dialog) {
@@ -359,11 +377,11 @@ bool PaymentRequestSheetController::ShouldShowSecondaryButton() {
   return true;
 }
 
-base::string16 PaymentRequestSheetController::GetSecondaryButtonLabel() {
+std::u16string PaymentRequestSheetController::GetSecondaryButtonLabel() {
   return l10n_util::GetStringUTF16(IDS_PAYMENTS_CANCEL_PAYMENT);
 }
 
-views::Button::PressedCallback
+PaymentRequestSheetController::ButtonCallback
 PaymentRequestSheetController::GetSecondaryButtonCallback() {
   return base::BindRepeating(&PaymentRequestSheetController::CloseButtonPressed,
                              base::Unretained(this));
@@ -503,9 +521,9 @@ void PaymentRequestSheetController::PerformPrimaryButtonAction(
 
   if (dialog()->IsInteractive() && primary_button_ &&
       primary_button_->GetEnabled()) {
-    views::Button::PressedCallback callback = GetPrimaryButtonCallback();
+    ButtonCallback callback = GetPrimaryButtonCallback();
     if (callback)
-      callback.Run(DummyEvent());
+      callback.Run();
   }
 }
 

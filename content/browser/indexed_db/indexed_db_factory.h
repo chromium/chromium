@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -17,7 +18,6 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "content/browser/indexed_db/indexed_db_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_database.h"
 #include "content/browser/indexed_db/indexed_db_database_callbacks.h"
@@ -36,23 +36,21 @@ class CONTENT_EXPORT IndexedDBFactory {
   virtual ~IndexedDBFactory() = default;
 
   using OriginDBMap =
-      base::flat_map<base::string16, std::unique_ptr<IndexedDBDatabase>>;
+      base::flat_map<std::u16string, std::unique_ptr<IndexedDBDatabase>>;
 
   virtual void GetDatabaseInfo(scoped_refptr<IndexedDBCallbacks> callbacks,
                                const url::Origin& origin,
                                const base::FilePath& data_directory) = 0;
-  virtual void Open(
-      const base::string16& name,
-      std::unique_ptr<IndexedDBPendingConnection> connection,
-      const url::Origin& origin,
-      const base::FilePath& data_directory) = 0;
+  virtual void Open(const std::u16string& name,
+                    std::unique_ptr<IndexedDBPendingConnection> connection,
+                    const url::Origin& origin,
+                    const base::FilePath& data_directory) = 0;
 
-  virtual void DeleteDatabase(
-      const base::string16& name,
-      scoped_refptr<IndexedDBCallbacks> callbacks,
-      const url::Origin& origin,
-      const base::FilePath& data_directory,
-      bool force_close) = 0;
+  virtual void DeleteDatabase(const std::u16string& name,
+                              scoped_refptr<IndexedDBCallbacks> callbacks,
+                              const url::Origin& origin,
+                              const base::FilePath& data_directory,
+                              bool force_close) = 0;
 
   virtual void AbortTransactionsAndCompactDatabase(
       base::OnceCallback<void(leveldb::Status)> callback,
@@ -98,8 +96,8 @@ class CONTENT_EXPORT IndexedDBFactory {
 
   virtual void NotifyIndexedDBContentChanged(
       const url::Origin& origin,
-      const base::string16& database_name,
-      const base::string16& object_store_name) = 0;
+      const std::u16string& database_name,
+      const std::u16string& object_store_name) = 0;
 
  protected:
   IndexedDBFactory() {}

@@ -7,9 +7,9 @@
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {MultiStorePasswordUiEntry, PasswordManagerImpl, Router, routes, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {createMultiStorePasswordEntry, createPasswordEntry, PasswordDeviceSectionElementFactory} from 'chrome://test/settings/passwords_and_autofill_fake_data.js';
-import {simulateStoredAccounts, simulateSyncStatus} from 'chrome://test/settings/sync_test_util.m.js';
+import {simulateStoredAccounts, simulateSyncStatus} from 'chrome://test/settings/sync_test_util.js';
 import {TestPasswordManagerProxy} from 'chrome://test/settings/test_password_manager_proxy.js';
-import {TestSyncBrowserProxy} from 'chrome://test/settings/test_sync_browser_proxy.m.js';
+import {TestSyncBrowserProxy} from 'chrome://test/settings/test_sync_browser_proxy.js';
 import {eventToPromise} from 'chrome://test/test_util.m.js';
 import {assertEquals, assertTrue} from '../chai_assert.js';
 
@@ -365,4 +365,64 @@ suite('PasswordsDeviceSection', function() {
     assertTrue(firstPasswordItem.$.moreActionsButton.hidden);
   });
 
+
+  test(
+      'moveMultiplePasswordsBannerHiddenWhenNoLocalPasswords',
+      async function() {
+        loadTimeData.overrideValues(
+            {enableMovingMultiplePasswordsToAccount: true});
+
+        const passwordsDeviceSection = await createPasswordsDeviceSection(
+            syncBrowserProxy, passwordManager, []);
+
+        assertTrue(passwordsDeviceSection.shadowRoot
+                       .querySelector('#moveMultiplePasswordsBanner')
+                       .hidden);
+      });
+
+  test(
+      'moveMultiplePasswordsBannerVisibleWhenLocalPasswords', async function() {
+        loadTimeData.overrideValues(
+            {enableMovingMultiplePasswordsToAccount: true});
+
+        const devicePassword = createPasswordEntry(
+            {username: 'device', id: 0, fromAccountStore: false});
+        const passwordsDeviceSection = await createPasswordsDeviceSection(
+            syncBrowserProxy, passwordManager, [devicePassword]);
+
+        assertFalse(passwordsDeviceSection.shadowRoot
+                        .querySelector('#moveMultiplePasswordsBanner')
+                        .hidden);
+      });
+
+  test(
+      'moveMultiplePasswordsBannerHiddenWhenConflictingLocalAndDevicesPasswords',
+      async function() {
+        loadTimeData.overrideValues(
+            {enableMovingMultiplePasswordsToAccount: true});
+
+        // The existence of two entries with the same url and password username
+        // indicate that they must have different passwords. Otherwise, they
+        // would have deduped earlier.
+        const devicePassword = createPasswordEntry({
+          url: 'www.test.com',
+          username: 'username',
+          id: 0,
+          fromAccountStore: false
+        });
+        const accountPassword = createPasswordEntry({
+          url: 'www.test.com',
+          username: 'username',
+          id: 1,
+          fromAccountStore: true
+        });
+
+        const passwordsDeviceSection = await createPasswordsDeviceSection(
+            syncBrowserProxy, passwordManager,
+            [devicePassword, accountPassword]);
+
+        assertTrue(passwordsDeviceSection.shadowRoot
+                       .querySelector('#moveMultiplePasswordsBanner')
+                       .hidden);
+      });
 });

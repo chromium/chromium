@@ -109,10 +109,10 @@ TEST_F(AttributedStringConverterTest, NilString) {
 
 TEST_F(AttributedStringConverterTest, OutOfRange) {
   NSFont* system_font = [NSFont systemFontOfSize:10];
-  base::string16 font_name = base::SysNSStringToUTF16([system_font fontName]);
+  std::u16string font_name = base::SysNSStringToUTF16([system_font fontName]);
   ui::mojom::AttributedStringPtr attributed_string =
       ui::mojom::AttributedString::New();
-  attributed_string->string = base::ASCIIToUTF16("Hello World");
+  attributed_string->string = u"Hello World";
   attributed_string->attributes.push_back(
       ui::mojom::FontAttribute::New(font_name, 12, gfx::Range(0, 5)));
   attributed_string->attributes.push_back(

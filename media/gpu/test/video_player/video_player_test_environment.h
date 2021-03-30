@@ -23,10 +23,16 @@ class Video;
 // the entire test run.
 class VideoPlayerTestEnvironment : public VideoTestEnvironment {
  public:
+  enum class ValidatorType {
+    kNone,
+    kMD5,
+    kSSIM,
+  };
+
   static VideoPlayerTestEnvironment* Create(
       const base::FilePath& video_path,
       const base::FilePath& video_metadata_path,
-      bool enable_validator,
+      ValidatorType validator_type,
       const DecoderImplementation implementation,
       const base::FilePath& output_folder = base::FilePath(),
       const FrameOutputConfig& frame_output_config = FrameOutputConfig());
@@ -39,6 +45,8 @@ class VideoPlayerTestEnvironment : public VideoTestEnvironment {
   const media::test::Video* Video() const;
   // Check whether frame validation is enabled.
   bool IsValidatorEnabled() const;
+  // Get the validator type.
+  ValidatorType GetValidatorType() const;
   // Return which implementation is used.
   DecoderImplementation GetDecoderImplementation() const;
 
@@ -62,13 +70,13 @@ class VideoPlayerTestEnvironment : public VideoTestEnvironment {
 
  private:
   VideoPlayerTestEnvironment(std::unique_ptr<media::test::Video> video,
-                             bool enable_validator,
+                             ValidatorType validator_type,
                              const DecoderImplementation implementation,
                              const base::FilePath& output_folder,
                              const FrameOutputConfig& frame_output_config);
 
   const std::unique_ptr<media::test::Video> video_;
-  const bool enable_validator_;
+  const ValidatorType validator_type_;
   const DecoderImplementation implementation_;
 
   const FrameOutputConfig frame_output_config_;

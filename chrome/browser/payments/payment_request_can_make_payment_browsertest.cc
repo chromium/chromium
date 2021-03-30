@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(
   NavigateTo("/payment_request_can_make_payment_query_test.html");
   autofill::AutofillProfile billing_address = CreateAndAddAutofillProfile();
   autofill::CreditCard card = autofill::test::GetMaskedServerCard();
-  card.SetNumber(base::ASCIIToUTF16("4111111111111111"));  // We need a visa.
+  card.SetNumber(u"4111111111111111");  // We need a visa.
   card.SetNetworkForMaskedCard(autofill::kVisaCard);
   card.set_billing_address_id(billing_address.guid());
   AddCreditCard(card);
@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(
     CanMakePayment_Supported) {
   NavigateTo("/payment_request_can_make_payment_query_test.html");
   autofill::CreditCard card = autofill::test::GetMaskedServerCard();
-  card.SetNumber(base::ASCIIToUTF16("4111111111111111"));  // We need a visa.
+  card.SetNumber(u"4111111111111111");  // We need a visa.
   card.SetNetworkForMaskedCard(autofill::kVisaCard);
   autofill::AutofillProfile billing_address = autofill::test::GetFullProfile();
   AddAutofillProfile(billing_address);

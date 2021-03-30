@@ -18,6 +18,7 @@ class WeightedMovingLinearRegression;
 
 namespace media {
 class MediaPipelineBackendForMixer;
+class RateAdjuster;
 
 class AvSyncVideo : public AvSync {
  public:
@@ -40,7 +41,9 @@ class AvSyncVideo : public AvSync {
   int GetVideoFrameRate();
 
   void HardCorrection(int64_t apts, int64_t desired_apts_timestamp);
-  void AudioRateUpkeep(int64_t error, int64_t timestamp);
+  double ChangeAudioRate(double desired_clock_rate,
+                         double error_slope,
+                         double current_error);
 
   void FlushAudioPts();
   void FlushVideoPts();
@@ -51,6 +54,7 @@ class AvSyncVideo : public AvSync {
 
   std::unique_ptr<WeightedMovingLinearRegression> apts_error_;
   std::unique_ptr<WeightedMovingLinearRegression> video_pts_;
+  std::unique_ptr<RateAdjuster> audio_rate_adjuster_;
 
   // This is the audio playback rate propagated from SetPlaybackRate, which is
   // exposed to the user to speed up or slow down their playback.
@@ -65,10 +69,6 @@ class AvSyncVideo : public AvSync {
 
   int64_t last_apts_value_ = INT64_MIN;
   int64_t last_apts_timestamp_ = INT64_MIN;
-
-  int64_t clock_rate_start_timestamp_ = INT64_MIN;
-  double clock_rate_error_base_ = 0.0;
-  int64_t apts_error_start_timestamp_ = INT64_MIN;
 
   DISALLOW_COPY_AND_ASSIGN(AvSyncVideo);
 };

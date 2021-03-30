@@ -4,6 +4,9 @@
 
 #include "services/network/web_bundle_url_loader_factory.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/optional.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/web_package/web_bundle_parser.h"
 #include "components/web_package/web_bundle_utils.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -11,6 +14,10 @@
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/cpp/cors/cors.h"
+#include "services/network/public/cpp/cross_origin_read_blocking.h"
+#include "services/network/web_bundle_chunked_buffer.h"
+#include "services/network/web_bundle_memory_quota_consumer.h"
 
 namespace network {
 
@@ -18,38 +25,35 @@ namespace {
 
 constexpr size_t kBlockedBodyAllocationSize = 1;
 
-class PipeDataSource : public mojo::DataPipeProducer::DataSource {
- public:
-  explicit PipeDataSource(std::vector<uint8_t> data) : data_(std::move(data)) {}
-  uint64_t GetLength() const override { return data_.size(); }
-
-  ReadResult Read(uint64_t uint64_offset, base::span<char> buffer) override {
-    ReadResult result;
-    if (uint64_offset > data_.size()) {
-      result.result = MOJO_RESULT_OUT_OF_RANGE;
-      return result;
-    }
-    size_t offset = base::checked_cast<size_t>(uint64_offset);
-    size_t len = std::min(data_.size() - offset, buffer.size());
-    if (len > 0) {
-      DCHECK_LT(offset, data_.size());
-      memcpy(buffer.data(), &data_[offset], len);
-    }
-    result.bytes_read = len;
-    return result;
-  }
-
- private:
-  // Since mojo::DataPipeProducer runs in its own sequence, we can't just have
-  // a reference to the buffer in BundleDataSource.
-  std::vector<uint8_t> data_;
-};
-
 void DeleteProducerAndRunCallback(
     std::unique_ptr<mojo::DataPipeProducer> producer,
     base::OnceCallback<void(MojoResult result)> callback,
     MojoResult result) {
   std::move(callback).Run(result);
+}
+
+// Verify the serving constraints of Web Bundle HTTP responses.
+// https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#name-serving-constraints
+bool CheckWebBundleServingConstraints(
+    const network::mojom::URLResponseHead& response_head,
+    std::string& out_error_message) {
+  if (!response_head.headers ||
+      !cors::IsOkStatus(response_head.headers->response_code())) {
+    out_error_message = "Failed to fetch Web Bundle.";
+    return false;
+  }
+  if (response_head.mime_type != "application/webbundle") {
+    out_error_message =
+        "Web Bundle response must have \"application/webbundle\" content-type.";
+    return false;
+  }
+  if (!web_package::HasNoSniffHeader(response_head)) {
+    out_error_message =
+        "Web Bundle response must have \"X-Content-Type-Options: nosniff\" "
+        "header.";
+    return false;
+  }
+  return true;
 }
 
 // URLLoaderClient which wraps the real URLLoaderClient.
@@ -62,8 +66,27 @@ class WebBundleURLLoaderClient : public network::mojom::URLLoaderClient {
 
  private:
   // network::mojom::URLLoaderClient implementation:
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
+    wrapped_->OnReceiveEarlyHints(std::move(early_hints));
+  }
+
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head) override {
+    std::string error_message;
+    if (!CheckWebBundleServingConstraints(*response_head, error_message)) {
+      if (factory_) {
+        factory_->ReportErrorAndCancelPendingLoaders(
+            WebBundleURLLoaderFactory::SubresourceWebBundleLoadResult::
+                kServingConstraintsNotMet,
+            mojom::WebBundleErrorType::kServingConstraintsNotMet,
+            error_message);
+      }
+    }
+
+    base::UmaHistogramCustomCounts(
+        "SubresourceWebBundles.ContentLength",
+        response_head->content_length < 0 ? 0 : response_head->content_length,
+        1, 50000000, 50);
     wrapped_->OnReceiveResponse(std::move(response_head));
   }
 
@@ -101,7 +124,7 @@ class WebBundleURLLoaderClient : public network::mojom::URLLoaderClient {
     options.capacity_num_bytes = kBlockedBodyAllocationSize;
     mojo::ScopedDataPipeProducerHandle producer;
     mojo::ScopedDataPipeConsumerHandle consumer;
-    MojoResult result = mojo::CreateDataPipe(&options, &producer, &consumer);
+    MojoResult result = mojo::CreateDataPipe(&options, producer, consumer);
     if (result != MOJO_RESULT_OK) {
       wrapped_->OnComplete(
           URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));
@@ -128,17 +151,36 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
  public:
   URLLoader(mojo::PendingReceiver<mojom::URLLoader> loader,
             const ResourceRequest& request,
-            mojo::PendingRemote<mojom::URLLoaderClient> client)
+            mojo::PendingRemote<mojom::URLLoaderClient> client,
+            const base::Optional<url::Origin>& request_initiator_origin_lock,
+            mojo::Remote<mojom::TrustedHeaderClient> trusted_header_client)
       : url_(request.url),
+        request_mode_(request.mode),
+        request_initiator_(request.request_initiator),
+        request_initiator_origin_lock_(request_initiator_origin_lock),
         receiver_(this, std::move(loader)),
-        client_(std::move(client)) {
+        client_(std::move(client)),
+        trusted_header_client_(std::move(trusted_header_client)) {
     receiver_.set_disconnect_handler(
         base::BindOnce(&URLLoader::OnMojoDisconnect, GetWeakPtr()));
+    if (trusted_header_client_) {
+      trusted_header_client_.set_disconnect_handler(
+          base::BindOnce(&URLLoader::OnMojoDisconnect, GetWeakPtr()));
+    }
   }
   URLLoader(const URLLoader&) = delete;
   URLLoader& operator=(const URLLoader&) = delete;
 
   const GURL& url() const { return url_; }
+  const mojom::RequestMode& request_mode() const { return request_mode_; }
+
+  const base::Optional<url::Origin>& request_initiator() const {
+    return request_initiator_;
+  }
+
+  const base::Optional<url::Origin>& request_initiator_origin_lock() const {
+    return request_initiator_origin_lock_;
+  }
 
   base::WeakPtr<URLLoader> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -164,6 +206,43 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
     delete this;
   }
 
+  void BlockResponseForCorb(mojom::URLResponseHeadPtr response_head) {
+    // A minimum implementation to block CORB-protected resources.
+    //
+    // TODO(crbug.com/1082020): Re-use
+    // network::URLLoader::BlockResponseForCorb(), instead of copying
+    // essential parts from there, so that the two implementations won't
+    // diverge further. That requires non-trivial refactoring.
+    CrossOriginReadBlocking::SanitizeBlockedResponse(response_head.get());
+    client_->OnReceiveResponse(std::move(response_head));
+
+    // Send empty body to the URLLoaderClient.
+    mojo::ScopedDataPipeProducerHandle producer;
+    mojo::ScopedDataPipeConsumerHandle consumer;
+    if (CreateDataPipe(nullptr, producer, consumer) != MOJO_RESULT_OK) {
+      OnFail(net::ERR_INSUFFICIENT_RESOURCES);
+      return;
+    }
+    producer.reset();
+    client_->OnStartLoadingResponseBody(std::move(consumer));
+
+    URLLoaderCompletionStatus status;
+    status.error_code = net::OK;
+    status.completion_time = base::TimeTicks::Now();
+    status.encoded_data_length = 0;
+    status.encoded_body_length = 0;
+    status.decoded_body_length = 0;
+    client_->OnComplete(status);
+
+    // Reset the connection to the URLLoaderClient.  This helps ensure that we
+    // won't accidentally leak any data to the renderer from this point on.
+    client_.reset();
+  }
+
+  mojo::Remote<mojom::TrustedHeaderClient>& trusted_header_client() {
+    return trusted_header_client_;
+  }
+
  private:
   // mojom::URLLoader
   void FollowRedirect(
@@ -185,8 +264,18 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
   void OnMojoDisconnect() { delete this; }
 
   const GURL url_;
+  mojom::RequestMode request_mode_;
+  base::Optional<url::Origin> request_initiator_;
+  // It is safe to hold |request_initiator_origin_lock_| in this factory because
+  // 1). |request_initiator_origin_lock| is a property of |URLLoaderFactory|
+  // (or, more accurately a property of |URLLoaderFactoryParams|), and
+  // 2) |WebURLLoader| is always associated with the same URLLoaderFactory
+  // (via URLLoaderFactory -> WebBundleManager -> WebBundleURLLoaderFactory
+  // -> WebBundleURLLoader).
+  const base::Optional<url::Origin> request_initiator_origin_lock_;
   mojo::Receiver<mojom::URLLoader> receiver_;
   mojo::Remote<mojom::URLLoaderClient> client_;
+  mojo::Remote<mojom::TrustedHeaderClient> trusted_header_client_;
   base::WeakPtrFactory<URLLoader> weak_ptr_factory_{this};
 };
 
@@ -198,11 +287,20 @@ class WebBundleURLLoaderFactory::BundleDataSource
 
   BundleDataSource(mojo::PendingReceiver<web_package::mojom::BundleDataSource>
                        data_source_receiver,
-                   mojo::ScopedDataPipeConsumerHandle bundle_body)
+                   mojo::ScopedDataPipeConsumerHandle bundle_body,
+                   std::unique_ptr<WebBundleMemoryQuotaConsumer>
+                       web_bundle_memory_quota_consumer,
+                   base::OnceClosure memory_quota_exceeded_closure,
+                   base::OnceClosure data_completed_closure)
       : data_source_receiver_(this, std::move(data_source_receiver)),
         pipe_drainer_(
             std::make_unique<mojo::DataPipeDrainer>(this,
-                                                    std::move(bundle_body))) {}
+                                                    std::move(bundle_body))),
+        web_bundle_memory_quota_consumer_(
+            std::move(web_bundle_memory_quota_consumer)),
+        memory_quota_exceeded_closure_(
+            std::move(memory_quota_exceeded_closure)),
+        data_completed_closure_(std::move(data_completed_closure)) {}
 
   ~BundleDataSource() override {
     // The receiver must be closed before destructing pending callbacks in
@@ -218,7 +316,7 @@ class WebBundleURLLoaderFactory::BundleDataSource
                       uint64_t length,
                       ReadToDataPipeCallback callback) {
     TRACE_EVENT0("loading", "BundleDataSource::ReadToDataPipe");
-    if (!finished_loading_ && offset + length > data_.size()) {
+    if (!finished_loading_ && !buffer_.ContainsAll(offset, length)) {
       // Current implementation does not support progressive loading of inner
       // response body.
       PendingReadToDataPipe pending;
@@ -230,9 +328,17 @@ class WebBundleURLLoaderFactory::BundleDataSource
       return;
     }
 
+    auto data_source = buffer_.CreateDataSource(offset, length);
+    if (!data_source) {
+      // When there is no body to send, returns OK here without creating a
+      // DataPipeProducer.
+      std::move(callback).Run(MOJO_RESULT_OK);
+      return;
+    }
+
     auto writer = std::make_unique<mojo::DataPipeProducer>(std::move(producer));
     mojo::DataPipeProducer* raw_writer = writer.get();
-    raw_writer->Write(std::make_unique<PipeDataSource>(GetData(offset, length)),
+    raw_writer->Write(std::move(data_source),
                       base::BindOnce(&DeleteProducerAndRunCallback,
                                      std::move(writer), std::move(callback)));
   }
@@ -240,7 +346,7 @@ class WebBundleURLLoaderFactory::BundleDataSource
   // mojom::BundleDataSource
   void Read(uint64_t offset, uint64_t length, ReadCallback callback) override {
     TRACE_EVENT0("loading", "BundleDataSource::Read");
-    if (!finished_loading_ && offset + length > data_.size()) {
+    if (!finished_loading_ && !buffer_.ContainsAll(offset, length)) {
       PendingRead pending;
       pending.offset = offset;
       pending.length = length;
@@ -248,51 +354,71 @@ class WebBundleURLLoaderFactory::BundleDataSource
       pending_reads_.push_back(std::move(pending));
       return;
     }
-    std::move(callback).Run(GetData(offset, length));
+    uint64_t out_len = buffer_.GetAvailableLength(offset, length);
+    std::vector<uint8_t> output(base::checked_cast<size_t>(out_len));
+    buffer_.ReadData(offset, out_len, output.data());
+    std::move(callback).Run(std::move(output));
   }
 
   // mojo::DataPipeDrainer::Client
   void OnDataAvailable(const void* data, size_t num_bytes) override {
     DCHECK(!finished_loading_);
-    const uint8_t* data_uint8 = reinterpret_cast<const uint8_t*>(data);
-    // TODO(crbug.com/1082020): Set a threshold for buffer size, so that Network
-    // Service does not use memory indefinitely.
-    data_.insert(data_.end(), data_uint8, data_uint8 + num_bytes);
+    if (!web_bundle_memory_quota_consumer_->AllocateMemory(num_bytes)) {
+      AbortPendingReads();
+      if (memory_quota_exceeded_closure_) {
+        // Defer calling |memory_quota_exceeded_closure_| to avoid the
+        // UAF call in DataPipeDrainer::ReadData().
+        base::SequencedTaskRunnerHandle::Get()->PostTask(
+            FROM_HERE, std::move(memory_quota_exceeded_closure_));
+      }
+      return;
+    }
+    buffer_.Append(reinterpret_cast<const uint8_t*>(data), num_bytes);
     ProcessPendingReads();
   }
 
   void OnDataComplete() override {
     DCHECK(!finished_loading_);
+    base::UmaHistogramCustomCounts(
+        "SubresourceWebBundles.ReceivedSize",
+        base::saturated_cast<base::Histogram::Sample>(buffer_.size()), 1,
+        50000000, 50);
+    DCHECK(data_completed_closure_);
+    // Defer calling |data_completed_closure_| not to run
+    // |data_completed_closure_| before |memory_quota_exceeded_closure_|.
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, std::move(data_completed_closure_));
     finished_loading_ = true;
     ProcessPendingReads();
   }
 
  private:
   void ProcessPendingReads() {
-    std::vector<PendingRead> pendings;
-    pendings.swap(pending_reads_);
-    for (auto& pending : pendings)
-      Read(pending.offset, pending.length, std::move(pending.callback));
+    std::vector<PendingRead> pendings(std::move(pending_reads_));
+    std::vector<PendingReadToDataPipe> pipe_pendings(
+        std::move(pending_reads_to_data_pipe_));
 
-    std::vector<PendingReadToDataPipe> pipe_pendings;
-    pipe_pendings.swap(pending_reads_to_data_pipe_);
+    for (auto& pending : pendings) {
+      Read(pending.offset, pending.length, std::move(pending.callback));
+    }
+
     for (auto& pending : pipe_pendings) {
       ReadToDataPipe(std::move(pending.producer), pending.offset,
                      pending.length, std::move(pending.callback));
     }
   }
 
-  std::vector<uint8_t> GetData(uint64_t uint64_offset, uint64_t uint64_length) {
-    size_t offset = base::checked_cast<size_t>(uint64_offset);
-    size_t length = base::checked_cast<size_t>(uint64_length);
-    if (offset >= data_.size())
-      return {};
-    if (length > data_.size() - offset)
-      length = data_.size() - offset;
+  void AbortPendingReads() {
+    std::vector<PendingRead> pendings(std::move(pending_reads_));
+    std::vector<PendingReadToDataPipe> pipe_pendings(
+        std::move(pending_reads_to_data_pipe_));
 
-    std::vector<uint8_t> output(length);
-    memcpy(output.data(), data_.data() + offset, length);
-    return output;
+    for (auto& pending : pendings) {
+      std::move(pending.callback).Run(std::vector<uint8_t>());
+    }
+    for (auto& pending : pipe_pendings) {
+      std::move(pending.callback).Run(MOJO_RESULT_NOT_FOUND);
+    }
   }
 
   struct PendingRead {
@@ -308,18 +434,28 @@ class WebBundleURLLoaderFactory::BundleDataSource
   };
 
   mojo::Receiver<web_package::mojom::BundleDataSource> data_source_receiver_;
-  std::vector<uint8_t> data_;
+  WebBundleChunkedBuffer buffer_;
   std::vector<PendingRead> pending_reads_;
   std::vector<PendingReadToDataPipe> pending_reads_to_data_pipe_;
   bool finished_loading_ = false;
   std::unique_ptr<mojo::DataPipeDrainer> pipe_drainer_;
+  std::unique_ptr<WebBundleMemoryQuotaConsumer>
+      web_bundle_memory_quota_consumer_;
+  base::OnceClosure memory_quota_exceeded_closure_;
+  base::OnceClosure data_completed_closure_;
 };
 
 WebBundleURLLoaderFactory::WebBundleURLLoaderFactory(
     const GURL& bundle_url,
-    mojo::Remote<mojom::WebBundleHandle> web_bundle_handle)
+    mojo::Remote<mojom::WebBundleHandle> web_bundle_handle,
+    const base::Optional<url::Origin>& request_initiator_origin_lock,
+    std::unique_ptr<WebBundleMemoryQuotaConsumer>
+        web_bundle_memory_quota_consumer)
     : bundle_url_(bundle_url),
-      web_bundle_handle_(std::move(web_bundle_handle)) {}
+      web_bundle_handle_(std::move(web_bundle_handle)),
+      request_initiator_origin_lock_(request_initiator_origin_lock),
+      web_bundle_memory_quota_consumer_(
+          std::move(web_bundle_memory_quota_consumer)) {}
 
 WebBundleURLLoaderFactory::~WebBundleURLLoaderFactory() {
   for (auto loader : pending_loaders_) {
@@ -333,11 +469,23 @@ base::WeakPtr<WebBundleURLLoaderFactory> WebBundleURLLoaderFactory::GetWeakPtr()
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+bool WebBundleURLLoaderFactory::HasError() const {
+  return load_result_.has_value() &&
+         *load_result_ != SubresourceWebBundleLoadResult::kSuccess;
+}
+
 void WebBundleURLLoaderFactory::SetBundleStream(
     mojo::ScopedDataPipeConsumerHandle body) {
+  if (HasError())
+    return;
   mojo::PendingRemote<web_package::mojom::BundleDataSource> data_source;
   source_ = std::make_unique<BundleDataSource>(
-      data_source.InitWithNewPipeAndPassReceiver(), std::move(body));
+      data_source.InitWithNewPipeAndPassReceiver(), std::move(body),
+      std::move(web_bundle_memory_quota_consumer_),
+      base::BindOnce(&WebBundleURLLoaderFactory::OnMemoryQuotaExceeded,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&WebBundleURLLoaderFactory::OnDataCompleted,
+                     weak_ptr_factory_.GetWeakPtr()));
   // WebBundleParser will self-destruct on remote mojo ends' disconnection.
   new web_package::WebBundleParser(parser_.BindNewPipeAndPassReceiver(),
                                    std::move(data_source));
@@ -358,34 +506,60 @@ WebBundleURLLoaderFactory::WrapURLLoaderClient(
   return client;
 }
 
-void WebBundleURLLoaderFactory::CreateLoaderAndStart(
+void WebBundleURLLoaderFactory::StartSubresourceRequest(
     mojo::PendingReceiver<mojom::URLLoader> receiver,
-    int32_t routing_id,
-    int32_t request_id,
-    uint32_t options,
     const ResourceRequest& url_request,
     mojo::PendingRemote<mojom::URLLoaderClient> client,
-    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
-  TRACE_EVENT0("loading", "WebBundleURLLoaderFactory::CreateLoaderAndStart");
-  URLLoader* loader =
-      new URLLoader(std::move(receiver), url_request, std::move(client));
-  if (metadata_error_) {
+    mojo::Remote<mojom::TrustedHeaderClient> trusted_header_client) {
+  TRACE_EVENT0("loading", "WebBundleURLLoaderFactory::StartSubresourceRequest");
+  URLLoader* loader = new URLLoader(
+      std::move(receiver), url_request, std::move(client),
+      request_initiator_origin_lock_, std::move(trusted_header_client));
+
+  // Verify that WebBundle URL associated with the request is correct.
+  DCHECK(url_request.web_bundle_token_params.has_value());
+  if (url_request.web_bundle_token_params->bundle_url != bundle_url_) {
+    mojo::ReportBadMessage(
+        "WebBundleURLLoaderFactory: Bundle URL does not match");
+    loader->OnFail(net::ERR_INVALID_ARGUMENT);
+    return;
+  }
+
+  if (!loader->trusted_header_client()) {
+    QueueOrStartLoader(loader->GetWeakPtr());
+    return;
+  }
+  loader->trusted_header_client()->OnBeforeSendHeaders(
+      url_request.headers,
+      base::BindOnce(&WebBundleURLLoaderFactory::OnBeforeSendHeadersComplete,
+                     weak_ptr_factory_.GetWeakPtr(), loader->GetWeakPtr()));
+}
+
+void WebBundleURLLoaderFactory::OnBeforeSendHeadersComplete(
+    base::WeakPtr<URLLoader> loader,
+    int result,
+    const base::Optional<net::HttpRequestHeaders>& headers) {
+  if (!loader)
+    return;
+  QueueOrStartLoader(loader);
+}
+
+void WebBundleURLLoaderFactory::QueueOrStartLoader(
+    base::WeakPtr<URLLoader> loader) {
+  if (!loader)
+    return;
+  if (HasError()) {
     loader->OnFail(net::ERR_INVALID_WEB_BUNDLE);
     return;
   }
   if (!metadata_) {
-    pending_loaders_.push_back(loader->GetWeakPtr());
+    pending_loaders_.push_back(loader);
     return;
   }
   StartLoad(loader);
 }
 
-void WebBundleURLLoaderFactory::Clone(
-    mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) {
-  NOTREACHED();
-}
-
-void WebBundleURLLoaderFactory::StartLoad(URLLoader* loader) {
+void WebBundleURLLoaderFactory::StartLoad(base::WeakPtr<URLLoader> loader) {
   DCHECK(metadata_);
   if (!loader)
     return;
@@ -408,26 +582,39 @@ void WebBundleURLLoaderFactory::StartLoad(URLLoader* loader) {
                      weak_ptr_factory_.GetWeakPtr(), loader->GetWeakPtr()));
 }
 
+void WebBundleURLLoaderFactory::ReportErrorAndCancelPendingLoaders(
+    SubresourceWebBundleLoadResult result,
+    mojom::WebBundleErrorType error,
+    const std::string& message) {
+  DCHECK_NE(SubresourceWebBundleLoadResult::kSuccess, result);
+  web_bundle_handle_->OnWebBundleError(error, message);
+  MaybeReportLoadResult(result);
+  auto pending_loaders = std::move(pending_loaders_);
+  for (auto loader : pending_loaders) {
+    if (loader)
+      loader->OnFail(net::ERR_INVALID_WEB_BUNDLE);
+  }
+
+  source_.reset();
+  parser_.reset();
+}
+
 void WebBundleURLLoaderFactory::OnMetadataParsed(
     web_package::mojom::BundleMetadataPtr metadata,
     web_package::mojom::BundleMetadataParseErrorPtr error) {
   TRACE_EVENT0("loading", "WebBundleURLLoaderFactory::OnMetadataParsed");
   if (error) {
-    metadata_error_ = std::move(error);
-    web_bundle_handle_->OnWebBundleError(
-        mojom::WebBundleErrorType::kMetadataParseError,
-        metadata_error_->message);
-    for (auto loader : pending_loaders_) {
-      if (loader)
-        loader->OnFail(net::ERR_INVALID_WEB_BUNDLE);
-    }
-    pending_loaders_.clear();
+    ReportErrorAndCancelPendingLoaders(
+        SubresourceWebBundleLoadResult::kMetadataParseError,
+        mojom::WebBundleErrorType::kMetadataParseError, error->message);
     return;
   }
 
   metadata_ = std::move(metadata);
+  if (data_completed_)
+    MaybeReportLoadResult(SubresourceWebBundleLoadResult::kSuccess);
   for (auto loader : pending_loaders_)
-    StartLoad(loader.get());
+    StartLoad(loader);
   pending_loaders_.clear();
 }
 
@@ -444,33 +631,110 @@ void WebBundleURLLoaderFactory::OnResponseParsed(
     loader->OnFail(net::ERR_INVALID_WEB_BUNDLE);
     return;
   }
+  // Add an artificial "X-Content-Type-Options: "nosniff" header, which is
+  // explained at
+  // https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#name-responses.
+  response->response_headers["X-Content-Type-Options"] = "nosniff";
+  const std::string header_string = web_package::CreateHeaderString(response);
+  if (!loader->trusted_header_client()) {
+    SendResponseToLoader(loader, header_string, response->payload_offset,
+                         response->payload_length);
+    return;
+  }
+  loader->trusted_header_client()->OnHeadersReceived(
+      header_string, net::IPEndPoint(),
+      base::BindOnce(&WebBundleURLLoaderFactory::OnHeadersReceivedComplete,
+                     weak_ptr_factory_.GetWeakPtr(), loader->GetWeakPtr(),
+                     header_string, response->payload_offset,
+                     response->payload_length));
+}
+
+void WebBundleURLLoaderFactory::OnHeadersReceivedComplete(
+    base::WeakPtr<URLLoader> loader,
+    const std::string& original_header,
+    uint64_t payload_offset,
+    uint64_t payload_length,
+    int result,
+    const base::Optional<std::string>& headers,
+    const base::Optional<GURL>& preserve_fragment_on_redirect_url) {
+  if (!loader)
+    return;
+  SendResponseToLoader(loader, headers ? *headers : original_header,
+                       payload_offset, payload_length);
+}
+
+void WebBundleURLLoaderFactory::SendResponseToLoader(
+    base::WeakPtr<URLLoader> loader,
+    const std::string& headers,
+    uint64_t payload_offset,
+    uint64_t payload_length) {
+  if (!loader)
+    return;
+  mojom::URLResponseHeadPtr response_head =
+      web_package::CreateResourceResponseFromHeaderString(headers);
   // Currently we allow only net::HTTP_OK responses in bundles.
   // TODO(crbug.com/990733): Revisit this once
   // https://github.com/WICG/webpackage/issues/478 is resolved.
-  if (response->response_code != net::HTTP_OK) {
+  if (response_head->headers->response_code() != net::HTTP_OK) {
     web_bundle_handle_->OnWebBundleError(
         mojom::WebBundleErrorType::kResponseParseError,
         "Invalid response code " +
-            base::NumberToString(response->response_code));
+            base::NumberToString(response_head->headers->response_code()));
     loader->OnFail(net::ERR_INVALID_WEB_BUNDLE);
     return;
   }
 
-  mojom::URLResponseHeadPtr response_head =
-      web_package::CreateResourceResponse(response);
   response_head->web_bundle_url = bundle_url_;
+
+  auto corb_analyzer =
+      std::make_unique<CrossOriginReadBlocking::ResponseAnalyzer>(
+          loader->url(), loader->request_initiator(), *response_head,
+          loader->request_initiator_origin_lock(), loader->request_mode());
+
+  if (corb_analyzer->ShouldBlock()) {
+    loader->BlockResponseForCorb(std::move(response_head));
+    return;
+  }
+
   loader->OnResponse(std::move(response_head));
 
   mojo::ScopedDataPipeProducerHandle producer;
   mojo::ScopedDataPipeConsumerHandle consumer;
-  if (CreateDataPipe(nullptr, &producer, &consumer) != MOJO_RESULT_OK) {
+  if (CreateDataPipe(nullptr, producer, consumer) != MOJO_RESULT_OK) {
     loader->OnFail(net::ERR_INSUFFICIENT_RESOURCES);
     return;
   }
   loader->OnData(std::move(consumer));
   source_->ReadToDataPipe(
-      std::move(producer), response->payload_offset, response->payload_length,
+      std::move(producer), payload_offset, payload_length,
       base::BindOnce(&URLLoader::OnWriteCompleted, loader->GetWeakPtr()));
+}
+
+void WebBundleURLLoaderFactory::OnMemoryQuotaExceeded() {
+  TRACE_EVENT0("loading", "WebBundleURLLoaderFactory::OnMemoryQuotaExceeded");
+  ReportErrorAndCancelPendingLoaders(
+      SubresourceWebBundleLoadResult::kMemoryQuotaExceeded,
+      mojom::WebBundleErrorType::kMemoryQuotaExceeded,
+      "Memory quota exceeded. Currently, there is an upper limit on the total "
+      "size of subresource web bundles in a process. See "
+      "https://crbug.com/1154140 for more details.");
+}
+
+void WebBundleURLLoaderFactory::OnDataCompleted() {
+  DCHECK(!data_completed_);
+  data_completed_ = true;
+  if (metadata_)
+    MaybeReportLoadResult(SubresourceWebBundleLoadResult::kSuccess);
+}
+
+void WebBundleURLLoaderFactory::MaybeReportLoadResult(
+    SubresourceWebBundleLoadResult result) {
+  if (load_result_.has_value())
+    return;
+  load_result_ = result;
+  base::UmaHistogramEnumeration("SubresourceWebBundles.LoadResult", result);
+  web_bundle_handle_->OnWebBundleLoadFinished(
+      result == SubresourceWebBundleLoadResult::kSuccess);
 }
 
 }  // namespace network

@@ -38,6 +38,13 @@ class SandboxDelegate {
 
   // Called right after the process is launched, but before its thread is run.
   virtual void PostSpawnTarget(base::ProcessHandle process) = 0;
+
+  // Whether this process should run inside a Job if running unsandboxed.
+  virtual bool ShouldUnsandboxedRunInJob() = 0;
+
+  // Whether this process will be compatible with Control-flow Enforcement
+  // Technology (CET) / Hardware-enforced Stack Protection.
+  virtual bool CetCompatible() = 0;
 #endif  // defined(OS_WIN)
 };
 

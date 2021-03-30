@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <device/bluetooth/bluez/bluetooth_local_gatt_service_bluez.h>
+#include "device/bluetooth/bluez/bluetooth_local_gatt_service_bluez.h"
 
 #include "base/guid.h"
 #include "base/logging.h"

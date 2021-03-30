@@ -12,7 +12,7 @@
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "ui/wm/public/activation_change_observer.h"
 
@@ -105,8 +105,8 @@ class ASH_EXPORT BackGestureContextualNudgeControllerImpl
   void DoCleanUp();
 
   ScopedSessionObserver session_observer_{this};
-  ScopedObserver<TabletModeController, TabletModeObserver>
-      tablet_mode_observer_{this};
+  base::ScopedObservation<TabletModeController, TabletModeObserver>
+      tablet_mode_observation_{this};
 
   // The delegate to monitor the current active window's navigation status.
   std::unique_ptr<BackGestureContextualNudgeDelegate> nudge_delegate_;

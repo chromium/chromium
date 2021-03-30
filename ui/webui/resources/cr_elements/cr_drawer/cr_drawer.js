@@ -2,8 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../shared_vars_css.m.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assertNotReached} from '../../js/assert.m.js';
+import {listenOnce} from '../../js/util.m.js';
+
 Polymer({
   is: 'cr-drawer',
+
+  _template: html`{__html_template__}`,
 
   properties: {
     heading: String,
@@ -136,10 +146,6 @@ Polymer({
    * @private
    */
   onDialogClose_(event) {
-    // TODO(dpapad): This is necessary to make the code work both for Polymer 1
-    // and Polymer 2. Remove once migration to Polymer 2 is completed.
-    event.stopPropagation();
-
     // Catch and re-fire the 'close' event such that it bubbles across Shadow
     // DOM v1.
     this.fire('close');

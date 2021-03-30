@@ -4,6 +4,7 @@
 
 #include "base/threading/sequence_bound.h"
 
+#include <functional>
 #include <utility>
 
 #include "base/macros.h"
@@ -107,12 +108,12 @@ class BoxedValue {
 };
 
 #if defined(OS_IOS) && !TARGET_OS_SIMULATOR
-#define MAYBE_ConstructThenPostThenReset FLAKY_ConstructThenPostThenReset
+#define MAYBE_ConstructAsyncCallReset FLAKY_ConstructAsyncCallReset
 #else
-#define MAYBE_ConstructThenPostThenReset ConstructThenPostThenReset
+#define MAYBE_ConstructAsyncCallReset ConstructAsyncCallReset
 #endif
 // https://crbug.com/899779 tracks test flakiness on iOS.
-TEST_F(SequenceBoundTest, MAYBE_ConstructThenPostThenReset) {
+TEST_F(SequenceBoundTest, MAYBE_ConstructAsyncCallReset) {
   auto derived = SequenceBound<Derived>(task_runner_, &value_);
   EXPECT_FALSE(derived.is_null());
   EXPECT_TRUE(derived);
@@ -123,7 +124,7 @@ TEST_F(SequenceBoundTest, MAYBE_ConstructThenPostThenReset) {
   EXPECT_EQ(value_, kDerivedCtorValue);
 
   // Post now that the object has been constructed.
-  derived.Post(FROM_HERE, &Derived::SetValue, kDifferentValue);
+  derived.AsyncCall(&Derived::SetValue).WithArgs(kDifferentValue);
   EXPECT_EQ(value_, kDerivedCtorValue);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(value_, kDifferentValue);
@@ -142,7 +143,7 @@ TEST_F(SequenceBoundTest, PostBeforeConstruction) {
   // Construct an object and post a message to it, before construction has been
   // run on |task_runner_|.
   auto derived = SequenceBound<Derived>(task_runner_, &value_);
-  derived.Post(FROM_HERE, &Derived::SetValue, kDifferentValue);
+  derived.AsyncCall(&Derived::SetValue).WithArgs(kDifferentValue);
   EXPECT_EQ(value_, kInitialValue);
   // Both construction and SetValue should run.
   base::RunLoop().RunUntilIdle();
@@ -294,7 +295,7 @@ TEST_F(SequenceBoundTest, MultiplyDerivedPostToLeftBaseClass) {
 
   // Cast to Other, the left base.
   SequenceBound<Other> other(std::move(mderived));
-  other.Post(FROM_HERE, &Other::SetValue, kDifferentValue);
+  other.AsyncCall(&Other::SetValue).WithArgs(kDifferentValue);
 
   base::RunLoop().RunUntilIdle();
 
@@ -313,7 +314,7 @@ TEST_F(SequenceBoundTest, MultiplyDerivedPostToRightBaseClass) {
       SequenceBound<MultiplyDerived>(task_runner_, &value1, &value2);
 
   SequenceBound<Derived> derived(std::move(mderived));
-  derived.Post(FROM_HERE, &Derived::SetValue, kDifferentValue);
+  derived.AsyncCall(&Derived::SetValue).WithArgs(kDifferentValue);
 
   base::RunLoop().RunUntilIdle();
 
@@ -349,7 +350,7 @@ TEST_F(SequenceBoundTest, LvalueConstructionParameter) {
   Value* value_ptr = &value;
   SequenceBound<Derived> derived(task_runner_, value_ptr);
   {
-    derived.Post(FROM_HERE, &Derived::SetValue, kDifferentValue);
+    derived.AsyncCall(&Derived::SetValue).WithArgs(kDifferentValue);
     base::RunLoop run_loop;
     task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
@@ -384,21 +385,15 @@ TEST_F(SequenceBoundTest, PostTaskWithThisObject) {
   loop.Run();
 }
 
-TEST_F(SequenceBoundTest, ResetWithCallbackAfterDestruction) {
+TEST_F(SequenceBoundTest, SynchronouslyResetForTest) {
   base::SequenceBound<BoxedValue> value(task_runner_, 0);
 
-  // Verify that the callback passed to ResetWithCallbackAfterDestruction always
-  // does happen *after* destruction.
   bool destroyed = false;
-  value.Post(FROM_HERE, &BoxedValue::set_destruction_callback,
-             base::BindLambdaForTesting([&] { destroyed = true; }));
+  value.AsyncCall(&BoxedValue::set_destruction_callback)
+      .WithArgs(base::BindLambdaForTesting([&] { destroyed = true; }));
 
-  base::RunLoop loop;
-  value.ResetWithCallbackAfterDestruction(base::BindLambdaForTesting([&] {
-    EXPECT_TRUE(destroyed);
-    loop.Quit();
-  }));
-  loop.Run();
+  value.SynchronouslyResetForTest();
+  EXPECT_TRUE(destroyed);
 }
 
 TEST_F(SequenceBoundTest, SmallObject) {
@@ -621,6 +616,154 @@ TEST_F(SequenceBoundTest, AsyncCallIsConstQualified) {
   const SequenceBound<NoArgsVoidReturn> s(task_runner_);
   s.AsyncCall(&NoArgsVoidReturn::ConstMethod);
   s.AsyncCall(&NoArgsVoidReturn::Method);
+}
+
+class IgnoreResultTestHelperWithNoArgs {
+ public:
+  explicit IgnoreResultTestHelperWithNoArgs(RunLoop* loop, bool* called)
+      : loop_(loop), called_(called) {}
+
+  int ConstMethod() const {
+    if (loop_) {
+      loop_->Quit();
+    }
+    if (called_) {
+      *called_ = true;
+    }
+    return 0;
+  }
+
+  int Method() {
+    if (loop_) {
+      loop_->Quit();
+    }
+    if (called_) {
+      *called_ = true;
+    }
+    return 0;
+  }
+
+ private:
+  RunLoop* const loop_ = nullptr;
+  bool* const called_ = nullptr;
+};
+
+TEST_F(SequenceBoundTest, AsyncCallIgnoreResultNoArgs) {
+  {
+    RunLoop loop;
+    SequenceBound<IgnoreResultTestHelperWithNoArgs> s(task_runner_, &loop,
+                                                      nullptr);
+    s.AsyncCall(IgnoreResult(&IgnoreResultTestHelperWithNoArgs::ConstMethod));
+    loop.Run();
+  }
+
+  {
+    RunLoop loop;
+    SequenceBound<IgnoreResultTestHelperWithNoArgs> s(task_runner_, &loop,
+                                                      nullptr);
+    s.AsyncCall(IgnoreResult(&IgnoreResultTestHelperWithNoArgs::Method));
+    loop.Run();
+  }
+}
+
+TEST_F(SequenceBoundTest, AsyncCallIgnoreResultThen) {
+  {
+    RunLoop loop;
+    bool called = false;
+    SequenceBound<IgnoreResultTestHelperWithNoArgs> s(task_runner_, nullptr,
+                                                      &called);
+    s.AsyncCall(IgnoreResult(&IgnoreResultTestHelperWithNoArgs::ConstMethod))
+        .Then(BindLambdaForTesting([&] { loop.Quit(); }));
+    loop.Run();
+    EXPECT_TRUE(called);
+  }
+
+  {
+    RunLoop loop;
+    bool called = false;
+    SequenceBound<IgnoreResultTestHelperWithNoArgs> s(task_runner_, nullptr,
+                                                      &called);
+    s.AsyncCall(IgnoreResult(&IgnoreResultTestHelperWithNoArgs::Method))
+        .Then(BindLambdaForTesting([&] { loop.Quit(); }));
+    loop.Run();
+    EXPECT_TRUE(called);
+  }
+}
+
+class IgnoreResultTestHelperWithArgs {
+ public:
+  IgnoreResultTestHelperWithArgs(RunLoop* loop, int& value)
+      : loop_(loop), value_(value) {}
+
+  int ConstMethod(int arg) const {
+    value_ = arg;
+    if (loop_) {
+      loop_->Quit();
+    }
+    return arg;
+  }
+
+  int Method(int arg) {
+    value_ = arg;
+    if (loop_) {
+      loop_->Quit();
+    }
+    return arg;
+  }
+
+ private:
+  RunLoop* const loop_ = nullptr;
+  int& value_;
+};
+
+TEST_F(SequenceBoundTest, AsyncCallIgnoreResultWithArgs) {
+  {
+    RunLoop loop;
+    int result = 0;
+    SequenceBound<IgnoreResultTestHelperWithArgs> s(task_runner_, &loop,
+                                                    std::ref(result));
+    s.AsyncCall(IgnoreResult(&IgnoreResultTestHelperWithArgs::ConstMethod))
+        .WithArgs(60);
+    loop.Run();
+    EXPECT_EQ(60, result);
+  }
+
+  {
+    RunLoop loop;
+    int result = 0;
+    SequenceBound<IgnoreResultTestHelperWithArgs> s(task_runner_, &loop,
+                                                    std::ref(result));
+    s.AsyncCall(IgnoreResult(&IgnoreResultTestHelperWithArgs::Method))
+        .WithArgs(06);
+    loop.Run();
+    EXPECT_EQ(06, result);
+  }
+}
+
+TEST_F(SequenceBoundTest, AsyncCallIgnoreResultWithArgsThen) {
+  {
+    RunLoop loop;
+    int result = 0;
+    SequenceBound<IgnoreResultTestHelperWithArgs> s(task_runner_, nullptr,
+                                                    std::ref(result));
+    s.AsyncCall(IgnoreResult(&IgnoreResultTestHelperWithArgs::ConstMethod))
+        .WithArgs(60)
+        .Then(BindLambdaForTesting([&] { loop.Quit(); }));
+    loop.Run();
+    EXPECT_EQ(60, result);
+  }
+
+  {
+    RunLoop loop;
+    int result = 0;
+    SequenceBound<IgnoreResultTestHelperWithArgs> s(task_runner_, nullptr,
+                                                    std::ref(result));
+    s.AsyncCall(IgnoreResult(&IgnoreResultTestHelperWithArgs::Method))
+        .WithArgs(06)
+        .Then(BindLambdaForTesting([&] { loop.Quit(); }));
+    loop.Run();
+    EXPECT_EQ(06, result);
+  }
 }
 
 // TODO(dcheng): Maybe use the nocompile harness here instead of being

@@ -17,6 +17,7 @@
 #include "extensions/browser/notification_types.h"
 #include "extensions/browser/runtime_data.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "url/gurl.h"
@@ -35,7 +36,7 @@ CastExtensionHost::CastExtensionHost(
     : extensions::ExtensionHost(extension,
                                 site_instance.get(),
                                 initial_url,
-                                extensions::VIEW_TYPE_EXTENSION_POPUP),
+                                extensions::mojom::ViewType::kExtensionPopup),
       browser_context_(browser_context) {
   DCHECK(browser_context_);
 }
@@ -81,14 +82,13 @@ void CastExtensionHost::DidStartNavigation(
 bool CastExtensionHost::DidAddMessageToConsole(
     content::WebContents* source,
     blink::mojom::ConsoleMessageLevel log_level,
-    const base::string16& message,
+    const std::u16string& message,
     int32_t line_no,
-    const base::string16& source_id) {
+    const std::u16string& source_id) {
   std::string context = "Cast Extension:";
-  base::string16 single_line_message;
+  std::u16string single_line_message;
   // Mult-line message is not friendly to dumpstate redact.
-  base::ReplaceChars(message, base::ASCIIToUTF16("\n"),
-                     base::ASCIIToUTF16("\\n "), &single_line_message);
+  base::ReplaceChars(message, u"\n", u"\\n ", &single_line_message);
   logging::LogMessage("CONSOLE", line_no, ::logging::LOG_INFO).stream()
       << context << " \"" << single_line_message << "\", source: " << source_id
       << " (" << line_no << ")";

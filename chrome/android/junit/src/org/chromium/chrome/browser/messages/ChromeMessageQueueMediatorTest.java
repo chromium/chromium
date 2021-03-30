@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.messages;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -20,16 +19,17 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
-import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
-import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.messages.ManagedMessageDispatcher;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * Unit tests for {@link ChromeMessageQueueMediator}.
@@ -52,21 +52,19 @@ public class ChromeMessageQueueMediatorTest {
     private LayoutStateProvider mLayoutStateProvider;
 
     @Mock
-    private TabModelSelector mTabModelSelector;
-
-    @Mock
     private ManagedMessageDispatcher mMessageDispatcher;
 
     @Mock
-    private TabModelFilterProvider mTabModelFilterProvider;
+    private ModalDialogManager mModalDialogManager;
+
+    @Mock
+    private ActivityTabProvider mActivityTabProvider;
 
     private ChromeMessageQueueMediator mMediator;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
-        doNothing().when(mTabModelFilterProvider).addTabModelFilterObserver(any());
         when(mMessageDispatcher.suspend()).thenReturn(EXPECTED_TOKEN);
     }
 
@@ -75,11 +73,13 @@ public class ChromeMessageQueueMediatorTest {
                 new OneshotSupplierImpl<>();
         ObservableSupplierImpl<TabModelSelector> tabModelSelectorSupplier =
                 new ObservableSupplierImpl<>();
+        ObservableSupplierImpl<ModalDialogManager> modalDialogManagerSupplier =
+                new ObservableSupplierImpl<>();
         mMediator = new ChromeMessageQueueMediator(mBrowserControlsManager,
-                mMessageContainerCoordinator, mFullscreenManager,
-                layoutStateProviderOneShotSupplier, tabModelSelectorSupplier, mMessageDispatcher);
+                mMessageContainerCoordinator, mFullscreenManager, mActivityTabProvider,
+                layoutStateProviderOneShotSupplier, modalDialogManagerSupplier, mMessageDispatcher);
         layoutStateProviderOneShotSupplier.set(mLayoutStateProvider);
-        tabModelSelectorSupplier.set(mTabModelSelector);
+        modalDialogManagerSupplier.set(mModalDialogManager);
     }
 
     /**
@@ -92,6 +92,7 @@ public class ChromeMessageQueueMediatorTest {
         doNothing().when(mFullscreenManager).addObserver(observer.capture());
         initMediator();
         observer.getValue().onEnterFullscreen(null, null);
+        verify(mMessageDispatcher).suspend();
         observer.getValue().onExitFullscreen(null);
         verify(mMessageDispatcher).resume(EXPECTED_TOKEN);
     }
@@ -106,21 +107,43 @@ public class ChromeMessageQueueMediatorTest {
         doNothing().when(mLayoutStateProvider).addObserver(observer.capture());
         initMediator();
         observer.getValue().onStartedShowing(LayoutType.TAB_SWITCHER, false);
+        verify(mMessageDispatcher).suspend();
         observer.getValue().onFinishedShowing(LayoutType.BROWSING);
         verify(mMessageDispatcher).resume(EXPECTED_TOKEN);
     }
 
     /**
-     * Test the queue can be cleared when tab changes.
-     * TODO(crbug.com/1123947): Clean this after message scope is implemented.
+     * Test the queue can be suspended and resumed correctly when showing/hiding modal dialogs.
      */
     @Test
-    public void testDismissAllMessages() {
-        final ArgumentCaptor<TabModelObserver> observer =
-                ArgumentCaptor.forClass(TabModelObserver.class);
-        doNothing().when(mTabModelFilterProvider).addTabModelFilterObserver(observer.capture());
+    public void testModalDialogChange() {
+        final ArgumentCaptor<ModalDialogManagerObserver> observer =
+                ArgumentCaptor.forClass(ModalDialogManagerObserver.class);
+        doNothing().when(mModalDialogManager).addObserver(observer.capture());
         initMediator();
-        observer.getValue().didSelectTab(null, TabSelectionType.FROM_NEW, 1);
-        verify(mMessageDispatcher).dismissAllMessages();
+        observer.getValue().onDialogAdded(new PropertyModel());
+        verify(mMessageDispatcher).suspend();
+        observer.getValue().onLastDialogDismissed();
+        verify(mMessageDispatcher).resume(EXPECTED_TOKEN);
+    }
+
+    /**
+     * Test NPE is not thrown when supplier offers a null value.
+     */
+    @Test
+    public void testThrowNothingWhenModalDialogManagerIsNull() {
+        OneshotSupplierImpl<LayoutStateProvider> layoutStateProviderOneShotSupplier =
+                new OneshotSupplierImpl<>();
+        ObservableSupplierImpl<TabModelSelector> tabModelSelectorSupplier =
+                new ObservableSupplierImpl<>();
+        ObservableSupplierImpl<ModalDialogManager> modalDialogManagerSupplier =
+                new ObservableSupplierImpl<>();
+        mMediator = new ChromeMessageQueueMediator(mBrowserControlsManager,
+                mMessageContainerCoordinator, mFullscreenManager, mActivityTabProvider,
+                layoutStateProviderOneShotSupplier, modalDialogManagerSupplier, mMessageDispatcher);
+        layoutStateProviderOneShotSupplier.set(mLayoutStateProvider);
+        // To offer a null value, we have to offer a value other than null first.
+        modalDialogManagerSupplier.set(mModalDialogManager);
+        modalDialogManagerSupplier.set(null);
     }
 }

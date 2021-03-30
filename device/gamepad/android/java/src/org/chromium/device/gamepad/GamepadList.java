@@ -113,7 +113,14 @@ public class GamepadList {
 
     // ------------------------------------------------------------
 
-    private void onInputDeviceChangedImpl(int deviceId) {}
+    private void onInputDeviceChangedImpl(int deviceId) {
+        InputDevice inputDevice = InputDevice.getDevice(deviceId);
+        if (!isGamepadDevice(inputDevice)) return;
+        synchronized (mLock) {
+            unregisterGamepad(inputDevice.getId());
+            registerGamepad(inputDevice);
+        }
+    }
 
     private void onInputDeviceRemovedImpl(int deviceId) {
         synchronized (mLock) {
@@ -238,6 +245,10 @@ public class GamepadList {
 
     private static boolean isGamepadDevice(InputDevice inputDevice) {
         if (inputDevice == null) return false;
+
+        // The fingerprint sensor is a SOURCE_JOYSTICK but is not a gamepad.
+        if (inputDevice.getName().equals("uinput-fpc")) return false;
+
         return ((inputDevice.getSources() & InputDevice.SOURCE_JOYSTICK)
                 == InputDevice.SOURCE_JOYSTICK);
     }
@@ -272,6 +283,8 @@ public class GamepadList {
             case KeyEvent.KEYCODE_DPAD_DOWN:
             case KeyEvent.KEYCODE_DPAD_LEFT:
             case KeyEvent.KEYCODE_DPAD_RIGHT:
+            // Xbox Series X maps the Share button as KEYCODE_MEDIA_RECORD.
+            case KeyEvent.KEYCODE_MEDIA_RECORD:
                 return true;
             default:
                 return KeyEvent.isGamepadButton(keyCode);
@@ -289,13 +302,17 @@ public class GamepadList {
                 final GamepadDevice device = getDevice(i);
                 if (device != null) {
                     device.updateButtonsAndAxesMapping();
-                    GamepadListJni.get().setGamepadData(GamepadList.this, webGamepadsPtr, i,
-                            device.isStandardGamepad(), true, device.getName(),
+                    GamepadListJni.get().setGamepadData(GamepadList.this, webGamepadsPtr,
+                            /*index=*/i, device.isStandardGamepad(), /*connected=*/true,
+                            device.getName(), device.getVendorId(), device.getProductId(),
                             device.getTimestamp(), device.getAxes(), device.getButtons(),
                             device.getButtonsLength());
                 } else {
-                    GamepadListJni.get().setGamepadData(GamepadList.this, webGamepadsPtr, i, false,
-                            false, null, 0, null, null, 0);
+                    GamepadListJni.get().setGamepadData(GamepadList.this, webGamepadsPtr,
+                            /*index=*/i, /*mapping=*/false, /*connected=*/false,
+                            /*devicename=*/null, /*vendorId=*/0, /*productId=*/0,
+                            /*timestamp=*/0, /*axes=*/null, /*buttons=*/null,
+                            /*buttonsLength=*/0);
                 }
             }
         }
@@ -326,7 +343,7 @@ public class GamepadList {
     @NativeMethods
     interface Natives {
         void setGamepadData(GamepadList caller, long webGamepadsPtr, int index, boolean mapping,
-                boolean connected, String devicename, long timestamp, float[] axes, float[] buttons,
-                int buttonsLength);
+                boolean connected, String devicename, int vendorId, int productId, long timestamp,
+                float[] axes, float[] buttons, int buttonsLength);
     }
 }

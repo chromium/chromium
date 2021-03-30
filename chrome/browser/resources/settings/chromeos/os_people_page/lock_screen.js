@@ -102,6 +102,12 @@ Polymer({
     numFingerprints_: {
       type: Number,
       value: 0,
+      observer: 'updateNumFingerprintsDescription_',
+    },
+
+    /** @private */
+    numFingerprintsDescription_: {
+      type: String,
     },
 
     /**
@@ -338,13 +344,16 @@ Polymer({
   },
 
   /** @private */
-  getDescriptionText_() {
-    if (this.numFingerprints_ > 0) {
-      return this.i18n(
-          'lockScreenNumberFingerprints', this.numFingerprints_.toString());
+  updateNumFingerprintsDescription_() {
+    if (this.numFingerprints_ === 0) {
+      this.numFingerprintDescription_ =
+          this.i18n('lockScreenEditFingerprintsDescription');
+    } else {
+      PluralStringProxyImpl.getInstance()
+          .getPluralString(
+              'lockScreenNumberFingerprints', this.numFingerprints_)
+          .then(string => this.numFingerprintDescription_ = string);
     }
-
-    return this.i18n('lockScreenEditFingerprintsDescription');
   },
 
   /** @private */

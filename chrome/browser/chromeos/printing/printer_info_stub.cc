@@ -22,8 +22,8 @@ void QueryIppPrinter(const std::string& host,
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
                                 printing::PrinterQueryResult::kUnknownFailure,
-                                printing::PrinterStatus(), "Foo", "Bar",
-                                "Foo Bar", std::vector<std::string>{}, false));
+                                printing::PrinterStatus(), "Foo Bar",
+                                std::vector<std::string>{}, false));
 }
 
 }  // namespace chromeos

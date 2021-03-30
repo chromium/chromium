@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#if defined(__IPHONE_13_4)
 // Returns a pointer style provider that has the default hover effect and a
 // circle pointer shape.
 UIButtonPointerStyleProvider CreateDefaultEffectCirclePointerStyleProvider()
@@ -57,7 +56,5 @@ API_AVAILABLE(ios(13.4))
 @interface ViewPointerInteraction
     : NSObject <UIInteraction, UIPointerInteractionDelegate>
 @end
-
-#endif  // defined(__IPHONE_13_4)
 
 #endif  // IOS_CHROME_COMMON_UI_UTIL_POINTER_INTERACTION_UTIL_H_

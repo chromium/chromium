@@ -116,14 +116,14 @@ void ImmersiveModeControllerChromeos::OnFindBarVisibleBoundsChanged(
 
 bool ImmersiveModeControllerChromeos::
     ShouldStayImmersiveAfterExitingFullscreen() {
-  return !browser_view_->CanSupportTabStrip() &&
+  return !browser_view_->GetSupportsTabStrip() &&
          chromeos::TabletState::Get()->InTabletMode();
 }
 
 void ImmersiveModeControllerChromeos::OnWidgetActivationChanged(
     views::Widget* widget,
     bool active) {
-  if (browser_view_->CanSupportTabStrip())
+  if (browser_view_->GetSupportsTabStrip())
     return;
 
   if (!chromeos::TabletState::Get()->InTabletMode())
@@ -179,7 +179,7 @@ void ImmersiveModeControllerChromeos::SetVisibleFraction(
   // means some gesture may not be recognized well during the animation, but
   // that's fine since a complicated gesture wouldn't be involved during the
   // animation duration. See: https://crbug.com/901544.
-  if (browser_view_->CanSupportTabStrip()) {
+  if (browser_view_->GetSupportsTabStrip()) {
     if (visible_fraction == 1.0) {
       browser_view_->contents_web_view()->holder()->SetHitTestTopInset(
           browser_view_->top_container()->height());

@@ -20,7 +20,9 @@ source_set("announcement_notification") {
   deps = [
     "//base",
     "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
     "//components/keyed_service/content",
+    "//components/pref_registry",
     "//components/prefs:prefs",
     "//skia",
     "//ui/base",
@@ -32,6 +34,8 @@ source_set("announcement_notification") {
       "announcement_notification_delegate_android.cc",
       "announcement_notification_delegate_android.h",
     ]
+
+    deps += [ "//chrome/android:chrome_jni_headers" ]
   } else {
     sources += [
       "announcement_notification_delegate.cc",
@@ -40,7 +44,10 @@ source_set("announcement_notification") {
       "announcement_notification_handler.h",
     ]
 
-    deps += [ "//chrome/browser/ui" ]
+    deps += [
+      "//chrome/browser/ui",
+      "//ui/message_center/public/cpp",
+    ]
   }
 }
 
@@ -52,6 +59,7 @@ source_set("unit_tests") {
     ":announcement_notification",
     "//build:chromeos_buildflags",
     "//chrome/test:test_support",
+    "//components/sync_preferences",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",

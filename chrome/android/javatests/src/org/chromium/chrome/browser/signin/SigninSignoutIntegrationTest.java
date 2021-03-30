@@ -54,6 +54,7 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
+import org.chromium.url.GURL;
 
 /**
  * Test the lifecycle of sign-in and sign-out.
@@ -116,8 +117,9 @@ public class SigninSignoutIntegrationTest {
                 AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         SigninActivity signinActivity = ActivityUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SigninActivity.class, () -> {
-                    SigninActivityLauncherImpl.get().launchActivity(
-                            mActivityTestRule.getActivity(), SigninAccessPoint.SETTINGS);
+                    SigninActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
+                            mActivityTestRule.getActivity(), SigninAccessPoint.SETTINGS,
+                            AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
                 });
         assertSignedOut();
         TestThreadUtils.runOnUiThreadBlocking(
@@ -134,7 +136,7 @@ public class SigninSignoutIntegrationTest {
     @Test
     @LargeTest
     public void testSignOut() {
-        signIn();
+        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
         mSettingsActivityTestRule.startSettingsActivity();
         onView(withText(R.string.sign_out_and_turn_off_sync)).perform(click());
         onView(withText(R.string.continue_button)).inRoot(isDialog()).perform(click());
@@ -151,7 +153,7 @@ public class SigninSignoutIntegrationTest {
     @Test
     @LargeTest
     public void testSignOutDismissedByPressingBack() {
-        signIn();
+        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
         mSettingsActivityTestRule.startSettingsActivity();
         onView(withText(R.string.sign_out_and_turn_off_sync)).perform(click());
         onView(isRoot()).perform(pressBack());
@@ -168,7 +170,7 @@ public class SigninSignoutIntegrationTest {
     @Test
     @LargeTest
     public void testSignOutCancelled() {
-        signIn();
+        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
         mSettingsActivityTestRule.startSettingsActivity();
         onView(withText(R.string.sign_out_and_turn_off_sync)).perform(click());
         onView(withText(R.string.cancel)).inRoot(isDialog()).perform(click());
@@ -185,7 +187,7 @@ public class SigninSignoutIntegrationTest {
     @Test
     @LargeTest
     public void testSignOutNonManagedAccountWithDataWiped() {
-        signIn();
+        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
         addOneTestBookmark();
         mSettingsActivityTestRule.startSettingsActivity();
         onView(withText(R.string.sign_out_and_turn_off_sync)).perform(click());
@@ -200,7 +202,7 @@ public class SigninSignoutIntegrationTest {
     @Test
     @LargeTest
     public void testSignOutNonManagedAccountWithoutWipingData() {
-        signIn();
+        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
         addOneTestBookmark();
         mSettingsActivityTestRule.startSettingsActivity();
         onView(withText(R.string.sign_out_and_turn_off_sync)).perform(click());
@@ -221,19 +223,10 @@ public class SigninSignoutIntegrationTest {
         BookmarkTestUtil.waitForBookmarkModelLoaded();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertEquals(0, mBookmarkModel.getChildCount(mBookmarkModel.getDefaultFolder()));
-            mBookmarkModel.addBookmark(
-                    mBookmarkModel.getDefaultFolder(), 0, "Test Bookmark", "http://google.com");
+            mBookmarkModel.addBookmark(mBookmarkModel.getDefaultFolder(), 0, "Test Bookmark",
+                    new GURL("http://google.com"));
             Assert.assertEquals(1, mBookmarkModel.getChildCount(mBookmarkModel.getDefaultFolder()));
         });
-    }
-
-    private void signIn() {
-        CoreAccountInfo coreAccountInfo = mAccountManagerTestRule.addAccountAndWaitForSeeding(
-                AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mSigninManager.signinAndEnableSync(SigninAccessPoint.SETTINGS, coreAccountInfo, null);
-        });
-        assertSignedIn();
     }
 
     private void assertSignedIn() {

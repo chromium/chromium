@@ -29,35 +29,29 @@ namespace storage {
 
 namespace {
 
-void GetOriginsForTypeOnFileTaskRunner(FileSystemContext* context,
-                                       StorageType storage_type,
-                                       std::vector<url::Origin>* origins_ptr) {
+std::vector<url::Origin> GetOriginsForTypeOnFileTaskRunner(
+    FileSystemContext* context,
+    StorageType storage_type) {
   FileSystemType type = QuotaStorageTypeToFileSystemType(storage_type);
   DCHECK(type != kFileSystemTypeUnknown);
 
   FileSystemQuotaUtil* quota_util = context->GetQuotaUtil(type);
   if (!quota_util)
-    return;
-  *origins_ptr = quota_util->GetOriginsForTypeOnFileTaskRunner(type);
+    return {};
+  return quota_util->GetOriginsForTypeOnFileTaskRunner(type);
 }
 
-void GetOriginsForHostOnFileTaskRunner(FileSystemContext* context,
-                                       StorageType storage_type,
-                                       const std::string& host,
-                                       std::vector<url::Origin>* origins_ptr) {
+std::vector<url::Origin> GetOriginsForHostOnFileTaskRunner(
+    FileSystemContext* context,
+    StorageType storage_type,
+    const std::string& host) {
   FileSystemType type = QuotaStorageTypeToFileSystemType(storage_type);
   DCHECK(type != kFileSystemTypeUnknown);
 
   FileSystemQuotaUtil* quota_util = context->GetQuotaUtil(type);
   if (!quota_util)
-    return;
-  *origins_ptr = quota_util->GetOriginsForHostOnFileTaskRunner(type, host);
-}
-
-void DidGetFileSystemQuotaClientOrigins(
-    QuotaClient::GetOriginsForTypeCallback callback,
-    std::vector<url::Origin>* origins_ptr) {
-  std::move(callback).Run(*origins_ptr);
+    return {};
+  return quota_util->GetOriginsForHostOnFileTaskRunner(type, host);
 }
 
 blink::mojom::QuotaStatusCode DeleteOriginOnFileTaskRunner(
@@ -120,14 +114,11 @@ void FileSystemQuotaClient::GetOriginsForType(
     GetOriginsForTypeCallback callback) {
   DCHECK(!callback.is_null());
 
-  auto* origins_ptr = new std::vector<url::Origin>();
-  file_task_runner()->PostTaskAndReply(
+  file_task_runner()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&GetOriginsForTypeOnFileTaskRunner,
-                     base::RetainedRef(file_system_context_), storage_type,
-                     base::Unretained(origins_ptr)),
-      base::BindOnce(&DidGetFileSystemQuotaClientOrigins, std::move(callback),
-                     base::Owned(origins_ptr)));
+                     base::RetainedRef(file_system_context_), storage_type),
+      std::move(callback));
 }
 
 void FileSystemQuotaClient::GetOriginsForHost(
@@ -136,14 +127,12 @@ void FileSystemQuotaClient::GetOriginsForHost(
     GetOriginsForHostCallback callback) {
   DCHECK(!callback.is_null());
 
-  auto* origins_ptr = new std::vector<url::Origin>();
-  file_task_runner()->PostTaskAndReply(
+  file_task_runner()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&GetOriginsForHostOnFileTaskRunner,
                      base::RetainedRef(file_system_context_), storage_type,
-                     host, base::Unretained(origins_ptr)),
-      base::BindOnce(&DidGetFileSystemQuotaClientOrigins, std::move(callback),
-                     base::Owned(origins_ptr)));
+                     host),
+      std::move(callback));
 }
 
 void FileSystemQuotaClient::DeleteOriginData(

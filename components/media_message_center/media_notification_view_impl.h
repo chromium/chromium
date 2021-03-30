@@ -12,6 +12,7 @@
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace message_center {
 class NotificationHeaderView;
@@ -40,6 +41,8 @@ struct COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) NotificationTheme {
 class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
     : public MediaNotificationView {
  public:
+  METADATA_HEADER(MediaNotificationViewImpl);
+
   // The name of the histogram used when recorded whether the artwork was
   // present.
   static const char kArtworkHistogramName[];
@@ -63,10 +66,13 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
       MediaNotificationContainer* container,
       base::WeakPtr<MediaNotificationItem> item,
       std::unique_ptr<views::View> header_row_controls_view,
-      const base::string16& default_app_name,
+      const std::u16string& default_app_name,
       int notification_width,
       bool should_show_icon,
       base::Optional<NotificationTheme> theme = base::nullopt);
+  MediaNotificationViewImpl(const MediaNotificationViewImpl&) = delete;
+  MediaNotificationViewImpl& operator=(const MediaNotificationViewImpl&) =
+      delete;
   ~MediaNotificationViewImpl() override;
 
   // views::View:
@@ -105,7 +111,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
   std::vector<views::View*> get_buttons_for_testing() { return GetButtons(); }
 
   views::Button* GetHeaderRowForTesting() const;
-  base::string16 GetSourceTitleForTesting() const;
+  std::u16string GetSourceTitleForTesting() const;
 
  private:
   friend class MediaNotificationViewImplTest;
@@ -115,7 +121,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
   // |accessible_name| is the text used for screen readers and the
   // button's tooltip.
   void CreateMediaButton(media_session::mojom::MediaSessionAction action,
-                         const base::string16& accessible_name);
+                         const std::u16string& accessible_name);
 
   void CreateHeaderRow(std::unique_ptr<views::View> header_row_controls_view,
                        bool should_show_icon);
@@ -127,8 +133,8 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
 
   MediaNotificationBackground* GetMediaNotificationBackground();
 
-  bool IsExpandable() const;
-  bool IsActuallyExpanded() const;
+  bool GetExpandable() const;
+  bool GetActuallyExpanded() const;
 
   void UpdateForegroundColor();
 
@@ -152,7 +158,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
   views::View* header_row_controls_view_ = nullptr;
 
   // String to set as the app name of the header when there is no source title.
-  base::string16 default_app_name_;
+  std::u16string default_app_name_;
 
   // Width of the notification in pixels. Used for calculating artwork bounds.
   int notification_width_;
@@ -170,7 +176,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
 
   // Stores the text to be read by screen readers describing the notification.
   // Contains the title, artist and album separated by hyphens.
-  base::string16 accessible_name_;
+  std::u16string accessible_name_;
 
   // Container views directly attached to this view.
   message_center::NotificationHeaderView* header_row_ = nullptr;
@@ -192,8 +198,6 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
   base::Optional<NotificationTheme> theme_;
 
   const bool is_cros_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaNotificationViewImpl);
 };
 
 }  // namespace media_message_center

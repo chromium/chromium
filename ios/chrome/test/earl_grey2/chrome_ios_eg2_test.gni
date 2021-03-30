@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/apple/compile_entitlements.gni")
 import("//build/apple/tweak_info_plist.gni")
 import("//build/config/ios/rules.gni")
 import("//ios/build/chrome_build.gni")
@@ -32,13 +33,6 @@ template("chrome_ios_eg2_test_app_host") {
       ]
       if (ios_chrome_info_plist_additions != []) {
         info_plists += ios_chrome_info_plist_additions
-      }
-      if (ios_enable_multi_window) {
-        info_plists +=
-            [ "//ios/chrome/app/resources/MultiWindowEnabled+Info.plist" ]
-      } else if (ios_enable_scene_startup) {
-        info_plists +=
-            [ "//ios/chrome/app/resources/MultiWindowDisabled+Info.plist" ]
       }
       if (ios_chrome_info_plist_addition_targets != []) {
         if (!defined(deps)) {

@@ -1,0 +1,59 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("constants") {
+  sources = [
+    "notification_constants_mac.h",
+    "notification_constants_mac.mm",
+    "notification_operation.h",
+  ]
+
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("cpp") {
+  sources = [
+    "notification_category_manager.h",
+    "notification_category_manager.mm",
+    "notification_utils_mac.cc",
+    "notification_utils_mac.h",
+  ]
+
+  frameworks = [ "Foundation.framework" ]
+
+  deps = [
+    "//base",
+    "//chrome/app:generated_resources",
+    "//ui/base",
+  ]
+
+  public_deps = [ ":constants" ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "notification_test_utils_mac.h",
+    "notification_test_utils_mac.mm",
+  ]
+
+  deps = [ "//base" ]
+
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "notification_category_manager_unittest.mm" ]
+
+  deps = [
+    ":cpp",
+    ":test_support",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

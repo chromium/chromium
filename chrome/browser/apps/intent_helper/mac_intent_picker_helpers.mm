@@ -10,6 +10,7 @@
 #include "base/optional.h"
 #include "base/strings/sys_string_conversions.h"
 #include "net/base/mac/url_conversions.h"
+#include "ui/base/models/image_model.h"
 
 namespace apps {
 
@@ -32,7 +33,8 @@ IntentPickerAppInfo AppInfoForAppUrl(NSURL* app_url) {
   }
   app_icon.size = NSMakeSize(16, 16);
 
-  return IntentPickerAppInfo(PickerEntryType::kMacOs, gfx::Image(app_icon),
+  return IntentPickerAppInfo(PickerEntryType::kMacOs,
+                             ui::ImageModel::FromImage(gfx::Image(app_icon)),
                              base::SysNSStringToUTF8([app_url path]),
                              base::SysNSStringToUTF8(app_name));
 }

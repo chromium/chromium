@@ -4,13 +4,13 @@
 
 #include "content/browser/payments/payment_app_info_fetcher.h"
 
+#include <limits>
 #include <utility>
 
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/optional.h"
-#include "base/task/post_task.h"
 #include "components/payments/content/icon/icon_size.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -169,7 +169,8 @@ void PaymentAppInfoFetcher::SelfDeleteFetcher::Start(
 void PaymentAppInfoFetcher::SelfDeleteFetcher::RunCallbackAndDestroy() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  base::PostTask(FROM_HERE, {ServiceWorkerContext::GetCoreThreadId()},
+  BrowserThread::GetTaskRunnerForThread(ServiceWorkerContext::GetCoreThreadId())
+      ->PostTask(FROM_HERE,
                  base::BindOnce(std::move(callback_),
                                 std::move(fetched_payment_app_info_)));
   delete this;
@@ -283,6 +284,7 @@ void PaymentAppInfoFetcher::SelfDeleteFetcher::FetchPaymentAppManifestCallback(
       web_contents, icon_url_,
       payments::IconSizeCalculator::IdealIconHeight(native_view),
       payments::IconSizeCalculator::MinimumIconHeight(),
+      /* maximum_icon_size_in_px= */ std::numeric_limits<int>::max(),
       base::BindOnce(&PaymentAppInfoFetcher::SelfDeleteFetcher::OnIconFetched,
                      weak_ptr_factory_.GetWeakPtr()),
       false /* square_only */);

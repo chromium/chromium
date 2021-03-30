@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+  <outputs>
+    <output filename="grit/feedback_resources.h" type="rc_header">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="grit/feedback_resources_map.cc"
+            type="resource_file_map_source" />
+    <output filename="grit/feedback_resources_map.h"
+            type="resource_map_header" />
+    <output filename="feedback_resources.pak" type="data_package" />
+  </outputs>
+  <release seq="1">
+    <includes>
+      <include name="IDR_FEEDBACK_DEFAULT_HTML" file="html/default.html" preprocess="true" type="BINDATA" />
+      <include name="IDR_FEEDBACK_FEEDBACK_UTIL_JS" file="js/feedback_util.js" type="BINDATA" />
+      <include name="IDR_FEEDBACK_FEEDBACK_JS" file="js/feedback.js" preprocess="true" type="BINDATA" />
+      <include name="IDR_FEEDBACK_TAKE_SCREENSHOT_JS" file="js/take_screenshot.js" type="BINDATA" />
+      <include name="IDR_FEEDBACK_FEEDBACK_CSS" file="css/feedback.css" type="BINDATA" />
+      <include name="IDR_FEEDBACK_BUTTON_BUTTER_BAR_CLOSE_PNG"
+               file="images/button_butter_bar_close.png" type="BINDATA" />
+      <include name="IDR_FEEDBACK_BUTTON_BUTTER_BAR_CLOSE_HOVER_PNG"
+               file="images/button_butter_bar_close_hover.png" type="BINDATA" />
+      <include name="IDR_FEEDBACK_BUTTON_BUTTER_BAR_CLOSE_PRESSED_PNG"
+               file="images/button_butter_bar_close_pressed.png" type="BINDATA" />
+      <include name="IDR_FEEDBACK_BUTTON_BUTTER_BAR_CLOSE_2X_PNG"
+               file="images/2x/button_butter_bar_close.png" type="BINDATA" />
+      <include name="IDR_FEEDBACK_BUTTON_BUTTER_BAR_CLOSE_HOVER_2X_PNG"
+               file="images/2x/button_butter_bar_close_hover.png" type="BINDATA" />
+      <include name="IDR_FEEDBACK_BUTTON_BUTTER_BAR_CLOSE_PRESSED_2X_PNG"
+               file="images/2x/button_butter_bar_close_pressed.png" type="BINDATA" />
+      <include name="IDR_FEEDBACK_SYSINFO_HTML" file="html/sys_info.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
+      <include name="IDR_FEEDBACK_SYSINFO_JS" file="js/sys_info.js" type="BINDATA" />
+      <include name="IDR_FEEDBACK_SYSINFO_CSS" file="css/sys_info.css" type="BINDATA" />
+      <if expr="chromeos">
+        <include name="IDR_FEEDBACK_BLUETOOTHLOGSINFO_HTML" file="html/bluetooth_logs_info.html" type="BINDATA" />
+        <include name="IDR_FEEDBACK_ASSISTANTLOGSINFO_HTML" file="html/assistant_logs_info.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
+        <include name="IDR_FEEDBACK_ASSISTANT_LOGS_INFO_JS" file="js/assistant_logs_info.js" type="BINDATA" />
+        <include name="IDR_FEEDBACK_ASSISTANT_LOGS_INFO_CSS" file="css/assistant_logs_info.css" type="BINDATA" />
+      </if>
+    </includes>
+  </release>
+</grit>

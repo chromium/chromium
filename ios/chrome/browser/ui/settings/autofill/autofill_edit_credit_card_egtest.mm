@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/ios/ios_util.h"
-#import "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -56,8 +55,7 @@ id<GREYAction> ScrollDown() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(
-      autofill::features::kAutofillEnableCardNicknameManagement);
+  // Add feature configs here.
   return config;
 }
 

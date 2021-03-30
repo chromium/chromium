@@ -77,7 +77,7 @@ bool CfmLoggerService::IsInitialized() {
 bool CfmLoggerService::ServiceRequestReceived(
     const std::string& interface_name) {
   // If Disabled should not be discoverable
-  if (!chromeos::cfm::features::IsCfmTelemetryEnabled() ||
+  if (!base::FeatureList::IsEnabled(features::kCloudLogger) ||
       interface_name != mojom::MeetDevicesLogger::Name_) {
     return false;
   }

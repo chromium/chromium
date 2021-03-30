@@ -3,7 +3,8 @@
     outline: none;
   }
 
-  :host(:hover, .selected) .button-container {
+  :host(:hover) .button-container,
+  :host(.selected) .button-container {
     height: auto;
     width: auto;
   }
@@ -17,14 +18,9 @@
 
   .button-container cr-icon-button {
     --cr-icon-button-fill-color: var(--mwb-icon-button-fill-color);
+    --cr-icon-button-focus-outline-color: transparent;
     border: 2px solid transparent;
     border-radius: 50%;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .button-container cr-icon-button {
-      --cr-icon-button-ripple-opacity: 0.15;
-    }
   }
 
   .button-container cr-icon-button:hover {
@@ -63,9 +59,25 @@
     margin-bottom: 3px;
   }
 
-  #secondaryText {
+  #secondaryContainer {
     color: var(--cr-secondary-text-color);
+    display: flex;
     font-size: var(--mwb-secondary-text-font-size);
+  }
+
+  #secondaryTimestamp {
+    flex-shrink: 0;
+  }
+
+  #secondaryTextAriaLabel {
+    clip: rect(0,0,0,0);
+    display: inline-block;
+    position: fixed;
+  }
+
+  #separator {
+    margin-inline-end: 4px;
+    margin-inline-start: 4px;
   }
 
   cr-icon-button {
@@ -83,11 +95,20 @@
 <div class="favicon" style="background-image:[[faviconUrl_(data.tab)]]"></div>
 <div class="text-container">
   <div id="primaryText" title="[[data.tab.title]]"></div>
-  <div id="secondaryText"></div>
+  <div id="secondaryTextAriaLabel" title="[[secondaryTextAriaLabel_]]"></div>
+  <div id="secondaryContainer" aria-hidden="true">
+    <div id="secondaryText"></div>
+    <div id="separator">•</div>
+    <div id="secondaryTimestamp">
+      [[data.tab.lastActiveElapsedText]]
+    </div>
+  </div>
 </div>
-<div class="button-container">
-  <cr-icon-button id="closeButton" aria-label="[[ariaLabel_(data.tab.title)]]"
-      iron-icon="mwb16:close" noink="[[!buttonRipples_]]"
-      no-ripple-on-focus on-click="onItemClose_" title="$i18n{closeTab}">
-  </cr-icon-button>
-</div>
+<template is="dom-if" if="[[isCloseable_(data.type)]]">
+  <div class="button-container">
+    <cr-icon-button id="closeButton" aria-label="[[ariaLabel_(data.tab.title)]]"
+        iron-icon="mwb16:close" noink="[[!buttonRipples_]]"
+        no-ripple-on-focus on-click="onItemClose_" title="$i18n{closeTab}">
+    </cr-icon-button>
+  </div>
+</template>

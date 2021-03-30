@@ -127,7 +127,7 @@ class CORE_EXPORT FontFaceSetDocument final : public FontFaceSet,
   };
   FontDisplayAutoAlignHistogram font_display_auto_align_histogram_;
 
-  TaskRunnerTimer<FontFaceSetDocument> lcp_limit_timer_;
+  HeapTaskRunnerTimer<FontFaceSetDocument> lcp_limit_timer_;
 
   bool has_reached_lcp_limit_ = false;
 };

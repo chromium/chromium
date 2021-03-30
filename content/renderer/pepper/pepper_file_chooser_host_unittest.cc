@@ -169,7 +169,7 @@ TEST_F(PepperFileChooserHostTest, Show) {
   // Send a chooser reply to the render view. Note our reply path has to have a
   // path separator so we include both a Unix and a Windows one.
   std::vector<blink::mojom::FileChooserFileInfoPtr> selected_info_vector;
-  base::string16 display_name = base::ASCIIToUTF16("Hello, world");
+  std::u16string display_name = u"Hello, world";
   selected_info_vector.push_back(
       blink::mojom::FileChooserFileInfo::NewNativeFile(
           blink::mojom::NativeFileInfo::New(

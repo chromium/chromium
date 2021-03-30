@@ -4,7 +4,7 @@
 
 cr.define('multidevice_setup', function() {
   /** @enum {string} */
-  const PageName = {
+  /* #export */ const PageName = {
     PASSWORD: 'password-page',
     SUCCESS: 'setup-succeeded-page',
     START: 'start-setup-page',
@@ -176,6 +176,7 @@ cr.define('multidevice_setup', function() {
     },
 
     initializeSetupFlow() {
+      this.$$('start-setup-page').setPlayAnimation(true);
       this.mojoInterfaceProvider_.getMojoServiceRemote()
           .getEligibleActiveHostDevices()
           .then((responseParams) => {
@@ -364,10 +365,12 @@ cr.define('multidevice_setup', function() {
      * @private
      */
     exitSetupFlow_(didUserCompleteSetup) {
+      this.$$('start-setup-page').setPlayAnimation(false);
       this.fire('setup-exited', {didUserCompleteSetup: didUserCompleteSetup});
     },
   });
 
+  // #cr_define_end
   return {
     MultiDeviceSetup: MultiDeviceSetup,
     PageName: PageName,

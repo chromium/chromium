@@ -105,6 +105,7 @@ template("core_impl_source_set") {
 
     public_deps = [
       "//base",
+      "//mojo/core/embedder:features",
       "//mojo/core/ports",
       "//mojo/public/c/system:headers",
       "//mojo/public/cpp/platform",
@@ -121,7 +122,17 @@ template("core_impl_source_set") {
         sources += [
           "broker_posix.cc",
           "channel_posix.cc",
+          "channel_posix.h",
         ]
+      }
+
+      if ((is_linux || is_chromeos || is_android) && !is_nacl) {
+        sources += [
+          "channel_linux.cc",
+          "channel_linux.h",
+        ]
+
+        public += [ "channel_linux.h" ]
       }
     }
 
@@ -288,6 +299,7 @@ source_set("test_sources") {
       "data_pipe_unittest.cc",
       "invitation_unittest.cc",
       "multiprocess_message_pipe_unittest.cc",
+      "node_controller_unittest.cc",
       "platform_wrapper_unittest.cc",
     ]
   }

@@ -1,0 +1,82 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/ios_sdk.gni")
+import("//build/toolchain/apple/toolchain.gni")
+
+# Specialisation of the apple_toolchain template to declare the toolchain
+# and its tools to build target for iOS platform.
+template("ios_toolchain") {
+  assert(defined(invoker.toolchain_args),
+         "Toolchains must declare toolchain_args")
+
+  apple_toolchain(target_name) {
+    forward_variables_from(invoker, "*", [ "toolchain_args" ])
+
+    sdk_developer_dir = ios_sdk_developer_dir
+    deployment_target = ios_deployment_target
+    sdk_name = ios_sdk_name
+    bin_path = ios_bin_path
+    strip_with_lipo = true
+
+    toolchain_args = {
+      forward_variables_from(invoker.toolchain_args, "*")
+      current_os = "ios"
+    }
+  }
+}
+
+ios_toolchain("ios_clang_arm64") {
+  toolchain_args = {
+    current_cpu = "arm64"
+  }
+}
+
+ios_toolchain("ios_clang_arm64_14_0") {
+  toolchain_args = {
+    current_cpu = "arm64"
+    ios_deployment_target = "14.0"
+  }
+}
+
+ios_toolchain("ios_clang_arm") {
+  toolchain_args = {
+    current_cpu = "arm"
+  }
+}
+
+ios_toolchain("ios_clang_arm_fat") {
+  toolchain_args = {
+    current_cpu = "arm"
+    is_fat_secondary_toolchain = true
+    primary_fat_toolchain_name = "//build/toolchain/ios:ios_clang_arm64"
+  }
+}
+
+ios_toolchain("ios_clang_x64") {
+  toolchain_args = {
+    current_cpu = "x64"
+  }
+}
+
+ios_toolchain("ios_clang_x64_14_0") {
+  toolchain_args = {
+    current_cpu = "x64"
+    ios_deployment_target = "14.0"
+  }
+}
+
+ios_toolchain("ios_clang_x86") {
+  toolchain_args = {
+    current_cpu = "x86"
+  }
+}
+
+ios_toolchain("ios_clang_x86_fat") {
+  toolchain_args = {
+    current_cpu = "x86"
+    is_fat_secondary_toolchain = true
+    primary_fat_toolchain_name = "//build/toolchain/ios:ios_clang_x64"
+  }
+}

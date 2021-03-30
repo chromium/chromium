@@ -23,6 +23,15 @@ Chrome-specific tests only.
 
 ## Running Web Tests
 
+### Supported Platforms
+
+* Linux
+* MacOS
+* Windows
+* Fuchsia
+
+Android is [not supported](https://crbug.com/567947).
+
 ### Initial Setup
 
 Before you can run the web tests, you need to build the `blink_tests` target
@@ -30,16 +39,6 @@ to get `content_shell` and all of the other needed binaries.
 
 ```bash
 autoninja -C out/Default blink_tests
-```
-
-On **Android** (web test support
-[currently limited to KitKat and earlier](https://crbug.com/567947)) you need to
-build and install `content_shell_apk` instead. See also:
-[Android Build Instructions](../android_build_instructions.md).
-
-```bash
-autoninja -C out/Default content_shell_apk
-adb install -r out/Default/apks/ContentShell.apk
 ```
 
 On **Mac**, you probably want to strip the content_shell binary before starting
@@ -63,14 +62,8 @@ use the build in `out/Default`, use:
 third_party/blink/tools/run_web_tests.py -t Default
 ```
 
-For Android (if your build directory is `out/android`):
-
-```bash
-third_party/blink/tools/run_web_tests.py -t android --android
-```
-
 *** promo
-* Windows users need to use `third_party/blink/tools/run_web_tests.bat` instead.
+* Windows users need to use `third_party\blink\tools\run_web_tests.bat` instead.
 * Linux users should not use `testing/xvfb.py`; `run_web_tests.py` manages Xvfb
   itself.
 ***
@@ -86,12 +79,11 @@ learn more about TestExpectations and related files.
 
 *** promo
 Currently only the tests listed in
-[SmokeTests](../../third_party/blink/web_tests/SmokeTests)
-are run on the Android bots, since running all web tests takes too long on
-Android (and may still have some infrastructure issues). Most developers focus
-their Blink testing on Linux. We rely on the fact that the Linux and Android
-behavior is nearly identical for scenarios outside those covered by the smoke
-tests.
+[SmokeTests](../../third_party/blink/web_tests/SmokeTests) are run on the
+Fuchsia bots, since running all web tests takes too long on Fuchshia. Most
+developers focus their Blink testing on Linux. We rely on the fact that the
+Linux and Fuchsia behavior is nearly identical for scenarios outside those
+covered by the smoke tests.
 ***
 
 To run only some of the tests, specify their directories or filenames as
@@ -122,19 +114,19 @@ As a final quick-but-less-robust alternative, you can also just use the
 content_shell executable to run specific tests by using (example on Windows):
 
 ```bash
-out/Default/content_shell.exe --run-web-tests <url>|<full_test_source_path>|<relative_test_path>
+out\\Default\\content_shell.exe --run-web-tests <url>|<full_test_source_path>|<relative_test_path>
 ```
 
 as in:
 
 ```bash
-out/Default/content_shell.exe --run-web-tests \
-    c:/chrome/src/third_party/blink/web_tests/fast/forms/001.html
+out\\Default\\content_shell.exe --run-web-tests \
+    c:\\chrome\\src\\third_party\\blink\\web_tests\\fast\\forms\\001.html
 ```
 or
 
 ```bash
-out/Default/content_shell.exe --run-web-tests fast/forms/001.html
+out\\Default\\content_shell.exe --run-web-tests fast\\forms\\001.html
 ```
 
 but this requires a manual diff against expected results, because the shell
@@ -568,8 +560,8 @@ test is being re-baselined.
 
 ### Rebaselining flag-specific expectations
 
-Though we prefer the Rebaseline Tool to local rebaselining, the Rebaseline Tool
-doesn't support rebaselining flag-specific expectations.
+Though we prefer the [Rebaseline Tool](./web_test_expectations.md#How-to-rebaseline) to local rebaselining, the Rebaseline Tool
+doesn't support rebaselining flag-specific expectations except highdpi.
 
 ```bash
 third_party/blink/tools/run_web_tests.py --additional-driver-flag=--enable-flag --reset-results foo/bar/test.html

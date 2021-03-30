@@ -71,7 +71,7 @@ const char kPermissionBlockedRepeatedIgnoresMessage[] =
     "information.";
 #endif
 
-const char kPermissionBlockedFeaturePolicyMessage[] =
+const char kPermissionBlockedPermissionsPolicyMessage[] =
     "%s permission has been blocked because of a permissions policy applied to"
     " the current document. See https://goo.gl/EuHzyv for more details.";
 
@@ -100,10 +100,10 @@ const char PermissionContextBase::kPermissionsKillSwitchBlockedValue[] =
 PermissionContextBase::PermissionContextBase(
     content::BrowserContext* browser_context,
     ContentSettingsType content_settings_type,
-    blink::mojom::FeaturePolicyFeature feature_policy_feature)
+    blink::mojom::PermissionsPolicyFeature permissions_policy_feature)
     : browser_context_(browser_context),
       content_settings_type_(content_settings_type),
-      feature_policy_feature_(feature_policy_feature) {
+      permissions_policy_feature_(permissions_policy_feature) {
   PermissionDecisionAutoBlocker::UpdateFromVariations();
 }
 
@@ -165,7 +165,7 @@ void PermissionContextBase::RequestPermission(
         break;
       case PermissionStatusSource::FEATURE_POLICY:
         LogPermissionBlockedMessage(web_contents,
-                                    kPermissionBlockedFeaturePolicyMessage,
+                                    kPermissionBlockedPermissionsPolicyMessage,
                                     content_settings_type_);
         break;
       case PermissionStatusSource::PORTAL:
@@ -188,12 +188,15 @@ void PermissionContextBase::RequestPermission(
     return;
   }
 
-  // Don't show request permission UI for an inactive RenderFrameHost. If this
-  // is called when RenderFrameHost is in BackForwardCache, evict the document
-  // as the page might not distinguish properly between user denying the
-  // permission and automatic rejection, leading to an inconsistent UX after
-  // restoring the page from the cache.
-  if (rfh->IsInactiveAndDisallowReactivation()) {
+  // Don't show request permission UI for an inactive RenderFrameHost as the
+  // page might not distinguish properly between user denying the permission and
+  // automatic rejection, leading to an inconsistent UX once the page becomes
+  // active again.
+  // - If this is called when RenderFrameHost is in BackForwardCache, evict the
+  // document from the cache.
+  // - If this is called when RenderFrameHost is in prerendering, cancel
+  // prerendering.
+  if (rfh->IsInactiveAndDisallowActivation()) {
     std::move(callback).Run(result.content_setting);
     return;
   }
@@ -229,10 +232,10 @@ PermissionResult PermissionContextBase::GetPermissionStatus(
                             PermissionStatusSource::INSECURE_ORIGIN);
   }
 
-  // Check whether the feature is enabled for the frame by feature policy. We
-  // can only do this when a RenderFrameHost has been provided.
+  // Check whether the feature is enabled for the frame by permissions policy.
+  // We can only do this when a RenderFrameHost has been provided.
   if (render_frame_host &&
-      !PermissionAllowedByFeaturePolicy(render_frame_host)) {
+      !PermissionAllowedByPermissionsPolicy(render_frame_host)) {
     return PermissionResult(CONTENT_SETTING_BLOCK,
                             PermissionStatusSource::FEATURE_POLICY);
   }
@@ -470,13 +473,14 @@ void PermissionContextBase::UpdateContentSetting(const GURL& requesting_origin,
                       : Constraints());
 }
 
-bool PermissionContextBase::PermissionAllowedByFeaturePolicy(
+bool PermissionContextBase::PermissionAllowedByPermissionsPolicy(
     content::RenderFrameHost* rfh) const {
-  // Some features don't have an associated feature policy yet. Allow those.
-  if (feature_policy_feature_ == blink::mojom::FeaturePolicyFeature::kNotFound)
+  // Some features don't have an associated permissions policy yet. Allow those.
+  if (permissions_policy_feature_ ==
+      blink::mojom::PermissionsPolicyFeature::kNotFound)
     return true;
 
-  return rfh->IsFeatureEnabled(feature_policy_feature_);
+  return rfh->IsFeatureEnabled(permissions_policy_feature_);
 }
 
 }  // namespace permissions

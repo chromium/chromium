@@ -64,14 +64,12 @@ feedwire::DataOperation MakeDataOperationWithContent(
   feedwire::DataOperation result = MakeDataOperation(operation);
   result.mutable_feature()->set_renderable_unit(feedwire::Feature::CONTENT);
   result.mutable_feature()
-      ->mutable_content_extension()
+      ->mutable_content()
       ->mutable_xsurface_content()
       ->set_xsurface_output(xsurface_content);
 
-  result.mutable_feature()
-      ->mutable_content_extension()
-      ->add_prefetch_metadata()
-      ->set_uri("http://uri-for-" + xsurface_content);
+  result.mutable_feature()->mutable_content()->add_prefetch_metadata()->set_uri(
+      "http://uri-for-" + xsurface_content);
   return result;
 }
 
@@ -177,6 +175,24 @@ TEST(ProtocolTranslatorTest, PrivacyNoticeFulfilled) {
   }
 }
 
+TEST(ProtocolTranslatorTest, ExperimentsAreTranslated) {
+  Experiments expected;
+  expected["Trial1"] = "Group1";
+
+  feedwire::Response response = EmptyWireResponse();
+  auto* exp = response.mutable_feed_response()
+                  ->mutable_feed_response_metadata()
+                  ->mutable_chrome_feed_response_metadata()
+                  ->add_experiments();
+  exp->set_trial_name("Trial1");
+  exp->set_group_name("Group1");
+
+  RefreshResponseData refresh = TranslateWireResponse(response);
+  ASSERT_TRUE(refresh.experiments.has_value());
+
+  EXPECT_EQ(refresh.experiments.value(), expected);
+}
+
 TEST(ProtocolTranslatorTest, MissingResponseVersion) {
   feedwire::Response response = EmptyWireResponse();
   response.set_response_version(feedwire::Response::UNKNOWN_RESPONSE_VERSION);
@@ -198,7 +214,7 @@ TEST(ProtocolTranslatorTest, TranslateContent) {
 TEST(ProtocolTranslatorTest, TranslateContentFailsWhenMissingContent) {
   feedwire::DataOperation wire_operation =
       MakeDataOperationWithContent(feedwire::DataOperation::UPDATE_OR_APPEND);
-  wire_operation.mutable_feature()->clear_content_extension();
+  wire_operation.mutable_feature()->clear_content();
   EXPECT_FALSE(TranslateDataOperation(wire_operation));
 }
 

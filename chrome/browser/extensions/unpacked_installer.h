@@ -129,7 +129,7 @@ class UnpackedInstaller
   // is allowed. Loads the extension, validates extension locales and persists
   // the ruleset for the Declarative Net Request API, if needed. In case of an
   // error, returns false and populates |error|.
-  bool LoadExtension(Manifest::Location location,
+  bool LoadExtension(mojom::ManifestLocation location,
                      int flags,
                      std::string* error);
 

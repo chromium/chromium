@@ -47,7 +47,8 @@ constexpr char kIsUserSignedInKey[] = "isUserSignedIn";
 bool IsUserSignedIn(Profile* profile) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  return identity_manager && identity_manager->HasPrimaryAccount();
+  return identity_manager &&
+         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
 }
 
 content::WebUIDataSource* CreateHistoryUIHTMLSource(Profile* profile) {
@@ -93,7 +94,7 @@ content::WebUIDataSource* CreateHistoryUIHTMLSource(Profile* profile) {
       {"signInPromoDesc", IDS_HISTORY_SIGN_IN_PROMO_DESC},
       {"title", IDS_HISTORY_TITLE},
   };
-  AddLocalizedStringsBulk(source, kStrings);
+  source->AddLocalizedStrings(kStrings);
 
   source->AddString(
       "sidebarFooter",

@@ -223,7 +223,7 @@
 - (NSString*)currentLocationString {
   if (self.webContentAreaShowingHTTPAuthDialog)
     return l10n_util::GetNSString(IDS_IOS_LOCATION_BAR_SIGN_IN);
-  base::string16 string = self.locationBarModel->GetURLForDisplay();
+  std::u16string string = self.locationBarModel->GetURLForDisplay();
   return base::SysUTF16ToNSString(string);
 }
 

@@ -105,6 +105,18 @@ TEST(RlweIdUtils, ComputeBucketStoredEncryptedIdError) {
       StatusIs(absl::StatusCode::kInvalidArgument, HasSubstr("non-null")));
 }
 
+TEST(RlweIdUtils, EnsureInjectiveInternalProtoNoNonSensitiveId) {
+  RlwePlaintextId id1;
+  id1.set_sensitive_id("sid1");
+
+  RlwePlaintextId id2;
+  id2.set_sensitive_id("sid2");
+
+  EXPECT_EQ(HashRlwePlaintextId(id1), HashRlwePlaintextId(id1));
+  EXPECT_EQ(HashRlwePlaintextId(id2), HashRlwePlaintextId(id2));
+  EXPECT_NE(HashRlwePlaintextId(id1), HashRlwePlaintextId(id2));
+}
+
 TEST(RlweIdUtils, EnsureInjectiveInternalProto) {
   RlwePlaintextId id1;
   id1.set_non_sensitive_id("nsid1");
@@ -117,6 +129,16 @@ TEST(RlweIdUtils, EnsureInjectiveInternalProto) {
   EXPECT_EQ(HashRlwePlaintextId(id1), HashRlwePlaintextId(id1));
   EXPECT_EQ(HashRlwePlaintextId(id2), HashRlwePlaintextId(id2));
   EXPECT_NE(HashRlwePlaintextId(id1), HashRlwePlaintextId(id2));
+
+  RlwePlaintextId id3;
+  id3.set_non_sensitive_id("1");
+  id3.set_sensitive_id("23456789111");
+
+  RlwePlaintextId id4;
+  id4.set_non_sensitive_id("11234567891");
+  id4.set_sensitive_id("1");
+
+  EXPECT_NE(HashRlwePlaintextId(id3), HashRlwePlaintextId(id4));
 }
 
 TEST(RlweIdUtils, HashNonsensitiveIdWithSalt) {

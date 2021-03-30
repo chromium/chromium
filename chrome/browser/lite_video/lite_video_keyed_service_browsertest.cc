@@ -25,8 +25,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
-#include "components/optimization_guide/optimization_guide_decider.h"
-#include "components/optimization_guide/optimization_guide_features.h"
+#include "components/optimization_guide/content/browser/optimization_guide_decider.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/lite_video_metadata.pb.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -495,8 +495,18 @@ IN_PROC_BROWSER_TEST_P(LiteVideoKeyedServiceBrowserTest,
           lite_video::LiteVideoThrottleResult::kThrottledWithoutStop));
 }
 
+#if defined(OS_MAC)
+// Flaky on Mac, and in any case the feature under test is not used on Mac:
+// https://crbug.com/1172472
+#define MAYBE_MultipleNavigationsNotBlocklisted \
+  DISABLED_MultipleNavigationsNotBlocklisted
+#else
+#define MAYBE_MultipleNavigationsNotBlocklisted \
+  MultipleNavigationsNotBlocklisted
+#endif
+
 IN_PROC_BROWSER_TEST_P(LiteVideoKeyedServiceBrowserTest,
-                       MultipleNavigationsNotBlocklisted) {
+                       MAYBE_MultipleNavigationsNotBlocklisted) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   WaitForBlocklistToBeLoaded();
   EXPECT_TRUE(

@@ -24,19 +24,19 @@ namespace {
 
 constexpr size_t kMacSize = 64;
 
-base::string16 GetSplitPrefKeyName(const base::string16& reg_key_name,
-                                   const std::string& split_key_name) {
-  return reg_key_name + L"\\" + base::UTF8ToUTF16(split_key_name);
+std::wstring GetSplitPrefKeyName(const std::wstring& reg_key_name,
+                                 const std::string& split_key_name) {
+  return reg_key_name + L"\\" + base::UTF8ToWide(split_key_name);
 }
 
 bool ReadMacFromRegistry(const base::win::RegKey& key,
                          const std::string& value_name,
                          std::string* out_mac) {
-  base::string16 string_value;
-  if (key.ReadValue(base::UTF8ToUTF16(value_name).c_str(), &string_value) ==
+  std::wstring string_value;
+  if (key.ReadValue(base::UTF8ToWide(value_name).c_str(), &string_value) ==
           ERROR_SUCCESS &&
       string_value.size() == kMacSize) {
-    out_mac->assign(base::UTF16ToUTF8(string_value));
+    out_mac->assign(base::WideToUTF8(string_value));
     return true;
   }
   return false;
@@ -44,12 +44,12 @@ bool ReadMacFromRegistry(const base::win::RegKey& key,
 
 // Removes |value_name| under |reg_key_name|. Returns true if found and
 // successfully removed.
-bool ClearAtomicMac(const base::string16& reg_key_name,
+bool ClearAtomicMac(const std::wstring& reg_key_name,
                     const std::string& value_name) {
   base::win::RegKey key;
   if (key.Open(HKEY_CURRENT_USER, reg_key_name.c_str(),
                KEY_SET_VALUE | KEY_WOW64_32KEY) == ERROR_SUCCESS) {
-    return key.DeleteValue(base::UTF8ToUTF16(value_name).c_str()) ==
+    return key.DeleteValue(base::UTF8ToWide(value_name).c_str()) ==
            ERROR_SUCCESS;
   }
   return false;
@@ -57,7 +57,7 @@ bool ClearAtomicMac(const base::string16& reg_key_name,
 
 // Deletes |split_key_name| under |reg_key_name|. Returns true if found and
 // successfully removed.
-bool ClearSplitMac(const base::string16& reg_key_name,
+bool ClearSplitMac(const std::wstring& reg_key_name,
                    const std::string& split_key_name) {
   base::win::RegKey key;
   if (key.Open(HKEY_CURRENT_USER,
@@ -69,7 +69,7 @@ bool ClearSplitMac(const base::string16& reg_key_name,
 }
 
 // Deletes |reg_key_name| if it exists.
-void DeleteRegistryKey(const base::string16& reg_key_name) {
+void DeleteRegistryKey(const std::wstring& reg_key_name) {
   base::win::RegKey key;
   if (key.Open(HKEY_CURRENT_USER, reg_key_name.c_str(),
                KEY_SET_VALUE | KEY_WOW64_32KEY) == ERROR_SUCCESS) {
@@ -81,7 +81,7 @@ void DeleteRegistryKey(const base::string16& reg_key_name) {
 }  // namespace
 
 void TempScopedDirRegistryCleaner::SetRegistryPath(
-    const base::string16& registry_path) {
+    const std::wstring& registry_path) {
   if (registry_path_.empty())
     registry_path_ = registry_path;
   else
@@ -94,8 +94,8 @@ TempScopedDirRegistryCleaner::~TempScopedDirRegistryCleaner() {
 }
 
 RegistryHashStoreContentsWin::RegistryHashStoreContentsWin(
-    const base::string16& registry_path,
-    const base::string16& store_key,
+    const std::wstring& registry_path,
+    const std::wstring& store_key,
     scoped_refptr<TempScopedDirCleaner> temp_dir_cleaner)
     : preference_key_name_(registry_path + L"\\PreferenceMACs\\" + store_key),
       temp_dir_cleaner_(std::move(temp_dir_cleaner)) {
@@ -148,8 +148,8 @@ bool RegistryHashStoreContentsWin::GetSplitMacs(
       GetSplitPrefKeyName(preference_key_name_, path).c_str());
 
   for (; iter_key.Valid(); ++iter_key) {
-    split_macs->insert(make_pair(base::UTF16ToUTF8(iter_key.Name()),
-                                 base::UTF16ToUTF8(iter_key.Value())));
+    split_macs->insert(make_pair(base::WideToUTF8(iter_key.Name()),
+                                 base::WideToUTF8(iter_key.Value())));
   }
 
   return !split_macs->empty();
@@ -162,8 +162,8 @@ void RegistryHashStoreContentsWin::SetMac(const std::string& path,
 
   if (key.Create(HKEY_CURRENT_USER, preference_key_name_.c_str(),
                  KEY_SET_VALUE | KEY_WOW64_32KEY) == ERROR_SUCCESS) {
-    key.WriteValue(base::UTF8ToUTF16(path).c_str(),
-                   base::UTF8ToUTF16(value).c_str());
+    key.WriteValue(base::UTF8ToWide(path).c_str(),
+                   base::UTF8ToWide(value).c_str());
   }
 }
 
@@ -176,8 +176,8 @@ void RegistryHashStoreContentsWin::SetSplitMac(const std::string& path,
   if (key.Create(HKEY_CURRENT_USER,
                  GetSplitPrefKeyName(preference_key_name_, path).c_str(),
                  KEY_SET_VALUE | KEY_WOW64_32KEY) == ERROR_SUCCESS) {
-    key.WriteValue(base::UTF8ToUTF16(split_path).c_str(),
-                   base::UTF8ToUTF16(value).c_str());
+    key.WriteValue(base::UTF8ToWide(split_path).c_str(),
+                   base::UTF8ToWide(value).c_str());
   }
 }
 

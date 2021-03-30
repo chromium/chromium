@@ -216,14 +216,15 @@ void DedicatedWorker::Start() {
     // asynchronous OnHostCreated call, so we call it directly here.
     // See https://crbug.com/1101603#c8.
     factory_client_->CreateWorkerHostDeprecated(
-        token_, WTF::Bind([](const network::CrossOriginEmbedderPolicy&) {}));
+        token_, script_request_url_,
+        WTF::Bind([](const network::CrossOriginEmbedderPolicy&) {}));
     OnHostCreated(std::move(blob_url_loader_factory),
                   network::CrossOriginEmbedderPolicy());
     return;
   }
 
   factory_client_->CreateWorkerHostDeprecated(
-      token_,
+      token_, script_request_url_,
       WTF::Bind(&DedicatedWorker::OnHostCreated, WrapWeakPersistent(this),
                 std::move(blob_url_loader_factory)));
 }
@@ -308,9 +309,12 @@ bool DedicatedWorker::HasPendingActivity() const {
 
 void DedicatedWorker::OnWorkerHostCreated(
     CrossVariantMojoRemote<mojom::blink::BrowserInterfaceBrokerInterfaceBase>
-        browser_interface_broker) {
+        browser_interface_broker,
+    CrossVariantMojoRemote<mojom::blink::DedicatedWorkerHostInterfaceBase>
+        dedicated_worker_host) {
   DCHECK(!browser_interface_broker_);
   browser_interface_broker_ = std::move(browser_interface_broker);
+  pending_dedicated_worker_host_ = std::move(dedicated_worker_host);
 }
 
 void DedicatedWorker::OnScriptLoadStarted(
@@ -399,7 +403,8 @@ void DedicatedWorker::ContinueStart(
                                       response_address_space),
       std::move(worker_main_script_load_params), options_, script_url,
       *outside_fetch_client_settings_object_, v8_stack_trace_id_, source_code,
-      reject_coep_unsafe_none, token_);
+      reject_coep_unsafe_none, token_,
+      std::move(pending_dedicated_worker_host_));
 }
 
 std::unique_ptr<GlobalScopeCreationParams>
@@ -409,18 +414,31 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
     base::Optional<network::mojom::IPAddressSpace> response_address_space) {
   base::UnguessableToken parent_devtools_token;
   std::unique_ptr<WorkerSettings> settings;
+  scoped_refptr<base::SingleThreadTaskRunner>
+      agent_group_scheduler_compositor_task_runner;
   if (auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext())) {
+    // When the main thread creates a new DedicatedWorker.
     auto* frame = window->GetFrame();
     if (frame)
       parent_devtools_token = frame->GetDevToolsFrameToken();
     settings = std::make_unique<WorkerSettings>(frame->GetSettings());
+    agent_group_scheduler_compositor_task_runner =
+        GetExecutionContext()
+            ->GetScheduler()
+            ->ToFrameScheduler()
+            ->GetAgentGroupScheduler()
+            ->CompositorTaskRunner();
   } else {
+    // When a DedicatedWorker creates another DedicatedWorker (nested worker).
     WorkerGlobalScope* worker_global_scope =
         To<WorkerGlobalScope>(GetExecutionContext());
     parent_devtools_token =
         worker_global_scope->GetThread()->GetDevToolsWorkerToken();
     settings = WorkerSettings::Copy(worker_global_scope->GetWorkerSettings());
+    agent_group_scheduler_compositor_task_runner =
+        worker_global_scope->GetAgentGroupSchedulerCompositorTaskRunner();
   }
+  DCHECK(agent_group_scheduler_compositor_task_runner);
 
   mojom::blink::ScriptType script_type =
       (options_->type() == "classic") ? mojom::blink::ScriptType::kClassic
@@ -431,7 +449,9 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
       GetExecutionContext()->UserAgent(),
       GetExecutionContext()->GetUserAgentMetadata(),
       CreateWebWorkerFetchContext(),
-      GetExecutionContext()->GetContentSecurityPolicy()->Headers(),
+      mojo::Clone(GetExecutionContext()
+                      ->GetContentSecurityPolicy()
+                      ->GetParsedPolicies()),
       referrer_policy, GetExecutionContext()->GetSecurityOrigin(),
       GetExecutionContext()->IsSecureContext(),
       GetExecutionContext()->GetHttpsState(),
@@ -442,10 +462,12 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
       mojom::blink::V8CacheOptions::kDefault,
       nullptr /* worklet_module_responses_map */,
       std::move(browser_interface_broker_), CreateBeginFrameProviderParams(),
-      GetExecutionContext()->GetSecurityContext().GetFeaturePolicy(),
+      GetExecutionContext()->GetSecurityContext().GetPermissionsPolicy(),
       GetExecutionContext()->GetAgentClusterID(),
+      GetExecutionContext()->UkmSourceID(),
       GetExecutionContext()->GetExecutionContextToken(),
-      GetExecutionContext()->CrossOriginIsolatedCapability());
+      GetExecutionContext()->CrossOriginIsolatedCapability(),
+      std::move(agent_group_scheduler_compositor_task_runner));
 }
 
 scoped_refptr<WebWorkerFetchContext>

@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_paths.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_paths.h"
-#include "chromeos/constants/chromeos_paths.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/notification_details.h"
@@ -109,8 +109,9 @@ class ExtensionInstallErrorObserver final {
         extension_id_(extension_id),
         notification_observer_(
             extensions::NOTIFICATION_EXTENSION_INSTALL_ERROR,
-            base::Bind(&ExtensionInstallErrorObserver::IsNotificationRelevant,
-                       base::Unretained(this))) {}
+            base::BindRepeating(
+                &ExtensionInstallErrorObserver::IsNotificationRelevant,
+                base::Unretained(this))) {}
 
   void Wait() { notification_observer_.Wait(); }
 
@@ -471,7 +472,7 @@ class SigninProfileExtensionsAutoUpdatePolicyTest
     : public SigninProfileExtensionsPolicyTest {
  public:
   SigninProfileExtensionsAutoUpdatePolicyTest() {
-    embedded_test_server()->RegisterRequestHandler(base::Bind(
+    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
         &SigninProfileExtensionsAutoUpdatePolicyTest::HandleTestServerRequest,
         base::Unretained(this)));
   }

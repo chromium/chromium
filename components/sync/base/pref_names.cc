@@ -88,16 +88,14 @@ const char kSyncCacheGuid[] = "sync.cache_guid";
 const char kSyncBirthday[] = "sync.birthday";
 const char kSyncBagOfChips[] = "sync.bag_of_chips";
 
-// Stores whether a platform specific passphrase error prompt has been shown to
-// the user (e.g. an Android system notification). Used for out of band prompts
-// that we only want to use once.
-const char kSyncPassphrasePrompted[] = "sync.passphrase_prompted";
+// Stores whether a platform specific passphrase error prompt has been muted by
+// the user (e.g. an Android system notification). Specifically, it stores which
+// major product version was used to mute this error.
+const char kSyncPassphrasePromptMutedProductVersion[] =
+    "sync.passphrase_prompt_muted_product_version";
 
 // Dictionary of last seen invalidation versions for each model type.
 const char kSyncInvalidationVersions[] = "sync.invalidation_versions";
-
-// The product version from the last restart of Chrome.
-const char kSyncLastRunVersion[] = "sync.last_run_version";
 
 // Enabled the local sync backend implemented by the LoopbackServer.
 const char kEnableLocalSyncBackend[] = "sync.enable_local_sync_backend";

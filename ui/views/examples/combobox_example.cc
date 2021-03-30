@@ -31,7 +31,7 @@ class ComboboxModelExample : public ui::ComboboxModel {
  private:
   // ui::ComboboxModel:
   int GetItemCount() const override { return 10; }
-  base::string16 GetItemAt(int index) const override {
+  std::u16string GetItemAt(int index) const override {
     return base::UTF8ToUTF16(base::StringPrintf("%c item", 'A' + index));
   }
 };

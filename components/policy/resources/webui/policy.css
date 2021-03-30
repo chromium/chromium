@@ -82,6 +82,7 @@ body > main {
 
 .warnings.row .value,
 .errors.row .value,
+.infos.row .value,
 .value.row .value {
   flex-grow: 1;
   max-height: 200px;
@@ -94,6 +95,7 @@ body > main {
 <if expr="not is_android and not is_ios">
 .errors.row .name,
 .warnings.row .name,
+.infos.row .name,
 .conflict.row .name,
 .value.row .name {
   text-align: end;
@@ -195,6 +197,11 @@ a {
 
 .no-help-link .link img {
   display: none;
+}
+
+#screen-reader-message {
+  clip: rect(0,0,0,0);
+  position: fixed;
 }
 
 <if expr="is_android or is_ios">

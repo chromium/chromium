@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/chromeos/file_manager/volume_manager.h"
 #include "chrome/browser/extensions/api/file_system/request_file_system_notification.h"
@@ -94,7 +94,7 @@ void ConsentProvider::RequestConsent(
   DCHECK(IsGrantableForVolume(extension, volume));
 
   // If a allowlisted component, then no need to ask or inform the user.
-  if (extension.location() == Manifest::COMPONENT &&
+  if (extension.location() == mojom::ManifestLocation::kComponent &&
       delegate_->IsAllowlistedComponent(extension)) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), CONSENT_GRANTED));
@@ -240,8 +240,8 @@ void ConsentProviderDelegate::ShowNotification(
 }
 
 bool ConsentProviderDelegate::IsAutoLaunched(const Extension& extension) {
-  chromeos::KioskAppManager::App app_info;
-  return chromeos::KioskAppManager::Get()->GetApp(extension.id(), &app_info) &&
+  ash::KioskAppManager::App app_info;
+  return ash::KioskAppManager::Get()->GetApp(extension.id(), &app_info) &&
          app_info.was_auto_launched_with_zero_delay;
 }
 

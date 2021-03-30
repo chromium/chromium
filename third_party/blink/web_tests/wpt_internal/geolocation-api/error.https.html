@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/testharness-adapter.js"></script>
+</head>
+<body>
+<script type="module">
+import {GeolocationMock} from './resources/geolocation-mock.js';
+
+description("Tests Geolocation error callback using the mock service.");
+
+const mockMessage = "debug";
+
+let error;
+
+const mock = new GeolocationMock();
+mock.setGeolocationPermission(true);
+mock.setGeolocationPositionUnavailableError(mockMessage);
+
+navigator.geolocation.getCurrentPosition(function(p) {
+  testFailed('Success callback invoked unexpectedly');
+  finishJSTest();
+}, function(e) {
+  error = e;
+  assert_equals(error.code, error.POSITION_UNAVAILABLE);
+  assert_equals(error.message, mockMessage);
+  assert_equals(error.UNKNOWN_ERROR, undefined);
+  assert_equals(error.PERMISSION_DENIED, 1);
+  assert_equals(error.POSITION_UNAVAILABLE, 2);
+  assert_equals(error.TIMEOUT, 3);
+  finishJSTest();
+});
+</script>
+</body>
+</html>

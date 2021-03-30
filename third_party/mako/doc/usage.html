@@ -12,7 +12,7 @@
     
                 Usage
              &mdash;
-    Mako 1.0.14 Documentation
+    Mako 1.1.4 Documentation
 
         </title>
 
@@ -32,7 +32,7 @@
 
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="Mako 1.0.14 Documentation" href="index.html" />
+    <link rel="top" title="Mako 1.1.4 Documentation" href="index.html" />
         <link rel="next" title="Syntax" href="syntax.html" />
         <link rel="prev" title="Table of Contents" href="index.html" />
     <!-- end layout.mako headers -->
@@ -56,7 +56,7 @@
 
 
 <div id="docs-header">
-    <h1>Mako 1.0.14 Documentation</h1>
+    <h1>Mako 1.1.4 Documentation</h1>
 
     <div id="docs-search">
     Search:
@@ -68,7 +68,7 @@
     </div>
 
     <div id="docs-version-header">
-        Release: <span class="version-num">1.0.14</span>
+        Release: <span class="version-num">1.1.4</span>
 
     </div>
 
@@ -92,7 +92,7 @@
     </div>
 
     <div id="docs-navigation-banner">
-        <a href="index.html">Mako 1.0.14 Documentation</a>
+        <a href="index.html">Mako 1.1.4 Documentation</a>
         » 
                 Usage
             
@@ -173,7 +173,7 @@ the <a class="reference internal" href="#mako.template.Template" title="mako.tem
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mako.template</span> <span class="kn">import</span> <span class="n">Template</span>
 
 <span class="n">mytemplate</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s2">&quot;hello world!&quot;</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">mytemplate</span><span class="o">.</span><span class="n">render</span><span class="p">())</span></pre></div>
+<span class="nb">print</span><span class="p">(</span><span class="n">mytemplate</span><span class="o">.</span><span class="n">render</span><span class="p">())</span></pre></div>
 </div>
 <p>Above, the text argument to <a class="reference internal" href="#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> is <strong>compiled</strong> into a
 Python module representation. This module contains a function
@@ -184,27 +184,27 @@ runtime environment for the template and calls the
 returning its string contents.</p>
 <p>The code inside the <code class="docutils literal notranslate"><span class="pre">render_body()</span></code> function has access to a
 namespace of variables. You can specify these variables by
-sending them as additional keyword arguments to the <a class="reference internal" href="#mako.template.Template.render" title="mako.template.Template.render"><code class="xref py py-meth docutils literal notranslate"><span class="pre">render()</span></code></a>
+sending them as additional keyword arguments to the <a class="reference internal" href="#mako.template.Template.render" title="mako.template.Template.render"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Template.render()</span></code></a>
 method:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mako.template</span> <span class="kn">import</span> <span class="n">Template</span>
 
-<span class="n">mytemplate</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s2">&quot;hello, ${name}!&quot;</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">mytemplate</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;jack&quot;</span><span class="p">))</span></pre></div>
+<span class="n">mytemplate</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s2">&quot;hello, $</span><span class="si">{name}</span><span class="s2">!&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mytemplate</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;jack&quot;</span><span class="p">))</span></pre></div>
 </div>
-<p>The <a class="reference internal" href="#mako.template.Template.render" title="mako.template.Template.render"><code class="xref py py-meth docutils literal notranslate"><span class="pre">render()</span></code></a> method calls upon Mako to create a
+<p>The <a class="reference internal" href="#mako.template.Template.render" title="mako.template.Template.render"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Template.render()</span></code></a> method calls upon Mako to create a
 <a class="reference internal" href="runtime.html#mako.runtime.Context" title="mako.runtime.Context"><code class="xref py py-class docutils literal notranslate"><span class="pre">Context</span></code></a> object, which stores all the variable names accessible
 to the template and also stores a buffer used to capture output.
 You can create this <a class="reference internal" href="runtime.html#mako.runtime.Context" title="mako.runtime.Context"><code class="xref py py-class docutils literal notranslate"><span class="pre">Context</span></code></a> yourself and have the template
-render with it, using the <a class="reference internal" href="#mako.template.Template.render_context" title="mako.template.Template.render_context"><code class="xref py py-meth docutils literal notranslate"><span class="pre">render_context()</span></code></a> method:</p>
+render with it, using the <a class="reference internal" href="#mako.template.Template.render_context" title="mako.template.Template.render_context"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Template.render_context()</span></code></a> method:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mako.template</span> <span class="kn">import</span> <span class="n">Template</span>
 <span class="kn">from</span> <span class="nn">mako.runtime</span> <span class="kn">import</span> <span class="n">Context</span>
 <span class="kn">from</span> <span class="nn">StringIO</span> <span class="kn">import</span> <span class="n">StringIO</span>
 
-<span class="n">mytemplate</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s2">&quot;hello, ${name}!&quot;</span><span class="p">)</span>
+<span class="n">mytemplate</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s2">&quot;hello, $</span><span class="si">{name}</span><span class="s2">!&quot;</span><span class="p">)</span>
 <span class="n">buf</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
 <span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;jack&quot;</span><span class="p">)</span>
 <span class="n">mytemplate</span><span class="o">.</span><span class="n">render_context</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">buf</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span></pre></div>
+<span class="nb">print</span><span class="p">(</span><span class="n">buf</span><span class="o">.</span><span class="n">getvalue</span><span class="p">())</span></pre></div>
 </div>
 </div>
 <div class="section" id="using-file-based-templates">
@@ -214,7 +214,7 @@ using the <code class="docutils literal notranslate"><span class="pre">filename<
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mako.template</span> <span class="kn">import</span> <span class="n">Template</span>
 
 <span class="n">mytemplate</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s1">&#39;/docs/mytmpl.txt&#39;</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">mytemplate</span><span class="o">.</span><span class="n">render</span><span class="p">())</span></pre></div>
+<span class="nb">print</span><span class="p">(</span><span class="n">mytemplate</span><span class="o">.</span><span class="n">render</span><span class="p">())</span></pre></div>
 </div>
 <p>For improved performance, a <a class="reference internal" href="#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> which is loaded from a
 file can also cache the source code to its generated module on
@@ -224,7 +224,7 @@ the template:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mako.template</span> <span class="kn">import</span> <span class="n">Template</span>
 
 <span class="n">mytemplate</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s1">&#39;/docs/mytmpl.txt&#39;</span><span class="p">,</span> <span class="n">module_directory</span><span class="o">=</span><span class="s1">&#39;/tmp/mako_modules&#39;</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">mytemplate</span><span class="o">.</span><span class="n">render</span><span class="p">())</span></pre></div>
+<span class="nb">print</span><span class="p">(</span><span class="n">mytemplate</span><span class="o">.</span><span class="n">render</span><span class="p">())</span></pre></div>
 </div>
 <p>When the above code is rendered, a file
 <code class="docutils literal notranslate"><span class="pre">/tmp/mako_modules/docs/mytmpl.txt.py</span></code> is created containing the
@@ -258,7 +258,7 @@ as text files on the filesystem. So far, all of our examples
 have been a little bit contrived in order to illustrate the
 basic concepts. But a real application would get most or all of
 its templates directly from the <a class="reference internal" href="#mako.lookup.TemplateLookup" title="mako.lookup.TemplateLookup"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateLookup</span></code></a>, using the
-aptly named <a class="reference internal" href="#mako.lookup.TemplateLookup.get_template" title="mako.lookup.TemplateLookup.get_template"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_template()</span></code></a> method, which accepts the URI of the
+aptly named <a class="reference internal" href="#mako.lookup.TemplateLookup.get_template" title="mako.lookup.TemplateLookup.get_template"><code class="xref py py-meth docutils literal notranslate"><span class="pre">TemplateLookup.get_template()</span></code></a> method, which accepts the URI of the
 desired template:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mako.template</span> <span class="kn">import</span> <span class="n">Template</span>
 <span class="kn">from</span> <span class="nn">mako.lookup</span> <span class="kn">import</span> <span class="n">TemplateLookup</span>
@@ -267,7 +267,7 @@ desired template:</p>
 
 <span class="k">def</span> <span class="nf">serve_template</span><span class="p">(</span><span class="n">templatename</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">mytemplate</span> <span class="o">=</span> <span class="n">mylookup</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="n">templatename</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">mytemplate</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">))</span></pre></div>
+    <span class="nb">print</span><span class="p">(</span><span class="n">mytemplate</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">))</span></pre></div>
 </div>
 <p>In the example above, we create a <a class="reference internal" href="#mako.lookup.TemplateLookup" title="mako.lookup.TemplateLookup"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateLookup</span></code></a> which will
 look for templates in the <code class="docutils literal notranslate"><span class="pre">/docs</span></code> directory, and will store
@@ -279,7 +279,7 @@ its search directories; so if you gave it a URI of
 exception, which is a custom Mako exception.</p>
 <p>When the lookup locates templates, it will also assign a <code class="docutils literal notranslate"><span class="pre">uri</span></code>
 property to the <a class="reference internal" href="#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> which is the URI passed to the
-<a class="reference internal" href="#mako.lookup.TemplateLookup.get_template" title="mako.lookup.TemplateLookup.get_template"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_template()</span></code></a> call. <a class="reference internal" href="#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> uses this URI to calculate the
+<a class="reference internal" href="#mako.lookup.TemplateLookup.get_template" title="mako.lookup.TemplateLookup.get_template"><code class="xref py py-meth docutils literal notranslate"><span class="pre">TemplateLookup.get_template()</span></code></a> call. <a class="reference internal" href="#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> uses this URI to calculate the
 name of its module file. So in the above example, a
 <code class="docutils literal notranslate"><span class="pre">templatename</span></code> argument of <code class="docutils literal notranslate"><span class="pre">/etc/beans/info.txt</span></code> will create a
 module file <code class="docutils literal notranslate"><span class="pre">/tmp/mako_modules/etc/beans/info.txt.py</span></code>.</p>
@@ -303,7 +303,7 @@ recently used scheme.</p>
 <h3>Setting Filesystem Checks<a class="headerlink" href="#setting-filesystem-checks" title="Permalink to this headline">¶</a></h3>
 <p>Another important flag on <a class="reference internal" href="#mako.lookup.TemplateLookup" title="mako.lookup.TemplateLookup"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateLookup</span></code></a> is
 <code class="docutils literal notranslate"><span class="pre">filesystem_checks</span></code>. This defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>, and says that each
-time a template is returned by the <a class="reference internal" href="#mako.lookup.TemplateLookup.get_template" title="mako.lookup.TemplateLookup.get_template"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_template()</span></code></a> method, the
+time a template is returned by the <a class="reference internal" href="#mako.lookup.TemplateLookup.get_template" title="mako.lookup.TemplateLookup.get_template"><code class="xref py py-meth docutils literal notranslate"><span class="pre">TemplateLookup.get_template()</span></code></a> method, the
 revision time of the original template file is checked against
 the last time the template was loaded, and if the file is newer
 will reload its contents and recompile the template. On a
@@ -323,19 +323,19 @@ output in any Python supported codec:</p>
 <span class="n">mylookup</span> <span class="o">=</span> <span class="n">TemplateLookup</span><span class="p">(</span><span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;/docs&#39;</span><span class="p">],</span> <span class="n">output_encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">encoding_errors</span><span class="o">=</span><span class="s1">&#39;replace&#39;</span><span class="p">)</span>
 
 <span class="n">mytemplate</span> <span class="o">=</span> <span class="n">mylookup</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s2">&quot;foo.txt&quot;</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">mytemplate</span><span class="o">.</span><span class="n">render</span><span class="p">())</span></pre></div>
+<span class="nb">print</span><span class="p">(</span><span class="n">mytemplate</span><span class="o">.</span><span class="n">render</span><span class="p">())</span></pre></div>
 </div>
-<p>When using Python 3, the <a class="reference internal" href="#mako.template.Template.render" title="mako.template.Template.render"><code class="xref py py-meth docutils literal notranslate"><span class="pre">render()</span></code></a> method will return a <code class="docutils literal notranslate"><span class="pre">bytes</span></code>
+<p>When using Python 3, the <a class="reference internal" href="#mako.template.Template.render" title="mako.template.Template.render"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Template.render()</span></code></a> method will return a <code class="docutils literal notranslate"><span class="pre">bytes</span></code>
 object, <strong>if</strong> <code class="docutils literal notranslate"><span class="pre">output_encoding</span></code> is set. Otherwise it returns a
 <code class="docutils literal notranslate"><span class="pre">string</span></code>.</p>
-<p>Additionally, the <a class="reference internal" href="#mako.template.Template.render_unicode" title="mako.template.Template.render_unicode"><code class="xref py py-meth docutils literal notranslate"><span class="pre">render_unicode()</span></code></a> method exists which will
+<p>Additionally, the <a class="reference internal" href="#mako.template.Template.render_unicode" title="mako.template.Template.render_unicode"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Template.render_unicode()</span></code></a> method exists which will
 return the template output as a Python <code class="docutils literal notranslate"><span class="pre">unicode</span></code> object, or in
 Python 3 a <code class="docutils literal notranslate"><span class="pre">string</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">mytemplate</span><span class="o">.</span><span class="n">render_unicode</span><span class="p">())</span></pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">mytemplate</span><span class="o">.</span><span class="n">render_unicode</span><span class="p">())</span></pre></div>
 </div>
 <p>The above method disregards the output encoding keyword
 argument; you can encode yourself by saying:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">mytemplate</span><span class="o">.</span><span class="n">render_unicode</span><span class="p">()</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="s1">&#39;replace&#39;</span><span class="p">))</span></pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">mytemplate</span><span class="o">.</span><span class="n">render_unicode</span><span class="p">()</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="s1">&#39;replace&#39;</span><span class="p">))</span></pre></div>
 </div>
 <p>Note that Mako’s ability to return data in any encoding and/or
 <code class="docutils literal notranslate"><span class="pre">unicode</span></code> implies that the underlying output stream of the
@@ -367,33 +367,33 @@ Usage of these handlers usually looks like:</p>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="n">template</span> <span class="o">=</span> <span class="n">lookup</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">())</span>
 <span class="k">except</span><span class="p">:</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">exceptions</span><span class="o">.</span><span class="n">text_error_template</span><span class="p">()</span><span class="o">.</span><span class="n">render</span><span class="p">())</span></pre></div>
+    <span class="nb">print</span><span class="p">(</span><span class="n">exceptions</span><span class="o">.</span><span class="n">text_error_template</span><span class="p">()</span><span class="o">.</span><span class="n">render</span><span class="p">())</span></pre></div>
 </div>
 <p>Or for the HTML render function:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mako</span> <span class="kn">import</span> <span class="n">exceptions</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="n">template</span> <span class="o">=</span> <span class="n">lookup</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">())</span>
 <span class="k">except</span><span class="p">:</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">exceptions</span><span class="o">.</span><span class="n">html_error_template</span><span class="p">()</span><span class="o">.</span><span class="n">render</span><span class="p">())</span></pre></div>
+    <span class="nb">print</span><span class="p">(</span><span class="n">exceptions</span><span class="o">.</span><span class="n">html_error_template</span><span class="p">()</span><span class="o">.</span><span class="n">render</span><span class="p">())</span></pre></div>
 </div>
 <p>The <a class="reference internal" href="#mako.exceptions.html_error_template" title="mako.exceptions.html_error_template"><code class="xref py py-func docutils literal notranslate"><span class="pre">html_error_template()</span></code></a> template accepts two options:
 specifying <code class="docutils literal notranslate"><span class="pre">full=False</span></code> causes only a section of an HTML
 document to be rendered. Specifying <code class="docutils literal notranslate"><span class="pre">css=False</span></code> will disable the
 default stylesheet from being rendered.</p>
 <p>E.g.:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">exceptions</span><span class="o">.</span><span class="n">html_error_template</span><span class="p">()</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">full</span><span class="o">=</span><span class="bp">False</span><span class="p">))</span></pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">exceptions</span><span class="o">.</span><span class="n">html_error_template</span><span class="p">()</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">full</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span></pre></div>
 </div>
 <p>The HTML render function is also available built-in to
 <a class="reference internal" href="#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> using the <code class="docutils literal notranslate"><span class="pre">format_exceptions</span></code> flag. In this case, any
 exceptions raised within the <strong>render</strong> stage of the template
 will result in the output being substituted with the output of
 <a class="reference internal" href="#mako.exceptions.html_error_template" title="mako.exceptions.html_error_template"><code class="xref py py-func docutils literal notranslate"><span class="pre">html_error_template()</span></code></a>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">template</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;/foo/bar&quot;</span><span class="p">,</span> <span class="n">format_exceptions</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">())</span></pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">template</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;/foo/bar&quot;</span><span class="p">,</span> <span class="n">format_exceptions</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">())</span></pre></div>
 </div>
 <p>Note that the compile stage of the above template occurs when
 you construct the <a class="reference internal" href="#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> itself, and no output stream is
@@ -413,13 +413,13 @@ which describes its general API:</p>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="n">template</span> <span class="o">=</span> <span class="n">lookup</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">())</span>
 <span class="k">except</span><span class="p">:</span>
     <span class="n">traceback</span> <span class="o">=</span> <span class="n">RichTraceback</span><span class="p">()</span>
     <span class="k">for</span> <span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">lineno</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span> <span class="ow">in</span> <span class="n">traceback</span><span class="o">.</span><span class="n">traceback</span><span class="p">:</span>
-        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;File </span><span class="si">%s</span><span class="s2">, line </span><span class="si">%s</span><span class="s2">, in </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">lineno</span><span class="p">,</span> <span class="n">function</span><span class="p">))</span>
-        <span class="k">print</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">),</span> <span class="n">traceback</span><span class="o">.</span><span class="n">error</span><span class="p">))</span></pre></div>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;File </span><span class="si">%s</span><span class="s2">, line </span><span class="si">%s</span><span class="s2">, in </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">lineno</span><span class="p">,</span> <span class="n">function</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">),</span> <span class="n">traceback</span><span class="o">.</span><span class="n">error</span><span class="p">))</span></pre></div>
 </div>
 </div>
 <div class="section" id="common-framework-integrations">
@@ -441,7 +441,7 @@ exception-handling utilities.</p>
 </div>
 <div class="section" id="pygments">
 <h3>Pygments<a class="headerlink" href="#pygments" title="Permalink to this headline">¶</a></h3>
-<p>A <a class="reference external" href="http://pygments.pocoo.org">Pygments</a>-compatible syntax
+<p>A <a class="reference external" href="https://pygments.org/">Pygments</a>-compatible syntax
 highlighting module is included under <code class="xref py py-mod docutils literal notranslate"><span class="pre">mako.ext.pygmentplugin</span></code>.
 This module is used in the generation of Mako documentation and
 also contains various <cite>setuptools</cite> entry points under the heading
@@ -518,15 +518,55 @@ for more information.</p>
 </div>
 <div class="section" id="api-reference">
 <h2>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<table class="longtable docutils">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head">Object Name</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="nowrap"><p><a class="reference internal" href="#mako.template.DefTemplate"><code class="sig-name descname">DefTemplate</code></a></p></td>
+<td><p>Bases: <a class="reference internal" href="#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">mako.template.Template</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td class="nowrap"><p><a class="reference internal" href="#mako.exceptions.html_error_template"><code class="sig-name descname">html_error_template</code></a>()</p></td>
+<td><p>Provides a template that renders a stack trace in an HTML format,
+providing an excerpt of code as well as substituting source template
+filenames, line numbers and code for that of the originating source
+template, as applicable.</p></td>
+</tr>
+<tr class="row-even"><td class="nowrap"><p><a class="reference internal" href="#mako.exceptions.RichTraceback"><code class="sig-name descname">RichTraceback</code></a></p></td>
+<td><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p></td>
+</tr>
+<tr class="row-odd"><td class="nowrap"><p><a class="reference internal" href="#mako.template.Template"><code class="sig-name descname">Template</code></a></p></td>
+<td><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p></td>
+</tr>
+<tr class="row-even"><td class="nowrap"><p><a class="reference internal" href="#mako.lookup.TemplateCollection"><code class="sig-name descname">TemplateCollection</code></a></p></td>
+<td><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p></td>
+</tr>
+<tr class="row-odd"><td class="nowrap"><p><a class="reference internal" href="#mako.lookup.TemplateLookup"><code class="sig-name descname">TemplateLookup</code></a></p></td>
+<td><p>Bases: <a class="reference internal" href="#mako.lookup.TemplateCollection" title="mako.lookup.TemplateCollection"><code class="xref py py-class docutils literal notranslate"><span class="pre">mako.lookup.TemplateCollection</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td class="nowrap"><p><a class="reference internal" href="#mako.exceptions.text_error_template"><code class="sig-name descname">text_error_template</code></a>([lookup])</p></td>
+<td><p>Provides a template that renders a stack trace in a similar format to
+the Python interpreter, substituting source template filenames, line
+numbers and code for that of the originating source template, as
+applicable.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
 <dt id="mako.template.Template">
-<em class="property">class </em><code class="sig-prename descclassname">mako.template.</code><code class="sig-name descname">Template</code><span class="sig-paren">(</span><em class="sig-param">text=None</em>, <em class="sig-param">filename=None</em>, <em class="sig-param">uri=None</em>, <em class="sig-param">format_exceptions=False</em>, <em class="sig-param">error_handler=None</em>, <em class="sig-param">lookup=None</em>, <em class="sig-param">output_encoding=None</em>, <em class="sig-param">encoding_errors='strict'</em>, <em class="sig-param">module_directory=None</em>, <em class="sig-param">cache_args=None</em>, <em class="sig-param">cache_impl='beaker'</em>, <em class="sig-param">cache_enabled=True</em>, <em class="sig-param">cache_type=None</em>, <em class="sig-param">cache_dir=None</em>, <em class="sig-param">cache_url=None</em>, <em class="sig-param">module_filename=None</em>, <em class="sig-param">input_encoding=None</em>, <em class="sig-param">disable_unicode=False</em>, <em class="sig-param">module_writer=None</em>, <em class="sig-param">bytestring_passthrough=False</em>, <em class="sig-param">default_filters=None</em>, <em class="sig-param">buffer_filters=()</em>, <em class="sig-param">strict_undefined=False</em>, <em class="sig-param">imports=None</em>, <em class="sig-param">future_imports=None</em>, <em class="sig-param">enable_loop=True</em>, <em class="sig-param">preprocessor=None</em>, <em class="sig-param">lexer_cls=None</em>, <em class="sig-param">include_error_handler=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.template.Template" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">mako.template.</code><code class="sig-name descname">Template</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">uri</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">format_exceptions</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">error_handler</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lookup</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output_encoding</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">encoding_errors</span><span class="o">=</span><span class="default_value">'strict'</span></em>, <em class="sig-param"><span class="n">module_directory</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cache_args</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cache_impl</span><span class="o">=</span><span class="default_value">'beaker'</span></em>, <em class="sig-param"><span class="n">cache_enabled</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">cache_type</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cache_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cache_url</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">module_filename</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">input_encoding</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">disable_unicode</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">module_writer</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bytestring_passthrough</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">default_filters</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">buffer_filters</span><span class="o">=</span><span class="default_value">()</span></em>, <em class="sig-param"><span class="n">strict_undefined</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">imports</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">future_imports</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">enable_loop</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">preprocessor</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lexer_cls</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">include_error_handler</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.template.Template" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Represents a compiled template.</p>
 <p><a class="reference internal" href="#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> includes a reference to the original
-template source (via the <a class="reference internal" href="#mako.exceptions.RichTraceback.source" title="mako.exceptions.RichTraceback.source"><code class="xref py py-attr docutils literal notranslate"><span class="pre">source</span></code></a> attribute)
+template source (via the <a class="reference internal" href="#mako.template.Template.source" title="mako.template.Template.source"><code class="xref py py-attr docutils literal notranslate"><span class="pre">source</span></code></a> attribute)
 as well as the source code of the
-generated Python module (i.e. the <code class="xref py py-attr docutils literal notranslate"><span class="pre">code</span></code> attribute),
+generated Python module (i.e. the <a class="reference internal" href="#mako.template.Template.code" title="mako.template.Template.code"><code class="xref py py-attr docutils literal notranslate"><span class="pre">code</span></code></a> attribute),
 as well as a reference to an actual Python module.</p>
 <p><a class="reference internal" href="#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> is constructed using either a literal string
 representing the template text, or a filename representing a filesystem
@@ -707,30 +747,30 @@ file path of the generated Python module file, if
 </ul>
 </dd>
 </dl>
-<dl class="method">
+<dl class="py attribute">
 <dt id="mako.template.Template.code">
-<em class="property">property </em><code class="sig-name descname">code</code><a class="headerlink" href="#mako.template.Template.code" title="Permalink to this definition">¶</a></dt>
+<em class="property">attribute </em><a class="reference internal" href="#mako.template.Template"><code class="docutils literal notranslate"><span class="pre">mako.template.Template.</span></code></a><code class="sig-name descname">code</code><a class="headerlink" href="#mako.template.Template.code" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the module source code for this <a class="reference internal" href="#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a>.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mako.template.Template.get_def">
-<code class="sig-name descname">get_def</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.template.Template.get_def" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.template.Template"><code class="docutils literal notranslate"><span class="pre">mako.template.Template.</span></code></a><code class="sig-name descname">get_def</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.template.Template.get_def" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a def of this template as a <a class="reference internal" href="#mako.template.DefTemplate" title="mako.template.DefTemplate"><code class="xref py py-class docutils literal notranslate"><span class="pre">DefTemplate</span></code></a>.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mako.template.Template.list_defs">
-<code class="sig-name descname">list_defs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mako.template.Template.list_defs" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.template.Template"><code class="docutils literal notranslate"><span class="pre">mako.template.Template.</span></code></a><code class="sig-name descname">list_defs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mako.template.Template.list_defs" title="Permalink to this definition">¶</a></dt>
 <dd><p>return a list of defs in the template.</p>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version 1.0.4.</span></p>
 </div>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mako.template.Template.render">
-<code class="sig-name descname">render</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**data</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.template.Template.render" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.template.Template"><code class="docutils literal notranslate"><span class="pre">mako.template.Template.</span></code></a><code class="sig-name descname">render</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">data</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.template.Template.render" title="Permalink to this definition">¶</a></dt>
 <dd><p>Render the output of this template as a string.</p>
 <p>If the template specifies an output encoding, the string
 will be encoded accordingly, else the output is raw (raw
@@ -741,43 +781,46 @@ by this template’s internal rendering method are also
 pulled from the given <code class="docutils literal notranslate"><span class="pre">*args</span></code>, <code class="docutils literal notranslate"><span class="pre">**data</span></code> members.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mako.template.Template.render_context">
-<code class="sig-name descname">render_context</code><span class="sig-paren">(</span><em class="sig-param">context</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.template.Template.render_context" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.template.Template"><code class="docutils literal notranslate"><span class="pre">mako.template.Template.</span></code></a><code class="sig-name descname">render_context</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.template.Template.render_context" title="Permalink to this definition">¶</a></dt>
 <dd><p>Render this <a class="reference internal" href="#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> with the given context.</p>
 <p>The data is written to the context’s buffer.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mako.template.Template.render_unicode">
-<code class="sig-name descname">render_unicode</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**data</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.template.Template.render_unicode" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.template.Template"><code class="docutils literal notranslate"><span class="pre">mako.template.Template.</span></code></a><code class="sig-name descname">render_unicode</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">data</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.template.Template.render_unicode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Render the output of this template as a unicode object.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py attribute">
 <dt id="mako.template.Template.source">
-<em class="property">property </em><code class="sig-name descname">source</code><a class="headerlink" href="#mako.template.Template.source" title="Permalink to this definition">¶</a></dt>
+<em class="property">attribute </em><a class="reference internal" href="#mako.template.Template"><code class="docutils literal notranslate"><span class="pre">mako.template.Template.</span></code></a><code class="sig-name descname">source</code><a class="headerlink" href="#mako.template.Template.source" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the template source code for this <a class="reference internal" href="#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a>.</p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="mako.template.DefTemplate">
-<em class="property">class </em><code class="sig-prename descclassname">mako.template.</code><code class="sig-name descname">DefTemplate</code><span class="sig-paren">(</span><em class="sig-param">parent</em>, <em class="sig-param">callable_</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.template.DefTemplate" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">mako.template.</code><code class="sig-name descname">DefTemplate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent</span></em>, <em class="sig-param"><span class="n">callable_</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.template.DefTemplate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">mako.template.Template</span></code></a></p>
-<p>Bases: <a class="reference internal" href="#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">mako.template.Template</span></code></a></p>
 <p>A <a class="reference internal" href="#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> which represents a callable def in a parent
 template.</p>
-<dl class="method">
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#mako.template.DefTemplate" title="mako.template.DefTemplate"><code class="xref py py-class docutils literal notranslate"><span class="pre">mako.template.DefTemplate</span></code></a> (<a class="reference internal" href="#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">mako.template.Template</span></code></a>)</p>
+</div>
+<dl class="py method">
 <dt id="mako.template.DefTemplate.get_def">
-<code class="sig-name descname">get_def</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.template.DefTemplate.get_def" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.template.DefTemplate"><code class="docutils literal notranslate"><span class="pre">mako.template.DefTemplate.</span></code></a><code class="sig-name descname">get_def</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.template.DefTemplate.get_def" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a def of this template as a <a class="reference internal" href="#mako.template.DefTemplate" title="mako.template.DefTemplate"><code class="xref py py-class docutils literal notranslate"><span class="pre">DefTemplate</span></code></a>.</p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="mako.lookup.TemplateCollection">
 <em class="property">class </em><code class="sig-prename descclassname">mako.lookup.</code><code class="sig-name descname">TemplateCollection</code><a class="headerlink" href="#mako.lookup.TemplateCollection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
@@ -791,9 +834,9 @@ to a string URI that is passed to that <a class="reference internal" href="#mako
 object’s <a class="reference internal" href="#mako.lookup.TemplateCollection" title="mako.lookup.TemplateCollection"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateCollection</span></code></a> for resolution.</p>
 <p><a class="reference internal" href="#mako.lookup.TemplateCollection" title="mako.lookup.TemplateCollection"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateCollection</span></code></a> is an abstract class,
 with the usual default implementation being <a class="reference internal" href="#mako.lookup.TemplateLookup" title="mako.lookup.TemplateLookup"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateLookup</span></code></a>.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="mako.lookup.TemplateCollection.adjust_uri">
-<code class="sig-name descname">adjust_uri</code><span class="sig-paren">(</span><em class="sig-param">uri</em>, <em class="sig-param">filename</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.lookup.TemplateCollection.adjust_uri" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.lookup.TemplateCollection"><code class="docutils literal notranslate"><span class="pre">mako.lookup.TemplateCollection.</span></code></a><code class="sig-name descname">adjust_uri</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">uri</span></em>, <em class="sig-param"><span class="n">filename</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.lookup.TemplateCollection.adjust_uri" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adjust the given <code class="docutils literal notranslate"><span class="pre">uri</span></code> based on the calling <code class="docutils literal notranslate"><span class="pre">filename</span></code>.</p>
 <p>When this method is called from the runtime, the
 <code class="docutils literal notranslate"><span class="pre">filename</span></code> parameter is taken directly to the <code class="docutils literal notranslate"><span class="pre">filename</span></code>
@@ -804,16 +847,16 @@ identifier desired in the <code class="docutils literal notranslate"><span class
 here.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mako.lookup.TemplateCollection.filename_to_uri">
-<code class="sig-name descname">filename_to_uri</code><span class="sig-paren">(</span><em class="sig-param">uri</em>, <em class="sig-param">filename</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.lookup.TemplateCollection.filename_to_uri" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.lookup.TemplateCollection"><code class="docutils literal notranslate"><span class="pre">mako.lookup.TemplateCollection.</span></code></a><code class="sig-name descname">filename_to_uri</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">uri</span></em>, <em class="sig-param"><span class="n">filename</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.lookup.TemplateCollection.filename_to_uri" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert the given <code class="docutils literal notranslate"><span class="pre">filename</span></code> to a URI relative to
 this <a class="reference internal" href="#mako.lookup.TemplateCollection" title="mako.lookup.TemplateCollection"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateCollection</span></code></a>.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mako.lookup.TemplateCollection.get_template">
-<code class="sig-name descname">get_template</code><span class="sig-paren">(</span><em class="sig-param">uri</em>, <em class="sig-param">relativeto=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.lookup.TemplateCollection.get_template" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.lookup.TemplateCollection"><code class="docutils literal notranslate"><span class="pre">mako.lookup.TemplateCollection.</span></code></a><code class="sig-name descname">get_template</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">uri</span></em>, <em class="sig-param"><span class="n">relativeto</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.lookup.TemplateCollection.get_template" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a <a class="reference internal" href="#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> object corresponding to the given
 <code class="docutils literal notranslate"><span class="pre">uri</span></code>.</p>
 <p>The default implementation raises
@@ -831,9 +874,9 @@ be relative to this URI.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mako.lookup.TemplateCollection.has_template">
-<code class="sig-name descname">has_template</code><span class="sig-paren">(</span><em class="sig-param">uri</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.lookup.TemplateCollection.has_template" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.lookup.TemplateCollection"><code class="docutils literal notranslate"><span class="pre">mako.lookup.TemplateCollection.</span></code></a><code class="sig-name descname">has_template</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">uri</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.lookup.TemplateCollection.has_template" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return <code class="docutils literal notranslate"><span class="pre">True</span></code> if this <a class="reference internal" href="#mako.lookup.TemplateLookup" title="mako.lookup.TemplateLookup"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateLookup</span></code></a> is
 capable of returning a <a class="reference internal" href="#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> object for the
 given <code class="docutils literal notranslate"><span class="pre">uri</span></code>.</p>
@@ -846,11 +889,10 @@ given <code class="docutils literal notranslate"><span class="pre">uri</span></c
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="mako.lookup.TemplateLookup">
-<em class="property">class </em><code class="sig-prename descclassname">mako.lookup.</code><code class="sig-name descname">TemplateLookup</code><span class="sig-paren">(</span><em class="sig-param">directories=None</em>, <em class="sig-param">module_directory=None</em>, <em class="sig-param">filesystem_checks=True</em>, <em class="sig-param">collection_size=-1</em>, <em class="sig-param">format_exceptions=False</em>, <em class="sig-param">error_handler=None</em>, <em class="sig-param">disable_unicode=False</em>, <em class="sig-param">bytestring_passthrough=False</em>, <em class="sig-param">output_encoding=None</em>, <em class="sig-param">encoding_errors='strict'</em>, <em class="sig-param">cache_args=None</em>, <em class="sig-param">cache_impl='beaker'</em>, <em class="sig-param">cache_enabled=True</em>, <em class="sig-param">cache_type=None</em>, <em class="sig-param">cache_dir=None</em>, <em class="sig-param">cache_url=None</em>, <em class="sig-param">modulename_callable=None</em>, <em class="sig-param">module_writer=None</em>, <em class="sig-param">default_filters=None</em>, <em class="sig-param">buffer_filters=()</em>, <em class="sig-param">strict_undefined=False</em>, <em class="sig-param">imports=None</em>, <em class="sig-param">future_imports=None</em>, <em class="sig-param">enable_loop=True</em>, <em class="sig-param">input_encoding=None</em>, <em class="sig-param">preprocessor=None</em>, <em class="sig-param">lexer_cls=None</em>, <em class="sig-param">include_error_handler=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.lookup.TemplateLookup" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">mako.lookup.</code><code class="sig-name descname">TemplateLookup</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">directories</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">module_directory</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">filesystem_checks</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">collection_size</span><span class="o">=</span><span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">format_exceptions</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">error_handler</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">disable_unicode</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">bytestring_passthrough</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">output_encoding</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">encoding_errors</span><span class="o">=</span><span class="default_value">'strict'</span></em>, <em class="sig-param"><span class="n">cache_args</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cache_impl</span><span class="o">=</span><span class="default_value">'beaker'</span></em>, <em class="sig-param"><span class="n">cache_enabled</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">cache_type</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cache_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cache_url</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">modulename_callable</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">module_writer</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">default_filters</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">buffer_filters</span><span class="o">=</span><span class="default_value">()</span></em>, <em class="sig-param"><span class="n">strict_undefined</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">imports</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">future_imports</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">enable_loop</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">input_encoding</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">preprocessor</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lexer_cls</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">include_error_handler</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.lookup.TemplateLookup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#mako.lookup.TemplateCollection" title="mako.lookup.TemplateCollection"><code class="xref py py-class docutils literal notranslate"><span class="pre">mako.lookup.TemplateCollection</span></code></a></p>
-<p>Bases: <a class="reference internal" href="#mako.lookup.TemplateCollection" title="mako.lookup.TemplateCollection"><code class="xref py py-class docutils literal notranslate"><span class="pre">mako.lookup.TemplateCollection</span></code></a></p>
 <p>Represent a collection of templates that locates template source files
 from the local filesystem.</p>
 <p>The primary argument is the <code class="docutils literal notranslate"><span class="pre">directories</span></code> argument, the list of
@@ -906,22 +948,26 @@ based on <code class="docutils literal notranslate"><span class="pre">module_dir
 <a class="reference internal" href="#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> objects are created, the keywords
 established with this <a class="reference internal" href="#mako.lookup.TemplateLookup" title="mako.lookup.TemplateLookup"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateLookup</span></code></a> are passed on
 to each new <a class="reference internal" href="#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a>.</p>
-<dl class="method">
+<div class="class-bases docutils container">
+<p><strong>Class signature</strong></p>
+<p>class <a class="reference internal" href="#mako.lookup.TemplateLookup" title="mako.lookup.TemplateLookup"><code class="xref py py-class docutils literal notranslate"><span class="pre">mako.lookup.TemplateLookup</span></code></a> (<a class="reference internal" href="#mako.lookup.TemplateCollection" title="mako.lookup.TemplateCollection"><code class="xref py py-class docutils literal notranslate"><span class="pre">mako.lookup.TemplateCollection</span></code></a>)</p>
+</div>
+<dl class="py method">
 <dt id="mako.lookup.TemplateLookup.adjust_uri">
-<code class="sig-name descname">adjust_uri</code><span class="sig-paren">(</span><em class="sig-param">uri</em>, <em class="sig-param">relativeto</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.lookup.TemplateLookup.adjust_uri" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.lookup.TemplateLookup"><code class="docutils literal notranslate"><span class="pre">mako.lookup.TemplateLookup.</span></code></a><code class="sig-name descname">adjust_uri</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">uri</span></em>, <em class="sig-param"><span class="n">relativeto</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.lookup.TemplateLookup.adjust_uri" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adjust the given <code class="docutils literal notranslate"><span class="pre">uri</span></code> based on the given relative URI.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mako.lookup.TemplateLookup.filename_to_uri">
-<code class="sig-name descname">filename_to_uri</code><span class="sig-paren">(</span><em class="sig-param">filename</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.lookup.TemplateLookup.filename_to_uri" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.lookup.TemplateLookup"><code class="docutils literal notranslate"><span class="pre">mako.lookup.TemplateLookup.</span></code></a><code class="sig-name descname">filename_to_uri</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.lookup.TemplateLookup.filename_to_uri" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert the given <code class="docutils literal notranslate"><span class="pre">filename</span></code> to a URI relative to
 this <a class="reference internal" href="#mako.lookup.TemplateCollection" title="mako.lookup.TemplateCollection"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateCollection</span></code></a>.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mako.lookup.TemplateLookup.get_template">
-<code class="sig-name descname">get_template</code><span class="sig-paren">(</span><em class="sig-param">uri</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.lookup.TemplateLookup.get_template" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.lookup.TemplateLookup"><code class="docutils literal notranslate"><span class="pre">mako.lookup.TemplateLookup.</span></code></a><code class="sig-name descname">get_template</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">uri</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.lookup.TemplateLookup.get_template" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a <a class="reference internal" href="#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> object corresponding to the given
 <code class="docutils literal notranslate"><span class="pre">uri</span></code>.</p>
 <div class="admonition note">
@@ -931,17 +977,17 @@ the moment.</p>
 </div>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mako.lookup.TemplateLookup.put_string">
-<code class="sig-name descname">put_string</code><span class="sig-paren">(</span><em class="sig-param">uri</em>, <em class="sig-param">text</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.lookup.TemplateLookup.put_string" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.lookup.TemplateLookup"><code class="docutils literal notranslate"><span class="pre">mako.lookup.TemplateLookup.</span></code></a><code class="sig-name descname">put_string</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">uri</span></em>, <em class="sig-param"><span class="n">text</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.lookup.TemplateLookup.put_string" title="Permalink to this definition">¶</a></dt>
 <dd><p>Place a new <a class="reference internal" href="#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> object into this
 <a class="reference internal" href="#mako.lookup.TemplateLookup" title="mako.lookup.TemplateLookup"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateLookup</span></code></a>, based on the given string of
 <code class="docutils literal notranslate"><span class="pre">text</span></code>.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mako.lookup.TemplateLookup.put_template">
-<code class="sig-name descname">put_template</code><span class="sig-paren">(</span><em class="sig-param">uri</em>, <em class="sig-param">template</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.lookup.TemplateLookup.put_template" title="Permalink to this definition">¶</a></dt>
+<em class="property">method </em><a class="reference internal" href="#mako.lookup.TemplateLookup"><code class="docutils literal notranslate"><span class="pre">mako.lookup.TemplateLookup.</span></code></a><code class="sig-name descname">put_template</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">uri</span></em>, <em class="sig-param"><span class="n">template</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.lookup.TemplateLookup.put_template" title="Permalink to this definition">¶</a></dt>
 <dd><p>Place a new <a class="reference internal" href="#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> object into this
 <a class="reference internal" href="#mako.lookup.TemplateLookup" title="mako.lookup.TemplateLookup"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateLookup</span></code></a>, based on the given
 <a class="reference internal" href="#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> object.</p>
@@ -949,44 +995,44 @@ the moment.</p>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="mako.exceptions.RichTraceback">
-<em class="property">class </em><code class="sig-prename descclassname">mako.exceptions.</code><code class="sig-name descname">RichTraceback</code><span class="sig-paren">(</span><em class="sig-param">error=None</em>, <em class="sig-param">traceback=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.exceptions.RichTraceback" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">mako.exceptions.</code><code class="sig-name descname">RichTraceback</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">error</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">traceback</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.exceptions.RichTraceback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Pull the current exception from the <code class="docutils literal notranslate"><span class="pre">sys</span></code> traceback and extracts
 Mako-specific template information.</p>
 <p>See the usage examples in <a class="reference internal" href="#handling-exceptions"><span class="std std-ref">Handling Exceptions</span></a>.</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="mako.exceptions.RichTraceback.error">
-<code class="sig-name descname">error</code><a class="headerlink" href="#mako.exceptions.RichTraceback.error" title="Permalink to this definition">¶</a></dt>
+<em class="property">attribute </em><a class="reference internal" href="#mako.exceptions.RichTraceback"><code class="docutils literal notranslate"><span class="pre">mako.exceptions.RichTraceback.</span></code></a><code class="sig-name descname">error</code><a class="headerlink" href="#mako.exceptions.RichTraceback.error" title="Permalink to this definition">¶</a></dt>
 <dd><p>the exception instance.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="mako.exceptions.RichTraceback.message">
-<code class="sig-name descname">message</code><a class="headerlink" href="#mako.exceptions.RichTraceback.message" title="Permalink to this definition">¶</a></dt>
+<em class="property">attribute </em><a class="reference internal" href="#mako.exceptions.RichTraceback"><code class="docutils literal notranslate"><span class="pre">mako.exceptions.RichTraceback.</span></code></a><code class="sig-name descname">message</code><a class="headerlink" href="#mako.exceptions.RichTraceback.message" title="Permalink to this definition">¶</a></dt>
 <dd><p>the exception error message as unicode.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="mako.exceptions.RichTraceback.source">
-<code class="sig-name descname">source</code><a class="headerlink" href="#mako.exceptions.RichTraceback.source" title="Permalink to this definition">¶</a></dt>
+<em class="property">attribute </em><a class="reference internal" href="#mako.exceptions.RichTraceback"><code class="docutils literal notranslate"><span class="pre">mako.exceptions.RichTraceback.</span></code></a><code class="sig-name descname">source</code><a class="headerlink" href="#mako.exceptions.RichTraceback.source" title="Permalink to this definition">¶</a></dt>
 <dd><p>source code of the file where the error occurred.
 If the error occurred within a compiled template,
 this is the template source.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="mako.exceptions.RichTraceback.lineno">
-<code class="sig-name descname">lineno</code><a class="headerlink" href="#mako.exceptions.RichTraceback.lineno" title="Permalink to this definition">¶</a></dt>
+<em class="property">attribute </em><a class="reference internal" href="#mako.exceptions.RichTraceback"><code class="docutils literal notranslate"><span class="pre">mako.exceptions.RichTraceback.</span></code></a><code class="sig-name descname">lineno</code><a class="headerlink" href="#mako.exceptions.RichTraceback.lineno" title="Permalink to this definition">¶</a></dt>
 <dd><p>line number where the error occurred.  If the error
 occurred within a compiled template, the line number
 is adjusted to that of the template source.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="mako.exceptions.RichTraceback.records">
-<code class="sig-name descname">records</code><a class="headerlink" href="#mako.exceptions.RichTraceback.records" title="Permalink to this definition">¶</a></dt>
+<em class="property">attribute </em><a class="reference internal" href="#mako.exceptions.RichTraceback"><code class="docutils literal notranslate"><span class="pre">mako.exceptions.RichTraceback.</span></code></a><code class="sig-name descname">records</code><a class="headerlink" href="#mako.exceptions.RichTraceback.records" title="Permalink to this definition">¶</a></dt>
 <dd><p>a list of 8-tuples containing the original
 python traceback elements, plus the
 filename, line number, source line, and full template source
@@ -994,26 +1040,26 @@ for the traceline mapped back to its originating source
 template, if any for that traceline (else the fields are <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="mako.exceptions.RichTraceback.reverse_records">
-<code class="sig-name descname">reverse_records</code><a class="headerlink" href="#mako.exceptions.RichTraceback.reverse_records" title="Permalink to this definition">¶</a></dt>
+<em class="property">attribute </em><a class="reference internal" href="#mako.exceptions.RichTraceback"><code class="docutils literal notranslate"><span class="pre">mako.exceptions.RichTraceback.</span></code></a><code class="sig-name descname">reverse_records</code><a class="headerlink" href="#mako.exceptions.RichTraceback.reverse_records" title="Permalink to this definition">¶</a></dt>
 <dd><p>the list of records in reverse
 traceback – a list of 4-tuples, in the same format as a regular
 python traceback, with template-corresponding
 traceback records replacing the originals.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="mako.exceptions.RichTraceback.reverse_traceback">
-<code class="sig-name descname">reverse_traceback</code><a class="headerlink" href="#mako.exceptions.RichTraceback.reverse_traceback" title="Permalink to this definition">¶</a></dt>
+<em class="property">attribute </em><a class="reference internal" href="#mako.exceptions.RichTraceback"><code class="docutils literal notranslate"><span class="pre">mako.exceptions.RichTraceback.</span></code></a><code class="sig-name descname">reverse_traceback</code><a class="headerlink" href="#mako.exceptions.RichTraceback.reverse_traceback" title="Permalink to this definition">¶</a></dt>
 <dd><p>the traceback list in reverse.</p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="mako.exceptions.html_error_template">
-<code class="sig-prename descclassname">mako.exceptions.</code><code class="sig-name descname">html_error_template</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mako.exceptions.html_error_template" title="Permalink to this definition">¶</a></dt>
+<em class="property">function </em><code class="sig-prename descclassname">mako.exceptions.</code><code class="sig-name descname">html_error_template</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mako.exceptions.html_error_template" title="Permalink to this definition">¶</a></dt>
 <dd><p>Provides a template that renders a stack trace in an HTML format,
 providing an excerpt of code as well as substituting source template
 filenames, line numbers and code for that of the originating source
@@ -1025,9 +1071,9 @@ returned. With the <code class="docutils literal notranslate"><span class="pre">
 won’t be included.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="mako.exceptions.text_error_template">
-<code class="sig-prename descclassname">mako.exceptions.</code><code class="sig-name descname">text_error_template</code><span class="sig-paren">(</span><em class="sig-param">lookup=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mako.exceptions.text_error_template" title="Permalink to this definition">¶</a></dt>
+<em class="property">function </em><code class="sig-prename descclassname">mako.exceptions.</code><code class="sig-name descname">text_error_template</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lookup</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mako.exceptions.text_error_template" title="Permalink to this definition">¶</a></dt>
 <dd><p>Provides a template that renders a stack trace in a similar format to
 the Python interpreter, substituting source template filenames, line
 numbers and code for that of the originating source template, as
@@ -1049,7 +1095,7 @@ applicable.</p>
 
     <div id="docs-copyright">
         &copy; Copyright the Mako authors and contributors.
-        Documentation generated using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2
+        Documentation generated using <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.4.3
         with Mako templates.
     </div>
 </div>
@@ -1064,7 +1110,7 @@ applicable.</p>
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
           URL_ROOT:    './',
-          VERSION:     '1.0.14',
+          VERSION:     '1.1.4',
           COLLAPSE_MODINDEX: false,
           FILE_SUFFIX: '.html'
       };
@@ -1076,7 +1122,6 @@ applicable.</p>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
     <!-- end iterate through sphinx environment script_files -->
 
     <script type="text/javascript" src="_static/detectmobile.js"></script>

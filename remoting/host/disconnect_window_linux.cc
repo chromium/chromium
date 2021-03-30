@@ -267,7 +267,7 @@ void DisconnectWindowGtk::Start(
 
   // Extract the user name from the JID.
   std::string client_jid = client_session_control_->client_jid();
-  base::string16 username =
+  std::u16string username =
       base::UTF8ToUTF16(client_jid.substr(0, client_jid.find('/')));
   gtk_label_set_text(
       GTK_LABEL(message_),

@@ -7,6 +7,8 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/ash_paths.h"
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
@@ -33,9 +35,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chromeos/constants/chromeos_constants.h"
-#include "chromeos/constants/chromeos_paths.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/system/kiosk_oem_manifest_parser.h"
 #include "chromeos/system/name_value_pairs_parser.h"
 
@@ -526,6 +525,7 @@ void StatisticsProviderImpl::LoadMachineStatistics(bool load_oem_manifest) {
   if (cancellation_flag_.IsSet())
     return;
 
+  std::string crossystem_wpsw;
   NameValuePairsParser parser(&machine_info_);
   if (base::SysInfo::IsRunningOnChromeOS()) {
     // Parse all of the key/value pairs from the crossystem tool.
@@ -537,6 +537,12 @@ void StatisticsProviderImpl::LoadMachineStatistics(bool load_oem_manifest) {
     // Drop useless "(error)" values so they don't displace valid values
     // supplied later by other tools: https://crbug.com/844258
     parser.DeletePairsWithValue(kCrosSystemValueError);
+
+    auto it = machine_info_.find(kFirmwareWriteProtectCurrentKey);
+    if (it != machine_info_.end()) {
+      crossystem_wpsw = it->second;
+      machine_info_.erase(it);
+    }
   }
 
   base::FilePath machine_info_path;
@@ -589,6 +595,15 @@ void StatisticsProviderImpl::LoadMachineStatistics(bool load_oem_manifest) {
     if (is_vm_iter != machine_info_.end() &&
         is_vm_iter->second == kIsVmValueTrue) {
       machine_info_[kIsVmKey] = kIsVmValueTrue;
+    }
+
+    // Use the write-protect value from crossystem only if it hasn't been loaded
+    // from any other source, since the result of crosystem is less reliable for
+    // this key.
+    if (machine_info_.find(kFirmwareWriteProtectCurrentKey) ==
+            machine_info_.end() &&
+        !crossystem_wpsw.empty()) {
+      machine_info_[kFirmwareWriteProtectCurrentKey] = crossystem_wpsw;
     }
   }
 

@@ -11,15 +11,18 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/location.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "pdf/document_layout.h"
 #include "pdf/ppapi_migration/url_loader.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 
 namespace chrome_pdf {
 
 PreviewModeClient::PreviewModeClient(Client* client) : client_(client) {}
+
+PreviewModeClient::~PreviewModeClient() = default;
 
 void PreviewModeClient::ProposeDocumentLayout(const DocumentLayout& layout) {
   // This will be invoked if the PreviewModeClient is used, which currently
@@ -38,8 +41,7 @@ void PreviewModeClient::ScrollToX(int x_in_screen_coords) {
   NOTREACHED();
 }
 
-void PreviewModeClient::ScrollToY(int y_in_screen_coords,
-                                  bool compensate_for_toolbar) {
+void PreviewModeClient::ScrollToY(int y_in_screen_coords) {
   NOTREACHED();
 }
 
@@ -56,7 +58,7 @@ void PreviewModeClient::NavigateTo(const std::string& url,
   NOTREACHED();
 }
 
-void PreviewModeClient::UpdateCursor(PP_CursorType_Dev cursor) {
+void PreviewModeClient::UpdateCursor(ui::mojom::CursorType cursor_type) {
   NOTREACHED();
 }
 
@@ -124,15 +126,14 @@ std::unique_ptr<UrlLoader> PreviewModeClient::CreateUrlLoader() {
 }
 
 std::vector<PDFEngine::Client::SearchStringResult>
-PreviewModeClient::SearchString(const base::char16* string,
-                                const base::char16* term,
+PreviewModeClient::SearchString(const char16_t* string,
+                                const char16_t* term,
                                 bool case_sensitive) {
   NOTREACHED();
   return std::vector<SearchStringResult>();
 }
 
-void PreviewModeClient::DocumentLoadComplete(
-    const PDFEngine::DocumentFeatures& document_features) {
+void PreviewModeClient::DocumentLoadComplete() {
   client_->PreviewDocumentLoadComplete();
 }
 
@@ -157,13 +158,9 @@ bool PreviewModeClient::IsPrintPreview() {
   return true;
 }
 
-float PreviewModeClient::GetToolbarHeightInScreenCoords() {
-  return 0.0f;
-}
-
-uint32_t PreviewModeClient::GetBackgroundColor() {
+SkColor PreviewModeClient::GetBackgroundColor() {
   NOTREACHED();
-  return 0;
+  return SK_ColorTRANSPARENT;
 }
 
 void PreviewModeClient::SetSelectedText(const std::string& selected_text) {
@@ -181,10 +178,10 @@ bool PreviewModeClient::IsValidLink(const std::string& url) {
 }
 
 void PreviewModeClient::ScheduleTaskOnMainThread(
-    base::TimeDelta delay,
+    const base::Location& from_here,
     ResultCallback callback,
     int32_t result,
-    const base::Location& from_here) {
+    base::TimeDelta delay) {
   NOTREACHED();
 }
 

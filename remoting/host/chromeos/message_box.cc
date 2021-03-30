@@ -9,6 +9,8 @@
 #include "base/macros.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/message_box_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -25,12 +27,15 @@ namespace remoting {
 // invalidated when either side are destroyed.
 class MessageBox::Core : public views::DialogDelegateView {
  public:
-  Core(const base::string16& title_label,
-       const base::string16& message_label,
-       const base::string16& ok_label,
-       const base::string16& cancel_label,
+  METADATA_HEADER(Core);
+  Core(const std::u16string& title_label,
+       const std::u16string& message_label,
+       const std::u16string& ok_label,
+       const std::u16string& cancel_label,
        ResultCallback result_callback,
        MessageBox* message_box);
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
 
   // Mirrors the public MessageBox interface.
   void Show();
@@ -38,7 +43,7 @@ class MessageBox::Core : public views::DialogDelegateView {
 
   // views::DialogDelegateView:
   ui::ModalType GetModalType() const override;
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
   views::View* GetContentsView() override;
   views::Widget* GetWidget() override;
   const views::Widget* GetWidget() const override;
@@ -48,20 +53,18 @@ class MessageBox::Core : public views::DialogDelegateView {
   void OnMessageBoxDestroyed();
 
  private:
-  const base::string16 title_label_;
+  const std::u16string title_label_;
   ResultCallback result_callback_;
   MessageBox* message_box_;
 
   // Owned by the native widget hierarchy.
   views::MessageBoxView* message_box_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
-MessageBox::Core::Core(const base::string16& title_label,
-                       const base::string16& message_label,
-                       const base::string16& ok_label,
-                       const base::string16& cancel_label,
+MessageBox::Core::Core(const std::u16string& title_label,
+                       const std::u16string& message_label,
+                       const std::u16string& ok_label,
+                       const std::u16string& cancel_label,
                        ResultCallback result_callback,
                        MessageBox* message_box)
     : title_label_(title_label),
@@ -106,7 +109,7 @@ ui::ModalType MessageBox::Core::GetModalType() const {
   return ui::MODAL_TYPE_SYSTEM;
 }
 
-base::string16 MessageBox::Core::GetWindowTitle() const {
+std::u16string MessageBox::Core::GetWindowTitle() const {
   return title_label_;
 }
 
@@ -136,10 +139,13 @@ void MessageBox::Core::OnMessageBoxDestroyed() {
   result_callback_.Reset();
 }
 
-MessageBox::MessageBox(const base::string16& title_label,
-                       const base::string16& message_label,
-                       const base::string16& ok_label,
-                       const base::string16& cancel_label,
+BEGIN_METADATA(MessageBox, Core, views::DialogDelegateView)
+END_METADATA
+
+MessageBox::MessageBox(const std::u16string& title_label,
+                       const std::u16string& message_label,
+                       const std::u16string& ok_label,
+                       const std::u16string& cancel_label,
                        ResultCallback result_callback)
     : core_(new Core(title_label,
                      message_label,

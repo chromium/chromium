@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_MEDIA_HISTORY_MEDIA_HISTORY_KEYED_SERVICE_H_
 #define CHROME_BROWSER_MEDIA_HISTORY_MEDIA_HISTORY_KEYED_SERVICE_H_
 
+#include "base/callback_helpers.h"
 #include "base/macros.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/media/feeds/media_feeds_store.mojom.h"
 #include "chrome/browser/media/history/media_history_store.mojom.h"
-#include "chrome/browser/media/kaleidoscope/mojom/kaleidoscope.mojom.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/media_player_watch_time.h"
@@ -27,10 +29,6 @@ struct MediaImage;
 struct MediaMetadata;
 struct MediaPosition;
 }  // namespace media_session
-
-namespace history {
-class HistoryService;
-}  // namespace history
 
 namespace media_history {
 
@@ -347,20 +345,6 @@ class MediaHistoryKeyedService : public KeyedService,
   void UpdateFeedUserStatus(const int64_t feed_id,
                             media_feeds::mojom::FeedUserStatus status);
 
-  // Stores the Kaleidocope data keyed against a GAIA ID.
-  void SetKaleidoscopeData(media::mojom::GetCollectionsResponsePtr data,
-                           const std::string& gaia_id);
-
-  // Retrieves the Kaleidoscope data keyed against a GAIA ID. The data expires
-  // after 24 hours or if the GAIA ID changes.
-  using GetKaleidoscopeDataCallback =
-      base::OnceCallback<void(media::mojom::GetCollectionsResponsePtr)>;
-  void GetKaleidoscopeData(const std::string& gaia_id,
-                           GetKaleidoscopeDataCallback callback);
-
-  // Delete any stored data.
-  void DeleteKaleidoscopeData();
-
  protected:
   friend class media_feeds::MediaFeedsService;
 
@@ -381,6 +365,10 @@ class MediaHistoryKeyedService : public KeyedService,
   std::unique_ptr<StoreHolder> store_;
 
   Profile* profile_;
+
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_service_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MediaHistoryKeyedService);
 };

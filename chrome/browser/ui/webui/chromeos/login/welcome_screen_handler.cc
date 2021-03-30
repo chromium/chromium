@@ -15,14 +15,15 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task_runner_util.h"
 #include "base/values.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/magnification_manager.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chrome/browser/ash/login/screens/welcome_screen.h"
+#include "chrome/browser/ash/login/ui/input_events_blocker.h"
+#include "chrome/browser/ash/system/input_device_settings.h"
+#include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
-#include "chrome/browser/chromeos/accessibility/magnification_manager.h"
-#include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
-#include "chrome/browser/chromeos/login/screens/welcome_screen.h"
-#include "chrome/browser/chromeos/login/ui/input_events_blocker.h"
-#include "chrome/browser/chromeos/system/input_device_settings.h"
-#include "chrome/browser/chromeos/system/timezone_util.h"
+#include "chrome/browser/chromeos/policy/enrollment_requisition_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/core_oobe_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/l10n_util.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
@@ -37,8 +38,12 @@
 #include "ui/base/ime/chromeos/component_extension_ime_manager.h"
 #include "ui/base/ime/chromeos/extension_ime_util.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/chromeos/devicetype_utils.h"
 
 namespace chromeos {
+
+using ::ash::AccessibilityManager;
+using ::ash::MagnificationManager;
 
 constexpr StaticOobeScreenId WelcomeView::kScreenId;
 
@@ -127,10 +132,19 @@ void WelcomeScreenHandler::ShowRemoraRequisitionDialog() {
 
 void WelcomeScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
-  if (system::InputDeviceSettings::Get()->ForceKeyboardDrivenUINavigation())
+  if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
+    builder->Add("newWelcomeScreenGreeting", IDS_REMORA_CONFIRM_MESSAGE);
+    builder->Add("newWelcomeScreenGreetingSubtitle", IDS_EMPTY_STRING);
     builder->Add("welcomeScreenGreeting", IDS_REMORA_CONFIRM_MESSAGE);
-  else
+  } else {
+    builder->AddF("newWelcomeScreenGreeting", IDS_NEW_WELCOME_SCREEN_GREETING,
+                  ui::GetChromeOSDeviceTypeResourceId());
+    builder->Add("newWelcomeScreenGreetingSubtitle",
+                 IDS_WELCOME_SCREEN_GREETING_SUBTITLE);
     builder->Add("welcomeScreenGreeting", IDS_WELCOME_SCREEN_GREETING);
+  }
+
+  builder->Add("welcomeScreenGetStarted", IDS_LOGIN_GET_STARTED);
 
   // MD-OOBE (oobe-welcome-element)
   builder->Add("debuggingFeaturesLink", IDS_WELCOME_ENABLE_DEV_FEATURES_LINK);
@@ -194,6 +208,22 @@ void WelcomeScreenHandler::DeclareLocalizedValues(
                IDS_OOBE_CHROMEVOX_HINT_ANNOUNCEMENT_TEXT_LAPTOP);
   builder->Add("chromeVoxHintAnnouncementTextTablet",
                IDS_OOBE_CHROMEVOX_HINT_ANNOUNCEMENT_TEXT_TABLET);
+
+  // Strings for the device requisition prompt.
+  builder->Add("deviceRequisitionPromptCancel",
+               IDS_ENTERPRISE_DEVICE_REQUISITION_PROMPT_CANCEL);
+  builder->Add("deviceRequisitionPromptOk",
+               IDS_ENTERPRISE_DEVICE_REQUISITION_PROMPT_OK);
+  builder->Add("deviceRequisitionPromptText",
+               IDS_ENTERPRISE_DEVICE_REQUISITION_PROMPT_TEXT);
+  builder->Add("deviceRequisitionRemoraPromptCancel",
+               IDS_CONFIRM_MESSAGEBOX_NO_BUTTON_LABEL);
+  builder->Add("deviceRequisitionRemoraPromptOk",
+               IDS_CONFIRM_MESSAGEBOX_YES_BUTTON_LABEL);
+  builder->Add("deviceRequisitionRemoraPromptText",
+               IDS_ENTERPRISE_DEVICE_REQUISITION_REMORA_PROMPT_TEXT);
+  builder->Add("deviceRequisitionSharkPromptText",
+               IDS_ENTERPRISE_DEVICE_REQUISITION_SHARK_PROMPT_TEXT);
 }
 
 void WelcomeScreenHandler::DeclareJSCallbacks() {
@@ -310,11 +340,13 @@ void WelcomeScreenHandler::HandleRecordChromeVoxHintSpokenSuccess() {
 }
 
 void WelcomeScreenHandler::OnAccessibilityStatusChanged(
-    const AccessibilityStatusEventDetails& details) {
-  if (details.notification_type == ACCESSIBILITY_MANAGER_SHUTDOWN)
+    const ash::AccessibilityStatusEventDetails& details) {
+  if (details.notification_type ==
+      ash::AccessibilityNotificationType::kManagerShutdown) {
     accessibility_subscription_ = {};
-  else
+  } else {
     UpdateA11yState();
+  }
 }
 
 void WelcomeScreenHandler::UpdateA11yState() {

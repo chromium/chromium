@@ -69,9 +69,8 @@ TEST_F(InfobarOverlayTabHelperTest, HighPriorityInfoBar) {
   ASSERT_TRUE(front_request());
 
   std::unique_ptr<FakeInfobarIOS> high_priority_infobar =
-      std::make_unique<FakeInfobarIOS>(
-          InfobarType::kInfobarTypeTranslate,
-          base::ASCIIToUTF16("FakeTranslateInfobar"));
+      std::make_unique<FakeInfobarIOS>(InfobarType::kInfobarTypeTranslate,
+                                       u"FakeTranslateInfobar");
   high_priority_infobar->set_high_priority(true);
   manager()->AddInfoBar(std::move(high_priority_infobar));
   OverlayRequest* request = front_request();

@@ -5,7 +5,6 @@
 #include "chrome/services/sharing/nearby/platform/bluetooth_classic_medium.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "base/time/time.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_server_socket.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_socket.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
@@ -15,6 +14,11 @@ namespace nearby {
 namespace chrome {
 
 namespace {
+
+// Duration of time after which inactive Bluetooth devices may be removed from
+// the discovered devices map.
+const base::TimeDelta kStaleBluetoothDeviceTimeout =
+    base::TimeDelta::FromSeconds(20);
 
 void LogStartDiscoveryResult(bool success) {
   base::UmaHistogramBoolean(
@@ -50,7 +54,13 @@ void LogListenForServiceResult(bool success) {
 
 BluetoothClassicMedium::BluetoothClassicMedium(
     const mojo::SharedRemote<bluetooth::mojom::Adapter>& adapter)
-    : adapter_(adapter) {
+    : adapter_(adapter),
+      stale_bluetooth_device_timer_(
+          FROM_HERE,
+          kStaleBluetoothDeviceTimeout / 4,
+          base::BindRepeating(
+              &BluetoothClassicMedium::RemoveStaleBluetoothDevices,
+              base::Unretained(this))) {
   DCHECK(adapter_.is_bound());
 }
 
@@ -90,6 +100,7 @@ bool BluetoothClassicMedium::StartDiscovery(
                      base::Unretained(this), /*discovering=*/false));
 
   discovery_callback_ = std::move(discovery_callback);
+  stale_bluetooth_device_timer_.Reset();
   LogStartDiscoveryResult(true);
   return true;
 }
@@ -108,6 +119,7 @@ bool BluetoothClassicMedium::StopDiscovery() {
   adapter_observer_.reset();
   discovery_callback_.reset();
   discovery_session_.reset();
+  stale_bluetooth_device_timer_.Stop();
 
   LogStopDiscoveryResult(stop_discovery_success);
   return stop_discovery_success;
@@ -115,16 +127,17 @@ bool BluetoothClassicMedium::StopDiscovery() {
 
 std::unique_ptr<api::BluetoothSocket> BluetoothClassicMedium::ConnectToService(
     api::BluetoothDevice& remote_device,
-    const std::string& service_uuid) {
+    const std::string& service_uuid,
+    CancellationFlag* cancellation_flag) {
   const std::string& address = remote_device.GetMacAddress();
 
-  auto start_time = base::Time::Now();
+  auto start_time = base::TimeTicks::Now();
   bluetooth::mojom::ConnectToServiceResultPtr result;
   bool success = adapter_->ConnectToServiceInsecurely(
       address, device::BluetoothUUID(service_uuid), &result);
 
   if (success && result) {
-    LogConnectToServiceDuration(base::Time::Now() - start_time);
+    LogConnectToServiceDuration(base::TimeTicks::Now() - start_time);
     LogConnectToServiceResult(true);
     return std::make_unique<chrome::BluetoothSocket>(
         remote_device, std::move(result->socket),
@@ -218,12 +231,14 @@ void BluetoothClassicMedium::DeviceAdded(
     auto& bluetooth_device = discovered_bluetooth_devices_map_.at(address);
     bool name_changed = device->name.has_value() &&
                         device->name.value() != bluetooth_device.GetName();
-    bluetooth_device.UpdateDeviceInfo(std::move(device));
+    bluetooth_device.UpdateDevice(std::move(device), base::TimeTicks::Now());
     if (name_changed) {
       discovery_callback_->device_name_changed_cb(bluetooth_device);
     }
   } else {
-    discovered_bluetooth_devices_map_.emplace(address, std::move(device));
+    discovered_bluetooth_devices_map_.emplace(
+        std::piecewise_construct, std::make_tuple(address),
+        std::make_tuple(std::move(device), base::TimeTicks::Now()));
     discovery_callback_->device_discovered_cb(
         discovered_bluetooth_devices_map_.at(address));
   }
@@ -248,6 +263,24 @@ void BluetoothClassicMedium::DeviceRemoved(
   discovery_callback_->device_lost_cb(
       discovered_bluetooth_devices_map_.at(address));
   discovered_bluetooth_devices_map_.erase(address);
+}
+
+void BluetoothClassicMedium::RemoveStaleBluetoothDevices() {
+  base::TimeTicks earliest_acceptable_discovery_time =
+      base::TimeTicks::Now() - kStaleBluetoothDeviceTimeout;
+  auto it = discovered_bluetooth_devices_map_.begin();
+  while (it != discovered_bluetooth_devices_map_.end()) {
+    if (it->second.GetLastDiscoveredTime().has_value() &&
+        it->second.GetLastDiscoveredTime().value() <
+            earliest_acceptable_discovery_time) {
+      if (discovery_callback_) {
+        discovery_callback_->device_lost_cb(it->second);
+      }
+      it = discovered_bluetooth_devices_map_.erase(it);
+    } else {
+      ++it;
+    }
+  }
 }
 
 }  // namespace chrome

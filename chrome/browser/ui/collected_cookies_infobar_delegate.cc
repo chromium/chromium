@@ -34,7 +34,7 @@ const gfx::VectorIcon& CollectedCookiesInfoBarDelegate::GetVectorIcon() const {
   return vector_icons::kCookieIcon;
 }
 
-base::string16 CollectedCookiesInfoBarDelegate::GetMessageText() const {
+std::u16string CollectedCookiesInfoBarDelegate::GetMessageText() const {
   return l10n_util::GetStringUTF16(IDS_COLLECTED_COOKIES_INFOBAR_MESSAGE);
 }
 
@@ -42,7 +42,7 @@ int CollectedCookiesInfoBarDelegate::GetButtons() const {
   return BUTTON_OK;
 }
 
-base::string16 CollectedCookiesInfoBarDelegate::GetButtonLabel(
+std::u16string CollectedCookiesInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   DCHECK_EQ(BUTTON_OK, button);
   return l10n_util::GetStringUTF16(IDS_COLLECTED_COOKIES_INFOBAR_BUTTON);

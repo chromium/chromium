@@ -129,9 +129,7 @@ void ImeControllerClient::ShowModeIndicator() {
   // Get the short name of the changed input method (e.g. US, JA, etc.)
   const InputMethodDescriptor descriptor =
       input_method_manager_->GetActiveIMEState()->GetCurrentInputMethod();
-  const base::string16 short_name =
-      input_method_manager_->GetInputMethodUtil()->GetInputMethodShortName(
-          descriptor);
+  const std::u16string short_name = descriptor.GetIndicator();
 
   chromeos::IMECandidateWindowHandlerInterface* cw_handler =
       ui::IMEBridge::Get()->GetCandidateWindowHandler();
@@ -209,7 +207,7 @@ ash::ImeInfo ImeControllerClient::GetAshImeInfo(
   ash::ImeInfo info;
   info.id = ime.id();
   info.name = util->GetInputMethodLongName(ime);
-  info.short_name = util->GetInputMethodShortName(ime);
+  info.short_name = ime.GetIndicator();
   info.third_party = chromeos::extension_ime_util::IsExtensionIME(ime.id());
   return info;
 }

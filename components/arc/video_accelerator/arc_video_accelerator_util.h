@@ -32,11 +32,13 @@ std::vector<base::ScopedFD> DuplicateFD(base::ScopedFD fd, size_t num_fds);
 // returns base::nullopt.
 base::Optional<gfx::GpuMemoryBufferHandle> CreateGpuMemoryBufferHandle(
     media::VideoPixelFormat pixel_format,
+    uint64_t modifier,
     const gfx::Size& coded_size,
     std::vector<base::ScopedFD> scoped_fds,
     const std::vector<VideoFramePlane>& planes);
 base::Optional<gfx::GpuMemoryBufferHandle> CreateGpuMemoryBufferHandle(
     media::VideoPixelFormat pixel_format,
+    uint64_t modifier,
     const gfx::Size& coded_size,
     std::vector<base::ScopedFD> scoped_fds,
     const std::vector<media::ColorPlaneLayout>& planes);

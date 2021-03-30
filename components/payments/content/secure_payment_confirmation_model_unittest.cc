@@ -4,7 +4,8 @@
 
 #include "components/payments/content/secure_payment_confirmation_model.h"
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -17,17 +18,16 @@ class SecurePaymentConfirmationModelTest : public testing::Test {};
 TEST_F(SecurePaymentConfirmationModelTest, SmokeTest) {
   SecurePaymentConfirmationModel model;
 
-  base::string16 title(
-      base::UTF8ToUTF16("Use Touch ID to verify and complete your purchase?"));
-  base::string16 merchant_label(base::UTF8ToUTF16("Store"));
-  base::string16 merchant_value(base::UTF8ToUTF16("merchant.com"));
-  base::string16 instrument_label(base::UTF8ToUTF16("Payment"));
-  base::string16 instrument_value(base::UTF8ToUTF16("Mastercard ****4444"));
+  std::u16string title(u"Use Touch ID to verify and complete your purchase?");
+  std::u16string merchant_label(u"Store");
+  std::u16string merchant_value(u"merchant.com");
+  std::u16string instrument_label(u"Payment");
+  std::u16string instrument_value(u"Mastercard ****4444");
   SkBitmap instrument_icon;
-  base::string16 total_label(base::UTF8ToUTF16("Total"));
-  base::string16 total_value(base::UTF8ToUTF16("$20.00 USD"));
-  base::string16 verify_button_label(base::UTF8ToUTF16("Verify"));
-  base::string16 cancel_button_label(base::UTF8ToUTF16("Cancel"));
+  std::u16string total_label(u"Total");
+  std::u16string total_value(u"$20.00 USD");
+  std::u16string verify_button_label(u"Verify");
+  std::u16string cancel_button_label(u"Cancel");
 
   model.set_title(title);
   EXPECT_EQ(title, model.title());

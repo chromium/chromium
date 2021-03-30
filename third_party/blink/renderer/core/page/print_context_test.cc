@@ -75,12 +75,17 @@ class MockPageContextCanvas : public SkCanvas {
                void(const SkPicture*, const SkMatrix*, const SkPaint*));
   MOCK_METHOD3(DrawPicture,
                void(const SkPicture*, const SkMatrix*, const SkPaint*));
-  MOCK_METHOD4(onDrawImage,
-               void(const SkImage*, SkScalar, SkScalar, const SkPaint*));
-  MOCK_METHOD5(onDrawImageRect,
+  MOCK_METHOD5(onDrawImage2,
                void(const SkImage*,
-                    const SkRect*,
+                    SkScalar,
+                    SkScalar,
+                    const SkSamplingOptions&,
+                    const SkPaint*));
+  MOCK_METHOD6(onDrawImageRect2,
+               void(const SkImage*,
                     const SkRect&,
+                    const SkRect&,
+                    const SkSamplingOptions&,
                     const SkPaint*,
                     SrcRectConstraint));
 
@@ -488,7 +493,7 @@ TEST_P(PrintContextTest, Canvas2DPixelated) {
       "});");
   GetDocument().body()->AppendChild(script_element);
 
-  EXPECT_CALL(canvas, onDrawImageRect(_, _, _, _, _));
+  EXPECT_CALL(canvas, onDrawImageRect2(_, _, _, _, _, _));
 
   PrintSinglePage(canvas);
 }

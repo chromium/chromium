@@ -82,8 +82,9 @@ class AppListTestModel : public AppListModel {
  private:
   void ItemActivated(AppListTestItem* item);
 
-  int activate_count_;
-  AppListItem* last_activated_;
+  int activate_count_ = 0;
+  AppListItem* last_activated_ = nullptr;
+  int naming_index_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(AppListTestModel);
 };

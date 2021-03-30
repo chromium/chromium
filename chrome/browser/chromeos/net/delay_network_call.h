@@ -25,4 +25,10 @@ void DelayNetworkCall(base::TimeDelta retry, base::OnceClosure callback);
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to chrome/browser/ash/.
+namespace ash {
+using chromeos::DelayNetworkCall;
+using chromeos::kDefaultNetworkRetryDelayMS;
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_CHROMEOS_NET_DELAY_NETWORK_CALL_H_

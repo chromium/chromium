@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "base/macros.h"
-#include "base/memory/ref_counted.h"
 
 namespace gfx {
 class Vector3dF;
@@ -49,12 +48,12 @@ struct ASH_EXPORT AccelerometerReading {
 
 // An accelerometer update contains the last known value for each of the
 // accelerometers present on the device.
-class ASH_EXPORT AccelerometerUpdate
-    : public base::RefCountedThreadSafe<AccelerometerUpdate> {
+class ASH_EXPORT AccelerometerUpdate {
  public:
   AccelerometerUpdate();
-  AccelerometerUpdate(const AccelerometerUpdate&) = delete;
-  AccelerometerUpdate& operator=(const AccelerometerUpdate&) = delete;
+  AccelerometerUpdate(const AccelerometerUpdate& update);
+  AccelerometerUpdate& operator=(const AccelerometerUpdate& update);
+  ~AccelerometerUpdate();
 
   // Returns true if |source| has a valid value in this update.
   bool has(AccelerometerSource source) const { return data_[source].present; }
@@ -67,25 +66,17 @@ class ASH_EXPORT AccelerometerUpdate
   // Returns the last known value for |source| as a vector.
   gfx::Vector3dF GetVector(AccelerometerSource source) const;
 
-  void Set(AccelerometerSource source, float x, float y, float z) {
-    data_[source].present = true;
-    data_[source].x = x;
-    data_[source].y = y;
-    data_[source].z = z;
-  }
+  void Set(AccelerometerSource source, float x, float y, float z);
 
   // A reading is considered stable if its deviation from gravity is small. This
   // returns false if the deviation is too high, or if |source| is not present
   // in the update.
   bool IsReadingStable(AccelerometerSource source) const;
 
+  void Reset();
+
  protected:
   AccelerometerReading data_[ACCELEROMETER_SOURCE_COUNT];
-
- private:
-  friend class base::RefCountedThreadSafe<AccelerometerUpdate>;
-
-  virtual ~AccelerometerUpdate();
 };
 
 }  // namespace ash

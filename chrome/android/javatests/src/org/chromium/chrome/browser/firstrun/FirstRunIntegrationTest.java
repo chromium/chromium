@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.locale.DefaultSearchEngineDialogHelperUtils;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManager.SearchEnginePromoType;
@@ -61,12 +60,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Integration test suite for the first run experience.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Features.EnableFeatures(ChromeFeatureList.SHARE_BY_DEFAULT_IN_CCT)
 public class FirstRunIntegrationTest {
     private static final long DEFERRED_START_UP_POLL_TIME = 10000L;
     @Rule
@@ -120,6 +119,18 @@ public class FirstRunIntegrationTest {
     private ActivityMonitor getMonitor(Class activityClass) {
         Assert.assertTrue(mSupportedActivities.contains(activityClass));
         return mMonitorMap.get(activityClass);
+    }
+
+    private FirstRunActivity launchFirstRunActivity() {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://test.com"));
+        intent.setPackage(mContext.getPackageName());
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mContext.startActivity(intent);
+
+        // Because the AsyncInitializationActivity notices that the FRE hasn't been run yet, it
+        // redirects to it.  Once the user closes the FRE, the user should be kicked back into the
+        // startup flow where they were interrupted.
+        return waitForActivity(FirstRunActivity.class);
     }
 
     private <T extends Activity> T waitForActivity(Class<T> activityClass) {
@@ -238,15 +249,7 @@ public class FirstRunIntegrationTest {
         };
         LocaleManager.setInstanceForTest(mockManager);
 
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://test.com"));
-        intent.setPackage(mContext.getPackageName());
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        mContext.startActivity(intent);
-
-        // Because the AsyncInitializationActivity notices that the FRE hasn't been run yet, it
-        // redirects to it.  Once the user closes the FRE, the user should be kicked back into the
-        // startup flow where they were interrupted.
-        waitForActivity(FirstRunActivity.class);
+        launchFirstRunActivity();
 
         mTestObserver.flowIsKnownCallback.waitForCallback("Failed to finalize the flow", 0);
         Bundle freProperties = mTestObserver.freProperties;
@@ -329,7 +332,6 @@ public class FirstRunIntegrationTest {
         // policy set in this test case.
         FirstRunStatus.setFirstRunSkippedByPolicy(true);
 
-        DeferredStartupHandler.setExpectingActivityStartupForTesting();
         Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(mContext, "about:blank");
         mContext.startActivity(intent);
         CustomTabActivity activity = waitForActivity(CustomTabActivity.class);
@@ -337,6 +339,7 @@ public class FirstRunIntegrationTest {
 
         // DeferredStartupHandler could not finish with CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL.
         // Use longer timeout here to avoid flakiness. See https://crbug.com/1157611.
+        CriteriaHelper.pollUiThread(() -> activity.deferredStartupPostedForTesting());
         Assert.assertTrue("Deferred startup never completed",
                 DeferredStartupHandler.waitForDeferredStartupCompleteForTesting(
                         ScalableTimeout.scaleTimeout(DEFERRED_START_UP_POLL_TIME)));
@@ -344,6 +347,20 @@ public class FirstRunIntegrationTest {
         // FirstRun status should be refreshed by TosDialogBehaviorSharedPrefInvalidator in deferred
         // start up task.
         CriteriaHelper.pollUiThread(() -> !FirstRunStatus.isFirstRunSkippedByPolicy());
+    }
+
+    @Test
+    @MediumTest
+    public void testSkipTosPage() throws TimeoutException {
+        // Test case that verifies when the ToS Page is accepted before thus skipped, and FRE should
+        // transitioning to the next page.
+        FirstRunStatus.setSkipWelcomePage(true);
+
+        FirstRunActivity freActivity = launchFirstRunActivity();
+        CriteriaHelper.pollUiThread(
+                () -> freActivity.getSupportFragmentManager().getFragments().size() > 0);
+
+        mTestObserver.jumpToPageCallback.waitForCallback("Welcome page should be skipped.", 0);
     }
 
     @Test

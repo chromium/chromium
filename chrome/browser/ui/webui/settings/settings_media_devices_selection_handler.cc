@@ -30,19 +30,18 @@ const char kVideo[] = "camera";
 namespace settings {
 
 MediaDevicesSelectionHandler::MediaDevicesSelectionHandler(Profile* profile)
-    : profile_(profile), observer_(this) {
-}
+    : profile_(profile) {}
 
 MediaDevicesSelectionHandler::~MediaDevicesSelectionHandler() {
 }
 
 void MediaDevicesSelectionHandler::OnJavascriptAllowed() {
   // Register to the device observer list to get up-to-date device lists.
-  observer_.Add(MediaCaptureDevicesDispatcher::GetInstance());
+  observation_.Observe(MediaCaptureDevicesDispatcher::GetInstance());
 }
 
 void MediaDevicesSelectionHandler::OnJavascriptDisallowed() {
-  observer_.RemoveAll();
+  observation_.Reset();
 }
 
 void MediaDevicesSelectionHandler::RegisterMessages() {

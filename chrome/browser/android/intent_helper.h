@@ -7,17 +7,18 @@
 
 #include <jni.h>
 
-#include "base/strings/string16.h"
+#include <string>
+
 
 namespace chrome {
 namespace android {
 
 // Triggers a send email intent.
-void SendEmail(const base::string16& data_email,
-               const base::string16& data_subject,
-               const base::string16& data_body,
-               const base::string16& data_chooser_title,
-               const base::string16& data_file_to_attach);
+void SendEmail(const std::u16string& data_email,
+               const std::u16string& data_subject,
+               const std::u16string& data_body,
+               const std::u16string& data_chooser_title,
+               const std::u16string& data_file_to_attach);
 
 }  // namespace android
 }  // namespace chrome

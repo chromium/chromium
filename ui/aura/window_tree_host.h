@@ -83,9 +83,6 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   Window* window() { return window_; }
   const Window* window() const { return window_; }
 
-  // TODO(msw): Remove this, callers should use GetEventSink().
-  ui::EventSink* event_sink();
-
   WindowEventDispatcher* dispatcher() {
     return const_cast<WindowEventDispatcher*>(
         const_cast<const WindowTreeHost*>(this)->dispatcher());
@@ -136,7 +133,6 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   // root window's.
   virtual void ConvertPixelsToDIP(gfx::Point* point) const;
 
-  // Cursor.
   // Sets the currently-displayed cursor. If the cursor was previously hidden
   // via ShowCursor(false), it will remain hidden until ShowCursor(true) is
   // called, at which point the cursor that was last set via SetCursor() will be
@@ -273,7 +269,8 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   void CreateCompositor(
       const viz::FrameSinkId& frame_sink_id = viz::FrameSinkId(),
       bool force_software_compositor = false,
-      bool use_external_begin_frame_control = false);
+      bool use_external_begin_frame_control = false,
+      bool enable_compositing_based_throttling = false);
 
   void InitCompositor();
   void OnAcceleratedWidgetAvailable();
@@ -337,10 +334,11 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   void MoveCursorToInternal(const gfx::Point& root_location,
                             const gfx::Point& host_location);
 
-  // Overrided from CompositorObserver:
-  void OnCompositingEnded(ui::Compositor* compositor) override;
-  void OnCompositingChildResizing(ui::Compositor* compositor) override;
-  void OnCompositingShuttingDown(ui::Compositor* compositor) override;
+  // Overridden from CompositorObserver:
+  void OnCompositingEnded(ui::Compositor* compositor) final;
+  void OnCompositingChildResizing(ui::Compositor* compositor) final;
+  void OnFrameSinksToThrottleUpdated(
+      const base::flat_set<viz::FrameSinkId>& ids) final;
 
   // We don't use a std::unique_ptr for |window_| since we need this ptr to be
   // valid during its deletion. (Window's dtor notifies observers that may

@@ -23,10 +23,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/swap_result.h"
 
-namespace base {
-class SingleThreadTaskRunner;
-}
-
 namespace gpu {
 
 class VulkanDeviceQueue;
@@ -59,7 +55,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanSwapChain {
     DISALLOW_COPY_AND_ASSIGN(ScopedWrite);
   };
 
-  VulkanSwapChain();
+  explicit VulkanSwapChain(uint64_t acquire_next_image_timeout_ns);
   ~VulkanSwapChain();
 
   // min_image_count is the minimum number of presentable images.
@@ -157,6 +153,8 @@ class COMPONENT_EXPORT(VULKAN) VulkanSwapChain {
 
   mutable base::Lock lock_;
 
+  const uint64_t acquire_next_image_timeout_ns_;
+
   bool use_protected_memory_ = false;
   VulkanDeviceQueue* device_queue_ = nullptr;
   bool is_incremental_present_supported_ = false;
@@ -189,9 +187,6 @@ class COMPONENT_EXPORT(VULKAN) VulkanSwapChain {
   base::Optional<uint32_t> acquired_image_ GUARDED_BY(lock_);
 
   bool destroy_swapchain_will_hang_ = false;
-
-  // For executing task on GPU main thread.
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   // For executing PosSubBufferAsync tasks off the GPU main thread.
   scoped_refptr<base::SequencedTaskRunner> post_sub_buffer_task_runner_;

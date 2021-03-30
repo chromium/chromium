@@ -23,11 +23,13 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Shto www. dhe .com në tekstin e shkruar në shiritin e adresës, më pas hap faqen</translation>
+<translation id="1768987374400973299">Nxirr një pamje të ekranit/bëj regjistrim</translation>
 <translation id="1872219238824176091">Hiq tavolinën aktuale të punës</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, më pas <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> ose <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">Shko te skeda tjetër</translation>
 <translation id="2010818616644390445">Shko te skeda e fundit në dritare</translation>
 <translation id="2040706009561734834">Hap/mbyll nisësin</translation>
+<translation id="2086334242442703436">Hap zgjedhësin e emoji</translation>
 <translation id="2088054208777350526">Kërko për shkurtoret e tastierës</translation>
 <translation id="2125211348069077981"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="E" /> ose <ph name="F" /></translation>
 <translation id="2145908266289632567">Redaktimi i tekstit</translation>
@@ -46,6 +48,7 @@
 <translation id="2480851840841871861">Hap "Asistentin e Google"</translation>
 <translation id="2488661730534396940">Aktivizo tavolinën e punës në të majtë</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516999188535378855">Hap aplikacionin "Diagnostikimi"</translation>
 <translation id="2530339807289914946">Lëviz poshtë faqes së uebit</translation>
 <translation id="2530896289327917474">Aktivizo ose çaktivizo shfletimin me kursor teksti</translation>
 <translation id="2574014812750545982">Rivendos nivelin e zmadhimit në faqe</translation>
@@ -110,6 +113,7 @@
 <translation id="4801989101741319327">Lëviz në fund të fjalës tjetër</translation>
 <translation id="4866066940972151697">Aktivizo tavolinën e punës në të djathtë</translation>
 <translation id="4916163929714267752">Hape lidhjen në një dritare të re</translation>
+<translation id="492453977506755176">Çelësi i modalitetit të regjistrimit</translation>
 <translation id="5030659775136592441">Shfaq menaxherin e faqeshënuesve</translation>
 <translation id="5034421018520995080">Shko në krye të faqes</translation>
 <translation id="5042305953558921026">Tasti i modalitetit "Përmbledhja"</translation>
@@ -132,6 +136,7 @@
 <translation id="5899919361772749550">Shfaq ose fshih panelin e "Veglave të zhvilluesit"</translation>
 <translation id="5919628958418675842">Aktivizo ose çaktivizo ekranin e privatësisë</translation>
 <translation id="5921745308587794300">Rrotullo dritaren</translation>
+<translation id="5926306472221400972">Regjistro një pamje ekrani të plotë</translation>
 <translation id="6022924867608035986">Pastro testin e kutisë së kërkimit</translation>
 <translation id="6045998054441862242">Aktivizo modalitetin "kontrast i lartë"</translation>
 <translation id="6052614013050385269">Kliko me të djathtën te një lidhje</translation>
@@ -149,6 +154,7 @@
 <translation id="6445033640292336367">Ktheje skedën në pozicionin fillestar</translation>
 <translation id="6474744297082284761">Zvogëlo (kur është e lidhur me stacionin OSE kur janë aktivë zmadhuesit e ekranit të plotë)</translation>
 <translation id="649811797655257835">Zgjidh skedarin, më pas shtyp <ph name="SPACE" /></translation>
+<translation id="6551886416582667425">Nxirr një pamje/regjistrim të pjesshëm të ekranit</translation>
 <translation id="6556040137485212400">Hap dritaren që nuk është përdorur prej më shumë kohësh</translation>
 <translation id="666343722268997814">Hap menynë e klikimit me të djathtë për artikullin e theksuar</translation>
 <translation id="6671538777808758331">Shko te përputhja e radhës për kërkimin tënd</translation>
@@ -175,6 +181,7 @@
 <translation id="7611271430932669992">Zhvendos fokusin te dritaret kërcyese dhe dialogët</translation>
 <translation id="7635348532214572995">Zhvendos një ikonë aplikacioni në rrjetën e aplikacioneve</translation>
 <translation id="766326951329901120">Ngjit përmbajtjen nga kujtesa e fragmenteve si tekst i thjeshtë</translation>
+<translation id="7673453620027697230">Nxirr një pamje të ekranit/bëj një regjistrim të dritares</translation>
 <translation id="7703010453515335249">kllapa majtas</translation>
 <translation id="7724603315864178912">Prite</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, më pas <ph name="SPACE" /> ose <ph name="ENTER" /></translation>

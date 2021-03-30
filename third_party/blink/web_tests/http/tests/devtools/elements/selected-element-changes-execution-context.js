@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that the execution context is changed to match new selected node.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <iframe id="iframe-per-se" src="resources/set-outer-html-body-iframe.html""></iframe>

@@ -70,6 +70,13 @@ void FakeIntentHelperInstance::HandleIntent(mojom::IntentInfoPtr intent,
   handled_intents_.emplace_back(std::move(intent), std::move(activity));
 }
 
+void FakeIntentHelperInstance::HandleIntentWithWindowInfo(
+    mojom::IntentInfoPtr intent,
+    mojom::ActivityNamePtr activity,
+    mojom::WindowInfoPtr window_info) {
+  handled_intents_.emplace_back(std::move(intent), std::move(activity));
+}
+
 void FakeIntentHelperInstance::HandleUrl(const std::string& url,
                                          const std::string& package_name) {}
 

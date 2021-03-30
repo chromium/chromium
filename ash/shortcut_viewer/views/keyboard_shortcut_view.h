@@ -46,7 +46,7 @@ class KeyboardShortcutView : public views::WidgetDelegateView,
   // views::View:
   const char* GetClassName() const override;
   ax::mojom::Role GetAccessibleWindowRole() override;
-  base::string16 GetAccessibleWindowTitle() const override;
+  std::u16string GetAccessibleWindowTitle() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   void Layout() override;
   gfx::Size CalculatePreferredSize() const override;
@@ -77,7 +77,7 @@ class KeyboardShortcutView : public views::WidgetDelegateView,
   void UpdateViewsLayout(bool is_search_box_active);
 
   // Show search results in |search_results_container_|.
-  void ShowSearchResults(const base::string16& search_query);
+  void ShowSearchResults(const std::u16string& search_query);
 
   // views::WidgetDelegate:
   views::ClientView* CreateClientView(views::Widget* widget) override;

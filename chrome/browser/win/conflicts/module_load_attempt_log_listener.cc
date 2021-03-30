@@ -55,7 +55,7 @@ DrainLogOnBackgroundTask() {
       // No log path should be empty.
       DCHECK(entry->path_len);
       blocked_modules.emplace_back(
-          base::UTF8ToUTF16(base::StringPiece(entry->path, entry->path_len)),
+          base::UTF8ToWide(base::StringPiece(entry->path, entry->path_len)),
           entry->module_size, entry->time_date_stamp);
     }
 
@@ -127,7 +127,7 @@ bool ModuleLoadAttemptLogListener::GetDriveLetterPath(
 
     for (const auto& element : device_to_letter_path_mapping_) {
       const base::FilePath& device_root = element.first;
-      const base::string16& drive_letter_root = element.second;
+      const std::wstring& drive_letter_root = element.second;
       if (device_root.IsParent(device_path)) {
         *drive_letter_path = base::FilePath(
             drive_letter_root +

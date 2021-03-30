@@ -209,34 +209,29 @@ SwapChainPresenter::SwapChainPresenter(
       window_(window),
       d3d11_device_(d3d11_device),
       dcomp_device_(dcomp_device),
-      is_on_battery_power_(true) {
-  if (base::PowerMonitor::IsInitialized()) {
-    is_on_battery_power_ = base::PowerMonitor::IsOnBatteryPower();
-    base::PowerMonitor::AddObserver(this);
-  }
-}
+      is_on_battery_power_(
+          base::PowerMonitor::AddPowerStateObserverAndReturnOnBatteryState(
+              this)) {}
 
 SwapChainPresenter::~SwapChainPresenter() {
-  base::PowerMonitor::RemoveObserver(this);
+  base::PowerMonitor::RemovePowerStateObserver(this);
 }
 
 DXGI_FORMAT SwapChainPresenter::GetSwapChainFormat(
     gfx::ProtectedVideoType protected_video_type,
     bool content_is_hdr) {
-  DXGI_FORMAT yuv_overlay_format =
-      DirectCompositionSurfaceWin::GetOverlayFormatUsedForSDR();
-  // TODO(crbug.com/850799): Assess power/perf impact when protected video
-  // swap chain is composited by DWM.
-
-  // Always prefer YUV swap chain for hardware protected video for now.
-  if (protected_video_type == gfx::ProtectedVideoType::kHardwareProtected)
-    return yuv_overlay_format;
-
   // Prefer RGB10A2 swapchain when playing HDR content.
   if (content_is_hdr)
     return DXGI_FORMAT_R10G10B10A2_UNORM;
 
-  if (failed_to_create_yuv_swapchain_)
+  DXGI_FORMAT yuv_overlay_format =
+      DirectCompositionSurfaceWin::GetOverlayFormatUsedForSDR();
+  // Always prefer YUV swap chain for hardware protected video for now.
+  if (protected_video_type == gfx::ProtectedVideoType::kHardwareProtected)
+    return yuv_overlay_format;
+
+  if (failed_to_create_yuv_swapchain_ ||
+      !DirectCompositionSurfaceWin::AreHardwareOverlaysSupported())
     return DXGI_FORMAT_B8G8R8A8_UNORM;
 
   // Start out as YUV.
@@ -1349,7 +1344,7 @@ bool SwapChainPresenter::ReallocateSwapChain(
     TRACE_EVENT0("gpu", trace_event_stream.str().c_str());
 
     desc.Format = swap_chain_format;
-    desc.Flags = 0;
+    desc.Flags = DXGI_SWAP_CHAIN_FLAG_FULLSCREEN_VIDEO;
     if (IsProtectedVideo(protected_video_type))
       desc.Flags |= DXGI_SWAP_CHAIN_FLAG_DISPLAY_ONLY;
     if (protected_video_type == gfx::ProtectedVideoType::kHardwareProtected)

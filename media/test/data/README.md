@@ -178,17 +178,23 @@ has support for OPUS in MP4 as experimental.
 
 #### av1-svc-L2T2.ivf
 AV1 data that has spatial and temporal layers.
-This is the same as av1-1-b8-22-svc-L2T2.ivf in
-[libaom test vectors]:https://aomedia.googlesource.com/aom/+/master/test/test_vectors.cc
+This is the same as av1-1-b8-22-svc-L2T2.ivf in [libaom test vectors].
+The video license is [libaom LICENSE].
 
 #### av1-show_existing_frame.ivf
 AV1 data that contains frames with `show_existing_frame=1`.
 This is the same as 00000592.ivf in
-https://people.xiph.org/~tterribe/av1/samples-all/
+https://people.xiph.org/~tterribe/av1/samples-all/.
+The video license is [libaom LICENSE].
 
 #### blackwhite\_yuv444p-frame.av1.ivf
 The first frame of blackwhite\_yuv444p.mp4 coded in AV1 by the following command.
 `ffmpeg -i blackwhite_yuv444p.mp4 -strict -2 -vcodec av1 -vframes 1 blackwhite_yuv444p-frame.av1.ivf`
+
+#### av1-film\_grain.ivf
+AV1 data where film grain feature is used.
+This is the same as av1-1-b8-23-film\_grain-50.ivf in [libaom test vectors].
+The video license is [libaom LICENSE].
 
 ### Alpha Channel
 
@@ -722,6 +728,29 @@ JSON file that contains all metadata related to test-25fps.av1.ivf, used by the
 video\_decode\_accelerator\_tests. This includes the video codec, resolution and
 md5 checksums of individual video frames when converted to the I420 format.
 
+#### test-25fps.hevc:
+H.265/HEVC video whose content is the same as test-25fps.h264.
+```
+ffmpeg -i test-25fps.h264 -vcodec hevc test25fps.hevc
+```
+
+#### test-25fps.hevc.json:
+JSON file that contains all metadata related to test-25fps.hevc, used by the
+video\_decode\_accelerator\_tests. This includes the video codec, resolution and
+md5 checksums of individual video frames when converted to the I420 format.
+
+#### test-25fps.hevc10:
+10-bit H.265/HEVC video whose content is the same as test-25fps.h264 but
+converted to 10bpp.
+```
+ffmpeg -i test-25fps.h264 -vcodec hevc -pix_fmt yuv420p10le test25fps.hevc10
+```
+
+#### test-25fps.hevc10.json:
+JSON file that contains all metadata related to test-25fps.hevc10, used by the
+video\_decode\_accelerator\_tests. This includes the video codec, resolution and
+md5 checksums of individual video frames when converted to the I420 format.
+
 ### VP9 video with raw vp9 frames
 
 #### buck-1280x720-vp9.webm
@@ -792,12 +821,12 @@ The frame sizes change between 1080p and 720p every 24 frames.
 
 #### bear_320x192_40frames.yuv.webm
 First 40 raw i420 frames of bear-1280x720.mp4 scaled down to 320x192 for
-video_encode_accelerator_unittest. Encoded with vp9 lossless:
+video_encode_accelerator_tests. Encoded with vp9 lossless:
 `ffmpeg -pix_fmt yuv420p -s:v 320x192 -r 30 -i bear_320x192_40frames.yuv -lossless 1 bear_320x192_40frames.yuv.webm`
 
 #### bear_640x384_40frames.yuv.webm
 First 40 raw i420 frames of bear-1280x720.mp4 scaled down to 340x384 for
-video_encode_accelerator_unittest. Encoded with vp9 lossless:
+video_encode_accelerator_tests. Encoded with vp9 lossless:
 `ffmpeg -pix_fmt yuv420p -s:v 640x384 -r 30 -i bear_640x384_40frames.yuv -lossless 1 bear_640x384_40frames.yuv.webm`
 
 
@@ -824,7 +853,7 @@ Metadata describing bear\_320x192.nv12.yuv.
 First frame of bear\_320x192\_40frames.yv12.yuv for image\_processor_test and
 formatted yv12.
 To get the uncompressed yuv, execute the following command.
-`ffmpeg -s:v 320x192 -pix_fmt yuv420p -i bear_320x192.i420.yuv  -c:v rawvideo -pix_fmt yuv420p -vf shuffleplanes=0:2:1 bear_320x192.yv12.2.yuv`
+`ffmpeg -s:v 320x192 -pix_fmt yuv420p -i bear_320x192.i420.yuv  -c:v rawvideo -pix_fmt yuv420p -vf shuffleplanes=0:2:1 bear_320x192.yv12.yuv`
 
 #### bear\_320x192.rgba
 RAW RGBA format data. This data is created from bear\_320x192.i420.yuv.
@@ -836,7 +865,7 @@ To get the uncompressed yuv, execute the following command.
 RAW BGRA format data. This data is created from bear\_320x192.i420.yuv.
 Alpha channel is always 0xFF.
 To get the uncompressed yuv, execute the following command.
-`ffmpeg -s 320x192 -pix_fmt yuv420p -i bear_320x192.i420.yuv -vcodec rawvideo -f image2 -pix_fmt rgba bear_320x192.bgra`
+`ffmpeg -s 320x192 -pix_fmt yuv420p -i bear_320x192.i420.yuv -vcodec rawvideo -f image2 -pix_fmt bgra bear_320x192.bgra`
 
 #### bear\_192x320\_90.nv12.yuv
 Rotate bear\_320x192.nv12.yuv by 90 degrees clockwise.
@@ -1184,3 +1213,6 @@ https://people.xiph.org/~greg/opus_testvectors/
 * opus-trimming-test.mp4
 * opus-trimming-test.ogg
 * opus-trimming-test.webm
+
+[libaom test vectors]: https://aomedia.googlesource.com/aom/+/master/test/test_vectors.cc
+[libaom LICENSE]: https://source.chromium.org/chromium/chromium/src/+/master:media/test/data/licenses/AOM-LICENSE

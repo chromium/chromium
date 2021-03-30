@@ -10,6 +10,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 
 class GURL;
 
@@ -24,7 +25,7 @@ namespace extension_test_util {
 scoped_refptr<extensions::Extension> LoadManifestUnchecked(
     const std::string& dir,
     const std::string& test_file,
-    extensions::Manifest::Location location,
+    extensions::mojom::ManifestLocation location,
     int extra_flags,
     const std::string& id,
     std::string* error);
@@ -32,14 +33,14 @@ scoped_refptr<extensions::Extension> LoadManifestUnchecked(
 scoped_refptr<extensions::Extension> LoadManifestUnchecked(
     const std::string& dir,
     const std::string& test_file,
-    extensions::Manifest::Location location,
+    extensions::mojom::ManifestLocation location,
     int extra_flags,
     std::string* error);
 
 scoped_refptr<extensions::Extension> LoadManifest(
     const std::string& dir,
     const std::string& test_file,
-    extensions::Manifest::Location location,
+    extensions::mojom::ManifestLocation location,
     int extra_flags);
 
 scoped_refptr<extensions::Extension> LoadManifest(const std::string& dir,

@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/add_event_listener_options_resolved.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -982,7 +983,7 @@ void SVGElement::SynchronizeSVGAttribute(const QualifiedName& name) const {
   }
 }
 
-void SVGElement::CollectStyleForAnimatedPresentationAttributes(
+void SVGElement::CollectExtraStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
   // TODO(fs): This re-applies all animating attributes that are also
   // presentation attributes. The precise predicate that we want is animated
@@ -1006,17 +1007,23 @@ void SVGElement::CollectStyleForAnimatedPresentationAttributes(
   }
 }
 
-scoped_refptr<ComputedStyle> SVGElement::CustomStyleForLayoutObject() {
+scoped_refptr<ComputedStyle> SVGElement::CustomStyleForLayoutObject(
+    const StyleRecalcContext& style_recalc_context) {
   SVGElement* corresponding_element = CorrespondingElement();
-  if (!corresponding_element)
-    return GetDocument().GetStyleResolver().StyleForElement(this);
+  if (!corresponding_element) {
+    return GetDocument().GetStyleResolver().ResolveStyle(this,
+                                                         style_recalc_context);
+  }
 
   const ComputedStyle* style = nullptr;
   if (Element* parent = ParentOrShadowHostElement())
     style = parent->GetComputedStyle();
 
-  return GetDocument().GetStyleResolver().StyleForElement(corresponding_element,
-                                                          style, style);
+  StyleRequest style_request;
+  style_request.parent_override = style;
+  style_request.layout_parent_override = style;
+  return GetDocument().GetStyleResolver().ResolveStyle(
+      corresponding_element, style_recalc_context, style_request);
 }
 
 bool SVGElement::LayoutObjectIsNeeded(const ComputedStyle& style) const {
@@ -1295,9 +1302,8 @@ void SVGElement::Trace(Visitor* visitor) const {
   Element::Trace(visitor);
 }
 
-void SVGElement::AccessKeyAction(bool send_mouse_events) {
-  DispatchSimulatedClick(
-      nullptr, send_mouse_events ? kSendMouseUpDownEvents : kSendNoEvents);
+void SVGElement::AccessKeyAction(SimulatedClickCreationScope creation_scope) {
+  DispatchSimulatedClick(nullptr, creation_scope);
 }
 
 }  // namespace blink

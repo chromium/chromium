@@ -13,13 +13,13 @@ async_test(function(t) {
     Object.defineProperty(Object.prototype, "then", { get() {
       if (count++ == 0) {
         for (var i = 0; i < 4; i++)
-          decoder.decode(2).then(() => {});
-        decoder.decode(3).then(t.step_func_done());
+          decoder.decode({frameIndex: 2}).then(() => {});
+        decoder.decode({frameIndex: 3}).then(t.step_func_done());
       }
     }});
 
-    decoder.decode(0).then(() => {});
-    decoder.decode(1).then(() => {});
+    decoder.decode({frameIndex: 0}).then(() => {});
+    decoder.decode({frameIndex: 1}).then(() => {});
   })).catch(t.unreached_func());
 });
 </script>

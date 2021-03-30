@@ -1,0 +1,21 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module storage.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "url/mojom/origin.mojom";
+
+// An equivalent mojo interface for content::StorageUsageInfo.
+struct StorageUsageInfo {
+  // The origin for this usage information.
+  url.mojom.Origin origin;
+
+  // The total size in bytes of usage.  This number is expected to be
+  // non-negative.
+  int64 total_size_bytes;
+
+  // Last modification time of the data for this origin.
+  mojo_base.mojom.Time last_modified;
+};

@@ -8,20 +8,20 @@
 
 namespace breadcrumb_persistent_storage_util {
 
-const base::FilePath::CharType kBreadcrumbsFile[] =
+const base::FilePath::CharType kOldBreadcrumbsFile[] =
     FILE_PATH_LITERAL("iOS Breadcrumbs");
 
-const base::FilePath::CharType kBreadcrumbsTempFile[] =
+const base::FilePath::CharType kOldBreadcrumbsTempFile[] =
     FILE_PATH_LITERAL("iOS Breadcrumbs.temp");
 
-base::FilePath GetBreadcrumbPersistentStorageFilePath(
+base::FilePath GetOldBreadcrumbPersistentStorageFilePath(
     base::FilePath storage_dir) {
-  return storage_dir.Append(kBreadcrumbsFile);
+  return storage_dir.Append(kOldBreadcrumbsFile);
 }
 
-base::FilePath GetBreadcrumbPersistentStorageTempFilePath(
+base::FilePath GetOldBreadcrumbPersistentStorageTempFilePath(
     base::FilePath storage_dir) {
-  return storage_dir.Append(kBreadcrumbsTempFile);
+  return storage_dir.Append(kOldBreadcrumbsTempFile);
 }
 
 }  // namespace breadcrumb_persistent_storage_util

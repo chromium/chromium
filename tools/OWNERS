@@ -5,6 +5,7 @@
 # If you're changing existing tools, have your change reviewed by the
 # OWNERS of the existing tool.
 
+set noparent
 brucedawson@chromium.org
 dpranke@google.com
 scottmg@chromium.org

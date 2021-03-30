@@ -44,4 +44,8 @@ void CanvasResourceHost::InitializeForRecording(cc::PaintCanvas* canvas) {
   RestoreCanvasMatrixClipStack(canvas);
 }
 
+void CanvasResourceHost::SetFilterQuality(SkFilterQuality filter_quality) {
+  filter_quality_ = filter_quality;
+}
+
 }  // namespace blink

@@ -29,18 +29,21 @@ interface AutofillAgent {
   // Tells the renderer that the Autofill previewed form should be cleared.
   ClearPreviewedForm();
 
-  // Sets the currently selected node's value.
-  FillFieldWithValue(mojo_base.mojom.String16 value);
+  // Sets the value of |field| (if it is still the currently selected node).
+  FillFieldWithValue(FieldRendererId field, mojo_base.mojom.String16 value);
 
-  // Sets the suggested value for the currently previewed node.
-  PreviewFieldWithValue(mojo_base.mojom.String16 value);
+  // Sets the suggested value of |field| (if it is still the currently selected
+  // node).
+  PreviewFieldWithValue(FieldRendererId field, mojo_base.mojom.String16 value);
 
-  // Sets the currently selected node's corresponding accessibility node's
-  // autofill/autocomplete suggestion availability.
-  SetSuggestionAvailability(AutofillState type);
+  // Sets the autofill/autocomplete suggestion availability of |field| (if it is
+  // still the currently selected node).
+  SetSuggestionAvailability(FieldRendererId field, AutofillState type);
 
-  // Sets the currently selected node's value to be the given data list value.
-  AcceptDataListSuggestion(mojo_base.mojom.String16 value);
+  // Sets the value of |field| (if it is still the currently selected node).
+  // to the given data list value.
+  AcceptDataListSuggestion(FieldRendererId field,
+                           mojo_base.mojom.String16 value);
 
   // Tells the renderer to fill the username and password with with given
   // values.

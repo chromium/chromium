@@ -17,9 +17,10 @@ RemoteChangeProcessorWrapper::RemoteChangeProcessorWrapper(
 
 void RemoteChangeProcessorWrapper::PrepareForProcessRemoteChange(
     const storage::FileSystemURL& url,
-    const RemoteChangeProcessor::PrepareChangeCallback& callback) {
+    RemoteChangeProcessor::PrepareChangeCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
-  remote_change_processor_->PrepareForProcessRemoteChange(url, callback);
+  remote_change_processor_->PrepareForProcessRemoteChange(url,
+                                                          std::move(callback));
 }
 
 void RemoteChangeProcessorWrapper::ApplyRemoteChange(
@@ -35,10 +36,10 @@ void RemoteChangeProcessorWrapper::ApplyRemoteChange(
 void RemoteChangeProcessorWrapper::FinalizeRemoteSync(
     const storage::FileSystemURL& url,
     bool clear_local_changes,
-    const base::Closure& completion_callback) {
+    base::OnceClosure completion_callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
-  remote_change_processor_->FinalizeRemoteSync(
-    url, clear_local_changes, completion_callback);
+  remote_change_processor_->FinalizeRemoteSync(url, clear_local_changes,
+                                               std::move(completion_callback));
 }
 
 void RemoteChangeProcessorWrapper::RecordFakeLocalChange(

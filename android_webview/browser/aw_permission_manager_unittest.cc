@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "android_webview/browser/aw_browser_permission_request_delegate.h"
+#include "android_webview/browser/permission/permission_callback.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "content/public/browser/permission_controller.h"
@@ -39,7 +40,7 @@ class AwBrowserPermissionRequestDelegateForTesting final
     for (auto it = request_.begin(); it != request_.end(); ++it) {
       if ((*it)->type != type || (*it)->origin != origin)
         continue;
-      base::OnceCallback<void(bool)> callback = std::move((*it)->callback);
+      PermissionCallback callback = std::move((*it)->callback);
       request_.erase(it);
       std::move(callback).Run(grant);
       return;
@@ -50,14 +51,13 @@ class AwBrowserPermissionRequestDelegateForTesting final
   // AwBrowserPermissionRequestDelegate:
   void RequestProtectedMediaIdentifierPermission(
       const GURL& origin,
-      base::OnceCallback<void(bool)> callback) override {}
+      PermissionCallback callback) override {}
 
   void CancelProtectedMediaIdentifierPermissionRequests(
       const GURL& origin) override {}
 
-  void RequestGeolocationPermission(
-      const GURL& origin,
-      base::OnceCallback<void(bool)> callback) override {
+  void RequestGeolocationPermission(const GURL& origin,
+                                    PermissionCallback callback) override {
     RequestPermission(origin, PermissionType::GEOLOCATION, std::move(callback));
   }
 
@@ -65,9 +65,8 @@ class AwBrowserPermissionRequestDelegateForTesting final
     CancelPermission(origin, PermissionType::GEOLOCATION);
   }
 
-  void RequestMIDISysexPermission(
-      const GURL& origin,
-      base::OnceCallback<void(bool)> callback) override {
+  void RequestMIDISysexPermission(const GURL& origin,
+                                  PermissionCallback callback) override {
     RequestPermission(origin, PermissionType::MIDI_SYSEX, std::move(callback));
   }
 
@@ -78,7 +77,7 @@ class AwBrowserPermissionRequestDelegateForTesting final
  private:
   void RequestPermission(const GURL& origin,
                          PermissionType type,
-                         base::OnceCallback<void(bool)> callback) {
+                         PermissionCallback callback) {
     for (auto it = response_.begin(); it != response_.end(); ++it) {
       if ((*it)->type != type || (*it)->origin != origin)
         continue;
@@ -105,11 +104,11 @@ class AwBrowserPermissionRequestDelegateForTesting final
   struct Request {
     GURL origin;
     PermissionType type;
-    base::OnceCallback<void(bool)> callback;
+    PermissionCallback callback;
 
     Request(const GURL& origin,
             PermissionType type,
-            base::OnceCallback<void(bool)> callback)
+            PermissionCallback callback)
         : origin(origin), type(type), callback(std::move(callback)) {}
   };
 

@@ -9,8 +9,11 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/chromeos/ui/adb_sideloading_policy_change_notification.h"
+#include "chromeos/dbus/power/power_manager_client.h"
+#include "chromeos/dbus/power_manager/idle.pb.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -30,7 +33,8 @@ enum class AdbSideloadingAllowanceMode {
   kAllowForAffiliatedUser = 3
 };
 
-class AdbSideloadingAllowanceModePolicyHandler {
+class AdbSideloadingAllowanceModePolicyHandler
+    : public chromeos::PowerManagerClient::Observer {
  public:
   // Will be invoked with the value of arc_sideloading_allowed flag in the boot
   // lockbox, or false if this flag is not set or if an error occurs while
@@ -49,8 +53,9 @@ class AdbSideloadingAllowanceModePolicyHandler {
       chromeos::AdbSideloadingPolicyChangeNotification::Type;
 
   AdbSideloadingAllowanceModePolicyHandler(
-      chromeos::CrosSettings* cros_settings,
+      ash::CrosSettings* cros_settings,
       PrefService* local_state,
+      chromeos::PowerManagerClient* power_manager_client,
       chromeos::AdbSideloadingPolicyChangeNotification*
           adb_sideloading_policy_change_notification);
 
@@ -60,7 +65,7 @@ class AdbSideloadingAllowanceModePolicyHandler {
   AdbSideloadingAllowanceModePolicyHandler& operator=(
       const AdbSideloadingAllowanceModePolicyHandler&) = delete;
 
-  ~AdbSideloadingAllowanceModePolicyHandler();
+  ~AdbSideloadingAllowanceModePolicyHandler() override;
 
   void SetCheckSideloadingStatusCallbackForTesting(
       const CheckSideloadingStatusCallback& callback);
@@ -72,8 +77,14 @@ class AdbSideloadingAllowanceModePolicyHandler {
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
+  // chromeos::PowerManagerClient::Observer overrides.
+  void ScreenIdleStateChanged(
+      const power_manager::ScreenIdleState& state) override;
+  void LidEventReceived(chromeos::PowerManagerClient::LidState state,
+                        base::TimeTicks timestamp) override;
+
  private:
-  void OnPolicyChanged();
+  void MaybeShowNotification();
 
   // Check if sideloading has been activated before
   // Returns the value of kSideloadingAllowedBootAttribute
@@ -89,7 +100,7 @@ class AdbSideloadingAllowanceModePolicyHandler {
   void MaybeShowPowerwashNotification(bool is_sideloading_enabled);
   void MaybeShowPowerwashUponRebootNotification();
 
-  chromeos::CrosSettings* const cros_settings_;
+  ash::CrosSettings* const cros_settings_;
 
   PrefService* const local_state_;
 
@@ -101,6 +112,10 @@ class AdbSideloadingAllowanceModePolicyHandler {
   base::CallbackListSubscription policy_subscription_;
 
   CheckSideloadingStatusCallback check_sideloading_status_callback_;
+
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
+      power_manager_observer_;
 
   base::WeakPtrFactory<AdbSideloadingAllowanceModePolicyHandler> weak_factory_{
       this};

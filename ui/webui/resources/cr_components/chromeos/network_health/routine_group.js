@@ -42,7 +42,7 @@ Polymer({
     },
 
     /**
-     * Boolean flag if the routine group is expanded.
+     * Boolean flag if the container is expanded.
      * @private {Boolean}
      */
     expanded: {
@@ -58,15 +58,6 @@ Polymer({
       type: Boolean,
       computed: 'showGroupIcon_(running, expanded)',
     },
-  },
-
-  /**
-   * Returns the correct arrow icon depending on if the routine group is
-   * expanded.
-   * @param {boolean} expanded
-   */
-  getArrowIcon_(expanded) {
-    return expanded ? 'cr:expand-less' : 'cr:expand-more';
   },
 
   /**
@@ -156,14 +147,5 @@ Polymer({
       }
     }
     return false;
-  },
-
-  /**
-   * Helper function to toggle the expanded properties when the routine group
-   * is clicked.
-   * @private
-   */
-  onGroupClick_() {
-    this.set('expanded', !this.expanded);
   },
 });

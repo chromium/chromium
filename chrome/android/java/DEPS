@@ -5,6 +5,7 @@ include_rules = [
   "+chrome/browser/banners/android/java",
   "+chrome/browser/device",
   "+chrome/browser/privacy",
+  "+chrome/browser/privacy_sandbox",
   "+chrome/browser/profiles/android/java",
   "+chrome/browser/share/android",
   "+chrome/browser/tab",
@@ -21,6 +22,7 @@ include_rules = [
   "+chrome/browser/performance_hints/android/java",
   "+chrome/browser/settings/android/java",
   "+chrome/browser/tabmodel/android/java",
+  "+chrome/browser/page_annotations/android/java",
   "+chrome/browser/video_tutorials/android",
   "+components/autofill/android/java/src/org/chromium/components/autofill",
   "+components/background_task_scheduler/android/java/src/org/chromium/components/background_task_scheduler",
@@ -30,6 +32,7 @@ include_rules = [
   "+components/browser_ui/settings/android",
   "+components/browser_ui/styles/android",
   "+components/browser_ui/widget/android",
+  "+components/component_updater/android/java/src/org/chromium/components/component_updater",
   "+components/crash/android/java",
   "+components/dom_distiller/content/browser/android/java/src/org/chromium/components/dom_distiller/content",
   "+components/dom_distiller/core/android/java/src/org/chromium/components/dom_distiller/core",
@@ -53,6 +56,7 @@ include_rules = [
   "+components/sync/android/java/src/org/chromium/components/sync",
   "+components/query_tiles/android/java",
   "+components/thin_webview/java",
+  "+components/ukm/android/java",
   "+components/webxr/android/java",
 
   "-content/public/android",
@@ -63,12 +67,10 @@ include_rules = [
 
 specific_include_rules = {
   # Special-case where monochrome composes chrome+webview
-  "MonochromeApplication\.java": [
+  "MonochromeApplicationImpl\.java": [
     "+android_webview/nonembedded/java/src/org/chromium/android_webview/nonembedded/WebViewApkApplication.java",
-    "+android_webview/glue/java/src/com/android/webview/chromium/MonochromeLibraryPreloader.java",
   ],
   "SplitMonochromeApplication\.java": [
     "+android_webview/nonembedded/java/src/org/chromium/android_webview/nonembedded/WebViewApkApplication.java",
-    "+android_webview/glue/java/src/com/android/webview/chromium/MonochromeLibraryPreloader.java",
   ],
 }

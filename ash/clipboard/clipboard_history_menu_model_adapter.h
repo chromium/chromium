@@ -74,6 +74,9 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
   // Selects the menu item specified by `command_id`.
   void SelectMenuItemWithCommandId(int command_id);
 
+  // Selects the menu item hovered by mouse.
+  void SelectMenuItemHoveredByMouse();
+
   // Removes the menu item specified by `command_id`.
   void RemoveMenuItemWithCommandId(int command_id);
 
@@ -153,6 +156,9 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
   int item_deletion_in_progress_count_ = 0;
 
   std::unique_ptr<ScopedA11yIgnore> scoped_ignore_;
+
+  // Indicates whether `Run()` has been called before.
+  bool run_before_ = false;
 
   // Called when an item view is removed from the root menu.
   base::RepeatingClosure item_removal_callback_for_test_;

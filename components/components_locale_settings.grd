@@ -34,6 +34,9 @@
       <output filename="components_locale_settings_zh-HK.pak" type="data_package" lang="zh-HK" />
       <output filename="components_locale_settings_zu.pak" type="data_package" lang="zu" />
     </if>
+    <if expr="chromeos or lacros">
+      <output filename="components_locale_settings_is.pak" type="data_package" lang="is" />
+    </if>
     <output filename="components_locale_settings_am.pak" type="data_package" lang="am" />
     <output filename="components_locale_settings_ar.pak" type="data_package" lang="ar" />
     <output filename="components_locale_settings_bg.pak" type="data_package" lang="bg" />
@@ -55,7 +58,6 @@
     </if>
     <output filename="components_locale_settings_et.pak" type="data_package" lang="et" />
     <output filename="components_locale_settings_fa.pak" type="data_package" lang="fa" />
-    <output filename="components_locale_settings_fake-bidi.pak" type="data_package" lang="fake-bidi" />
     <output filename="components_locale_settings_fi.pak" type="data_package" lang="fi" />
     <output filename="components_locale_settings_fil.pak" type="data_package" lang="fil" />
     <output filename="components_locale_settings_fr.pak" type="data_package" lang="fr" />
@@ -189,6 +191,10 @@
       <output filename="java/res/values-zu/components_locale_settings.xml" lang="zu" type="android" context="android_java" />
     </if>
 
+
+    <!-- Pseudolocales -->
+    <output filename="components_locale_settings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="components_locale_settings_en-XA.pak" type="data_package" lang="en-XA" />
   </outputs>
   <translations>
     <file path="strings/components_locale_settings_am.xtb" lang="am" />
@@ -243,7 +249,9 @@
     <file path="strings/components_locale_settings_vi.xtb" lang="vi" />
     <file path="strings/components_locale_settings_zh-CN.xtb" lang="zh-CN" />
     <file path="strings/components_locale_settings_zh-TW.xtb" lang="zh-TW" />
-    <file path="strings/components_locale_settings_fake-bidi.xtb" lang="fake-bidi" />
+
+    <!-- ar-XB falls back to ar, but we want it to fall back to english -->
+    <file path="strings/components_locale_settings_ar-XB.xtb" lang="ar-XB" />
   </translations>
   <release seq="1" allow_pseudo="false">
     <includes>

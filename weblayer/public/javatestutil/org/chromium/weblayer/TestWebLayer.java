@@ -10,6 +10,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.AndroidRuntimeException;
 import android.view.View;
+import android.webkit.ValueCallback;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -17,6 +18,9 @@ import androidx.annotation.Nullable;
 
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 import org.chromium.weblayer_private.test_interfaces.ITestWebLayer;
+
+import java.util.ArrayList;
+import java.util.Set;
 
 /**
  * TestWebLayer is responsible for passing messages over a test only AIDL to the
@@ -36,9 +40,8 @@ public final class TestWebLayer {
 
     private TestWebLayer(@NonNull Context appContext) {
         try {
-            ClassLoader remoteClassLoader = WebLayer.getOrCreateRemoteClassLoader(appContext);
-            Class TestWebLayerClass = remoteClassLoader.loadClass(
-                    "org.chromium.weblayer_private.test.TestWebLayerImpl");
+            Class TestWebLayerClass = WebLayer.loadRemoteClass(
+                    appContext, "org.chromium.weblayer_private.test.TestWebLayerImpl");
             mITestWebLayer = ITestWebLayer.Stub.asInterface(
                     (IBinder) TestWebLayerClass.getMethod("create").invoke(null));
         } catch (PackageManager.NameNotFoundException | ReflectiveOperationException e) {
@@ -162,5 +165,20 @@ public final class TestWebLayer {
     public ImageView getSecurityButton(View urlBarView) throws RemoteException {
         return (ImageView) ObjectWrapper.unwrap(
                 mITestWebLayer.getSecurityButton(ObjectWrapper.wrap(urlBarView)), ImageView.class);
+    }
+
+    public void fetchAccessToken(Profile profile, Set<String> scopes,
+            Callback<String> onTokenFetched) throws RemoteException {
+        ValueCallback<String> valueCallback = (String token) -> {
+            onTokenFetched.onResult(token);
+        };
+        mITestWebLayer.fetchAccessToken(profile.getIProfile(), ObjectWrapper.wrap(scopes),
+                ObjectWrapper.wrap(valueCallback));
+    }
+
+    public void addContentCaptureConsumer(Browser browser, Runnable runnable,
+            ArrayList<Integer> callbacks) throws RemoteException {
+        mITestWebLayer.addContentCaptureConsumer(
+                browser.getIBrowser(), ObjectWrapper.wrap(runnable), ObjectWrapper.wrap(callbacks));
     }
 }

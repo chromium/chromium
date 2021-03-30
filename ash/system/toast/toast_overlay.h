@@ -6,11 +6,11 @@
 #define ASH_SYSTEM_TOAST_TOAST_OVERLAY_H_
 
 #include <memory>
+#include <string>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -48,8 +48,8 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   // |dismiss_text| has a value but the string is empty, the default text is
   // used. If |is_managed| is true, a managed icon will be added to the toast.
   ToastOverlay(Delegate* delegate,
-               const base::string16& text,
-               base::Optional<base::string16> dismiss_text,
+               const std::u16string& text,
+               base::Optional<std::u16string> dismiss_text,
                bool show_on_lock_screen,
                bool is_managed);
   ~ToastOverlay() override;
@@ -80,8 +80,8 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   void ClickDismissButtonForTesting(const ui::Event& event);
 
   Delegate* const delegate_;
-  const base::string16 text_;
-  const base::Optional<base::string16> dismiss_text_;
+  const std::u16string text_;
+  const base::Optional<std::u16string> dismiss_text_;
   std::unique_ptr<views::Widget> overlay_widget_;
   std::unique_ptr<ToastOverlayView> overlay_view_;
   std::unique_ptr<ToastDisplayObserver> display_observer_;

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<org.chromium.components.browser_ui.widget.tile.TileView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/tile_view_width"
+    android:layout_height="wrap_content" >
+    <include
+        layout="@layout/tile_view_modern"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+  </org.chromium.components.browser_ui.widget.tile.TileView>

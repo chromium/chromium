@@ -45,7 +45,6 @@ public final class ErrorPageCallbackProxy {
 
     @CalledByNative
     private String getErrorPageContent(NavigationImpl navigation) throws RemoteException {
-        if (WebLayerFactoryImpl.getClientMajorVersion() < 86) return null;
         return mClient.getErrorPageContent(navigation.getClientNavigation());
     }
 

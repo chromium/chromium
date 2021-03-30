@@ -7,7 +7,6 @@ import("//chrome/common/features.gni")
 import("//components/feed/features.gni")
 
 android_resources("chrome_feed_java_resources") {
-  # TODO(crbug.com/1129187): Determine if more resources can be moved to v1-only.
   sources = [
     "core/java/res/drawable/feed_text_ripple_drawable_dark.xml",
     "core/java/res/drawable/feed_text_ripple_drawable_light.xml",
@@ -22,30 +21,8 @@ android_resources("chrome_feed_java_resources") {
     "core/java/res/values/styles.xml",
   ]
 
-  if (enable_feed_v1) {
-    # Note that we had to move v1 resources to a new directory because the
-    # android_resources rule ensures that you include all files in your resource
-    # directories.
-    sources += [
-      "core/java/resv1/drawable-hdpi/ic_amp_24dp.png",
-      "core/java/resv1/drawable-mdpi/ic_amp_24dp.png",
-      "core/java/resv1/drawable-xhdpi/ic_amp_24dp.png",
-      "core/java/resv1/drawable-xxhdpi/ic_amp_24dp.png",
-      "core/java/resv1/drawable-xxxhdpi/ic_amp_24dp.png",
-      "core/java/resv1/layout/feed_more_button.xml",
-      "core/java/resv1/layout/feed_simple_list_item.xml",
-      "core/java/resv1/layout/feed_spinner_gone.xml",
-      "core/java/resv1/layout/no_content.xml",
-      "core/java/resv1/layout/zero_state.xml",
-      "core/java/resv1/values-v16/styles.xml",
-      "core/java/resv1/values-v17/styles.xml",
-      "core/java/resv1/values/dimens.xml",
-    ]
-  }
-
   deps = [
     "//chrome/android:chrome_app_java_resources",
     "//ui/android:ui_java_resources",
   ]
-  create_srcjar = false
 }

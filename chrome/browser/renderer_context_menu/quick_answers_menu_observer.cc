@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "ash/public/cpp/quick_answers/controller/quick_answers_controller.h"
 #include "base/metrics/histogram_functions.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -76,7 +76,7 @@ void QuickAnswersMenuObserver::OnContextMenuShown(
 
   // Skip password input field.
   if (params.input_field_type ==
-      blink::ContextMenuDataInputFieldType::kPassword) {
+      blink::mojom::ContextMenuDataInputFieldType::kPassword) {
     return;
   }
 
@@ -144,7 +144,7 @@ void QuickAnswersMenuObserver::OnEligibilityChanged(bool eligible) {
 
 void QuickAnswersMenuObserver::OnTextSurroundingSelectionAvailable(
     const std::string& selected_text,
-    const base::string16& surrounding_text,
+    const std::u16string& surrounding_text,
     uint32_t start_offset,
     uint32_t end_offset) {
   PrefService* prefs =

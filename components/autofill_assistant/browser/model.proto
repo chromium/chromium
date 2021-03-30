@@ -194,10 +194,6 @@ enum ProcessedActionStatusProto {
   // ProcessedActionStatusProto.AutofillErrorInfoProto contains more details.
   AUTOFILL_INCOMPLETE = 24;
 
-  // Evaluating a selector required considering too many candidates. Please
-  // generate more specific selectors. See SelectorProto::ProximityFilter.
-  TOO_MANY_CANDIDATES = 25;
-
   // Evaluating the element did report an unexpected mismatch in either value
   // or text.
   ELEMENT_MISMATCH = 26;
@@ -210,7 +206,11 @@ enum ProcessedActionStatusProto {
   // used.
   CLIENT_ID_RESOLUTION_FAILED = 28;
 
-  reserved 15, 23;
+  // The target element's frame was not in the same domain or subdomain as the
+  // password's origin.
+  PASSWORD_ORIGIN_MISMATCH = 29;
+
+  reserved 15, 23, 25;
 }
 
 // A message to describe a chip.
@@ -270,6 +270,12 @@ enum ChipType {
   // cancel button. Otherwise, buttons of this type work and look like a
   // HIGHLIGHTED_ACTION.
   DONE_ACTION = 6;
+
+  // A "Send feedback" chip, which will show the feedback form when clicked.
+  //
+  // Note that when this is used inside a script, we will continue the script
+  // normally once the user has clicked the chip.
+  FEEDBACK_ACTION = 7;
 
   reserved 2;
 }

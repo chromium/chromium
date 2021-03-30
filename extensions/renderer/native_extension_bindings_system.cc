@@ -20,6 +20,7 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/content_capabilities_handler.h"
 #include "extensions/common/manifest_handlers/externally_connectable.h"
+#include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/renderer/api_activity_logger.h"
 #include "extensions/renderer/bindings/api_binding_bridge.h"
 #include "extensions/renderer/bindings/api_binding_hooks.h"
@@ -569,10 +570,6 @@ void NativeExtensionBindingsSystem::UpdateBindingsForContext(
       is_webpage = true;
       break;
     case Feature::BLESSED_EXTENSION_CONTEXT:
-      if (context->IsForServiceWorker())
-        DCHECK(ExtensionsClient::Get()
-                   ->ExtensionAPIEnabledInExtensionServiceWorkers());
-      FALLTHROUGH;
     case Feature::LOCK_SCREEN_EXTENSION_CONTEXT:
     case Feature::UNBLESSED_EXTENSION_CONTEXT:
     case Feature::CONTENT_SCRIPT_CONTEXT:
@@ -866,9 +863,10 @@ void NativeExtensionBindingsSystem::SendRequest(
   else
     url = script_context->url();
 
-  auto params = std::make_unique<ExtensionHostMsg_Request_Params>();
+  auto params = mojom::RequestParams::New();
   params->name = request->method_name;
-  params->arguments.Swap(request->arguments.get());
+  base::Value args(request->arguments->TakeList());
+  params->arguments = std::move(args);
   params->extension_id = script_context->GetExtensionID();
   params->source_url = url;
   params->request_id = request->request_id;

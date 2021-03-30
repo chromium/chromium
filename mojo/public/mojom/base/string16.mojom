@@ -6,7 +6,7 @@ module mojo_base.mojom;
 
 import "mojo/public/mojom/base/big_buffer.mojom";
 
-// Corresponds to |base::string16| in base/strings/string16.h
+// Corresponds to |std::u16string| in <string>.
 // Corresponds to |WTF::String| in
 // third_party/WebKit/Source/platform/wtf/text/WTFString.h.
 [Stable]

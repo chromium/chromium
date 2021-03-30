@@ -15,12 +15,11 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 
-import org.chromium.base.BuildConfig;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.password_check.CompromisedCredential;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
@@ -36,8 +35,8 @@ import org.chromium.chrome.browser.safety_check.SafetyCheckBridge.SafetyCheckCom
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.PasswordsState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.SafeBrowsingState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.UpdatesState;
-import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.browser.signin.ui.SigninActivityLauncher;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -191,24 +190,12 @@ class SafetyCheckMediator implements PasswordCheck.Observer, SafetyCheckCommonOb
                             SafetyCheckInteractions.SAFE_BROWSING_MANAGE,
                             SafetyCheckInteractions.MAX_VALUE + 1);
                     String safeBrowsingSettingsClassName;
-                    if (ChromeFeatureList.isEnabled(ChromeFeatureList.SAFE_BROWSING_SECTION_UI)) {
-                        // Open the Safe Browsing settings since the flag for them is enabled.
-                        safeBrowsingSettingsClassName =
-                                SafeBrowsingSettingsFragment.class.getName();
-                        p.getContext().startActivity(settingsLauncher.createSettingsActivityIntent(
-                                p.getContext(), safeBrowsingSettingsClassName,
-                                SafeBrowsingSettingsFragment.createArguments(
-                                        SettingsAccessPoint.SAFETY_CHECK)));
-                    } else {
-                        // Open the Sync and Services settings.
-                        // TODO(crbug.com/1070620): replace the hardcoded class name with an import
-                        // and ".class.getName()" once SyncAndServicesSettings is moved out of
-                        // //chrome/android.
-                        safeBrowsingSettingsClassName =
-                                "org.chromium.chrome.browser.sync.settings.SyncAndServicesSettings";
-                        p.getContext().startActivity(settingsLauncher.createSettingsActivityIntent(
-                                p.getContext(), safeBrowsingSettingsClassName));
-                    }
+                    // Open the Safe Browsing settings.
+                    safeBrowsingSettingsClassName = SafeBrowsingSettingsFragment.class.getName();
+                    p.getContext().startActivity(settingsLauncher.createSettingsActivityIntent(
+                            p.getContext(), safeBrowsingSettingsClassName,
+                            SafeBrowsingSettingsFragment.createArguments(
+                                    SettingsAccessPoint.SAFETY_CHECK)));
                     return true;
                 });
         // Set the listener for clicking the passwords element.
@@ -481,7 +468,8 @@ class SafetyCheckMediator implements PasswordCheck.Observer, SafetyCheckCommonOb
         if (state == PasswordsState.SIGNED_OUT) {
             listener = (p) -> {
                 // Open the sign in page.
-                mSigninLauncher.launchActivity(p.getContext(), SigninAccessPoint.SAFETY_CHECK);
+                mSigninLauncher.launchActivityIfAllowed(
+                        p.getContext(), SigninAccessPoint.SAFETY_CHECK);
                 return true;
             };
         } else if (state == PasswordsState.COMPROMISED_EXIST || state == PasswordsState.SAFE) {

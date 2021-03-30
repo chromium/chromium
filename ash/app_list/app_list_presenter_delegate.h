@@ -7,9 +7,8 @@
 
 #include <stdint.h>
 
-#include "ash/app_list/app_list_export.h"
+#include "ash/ash_export.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
 
 namespace aura {
 class Window;
@@ -20,11 +19,12 @@ namespace ash {
 class AppListPresenterImpl;
 class AppListView;
 class AppListViewDelegate;
+enum class AppListViewState;
 
 // Delegate of the app list presenter which allows customizing its behavior.
 // The design of this interface was heavily influenced by the needs of Ash's
 // app list implementation (see ash::AppListPresenterDelegateImpl).
-class APP_LIST_EXPORT AppListPresenterDelegate {
+class ASH_EXPORT AppListPresenterDelegate {
  public:
   virtual ~AppListPresenterDelegate() {}
 
@@ -33,7 +33,8 @@ class APP_LIST_EXPORT AppListPresenterDelegate {
 
   // Called to initialize the layout of the app list.
   virtual void Init(AppListView* view, int64_t display_id) = 0;
-  virtual void ShowForDisplay(int64_t display_id) = 0;
+  virtual void ShowForDisplay(AppListViewState preferred_state,
+                              int64_t display_id) = 0;
 
   // Called when app list is closing.
   virtual void OnClosing() = 0;

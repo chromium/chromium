@@ -39,7 +39,6 @@
 #include "opus_defines.h"
 
 #include <string.h>
-#include <stdio.h>
 #include <stdlib.h>
 
 /** Opus wrapper for malloc(). To do your own dynamic allocation, all you need to do is replace this function and opus_free */

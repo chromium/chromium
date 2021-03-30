@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/sensor/magnetometer.h"
 
-#include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 
 using device::mojom::blink::SensorType;
 
@@ -32,7 +32,7 @@ Magnetometer::Magnetometer(ExecutionContext* execution_context,
              options,
              exception_state,
              SensorType::MAGNETOMETER,
-             {mojom::blink::FeaturePolicyFeature::kMagnetometer}) {}
+             {mojom::blink::PermissionsPolicyFeature::kMagnetometer}) {}
 
 base::Optional<double> Magnetometer::x() const {
   if (hasReading())

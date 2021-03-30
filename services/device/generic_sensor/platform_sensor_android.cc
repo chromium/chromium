@@ -70,7 +70,7 @@ bool PlatformSensorAndroid::CheckSensorConfiguration(
 void PlatformSensorAndroid::NotifyPlatformSensorError(
     JNIEnv*,
     const JavaRef<jobject>& caller) {
-  task_runner_->PostTask(
+  PostTaskToMainSequence(
       FROM_HERE,
       base::BindOnce(&PlatformSensorAndroid::NotifySensorError, this));
 }

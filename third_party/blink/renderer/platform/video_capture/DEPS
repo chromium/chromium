@@ -6,6 +6,7 @@ include_rules = [
     "+third_party/blink/renderer/platform/video_capture",
 
     # Dependencies.
+    "+base/bind_post_task.h",
     "+media/base",
     "+media/capture",
     "+third_party/blink/renderer/platform/wtf",
@@ -21,6 +22,7 @@ include_rules = [
 specific_include_rules = {
     "video_capture_impl_test.cc": [
         "+third_party/blink/renderer/platform/testing/gpu_memory_buffer_test_support.h",
+        "+third_party/blink/renderer/platform/testing/histogram_tester.h",
     ],
     "gpu_memory_buffer_test_support.cc": [
         "+components/viz/test/test_context_provider.h",

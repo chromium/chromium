@@ -9,14 +9,13 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import 'chrome://resources/cr_elements/cr_search_field/cr_search_field.m.js';
+import 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import './languages.m.js';
-import '../settings_shared_css.m.js';
+import '../settings_shared_css.js';
 
 import {CrScrollableBehavior} from 'chrome://resources/cr_elements/cr_scrollable_behavior.m.js';
-import {FindShortcutBehavior} from 'chrome://resources/cr_elements/find_shortcut_behavior.m.js';
+import {FindShortcutBehavior} from 'chrome://resources/cr_elements/find_shortcut_behavior.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 Polymer({
@@ -30,14 +29,11 @@ Polymer({
   ],
 
   properties: {
-    /** @type {!LanguagesModel|undefined} */
+    /** @type  {!Array<!chrome.languageSettingsPrivate.Language>} */
     languages: {
-      type: Object,
+      type: Array,
       notify: true,
     },
-
-    /** @type {!LanguageHelper} */
-    languageHelper: Object,
 
     /** @private {!Set<string>} */
     languagesToAdd_: {
@@ -96,17 +92,13 @@ Polymer({
    * @private
    */
   getLanguages_() {
-    const filterValue =
-        this.filterValue_ ? this.filterValue_.toLowerCase() : null;
-    return this.languages.supported.filter(language => {
-      if (!this.languageHelper.canEnableLanguage(language)) {
-        return false;
-      }
+    if (!this.filterValue_) {
+      return this.languages;
+    }
 
-      if (filterValue === null) {
-        return true;
-      }
+    const filterValue = this.filterValue_.toLowerCase();
 
+    return this.languages.filter(language => {
       return language.displayName.toLowerCase().includes(filterValue) ||
           language.nativeDisplayName.toLowerCase().includes(filterValue);
     });
@@ -167,10 +159,8 @@ Polymer({
    * @private
    */
   onActionButtonTap_() {
+    this.fire('languages-added', Array.from(this.languagesToAdd_));
     this.$.dialog.close();
-    this.languagesToAdd_.forEach(languageCode => {
-      this.languageHelper.enableLanguage(languageCode);
-    });
   },
 
   /**

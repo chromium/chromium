@@ -554,7 +554,7 @@ base::ProcessId Zygote::ReadArgsAndFork(base::PickleIterator iter,
   // timezone_id is obtained from ICU in zygote host so that it can't be
   // invalid. For an unknown reason, if an invalid ID is passed down here, the
   // worst result would be that timezone would be set to Etc/Unknown.
-  base::string16 timezone_id;
+  std::u16string timezone_id;
   if (!iter.ReadString16(&timezone_id))
     return -1;
   icu::TimeZone::adoptDefault(icu::TimeZone::createTimeZone(

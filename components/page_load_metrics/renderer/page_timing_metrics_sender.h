@@ -53,6 +53,7 @@ class PageTimingMetricsSender {
   void DidObserveNewCssPropertyUsage(blink::mojom::CSSSampleId css_property,
                                      bool is_animated);
   void DidObserveLayoutShift(double score, bool after_input_or_scroll);
+  void DidObserveInputForLayoutShiftTracking(base::TimeTicks timestamp);
   void DidObserveLayoutNg(uint32_t all_block_count,
                           uint32_t ng_block_count,
                           uint32_t all_call_count,
@@ -73,7 +74,7 @@ class PageTimingMetricsSender {
                                       int request_id,
                                       int64_t encoded_body_length,
                                       const std::string& mime_type);
-  void OnMainFrameIntersectionChanged(const blink::WebRect& intersect_rect);
+  void OnMainFrameIntersectionChanged(const gfx::Rect& intersect_rect);
 
   void DidObserveInputDelay(base::TimeDelta input_delay);
   // Updates the timing information. Buffers |timing| to be sent over mojo
@@ -98,7 +99,7 @@ class PageTimingMetricsSender {
   base::OneShotTimer* timer() const { return timer_.get(); }
 
  private:
-  void EnsureSendTimer();
+  void EnsureSendTimer(bool urgent = false);
   void SendNow();
   void ClearNewFeatures();
 

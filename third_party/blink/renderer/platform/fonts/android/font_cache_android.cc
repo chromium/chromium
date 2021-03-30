@@ -30,6 +30,9 @@
 
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 
+#include "base/feature_list.h"
+
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_face_creation_params.h"
@@ -39,6 +42,10 @@
 #include "third_party/skia/include/core/SkTypeface.h"
 
 namespace blink {
+
+namespace {
+const char kNotoColorEmoji[] = "NotoColorEmoji";
+}
 
 static AtomicString DefaultFontFamily(sk_sp<SkFontMgr> font_manager) {
   // Pass nullptr to get the default typeface. The default typeface in Android
@@ -81,10 +88,60 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
     const SimpleFontData*,
     FontFallbackPriority fallback_priority) {
   sk_sp<SkFontMgr> fm(SkFontMgr::RefDefault());
+
   AtomicString family_name = GetFamilyNameForCharacter(
       fm.get(), c, font_description, fallback_priority);
+
+  // Return the GMS Core emoji font if FontFallbackPriority is kEmojiEmoji and
+  // a) no system fallback was found or b) the system fallback font's PostScript
+  // name is "Noto Color Emoji" - then we override the system one with the newer
+  // one from GMS core if we have it and if it has glyph coverage. This should
+  // improves coverage for sequences such as WOMAN FEEDING BABY, which would
+  // otherwise get broken down into multiple individual emoji from the
+  // potentially older firmware emoji font.  Don't override it if a fallback
+  // font for emoji was returned but its PS name is not NotoColorEmoji as we
+  // would otherwise always override an OEMs emoji font.
+
+  if (fallback_priority == FontFallbackPriority::kEmojiEmoji &&
+      base::FeatureList::IsEnabled(features::kGMSCoreEmoji)) {
+    auto skia_fallback_is_noto_color_emoji = [&]() {
+      FontPlatformData* skia_fallback_result = GetFontPlatformData(
+          font_description, FontFaceCreationParams(family_name));
+
+      // Determining the PostScript name is required as Skia on Android gives
+      // synthetic family names such as "91##fallback" to fallback fonts
+      // determined (Compare Skia's SkFontMgr_Android::addFamily). In order to
+      // identify if really the Emoji font was returned, compare by PostScript
+      // name rather than by family.
+      SkString fallback_postscript_name;
+      if (skia_fallback_result && skia_fallback_result->Typeface()) {
+        skia_fallback_result->Typeface()->getPostScriptName(
+            &fallback_postscript_name);
+      }
+      return fallback_postscript_name.equals(kNotoColorEmoji);
+    };
+
+    if (family_name.IsEmpty() || skia_fallback_is_noto_color_emoji()) {
+      FontPlatformData* emoji_gms_core_font = GetFontPlatformData(
+          font_description,
+          FontFaceCreationParams(AtomicString(kNotoColorEmojiCompat)));
+      if (emoji_gms_core_font) {
+        SkTypeface* probe_coverage_typeface = emoji_gms_core_font->Typeface();
+        if (probe_coverage_typeface &&
+            probe_coverage_typeface->unicharToGlyph(c)) {
+          return FontDataFromFontPlatformData(emoji_gms_core_font,
+                                              kDoNotRetain);
+        }
+      }
+    }
+  }
+
+  // Remaining case, if fallback priority is not emoij or the GMS core emoji
+  // font was not found or an OEM emoji font was not to be overridden.
+
   if (family_name.IsEmpty())
     return GetLastResortFallbackFont(font_description, kDoNotRetain);
+
   return FontDataFromFontPlatformData(
       GetFontPlatformData(font_description,
                           FontFaceCreationParams(family_name)),

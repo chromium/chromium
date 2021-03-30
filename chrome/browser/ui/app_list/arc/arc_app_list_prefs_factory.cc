@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
 
-#include "chrome/browser/chromeos/arc/arc_util.h"
+#include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"

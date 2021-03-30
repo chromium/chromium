@@ -23,6 +23,13 @@ const CGFloat kPreferredMaxWidth = 73;
 
 }  // namespace
 
+@interface NTPTileView ()
+// Hold onto the created interaction for pointer support so it can be removed
+// when the view goes away.
+@property(nonatomic, strong)
+    UIPointerInteraction* pointerInteraction API_AVAILABLE(ios(13.4));
+@end
+
 @implementation NTPTileView
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -69,14 +76,20 @@ const CGFloat kPreferredMaxWidth = 73;
 
     _imageBackgroundView = backgroundView;
 
-#ifdef __IPHONE_13_4
     if (@available(iOS 13.4, *)) {
-        [self addInteraction:[[UIPointerInteraction alloc]
-                                 initWithDelegate:self]];
+      _pointerInteraction =
+          [[UIPointerInteraction alloc] initWithDelegate:self];
+      [self addInteraction:self.pointerInteraction];
     }
-#endif
   }
   return self;
+}
+
+- (void)dealloc {
+  if (@available(iOS 13.4, *)) {
+    [self removeInteraction:self.pointerInteraction];
+    self.pointerInteraction = nil;
+  }
 }
 
 // Returns the font size for the location label.
@@ -99,8 +112,6 @@ const CGFloat kPreferredMaxWidth = 73;
 
 #pragma mark - UIPointerInteractionDelegate
 
-#ifdef __IPHONE_13_4
-
 - (UIPointerRegion*)pointerInteraction:(UIPointerInteraction*)interaction
                       regionForRequest:(UIPointerRegionRequest*)request
                          defaultRegion:(UIPointerRegion*)defaultRegion
@@ -111,6 +122,11 @@ const CGFloat kPreferredMaxWidth = 73;
 - (UIPointerStyle*)pointerInteraction:(UIPointerInteraction*)interaction
                        styleForRegion:(UIPointerRegion*)region
     API_AVAILABLE(ios(13.4)) {
+  // The preview APIs require the view to be in a window. Ensure they are before
+  // proceeding.
+  if (!self.window)
+    return nil;
+
   UITargetedPreview* preview =
       [[UITargetedPreview alloc] initWithView:_imageContainerView];
   UIPointerHighlightEffect* effect =
@@ -120,7 +136,5 @@ const CGFloat kPreferredMaxWidth = 73;
                               cornerRadius:8.0];
   return [UIPointerStyle styleWithEffect:effect shape:shape];
 }
-
-#endif
 
 @end

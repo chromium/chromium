@@ -728,22 +728,34 @@ TEST_F(TreeSynchronizerTest, RefreshPropertyTreesCachedData) {
   host_impl->ActivateSyncTree();
 
   // This arbitrarily set the animation scale for transform_layer and see if it
-  // is
-  // refreshed when pushing layer trees.
-  host_impl->active_tree()->property_trees()->SetAnimationScalesForTesting(
-      transform_layer->transform_tree_index(), 10.f, 10.f);
+  // is refreshed when pushing layer trees.
+  float maximum_animation_scale = 123.f;
+  bool animation_affected_by_invalid_scale = true;
+  host_impl->active_tree()
+      ->property_trees()
+      ->SetMaximumAnimationToScreenScaleForTesting(
+          transform_layer->transform_tree_index(), maximum_animation_scale,
+          animation_affected_by_invalid_scale);
   EXPECT_EQ(
-      CombinedAnimationScale(10.f, 10.f),
-      host_impl->active_tree()->property_trees()->GetAnimationScales(
-          transform_layer->transform_tree_index(), host_impl->active_tree()));
+      maximum_animation_scale,
+      host_impl->active_tree()->property_trees()->MaximumAnimationToScreenScale(
+          transform_layer->transform_tree_index()));
+  EXPECT_TRUE(host_impl->active_tree()
+                  ->property_trees()
+                  ->AnimationAffectedByInvalidScale(
+                      transform_layer->transform_tree_index()));
 
   host_impl->CreatePendingTree();
   host_->CommitAndCreatePendingTree();
   host_impl->ActivateSyncTree();
   EXPECT_EQ(
-      CombinedAnimationScale(kNotScaled, kNotScaled),
-      host_impl->active_tree()->property_trees()->GetAnimationScales(
-          transform_layer->transform_tree_index(), host_impl->active_tree()));
+      2.0f,
+      host_impl->active_tree()->property_trees()->MaximumAnimationToScreenScale(
+          transform_layer->transform_tree_index()));
+  EXPECT_FALSE(host_impl->active_tree()
+                   ->property_trees()
+                   ->AnimationAffectedByInvalidScale(
+                       transform_layer->transform_tree_index()));
 }
 
 TEST_F(TreeSynchronizerTest, RoundedScrollDeltasOnCommit) {

@@ -31,7 +31,7 @@ class FakeDeviceCloudPolicyInitializer : public DeviceCloudPolicyInitializer {
       chromeos::ActiveDirectoryJoinDelegate* ad_join_delegate,
       const EnrollmentConfig& enrollment_config,
       DMAuth auth,
-      const EnrollmentCallback& enrollment_callback) override;
+      EnrollmentCallback enrollment_callback) override;
 
   void StartEnrollment() override;
 

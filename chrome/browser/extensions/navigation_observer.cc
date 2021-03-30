@@ -26,7 +26,7 @@ bool g_repeat_prompting = false;
 
 NavigationObserver::NavigationObserver(Profile* profile) : profile_(profile) {
   RegisterForNotifications();
-  extension_registry_observer_.Add(ExtensionRegistry::Get(profile));
+  extension_registry_observation_.Observe(ExtensionRegistry::Get(profile));
 }
 
 NavigationObserver::~NavigationObserver() {}

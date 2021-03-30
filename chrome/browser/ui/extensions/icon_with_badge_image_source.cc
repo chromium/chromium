@@ -77,7 +77,7 @@ void IconWithBadgeImageSource::SetBadge(std::unique_ptr<Badge> badge) {
   ui::ResourceBundle* rb = &ui::ResourceBundle::GetSharedInstance();
   gfx::FontList base_font = rb->GetFontList(ui::ResourceBundle::BaseFont)
                                 .DeriveWithHeightUpperBound(kBadgeHeight);
-  base::string16 utf16_text = base::UTF8ToUTF16(badge_->text);
+  std::u16string utf16_text = base::UTF8ToUTF16(badge_->text);
 
   // See if we can squeeze a slightly larger font into the badge given the
   // actual string that is to be displayed.

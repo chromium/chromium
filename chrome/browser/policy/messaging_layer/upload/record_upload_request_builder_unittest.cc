@@ -18,12 +18,12 @@ using ::testing::Not;
 namespace reporting {
 namespace {
 
-constexpr uint64_t kGenerationId = 4321;
+constexpr int64_t kGenerationId = 4321;
 constexpr Priority kPriority = Priority::IMMEDIATE;
 
 // Default values for EncryptionInfo
 constexpr char kEncryptionKey[] = "abcdef";
-constexpr uint64_t kPublicKeyId = 9876;
+constexpr int64_t kPublicKeyId = 9876;
 
 class RecordUploadRequestBuilderTest : public ::testing::TestWithParam<bool> {
  public:
@@ -48,8 +48,8 @@ class RecordUploadRequestBuilderTest : public ::testing::TestWithParam<bool> {
     return record;
   }
 
-  static uint64_t GetNextSequencingId() {
-    static uint64_t sequencing_id = 0;
+  static int64_t GetNextSequencingId() {
+    static int64_t sequencing_id = 0;
     return sequencing_id++;
   }
 
@@ -57,8 +57,6 @@ class RecordUploadRequestBuilderTest : public ::testing::TestWithParam<bool> {
 };
 
 TEST_P(RecordUploadRequestBuilderTest, AcceptEncryptedRecordsList) {
-  const std::vector<std::string> kEncryptedWrappedRecords{
-      "T", "E", "S", "T", "_", "I", "N", "F", "O"};
   static constexpr size_t kNumRecords = 10;
 
   std::vector<EncryptedRecord> records;
@@ -94,8 +92,6 @@ TEST_P(RecordUploadRequestBuilderTest, AcceptEncryptedRecordsList) {
 }
 
 TEST_P(RecordUploadRequestBuilderTest, BreakListOnSingleBadRecord) {
-  const std::vector<std::string> kEncryptedWrappedRecords{
-      "T", "E", "S", "T", "_", "I", "N", "F", "O"};
   static constexpr size_t kNumRecords = 10;
 
   std::vector<EncryptedRecord> records;

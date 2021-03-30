@@ -15,6 +15,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/memory_usage_estimator.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "url/url_canon_stdstring.h"
 #include "url/url_util.h"
 
@@ -67,8 +68,8 @@ GURL::GURL(std::string canonical_spec, const url::Parsed& parsed, bool is_valid)
   InitializeFromCanonicalSpec();
 }
 
-template<typename STR>
-void GURL::InitCanonical(base::BasicStringPiece<STR> input_spec,
+template <typename CharT>
+void GURL::InitCanonical(base::BasicStringPiece<CharT> input_spec,
                          bool trim_path_end) {
   url::StdStringCanonOutput output(&spec_);
   is_valid_ = url::Canonicalize(
@@ -247,7 +248,7 @@ GURL GURL::ReplaceComponents(
 
 // Note: code duplicated above (it's inconvenient to use a template here).
 GURL GURL::ReplaceComponents(
-    const url::Replacements<base::char16>& replacements) const {
+    const url::Replacements<char16_t>& replacements) const {
   GURL result;
 
   // Not allowed for invalid URLs.
@@ -485,21 +486,31 @@ bool GURL::IsAboutUrl(base::StringPiece allowed_path) const {
   if (has_host() || has_username() || has_password() || has_port())
     return false;
 
-  if (!base::StartsWith(path_piece(), allowed_path))
+  return IsAboutPath(path_piece(), allowed_path);
+}
+
+// static
+bool GURL::IsAboutPath(base::StringPiece actual_path,
+                       base::StringPiece allowed_path) {
+  if (!base::StartsWith(actual_path, allowed_path))
     return false;
 
-  if (path_piece().size() == allowed_path.size()) {
-    DCHECK_EQ(path_piece(), allowed_path);
+  if (actual_path.size() == allowed_path.size()) {
+    DCHECK_EQ(actual_path, allowed_path);
     return true;
   }
 
-  if ((path_piece().size() == allowed_path.size() + 1) &&
-      path_piece().back() == '/') {
-    DCHECK_EQ(path_piece(), allowed_path.as_string() + '/');
+  if ((actual_path.size() == allowed_path.size() + 1) &&
+      actual_path.back() == '/') {
+    DCHECK_EQ(actual_path, allowed_path.as_string() + '/');
     return true;
   }
 
   return false;
+}
+
+void GURL::WriteIntoTracedValue(perfetto::TracedValue context) const {
+  std::move(context).WriteString(possibly_invalid_spec());
 }
 
 std::ostream& operator<<(std::ostream& out, const GURL& url) {

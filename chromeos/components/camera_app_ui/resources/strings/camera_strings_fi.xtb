@@ -15,6 +15,7 @@
 <translation id="2036868001356139588">Ajastimen kesto</translation>
 <translation id="2050339315714019657">Pystysuunta</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> on aktiivinen.</translation>
+<translation id="2144806332417375165">Omat videoparametrit</translation>
 <translation id="229579744168541441">Vie paikalliselle levylle</translation>
 <translation id="2501278716633472235">Takaisin</translation>
 <translation id="2501853267655415902">Tallennus lopetettu</translation>
@@ -33,7 +34,6 @@
 <translation id="3259149966178251584">Kameran resoluutio</translation>
 <translation id="3517926952904427380">Muotokuvan ottaminen epäonnistui</translation>
 <translation id="3569311554794739032">Haluatko varmasti, että <ph name="FILE" /> poistetaan?</translation>
-<translation id="3750315947605636967">Toinen sovellus käyttää kameraasi</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Skannaa viivakoodi</translation>
 <translation id="3892148308691398805">Kopioi teksti</translation>
@@ -76,10 +76,12 @@ Jos palautteesi koskee kuvan tai videon laatua, liitä mukaan esimerkkikuva tai 
 <translation id="7337660886763914220">Tiedostojärjestelmän virheitä</translation>
 <translation id="7450541714075000668">Teksti kopioitu</translation>
 <translation id="7557677699350329807">Vaihda seuraavaan kameraan</translation>
+<translation id="7607002721634913082">Keskeytetty</translation>
 <translation id="7608223098072244877">4x4</translation>
 <translation id="7649070708921625228">Ohje</translation>
 <translation id="7658239707568436148">Peruuta</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7974782136796202581">Näytä panorointi-, kallistus- ja zoomausvalinnat</translation>
 <translation id="7983668134180549431">Tekstiä havaittu.</translation>
 <translation id="8067883171444229417">Toista video</translation>
 <translation id="8131740175452115882">Vahvista</translation>

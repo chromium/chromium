@@ -1,99 +1,222 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# -*- coding: utf-8 -*-
+# Copyright 2021 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import os
-import sys
+"""Model of a structured metrics description xml file.
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
-import models
+This marshals an XML string into a Model, and validates that the XML is
+semantically correct. The model can also be used to create a canonically
+formatted version XML.
+"""
 
-# Helpers
+import xml.etree.ElementTree as ET
+import textwrap as tw
+import model_util as util
 
-# A key for sorting XML nodes by the value of |attribute|.
-_LOWERCASE_FN = lambda attribute: (lambda node: node.get(attribute).lower())
-# A constant function as the sorting key for nodes whose orderings should be
-# kept as given in the XML file within their parent node.
-_KEEP_ORDER = lambda node: 1
 
-# Model definitions
+def wrap(text, indent):
+  wrapper = tw.TextWrapper(width=80,
+                           initial_indent=indent,
+                           subsequent_indent=indent)
+  return wrapper.fill(tw.dedent(text))
 
-_OBSOLETE_TYPE = models.TextNodeType('obsolete')
-_OWNER_TYPE = models.TextNodeType('owner', single_line=True)
-_ID_TYPE = models.TextNodeType('id', single_line=True)
-_SUMMARY_TYPE = models.TextNodeType('summary')
 
-_METRIC_TYPE =  models.ObjectNodeType(
-    'metric',
-    attributes=[
-      ('name', unicode, r'^[A-Za-z0-9_.]+$'),
-      ('kind', unicode, r'^(?i)(|hashed-string|int)$'),
-    ],
-    alphabetization=[
-        (_OBSOLETE_TYPE.tag, lambda _: 1),
-        (_SUMMARY_TYPE.tag, lambda _: 2),
-    ],
-    children=[
-        models.ChildType(_OBSOLETE_TYPE.tag, _OBSOLETE_TYPE, multiple=False),
-        models.ChildType(_OWNER_TYPE.tag, _OWNER_TYPE, multiple=True),
-        models.ChildType(_SUMMARY_TYPE.tag, _SUMMARY_TYPE, multiple=False),
-    ])
+# TODO(crbug.com/1148168): This can be removed and replaced with textwrap.indent
+# once this is run under python3.
+def indent(text, prefix):
+  return '\n'.join(prefix + line if line else '' for line in text.split('\n'))
 
-_EVENT_TYPE = models.ObjectNodeType('event',
-    attributes=[('name', unicode, r'^[A-Z][A-Za-z0-9.]*$'),],
-    alphabetization=[
-        (_OBSOLETE_TYPE.tag, lambda _: 1),
-        (_OWNER_TYPE.tag, lambda _: 2),
-        (_SUMMARY_TYPE.tag, lambda _: 3),
-        (_METRIC_TYPE.tag,
-         _LOWERCASE_FN('name')),
-    ],
-    extra_newlines=(1, 1, 1),
-    children=[
-        models.ChildType(_OBSOLETE_TYPE.tag, _OBSOLETE_TYPE, multiple=False),
-        models.ChildType(_OWNER_TYPE.tag, _OWNER_TYPE, multiple=True),
-        models.ChildType(_SUMMARY_TYPE.tag, _SUMMARY_TYPE, multiple=False),
-        models.ChildType(_METRIC_TYPE.tag, _METRIC_TYPE, multiple=True),
-    ])
 
-_PROJECT_TYPE = models.ObjectNodeType('project',
-    attributes=[
-        ('name', unicode, r'^[A-Z][A-Za-z0-9.]*$'),
-    ],
-    alphabetization=[
-        (_OBSOLETE_TYPE.tag, lambda _: 1),
-        (_OWNER_TYPE.tag, lambda _: 2),
-        (_ID_TYPE.tag, lambda _: 3),
-        (_SUMMARY_TYPE.tag, lambda _: 4),
-    ],
-    extra_newlines=(1, 1, 1),
-    children=[
-        models.ChildType(_OBSOLETE_TYPE.tag, _OBSOLETE_TYPE, multiple=False),
-        models.ChildType(_OWNER_TYPE.tag, _OWNER_TYPE, multiple=True),
-        models.ChildType(_ID_TYPE.tag, _ID_TYPE, multiple=False),
-        models.ChildType(_SUMMARY_TYPE.tag, _SUMMARY_TYPE, multiple=False),
-        models.ChildType(_EVENT_TYPE.tag, _EVENT_TYPE, multiple=True),
-    ])
+class Model:
+  """Represents all projects in the structured.xml file.
 
-CONFIGURATION_TYPE = models.ObjectNodeType(
-    'structured-metrics',
-    alphabetization=[(_PROJECT_TYPE.tag, _LOWERCASE_FN('name'))],
-    extra_newlines=(2, 1, 1),
-    indent=False,
-    children=[
-        models.ChildType(_PROJECT_TYPE.tag, _PROJECT_TYPE, multiple=True),
-    ])
+  A Model is initialized with an XML string representing the top-level of
+  the structured.xml file. This file is built from three building blocks:
+  metrics, events, and projects. These have the following attributes.
 
-XML_TYPE = models.DocumentType(CONFIGURATION_TYPE)
+    METRIC
+    - summary
+    - data type
 
-def PrettifyXML(original_xml):
-  """Parses the original xml and return a pretty printed version.
+    EVENT
+    - summary
+    - one or more metrics
 
-  Args:
-    original_xml: A string containing the original xml file contents.
+    PROJECT
+    - summary
+    - id specifier
+    - one or more owners
+    - one or more events
 
-  Returns:
-    A pretty-printed xml string, or None if the config contains errors.
+  The following is an example input XML.
+
+    <structured-metrics>
+    <project name="MyProject">
+      <owner>owner@chromium.org</owner>
+      <id>none</id>
+      <summary> My project. </summary>
+
+      <event name="MyEvent">
+        <summary> My event. </summary>
+        <metric name="MyMetric" type="int">
+          <summary> My metric. </summary>
+        </metric>
+      </event>
+    </project>
+    </structured-metrics>
+
+  Calling str(model) will return a canonically formatted XML string.
   """
-  config = XML_TYPE.Parse(original_xml)
-  return XML_TYPE.PrettyPrint(config)
+
+  OWNER_REGEX = r'^.+@(chromium\.org|google\.com)$'
+  NAME_REGEX = r'^[A-Za-z0-9_.]+$'
+  TYPE_REGEX = r'^(hmac-string|int)$'
+  ID_REGEX = r'^(none|per-project|uma)$'
+
+  def __init__(self, xml_string):
+    elem = ET.fromstring(xml_string)
+    util.check_attributes(elem, set())
+    util.check_children(elem, {'project'})
+    util.check_child_names_unique(elem, 'project')
+
+    projects = util.get_compound_children(elem, 'project')
+    self.projects = [Project(p) for p in projects]
+
+  def __repr__(self):
+    projects = '\n\n'.join(str(p) for p in self.projects)
+
+    result = tw.dedent("""\
+               <structured-metrics>
+
+               {projects}
+
+               </structured-metrics>""")
+    return result.format(projects=projects)
+
+
+class Project:
+  """Represents a single structured metrics project.
+
+  A Project is initialized with an XML node representing one project, eg:
+
+    <project name="MyProject">
+      <owner>owner@chromium.org</owner>
+      <id>none</id>
+      <summary> My project. </summary>
+
+      <event name="MyEvent">
+        <summary> My event. </summary>
+        <metric name="MyMetric" type="int">
+          <summary> My metric. </summary>
+        </metric>
+      </event>
+    </project>
+
+  Calling str(project) will return a canonically formatted XML string.
+  """
+
+  def __init__(self, elem):
+    util.check_attributes(elem, {'name'})
+    util.check_children(elem, {'id', 'summary', 'owner', 'event'})
+    util.check_child_names_unique(elem, 'event')
+
+    self.name = util.get_attr(elem, 'name', Model.NAME_REGEX)
+    self.id = util.get_text_child(elem, 'id', Model.ID_REGEX)
+    self.summary = util.get_text_child(elem, 'summary')
+    self.owners = util.get_text_children(elem, 'owner', Model.OWNER_REGEX)
+
+    self.events = [Event(e) for e in util.get_compound_children(elem, 'event')]
+
+  def __repr__(self):
+    events = '\n\n'.join(str(e) for e in self.events)
+    events = indent(events, '  ')
+    summary = wrap(self.summary, indent='    ')
+    owners = '\n'.join('  <owner>{}</owner>'.format(o) for o in self.owners)
+
+    result = tw.dedent("""\
+               <project name="{name}">
+               {owners}
+                 <id>{id}</id>
+                 <summary>
+               {summary}
+                 </summary>
+
+               {events}
+               </project>""")
+    return result.format(name=self.name,
+                         owners=owners,
+                         id=self.id,
+                         summary=summary,
+                         events=events)
+
+
+class Event:
+  """Represents a single structured metrics event.
+
+  An Event is initialized with an XML node representing one event, eg:
+
+    <event name="MyEvent">
+      <summary> My event. </summary>
+      <metric name="MyMetric" type="int">
+        <summary> My metric. </summary>
+      </metric>
+    </event>
+
+  Calling str(event) will return a canonically formatted XML string.
+  """
+
+  def __init__(self, elem):
+    util.check_attributes(elem, {'name'})
+    util.check_children(elem, {'summary', 'metric'})
+    util.check_child_names_unique(elem, 'metric')
+
+    self.name = util.get_attr(elem, 'name', Model.NAME_REGEX)
+    self.summary = util.get_text_child(elem, 'summary')
+    self.metrics = [
+        Metric(m) for m in util.get_compound_children(elem, 'metric')
+    ]
+
+  def __repr__(self):
+    metrics = '\n'.join(str(m) for m in self.metrics)
+    metrics = indent(metrics, '  ')
+    summary = wrap(self.summary, indent='    ')
+    result = tw.dedent("""\
+               <event name="{name}">
+                 <summary>
+               {summary}
+                 </summary>
+               {metrics}
+               </event>""")
+    return result.format(name=self.name, summary=summary, metrics=metrics)
+
+
+class Metric:
+  """Represents a single metric.
+
+  A Metric is initialized with an XML node representing one metric, eg:
+
+    <metric name="MyMetric" type="int">
+      <summary> My metric. </summary>
+    </metric>
+
+  Calling str(metric) will return a canonically formatted XML string.
+  """
+
+  def __init__(self, elem):
+    util.check_attributes(elem, {'name', 'type'})
+    util.check_children(elem, {'summary'})
+
+    self.name = util.get_attr(elem, 'name', Model.NAME_REGEX)
+    self.type = util.get_attr(elem, 'type', Model.TYPE_REGEX)
+    self.summary = util.get_text_child(elem, 'summary')
+
+  def __repr__(self):
+    summary = wrap(self.summary, indent='    ')
+    result = tw.dedent("""\
+               <metric name="{name}" type="{type}">
+                 <summary>
+               {summary}
+                 </summary>
+               </metric>""")
+    return result.format(name=self.name, type=self.type, summary=summary)

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_APPS_SECTION_H_
 
 #include "base/values.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_section.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -27,7 +28,8 @@ class AppsSection : public OsSettingsSection, public ArcAppListPrefs::Observer {
   AppsSection(Profile* profile,
               SearchTagRegistry* search_tag_registry,
               PrefService* pref_service,
-              ArcAppListPrefs* arc_app_list_prefs);
+              ArcAppListPrefs* arc_app_list_prefs,
+              apps::AppServiceProxy* app_service_proxy);
   ~AppsSection() override;
 
  private:
@@ -52,6 +54,7 @@ class AppsSection : public OsSettingsSection, public ArcAppListPrefs::Observer {
 
   PrefService* pref_service_;
   ArcAppListPrefs* arc_app_list_prefs_;
+  apps::AppServiceProxy* app_service_proxy_;
   PrefChangeRegistrar pref_change_registrar_;
 };
 

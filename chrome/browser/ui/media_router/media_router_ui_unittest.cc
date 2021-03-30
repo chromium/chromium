@@ -92,7 +92,7 @@ class MockMediaRouterFileDialog : public MediaRouterFileDialog {
   ~MockMediaRouterFileDialog() override {}
 
   MOCK_METHOD0(GetLastSelectedFileUrl, GURL());
-  MOCK_METHOD0(GetLastSelectedFileName, base::string16());
+  MOCK_METHOD0(GetLastSelectedFileName, std::u16string());
   MOCK_METHOD1(OpenFileDialog, void(Browser* browser));
 };
 
@@ -240,10 +240,10 @@ class MediaRouterViewsUITest : public ChromeRenderViewHostTestHarness {
         std::make_unique<PresentationRequestCallbacks>(expected_error);
     start_presentation_context_ = std::make_unique<StartPresentationContext>(
         presentation_request_,
-        base::Bind(&PresentationRequestCallbacks::Success,
-                   base::Unretained(request_callbacks.get())),
-        base::Bind(&PresentationRequestCallbacks::Error,
-                   base::Unretained(request_callbacks.get())));
+        base::BindOnce(&PresentationRequestCallbacks::Success,
+                       base::Unretained(request_callbacks.get())),
+        base::BindOnce(&PresentationRequestCallbacks::Error,
+                       base::Unretained(request_callbacks.get())));
     StartPresentationContext* context_ptr = start_presentation_context_.get();
     ui_->set_start_presentation_context_for_test(
         std::move(start_presentation_context_));
@@ -534,7 +534,7 @@ TEST_F(MediaRouterViewsUITest, RouteCreationTimeoutForPresentation) {
   StartCastingAndExpectTimeout(
       MediaCastMode::PRESENTATION,
       l10n_util::GetStringFUTF8(IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT,
-                                base::UTF8ToUTF16("frameurl.fakeurl")),
+                                u"frameurl.fakeurl"),
       20);
 }
 

@@ -42,7 +42,7 @@ class FullCardRequestResultDelegateBridge
   void OnFullCardRequestSucceeded(
       const autofill::payments::FullCardRequest& full_card_request,
       const autofill::CreditCard& card,
-      const base::string16& cvc) override;
+      const std::u16string& cvc) override;
   void OnFullCardRequestFailed(
       autofill::payments::FullCardRequest::FailureType failure_type) override;
 

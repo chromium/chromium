@@ -532,13 +532,13 @@ TEST_P(RunLoopTest, NestingObservers) {
   RunLoop::RemoveNestingObserverOnCurrentThread(&nesting_observer);
 }
 
-TEST_P(RunLoopTest, DisallowRunningForTesting) {
-  RunLoop::ScopedDisallowRunningForTesting disallow_running;
+TEST_P(RunLoopTest, DisallowRunning) {
+  RunLoop::ScopedDisallowRunning disallow_running;
   EXPECT_DCHECK_DEATH({ run_loop_.RunUntilIdle(); });
 }
 
-TEST_P(RunLoopTest, ExpiredDisallowRunningForTesting) {
-  { RunLoop::ScopedDisallowRunningForTesting disallow_running; }
+TEST_P(RunLoopTest, ExpiredDisallowRunning) {
+  { RunLoop::ScopedDisallowRunning disallow_running; }
   // Running should be fine after |disallow_running| goes out of scope.
   run_loop_.RunUntilIdle();
 }

@@ -62,7 +62,7 @@ class SpellCheckHostChromeImplWinBrowserTest : public InProcessBrowserTest {
   }
 
   void OnSuggestionResult(
-      const std::vector<std::vector<::base::string16>>& suggestions) {
+      const std::vector<std::vector<::std::u16string>>& suggestions) {
     received_result_ = true;
     suggestion_result_ = suggestions;
     if (quit_)
@@ -87,7 +87,6 @@ class SpellCheckHostChromeImplWinBrowserTest : public InProcessBrowserTest {
   }
 
   void RunSpellCheckReturnMessageTest();
-  void RunGetPerLanguageSuggestionsTest();
 
  protected:
   PlatformSpellChecker* platform_spell_checker_;
@@ -97,7 +96,7 @@ class SpellCheckHostChromeImplWinBrowserTest : public InProcessBrowserTest {
 
   bool received_result_ = false;
   std::vector<SpellCheckResult> result_;
-  std::vector<std::vector<::base::string16>> suggestion_result_;
+  std::vector<std::vector<::std::u16string>> suggestion_result_;
   base::OnceClosure quit_;
 };
 
@@ -120,7 +119,7 @@ void SpellCheckHostChromeImplWinBrowserTest::RunSpellCheckReturnMessageTest() {
   RunUntilResultReceived();
 
   spell_check_host_->RequestTextCheck(
-      base::UTF8ToUTF16("zz."),
+      u"zz.",
       /*route_id=*/123,
       base::BindOnce(
           &SpellCheckHostChromeImplWinBrowserTest::OnSpellcheckResult,
@@ -131,36 +130,6 @@ void SpellCheckHostChromeImplWinBrowserTest::RunSpellCheckReturnMessageTest() {
   EXPECT_EQ(result_[0].location, 0);
   EXPECT_EQ(result_[0].length, 2);
   EXPECT_EQ(result_[0].decoration, SpellCheckResult::SPELLING);
-}
-
-IN_PROC_BROWSER_TEST_F(SpellCheckHostChromeImplWinBrowserTest,
-                       GetPerLanguageSuggestions) {
-  RunGetPerLanguageSuggestionsTest();
-}
-
-void SpellCheckHostChromeImplWinBrowserTest::
-    RunGetPerLanguageSuggestionsTest() {
-  if (!spellcheck::WindowsVersionSupportsSpellchecker()) {
-    return;
-  }
-
-  spellcheck_platform::SetLanguage(
-      platform_spell_checker_, "en-US",
-      base::BindOnce(&SpellCheckHostChromeImplWinBrowserTest::
-                         SetLanguageCompletionCallback,
-                     base::Unretained(this)));
-  RunUntilResultReceived();
-
-  spell_check_host_->GetPerLanguageSuggestions(
-      base::UTF8ToUTF16("tihs"),
-      base::BindOnce(
-          &SpellCheckHostChromeImplWinBrowserTest::OnSuggestionResult,
-          base::Unretained(this)));
-  RunUntilResultReceived();
-
-  // Should have 1 vector of results, which should contain at least 1 suggestion
-  ASSERT_EQ(1U, suggestion_result_.size());
-  EXPECT_GT(suggestion_result_[0].size(), 0U);
 }
 
 class SpellCheckHostChromeImplWinBrowserTestDelayInit
@@ -201,9 +170,4 @@ class SpellCheckHostChromeImplWinBrowserTestDelayInit
 IN_PROC_BROWSER_TEST_F(SpellCheckHostChromeImplWinBrowserTestDelayInit,
                        SpellCheckReturnMessage) {
   RunSpellCheckReturnMessageTest();
-}
-
-IN_PROC_BROWSER_TEST_F(SpellCheckHostChromeImplWinBrowserTestDelayInit,
-                       GetPerLanguageSuggestions) {
-  RunGetPerLanguageSuggestionsTest();
 }

@@ -39,6 +39,7 @@ enum NotificationType {
   // before we actually try to navigate. The source will be the
   // NavigationController that owns the pending entry, and the details
   // will be a NavigationEntry.
+  // TODO(https://crbug.com/1174759): Remove.
   NOTIFICATION_NAV_ENTRY_PENDING,
 
   // A new non-pending navigation entry has been created. This will
@@ -48,6 +49,7 @@ enum NotificationType {
   // The source will be the navigation controller doing the commit. The
   // details will be NavigationController::LoadCommittedDetails.
   // DEPRECATED: Use WebContentsObserver::NavigationEntryCommitted()
+  // TODO(https://crbug.com/1174760): Remove.
   NOTIFICATION_NAV_ENTRY_COMMITTED,
 
   // Other load-related (not from NavigationController) ----------------------
@@ -55,12 +57,14 @@ enum NotificationType {
   // Corresponds to ViewHostMsg_DocumentOnLoadCompletedInMainFrame. The source
   // is the WebContents.
   // DEPRECATED: Use WebContentsObserver::DocumentOnLoadCompletedInMainFrame()
+  // TODO(https://crbug.com/1174761): Remove.
   NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
 
   // A content load is starting.  The source will be a
   // Source<NavigationController> corresponding to the tab in which the load
   // is occurring.  No details are expected for this notification.
   // DEPRECATED: Use WebContentsObserver::DidStartLoading()
+  // TODO(https://crbug.com/1174762): Remove.
   NOTIFICATION_LOAD_START,
 
   // A content load has stopped. The source will be a
@@ -68,41 +72,22 @@ enum NotificationType {
   // is occurring.  Details in the form of a LoadNotificationDetails object
   // are optional.
   // DEPRECATED: Use WebContentsObserver::DidStopLoading()
+  // TODO(https://crbug.com/1174764): Remove.
   NOTIFICATION_LOAD_STOP,
 
   // WebContents ---------------------------------------------------------------
-
-  // This message is sent after a WebContents is disconnected from the
-  // renderer process.  The source is a Source<WebContents> with a pointer to
-  // the WebContents (the pointer is usable).  No details are expected.
-  // DEPRECATED: This is fired in two situations: when the render process
-  // crashes, in which case use WebContentsObserver::RenderProcessGone, and when
-  // the WebContents is being torn down, in which case use
-  // WebContentsObserver::WebContentsDestroyed()
-  NOTIFICATION_WEB_CONTENTS_DISCONNECTED,
-
-  // This notification is sent when a WebContents is being destroyed. Any
-  // object holding a reference to a WebContents can listen to that
-  // notification to properly reset the reference. The source is a
-  // Source<WebContents>.
-  // DEPRECATED: Use WebContentsObserver::WebContentsDestroyed()
-  NOTIFICATION_WEB_CONTENTS_DESTROYED,
-
-  // A RenderViewHost was created for a WebContents. The source is the
-  // associated WebContents, and the details is the RenderViewHost
-  // pointer.
-  // DEPRECATED: Use WebContentsObserver::RenderViewCreated()
-  NOTIFICATION_WEB_CONTENTS_RENDER_VIEW_HOST_CREATED,
 
   // Indicates that a RenderProcessHost was created and its handle is now
   // available. The source will be the RenderProcessHost that corresponds to
   // the process.
   // DEPRECATED: Use RenderProcessHostObserver::RenderProcessReady()
+  // TODO(https://crbug.com/357627): Remove.
   NOTIFICATION_RENDERER_PROCESS_CREATED,
 
   // Indicates that a RenderProcessHost is destructing. The source will be the
   // RenderProcessHost that corresponds to the process.
   // DEPRECATED: Use RenderProcessHostObserver::RenderProcessHostDestroyed()
+  // TODO(https://crbug.com/357627): Remove.
   NOTIFICATION_RENDERER_PROCESS_TERMINATED,
 
   // Indicates that a render process was closed (meaning it exited, but the
@@ -110,22 +95,14 @@ enum NotificationType {
   // RenderProcessHost.  The details will be a ChildProcessTerminationInfo
   // struct. This may get sent along with RENDERER_PROCESS_TERMINATED.
   // DEPRECATED: Use RenderProcessHostObserver::RenderProcessExited()
+  // TODO(https://crbug.com/357627): Remove.
   NOTIFICATION_RENDERER_PROCESS_CLOSED,
 
   // Indicates that a RenderWidgetHost has become unresponsive for a period of
   // time. The source will be the RenderWidgetHost that corresponds to the
   // hung view, and no details are expected.
+  // TODO(https://crbug.com/1174769): Remove.
   NOTIFICATION_RENDER_WIDGET_HOST_HANG,
-
-  // This is sent when a RenderWidgetHost is being destroyed. The source is
-  // the RenderWidgetHost, the details are not used.
-  // DEPRECATED: Use RenderWidgetHostObserver::RenderWidgetHostDestroyed()
-  NOTIFICATION_RENDER_WIDGET_HOST_DESTROYED,
-
-  // Sent after the renderer has updated visual properties on the main thread
-  // and committed the change on the compositor thread. The source is the
-  // RenderWidgetHost, the details are not used.
-  NOTIFICATION_RENDER_WIDGET_HOST_DID_UPDATE_VISUAL_PROPERTIES,
 
   // Indicates a RenderWidgetHost has been hidden or restored. The source is
   // the RWH whose visibility changed, the details is a bool set to true if
@@ -133,16 +110,19 @@ enum NotificationType {
   //
   // DEPRECATED:
   // Use RenderWidgetHostObserver::RenderWidgetHostVisibilityChanged()
+  // TODO(https://crbug.com/1174771): Remove.
   NOTIFICATION_RENDER_WIDGET_VISIBILITY_CHANGED,
 
   // The focused element inside a page has changed.  The source is the
   // RenderViewHost. The details is a Details<const bool> that indicates whether
   // or not an editable node was focused.
+  // TODO(https://crbug.com/1174772): Remove.
   NOTIFICATION_FOCUS_CHANGED_IN_PAGE,
 
   // Notification from WebContents that we have received a response from the
   // renderer in response to a dom automation controller action. The source is
   // the RenderViewHost, and the details is a string with the response.
+  // TODO(https://crbug.com/1174774): Remove.
   NOTIFICATION_DOM_OPERATION_RESPONSE,
 
   // Custom notifications used by the embedder should start from here.

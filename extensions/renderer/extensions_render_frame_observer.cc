@@ -38,16 +38,16 @@ const char kStackFrameDelimiter[] = "\n    at ";
 //    the given line number and source.
 // |message| will be populated with the error message only (i.e., will not
 // include any stack trace).
-StackTrace GetStackTraceFromMessage(base::string16* message,
-                                    const base::string16& source,
-                                    const base::string16& stack_trace,
+StackTrace GetStackTraceFromMessage(std::u16string* message,
+                                    const std::u16string& source,
+                                    const std::u16string& stack_trace,
                                     int32_t line_number) {
   StackTrace result;
-  std::vector<base::string16> pieces;
+  std::vector<std::u16string> pieces;
   size_t index = 0;
 
   if (message->find(base::UTF8ToUTF16(kStackFrameDelimiter)) !=
-          base::string16::npos) {
+      std::u16string::npos) {
     pieces = base::SplitStringUsingSubstr(
         *message, base::UTF8ToUTF16(kStackFrameDelimiter),
         base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
@@ -70,11 +70,10 @@ StackTrace GetStackTraceFromMessage(base::string16* message,
   }
 
   if (result.empty()) {  // If we don't have a stack trace, mock one up.
-    result.push_back(
-        StackFrame(line_number,
-                   1u,  // column number
-                   source,
-                   base::string16() /* no function name */ ));
+    result.push_back(StackFrame(line_number,
+                                1u,  // column number
+                                source,
+                                std::u16string() /* no function name */));
   }
 
   return result;
@@ -115,9 +114,9 @@ void ExtensionsRenderFrameObserver::SetVisuallyDeemphasized(bool deemphasized) {
 }
 
 void ExtensionsRenderFrameObserver::DetailedConsoleMessageAdded(
-    const base::string16& message,
-    const base::string16& source,
-    const base::string16& stack_trace_string,
+    const std::u16string& message,
+    const std::u16string& source,
+    const std::u16string& stack_trace_string,
     uint32_t line_number,
     int32_t severity_level) {
   if (severity_level <
@@ -126,7 +125,7 @@ void ExtensionsRenderFrameObserver::DetailedConsoleMessageAdded(
     return;
   }
 
-  base::string16 trimmed_message = message;
+  std::u16string trimmed_message = message;
   StackTrace stack_trace = GetStackTraceFromMessage(
       &trimmed_message,
       source,

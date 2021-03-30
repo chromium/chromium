@@ -15,7 +15,6 @@ class GURL;
 namespace web {
 class NavigationItem;
 class WebState;
-class BrowserState;
 }
 
 // Manages using the current device location for omnibox search queries.
@@ -26,24 +25,10 @@ class BrowserState;
 
 // Triggers the iOS system prompt to authorize the use of location, if the
 // authorization is not yet determined.
-// |newUser| specifies whether this is a new user or an existing user
-- (void)triggerSystemPromptForNewUser:(BOOL)newUser;
+- (void)triggerSystemPrompt;
 
 // Notifies the receiver that the location bar became the first responder.
 - (void)locationBarDidBecomeFirstResponder:(ChromeBrowserState*)browserState;
-
-// Notifies the receiver that the location bar stopped being the first
-// responder.
-- (void)locationBarDidResignFirstResponder:(ChromeBrowserState*)browserState;
-
-// Notifies the receiver that the user submitted a URL via the location bar.
-- (void)locationBarDidSubmitURL;
-
-// Adds the current device location to |item| if |item| represents an Omnibox
-// query that's eligible for location. Returns |YES| if the current device
-// location was added to |item|; returns |NO| otherwise.
-- (BOOL)addLocationToNavigationItem:(web::NavigationItem*)item
-                       browserState:(web::BrowserState*)browserState;
 
 // Notifies the receiver that the browser finished loading the page for
 // |webState|. |loadSuccess| whether the web state loaded successfully.

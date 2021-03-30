@@ -18,6 +18,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/task_runner_util.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -159,7 +160,7 @@ void BluetoothSocketBlueZ::Listen(
                   std::move(success_callback), std::move(error_callback));
 }
 
-void BluetoothSocketBlueZ::Close() {
+void BluetoothSocketBlueZ::Disconnect(base::OnceClosure callback) {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
 
   if (profile_)
@@ -175,24 +176,21 @@ void BluetoothSocketBlueZ::Close() {
   }
 
   if (!device_path_.value().empty()) {
-    BluetoothSocketNet::Close();
-  } else {
-    DoCloseListening();
-  }
-}
-
-void BluetoothSocketBlueZ::Disconnect(base::OnceClosure callback) {
-  DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
-
-  if (profile_)
-    UnregisterProfile();
-
-  if (!device_path_.value().empty()) {
     BluetoothSocketNet::Disconnect(std::move(callback));
-  } else {
-    DoCloseListening();
-    std::move(callback).Run();
+    return;
   }
+
+  if (accept_request_) {
+    std::move(accept_request_->error_callback)
+        .Run(net::ErrorToString(net::ERR_CONNECTION_CLOSED));
+    accept_request_.reset(nullptr);
+  }
+
+  while (connection_request_queue_.size() > 0) {
+    std::move(connection_request_queue_.front()->callback).Run(REJECTED);
+    connection_request_queue_.pop();
+  }
+  std::move(callback).Run();
 }
 
 void BluetoothSocketBlueZ::Accept(AcceptCompletionCallback success_callback,
@@ -241,14 +239,15 @@ void BluetoothSocketBlueZ::RegisterProfile(
   DVLOG(1) << uuid_.canonical_value() << " on " << device_path_.value()
            << ": Acquiring profile.";
 
-  auto copyable_error_callback =
-      base::AdaptCallbackForRepeating(std::move(error_callback));
+  auto split_error_callback =
+      base::SplitOnceCallback(std::move(error_callback));
   adapter->UseProfile(
       uuid_, device_path_, *options_, this,
       base::BindOnce(&BluetoothSocketBlueZ::OnRegisterProfile, this,
-                     std::move(success_callback), copyable_error_callback),
+                     std::move(success_callback),
+                     std::move(split_error_callback.first)),
       base::BindOnce(&BluetoothSocketBlueZ::OnRegisterProfileError, this,
-                     copyable_error_callback));
+                     std::move(split_error_callback.second)));
 }
 
 void BluetoothSocketBlueZ::OnRegisterProfile(
@@ -304,24 +303,43 @@ void BluetoothSocketBlueZ::OnConnectProfileError(
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
   DCHECK(profile_);
 
+  const std::string error = base::StrCat({error_name, ": ", error_message});
   LOG(WARNING) << profile_->object_path().value()
-               << ": Failed to connect profile: " << error_name << ": "
-               << error_message;
+               << ": Failed to connect profile: " << error;
   UnregisterProfile();
-  std::move(error_callback).Run(error_message);
+  std::move(error_callback).Run(error);
 }
 
 void BluetoothSocketBlueZ::AdapterPresentChanged(BluetoothAdapter* adapter,
                                                  bool present) {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
 
+  // Some boards cut power to their Bluetooth chip during suspension, which
+  // leads to a AdapterPresentChanged(present=false) event on wake (quickly
+  // followed by an AdapterPresentChanged(present=true) event).
+  // This 'present=false' event can occur in the middle of
+  // BluetoothSocketBlueZ's asynchronous process of acquiring |profile_|. That
+  // means the following 2 surprising edge-cases can occur on a few select
+  // boards:
+  //   1) |profile_| may not be initialized when a 'present=false' event occurs.
+  //      We must check |profile_| before calling UnregisterProfile().
+  //   2) |profile_| may already be initialized when a 'present=true' event
+  //      occurs. We must check |profile_| before attempting to redundantly
+  //      initialize it via BluetoothAdapterBlueZ::UseProfile().
+
   if (!present) {
-    // Adapter removed, we can't use the profile anymore.
-    UnregisterProfile();
+    // Edge-case (1) described above.
+    if (profile_) {
+      // Adapter removed, we can't use the profile anymore.
+      UnregisterProfile();
+    }
     return;
   }
 
-  DCHECK(!profile_);
+  // Edge-case (2) described above.
+  if (profile_) {
+    return;
+  }
 
   DVLOG(1) << uuid_.canonical_value() << " on " << device_path_.value()
            << ": Acquiring profile.";
@@ -518,21 +536,6 @@ void BluetoothSocketBlueZ::OnNewConnection(
   connection_request_queue_.pop();
 
   std::move(callback).Run(status);
-}
-
-void BluetoothSocketBlueZ::DoCloseListening() {
-  DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
-
-  if (accept_request_) {
-    std::move(accept_request_->error_callback)
-        .Run(net::ErrorToString(net::ERR_CONNECTION_CLOSED));
-    accept_request_.reset(nullptr);
-  }
-
-  while (connection_request_queue_.size() > 0) {
-    std::move(connection_request_queue_.front()->callback).Run(REJECTED);
-    connection_request_queue_.pop();
-  }
 }
 
 void BluetoothSocketBlueZ::UnregisterProfile() {

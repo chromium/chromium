@@ -15,6 +15,7 @@
 <translation id="2036868001356139588">Trvání časovače</translation>
 <translation id="2050339315714019657">Na výšku</translation>
 <translation id="2064538373111010176">Aktivní: <ph name="CAMERA" /></translation>
+<translation id="2144806332417375165">Vlastní parametry videa</translation>
 <translation id="229579744168541441">Exportovat na disk</translation>
 <translation id="2501278716633472235">Zpět</translation>
 <translation id="2501853267655415902">Nahrávání bylo zastaveno</translation>
@@ -33,7 +34,6 @@
 <translation id="3259149966178251584">Rozlišení fotoaparátu</translation>
 <translation id="3517926952904427380">Portrétovou fotku nelze pořídit</translation>
 <translation id="3569311554794739032">Opravdu soubor <ph name="FILE" /> chcete odstranit?</translation>
-<translation id="3750315947605636967">Kameru používá jiná aplikace</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Skenovat čárový kód</translation>
 <translation id="3892148308691398805">Kopírovat text</translation>
@@ -76,10 +76,12 @@ Pokud se zpětná vazba týká kvality fotek nebo videí, připojte ukázkovou f
 <translation id="7337660886763914220">Chyby systému souborů.</translation>
 <translation id="7450541714075000668">Text byl zkopírován</translation>
 <translation id="7557677699350329807">Přepnout na další fotoaparát</translation>
+<translation id="7607002721634913082">Přerušeno</translation>
 <translation id="7608223098072244877">4 krát 4</translation>
 <translation id="7649070708921625228">Nápověda</translation>
 <translation id="7658239707568436148">Zrušit</translation>
 <translation id="7670511624014457267">60 snímků/s</translation>
+<translation id="7974782136796202581">Zobrazit možnosti posunutí, náklonu a přiblížení</translation>
 <translation id="7983668134180549431">Byl zjištěn text.</translation>
 <translation id="8067883171444229417">Přehrát video</translation>
 <translation id="8131740175452115882">Potvrdit</translation>

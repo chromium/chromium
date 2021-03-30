@@ -6,6 +6,8 @@
 
 #include "chrome/browser/login_detection/login_detection_prefs.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/child_process_security_policy.h"
@@ -37,7 +39,13 @@ LoginDetectionKeyedService::LoginDetectionKeyedService(Profile* profile)
           ServiceAccessType::EXPLICIT_ACCESS)),
       account_password_sites_(AccountPasswordStoreFactory::GetForProfile(
           profile,
-          ServiceAccessType::EXPLICIT_ACCESS)) {}
+          ServiceAccessType::EXPLICIT_ACCESS)) {
+  if (auto* optimization_guide_decider =
+          OptimizationGuideKeyedServiceFactory::GetForProfile(profile_)) {
+    optimization_guide_decider->RegisterOptimizationTypes(
+        {optimization_guide::proto::LOGIN_DETECTION});
+  }
+}
 
 LoginDetectionKeyedService::~LoginDetectionKeyedService() = default;
 
@@ -72,6 +80,15 @@ LoginDetectionType LoginDetectionKeyedService::GetPersistentLoginDetection(
           url_origin, content::ChildProcessSecurityPolicy::
                           IsolatedOriginSource::BUILT_IN)) {
     return LoginDetectionType::kPreloadedPasswordSiteLogin;
+  }
+
+  if (auto* optimization_guide_decider =
+          OptimizationGuideKeyedServiceFactory::GetForProfile(profile_)) {
+    if (optimization_guide_decider->CanApplyOptimization(
+            url, optimization_guide::proto::LOGIN_DETECTION, nullptr) ==
+        optimization_guide::OptimizationGuideDecision::kTrue) {
+      return LoginDetectionType::kOptimizationGuideDetected;
+    }
   }
 
   // Check for sites saved in the password manager.

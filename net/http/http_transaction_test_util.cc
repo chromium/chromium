@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -550,7 +551,8 @@ int MockNetworkTransaction::StartInternal(const HttpRequestInfo* request,
 
   int result = OK;
   if (!connected_callback_.is_null()) {
-    result = connected_callback_.Run(t->transport_info);
+    result = connected_callback_.Run(t->transport_info,
+                                     base::DoNothing::Repeatedly<int>());
   }
 
   CallbackLater(std::move(callback), result);
@@ -687,8 +689,14 @@ ConnectedHandler& ConnectedHandler::operator=(const ConnectedHandler&) =
 ConnectedHandler::ConnectedHandler(ConnectedHandler&&) = default;
 ConnectedHandler& ConnectedHandler::operator=(ConnectedHandler&&) = default;
 
-int ConnectedHandler::OnConnected(const TransportInfo& info) {
+int ConnectedHandler::OnConnected(const TransportInfo& info,
+                                  CompletionOnceCallback callback) {
   transports_.push_back(info);
+  if (run_callback_) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), result_));
+    return net::ERR_IO_PENDING;
+  }
   return result_;
 }
 

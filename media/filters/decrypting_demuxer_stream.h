@@ -144,6 +144,8 @@ class MEDIA_EXPORT DecryptingDemuxerStream : public DemuxerStream {
   void CompletePendingDecrypt(Decryptor::Status status);
   void CompleteWaitingForDecryptionKey();
 
+  void LogMetadata();
+
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);
   MediaLog* const media_log_;

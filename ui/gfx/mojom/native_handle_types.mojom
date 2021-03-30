@@ -8,7 +8,7 @@ import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
 // gfx::NativePixmapPlane
-[EnableIf=supports_native_pixmap]
+[EnableIf=supports_native_pixmap, Stable]
 struct NativePixmapPlane {
   uint32 stride;
   uint64 offset;
@@ -50,6 +50,18 @@ struct AHardwareBufferHandle {
   handle<message_pipe> tracking_pipe;
 };
 
+[EnableIf=is_win]
+struct DxgiHandle {
+  // The actual buffer windows handle.
+  handle<platform> buffer_handle;
+
+  // Shared memory copy of all the data. Valid only if requested by the
+  // consumer. It is included here because DXGI GMBs are unmappable except in
+  // the GPU process. So without it the consumer if a CPU readable frame is
+  // needed would resort to request a copy in the shared memory via GPU process.
+  mojo_base.mojom.UnsafeSharedMemoryRegion? shared_memory_handle;
+};
+
 union GpuMemoryBufferPlatformHandle {
   mojo_base.mojom.UnsafeSharedMemoryRegion shared_memory_handle;
 
@@ -60,7 +72,7 @@ union GpuMemoryBufferPlatformHandle {
   handle<platform> mach_port;
 
   [EnableIf=is_win]
-  handle<platform> dxgi_handle;
+  DxgiHandle dxgi_handle;
 
   [EnableIf=is_android]
   AHardwareBufferHandle android_hardware_buffer_handle;

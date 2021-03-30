@@ -35,7 +35,7 @@ ComplexFeature::~ComplexFeature() {
 Feature::Availability ComplexFeature::IsAvailableToManifest(
     const HashedExtensionId& hashed_id,
     Manifest::Type type,
-    Manifest::Location location,
+    mojom::ManifestLocation location,
     int manifest_version,
     Platform platform) const {
   Feature::Availability first_availability =

@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {CustomElement} from 'chrome://resources/js/custom_element.js';
+
 import {AlertIndicatorElement} from './alert_indicator.js';
-import {CustomElement} from './custom_element.js';
 import {TabAlertState} from './tabs_api_proxy.js';
 
 export class AlertIndicatorsElement extends CustomElement {

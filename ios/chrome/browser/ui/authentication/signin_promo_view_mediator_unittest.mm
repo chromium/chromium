@@ -7,17 +7,21 @@
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#import "base/test/scoped_command_line.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
+#import "components/sync/driver/mock_sync_service.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/chrome_switches.h"
 #import "ios/chrome/browser/prefs/browser_prefs.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/authentication_service_fake.h"
 #include "ios/chrome/browser/signin/chrome_identity_service_observer_bridge.h"
+#import "ios/chrome/browser/sync/profile_sync_service_factory.h"
+#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
+#import "ios/chrome/browser/sync/sync_setup_service_mock.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
@@ -47,12 +51,27 @@ using user_prefs::PrefRegistrySyncable;
 using web::WebTaskEnvironment;
 
 namespace {
+std::unique_ptr<KeyedService> BuildMockSyncService(web::BrowserState* context) {
+  return std::make_unique<syncer::MockSyncService>();
+}
 
 class SigninPromoViewMediatorTest : public PlatformTest {
  protected:
   void SetUp() override {
     user_full_name_ = @"John Doe";
     close_button_hidden_ = YES;
+
+    TestChromeBrowserState::Builder builder;
+    builder.AddTestingFactory(ProfileSyncServiceFactory::GetInstance(),
+                              base::BindRepeating(&BuildMockSyncService));
+    builder.AddTestingFactory(
+        SyncSetupServiceFactory::GetInstance(),
+        base::BindRepeating(&SyncSetupServiceMock::CreateKeyedService));
+    builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        base::BindRepeating(
+            &AuthenticationServiceFake::CreateAuthenticationService));
+    chrome_browser_state_ = builder.Build();
   }
 
   void TearDown() override {
@@ -73,10 +92,10 @@ class SigninPromoViewMediatorTest : public PlatformTest {
 
   void CreateMediator(signin_metrics::AccessPoint accessPoint) {
     consumer_ = OCMStrictProtocolMock(@protocol(SigninPromoViewConsumer));
-    mediator_ =
-        [[SigninPromoViewMediator alloc] initWithBrowserState:nil
-                                                  accessPoint:accessPoint
-                                                    presenter:nil];
+    mediator_ = [[SigninPromoViewMediator alloc]
+        initWithBrowserState:chrome_browser_state_.get()
+                 accessPoint:accessPoint
+                   presenter:nil];
     mediator_.consumer = consumer_;
 
     signin_promo_view_ = OCMStrictClassMock([SigninPromoView class]);
@@ -144,7 +163,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
   // Expects the signin promo view to be configured with no accounts on the
   // device.
   void ExpectNoAccountsConfiguration() {
-    OCMExpect([signin_promo_view_ setMode:IdentityPromoViewModeNoAccounts]);
+    OCMExpect([signin_promo_view_ setMode:SigninPromoViewModeNoAccounts]);
     NSString* title = GetNSString(IDS_IOS_OPTIONS_IMPORT_DATA_TITLE_SIGNIN);
     OCMExpect([signin_promo_view_ setAccessibilityLabel:title]);
     OCMExpect([primary_button_ setTitle:title forState:UIControlStateNormal]);
@@ -165,16 +184,16 @@ class SigninPromoViewMediatorTest : public PlatformTest {
   void ExpectSigninWithAccountConfiguration() {
     EXPECT_EQ(expected_default_identity_, mediator_.defaultIdentity);
     OCMExpect(
-        [signin_promo_view_ setMode:IdentityPromoViewModeSigninWithAccount]);
+        [signin_promo_view_ setMode:SigninPromoViewModeSigninWithAccount]);
     OCMExpect([signin_promo_view_
         setProfileImage:[OCMArg checkWithBlock:^BOOL(id value) {
           image_view_profile_image_ = value;
           return YES;
         }]]);
-    NSString* name = expected_default_identity_.userFullName.length
-                         ? expected_default_identity_.userFullName
+    NSString* name = expected_default_identity_.userGivenName.length
+                         ? expected_default_identity_.userGivenName
                          : expected_default_identity_.userEmail;
-    base::string16 name16 = SysNSStringToUTF16(name);
+    std::u16string name16 = SysNSStringToUTF16(name);
     NSString* accessibilityLabel =
         GetNSStringF(IDS_IOS_SIGNIN_PROMO_ACCESSIBILITY_LABEL, name16);
     OCMExpect([signin_promo_view_ setAccessibilityLabel:accessibilityLabel]);
@@ -209,6 +228,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
 
   // Task environment.
   WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
 
   // Mediator used for the tests.
   SigninPromoViewMediator* mediator_;
@@ -258,7 +278,7 @@ TEST_F(SigninPromoViewMediatorTest, SigninWithAccountConfigureSigninPromoView) {
 // Tests signin promo view and its configurator with an identity
 // without full name.
 TEST_F(SigninPromoViewMediatorTest,
-       SigninWithAccountConfigureSigninPromoViewWithoutFullName) {
+       SigninWithAccountConfigureSigninPromoViewWithoutName) {
   user_full_name_ = nil;
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
   TestSigninPromoWithAccount();
@@ -398,9 +418,6 @@ TEST_F(SigninPromoViewMediatorTest,
 // Tests that promos aren't shown if browser sign-in is disabled by policy
 TEST_F(SigninPromoViewMediatorTest,
        ShouldNotDisplaySigninPromoViewIfDisabledByPolicy) {
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
-      switches::kInstallBrowserSigninHandler);
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
   TestChromeBrowserState::Builder builder;
   builder.SetPrefService(CreatePrefService());

@@ -17,9 +17,13 @@
     }
 
     select.md-select {
-      @apply --scanning-select-font;
       background-position-x: calc(100% - 12px);
-      color: var(--scanning-select-text-color);
+      color: var(--scanning-scan-setting-text-color);
+      font-family: var(--scanning-scan-setting-font-family);
+      font-size: var(--scanning-scan-setting-font-size);
+      font-weight: var(--scanning-regular-font-weight);
+      line-height: var(--scanning-scan-setting-line-height);
+      padding-inline-end: 32px;
       padding-inline-start: 16px;
     }
 
@@ -27,13 +31,25 @@
       background-position-x: 12px;
     }
 
+    ::-webkit-scrollbar {
+      -webkit-appearance: none;
+      width: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: rgba(0, 0, 0, 0.5);
+      border-radius: 4px;
+    }
+
     @media (min-width: 600px) {
       :host {
         --container-width: 600px;
+        --helper-text-margin-bottom: 0;
         --left-panel-margin-inline-end: 10px;
         --left-panel-margin-inline-start: 10px;
         --left-panel-width: 200px;
         --panel-container-margin-top: 20px;
+        --ready-to-scan-image-margin-top: 0;
         --right-panel-margin-inline-end: 10px;
         --right-panel-margin-inline-start: 0;
         --right-panel-padding-inline-end: 8px;
@@ -44,10 +60,12 @@
     @media (min-width: 768px) {
       :host {
         --container-width: 768px;
+        --helper-text-margin-bottom: 56px;
         --left-panel-margin-inline-end: 32px;
         --left-panel-margin-inline-start: 32px;
         --left-panel-width: 288px;
         --panel-container-margin-top: 20px;
+        --ready-to-scan-image-margin-top: 32px;
         --right-panel-margin-inline-end: 32px;
         --right-panel-margin-inline-start: 0;
         --right-panel-padding-inline-end: 16px;

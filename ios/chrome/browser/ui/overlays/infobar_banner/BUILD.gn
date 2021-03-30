@@ -34,6 +34,7 @@ source_set("coordinators") {
     "//ios/chrome/browser/ui/overlays:util",
     "//ios/chrome/browser/ui/overlays/infobar_banner/confirm",
     "//ios/chrome/browser/ui/overlays/infobar_banner/passwords",
+    "//ios/chrome/browser/ui/overlays/infobar_banner/save_address_profile",
     "//ios/chrome/browser/ui/overlays/infobar_banner/save_card",
     "//ios/chrome/browser/ui/overlays/infobar_banner/translate:mediators",
     "//ios/chrome/browser/ui/util",

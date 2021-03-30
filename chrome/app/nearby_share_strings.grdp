@@ -35,16 +35,13 @@
     Your contacts can share with you when they are nearby. Transfers won't start until you accept.
   </message>
   <message name="IDS_NEARBY_CONTACT_VISIBILITY_OWN_NONE" desc="Describes who can see the local device when the Nearby Share visibility setting is set to 'Hidden'.">
-    No one can share with you until you make yourself visible.<ph name="BR">&lt;br&gt;</ph><ph name="BR">&lt;br&gt;</ph>To make yourself visible temporarily, open the status area by selecting the time, then turn on Nearby visibility.
+    No one can share with you until you make yourself visible.<ph name="BR">&lt;br&gt;</ph><ph name="BR">&lt;br&gt;</ph>To make yourself visible temporarily, open the status area, then turn on Nearby visibility.
   </message>
   <message name="IDS_NEARBY_CONTACT_VISIBILITY_OWN_SOME" desc="Describes who can see the local device when the Nearby Share visibility setting is set to 'Some contacts'.">
     Selected contacts can share with you when nearby. Transfers won't start until you accept.
   </message>
-  <message name="IDS_NEARBY_CONTACT_VISIBILITY_ZERO_STATE_INFO" desc="Help text to learn more about the privacy and visibility settings of the Nearby Share feature.">
-    Learn more
-  </message>
   <message name="IDS_NEARBY_CONTACT_VISIBILITY_ZERO_STATE_TEXT" desc="Zero state help text to explain how the visibility settings control the Nearby Share feature.">
-    Your device visibility controls who can share with you while your screen is unlocked
+    Your device visibility controls who can share with you while your screen is unlocked. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
 
   <!-- Device name validation -->
@@ -60,7 +57,7 @@
 
   <!-- Discovery page -->
   <message name="IDS_NEARBY_DISCOVERY_PAGE_INFO" desc="Help text on how to use the Nearby Share feature. Explains how to enable it on a nearby Chromebook to share with it.">
-    Make sure both devices are unlocked, close together, and have Bluetooth turned on. If you’re sharing with a Chromebook not in your contacts, make sure it has Nearby visibility turned on (open the status area by selecting the time, then select Nearby visibility). <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+    Make sure both devices are unlocked, close together, and have Bluetooth turned on. If you’re sharing with a Chromebook not in your contacts, make sure it has Nearby visibility turned on (open the status area, then turn on Nearby visibility). <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_NEARBY_DISCOVERY_PAGE_SUBTITLE" desc="Subtitle of the Nearby Share device discovery page. This is where users select a device to share files with.">
     Select the device you’d like to share files with
@@ -80,7 +77,7 @@
     How your device appears to others
   </message>
   <message name="IDS_NEARBY_ONBOARDING_PAGE_SUBTITLE" desc="Subtitle of the Nearby Share onboarding page that sets up the local device for the feature which provides a way for nearby devices to share files, text, and urls.">
-    Share files with people around you
+    Share files with Chromebooks and Android devices around you
   </message>
   <message name="IDS_NEARBY_ONBOARDING_PAGE_TITLE" desc="Title of the Nearby Share onboarding page that sets up the local device for the feature. Nearby Share is the feature name.">
     Set up Nearby Share
@@ -155,35 +152,62 @@
   <message name="IDS_NEARBY_ERROR_UNSUPPORTED_FILE_TYPE" desc="Notify user that the file chosen can't be shared because of its type, e.g. missing file extension.">
     Unsupported file type
   </message>
-  <message name="IDS_NEARBY_FILE_ATTACHMENTS_APPS" desc="Describes one or more apps being transfered via Nearby Share.">
-    {COUNT, plural, =1 {1 app} other {# apps}}
+  <message name="IDS_NEARBY_FILE_ATTACHMENTS_CAPITALIZED_APPS" desc="Describes one or more apps being transfered via Nearby Share. Singular case is capitalized, e.g. 'App'.">
+    {COUNT, plural, =1 {App} other {# apps}}
   </message>
-  <message name="IDS_NEARBY_FILE_ATTACHMENTS_IMAGES" desc="Describes one or more images being transfered via Nearby Share.">
-    {COUNT, plural, =1 {1 image} other {# images}}
+  <message name="IDS_NEARBY_FILE_ATTACHMENTS_NOT_CAPITALIZED_APPS" desc="Describes one or more apps being transfered via Nearby Share. Singular case is not capitalized, e.g. 'app'.">
+    {COUNT, plural, =1 {app} other {# apps}}
   </message>
-  <message name="IDS_NEARBY_FILE_ATTACHMENTS_UNKNOWN" desc="Describes one or more files being transfered via Nearby Share.">
-    {COUNT, plural, =1 {1 file} other {# files}}
+  <message name="IDS_NEARBY_FILE_ATTACHMENTS_CAPITALIZED_IMAGES" desc="Describes one or more images being transfered via Nearby Share. Singular case is capitalized, e.g. 'Image'.">
+    {COUNT, plural, =1 {Image} other {# images}}
   </message>
-  <message name="IDS_NEARBY_FILE_ATTACHMENTS_VIDEOS" desc="Describes one or more videos being transfered via Nearby Share.">
-    {COUNT, plural, =1 {1 video} other {# videos}}
+  <message name="IDS_NEARBY_FILE_ATTACHMENTS_NOT_CAPITALIZED_IMAGES" desc="Describes one or more images being transfered via Nearby Share. Singular case is not capitalized, e.g. 'image'.">
+    {COUNT, plural, =1 {image} other {# images}}
+  </message>
+  <message name="IDS_NEARBY_FILE_ATTACHMENTS_CAPITALIZED_UNKNOWN" desc="Describes one or more files being transfered via Nearby Share. Singular case is capitalized, e.g. 'File'.">
+    {COUNT, plural, =1 {File} other {# files}}
+  </message>
+  <message name="IDS_NEARBY_FILE_ATTACHMENTS_NOT_CAPITALIZED_UNKNOWN" desc="Describes one or more files being transfered via Nearby Share. Singular case is not capitalized, e.g. 'file'.">
+    {COUNT, plural, =1 {file} other {# files}}
+  </message>
+  <message name="IDS_NEARBY_FILE_ATTACHMENTS_CAPITALIZED_VIDEOS" desc="Describes one or more videos being transfered via Nearby Share. Singular case is capitalized, e.g. 'Video'.">
+    {COUNT, plural, =1 {Video} other {# videos}}
+  </message>
+  <message name="IDS_NEARBY_FILE_ATTACHMENTS_NOT_CAPITALIZED_VIDEOS" desc="Describes one or more videos being transfered via Nearby Share. Singular case is not capitalized, e.g. 'video'.">
+    {COUNT, plural, =1 {video} other {# videos}}
   </message>
   <message name="IDS_NEARBY_SECURE_CONNECTION_ID" desc="Description shown on both sender and receiver devices, to remind users to verify/compare tokens on both devices for security before sending/receiving data.">
     Secure connection ID: <ph name="TOKEN">$1<ex>1234</ex></ph>
   </message>
-  <message name="IDS_NEARBY_TEXT_ATTACHMENTS_ADDRESSES" desc="Describes one or more addresses being transfered via Nearby Share.">
-    {COUNT, plural, =1 {1 address} other {# addresses}}
+  <message name="IDS_NEARBY_TEXT_ATTACHMENTS_CAPITALIZED_ADDRESSES" desc="Describes one or more addresses being transfered via Nearby Share. Singular case is capitalized, e.g. 'Address'.">
+    {COUNT, plural, =1 {Address} other {# addresses}}
   </message>
-  <message name="IDS_NEARBY_TEXT_ATTACHMENTS_LINKS" desc="Describes one or more web links being transfered via Nearby Share.">
-    {COUNT, plural, =1 {1 link} other {# links}}
+  <message name="IDS_NEARBY_TEXT_ATTACHMENTS_NOT_CAPITALIZED_ADDRESSES" desc="Describes one or more addresses being transfered via Nearby Share. Singular case is not capitalized, e.g. 'address'.">
+    {COUNT, plural, =1 {address} other {# addresses}}
   </message>
-  <message name="IDS_NEARBY_TEXT_ATTACHMENTS_PHONE_NUMBERS" desc="Describes one or more phone numbers being transfered via Nearby Share.">
-    {COUNT, plural, =1 {1 phone number} other {# phone numbers}}
+  <message name="IDS_NEARBY_TEXT_ATTACHMENTS_CAPITALIZED_LINKS" desc="Describes one or more web links being transfered via Nearby Share. Singular case is capitalized, e.g. 'Link'.">
+    {COUNT, plural, =1 {Link} other {# links}}
   </message>
-  <message name="IDS_NEARBY_TEXT_ATTACHMENTS_UNKNOWN" desc="Describes one or more pieces of text being transfered via Nearby Share.">
-    {COUNT, plural, =1 {1 text} other {# texts}}
+  <message name="IDS_NEARBY_TEXT_ATTACHMENTS_NOT_CAPITALIZED_LINKS" desc="Describes one or more web links being transfered via Nearby Share. Singular case is not capitalized, e.g. 'link'.">
+    {COUNT, plural, =1 {link} other {# links}}
   </message>
-  <message name="IDS_NEARBY_UNKNOWN_ATTACHMENTS" desc="Describes one or more items being transfered via Nearby Share.">
-    {COUNT, plural, =1 {1 item} other {# items}}
+  <message name="IDS_NEARBY_TEXT_ATTACHMENTS_CAPITALIZED_PHONE_NUMBERS" desc="Describes one or more phone numbers being transfered via Nearby Share. Singular case is capitalized, e.g. 'Phone number'.">
+    {COUNT, plural, =1 {Phone number} other {# phone numbers}}
+  </message>
+  <message name="IDS_NEARBY_TEXT_ATTACHMENTS_NOT_CAPITALIZED_PHONE_NUMBERS" desc="Describes one or more phone numbers being transfered via Nearby Share. Singular case is not capitalized, e.g. 'phone number'.">
+    {COUNT, plural, =1 {phone number} other {# phone numbers}}
+  </message>
+  <message name="IDS_NEARBY_TEXT_ATTACHMENTS_CAPITALIZED_UNKNOWN" desc="Describes one or more pieces of text being transfered via Nearby Share. Singular case is capitalized, e.g. 'Text'.">
+    {COUNT, plural, =1 {Text} other {# texts}}
+  </message>
+  <message name="IDS_NEARBY_TEXT_ATTACHMENTS_NOT_CAPITALIZED_UNKNOWN" desc="Describes one or more pieces of text being transfered via Nearby Share. Singular case is not capitalized, e.g. 'text'.">
+    {COUNT, plural, =1 {text} other {# texts}}
+  </message>
+  <message name="IDS_NEARBY_CAPITALIZED_UNKNOWN_ATTACHMENTS" desc="Describes one or more items being transfered via Nearby Share. Singular case is capitalized, e.g. 'Item'.">
+    {COUNT, plural, =1 {Item} other {# items}}
+  </message>
+  <message name="IDS_NEARBY_NOT_CAPITALIZED_UNKNOWN_ATTACHMENTS" desc="Describes one or more items being transfered via Nearby Share. Singular case is not capitalized, e.g. 'item'.">
+    {COUNT, plural, =1 {item} other {# items}}
   </message>
 
   <!-- High Visibility Page Strings -->
@@ -322,5 +346,11 @@
   </message>
   <message name="IDS_NEARBY_NOTIFICATION_SOURCE" desc="Text shown as the source of a Nearby Share notification.">
     Nearby Share
+  </message>
+  <message name="IDS_NEARBY_NOTIFICATION_RECEIVER_CANCELLED" desc="Text shown as the title of a notification when the receiver device cancels the Nearby Share tranfer.">
+    <ph name="DEVICE_NAME">$1<ex>Ted's Pixel 2</ex></ph> did not accept the file
+  </message>
+  <message name="IDS_NEARBY_NOTIFICATION_SENDER_CANCELLED" desc="Text shown as the title of a notification when the sender device cancels the Nearby Share tranfer.">
+    <ph name="DEVICE_NAME">$1<ex>Ted's Pixel 2</ex></ph> cancelled the transfer
   </message>
 </grit-part>

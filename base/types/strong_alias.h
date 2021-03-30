@@ -95,7 +95,7 @@ class StrongAlias {
   constexpr UnderlyingType&& value() && { return std::move(value_); }
   constexpr const UnderlyingType&& value() const&& { return std::move(value_); }
 
-  constexpr explicit operator UnderlyingType() const { return value_; }
+  constexpr explicit operator const UnderlyingType&() const& { return value_; }
 
   constexpr bool operator==(const StrongAlias& other) const {
     return value_ == other.value_;

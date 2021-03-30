@@ -8,12 +8,9 @@ import("//build/config/android/rules.gni")
 android_library("sync_java") {
   deps = [
     "//base:base_java",
-    "//base:jni_java",
-    "//components/signin/core/browser/android:java",
     "//net/android:net_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
-    "//third_party/android_sdk:android_gcm_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   srcjar_deps = [ ":java_enums" ]

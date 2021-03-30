@@ -6,7 +6,7 @@ Polymer({
   is: 'app-management-plugin-vm-detail-view',
 
   behaviors: [
-    app_management.StoreClient,
+    app_management.AppManagementStoreClient,
     WebUIListenerBehavior,
   ],
 

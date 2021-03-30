@@ -7,6 +7,7 @@ package org.chromium.components.content_capture;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ public class ContentCaptureReceiverManager {
     }
 
     @CalledByNative
-    private void didCaptureContent(Object[] session, ContentCaptureData data) {
+    private void didCaptureContent(Object[] session, ContentCaptureFrame data) {
         FrameSession frameSession = toFrameSession(session);
         String[] urls = buildUrls(frameSession, data);
         for (ContentCaptureConsumer consumer : mContentCaptureConsumers) {
@@ -48,7 +49,7 @@ public class ContentCaptureReceiverManager {
     }
 
     @CalledByNative
-    private void didUpdateContent(Object[] session, ContentCaptureData data) {
+    private void didUpdateContent(Object[] session, ContentCaptureFrame data) {
         FrameSession frameSession = toFrameSession(session);
         String[] urls = buildUrls(frameSession, data);
         for (ContentCaptureConsumer consumer : mContentCaptureConsumers) {
@@ -85,20 +86,45 @@ public class ContentCaptureReceiverManager {
         if (sDump.booleanValue()) Log.i(TAG, "Removed Session: %s", frameSession.get(0));
     }
 
+    @CalledByNative
+    private void didUpdateTitle(ContentCaptureFrame mainFrame) {
+        String[] urls = buildUrls(null, mainFrame);
+        for (ContentCaptureConsumer consumer : mContentCaptureConsumers) {
+            if (consumer.shouldCapture(urls)) {
+                consumer.onTitleUpdated(mainFrame);
+            }
+        }
+        if (sDump.booleanValue()) Log.i(TAG, "Updated Title: %s", mainFrame);
+    }
+
+    @CalledByNative
+    private int getOffsetY(WebContents webContents) {
+        return RenderCoordinates.fromWebContents(webContents).getContentOffsetYPixInt();
+    }
+
+    @CalledByNative
+    private boolean shouldCapture(String url) {
+        String[] urls = new String[] {url};
+        for (ContentCaptureConsumer consumer : mContentCaptureConsumers) {
+            if (consumer.shouldCapture(urls)) return true;
+        }
+        return false;
+    }
+
     private FrameSession toFrameSession(Object[] session) {
         FrameSession frameSession = new FrameSession(session.length);
-        for (Object s : session) frameSession.add((ContentCaptureData) s);
+        for (Object s : session) frameSession.add((ContentCaptureFrame) s);
         return frameSession;
     }
 
-    private String[] buildUrls(FrameSession session, ContentCaptureData data) {
+    private String[] buildUrls(FrameSession session, ContentCaptureFrame data) {
         ArrayList<String> urls = new ArrayList<String>();
         if (session != null) {
-            for (ContentCaptureData d : session) {
-                urls.add(d.getValue());
+            for (ContentCaptureFrame d : session) {
+                urls.add(d.getUrl());
             }
         }
-        if (data != null) urls.add(data.getValue());
+        if (data != null) urls.add(data.getUrl());
         String[] result = new String[urls.size()];
         urls.toArray(result);
         return result;

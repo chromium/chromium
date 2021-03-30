@@ -10,8 +10,10 @@
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/ui/cocoa/notifications/notification_builder_mac.h"
-#include "chrome/browser/ui/cocoa/notifications/notification_constants_mac.h"
+#include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
+#include "chrome/services/mac_notifications/public/cpp/notification_operation.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "testing/gtest_mac.h"
 
 TEST(NotificationBuilderMacTest, TestNotificationNoButtons) {
   base::scoped_nsobject<NotificationBuilder> builder(
@@ -21,7 +23,7 @@ TEST(NotificationBuilderMacTest, TestNotificationNoButtons) {
   [builder setTitle:@"Title"];
   [builder setSubTitle:@"https://www.miguel.com"];
   [builder setContextMessage:@""];
-  [builder setTag:@"tag1"];
+  [builder setIdentifier:@"identifier"];
   [builder setIcon:[NSImage imageNamed:@"NSApplicationIcon"]];
   [builder setNotificationId:@"notificationId"];
   [builder setProfileId:@"profileId"];
@@ -39,7 +41,7 @@ TEST(NotificationBuilderMacTest, TestNotificationNoButtons) {
   EXPECT_EQ(nullptr, [notification informativeText]);
   EXPECT_EQ("https://www.miguel.com",
             base::SysNSStringToUTF8([notification subtitle]));
-  EXPECT_EQ("tag1",
+  EXPECT_EQ("identifier",
             base::SysNSStringToUTF8([notification valueForKey:@"identifier"]));
 
   EXPECT_TRUE([notification hasActionButton]);
@@ -295,4 +297,40 @@ TEST(NotificationBuilderMacTest, TestBuildDictionary) {
             base::SysNSStringToUTF8([notification informativeText]));
   EXPECT_EQ("https://www.miguel.com",
             base::SysNSStringToUTF8([notification subtitle]));
+}
+
+TEST(NotificationBuilderMacTest, TestSetClosedFromAlert_YES) {
+  base::scoped_nsobject<NotificationBuilder> builder(
+      [[NotificationBuilder alloc] initWithCloseLabel:@"Close"
+                                         optionsLabel:@"Options"
+                                        settingsLabel:@"Settings"]);
+  [builder setClosedFromAlert:YES];
+  NSDictionary* data = [builder buildDictionary];
+
+  EXPECT_NSEQ(@YES,
+              [data objectForKey:notification_constants::kNotificationIsAlert]);
+  EXPECT_NSEQ(
+      @(static_cast<int>(NotificationOperation::NOTIFICATION_CLOSE)),
+      [data objectForKey:notification_constants::kNotificationOperation]);
+  EXPECT_NSEQ(
+      @(notification_constants::kNotificationInvalidButtonIndex),
+      [data objectForKey:notification_constants::kNotificationButtonIndex]);
+}
+
+TEST(NotificationBuilderMacTest, TestSetClosedFromAlert_NO) {
+  base::scoped_nsobject<NotificationBuilder> builder(
+      [[NotificationBuilder alloc] initWithCloseLabel:@"Close"
+                                         optionsLabel:@"Options"
+                                        settingsLabel:@"Settings"]);
+  [builder setClosedFromAlert:NO];
+  NSDictionary* data = [builder buildDictionary];
+
+  EXPECT_NSEQ(@NO,
+              [data objectForKey:notification_constants::kNotificationIsAlert]);
+  EXPECT_NSEQ(
+      @(static_cast<int>(NotificationOperation::NOTIFICATION_CLOSE)),
+      [data objectForKey:notification_constants::kNotificationOperation]);
+  EXPECT_NSEQ(
+      @(notification_constants::kNotificationInvalidButtonIndex),
+      [data objectForKey:notification_constants::kNotificationButtonIndex]);
 }

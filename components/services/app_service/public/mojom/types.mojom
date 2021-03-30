@@ -68,6 +68,10 @@ struct App {
   // be handled by this app. One app can have multiple intent filters.
   array<IntentFilter> intent_filters;
 
+  // Whether the app can be free resized. If this is true, various resizing
+  // operations will be restricted.
+  OptionalBool resize_locked;
+
   // When adding new fields, also update the Merge method and other helpers in
   // components/services/app_service/public/cpp/app_update.*
 };
@@ -97,6 +101,7 @@ enum AppType {
   kLacros,     // Lacros browser app, see //docs/lacros.md.
   kRemote,     // Remote app.
   kBorealis,   // Borealis app, see go/borealis-app.
+  kSystemWeb,  // System web app.
 };
 
 // Whether an app is ready to launch, i.e. installed.
@@ -194,8 +199,7 @@ struct IconValue {
 };
 
 // Enumeration of possible app launch sources.
-// Note the enumeration is used in UMA histogram so entries
-// should not be re-ordered or removed.
+// This should be kept in sync with histogram_suffixes_list.xml.
 enum LaunchSource {
   kUnknown = 0,
   kFromAppListGrid = 1,               // Grid of apps, not the search box.
@@ -220,6 +224,8 @@ enum LaunchSource {
   kFromArc = 17,                      // Arc.
   kFromSharesheet = 18,               // Sharesheet.
   kFromReleaseNotesNotification = 19, // Release Notes Notification.
+  kFromFullRestore = 20,              // Full restore.
+  kFromSmartTextContextMenu = 21,     // Smart text selection context menu.
 };
 
 enum TriState {
@@ -338,6 +344,11 @@ struct Intent {
   url.mojom.Url? drive_share_url;
   string? share_text; // Text to share. e.g. Share link to other app.
   string? share_title; // Title for the share.
+  string? start_type; // Start type.
+  array<string>? categories;
+  string? data;  // URI
+  OptionalBool ui_bypassed; // Whether or not the user saw the UI.
+  map<string, string>? extras; // Optional string extras.
 };
 
 // Represents a group of |app_ids| that is no longer preferred app of their
@@ -387,6 +398,7 @@ enum AppLaunchSource {
   kSourceContextMenu = 21,
   kSourceArc = 22,
   kSourceIntentUrl = 23,  // App launch triggered by a URL.
+  kSourceRunOnOsLogin = 24,  // App launched during OS login.
 };
 
 // Don't remove items or change the order of this enum.  It's used in
@@ -398,4 +410,37 @@ enum LaunchContainer {
   // For platform apps, which don't actually have a container (they just get a
   // "onLaunched" event).
   kLaunchContainerNone = 3,
+};
+
+// Information about whether an app is accessing some capability, e.g. camera,
+// microphone.
+struct CapabilityAccess {
+  string app_id;
+
+  // The fields above are mandatory. Everything else below is optional.
+
+  // Whether the app is accessing camera.
+  OptionalBool camera;
+
+  // Whether the app is accessing microphone.
+  OptionalBool microphone;
+
+  // When adding new fields, also update the Merge method and other helpers in
+  // components/services/app_service/public/cpp/access_update.*
+};
+
+// The window bounds information.
+struct Rect {
+  int32 x;
+  int32 y;
+  int32 width;
+  int32 height;
+};
+
+// The window information to launch an app.
+struct WindowInfo {
+  int32 window_id = -1;
+  int32 state = -1;
+  int64 display_id = -1;
+  Rect? bounds;
 };

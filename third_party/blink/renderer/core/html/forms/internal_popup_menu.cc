@@ -10,8 +10,8 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_value_id_mappings.h"
-#include "third_party/blink/renderer/core/css/pseudo_style_request.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/css/style_request.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
@@ -87,10 +87,9 @@ scoped_refptr<const ComputedStyle> StyleForHoveredScrollbarPart(
   if (part == kNoPart)
     return nullptr;
   scrollbar->SetHoveredPart(part);
-  scoped_refptr<const ComputedStyle> part_style = element.StyleForPseudoElement(
-      PseudoElementStyleRequest(target_id, To<CustomScrollbar>(scrollbar),
-                                part),
-      style);
+  scoped_refptr<const ComputedStyle> part_style =
+      element.UncachedStyleForPseudoElement(
+          StyleRequest(target_id, To<CustomScrollbar>(scrollbar), part, style));
   return part_style;
 }
 

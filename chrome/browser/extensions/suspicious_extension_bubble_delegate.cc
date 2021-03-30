@@ -72,11 +72,11 @@ void SuspiciousExtensionBubbleDelegate::PerformAction(
   // "Well, my work here is done".
 }
 
-base::string16 SuspiciousExtensionBubbleDelegate::GetTitle() const {
+std::u16string SuspiciousExtensionBubbleDelegate::GetTitle() const {
   return l10n_util::GetStringUTF16(IDS_EXTENSIONS_UNSUPPORTED_DISABLED_TITLE);
 }
 
-base::string16 SuspiciousExtensionBubbleDelegate::GetMessageBody(
+std::u16string SuspiciousExtensionBubbleDelegate::GetMessageBody(
     bool anchored_to_browser_action,
     int extension_count) const {
   int message_id = extension_count == 1 ?
@@ -86,8 +86,8 @@ base::string16 SuspiciousExtensionBubbleDelegate::GetMessageBody(
       message_id, l10n_util::GetStringUTF16(IDS_EXTENSION_WEB_STORE_TITLE));
 }
 
-base::string16 SuspiciousExtensionBubbleDelegate::GetOverflowText(
-    const base::string16& overflow_count) const {
+std::u16string SuspiciousExtensionBubbleDelegate::GetOverflowText(
+    const std::u16string& overflow_count) const {
   return l10n_util::GetStringFUTF16(
             IDS_EXTENSIONS_DISABLED_AND_N_MORE,
             overflow_count);
@@ -97,21 +97,16 @@ GURL SuspiciousExtensionBubbleDelegate::GetLearnMoreUrl() const {
   return GURL(chrome::kRemoveNonCWSExtensionURL);
 }
 
-base::string16
-SuspiciousExtensionBubbleDelegate::GetActionButtonLabel() const {
-  return base::string16();
+std::u16string SuspiciousExtensionBubbleDelegate::GetActionButtonLabel() const {
+  return std::u16string();
 }
 
-base::string16
-SuspiciousExtensionBubbleDelegate::GetDismissButtonLabel() const {
+std::u16string SuspiciousExtensionBubbleDelegate::GetDismissButtonLabel()
+    const {
   return l10n_util::GetStringUTF16(IDS_EXTENSIONS_UNSUPPORTED_DISABLED_BUTTON);
 }
 
 bool SuspiciousExtensionBubbleDelegate::ShouldCloseOnDeactivate() const {
-  return false;
-}
-
-bool SuspiciousExtensionBubbleDelegate::ShouldAcknowledgeOnDeactivate() const {
   return false;
 }
 

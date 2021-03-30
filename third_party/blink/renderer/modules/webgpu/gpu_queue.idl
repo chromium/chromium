@@ -9,8 +9,11 @@
 ] interface GPUQueue {
     void submit(sequence<GPUCommandBuffer> buffers);
 
+    // Deprecated
     GPUFence createFence(optional GPUFenceDescriptor descriptor = {});
     void signal(GPUFence fence, GPUFenceValue signalValue);
+
+    [CallWith=ScriptState] Promise<void> onSubmittedWorkDone();
 
     // TODO(crbug.com/1088107): Merge these overloads into one with
     // [AllowShared] BufferSource (or whatever the upstream spec has), which
@@ -19,8 +22,8 @@
         GPUBuffer buffer,
         GPUSize64 bufferOffset,
         [AllowShared] ArrayBufferView data,
-        optional GPUSize64 dataByteOffset = 0,
-        optional GPUSize64 byteSize);
+        optional GPUSize64 dataElementOffset = 0,
+        optional GPUSize64 dataElementCount);
     [RaisesException] void writeBuffer(
         GPUBuffer buffer,
         GPUSize64 bufferOffset,
@@ -29,18 +32,19 @@
         optional GPUSize64 byteSize);
 
     [RaisesException] void writeTexture(
-        GPUTextureCopyView destination,
+        GPUImageCopyTexture destination,
         [AllowShared] ArrayBufferView data,
-        GPUTextureDataLayout dataLayout,
+        GPUImageDataLayout dataLayout,
         GPUExtent3D size);
     [RaisesException] void writeTexture(
-        GPUTextureCopyView destination,
+        GPUImageCopyTexture destination,
         ArrayBuffer data,
-        GPUTextureDataLayout dataLayout,
+        GPUImageDataLayout dataLayout,
         GPUExtent3D size);
 
     [RaisesException] void copyImageBitmapToTexture(
-        GPUImageBitmapCopyView source,
-        GPUTextureCopyView destination,
+        GPUImageCopyImageBitmap source,
+        GPUImageCopyTexture destination,
         GPUExtent3D copySize);
 };
+GPUQueue includes GPUObjectBase;

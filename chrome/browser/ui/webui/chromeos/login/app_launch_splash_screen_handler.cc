@@ -9,9 +9,9 @@
 
 #include "ash/public/cpp/login_screen.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
-#include "chrome/browser/chromeos/login/oobe_screen.h"
-#include "chrome/browser/chromeos/login/screens/network_error.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/login/oobe_screen.h"
+#include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
@@ -63,7 +63,7 @@ void AppLaunchSplashScreenHandler::DeclareLocalizedValues(
   builder->Add("appStartMessage", IDS_APP_START_NETWORK_WAIT_MESSAGE);
   builder->Add("configureNetwork", IDS_APP_START_CONFIGURE_NETWORK);
 
-  const base::string16 product_os_name =
+  const std::u16string product_os_name =
       l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_OS_NAME);
   builder->Add("shortcutInfo",
                l10n_util::GetStringFUTF16(IDS_APP_START_BAILOUT_SHORTCUT_FORMAT,
@@ -241,24 +241,23 @@ void AppLaunchSplashScreenHandler::SetLaunchText(const std::string& text) {
 int AppLaunchSplashScreenHandler::GetProgressMessageFromState(
     AppLaunchState state) {
   switch (state) {
-    case APP_LAUNCH_STATE_PREPARING_PROFILE:
+    case AppLaunchState::kPreparingProfile:
       return IDS_APP_START_PREPARING_PROFILE_MESSAGE;
-    case APP_LAUNCH_STATE_PREPARING_NETWORK:
+    case AppLaunchState::kPreparingNetwork:
       return IDS_APP_START_NETWORK_WAIT_MESSAGE;
-    case APP_LAUNCH_STATE_INSTALLING_APPLICATION:
+    case AppLaunchState::kInstallingApplication:
       return IDS_APP_START_APP_WAIT_MESSAGE;
-    case APP_LAUNCH_STATE_INSTALLING_EXTENSION:
+    case AppLaunchState::kInstallingExtension:
       return IDS_APP_START_EXTENSION_WAIT_MESSAGE;
-    case APP_LAUNCH_STATE_WAITING_APP_WINDOW:
+    case AppLaunchState::kWaitingAppWindow:
       return IDS_APP_START_WAIT_FOR_APP_WINDOW_MESSAGE;
-    case APP_LAUNCH_STATE_WAITING_APP_WINDOW_INSTALL_FAILED:
+    case AppLaunchState::kWaitingAppWindowInstallFailed:
       return IDS_APP_START_WAIT_FOR_APP_WINDOW_INSTALL_FAILED_MESSAGE;
-    case APP_LAUNCH_STATE_NETWORK_WAIT_TIMEOUT:
+    case AppLaunchState::kNetworkWaitTimeout:
       return IDS_APP_START_NETWORK_WAIT_TIMEOUT_MESSAGE;
-    case APP_LAUNCH_STATE_SHOWING_NETWORK_CONFIGURE_UI:
+    case AppLaunchState::kShowingNetworkConfigureUI:
       return IDS_APP_START_SHOWING_NETWORK_CONFIGURE_UI_MESSAGE;
   }
-  return IDS_APP_START_NETWORK_WAIT_MESSAGE;
 }
 
 void AppLaunchSplashScreenHandler::HandleConfigureNetwork() {

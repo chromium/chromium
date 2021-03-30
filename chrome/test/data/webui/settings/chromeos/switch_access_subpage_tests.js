@@ -2,6 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import 'chrome://os-settings/chromeos/lazy_load.js';
+
+// #import {SwitchAccessSubpageBrowserProxyImpl, SwitchAccessSubpageBrowserProxy, routes, Router} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+// #import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
+// #import {assertEquals, assertDeepEquals} from '../../chai_assert.js';
+// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+// #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
+// clang-format on
+
 /**
  * @implements {SwitchAccessSubpageBrowserProxy}
  */
@@ -96,13 +108,15 @@ suite('ManageAccessibilityPageTests', function() {
   });
 
   /**
-   * @param {!Array<string>} switches New switch assignments for select action.
+   * @param {!Array<string>} keys New switch key assignments for select action.
    * @return {string} Sub-label text from the select link row.
    */
-  function getSublabelForSelectUpdates(switches) {
-    cr.webUIListenerCallback(
-        'switch-access-assignments-changed',
-        {select: switches, next: [], previous: []});
+  function getSublabelForSelectUpdates(keys) {
+    cr.webUIListenerCallback('switch-access-assignments-changed', {
+      select: keys.map(key => ({key, device: 'usb'})),
+      next: [],
+      previous: []
+    });
 
     return page.$$('#selectLinkRow').$$('#subLabel').textContent.trim();
   }
@@ -118,10 +132,10 @@ suite('ManageAccessibilityPageTests', function() {
     // Simulate a pref change for the select action.
     cr.webUIListenerCallback(
         'switch-access-assignments-changed',
-        {select: ['a'], next: [], previous: []});
+        {select: [{key: 'a', device: 'usb'}], next: [], previous: []});
 
     assertEquals(1, page.selectAssignments_.length);
-    assertEquals('a', page.selectAssignments_[0]);
+    assertDeepEquals({key: 'a', device: 'usb'}, page.selectAssignments_[0]);
     assertEquals(0, page.nextAssignments_.length);
     assertEquals(0, page.previousAssignments_.length);
   });
@@ -130,24 +144,29 @@ suite('ManageAccessibilityPageTests', function() {
     initPage();
 
     assertEquals('0 switches assigned', getSublabelForSelectUpdates([]));
-    assertEquals('Backspace', getSublabelForSelectUpdates(['Backspace']));
+    assertEquals('Backspace (USB)', getSublabelForSelectUpdates(['Backspace']));
     assertEquals(
-        'Backspace, Tab', getSublabelForSelectUpdates(['Backspace', 'Tab']));
+        'Backspace (USB), Tab (USB)',
+        getSublabelForSelectUpdates(['Backspace', 'Tab']));
     assertEquals(
-        'Backspace, Tab, Enter',
+        'Backspace (USB), Tab (USB), Enter (USB)',
         getSublabelForSelectUpdates(['Backspace', 'Tab', 'Enter']));
     assertEquals(
-        'Backspace, Tab, Enter, and 1 more switch',
+        'Backspace (USB), Tab (USB), Enter (USB), ' +
+            'and 1 more switch',
         getSublabelForSelectUpdates(['Backspace', 'Tab', 'Enter', 'a']));
     assertEquals(
-        'Backspace, Tab, Enter, and 2 more switches',
+        'Backspace (USB), Tab (USB), Enter (USB), ' +
+            'and 2 more switches',
         getSublabelForSelectUpdates(['Backspace', 'Tab', 'Enter', 'a', 'b']));
     assertEquals(
-        'Backspace, Tab, Enter, and 3 more switches',
+        'Backspace (USB), Tab (USB), Enter (USB), ' +
+            'and 3 more switches',
         getSublabelForSelectUpdates(
             ['Backspace', 'Tab', 'Enter', 'a', 'b', 'c']));
     assertEquals(
-        'Backspace, Tab, Enter, and 4 more switches',
+        'Backspace (USB), Tab (USB), Enter (USB), ' +
+            'and 4 more switches',
         getSublabelForSelectUpdates(
             ['Backspace', 'Tab', 'Enter', 'a', 'b', 'c', 'd']));
   });
@@ -169,9 +188,11 @@ suite('ManageAccessibilityPageTests', function() {
 
     // Simulate pressing 'a' twice.
     cr.webUIListenerCallback(
-        'switch-access-got-key-press-for-assignment', {key: 'a', keyCode: 65});
+        'switch-access-got-key-press-for-assignment',
+        {key: 'a', keyCode: 65, device: 'usb'});
     cr.webUIListenerCallback(
-        'switch-access-got-key-press-for-assignment', {key: 'a', keyCode: 65});
+        'switch-access-got-key-press-for-assignment',
+        {key: 'a', keyCode: 65, device: 'usb'});
 
     // This should cause the dialog to close.
     await browserProxy.methodCalled(
@@ -189,9 +210,11 @@ suite('ManageAccessibilityPageTests', function() {
 
     // Simulate pressing 'a', and then 'b'.
     cr.webUIListenerCallback(
-        'switch-access-got-key-press-for-assignment', {key: 'a', keyCode: 65});
+        'switch-access-got-key-press-for-assignment',
+        {key: 'a', keyCode: 65, device: 'usb'});
     cr.webUIListenerCallback(
-        'switch-access-got-key-press-for-assignment', {key: 'b', keyCode: 66});
+        'switch-access-got-key-press-for-assignment',
+        {key: 'b', keyCode: 66, device: 'usb'});
 
     const element = page.$$('#switchAccessActionAssignmentDialog');
     await test_util.waitAfterNextRender(element);
@@ -208,7 +231,7 @@ suite('ManageAccessibilityPageTests', function() {
       isDeepLinkingEnabled: true,
       showExperimentalAccessibilitySwitchAccessImprovedTextInput: true,
     });
-    prefs = getDefaultPrefs();
+    const prefs = getDefaultPrefs();
     prefs.settings.a11y.switch_access.auto_scan.enabled.value = true;
     initPage(prefs);
 

@@ -19,9 +19,9 @@ TEST(DenseSet, initialization) {
     Three = 3,
     Four = 4,
     Five = 5,
-    kEnd = 6
+    kMaxValue = Five,
   };
-  using DS = DenseSet<T, T::kEnd>;
+  using DS = DenseSet<T>;
 
   DS s;
   EXPECT_TRUE(s.empty());
@@ -45,9 +45,9 @@ TEST(DenseSet, iterators_begin_end) {
     Three = 3,
     Four = 4,
     Five = 5,
-    kEnd = 6
+    kMaxValue = Five,
   };
-  using DS = DenseSet<T, T::kEnd>;
+  using DS = DenseSet<T, T::kMaxValue>;
 
   DS s;
   s.insert(T::Two);
@@ -88,9 +88,9 @@ TEST(DenseSet, iterators_begin_end_reverse) {
     Three = 3,
     Four = 4,
     Five = 5,
-    kEnd = 6
+    kMaxValue = Five,
   };
-  using DS = DenseSet<T, T::kEnd>;
+  using DS = DenseSet<T>;
 
   DS s;
   s.insert(T::Two);
@@ -123,8 +123,15 @@ TEST(DenseSet, iterators_begin_end_reverse) {
 }
 
 TEST(DenseSet, iterators_rbegin_rend) {
-  enum class T { One = 1, Two = 2, Three = 3, Four = 4, Five = 5, kEnd = 6 };
-  using DS = DenseSet<T, T::kEnd>;
+  enum class T {
+    One = 1,
+    Two = 2,
+    Three = 3,
+    Four = 4,
+    Five = 5,
+    kMaxValue = Five
+  };
+  using DS = DenseSet<T, T::kMaxValue>;
 
   DS s;
   s.insert(T::Two);
@@ -160,8 +167,15 @@ TEST(DenseSet, iterators_rbegin_rend) {
 }
 
 TEST(DenseSet, lookup) {
-  enum class T { One = 1, Two = 2, Three = 3, Four = 4, Five = 5, kEnd = 6 };
-  using DS = DenseSet<T, T::kEnd>;
+  enum class T {
+    One = 1,
+    Two = 2,
+    Three = 3,
+    Four = 4,
+    Five = 5,
+    kMaxValue = Five
+  };
+  using DS = DenseSet<T, T::kMaxValue>;
 
   DS s;
   s.insert(T::Two);
@@ -199,11 +213,37 @@ TEST(DenseSet, lookup) {
   EXPECT_NE(s.find(T::Three), s.lower_bound(T::Three));
   EXPECT_EQ(s.find(T::Four), s.lower_bound(T::Four));
   EXPECT_EQ(s.find(T::Five), s.lower_bound(T::Five));
+
+  DS t;
+  EXPECT_TRUE(t.empty());
+  EXPECT_TRUE(t.contains_none({}));
+  EXPECT_FALSE(t.contains_any({}));
+  EXPECT_TRUE(t.contains_all({}));
+
+  t.insert_all(s);
+  EXPECT_EQ(s, t);
+  EXPECT_FALSE(s.contains_none(t));
+  EXPECT_TRUE(s.contains_any(t));
+  EXPECT_TRUE(s.contains_all(t));
+  EXPECT_TRUE(s.contains_none({}));
+  EXPECT_FALSE(s.contains_any({}));
+  EXPECT_TRUE(s.contains_all({}));
+
+  t.erase(t.begin());
+  EXPECT_FALSE(s.contains_none(t));
+  EXPECT_TRUE(s.contains_any(t));
+  EXPECT_TRUE(s.contains_all(t));
+  EXPECT_FALSE(t.contains_none(s));
+  EXPECT_FALSE(t.contains_all(s));
+  EXPECT_TRUE(t.contains_any(s));
+  EXPECT_TRUE(s.contains_none({}));
+  EXPECT_FALSE(s.contains_any({}));
+  EXPECT_TRUE(s.contains_all({}));
 }
 
 TEST(DenseSet, iterators_lower_upper_bound) {
-  enum class T { One = 1, Two = 2, Three = 3, Four = 4, Five = 5, kEnd = 6 };
-  using DS = DenseSet<T, T::kEnd>;
+  enum class T { One = 1, Two = 2, Three = 3, Four = 4, Five = 5 };
+  using DS = DenseSet<T, T::Five>;
 
   DS s;
   s.insert(T::Two);
@@ -276,8 +316,8 @@ TEST(DenseSet, max_size) {
   // const int Three = 3;
   const int Four = 4;
   // const int Five = 5;
-  const int kEnd = 6;
-  using DS = DenseSet<int, kEnd>;
+  const int kMaxValue = 5;
+  using DS = DenseSet<int, kMaxValue>;
 
   DS s;
   EXPECT_TRUE(s.empty());
@@ -301,8 +341,8 @@ TEST(DenseSet, modifiers) {
   const size_t Three = 3;
   const size_t Four = 4;
   // const size_t Five = 5;
-  const size_t kEnd = 6;
-  using DS = DenseSet<size_t, kEnd>;
+  const size_t kMaxValue = 5;
+  using DS = DenseSet<size_t, kMaxValue>;
 
   DS s;
   s.insert(Two);
@@ -375,7 +415,35 @@ TEST(DenseSet, modifiers) {
 
   s.clear();
   EXPECT_EQ(s, DS());
-  EXPECT_EQ(s.size(), 0u);
+  EXPECT_TRUE(s.empty());
+
+  s.insert(Three);
+  s.insert_all(t);
+  EXPECT_EQ(s.size(), 4u);
+  EXPECT_EQ(t.size(), 3u);
+  EXPECT_NE(s, t);
+  EXPECT_FALSE(s.contains_none(t));
+  EXPECT_TRUE(s.contains_any(t));
+  EXPECT_TRUE(s.contains_all(t));
+  EXPECT_TRUE(s.contains(Three));
+  EXPECT_FALSE(t.contains_none(s));
+  EXPECT_TRUE(t.contains_any(s));
+  EXPECT_FALSE(t.contains_all(s));
+
+  s.erase_all(t);
+  EXPECT_EQ(s.size(), 1u);
+  EXPECT_TRUE(s.contains(Three));
+  EXPECT_TRUE(s.contains_none(t));
+  EXPECT_FALSE(s.contains_any(t));
+  EXPECT_FALSE(s.contains_all(t));
+
+  s.insert_all(t);
+  s.erase(Three);
+  EXPECT_EQ(s.size(), 3u);
+  EXPECT_EQ(s, t);
+
+  s.erase_all(t);
+  EXPECT_TRUE(s.empty());
 
   EXPECT_INSERTION(s, *t.begin(), true);
   EXPECT_TRUE(s.contains(One));
@@ -389,8 +457,8 @@ TEST(DenseSet, modifiers) {
 }
 
 TEST(DenseSet, std_set) {
-  constexpr size_t kEnd = 50;
-  DenseSet<size_t, kEnd> dense_set;
+  constexpr size_t kMaxValue = 50;
+  DenseSet<size_t, kMaxValue> dense_set;
   std::set<size_t> std_set;
 
   auto expect_equivalence = [&] {
@@ -401,7 +469,7 @@ TEST(DenseSet, std_set) {
 
   auto random_insert = [&] {
     expect_equivalence();
-    size_t value = base::RandUint64() % kEnd;
+    size_t value = base::RandUint64() % kMaxValue;
     auto p = dense_set.insert(value);
     auto q = std_set.insert(value);
     EXPECT_EQ(p.second, q.second);
@@ -412,13 +480,13 @@ TEST(DenseSet, std_set) {
 
   auto random_erase = [&] {
     expect_equivalence();
-    size_t value = base::RandUint64() % kEnd;
+    size_t value = base::RandUint64() % kMaxValue;
     EXPECT_EQ(dense_set.erase(value), std_set.erase(value));
   };
 
   auto random_erase_iterator = [&] {
     expect_equivalence();
-    size_t value = base::RandUint64() % kEnd;
+    size_t value = base::RandUint64() % kMaxValue;
     auto it = dense_set.find(value);
     auto jt = std_set.find(value);
     EXPECT_EQ(it == dense_set.end(), jt == std_set.end());
@@ -434,8 +502,8 @@ TEST(DenseSet, std_set) {
 
   auto random_erase_range = [&] {
     expect_equivalence();
-    size_t min_value = base::RandUint64() % kEnd;
-    size_t max_value = base::RandUint64() % kEnd;
+    size_t min_value = base::RandUint64() % kMaxValue;
+    size_t max_value = base::RandUint64() % kMaxValue;
     min_value = std::min(min_value, max_value);
     max_value = std::max(min_value, max_value);
     dense_set.erase(dense_set.lower_bound(min_value),
@@ -444,11 +512,11 @@ TEST(DenseSet, std_set) {
                   std_set.upper_bound(max_value));
   };
 
-  for (size_t i = 0; i < kEnd; ++i) {
+  for (size_t i = 0; i < kMaxValue; ++i) {
     random_insert();
   }
 
-  for (size_t i = 0; i < kEnd / 2; ++i) {
+  for (size_t i = 0; i < kMaxValue / 2; ++i) {
     random_erase();
   }
 
@@ -457,11 +525,11 @@ TEST(DenseSet, std_set) {
   std_set.clear();
   expect_equivalence();
 
-  for (size_t i = 0; i < kEnd; ++i) {
+  for (size_t i = 0; i < kMaxValue; ++i) {
     random_insert();
   }
 
-  for (size_t i = 0; i < kEnd; ++i) {
+  for (size_t i = 0; i < kMaxValue; ++i) {
     random_erase_iterator();
   }
 
@@ -470,11 +538,11 @@ TEST(DenseSet, std_set) {
   std_set.clear();
   expect_equivalence();
 
-  for (size_t i = 0; i < kEnd; ++i) {
+  for (size_t i = 0; i < kMaxValue; ++i) {
     random_insert();
   }
 
-  for (size_t i = 0; i < kEnd; ++i) {
+  for (size_t i = 0; i < kMaxValue; ++i) {
     random_erase_range();
   }
 

@@ -68,7 +68,7 @@ bool AXTreeSourceAura::GetTreeData(ui::AXTreeData* tree_data) const {
           for (aura::Window* child : top->children())
             stack.push(child);
         }
-        if (tree_data->focus_id == ui::AXNode::kInvalidAXID) {
+        if (tree_data->focus_id == ui::kInvalidAXNodeID) {
           LOG(ERROR) << "Could not find node to focus in desktop tree.";
         }
       }

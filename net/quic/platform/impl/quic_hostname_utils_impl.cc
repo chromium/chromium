@@ -6,6 +6,7 @@
 
 #include "base/strings/abseil_string_conversions.h"
 #include "net/base/url_util.h"
+#include "net/third_party/quiche/src/quic/platform/api/quic_flags.h"
 #include "url/gurl.h"
 #include "url/url_canon.h"
 
@@ -23,7 +24,8 @@ bool QuicHostnameUtilsImpl::IsValidSNI(absl::string_view sni) {
       net::CanonicalizeHost(base::StringViewToStringPiece(sni), &host_info));
   return !host_info.IsIPAddress() &&
          net::IsCanonicalizedHostCompliant(canonicalized_host) &&
-         sni.find_last_of('.') != std::string::npos;
+         (GetQuicReloadableFlag(quic_and_tls_allow_sni_without_dots) ||
+          sni.find_last_of('.') != std::string::npos);
 }
 
 // static

@@ -145,6 +145,7 @@ class FakeDownloadItem : public download::DownloadItem {
       scoped_refptr<const net::HttpResponseHeaders> response_headers);
   void SetMimeType(const std::string& mime_type);
   void SetOriginalUrl(const GURL& url);
+  void SetTabUrl(const GURL& url);
   void SetLastReason(download::DownloadInterruptReason last_reason);
   void SetReceivedBytes(int64_t received_bytes);
   void SetTotalBytes(int64_t total_bytes);
@@ -173,6 +174,7 @@ class FakeDownloadItem : public download::DownloadItem {
   scoped_refptr<const net::HttpResponseHeaders> response_headers_;
   std::string mime_type_;
   GURL original_url_;
+  GURL tab_url_;
   download::DownloadInterruptReason last_reason_ =
       download::DOWNLOAD_INTERRUPT_REASON_NONE;
   int64_t received_bytes_ = 0;

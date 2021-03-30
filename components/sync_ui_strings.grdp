@@ -2,13 +2,13 @@
 <grit-part>
   <if expr="not is_android">
     <message name="IDS_SYNC_BASIC_ENCRYPTION_DATA" desc="Text of the radio that when selected enables basic encryption.">
-      Encrypt synced passwords with your Google credentials
+      Encrypt synced passwords with your Google Account
     </message>
     <message name="IDS_SYNC_CONFIGURE_ENCRYPTION" desc="Link to configure sync encryption for passwords">
       Please update your sync passphrase.
     </message>
     <message name="IDS_SYNC_DATATYPE_AUTOFILL" desc="Form Autofill items, one of the data types that we allow syncing.">
-      Autofill
+      Addresses and More
     </message>
     <message name="IDS_SYNC_DATATYPE_BOOKMARKS" desc="Bookmarks, one of the data types that we allow syncing.">
       Bookmarks
@@ -20,7 +20,7 @@
       Settings
     </message>
     <message name="IDS_SYNC_DATATYPE_TABS" desc="Open Tabs, one of the data types that we allow syncing.">
-      Open tabs
+      Open Tabs
     </message>
     <message name="IDS_SYNC_DATATYPE_TYPED_URLS" desc="History, one of the data types that we allow syncing.">
       History

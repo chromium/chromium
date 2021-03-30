@@ -39,7 +39,7 @@ StatusIconLinuxWrapper::StatusIconLinuxWrapper(
     views::StatusIconLinux* status_icon,
     StatusIconType status_icon_type,
     const gfx::ImageSkia& image,
-    const base::string16& tool_tip)
+    const std::u16string& tool_tip)
     : status_icon_(status_icon),
       status_icon_type_(status_icon_type),
       image_(GetBestImageRep(image)),
@@ -52,7 +52,7 @@ StatusIconLinuxWrapper::StatusIconLinuxWrapper(
 StatusIconLinuxWrapper::StatusIconLinuxWrapper(
     scoped_refptr<StatusIconLinuxDbus> status_icon,
     const gfx::ImageSkia& image,
-    const base::string16& tool_tip)
+    const std::u16string& tool_tip)
     : StatusIconLinuxWrapper(status_icon.get(), kTypeDbus, image, tool_tip) {
   status_icon_dbus_ = status_icon;
 }
@@ -62,7 +62,7 @@ StatusIconLinuxWrapper::StatusIconLinuxWrapper(
     std::unique_ptr<views::StatusIconLinux> status_icon,
     StatusIconType status_icon_type,
     const gfx::ImageSkia& image,
-    const base::string16& tool_tip)
+    const std::u16string& tool_tip)
     : StatusIconLinuxWrapper(status_icon.get(),
                              status_icon_type,
                              image,
@@ -81,7 +81,7 @@ void StatusIconLinuxWrapper::SetImage(const gfx::ImageSkia& image) {
     status_icon_->SetIcon(image_);
 }
 
-void StatusIconLinuxWrapper::SetToolTip(const base::string16& tool_tip) {
+void StatusIconLinuxWrapper::SetToolTip(const std::u16string& tool_tip) {
   tool_tip_ = tool_tip;
   if (status_icon_)
     status_icon_->SetToolTip(tool_tip);
@@ -89,8 +89,8 @@ void StatusIconLinuxWrapper::SetToolTip(const base::string16& tool_tip) {
 
 void StatusIconLinuxWrapper::DisplayBalloon(
     const gfx::ImageSkia& icon,
-    const base::string16& title,
-    const base::string16& contents,
+    const std::u16string& title,
+    const std::u16string& contents,
     const message_center::NotifierId& notifier_id) {
   notification_.DisplayBalloon(icon, title, contents, notifier_id);
 }
@@ -107,7 +107,7 @@ const gfx::ImageSkia& StatusIconLinuxWrapper::GetImage() const {
   return image_;
 }
 
-const base::string16& StatusIconLinuxWrapper::GetToolTip() const {
+const std::u16string& StatusIconLinuxWrapper::GetToolTip() const {
   return tool_tip_;
 }
 
@@ -147,7 +147,7 @@ void StatusIconLinuxWrapper::OnMenuStateChanged() {
 std::unique_ptr<StatusIconLinuxWrapper>
 StatusIconLinuxWrapper::CreateWrappedStatusIcon(
     const gfx::ImageSkia& image,
-    const base::string16& tool_tip) {
+    const std::u16string& tool_tip) {
 #if defined(USE_DBUS)
   return base::WrapUnique(new StatusIconLinuxWrapper(
       base::MakeRefCounted<StatusIconLinuxDbus>(), image, tool_tip));

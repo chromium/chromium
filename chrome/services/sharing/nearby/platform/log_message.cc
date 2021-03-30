@@ -16,6 +16,8 @@ api::LogMessage::Severity g_min_log_severity = api::LogMessage::Severity::kInfo;
 
 logging::LogSeverity ConvertSeverity(api::LogMessage::Severity severity) {
   switch (severity) {
+    case api::LogMessage::Severity::kVerbose:
+      return logging::LOG_VERBOSE;
     case api::LogMessage::Severity::kInfo:
       return logging::LOG_INFO;
     case api::LogMessage::Severity::kWarning:

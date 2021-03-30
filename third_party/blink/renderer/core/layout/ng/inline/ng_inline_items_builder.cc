@@ -481,7 +481,20 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendText(
     AppendEmptyTextItem(layout_object);
     return;
   }
-  text_.ReserveCapacity(string.length());
+
+  const wtf_size_t estimated_length = text_.length() + string.length();
+  if (estimated_length > text_.Capacity()) {
+    // The reallocations may occur very frequently for large text such as log
+    // files. We use a more aggressive expansion strategy, the same as
+    // |Vector::ExpandCapacity| does for |Vector|s with inline storage.
+    // |ReserveCapacity| reserves only the requested size.
+    const wtf_size_t new_capacity =
+        std::max(estimated_length, text_.Capacity() * 2);
+    if (string.Is8Bit())
+      text_.ReserveCapacity(new_capacity);
+    else
+      text_.Reserve16BitCapacity(new_capacity);
+  }
 
   typename OffsetMappingBuilder::SourceNodeScope scope(&mapping_builder_,
                                                        layout_object);

@@ -117,6 +117,7 @@ void RootFrameSinkProxy::InvalidateOnUI() {
 
 void RootFrameSinkProxy::AddChildFrameSinkId(
     const viz::FrameSinkId& frame_sink_id) {
+  DCHECK_NE(frame_sink_id.client_id(), 0u);
   DCHECK_CALLED_ON_VALID_THREAD(ui_thread_checker_);
   viz_task_runner_->PostTask(
       FROM_HERE,

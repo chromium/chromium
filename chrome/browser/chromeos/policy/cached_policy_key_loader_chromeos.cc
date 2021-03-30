@@ -13,7 +13,6 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/task_runner_util.h"
@@ -31,24 +30,6 @@ const base::FilePath::CharType kPolicyKeyFile[] =
 
 // Maximum key size that will be loaded, in bytes.
 const size_t kKeySizeLimit = 16 * 1024;
-
-// Failures that can happen when loading the policy key,
-// This enum is used to define the buckets for an enumerated UMA histogram.
-// Hence,
-//   (a) existing enumerated constants should never be deleted or reordered, and
-//   (b) new constants should only be appended at the end of the enumeration.
-enum class ValidationFailure {
-  DBUS,
-  LOAD_KEY,
-
-  // Number of histogram buckets. Has to be the last element.
-  MAX_VALUE,
-};
-
-void SampleValidationFailure(ValidationFailure sample) {
-  UMA_HISTOGRAM_ENUMERATION("Enterprise.UserPolicyValidationFailure", sample,
-                            ValidationFailure::MAX_VALUE);
-}
 
 }  // namespace
 
@@ -158,9 +139,6 @@ std::string CachedPolicyKeyLoaderChromeOS::LoadPolicyKey(
     LOG(ERROR) << "Failed to read key at " << path.value();
   }
 
-  if (key.empty())
-    SampleValidationFailure(ValidationFailure::LOAD_KEY);
-
   return key;
 }
 
@@ -190,8 +168,6 @@ void CachedPolicyKeyLoaderChromeOS::OnGetSanitizedUsername(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!sanitized_username || sanitized_username->empty()) {
-    SampleValidationFailure(ValidationFailure::DBUS);
-
     // Don't bother trying to load a key if we don't know where it is - just
     // signal that the load attempt has finished.
     key_load_in_progress_ = false;

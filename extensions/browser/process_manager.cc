@@ -46,12 +46,15 @@
 #include "extensions/browser/process_manager_delegate.h"
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/browser/process_manager_observer.h"
+#include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
+#include "extensions/common/mojom/renderer.mojom.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 
 using content::BrowserContext;
 
@@ -183,7 +186,7 @@ struct ProcessManager::BackgroundPageData {
 // Data of a RenderFrameHost associated with an extension.
 struct ProcessManager::ExtensionRenderFrameData {
   // The type of the view.
-  extensions::ViewType view_type = VIEW_TYPE_INVALID;
+  extensions::mojom::ViewType view_type = extensions::mojom::ViewType::kInvalid;
 
   // Whether the view is keeping the lazy background page alive or not.
   bool has_keepalive = false;
@@ -191,17 +194,17 @@ struct ProcessManager::ExtensionRenderFrameData {
   // Returns whether the view can keep the lazy background page alive or not.
   bool CanKeepalive() const {
     switch (view_type) {
-      case VIEW_TYPE_APP_WINDOW:
-      case VIEW_TYPE_BACKGROUND_CONTENTS:
-      case VIEW_TYPE_COMPONENT:
-      case VIEW_TYPE_EXTENSION_DIALOG:
-      case VIEW_TYPE_EXTENSION_GUEST:
-      case VIEW_TYPE_EXTENSION_POPUP:
-      case VIEW_TYPE_TAB_CONTENTS:
+      case extensions::mojom::ViewType::kAppWindow:
+      case extensions::mojom::ViewType::kBackgroundContents:
+      case extensions::mojom::ViewType::kComponent:
+      case extensions::mojom::ViewType::kExtensionDialog:
+      case extensions::mojom::ViewType::kExtensionGuest:
+      case extensions::mojom::ViewType::kExtensionPopup:
+      case extensions::mojom::ViewType::kTabContents:
         return true;
 
-      case VIEW_TYPE_INVALID:
-      case VIEW_TYPE_EXTENSION_BACKGROUND_PAGE:
+      case extensions::mojom::ViewType::kInvalid:
+      case extensions::mojom::ViewType::kExtensionBackgroundPage:
         return false;
     }
     NOTREACHED();
@@ -281,12 +284,6 @@ ProcessManager::ProcessManager(BrowserContext* context,
         base::BindOnce(&ProcessManager::MaybeCreateStartupBackgroundHosts,
                        weak_ptr_factory_.GetWeakPtr()));
   }
-  registrar_.Add(this,
-                 extensions::NOTIFICATION_EXTENSION_HOST_DESTROYED,
-                 content::Source<BrowserContext>(context));
-  registrar_.Add(this,
-                 extensions::NOTIFICATION_EXTENSION_HOST_VIEW_SHOULD_CLOSE,
-                 content::Source<BrowserContext>(context));
   content::DevToolsAgentHost::AddObserver(this);
 }
 
@@ -397,8 +394,8 @@ bool ProcessManager::CreateBackgroundHost(const Extension* extension,
   DVLOG(1) << "CreateBackgroundHost " << extension->id();
   ExtensionHost* host =
       new ExtensionHost(extension, GetSiteInstanceForURL(url).get(), url,
-                        VIEW_TYPE_EXTENSION_BACKGROUND_PAGE);
-  host->CreateRenderViewSoon();
+                        mojom::ViewType::kExtensionBackgroundPage);
+  host->CreateRendererSoon();
   OnBackgroundHostCreated(host);
   return true;
 }
@@ -532,6 +529,13 @@ void ProcessManager::DecrementLazyKeepaliveCount(
     DecrementLazyKeepaliveCount(extension->id(), activity_type, extra_data);
 }
 
+void ProcessManager::NotifyExtensionProcessTerminated(
+    const Extension* extension) {
+  DCHECK(extension);
+  for (auto& observer : observer_list_)
+    observer.OnExtensionProcessTerminated(extension);
+}
+
 ProcessManager::ActivitiesMultiset ProcessManager::GetLazyKeepaliveActivities(
     const Extension* extension) {
   ProcessManager::ActivitiesMultiset result;
@@ -545,7 +549,15 @@ void ProcessManager::OnShouldSuspendAck(const std::string& extension_id,
   ExtensionHost* host = GetBackgroundHostForExtension(extension_id);
   if (host &&
       sequence_id == background_page_data_[extension_id].close_sequence_id) {
-    host->render_process_host()->Send(new ExtensionMsg_Suspend(extension_id));
+    mojom::Renderer* renderer =
+        RendererStartupHelperFactory::GetForBrowserContext(browser_context_)
+            ->GetRenderer(host->render_process_host());
+    if (renderer) {
+      renderer->SuspendExtension(
+          extension_id,
+          base::BindOnce(&ProcessManager::OnSuspendAck,
+                         weak_ptr_factory_.GetWeakPtr(), extension_id));
+    }
   }
 }
 
@@ -559,7 +571,7 @@ void ProcessManager::OnSuspendAck(const std::string& extension_id) {
       base::TimeDelta::FromMilliseconds(g_event_page_suspending_time_msec));
 }
 
-void ProcessManager::OnNetworkRequestStarted(
+void ProcessManager::NetworkRequestStarted(
     content::RenderFrameHost* render_frame_host,
     uint64_t request_id) {
   ExtensionHost* host = GetBackgroundHostForExtension(
@@ -576,7 +588,7 @@ void ProcessManager::OnNetworkRequestStarted(
   host->OnNetworkRequestStarted(request_id);
 }
 
-void ProcessManager::OnNetworkRequestDone(
+void ProcessManager::NetworkRequestDone(
     content::RenderFrameHost* render_frame_host,
     uint64_t request_id) {
   auto result = pending_network_requests_.find(request_id);
@@ -604,8 +616,11 @@ void ProcessManager::CancelSuspend(const Extension* extension) {
   ExtensionHost* host = GetBackgroundHostForExtension(extension->id());
   if (host && is_closing) {
     is_closing = false;
-    host->render_process_host()->Send(
-        new ExtensionMsg_CancelSuspend(extension->id()));
+    mojom::Renderer* renderer =
+        RendererStartupHelperFactory::GetForBrowserContext(browser_context_)
+            ->GetRenderer(host->render_process_host());
+    if (renderer)
+      renderer->CancelSuspendExtension(extension->id());
     // This increment / decrement is to simulate an instantaneous event. This
     // has the effect of invalidating close_sequence_id, preventing any in
     // progress closes from completing and starting a new close process if
@@ -622,9 +637,9 @@ void ProcessManager::CloseBackgroundHosts() {
   // callbacks to modify the |background_hosts_| set.
   ExtensionHostSet hosts_copy = background_hosts_;
   for (auto* host : hosts_copy) {
-    // Deleting the host will cause a NOTIFICATION_EXTENSION_HOST_DESTROYED
-    // which will cause the removal of the host from the |background_hosts_| set
-    // in the Observe() method below.
+    // Deleting the host will cause a OnExtensionHostDestroyed which will cause
+    // the removal of the host from the |background_hosts_| set in the
+    // OnExtensionHostDestroyed() method below.
     delete host;
     DCHECK_EQ(0u, background_hosts_.count(host));
   }
@@ -647,33 +662,6 @@ void ProcessManager::SetEventPageSuspendingTimeForTesting(
 
 ////////////////////////////////////////////////////////////////////////////////
 // Private
-
-void ProcessManager::Observe(int type,
-                             const content::NotificationSource& source,
-                             const content::NotificationDetails& details) {
-  TRACE_EVENT0("browser,startup", "ProcessManager::Observe");
-  switch (type) {
-    case extensions::NOTIFICATION_EXTENSION_HOST_DESTROYED: {
-      ExtensionHost* host = content::Details<ExtensionHost>(details).ptr();
-      if (background_hosts_.erase(host)) {
-        // Note: |host->extension()| may be null at this point.
-        ClearBackgroundPageData(host->extension_id());
-        background_page_data_[host->extension_id()].since_suspended.reset(
-            new base::ElapsedTimer());
-      }
-      break;
-    }
-    case extensions::NOTIFICATION_EXTENSION_HOST_VIEW_SHOULD_CLOSE: {
-      ExtensionHost* host = content::Details<ExtensionHost>(details).ptr();
-      if (host->extension_host_type() == VIEW_TYPE_EXTENSION_BACKGROUND_PAGE) {
-        CloseBackgroundHost(host);
-      }
-      break;
-    }
-    default:
-      NOTREACHED();
-  }
-}
 
 void ProcessManager::OnExtensionLoaded(BrowserContext* browser_context,
                                        const Extension* extension) {
@@ -706,6 +694,7 @@ void ProcessManager::CreateStartupBackgroundHosts() {
 void ProcessManager::OnBackgroundHostCreated(ExtensionHost* host) {
   DCHECK_EQ(browser_context_, host->browser_context());
   background_hosts_.insert(host);
+  host->AddObserver(this);
 
   if (BackgroundInfo::HasLazyBackgroundPage(host->extension())) {
     std::unique_ptr<base::ElapsedTimer> since_suspended = std::move(
@@ -721,7 +710,8 @@ void ProcessManager::OnBackgroundHostCreated(ExtensionHost* host) {
 
 void ProcessManager::CloseBackgroundHost(ExtensionHost* host) {
   ExtensionId extension_id = host->extension_id();
-  CHECK(host->extension_host_type() == VIEW_TYPE_EXTENSION_BACKGROUND_PAGE);
+  CHECK(host->extension_host_type() ==
+        mojom::ViewType::kExtensionBackgroundPage);
   delete host;
   // |host| should deregister itself from our structures.
   CHECK(background_hosts_.find(host) == background_hosts_.end());
@@ -854,12 +844,18 @@ void ProcessManager::OnLazyBackgroundPageIdle(const std::string& extension_id,
       sequence_id == background_page_data_[extension_id].close_sequence_id) {
     // Tell the renderer we are about to close. This is a simple ping that the
     // renderer will respond to. The purpose is to control sequencing: if the
-    // extension remains idle until the renderer responds with an ACK, then we
-    // know that the extension process is ready to shut down. If our
-    // close_sequence_id has already changed, then we would ignore the
-    // ShouldSuspendAck, so we don't send the ping.
-    host->render_process_host()->Send(new ExtensionMsg_ShouldSuspend(
-        extension_id, sequence_id));
+    // extension remains idle until the renderer responds, then we know that the
+    // extension process is ready to shut down. If our close_sequence_id has
+    // already changed, then we would ignore the reply to this message, so we
+    // don't send the ping.
+    mojom::Renderer* renderer =
+        RendererStartupHelperFactory::GetForBrowserContext(browser_context())
+            ->GetRenderer(host->render_process_host());
+    if (renderer) {
+      renderer->ShouldSuspend(base::BindOnce(
+          &ProcessManager::OnShouldSuspendAck, weak_ptr_factory_.GetWeakPtr(),
+          extension_id, sequence_id));
+    }
   }
 }
 
@@ -915,7 +911,7 @@ const Extension* ProcessManager::GetExtensionForAgentHost(
   // Ignore unrelated notifications.
   if (!web_contents || web_contents->GetBrowserContext() != browser_context_)
     return nullptr;
-  if (GetViewType(web_contents) != VIEW_TYPE_EXTENSION_BACKGROUND_PAGE)
+  if (GetViewType(web_contents) != mojom::ViewType::kExtensionBackgroundPage)
     return nullptr;
   return GetExtensionForWebContents(web_contents);
 }
@@ -977,9 +973,9 @@ void ProcessManager::RegisterServiceWorker(const WorkerId& worker_id) {
     content::RenderProcessHost* render_process_host =
         content::RenderProcessHost::FromID(render_process_id);
     DCHECK(render_process_host);
-    if (!process_observer_.IsObserving(render_process_host)) {
+    if (!process_observations_.IsObservingSource(render_process_host)) {
       // These will be cleaned up in RenderProcessExited().
-      process_observer_.Add(render_process_host);
+      process_observations_.AddObservation(render_process_host);
     }
     for (auto& observer : observer_list_)
       observer.OnServiceWorkerRegistered(worker_id);
@@ -989,8 +985,8 @@ void ProcessManager::RegisterServiceWorker(const WorkerId& worker_id) {
 void ProcessManager::RenderProcessExited(
     content::RenderProcessHost* host,
     const content::ChildProcessTerminationInfo& info) {
-  DCHECK(process_observer_.IsObserving(host));
-  process_observer_.Remove(host);
+  DCHECK(process_observations_.IsObservingSource(host));
+  process_observations_.RemoveObservation(host);
   const int render_process_id = host->GetID();
   // Look up and then clean up the entries that are affected by
   // |render_process_id| destruction.
@@ -1018,6 +1014,25 @@ void ProcessManager::RenderProcessExited(
     DCHECK(all_extension_workers_.GetAllForExtension(extension_id).empty());
 #endif
   worker_process_to_extension_ids_.erase(iter);
+}
+
+void ProcessManager::OnExtensionHostDestroyed(ExtensionHost* host) {
+  TRACE_EVENT0("browser,startup", "ProcessManager::OnExtensionHostDestroyed");
+  host->RemoveObserver(this);
+
+  DCHECK(background_hosts_.find(host) != background_hosts_.end());
+  background_hosts_.erase(host);
+  // Note: |host->extension()| may be null at this point.
+  ClearBackgroundPageData(host->extension_id());
+  background_page_data_[host->extension_id()].since_suspended =
+      std::make_unique<base::ElapsedTimer>();
+}
+
+void ProcessManager::OnExtensionHostShouldClose(ExtensionHost* host) {
+  TRACE_EVENT0("browser,startup", "ProcessManager::OnExtensionHostShouldClose");
+  DCHECK(host->extension_host_type() ==
+         mojom::ViewType::kExtensionBackgroundPage);
+  CloseBackgroundHost(host);
 }
 
 void ProcessManager::UnregisterServiceWorker(const WorkerId& worker_id) {

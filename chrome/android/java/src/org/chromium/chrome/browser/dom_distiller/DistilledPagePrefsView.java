@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
 import org.chromium.dom_distiller.mojom.FontFamily;
 import org.chromium.dom_distiller.mojom.Theme;
-import org.chromium.ui.UiUtils;
 
 import java.text.NumberFormat;
 import java.util.HashMap;
@@ -86,8 +85,8 @@ public class DistilledPagePrefsView extends LinearLayout
     }
 
     public static void showDialog(Context context) {
-        AlertDialog.Builder builder = new UiUtils.CompatibleAlertDialogBuilder(
-                context, R.style.Theme_Chromium_AlertDialog);
+        AlertDialog.Builder builder =
+                new AlertDialog.Builder(context, R.style.Theme_Chromium_AlertDialog);
         builder.setView(DistilledPagePrefsView.create(context));
         builder.show();
     }

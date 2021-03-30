@@ -37,7 +37,7 @@ const base::TimeDelta kTPMUpdatePlannedNotificationWaitTime =
 // are available and AutoUpdateMode::kNever will be returned. This value is set
 // via the device policy TPMFirmwareUpdateSettings.
 policy::AutoUpdateMode GetTPMAutoUpdateModeSetting(
-    const chromeos::CrosSettings* cros_settings,
+    const ash::CrosSettings* cros_settings,
     const base::RepeatingClosure callback) {
   if (!g_browser_process->platform_part()
            ->browser_policy_connector_chromeos()
@@ -81,7 +81,7 @@ policy::AutoUpdateMode GetTPMAutoUpdateModeSetting(
 namespace policy {
 
 TPMAutoUpdateModePolicyHandler::TPMAutoUpdateModePolicyHandler(
-    chromeos::CrosSettings* cros_settings,
+    ash::CrosSettings* cros_settings,
     PrefService* local_state)
     : cros_settings_(cros_settings), local_state_(local_state) {
   DCHECK(local_state_);

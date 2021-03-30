@@ -372,9 +372,9 @@ void DoSomething(const base::RepeatingCallback<double(double)>& callback) {
 
 If running a callback could result in its own destruction (e.g., if the callback
 recipient deletes the object the callback is a member of), the callback should
-be moved before it can be safely invoked. (Note that this is only an issue for
-RepeatingCallbacks, because a OnceCallback always has to be moved for
-execution.)
+be moved or copied onto the stack before it can be safely invoked. (Note that
+this is only an issue for RepeatingCallbacks, because a OnceCallback always has
+to be moved for execution.)
 
 ```cpp
 void Foo::RunCallback() {
@@ -608,7 +608,10 @@ Sometimes you want to call a function that returns a value in a callback that
 doesn't expect a return value.
 
 ```cpp
-int DoSomething(int arg) { cout << arg << endl; }
+int DoSomething(int arg) {
+  cout << arg << endl;
+  return arg;
+}
 base::RepeatingCallback<void(int)> cb =
     base::BindRepeating(IgnoreResult(&DoSomething));
 ```
@@ -673,25 +676,74 @@ base::Closure cb = base::Bind(&DontTakeRef, base::RetainedRef(f));
 `base::RetainedRef` holds a reference to the object and passes a raw pointer to
 the object when the Callback is run.
 
-### Passing Parameters By Reference
+### Binding Const Reference Parameters
 
-References are *copied* unless `std::ref` or `std::cref` is used. Example:
+If the callback function takes a const reference parameter then the value is
+*copied* when bound unless `std::ref` or `std::cref` is used. Example:
 
 ```cpp
 void foo(const int& arg) { printf("%d %p\n", arg, &arg); }
 int n = 1;
-base::Closure has_copy = base::Bind(&foo, n);
-base::Closure has_ref = base::Bind(&foo, std::cref(n));
+base::OnceClosure has_copy = base::BindOnce(&foo, n);
+base::OnceClosure has_ref = base::BindOnce(&foo, std::cref(n));
 n = 2;
-foo(n);                        // Prints "2 0xaaaaaaaaaaaa"
-has_copy.Run();                // Prints "1 0xbbbbbbbbbbbb"
-has_ref.Run();                 // Prints "2 0xaaaaaaaaaaaa"
+foo(n);                                   // Prints "2 0xaaaaaaaaaaaa"
+std::move(has_copy).Run();                // Prints "1 0xbbbbbbbbbbbb"
+std::move(has_ref).Run();                 // Prints "2 0xaaaaaaaaaaaa"
 ```
 
-Normally parameters are copied in the closure.
-**DANGER**: `std::ref` and `std::cref` store a (const) reference instead,
-referencing the original parameter. This means that you must ensure the object
-outlives the callback!
+Normally parameters are copied in the closure. **DANGER**: `std::ref` and
+`std::cref` store a (const) reference instead, referencing the original
+parameter. This means that you must ensure the object outlives the callback!
+
+### Binding Non-Const Reference Parameters
+
+If the callback function takes a non-const reference then the bind statement
+must specify what behavior is desired. If a reference that can mutate the
+original value is desired then `std::ref` is used. If the callback should take
+ownership of the value, either by making a copy or moving an existing value,
+then `base::OwnedRef` is used. If neither is used the bind statement will fail
+to compile. Example:
+
+```cpp
+void foo(int& arg) {
+  printf("%d\n", arg);
+  ++arg;
+}
+
+int n = 0;
+base::RepeatingClosure has_ref = base::BindRepeating(&foo, std::ref(n));
+base::RepeatingClosure has_copy = base::BindRepeating(&foo, base::OwnedRef(n));
+
+foo(n);                        // Prints "0"
+has_ref.Run();                 // Prints "1"
+has_ref.Run();                 // Prints "2"
+foo(n);                        // Prints "3"
+
+has_copy.Run();                // Prints "0"
+has_copy.Run();                // Prints "1"
+
+// This will fail to compile.
+base::RepeatingClosure cb = base::BindRepeating(&foo, n);
+```
+
+Normally parameters are copied in the closure. **DANGER**: `std::ref` stores a
+reference instead, referencing the original parameter. This means that you must
+ensure the object outlives the callback!
+
+If the callback function has an output reference parameter but the output value
+isn't needed then `base::OwnedRef()` is a convenient way to handle it. The
+callback owned value will be mutated by the callback function and then deleted
+along with the callback. Example:
+
+```cpp
+bool Compute(size_t index, int& output);
+
+// The `output` parameter isn't important for the callback, it only cares about
+// the return value.
+base::OnceClosure cb = base::BindOnce(&Compute, index, base::OwnedRef(0));
+bool success = std::move(cb).Run();
+```
 
 ## Implementation notes
 

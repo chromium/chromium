@@ -4,10 +4,31 @@
 
 import("//media/media_options.gni")
 
-if (enable_library_cdms) {
-  source_set("cdm_api") {
-    sources = [ "api/content_decryption_module.h" ]
+source_set("cdm_api") {
+  sources = [ "api/content_decryption_module.h" ]
+}
+
+source_set("cdm_type_conversion") {
+  if (enable_library_cdms) {
+    # This target is a subcomponent.
+    visibility = [
+      "//media",
+      "//media/cdm",
+    ]
+    configs += [ "//media:subcomponent_config" ]
+  } else {
+    visibility = [ "//media/cdm/library_cdm/clear_key_cdm:clear_key_cdm" ]
   }
+
+  sources = [
+    "cdm_type_conversion.cc",
+    "cdm_type_conversion.h",
+  ]
+
+  deps = [
+    ":cdm_api",
+    "//media/base",
+  ]
 }
 
 source_set("cdm") {
@@ -60,6 +81,7 @@ source_set("cdm") {
     deps += [
       ":cdm_api",
       ":cdm_paths",
+      ":cdm_type_conversion",
       "//components/crash/core/common:crash_key",
     ]
     sources += [
@@ -75,8 +97,6 @@ source_set("cdm") {
       "cdm_helpers.h",
       "cdm_module.cc",
       "cdm_module.h",
-      "cdm_type_conversion.cc",
-      "cdm_type_conversion.h",
       "cdm_wrapper.h",
       "output_protection.h",
       "platform_verification.h",
@@ -165,6 +185,7 @@ source_set("unit_tests") {
       "simple_cdm_buffer.cc",
       "simple_cdm_buffer.h",
     ]
+
     data_deps += [ "//media/cdm/library_cdm/clear_key_cdm" ]
 
     deps += [

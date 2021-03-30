@@ -8,13 +8,7 @@
 #include "content/browser/renderer_host/input/input_router.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::TimeDelta;
-using blink::WebGestureEvent;
 using blink::WebInputEvent;
-using blink::WebMouseEvent;
-using blink::WebMouseWheelEvent;
-using blink::WebTouchEvent;
-using blink::WebTouchPoint;
 
 namespace content {
 

@@ -2,7 +2,12 @@
 
 <link rel="import" href="shared_style.html">
 <link rel="import" href="toggle_row.html">
+<link rel="import" href="store_client.html">
+<link rel="import" href="browser_proxy.html"
+<link rel="import" href="constants.html">
+<link rel="import" href="util.html">
 <link rel="import" href="../../metrics_recorder.html">
+<link rel="import" href="chrome://resources/html/assert.html">
 
 <dom-module id="app-management-permission-item">
   <template>
@@ -21,7 +26,7 @@
         display: none;
       }
     </style>
-    <!-- `permission-item` does not include any icon-set, so containing
+    <!-- permission-item does not include any icon-set, so containing
      elements should import the icon-set needed for the specified |icon|. -->
     <template is="dom-if" if="[[available_]]">
       <app-management-toggle-row

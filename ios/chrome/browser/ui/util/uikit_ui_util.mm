@@ -193,6 +193,26 @@ UIInterfaceOrientation GetInterfaceOrientation(UIWindow* window) {
 #endif
 }
 
+UIActivityIndicatorView* GetMediumUIActivityIndicatorView() {
+#if !defined(__IPHONE_13_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_13_0
+  return [[UIActivityIndicatorView alloc]
+      initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+#else
+  return [[UIActivityIndicatorView alloc]
+      initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+#endif
+}
+
+UIActivityIndicatorView* GetLargeUIActivityIndicatorView() {
+#if !defined(__IPHONE_13_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_13_0
+  return [[UIActivityIndicatorView alloc]
+      initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+#else
+  return [[UIActivityIndicatorView alloc]
+      initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleLarge];
+#endif
+}
+
 CGFloat CurrentKeyboardHeight(NSValue* keyboardFrameValue) {
   return [keyboardFrameValue CGRectValue].size.height;
 }
@@ -299,7 +319,7 @@ UIView* GetFirstResponderSubview(UIView* view) {
 
 UIResponder* GetFirstResponder() {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  return GetFirstResponderSubview([UIApplication sharedApplication].keyWindow);
+  return GetFirstResponderSubview(GetAnyKeyWindow());
 }
 
 // Trigger a haptic vibration for the user selecting an action. This is a no-op

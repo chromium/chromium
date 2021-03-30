@@ -1,0 +1,12 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[Exposed=Window,HTMLConstructor,RuntimeEnabled=HTMLSelectMenuElement]
+interface HTMLSelectMenuElement : HTMLElement {
+  attribute DOMString value;
+  // TODO(crbug.com/1121840) Fill this out.
+  // Open question: do we want to replicate the interface of
+  // <select> as closely as possible?
+  // Or should we try to improve, simplify, or extend it?
+};

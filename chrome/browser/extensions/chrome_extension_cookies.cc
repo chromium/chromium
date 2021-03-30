@@ -25,7 +25,7 @@ ChromeExtensionCookies::ChromeExtensionCookies(Profile* profile)
     : profile_(profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   cookie_settings_ = CookieSettingsFactory::GetForProfile(profile);
-  cookie_settings_observer_.Add(cookie_settings_.get());
+  cookie_settings_observation_.Observe(cookie_settings_.get());
   HostContentSettingsMapFactory::GetForProfile(profile_)->AddObserver(this);
 
   std::unique_ptr<content::CookieStoreConfig> creation_config;
@@ -61,8 +61,7 @@ ChromeExtensionCookies* ChromeExtensionCookies::Get(
 
 void ChromeExtensionCookies::CreateRestrictedCookieManager(
     const url::Origin& origin,
-    const net::SiteForCookies& site_for_cookies,
-    const url::Origin& top_frame_origin,
+    const net::IsolationInfo& isolation_info,
     mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!io_data_)
@@ -70,10 +69,9 @@ void ChromeExtensionCookies::CreateRestrictedCookieManager(
 
   // Safe since |io_data_| is non-null so no IOData deletion is queued.
   content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&IOData::CreateRestrictedCookieManager,
-                     base::Unretained(io_data_.get()), origin, site_for_cookies,
-                     top_frame_origin, std::move(receiver)));
+      FROM_HERE, base::BindOnce(&IOData::CreateRestrictedCookieManager,
+                                base::Unretained(io_data_.get()), origin,
+                                isolation_info, std::move(receiver)));
 }
 
 void ChromeExtensionCookies::ClearCookies(const GURL& origin) {
@@ -111,8 +109,7 @@ ChromeExtensionCookies::IOData::~IOData() {
 
 void ChromeExtensionCookies::IOData::CreateRestrictedCookieManager(
     const url::Origin& origin,
-    const net::SiteForCookies& site_for_cookies,
-    const url::Origin& top_frame_origin,
+    const net::IsolationInfo& isolation_info,
     mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
@@ -120,7 +117,7 @@ void ChromeExtensionCookies::IOData::CreateRestrictedCookieManager(
       std::make_unique<network::RestrictedCookieManager>(
           network::mojom::RestrictedCookieManagerRole::SCRIPT,
           GetOrCreateCookieStore(), &network_cookie_settings_, origin,
-          site_for_cookies, top_frame_origin,
+          isolation_info,
           /* null cookies_observer disables logging */
           mojo::NullRemote()),
       std::move(receiver));

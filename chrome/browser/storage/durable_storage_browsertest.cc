@@ -48,7 +48,7 @@ class DurableStorageBrowserTest : public InProcessBrowserTest {
     bookmarks::BookmarkModel* bookmark_model =
         BookmarkModelFactory::GetForBrowserContext(browser->profile());
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
-    bookmarks::AddIfNotBookmarked(bookmark_model, url_, base::ASCIIToUTF16(""));
+    bookmarks::AddIfNotBookmarked(bookmark_model, url_, u"");
   }
 
   void Bookmark() {

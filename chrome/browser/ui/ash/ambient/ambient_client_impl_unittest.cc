@@ -7,8 +7,7 @@
 #include <memory>
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -40,7 +39,7 @@ class AmbientClientImplTest : public testing::Test {
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_);
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<chromeos::FakeChromeUserManager>());
+        std::make_unique<ash::FakeChromeUserManager>());
   }
 
   void TearDown() override {
@@ -55,8 +54,8 @@ class AmbientClientImplTest : public testing::Test {
  protected:
   TestingProfile* profile() { return profile_; }
 
-  chromeos::FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<chromeos::FakeChromeUserManager*>(
+  ash::FakeChromeUserManager* GetFakeUserManager() const {
+    return static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
 
@@ -74,7 +73,7 @@ class AmbientClientImplTest : public testing::Test {
 
   void MaybeMakeAccountAsPrimaryAccount(const AccountId& account_id) {
     if (!identity_test_env()->identity_manager()->HasPrimaryAccount(
-            signin::ConsentLevel::kNotRequired)) {
+            signin::ConsentLevel::kSignin)) {
       identity_test_env()->MakeUnconsentedPrimaryAccountAvailable(
           account_id.GetUserEmail());
     }

@@ -206,7 +206,7 @@ bool HidDeviceManager::HasPermission(
       UsbDevicePermission::CheckParam::ForHidDevice(
           extension, device_info.vendor_id, device_info.product_id);
   if (extension->permissions_data()->CheckAPIPermissionWithParam(
-          APIPermission::kUsbDevice, usb_param.get())) {
+          mojom::APIPermissionID::kUsbDevice, usb_param.get())) {
     return true;
   }
 

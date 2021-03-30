@@ -11,7 +11,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
-#include "extensions/browser/api/storage/settings_namespace.h"
+#include "extensions/browser/value_store/settings_namespace.h"
 #include "extensions/browser/value_store/value_store_change.h"
 
 namespace extensions {
@@ -75,25 +75,33 @@ void PolicyValueStore::SetCurrentPolicy(const policy::PolicyMap& policy) {
 
   ValueStoreChangeList changes;
 
-  WriteResult result = delegate_->Remove(removed_keys);
-  if (result.status().ok()) {
-    changes.insert(changes.end(), result.changes().begin(),
-                   result.changes().end());
+  {
+    WriteResult result = delegate_->Remove(removed_keys);
+    if (result.status().ok()) {
+      auto new_changes = result.PassChanges();
+      changes.insert(changes.end(),
+                     std::make_move_iterator(new_changes.begin()),
+                     std::make_move_iterator(new_changes.end()));
+    }
   }
 
-  // IGNORE_QUOTA because these settings aren't writable by the extension, and
-  // are configured by the domain administrator.
-  ValueStore::WriteOptions options = ValueStore::IGNORE_QUOTA;
-  result = delegate_->Set(options, current_policy);
-  if (result.status().ok()) {
-    changes.insert(changes.end(), result.changes().begin(),
-                   result.changes().end());
+  {
+    // IGNORE_QUOTA because these settings aren't writable by the extension, and
+    // are configured by the domain administrator.
+    ValueStore::WriteOptions options = ValueStore::IGNORE_QUOTA;
+    WriteResult result = delegate_->Set(options, current_policy);
+    if (result.status().ok()) {
+      auto new_changes = result.PassChanges();
+      changes.insert(changes.end(),
+                     std::make_move_iterator(new_changes.begin()),
+                     std::make_move_iterator(new_changes.end()));
+    }
   }
 
   if (!changes.empty()) {
     observers_->Notify(FROM_HERE, &SettingsObserver::OnSettingsChanged,
                        extension_id_, settings_namespace::MANAGED,
-                       ValueStoreChange::ToJson(changes));
+                       ValueStoreChange::ToValue(std::move(changes)));
   }
 }
 

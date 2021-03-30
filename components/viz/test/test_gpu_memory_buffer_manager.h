@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VIZ_TEST_TEST_GPU_MEMORY_BUFFER_MANAGER_H_
 #define COMPONENTS_VIZ_TEST_TEST_GPU_MEMORY_BUFFER_MANAGER_H_
 
+#include <map>
 #include <memory>
 
 #include "base/macros.h"
@@ -36,6 +37,13 @@ class TestGpuMemoryBufferManager : public gpu::GpuMemoryBufferManager {
       gpu::SurfaceHandle surface_handle) override;
   void SetDestructionSyncToken(gfx::GpuMemoryBuffer* buffer,
                                const gpu::SyncToken& sync_token) override;
+  void CopyGpuMemoryBufferAsync(
+      gfx::GpuMemoryBufferHandle buffer_handle,
+      base::UnsafeSharedMemoryRegion memory_region,
+      base::OnceCallback<void(bool)> callback) override;
+  bool CopyGpuMemoryBufferSync(
+      gfx::GpuMemoryBufferHandle buffer_handle,
+      base::UnsafeSharedMemoryRegion memory_region) override;
 
  private:
   // This class is called by multiple threads at the same time. Hold this lock

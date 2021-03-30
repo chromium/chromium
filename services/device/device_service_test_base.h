@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/device_service.mojom.h"
 #include "services/network/test/test_network_connection_tracker.h"
@@ -16,6 +17,7 @@
 namespace device {
 
 class DeviceService;
+class GeolocationSystemPermissionManager;
 
 const char kTestGeolocationApiKey[] = "FakeApiKeyForTest";
 
@@ -45,6 +47,11 @@ class DeviceServiceTestBase : public testing::Test {
   // components of the device service creating their own.
   scoped_refptr<base::SingleThreadTaskRunner> file_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
+
+#if defined(OS_MAC)
+  std::unique_ptr<GeolocationSystemPermissionManager>
+      fake_location_permission_manager_;
+#endif
 
   network::TestURLLoaderFactory test_url_loader_factory_;
 

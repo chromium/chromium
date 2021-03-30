@@ -38,7 +38,7 @@ class LayoutTableCellDeathTest : public RenderingTest,
 
   void SetUp() override {
     RenderingTest::SetUp();
-    auto style = ComputedStyle::Create();
+    auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
     style->SetDisplay(EDisplay::kTableCell);
     cell_ = LayoutTableCell::CreateAnonymous(&GetDocument(), std::move(style),
                                              LegacyLayout::kAuto);
@@ -337,25 +337,28 @@ TEST_F(LayoutTableCellTest, BorderWidthsWithCollapsedBorders) {
                      "writing-mode: vertical-rl; direction: rtl");
   UpdateAllLifecyclePhasesForTest();
 
-  border_right = RuntimeEnabledFeatures::LayoutNGTableEnabled()
-                     ? LayoutUnit(1.5)
-                     : LayoutUnit(1);
-  border_left = RuntimeEnabledFeatures::LayoutNGTableEnabled() ? LayoutUnit(1.5)
-                                                               : LayoutUnit(2);
-  border_top = RuntimeEnabledFeatures::LayoutNGTableEnabled() ? LayoutUnit(7.5)
-                                                              : LayoutUnit(8);
-  border_bottom = RuntimeEnabledFeatures::LayoutNGTableEnabled()
-                      ? LayoutUnit(7.5)
-                      : LayoutUnit(7);
+  NGPhysicalBoxStrut cell1_borders(LayoutUnit(8), LayoutUnit(), LayoutUnit(),
+                                   LayoutUnit(5));
+  NGPhysicalBoxStrut cell2_borders(LayoutUnit(8), LayoutUnit(1), LayoutUnit(7),
+                                   LayoutUnit(2));
 
-  EXPECT_EQ(5, cell1box->BorderLeft());
-  EXPECT_EQ(0, cell1box->BorderRight());
-  EXPECT_EQ(border_top, cell1box->BorderTop());
-  EXPECT_EQ(0, cell1box->BorderBottom());
-  EXPECT_EQ(border_left, cell2box->BorderLeft());
-  EXPECT_EQ(border_right, cell2box->BorderRight());
-  EXPECT_EQ(border_top, cell2box->BorderTop());
-  EXPECT_EQ(border_bottom, cell2box->BorderBottom());
+  // TableNG results are completely different, because
+  // Legacy has a bug, and rotates the borders.
+  if (RuntimeEnabledFeatures::LayoutNGTableEnabled()) {
+    cell1_borders = NGPhysicalBoxStrut(LayoutUnit(1.5), LayoutUnit(0),
+                                       LayoutUnit(5), LayoutUnit(0));
+    cell2_borders = NGPhysicalBoxStrut(LayoutUnit(1.5), LayoutUnit(7.5),
+                                       LayoutUnit(1.5), LayoutUnit(7.5));
+  }
+
+  EXPECT_EQ(cell1_borders.left, cell1box->BorderLeft());
+  EXPECT_EQ(cell1_borders.right, cell1box->BorderRight());
+  EXPECT_EQ(cell1_borders.top, cell1box->BorderTop());
+  EXPECT_EQ(cell1_borders.bottom, cell1box->BorderBottom());
+  EXPECT_EQ(cell2_borders.left, cell2box->BorderLeft());
+  EXPECT_EQ(cell2_borders.right, cell2box->BorderRight());
+  EXPECT_EQ(cell2_borders.top, cell2box->BorderTop());
+  EXPECT_EQ(cell2_borders.bottom, cell2box->BorderBottom());
 
   // TablesNG do not have CollapsedBorder APIs.
   if (!RuntimeEnabledFeatures::LayoutNGTableEnabled()) {

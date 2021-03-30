@@ -4,12 +4,13 @@
 
 #include "ash/system/network/auto_connect_notifier.h"
 
+#include <string>
+
 #include "ash/public/cpp/network_icon_image_source.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/network/network_connection_handler.h"
@@ -153,7 +154,7 @@ void AutoConnectNotifier::DisplayNotification(
       l10n_util::GetStringUTF16(IDS_ASH_NETWORK_AUTOCONNECT_NOTIFICATION_TITLE),
       l10n_util::GetStringUTF16(
           IDS_ASH_NETWORK_AUTOCONNECT_NOTIFICATION_MESSAGE),
-      base::string16() /* display_source */, GURL() /* origin_url */,
+      std::u16string() /* display_source */, GURL() /* origin_url */,
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierAutoConnect),
       {} /* optional_fields */,

@@ -4,8 +4,12 @@ include_rules = [
   "+chromeos/grit/chromeos_diagnostics_app_resources.h",
   "+chromeos/strings/grit/chromeos_strings.h",
   "+content/public/browser",
+  "+content/public/test",
   "+services/data_decoder/public",
+  "+services/device/public",
   "+ui/base",
+  "+ui/gfx",
   "+ui/resources",
-  "+ui/webui",
+  "+ui/shell_dialogs",
+  "+ui/web_dialogs",
 ]

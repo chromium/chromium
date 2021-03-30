@@ -180,8 +180,8 @@ void TargetAutoAttacher::UpdateFrames() {
     while (!queue.empty()) {
       FrameTreeNode* node = queue.front();
       queue.pop();
-      bool cross_process = node->current_frame_host()->IsCrossProcessSubframe();
-      if (node != root && cross_process) {
+      bool should_create = node->current_frame_host()->is_local_root_subframe();
+      if (node != root && should_create) {
         scoped_refptr<DevToolsAgentHost> new_host =
             RenderFrameDevToolsAgentHost::GetOrCreateFor(node);
         new_hosts.insert(new_host);
@@ -228,25 +228,26 @@ DevToolsAgentHost* TargetAutoAttacher::AutoAttachToFrame(
   scoped_refptr<DevToolsAgentHost> agent_host =
       RenderFrameDevToolsAgentHost::FindForDangling(frame_tree_node);
 
-  bool old_cross_process = !!agent_host;
+  bool has_host_attached = !!agent_host;
   bool is_portal_main_frame =
       frame_tree_node->IsMainFrame() &&
       static_cast<WebContentsImpl*>(WebContents::FromRenderFrameHost(new_host))
           ->IsPortal();
-  bool new_cross_process =
-      new_host->IsCrossProcessSubframe() || is_portal_main_frame;
+  bool needs_host_attached =
+      new_host->is_local_root_subframe() || is_portal_main_frame;
 
-  if (old_cross_process == new_cross_process)
+  if (has_host_attached == needs_host_attached)
     return nullptr;
 
-  if (new_cross_process) {
-    agent_host = RenderFrameDevToolsAgentHost::CreateForCrossProcessNavigation(
-        navigation_request);
+  if (needs_host_attached) {
+    agent_host =
+        RenderFrameDevToolsAgentHost::CreateForLocalRootOrPortalNavigation(
+            navigation_request);
     AttachToAgentHost(agent_host.get());
     return wait_for_debugger_on_start_ ? agent_host.get() : nullptr;
   }
 
-  DCHECK(old_cross_process);
+  DCHECK(has_host_attached);
   auto it = auto_attached_hosts_.find(agent_host);
   // This should not happen in theory, but error pages are sometimes not
   // picked up. See https://crbug.com/836511 and https://crbug.com/817881.

@@ -4,4 +4,6 @@ include_rules = [
   "+chromeos/crosapi/cpp/crosapi_constants.h",
   "+chromeos/lacros/lacros_chrome_service_impl.h",
   "+chromeos/ui/base",
+  # Common includes.
+  "+ui/base/linux/linux_desktop.h",
 ]

@@ -10,6 +10,7 @@
 #include "content/public/browser/web_contents.h"
 #include "device/bluetooth/bluetooth_gatt_connection.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "third_party/blink/public/common/bluetooth/web_bluetooth_device_id.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
 
 namespace content {
@@ -80,6 +81,7 @@ void FrameConnectedBluetoothDevices::CloseConnectionToDeviceWithId(
   }
   CHECK(device_address_to_id_map_.erase(
       connection_iter->second->gatt_connection->GetDeviceAddress()));
+  connection_iter->second->server_client->GATTServerDisconnected();
   device_id_to_connection_map_.erase(connection_iter);
   DecrementDevicesConnectedCount();
 }
@@ -99,6 +101,19 @@ FrameConnectedBluetoothDevices::CloseConnectionToDeviceWithAddress(
   device_id_to_connection_map_.erase(device_id);
   DecrementDevicesConnectedCount();
   return base::make_optional(device_id);
+}
+
+void FrameConnectedBluetoothDevices::CloseConnectionsToDevicesNotInList(
+    const std::set<blink::WebBluetoothDeviceId>& permitted_ids) {
+  std::set<blink::WebBluetoothDeviceId> ids_to_delete;
+
+  for (const auto& device_pair : device_id_to_connection_map_) {
+    if (!base::Contains(permitted_ids, device_pair.first))
+      ids_to_delete.insert(device_pair.first);
+  }
+
+  for (const auto& device_id : ids_to_delete)
+    CloseConnectionToDeviceWithId(device_id);
 }
 
 void FrameConnectedBluetoothDevices::IncrementDevicesConnectedCount() {

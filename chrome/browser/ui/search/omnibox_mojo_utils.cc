@@ -41,7 +41,8 @@ CreateSuggestionGroupsMap(
 }  // namespace
 
 const char kGoogleGIconResourceName[] = "google_g.png";
-const char kBookmarkIconResourceName[] = "bookmark.svg";
+const char kBookmarkIconResourceName[] =
+    "chrome://resources/images/icon_bookmark.svg";
 const char kCalculatorIconResourceName[] = "calculator.svg";
 const char kClockIconResourceName[] = "clock.svg";
 const char kDriveDocsIconResourceName[] = "drive_docs.svg";
@@ -147,7 +148,7 @@ std::vector<search::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
 }
 
 search::mojom::AutocompleteResultPtr CreateAutocompleteResult(
-    const base::string16& input,
+    const std::u16string& input,
     const AutocompleteResult& result,
     bookmarks::BookmarkModel* bookmark_model,
     PrefService* prefs) {

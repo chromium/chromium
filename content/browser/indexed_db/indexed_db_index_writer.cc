@@ -7,14 +7,12 @@
 #include <stddef.h>
 #include <utility>
 
-#include "base/strings/utf_string_conversions.h"
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
 #include "content/browser/indexed_db/indexed_db_tracing.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_metadata.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
-using base::ASCIIToUTF16;
 using blink::IndexedDBIndexKeys;
 using blink::IndexedDBIndexMetadata;
 using blink::IndexedDBKey;
@@ -40,7 +38,7 @@ bool IndexWriter::VerifyIndexKeys(
     int64_t index_id,
     bool* can_add_keys,
     const IndexedDBKey& primary_key,
-    base::string16* error_message) const {
+    std::u16string* error_message) const {
   *can_add_keys = false;
   for (const auto& key : keys_) {
     bool ok = AddingKeyAllowed(backing_store, transaction, database_id,
@@ -50,10 +48,10 @@ bool IndexWriter::VerifyIndexKeys(
       return false;
     if (!*can_add_keys) {
       if (error_message) {
-        *error_message = ASCIIToUTF16("Unable to add key to index '") +
+        *error_message = u"Unable to add key to index '" +
                          index_metadata_.name +
-                         ASCIIToUTF16("': at least one key does not satisfy "
-                                      "the uniqueness requirements.");
+                         u"': at least one key does not satisfy the uniqueness "
+                         u"requirements.";
       }
       return true;
     }
@@ -119,7 +117,7 @@ bool MakeIndexWriters(IndexedDBTransaction* transaction,
                       bool key_was_generated,
                       const std::vector<IndexedDBIndexKeys>& index_keys,
                       std::vector<std::unique_ptr<IndexWriter>>* index_writers,
-                      base::string16* error_message,
+                      std::u16string* error_message,
                       bool* completed) {
   *completed = false;
 

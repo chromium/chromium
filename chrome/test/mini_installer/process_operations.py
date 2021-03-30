@@ -66,5 +66,5 @@ def CleanProcess(expectation_name, expectation, variable_expander):
       logging.info(
           'CleanProcess killed process %s of pid %s' % (process_path, pid))
     except psutil.NoSuchProcess:
-      logging.info('CleanProcess tried to kill process %s of pid %s, ' +
-                   'yet it was already gone' % (process_path, pid))
+      logging.info('CleanProcess tried to kill process %s of pid %s, ' %
+                   (process_path, pid) + 'yet it was already gone')

@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_UI_STARTUP_OBSOLETE_SYSTEM_INFOBAR_DELEGATE_H_
 #define CHROME_BROWSER_UI_STARTUP_OBSOLETE_SYSTEM_INFOBAR_DELEGATE_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "url/gurl.h"
 
@@ -28,9 +29,9 @@ class ObsoleteSystemInfoBarDelegate : public ConfirmInfoBarDelegate {
   ~ObsoleteSystemInfoBarDelegate() override = default;
 
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
-  base::string16 GetLinkText() const override;
+  std::u16string GetLinkText() const override;
   GURL GetLinkURL() const override;
-  base::string16 GetMessageText() const override;
+  std::u16string GetMessageText() const override;
   int GetButtons() const override;
   bool ShouldExpire(const NavigationDetails& details) const override;
 };

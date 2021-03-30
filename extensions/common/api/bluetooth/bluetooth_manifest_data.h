@@ -5,9 +5,9 @@
 #ifndef EXTENSIONS_COMMON_API_BLUETOOTH_BLUETOOTH_MANIFEST_DATA_H_
 #define EXTENSIONS_COMMON_API_BLUETOOTH_BLUETOOTH_MANIFEST_DATA_H_
 
+#include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"
 
@@ -40,7 +40,7 @@ class BluetoothManifestData : public Extension::ManifestData {
   // the manifest. Sets |error| and returns an empty scoped_ptr on failure.
   static std::unique_ptr<BluetoothManifestData> FromValue(
       const base::Value& value,
-      base::string16* error);
+      std::u16string* error);
 
   const BluetoothManifestPermission* permission() const {
     return permission_.get();

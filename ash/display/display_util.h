@@ -6,9 +6,9 @@
 #define ASH_DISPLAY_DISPLAY_UTIL_H_
 
 #include <memory>
+#include <string>
 
 #include "ash/ash_export.h"
-#include "base/strings/string16.h"
 
 namespace aura {
 class Window;
@@ -49,15 +49,15 @@ void MoveCursorTo(AshWindowTreeHost* ash_host,
 
 // Shows the notification message for display related issues, and optionally
 // adds a button to send a feedback report.
-void ShowDisplayErrorNotification(const base::string16& message,
+void ShowDisplayErrorNotification(const std::u16string& message,
                                   bool allow_feedback);
 
 // Takes a refresh rate represented as a float and rounds it to two decimal
 // places. If the rounded refresh rate is a whole number, the mantissa is
 // removed. Ex: 54.60712 -> "54.61"
-ASH_EXPORT base::string16 ConvertRefreshRateToString16(float refresh_rate);
+ASH_EXPORT std::u16string ConvertRefreshRateToString16(float refresh_rate);
 
-ASH_EXPORT base::string16 GetDisplayErrorNotificationMessageForTest();
+ASH_EXPORT std::u16string GetDisplayErrorNotificationMessageForTest();
 
 }  // namespace ash
 

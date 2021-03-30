@@ -10,8 +10,12 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/chromeos/arc/arc_util.h"
-#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
+#include "chrome/browser/ash/login/test/scoped_policy_update.h"
+#include "chrome/browser/ash/login/test/user_policy_mixin.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/child_accounts/child_user_service.h"
 #include "chrome/browser/chromeos/child_accounts/child_user_service_factory.h"
 #include "chrome/browser/chromeos/child_accounts/time_limits/app_activity_registry.h"
@@ -19,12 +23,8 @@
 #include "chrome/browser/chromeos/child_accounts/time_limits/app_time_limit_utils.h"
 #include "chrome/browser/chromeos/child_accounts/time_limits/app_time_limits_policy_builder.h"
 #include "chrome/browser/chromeos/child_accounts/time_limits/app_types.h"
-#include "chrome/browser/chromeos/login/test/scoped_policy_update.h"
-#include "chrome/browser/chromeos/login/test/user_policy_mixin.h"
 #include "chrome/browser/chromeos/policy/user_policy_test_helper.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/supervised_user/logged_in_user_mixin.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
@@ -37,7 +37,6 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
-#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -82,7 +81,7 @@ class AppTimeTest : public MixinBasedInProcessBrowserTest {
 
   // MixinBasedInProcessBrowserTest:
   void SetUp() override {
-    std::vector<base::Feature> enabled_features{features::kPerAppTimeLimits};
+    std::vector<base::Feature> enabled_features;
     std::vector<base::Feature> disabled_features;
     if (ShouldEnableWebTimeLimit())
       enabled_features.push_back(features::kWebTimeLimits);
@@ -106,10 +105,7 @@ class AppTimeTest : public MixinBasedInProcessBrowserTest {
   void SetUpOnMainThread() override {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Started());
-    host_resolver()->AddIPLiteralRule("*", "127.0.0.1", "localhost");
-    logged_in_user_mixin_.LogInUser(false /*issue_any_scope_token*/,
-                                    true /*wait_for_active_session*/,
-                                    true /*request_policy_update*/);
+    logged_in_user_mixin_.LogInUser();
 
     arc::SetArcPlayStoreEnabledForProfile(browser()->profile(), true);
     arc_app_list_prefs_ = ArcAppListPrefs::Get(browser()->profile());

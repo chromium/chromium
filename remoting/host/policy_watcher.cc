@@ -190,6 +190,7 @@ std::unique_ptr<base::DictionaryValue> PolicyWatcher::GetDefaultPolicies() {
   result->SetBoolean(key::kRemoteAccessHostAllowFileTransfer, true);
   result->SetBoolean(key::kRemoteAccessHostEnableUserInterface, true);
   result->SetBoolean(key::kRemoteAccessHostAllowRemoteAccessConnections, true);
+  result->SetInteger(key::kRemoteAccessHostMaximumSessionDurationMinutes, 0);
 #endif
   return result;
 }

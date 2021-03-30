@@ -46,6 +46,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
@@ -208,13 +209,9 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         assertHistograms(true, SpeedComparedToInflation.SLOWER,
                 SpeedComparedToInflation.NOT_RECORDED, SpeedComparedToInflation.NOT_RECORDED);
 
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING, false);
-        Assert.assertFalse("Crash report should be disabled by shared preference.",
-                PrivacyPreferencesManagerImpl.getInstance()
-                        .isUsageAndCrashReportingPermittedByUser());
 
         // Try to accept ToS.
+        setMetricsReportDisabled();
         TestThreadUtils.runOnUiThreadBlocking((Runnable) mAcceptButton::performClick);
         Assert.assertTrue("Crash report should be enabled.",
                 PrivacyPreferencesManagerImpl.getInstance()
@@ -233,13 +230,8 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         assertHistograms(true, SpeedComparedToInflation.SLOWER,
                 SpeedComparedToInflation.NOT_RECORDED, SpeedComparedToInflation.NOT_RECORDED);
 
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING, false);
-        Assert.assertFalse("Crash report should be disabled by shared preference.",
-                PrivacyPreferencesManagerImpl.getInstance()
-                        .isUsageAndCrashReportingPermittedByUser());
-
         // Try to accept ToS.
+        setMetricsReportDisabled();
         TestThreadUtils.runOnUiThreadBlocking((Runnable) mAcceptButton::performClick);
         assertUIState(FragmentState.WAITING_UNTIL_NEXT_PAGE);
         Assert.assertFalse("Crash report should not be enabled before native initialized.",
@@ -248,6 +240,9 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
 
         // ToS should be accepted when native is initialized.
         startNativeInitializationAndWait();
+        String histogram = "MobileFre.TosFragment.SpinnerVisibleDuration";
+        Assert.assertEquals(String.format("Histogram <%s> should be recorded.", histogram), 1,
+                RecordHistogram.getHistogramTotalCountForTesting(histogram));
         Assert.assertTrue("Crash report should be enabled.",
                 PrivacyPreferencesManagerImpl.getInstance()
                         .isUsageAndCrashReportingPermittedByUser());
@@ -279,7 +274,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         assertHistograms(true, SpeedComparedToInflation.FASTER,
                 SpeedComparedToInflation.NOT_RECORDED, SpeedComparedToInflation.SLOWER);
 
-        // Try to accept Tos.
+        // Try to accept ToS.
         TestThreadUtils.runOnUiThreadBlocking((Runnable) mAcceptButton::performClick);
         Assert.assertTrue("Crash report should be enabled.",
                 PrivacyPreferencesManagerImpl.getInstance()
@@ -312,17 +307,38 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
 
         assertHistograms(true, SpeedComparedToInflation.FASTER, SpeedComparedToInflation.SLOWER,
                 SpeedComparedToInflation.NOT_RECORDED);
-
-        // Try to accept Tos.
-        TestThreadUtils.runOnUiThreadBlocking((Runnable) mAcceptButton::performClick);
-        Assert.assertTrue("Crash report should be enabled.",
-                PrivacyPreferencesManagerImpl.getInstance()
-                        .isUsageAndCrashReportingPermittedByUser());
     }
 
     @Test
     @SmallTest
-    public void testNotOwnedDevice_beforeInflation() {
+    public void testNotOwnedDevice_AcceptBeforePolicy() {
+        setAppRestrictionsMockInitialized(true);
+        launchFirstRunThroughCustomTab();
+        assertUIState(FragmentState.LOADING);
+
+        setEnterpriseInfoInitializedWithDeviceOwner(false);
+        assertUIState(FragmentState.NO_POLICY);
+
+        // Try to accept Tos.
+        setMetricsReportDisabled();
+        TestThreadUtils.runOnUiThreadBlocking((Runnable) mAcceptButton::performClick);
+        assertUIState(FragmentState.WAITING_UNTIL_NEXT_PAGE);
+
+        setPolicyServiceMockInitializedWithDialogEnabled(false);
+        CriteriaHelper.pollUiThread(()
+                                            -> PrivacyPreferencesManagerImpl.getInstance()
+                                                       .isUsageAndCrashReportingPermittedByUser());
+        String histogram = "MobileFre.TosFragment.SpinnerVisibleDuration";
+        Assert.assertEquals(String.format("Histogram <%s> should be recorded.", histogram), 1,
+                RecordHistogram.getHistogramTotalCountForTesting(histogram));
+
+        assertHistograms(true, SpeedComparedToInflation.FASTER, SpeedComparedToInflation.SLOWER,
+                SpeedComparedToInflation.SLOWER);
+    }
+
+    @Test
+    @SmallTest
+    public void testNotOwnedDevice_BeforeInflation() {
         setAppRestrictionsMockInitialized(true);
         setEnterpriseInfoInitializedWithDeviceOwner(false);
 
@@ -447,6 +463,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "Flaky test - see: https://crbug.com/1171147")
     public void testAcceptTosWithoutCrashUpload() throws Exception {
         setAppRestrictionsMockInitialized(true);
         setEnterpriseInfoInitializedWithDeviceOwner(true);
@@ -750,6 +767,14 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
                 callback.onResult(ownedState);
             }
         });
+    }
+
+    private void setMetricsReportDisabled() {
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING, false);
+        Assert.assertFalse("Crash report should be disabled by shared preference.",
+                PrivacyPreferencesManagerImpl.getInstance()
+                        .isUsageAndCrashReportingPermittedByUser());
     }
 
     private void renderWithPortraitAndLandscape(View tosAndUmaFragmentView, String testPrefix)

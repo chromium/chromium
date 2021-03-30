@@ -1,0 +1,19 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+def subprojectDirs = [{{subproject_dirs}}]
+
+def subprojects = new HashMap<String, String>()
+def i = 1
+subprojectDirs.each { subprojectDir ->
+  def subprojectName = 'subproject' + i
+  subprojects.put(subprojectName, subprojectDir)
+  include(subprojectName)
+}
+
+rootProject.children.each { prj ->
+  prj.projectDir = new File(subprojects[prj.name])
+}
+
+enableFeaturePreview("VERSION_ORDERING_V2")

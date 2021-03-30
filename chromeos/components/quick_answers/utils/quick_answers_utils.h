@@ -27,9 +27,18 @@ std::string BuildTranslationTitleText(const IntentInfo& intent_info);
 std::string BuildTranslationTitleText(const std::string& query_text,
                                       const std::string& locale_name);
 
+// Build display text for Quick Answers unit conversion result.
+std::string BuildUnitConversionResultText(const std::string& result_value,
+                                          const std::string& name);
+
 // Unescapes the following ampersand character codes from |string|:
 // &lt; &gt; &amp; &quot; &#39;
 std::string UnescapeStringForHTML(const std::string& string);
+
+// Get the ratio between the two given values (divide the larger value by the
+// smaller one, so the result should be greater or equal to 1), return nullopt
+// if not feasible.
+base::Optional<double> GetRatio(const double value1, const double value2);
 
 }  // namespace quick_answers
 }  // namespace chromeos

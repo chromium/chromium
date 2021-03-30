@@ -17,6 +17,7 @@
       "name": "LayoutNGBlockFlow (positioned) DIV",
       "position": [50, 50],
       "bounds": [251, 251],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#FF0000",
       "invalidations": [
         [50, 50, 201, 201]

@@ -8,7 +8,6 @@
 
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/strings/string16.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/updater/mac/managed_preference_policy_manager_impl.h"
 #include "chrome/updater/policy_manager.h"

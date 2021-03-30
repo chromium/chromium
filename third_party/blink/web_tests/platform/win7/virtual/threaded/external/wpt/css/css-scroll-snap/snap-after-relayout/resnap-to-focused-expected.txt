@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Resnap to focused element after relayout assert_equals: After resize, should snap to row 3. expected 3 but got 4
+Harness: the test ran to completion.
+

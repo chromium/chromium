@@ -99,7 +99,7 @@ class VR_UI_EXPORT Text : public TexturedElement {
   ~Text() override;
 
   void SetFontHeightInDmm(float font_height_dmms);
-  void SetText(const base::string16& text);
+  void SetText(const std::u16string& text);
 
   // SetSize() should not be called on the Text element, because the element
   // updates its size according to text layout.

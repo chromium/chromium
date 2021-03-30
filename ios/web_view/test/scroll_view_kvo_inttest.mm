@@ -17,11 +17,11 @@
 
 namespace ios_web_view {
 
-// Tests that the KVO compliant properties of CWVScrollView correctly report
+// Tests that the KVO compliant properties of UIScrollView correctly report
 // changes.
 typedef ios_web_view::WebViewInttestBase ScrollViewKvoTest;
 
-// Tests that CWVScrollView correctly reports |contentOffset| state.
+// Tests that UIScrollView correctly reports |contentOffset| state.
 TEST_F(ScrollViewKvoTest, contentOffset) {
   Observer* offset_observer = [[Observer alloc] init];
   [offset_observer setObservedObject:web_view_.scrollView

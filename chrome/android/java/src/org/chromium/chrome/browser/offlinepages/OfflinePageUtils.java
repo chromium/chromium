@@ -99,8 +99,8 @@ public class OfflinePageUtils {
      * We are using an internal interface, so that instance methods can have the same names as
      * static methods.
      */
-    @VisibleForTesting
-    interface Internal {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public interface Internal {
         /** Returns offline page bridge for specified profile. */
         OfflinePageBridge getOfflinePageBridge(Profile profile);
 
@@ -772,8 +772,9 @@ public class OfflinePageUtils {
         if (OfflinePageUtils.isShowingTrustedOfflinePage(webContents) || offlinePage == null) {
             // TODO(crbug.com/1033178): dedupe the
             // DomDistillerUrlUtils#getOriginalUrlFromDistillerUrl() calls.
-            String distilledUrl = DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(
-                    webContents.getVisibleUrl());
+            String distilledUrl =
+                    DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(webContents.getVisibleUrl())
+                            .getSpec();
             // If current page is an offline page, reload it with custom behavior defined in extra
             // header respected.
             LoadUrlParams params = new LoadUrlParams(distilledUrl, transitionTypeForReload);
@@ -949,8 +950,8 @@ public class OfflinePageUtils {
                 "OfflinePages.TabRestore", tabRestoreType, TabRestoreType.NUM_ENTRIES);
     }
 
-    @VisibleForTesting
-    static void setInstanceForTesting(Internal instance) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static void setInstanceForTesting(Internal instance) {
         sInstance = instance;
     }
 

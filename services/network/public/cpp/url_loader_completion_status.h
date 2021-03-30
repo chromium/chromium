@@ -21,8 +21,9 @@
 
 namespace network {
 
-// NOTE: When adding/removing fields to this struct, don't forget to
-// update services/network/public/cpp/network_ipc_param_traits.h.
+// NOTE: When adding/removing fields to this struct, don't forget to update
+// services/network/public/cpp/network_ipc_param_traits.h and the equals (==)
+// operator below.
 
 struct COMPONENT_EXPORT(NETWORK_CPP_BASE) URLLoaderCompletionStatus {
   URLLoaderCompletionStatus();
@@ -99,6 +100,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) URLLoaderCompletionStatus {
 
   // Host resolution error info for this request.
   net::ResolveErrorInfo resolve_error_info;
+
+  // Whether the initiator of this request should be collapsed.
+  bool should_collapse_initiator = false;
 };
 
 }  // namespace network

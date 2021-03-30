@@ -24,6 +24,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "headless/app/headless_shell_switches.h"
 #include "headless/lib/browser/headless_browser_context_impl.h"
@@ -159,10 +160,10 @@ HeadlessContentBrowserClient::CreateBrowserMainParts(
 }
 
 void HeadlessContentBrowserClient::OverrideWebkitPrefs(
-    content::RenderViewHost* render_view_host,
+    content::WebContents* web_contents,
     blink::web_pref::WebPreferences* prefs) {
-  auto* browser_context = HeadlessBrowserContextImpl::From(
-      render_view_host->GetProcess()->GetBrowserContext());
+  auto* browser_context =
+      HeadlessBrowserContextImpl::From(web_contents->GetBrowserContext());
   base::RepeatingCallback<void(blink::web_pref::WebPreferences*)> callback =
       browser_context->options()->override_web_preferences_callback();
   if (callback)
@@ -342,7 +343,7 @@ void HeadlessContentBrowserClient::ConfigureNetworkContextParams(
     bool in_memory,
     const base::FilePath& relative_partition_path,
     ::network::mojom::NetworkContextParams* network_context_params,
-    ::network::mojom::CertVerifierCreationParams*
+    ::cert_verifier::mojom::CertVerifierCreationParams*
         cert_verifier_creation_params) {
   HeadlessBrowserContextImpl::From(context)->ConfigureNetworkContextParams(
       in_memory, relative_partition_path, network_context_params,
@@ -364,6 +365,13 @@ void HeadlessContentBrowserClient::BindBadgeService(
     stub_badge_service_ = std::make_unique<StubBadgeService>();
 
   stub_badge_service_->Bind(std::move(receiver));
+}
+
+bool HeadlessContentBrowserClient::CanAcceptUntrustedExchangesIfNeeded() {
+  // We require --user-data-dir flag too so that no dangerous changes are made
+  // in the user's regular profile.
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kUserDataDir);
 }
 
 }  // namespace headless

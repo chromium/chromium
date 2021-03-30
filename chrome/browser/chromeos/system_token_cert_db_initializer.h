@@ -5,16 +5,8 @@
 #ifndef CHROME_BROWSER_CHROMEOS_SYSTEM_TOKEN_CERT_DB_INITIALIZER_H_
 #define CHROME_BROWSER_CHROMEOS_SYSTEM_TOKEN_CERT_DB_INITIALIZER_H_
 
-#include <memory>
-#include <vector>
-
-#include "base/callback_forward.h"
-#include "base/callback_list.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
-#include "base/observer_list_types.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -29,22 +21,9 @@ class NSSCertDatabase;
 
 namespace chromeos {
 
-// An observer that gets notified when the global NSSCertDatabase is about to be
-// destroyed.
-class SystemTokenCertDBObserver : public base::CheckedObserver {
- public:
-  // Called when the global NSSCertDatabase is about to be destroyed.
-  // Consumers of that database should drop any reference to it and stop using
-  // it.
-  virtual void OnSystemTokenCertDBDestroyed() = 0;
-};
-
-// Initializes a global NSSCertDatabase for the system token and starts
-// NetworkCertLoader with that database.
-//
-// Lifetime: The global NetworkCertLoader instance must exist until ShutDown()
-// has been called. The global NetworkCertLoader instance must exist until
-// ShutDown() has been called, but must be outlived by this object.
+// Initializes a global NSSCertDatabase for the system token and stores it in a
+// global SystemTokenCertDbStorage instance which can be used by all ChromeOS
+// components, i.e. components under //chrome/browser/chromeos/ and //chromeos/
 //
 // All of the methods must be called on the UI thread.
 class SystemTokenCertDBInitializer : public TpmManagerClient::Observer {
@@ -55,33 +34,17 @@ class SystemTokenCertDBInitializer : public TpmManagerClient::Observer {
   static constexpr base::TimeDelta kMaxCertDbRetrievalDelay =
       base::TimeDelta::FromMinutes(5);
 
+  // Note: This should only be used by ChromeBrowserMainPartsChromeos to
+  // initialize the system token certificate database. Use
+  // SystemTokenCertDbStorage to retrieve the database.
   SystemTokenCertDBInitializer();
   ~SystemTokenCertDBInitializer() override;
-
-  // Returns a global instance. May return null if not initialized.
-  static SystemTokenCertDBInitializer* Get();
 
   // Stops making new requests to D-Bus services.
   void ShutDown();
 
   // TpmManagerClient::Observer overrides.
   void OnOwnershipTaken() override;
-
-  // Retrieves the global NSSCertDatabase for the system token and passes it to
-  // |callback|. If the database is already initialized, calls |callback|
-  // immediately. Otherwise, |callback| will be called when the database is
-  // initialized.
-  // To be notified when the returned NSSCertDatabase becomes invalid, callers
-  // should register as SystemTokenCertDBObserver.
-
-  using GetSystemTokenCertDbCallback =
-      base::OnceCallback<void(net::NSSCertDatabase* nss_cert_database)>;
-  void GetSystemTokenCertDb(GetSystemTokenCertDbCallback callback);
-
-  // Adds |observer| as SystemTokenCertDBObserver.
-  void AddObserver(SystemTokenCertDBObserver* observer);
-  // Removes |observer| as SystemTokenCertDBObserver.
-  void RemoveObserver(SystemTokenCertDBObserver* observer);
 
   // Sets if the software fallback for system slot is allowed; useful for
   // testing.
@@ -117,30 +80,8 @@ class SystemTokenCertDBInitializer : public TpmManagerClient::Observer {
   // Also starts NetworkCertLoader with the system token database.
   void InitializeDatabase(crypto::ScopedPK11Slot system_slot);
 
-  // Called after a delay if the system token certificate database was still not
-  // initialized when |GetSystemTokenCertDb| was called. This function notifies
-  // |get_system_token_cert_db_callback_list_| with nullptrs as a way of
-  // informing callers that the database initialization failed.
-  void OnSystemTokenDbRetrievalTimeout();
-
   // Whether the database initialization was started.
   bool started_initializing_ = false;
-
-  // Global NSSCertDatabase which sees the system token.
-  std::unique_ptr<net::NSSCertDatabase> system_token_cert_database_;
-
-  // List of callbacks that should be executed when the system token certificate
-  // database is created.
-  base::OnceCallbackList<GetSystemTokenCertDbCallback::RunType>
-      get_system_token_cert_db_callback_list_;
-
-  // List of observers that will be notified when the global system token
-  // NSSCertDatabase is destroyed.
-  base::ObserverList<SystemTokenCertDBObserver> observers_;
-
-  bool system_token_cert_db_retrieval_failed_ = false;
-
-  base::OneShotTimer system_token_cert_db_retrieval_timer_;
 
   // The current request delay before the next attempt to retrieve the TPM
   // state. Will be adapted after each attempt.

@@ -22,8 +22,8 @@
 #include "services/network/public/cpp/features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/login/signin/merge_session_throttling_utils.h"
-#include "chrome/browser/chromeos/login/signin/oauth2_login_manager_factory.h"
+#include "chrome/browser/ash/login/signin/merge_session_throttling_utils.h"
+#include "chrome/browser/ash/login/signin/oauth2_login_manager_factory.h"
 #endif
 
 namespace {
@@ -187,12 +187,12 @@ void RendererUpdater::OnSessionRestoreStateChanged(
 }
 #endif
 
-void RendererUpdater::OnPrimaryAccountSet(const CoreAccountInfo& account_info) {
-  UpdateAllRenderers();
-}
-
-void RendererUpdater::OnPrimaryAccountCleared(
-    const CoreAccountInfo& account_info) {
+void RendererUpdater::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  if (event.GetEventTypeFor(signin::ConsentLevel::kSync) ==
+      signin::PrimaryAccountChangeEvent::Type::kNone) {
+    return;
+  }
   UpdateAllRenderers();
 }
 

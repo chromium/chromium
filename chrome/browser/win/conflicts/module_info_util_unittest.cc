@@ -83,7 +83,7 @@ TEST(ModuleInfoUtilTest, GetEnvironmentVariablesMapping) {
                                                                 "C:\\bar\\");
 
   // The mapping for these variables will be retrieved.
-  std::vector<base::string16> environment_variables = {
+  std::vector<std::wstring> environment_variables = {
       L"foo",
       L"SYSTEMROOT",
   };
@@ -92,32 +92,32 @@ TEST(ModuleInfoUtilTest, GetEnvironmentVariablesMapping) {
 
   ASSERT_EQ(2u, string_mapping.size());
 
-  EXPECT_STREQ(L"c:\\bar", string_mapping[0].first.c_str());
-  EXPECT_STREQ(L"%foo%", string_mapping[0].second.c_str());
+  EXPECT_EQ(u"c:\\bar", string_mapping[0].first);
+  EXPECT_EQ(u"%foo%", string_mapping[0].second);
   EXPECT_FALSE(string_mapping[1].second.empty());
 }
 
 const struct CollapsePathList {
-  base::string16 expected_result;
-  base::string16 test_case;
+  std::u16string expected_result;
+  std::u16string test_case;
 } kCollapsePathList[] = {
     // Negative testing (should not collapse this path).
-    {L"c:\\a\\a.dll", L"c:\\a\\a.dll"},
+    {u"c:\\a\\a.dll", u"c:\\a\\a.dll"},
     // These two are to test that we select the maximum collapsed path.
-    {L"%foo%\\a.dll", L"c:\\foo\\a.dll"},
-    {L"%x%\\a.dll", L"c:\\foo\\bar\\a.dll"},
+    {u"%foo%\\a.dll", u"c:\\foo\\a.dll"},
+    {u"%x%\\a.dll", u"c:\\foo\\bar\\a.dll"},
     // Tests that only full path components are collapsed.
-    {L"c:\\foo_bar\\a.dll", L"c:\\foo_bar\\a.dll"},
+    {u"c:\\foo_bar\\a.dll", u"c:\\foo_bar\\a.dll"},
 };
 
 TEST(ModuleInfoUtilTest, CollapseMatchingPrefixInPath) {
   StringMapping string_mapping = {
-      std::make_pair(L"c:\\foo", L"%foo%"),
-      std::make_pair(L"c:\\foo\\bar", L"%x%"),
+      std::make_pair(u"c:\\foo", u"%foo%"),
+      std::make_pair(u"c:\\foo\\bar", u"%x%"),
   };
 
   for (size_t i = 0; i < base::size(kCollapsePathList); ++i) {
-    base::string16 test_case = kCollapsePathList[i].test_case;
+    std::u16string test_case = kCollapsePathList[i].test_case;
     CollapseMatchingPrefixInPath(string_mapping, &test_case);
     EXPECT_EQ(kCollapsePathList[i].expected_result, test_case);
   }
@@ -173,10 +173,10 @@ TEST(ModuleInfoUtilTest, InvalidNTHeader) {
 }
 
 TEST(ModuleInfoUtilTest, NormalizeCertificateSubject) {
-  base::string16 test_case = base::string16(L"signer\0", 7);
+  std::wstring test_case = std::wstring(L"signer\0", 7);
   EXPECT_EQ(7u, test_case.length());
 
-  base::string16 expected = L"signer";
+  std::wstring expected = L"signer";
 
   internal::NormalizeCertificateSubject(&test_case);
 

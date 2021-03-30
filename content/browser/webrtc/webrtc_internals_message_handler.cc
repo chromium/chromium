@@ -7,7 +7,9 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "content/browser/renderer_host/media/peer_connection_tracker_host.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webrtc/webrtc_internals.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -91,23 +93,15 @@ RenderFrameHost* WebRTCInternalsMessageHandler::GetWebRTCInternalsHost() const {
 
 void WebRTCInternalsMessageHandler::OnGetStandardStats(
     const base::ListValue* /* unused_list */) {
-  for (RenderProcessHost::iterator i(
-           content::RenderProcessHost::AllHostsIterator());
-       !i.IsAtEnd(); i.Advance()) {
-    auto* render_process_host =
-        static_cast<RenderProcessHostImpl*>(i.GetCurrentValue());
-    render_process_host->GetPeerConnectionTrackerHost()->GetStandardStats();
+  for (auto* host : PeerConnectionTrackerHost::GetAllHosts()) {
+    host->GetStandardStats();
   }
 }
 
 void WebRTCInternalsMessageHandler::OnGetLegacyStats(
     const base::ListValue* /* unused_list */) {
-  for (RenderProcessHost::iterator i(
-       content::RenderProcessHost::AllHostsIterator());
-       !i.IsAtEnd(); i.Advance()) {
-    auto* render_process_host =
-        static_cast<RenderProcessHostImpl*>(i.GetCurrentValue());
-    render_process_host->GetPeerConnectionTrackerHost()->GetLegacyStats();
+  for (auto* host : PeerConnectionTrackerHost::GetAllHosts()) {
+    host->GetLegacyStats();
   }
 }
 
@@ -136,43 +130,37 @@ void WebRTCInternalsMessageHandler::OnSetEventLogRecordingsEnabled(
   }
 }
 
-void WebRTCInternalsMessageHandler::OnDOMLoadDone(
-    const base::ListValue* /* unused_list */) {
+void WebRTCInternalsMessageHandler::OnDOMLoadDone(const base::ListValue* args) {
+  std::string callback_id;
+  CHECK(args->GetString(0, &callback_id));
+  AllowJavascript();
+
   webrtc_internals_->UpdateObserver(this);
 
-  if (webrtc_internals_->IsAudioDebugRecordingsEnabled())
-    ExecuteJavascriptCommand("setAudioDebugRecordingsEnabled", nullptr);
+  base::Value params(base::Value::Type::DICTIONARY);
+  params.SetBoolKey("audioDebugRecordingsEnabled",
+                    webrtc_internals_->IsAudioDebugRecordingsEnabled());
+  params.SetBoolKey("eventLogRecordingsEnabled",
+                    webrtc_internals_->IsEventLogRecordingsEnabled());
+  params.SetBoolKey("eventLogRecordingsToggleable",
+                    webrtc_internals_->CanToggleEventLogRecordings());
 
-  if (webrtc_internals_->IsEventLogRecordingsEnabled())
-    ExecuteJavascriptCommand("setEventLogRecordingsEnabled", nullptr);
-
-  const base::Value can_toggle(
-      webrtc_internals_->CanToggleEventLogRecordings());
-  ExecuteJavascriptCommand("setEventLogRecordingsToggleability", &can_toggle);
+  ResolveJavascriptCallback(base::Value(callback_id), std::move(params));
 }
 
-void WebRTCInternalsMessageHandler::OnUpdate(const char* command,
-                                             const base::Value* args) {
-  ExecuteJavascriptCommand(command, args);
-}
-
-// TODO(eladalon): Make this function accept a vector of base::Values.
-// https://crbug.com/817384
-void WebRTCInternalsMessageHandler::ExecuteJavascriptCommand(
-    const char* command,
-    const base::Value* args) {
+void WebRTCInternalsMessageHandler::OnUpdate(const std::string& event_name,
+                                             const base::Value* event_data) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   RenderFrameHost* host = GetWebRTCInternalsHost();
   if (!host)
     return;
 
-  std::vector<const base::Value*> args_vector;
-  if (args)
-    args_vector.push_back(args);
-
-  base::string16 script = WebUI::GetJavascriptCall(command, args_vector);
-  host->ExecuteJavaScript(script, base::NullCallback());
+  if (event_data) {
+    FireWebUIListener(event_name, *event_data);
+  } else {
+    FireWebUIListener(event_name, base::Value());
+  }
 }
 
 }  // namespace content

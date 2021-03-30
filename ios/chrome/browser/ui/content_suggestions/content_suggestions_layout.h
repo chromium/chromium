@@ -7,6 +7,8 @@
 
 #import <MaterialComponents/MDCCollectionViewFlowLayout.h>
 
+@protocol NewTabPageOmniboxPositioning;
+
 // Layout used for ContentSuggestions. It makes sure the collection is high
 // enough to be scrolled up to the point the fake omnibox is hidden. For size
 // classes other than RegularXRegular, this layout makes sure the fake omnibox
@@ -19,10 +21,21 @@
 // The total scroll height of the NTP.
 @property(nonatomic, assign) CGFloat ntpHeight;
 
+// The parent collection view that contains the content suggestions collection
+// view.
+@property(nonatomic, weak) UICollectionView* parentCollectionView;
+
+// Provides information relating to the fake omnibox size.
+@property(nonatomic, weak) id<NewTabPageOmniboxPositioning> omniboxPositioner;
+
+// Whether or not the user has scrolled into the feed, transferring ownership of
+// the omnibox to allow it to stick to the top of the NTP.
+@property(nonatomic, assign) BOOL isScrolledIntoFeed;
+
 // Creates layout with |offset| as additional height. Allows the view's height
 // to be increased enough to maintain the scroll position. Only needed if
-// Discover feed is enabled.
-- (instancetype)initWithOffset:(CGFloat)offset;
+// Discover feed is visible.
+- (instancetype)initWithOffset:(CGFloat)offset feedVisible:(BOOL)visible;
 
 @end
 

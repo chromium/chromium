@@ -29,6 +29,7 @@
 #include "third_party/blink/public/resources/grit/blink_image_resources.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/forms/slider_thumb_element.h"
 #include "third_party/blink/renderer/core/html/forms/spin_button_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -72,6 +73,8 @@ WebThemeEngine::State GetWebThemeState(const Element& element) {
 }
 
 class DirectionFlippingScope {
+  STACK_ALLOCATED();
+
  public:
   DirectionFlippingScope(const LayoutObject&, const PaintInfo&, const IntRect&);
   ~DirectionFlippingScope();
@@ -146,6 +149,13 @@ IntRect ConvertToPaintingRect(const LayoutObject& input_layout_object,
   return PixelSnappedIntRect(part_rect);
 }
 
+base::Optional<SkColor> BlinkToSkColor(
+    const base::Optional<Color> blink_color) {
+  if (!blink_color)
+    return base::nullopt;
+  return blink_color->Rgb();
+}
+
 }  // namespace
 
 ThemePainterDefault::ThemePainterDefault(LayoutThemeDefault& theme)
@@ -165,19 +175,13 @@ bool ThemePainterDefault::PaintCheckbox(const Element& element,
   float zoom_level = style.EffectiveZoom();
   extra_params.button.zoom = zoom_level;
   GraphicsContextStateSaver state_saver(paint_info.context, false);
-  IntRect unzoomed_rect = rect;
-  if (zoom_level != 1 && !features::IsFormControlsRefreshEnabled()) {
-    state_saver.Save();
-    unzoomed_rect.SetWidth(unzoomed_rect.Width() / zoom_level);
-    unzoomed_rect.SetHeight(unzoomed_rect.Height() / zoom_level);
-    paint_info.context.Translate(unzoomed_rect.X(), unzoomed_rect.Y());
-    paint_info.context.Scale(zoom_level, zoom_level);
-    paint_info.context.Translate(-unzoomed_rect.X(), -unzoomed_rect.Y());
-  }
+  IntRect unzoomed_rect =
+      ApplyZoomToRect(rect, paint_info, state_saver, zoom_level);
 
   Platform::Current()->ThemeEngine()->Paint(
       canvas, WebThemeEngine::kPartCheckbox, GetWebThemeState(element),
-      gfx::Rect(unzoomed_rect), &extra_params, style.UsedColorScheme());
+      gfx::Rect(unzoomed_rect), &extra_params, style.UsedColorScheme(),
+      BlinkToSkColor(style.AccentColorResolved()));
   return false;
 }
 
@@ -191,9 +195,18 @@ bool ThemePainterDefault::PaintRadio(const Element& element,
   extra_params.button = WebThemeEngine::ButtonExtraParams();
   extra_params.button.checked = IsChecked(element);
 
+  float zoom_level = style.EffectiveZoom();
+  extra_params.button.zoom = zoom_level;
+  GraphicsContextStateSaver state_saver(paint_info.context, false);
+  IntRect unzoomed_rect =
+      features::IsFormControlsRefreshEnabled()
+          ? ApplyZoomToRect(rect, paint_info, state_saver, zoom_level)
+          : rect;
+
   Platform::Current()->ThemeEngine()->Paint(
       canvas, WebThemeEngine::kPartRadio, GetWebThemeState(element),
-      gfx::Rect(rect), &extra_params, style.UsedColorScheme());
+      gfx::Rect(unzoomed_rect), &extra_params, style.UsedColorScheme(),
+      BlinkToSkColor(style.AccentColorResolved()));
   return false;
 }
 
@@ -207,13 +220,15 @@ bool ThemePainterDefault::PaintButton(const Element& element,
   extra_params.button = WebThemeEngine::ButtonExtraParams();
   extra_params.button.has_border = true;
   extra_params.button.background_color = kDefaultButtonBackgroundColor;
+  extra_params.button.zoom = style.EffectiveZoom();
   if (style.HasBackground()) {
     extra_params.button.background_color =
         style.VisitedDependentColor(GetCSSPropertyBackgroundColor()).Rgb();
   }
   Platform::Current()->ThemeEngine()->Paint(
       canvas, WebThemeEngine::kPartButton, GetWebThemeState(element),
-      gfx::Rect(rect), &extra_params, style.UsedColorScheme());
+      gfx::Rect(rect), &extra_params, style.UsedColorScheme(),
+      BlinkToSkColor(style.AccentColorResolved()));
   return false;
 }
 
@@ -241,6 +256,7 @@ bool ThemePainterDefault::PaintTextField(const Element& element,
   extra_params.text_field.is_text_area = part == kTextAreaPart;
   extra_params.text_field.is_listbox = part == kListboxPart;
   extra_params.text_field.has_border = true;
+  extra_params.text_field.zoom = style.EffectiveZoom();
 
   cc::PaintCanvas* canvas = paint_info.context.Canvas();
 
@@ -252,7 +268,8 @@ bool ThemePainterDefault::PaintTextField(const Element& element,
 
   Platform::Current()->ThemeEngine()->Paint(
       canvas, WebThemeEngine::kPartTextField, GetWebThemeState(element),
-      gfx::Rect(rect), &extra_params, style.UsedColorScheme());
+      gfx::Rect(rect), &extra_params, style.UsedColorScheme(),
+      BlinkToSkColor(style.AccentColorResolved()));
   return false;
 }
 
@@ -265,6 +282,7 @@ bool ThemePainterDefault::PaintMenuList(const Element& element,
   // Match Chromium Win behaviour of showing all borders if any are shown.
   extra_params.menu_list.has_border = style.HasBorder();
   extra_params.menu_list.has_border_radius = style.HasBorderRadius();
+  extra_params.menu_list.zoom = style.EffectiveZoom();
   // Fallback to transparent if the specified color object is invalid.
   Color background_color(Color::kTransparent);
   if (style.HasBackground()) {
@@ -286,7 +304,8 @@ bool ThemePainterDefault::PaintMenuList(const Element& element,
   cc::PaintCanvas* canvas = i.context.Canvas();
   Platform::Current()->ThemeEngine()->Paint(
       canvas, WebThemeEngine::kPartMenuList, GetWebThemeState(element),
-      gfx::Rect(rect), &extra_params, style.UsedColorScheme());
+      gfx::Rect(rect), &extra_params, style.UsedColorScheme(),
+      BlinkToSkColor(style.AccentColorResolved()));
   return false;
 }
 
@@ -305,7 +324,8 @@ bool ThemePainterDefault::PaintMenuListButton(const Element& element,
   cc::PaintCanvas* canvas = paint_info.context.Canvas();
   Platform::Current()->ThemeEngine()->Paint(
       canvas, WebThemeEngine::kPartMenuList, GetWebThemeState(element),
-      gfx::Rect(rect), &extra_params, style.UsedColorScheme());
+      gfx::Rect(rect), &extra_params, style.UsedColorScheme(),
+      BlinkToSkColor(style.AccentColorResolved()));
   return false;
 }
 
@@ -339,7 +359,8 @@ void ThemePainterDefault::SetupMenuListArrow(
 bool ThemePainterDefault::PaintSliderTrack(const Element& element,
                                            const LayoutObject& o,
                                            const PaintInfo& i,
-                                           const IntRect& rect) {
+                                           const IntRect& rect,
+                                           const ComputedStyle& style) {
   WebThemeEngine::ExtraParams extra_params;
   cc::PaintCanvas* canvas = i.context.Canvas();
   extra_params.slider.vertical =
@@ -396,7 +417,8 @@ bool ThemePainterDefault::PaintSliderTrack(const Element& element,
 
   Platform::Current()->ThemeEngine()->Paint(
       canvas, WebThemeEngine::kPartSliderTrack, GetWebThemeState(element),
-      gfx::Rect(unzoomed_rect), &extra_params, o.StyleRef().UsedColorScheme());
+      gfx::Rect(unzoomed_rect), &extra_params, o.StyleRef().UsedColorScheme(),
+      BlinkToSkColor(style.AccentColorResolved()));
   return false;
 }
 
@@ -423,9 +445,22 @@ bool ThemePainterDefault::PaintSliderThumb(const Element& element,
     paint_info.context.Translate(-unzoomed_rect.X(), -unzoomed_rect.Y());
   }
 
+  // The element passed in is inside the user agent shadowdom of the input
+  // element, so we have to access the parent input element in order to get the
+  // accent-color style set by the page.
+  const SliderThumbElement* slider_element =
+      DynamicTo<SliderThumbElement>(&element);
+  DCHECK(slider_element);  // PaintSliderThumb should always be passed a
+                           // SliderThumbElement
+  base::Optional<SkColor> accent_color =
+      BlinkToSkColor(slider_element->HostInput()
+                         ->EnsureComputedStyle()
+                         ->AccentColorResolved());
+
   Platform::Current()->ThemeEngine()->Paint(
       canvas, WebThemeEngine::kPartSliderThumb, GetWebThemeState(element),
-      gfx::Rect(unzoomed_rect), &extra_params, style.UsedColorScheme());
+      gfx::Rect(unzoomed_rect), &extra_params, style.UsedColorScheme(),
+      accent_color);
   return false;
 }
 
@@ -451,14 +486,16 @@ bool ThemePainterDefault::PaintInnerSpinButton(const Element& element,
 
   Platform::Current()->ThemeEngine()->Paint(
       canvas, WebThemeEngine::kPartInnerSpinButton, GetWebThemeState(element),
-      gfx::Rect(rect), &extra_params, style.UsedColorScheme());
+      gfx::Rect(rect), &extra_params, style.UsedColorScheme(),
+      BlinkToSkColor(style.AccentColorResolved()));
   return false;
 }
 
 bool ThemePainterDefault::PaintProgressBar(const Element& element,
                                            const LayoutObject& o,
                                            const PaintInfo& i,
-                                           const IntRect& rect) {
+                                           const IntRect& rect,
+                                           const ComputedStyle& style) {
   if (!o.IsProgress())
     return true;
 
@@ -471,12 +508,14 @@ bool ThemePainterDefault::PaintProgressBar(const Element& element,
   extra_params.progress_bar.value_rect_y = value_rect.Y();
   extra_params.progress_bar.value_rect_width = value_rect.Width();
   extra_params.progress_bar.value_rect_height = value_rect.Height();
+  extra_params.progress_bar.zoom = o.StyleRef().EffectiveZoom();
 
   DirectionFlippingScope scope(o, i, rect);
   cc::PaintCanvas* canvas = i.context.Canvas();
   Platform::Current()->ThemeEngine()->Paint(
       canvas, WebThemeEngine::kPartProgressBar, GetWebThemeState(element),
-      gfx::Rect(rect), &extra_params, o.StyleRef().UsedColorScheme());
+      gfx::Rect(rect), &extra_params, o.StyleRef().UsedColorScheme(),
+      BlinkToSkColor(style.AccentColorResolved()));
   return false;
 }
 
@@ -542,7 +581,7 @@ bool ThemePainterDefault::PaintSearchFieldCancelButton(
       (Image::LoadPlatformResource(IDR_SEARCH_CANCEL_PRESSED_HC_LIGHT_MODE)));
   Image* color_scheme_adjusted_cancel_image;
   Image* color_scheme_adjusted_cancel_pressed_image;
-  if (ui::NativeTheme::GetInstanceForWeb()->UsesHighContrastColors()) {
+  if (ui::NativeTheme::GetInstanceForWeb()->UserHasContrastPreference()) {
     // TODO(crbug.com/1159597): Ideally we want the cancel button to be the same
     // color as search field text. Since the cancel button is currently painted
     // with a .png, it can't be colored dynamically so currently our only
@@ -574,6 +613,24 @@ bool ThemePainterDefault::PaintSearchFieldCancelButton(
           : color_scheme_adjusted_cancel_image,
       Image::kSyncDecode, FloatRect(painting_rect));
   return false;
+}
+
+IntRect ThemePainterDefault::ApplyZoomToRect(
+    const IntRect& rect,
+    const PaintInfo& paint_info,
+    GraphicsContextStateSaver& state_saver,
+    float zoom_level) {
+  IntRect unzoomed_rect = rect;
+  if (zoom_level != 1) {
+    state_saver.Save();
+    unzoomed_rect.SetWidth(unzoomed_rect.Width() / zoom_level);
+    unzoomed_rect.SetHeight(unzoomed_rect.Height() / zoom_level);
+    paint_info.context.Translate(unzoomed_rect.X(), unzoomed_rect.Y());
+    paint_info.context.Scale(zoom_level, zoom_level);
+    paint_info.context.Translate(-unzoomed_rect.X(), -unzoomed_rect.Y());
+  }
+
+  return unzoomed_rect;
 }
 
 }  // namespace blink

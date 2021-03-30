@@ -159,7 +159,7 @@ base::flat_map<std::string, std::string> MakeQueryMap(const GURL& url) {
 // TODO(jrw): Should this use net::UnescapeURLComponent instead of
 // url::DecodeURLEscapeSequences?
 std::string DecodeURLComponent(const std::string& encoded) {
-  url::RawCanonOutputT<base::char16> unescaped;
+  url::RawCanonOutputT<char16_t> unescaped;
   std::string output;
   url::DecodeURLEscapeSequences(encoded.data(), encoded.size(),
                                 url::DecodeURLMode::kUTF8OrIsomorphic,

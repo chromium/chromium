@@ -19,7 +19,7 @@
 #include "chrome/common/url_constants.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/user_manager.h"
+#include "chrome/browser/ui/profile_picker.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 LoginUIService::LoginUIService(Profile* profile)
@@ -29,7 +29,7 @@ LoginUIService::LoginUIService(Profile* profile)
 {
 }
 
-LoginUIService::~LoginUIService() {}
+LoginUIService::~LoginUIService() = default;
 
 void LoginUIService::AddObserver(LoginUIService::Observer* observer) {
   observer_list_.AddObserver(observer);
@@ -67,11 +67,11 @@ void LoginUIService::ShowExtensionLoginPrompt(bool enable_sync,
   if (profile_->IsGuestSession() || profile_->IsSystemProfile())
     return;
   // Locked profile should be unlocked with UserManager only.
-  ProfileAttributesEntry* entry;
-  if (g_browser_process->profile_manager()
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile_->GetPath(), &entry) &&
-      entry->IsSigninRequired()) {
+          .GetProfileAttributesWithPath(profile_->GetPath());
+  if (entry && entry->IsSigninRequired()) {
     return;
   }
 
@@ -94,46 +94,39 @@ void LoginUIService::ShowExtensionLoginPrompt(bool enable_sync,
 }
 
 void LoginUIService::DisplayLoginResult(Browser* browser,
-                                        const base::string16& error_message,
-                                        const base::string16& email) {
+                                        const SigninUIError& error) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // ChromeOS doesn't have the avatar bubble so it never calls this function.
   NOTREACHED();
 #else
-  is_displaying_profile_blocking_error_message_ = false;
-  last_login_result_ = error_message;
-  last_login_error_email_ = email;
-  if (!error_message.empty()) {
+  last_login_error_ = error;
+  if (!error.message().empty()) {
     if (browser) {
       browser->signin_view_controller()->ShowModalSigninErrorDialog();
-    } else if (profile_->GetPath() == UserManager::GetSigninProfilePath()) {
-      UserManagerProfileDialog::DisplayErrorMessage();
+    } else if (profile_->GetPath() ==
+               ProfilePicker::GetForceSigninProfilePath()) {
+      ProfilePickerForceSigninDialog::DisplayErrorMessage();
     } else {
-      LOG(ERROR) << "Unable to show Login error message: " << error_message;
+      LOG(ERROR) << "Unable to show Login error message: " << error.message();
     }
   } else if (browser) {
     browser->window()->ShowAvatarBubbleFromAvatarButton(
         BrowserWindow::AVATAR_BUBBLE_MODE_CONFIRM_SIGNIN,
-
         signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS, false);
   }
 #endif
 }
 
 void LoginUIService::SetProfileBlockingErrorMessage() {
-  last_login_result_ = base::string16();
-  last_login_error_email_ = base::string16();
-  is_displaying_profile_blocking_error_message_ = true;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  NOTREACHED();
+#else
+  last_login_error_ = SigninUIError::ProfileIsBlocked();
+#endif
 }
 
-bool LoginUIService::IsDisplayingProfileBlockedErrorMessage() const {
-  return is_displaying_profile_blocking_error_message_;
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+const SigninUIError& LoginUIService::GetLastLoginError() const {
+  return last_login_error_;
 }
-
-const base::string16& LoginUIService::GetLastLoginResult() const {
-  return last_login_result_;
-}
-
-const base::string16& LoginUIService::GetLastLoginErrorEmail() const {
-  return last_login_error_email_;
-}
+#endif

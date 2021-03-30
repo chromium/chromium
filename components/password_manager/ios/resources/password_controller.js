@@ -128,9 +128,11 @@ const onSubmitButtonTouchEnd = function(evt) {
  * @return {HTMLInputElement}
  */
 const findInputByUniqueFieldId = function(inputs, identifier) {
-  const uniqueID = Symbol.for(__gCrWeb.fill.UNIQUE_ID_SYMBOL_NAME);
+  if (identifier.toString() === __gCrWeb.fill.RENDERER_ID_NOT_SET) {
+    return null;
+  }
   for (let i = 0; i < inputs.length; ++i) {
-    if (identifier === inputs[i][uniqueID]) {
+    if (identifier.toString() === __gCrWeb.fill.getUniqueID(inputs[i])) {
       return inputs[i];
     }
   }
@@ -177,11 +179,15 @@ const getFormInputElements = function(form) {
  * @return {string} The password form.
  */
 __gCrWeb.passwords['getPasswordFormDataAsString'] = function(identifier) {
-  const el = getPasswordFormElement(window, identifier);
-  if (!el) {
+  const hasFormTag =
+      identifier.toString() !== __gCrWeb.fill.RENDERER_ID_NOT_SET;
+  const form = hasFormTag ? getPasswordFormElement(window, identifier) : null;
+  if (!form && hasFormTag) {
     return '{}';
   }
-  const formData = __gCrWeb.passwords.getPasswordFormData(el, window);
+  const formData = hasFormTag ?
+      __gCrWeb.passwords.getPasswordFormData(form, window) :
+      __gCrWeb.passwords.getPasswordFormDataFromUnownedElements(window);
   if (!formData) {
     return '{}';
   }
@@ -212,7 +218,7 @@ __gCrWeb.passwords['fillPasswordForm'] = function(
 };
 
 /**
- * Fills all password fields in the form identified by |formName|
+ * Finds the form identified by |formIdentifier| and fills its password fields
  * with |password|.
  *
  * @param {number} formIdentifier The name of the form to fill.
@@ -227,7 +233,41 @@ __gCrWeb.passwords['fillPasswordFormWithGeneratedPassword'] = function(
     password) {
   const hasFormTag =
       formIdentifier.toString() !== __gCrWeb.fill.RENDERER_ID_NOT_SET;
-  const form = __gCrWeb.form.getFormElementFromUniqueFormId(formIdentifier);
+  if (fillGeneratedPasswordInWindow(
+          formIdentifier, newPasswordIdentifier, confirmPasswordIdentifier,
+          password, hasFormTag, window)) {
+    return true;
+  }
+  // Try to recursively invoke for same origin iframes.
+  const frames = getSameOriginFrames(window);
+  for (let i = 0; i < frames.length; i++) {
+    if (fillGeneratedPasswordInWindow(
+            formIdentifier, newPasswordIdentifier, confirmPasswordIdentifier,
+            password, hasFormTag, frames[i])) {
+      return true;
+    }
+  }
+  return false;
+};
+
+/**
+ * Fills password fields in the form identified by |formIdentifier|
+ * with |password| in a given window.
+ *
+ * @param {number} formIdentifier The name of the form to fill.
+ * @param {number} newPasswordIdentifier The id of password element to fill.
+ * @param {number} confirmPasswordIdentifier The id of confirm password
+ *     element to fill.
+ * @param {string} password The password to fill.
+ * @param {boolean} hasFormTag Whether the new password field belongs to a
+ *     <form> element.
+ * @param {Window} win A window or a frame containing formData.
+ * @return {boolean} Whether new password field has been filled.
+ */
+const fillGeneratedPasswordInWindow = function(
+    formIdentifier, newPasswordIdentifier, confirmPasswordIdentifier, password,
+    hasFormTag, win) {
+  const form = getPasswordFormElement(win, formIdentifier);
   if (!form && hasFormTag) {
     return false;
   }
@@ -351,7 +391,11 @@ const getPasswordFormDataList = function(formDataList, win) {
       addSubmitButtonTouchEndHandler(forms[i]);
     }
   }
-  getPasswordFormDataFromUnownedElements_(formDataList, win);
+  const unownedFormData =
+      __gCrWeb.passwords.getPasswordFormDataFromUnownedElements(win);
+  if (unownedFormData) {
+    formDataList.push(unownedFormData);
+  }
   // Recursively invoke for all iframes.
   const frames = getSameOriginFrames(win);
   for (let i = 0; i < frames.length; i++) {
@@ -360,13 +404,12 @@ const getPasswordFormDataList = function(formDataList, win) {
 };
 
 /**
- * Finds all forms with passwords that are not inside any <form> tag and appends
- * JS object containing the form data to |formDataList|.
- * @param {!Array<Object>} formDataList A list that this function populates
- *     with descriptions of discovered forms.
+ * Finds all forms with passwords that are not inside any <form> tag and returns
+ * JS object containing the form data.
  * @param {Window} win A window or a frame containing formData.
+ * @return {Object} Object of data from formElement.
  */
-function getPasswordFormDataFromUnownedElements_(formDataList, window) {
+__gCrWeb.passwords.getPasswordFormDataFromUnownedElements = function(window) {
   const doc = window.document;
   const extractMask = __gCrWeb.fill.EXTRACT_MASK_VALUE;
   const fieldsets = [];
@@ -380,10 +423,9 @@ function getPasswordFormDataFromUnownedElements_(formDataList, window) {
       __gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData(
           window, fieldsets, unownedControlElements, extractMask, false,
           unownedForm);
-  if (hasUnownedForm) {
-    formDataList.push(unownedForm);
-  }
-}
+  return hasUnownedForm ? unownedForm : null;
+};
+
 
 /**
  * Returns a JS object containing the data from |formElement|.

@@ -11,7 +11,6 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/nullable_string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -214,6 +213,11 @@ bool ReadValue(const base::Pickle* m,
   if (!ReadParam(m, iter, &type))
     return false;
 
+  constexpr int kMinValueType = static_cast<int>(base::Value::Type::NONE);
+  constexpr int kMaxValueType = static_cast<int>(base::Value::Type::LIST);
+  if (type > kMaxValueType || type < kMinValueType)
+    return false;
+
   switch (static_cast<base::Value::Type>(type)) {
     case base::Value::Type::NONE:
       *value = base::Value();
@@ -405,11 +409,11 @@ void ParamTraits<std::string>::Log(const param_type& p, std::string* l) {
   l->append(p);
 }
 
-void ParamTraits<base::string16>::Log(const param_type& p, std::string* l) {
+void ParamTraits<std::u16string>::Log(const param_type& p, std::string* l) {
   l->append(base::UTF16ToUTF8(p));
 }
 
-#if defined(OS_WIN) && defined(BASE_STRING16_IS_STD_U16STRING)
+#if defined(OS_WIN)
 bool ParamTraits<std::wstring>::Read(const base::Pickle* m,
                                      base::PickleIterator* iter,
                                      param_type* r) {
@@ -1184,32 +1188,20 @@ void ParamTraits<base::ListValue>::Log(const param_type& p, std::string* l) {
   l->append(json);
 }
 
-void ParamTraits<base::NullableString16>::Write(base::Pickle* m,
-                                                const param_type& p) {
-  WriteParam(m, p.string());
-  WriteParam(m, p.is_null());
+void ParamTraits<base::Value>::Write(base::Pickle* m, const param_type& p) {
+  WriteValue(m, &p, 0);
 }
 
-bool ParamTraits<base::NullableString16>::Read(const base::Pickle* m,
-                                               base::PickleIterator* iter,
-                                               param_type* r) {
-  base::string16 string;
-  if (!ReadParam(m, iter, &string))
-    return false;
-  bool is_null;
-  if (!ReadParam(m, iter, &is_null))
-    return false;
-  *r = base::NullableString16(string, is_null);
-  return true;
+bool ParamTraits<base::Value>::Read(const base::Pickle* m,
+                                    base::PickleIterator* iter,
+                                    param_type* r) {
+  return ReadValue(m, iter, r, 0);
 }
 
-void ParamTraits<base::NullableString16>::Log(const param_type& p,
-                                              std::string* l) {
-  l->append("(");
-  LogParam(p.string(), l);
-  l->append(", ");
-  LogParam(p.is_null(), l);
-  l->append(")");
+void ParamTraits<base::Value>::Log(const param_type& p, std::string* l) {
+  std::string json;
+  base::JSONWriter::Write(p, &json);
+  l->append(json);
 }
 
 void ParamTraits<base::File::Info>::Write(base::Pickle* m,

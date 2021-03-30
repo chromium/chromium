@@ -8,28 +8,22 @@
 #include "base/files/file_util.h"
 #include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
-#include "chrome/browser/download/download_service_factory.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_model_download_observer.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_key.h"
-#include "chrome/common/chrome_paths.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/download/public/background_service/download_service.h"
-#include "components/optimization_guide/optimization_guide_enums.h"
-#include "components/optimization_guide/optimization_guide_features.h"
-#include "components/optimization_guide/optimization_guide_switches.h"
-#include "components/optimization_guide/optimization_guide_util.h"
+#include "components/optimization_guide/core/optimization_guide_enums.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/services/unzip/public/cpp/unzip.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
+#include "crypto/sha2.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace optimization_guide {
@@ -39,6 +33,12 @@ namespace {
 // Header for API key.
 constexpr char kGoogApiKey[] = "X-Goog-Api-Key";
 
+// The SHA256 hash of the public key for the Optimization Guide Server that
+// we require models to come from.
+constexpr uint8_t kPublisherKeyHash[] = {
+    0x66, 0xa1, 0xd9, 0x3e, 0x4e, 0x5a, 0x66, 0x8a, 0x0f, 0xd3, 0xfa,
+    0xa3, 0x70, 0x71, 0x42, 0x16, 0x0d, 0x2d, 0x68, 0xb0, 0x53, 0x02,
+    0x5c, 0x7f, 0xd0, 0x0c, 0xa1, 0x6e, 0xef, 0xdd, 0x63, 0x7a};
 const net::NetworkTrafficAnnotationTag
     kOptimizationGuidePredictionModelsTrafficAnnotation =
         net::DefineNetworkTrafficAnnotation("optimization_guide_model_download",
@@ -76,11 +76,9 @@ bool IsRelevantFile(const base::FilePath& file_path) {
          base_name_value == kModelInfoFileName;
 }
 
-base::FilePath GetFilePathForModelInfo(const proto::ModelInfo& model_info) {
-  base::FilePath models_dir;
-  base::PathService::Get(chrome::DIR_OPTIMIZATION_GUIDE_PREDICTION_MODELS,
-                         &models_dir);
-  return models_dir.AppendASCII(base::StringPrintf(
+base::FilePath GetFilePathForModelInfo(const base::FilePath& dir,
+                                       const proto::ModelInfo& model_info) {
+  return dir.AppendASCII(base::StringPrintf(
       "%s_%s.tflite",
       proto::OptimizationTarget_Name(model_info.optimization_target()).c_str(),
       base::NumberToString(model_info.version()).c_str()));
@@ -96,10 +94,11 @@ void RecordPredictionModelDownloadStatus(PredictionModelDownloadStatus status) {
 }  // namespace
 
 PredictionModelDownloadManager::PredictionModelDownloadManager(
-    Profile* profile,
+    download::DownloadService* download_service,
+    const base::FilePath& models_dir,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
-    : download_service_(
-          DownloadServiceFactory::GetForKey(profile->GetProfileKey())),
+    : download_service_(download_service),
+      models_dir_(models_dir),
       is_available_for_downloads_(true),
       api_key_(features::GetOptimizationGuideServiceAPIKey()),
       background_task_runner_(background_task_runner) {}
@@ -152,14 +151,14 @@ bool PredictionModelDownloadManager::IsAvailableForDownloads() const {
 
 void PredictionModelDownloadManager::AddObserver(
     PredictionModelDownloadObserver* observer) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   observers_.AddObserver(observer);
 }
 
 void PredictionModelDownloadManager::RemoveObserver(
     PredictionModelDownloadObserver* observer) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   observers_.RemoveObserver(observer);
 }
@@ -170,8 +169,8 @@ void PredictionModelDownloadManager::OnDownloadServiceReady(
   for (const std::string& pending_download_guid : pending_download_guids)
     pending_download_guids_.insert(pending_download_guid);
 
-  for (const auto& successful_download : successful_downloads)
-    OnDownloadSucceeded(successful_download.first, successful_download.second);
+  // Successful downloads should already be notified via |onDownloadSucceeded|,
+  // so we don't do anything with them here.
 }
 
 void PredictionModelDownloadManager::OnDownloadServiceUnavailable() {
@@ -216,15 +215,33 @@ PredictionModelDownloadManager::ProcessDownload(
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
 
   if (!switches::ShouldSkipModelDownloadVerificationForTesting()) {
-    // Verify that the |file_path| contains a file signed with a key we trust.
+    // Verify that the |file_path| contains a valid CRX file.
+    std::string public_key;
     crx_file::VerifierResult verifier_result = crx_file::Verify(
-        file_path, crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF,
+        file_path, crx_file::VerifierFormat::CRX3,
         /*required_key_hashes=*/{},
-        /*required_file_hash=*/{}, /*public_key=*/nullptr,
-        /*crx_id=*/nullptr);
+        /*required_file_hash=*/{}, &public_key,
+        /*crx_id=*/nullptr, /*compressed_verified_contents=*/nullptr);
     if (verifier_result != crx_file::VerifierResult::OK_FULL) {
       RecordPredictionModelDownloadStatus(
           PredictionModelDownloadStatus::kFailedCrxVerification);
+      base::ThreadPool::PostTask(
+          FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+          base::BindOnce(base::GetDeleteFileCallback(), file_path));
+      return base::nullopt;
+    }
+
+    // Verify that the CRX3 file is from a publisher we trust.
+    std::vector<uint8_t> publisher_key_hash(std::begin(kPublisherKeyHash),
+                                            std::end(kPublisherKeyHash));
+
+    std::vector<uint8_t> public_key_hash(crypto::kSHA256Length);
+    crypto::SHA256HashString(public_key, public_key_hash.data(),
+                             public_key_hash.size());
+
+    if (publisher_key_hash != public_key_hash) {
+      RecordPredictionModelDownloadStatus(
+          PredictionModelDownloadStatus::kFailedCrxInvalidPublisher);
       base::ThreadPool::PostTask(
           FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
           base::BindOnce(base::GetDeleteFileCallback(), file_path));
@@ -250,7 +267,7 @@ PredictionModelDownloadManager::ProcessDownload(
 void PredictionModelDownloadManager::StartUnzipping(
     const base::Optional<std::pair<base::FilePath, base::FilePath>>&
         unzip_paths) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!unzip_paths)
     return;
@@ -267,7 +284,7 @@ void PredictionModelDownloadManager::OnDownloadUnzipped(
     const base::FilePath& original_file_path,
     const base::FilePath& unzipped_dir_path,
     bool success) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Clean up original download file when this function finishes.
   background_task_runner_->PostTask(
@@ -320,7 +337,7 @@ PredictionModelDownloadManager::ProcessUnzippedContents(
 
   // Move model file away from temp directory.
   base::FilePath temp_model_path = unzipped_dir_path.Append(kModelFileName);
-  base::FilePath model_path = GetFilePathForModelInfo(model_info);
+  base::FilePath model_path = GetFilePathForModelInfo(models_dir_, model_info);
   base::File::Error file_error;
   if (!base::ReplaceFile(temp_model_path, model_path, &file_error)) {
     if (file_error == base::File::FILE_ERROR_NOT_FOUND) {
@@ -343,7 +360,7 @@ PredictionModelDownloadManager::ProcessUnzippedContents(
 
 void PredictionModelDownloadManager::NotifyModelReady(
     const base::Optional<proto::PredictionModel>& model) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!model)
     return;

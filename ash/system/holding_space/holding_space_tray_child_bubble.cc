@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/holding_space/holding_space_item_view_delegate.h"
 #include "ash/system/holding_space/holding_space_item_views_section.h"
 #include "ash/system/holding_space/holding_space_util.h"
 #include "ash/system/tray/tray_constants.h"
@@ -155,6 +156,16 @@ void HoldingSpaceTrayChildBubble::Reset() {
     section->Reset();
 }
 
+std::vector<HoldingSpaceItemView*>
+HoldingSpaceTrayChildBubble::GetHoldingSpaceItemViews() {
+  std::vector<HoldingSpaceItemView*> views;
+  for (HoldingSpaceItemViewsSection* section : sections_) {
+    auto section_views = section->GetHoldingSpaceItemViews();
+    views.insert(views.end(), section_views.begin(), section_views.end());
+  }
+  return views;
+}
+
 void HoldingSpaceTrayChildBubble::OnHoldingSpaceModelAttached(
     HoldingSpaceModel* model) {
   model_observer_.Observe(model);
@@ -231,6 +242,9 @@ void HoldingSpaceTrayChildBubble::ChildPreferredSizeChanged(
 }
 
 void HoldingSpaceTrayChildBubble::ChildVisibilityChanged(views::View* child) {
+  if (ignore_child_visibility_changed_)
+    return;
+
   // This child bubble should be visible iff it has visible children.
   bool visible = false;
   for (const views::View* c : children()) {
@@ -250,6 +264,16 @@ void HoldingSpaceTrayChildBubble::ChildVisibilityChanged(views::View* child) {
   }
 
   PreferredSizeChanged();
+}
+
+void HoldingSpaceTrayChildBubble::OnGestureEvent(ui::GestureEvent* event) {
+  delegate_->OnHoldingSpaceTrayChildBubbleGestureEvent(*event);
+  views::View::OnGestureEvent(event);
+}
+
+bool HoldingSpaceTrayChildBubble::OnMousePressed(const ui::MouseEvent& event) {
+  delegate_->OnHoldingSpaceTrayChildBubbleMousePressed(event);
+  return true;
 }
 
 void HoldingSpaceTrayChildBubble::MaybeAnimateIn() {
@@ -300,11 +324,16 @@ void HoldingSpaceTrayChildBubble::AnimateIn(
     ui::LayerAnimationObserver* observer) {
   DCHECK(!is_animating_out_);
 
+  // Animation is only necessary if this view is visible to the user.
+  const base::TimeDelta animation_duration =
+      IsDrawn() ? kAnimationDuration : base::TimeDelta();
+
   // Delay in animations to give the holding space bubble time to animate its
   // layout changes. This ensures that there is sufficient space to display the
   // child bubble before it is displayed to the user.
-  const base::TimeDelta animation_delay = kAnimationDuration;
-  holding_space_util::AnimateIn(this, kAnimationDuration, animation_delay,
+  const base::TimeDelta animation_delay =
+      IsDrawn() ? kAnimationDuration : base::TimeDelta();
+  holding_space_util::AnimateIn(this, animation_duration, animation_delay,
                                 observer);
 }
 
@@ -340,8 +369,17 @@ void HoldingSpaceTrayChildBubble::OnAnimateOutCompleted(bool aborted) {
   // re-layout of its view hierarchy with this child bubble taking no space.
   SetVisible(false);
 
-  for (HoldingSpaceItemViewsSection* section : sections_)
-    section->RemoveAllHoldingSpaceItemViews();
+  {
+    // Removing all holding space items from a section will cause it to become
+    // invisible. When multiple sections exist, the `ChildVisibilityChanged()`
+    // event which results would normally cause this child bubble to regain
+    // visibility since some sections have not yet been hidden. To prevent this
+    // child bubble from becoming visible, ignore `ChildVisibilityChanged()`.
+    base::AutoReset<bool> scoped_ignore_child_visibility_changed(
+        &ignore_child_visibility_changed_, true);
+    for (HoldingSpaceItemViewsSection* section : sections_)
+      section->RemoveAllHoldingSpaceItemViews();
+  }
 
   HoldingSpaceModel* model = HoldingSpaceController::Get()->model();
   if (!model || model->items().empty())

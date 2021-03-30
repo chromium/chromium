@@ -21,7 +21,7 @@ namespace {
 // Convert() unescapes a CSV field |str| and converts the result to a 16-bit
 // string. |str| is assumed to exclude the outer pair of quotation marks, if
 // originally present.
-base::string16 Convert(base::StringPiece str) {
+std::u16string Convert(base::StringPiece str) {
   std::string str_copy(str);
   base::ReplaceSubstringsAfterOffset(&str_copy, 0, "\"\"", "\"");
   return base::UTF8ToUTF16(str_copy);

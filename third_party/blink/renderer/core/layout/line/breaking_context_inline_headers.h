@@ -207,6 +207,7 @@ class BreakingContext {
   bool ignoring_spaces_;
   bool current_character_is_space_;
   bool is_space_or_other_space_separator_;
+  bool previous_is_space_or_other_space_separator_;
   bool previous_character_is_space_;
   bool has_former_opportunity_;
   unsigned current_start_offset_;  // initial offset for the current text
@@ -1077,11 +1078,10 @@ inline bool BreakingContext::HandleText(WordMeasurements& word_measurements,
   UChar last_character = layout_text_info_.line_break_iterator_.LastCharacter();
   UChar second_to_last_character =
       layout_text_info_.line_break_iterator_.SecondToLastCharacter();
-  bool previous_is_space_or_other_space_separator = false;
   for (; current_.Offset() < layout_text.TextLength();
        current_.FastIncrementInTextNode()) {
     previous_character_is_space_ = current_character_is_space_;
-    previous_is_space_or_other_space_separator =
+    previous_is_space_or_other_space_separator_ =
         is_space_or_other_space_separator_;
     UChar c = current_.Current();
     SetCurrentCharacterIsSpace(c);
@@ -1145,7 +1145,7 @@ inline bool BreakingContext::HandleText(WordMeasurements& word_measurements,
       }
 
       PrepareForNextCharacter(layout_text, prohibit_break_inside,
-                              previous_is_space_or_other_space_separator);
+                              previous_is_space_or_other_space_separator_);
       at_start_ = false;
       NextCharacter(c, last_character, second_to_last_character);
       continue;
@@ -1185,7 +1185,7 @@ inline bool BreakingContext::HandleText(WordMeasurements& word_measurements,
     // We keep track of the total width contributed by trailing space as we
     // often want to exclude it when determining
     // if a run fits on a line.
-    if (collapse_white_space_ && previous_is_space_or_other_space_separator &&
+    if (collapse_white_space_ && previous_is_space_or_other_space_separator_ &&
         is_space_or_other_space_separator_ && last_width_measurement)
       width_.SetTrailingWhitespaceWidth(last_width_measurement);
 
@@ -1250,9 +1250,9 @@ inline bool BreakingContext::HandleText(WordMeasurements& word_measurements,
     if (CanBreakAtWhitespace(
             break_words, word_measurement, stopped_ignoring_spaces, char_width,
             hyphenated, disable_soft_hyphen, hyphen_width, between_words,
-            mid_word_break, can_break_mid_word, previous_character_is_space_,
-            last_width_measurement, layout_text, font, apply_word_spacing,
-            word_spacing))
+            mid_word_break, can_break_mid_word,
+            previous_is_space_or_other_space_separator_, last_width_measurement,
+            layout_text, font, apply_word_spacing, word_spacing))
       return false;
 
     // If there is a hard-break available at this whitespace position then take
@@ -1304,7 +1304,7 @@ inline bool BreakingContext::HandleText(WordMeasurements& word_measurements,
     }
 
     PrepareForNextCharacter(layout_text, prohibit_break_inside,
-                            previous_is_space_or_other_space_separator);
+                            previous_is_space_or_other_space_separator_);
     at_start_ = false;
     is_line_empty = line_info_.IsEmpty();
     NextCharacter(c, last_character, second_to_last_character);
@@ -1461,7 +1461,7 @@ inline void BreakingContext::TrailingSpacesHang(bool can_break_mid_word) {
   DCHECK(curr_ws_ == EWhiteSpace::kBreakSpaces);
   // Avoid breaking before the first white-space after a word if there is a
   // breaking opportunity before.
-  if (has_former_opportunity_ && !previous_character_is_space_)
+  if (has_former_opportunity_ && !previous_is_space_or_other_space_separator_)
     return;
 
   line_break_.MoveTo(current_.GetLineLayoutItem(), current_.Offset(),
@@ -1469,7 +1469,7 @@ inline void BreakingContext::TrailingSpacesHang(bool can_break_mid_word) {
 
   // Avoid breaking before the first white-space after a word, unless
   // overflow-wrap or word-break allow to.
-  if (!previous_character_is_space_ && !can_break_mid_word)
+  if (!previous_is_space_or_other_space_separator_ && !can_break_mid_word)
     line_break_.Increment();
 }
 

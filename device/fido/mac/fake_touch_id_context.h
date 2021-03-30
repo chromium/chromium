@@ -19,7 +19,7 @@ class API_AVAILABLE(macosx(10.12.2)) FakeTouchIdContext
   ~FakeTouchIdContext() override;
 
   // TouchIdContext:
-  void PromptTouchId(const base::string16& reason, Callback callback) override;
+  void PromptTouchId(const std::u16string& reason, Callback callback) override;
 
   void set_callback_result(bool callback_result) {
     callback_result_ = callback_result;

@@ -7,11 +7,14 @@
 
 #include "chromeos/services/multidevice_setup/multidevice_setup_impl.h"
 
+#include "ash/constants/ash_features.h"
+#include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_clock.h"
 #include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/multidevice_setup/account_status_change_delegate_notifier_impl.h"
 #include "chromeos/services/multidevice_setup/android_sms_app_installing_status_observer.h"
 #include "chromeos/services/multidevice_setup/device_reenroller.h"
@@ -121,17 +124,6 @@ MultiDeviceSetupImpl::MultiDeviceSetupImpl(
               host_backend_delegate_.get(),
               device_sync_client,
               pref_service)),
-      wifi_sync_feature_manager_(WifiSyncFeatureManagerImpl::Factory::Create(
-          host_status_provider_.get(),
-          pref_service,
-          device_sync_client)),
-      feature_state_manager_(FeatureStateManagerImpl::Factory::Create(
-          pref_service,
-          host_status_provider_.get(),
-          device_sync_client,
-          android_sms_pairing_state_tracker,
-          wifi_sync_feature_manager_.get(),
-          is_secondary_user)),
       host_device_timestamp_manager_(
           HostDeviceTimestampManagerImpl::Factory::Create(
               host_status_provider_.get(),
@@ -144,6 +136,18 @@ MultiDeviceSetupImpl::MultiDeviceSetupImpl(
               host_device_timestamp_manager_.get(),
               oobe_completion_tracker,
               base::DefaultClock::GetInstance())),
+      wifi_sync_feature_manager_(WifiSyncFeatureManagerImpl::Factory::Create(
+          host_status_provider_.get(),
+          pref_service,
+          device_sync_client,
+          delegate_notifier_.get())),
+      feature_state_manager_(FeatureStateManagerImpl::Factory::Create(
+          pref_service,
+          host_status_provider_.get(),
+          device_sync_client,
+          android_sms_pairing_state_tracker,
+          wifi_sync_feature_manager_.get(),
+          is_secondary_user)),
       device_reenroller_(
           DeviceReenroller::Factory::Create(device_sync_client,
                                             gcm_device_info_provider)),
@@ -193,13 +197,31 @@ void MultiDeviceSetupImpl::GetEligibleHostDevices(
 
 void MultiDeviceSetupImpl::GetEligibleActiveHostDevices(
     GetEligibleActiveHostDevicesCallback callback) {
+  // For metrics.
+  bool has_duplicate_host_name = false;
+  base::flat_set<std::string> name_set;
+
   std::vector<mojom::HostDevicePtr> eligible_active_hosts;
   for (const auto& host_device :
        eligible_host_devices_provider_->GetEligibleActiveHostDevices()) {
+    // For metrics.
+    if (base::Contains(name_set, host_device.remote_device.name())) {
+      has_duplicate_host_name = true;
+      PA_LOG(WARNING) << "MultiDeviceSetupImpl::GetEligibleActiveHostDevices: "
+                      << "Detected duplicate eligible host device name \""
+                      << host_device.remote_device.name() << "\"";
+    } else {
+      name_set.insert(host_device.remote_device.name());
+    }
+
     eligible_active_hosts.push_back(
         mojom::HostDevice::New(host_device.remote_device.GetRemoteDevice(),
                                host_device.connectivity_status));
   }
+
+  base::UmaHistogramBoolean(
+      "MultiDevice.Setup.HasDuplicateEligibleHostDeviceNames",
+      has_duplicate_host_name);
 
   std::move(callback).Run(std::move(eligible_active_hosts));
 }
@@ -247,6 +269,8 @@ void MultiDeviceSetupImpl::SetFeatureEnabledState(
     SetFeatureEnabledStateCallback callback) {
   if (IsAuthTokenRequiredForFeatureStateChange(feature, enabled) &&
       (!auth_token || !auth_token_validator_->IsAuthTokenValid(*auth_token))) {
+    PA_LOG(ERROR) << __func__ << " Cannot " << (enabled ? "enable" : "disable")
+                  << " " << feature << "; auth token invalid";
     std::move(callback).Run(false /* success */);
     return;
   }

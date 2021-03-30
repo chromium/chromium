@@ -145,18 +145,22 @@ class CONTENT_EXPORT PlatformNotificationContextImpl
       bool /* initialized */)>;
 
   // Initializes the database if necessary. |callback| will be invoked on the
-  // |task_runner_| thread. If everything is available, |callback| will be
+  // |task_runner_| thread. If |lazy| is true this will not try to create a new
+  // database if there isn't one already. Otherwise this will try to open or
+  // create a new database. If everything is available, |callback| will be
   // called with true, otherwise it will be called with false.
-  void LazyInitialize(InitializeResultCallback callback);
+  void InitializeDatabase(InitializeResultCallback callback, bool lazy = false);
 
   // Marks this notification as shown and displays it.
   void DoTriggerNotification(const NotificationDatabaseData& database_data);
 
   // Opens the database. Must be called on the |task_runner_| thread. |callback|
-  // will be invoked on the |task_runner_| thread. When the database has been
+  // will be invoked on the |task_runner_| thread. If |create_if_missing| is
+  // true this will try to create a new database if there isn't one already.
+  // Otherwise we will just try to open it. When the database has been
   // successfully opened, |callback| will be called with true, otherwise it will
   // be called with false.
-  void OpenDatabase(InitializeResultCallback callback);
+  void OpenDatabase(InitializeResultCallback callback, bool create_if_missing);
 
   // Actually reads the notification data from the database. Must only be
   // called on the |task_runner_| thread. |callback| will be invoked on the
@@ -182,10 +186,12 @@ class CONTENT_EXPORT PlatformNotificationContextImpl
                               bool initialized);
 
   // Checks if the given notification is still valid, otherwise deletes it from
-  // the database.
+  // the database. Fills |close_notification_ids| with notification ids that
+  // should be closed by the platform.
   void DoHandleSyncNotification(
       bool supports_synchronization,
       const std::set<std::string>& displayed_notifications,
+      std::set<std::string>* close_notification_ids,
       const NotificationDatabaseData& data);
 
   // Tries to get a list of displayed notification ids if the platform supports

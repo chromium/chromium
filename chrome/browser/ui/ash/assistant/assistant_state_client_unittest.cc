@@ -9,9 +9,9 @@
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
-#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
-#include "chrome/browser/chromeos/arc/test/test_arc_session_manager.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -25,8 +25,7 @@
 class AssistantStateClientTest : public ChromeAshTestBase {
  public:
   AssistantStateClientTest()
-      : fake_user_manager_(
-            std::make_unique<chromeos::FakeChromeUserManager>()) {}
+      : fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {}
   ~AssistantStateClientTest() override = default;
 
   void SetUp() override {
@@ -75,8 +74,8 @@ class AssistantStateClientTest : public ChromeAshTestBase {
   }
 
  private:
-  chromeos::FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<chromeos::FakeChromeUserManager*>(
+  ash::FakeChromeUserManager* GetFakeUserManager() const {
+    return static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
 

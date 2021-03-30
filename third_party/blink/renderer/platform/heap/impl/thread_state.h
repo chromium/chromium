@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "v8/include/v8.h"
 
 namespace v8 {
 class EmbedderGraph;
@@ -65,7 +66,6 @@ class IncrementalMarkingScope;
 
 class MarkingVisitor;
 class MarkingSchedulingOracle;
-class PersistentNode;
 class PersistentRegion;
 class ThreadHeap;
 class ThreadState;
@@ -107,26 +107,6 @@ class Visitor;
  private:                                                                    \
   ThreadState::PrefinalizerRegistration<Class> prefinalizer_dummy_{this};    \
   using UsingPreFinalizerMacroNeedsTrailingSemiColon = char
-
-class PLATFORM_EXPORT BlinkGCObserver {
-  USING_FAST_MALLOC(BlinkGCObserver);
-
- public:
-  // The constructor automatically register this object to ThreadState's
-  // observer lists. The argument must not be null.
-  explicit BlinkGCObserver(ThreadState*);
-
-  // The destructor automatically unregister this object from ThreadState's
-  // observer lists.
-  virtual ~BlinkGCObserver();
-
-  virtual void OnCompleteSweepDone() = 0;
-
- private:
-  // As a ThreadState must live when a BlinkGCObserver lives, holding a raw
-  // pointer is safe.
-  ThreadState* thread_state_;
-};
 
 class PLATFORM_EXPORT ThreadState final {
   USING_FAST_MALLOC(ThreadState);
@@ -192,7 +172,6 @@ class PLATFORM_EXPORT ThreadState final {
   class StatisticsCollector;
   struct Statistics;
   class SweepForbiddenScope;
-  class HeapPointersOnStackScope;
 
   using V8BuildEmbedderGraphCallback = void (*)(v8::Isolate*,
                                                 v8::EmbedderGraph*,
@@ -347,10 +326,6 @@ class PLATFORM_EXPORT ThreadState final {
     return weak_persistent_region_.get();
   }
 
-  void RegisterStaticPersistentNode(PersistentNode*);
-  void ReleaseStaticPersistentNodes();
-  void FreePersistentNode(PersistentRegion*, PersistentNode*);
-
   v8::Isolate* GetIsolate() const { return isolate_; }
 
   // Returns |true| if |object| resides on this thread's heap.
@@ -367,8 +342,6 @@ class PLATFORM_EXPORT ThreadState final {
            address >= (reinterpret_cast<Address>(reinterpret_cast<uintptr_t>(
                           WTF::GetCurrentStackPosition())));
   }
-
-  int GcAge() const { return gc_age_; }
 
   MarkingVisitor* CurrentVisitor() const {
     return current_gc_data_.visitor.get();
@@ -415,6 +388,20 @@ class PLATFORM_EXPORT ThreadState final {
   }
   void LeaveNoHeapVerificationScopeForTesting() {
     --disable_heap_verification_scope_;
+  }
+
+  void EnableDetachedGarbageCollectionsForTesting() { CHECK(!isolate_); }
+
+  void NotifyGarbageCollection(v8::GCType, v8::GCCallbackFlags);
+
+  // Waits until sweeping is done and invokes the given callback with
+  // the total sizes of live objects in Node and CSS arenas.
+  void CollectNodeAndCssStatistics(
+      base::OnceCallback<void(size_t allocated_node_bytes,
+                              size_t allocated_css_bytes)>);
+
+  void ForceNoFollowupFullGCForTesting() {
+    no_followup_full_gc_for_testing_ = true;
   }
 
  private:
@@ -465,9 +452,6 @@ class PLATFORM_EXPORT ThreadState final {
     DCHECK_GT(gc_forbidden_count_, 0u);
     gc_forbidden_count_--;
   }
-
-  void EnterStaticReferenceRegistrationDisabledScope();
-  void LeaveStaticReferenceRegistrationDisabledScope();
 
   // Performs stand-alone garbage collections considering only C++ objects.
   //
@@ -561,6 +545,8 @@ class PLATFORM_EXPORT ThreadState final {
   // Schedule helpers.
   void ScheduleIdleLazySweep();
   void ScheduleConcurrentAndLazySweep();
+  // Advances sweeping and returns true if sweeping is complete.
+  bool AdvanceLazySweep(base::TimeTicks deadline);
 
   void NotifySweepDone();
   void PostSweep();
@@ -573,16 +559,6 @@ class PLATFORM_EXPORT ThreadState final {
   void SynchronizeAndFinishConcurrentSweeping();
 
   void InvokePreFinalizers();
-
-  // Adds the given observer to the ThreadState's observer list. This doesn't
-  // take ownership of the argument. The argument must not be null. The argument
-  // must not be registered before calling this.
-  void AddObserver(BlinkGCObserver*);
-
-  // Removes the given observer from the ThreadState's observer list. This
-  // doesn't take ownership of the argument. The argument must not be null.
-  // The argument must be registered before calling this.
-  void RemoveObserver(BlinkGCObserver*);
 
   bool IsForcedGC() const { return IsForcedGC(current_gc_data_.reason); }
 
@@ -619,7 +595,6 @@ class PLATFORM_EXPORT ThreadState final {
   bool forced_scheduled_gc_for_testing_ = false;
   size_t no_allocation_count_ = 0;
   size_t gc_forbidden_count_ = 0;
-  size_t static_persistent_registration_disabled_count_ = 0;
 
   GCState gc_state_ = GCState::kNoGCScheduled;
   GCPhase gc_phase_ = GCPhase::kNone;
@@ -641,16 +616,6 @@ class PLATFORM_EXPORT ThreadState final {
 #if defined(ADDRESS_SANITIZER)
   void* asan_fake_stack_;
 #endif
-
-  HashSet<BlinkGCObserver*> observers_;
-
-  // PersistentNodes that are stored in static references;
-  // references that either have to be cleared upon the thread
-  // detaching from Oilpan and shutting down or references we
-  // have to clear before initiating LSan's leak detection.
-  HashSet<PersistentNode*> static_persistents_;
-
-  int gc_age_ = 0;
 
   struct GCData {
     BlinkGC::CollectionType collection_type;
@@ -677,8 +642,10 @@ class PLATFORM_EXPORT ThreadState final {
   base::TimeTicks last_concurrently_marked_bytes_update_;
   bool concurrent_marking_priority_increased_ = false;
 
-  friend class BlinkGCObserver;
+  bool no_followup_full_gc_for_testing_ = false;
+
   friend class incremental_marking_test::IncrementalMarkingScope;
+  friend class HeapPointersOnStackScope;
   friend class IncrementalMarkingTestDriver;
   friend class HeapAllocator;
   template <typename T>

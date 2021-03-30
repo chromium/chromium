@@ -38,16 +38,34 @@ Element& LayoutTreeRebuildRoot::RootElement() const {
 ContainerNode* LayoutTreeRebuildRoot::Parent(const Node& node) const {
   return node.GetReattachParent();
 }
+
+bool LayoutTreeRebuildRoot::IsChildDirty(const Node& node) const {
+  return node.ChildNeedsReattachLayoutTree();
+}
 #endif  // DCHECK_IS_ON()
 
 bool LayoutTreeRebuildRoot::IsDirty(const Node& node) const {
   return node.NeedsReattachLayoutTree();
 }
 
-void LayoutTreeRebuildRoot::RootRemoved(ContainerNode& parent) {
+void LayoutTreeRebuildRoot::SubtreeModified(ContainerNode& parent) {
+  if (!GetRootNode())
+    return;
+  if (GetRootNode()->isConnected())
+    return;
+  // LayoutTreeRebuildRoot is only used for marking for layout tree rebuild
+  // during style recalc. We do not allow DOM modifications during style recalc
+  // or the layout tree rebuild that happens right after. The only time we
+  // should end up here is when we find out that we need to remove generated
+  // pseudo elements like ::first-letter or ::marker during layout tree rebuild.
+  DCHECK(parent.isConnected());
+  DCHECK(GetRootNode()->IsPseudoElement());
   Element* ancestor = DynamicTo<Element>(parent);
-  if (!ancestor)
+  if (!ancestor) {
+    // The parent should be the pseudo element's originating element.
+    NOTREACHED();
     ancestor = parent.ParentOrShadowHostElement();
+  }
   for (; ancestor; ancestor = ancestor->GetReattachParent()) {
     DCHECK(ancestor->ChildNeedsReattachLayoutTree());
     DCHECK(!ancestor->NeedsReattachLayoutTree());

@@ -25,13 +25,13 @@ class PredictionServiceBase : public KeyedService {
   // TODO(crbug.com/1138595, andypaicu): once the above TODO is done, refactor
   // to use a struct to make the call sites more readable (for both callbacks).
   using LookupRequestCallback =
-      base::OnceCallback<void(std::unique_ptr<GetSuggestionsRequest>,
+      base::OnceCallback<void(std::unique_ptr<GeneratePredictionsRequest>,
                               std::string)>;  // Access token.
 
   using LookupResponseCallback =
       base::OnceCallback<void(bool,  // Lookup successful.
                               bool,  // Response from cache.
-                              std::unique_ptr<GetSuggestionsResponse>)>;
+                              std::unique_ptr<GeneratePredictionsResponse>)>;
 
   virtual void StartLookup(const PredictionRequestFeatures& entity,
                            LookupRequestCallback request_callback,

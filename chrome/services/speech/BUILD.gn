@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/services/speech/buildflags.gni")
 
 buildflag_header("buildflags") {
@@ -12,6 +13,8 @@ buildflag_header("buildflags") {
 
 source_set("lib") {
   sources = [
+    "audio_source_fetcher_impl.cc",
+    "audio_source_fetcher_impl.h",
     "cloud_speech_recognition_client.cc",
     "cloud_speech_recognition_client.h",
     "speech_recognition_recognizer_impl.cc",
@@ -19,6 +22,13 @@ source_set("lib") {
     "speech_recognition_service_impl.cc",
     "speech_recognition_service_impl.h",
   ]
+
+  if (is_chromeos_ash) {
+    sources += [
+      "cros_speech_recognition_recognizer_impl.cc",
+      "cros_speech_recognition_recognizer_impl.h",
+    ]
+  }
 
   public_deps = [
     "//media/mojo/mojom",
@@ -30,12 +40,14 @@ source_set("lib") {
     ":buildflags",
     "//base",
     "//chrome/services/speech/soda",
+    "//chrome/services/speech/soda:soda_api_proto",
     "//components/speech",
     "//content/public/browser:proto",
     "//google_apis",
     "//media/mojo/common",
     "//mojo/public/cpp/bindings",
     "//net",
+    "//services/audio/public/cpp",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
   ]

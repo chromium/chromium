@@ -5,8 +5,13 @@
         flex-direction: column;
       }
 
-      #minimumSizeSample {
+      #minimumSizeFontPreview {
         text-align: end;
+      }
+
+      div[id$='FontPreview'] {
+        /* Override default style from cr-page-host-style */
+        line-height: initial;
       }
     </style>
     <div class="cr-row first">
@@ -28,7 +33,7 @@
             ticks="[[minimumFontSizeRange_]]" label-aria="$i18n{minimumFont}"
             label-min="$i18n{tiny}" label-max="$i18n{huge}">
         </settings-slider>
-        <div id="minimumSizeSample"
+        <div id="minimumSizeFontPreview"
             style="
                 font-size:[[computeMinimumFontSize_(
                     prefs.webkit.webprefs.minimum_font_size.value)]]px;
@@ -51,15 +56,13 @@
             menu-options="[[fontOptions_]]">
         </settings-dropdown-menu>
       </div>
-      <div class="list-item cr-padded-text"
+      <div id="standardFontPreview" class="list-item cr-padded-text"
           style="
               font-size:[[prefs.webkit.webprefs.default_font_size.value]]px;
               font-family:
                   '[[prefs.webkit.webprefs.fonts.standard.Zyyy.value]]';">
-        <span>
-          [[prefs.webkit.webprefs.default_font_size.value]]:
-          $i18n{quickBrownFox}
-        </span>
+        [[prefs.webkit.webprefs.default_font_size.value]]:
+        $i18n{quickBrownFox}
       </div>
     </div>
     <div class="cr-row" aria-hidden="true">
@@ -72,15 +75,13 @@
             menu-options="[[fontOptions_]]">
         </settings-dropdown-menu>
       </div>
-      <div class="list-item cr-padded-text"
+      <div id="serifFontPreview" class="list-item cr-padded-text"
           style="
               font-size:[[prefs.webkit.webprefs.default_font_size.value]]px;
               font-family:
                   '[[prefs.webkit.webprefs.fonts.serif.Zyyy.value]]';">
-        <span>
-          [[prefs.webkit.webprefs.default_font_size.value]]:
-          $i18n{quickBrownFox}
-        </span>
+        [[prefs.webkit.webprefs.default_font_size.value]]:
+        $i18n{quickBrownFox}
       </div>
     </div>
     <div class="cr-row" aria-hidden="true">
@@ -93,15 +94,13 @@
             menu-options="[[fontOptions_]]">
         </settings-dropdown-menu>
       </div>
-      <div class="list-item cr-padded-text"
+      <div id="sansSerifFontPreview" class="list-item cr-padded-text"
           style="
               font-size:[[prefs.webkit.webprefs.default_font_size.value]]px;
               font-family:
                   '[[prefs.webkit.webprefs.fonts.sansserif.Zyyy.value]]';">
-        <span>
-          [[prefs.webkit.webprefs.default_font_size.value]]:
-          $i18n{quickBrownFox}
-        </span>
+        [[prefs.webkit.webprefs.default_font_size.value]]:
+        $i18n{quickBrownFox}
       </div>
     </div>
     <div class="cr-row" aria-hidden="true">
@@ -114,13 +113,13 @@
             menu-options="[[fontOptions_]]">
         </settings-dropdown-menu>
       </div>
-      <div class="list-item cr-padded-text"
+      <div id="fixedFontPreview" class="list-item cr-padded-text"
           style="
               font-size:
                   [[prefs.webkit.webprefs.default_fixed_font_size.value]]px;
               font-family:
                   '[[prefs.webkit.webprefs.fonts.fixed.Zyyy.value]]';">
-        [[prefs.webkit.webprefs.default_font_size.value]]:
+        [[prefs.webkit.webprefs.default_fixed_font_size.value]]:
         $i18n{quickBrownFox}
       </div>
     </div>

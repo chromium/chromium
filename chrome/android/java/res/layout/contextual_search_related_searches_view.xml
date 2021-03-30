@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<!-- Displays Related Searches suggestions in a section of the Contextual
+     Search bottom sheet. -->
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/contextual_search_related_searches_layout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@color/overlay_panel_bar_background_color"
+    android:visibility="invisible">
+    <!-- ChipView elements and their container are dynamically added here. -->
+</FrameLayout>

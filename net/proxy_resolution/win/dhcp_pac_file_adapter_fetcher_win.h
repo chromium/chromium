@@ -13,7 +13,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "net/base/completion_once_callback.h"
@@ -67,7 +66,7 @@ class NET_EXPORT_PRIVATE DhcpPacFileAdapterFetcher
   // Returns the contents of the PAC file retrieved.  Only valid if
   // |IsComplete()| is true.  Returns the empty string if |GetResult()|
   // returns anything other than OK.
-  virtual base::string16 GetPacScript() const;
+  virtual std::u16string GetPacScript() const;
 
   // Returns the PAC URL retrieved from DHCP.  Only guaranteed to be
   // valid if |IsComplete()| is true.  Returns an empty URL if no URL was
@@ -170,7 +169,7 @@ class NET_EXPORT_PRIVATE DhcpPacFileAdapterFetcher
   int result_;
 
   // Empty string or the PAC script downloaded.
-  base::string16 pac_script_;
+  std::u16string pac_script_;
 
   // Empty URL or the PAC URL configured in DHCP.
   GURL pac_url_;

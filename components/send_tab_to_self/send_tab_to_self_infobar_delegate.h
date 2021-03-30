@@ -6,9 +6,9 @@
 #define COMPONENTS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_INFOBAR_DELEGATE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/infobars/core/infobar_delegate.h"
 
 namespace content {
@@ -30,7 +30,7 @@ class SendTabToSelfInfoBarDelegate : public infobars::InfoBarDelegate {
   ~SendTabToSelfInfoBarDelegate() override;
 
   // Returns the message to be shown in the infobar.
-  base::string16 GetInfobarMessage() const;
+  std::u16string GetInfobarMessage() const;
 
   // Opens a tab to the url of the shared |entry_|.
   void OpenTab();

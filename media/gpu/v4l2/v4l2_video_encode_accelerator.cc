@@ -283,7 +283,7 @@ void V4L2VideoEncodeAccelerator::InitializeTask(const Config& config,
 
   native_input_mode_ =
       config.storage_type.value_or(Config::StorageType::kShmem) ==
-      Config::StorageType::kDmabuf;
+      Config::StorageType::kGpuMemoryBuffer;
 
   input_queue_ = device_->GetQueue(V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
   output_queue_ = device_->GetQueue(V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
@@ -403,7 +403,7 @@ bool V4L2VideoEncodeAccelerator::CreateImageProcessor(
 
   auto platform_layout = GetPlatformVideoFrameLayout(
       /*gpu_memory_buffer_factory=*/nullptr, output_format, output_size,
-      gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE);
+      gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
   if (!platform_layout) {
     VLOGF(1) << "Failed to get Platform VideoFrameLayout";
     return false;
@@ -476,7 +476,7 @@ bool V4L2VideoEncodeAccelerator::AllocateImageProcessorOutputBuffers(
             output_config.fourcc.ToVideoPixelFormat(), output_config.size,
             output_config.visible_rect, output_config.visible_rect.size(),
             base::TimeDelta(),
-            gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE);
+            gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
         break;
       default:
         VLOGF(1) << "Unsupported output storage type of image processor: "
@@ -509,7 +509,7 @@ bool V4L2VideoEncodeAccelerator::InitInputMemoryType(const Config& config) {
       case Config::StorageType::kShmem:
         input_memory_type_ = V4L2_MEMORY_USERPTR;
         break;
-      case Config::StorageType::kDmabuf:
+      case Config::StorageType::kGpuMemoryBuffer:
         input_memory_type_ = V4L2_MEMORY_DMABUF;
         break;
     }
@@ -860,6 +860,7 @@ void V4L2VideoEncodeAccelerator::MaybeFlushImageProcessor() {
               << "|image_processor_|. Move the flush request to the encoder";
     image_processor_input_queue_.pop();
     encoder_input_queue_.emplace(nullptr, false);
+    Enqueue();
   }
 }
 
@@ -1646,7 +1647,7 @@ bool V4L2VideoEncodeAccelerator::SetFormats(VideoPixelFormat input_format,
     auto input_layout = GetPlatformVideoFrameLayout(
         /*gpu_memory_buffer_factory=*/nullptr, input_format,
         encoder_input_visible_rect_.size(),
-        gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE);
+        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
     if (!input_layout)
       return false;
     input_size = gfx::Size(input_layout->planes()[0].stride,
@@ -1765,11 +1766,12 @@ bool V4L2VideoEncodeAccelerator::InitControls(const Config& config) {
 
   // Optional controls:
   // - Enable macroblock-level bitrate control.
-  // - Set GOP length, or default 0 to disable periodic key frames.
+
   device_->SetExtCtrls(V4L2_CTRL_CLASS_MPEG,
-                       {V4L2ExtCtrl(V4L2_CID_MPEG_VIDEO_MB_RC_ENABLE, 1),
-                        V4L2ExtCtrl(V4L2_CID_MPEG_VIDEO_GOP_SIZE,
-                                    config.gop_length.value_or(0))});
+                       {V4L2ExtCtrl(V4L2_CID_MPEG_VIDEO_MB_RC_ENABLE, 1)});
+
+  // - Set GOP length, or default 0 to disable periodic key frames.
+  device_->SetGOPLength(config.gop_length.value_or(0));
 
   return true;
 }

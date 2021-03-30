@@ -1,0 +1,44 @@
+<html>
+<head>
+<script type="text/javascript">
+var gl_canvas;
+var gl;
+
+function onLoad() {
+  gl_canvas = document.getElementById("glcanvas");
+  gl_canvas.addEventListener("webglcontextlost", function(event) {
+    event.preventDefault();
+  }, false);
+  gl_canvas.addEventListener("webglcontextrestored", setupWebGL, false);
+
+  setupWebGL();
+
+  window.domAutomationController.reset = function() {
+    window.domAutomationController._loaded = false;
+    window.domAutomationController._succeeded = false;
+    window.domAutomationController._finished = false;
+    window.requestAnimationFrame(succeed);
+  };
+  window.domAutomationController.send("LOADED");
+}
+
+function setupWebGL() {
+  // Initialize the GL context.
+  gl = gl_canvas.getContext("webgl", {powerPreference: "high-performance"});
+  if (gl) {
+    gl.clearColor(0.0, 1.0, 0.0, 1.0);
+    gl.clearDepth(1);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  }
+}
+
+function succeed() {
+  if (gl)
+    window.domAutomationController.send("SUCCESS");
+}
+</script>
+</head>
+<body onload="onLoad()">
+  <canvas id="glcanvas" width="640" height="480"></canvas>
+</body>
+</html>

@@ -17,6 +17,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.autofill_assistant.onboarding.BaseOnboardingCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.trigger_scripts.AssistantTriggerScriptBridge;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -76,6 +77,13 @@ public class AutofillAssistantClient {
         return AutofillAssistantClientJni.get().fromWebContents(webContents);
     }
 
+    /**
+     * Notifies that an onboarding UI is shown or hidden.
+     */
+    public static void onOnboardingUiChange(WebContents webContents, boolean shown) {
+        AutofillAssistantClientJni.get().onOnboardingUiChange(webContents, shown);
+    }
+
     private AutofillAssistantClient(long nativeClientAndroid) {
         mNativeClientAndroid = nativeClientAndroid;
     }
@@ -96,8 +104,7 @@ public class AutofillAssistantClient {
      * is the URL included into the intent
      * @param parameters Autofill Assistant parameters to set during the whole flow
      * @param experimentIds comma-separated set of experiments to use while running the flow
-     * @param callerAccount the account calling the flow
-     * @param userName the user name associated with this flow
+     * @param callerEmail the email of the caller, if specified.
      * @param isChromeCustomTab whether this was started from a {@link CustomTabActivity} or a
      *         normal Chrome tab.
      * @param onboardingCoordinator if non-null, reuse existing UI elements, usually created to show
@@ -108,20 +115,19 @@ public class AutofillAssistantClient {
      * still fail after this method returns true; the failure will be displayed on the UI.
      */
     boolean start(String initialUrl, Map<String, String> parameters, String experimentIds,
-            @Nullable String callerAccount, @Nullable String userName, boolean isChromeCustomTab,
+            @Nullable String callerEmail, boolean isChromeCustomTab,
             @Nullable BaseOnboardingCoordinator onboardingCoordinator) {
         if (mNativeClientAndroid == 0) return false;
 
         checkNativeClientIsAliveOrThrow();
-        chooseAccountAsyncIfNecessary(userName);
+        chooseAccountAsyncIfNecessary(callerEmail);
         return AutofillAssistantClientJni.get().start(mNativeClientAndroid, this, initialUrl,
-                experimentIds, callerAccount,
-                parameters.keySet().toArray(new String[parameters.size()]),
+                experimentIds, parameters.keySet().toArray(new String[parameters.size()]),
                 parameters.values().toArray(new String[parameters.size()]), isChromeCustomTab,
                 onboardingCoordinator,
                 /* onboardingShown= */
                 onboardingCoordinator != null && onboardingCoordinator.getOnboardingShown(),
-                AutofillAssistantServiceInjector.getServiceToInject());
+                AutofillAssistantServiceInjector.getServiceToInject(mNativeClientAndroid));
     }
 
     public void startTriggerScript(AssistantTriggerScriptBridge delegate, String initialUrl,
@@ -382,12 +388,6 @@ public class AutofillAssistantClient {
         return ChromeAccessibilityUtil.get().isAccessibilityEnabled();
     }
 
-    /** Returns whether the user has seen a trigger script before or not. */
-    @CalledByNative
-    private static boolean isFirstTimeTriggerScriptUser() {
-        return AutofillAssistantPreferencesUtil.isAutofillAssistantFirstTimeLiteScriptUser();
-    }
-
     /** Adds a dynamic action to the given reporter. */
     @CalledByNative
     private void onFetchWebsiteActions(Callback<Boolean> callback, boolean success) {
@@ -402,9 +402,10 @@ public class AutofillAssistantClient {
     @NativeMethods
     interface Natives {
         AutofillAssistantClient fromWebContents(WebContents webContents);
+        void onOnboardingUiChange(WebContents webContents, boolean shown);
         boolean start(long nativeClientAndroid, AutofillAssistantClient caller, String initialUrl,
-                String experimentIds, String callerAccount, String[] parameterNames,
-                String[] parameterValues, boolean isChromeCustomTab,
+                String experimentIds, String[] parameterNames, String[] parameterValues,
+                boolean isChromeCustomTab,
                 @Nullable BaseOnboardingCoordinator onboardingCoordinator, boolean onboardingShown,
                 long nativeService);
         void startTriggerScript(long nativeClientAndroid, AutofillAssistantClient caller,

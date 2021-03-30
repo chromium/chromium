@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -138,7 +138,7 @@ class DeveloperPrivateApiUnitTest : public ExtensionServiceTestWithInstall {
   const Extension* LoadSimpleExtension();
 
   // Tests modifying the extension's configuration.
-  void TestExtensionPrefSetting(const base::Callback<bool()>& has_pref,
+  void TestExtensionPrefSetting(const base::RepeatingCallback<bool()>& has_pref,
                                 const std::string& key,
                                 const std::string& extension_id);
 
@@ -223,7 +223,7 @@ const Extension* DeveloperPrivateApiUnitTest::LoadSimpleExtension() {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
           .SetManifest(manifest.Build())
-          .SetLocation(Manifest::INTERNAL)
+          .SetLocation(mojom::ManifestLocation::kInternal)
           .SetID(id)
           .Build();
   service()->AddExtension(extension.get());
@@ -231,7 +231,7 @@ const Extension* DeveloperPrivateApiUnitTest::LoadSimpleExtension() {
 }
 
 void DeveloperPrivateApiUnitTest::TestExtensionPrefSetting(
-    const base::Callback<bool()>& has_pref,
+    const base::RepeatingCallback<bool()>& has_pref,
     const std::string& key,
     const std::string& extension_id) {
   scoped_refptr<ExtensionFunction> function(
@@ -394,10 +394,12 @@ TEST_F(DeveloperPrivateApiUnitTest,
       .SetWithholdHostPermissions(true);
 
   TestExtensionPrefSetting(
-      base::Bind(&HasPrefsPermission, &util::IsIncognitoEnabled, profile(), id),
+      base::BindRepeating(&HasPrefsPermission, &util::IsIncognitoEnabled,
+                          profile(), id),
       "incognitoAccess", id);
   TestExtensionPrefSetting(
-      base::Bind(&HasPrefsPermission, &util::AllowFileAccess, profile(), id),
+      base::BindRepeating(&HasPrefsPermission, &util::AllowFileAccess,
+                          profile(), id),
       "fileAccess", id);
 }
 
@@ -830,8 +832,8 @@ TEST_F(DeveloperPrivateApiUnitTest, ReloadBadExtensionToLoadUnpackedRetry) {
      public:
       UnloadedRegistryObserver(const base::FilePath& expected_path,
                                ExtensionRegistry* registry)
-          : expected_path_(expected_path), observer_(this) {
-        observer_.Add(registry);
+          : expected_path_(expected_path) {
+        observation_.Observe(registry);
       }
 
       void OnExtensionUnloaded(content::BrowserContext* browser_context,
@@ -846,7 +848,8 @@ TEST_F(DeveloperPrivateApiUnitTest, ReloadBadExtensionToLoadUnpackedRetry) {
      private:
       bool saw_unload_ = false;
       base::FilePath expected_path_;
-      ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver> observer_;
+      base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+          observation_{this};
 
       DISALLOW_COPY_AND_ASSIGN(UnloadedRegistryObserver);
     };
@@ -1139,7 +1142,7 @@ TEST_F(DeveloperPrivateApiUnitTest, RepairPolicyExtension) {
   // Set up a mock provider with a policy extension.
   std::unique_ptr<MockExternalProvider> mock_provider =
       std::make_unique<MockExternalProvider>(
-          service(), Manifest::EXTERNAL_POLICY_DOWNLOAD);
+          service(), mojom::ManifestLocation::kExternalPolicyDownload);
   MockExternalProvider* mock_provider_ptr = mock_provider.get();
   AddMockExternalProvider(std::move(mock_provider));
   mock_provider_ptr->UpdateOrAddExtension(extension_id, "1.0.0.0",
@@ -1733,7 +1736,7 @@ TEST_F(DeveloperPrivateApiUnitTest, ExtensionUpdatedEventOnPermissionsChange) {
                                                     dummy_extension->id()));
 
   APIPermissionSet apis;
-  apis.insert(APIPermission::kTab);
+  apis.insert(extensions::mojom::APIPermissionID::kTab);
   PermissionSet permissions(std::move(apis), ManifestPermissionSet(),
                             URLPatternSet(), URLPatternSet());
   permissions_test_util::GrantOptionalPermissionsAndWaitForCompletion(

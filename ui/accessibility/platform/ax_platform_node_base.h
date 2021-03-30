@@ -28,6 +28,8 @@ namespace ui {
 
 struct AXNodeData;
 
+// TODO(nektar): Move this struct over to AXNode so that it can be accessed by
+// AXPosition.
 struct AX_EXPORT AXHypertext {
   AXHypertext();
   ~AXHypertext();
@@ -50,7 +52,7 @@ struct AX_EXPORT AXHypertext {
   // Hypertext.
   std::vector<int32_t> hyperlinks;
 
-  base::string16 hypertext;
+  std::u16string hypertext;
 };
 
 class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
@@ -68,7 +70,6 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
   gfx::NativeViewAccessible ChildAtIndex(int index) const;
 
   std::string GetName() const;
-  base::string16 GetNameAsString16() const;
 
   // This returns nullopt if there's no parent, it's unable to find the child in
   // the list of its parent's children, or its parent doesn't have children.
@@ -92,7 +93,7 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
   void NotifyAccessibilityEvent(ax::mojom::Event event_type) override;
 
 #if defined(OS_APPLE)
-  void AnnounceText(const base::string16& text) override;
+  void AnnounceText(const std::u16string& text) override;
 #endif
 
   AXPlatformNodeDelegate* GetDelegate() const override;
@@ -132,18 +133,18 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
   bool GetStringAttribute(ax::mojom::StringAttribute attribute,
                           std::string* value) const;
   bool GetString16Attribute(ax::mojom::StringAttribute attribute,
-                            base::string16* value) const;
-  base::string16 GetString16Attribute(
+                            std::u16string* value) const;
+  std::u16string GetString16Attribute(
       ax::mojom::StringAttribute attribute) const;
   bool HasInheritedStringAttribute(ax::mojom::StringAttribute attribute) const;
   const std::string& GetInheritedStringAttribute(
       ax::mojom::StringAttribute attribute) const;
-  base::string16 GetInheritedString16Attribute(
+  std::u16string GetInheritedString16Attribute(
       ax::mojom::StringAttribute attribute) const;
   bool GetInheritedStringAttribute(ax::mojom::StringAttribute attribute,
                                    std::string* value) const;
   bool GetInheritedString16Attribute(ax::mojom::StringAttribute attribute,
-                                     base::string16* value) const;
+                                     std::u16string* value) const;
 
   bool HasIntListAttribute(ax::mojom::IntListAttribute attribute) const;
   const std::vector<int32_t>& GetIntListAttribute(
@@ -275,32 +276,32 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
   bool HasFocus();
 
   // If this node is a leaf, returns the visible accessible name of this node.
-  // Otherwise represents every non-leaf child node with a special "embedded
-  // object character", and every leaf child node with its visible accessible
+  // Otherwise represents every non-textual child node with a special "embedded
+  // object character", and every textual child node with its visible accessible
   // name. This is how displayed text and embedded objects are represented in
   // ATK and IA2 APIs.
-  base::string16 GetHypertext() const;
+  std::u16string GetHypertext() const;
 
-  // Returns the text of this node and all descendant nodes; including text
-  // found in embedded objects.
+  // Returns the text that is found inside this node and all its descendants;
+  // including text found in embedded objects.
   //
   // Only text displayed on screen is included. Text from ARIA and HTML
   // attributes that is either not displayed on screen, or outside this node,
   // e.g. aria-label and HTML title, is not returned.
-  base::string16 GetInnerText() const;
+  std::u16string GetInnerText() const;
 
   // Returns the value of a control such as a text field, a slider, a <select>
   // element, a date picker or an ARIA combo box. In order to minimize
   // cross-process communication between the renderer and the browser, may
   // compute the value from the control's inner text in the case of a text
   // field.
-  base::string16 GetValueForControl() const;
+  std::u16string GetValueForControl() const;
 
   // Represents a non-static text node in IAccessibleHypertext (and ATK in the
   // future). This character is embedded in the response to
   // IAccessibleText::get_text, indicating the position where a non-static text
   // child object appears.
-  static const base::char16 kEmbeddedCharacter;
+  static const char16_t kEmbeddedCharacter;
 
   // Get a node given its unique id or null in the case that the id is unknown.
   static AXPlatformNode* GetFromUniqueId(int32_t unique_id);
@@ -346,8 +347,8 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
 
   ui::TextAttributeList ComputeTextAttributes() const;
 
-  // Get the number of items selected. It checks kMultiselectable and
-  // kFocusable. and uses GetSelectedItems to get the selected number.
+  // Get the number of items selected. It checks kMultiselectable and uses
+  // GetSelectedItems to get the selected number.
   int GetSelectionCount() const;
 
   // If this object is a container that supports selectable children, returns
@@ -385,9 +386,13 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
 
   // Get the role description from the node data or from the image annotation
   // status.
-  base::string16 GetRoleDescription() const;
-  base::string16 GetRoleDescriptionFromImageAnnotationStatusOrFromAttribute()
+  std::u16string GetRoleDescription() const;
+  std::u16string GetRoleDescriptionFromImageAnnotationStatusOrFromAttribute()
       const;
+
+  // Return true if a kImage corresponds to an image map (has children).
+  // Cannot be called on nodes with a role other than kImage.
+  bool IsImageWithMap() const;
 
   // Cast a gfx::NativeViewAccessible to an AXPlatformNodeBase if it is one,
   // or return NULL if it's not an instance of this class.
@@ -402,7 +407,7 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
 #if BUILDFLAG(USE_ATK)
   using PlatformAttributeList = AtkAttributeSet*;
 #else
-  using PlatformAttributeList = std::vector<base::string16>;
+  using PlatformAttributeList = std::vector<std::wstring>;
 #endif
 
   // Compute the attributes exposed via platform accessibility objects and put
@@ -516,7 +521,7 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
 
  private:
   // Returns true if the index represents a text character.
-  bool IsText(const base::string16& text,
+  bool IsText(const std::u16string& text,
               size_t index,
               bool is_indexed_from_end = false);
 

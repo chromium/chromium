@@ -5,8 +5,9 @@
 #ifndef ASH_HUD_DISPLAY_TAB_STRIP_H_
 #define ASH_HUD_DISPLAY_TAB_STRIP_H_
 
+#include <string>
+
 #include "ash/hud_display/hud_constants.h"
-#include "base/strings/string16.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -38,7 +39,7 @@ class HUDTabButton : public views::LabelButton {
 
   HUDTabButton(Style style,
                const DisplayMode display_mode,
-               const base::string16& text);
+               const std::u16string& text);
   HUDTabButton(const HUDTabButton&) = delete;
   HUDTabButton& operator=(const HUDTabButton&) = delete;
 
@@ -71,7 +72,7 @@ class HUDTabStrip : public views::View {
   ~HUDTabStrip() override;
 
   HUDTabButton* AddTabButton(const DisplayMode display_mode,
-                             const base::string16& label);
+                             const std::u16string& label);
 
   // Mark tabs around the active one need repaint to modify borders.
   void ActivateTab(DisplayMode mode);

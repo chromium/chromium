@@ -15,10 +15,13 @@ const PREFIX = 'settings.a11y.switch_access.';
 
 /** @type {!Array<number>} */
 const AUTO_SCAN_SPEED_RANGE_MS = [
-  700,  800,  900,  1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800,
-  1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2700, 2800, 2900, 3000,
-  3100, 3200, 3300, 3400, 3500, 3600, 3700, 3800, 3900, 4000
+  4000, 3900, 3800, 3700, 3600, 3500, 3400, 3300, 3200, 3100, 3000, 2900,
+  2800, 2700, 2600, 2500, 2400, 2300, 2200, 2100, 2000, 1900, 1800, 1700,
+  1600, 1500, 1400, 1300, 1200, 1100, 1000, 900,  800,  700
 ];
+
+/** @type {!Array<number>} */
+const POINT_SCAN_SPEED_RANGE_DIPS_PER_SECOND = [25, 50, 75, 100, 150, 200, 300];
 
 /**
  * @param {!Array<number>} ticksInMs
@@ -27,6 +30,14 @@ const AUTO_SCAN_SPEED_RANGE_MS = [
 function ticksWithLabelsInSec(ticksInMs) {
   // Dividing by 1000 to convert milliseconds to seconds for the label.
   return ticksInMs.map(x => ({label: `${x / 1000}`, value: x}));
+}
+
+/**
+ * @param {!Array<number>} ticks
+ * @return {!Array<!cr_slider.SliderTick>}
+ */
+function ticksWithCountingLabels(ticks) {
+  return ticks.map((x, i) => ({label: i + 1, value: x}));
 }
 
 Polymer({
@@ -49,21 +60,21 @@ Polymer({
       notify: true,
     },
 
-    /** @private {Array<string>} */
+    /** @private {!Array<{key: string, device: !SwitchAccessDeviceType}>} */
     selectAssignments_: {
       type: Array,
       value: [],
       notify: true,
     },
 
-    /** @private {Array<string>} */
+    /** @private {!Array<{key: string, device: !SwitchAccessDeviceType}>} */
     nextAssignments_: {
       type: Array,
       value: [],
       notify: true,
     },
 
-    /** @private {Array<string>} */
+    /** @private {!Array<{key: string, device: !SwitchAccessDeviceType}>} */
     previousAssignments_: {
       type: Array,
       value: [],
@@ -75,6 +86,13 @@ Polymer({
       readOnly: true,
       type: Array,
       value: ticksWithLabelsInSec(AUTO_SCAN_SPEED_RANGE_MS),
+    },
+
+    /** @private {Array<number>} */
+    pointScanSpeedRangeDipsPerSecond_: {
+      readOnly: true,
+      type: Array,
+      value: ticksWithCountingLabels(POINT_SCAN_SPEED_RANGE_DIPS_PER_SECOND),
     },
 
     /** @private {Object} */
@@ -117,6 +135,16 @@ Polymer({
       },
     },
 
+    /** @private {number} */
+    maxPointScanSpeed_: {
+      readOnly: true,
+      type: Number,
+      value: POINT_SCAN_SPEED_RANGE_DIPS_PER_SECOND.length
+    },
+
+    /** @private {number} */
+    minPointScanSpeed_: {readOnly: true, type: Number, value: 1},
+
     /**
      * Used by DeepLinkingBehavior to focus this page's deep links.
      * @type {!Set<!chromeos.settings.mojom.Setting>}
@@ -130,8 +158,14 @@ Polymer({
       ]),
     },
 
-    /** @private {boolean} */
+    /** @private */
     showSwitchAccessActionAssignmentDialog_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /** @private */
+    showSwitchAccessSetupGuideDialog_: {
       type: Boolean,
       value: false,
     },
@@ -175,6 +209,13 @@ Polymer({
   },
 
   /** @private */
+  onSetupGuideClick_() {
+    if (this.showSetupGuide_()) {
+      this.showSwitchAccessSetupGuideDialog_ = true;
+    }
+  },
+
+  /** @private */
   onSelectAssignClick_() {
     this.action_ = SwitchAccessCommand.SELECT;
     this.showSwitchAccessActionAssignmentDialog_ = true;
@@ -196,13 +237,20 @@ Polymer({
   },
 
   /** @private */
+  onSwitchAccessSetupGuideDialogClose_() {
+    this.showSwitchAccessSetupGuideDialog_ = false;
+    this.$.setupGuideLink.focus();
+  },
+
+  /** @private */
   onSwitchAccessActionAssignmentDialogClose_() {
     this.showSwitchAccessActionAssignmentDialog_ = false;
     this.focusAfterDialogClose_.focus();
   },
 
   /**
-   * @param {!Object<SwitchAccessCommand, !Array<string>>} value
+   * @param {!Object<SwitchAccessCommand, !Array<{key: string, device:
+   *     !SwitchAccessDeviceType}>>} value
    * @private
    */
   onAssignmentsChanged_(value) {
@@ -212,11 +260,23 @@ Polymer({
   },
 
   /**
-   * @param {!Array<string>} switches List of switch names
-   * @return {string} (e.g. 'Alt, Backspace, Enter, and 4 more switches')
+   * @param {{key: string, device: !SwitchAccessDeviceType}} assignment
+   * @return {string}
    * @private
    */
-  getAssignSwitchSubLabel_(switches) {
+  getLabelForAssignment_(assignment) {
+    return getLabelForAssignment(assignment);
+  },
+
+  /**
+   * @param {!Array<{key: string, device: !SwitchAccessDeviceType}>} assignments
+   *     List of assignments
+   * @return {string} (e.g. 'Alt (USB), Backspace, Enter, and 4 more switches')
+   * @private
+   */
+  getAssignSwitchSubLabel_(assignments) {
+    const switches =
+        assignments.map(assignment => this.getLabelForAssignment_(assignment));
     switch (switches.length) {
       case 0:
         return this.i18n('assignSwitchSubLabel0Switches');
@@ -247,6 +307,22 @@ Polymer({
     const autoScanEnabled = /** @type {boolean} */
         (this.getPref(PREFIX + 'auto_scan.enabled').value);
     return improvedTextInputEnabled && autoScanEnabled;
+  },
+
+  /**
+   * @return {boolean} Whether to show the Switch Access setup guide.
+   * @private
+   */
+  showSetupGuide_() {
+    return loadTimeData.getBoolean('showSwitchAccessSetupGuide');
+  },
+
+  /**
+   * @return {boolean} Whether Switch Access point scanning is enabled.
+   * @private
+   */
+  isSwitchAccessPointScanningEnabled_() {
+    return loadTimeData.getBoolean('isSwitchAccessPointScanningEnabled');
   },
 
   /**

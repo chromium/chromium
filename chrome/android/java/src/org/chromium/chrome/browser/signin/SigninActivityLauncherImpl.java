@@ -10,20 +10,24 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.ui.SigninActivityLauncher;
+import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 /**
  * SigninActivityLauncher creates the proper intent and then launches the
  * SigninActivity in different scenarios.
  */
-public class SigninActivityLauncherImpl implements SigninActivityLauncher {
-    private static SigninActivityLauncherImpl sLauncher;
+public final class SigninActivityLauncherImpl implements SigninActivityLauncher {
+    private static SigninActivityLauncher sLauncher;
 
     /**
      * Singleton instance getter
      */
-    public static SigninActivityLauncherImpl get() {
+    public static SigninActivityLauncher get() {
         if (sLauncher == null) {
             sLauncher = new SigninActivityLauncherImpl();
         }
@@ -31,7 +35,7 @@ public class SigninActivityLauncherImpl implements SigninActivityLauncher {
     }
 
     @VisibleForTesting
-    public static void setLauncherForTest(@Nullable SigninActivityLauncherImpl launcher) {
+    public static void setLauncherForTest(@Nullable SigninActivityLauncher launcher) {
         sLauncher = launcher;
     }
 
@@ -46,7 +50,7 @@ public class SigninActivityLauncherImpl implements SigninActivityLauncher {
     public void launchActivityForPromoDefaultFlow(
             Context context, @SigninAccessPoint int accessPoint, String accountName) {
         launchInternal(context,
-                SigninFragment.createArgumentsForPromoDefaultFlow(accessPoint, accountName));
+                SyncConsentFragment.createArgumentsForPromoDefaultFlow(accessPoint, accountName));
     }
 
     /**
@@ -59,7 +63,8 @@ public class SigninActivityLauncherImpl implements SigninActivityLauncher {
     public void launchActivityForPromoChooseAccountFlow(
             Context context, @SigninAccessPoint int accessPoint, String accountName) {
         launchInternal(context,
-                SigninFragment.createArgumentsForPromoChooseAccountFlow(accessPoint, accountName));
+                SyncConsentFragment.createArgumentsForPromoChooseAccountFlow(
+                        accessPoint, accountName));
     }
 
     /**
@@ -70,16 +75,28 @@ public class SigninActivityLauncherImpl implements SigninActivityLauncher {
     @Override
     public void launchActivityForPromoAddAccountFlow(
             Context context, @SigninAccessPoint int accessPoint) {
-        launchInternal(context, SigninFragment.createArgumentsForPromoAddAccountFlow(accessPoint));
+        launchInternal(
+                context, SyncConsentFragment.createArgumentsForPromoAddAccountFlow(accessPoint));
     }
 
     /**
-     * Launches the signin activity.
+     * Launches the {@link SigninActivity} if signin is allowed.
+     * @param context A {@link Context} object.
      * @param accessPoint {@link SigninAccessPoint} for starting sign-in flow.
+     * @return a boolean indicating if the {@link SigninActivity} is launched.
      */
     @Override
-    public void launchActivity(Context context, @SigninAccessPoint int accessPoint) {
-        launchInternal(context, SigninFragment.createArguments(accessPoint));
+    public boolean launchActivityIfAllowed(Context context, @SigninAccessPoint int accessPoint) {
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
+                Profile.getLastUsedRegularProfile());
+        if (signinManager.isSignInAllowed()) {
+            launchInternal(context, SyncConsentFragmentBase.createArguments(accessPoint, null));
+            return true;
+        }
+        if (signinManager.isSigninDisabledByPolicy()) {
+            ManagedPreferencesUtils.showManagedByAdministratorToast(context);
+        }
+        return false;
     }
 
     private void launchInternal(Context context, Bundle fragmentArgs) {

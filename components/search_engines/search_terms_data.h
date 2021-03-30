@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 
 // All data needed by TemplateURLRef::ReplaceSearchTerms which typically may
 // only be accessed on the UI thread.
@@ -22,6 +21,11 @@ class SearchTermsData {
   // implementation simply returns the default value.
   virtual std::string GoogleBaseURLValue() const;
 
+  // Returns the value to use for the GOOGLE_BASE_SEARCH_BY_IMAGE_URL. Points
+  // at Lens if the user is enrolled in the Lens experiment, and defaults to
+  // Image Search otherwise.
+  virtual std::string GoogleBaseSearchByImageURLValue() const;
+
   // Returns the value for the GOOGLE_BASE_SUGGEST_URL term.  This
   // implementation simply returns the default value.
   std::string GoogleBaseSuggestURLValue() const;
@@ -32,7 +36,7 @@ class SearchTermsData {
 
   // Returns the value for the Chrome Omnibox rlz.  This implementation returns
   // the empty string.
-  virtual base::string16 GetRlzParameterValue(bool from_app_list) const;
+  virtual std::u16string GetRlzParameterValue(bool from_app_list) const;
 
   // The optional client parameter passed with Google search requests.  This
   // implementation returns the empty string.

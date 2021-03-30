@@ -223,7 +223,7 @@ class WaylandToplevel : public aura::WindowObserver {
           parent->shell_surface_data_->shell_surface.get());
   }
 
-  void SetTitle(const base::string16& title) {
+  void SetTitle(const std::u16string& title) {
     if (shell_surface_data_)
       shell_surface_data_->shell_surface->SetTitle(title);
   }
@@ -333,7 +333,7 @@ void xdg_toplevel_v6_set_title(wl_client* client,
                                wl_resource* resource,
                                const char* title) {
   GetUserDataAs<WaylandToplevel>(resource)->SetTitle(
-      base::string16(base::UTF8ToUTF16(title)));
+      std::u16string(base::UTF8ToUTF16(title)));
 }
 
 void xdg_toplevel_v6_set_app_id(wl_client* client,

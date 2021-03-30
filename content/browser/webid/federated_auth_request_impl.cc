@@ -8,42 +8,13 @@
 #include "base/strings/string_piece.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/id_token_request_callback_data.h"
+#include "content/browser/webid/webid_utils.h"
 #include "content/public/common/content_client.h"
 #include "url/url_constants.h"
 
-using blink::mojom::ProvideIdTokenStatus;
 using blink::mojom::RequestIdTokenStatus;
 
 namespace content {
-
-namespace {
-
-// Determines whether |host| is same-origin with all of its ancestors in the
-// frame tree. Returns false if not.
-// |origin| is provided because it is not considered safe to use
-// host->GetLastCommittedOrigin() at some times, so FrameServiceBase::origin()
-// should be used to obtain the frame's origin.
-bool IsSameOriginWithAncestors(RenderFrameHost* host,
-                               const url::Origin& origin) {
-  RenderFrameHost* parent = host->GetParent();
-  while (parent) {
-    if (!parent->GetLastCommittedOrigin().IsSameOriginWith(origin)) {
-      return false;
-    }
-    parent = parent->GetParent();
-  }
-  return true;
-}
-
-// Checks requirements for URLs received from the IDP.
-bool IdpUrlIsValid(const GURL& url) {
-  if (!url.is_valid() || !url.SchemeIs(url::kHttpsScheme))
-    return false;
-
-  return true;
-}
-
-}  // namespace
 
 FederatedAuthRequestImpl::FederatedAuthRequestImpl(
     RenderFrameHost* host,
@@ -69,7 +40,7 @@ void FederatedAuthRequestImpl::Create(
   // but FrameServiceBase::origin() should be used thereafter.
   if (!IsSameOriginWithAncestors(host, host->GetLastCommittedOrigin())) {
     mojo::ReportBadMessage(
-        "WebID cannot be invoked from within cross-origin iframes.");
+        "navigator.id.get cannot be invoked from within cross-origin iframes.");
     return;
   }
 
@@ -91,18 +62,22 @@ void FederatedAuthRequestImpl::RequestIdToken(const GURL& provider,
   provider_ = provider;
   id_request_ = id_request;
 
-  network_manager_ =
-      IdpNetworkRequestManager::Create(provider, render_frame_host());
+  network_manager_ = CreateNetworkManager(provider);
   if (!network_manager_) {
     CompleteRequest(RequestIdTokenStatus::kError, "");
     return;
   }
 
-  request_dialog_controller_ =
-      GetContentClient()->browser()->CreateIdentityRequestDialogController();
+  request_dialog_controller_ = CreateDialogController();
 
-  network_manager_->FetchIDPWellKnown(
-      base::BindOnce(&FederatedAuthRequestImpl::OnWellKnownFetched,
+  // Use the web contents of the page that initiated the WebID request (i.e.
+  // the Relying Party) for showing the initial permission dialog.
+  WebContents* web_contents =
+      WebContents::FromRenderFrameHost(render_frame_host());
+
+  request_dialog_controller_->ShowInitialPermissionDialog(
+      web_contents, provider_,
+      base::BindOnce(&FederatedAuthRequestImpl::OnSigninApproved,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -128,22 +103,22 @@ void FederatedAuthRequestImpl::OnWellKnownFetched(
     }
   }
 
-  idp_endpoint_url_ = GURL(base::StringPiece(idp_endpoint));
-  // TODO(kenrb): Do we have to check that this URL is same-origin with the
-  // provider, or is that not a requirement?
+  const url::Origin& idp_origin = url::Origin::Create(provider_);
+  GURL well_known_url =
+      idp_origin.GetURL().Resolve(IdpNetworkRequestManager::kWellKnownFilePath);
+  idp_endpoint_url_ = well_known_url.Resolve(idp_endpoint);
+
+  // TODO(kenrb): This has to be same-origin with the provider.
   // https://crbug.com/1141125
   if (!IdpUrlIsValid(idp_endpoint_url_)) {
     CompleteRequest(RequestIdTokenStatus::kError, "");
     return;
   }
-  // Use the web contents of the page that initiated the WebID request (i.e.
-  // the Relying Party) for showing the initial permission dialog.
-  WebContents* web_contents =
-      WebContents::FromRenderFrameHost(render_frame_host());
 
-  request_dialog_controller_->ShowInitialPermissionDialog(
-      web_contents, base::BindOnce(&FederatedAuthRequestImpl::OnSigninApproved,
-                                   weak_ptr_factory_.GetWeakPtr()));
+  network_manager_->SendSigninRequest(
+      idp_endpoint_url_, id_request_,
+      base::BindOnce(&FederatedAuthRequestImpl::OnSigninResponseReceived,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void FederatedAuthRequestImpl::OnSigninApproved(
@@ -153,9 +128,8 @@ void FederatedAuthRequestImpl::OnSigninApproved(
     return;
   }
 
-  network_manager_->SendSigninRequest(
-      idp_endpoint_url_, id_request_,
-      base::BindOnce(&FederatedAuthRequestImpl::OnSigninResponseReceived,
+  network_manager_->FetchIdpWellKnown(
+      base::BindOnce(&FederatedAuthRequestImpl::OnWellKnownFetched,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -166,7 +140,7 @@ void FederatedAuthRequestImpl::OnSigninResponseReceived(
   // depending on |status|.
   switch (status) {
     case IdpNetworkRequestManager::SigninResponse::kLoadIdp: {
-      GURL idp_signin_page_url = GURL(base::StringPiece(response));
+      GURL idp_signin_page_url = idp_endpoint_url_.Resolve(response);
       if (!IdpUrlIsValid(idp_signin_page_url)) {
         CompleteRequest(RequestIdTokenStatus::kError, "");
         return;
@@ -247,7 +221,11 @@ void FederatedAuthRequestImpl::OnIdpPageClosed() {
     return;
   }
 
+  WebContents* rp_web_contents =
+      WebContents::FromRenderFrameHost(render_frame_host());
+
   request_dialog_controller_->ShowTokenExchangePermissionDialog(
+      rp_web_contents, provider_,
       base::BindOnce(&FederatedAuthRequestImpl::OnTokenProvisionApproved,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -287,49 +265,30 @@ void FederatedAuthRequestImpl::CompleteRequest(
     std::move(callback_).Run(status, id_token);
 }
 
-// ---- Provider logic -----
+std::unique_ptr<IdpNetworkRequestManager>
+FederatedAuthRequestImpl::CreateNetworkManager(const GURL& provider) {
+  if (mock_network_manager_)
+    return std::move(mock_network_manager_);
 
-void FederatedAuthRequestImpl::ProvideIdToken(
-    const std::string& id_token,
-    ProvideIdTokenCallback idp_callback) {
-  // The ptr below is actually the same as |idp_web_contents_| but because this
-  // is a different instance of |FederatedAuthRequestImpl| for which
-  // |idp_web_contents_| has not been initialized.
-  //
-  // TODO(majidvp): We should have two separate mojo service for request and
-  // response sides would have make this more obvious. http://crbug.com/1141125
-  WebContents* idp_web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host());
-  auto* request_callback_data =
-      IdTokenRequestCallbackData::Get(idp_web_contents);
+  return IdpNetworkRequestManager::Create(provider, render_frame_host());
+}
 
-  // TODO(majidvp): This may happen if the page is not loaded by the browser's
-  // WebID machinery. We need a way for IDP logic to detect that and not provide
-  // a token. The current plan is to send a special header but we may also need
-  // to not expose this in JS somehow. Investigate this further.
-  // http://crbug.com/1141125
-  if (!request_callback_data) {
-    std::move(idp_callback).Run(ProvideIdTokenStatus::kError);
-    return;
-  }
+std::unique_ptr<IdentityRequestDialogController>
+FederatedAuthRequestImpl::CreateDialogController() {
+  if (mock_dialog_controller_)
+    return std::move(mock_dialog_controller_);
 
-  // After running the RP done callback the IDP sign-in page gets closed and its
-  // web contents cleared in `FederatedAuthRequestImpl::CompleteRequest()`. So
-  // we should not access |idp_web_contents| or any of its associated objects
-  // as it may already be destructed. This is why we first run any logic that
-  // needs to touch the IDP web contents and then run the RP done callback.
+  return GetContentClient()->browser()->CreateIdentityRequestDialogController();
+}
 
-  auto rp_done_callback = request_callback_data->TakeDoneCallback();
-  IdTokenRequestCallbackData::Remove(idp_web_contents);
+void FederatedAuthRequestImpl::SetNetworkManagerForTests(
+    std::unique_ptr<IdpNetworkRequestManager> manager) {
+  mock_network_manager_ = std::move(manager);
+}
 
-  if (!rp_done_callback) {
-    std::move(idp_callback).Run(ProvideIdTokenStatus::kErrorTooManyResponses);
-    return;
-  }
-  std::move(idp_callback).Run(ProvideIdTokenStatus::kSuccess);
-
-  std::move(rp_done_callback).Run(id_token);
-  // Don't access |idp_web_contents| passed this point.
+void FederatedAuthRequestImpl::SetDialogControllerForTests(
+    std::unique_ptr<IdentityRequestDialogController> controller) {
+  mock_dialog_controller_ = std::move(controller);
 }
 
 }  // namespace content

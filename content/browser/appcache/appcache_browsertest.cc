@@ -73,7 +73,7 @@ IN_PROC_BROWSER_TEST_F(
   GURL main_url =
       embedded_test_server.GetURL("/appcache/simple_page_with_manifest.html");
 
-  base::string16 expected_title = base::ASCIIToUTF16("AppCache updated");
+  std::u16string expected_title = u"AppCache updated";
 
   // Load the main page twice. The second navigation should have AppCache
   // initialized for the page.
@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(AppCacheNetworkServiceBrowserTest,
 
   GURL main_url =
       embedded_test_server.GetURL("/appcache/simple_page_with_manifest.html");
-  base::string16 expected_title = base::ASCIIToUTF16("AppCache updated");
+  std::u16string expected_title = u"AppCache updated";
 
   // Load the main page twice. The second navigation should have AppCache
   // initialized for the page.
@@ -168,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(AppCacheNetworkServiceBrowserTest,
   // First navigation populates AppCache.
   {
     EXPECT_TRUE(NavigateToURL(shell(), main_url));
-    base::string16 expected_title = base::ASCIIToUTF16("AppCache primed");
+    std::u16string expected_title = u"AppCache primed";
     TitleWatcher title_watcher(shell()->web_contents(), expected_title);
     EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
   }
@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(AppCacheNetworkServiceBrowserTest,
   manifest_nonce = "# Version 2";
   {
     EXPECT_TRUE(NavigateToURL(shell(), main_url));
-    base::string16 expected_title = base::ASCIIToUTF16("AppCache updated");
+    std::u16string expected_title = u"AppCache updated";
     TitleWatcher title_watcher(shell()->web_contents(), expected_title);
     EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
   }
@@ -247,7 +247,6 @@ class LoaderFactoryInterceptingBrowserClient : public TestContentBrowserClient {
 
     void CreateLoaderAndStart(
         mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
-        int32_t routing_id,
         int32_t request_id,
         uint32_t options,
         const network::ResourceRequest& request,
@@ -256,7 +255,7 @@ class LoaderFactoryInterceptingBrowserClient : public TestContentBrowserClient {
         override {
       client_->intercepted_request_map_[request.url] = request_initiator_;
       target_factory_->CreateLoaderAndStart(
-          std::move(loader_receiver), routing_id, request_id, options, request,
+          std::move(loader_receiver), request_id, options, request,
           std::move(client), traffic_annotation);
     }
 
@@ -290,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(AppCacheNetworkServiceBrowserTest,
   GURL main_url =
       embedded_test_server.GetURL("/appcache/simple_page_with_manifest.html");
 
-  base::string16 expected_title = base::ASCIIToUTF16("AppCache updated");
+  std::u16string expected_title = u"AppCache updated";
 
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
   TitleWatcher title_watcher(shell()->web_contents(), expected_title);

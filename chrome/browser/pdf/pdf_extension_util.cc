@@ -19,7 +19,7 @@
 #include "ui/base/webui/web_ui_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/ui/login_display_host.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace pdf_extension_util {
@@ -65,6 +65,24 @@ void AddPdfViewerStrings(base::Value* dict) {
     {"passwordPrompt", IDS_PDF_NEED_PASSWORD},
     {"passwordSubmit", IDS_PDF_PASSWORD_SUBMIT},
     {"present", IDS_PDF_PRESENT},
+    {"propertiesApplication", IDS_PDF_PROPERTIES_APPLICATION},
+    {"propertiesAuthor", IDS_PDF_PROPERTIES_AUTHOR},
+    {"propertiesCreated", IDS_PDF_PROPERTIES_CREATED},
+    {"propertiesDialogClose", IDS_CLOSE},
+    {"propertiesDialogTitle", IDS_PDF_PROPERTIES_DIALOG_TITLE},
+    {"propertiesFastWebView", IDS_PDF_PROPERTIES_FAST_WEB_VIEW},
+    {"propertiesFastWebViewNo", IDS_PDF_PROPERTIES_FAST_WEB_VIEW_NO},
+    {"propertiesFastWebViewYes", IDS_PDF_PROPERTIES_FAST_WEB_VIEW_YES},
+    {"propertiesFileName", IDS_PDF_PROPERTIES_FILE_NAME},
+    {"propertiesFileSize", IDS_PDF_PROPERTIES_FILE_SIZE},
+    {"propertiesKeywords", IDS_PDF_PROPERTIES_KEYWORDS},
+    {"propertiesModified", IDS_PDF_PROPERTIES_MODIFIED},
+    {"propertiesPageCount", IDS_PDF_PROPERTIES_PAGE_COUNT},
+    {"propertiesPageSize", IDS_PDF_PROPERTIES_PAGE_SIZE},
+    {"propertiesPdfProducer", IDS_PDF_PROPERTIES_PDF_PRODUCER},
+    {"propertiesPdfVersion", IDS_PDF_PROPERTIES_PDF_VERSION},
+    {"propertiesSubject", IDS_PDF_PROPERTIES_SUBJECT},
+    {"propertiesTitle", IDS_PDF_PROPERTIES_TITLE},
     {"thumbnailPageAriaLabel", IDS_PDF_THUMBNAIL_PAGE_ARIA_LABEL},
     {"tooltipDocumentOutline", IDS_PDF_TOOLTIP_DOCUMENT_OUTLINE},
     {"tooltipDownload", IDS_PDF_TOOLTIP_DOWNLOAD},
@@ -136,7 +154,7 @@ void AddPdfViewerStrings(base::Value* dict) {
     dict->SetStringKey(resource.name, l10n_util::GetStringUTF16(resource.id));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::string16 edit_string = l10n_util::GetStringUTF16(IDS_EDIT);
+  std::u16string edit_string = l10n_util::GetStringUTF16(IDS_EDIT);
   base::Erase(edit_string, '&');
   dict->SetStringKey("editButton", edit_string);
 #endif
@@ -172,14 +190,9 @@ void AddStrings(PdfViewerContext context, base::Value* dict) {
 }
 
 void AddAdditionalData(base::Value* dict) {
-  dict->SetKey("pdfFormSaveEnabled",
+  dict->SetKey("documentPropertiesEnabled",
                base::Value(base::FeatureList::IsEnabled(
-                   chrome_pdf::features::kSaveEditedPDFForm)));
-  dict->SetStringKey(
-      "pdfViewerUpdateEnabledAttribute",
-      base::FeatureList::IsEnabled(chrome_pdf::features::kPDFViewerUpdate)
-          ? "pdf-viewer-update-enabled"
-          : "");
+                   chrome_pdf::features::kPdfViewerDocumentProperties)));
   dict->SetKey("presentationModeEnabled",
                base::Value(base::FeatureList::IsEnabled(
                    chrome_pdf::features::kPdfViewerPresentationMode)));

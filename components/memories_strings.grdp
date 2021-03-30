@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Strings for the chrome://memories page -->
+
+<grit-part>
+  <message name="IDS_MEMORIES_PAGE_TITLE" desc="Title of chrome://memories page.">
+    Memories
+  </message>
+</grit-part>

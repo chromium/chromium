@@ -1,0 +1,12 @@
+include_rules = [
+  "+third_party/re2",
+  "+chrome/browser/signin",
+  "+chrome/browser",
+  "+components/signin/public/identity_manager",
+]
+
+specific_include_rules = {
+   "commerce_hint_agent_browsertest.cc": [
+      "+components/optimization_guide/core/optimization_guide_features.h",
+   ],
+}

@@ -26,11 +26,11 @@
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/feature_policy/feature_policy_parser.h"
 #include "third_party/blink/renderer/core/frame/dom_window.h"
 #include "third_party/blink/renderer/core/frame/embedded_content_view.h"
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
@@ -74,7 +74,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
     return embedded_content_view_;
   }
 
-  void SetColorScheme(mojom::ColorScheme);
+  void SetColorScheme(mojom::blink::ColorScheme);
 
   class PluginDisposeSuspendScope {
     STACK_ALLOCATED();
@@ -118,7 +118,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   bool AllowFullscreen() const override { return false; }
   bool AllowPaymentRequest() const override { return false; }
   bool IsDisplayNone() const override { return !embedded_content_view_; }
-  mojom::ColorScheme GetColorScheme() const override;
+  mojom::blink::ColorScheme GetColorScheme() const override;
   AtomicString RequiredCsp() const override { return g_null_atom; }
   bool ShouldLazyLoadChildren() const final;
 
@@ -149,19 +149,19 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
 
   void DisposePluginSoon(WebPluginContainerImpl*);
 
-  // Return the origin which is to be used for feature policy container
+  // Return the origin which is to be used for permissions policy container
   // policies, as "the origin of the URL in the frame's src attribute" (see
-  // https://wicg.github.io/feature-policy/#iframe-allow-attribute).
+  // https://w3c.github.io/webappsec-permissions-policy/#iframe-allow-attribute).
   // This method is intended to be overridden by specific frame classes.
-  virtual scoped_refptr<const SecurityOrigin> GetOriginForFeaturePolicy()
+  virtual scoped_refptr<const SecurityOrigin> GetOriginForPermissionsPolicy()
       const {
     return SecurityOrigin::CreateUniqueOpaque();
   }
 
-  // Return a feature policy container policy for this frame, based on the
+  // Return a permissions policy container policy for this frame, based on the
   // frame attributes and the effective origin specified in the frame
   // attributes.
-  virtual ParsedFeaturePolicy ConstructContainerPolicy() const = 0;
+  virtual ParsedPermissionsPolicy ConstructContainerPolicy() const = 0;
 
   // Update the container policy and notify the frame loader client of any
   // changes.

@@ -54,8 +54,7 @@ class SchedulerDelegateTest : public testing::Test {
   void SetUp() override {
     test_task_runner_ =
         base::WrapRefCounted(new base::TestMockTimeTaskRunner());
-    on_destroy_ =
-        base::ThreadTaskRunnerHandle::OverrideForTesting(test_task_runner_);
+    task_runner_handle_override_.emplace(test_task_runner_);
   }
 
   void FastForwardBy(base::TimeDelta delta) {
@@ -64,7 +63,8 @@ class SchedulerDelegateTest : public testing::Test {
 
  private:
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
-  base::ScopedClosureRunner on_destroy_;
+  base::Optional<base::ThreadTaskRunnerHandleOverrideForTesting>
+      task_runner_handle_override_;
 };
 
 TEST_F(SchedulerDelegateTest, NoTimeoutWhenWebXrFrameArrivesFast) {

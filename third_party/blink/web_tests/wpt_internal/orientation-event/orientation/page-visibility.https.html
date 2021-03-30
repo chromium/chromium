@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="module">
+import {generateOrientationData, setMainWindowHidden, setMockOrientationData, waitForOrientation} from '../resources/device-orientation-helpers.js';
+import {sensor_test} from '../resources/sensor-helpers.js';
+
+function sleep(time_ms) {
+  return new Promise(resolve => window.setTimeout(resolve, time_ms));
+}
+
+sensor_test(async (t, sensorProvider) => {
+  const orientationData = generateOrientationData(1, 2, 3, false);
+
+  setMockOrientationData(sensorProvider, orientationData);
+  await waitForOrientation(orientationData);
+
+  await setMainWindowHidden(true);
+  let hidden = true;
+
+  let hiddenEventPromise = new Promise((resolve, reject) => {
+    window.addEventListener(
+        'deviceorientation',
+        event => {
+          if (hidden) {
+            reject();
+          } else {
+            resolve();
+          }
+        },
+        { once: true });
+  });
+
+  // Sleep for a while to make sure no deviceorientation events are fired
+  // while the page is hidden.
+  await sleep(100);
+  hidden = false;
+  await setMainWindowHidden(false);
+  return Promise.all([hiddenEventPromise, waitForOrientation(orientationData)]);
+}, 'Tests to check that deviceorientation events are not fired when the page is not visible.');
+</script>
+</body>
+</html>

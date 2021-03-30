@@ -4,11 +4,11 @@
 
 #include "chromeos/components/proximity_auth/screenlock_bridge.h"
 
+#include <string>
 #include <utility>
 
 #include <memory>
 
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
@@ -84,14 +84,14 @@ void ScreenlockBridge::UserPodCustomIconOptions::SetIcon(
 }
 
 void ScreenlockBridge::UserPodCustomIconOptions::SetTooltip(
-    const base::string16& tooltip,
+    const std::u16string& tooltip,
     bool autoshow) {
   tooltip_ = tooltip;
   autoshow_tooltip_ = autoshow;
 }
 
 void ScreenlockBridge::UserPodCustomIconOptions::SetAriaLabel(
-    const base::string16& aria_label) {
+    const std::u16string& aria_label) {
   aria_label_ = aria_label;
 }
 

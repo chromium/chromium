@@ -78,4 +78,22 @@ TEST(NTPFeaturesTest, LocalHistoryRepeatableQueriesFrequencyExponent) {
   EXPECT_EQ(2, frequency_exponent);
 }
 
+TEST(NTPFeaturesTest, ModulesLoadTimeout) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  // The default value can be overridden.
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{kModules, {{kNtpModulesLoadTimeoutMillisecondsParam, "123"}}}}, {});
+  base::TimeDelta timeout = GetModulesLoadTimeout();
+  EXPECT_EQ(123, timeout.InMilliseconds());
+
+  // If the timeout is not parsable to an unsigned integer, the default value is
+  // used.
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{kModules, {{kNtpModulesLoadTimeoutMillisecondsParam, "j"}}}}, {});
+  timeout = GetModulesLoadTimeout();
+  EXPECT_EQ(3, timeout.InSeconds());
+}
+
 }  // namespace ntp_features

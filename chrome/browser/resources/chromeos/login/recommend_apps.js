@@ -111,8 +111,6 @@ Polymer({
           const generateContents = {code: generateItemScript};
           appListView.executeScript(generateContents);
         });
-        const addScrollShadowEffectScript = 'addScrollShadowEffect();';
-        appListView.executeScript({code: addScrollShadowEffectScript});
 
         const getNumOfSelectedAppsScript = 'sendNumberOfSelectedApps();';
         appListView.executeScript({code: getNumOfSelectedAppsScript});
@@ -126,6 +124,10 @@ Polymer({
    * Handles event when contents in the webview is generated.
    */
   onFullyLoaded_() {
+    const appListView = this.$.appView;
+    appListView.executeScript({code: 'getHeight();'}, function(result) {
+      appListView.setAttribute('style', 'height: ' + result + 'px');
+    });
     this.setUIStep(UIState.LIST);
     this.$.installButton.focus();
   },
@@ -162,6 +164,15 @@ Polymer({
     if (data.type && (data.type === 'NUM_OF_SELECTED_APPS')) {
       this.appsSelected_ = data.numOfSelected;
     }
+  },
+
+  /**
+   * Handles Select all button click.
+   * @suppress {missingProperties} as WebView type has no executeScript defined.
+   */
+  onSelectAll_() {
+    var appListView = this.$.appView;
+    appListView.executeScript({code: 'selectAll();'});
   },
 
   canProceed_(appsSelected) {

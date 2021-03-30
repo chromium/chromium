@@ -358,10 +358,18 @@ void Slider::OnPaint(gfx::Canvas* canvas) {
   const int thumb_highlight_radius =
       HasFocus() ? kThumbHighlightRadius : thumb_highlight_radius_;
   if (thumb_highlight_radius > kThumbRadius) {
-    cc::PaintFlags highlight;
-    highlight.setColor(GetTroughColor());
-    highlight.setAntiAlias(true);
-    canvas->DrawCircle(thumb_center, thumb_highlight_radius, highlight);
+    cc::PaintFlags highlight_background;
+    highlight_background.setColor(GetTroughColor());
+    highlight_background.setAntiAlias(true);
+    canvas->DrawCircle(thumb_center, thumb_highlight_radius,
+                       highlight_background);
+
+    cc::PaintFlags highlight_border;
+    highlight_border.setColor(GetThumbColor());
+    highlight_border.setAntiAlias(true);
+    highlight_border.setStyle(cc::PaintFlags::kStroke_Style);
+    highlight_border.setStrokeWidth(kLineThickness);
+    canvas->DrawCircle(thumb_center, thumb_highlight_radius, highlight_border);
   }
 
   // Paint the thumb of the slider.

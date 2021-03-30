@@ -11,7 +11,7 @@
 namespace base {
 namespace i18n {
 
-// Compares the character data stored in two different string16 strings by
+// Compares the character data stored in two different std::u16string strings by
 // specified Collator instance.
 UCollationResult CompareString16WithCollator(const icu::Collator& collator,
                                              StringPiece16 lhs,

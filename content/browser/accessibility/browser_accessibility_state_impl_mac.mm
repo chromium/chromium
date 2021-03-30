@@ -52,13 +52,28 @@ void SetupAccessibilityDisplayOptionsNotifier() {
 }
 }  // namespace
 
-void BrowserAccessibilityStateImpl::PlatformInitialize() {
+class BrowserAccessibilityStateImplMac : public BrowserAccessibilityStateImpl {
+ public:
+  BrowserAccessibilityStateImplMac() = default;
+  ~BrowserAccessibilityStateImplMac() override {}
+
+ protected:
+  void InitBackgroundTasks() override;
+  void UpdateHistogramsOnUIThread() override;
+  void UpdateHistogramsOnOtherThread() override;
+  void UpdateUniqueUserHistograms() override;
+};
+
+void BrowserAccessibilityStateImplMac::InitBackgroundTasks() {
+  BrowserAccessibilityStateImpl::InitBackgroundTasks();
+
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&SetupAccessibilityDisplayOptionsNotifier));
 }
 
-void BrowserAccessibilityStateImpl::
-    UpdatePlatformSpecificHistogramsOnUIThread() {
+void BrowserAccessibilityStateImplMac::UpdateHistogramsOnUIThread() {
+  BrowserAccessibilityStateImpl::UpdateHistogramsOnUIThread();
+
   NSWorkspace* workspace = [NSWorkspace sharedWorkspace];
 
   SEL sel = @selector(accessibilityDisplayShouldReduceTransparency);
@@ -75,8 +90,9 @@ void BrowserAccessibilityStateImpl::
   }
 }
 
-void BrowserAccessibilityStateImpl::
-    UpdatePlatformSpecificHistogramsOnOtherThread() {
+void BrowserAccessibilityStateImplMac::UpdateHistogramsOnOtherThread() {
+  BrowserAccessibilityStateImpl::UpdateHistogramsOnOtherThread();
+
   // Screen reader metric.
   ui::AXMode mode =
       BrowserAccessibilityStateImpl::GetInstance()->GetAccessibilityMode();
@@ -84,10 +100,23 @@ void BrowserAccessibilityStateImpl::
                         mode.has_mode(ui::AXMode::kScreenReader));
 }
 
-void BrowserAccessibilityStateImpl::UpdateUniqueUserHistograms() {
+void BrowserAccessibilityStateImplMac::UpdateUniqueUserHistograms() {
+  BrowserAccessibilityStateImpl::UpdateUniqueUserHistograms();
+
   ui::AXMode mode = GetAccessibilityMode();
   UMA_HISTOGRAM_BOOLEAN("Accessibility.Mac.ScreenReader.EveryReport",
                         mode.has_mode(ui::AXMode::kScreenReader));
+}
+
+//
+// BrowserAccessibilityStateImpl::GetInstance implementation that constructs
+// this class instead of the base class.
+//
+
+// static
+BrowserAccessibilityStateImpl* BrowserAccessibilityStateImpl::GetInstance() {
+  static base::NoDestructor<BrowserAccessibilityStateImplMac> instance;
+  return &*instance;
 }
 
 }  // namespace content

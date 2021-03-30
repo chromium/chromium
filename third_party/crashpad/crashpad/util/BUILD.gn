@@ -35,6 +35,12 @@ if (crashpad_is_mac || crashpad_is_ios) {
       "mach/mig_gen.py",
     ]
 
+    if (crashpad_is_in_fuchsia) {
+      # TODO(https://fxbug.dev/68780): Remove suppression when fixed.
+      hermetic_deps = false
+      all_outputs_fresh = false
+    }
+
     if (crashpad_is_mac) {
       sources = [
         "$sysroot/usr/include/mach/exc.defs",
@@ -77,7 +83,9 @@ if (crashpad_is_mac || crashpad_is_ios) {
           migcom_path,
         ]
       }
-      deps = [ "//build/config/mac:sdk_inputs" ]
+      if (crashpad_is_mac) {
+        deps = [ "//build/config/mac:sdk_inputs" ]
+      }
     }
     if (sysroot != "") {
       if (crashpad_is_in_chromium) {
@@ -859,6 +867,12 @@ source_set("util_test") {
 
   if (crashpad_is_android || crashpad_is_linux) {
     deps += [ "../third_party/lss" ]
+  }
+
+  if (crashpad_is_in_chromium && (crashpad_is_linux || crashpad_is_android)) {
+    # TODO(crbug.com/1163794): Disabling MemoryMap tests if PartitionAlloc is
+    # used for malloc.
+    deps += [ "//base/allocator:buildflags" ]
   }
 
   if (crashpad_is_win) {

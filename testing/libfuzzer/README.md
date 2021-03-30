@@ -72,7 +72,7 @@ Started Guide].
 [Improving fuzz target efficiency]: efficient_fuzzing.md
 [Issues automatically filed]: https://bugs.chromium.org/p/chromium/issues/list?sort=-modified&colspec=ID%20Pri%20M%20Stars%20ReleaseBlock%20Component%20Status%20Owner%20Summary%20OS%20Modified&q=label%3AStability-LibFuzzer%2CStability-AFL%20label%3AClusterFuzz%20-status%3AWontFix%2CDuplicate&can=1
 [Issues filed manually]: https://bugs.chromium.org/p/chromium/issues/list?can=1&q=label%3AStability-LibFuzzer+-label%3AClusterFuzz&sort=-modified&colspec=ID+Pri+M+Stars+ReleaseBlock+Component+Status+Owner+Summary+OS+Modified&x=m&y=releaseblock&cells=ids
-[non-browser parts of Chrome OS]: https://chromium.googlesource.com/chromiumos/docs/+/master/fuzzing.md
+[non-browser parts of Chrome OS]: https://chromium.googlesource.com/chromiumos/docs/+/main/testing/fuzzing.md
 [Reproducing bugs]: reproducing.md
 [crbug.com/539572]: https://bugs.chromium.org/p/chromium/issues/detail?id=539572
 [go/fuzzing-success]: https://goto.google.com/fuzzing-success

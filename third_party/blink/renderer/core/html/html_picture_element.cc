@@ -27,6 +27,15 @@ void HTMLPictureElement::SourceOrMediaChanged() {
   }
 }
 
+void HTMLPictureElement::SourceAttributeChanged() {
+  for (HTMLImageElement* image_element =
+           Traversal<HTMLImageElement>::FirstChild(*this);
+       image_element; image_element = Traversal<HTMLImageElement>::NextSibling(
+                          *image_element)) {
+    image_element->InvalidateAttributeMapping();
+  }
+}
+
 void HTMLPictureElement::RemoveListenerFromSourceChildren() {
   for (HTMLSourceElement* source_element =
            Traversal<HTMLSourceElement>::FirstChild(*this);

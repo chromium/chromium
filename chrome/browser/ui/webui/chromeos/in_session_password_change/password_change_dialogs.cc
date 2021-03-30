@@ -59,7 +59,7 @@ gfx::Size FitSizeToDisplay(const gfx::Size& desired) {
 }  // namespace
 
 BasePasswordDialog::BasePasswordDialog(GURL url, gfx::Size desired_size)
-    : SystemWebDialogDelegate(url, /*title=*/base::string16()),
+    : SystemWebDialogDelegate(url, /*title=*/std::u16string()),
       desired_size_(desired_size) {}
 
 BasePasswordDialog::~BasePasswordDialog() {}

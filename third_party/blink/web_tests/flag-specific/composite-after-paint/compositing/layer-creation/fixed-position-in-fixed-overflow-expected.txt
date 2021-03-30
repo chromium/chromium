@@ -9,6 +9,7 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='overflow fixed'",
       "bounds": [800, 600],
+      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 1
     },

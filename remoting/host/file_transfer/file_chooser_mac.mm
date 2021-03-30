@@ -146,8 +146,7 @@ FileChooserMac::FileChooserMac(
 }
 
 void FileChooserMac::Show() {
-  mac_file_chooser_on_ui_thread_.Post(FROM_HERE,
-                                      &MacFileChooserOnUiThread::Show);
+  mac_file_chooser_on_ui_thread_.AsyncCall(&MacFileChooserOnUiThread::Show);
 }
 
 void FileChooserMac::RunCallback(FileChooser::Result result) {

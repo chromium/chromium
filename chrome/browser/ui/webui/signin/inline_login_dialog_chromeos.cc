@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <string>
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/window_backdrop.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/callback_helpers.h"
@@ -15,16 +17,13 @@
 #include "base/json/json_writer.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/chromeos/arc/arc_util.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/supervised_user/supervised_user_features.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "chromeos/constants/chromeos_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -46,12 +45,6 @@ InlineLoginDialogChromeOS* dialog = nullptr;
 constexpr int kSigninDialogWidth = 768;
 constexpr int kSigninDialogHeight = 640;
 
-// Keep in sync with resources/chromeos/account_manager_error.js
-enum class AccountManagerErrorType {
-  kSecondaryAccountsDisabled = 0,
-  kChildUserArcDisabled = 1
-};
-
 bool IsDeviceAccountEmail(const std::string& email) {
   auto* active_user = user_manager::UserManager::Get()->GetActiveUser();
   return active_user &&
@@ -68,7 +61,7 @@ GURL GetUrlWithEmailParam(base::StringPiece url_string,
   return url;
 }
 
-GURL GetInlineLoginUrl(const std::string& email, bool is_arc_source) {
+GURL GetInlineLoginUrl(const std::string& email) {
   if (IsDeviceAccountEmail(email)) {
     // It's a device account re-auth.
     return GetUrlWithEmailParam(chrome::kChromeUIChromeSigninURL, email);
@@ -80,22 +73,14 @@ GURL GetInlineLoginUrl(const std::string& email, bool is_arc_source) {
   }
 
   // Addition of secondary Google Accounts is allowed.
-  if (!ProfileManager::GetActiveUserProfile()->IsChild()) {
-    return GetUrlWithEmailParam(chrome::kChromeUIChromeSigninURL, email);
+  if (ProfileManager::GetActiveUserProfile()->IsChild()) {
+    return GetUrlWithEmailParam(
+        SupervisedUserService::GetEduCoexistenceLoginUrl(), email);
   }
-  // User type is Child.
-  if (!arc::IsSecondaryAccountForChildEnabled() && is_arc_source) {
-    return GURL(chrome::kChromeUIAccountManagerErrorURL);
-  }
-  return GetUrlWithEmailParam(
-      SupervisedUserService::GetEduCoexistenceLoginUrl(), email);
+  return GetUrlWithEmailParam(chrome::kChromeUIChromeSigninURL, email);
 }
 
 }  // namespace
-
-// static
-const char InlineLoginDialogChromeOS::kAccountAdditionSource[] =
-    "AccountManager.AccountAdditionSource";
 
 // static
 bool InlineLoginDialogChromeOS::IsShown() {
@@ -107,11 +92,9 @@ void InlineLoginDialogChromeOS::ShowDeprecated(
     const std::string& email,
     const ::account_manager::AccountManagerFacade::AccountAdditionSource&
         source) {
-  base::UmaHistogramEnumeration(kAccountAdditionSource, source);
-  const bool is_arc_source =
-      source ==
-      ::account_manager::AccountManagerFacade::AccountAdditionSource::kArc;
-  ShowInternal(email, is_arc_source);
+  base::UmaHistogramEnumeration(
+      account_manager::AccountManagerFacade::kAccountAdditionSource, source);
+  ShowInternal(email);
 }
 
 // static
@@ -152,25 +135,26 @@ gfx::Point InlineLoginDialogChromeOS::GetDialogPosition(const gfx::Size& size) {
 }
 
 void InlineLoginDialogChromeOS::AddObserver(
-    web_modal::ModalDialogHostObserver* observer) {}
+    web_modal::ModalDialogHostObserver* observer) {
+  modal_dialog_host_observer_list_.AddObserver(observer);
+}
 
 void InlineLoginDialogChromeOS::RemoveObserver(
-    web_modal::ModalDialogHostObserver* observer) {}
+    web_modal::ModalDialogHostObserver* observer) {
+  modal_dialog_host_observer_list_.RemoveObserver(observer);
+}
 
 void InlineLoginDialogChromeOS::SetEduCoexistenceFlowResult(
     EduCoexistenceFlowResult result) {
   edu_coexistence_flow_result_ = result;
 }
 
-InlineLoginDialogChromeOS::InlineLoginDialogChromeOS(bool is_arc_source)
-    : InlineLoginDialogChromeOS(GetInlineLoginUrl(std::string(), is_arc_source),
-                                is_arc_source) {}
+InlineLoginDialogChromeOS::InlineLoginDialogChromeOS()
+    : InlineLoginDialogChromeOS(GetInlineLoginUrl(std::string())) {}
 
-InlineLoginDialogChromeOS::InlineLoginDialogChromeOS(const GURL& url,
-                                                     bool is_arc_source)
-    : SystemWebDialogDelegate(url, base::string16() /* title */),
+InlineLoginDialogChromeOS::InlineLoginDialogChromeOS(const GURL& url)
+    : SystemWebDialogDelegate(url, std::u16string() /* title */),
       delegate_(this),
-      is_arc_source_(is_arc_source),
       url_(url) {
   DCHECK(!dialog);
   dialog = this;
@@ -178,11 +162,9 @@ InlineLoginDialogChromeOS::InlineLoginDialogChromeOS(const GURL& url,
 
 InlineLoginDialogChromeOS::InlineLoginDialogChromeOS(
     const GURL& url,
-    bool is_arc_source,
     base::OnceClosure close_dialog_closure)
-    : SystemWebDialogDelegate(url, base::string16() /* title */),
+    : SystemWebDialogDelegate(url, std::u16string() /* title */),
       delegate_(this),
-      is_arc_source_(is_arc_source),
       url_(url),
       close_dialog_closure_(std::move(close_dialog_closure)) {
   DCHECK(!dialog);
@@ -190,6 +172,15 @@ InlineLoginDialogChromeOS::InlineLoginDialogChromeOS(
 }
 
 InlineLoginDialogChromeOS::~InlineLoginDialogChromeOS() {
+  for (auto& observer : modal_dialog_host_observer_list_)
+    observer.OnHostDestroying();
+
+  if (webui()) {
+    web_modal::WebContentsModalDialogManager::FromWebContents(
+        webui()->GetWebContents())
+        ->SetDelegate(nullptr);
+  }
+
   if (!close_dialog_closure_.is_null()) {
     std::move(close_dialog_closure_).Run();
   }
@@ -209,27 +200,6 @@ ui::ModalType InlineLoginDialogChromeOS::GetDialogModalType() const {
   return chromeos::features::IsAccountManagementFlowsV2Enabled()
              ? ui::MODAL_TYPE_SYSTEM
              : ui::MODAL_TYPE_NONE;
-}
-
-std::string InlineLoginDialogChromeOS::GetDialogArgs() const {
-  if (url_.GetWithEmptyPath() !=
-      GURL(chrome::kChromeUIAccountManagerErrorURL)) {
-    return std::string();
-  }
-
-  AccountManagerErrorType error =
-      AccountManagerErrorType::kSecondaryAccountsDisabled;
-  if (is_arc_source_ && ProfileManager::GetActiveUserProfile()->IsChild() &&
-      ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
-          chromeos::prefs::kSecondaryGoogleAccountSigninAllowed)) {
-    error = AccountManagerErrorType::kChildUserArcDisabled;
-  }
-
-  std::string data;
-  base::DictionaryValue dialog_args;
-  dialog_args.SetInteger("errorType", static_cast<int>(error));
-  base::JSONWriter::Write(dialog_args, &data);
-  return data;
 }
 
 bool InlineLoginDialogChromeOS::ShouldShowDialogTitle() const {
@@ -263,13 +233,12 @@ void InlineLoginDialogChromeOS::Show(base::OnceClosure close_dialog_closure) {
 // static
 void InlineLoginDialogChromeOS::Show(const std::string& email,
                                      base::OnceClosure close_dialog_closure) {
-  ShowInternal(email, /*is_arc_source=*/false, std::move(close_dialog_closure));
+  ShowInternal(email, std::move(close_dialog_closure));
 }
 
 // static
 void InlineLoginDialogChromeOS::ShowInternal(
     const std::string& email,
-    bool is_arc_source,
     base::OnceClosure close_dialog_closure) {
   // If the dialog was triggered as a response to background request, it could
   // get displayed on the lock screen. In this case it is safe to ignore it,
@@ -284,9 +253,8 @@ void InlineLoginDialogChromeOS::ShowInternal(
   }
 
   // Will be deleted by |SystemWebDialogDelegate::OnDialogClosed|.
-  dialog = new InlineLoginDialogChromeOS(
-      GetInlineLoginUrl(email, is_arc_source), is_arc_source,
-      std::move(close_dialog_closure));
+  dialog = new InlineLoginDialogChromeOS(GetInlineLoginUrl(email),
+                                         std::move(close_dialog_closure));
   dialog->ShowSystemDialog();
 
   // TODO(crbug.com/1016828): Remove/update this after the dialog behavior on

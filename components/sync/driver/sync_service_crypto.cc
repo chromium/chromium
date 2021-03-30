@@ -14,11 +14,10 @@
 #include "base/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/sync/base/passphrase_enums.h"
-#include "components/sync/base/sync_prefs.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/sync_service.h"
+#include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/engine/sync_string_conversions.h"
-#include "components/sync/nigori/nigori.h"
 
 namespace syncer {
 
@@ -206,16 +205,13 @@ SyncServiceCrypto::SyncServiceCrypto(
     const base::RepeatingClosure& notify_observers,
     const base::RepeatingClosure& notify_required_user_action_changed,
     const base::RepeatingCallback<void(ConfigureReason)>& reconfigure,
-    CryptoSyncPrefs* sync_prefs,
     TrustedVaultClient* trusted_vault_client)
     : notify_observers_(notify_observers),
       notify_required_user_action_changed_(notify_required_user_action_changed),
       reconfigure_(reconfigure),
-      sync_prefs_(sync_prefs),
       trusted_vault_client_(ResoveNullClient(trusted_vault_client)) {
   DCHECK(notify_observers_);
   DCHECK(reconfigure_);
-  DCHECK(sync_prefs_);
   DCHECK(trusted_vault_client_);
 
   trusted_vault_client_->AddObserver(this);
@@ -519,11 +515,11 @@ void SyncServiceCrypto::OnBootstrapTokenUpdated(
     const std::string& bootstrap_token,
     BootstrapTokenType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(sync_prefs_);
+  DCHECK(state_.engine);
   if (type == PASSPHRASE_BOOTSTRAP_TOKEN) {
-    sync_prefs_->SetEncryptionBootstrapToken(bootstrap_token);
+    state_.engine->SetEncryptionBootstrapToken(bootstrap_token);
   } else {
-    sync_prefs_->SetKeystoreEncryptionBootstrapToken(bootstrap_token);
+    state_.engine->SetKeystoreEncryptionBootstrapToken(bootstrap_token);
   }
 }
 

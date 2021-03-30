@@ -313,9 +313,9 @@ bool SVGInlineTextBox::NodeAtPoint(HitTestResult& result,
     return false;
   if (hit_rules.can_hit_bounding_box ||
       (hit_rules.can_hit_stroke &&
-       (style.SvgStyle().HasStroke() || !hit_rules.require_stroke)) ||
+       (style.HasStroke() || !hit_rules.require_stroke)) ||
       (hit_rules.can_hit_fill &&
-       (style.SvgStyle().HasFill() || !hit_rules.require_fill))) {
+       (style.HasFill() || !hit_rules.require_fill))) {
     // Currently SVGInlineTextBox doesn't flip in blocks direction.
     PhysicalRect rect{PhysicalOffset(Location()), PhysicalSize(Size())};
     rect.Move(accumulated_offset);

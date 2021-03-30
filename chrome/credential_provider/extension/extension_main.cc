@@ -11,6 +11,7 @@
 #include "base/win/process_startup_helper.h"
 #include "base/win/windows_types.h"
 #include "chrome/credential_provider/eventlog/gcp_eventlog_messages.h"
+#include "chrome/credential_provider/extension/app_inventory_manager.h"
 #include "chrome/credential_provider/extension/os_service_manager.h"
 #include "chrome/credential_provider/extension/service.h"
 #include "chrome/credential_provider/extension/task_manager.h"
@@ -39,6 +40,14 @@ void RegisterAllTasks() {
     credential_provider::extension::TaskManager::Get()->RegisterTask(
         "UploadDeviceDetails", credential_provider::GemDeviceDetailsManager::
                                    UploadDeviceDetailsTaskCreator());
+
+    // Task to Upload app data.
+    if (credential_provider::AppInventoryManager::Get()
+            ->UploadAppInventoryFromEsaFeatureEnabled()) {
+      credential_provider::extension::TaskManager::Get()->RegisterTask(
+          "UploadAppInventory", credential_provider::AppInventoryManager::
+                                    UploadAppInventoryTaskCreator());
+    }
   }
 
   // Task to fetch experiments for all GCPW users.

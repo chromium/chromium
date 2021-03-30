@@ -103,7 +103,7 @@ class CanvasTransform { // eslint-disable-line no-unused-vars
   async transform(frame, controller) {
     const ctx = this.ctx_;
     if (!this.canvas_ || !ctx) {
-      frame.destroy();
+      frame.close();
       return;
     }
     const width = frame.displayWidth;
@@ -116,7 +116,7 @@ class CanvasTransform { // eslint-disable-line no-unused-vars
     // non-optional.
     const timestamp = /** @type {number} */ (frame.timestamp);
     const inputBitmap = await frame.createImageBitmap();
-    frame.destroy();
+    frame.close();
 
     ctx.drawImage(inputBitmap, 0, 0);
     inputBitmap.close();
@@ -156,15 +156,21 @@ if (typeof MediaStreamTrackProcessor === 'undefined' ||
       'page.');
 }
 
+// In Chrome 88, VideoFrame.close() was called VideoFrame.destroy()
+if (VideoFrame.prototype.close === undefined) {
+  VideoFrame.prototype.close = VideoFrame.prototype.destroy;
+}
+
 /* global CameraSource */ // defined in camera-source.js
 /* global CanvasTransform */ // defined in canvas-transform.js
 /* global PeerConnectionSink */ // defined in peer-connection-sink.js
 /* global PeerConnectionSource */ // defined in peer-connection-source.js
 /* global Pipeline */ // defined in pipeline.js
-/* global DropTransform, DelayTransform */ // defined in simple-transforms.js
+/* global NullTransform, DropTransform, DelayTransform */ // defined in simple-transforms.js
 /* global VideoSink */ // defined in video-sink.js
 /* global VideoSource */ // defined in video-source.js
 /* global WebGLTransform */ // defined in webgl-transform.js
+/* global WebCodecTransform */ // defined in webcodec-transform.js
 
 /**
  * Allows inspecting objects in the console. See console log messages for
@@ -177,7 +183,7 @@ let debug = {};
  * FrameTransformFn applies a transform to a frame and queues the output frame
  * (if any) using the controller. The first argument is the input frame and the
  * second argument is the stream controller.
- * The VideoFrame should be destroyed as soon as it is no longer needed to free
+ * The VideoFrame should be closed as soon as it is no longer needed to free
  * resources and maintain good performance.
  * @typedef {function(
  *     !VideoFrame,
@@ -342,6 +348,9 @@ function initUI() {
    * UI element.
    */
   function updatePipelineTransform() {
+    if (!pipeline) {
+      return;
+    }
     const transformType =
         transformSelector.options[transformSelector.selectedIndex].value;
     console.log(`[UI] Selected transform: ${transformType}`);
@@ -356,9 +365,17 @@ function initUI() {
         // Defined in simple-transforms.js.
         pipeline.updateTransform(new DropTransform());
         break;
+      case 'noop':
+        // Defined in simple-transforms.js.
+        pipeline.updateTransform(new NullTransform());
+        break;
       case 'delay':
         // Defined in simple-transforms.js.
         pipeline.updateTransform(new DelayTransform());
+        break;
+      case 'webcodec':
+        // Defined in webcodec-transform.js
+        pipeline.updateTransform(new WebCodecTransform());
         break;
       default:
         alert(`unknown transform ${transformType}`);
@@ -887,6 +904,21 @@ class Pipeline { // eslint-disable-line no-unused-vars
 'use strict';
 
 /**
+ * Does nothing.
+ * @implements {FrameTransform} in pipeline.js
+ */
+class NullTransform { // eslint-disable-line no-unused-vars
+  /** @override */
+  async init() {}
+  /** @override */
+  async transform(frame, controller) {
+    controller.enqueue(frame);
+  }
+  /** @override */
+  destroy() {}
+}
+
+/**
  * Drops frames at random.
  * @implements {FrameTransform} in pipeline.js
  */
@@ -898,7 +930,7 @@ class DropTransform { // eslint-disable-line no-unused-vars
     if (Math.random() < 0.5) {
       controller.enqueue(frame);
     } else {
-      frame.destroy();
+      frame.close();
     }
   }
   /** @override */
@@ -1172,6 +1204,73 @@ class VideoSource { // eslint-disable-line no-unused-vars
 }
 
 /*
+ *  Copyright (c) 2021 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree.
+ */
+
+'use strict';
+
+/**
+ * Encodes and decodes frames using the WebCodec API.
+ * @implements {FrameTransform} in pipeline.js
+ */
+class WebCodecTransform { // eslint-disable-line no-unused-vars
+  constructor() {
+    // Encoder and decoder are initialized in init()
+    this.decoder_ = null;
+    this.encoder_ = null;
+    this.controller_ = null;
+  }
+  /** @override */
+  async init() {
+    console.log('[WebCodecTransform] Initializing encoder and decoder');
+    this.decoder_ = new VideoDecoder({
+      output: frame => this.handleDecodedFrame(frame),
+      error: this.error
+    });
+    this.encoder_ = new VideoEncoder({
+      output: frame => this.handleEncodedFrame(frame),
+      error: this.error
+    });
+    this.encoder_.configure({codec: 'vp8', width: 640, height: 480});
+    this.decoder_.configure({codec: 'vp8', width: 640, height: 480});
+  }
+
+  /** @override */
+  async transform(frame, controller) {
+    if (!this.encoder_) {
+      frame.close();
+      return;
+    }
+    this.controller_ = controller;
+    this.encoder_.encode(frame);
+  }
+
+  /** @override */
+  destroy() {}
+
+  /* Helper functions */
+  handleEncodedFrame(encodedFrame) {
+    this.decoder_.decode(encodedFrame);
+  }
+
+  handleDecodedFrame(videoFrame) {
+    if (!this.controller_) {
+      videoFrame.close();
+      return;
+    }
+    this.controller_.enqueue(videoFrame);
+  }
+
+  error(e) {
+    console.log('[WebCodecTransform] Bad stuff happened: ' + e);
+  }
+}
+
+/*
  *  Copyright (c) 2020 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -1326,7 +1425,7 @@ class WebGLTransform { // eslint-disable-line no-unused-vars
   async transform(frame, controller) {
     const gl = this.gl_;
     if (!gl || !this.canvas_) {
-      frame.destroy();
+      frame.close();
       return;
     }
     const width = frame.displayWidth;
@@ -1342,7 +1441,7 @@ class WebGLTransform { // eslint-disable-line no-unused-vars
     // non-optional.
     const timestamp = /** @type {number} */ (frame.timestamp);
     const inputBitmap = await frame.createImageBitmap();
-    frame.destroy();
+    frame.close();
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, this.texture_);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);

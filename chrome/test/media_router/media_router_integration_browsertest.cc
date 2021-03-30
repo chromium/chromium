@@ -412,10 +412,6 @@ void MediaRouterIntegrationBrowserTest::RunReconnectSessionSameTabTest() {
   ASSERT_EQ(session_id, reconnected_session_id);
 }
 
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest, Basic) {
-  RunBasicTest();
-}
-
 // Tests that creating a route with a local file opens the file in a new tab.
 //
 // This test is disabled because the test needs to wait until navigation is
@@ -602,7 +598,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
 
 void MediaRouterIntegrationIncognitoBrowserTest::InstallAndEnableMRExtension() {
   const extensions::Extension* extension =
-      LoadExtensionIncognito(extension_unpacked_);
+      LoadExtension(extension_unpacked_, {.allow_in_incognito = true});
   incognito_extension_id_ = extension->id();
 }
 

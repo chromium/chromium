@@ -19,7 +19,7 @@ class IOSChromeFieldTrials : public variations::PlatformFieldTrials {
   void SetupFieldTrials() override;
   void SetupFeatureControllingFieldTrials(
       bool has_seed,
-      const base::FieldTrial::EntropyProvider& low_entropy_provider,
+      const base::FieldTrial::EntropyProvider* low_entropy_provider,
       base::FeatureList* feature_list) override;
 
  private:

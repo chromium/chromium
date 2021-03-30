@@ -60,9 +60,6 @@ ResultExpr AudioProcessPolicy::EvaluateSyscall(int system_call_number) const {
 #if defined(__NR_ioctl)
     case __NR_ioctl:
 #endif
-#if defined(__NR_memfd_create)
-    case __NR_memfd_create:
-#endif
 #if defined(__NR_pwrite)
     case __NR_pwrite:
 #endif
@@ -80,7 +77,12 @@ ResultExpr AudioProcessPolicy::EvaluateSyscall(int system_call_number) const {
 #endif
       return Allow();
 #if defined(__NR_futex)
-    case __NR_futex: {
+    case __NR_futex:
+#if defined(__i386__) || defined(__arm__) || \
+    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
+    case __NR_futex_time64:
+#endif
+    {
       const Arg<int> op(1);
 #if defined(USE_PULSEAUDIO)
       return Switch(op & ~FUTEX_PRIVATE_FLAG)

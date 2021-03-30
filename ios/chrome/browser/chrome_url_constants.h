@@ -18,6 +18,7 @@ extern const char kChromeUIFlagsURL[];
 extern const char kChromeUIHistoryURL[];
 extern const char kChromeUIInspectURL[];
 extern const char kChromeUIIntersitialsURL[];
+extern const char kChromeUIManagementURL[];
 extern const char kChromeUINewTabURL[];
 extern const char kChromeUINTPTilesInternalsURL[];
 extern const char kChromeUIOfflineURL[];

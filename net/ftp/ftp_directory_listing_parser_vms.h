@@ -5,9 +5,9 @@
 #ifndef NET_FTP_FTP_DIRECTORY_LISTING_PARSER_VMS_H_
 #define NET_FTP_FTP_DIRECTORY_LISTING_PARSER_VMS_H_
 
+#include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "net/base/net_export.h"
 
 namespace net {
@@ -16,7 +16,7 @@ struct FtpDirectoryListingEntry;
 
 // Parses VMS FTP directory listing. Returns true on success.
 NET_EXPORT_PRIVATE bool ParseFtpDirectoryListingVms(
-    const std::vector<base::string16>& lines,
+    const std::vector<std::u16string>& lines,
     std::vector<FtpDirectoryListingEntry>* entries);
 
 }  // namespace net

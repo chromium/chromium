@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 class AvatarToolbarButton;
 class Browser;
@@ -21,6 +22,7 @@ class ToolbarAccountIconContainerView : public ToolbarIconContainerView,
                                         public PageActionIconContainer,
                                         public PageActionIconView::Delegate {
  public:
+  METADATA_HEADER(ToolbarAccountIconContainerView);
   explicit ToolbarAccountIconContainerView(Browser* browser);
   ToolbarAccountIconContainerView(const ToolbarAccountIconContainerView&) =
       delete;
@@ -44,14 +46,11 @@ class ToolbarAccountIconContainerView : public ToolbarIconContainerView,
 
   // views::View:
   void OnThemeChanged() override;
-  const char* GetClassName() const override;
 
   PageActionIconController* page_action_icon_controller() {
     return page_action_icon_controller_.get();
   }
   AvatarToolbarButton* avatar_button() { return avatar_; }
-
-  static const char kToolbarAccountIconContainerViewClassName[];
 
  private:
   // PageActionIconContainer:

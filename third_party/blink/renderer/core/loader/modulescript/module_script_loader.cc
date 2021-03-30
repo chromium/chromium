@@ -122,12 +122,6 @@ void ModuleScriptLoader::FetchInternal(
 
   ResourceLoaderOptions options(&modulator_->GetScriptState()->World());
 
-  // <spec step="6">If destination is "worker" or "sharedworker" and the
-  // top-level module fetch flag is set, then set request's mode to
-  // "same-origin".</spec>
-  // Cross-origin workers are not supported due to security checks in
-  // AbstractWorker::ResolveURL, so no action needs to be taken here.
-
   // <spec step="7">Set up the module script request given request and
   // options.</spec>
   //
@@ -179,6 +173,26 @@ void ModuleScriptLoader::FetchInternal(
       fetch_client_settings_object.GetSecurityOrigin(),
       options_.CredentialsMode());
 
+  // <spec step="6">If destination is "worker" or "sharedworker" and the
+  // top-level module fetch flag is set, then set request's mode to
+  // "same-origin".</spec>
+  //
+  // `kServiceWorker` is included here for consistency, while it isn't mentioned
+  // in the spec. This doesn't affect the behavior, because we already forbid
+  // redirects and cross-origin response URLs in other places.
+  if ((module_request.Destination() ==
+           network::mojom::RequestDestination::kWorker ||
+       module_request.Destination() ==
+           network::mojom::RequestDestination::kSharedWorker ||
+       module_request.Destination() ==
+           network::mojom::RequestDestination::kServiceWorker) &&
+      level == ModuleGraphLevel::kTopLevelModuleFetch) {
+    // This should be done after SetCrossOriginAccessControl() that sets the
+    // mode to kCors.
+    fetch_params.MutableResourceRequest().SetMode(
+        network::mojom::RequestMode::kSameOrigin);
+  }
+
   // <spec step="5">... referrer is referrer, ...</spec>
   fetch_params.MutableResourceRequest().SetReferrerString(
       module_request.ReferrerString());
@@ -200,6 +214,10 @@ void ModuleScriptLoader::FetchInternal(
 
   // Module scripts are always defer.
   fetch_params.SetDefer(FetchParameters::kLazyLoad);
+  // TODO(yoav): This is not accurate for module scripts with an async
+  // attribute.
+  fetch_params.SetRenderBlockingBehavior(RenderBlockingBehavior::kNonBlocking);
+
   // [nospec] Unlike defer/async classic scripts, module scripts are fetched at
   // High priority.
   fetch_params.MutableResourceRequest().SetPriority(
@@ -219,8 +237,8 @@ void ModuleScriptLoader::FetchInternal(
   // response.</spec>
   module_fetcher_ =
       modulator_->CreateModuleScriptFetcher(custom_fetch_type, PassKey());
-  module_fetcher_->Fetch(fetch_params, fetch_client_settings_object_fetcher,
-                         level, this);
+  module_fetcher_->Fetch(fetch_params, module_request.GetExpectedModuleType(),
+                         fetch_client_settings_object_fetcher, level, this);
 }
 
 // <specdef href="https://html.spec.whatwg.org/C/#fetch-a-single-module-script">
@@ -269,7 +287,7 @@ void ModuleScriptLoader::NotifyFetchFinishedSuccess(
       module_script_ = ValueWrapperSyntheticModuleScript::
           CreateCSSWrapperSyntheticModuleScript(params, modulator_);
       break;
-    case ModuleType::kJavaScript: {
+    case ModuleType::kJavaScript:
       // Step 9. "Let source text be the result of UTF-8 decoding response's
       // body." [spec text]
       // Step 10. "Let module script be the result of creating
@@ -277,7 +295,8 @@ void ModuleScriptLoader::NotifyFetchFinishedSuccess(
       // response's url, and options." [spec text]
       module_script_ = JSModuleScript::Create(params, modulator_, options_);
       break;
-    };
+    case ModuleType::kInvalid:
+      NOTREACHED();
   }
 
   AdvanceState(State::kFinished);

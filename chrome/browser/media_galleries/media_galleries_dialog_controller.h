@@ -7,10 +7,10 @@
 
 #include <stddef.h>
 
+#include <string>
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "chrome/browser/media_galleries/media_galleries_preferences.h"
 
@@ -62,23 +62,23 @@ class MediaGalleriesDialogController {
 
   // The title of the dialog view. Note that this is only guaranteed to be
   // called once, and once called there is no way to update the title text.
-  virtual base::string16 GetHeader() const = 0;
+  virtual std::u16string GetHeader() const = 0;
 
   // Explanatory text directly below the title.
-  virtual base::string16 GetSubtext() const = 0;
+  virtual std::u16string GetSubtext() const = 0;
 
   // Initial state of whether the dialog's confirmation button will be enabled.
   virtual bool IsAcceptAllowed() const = 0;
 
   // The titles for different sections of entries. Empty hides the header.
-  virtual std::vector<base::string16> GetSectionHeaders() const = 0;
+  virtual std::vector<std::u16string> GetSectionHeaders() const = 0;
 
   // Get the set of permissions for the |index|th section. The size of the
   // vector returned from GetSectionHeaders() defines the number of sections.
   virtual Entries GetSectionEntries(size_t index) const = 0;
 
   // The text for an auxiliary button. Empty hides the button.
-  virtual base::string16 GetAuxiliaryButtonText() const = 0;
+  virtual std::u16string GetAuxiliaryButtonText() const = 0;
 
   // Called when an auxiliary button is clicked.
   virtual void DidClickAuxiliaryButton() = 0;
@@ -90,7 +90,7 @@ class MediaGalleriesDialogController {
   virtual void DidForgetEntry(MediaGalleryPrefId id) = 0;
 
   // The text for the accept button.
-  virtual base::string16 GetAcceptButtonText() const = 0;
+  virtual std::u16string GetAcceptButtonText() const = 0;
 
   // The dialog is being deleted.
   virtual void DialogFinished(bool accepted) = 0;

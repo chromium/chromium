@@ -55,6 +55,10 @@ bool SortedTokenComparisonResult::ContainEachOther() const {
   return status != DISTINCT;
 }
 
+bool SortedTokenComparisonResult::TokensMatch() const {
+  return status == MATCH;
+}
+
 bool StructuredNamesEnabled() {
   return base::FeatureList::IsEnabled(
       features::kAutofillEnableSupportForMoreStructureInNames);
@@ -63,6 +67,13 @@ bool StructuredNamesEnabled() {
 bool StructuredAddressesEnabled() {
   return base::FeatureList::IsEnabled(
       features::kAutofillEnableSupportForMoreStructureInAddresses);
+}
+
+bool HonorificPrefixEnabled() {
+  return base::FeatureList::IsEnabled(
+             features::kAutofillEnableSupportForHonorificPrefixes) &&
+         base::FeatureList::IsEnabled(
+             features::kAutofillEnableSupportForMoreStructureInNames);
 }
 
 Re2RegExCache::Re2RegExCache() = default;
@@ -102,13 +113,13 @@ RewriterCache* RewriterCache::GetInstance() {
 }
 
 // static
-base::string16 RewriterCache::Rewrite(const base::string16& country_code,
-                                      const base::string16& text) {
+std::u16string RewriterCache::Rewrite(const std::u16string& country_code,
+                                      const std::u16string& text) {
   return GetInstance()->GetRewriter(country_code).Rewrite(NormalizeValue(text));
 }
 
 const AddressRewriter& RewriterCache::GetRewriter(
-    const base::string16& country_code) {
+    const std::u16string& country_code) {
   // For thread safety, acquire a lock to prevent concurrent access.
   base::AutoLock lock(lock_);
 
@@ -269,6 +280,29 @@ std::string CaptureTypeWithPattern(
       options);
 }
 
+std::string NoCapturePattern(const std::string& pattern,
+                             const CaptureOptions& options) {
+  std::string quantifier;
+  switch (options.quantifier) {
+    // Makes the match optional.
+    case MATCH_OPTIONAL:
+      quantifier = "?";
+      break;
+    // Makes the match lazy meaning that it is avoided if possible.
+    case MATCH_LAZY_OPTIONAL:
+      quantifier = "??";
+      break;
+    // Makes the match required.
+    case MATCH_REQUIRED:
+      quantifier = "";
+  }
+
+  // By adding an "i" in the first group, the capturing is case insensitive.
+  // Allow multiple separators to support the ", " case.
+  return base::StrCat(
+      {"(?i:", pattern, "(?:", options.separator, ")+)", quantifier});
+}
+
 std::string CaptureTypeWithAffixedPattern(const ServerFieldType& type,
                                           const std::string& prefix,
                                           const std::string& pattern,
@@ -319,15 +353,15 @@ std::string CaptureTypeWithPattern(const ServerFieldType& type,
                                        std::string(), options);
 }
 
-base::string16 NormalizeValue(base::StringPiece16 value,
+std::u16string NormalizeValue(base::StringPiece16 value,
                               bool keep_white_space) {
   return AutofillProfileComparator::NormalizeForComparison(
       value, keep_white_space ? AutofillProfileComparator::RETAIN_WHITESPACE
                               : AutofillProfileComparator::DISCARD_WHITESPACE);
 }
 
-bool AreStringTokenEquivalent(const base::string16& one,
-                              const base::string16& other) {
+bool AreStringTokenEquivalent(const std::u16string& one,
+                              const std::u16string& other) {
   return AreSortedTokensEqual(TokenizeValue(one), TokenizeValue(other));
 }
 
@@ -371,8 +405,8 @@ SortedTokenComparisonResult CompareSortedTokens(
   return SortedTokenComparisonResult(SUBSET, additional_tokens);
 }
 
-SortedTokenComparisonResult CompareSortedTokens(const base::string16& first,
-                                                const base::string16& second) {
+SortedTokenComparisonResult CompareSortedTokens(const std::u16string& first,
+                                                const std::u16string& second) {
   return CompareSortedTokens(TokenizeValue(first), TokenizeValue(second));
 }
 
@@ -381,7 +415,7 @@ bool AreSortedTokensEqual(const std::vector<AddressToken>& first,
   return CompareSortedTokens(first, second).status == MATCH;
 }
 
-std::vector<AddressToken> TokenizeValue(const base::string16 value) {
+std::vector<AddressToken> TokenizeValue(const std::u16string value) {
   std::vector<AddressToken> tokens;
   int index = 0;
 
@@ -390,8 +424,8 @@ std::vector<AddressToken> TokenizeValue(const base::string16 value) {
   if (HasCjkNameCharacteristics(base::UTF16ToUTF8(value))) {
     tokens.reserve(value.size());
     for (size_t i = 0; i < value.size(); i++) {
-      base::string16 cjk_separators = base::UTF8ToUTF16("・·　 ");
-      if (cjk_separators.find(value.substr(i, 1)) == base::string16::npos) {
+      std::u16string cjk_separators = u"・·　 ";
+      if (cjk_separators.find(value.substr(i, 1)) == std::u16string::npos) {
         tokens.emplace_back(AddressToken{.value = value.substr(i, 1),
                                          .normalized_value = value.substr(i, 1),
                                          .position = index++});
@@ -400,8 +434,8 @@ std::vector<AddressToken> TokenizeValue(const base::string16 value) {
   } else {
     // Split it by white spaces and commas into non-empty values.
     for (const auto& token :
-         base::SplitString(value, base::ASCIIToUTF16(", \n"),
-                           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+         base::SplitString(value, u", \n", base::TRIM_WHITESPACE,
+                           base::SPLIT_WANT_NONEMPTY)) {
       tokens.emplace_back(
           AddressToken{.value = token,
                        .normalized_value = NormalizeValue(token),

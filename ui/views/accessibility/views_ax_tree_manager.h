@@ -56,7 +56,7 @@ class VIEWS_EXPORT ViewsAXTreeManager : public ui::AXTreeManager,
                                         public views::WidgetObserver {
  public:
   using GeneratedEventCallbackForTesting = base::RepeatingCallback<
-      void(Widget*, ui::AXEventGenerator::Event, ui::AXNode::AXID)>;
+      void(Widget*, ui::AXEventGenerator::Event, ui::AXNodeID)>;
 
   // Creates an instance of this class that manages an AXTree mirroring the
   // Views tree rooted at a given Widget.
@@ -82,8 +82,8 @@ class VIEWS_EXPORT ViewsAXTreeManager : public ui::AXTreeManager,
 
   // AXTreeManager implementation.
   ui::AXNode* GetNodeFromTree(const ui::AXTreeID tree_id,
-                              const ui::AXNode::AXID node_id) const override;
-  ui::AXNode* GetNodeFromTree(const ui::AXNode::AXID node_id) const override;
+                              const ui::AXNodeID node_id) const override;
+  ui::AXNode* GetNodeFromTree(const ui::AXNodeID node_id) const override;
   ui::AXTreeID GetTreeID() const override;
   ui::AXTreeID GetParentTreeID() const override;
   ui::AXNode* GetRootAsAXNode() const override;
@@ -100,8 +100,7 @@ class VIEWS_EXPORT ViewsAXTreeManager : public ui::AXTreeManager,
   void OnWidgetClosing(Widget* widget) override;
 
  private:
-  using ViewsAXTreeSerializer =
-      ui::AXTreeSerializer<AXAuraObjWrapper*, ui::AXNodeData, ui::AXTreeData>;
+  using ViewsAXTreeSerializer = ui::AXTreeSerializer<AXAuraObjWrapper*>;
 
   void SerializeTreeUpdates();
   void UnserializeTreeUpdates(const std::vector<ui::AXTreeUpdate>& updates);
@@ -124,7 +123,7 @@ class VIEWS_EXPORT ViewsAXTreeManager : public ui::AXTreeManager,
 
   // The set of nodes in the source tree that might have been modified after an
   // event has been fired on them.
-  std::set<ui::AXNode::AXID> modified_nodes_;
+  std::set<ui::AXNodeID> modified_nodes_;
 
   // The cache that maps objects in the Views tree to AXAuraObjWrapper objects
   // that are used to serialize the Views tree.

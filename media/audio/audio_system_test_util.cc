@@ -145,4 +145,7 @@ void AudioSystemCallbackExpectations::OnDeviceId(
   std::move(on_cb_received).Run();
 }
 
+// This suite is instantiated in binaries that use //media:test_support.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(AudioSystemTestTemplate);
+
 }  // namespace media

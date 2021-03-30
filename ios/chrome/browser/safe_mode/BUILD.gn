@@ -16,7 +16,7 @@ source_set("safe_mode") {
   deps = [
     ":resources",
     "//base",
-    ios_packed_resources_target,
+    "//ios/chrome/app/resources:packed_resources",
   ]
 
   frameworks = [ "UIKit.framework" ]

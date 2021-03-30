@@ -116,6 +116,8 @@ public class SearchWidgetProvider extends AppWidgetProvider {
 
     public static final String EXTRA_START_VOICE_SEARCH =
             "org.chromium.chrome.browser.searchwidget.START_VOICE_SEARCH";
+    public static final String EXTRA_FROM_SEARCH_WIDGET =
+            "org.chromium.chrome.browser.searchwidget.FROM_SEARCH_WIDGET";
 
     /** Number of consecutive crashes this widget will absorb before giving up. */
     private static final int CRASH_LIMIT = 3;
@@ -219,6 +221,7 @@ public class SearchWidgetProvider extends AppWidgetProvider {
         searchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         searchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
         searchIntent.putExtra(EXTRA_START_VOICE_SEARCH, startVoiceSearch);
+        searchIntent.putExtra(EXTRA_FROM_SEARCH_WIDGET, true);
 
         Bundle optionsBundle =
                 ActivityOptionsCompat.makeCustomAnimation(context, R.anim.activity_open_enter, 0)
@@ -252,15 +255,17 @@ public class SearchWidgetProvider extends AppWidgetProvider {
         // over how the Activity is animated when it starts up.
         Intent textIntent = createStartQueryIntent(context, ACTION_START_TEXT_QUERY, id);
         views.setOnClickPendingIntent(R.id.text_container,
-                PendingIntent.getBroadcast(
-                        context, 0, textIntent, PendingIntent.FLAG_UPDATE_CURRENT));
+                PendingIntent.getBroadcast(context, 0, textIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                                | IntentUtils.getPendingIntentMutabilityFlag(false)));
 
         // If voice search is available, clicking on the microphone triggers a voice query.
         if (isVoiceSearchAvailable) {
             Intent voiceIntent = createStartQueryIntent(context, ACTION_START_VOICE_QUERY, id);
             views.setOnClickPendingIntent(R.id.microphone_icon,
-                    PendingIntent.getBroadcast(
-                            context, 0, voiceIntent, PendingIntent.FLAG_UPDATE_CURRENT));
+                    PendingIntent.getBroadcast(context, 0, voiceIntent,
+                            PendingIntent.FLAG_UPDATE_CURRENT
+                                    | IntentUtils.getPendingIntentMutabilityFlag(false)));
             views.setViewVisibility(R.id.microphone_icon, View.VISIBLE);
         } else {
             views.setViewVisibility(R.id.microphone_icon, View.GONE);
@@ -279,6 +284,7 @@ public class SearchWidgetProvider extends AppWidgetProvider {
     private static Intent createStartQueryIntent(Context context, String action, int widgetId) {
         Intent intent = new Intent(action, Uri.parse(String.valueOf(widgetId)));
         intent.setClass(context, SearchWidgetProvider.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         IntentHandler.addTrustedIntentExtras(intent);
         return intent;
     }

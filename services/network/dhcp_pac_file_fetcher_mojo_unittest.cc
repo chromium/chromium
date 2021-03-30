@@ -52,7 +52,7 @@ TEST_F(DhcpPacFileFetcherMojoTest, UsePacSctipt) {
   CreateFetcher(pac_url.spec());
 
   net::TestCompletionCallback callback;
-  base::string16 pac_text;
+  std::u16string pac_text;
   dhcp_pac_file_fetcher_mojo_->Fetch(&pac_text, callback.callback(),
                                      net::NetLogWithSource(),
                                      TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -68,7 +68,7 @@ TEST_F(DhcpPacFileFetcherMojoTest, PacScriptMissing) {
   CreateFetcher(std::string());
 
   net::TestCompletionCallback callback;
-  base::string16 pac_text;
+  std::u16string pac_text;
   dhcp_pac_file_fetcher_mojo_->Fetch(&pac_text, callback.callback(),
                                      net::NetLogWithSource(),
                                      TRAFFIC_ANNOTATION_FOR_TESTS);

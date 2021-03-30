@@ -11,7 +11,7 @@
 // #import {MetadataProvider} from './metadata_provider.m.js';
 // #import {MultiMetadataProvider} from './multi_metadata_provider.m.js';
 // #import * as wrappedUtil from '../../../common/js/util.m.js'; const {util} = wrappedUtil;
-// #import {VolumeManager} from '../../../../externs/volume_manager.m.js';
+// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
 // clang-format on
 
 /**

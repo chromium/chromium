@@ -8,7 +8,7 @@
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/service/display/aggregated_frame.h"
-#include "components/viz/service/display/display_resource_provider.h"
+#include "components/viz/service/display/display_resource_provider_software.h"
 #include "components/viz/service/display/surface_aggregator.h"
 #include "components/viz/service/display/viz_perf_test.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
@@ -16,7 +16,6 @@
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 #include "components/viz/test/compositor_frame_helpers.h"
-#include "components/viz/test/test_context_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
 
@@ -56,11 +55,7 @@ class ExpectedOutput {
 class SurfaceAggregatorPerfTest : public VizPerfTest {
  public:
   SurfaceAggregatorPerfTest() : manager_(&shared_bitmap_manager_) {
-    context_provider_ = TestContextProvider::Create();
-    context_provider_->BindToCurrentThread();
-
-    resource_provider_ = std::make_unique<DisplayResourceProvider>(
-        DisplayResourceProvider::kSoftware, context_provider_.get(),
+    resource_provider_ = std::make_unique<DisplayResourceProviderSoftware>(
         &shared_bitmap_manager_);
   }
 
@@ -95,7 +90,7 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
         const gfx::Size size(1, 2);
         TransferableResource resource = TransferableResource::MakeSoftware(
             SharedBitmap::GenerateId(), size, ResourceFormat::RGBA_8888);
-        resource.id = j;
+        resource.id = ResourceId(j);
         frame_builder.AddTransferableResource(resource);
 
         auto* quad = pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
@@ -111,9 +106,9 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
         const float vertex_opacity[4] = {0.f, 0.f, 1.f, 1.f};
         bool flipped = false;
         bool nearest_neighbor = false;
-        quad->SetAll(sqs, rect, visible_rect, needs_blending, j, gfx::Size(),
-                     premultiplied_alpha, uv_top_left, uv_bottom_right,
-                     background_color, vertex_opacity, flipped,
+        quad->SetAll(sqs, rect, visible_rect, needs_blending, ResourceId(j),
+                     gfx::Size(), premultiplied_alpha, uv_top_left,
+                     uv_bottom_right, background_color, vertex_opacity, flipped,
                      nearest_neighbor, /*secure_output_only=*/false,
                      gfx::ProtectedVideoType::kClear);
       }
@@ -198,7 +193,6 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
  protected:
   ServerSharedBitmapManager shared_bitmap_manager_;
   FrameSinkManagerImpl manager_;
-  scoped_refptr<TestContextProvider> context_provider_;
   std::unique_ptr<DisplayResourceProvider> resource_provider_;
   std::unique_ptr<SurfaceAggregator> aggregator_;
 };

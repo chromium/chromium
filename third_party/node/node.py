@@ -11,6 +11,12 @@ import os
 
 
 def GetBinaryPath():
+  # TODO: Node 16.0 will likely ship with an official universal node binary
+  # on macOS. Once node 16.0 is released, remove this special case here
+  # and use node-darwin-universal in the dict in the main return statement.
+  if platform.system() == 'Darwin' and platform.machine() == 'arm64':
+      return os.path.join(os_path.join(os_path.dirname(__file__), 'mac',
+                          'node-darwin-arm64', 'bin', 'node'))
   return os_path.join(os_path.dirname(__file__), *{
     'Darwin': ('mac', 'node-darwin-x64', 'bin', 'node'),
     'Linux': ('linux', 'node-linux-x64', 'bin', 'node'),
@@ -24,19 +30,11 @@ def RunNode(cmd_parts, stdout=None):
       cmd, cwd=os.getcwd(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   stdout, stderr = process.communicate()
 
-  # TODO(crbug.com/1098074): Properly handle the returncode of
-  # process defined above. Right now, if the process would exit
-  # with a return code of non-zero, but the stderr is empty,
-  # we would still pass.
-  #
-  # However, we can't make this change here yet, as there are
-  # various presubmit scripts that rely on the runtime error
-  # and are unable to handle a `os.exit` call in this branch.
-  # These presubmit scripts need to spawn `subprocesses`
-  # themselves to handle the exitcode, before we can make the
-  # change here.
-  if stderr:
-    raise RuntimeError('%s failed: %s' % (cmd, stderr))
+  if process.returncode != 0:
+    # Handle cases where stderr is empty, even though the command failed, for
+    # example https://github.com/microsoft/TypeScript/issues/615
+    err = stderr if len(stderr) > 0 else stdout
+    raise RuntimeError('Command \'%s\' failed\n%s' % (' '.join(cmd), err))
 
   return stdout
 

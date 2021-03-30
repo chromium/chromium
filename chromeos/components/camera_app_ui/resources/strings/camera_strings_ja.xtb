@@ -15,6 +15,7 @@
 <translation id="2036868001356139588">タイマーの時間</translation>
 <translation id="2050339315714019657">縦</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" />（有効）</translation>
+<translation id="2144806332417375165">カスタム動画パラメータ</translation>
 <translation id="229579744168541441">ディスクに書き出し</translation>
 <translation id="2501278716633472235">戻る</translation>
 <translation id="2501853267655415902">録画を停止しました</translation>
@@ -33,7 +34,6 @@
 <translation id="3259149966178251584">カメラの解像度</translation>
 <translation id="3517926952904427380">縦向きの写真を撮影できません</translation>
 <translation id="3569311554794739032"><ph name="FILE" /> を削除してもよろしいですか？</translation>
-<translation id="3750315947605636967">別のアプリでカメラが使用されています</translation>
 <translation id="3810838688059735925">動画</translation>
 <translation id="3838931309141338733">バーコード スキャン</translation>
 <translation id="3892148308691398805">テキストをコピー</translation>
@@ -76,10 +76,12 @@
 <translation id="7337660886763914220">ファイル システムのエラーが発生しました。</translation>
 <translation id="7450541714075000668">テキストをコピーしました</translation>
 <translation id="7557677699350329807">次のカメラに切り替え</translation>
+<translation id="7607002721634913082">一時停止中</translation>
 <translation id="7608223098072244877">4x4</translation>
 <translation id="7649070708921625228">ヘルプ</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7974782136796202581">パン ティルト ズーム オプションを表示</translation>
 <translation id="7983668134180549431">テキストが検出されました。</translation>
 <translation id="8067883171444229417">動画を再生します</translation>
 <translation id="8131740175452115882">確認</translation>

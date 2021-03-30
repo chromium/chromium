@@ -12,31 +12,37 @@
 #include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/optimization_guide/optimization_guide_hints_manager.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_navigation_data.h"
-#include "chrome/browser/optimization_guide/optimization_guide_session_statistic.h"
 #include "chrome/browser/optimization_guide/optimization_guide_top_host_provider.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
-#include "components/optimization_guide/command_line_top_host_provider.h"
-#include "components/optimization_guide/hints_processing_util.h"
-#include "components/optimization_guide/optimization_guide_constants.h"
-#include "components/optimization_guide/optimization_guide_decider.h"
-#include "components/optimization_guide/optimization_guide_features.h"
-#include "components/optimization_guide/optimization_guide_service.h"
-#include "components/optimization_guide/optimization_guide_store.h"
-#include "components/optimization_guide/optimization_guide_util.h"
+#include "components/optimization_guide/core/command_line_top_host_provider.h"
+#include "components/optimization_guide/core/hints_processing_util.h"
+#include "components/optimization_guide/core/optimization_guide_constants.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_store.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/core/tab_url_provider.h"
+#include "components/optimization_guide/core/top_host_provider.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "components/optimization_guide/top_host_provider.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/storage_partition.h"
 #include "url/gurl.h"
+
+#if defined(OS_ANDROID)
+#include "chrome/browser/optimization_guide/android/optimization_guide_tab_url_provider_android.h"
+#else
+#include "chrome/browser/optimization_guide/optimization_guide_tab_url_provider.h"
+#endif
 
 namespace {
 
@@ -150,6 +156,15 @@ void OptimizationGuideKeyedService::Initialize() {
         "SyntheticOptimizationGuideRemoteFetching",
         optimization_guide_fetching_enabled ? "Enabled" : "Disabled");
 
+#if defined(OS_ANDROID)
+    tab_url_provider_ = std::make_unique<
+        optimization_guide::android::OptimizationGuideTabUrlProviderAndroid>(
+        profile);
+#else
+    tab_url_provider_ =
+        std::make_unique<OptimizationGuideTabUrlProvider>(profile);
+#endif
+
     hint_store_ =
         optimization_guide::features::ShouldPersistHintsToDisk()
             ? std::make_unique<optimization_guide::OptimizationGuideStore>(
@@ -174,9 +189,8 @@ void OptimizationGuideKeyedService::Initialize() {
   }
 
   hints_manager_ = std::make_unique<OptimizationGuideHintsManager>(
-      g_browser_process->optimization_guide_service(), profile,
-      profile->GetPrefs(), hint_store, top_host_provider_.get(),
-      url_loader_factory);
+      profile, profile->GetPrefs(), hint_store, top_host_provider_.get(),
+      tab_url_provider_.get(), url_loader_factory);
   prediction_manager_ = std::make_unique<optimization_guide::PredictionManager>(
       prediction_model_and_features_store, top_host_provider_.get(),
       url_loader_factory, profile->GetPrefs(), profile);
@@ -206,7 +220,7 @@ void OptimizationGuideKeyedService::OnNavigationStartOrRedirect(
     navigation_data->set_registered_optimization_types(
         hints_manager_->registered_optimization_types());
     navigation_data->set_registered_optimization_targets(
-        prediction_manager_->registered_optimization_targets());
+        prediction_manager_->GetRegisteredOptimizationTargets());
   }
 }
 
@@ -220,7 +234,16 @@ void OptimizationGuideKeyedService::OnNavigationFinish(
 void OptimizationGuideKeyedService::RegisterOptimizationTargets(
     const std::vector<optimization_guide::proto::OptimizationTarget>&
         optimization_targets) {
-  prediction_manager_->RegisterOptimizationTargets(optimization_targets);
+  std::vector<std::pair<optimization_guide::proto::OptimizationTarget,
+                        base::Optional<optimization_guide::proto::Any>>>
+      optimization_targets_and_metadata;
+  for (optimization_guide::proto::OptimizationTarget optimization_target :
+       optimization_targets) {
+    optimization_targets_and_metadata.emplace_back(
+        std::make_pair(optimization_target, base::nullopt));
+  }
+  prediction_manager_->RegisterOptimizationTargets(
+      optimization_targets_and_metadata);
 }
 
 void OptimizationGuideKeyedService::ShouldTargetNavigationAsync(
@@ -241,9 +264,10 @@ void OptimizationGuideKeyedService::ShouldTargetNavigationAsync(
 
 void OptimizationGuideKeyedService::AddObserverForOptimizationTargetModel(
     optimization_guide::proto::OptimizationTarget optimization_target,
+    const base::Optional<optimization_guide::proto::Any>& model_metadata,
     optimization_guide::OptimizationTargetModelObserver* observer) {
-    prediction_manager_->AddObserverForOptimizationTargetModel(
-        optimization_target, observer);
+  prediction_manager_->AddObserverForOptimizationTargetModel(
+      optimization_target, model_metadata, observer);
 }
 
 void OptimizationGuideKeyedService::RemoveObserverForOptimizationTargetModel(
@@ -275,8 +299,9 @@ OptimizationGuideKeyedService::CanApplyOptimization(
           optimization_guide::GetStringNameForOptimizationType(
               optimization_type),
       optimization_type_decision);
-  return GetOptimizationGuideDecisionFromOptimizationTypeDecision(
-      optimization_type_decision);
+  return OptimizationGuideHintsManager::
+      GetOptimizationGuideDecisionFromOptimizationTypeDecision(
+          optimization_type_decision);
 }
 
 void OptimizationGuideKeyedService::CanApplyOptimizationAsync(
@@ -285,13 +310,6 @@ void OptimizationGuideKeyedService::CanApplyOptimizationAsync(
     optimization_guide::OptimizationGuideDecisionCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(navigation_handle->IsInMainFrame());
-
-  if (!hints_manager_) {
-    std::move(callback).Run(
-        optimization_guide::OptimizationGuideDecision::kUnknown,
-        /*metadata=*/{});
-    return;
-  }
 
   hints_manager_->CanApplyOptimizationAsync(
       navigation_handle->GetURL(), navigation_handle->GetNavigationId(),
@@ -302,9 +320,6 @@ void OptimizationGuideKeyedService::AddHintForTesting(
     const GURL& url,
     optimization_guide::proto::OptimizationType optimization_type,
     const base::Optional<optimization_guide::OptimizationMetadata>& metadata) {
-  if (!hints_manager_)
-    return;
-
   hints_manager_->AddHintForTesting(url, optimization_type, metadata);
 }
 
@@ -330,7 +345,8 @@ void OptimizationGuideKeyedService::OverrideTargetDecisionForTesting(
 
 void OptimizationGuideKeyedService::OverrideTargetModelFileForTesting(
     optimization_guide::proto::OptimizationTarget optimization_target,
+    const base::Optional<optimization_guide::proto::Any>& model_metadata,
     const base::FilePath& file_path) {
-    prediction_manager_->OverrideTargetModelFileForTesting(optimization_target,
-                                                           file_path);
+  prediction_manager_->OverrideTargetModelFileForTesting(
+      optimization_target, model_metadata, file_path);
 }

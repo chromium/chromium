@@ -14,6 +14,7 @@
 #include "base/base64url.h"
 #include "base/bind.h"
 #include "base/format_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -84,23 +85,15 @@ std::vector<FormStructure*> ToRawPointerVector(
 // the response body data is utilized.
 std::string GetStringFromDataElements(
     const std::vector<network::DataElement>* data_elements) {
-  network::DataElement unified_data_element;
-  auto data_elements_it = data_elements->begin();
-  if (data_elements_it != data_elements->end()) {
-    unified_data_element.SetToBytes(data_elements_it->bytes(),
-                                    data_elements_it->length());
+  std::string result;
+  for (const network::DataElement& e : *data_elements) {
+    DCHECK_EQ(e.type(), network::DataElement::Tag::kBytes);
+    // Provide the length of the bytes explicitly, not to rely on the null
+    // termination.
+    const auto piece = e.As<network::DataElementBytes>().AsStringPiece();
+    result.append(piece.data(), piece.size());
   }
-  ++data_elements_it;
-  while (data_elements_it != data_elements->end()) {
-    unified_data_element.AppendBytes(data_elements_it->bytes(),
-                                     data_elements_it->length());
-    ++data_elements_it;
-  }
-  // Using the std::string constructor with length ensures that we don't rely
-  // on having a termination character to delimit the string. This is the
-  // safest approach.
-  return std::string(unified_data_element.bytes(),
-                     unified_data_element.length());
+  return result;
 }
 
 // Gets the AutofillUploadRequest proto from the HTTP loader request payload.
@@ -165,10 +158,12 @@ class AutofillDownloadManagerWithCustomPayloadSize
                                                Observer* observer,
                                                const std::string& api_key,
                                                size_t length)
-      : AutofillDownloadManager(driver,
-                                observer,
-                                api_key,
-                                /*log_manager=*/nullptr),
+      : AutofillDownloadManager(
+            driver,
+            observer,
+            api_key,
+            AutofillDownloadManager::IsRawMetadataUploadingEnabled(false),
+            /*log_manager=*/nullptr),
         length_(length) {}
 
  protected:
@@ -268,38 +263,38 @@ TEST_F(AutofillDownloadManagerTest, QueryAndUploadTest) {
   FormData form;
 
   FormFieldData field;
-  field.label = UTF8ToUTF16("username");
-  field.name = UTF8ToUTF16("username");
+  field.label = u"username";
+  field.name = u"username";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  field.label = UTF8ToUTF16("First Name");
-  field.name = UTF8ToUTF16("firstname");
+  field.label = u"First Name";
+  field.name = u"firstname";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  field.label = UTF8ToUTF16("Last Name");
-  field.name = UTF8ToUTF16("lastname");
+  field.label = u"Last Name";
+  field.name = u"lastname";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  field.label = UTF8ToUTF16("email");
-  field.name = UTF8ToUTF16("email");
+  field.label = u"email";
+  field.name = u"email";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  field.label = UTF8ToUTF16("email2");
-  field.name = UTF8ToUTF16("email2");
+  field.label = u"email2";
+  field.name = u"email2";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  field.label = UTF8ToUTF16("password");
-  field.name = UTF8ToUTF16("password");
+  field.label = u"password";
+  field.name = u"password";
   field.form_control_type = "password";
   form.fields.push_back(field);
 
-  field.label = base::string16();
-  field.name = UTF8ToUTF16("Submit");
+  field.label = std::u16string();
+  field.name = u"Submit";
   field.form_control_type = "submit";
   form.fields.push_back(field);
 
@@ -308,23 +303,23 @@ TEST_F(AutofillDownloadManagerTest, QueryAndUploadTest) {
 
   form.fields.clear();
 
-  field.label = UTF8ToUTF16("address");
-  field.name = UTF8ToUTF16("address");
+  field.label = u"address";
+  field.name = u"address";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  field.label = UTF8ToUTF16("address2");
-  field.name = UTF8ToUTF16("address2");
+  field.label = u"address2";
+  field.name = u"address2";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  field.label = UTF8ToUTF16("city");
-  field.name = UTF8ToUTF16("city");
+  field.label = u"city";
+  field.name = u"city";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  field.label = base::string16();
-  field.name = UTF8ToUTF16("Submit");
+  field.label = std::u16string();
+  field.name = u"Submit";
   field.form_control_type = "submit";
   form.fields.push_back(field);
 
@@ -332,26 +327,28 @@ TEST_F(AutofillDownloadManagerTest, QueryAndUploadTest) {
 
   form.fields.clear();
 
-  field.label = UTF8ToUTF16("username");
-  field.name = UTF8ToUTF16("username");
+  field.label = u"username";
+  field.name = u"username";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  field.label = UTF8ToUTF16("password");
-  field.name = UTF8ToUTF16("password");
+  field.label = u"password";
+  field.name = u"password";
   field.form_control_type = "password";
   form.fields.push_back(field);
 
-  field.label = base::string16();
-  field.name = UTF8ToUTF16("Submit");
+  field.label = std::u16string();
+  field.name = u"Submit";
   field.form_control_type = "submit";
   form.fields.push_back(field);
 
   form_structures.push_back(std::make_unique<FormStructure>(form));
 
   // Make download manager.
-  AutofillDownloadManager download_manager(&driver_, this, "dummykey",
-                                           /*log_manager=*/nullptr);
+  AutofillDownloadManager download_manager(
+      &driver_, this, "dummykey",
+      AutofillDownloadManager::IsRawMetadataUploadingEnabled(false),
+      /*log_manager=*/nullptr);
 
   // Request with id 0.
   base::HistogramTester histogram;
@@ -452,8 +449,8 @@ TEST_F(AutofillDownloadManagerTest, QueryAndUploadTest) {
   responses_.pop_front();
 
   // Modify form structures to miss the cache.
-  field.label = UTF8ToUTF16("Address line 2");
-  field.name = UTF8ToUTF16("address2");
+  field.label = u"Address line 2";
+  field.name = u"address2";
   field.form_control_type = "text";
   form.fields.push_back(field);
   form_structures.push_back(std::make_unique<FormStructure>(form));
@@ -504,8 +501,8 @@ TEST_F(AutofillDownloadManagerTest, QueryAndUploadTest) {
   fl2.InitAndDisableFeature(features::kAutofillCacheQueryResponses);
 
   // Don't hit the in-mem cache.
-  field.label = UTF8ToUTF16("Address line 3");
-  field.name = UTF8ToUTF16("address3");
+  field.label = u"Address line 3";
+  field.name = u"address3";
   field.form_control_type = "text";
   form.fields.push_back(field);
   form_structures.push_back(std::make_unique<FormStructure>(form));
@@ -527,21 +524,23 @@ TEST_F(AutofillDownloadManagerTest, QueryAPITest) {
   FormData form;
   FormFieldData field;
 
-  field.label = UTF8ToUTF16("First Name");
-  field.name = UTF8ToUTF16("firstname");
+  field.label = u"First Name";
+  field.name = u"firstname";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  field.label = UTF8ToUTF16("Last Name");
-  field.name = UTF8ToUTF16("lastname");
+  field.label = u"Last Name";
+  field.name = u"lastname";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
   std::vector<std::unique_ptr<FormStructure>> form_structures;
   form_structures.push_back(std::make_unique<FormStructure>(form));
 
-  AutofillDownloadManager download_manager(&driver_, this, "dummykey",
-                                           /*log_manager=*/nullptr);
+  AutofillDownloadManager download_manager(
+      &driver_, this, "dummykey",
+      AutofillDownloadManager::IsRawMetadataUploadingEnabled(false),
+      /*log_manager=*/nullptr);
 
   // Start the query request and look if it is successful. No response was
   // received yet.
@@ -624,8 +623,8 @@ TEST_F(AutofillDownloadManagerTest, QueryAPITestWhenTooLongUrl) {
   // Build the form structures that we want to query.
   FormData form;
   FormFieldData field;
-  field.label = UTF8ToUTF16("First Name");
-  field.name = UTF8ToUTF16("firstname");
+  field.label = u"First Name";
+  field.name = u"firstname";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
@@ -729,25 +728,27 @@ TEST_F(AutofillDownloadManagerTest, UploadToAPITest) {
       // We don't want upload throttling for testing purpose.
       {features::kAutofillUploadThrottling});
 
-  // Build the form structures that we want to query.
+  // Build the form structures that we want to upload.
   FormData form;
   FormFieldData field;
 
-  field.label = UTF8ToUTF16("First Name");
-  field.name = UTF8ToUTF16("firstname");
+  field.label = u"First Name";
+  field.name = u"firstname";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  field.label = UTF8ToUTF16("Last Name");
-  field.name = UTF8ToUTF16("lastname");
+  field.label = u"Last Name";
+  field.name = u"lastname";
   field.form_control_type = "text";
   form.fields.push_back(field);
   FormStructure form_structure(form);
   form_structure.set_submission_source(SubmissionSource::FORM_SUBMISSION);
 
   std::unique_ptr<PrefService> pref_service = test::PrefServiceForTesting();
-  AutofillDownloadManager download_manager(&driver_, this, "dummykey",
-                                           /*log_manager=*/nullptr);
+  AutofillDownloadManager download_manager(
+      &driver_, this, "dummykey",
+      AutofillDownloadManager::IsRawMetadataUploadingEnabled(false),
+      /*log_manager=*/nullptr);
   EXPECT_TRUE(download_manager.StartUploadRequest(form_structure, true,
                                                   ServerFieldTypeSet(), "",
                                                   true, pref_service.get()));
@@ -793,26 +794,100 @@ TEST_F(AutofillDownloadManagerTest, UploadToAPITest) {
                               net::HTTP_OK, 1);
 }
 
+TEST_F(AutofillDownloadManagerTest, UploadWithRawMetadata) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      // Enabled
+      {},
+      // Disabled
+      // We don't want upload throttling for testing purpose.
+      {features::kAutofillUploadThrottling});
+
+  for (bool is_raw_metadata_uploading_enabled : {false, true}) {
+    SCOPED_TRACE(testing::Message() << "is_raw_metadata_uploading_enabled = "
+                                    << is_raw_metadata_uploading_enabled);
+    // Build the form structures that we want to upload.
+    FormData form;
+    form.name = u"form1";
+    FormFieldData field;
+
+    field.name = u"firstname";
+    field.form_control_type = "text";
+    form.fields.push_back(field);
+
+    field.name = u"lastname";
+    field.form_control_type = "text";
+    form.fields.push_back(field);
+    FormStructure form_structure(form);
+    form_structure.set_submission_source(SubmissionSource::FORM_SUBMISSION);
+
+    std::unique_ptr<PrefService> pref_service = test::PrefServiceForTesting();
+    AutofillDownloadManager download_manager(
+        &driver_, this, "dummykey",
+        AutofillDownloadManager::IsRawMetadataUploadingEnabled(
+            is_raw_metadata_uploading_enabled),
+        /*log_manager=*/nullptr);
+    EXPECT_TRUE(download_manager.StartUploadRequest(form_structure, true,
+                                                    ServerFieldTypeSet(), "",
+                                                    true, pref_service.get()));
+
+    // Inspect the request that the test URL loader sent.
+    ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+    network::TestURLLoaderFactory::PendingRequest* request =
+        test_url_loader_factory_.GetPendingRequest(0);
+
+    // Assert some of the fields within the uploaded proto to make sure it was
+    // filled with something else than default data.
+    AutofillUploadRequest autofill_upload_request;
+    EXPECT_TRUE(
+        GetUploadRequestProtoFromRequest(request, &autofill_upload_request));
+    AutofillUploadContents upload = autofill_upload_request.upload();
+    EXPECT_GT(upload.client_version().size(), 0U);
+    EXPECT_EQ(FormSignature(upload.form_signature()),
+              form_structure.form_signature());
+    // Only a few strings are tested, full testing happens in FormStructure's
+    // tests.
+    ASSERT_EQ(is_raw_metadata_uploading_enabled, upload.has_form_name());
+    ASSERT_EQ(is_raw_metadata_uploading_enabled, upload.field()[0].has_name());
+    ASSERT_EQ(is_raw_metadata_uploading_enabled, upload.field()[1].has_type());
+    if (is_raw_metadata_uploading_enabled) {
+      EXPECT_EQ(form.name, UTF8ToUTF16(upload.form_name()));
+      EXPECT_EQ(form.fields[0].name, UTF8ToUTF16(upload.field()[0].name()));
+      EXPECT_EQ(form.fields[1].form_control_type, upload.field()[1].type());
+    }
+
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        request->request.url.spec(), "");
+    EXPECT_EQ(1U, responses_.size());
+    EXPECT_EQ(AutofillDownloadManagerTest::UPLOAD_SUCCESSFULL,
+              responses_.front().type_of_response);
+
+    ASSERT_EQ(0, test_url_loader_factory_.NumPending());
+    test_url_loader_factory_.ClearResponses();
+    responses_.clear();
+  }
+}
+
 TEST_F(AutofillDownloadManagerTest, BackoffLogic_Query) {
   FormData form;
   FormFieldData field;
-  field.label = UTF8ToUTF16("address");
-  field.name = UTF8ToUTF16("address");
+  field.label = u"address";
+  field.name = u"address";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  field.label = UTF8ToUTF16("address2");
-  field.name = UTF8ToUTF16("address2");
+  field.label = u"address2";
+  field.name = u"address2";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  field.label = UTF8ToUTF16("city");
-  field.name = UTF8ToUTF16("city");
+  field.label = u"city";
+  field.name = u"city";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  field.label = base::string16();
-  field.name = UTF8ToUTF16("Submit");
+  field.label = std::u16string();
+  field.name = u"Submit";
   field.form_control_type = "submit";
   form.fields.push_back(field);
 
@@ -867,23 +942,23 @@ TEST_F(AutofillDownloadManagerTest, BackoffLogic_Query) {
 TEST_F(AutofillDownloadManagerTest, BackoffLogic_Upload) {
   FormData form;
   FormFieldData field;
-  field.label = UTF8ToUTF16("address");
-  field.name = UTF8ToUTF16("address");
+  field.label = u"address";
+  field.name = u"address";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  field.label = UTF8ToUTF16("address2");
-  field.name = UTF8ToUTF16("address2");
+  field.label = u"address2";
+  field.name = u"address2";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  field.label = UTF8ToUTF16("city");
-  field.name = UTF8ToUTF16("city");
+  field.label = u"city";
+  field.name = u"city";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  field.label = base::string16();
-  field.name = UTF8ToUTF16("Submit");
+  field.label = std::u16string();
+  field.name = u"Submit";
   field.form_control_type = "submit";
   form.fields.push_back(field);
 
@@ -955,23 +1030,23 @@ TEST_F(AutofillDownloadManagerTest, BackoffLogic_Upload) {
 TEST_F(AutofillDownloadManagerTest, RetryLimit_Query) {
   FormData form;
   FormFieldData field;
-  field.label = UTF8ToUTF16("address");
-  field.name = UTF8ToUTF16("address");
+  field.label = u"address";
+  field.name = u"address";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  field.label = UTF8ToUTF16("address2");
-  field.name = UTF8ToUTF16("address2");
+  field.label = u"address2";
+  field.name = u"address2";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  field.label = UTF8ToUTF16("city");
-  field.name = UTF8ToUTF16("city");
+  field.label = u"city";
+  field.name = u"city";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  field.label = base::string16();
-  field.name = UTF8ToUTF16("Submit");
+  field.label = std::u16string();
+  field.name = u"Submit";
   field.form_control_type = "submit";
   form.fields.push_back(field);
 
@@ -1032,23 +1107,23 @@ TEST_F(AutofillDownloadManagerTest, RetryLimit_Query) {
 TEST_F(AutofillDownloadManagerTest, RetryLimit_Upload) {
   FormData form;
   FormFieldData field;
-  field.label = UTF8ToUTF16("address");
-  field.name = UTF8ToUTF16("address");
+  field.label = u"address";
+  field.name = u"address";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  field.label = UTF8ToUTF16("address2");
-  field.name = UTF8ToUTF16("address2");
+  field.label = u"address2";
+  field.name = u"address2";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  field.label = UTF8ToUTF16("city");
-  field.name = UTF8ToUTF16("city");
+  field.label = u"city";
+  field.name = u"city";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  field.label = base::string16();
-  field.name = UTF8ToUTF16("Submit");
+  field.label = std::u16string();
+  field.name = u"Submit";
   field.form_control_type = "submit";
   form.fields.push_back(field);
 
@@ -1156,32 +1231,32 @@ TEST_F(AutofillDownloadManagerTest, CacheQueryTest) {
   FormFieldData field;
   field.form_control_type = "text";
 
-  field.label = UTF8ToUTF16("username");
-  field.name = UTF8ToUTF16("username");
+  field.label = u"username";
+  field.name = u"username";
   form.fields.push_back(field);
 
-  field.label = UTF8ToUTF16("First Name");
-  field.name = UTF8ToUTF16("firstname");
+  field.label = u"First Name";
+  field.name = u"firstname";
   form.fields.push_back(field);
 
-  field.label = UTF8ToUTF16("Last Name");
-  field.name = UTF8ToUTF16("lastname");
+  field.label = u"Last Name";
+  field.name = u"lastname";
   form.fields.push_back(field);
 
   std::vector<std::unique_ptr<FormStructure>> form_structures0;
   form_structures0.push_back(std::make_unique<FormStructure>(form));
 
   // Add a slightly different form, which should result in a different request.
-  field.label = UTF8ToUTF16("email");
-  field.name = UTF8ToUTF16("email");
+  field.label = u"email";
+  field.name = u"email";
   form.fields.push_back(field);
   std::vector<std::unique_ptr<FormStructure>> form_structures1;
   form_structures1.push_back(std::make_unique<FormStructure>(form));
 
   // Add another slightly different form, which should also result in a
   // different request.
-  field.label = UTF8ToUTF16("email2");
-  field.name = UTF8ToUTF16("email2");
+  field.label = u"email2";
+  field.name = u"email2";
   form.fields.push_back(field);
   std::vector<std::unique_ptr<FormStructure>> form_structures2;
   form_structures2.push_back(std::make_unique<FormStructure>(form));
@@ -1504,8 +1579,8 @@ TEST_P(AutofillServerCommunicationTest, Query) {
   FormData form;
   FormFieldData field;
 
-  field.label = UTF8ToUTF16("First Name:");
-  field.name = UTF8ToUTF16("firstname");
+  field.label = u"First Name:";
+  field.name = u"firstname";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
@@ -1519,18 +1594,18 @@ TEST_P(AutofillServerCommunicationTest, Upload) {
   FormData form;
   FormFieldData field;
 
-  field.label = UTF8ToUTF16("First Name:");
-  field.name = UTF8ToUTF16("firstname");
+  field.label = u"First Name:";
+  field.name = u"firstname";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  field.label = UTF8ToUTF16("Last Name:");
-  field.name = UTF8ToUTF16("lastname");
+  field.label = u"Last Name:";
+  field.name = u"lastname";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  field.label = UTF8ToUTF16("Email:");
-  field.name = UTF8ToUTF16("email");
+  field.label = u"Email:";
+  field.name = u"email";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
@@ -1551,8 +1626,8 @@ using AutofillQueryTest = AutofillServerCommunicationTest;
 
 TEST_P(AutofillQueryTest, CacheableResponse) {
   FormFieldData field;
-  field.label = UTF8ToUTF16("First Name:");
-  field.name = UTF8ToUTF16("firstname");
+  field.label = u"First Name:";
+  field.name = u"firstname";
   field.form_control_type = "text";
 
   FormData form;
@@ -1591,8 +1666,8 @@ TEST_P(AutofillQueryTest, CacheableResponse) {
 
 TEST_P(AutofillQueryTest, SendsExperiment) {
   FormFieldData field;
-  field.label = UTF8ToUTF16("First Name:");
-  field.name = UTF8ToUTF16("firstname");
+  field.label = u"First Name:";
+  field.name = u"firstname";
   field.form_control_type = "text";
 
   FormData form;
@@ -1662,8 +1737,8 @@ TEST_P(AutofillQueryTest, SendsExperiment) {
 
 TEST_P(AutofillQueryTest, ExpiredCacheInResponse) {
   FormFieldData field;
-  field.label = UTF8ToUTF16("First Name:");
-  field.name = UTF8ToUTF16("firstname");
+  field.label = u"First Name:";
+  field.name = u"firstname";
   field.form_control_type = "text";
 
   FormData form;
@@ -1715,45 +1790,45 @@ TEST_P(AutofillQueryTest, RichMetadata_Enabled) {
   FormData form;
   form.url = GURL("https://origin.com");
   form.action = GURL("https://origin.com/submit-me");
-  form.id_attribute = UTF8ToUTF16("form-id-attribute");
-  form.name_attribute = UTF8ToUTF16("form-name-attribute");
+  form.id_attribute = u"form-id-attribute";
+  form.name_attribute = u"form-name-attribute";
   form.name = form.name_attribute;
 
   // Add field 0.
   FormFieldData field;
-  field.id_attribute = UTF8ToUTF16("field-id-attribute-1");
-  field.name_attribute = UTF8ToUTF16("field-name-attribute-1");
+  field.id_attribute = u"field-id-attribute-1";
+  field.name_attribute = u"field-name-attribute-1";
   field.name = field.name_attribute;
-  field.label = UTF8ToUTF16("field-label");
-  field.aria_label = UTF8ToUTF16("field-aria-label");
-  field.aria_description = UTF8ToUTF16("field-aria-description");
+  field.label = u"field-label";
+  field.aria_label = u"field-aria-label";
+  field.aria_description = u"field-aria-description";
   field.form_control_type = "text";
-  field.css_classes = UTF8ToUTF16("field-css-classes");
-  field.placeholder = UTF8ToUTF16("field-placeholder");
+  field.css_classes = u"field-css-classes";
+  field.placeholder = u"field-placeholder";
   form.fields.push_back(field);
 
   // Add field 1.
-  field.id_attribute = UTF8ToUTF16("field-id-attribute-2");
-  field.name_attribute = UTF8ToUTF16("field-name-attribute-2");
+  field.id_attribute = u"field-id-attribute-2";
+  field.name_attribute = u"field-name-attribute-2";
   field.name = field.name_attribute;
-  field.label = UTF8ToUTF16("field-label");
-  field.aria_label = UTF8ToUTF16("field-aria-label");
-  field.aria_description = UTF8ToUTF16("field-aria-description");
+  field.label = u"field-label";
+  field.aria_label = u"field-aria-label";
+  field.aria_description = u"field-aria-description";
   field.form_control_type = "text";
-  field.css_classes = UTF8ToUTF16("field-css-classes");
-  field.placeholder = UTF8ToUTF16("field-placeholder");
+  field.css_classes = u"field-css-classes";
+  field.placeholder = u"field-placeholder";
   form.fields.push_back(field);
 
   // Add field 2.
-  field.id_attribute = UTF8ToUTF16("field-id-attribute-3");
-  field.name_attribute = UTF8ToUTF16("field-name-attribute-3");
+  field.id_attribute = u"field-id-attribute-3";
+  field.name_attribute = u"field-name-attribute-3";
   field.name = field.name_attribute;
-  field.label = UTF8ToUTF16("field-label");
-  field.aria_label = UTF8ToUTF16("field-aria-label");
-  field.aria_description = UTF8ToUTF16("field-aria-description");
+  field.label = u"field-label";
+  field.aria_label = u"field-aria-label";
+  field.aria_description = u"field-aria-description";
   field.form_control_type = "text";
-  field.css_classes = UTF8ToUTF16("field-css-classes");
-  field.placeholder = UTF8ToUTF16("field-placeholder");
+  field.css_classes = u"field-css-classes";
+  field.placeholder = u"field-placeholder";
   form.fields.push_back(field);
 
   // Setup the form structures to query.
@@ -1815,45 +1890,45 @@ TEST_P(AutofillQueryTest, RichMetadata_Disabled) {
   FormData form;
   form.url = GURL("https://origin.com");
   form.action = GURL("https://origin.com/submit-me");
-  form.id_attribute = UTF8ToUTF16("form-id-attribute");
-  form.name_attribute = UTF8ToUTF16("form-name-attribute");
+  form.id_attribute = u"form-id-attribute";
+  form.name_attribute = u"form-name-attribute";
   form.name = form.name_attribute;
 
   // Add field 0.
   FormFieldData field;
-  field.id_attribute = UTF8ToUTF16("field-id-attribute-1");
-  field.name_attribute = UTF8ToUTF16("field-name-attribute-1");
+  field.id_attribute = u"field-id-attribute-1";
+  field.name_attribute = u"field-name-attribute-1";
   field.name = field.name_attribute;
-  field.label = UTF8ToUTF16("field-label");
-  field.aria_label = UTF8ToUTF16("field-aria-label");
-  field.aria_description = UTF8ToUTF16("field-aria-description");
+  field.label = u"field-label";
+  field.aria_label = u"field-aria-label";
+  field.aria_description = u"field-aria-description";
   field.form_control_type = "text";
-  field.css_classes = UTF8ToUTF16("field-css-classes");
-  field.placeholder = UTF8ToUTF16("field-placeholder");
+  field.css_classes = u"field-css-classes";
+  field.placeholder = u"field-placeholder";
   form.fields.push_back(field);
 
   // Add field 1.
-  field.id_attribute = UTF8ToUTF16("field-id-attribute-2");
-  field.name_attribute = UTF8ToUTF16("field-name-attribute-2");
+  field.id_attribute = u"field-id-attribute-2";
+  field.name_attribute = u"field-name-attribute-2";
   field.name = field.name_attribute;
-  field.label = UTF8ToUTF16("field-label");
-  field.aria_label = UTF8ToUTF16("field-aria-label");
-  field.aria_description = UTF8ToUTF16("field-aria-description");
+  field.label = u"field-label";
+  field.aria_label = u"field-aria-label";
+  field.aria_description = u"field-aria-description";
   field.form_control_type = "text";
-  field.css_classes = UTF8ToUTF16("field-css-classes");
-  field.placeholder = UTF8ToUTF16("field-placeholder");
+  field.css_classes = u"field-css-classes";
+  field.placeholder = u"field-placeholder";
   form.fields.push_back(field);
 
   // Add field 2.
-  field.id_attribute = UTF8ToUTF16("field-id-attribute-3");
-  field.name_attribute = UTF8ToUTF16("field-name-attribute-3");
+  field.id_attribute = u"field-id-attribute-3";
+  field.name_attribute = u"field-name-attribute-3";
   field.name = field.name_attribute;
-  field.label = UTF8ToUTF16("field-label");
-  field.aria_label = UTF8ToUTF16("field-aria-label");
-  field.aria_description = UTF8ToUTF16("field-aria-description");
+  field.label = u"field-label";
+  field.aria_label = u"field-aria-label";
+  field.aria_description = u"field-aria-description";
   field.form_control_type = "text";
-  field.css_classes = UTF8ToUTF16("field-css-classes");
-  field.placeholder = UTF8ToUTF16("field-placeholder");
+  field.css_classes = u"field-css-classes";
+  field.placeholder = u"field-placeholder";
   form.fields.push_back(field);
 
   // Setup the form structures to query.
@@ -1906,42 +1981,42 @@ TEST_P(AutofillUploadTest, RichMetadata) {
   form.url = GURL("https://origin.com");
   form.full_url = GURL("https://origin.com?foo=bar#foo");
   form.action = GURL("https://origin.com/submit-me");
-  form.id_attribute = UTF8ToUTF16("form-id_attribute");
-  form.name_attribute = UTF8ToUTF16("form-id_attribute");
+  form.id_attribute = u"form-id_attribute";
+  form.name_attribute = u"form-id_attribute";
   form.name = form.name_attribute;
 
   FormFieldData field;
-  field.id_attribute = UTF8ToUTF16("field-id-attribute-1");
-  field.name_attribute = UTF8ToUTF16("field-name-attribute-1");
+  field.id_attribute = u"field-id-attribute-1";
+  field.name_attribute = u"field-name-attribute-1";
   field.name = field.name_attribute;
-  field.label = UTF8ToUTF16("field-label");
-  field.aria_label = UTF8ToUTF16("field-aria-label");
-  field.aria_description = UTF8ToUTF16("field-aria-descriptionm");
+  field.label = u"field-label";
+  field.aria_label = u"field-aria-label";
+  field.aria_description = u"field-aria-descriptionm";
   field.form_control_type = "text";
-  field.css_classes = UTF8ToUTF16("field-css-classes");
-  field.placeholder = UTF8ToUTF16("field-placeholder");
+  field.css_classes = u"field-css-classes";
+  field.placeholder = u"field-placeholder";
   form.fields.push_back(field);
 
-  field.id_attribute = UTF8ToUTF16("field-id-attribute-2");
-  field.name_attribute = UTF8ToUTF16("field-name-attribute-2");
+  field.id_attribute = u"field-id-attribute-2";
+  field.name_attribute = u"field-name-attribute-2";
   field.name = field.name_attribute;
-  field.label = UTF8ToUTF16("field-label");
-  field.aria_label = UTF8ToUTF16("field-aria-label");
-  field.aria_description = UTF8ToUTF16("field-aria-descriptionm");
+  field.label = u"field-label";
+  field.aria_label = u"field-aria-label";
+  field.aria_description = u"field-aria-descriptionm";
   field.form_control_type = "text";
-  field.css_classes = UTF8ToUTF16("field-css-classes");
-  field.placeholder = UTF8ToUTF16("field-placeholder");
+  field.css_classes = u"field-css-classes";
+  field.placeholder = u"field-placeholder";
   form.fields.push_back(field);
 
-  field.id_attribute = UTF8ToUTF16("field-id-attribute-3");
-  field.name_attribute = UTF8ToUTF16("field-name-attribute-3");
+  field.id_attribute = u"field-id-attribute-3";
+  field.name_attribute = u"field-name-attribute-3";
   field.name = field.name_attribute;
-  field.label = UTF8ToUTF16("field-label");
-  field.aria_label = UTF8ToUTF16("field-aria-label");
-  field.aria_description = UTF8ToUTF16("field-aria-descriptionm");
+  field.label = u"field-label";
+  field.aria_label = u"field-aria-label";
+  field.aria_description = u"field-aria-descriptionm";
   field.form_control_type = "text";
-  field.css_classes = UTF8ToUTF16("field-css-classes");
-  field.placeholder = UTF8ToUTF16("field-placeholder");
+  field.css_classes = u"field-css-classes";
+  field.placeholder = u"field-placeholder";
   form.fields.push_back(field);
 
   AutofillDownloadManager download_manager(driver_.get(), this);
@@ -2012,18 +2087,18 @@ TEST_P(AutofillUploadTest, Throttling) {
   FormData form;
   FormFieldData field;
 
-  field.label = UTF8ToUTF16("First Name:");
-  field.name = UTF8ToUTF16("firstname");
+  field.label = u"First Name:";
+  field.name = u"firstname";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  field.label = UTF8ToUTF16("Last Name:");
-  field.name = UTF8ToUTF16("lastname");
+  field.label = u"Last Name:";
+  field.name = u"lastname";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  field.label = UTF8ToUTF16("Email:");
-  field.name = UTF8ToUTF16("email");
+  field.label = u"Email:";
+  field.name = u"email";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
@@ -2069,20 +2144,20 @@ TEST_P(AutofillUploadTest, ThrottlingDisabled) {
   FormData small_form;
   FormFieldData field;
 
-  field.label = UTF8ToUTF16("First Name:");
-  field.name = UTF8ToUTF16("firstname");
+  field.label = u"First Name:";
+  field.name = u"firstname";
   field.form_control_type = "text";
   form.fields.push_back(field);
   small_form.fields.push_back(field);
 
-  field.label = UTF8ToUTF16("Last Name:");
-  field.name = UTF8ToUTF16("lastname");
+  field.label = u"Last Name:";
+  field.name = u"lastname";
   field.form_control_type = "text";
   form.fields.push_back(field);
   small_form.fields.push_back(field);
 
-  field.label = UTF8ToUTF16("Email:");
-  field.name = UTF8ToUTF16("email");
+  field.label = u"Email:";
+  field.name = u"email";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
@@ -2153,18 +2228,18 @@ TEST_P(AutofillUploadTest, PeriodicReset) {
   FormData form;
   FormFieldData field;
 
-  field.label = UTF8ToUTF16("First Name:");
-  field.name = UTF8ToUTF16("firstname");
+  field.label = u"First Name:";
+  field.name = u"firstname";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  field.label = UTF8ToUTF16("Last Name:");
-  field.name = UTF8ToUTF16("lastname");
+  field.label = u"Last Name:";
+  field.name = u"lastname";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  field.label = UTF8ToUTF16("Email:");
-  field.name = UTF8ToUTF16("email");
+  field.label = u"Email:";
+  field.name = u"email";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
@@ -2211,18 +2286,18 @@ TEST_P(AutofillUploadTest, ResetOnClearUploadHisotry) {
   FormData form;
   FormFieldData field;
 
-  field.label = UTF8ToUTF16("First Name:");
-  field.name = UTF8ToUTF16("firstname");
+  field.label = u"First Name:";
+  field.name = u"firstname";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  field.label = UTF8ToUTF16("Last Name:");
-  field.name = UTF8ToUTF16("lastname");
+  field.label = u"Last Name:";
+  field.name = u"lastname";
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  field.label = UTF8ToUTF16("Email:");
-  field.name = UTF8ToUTF16("email");
+  field.label = u"Email:";
+  field.name = u"email";
   field.form_control_type = "text";
   form.fields.push_back(field);
 

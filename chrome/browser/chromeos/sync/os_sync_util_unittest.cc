@@ -4,11 +4,11 @@
 
 #include "chrome/browser/chromeos/sync/os_sync_util.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_ui.h"
 #include "chrome/browser/ui/webui/settings/chromeos/pref_names.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"

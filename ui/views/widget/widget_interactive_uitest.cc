@@ -906,7 +906,7 @@ TEST_F(DesktopWidgetTestInteractive,
 
   Textfield* textfield = new Textfield;
   textfield->SetBounds(0, 0, 200, 20);
-  textfield->SetText(base::ASCIIToUTF16("some text"));
+  textfield->SetText(u"some text");
   widget->GetRootView()->AddChildView(textfield);
 
   widget->Show();
@@ -1219,7 +1219,7 @@ TEST_F(DesktopWidgetTestInteractive, EventHandlersClearedOnWidgetMinimize) {
       static_cast<internal::RootView*>(widget->GetRootView());
   // This also sets the gesture_handler, and we'll verify that it
   // gets cleared when the widget is minimized.
-  root_view->SetMouseHandler(&mouse_handler_view);
+  root_view->SetMouseAndGestureHandler(&mouse_handler_view);
   EXPECT_TRUE(GetGestureHandler(root_view));
 
   widget->Minimize();
@@ -1875,7 +1875,7 @@ TEST_F(WidgetCaptureTest, MouseEventDispatchedToRightWindow) {
   ui::MouseEvent mouse_event(ui::ET_MOUSE_EXITED, gfx::Point(), gfx::Point(),
                              ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
   ui::EventDispatchDetails details =
-      widget1.GetNativeWindow()->GetHost()->event_sink()->OnEventFromSource(
+      widget1.GetNativeWindow()->GetHost()->GetEventSink()->OnEventFromSource(
           &mouse_event);
   ASSERT_FALSE(details.dispatcher_destroyed);
   EXPECT_TRUE(widget1.GetAndClearGotMouseEvent());

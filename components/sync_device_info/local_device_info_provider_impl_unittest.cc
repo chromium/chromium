@@ -47,6 +47,10 @@ class MockDeviceInfoSyncClient : public DeviceInfoSyncClient {
               GetLocalSharingInfo,
               (),
               (const override));
+  MOCK_METHOD(base::Optional<DeviceInfo::PhoneAsASecurityKeyInfo>,
+              GetPhoneAsASecurityKeyInfo,
+              (),
+              (const override));
   MOCK_METHOD(base::Optional<std::string>,
               GetFCMRegistrationToken,
               (),
@@ -80,8 +84,17 @@ class LocalDeviceInfoProviderImplTest : public testing::Test {
   void InitializeProvider(const std::string& guid) {
     provider_->Initialize(guid, kLocalDeviceClientName,
                           kLocalDeviceManufacturerName, kLocalDeviceModelName,
-                          /*last_fcm_registration_token=*/std::string(),
-                          ModelTypeSet());
+                          /*device_info_restored_from_store=*/nullptr);
+  }
+
+  DeviceInfo::PhoneAsASecurityKeyInfo SamplePhoneAsASecurityKeyInfo() {
+    DeviceInfo::PhoneAsASecurityKeyInfo paask_info;
+    paask_info.tunnel_server_domain = 123;
+    paask_info.contact_id = {1, 2, 3, 4};
+    paask_info.secret = {5, 6, 7, 8};
+    paask_info.id = 321;
+    paask_info.peer_public_key_x962 = {10, 11, 12, 13};
+    return paask_info;
   }
 
   testing::NiceMock<MockDeviceInfoSyncClient> device_info_sync_client_;
@@ -208,18 +221,62 @@ TEST_F(LocalDeviceInfoProviderImplTest, ShouldPopulateInterestedDataTypes) {
 TEST_F(LocalDeviceInfoProviderImplTest, ShouldKeepStoredInvalidationFields) {
   const std::string kFCMRegistrationToken = "fcm_token";
   const ModelTypeSet kInterestedDataTypes(BOOKMARKS);
+
+  DeviceInfo::PhoneAsASecurityKeyInfo paask_info =
+      SamplePhoneAsASecurityKeyInfo();
+  auto device_info_restored_from_store = std::make_unique<DeviceInfo>(
+      kLocalDeviceGuid, "name", "chrome_version", "user_agent",
+      sync_pb::SyncEnums_DeviceType_TYPE_LINUX, "device_id", "manufacturer",
+      "model", base::Time(), base::TimeDelta::FromDays(1),
+      /*send_tab_to_self_receiving_enabled=*/true,
+      /*sharing_info=*/base::nullopt, paask_info, kFCMRegistrationToken,
+      kInterestedDataTypes);
+
+  // |kFCMRegistrationToken|, |kInterestedDataTypes|, and |paask_info| should be
+  // taken from |device_info_restored_from_store| when
+  // |device_info_sync_client_| returns nullopt.
   provider_->Initialize(kLocalDeviceGuid, kLocalDeviceClientName,
                         kLocalDeviceManufacturerName, kLocalDeviceModelName,
-                        kFCMRegistrationToken, kInterestedDataTypes);
+                        std::move(device_info_restored_from_store));
 
   EXPECT_CALL(device_info_sync_client_, GetFCMRegistrationToken())
       .WillOnce(Return(base::nullopt));
   EXPECT_CALL(device_info_sync_client_, GetInterestedDataTypes())
       .WillOnce(Return(base::nullopt));
+  EXPECT_CALL(device_info_sync_client_, GetPhoneAsASecurityKeyInfo())
+      .WillOnce(Return(base::nullopt));
 
   const DeviceInfo* local_device_info = provider_->GetLocalDeviceInfo();
   EXPECT_EQ(local_device_info->interested_data_types(), kInterestedDataTypes);
   EXPECT_EQ(local_device_info->fcm_registration_token(), kFCMRegistrationToken);
+  EXPECT_EQ(local_device_info->paask_info(), paask_info);
+}
+
+TEST_F(LocalDeviceInfoProviderImplTest, PhoneAsASecurityKeyInfo) {
+  ON_CALL(device_info_sync_client_, GetPhoneAsASecurityKeyInfo())
+      .WillByDefault(Return(base::nullopt));
+
+  InitializeProvider();
+
+  ASSERT_THAT(provider_->GetLocalDeviceInfo(), NotNull());
+  EXPECT_FALSE(provider_->GetLocalDeviceInfo()->paask_info());
+
+  DeviceInfo::PhoneAsASecurityKeyInfo paask_info =
+      SamplePhoneAsASecurityKeyInfo();
+  ON_CALL(device_info_sync_client_, GetPhoneAsASecurityKeyInfo())
+      .WillByDefault(Return(paask_info));
+
+  ASSERT_THAT(provider_->GetLocalDeviceInfo(), NotNull());
+  const base::Optional<DeviceInfo::PhoneAsASecurityKeyInfo>& result_paask_info =
+      provider_->GetLocalDeviceInfo()->paask_info();
+  ASSERT_TRUE(result_paask_info);
+  EXPECT_EQ(paask_info.tunnel_server_domain,
+            result_paask_info->tunnel_server_domain);
+  EXPECT_EQ(paask_info.contact_id, result_paask_info->contact_id);
+  EXPECT_EQ(paask_info.secret, result_paask_info->secret);
+  EXPECT_EQ(paask_info.id, result_paask_info->id);
+  EXPECT_EQ(paask_info.peer_public_key_x962,
+            result_paask_info->peer_public_key_x962);
 }
 
 }  // namespace

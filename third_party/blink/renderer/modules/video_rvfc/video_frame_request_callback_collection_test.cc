@@ -29,6 +29,9 @@ class VideoFrameRequestCallbackCollectionTest : public PageTestBase {
       : execution_context_(MakeGarbageCollected<NullExecutionContext>()),
         collection_(MakeGarbageCollected<VideoFrameRequestCallbackCollection>(
             execution_context_.Get())) {}
+  ~VideoFrameRequestCallbackCollectionTest() override {
+    execution_context_->NotifyContextDestroyed();
+  }
 
   VideoFrameRequestCallbackCollection* collection() {
     return collection_.Get();

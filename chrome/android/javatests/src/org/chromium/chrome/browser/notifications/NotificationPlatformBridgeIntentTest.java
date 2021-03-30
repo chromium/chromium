@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.notifications;
 
 import android.app.Notification;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
@@ -155,11 +154,7 @@ public class NotificationPlatformBridgeIntentTest {
         intent.putExtra(
                 NotificationConstants.EXTRA_NOTIFICATION_INFO_ORIGIN, "https://example.com");
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                context, 0 /* request code */, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        // Send the pending intent. This will begin starting up the browser process.
-        pendingIntent.send();
+        context.sendBroadcast(intent);
 
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat("Browser process was never started.",

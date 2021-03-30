@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_GENERATION_DIALOG_VIEW_INTERFACE_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_GENERATION_DIALOG_VIEW_INTERFACE_H_
 
+#include <string>
+
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "components/autofill/core/common/password_generation_util.h"
 class PasswordGenerationController;
 
@@ -25,7 +26,7 @@ class PasswordGenerationDialogViewInterface {
   // |manual| whether the dialog is shown for manual or automatic generation.
   // Used for metrics.
   virtual void Show(
-      base::string16& password,
+      std::u16string& password,
       base::WeakPtr<password_manager::PasswordManagerDriver>
           target_frame_driver,
       autofill::password_generation::PasswordGenerationType type) = 0;

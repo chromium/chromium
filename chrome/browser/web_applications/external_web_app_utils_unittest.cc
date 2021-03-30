@@ -13,8 +13,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "components/arc/arc_util.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -197,12 +197,12 @@ TEST_F(ExternalWebAppUtilsTest, MAYBE_OfflineManifestValid) {
                                                      .value()
                                                      .Run();
   EXPECT_TRUE(app_info);
-  EXPECT_EQ(app_info->title, base::UTF8ToUTF16("Test App"));
+  EXPECT_EQ(app_info->title, u"Test App");
   EXPECT_EQ(app_info->start_url, GURL("https://test.org/start.html"));
   EXPECT_EQ(app_info->scope, GURL("https://test.org/"));
   EXPECT_EQ(app_info->display_mode, DisplayMode::kStandalone);
-  EXPECT_EQ(app_info->icon_bitmaps_any.size(), 1u);
-  EXPECT_EQ(app_info->icon_bitmaps_any.at(192).getColor(0, 0), SK_ColorBLUE);
+  EXPECT_EQ(app_info->icon_bitmaps.any.size(), 1u);
+  EXPECT_EQ(app_info->icon_bitmaps.any.at(192).getColor(0, 0), SK_ColorBLUE);
   EXPECT_EQ(app_info->theme_color, SkColorSetARGB(0xFF, 0xBB, 0xCC, 0xDD));
 }
 
@@ -441,6 +441,84 @@ TEST_F(ExternalWebAppUtilsTest, OfflineManifestThemeColorArgbHex) {
       "theme_color_argb_hex": "#ff0000"
     }
   )")) << "theme_color_argb_hex is valid";
+}
+
+TEST_F(ExternalWebAppUtilsTest, ForceReinstallForMilestone) {
+  base::Optional<ExternalInstallOptions> non_number = ParseConfig(R"(
+    {
+      "app_url": "https://test.org",
+      "launch_container": "window",
+      "force_reinstall_for_milestone": "error",
+      "user_type": ["test"]
+    }
+  )");
+  EXPECT_FALSE(non_number.has_value());
+
+  base::Optional<ExternalInstallOptions> number = ParseConfig(R"(
+    {
+      "app_url": "https://test.org",
+      "launch_container": "window",
+      "force_reinstall_for_milestone": 89,
+      "user_type": ["test"]
+    }
+  )");
+  EXPECT_TRUE(number.has_value());
+  EXPECT_EQ(89, number->force_reinstall_for_milestone);
+}
+
+TEST_F(ExternalWebAppUtilsTest, IsReinstallPastMilestoneNeeded) {
+  // Arguments: last_preinstall_synchronize_milestone, current_milestone,
+  // force_reinstall_for_milestone.
+  EXPECT_FALSE(IsReinstallPastMilestoneNeeded("87", "87", 89));
+  EXPECT_FALSE(IsReinstallPastMilestoneNeeded("87", "88", 89));
+  EXPECT_FALSE(IsReinstallPastMilestoneNeeded("88", "88", 89));
+  EXPECT_TRUE(IsReinstallPastMilestoneNeeded("88", "89", 89));
+  EXPECT_FALSE(IsReinstallPastMilestoneNeeded("89", "89", 89));
+  EXPECT_FALSE(IsReinstallPastMilestoneNeeded("89", "90", 89));
+  EXPECT_FALSE(IsReinstallPastMilestoneNeeded("90", "90", 89));
+  EXPECT_FALSE(IsReinstallPastMilestoneNeeded("90", "91", 89));
+  EXPECT_FALSE(IsReinstallPastMilestoneNeeded("91", "91", 89));
+
+  // Long jumps:
+  EXPECT_FALSE(IsReinstallPastMilestoneNeeded("80", "85", 89));
+  EXPECT_TRUE(IsReinstallPastMilestoneNeeded("80", "100", 89));
+  EXPECT_FALSE(IsReinstallPastMilestoneNeeded("90", "95", 89));
+
+  // Wrong input:
+  EXPECT_FALSE(IsReinstallPastMilestoneNeeded("error", "90", 89));
+  EXPECT_FALSE(IsReinstallPastMilestoneNeeded("88", "error", 89));
+  EXPECT_FALSE(IsReinstallPastMilestoneNeeded("error", "error", 0));
+}
+
+TEST_F(ExternalWebAppUtilsTest, OemInstalled) {
+  base::Optional<ExternalInstallOptions> non_bool = ParseConfig(R"(
+        {
+          "app_url": "https://www.test.org",
+          "launch_container": "window",
+          "oem_installed": "some string",
+          "user_type": ["test"]
+        }
+    )");
+  EXPECT_FALSE(non_bool.has_value());
+
+  base::Optional<ExternalInstallOptions> no_oem = ParseConfig(R"(
+        {
+          "app_url": "https://www.test.org",
+          "launch_container": "window",
+          "user_type": ["test"]
+        }
+    )");
+  EXPECT_FALSE(no_oem->oem_installed);
+
+  base::Optional<ExternalInstallOptions> oem_set = ParseConfig(R"(
+        {
+          "app_url": "https://www.test.org",
+          "launch_container": "window",
+          "oem_installed": true,
+          "user_type": ["test"]
+        }
+    )");
+  EXPECT_TRUE(oem_set->oem_installed);
 }
 
 }  // namespace web_app

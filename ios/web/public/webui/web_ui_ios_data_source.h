@@ -5,9 +5,10 @@
 #ifndef IOS_WEB_PUBLIC_WEBUI_WEB_UI_IOS_DATA_SOURCE_H_
 #define IOS_WEB_PUBLIC_WEBUI_WEB_UI_IOS_DATA_SOURCE_H_
 
+#include <string>
+
 #include "base/callback.h"
 #include "base/containers/span.h"
-#include "base/strings/string16.h"
 #include "base/supports_user_data.h"
 
 namespace base {
@@ -34,7 +35,7 @@ class WebUIIOSDataSource : public base::SupportsUserData {
 
   // Adds a string keyed to its name to our dictionary.
   virtual void AddString(const std::string& name,
-                         const base::string16& value) = 0;
+                         const std::u16string& value) = 0;
 
   // Adds a string keyed to its name to our dictionary.
   virtual void AddString(const std::string& name, const std::string& value) = 0;

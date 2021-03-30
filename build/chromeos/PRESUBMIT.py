@@ -9,8 +9,13 @@ details on the presubmit API built into depot_tools.
 
 
 def CommonChecks(input_api, output_api):
-  return input_api.canned_checks.RunPylint(
+  results = []
+  results += input_api.canned_checks.RunPylint(
       input_api, output_api, pylintrc='pylintrc')
+  tests = input_api.canned_checks.GetUnitTestsInDirectory(
+      input_api, output_api, '.', [r'^.+_test\.py$'])
+  results += input_api.RunTests(tests)
+  return results
 
 
 def CheckChangeOnUpload(input_api, output_api):

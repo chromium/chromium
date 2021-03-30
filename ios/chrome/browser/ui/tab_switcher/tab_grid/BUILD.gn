@@ -21,6 +21,7 @@ source_set("tab_grid") {
     "grid:grid_ui",
     "//base",
     "//components/favicon/ios",
+    "//components/prefs",
     "//components/sessions",
     "//components/strings",
     "//ios/chrome/app/strings",
@@ -28,6 +29,8 @@ source_set("tab_grid") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/drag_and_drop",
     "//ios/chrome/browser/main",
+    "//ios/chrome/browser/policy:feature_flags",
+    "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/sessions:restoration_agent",
     "//ios/chrome/browser/sessions:serialisation",
@@ -50,6 +53,7 @@ source_set("tab_grid") {
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/transitions",
     "//ios/chrome/browser/ui/thumb_strip",
     "//ios/chrome/browser/ui/thumb_strip:feature_flags",
+    "//ios/chrome/browser/ui/thumb_strip:public",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/web",
@@ -82,6 +86,8 @@ source_set("tab_grid_paging") {
 
 source_set("tab_grid_ui") {
   sources = [
+    "disabled_tab_view_controller.h",
+    "disabled_tab_view_controller.mm",
     "tab_grid_bottom_toolbar.h",
     "tab_grid_bottom_toolbar.mm",
     "tab_grid_empty_state_view.h",
@@ -123,8 +129,11 @@ source_set("tab_grid_ui") {
     "//ios/chrome/browser/ui/recent_tabs:recent_tabs_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/transitions",
     "//ios/chrome/browser/ui/table_view:styler",
+    "//ios/chrome/browser/ui/thumb_strip",
     "//ios/chrome/browser/ui/thumb_strip:feature_flags",
+    "//ios/chrome/browser/ui/thumb_strip:public",
     "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common",
     "//ios/chrome/common/ui/util",
     "//ios/web/public",
     "//ui/base",
@@ -167,6 +176,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/tab_switcher",
+    "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/web",
     "//ios/chrome/browser/web:page_placeholder",
     "//ios/chrome/browser/web:test_support",
@@ -191,6 +201,7 @@ source_set("eg2_tests") {
   testonly = true
   sources = [
     "tab_grid_egtest.mm",
+    "tab_grid_thumb_strip_egtest.mm",
     "tab_grid_transition_egtest.mm",
   ]
 
@@ -198,7 +209,11 @@ source_set("eg2_tests") {
     ":tab_grid_ui_constants",
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/fullscreen:feature_flags",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:features",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
+    "//ios/chrome/browser/ui/thumb_strip:feature_flags",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",

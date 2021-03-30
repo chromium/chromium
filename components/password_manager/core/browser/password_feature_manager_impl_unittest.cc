@@ -51,7 +51,7 @@ TEST_F(PasswordFeatureManagerImplTest, GenerationEnabledIfUserIsOptedIn) {
 
   ASSERT_EQ(
       password_manager_util::GetPasswordSyncState(&sync_service_),
-      password_manager::SyncState::ACCOUNT_PASSWORDS_ACTIVE_NORMAL_ENCRYPTION);
+      password_manager::SyncState::kAccountPasswordsActiveNormalEncryption);
 
   EXPECT_TRUE(password_feature_manager_.IsGenerationEnabled());
 }
@@ -69,7 +69,7 @@ TEST_F(PasswordFeatureManagerImplTest,
   sync_service_.SetActiveDataTypes({});
 
   ASSERT_EQ(password_manager_util::GetPasswordSyncState(&sync_service_),
-            password_manager::SyncState::NOT_SYNCING);
+            password_manager::SyncState::kNotSyncing);
   // The user must be eligible for account storage opt in now.
   ASSERT_TRUE(password_feature_manager_.ShouldShowAccountStorageOptIn());
 
@@ -91,7 +91,7 @@ TEST_F(PasswordFeatureManagerImplTest,
   sync_service_.SetActiveDataTypes({});
 
   ASSERT_EQ(password_manager_util::GetPasswordSyncState(&sync_service_),
-            password_manager::SyncState::NOT_SYNCING);
+            password_manager::SyncState::kNotSyncing);
   // The user must not be eligible for account storage opt in now.
   ASSERT_FALSE(password_feature_manager_.ShouldShowAccountStorageOptIn());
 

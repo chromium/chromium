@@ -43,4 +43,8 @@ bool SearchPrefetchShouldCancelUneededInflightRequests();
 // requests.
 bool StreamSearchPrefetchResponses();
 
+// The max number of stored cached prefetch responses. This is stored as a list
+// of navigation URLs to prefetch URLs.
+size_t SearchPrefetchMaxCacheEntries();
+
 #endif  // CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_FIELD_TRIAL_SETTINGS_H_

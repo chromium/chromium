@@ -20,6 +20,16 @@
     // TODO(crbug.com/1114792): Handle case where feed is disabled, replacing it
     // with a regular scroll view.
     _discoverFeed = discoverFeed;
+
+    // Iterates through subviews to find collection view containing feed
+    // articles.
+    // TODO(crbug.com/1085419): Once the CollectionView is cleanly exposed,
+    // remove this loop.
+    for (UIView* view in _discoverFeed.view.subviews) {
+      if ([view isKindOfClass:[UICollectionView class]]) {
+        _feedCollectionView = static_cast<UICollectionView*>(view);
+      }
+    }
   }
   return self;
 }
@@ -28,16 +38,6 @@
   [super viewDidLoad];
 
   UIView* discoverView = self.discoverFeed.view;
-
-  // Iterates through subviews to find collection view containing feed articles.
-  // TODO(crbug.com/1085419): Once the CollectionView is cleanly exposed, remove
-  // this loop.
-  for (UIView* view in discoverView.subviews) {
-    if ([view isKindOfClass:[UICollectionView class]]) {
-      _feedCollectionView = static_cast<UICollectionView*>(view);
-    }
-  }
-
   [self.discoverFeed willMoveToParentViewController:self];
   [self addChildViewController:self.discoverFeed];
   [self.view addSubview:discoverView];

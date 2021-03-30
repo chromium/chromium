@@ -20,7 +20,7 @@
 extern "C" {
 #endif
 
-#define WEBP_ENCODER_ABI_VERSION 0x0210    // MAJOR(8b) + MINOR(8b)
+#define WEBP_ENCODER_ABI_VERSION 0x020f    // MAJOR(8b) + MINOR(8b)
 
 // Note: forward declaring enumerations is not allowed in (strict) C and C++,
 // the types are left here for reference.
@@ -292,6 +292,11 @@ typedef enum WebPEncodingError {
 #define WEBP_MAX_DIMENSION 16383
 
 // Main exchange structure (input samples, output bytes, statistics)
+//
+// Once WebPPictureInit() has been called, it's ok to make all the INPUT fields
+// (use_argb, y/u/v, argb, ...) point to user-owned data, even if
+// WebPPictureAlloc() has been called. Depending on the value use_argb,
+// it's guaranteed that either *argb or *y/*u/*v content will be kept untouched.
 struct WebPPicture {
   //   INPUT
   //////////////

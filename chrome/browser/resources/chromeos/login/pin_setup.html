@@ -1,0 +1,95 @@
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_components/chromeos/quick_unlock/setup_pin_keyboard.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
+<link rel="import" href="chrome://resources/html/assert.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+
+<link rel="import" href="/components/common_styles.html">
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
+<link rel="import" href="/components/oobe_dialog_host_behavior.html">
+<link rel="import" href="/components/login_screen_behavior.html">
+<link rel="import" href="/components/multi_step_behavior.html">
+
+<dom-module id="pin-setup-element">
+  <template>
+    <style include="cr-shared-style oobe-dialog-host">
+      setup-pin-keyboard {
+        margin-top: 17px;
+      }
+    </style>
+    <oobe-adaptive-dialog id="setup" role="dialog" for-step="start,confirm">
+      <iron-icon slot="icon" icon="oobe-32:lock"></iron-icon>
+      <h1 slot="title" for-step="start">
+        [[i18nDynamic(locale, 'discoverPinSetupTitle1')]]
+      </h1>
+      <h1 slot="title" for-step="confirm">
+        [[i18nDynamic(locale, 'discoverPinSetupTitle2')]]
+      </h1>
+      <div slot="subtitle" for-step="start">
+        [[i18nDynamic(locale, 'discoverPinSetupSubtitle1')]]
+      </div>
+      <div slot="content" class="flex-grow layout vertical center
+          center-justified">
+        <setup-pin-keyboard id="pinKeyboard"
+            enable-submit="{{enableSubmit_}}"
+            is-confirm-step="{{isConfirmStep_}}"
+            on-pin-submit="onPinSubmit_"
+            on-set-pin-done="onSetPinDone_"
+            set-modes="{{setModes}}"
+            quick-unlock-private="[[quickUnlockPrivate_]]"
+            write-uma="[[writeUma_]]"
+            class="focus-on-show">
+        </setup-pin-keyboard>
+      </div>
+      <div slot="back-navigation">
+        <oobe-back-button id="backButton" for-step="confirm"
+            on-click="onBackButton_">
+        </oobe-back-button>
+      </div>
+      <div slot="bottom-buttons">
+        <oobe-text-button id="setupSkipButton" on-click="onSkipButton_"
+            text-key="discoverPinSetupSkip"
+            for-step="start, confirm">
+        </oobe-text-button>
+        <oobe-next-button inverse
+            id="nextButton"
+            disabled="[[!enableSubmit_]]"
+            on-click="onNextButton_" class="focus-on-show"
+            for-step="start, confirm"></oobe-next-button>
+      </div>
+    </oobe-adaptive-dialog>
+    <oobe-adaptive-dialog id="setup" role="dialog" for-step="done"
+        footer-shrinkable>
+      <iron-icon slot="icon" icon="oobe-32:lock"></iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'discoverPinSetupTitle3')]]
+      </h1>
+      <div slot="subtitle">
+        <div hidden="[[hasLoginSupport_]]">
+          [[i18nDynamic(locale, 'discoverPinSetupSubtitle3NoLogin')]]
+        </div>
+        <div hidden="[[!hasLoginSupport_]]">
+          [[i18nDynamic(locale, 'discoverPinSetupSubtitle3WithLogin')]]
+        </div>
+      </div>
+      <div slot="content" class="flex layout vertical center
+          center-justified">
+        <img id="done-illustration" class="oobe-illustration"
+            srcset="images/pin_illustration_1x.svg 1x,
+                    images/pin_illustration_2x.svg 2x">
+      </div>
+      <div slot="bottom-buttons">
+        <oobe-text-button id="doneButton" inverse on-click="onDoneButton_"
+            class="focus-on-show" text-key="discoverPinSetupDone">
+        </oobe-text-button>
+      </div>
+    </oobe-adaptive-dialog>
+  </template>
+</dom-module>

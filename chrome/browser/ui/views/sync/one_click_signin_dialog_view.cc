@@ -26,6 +26,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 // static
@@ -33,7 +34,7 @@ OneClickSigninDialogView* OneClickSigninDialogView::dialog_view_ = nullptr;
 
 // static
 void OneClickSigninDialogView::ShowDialog(
-    const base::string16& email,
+    const std::u16string& email,
     std::unique_ptr<OneClickSigninLinksDelegate> delegate,
     gfx::NativeWindow window,
     base::OnceCallback<void(bool)> confirmed_callback) {
@@ -57,10 +58,6 @@ void OneClickSigninDialogView::Hide() {
     dialog_view_->GetWidget()->Close();
 }
 
-ui::ModalType OneClickSigninDialogView::GetModalType() const {
-  return ui::MODAL_TYPE_WINDOW;
-}
-
 void OneClickSigninDialogView::WindowClosing() {
   // We have to reset |dialog_view_| here, not in our destructor, because
   // we'll be destroyed asynchronously and the shown state will be checked
@@ -75,7 +72,7 @@ bool OneClickSigninDialogView::Accept() {
 }
 
 OneClickSigninDialogView::OneClickSigninDialogView(
-    const base::string16& email,
+    const std::u16string& email,
     std::unique_ptr<OneClickSigninLinksDelegate> delegate,
     base::OnceCallback<void(bool)> confirmed_callback)
     : email_(email), confirmed_callback_(std::move(confirmed_callback)) {
@@ -128,6 +125,7 @@ OneClickSigninDialogView::OneClickSigninDialogView(
   SetButtonLabel(
       ui::DIALOG_BUTTON_CANCEL,
       l10n_util::GetStringUTF16(IDS_ONE_CLICK_SIGNIN_DIALOG_UNDO_BUTTON));
+  SetModalType(ui::MODAL_TYPE_WINDOW);
   SetTitle(IDS_ONE_CLICK_SIGNIN_DIALOG_TITLE_NEW);
 
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
@@ -139,3 +137,6 @@ OneClickSigninDialogView::~OneClickSigninDialogView() {
   if (!confirmed_callback_.is_null())
     std::move(confirmed_callback_).Run(false);
 }
+
+BEGIN_METADATA(OneClickSigninDialogView, views::DialogDelegateView)
+END_METADATA

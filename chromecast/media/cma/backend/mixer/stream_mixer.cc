@@ -825,8 +825,8 @@ void StreamMixer::UpdateStreamCountsOnThread() {
       sfx != last_sent_sfx_stream_count_) {
     last_sent_primary_stream_count_ = primary;
     last_sent_sfx_stream_count_ = sfx;
-    receiver_.Post(FROM_HERE, &MixerServiceReceiver::OnStreamCountChanged,
-                   primary, sfx);
+    receiver_.AsyncCall(&MixerServiceReceiver::OnStreamCountChanged)
+        .WithArgs(primary, sfx);
   }
 }
 

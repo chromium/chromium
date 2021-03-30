@@ -321,9 +321,14 @@ class TestReportingService : public ReportingService {
                    std::unique_ptr<const base::Value> body,
                    int depth) override;
 
-  void ProcessHeader(const GURL& url,
-                     const NetworkIsolationKey& network_isolation_key,
-                     const std::string& header_value) override;
+  void ProcessReportToHeader(const GURL& url,
+                             const NetworkIsolationKey& network_isolation_key,
+                             const std::string& header_value) override;
+
+  void ProcessReportingEndpointsHeader(
+      const url::Origin& origin,
+      const NetworkIsolationKey& network_isolation_key,
+      const std::string& header_value) override;
 
   void RemoveBrowsingData(
       uint64_t data_type_mask,

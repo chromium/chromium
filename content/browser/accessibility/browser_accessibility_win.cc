@@ -5,6 +5,7 @@
 #include "content/browser/accessibility/browser_accessibility_win.h"
 
 #include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "content/browser/accessibility/browser_accessibility_manager_win.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 
 #include "ui/base/win/atl_module.h"
@@ -47,6 +48,13 @@ bool BrowserAccessibilityWin::CanFireEvents() const {
   if (!IsIgnored() && GetCollapsedMenuListPopUpButtonAncestor())
     return true;
 
+  // If the node changed its ignored state this frame then some events should be
+  // allowed, such as hide/show/structure events. If a node with no siblings
+  // changes aria-hidden value, this would affect whether it would be considered
+  // a "child of leaf" node which affects BrowserAccessibility::CanFireEvents.
+  if (manager()->ToBrowserAccessibilityManagerWin()->IsIgnoredChangedNode(this))
+    return true;
+
   return BrowserAccessibility::CanFireEvents();
 }
 
@@ -58,11 +66,7 @@ void BrowserAccessibilityWin::OnLocationChanged() {
   GetCOM()->FireNativeEvent(EVENT_OBJECT_LOCATIONCHANGE);
 }
 
-base::string16 BrowserAccessibilityWin::GetText() const {
-  return GetHypertext();
-}
-
-base::string16 BrowserAccessibilityWin::GetHypertext() const {
+std::u16string BrowserAccessibilityWin::GetHypertext() const {
   return GetCOM()->AXPlatformNodeWin::GetHypertext();
 }
 

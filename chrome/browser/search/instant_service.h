@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/search/background/ntp_background_service.h"
 #include "chrome/browser/search/background/ntp_background_service_observer.h"
+#include "chrome/browser/themes/theme_service_observer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -63,7 +64,8 @@ class InstantService : public KeyedService,
                        public NtpBackgroundServiceObserver,
                        public content::NotificationObserver,
                        public ntp_tiles::MostVisitedSites::Observer,
-                       public ui::NativeThemeObserver {
+                       public ui::NativeThemeObserver,
+                       public ThemeServiceObserver {
  public:
   explicit InstantService(Profile* profile);
   ~InstantService() override;
@@ -95,6 +97,9 @@ class InstantService : public KeyedService,
   // Invoked whenever an NTP is opened. Causes an async refresh of Most Visited
   // items.
   void OnNewTabPageOpened();
+
+  // ThemeServiceObserver implementation.
+  void OnThemeChanged() override;
 
   // Most visited item APIs.
   //
@@ -274,7 +279,7 @@ class InstantService : public KeyedService,
   bool IsCustomBackgroundPrefValid(GURL& custom_background_url);
 
   // Update the background pref to point to
-  // chrome-search://local-ntp/background.jpg
+  // chrome://new-tab-page/background.jpg.
   void SetBackgroundToLocalResource();
 
   // Updates custom background prefs with color if the background hasn't changed

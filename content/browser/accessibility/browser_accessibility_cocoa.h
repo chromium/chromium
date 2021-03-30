@@ -6,13 +6,15 @@
 #define CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_COCOA_H_
 
 #import <Cocoa/Cocoa.h>
+#include <string>
 #include <vector>
 
 #import "base/mac/scoped_nsobject.h"
-#include "base/strings/string16.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/common/content_export.h"
+#include "ui/accessibility/ax_node_position.h"
+#include "ui/accessibility/ax_range.h"
 
 namespace content {
 
@@ -20,38 +22,40 @@ namespace content {
 // support character echo and other announcements during editing.
 struct CONTENT_EXPORT AXTextEdit {
   AXTextEdit();
-  AXTextEdit(base::string16 inserted_text,
-             base::string16 deleted_text,
+  AXTextEdit(std::u16string inserted_text,
+             std::u16string deleted_text,
              id edit_text_marker);
   AXTextEdit(const AXTextEdit& other);
   ~AXTextEdit();
 
   bool IsEmpty() const { return inserted_text.empty() && deleted_text.empty(); }
 
-  base::string16 inserted_text;
-  base::string16 deleted_text;
+  std::u16string inserted_text;
+  std::u16string deleted_text;
   base::scoped_nsprotocol<id> edit_text_marker;
 };
 
-// Returns true if the given object is AXTextMarker object.
-bool IsAXTextMarker(id);
+// Uses a system API to verify that the given object is an AXTextMarker object.
+bool IsAXTextMarker(id text_marker);
 
-// Returns true if the given object is AXTextMarkerRange object.
-bool IsAXTextMarkerRange(id);
+// Uses a system API to verify that the given object is an AXTextMarkerRange
+// object.
+bool IsAXTextMarkerRange(id marker_range);
 
-// Returns browser accessibility position for the given AXTextMarker.
-CONTENT_EXPORT BrowserAccessibilityPosition::AXPositionInstance AXTextMarkerToPosition(id);
+// Returns the AXNodePosition representing the given AXTextMarker.
+CONTENT_EXPORT BrowserAccessibility::AXPosition AXTextMarkerToAXPosition(
+    id text_marker);
 
-// Returns browser accessibility range for the given AXTextMarkerRange.
-BrowserAccessibilityPosition::AXRangeType AXTextMarkerRangeToRange(id);
+// Returns the AXRange representing the given AXTextMarkerRange.
+BrowserAccessibility::AXRange AXTextMarkerRangeToAXRange(id marker_range);
 
-// Returns AXTextMarker for the given browser accessibility position.
+// Returns an AXTextMarker representing the given position in the tree.
 id AXTextMarkerFrom(const BrowserAccessibilityCocoa* anchor,
                     int offset,
                     ax::mojom::TextAffinity affinity);
 
-// Returns AXTextMarkerRange for the given browser accessibility positions.
-id AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker);
+// Returns an AXTextMarkerRange that spans the given AXTextMarkers.
+id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 
 }  // namespace content
 
@@ -62,9 +66,14 @@ id AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker);
 @interface BrowserAccessibilityCocoa : NSAccessibilityElement {
  @private
   content::BrowserAccessibility* _owner;
+  // An array of children of this object. Cached to avoid re-computing.
   base::scoped_nsobject<NSMutableArray> _children;
+  // Whether the children have changed and need to be updated.
+  bool _needsToUpdateChildren;
+  // Whether _children is currently being computed.
+  bool _gettingChildren;
   // Stores the previous value of an edit field.
-  base::string16 _oldValue;
+  std::u16string _oldValue;
 }
 
 // This creates a cocoa browser accessibility object around

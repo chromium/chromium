@@ -16,15 +16,17 @@ class TestRebaselineTest(BaseTestCase):
     @staticmethod
     def options(**kwargs):
         return optparse.Values(
-            dict({
-                'builder': 'MOCK Mac10.11',
-                'port_name': None,
-                'test': 'userscripts/another-test.html',
-                'suffixes': 'txt',
-                'results_directory': None,
-                'build_number': None,
-                'step_name': None,
-            }, **kwargs))
+            dict(
+                {
+                    'builder': 'MOCK Mac10.11',
+                    'port_name': None,
+                    'test': 'userscripts/another-test.html',
+                    'suffixes': 'txt',
+                    'results_directory': None,
+                    'build_number': None,
+                    'step_name': None,
+                    'flag_specific': None,
+                }, **kwargs))
 
     def test_rebaseline_test_internal_with_port_that_lacks_buildbot(self):
         self.tool.executive = MockExecutive()
@@ -51,6 +53,7 @@ class TestRebaselineTest(BaseTestCase):
                 'results_directory': None,
                 'build_number': None,
                 'step_name': None,
+                'flag_specific': None,
             })
             oc.capture_output()
             self.command.execute(options, [], self.tool)

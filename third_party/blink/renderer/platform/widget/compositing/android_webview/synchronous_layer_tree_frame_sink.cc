@@ -16,6 +16,9 @@
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
+#include "components/power_scheduler/power_mode.h"
+#include "components/power_scheduler/power_mode_arbiter.h"
+#include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/gpu/context_provider.h"
@@ -88,6 +91,8 @@ class SoftwareCompositorFrameSinkClient
     DCHECK(resources.empty());
   }
   void OnBeginFramePausedChanged(bool paused) override {}
+  void OnCompositorFrameTransitionDirectiveProcessed(
+      uint32_t sequence_id) override {}
 
  private:
   DISALLOW_COPY_AND_ASSIGN(SoftwareCompositorFrameSinkClient);
@@ -159,7 +164,10 @@ SynchronousLayerTreeFrameSink::SynchronousLayerTreeFrameSink(
           features::IsUsingVizFrameSubmissionForWebView()),
       use_zero_copy_sw_draw_(
           Platform::Current()
-              ->IsZeroCopySynchronousSwDrawEnabledForAndroidWebView()) {
+              ->IsZeroCopySynchronousSwDrawEnabledForAndroidWebView()),
+      animation_power_mode_voter_(
+          power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
+              "PowerModeVoter.Animation")) {
   DCHECK(registry_);
   DETACH_FROM_THREAD(thread_checker_);
   memory_policy_.priority_cutoff_when_visible =
@@ -434,10 +442,15 @@ void SynchronousLayerTreeFrameSink::Invalidate(bool needs_draw) {
 void SynchronousLayerTreeFrameSink::DemandDrawHw(
     const gfx::Size& viewport_size,
     const gfx::Rect& viewport_rect_for_tile_priority,
-    const gfx::Transform& transform_for_tile_priority) {
+    const gfx::Transform& transform_for_tile_priority,
+    bool need_new_local_surface_id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(HasClient());
   DCHECK(context_provider_.get());
+
+  if (need_new_local_surface_id) {
+    child_local_surface_id_ = viz::LocalSurfaceId();
+  }
 
   client_->SetExternalTilePriorityConstraints(viewport_rect_for_tile_priority,
                                               transform_for_tile_priority);
@@ -582,6 +595,18 @@ void SynchronousLayerTreeFrameSink::OnBeginFramePausedChanged(bool paused) {
 
 void SynchronousLayerTreeFrameSink::OnNeedsBeginFrames(
     bool needs_begin_frames) {
+  if (needs_begin_frames_ != needs_begin_frames) {
+    if (needs_begin_frames) {
+      TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("cc,benchmark", "NeedsBeginFrames",
+                                        this);
+      animation_power_mode_voter_->VoteFor(
+          power_scheduler::PowerMode::kAnimation);
+    } else {
+      TRACE_EVENT_NESTABLE_ASYNC_END0("cc,benchmark", "NeedsBeginFrames", this);
+      animation_power_mode_voter_->ResetVoteAfterTimeout(
+          power_scheduler::PowerModeVoter::kAnimationTimeout);
+    }
+  }
   needs_begin_frames_ = needs_begin_frames;
   if (sync_client_) {
     sync_client_->SetNeedsBeginFrames(needs_begin_frames);

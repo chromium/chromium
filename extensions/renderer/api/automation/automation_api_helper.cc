@@ -37,7 +37,7 @@ void AutomationApiHelper::OnDestruct() {
 
 void AutomationApiHelper::OnQuerySelector(int request_id,
                                           int acc_obj_id,
-                                          const base::string16& selector) {
+                                          const std::u16string& selector) {
   // ExtensionMsg_AutomationQuerySelector should only be sent to an active view.
   DCHECK(render_frame()->IsMainFrame());
 
@@ -69,15 +69,18 @@ void AutomationApiHelper::OnQuerySelector(int request_id,
     }
   }
   blink::WebString web_selector = blink::WebString::FromUTF16(selector);
-  blink::WebElement result_element = start_node.QuerySelector(web_selector);
-  int result_acc_obj_id = 0;
-  if (!result_element.IsNull()) {
-    auto result_acc_obj = blink::WebAXObject::FromWebNode(result_element);
-    if (!result_acc_obj.IsDetached()) {
-      while (result_acc_obj.AccessibilityIsIgnored())
-        result_acc_obj = result_acc_obj.ParentObject();
 
+  // Returns first match that has an attached, unignored node, otherwise null.
+  blink::WebVector<blink::WebElement> all_matches =
+      start_node.QuerySelectorAll(web_selector);
+  int result_acc_obj_id = ui::kInvalidAXNodeID;
+  for (const blink::WebElement& match : all_matches) {
+    auto result_acc_obj = blink::WebAXObject::FromWebNode(match);
+    if (!result_acc_obj.IsDetached() &&
+        !result_acc_obj.AccessibilityIsIgnored()) {
+      // Found unignored WebAXObject.
       result_acc_obj_id = result_acc_obj.AxID();
+      break;
     }
   }
   Send(new ExtensionHostMsg_AutomationQuerySelector_Result(

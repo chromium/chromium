@@ -12,7 +12,7 @@
 
 #include "base/optional.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
-#include "components/sync/model/entity_data.h"
+#include "components/sync/engine/entity_data.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_change_processor.h"

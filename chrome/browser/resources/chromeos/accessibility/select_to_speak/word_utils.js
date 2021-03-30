@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ParagraphUtils} from './paragraph_utils.js';
+
 // Utilities for processing words within strings and nodes.
 
-class WordUtils {
+export class WordUtils {
   constructor() {}
 
   /**

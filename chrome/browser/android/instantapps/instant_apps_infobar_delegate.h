@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/android/jni_android.h"
-#include "base/strings/string16.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -42,7 +41,7 @@ class InstantAppsInfoBarDelegate : public ConfirmInfoBarDelegate,
 
   // ConfirmInfoBarDelegate:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
-  base::string16 GetMessageText() const override;
+  std::u16string GetMessageText() const override;
   bool Accept() override;
   bool EqualsDelegate(infobars::InfoBarDelegate* delegate) const override;
   void InfoBarDismissed() override;

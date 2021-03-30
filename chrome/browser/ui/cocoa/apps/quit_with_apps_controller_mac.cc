@@ -94,7 +94,7 @@ void QuitWithAppsController::Close(bool by_user) {
 
 void QuitWithAppsController::Click(
     const base::Optional<int>& button_index,
-    const base::Optional<base::string16>& reply) {
+    const base::Optional<std::u16string>& reply) {
   CloseNotification(notification_profile_);
 
   if (!button_index)

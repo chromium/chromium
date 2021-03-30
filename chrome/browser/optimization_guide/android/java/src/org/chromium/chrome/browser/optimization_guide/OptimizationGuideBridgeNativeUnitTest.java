@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
+import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
 import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.url.GURL;
@@ -27,11 +28,11 @@ public class OptimizationGuideBridgeNativeUnitTest {
             implements OptimizationGuideBridge.OptimizationGuideCallback {
         private boolean mWasCalled;
         private @OptimizationGuideDecision int mDecision;
-        private OptimizationMetadata mMetadata;
+        private Any mMetadata;
 
         @Override
         public void onOptimizationGuideDecision(
-                @OptimizationGuideDecision int decision, OptimizationMetadata metadata) {
+                @OptimizationGuideDecision int decision, Any metadata) {
             mWasCalled = true;
             mDecision = decision;
             mMetadata = metadata;
@@ -45,7 +46,7 @@ public class OptimizationGuideBridgeNativeUnitTest {
             return mDecision;
         }
 
-        public OptimizationMetadata getMetadata() {
+        public Any getMetadata() {
             return mMetadata;
         }
     }
@@ -86,8 +87,7 @@ public class OptimizationGuideBridgeNativeUnitTest {
         assertTrue(callback.wasCalled());
         assertEquals(OptimizationGuideDecision.TRUE, callback.getDecision());
         assertNotNull(callback.getMetadata());
-        assertNotNull(callback.getMetadata().getPerformanceHintsMetadata());
-        assertEquals(
-                1, callback.getMetadata().getPerformanceHintsMetadata().getPerformanceHintsCount());
+        assertEquals("optimization_guide.proto.PerformanceHintsMetadata",
+                callback.getMetadata().getTypeUrl());
     }
 }

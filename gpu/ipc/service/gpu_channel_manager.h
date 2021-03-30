@@ -346,6 +346,15 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
 
   GpuPeakMemoryMonitor peak_memory_monitor_;
 
+  // Creation time of GpuChannelManger.
+  const base::TimeTicks creation_time_ = base::TimeTicks::Now();
+
+  // Context lost time since creation of |GpuChannelManger|.
+  base::TimeDelta context_lost_time_;
+
+  // Count of context lost.
+  int context_lost_count_ = 0;
+
   THREAD_CHECKER(thread_checker_);
 
   // Member variables should appear before the WeakPtrFactory, to ensure

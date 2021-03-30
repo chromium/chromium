@@ -122,4 +122,18 @@ suite('ConfirmatonPageTest', function() {
     const errorTitle = confirmationPageElement.$$('#errorTitle').textContent;
     assertTrue(!!errorTitle);
   });
+
+  test('gets transfer info for testing', async function() {
+    const token = 'TestToken1234';
+    transferUpdateListener.remote_.onTransferUpdate(
+        nearbyShare.mojom.TransferStatus.kRejected, token);
+    await transferUpdateListener.remote_.$.flushForTesting();
+
+    const info = confirmationPageElement.getTransferInfoForTesting();
+    assertEquals(
+        info.transferStatus, nearbyShare.mojom.TransferStatus.kRejected);
+    assertEquals(info.confirmationToken, token);
+    assertTrue(!!info.errorTitle);
+    assertTrue(!!info.errorDescription);
+  });
 });

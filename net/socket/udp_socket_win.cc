@@ -5,6 +5,7 @@
 #include "net/socket/udp_socket_win.h"
 
 #include <mstcpip.h>
+#include <winsock2.h>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -35,14 +36,6 @@
 #include "net/socket/socket_tag.h"
 #include "net/socket/udp_net_log_parameters.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-
-namespace {
-
-const int kBindRetries = 10;
-const int kPortStart = 1024;
-const int kPortEnd = 65535;
-
-}  // namespace
 
 namespace net {
 
@@ -253,7 +246,6 @@ UDPSocketWin::UDPSocketWin(DatagramSocket::BindType bind_type,
       socket_options_(SOCKET_OPTION_MULTICAST_LOOP),
       multicast_interface_(0),
       multicast_time_to_live_(1),
-      bind_type_(bind_type),
       use_non_blocking_io_(false),
       read_iobuffer_len_(0),
       write_iobuffer_len_(0),
@@ -470,27 +462,21 @@ int UDPSocketWin::InternalConnect(const IPEndPoint& address) {
   DCHECK(!is_connected());
   DCHECK(!remote_address_.get());
 
-  int rv = 0;
-  if (bind_type_ == DatagramSocket::RANDOM_BIND) {
-    // Construct IPAddress of appropriate size (IPv4 or IPv6) of 0s,
-    // representing INADDR_ANY or in6addr_any.
-    size_t addr_size = (address.GetSockAddrFamily() == AF_INET)
-                           ? IPAddress::kIPv4AddressSize
-                           : IPAddress::kIPv6AddressSize;
-    rv = RandomBind(IPAddress::AllZeros(addr_size));
-  }
-  // else connect() does the DatagramSocket::DEFAULT_BIND
-
-  if (rv < 0) {
-    base::UmaHistogramSparse("Net.UdpSocketRandomBindErrorCode", -rv);
-    return rv;
-  }
+  // Always do a random bind.
+  //
+  // Ignore failures, which may happen if the socket was already bound.
+  // Microsoft's documentation claims this is a uint16, but experimentally, this
+  // fails if passed a 16-bit value.
+  std::uint32_t randomize_port_value = 1;
+  setsockopt(socket_, SOL_SOCKET, SO_RANDOMIZE_PORT,
+             reinterpret_cast<const char*>(&randomize_port_value),
+             sizeof(randomize_port_value));
 
   SockaddrStorage storage;
   if (!address.ToSockAddr(storage.addr, &storage.addr_len))
     return ERR_ADDRESS_INVALID;
 
-  rv = connect(socket_, storage.addr, storage.addr_len);
+  int rv = connect(socket_, storage.addr, storage.addr_len);
   if (rv < 0)
     return MapSystemError(WSAGetLastError());
 
@@ -770,8 +756,6 @@ void UDPSocketWin::LogWrite(int result,
     NetLogUDPDataTransfer(net_log_, NetLogEventType::UDP_BYTES_SENT, result,
                           bytes, address);
   }
-
-  NetworkActivityMonitor::GetInstance()->IncrementBytesSent(result);
 }
 
 int UDPSocketWin::InternalRecvFromOverlapped(IOBuffer* buf,
@@ -1011,18 +995,6 @@ int UDPSocketWin::DoBind(const IPEndPoint& address) {
   if (last_error == WSAEACCES || last_error == WSAEADDRNOTAVAIL)
     return ERR_ADDRESS_IN_USE;
   return MapSystemError(last_error);
-}
-
-int UDPSocketWin::RandomBind(const IPAddress& address) {
-  DCHECK_EQ(bind_type_, DatagramSocket::RANDOM_BIND);
-
-  for (int i = 0; i < kBindRetries; ++i) {
-    int rv = DoBind(IPEndPoint(
-        address, static_cast<uint16_t>(base::RandInt(kPortStart, kPortEnd))));
-    if (rv != ERR_ADDRESS_IN_USE)
-      return rv;
-  }
-  return DoBind(IPEndPoint(address, 0));
 }
 
 QwaveApi* UDPSocketWin::GetQwaveApi() const {

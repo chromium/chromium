@@ -477,7 +477,7 @@ ComPtr<IMMDevice> CreateDeviceInternal(const std::string& device_id,
     // interface for the *rendering* endpoint device.
     hr = device_enum->GetDefaultAudioEndpoint(eRender, role, &endpoint_device);
   } else {
-    hr = device_enum->GetDevice(base::UTF8ToUTF16(device_id).c_str(),
+    hr = device_enum->GetDevice(base::UTF8ToWide(device_id).c_str(),
                                 &endpoint_device);
   }
   DVLOG_IF(1, FAILED(hr)) << "Create Device failed: " << std::hex << hr;
@@ -685,7 +685,7 @@ std::string CoreAudioUtil::ErrorToString(HRESULT hresult) {
   // method returns the HRESULT minus 0x80040200; otherwise, it returns zero.
   return base::StringPrintf("HRESULT: 0x%08lX, WCode: %u, message: \"%s\"",
                             error.Error(), error.WCode(),
-                            base::UTF16ToUTF8(error.ErrorMessage()).c_str());
+                            base::WideToUTF8(error.ErrorMessage()).c_str());
 }
 
 std::string CoreAudioUtil::WaveFormatToString(const WaveFormatWrapper format) {

@@ -12,7 +12,7 @@
 #include "components/payments/core/features.h"
 #include "components/payments/core/payments_experimental_features.h"
 #include "content/public/browser/render_frame_host.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-shared.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
 namespace {
 
@@ -38,7 +38,7 @@ void DigitalGoodsFactoryImpl::CreateDigitalGoods(
     const std::string& payment_method,
     CreateDigitalGoodsCallback callback) {
   if (!render_frame_host_->IsFeatureEnabled(
-          blink::mojom::FeaturePolicyFeature::kPayment)) {
+          blink::mojom::PermissionsPolicyFeature::kPayment)) {
     mojo::ReportBadMessage("Feature policy blocks Payment");
     return;
   }

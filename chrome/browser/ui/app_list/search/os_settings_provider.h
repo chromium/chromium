@@ -73,7 +73,7 @@ class OsSettingsProvider
   OsSettingsProvider& operator=(const OsSettingsProvider&) = delete;
 
   // SearchProvider:
-  void Start(const base::string16& query) override;
+  void Start(const std::u16string& query) override;
   void ViewClosing() override;
   ash::AppListSearchResultType ResultType() override;
 
@@ -87,7 +87,7 @@ class OsSettingsProvider
 
  private:
   void OnSearchReturned(
-      const base::string16& query,
+      const std::u16string& query,
       const base::TimeTicks& start_time,
       std::vector<chromeos::settings::mojom::SearchResultPtr> results);
 
@@ -109,7 +109,7 @@ class OsSettingsProvider
   // So simply iterating down the vector while being careful about duplicates
   // and checking for alternate matches is enough.
   std::vector<chromeos::settings::mojom::SearchResultPtr> FilterResults(
-      const base::string16& query,
+      const std::u16string& query,
       const std::vector<chromeos::settings::mojom::SearchResultPtr>& results,
       const chromeos::settings::Hierarchy* hierarchy);
 
@@ -129,11 +129,8 @@ class OsSettingsProvider
   apps::AppServiceProxy* app_service_proxy_;
   gfx::ImageSkia icon_;
 
-  // Whether the app service has signalled the settings app as ready.
-  bool settings_app_ready_ = false;
-
   // Last query. It is reset when view is closed.
-  base::string16 last_query_;
+  std::u16string last_query_;
   mojo::Receiver<chromeos::settings::mojom::SearchResultsObserver>
       search_results_observer_receiver_{this};
 

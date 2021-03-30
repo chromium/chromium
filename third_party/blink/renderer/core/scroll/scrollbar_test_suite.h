@@ -50,10 +50,12 @@ class MockScrollableArea : public GarbageCollected<MockScrollableArea>,
   }
 
   explicit MockScrollableArea()
-      : maximum_scroll_offset_(ScrollOffset(0, 100)),
+      : ScrollableArea(blink::scheduler::GetSingleThreadTaskRunnerForTesting()),
+        maximum_scroll_offset_(ScrollOffset(0, 100)),
         chrome_client_(MakeGarbageCollected<MockPlatformChromeClient>()) {}
   explicit MockScrollableArea(const ScrollOffset& offset)
-      : maximum_scroll_offset_(offset),
+      : ScrollableArea(blink::scheduler::GetSingleThreadTaskRunnerForTesting()),
+        maximum_scroll_offset_(offset),
         chrome_client_(MakeGarbageCollected<MockPlatformChromeClient>()) {}
 
   MOCK_CONST_METHOD0(VisualRectForScrollbarParts, LayoutRect());

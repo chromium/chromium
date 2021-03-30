@@ -133,6 +133,10 @@ bool SystemEngine::BindRequest(
 }
 
 bool SystemEngine::IsImeSupportedByDecoder(const std::string& ime_spec) {
+  // M17N request will always fallback to built-in rulebased IMEs.
+  if (InputEngine::IsImeSupportedByRulebased(ime_spec)) {
+    return false;
+  }
   return decoder_entry_points_ &&
          decoder_entry_points_->supports(ime_spec.c_str());
 }
@@ -245,7 +249,13 @@ void SystemEngine::OnReply(const std::vector<uint8_t>& message,
       break;
     }
     case ime::PublicMessage::kCommitText: {
-      remote->CommitText(reply.commit_text().text());
+      remote->CommitText(
+          reply.commit_text().text(),
+          reply.commit_text().cursor_behavior() ==
+                  ime::CommitTextCursorBehavior::
+                      COMMIT_TEXT_CURSOR_BEHAVIOR_MOVE_CURSOR_BEFORE_TEXT
+              ? mojom::CommitTextCursorBehavior::kMoveCursorBeforeText
+              : mojom::CommitTextCursorBehavior::kMoveCursorAfterText);
       break;
     }
     case ime::PublicMessage::kHandleAutocorrect: {

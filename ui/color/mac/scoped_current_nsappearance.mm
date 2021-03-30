@@ -7,10 +7,20 @@
 #import <Cocoa/Cocoa.h>
 
 namespace ui {
-ScopedCurrentNSAppearance::ScopedCurrentNSAppearance(bool dark) {
+ScopedCurrentNSAppearance::ScopedCurrentNSAppearance(bool dark,
+                                                     bool high_contrast) {
   if (@available(macOS 10.14, *)) {
-    NSAppearanceName appearance =
-        dark ? NSAppearanceNameDarkAqua : NSAppearanceNameAqua;
+    NSAppearanceName appearance;
+
+    if (dark) {
+      appearance = high_contrast
+                       ? NSAppearanceNameAccessibilityHighContrastDarkAqua
+                       : NSAppearanceNameDarkAqua;
+    } else {
+      appearance = high_contrast ? NSAppearanceNameAccessibilityHighContrastAqua
+                                 : NSAppearanceNameAqua;
+    }
+
     [NSAppearance
         setCurrentAppearance:[NSAppearance appearanceNamed:appearance]];
   }

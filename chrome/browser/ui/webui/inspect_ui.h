@@ -13,8 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
 
@@ -32,9 +31,11 @@ class DevToolsTargetsUIHandler;
 class PortForwardingStatusSerializer;
 
 class InspectUI : public content::WebUIController,
-                  public content::NotificationObserver {
+                  public content::WebContentsObserver {
  public:
   explicit InspectUI(content::WebUI* web_ui);
+  InspectUI(const InspectUI&) = delete;
+  InspectUI& operator=(const InspectUI&) = delete;
   ~InspectUI() override;
 
   void InitUI();
@@ -53,13 +54,14 @@ class InspectUI : public content::WebUIController,
       const std::string& browser_id,
       const GURL& frontend_url);
 
+  void PopulateNativeUITargets(const base::Value& targets);
+  void ShowNativeUILaunchButton(bool enabled);
+
   static void InspectDevices(Browser* browser);
 
  private:
-  // content::NotificationObserver overrides.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // content::WebContentsObserver:
+  void WebContentsDestroyed() override;
 
   void StartListeningNotifications();
   void StopListeningNotifications();
@@ -87,14 +89,9 @@ class InspectUI : public content::WebUIController,
   void PopulateTargets(const std::string& source_id,
                        const base::ListValue& targets);
 
-  void PopulateAdditionalTargets(const base::Value& targets);
-
   void PopulatePortStatus(base::Value status);
 
   void ShowIncognitoWarning();
-
-  // A scoped container for notification registries.
-  content::NotificationRegistrar notification_registrar_;
 
   // A scoped container for preference change registries.
   PrefChangeRegistrar pref_change_registrar_;
@@ -103,8 +100,6 @@ class InspectUI : public content::WebUIController,
       target_handlers_;
 
   std::unique_ptr<PortForwardingStatusSerializer> port_status_serializer_;
-
-  DISALLOW_COPY_AND_ASSIGN(InspectUI);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_INSPECT_UI_H_

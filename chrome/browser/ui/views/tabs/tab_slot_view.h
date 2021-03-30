@@ -46,6 +46,9 @@ class TabSlotView : public views::View {
   void set_dragging(bool dragging) { dragging_ = dragging; }
   bool dragging() const { return dragging_; }
 
+  void set_animating(bool animating) { animating_ = animating; }
+  bool animating() const { return animating_; }
+
  private:
   base::Optional<tab_groups::TabGroupId> group_;
 
@@ -54,6 +57,9 @@ class TabSlotView : public views::View {
 
   // True if the tab is being dragged.
   bool dragging_ = false;
+
+  // True if the tab's bounds are being animated by the tabstrip.
+  bool animating_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_SLOT_VIEW_H_

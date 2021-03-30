@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/modules/mediarecorder/h264_encoder.h"
 #include "build/chromeos_buildflags.h"
 
+#include <utility>
+
 #include "media/base/video_frame.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -55,9 +57,12 @@ void H264Encoder::EncodeOnEncodingTaskRunner(
     base::TimeTicks capture_timestamp) {
   TRACE_EVENT0("media", "H264Encoder::EncodeOnEncodingTaskRunner");
   DCHECK(encoding_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK(frame->format() == media::VideoPixelFormat::PIXEL_FORMAT_NV12 ||
+         frame->format() == media::VideoPixelFormat::PIXEL_FORMAT_I420);
 
-  if (frame->storage_type() == media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER)
+  if (frame->format() == media::PIXEL_FORMAT_NV12)
     frame = ConvertToI420ForSoftwareEncoder(frame);
+  DCHECK(frame->IsMappable());
 
   const gfx::Size frame_size = frame->visible_rect().size();
   if (!openh264_encoder_ || configured_size_ != frame_size) {
@@ -109,11 +114,10 @@ void H264Encoder::EncodeOnEncodingTaskRunner(
   const bool is_key_frame = info.eFrameType == videoFrameTypeIDR;
   PostCrossThreadTask(
       *origin_task_runner_.get(), FROM_HERE,
-      CrossThreadBindOnce(
-          OnFrameEncodeCompleted,
-          WTF::Passed(CrossThreadBindRepeating(on_encoded_video_cb_)),
-          video_params, std::move(data), std::string(), capture_timestamp,
-          is_key_frame));
+      CrossThreadBindOnce(OnFrameEncodeCompleted,
+                          CrossThreadBindRepeating(on_encoded_video_cb_),
+                          video_params, std::move(data), std::string(),
+                          capture_timestamp, is_key_frame));
 }
 
 void H264Encoder::ConfigureEncoderOnEncodingTaskRunner(const gfx::Size& size) {

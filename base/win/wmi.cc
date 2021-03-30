@@ -143,44 +143,9 @@ WmiComputerSystemInfo WmiComputerSystemInfo::Get() {
   if (!CreateLocalWmiConnection(true, &services))
     return info;
 
-  info.PopulateModelAndManufacturer(services);
   info.PopulateSerialNumber(services);
 
   return info;
-}
-
-void WmiComputerSystemInfo::PopulateModelAndManufacturer(
-    const ComPtr<IWbemServices>& services) {
-  static constexpr WStringPiece query_computer_system =
-      L"SELECT Manufacturer,Model FROM Win32_ComputerSystem";
-
-  ComPtr<IEnumWbemClassObject> enumerator_computer_system;
-  HRESULT hr = services->ExecQuery(
-      ScopedBstr(L"WQL").Get(), ScopedBstr(query_computer_system).Get(),
-      WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY, nullptr,
-      &enumerator_computer_system);
-  if (FAILED(hr) || !enumerator_computer_system.Get())
-    return;
-
-  ComPtr<IWbemClassObject> class_object;
-  ULONG items_returned = 0;
-  hr = enumerator_computer_system->Next(WBEM_INFINITE, 1, &class_object,
-                                        &items_returned);
-  if (FAILED(hr) || !items_returned)
-    return;
-
-  ScopedVariant manufacturer;
-  hr = class_object->Get(L"Manufacturer", 0, manufacturer.Receive(), nullptr,
-                         nullptr);
-  if (SUCCEEDED(hr) && manufacturer.type() == VT_BSTR) {
-    manufacturer_.assign(V_BSTR(manufacturer.ptr()),
-                         ::SysStringLen(V_BSTR(manufacturer.ptr())));
-  }
-  ScopedVariant model;
-  hr = class_object->Get(L"Model", 0, model.Receive(), nullptr, nullptr);
-  if (SUCCEEDED(hr) && model.type() == VT_BSTR) {
-    model_.assign(V_BSTR(model.ptr()), ::SysStringLen(V_BSTR(model.ptr())));
-  }
 }
 
 void WmiComputerSystemInfo::PopulateSerialNumber(

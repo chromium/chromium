@@ -4,24 +4,24 @@
 
 #include "weblayer/browser/no_state_prefetch/prerender_utils.h"
 
-#include "components/no_state_prefetch/browser/prerender_contents.h"
-#include "components/no_state_prefetch/browser/prerender_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "content/public/browser/web_contents.h"
-#include "weblayer/browser/no_state_prefetch/prerender_manager_factory.h"
+#include "weblayer/browser/no_state_prefetch/no_state_prefetch_manager_factory.h"
 
 namespace weblayer {
-prerender::PrerenderContents* PrerenderContentsFromWebContents(
+prerender::NoStatePrefetchContents* NoStatePrefetchContentsFromWebContents(
     content::WebContents* web_contents) {
   if (!web_contents)
     return nullptr;
 
-  prerender::PrerenderManager* prerender_manager =
-      PrerenderManagerFactory::GetForBrowserContext(
+  prerender::NoStatePrefetchManager* no_state_prefetch_manager =
+      NoStatePrefetchManagerFactory::GetForBrowserContext(
           web_contents->GetBrowserContext());
-  if (!prerender_manager)
+  if (!no_state_prefetch_manager)
     return nullptr;
 
-  return prerender_manager->GetPrerenderContents(web_contents);
+  return no_state_prefetch_manager->GetNoStatePrefetchContents(web_contents);
 }
 
 }  // namespace weblayer

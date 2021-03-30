@@ -31,7 +31,6 @@ namespace ash {
 
 namespace {
 
-constexpr int kPlaceholderImageEdgePadding = 5;
 constexpr int kPlaceholderImageWidth = 234;
 constexpr int kPlaceholderImageHeight = 74;
 constexpr int kPlaceholderImageOutlineCornerRadius = 8;
@@ -69,9 +68,7 @@ class UnrenderedHTMLPlaceholderImage : public gfx::CanvasImageSource {
     flags.setAntiAlias(true);
     flags.setColor(gfx::kGoogleGrey100);
     canvas->DrawRoundRect(
-        {kPlaceholderImageEdgePadding, kPlaceholderImageEdgePadding,
-         kPlaceholderImageWidth - 2 * kPlaceholderImageEdgePadding,
-         kPlaceholderImageHeight - 2 * kPlaceholderImageEdgePadding},
+        /*rect=*/{kPlaceholderImageWidth, kPlaceholderImageHeight},
         kPlaceholderImageOutlineCornerRadius, flags);
 
     flags = cc::PaintFlags();
@@ -89,34 +86,31 @@ class UnrenderedHTMLPlaceholderImage : public gfx::CanvasImageSource {
 // Helpers ---------------------------------------------------------------------
 
 // Returns the localized string for the specified |resource_id|.
-base::string16 GetLocalizedString(int resource_id) {
+std::u16string GetLocalizedString(int resource_id) {
   return ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
       resource_id);
 }
 
 // Returns the label to display for the custom data contained within |data|.
-base::string16 GetLabelForCustomData(const ui::ClipboardData& data) {
+std::u16string GetLabelForCustomData(const ui::ClipboardData& data) {
   // Currently the only supported type of custom data is file system data. This
   // code should not be reached if `data` does not contain file system data.
-  base::string16 sources = ClipboardHistoryUtil::GetFileSystemSources(data);
+  std::u16string sources;
+  std::vector<base::StringPiece16> source_list;
+  ClipboardHistoryUtil::GetSplitFileSystemData(data, &source_list, &sources);
   if (sources.empty()) {
     NOTREACHED();
-    return base::string16();
+    return std::u16string();
   }
-
-  // Split sources into a list.
-  std::vector<base::StringPiece16> source_list =
-      base::SplitStringPiece(sources, base::UTF8ToUTF16("\n"),
-                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   // Strip path information, so all that's left are file names.
   for (auto it = source_list.begin(); it != source_list.end(); ++it)
-    *it = it->substr(it->find_last_of(base::UTF8ToUTF16("/")) + 1);
+    *it = it->substr(it->find_last_of(u"/") + 1);
 
   // Join file names, unescaping encoded character sequences for display. This
   // ensures that "My%20File.txt" will display as "My File.txt".
   return base::UTF8ToUTF16(base::UnescapeURLComponent(
-      base::UTF16ToUTF8(base::JoinString(source_list, base::UTF8ToUTF16(", "))),
+      base::UTF16ToUTF8(base::JoinString(source_list, u", ")),
       base::UnescapeRule::SPACES));
 }
 
@@ -155,7 +149,7 @@ ui::ImageModel ClipboardHistoryResourceManager::GetImageModel(
   return cached_image_model->image_model;
 }
 
-base::string16 ClipboardHistoryResourceManager::GetLabel(
+std::u16string ClipboardHistoryResourceManager::GetLabel(
     const ClipboardHistoryItem& item) const {
   const ui::ClipboardData& data = item.data();
   switch (ClipboardHistoryUtil::CalculateMainFormat(data).value()) {
@@ -175,6 +169,9 @@ base::string16 ClipboardHistoryResourceManager::GetLabel(
     case ui::ClipboardInternalFormat::kRtf:
       RecordPlaceholderString(ClipboardHistoryPlaceholderStringType::kRtf);
       return GetLocalizedString(IDS_CLIPBOARD_MENU_RTF_CONTENT);
+    case ui::ClipboardInternalFormat::kFilenames:
+      DCHECK(!data.filenames().empty());
+      return base::UTF8ToUTF16(data.filenames()[0].display_name.value());
     case ui::ClipboardInternalFormat::kBookmark:
       return base::UTF8ToUTF16(data.bookmark_title());
     case ui::ClipboardInternalFormat::kWeb:

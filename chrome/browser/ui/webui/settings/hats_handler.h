@@ -25,6 +25,8 @@ class HatsHandler : public SettingsPageUIHandler {
 
   void HandleTryShowHatsSurvey(const base::ListValue* args);
 
+  void HandleTryShowPrivacySandboxHatsSurvey(const base::ListValue* args);
+
  private:
   friend class HatsHandlerTest;
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerTest, HandleTryShowHatsSurvey);

@@ -39,7 +39,7 @@ gfx::Image DuplicateImage(const gfx::Image& image) {
 
 }  // namespace
 
-ButtonInfo::ButtonInfo(const base::string16& title) : title(title) {}
+ButtonInfo::ButtonInfo(const std::u16string& title) : title(title) {}
 
 ButtonInfo::ButtonInfo(const ButtonInfo& other) = default;
 
@@ -58,10 +58,10 @@ RichNotificationData::~RichNotificationData() = default;
 
 Notification::Notification(NotificationType type,
                            const std::string& id,
-                           const base::string16& title,
-                           const base::string16& message,
+                           const std::u16string& title,
+                           const std::u16string& message,
                            const gfx::Image& icon,
-                           const base::string16& display_source,
+                           const std::u16string& display_source,
                            const GURL& origin_url,
                            const NotifierId& notifier_id,
                            const RichNotificationData& optional_fields,
@@ -134,18 +134,28 @@ bool Notification::UseOriginAsContextMessage() const {
          origin_url_.SchemeIsHTTPOrHTTPS();
 }
 
-gfx::Image Notification::GenerateMaskedSmallIcon(int dip_size,
-                                                 SkColor color) const {
+gfx::Image Notification::GenerateMaskedSmallIcon(
+    int dip_size,
+    SkColor mask_color,
+    SkColor background_color,
+    SkColor foreground_color) const {
   if (!vector_small_image().is_empty())
     return gfx::Image(
-        gfx::CreateVectorIcon(vector_small_image(), dip_size, color));
+        gfx::CreateVectorIcon(vector_small_image(), dip_size, mask_color));
 
   if (small_image().IsEmpty())
     return gfx::Image();
 
   // If |vector_small_image| is not available, fallback to raster based
   // masking and resizing.
-  gfx::ImageSkia image = small_image().AsImageSkia();
+  gfx::ImageSkia image;
+  if (small_image_needs_additional_masking()) {
+    image = GetMaskedSmallImage(small_image().AsImageSkia(), background_color,
+                                foreground_color)
+                .AsImageSkia();
+  } else {
+    image = small_image().AsImageSkia();
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool create_masked_image =
@@ -156,12 +166,31 @@ gfx::Image Notification::GenerateMaskedSmallIcon(int dip_size,
 
   if (create_masked_image) {
     image = gfx::ImageSkiaOperations::CreateMaskedImage(
-        CreateSolidColorImage(image.width(), image.height(), color), image);
+        CreateSolidColorImage(image.width(), image.height(), mask_color),
+        image);
   }
   gfx::ImageSkia resized = gfx::ImageSkiaOperations::CreateResizedImage(
       image, skia::ImageOperations::ResizeMethod::RESIZE_BEST,
       gfx::Size(dip_size, dip_size));
   return gfx::Image(resized);
+}
+
+// Take the alpha channel of small_image, mask it with the foreground,
+// then add the masked foreground on top of the background
+gfx::Image Notification::GetMaskedSmallImage(const gfx::ImageSkia& small_image,
+                                             SkColor background_color,
+                                             SkColor foreground_color) const {
+  int width = small_image.width();
+  int height = small_image.height();
+
+  const gfx::ImageSkia background =
+      CreateSolidColorImage(width, height, background_color);
+  const gfx::ImageSkia foreground =
+      CreateSolidColorImage(width, height, foreground_color);
+  const gfx::ImageSkia masked_small_image =
+      gfx::ImageSkiaOperations::CreateMaskedImage(foreground, small_image);
+  return gfx::Image(gfx::ImageSkiaOperations::CreateSuperimposedImage(
+      background, masked_small_image));
 }
 
 }  // namespace message_center

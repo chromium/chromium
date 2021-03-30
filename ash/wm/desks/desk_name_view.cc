@@ -8,6 +8,8 @@
 
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/wm/desks/desk_mini_view.h"
+#include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -47,7 +49,7 @@ bool IsDesksBarWidget(const views::Widget* widget) {
 
 }  // namespace
 
-DeskNameView::DeskNameView() {
+DeskNameView::DeskNameView(DeskMiniView* mini_view) : mini_view_(mini_view) {
   auto border = std::make_unique<WmHighlightItemBorder>(
       /*corner_radius=*/4, gfx::Insets(0, kDeskNameViewHorizontalPadding));
   border_ptr_ = border.get();
@@ -73,7 +75,7 @@ void DeskNameView::CommitChanges(views::Widget* widget) {
   focus_manager->SetStoredFocusView(nullptr);
 }
 
-void DeskNameView::SetTextAndElideIfNeeded(const base::string16& text) {
+void DeskNameView::SetTextAndElideIfNeeded(const std::u16string& text) {
   // Use the potential max size of this to calculate elision, not its current
   // size to avoid eliding names that don't need to be.
   SetText(
@@ -117,7 +119,7 @@ bool DeskNameView::SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) {
 }
 
 void DeskNameView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kTextField;
+  Textfield::GetAccessibleNodeData(node_data);
   // When Bento is enabled and the user creates a new desk, |full_text_| will be
   // empty but the accesssible name for |this| will be the default desk name.
   node_data->SetName(full_text_.empty() ? GetAccessibleName() : full_text_);
@@ -161,8 +163,11 @@ void DeskNameView::MaybeActivateHighlightedView() {
 
 void DeskNameView::MaybeCloseHighlightedView() {}
 
+void DeskNameView::MaybeSwapHighlightedView(bool right) {}
+
 void DeskNameView::OnViewHighlighted() {
   UpdateBorderState();
+  mini_view_->owner_bar()->ScrollToShowMiniViewIfNecessary(mini_view_);
 }
 
 void DeskNameView::OnViewUnhighlighted() {

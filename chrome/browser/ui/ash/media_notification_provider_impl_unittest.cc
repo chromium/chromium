@@ -5,16 +5,19 @@
 #include "chrome/browser/ui/ash/media_notification_provider_impl.h"
 
 #include "ash/public/cpp/media_notification_provider_observer.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_factory.h"
+#include "chrome/browser/ui/global_media_controls/media_session_notification_producer.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_list_view.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "media/base/media_switches.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -51,6 +54,11 @@ class MediaNotificationProviderImplTest : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
+
+    // Disable a feature unrelated to the unit test. The use of cast features
+    // requires setting up extra dependencies.
+    feature_list_.InitAndDisableFeature(media::kGlobalMediaControlsForCast);
+
     user_manager_->Initialize();
     CHECK(testing_profile_manager_.SetUp());
 
@@ -93,7 +101,8 @@ class MediaNotificationProviderImplTest : public testing::Test {
     focus->request_id = id;
     focus->session_info = std::move(session_info);
 
-    provider_->service_for_testing()->OnFocusGained(std::move(focus));
+    provider_->service_for_testing()
+        ->media_session_notification_producer_->OnFocusGained(std::move(focus));
     provider_->service_for_testing()->ShowNotification(id.ToString());
   }
 
@@ -107,15 +116,15 @@ class MediaNotificationProviderImplTest : public testing::Test {
 
   MediaNotificationProviderImpl* provider() { return provider_.get(); }
 
-  content::BrowserTaskEnvironment browser_environment;
+  content::BrowserTaskEnvironment browser_environment_;
 
  private:
   session_manager::SessionManager session_manager_;
-  chromeos::FakeChromeUserManager* user_manager_{
-      new chromeos::FakeChromeUserManager()};
+  ash::FakeChromeUserManager* user_manager_{new ash::FakeChromeUserManager()};
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
-  views::LayoutProvider layout_provider;
+  views::LayoutProvider layout_provider_;
+  base::test::ScopedFeatureList feature_list_;
 
   std::unique_ptr<MockMediaNotificationProviderObserver> mock_observer_;
   std::unique_ptr<MediaNotificationProviderImpl> provider_;

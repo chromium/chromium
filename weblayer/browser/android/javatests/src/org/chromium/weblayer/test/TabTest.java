@@ -46,7 +46,6 @@ public class TabTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(82)
     public void testBeforeUnload() {
         String url = mActivityTestRule.getTestDataURL("before_unload.html");
         mActivity = mActivityTestRule.launchShellWithUrl(url);
@@ -151,7 +150,6 @@ public class TabTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(84)
     public void testCaptureScreenShot() throws TimeoutException {
         String url = mActivityTestRule.getTestDataURL("quadrant_colors.html");
         mActivity = mActivityTestRule.launchShellWithUrl(url);
@@ -168,7 +166,6 @@ public class TabTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(84)
     public void testCaptureScreenShotDoesNotHang() throws TimeoutException {
         String startupUrl = "about:blank";
         mActivity = mActivityTestRule.launchShellWithUrl(startupUrl);
@@ -187,7 +184,6 @@ public class TabTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(85)
     public void testSetData() {
         String startupUrl = "about:blank";
         mActivity = mActivityTestRule.launchShellWithUrl(startupUrl);
@@ -206,7 +202,6 @@ public class TabTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(85)
     public void testSetDataMaxSize() {
         String startupUrl = "about:blank";
         mActivity = mActivityTestRule.launchShellWithUrl(startupUrl);
@@ -226,7 +221,6 @@ public class TabTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(85)
     public void testCreateTab() throws Exception {
         mActivity = mActivityTestRule.launchShellWithUrl("about:blank");
         CallbackHelper helper = new CallbackHelper();
@@ -252,7 +246,6 @@ public class TabTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(86) // New behavior added in 86
     public void testViewDetachedTabIsInvisible() throws Exception {
         mActivity = mActivityTestRule.launchShellWithUrl("about:blank");
 

@@ -7,9 +7,9 @@
 #include <stddef.h>
 
 #include "base/values.h"
-#include "chrome/browser/chromeos/login/demo_mode/demo_setup_controller.h"
-#include "chrome/browser/chromeos/login/screens/network_screen.h"
-#include "chrome/browser/chromeos/login/startup_utils.h"
+#include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
+#include "chrome/browser/ash/login/screens/network_screen.h"
+#include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ui/webui/chromeos/cellular_setup/cellular_setup_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/chromeos/login/core_oobe_handler.h"
 #include "chrome/browser/ui/webui/chromeos/network_element_localized_strings_provider.h"
@@ -72,7 +72,7 @@ void NetworkScreenHandler::Unbind() {
   BaseScreenHandler::SetBaseScreen(nullptr);
 }
 
-void NetworkScreenHandler::ShowError(const base::string16& message) {
+void NetworkScreenHandler::ShowError(const std::u16string& message) {
   CallJS("login.NetworkScreen.showError", message);
 }
 
@@ -83,7 +83,7 @@ void NetworkScreenHandler::ClearErrors() {
 
 void NetworkScreenHandler::ShowConnectingStatus(
     bool connecting,
-    const base::string16& network_id) {}
+    const std::u16string& network_id) {}
 
 void NetworkScreenHandler::SetOfflineDemoModeEnabled(bool enabled) {
   CallJS("login.NetworkScreen.setOfflineDemoModeEnabled", enabled);

@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
-#include "media/base/video_frame_feedback.h"
+#include "media/capture/video_frame_feedback.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/cast_sender.h"
 #include "media/cast/common/rtp_time.h"

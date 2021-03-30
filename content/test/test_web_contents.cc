@@ -16,6 +16,7 @@
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
+#include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/site_instance_impl.h"
@@ -48,8 +49,6 @@ TestWebContents::TestWebContents(BrowserContext* browser_context)
     : WebContentsImpl(browser_context),
       delegate_view_override_(nullptr),
       web_preferences_changed_counter_(nullptr),
-      expect_set_history_offset_and_length_(false),
-      expect_set_history_offset_and_length_history_length_(0),
       pause_subresource_loading_called_(false),
       audio_group_id_(base::UnguessableToken::Create()),
       is_page_frozen_(false) {
@@ -80,7 +79,6 @@ TestWebContents* TestWebContents::Create(const CreateParams& params) {
 }
 
 TestWebContents::~TestWebContents() {
-  EXPECT_FALSE(expect_set_history_offset_and_length_);
 }
 
 TestRenderFrameHost* TestWebContents::GetMainFrame() {
@@ -97,9 +95,9 @@ TestRenderViewHost* TestWebContents::GetRenderViewHost() {
   return static_cast<TestRenderViewHost*>(instance);
 }
 
-TestRenderFrameHost* TestWebContents::GetPendingMainFrame() {
+TestRenderFrameHost* TestWebContents::GetSpeculativePrimaryMainFrame() {
   return static_cast<TestRenderFrameHost*>(
-      WebContentsImpl::GetPendingMainFrame());
+      GetFrameTree()->root()->render_manager()->speculative_frame_host());
 }
 
 int TestWebContents::DownloadImage(const GURL& url,
@@ -122,77 +120,18 @@ const GURL& TestWebContents::GetLastCommittedURL() {
   return WebContentsImpl::GetLastCommittedURL();
 }
 
-const base::string16& TestWebContents::GetTitle() {
+const std::u16string& TestWebContents::GetTitle() {
   if (title_)
     return title_.value();
 
   return WebContentsImpl::GetTitle();
 }
 
-void TestWebContents::TestDidNavigate(RenderFrameHost* render_frame_host,
-                                      bool did_create_new_entry,
-                                      const GURL& url,
-                                      ui::PageTransition transition) {
-  TestDidNavigateWithSequenceNumber(render_frame_host, did_create_new_entry,
-                                    url, Referrer(), transition, false, -1, -1);
-}
-
-void TestWebContents::TestDidNavigateWithSequenceNumber(
-    RenderFrameHost* render_frame_host,
-    bool did_create_new_entry,
-    const GURL& url,
-    const Referrer& referrer,
-    ui::PageTransition transition,
-    bool was_within_same_document,
-    int item_sequence_number,
-    int document_sequence_number) {
-  TestRenderFrameHost* rfh =
-      static_cast<TestRenderFrameHost*>(render_frame_host);
-  rfh->InitializeRenderFrameIfNeeded();
-
-  if (!rfh->is_loading())
-    rfh->SimulateNavigationStart(url);
-
-  auto params = mojom::DidCommitProvisionalLoadParams::New();
-  params->item_sequence_number = item_sequence_number;
-  params->document_sequence_number = document_sequence_number;
-  params->url = url;
-  params->base_url = GURL();
-  params->referrer = blink::mojom::Referrer::From(referrer);
-  params->transition = transition;
-  params->redirects = std::vector<GURL>();
-  params->should_update_history = true;
-  params->contents_mime_type = std::string("text/html");
-  params->intended_as_new_entry = did_create_new_entry;
-  params->did_create_new_entry = did_create_new_entry;
-  params->should_replace_current_entry = false;
-  params->gesture = NavigationGestureUser;
-  params->method = "GET";
-  params->post_id = 0;
-  params->http_status_code = 200;
-  params->url_is_unreachable = false;
-  if (item_sequence_number != -1 && document_sequence_number != -1) {
-    params->page_state = blink::PageState::CreateForTestingWithSequenceNumbers(
-        url, item_sequence_number, document_sequence_number);
-  } else {
-    params->page_state = blink::PageState::CreateFromURL(url);
-  }
-  params->original_request_url = GURL();
-  params->is_overriding_user_agent = false;
-  params->history_list_was_cleared = false;
-  params->origin = url::Origin::Create(url);
-  params->insecure_request_policy =
-      blink::mojom::InsecureRequestPolicy::kLeaveInsecureRequestsAlone;
-  params->has_potentially_trustworthy_unique_origin = false;
-
-  rfh->SendNavigateWithParams(std::move(params), was_within_same_document);
-}
-
 const std::string& TestWebContents::GetSaveFrameHeaders() {
   return save_frame_headers_;
 }
 
-const base::string16& TestWebContents::GetSuggestedFileName() {
+const std::u16string& TestWebContents::GetSuggestedFileName() {
   return suggested_filename_;
 }
 
@@ -231,7 +170,7 @@ void TestWebContents::SetLastCommittedURL(const GURL& url) {
   last_committed_url_ = url;
 }
 
-void TestWebContents::SetTitle(const base::string16& title) {
+void TestWebContents::SetTitle(const std::u16string& title) {
   title_ = title;
 }
 
@@ -288,8 +227,10 @@ bool TestWebContents::CrossProcessNavigationPending() {
 
 bool TestWebContents::CreateRenderViewForRenderManager(
     RenderViewHost* render_view_host,
-    const base::Optional<base::UnguessableToken>& opener_frame_token,
-    int proxy_routing_id) {
+    const base::Optional<blink::FrameToken>& opener_frame_token,
+    RenderFrameProxyHost* proxy_host) {
+  const auto proxy_routing_id =
+      proxy_host ? proxy_host->GetRoutingID() : MSG_ROUTING_NONE;
   // This will go to a TestRenderViewHost.
   static_cast<RenderViewHostImpl*>(render_view_host)
       ->CreateRenderView(opener_frame_token, proxy_routing_id, false);
@@ -299,7 +240,7 @@ bool TestWebContents::CreateRenderViewForRenderManager(
 std::unique_ptr<WebContents> TestWebContents::Clone() {
   std::unique_ptr<WebContentsImpl> contents =
       Create(GetBrowserContext(), SiteInstance::Create(GetBrowserContext()));
-  contents->GetController().CopyStateFrom(&controller_, true);
+  contents->GetController().CopyStateFrom(&GetController(), true);
   return contents;
 }
 
@@ -361,6 +302,11 @@ void TestWebContents::SetOpener(WebContents* opener) {
       static_cast<WebContentsImpl*>(opener)->GetFrameTree()->root());
 }
 
+void TestWebContents::SetIsCrashed(base::TerminationStatus status,
+                                   int error_code) {
+  SetMainFrameProcessStatus(status, error_code);
+}
+
 void TestWebContents::AddPendingContents(
     std::unique_ptr<WebContentsImpl> contents,
     const GURL& target_url) {
@@ -368,29 +314,12 @@ void TestWebContents::AddPendingContents(
   GlobalRoutingID key(
       contents->GetRenderViewHost()->GetProcess()->GetID(),
       contents->GetRenderViewHost()->GetWidget()->GetRoutingID());
-  AddDestructionObserver(contents.get());
+  AddWebContentsDestructionObserver(contents.get());
   pending_contents_[key] = CreatedWindow(std::move(contents), target_url);
 }
 
-void TestWebContents::ExpectSetHistoryOffsetAndLength(int history_offset,
-                                                      int history_length) {
-  expect_set_history_offset_and_length_ = true;
-  expect_set_history_offset_and_length_history_offset_ = history_offset;
-  expect_set_history_offset_and_length_history_length_ = history_length;
-}
-
-void TestWebContents::SetHistoryOffsetAndLength(int history_offset,
-                                                int history_length) {
-  EXPECT_TRUE(expect_set_history_offset_and_length_);
-  expect_set_history_offset_and_length_ = false;
-  EXPECT_EQ(expect_set_history_offset_and_length_history_offset_,
-            history_offset);
-  EXPECT_EQ(expect_set_history_offset_and_length_history_length_,
-            history_length);
-}
-
 RenderFrameHostDelegate* TestWebContents::CreateNewWindow(
-    RenderFrameHost* opener,
+    RenderFrameHostImpl* opener,
     const mojom::CreateNewWindowParams& params,
     bool is_new_browsing_instance,
     bool has_user_gesture,
@@ -408,7 +337,7 @@ RenderWidgetHostImpl* TestWebContents::CreateNewPopupWidget(
   return nullptr;
 }
 
-void TestWebContents::ShowCreatedWindow(RenderFrameHost* opener,
+void TestWebContents::ShowCreatedWindow(RenderFrameHostImpl* opener,
                                         int route_id,
                                         WindowOpenDisposition disposition,
                                         const gfx::Rect& initial_rect,
@@ -422,7 +351,8 @@ void TestWebContents::SaveFrameWithHeaders(
     const GURL& url,
     const Referrer& referrer,
     const std::string& headers,
-    const base::string16& suggested_filename) {
+    const std::u16string& suggested_filename,
+    RenderFrameHost* rfh) {
   save_frame_headers_ = headers;
   suggested_filename_ = suggested_filename;
 }

@@ -10,8 +10,6 @@ import androidx.annotation.NonNull;
 
 /**
  * Params passed to {@link GoogleAccountsCallback#onGoogleAccountsRequest}.
- *
- * @since 86
  */
 public class GoogleAccountsParams {
     /**

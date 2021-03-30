@@ -23,6 +23,7 @@
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/focus_ring.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view.h"
@@ -49,7 +50,10 @@ T CombineScrollOffsets(T x, T y) {
 
 class ScrollCornerView : public View {
  public:
+  METADATA_HEADER(ScrollCornerView);
   ScrollCornerView() = default;
+  ScrollCornerView(const ScrollCornerView&) = delete;
+  ScrollCornerView& operator=(const ScrollCornerView&) = delete;
 
   void OnPaint(gfx::Canvas* canvas) override {
     ui::NativeTheme::ExtraParams ignored;
@@ -57,10 +61,10 @@ class ScrollCornerView : public View {
         canvas->sk_canvas(), ui::NativeTheme::kScrollbarCorner,
         ui::NativeTheme::kNormal, GetLocalBounds(), ignored);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScrollCornerView);
 };
+
+BEGIN_METADATA(ScrollCornerView, View)
+END_METADATA
 
 // Returns true if any descendants of |view| have a layer (not including
 // |view|).
@@ -128,7 +132,10 @@ int AdjustPosition(int current_position,
 // Viewport contains the contents View of the ScrollView.
 class ScrollView::Viewport : public View {
  public:
+  METADATA_HEADER(Viewport);
   explicit Viewport(ScrollView* scroll_view) : scroll_view_(scroll_view) {}
+  Viewport(const Viewport&) = delete;
+  Viewport& operator=(const Viewport&) = delete;
   ~Viewport() override = default;
 
   void ScrollRectToVisible(const gfx::Rect& rect) override {
@@ -159,24 +166,26 @@ class ScrollView::Viewport : public View {
 
   void ViewHierarchyChanged(
       const ViewHierarchyChangedDetails& details) override {
-    if (details.is_add && IsContentsViewport() && Contains(details.parent))
+    if (details.is_add && GetIsContentsViewport() && Contains(details.parent))
       scroll_view_->UpdateViewportLayerForClipping();
   }
 
   void OnChildLayerChanged(View* child) override {
-    if (IsContentsViewport())
+    if (GetIsContentsViewport())
       scroll_view_->UpdateViewportLayerForClipping();
   }
 
  private:
-  bool IsContentsViewport() const {
+  bool GetIsContentsViewport() const {
     return parent() && scroll_view_->contents_viewport_ == this;
   }
 
   ScrollView* scroll_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(Viewport);
 };
+
+BEGIN_METADATA(ScrollView, Viewport, View)
+ADD_READONLY_PROPERTY_METADATA(bool, IsContentsViewport)
+END_METADATA
 
 ScrollView::ScrollView()
     : ScrollView(base::FeatureList::IsEnabled(
@@ -365,6 +374,47 @@ void ScrollView::SetDrawOverflowIndicator(bool draw_overflow_indicator) {
   OnPropertyChanged(&draw_overflow_indicator_, kPropertyEffectsPaint);
 }
 
+View* ScrollView::SetCustomOverflowIndicator(OverflowIndicatorAlignment side,
+                                             std::unique_ptr<View> indicator,
+                                             int thickness,
+                                             bool fills_opaquely) {
+  if (thickness < 0)
+    thickness = 0;
+
+  if (ScrollsWithLayers()) {
+    indicator->SetPaintToLayer();
+    indicator->layer()->SetFillsBoundsOpaquely(fills_opaquely);
+  }
+
+  View* indicator_ptr = indicator.get();
+  switch (side) {
+    case OverflowIndicatorAlignment::kLeft:
+      more_content_left_ = std::move(indicator);
+      more_content_left_thickness_ = thickness;
+      break;
+    case OverflowIndicatorAlignment::kTop:
+      more_content_top_ = std::move(indicator);
+      more_content_top_thickness_ = thickness;
+      break;
+    case OverflowIndicatorAlignment::kRight:
+      more_content_right_ = std::move(indicator);
+      more_content_right_thickness_ = thickness;
+      break;
+    case OverflowIndicatorAlignment::kBottom:
+      more_content_bottom_ = std::move(indicator);
+      more_content_bottom_thickness_ = thickness;
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+
+  UpdateOverflowIndicatorVisibility(CurrentOffset());
+  PositionOverflowIndicators();
+
+  return indicator_ptr;
+}
+
 void ScrollView::ClipHeightTo(int min_height, int max_height) {
   min_height_ = min_height;
   max_height_ = max_height;
@@ -406,6 +456,14 @@ void ScrollView::SetHasFocusIndicator(bool has_focus_indicator) {
   focus_ring_->SchedulePaint();
   SchedulePaint();
   OnPropertyChanged(&draw_focus_indicator_, kPropertyEffectsPaint);
+}
+
+void ScrollView::AddScrollViewObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ScrollView::RemoveScrollViewObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 gfx::Size ScrollView::CalculatePreferredSize() const {
@@ -1052,6 +1110,9 @@ void ScrollView::OnScrolled(const gfx::ScrollOffset& offset) {
   UpdateOverflowIndicatorVisibility(offset);
   UpdateScrollBarPositions();
   ScrollHeader();
+
+  for (auto& observer : observers_)
+    observer.OnContentsScrolled();
 }
 
 void ScrollView::ScrollHeader() {
@@ -1114,16 +1175,23 @@ base::Optional<ui::NativeTheme::ColorId> ScrollView::GetBackgroundThemeColorId()
 }
 
 void ScrollView::PositionOverflowIndicators() {
-  const gfx::Rect bounds = GetContentsBounds();
-  const int x = bounds.x();
-  const int y = bounds.y();
-  const int w = bounds.width();
-  const int h = bounds.height();
-  const int t = Separator::kThickness;
-  more_content_left_->SetBounds(x, y, t, h);
-  more_content_top_->SetBounds(x, y, w, t);
-  more_content_right_->SetBounds(bounds.right() - t, y, t, h);
-  more_content_bottom_->SetBounds(x, bounds.bottom() - t, w, t);
+  // TODO(https://crbug.com/1166949): Use a layout manager to position these.
+  const gfx::Rect contents_bounds = GetContentsBounds();
+  const int x = contents_bounds.x();
+  const int y = contents_bounds.y();
+  const int w = contents_bounds.width();
+  const int h = contents_bounds.height();
+
+  more_content_left_->SetBoundsRect(
+      gfx::Rect(x, y, more_content_left_thickness_, h));
+  more_content_top_->SetBoundsRect(
+      gfx::Rect(x, y, w, more_content_top_thickness_));
+  more_content_right_->SetBoundsRect(
+      gfx::Rect(contents_bounds.right() - more_content_right_thickness_, y,
+                more_content_right_thickness_, h));
+  more_content_bottom_->SetBoundsRect(
+      gfx::Rect(x, contents_bounds.bottom() - more_content_bottom_thickness_, w,
+                more_content_bottom_thickness_));
 }
 
 void ScrollView::UpdateOverflowIndicatorVisibility(
@@ -1134,7 +1202,7 @@ void ScrollView::UpdateOverflowIndicatorVisibility(
                            draw_overflow_indicator_);
   SetControlVisibility(
       more_content_bottom_.get(),
-      !draw_border_ && vert_sb_->GetVisible() && !horiz_sb_->GetVisible() &&
+      !draw_border_ && IsVerticalScrollEnabled() && !horiz_sb_->GetVisible() &&
           offset.y() < vert_sb_->GetMaxPosition() && draw_overflow_indicator_);
 
   SetControlVisibility(more_content_left_.get(),

@@ -19,6 +19,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_config.h"
@@ -340,9 +341,13 @@ TracingControllerImpl::GenerateMetadataDict() {
   metadata_dict->SetBoolean("highres-ticks",
                             base::TimeTicks::IsHighResolution());
 
-  metadata_dict->SetString(
-      "command_line",
-      base::CommandLine::ForCurrentProcess()->GetCommandLineString());
+  base::CommandLine::StringType command_line =
+      base::CommandLine::ForCurrentProcess()->GetCommandLineString();
+#if defined(OS_WIN)
+  metadata_dict->SetString("command_line", base::WideToUTF16(command_line));
+#else
+  metadata_dict->SetString("command_line", command_line);
+#endif
 
   base::Time::Exploded ctime;
   TRACE_TIME_NOW().UTCExplode(&ctime);
@@ -469,7 +474,7 @@ bool TracingControllerImpl::StopTracing(
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
   MojoResult result =
-      mojo::CreateDataPipe(nullptr, &producer_handle, &consumer_handle);
+      mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle);
   if (result != MOJO_RESULT_OK) {
     CompleteFlush();
     return true;

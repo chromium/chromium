@@ -14,8 +14,6 @@
 #include "rlz/lib/supplementary_branding.h"
 #include "rlz/win/lib/registry_util.h"
 
-using base::ASCIIToUTF16;
-
 namespace rlz_lib {
 
 namespace {
@@ -48,7 +46,7 @@ const char kStatefulEventsSubkeyName[] = "StatefulEvents";
 const char kPingTimesSubkeyName[]      = "PTimes";
 
 std::wstring GetWideProductName(Product product) {
-  return ASCIIToUTF16(GetProductName(product));
+  return base::ASCIIToWide(GetProductName(product));
 }
 
 void AppendBrandToString(std::string* str) {
@@ -62,13 +60,13 @@ bool GetRegKey(const char* name, REGSAM access, base::win::RegKey* key) {
   std::string key_location;
   base::StringAppendF(&key_location, "%s\\%s", kLibKeyName, name);
   AppendBrandToString(&key_location);
-  base::string16 key_location16 = ASCIIToUTF16(key_location);
+  std::wstring key_locationw = base::ASCIIToWide(key_location);
 
   LONG ret;
   if (access & (KEY_SET_VALUE | KEY_CREATE_SUB_KEY | KEY_CREATE_LINK))
-    ret = key->Create(HKEY_CURRENT_USER, key_location16.c_str(), access);
+    ret = key->Create(HKEY_CURRENT_USER, key_locationw.c_str(), access);
   else
-    ret = key->Open(HKEY_CURRENT_USER, key_location16.c_str(), access);
+    ret = key->Open(HKEY_CURRENT_USER, key_locationw.c_str(), access);
   return ret == ERROR_SUCCESS;
 }
 
@@ -92,13 +90,13 @@ bool GetEventsRegKey(const char* event_type,
 
     base::StringAppendF(&key_location, "\\%s", product_name.c_str());
   }
-  base::string16 key_location16 = ASCIIToUTF16(key_location);
+  std::wstring key_locationw = base::ASCIIToWide(key_location);
 
   LONG ret;
   if (access & (KEY_SET_VALUE | KEY_CREATE_SUB_KEY | KEY_CREATE_LINK))
-    ret = key->Create(HKEY_CURRENT_USER, key_location16.c_str(), access);
+    ret = key->Create(HKEY_CURRENT_USER, key_locationw.c_str(), access);
   else
-    ret = key->Open(HKEY_CURRENT_USER, key_location16.c_str(), access);
+    ret = key->Open(HKEY_CURRENT_USER, key_locationw.c_str(), access);
   return ret == ERROR_SUCCESS;
 }
 
@@ -155,7 +153,7 @@ bool DeleteKeyIfEmpty(HKEY root_key, const wchar_t* key_name) {
 
 // static
 std::wstring RlzValueStoreRegistry::GetWideLibKeyName() {
-  return ASCIIToUTF16(kLibKeyName);
+  return base::ASCIIToWide(kLibKeyName);
 }
 
 bool RlzValueStoreRegistry::HasAccess(AccessType type) {
@@ -202,11 +200,11 @@ bool RlzValueStoreRegistry::WriteAccessPointRlz(AccessPoint access_point,
   if (!access_point_name)
     return false;
 
-  base::string16 access_point_name16(ASCIIToUTF16(access_point_name));
+  std::wstring access_point_namew(base::ASCIIToWide(access_point_name));
   base::win::RegKey key;
   GetAccessPointRlzsRegKey(KEY_WRITE, &key);
 
-  if (!RegKeyWriteValue(&key, access_point_name16.c_str(), new_rlz)) {
+  if (!RegKeyWriteValue(&key, access_point_namew.c_str(), new_rlz)) {
     ASSERT_STRING("SetAccessPointRlz: Could not write the new RLZ value");
     return false;
   }
@@ -223,8 +221,8 @@ bool RlzValueStoreRegistry::ReadAccessPointRlz(AccessPoint access_point,
   size_t size = rlz_size;
   base::win::RegKey key;
   GetAccessPointRlzsRegKey(KEY_READ, &key);
-  base::string16 access_point_name16 = ASCIIToUTF16(access_point_name);
-  if (!RegKeyReadValue(key, access_point_name16.c_str(), rlz, &size)) {
+  std::wstring access_point_namew = base::ASCIIToWide(access_point_name);
+  if (!RegKeyReadValue(key, access_point_namew.c_str(), rlz, &size)) {
     rlz[0] = 0;
     if (size > rlz_size) {
       ASSERT_STRING("GetAccessPointRlz: Insufficient buffer size");
@@ -239,15 +237,15 @@ bool RlzValueStoreRegistry::ClearAccessPointRlz(AccessPoint access_point) {
   if (!access_point_name)
     return false;
 
-  base::string16 access_point_name16(ASCIIToUTF16(access_point_name));
+  std::wstring access_point_namew(base::ASCIIToWide(access_point_name));
   base::win::RegKey key;
   GetAccessPointRlzsRegKey(KEY_WRITE, &key);
 
-  key.DeleteValue(access_point_name16.c_str());
+  key.DeleteValue(access_point_namew.c_str());
 
   // Verify deletion.
   DWORD value;
-  if (key.ReadValueDW(access_point_name16.c_str(), &value) == ERROR_SUCCESS) {
+  if (key.ReadValueDW(access_point_namew.c_str(), &value) == ERROR_SUCCESS) {
     ASSERT_STRING("SetAccessPointRlz: Could not clear the RLZ value.");
     return false;
   }
@@ -261,10 +259,10 @@ bool RlzValueStoreRegistry::UpdateExistingAccessPointRlz(
 
 bool RlzValueStoreRegistry::AddProductEvent(Product product,
                                             const char* event_rlz) {
-  base::string16 event_rlz16(ASCIIToUTF16(event_rlz));
+  std::wstring event_rlzw(base::ASCIIToWide(event_rlz));
   base::win::RegKey reg_key;
   GetEventsRegKey(kEventsSubkeyName, &product, KEY_WRITE, &reg_key);
-  if (reg_key.WriteValue(event_rlz16.c_str(), 1) != ERROR_SUCCESS) {
+  if (reg_key.WriteValue(event_rlzw.c_str(), 1) != ERROR_SUCCESS) {
     ASSERT_STRING("AddProductEvent: Could not write the new event value");
     return false;
   }
@@ -300,14 +298,14 @@ bool RlzValueStoreRegistry::ReadProductEvents(Product product,
 
 bool RlzValueStoreRegistry::ClearProductEvent(Product product,
                                               const char* event_rlz) {
-  base::string16 event_rlz16(ASCIIToUTF16(event_rlz));
+  std::wstring event_rlzw(base::ASCIIToWide(event_rlz));
   base::win::RegKey key;
   GetEventsRegKey(kEventsSubkeyName, &product, KEY_WRITE, &key);
-  key.DeleteValue(event_rlz16.c_str());
+  key.DeleteValue(event_rlzw.c_str());
 
   // Verify deletion.
   DWORD value;
-  if (key.ReadValueDW(event_rlz16.c_str(), &value) == ERROR_SUCCESS) {
+  if (key.ReadValueDW(event_rlzw.c_str(), &value) == ERROR_SUCCESS) {
     ASSERT_STRING("ClearProductEvent: Could not delete the event value.");
     return false;
   }
@@ -322,9 +320,9 @@ bool RlzValueStoreRegistry::ClearAllProductEvents(Product product) {
 bool RlzValueStoreRegistry::AddStatefulEvent(Product product,
                                              const char* event_rlz) {
   base::win::RegKey key;
-  base::string16 event_rlz16(ASCIIToUTF16(event_rlz));
+  std::wstring event_rlzw(base::ASCIIToWide(event_rlz));
   if (!GetEventsRegKey(kStatefulEventsSubkeyName, &product, KEY_WRITE, &key) ||
-      key.WriteValue(event_rlz16.c_str(), 1) != ERROR_SUCCESS) {
+      key.WriteValue(event_rlzw.c_str(), 1) != ERROR_SUCCESS) {
     ASSERT_STRING(
         "AddStatefulEvent: Could not write the new stateful event");
     return false;
@@ -338,8 +336,8 @@ bool RlzValueStoreRegistry::IsStatefulEvent(Product product,
   DWORD value;
   base::win::RegKey key;
   GetEventsRegKey(kStatefulEventsSubkeyName, &product, KEY_READ, &key);
-  base::string16 event_rlz16(ASCIIToUTF16(event_rlz));
-  return key.ReadValueDW(event_rlz16.c_str(), &value) == ERROR_SUCCESS;
+  std::wstring event_rlzw(base::ASCIIToWide(event_rlz));
+  return key.ReadValueDW(event_rlzw.c_str(), &value) == ERROR_SUCCESS;
 }
 
 bool RlzValueStoreRegistry::ClearAllStatefulEvents(Product product) {
@@ -359,9 +357,9 @@ void RlzValueStoreRegistry::CollectGarbage() {
     std::string subkey_name;
     base::StringAppendF(&subkey_name, "%s\\%s", kLibKeyName, subkeys[i]);
     AppendBrandToString(&subkey_name);
-    base::string16 subkey_name16 = ASCIIToUTF16(subkey_name);
+    std::wstring subkey_namew = base::ASCIIToWide(subkey_name);
 
-    VERIFY(DeleteKeyIfEmpty(HKEY_CURRENT_USER, subkey_name16.c_str()));
+    VERIFY(DeleteKeyIfEmpty(HKEY_CURRENT_USER, subkey_namew.c_str()));
   }
 
   // Delete the library key and its parents too now if empty.

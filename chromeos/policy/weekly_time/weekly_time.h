@@ -25,6 +25,8 @@ class CHROMEOS_EXPORT WeeklyTime {
   static const char kDayOfWeek[];
   static const char kTime[];
   static const char kTimezoneOffset[];
+  // Dictionary value constants for testing.
+  static const std::vector<std::string> kWeekDays;
 
   WeeklyTime(int day_of_week,
              int milliseconds,

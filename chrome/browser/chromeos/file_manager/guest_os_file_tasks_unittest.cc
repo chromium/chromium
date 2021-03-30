@@ -6,12 +6,12 @@
 
 #include "base/files/file_path.h"
 #include "base/values.h"
+#include "chrome/browser/ash/plugin_vm/fake_plugin_vm_features.h"
 #include "chrome/browser/chromeos/crostini/crostini_pref_names.h"
 #include "chrome/browser/chromeos/crostini/fake_crostini_features.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service.h"
-#include "chrome/browser/chromeos/plugin_vm/fake_plugin_vm_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -40,7 +40,7 @@ class GuestOsFileTasksTest : public testing::Test {
   void SetUp() override {
     storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
         util::GetDownloadsMountPointName(&profile_),
-        storage::kFileSystemTypeNativeLocal, storage::FileSystemMountOption(),
+        storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
         util::GetMyFilesFolderForProfile(&profile_));
     fake_crostini_features_.set_enabled(true);
     fake_plugin_vm_features_.set_enabled(true);

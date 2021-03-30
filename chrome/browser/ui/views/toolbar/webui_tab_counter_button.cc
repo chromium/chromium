@@ -5,11 +5,11 @@
 #include "chrome/browser/ui/views/toolbar/webui_tab_counter_button.h"
 
 #include <memory>
+#include <string>
 
 #include "base/bind.h"
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/number_formatting.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -54,6 +54,8 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/native_widget.h"
@@ -79,10 +81,10 @@ bool ShouldChangeStartThrobber(TabStripModel* tab_strip_model,
          tab_strip_model->GetActiveWebContents() != contents[0].contents;
 }
 
-base::string16 GetTabCounterLabelText(int num_tabs) {
+std::u16string GetTabCounterLabelText(int num_tabs) {
   // In the triple-digit case, fall back to ':D' to match Android.
   if (num_tabs >= 100)
-    return base::string16(base::ASCIIToUTF16(":D"));
+    return std::u16string(u":D");
   return base::FormatNumber(num_tabs);
 }
 
@@ -93,7 +95,8 @@ base::string16 GetTabCounterLabelText(int num_tabs) {
 // tab counter border, the font shrinks when the count is 10 or higher.
 class NumberLabel : public views::Label {
  public:
-  NumberLabel() : Label(base::string16(), CONTEXT_TAB_COUNTER) {
+  METADATA_HEADER(NumberLabel);
+  NumberLabel() : Label(std::u16string(), CONTEXT_TAB_COUNTER) {
     single_digit_font_ = font_list();
     double_digit_font_ = views::style::GetFont(CONTEXT_TAB_COUNTER,
                                                views::style::STYLE_SECONDARY);
@@ -101,7 +104,7 @@ class NumberLabel : public views::Label {
 
   ~NumberLabel() override = default;
 
-  void SetText(const base::string16& text) override {
+  void SetText(const std::u16string& text) override {
     SetFontList(text.length() > 1 ? double_digit_font_ : single_digit_font_);
     Label::SetText(text);
   }
@@ -110,6 +113,9 @@ class NumberLabel : public views::Label {
   gfx::FontList single_digit_font_;
   gfx::FontList double_digit_font_;
 };
+
+BEGIN_METADATA(NumberLabel, views::Label)
+END_METADATA
 
 ///////////////////////////////////////////////////////////////////////////////
 // InteractionTracker
@@ -438,6 +444,8 @@ class WebUITabCounterButton : public views::Button,
                               public views::ContextMenuController,
                               public ui::SimpleMenuModel::Delegate {
  public:
+  METADATA_HEADER(WebUITabCounterButton);
+
   static constexpr int WEBUI_TAB_COUNTER_CXMENU_CLOSE_TAB = 13;
   static constexpr int WEBUI_TAB_COUNTER_CXMENU_NEW_TAB = 14;
 
@@ -545,11 +553,12 @@ void WebUITabCounterButton::Init() {
 
   ink_drop_container_ =
       AddChildView(std::make_unique<views::InkDropContainerView>());
-  ink_drop_container_->SetBoundsRect(GetLocalBounds());
 
   throbber_ = AddChildView(std::make_unique<views::Throbber>());
+  throbber_->SetCanProcessEventsWithinSubtree(false);
 
   border_view_ = AddChildView(std::make_unique<views::View>());
+  border_view_->SetCanProcessEventsWithinSubtree(false);
 
   appearing_label_ =
       border_view_->AddChildView(std::make_unique<NumberLabel>());
@@ -616,7 +625,9 @@ void WebUITabCounterButton::OnThemeChanged() {
 void WebUITabCounterButton::Layout() {
   const gfx::Rect view_bounds = GetLocalBounds();
 
-  // Position views from the outside in (beacuse it's easier).
+  ink_drop_container_->SetBoundsRect(view_bounds);
+
+  // Position views from the outside in (because it's easier).
   // Start with the throbber.
   const int throbber_height = GetLayoutConstant(LOCATION_BAR_HEIGHT);
   gfx::Rect throbber_rect = view_bounds;
@@ -683,6 +694,9 @@ void WebUITabCounterButton::ExecuteCommand(int command_id, int event_flags) {
       NOTREACHED();
   }
 }
+
+BEGIN_METADATA(WebUITabCounterButton, views::Button)
+END_METADATA
 
 }  // namespace
 

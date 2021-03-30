@@ -114,7 +114,7 @@ void ExtensionMessageBubbleBrowserTest::TestBubbleAnchoredToExtensionAction() {
   scoped_refptr<const extensions::Extension> action_extension =
       extensions::ExtensionBuilder("action_extension")
           .SetAction(extensions::ExtensionBuilder::ActionType::BROWSER_ACTION)
-          .SetLocation(extensions::Manifest::UNPACKED)
+          .SetLocation(extensions::mojom::ManifestLocation::kUnpacked)
           .Build();
   extension_service()->AddExtension(action_extension.get());
 
@@ -131,7 +131,7 @@ void ExtensionMessageBubbleBrowserTest::TestBubbleAnchoredToExtensionAction() {
 void ExtensionMessageBubbleBrowserTest::TestBubbleAnchoredToAppMenu() {
   scoped_refptr<const extensions::Extension> no_action_extension =
       extensions::ExtensionBuilder("no_action_extension")
-          .SetLocation(extensions::Manifest::INTERNAL)
+          .SetLocation(extensions::mojom::ManifestLocation::kInternal)
           .Build();
   extension_service()->AddExtension(no_action_extension.get());
   // The 'suspicious extension' bubble warns the user about extensions that are
@@ -154,14 +154,14 @@ void ExtensionMessageBubbleBrowserTest::
     TestBubbleAnchoredToAppMenuWithOtherAction() {
   scoped_refptr<const extensions::Extension> no_action_extension =
       extensions::ExtensionBuilder("no_action_extension")
-          .SetLocation(extensions::Manifest::INTERNAL)
+          .SetLocation(extensions::mojom::ManifestLocation::kInternal)
           .Build();
   extension_service()->AddExtension(no_action_extension.get());
 
   scoped_refptr<const extensions::Extension> action_extension =
       extensions::ExtensionBuilder("action_extension")
           .SetAction(extensions::ExtensionBuilder::ActionType::BROWSER_ACTION)
-          .SetLocation(extensions::Manifest::INTERNAL)
+          .SetLocation(extensions::mojom::ManifestLocation::kInternal)
           .Build();
   extension_service()->AddExtension(action_extension.get());
 
@@ -245,7 +245,7 @@ void ExtensionMessageBubbleBrowserTest::TestDevModeBubbleIsntShownTwice() {
   scoped_refptr<const extensions::Extension> action_extension =
       extensions::ExtensionBuilder("action_extension")
           .SetAction(extensions::ExtensionBuilder::ActionType::BROWSER_ACTION)
-          .SetLocation(extensions::Manifest::UNPACKED)
+          .SetLocation(extensions::mojom::ManifestLocation::kUnpacked)
           .Build();
   extension_service()->AddExtension(action_extension.get());
 
@@ -266,26 +266,6 @@ void ExtensionMessageBubbleBrowserTest::TestDevModeBubbleIsntShownTwice() {
   third_browser->window()->Show();
   base::RunLoop().RunUntilIdle();
   CheckBubbleIsNotPresent(third_browser, false, false);
-}
-
-void ExtensionMessageBubbleBrowserTest::TestControlledNewTabPageBubbleShown(
-    bool click_learn_more) {
-  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("api_test")
-                                          .AppendASCII("override")
-                                          .AppendASCII("newtab")));
-  CheckBubbleIsNotPresent(browser(), false, false);
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
-  chrome::NewTab(browser());
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
-  base::RunLoop().RunUntilIdle();
-  CheckBubble(browser(), ANCHOR_BROWSER_ACTION, false);
-  if (click_learn_more) {
-    ClickLearnMoreButton(browser());
-    EXPECT_EQ(3, browser()->tab_strip_model()->count());
-  } else {
-    CloseBubble(browser());
-    EXPECT_EQ(2, browser()->tab_strip_model()->count());
-  }
 }
 
 void ExtensionMessageBubbleBrowserTest::TestControlledHomeBubbleShown() {
@@ -321,7 +301,7 @@ void ExtensionMessageBubbleBrowserTest::TestControlledSearchBubbleShown() {
   OmniboxView* omnibox =
       browser()->window()->GetLocationBar()->GetOmniboxView();
   omnibox->OnBeforePossibleChange();
-  omnibox->SetUserText(base::ASCIIToUTF16("search for this"));
+  omnibox->SetUserText(u"search for this");
   omnibox->OnAfterPossibleChange(true);
   omnibox->model()->AcceptInput(WindowOpenDisposition::CURRENT_TAB);
   base::RunLoop().RunUntilIdle();
@@ -384,7 +364,7 @@ void ExtensionMessageBubbleBrowserTest::TestClickingLearnMoreButton() {
   CheckBubbleIsNotPresent(browser(), false, false);
   scoped_refptr<const extensions::Extension> no_action_extension =
       extensions::ExtensionBuilder("no_action_extension")
-          .SetLocation(extensions::Manifest::INTERNAL)
+          .SetLocation(extensions::mojom::ManifestLocation::kInternal)
           .Build();
   extension_service()->AddExtension(no_action_extension.get());
 

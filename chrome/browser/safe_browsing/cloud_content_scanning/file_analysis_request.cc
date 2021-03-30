@@ -4,8 +4,10 @@
 
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_analysis_request.h"
 
+#include "base/files/memory_mapped_file.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/file_util_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
@@ -20,73 +22,47 @@ namespace safe_browsing {
 namespace {
 
 std::pair<BinaryUploadService::Result, BinaryUploadService::Request::Data>
-GetFileContentsForLargeFile(const base::FilePath& path, base::File* file) {
-  size_t file_size = file->GetLength();
-  BinaryUploadService::Request::Data file_data;
-  file_data.size = file_size;
-
-  // Only read 50MB at a time to avoid having very large files in memory.
-  std::unique_ptr<crypto::SecureHash> secure_hash =
-      crypto::SecureHash::Create(crypto::SecureHash::SHA256);
-  size_t bytes_read = 0;
-  std::string buf;
-  buf.reserve(BinaryUploadService::kMaxUploadSizeBytes);
-  while (bytes_read < file_size) {
-    int64_t bytes_currently_read = file->ReadAtCurrentPos(
-        &buf[0], BinaryUploadService::kMaxUploadSizeBytes);
-
-    if (bytes_currently_read == -1) {
-      return std::make_pair(BinaryUploadService::Result::UNKNOWN,
-                            BinaryUploadService::Request::Data());
-    }
-
-    secure_hash->Update(buf.data(), bytes_currently_read);
-
-    bytes_read += bytes_currently_read;
-  }
-
-  file_data.hash.resize(crypto::kSHA256Length);
-  secure_hash->Finish(base::data(file_data.hash), crypto::kSHA256Length);
-  file_data.hash =
-      base::HexEncode(base::as_bytes(base::make_span(file_data.hash)));
-  return std::make_pair(BinaryUploadService::Result::FILE_TOO_LARGE, file_data);
-}
-
-std::pair<BinaryUploadService::Result, BinaryUploadService::Request::Data>
-GetFileContentsForNormalFile(const base::FilePath& path, base::File* file) {
-  size_t file_size = file->GetLength();
-  BinaryUploadService::Request::Data file_data;
-  file_data.size = file_size;
-  file_data.contents.resize(file_size);
-
-  int64_t bytes_currently_read =
-      file->ReadAtCurrentPos(&file_data.contents[0], file_size);
-
-  if (bytes_currently_read == -1) {
-    return std::make_pair(BinaryUploadService::Result::UNKNOWN,
-                          BinaryUploadService::Request::Data());
-  }
-
-  DCHECK_EQ(static_cast<size_t>(bytes_currently_read), file_size);
-
-  file_data.hash = crypto::SHA256HashString(file_data.contents);
-  file_data.hash =
-      base::HexEncode(base::as_bytes(base::make_span(file_data.hash)));
-  return std::make_pair(BinaryUploadService::Result::SUCCESS, file_data);
-}
-
-std::pair<BinaryUploadService::Result, BinaryUploadService::Request::Data>
 GetFileDataBlocking(const base::FilePath& path) {
   base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+
   if (!file.IsValid()) {
     return std::make_pair(BinaryUploadService::Result::UNKNOWN,
                           BinaryUploadService::Request::Data());
   }
 
-  return static_cast<size_t>(file.GetLength()) >
-                 BinaryUploadService::kMaxUploadSizeBytes
-             ? GetFileContentsForLargeFile(path, &file)
-             : GetFileContentsForNormalFile(path, &file);
+  size_t file_size = file.GetLength();
+  if (file_size == 0) {
+    return std::make_pair(BinaryUploadService::Result::SUCCESS,
+                          BinaryUploadService::Request::Data());
+  }
+
+  base::MemoryMappedFile mm_file;
+  if (!mm_file.Initialize(std::move(file)) || !mm_file.IsValid()) {
+    return std::make_pair(BinaryUploadService::Result::UNKNOWN,
+                          BinaryUploadService::Request::Data());
+  }
+
+  BinaryUploadService::Result result;
+  BinaryUploadService::Request::Data file_data;
+  file_data.size = file_size;
+
+  if (file_size <= BinaryUploadService::kMaxUploadSizeBytes) {
+    result = BinaryUploadService::Result::SUCCESS;
+    file_data.contents =
+        std::string(reinterpret_cast<char*>(mm_file.data()), file_size);
+  } else {
+    result = BinaryUploadService::Result::FILE_TOO_LARGE;
+  }
+
+  std::unique_ptr<crypto::SecureHash> secure_hash =
+      crypto::SecureHash::Create(crypto::SecureHash::SHA256);
+  secure_hash->Update(mm_file.data(), file_size);
+  file_data.hash.resize(crypto::kSHA256Length);
+  secure_hash->Finish(base::data(file_data.hash), crypto::kSHA256Length);
+  file_data.hash =
+      base::HexEncode(base::as_bytes(base::make_span(file_data.hash)));
+
+  return std::make_pair(result, file_data);
 }
 
 }  // namespace

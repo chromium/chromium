@@ -415,7 +415,16 @@ TEST_F(JankMetricsTest, RAFMergeJanks) {
   SimulateFrameSequence(other_reporter.get(), seqs);
 
   jank_reporter.Merge(std::move(other_reporter));
+  EXPECT_EQ(jank_reporter.jank_count(), 6);
+  EXPECT_TRUE(
+      jank_reporter.max_staleness() > base::TimeDelta::FromMilliseconds(33) &&
+      jank_reporter.max_staleness() < base::TimeDelta::FromMilliseconds(34));
   jank_reporter.ReportJankMetrics(100u);
+
+  // Jank / staleness values should be reset after reporting
+  EXPECT_EQ(jank_reporter.jank_count(), 0);
+  EXPECT_EQ(jank_reporter.max_staleness(),
+            base::TimeDelta::FromMilliseconds(0));
 
   // Expect 6 janks for "Main" (3 from each reporter)
   const char* metric = "Graphics.Smoothness.Jank.Main.RAF";

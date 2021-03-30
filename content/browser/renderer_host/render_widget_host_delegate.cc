@@ -5,7 +5,6 @@
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 
 #include "build/build_config.h"
-#include "components/rappor/public/sample.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -126,12 +125,6 @@ bool RenderWidgetHostDelegate::IsWidgetForMainFrame(RenderWidgetHostImpl*) {
   return false;
 }
 
-bool RenderWidgetHostDelegate::AddDomainInfoToRapporSample(
-    rappor::Sample* sample) {
-  sample->SetStringField("Domain", "Unknown");
-  return false;
-}
-
 ukm::SourceId RenderWidgetHostDelegate::GetCurrentPageUkmSourceId() {
   return ukm::kInvalidSourceId;
 }
@@ -151,10 +144,6 @@ RenderWidgetHostDelegate::GetFocusedFrameFromFocusedDelegate() {
 
 bool RenderWidgetHostDelegate::IsPortal() {
   return false;
-}
-
-FrameTree* RenderWidgetHostDelegate::GetFrameTree() {
-  return nullptr;
 }
 
 }  // namespace content

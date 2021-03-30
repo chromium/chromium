@@ -9,7 +9,6 @@
 
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "remoting/host/win/remoting_host_messages.h"
 
@@ -17,7 +16,7 @@ namespace remoting {
 
 WindowsEventLogger::WindowsEventLogger(const std::string& application_name) {
   event_log_ = ::RegisterEventSourceW(
-      nullptr, base::UTF8ToUTF16(application_name).c_str());
+      nullptr, base::UTF8ToWide(application_name).c_str());
   if (event_log_ == nullptr) {
     PLOG(ERROR) << "Failed to register the event source: " << application_name;
   }
@@ -55,10 +54,10 @@ bool WindowsEventLogger::Log(WORD type,
   // ReportEventW() takes an array of raw string pointers. They should stay
   // valid for the duration of the call.
   std::vector<const WCHAR*> raw_strings(strings.size());
-  std::vector<base::string16> utf16_strings(strings.size());
+  std::vector<std::wstring> wide_strings(strings.size());
   for (size_t i = 0; i < strings.size(); ++i) {
-    utf16_strings[i] = base::UTF8ToUTF16(strings[i]);
-    raw_strings[i] = utf16_strings[i].c_str();
+    wide_strings[i] = base::UTF8ToWide(strings[i]);
+    raw_strings[i] = wide_strings[i].c_str();
   }
 
   return ::ReportEventW(event_log_, type, HOST_CATEGORY, event_id, nullptr,

@@ -6,14 +6,15 @@
 
 #include <map>
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_group_controller.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -31,23 +32,29 @@ TabGroup::~TabGroup() = default;
 
 void TabGroup::SetVisualData(const tab_groups::TabGroupVisualData& visual_data,
                              bool is_customized) {
+  std::unique_ptr<tab_groups::TabGroupVisualData> old_visuals =
+      std::move(visual_data_);
+  TabGroupChange::VisualsChange visuals;
+  visuals.old_visuals = old_visuals.get();
+  visuals.new_visuals = &visual_data;
   visual_data_ = std::make_unique<tab_groups::TabGroupVisualData>(visual_data);
 
   // Once the visual data is customized, it should stay customized.
   is_customized_ |= is_customized;
-  controller_->ChangeTabGroupVisuals(id_);
+
+  controller_->ChangeTabGroupVisuals(id_, visuals);
 }
 
-base::string16 TabGroup::GetContentString() const {
+std::u16string TabGroup::GetContentString() const {
   gfx::Range tabs_in_group = ListTabs();
   DCHECK_GT(tabs_in_group.length(), 0u);
 
   TabUIHelper* const tab_ui_helper = TabUIHelper::FromWebContents(
       controller_->GetWebContentsAt(tabs_in_group.start()));
   constexpr size_t kContextMenuTabTitleMaxLength = 30;
-  base::string16 format_string = l10n_util::GetPluralStringFUTF16(
+  std::u16string format_string = l10n_util::GetPluralStringFUTF16(
       IDS_TAB_CXMENU_PLACEHOLDER_GROUP_TITLE, tabs_in_group.length() - 1);
-  base::string16 short_title;
+  std::u16string short_title;
   gfx::ElideString(tab_ui_helper->GetTitle(), kContextMenuTabTitleMaxLength,
                    &short_title);
   return base::ReplaceStringPlaceholders(format_string, {short_title}, nullptr);
@@ -56,7 +63,9 @@ base::string16 TabGroup::GetContentString() const {
 void TabGroup::AddTab() {
   if (tab_count_ == 0) {
     controller_->CreateTabGroup(id_);
-    controller_->ChangeTabGroupVisuals(id_);
+    TabGroupChange::VisualsChange visuals;
+    visuals.old_visuals = nullptr;
+    controller_->ChangeTabGroupVisuals(id_, visuals);
   }
   controller_->ChangeTabGroupContents(id_);
   ++tab_count_;

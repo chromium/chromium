@@ -7,7 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/phonehub/interstitial_view_button.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chromeos/components/phonehub/notification_access_manager.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/metadata/metadata_header_macros.h"
@@ -58,9 +58,10 @@ class ASH_EXPORT NotificationOptInView
 
   chromeos::phonehub::NotificationAccessManager* notification_access_manager_;
 
-  ScopedObserver<chromeos::phonehub::NotificationAccessManager,
-                 chromeos::phonehub::NotificationAccessManager::Observer>
-      access_manager_observer_{this};
+  base::ScopedObservation<
+      chromeos::phonehub::NotificationAccessManager,
+      chromeos::phonehub::NotificationAccessManager::Observer>
+      access_manager_observation_{this};
 };
 
 }  // namespace ash

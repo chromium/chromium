@@ -23,7 +23,8 @@ const char kMetricsUploadIntervalSec[] = "metrics-upload-interval";
 // known as the Chrome Variations state.
 const char kResetVariationState[] = "reset-variation-state";
 
-// Forces metrics reporting to be enabled.
+// Forces metrics reporting to be enabled. Should not be used for tests as it
+// will send data to servers.
 const char kForceEnableMetricsReporting[] = "force-enable-metrics-reporting";
 
 }  // namespace switches

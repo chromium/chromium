@@ -7,10 +7,10 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/window_factory.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
+#include "ui/aura/window.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/test/test_utils.h"
@@ -29,8 +29,8 @@ class DefaultWindowResizerTest : public AshTestBase {
 
     delegate_.set_minimum_size(gfx::Size(10, 10));
     delegate_.set_maximum_size(gfx::Size(500, 500));
-    aspect_ratio_window_ =
-        window_factory::NewWindow(&delegate_, aura::client::WINDOW_TYPE_NORMAL);
+    aspect_ratio_window_ = std::make_unique<aura::Window>(
+        &delegate_, aura::client::WINDOW_TYPE_NORMAL);
     aspect_ratio_window_->Init(ui::LAYER_NOT_DRAWN);
     ParentWindowInPrimaryRootWindow(aspect_ratio_window_.get());
   }
@@ -159,8 +159,8 @@ TEST_F(DefaultWindowResizerTest, WindowDragWithAspectRatioVertical) {
 }
 
 TEST_F(DefaultWindowResizerTest, NoResizeHistogramOnMove) {
-  std::unique_ptr<aura::Window> window =
-      window_factory::NewWindow(&delegate_, aura::client::WINDOW_TYPE_NORMAL);
+  std::unique_ptr<aura::Window> window = std::make_unique<aura::Window>(
+      &delegate_, aura::client::WINDOW_TYPE_NORMAL);
   window->Init(ui::LAYER_NOT_DRAWN);
   ParentWindowInPrimaryRootWindow(window.get());
   window->SetBounds(gfx::Rect(0, 0, 50, 50));
@@ -178,8 +178,8 @@ TEST_F(DefaultWindowResizerTest, NoResizeHistogramOnMove) {
 }
 
 TEST_F(DefaultWindowResizerTest, ResizeHistogram) {
-  std::unique_ptr<aura::Window> window =
-      window_factory::NewWindow(&delegate_, aura::client::WINDOW_TYPE_NORMAL);
+  std::unique_ptr<aura::Window> window = std::make_unique<aura::Window>(
+      &delegate_, aura::client::WINDOW_TYPE_NORMAL);
   window->Init(ui::LAYER_NOT_DRAWN);
   ParentWindowInPrimaryRootWindow(window.get());
   window->SetBounds(gfx::Rect(0, 0, 50, 50));

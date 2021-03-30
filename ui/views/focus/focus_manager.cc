@@ -86,6 +86,10 @@ bool FocusManager::OnKeyEvent(const ui::KeyEvent& event) {
       View::Views views;
       focused_view_->parent()->GetViewsInGroup(focused_view_->GetGroup(),
                                                &views);
+      // Remove any views except current, which are disabled or hidden.
+      base::EraseIf(views, [this](View* v) {
+        return v != focused_view_ && !v->IsAccessibilityFocusable();
+      });
       View::Views::const_iterator i(
           std::find(views.begin(), views.end(), focused_view_));
       DCHECK(i != views.end());
@@ -661,7 +665,8 @@ bool FocusManager::IsArrowKeyTraversalEnabledForWidget() const {
   Widget* const widget = (focused_view_ && focused_view_->GetWidget())
                              ? focused_view_->GetWidget()
                              : widget_;
-  return widget->widget_delegate()->enable_arrow_key_traversal();
+  return widget && widget->widget_delegate() &&
+         widget->widget_delegate()->enable_arrow_key_traversal();
 }
 
 }  // namespace views

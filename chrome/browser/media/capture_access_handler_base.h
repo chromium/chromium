@@ -52,7 +52,7 @@ class CaptureAccessHandlerBase : public MediaAccessHandler {
   static bool IsExtensionAllowedForScreenCapture(
       const extensions::Extension* extension);
 
-  static bool IsBuiltInExtension(const GURL& origin);
+  static bool IsBuiltInFeedbackUI(const GURL& origin);
 
   void UpdateExtensionTrusted(const content::MediaStreamRequest& request,
                               const extensions::Extension* extension);

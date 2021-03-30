@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env vpython
 # Copyright 2014 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -209,7 +209,8 @@ class JsonResultsTest(unittest.TestCase):
     all_results = base_test_result.TestRunResults()
     all_results.AddResult(result)
 
-    results_dict = json_results.GenerateJsonTestResultFormatDict([all_results])
+    results_dict = json_results.GenerateJsonTestResultFormatDict([all_results],
+                                                                 False)
     self.assertEquals(1, len(results_dict['tests']))
     self.assertEquals(1, len(results_dict['tests']['test']))
     self.assertEquals(1, len(results_dict['tests']['test']['package']))
@@ -230,7 +231,8 @@ class JsonResultsTest(unittest.TestCase):
     all_results = base_test_result.TestRunResults()
     all_results.AddResult(result)
 
-    results_dict = json_results.GenerateJsonTestResultFormatDict([all_results])
+    results_dict = json_results.GenerateJsonTestResultFormatDict([all_results],
+                                                                 False)
     self.assertEquals(1, len(results_dict['tests']))
     self.assertEquals(1, len(results_dict['tests']['test']))
     self.assertEquals(1, len(results_dict['tests']['test']['package']))
@@ -262,7 +264,8 @@ class JsonResultsTest(unittest.TestCase):
 
     all_results = [run_results_1, run_results_2]
 
-    results_dict = json_results.GenerateJsonTestResultFormatDict(all_results)
+    results_dict = json_results.GenerateJsonTestResultFormatDict(
+        all_results, False)
     self.assertEquals(1, len(results_dict['tests']))
     self.assertEquals(1, len(results_dict['tests']['test']))
     self.assertEquals(1, len(results_dict['tests']['test']['package']))

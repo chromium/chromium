@@ -40,7 +40,7 @@ constexpr int kLineHeight = 20;
 PowerButtonMenuItemView::PowerButtonMenuItemView(
     PressedCallback callback,
     const gfx::VectorIcon& icon,
-    const base::string16& title_text)
+    const std::u16string& title_text)
     : views::ImageButton(std::move(callback)), icon_(icon) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetFocusPainter(nullptr);

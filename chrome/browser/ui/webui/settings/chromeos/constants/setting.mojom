@@ -185,6 +185,7 @@ enum Setting {
   kChangeAuthPinV2 = 1110,
   kAddFingerprintV2 = 1111,
   kRemoveFingerprintV2 = 1112,
+  kPeripheralDataAccessProtection = 1113,
 
   // Languages and Input section.
   kAddLanguage = 1200,
@@ -233,9 +234,10 @@ enum Setting {
   kSwitchActionAutoScan = 1524,
   kSwitchActionAutoScanKeyboard = 1525,
   kGetImageDescriptionsFromGoogle = 1526,
-  kLiveCaptions = 1527,
+  kLiveCaption = 1527,
   kEnableCursorColor = 1528,
   kFullscreenMagnifierFocusFollowing = 1529,
+  kFullscreenMagnifierMouseFollowingMode = 1530,
 
   // Reset section.
   kPowerwash = 1600,
@@ -248,6 +250,7 @@ enum Setting {
   kGetHelpWithChromeOs = 1704,
   kReportAnIssue = 1705,
   kTermsOfService = 1706,
+  kDiagnostics = 1707,
 
   // Kerberos section.
   kAddKerberosTicketV2 = 1800,

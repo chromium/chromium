@@ -105,10 +105,23 @@ bool PaintChunker::IncrementDisplayItemIndex(const DisplayItem& item) {
   }
 
   constexpr wtf_size_t kMaxRegionComplexity = 10;
-  if (item.IsDrawing() &&
-      static_cast<const DrawingDisplayItem&>(item).KnownToBeOpaque() &&
-      last_chunk_known_to_be_opaque_region_.Complexity() < kMaxRegionComplexity)
-    last_chunk_known_to_be_opaque_region_.Unite(item.VisualRect());
+  if (should_compute_contents_opaque_ && item.IsDrawing()) {
+    const DrawingDisplayItem& drawing =
+        static_cast<const DrawingDisplayItem&>(item);
+    if (drawing.KnownToBeOpaque() &&
+        last_chunk_known_to_be_opaque_region_.Complexity() <
+            kMaxRegionComplexity) {
+      last_chunk_known_to_be_opaque_region_.Unite(item.VisualRect());
+    }
+    if (last_chunk_text_known_to_be_on_opaque_background_) {
+      if (const auto* paint_record = drawing.GetPaintRecord().get()) {
+        if (paint_record->has_draw_text_ops()) {
+          last_chunk_text_known_to_be_on_opaque_background_ =
+              last_chunk_known_to_be_opaque_region_.Contains(item.VisualRect());
+        }
+      }
+    }
+  }
 
   chunk.raster_effect_outset =
       std::max(chunk.raster_effect_outset, item.GetRasterEffectOutset());
@@ -246,9 +259,14 @@ void PaintChunker::FinalizeLastChunkProperties() {
     return;
 
   auto& chunk = chunks_->back();
-  chunk.known_to_be_opaque =
-      last_chunk_known_to_be_opaque_region_.Contains(chunk.bounds);
-  last_chunk_known_to_be_opaque_region_ = Region();
+  if (should_compute_contents_opaque_) {
+    chunk.known_to_be_opaque =
+        last_chunk_known_to_be_opaque_region_.Contains(chunk.bounds);
+    chunk.text_known_to_be_on_opaque_background =
+        last_chunk_text_known_to_be_on_opaque_background_;
+    last_chunk_known_to_be_opaque_region_ = Region();
+    last_chunk_text_known_to_be_on_opaque_background_ = true;
+  }
 
   if (candidate_background_color_ != Color::kTransparent) {
     chunk.background_color = candidate_background_color_;

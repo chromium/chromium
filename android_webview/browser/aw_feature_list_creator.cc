@@ -29,6 +29,7 @@
 #include "cc/base/switches.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/embedder_support/android/metrics/android_metrics_service_client.h"
+#include "components/embedder_support/origin_trials/origin_trial_prefs.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/persistent_histograms.h"
 #include "components/policy/core/browser/configuration_policy_pref_store.h"
@@ -106,14 +107,6 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
   std::vector<base::FeatureList::FeatureOverrideInfo> feature_overrides =
       content::GetSwitchDependentFeatureOverrides(command_line);
 
-  // TODO(chlily): This can be removed when Schemeful Same-Site is enabled by
-  // default.
-  if (command_line.HasSwitch(switches::kWebViewEnableModernCookieSameSite)) {
-    feature_overrides.push_back(
-        std::make_pair(net::features::kSchemefulSameSite,
-                       base::FeatureList::OVERRIDE_ENABLE_FEATURE));
-  }
-
   return feature_overrides;
 }
 
@@ -130,6 +123,7 @@ std::unique_ptr<PrefService> AwFeatureListCreator::CreatePrefService() {
   AwMetricsServiceClient::RegisterPrefs(pref_registry.get());
   variations::VariationsService::RegisterPrefs(pref_registry.get());
 
+  embedder_support::OriginTrialPrefs::RegisterPrefs(pref_registry.get());
   AwBrowserProcess::RegisterNetworkContextLocalStatePrefs(pref_registry.get());
 
   PrefServiceFactory pref_service_factory;

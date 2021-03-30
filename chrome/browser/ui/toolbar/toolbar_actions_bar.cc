@@ -102,7 +102,6 @@ ToolbarActionsBar::ToolbarActionsBar(ToolbarActionsBarDelegate* delegate,
       main_bar_(main_bar),
       platform_settings_(),
       popup_owner_(nullptr),
-      model_observer_(this),
       suppress_layout_(false),
       suppress_animation_(true),
       should_check_extension_bubble_(!main_bar),
@@ -110,7 +109,7 @@ ToolbarActionsBar::ToolbarActionsBar(ToolbarActionsBarDelegate* delegate,
       is_popped_out_sticky_(false),
       is_showing_bubble_(false) {
   if (model_)  // |model_| can be null in unittests.
-    model_observer_.Add(model_);
+    model_observation_.Observe(model_);
 
   DCHECK(!base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu));
 
@@ -125,7 +124,7 @@ ToolbarActionsBar::~ToolbarActionsBar() {
 
   // Make sure we don't listen to any more model changes during
   // ToolbarActionsBar destruction.
-  model_observer_.RemoveAll();
+  model_observation_.Reset();
 
   for (ToolbarActionsBarObserver& observer : observers_)
     observer.OnToolbarActionsBarDestroyed();
@@ -605,6 +604,19 @@ void ToolbarActionsBar::ShowToolbarActionBubbleAsync(
       FROM_HERE,
       base::BindOnce(&ToolbarActionsBar::ShowToolbarActionBubble,
                      weak_ptr_factory_.GetWeakPtr(), std::move(bubble)));
+}
+
+void ToolbarActionsBar::ToggleExtensionsMenu() {
+  // This is only implemented by |ExtensionsToolbarContainer|.
+  // TODO(crbug.com/1165609): Remove this entire class.
+  NOTREACHED();
+}
+
+bool ToolbarActionsBar::HasAnyExtensions() const {
+  // This is only implemented by |ExtensionsToolbarContainer|.
+  // TODO(crbug.com/1165609): Remove this entire class.
+  NOTREACHED();
+  return false;
 }
 
 bool ToolbarActionsBar::CloseOverflowMenuIfOpen() {

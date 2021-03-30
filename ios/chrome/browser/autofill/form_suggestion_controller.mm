@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/passwords/password_generation_utils.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/web/common/url_scheme_util.h"
-#import "ios/web/public/deprecated/crw_js_injection_receiver.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state.h"
@@ -110,9 +109,6 @@ AutofillSuggestionState::AutofillSuggestionState(
   // Bridge to observe the web state from Objective-C.
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
 
-  // Manager for FormSuggestion JavaScripts.
-  JsSuggestionManager* _jsSuggestionManager;
-
   // The provider for the current set of suggestions.
   __weak id<FormSuggestionProvider> _provider;
 }
@@ -120,8 +116,7 @@ AutofillSuggestionState::AutofillSuggestionState(
 @synthesize formInputNavigator = _formInputNavigator;
 
 - (instancetype)initWithWebState:(web::WebState*)webState
-                       providers:(NSArray*)providers
-             JsSuggestionManager:(JsSuggestionManager*)jsSuggestionManager {
+                       providers:(NSArray*)providers {
   self = [super init];
   if (self) {
     DCHECK(webState);
@@ -130,22 +125,9 @@ AutofillSuggestionState::AutofillSuggestionState(
         std::make_unique<web::WebStateObserverBridge>(self);
     _webState->AddObserver(_webStateObserverBridge.get());
     _webViewProxy = webState->GetWebViewProxy();
-    _jsSuggestionManager = jsSuggestionManager;
     _suggestionProviders = [providers copy];
   }
   return self;
-}
-
-- (instancetype)initWithWebState:(web::WebState*)webState
-                       providers:(NSArray*)providers {
-  JsSuggestionManager* jsSuggestionManager =
-      base::mac::ObjCCast<JsSuggestionManager>(
-          [webState->GetJSInjectionReceiver()
-              instanceOfClass:[JsSuggestionManager class]]);
-  [jsSuggestionManager setWebFramesManager:webState->GetWebFramesManager()];
-  return [self initWithWebState:webState
-                      providers:providers
-            JsSuggestionManager:jsSuggestionManager];
 }
 
 - (void)dealloc {

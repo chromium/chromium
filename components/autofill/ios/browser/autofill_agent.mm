@@ -18,7 +18,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -50,6 +49,7 @@
 #import "components/prefs/ios/pref_observer_bridge.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/ukm/ios/ukm_url_recorder.h"
 #include "ios/web/common/url_scheme_util.h"
 #include "ios/web/public/deprecated/url_verification_constants.h"
 #include "ios/web/public/js_messaging/web_frame.h"
@@ -58,6 +58,7 @@
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
@@ -73,7 +74,6 @@ using autofill::FormRendererId;
 using autofill::FieldDataManager;
 using autofill::FieldRendererId;
 using autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger;
-using autofill::kNotSetRendererID;
 
 namespace {
 
@@ -87,7 +87,7 @@ typedef void (^FetchFormsCompletionHandler)(BOOL, const FormDataVector&);
 // modifies the field's value for the select elements.
 void GetFormField(autofill::FormFieldData* field,
                   const autofill::FormData& form,
-                  const base::string16& fieldIdentifier) {
+                  const std::u16string& fieldIdentifier) {
   for (const auto& currentField : form.fields) {
     if (currentField.unique_id == fieldIdentifier &&
         currentField.is_focusable) {
@@ -103,36 +103,7 @@ void GetFormField(autofill::FormFieldData* field,
     // Any value set will cause the AutofillManager to filter suggestions (only
     // show suggestions that begin the same as the current value) with the
     // effect that one only suggestion would be returned; the value itself.
-    field->value = base::string16();
-  }
-}
-
-void UpdateFieldManagerWithFillingResults(
-    scoped_refptr<FieldDataManager> fieldDataManager,
-    NSString* jsonString,
-    size_t numFieldsInFormData) {
-  std::map<uint32_t, base::string16> fillingResults;
-  if (autofill::ExtractFillingResults(jsonString, &fillingResults)) {
-    for (auto& fillData : fillingResults) {
-      fieldDataManager->UpdateFieldDataWithAutofilledValue(
-          FieldRendererId(fillData.first), fillData.second,
-          kAutofilledOnUserTrigger);
-    }
-  }
-  // TODO(crbug/1131038): Remove once the experiment is over.
-  UMA_HISTOGRAM_BOOLEAN("Autofill.FormFillSuccessIOS", !fillingResults.empty());
-}
-
-void UpdateFieldManagerForClearedIDs(
-    scoped_refptr<FieldDataManager> fieldDataManager,
-    NSString* jsonString) {
-  std::vector<uint32_t> clearingResults;
-  if (autofill::ExtractIDs(jsonString, &clearingResults)) {
-    for (auto uniqueID : clearingResults) {
-      fieldDataManager->UpdateFieldDataWithAutofilledValue(
-          FieldRendererId(uniqueID), base::string16(),
-          kAutofilledOnUserTrigger);
-    }
+    field->value = std::u16string();
   }
 }
 
@@ -157,7 +128,7 @@ void UpdateFieldManagerForClearedIDs(
   // The name and the unique renderer ID of the most recent autocomplete field;
   // tracks the currently-focused form element in order to force filling of
   // the currently selected form element, even if it's non-empty.
-  base::string16 _pendingAutocompleteField;
+  std::u16string _pendingAutocompleteField;
   FieldRendererId _pendingAutocompleteFieldID;
 
   // Suggestions state:
@@ -299,14 +270,14 @@ autofillManagerFromWebState:(web::WebState*)webState
 // Calls |completionHandler| with NO if the forms could not be extracted.
 // |completionHandler| cannot be nil.
 - (void)fetchFormsFiltered:(BOOL)filtered
-                      withName:(const base::string16&)formName
+                      withName:(const std::u16string&)formName
     minimumRequiredFieldsCount:(NSUInteger)requiredFieldsCount
                        inFrame:(web::WebFrame*)frame
              completionHandler:(FetchFormsCompletionHandler)completionHandler {
   DCHECK(completionHandler);
 
   // Necessary so the values can be used inside a block.
-  base::string16 formNameCopy = formName;
+  std::u16string formNameCopy = formName;
   GURL pageURL = _webState->GetLastCommittedURL();
   GURL frameOrigin = frame ? frame->GetSecurityOrigin() : pageURL.GetOrigin();
   [_jsAutofillManager
@@ -426,6 +397,17 @@ autofillManagerFromWebState:(web::WebState*)webState
   completion(_mostRecentSuggestions, self);
 }
 
+- (void)updateFieldManagerForClearedIDs:(NSString*)jsonString {
+  std::vector<uint32_t> clearingResults;
+  if (autofill::ExtractIDs(jsonString, &clearingResults)) {
+    for (auto uniqueID : clearingResults) {
+      _fieldDataManager->UpdateFieldDataMap(FieldRendererId(uniqueID),
+                                            std::u16string(),
+                                            kAutofilledOnUserTrigger);
+    }
+  }
+}
+
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
                        form:(NSString*)formName
                uniqueFormID:(FormRendererId)uniqueFormID
@@ -472,8 +454,8 @@ autofillManagerFromWebState:(web::WebState*)webState
                          AutofillAgent* strongSelf = weakSelf;
                          if (!strongSelf)
                            return;
-                         UpdateFieldManagerForClearedIDs(
-                             strongSelf->_fieldDataManager, jsonString);
+                         [strongSelf
+                             updateFieldManagerForClearedIDs:jsonString];
                          suggestionHandledCompletionCopy();
                        }];
 
@@ -498,11 +480,9 @@ autofillManagerFromWebState:(web::WebState*)webState
   auto autofillData =
       std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
   autofillData->SetKey("formName", base::Value(base::UTF16ToUTF8(form.name)));
-  uint32_t formRendererID = form.unique_renderer_id
-                                ? form.unique_renderer_id.value()
-                                : autofill::kNotSetRendererID;
-  autofillData->SetKey("formRendererID",
-                       base::Value(static_cast<int>(formRendererID)));
+  autofillData->SetKey(
+      "formRendererID",
+      base::Value(static_cast<int>(form.unique_renderer_id.value())));
 
   bool useRendererIDs = base::FeatureList::IsEnabled(
       autofill::features::kAutofillUseUniqueRendererIDsOnIOS);
@@ -515,11 +495,9 @@ autofillManagerFromWebState:(web::WebState*)webState
     base::Value fieldData(base::Value::Type::DICTIONARY);
     fieldData.SetKey("value", base::Value(field.value));
     fieldData.SetKey("section", base::Value(field.section));
-    uint32_t fieldRendererID = field.unique_renderer_id
-                                   ? field.unique_renderer_id.value()
-                                   : autofill::kNotSetRendererID;
     if (useRendererIDs) {
-      fieldsData.SetKey(NumberToString(fieldRendererID), std::move(fieldData));
+      fieldsData.SetKey(NumberToString(field.unique_renderer_id.value()),
+                        std::move(fieldData));
     } else {
       fieldsData.SetKey(base::UTF16ToUTF8(field.unique_id),
                         std::move(fieldData));
@@ -768,7 +746,7 @@ autofillManagerFromWebState:(web::WebState*)webState
           MIN(autofill::kMinRequiredFieldsForHeuristics,
               autofill::kMinRequiredFieldsForQuery));
   [self fetchFormsFiltered:NO
-                        withName:base::string16()
+                        withName:std::u16string()
       minimumRequiredFieldsCount:min_required_fields
                          inFrame:webFrame
                completionHandler:completionHandler];
@@ -912,11 +890,10 @@ autofillManagerFromWebState:(web::WebState*)webState
 - (void)fillField:(const std::string&)fieldIdentifier
     uniqueFieldID:(FieldRendererId)uniqueFieldID
          formName:(const std::string&)formName
-            value:(const base::string16)value
+            value:(const std::u16string)value
           inFrame:(web::WebFrame*)frame {
   auto data = std::make_unique<base::DictionaryValue>();
-  data->SetInteger("unique_renderer_id",
-                   uniqueFieldID ? uniqueFieldID.value() : kNotSetRendererID);
+  data->SetInteger("unique_renderer_id", uniqueFieldID.value());
   data->SetString("identifier", fieldIdentifier);
   data->SetString("form", formName);
   data->SetString("value", value);
@@ -934,11 +911,29 @@ autofillManagerFromWebState:(web::WebState*)webState
           if (!strongSelf)
             return;
           if (success) {
-            strongSelf->_fieldDataManager->UpdateFieldDataWithAutofilledValue(
+            strongSelf->_fieldDataManager->UpdateFieldDataMap(
                 uniqueFieldID, value, kAutofilledOnUserTrigger);
           }
           suggestionHandledCompletionCopy();
         }];
+}
+
+- (void)updateFieldManagerWithFillingResults:(NSString*)jsonString {
+  std::map<uint32_t, std::u16string> fillingResults;
+  if (autofill::ExtractFillingResults(jsonString, &fillingResults)) {
+    for (auto& fillData : fillingResults) {
+      _fieldDataManager->UpdateFieldDataMap(FieldRendererId(fillData.first),
+                                            fillData.second,
+                                            kAutofilledOnUserTrigger);
+    }
+  }
+  // TODO(crbug/1131038): Remove once the experiment is over.
+  UMA_HISTOGRAM_BOOLEAN("Autofill.FormFillSuccessIOS", !fillingResults.empty());
+
+  ukm::SourceId source_id = ukm::GetSourceIdForWebStateDocument(_webState);
+  ukm::builders::Autofill_FormFillSuccessIOS(source_id)
+      .SetFormFillSuccess(!fillingResults.empty())
+      .Record(ukm::UkmRecorder::Get());
 }
 
 // Sends the the |data| to |frame| to actually fill the data.
@@ -949,7 +944,6 @@ autofillManagerFromWebState:(web::WebState*)webState
   SuggestionHandledCompletion suggestionHandledCompletionCopy =
       [_suggestionHandledCompletion copy];
   _suggestionHandledCompletion = nil;
-  size_t numFieldsInFormData = data->FindPath("fields")->DictSize();
   [_jsAutofillManager fillForm:std::move(data)
       forceFillFieldIdentifier:SysUTF16ToNSString(_pendingAutocompleteField)
         forceFillFieldUniqueID:_pendingAutocompleteFieldID
@@ -958,9 +952,7 @@ autofillManagerFromWebState:(web::WebState*)webState
                AutofillAgent* strongSelf = weakSelf;
                if (!strongSelf)
                  return;
-               UpdateFieldManagerWithFillingResults(
-                   strongSelf->_fieldDataManager, jsonString,
-                   numFieldsInFormData);
+               [strongSelf updateFieldManagerWithFillingResults:jsonString];
                // It is possible that the fill was not initiated by selecting
                // a suggestion in this case the callback is nil.
                if (suggestionHandledCompletionCopy)

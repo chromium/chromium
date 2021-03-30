@@ -10,7 +10,9 @@ GEN_INCLUDE([
   '//chrome/browser/resources/chromeos/accessibility/chromevox/testing/' +
       'common.js',
   '//chrome/browser/resources/chromeos/accessibility/common/testing/' +
-      'callback_helper.js'
+      'callback_helper.js',
+  '//chrome/browser/resources/chromeos/accessibility/common/testing/' +
+      'common.js'
 ]);
 
 /**

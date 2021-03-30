@@ -5,10 +5,10 @@
 #ifndef COMPONENTS_JS_INJECTION_BROWSER_JS_TO_BROWSER_MESSAGING_H_
 #define COMPONENTS_JS_INJECTION_BROWSER_JS_TO_BROWSER_MESSAGING_H_
 
+#include <string>
 #include <vector>
 
 #include "base/check.h"
-#include "base/strings/string16.h"
 #include "components/js_injection/common/interfaces.mojom.h"
 #include "components/js_injection/common/origin_matcher.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -28,6 +28,8 @@ class WebMessageHostFactory;
 
 // Implementation of mojo::JsToBrowserMessaging interface. Receives
 // PostMessage() call from renderer JsBinding.
+//
+// This object is destroyed when the associated RenderFrameHost is destroyed.
 class JsToBrowserMessaging : public mojom::JsToBrowserMessaging {
  public:
   JsToBrowserMessaging(
@@ -37,8 +39,10 @@ class JsToBrowserMessaging : public mojom::JsToBrowserMessaging {
       const OriginMatcher& origin_matcher);
   ~JsToBrowserMessaging() override;
 
+  void OnBackForwardCacheStateChanged();
+
   // mojom::JsToBrowserMessaging implementation.
-  void PostMessage(const base::string16& message,
+  void PostMessage(const std::u16string& message,
                    std::vector<blink::MessagePortDescriptor> ports) override;
   void SetBrowserToJsMessaging(
       mojo::PendingAssociatedRemote<mojom::BrowserToJsMessaging>

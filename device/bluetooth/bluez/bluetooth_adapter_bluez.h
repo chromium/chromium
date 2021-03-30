@@ -401,10 +401,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
       DiscoverySessionErrorCallback error_callback);
 
   // Called by dbus:: on completion of the D-Bus method call to start discovery.
-  void OnStartDiscovery(base::OnceClosure callback,
-                        DiscoverySessionErrorCallback error_callback);
-  void OnStartDiscoveryError(base::OnceClosure callback,
-                             DiscoverySessionErrorCallback error_callback,
+  void OnStartDiscovery(DiscoverySessionResultCallback callback);
+  void OnStartDiscoveryError(DiscoverySessionResultCallback callback,
                              const std::string& error_name,
                              const std::string& error_message);
 
@@ -414,16 +412,13 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
                             const std::string& error_name,
                             const std::string& error_message);
 
-  void OnPreSetDiscoveryFilter(base::OnceClosure callback,
-                               DiscoverySessionErrorCallback error_callback);
+  void OnPreSetDiscoveryFilter(DiscoverySessionResultCallback callback);
   void OnPreSetDiscoveryFilterError(
-      base::OnceClosure callback,
       DiscoverySessionErrorCallback error_callback,
       device::UMABluetoothDiscoverySessionOutcome outcome);
   void OnSetDiscoveryFilter(base::OnceClosure callback,
                             DiscoverySessionErrorCallback error_callback);
-  void OnSetDiscoveryFilterError(base::OnceClosure callback,
-                                 DiscoverySessionErrorCallback error_callback,
+  void OnSetDiscoveryFilterError(DiscoverySessionErrorCallback error_callback,
                                  const std::string& error_name,
                                  const std::string& error_message);
 

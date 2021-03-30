@@ -10,6 +10,7 @@
 #include "ash/shelf/shelf_button.h"
 #include "ash/shelf/shelf_button_delegate.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/gfx/shadow_value.h"
@@ -17,6 +18,7 @@
 #include "ui/views/animation/ink_drop_state.h"
 
 namespace views {
+class DotIndicator;
 class ImageView;
 }
 
@@ -119,8 +121,7 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   // Return the bounds in the local coordinates enclosing the small ripple area.
   gfx::Rect CalculateSmallRippleArea() const;
 
-  // Gets the color of the |notification_indicator_| for test usage.
-  SkColor GetNotificationIndicatorColorForTest();
+  void SetNotificationBadgeColor(SkColor color);
 
  protected:
   // ui::EventHandler:
@@ -185,16 +186,12 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
 
   // Draws an indicator in the top right corner of the image to represent an
   // active notification.
-  AppNotificationIndicatorView* notification_indicator_;
+  views::DotIndicator* notification_indicator_;
 
   // The current application state, a bitfield of State enum values.
   int state_;
 
   gfx::ShadowValues icon_shadows_;
-
-  // If non-null the destuctor sets this to true. This is set while the menu is
-  // showing and used to detect if the menu was deleted while running.
-  bool* destroyed_flag_;
 
   // Whether the notification indicator is enabled.
   const bool is_notification_indicator_enabled_;
@@ -219,6 +216,9 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
 
   std::unique_ptr<ShelfButtonDelegate::ScopedActiveInkDropCount>
       ink_drop_count_;
+
+  // Used to track whether the menu was deleted while running. Must be last.
+  base::WeakPtrFactory<ShelfAppButton> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ShelfAppButton);
 };

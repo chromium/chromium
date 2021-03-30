@@ -7,7 +7,7 @@
 
 #include "components/invalidation/public/invalidation_export.h"
 
-namespace syncer {
+namespace invalidation {
 
 enum InvalidatorState {
   // Invalidations are fully working.
@@ -32,6 +32,6 @@ enum InvalidatorState {
 INVALIDATION_EXPORT const char* InvalidatorStateToString(
     InvalidatorState state);
 
-}  // namespace syncer
+}  // namespace invalidation
 
 #endif  // COMPONENTS_INVALIDATION_PUBLIC_INVALIDATOR_STATE_H_

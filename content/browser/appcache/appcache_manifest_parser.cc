@@ -44,6 +44,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/appcache/appcache.h"
 #include "third_party/blink/public/common/origin_trials/trial_token.h"
+#include "third_party/blink/public/common/origin_trials/trial_token_result.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "url/gurl.h"
 
@@ -335,7 +336,7 @@ bool ParseManifest(const GURL& manifest_url,
   // purpose, but AppCache isn't important enough to add conversion code just
   // to accelerate manifest decoding.
   DCHECK_GE(manifest_size, 0);
-  base::string16 wide_manifest_bytes =
+  std::u16string wide_manifest_bytes =
       base::UTF8ToUTF16(base::StringPiece(manifest_bytes, manifest_size));
   std::string decoded_manifest_bytes = base::UTF16ToUTF8(wide_manifest_bytes);
 
@@ -446,9 +447,9 @@ bool ParseManifest(const GURL& manifest_url,
       url::Origin origin = url::Origin::Create(manifest_url);
       blink::TrialTokenResult result = validator.ValidateToken(
           origin_trial_token, origin, base::Time::Now());
-      if (result.status == blink::OriginTrialTokenStatus::kSuccess) {
-        if (result.feature_name == kAppCacheOriginTrialName)
-          manifest.token_expires = result.expiry_time;
+      if (result.Status() == blink::OriginTrialTokenStatus::kSuccess) {
+        if (result.ParsedToken()->feature_name() == kAppCacheOriginTrialName)
+          manifest.token_expires = result.ParsedToken()->expiry_time();
       }
       continue;
     }

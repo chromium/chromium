@@ -8,7 +8,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGTableCell (relative positioned) TD id='cellToScroll' class='relative'",
+      "name": "LayoutNGTableCellNew (relative positioned) TD id='cellToScroll' class='relative'",
       "bounds": [454, 469],
       "transform": 2
     },

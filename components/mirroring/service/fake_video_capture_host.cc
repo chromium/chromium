@@ -47,10 +47,11 @@ void FakeVideoCaptureHost::SendOneFrame(const gfx::Size& size,
   media::VideoFrameMetadata metadata;
   metadata.frame_rate = 30;
   metadata.reference_time = capture_time;
-  observer_->OnBufferReady(
+  media::mojom::ReadyBufferPtr buffer = media::mojom::ReadyBuffer::New(
       0, media::mojom::VideoFrameInfo::New(
              base::TimeDelta(), metadata, media::PIXEL_FORMAT_I420, size,
              gfx::Rect(size), gfx::ColorSpace::CreateREC709(), nullptr));
+  observer_->OnBufferReady(std::move(buffer), {});
 }
 
 }  // namespace mirroring

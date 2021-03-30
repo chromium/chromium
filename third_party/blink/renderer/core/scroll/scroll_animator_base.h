@@ -40,9 +40,7 @@
 
 namespace blink {
 
-class CompositorAnimationTimeline;
 class ScrollableArea;
-class Scrollbar;
 
 // ScrollAnimatorBase is the common base class for all user scroll animators.
 // Every scrollable area has a lazily-created animator for user-input scrolls
@@ -58,8 +56,6 @@ class CORE_EXPORT ScrollAnimatorBase
 
   explicit ScrollAnimatorBase(ScrollableArea*);
   ~ScrollAnimatorBase() override;
-
-  virtual void Dispose() {}
 
   // A possibly animated scroll. The base class implementation always scrolls
   // immediately, never animates. If the scroll is animated and currently the
@@ -91,30 +87,7 @@ class CORE_EXPORT ScrollAnimatorBase
   void UpdateCompositorAnimations() override {}
   void NotifyCompositorAnimationFinished(int group_id) override {}
   void NotifyCompositorAnimationAborted(int group_id) override {}
-  void LayerForCompositedScrollingDidChange(
-      CompositorAnimationTimeline*) override {}
-
-  virtual void ContentAreaWillPaint() const {}
-  virtual void MouseEnteredContentArea() const {}
-  virtual void MouseExitedContentArea() const {}
-  virtual void MouseMovedInContentArea() const {}
-  virtual void MouseEnteredScrollbar(Scrollbar&) const {}
-  virtual void MouseExitedScrollbar(Scrollbar&) const {}
-  virtual void ContentsResized() const {}
-  virtual void ContentAreaDidShow() const {}
-  virtual void ContentAreaDidHide() const {}
-
-  virtual void FinishCurrentScrollAnimations() {}
-
-  virtual void DidAddVerticalScrollbar(Scrollbar&) {}
-  virtual void WillRemoveVerticalScrollbar(Scrollbar&) {}
-  virtual void DidAddHorizontalScrollbar(Scrollbar&) {}
-  virtual void WillRemoveHorizontalScrollbar(Scrollbar&) {}
-
-  virtual void NotifyContentAreaScrolled(const ScrollOffset&,
-                                         mojom::blink::ScrollType) {}
-
-  virtual bool SetScrollbarsVisibleForTesting(bool) { return false; }
+  void MainThreadScrollingDidChange() override {}
 
   void Trace(Visitor*) const override;
 

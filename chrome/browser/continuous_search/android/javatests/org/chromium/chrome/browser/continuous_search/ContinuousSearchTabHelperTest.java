@@ -21,16 +21,16 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.url.GURL;
@@ -80,7 +80,7 @@ public class ContinuousSearchTabHelperTest {
             new Handler().postDelayed(() -> {
                 mListener.onResult(new SearchResultMetadata(
                         mSearchUrl, mQuery, 0, new ArrayList<SearchResultGroup>()));
-            }, 50);
+            }, 300);
         }
 
         @Override
@@ -95,6 +95,7 @@ public class ContinuousSearchTabHelperTest {
         public CallbackHelper mOnUpdateCallbackHelper = new CallbackHelper();
         public SearchResultMetadata mMetadata;
         public GURL mUrl;
+        public boolean mOnSrp;
 
         @Override
         public void onInvalidate() {
@@ -102,15 +103,15 @@ public class ContinuousSearchTabHelperTest {
         }
 
         @Override
-        public void onUpdate(SearchResultMetadata metadata, GURL url) {
+        public void onUpdate(SearchResultMetadata metadata) {
             mMetadata = metadata;
-            mUrl = url;
             mOnUpdateCallbackHelper.notifyCalled();
         }
 
         @Override
-        public void onUrlChanged(GURL url) {
+        public void onUrlChanged(GURL url, boolean onSrp) {
             mUrl = url;
+            mOnSrp = onSrp;
         }
     }
 
@@ -132,34 +133,111 @@ public class ContinuousSearchTabHelperTest {
         mServer.stopAndDestroyServer();
     }
 
+    /**
+     * Loads a tab with a provided set of params. Will exit via {@link Assert#fail()} if the tab
+     * fails to load, crashes, or exceeds the a certain timeout window. Otherwise, the tab will
+     * be successfully loaded upon returning.
+     * @param tab The tab to load.
+     * @param params The URL and loading type for the tab.
+     */
+    private void loadUrl(Tab tab, LoadUrlParams params) {
+        final CallbackHelper startedCallback = new CallbackHelper();
+        final CallbackHelper loadedCallback = new CallbackHelper();
+        final CallbackHelper failedCallback = new CallbackHelper();
+        final CallbackHelper crashedCallback = new CallbackHelper();
+
+        TabObserver observer = new EmptyTabObserver() {
+            @Override
+            public void onPageLoadStarted(Tab tab, GURL url) {
+                startedCallback.notifyCalled();
+            }
+
+            @Override
+            public void onPageLoadFinished(Tab tab, GURL url) {
+                loadedCallback.notifyCalled();
+            }
+
+            @Override
+            public void onPageLoadFailed(Tab tab, int errorCode) {
+                failedCallback.notifyCalled();
+            }
+
+            @Override
+            public void onCrash(Tab tab) {
+                crashedCallback.notifyCalled();
+            }
+        };
+        tab.addObserver(observer);
+
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> { tab.loadUrl(params); });
+
+        // Ensure the tab loads.
+        try {
+            startedCallback.waitForCallback(0, 1);
+        } catch (TimeoutException e) {
+            Assert.fail("Tab never started loading.");
+        }
+        boolean timedOut = false;
+        try {
+            loadedCallback.waitForCallback(0, 1);
+        } catch (TimeoutException e) {
+            timedOut = true;
+        }
+
+        // If the tab doesn't fully load, try to determine what happened for easier debugging.
+        if (timedOut) {
+            try {
+                failedCallback.waitForCallback(0, 1);
+                Assert.fail("Tab failed to load.");
+            } catch (TimeoutException e) {
+                // Tab didn't fail to load so continue.
+            }
+            try {
+                crashedCallback.waitForCallback(0, 1);
+                Assert.fail("Tab crashed while loading.");
+            } catch (TimeoutException e) {
+                // Tab didn't crash so continue.
+            }
+            Assert.fail("Tab timed out while loading.");
+        }
+
+        tab.removeObserver(observer);
+    }
+
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1157325")
     public void testContinuousSearchFakeResults() throws TimeoutException {
         WaitableSearchResultUserDataObserver observer = new WaitableSearchResultUserDataObserver();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Tab tab = mActivityTestRule.getActivity().getActivityTab();
-            SearchResultUserData searchResultUserData = SearchResultUserData.getForTab(tab);
+        // Load a SRP URL.
+        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
+            SearchResultUserData searchResultUserData = SearchResultUserData.getOrCreateForTab(tab);
             Assert.assertNotNull(searchResultUserData);
             searchResultUserData.addObserver(observer);
-            tab.loadUrl(new LoadUrlParams(
-                    mServer.getURLWithHostName("www.google.com", TEST_URL + "?q=cat+dog")));
         });
+        loadUrl(tab,
+                new LoadUrlParams(
+                        mServer.getURLWithHostName("www.google.com", TEST_URL + "?q=cat+dog")));
+        observer.mOnUpdateCallbackHelper.waitForFirst(
+                "Timed out waiting for SearchResultUserDataObserver#onUpdate", 5000,
+                TimeUnit.MILLISECONDS);
 
-        observer.mOnUpdateCallbackHelper.waitForFirst(5000, TimeUnit.MILLISECONDS);
+        // Check the retuned data.
         Assert.assertEquals("cat dog", observer.mMetadata.getQuery());
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Tab tab = mActivityTestRule.getActivity().getActivityTab();
-            SearchResultUserData searchResultUserData = SearchResultUserData.getForTab(tab);
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
+            SearchResultUserData searchResultUserData = SearchResultUserData.getOrCreateForTab(tab);
             Assert.assertTrue(searchResultUserData.isValid());
             String url = mServer.getURLWithHostName("www.google.com", TEST_URL + "?q=cat+dog");
             Assert.assertTrue(observer.mMetadata.getResultUrl().getSpec().startsWith(url));
             Assert.assertTrue(observer.mUrl.getSpec().startsWith(url));
-            tab.loadUrl(new LoadUrlParams(UrlConstants.ABOUT_URL));
+            Assert.assertTrue(observer.mOnSrp);
         });
 
-        observer.mInvalidateCallbackHelper.waitForFirst(5000, TimeUnit.MILLISECONDS);
+        // Invalidate the data.
+        loadUrl(tab, new LoadUrlParams(UrlConstants.ABOUT_URL));
+        observer.mInvalidateCallbackHelper.waitForFirst(
+                "Timed out waiting for SearchResultUserDataObserver#onInvalidate", 5000,
+                TimeUnit.MILLISECONDS);
     }
 }

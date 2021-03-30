@@ -20,6 +20,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/table/table_utils.h"
 #include "ui/views/controls/table/table_view.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/native_cursor.h"
 
 namespace views {
@@ -45,8 +46,6 @@ constexpr int kSortIndicatorSize = 8;
 
 }  // namespace
 
-// static
-const char TableHeader::kViewClassName[] = "TableHeader";
 // static
 const int TableHeader::kHorizontalPadding = 7;
 // static
@@ -162,10 +161,6 @@ void TableHeader::OnPaint(gfx::Canvas* canvas) {
       canvas->DrawPath(indicator_path, flags);
     }
   }
-}
-
-const char* TableHeader::GetClassName() const {
-  return kViewClassName;
 }
 
 gfx::Size TableHeader::CalculatePreferredSize() const {
@@ -335,5 +330,7 @@ int TableHeader::GetResizeColumn(int x) const {
   return (x >= max_x - kResizePadding && x <= max_x + kResizePadding) ? index
                                                                       : -1;
 }
+BEGIN_METADATA(TableHeader, View)
+END_METADATA
 
 }  // namespace views

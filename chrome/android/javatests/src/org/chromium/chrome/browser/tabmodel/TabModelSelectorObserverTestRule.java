@@ -12,6 +12,7 @@ import org.junit.runners.model.Statement;
 import org.chromium.base.CommandLine;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -28,6 +29,9 @@ import java.util.Set;
  * Basis for testing tab model selector observers.
  */
 public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
+    // Test activity type that does not restore tab on cold restart.
+    // Any type other than ActivityType.TABBED works.
+    private static final @ActivityType int NO_RESTORE_TYPE = ActivityType.CUSTOM_TAB;
     private TabModelSelectorBase mSelector;
     private TabModelSelectorTestTabModel mNormalTabModel;
     private TabModelSelectorTestIncognitoTabModel mIncognitoTabModel;
@@ -73,9 +77,6 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
         TabContentManager tabContentManager = new TabContentManager(
                 InstrumentationRegistry.getTargetContext(), null, false, mSelector::getTabById);
         tabContentManager.initWithNative();
-        TabPersistencePolicy persistencePolicy = new TabbedModeTabPersistencePolicy(0, false);
-        TabPersistentStore tabPersistentStore =
-                new TabPersistentStore(persistencePolicy, mSelector, null);
         NextTabPolicySupplier nextTabPolicySupplier = () -> NextTabPolicy.HIERARCHICAL;
         AsyncTabParamsManager asyncTabParamsManager = AsyncTabParamsManagerSingleton.getInstance();
 
@@ -115,13 +116,12 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
         };
 
         mNormalTabModel = new TabModelSelectorTestTabModel(Profile.getLastUsedRegularProfile(),
-                orderController, tabContentManager, tabPersistentStore, nextTabPolicySupplier,
-                asyncTabParamsManager, delegate);
+                orderController, tabContentManager, nextTabPolicySupplier, asyncTabParamsManager,
+                NO_RESTORE_TYPE, delegate);
 
         mIncognitoTabModel = new TabModelSelectorTestIncognitoTabModel(
                 Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(), orderController,
-                tabContentManager, tabPersistentStore, nextTabPolicySupplier, asyncTabParamsManager,
-                delegate);
+                tabContentManager, nextTabPolicySupplier, asyncTabParamsManager, delegate);
 
         mSelector.initialize(mNormalTabModel, mIncognitoTabModel);
     }
@@ -134,11 +134,11 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
 
         public TabModelSelectorTestTabModel(Profile profile,
                 TabModelOrderController orderController, TabContentManager tabContentManager,
-                TabPersistentStore tabPersistentStore, NextTabPolicySupplier nextTabPolicySupplier,
-                AsyncTabParamsManager asyncTabParamsManager, TabModelDelegate modelDelegate) {
-            super(profile, false, null, null, orderController, tabContentManager,
-                    tabPersistentStore, nextTabPolicySupplier, asyncTabParamsManager, modelDelegate,
-                    false);
+                NextTabPolicySupplier nextTabPolicySupplier,
+                AsyncTabParamsManager asyncTabParamsManager, @ActivityType int activityType,
+                TabModelDelegate modelDelegate) {
+            super(profile, activityType, null, null, orderController, tabContentManager,
+                    nextTabPolicySupplier, asyncTabParamsManager, modelDelegate, false);
         }
 
         @Override
@@ -161,15 +161,15 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
     /**
      * Test IncognitoTabModel that exposes the needed capabilities for testing.
      */
-    public static class TabModelSelectorTestIncognitoTabModel
+    private static class TabModelSelectorTestIncognitoTabModel
             extends TabModelSelectorTestTabModel implements IncognitoTabModel {
         public TabModelSelectorTestIncognitoTabModel(Profile profile,
                 TabModelOrderController orderController, TabContentManager tabContentManager,
-                TabPersistentStore tabPersistentStore, NextTabPolicySupplier nextTabPolicySupplier,
+                NextTabPolicySupplier nextTabPolicySupplier,
                 AsyncTabParamsManager asyncTabParamsManager, TabModelDelegate modelDelegate) {
             super(Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(), orderController,
-                    tabContentManager, tabPersistentStore, nextTabPolicySupplier,
-                    asyncTabParamsManager, modelDelegate);
+                    tabContentManager, nextTabPolicySupplier, asyncTabParamsManager,
+                    NO_RESTORE_TYPE, modelDelegate);
         }
 
         @Override

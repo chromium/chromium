@@ -139,9 +139,8 @@ int32_t Graphics2DResource::Flush(scoped_refptr<TrackedCallback> callback) {
   current_flush_callback_ = callback;
 
   Call<PpapiPluginMsg_Graphics2D_FlushAck>(
-      RENDERER,
-      PpapiHostMsg_Graphics2D_Flush(),
-      base::Bind(&Graphics2DResource::OnPluginMsgFlushACK, this));
+      RENDERER, PpapiHostMsg_Graphics2D_Flush(),
+      base::BindOnce(&Graphics2DResource::OnPluginMsgFlushACK, this));
   return PP_OK_COMPLETIONPENDING;
 }
 

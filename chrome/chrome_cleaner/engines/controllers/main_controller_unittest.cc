@@ -190,10 +190,6 @@ class TestMainController : public MainController {
       delegate()->OnClose();
     }
     void Close() override { delegate()->OnClose(); }
-    void DisableExtensions(const std::vector<std::wstring>& extensions,
-                           base::OnceCallback<void(bool)> on_disable) override {
-      std::move(on_disable).Run(true);
-    }
     void set_user_response_delay(base::TimeDelta delay) {
       user_response_delay_ = delay;
     }

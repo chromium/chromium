@@ -20,6 +20,7 @@
 #include "ui/gl/dc_layer_tree.h"
 #include "ui/gl/direct_composition_child_surface_win.h"
 #include "ui/gl/gl_angle_util_win.h"
+#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_features.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_switches.h"
@@ -37,10 +38,14 @@ bool g_overlay_caps_valid = false;
 // Indicates support for either NV12 or YUY2 overlays. GUARDED_BY
 // GetOverlayLock().
 bool g_supports_overlays = false;
+// Whether the GPU can support hardware overlays or not.
+bool g_supports_hardware_overlays = false;
 // Whether the DecodeSwapChain is disabled or not.
 bool g_decode_swap_chain_disabled = false;
 // Whether to force the nv12 overlay support.
 bool g_force_nv12_overlay_support = false;
+// Whether software overlays have been disabled.
+bool g_disable_sw_overlays = false;
 
 // The lock to guard g_overlay_caps_valid and g_supports_overlays.
 base::Lock& GetOverlayLock() {
@@ -53,9 +58,25 @@ bool SupportsOverlays() {
   return g_supports_overlays;
 }
 
+bool SupportsHardwareOverlays() {
+  base::AutoLock auto_lock(GetOverlayLock());
+  return g_supports_hardware_overlays;
+}
+
 void SetSupportsOverlays(bool support) {
   base::AutoLock auto_lock(GetOverlayLock());
   g_supports_overlays = support;
+}
+
+void SetSupportsHardwareOverlays(bool support) {
+  base::AutoLock auto_lock(GetOverlayLock());
+  g_supports_hardware_overlays = support;
+}
+
+bool SupportsSoftwareOverlays() {
+  return base::FeatureList::IsEnabled(
+             features::kDirectCompositionSoftwareOverlays) &&
+         !g_disable_sw_overlays;
 }
 
 bool OverlayCapsValid() {
@@ -109,6 +130,18 @@ UINT g_rgb10a2_overlay_support_flags = 0;
 // as supported as well.
 bool g_enable_bgra8_overlays_with_yuv_overlay_support = false;
 
+// Force enabling DXGI_FORMAT_R10G10B10A2_UNORM format for overlay. Intel
+// celake and Tigerlake fail to report the cap of this HDR overlay format.
+// TODO(magchen@): Remove this workaround when this cap is fixed in the Intel
+// drivers.
+bool g_force_rgb10a2_overlay_support = false;
+
+// Per Intel's request, only use NV12 for overlay when
+// COLOR_SPACE_YCBCR_STUDIO_G22_LEFT_P709 is also supported. At least one Intel
+// Gen9 SKU does not support NV12 overlays and it cannot be screened by the
+// device id.
+bool g_check_ycbcr_studio_g22_left_p709_for_nv12_support = false;
+
 void SetOverlaySupportFlagsForFormats(UINT nv12_flags,
                                       UINT yuy2_flags,
                                       UINT bgra8_flags,
@@ -126,6 +159,7 @@ bool FlagsSupportsOverlays(UINT flags) {
 }
 
 void GetGpuDriverOverlayInfo(bool* supports_overlays,
+                             bool* supports_hardware_overlays,
                              DXGI_FORMAT* overlay_format_used,
                              DXGI_FORMAT* overlay_format_used_hdr,
                              UINT* nv12_overlay_support_flags,
@@ -134,6 +168,7 @@ void GetGpuDriverOverlayInfo(bool* supports_overlays,
                              UINT* rgb10a2_overlay_support_flags) {
   // Initialization
   *supports_overlays = false;
+  *supports_hardware_overlays = false;
   *overlay_format_used = DXGI_FORMAT_NV12;
   *overlay_format_used_hdr = DXGI_FORMAT_R10G10B10A2_UNORM;
   *nv12_overlay_support_flags = 0;
@@ -199,12 +234,11 @@ void GetGpuDriverOverlayInfo(bool* supports_overlays,
                                  rgb10a2_overlay_support_flags);
     if (FlagsSupportsOverlays(*nv12_overlay_support_flags)) {
       // NV12 format is preferred if it's supported.
+      *overlay_format_used = DXGI_FORMAT_NV12;
+      *supports_hardware_overlays = true;
 
-      // Per Intel's request, use NV12 only when
-      // COLOR_SPACE_YCBCR_STUDIO_G22_LEFT_P709 is also supported. Rec 709 is
-      // commonly used for H.264 and HEVC. At least one Intel Gen9 SKU will not
-      // support NV12 overlays.
-      if (CheckOverlayColorSpaceSupport(
+      if (g_check_ycbcr_studio_g22_left_p709_for_nv12_support &&
+          !CheckOverlayColorSpaceSupport(
               DXGI_FORMAT_NV12, DXGI_COLOR_SPACE_YCBCR_STUDIO_G22_LEFT_P709,
               output, d3d11_device)) {
         // Some new Intel drivers only claim to support unscaled overlays, but
@@ -212,15 +246,14 @@ void GetGpuDriverOverlayInfo(bool* supports_overlays,
         // performing an extra scaling Blt before calling the driver. Even when
         // scaled overlays aren't actually supported, presentation using the
         // overlay path should be relatively efficient.
-        *overlay_format_used = DXGI_FORMAT_NV12;
-        *supports_overlays = true;
+        *supports_hardware_overlays = false;
       }
     }
-    if (!*supports_overlays &&
+    if (!*supports_hardware_overlays &&
         FlagsSupportsOverlays(*yuy2_overlay_support_flags)) {
       // If NV12 isn't supported, fallback to YUY2 if it's supported.
       *overlay_format_used = DXGI_FORMAT_YUY2;
-      *supports_overlays = true;
+      *supports_hardware_overlays = true;
     }
     if (g_enable_bgra8_overlays_with_yuv_overlay_support) {
       if (FlagsSupportsOverlays(*nv12_overlay_support_flags))
@@ -238,6 +271,9 @@ void GetGpuDriverOverlayInfo(bool* supports_overlays,
               DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020, output, d3d11_device))
         *rgb10a2_overlay_support_flags = 0;
     }
+    if (g_force_rgb10a2_overlay_support) {
+      *rgb10a2_overlay_support_flags = DXGI_OVERLAY_SUPPORT_FLAG_SCALING;
+    }
 
     // Early out after the first output that reports overlay support. All
     // outputs are expected to report the same overlay support according to
@@ -245,15 +281,12 @@ void GetGpuDriverOverlayInfo(bool* supports_overlays,
     // https://docs.microsoft.com/en-us/windows-hardware/drivers/display/multiplane-overlay-hardware-requirements
     // TODO(sunnyps): If the above is true, then we can only look at first
     // output instead of iterating over all outputs.
-    if (*supports_overlays)
+    if (*supports_hardware_overlays)
       break;
   }
 
-  base::UmaHistogramBoolean("GPU.DirectComposition.HardwareOverlaysSupported",
-                            *supports_overlays);
-
-  if (*supports_overlays || !base::FeatureList::IsEnabled(
-                                features::kDirectCompositionSoftwareOverlays)) {
+  *supports_overlays = *supports_hardware_overlays;
+  if (*supports_hardware_overlays || !SupportsSoftwareOverlays()) {
     return;
   }
 
@@ -275,6 +308,7 @@ void UpdateOverlaySupport() {
   SetOverlayCapsValid(true);
 
   bool supports_overlays = false;
+  bool supports_hardware_overlays = false;
   DXGI_FORMAT overlay_format_used = DXGI_FORMAT_NV12;
   DXGI_FORMAT overlay_format_used_hdr = DXGI_FORMAT_R10G10B10A2_UNORM;
   UINT nv12_overlay_support_flags = 0;
@@ -283,9 +317,10 @@ void UpdateOverlaySupport() {
   UINT rgb10a2_overlay_support_flags = 0;
 
   GetGpuDriverOverlayInfo(
-      &supports_overlays, &overlay_format_used, &overlay_format_used_hdr,
-      &nv12_overlay_support_flags, &yuy2_overlay_support_flags,
-      &bgra8_overlay_support_flags, &rgb10a2_overlay_support_flags);
+      &supports_overlays, &supports_hardware_overlays, &overlay_format_used,
+      &overlay_format_used_hdr, &nv12_overlay_support_flags,
+      &yuy2_overlay_support_flags, &bgra8_overlay_support_flags,
+      &rgb10a2_overlay_support_flags);
 
   if (g_force_nv12_overlay_support) {
     supports_overlays = true;
@@ -310,19 +345,19 @@ void UpdateOverlaySupport() {
     }
   }
 
-  if (supports_overlays != SupportsOverlays() ||
-      overlay_format_used != g_overlay_format_used) {
-    // Record the new histograms
-    if (supports_overlays) {
-      base::UmaHistogramSparse("GPU.DirectComposition.OverlayFormatUsed3",
-                               overlay_format_used);
-    }
-    UMA_HISTOGRAM_BOOLEAN("GPU.DirectComposition.OverlaysSupported",
-                          supports_overlays);
+  // Record histograms.
+  if (supports_overlays) {
+    base::UmaHistogramSparse("GPU.DirectComposition.OverlayFormatUsed3",
+                             overlay_format_used);
   }
+  base::UmaHistogramBoolean("GPU.DirectComposition.OverlaysSupported",
+                            supports_overlays);
+  base::UmaHistogramBoolean("GPU.DirectComposition.HardwareOverlaysSupported",
+                            supports_hardware_overlays);
 
-  // Update global caps
+  // Update global caps.
   SetSupportsOverlays(supports_overlays);
+  SetSupportsHardwareOverlays(supports_hardware_overlays);
   SetOverlaySupportFlagsForFormats(
       nv12_overlay_support_flags, yuy2_overlay_support_flags,
       bgra8_overlay_support_flags, rgb10a2_overlay_support_flags);
@@ -443,6 +478,11 @@ bool DirectCompositionSurfaceWin::AreOverlaysSupported() {
   return SupportsOverlays();
 }
 
+bool DirectCompositionSurfaceWin::AreHardwareOverlaysSupported() {
+  UpdateOverlaySupport();
+  return SupportsHardwareOverlays();
+}
+
 // static
 bool DirectCompositionSurfaceWin::IsDecodeSwapChainSupported() {
   if (!g_decode_swap_chain_disabled) {
@@ -464,6 +504,11 @@ void DirectCompositionSurfaceWin::DisableOverlays() {
 }
 
 // static
+void DirectCompositionSurfaceWin::DisableSoftwareOverlays() {
+  g_disable_sw_overlays = true;
+}
+
+// static
 void DirectCompositionSurfaceWin::InvalidateOverlayCaps() {
   SetOverlayCapsValid(false);
 }
@@ -473,9 +518,7 @@ bool DirectCompositionSurfaceWin::AreScaledOverlaysSupported() {
   UpdateOverlaySupport();
   if (g_overlay_format_used == DXGI_FORMAT_NV12) {
     return (g_nv12_overlay_support_flags & DXGI_OVERLAY_SUPPORT_FLAG_SCALING) ||
-           (SupportsOverlays() &&
-            base::FeatureList::IsEnabled(
-                features::kDirectCompositionSoftwareOverlays));
+           (SupportsOverlays() && SupportsSoftwareOverlays());
   } else if (g_overlay_format_used == DXGI_FORMAT_YUY2) {
     return !!(g_yuy2_overlay_support_flags & DXGI_OVERLAY_SUPPORT_FLAG_SCALING);
   } else {
@@ -538,6 +581,7 @@ void DirectCompositionSurfaceWin::SetScaledOverlaysSupportedForTesting(
     g_yuy2_overlay_support_flags &= ~DXGI_OVERLAY_SUPPORT_FLAG_SCALING;
     g_rgb10a2_overlay_support_flags &= ~DXGI_OVERLAY_SUPPORT_FLAG_SCALING;
   }
+  SetSupportsHardwareOverlays(supported);
   DCHECK_EQ(supported, AreScaledOverlaysSupported());
 }
 
@@ -675,6 +719,20 @@ void DirectCompositionSurfaceWin::ForceNV12OverlaySupport() {
   // This has to be set before initializing overlay caps.
   DCHECK(!OverlayCapsValid());
   g_force_nv12_overlay_support = true;
+}
+
+// static
+void DirectCompositionSurfaceWin::ForceRgb10a2OverlaySupport() {
+  // This has to be set before initializing overlay caps.
+  DCHECK(!OverlayCapsValid());
+  g_force_rgb10a2_overlay_support = true;
+}
+// static
+void DirectCompositionSurfaceWin::
+    SetCheckYCbCrStudioG22LeftP709ForNv12Support() {
+  // This has to be set before initializing overlay caps.
+  DCHECK(!OverlayCapsValid());
+  g_check_ycbcr_studio_g22_left_p709_for_nv12_support = true;
 }
 
 bool DirectCompositionSurfaceWin::Initialize(GLSurfaceFormat format) {
@@ -845,6 +903,7 @@ void DirectCompositionSurfaceWin::OnDisplayAdded() {
   InvalidateOverlayCaps();
   UpdateOverlaySupport();
   UpdateMonitorInfo();
+  layer_tree_->GetHDRMetadataHelper()->UpdateDisplayMetadata(d3d11_device_);
   RunOverlayHdrGpuInfoUpdateCallback();
 }
 
@@ -852,11 +911,21 @@ void DirectCompositionSurfaceWin::OnDisplayRemoved() {
   InvalidateOverlayCaps();
   UpdateOverlaySupport();
   UpdateMonitorInfo();
+  layer_tree_->GetHDRMetadataHelper()->UpdateDisplayMetadata(d3d11_device_);
   RunOverlayHdrGpuInfoUpdateCallback();
 }
 
 void DirectCompositionSurfaceWin::OnDisplayMetricsChanged() {
   UpdateMonitorInfo();
+}
+
+bool DirectCompositionSurfaceWin::SupportsDelegatedInk() {
+  return layer_tree_->SupportsDelegatedInk();
+}
+
+void DirectCompositionSurfaceWin::SetDelegatedInkTrailStartPoint(
+    std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {
+  layer_tree_->SetDelegatedInkTrailStartPoint(std::move(metadata));
 }
 
 scoped_refptr<base::TaskRunner>

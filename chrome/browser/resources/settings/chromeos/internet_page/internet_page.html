@@ -1,13 +1,18 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/cellular_setup_icons.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/network/cellular_utils.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/network/mojo_interface_provider.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/network/network_listener_behavior.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/network/onc_mojo.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/network/sim_lock_dialogs.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_expand_button/cr_expand_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_toast/cr_toast.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
 <link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_indicator.html">
+<link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
@@ -40,6 +45,14 @@
         margin-inline-start: 4px;
         width: 24px;
       }
+
+      cr-toast {
+        --iron-icon-fill-color: var(--google-yellow-500);
+      }
+
+      cr-toast iron-icon {
+        margin-inline-end: 16px;
+      }
     </style>
     <settings-animated-pages id="pages" section="internet"
         focus-config="[[focusConfig_]]">
@@ -51,7 +64,7 @@
         <template is="dom-if" if="[[allowAddConnection_(globalPolicy_,
             managedNetworkAvailable)]]">
           <cr-expand-button
-              alt="$i18n{internetAddConnectionExpandA11yLabel}"
+              aria-label="$i18n{internetAddConnectionExpandA11yLabel}"
               class="settings-box two-line"
               expanded="{{addConnectionExpanded_}}"
               id="expandAddConnections">
@@ -71,13 +84,13 @@
                       aria-labelledby="add-wifi-label"></cr-icon-button>
                 </div>
               </template>
-              <div actionable$="[[vpnIsEnabled_]]" class="list-item"
+              <div actionable$="[[!vpnIsProhibited_]]" class="list-item"
                   on-click="onAddVPNTap_">
                 <div class="start settings-box-text"
                     id="add-vpn-label" aria-hidden="true">
                   $i18n{internetAddVPN}
                 </div>
-                <template is="dom-if" if="[[!vpnIsEnabled_]]">
+                <template is="dom-if" if="[[vpnIsProhibited_]]">
                   <cr-policy-indicator id="vpnPolicyIndicator"
                       icon-aria-label="$i18n{networkVpnBuiltin}"
                       indicator-type="devicePolicy"
@@ -86,7 +99,7 @@
                 </template>
                 <cr-icon-button class="icon-add-circle"
                     aria-labelledby="add-vpn-label"
-                    disabled="[[!vpnIsEnabled_]]">
+                    disabled="[[vpnIsProhibited_]]">
                 </cr-icon-button>
               </div>
               <template is="dom-repeat" items="[[vpnProviders_]]">
@@ -145,7 +158,8 @@
               tether-device-state="[[getTetherDeviceState_(deviceStates)]]"
               global-policy="[[globalPolicy_]]"
               vpn-providers="[[vpnProviders_]]"
-              show-spinner="{{showSpinner_}}">
+              show-spinner="{{showSpinner_}}"
+              is-connected-to-non-cellular-network="[[isConnectedToNonCellularNetwork_]]">
           </settings-internet-subpage>
         </settings-subpage>
       </template>
@@ -167,16 +181,31 @@
     <template is="dom-if" if="[[showESimProfileRenameDialog_]]" restamp>
       <esim-rename-dialog id="esimRenameDialog"
           on-close="onCloseESimProfileRenameDialog_"
-          iccid="[[esimProfileIccid_]]">
+          network-state="[[eSimNetworkState_]]"
+          show-cellular-disconnect-warning="[[hasActivePSimNetwork_]]">
       </esim-rename-dialog>
     </template>
 
     <template is="dom-if" if="[[showESimRemoveProfileDialog_]]" restamp>
       <esim-remove-profile-dialog id="esimRemoveProfileDialog"
           on-close="onCloseESimRemoveProfileDialog_"
-          iccid="[[esimProfileIccid_]]">
+          on-show-error-toast="onShowErrorToast_"
+          network-state="[[eSimNetworkState_]]"
+          show-cellular-disconnect-warning="[[hasActivePSimNetwork_]]">
       </esim-remove-profile-dialog>
     </template>
+
+    <template is="dom-if" if="[[showSimLockDialog_]]" restamp>
+      <sim-lock-dialogs
+          is-dialog-open="{{showSimLockDialog_}}"
+          device-state="[[getDeviceState_(subpageType_, deviceStates)]]">
+      </sim-lock-dialogs>
+    </template>
+
+    <cr-toast id="errorToast" duration="5000">
+      <iron-icon icon="cellular-setup:warning"></iron-icon>
+      <span id="errorToastMessage">[[errorToastMessage_]]</span>
+    </cr-toast>
   </template>
   <script src="internet_page.js"></script>
 </dom-module>

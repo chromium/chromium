@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import * as animate from '../../animation.js';
 import * as dom from '../../dom.js';
 import {play} from '../../sound.js';
 import * as state from '../../state.js';
-import * as util from '../../util.js';
+import {CanceledError} from '../../type.js';
 
 /**
  * Handler to cancel the active running timer-ticks.
- * @type {?function()}
+ * @type {?function(): void}
  */
 let doCancel = null;
 
@@ -30,8 +31,8 @@ export function start() {
         clearTimeout(tickTimeout);
         tickTimeout = null;
       }
-      util.animateCancel(tickMsg);
-      reject(new Error('cancel'));
+      animate.cancel(tickMsg);
+      reject(new CanceledError('Timer tick is canceled'));
     };
 
     let tickCounter = state.get(state.State.TIMER_10SEC) ? 10 : 3;
@@ -46,10 +47,10 @@ export function start() {
         resolve();
       } else {
         if (sounds[tickCounter] !== undefined) {
-          play(sounds[tickCounter]);
+          play(dom.get(sounds[tickCounter], HTMLAudioElement));
         }
         tickMsg.textContent = tickCounter + '';
-        util.animateOnce(tickMsg);
+        animate.play(tickMsg);
         tickTimeout = setTimeout(onTimerTick, 1000);
         tickCounter--;
       }

@@ -14,8 +14,6 @@
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/default_color_constants.h"
-#include "ash/style/default_colors.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/check_op.h"
 #include "base/metrics/user_metrics.h"
@@ -60,9 +58,9 @@ void HomeButton::OnGestureEvent(ui::GestureEvent* event) {
     Button::OnGestureEvent(event);
 }
 
-base::string16 HomeButton::GetTooltipText(const gfx::Point& p) const {
+std::u16string HomeButton::GetTooltipText(const gfx::Point& p) const {
   // Don't show a tooltip if we're already showing the app list.
-  return IsShowingAppList() ? base::string16() : GetAccessibleName();
+  return IsShowingAppList() ? std::u16string() : GetAccessibleName();
 }
 
 const char* HomeButton::GetClassName() const {
@@ -143,9 +141,8 @@ void HomeButton::PaintButtonContents(gfx::Canvas* canvas) {
     cc::PaintFlags fg_flags;
     fg_flags.setAntiAlias(true);
     fg_flags.setStyle(cc::PaintFlags::kStroke_Style);
-    fg_flags.setColor(DeprecatedGetContentLayerColor(
-        AshColorProvider::ContentLayerType::kButtonIconColor,
-        kShelfButtonColor));
+    fg_flags.setColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kButtonIconColor));
 
     if (controller_.IsAssistantAvailable()) {
       // active: 100% alpha, inactive: 54% alpha
@@ -168,6 +165,11 @@ void HomeButton::PaintButtonContents(gfx::Canvas* canvas) {
                          fg_flags);
     }
   }
+}
+
+void HomeButton::OnThemeChanged() {
+  ShelfControlButton::OnThemeChanged();
+  SchedulePaint();
 }
 
 bool HomeButton::DoesIntersectRect(const views::View* target,

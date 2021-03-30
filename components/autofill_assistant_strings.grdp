@@ -27,5 +27,8 @@
     <message name="IDS_AUTOFILL_ASSISTANT_STOPPED" desc="Text label that is shown when stopping the Autofill Assistant.">
       Google Assistant in Chrome stopping
     </message>
+    <message name="IDS_AUTOFILL_ASSISTANT_SEND_FEEDBACK" desc="Option shown in the menu when clicking the Autofill Assistant profile icon. Clicking this option will open a feedback sharing dialog.">
+      Send feedback
+    </message>
   </if>
 </grit-part>

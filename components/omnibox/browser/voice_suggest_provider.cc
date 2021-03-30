@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
@@ -102,7 +101,7 @@ void VoiceSuggestProvider::ClearCache() {
   voice_matches_.clear();
 }
 
-void VoiceSuggestProvider::AddVoiceSuggestion(base::string16 voice_match,
+void VoiceSuggestProvider::AddVoiceSuggestion(std::u16string voice_match,
                                               float confidence_score) {
   voice_matches_.emplace_back(confidence_score, std::move(voice_match));
 }

@@ -241,7 +241,7 @@ static bool ShouldScaleColumnsForParent(LayoutTable* table) {
     const bool is_deprecated_webkit_box =
         cb->StyleRef().IsDeprecatedWebkitBox();
     if ((!is_deprecated_webkit_box && cb->IsFlexibleBoxIncludingNG()) ||
-        cb->IsLayoutGrid()) {
+        cb->IsLayoutGridIncludingNG()) {
       return false;
     }
     cb = cb->ContainingBlock();

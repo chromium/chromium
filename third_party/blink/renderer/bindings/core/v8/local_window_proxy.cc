@@ -71,12 +71,6 @@
 
 namespace blink {
 
-namespace {
-
-constexpr char kGlobalProxyLabel[] = "WindowProxy::global_proxy_";
-
-}  // namespace
-
 void LocalWindowProxy::Trace(Visitor* visitor) const {
   visitor->Trace(script_state_);
   WindowProxy::Trace(visitor);
@@ -96,8 +90,6 @@ void LocalWindowProxy::DisposeContext(Lifecycle next_status,
   if (lifecycle_ == Lifecycle::kV8MemoryIsForciblyPurged) {
     DCHECK(next_status == Lifecycle::kGlobalObjectIsDetached ||
            next_status == Lifecycle::kFrameIsDetachedAndV8MemoryIsPurged);
-    if (next_status == Lifecycle::kFrameIsDetachedAndV8MemoryIsPurged)
-      global_proxy_.SetPhantom();
     lifecycle_ = next_status;
     return;
   }
@@ -116,7 +108,7 @@ void LocalWindowProxy::DisposeContext(Lifecycle next_status,
       next_status == Lifecycle::kGlobalObjectIsDetached) {
     // Clean up state on the global proxy, which will be reused.
     if (!global_proxy_.IsEmpty()) {
-      CHECK(global_proxy_ == context->Global());
+      CHECK(global_proxy_.Get() == context->Global());
       CHECK_EQ(ToScriptWrappable(context->Global()),
                ToScriptWrappable(
                    context->Global()->GetPrototype().As<v8::Object>()));
@@ -136,12 +128,6 @@ void LocalWindowProxy::DisposeContext(Lifecycle next_status,
   // it up when idle.
   V8GCForContextDispose::Instance().NotifyContextDisposed(
       GetFrame()->IsMainFrame(), frame_reuse_status);
-
-  if (next_status == Lifecycle::kFrameIsDetached) {
-    // The context's frame is detached from the DOM, so there shouldn't be a
-    // strong reference to the context.
-    global_proxy_.SetPhantom();
-  }
 
   DCHECK_EQ(lifecycle_, Lifecycle::kContextIsInitialized);
   lifecycle_ = next_status;
@@ -163,7 +149,6 @@ void LocalWindowProxy::Initialize() {
   v8::Local<v8::Context> context = script_state_->GetContext();
   if (global_proxy_.IsEmpty()) {
     global_proxy_.Set(GetIsolate(), context->Global());
-    global_proxy_.Get().AnnotateStrongRetainer(kGlobalProxyLabel);
     CHECK(!global_proxy_.IsEmpty());
   }
 
@@ -188,8 +173,8 @@ void LocalWindowProxy::Initialize() {
 
   scoped_refptr<const SecurityOrigin> origin;
   if (world_->IsMainWorld()) {
-    // ActivityLogger for main world is updated within updateDocumentInternal().
-    UpdateDocumentInternal();
+    // This also updates the ActivityLogger for the main world.
+    UpdateDocumentForMainWorld();
     origin = GetFrame()->DomWindow()->GetSecurityOrigin();
   } else {
     UpdateActivityLogger();
@@ -332,7 +317,7 @@ void LocalWindowProxy::SetupWindowPrototypeChain() {
 
   // The global proxy object.  Note this is not the global object.
   v8::Local<v8::Object> global_proxy = context->Global();
-  CHECK(global_proxy_ == global_proxy);
+  CHECK(global_proxy_.Get() == global_proxy);
   V8DOMWrapper::SetNativeInfo(GetIsolate(), global_proxy, wrapper_type_info,
                               window);
   // Mark the handle to be traced by Oilpan, since the global proxy has a
@@ -461,7 +446,6 @@ void LocalWindowProxy::SetSecurityToken(const SecurityOrigin* origin) {
 }
 
 void LocalWindowProxy::UpdateDocument() {
-  DCHECK(world_->IsMainWorld());
   // For an uninitialized main window proxy, there's nothing we need
   // to update. The update is done when the window proxy gets initialized later.
   if (lifecycle_ == Lifecycle::kContextIsUninitialized)
@@ -477,10 +461,14 @@ void LocalWindowProxy::UpdateDocument() {
     return;
   }
 
-  UpdateDocumentInternal();
+  if (!world_->IsMainWorld())
+    return;
+
+  UpdateDocumentForMainWorld();
 }
 
-void LocalWindowProxy::UpdateDocumentInternal() {
+void LocalWindowProxy::UpdateDocumentForMainWorld() {
+  DCHECK(world_->IsMainWorld());
   UpdateActivityLogger();
   UpdateDocumentProperty();
   UpdateSecurityOrigin(GetFrame()->DomWindow()->GetSecurityOrigin());

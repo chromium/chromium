@@ -214,7 +214,7 @@ void PluginMetricsProvider::RecordCurrentState() {
       continue;
     }
 
-    base::string16 plugin_name;
+    std::u16string plugin_name;
     plugin_dict->GetString(prefs::kStabilityPluginName, &plugin_name);
     if (plugin_name.empty()) {
       NOTREACHED();
@@ -330,7 +330,7 @@ void PluginMetricsProvider::OnGotPlugins(
 PluginMetricsProvider::ChildProcessStats&
 PluginMetricsProvider::GetChildProcessStats(
     const content::ChildProcessData& data) {
-  const base::string16& child_name = data.name;
+  const std::u16string& child_name = data.name;
   if (!base::Contains(child_process_stats_buffer_, child_name)) {
     child_process_stats_buffer_[child_name] =
         ChildProcessStats(data.process_type);

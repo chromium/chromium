@@ -10,9 +10,8 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
-#include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
-#include "chrome/browser/extensions/ntp_overridden_bubble_delegate.h"
 #include "chrome/browser/extensions/suspicious_extension_bubble_delegate.h"
+#include "chrome/browser/extensions/test_extension_message_bubble_delegate.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/toolbar/test_toolbar_actions_bar_bubble_delegate.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_bar_bubble_delegate.h"
@@ -39,11 +38,6 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
-
-std::unique_ptr<KeyedService> BuildOverrideRegistrar(
-    content::BrowserContext* context) {
-  return std::make_unique<extensions::ExtensionWebUIOverrideRegistrar>(context);
-}
 
 std::unique_ptr<KeyedService> BuildToolbarModel(
     content::BrowserContext* context) {
@@ -72,11 +66,6 @@ class ExtensionMessageBubbleBridgeUnitTest
     params.window = browser_window_.get();
     browser_ = std::unique_ptr<Browser>(Browser::Create(params));
 
-    extensions::ExtensionWebUIOverrideRegistrar::GetFactoryInstance()
-        ->SetTestingFactory(browser()->profile(),
-                            base::BindRepeating(&BuildOverrideRegistrar));
-    extensions::ExtensionWebUIOverrideRegistrar::GetFactoryInstance()->Get(
-        browser()->profile());
     ToolbarActionsModelFactory::GetInstance()->SetTestingFactory(
         browser()->profile(), base::BindRepeating(&BuildToolbarModel));
   }
@@ -95,59 +84,65 @@ class ExtensionMessageBubbleBridgeUnitTest
 
 TEST_F(ExtensionMessageBubbleBridgeUnitTest,
        TestGetExtraViewInfoMethodWithNormalSettingsOverrideExtension) {
-  base::FilePath path(data_dir().AppendASCII("api_test/override/newtab/"));
-  EXPECT_NE(nullptr, PackAndInstallCRX(path, INSTALL_NEW));
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionBuilder("extension").Build();
+  ASSERT_TRUE(extension);
+  service()->AddExtension(extension.get());
 
-  std::unique_ptr<extensions::ExtensionMessageBubbleController>
-      ntp_bubble_controller(new extensions::ExtensionMessageBubbleController(
-          new extensions::NtpOverriddenBubbleDelegate(browser()->profile()),
-          browser()));
+  auto delegate =
+      std::make_unique<extensions::TestExtensionMessageBubbleDelegate>(
+          profile());
+  delegate->IncludeExtensionId(extension->id());
+  auto controller =
+      std::make_unique<extensions::ExtensionMessageBubbleController>(
+          delegate.release(), browser());
 
-  ASSERT_EQ(1U, ntp_bubble_controller->GetExtensionList().size());
+  ASSERT_EQ(1U, controller->GetExtensionList().size());
 
-  std::unique_ptr<ToolbarActionsBarBubbleDelegate> bridge(
-      new ExtensionMessageBubbleBridge(std::move(ntp_bubble_controller)));
+  std::unique_ptr<ToolbarActionsBarBubbleDelegate> bridge =
+      std::make_unique<ExtensionMessageBubbleBridge>(std::move(controller));
 
   std::unique_ptr<ToolbarActionsBarBubbleDelegate::ExtraViewInfo>
       extra_view_info = bridge->GetExtraViewInfo();
 
   EXPECT_FALSE(extra_view_info->resource);
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_LEARN_MORE), extra_view_info->text);
+  EXPECT_EQ(u"Learn more", extra_view_info->text);
   EXPECT_TRUE(extra_view_info->is_learn_more);
 
-  EXPECT_EQ(
-      l10n_util::GetStringUTF16(IDS_EXTENSION_CONTROLLED_RESTORE_SETTINGS),
-      bridge->GetActionButtonText());
+  EXPECT_EQ(u"OK", bridge->GetActionButtonText());
 }
 
 TEST_F(ExtensionMessageBubbleBridgeUnitTest,
        TestGetExtraViewInfoMethodWithPolicyInstalledSettingsOverrideExtension) {
-  base::FilePath path(data_dir().AppendASCII("api_test/override/newtab/"));
-  EXPECT_NE(nullptr,
-            PackAndInstallCRX(path, extensions::Manifest::EXTERNAL_POLICY,
-                              INSTALL_NEW));
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionBuilder("extension")
+          .SetLocation(extensions::mojom::ManifestLocation::kExternalPolicy)
+          .Build();
+  ASSERT_TRUE(extension);
+  service()->AddExtension(extension.get());
 
-  std::unique_ptr<extensions::ExtensionMessageBubbleController>
-      ntp_bubble_controller(new extensions::ExtensionMessageBubbleController(
-          new extensions::NtpOverriddenBubbleDelegate(browser()->profile()),
-          browser()));
+  auto delegate =
+      std::make_unique<extensions::TestExtensionMessageBubbleDelegate>(
+          profile());
+  delegate->IncludeExtensionId(extension->id());
+  auto controller =
+      std::make_unique<extensions::ExtensionMessageBubbleController>(
+          delegate.release(), browser());
 
-  ASSERT_EQ(1U, ntp_bubble_controller->GetExtensionList().size());
+  ASSERT_EQ(1U, controller->GetExtensionList().size());
 
-  std::unique_ptr<ToolbarActionsBarBubbleDelegate> bridge(
-      new ExtensionMessageBubbleBridge(std::move(ntp_bubble_controller)));
+  std::unique_ptr<ToolbarActionsBarBubbleDelegate> bridge =
+      std::make_unique<ExtensionMessageBubbleBridge>(std::move(controller));
 
   std::unique_ptr<ToolbarActionsBarBubbleDelegate::ExtraViewInfo>
       extra_view_info = bridge->GetExtraViewInfo();
-
-  extra_view_info = bridge->GetExtraViewInfo();
 
   EXPECT_EQ(&vector_icons::kBusinessIcon, extra_view_info->resource);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_EXTENSIONS_INSTALLED_BY_ADMIN),
             extra_view_info->text);
   EXPECT_FALSE(extra_view_info->is_learn_more);
 
-  EXPECT_EQ(base::string16(), bridge->GetActionButtonText());
+  EXPECT_EQ(std::u16string(), bridge->GetActionButtonText());
 }
 
 // Tests the ExtensionMessageBubbleBridge in conjunction with the

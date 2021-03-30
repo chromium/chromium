@@ -175,13 +175,6 @@ void DaemonControllerDelegateLinux::SetConfigAndStart(
     std::unique_ptr<base::DictionaryValue> config,
     bool consent,
     DaemonController::CompletionCallback done) {
-  // Add the user to chrome-remote-desktop group first.
-  if (!RunHostScript({"--add-user"})) {
-    LOG(ERROR) << "Failed to add user to chrome-remote-desktop group.";
-    std::move(done).Run(DaemonController::RESULT_FAILED);
-    return;
-  }
-
   // Ensure the configuration directory exists.
   base::FilePath config_dir = GetConfigPath().DirName();
   if (!base::DirectoryExists(config_dir)) {
@@ -202,9 +195,13 @@ void DaemonControllerDelegateLinux::SetConfigAndStart(
   }
 
   // Finally start the host.
-  std::vector<std::string> args = {"--start",
-                                   "--config=" + GetConfigPath().value()};
+  std::vector<std::string> args = {"--enable-and-start"};
 
+  // TODO(rkjnsn): At this point, the host is configured and just requires an
+  // administrator to enable and start it. If that fails here, e.g., due to no
+  // policy kit agent running, it might be nice to tell the user what they need
+  // to do so they can perform the last step manually (or have an administrator
+  // do it, if the user isn't one).
   DaemonController::AsyncResult result = DaemonController::RESULT_FAILED;
   if (RunHostScript(args))
     result = DaemonController::RESULT_OK;

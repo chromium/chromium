@@ -40,6 +40,7 @@ class IdleSpellCheckController;
 class LocalDOMWindow;
 class LocalFrame;
 class HTMLElement;
+class Node;
 class SpellCheckMarker;
 class SpellCheckRequest;
 class SpellCheckRequester;
@@ -64,6 +65,7 @@ class CORE_EXPORT SpellChecker final : public GarbageCollected<SpellChecker> {
   void ShowSpellingGuessPanel();
   void RespondToChangedContents();
   void RespondToChangedSelection();
+  void RespondToChangedEnablement(const HTMLElement&, bool enabled);
   std::pair<Node*, SpellCheckMarker*> GetSpellCheckMarkerUnderSelection() const;
   // The first String returned in the pair is the selected text.
   // The second String is the marker's description.

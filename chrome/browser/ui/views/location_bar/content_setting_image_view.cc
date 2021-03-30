@@ -26,6 +26,7 @@
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -42,7 +43,6 @@ base::Optional<ViewID> GetViewID(
 
     case ImageType::COOKIES:
     case ImageType::IMAGES:
-    case ImageType::PPAPI_BROKER:
     case ImageType::GEOLOCATION:
     case ImageType::MIXEDSCRIPT:
     case ImageType::PROTOCOL_HANDLERS:
@@ -136,14 +136,17 @@ void ContentSettingImageView::Update() {
   content_setting_image_model_->SetAnimationHasRun(web_contents);
 }
 
-void ContentSettingImageView::SetIconColor(SkColor color) {
+void ContentSettingImageView::SetIconColor(base::Optional<SkColor> color) {
+  if (icon_color_ == color)
+    return;
   icon_color_ = color;
   if (content_setting_image_model_->is_visible())
     UpdateImage();
+  OnPropertyChanged(&icon_color_, views::kPropertyEffectsNone);
 }
 
-const char* ContentSettingImageView::GetClassName() const {
-  return "ContentSettingsImageView";
+base::Optional<SkColor> ContentSettingImageView::GetIconColor() const {
+  return icon_color_;
 }
 
 bool ContentSettingImageView::OnMousePressed(const ui::MouseEvent& event) {
@@ -247,3 +250,7 @@ void ContentSettingImageView::AnimationEnded(const gfx::Animation* animation) {
     promo_controller->ShowCriticalPromo(bubble_params);
   }
 }
+
+BEGIN_METADATA(ContentSettingImageView, IconLabelBubbleView)
+ADD_PROPERTY_METADATA(base::Optional<SkColor>, IconColor)
+END_METADATA

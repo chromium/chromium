@@ -22,11 +22,11 @@
 
 #include <memory>
 #include <set>
+#include <string>
 
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace content {
@@ -85,7 +85,7 @@ class PhishingClassifier {
   //
   // It is an error to call BeginClassification if the classifier is not yet
   // ready.
-  virtual void BeginClassification(const base::string16* page_text,
+  virtual void BeginClassification(const std::u16string* page_text,
                                    DoneCallback callback);
 
   // Called by the RenderView (on the render thread) when a page is unloading
@@ -145,7 +145,7 @@ class PhishingClassifier {
   // State for any in-progress extraction.
   std::unique_ptr<FeatureMap> features_;
   std::unique_ptr<std::set<uint32_t>> shingle_hashes_;
-  const base::string16* page_text_;  // owned by the caller
+  const std::u16string* page_text_;  // owned by the caller
   std::unique_ptr<SkBitmap> bitmap_;
   DoneCallback done_callback_;
 

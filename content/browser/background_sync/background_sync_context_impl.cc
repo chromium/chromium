@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/stl_util.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "content/browser/background_sync/background_sync_launcher.h"
 #include "content/browser/background_sync/background_sync_manager.h"
@@ -25,8 +24,8 @@ namespace content {
 
 BackgroundSyncContextImpl::BackgroundSyncContextImpl()
     : base::RefCountedDeleteOnSequence<BackgroundSyncContextImpl>(
-          base::CreateSingleThreadTaskRunner(
-              {ServiceWorkerContext::GetCoreThreadId()})),
+          BrowserThread::GetTaskRunnerForThread(
+              ServiceWorkerContext::GetCoreThreadId())),
       test_wakeup_delta_(
           {{blink::mojom::BackgroundSyncType::ONE_SHOT, base::TimeDelta::Max()},
            {blink::mojom::BackgroundSyncType::PERIODIC,

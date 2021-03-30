@@ -18,6 +18,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 CookieControlsIconView::CookieControlsIconView(
     IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
@@ -77,7 +78,7 @@ bool CookieControlsIconView::ShouldBeVisible() const {
   if (delegate()->ShouldHidePageActionIcons())
     return false;
 
-  if (HasAssociatedBubble())
+  if (GetAssociatedBubble())
     return true;
 
   if (!delegate()->GetWebContentsForPageActionIconView())
@@ -94,15 +95,11 @@ bool CookieControlsIconView::ShouldBeVisible() const {
   }
 }
 
-bool CookieControlsIconView::HasAssociatedBubble() const {
-  if (!GetBubble())
-    return false;
-
+bool CookieControlsIconView::GetAssociatedBubble() const {
   // There may be multiple icons but only a single bubble can be displayed
   // at a time. Check if the bubble belongs to this icon.
-  if (!GetBubble()->GetAnchorView())
-    return false;
-  return GetBubble()->GetAnchorView()->GetWidget() == GetWidget();
+  return GetBubble() && GetBubble()->GetAnchorView() &&
+         GetBubble()->GetAnchorView()->GetWidget() == GetWidget();
 }
 
 void CookieControlsIconView::OnExecuting(
@@ -122,11 +119,11 @@ const gfx::VectorIcon& CookieControlsIconView::GetVectorIcon() const {
   return kEyeCrossedIcon;
 }
 
-const char* CookieControlsIconView::GetClassName() const {
-  return "CookieControlsIconView";
-}
-
-base::string16 CookieControlsIconView::GetTextForTooltipAndAccessibleName()
+std::u16string CookieControlsIconView::GetTextForTooltipAndAccessibleName()
     const {
   return l10n_util::GetStringUTF16(IDS_COOKIE_CONTROLS_TOOLTIP);
 }
+
+BEGIN_METADATA(CookieControlsIconView, PageActionIconView)
+ADD_READONLY_PROPERTY_METADATA(bool, AssociatedBubble)
+END_METADATA

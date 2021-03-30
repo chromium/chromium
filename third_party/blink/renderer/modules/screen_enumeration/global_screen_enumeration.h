@@ -17,20 +17,24 @@ class ScriptState;
 
 // A proposed interface for querying the state of the device's screen space.
 // https://github.com/webscreens/window-placement
+// TODO(crbug.com/897300): Remove this; use the new WindowScreens supplement.
 class GlobalScreenEnumeration {
   STATIC_ONLY(GlobalScreenEnumeration);
 
  public:
   // Resolves to the list of |Screen| objects in the device's screen space.
-  static ScriptPromise getScreens(ScriptState* script_state,
-                                  LocalDOMWindow&,
-                                  ExceptionState& exception_state);
+  // TODO(crbug.com/897300): Remove this; use the new WindowScreens supplement.
+  static ScriptPromise getScreensDeprecated(ScriptState* script_state,
+                                            LocalDOMWindow&,
+                                            ExceptionState& exception_state);
 
   // Resolves to true if the number of available screens is greater than one.
+  // TODO(crbug.com/897300): Remove this; use Screen.isExtended.
   static ScriptPromise isMultiScreen(ScriptState* script_state,
                                      LocalDOMWindow&,
                                      ExceptionState& exception_state);
 
+  // TODO(crbug.com/897300): Remove this; use Screens.onchange.
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(screenschange, kScreenschange)
 };
 

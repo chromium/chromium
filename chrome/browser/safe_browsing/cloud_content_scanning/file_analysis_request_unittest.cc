@@ -11,8 +11,8 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/enterprise/connectors/content_analysis_delegate.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/common/chrome_paths.h"
 #include "content/public/test/browser_task_environment.h"
@@ -123,6 +123,31 @@ TEST_F(FileAnalysisRequestTest, InvalidFiles) {
           run_loop.Quit();
 
           EXPECT_EQ(result, BinaryUploadService::Result::UNKNOWN);
+          EXPECT_EQ(data.size, 0u);
+          EXPECT_TRUE(data.contents.empty());
+          EXPECT_TRUE(data.hash.empty());
+        }));
+    run_loop.Run();
+
+    EXPECT_TRUE(called);
+  }
+
+  {
+    // Empty files should return SUCCESS as they have no content to scan.
+    base::FilePath path = temp_dir.GetPath().AppendASCII("empty.doc");
+    base::File file(path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    auto request =
+        MakeRequest(/*block_unsupported_types=*/false, path, path.BaseName());
+
+    bool called = false;
+    base::RunLoop run_loop;
+    request->GetRequestData(base::BindLambdaForTesting(
+        [&run_loop, &called](BinaryUploadService::Result result,
+                             const BinaryUploadService::Request::Data& data) {
+          called = true;
+          run_loop.Quit();
+
+          EXPECT_EQ(result, BinaryUploadService::Result::SUCCESS);
           EXPECT_EQ(data.size, 0u);
           EXPECT_TRUE(data.contents.empty());
           EXPECT_TRUE(data.hash.empty());

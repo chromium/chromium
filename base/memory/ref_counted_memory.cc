@@ -89,7 +89,7 @@ RefCountedString16::~RefCountedString16() = default;
 
 // static
 scoped_refptr<RefCountedString16> RefCountedString16::TakeString(
-    string16* to_destroy) {
+    std::u16string* to_destroy) {
   auto self = MakeRefCounted<RefCountedString16>();
   to_destroy->swap(self->data_);
   return self;
@@ -100,7 +100,7 @@ const unsigned char* RefCountedString16::front() const {
 }
 
 size_t RefCountedString16::size() const {
-  return data_.size() * sizeof(char16);
+  return data_.size() * sizeof(char16_t);
 }
 
 RefCountedSharedMemoryMapping::RefCountedSharedMemoryMapping(

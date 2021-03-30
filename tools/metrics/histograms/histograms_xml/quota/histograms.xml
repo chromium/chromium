@@ -32,8 +32,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Quota.AgeOfOriginInDays" units="days"
-    expires_after="2021-04-18">
+    expires_after="2022-03-15">
   <owner>jarrydg@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
   <summary>
     How many days it's been since an origin's temporary storage has been
     accessed. Logged hourly for all origins with stored data.
@@ -41,8 +42,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Quota.AvailableDiskSpace" units="MB"
-    expires_after="2021-01-31">
+    expires_after="2021-12-21">
   <owner>jarrydg@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Amount of free disk space for the storage directory. Logged at irregular
     intervals.
@@ -50,7 +52,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Quota.AvailableDiskSpace2" units="MB"
-    expires_after="2021-06-13">
+    expires_after="2021-08-15">
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -70,8 +72,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Quota.DiskspaceShortage" units="MB" expires_after="2021-02-14">
+<histogram name="Quota.DiskspaceShortage" units="MB" expires_after="2022-01-18">
   <owner>jarrydg@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Difference between acceptable lower limit of diskspace and actual free
     diskspace at beginning of an eviction round.
@@ -88,7 +91,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Quota.EvictedOriginAccessCount" units="units"
-    expires_after="2021-05-16">
+    expires_after="2021-09-19">
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -98,7 +101,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Quota.EvictedOriginDaysSinceAccess" units="units"
-    expires_after="2021-05-16">
+    expires_after="2021-09-19">
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -108,7 +111,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Quota.EvictedOriginsPerHour" units="units"
-    expires_after="2021-07-03">
+    expires_after="2021-09-05">
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>Number of evicted origins in an hour.</summary>
@@ -121,7 +124,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Quota.GlobalTemporaryPoolSize" units="MB"
-    expires_after="2021-02-23">
+    expires_after="2022-01-18">
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -131,13 +134,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Quota.GlobalUsageOfPersistentStorage" units="MB"
-    expires_after="2021-06-27">
+    expires_after="2021-08-29">
   <owner>jarrydg@chromium.org</owner>
   <summary>Global usage of persistent storage.</summary>
 </histogram>
 
 <histogram name="Quota.GlobalUsageOfTemporaryStorage" units="MB"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>jarrydg@chromium.org</owner>
   <summary>Global usage of temporary storage.</summary>
 </histogram>
@@ -162,8 +165,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Quota.PercentDiskAvailable" units="%"
-    expires_after="2021-01-31">
+    expires_after="2021-12-21">
   <owner>jarrydg@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Percentage of the storage device that is free. Logged at irregular
     intervals.
@@ -171,7 +175,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Quota.PercentDiskAvailable2" units="%"
-    expires_after="2021-02-10">
+    expires_after="2022-01-18">
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -181,7 +185,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Quota.PercentUsedByOrigin" units="%"
-    expires_after="2021-02-23">
+    expires_after="2022-01-18">
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -200,7 +204,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Quota.QuotaForOrigin" units="MB" expires_after="2021-02-23">
+<histogram name="Quota.QuotaForOrigin" units="MB" expires_after="2022-01-18">
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -231,10 +235,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Quota.TimeDeltaOfEvictionRounds" units="units"
-    expires_after="2021-03-04">
+    expires_after="2022-02-26">
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
-  <summary>Time between two consecutive active eviction rounds.</summary>
+  <summary>
+    Time between two consecutive eviction rounds. Only recorded if at least one
+    origin has been evicted in each eviction round.
+  </summary>
 </histogram>
 
 <histogram name="Quota.TimeSpentToAEvictionRound" units="units"
@@ -243,10 +250,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Time spent to an eviction round.</summary>
 </histogram>
 
-<histogram name="Quota.TotalDiskSpace" units="MB" expires_after="2021-06-06">
+<histogram name="Quota.TotalDiskSpace" units="MB" expires_after="2021-08-09">
   <owner>jarrydg@chromium.org</owner>
   <summary>
     Total disk space for the storage directory. Logged at irregular intervals.
+  </summary>
+</histogram>
+
+<histogram name="Quota.TotalDiskSpaceIsZero" enum="BooleanVolumeZero"
+    expires_after="2022-03-18">
+  <owner>jarrydg@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Whether base::SysInfo::AmountOfTotalDiskSpace() returned zero or a negative
+    number to the quota system. Logged whenever something is pinging the system
+    for quota or device info.
   </summary>
 </histogram>
 

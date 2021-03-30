@@ -7,7 +7,7 @@
     `Tests that when stack overflow exception happens when inspector is open the stack trace is correctly shown in console.\n`
   );
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
     // Both the call and the function entry may trigger stack overflow.

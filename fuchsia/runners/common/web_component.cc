@@ -16,6 +16,7 @@
 #include "base/bind.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
+#include "base/strings/string_piece.h"
 #include "fuchsia/runners/common/web_content_runner.h"
 
 WebComponent::WebComponent(
@@ -24,7 +25,7 @@ WebComponent::WebComponent(
     std::unique_ptr<base::StartupContext> context,
     fidl::InterfaceRequest<fuchsia::sys::ComponentController>
         controller_request)
-    : debug_name_(debug_name.as_string()),
+    : debug_name_(debug_name),
       runner_(runner),
       startup_context_(std::move(context)),
       controller_binding_(this),
@@ -93,7 +94,7 @@ void WebComponent::StartComponent() {
     // Publish outgoing services and start serving component's outgoing
     // directory.
     view_provider_binding_ = std::make_unique<
-        base::fuchsia::ScopedServiceBinding<fuchsia::ui::app::ViewProvider>>(
+        base::ScopedServiceBinding<fuchsia::ui::app::ViewProvider>>(
         startup_context()->component_context()->outgoing().get(), this);
     lifecycle_ = std::make_unique<cr_fuchsia::LifecycleImpl>(
         startup_context()->component_context()->outgoing().get(),

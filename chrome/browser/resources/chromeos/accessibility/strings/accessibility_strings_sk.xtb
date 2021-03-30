@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">Položka zoznamu</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">Potiahnite dvoma prstami doprava</translation>
-<translation id="1016393160682012902">Po stlačení klávesa Qwerty, klávesa obnoviteľného Braillovho displeja alebo dotykového gesta sa dozviete viac o funkcii danej položky. Ak chcete odísť, stlačte kombináciu klávesov Control a w alebo Escape.</translation>
 <translation id="1022586497894531524">Používate hovorenú spätnú väzbu čítačky ChromeVox prvýkrát? Tento stručný návod vám vysvetlí základy potrebné na začatie používania čítačky ChromeVox.</translation>
 <translation id="1025074108959230262">Rýchly režim bol zakázaný</translation>
 <translation id="1031961866430398710">a potom</translation>
@@ -150,6 +149,7 @@
 <translation id="2045055672832940894">Žiadny predchádzajúci ovládací prvok</translation>
 <translation id="2045606329038304310">Ovládací prvok poľa formulára</translation>
 <translation id="2063539687800151747">Epigraf</translation>
+<translation id="2074531330963286860">Dostupné akcie. Zobrazíte stlačením skratky Hľadať + bodka.</translation>
 <translation id="2086961585857038472">Ďalšie slovo</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">sk</translation>
@@ -975,6 +975,7 @@
 <translation id="827266600368092403">Začať alebo ukončiť výber</translation>
 <translation id="827422111966801947">Indigová</translation>
 <translation id="8276439074553447000">Prejsť na predchádzajúcu zamerateľnú položku</translation>
+<translation id="8279039817939141096">Po stlačení klávesa Qwerty, klávesa obnoviteľného Braillovho displeja alebo dotykového gesta sa dozviete viac o funkcii danej položky. Stlačte kombináciu klávesov Control a w, medzerník a Z alebo potiahnite dvoma prstami doľava. Ak chcete ponuku opustiť, stlačte Exit.</translation>
 <translation id="8283603667300770666">Ďalšie pole formulára</translation>
 <translation id="8310185481635255431">Žiadny ďalší odkaz</translation>
 <translation id="831207808878314375">Definícia</translation>

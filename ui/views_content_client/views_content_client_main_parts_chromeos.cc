@@ -4,6 +4,7 @@
 
 #include "base/macros.h"
 #include "content/public/browser/context_factory.h"
+#include "content/public/common/result_codes.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "ui/aura/window.h"
 #include "ui/views_content_client/views_content_client.h"
@@ -23,7 +24,7 @@ class ViewsContentClientMainPartsChromeOS
   ~ViewsContentClientMainPartsChromeOS() override {}
 
   // content::BrowserMainParts:
-  void PreMainMessageLoopRun() override;
+  int PreMainMessageLoopRun() override;
   void PostMainMessageLoopRun() override;
 
  private:
@@ -39,7 +40,7 @@ ViewsContentClientMainPartsChromeOS::ViewsContentClientMainPartsChromeOS(
     : ViewsContentClientMainPartsAura(content_params, views_content_client) {
 }
 
-void ViewsContentClientMainPartsChromeOS::PreMainMessageLoopRun() {
+int ViewsContentClientMainPartsChromeOS::PreMainMessageLoopRun() {
   ViewsContentClientMainPartsAura::PreMainMessageLoopRun();
 
   // Set up basic pieces of views::corewm.
@@ -51,6 +52,8 @@ void ViewsContentClientMainPartsChromeOS::PreMainMessageLoopRun() {
   aura::Window* root_window = wm_test_helper_->host()->window();
   views_content_client()->OnPreMainMessageLoopRun(browser_context(),
                                                   root_window);
+
+  return content::RESULT_CODE_NORMAL_EXIT;
 }
 
 void ViewsContentClientMainPartsChromeOS::PostMainMessageLoopRun() {

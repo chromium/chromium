@@ -14,7 +14,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/time/tick_clock.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
@@ -48,6 +47,7 @@ class ASH_EXPORT PeripheralBatteryNotifier
 
   friend class PeripheralBatteryNotifierTest;
   FRIEND_TEST_ALL_PREFIXES(PeripheralBatteryNotifierTest, Basic);
+  FRIEND_TEST_ALL_PREFIXES(PeripheralBatteryNotifierTest, EarlyNotification);
 
   struct NotificationInfo {
     NotificationInfo();
@@ -58,6 +58,7 @@ class ASH_EXPORT PeripheralBatteryNotifier
     // Battery level within range [0, 100].
     base::Optional<uint8_t> level;
     base::TimeTicks last_notification_timestamp;
+    bool ever_notified;
   };
 
   // PeripheralBatteryListener::Observer:
@@ -94,8 +95,6 @@ class ASH_EXPORT PeripheralBatteryNotifier
   std::map<std::string, NotificationInfo> battery_notifications_;
 
   PeripheralBatteryListener* peripheral_battery_listener_;
-
-  const base::TickClock* clock_;
 };
 
 }  // namespace ash

@@ -497,6 +497,105 @@ void HitTestWatermark(
       web_contents, rwhv_child, child_location, rwhv_child, child_location);
 }
 
+void HitTestNestedFramesHelper(
+    Shell* shell,
+    net::test_server::EmbeddedTestServer* embedded_test_server) {
+  GURL main_url(embedded_test_server->GetURL(
+      "/frame_tree/page_with_positioned_nested_frames.html"));
+  EXPECT_TRUE(NavigateToURL(shell, main_url));
+
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell->web_contents())
+                            ->GetFrameTree()
+                            ->root();
+  ASSERT_EQ(1U, root->child_count());
+
+  EXPECT_EQ(
+      " Site A ------------ proxies for B C\n"
+      "   +--Site B ------- proxies for A C\n"
+      "        +--Site C -- proxies for A B\n"
+      "Where A = http://127.0.0.1/\n"
+      "      B = http://a.com/\n"
+      "      C = http://baz.com/",
+      DepictFrameTree(*root));
+
+  FrameTreeNode* child_node = root->child_at(0);
+  FrameTreeNode* grandchild_node = child_node->child_at(0);
+  RenderWidgetHostViewBase* rwhv_child = static_cast<RenderWidgetHostViewBase*>(
+      child_node->current_frame_host()->GetRenderWidgetHost()->GetView());
+  RenderWidgetHostViewBase* rwhv_grandchild =
+      static_cast<RenderWidgetHostViewBase*>(
+          grandchild_node->current_frame_host()
+              ->GetRenderWidgetHost()
+              ->GetView());
+
+  WaitForHitTestData(child_node->current_frame_host());
+  WaitForHitTestData(grandchild_node->current_frame_host());
+
+  // Create two points to hit test: One in the child of the main frame, and
+  // one in the frame nested within that. The hit test request is sent to the
+  // child's renderer.
+  gfx::PointF point_in_child(1.29, 1.59);
+  gfx::PointF point_in_nested_child(5.52, 5.62);
+  gfx::PointF point_in_nested_child_transformed;  // Transformed into child view
+                                                  // coordinate space.
+  rwhv_grandchild->TransformPointToCoordSpaceForView(
+      point_in_nested_child, rwhv_child, &point_in_nested_child_transformed);
+
+  {
+    base::RunLoop run_loop;
+    viz::FrameSinkId received_frame_sink_id;
+    gfx::PointF returned_point;
+    base::OnceClosure quit_closure = run_loop.QuitClosure();
+    DCHECK(child_node->current_frame_host()
+               ->GetRenderWidgetHost()
+               ->input_target_client());
+    child_node->current_frame_host()
+        ->GetRenderWidgetHost()
+        ->input_target_client()
+        ->FrameSinkIdAt(
+            point_in_child, 0,
+            base::BindLambdaForTesting(
+                [&](const viz::FrameSinkId& id, const gfx::PointF& point) {
+                  received_frame_sink_id = id;
+                  returned_point = point;
+                  std::move(quit_closure).Run();
+                }));
+    run_loop.Run();
+    // |point_in_child| should hit test to the view for |child_node|.
+    ASSERT_EQ(rwhv_child->GetFrameSinkId(), received_frame_sink_id);
+    EXPECT_NEAR(returned_point.x(), point_in_child.x(), kHitTestLowTolerance);
+    EXPECT_NEAR(returned_point.y(), point_in_child.y(), kHitTestLowTolerance);
+  }
+
+  {
+    base::RunLoop run_loop;
+    viz::FrameSinkId received_frame_sink_id;
+    gfx::PointF returned_point;
+    base::OnceClosure quit_closure = run_loop.QuitClosure();
+    DCHECK(child_node->current_frame_host()
+               ->GetRenderWidgetHost()
+               ->input_target_client());
+    child_node->current_frame_host()
+        ->GetRenderWidgetHost()
+        ->input_target_client()
+        ->FrameSinkIdAt(
+            point_in_nested_child_transformed, 0,
+            base::BindLambdaForTesting(
+                [&](const viz::FrameSinkId& id, const gfx::PointF& point) {
+                  received_frame_sink_id = id;
+                  returned_point = point;
+                  std::move(quit_closure).Run();
+                }));
+    run_loop.Run();
+    // |point_in_nested_child_transformed| should hit test to |rwhv_grandchild|.
+    ASSERT_EQ(rwhv_grandchild->GetFrameSinkId(), received_frame_sink_id);
+    EXPECT_NEAR(returned_point.x(), point_in_nested_child.x(),
+                kHitTestLowTolerance);
+    EXPECT_NEAR(returned_point.y(), point_in_nested_child.y(),
+                kHitTestLowTolerance);
+  }
+}
+
 #if defined(USE_AURA)
 void HitTestRootWindowTransform(
     Shell* shell,
@@ -710,6 +809,24 @@ class SitePerProcessHitTestBrowserTest : public SitePerProcessBrowserTestBase {
 #if defined(USE_AURA)
   SystemEventRewriter event_rewriter_;
 #endif
+};
+
+// This tests the kInputTargetClientHighPriority finch experiment where we
+// upgrade the TaskQueue priority for InputTargetClient methods.
+class SitePerProcessHitTestTaskPriorityBrowserTest
+    : public SitePerProcessHitTestBrowserTest {
+ public:
+  SitePerProcessHitTestTaskPriorityBrowserTest() = default;
+
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SitePerProcessBrowserTestBase::SetUpCommandLine(command_line);
+    feature_list_.InitAndEnableFeature(
+        blink::features::kInputTargetClientHighPriority);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 //
@@ -1819,7 +1936,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   synchronize_threads.Wait();
 
   SyntheticSmoothScrollGestureParams params;
-  params.gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
+  params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
   const gfx::PointF location_in_widget(25, 25);
   const gfx::PointF location_in_root =
       rwhv_nested->TransformPointToRootCoordSpaceF(location_in_widget);
@@ -1828,8 +1945,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   params.prevent_fling = false;
   RenderWidgetHostImpl* root_widget_host =
       static_cast<RenderWidgetHostImpl*>(root_rwhv->GetRenderWidgetHost());
-  auto dont_care_on_complete =
-      base::BindOnce([](SyntheticGesture::Result result) {});
+  auto dont_care_on_complete = base::DoNothing();
   root_widget_host->QueueSyntheticGesture(
       std::make_unique<SyntheticSmoothScrollGesture>(params),
       std::move(dont_care_on_complete));
@@ -1984,14 +2100,11 @@ class SitePerProcessEmulatedTouchBrowserTest
 
     // Create mouse events to emulate touch scroll. Since the page has no touch
     // handlers, these events will be converted into a gesture scroll sequence.
-    base::TimeTicks simulated_event_time = ui::EventTimeForNow();
-    base::TimeDelta simulated_event_time_delta =
-        base::TimeDelta::FromMilliseconds(100);
     blink::WebMouseEvent mouse_move_event =
         blink::SyntheticWebMouseEventBuilder::Build(
             blink::WebInputEvent::Type::kMouseMove, position_in_root.x(),
             position_in_root.y(), 0);
-    mouse_move_event.SetTimeStamp(simulated_event_time);
+    mouse_move_event.SetTimeStamp(ui::EventTimeForNow());
 
     int mouse_modifier = (test_type == PinchGoesToMainFrame)
                              ? blink::WebInputEvent::kShiftKey
@@ -2002,15 +2115,13 @@ class SitePerProcessEmulatedTouchBrowserTest
             blink::WebInputEvent::Type::kMouseDown, position_in_root.x(),
             position_in_root.y(), mouse_modifier);
     mouse_down_event.button = blink::WebMouseEvent::Button::kLeft;
-    simulated_event_time += simulated_event_time_delta;
-    mouse_down_event.SetTimeStamp(simulated_event_time);
+    mouse_down_event.SetTimeStamp(ui::EventTimeForNow());
 
     blink::WebMouseEvent mouse_drag_event =
         blink::SyntheticWebMouseEventBuilder::Build(
             blink::WebInputEvent::Type::kMouseMove, position_in_root.x(),
             position_in_root.y() + 20, mouse_modifier);
-    simulated_event_time += simulated_event_time_delta;
-    mouse_drag_event.SetTimeStamp(simulated_event_time);
+    mouse_drag_event.SetTimeStamp(ui::EventTimeForNow());
     mouse_drag_event.button = blink::WebMouseEvent::Button::kLeft;
 
     blink::WebMouseEvent mouse_up_event =
@@ -2018,8 +2129,7 @@ class SitePerProcessEmulatedTouchBrowserTest
             blink::WebInputEvent::Type::kMouseUp, position_in_root.x(),
             position_in_root.y() + 20, mouse_modifier);
     mouse_up_event.button = blink::WebMouseEvent::Button::kLeft;
-    simulated_event_time += simulated_event_time_delta;
-    mouse_up_event.SetTimeStamp(simulated_event_time);
+    mouse_up_event.SetTimeStamp(ui::EventTimeForNow());
 
     // Send mouse events and wait for GesturePinchBegin.
     router->RouteMouseEvent(root_rwhv, &mouse_move_event, ui::LatencyInfo());
@@ -2106,7 +2216,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
       (child_bounds.y() - root_bounds.y() + 25) * page_scale_factor);
 
   SyntheticSmoothScrollGestureParams params;
-  params.gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
+  params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
   params.anchor = gfx::PointF(point_in_child.x(), point_in_child.y());
   params.distances.push_back(gfx::Vector2dF(0, -10));
   // The JS jank from the "page_with_touch_start_janking_main_thread.html"
@@ -2240,7 +2350,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   std::unique_ptr<MockOverscrollControllerDelegateAura>
       mock_overscroll_delegate =
           std::make_unique<MockOverscrollControllerDelegateAura>(rwhva);
-  rwhva->overscroll_controller()->set_delegate(mock_overscroll_delegate.get());
+  rwhva->overscroll_controller()->set_delegate(
+      mock_overscroll_delegate->GetWeakPtr());
   MockOverscrollObserver* mock_overscroll_observer =
       mock_overscroll_delegate.get();
 #elif defined(OS_ANDROID)
@@ -3174,13 +3285,13 @@ class TooltipMonitor : public CursorManager::TooltipObserver {
   }
 
   void OnSetTooltipTextForView(const RenderWidgetHostViewBase* view,
-                               const base::string16& tooltip_text) override {
+                               const std::u16string& tooltip_text) override {
     tooltips_received_.push_back(tooltip_text);
     if (tooltip_text == tooltip_text_wanted_ && run_loop_->running())
       run_loop_->Quit();
   }
 
-  void WaitUntil(const base::string16& tooltip_text) {
+  void WaitUntil(const std::u16string& tooltip_text) {
     tooltip_text_wanted_ = tooltip_text;
     if (base::Contains(tooltips_received_, tooltip_text))
       return;
@@ -3189,8 +3300,8 @@ class TooltipMonitor : public CursorManager::TooltipObserver {
 
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
-  base::string16 tooltip_text_wanted_;
-  std::vector<base::string16> tooltips_received_;
+  std::u16string tooltip_text_wanted_;
+  std::vector<std::u16string> tooltips_received_;
 
   DISALLOW_COPY_AND_ASSIGN(TooltipMonitor);
 };  // class TooltipMonitor
@@ -3270,7 +3381,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
     EXPECT_EQ(iteration != 0, b_frame_monitor.EventWasReceived());
     b_frame_monitor.ResetEventReceived();
 
-    tooltip_monitor.WaitUntil(base::UTF8ToUTF16("body_tooltip"));
+    tooltip_monitor.WaitUntil(u"body_tooltip");
     tooltip_monitor.Reset();
 
     // Next send a MouseMove to B frame, and A should receive a MouseMove event.
@@ -3284,7 +3395,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
     a_frame_monitor.ResetEventReceived();
     EXPECT_TRUE(b_frame_monitor.EventWasReceived());
     b_frame_monitor.ResetEventReceived();
-    tooltip_monitor.WaitUntil(base::string16());
+    tooltip_monitor.WaitUntil(std::u16string());
     tooltip_monitor.Reset();
   }
 
@@ -4088,6 +4199,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   scoped_refptr<SetMouseCaptureInterceptor> interceptor =
       new SetMouseCaptureInterceptor(
           static_cast<RenderWidgetHostImpl*>(widget_host));
+
+  WaitForHitTestData(root->current_frame_host());
 
   gfx::PointF click_point =
       gfx::PointF(rwhv_root->GetViewBounds().width() / 2, 20);
@@ -4973,7 +5086,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
 
   // Simulate touch sequence to send GestureTap to sub-frame.
   SyntheticTapGestureParams params;
-  params.gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
+  params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
   gfx::Point center(150, 150);
   params.position = gfx::PointF(center.x(), center.y());
   params.duration_ms = 100;
@@ -5559,7 +5672,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
 
   const gfx::PointF point_in_root(1, 1);
   SyntheticPinchGestureParams params;
-  params.gesture_source_type = SyntheticGestureParams::TOUCHPAD_INPUT;
+  params.gesture_source_type =
+      content::mojom::GestureSourceType::kTouchpadInput;
   params.scale_factor = 1.2f;
   params.anchor = point_in_root;
 
@@ -6627,102 +6741,14 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest, HitTestClippedFrame) {
 
 // Verify InputTargetClient works within an OOPIF process.
 IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest, HitTestNestedFrames) {
-  GURL main_url(embedded_test_server()->GetURL(
-      "/frame_tree/page_with_positioned_nested_frames.html"));
-  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  HitTestNestedFramesHelper(shell(), embedded_test_server());
+}
 
-  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
-  ASSERT_EQ(1U, root->child_count());
-
-  EXPECT_EQ(
-      " Site A ------------ proxies for B C\n"
-      "   +--Site B ------- proxies for A C\n"
-      "        +--Site C -- proxies for A B\n"
-      "Where A = http://127.0.0.1/\n"
-      "      B = http://a.com/\n"
-      "      C = http://baz.com/",
-      DepictFrameTree(root));
-
-  FrameTreeNode* child_node = root->child_at(0);
-  FrameTreeNode* grandchild_node = child_node->child_at(0);
-  RenderWidgetHostViewBase* rwhv_child = static_cast<RenderWidgetHostViewBase*>(
-      child_node->current_frame_host()->GetRenderWidgetHost()->GetView());
-  RenderWidgetHostViewBase* rwhv_grandchild =
-      static_cast<RenderWidgetHostViewBase*>(
-          grandchild_node->current_frame_host()
-              ->GetRenderWidgetHost()
-              ->GetView());
-
-  WaitForHitTestData(child_node->current_frame_host());
-  WaitForHitTestData(grandchild_node->current_frame_host());
-
-  // Create two points to hit test: One in the child of the main frame, and
-  // one in the frame nested within that. The hit test request is sent to the
-  // child's renderer.
-  gfx::PointF point_in_child(1.29, 1.59);
-  gfx::PointF point_in_nested_child(5.52, 5.62);
-  gfx::PointF point_in_nested_child_transformed;  // Transformed into child view
-                                                  // coordinate space.
-  rwhv_grandchild->TransformPointToCoordSpaceForView(
-      point_in_nested_child, rwhv_child, &point_in_nested_child_transformed);
-
-  {
-    base::RunLoop run_loop;
-    viz::FrameSinkId received_frame_sink_id;
-    gfx::PointF returned_point;
-    base::OnceClosure quit_closure =
-        content::GetDeferredQuitTaskForRunLoop(&run_loop);
-    DCHECK(child_node->current_frame_host()
-               ->GetRenderWidgetHost()
-               ->input_target_client());
-    child_node->current_frame_host()
-        ->GetRenderWidgetHost()
-        ->input_target_client()
-        ->FrameSinkIdAt(
-            point_in_child, 0,
-            base::BindLambdaForTesting(
-                [&](const viz::FrameSinkId& id, const gfx::PointF& point) {
-                  received_frame_sink_id = id;
-                  returned_point = point;
-                  std::move(quit_closure).Run();
-                }));
-    content::RunThisRunLoop(&run_loop);
-    // |point_in_child| should hit test to the view for |child_node|.
-    ASSERT_EQ(rwhv_child->GetFrameSinkId(), received_frame_sink_id);
-    EXPECT_NEAR(returned_point.x(), point_in_child.x(), kHitTestLowTolerance);
-    EXPECT_NEAR(returned_point.y(), point_in_child.y(), kHitTestLowTolerance);
-  }
-
-  {
-    base::RunLoop run_loop;
-    viz::FrameSinkId received_frame_sink_id;
-    gfx::PointF returned_point;
-    base::OnceClosure quit_closure =
-        content::GetDeferredQuitTaskForRunLoop(&run_loop);
-    DCHECK(child_node->current_frame_host()
-               ->GetRenderWidgetHost()
-               ->input_target_client());
-    child_node->current_frame_host()
-        ->GetRenderWidgetHost()
-        ->input_target_client()
-        ->FrameSinkIdAt(
-            point_in_nested_child_transformed, 0,
-            base::BindLambdaForTesting(
-                [&](const viz::FrameSinkId& id, const gfx::PointF& point) {
-                  received_frame_sink_id = id;
-                  returned_point = point;
-                  std::move(quit_closure).Run();
-                }));
-    content::RunThisRunLoop(&run_loop);
-    // |point_in_nested_child_transformed| should hit test to |rwhv_grandchild|.
-    ASSERT_EQ(rwhv_grandchild->GetFrameSinkId(), received_frame_sink_id);
-    EXPECT_NEAR(returned_point.x(), point_in_nested_child.x(),
-                kHitTestLowTolerance);
-    EXPECT_NEAR(returned_point.y(), point_in_nested_child.y(),
-                kHitTestLowTolerance);
-  }
+// Test that the InputTargetClient interface works as expected even when Running
+// a TaskPriority finch experiment.
+IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestTaskPriorityBrowserTest,
+                       SmokeTestInputTargetClientTaskPriority) {
+  HitTestNestedFramesHelper(shell(), embedded_test_server());
 }
 
 IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,

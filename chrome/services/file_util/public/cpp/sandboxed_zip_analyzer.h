@@ -9,7 +9,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/ref_counted_delete_on_sequence.h"
 #include "chrome/services/file_util/public/mojom/file_util_service.mojom.h"
 #include "chrome/services/file_util/public/mojom/safe_archive_analyzer.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -23,7 +23,7 @@ struct ArchiveAnalyzerResults;
 // file download protection. This class lives on the UI thread, which is where
 // the result callback will be invoked.
 class SandboxedZipAnalyzer
-    : public base::RefCountedThreadSafe<SandboxedZipAnalyzer> {
+    : public base::RefCountedDeleteOnSequence<SandboxedZipAnalyzer> {
  public:
   using ResultCallback =
       base::OnceCallback<void(const safe_browsing::ArchiveAnalyzerResults&)>;
@@ -37,7 +37,8 @@ class SandboxedZipAnalyzer
   void Start();
 
  private:
-  friend class base::RefCountedThreadSafe<SandboxedZipAnalyzer>;
+  friend class base::RefCountedDeleteOnSequence<SandboxedZipAnalyzer>;
+  friend class base::DeleteHelper<SandboxedZipAnalyzer>;
 
   ~SandboxedZipAnalyzer();
 

@@ -1,11 +1,12 @@
 # Current list of eng reviewers mostly for the purpose of reviewing
 # addings of top-level and third-party directories.
 
+# NOTE: keep this in sync with lsc-owners-override@chromium.org owners
 creis@chromium.org
-darin@chromium.org
 haraken@chromium.org
 jam@chromium.org
 jochen@chromium.org
 pinkerton@chromium.org
 sky@chromium.org
 yfriedman@chromium.org
+# NOTE: keep this in sync with lsc-owners-override@chromium.org owners

@@ -10,6 +10,7 @@
 
 #include "base/macros.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
 #include "components/offline_items_collection/core/offline_item.h"
 
@@ -47,8 +48,12 @@ class FilteredOfflineItemObserver : public OfflineContentProvider::Observer {
   void OnItemRemoved(const ContentId& id) override;
   void OnItemUpdated(const OfflineItem& item,
                      const base::Optional<UpdateDelta>& update_delta) override;
+  void OnContentProviderGoingDown() override;
 
   OfflineContentProvider* provider_;
+  base::ScopedObservation<OfflineContentProvider,
+                          OfflineContentProvider::Observer>
+      observation_{this};
   ObserversMap observers_;
 
   DISALLOW_COPY_AND_ASSIGN(FilteredOfflineItemObserver);

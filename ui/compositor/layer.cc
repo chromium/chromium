@@ -459,6 +459,14 @@ LayerAnimator* Layer::GetAnimator() {
   return animator_.get();
 }
 
+void Layer::SetSubtreeCaptureId(viz::SubtreeCaptureId subtree_id) {
+  cc_layer_->SetSubtreeCaptureId(subtree_id);
+}
+
+viz::SubtreeCaptureId Layer::GetSubtreeCaptureId() const {
+  return cc_layer_->subtree_capture_id();
+}
+
 void Layer::SetTransform(const gfx::Transform& transform) {
   GetAnimator()->SetTransform(transform);
 }
@@ -628,8 +636,8 @@ void Layer::SetLayerFilters() {
   if (layer_inverted_)
     filters.Append(cc::FilterOperation::CreateInvertFilter(1.0));
   if (layer_blur_sigma_) {
-    filters.Append(cc::FilterOperation::CreateBlurFilter(
-        layer_blur_sigma_, SkBlurImageFilter::kClamp_TileMode));
+    filters.Append(cc::FilterOperation::CreateBlurFilter(layer_blur_sigma_,
+                                                         SkTileMode::kClamp));
   }
   // Brightness goes last, because the resulting colors neeed clamping, which
   // cause further color matrix filters to be applied separately. In this order,
@@ -652,8 +660,8 @@ void Layer::SetLayerBackgroundFilters() {
     filters.Append(cc::FilterOperation::CreateZoomFilter(zoom_, zoom_inset_));
 
   if (background_blur_sigma_) {
-    filters.Append(cc::FilterOperation::CreateBlurFilter(
-        background_blur_sigma_, SkBlurImageFilter::kClamp_TileMode));
+    filters.Append(cc::FilterOperation::CreateBlurFilter(background_blur_sigma_,
+                                                         SkTileMode::kClamp));
   }
   cc_layer_->SetBackdropFilters(filters);
 }
@@ -781,6 +789,7 @@ bool Layer::SwitchToLayer(scoped_refptr<cc::Layer> new_layer) {
   new_layer->SetBackgroundColor(cc_layer_->background_color());
   new_layer->SetSafeOpaqueBackgroundColor(
       cc_layer_->SafeOpaqueBackgroundColor());
+  new_layer->SetSubtreeCaptureId(cc_layer_->subtree_capture_id());
   new_layer->SetCacheRenderSurface(cc_layer_->cache_render_surface());
   new_layer->SetTrilinearFiltering(cc_layer_->trilinear_filtering());
   new_layer->SetRoundedCorner(cc_layer_->corner_radii());

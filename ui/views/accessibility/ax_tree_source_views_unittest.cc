@@ -52,11 +52,11 @@ class AXTreeSourceViewsTest : public ViewsTestBase {
     widget_->Init(std::move(params));
     widget_->SetContentsView(std::make_unique<View>());
 
-    label1_ = new Label(base::ASCIIToUTF16("Label 1"));
+    label1_ = new Label(u"Label 1");
     label1_->SetBounds(1, 1, 111, 111);
     widget_->GetContentsView()->AddChildView(label1_);
 
-    label2_ = new Label(base::ASCIIToUTF16("Label 2"));
+    label2_ = new Label(u"Label 2");
     label2_->SetBounds(2, 2, 222, 222);
     widget_->GetContentsView()->AddChildView(label2_);
 
@@ -150,6 +150,21 @@ TEST_F(AXTreeSourceViewsTest, IgnoredView) {
   AXAuraObjCache cache;
   TestAXTreeSourceViews tree(cache.GetOrCreate(widget_.get()), &cache);
   EXPECT_TRUE(tree.IsValid(cache.GetOrCreate(ignored_view)));
+}
+
+TEST_F(AXTreeSourceViewsTest, ViewWithChildTreeHasNoChildren) {
+  View* contents_view = widget_->GetContentsView();
+  contents_view->GetViewAccessibility().OverrideChildTreeID(
+      ui::AXTreeID::CreateNewAXTreeID());
+
+  AXAuraObjCache cache;
+  TestAXTreeSourceViews tree(cache.GetOrCreate(widget_.get()), &cache);
+  auto* ax_obj = cache.GetOrCreate(contents_view);
+  EXPECT_TRUE(tree.IsValid(ax_obj));
+  std::vector<AXAuraObjWrapper*> children;
+  ax_obj->GetChildren(&children);
+  EXPECT_TRUE(children.empty());
+  EXPECT_EQ(nullptr, cache.GetOrCreate(textfield_)->GetParent());
 }
 
 }  // namespace

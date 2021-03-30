@@ -242,27 +242,6 @@ void TabletModeWindowState::LeaveTabletMode(WindowState* window_state,
       window_state->SetStateObject(std::move(old_state_));
 }
 
-void TabletModeWindowState::CycleTabletSnap(
-    WindowState* window_state,
-    SplitViewController::SnapPosition snap_position) {
-  aura::Window* window = window_state->window();
-  SplitViewController* split_view_controller = SplitViewController::Get(window);
-  // If |window| is already snapped in |snap_position|, then unsnap |window|.
-  if (window == split_view_controller->GetSnappedWindow(snap_position)) {
-    UpdateWindow(window_state, GetMaximizedOrCenteredWindowType(window_state),
-                 /*animated=*/true);
-    return;
-  }
-  // If |window| can snap in split view, then snap |window| in |snap_position|.
-  if (split_view_controller->CanSnapWindow(window)) {
-    split_view_controller->SnapWindow(window, snap_position);
-    Shell::Get()->overview_controller()->StartOverview();
-    return;
-  }
-  // Otherwise, show the cannot snap toast.
-  ShowAppCannotSnapToast();
-}
-
 void TabletModeWindowState::OnWMEvent(WindowState* window_state,
                                       const WMEvent* event) {
   // Ignore events that are sent during the exit transition.
@@ -304,22 +283,8 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
                    true /* animated */);
       return;
     case WM_EVENT_SNAP_LEFT:
-      // Set bounds_changed_by_user to true to avoid WindowPositioner to auto
-      // place the window.
-      window_state->set_bounds_changed_by_user(true);
-      UpdateWindow(window_state,
-                   GetSnappedWindowStateType(window_state,
-                                             WindowStateType::kLeftSnapped),
-                   false /* animated */);
-      return;
     case WM_EVENT_SNAP_RIGHT:
-      // Set bounds_changed_by_user to true to avoid WindowPositioner to auto
-      // place the window.
-      window_state->set_bounds_changed_by_user(true);
-      UpdateWindow(window_state,
-                   GetSnappedWindowStateType(window_state,
-                                             WindowStateType::kRightSnapped),
-                   false /* animated */);
+      DoTabletSnap(window_state, event->type());
       return;
     case WM_EVENT_CYCLE_SNAP_LEFT:
       CycleTabletSnap(window_state, SplitViewController::LEFT);
@@ -542,6 +507,50 @@ void TabletModeWindowState::UpdateBounds(WindowState* window_state,
         window_state->SetBoundsDirectAnimated(bounds_in_parent);
     }
   }
+}
+
+void TabletModeWindowState::CycleTabletSnap(
+    WindowState* window_state,
+    SplitViewController::SnapPosition snap_position) {
+  aura::Window* window = window_state->window();
+  SplitViewController* split_view_controller = SplitViewController::Get(window);
+  // If |window| is already snapped in |snap_position|, then unsnap |window|.
+  if (window == split_view_controller->GetSnappedWindow(snap_position)) {
+    UpdateWindow(window_state, GetMaximizedOrCenteredWindowType(window_state),
+                 /*animated=*/true);
+    return;
+  }
+  // If |window| can snap in split view, then snap |window| in |snap_position|.
+  if (split_view_controller->CanSnapWindow(window)) {
+    split_view_controller->SnapWindow(window, snap_position);
+    return;
+  }
+  // Otherwise, show the cannot snap toast.
+  ShowAppCannotSnapToast();
+}
+
+void TabletModeWindowState::DoTabletSnap(WindowState* window_state,
+                                         WMEventType snap_event_type) {
+  DCHECK(snap_event_type == WM_EVENT_SNAP_LEFT ||
+         snap_event_type == WM_EVENT_SNAP_RIGHT);
+
+  aura::Window* window = window_state->window();
+  SplitViewController* split_view_controller = SplitViewController::Get(window);
+  if (!split_view_controller->CanSnapWindow(window)) {
+    ShowAppCannotSnapToast();
+    return;
+  }
+
+  window_state->set_bounds_changed_by_user(true);
+  // A snap WMEvent will put the window in tablet split view.
+  split_view_controller->OnWindowSnapWMEvent(window, snap_event_type);
+
+  // Change window state and bounds to the snapped window state and bounds.
+  UpdateWindow(window_state,
+               snap_event_type == WM_EVENT_SNAP_LEFT
+                   ? WindowStateType::kLeftSnapped
+                   : WindowStateType::kRightSnapped,
+               /*animated=*/false);
 }
 
 }  // namespace ash

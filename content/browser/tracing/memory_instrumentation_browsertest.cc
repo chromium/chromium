@@ -20,11 +20,9 @@
 
 #if defined(OS_ANDROID)
 #include "base/android/build_info.h"
-
-// TODO: Remove these definitions when upgrading to an NDK that includes them.
-// They were copied from <malloc.h> in Bionic master.
+// TODO: Remove this definition by targeting version 22+ NDK at build time.
+// This was copied from <malloc.h> in Bionic master.
 extern "C" int mallopt(int __option, int __value) __attribute__((weak));
-#define M_PURGE -101
 #endif
 
 using testing::Le;
@@ -123,14 +121,6 @@ IN_PROC_BROWSER_TEST_F(MemoryInstrumentationTest,
   volatile char* x = static_cast<volatile char*>(buffer.get());
   EXPECT_EQ(x[0] + x[kAllocSize - 1], 2);
 
-  content::WebContents* web_contents = shell()->web_contents();
-  base::ProcessId renderer_pid =
-      web_contents->GetMainFrame()->GetProcess()->GetProcess().Pid();
-
-  // Should allocate at least 4*10^6 / 1024 = 4000kb.
-  EXPECT_TRUE(content::ExecuteScript(web_contents,
-                                     "var a = Array(1000000).fill(1234);\n"));
-
   std::unique_ptr<GlobalMemoryDump> during_ptr = DoGlobalDump();
 
   buffer.reset();
@@ -152,12 +142,6 @@ IN_PROC_BROWSER_TEST_F(MemoryInstrumentationTest,
               AllOf(Ge(kAllocSizeKb - 3000), Le(kAllocSizeKb + 3000)));
   EXPECT_THAT(during_kb - after_kb,
               AllOf(Ge(kAllocSizeKb - 3000), Le(kAllocSizeKb + 3000)));
-
-  int64_t before_renderer_kb =
-      GetPrivateFootprintKb(ProcessType::RENDERER, *before_ptr, renderer_pid);
-  int64_t during_renderer_kb =
-      GetPrivateFootprintKb(ProcessType::RENDERER, *during_ptr, renderer_pid);
-  EXPECT_GE(during_renderer_kb - before_renderer_kb, 3000);
 }
 
 }  // namespace content

@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -19,6 +20,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "components/safe_browsing/core/common/test_task_environment.h"
 #include "components/safe_browsing/core/db/v4_database.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
@@ -43,6 +46,8 @@ FullHash HashForUrl(const GURL& url) {
   // ASSERT_GE(full_hashes.size(), 1u);
   return full_hashes[0];
 }
+
+const int kDefaultStoreFileSizeInBytes = 320000;
 
 // Use this if you want GetFullHashes() to always return prescribed results.
 class FakeGetHashProtocolManager : public V4GetHashProtocolManager {
@@ -108,7 +113,8 @@ class FakeV4Database : public V4Database {
       std::unique_ptr<StoreMap> store_map,
       const StoreAndHashPrefixes& store_and_hash_prefixes,
       NewDatabaseReadyCallback new_db_callback,
-      bool stores_available) {
+      bool stores_available,
+      int64_t store_file_size) {
     // Mimics V4Database::Create
     const scoped_refptr<base::SingleThreadTaskRunner>& callback_task_runner =
         base::ThreadTaskRunnerHandle::Get();
@@ -117,7 +123,7 @@ class FakeV4Database : public V4Database {
         base::BindOnce(&FakeV4Database::CreateOnTaskRunner, db_task_runner,
                        std::move(store_map), store_and_hash_prefixes,
                        callback_task_runner, std::move(new_db_callback),
-                       stores_available));
+                       stores_available, store_file_size));
   }
 
   // V4Database implementation
@@ -134,6 +140,11 @@ class FakeV4Database : public V4Database {
         store_and_hash_prefixes->push_back(stored_sahp);
       }
     }
+  }
+
+  // V4Database implementation
+  int64_t GetStoreSizeInBytes(const ListIdentifier& store) const override {
+    return store_file_size_;
   }
 
   bool AreAllStoresAvailable(
@@ -153,11 +164,12 @@ class FakeV4Database : public V4Database {
       const StoreAndHashPrefixes& store_and_hash_prefixes,
       const scoped_refptr<base::SingleThreadTaskRunner>& callback_task_runner,
       NewDatabaseReadyCallback new_db_callback,
-      bool stores_available) {
+      bool stores_available,
+      int64_t store_file_size) {
     // Mimics the semantics of V4Database::CreateOnTaskRunner
-    std::unique_ptr<FakeV4Database> fake_v4_database(
-        new FakeV4Database(db_task_runner, std::move(store_map),
-                           store_and_hash_prefixes, stores_available));
+    std::unique_ptr<FakeV4Database> fake_v4_database(new FakeV4Database(
+        db_task_runner, std::move(store_map), store_and_hash_prefixes,
+        stores_available, store_file_size));
     callback_task_runner->PostTask(FROM_HERE,
                                    base::BindOnce(std::move(new_db_callback),
                                                   std::move(fake_v4_database)));
@@ -166,13 +178,16 @@ class FakeV4Database : public V4Database {
   FakeV4Database(const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
                  std::unique_ptr<StoreMap> store_map,
                  const StoreAndHashPrefixes& store_and_hash_prefixes,
-                 bool stores_available)
+                 bool stores_available,
+                 int64_t store_file_size)
       : V4Database(db_task_runner, std::move(store_map)),
         store_and_hash_prefixes_(store_and_hash_prefixes),
-        stores_available_(stores_available) {}
+        stores_available_(stores_available),
+        store_file_size_(store_file_size) {}
 
   const StoreAndHashPrefixes store_and_hash_prefixes_;
   const bool stores_available_;
+  int64_t store_file_size_;
 };
 
 // TODO(nparker): This might be simpler with a mock and EXPECT calls.
@@ -247,9 +262,9 @@ class TestAllowlistClient : public SafeBrowsingDatabaseManager::Client {
       : expected_sb_threat_type_(expected_sb_threat_type),
         match_expected_(match_expected) {}
 
-  void OnCheckWhitelistUrlResult(bool is_allowlisted) override {
+  void OnCheckAllowlistUrlResult(bool is_allowlisted) override {
     EXPECT_EQ(match_expected_, is_allowlisted);
-    EXPECT_EQ(SB_THREAT_TYPE_CSD_WHITELIST, expected_sb_threat_type_);
+    EXPECT_EQ(SB_THREAT_TYPE_CSD_ALLOWLIST, expected_sb_threat_type_);
     callback_called_ = true;
   }
 
@@ -371,8 +386,10 @@ class V4LocalDatabaseManagerTest : public PlatformTest {
     v4_local_database_manager_->PopulateArtificialDatabase();
   }
 
-  void ReplaceV4Database(const StoreAndHashPrefixes& store_and_hash_prefixes,
-                         bool stores_available = false) {
+  void ReplaceV4Database(
+      const StoreAndHashPrefixes& store_and_hash_prefixes,
+      bool stores_available = false,
+      int64_t store_file_size = kDefaultStoreFileSizeInBytes) {
     // Disable the V4LocalDatabaseManager first so that if the callback to
     // verify checksum has been scheduled, then it doesn't do anything when it
     // is called back.
@@ -387,9 +404,9 @@ class V4LocalDatabaseManagerTest : public PlatformTest {
     NewDatabaseReadyCallback db_ready_callback =
         base::BindOnce(&V4LocalDatabaseManager::DatabaseReadyForChecks,
                        base::Unretained(v4_local_database_manager_.get()));
-    FakeV4Database::Create(task_runner_, std::make_unique<StoreMap>(),
-                           store_and_hash_prefixes,
-                           std::move(db_ready_callback), stores_available);
+    FakeV4Database::Create(
+        task_runner_, std::make_unique<StoreMap>(), store_and_hash_prefixes,
+        std::move(db_ready_callback), stores_available, store_file_size);
     WaitForTasksOnTaskRunner();
   }
 
@@ -501,7 +518,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckBrowseUrlWithFakeDbReturnsMatch) {
   WaitForTasksOnTaskRunner();
 }
 
-TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdWhitelistWithPrefixMatch) {
+TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdAllowlistWithPrefixMatch) {
   // Setup to receive full-hash misses. We won't make URL requests.
   ScopedFakeGetHashProtocolManagerFactory pin(FullHashInfos({}));
   ResetLocalDatabaseManager();
@@ -511,15 +528,15 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdWhitelistWithPrefixMatch) {
   FullHash safe_full_hash(crypto::SHA256HashString(url_safe_no_scheme));
   const HashPrefix safe_hash_prefix(safe_full_hash.substr(0, 5));
   StoreAndHashPrefixes store_and_hash_prefixes;
-  store_and_hash_prefixes.emplace_back(GetUrlCsdWhitelistId(),
+  store_and_hash_prefixes.emplace_back(GetUrlCsdAllowlistId(),
                                        safe_hash_prefix);
   ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
 
   TestAllowlistClient client(
       /* match_expected= */ false,
-      /* expected_sb_threat_type= */ SB_THREAT_TYPE_CSD_WHITELIST);
+      /* expected_sb_threat_type= */ SB_THREAT_TYPE_CSD_ALLOWLIST);
   const GURL url_check("https://" + url_safe_no_scheme);
-  EXPECT_EQ(AsyncMatch::ASYNC, v4_local_database_manager_->CheckCsdWhitelistUrl(
+  EXPECT_EQ(AsyncMatch::ASYNC, v4_local_database_manager_->CheckCsdAllowlistUrl(
                                    url_check, &client));
 
   EXPECT_FALSE(client.callback_called());
@@ -529,31 +546,31 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdWhitelistWithPrefixMatch) {
   EXPECT_TRUE(client.callback_called());
 }
 
-// This is like CsdWhitelistWithPrefixMatch, but we also verify the
+// This is like CsdAllowlistWithPrefixMatch, but we also verify the
 // full-hash-match results in an appropriate callback value.
 TEST_F(V4LocalDatabaseManagerTest,
-       TestCheckCsdWhitelistWithPrefixTheFullMatch) {
+       TestCheckCsdAllowlistWithPrefixTheFullMatch) {
   std::string url_safe_no_scheme("example.com/safe/");
   FullHash safe_full_hash(crypto::SHA256HashString(url_safe_no_scheme));
 
   // Setup to receive full-hash hit. We won't make URL requests.
   FullHashInfos infos(
-      {{safe_full_hash, GetUrlCsdWhitelistId(), base::Time::Now()}});
+      {{safe_full_hash, GetUrlCsdAllowlistId(), base::Time::Now()}});
   ScopedFakeGetHashProtocolManagerFactory pin(infos);
   ResetLocalDatabaseManager();
   WaitForTasksOnTaskRunner();
 
   const HashPrefix safe_hash_prefix(safe_full_hash.substr(0, 5));
   StoreAndHashPrefixes store_and_hash_prefixes;
-  store_and_hash_prefixes.emplace_back(GetUrlCsdWhitelistId(),
+  store_and_hash_prefixes.emplace_back(GetUrlCsdAllowlistId(),
                                        safe_hash_prefix);
   ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
 
   TestAllowlistClient client(
       /* match_expected= */ true,
-      /* expected_sb_threat_type= */ SB_THREAT_TYPE_CSD_WHITELIST);
+      /* expected_sb_threat_type= */ SB_THREAT_TYPE_CSD_ALLOWLIST);
   const GURL url_check("https://" + url_safe_no_scheme);
-  EXPECT_EQ(AsyncMatch::ASYNC, v4_local_database_manager_->CheckCsdWhitelistUrl(
+  EXPECT_EQ(AsyncMatch::ASYNC, v4_local_database_manager_->CheckCsdAllowlistUrl(
                                    url_check, &client));
 
   EXPECT_FALSE(client.callback_called());
@@ -563,7 +580,7 @@ TEST_F(V4LocalDatabaseManagerTest,
   EXPECT_TRUE(client.callback_called());
 }
 
-TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdWhitelistWithFullMatch) {
+TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdAllowlistWithFullMatch) {
   // Setup to receive full-hash misses. We won't make URL requests.
   ScopedFakeGetHashProtocolManagerFactory pin(FullHashInfos({}));
   ResetLocalDatabaseManager();
@@ -572,21 +589,21 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdWhitelistWithFullMatch) {
   std::string url_safe_no_scheme("example.com/safe/");
   FullHash safe_full_hash(crypto::SHA256HashString(url_safe_no_scheme));
   StoreAndHashPrefixes store_and_hash_prefixes;
-  store_and_hash_prefixes.emplace_back(GetUrlCsdWhitelistId(), safe_full_hash);
+  store_and_hash_prefixes.emplace_back(GetUrlCsdAllowlistId(), safe_full_hash);
   ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
 
   TestAllowlistClient client(
       /* match_expected= */ false,
-      /* expected_sb_threat_type= */ SB_THREAT_TYPE_CSD_WHITELIST);
+      /* expected_sb_threat_type= */ SB_THREAT_TYPE_CSD_ALLOWLIST);
   const GURL url_check("https://" + url_safe_no_scheme);
-  EXPECT_EQ(AsyncMatch::MATCH, v4_local_database_manager_->CheckCsdWhitelistUrl(
+  EXPECT_EQ(AsyncMatch::MATCH, v4_local_database_manager_->CheckCsdAllowlistUrl(
                                    url_check, &client));
 
   WaitForTasksOnTaskRunner();
   EXPECT_FALSE(client.callback_called());
 }
 
-TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdWhitelistWithNoMatch) {
+TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdAllowlistWithNoMatch) {
   // Setup to receive full-hash misses. We won't make URL requests.
   ScopedFakeGetHashProtocolManagerFactory pin(FullHashInfos({}));
   ResetLocalDatabaseManager();
@@ -601,18 +618,18 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdWhitelistWithNoMatch) {
 
   TestAllowlistClient client(
       /* match_expected= */ true,
-      /* expected_sb_threat_type= */ SB_THREAT_TYPE_CSD_WHITELIST);
+      /* expected_sb_threat_type= */ SB_THREAT_TYPE_CSD_ALLOWLIST);
   const GURL url_check("https://other.com/");
   EXPECT_EQ(
       AsyncMatch::NO_MATCH,
-      v4_local_database_manager_->CheckCsdWhitelistUrl(url_check, &client));
+      v4_local_database_manager_->CheckCsdAllowlistUrl(url_check, &client));
 
   WaitForTasksOnTaskRunner();
   EXPECT_FALSE(client.callback_called());
 }
 
 // When allowlist is unavailable, all URLS should be allowed.
-TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdWhitelistUnavailable) {
+TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdAllowlistUnavailable) {
   // Setup to receive full-hash misses. We won't make URL requests.
   ScopedFakeGetHashProtocolManagerFactory pin(FullHashInfos({}));
   ResetLocalDatabaseManager();
@@ -623,9 +640,9 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdWhitelistUnavailable) {
 
   TestAllowlistClient client(
       /* match_expected= */ false,
-      /* expected_sb_threat_type= */ SB_THREAT_TYPE_CSD_WHITELIST);
+      /* expected_sb_threat_type= */ SB_THREAT_TYPE_CSD_ALLOWLIST);
   const GURL url_check("https://other.com/");
-  EXPECT_EQ(AsyncMatch::MATCH, v4_local_database_manager_->CheckCsdWhitelistUrl(
+  EXPECT_EQ(AsyncMatch::MATCH, v4_local_database_manager_->CheckCsdAllowlistUrl(
                                    url_check, &client));
 
   WaitForTasksOnTaskRunner();
@@ -664,7 +681,8 @@ TEST_F(V4LocalDatabaseManagerTest,
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlHighConfidenceAllowlistId(),
                                        safe_hash_prefix);
-  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
+  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true,
+                    /* store_file_size= */ 10000);
 
   // Setup the allowlist client to verify the callback.
   TestAllowlistClient client(
@@ -706,7 +724,8 @@ TEST_F(V4LocalDatabaseManagerTest,
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlHighConfidenceAllowlistId(),
                                        safe_hash_prefix);
-  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
+  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true,
+                    /* store_file_size= */ 100000);
 
   // Setup the allowlist client to verify the callback.
   TestAllowlistClient client(
@@ -745,7 +764,8 @@ TEST_F(V4LocalDatabaseManagerTest,
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlHighConfidenceAllowlistId(),
                                        safe_full_hash);
-  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
+  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true,
+                    /* store_file_size= */ 100000);
 
   // Setup the allowlist client to verify the callback isn't called.
   TestAllowlistClient client(
@@ -777,7 +797,8 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckUrlForHCAllowlistWithNoMatch) {
   // Add a full hash that won't match the URL we check.
   StoreAndHashPrefixes store_and_hash_prefixes;
   store_and_hash_prefixes.emplace_back(GetUrlMalwareId(), safe_full_hash);
-  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
+  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true,
+                    /* store_file_size= */ 100000);
 
   // Setup the allowlist client to verify the callback isn't called.
   TestAllowlistClient client(
@@ -804,7 +825,39 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckUrlForHCAllowlistUnavailable) {
 
   // Setup local database as unavailable.
   StoreAndHashPrefixes store_and_hash_prefixes;
-  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ false);
+  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ false,
+                    /* store_file_size= */ 100000);
+
+  // Setup the allowlist client to verify the callback isn't called.
+  TestAllowlistClient client(
+      /* match_expected= */ false,
+      /* expected_sb_threat_type= */ SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST);
+
+  const GURL url_check("https://example.com/safe");
+  EXPECT_EQ(AsyncMatch::MATCH,
+            v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
+                url_check, &client));
+
+  WaitForTasksOnTaskRunner();
+  EXPECT_FALSE(client.callback_called());
+}
+
+// When allowlist is available but the size is too small, all URLS should be
+// considered MATCH.
+TEST_F(V4LocalDatabaseManagerTest, TestCheckUrlForHCAllowlistSmallSize) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({safe_browsing::kRealTimeUrlLookupEnabled}, {});
+
+  // Setup to receive full-hash misses. We won't make URL requests.
+  ScopedFakeGetHashProtocolManagerFactory pin(FullHashInfos({}));
+  ResetLocalDatabaseManager();
+  WaitForTasksOnTaskRunner();
+
+  // Setup the size of the allowlist to be smaller than the threshold. (10
+  // entries)
+  StoreAndHashPrefixes store_and_hash_prefixes;
+  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true,
+                    /* store_file_size= */ 32 * 10);
 
   // Setup the allowlist client to verify the callback isn't called.
   TestAllowlistClient client(
@@ -1006,52 +1059,52 @@ TEST_F(V4LocalDatabaseManagerTest, UsingWeakPtrDropsCallback) {
   WaitForTasksOnTaskRunner();
 }
 
-TEST_F(V4LocalDatabaseManagerTest, TestMatchDownloadWhitelistString) {
+TEST_F(V4LocalDatabaseManagerTest, TestMatchDownloadAllowlistString) {
   SetupFakeManager();
   const std::string good_cert = "Good Cert";
   const std::string other_cert = "Other Cert";
   FullHash good_hash(crypto::SHA256HashString(good_cert));
 
   StoreAndHashPrefixes store_and_hash_prefixes;
-  store_and_hash_prefixes.emplace_back(GetCertCsdDownloadWhitelistId(),
+  store_and_hash_prefixes.emplace_back(GetCertCsdDownloadAllowlistId(),
                                        good_hash);
 
   ReplaceV4Database(store_and_hash_prefixes, false /* not available */);
   // Verify it defaults to false when DB is not available.
   EXPECT_FALSE(
-      v4_local_database_manager_->MatchDownloadWhitelistString(good_cert));
+      v4_local_database_manager_->MatchDownloadAllowlistString(good_cert));
 
   ReplaceV4Database(store_and_hash_prefixes, true /* available */);
-  // Not whitelisted.
+  // Not allowlisted.
   EXPECT_FALSE(
-      v4_local_database_manager_->MatchDownloadWhitelistString(other_cert));
-  // Whitelisted.
+      v4_local_database_manager_->MatchDownloadAllowlistString(other_cert));
+  // Allowlisted.
   EXPECT_TRUE(
-      v4_local_database_manager_->MatchDownloadWhitelistString(good_cert));
+      v4_local_database_manager_->MatchDownloadAllowlistString(good_cert));
 
   EXPECT_FALSE(FakeV4LocalDatabaseManager::PerformFullHashCheckCalled(
       v4_local_database_manager_));
 }
 
-TEST_F(V4LocalDatabaseManagerTest, TestMatchDownloadWhitelistUrl) {
+TEST_F(V4LocalDatabaseManagerTest, TestMatchDownloadAllowlistUrl) {
   SetupFakeManager();
   GURL good_url("http://safe.com");
   GURL other_url("http://iffy.com");
 
   StoreAndHashPrefixes store_and_hash_prefixes;
-  store_and_hash_prefixes.emplace_back(GetUrlCsdDownloadWhitelistId(),
+  store_and_hash_prefixes.emplace_back(GetUrlCsdDownloadAllowlistId(),
                                        HashForUrl(good_url));
 
   ReplaceV4Database(store_and_hash_prefixes, false /* not available */);
   // Verify it defaults to false when DB is not available.
-  EXPECT_FALSE(v4_local_database_manager_->MatchDownloadWhitelistUrl(good_url));
+  EXPECT_FALSE(v4_local_database_manager_->MatchDownloadAllowlistUrl(good_url));
 
   ReplaceV4Database(store_and_hash_prefixes, true /* available */);
-  // Not whitelisted.
+  // Not allowlisted.
   EXPECT_FALSE(
-      v4_local_database_manager_->MatchDownloadWhitelistUrl(other_url));
-  // Whitelisted.
-  EXPECT_TRUE(v4_local_database_manager_->MatchDownloadWhitelistUrl(good_url));
+      v4_local_database_manager_->MatchDownloadAllowlistUrl(other_url));
+  // Allowlisted.
+  EXPECT_TRUE(v4_local_database_manager_->MatchDownloadAllowlistUrl(good_url));
 
   EXPECT_FALSE(FakeV4LocalDatabaseManager::PerformFullHashCheckCalled(
       v4_local_database_manager_));
@@ -1071,9 +1124,9 @@ TEST_F(V4LocalDatabaseManagerTest, TestMatchMalwareIP) {
   ReplaceV4Database(store_and_hash_prefixes);
 
   EXPECT_FALSE(v4_local_database_manager_->MatchMalwareIP(""));
-  // Not blacklisted.
+  // Not blocklisted.
   EXPECT_FALSE(v4_local_database_manager_->MatchMalwareIP("192.168.1.1"));
-  // Blacklisted.
+  // Blocklisted.
   EXPECT_TRUE(v4_local_database_manager_->MatchMalwareIP("192.168.1.2"));
 
   EXPECT_FALSE(FakeV4LocalDatabaseManager::PerformFullHashCheckCalled(
@@ -1190,14 +1243,14 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckResourceUrlReturnsBad) {
   ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
 
   const GURL url_bad("https://" + url_bad_no_scheme);
-  TestClient client(SB_THREAT_TYPE_BLACKLISTED_RESOURCE, url_bad);
+  TestClient client(SB_THREAT_TYPE_BLOCKLISTED_RESOURCE, url_bad);
   EXPECT_FALSE(v4_local_database_manager_->CheckResourceUrl(url_bad, &client));
   EXPECT_FALSE(client.on_check_resource_url_result_called());
   WaitForTasksOnTaskRunner();
   EXPECT_TRUE(client.on_check_resource_url_result_called());
 }
 
-TEST_F(V4LocalDatabaseManagerTest, TestCheckExtensionIDsNothingBlacklisted) {
+TEST_F(V4LocalDatabaseManagerTest, TestCheckExtensionIDsNothingBlocklisted) {
   // Setup to receive full-hash misses.
   ScopedFakeGetHashProtocolManagerFactory pin(FullHashInfos({}));
 
@@ -1225,7 +1278,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckExtensionIDsNothingBlacklisted) {
   EXPECT_TRUE(client.on_check_extensions_result_called());
 }
 
-TEST_F(V4LocalDatabaseManagerTest, TestCheckExtensionIDsOneIsBlacklisted) {
+TEST_F(V4LocalDatabaseManagerTest, TestCheckExtensionIDsOneIsBlocklisted) {
   // bad_extension_id is in the local DB and the full hash will match.
   const FullHash bad_extension_id("aaaabbbbccccdddd"),
       good_extension_id("ddddccccbbbbaaaa");
@@ -1254,7 +1307,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckExtensionIDsOneIsBlacklisted) {
   EXPECT_TRUE(client.on_check_extensions_result_called());
 }
 
-TEST_F(V4LocalDatabaseManagerTest, TestCheckDownloadUrlNothingBlacklisted) {
+TEST_F(V4LocalDatabaseManagerTest, TestCheckDownloadUrlNothingBlocklisted) {
   // Setup to receive full-hash misses.
   ScopedFakeGetHashProtocolManagerFactory pin(FullHashInfos({}));
 
@@ -1282,7 +1335,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckDownloadUrlNothingBlacklisted) {
   EXPECT_TRUE(client.on_check_download_urls_result_called());
 }
 
-TEST_F(V4LocalDatabaseManagerTest, TestCheckDownloadUrlWithOneBlacklisted) {
+TEST_F(V4LocalDatabaseManagerTest, TestCheckDownloadUrlWithOneBlocklisted) {
   // Setup to receive full-hash hit.
   std::string url_bad_no_scheme("example.com/bad/");
   FullHash bad_full_hash(crypto::SHA256HashString(url_bad_no_scheme));
@@ -1418,6 +1471,269 @@ TEST_F(V4LocalDatabaseManagerTest, FlagMultipleUrls) {
       url_good, usual_threat_types_, nullptr));
 
   StopLocalDatabaseManager();
+}
+
+// Verify that the correct set of lists is synced on each platform: iOS,
+// Chrome-branded desktop, and non-Chrome-branded desktop.
+TEST_F(V4LocalDatabaseManagerTest, SyncedLists) {
+  WaitForTasksOnTaskRunner();
+
+#if defined(OS_IOS)
+  std::vector<ListIdentifier> expected_lists{
+      GetUrlSocEngId(), GetUrlMalwareId(), GetUrlBillingId(),
+      GetUrlCsdAllowlistId(), GetUrlHighConfidenceAllowlistId()};
+#elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  std::vector<ListIdentifier> expected_lists{GetIpMalwareId(),
+                                             GetUrlSocEngId(),
+                                             GetUrlMalwareId(),
+                                             GetUrlUwsId(),
+                                             GetUrlMalBinId(),
+                                             GetChromeExtMalwareId(),
+                                             GetCertCsdDownloadAllowlistId(),
+                                             GetChromeUrlClientIncidentId(),
+                                             GetUrlBillingId(),
+                                             GetUrlCsdDownloadAllowlistId(),
+                                             GetUrlCsdAllowlistId(),
+                                             GetUrlSubresourceFilterId(),
+                                             GetUrlSuspiciousSiteId(),
+                                             GetUrlHighConfidenceAllowlistId()};
+#else
+  std::vector<ListIdentifier> expected_lists{
+      GetIpMalwareId(), GetUrlSocEngId(), GetUrlMalwareId(),
+      GetUrlUwsId(),    GetUrlMalBinId(), GetChromeExtMalwareId(),
+      GetUrlBillingId()};
+#endif
+
+  std::vector<ListIdentifier> synced_lists;
+  for (const auto& info : v4_local_database_manager_->list_infos_) {
+    if (info.fetch_updates())
+      synced_lists.push_back(info.list_id());
+  }
+  EXPECT_EQ(expected_lists, synced_lists);
+}
+
+TEST_F(V4LocalDatabaseManagerTest, RenameStoreFile_RenameSuccess) {
+  const std::string prefix = "SafeBrowsing.V4Store.";
+  const std::string old_store_name = "UrlCsdWhitelist";
+  const std::string old_name_in_use_histogram =
+      prefix + "OldFileNameInUse." + old_store_name;
+  const std::string old_name_exists_histogram =
+      prefix + "OldFileNameExists." + old_store_name;
+  const std::string new_store_name = "UrlCsdAllowlist";
+  const std::string new_name_exists_histogram =
+      prefix + "NewFileNameExists." + new_store_name;
+  const std::string rename_status_histogram =
+      prefix + "RenameStatus." + new_store_name;
+
+  base::HistogramTester histograms;
+  histograms.ExpectTotalCount(old_name_in_use_histogram, 0);
+  histograms.ExpectTotalCount(old_name_exists_histogram, 0);
+  histograms.ExpectTotalCount(new_name_exists_histogram, 0);
+  histograms.ExpectTotalCount(rename_status_histogram, 0);
+
+  auto old_store_path =
+      base_dir_.GetPath().AppendASCII(old_store_name + ".store");
+  ASSERT_FALSE(base::PathExists(old_store_path));
+
+  // Now write an empty file at |old_store_path|.
+  base::WriteFile(old_store_path, "", 0);
+  ASSERT_TRUE(base::PathExists(old_store_path));
+
+  WaitForTasksOnTaskRunner();
+  ASSERT_FALSE(base::PathExists(old_store_path));
+
+  auto new_store_path =
+      base_dir_.GetPath().AppendASCII(new_store_name + ".store");
+  ASSERT_TRUE(base::PathExists(new_store_path));
+
+  histograms.ExpectTotalCount(old_name_in_use_histogram, 1);
+  histograms.ExpectBucketCount(old_name_in_use_histogram, false, 1);
+
+  histograms.ExpectTotalCount(old_name_exists_histogram, 1);
+  histograms.ExpectBucketCount(old_name_exists_histogram, true, 1);
+
+  histograms.ExpectTotalCount(new_name_exists_histogram, 1);
+  histograms.ExpectBucketCount(new_name_exists_histogram, false, 1);
+
+  histograms.ExpectTotalCount(rename_status_histogram, 1);
+  histograms.ExpectBucketCount(rename_status_histogram, 0, 1);
+
+  // Cleanup
+  base::DeleteFile(new_store_path);
+}
+
+TEST_F(V4LocalDatabaseManagerTest, RenameStoreFile_RenameSuccessMultiple) {
+  const std::string prefix = "SafeBrowsing.V4Store.";
+  const std::string old_name_in_use_prefix = prefix + "OldFileNameInUse.";
+  const std::string old_name_exists_prefix = prefix + "OldFileNameExists.";
+  const std::string new_name_exists_prefix = prefix + "NewFileNameExists.";
+  const std::string rename_status_prefix = prefix + "RenameStatus.";
+
+  const auto kStoreFilesToRename =
+      base::MakeFixedFlatMap<std::string, std::string>({
+          {"CertCsdDownloadWhitelist", "CertCsdDownloadAllowlist"},
+          {"UrlCsdDownloadWhitelist", "UrlCsdDownloadAllowlist"},
+          {"UrlCsdWhitelist", "UrlCsdAllowlist"},
+      });
+
+  base::HistogramTester histograms;
+  for (auto const& pair : kStoreFilesToRename) {
+    const std::string& old_store_name = pair.first;
+    const std::string& new_store_name = pair.second;
+
+    std::string old_name_in_use_histogram =
+        old_name_in_use_prefix + old_store_name;
+    histograms.ExpectTotalCount(old_name_in_use_histogram, 0);
+    std::string old_name_exists_histogram =
+        old_name_exists_prefix + old_store_name;
+    histograms.ExpectTotalCount(old_name_exists_histogram, 0);
+
+    std::string new_name_exists_histogram =
+        new_name_exists_prefix + new_store_name;
+    histograms.ExpectTotalCount(new_name_exists_histogram, 0);
+    std::string rename_status_histogram = rename_status_prefix + new_store_name;
+    histograms.ExpectTotalCount(rename_status_histogram, 0);
+
+    auto old_store_path =
+        base_dir_.GetPath().AppendASCII(old_store_name + ".store");
+    ASSERT_FALSE(base::PathExists(old_store_path));
+
+    auto new_store_path =
+        base_dir_.GetPath().AppendASCII(new_store_name + ".store");
+    ASSERT_FALSE(base::PathExists(new_store_path));
+
+    // Now write an empty file at |old_store_path|.
+    base::WriteFile(old_store_path, "", 0);
+    ASSERT_TRUE(base::PathExists(old_store_path));
+  }
+
+  WaitForTasksOnTaskRunner();
+  for (auto const& pair : kStoreFilesToRename) {
+    const std::string& old_store_name = pair.first;
+    const std::string& new_store_name = pair.second;
+
+    auto old_store_path =
+        base_dir_.GetPath().AppendASCII(old_store_name + ".store");
+    ASSERT_FALSE(base::PathExists(old_store_path));
+
+    auto new_store_path =
+        base_dir_.GetPath().AppendASCII(new_store_name + ".store");
+    ASSERT_TRUE(base::PathExists(new_store_path));
+
+    std::string old_name_in_use_histogram =
+        old_name_in_use_prefix + old_store_name;
+    histograms.ExpectTotalCount(old_name_in_use_histogram, 1);
+    histograms.ExpectBucketCount(old_name_in_use_histogram, false, 1);
+
+    std::string old_name_exists_histogram =
+        old_name_exists_prefix + old_store_name;
+    histograms.ExpectTotalCount(old_name_exists_histogram, 1);
+    histograms.ExpectBucketCount(old_name_exists_histogram, true, 1);
+
+    std::string new_name_exists_histogram =
+        new_name_exists_prefix + new_store_name;
+    histograms.ExpectTotalCount(new_name_exists_histogram, 1);
+    histograms.ExpectBucketCount(new_name_exists_histogram, false, 1);
+
+    std::string rename_status_histogram = rename_status_prefix + new_store_name;
+    histograms.ExpectTotalCount(rename_status_histogram, 1);
+    histograms.ExpectBucketCount(rename_status_histogram, 0, 1);
+
+    // Cleanup
+    base::DeleteFile(new_store_path);
+  }
+}
+
+TEST_F(V4LocalDatabaseManagerTest,
+       RenameStoreOldFileDoesNotExist_DoesNotRename) {
+  const std::string prefix = "SafeBrowsing.V4Store.";
+  const std::string old_store_name = "UrlCsdWhitelist";
+  const std::string old_name_in_use_histogram =
+      prefix + "OldFileNameInUse." + old_store_name;
+  const std::string old_name_exists_histogram =
+      prefix + "OldFileNameExists." + old_store_name;
+  const std::string new_store_name = "UrlCsdAllowlist";
+  const std::string new_name_exists_histogram =
+      prefix + "NewFileNameExists." + new_store_name;
+  const std::string rename_status_histogram =
+      prefix + "RenameStatus." + new_store_name;
+
+  base::HistogramTester histograms;
+  histograms.ExpectTotalCount(old_name_in_use_histogram, 0);
+  histograms.ExpectTotalCount(old_name_exists_histogram, 0);
+  histograms.ExpectTotalCount(new_name_exists_histogram, 0);
+  histograms.ExpectTotalCount(rename_status_histogram, 0);
+
+  auto old_store_path =
+      base_dir_.GetPath().AppendASCII(old_store_name + ".store");
+  ASSERT_FALSE(base::PathExists(old_store_path));
+
+  WaitForTasksOnTaskRunner();
+
+  histograms.ExpectTotalCount(old_name_in_use_histogram, 1);
+  histograms.ExpectBucketCount(old_name_in_use_histogram, false, 1);
+
+  histograms.ExpectTotalCount(old_name_exists_histogram, 1);
+  histograms.ExpectBucketCount(old_name_exists_histogram, false, 1);
+
+  histograms.ExpectTotalCount(new_name_exists_histogram, 0);
+  histograms.ExpectTotalCount(rename_status_histogram, 0);
+
+  // Cleanup
+  base::DeleteFile(old_store_path);
+}
+
+TEST_F(V4LocalDatabaseManagerTest, RenameStoreNewFileExists_DoesNotRename) {
+  const std::string prefix = "SafeBrowsing.V4Store.";
+  const std::string old_store_name = "UrlCsdWhitelist";
+  const std::string old_name_in_use_histogram =
+      prefix + "OldFileNameInUse." + old_store_name;
+  const std::string old_name_exists_histogram =
+      prefix + "OldFileNameExists." + old_store_name;
+  const std::string new_store_name = "UrlCsdAllowlist";
+  const std::string new_name_exists_histogram =
+      prefix + "NewFileNameExists." + new_store_name;
+  const std::string rename_status_histogram =
+      prefix + "RenameStatus." + new_store_name;
+
+  base::HistogramTester histograms;
+  histograms.ExpectTotalCount(old_name_in_use_histogram, 0);
+  histograms.ExpectTotalCount(old_name_exists_histogram, 0);
+  histograms.ExpectTotalCount(new_name_exists_histogram, 0);
+  histograms.ExpectTotalCount(rename_status_histogram, 0);
+
+  auto old_store_path =
+      base_dir_.GetPath().AppendASCII(old_store_name + ".store");
+  ASSERT_FALSE(base::PathExists(old_store_path));
+
+  // Now write an empty old file.
+  base::WriteFile(old_store_path, "", 0);
+  ASSERT_TRUE(base::PathExists(old_store_path));
+
+  auto new_store_path =
+      base_dir_.GetPath().AppendASCII(new_store_name + ".store");
+  ASSERT_FALSE(base::PathExists(new_store_path));
+
+  // Now write an empty new file.
+  base::WriteFile(new_store_path, "", 0);
+  ASSERT_TRUE(base::PathExists(new_store_path));
+
+  WaitForTasksOnTaskRunner();
+
+  histograms.ExpectTotalCount(old_name_in_use_histogram, 1);
+  histograms.ExpectBucketCount(old_name_in_use_histogram, false, 1);
+
+  histograms.ExpectTotalCount(old_name_exists_histogram, 1);
+  histograms.ExpectBucketCount(old_name_exists_histogram, true, 1);
+
+  histograms.ExpectTotalCount(new_name_exists_histogram, 1);
+  histograms.ExpectBucketCount(new_name_exists_histogram, true, 1);
+
+  histograms.ExpectTotalCount(rename_status_histogram, 0);
+
+  // Cleanup
+  base::DeleteFile(old_store_path);
+  base::DeleteFile(new_store_path);
 }
 
 }  // namespace safe_browsing

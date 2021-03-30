@@ -49,4 +49,19 @@ const ActionInfo* GetActionInfoOfType(const Extension& extension,
   return (action_info && action_info->type == type) ? action_info : nullptr;
 }
 
+int GetManifestVersionForActionType(ActionInfo::Type type) {
+  int manifest_version = 0;
+  switch (type) {
+    case ActionInfo::TYPE_BROWSER:
+    case ActionInfo::TYPE_PAGE:
+      manifest_version = 2;
+      break;
+    case ActionInfo::TYPE_ACTION:
+      manifest_version = 3;
+      break;
+  }
+
+  return manifest_version;
+}
+
 }  // namespace extensions

@@ -48,13 +48,13 @@ enum PolicyLoadStatusForUma {
 // Struct containing the result of a policy load - if |status| ==
 // LOAD_RESULT_SUCCESS, |policy| is initialized from the policy file on disk.
 // |key| is initialized from the signing key file on disk.
-// |skip_key_signature_validation| must remain false except if the policy being
-// loaded is from a secure location and no signing key file is provided.
+// |doing_key_rotation| is true if we need to re-download the key again when key
+// loaded from external place is different than the local one.
 struct PolicyLoadResult {
   PolicyLoadStatusForUma status;
   enterprise_management::PolicyFetchResponse policy;
   enterprise_management::PolicySigningKey key;
-  bool skip_key_signature_validation = false;
+  bool doing_key_rotation = false;
 };
 
 // Function that takes in a PolicyLoadResult and returns a PolicyLoadResult with

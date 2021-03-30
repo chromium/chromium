@@ -31,6 +31,7 @@ static_library("browser") {
     "//base:i18n",
     "//components/os_crypt",
     "//components/prefs",
+    "//components/profile_metrics",
     "//components/resources",
     "//components/strings",
     "//components/user_prefs",

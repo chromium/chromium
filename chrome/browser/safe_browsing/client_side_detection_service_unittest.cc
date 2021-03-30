@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/containers/queue.h"
 #include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
@@ -84,10 +83,7 @@ class ClientSideDetectionServiceTest : public testing::Test {
     csd_service_.reset();
   }
 
-  bool SendClientReportPhishingRequest(const GURL& phishing_url,
-                                       float score,
-                                       bool is_extended_reporting,
-                                       bool is_enhanced_reporting) {
+  bool SendClientReportPhishingRequest(const GURL& phishing_url, float score) {
     std::unique_ptr<ClientPhishingRequest> request =
         std::make_unique<ClientPhishingRequest>(ClientPhishingRequest());
     request->set_url(phishing_url.spec());
@@ -96,7 +92,7 @@ class ClientSideDetectionServiceTest : public testing::Test {
 
     base::RunLoop run_loop;
     csd_service_->SendClientReportPhishingRequest(
-        std::move(request), is_extended_reporting, is_enhanced_reporting,
+        std::move(request),
         base::BindOnce(&ClientSideDetectionServiceTest::SendRequestDone,
                        base::Unretained(this), run_loop.QuitWhenIdleClosure()));
     phishing_url_ = phishing_url;
@@ -135,15 +131,11 @@ class ClientSideDetectionServiceTest : public testing::Test {
                 response_data, net_error);
   }
 
-  int GetNumReports(base::queue<base::Time>* report_times) {
-    return csd_service_->GetNumReports(report_times);
-  }
-
   bool OverPhishingReportLimit() {
     return csd_service_->OverPhishingReportLimit();
   }
 
-  base::queue<base::Time>& GetPhishingReportTimes() {
+  std::deque<base::Time>& GetPhishingReportTimes() {
     return csd_service_->phishing_report_times_;
   }
 
@@ -251,40 +243,39 @@ TEST_F(ClientSideDetectionServiceTest, SendClientReportPhishingRequest) {
 
   // Safe browsing is not enabled.
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
-  EXPECT_FALSE(SendClientReportPhishingRequest(url, score, false, true));
+  EXPECT_FALSE(SendClientReportPhishingRequest(url, score));
 
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
   base::Time before = base::Time::Now();
 
   // Invalid response body from the server.
   SetClientReportPhishingResponse("invalid proto response", net::OK);
-  EXPECT_FALSE(SendClientReportPhishingRequest(url, score, false, false));
+  EXPECT_FALSE(SendClientReportPhishingRequest(url, score));
 
   // Normal behavior.
   ClientPhishingResponse response;
   response.set_phishy(true);
   SetClientReportPhishingResponse(response.SerializeAsString(), net::OK);
-  EXPECT_TRUE(SendClientReportPhishingRequest(url, score, false, true));
-  EXPECT_TRUE(SendClientReportPhishingRequest(url, score, true, false));
-  EXPECT_TRUE(SendClientReportPhishingRequest(url, score, false, false));
+  EXPECT_TRUE(SendClientReportPhishingRequest(url, score));
+  EXPECT_TRUE(SendClientReportPhishingRequest(url, score));
+  EXPECT_TRUE(SendClientReportPhishingRequest(url, score));
 
   // This request will fail
   GURL second_url("http://b.com/");
   response.set_phishy(false);
   SetClientReportPhishingResponse(response.SerializeAsString(),
                                   net::ERR_FAILED);
-  EXPECT_FALSE(
-      SendClientReportPhishingRequest(second_url, score, false, false));
+  EXPECT_FALSE(SendClientReportPhishingRequest(second_url, score));
 
   base::Time after = base::Time::Now();
 
   // Check that we have recorded all 3 requests within the correct time range.
-  base::queue<base::Time>& report_times = GetPhishingReportTimes();
+  std::deque<base::Time>& report_times = GetPhishingReportTimes();
   EXPECT_EQ(5U, report_times.size());
   EXPECT_TRUE(OverPhishingReportLimit());
   while (!report_times.empty()) {
     base::Time time = report_times.back();
-    report_times.pop();
+    report_times.pop_back();
     EXPECT_LE(before, time);
     EXPECT_GE(after, time);
   }
@@ -302,15 +293,14 @@ TEST_F(ClientSideDetectionServiceTest, GetNumReportTest) {
   csd_service_ = std::make_unique<ClientSideDetectionService>(
       std::make_unique<ClientSideDetectionServiceDelegate>(profile_));
 
-  base::queue<base::Time>& report_times = GetPhishingReportTimes();
   base::Time now = base::Time::Now();
   base::TimeDelta twenty_five_hours = base::TimeDelta::FromHours(25);
-  report_times.push(now - twenty_five_hours);
-  report_times.push(now - twenty_five_hours);
-  report_times.push(now);
-  report_times.push(now);
+  csd_service_->AddPhishingReport(now - twenty_five_hours);
+  csd_service_->AddPhishingReport(now - twenty_five_hours);
+  csd_service_->AddPhishingReport(now);
+  csd_service_->AddPhishingReport(now);
 
-  EXPECT_EQ(2, GetNumReports(&report_times));
+  EXPECT_EQ(2, csd_service_->GetPhishingNumReports());
   EXPECT_FALSE(OverPhishingReportLimit());
 }
 

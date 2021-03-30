@@ -167,7 +167,7 @@
     <file lang="zh-TW" path="translations/browser_ui_strings_zh-TW.xtb" />
     <file lang="zu" path="translations/browser_ui_strings_zu.xtb" />
   </translations>
-  <release allow_pseudo="false" seq="1">
+  <release seq="1">
     <messages fallback_to_english="true">
       <part file="site_settings.grdp" />
 
@@ -300,9 +300,6 @@
       <message name="IDS_MENU_ITEM_MOVE_TO_TOP" desc="Option in item menu. User can click the 'Move to top' option to move the item up to the top of its list. [CHAR-LIMIT=24]">
         Move to top
       </message>
-      <message name="IDS_ALL" desc="Generic label for a button to show all items or options, for example a button to view all bookmarks. [CHAR-LIMIT=20]">
-        All
-      </message>
       <message name="IDS_JUST_ONCE" desc="Generic label for a user to select an option for just once">
         Just once
       </message>
@@ -401,6 +398,9 @@
       <message name="IDS_DOWNLOAD_NOTIFICATION_CANCEL_BUTTON" desc="Text on the button that cancels a download.">
         Cancel
       </message>
+      <message name="IDS_DOWNLOAD_NOTIFICATION_COMPLETED" desc="Download notification to be displayed when a download completes.">
+        Download complete
+      </message>
       <message name="IDS_DOWNLOAD_NOTIFICATION_COMPLETED_WITH_SIZE" desc="Download notification to be displayed when a download completes, includes the size of the download as well after a separator character.">
         Download complete <ph name="SEPARATOR">•</ph> <ph name="BYTES_DOWNLOADED">%1$s<ex>4.3 MB</ex></ph>
       </message>
@@ -443,6 +443,21 @@
       <!-- Page Info popup -->
       <message name="IDS_PAGE_INFO_DOMAIN_HIDDEN" desc="Message to display in the page info bubble when the domain is hidden.">
         This content is from <ph name="DOMAIN_NAME">%1$s<ex>google.com</ex></ph>, delivered by Google.
+      </message>
+      <message name="IDS_PAGE_INFO_FORGET_SITE_TITLE" desc="Label used at top of dialog which clears stored information displayed in page info (ie permissions, cookies, eventually history).">
+        Forget this site?
+      </message>
+      <message name="IDS_PAGE_INFO_FORGET_SITE_MESSAGE" desc="Message used in dialogwhich clears stored information displayed in page info.">
+        Are you sure you want to reset permissions, and clear cookies and site data?
+      </message>
+      <message name="IDS_PAGE_INFO_FORGET_SITE_CONFIRMATION_BUTTON" desc="Confirmation button in dialog which clears stored information displayed in page info.">
+        Forget
+      </message>
+      <message name="IDS_PAGE_INFO_HISTORY_TITLE" desc="Label used in the Page Info dialog above the history list.">
+        History
+      </message>
+      <message name="IDS_PAGE_INFO_HISTORY_FORGET" desc="Label used in the Page Info dialog for clearing history information">
+        Forget this site
       </message>
       <message name="IDS_PAGE_INFO_PERMISSIONS_TITLE" desc="Label used in the Page Info dialog above the permissions list.">
         Permissions
@@ -723,6 +738,12 @@
       <message name="IDS_PHOTO_PICKER_VIDEO_DURATION" desc="The label showing the duration time and current position of the video, as in: 0:01 / 0:10.">
         <ph name="POSITION">%1$s<ex>0:01</ex></ph> / <ph name="DURATION">%2$s<ex>0:10</ex></ph>
       </message>
+      <message name="IDS_PHOTO_PICKER_ACCESSIBILITY_ZOOM_IN" desc="The accessibility string for the Zoom (in) button in the photo grid.">
+        Zoom in
+      </message>
+      <message name="IDS_PHOTO_PICKER_ACCESSIBILITY_ZOOM_OUT" desc="The accessibility string for the Zoom (out) button in the photo grid.">
+        Zoom out
+      </message>
       <message name="IDS_DECODER_DESCRIPTION" desc="The title for the image decoder utility service.">
         Image decoder
       </message>
@@ -746,6 +767,9 @@
       </message>
       <message name="IDS_ACCESSIBILITY_EXIT_FULL_SCREEN" desc="The accessibility string for the exiting of full screen video button.">
         Exit full screen
+      </message>
+      <message name="IDS_ACCESSIBILITY_NTP_OFFLINE_BADGE" desc="Content description for the badge that indicates offline availability of a most visited item or content suggestion on the new tab page.">
+        Available offline
       </message>
       <message name="IDS_ACCESSIBILITY_VIDEO_PLAYER" desc="The accessibility string for the video player.">
         Video player

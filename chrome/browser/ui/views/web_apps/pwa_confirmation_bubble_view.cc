@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
 
+#include <string>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -49,7 +50,7 @@ std::unique_ptr<views::ImageView> CreateIconView(
     const WebApplicationInfo& web_app_info) {
   constexpr int kIconSize = 48;
   gfx::ImageSkia image(std::make_unique<WebAppInfoImageSource>(
-                           kIconSize, web_app_info.icon_bitmaps_any),
+                           kIconSize, web_app_info.icon_bitmaps.any),
                        gfx::Size(kIconSize, kIconSize));
 
   auto icon_image_view = std::make_unique<views::ImageView>();
@@ -58,7 +59,7 @@ std::unique_ptr<views::ImageView> CreateIconView(
 }
 
 // Returns a label containing the app name.
-std::unique_ptr<views::Label> CreateNameLabel(const base::string16& name) {
+std::unique_ptr<views::Label> CreateNameLabel(const std::u16string& name) {
   auto name_label = std::make_unique<views::Label>(
       name, views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::TextStyle::STYLE_PRIMARY);

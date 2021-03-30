@@ -40,8 +40,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.init.BrowserParts;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
-import org.chromium.chrome.browser.metrics.BackgroundTaskMemoryMetricsEmitter;
-import org.chromium.chrome.browser.metrics.BackgroundTaskMemoryMetricsEmitterJni;
 import org.chromium.components.background_task_scheduler.BackgroundTask;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerExternalUma;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
@@ -128,8 +126,6 @@ public class NativeBackgroundTaskTest {
     public final JniMocker mocker = new JniMocker();
     @Mock
     private ChromeBrowserInitializer mChromeBrowserInitializer;
-    @Mock
-    BackgroundTaskMemoryMetricsEmitter.Natives mEmitterNativeMock;
     @Captor
     ArgumentCaptor<BrowserParts> mBrowserParts;
 
@@ -249,7 +245,6 @@ public class NativeBackgroundTaskTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mocker.mock(BackgroundTaskMemoryMetricsEmitterJni.TEST_HOOKS, mEmitterNativeMock);
         mBrowserStartupController = new TestBrowserStartupController();
         mCallback = new TaskFinishedCallback();
         mTask = new TestNativeBackgroundTask(mBrowserStartupController);
@@ -264,7 +259,9 @@ public class NativeBackgroundTaskTest {
     }
 
     private void setUpChromeBrowserInitializer(InitializerSetup setup) {
-        doNothing().when(mChromeBrowserInitializer).handlePreNativeStartup(any(BrowserParts.class));
+        doNothing()
+                .when(mChromeBrowserInitializer)
+                .handlePreNativeStartupAndLoadLibraries(any(BrowserParts.class));
         switch (setup) {
             case SUCCESS:
                 doAnswer(new Answer<Void>() {
@@ -300,7 +297,7 @@ public class NativeBackgroundTaskTest {
 
     private void verifyStartupCalls(int expectedPreNativeCalls, int expectedPostNativeCalls) {
         verify(mChromeBrowserInitializer, times(expectedPreNativeCalls))
-                .handlePreNativeStartup(any(BrowserParts.class));
+                .handlePreNativeStartupAndLoadLibraries(any(BrowserParts.class));
         verify(mChromeBrowserInitializer, times(expectedPostNativeCalls))
                 .handlePostNativeStartup(eq(true), any(BrowserParts.class));
     }

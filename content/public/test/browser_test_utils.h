@@ -22,7 +22,8 @@
 #include "base/optional.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
+#include "base/scoped_observation.h"
+#include "base/template_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "cc/test/pixel_test_utils.h"
@@ -31,6 +32,7 @@
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/render_frame_metadata_provider.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -38,13 +40,13 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/page_type.h"
-#include "content/public/common/untrustworthy_context_menu_params.h"
 #include "content/public/test/fake_frame_widget.h"
 #include "ipc/message_filter.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
@@ -134,10 +136,13 @@ WARN_UNUSED_RESULT bool NavigateToURL(WebContents* web_contents,
                                       const GURL& expected_commit_url);
 
 // Navigates |web_contents| to |url|, blocking until the given number of
-// navigations finishes.
-void NavigateToURLBlockUntilNavigationsComplete(WebContents* web_contents,
-                                                const GURL& url,
-                                                int number_of_navigations);
+// navigations finishes. If |ignore_uncommitted_navigations| is true, then an
+// aborted navigation also counts toward |number_of_navigations| being complete.
+void NavigateToURLBlockUntilNavigationsComplete(
+    WebContents* web_contents,
+    const GURL& url,
+    int number_of_navigations,
+    bool ignore_uncommitted_navigations = true);
 
 // Perform a renderer-initiated navigation of |window| to |url|, blocking
 // until the navigation finishes.  The navigation is done by assigning
@@ -168,6 +173,10 @@ WARN_UNUSED_RESULT bool BeginNavigateToURLFromRenderer(
 // Navigate a frame with ID |iframe_id| to |url|, blocking until the navigation
 // finishes.  Uses a renderer-initiated navigation from script code in the
 // main frame.
+//
+// This method does not trigger a user activation before the navigation.  If
+// necessary, a user activation can be triggered right before calling this
+// method, e.g. by calling |ExecuteScript(frame_tree_node, "")|.
 bool NavigateIframeToURL(WebContents* web_contents,
                          const std::string& iframe_id,
                          const GURL& url);
@@ -471,7 +480,7 @@ RenderFrameHost* ConvertToRenderFrameHost(WebContents* web_contents);
 // with a malformed or unexpected value).
 //
 // See also:
-// - ExecJs (preferred replacement with better errror handling)
+// - ExecJs (preferred replacement with better error handling)
 // - EvalJs (if you want to retrieve a value)
 // - ExecuteScriptAsync (if you don't want to block for |script| completion)
 // - DOMMessageQueue (to manually wait for domAutomationController.send(...))
@@ -581,7 +590,7 @@ template <typename T, typename... Args>
 void ConvertToBaseValueList(base::Value::ListStorage* list,
                             T&& first,
                             Args&&... rest) {
-  using ValueType = std::remove_cv_t<std::remove_reference_t<T>>;
+  using ValueType = base::remove_cvref_t<T>;
   list->push_back(JsLiteralHelper<ValueType>::Convert(std::forward<T>(first)));
   ConvertToBaseValueList(list, std::forward<Args>(rest)...);
 }
@@ -853,6 +862,9 @@ EvalJsResult EvalJsAfterLifecycleUpdate(
 // AssertionFailure() if |script| contained a syntax error or threw an
 // exception.
 //
+// As with EvalJs(), if the script passed evaluates to a Promise, this waits
+// until it resolves.
+//
 // Unlike ExecuteScript(), this catches syntax errors and uncaught exceptions,
 // and gives more useful error messages when things go wrong. Prefer ExecJs to
 // ExecuteScript(), unless your page has a CSP.
@@ -900,14 +912,21 @@ std::vector<net::CanonicalCookie> GetCanonicalCookies(
     BrowserContext* browser_context,
     const GURL& url);
 
-// Sets a cookie for the given url. Uses an inclusive SameSiteCookieContext by
-// default, which gets cookies regardless of their SameSite attribute. Returns
-// true on success.
+// Sets a cookie for the given url. Uses inclusive SameSiteCookieContext and
+// SamePartyCookieContextType by default, which get cookies regardless of their
+// SameSite and SameParty attributes. Returns true on success.
 bool SetCookie(BrowserContext* browser_context,
                const GURL& url,
                const std::string& value,
                net::CookieOptions::SameSiteCookieContext context =
-                   net::CookieOptions::SameSiteCookieContext::MakeInclusive());
+                   net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
+               net::CookieOptions::SamePartyCookieContextType party_context =
+                   net::CookieOptions::SamePartyCookieContextType::kSameParty);
+
+// Deletes cookies matching the provided filter. Returns the number of cookies
+// that were deleted.
+uint32_t DeleteCookies(BrowserContext* browser_context,
+                       network::mojom::CookieDeletionFilter filter);
 
 // Fetch the histograms data from other processes. This should be called after
 // the test code has been executed but before performing assertions.
@@ -1044,17 +1063,16 @@ class TitleWatcher : public WebContentsObserver {
   // |web_contents| must be non-NULL and needs to stay alive for the
   // entire lifetime of |this|. |expected_title| is the title that |this|
   // will wait for.
-  TitleWatcher(WebContents* web_contents,
-               const base::string16& expected_title);
+  TitleWatcher(WebContents* web_contents, const std::u16string& expected_title);
   ~TitleWatcher() override;
 
   // Adds another title to watch for.
-  void AlsoWaitForTitle(const base::string16& expected_title);
+  void AlsoWaitForTitle(const std::u16string& expected_title);
 
   // Waits until the title matches either expected_title or one of the titles
   // added with AlsoWaitForTitle. Returns the value of the most recently
   // observed matching title.
-  const base::string16& WaitAndGetTitle() WARN_UNUSED_RESULT;
+  const std::u16string& WaitAndGetTitle() WARN_UNUSED_RESULT;
 
  private:
   // Overridden WebContentsObserver methods.
@@ -1063,11 +1081,11 @@ class TitleWatcher : public WebContentsObserver {
 
   void TestTitle();
 
-  std::vector<base::string16> expected_titles_;
+  std::vector<std::u16string> expected_titles_;
   base::RunLoop run_loop_;
 
   // The most recently observed expected title, if any.
-  base::string16 observed_title_;
+  std::u16string observed_title_;
 
   DISALLOW_COPY_AND_ASSIGN(TitleWatcher);
 };
@@ -1096,8 +1114,6 @@ class RenderProcessHostWatcher : public RenderProcessHostObserver {
   bool did_exit_normally() { return did_exit_normally_; }
 
  private:
-  // Stop observing and drop the reference to the RenderProcessHost.
-  void ClearProcessHost();
   // Quit the run loop and clean up.
   void QuitRunLoop();
 
@@ -1107,7 +1123,8 @@ class RenderProcessHostWatcher : public RenderProcessHostObserver {
                            const ChildProcessTerminationInfo& info) override;
   void RenderProcessHostDestroyed(RenderProcessHost* host) override;
 
-  RenderProcessHost* render_process_host_;
+  base::ScopedObservation<RenderProcessHost, RenderProcessHostObserver>
+      observation_{this};
   WatchType type_;
   bool did_exit_normally_;
 
@@ -1241,19 +1258,13 @@ class WebContentsAddedObserver {
   // created since the constructor
   WebContents* GetWebContents();
 
-  // Will tell whether RenderViewCreated Callback has invoked
-  bool RenderViewCreatedCalled();
-
  private:
-  class RenderViewCreatedObserver;
-
   void WebContentsCreated(WebContents* web_contents);
 
   // Callback to WebContentCreated(). Cached so that we can unregister it.
   base::RepeatingCallback<void(WebContents*)> web_contents_created_callback_;
 
   WebContents* web_contents_;
-  std::unique_ptr<RenderViewCreatedObserver> child_observer_;
   base::OnceClosure quit_closure_;
 
   DISALLOW_COPY_AND_ASSIGN(WebContentsAddedObserver);
@@ -1330,7 +1341,8 @@ class RenderFrameSubmissionObserver
   // RenderFrameMetadataProvider::Observer
   void OnRenderFrameMetadataChangedBeforeActivation(
       const cc::RenderFrameMetadata& metadata) override;
-  void OnRenderFrameMetadataChangedAfterActivation() override;
+  void OnRenderFrameMetadataChangedAfterActivation(
+      base::TimeTicks activation_time) override;
   void OnRenderFrameSubmission() override;
   void OnLocalSurfaceIdChanged(
       const cc::RenderFrameMetadata& metadata) override;
@@ -1627,9 +1639,9 @@ class WebContentsConsoleObserver : public WebContentsObserver {
   struct Message {
     RenderFrameHost* source_frame;
     blink::mojom::ConsoleMessageLevel log_level;
-    base::string16 message;
+    std::u16string message;
     int32_t line_no;
-    base::string16 source_id;
+    std::u16string source_id;
   };
 
   // A filter to apply to incoming console messages to determine whether to
@@ -1663,10 +1675,10 @@ class WebContentsConsoleObserver : public WebContentsObserver {
   void OnDidAddMessageToConsole(
       RenderFrameHost* source_frame,
       blink::mojom::ConsoleMessageLevel log_level,
-      const base::string16& message,
+      const std::u16string& message,
       int32_t line_no,
-      const base::string16& source_id,
-      const base::Optional<base::string16>& untrusted_stack_trace) override;
+      const std::u16string& source_id,
+      const base::Optional<std::u16string>& untrusted_stack_trace) override;
 
   Filter filter_;
   std::string pattern_;
@@ -1711,34 +1723,41 @@ void VerifyStaleContentOnFrameEviction(
 
 #endif  // defined(USE_AURA)
 
-// This class filters for FrameHostMsg_ContextMenu messages coming in from a
+// This class intercepts for ShowContextMenu Mojo method called from a
 // renderer process, and allows observing the UntrustworthyContextMenuParams as
 // sent by the renderer.
-class ContextMenuFilter : public content::BrowserMessageFilter {
+class ContextMenuInterceptor
+    : public blink::mojom::LocalFrameHostInterceptorForTesting {
  public:
   // Whether or not the ContextMenu should be prevented from performing
   // its default action, preventing the context menu from showing.
   enum ShowBehavior { kShow, kPreventShow };
 
-  explicit ContextMenuFilter(ShowBehavior behavior = ShowBehavior::kShow);
+  explicit ContextMenuInterceptor(ShowBehavior behavior = ShowBehavior::kShow);
+  ~ContextMenuInterceptor() override;
 
-  bool OnMessageReceived(const IPC::Message& message) override;
+  void Init(content::RenderFrameHost* render_frame_host);
+  blink::mojom::LocalFrameHost* GetForwardingInterface() override;
+
+  void ShowContextMenu(
+      mojo::PendingAssociatedRemote<blink::mojom::ContextMenuClient>
+          context_menu_client,
+      const blink::UntrustworthyContextMenuParams& params) override;
+
   void Wait();
   void Reset();
 
-  content::UntrustworthyContextMenuParams get_params() { return last_params_; }
+  blink::UntrustworthyContextMenuParams get_params() { return last_params_; }
 
  private:
-  ~ContextMenuFilter() override;
-
-  void OnContextMenu(const content::UntrustworthyContextMenuParams& params);
-
+  content::RenderFrameHost* render_frame_host_;
+  blink::mojom::LocalFrameHost* impl_;
   std::unique_ptr<base::RunLoop> run_loop_;
   base::OnceClosure quit_closure_;
-  content::UntrustworthyContextMenuParams last_params_;
+  blink::UntrustworthyContextMenuParams last_params_;
   const ShowBehavior show_behavior_;
 
-  DISALLOW_COPY_AND_ASSIGN(ContextMenuFilter);
+  DISALLOW_COPY_AND_ASSIGN(ContextMenuInterceptor);
 };
 
 class UpdateUserActivationStateInterceptor

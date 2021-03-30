@@ -87,7 +87,10 @@ class SharingService : public KeyedService, public syncer::SyncServiceObserver {
   // |message|: Message to be sent.
   // |callback| will be invoked once a response has received from remote device,
   // or if operation has failed or timed out.
-  virtual void SendMessageToDevice(
+  // Returns a callback that cancels receiving of the response. Calling it will
+  // run |callback| if it hasn't been executed yet, otherwise it will be a
+  // no-op. Returns a null callback if the message is failed to be sent.
+  virtual base::OnceClosure SendMessageToDevice(
       const syncer::DeviceInfo& device,
       base::TimeDelta response_timeout,
       chrome_browser_sharing::SharingMessage message,

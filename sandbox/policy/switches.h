@@ -25,6 +25,7 @@ SANDBOX_POLICY_EXPORT extern const char kNetworkSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kPpapiSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kUtilitySandbox[];
 SANDBOX_POLICY_EXPORT extern const char kCdmSandbox[];
+SANDBOX_POLICY_EXPORT extern const char kPrintBackendSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kPrintCompositorSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kAudioSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kSharingServiceSandbox[];
@@ -65,6 +66,7 @@ SANDBOX_POLICY_EXPORT extern const char kAddXrAppContainerCaps[];
 #endif
 #if defined(OS_MAC)
 SANDBOX_POLICY_EXPORT extern const char kEnableSandboxLogging[];
+SANDBOX_POLICY_EXPORT extern const char kDisableMetalShaderCache[];
 #endif
 
 // Flags spied upon from other layers.
@@ -77,6 +79,7 @@ SANDBOX_POLICY_EXPORT extern const char kRendererProcess[];
 SANDBOX_POLICY_EXPORT extern const char kUtilityProcess[];
 SANDBOX_POLICY_EXPORT extern const char kCloudPrintServiceProcess[];
 SANDBOX_POLICY_EXPORT extern const char kZygoteProcessType[];
+SANDBOX_POLICY_EXPORT extern const char kRelauncherProcessType[];
 
 }  // namespace switches
 }  // namespace policy

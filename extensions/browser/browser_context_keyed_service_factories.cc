@@ -14,7 +14,6 @@
 #include "extensions/browser/api/bluetooth_socket/bluetooth_socket_event_dispatcher.h"
 #include "extensions/browser/api/cast_channel/cast_channel_api.h"
 #include "extensions/browser/api/declarative_net_request/rules_monitor_service.h"
-#include "extensions/browser/api/display_source/display_source_event_router_factory.h"
 #include "extensions/browser/api/feedback_private/feedback_private_api.h"
 #include "extensions/browser/api/hid/hid_device_manager.h"
 #include "extensions/browser/api/idle/idle_manager_factory.h"
@@ -36,11 +35,11 @@
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/app_window/app_window_geometry_cache.h"
 #include "extensions/browser/app_window/app_window_registry.h"
-#include "extensions/browser/declarative_user_script_manager_factory.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_message_filter.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_protocols.h"
+#include "extensions/browser/extension_service_worker_message_filter.h"
 #include "extensions/browser/guest_view/extensions_guest_view_message_filter.h"
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/browser/renderer_startup_helper.h"
@@ -77,11 +76,10 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   api::TCPSocketEventDispatcher::GetFactoryInstance();
   api::UDPSocketEventDispatcher::GetFactoryInstance();
   declarative_net_request::RulesMonitorService::GetFactoryInstance();
-  DeclarativeUserScriptManagerFactory::GetInstance();
-  DisplaySourceEventRouterFactory::GetInstance();
   EnsureExtensionURLLoaderFactoryShutdownNotifierFactoryBuilt();
   EventRouterFactory::GetInstance();
   ExtensionMessageFilter::EnsureShutdownNotifierFactoryBuilt();
+  ExtensionServiceWorkerMessageFilter::EnsureShutdownNotifierFactoryBuilt();
   ExtensionsGuestViewMessageFilter::EnsureShutdownNotifierFactoryBuilt();
   ExtensionPrefsFactory::GetInstance();
   FeedbackPrivateAPI::GetFactoryInstance();

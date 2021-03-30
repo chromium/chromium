@@ -1,5 +1,5 @@
 # ext/linguaplugin.py
-# Copyright 2006-2019 the Mako authors and contributors <see AUTHORS file>
+# Copyright 2006-2020 the Mako authors and contributors <see AUTHORS file>
 #
 # This module is part of Mako and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -27,7 +27,15 @@ class LinguaMakoExtractor(Extractor, MessageExtractor):
         self.python_extractor = get_extractor("x.py")
         if fileobj is None:
             fileobj = open(filename, "rb")
-        return self.process_file(fileobj)
+            must_close = True
+        else:
+            must_close = False
+        try:
+            for message in self.process_file(fileobj):
+                yield message
+        finally:
+            if must_close:
+                fileobj.close()
 
     def process_python(self, code, code_lineno, translator_strings):
         source = code.getvalue().strip()

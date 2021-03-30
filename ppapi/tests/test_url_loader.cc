@@ -708,9 +708,9 @@ std::string TestURLLoader::TestUntrustedHttpRequests() {
 }
 
 std::string TestURLLoader::TestTrustedHttpRequests() {
-  // Trusted requests can use restricted methods.
+  // Trusted requests can use restricted methods, other than CONNECT, which gets
+  // sockets into a problematic state.
   {
-    ASSERT_EQ(PP_OK, OpenTrusted("cOnNeCt", std::string()));
     ASSERT_EQ(PP_OK, OpenTrusted("tRaCk", std::string()));
     ASSERT_EQ(PP_OK, OpenTrusted("tRaCe", std::string()));
   }

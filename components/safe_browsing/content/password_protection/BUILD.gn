@@ -10,8 +10,8 @@ source_set("password_protection") {
     sources = [
       "password_protection_navigation_throttle.cc",
       "password_protection_navigation_throttle.h",
-      "password_protection_request.cc",
-      "password_protection_request.h",
+      "password_protection_request_content.cc",
+      "password_protection_request_content.h",
       "password_protection_service.cc",
       "password_protection_service.h",
       "request_canceler_content.cc",
@@ -54,6 +54,9 @@ source_set("password_protection") {
   if (safe_browsing_mode == 1) {
     deps += [ "//components/zoom" ]
   }
+  if (is_android && safe_browsing_mode == 2) {
+    deps += [ "//ui/android" ]
+  }
 }
 
 source_set("password_protection_unittest") {
@@ -77,6 +80,7 @@ source_set("password_protection_unittest") {
       "//components/safe_browsing/core:features",
       "//components/safe_browsing/core:verdict_cache_manager",
       "//components/safe_browsing/core/db:test_database_manager",
+      "//components/safe_browsing/core/password_protection",
       "//components/safe_browsing/core/password_protection:password_protection_metrics_util",
       "//components/signin/public/base",
       "//components/signin/public/identity_manager",
@@ -109,4 +113,19 @@ source_set("mock_password_protection") {
       "//testing/gtest",
     ]
   }
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "password_protection_test_util.cc",
+    "password_protection_test_util.h",
+  ]
+  deps = [
+    ":mock_password_protection",
+    ":password_protection",
+    "//base",
+    "//content/public/browser",
+    "//testing/gmock",
+  ]
 }

@@ -126,7 +126,7 @@ class SendTabToSelfBrowserAgentTest : public PlatformTest {
     // Create a navigation item to match the URL and give it a title.
     std::unique_ptr<web::NavigationItem> item = web::NavigationItem::Create();
     item->SetURL(url);
-    item->SetTitle(base::UTF8ToUTF16("Page title"));
+    item->SetTitle(u"Page title");
     auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     navigation_manager->SetLastCommittedItem(item.get());
     // Test nav manager doesn't own its items, so move |item| into the storage

@@ -2,18 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# TODO(crbug.com.1052397): Remove this and |chromeos_is_browser_only| usage once
-# |is_chromeos| is true in a LaCrOS build.
-import("//build/config/chromeos/ui_mode.gni")
-
 # This file contains common system config stuff for the Android build.
 
 # NOTE: Because Chrome OS builds may depend on targets built with the Android
 # toolchain, this GNI file may be read and processed from within Chrome OS
 # toolchains. Checking |is_android| here would therefore be too restrictive.
-if (is_android || is_chromeos_ash ||
-    (is_chromeos_lacros && also_build_ash_chrome)) {
+if (is_android || is_chromeos) {
   import("//build/config/chromecast_build.gni")
+  import("//build/config/dcheck_always_on.gni")
   import("//build_overrides/build.gni")
   import("abi.gni")
 
@@ -54,17 +50,23 @@ if (is_android || is_chromeos_ash ||
     # not explicitly set it.
     default_min_sdk_version = 21
 
-    # Android API level for 32 bits platforms
-    android32_ndk_api_level = 16
-
-    # Android API level for 64 bits platforms
-    android64_ndk_api_level = 21
-
     # [WIP] Allows devs to achieve much faster edit-build-install cycles.
     # Currently only works for ChromeModern apks due to incremental install.
     # This needs to be in a separate declare_args as it determines some of the
     # args in the main declare_args block below.
     android_fast_local_dev = false
+  }
+
+  declare_args() {
+    # Android API level for 32 bits platforms
+    android32_ndk_api_level = default_min_sdk_version
+
+    # Android API level for 64 bits platforms
+    if (default_min_sdk_version < 21) {
+      android64_ndk_api_level = 21
+    } else {
+      android64_ndk_api_level = default_min_sdk_version
+    }
   }
 
   if (enable_chrome_android_internal) {
@@ -79,8 +81,8 @@ if (is_android || is_chromeos_ash ||
 
   if (!defined(default_android_ndk_root)) {
     default_android_ndk_root = "//third_party/android_ndk"
-    default_android_ndk_version = "r20"
-    default_android_ndk_major_version = 20
+    default_android_ndk_version = "r22"
+    default_android_ndk_major_version = 22
   } else {
     assert(defined(default_android_ndk_version))
     assert(defined(default_android_ndk_major_version))
@@ -247,6 +249,9 @@ if (is_android || is_chromeos_ash ||
 
     # The target to use as the system WebView implementation.
     system_webview_apk_target = "//android_webview:system_webview_apk"
+
+    # Where to write failed expectations for bots to read.
+    expectations_failure_dir = "$root_build_dir/failed_expectations"
   }
 
   # We need a second declare_args block to make sure we are using the overridden
@@ -257,6 +262,9 @@ if (is_android || is_chromeos_ash ||
     } else {
       android_sdk_platform_version = android_sdk_version
     }
+
+    # Whether java assertions and Preconditions checks are enabled.
+    enable_java_asserts = is_java_debug || dcheck_always_on
 
     # Reduce build time by using d8 incremental build.
     enable_incremental_d8 = true

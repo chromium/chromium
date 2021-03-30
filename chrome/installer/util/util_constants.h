@@ -112,8 +112,13 @@ enum InstallStatus {
                                // registry.
   STORE_DMTOKEN_SUCCESS = 65,  // Writing the specified DMToken to the registry
                                // succeeded.
-  MAX_INSTALL_STATUS = 66,     // When adding a new result, bump this and update
-                               // the InstallStatus enum in histograms.xml.
+  DOWNGRADE_CLEANUP_FAILED = 66,
+  DOWNGRADE_CLEANUP_SUCCESS = 67,
+  UNDO_DOWNGRADE_CLEANUP_FAILED = 68,
+  UNDO_DOWNGRADE_CLEANUP_SUCCESS = 69,
+  DOWNGRADE_CLEANUP_UNKNOWN_OPERATION = 70,
+  MAX_INSTALL_STATUS = 71,  // When adding a new result, bump this and update
+                            // the InstallStatus enum in histograms.xml.
 };
 
 // The type of an update archive.
@@ -216,6 +221,7 @@ extern const wchar_t kInstallTempDir[];
 extern const wchar_t kLnkExt[];
 extern const wchar_t kNaClExe[];
 extern const wchar_t kNotificationHelperExe[];
+extern const wchar_t kRegDowngradeVersion[];
 extern const wchar_t kSetupExe[];
 extern const wchar_t kUninstallArgumentsField[];
 extern const wchar_t kUninstallDisplayNameField[];

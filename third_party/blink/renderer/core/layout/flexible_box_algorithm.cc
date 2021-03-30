@@ -589,17 +589,18 @@ void FlexLine::ComputeLineItemsPosition(LayoutUnit main_axis_start_offset,
 LayoutUnit FlexLayoutAlgorithm::GapBetweenItems(
     const ComputedStyle& style,
     LogicalSize percent_resolution_sizes) {
-  DCHECK_GE(percent_resolution_sizes.inline_size, 0);
   if (IsColumnFlow(style)) {
     if (const base::Optional<Length>& row_gap = style.RowGap()) {
       return MinimumValueForLength(
-          *row_gap, percent_resolution_sizes.block_size.ClampNegativeToZero());
+          *row_gap,
+          percent_resolution_sizes.block_size.ClampIndefiniteToZero());
     }
     return LayoutUnit();
   }
   if (const base::Optional<Length>& column_gap = style.ColumnGap()) {
-    return MinimumValueForLength(*column_gap,
-                                 percent_resolution_sizes.inline_size);
+    return MinimumValueForLength(
+        *column_gap,
+        percent_resolution_sizes.inline_size.ClampIndefiniteToZero());
   }
   return LayoutUnit();
 }
@@ -608,17 +609,18 @@ LayoutUnit FlexLayoutAlgorithm::GapBetweenItems(
 LayoutUnit FlexLayoutAlgorithm::GapBetweenLines(
     const ComputedStyle& style,
     LogicalSize percent_resolution_sizes) {
-  DCHECK_GE(percent_resolution_sizes.inline_size, 0);
   if (!IsColumnFlow(style)) {
     if (const base::Optional<Length>& row_gap = style.RowGap()) {
       return MinimumValueForLength(
-          *row_gap, percent_resolution_sizes.block_size.ClampNegativeToZero());
+          *row_gap,
+          percent_resolution_sizes.block_size.ClampIndefiniteToZero());
     }
     return LayoutUnit();
   }
   if (const base::Optional<Length>& column_gap = style.ColumnGap()) {
-    return MinimumValueForLength(*column_gap,
-                                 percent_resolution_sizes.inline_size);
+    return MinimumValueForLength(
+        *column_gap,
+        percent_resolution_sizes.inline_size.ClampIndefiniteToZero());
   }
   return LayoutUnit();
 }
@@ -773,13 +775,8 @@ LayoutUnit FlexLayoutAlgorithm::IntrinsicContentBlockSize() const {
 
   if (IsColumnFlow()) {
     LayoutUnit max_size;
-    for (const FlexLine& line : flex_lines_) {
-      // Subtract main_axis_offset to remove border/padding
-      max_size =
-          std::max(line.main_axis_extent_ - line.sum_justify_adjustments_ -
-                       line.main_axis_offset_,
-                   max_size);
-    }
+    for (const FlexLine& line : flex_lines_)
+      max_size = std::max(line.sum_hypothetical_main_size_, max_size);
     return max_size;
   }
 

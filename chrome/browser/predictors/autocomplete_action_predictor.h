@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <string>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -16,14 +17,11 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_table.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "url/gurl.h"
 
 struct AutocompleteMatch;
@@ -45,7 +43,7 @@ class URLDatabase;
 }
 
 namespace prerender {
-class PrerenderHandle;
+class NoStatePrefetchHandle;
 }
 
 namespace predictors {
@@ -65,7 +63,6 @@ namespace predictors {
 // triggers. This is necessary during initialization.
 class AutocompleteActionPredictor
     : public KeyedService,
-      public content::NotificationObserver,
       public history::HistoryServiceObserver,
       public base::SupportsWeakPtr<AutocompleteActionPredictor> {
  public:
@@ -82,7 +79,7 @@ class AutocompleteActionPredictor
   // Registers an AutocompleteResult for a given |user_text|. This will be used
   // when the user navigates from the Omnibox to determine early opportunities
   // to predict their actions.
-  void RegisterTransitionalMatches(const base::string16& user_text,
+  void RegisterTransitionalMatches(const std::u16string& user_text,
                                    const AutocompleteResult& result);
 
   // Clears any transitional matches that have been registered. Called when, for
@@ -95,7 +92,7 @@ class AutocompleteActionPredictor
   // of the matching entry the user typed, and how long it's been since the user
   // visited the matching URL, to calculate a score between 0 and 1. This score
   // is then mapped to an Action.
-  Action RecommendAction(const base::string16& user_text,
+  Action RecommendAction(const std::u16string& user_text,
                          const AutocompleteMatch& match) const;
 
   // Begin prerendering |url| with |session_storage_namespace|. The |size| gives
@@ -127,20 +124,20 @@ class AutocompleteActionPredictor
 
   struct TransitionalMatch {
     TransitionalMatch();
-    explicit TransitionalMatch(const base::string16 in_user_text);
+    explicit TransitionalMatch(const std::u16string in_user_text);
     TransitionalMatch(const TransitionalMatch& other);
     ~TransitionalMatch();
 
-    base::string16 user_text;
+    std::u16string user_text;
     std::vector<GURL> urls;
 
-    bool operator==(const base::string16& other_user_text) const {
+    bool operator==(const std::u16string& other_user_text) const {
       return user_text == other_user_text;
     }
   };
 
   struct DBCacheKey {
-    base::string16 user_text;
+    std::u16string user_text;
     GURL url;
 
     bool operator<(const DBCacheKey& rhs) const {
@@ -164,16 +161,6 @@ class AutocompleteActionPredictor
   static const int kMaximumDaysToKeepEntry;
   static const size_t kMinimumUserTextLength;
   static const size_t kMaximumStringLength;
-
-  // NotificationObserver
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
-  // The first step in initializing the predictor is accessing the database and
-  // building the local cache. This should be delayed until after critical DB
-  // and IO processes have completed.
-  void CreateLocalCachesFromDatabase();
 
   // Removes all rows from the database and caches.
   void DeleteAllRows();
@@ -228,7 +215,7 @@ class AutocompleteActionPredictor
   // will take a particular match given what they have typed. |is_in_db| is set
   // to differentiate trivial zero results resulting from a match not being
   // found from actual zero results where the calculation returns 0.0.
-  double CalculateConfidence(const base::string16& user_text,
+  double CalculateConfidence(const std::u16string& user_text,
                              const AutocompleteMatch& match,
                              bool* is_in_db) const;
 
@@ -257,8 +244,6 @@ class AutocompleteActionPredictor
   // The backing data store.  This is nullptr for incognito-owned predictors.
   scoped_refptr<AutocompleteActionPredictorTable> table_;
 
-  content::NotificationRegistrar notification_registrar_;
-
   // This is cleared after every Omnibox navigation.
   std::vector<TransitionalMatch> transitional_matches_;
 
@@ -266,7 +251,7 @@ class AutocompleteActionPredictor
   // This is used to limit the maximum size of |transitional_matches_|.
   size_t transitional_matches_size_ = 0;
 
-  std::unique_ptr<prerender::PrerenderHandle> prerender_handle_;
+  std::unique_ptr<prerender::NoStatePrefetchHandle> no_state_prefetch_handle_;
 
   // This allows us to predict the effect of confidence threshold changes on
   // accuracy.  This is cleared after every omnibox navigation.

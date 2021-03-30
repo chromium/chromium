@@ -7,47 +7,29 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "base/process/process_handle.h"
-#include "build/build_config.h"
-#include "content/public/browser/child_process_data.h"
-#include "content/public/common/process_type.h"
+#include "chrome/browser/performance_monitor/process_monitor.h"
 
 namespace base {
 class ProcessMetrics;
 }
 
 namespace performance_monitor {
-enum ProcessSubtypes {
-  kProcessSubtypeUnknown,
-  kProcessSubtypePPAPIFlash,
-  kProcessSubtypeExtensionPersistent,
-  kProcessSubtypeExtensionEvent
-};
-
-struct ProcessMetricsMetadata {
-  base::ProcessHandle handle;
-  int process_type;
-  ProcessSubtypes process_subtype;
-
-  ProcessMetricsMetadata()
-      : handle(base::kNullProcessHandle),
-        process_type(content::PROCESS_TYPE_UNKNOWN),
-        process_subtype(kProcessSubtypeUnknown) {}
-};
 
 class ProcessMetricsHistory {
  public:
   ProcessMetricsHistory();
+
   ProcessMetricsHistory(const ProcessMetricsHistory& other) = delete;
+  ProcessMetricsHistory& operator=(const ProcessMetricsHistory& other) = delete;
+
   ~ProcessMetricsHistory();
 
   // Configure this to monitor a specific process.
-  void Initialize(const ProcessMetricsMetadata& process_data,
+  void Initialize(const ProcessMetadata& process_data,
                   int initial_update_sequence);
 
   // Gather metrics for the process and accumulate with past data.
-  void SampleMetrics();
+  ProcessMonitor::Metrics SampleMetrics();
 
   // Used to mark when this object was last updated, so we can cull
   // dead ones.
@@ -55,32 +37,14 @@ class ProcessMetricsHistory {
     last_update_sequence_ = new_update_sequence;
   }
 
+  const ProcessMetadata& metadata() const { return process_data_; }
+
   int last_update_sequence() const { return last_update_sequence_; }
 
  private:
-  void UpdateHistograms();
-
-  // May not be fully populated. e.g. no |id| and no |name| for browser and
-  // renderer processes.
-  ProcessMetricsMetadata process_data_;
+  ProcessMetadata process_data_;
   std::unique_ptr<base::ProcessMetrics> process_metrics_;
   int last_update_sequence_ = 0;
-
-  double cpu_usage_ = 0.0;
-#if defined(OS_WIN)
-  uint64_t disk_usage_ = 0;
-#endif
-
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_AIX)
-  int idle_wakeups_ = 0;
-#endif
-#if defined(OS_MAC)
-  int package_idle_wakeups_ = 0;
-  double energy_impact_ = 0.0;
-#endif
-
-  DISALLOW_ASSIGN(ProcessMetricsHistory);
 };
 
 }  // namespace performance_monitor

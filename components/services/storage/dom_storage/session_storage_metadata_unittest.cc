@@ -4,13 +4,14 @@
 
 #include "components/services/storage/dom_storage/session_storage_metadata.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -478,14 +479,14 @@ struct BatchCollector : public leveldb::WriteBatch::Handler {
 };
 
 TEST_F(SessionStorageMetadataMigrationTest, MigrateV0ToV1) {
-  base::string16 key = base::ASCIIToUTF16("key");
-  base::string16 value = base::ASCIIToUTF16("value");
-  base::string16 key2 = base::ASCIIToUTF16("key2");
+  std::u16string key = u"key";
+  std::u16string value = u"value";
+  std::u16string key2 = u"key2";
   key2.push_back(0xd83d);
   key2.push_back(0xde00);
   LegacyDomStorageValuesMap data;
-  data[key] = base::NullableString16(value, false);
-  data[key2] = base::NullableString16(value, false);
+  data[key] = value;
+  data[key2] = value;
   EXPECT_TRUE(old_ss_database_->CommitAreaChanges(test_namespace1_id_,
                                                   test_origin1_, false, data));
   EXPECT_TRUE(old_ss_database_->CloneNamespace(test_namespace1_id_,

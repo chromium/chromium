@@ -61,7 +61,7 @@ const ClientId kTestUserRequestedClientId(kDownloadNamespace, "714");
 const ClientId kTestBrowserActionsClientId(kBrowserActionsNamespace, "999");
 const ClientId kTestLastNClientId(kLastNNamespace, "8989");
 const int64_t kTestFileSize = 876543LL;
-const base::string16 kTestTitle = base::UTF8ToUTF16("a title");
+const std::u16string kTestTitle = u"a title";
 const char kTestRequestOrigin[] = "abc.xyz";
 const char kEmptyRequestOrigin[] = "";
 const char kTestDigest[] = "test digest";

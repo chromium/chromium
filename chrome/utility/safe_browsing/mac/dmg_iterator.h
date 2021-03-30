@@ -8,10 +8,10 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "chrome/utility/safe_browsing/mac/udif.h"
 
 namespace safe_browsing {
@@ -46,7 +46,7 @@ class DMGIterator {
   virtual bool Next();
 
   // Returns the full path in a DMG filesystem to the current file item.
-  virtual base::string16 GetPath();
+  virtual std::u16string GetPath();
 
   // Returns a ReadStream for the current file item.
   virtual std::unique_ptr<ReadStream> GetReadStream();

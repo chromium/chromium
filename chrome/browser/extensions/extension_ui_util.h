@@ -40,7 +40,7 @@ bool ShouldDisplayInNewTabPage(const Extension* extension,
 // If |url| is an extension URL, returns the name of the associated extension,
 // with whitespace collapsed. Otherwise, returns empty string. |context| is used
 // to get at the extension registry.
-base::string16 GetEnabledExtensionNameForUrl(const GURL& url,
+std::u16string GetEnabledExtensionNameForUrl(const GURL& url,
                                              content::BrowserContext* context);
 
 // Returns true if the icon, rendered in the toolbar of the current context,

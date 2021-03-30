@@ -55,13 +55,14 @@ class NotificationManager {
   // Sends an inline reply for the notificaiton with the given ID; if no
   // notification exists with this ID, this function is a no-op.
   virtual void SendInlineReply(int64_t notification_id,
-                               const base::string16& inline_reply_text) = 0;
+                               const std::u16string& inline_reply_text) = 0;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
  protected:
-  friend class PhoneStatusProcessor;
+  friend class FakeNotificationProcessor;
+  friend class NotificationProcessor;
   friend class NotificationManagerImplTest;
 
   NotificationManager();

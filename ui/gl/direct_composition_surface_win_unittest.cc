@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
+#include "base/power_monitor/test/fake_power_monitor_source.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/scoped_feature_list.h"
@@ -26,6 +27,7 @@
 #include "ui/gl/dc_renderer_layer_params.h"
 #include "ui/gl/direct_composition_child_surface_win.h"
 #include "ui/gl/gl_angle_util_win.h"
+#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_image_d3d.h"
 #include "ui/gl/gl_image_dxgi.h"
@@ -41,7 +43,7 @@ namespace {
 class TestPlatformDelegate : public ui::PlatformWindowDelegate {
  public:
   // ui::PlatformWindowDelegate implementation.
-  void OnBoundsChanged(const gfx::Rect& new_bounds) override {}
+  void OnBoundsChanged(const BoundsChange& change) override {}
   void OnDamageRect(const gfx::Rect& damaged_region) override {}
   void DispatchEvent(ui::Event* event) override {}
   void OnCloseRequest() override {}
@@ -116,6 +118,9 @@ class DirectCompositionSurfaceTest : public testing::Test {
 
  protected:
   void SetUp() override {
+    // These tests are assumed to run on battery.
+    fake_power_monitor_source_.SetOnBatteryPower(true);
+
     // Without this, the following check always fails.
     gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings*/ true);
     if (!QueryDirectCompositionDevice(QueryD3D11DeviceObjectFromANGLE())) {
@@ -169,6 +174,7 @@ class DirectCompositionSurfaceTest : public testing::Test {
   HWND parent_window_;
   scoped_refptr<DirectCompositionSurfaceWin> surface_;
   scoped_refptr<GLContext> context_;
+  base::test::ScopedFakePowerMonitorSource fake_power_monitor_source_;
 };
 
 TEST_F(DirectCompositionSurfaceTest, TestMakeCurrent) {
@@ -949,7 +955,8 @@ TEST_F(DirectCompositionPixelTest, YUY2SwapChain) {
   // CreateSwapChainForCompositionSurfaceHandle fails with YUY2 format on
   // Win10/AMD bot (Radeon RX550). See https://crbug.com/967860.
   if (context_ && context_->GetVersionInfo() &&
-      context_->GetVersionInfo()->driver_vendor == "ANGLE (AMD)")
+      context_->GetVersionInfo()->driver_vendor.find("AMD") !=
+          std::string::npos)
     return;
 
   // Swap chain size is overridden to content rect size only if scaled overlays
@@ -1165,7 +1172,8 @@ TEST_F(DirectCompositionPixelTest, SwapChainImage) {
     return;
   // Fails on AMD RX 5500 XT. https://crbug.com/1152565.
   if (context_ && context_->GetVersionInfo() &&
-      context_->GetVersionInfo()->driver_vendor == "ANGLE (AMD)")
+      context_->GetVersionInfo()->driver_vendor.find("AMD") !=
+          std::string::npos)
     return;
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =

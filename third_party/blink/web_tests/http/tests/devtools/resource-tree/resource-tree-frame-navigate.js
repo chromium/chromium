@@ -5,8 +5,8 @@
 (async function() {
   TestRunner.addResult(
       `Tests resource tree model on iframe navigation, compares resource tree against golden. Every line is important.\n`);
-  await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('application_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('application_test_runner');
   await TestRunner.showPanel('resources');
   await TestRunner.loadHTML(`
     <iframe id="iframe"></iframe>

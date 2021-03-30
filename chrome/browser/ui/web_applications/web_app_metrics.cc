@@ -5,11 +5,11 @@
 #include "chrome/browser/ui/web_applications/web_app_metrics.h"
 
 #include "base/bind.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/time/time.h"
-#include "chrome/browser/engagement/site_engagement_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -20,7 +20,10 @@
 #include "chrome/browser/web_applications/components/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/daily_metrics_helper.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "components/webapps/installable/installable_metrics.h"
+#include "components/site_engagement/content/engagement_type.h"
+#include "components/site_engagement/content/site_engagement_service.h"
+#include "components/webapps/browser/banners/app_banner_manager.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 
 using DisplayMode = blink::mojom::DisplayMode;
@@ -39,23 +42,22 @@ constexpr base::TimeDelta max_valid_session_delta_ =
 
 void RecordEngagementHistogram(
     const std::string& histogram_name,
-    site_engagement::SiteEngagementService::EngagementType engagement_type) {
-  base::UmaHistogramEnumeration(
-      histogram_name, engagement_type,
-      site_engagement::SiteEngagementService::ENGAGEMENT_LAST);
+    site_engagement::EngagementType engagement_type) {
+  base::UmaHistogramEnumeration(histogram_name, engagement_type,
+                                site_engagement::EngagementType::kLast);
 }
 
 void RecordTabOrWindowHistogram(
     const std::string& histogram_prefix,
     bool in_window,
-    site_engagement::SiteEngagementService::EngagementType engagement_type) {
+    site_engagement::EngagementType engagement_type) {
   RecordEngagementHistogram(
       histogram_prefix + (in_window ? ".InWindow" : ".InTab"), engagement_type);
 }
 
 void RecordUserInstalledHistogram(
     bool in_window,
-    site_engagement::SiteEngagementService::EngagementType engagement_type) {
+    site_engagement::EngagementType engagement_type) {
   const std::string histogram_prefix = "WebApp.Engagement.UserInstalled";
   RecordTabOrWindowHistogram(histogram_prefix, in_window, engagement_type);
 }
@@ -83,7 +85,7 @@ WebAppMetrics::WebAppMetrics(Profile* profile)
       profile_(profile),
       browser_tab_strip_tracker_(this, nullptr) {
   browser_tab_strip_tracker_.Init();
-  base::PowerMonitor::AddObserver(this);
+  base::PowerMonitor::AddPowerSuspendObserver(this);
   BrowserList::AddObserver(this);
 
   WebAppProvider* provider = WebAppProvider::Get(profile_);
@@ -94,16 +96,15 @@ WebAppMetrics::WebAppMetrics(Profile* profile)
 }
 
 WebAppMetrics::~WebAppMetrics() {
-  UpdateForegroundWebContents(nullptr);
   BrowserList::RemoveObserver(this);
-  base::PowerMonitor::RemoveObserver(this);
+  base::PowerMonitor::RemovePowerSuspendObserver(this);
 }
 
 void WebAppMetrics::OnEngagementEvent(
     WebContents* web_contents,
     const GURL& url,
     double score,
-    site_engagement::SiteEngagementService::EngagementType engagement_type) {
+    site_engagement::EngagementType engagement_type) {
   if (!web_contents)
     return;
 
@@ -166,7 +167,7 @@ void WebAppMetrics::OnBrowserNoLongerActive(Browser* browser) {
   if (web_contents != foreground_web_contents_)
     UpdateUkmData(web_contents, TabSwitching::kFrom);
   UpdateUkmData(foreground_web_contents_, TabSwitching::kFrom);
-  UpdateForegroundWebContents(nullptr);
+  foreground_web_contents_ = nullptr;
 }
 
 void WebAppMetrics::OnBrowserSetLastActive(Browser* browser) {
@@ -174,7 +175,7 @@ void WebAppMetrics::OnBrowserSetLastActive(Browser* browser) {
   // focus switch.
   WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
-  UpdateForegroundWebContents(web_contents);
+  foreground_web_contents_ = web_contents;
   UpdateUkmData(web_contents, TabSwitching::kTo);
 }
 
@@ -186,7 +187,20 @@ void WebAppMetrics::OnTabStripModelChanged(
   // consistent view of selected and last-interacted tabs.
   UpdateUkmData(selection.old_contents, TabSwitching::kFrom);
 
-  UpdateForegroundWebContents(selection.new_contents);
+  foreground_web_contents_ = selection.new_contents;
+  // Newly-selected foreground contents should not be going away.
+  if (foreground_web_contents_ &&
+      foreground_web_contents_->IsBeingDestroyed()) {
+    base::debug::DumpWithoutCrashing();
+    foreground_web_contents_ = nullptr;
+  }
+
+  // Contents being replaced should never be the new selection.
+  if (change.type() == TabStripModelChange::kReplaced &&
+      change.GetReplace()->old_contents == foreground_web_contents_) {
+    base::debug::DumpWithoutCrashing();
+    foreground_web_contents_ = nullptr;
+  }
 
   if (change.type() == TabStripModelChange::kRemoved) {
     for (const TabStripModelChange::ContentsWithIndexAndWillBeDeleted&
@@ -196,13 +210,16 @@ void WebAppMetrics::OnTabStripModelChanged(
             WebAppTabHelperBase::FromWebContents(contents.contents);
         if (tab_helper && !tab_helper->GetAppId().empty())
           app_last_interacted_time_.erase(tab_helper->GetAppId());
-        // Foreground contents should not be going away.
-        DCHECK_NE(contents.contents, foreground_web_contents_);
+        // Newly-selected foreground contents should not be going away.
+        if (contents.contents == foreground_web_contents_) {
+          base::debug::DumpWithoutCrashing();
+          foreground_web_contents_ = nullptr;
+        }
       }
     }
   }
 
-  UpdateUkmData(selection.new_contents, TabSwitching::kTo);
+  UpdateUkmData(foreground_web_contents_, TabSwitching::kTo);
 }
 
 void WebAppMetrics::OnSuspend() {
@@ -233,20 +250,23 @@ void WebAppMetrics::OnSuspend() {
   app_last_interacted_time_.clear();
 }
 
-void WebAppMetrics::NotifyOnAssociatedAppChanged(
-    content::WebContents* web_contents,
-    const AppId& previous_app_id,
-    const AppId& new_app_id) {
+void WebAppMetrics::NotifyOnAssociatedAppChanged(WebContents* web_contents,
+                                                 const AppId& previous_app_id,
+                                                 const AppId& new_app_id) {
   // Ensure we aren't counting closed app as still open.
   // TODO (crbug.com/1081187): If there were multiple app instances open, this
   // will prevent background time being counted until the app is next active.
   app_last_interacted_time_.erase(previous_app_id);
   // Don't record any UKM data here. It will be recorded in
-  // |OnInstallableWebAppStatusUpdated| once fully fetched.
+  // |NotifyInstallableWebAppStatusUpdated| once fully fetched.
 }
 
-void WebAppMetrics::OnInstallableWebAppStatusUpdated() {
-  DCHECK(foreground_web_contents_);
+void WebAppMetrics::NotifyInstallableWebAppStatusUpdated(
+    WebContents* web_contents) {
+  DCHECK(web_contents);
+  // Skip recording if app isn't in the foreground.
+  if (web_contents != foreground_web_contents_)
+    return;
   // Skip recording if we just recorded this App ID (when switching tabs/windows
   // or on a previous navigation that triggered this event). Otherwise we would
   // count navigations within a web app as sessions.
@@ -261,6 +281,13 @@ void WebAppMetrics::OnInstallableWebAppStatusUpdated() {
   }
 
   UpdateUkmData(foreground_web_contents_, TabSwitching::kTo);
+}
+
+void WebAppMetrics::NotifyWebContentsDestroyed(WebContents* web_contents) {
+  // Won't save us if we set a destroyed WebContents as foreground after this
+  // point. Maybe we should keep a set of destroyed WebContents pointers?
+  if (foreground_web_contents_ == web_contents)
+    foreground_web_contents_ = nullptr;
 }
 
 void WebAppMetrics::RemoveBrowserListObserverForTesting() {
@@ -289,9 +316,11 @@ void WebAppMetrics::UpdateUkmData(WebContents* web_contents,
     return;
   auto* app_banner_manager =
       webapps::AppBannerManager::FromWebContents(web_contents);
-  DCHECK(app_banner_manager);
+  // May be null in unit tests.
+  if (!app_banner_manager)
+    return;
   WebAppProvider* provider = WebAppProvider::Get(profile_);
-  // WebAppProvider not available in kiosk mode.
+  // WebAppProvider may be removed after WebAppMetrics construction in tests.
   if (!provider)
     return;
   DailyInteraction features;
@@ -351,20 +380,6 @@ void WebAppMetrics::UpdateUkmData(WebContents* web_contents,
   }
   last_recorded_web_app_start_url_ = features.start_url;
   FlushOldRecordsAndUpdate(features, profile_);
-}
-
-// Store web_contents for use in ABM observer callback.
-void WebAppMetrics::UpdateForegroundWebContents(WebContents* web_contents) {
-  if (web_contents == foreground_web_contents_)
-    return;
-  app_banner_manager_observer_.RemoveAll();
-  foreground_web_contents_ = web_contents;
-  if (web_contents) {
-    auto* app_banner_manager =
-        webapps::AppBannerManager::FromWebContents(web_contents);
-    DCHECK(app_banner_manager);
-    app_banner_manager_observer_.Add(app_banner_manager);
-  }
 }
 
 }  // namespace web_app

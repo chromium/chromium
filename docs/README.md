@@ -48,8 +48,8 @@ used when committed.
     (on a Linux host)
 *   [Cast for Android Build Instructions](android_cast_build_instructions.md) -
     Cast for Android (on a Linux host)
-*   [Fuchsia Build Instructions](fuchsia_build_instructions.md) - Fuchsia target
-    (on a Linux host)
+*   [Fuchsia Build Instructions](fuchsia/build_instructions.md) -
+    Fuchsia target (on a Linux host)
 *   [iOS Build Instructions](ios/build_instructions.md) - iOS target (on a MacOS
     host)
 *   [Chrome OS Build Instructions](chromeos_build_instructions.md) - Chrome OS
@@ -305,10 +305,13 @@ used when committed.
     *   [Kiosk mode and public sessions](enterprise/kiosk_public_session.md)
 *   [Debugging UI in OOBE/login/lock](login/ui_debugging.md)
 *   [Chrome Logging on Chrome OS](chrome_os_logging.md)
+*   [Debugging tips](testing/chromeos_debugging_tips.md)
 
 ### Misc WebUI-Specific Docs
 *   [Creating WebUI Interfaces in components/](webui_in_components.md) How to
     create a new WebUI component in the `components/` directory.
+*   [Trusted Types on WebUI](trusted_types_on_webui.md) Tips for coding in WebUI
+    with Trusted Types in mind.
 
 ### Media
 *   [Audio Focus Handling](media/audio_focus.md) - How multiple MediaSession
@@ -393,6 +396,8 @@ used when committed.
     patterns for practical IPC conversion work
 *   [Mojo “Style” Guide](security/mojo.md) - Recommendations for best practices
     from Mojo and IPC reviewers
+*   [D-Bus Mojo Connection Service](dbus_mojo_connection_service.md) - A service
+    in Chrome to bootstrap CrOS services' Mojo connection.
 
 ### Speed
 *   [Chrome Speed](speed/README.md) - Documentation for performance measurements and regressions in Chrome.

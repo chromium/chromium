@@ -289,11 +289,9 @@ NSString* const kTitleViewAccessibilityIdentifier = @"titleView";
     [closeButton.trailingAnchor
         constraintEqualToAnchor:headerView.trailingAnchor],
   ]];
-#if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
       closeButton.pointerInteractionEnabled = YES;
   }
-#endif  // defined(__IPHONE_13_4)
 
   // Add the content view.
   UIView* contentView = [self contentView];
@@ -354,13 +352,11 @@ NSString* const kTitleViewAccessibilityIdentifier = @"titleView";
                            titleColor:[UIColor colorNamed:kBlueColor]
                                target:self
                                action:@selector(didTapCancel)];
-#if defined(__IPHONE_13_4)
       if (@available(iOS 13.4, *)) {
           cancelButton.pointerInteractionEnabled = YES;
           cancelButton.pointerStyleProvider =
               CreateTransparentButtonPointerStyleProvider();
       }
-#endif  // defined(__IPHONE_13_4)
 
       [footerView addArrangedSubview:cancelButton];
     }
@@ -372,13 +368,11 @@ NSString* const kTitleViewAccessibilityIdentifier = @"titleView";
                            titleColor:[UIColor colorNamed:kSolidButtonTextColor]
                                target:self
                                action:@selector(didTapConfirm)];
-#if defined(__IPHONE_13_4)
       if (@available(iOS 13.4, *)) {
           confirmButton.pointerInteractionEnabled = YES;
           confirmButton.pointerStyleProvider =
               CreateOpaqueButtonPointerStyleProvider();
       }
-#endif  // defined(__IPHONE_13_4)
 
       [footerView addArrangedSubview:confirmButton];
     }

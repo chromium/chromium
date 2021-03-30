@@ -15,9 +15,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/updater/app/app.h"
@@ -42,7 +42,7 @@ class TestApp : public App {
                        bool rollback,
                        const std::string& version,
                        int64_t size,
-                       const base::string16& message);
+                       const std::u16string& message);
 };
 
 void TestApp::SetUpdateStatus(UpdateStatus status,
@@ -50,7 +50,7 @@ void TestApp::SetUpdateStatus(UpdateStatus status,
                               bool rollback,
                               const std::string& version,
                               int64_t size,
-                              const base::string16& message) {
+                              const std::u16string& message) {
   switch (status) {
     case UpdateStatus::INIT:
       VLOG(1) << "Updates starting!";

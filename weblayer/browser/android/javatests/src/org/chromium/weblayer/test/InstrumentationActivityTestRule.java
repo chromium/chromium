@@ -140,14 +140,6 @@ public class InstrumentationActivityTestRule
         (new NavigationWaiter(url, tab, true /* expectFailure */, waitForPaint)).navigateAndWait();
     }
 
-    /**
-     * Recreates the Activity, blocking until finished.
-     * After calling this, getActivity() returns the new Activity.
-     */
-    public void recreateActivity() {
-        setActivity(ApplicationTestUtils.recreateActivity(getActivity()));
-    }
-
     public void recreateByRotatingToLandscape() {
         setActivity(ApplicationTestUtils.waitForActivityWithClass(
                 InstrumentationActivity.class, Stage.RESUMED, () -> {

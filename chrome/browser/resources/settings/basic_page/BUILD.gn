@@ -16,10 +16,10 @@ js_library("basic_page") {
   deps = [
     "..:page_visibility",
     "..:route",
-    "..:router.m",
-    "..:search_settings.m",
+    "..:router",
+    "..:search_settings",
     "../chrome_cleanup_page:chrome_cleanup_proxy",
-    "../prefs:prefs_behavior.m",
+    "../prefs:prefs_behavior",
     "../privacy_page:privacy_page",
     "../safety_check_page:safety_check_page",
     "../search_page",

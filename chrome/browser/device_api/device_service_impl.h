@@ -15,7 +15,7 @@ namespace content {
 class RenderFrameHost;
 }
 
-// A browser-side mojo service, which corresponds to the navigator.device Web
+// A browser-side mojo service, which corresponds to the navigator.managed Web
 // API. Available only to trusted web applications.
 class DeviceServiceImpl final
     : public content::FrameServiceBase<blink::mojom::DeviceAPIService>,
@@ -38,6 +38,11 @@ class DeviceServiceImpl final
   void SubscribeToManagedConfiguration(
       mojo::PendingRemote<blink::mojom::ManagedConfigurationObserver> observer)
       override;
+  void GetDirectoryId(GetDirectoryIdCallback callback) override;
+  void GetHostname(GetHostnameCallback callback) override;
+  void GetSerialNumber(GetSerialNumberCallback callback) override;
+  void GetAnnotatedAssetId(GetAnnotatedAssetIdCallback callback) override;
+  void GetAnnotatedLocation(GetAnnotatedLocationCallback callback) override;
 
  private:
   DeviceServiceImpl(
@@ -47,6 +52,7 @@ class DeviceServiceImpl final
   void OnForceInstallWebAppListChanged();
 
   ManagedConfigurationAPI* managed_configuration_api();
+
   // ManagedConfigurationAPI::Observer:
   void OnManagedConfigurationChanged() override;
 

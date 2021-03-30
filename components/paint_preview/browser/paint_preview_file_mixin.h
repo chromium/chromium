@@ -5,9 +5,12 @@
 #ifndef COMPONENTS_PAINT_PREVIEW_BROWSER_PAINT_PREVIEW_FILE_MIXIN_H_
 #define COMPONENTS_PAINT_PREVIEW_BROWSER_PAINT_PREVIEW_FILE_MIXIN_H_
 
+#include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/paint_preview/browser/file_manager.h"
+#include "ui/accessibility/ax_tree_update.h"
 
 namespace paint_preview {
 
@@ -23,6 +26,9 @@ class PaintPreviewFileMixin {
   using OnReadProtoCallback =
       base::OnceCallback<void(ProtoReadStatus,
                               std::unique_ptr<PaintPreviewProto>)>;
+
+  using OnReadAXTree =
+      base::OnceCallback<void(std::unique_ptr<ui::AXTreeUpdate>)>;
 
   // Creates an instance for a profile. FileManager's root directory will be set
   // to |profile_dir|/paint_preview/|ascii_feature_name|.
@@ -40,6 +46,10 @@ class PaintPreviewFileMixin {
     return task_runner_;
   }
 
+  base::WeakPtr<PaintPreviewFileMixin> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   // Acquires the PaintPreviewProto that is associated with |key| and sends it
   // to |on_read_proto_callback|. The default implementation attempts to invoke
   // GetFileManager()->DeserializePaintPreviewProto(). If |expiry_horizon| is
@@ -50,9 +60,18 @@ class PaintPreviewFileMixin {
       base::Optional<base::TimeDelta> expiry_horizon,
       OnReadProtoCallback on_read_proto_callback);
 
+  // Writes an Accessibility Tree snapshot to the directory listed in key.
+  void WriteAXTreeUpdate(const DirectoryKey& key,
+                         base::OnceCallback<void(bool)> finished_callback,
+                         const ui::AXTreeUpdate& ax_tree_update);
+
+  // Gets an Accessibility Tree snapshot for key.
+  void GetAXTreeUpdate(const DirectoryKey& key, OnReadAXTree callback);
+
  private:
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   scoped_refptr<FileManager> file_manager_;
+  base::WeakPtrFactory<PaintPreviewFileMixin> weak_ptr_factory_{this};
 };
 
 }  // namespace paint_preview

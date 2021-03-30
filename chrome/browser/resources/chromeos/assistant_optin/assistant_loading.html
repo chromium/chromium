@@ -2,42 +2,45 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<link rel="import" href="chrome://resources/cr_elements/cr_expand_button/cr_expand_button.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-collapse/iron-collapse.html">
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-progress/paper-progress.html">
 
 <link rel="import" href="/components/oobe_i18n_behavior.html">
-<link rel="import" href="/components/oobe_dialog.html">
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
+<link rel="import" href="/components/oobe_content_dialog.html">
+<link rel="import" href="/components/oobe_dialog_host_behavior.html">
+<link rel="import" href="/components/multi_step_behavior.html">
 
 <dom-module id="assistant-loading">
   <template>
     <style include="oobe-dialog-host"></style>
     <link rel="stylesheet" href="assistant_loading.css">
     <link rel="stylesheet" href="assistant_shared_styles.css">
-    <oobe-dialog id="loading-dialog" role="dialog" has-buttons hide-shadow
-        no-footer-padding no-header>
-      <div slot="footer">
-        <div class="container" id="error-container">
-          <img id="logo" src="assistant_logo.png"
-              aria-label$="[[i18nDynamic(locale, 'assistantLogo')]]">
-          <div class="title">
-            [[i18nDynamic(locale, 'assistantOptinLoadErrorTitle')]]
+    <oobe-content-dialog id="loading-dialog" role="dialog" for-step="loading"
+        no-buttons>
+      <div slot="content" class="flex layout vertical center-justified">
+        <div id="loading-content" class="content">
+          <div>
+            [[i18nDynamic(locale, 'assistantOptinLoading')]]
           </div>
-          <div class="sub-title">
-            [[i18nDynamic(locale, 'assistantOptinLoadErrorMessage')]]
-          </div>
-        </div>
-        <div class="container" id="loading-container">
-          <div id="loading-content" class="content">
-            <div>
-              [[i18nDynamic(locale, 'assistantOptinLoading')]]
-            </div>
-            <paper-progress class="slow" indeterminate></paper-progress>
-          </div>
+          <paper-progress class="slow" indeterminate></paper-progress>
         </div>
       </div>
-      <div slot="bottom-buttons" class="flex layout horizontal">
-        <div class="flex"></div>
+    </oobe-content-dialog>
+    <oobe-adaptive-dialog id="error-dialog" role="dialog" hide-shadow
+        for-step="error">
+      <iron-icon slot="icon" icon="assistant-32:assistant"
+          aria-label$="[[i18nDynamic(locale, 'assistantLogo')]]">
+      </iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'assistantOptinLoadErrorTitle')]]
+      </h1>
+      <div slot="subtitle">
+        [[i18nDynamic(locale, 'assistantOptinLoadErrorMessage')]]
+      </div>
+      <div slot="bottom-buttons">
         <oobe-text-button id="skip-button" on-click="onSkipTap_"
             disabled="[[buttonsDisabled]]" text-key="assistantOptinSkipButton">
         </oobe-text-button>
@@ -45,6 +48,6 @@
             disabled="[[buttonsDisabled]]" text-key="assistantOptinRetryButton">
         </oobe-text-button>
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
   </template>
 </dom-module>

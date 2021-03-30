@@ -58,7 +58,7 @@ UIMediaSink CreateConnectedSink() {
 
 CastDialogModel CreateModelWithSinks(std::vector<UIMediaSink> sinks) {
   CastDialogModel model;
-  model.set_dialog_header(base::UTF8ToUTF16("Dialog header"));
+  model.set_dialog_header(u"Dialog header");
   model.set_media_sinks(std::move(sinks));
   return model;
 }
@@ -261,8 +261,8 @@ TEST_F(CastDialogViewTest, CastLocalFile) {
   views::test::ButtonTestApi(sources_button()).NotifyClick(CreateMouseEvent());
 
 #if defined(OS_WIN)
-  ui::SelectedFileInfo file_info{base::FilePath(base::UTF8ToUTF16(file_name)),
-                                 base::FilePath(base::UTF8ToUTF16(file_path))};
+  ui::SelectedFileInfo file_info{base::FilePath(base::UTF8ToWide(file_name)),
+                                 base::FilePath(base::UTF8ToWide(file_path))};
 #else
   ui::SelectedFileInfo file_info{base::FilePath(file_name),
                                  base::FilePath(file_path)};

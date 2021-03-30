@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/page_load_metrics/browser/page_load_metrics_embedder_interface.h"
+#include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
 #include "components/page_load_metrics/browser/page_load_metrics_update_dispatcher.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
@@ -102,6 +103,11 @@ void MetricsWebContentsObserver::WebContentsDestroyed() {
   // TODO(csharrison): Use a more user-initiated signal for CLOSE.
   NotifyPageEndAllLoads(END_CLOSE, UserInitiatedInfo::NotUserInitiated());
 
+  // Do this before clearing committed_load_, so that the observers don't hit
+  // the DCHECK in MetricsWebContentsObserver::GetDelegateForCommittedLoad.
+  for (auto& observer : testing_observers_)
+    observer.OnGoingAway();
+
   // We tear down PageLoadTrackers in WebContentsDestroyed, rather than in the
   // destructor, since |web_contents()| returns nullptr in the destructor, and
   // PageLoadMetricsObservers can cause code to execute that wants to be able to
@@ -110,9 +116,6 @@ void MetricsWebContentsObserver::WebContentsDestroyed() {
   ukm_smoothness_data_ = {};
   provisional_loads_.clear();
   aborted_provisional_loads_.clear();
-
-  for (auto& observer : testing_observers_)
-    observer.OnGoingAway();
 }
 
 void MetricsWebContentsObserver::RegisterInputEventObserver(
@@ -136,11 +139,15 @@ void MetricsWebContentsObserver::RenderViewHostChanged(
 
 void MetricsWebContentsObserver::FrameDeleted(content::RenderFrameHost* rfh) {
   if (committed_load_)
-    committed_load_->FrameDeleted(rfh);
+    committed_load_->FrameDeleted(rfh->GetFrameTreeNodeId());
 }
 
 void MetricsWebContentsObserver::RenderFrameDeleted(
     content::RenderFrameHost* rfh) {
+  if (auto* memory_tracker = GetMemoryTracker())
+    memory_tracker->OnRenderFrameDeleted(rfh, this);
+  if (committed_load_)
+    committed_load_->RenderFrameDeleted(rfh);
   // PageLoadTracker can be associated only with a main frame.
   if (rfh->GetParent())
     return;
@@ -150,14 +157,17 @@ void MetricsWebContentsObserver::RenderFrameDeleted(
 void MetricsWebContentsObserver::MediaStartedPlaying(
     const content::WebContentsObserver::MediaPlayerInfo& video_type,
     const content::MediaPlayerId& id) {
-  if (!id.render_frame_host->GetMainFrame()->IsCurrent()) {
+  auto* render_frame_host =
+      content::RenderFrameHost::FromID(id.frame_routing_id);
+
+  if (!render_frame_host || !render_frame_host->GetMainFrame()->IsCurrent()) {
     // Ignore media that starts playing in a page that was navigated away
     // from.
     return;
   }
 
   if (committed_load_)
-    committed_load_->MediaStartedPlaying(video_type, id.render_frame_host);
+    committed_load_->MediaStartedPlaying(video_type, render_frame_host);
 }
 
 void MetricsWebContentsObserver::WillStartNavigationRequest(
@@ -187,7 +197,7 @@ MetricsWebContentsObserver::MetricsWebContentsObserver(
   if (embedder_interface_->IsPrerender(web_contents))
     in_foreground_ = false;
 
-  RegisterInputEventObserver(web_contents->GetRenderViewHost());
+  RegisterInputEventObserver(web_contents->GetMainFrame()->GetRenderViewHost());
 }
 
 void MetricsWebContentsObserver::WillStartNavigationRequestImpl(
@@ -560,11 +570,23 @@ void MetricsWebContentsObserver::HandleCommittedNavigationForTrackedLoad(
                                            std::move(ukm_smoothness_data_));
     }
   }
+
+  // Clear memory update queue, sending each queued update now that we have
+  // a `committed_load_`.
+  while (!queued_memory_updates_.empty()) {
+    committed_load_->OnV8MemoryChanged(queued_memory_updates_.front());
+    queued_memory_updates_.pop();
+  }
 }
 
 void MetricsWebContentsObserver::MaybeStorePageLoadTrackerForBackForwardCache(
     content::NavigationHandle* next_navigation_handle,
     std::unique_ptr<PageLoadTracker> previously_committed_load) {
+  TRACE_EVENT1("loading",
+               "MetricsWebContentsObserver::"
+               "MaybeRestorePageLoadTrackerForBackForwardCache",
+               "next_navigation", next_navigation_handle);
+
   if (!previously_committed_load)
     return;
 
@@ -589,6 +611,11 @@ void MetricsWebContentsObserver::MaybeStorePageLoadTrackerForBackForwardCache(
 
 bool MetricsWebContentsObserver::MaybeRestorePageLoadTrackerForBackForwardCache(
     content::NavigationHandle* navigation_handle) {
+  TRACE_EVENT1("loading",
+               "MetricsWebContentsObserver::"
+               "MaybeRestorePageLoadTrackerForBackForwardCache",
+               "navigation", navigation_handle);
+
   if (!navigation_handle->IsServedFromBackForwardCache())
     return false;
 
@@ -970,15 +997,36 @@ void MetricsWebContentsObserver::TestingObserver::OnGoingAway() {
   observer_ = nullptr;
 }
 
-const PageLoadMetricsObserverDelegate&
+const PageLoadMetricsObserverDelegate*
 MetricsWebContentsObserver::TestingObserver::GetDelegateForCommittedLoad() {
-  return observer_->GetDelegateForCommittedLoad();
+  return observer_ ? &observer_->GetDelegateForCommittedLoad() : nullptr;
 }
 
 void MetricsWebContentsObserver::BroadcastEventToObservers(
-    const void* const event_key) {
+    PageLoadMetricsEvent event) {
   if (committed_load_)
-    committed_load_->BroadcastEventToObservers(event_key);
+    committed_load_->BroadcastEventToObservers(event);
+}
+
+void MetricsWebContentsObserver::OnV8MemoryChanged(
+    const std::vector<MemoryUpdate>& memory_updates) {
+  if (committed_load_) {
+    committed_load_->OnV8MemoryChanged(memory_updates);
+  } else {
+    // If the load hasn't committed yet, then memory updates can't be sent
+    // at this time, but will still need to be sent later. Queue the updates
+    // in case `committed_load_` is null due to the navigation having not yet
+    // completed, in which case the queued updates will be sent when
+    // HandleCommittedNavigationForTrackedLoad is called.  Otherwise, they will
+    // be ignored and destructed when the MWCO is destructed.
+    queued_memory_updates_.push(memory_updates);
+  }
+}
+
+PageLoadMetricsMemoryTracker* MetricsWebContentsObserver::GetMemoryTracker()
+    const {
+  return embedder_interface_->GetMemoryTrackerForBrowserContext(
+      web_contents()->GetBrowserContext());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(MetricsWebContentsObserver)

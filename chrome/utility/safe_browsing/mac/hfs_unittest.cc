@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/files/file.h"
+#include "base/logging.h"
 #include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -23,8 +24,8 @@ namespace {
 class HFSIteratorTest : public testing::Test {
  public:
   void GetTargetFiles(bool case_sensitive,
-                      std::set<base::string16>* files,
-                      std::set<base::string16>* dirs) {
+                      std::set<std::u16string>* files,
+                      std::set<std::u16string>* dirs) {
     const char* kBaseFiles[] = {
       "first/second/third/fourth/fifth/random",
       "first/second/third/fourth/Hello World",
@@ -44,12 +45,12 @@ class HFSIteratorTest : public testing::Test {
       ".Trashes",
     };
 
-    const base::string16 dmg_name = base::ASCIIToUTF16("SafeBrowsingDMG/");
+    const std::u16string dmg_name = u"SafeBrowsingDMG/";
 
     for (size_t i = 0; i < base::size(kBaseFiles); ++i)
       files->insert(dmg_name + base::ASCIIToUTF16(kBaseFiles[i]));
 
-    files->insert(dmg_name + base::ASCIIToUTF16("first/second/") +
+    files->insert(dmg_name + u"first/second/" +
                   base::UTF8ToUTF16("Te\xCC\x86st\xCC\x88 \xF0\x9F\x90\x90 "));
 
     dirs->insert(dmg_name.substr(0, dmg_name.size() - 1));
@@ -64,15 +65,14 @@ class HFSIteratorTest : public testing::Test {
 
   void TestTargetFiles(safe_browsing::dmg::HFSIterator* hfs_reader,
                        bool case_sensitive) {
-    std::set<base::string16> files, dirs;
+    std::set<std::u16string> files, dirs;
     GetTargetFiles(case_sensitive, &files, &dirs);
 
     ASSERT_TRUE(hfs_reader->Open());
     while (hfs_reader->Next()) {
-      base::string16 path = hfs_reader->GetPath();
+      std::u16string path = hfs_reader->GetPath();
       // Skip over .fseventsd files.
-      if (path.find(base::ASCIIToUTF16("SafeBrowsingDMG/.fseventsd")) !=
-              base::string16::npos) {
+      if (path.find(u"SafeBrowsingDMG/.fseventsd") != std::u16string::npos) {
         continue;
       }
       if (hfs_reader->IsDirectory())

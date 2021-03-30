@@ -40,6 +40,9 @@ This file contains strings for code in //services.
       <output filename="services_strings_zh-HK.pak" type="data_package" lang="zh-HK" />
       <output filename="services_strings_zu.pak" type="data_package" lang="zu" />
     </if>
+    <if expr="chromeos or lacros">
+      <output filename="services_strings_is.pak" type="data_package" lang="is" />
+    </if>
     <output filename="services_strings_am.pak" type="data_package" lang="am" />
     <output filename="services_strings_ar.pak" type="data_package" lang="ar" />
     <output filename="services_strings_bg.pak" type="data_package" lang="bg" />
@@ -55,7 +58,6 @@ This file contains strings for code in //services.
     <output filename="services_strings_es-419.pak" type="data_package" lang="es-419" />
     <output filename="services_strings_et.pak" type="data_package" lang="et" />
     <output filename="services_strings_fa.pak" type="data_package" lang="fa" />
-    <output filename="services_strings_fake-bidi.pak" type="data_package" lang="fake-bidi" />
     <output filename="services_strings_fi.pak" type="data_package" lang="fi" />
     <output filename="services_strings_fil.pak" type="data_package" lang="fil" />
     <output filename="services_strings_fr.pak" type="data_package" lang="fr" />
@@ -96,6 +98,10 @@ This file contains strings for code in //services.
     <output filename="services_strings_vi.pak" type="data_package" lang="vi" />
     <output filename="services_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
     <output filename="services_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+
+    <!-- Pseudolocales -->
+    <output filename="services_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="services_strings_en-XA.pak" type="data_package" lang="en-XA" />
   </outputs>
   <translations>
     <file path="strings/services_strings_af.xtb" lang="af" />
@@ -180,7 +186,7 @@ This file contains strings for code in //services.
     <file path="strings/services_strings_zh-TW.xtb" lang="zh-TW" />
     <file path="strings/services_strings_zu.xtb" lang="zu" />
   </translations>
-  <release seq="1" allow_pseudo="false">
+  <release seq="1">
     <messages fallback_to_english="true">
       <message name="IDS_PROXY_RESOLVER_DISPLAY_NAME" desc="The name of the display name (in system task manager, etc) of the service process used for out-of-process V8 proxy resolution.">
         V8 Proxy Resolver

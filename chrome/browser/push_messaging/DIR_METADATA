@@ -1,4 +1,4 @@
-monorail:  {
-  component:  "Blink>PushAPI"
+monorail: {
+  component: "Blink>PushAPI"
 }
-team_email:  "platform-capabilities@chromium.org"
+team_email: "platform-capabilities@chromium.org"

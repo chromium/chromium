@@ -1,6 +1,0 @@
-parameters:
-  packages: ''
-
-steps:
-- script: pip --disable-pip-version-check install --upgrade ${{ parameters.packages }}
-  displayName: 'Install Python packages'

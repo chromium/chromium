@@ -29,14 +29,6 @@ class Value;
 class SingleThreadTaskRunner;
 }  // namespace base
 
-namespace net {
-class URLRequestContextGetter;
-}  // namespace net
-
-namespace policy {
-class PolicyService;
-}  // namespace policy
-
 namespace remoting {
 
 class ChromotingHostContext;
@@ -73,16 +65,6 @@ class It2MeNativeMessagingHost : public It2MeHost::Observer,
   void SetPolicyErrorClosureForTesting(base::OnceClosure closure);
 
   static std::string HostStateToString(It2MeHostState host_state);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Creates native messaging host on ChromeOS. Must be called on the UI thread
-  // of the browser process.
-  static std::unique_ptr<extensions::NativeMessageHost> CreateForChromeOS(
-      net::URLRequestContextGetter* system_request_context,
-      scoped_refptr<base::SingleThreadTaskRunner> io_runnner,
-      scoped_refptr<base::SingleThreadTaskRunner> ui_runnner,
-      policy::PolicyService* policy_service);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
   // These "Process.." methods handle specific request types. The |response|

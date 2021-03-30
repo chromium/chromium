@@ -87,8 +87,8 @@ base::OnceCallback<void(Args...)> RelayCallbackToTaskRunner(
   using HelperType = internal::CallbackHolder<CallbackType>;
   using RunnerType = void (HelperType::*)(Args...);
   RunnerType run = &HelperType::Run;
-  return base::Bind(run, std::make_unique<HelperType>(task_runner, from_here,
-                                                      std::move(callback)));
+  return base::BindOnce(run, std::make_unique<HelperType>(
+                                 task_runner, from_here, std::move(callback)));
 }
 
 template <typename... Args>
@@ -105,8 +105,9 @@ base::RepeatingCallback<void(Args...)> RelayCallbackToTaskRunner(
   using HelperType = internal::CallbackHolder<CallbackType>;
   using RunnerType = void (HelperType::*)(Args...);
   RunnerType run = &HelperType::Run;
-  return base::Bind(run, std::make_unique<HelperType>(task_runner, from_here,
-                                                      std::move(callback)));
+  return base::BindRepeating(
+      run, std::make_unique<HelperType>(task_runner, from_here,
+                                        std::move(callback)));
 }
 
 template <typename CallbackType>

@@ -6,5 +6,8 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   sources = [ "cast_web_service.mojom" ]
-  deps = [ "//chromecast/browser/webui/mojom" ]
+  deps = [
+    "//chromecast/browser/webui/mojom",
+    "//chromecast/common/mojom",
+  ]
 }

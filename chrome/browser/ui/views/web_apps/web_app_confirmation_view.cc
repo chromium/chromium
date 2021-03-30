@@ -5,11 +5,11 @@
 #include "chrome/browser/ui/views/web_apps/web_app_confirmation_view.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -29,6 +29,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -54,6 +55,7 @@ WebAppConfirmationView::WebAppConfirmationView(
   DCHECK(web_app_info_);
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(IDS_CREATE_SHORTCUTS_BUTTON_LABEL));
+  SetModalType(ui::MODAL_TYPE_CHILD);
   SetTitle(IDS_ADD_TO_OS_LAUNCH_SURFACE_BUBBLE_TITLE);
   const ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
   set_margins(layout_provider->GetDialogInsetsForContentType(views::CONTROL,
@@ -79,7 +81,7 @@ WebAppConfirmationView::WebAppConfirmationView(
   gfx::Size image_size(web_app::kWebAppIconSmall, web_app::kWebAppIconSmall);
   gfx::ImageSkia image(
       std::make_unique<WebAppInfoImageSource>(web_app::kWebAppIconSmall,
-                                              web_app_info_->icon_bitmaps_any),
+                                              web_app_info_->icon_bitmaps.any),
       image_size);
   icon_image_view->SetImageSize(image_size);
   icon_image_view->SetImage(image);
@@ -154,10 +156,6 @@ views::View* WebAppConfirmationView::GetInitiallyFocusedView() {
   return title_tf_;
 }
 
-ui::ModalType WebAppConfirmationView::GetModalType() const {
-  return ui::MODAL_TYPE_CHILD;
-}
-
 bool WebAppConfirmationView::ShouldShowCloseButton() const {
   return false;
 }
@@ -194,16 +192,20 @@ bool WebAppConfirmationView::IsDialogButtonEnabled(
 
 void WebAppConfirmationView::ContentsChanged(
     views::Textfield* sender,
-    const base::string16& new_contents) {
+    const std::u16string& new_contents) {
   DCHECK_EQ(title_tf_, sender);
   DialogModelChanged();
 }
 
-base::string16 WebAppConfirmationView::GetTrimmedTitle() const {
-  base::string16 title(title_tf_->GetText());
+std::u16string WebAppConfirmationView::GetTrimmedTitle() const {
+  std::u16string title(title_tf_->GetText());
   base::TrimWhitespace(title, base::TRIM_ALL, &title);
   return title;
 }
+
+BEGIN_METADATA(WebAppConfirmationView, views::DialogDelegateView)
+ADD_READONLY_PROPERTY_METADATA(std::u16string, TrimmedTitle)
+END_METADATA
 
 namespace chrome {
 

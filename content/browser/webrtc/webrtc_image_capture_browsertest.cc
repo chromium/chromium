@@ -23,15 +23,16 @@
 
 namespace content {
 
-// Disable FocusDistance test which fails with Logitec cameras.
+// Disable FocusDistance test which fails with Logitech cameras.
 // TODO(crbug.com/957020): renable these tests when we have a way to detect
 // which device is connected and hence avoid running it if the camera is
 // Logitech.
 #define MAYBE_ManipulateFocusDistance DISABLED_ManipulateFocusDistance
 
-#if defined(OS_ANDROID)
 // TODO(crbug.com/793859): Re-enable test on Android as soon as the cause for
 // the bug is understood and fixed.
+// TODO(crbug.com/1187247): Flaky on Linux/Windows.
+#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_WIN)
 #define MAYBE_ManipulatePan DISABLED_ManipulatePan
 #define MAYBE_ManipulateZoom DISABLED_ManipulateZoom
 #else
@@ -205,12 +206,24 @@ IN_PROC_BROWSER_TEST_P(WebRtcImageCaptureSucceedsBrowserTest,
       RunImageCaptureTestCase("testCreateAndGetPhotoSettingsSucceeds()"));
 }
 
-IN_PROC_BROWSER_TEST_P(WebRtcImageCaptureSucceedsBrowserTest, TakePhoto) {
+// TODO(crbug.com/1187247): Flaky on Linux/Windows.
+#if defined(OS_LINUX) || defined(OS_WIN)
+#define MAYBE_TakePhoto DISABLED_TakePhoto
+#else
+#define MAYBE_TakePhoto TakePhoto
+#endif
+IN_PROC_BROWSER_TEST_P(WebRtcImageCaptureSucceedsBrowserTest, MAYBE_TakePhoto) {
   embedded_test_server()->StartAcceptingConnections();
   ASSERT_TRUE(RunImageCaptureTestCase("testCreateAndTakePhotoSucceeds()"));
 }
 
-IN_PROC_BROWSER_TEST_P(WebRtcImageCaptureSucceedsBrowserTest, GrabFrame) {
+// TODO(crbug.com/1187247): Flaky on Linux/Windows.
+#if defined(OS_LINUX) || defined(OS_WIN)
+#define MAYBE_GrabFrame DISABLED_GrabFrame
+#else
+#define MAYBE_GrabFrame GrabFrame
+#endif
+IN_PROC_BROWSER_TEST_P(WebRtcImageCaptureSucceedsBrowserTest, MAYBE_GrabFrame) {
   embedded_test_server()->StartAcceptingConnections();
   ASSERT_TRUE(RunImageCaptureTestCase("testCreateAndGrabFrameSucceeds()"));
 }

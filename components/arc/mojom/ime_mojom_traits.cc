@@ -7,6 +7,8 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
+#include "ui/events/ozone/layout/keyboard_layout_engine.h"
+#include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 
 namespace mojo {
 using KeyEventUniquePtr = std::unique_ptr<ui::KeyEvent>;
@@ -16,15 +18,10 @@ bool StructTraits<arc::mojom::KeyEventDataDataView, KeyEventUniquePtr>::Read(
     KeyEventUniquePtr* out) {
   const ui::EventType type =
       data.pressed() ? ui::ET_KEY_PRESSED : ui::ET_KEY_RELEASED;
-  // TODO(yhanada): Currently we have no way to know the correct keyboard layout
-  // here, so assuming US layout. Find a way to get the more precise DomCode.
   ui::DomCode dom_code = ui::UsLayoutKeyboardCodeToDomCode(
       static_cast<ui::KeyboardCode>(data.key_code()));
-  if (dom_code == ui::DomCode::NONE) {
-    // |data.key_code| doesn't give us a proper DomCode. Let's fall back to
-    // scan_code.
+  if (data.scan_code() != 0)
     dom_code = ui::KeycodeConverter::EvdevCodeToDomCode(data.scan_code());
-  }
 
   int flags = 0;
   if (data.is_shift_down())
@@ -38,8 +35,10 @@ bool StructTraits<arc::mojom::KeyEventDataDataView, KeyEventUniquePtr>::Read(
 
   ui::KeyboardCode key_code;
   ui::DomKey dom_key;
-  if (!DomCodeToUsLayoutDomKey(dom_code, flags, &dom_key, &key_code))
+  if (!ui::KeyboardLayoutEngineManager::GetKeyboardLayoutEngine()->Lookup(
+          dom_code, flags, &dom_key, &key_code)) {
     return false;
+  }
 
   *out = std::make_unique<ui::KeyEvent>(type, key_code, dom_code, flags,
                                         dom_key, base::TimeTicks::Now());

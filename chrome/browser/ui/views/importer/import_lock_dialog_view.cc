@@ -22,6 +22,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 using base::UserMetricsAction;
@@ -62,6 +63,8 @@ ImportLockDialogView::ImportLockDialogView(
       base::BindOnce(done_callback, base::Unretained(this), true));
   SetCancelCallback(
       base::BindOnce(done_callback, base::Unretained(this), false));
+  SetCloseCallback(
+      base::BindOnce(done_callback, base::Unretained(this), false));
 
   SetShowCloseButton(false);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
@@ -80,3 +83,6 @@ ImportLockDialogView::ImportLockDialogView(
 }
 
 ImportLockDialogView::~ImportLockDialogView() = default;
+
+BEGIN_METADATA(ImportLockDialogView, views::DialogDelegateView)
+END_METADATA

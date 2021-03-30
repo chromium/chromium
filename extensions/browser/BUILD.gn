@@ -18,7 +18,10 @@ group("browser") {
   # Includes all API implementations and the ExtensionsApiClient
   # interface. Moving an API from src/chrome to src/extensions implies
   # it can be cleanly disabled with enable_extensions=false.
-  public_deps += [ "//extensions/browser/api" ]
+  public_deps += [
+    "//extensions/browser/api",
+    "//extensions/browser/api:api_implementations",
+  ]
 }
 
 # Isolate the instantiation of BrowserContextKeyedServiceFactories.
@@ -36,6 +39,8 @@ source_set("browser_context_keyed_service_factories") {
     "//build:chromeos_buildflags",
     "//extensions/browser:browser_sources",
     "//extensions/browser/api",
+    "//extensions/browser/api:api_implementations",
+    "//extensions/browser/updater",
   ]
 }
 
@@ -45,6 +50,7 @@ source_set("browser_sources") {
   sources = [
     "activity.cc",
     "activity.h",
+    "allowlist_state.h",
     "api_activity_monitor.cc",
     "api_activity_monitor.h",
     "app_sorting.h",
@@ -97,12 +103,6 @@ source_set("browser_sources") {
     "content_verify_job.h",
     "crx_file_info.cc",
     "crx_file_info.h",
-    "declarative_user_script_manager.cc",
-    "declarative_user_script_manager.h",
-    "declarative_user_script_manager_factory.cc",
-    "declarative_user_script_manager_factory.h",
-    "declarative_user_script_set.cc",
-    "declarative_user_script_set.h",
     "deferred_start_render_host.h",
     "device_local_account_util.cc",
     "device_local_account_util.h",
@@ -138,6 +138,8 @@ source_set("browser_sources") {
     "extension_error.h",
     "extension_file_task_runner.cc",
     "extension_file_task_runner.h",
+    "extension_frame_host.cc",
+    "extension_frame_host.h",
     "extension_function.cc",
     "extension_function.h",
     "extension_function_constants.cc",
@@ -339,8 +341,6 @@ source_set("browser_sources") {
     "service_worker_task_queue.h",
     "service_worker_task_queue_factory.cc",
     "service_worker_task_queue_factory.h",
-    "shared_user_script_manager.cc",
-    "shared_user_script_manager.h",
     "state_store.cc",
     "state_store.h",
     "suggest_permission_util.cc",
@@ -350,8 +350,6 @@ source_set("browser_sources") {
     "task_queue_util.h",
     "ui_util.cc",
     "ui_util.h",
-    "uninstall_ping_sender.cc",
-    "uninstall_ping_sender.h",
     "uninstall_reason.h",
     "unloaded_extension_reason.h",
     "update_observer.h",
@@ -361,6 +359,8 @@ source_set("browser_sources") {
     "url_request_util.h",
     "user_script_loader.cc",
     "user_script_loader.h",
+    "user_script_manager.cc",
+    "user_script_manager.h",
     "verified_contents.cc",
     "verified_contents.h",
     "view_type_utils.cc",
@@ -421,6 +421,7 @@ source_set("browser_sources") {
     "//skia/public/mojom",
     "//third_party/blink/public/common",
     "//third_party/blink/public/mojom/frame",
+    "//third_party/zlib/google:zip",
     "//ui/display",
   ]
 
@@ -428,7 +429,6 @@ source_set("browser_sources") {
     "//content/public/common",
     "//extensions/browser/install",
     "//extensions/browser/kiosk",
-    "//extensions/browser/updater",
     "//extensions/browser/value_store",
     "//ipc",
   ]
@@ -470,13 +470,9 @@ source_set("browser_tests") {
     # crbug.com/650835.
     "api/bluetooth/bluetooth_appshell_test.cc",
     "api/bluetooth_socket/bluetooth_socket_apitest.cc",
-    "api/display_source/display_source_apitest.cc",
-    "api/display_source/display_source_apitestbase.cc",
-    "api/display_source/display_source_apitestbase.h",
     "api/dns/dns_apitest.cc",
     "api/feedback_private/feedback_private_apitest.cc",
     "api/hid/hid_apitest.cc",
-    "api/printer_provider/printer_provider_apitest.cc",
     "api/socket/socket_apitest.cc",
     "api/sockets_tcp/sockets_tcp_apitest.cc",
     "api/sockets_tcp_server/sockets_tcp_server_apitest.cc",
@@ -533,7 +529,7 @@ source_set("browser_tests") {
     ]
 
     deps += [
-      "//chromeos/audio",
+      "//ash/components/audio",
       "//chromeos/dbus:test_support",
       "//chromeos/dbus/audio",
       "//chromeos/dbus/media_analytics",
@@ -579,6 +575,7 @@ source_set("test_support") {
     "//content/public/browser",
     "//content/test:test_support",
     "//extensions/browser",
+    "//extensions/browser/updater:updater",
     "//extensions/common",
     "//extensions/common:test_support",
     "//services/data_decoder:lib",
@@ -739,8 +736,10 @@ source_set("unit_tests") {
     "//extensions:extensions_browser_resources",
     "//extensions:test_support",
     "//extensions/browser/api/declarative_net_request/filter_list_converter:unit_tests",
+    "//extensions/browser/updater:updater",
     "//extensions/buildflags",
     "//extensions/common",
+    "//extensions/common:mojom",
     "//extensions/common:test_support",
     "//extensions/common/api",
     "//extensions/strings",

@@ -9,8 +9,8 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "components/autofill/core/common/renderer_id.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/form_parsing/fuzzer/data_accessor.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -70,7 +70,6 @@ autofill::FormData GenerateWithDataAccessor(
   // First determine the main non-string attributes not specific to particular
   // fields.
   result.is_form_tag = accessor->ConsumeBit();
-  result.is_formless_checkout = accessor->ConsumeBit();
 
   // To minimize wasting bits, string-based data itself gets extracted after all
   // numbers and flags are. Their length can be determined now, however. A
@@ -149,9 +148,8 @@ autofill::FormData GenerateWithDataAccessor(
     }
 
 #if defined(OS_IOS)
-    result.fields[i].unique_id = result.fields[i].id_attribute +
-                                 base::UTF8ToUTF16("-") +
-                                 base::NumberToString16(i);
+    result.fields[i].unique_id =
+        result.fields[i].id_attribute + u"-" + base::NumberToString16(i);
 #endif
     if (field_params[i].same_value_field &&
         first_field_with_same_value != static_cast<int>(i)) {

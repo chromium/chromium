@@ -39,6 +39,12 @@ constexpr char kDeskUpdateGestureMaxLatencyHistogramName[] =
 constexpr char kDeskEndGestureSmoothnessHistogramName[] =
     "Ash.Desks.AnimationSmoothness.DeskEndGesture";
 
+// Swipes which are below this threshold are considered fast, and
+// RootWindowDeskSwitchAnimator will determine a different ending desk for these
+// swipes.
+constexpr base::TimeDelta kFastSwipeThresholdDuration =
+    base::TimeDelta::FromMilliseconds(500);
+
 bool IsForContinuousGestures(DesksSwitchSource source) {
   return source == DesksSwitchSource::kDeskSwitchTouchpad &&
          features::IsEnhancedDeskAnimations();
@@ -60,6 +66,7 @@ DeskActivationAnimation::DeskActivationAnimation(DesksController* controller,
       switch_source_(source),
       update_window_activation_(update_window_activation),
       visible_desk_index_(starting_desk_index),
+      last_start_or_replace_time_(base::TimeTicks::Now()),
       presentation_time_recorder_(CreatePresentationTimeHistogramRecorder(
           desks_util::GetSelectedCompositorForPerformanceMetrics(),
           kDeskUpdateGestureHistogramName,
@@ -108,6 +115,8 @@ bool DeskActivationAnimation::Replace(bool moving_left,
 
   ending_desk_index_ = new_ending_desk_index;
 
+  last_start_or_replace_time_ = base::TimeTicks::Now();
+
   // Similar to on starting, for touchpad, the user can replace the animation
   // without switching visible desks.
   if (switch_source_ != DesksSwitchSource::kDeskSwitchTouchpad)
@@ -116,7 +125,6 @@ bool DeskActivationAnimation::Replace(bool moving_left,
   // List of animators that need a screenshot. It should be either empty or
   // match the size of |desk_switch_animators_| as all the animations should be
   // in sync.
-  // TODO(sammiequon): Verify all the animations are in sync.
   std::vector<RootWindowDeskSwitchAnimator*> pending_animators;
   for (const auto& animator : desk_switch_animators_) {
     if (animator->ReplaceAnimation(new_ending_desk_index))
@@ -196,8 +204,11 @@ bool DeskActivationAnimation::EndSwipeAnimation() {
   // End the animation. The animator will determine which desk to animate to,
   // and update their ending desk index. When the animation is finished we will
   // activate that desk.
+  const bool is_fast_swipe =
+      base::TimeTicks::Now() - last_start_or_replace_time_ <
+      kFastSwipeThresholdDuration;
   for (const auto& animator : desk_switch_animators_)
-    ending_desk_index_ = animator->EndSwipeAnimation();
+    ending_desk_index_ = animator->EndSwipeAnimation(is_fast_swipe);
 
   return true;
 }

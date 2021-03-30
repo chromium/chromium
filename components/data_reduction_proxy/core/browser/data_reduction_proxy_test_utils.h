@@ -19,7 +19,6 @@
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_config_service_client.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_request_options.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_service.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings_test_utils.h"
@@ -30,21 +29,12 @@
 #include "components/prefs/testing_pref_service.h"
 #include "net/base/backoff_entry.h"
 #include "net/base/proxy_server.h"
-#include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-class GURL;
 class TestingPrefServiceSimple;
-
-namespace network {
-class SharedURLLoaderFactory;
-class TestNetworkQualityTracker;
-class TestURLLoaderFactory;
-}  // namespace network
 
 namespace data_reduction_proxy {
 
-class ClientConfig;
 class DataReductionProxyRequestOptions;
 class DataReductionProxySettings;
 
@@ -68,92 +58,8 @@ class MockDataReductionProxyRequestOptions
   explicit MockDataReductionProxyRequestOptions(Client client);
 
   ~MockDataReductionProxyRequestOptions() override;
-
-  MOCK_CONST_METHOD1(PopulateConfigResponse, void(ClientConfig* config));
 };
 
-// Test version of |DataReductionProxyConfigServiceClient|, which permits
-// finely controlling the backoff timer.
-class TestDataReductionProxyConfigServiceClient
-    : public DataReductionProxyConfigServiceClient {
- public:
-  TestDataReductionProxyConfigServiceClient(
-      DataReductionProxyRequestOptions* request_options,
-      DataReductionProxyService* service,
-      network::NetworkConnectionTracker* network_connection_tracker,
-      ConfigStorer config_storer,
-      const net::BackoffEntry::Policy& backoff_policy);
-
-  ~TestDataReductionProxyConfigServiceClient() override;
-
-  using DataReductionProxyConfigServiceClient::OnConnectionChanged;
-
-  void SetNow(const base::Time& time);
-
-  void SetCustomReleaseTime(const base::TimeTicks& release_time);
-
-  base::TimeDelta GetDelay() const;
-
-  int GetBackoffErrorCount();
-
-  base::TimeDelta GetBackoffTimeUntilRelease() const;
-
-  void SetConfigServiceURL(const GURL& service_url);
-
-  int32_t failed_attempts_before_success() const;
-
-#if defined(OS_ANDROID)
-  bool IsApplicationStateBackground() const override;
-
-  void set_application_state_background(bool new_state) {
-    is_application_state_background_ = new_state;
-  }
-
-  bool foreground_fetch_pending() const { return foreground_fetch_pending_; }
-
-  // Triggers the callback for Chromium status change to foreground.
-  void TriggerApplicationStatusToForeground();
-#endif
-
-  void SetRemoteConfigApplied(bool remote_config_applied);
-
-  bool RemoteConfigApplied() const override;
-
- protected:
-  // Overrides of DataReductionProxyConfigServiceClient
-  base::Time Now() override;
-  net::BackoffEntry* GetBackoffEntry() override;
-
- private:
-  // A clock which returns a fixed value in both base::Time and base::TimeTicks.
-  class TestTickClock : public base::Clock, public base::TickClock {
-   public:
-    TestTickClock(const base::Time& initial_time);
-
-    // base::TickClock implementation.
-    base::TimeTicks NowTicks() const override;
-
-    // base::Clock implementation.
-    base::Time Now() const override;
-
-    // Sets the current time.
-    void SetTime(const base::Time& time);
-
-   private:
-    base::Time time_;
-  };
-
-#if defined(OS_ANDROID)
-  bool is_application_state_background_;
-#endif
-
-  TestTickClock tick_clock_;
-  net::BackoffEntry test_backoff_entry_;
-
-  base::Optional<bool> remote_config_applied_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDataReductionProxyConfigServiceClient);
-};
 
 // Test version of |DataReductionProxyService|, which permits mocking of various
 // methods.
@@ -162,9 +68,7 @@ class MockDataReductionProxyService : public DataReductionProxyService {
   MockDataReductionProxyService(
       data_use_measurement::DataUseMeasurement* data_use_measurement,
       DataReductionProxySettings* settings,
-      network::TestNetworkQualityTracker* test_network_quality_tracker,
       PrefService* prefs,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner);
   ~MockDataReductionProxyService() override;
 
@@ -195,8 +99,6 @@ class TestDataReductionProxyService : public DataReductionProxyService {
       data_use_measurement::DataUseMeasurement* data_use_measurement,
       DataReductionProxySettings* settings,
       PrefService* prefs,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      network::NetworkQualityTracker* network_quality_tracker,
       const scoped_refptr<base::SequencedTaskRunner>& db_task_runner);
   ~TestDataReductionProxyService() override;
 
@@ -246,10 +148,6 @@ class DataReductionProxyTestContext {
     // The |Client| enum to use for |DataReductionProxyRequestOptions|.
     Builder& WithClient(Client client);
 
-    // Specifies a |network::URLLoaderFactory| to use.
-    Builder& WithURLLoaderFactory(
-        scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
-
     // Specifies the use of |MockDataReductionProxyConfig| instead of
     // |TestDataReductionProxyConfig|.
     Builder& WithMockConfig();
@@ -262,13 +160,6 @@ class DataReductionProxyTestContext {
     // |DataReductionProxyRequestOptions|.
     Builder& WithMockRequestOptions();
 
-    // Specifies the use of the |DataReductionProxyConfigServiceClient|.
-    Builder& WithConfigClient();
-
-    // Specifies the use of the a |TestDataReductionProxyConfigServiceClient|
-    // instead of a |DataReductionProxyConfigServiceClient|.
-    Builder& WithTestConfigClient();
-
     // Construct, but do not initialize the |DataReductionProxySettings| object.
     Builder& SkipSettingsInitialization();
 
@@ -280,13 +171,10 @@ class DataReductionProxyTestContext {
 
    private:
     Client client_;
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
     bool use_mock_config_;
     bool use_mock_service_;
     bool use_mock_request_options_;
-    bool use_config_client_;
-    bool use_test_config_client_;
     bool skip_settings_initialization_;
     std::unique_ptr<DataReductionProxySettings> settings_;
     std::unique_ptr<data_use_measurement::DataUseMeasurement>
@@ -337,11 +225,6 @@ class DataReductionProxyTestContext {
   // only be called if built with WithMockRequestOptions.
   MockDataReductionProxyRequestOptions* mock_request_options() const;
 
-
-  // Returns the underlying |TestDataReductionProxyConfigServiceClient|. This
-  // can only be called if built with WithTestConfigClient.
-  TestDataReductionProxyConfigServiceClient* test_config_client();
-
   scoped_refptr<base::SingleThreadTaskRunner> task_runner() const {
     return task_runner_;
   }
@@ -350,45 +233,19 @@ class DataReductionProxyTestContext {
     return simple_pref_service_.get();
   }
 
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory() const {
-    return test_shared_url_loader_factory_;
-  }
-
   DataReductionProxySettings* settings() const { return settings_.get(); }
-
-  network::TestNetworkQualityTracker* test_network_quality_tracker() const {
-    return test_network_quality_tracker_.get();
-  }
 
   void InitSettingsWithoutCheck();
 
 
  private:
-  // Used to storage a serialized Data Reduction Proxy config.
-  class TestConfigStorer {
-   public:
-    // |prefs| must not be null and outlive |this|.
-    TestConfigStorer(PrefService* prefs);
-
-    // Stores |serialized_config| in |prefs_|.
-    void StoreSerializedConfig(const std::string& serialized_config);
-
-   private:
-    PrefService* prefs_;
-  };
-
   DataReductionProxyTestContext(
       std::unique_ptr<data_use_measurement::DataUseMeasurement>
           data_use_measurement,
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
       std::unique_ptr<TestingPrefServiceSimple> simple_pref_service,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::unique_ptr<network::TestURLLoaderFactory> test_url_loader_factory,
       std::unique_ptr<DataReductionProxySettings> settings,
       std::unique_ptr<DataReductionProxyService> service,
-      std::unique_ptr<network::TestNetworkQualityTracker>
-          test_network_quality_tracker,
-      std::unique_ptr<TestConfigStorer> config_storer,
       unsigned int test_context_flags);
 
   std::unique_ptr<data_use_measurement::DataUseMeasurement>
@@ -398,16 +255,10 @@ class DataReductionProxyTestContext {
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   std::unique_ptr<TestingPrefServiceSimple> simple_pref_service_;
-  scoped_refptr<network::SharedURLLoaderFactory>
-      test_shared_url_loader_factory_;
-  std::unique_ptr<network::TestURLLoaderFactory> test_url_loader_factory_;
 
   std::unique_ptr<DataReductionProxySettings> settings_;
   DataReductionProxyService* data_reduction_proxy_service_;
-  std::unique_ptr<network::TestNetworkQualityTracker>
-      test_network_quality_tracker_;
   std::unique_ptr<DataReductionProxyService> service_;
-  std::unique_ptr<TestConfigStorer> config_storer_;
 
   DISALLOW_COPY_AND_ASSIGN(DataReductionProxyTestContext);
 };

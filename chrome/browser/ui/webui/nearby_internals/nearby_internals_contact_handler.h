@@ -11,7 +11,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_manager.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -57,8 +57,9 @@ class NearbyInternalsContactHandler
   void HandleDownloadContacts(const base::ListValue* args);
 
   content::BrowserContext* context_;
-  ScopedObserver<NearbyShareContactManager, NearbyShareContactManager::Observer>
-      observer_{this};
+  base::ScopedObservation<NearbyShareContactManager,
+                          NearbyShareContactManager::Observer>
+      observation_{this};
   base::WeakPtrFactory<NearbyInternalsContactHandler> weak_ptr_factory_{this};
 };
 

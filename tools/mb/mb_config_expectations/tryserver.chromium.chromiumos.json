@@ -28,6 +28,16 @@
       "use_real_dbus_clients": false
     }
   },
+  "chromeos-amd64-generic-rel-dchecks": {
+    "args_file": "//build/args/chromeos/amd64-generic.gni",
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_chromeos_device": true,
+      "ozone_platform_headless": true,
+      "use_goma": true,
+      "use_real_dbus_clients": false
+    }
+  },
   "chromeos-arm-generic-dbg": {
     "args_file": "//build/args/chromeos/arm-generic.gni",
     "gn_args": {
@@ -90,6 +100,45 @@
       "use_goma": true
     }
   },
+  "lacros-amd64-generic-rel": {
+    "args_file": "//build/args/chromeos/amd64-generic.gni",
+    "gn_args": {
+      "chromeos_is_browser_only": true,
+      "cros_host_sysroot": "//build/linux/debian_sid_amd64-sysroot",
+      "cros_v8_snapshot_sysroot": "//build/linux/debian_sid_amd64-sysroot",
+      "enable_linux_installer": false,
+      "is_chromeos_device": true,
+      "ozone_platform_headless": true,
+      "ozone_platform_wayland": true,
+      "ozone_platform_x11": false,
+      "rtc_use_pipewire": false,
+      "target_os": "chromeos",
+      "use_custom_libcxx": false,
+      "use_custom_libcxx_for_host": true,
+      "use_evdev_gestures": false,
+      "use_gio": false,
+      "use_glib": false,
+      "use_goma": true,
+      "use_gtk": false,
+      "use_ozone": true,
+      "use_pangocairo": false,
+      "use_pulseaudio": false,
+      "use_system_libsync": false,
+      "use_v8_context_snapshot": false,
+      "use_vaapi": true
+    }
+  },
+  "linux-cfm-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_cfm": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "target_os": "chromeos",
+      "use_goma": true
+    }
+  },
   "linux-chromeos-compile-dbg": {
     "gn_args": {
       "ffmpeg_branding": "ChromeOS",
@@ -125,6 +174,22 @@
       "use_goma": true
     }
   },
+  "linux-chromeos-js-code-coverage": {
+    "gn_args": {
+      "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
+      "dcheck_always_on": true,
+      "ffmpeg_branding": "ChromeOS",
+      "is_component_build": false,
+      "is_debug": false,
+      "optimize_webui": false,
+      "proprietary_codecs": true,
+      "symbol_level": 0,
+      "target_os": "chromeos",
+      "use_clang_coverage": true,
+      "use_goma": true,
+      "use_javascript_coverage": true
+    }
+  },
   "linux-chromeos-rel": {
     "gn_args": {
       "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
@@ -149,6 +214,7 @@
       "ozone_platform": "wayland",
       "ozone_platform_wayland": true,
       "symbol_level": 1,
+      "target_os": "chromeos",
       "use_goma": true,
       "use_gtk": false,
       "use_ozone": true

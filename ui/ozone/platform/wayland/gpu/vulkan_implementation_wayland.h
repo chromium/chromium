@@ -14,7 +14,7 @@ namespace ui {
 
 class VulkanImplementationWayland : public gpu::VulkanImplementation {
  public:
-  VulkanImplementationWayland();
+  explicit VulkanImplementationWayland(bool use_swiftshader = false);
   ~VulkanImplementationWayland() override;
 
   VulkanImplementationWayland(const VulkanImplementationWayland&) = delete;

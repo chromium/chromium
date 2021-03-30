@@ -58,7 +58,7 @@ void UsbDeviceMac::Open(OpenCallback callback) {
     return;
   }
 
-  base::mac::ScopedIOPluginInterface<IOUSBDeviceInterface182> device_interface;
+  base::mac::ScopedIOPluginInterface<IOUSBDeviceInterface187> device_interface;
   kr = (*plugin_interface)
            ->QueryInterface(
                plugin_interface.get(),

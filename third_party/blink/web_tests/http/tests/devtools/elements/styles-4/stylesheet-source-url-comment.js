@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that stylesheets with sourceURL comment are shown in the Sources panel.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.showPanel('elements');
   await TestRunner.navigatePromise('resources/stylesheet-source-url-comment.html');

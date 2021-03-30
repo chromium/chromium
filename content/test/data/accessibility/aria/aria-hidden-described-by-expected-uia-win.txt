@@ -1,5 +1,5 @@
 Document
-++Group Name='span-A' DescribedBy='span-1'
-++Group Name='span-B' DescribedBy='span-2'
-++Group Name='span-C' DescribedBy='span-3'
-++Group Name='span-D' DescribedBy='span-4'
+++Group Name='span-A' DescribedBy='{group}'
+++Group Name='span-B' DescribedBy='{group}'
+++Group Name='span-C' DescribedBy='{group}'
+++Group Name='span-D' DescribedBy='{group}'

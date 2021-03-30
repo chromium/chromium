@@ -5,7 +5,6 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
-import("//third_party/protobuf/proto_library.gni")
 
 component("fido") {
   sources = [
@@ -122,8 +121,6 @@ component("fido") {
       "cable/fido_tunnel_device.h",
       "cable/v2_discovery.cc",
       "cable/v2_discovery.h",
-      "client_data.cc",
-      "client_data.h",
       "credential_management.cc",
       "credential_management.h",
       "credential_management_handler.cc",
@@ -155,6 +152,8 @@ component("fido") {
       "fido_task.cc",
       "fido_task.h",
       "fido_types.h",
+      "filter.cc",
+      "filter.h",
       "get_assertion_request_handler.cc",
       "get_assertion_request_handler.h",
       "get_assertion_task.cc",
@@ -182,8 +181,6 @@ component("fido") {
       "platform_credential_store.h",
       "reset_request_handler.cc",
       "reset_request_handler.h",
-      "response_data.cc",
-      "response_data.h",
       "set_pin_request_handler.cc",
       "set_pin_request_handler.h",
       "u2f_command_constructor.cc",
@@ -266,7 +263,8 @@ component("fido") {
     ]
 
     deps += [
-      ":u2f_proto",
+      "//chromeos/dbus/u2f",
+      "//chromeos/dbus/u2f:u2f_proto",
       "//dbus",
     ]
   }
@@ -314,14 +312,6 @@ static_library("cablev2_test_util") {
     "//services/network:test_support",
     "//services/network/public/mojom",
   ]
-}
-
-if (is_chromeos_ash) {
-  proto_library("u2f_proto") {
-    sources = [ "//third_party/cros_system_api/dbus/u2f/u2f_interface.proto" ]
-
-    proto_out_dir = "chromeos/dbus/u2f"
-  }
 }
 
 source_set("mocks") {

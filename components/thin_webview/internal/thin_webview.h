@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "components/thin_webview/internal/compositor_view_impl.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "ui/android/window_android.h"
 
 namespace web_contents_delegate_android {
@@ -22,13 +23,13 @@ namespace thin_webview {
 namespace android {
 
 // Native counterpart of ThinWebViewImpl.java.
-class ThinWebView {
+class ThinWebView : public content::WebContentsObserver {
  public:
   ThinWebView(JNIEnv* env,
               jobject obj,
               CompositorView* compositor_view,
               ui::WindowAndroid* window_android);
-  ~ThinWebView();
+  ~ThinWebView() override;
 
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& object);
 
@@ -44,6 +45,10 @@ class ThinWebView {
                    jint height);
 
  private:
+  // content::WebContentsObserver overrides:
+  void DocumentAvailableInMainFrame(
+      content::RenderFrameHost* render_frame_host) override;
+
   void SetWebContents(
       content::WebContents* web_contents,
       web_contents_delegate_android::WebContentsDelegateAndroid* delegate);

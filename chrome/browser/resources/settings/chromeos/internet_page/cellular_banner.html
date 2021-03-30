@@ -1,0 +1,37 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/network/onc_mojo.html">
+<link rel="import" href="chrome://resources/html/assert.html">
+
+<dom-module id="cellular-banner">
+  <template>
+    <style include="iron-flex">
+      paper-spinner-lite {
+        height: 20px;
+        width: 20px;
+      }
+
+      #container {
+        border: var(--cr-separator-line);
+        border-radius: 6px;
+        margin-bottom: 8px;
+        margin-inline: 6px;
+        padding: 18px;
+      }
+
+      #bannerMessage {
+        margin-inline-start: 22px;
+      }
+    </style>
+    <div id="container" class="layout horizontal">
+      <paper-spinner-lite active>
+      </paper-spinner-lite>
+      <div id="bannerMessage">
+        [[getBannerMessage_(deviceState)]]
+      </div>
+    </div>
+  </template>
+  <script src="cellular_banner.js"></script>
+</dom-module>

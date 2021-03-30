@@ -21,7 +21,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string16.h"
 #include "components/bookmarks/browser/bookmark_client.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_undo_provider.h"
@@ -173,7 +172,7 @@ class BookmarkModel : public BookmarkUndoProvider,
   const gfx::Image& GetFavicon(const BookmarkNode* node);
 
   // Sets the title of |node|.
-  void SetTitle(const BookmarkNode* node, const base::string16& title);
+  void SetTitle(const BookmarkNode* node, const std::u16string& title);
 
   // Sets the URL of |node|.
   void SetURL(const BookmarkNode* node, const GURL& url);
@@ -210,7 +209,7 @@ class BookmarkModel : public BookmarkUndoProvider,
   const BookmarkNode* AddFolder(
       const BookmarkNode* parent,
       size_t index,
-      const base::string16& title,
+      const std::u16string& title,
       const BookmarkNode::MetaInfoMap* meta_info = nullptr,
       base::Optional<base::GUID> guid = base::nullopt);
 
@@ -220,7 +219,7 @@ class BookmarkModel : public BookmarkUndoProvider,
   const BookmarkNode* AddURL(
       const BookmarkNode* parent,
       size_t index,
-      const base::string16& title,
+      const std::u16string& title,
       const GURL& url,
       const BookmarkNode::MetaInfoMap* meta_info = nullptr,
       base::Optional<base::Time> creation_time = base::nullopt,
@@ -250,7 +249,7 @@ class BookmarkModel : public BookmarkUndoProvider,
   // of ancestors. |matching_algorithm| determines the algorithm used by
   // QueryParser internally to parse |query|.
   std::vector<TitledUrlMatch> GetBookmarksMatching(
-      const base::string16& query,
+      const std::u16string& query,
       size_t max_count,
       query_parser::MatchingAlgorithm matching_algorithm,
       bool match_ancestor_titles = false);

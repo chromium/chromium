@@ -4014,7 +4014,7 @@ error::Error GLES2DecoderPassthroughImpl::HandleFramebufferParameteri(
 error::Error GLES2DecoderPassthroughImpl::HandleBindImageTexture(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
-  if (!feature_info_->IsWebGL2ComputeContext())
+  if (!feature_info_->IsES31ForTestingContext())
     return error::kUnknownCommand;
   const volatile gles2::cmds::BindImageTexture& c =
       *static_cast<const volatile gles2::cmds::BindImageTexture*>(cmd_data);
@@ -4036,7 +4036,7 @@ error::Error GLES2DecoderPassthroughImpl::HandleBindImageTexture(
 error::Error GLES2DecoderPassthroughImpl::HandleDispatchCompute(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
-  if (!feature_info_->IsWebGL2ComputeContext())
+  if (!feature_info_->IsES31ForTestingContext())
     return error::kUnknownCommand;
   const volatile gles2::cmds::DispatchCompute& c =
       *static_cast<const volatile gles2::cmds::DispatchCompute*>(cmd_data);
@@ -4054,7 +4054,7 @@ error::Error GLES2DecoderPassthroughImpl::HandleDispatchCompute(
 error::Error GLES2DecoderPassthroughImpl::HandleDispatchComputeIndirect(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
-  if (!feature_info_->IsWebGL2ComputeContext())
+  if (!feature_info_->IsES31ForTestingContext())
     return error::kUnknownCommand;
   const volatile gles2::cmds::DispatchComputeIndirect& c =
       *static_cast<const volatile gles2::cmds::DispatchComputeIndirect*>(
@@ -4070,7 +4070,7 @@ error::Error GLES2DecoderPassthroughImpl::HandleDispatchComputeIndirect(
 error::Error GLES2DecoderPassthroughImpl::HandleGetProgramInterfaceiv(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
-  if (!feature_info_->IsWebGL2ComputeContext())
+  if (!feature_info_->IsES31ForTestingContext())
     return error::kUnknownCommand;
   const volatile gles2::cmds::GetProgramInterfaceiv& c =
       *static_cast<const volatile gles2::cmds::GetProgramInterfaceiv*>(
@@ -4104,7 +4104,7 @@ error::Error GLES2DecoderPassthroughImpl::HandleGetProgramInterfaceiv(
 error::Error GLES2DecoderPassthroughImpl::HandleMemoryBarrierEXT(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
-  if (!feature_info_->IsWebGL2ComputeContext())
+  if (!feature_info_->IsES31ForTestingContext())
     return error::kUnknownCommand;
   const volatile gles2::cmds::MemoryBarrierEXT& c =
       *static_cast<const volatile gles2::cmds::MemoryBarrierEXT*>(cmd_data);
@@ -4119,7 +4119,7 @@ error::Error GLES2DecoderPassthroughImpl::HandleMemoryBarrierEXT(
 error::Error GLES2DecoderPassthroughImpl::HandleMemoryBarrierByRegion(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
-  if (!feature_info_->IsWebGL2ComputeContext())
+  if (!feature_info_->IsES31ForTestingContext())
     return error::kUnknownCommand;
   const volatile gles2::cmds::MemoryBarrierByRegion& c =
       *static_cast<const volatile gles2::cmds::MemoryBarrierByRegion*>(

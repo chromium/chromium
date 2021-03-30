@@ -5,11 +5,11 @@
   </span>
   <div slot="settings">
     <select id="resolutionSelect" class="md-select"
-        value="{{selectedResolution::change}}" disabled="[[disabled]]"
+        value="{{selectedOption::change}}" disabled="[[disabled]]"
         aria-labelledby="resolutionLabel">
-      <template is="dom-repeat" items="[[resolutions]]" as="resolution">
+      <template is="dom-repeat" items="[[options]]" as="resolution">
         <option value="[[resolution]]"
-            selected$="[[isDefaultResolution_(resolution)]]">
+            selected$="[[isDefaultOption(resolution)]]">
           [[getResolutionString_(resolution)]]
         </option>
       </template>

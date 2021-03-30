@@ -36,6 +36,9 @@
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/scroll/scroll_customization.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/platform/heap/custom_spaces.h"
+#include "third_party/blink/renderer/platform/text/text_direction.h"
+#include "third_party/blink/renderer/platform/wtf/buildflags.h"
 
 // This needs to be here because element.cc also depends on it.
 #define DUMP_NODE_STATISTICS 0
@@ -166,6 +169,7 @@ class CORE_EXPORT Node : public EventTarget {
     kDocumentPositionImplementationSpecific = 0x20,
   };
 
+#if !BUILDFLAG(USE_V8_OILPAN)
   template <typename T>
   static void* AllocateObject(size_t size) {
     ThreadState* state =
@@ -175,6 +179,7 @@ class CORE_EXPORT Node : public EventTarget {
         state, size, BlinkGC::kNodeArenaIndex,
         GCInfoTrait<GCInfoFoldedType<T>>::Index(), type_name);
   }
+#endif  // !BUILDFLAG(USE_V8_OILPAN)
 
   static void DumpStatistics();
 
@@ -822,7 +827,6 @@ class CORE_EXPORT Node : public EventTarget {
                                                Event& underlying_event);
 
   void DispatchSimulatedClick(const Event* underlying_event,
-                              SimulatedClickMouseEventOptions = kSendNoEvents,
                               SimulatedClickCreationScope =
                                   SimulatedClickCreationScope::kFromUserAgent);
 
@@ -855,6 +859,7 @@ class CORE_EXPORT Node : public EventTarget {
   StaticNodeList* getDestinationInsertionPoints();
   HTMLSlotElement* AssignedSlot() const;
   HTMLSlotElement* assignedSlotForBinding();
+  HTMLSlotElement* AssignedSlotWithoutRecalc() const;
 
   bool IsFinishedParsingChildren() const {
     return GetFlag(kIsFinishedParsingChildrenFlag);
@@ -890,6 +895,40 @@ class CORE_EXPORT Node : public EventTarget {
   // For Element.
   void SetHasDisplayLockContext() { SetFlag(kHasDisplayLockContext); }
   bool HasDisplayLockContext() const { return GetFlag(kHasDisplayLockContext); }
+
+  bool SelfOrAncestorHasDirAutoAttribute() const {
+    return GetFlag(kSelfOrAncestorHasDirAutoAttribute);
+  }
+  void SetSelfOrAncestorHasDirAutoAttribute() {
+    SetFlag(kSelfOrAncestorHasDirAutoAttribute);
+  }
+  void ClearSelfOrAncestorHasDirAutoAttribute() {
+    ClearFlag(kSelfOrAncestorHasDirAutoAttribute);
+  }
+  TextDirection CachedDirectionality() const {
+    return (node_flags_ & kCachedDirectionalityIsRtl) ? TextDirection::kRtl
+                                                      : TextDirection::kLtr;
+  }
+  void SetCachedDirectionality(TextDirection direction) {
+    switch (direction) {
+      case TextDirection::kRtl:
+        SetFlag(kCachedDirectionalityIsRtl);
+        break;
+      case TextDirection::kLtr:
+        ClearFlag(kCachedDirectionalityIsRtl);
+        break;
+    }
+    ClearFlag(kNeedsInheritDirectionalityFromParent);
+  }
+  bool NeedsInheritDirectionalityFromParent() const {
+    return GetFlag(kNeedsInheritDirectionalityFromParent);
+  }
+  void SetNeedsInheritDirectionalityFromParent() {
+    SetFlag(kNeedsInheritDirectionalityFromParent);
+  }
+  void ClearNeedsInheritDirectionalityFromParent() {
+    ClearFlag(kNeedsInheritDirectionalityFromParent);
+  }
 
   void Trace(Visitor*) const override;
 
@@ -938,9 +977,13 @@ class CORE_EXPORT Node : public EventTarget {
 
     kHasDisplayLockContext = 1 << 26,
 
+    kSelfOrAncestorHasDirAutoAttribute = 1 << 27,
+    kCachedDirectionalityIsRtl = 1 << 28,
+    kNeedsInheritDirectionalityFromParent = 1 << 29,
+
     kDefaultNodeFlags = kIsFinishedParsingChildrenFlag,
 
-    // 6 bits remaining.
+    // 3 bits remaining.
   };
 
   ALWAYS_INLINE bool GetFlag(NodeFlags mask) const {
@@ -1082,6 +1125,9 @@ class CORE_EXPORT Node : public EventTarget {
     DCHECK(!HasRareData());
     return reinterpret_cast<NodeRenderingData*>(data_.Get());
   }
+  ShadowRoot* GetSlotAssignmentRoot() const;
+
+  void AddCandidateDirectionalityForSlot();
 
   uint32_t node_flags_;
   Member<Node> parent_or_shadow_host_node_;
@@ -1116,5 +1162,25 @@ void showNode(const blink::Node*);
 void showTree(const blink::Node*);
 void showNodePath(const blink::Node*);
 #endif
+
+#if BUILDFLAG(USE_V8_OILPAN)
+namespace cppgc {
+// Assign Node to be allocated on custom NodeSpace.
+template <typename T>
+struct SpaceTrait<T, std::enable_if_t<std::is_base_of<blink::Node, T>::value>> {
+  using Space = blink::NodeSpace;
+};
+}  // namespace cppgc
+
+namespace blink {
+template <typename T>
+struct ThreadingTrait<
+    T,
+    std::enable_if_t<std::is_base_of<blink::Node, T>::value>> {
+  static constexpr ThreadAffinity kAffinity = kMainThreadOnly;
+};
+}  // namespace blink
+
+#endif  // USE_V8_OILPAN
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_NODE_H_

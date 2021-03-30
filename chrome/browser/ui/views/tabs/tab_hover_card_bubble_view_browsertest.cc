@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
@@ -11,11 +10,12 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_bubble_view.h"
+#include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
+#include "chrome/browser/ui/views/tabs/tab_hover_card_metrics.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -33,8 +33,7 @@ class TabHoverCardBubbleViewBrowserTest : public DialogBrowserTest {
   TabHoverCardBubbleViewBrowserTest()
       : animation_mode_reset_(gfx::AnimationTestApi::SetRichAnimationRenderMode(
             gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED)) {
-    TabHoverCardBubbleView::disable_animations_for_testing_ = true;
-    scoped_feature_list_.InitAndEnableFeature(features::kTabHoverCards);
+    TabHoverCardController::disable_animations_for_testing_ = true;
   }
   TabHoverCardBubbleViewBrowserTest(const TabHoverCardBubbleViewBrowserTest&) =
       delete;
@@ -49,17 +48,23 @@ class TabHoverCardBubbleViewBrowserTest : public DialogBrowserTest {
 
   TabStrip* tab_strip() { return tab_strip_; }
 
-  TabHoverCardBubbleView* hover_card() { return tab_strip()->hover_card_; }
+  TabHoverCardBubbleView* hover_card() {
+    return tab_strip()->hover_card_controller_->hover_card_;
+  }
 
-  base::string16 GetHoverCardTitle() {
+  std::u16string GetHoverCardTitle() {
     return hover_card()->title_label_->GetText();
   }
 
-  base::string16 GetHoverCardDomain() {
+  std::u16string GetHoverCardDomain() {
     return hover_card()->domain_label_->GetText();
   }
 
-  int GetHoverCardsSeenCount() { return hover_card()->hover_cards_seen_count_; }
+  int GetHoverCardsSeenCount() {
+    return tab_strip()
+        ->hover_card_controller_->metrics_for_testing()
+        ->cards_seen_count();
+  }
 
   void MouseExitTabStrip() {
     ui::MouseEvent stop_hover_event(ui::ET_MOUSE_EXITED, gfx::Point(),
@@ -79,7 +84,8 @@ class TabHoverCardBubbleViewBrowserTest : public DialogBrowserTest {
     // We don't use Tab::OnMouseEntered here to invoke the hover card because
     // that path is disabled in browser tests. If we enabled it, the real mouse
     // might interfere with the test.
-    tab_strip()->UpdateHoverCard(tab_strip()->tab_at(index));
+    tab_strip()->UpdateHoverCard(tab_strip()->tab_at(index),
+                                 TabController::HoverCardUpdateType::kHover);
   }
 
   // DialogBrowserTest:
@@ -91,8 +97,6 @@ class TabHoverCardBubbleViewBrowserTest : public DialogBrowserTest {
  private:
   std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
       animation_mode_reset_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   TabStrip* tab_strip_ = nullptr;
 };
@@ -204,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewBrowserTest,
 IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewBrowserTest,
                        MAYBE_WidgetVisibleOnTabFocusFromKeyboardAccelerator) {
   TabRendererData new_tab_data = TabRendererData();
-  new_tab_data.title = base::UTF8ToUTF16("Test Tab 2");
+  new_tab_data.title = u"Test Tab 2";
   new_tab_data.last_committed_url =
       GURL("http://example.com/this/should/not/be/seen");
   tab_strip()->AddTabAt(1, new_tab_data, false);
@@ -253,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewBrowserTest,
 IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewBrowserTest,
                        MAYBE_WidgetDataUpdate) {
   TabRendererData new_tab_data = TabRendererData();
-  new_tab_data.title = base::UTF8ToUTF16("Test Tab 2");
+  new_tab_data.title = u"Test Tab 2";
   new_tab_data.last_committed_url =
       GURL("http://example.com/this/should/not/be/seen");
   tab_strip()->AddTabAt(1, new_tab_data, false);
@@ -267,8 +271,8 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewBrowserTest,
   ASSERT_NE(nullptr, widget);
   EXPECT_TRUE(widget->IsVisible());
   Tab* const tab = tab_strip()->tab_at(1);
-  EXPECT_EQ(GetHoverCardTitle(), base::ASCIIToUTF16("Test Tab 2"));
-  EXPECT_EQ(GetHoverCardDomain(), base::ASCIIToUTF16("example.com"));
+  EXPECT_EQ(GetHoverCardTitle(), u"Test Tab 2");
+  EXPECT_EQ(GetHoverCardDomain(), u"example.com");
   EXPECT_EQ(hover_card()->GetAnchorView(), static_cast<views::View*>(tab));
 }
 
@@ -307,16 +311,8 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewBrowserTest,
       BrowserView::GetBrowserViewForBrowser(inactive_window)->IsActive());
 }
 
-// Verify counter for tab hover cards seen ratio metric increases as hover
-// cards are shown and is reset when a tab is selected.
-// Fails on Windows, see crbug.com/990210.
-#if defined(OS_WIN)
-#define MAYBE_HoverCardsSeenRatioMetric DISABLED_HoverCardsSeenRatioMetric
-#else
-#define MAYBE_HoverCardsSeenRatioMetric HoverCardsSeenRatioMetric
-#endif
 IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewBrowserTest,
-                       MAYBE_HoverCardsSeenRatioMetric) {
+                       HoverCardsSeenRatioMetric) {
   tab_strip()->AddTabAt(1, TabRendererData(), false);
   tab_strip()->AddTabAt(2, TabRendererData(), false);
 

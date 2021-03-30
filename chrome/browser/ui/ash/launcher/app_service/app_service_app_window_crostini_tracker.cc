@@ -11,14 +11,15 @@
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/crostini/crostini_features.h"
 #include "chrome/browser/chromeos/crostini/crostini_force_close_watcher.h"
 #include "chrome/browser/chromeos/crostini/crostini_shelf_utils.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service_factory.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_launcher_controller.h"
 #include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_launcher_item_controller.h"
@@ -83,6 +84,7 @@ void AppServiceAppWindowCrostiniTracker::OnWindowVisibilityChanged(
   // Crostini shouldn't need to know about ARC app windows.
   if (wm::GetTransientParent(window) ||
       arc::GetWindowTaskId(window) != arc::kNoTaskId ||
+      crosapi::browser_util::IsLacrosWindow(window) ||
       plugin_vm::IsPluginVmAppWindow(window)) {
     return;
   }
@@ -100,6 +102,13 @@ void AppServiceAppWindowCrostiniTracker::OnWindowVisibilityChanged(
 
   Profile* primary_account_profile =
       chromeos::ProfileHelper::Get()->GetProfileByAccountId(primary_account_id);
+
+  // Windows without an application id set will get filtered out here.
+  const std::string& crostini_shelf_app_id = crostini::GetCrostiniShelfAppId(
+      primary_account_profile, exo::GetShellApplicationId(window),
+      exo::GetShellStartupId(window));
+  if (crostini_shelf_app_id.empty())
+    return;
 
   auto* registry_service =
       guest_os::GuestOsRegistryServiceFactory::GetForProfile(
@@ -157,9 +166,7 @@ void AppServiceAppWindowCrostiniTracker::OnWindowVisibilityChanged(
 
 void AppServiceAppWindowCrostiniTracker::OnWindowDestroying(
     aura::Window* window) {
-  base::EraseIf(activation_permissions_, [&window](const auto& element) {
-    return element.first == window;
-  });
+  activation_permissions_.erase(window);
 }
 
 void AppServiceAppWindowCrostiniTracker::OnAppLaunchRequested(
@@ -168,6 +175,8 @@ void AppServiceAppWindowCrostiniTracker::OnAppLaunchRequested(
   crostini_app_display_.Register(app_id, display_id);
   // Remove the old permissions and add a permission for every window the app
   // currently has open.
+  for (aura::Window* window : activation_permissions_)
+    exo::RevokePermissionToActivate(window);
   activation_permissions_.clear();
   ash::ShelfModel* model = app_service_controller_->owner()->shelf_model();
   int index = model->ItemIndexByAppID(app_id);
@@ -183,10 +192,9 @@ void AppServiceAppWindowCrostiniTracker::OnAppLaunchRequested(
   if (!launcher_item_controller)
     return;
   for (AppWindowBase* app_window : launcher_item_controller->windows()) {
-    activation_permissions_.emplace(
-        app_window->GetNativeWindow(),
-        exo::GrantPermissionToActivate(app_window->GetNativeWindow(),
-                                       kSelfActivationTimeout));
+    exo::GrantPermissionToActivate(app_window->GetNativeWindow(),
+                                   kSelfActivationTimeout);
+    activation_permissions_.insert(app_window->GetNativeWindow());
   }
 }
 
@@ -196,6 +204,7 @@ std::string AppServiceAppWindowCrostiniTracker::GetShelfAppId(
   // Crostini shouldn't need to know about ARC app windows.
   if (wm::GetTransientParent(window) ||
       arc::GetWindowTaskId(window) != arc::kNoTaskId ||
+      crosapi::browser_util::IsLacrosWindow(window) ||
       plugin_vm::IsPluginVmAppWindow(window)) {
     return std::string();
   }

@@ -17,20 +17,6 @@
 
 namespace ash {
 
-namespace {
-
-// These constants affect logging, and  should not be changed without
-// deprecating the following UMA histograms:
-//  - Apps.AppListTileClickIndexAndQueryLength
-//  - Apps.AppListResultClickIndexAndQueryLength
-constexpr int kMaxLoggedQueryLength = 10;
-constexpr int kMaxLoggedSuggestionIndex = 6;
-constexpr int kMaxLoggedHistogramValue =
-    (kMaxLoggedSuggestionIndex + 1) * kMaxLoggedQueryLength +
-    kMaxLoggedSuggestionIndex;
-
-}  // namespace
-
 // The UMA histogram that logs smoothness of pagination animation.
 constexpr char kPaginationTransitionAnimationSmoothness[] =
     "Apps.PaginationTransition.AnimationSmoothness";
@@ -60,12 +46,6 @@ constexpr char kAppListZeroStateSearchResultUserActionHistogram[] =
 // search result removal confirmation.
 constexpr char kAppListZeroStateSearchResultRemovalHistogram[] =
     "Apps.AppList.ZeroStateSearchResultRemovalDecision";
-
-// The UMA histogram that logs the length of the query when user abandons
-// results of a queried search or recommendations of zero state(zero length
-// query) in launcher UI.
-constexpr char kSearchAbandonQueryLengthHistogram[] =
-    "Apps.AppListSearchAbandonQueryLength";
 
 // The base UMA histogram that logs app launches within the AppList and shelf.
 constexpr char kAppListAppLaunched[] = "Apps.AppListAppLaunchedV2";
@@ -138,10 +118,9 @@ void RecordPageSwitcherSource(AppListPageSwitcherSource source,
   }
 }
 
-APP_LIST_EXPORT void RecordSearchResultOpenSource(
-    const SearchResult* result,
-    const AppListModel* model,
-    const SearchModel* search_model) {
+void RecordSearchResultOpenSource(const SearchResult* result,
+                                  const AppListModel* model,
+                                  const SearchModel* search_model) {
   // Record the search metric if the SearchResult is not a suggested app.
   if (result->is_recommendation())
     return;
@@ -158,33 +137,6 @@ APP_LIST_EXPORT void RecordSearchResultOpenSource(
   UMA_HISTOGRAM_ENUMERATION(
       kAppListSearchResultOpenSourceHistogram, source,
       ApplistSearchResultOpenedSource::kMaxApplistSearchResultOpenedSource);
-}
-
-void RecordSearchLaunchIndexAndQueryLength(
-    SearchResultLaunchLocation launch_location,
-    int query_length,
-    int suggestion_index) {
-  if (suggestion_index < 0) {
-    LOG(ERROR) << "Received invalid suggestion index.";
-    return;
-  }
-
-  query_length = std::min(query_length, kMaxLoggedQueryLength);
-  suggestion_index = std::min(suggestion_index, kMaxLoggedSuggestionIndex);
-  const int logged_value =
-      (kMaxLoggedSuggestionIndex + 1) * query_length + suggestion_index;
-
-  if (launch_location == SearchResultLaunchLocation::kResultList) {
-    UMA_HISTOGRAM_EXACT_LINEAR(kAppListResultLaunchIndexAndQueryLength,
-                               logged_value, kMaxLoggedHistogramValue);
-    UMA_HISTOGRAM_BOOLEAN(kAppListResultLaunchIsEmptyQuery, query_length == 0);
-  }
-}
-
-void RecordSearchAbandonWithQueryLengthHistogram(int query_length) {
-  UMA_HISTOGRAM_EXACT_LINEAR(kSearchAbandonQueryLengthHistogram,
-                             std::min(query_length, kMaxLoggedQueryLength),
-                             kMaxLoggedQueryLength);
 }
 
 void RecordZeroStateSearchResultUserActionHistogram(

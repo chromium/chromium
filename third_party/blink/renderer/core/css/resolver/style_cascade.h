@@ -112,11 +112,18 @@ class CORE_EXPORT StyleCascade {
   // applying a keyframe from e.g. "color: var(--x)" to "color: var(--y)".
   // Hence that code needs an entry point to the resolving process.
   //
+  // This function handles IACVT [1] as follows:
+  //
+  //  - If a cycle was detected, returns nullptr.
+  //  - If IACVT for other reasons, returns a 'CSSUnsetValue'.
+  //
   // TODO(crbug.com/985023): This function has an associated const
   // violation, which isn't great. (This vilation was not introduced with
   // StyleCascade, however).
   //
   // See documentation the other Resolve* functions for what resolve means.
+  //
+  // [1] https://drafts.csswg.org/css-variables/#invalid-at-computed-value-time
   const CSSValue* Resolve(const CSSPropertyName&,
                           const CSSValue&,
                           CascadeOrigin,
@@ -333,13 +340,6 @@ class CORE_EXPORT StyleCascade {
   // Marks a CSSProperty as having a reference to a custom property. Needed to
   // disable the matched property cache in some cases.
   void MarkHasVariableReference(const CSSProperty&);
-  // The resulting ComputedStyle may depend on values from the parent style,
-  // for example, explicit inheritance or var() references means we hold a
-  // dependency on the relevant property. We maintain a set of these
-  // dependencies on StyleResolverState, which is later used by the
-  // MatchedPropertiesCache to figure out if a given cache lookup is a hit or a
-  // miss.
-  void MarkDependency(const CSSProperty&);
 
   const Document& GetDocument() const;
   const CSSProperty& ResolveSurrogate(const CSSProperty& surrogate);
@@ -347,7 +347,6 @@ class CORE_EXPORT StyleCascade {
   void CountUse(WebFeature);
   void MaybeUseCountRevert(const CSSValue&);
   void MaybeUseCountSummaryDisplayBlock();
-  void MaybeUseCountInvalidVariableUnset(const CustomProperty&);
 
   StyleResolverState& state_;
   MatchResult match_result_;

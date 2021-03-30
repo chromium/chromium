@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_GENERATED_PASSWORD_SAVED_INFOBAR_DELEGATE_ANDROID_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_GENERATED_PASSWORD_SAVED_INFOBAR_DELEGATE_ANDROID_H_
 
+#include <string>
+
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "ui/gfx/range/range.h"
 
@@ -25,10 +26,10 @@ class GeneratedPasswordSavedInfoBarDelegateAndroid
   ~GeneratedPasswordSavedInfoBarDelegateAndroid() override;
 
   // Returns the translated text of the message to display.
-  const base::string16& message_text() const { return message_text_; }
+  const std::u16string& message_text() const { return message_text_; }
 
   // Returns the translated text of the details message to display. T
-  const base::string16& details_message_text() const {
+  const std::u16string& details_message_text() const {
     return details_message_text_;
   }
 
@@ -36,7 +37,7 @@ class GeneratedPasswordSavedInfoBarDelegateAndroid
   const gfx::Range& inline_link_range() const { return inline_link_range_; }
 
   // Returns the translated label of the button.
-  const base::string16& button_label() const { return button_label_; }
+  const std::u16string& button_label() const { return button_label_; }
 
   // Called when the link in the message is clicked.
   void OnInlineLinkClicked();
@@ -49,17 +50,17 @@ class GeneratedPasswordSavedInfoBarDelegateAndroid
   int GetIconId() const override;
 
   // The translated text of the message to display.
-  base::string16 message_text_;
+  std::u16string message_text_;
 
   // The translated text of the details message to display. This message
   // explains where the generated password is saved.
-  base::string16 details_message_text_;
+  std::u16string details_message_text_;
 
   // The range of the details message that should be a link.
   gfx::Range inline_link_range_;
 
   // The translated label of the button.
-  base::string16 button_label_;
+  std::u16string button_label_;
 
   DISALLOW_COPY_AND_ASSIGN(GeneratedPasswordSavedInfoBarDelegateAndroid);
 };

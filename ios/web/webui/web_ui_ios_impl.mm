@@ -30,20 +30,19 @@ const char kCommandPrefix[] = "webui";
 namespace web {
 
 // static
-base::string16 WebUIIOS::GetJavascriptCall(
+std::u16string WebUIIOS::GetJavascriptCall(
     const std::string& function_name,
     const std::vector<const base::Value*>& arg_list) {
-  base::string16 parameters;
+  std::u16string parameters;
   std::string json;
   for (size_t i = 0; i < arg_list.size(); ++i) {
     if (i > 0)
-      parameters += base::char16(',');
+      parameters += u',';
 
     base::JSONWriter::Write(*arg_list[i], &json);
     parameters += base::UTF8ToUTF16(json);
   }
-  return base::ASCIIToUTF16(function_name) + base::char16('(') + parameters +
-         base::char16(')') + base::char16(';');
+  return base::ASCIIToUTF16(function_name) + u'(' + parameters + u");";
 }
 
 WebUIIOSImpl::WebUIIOSImpl(WebState* web_state) : web_state_(web_state) {
@@ -166,7 +165,7 @@ void WebUIIOSImpl::AddMessageHandler(
   handlers_.push_back(std::move(handler));
 }
 
-void WebUIIOSImpl::ExecuteJavascript(const base::string16& javascript) {
+void WebUIIOSImpl::ExecuteJavascript(const std::u16string& javascript) {
   web_state_->ExecuteJavaScript(javascript);
 }
 

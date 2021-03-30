@@ -368,15 +368,16 @@ static void ParseOldStyleNames(
       }
       result.enable_dtls_srtp.SetExact(ToBoolean(constraint.value_));
     } else if (constraint.name_.Equals(kEnableRtpDataChannels)) {
+      // This constraint does not turn on RTP data channels, but we do not
+      // want it to cause an error, so we parse it and ignore it.
       bool value = ToBoolean(constraint.value_);
       if (value) {
         Deprecation::CountDeprecation(
             context, WebFeature::kRTCConstraintEnableRtpDataChannelsTrue);
       } else {
-        UseCounter::Count(context,
-                          WebFeature::kRTCConstraintEnableRtpDataChannelsFalse);
+        Deprecation::CountDeprecation(
+            context, WebFeature::kRTCConstraintEnableRtpDataChannelsFalse);
       }
-      result.enable_rtp_data_channels.SetExact(ToBoolean(constraint.value_));
     } else if (constraint.name_.Equals(kEnableDscp)) {
       result.enable_dscp.SetExact(ToBoolean(constraint.value_));
     } else if (constraint.name_.Equals(kEnableIPv6)) {

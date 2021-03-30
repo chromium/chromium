@@ -70,6 +70,17 @@ struct GridSpan {
            end_line_ == o.end_line_;
   }
 
+  bool operator<(const GridSpan& o) const {
+    DCHECK(IsTranslatedDefinite());
+    return start_line_ < o.start_line_ ||
+           (start_line_ == o.start_line_ && end_line_ < o.end_line_);
+  }
+
+  bool operator<=(const GridSpan& o) const {
+    DCHECK(IsTranslatedDefinite());
+    return *this < o || *this == o;
+  }
+
   size_t IntegerSpan() const {
     DCHECK(IsTranslatedDefinite());
     DCHECK_GT(end_line_, start_line_);
@@ -120,8 +131,8 @@ struct GridSpan {
     return end_line_;
   }
 
+  bool IsUntranslatedDefinite() const { return type_ == kUntranslatedDefinite; }
   bool IsTranslatedDefinite() const { return type_ == kTranslatedDefinite; }
-
   bool IsIndefinite() const { return type_ == kIndefinite; }
 
   void Translate(size_t offset) {

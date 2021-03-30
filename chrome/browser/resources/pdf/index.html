@@ -1,6 +1,5 @@
 <!doctype html>
-<html dir="$i18n{textdirection}" lang="$i18n{language}"
-    $i18n{pdfViewerUpdateEnabledAttribute}>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
 <head>
   <meta charset="utf-8">
 
@@ -13,7 +12,7 @@
       height: 100%;
     }
 
-    html[pdf-viewer-update-enabled] body {
+    body {
       width: 100%;
     }
   </style>
@@ -22,5 +21,5 @@
 <pdf-viewer id="viewer"></pdf-viewer>
 </body>
 <script type="module" src="main.js"></script>
-<script type="module" src="pdf_viewer.js"></script>
+<script type="module" src="pdf_viewer_wrapper.js"></script>
 </html>

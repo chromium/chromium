@@ -77,13 +77,6 @@ bool operator<(const SelectorProto::Filter& a, const SelectorProto::Filter& b) {
     case SelectorProto::Filter::kLabelled:
       return false;
 
-    case SelectorProto::Filter::kClosest: {
-      return std::make_tuple(a.closest().target(), a.closest().in_alignment(),
-                             a.closest().relative_position()) <
-             std::make_tuple(b.closest().target(), b.closest().in_alignment(),
-                             b.closest().relative_position());
-    }
-
     case SelectorProto::Filter::kMatchCssSelector:
       return a.match_css_selector() < b.match_css_selector();
 
@@ -242,7 +235,6 @@ base::Optional<std::string> Selector::ExtractSingleCssSelectorForAutofill()
       case SelectorProto::Filter::kPseudoElementContent:
       case SelectorProto::Filter::kCssStyle:
       case SelectorProto::Filter::kLabelled:
-      case SelectorProto::Filter::kClosest:
       case SelectorProto::Filter::kMatchCssSelector:
       case SelectorProto::Filter::kOnTop:
         VLOG(1) << __func__
@@ -366,29 +358,6 @@ std::ostream& operator<<(std::ostream& out, const SelectorProto::Filter& f) {
 
     case SelectorProto::Filter::kLabelled:
       out << "labelled";
-      return out;
-
-    case SelectorProto::Filter::kClosest:
-      out << "closest to " << f.closest().target();
-      switch (f.closest().relative_position()) {
-        case SelectorProto::ProximityFilter::UNSPECIFIED_POSITION:
-          break;
-        case SelectorProto::ProximityFilter::ABOVE:
-          out << " above";
-          break;
-        case SelectorProto::ProximityFilter::BELOW:
-          out << " below";
-          break;
-        case SelectorProto::ProximityFilter::RIGHT:
-          out << " right";
-          break;
-        case SelectorProto::ProximityFilter::LEFT:
-          out << " left";
-          break;
-      }
-      if (f.closest().in_alignment()) {
-        out << " in alignment";
-      }
       return out;
 
     case SelectorProto::Filter::kMatchCssSelector:

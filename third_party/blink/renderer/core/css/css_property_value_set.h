@@ -298,6 +298,7 @@ class CORE_EXPORT MutableCSSPropertyValueSet : public CSSPropertyValueSet {
   friend class CSSPropertyValueSet;
 
   HeapVector<CSSPropertyValue, 4> property_vector_;
+  bool may_have_logical_properties_{false};
 };
 
 template <>

@@ -17,8 +17,9 @@
 #include "ash/wm/desks/root_window_desk_switch_animator_test_api.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_test_util.h"
-#include "ash/wm/window_cycle_controller.h"
-#include "ash/wm/window_cycle_list.h"
+#include "ash/wm/screen_pinning_controller.h"
+#include "ash/wm/window_cycle/window_cycle_controller.h"
+#include "ash/wm/window_cycle/window_cycle_list.h"
 #include "ash/wm/window_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_service.h"
@@ -33,7 +34,6 @@ namespace ash {
 
 namespace {
 
-constexpr int kNumFingersForWindowCycle = 2;
 constexpr int kNumFingersForHighlight = 3;
 constexpr int kNumFingersForDesksSwitch = 4;
 
@@ -290,6 +290,25 @@ TEST_F(WmGestureHandlerTest, EnterOverviewOnScrollEnd) {
   EXPECT_TRUE(InOverviewSession());
 }
 
+// Test switch desk is disabled when screen is pinned.
+TEST_F(WmGestureHandlerTest, LockedModeNoSwitchDesk) {
+  auto* desk_controller = DesksController::Get();
+  desk_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desk_controller->desks().size());
+  ASSERT_EQ(desk_controller->desks()[0].get(), desk_controller->active_desk());
+
+  // Pin a window to current desk.
+  aura::Window* w1 = CreateTestWindowInShellWithId(0);
+  wm::ActivateWindow(w1);
+  window_util::PinWindow(w1, /*trusted=*/false);
+  EXPECT_TRUE(Shell::Get()->screen_pinning_controller()->IsPinned());
+
+  // Tests that scrolling right won't switch desks when screen is pinned.
+  const float long_scroll = WmGestureHandler::kHorizontalThresholdDp;
+  Scroll(long_scroll, 0.f, kNumFingersForDesksSwitch);
+  EXPECT_EQ(desk_controller->desks()[0].get(), desk_controller->active_desk());
+}
+
 using DesksGestureHandlerTest = WmGestureHandlerTest;
 
 // Tests that a four-finger horizontal scroll will switch desks as expected.
@@ -380,196 +399,6 @@ TEST_F(DesksGestureHandlerTest, NoDeskChangesInLockScreen) {
   EXPECT_EQ(desk_controller->desks()[0].get(), desk_controller->active_desk());
 }
 
-class InteractiveWindowCycleListGestureHandlerTest
-    : public WmGestureHandlerTest {
- public:
-  InteractiveWindowCycleListGestureHandlerTest() = default;
-  InteractiveWindowCycleListGestureHandlerTest(
-      const InteractiveWindowCycleListGestureHandlerTest&) = delete;
-  InteractiveWindowCycleListGestureHandlerTest& operator=(
-      const InteractiveWindowCycleListGestureHandlerTest&) = delete;
-  ~InteractiveWindowCycleListGestureHandlerTest() override = default;
-
-  // AshTestBase:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kInteractiveWindowCycleList);
-    AshTestBase::SetUp();
-    WindowCycleList::DisableInitialDelayForTesting();
-  }
-
-  int GetCurrentIndex() const {
-    return Shell::Get()
-        ->window_cycle_controller()
-        ->window_cycle_list()
-        ->current_index_for_testing();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Tests three finger horizontal scroll gesture to move selection left or right.
-TEST_F(InteractiveWindowCycleListGestureHandlerTest,
-       ThreeFingerHorizontalScrollInWindowCycleList) {
-  const gfx::Rect bounds(0, 0, 400, 400);
-  std::unique_ptr<aura::Window> window1 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window2 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window3 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window4 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window5 = CreateTestWindow(bounds);
-  const float horizontal_scroll = WmGestureHandler::kHorizontalThresholdDp;
-
-  auto scroll_until_window_highlighted_and_confirm = [this](float x_offset,
-                                                            float y_offset) {
-    WindowCycleController* controller = Shell::Get()->window_cycle_controller();
-    controller->StartCycling();
-    Scroll(GetOffsetX(x_offset), GetOffsetY(y_offset), kNumFingersForHighlight);
-    controller->CompleteCycling();
-  };
-
-  // Start cycle, simulating alt key being held down. Scroll right to fourth
-  // item.
-  // Current order is [5,4,3,2,1].
-  scroll_until_window_highlighted_and_confirm(horizontal_scroll * 3, 0);
-  EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
-
-  // Start cycle. Scroll left to third item.
-  // Current order is [2,5,4,3,1].
-  scroll_until_window_highlighted_and_confirm(-horizontal_scroll * 3, 0);
-  EXPECT_TRUE(wm::IsActiveWindow(window4.get()));
-
-  // Start cycle. Scroll right to second item.
-  // Current order is [4,2,5,3,1].
-  scroll_until_window_highlighted_and_confirm(horizontal_scroll, 0);
-  EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
-
-  // Open an overview session and window cycle list. Scroll right to second
-  // item. Scroll should only go to the window cycle list.
-  // Current order is [2,4,5,3,1].
-  Shell::Get()->overview_controller()->StartOverview();
-  EXPECT_TRUE(InOverviewSession());
-
-  Shell::Get()->window_cycle_controller()->StartCycling();
-  Scroll(GetOffsetX(horizontal_scroll), 0, kNumFingersForHighlight);
-  EXPECT_EQ(nullptr, GetHighlightedWindow());
-
-  Shell::Get()->window_cycle_controller()->CompleteCycling();
-  EXPECT_FALSE(InOverviewSession());
-  EXPECT_TRUE(wm::IsActiveWindow(window4.get()));
-}
-
-// Tests two finger horizontal scroll gesture to move selection left or right.
-TEST_F(InteractiveWindowCycleListGestureHandlerTest,
-       TwoFingerHorizontalScrollInWindowCycleList) {
-  const gfx::Rect bounds(0, 0, 400, 400);
-  std::unique_ptr<aura::Window> window1 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window2 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window3 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window4 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window5 = CreateTestWindow(bounds);
-  const float horizontal_scroll = WmGestureHandler::kHorizontalThresholdDp;
-
-  auto scroll_until_window_highlighted_and_confirm = [this](float x_offset,
-                                                            float y_offset) {
-    WindowCycleController* controller = Shell::Get()->window_cycle_controller();
-    controller->StartCycling();
-    // Since two finger swipes are negated, negate in tests to mimic how this
-    // actually behaves on devices.
-    Scroll(GetOffsetX(-x_offset), GetOffsetY(y_offset),
-           kNumFingersForWindowCycle);
-    controller->CompleteCycling();
-  };
-
-  // Start cycle, simulating alt key being held down. Scroll right to fourth
-  // item.
-  // Current order is [5,4,3,2,1].
-  scroll_until_window_highlighted_and_confirm(horizontal_scroll * 3, 0);
-  EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
-
-  // Start cycle. Scroll left to third item.
-  // Current order is [2,5,4,3,1].
-  scroll_until_window_highlighted_and_confirm(-horizontal_scroll * 3, 0);
-  EXPECT_TRUE(wm::IsActiveWindow(window4.get()));
-
-  // Start cycle. Scroll right to second item.
-  // Current order is [4,2,5,3,1].
-  scroll_until_window_highlighted_and_confirm(horizontal_scroll, 0);
-  EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
-}
-
-// Tests mouse wheel scroll gesture to move selection left or right.
-TEST_F(InteractiveWindowCycleListGestureHandlerTest,
-       MouseWheelScrollInWindowCycleList) {
-  const gfx::Rect bounds(0, 0, 400, 400);
-  std::unique_ptr<aura::Window> window1 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window2 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window3 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window4 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window5 = CreateTestWindow(bounds);
-  const float horizontal_scroll = WmGestureHandler::kHorizontalThresholdDp;
-
-  auto scroll_until_window_highlighted_and_confirm = [this](float x_offset,
-                                                            float y_offset,
-                                                            int num_of_times) {
-    WindowCycleController* controller = Shell::Get()->window_cycle_controller();
-    controller->StartCycling();
-    MouseWheelScroll(x_offset, y_offset, num_of_times);
-    controller->CompleteCycling();
-  };
-
-  // Start cycle, simulating alt key being held down. Scroll right to fourth
-  // item.
-  // Current order is [5,4,3,2,1].
-  scroll_until_window_highlighted_and_confirm(0, -horizontal_scroll, 3);
-  EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
-
-  // Start cycle. Scroll left to third item.
-  // Current order is [2,5,4,3,1].
-  scroll_until_window_highlighted_and_confirm(0, horizontal_scroll, 3);
-  EXPECT_TRUE(wm::IsActiveWindow(window4.get()));
-
-  // Start cycle. Scroll right to second item.
-  // Current order is [4,2,5,3,1].
-  scroll_until_window_highlighted_and_confirm(0, -horizontal_scroll, 1);
-  EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
-}
-
-// Tests that swiping up closes window cycle if it's open and starts overview
-// mode.
-// TODO(chinsenj): Add this test to
-// WmGestureHandlerTest.VerticalScrolls after this feature is launched.
-TEST_F(InteractiveWindowCycleListGestureHandlerTest, VerticalScroll) {
-  std::unique_ptr<aura::Window> window1 = CreateTestWindow();
-  std::unique_ptr<aura::Window> window2 = CreateTestWindow();
-  const float vertical_scroll = 2 * WmGestureHandler::kVerticalThresholdDp;
-  const float horizontal_scroll = WmGestureHandler::kHorizontalThresholdDp;
-  auto* window_cycle_controller = Shell::Get()->window_cycle_controller();
-
-  // Start cycling and then swipe up to open up overview.
-  window_cycle_controller->HandleCycleWindow(WindowCycleController::FORWARD);
-  EXPECT_TRUE(window_cycle_controller->IsCycling());
-  Scroll(0, vertical_scroll, 3);
-  EXPECT_TRUE(InOverviewSession());
-  EXPECT_FALSE(window_cycle_controller->IsCycling());
-
-  // Start cycling and then swipe down.
-  window_cycle_controller->HandleCycleWindow(WindowCycleController::FORWARD);
-  EXPECT_TRUE(window_cycle_controller->IsCycling());
-  Scroll(0, -vertical_scroll, 3);
-  EXPECT_TRUE(window_cycle_controller->IsCycling());
-
-  // Swipe diagonally with horizontal bias.
-  Scroll(horizontal_scroll * 3, vertical_scroll, 3);
-  EXPECT_TRUE(window_cycle_controller->IsCycling());
-  EXPECT_FALSE(InOverviewSession());
-
-  // Swipe diagonally with vertical bias.
-  Scroll(horizontal_scroll, vertical_scroll, 3);
-  EXPECT_FALSE(window_cycle_controller->IsCycling());
-  EXPECT_TRUE(InOverviewSession());
-}
-
 class ReverseGestureHandlerTest : public WmGestureHandlerTest {
  public:
   ReverseGestureHandlerTest() = default;
@@ -580,10 +409,7 @@ class ReverseGestureHandlerTest : public WmGestureHandlerTest {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kInteractiveWindowCycleList,
-         features::kReverseScrollGestures},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(features::kReverseScrollGestures);
     AshTestBase::SetUp();
 
     // Set natural scroll on.
@@ -631,110 +457,6 @@ TEST_F(ReverseGestureHandlerTest, SwitchDesk) {
   // Scroll right to get previous desk.
   ScrollToSwitchDesks(/*scroll_right=*/false);
   EXPECT_EQ(desk1, GetActiveDesk());
-}
-
-// Tests mouse wheel scroll gesture to move selection left or right. Mouse
-// reverse scroll should reverse its direction.
-TEST_F(ReverseGestureHandlerTest, MouseWheelScrollInWindowCycleList) {
-  const gfx::Rect bounds(0, 0, 400, 400);
-  std::unique_ptr<aura::Window> window1 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window2 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window3 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window4 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window5 = CreateTestWindow(bounds);
-  const float horizontal_scroll = WmGestureHandler::kHorizontalThresholdDp;
-
-  auto scroll_until_window_highlighted_and_confirm = [this](float x_offset,
-                                                            float y_offset,
-                                                            int num_of_times) {
-    WindowCycleController* controller = Shell::Get()->window_cycle_controller();
-    controller->StartCycling();
-    MouseWheelScroll(x_offset, y_offset, num_of_times);
-    controller->CompleteCycling();
-  };
-
-  // Start cycle, simulating alt key being held down. Scroll right to fourth
-  // item.
-  // Current order is [5,4,3,2,1].
-  scroll_until_window_highlighted_and_confirm(0, horizontal_scroll, 3);
-  EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
-
-  // Start cycle. Scroll left to third item.
-  // Current order is [2,5,4,3,1].
-  scroll_until_window_highlighted_and_confirm(0, -horizontal_scroll, 3);
-  EXPECT_TRUE(wm::IsActiveWindow(window4.get()));
-
-  // Start cycle. Scroll right to second item.
-  // Current order is [4,2,5,3,1].
-  scroll_until_window_highlighted_and_confirm(0, horizontal_scroll, 1);
-  EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
-
-  // Turn mouse reverse scroll off.
-  PrefService* pref =
-      Shell::Get()->session_controller()->GetActivePrefService();
-  pref->SetBoolean(prefs::kMouseReverseScroll, false);
-
-  // Start cycle. Scroll left once.
-  // Current order is [2,4,5,3,1].
-  scroll_until_window_highlighted_and_confirm(0, horizontal_scroll, 1);
-  EXPECT_TRUE(wm::IsActiveWindow(window1.get()));
-
-  // Start cycle. Scroll right once.
-  // Current order is [1,2,4,5,3].
-  scroll_until_window_highlighted_and_confirm(0, -horizontal_scroll, 1);
-  EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
-}
-
-// Tests that natural scroll doesn't affect two and three finger horizontal
-// scroll gestures for cycling window cycle list.
-TEST_F(ReverseGestureHandlerTest, WindowCycleListTrackpadGestures) {
-  const gfx::Rect bounds(0, 0, 400, 400);
-  std::unique_ptr<aura::Window> window1 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window2 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window3 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window4 = CreateTestWindow(bounds);
-  std::unique_ptr<aura::Window> window5 = CreateTestWindow(bounds);
-  const float horizontal_scroll = WmGestureHandler::kHorizontalThresholdDp;
-
-  auto scroll_until_window_highlighted_and_confirm = [this](float x_offset,
-                                                            float y_offset,
-                                                            int num_fingers) {
-    WindowCycleController* controller = Shell::Get()->window_cycle_controller();
-    controller->StartCycling();
-    Scroll(x_offset, y_offset, num_fingers);
-    controller->CompleteCycling();
-  };
-
-  // Start cycle, scroll right with two finger gesture.
-  // Current order is [5,4,3,2,1].
-  scroll_until_window_highlighted_and_confirm(horizontal_scroll, 0,
-                                              kNumFingersForWindowCycle);
-  EXPECT_TRUE(wm::IsActiveWindow(window4.get()));
-
-  // Start cycle, scroll right with three finger gesture.
-  // Current order is [4,5,3,2,1].
-  scroll_until_window_highlighted_and_confirm(horizontal_scroll, 0,
-                                              kNumFingersForHighlight);
-  EXPECT_TRUE(wm::IsActiveWindow(window5.get()));
-
-  // Turn natural scroll off.
-  PrefService* pref =
-      Shell::Get()->session_controller()->GetActivePrefService();
-  pref->SetBoolean(prefs::kNaturalScroll, false);
-
-  // Start cycle, scroll right with two finger gesture. Note: two figner swipes
-  // are negated, so negate in tests to mimic how this actually behaves on
-  // devices.
-  // Current order is [5,4,3,2,1].
-  scroll_until_window_highlighted_and_confirm(-horizontal_scroll, 0,
-                                              kNumFingersForWindowCycle);
-  EXPECT_TRUE(wm::IsActiveWindow(window4.get()));
-
-  // Start cycle, scroll right with three finger gesture.
-  // Current order is [4,5,3,2,1].
-  scroll_until_window_highlighted_and_confirm(horizontal_scroll, 0,
-                                              kNumFingersForHighlight);
-  EXPECT_TRUE(wm::IsActiveWindow(window5.get()));
 }
 
 }  // namespace ash

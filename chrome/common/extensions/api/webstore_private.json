@@ -178,6 +178,11 @@
                 "type": "string",
                 "optional": true,
                 "description": "The authuser index to be included with CRX download requests in multi-login sessions."
+              },
+              "esbAllowlist": {
+                "type": "boolean",
+                "optional": true,
+                "description": "A flag to specify if the extension is included in the ESB allowlist."
               }
             },
             "additionalProperties": { "type": "any" }
@@ -234,7 +239,6 @@
           {
             "name": "callback",
             "type": "function",
-            "optional": false,
             "parameters": [
               {
                 "name": "info",
@@ -254,7 +258,6 @@
           {
             "name": "callback",
             "type": "function",
-            "optional": false,
             "parameters": [
               { "name": "login", "type": "string" }
             ]
@@ -281,7 +284,6 @@
           {
             "name": "callback",
             "type": "function",
-            "optional": false,
             "parameters": [
               {
                 "name": "webgl_status",
@@ -298,7 +300,6 @@
           {
             "name": "callback",
             "type": "function",
-            "optional": false,
             "parameters": [
               { "name": "is_enabled", "type": "boolean" }
             ]
@@ -312,7 +313,6 @@
           {
             "name": "callback",
             "type": "function",
-            "optional": false,
             "parameters": [
               { "name": "is_incognito", "type": "boolean" }
             ]
@@ -326,7 +326,6 @@
           {
             "name": "callback",
             "type": "function",
-            "optional": false,
             "parameters": [
               { "name": "is_enabled", "type": "boolean" }
             ]
@@ -368,7 +367,6 @@
           {
             "name": "callback",
             "type": "function",
-            "optional": false,
             "parameters": [
               { "name": "is_pending_approval", "type": "boolean" }
             ]

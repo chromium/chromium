@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_UI_TAB_UI_HELPER_H_
 #define CHROME_BROWSER_UI_TAB_UI_HELPER_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/favicon_base/favicon_callback.h"
@@ -28,7 +29,7 @@ class TabUIHelper : public content::WebContentsObserver,
 
   // Get the title of the tab. When the associated WebContents' title is empty,
   // a customized title is used.
-  base::string16 GetTitle() const;
+  std::u16string GetTitle() const;
 
   // Get the favicon of the tab. It will return a favicon from history service
   // if it needs to, otherwise, it will return the favicon of the WebContents.
@@ -56,7 +57,7 @@ class TabUIHelper : public content::WebContentsObserver,
 
   struct TabUIData {
     explicit TabUIData(const GURL& url);
-    base::string16 title;
+    std::u16string title;
     gfx::Image favicon;
   };
 

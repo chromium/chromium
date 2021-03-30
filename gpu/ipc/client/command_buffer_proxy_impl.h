@@ -43,6 +43,10 @@
 struct GPUCommandBufferConsoleMessage;
 class GURL;
 
+namespace base {
+class HistogramBase;
+}
+
 namespace gfx {
 struct GpuFenceHandle;
 struct PresentationFeedback;
@@ -231,6 +235,8 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
   // The shared memory area used to update state.
   gpu::CommandBufferSharedState* shared_state() const;
 
+  base::HistogramBase* GetUMAHistogramEnsureWorkVisibleDuration();
+
   // The shared memory region used to update state.
   base::UnsafeSharedMemoryRegion shared_state_shm_;
   base::WritableSharedMemoryMapping shared_state_mapping_;
@@ -278,6 +284,9 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
   gpu::Capabilities capabilities_;
 
   UpdateVSyncParametersCallback update_vsync_parameters_completion_callback_;
+
+  // Cache pointer to EnsureWorkVisibleDuration custom UMA histogram.
+  base::HistogramBase* uma_histogram_ensure_work_visible_duration_ = nullptr;
 
   using GetGpuFenceTaskMap =
       base::flat_map<uint32_t,

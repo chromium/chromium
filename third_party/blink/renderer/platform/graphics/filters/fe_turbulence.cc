@@ -27,8 +27,6 @@
 
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
-#include "third_party/skia/include/effects/SkPaintImageFilter.h"
-#include "third_party/skia/include/effects/SkPerlinNoiseShader.h"
 
 namespace blink {
 
@@ -123,7 +121,7 @@ sk_sp<PaintFilter> FETurbulence::CreateImageFilter() {
     base_frequency_x = base_frequency_y = 0;
   }
 
-  PaintFilter::CropRect rect = GetCropRect();
+  base::Optional<PaintFilter::CropRect> crop_rect = GetCropRect();
   TurbulencePaintFilter::TurbulenceType type =
       GetType() == FETURBULENCE_TYPE_FRACTALNOISE
           ? TurbulencePaintFilter::TurbulenceType::kFractalNoise
@@ -144,7 +142,8 @@ sk_sp<PaintFilter> FETurbulence::CreateImageFilter() {
   return sk_make_sp<TurbulencePaintFilter>(
       type, SkFloatToScalar(base_frequency_x),
       SkFloatToScalar(base_frequency_y), capped_num_octaves,
-      SkFloatToScalar(Seed()), StitchTiles() ? &size : nullptr, &rect);
+      SkFloatToScalar(Seed()), StitchTiles() ? &size : nullptr,
+      base::OptionalOrNullptr(crop_rect));
 }
 
 static WTF::TextStream& operator<<(WTF::TextStream& ts,

@@ -37,8 +37,8 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_switches.h"
 #include "chrome/common/channel_info.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "components/version_info/version_info.h"
 #endif
 
@@ -128,7 +128,7 @@ void ChromeCrashReporterClient::GetProductNameAndVersion(
   GetProductNameAndVersion(&c_product_name, &c_version);
   *product_name = c_product_name;
   *version = c_version;
-  *channel = chrome::GetChannelName();
+  *channel = chrome::GetChannelName(chrome::WithExtendedStable(true));
 }
 
 base::FilePath ChromeCrashReporterClient::GetReporterLogFilename() {

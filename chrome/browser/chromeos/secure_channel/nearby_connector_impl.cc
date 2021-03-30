@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "chrome/browser/chromeos/secure_channel/nearby_connection_broker_impl.h"
 #include "chrome/browser/chromeos/secure_channel/nearby_endpoint_finder_impl.h"
+#include "chrome/browser/chromeos/secure_channel/util/histogram_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/nearby/public/cpp/nearby_process_manager.h"
 #include "chromeos/services/secure_channel/public/cpp/client/nearby_connector.h"
@@ -14,6 +15,9 @@
 
 namespace chromeos {
 namespace secure_channel {
+
+using NearbyProcessShutdownReason =
+    nearby::NearbyProcessManager::NearbyProcessShutdownReason;
 
 NearbyConnectorImpl::ConnectionRequestMetadata::ConnectionRequestMetadata(
     const std::vector<uint8_t>& bluetooth_public_address,
@@ -128,12 +132,45 @@ void NearbyConnectorImpl::ProcessQueuedConnectionRequests() {
                          base::Unretained(this), new_broker_id));
 }
 
-void NearbyConnectorImpl::OnNearbyProcessStopped() {
+void NearbyConnectorImpl::OnNearbyProcessStopped(
+    NearbyProcessShutdownReason shutdown_reason) {
   PA_LOG(WARNING) << "Nearby process stopped unexpectedly. Destroying active "
-                  << "connections.";
+                  << "connections. Shutdown reason: " << shutdown_reason;
 
+  RecordNearbyDisconnectionForActiveBrokers(shutdown_reason);
   ClearActiveAndPendingConnections();
   ProcessQueuedConnectionRequests();
+}
+
+void NearbyConnectorImpl::RecordNearbyDisconnectionForActiveBrokers(
+    NearbyProcessShutdownReason shutdown_reason) {
+  if (id_to_brokers_map_.empty())
+    return;
+
+  util::NearbyDisconnectionReason disconnection_reason;
+
+  switch (shutdown_reason) {
+    case NearbyProcessShutdownReason::kCrash:
+      disconnection_reason =
+          util::NearbyDisconnectionReason::kNearbyProcessCrash;
+      break;
+
+    case NearbyProcessShutdownReason::kMojoPipeDisconnection:
+      disconnection_reason =
+          util::NearbyDisconnectionReason::kNearbyProcessMojoDisconnection;
+      break;
+
+    case NearbyProcessShutdownReason::kNormal:
+      PA_LOG(WARNING) << "Neary process stopped normally. This is unexpected "
+                         "when there are active brokers.";
+      disconnection_reason =
+          util::NearbyDisconnectionReason::kDisconnectionRequestedByClient;
+      break;
+  }
+
+  for (size_t i = 0; i < id_to_brokers_map_.size(); ++i) {
+    util::RecordNearbyDisconnection(disconnection_reason);
+  }
 }
 
 void NearbyConnectorImpl::OnConnected(

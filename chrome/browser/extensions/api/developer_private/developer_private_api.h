@@ -11,7 +11,7 @@
 #include "base/files/file.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/commands/command_service.h"
 #include "chrome/browser/extensions/api/developer_private/entry_picker.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
@@ -146,22 +146,22 @@ class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
       std::unique_ptr<ExtensionInfoGenerator> info_generator,
       std::vector<api::developer_private::ExtensionInfo> infos);
 
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
-  ScopedObserver<ErrorConsole, ErrorConsole::Observer> error_console_observer_{
-      this};
-  ScopedObserver<ProcessManager, ProcessManagerObserver>
-      process_manager_observer_{this};
-  ScopedObserver<AppWindowRegistry, AppWindowRegistry::Observer>
-      app_window_registry_observer_{this};
-  ScopedObserver<WarningService, WarningService::Observer>
-      warning_service_observer_{this};
-  ScopedObserver<ExtensionPrefs, ExtensionPrefsObserver>
-      extension_prefs_observer_{this};
-  ScopedObserver<ExtensionManagement, ExtensionManagement::Observer>
-      extension_management_observer_{this};
-  ScopedObserver<CommandService, CommandService::Observer>
-      command_service_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
+  base::ScopedObservation<ErrorConsole, ErrorConsole::Observer>
+      error_console_observation_{this};
+  base::ScopedObservation<ProcessManager, ProcessManagerObserver>
+      process_manager_observation_{this};
+  base::ScopedObservation<AppWindowRegistry, AppWindowRegistry::Observer>
+      app_window_registry_observation_{this};
+  base::ScopedObservation<WarningService, WarningService::Observer>
+      warning_service_observation_{this};
+  base::ScopedObservation<ExtensionPrefs, ExtensionPrefsObserver>
+      extension_prefs_observation_{this};
+  base::ScopedObservation<ExtensionManagement, ExtensionManagement::Observer>
+      extension_management_observation_{this};
+  base::ScopedObservation<CommandService, CommandService::Observer>
+      command_service_observation_{this};
 
   Profile* profile_;
 
@@ -392,7 +392,7 @@ class DeveloperPrivateGetExtensionSizeFunction
   ~DeveloperPrivateGetExtensionSizeFunction() override;
   ResponseAction Run() override;
 
-  void OnSizeCalculated(const base::string16& size);
+  void OnSizeCalculated(const std::u16string& size);
 
   DISALLOW_COPY_AND_ASSIGN(DeveloperPrivateGetExtensionSizeFunction);
 };
@@ -467,10 +467,10 @@ class DeveloperPrivateReloadFunction : public DeveloperPrivateAPIFunction,
   // The file path of the extension that's reloading.
   base::FilePath reloading_extension_path_;
 
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      registry_observer_{this};
-  ScopedObserver<LoadErrorReporter, LoadErrorReporter::Observer>
-      error_reporter_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      registry_observation_{this};
+  base::ScopedObservation<LoadErrorReporter, LoadErrorReporter::Observer>
+      error_reporter_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DeveloperPrivateReloadFunction);
 };
@@ -497,7 +497,7 @@ class DeveloperPrivateChooseEntryFunction : public ExtensionFunction,
  protected:
   ~DeveloperPrivateChooseEntryFunction() override;
   bool ShowPicker(ui::SelectFileDialog::Type picker_type,
-                  const base::string16& select_title,
+                  const std::u16string& select_title,
                   const ui::SelectFileDialog::FileTypeInfo& info,
                   int file_type_index);
 };

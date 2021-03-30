@@ -1,4 +1,4 @@
-monorail:  {
-  component:  "UI>Browser>Downloads"
+monorail: {
+  component: "UI>Browser>Downloads"
 }
-os:  ANDROID
+os: ANDROID

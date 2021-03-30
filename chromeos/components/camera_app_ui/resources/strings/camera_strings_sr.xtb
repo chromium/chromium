@@ -15,6 +15,7 @@
 <translation id="2036868001356139588">Трајање тајмера</translation>
 <translation id="2050339315714019657">Вертикално</translation>
 <translation id="2064538373111010176">Kamera <ph name="CAMERA" /> је активна</translation>
+<translation id="2144806332417375165">Прилагођени параметри видео снимака</translation>
 <translation id="229579744168541441">Извези на диск</translation>
 <translation id="2501278716633472235">Назад</translation>
 <translation id="2501853267655415902">Снимање је заустављено</translation>
@@ -33,7 +34,6 @@
 <translation id="3259149966178251584">Резолуција камере</translation>
 <translation id="3517926952904427380">Снимање усправне слике није успело</translation>
 <translation id="3569311554794739032">Желите ли стварно да уклоните датотеку <ph name="FILE" />?</translation>
-<translation id="3750315947605636967">Друга апликација користи камеру</translation>
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3838931309141338733">Скенирај бар-код</translation>
 <translation id="3892148308691398805">Копирај текст</translation>
@@ -76,10 +76,12 @@
 <translation id="7337660886763914220">Грешке система датотека.</translation>
 <translation id="7450541714075000668">Текст је копиран</translation>
 <translation id="7557677699350329807">Пређи на следећу камеру</translation>
+<translation id="7607002721634913082">Паузирано</translation>
 <translation id="7608223098072244877">4 са 4</translation>
 <translation id="7649070708921625228">Помоћ</translation>
 <translation id="7658239707568436148">Откажи</translation>
 <translation id="7670511624014457267">60 кадр/с</translation>
+<translation id="7974782136796202581">Прикажи опције за померање, нагињање и зумирање</translation>
 <translation id="7983668134180549431">Текст је откривен.</translation>
 <translation id="8067883171444229417">Пусти видео</translation>
 <translation id="8131740175452115882">Потврди</translation>

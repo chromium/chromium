@@ -82,7 +82,7 @@ class TestUrlCheckerClient {
   void CheckUrl(const GURL& url) {
     result_pending_ = true;
     url_checker_ = safe_browsing_service_->CreateUrlChecker(
-        safe_browsing::ResourceType::kMainFrame, &web_state_);
+        network::mojom::RequestDestination::kDocument, &web_state_);
     base::PostTask(FROM_HERE, {web::WebThread::IO},
                    base::BindOnce(&TestUrlCheckerClient::CheckUrlOnIOThread,
                                   base::Unretained(this), url));

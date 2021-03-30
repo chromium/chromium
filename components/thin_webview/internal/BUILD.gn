@@ -36,11 +36,10 @@ android_library("internal_java") {
 
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//components/embedder_support/android:web_contents_delegate_java",
     "//components/thin_webview:java",
     "//content/public/android:content_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

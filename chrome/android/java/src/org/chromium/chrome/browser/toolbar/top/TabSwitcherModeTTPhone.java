@@ -18,11 +18,9 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.device.DeviceClassManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.toolbar.IncognitoToggleTabLayout;
 import org.chromium.chrome.browser.toolbar.NewTabButton;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
@@ -61,6 +59,9 @@ public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
 
     private ObjectAnimator mVisiblityAnimator;
 
+    private boolean mIsGridTabSwitcherEnabled;
+    private boolean mShowZoomingAnimation;
+
     public TabSwitcherModeTTPhone(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -80,7 +81,15 @@ public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
         //                    class and the bottom toolbar will need to be unified.
         mNewTabImageButton.setOnClickListener(this);
         mNewTabViewButton.setOnClickListener(this);
+    }
 
+    void initialize(boolean isGridTabSwitcherEnabled, boolean isTabToGtsAnimationEnabled,
+            boolean isStartSurfaceEnabled) {
+        mIsGridTabSwitcherEnabled = isGridTabSwitcherEnabled;
+        mShowZoomingAnimation = isGridTabSwitcherEnabled && isTabToGtsAnimationEnabled;
+
+        mNewTabImageButton.setGridTabSwitcherEnabled(isGridTabSwitcherEnabled);
+        mNewTabImageButton.setStartSurfaceEnabled(isStartSurfaceEnabled);
         updateTabSwitchingElements(shouldShowIncognitoToggle());
         updateNewTabButtonVisibility();
     }
@@ -126,18 +135,14 @@ public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
         // TODO(twellington): Handle interrupted animations to avoid jumps to 1.0 or 0.f.
         setAlpha(inTabSwitcherMode ? 0.0f : 1.0f);
 
-        boolean showZoomingAnimation = TabUiFeatureUtilities.isGridTabSwitcherEnabled()
-                && TabUiFeatureUtilities.isTabToGtsAnimationEnabled();
-        long duration = showZoomingAnimation
+        long duration = mShowZoomingAnimation
                 ? TopToolbarCoordinator.TAB_SWITCHER_MODE_GTS_ANIMATION_DURATION_MS
                 : TopToolbarCoordinator.TAB_SWITCHER_MODE_NORMAL_ANIMATION_DURATION_MS;
 
         mVisiblityAnimator =
                 ObjectAnimator.ofFloat(this, View.ALPHA, inTabSwitcherMode ? 1.0f : 0.0f);
         mVisiblityAnimator.setDuration(duration);
-        if (showZoomingAnimation && inTabSwitcherMode) {
-            mVisiblityAnimator.setStartDelay(duration);
-        }
+        if (mShowZoomingAnimation && inTabSwitcherMode) mVisiblityAnimator.setStartDelay(duration);
         mVisiblityAnimator.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
 
         // TODO(https://crbug.com/914868): Use consistent logic here for setting clickable/enabled
@@ -236,11 +241,6 @@ public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
     void onAccessibilityStatusChanged(boolean enabled) {
         if (mNewTabImageButton != null) mNewTabImageButton.onAccessibilityStatusChanged();
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.HORIZONTAL_TAB_SWITCHER_ANDROID)
-                && IncognitoUtils.isIncognitoModeEnabled()) {
-            updateTabSwitchingElements(!enabled);
-        }
-
         updatePrimaryColorAndTint();
     }
 
@@ -291,8 +291,7 @@ public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
             // the tab switcher, which is the standard mode background. Note that horizontal tab
             // switcher is an exception, which uses the correspond background color for standard
             // and incognito mode.
-            int backgroundColor = ChromeColors.getPrimaryBackgroundColor(
-                    getResources(), usingHorizontalTabSwitcher() && mIsIncognito);
+            int backgroundColor = ChromeColors.getPrimaryBackgroundColor(getResources(), false);
             useLightIcons = ColorUtils.shouldUseLightForegroundOnBackground(backgroundColor);
         } else {
             useLightIcons = ColorUtils.shouldUseLightForegroundOnBackground(primaryColor);
@@ -316,20 +315,11 @@ public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
 
     private int getToolbarColorForCurrentState() {
         // TODO(huayinz): Split tab switcher background color from primary background color.
-        if (DeviceClassManager.enableAccessibilityLayout()
-                || TabUiFeatureUtilities.isGridTabSwitcherEnabled()) {
+        if (DeviceClassManager.enableAccessibilityLayout() || mIsGridTabSwitcherEnabled) {
             return ChromeColors.getPrimaryBackgroundColor(getResources(), mIsIncognito);
         }
 
         return Color.TRANSPARENT;
-    }
-
-    private boolean usingHorizontalTabSwitcher() {
-        // The horizontal tab switcher flag does not affect the accessibility switcher. We do the
-        // enableAccessibilityLayout() check first here to avoid logging an experiment exposure for
-        // these users.
-        return !DeviceClassManager.enableAccessibilityLayout()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.HORIZONTAL_TAB_SWITCHER_ANDROID);
     }
 
     private void inflateIncognitoToggle() {
@@ -368,7 +358,6 @@ public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
      *         and incognito status.
      */
     private boolean shouldShowIncognitoToggle() {
-        return (usingHorizontalTabSwitcher() || TabUiFeatureUtilities.isGridTabSwitcherEnabled())
-                && IncognitoUtils.isIncognitoModeEnabled();
+        return mIsGridTabSwitcherEnabled && IncognitoUtils.isIncognitoModeEnabled();
     }
 }

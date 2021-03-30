@@ -47,8 +47,8 @@
             clear-label="$i18n{clearSearch}" autofocus>
         </cr-search-field>
         <iron-list scroll-target="[[$$('[slot=body]')]]"
-            items="[[getLanguages_(
-                languages.supported, languages.enabled.*, filterValue_)]]">
+            items="[[displayedLanguages_]]"
+            hidden$="[[displayedLanguagesEmpty_]]">
           <template>
             <cr-checkbox class="list-item no-outline"
                 checked="[[willAdd_(item.code)]]" tab-index="[[tabIndex]]"
@@ -58,6 +58,10 @@
             </cr-checkbox>
           </template>
         </iron-list>
+        <div id="no-search-results" class="centered-message"
+            hidden$="[[!displayedLanguagesEmpty_]]">
+          $i18n{noSearchResults}
+        </div>
       </div>
       <div slot="button-container">
         <cr-button class="cancel-button" on-click="onCancelButtonTap_">

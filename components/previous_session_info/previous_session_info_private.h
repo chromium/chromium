@@ -26,6 +26,7 @@
 @property(nonatomic, assign) NSInteger memoryFootprint;
 @property(nonatomic, assign) NSInteger tabCount;
 @property(nonatomic, assign) NSInteger OTRTabCount;
+@property(nonatomic, assign) BOOL applicationWillTerminateWasReceived;
 
 + (void)resetSharedInstanceForTesting;
 

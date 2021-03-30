@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that InspectorCSSAgent formats the CSS style text based on the CSS model modifications.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>

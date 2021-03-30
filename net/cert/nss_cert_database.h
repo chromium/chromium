@@ -15,7 +15,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "build/chromeos_buildflags.h"
 #include "crypto/scoped_nss_types.h"
 #include "net/base/net_errors.h"
@@ -181,6 +180,12 @@ class NET_EXPORT NSSCertDatabase {
   virtual void ListModules(std::vector<crypto::ScopedPK11Slot>* modules,
                            bool need_rw) const;
 
+  // Set trust values for certificate.
+  // Returns true on success or false on failure.
+  virtual bool SetCertTrust(CERTCertificate* cert,
+                            CertType type,
+                            TrustBits trust_bits);
+
   // Import certificates and private keys from PKCS #12 blob into the module.
   // If |is_extractable| is false, mark the private key as being unextractable
   // from the module.
@@ -189,7 +194,7 @@ class NET_EXPORT NSSCertDatabase {
   // of certs that were imported.
   int ImportFromPKCS12(PK11SlotInfo* slot_info,
                        const std::string& data,
-                       const base::string16& password,
+                       const std::u16string& password,
                        bool is_extractable,
                        ScopedCERTCertificateList* imported_certs);
 
@@ -197,7 +202,7 @@ class NET_EXPORT NSSCertDatabase {
   // storing into |output|.
   // Returns the number of certificates successfully exported.
   int ExportToPKCS12(const ScopedCERTCertificateList& certs,
-                     const base::string16& password,
+                     const std::u16string& password,
                      std::string* output) const;
 
   // Uses similar logic to nsNSSCertificateDB::handleCACertDownload to find the
@@ -240,10 +245,6 @@ class NET_EXPORT NSSCertDatabase {
 
   // Get trust bits for certificate.
   TrustBits GetCertTrust(const CERTCertificate* cert, CertType type) const;
-
-  // Set trust values for certificate.
-  // Returns true on success or false on failure.
-  bool SetCertTrust(CERTCertificate* cert, CertType type, TrustBits trust_bits);
 
   // Delete certificate and associated private key (if one exists).
   // |cert| is still valid when this function returns. Returns true on

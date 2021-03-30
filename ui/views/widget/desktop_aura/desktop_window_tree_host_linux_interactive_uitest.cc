@@ -288,20 +288,19 @@ class DesktopWindowTreeHostLinuxTest
     return toplevel;
   }
 
-  void GenerateAndDispatchMouseEvent(ui::EventType event_type,
-                                     const gfx::Point& click_location,
-                                     int flags) {
+  void DispatchEvent(ui::Event* event) {
     DCHECK(host_);
-    std::unique_ptr<ui::MouseEvent> mouse_event(
-        GenerateMouseEvent(event_type, click_location, flags));
-    host_->DispatchEvent(mouse_event.get());
+    std::unique_ptr<ui::Event> owned_event(event);
+    host_->DispatchEvent(owned_event.get());
   }
 
   void GenerateAndDispatchClickMouseEvent(const gfx::Point& click_location,
                                           int flags) {
     DCHECK(host_);
-    GenerateAndDispatchMouseEvent(ui::ET_MOUSE_PRESSED, click_location, flags);
-    GenerateAndDispatchMouseEvent(ui::ET_MOUSE_RELEASED, click_location, flags);
+    DispatchEvent(
+        GenerateMouseEvent(ui::ET_MOUSE_PRESSED, click_location, flags));
+    DispatchEvent(
+        GenerateMouseEvent(ui::ET_MOUSE_RELEASED, click_location, flags));
   }
 
   ui::MouseEvent* GenerateMouseEvent(ui::EventType event_type,
@@ -319,6 +318,14 @@ class DesktopWindowTreeHostLinuxTest
     }
     return new ui::MouseEvent(event_type, click_location, click_location,
                               base::TimeTicks::Now(), flags, flag);
+  }
+
+  ui::TouchEvent* GenerateTouchEvent(ui::EventType event_type,
+                                     const gfx::Point& touch_location,
+                                     int flags) {
+    return new ui::TouchEvent(event_type, touch_location,
+                              base::TimeTicks::Now(), ui::PointerDetails(),
+                              flags);
   }
 
   HitTestWidgetDelegate* delegate_ = nullptr;
@@ -358,53 +365,69 @@ TEST_F(DesktopWindowTreeHostLinuxTest, HitTest) {
   aura::Window* window = widget->GetNativeWindow();
   auto* frame_view = delegate_->frame_view();
   for (int hittest : hittest_values) {
-    handler->Reset();
+    // Alternating between touch and mouse events.
+    for (int use_touch_event = 0; use_touch_event < 2; use_touch_event++) {
+      handler->Reset();
 
-    // Set the desired hit test result value, which will be returned, when
-    // WindowEventFilter starts to perform hit testing.
-    frame_view->set_hit_test_result(hittest);
+      // Set the desired hit test result value, which will be returned, when
+      // WindowEventFilter starts to perform hit testing.
+      frame_view->set_hit_test_result(hittest);
 
-    gfx::Rect bounds = window->GetBoundsInScreen();
+      gfx::Rect bounds = window->GetBoundsInScreen();
 
-    // The wm move/resize handler receives pointer location in the global screen
-    // coordinate, whereas event dispatcher receives event locations on a local
-    // system coordinate. Thus, add an offset of a new possible origin value of
-    // a window to the expected pointer location.
-    gfx::Point expected_pointer_location_in_px(pointer_location_in_px);
-    expected_pointer_location_in_px.Offset(bounds.x(), bounds.y());
+      // The wm move/resize handler receives pointer location in the global
+      // screen coordinate, whereas event dispatcher receives event locations on
+      // a local system coordinate. Thus, add an offset of a new possible origin
+      // value of a window to the expected pointer location.
+      gfx::Point expected_pointer_location_in_px(pointer_location_in_px);
+      expected_pointer_location_in_px.Offset(bounds.x(), bounds.y());
 
-    if (hittest == HTCAPTION) {
-      // Move the window on HTCAPTION hit test value.
-      bounds =
-          gfx::Rect(gfx::Point(bounds.x() + 2, bounds.y() + 4), bounds.size());
-      handler->set_bounds(bounds);
-    } else if (IsNonClientComponent(hittest)) {
-      // Resize the window on other than HTCAPTION non client hit test values.
-      bounds = gfx::Rect(
-          gfx::Point(bounds.origin()),
-          gfx::Size(bounds.size().width() + 5, bounds.size().height() + 10));
-      handler->set_bounds(bounds);
+      if (hittest == HTCAPTION) {
+        // Move the window on HTCAPTION hit test value.
+        bounds = gfx::Rect(gfx::Point(bounds.x() + 2, bounds.y() + 4),
+                           bounds.size());
+        handler->set_bounds(bounds);
+      } else if (IsNonClientComponent(hittest)) {
+        // Resize the window on other than HTCAPTION non client hit test values.
+        bounds = gfx::Rect(
+            gfx::Point(bounds.origin()),
+            gfx::Size(bounds.size().width() + 5, bounds.size().height() + 10));
+        handler->set_bounds(bounds);
+      }
+
+      // Send mouse/touch down event and make sure the WindowEventFilter calls
+      // the move/resize handler to start interactive move/resize with the
+      // |hittest| value we specified.
+
+      if (use_touch_event) {
+        DispatchEvent(GenerateTouchEvent(ui::ET_TOUCH_PRESSED,
+                                         pointer_location_in_px, 0));
+      } else {
+        DispatchEvent(GenerateMouseEvent(ui::ET_MOUSE_PRESSED,
+                                         pointer_location_in_px,
+                                         ui::EF_LEFT_MOUSE_BUTTON));
+      }
+
+      // The test expectation is based on the hit test component. If it is a
+      // non-client component, which results in a call to move/resize, the
+      // handler must receive the hittest value and the pointer location in
+      // global screen coordinate system. In other cases, it must not.
+      SetExpectationBasedOnHittestValue(hittest, *handler.get(),
+                                        expected_pointer_location_in_px);
+      // Make sure the bounds of the content window are correct.
+      EXPECT_EQ(window->GetBoundsInScreen().ToString(), bounds.ToString());
+
+      // Dispatch mouse/touch release event to release a mouse/touch pressed
+      // handler and be able to consume future events.
+      if (use_touch_event) {
+        DispatchEvent(GenerateTouchEvent(ui::ET_TOUCH_RELEASED,
+                                         pointer_location_in_px, 0));
+      } else {
+        DispatchEvent(GenerateMouseEvent(ui::ET_MOUSE_RELEASED,
+                                         pointer_location_in_px,
+                                         ui::EF_LEFT_MOUSE_BUTTON));
+      }
     }
-
-    // Send mouse down event and make sure the WindowEventFilter calls the
-    // move/resize handler to start interactive move/resize with the |hittest|
-    // value we specified.
-    GenerateAndDispatchMouseEvent(ui::ET_MOUSE_PRESSED, pointer_location_in_px,
-                                  ui::EF_LEFT_MOUSE_BUTTON);
-
-    // The test expectation is based on the hit test component. If it is a
-    // non-client component, which results in a call to move/resize, the
-    // handler must receive the hittest value and the pointer location in
-    // global screen coordinate system. In other cases, it must not.
-    SetExpectationBasedOnHittestValue(hittest, *handler.get(),
-                                      expected_pointer_location_in_px);
-    // Make sure the bounds of the content window are correct.
-    EXPECT_EQ(window->GetBoundsInScreen().ToString(), bounds.ToString());
-
-    // Dispatch mouse release event to release a mouse pressed handler and be
-    // able to consume future events.
-    GenerateAndDispatchMouseEvent(ui::ET_MOUSE_RELEASED, pointer_location_in_px,
-                                  ui::EF_LEFT_MOUSE_BUTTON);
   }
 }
 

@@ -6,12 +6,12 @@
 #define CHROMECAST_UI_MEDIA_OVERLAY_IMPL_H_
 
 #include <memory>
+#include <string>
 
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
-#include "base/strings/string16.h"
 #include "base/timer/timer.h"
 #include "chromecast/graphics/cast_window_manager.h"
 #include "chromecast/media/cma/pipeline/media_pipeline_observer.h"
@@ -42,7 +42,7 @@ class MediaOverlayImpl : public MediaOverlay,
 
   // MediaOverlay implementation:
   void SetController(Controller* controller) override;
-  void ShowMessage(const base::string16& message) override;
+  void ShowMessage(const std::u16string& message) override;
   void ShowVolumeBar(float volume) override;
 
   // media::MediaPipelineObserver implementation
@@ -59,7 +59,7 @@ class MediaOverlayImpl : public MediaOverlay,
 
   void HideVolumeWidget();
 
-  void ShowToast(const base::string16& text);
+  void ShowToast(const std::u16string& text);
   void HideToast();
 
   std::unique_ptr<views::Widget> CreateOverlayWidget(

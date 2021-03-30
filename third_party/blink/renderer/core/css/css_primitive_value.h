@@ -229,6 +229,10 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   // expression can be resolved into a single numeric value *without any type
   // conversion* (e.g., between px and em). Otherwise, it hits a DCHECK.
   double GetDoubleValue() const;
+
+  // Returns Double Value including infinity, -infinity, and NaN.
+  double GetDoubleValueWithoutClamping() const;
+
   float GetFloatValue() const { return GetValue<float>(); }
   int GetIntValue() const { return GetValue<int>(); }
   template <typename T>
@@ -296,7 +300,8 @@ CORE_EXPORT float CSSPrimitiveValue::ComputeLength(
     const CSSToLengthConversionData&) const;
 
 template <>
-double CSSPrimitiveValue::ComputeLength(const CSSToLengthConversionData&) const;
+CORE_EXPORT double CSSPrimitiveValue::ComputeLength(
+    const CSSToLengthConversionData&) const;
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PRIMITIVE_VALUE_H_

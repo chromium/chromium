@@ -80,24 +80,9 @@ ScriptPromise XRHitTestResult::createAnchor(ScriptState* script_state,
       space_from_mojo *
       TransformationMatrix(mojo_from_this_.ToTransform().matrix());
 
-  if (plane_id_) {
-    DVLOG(2) << __func__
-             << ": hit test result's entity is a plane, creating "
-                "plane-attached anchor";
-    return session_->CreatePlaneAnchorHelper(
-        script_state, space_from_anchor,
-        reference_space_information->native_origin, *plane_id_,
-        exception_state);
-  } else {
-    DVLOG(2) << __func__
-             << ": hit test result's entity is unavailable, creating "
-                "free-floating anchor ";
-
-    // Let's create free-floating anchor since plane is unavailable.
-    return session_->CreateAnchorHelper(
-        script_state, space_from_anchor,
-        reference_space_information->native_origin, exception_state);
-  }
+  return session_->CreateAnchorHelper(
+      script_state, space_from_anchor,
+      reference_space_information->native_origin, plane_id_, exception_state);
 }
 
 void XRHitTestResult::Trace(Visitor* visitor) const {

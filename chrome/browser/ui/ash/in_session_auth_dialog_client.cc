@@ -11,10 +11,10 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chromeos/login/quick_unlock/fingerprint_storage.h"
-#include "chrome/browser/chromeos/login/quick_unlock/pin_backend.h"
-#include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_factory.h"
-#include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_storage.h"
+#include "chrome/browser/ash/login/quick_unlock/fingerprint_storage.h"
+#include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
+#include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
+#include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -32,10 +32,8 @@ using chromeos::UserContext;
 
 namespace {
 
-// TODO(b/156258540): Replace with correct URL once the article is uploaded.
-// This URL is an irrelevant article just for validating functionality.
 const char kInSessionAuthHelpPageUrl[] =
-    "https://support.google.com/chrome/?p=settings_sign_in";
+    "https://support.google.com/chromebook?p=WebAuthn";
 
 InSessionAuthDialogClient* g_auth_dialog_client_instance = nullptr;
 
@@ -195,8 +193,7 @@ void InSessionAuthDialogClient::AuthenticateUserWithFingerprint(
   extended_authenticator_->AuthenticateWithFingerprint(
       user_context,
       base::BindOnce(&InSessionAuthDialogClient::OnFingerprintAuthDone,
-                     weak_factory_.GetWeakPtr(),
-                     base::Passed(std::move(callback))));
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void InSessionAuthDialogClient::OnFingerprintAuthDone(

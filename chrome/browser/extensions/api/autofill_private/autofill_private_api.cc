@@ -53,7 +53,7 @@ constexpr auto kUserVerified =
 void RemoveDuplicatePhoneNumberAtIndex(size_t index,
                                        const std::string& country_code,
                                        base::ListValue* list) {
-  base::string16 new_value;
+  std::u16string new_value;
   if (!list->GetString(index, &new_value)) {
     NOTREACHED() << "List should have a value at index " << index;
     return;
@@ -65,7 +65,7 @@ void RemoveDuplicatePhoneNumberAtIndex(size_t index,
     if (i == index)
       continue;
 
-    base::string16 existing_value;
+    std::u16string existing_value;
     if (!list->GetString(i, &existing_value)) {
       NOTREACHED() << "List should have a value at index " << i;
       continue;
@@ -133,6 +133,12 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveAddressFunction::Run() {
     profile.SetInfoWithVerificationStatus(
         autofill::AutofillType(autofill::NAME_FULL),
         base::UTF8ToUTF16(full_name), g_browser_process->GetApplicationLocale(),
+        kUserVerified);
+  }
+
+  if (address->honorific) {
+    profile.SetRawInfoWithVerificationStatus(
+        autofill::NAME_HONORIFIC_PREFIX, base::UTF8ToUTF16(*address->honorific),
         kUserVerified);
   }
 
@@ -208,6 +214,7 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveAddressFunction::Run() {
     profile.set_origin(kSettingsOrigin);
     personal_data->UpdateProfile(profile);
   } else {
+    profile.FinalizeAfterImport();
     personal_data->AddProfile(profile);
   }
 

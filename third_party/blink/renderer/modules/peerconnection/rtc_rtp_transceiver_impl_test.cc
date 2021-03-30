@@ -146,7 +146,7 @@ class RTCRtpTransceiverImplTest : public ::testing::Test {
         blink::ToBaseOptional(webrtc_transceiver->mid()),
         webrtc_transceiver->stopped(), webrtc_transceiver->direction(),
         blink::ToBaseOptional(webrtc_transceiver->current_direction()),
-        blink::ToBaseOptional(webrtc_transceiver->fired_direction()));
+        blink::ToBaseOptional(webrtc_transceiver->fired_direction()), {});
   }
 
  protected:

@@ -10,6 +10,7 @@
 #include "ash/focus_cycler.h"
 #include "ash/metrics/pip_uma.h"
 #include "ash/public/cpp/app_types.h"
+#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_animation_types.h"
 #include "ash/public/cpp/window_properties.h"
@@ -17,6 +18,7 @@
 #include "ash/shell.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 #include "ash/wm/default_state.h"
+#include "ash/wm/full_restore/full_restore_controller.h"
 #include "ash/wm/pip/pip_positioner.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_animations.h"
@@ -173,6 +175,16 @@ void ReportAshPipAndroidPipUseTime(base::TimeDelta duration) {
   UMA_HISTOGRAM_CUSTOM_TIMES(kAshPipAndroidPipUseTimeHistogramName, duration,
                              base::TimeDelta::FromSeconds(1),
                              base::TimeDelta::FromHours(10), 50);
+}
+
+// Notifies the full restore controller to write to file.
+void SaveWindowForFullRestore(WindowState* window_state) {
+  if (!features::IsFullRestoreEnabled())
+    return;
+
+  auto* controller = FullRestoreController::Get();
+  if (controller)
+    controller->SaveWindow(window_state);
 }
 
 }  // namespace
@@ -524,6 +536,7 @@ void WindowState::OnCompleteDrag(const gfx::PointF& location) {
   DCHECK(drag_details_);
   if (delegate_)
     delegate_->OnDragFinished(/*canceled=*/false, location);
+  SaveWindowForFullRestore(this);
 }
 
 void WindowState::OnRevertDrag(const gfx::PointF& location) {
@@ -668,6 +681,7 @@ void WindowState::NotifyPostStateTypeChange(
   for (auto& observer : observer_list_)
     observer.OnPostWindowStateTypeChange(this, old_window_state_type);
   OnPostPipStateChange(old_window_state_type);
+  SaveWindowForFullRestore(this);
 }
 
 void WindowState::OnPostPipStateChange(WindowStateType old_window_state_type) {
@@ -821,7 +835,7 @@ void WindowState::UpdatePipBounds() {
 }
 
 void WindowState::CollectPipEnterExitMetrics(bool enter) {
-  const bool is_arc = window_util::IsArcWindow(window());
+  const bool is_arc = IsArcWindow(window());
   if (enter) {
     pip_start_time_ = base::TimeTicks::Now();
 
@@ -910,6 +924,17 @@ void WindowState::OnWindowPropertyChanged(aura::Window* window,
     }
     return;
   }
+  if (key == aura::client::kWindowWorkspaceKey ||
+      key == aura::client::kVisibleOnAllWorkspacesKey) {
+    // Save the window for full restore purposes unless
+    // |ignore_property_change_| is true. Note that moving windows across
+    // displays will also trigger a kWindowWorkspaceKey change, even if the
+    // value stays the same, so we do not need to save the window when it
+    // changes root windows (OnWindowAddedToRootWindow).
+    if (!ignore_property_change_)
+      SaveWindowForFullRestore(this);
+    return;
+  }
 
   // The shelf visibility should be updated if kHideShelfWhenFullscreenKey or
   // kImmersiveIsActive change - these property affect the shelf behavior, and
@@ -957,6 +982,9 @@ void WindowState::OnWindowBoundsChanged(aura::Window* window,
       window_->GetProperty(ash::kWindowManagerManagesOpacityKey)) {
     window_->SetOpaqueRegionsForOcclusion({gfx::Rect(new_bounds.size())});
   }
+
+  if (reason != ui::PropertyChangeReason::FROM_ANIMATION && !is_dragged())
+    SaveWindowForFullRestore(this);
 }
 
 }  // namespace ash

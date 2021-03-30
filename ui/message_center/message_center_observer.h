@@ -9,7 +9,6 @@
 
 #include "base/observer_list_types.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/message_center_types.h"
 
@@ -42,7 +41,7 @@ class MESSAGE_CENTER_EXPORT MessageCenterObserver
   virtual void OnNotificationClicked(
       const std::string& notification_id,
       const base::Optional<int>& button_index,
-      const base::Optional<base::string16>& reply) {}
+      const base::Optional<std::u16string>& reply) {}
 
   // Called when notification settings button is clicked. The |handled| argument
   // indicates whether the notification delegate already handled the operation.

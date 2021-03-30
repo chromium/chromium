@@ -64,10 +64,8 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
              State state,
              const gfx::Rect& rect,
              const ExtraParams& extra,
-             ColorScheme color_scheme) const override;
-  SkColor GetSystemColor(
-      ColorId color_id,
-      ColorScheme color_scheme = ColorScheme::kDefault) const override;
+             ColorScheme color_scheme,
+             const base::Optional<SkColor>& accent_color) const override;
   bool SupportsNinePatch(Part part) const override;
   gfx::Size GetNinePatchCanvasSize(Part part) const override;
   gfx::Rect GetNinePatchAperture(Part part) const override;
@@ -80,7 +78,12 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
   friend class NativeTheme;
   friend class base::NoDestructor<NativeThemeWin>;
 
+  // NativeTheme:
   void ConfigureWebInstance() override;
+  bool AllowColorPipelineRedirection(ColorScheme color_scheme) const override;
+  SkColor GetSystemColorDeprecated(ColorId color_id,
+                                   ColorScheme color_scheme,
+                                   bool apply_processing) const override;
 
   NativeThemeWin(bool configure_web_instance, bool should_only_use_dark_colors);
   ~NativeThemeWin() override;
@@ -89,7 +92,7 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
   bool IsUsingHighContrastThemeInternal() const;
   void CloseHandlesInternal();
 
-  // gfx::SysColorChangeListener implementation:
+  // gfx::SysColorChangeListener:
   void OnSysColorChange() override;
 
   // Update the locally cached set of system colors.

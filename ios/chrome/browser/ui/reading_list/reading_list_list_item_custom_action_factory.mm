@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item_accessibility_delegate.h"
+#import "ios/chrome/browser/ui/reading_list/reading_list_list_item_factory_delegate.h"
 #import "ios/chrome/browser/ui/util/pasteboard_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -72,28 +73,37 @@
                 item:item];
   }
 
-  ReadingListCustomAction* openInNewTabAction = [[ReadingListCustomAction alloc]
-      initWithName:l10n_util::GetNSString(
-                       IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB)
-            target:self
-          selector:@selector(openInNewTab:)
-              item:item];
-  ReadingListCustomAction* openInNewIncognitoTabAction =
-      [[ReadingListCustomAction alloc]
-          initWithName:l10n_util::GetNSString(
-                           IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWINCOGNITOTAB)
-                target:self
-              selector:@selector(openInNewIncognitoTab:)
-                  item:item];
+  NSMutableArray* customActions =
+      [NSMutableArray arrayWithObjects:toggleReadStatus, nil];
+
+  if (![self.incognitoDelegate isIncognitoForced]) {
+    ReadingListCustomAction* openInNewTabAction =
+        [[ReadingListCustomAction alloc]
+            initWithName:l10n_util::GetNSString(
+                             IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB)
+                  target:self
+                selector:@selector(openInNewTab:)
+                    item:item];
+    [customActions addObject:openInNewTabAction];
+  }
+
+  if ([self.incognitoDelegate isIncognitoAvailable]) {
+    ReadingListCustomAction* openInNewIncognitoTabAction =
+        [[ReadingListCustomAction alloc]
+            initWithName:l10n_util::GetNSString(
+                             IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWINCOGNITOTAB)
+                  target:self
+                selector:@selector(openInNewIncognitoTab:)
+                    item:item];
+    [customActions addObject:openInNewIncognitoTabAction];
+  }
+
   ReadingListCustomAction* copyURLAction = [[ReadingListCustomAction alloc]
       initWithName:l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_COPY)
             target:self
           selector:@selector(copyURL:)
               item:item];
-
-  NSMutableArray* customActions = [NSMutableArray
-      arrayWithObjects:toggleReadStatus, openInNewTabAction,
-                       openInNewIncognitoTabAction, copyURLAction, nil];
+  [customActions addObject:copyURLAction];
 
   if (item.distillationState == ReadingListUIDistillationStatusSuccess) {
     // Add the possibility to open offline version only if the entry is
@@ -123,11 +133,17 @@
 }
 
 - (BOOL)openInNewTab:(ReadingListCustomAction*)action {
+  if ([self.incognitoDelegate isIncognitoForced])
+    return YES;
+
   [self.accessibilityDelegate openItemInNewTab:action.item];
   return YES;
 }
 
 - (BOOL)openInNewIncognitoTab:(ReadingListCustomAction*)action {
+  if (![self.incognitoDelegate isIncognitoAvailable])
+    return YES;
+
   [self.accessibilityDelegate openItemInNewIncognitoTab:action.item];
   return YES;
 }

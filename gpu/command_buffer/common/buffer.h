@@ -87,20 +87,20 @@ class GPU_EXPORT Buffer : public base::RefCountedThreadSafe<Buffer> {
   DISALLOW_COPY_AND_ASSIGN(Buffer);
 };
 
-static inline std::unique_ptr<BufferBacking> MakeBackingFromSharedMemory(
+inline std::unique_ptr<BufferBacking> MakeBackingFromSharedMemory(
     base::UnsafeSharedMemoryRegion shared_memory_region,
     base::WritableSharedMemoryMapping shared_memory_mapping) {
   return std::make_unique<SharedMemoryBufferBacking>(
       std::move(shared_memory_region), std::move(shared_memory_mapping));
 }
-static inline scoped_refptr<Buffer> MakeBufferFromSharedMemory(
+inline scoped_refptr<Buffer> MakeBufferFromSharedMemory(
     base::UnsafeSharedMemoryRegion shared_memory_region,
     base::WritableSharedMemoryMapping shared_memory_mapping) {
   return base::MakeRefCounted<Buffer>(MakeBackingFromSharedMemory(
       std::move(shared_memory_region), std::move(shared_memory_mapping)));
 }
 
-static inline scoped_refptr<Buffer> MakeMemoryBuffer(uint32_t size) {
+inline scoped_refptr<Buffer> MakeMemoryBuffer(uint32_t size) {
   return base::MakeRefCounted<Buffer>(
       std::make_unique<MemoryBufferBacking>(size));
 }

@@ -53,7 +53,7 @@ enum SpeechRecognitionState {
 class VoiceResultDelegate {
  public:
   virtual ~VoiceResultDelegate() {}
-  virtual void OnVoiceResults(const base::string16& result) = 0;
+  virtual void OnVoiceResults(const std::u16string& result) = 0;
 };
 
 class BrowserUiInterface;
@@ -66,7 +66,7 @@ class IOBrowserUIInterface {
   // Receive a speech recognition result. |is_final| indicated whether the
   // result is an intermediate or final result. If |is_final| is true, then the
   // recognizer stops and no more results will be returned.
-  virtual void OnSpeechResult(const base::string16& query, bool is_final) = 0;
+  virtual void OnSpeechResult(const std::u16string& query, bool is_final) = 0;
 
   // Invoked regularly to indicate the average sound volume.
   virtual void OnSpeechSoundLevelChanged(float level) = 0;
@@ -100,7 +100,7 @@ class VR_BASE_EXPORT SpeechRecognizer : public IOBrowserUIInterface {
   void Stop();
 
   // Overridden from vr::IOBrowserUIInterface:
-  void OnSpeechResult(const base::string16& query, bool is_final) override;
+  void OnSpeechResult(const std::u16string& query, bool is_final) override;
   void OnSpeechSoundLevelChanged(float level) override;
   void OnSpeechRecognitionStateChanged(
       vr::SpeechRecognitionState new_state) override;
@@ -122,7 +122,7 @@ class VR_BASE_EXPORT SpeechRecognizer : public IOBrowserUIInterface {
 
   const std::string accept_language_;
   std::string locale_;
-  base::string16 final_result_;
+  std::u16string final_result_;
 
   // Note that this object is destroyed on IO thread.
   std::unique_ptr<SpeechRecognizerOnIO> speech_recognizer_on_io_;

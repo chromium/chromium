@@ -12,7 +12,7 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/renderer/subresource_redirect/subresource_redirect_params.h"
-#include "components/data_reduction_proxy/proto/robots_rules.pb.h"
+#include "components/subresource_redirect/proto/robots_rules.pb.h"
 
 namespace subresource_redirect {
 
@@ -30,7 +30,7 @@ bool IsMatchingRobotsRule(const std::string& path, const std::string& pattern) {
   }
 
   size_t numpos = 1;
-  size_t pos[path.length() + 1];
+  std::vector<size_t> pos(path.length() + 1, 0);
 
   // The pos[] array holds a sorted list of indexes of 'path', with length
   // 'numpos'.  At the start and end of each iteration of the main loop below,
@@ -39,7 +39,6 @@ bool IsMatchingRobotsRule(const std::string& path, const std::string& pattern) {
   // return false. If we reach the end of 'pattern' with at least one element
   // in pos[], return true.
 
-  pos[0] = 0;
   for (auto pat = pattern.begin(); pat != pattern.end(); ++pat) {
     if (*pat == '$' && pat + 1 == pattern.end()) {
       return (pos[numpos - 1] == path.length());
@@ -82,12 +81,13 @@ bool RobotsRulesParser::RobotsRule::Match(const std::string& path) const {
   return IsMatchingRobotsRule(path, pattern_);
 }
 
-RobotsRulesParser::RobotsRulesParser() {
+RobotsRulesParser::RobotsRulesParser(
+    const base::TimeDelta& rules_receive_timeout) {
   // Using base::Unretained(this) is safe here, since the timer
   // |rules_receive_timeout_timer_| is owned by |this| and destroyed before
   // |this|.
   rules_receive_timeout_timer_.Start(
-      FROM_HERE, GetRobotsRulesReceiveTimeout(),
+      FROM_HERE, rules_receive_timeout,
       base::BindOnce(&RobotsRulesParser::OnRulesReceiveTimeout,
                      base::Unretained(this)));
   rules_receive_state_ = RulesReceiveState::kTimerRunning;
@@ -126,21 +126,27 @@ void RobotsRulesParser::UpdateRobotsRules(
   }
 
   // Respond to the pending requests, even if robots proto parse failed.
-  for (auto& request : pending_check_requests_) {
-    std::move(request.first).Run(CheckRobotsRulesImmediate(request.second));
+  for (auto& requests : pending_check_requests_) {
+    for (auto& request : requests.second) {
+      std::move(request.first).Run(CheckRobotsRulesImmediate(request.second));
+    }
   }
   pending_check_requests_.clear();
 }
 
 base::Optional<RobotsRulesParser::CheckResult>
-RobotsRulesParser::CheckRobotsRules(const GURL& url,
+RobotsRulesParser::CheckRobotsRules(int routing_id,
+                                    const GURL& url,
                                     CheckResultCallback callback) {
   std::string path_with_query = url.path();
   if (url.has_query())
     base::StrAppend(&path_with_query, {"?", url.query()});
   if (rules_receive_state_ == RulesReceiveState::kTimerRunning) {
     DCHECK(rules_receive_timeout_timer_.IsRunning());
-    pending_check_requests_.emplace_back(
+    auto it = pending_check_requests_.insert(std::make_pair(
+        routing_id,
+        std::vector<std::pair<CheckResultCallback, std::string>>()));
+    it.first->second.emplace_back(
         std::make_pair(std::move(callback), path_with_query));
     return base::nullopt;
   }
@@ -172,11 +178,24 @@ RobotsRulesParser::CheckResult RobotsRulesParser::CheckRobotsRulesImmediate(
 void RobotsRulesParser::OnRulesReceiveTimeout() {
   DCHECK(!rules_receive_timeout_timer_.IsRunning());
   rules_receive_state_ = RulesReceiveState::kTimeout;
-  for (auto& request : pending_check_requests_)
-    std::move(request.first).Run(CheckResult::kTimedout);
+  for (auto& requests : pending_check_requests_) {
+    for (auto& request : requests.second) {
+      std::move(request.first).Run(CheckResult::kTimedout);
+    }
+  }
   pending_check_requests_.clear();
   RecordRobotsRulesReceiveResultHistogram(
       SubresourceRedirectRobotsRulesReceiveResult::kTimeout);
+}
+
+void RobotsRulesParser::InvalidatePendingRequests(int routing_id) {
+  auto it = pending_check_requests_.find(routing_id);
+  if (it == pending_check_requests_.end())
+    return;
+  for (auto& request : it->second) {
+    std::move(request.first).Run(CheckResult::kInvalidated);
+  }
+  pending_check_requests_.erase(it);
 }
 
 }  // namespace subresource_redirect

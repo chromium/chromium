@@ -15,7 +15,6 @@
 
 #include "base/macros.h"
 #include "net/base/request_priority.h"
-#include "net/third_party/quiche/src/common/platform/api/quiche_string_piece.h"
 #include "net/third_party/quiche/src/quic/core/http/http_encoder.h"
 #include "net/third_party/quiche/src/quic/core/qpack/qpack_encoder.h"
 #include "net/third_party/quiche/src/quic/core/quic_clock.h"
@@ -107,6 +106,15 @@ class QuicTestPacketMaker {
       quic::QuicStreamId data_stream_id,
       absl::string_view data);
 
+  std::unique_ptr<quic::QuicReceivedPacket> MakeRetransmissionRstAndDataPacket(
+      const std::vector<uint64_t>& original_packet_numbers,
+      uint64_t num,
+      bool include_version,
+      quic::QuicStreamId rst_stream_id,
+      quic::QuicRstStreamErrorCode rst_error_code,
+      quic::QuicStreamId data_stream_id,
+      absl::string_view data);
+
   std::unique_ptr<quic::QuicReceivedPacket> MakeDataAndRstPacket(
       uint64_t num,
       bool include_version,
@@ -163,6 +171,17 @@ class QuicTestPacketMaker {
       bool fin,
       absl::string_view data);
 
+  std::unique_ptr<quic::QuicReceivedPacket> MakeAckDataAndRst(
+      uint64_t num,
+      bool include_version,
+      quic::QuicStreamId stream_id,
+      quic::QuicRstStreamErrorCode error_code,
+      uint64_t largest_received,
+      uint64_t smallest_received,
+      quic::QuicStreamId data_id,
+      bool fin,
+      absl::string_view data);
+
   std::unique_ptr<quic::QuicReceivedPacket> MakeAckRstAndDataPacket(
       uint64_t num,
       bool include_version,
@@ -204,6 +223,26 @@ class QuicTestPacketMaker {
       uint64_t smallest_received,
       quic::QuicErrorCode quic_error,
       const std::string& quic_error_details);
+
+  std::unique_ptr<quic::QuicReceivedPacket>
+  MakeDataRstAckAndConnectionClosePacket(
+      uint64_t num,
+      bool include_version,
+      quic::QuicStreamId data_stream_id,
+      absl::string_view data,
+      quic::QuicStreamId rst_stream_id,
+      quic::QuicRstStreamErrorCode error_code,
+      uint64_t largest_received,
+      uint64_t smallest_received,
+      quic::QuicErrorCode quic_error,
+      const std::string& quic_error_details,
+      uint64_t frame_type);
+
+  std::unique_ptr<quic::QuicReceivedPacket> MakeStopSendingPacket(
+      uint64_t num,
+      bool include_version,
+      quic::QuicStreamId stream_id,
+      quic::QuicRstStreamErrorCode error_code);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeAckAndConnectionClosePacket(
       uint64_t num,
@@ -252,6 +291,13 @@ class QuicTestPacketMaker {
       bool fin,
       absl::string_view data);
 
+  std::unique_ptr<quic::QuicReceivedPacket> MakeAckAndRetransmissionPacket(
+      uint64_t packet_number,
+      uint64_t first_received,
+      uint64_t largest_received,
+      uint64_t smallest_received,
+      const std::vector<uint64_t>& original_packet_numbers);
+
   std::unique_ptr<quic::QuicReceivedPacket>
   MakeRequestHeadersAndMultipleDataFramesPacket(
       uint64_t packet_number,
@@ -267,6 +313,18 @@ class QuicTestPacketMaker {
   // If |spdy_headers_frame_length| is non-null, it will be set to the size of
   // the SPDY headers frame created for this packet.
   std::unique_ptr<quic::QuicReceivedPacket> MakeRequestHeadersPacket(
+      uint64_t packet_number,
+      quic::QuicStreamId stream_id,
+      bool should_include_version,
+      bool fin,
+      spdy::SpdyPriority priority,
+      spdy::Http2HeaderBlock headers,
+      quic::QuicStreamId parent_stream_id,
+      size_t* spdy_headers_frame_length);
+
+  std::unique_ptr<quic::QuicReceivedPacket>
+  MakeRetransmissionAndRequestHeadersPacket(
+      const std::vector<uint64_t>& original_packet_numbers,
       uint64_t packet_number,
       quic::QuicStreamId stream_id,
       bool should_include_version,
@@ -344,6 +402,11 @@ class QuicTestPacketMaker {
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeRetransmissionPacket(
       uint64_t original_packet_number,
+      uint64_t new_packet_number,
+      bool should_include_version);
+
+  std::unique_ptr<quic::QuicReceivedPacket> MakeCombinedRetransmissionPacket(
+      const std::vector<uint64_t>& original_packet_numbers,
       uint64_t new_packet_number,
       bool should_include_version);
 

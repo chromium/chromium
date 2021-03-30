@@ -395,7 +395,7 @@ TEST(VideoLayerImplTest, NativeYUVFrameGeneratesYUVQuad) {
           gfx::Size(10, 10), gfx::Rect(10, 10), gfx::Size(10, 10),
           base::TimeDelta());
   ASSERT_TRUE(video_frame);
-  video_frame->metadata()->allow_overlay = true;
+  video_frame->metadata().allow_overlay = true;
   FakeVideoFrameProvider provider;
   provider.set_frame(video_frame);
 
@@ -438,7 +438,7 @@ TEST(VideoLayerImplTest, NativeARGBFrameGeneratesTextureQuad) {
           media::PIXEL_FORMAT_ARGB, mailbox_holders, base::DoNothing(),
           resource_size, gfx::Rect(10, 10), resource_size, base::TimeDelta());
   ASSERT_TRUE(video_frame);
-  video_frame->metadata()->allow_overlay = true;
+  video_frame->metadata().allow_overlay = true;
   FakeVideoFrameProvider provider;
   provider.set_frame(video_frame);
 

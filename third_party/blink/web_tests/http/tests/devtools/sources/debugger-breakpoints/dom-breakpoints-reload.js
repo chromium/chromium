@@ -4,14 +4,13 @@
 
 (async function() {
   TestRunner.addResult(`Tests DOM breakpoints.`);
-  await TestRunner.loadModule('elements_test_runner');
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadModule('panels/browser_debugger'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.showPanel('elements');
   await TestRunner.navigatePromise('resources/dom-breakpoints.html');
 
-  var pane =
-      self.runtime.sharedInstance(BrowserDebugger.DOMBreakpointsSidebarPane);
+  var pane = BrowserDebugger.DOMBreakpointsSidebarPane.instance();
   var rootElement;
   var outerElement;
   var authorShadowRoot;

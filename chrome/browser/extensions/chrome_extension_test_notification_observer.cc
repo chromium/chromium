@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <chrome/browser/extensions/chrome_extension_test_notification_observer.h>
+#include "chrome/browser/extensions/chrome_extension_test_notification_observer.h"
+
 #include "base/bind.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -69,9 +70,9 @@ ChromeExtensionTestNotificationObserver::GetBrowserContext() {
 bool ChromeExtensionTestNotificationObserver::
     WaitForPageActionVisibilityChangeTo(int count) {
   DCHECK(browser_);
-  ScopedObserver<ExtensionActionAPI, ExtensionActionAPI::Observer> observer(
-      this);
-  observer.Add(ExtensionActionAPI::Get(GetBrowserContext()));
+  base::ScopedObservation<ExtensionActionAPI, ExtensionActionAPI::Observer>
+      observer(this);
+  observer.Observe(ExtensionActionAPI::Get(GetBrowserContext()));
   WaitForCondition(base::BindRepeating(&HasPageActionVisibilityReachedTarget,
                                        browser_, count),
                    nullptr);
@@ -85,7 +86,7 @@ bool ChromeExtensionTestNotificationObserver::WaitForExtensionViewsToLoad() {
 
   ProcessManager* manager = ProcessManager::Get(GetBrowserContext());
   NotificationSet notification_set;
-  notification_set.Add(content::NOTIFICATION_WEB_CONTENTS_DESTROYED);
+  notification_set.AddWebContentsDestroyed(manager);
   notification_set.Add(content::NOTIFICATION_LOAD_STOP);
   notification_set.AddExtensionFrameUnregistration(manager);
   WaitForCondition(

@@ -13,6 +13,8 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/scoped_observation.h"
+#include "extensions/browser/api/automation_internal/automation_event_router.h"
 #include "ui/accessibility/ax_action_handler.h"
 #include "ui/accessibility/ax_tree_serializer.h"
 #include "ui/views/accessibility/ax_aura_obj_cache.h"
@@ -24,9 +26,9 @@ template <typename T>
 class NoDestructor;
 }  // namespace base
 
-namespace ui {
-class AXEventBundleSink;
-}  // namespace ui
+namespace extensions {
+class AutomationEventRouterInterface;
+}  // namespace extensions
 
 namespace views {
 class AccessibilityAlertWindow;
@@ -34,13 +36,13 @@ class AXAuraObjWrapper;
 class View;
 }  // namespace views
 
-using AuraAXTreeSerializer = ui::
-    AXTreeSerializer<views::AXAuraObjWrapper*, ui::AXNodeData, ui::AXTreeData>;
+using AuraAXTreeSerializer = ui::AXTreeSerializer<views::AXAuraObjWrapper*>;
 
 // Manages a tree of automation nodes backed by aura constructs.
 class AutomationManagerAura : public ui::AXActionHandler,
                               public views::AXAuraObjCache::Delegate,
-                              public views::AXEventObserver {
+                              public views::AXEventObserver,
+                              public extensions::AutomationEventRouterObserver {
  public:
   // Get the single instance of this class.
   static AutomationManagerAura* GetInstance();
@@ -60,6 +62,8 @@ class AutomationManagerAura : public ui::AXActionHandler,
   // AXActionHandlerBase implementation.
   void PerformAction(const ui::AXActionData& data) override;
 
+  void SetA11yOverrideWindow(aura::Window* a11y_override_window);
+
   // views::AXAuraObjCache::Delegate implementation.
   void OnChildWindowRemoved(views::AXAuraObjWrapper* parent) override;
   void OnEvent(views::AXAuraObjWrapper* aura_obj,
@@ -68,14 +72,22 @@ class AutomationManagerAura : public ui::AXActionHandler,
   // views::AXEventObserver:
   void OnViewEvent(views::View* view, ax::mojom::Event event_type) override;
 
-  void set_event_bundle_sink(ui::AXEventBundleSink* sink) {
-    event_bundle_sink_ = sink;
+  // AutomationEventRouterObserver:
+  void AllAutomationExtensionsGone() override;
+
+  void set_automation_event_router_interface(
+      extensions::AutomationEventRouterInterface* router) {
+    automation_event_router_interface_ = router;
   }
 
   void set_ax_aura_obj_cache_for_testing(
       std::unique_ptr<views::AXAuraObjCache> cache) {
     cache_ = std::move(cache);
   }
+
+  // TODO(https://crbug.com/1185764): Figure out an appropriate design for
+  // Lacros a11y that does not require exposing the root tree id.
+  ui::AXTreeID get_root_tree_id_deprecated() { return tree_->tree_id(); }
 
  private:
   friend class base::NoDestructor<AutomationManagerAura>;
@@ -128,13 +140,18 @@ class AutomationManagerAura : public ui::AXActionHandler,
 
   // The handler for AXEvents (e.g. the extensions subsystem in production, or
   // a fake for tests).
-  ui::AXEventBundleSink* event_bundle_sink_ = nullptr;
+  extensions::AutomationEventRouterInterface*
+      automation_event_router_interface_ = nullptr;
 
   std::unique_ptr<views::AccessibilityAlertWindow> alert_window_;
 
   std::unique_ptr<views::AXAuraObjCache> cache_;
 
   bool is_performing_action_ = false;
+
+  base::ScopedObservation<extensions::AutomationEventRouter,
+                          extensions::AutomationEventRouterObserver>
+      automation_event_router_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AutomationManagerAura);
 };

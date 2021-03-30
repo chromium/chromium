@@ -128,7 +128,7 @@ ExtensionIndicatorIcon::ExtensionIndicatorIcon(
   // Get the icon image and tool tip for the status icon. The extension name is
   // used as the tool tip.
   gfx::ImageSkia icon_skia = manifest_icon_.image().AsImageSkia();
-  base::string16 tool_tip = base::UTF8ToUTF16(extension_->name());
+  std::u16string tool_tip = base::UTF8ToUTF16(extension_->name());
 
   status_icon_ = status_tray_->CreateStatusIcon(StatusTray::OTHER_ICON,
                                                 icon_skia, tool_tip);
@@ -142,7 +142,7 @@ SystemIndicatorManager::SystemIndicator::~SystemIndicator() = default;
 SystemIndicatorManager::SystemIndicatorManager(Profile* profile,
                                                StatusTray* status_tray)
     : profile_(profile), status_tray_(status_tray) {
-  extension_registry_observer_.Add(ExtensionRegistry::Get(profile_));
+  extension_registry_observation_.Observe(ExtensionRegistry::Get(profile_));
 }
 
 SystemIndicatorManager::~SystemIndicatorManager() {

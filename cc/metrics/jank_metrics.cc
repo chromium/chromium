@@ -246,6 +246,14 @@ void JankMetrics::ReportJankMetrics(int frames_expected) {
           GetMaxStaleHistogramName(tracker_type_), kStaleHistogramMin,
           kStaleHistogramMax, kStaleHistogramBucketCount,
           base::HistogramBase::kUmaTargetedHistogramFlag));
+
+  // Reset counts to avoid duplicated reporting.
+  Reset();
+}
+
+void JankMetrics::Reset() {
+  jank_count_ = 0;
+  max_staleness_ = {};
 }
 
 void JankMetrics::Merge(std::unique_ptr<JankMetrics> jank_metrics) {

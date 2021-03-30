@@ -68,7 +68,7 @@ class ScreenManager {
   void RemoveDisplayControllers(const CrtcsWithDrmList& controllers_to_remove);
 
   // Enables/Disables the display controller based on if a mode exists.
-  base::flat_map<int64_t, bool> ConfigureDisplayControllers(
+  bool ConfigureDisplayControllers(
       const ControllerConfigsList& controllers_params);
 
   // Returns a reference to the display controller configured to display within
@@ -98,6 +98,9 @@ class ScreenManager {
       std::vector<std::unique_ptr<HardwareDisplayController>>;
   using WidgetToWindowMap =
       std::unordered_map<gfx::AcceleratedWidget, std::unique_ptr<DrmWindow>>;
+  using CrtcPreferredModifierMap = base::flat_map<
+      uint32_t /*crtc_is*/,
+      std::pair<bool /*modifiers_list.empty()*/, uint64_t /*picked_modifier*/>>;
 
   // Returns an iterator into |controllers_| for the controller identified by
   // (|crtc|, |connector|).
@@ -105,13 +108,18 @@ class ScreenManager {
       const scoped_refptr<DrmDevice>& drm,
       uint32_t crtc);
 
-  base::flat_map<int64_t, bool> TestAndModeset(
-      const ControllerConfigsList& controllers_params);
-
   bool TestModeset(const ControllerConfigsList& controllers_params);
-
-  base::flat_map<int64_t, bool> Modeset(
+  bool TestAndSetPreferredModifiers(
       const ControllerConfigsList& controllers_params);
+  bool TestAndSetLinearModifier(
+      const ControllerConfigsList& controllers_params);
+  // Setting the Preferred modifiers that passed from one of the Modeset Test
+  // functions. The preferred modifiers are used in Modeset.
+  void SetPreferredModifiers(
+      const ControllerConfigsList& controllers_params,
+      const CrtcPreferredModifierMap& crtcs_preferred_modifier);
+
+  bool Modeset(const ControllerConfigsList& controllers_params);
 
   // Configures a display controller to be enabled. The display controller is
   // identified by (|crtc|, |connector|) and the controller is to be modeset
@@ -135,12 +143,13 @@ class ScreenManager {
       const scoped_refptr<DrmDevice>& drm,
       uint32_t crtc);
 
-  void UpdateControllerStateAfterModeset(const ControllerConfigParams& config,
+  void UpdateControllerStateAfterModeset(const scoped_refptr<DrmDevice>& drm,
                                          const CommitRequest& commit_request,
                                          bool did_succeed);
 
   void HandleMirrorIfExists(
-      const ControllerConfigParams& config,
+      const scoped_refptr<DrmDevice>& drm,
+      const CrtcCommitRequest& crtc_request,
       const HardwareDisplayControllers::iterator& controller);
 
   // Returns an iterator into |controllers_| for the controller located at

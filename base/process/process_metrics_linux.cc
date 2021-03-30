@@ -26,6 +26,7 @@
 #include "base/process/internal_linux.h"
 #include "base/process/process_metrics_iocounters.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
@@ -555,7 +556,7 @@ bool ParseProcMeminfo(StringPiece meminfo_data, SystemMemoryInfoKB* meminfo) {
     // tokens.
     if (tokens.size() <= 1) {
       DLOG(WARNING) << "meminfo: tokens: " << tokens.size()
-                    << " malformed line: " << line.as_string();
+                    << " malformed line: " << line;
       continue;
     }
 
@@ -658,10 +659,9 @@ bool ParseProcVmstat(StringPiece vmstat_data, VmStatInfo* vmstat) {
 }
 
 bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {
-  // Synchronously reading files in /proc is safe.
-  ThreadRestrictions::ScopedAllowIO allow_io;
-
   // Used memory is: total - free - buffers - caches
+  // ReadFileToStringNonBlocking doesn't require ScopedAllowIO, and reading
+  // /proc/meminfo is fast. See crbug.com/1160988 for details.
   FilePath meminfo_file("/proc/meminfo");
   std::string meminfo_data;
   if (!ReadFileToStringNonBlocking(meminfo_file, &meminfo_data)) {
@@ -811,7 +811,7 @@ bool GetSystemDiskInfo(SystemDiskInfo* diskinfo) {
         line, kWhitespaceASCII, TRIM_WHITESPACE, SPLIT_WANT_NONEMPTY);
 
     // Fields may have overflowed and reset to zero.
-    if (!IsValidDiskName(disk_fields[kDiskDriveName].as_string()))
+    if (!IsValidDiskName(disk_fields[kDiskDriveName]))
       continue;
 
     StringToUint64(disk_fields[kDiskReads], &reads);
@@ -887,7 +887,7 @@ bool ParseZramMmStat(StringPiece mm_stat_data, SwapInfo* swap_info) {
       mm_stat_data, kWhitespaceASCII, TRIM_WHITESPACE, SPLIT_WANT_NONEMPTY);
   if (tokens.size() < 7) {
     DLOG(WARNING) << "zram mm_stat: tokens: " << tokens.size()
-                  << " malformed line: " << mm_stat_data.as_string();
+                  << " malformed line: " << mm_stat_data;
     return false;
   }
 
@@ -915,7 +915,7 @@ bool ParseZramStat(StringPiece stat_data, SwapInfo* swap_info) {
       stat_data, kWhitespaceASCII, TRIM_WHITESPACE, SPLIT_WANT_NONEMPTY);
   if (tokens.size() < 11) {
     DLOG(WARNING) << "zram stat: tokens: " << tokens.size()
-                  << " malformed line: " << stat_data.as_string();
+                  << " malformed line: " << stat_data;
     return false;
   }
 

@@ -167,6 +167,10 @@ extern const char kInternalErrorGettingDynamicRules[];
 extern const char kDynamicRuleCountExceeded[];
 extern const char kDynamicRegexRuleCountExceeded[];
 
+// Session-scoped rules API errors.
+extern const char kSessionRuleCountExceeded[];
+extern const char kSessionRegexRuleCountExceeded[];
+
 // Static ruleset toggling API errors.
 extern const char kInvalidRulesetIDError[];
 extern const char kEnabledRulesetsRuleCountExceeded[];

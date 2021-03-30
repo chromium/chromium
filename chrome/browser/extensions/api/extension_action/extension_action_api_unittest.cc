@@ -30,7 +30,7 @@ TEST_P(ExtensionActionAPIUnitTest, MultiIcons) {
       R"({
            "name": "A test extension that tests multiple browser action icons",
            "version": "1.0",
-           "manifest_version": 2,
+           "manifest_version": %d,
            "%s": {
              "default_icon": {
                "19": "icon19.png",
@@ -43,7 +43,8 @@ TEST_P(ExtensionActionAPIUnitTest, MultiIcons) {
 
   TestExtensionDir test_extension_dir;
   test_extension_dir.WriteManifest(base::StringPrintf(
-      kManifestTemplate, GetManifestKeyForActionType(GetParam())));
+      kManifestTemplate, GetManifestVersionForActionType(GetParam()),
+      GetManifestKeyForActionType(GetParam())));
 
   {
     std::string icon_file_content;
@@ -82,12 +83,13 @@ TEST_P(ExtensionActionAPIUnitTest, ActionLocalization) {
       R"({
            "name": "Some extension",
            "version": "3.0",
-           "manifest_version": 2,
+           "manifest_version": %d,
            "default_locale": "en",
            "%s": { "default_title": "__MSG_default_action_title__" }
          })";
   test_dir.WriteManifest(
-      base::StringPrintf(kManifest, GetManifestKeyForActionType(GetParam())));
+      base::StringPrintf(kManifest, GetManifestVersionForActionType(GetParam()),
+                         GetManifestKeyForActionType(GetParam())));
 
   constexpr char kMessages[] =
       R"({

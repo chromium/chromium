@@ -36,9 +36,10 @@ class SingleCachedMetadataHandler;
 class WorkerMainScriptLoaderClient;
 struct ResourceLoaderOptions;
 
-// For dedicated workers (PlzDedicatedWorker) and shared workers, the main
-// script is pre-requested by the browser process. This class is used for
-// receiving the response in the renderer process.
+// For dedicated workers (PlzDedicatedWorker), service workers
+// (PlzServiceWorker), and shared workers, the main script is pre-requested by
+// the browser process. This class is used for receiving the response in the
+// renderer process.
 class PLATFORM_EXPORT WorkerMainScriptLoader final
     : public GarbageCollected<WorkerMainScriptLoader>,
       public network::mojom::URLLoaderClient {
@@ -47,7 +48,7 @@ class PLATFORM_EXPORT WorkerMainScriptLoader final
   ~WorkerMainScriptLoader() override;
 
   // Starts to load the main script.
-  void Start(FetchParameters& fetch_params,
+  void Start(const FetchParameters& fetch_params,
              std::unique_ptr<WorkerMainScriptLoadParameters>
                  worker_main_script_load_params,
              FetchContext* fetch_context,
@@ -59,6 +60,7 @@ class PLATFORM_EXPORT WorkerMainScriptLoader final
   void Cancel();
 
   // Implements network::mojom::URLLoaderClient.
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head) override;
   void OnReceiveRedirect(
@@ -98,7 +100,8 @@ class PLATFORM_EXPORT WorkerMainScriptLoader final
   Member<WorkerMainScriptLoaderClient> client_;
   Member<ResourceLoadObserver> resource_load_observer_;
 
-  ResourceRequest initial_request_;
+  int request_id_;
+  ResourceRequestHead initial_request_;
   ResourceLoaderOptions resource_loader_options_{nullptr /* world */};
   KURL initial_request_url_;
   KURL last_request_url_;

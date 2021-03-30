@@ -26,8 +26,9 @@
 #include "ash/public/cpp/ash_typography.h"  // nogncheck
 #endif
 
-const gfx::FontList& ChromeTypographyProvider::GetFont(int context,
-                                                       int style) const {
+ui::ResourceBundle::FontDetails ChromeTypographyProvider::GetFontDetails(
+    int context,
+    int style) const {
   // "Target" font size constants.
   constexpr int kHeadlineSize = 20;
   constexpr int kTitleSize = 15;
@@ -36,37 +37,39 @@ const gfx::FontList& ChromeTypographyProvider::GetFont(int context,
   constexpr int kDefaultSize = 12;
   constexpr int kStatusSize = 10;
 
-  std::string typeface;
-  int size_delta = kDefaultSize - gfx::PlatformFont::kDefaultBaseFontSize;
-  gfx::Font::Weight font_weight = gfx::Font::Weight::NORMAL;
+  ui::ResourceBundle::FontDetails details;
+  details.size_delta = kDefaultSize - gfx::PlatformFont::kDefaultBaseFontSize;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::ApplyAshFontStyles(context, style, &size_delta, &font_weight, &typeface);
+  ash::ApplyAshFontStyles(context, style, details);
 #endif
 
-  ApplyCommonFontStyles(context, style, &size_delta, &font_weight);
+  ApplyCommonFontStyles(context, style, details);
 
   switch (context) {
     case views::style::CONTEXT_BUTTON_MD:
-      font_weight = MediumWeightForUI();
+      details.weight = MediumWeightForUI();
       break;
     case views::style::CONTEXT_DIALOG_TITLE:
-      size_delta = kTitleSize - gfx::PlatformFont::kDefaultBaseFontSize;
+      details.size_delta = kTitleSize - gfx::PlatformFont::kDefaultBaseFontSize;
       break;
     case views::style::CONTEXT_TOUCH_MENU:
-      size_delta =
+      details.size_delta =
           kTouchableLabelSize - gfx::PlatformFont::kDefaultBaseFontSize;
       break;
     case views::style::CONTEXT_DIALOG_BODY_TEXT:
     case CONTEXT_TAB_HOVER_CARD_TITLE:
     case CONTEXT_DOWNLOAD_SHELF:
-      size_delta = kBodyTextLargeSize - gfx::PlatformFont::kDefaultBaseFontSize;
+      details.size_delta =
+          kBodyTextLargeSize - gfx::PlatformFont::kDefaultBaseFontSize;
       break;
     case CONTEXT_HEADLINE:
-      size_delta = kHeadlineSize - gfx::PlatformFont::kDefaultBaseFontSize;
+      details.size_delta =
+          kHeadlineSize - gfx::PlatformFont::kDefaultBaseFontSize;
       break;
     case CONTEXT_DOWNLOAD_SHELF_STATUS:
-      size_delta = kStatusSize - gfx::PlatformFont::kDefaultBaseFontSize;
+      details.size_delta =
+          kStatusSize - gfx::PlatformFont::kDefaultBaseFontSize;
       break;
     default:
       break;
@@ -74,7 +77,7 @@ const gfx::FontList& ChromeTypographyProvider::GetFont(int context,
 
   if (context == CONTEXT_TAB_HOVER_CARD_TITLE) {
     DCHECK_EQ(views::style::STYLE_PRIMARY, style);
-    font_weight = gfx::Font::Weight::SEMIBOLD;
+    details.weight = gfx::Font::Weight::SEMIBOLD;
   }
 
   if (context == CONTEXT_TAB_COUNTER &&
@@ -83,9 +86,9 @@ const gfx::FontList& ChromeTypographyProvider::GetFont(int context,
     // system fonts on ChromeOS, we can just choose a condensed font. For other
     // platforms we adjust size.
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-    typeface = "Roboto Condensed";
+    details.typeface = "Roboto Condensed";
 #else
-    size_delta -= 2;
+    details.size_delta -= 2;
 #endif
   }
 
@@ -97,23 +100,21 @@ const gfx::FontList& ChromeTypographyProvider::GetFont(int context,
            context == views::style::CONTEXT_DIALOG_BODY_TEXT ||
            context == CONTEXT_DIALOG_BODY_TEXT_SMALL ||
            context == CONTEXT_DOWNLOAD_SHELF);
-    font_weight = gfx::Font::Weight::SEMIBOLD;
+    details.weight = gfx::Font::Weight::SEMIBOLD;
   }
 
   if (style == STYLE_PRIMARY_MONOSPACED ||
       style == STYLE_SECONDARY_MONOSPACED) {
 #if defined(OS_MAC)
-    typeface = "Menlo";
+    details.typeface = "Menlo";
 #elif defined(OS_WIN)
-    typeface = "Consolas";
+    details.typeface = "Consolas";
 #else
-    typeface = "DejaVu Sans Mono";
+    details.typeface = "DejaVu Sans Mono";
 #endif
   }
 
-  return ui::ResourceBundle::GetSharedInstance()
-      .GetFontListWithTypefaceAndDelta(typeface, size_delta, gfx::Font::NORMAL,
-                                       font_weight);
+  return details;
 }
 
 SkColor ChromeTypographyProvider::GetColor(const views::View& view,

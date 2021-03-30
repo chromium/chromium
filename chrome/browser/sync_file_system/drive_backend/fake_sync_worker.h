@@ -53,16 +53,16 @@ class FakeSyncWorker : public SyncWorkerInterface {
   void UninstallOrigin(const GURL& origin,
                        RemoteFileSyncService::UninstallFlag flag,
                        SyncStatusCallback callback) override;
-  void ProcessRemoteChange(const SyncFileCallback& callback) override;
+  void ProcessRemoteChange(SyncFileCallback callback) override;
   void SetRemoteChangeProcessor(RemoteChangeProcessorOnWorker*
                                     remote_change_processor_on_worker) override;
   RemoteServiceState GetCurrentState() const override;
   void GetOriginStatusMap(
-      const RemoteFileSyncService::StatusMapCallback& callback) override;
+      RemoteFileSyncService::StatusMapCallback callback) override;
   std::unique_ptr<base::ListValue> DumpFiles(const GURL& origin) override;
   std::unique_ptr<base::ListValue> DumpDatabase() override;
   void SetSyncEnabled(bool enabled) override;
-  void PromoteDemotedChanges(const base::Closure& callback) override;
+  void PromoteDemotedChanges(base::OnceClosure callback) override;
   void ApplyLocalChange(const FileChange& local_change,
                         const base::FilePath& local_path,
                         const SyncFileMetadata& local_metadata,

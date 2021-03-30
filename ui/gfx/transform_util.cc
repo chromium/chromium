@@ -633,4 +633,39 @@ Transform WindowMatrix(int x, int y, int width, int height) {
   return canvas;
 }
 
+static inline bool NearlyZero(double value) {
+  return std::abs(value) < std::numeric_limits<double>::epsilon();
+}
+
+static inline float ScaleOnAxis(double a, double b, double c) {
+  if (NearlyZero(b) && NearlyZero(c))
+    return std::abs(a);
+  if (NearlyZero(a) && NearlyZero(c))
+    return std::abs(b);
+  if (NearlyZero(a) && NearlyZero(b))
+    return std::abs(c);
+
+  // Do the sqrt as a double to not lose precision.
+  return static_cast<float>(std::sqrt(a * a + b * b + c * c));
+}
+
+Vector2dF ComputeTransform2dScaleComponents(const Transform& transform,
+                                            float fallback_value) {
+  if (transform.HasPerspective())
+    return Vector2dF(fallback_value, fallback_value);
+  float x_scale = ScaleOnAxis(transform.matrix().getDouble(0, 0),
+                              transform.matrix().getDouble(1, 0),
+                              transform.matrix().getDouble(2, 0));
+  float y_scale = ScaleOnAxis(transform.matrix().getDouble(0, 1),
+                              transform.matrix().getDouble(1, 1),
+                              transform.matrix().getDouble(2, 1));
+  return Vector2dF(x_scale, y_scale);
+}
+
+float ComputeApproximateMaxScale(const Transform& transform) {
+  RectF unit(0.f, 0.f, 1.f, 1.f);
+  transform.TransformRect(&unit);
+  return std::max(unit.width(), unit.height());
+}
+
 }  // namespace gfx

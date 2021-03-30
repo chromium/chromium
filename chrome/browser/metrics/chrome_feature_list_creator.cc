@@ -20,6 +20,7 @@
 #include "cc/base/switches.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
 #include "chrome/browser/prefs/browser_prefs.h"
@@ -46,6 +47,7 @@
 #include "ui/base/resource/resource_bundle.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/settings/owner_flags_storage.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -129,29 +131,38 @@ void ChromeFeatureListCreator::CreatePrefService() {
     // language the user selected when downloading the installer. This
     // becomes our default language in the prefs.
     // Other platforms obey the system locale.
-    base::string16 install_lang;
+    std::wstring install_lang;
     if (GoogleUpdateSettings::GetLanguage(&install_lang)) {
       local_state_->SetString(language::prefs::kApplicationLocale,
-                              base::UTF16ToASCII(install_lang));
+                              base::WideToASCII(install_lang));
     }
   }
 #endif  // defined(OS_WIN)
 }
 
 void ChromeFeatureListCreator::ConvertFlagsToSwitches() {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Convert active flags into switches. This needs to be done before
   // ui::ResourceBundle::InitSharedInstanceWithLocale as some loaded resources
-  // are affected by experiment flags (--touch-optimized-ui in particular). On
-  // ChromeOS system level flags are applied from the device settings from the
-  // session manager.
+  // are affected by experiment flags (--touch-optimized-ui in particular).
   DCHECK(!ui::ResourceBundle::HasSharedInstance());
   TRACE_EVENT0("startup", "ChromeFeatureListCreator::ConvertFlagsToSwitches");
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // On Chrome OS, flags are passed on the command line when Chrome gets
+  // launched by session_manager. There are separate sets of flags for the login
+  // screen environment and user sessions. session_manager populates the former
+  // from signed device settings, while flags for user session are stored in
+  // preferences and applied via a chrome restart upon user login, see
+  // UserSessionManager::RestartToApplyPerSessionFlagsIfNeed for the latter.
+  ash::about_flags::ReadOnlyFlagsStorage flags_storage(
+      ash::about_flags::ParseFlagsFromCommandLine());
+#else
   flags_ui::PrefServiceFlagsStorage flags_storage(local_state_.get());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   about_flags::ConvertFlagsToSwitches(&flags_storage,
                                       base::CommandLine::ForCurrentProcess(),
                                       flags_ui::kAddSentinels);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ChromeFeatureListCreator::SetupFieldTrials() {

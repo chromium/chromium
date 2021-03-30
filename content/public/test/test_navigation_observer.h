@@ -95,7 +95,7 @@ class TestNavigationObserver {
   // Returns the frame token of the initiator RenderFrameHost of the last
   // finished navigation. This is defined if and only if
   // last_initiator_process_id below is.
-  const base::Optional<base::UnguessableToken>& last_initiator_frame_token()
+  const base::Optional<blink::LocalFrameToken>& last_initiator_frame_token()
       const {
     return last_initiator_frame_token_;
   }
@@ -213,7 +213,7 @@ class TestNavigationObserver {
   // The frame token of the initiator frame for the last observed
   // navigation. This parameter is defined if and only if
   // |initiator_process_id_| below is.
-  base::Optional<base::UnguessableToken> last_initiator_frame_token_;
+  base::Optional<blink::LocalFrameToken> last_initiator_frame_token_;
 
   // The process id of the initiator frame for the last observed navigation.
   // This is defined if and only if |initiator_frame_token_| above is, and it is

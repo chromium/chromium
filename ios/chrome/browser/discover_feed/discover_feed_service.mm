@@ -46,12 +46,7 @@ void DiscoverFeedService::Shutdown() {
   }
 }
 
-void DiscoverFeedService::OnPrimaryAccountSet(
-    const CoreAccountInfo& primary_account_info) {
-  discover_feed_provider_->UpdateFeedForAccountChange();
-}
-
-void DiscoverFeedService::OnPrimaryAccountCleared(
-    const CoreAccountInfo& previous_primary_account_info) {
+void DiscoverFeedService::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
   discover_feed_provider_->UpdateFeedForAccountChange();
 }

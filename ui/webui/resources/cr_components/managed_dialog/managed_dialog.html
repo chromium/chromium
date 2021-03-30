@@ -1,0 +1,26 @@
+<style>
+  iron-icon {
+    --iron-icon-height: var(--cr-icon-size);
+    --iron-icon-width: var(--cr-icon-size);
+    padding-inline-end: 10px;
+  }
+
+  cr-dialog::part(body-container) {
+    padding-inline-start: 35px;
+  }
+</style>
+
+<cr-dialog id="dialog" close-text="[[i18n('close')]]" show-on-attach>
+  <div slot="title">
+    <iron-icon icon="cr:domain" role="img"
+        aria-label="[[i18n('controlledSettingPolicy')]]">
+    </iron-icon>
+    [[title]]
+  </div>
+  <div slot="body">[[body]]</div>
+  <div slot="button-container">
+    <cr-button class="action-button" on-click="onOkClick_">
+      [[i18n('ok')]]
+    </cr-button>
+  </div>
+</cr-dialog>

@@ -218,10 +218,6 @@ Polymer({
       return;
     }
 
-    // TODO(dpapad): This is necessary to make the code work both for Polymer 1
-    // and Polymer 2. Remove once migration to Polymer 2 is completed.
-    e.stopPropagation();
-
     // Catch and re-fire the 'close' event such that it bubbles across Shadow
     // DOM v1.
     this.fire('close');
@@ -524,4 +520,5 @@ Polymer({
     }
   },
 });
+/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');
 })();

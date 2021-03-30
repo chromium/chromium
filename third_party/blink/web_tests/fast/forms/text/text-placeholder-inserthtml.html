@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<body>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit <input placeholder="Lorem ipsum dolor sit amet, consectetur adipiscing elit">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+<script>
+if (window.testRunner)
+  testRunner.waitUntilDone();
+document.querySelector('input').focus();
+requestAnimationFrame(() => {
+  requestAnimationFrame(() => {
+    document.execCommand("InsertHTML", false, "<a href='#'>link</a>");
+    document.execCommand("SelectAll");
+    document.execCommand("InsertText", false, "");
+    requestAnimationFrame(testRunner.notifyDone.bind(testRunner));
+  });
+});
+</script>
+</body>

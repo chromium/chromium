@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/metrics/field_trial_params.h"
-#include "base/strings/string16.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/crash/content/browser/error_reporting/javascript_error_report.h"
@@ -125,7 +124,7 @@ class WebUIMainFrameObserverTest : public RenderViewHostTestHarness {
 
     // We have to destroy the site_instance_ before
     // RenderViewHostTestHarness::TearDown() destroys the
-    // BrowserTaskEnvironment. We gotten a lot of things that depend directly
+    // BrowserTaskEnvironment. We've gotten a lot of things that depend directly
     // or indirectly on BrowserTaskEnvironment, so just destroy everything we
     // can.
     previous_processor_.reset();
@@ -141,7 +140,7 @@ class WebUIMainFrameObserverTest : public RenderViewHostTestHarness {
   // initializes the error handling.
   void NavigateToPage() {
     NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
-                                                      GURL(kSourceURL8));
+                                                      GURL(kPageURL8));
   }
 
   // Calls the observer's OnDidAddMessageToConsole with the given arguments.
@@ -150,10 +149,10 @@ class WebUIMainFrameObserverTest : public RenderViewHostTestHarness {
   void CallOnDidAddMessageToConsole(
       RenderFrameHost* source_frame,
       blink::mojom::ConsoleMessageLevel log_level,
-      const base::string16& message,
+      const std::u16string& message,
       int32_t line_no,
-      const base::string16& source_id,
-      const base::Optional<base::string16>& stack_trace) {
+      const std::u16string& source_id,
+      const base::Optional<std::u16string>& stack_trace) {
     web_ui_->GetWebUIMainFrameObserverForTest()->OnDidAddMessageToConsole(
         source_frame, log_level, message, line_no, source_id, stack_trace);
   }
@@ -166,17 +165,19 @@ class WebUIMainFrameObserverTest : public RenderViewHostTestHarness {
   scoped_refptr<JsErrorReportProcessor> previous_processor_;
 
   static constexpr char kMessage8[] = "An Error Is Me";
-  const base::string16 kMessage16 = base::UTF8ToUTF16(kMessage8);
-  static constexpr char kSourceURL8[] = "chrome://here.is.error/";
-  const base::string16 kSourceId16 = base::UTF8ToUTF16(kSourceURL8);
+  const std::u16string kMessage16 = base::UTF8ToUTF16(kMessage8);
+  static constexpr char kSourceURL8[] = "chrome://here.is.error/bad.js";
+  const std::u16string kSourceId16 = base::UTF8ToUTF16(kSourceURL8);
+  static constexpr char kPageURL8[] = "chrome://here.is.error/index.html";
   static constexpr char kStackTrace8[] =
       "at badFunction (chrome://page/my.js:20:30)\n"
       "at poorCaller (chrome://page/my.js:50:10)\n";
-  const base::string16 kStackTrace16 = base::UTF8ToUTF16(kStackTrace8);
+  const std::u16string kStackTrace16 = base::UTF8ToUTF16(kStackTrace8);
 };
 
 constexpr char WebUIMainFrameObserverTest::kMessage8[];
 constexpr char WebUIMainFrameObserverTest::kSourceURL8[];
+constexpr char WebUIMainFrameObserverTest::kPageURL8[];
 constexpr char WebUIMainFrameObserverTest::kStackTrace8[];
 
 TEST_F(WebUIMainFrameObserverTest, ErrorReported) {
@@ -188,6 +189,9 @@ TEST_F(WebUIMainFrameObserverTest, ErrorReported) {
   EXPECT_EQ(processor_->error_report_count(), 1);
   EXPECT_EQ(processor_->last_error_report().message, kMessage8);
   EXPECT_EQ(processor_->last_error_report().url, kSourceURL8);
+  EXPECT_EQ(processor_->last_error_report().page_url, kPageURL8);
+  EXPECT_EQ(processor_->last_error_report().source_system,
+            JavaScriptErrorReport::SourceSystem::kWebUIObserver);
   EXPECT_THAT(processor_->last_error_report().stack_trace,
               Optional(Eq(kStackTrace8)));
   // WebUI should use default product & version.
@@ -247,9 +251,9 @@ TEST_F(WebUIMainFrameObserverTest, NotSentIfFlagDisabled) {
 
 TEST_F(WebUIMainFrameObserverTest, NotSentIfInvalidURL) {
   NavigateToPage();
-  CallOnDidAddMessageToConsole(
-      web_ui_->frame_host(), blink::mojom::ConsoleMessageLevel::kError,
-      kMessage16, 5, base::UTF8ToUTF16("invalid URL"), kStackTrace16);
+  CallOnDidAddMessageToConsole(web_ui_->frame_host(),
+                               blink::mojom::ConsoleMessageLevel::kError,
+                               kMessage16, 5, u"invalid URL", kStackTrace16);
   task_environment()->RunUntilIdle();
   EXPECT_EQ(processor_->error_report_count(), 0);
 }
@@ -306,6 +310,19 @@ TEST_F(WebUIMainFrameObserverTest, URLPathIsPreservedOtherPartsRemoved) {
     EXPECT_EQ(processor_->last_error_report().url, test.expected)
         << "for " << test.input;
   }
+}
+
+TEST_F(WebUIMainFrameObserverTest, PageURLAlsoRedacted) {
+  constexpr char kPageWithQueryAndFragment[] =
+      "chrome://bookmarks/add?q=chromium#code";
+  NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL(kPageWithQueryAndFragment));
+  CallOnDidAddMessageToConsole(web_ui_->frame_host(),
+                               blink::mojom::ConsoleMessageLevel::kError,
+                               kMessage16, 5, kSourceId16, kStackTrace16);
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(processor_->error_report_count(), 1);
+  EXPECT_EQ(processor_->last_error_report().page_url, "chrome://bookmarks/add");
 }
 
 TEST_F(WebUIMainFrameObserverTest, ErrorsNotReportedInOtherFrames) {

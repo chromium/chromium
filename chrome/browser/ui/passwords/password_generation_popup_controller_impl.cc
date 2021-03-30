@@ -242,7 +242,7 @@ void PasswordGenerationPopupControllerImpl::Show(GenerationUIState state) {
 }
 
 void PasswordGenerationPopupControllerImpl::UpdatePassword(
-    base::string16 new_password) {
+    std::u16string new_password) {
   current_password_ = std::move(new_password);
   if (view_)
     view_->UpdatePasswordValue();
@@ -338,16 +338,16 @@ bool PasswordGenerationPopupControllerImpl::password_selected() const {
   return password_selected_;
 }
 
-const base::string16& PasswordGenerationPopupControllerImpl::password() const {
+const std::u16string& PasswordGenerationPopupControllerImpl::password() const {
   return current_password_;
 }
 
-base::string16 PasswordGenerationPopupControllerImpl::SuggestedText() {
+std::u16string PasswordGenerationPopupControllerImpl::SuggestedText() {
   return l10n_util::GetStringUTF16(
       state_ == kOfferGeneration ? IDS_PASSWORD_GENERATION_SUGGESTION
                                  : IDS_PASSWORD_GENERATION_EDITING_SUGGESTION);
 }
 
-const base::string16& PasswordGenerationPopupControllerImpl::HelpText() {
+const std::u16string& PasswordGenerationPopupControllerImpl::HelpText() {
   return help_text_;
 }

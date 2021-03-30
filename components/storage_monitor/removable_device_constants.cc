@@ -15,7 +15,7 @@ const char kVendorModelVolumeStoragePrefix[] = "VendorModelVolumeStorage:";
 #endif
 
 #if defined(OS_WIN)
-const base::char16 kWPDDevInterfaceGUID[] =
+const wchar_t kWPDDevInterfaceGUID[] =
     L"{6ac27878-a6fa-4155-ba85-f98f491d4f33}";
 #endif
 

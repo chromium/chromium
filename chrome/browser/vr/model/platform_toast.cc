@@ -8,6 +8,6 @@ namespace vr {
 
 PlatformToast::PlatformToast() = default;
 
-PlatformToast::PlatformToast(base::string16 t) : text(t) {}
+PlatformToast::PlatformToast(std::u16string t) : text(t) {}
 
 }  // namespace vr

@@ -63,7 +63,7 @@ void Presentation::setDefaultRequest(PresentationRequest* request) {
 
 void Presentation::MaybeInitReceiver() {
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
-  if (!receiver_ && window &&
+  if (!receiver_ && window && window->GetFrame()->IsMainFrame() &&
       window->GetFrame()->GetSettings()->GetPresentationReceiver()) {
     receiver_ = MakeGarbageCollected<PresentationReceiver>(window);
   }

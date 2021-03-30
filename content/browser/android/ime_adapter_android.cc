@@ -183,7 +183,7 @@ void ImeAdapterAndroid::UpdateState(const ui::mojom::TextInputState& state) {
     return;
 
   ScopedJavaLocalRef<jstring> jstring_text =
-      ConvertUTF16ToJavaString(env, state.value.value_or(base::string16()));
+      ConvertUTF16ToJavaString(env, state.value.value_or(std::u16string()));
   Java_ImeAdapterImpl_updateState(
       env, obj, static_cast<int>(state.type), state.flags, state.mode,
       static_cast<int>(state.action), state.show_ime_if_needed,
@@ -278,7 +278,7 @@ void ImeAdapterAndroid::SetComposingText(JNIEnv* env,
   if (!rwhi)
     return;
 
-  base::string16 text16 = ConvertJavaStringToUTF16(env, text_str);
+  std::u16string text16 = ConvertJavaStringToUTF16(env, text_str);
 
   std::vector<ui::ImeTextSpan> ime_text_spans =
       GetImeTextSpansFromJava(env, obj, text, text16);
@@ -311,7 +311,7 @@ void ImeAdapterAndroid::CommitText(JNIEnv* env,
   if (!rwhi)
     return;
 
-  base::string16 text16 = ConvertJavaStringToUTF16(env, text_str);
+  std::u16string text16 = ConvertJavaStringToUTF16(env, text_str);
 
   std::vector<ui::ImeTextSpan> ime_text_spans =
       GetImeTextSpansFromJava(env, obj, text, text16);
@@ -501,7 +501,7 @@ std::vector<ui::ImeTextSpan> ImeAdapterAndroid::GetImeTextSpansFromJava(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jobject>& text,
-    const base::string16& text16) {
+    const std::u16string& text16) {
   std::vector<ui::ImeTextSpan> ime_text_spans;
   // Iterate over spans in |text|, dispatch those that we care about (e.g.,
   // BackgroundColorSpan) to a matching callback (e.g.,

@@ -5,6 +5,8 @@
 #ifndef CC_TREES_LAYER_TREE_FRAME_SINK_CLIENT_H_
 #define CC_TREES_LAYER_TREE_FRAME_SINK_CLIENT_H_
 
+#include <vector>
+
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
@@ -86,6 +88,11 @@ class CC_EXPORT LayerTreeFrameSinkClient {
   virtual void SetExternalTilePriorityConstraints(
       const gfx::Rect& viewport_rect,
       const gfx::Transform& transform) = 0;
+
+  // Notification that the compositor frame transition directive has been
+  // processed.
+  virtual void OnCompositorFrameTransitionDirectiveProcessed(
+      uint32_t sequence_id) {}
 
  protected:
   virtual ~LayerTreeFrameSinkClient() {}

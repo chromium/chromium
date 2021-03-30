@@ -46,6 +46,7 @@
 #include "net/ssl/ssl_info.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
@@ -132,34 +133,6 @@ TEST_F(ChromeWebClientTest, UserAgent) {
   EXPECT_FALSE(safari_version_str.empty());
 
   EXPECT_EQ(0u, product_str.find("CriOS/"));
-}
-
-// Tests that ChromeWebClient provides accessibility script for WKWebView.
-TEST_F(ChromeWebClientTest, WKWebViewEarlyPageScriptAccessibility) {
-  // Chrome scripts rely on __gCrWeb object presence.
-  WKWebView* web_view = web::BuildWKWebView(CGRectZero, browser_state());
-  web::test::ExecuteJavaScript(web_view, @"__gCrWeb = {};");
-
-  web::ScopedTestingWebClient web_client(std::make_unique<ChromeWebClient>());
-  NSString* script =
-      web_client.Get()->GetDocumentStartScriptForAllFrames(browser_state());
-  web::test::ExecuteJavaScript(web_view, script);
-  EXPECT_NSEQ(@"object", web::test::ExecuteJavaScript(
-                             web_view, @"typeof __gCrWeb.accessibility"));
-}
-
-// Tests that ChromeWebClient provides print script for WKWebView.
-TEST_F(ChromeWebClientTest, WKWebViewEarlyPageScriptPrint) {
-  // Chrome scripts rely on __gCrWeb object presence.
-  WKWebView* web_view = web::BuildWKWebView(CGRectZero, browser_state());
-  web::test::ExecuteJavaScript(web_view, @"__gCrWeb = {};");
-
-  web::ScopedTestingWebClient web_client(std::make_unique<ChromeWebClient>());
-  NSString* script =
-      web_client.Get()->GetDocumentStartScriptForAllFrames(browser_state());
-  web::test::ExecuteJavaScript(web_view, script);
-  EXPECT_NSEQ(@"object",
-              web::test::ExecuteJavaScript(web_view, @"typeof __gCrWeb.print"));
 }
 
 // Tests that ChromeWebClient provides autofill controller script for WKWebView.
@@ -351,7 +324,7 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageForSafeBrowsingError) {
   security_interstitials::UnsafeResource resource;
   resource.threat_type = safe_browsing::SB_THREAT_TYPE_URL_PHISHING;
   resource.url = GURL("http://www.chromium.test");
-  resource.resource_type = safe_browsing::ResourceType::kMainFrame;
+  resource.request_destination = network::mojom::RequestDestination::kDocument;
   resource.web_state_getter = web_state.CreateDefaultGetter();
   SafeBrowsingUrlAllowList::FromWebState(&web_state)
       ->AddPendingUnsafeNavigationDecision(resource.url, resource.threat_type);

@@ -5,7 +5,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/path_service.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
@@ -58,7 +58,8 @@ class BackgroundContentsCreationObserver
     : public BackgroundContentsServiceObserver {
  public:
   explicit BackgroundContentsCreationObserver(Profile* profile) {
-    observer_.Add(BackgroundContentsServiceFactory::GetForProfile(profile));
+    observation_.Observe(
+        BackgroundContentsServiceFactory::GetForProfile(profile));
   }
 
   ~BackgroundContentsCreationObserver() override = default;
@@ -74,8 +75,9 @@ class BackgroundContentsCreationObserver
   // The number of background contents that have been opened since creation.
   int opens_ = 0;
 
-  ScopedObserver<BackgroundContentsService, BackgroundContentsServiceObserver>
-      observer_{this};
+  base::ScopedObservation<BackgroundContentsService,
+                          BackgroundContentsServiceObserver>
+      observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BackgroundContentsCreationObserver);
 };
@@ -467,7 +469,8 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, OpenTwoPagesWithManifest) {
 }
 
 // TODO(https://crbug.com/1124033): Fails on LaCrOS bot.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(https://crbug.com/1186442): Fails on linux-ozone-rel bot.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_LINUX)
 #define MAYBE_OpenPopupFromBGPage DISABLED_OpenPopupFromBGPage
 #else
 #define MAYBE_OpenPopupFromBGPage OpenPopupFromBGPage

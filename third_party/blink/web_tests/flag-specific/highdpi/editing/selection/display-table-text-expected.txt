@@ -1,0 +1,14 @@
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+layer at (0,0) size 1200x900
+  LayoutView at (0,0) size 1200x900
+layer at (0,0) size 1200x900
+  LayoutNGBlockFlow {HTML} at (0,0) size 1200x900
+    LayoutNGBlockFlow {BODY} at (12,12) size 1176x876
+      LayoutNGTable {DIV} at (0,0) size 537x27
+        LayoutNGTableSection (anonymous) at (0,0) size 537x27
+          LayoutNGTableRow (anonymous) at (0,0) size 537x27
+            LayoutNGTableCellNew (anonymous) at (0,0) size 537x27 [r=0 c=0 rs=1 cs=1]
+              LayoutText {#text} at (0,0) size 537x26
+                text run at (0,0) width 537: "Only the third word in this sentence should be selected."
+selection start: position 9 of child 0 {#text} of child 1 {DIV} of body
+selection end:   position 14 of child 0 {#text} of child 1 {DIV} of body

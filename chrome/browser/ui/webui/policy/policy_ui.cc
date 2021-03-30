@@ -34,8 +34,6 @@ content::WebUIDataSource* CreatePolicyUIHtmlSource() {
     {"labelAssetId", IDS_POLICY_LABEL_ASSET_ID},
     {"labelClientId", IDS_POLICY_LABEL_CLIENT_ID},
     {"labelDirectoryApiId", IDS_POLICY_LABEL_DIRECTORY_API_ID},
-    {"labelEnterpriseDisplayDomain",
-     IDS_POLICY_LABEL_ENTERPRISE_DISPLAY_DOMAIN},
     {"labelEnterpriseEnrollmentDomain",
      IDS_POLICY_LABEL_ENTERPRISE_ENROLLMENT_DOMAIN},
     {"labelGaiaId", IDS_POLICY_LABEL_GAIA_ID},
@@ -54,6 +52,7 @@ content::WebUIDataSource* CreatePolicyUIHtmlSource() {
     {"labelStatus", IDS_POLICY_LABEL_STATUS},
     {"labelTimeSinceLastRefresh", IDS_POLICY_LABEL_TIME_SINCE_LAST_REFRESH},
     {"labelUsername", IDS_POLICY_LABEL_USERNAME},
+    {"labelManagedBy", IDS_POLICY_LABEL_MANAGED_BY},
     {"labelVersion", IDS_POLICY_LABEL_VERSION},
     {"noPoliciesSet", IDS_POLICY_NO_POLICIES_SET},
     {"offHoursActive", IDS_POLICY_OFFHOURS_ACTIVE},
@@ -76,7 +75,7 @@ content::WebUIDataSource* CreatePolicyUIHtmlSource() {
 #endif
     {"statusUser", IDS_POLICY_STATUS_USER},
   };
-  AddLocalizedStringsBulk(source, kStrings);
+  source->AddLocalizedStrings(kStrings);
 
   source->AddResourcePath("policy.css", IDR_POLICY_CSS);
   source->AddResourcePath("policy_base.js", IDR_POLICY_BASE_JS);

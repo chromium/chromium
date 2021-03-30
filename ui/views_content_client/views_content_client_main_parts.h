@@ -41,8 +41,7 @@ class ViewsContentClientMainParts : public content::BrowserMainParts {
   ~ViewsContentClientMainParts() override;
 
   // content::BrowserMainParts:
-  void PreMainMessageLoopRun() override;
-  bool MainMessageLoopRun(int* result_code) override;
+  int PreMainMessageLoopRun() override;
   void PostMainMessageLoopRun() override;
 
   content::ShellBrowserContext* browser_context() {

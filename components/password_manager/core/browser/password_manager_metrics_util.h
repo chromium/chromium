@@ -224,6 +224,7 @@ enum AccessPasswordInSettingsEvent {
 // numeric values should never be reused. Needs to stay in sync with
 // "PasswordManager.ReauthResult" in enums.xml.
 // Metrics: PasswordManager.ReauthToAccessPasswordInSettings
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.password_manager
 enum class ReauthResult {
   kSuccess = 0,
   kFailure = 1,

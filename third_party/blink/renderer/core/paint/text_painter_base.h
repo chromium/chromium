@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/style/text_decoration_thickness.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
+#include "third_party/blink/renderer/platform/graphics/draw_looper_builder.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -23,6 +24,7 @@ class ComputedStyle;
 class Document;
 class GraphicsContext;
 class GraphicsContextStateSaver;
+class Node;
 class TextDecorationOffsetBase;
 struct PaintInfo;
 
@@ -47,10 +49,19 @@ class CORE_EXPORT TextPainterBase {
   void SetEmphasisMark(const AtomicString&, TextEmphasisPosition);
   void SetEllipsisOffset(int offset) { ellipsis_offset_ = offset; }
 
+  enum ShadowMode { kBothShadowsAndTextProper, kShadowsOnly, kTextProperOnly };
   static void UpdateGraphicsContext(GraphicsContext&,
                                     const TextPaintStyle&,
                                     bool horizontal,
-                                    GraphicsContextStateSaver&);
+                                    GraphicsContextStateSaver&,
+                                    ShadowMode = kBothShadowsAndTextProper);
+  static sk_sp<SkDrawLooper> CreateDrawLooper(
+      const ShadowList* shadow_list,
+      DrawLooperBuilder::ShadowAlphaMode,
+      const Color& current_color,
+      mojom::blink::ColorScheme color_scheme,
+      bool is_horizontal = true,
+      ShadowMode = kBothShadowsAndTextProper);
 
   void PaintDecorationsExceptLineThrough(const TextDecorationOffsetBase&,
                                          TextDecorationInfo&,

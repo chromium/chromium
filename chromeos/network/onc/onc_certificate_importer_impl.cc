@@ -218,7 +218,7 @@ bool CertificateImporterImpl::StoreClientCertificate(
 
   int import_result =
       nssdb->ImportFromPKCS12(private_slot.get(), certificate.pkcs12_data(),
-                              base::string16(), false, &imported_certs);
+                              std::u16string(), false, &imported_certs);
   if (import_result != net::OK) {
     std::string error_string = net::ErrorToString(import_result);
     NET_LOG(ERROR) << "Unable to import client certificate with guid: "

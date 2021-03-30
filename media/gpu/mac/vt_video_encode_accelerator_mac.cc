@@ -287,7 +287,7 @@ void VTVideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
           force_keyframe ? kCFBooleanTrue : kCFBooleanFalse);
 
   base::TimeTicks ref_time =
-      frame->metadata()->reference_time.value_or(base::TimeTicks::Now());
+      frame->metadata().reference_time.value_or(base::TimeTicks::Now());
   auto timestamp_cm =
       CMTimeMake(frame->timestamp().InMicroseconds(), USEC_PER_SEC);
   // Wrap information we'll need after the frame is encoded in a heap object.

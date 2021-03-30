@@ -32,6 +32,7 @@ class LocationBar {
   virtual WindowOpenDisposition GetWindowOpenDisposition() const = 0;
   virtual ui::PageTransition GetPageTransition() const = 0;
   virtual base::TimeTicks GetMatchSelectionTimestamp() const = 0;
+  virtual bool IsInputTypedUrlWithoutScheme() const = 0;
 
   // Accepts the current string of text entered in the location bar.
   virtual void AcceptInput() = 0;

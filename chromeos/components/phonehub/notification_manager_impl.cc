@@ -49,7 +49,7 @@ void NotificationManagerImpl::DismissNotification(int64_t notification_id) {
 
 void NotificationManagerImpl::SendInlineReply(
     int64_t notification_id,
-    const base::string16& inline_reply_text) {
+    const std::u16string& inline_reply_text) {
   if (!GetNotification(notification_id)) {
     PA_LOG(INFO) << "Could not send inline reply for notification with ID "
                  << notification_id << ".";

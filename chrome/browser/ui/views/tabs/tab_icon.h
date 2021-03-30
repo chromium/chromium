@@ -11,6 +11,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_throbber.h"
 #include "ui/views/animation/animation_delegate_views.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace base {
@@ -30,6 +31,8 @@ struct TabRendererData;
 // the bottom).
 class TabIcon : public views::View, public views::AnimationDelegateViews {
  public:
+  METADATA_HEADER(TabIcon);
+
   // Attention indicator types (use as a bitmask). There is only one visual
   // representation, but the state of each of these is tracked separately and
   // the indicator is shown as long as one is enabled.
@@ -51,8 +54,8 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
   // will be shown as long as any of the types are enabled.
   void SetAttention(AttentionType type, bool enabled);
 
-  bool ShowingLoadingAnimation() const;
-  bool ShowingAttentionIndicator() const;
+  bool GetShowingLoadingAnimation() const;
+  bool GetShowingAttentionIndicator() const;
 
   // Sets whether this object can paint to a layer. When the loading animation
   // is running, painting to a layer saves painting overhead. But if the tab is
@@ -94,7 +97,7 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
   void MaybePaintFavicon(gfx::Canvas* canvas,
                          const gfx::ImageSkia& icon,
                          const gfx::Rect& bounds);
-  bool HasNonDefaultFavicon() const;
+  bool GetNonDefaultFavicon() const;
 
   // Sets the icon. Depending on the URL the icon may be automatically themed.
   void SetIcon(const GURL& url, const gfx::ImageSkia& favicon);
@@ -105,7 +108,8 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
   void SetNetworkState(TabNetworkState network_state);
 
   // Sets whether the tab should paint as crashed or not.
-  void SetIsCrashed(bool is_crashed);
+  void SetCrashed(bool crashed);
+  bool GetCrashed() const;
 
   // Creates or destroys the layer according to the current animation state and
   // whether a layer can be used.
@@ -117,7 +121,7 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
 
   gfx::ImageSkia favicon_;
   TabNetworkState network_state_ = TabNetworkState::kNone;
-  bool is_crashed_ = false;
+  bool crashed_ = false;
   int attention_types_ = 0;  // Bitmask of AttentionType.
 
   // Value from last call to SetNetworkState. When true, the network loading

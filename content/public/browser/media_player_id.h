@@ -6,22 +6,21 @@
 #define CONTENT_PUBLIC_BROWSER_MEDIA_PLAYER_ID_H_
 
 #include "content/common/content_export.h"
+#include "content/public/browser/global_routing_id.h"
 
 namespace content {
-
-class RenderFrameHost;
 
 struct CONTENT_EXPORT MediaPlayerId {
   static MediaPlayerId CreateMediaPlayerIdForTests();
   MediaPlayerId() = delete;
 
-  MediaPlayerId(RenderFrameHost* render_frame_host, int delegate_id);
+  MediaPlayerId(GlobalFrameRoutingId routing_id, int delegate_id);
   bool operator==(const MediaPlayerId&) const;
   bool operator!=(const MediaPlayerId&) const;
   bool operator<(const MediaPlayerId&) const;
 
-  RenderFrameHost* render_frame_host = nullptr;
-  int delegate_id = 0;
+  GlobalFrameRoutingId frame_routing_id;
+  int delegate_id;
 };
 
 }  // namespace content

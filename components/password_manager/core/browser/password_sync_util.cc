@@ -41,7 +41,8 @@ std::string GetSyncUsernameIfSyncingPasswords(
     return std::string();
   }
 
-  return identity_manager->GetPrimaryAccountInfo().email;
+  return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+      .email;
 }
 
 bool IsSyncAccountCredential(const PasswordForm& form,
@@ -67,7 +68,9 @@ bool IsSyncAccountEmail(const std::string& username,
   if (!identity_manager)
     return false;
 
-  std::string sync_email = identity_manager->GetPrimaryAccountInfo().email;
+  std::string sync_email =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+          .email;
 
   if (sync_email.empty() || username.empty())
     return false;

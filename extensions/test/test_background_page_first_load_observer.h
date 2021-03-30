@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_observer.h"
 #include "extensions/browser/process_manager.h"
@@ -45,10 +45,10 @@ class TestBackgroundPageFirstLoadObserver : public ProcessManagerObserver,
   ProcessManager* const process_manager_ = nullptr;
   ExtensionHost* extension_host_ = nullptr;
   base::RunLoop run_loop_;
-  ScopedObserver<ProcessManager, ProcessManagerObserver>
-      process_manager_observer_{this};
-  ScopedObserver<ExtensionHost, ExtensionHostObserver> extension_host_observer_{
-      this};
+  base::ScopedObservation<ProcessManager, ProcessManagerObserver>
+      process_manager_observation_{this};
+  base::ScopedObservation<ExtensionHost, ExtensionHostObserver>
+      extension_host_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TestBackgroundPageFirstLoadObserver);
 };

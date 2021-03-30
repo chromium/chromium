@@ -29,12 +29,12 @@ class ASH_EXPORT CameraMicTrayItemView : public TrayItemView,
   CameraMicTrayItemView(const CameraMicTrayItemView&) = delete;
   CameraMicTrayItemView& operator=(const CameraMicTrayItemView&) = delete;
 
-  base::string16 GetAccessibleNameString() const;
+  std::u16string GetAccessibleNameString() const;
 
   // views::View:
   const char* GetClassName() const override;
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
-  base::string16 GetTooltipText(const gfx::Point& p) const override;
+  std::u16string GetTooltipText(const gfx::Point& p) const override;
 
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
@@ -43,7 +43,9 @@ class ASH_EXPORT CameraMicTrayItemView : public TrayItemView,
   void HandleLocaleChange() override;
 
   // MediaCaptureObserver:
-  void OnVmMediaNotificationChanged(bool camera, bool mic) override;
+  void OnVmMediaNotificationChanged(bool camera,
+                                    bool mic,
+                                    bool camera_and_mic) override;
 
  private:
   void Update();
@@ -51,8 +53,9 @@ class ASH_EXPORT CameraMicTrayItemView : public TrayItemView,
 
   const Type type_;
   bool active_ = false;
+  bool with_mic_ = false;  // Only for `type_ == kCamera`.
   bool is_primary_session_ = false;
-  base::string16 message_;
+  std::u16string message_;
 };
 
 }  // namespace ash

@@ -8,7 +8,6 @@ include_rules = [
 
 specific_include_rules = {
     "notification_data_conversions_test.cc": [
-        "+base/strings/nullable_string16.h",
         "+base/strings/utf_string_conversions.h",
     ],
 }

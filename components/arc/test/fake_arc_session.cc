@@ -45,6 +45,9 @@ void FakeArcSession::SetUserInfo(
     const std::string& hash,
     const std::string& serial_number) {}
 
+void FakeArcSession::SetDemoModeDelegate(
+    ArcClientAdapter::DemoModeDelegate* delegate) {}
+
 void FakeArcSession::StopWithReason(ArcStopReason reason) {
   bool was_mojo_connected = running_;
   running_ = false;

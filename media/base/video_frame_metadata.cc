@@ -21,11 +21,11 @@ VideoFrameMetadata::VideoFrameMetadata(const VideoFrameMetadata& other) =
     default;
 
 #define MERGE_FIELD(a, source) \
-  if (source->a)               \
-    this->a = source->a
+  if (source.a)                \
+  this->a = source.a
 
 void VideoFrameMetadata::MergeMetadataFrom(
-    const VideoFrameMetadata* metadata_source) {
+    const VideoFrameMetadata& metadata_source) {
   MERGE_FIELD(allow_overlay, metadata_source);
   MERGE_FIELD(capture_begin_time, metadata_source);
   MERGE_FIELD(capture_end_time, metadata_source);
@@ -38,7 +38,7 @@ void VideoFrameMetadata::MergeMetadataFrom(
   MERGE_FIELD(interactive_content, metadata_source);
   MERGE_FIELD(reference_time, metadata_source);
   MERGE_FIELD(read_lock_fences_enabled, metadata_source);
-  MERGE_FIELD(rotation, metadata_source);
+  MERGE_FIELD(transformation, metadata_source);
   MERGE_FIELD(texture_owner, metadata_source);
   MERGE_FIELD(wants_promotion_hint, metadata_source);
   MERGE_FIELD(protected_video, metadata_source);
@@ -57,6 +57,7 @@ void VideoFrameMetadata::MergeMetadataFrom(
   MERGE_FIELD(receive_time, metadata_source);
   MERGE_FIELD(wallclock_frame_duration, metadata_source);
   MERGE_FIELD(maximum_composition_delay_in_frames, metadata_source);
+  MERGE_FIELD(hw_protected_validation_id, metadata_source);
 }
 
 }  // namespace media

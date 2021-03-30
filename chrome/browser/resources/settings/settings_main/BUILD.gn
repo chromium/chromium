@@ -16,10 +16,10 @@ js_library("settings_main") {
   deps = [
     "..:page_visibility",
     "..:route",
-    "..:router.m",
-    "..:search_settings.m",
+    "..:router",
+    "..:search_settings",
     "../about_page:about_page",
-    "../about_page:about_page_browser_proxy.m",
+    "../about_page:about_page_browser_proxy",
     "../basic_page:basic_page",
     "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
     "//ui/webui/resources/js:assert.m",

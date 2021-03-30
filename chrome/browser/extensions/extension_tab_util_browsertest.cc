@@ -141,8 +141,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
                        MAYBE_OpenSplitModeExtensionOptionsPageIncognito) {
-  const Extension* options_split_extension = LoadExtensionIncognito(
-      test_data_dir_.AppendASCII("options_page_split_incognito"));
+  const Extension* options_split_extension =
+      LoadExtension(test_data_dir_.AppendASCII("options_page_split_incognito"),
+                    {.allow_in_incognito = true});
   ASSERT_TRUE(options_split_extension);
   ASSERT_TRUE(OptionsPageInfo::HasOptionsPage(options_split_extension));
   GURL options_url = OptionsPageInfo::GetOptionsPage(options_split_extension);
@@ -230,8 +231,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
                        OpenSpanningModeExtensionOptionsPageIncognito) {
-  const Extension* options_spanning_extension = LoadExtensionIncognito(
-      test_data_dir_.AppendASCII("options_page_spanning_incognito"));
+  const Extension* options_spanning_extension = LoadExtension(
+      test_data_dir_.AppendASCII("options_page_spanning_incognito"),
+      {.allow_in_incognito = true});
   ASSERT_TRUE(options_spanning_extension);
   ASSERT_TRUE(OptionsPageInfo::HasOptionsPage(options_spanning_extension));
   GURL options_url =

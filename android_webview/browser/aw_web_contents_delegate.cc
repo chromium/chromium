@@ -141,8 +141,8 @@ void AwWebContentsDelegate::RunFileChooser(
   Java_AwWebContentsDelegate_runFileChooser(
       env, java_delegate, render_frame_host->GetProcess()->GetID(),
       render_frame_host->GetRoutingID(), mode_flags,
-      ConvertUTF16ToJavaString(
-          env, base::JoinString(params.accept_types, base::ASCIIToUTF16(","))),
+      ConvertUTF16ToJavaString(env,
+                               base::JoinString(params.accept_types, u",")),
       params.title.empty() ? nullptr
                            : ConvertUTF16ToJavaString(env, params.title),
       params.default_file_name.empty()
@@ -338,7 +338,7 @@ static void JNI_AwWebContentsDelegate_FilesSelectedInChooser(
   }
 
   std::vector<std::string> file_path_str;
-  std::vector<base::string16> display_name_str;
+  std::vector<std::u16string> display_name_str;
   // Note file_paths maybe NULL, but this will just yield a zero-length vector.
   base::android::AppendJavaStringArrayToStringVector(env, file_paths,
                                                      &file_path_str);

@@ -167,6 +167,13 @@ void CSSFontSelector::ReportNotDefGlyph() const {
   UseCounter::Count(GetDocument(), WebFeature::kFontShapingNotDefGlyphObserved);
 }
 
+void CSSFontSelector::ReportEmojiSegmentGlyphCoverage(
+    unsigned num_clusters,
+    unsigned num_broken_clusters) {
+  GetDocument().GetFontMatchingMetrics()->ReportEmojiSegmentGlyphCoverage(
+      num_clusters, num_broken_clusters);
+}
+
 void CSSFontSelector::ReportSuccessfulFontFamilyMatch(
     const AtomicString& font_family_name) {
   GetDocument().GetFontMatchingMetrics()->ReportSuccessfulFontFamilyMatch(

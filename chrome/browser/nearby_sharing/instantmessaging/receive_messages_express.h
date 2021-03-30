@@ -11,7 +11,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/stream_parser.h"
+#include "chrome/browser/nearby_sharing/instantmessaging/token_fetcher.h"
+#include "chromeos/services/nearby/public/mojom/webrtc_signaling_messenger.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
 
 namespace chrome_browser_nearby_sharing_instantmessaging {
@@ -23,39 +28,54 @@ class SharedURLLoaderFactory;
 class SimpleURLLoader;
 }  // namespace network
 
-class TokenFetcher;
+namespace signin {
+class IdentityManager;
+}  // namespace signin
 
 // Receives streaming messages from Instant Messaging API over HTTP. Responsible
 // for parsing incoming bytes into valid ReceivesMessagesExpressResponse
 // messages.
-class ReceiveMessagesExpress : public network::SimpleURLLoaderStreamConsumer {
+class ReceiveMessagesExpress : public sharing::mojom::ReceiveMessagesSession,
+                               public network::SimpleURLLoaderStreamConsumer {
  public:
   using SuccessCallback = base::OnceCallback<void(bool success)>;
+  using StartReceivingMessagesCallback =
+      sharing::mojom::WebRtcSignalingMessenger::StartReceivingMessagesCallback;
 
-  ReceiveMessagesExpress(
-      TokenFetcher* token_fetcher,
+  static void StartReceiveSession(
+      const std::string& self_id,
+      sharing::mojom::LocationHintPtr location_hint,
+      mojo::PendingRemote<sharing::mojom::IncomingMessagesListener>
+          incoming_messages_listener,
+      StartReceivingMessagesCallback callback,
+      signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   ~ReceiveMessagesExpress() override;
 
-  // Registers with InstantMessaging to start receiving messages. Each
-  // individual message is passed to |listener|. Subsequent calls to this method
-  // replaces the registered listener.
+  // sharing::mojom::ReceiveMessagesSession:
+  void StopReceivingMessages() override;
+
+ private:
+  ReceiveMessagesExpress(
+      mojo::PendingRemote<sharing::mojom::IncomingMessagesListener>
+          incoming_messages_listener,
+      signin::IdentityManager* identity_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
   void StartReceivingMessages(
       const chrome_browser_nearby_sharing_instantmessaging::
           ReceiveMessagesExpressRequest& request,
-      base::RepeatingCallback<void(const std::string& message)> listener,
-      SuccessCallback callback);
+      StartReceivingMessagesCallback callback,
+      mojo::PendingRemote<sharing::mojom::ReceiveMessagesSession>
+          pending_remote_for_result);
 
-  // Stops the incoming stream of messages from InstantMessaging and unregisters
-  // the listener.
-  void StopReceivingMessages();
-
- private:
   void DoStartReceivingMessages(
       const chrome_browser_nearby_sharing_instantmessaging::
           ReceiveMessagesExpressRequest& request,
       const std::string& oauth_token);
+
+  void OnFastPathReadyTimeout();
 
   // network::SimpleURLLoaderStreamConsumer:
   void OnDataReceived(base::StringPiece string_piece,
@@ -63,13 +83,25 @@ class ReceiveMessagesExpress : public network::SimpleURLLoaderStreamConsumer {
   void OnComplete(bool success) override;
   void OnRetry(base::OnceClosure start_retry) override;
 
+  // StreamParser callbacks:
   void OnFastPathReady();
+  void OnMessageReceived(const std::string& message);
 
-  TokenFetcher* token_fetcher_;
+  // This method will cause the object to shut down its mojo pipe
+  // and self destruct. After calling, this object may no longer be valid and
+  // no further interactions should be done.
+  void FailSessionAndDestruct(const std::string reason);
+
+  StartReceivingMessagesCallback start_receiving_messages_callback_;
+  mojo::PendingRemote<sharing::mojom::ReceiveMessagesSession>
+      self_pending_remote_;
+  mojo::Remote<sharing::mojom::IncomingMessagesListener>
+      incoming_messages_listener_;
+  TokenFetcher token_fetcher_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
-  std::unique_ptr<StreamParser> stream_parser_;
-  SuccessCallback success_callback_;
+  StreamParser stream_parser_;
+  base::OneShotTimer fast_path_ready_timeout_timer_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_consumer.h"
 #import "ios/chrome/browser/ui/page_info/requirements/page_info_presentation.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_presenter.h"
-#import "ios/chrome/browser/ui/thumb_strip/thumb_strip_attacher.h"
+#import "ios/chrome/browser/ui/thumb_strip/thumb_strip_supporting.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator_delegate.h"
 #import "ios/chrome/browser/web/web_navigation_ntp_delegate.h"
 #import "ios/public/provider/chrome/browser/voice/logo_animation_controller.h"
@@ -34,7 +34,7 @@ class Browser;
                         LogoAnimationControllerOwnerOwner,
                         PageInfoPresentation,
                         SyncPresenter,
-                        ThumbStripAttacher,
+                        ThumbStripSupporting,
                         ToolbarCoordinatorDelegate,
                         WebNavigationNTPDelegate>
 
@@ -89,7 +89,8 @@ class Browser;
 
 // Opens a new tab as if originating from |originPoint| and |focusOmnibox|.
 - (void)openNewTabFromOriginPoint:(CGPoint)originPoint
-                     focusOmnibox:(BOOL)focusOmnibox;
+                     focusOmnibox:(BOOL)focusOmnibox
+                    inheritOpener:(BOOL)inheritOpener;
 
 // Adds |tabAddedCompletion| to the completion block (if any) that will be run
 // the next time a tab is added to the TabModel this object was initialized

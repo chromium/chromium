@@ -5,6 +5,7 @@
 #include "chrome/browser/android/webapk/webapk_installer.h"
 
 #include <set>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -38,7 +38,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/version_info/version_info.h"
-#include "components/webapps/android/shortcut_info.h"
+#include "components/webapps/browser/android/shortcut_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_remover.h"
@@ -179,7 +179,7 @@ std::unique_ptr<std::string> BuildProtoInBackground(
     const std::string& version,
     std::map<std::string, WebApkIconHasher::Icon> icon_url_to_murmur2_hash,
     bool is_manifest_stale,
-    WebApkUpdateReason update_reason) {
+    std::vector<WebApkUpdateReason> update_reasons) {
   std::unique_ptr<webapk::WebApk> webapk(new webapk::WebApk);
   webapk->set_manifest_url(shortcut_info.manifest_url.spec());
   webapk->set_requester_application_package(
@@ -189,7 +189,9 @@ std::unique_ptr<std::string> BuildProtoInBackground(
   webapk->set_package_name(package_name);
   webapk->set_version(version);
   webapk->set_stale_manifest(is_manifest_stale);
-  webapk->set_update_reason(ConvertUpdateReasonToProtoEnum(update_reason));
+
+  for (auto update_reason : update_reasons)
+    webapk->add_update_reasons(ConvertUpdateReasonToProtoEnum(update_reason));
 
   webapk::WebAppManifest* web_app_manifest = webapk->mutable_manifest();
   web_app_manifest->set_name(base::UTF16ToUTF8(shortcut_info.name));
@@ -234,7 +236,7 @@ std::unique_ptr<std::string> BuildProtoInBackground(
       webapk::ShareTargetParamsFile* share_files =
           share_target_params->add_files();
       share_files->set_name(base::UTF16ToUTF8(share_target_params_file.name));
-      for (base::string16 mime_type : share_target_params_file.accept) {
+      for (std::u16string mime_type : share_target_params_file.accept) {
         share_files->add_accept(base::UTF16ToUTF8(mime_type));
       }
     }
@@ -289,7 +291,7 @@ std::unique_ptr<std::string> BuildProtoInBackground(
     auto* shortcut_item = web_app_manifest->add_shortcuts();
     shortcut_item->set_name(base::UTF16ToUTF8(manifest_shortcut_item.name));
     shortcut_item->set_short_name(base::UTF16ToUTF8(
-        manifest_shortcut_item.short_name.value_or(base::string16())));
+        manifest_shortcut_item.short_name.value_or(std::u16string())));
     shortcut_item->set_url(manifest_shortcut_item.url.spec());
 
     for (const auto& manifest_icon : manifest_shortcut_item.icons) {
@@ -330,14 +332,14 @@ bool StoreUpdateRequestToFileInBackground(
     const std::string& version,
     std::map<std::string, WebApkIconHasher::Icon> icon_url_to_murmur2_hash,
     bool is_manifest_stale,
-    WebApkUpdateReason update_reason) {
+    std::vector<WebApkUpdateReason> update_reasons) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
   std::unique_ptr<std::string> proto = BuildProtoInBackground(
       shortcut_info, primary_icon, is_primary_icon_maskable, splash_icon,
       package_name, version, std::move(icon_url_to_murmur2_hash),
-      is_manifest_stale, update_reason);
+      is_manifest_stale, std::move(update_reasons));
 
   // Create directory if it does not exist.
   base::CreateDirectory(update_request_path.DirName());
@@ -438,7 +440,7 @@ void WebApkInstaller::BuildProto(
       base::BindOnce(&BuildProtoInBackground, shortcut_info, primary_icon,
                      is_primary_icon_maskable, splash_icon, package_name,
                      version, std::move(icon_url_to_murmur2_hash),
-                     is_manifest_stale, WebApkUpdateReason::NONE),
+                     is_manifest_stale, std::vector<WebApkUpdateReason>()),
       std::move(callback));
 }
 
@@ -453,7 +455,7 @@ void WebApkInstaller::StoreUpdateRequestToFile(
     const std::string& version,
     std::map<std::string, WebApkIconHasher::Icon> icon_url_to_murmur2_hash,
     bool is_manifest_stale,
-    WebApkUpdateReason update_reason,
+    std::vector<WebApkUpdateReason> update_reasons,
     base::OnceCallback<void(bool)> callback) {
   base::PostTaskAndReplyWithResult(
       GetBackgroundTaskRunner().get(), FROM_HERE,
@@ -461,7 +463,7 @@ void WebApkInstaller::StoreUpdateRequestToFile(
                      shortcut_info, primary_icon, is_primary_icon_maskable,
                      splash_icon, package_name, version,
                      std::move(icon_url_to_murmur2_hash), is_manifest_stale,
-                     update_reason),
+                     std::move(update_reasons)),
       std::move(callback));
 }
 

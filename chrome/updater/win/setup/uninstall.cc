@@ -7,15 +7,16 @@
 #include <shlobj.h>
 #include <windows.h>
 #include <memory>
+#include <string>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/optional.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_com_initializer.h"
@@ -26,6 +27,7 @@
 #include "chrome/updater/app/server/win/updater_internal_idl.h"
 #include "chrome/updater/app/server/win/updater_legacy_idl.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
 #include "chrome/updater/win/constants.h"
 #include "chrome/updater/win/setup/setup_util.h"
@@ -53,13 +55,20 @@ void DeleteComService() {
                                  GetComServiceAppidRegistryPath(),
                                  WorkItem::kWow64Default);
   if (!installer::InstallServiceWorkItem::DeleteService(
-          kWindowsServiceName, base::ASCIIToUTF16(UPDATER_KEY),
+          kWindowsServiceName, base::ASCIIToWide(UPDATER_KEY),
           {__uuidof(UpdaterServiceClass)}, {}))
     LOG(WARNING) << "DeleteService failed.";
 }
 
 void DeleteComInterfaces(HKEY root) {
-  for (const auto& iid : GetInterfaces()) {
+  for (const auto& iid : GetActiveInterfaces()) {
+    for (const auto& reg_path :
+         {GetComIidRegistryPath(iid), GetComTypeLibRegistryPath(iid)}) {
+      InstallUtil::DeleteRegistryKey(root, reg_path, WorkItem::kWow64Default);
+    }
+  }
+  // TODO(crbug.com/1175095): Support candidate-specific uninstallation.
+  for (const auto& iid : GetSideBySideInterfaces()) {
     for (const auto& reg_path :
          {GetComIidRegistryPath(iid), GetComTypeLibRegistryPath(iid)}) {
       InstallUtil::DeleteRegistryKey(root, reg_path, WorkItem::kWow64Default);
@@ -68,21 +77,21 @@ void DeleteComInterfaces(HKEY root) {
 }
 
 int RunUninstallScript(bool uninstall_all) {
-  base::FilePath versioned_dir;
-  if (!GetVersionedDirectory(&versioned_dir)) {
+  base::Optional<base::FilePath> versioned_dir = GetVersionedDirectory();
+  if (!versioned_dir) {
     LOG(ERROR) << "GetVersionedDirectory failed.";
     return -1;
   }
 
-  base::char16 cmd_path[MAX_PATH] = {0};
+  wchar_t cmd_path[MAX_PATH] = {0};
   DWORD size = ExpandEnvironmentStrings(L"%SystemRoot%\\System32\\cmd.exe",
                                         cmd_path, base::size(cmd_path));
   if (!size || size >= MAX_PATH)
     return -1;
 
-  base::FilePath script_path = versioned_dir.AppendASCII(kUninstallScript);
+  base::FilePath script_path = versioned_dir->AppendASCII(kUninstallScript);
 
-  base::string16 cmdline = cmd_path;
+  std::wstring cmdline = cmd_path;
   base::StringAppendF(&cmdline, L" /Q /C \"%ls\" %ls",
                       script_path.value().c_str(),
                       uninstall_all ? L"all" : L"local");
@@ -107,10 +116,11 @@ int RunUninstallScript(bool uninstall_all) {
 // 3. Runs the uninstall script in the install directory of the updater.
 // The execution of this function and the script race each other but the script
 // loops and waits in between iterations trying to delete the install directory.
-int Uninstall(bool is_machine) {
-  VLOG(1) << __func__ << ", is_machine: " << is_machine;
-  DCHECK(!is_machine || ::IsUserAnAdmin());
-  HKEY key = is_machine ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
+int Uninstall(UpdaterScope scope) {
+  VLOG(1) << __func__ << ", scope: " << scope;
+  DCHECK(scope == UpdaterScope::kUser || ::IsUserAnAdmin());
+  HKEY key =
+      scope == UpdaterScope::kSystem ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
 
   auto scoped_com_initializer =
       std::make_unique<base::win::ScopedCOMInitializer>(
@@ -119,7 +129,7 @@ int Uninstall(bool is_machine) {
   updater::UnregisterWakeTask();
 
   std::unique_ptr<WorkItemList> uninstall_list(WorkItem::CreateWorkItemList());
-  uninstall_list->AddDeleteRegKeyWorkItem(key, base::ASCIIToUTF16(UPDATER_KEY),
+  uninstall_list->AddDeleteRegKeyWorkItem(key, base::ASCIIToWide(UPDATER_KEY),
                                           WorkItem::kWow64Default);
   if (!uninstall_list->Do()) {
     LOG(ERROR) << "Failed to delete the registry keys.";
@@ -128,7 +138,7 @@ int Uninstall(bool is_machine) {
   }
 
   DeleteComInterfaces(key);
-  if (is_machine)
+  if (scope == UpdaterScope::kSystem)
     DeleteComService();
   DeleteComServer(key);
 
@@ -137,7 +147,7 @@ int Uninstall(bool is_machine) {
 
 // Uninstalls this version of the updater, without uninstalling any other
 // versions. This version is assumed to not be the active version.
-int UninstallCandidate(bool is_machine) {
+int UninstallCandidate(UpdaterScope scope) {
   {
     auto scoped_com_initializer =
         std::make_unique<base::win::ScopedCOMInitializer>(
@@ -145,7 +155,8 @@ int UninstallCandidate(bool is_machine) {
     updater::UnregisterWakeTask();
   }
 
-  // TODO(crbug.com/1140562): Remove the UpdateServiceInternal server as well.
+  // TODO(crbug.com/1175095): Remove the UpdateServiceInternal server as well.
+  // TODO(crbug.com/1175095): Remove COM interfaces.
 
   return RunUninstallScript(false);
 }

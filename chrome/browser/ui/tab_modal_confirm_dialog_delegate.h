@@ -5,11 +5,12 @@
 #ifndef CHROME_BROWSER_UI_TAB_MODAL_CONFIRM_DIALOG_DELEGATE_H_
 #define CHROME_BROWSER_UI_TAB_MODAL_CONFIRM_DIALOG_DELEGATE_H_
 
+#include <string>
+
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "ui/base/window_open_disposition.h"
@@ -72,8 +73,8 @@ class TabModalConfirmDialogDelegate : public content::NotificationObserver {
   void LinkClicked(WindowOpenDisposition disposition);
 
   // The title of the dialog. Note that the title is not shown on all platforms.
-  virtual base::string16 GetTitle() = 0;
-  virtual base::string16 GetDialogMessage() = 0;
+  virtual std::u16string GetTitle() = 0;
+  virtual std::u16string GetDialogMessage() = 0;
 
   // Icon to show for the dialog. If this method is not overridden, a default
   // icon (like the application icon) is shown.
@@ -82,12 +83,12 @@ class TabModalConfirmDialogDelegate : public content::NotificationObserver {
   // Title for the accept and the cancel buttons.
   // The default implementation uses IDS_OK and IDS_CANCEL.
   virtual int GetDialogButtons() const;
-  virtual base::string16 GetAcceptButtonTitle();
-  virtual base::string16 GetCancelButtonTitle();
+  virtual std::u16string GetAcceptButtonTitle();
+  virtual std::u16string GetCancelButtonTitle();
 
   // Returns the text of the link to be displayed, if any. Otherwise returns
   // an empty string.
-  virtual base::string16 GetLinkText() const;
+  virtual std::u16string GetLinkText() const;
 
   // GTK stock icon names for the accept and cancel buttons, respectively.
   // The icons are only used on GTK. If these methods are not overriden,

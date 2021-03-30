@@ -11,6 +11,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
+#include "third_party/blink/public/mojom/worker/dedicated_worker_host.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_worker_options.h"
@@ -57,7 +58,9 @@ void DedicatedWorkerMessagingProxy::StartWorkerGlobalScope(
     const v8_inspector::V8StackTraceId& stack_id,
     const String& source_code,
     RejectCoepUnsafeNone reject_coep_unsafe_none,
-    const blink::DedicatedWorkerToken& token) {
+    const blink::DedicatedWorkerToken& token,
+    mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
+        dedicated_worker_host) {
   DCHECK(IsParentContextThread());
   if (AskedToTerminate()) {
     // Worker.terminate() could be called from JS before the thread was
@@ -65,6 +68,8 @@ void DedicatedWorkerMessagingProxy::StartWorkerGlobalScope(
     return;
   }
 
+  // |dedicated_worker_host| must be stored before InitializeWorkerThread.
+  pending_dedicated_worker_host_ = std::move(dedicated_worker_host);
   InitializeWorkerThread(
       std::move(creation_params),
       CreateBackingThreadStartupData(GetExecutionContext()->GetIsolate()),
@@ -125,8 +130,7 @@ void DedicatedWorkerMessagingProxy::PostMessageToWorkerGlobalScope(
       *GetWorkerThread()->GetTaskRunner(TaskType::kPostedMessage), FROM_HERE,
       CrossThreadBindOnce(
           &DedicatedWorkerObjectProxy::ProcessMessageFromWorkerObject,
-          CrossThreadUnretained(&WorkerObjectProxy()),
-          WTF::Passed(std::move(message)),
+          CrossThreadUnretained(&WorkerObjectProxy()), std::move(message),
           CrossThreadUnretained(GetWorkerThread())));
 }
 
@@ -179,8 +183,7 @@ void DedicatedWorkerMessagingProxy::DidEvaluateScript(bool success) {
         *GetWorkerThread()->GetTaskRunner(TaskType::kPostedMessage), FROM_HERE,
         CrossThreadBindOnce(
             &DedicatedWorkerObjectProxy::ProcessMessageFromWorkerObject,
-            CrossThreadUnretained(&WorkerObjectProxy()),
-            WTF::Passed(std::move(task)),
+            CrossThreadUnretained(&WorkerObjectProxy()), std::move(task),
             CrossThreadUnretained(GetWorkerThread())));
   }
 }
@@ -263,8 +266,10 @@ DedicatedWorkerMessagingProxy::CreateBackingThreadStartupData(
 
 std::unique_ptr<WorkerThread>
 DedicatedWorkerMessagingProxy::CreateWorkerThread() {
-  return std::make_unique<DedicatedWorkerThread>(GetExecutionContext(),
-                                                 WorkerObjectProxy());
+  DCHECK(pending_dedicated_worker_host_);
+  return std::make_unique<DedicatedWorkerThread>(
+      GetExecutionContext(), WorkerObjectProxy(),
+      std::move(pending_dedicated_worker_host_));
 }
 
 }  // namespace blink

@@ -6,8 +6,8 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_CREDIT_CARD_FIDO_AUTHENTICATOR_H_
 
 #include <memory>
+#include <string>
 
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_driver.h"
@@ -82,7 +82,7 @@ class CreditCardFIDOAuthenticator
     virtual void OnFIDOAuthenticationComplete(
         bool did_succeed,
         const CreditCard* card = nullptr,
-        const base::string16& cvc = base::string16()) = 0;
+        const std::u16string& cvc = std::u16string()) = 0;
     virtual void OnFidoAuthorizationComplete(bool did_succeed) = 0;
   };
   CreditCardFIDOAuthenticator(AutofillDriver* driver, AutofillClient* client);
@@ -193,7 +193,7 @@ class CreditCardFIDOAuthenticator
   void OnFullCardRequestSucceeded(
       const payments::FullCardRequest& full_card_request,
       const CreditCard& card,
-      const base::string16& cvc) override;
+      const std::u16string& cvc) override;
   void OnFullCardRequestFailed(
       payments::FullCardRequest::FailureType failure_type) override;
 

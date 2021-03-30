@@ -7,7 +7,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
-#include "components/webapps/installable/installable_manager.h"
+#include "components/webapps/browser/installable/installable_manager.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
@@ -70,11 +70,11 @@ gfx::ImageSkia ManifestWebAppBrowserController::GetWindowIcon() const {
   return browser()->GetCurrentPageIcon().AsImageSkia();
 }
 
-base::string16 ManifestWebAppBrowserController::GetAppShortName() const {
-  return base::string16();
+std::u16string ManifestWebAppBrowserController::GetAppShortName() const {
+  return std::u16string();
 }
 
-base::string16 ManifestWebAppBrowserController::GetFormattedUrlOrigin() const {
+std::u16string ManifestWebAppBrowserController::GetFormattedUrlOrigin() const {
   return FormatUrlOrigin(GetAppStartUrl());
 }
 

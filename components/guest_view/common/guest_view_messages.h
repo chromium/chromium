@@ -18,12 +18,6 @@
 IPC_MESSAGE_CONTROL1(GuestViewMsg_AttachToEmbedderFrame_ACK,
                      int /* element_instance_id */)
 
-// Once a RenderView proxy has been created for the guest in the embedder render
-// process, this IPC informs the embedder of the proxy's routing ID.
-IPC_MESSAGE_CONTROL2(GuestViewMsg_GuestAttached,
-                     int /* element_instance_id */,
-                     int /* source_routing_id */)
-
 // Messages sent from the renderer to the browser.
 
 // We have a RenderFrame with routing id of |embedder_local_frame_routing_id|.

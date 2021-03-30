@@ -38,6 +38,7 @@ cc_library(
     deps = [
         ":city",
         ":wyhash",
+        "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/base:endian",
         "//absl/container:fixed_array",
@@ -94,6 +95,7 @@ cc_binary(
         ":hash",
         "//absl/base:core_headers",
         "//absl/random",
+        "//absl/strings",
         "//absl/strings:cord",
         "//absl/strings:cord_test_helpers",
         "@com_github_google_benchmark//:benchmark_main",

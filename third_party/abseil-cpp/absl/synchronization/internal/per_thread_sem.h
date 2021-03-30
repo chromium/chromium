@@ -96,20 +96,20 @@ ABSL_NAMESPACE_END
 // By changing our extension points to be extern "C", we dodge this
 // check.
 extern "C" {
-void AbslInternalPerThreadSemPost(
+void ABSL_INTERNAL_C_SYMBOL(AbslInternalPerThreadSemPost)(
     absl::base_internal::ThreadIdentity* identity);
-bool AbslInternalPerThreadSemWait(
+bool ABSL_INTERNAL_C_SYMBOL(AbslInternalPerThreadSemWait)(
     absl::synchronization_internal::KernelTimeout t);
 }  // extern "C"
 
 void absl::synchronization_internal::PerThreadSem::Post(
     absl::base_internal::ThreadIdentity* identity) {
-  AbslInternalPerThreadSemPost(identity);
+  ABSL_INTERNAL_C_SYMBOL(AbslInternalPerThreadSemPost)(identity);
 }
 
 bool absl::synchronization_internal::PerThreadSem::Wait(
     absl::synchronization_internal::KernelTimeout t) {
-  return AbslInternalPerThreadSemWait(t);
+  return ABSL_INTERNAL_C_SYMBOL(AbslInternalPerThreadSemWait)(t);
 }
 
 #endif  // ABSL_SYNCHRONIZATION_INTERNAL_PER_THREAD_SEM_H_

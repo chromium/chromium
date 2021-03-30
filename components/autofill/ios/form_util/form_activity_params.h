@@ -6,9 +6,12 @@
 
 #include <string>
 
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
+
+// HTML password field type.
+constexpr char kPasswordFieldType[] = "password";
 
 // Wraps information about event happening in a form.
 // Example HTML

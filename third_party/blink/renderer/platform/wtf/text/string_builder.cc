@@ -136,10 +136,24 @@ unsigned StringBuilder::Capacity() const {
 }
 
 void StringBuilder::ReserveCapacity(unsigned new_capacity) {
+  if (!HasBuffer()) {
+    if (is_8bit_)
+      CreateBuffer8(new_capacity);
+    else
+      CreateBuffer16(new_capacity);
+    return;
+  }
   if (is_8bit_)
-    EnsureBuffer8(new_capacity);
+    buffer8_.ReserveCapacity(new_capacity);
   else
-    EnsureBuffer16(new_capacity);
+    buffer16_.ReserveCapacity(new_capacity);
+}
+
+void StringBuilder::Reserve16BitCapacity(unsigned new_capacity) {
+  if (is_8bit_ || !HasBuffer())
+    CreateBuffer16(new_capacity);
+  else
+    buffer16_.ReserveCapacity(new_capacity);
 }
 
 void StringBuilder::Resize(unsigned new_size) {
@@ -179,16 +193,19 @@ void StringBuilder::CreateBuffer16(unsigned added_size) {
   DCHECK(is_8bit_ || !HasBuffer());
   Buffer8 buffer8;
   unsigned length = length_;
+  wtf_size_t capacity = 0;
   if (has_buffer_) {
     buffer8 = std::move(buffer8_);
     buffer8_.~Buffer8();
+    capacity = buffer8.capacity();
   }
   new (&buffer16_) Buffer16;
   has_buffer_ = true;
-  // See createBuffer8's call to reserveInitialCapacity for why we do this.
-  buffer16_.ReserveInitialCapacity(
-      length_ +
-      std::max<unsigned>(added_size, InitialBufferSize() / sizeof(UChar)));
+  capacity = std::max<wtf_size_t>(
+      capacity, length_ + std::max<unsigned>(
+                              added_size, InitialBufferSize() / sizeof(UChar)));
+  // See CreateBuffer8's call to ReserveInitialCapacity for why we do this.
+  buffer16_.ReserveInitialCapacity(capacity);
   is_8bit_ = false;
   length_ = 0;
   if (!buffer8.IsEmpty()) {

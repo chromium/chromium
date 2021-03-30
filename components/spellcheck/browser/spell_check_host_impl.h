@@ -33,29 +33,25 @@ class SpellCheckHostImpl : public spellcheck::mojom::SpellCheckHost {
  protected:
   // spellcheck::mojom::SpellCheckHost:
   void RequestDictionary() override;
-  void NotifyChecked(const base::string16& word, bool misspelled) override;
+  void NotifyChecked(const std::u16string& word, bool misspelled) override;
 
 #if BUILDFLAG(USE_RENDERER_SPELLCHECKER)
-  void CallSpellingService(const base::string16& text,
+  void CallSpellingService(const std::u16string& text,
                            CallSpellingServiceCallback callback) override;
 #endif  // BUILDFLAG(USE_RENDERER_SPELLCHECKER)
 
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER) && !BUILDFLAG(ENABLE_SPELLING_SERVICE)
-  void RequestTextCheck(const base::string16& text,
+  void RequestTextCheck(const std::u16string& text,
                         int route_id,
                         RequestTextCheckCallback callback) override;
 
-  void CheckSpelling(const base::string16& word,
+  void CheckSpelling(const std::u16string& word,
                      int route_id,
                      CheckSpellingCallback callback) override;
-  void FillSuggestionList(const base::string16& word,
+  void FillSuggestionList(const std::u16string& word,
                           FillSuggestionListCallback callback) override;
 
 #if defined(OS_WIN)
-  void GetPerLanguageSuggestions(
-      const base::string16& word,
-      GetPerLanguageSuggestionsCallback callback) override;
-
   void InitializeDictionaries(InitializeDictionariesCallback callback) override;
 #endif  // defined(OS_WIN)
 #endif  // BUILDFLAG(USE_BROWSER_SPELLCHECKER) &&

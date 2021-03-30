@@ -748,7 +748,7 @@ TEST(ProcessSnapshotMinidump, System) {
   minidump_system_info.Cpu.X86CpuInfo.VendorId[2] = cpu_info_bytes[2];
 
   MINIDUMP_MISC_INFO_5 minidump_misc_info = {};
-  base::string16 build_string;
+  std::u16string build_string;
   ASSERT_TRUE(base::UTF8ToUTF16(
       "MyOSVersion; MyMachineDescription", 33, &build_string));
   std::copy(build_string.begin(), build_string.end(),

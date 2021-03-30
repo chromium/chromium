@@ -22,6 +22,11 @@ Polymer({
       observer: 'managedPropertiesChanged_',
     },
 
+    disabled: {
+      type: Boolean,
+      value: false,
+    },
+
     /**
      * The name property of the selected APN. If a name property is empty, the
      * accessPointName property will be used. We use 'name' so that multiple
@@ -90,6 +95,21 @@ Polymer({
         };
       },
       readOnly: true
+    },
+
+    /** @private */
+    isAttachApnAllowed_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('useAttachApn') &&
+            loadTimeData.getBoolean('useAttachApn');
+      }
+    },
+
+    /** @private */
+    isAttachApnToggleEnabled_: {
+      type: Boolean,
+      value: false,
     },
   },
 
@@ -206,6 +226,8 @@ Polymer({
       // If the active APN is not in the list, copy it to otherApn.
       otherApn = activeApn;
     }
+    this.isAttachApnToggleEnabled_ =
+        otherApn.attach === OncMojo.USE_ATTACH_APN_NAME;
     this.otherApn_ = {
       accessPointName: otherApn.accessPointName,
       name: kOtherAccessPointName,
@@ -315,6 +337,8 @@ Polymer({
         accessPointName: this.otherApn_.accessPointName,
         username: this.otherApn_.username,
         password: this.otherApn_.password,
+        attach: this.isAttachApnToggleEnabled_ ? OncMojo.USE_ATTACH_APN_NAME :
+                                                 '',
       };
     } else {
       apn = this.apnSelectList_.find(a => a.name === name);
@@ -332,7 +356,7 @@ Polymer({
    * @private
    */
   isDisabled_() {
-    return this.selectedApn_ === '';
+    return this.disabled || this.selectedApn_ === '';
   },
 
   /**

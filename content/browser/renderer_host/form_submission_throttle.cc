@@ -4,7 +4,9 @@
 
 #include "content/browser/renderer_host/form_submission_throttle.h"
 #include "base/memory/ptr_util.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
+#include "content/browser/renderer_host/render_frame_host_csp_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -64,8 +66,7 @@ FormSubmissionThrottle::CheckContentSecurityPolicyFormAction(
 
   NavigationRequest* request = NavigationRequest::From(navigation_handle());
 
-  if (request->common_params()
-          .initiator_csp_info->should_check_main_world_csp ==
+  if (request->common_params().should_check_main_world_csp ==
       network::mojom::CSPDisposition::DO_NOT_CHECK) {
     return NavigationThrottle::PROCEED;
   }
@@ -78,10 +79,15 @@ FormSubmissionThrottle::CheckContentSecurityPolicyFormAction(
   RenderFrameHostImpl* render_frame =
       request->frame_tree_node()->current_frame_host();
 
+  RenderFrameHostCSPContext csp_context(render_frame);
+
   // TODO(estark): Move this check into NavigationRequest and split it into (1)
   // check report-only CSP, (2) upgrade request if needed, (3) check enforced
   // CSP to match how frame-src works. https://crbug.com/713388
-  if (render_frame->IsAllowedByCsp(
+  if (csp_context.IsAllowedByCsp(
+          render_frame->policy_container_host()
+              ->policies()
+              .content_security_policies,
           network::mojom::CSPDirectiveName::FormAction, url,
           was_server_redirect, false /* is_response_check */,
           request->common_params().source_location,

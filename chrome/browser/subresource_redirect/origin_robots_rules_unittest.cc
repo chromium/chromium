@@ -70,7 +70,8 @@ class SubresourceRedirectOriginRobotsRulesTest : public testing::Test {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kSubresourceRedirect,
           {{"enable_login_robots_based_compression", "true"},
-           {"enable_public_image_hints_based_compression", "false"}}}},
+           {"enable_public_image_hints_based_compression", "false"},
+           {"enable_login_robots_for_low_memory", "true"}}}},
         {});
   }
 

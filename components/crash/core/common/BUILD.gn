@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//components/gwp_asan/buildflags/buildflags.gni")
+import("//ios/features.gni")
 
 declare_args() {
   # If set to true, this will stub out and disable the entire crash key system.
@@ -21,7 +22,7 @@ group("common") {
   }
 
   if (is_ios) {
-    public_deps += [ ":breakpad_running_ios" ]
+    public_deps += [ ":reporter_running_ios" ]
   }
 }
 
@@ -32,7 +33,8 @@ use_crashpad_annotation =
 # implementations will be instantiated and set, doubling the storage
 # used for keys. This is intended to be used temporarily to test Crashpad
 # integrations without disabling Breakpad.
-use_combined_annotations = is_linux || is_chromeos
+use_combined_annotations =
+    (is_ios && !is_cronet_build) || is_linux || is_chromeos
 
 buildflag_header("crash_buildflags") {
   header = "crash_buildflags.h"
@@ -99,7 +101,10 @@ target(crash_key_target_type, "crash_key_lib") {
 
     if (is_ios) {
       sources += [ "crash_key_breakpad_ios.mm" ]
-      deps += [ "//components/previous_session_info" ]
+      deps += [
+        ":reporter_running_ios",
+        "//components/previous_session_info",
+      ]
 
       configs += [ "//build/config/compiler:enable_arc" ]
     } else {
@@ -156,10 +161,10 @@ if (is_apple) {
 }
 
 if (is_ios) {
-  source_set("breakpad_running_ios") {
+  source_set("reporter_running_ios") {
     sources = [
-      "breakpad_running_ios.cc",
-      "breakpad_running_ios.h",
+      "reporter_running_ios.cc",
+      "reporter_running_ios.h",
     ]
   }
 }

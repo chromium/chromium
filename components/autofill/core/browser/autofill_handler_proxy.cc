@@ -12,11 +12,11 @@ using base::TimeTicks;
 
 AutofillHandlerProxy::AutofillHandlerProxy(
     AutofillDriver* driver,
-    LogManager* log_manager,
+    AutofillClient* client,
     AutofillProvider* provider,
     AutofillHandler::AutofillDownloadManagerState enable_download_manager)
     : AutofillHandler(driver,
-                      log_manager,
+                      client,
                       enable_download_manager,
                       version_info::Channel::UNKNOWN),
       provider_(provider) {}

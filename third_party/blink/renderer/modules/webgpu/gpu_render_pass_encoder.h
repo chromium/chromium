@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_programmable_pass_encoder.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "v8/include/v8-fast-api-calls.h"
+#include "third_party/blink/renderer/platform/bindings/no_alloc_direct_call_host.h"
 
 namespace blink {
 
@@ -18,17 +18,19 @@ class DoubleSequenceOrGPUColorDict;
 class GPURenderBundle;
 class GPURenderPipeline;
 class GPUQuerySet;
+class V8GPUIndexFormat;
 
 class GPURenderPassEncoder : public DawnObject<WGPURenderPassEncoder>,
-                             public GPUProgrammablePassEncoder {
+                             public GPUProgrammablePassEncoder,
+                             public NoAllocDirectCallHost {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   explicit GPURenderPassEncoder(GPUDevice* device,
                                 WGPURenderPassEncoder render_pass_encoder);
-  ~GPURenderPassEncoder() override;
 
   // gpu_render_pass_encoder.idl
+  void setBindGroup(uint32_t index, GPUBindGroup* bindGroup);
   void setBindGroup(uint32_t index,
                     GPUBindGroup* bindGroup,
                     const Vector<uint32_t>& dynamicOffsets);
@@ -54,7 +56,7 @@ class GPURenderPassEncoder : public DawnObject<WGPURenderPassEncoder>,
                    float maxDepth);
   void setScissorRect(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
   void setIndexBuffer(GPUBuffer* buffer,
-                      const WTF::String& format,
+                      const V8GPUIndexFormat& format,
                       uint64_t offset,
                       uint64_t size);
   void setVertexBuffer(uint32_t slot,
@@ -65,25 +67,16 @@ class GPURenderPassEncoder : public DawnObject<WGPURenderPassEncoder>,
             uint32_t instanceCount,
             uint32_t firstVertex,
             uint32_t firstInstance);
-  void draw(uint32_t vertexCount,
-            uint32_t instanceCount,
-            uint32_t firstVertex,
-            uint32_t firstInstance,
-            v8::FastApiCallbackOptions& options);
   void drawIndexed(uint32_t indexCount,
                    uint32_t instanceCount,
                    uint32_t firstIndex,
                    int32_t baseVertex,
                    uint32_t firstInstance);
-  void drawIndexed(uint32_t indexCount,
-                   uint32_t instanceCount,
-                   uint32_t firstIndex,
-                   int32_t baseVertex,
-                   uint32_t firstInstance,
-                   v8::FastApiCallbackOptions& options);
   void drawIndirect(GPUBuffer* indirectBuffer, uint64_t indirectOffset);
   void drawIndexedIndirect(GPUBuffer* indirectBuffer, uint64_t indirectOffset);
   void executeBundles(const HeapVector<Member<GPURenderBundle>>& bundles);
+  void beginOcclusionQuery(uint32_t queryIndex);
+  void endOcclusionQuery();
   void writeTimestamp(GPUQuerySet* querySet, uint32_t queryIndex);
   void endPass();
 

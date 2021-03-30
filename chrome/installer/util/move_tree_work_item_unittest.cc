@@ -34,7 +34,7 @@ class MoveTreeWorkItemTest : public testing::Test {
 void CreateTextFile(const std::wstring& filename,
                     const std::wstring& contents) {
   std::wofstream file;
-  file.open(base::UTF16ToASCII(filename).c_str());
+  file.open(base::WideToASCII(filename).c_str());
   ASSERT_TRUE(file.is_open());
   file << contents;
   file.close();
@@ -44,7 +44,7 @@ void CreateTextFile(const std::wstring& filename,
 std::wstring ReadTextFile(const base::FilePath& path) {
   WCHAR contents[64];
   std::wifstream file;
-  file.open(base::UTF16ToASCII(path.value()).c_str());
+  file.open(base::WideToASCII(path.value()).c_str());
   EXPECT_TRUE(file.is_open());
   file.getline(contents, base::size(contents));
   file.close();

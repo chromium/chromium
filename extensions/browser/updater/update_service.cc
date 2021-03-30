@@ -36,7 +36,8 @@ namespace {
 UpdateService* update_service_override = nullptr;
 
 // This set contains all Omaha attributes that is associated with extensions.
-constexpr const char* kOmahaAttributes[] = {"_malware"};
+constexpr const char* kOmahaAttributes[] = {
+    "_malware", "_esbAllowlist", "_potentially_uws", "_policy_violation"};
 
 void SendUninstallPingCompleteCallback(update_client::Error error) {}
 
@@ -89,17 +90,14 @@ void UpdateService::OnEvent(Events event, const std::string& extension_id) {
   VLOG(2) << "UpdateService::OnEvent " << static_cast<int>(event) << " "
           << extension_id;
 
+  // Custom attributes can only be sent for NOT_UPDATED/UPDATE_FOUND events.
   bool should_perform_action_on_omaha_attributes = false;
+
   switch (event) {
     case Events::COMPONENT_NOT_UPDATED:
-      // Attributes is currently only added when no_update is true in the update
-      // client config.
       should_perform_action_on_omaha_attributes = true;
       break;
     case Events::COMPONENT_UPDATE_FOUND:
-      // This flag is set since it makes sense to update attributes when an
-      // update is found even though the server currently doesn not serve
-      // attributes for an extension with an update.
       should_perform_action_on_omaha_attributes = true;
       HandleComponentUpdateFoundEvent(extension_id);
       break;
@@ -114,11 +112,9 @@ void UpdateService::OnEvent(Events event, const std::string& extension_id) {
   }
 
   if (should_perform_action_on_omaha_attributes) {
-    base::Value attributes(base::Value::Type::DICTIONARY);
-    if (base::FeatureList::IsEnabled(
-            extensions_features::kDisableMalwareExtensionsRemotely)) {
-      attributes = GetExtensionOmahaAttributes(extension_id);
-    }
+    base::Value attributes = GetExtensionOmahaAttributes(extension_id);
+    // Note that it's important to perform actions even if |attributes| is
+    // empty, missing values may default to false and have associated logic.
     ExtensionSystem::Get(browser_context_)
         ->PerformActionBasedOnOmahaAttributes(extension_id, attributes);
   }
@@ -240,9 +236,6 @@ void UpdateService::HandleComponentUpdateFoundEvent(
 
 base::Value UpdateService::GetExtensionOmahaAttributes(
     const std::string& extension_id) {
-  DCHECK(base::FeatureList::IsEnabled(
-      extensions_features::kDisableMalwareExtensionsRemotely));
-
   update_client::CrxUpdateItem update_item;
   base::Value attributes(base::Value::Type::DICTIONARY);
   if (!update_client_->GetCrxUpdateState(extension_id, &update_item))
@@ -252,6 +245,8 @@ base::Value UpdateService::GetExtensionOmahaAttributes(
     auto iter = update_item.custom_updatecheck_data.find(key);
     // This is assuming that the values of the keys are "true", "false",
     // or does not exist.
+    // Only create the attribute if it's defined in the custom update check
+    // data. We want to distinguish true, false and undefined values.
     if (iter != update_item.custom_updatecheck_data.end())
       attributes.SetKey(key, base::Value(iter->second == "true"));
   }

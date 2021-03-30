@@ -20,6 +20,10 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/script_executor.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/mojom/action_type.mojom-shared.h"
+#include "extensions/common/mojom/css_origin.mojom-shared.h"
+#include "extensions/common/mojom/host_id.mojom.h"
+#include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -47,25 +51,18 @@ class ScriptExecutorHelper {
                           base::Unretained(this));
   }
 
-  const std::string& error() const { return error_; }
-  const GURL& url() const { return url_; }
-  const base::Value& result() const { return result_; }
+  const std::vector<ScriptExecutor::FrameResult>& results() const {
+    return results_;
+  }
 
  private:
-  void OnScriptFinished(const std::string& error,
-                        const GURL& url,
-                        const base::ListValue& result) {
-    error_ = error;
-    url_ = url;
-    result_ = result.Clone();
+  void OnScriptFinished(
+      std::vector<ScriptExecutor::FrameResult> frame_results) {
+    results_ = std::move(frame_results);
     run_loop_.Quit();
   }
 
-  // Note: we include an initial value for the error so that asserting it's
-  // empty is meaningful.
-  std::string error_{"<initial error>"};
-  GURL url_;
-  base::Value result_;
+  std::vector<ScriptExecutor::FrameResult> results_;
   base::RunLoop run_loop_;
 };
 
@@ -131,22 +128,22 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, MainFrameExecution) {
 
   ScriptExecutorHelper helper;
   script_executor.ExecuteScript(
-      HostID(HostID::EXTENSIONS, extension->id()), UserScript::ADD_JAVASCRIPT,
-      kCode, ScriptExecutor::SPECIFIED_FRAMES,
-      {ExtensionApiFrameIdMap::kTopFrameId},
-      ScriptExecutor::DONT_MATCH_ABOUT_BLANK, UserScript::DOCUMENT_IDLE,
+      mojom::HostID(mojom::HostID::HostType::kExtensions, extension->id()),
+      mojom::ActionType::kAddJavascript, kCode,
+      ScriptExecutor::SPECIFIED_FRAMES, {ExtensionApiFrameIdMap::kTopFrameId},
+      ScriptExecutor::DONT_MATCH_ABOUT_BLANK, mojom::RunLocation::kDocumentIdle,
       ScriptExecutor::DEFAULT_PROCESS, GURL() /* webview_src */,
       GURL() /* script_url */, false /* user_gesture */,
-      base::nullopt /* css_origin */, ScriptExecutor::JSON_SERIALIZED_RESULT,
+      mojom::CSSOrigin::kAuthor, ScriptExecutor::JSON_SERIALIZED_RESULT,
       helper.GetCallback());
   helper.Wait();
   EXPECT_EQ("New Title", base::UTF16ToUTF8(web_contents->GetTitle()));
-  EXPECT_EQ(web_contents->GetLastCommittedURL(), helper.url());
-  EXPECT_EQ("", helper.error());
 
-  base::Value expected(base::Value::Type::LIST);
-  expected.Append("OK");
-  EXPECT_EQ(expected, helper.result());
+  ASSERT_EQ(1u, helper.results().size());
+  EXPECT_EQ(web_contents->GetLastCommittedURL(), helper.results()[0].url);
+  EXPECT_EQ(base::Value("OK"), helper.results()[0].value);
+  EXPECT_EQ(0, helper.results()[0].frame_id);
+  EXPECT_EQ("", helper.results()[0].error);
 }
 
 // Tests script execution into a specified set of frames.
@@ -176,41 +173,57 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, SpecifiedFrames) {
   content::RenderFrameHost* frame1 = GetFrameByName(web_contents, "frame1");
   ASSERT_TRUE(frame1);
   const int frame1_id = ExtensionApiFrameIdMap::GetFrameId(frame1);
+  const GURL frame1_url = frame1->GetLastCommittedURL();
   content::RenderFrameHost* frame2 = GetFrameByName(web_contents, "frame2");
   ASSERT_TRUE(frame2);
   const int frame2_id = ExtensionApiFrameIdMap::GetFrameId(frame2);
+  const GURL frame2_url = frame2->GetLastCommittedURL();
   content::RenderFrameHost* frame3 = GetFrameByName(web_contents, "frame3");
   ASSERT_TRUE(frame3);
   content::RenderFrameHost* frame2_child =
       GetFrameByName(web_contents, "frame2_child");
   ASSERT_TRUE(frame2_child);
+  const int frame2_child_id = ExtensionApiFrameIdMap::GetFrameId(frame2_child);
+  const GURL frame2_child_url = frame2_child->GetLastCommittedURL();
 
   ScriptExecutor script_executor(web_contents);
   // Note: Since other tests verify the code's effects, here we just rely on the
   // execution result as an indication that it ran.
   constexpr char kCode[] = "document.title;";
 
+  const base::Value frame1_result("Frame 1");
+  const base::Value frame2_result("Frame 2");
+  const base::Value frame2_child_result("Frame 2 Child");
+
+  auto get_result_matcher = [](const base::Value& value, int frame_id,
+                               const GURL& url, const std::string& error = "") {
+    return ::testing::AllOf(
+        ::testing::Field(&ScriptExecutor::FrameResult::value,
+                         ::testing::Eq(std::cref(value))),
+        ::testing::Field(&ScriptExecutor::FrameResult::frame_id, frame_id),
+        ::testing::Field(&ScriptExecutor::FrameResult::url, url),
+        ::testing::Field(&ScriptExecutor::FrameResult::error, error));
+  };
+
   {
     // Execute in frames 1 and 2. These are the only frames for which we should
     // get a result.
     ScriptExecutorHelper helper;
     script_executor.ExecuteScript(
-        HostID(HostID::EXTENSIONS, extension->id()), UserScript::ADD_JAVASCRIPT,
-        kCode, ScriptExecutor::SPECIFIED_FRAMES, {frame1_id, frame2_id},
-        ScriptExecutor::DONT_MATCH_ABOUT_BLANK, UserScript::DOCUMENT_IDLE,
-        ScriptExecutor::DEFAULT_PROCESS, GURL() /* webview_src */,
-        GURL() /* script_url */, false /* user_gesture */,
-        base::nullopt /* css_origin */, ScriptExecutor::JSON_SERIALIZED_RESULT,
-        helper.GetCallback());
+        mojom::HostID(mojom::HostID::HostType::kExtensions, extension->id()),
+        mojom::ActionType::kAddJavascript, kCode,
+        ScriptExecutor::SPECIFIED_FRAMES, {frame1_id, frame2_id},
+        ScriptExecutor::DONT_MATCH_ABOUT_BLANK,
+        mojom::RunLocation::kDocumentIdle, ScriptExecutor::DEFAULT_PROCESS,
+        GURL() /* webview_src */, GURL() /* script_url */,
+        false /* user_gesture */, mojom::CSSOrigin::kAuthor,
+        ScriptExecutor::JSON_SERIALIZED_RESULT, helper.GetCallback());
     helper.Wait();
-    EXPECT_EQ("", helper.error());
 
-    base::Value frame1_result("Frame 1");
-    base::Value frame2_result("Frame 2");
-    EXPECT_THAT(
-        helper.result().GetList(),
-        testing::UnorderedElementsAre(::testing::Eq(std::cref(frame1_result)),
-                                      ::testing::Eq(std::cref(frame2_result))));
+    EXPECT_THAT(helper.results(),
+                testing::UnorderedElementsAre(
+                    get_result_matcher(frame1_result, frame1_id, frame1_url),
+                    get_result_matcher(frame2_result, frame2_id, frame2_url)));
   }
 
   {
@@ -218,24 +231,22 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, SpecifiedFrames) {
     // should result in frame2_child being added to the results.
     ScriptExecutorHelper helper;
     script_executor.ExecuteScript(
-        HostID(HostID::EXTENSIONS, extension->id()), UserScript::ADD_JAVASCRIPT,
-        kCode, ScriptExecutor::INCLUDE_SUB_FRAMES, {frame1_id, frame2_id},
-        ScriptExecutor::DONT_MATCH_ABOUT_BLANK, UserScript::DOCUMENT_IDLE,
-        ScriptExecutor::DEFAULT_PROCESS, GURL() /* webview_src */,
-        GURL() /* script_url */, false /* user_gesture */,
-        base::nullopt /* css_origin */, ScriptExecutor::JSON_SERIALIZED_RESULT,
-        helper.GetCallback());
+        mojom::HostID(mojom::HostID::HostType::kExtensions, extension->id()),
+        mojom::ActionType::kAddJavascript, kCode,
+        ScriptExecutor::INCLUDE_SUB_FRAMES, {frame1_id, frame2_id},
+        ScriptExecutor::DONT_MATCH_ABOUT_BLANK,
+        mojom::RunLocation::kDocumentIdle, ScriptExecutor::DEFAULT_PROCESS,
+        GURL() /* webview_src */, GURL() /* script_url */,
+        false /* user_gesture */, mojom::CSSOrigin::kAuthor,
+        ScriptExecutor::JSON_SERIALIZED_RESULT, helper.GetCallback());
     helper.Wait();
-    EXPECT_EQ("", helper.error());
 
-    base::Value frame1_result("Frame 1");
-    base::Value frame2_result("Frame 2");
-    base::Value frame2_child_result("Frame 2 Child");
-    EXPECT_THAT(helper.result().GetList(),
+    EXPECT_THAT(helper.results(),
                 testing::UnorderedElementsAre(
-                    ::testing::Eq(std::cref(frame1_result)),
-                    ::testing::Eq(std::cref(frame2_result)),
-                    ::testing::Eq(std::cref(frame2_child_result))));
+                    get_result_matcher(frame1_result, frame1_id, frame1_url),
+                    get_result_matcher(frame2_result, frame2_id, frame2_url),
+                    get_result_matcher(frame2_child_result, frame2_child_id,
+                                       frame2_child_url)));
   }
 
   // Note: we don't use ExtensionApiFrameIdMap::kInvalidFrameId because we want
@@ -250,44 +261,45 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, SpecifiedFrames) {
     // doesn't exist.
     ScriptExecutorHelper helper;
     script_executor.ExecuteScript(
-        HostID(HostID::EXTENSIONS, extension->id()), UserScript::ADD_JAVASCRIPT,
-        kCode, ScriptExecutor::SPECIFIED_FRAMES,
+        mojom::HostID(mojom::HostID::HostType::kExtensions, extension->id()),
+        mojom::ActionType::kAddJavascript, kCode,
+        ScriptExecutor::SPECIFIED_FRAMES,
         {frame1_id, frame2_id, kNonExistentFrameId},
-        ScriptExecutor::DONT_MATCH_ABOUT_BLANK, UserScript::DOCUMENT_IDLE,
-        ScriptExecutor::DEFAULT_PROCESS, GURL() /* webview_src */,
-        GURL() /* script_url */, false /* user_gesture */,
-        base::nullopt /* css_origin */, ScriptExecutor::JSON_SERIALIZED_RESULT,
-        helper.GetCallback());
+        ScriptExecutor::DONT_MATCH_ABOUT_BLANK,
+        mojom::RunLocation::kDocumentIdle, ScriptExecutor::DEFAULT_PROCESS,
+        GURL() /* webview_src */, GURL() /* script_url */,
+        false /* user_gesture */, mojom::CSSOrigin::kAuthor,
+        ScriptExecutor::JSON_SERIALIZED_RESULT, helper.GetCallback());
     helper.Wait();
 
-    // When specifying multiple frames, if one doesn't exist, the rest of the
-    // injections should succeed and there should be no error.
-    EXPECT_EQ("", helper.error());
     base::Value frame1_result("Frame 1");
     base::Value frame2_result("Frame 2");
-    EXPECT_THAT(
-        helper.result().GetList(),
-        testing::UnorderedElementsAre(::testing::Eq(std::cref(frame1_result)),
-                                      ::testing::Eq(std::cref(frame2_result))));
+    EXPECT_THAT(helper.results(),
+                testing::UnorderedElementsAre(
+                    get_result_matcher(frame1_result, frame1_id, frame1_url),
+                    get_result_matcher(frame2_result, frame2_id, frame2_url),
+                    get_result_matcher(base::Value(), kNonExistentFrameId,
+                                       GURL(), "No frame with ID: 99999")));
   }
 
   {
     // Try injecting into a single non-existent frame.
     ScriptExecutorHelper helper;
     script_executor.ExecuteScript(
-        HostID(HostID::EXTENSIONS, extension->id()), UserScript::ADD_JAVASCRIPT,
-        kCode, ScriptExecutor::SPECIFIED_FRAMES, {kNonExistentFrameId},
-        ScriptExecutor::DONT_MATCH_ABOUT_BLANK, UserScript::DOCUMENT_IDLE,
-        ScriptExecutor::DEFAULT_PROCESS, GURL() /* webview_src */,
-        GURL() /* script_url */, false /* user_gesture */,
-        base::nullopt /* css_origin */, ScriptExecutor::JSON_SERIALIZED_RESULT,
-        helper.GetCallback());
+        mojom::HostID(mojom::HostID::HostType::kExtensions, extension->id()),
+        mojom::ActionType::kAddJavascript, kCode,
+        ScriptExecutor::SPECIFIED_FRAMES, {kNonExistentFrameId},
+        ScriptExecutor::DONT_MATCH_ABOUT_BLANK,
+        mojom::RunLocation::kDocumentIdle, ScriptExecutor::DEFAULT_PROCESS,
+        GURL() /* webview_src */, GURL() /* script_url */,
+        false /* user_gesture */, mojom::CSSOrigin::kAuthor,
+        ScriptExecutor::JSON_SERIALIZED_RESULT, helper.GetCallback());
     helper.Wait();
 
-    // If only a single frame was specified and it doesn't exist, the call
-    // should return an error.
-    EXPECT_EQ("The frame was removed.", helper.error());
-    EXPECT_TRUE(helper.result().GetList().empty());
+    EXPECT_THAT(helper.results(),
+                testing::UnorderedElementsAre(
+                    get_result_matcher(base::Value(), kNonExistentFrameId,
+                                       GURL(), "No frame with ID: 99999")));
   }
 }
 

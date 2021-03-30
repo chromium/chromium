@@ -6,8 +6,8 @@
   'use strict';
   TestRunner.addResult(
       `Verify that for a fileSystem UISourceCode with persistence binding TabbedEditorContainer opens filesystem UISourceCode.\n`);
-  await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('bindings_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadTestModule('bindings_test_runner');
   await TestRunner.addScriptTag('resources/foo.js');
   await TestRunner.showPanel('sources');
 
@@ -30,7 +30,7 @@
   function dumpEditorTabs(title) {
     var editorContainer = UI.panels.sources._sourcesView._editorContainer;
     var openedUISourceCodes = [...editorContainer._tabIds.keys()];
-    openedUISourceCodes.sort((a, b) => a.url().compareTo(b.url()));
+    openedUISourceCodes.sort((a, b) => a.url > b.url ? 1 : b.url > a.url ? -1 : 0);
     TestRunner.addResult(title);
     for (const code of openedUISourceCodes)
       TestRunner.addResult('    ' + code.url());

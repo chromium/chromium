@@ -1,9 +1,11 @@
 file://media/OWNERS
 olka@chromium.org
-miu@chromium.org
 mfoltz@chromium.org
 
 per-file media_devices_*=guidou@chromium.org
 per-file midi_*=toyoshim@chromium.org
 
+per-file active_media_session_controller*=file://services/media_session/OWNERS
 per-file media_internals_audio_focus_helper*=file://services/media_session/OWNERS
+per-file media_keys_listener_manager*=file://services/media_session/OWNERS
+per-file system_media_controls_notifier*=file://services/media_session/OWNERS

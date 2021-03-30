@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/optional.h"
 #include "net/base/net_export.h"
 #include "net/socket/next_proto.h"
@@ -78,6 +79,10 @@ struct NET_EXPORT SSLServerConfig {
   // used in unit tests.
   base::Optional<uint16_t> signature_algorithm_for_testing;
 
+  // curves_for_testing, if not empty, specifies the list of NID values (e.g.
+  // NID_X25519) to configure as supported curves for the TLS connection.
+  std::vector<int> curves_for_testing;
+
   // Sets the requirement for client certificates during handshake.
   ClientCertType client_cert_type;
 
@@ -98,6 +103,11 @@ struct NET_EXPORT SSLServerConfig {
   // Layer Protocol Negotiation), in decreasing order of preference.  Protocols
   // will be advertised in this order during TLS handshake.
   NextProtoVector alpn_protos;
+
+  // ALPS TLS extension is enabled and corresponding data is sent to client if
+  // client also enabled ALPS, for each NextProto in |application_settings|.
+  // Data might be empty.
+  base::flat_map<NextProto, std::vector<uint8_t>> application_settings;
 
   // If non-empty, the DER-encoded OCSP response to staple.
   std::vector<uint8_t> ocsp_response;

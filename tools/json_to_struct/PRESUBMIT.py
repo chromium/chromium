@@ -12,9 +12,9 @@ WHITELIST = [ r'.+_test.py$' ]
 
 def CheckChangeOnUpload(input_api, output_api):
   return input_api.canned_checks.RunUnitTestsInDirectory(
-      input_api, output_api, '.', whitelist=WHITELIST)
+      input_api, output_api, '.', files_to_check=WHITELIST)
 
 
 def CheckChangeOnCommit(input_api, output_api):
   return input_api.canned_checks.RunUnitTestsInDirectory(
-      input_api, output_api, '.', whitelist=WHITELIST)
+      input_api, output_api, '.', files_to_check=WHITELIST)

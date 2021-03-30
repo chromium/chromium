@@ -4,8 +4,9 @@
 
 #include "chrome/browser/ui/login/login_handler.h"
 
+#include <string>
+
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/blocked_content/popunder_preventer.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -47,8 +48,8 @@ class LoginHandlerViews : public LoginHandler {
 
  protected:
   // LoginHandler:
-  void BuildViewImpl(const base::string16& authority,
-                     const base::string16& explanation,
+  void BuildViewImpl(const std::u16string& authority,
+                     const std::u16string& explanation,
                      LoginModelData* login_model_data) override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     DCHECK(!dialog_);
@@ -82,8 +83,8 @@ class LoginHandlerViews : public LoginHandler {
     // release pointers to the other.
     Dialog(LoginHandlerViews* handler,
            content::WebContents* web_contents,
-           const base::string16& authority,
-           const base::string16& explanation,
+           const std::u16string& authority,
+           const std::u16string& explanation,
            LoginHandler::LoginModelData* login_model_data)
         : handler_(handler), login_view_(nullptr), widget_(nullptr) {
       SetButtonLabel(
@@ -104,6 +105,7 @@ class LoginHandlerViews : public LoginHandler {
             dialog->handler_->CancelAuth();
           },
           base::Unretained(this)));
+      SetModalType(ui::MODAL_TYPE_CHILD);
       SetOwnedByWidget(true);
 
       // Create a new LoginView and set the model for it.  The model (password
@@ -125,7 +127,7 @@ class LoginHandlerViews : public LoginHandler {
     // views::DialogDelegate:
     bool ShouldShowCloseButton() const override { return false; }
 
-    base::string16 GetWindowTitle() const override {
+    std::u16string GetWindowTitle() const override {
       return l10n_util::GetStringUTF16(IDS_LOGIN_DIALOG_TITLE);
     }
 
@@ -136,16 +138,16 @@ class LoginHandlerViews : public LoginHandler {
         handler_->CancelAuth();
     }
 
-    ui::ModalType GetModalType() const override { return ui::MODAL_TYPE_CHILD; }
-
     views::View* GetInitiallyFocusedView() override {
       return login_view_->GetInitiallyFocusedView();
     }
 
     views::View* GetContentsView() override { return login_view_; }
-    views::Widget* GetWidget() override { return login_view_->GetWidget(); }
+    views::Widget* GetWidget() override {
+      return login_view_ ? login_view_->GetWidget() : nullptr;
+    }
     const views::Widget* GetWidget() const override {
-      return login_view_->GetWidget();
+      return login_view_ ? login_view_->GetWidget() : nullptr;
     }
 
    private:

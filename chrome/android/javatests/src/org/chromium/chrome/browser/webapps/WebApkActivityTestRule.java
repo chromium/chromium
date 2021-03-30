@@ -13,9 +13,8 @@ import org.junit.runners.model.Statement;
 
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.ShortcutHelper;
-import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.webapk.lib.common.WebApkConstants;
@@ -23,7 +22,7 @@ import org.chromium.webapk.lib.common.WebApkConstants;
 /** Custom {@link ChromeActivityTestRule} for tests using a WebAPK {@link WebappActivity}. */
 public class WebApkActivityTestRule extends ChromeActivityTestRule<WebappActivity> {
     /** Time in milliseconds to wait for page to be loaded. */
-    private static final long STARTUP_TIMEOUT = ScalableTimeout.scaleTimeout(10000);
+    private static final long STARTUP_TIMEOUT = 10000;
 
     public WebApkActivityTestRule() {
         super(WebappActivity.class);

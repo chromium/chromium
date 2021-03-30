@@ -26,7 +26,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.payments.SettingsAutofillAndPaymentsObserver;
 import org.chromium.chrome.browser.version.ChromeVersionInfo;
 
@@ -75,8 +74,6 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
         mNumberLabel = (TextInputLayout) v.findViewById(R.id.credit_card_number_label);
         mNumberText = (EditText) v.findViewById(R.id.credit_card_number_edit);
 
-        // Set the visibility of the nickname field based on the experiment flag.
-        mNicknameLabel.setVisibility(isNicknameManagementEnabled() ? View.VISIBLE : View.GONE);
         mNicknameText.addTextChangedListener(nicknameTextWatcher());
         mNicknameText.setOnFocusChangeListener(
                 (view, hasFocus) -> mNicknameLabel.setCounterEnabled(hasFocus));
@@ -253,11 +250,6 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
         // validate the credit card number when user presses the save button.
         boolean enabled = !TextUtils.isEmpty(mNumberText.getText()) && mIsValidNickname;
         mDoneButton.setEnabled(enabled);
-    }
-
-    private boolean isNicknameManagementEnabled() {
-        return ChromeFeatureList.isEnabled(
-                ChromeFeatureList.AUTOFILL_ENABLE_CARD_NICKNAME_MANAGEMENT);
     }
 
     private TextWatcher nicknameTextWatcher() {

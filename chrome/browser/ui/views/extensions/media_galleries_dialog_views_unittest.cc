@@ -31,7 +31,7 @@ MediaGalleryPrefInfo MakePrefInfoForTesting(MediaGalleryPrefId id) {
   gallery.device_id = storage_monitor::StorageInfo::MakeDeviceId(
       storage_monitor::StorageInfo::FIXED_MASS_STORAGE,
       base::NumberToString(id));
-  gallery.display_name = base::ASCIIToUTF16("Display Name");
+  gallery.display_name = u"Display Name";
   return gallery;
 }
 
@@ -42,9 +42,9 @@ class MediaGalleriesDialogTest : public testing::Test {
   MediaGalleriesDialogTest() {}
   ~MediaGalleriesDialogTest() override {}
   void SetUp() override {
-    std::vector<base::string16> headers;
-    headers.push_back(base::string16());
-    headers.push_back(base::ASCIIToUTF16("header2"));
+    std::vector<std::u16string> headers;
+    headers.push_back(std::u16string());
+    headers.push_back(u"header2");
     ON_CALL(controller_, GetSectionHeaders()).
         WillByDefault(Return(headers));
     EXPECT_CALL(controller_, GetSectionEntries(_)).

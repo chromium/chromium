@@ -86,12 +86,14 @@ void LayoutNGTable::GridBordersChanged() {
     SetShouldDoFullPaintInvalidationWithoutGeometryChange(
         PaintInvalidationReason::kStyle);
     // If borders change, table fragment must be regenerated.
-    SetNeedsLayout(layout_invalidation_reason::kTableChanged);
+    SetNeedsLayoutAndIntrinsicWidthsRecalc(
+        layout_invalidation_reason::kTableChanged);
   }
 }
 
 void LayoutNGTable::TableGridStructureChanged() {
   NOT_DESTROYED();
+  // Callers must ensure table layout gets invalidated.
   InvalidateCachedTableBorders();
 }
 
@@ -125,6 +127,10 @@ void LayoutNGTable::UpdateBlockLayout(bool relayout_children) {
 void LayoutNGTable::AddChild(LayoutObject* child, LayoutObject* before_child) {
   NOT_DESTROYED();
   TableGridStructureChanged();
+  // Only TablesNG table parts are allowed.
+  DCHECK(child->IsLayoutNGObject() ||
+         (!child->IsTableCaption() && !child->IsLayoutTableCol() &&
+          !child->IsTableSection()));
   bool wrap_in_anonymous_section = !child->IsTableCaption() &&
                                    !child->IsLayoutTableCol() &&
                                    !child->IsTableSection();
@@ -185,9 +191,13 @@ void LayoutNGTable::StyleDidChange(StyleDifference diff,
   NOT_DESTROYED();
   // StyleDifference handles changes in table-layout, border-spacing.
   if (old_style) {
-    bool borders_changed = !old_style->BorderVisuallyEqual(StyleRef()) ||
-                           (diff.TextDecorationOrColorChanged() &&
-                            StyleRef().HasBorderColorReferencingCurrentColor());
+    bool borders_changed =
+        !old_style->BorderVisuallyEqual(StyleRef()) ||
+        old_style->GetWritingDirection() != StyleRef().GetWritingDirection() ||
+        old_style->IsFixedTableLayout() != StyleRef().IsFixedTableLayout() ||
+        old_style->EmptyCells() != StyleRef().EmptyCells() ||
+        (diff.TextDecorationOrColorChanged() &&
+         StyleRef().HasBorderColorReferencingCurrentColor());
     bool collapse_changed =
         StyleRef().BorderCollapse() != old_style->BorderCollapse();
     if (borders_changed || collapse_changed)
@@ -246,8 +256,11 @@ PhysicalRect LayoutNGTable::OverflowClipRect(
 void LayoutNGTable::AddVisualEffectOverflow() {
   NOT_DESTROYED();
   // TODO(1061423) Fragment painting: need a correct fragment.
+  if (PhysicalFragmentCount() != 1u) {
+    NOTREACHED();
+    return;
+  }
   if (const NGPhysicalBoxFragment* fragment = GetPhysicalFragment(0)) {
-    DCHECK_EQ(PhysicalFragmentCount(), 1u);
     // Table's collapsed borders contribute to visual overflow.
     // In the inline direction, table's border box does not include
     // visual border width (largest border), but does include
@@ -366,6 +379,28 @@ LayoutRectOutsets LayoutNGTable::BorderBoxOutsets() const {
   }
   NOTREACHED();
   return LayoutRectOutsets();
+}
+
+// Effective column index is index of columns with mergeable
+// columns skipped. Used in a11y.
+unsigned LayoutNGTable::AbsoluteColumnToEffectiveColumn(
+    unsigned absolute_column_index) const {
+  NOT_DESTROYED();
+  if (!cached_table_columns_) {
+    NOTREACHED();
+    return absolute_column_index;
+  }
+  unsigned effective_column_index = 0;
+  unsigned column_count = cached_table_columns_.get()->data.size();
+  for (unsigned current_column_index = 0; current_column_index < column_count;
+       ++current_column_index) {
+    if (current_column_index != 0 &&
+        !cached_table_columns_.get()->data[current_column_index].is_mergeable)
+      ++effective_column_index;
+    if (current_column_index == absolute_column_index)
+      return effective_column_index;
+  }
+  return effective_column_index;
 }
 
 bool LayoutNGTable::IsFirstCell(const LayoutNGTableCellInterface& cell) const {

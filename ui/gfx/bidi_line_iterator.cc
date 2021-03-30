@@ -37,7 +37,7 @@ BiDiLineIterator::~BiDiLineIterator() {
   }
 }
 
-bool BiDiLineIterator::Open(const base::string16& text,
+bool BiDiLineIterator::Open(const std::u16string& text,
                             base::i18n::TextDirection direction) {
   DCHECK(!bidi_);
   UErrorCode error = U_ZERO_ERROR;

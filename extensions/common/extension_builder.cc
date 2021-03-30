@@ -131,7 +131,8 @@ struct ExtensionBuilder::ManifestData {
 };
 
 ExtensionBuilder::ExtensionBuilder()
-    : location_(Manifest::UNPACKED), flags_(Extension::NO_FLAGS) {}
+    : location_(mojom::ManifestLocation::kUnpacked),
+      flags_(Extension::NO_FLAGS) {}
 
 ExtensionBuilder::ExtensionBuilder(const std::string& name, Type type)
     : ExtensionBuilder() {
@@ -211,7 +212,8 @@ ExtensionBuilder& ExtensionBuilder::SetPath(const base::FilePath& path) {
   return *this;
 }
 
-ExtensionBuilder& ExtensionBuilder::SetLocation(Manifest::Location location) {
+ExtensionBuilder& ExtensionBuilder::SetLocation(
+    mojom::ManifestLocation location) {
   location_ = location;
   return *this;
 }

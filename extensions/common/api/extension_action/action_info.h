@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_icon_set.h"
 #include "url/gurl.h"
@@ -42,7 +41,7 @@ struct ActionInfo {
   static std::unique_ptr<ActionInfo> Load(const Extension* extension,
                                           Type type,
                                           const base::DictionaryValue* dict,
-                                          base::string16* error);
+                                          std::u16string* error);
 
   // Returns any action associated with the extension, whether it's specified
   // under the "page_action", "browser_action", or "action" key.

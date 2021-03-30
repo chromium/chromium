@@ -69,13 +69,16 @@ TEST_F(SharedModuleManifestTest, ExportParseErrors) {
       Testcase("shared_module_export_and_import.json",
                "Simultaneous 'import' and 'export' are not allowed."),
       Testcase("shared_module_export_not_dict.json",
-               "Invalid value for 'export'."),
+               "Error at key 'export'. Type is invalid. Expected dictionary, "
+               "found list."),
       Testcase("shared_module_export_allowlist_item_not_id.json",
                "Invalid value for 'export.allowlist[0]'."),
       Testcase("shared_module_export_allowlist_item_not_string.json",
-               "Invalid value for 'export.allowlist[0]'."),
+               "Error at key 'export.allowlist'. Parsing array failed at index "
+               "0: expected string, got dictionary"),
       Testcase("shared_module_export_allowlist_not_list.json",
-               "Invalid value for 'export.allowlist'."),
+               "Error at key 'export.allowlist'. Type is invalid. Expected "
+               "list, found string."),
   };
   RunTestcases(testcases, base::size(testcases), EXPECT_TYPE_ERROR);
 }
@@ -117,25 +120,15 @@ TEST_F(SharedModuleManifestTest, Import) {
 
 TEST_F(SharedModuleManifestTest, ImportParseErrors) {
   Testcase testcases[] = {
-    Testcase("shared_module_import_not_list.json",
-             "Invalid value for 'import'."),
-    Testcase("shared_module_import_invalid_id.json",
-             "Invalid value for 'import[0].id'."),
-    Testcase("shared_module_import_invalid_version.json",
-             "Invalid value for 'import[0].minimum_version'."),
+      Testcase("shared_module_import_not_list.json",
+               "Error at key 'import'. Type is invalid. Expected list, found "
+               "dictionary."),
+      Testcase("shared_module_import_invalid_id.json",
+               "Invalid value for 'import[0].id'."),
+      Testcase("shared_module_import_invalid_version.json",
+               "Invalid value for 'import[0].minimum_version'."),
   };
   RunTestcases(testcases, base::size(testcases), EXPECT_TYPE_ERROR);
-}
-
-TEST_F(SharedModuleManifestTest, LegacyAllowlistKey) {
-  scoped_refptr<const Extension> extension =
-      LoadAndExpectSuccess(ManifestData("shared_module_legacy_allowlist.json"));
-  EXPECT_TRUE(SharedModuleInfo::IsExportAllowedByAllowlist(extension.get(),
-                                                           kImportId1));
-  EXPECT_TRUE(SharedModuleInfo::IsExportAllowedByAllowlist(extension.get(),
-                                                           kImportId2));
-  EXPECT_FALSE(
-      SharedModuleInfo::IsExportAllowedByAllowlist(extension.get(), kNoImport));
 }
 
 }  // namespace extensions

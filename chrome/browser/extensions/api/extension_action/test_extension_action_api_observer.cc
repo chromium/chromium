@@ -9,8 +9,8 @@ namespace extensions {
 TestExtensionActionAPIObserver::TestExtensionActionAPIObserver(
     content::BrowserContext* context,
     const ExtensionId& extension_id)
-    : extension_id_(extension_id), scoped_observer_(this) {
-  scoped_observer_.Add(ExtensionActionAPI::Get(context));
+    : extension_id_(extension_id) {
+  scoped_observation_.Observe(ExtensionActionAPI::Get(context));
 }
 
 TestExtensionActionAPIObserver::TestExtensionActionAPIObserver(

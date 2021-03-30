@@ -99,11 +99,13 @@ int PrivacyInfoView::GetHeightForWidth(int width) const {
 
 void PrivacyInfoView::OnPaintBackground(gfx::Canvas* canvas) {
   if (selected_action_ == Action::kCloseButton) {
+    const AppListColorProvider* color_provider = AppListColorProvider::Get();
+    const SkColor bg_color = color_provider->GetSearchBoxBackgroundColor();
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     flags.setColor(SkColorSetA(
-        AppListColorProvider::Get()->GetSearchResultViewHighlightColor(),
-        0x14));
+        color_provider->GetRippleAttributesBaseColor(bg_color),
+        color_provider->GetRippleAttributesHighlightOpacity(bg_color) * 255));
     flags.setStyle(cc::PaintFlags::kFill_Style);
     canvas->DrawCircle(close_button_->bounds().CenterPoint(),
                        close_button_->width() / 2, flags);
@@ -243,9 +245,9 @@ void PrivacyInfoView::InitInfoIcon() {
 }
 
 void PrivacyInfoView::InitText() {
-  const base::string16 link = l10n_util::GetStringUTF16(link_string_id_);
+  const std::u16string link = l10n_util::GetStringUTF16(link_string_id_);
   size_t offset;
-  const base::string16 text =
+  const std::u16string text =
       l10n_util::GetStringFUTF16(info_string_id_, link, &offset);
   text_view_ = AddChildView(std::make_unique<PrivacyTextView>(this));
   text_view_->SetText(text);
@@ -284,7 +286,7 @@ void PrivacyInfoView::InitCloseButton() {
                                                gfx::kGoogleGrey700));
   close_button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   close_button->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-  base::string16 close_button_label(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
+  std::u16string close_button_label(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
   close_button->SetAccessibleName(close_button_label);
   close_button->SetTooltipText(close_button_label);
   close_button->SetFocusBehavior(FocusBehavior::ALWAYS);

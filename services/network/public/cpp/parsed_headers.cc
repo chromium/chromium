@@ -10,13 +10,14 @@
 #include "services/network/public/cpp/cross_origin_embedder_policy_parser.h"
 #include "services/network/public/cpp/cross_origin_opener_policy_parser.h"
 #include "services/network/public/cpp/features.h"
-#include "services/network/public/cpp/origin_isolation_parser.h"
+#include "services/network/public/cpp/link_header_parser.h"
+#include "services/network/public/cpp/origin_agent_cluster_parser.h"
 #include "services/network/public/cpp/x_frame_options_parser.h"
 
 namespace network {
 
 mojom::ParsedHeadersPtr PopulateParsedHeaders(
-    const scoped_refptr<net::HttpResponseHeaders>& headers,
+    const net::HttpResponseHeaders* headers,
     const GURL& url) {
   auto parsed_headers = mojom::ParsedHeaders::New();
   if (!headers)
@@ -32,12 +33,12 @@ mojom::ParsedHeadersPtr PopulateParsedHeaders(
   parsed_headers->cross_origin_opener_policy = ParseCrossOriginOpenerPolicy(
       *headers, parsed_headers->cross_origin_embedder_policy);
 
-  // TODO(https://crbug.com/1157917): we implement the change at
-  // https://github.com/whatwg/html/pull/6214 but all the class and function
-  // names are not yet updated.
-  std::string origin_isolation;
-  if (headers->GetNormalizedHeader("Origin-Agent-Cluster", &origin_isolation))
-    parsed_headers->origin_isolation = ParseOriginIsolation(origin_isolation);
+  std::string origin_agent_cluster;
+  if (headers->GetNormalizedHeader("Origin-Agent-Cluster",
+                                   &origin_agent_cluster)) {
+    parsed_headers->origin_agent_cluster =
+        ParseOriginAgentCluster(origin_agent_cluster);
+  }
 
   std::string accept_ch;
   if (headers->GetNormalizedHeader("Accept-CH", &accept_ch))
@@ -54,6 +55,8 @@ mojom::ParsedHeadersPtr PopulateParsedHeaders(
     parsed_headers->critical_ch = ParseClientHintsHeader(critical_ch);
 
   parsed_headers->xfo = ParseXFrameOptions(*headers);
+
+  parsed_headers->link_headers = ParseLinkHeaders(*headers, url);
 
   return parsed_headers;
 }

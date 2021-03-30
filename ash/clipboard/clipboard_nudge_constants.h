@@ -10,11 +10,21 @@
 
 namespace ash {
 
+enum ClipboardNudgeType {
+  // Onboarding nudge. Shows when a user copy and pastes repeatedly within a
+  // time frame.
+  kOnboardingNudge = 0,
+  // Shows when the keyboard shortcut for clipboard is pressed with no items
+  // in the history.
+  kZeroStateNudge = 1,
+};
+
 constexpr int kNotificationLimit = 3;
+constexpr int kContextMenuBadgeShowLimit = 3;
 constexpr base::TimeDelta kMinInterval = base::TimeDelta::FromDays(1);
 constexpr base::TimeDelta kMaxTimeBetweenPaste =
     base::TimeDelta::FromMinutes(10);
-constexpr base::TimeDelta kNudgeShowTime = base::TimeDelta::FromSeconds(6);
+constexpr base::TimeDelta kNudgeShowTime = base::TimeDelta::FromSeconds(10);
 constexpr float kNudgeFadeAnimationScale = 1.2f;
 constexpr base::TimeDelta kNudgeFadeAnimationTime =
     base::TimeDelta::FromMilliseconds(250);

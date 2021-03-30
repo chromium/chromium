@@ -123,12 +123,12 @@ class WorkerTest : public ContentBrowserTest,
   }
 
   void RunTest(Shell* window, const GURL& url, bool expect_failure = false) {
-    const base::string16 ok_title = base::ASCIIToUTF16("OK");
-    const base::string16 fail_title = base::ASCIIToUTF16("FAIL");
+    const std::u16string ok_title = u"OK";
+    const std::u16string fail_title = u"FAIL";
     TitleWatcher title_watcher(window->web_contents(), ok_title);
     title_watcher.AlsoWaitForTitle(fail_title);
     EXPECT_TRUE(NavigateToURL(window, url));
-    base::string16 final_title = title_watcher.WaitAndGetTitle();
+    std::u16string final_title = title_watcher.WaitAndGetTitle();
     EXPECT_EQ(expect_failure ? fail_title : ok_title, final_title);
   }
 
@@ -335,6 +335,8 @@ IN_PROC_BROWSER_TEST_P(WorkerTest, SharedWorkerWithoutCoepInDifferentProcess) {
       shell()->web_contents()->GetMainFrame());
   auto page_lock = page_rfh->GetSiteInstance()->GetProcessLock();
   EXPECT_TRUE(page_lock.coop_coep_cross_origin_isolated_info().is_isolated());
+  EXPECT_NE(page_rfh->GetCrossOriginIsolationStatus(),
+            RenderFrameHost::CrossOriginIsolationStatus::kNotIsolated);
 
   // Create a shared worker from the cross-origin-isolated page.
   // The worker must be in a different process because shared workers isn't
@@ -459,10 +461,10 @@ IN_PROC_BROWSER_TEST_P(WorkerTest, WebSocketSharedWorker) {
 
   // Run test.
   Shell* window = shell();
-  const base::string16 expected_title = base::ASCIIToUTF16("OK");
+  const std::u16string expected_title = u"OK";
   TitleWatcher title_watcher(window->web_contents(), expected_title);
   EXPECT_TRUE(NavigateToURL(window, url));
-  base::string16 final_title = title_watcher.WaitAndGetTitle();
+  std::u16string final_title = title_watcher.WaitAndGetTitle();
   EXPECT_EQ(expected_title, final_title);
 }
 

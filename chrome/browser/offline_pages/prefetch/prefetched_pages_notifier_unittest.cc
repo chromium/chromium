@@ -4,8 +4,9 @@
 
 #include "chrome/browser/offline_pages/prefetch/prefetched_pages_notifier.h"
 
+#include <string>
+
 #include "base/files/file_path.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/offline_pages/core/client_namespace_constants.h"
@@ -18,14 +19,14 @@ namespace {
 
 const ClientId kClientId("1234", kSuggestedArticlesNamespace);
 const base::FilePath kFilePath("/");
-const base::string16 kExampleHost = base::UTF8ToUTF16("www.example.com");
-const base::string16 kExampleHost2 = base::UTF8ToUTF16("www.example2.com");
-const base::string16 kExampleHost3 = base::UTF8ToUTF16("www.example3.com");
+const std::u16string kExampleHost = u"www.example.com";
+const std::u16string kExampleHost2 = u"www.example2.com";
+const std::u16string kExampleHost3 = u"www.example3.com";
 
-OfflinePageItem ItemCreatedOn(base::string16 host, base::Time creation_time) {
+OfflinePageItem ItemCreatedOn(std::u16string host, base::Time creation_time) {
   static int offline_id = 0;
 
-  base::string16 scheme = base::ASCIIToUTF16("https://");
+  std::u16string scheme = u"https://";
   GURL url(scheme + host);
 
   OfflinePageItem item(url, ++offline_id, kClientId, kFilePath, 0);
@@ -37,7 +38,7 @@ OfflinePageItem ItemCreatedOn(base::string16 host, base::Time creation_time) {
 
 TEST(PrefetchedPagesNotifierTest, CheckEmptyList) {
   std::vector<OfflinePageItem> empty_list = {};
-  EXPECT_EQ(base::string16(), ExtractRelevantHostFromOfflinePageItemList(
+  EXPECT_EQ(std::u16string(), ExtractRelevantHostFromOfflinePageItemList(
                                   base::Time(), empty_list));
 }
 
@@ -49,7 +50,7 @@ TEST(PrefetchedPagesNotifierTest, CheckPageCreatedAfterTimes) {
 
   EXPECT_EQ(kExampleHost,
             ExtractRelevantHostFromOfflinePageItemList(past, single_list));
-  EXPECT_EQ(base::string16(),
+  EXPECT_EQ(std::u16string(),
             ExtractRelevantHostFromOfflinePageItemList(future, single_list));
 
   // Should not crash
@@ -57,7 +58,7 @@ TEST(PrefetchedPagesNotifierTest, CheckPageCreatedAfterTimes) {
                               base::Time(), single_list));
   EXPECT_EQ(kExampleHost, ExtractRelevantHostFromOfflinePageItemList(
                               base::Time::Min(), single_list));
-  EXPECT_EQ(base::string16(), ExtractRelevantHostFromOfflinePageItemList(
+  EXPECT_EQ(std::u16string(), ExtractRelevantHostFromOfflinePageItemList(
                                   base::Time::Max(), single_list));
 }
 
@@ -77,9 +78,9 @@ TEST(PrefetchedPagesNotifierTest, CheckFilteredList) {
             ExtractRelevantHostFromOfflinePageItemList(now, item_list));
   EXPECT_EQ(kExampleHost3,
             ExtractRelevantHostFromOfflinePageItemList(future, item_list));
-  EXPECT_EQ(base::string16(),
+  EXPECT_EQ(std::u16string(),
             ExtractRelevantHostFromOfflinePageItemList(more_future, item_list));
-  EXPECT_EQ(base::string16(), ExtractRelevantHostFromOfflinePageItemList(
+  EXPECT_EQ(std::u16string(), ExtractRelevantHostFromOfflinePageItemList(
                                   base::Time::Max(), item_list));
 }
 

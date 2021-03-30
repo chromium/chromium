@@ -89,6 +89,7 @@ void LoseContextCHROMIUM(GLenum current, GLenum other) {
 }
 
 void BeginRasterCHROMIUMImmediate(GLuint sk_color,
+                                  GLboolean needs_clear,
                                   GLuint msaa_sample_count,
                                   GLboolean can_use_lcd_text,
                                   const GLbyte* mailbox) {
@@ -98,7 +99,8 @@ void BeginRasterCHROMIUMImmediate(GLuint sk_color,
       GetImmediateCmdSpaceTotalSize<raster::cmds::BeginRasterCHROMIUMImmediate>(
           size);
   if (c) {
-    c->Init(sk_color, msaa_sample_count, can_use_lcd_text, mailbox);
+    c->Init(sk_color, needs_clear, msaa_sample_count, can_use_lcd_text,
+            mailbox);
   }
 }
 
@@ -235,6 +237,8 @@ void ReadbackImagePixelsINTERNALImmediate(GLint src_x,
                                           GLint shm_id,
                                           GLuint shm_offset,
                                           GLuint pixels_offset,
+                                          GLint result_shm_id,
+                                          GLuint result_shm_offset,
                                           const GLbyte* mailbox) {
   const uint32_t size =
       raster::cmds::ReadbackImagePixelsINTERNALImmediate::ComputeSize();
@@ -243,7 +247,8 @@ void ReadbackImagePixelsINTERNALImmediate(GLint src_x,
           raster::cmds::ReadbackImagePixelsINTERNALImmediate>(size);
   if (c) {
     c->Init(src_x, src_y, dst_width, dst_height, row_bytes, dst_sk_color_type,
-            dst_sk_alpha_type, shm_id, shm_offset, pixels_offset, mailbox);
+            dst_sk_alpha_type, shm_id, shm_offset, pixels_offset, result_shm_id,
+            result_shm_offset, mailbox);
   }
 }
 

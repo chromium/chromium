@@ -7,13 +7,12 @@
 #include <utility>
 
 #include "base/location.h"
-#include "third_party/blink/public/common/feature_policy/feature_policy.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_icon_sizes_parser.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -82,8 +81,8 @@ bool AllowedToUsePaymentFeatures(ScriptState* script_state) {
     return false;
   return ExecutionContext::From(script_state)
       ->GetSecurityContext()
-      .GetFeaturePolicy()
-      ->IsFeatureEnabled(mojom::blink::FeaturePolicyFeature::kPayment);
+      .GetPermissionsPolicy()
+      ->IsFeatureEnabled(mojom::blink::PermissionsPolicyFeature::kPayment);
 }
 
 ScriptPromise RejectNotAllowedToUsePaymentFeatures(
@@ -98,8 +97,7 @@ ScriptPromise RejectNotAllowedToUsePaymentFeatures(
 }  // namespace
 
 PaymentInstruments::PaymentInstruments(
-    const HeapMojoRemote<payments::mojom::blink::PaymentManager,
-                         HeapMojoWrapperMode::kWithoutContextObserver>& manager,
+    const HeapMojoRemote<payments::mojom::blink::PaymentManager>& manager,
     ExecutionContext* context)
     : manager_(manager), permission_service_(context) {}
 
@@ -295,7 +293,7 @@ void PaymentInstruments::OnRequestPermission(
       icon->src = parsed_url;
       icon->type = image_object->type();
       icon->purpose.push_back(blink::mojom::ManifestImageResource_Purpose::ANY);
-      WebVector<WebSize> web_sizes =
+      WebVector<gfx::Size> web_sizes =
           WebIconSizesParser::ParseIconSizes(image_object->sizes());
       for (const auto& web_size : web_sizes) {
         icon->sizes.push_back(web_size);

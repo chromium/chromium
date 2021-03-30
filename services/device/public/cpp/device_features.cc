@@ -10,10 +10,6 @@ namespace features {
 // which expose previously unexposed platform features, e.g. ALS or Magnetometer
 const base::Feature kGenericSensorExtraClasses{
     "GenericSensorExtraClasses", base::FEATURE_DISABLED_BY_DEFAULT};
-// Enables usage of the Windows.Devices.Sensors WinRT API for the sensor
-// backend instead of the ISensor API on Windows.
-const base::Feature kWinrtSensorsImplementation{
-    "WinrtSensorsImplementation", base::FEATURE_ENABLED_BY_DEFAULT};
 // Enables usage of the Windows.Devices.Geolocation WinRT API for the
 // LocationProvider instead of the NetworkLocationProvider on Windows.
 const base::Feature kWinrtGeolocationImplementation{
@@ -29,13 +25,5 @@ const base::Feature kMacCoreLocationImplementation{
     "MacCoreLocationImplementation", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kMacCoreLocationBackend{"MacCoreLocationBackend",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
-
-#if defined(OS_WIN)
-// Switches from enumerating serial ports using GUID_DEVINTERFACE_SERIALPORT to
-// GUID_DEVINTERFACE_SERENUM_BUS_ENUMERATOR. This is an partial solution to
-// https://crbug.com/1119497.
-const base::Feature kUseSerialBusEnumerator{"UseSerialBusEnumerator",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
-#endif  // defined(OS_WIN)
 
 }  // namespace features

@@ -1,7 +1,7 @@
 Name: ARCore SDK
 Short Name: arcore
 URL: https://github.com/google-ar/arcore-android-sdk
-Version: 1.18
+Version: 1.22
 License: Apache 2.0
 License File: LICENSE
 Security Critical: yes
@@ -24,6 +24,9 @@ The LICENSE file is taken from
  * https://github.com/google-ar/arcore-unity-sdk/blob/master/LICENSE
 
 Changes:
+2020-02-19 - Upgrade test-apks/arcore_current.apk to v1.23.
+2020-02-01 - Upgrade SDK to v1.22.
+             Upgrade test-apks/arcore_current.apk to v1.22.
 2020-07-13 - Upgrade SDK to v1.18.
              Upgrade test-apks/arcore_current.apk to v1.18.
 2019-12-18 - Upgrade test-apks/arcore_current.apk to v1.14.

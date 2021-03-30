@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "author": "dpapad@chromium.org",
   "dependencies": {
-    "@polymer/font-roboto": "3.0.2",
     "@polymer/iron-a11y-announcer": "3.0.2",
     "@polymer/iron-a11y-keys": "3.0.1",
     "@polymer/iron-a11y-keys-behavior": "3.0.1",

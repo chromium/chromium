@@ -5,47 +5,34 @@
 import("//build/config/android/rules.gni")
 import("//chrome/android/features/android_library_factory_tmpl.gni")
 
-# TODO(sinansahin): Decide which classes should stay in the public target, and
-# probably move MessageBanner* classes to internal/.
 android_library("java") {
   sources = [
-    "java/src/org/chromium/components/messages/MessageAutoDismissTimer.java",
-    "java/src/org/chromium/components/messages/MessageBannerCoordinator.java",
-    "java/src/org/chromium/components/messages/MessageBannerMediator.java",
     "java/src/org/chromium/components/messages/MessageBannerProperties.java",
-    "java/src/org/chromium/components/messages/MessageBannerView.java",
-    "java/src/org/chromium/components/messages/MessageBannerViewBinder.java",
     "java/src/org/chromium/components/messages/MessageContainer.java",
     "java/src/org/chromium/components/messages/MessageDispatcher.java",
     "java/src/org/chromium/components/messages/MessageDispatcherBridge.java",
     "java/src/org/chromium/components/messages/MessageDispatcherProvider.java",
-    "java/src/org/chromium/components/messages/MessageStateHandler.java",
-    "java/src/org/chromium/components/messages/MessageUtils.java",
     "java/src/org/chromium/components/messages/MessageWrapper.java",
-    "java/src/org/chromium/components/messages/SingleActionMessage.java",
   ]
   resources_package = "org.chromium.components.messages"
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   deps = [
     ":java_resources",
     "//base:base_java",
-    "//base:jni_java",
     "//components/browser_ui/banners/android:java",
     "//components/browser_ui/widget/android:java",
     "//content/public/android:content_java",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//third_party/android_deps:androidx_appcompat_appcompat_resources_java",
-    "//third_party/android_deps:androidx_core_core_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//ui/android:ui_java",
   ]
+
+  srcjar_deps = [ ":message_enums_java" ]
 }
 
 android_resources("java_resources") {
-  sources = [
-    "java/res/drawable/message_bg_tinted.xml",
-    "java/res/layout/message_banner_view.xml",
-    "java/res/values/dimens.xml",
-  ]
+  sources = [ "java/res/values/dimens.xml" ]
   deps = [
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
@@ -64,6 +51,7 @@ static_library("android") {
   sources = [
     "message_dispatcher_bridge.cc",
     "message_dispatcher_bridge.h",
+    "message_enums.h",
     "message_wrapper.cc",
     "message_wrapper.h",
   ]
@@ -72,6 +60,23 @@ static_library("android") {
     "//base",
     "//content/public/browser",
   ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "mock_message_dispatcher_bridge.cc",
+    "mock_message_dispatcher_bridge.h",
+  ]
+
+  deps = [
+    ":android",
+    "//testing/gmock",
+  ]
+}
+
+java_cpp_enum("message_enums_java") {
+  sources = [ "message_enums.h" ]
 }
 
 # Build target for Messages manager code, that owns and initializes
@@ -104,49 +109,22 @@ static_library("feature_flags") {
   deps = [ "//base" ]
 }
 
-android_library("javatests") {
-  testonly = true
-  sources = [
-    "java/src/org/chromium/components/messages/MessageBannerRenderTest.java",
-    "java/src/org/chromium/components/messages/MessageBannerViewTest.java",
-    "java/src/org/chromium/components/messages/SingleActionMessageTest.java",
-  ]
-  resources_package = "org.chromium.components.messages"
-  deps = [
-    ":java",
-    ":java_resources",
-    "//base:base_java",
-    "//base:base_java_test_support",
-    "//content/public/test/android:content_java_test_support",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//third_party/android_deps:androidx_appcompat_appcompat_java",
-    "//third_party/android_deps:androidx_appcompat_appcompat_resources_java",
-    "//third_party/android_deps:androidx_core_core_java",
-    "//third_party/android_deps:androidx_test_runner_java",
-    "//third_party/android_deps:espresso_java",
-    "//third_party/android_support_test_runner:rules_java",
-    "//third_party/android_support_test_runner:runner_java",
-    "//third_party/junit",
-    "//third_party/mockito:mockito_java",
-    "//ui/android:ui_java",
-    "//ui/android:ui_java_test_support",
-  ]
-}
-
 java_library("junit") {
   # Skip platform checks since Robolectric depends on requires_android targets.
   bypass_platform_checks = true
   testonly = true
-  sources = [
-    "java/src/org/chromium/components/messages/MessageAutoDismissTimerTest.java",
-    "java/src/org/chromium/components/messages/MessageWrapperTest.java",
-  ]
+  sources =
+      [ "java/src/org/chromium/components/messages/MessageWrapperTest.java" ]
   deps = [
     ":java",
+    "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//third_party/android_deps:androidx_test_runner_java",
+    "//components/browser_ui/widget/android:java",
     "//third_party/android_deps:robolectric_all_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",

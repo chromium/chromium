@@ -42,6 +42,5 @@ DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(LayoutAlignment,
                                    kCrossAxisAlignmentKey,
                                    nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kViewIgnoredByLayoutKey, false)
-DEFINE_UI_CLASS_PROPERTY_KEY(bool, kViewCanBeVisibleKey, false)
 
 }  // namespace views

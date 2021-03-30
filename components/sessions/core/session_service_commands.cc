@@ -17,12 +17,7 @@
 #include "base/pickle.h"
 #include "base/token.h"
 #include "components/sessions/core/base_session_service_commands.h"
-#include "components/sessions/core/command_storage_manager_delegate.h"
-#include "components/sessions/core/session_command.h"
-#include "components/sessions/core/session_types.h"
 #include "components/tab_groups/tab_group_color.h"
-#include "components/tab_groups/tab_group_id.h"
-#include "components/tab_groups/tab_group_visual_data.h"
 
 namespace sessions {
 
@@ -72,6 +67,9 @@ static const SessionCommand::id_type kCommandSetTabGuid = 28;
 static const SessionCommand::id_type kCommandSetTabUserAgentOverride2 = 29;
 static const SessionCommand::id_type kCommandSetTabData = 30;
 static const SessionCommand::id_type kCommandSetWindowUserTitle = 31;
+static const SessionCommand::id_type kCommandSetWindowVisibleOnAllWorkspaces =
+    32;
+// ID 255 is used by CommandStorageBackend.
 
 namespace {
 
@@ -146,6 +144,11 @@ struct PinnedStatePayload {
 struct LastActiveTimePayload {
   SessionID::id_type tab_id;
   int64_t last_active_time;
+};
+
+struct VisibleOnAllWorkspacesPayload {
+  SessionID::id_type window_id;
+  bool visible_on_all_workspaces;
 };
 
 // Persisted versions of ui::WindowShowState that are written to disk and can
@@ -648,7 +651,7 @@ bool CreateTabsAndWindows(
             tab_groups::TabGroupId::FromRawToken(group_token.value()),
             tab_groups);
 
-        base::string16 title;
+        std::u16string title;
         if (!iter.ReadString16(&title))
           return true;
 
@@ -782,6 +785,17 @@ bool CreateTabsAndWindows(
         }
         GetWindow(SessionID::FromSerializedValue(window_id), windows)
             ->workspace = workspace;
+        break;
+      }
+
+      case kCommandSetWindowVisibleOnAllWorkspaces: {
+        VisibleOnAllWorkspacesPayload payload;
+        if (!command->GetPayload(&payload, sizeof(payload))) {
+          DVLOG(1) << "Failed reading command " << command->id();
+          return true;
+        }
+        GetWindow(SessionID::FromSerializedValue(payload.window_id), windows)
+            ->visible_on_all_workspaces = payload.visible_on_all_workspaces;
         break;
       }
 
@@ -1000,6 +1014,16 @@ std::unique_ptr<SessionCommand> CreateSetWindowWorkspaceCommand(
   pickle.WriteInt(window_id.id());
   pickle.WriteString(workspace);
   return std::make_unique<SessionCommand>(kCommandSetWindowWorkspace2, pickle);
+}
+
+std::unique_ptr<SessionCommand> CreateSetWindowVisibleOnAllWorkspacesCommand(
+    const SessionID& window_id,
+    bool visible_on_all_workspaces) {
+  VisibleOnAllWorkspacesPayload payload = {0};
+  payload.window_id = window_id.id();
+  payload.visible_on_all_workspaces = visible_on_all_workspaces;
+  return CreateSessionCommandForPayload(kCommandSetWindowVisibleOnAllWorkspaces,
+                                        payload);
 }
 
 std::unique_ptr<SessionCommand> CreateTabNavigationPathPrunedCommand(

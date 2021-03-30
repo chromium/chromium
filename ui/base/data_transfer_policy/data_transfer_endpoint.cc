@@ -30,10 +30,22 @@ DataTransferEndpoint::DataTransferEndpoint(const DataTransferEndpoint& other) =
 DataTransferEndpoint::DataTransferEndpoint(DataTransferEndpoint&& other) =
     default;
 
+DataTransferEndpoint& DataTransferEndpoint::operator=(
+    const DataTransferEndpoint& other) = default;
+
+DataTransferEndpoint& DataTransferEndpoint::operator=(
+    DataTransferEndpoint&& other) = default;
+
 bool DataTransferEndpoint::operator==(const DataTransferEndpoint& other) const {
-  return origin_ == other.origin_ && type_ == other.type_;
+  return origin_ == other.origin_ && type_ == other.type_ &&
+         notify_if_restricted_ == other.notify_if_restricted_;
 }
 
 DataTransferEndpoint::~DataTransferEndpoint() = default;
+
+bool DataTransferEndpoint::IsSameOriginWith(
+    const DataTransferEndpoint& other) const {
+  return IsUrlType() && (type_ == other.type_) && (origin_ == other.origin_);
+}
 
 }  // namespace ui

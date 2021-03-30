@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "ash/login/ui/login_auth_user_view.h"
+
+#include "ash/constants/ash_features.h"
 #include "ash/login/mock_login_screen_client.h"
 #include "ash/login/ui/login_password_view.h"
 #include "ash/login/ui/login_pin_input_view.h"
@@ -16,7 +18,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
@@ -317,6 +318,23 @@ TEST_P(LoginAuthUserViewUnittest, PasswordFieldChangeOnUpdateUser) {
             ui::TEXT_INPUT_TYPE_PASSWORD);
 }
 
+// Tests that the appropriate InputFieldMode is used based on the exposed
+// length of the user's PIN. An exposed PIN length of zero (0) means that
+// auto submit is not being used.
+TEST_P(LoginAuthUserViewUnittest, CorrectFieldModeForExposedPinLength) {
+  SetUserCount(1);
+
+  for (int pin_length = 0; pin_length <= 64; pin_length++) {
+    SetAuthPin(/*autosubmit_length*/ pin_length);
+
+    if (LoginPinInputView::IsAutosubmitSupported(pin_length)) {
+      ExpectModeVisibility(LoginAuthUserView::InputFieldMode::PIN_WITH_TOGGLE);
+    } else {
+      ExpectModeVisibility(LoginAuthUserView::InputFieldMode::PIN_AND_PASSWORD);
+    }
+  }
+}
+
 // Tests the correctness of InputFieldMode::NONE
 TEST_P(LoginAuthUserViewUnittest, ModesWithoutInputFields) {
   LoginAuthUserView::TestApi auth_test(view_);
@@ -324,92 +342,121 @@ TEST_P(LoginAuthUserViewUnittest, ModesWithoutInputFields) {
       LoginAuthUserView::AUTH_CHALLENGE_RESPONSE,
       LoginAuthUserView::AUTH_DISABLED, LoginAuthUserView::AUTH_NONE,
       LoginAuthUserView::AUTH_ONLINE_SIGN_IN};
+
   for (auto method : methods_without_input) {
     SetAuthMethods(method);
     ExpectModeVisibility(LoginAuthUserView::InputFieldMode::NONE);
   }
 }
 
-// Tests the correctness of InputFieldMode::PASSWORD_ONLY
+// Tests the correctness of InputFieldMode::PASSWORD_ONLY. With only the
+// password field present and no PIN, the authentication call must
+// have 'authenticated_by_pin' as false.
 TEST_P(LoginAuthUserViewUnittest, PasswordOnlyFieldMode) {
   LoginAuthUserView::TestApi auth_test(view_);
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  auto client = std::make_unique<MockLoginScreenClient>();
+  LoginUserView* user_view(auth_test.user_view());
+  LoginPasswordView::TestApi password_test(view_->password_view());
+
   // Only password, no PIN.
+  SetUserCount(1);
   SetAuthMethods(LoginAuthUserView::AUTH_PASSWORD);
   ExpectModeVisibility(LoginAuthUserView::InputFieldMode::PASSWORD_ONLY);
+
+  password_test.textfield()->SetText(base::ASCIIToUTF16("test_password"));
+
+  EXPECT_CALL(*client, AuthenticateUserWithPasswordOrPin_(
+                           user_view->current_user().basic_user_info.account_id,
+                           /*password=*/"test_password",
+                           /*authenticated_by_pin=*/false,
+                           /*callback=*/_));
+
+  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  base::RunLoop().RunUntilIdle();
 }
 
-// Tests the correctness of InputFieldMode::PIN_AND_PASSWORD
-TEST_P(LoginAuthUserViewUnittest, PinAndPasswordFieldMode) {
+/**
+ * Tests the correctness of InputFieldMode::PIN_AND_PASSWORD by ensuring the
+ * following:
+ * - Clicking on the pin pad inserts digits into the field
+ * - Digits are correctly ignored when the field is set to read-only
+ * - Submitting the credentials results in the correct auth call
+ */
+TEST_P(LoginAuthUserViewUnittest, PinAndPasswordFieldModeCorrectness) {
   LoginAuthUserView::TestApi auth_test(view_);
-  // Invalid pin lengths always result in a combined PIN and PWD input.
-  const int invalid_lengths[] = {0, 1, 2, 3, 4, 5, 13, 14};
-  for (auto length : invalid_lengths) {
-    SetAuthPin(/*autosubmit_length*/ length);
-    ExpectModeVisibility(LoginAuthUserView::InputFieldMode::PIN_AND_PASSWORD);
-  }
-}
-
-// Tests that clicking on the digits on the pin pad inserts digits on the
-// password field, but it does not when the field is read only.
-TEST_P(LoginAuthUserViewUnittest, PinPadWorksForPasswordField) {
-  LoginAuthUserView::TestApi auth_test(view_);
-  LoginPasswordView::TestApi password_test(auth_test.password_view());
-
-  // Set up PIN without auto submit.
-  SetAuthPin(/*autosubmit_length*/ 0);
-
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  auto client = std::make_unique<MockLoginScreenClient>();
+  LoginUserView* user_view(auth_test.user_view());
   LoginPinView::TestApi pin_pad_api{auth_test.pin_view()};
-  const auto password = base::ASCIIToUTF16("123");
 
-  // Click on "1" "2" and "3"
+  // PIN length not exposed and thus no auto submit.
+  SetUserCount(1);
+  SetAuthPin(/*autosubmit_length*/ 0);
+  ExpectModeVisibility(LoginAuthUserView::InputFieldMode::PIN_AND_PASSWORD);
+
+  // Typing '123456789'.
   pin_pad_api.ClickOnDigit(1);
   pin_pad_api.ClickOnDigit(2);
   pin_pad_api.ClickOnDigit(3);
-
-  EXPECT_EQ(password_test.textfield()->GetText(), password);
-
-  // Set the field to read only. Clicking on the digits has no effect.
+  // '456' must be ignored.
   auth_test.password_view()->SetReadOnly(true);
   pin_pad_api.ClickOnDigit(4);
   pin_pad_api.ClickOnDigit(5);
   pin_pad_api.ClickOnDigit(6);
+  auth_test.password_view()->SetReadOnly(false);
+  pin_pad_api.ClickOnDigit(7);
+  pin_pad_api.ClickOnDigit(8);
+  pin_pad_api.ClickOnDigit(9);
 
-  EXPECT_EQ(password_test.textfield()->GetText(), password);
+  EXPECT_CALL(*client, AuthenticateUserWithPasswordOrPin_(
+                           user_view->current_user().basic_user_info.account_id,
+                           /*password=*/"123789",
+                           /*authenticated_by_pin=*/true,
+                           /*callback=*/_));
+
+  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  base::RunLoop().RunUntilIdle();
 }
 
-// Tests that clicking on the digits on the pin pad inserts digits on the
-// PIN input field, but it does not when the field is read only.
-TEST_P(LoginAuthUserViewUnittest, PinPadWorksForPinInputField) {
+/**
+ * Tests the correctness of InputFieldMode::PIN_WITH_TOGGLE - the default
+ * input mode when using a PIN with auto submit enabled, by ensuring the
+ * following:
+ * - Clicking on the pin pad inserts digits into the field
+ * - Digits are correctly ignored when the field is set to read-only
+ * - Submitting the last digit triggers the correct auth call
+ */
+TEST_P(LoginAuthUserViewUnittest, PinWithToggleFieldModeCorrectness) {
   if (!autosubmit_feature_enabled_)
     return;
 
-  auto client = std::make_unique<MockLoginScreenClient>();
   LoginAuthUserView::TestApi auth_test(view_);
+  auto client = std::make_unique<MockLoginScreenClient>();
   LoginUserView* user_view(auth_test.user_view());
   LoginPinInputView::TestApi pin_input_test{auth_test.pin_input_view()};
-  SetUserCount(1);
-  EXPECT_CALL(*client, AuthenticateUserWithPasswordOrPin_(
-                           user_view->current_user().basic_user_info.account_id,
-                           "123456", /*password*/
-                           true,     /*authenticated_by_pin*/
-                           _ /*callback*/));
+  LoginPinView::TestApi pin_pad_api{auth_test.pin_view()};
 
   // Set up PIN with auto submit.
+  SetUserCount(1);
   SetAuthPin(/*autosubmit_length*/ 6);
+  ExpectModeVisibility(LoginAuthUserView::InputFieldMode::PIN_WITH_TOGGLE);
 
-  LoginPinView::TestApi pin_pad_api{auth_test.pin_view()};
   const auto pin = std::string("123456");
+  EXPECT_CALL(*client, AuthenticateUserWithPasswordOrPin_(
+                           user_view->current_user().basic_user_info.account_id,
+                           /*password=*/pin,
+                           /*authenticated_by_pin=*/true,
+                           /*callback=*/_));
 
-  // Click on "1" "2" and "3"
+  // Inserting `1230456`.
   pin_pad_api.ClickOnDigit(1);
   pin_pad_api.ClickOnDigit(2);
   pin_pad_api.ClickOnDigit(3);
-
-  // Ignore input when read only.
+  // `0` must be ignored when the field is read only.
   auth_test.pin_input_view()->SetReadOnly(true);
   pin_pad_api.ClickOnDigit(0);
   auth_test.pin_input_view()->SetReadOnly(false);
-
   pin_pad_api.ClickOnDigit(4);
   pin_pad_api.ClickOnDigit(5);
   pin_pad_api.ClickOnDigit(6);
@@ -419,32 +466,44 @@ TEST_P(LoginAuthUserViewUnittest, PinPadWorksForPinInputField) {
   base::RunLoop().RunUntilIdle();
 }
 
-// Tests the correctness of InputFieldModes used for PIN autosubmit.
-TEST_P(LoginAuthUserViewUnittest, PinAutosubmitFieldModes) {
+/**
+ * Tests the correctness of InputFieldMode::PWD_WITH_TOGGLE. This is the
+ * mode that shows just the password field with the option to switch to PIN.
+ * It is only available when the user has auto submit enabled.
+ */
+TEST_P(LoginAuthUserViewUnittest, PwdWithToggleFieldModeCorrectness) {
+  if (!autosubmit_feature_enabled_)
+    return;
+
   LoginAuthUserView::TestApi auth_test(view_);
-  // Valid autosubmit lenths default to showing the pin input field,
-  // if autosubmit is available.
-  const int valid_lengths[] = {6, 7, 8, 9, 10, 11, 12};
-  for (auto length : valid_lengths) {
-    SetAuthPin(/*autosubmit_length*/ length);
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  auto client = std::make_unique<MockLoginScreenClient>();
+  LoginUserView* user_view(auth_test.user_view());
+  LoginPasswordView::TestApi password_test(view_->password_view());
 
-    // No autosubmit when the feature is disabled
-    if (!autosubmit_feature_enabled_) {
-      ExpectModeVisibility(LoginAuthUserView::InputFieldMode::PIN_AND_PASSWORD);
-      continue;
-    }
+  // Set up PIN with auto submit and click on the toggle to switch to password.
+  SetUserCount(1);
+  SetAuthPin(/*autosubmit_length*/ 6);
+  ExpectModeVisibility(LoginAuthUserView::InputFieldMode::PIN_WITH_TOGGLE);
+  const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                             ui::EventTimeForNow(), 0, 0);
+  views::test::ButtonTestApi(auth_test.pin_password_toggle())
+      .NotifyClick(event);
+  base::RunLoop().RunUntilIdle();
+  ExpectModeVisibility(LoginAuthUserView::InputFieldMode::PWD_WITH_TOGGLE);
 
-    // Autosubmit feature present
-    ExpectModeVisibility(LoginAuthUserView::InputFieldMode::PIN_WITH_TOGGLE);
-    // Clicking on the switch button changes to the password field
-    const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                               ui::EventTimeForNow(), 0, 0);
-    views::test::ButtonTestApi(auth_test.pin_password_toggle())
-        .NotifyClick(event);
-    base::RunLoop().RunUntilIdle();
-    ExpectModeVisibility(LoginAuthUserView::InputFieldMode::PWD_WITH_TOGGLE);
-    SetAuthMethods(LoginAuthUserView::AUTH_NONE);  // Clear state for next run.
-  }
+  // Insert a password consisting of numbers only and expect it to be treated
+  // as a password, not a PIN. This means 'authenticated_by_pin' must be false.
+  password_test.textfield()->SetText(base::ASCIIToUTF16("12345678"));
+
+  EXPECT_CALL(*client, AuthenticateUserWithPasswordOrPin_(
+                           user_view->current_user().basic_user_info.account_id,
+                           /*password=*/"12345678",
+                           /*authenticated_by_pin=*/false,
+                           /*callback=*/_));
+
+  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  base::RunLoop().RunUntilIdle();
 }
 
 INSTANTIATE_TEST_SUITE_P(LoginAuthUserViewTests,

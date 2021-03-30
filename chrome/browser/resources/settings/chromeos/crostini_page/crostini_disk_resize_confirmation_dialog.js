@@ -12,16 +12,24 @@ Polymer({
 
   /** @override */
   attached() {
-    this.$.dialog.showModal();
+    this.getDialog_().showModal();
   },
 
   /** @private */
   onCancelTap_() {
-    this.$.dialog.cancel();
+    this.getDialog_().cancel();
   },
 
   /** @private */
   onReserveSizeTap_() {
-    this.$.dialog.close();
+    this.getDialog_().close();
   },
+
+  /**
+   * @private
+   * @return {!CrDialogElement}
+   */
+  getDialog_() {
+    return /** @type{!CrDialogElement} */ (this.$.dialog);
+  }
 });

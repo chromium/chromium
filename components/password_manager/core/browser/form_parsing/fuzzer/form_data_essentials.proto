@@ -23,7 +23,6 @@ message FormField {
 message Form {
   bool is_mode_filling = 1;
   bool is_form_tag = 2;
-  bool is_formless_checkout = 3;
   string name = 4;
   string action = 5;
   string origin = 6;

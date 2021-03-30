@@ -5,8 +5,9 @@
 #ifndef UI_EVENTS_KEYCODES_KEYBOARD_CODE_CONVERSION_H_
 #define UI_EVENTS_KEYCODES_KEYBOARD_CODE_CONVERSION_H_
 
+#include <string>
+
 #include "base/compiler_specific.h"
-#include "base/strings/string16.h"
 #include "ui/events/events_base_export.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -40,8 +41,8 @@ enum class DomCode;
 // Returns true and sets the output parameters if the (dom_code, flags) pair
 // has an interpretation in the US English layout; otherwise the output
 // parameters are untouched.
-EVENTS_BASE_EXPORT base::char16 DomCodeToUsLayoutCharacter(DomCode dom_code,
-                                                           int flags);
+EVENTS_BASE_EXPORT char16_t DomCodeToUsLayoutCharacter(DomCode dom_code,
+                                                       int flags);
 EVENTS_BASE_EXPORT bool DomCodeToUsLayoutDomKey(DomCode dom_code,
                                                 int flags,
                                                 DomKey* dom_key,

@@ -4,8 +4,14 @@
     function handleMessage(e) {
       if (e.data == "focus") {
         let button = document.querySelector("button");
-        button.onfocus = () => e.source.postMessage({focused: true}, "*");
+        button.onfocus = () => e.source.postMessage({focused: true}, {targetOrigin: "*"});
         button.focus();
+      }
+
+      if (e.data == "focus-update-active-element") {
+        let button = document.querySelector("button");
+        button.focus();
+        e.source.postMessage({activeElementUpdated: document.activeElement === button}, {targetOrigin: "*"});
       }
     }
 
@@ -22,7 +28,7 @@
 
     window.onfocus = () => {
       if (window.portalHost)
-        window.portalHost.postMessage("window focused", "*");
+        window.portalHost.postMessage("window focused");
     };
   </script>
   <button>A</button>

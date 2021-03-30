@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_CHROMEOS_CHILD_ACCOUNTS_FAMILY_USER_DEVICE_METRICS_H_
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/chromeos/child_accounts/family_user_metrics_service.h"
-#include "chrome/browser/chromeos/settings/device_settings_service.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
 namespace user_manager {
@@ -21,8 +21,9 @@ namespace chromeos {
 // - FamilyUser.DeviceOwner: Boolean value indicates whether the primary
 // user is the owner of device. Recorded at the beginning of the first active
 // session daily.
-// - FamilyUser.TotalUsersCount: the number of users on the device. Recorded
-// at the beginning of the first active session daily.
+// - FamilyUser.GaiaUsersCount: the number of Gaia users on the device.
+// Recorded at the beginning of the first active session daily. The user count
+// could be 0 if the managed device has ephemeral user policy.
 // - FamilyUser.FamilyLinkUsersCount: the number of family link users on the
 // device. Recorded at the beginning of the first active session daily.
 class FamilyUserDeviceMetrics : public session_manager::SessionManagerObserver,
@@ -48,7 +49,7 @@ class FamilyUserDeviceMetrics : public session_manager::SessionManagerObserver,
   static const char* GetNewUserAddedHistogramNameForTest();
   static const char* GetDeviceOwnerHistogramNameForTest();
   static const char* GetFamilyLinkUsersCountHistogramNameForTest();
-  static const char* GetTotalUsersCountHistogramNameForTest();
+  static const char* GetGaiaUsersCountHistogramNameForTest();
 
   // FamilyUserMetricsService::Observer:
   void OnNewDay() override;

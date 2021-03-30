@@ -242,11 +242,9 @@ const CGFloat kButtonLength = 44;
     SetA11yLabelAndUiAutomationName(_previousButton,
                                     IDS_FIND_IN_PAGE_PREVIOUS_TOOLTIP,
                                     kFindInPagePreviousButtonId);
-#if defined(__IPHONE_13_4)
     if (@available(iOS 13.4, *)) {
         _previousButton.pointerInteractionEnabled = YES;
     }
-#endif  // defined(__IPHONE_13_4)
   }
 
   return _previousButton;
@@ -263,11 +261,9 @@ const CGFloat kButtonLength = 44;
     _nextButton.translatesAutoresizingMaskIntoConstraints = NO;
     SetA11yLabelAndUiAutomationName(_nextButton, IDS_FIND_IN_PAGE_NEXT_TOOLTIP,
                                     kFindInPageNextButtonId);
-#if defined(__IPHONE_13_4)
     if (@available(iOS 13.4, *)) {
         _nextButton.pointerInteractionEnabled = YES;
     }
-#endif  // defined(__IPHONE_13_4)
   }
 
   return _nextButton;
@@ -282,11 +278,9 @@ const CGFloat kButtonLength = 44;
     _closeButton.translatesAutoresizingMaskIntoConstraints = NO;
     _closeButton.accessibilityIdentifier = kFindInPageCloseButtonId;
     _closeButton.titleLabel.font = [UIFont systemFontOfSize:kButtonFontSize];
-#if defined(__IPHONE_13_4)
     if (@available(iOS 13.4, *)) {
         _closeButton.pointerInteractionEnabled = YES;
     }
-#endif  // defined(__IPHONE_13_4)
   }
 
   return _closeButton;

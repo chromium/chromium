@@ -93,7 +93,17 @@ suite('TabList', () => {
         tabList.shadowRoot.querySelectorAll('tabstrip-tab-group'));
   }
 
-  setup(() => {
+  /**
+   * @param {number} ms
+   * @return {!Promise}
+   */
+  function waitFor(ms) {
+    return new Promise(resolve => {
+      setTimeout(resolve, ms);
+    });
+  }
+
+  setup(async () => {
     document.documentElement.dir = 'ltr';
     document.body.innerHTML = '';
     document.body.style.margin = 0;
@@ -120,7 +130,7 @@ suite('TabList', () => {
         document.createElement('tabstrip-tab-list'));
     document.body.appendChild(tabList);
 
-    return testTabsApiProxy.whenCalled('getTabs');
+    await testTabsApiProxy.whenCalled('getTabs');
   });
 
   teardown(() => {
@@ -828,6 +838,55 @@ suite('TabList', () => {
         testTabsApiProxy.getCallCount('setThumbnailTracked'), tabs.length);
   });
 
+  test('ShouldDebounceThumbnailTrackerWhenScrollingFast', async () => {
+    // Set tab widths such that 3 tabs fit in the viewport. This should reach a
+    // state where the first 6 thumbnails are being tracked: 3 in the viewport
+    // and 3 within the IntersectionObserver's rootMargin. The widths need to be
+    // full integers to avoid rounding errors.
+    const tabsPerViewport = 3;
+    const tabStripWidth = window.innerWidth - window.innerWidth % 3;
+    tabList.style.width = `${tabStripWidth}px`;
+    tabList.style.setProperty(
+        '--tabstrip-tab-width', `${tabStripWidth / tabsPerViewport}px`);
+    tabList.style.setProperty('--tabstrip-tab-height', '10px');
+    tabList.style.setProperty('--tabstrip-tab-spacing', '0px');
+
+    await tabList.animationPromises;
+    await testTabsApiProxy.whenCalled('setThumbnailTracked');
+    testTabsApiProxy.reset();
+
+    // Add enough tabs for there to be 13 tabs.
+    for (let i = 0; i < 10; i++) {
+      webUIListenerCallback('tab-created', {
+        active: false,
+        alertStates: [],
+        id: tabs.length + i,
+        index: tabs.length + i,
+        title: '',
+      });
+    }
+    await tabList.animationPromises;
+    await testTabsApiProxy.whenCalled('setThumbnailTracked');
+    testTabsApiProxy.reset();
+    testTabsApiProxy.resetThumbnailRequestCounts();
+
+    // Mock 3 scroll events and end up with a scrolled state where the 10th
+    // tab is aligned to the left. This should only evaluate to 1 set of
+    // thumbnail updates and should most importantly skip the 6th tab.
+    const tabElements = getUnpinnedTabs();
+    tabList.scrollLeft = tabElements[3].offsetLeft;
+    tabList.scrollLeft = tabElements[5].offsetLeft;
+    tabList.scrollLeft = tabElements[10].offsetLeft;
+    assertEquals(0, testTabsApiProxy.getCallCount('setThumbnailTracked'));
+
+    await waitFor(200);
+    assertEquals(12, testTabsApiProxy.getCallCount('setThumbnailTracked'));
+    assertEquals(0, testTabsApiProxy.getThumbnailRequestCount(6));
+    for (let tabId = 7; tabId < 13; tabId++) {
+      assertEquals(1, testTabsApiProxy.getThumbnailRequestCount(tabId));
+    }
+  });
+
   test(
       'focusing on tab strip with the keyboard adds a class and focuses ' +
           'the first tab',
@@ -915,8 +974,16 @@ suite('TabList', () => {
     assertEquals(tabList.scrollLeft, 0);
   });
 
-  test('clicking on new tab button opens a new tab', () => {
+  test('clicking on new tab button opens a new tab', async () => {
     tabList.shadowRoot.querySelector('#newTabButton').click();
-    return testTabsApiProxy.whenCalled('createNewTab');
+    await testTabsApiProxy.whenCalled('createNewTab');
+  });
+
+  test('PreventsDraggingWhenOnlyOneTab', () => {
+    assertFalse(tabList.shouldPreventDrag());
+    const tabElements = getUnpinnedTabs();
+    tabElements[1].remove();
+    tabElements[2].remove();
+    assertTrue(tabList.shouldPreventDrag());
   });
 });

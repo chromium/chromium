@@ -1,0 +1,46 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
+<link rel="import" href="chrome://resources/html/load_time_data.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-progress/paper-progress.html">
+<link rel="import" href="../../prefs/prefs_behavior.html">
+<link rel="import" href="../../settings_shared_css.html">
+
+<dom-module id="settings-peripheral-data-access-protection-dialog">
+  <template>
+    <style include="settings-shared">
+      #dataAccesProtectionDialogSubDescription {
+        padding-top: 10px;
+      }
+
+      cr-dialog::part(dialog) {
+        width: 370px;
+      }
+    </style>
+
+    <cr-dialog id="warningDialog" show-on-attach>
+      <div slot="title">
+        $i18n{peripheralDataAccessProtectionWarningTitle}
+      </div>
+      <div slot="body">
+        <div>$i18n{peripheralDataAccessProtectionWarningDescription}</div>
+        <div id="dataAccesProtectionDialogSubDescription">
+          $i18n{peripheralDataAccessProtectionWarningSubDescription}
+        </div>
+      </div>
+      <div slot="button-container">
+        <cr-button id="cancelButton" class="cancel-button"
+            on-click="onCancelButtonClicked_">
+          $i18n{peripheralDataAccessProtectionCancelButton}
+        </cr-button>
+        <cr-button id="disableConfirmation" class="action-button"
+            on-click="onDisableClicked_">
+          $i18n{peripheralDataAccessProtectionDisableButton}
+        </cr-button>
+      </div>
+    </cr-dialog>
+
+  </template>
+  <script src="peripheral_data_access_protection_dialog.js"></script>
+</dom-module>

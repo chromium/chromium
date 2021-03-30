@@ -32,7 +32,7 @@ void FocusOmnibox(bool focus, content::WebContents* web_contents) {
     return;
 
   if (focus) {
-    // This is an invisible focus to support "realbox" implementations on NTPs
+    // This is an invisible focus to support "fakebox" implementations on NTPs
     // (including other search providers). We shouldn't consider it as the user
     // explicitly focusing the omnibox.
     omnibox_view->SetFocus(/*is_user_initiated=*/false);
@@ -53,7 +53,7 @@ void FocusOmnibox(bool focus, content::WebContents* web_contents) {
   }
 }
 
-void PasteIntoOmnibox(const base::string16& text,
+void PasteIntoOmnibox(const std::u16string& text,
                       content::WebContents* web_contents) {
   OmniboxView* omnibox_view = GetOmniboxView(web_contents);
   if (!omnibox_view)
@@ -62,7 +62,7 @@ void PasteIntoOmnibox(const base::string16& text,
   // from the clipboard already sanitized. The second case is needed to handle
   // drag-and-drop value and it has to be sanitazed before setting it into the
   // omnibox.
-  base::string16 text_to_paste =
+  std::u16string text_to_paste =
       text.empty() ? GetClipboardText(/*notify_if_restricted=*/true)
                    : omnibox_view->SanitizeTextForPaste(text);
 

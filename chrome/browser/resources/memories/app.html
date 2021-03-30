@@ -1,0 +1,71 @@
+<style include="cr-shared-style">
+  :host {
+    color: var(--cr-primary-text-color);
+    display: block;
+    font-size: 0.8125rem;  /* 13px */
+  }
+
+  cr-toolbar {
+    --cr-toolbar-field-width: var(--memory-card-width);
+  }
+
+  #container {
+    height: calc(100% - var(--cr-toolbar-height));
+    overflow-x: hidden;
+    overflow-y: scroll;
+  }
+
+  #header {
+    align-items: center;
+    display: flex;
+    margin: var(--memory-card-padding) auto 0;
+    width: var(--memory-card-width);
+  }
+
+  page-thumbnail {
+    --thumbnail-max-height: 100px;
+    --thumbnail-max-width: 100px;
+    margin-inline-end: 25px;
+  }
+
+  #title {
+    display: flex;
+    flex-direction: column;
+  }
+
+  #title #description {
+    color: var(--cr-secondary-text-color);
+    font-size: 0.75rem;  /* 12px */
+    line-height: 20px;
+  }
+
+  #title #text {
+    font-size: 2.25rem;  /* 36px */
+    line-height: 42px;
+  }
+
+  #memories {
+    margin: var(--memory-card-padding) auto;
+    width: var(--memory-card-width);
+  }
+</style>
+<memories-router query="{{query_}}"></memories-router>
+<cr-toolbar page-name="Memories" clear-label="$i18n{clearLabel}"
+    search-prompt="$i18n{searchPrompt}" on-search-changed="onSearchChanged_">
+</cr-toolbar>
+<div id="container">
+  <div id="header" hidden="[[!decodeMojoString16(result_.title)]]">
+    <page-thumbnail page="[[createPageWithThumbnail_(result_.thumbnailUrl)]]"
+        hidden="[[!result_.thumbnailUrl]]">
+    </page-thumbnail>
+    <div id="title">
+      <span id="description">$i18n{memoryTitleDescription}</span>
+      <span id="text">[[decodeMojoString16(result_.title)]]</span>
+    </div>
+  </div>
+  <div id="memories">
+    <template is="dom-repeat" items="[[result_.memories]]">
+      <memory-card memory="[[item]]"></memory-card>
+    </template>
+  </div>
+</div>

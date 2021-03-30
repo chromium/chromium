@@ -144,6 +144,9 @@ class MEDIA_EXPORT VideoResourceUpdater
   // A resource that will be embedded in a DrawQuad in the next CompositorFrame.
   // Each video plane will correspond to one FrameResource.
   struct FrameResource {
+    FrameResource();
+    FrameResource(viz::ResourceId id, const gfx::Size& size);
+
     viz::ResourceId id;
     gfx::Size size_in_pixels;
   };

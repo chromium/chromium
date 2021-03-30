@@ -21,7 +21,8 @@ interface UsbDeviceManager {
   GetDevices(UsbEnumerationOptions? options) => (array<UsbDeviceInfo> results);
 
   // Requests a device by guid.
-  GetDevice(string guid, pending_receiver<UsbDevice> device_receiver,
+  GetDevice(string guid, array<uint8> blocked_interface_classes,
+            pending_receiver<UsbDevice> device_receiver,
             pending_remote<UsbDeviceClient>? device_client);
 
   // Requests a device by guid. The returned device will be permitted to send
@@ -42,14 +43,6 @@ interface UsbDeviceManager {
   // a given USB device to succeed.
   [EnableIf=is_chromeos]
   CheckAccess(string guid) => (bool success);
-
-  // Similar to EnumerateDevicesAndSetClient, but mass storage devices are not
-  // filtered out. The VM sharing client can only be set once, all future calls
-  // to this function will be ignored.
-  [EnableIf=is_chromeos]
-  EnumerateDevicesAndSetVmSharingClient(
-      pending_associated_remote<UsbDeviceManagerClient> client)
-          => (array<UsbDeviceInfo> results);
 
   // Attempt to open a USB device using permission_broker and return
   // a file descriptor. Allow access only to interfaces specified in

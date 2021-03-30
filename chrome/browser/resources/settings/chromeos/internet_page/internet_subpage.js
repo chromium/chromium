@@ -61,6 +61,10 @@ Polymer({
       value: false,
     },
 
+    isConnectedToNonCellularNetwork: {
+      type: Boolean,
+    },
+
     /**
      * List of all network state data for the network type.
      * @private {!Array<!OncMojo.NetworkStateProperties>}
@@ -542,10 +546,28 @@ Polymer({
    * @private
    */
   enableToggleIsEnabled_(deviceState) {
-    return !!deviceState &&
-        deviceState.deviceState !==
-        chromeos.networkConfig.mojom.DeviceStateType.kProhibited &&
-        !OncMojo.deviceStateIsIntermediate(deviceState.deviceState);
+    if (!deviceState) {
+      return false;
+    }
+    if (deviceState.deviceState ===
+        chromeos.networkConfig.mojom.DeviceStateType.kProhibited) {
+      return false;
+    }
+    if (OncMojo.deviceStateIsIntermediate(deviceState.deviceState)) {
+      return false;
+    }
+    return !this.isDeviceInhibited_();
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isDeviceInhibited_() {
+    if (!this.deviceState || !this.isUpdatedCellularUiEnabled_) {
+      return false;
+    }
+    return OncMojo.deviceIsInhibited(this.deviceState);
   },
 
   /**
@@ -753,20 +775,26 @@ Polymer({
     if (state.connectionState !== mojom.ConnectionStateType.kNotConnected) {
       return false;
     }
+
     if (this.isBlockedByPolicy_(state)) {
       return false;
     }
+
+    // VPNs can only be connected if there is an existing network connection to
+    // use with the VPN.
     if (state.type === mojom.NetworkType.kVPN &&
         (!this.defaultNetwork ||
          !OncMojo.connectionStateIsConnected(
              this.defaultNetwork.connectionState))) {
       return false;
     }
-    // Cellular networks do not have a configuration flow, so it's not possible
-    // to attempt a connection if the network is not conncetable.
-    if (state.type === mojom.NetworkType.kCellular && !state.connectable) {
+
+    // Locked SIM profiles must be unlocked before a connection can occur.
+    if (state.type === mojom.NetworkType.kCellular &&
+        state.typeState.cellular.simLocked) {
       return false;
     }
+
     return true;
   },
 
@@ -859,12 +887,9 @@ Polymer({
       return false;
     }
 
-    if (this.deviceState.type === mojom.NetworkType.kCellular ||
-        this.deviceState.type === mojom.NetworkType.kTether) {
-      return this.networkStateList_.length > 0;
-    }
-
-    return false;
+    // Only shown if the currently-active subpage is for Cellular networks.
+    return !!this.deviceState &&
+        this.deviceState.type === mojom.NetworkType.kCellular;
   },
 
   /**

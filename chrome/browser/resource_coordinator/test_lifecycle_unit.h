@@ -31,11 +31,11 @@ class TestLifecycleUnit : public LifecycleUnitBase {
 
   void SetSortKey(LifecycleUnit::SortKey sort_key) { sort_key_ = sort_key; }
 
-  void SetTitle(base::StringPiece16 title) { title_ = base::string16(title); }
+  void SetTitle(base::StringPiece16 title) { title_ = std::u16string(title); }
 
   // LifecycleUnit:
   TabLifecycleUnitExternal* AsTabLifecycleUnitExternal() override;
-  base::string16 GetTitle() const override;
+  std::u16string GetTitle() const override;
   base::TimeTicks GetLastFocusedTime() const override;
   base::ProcessHandle GetProcessHandle() const override;
   SortKey GetSortKey() const override;
@@ -49,7 +49,7 @@ class TestLifecycleUnit : public LifecycleUnitBase {
   LifecycleUnitDiscardReason GetDiscardReason() const override;
 
  private:
-  base::string16 title_;
+  std::u16string title_;
   base::TimeTicks last_focused_time_;
   base::ProcessHandle process_handle_;
   LifecycleUnit::SortKey sort_key_;

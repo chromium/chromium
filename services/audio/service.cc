@@ -49,7 +49,7 @@ Service::Service(std::unique_ptr<AudioManagerAccessor> audio_manager_accessor,
     // created. This is required for in-process device notifications.
     InitializeDeviceMonitor();
   }
-  TRACE_EVENT0("audio", "audio::Service::OnStart")
+  TRACE_EVENT0("audio", "audio::Service::OnStart");
 
   // This will pre-create AudioManager if AudioManagerAccessor owns it.
   CHECK(audio_manager_accessor_->GetAudioManager());
@@ -122,7 +122,7 @@ void Service::BindDebugRecording(
 }
 
 void Service::BindStreamFactory(
-    mojo::PendingReceiver<mojom::StreamFactory> receiver) {
+    mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (!stream_factory_)

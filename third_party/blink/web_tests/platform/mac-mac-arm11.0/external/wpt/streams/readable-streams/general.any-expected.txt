@@ -1,0 +1,41 @@
+This is a testharness.js-based test.
+PASS ReadableStream can be constructed with no errors
+PASS ReadableStream can't be constructed with garbage
+FAIL ReadableStream can't be constructed with an invalid type assert_throws_js: constructor should throw when the type is null function "() => new ReadableStream({ type: null })" threw object "RangeError: Failed to construct 'ReadableStream': Invalid type is specified" ("RangeError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS ReadableStream constructor should throw for non-function start arguments
+PASS ReadableStream constructor will not tolerate initial garbage as cancel argument
+PASS ReadableStream constructor will not tolerate initial garbage as pull argument
+PASS ReadableStream start should be called with the proper thisArg
+PASS ReadableStream start controller parameter should be extensible
+PASS default ReadableStream getReader() should only accept mode:undefined
+PASS ReadableStream should be able to call start method within prototype chain of its source
+PASS ReadableStream start should be able to return a promise
+PASS ReadableStream start should be able to return a promise and reject it
+PASS ReadableStream should be able to enqueue different objects.
+PASS ReadableStream: if pull rejects, it should error the stream
+PASS ReadableStream: should only call pull once upon starting the stream
+PASS ReadableStream: should call pull when trying to read from a started, empty stream
+PASS ReadableStream: should only call pull once on a non-empty stream read from before start fulfills
+PASS ReadableStream: should only call pull once on a non-empty stream read from after start fulfills
+PASS ReadableStream: should call pull in reaction to read()ing the last chunk, if not draining
+PASS ReadableStream: should not call pull() in reaction to read()ing the last chunk, if draining
+PASS ReadableStream: should not call pull until the previous pull call's promise fulfills
+PASS ReadableStream: should pull after start, and after every read
+PASS ReadableStream: should not call pull after start if the stream is now closed
+PASS ReadableStream: should call pull after enqueueing from inside pull (with no read requests), if strategy allows
+PASS ReadableStream pull should be able to close a stream.
+PASS ReadableStream pull should be able to error a stream.
+PASS ReadableStream pull should be able to error a stream and throw.
+PASS ReadableStream: enqueue should throw when the stream is readable but draining
+PASS ReadableStream: enqueue should throw when the stream is closed
+PASS ReadableStream: should call underlying source methods as methods
+PASS ReadableStream: desiredSize when closed
+PASS ReadableStream: desiredSize when errored
+PASS Subclassing ReadableStream should work
+PASS ReadableStream strategies: the default strategy should give desiredSize of 1 to start, decreasing by 1 per enqueue
+PASS ReadableStream strategies: the default strategy should continue giving desiredSize of 1 if the chunks are read immediately
+PASS ReadableStream integration test: adapting a random push source
+PASS ReadableStream integration test: adapting a sync pull source
+PASS ReadableStream integration test: adapting an async pull source
+Harness: the test ran to completion.
+

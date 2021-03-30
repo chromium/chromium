@@ -70,7 +70,7 @@ class PaymentRequestShowPromiseTest : public PaymentRequestBrowserTestBase {
     if (!view || !view->GetVisible())
       return;
 
-    EXPECT_EQ(base::string16(), static_cast<views::Label*>(view)->GetText());
+    EXPECT_EQ(std::u16string(), static_cast<views::Label*>(view)->GetText());
   }
 
   // Verifies that the shipping address section has |expected_message| in the
@@ -322,10 +322,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestShowPromiseTest,
   OpenOrderSummaryScreen();
 
   ExpectTotal("$3.00");
-  EXPECT_EQ(base::ASCIIToUTF16("$1.00"),
-            GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_1));
-  EXPECT_EQ(base::ASCIIToUTF16("$1.00"),
-            GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_2));
+  EXPECT_EQ(u"$1.00", GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_1));
+  EXPECT_EQ(u"$1.00", GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_2));
 
   ClickOnBackArrow();
   OpenShippingAddressSectionScreen();

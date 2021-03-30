@@ -1,0 +1,5 @@
+{
+  "name": "Site C",
+  "start_url": "/web_apps/site_c/basic.html",
+  "scope": "/web_apps/site_c/"
+}

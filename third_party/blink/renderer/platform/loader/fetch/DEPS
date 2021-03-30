@@ -1,7 +1,9 @@
 include_rules = [
+  "+base/containers/flat_set.h",
   "+net/base/ip_endpoint.h",
   "+net/base/schemeful_site.h",
   "+net/dns/public",
+  "+net/filter/source_stream.h",
   "+services/network/public/cpp/fetch_api_utils.h",
   "+services/network/public/cpp/optional_trust_token_params.h",
   "+third_party/blink/renderer/platform/mojo",

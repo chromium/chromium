@@ -42,7 +42,7 @@ class HTMLImportTreeRoot final : public HTMLImport, public NameClient {
   void RecalcTimerFired(TimerBase*);
 
   Member<Document> document_;
-  TaskRunnerTimer<HTMLImportTreeRoot> recalc_timer_;
+  HeapTaskRunnerTimer<HTMLImportTreeRoot> recalc_timer_;
 
   // List of import which has been loaded or being loaded.
   typedef HeapVector<Member<HTMLImportChild>> ImportList;

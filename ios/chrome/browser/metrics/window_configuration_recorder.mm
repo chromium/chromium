@@ -5,10 +5,10 @@
 #import "ios/chrome/browser/metrics/window_configuration_recorder.h"
 
 #include "base/check.h"
+#import "base/ios/ios_util.h"
 #include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/timer/timer.h"
-#import "ios/chrome/browser/ui/util/multi_window_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -37,7 +37,7 @@ NSArray<UIWindow*>* ForegroundWindowsForApplication(
     UIApplication* application) {
   NSMutableArray<UIWindow*>* windows = [NSMutableArray arrayWithCapacity:3];
 
-  if (IsSceneStartupSupported()) {
+  if (base::ios::IsSceneStartupSupported()) {
     if (@available(iOS 13, *)) {
       for (UIScene* scene in application.connectedScenes) {
         if (scene.activationState != UISceneActivationStateForegroundActive)

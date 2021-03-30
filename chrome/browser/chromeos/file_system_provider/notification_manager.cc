@@ -61,7 +61,7 @@ void NotificationManager::HideUnresponsiveNotification(int id) {
 }
 
 void NotificationManager::Click(const base::Optional<int>& button_index,
-                                const base::Optional<base::string16>& reply) {
+                                const base::Optional<std::u16string>& reply) {
   if (!button_index)
     return;
 
@@ -105,7 +105,7 @@ void NotificationManager::ShowNotification() {
               ? IDS_FILE_SYSTEM_PROVIDER_UNRESPONSIVE_WARNING
               : IDS_FILE_SYSTEM_PROVIDER_MANY_UNRESPONSIVE_WARNING),
       extension_icon_,
-      base::string16(),  // display_source
+      std::u16string(),  // display_source
       GURL(), notifier_id, rich_notification_data,
       base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
           weak_factory_.GetWeakPtr()));

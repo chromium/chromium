@@ -1,4 +1,3 @@
-
 // Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -8,12 +7,12 @@
 #include <map>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -23,7 +22,6 @@
 #include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/arc/mojom/app.mojom.h"
 #include "components/arc/test/fake_app_instance.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -204,9 +202,6 @@ TEST_F(ArcAppReinstallSearchProviderTest, TestPolicyManagedUser) {
 }
 
 TEST_F(ArcAppReinstallSearchProviderTest, TestResultsWithSearchChanged) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      chromeos::features::kSuggestedContentToggle);
   std::vector<arc::mojom::AppReinstallCandidatePtr> candidates;
   candidates.emplace_back(arc::mojom::AppReinstallCandidate::New(
       "com.package.fakepackage1", "Title of first package",
@@ -235,12 +230,12 @@ TEST_F(ArcAppReinstallSearchProviderTest, TestResultsWithSearchChanged) {
 
   // Test that we set to 0 results when having a query, or when arc is turned
   // off.
-  app_provider_->Start(base::UTF8ToUTF16("non empty query"));
+  app_provider_->Start(u"non empty query");
   EXPECT_EQ(0u, app_provider_->results().size());
   // Verify that all icons are still loaded.
   EXPECT_EQ(2u, app_provider_->icon_urls_.size());
   EXPECT_EQ(0u, app_provider_->loading_icon_urls_.size());
-  app_provider_->Start(base::string16());
+  app_provider_->Start(std::u16string());
   EXPECT_EQ(2u, app_provider_->results().size());
 
   app_instance()->SendInstallationStarted("com.package.fakepackage1");
@@ -439,9 +434,9 @@ TEST_F(ArcAppReinstallSearchProviderTest, TestResultListComparison) {
   b.emplace_back(new TestSearchResult);
   EXPECT_TRUE(app_list::ArcAppReinstallSearchProvider::ResultsIdentical(a, b));
   // Different Titles.
-  a[0]->SetTitle(base::UTF8ToUTF16("fake_title"));
+  a[0]->SetTitle(u"fake_title");
   EXPECT_FALSE(app_list::ArcAppReinstallSearchProvider::ResultsIdentical(a, b));
-  b[0]->SetTitle(base::UTF8ToUTF16("fake_title"));
+  b[0]->SetTitle(u"fake_title");
   EXPECT_TRUE(app_list::ArcAppReinstallSearchProvider::ResultsIdentical(a, b));
 
   // Different ID.

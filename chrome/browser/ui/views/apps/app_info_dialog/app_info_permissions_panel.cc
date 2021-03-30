@@ -53,7 +53,7 @@ class RevokeButton : public views::ImageButton {
  public:
   METADATA_HEADER(RevokeButton);
   explicit RevokeButton(PressedCallback callback,
-                        base::string16 permission_message)
+                        std::u16string permission_message)
       : views::ImageButton(std::move(callback)) {
     ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
     SetImage(views::Button::STATE_NORMAL,
@@ -132,8 +132,8 @@ class BulletedPermissionsList : public views::View {
   // bullets to the given BulletedPermissionsList. If |revoke_callback| is
   // provided, also adds an X button next to the bullet which calls the callback
   // when clicked.
-  void AddPermissionBullets(base::string16 message,
-                            std::vector<base::string16> submessages,
+  void AddPermissionBullets(std::u16string message,
+                            std::vector<std::u16string> submessages,
                             gfx::ElideBehavior elide_behavior_for_submessages,
                             base::RepeatingClosure revoke_callback) {
     std::unique_ptr<RevokeButton> revoke_button;
@@ -163,9 +163,9 @@ class BulletedPermissionsList : public views::View {
                                  views::DISTANCE_RELATED_CONTROL_VERTICAL));
     }
 
-    const base::char16 bullet_point[] = {0x2022, 0};
+    const char16_t bullet_point[] = {0x2022, 0};
     auto bullet_label =
-        std::make_unique<views::Label>(base::string16(bullet_point));
+        std::make_unique<views::Label>(std::u16string(bullet_point));
 
     layout_->StartRow(
         1.0, is_nested ? kNestedBulletColumnSetId : kBulletColumnSetId);
@@ -266,14 +266,14 @@ int AppInfoPermissionsPanel::GetRetainedFileCount() const {
   return 0;
 }
 
-base::string16 AppInfoPermissionsPanel::GetRetainedFileHeading() const {
+std::u16string AppInfoPermissionsPanel::GetRetainedFileHeading() const {
   return l10n_util::GetPluralStringFUTF16(
       IDS_APPLICATION_INFO_RETAINED_FILES, GetRetainedFileCount());
 }
 
-const std::vector<base::string16>
+const std::vector<std::u16string>
 AppInfoPermissionsPanel::GetRetainedFilePaths() const {
-  std::vector<base::string16> retained_file_paths;
+  std::vector<std::u16string> retained_file_paths;
   if (app_->permissions_data()->HasAPIPermission(
           extensions::APIPermission::kFileSystem)) {
     apps::SavedFilesService* service = apps::SavedFilesService::Get(profile_);
@@ -307,12 +307,12 @@ int AppInfoPermissionsPanel::GetRetainedDeviceCount() const {
       .size();
 }
 
-base::string16 AppInfoPermissionsPanel::GetRetainedDeviceHeading() const {
+std::u16string AppInfoPermissionsPanel::GetRetainedDeviceHeading() const {
   return l10n_util::GetPluralStringFUTF16(
       IDS_APPLICATION_INFO_RETAINED_DEVICES, GetRetainedDeviceCount());
 }
 
-const std::vector<base::string16> AppInfoPermissionsPanel::GetRetainedDevices()
+const std::vector<std::u16string> AppInfoPermissionsPanel::GetRetainedDevices()
     const {
   return extensions::DevicePermissionsManager::Get(profile_)
       ->GetPermissionMessageStrings(app_->id());

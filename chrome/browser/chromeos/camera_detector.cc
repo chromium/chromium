@@ -41,7 +41,7 @@ CameraDetector::CameraPresence CameraDetector::camera_presence_ =
 bool CameraDetector::presence_check_in_progress_ = false;
 
 // static
-void CameraDetector::StartPresenceCheck(const base::Closure& callback) {
+void CameraDetector::StartPresenceCheck(base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (presence_check_in_progress_)
     return;
@@ -53,16 +53,17 @@ void CameraDetector::StartPresenceCheck(const base::Closure& callback) {
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})
           .get(),
       FROM_HERE, base::BindOnce(&CameraDetector::CheckPresence),
-      base::BindOnce(&CameraDetector::OnPresenceCheckDone, callback));
+      base::BindOnce(&CameraDetector::OnPresenceCheckDone,
+                     std::move(callback)));
 }
 
 // static
-void CameraDetector::OnPresenceCheckDone(const base::Closure& callback,
+void CameraDetector::OnPresenceCheckDone(base::OnceClosure callback,
                                          bool present) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   camera_presence_ = present ? kCameraPresent : kCameraAbsent;
   presence_check_in_progress_ = false;
-  callback.Run();
+  std::move(callback).Run();
 }
 
 // static

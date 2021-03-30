@@ -141,7 +141,7 @@ class ManagedBookmarkServiceTest : public testing::Test {
 
   static bool NodeMatchesValue(const BookmarkNode* node,
                                const base::DictionaryValue* dict) {
-    base::string16 title;
+    std::u16string title;
     if (!dict->GetString("name", &title) || node->GetTitle() != title)
       return false;
 
@@ -288,10 +288,9 @@ TEST_F(ManagedBookmarkServiceTest, RemoveAllDoesntRemoveManaged) {
               BookmarkNodeAdded(model_, model_->bookmark_bar_node(), 0));
   EXPECT_CALL(observer_,
               BookmarkNodeAdded(model_, model_->bookmark_bar_node(), 1));
-  model_->AddURL(model_->bookmark_bar_node(), 0, base::ASCIIToUTF16("Test"),
+  model_->AddURL(model_->bookmark_bar_node(), 0, u"Test",
                  GURL("http://google.com/"));
-  model_->AddFolder(model_->bookmark_bar_node(), 1,
-                    base::ASCIIToUTF16("Test Folder"));
+  model_->AddFolder(model_->bookmark_bar_node(), 1, u"Test Folder");
   EXPECT_EQ(2u, model_->bookmark_bar_node()->children().size());
   Mock::VerifyAndClearExpectations(&observer_);
 
@@ -303,9 +302,8 @@ TEST_F(ManagedBookmarkServiceTest, RemoveAllDoesntRemoveManaged) {
 }
 
 TEST_F(ManagedBookmarkServiceTest, HasDescendantsOfManagedNode) {
-  const BookmarkNode* user_node =
-      model_->AddURL(model_->other_node(), 0, base::ASCIIToUTF16("foo bar"),
-                     GURL("http://www.google.com"));
+  const BookmarkNode* user_node = model_->AddURL(
+      model_->other_node(), 0, u"foo bar", GURL("http://www.google.com"));
   const BookmarkNode* managed_node =
       managed_->managed_node()->children().front().get();
   ASSERT_TRUE(managed_node);

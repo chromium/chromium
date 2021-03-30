@@ -27,7 +27,7 @@ TEST(PasswordHashDataTest, CalculatePasswordHash) {
 
   for (size_t i = 0; i < base::size(kPlainText); ++i) {
     SCOPED_TRACE(i);
-    base::string16 text = base::UTF8ToUTF16(kPlainText[i]);
+    std::u16string text = base::UTF8ToUTF16(kPlainText[i]);
     EXPECT_EQ(kExpectedHash[i], CalculatePasswordHash(text, kSalt[i]));
   }
 }

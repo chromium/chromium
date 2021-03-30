@@ -7,7 +7,8 @@
 
 #include <windows.h>
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "base/win/atl.h"
 #include "chrome/updater/win/ui/resources/resources.grh"
 #include "chrome/updater/win/ui/ui.h"
@@ -19,7 +20,7 @@ class CompleteWndEvents : public OmahaWndEvents {
  public:
   // Launches the browser and returns true if the browser was successfully
   // launched.
-  virtual bool DoLaunchBrowser(const base::string16& url) = 0;
+  virtual bool DoLaunchBrowser(const std::u16string& url) = 0;
 };
 
 class CompleteWnd : public OmahaWnd {
@@ -32,8 +33,8 @@ class CompleteWnd : public OmahaWnd {
   void SetEventSink(CompleteWndEvents* ev);
 
   void DisplayCompletionDialog(bool is_success,
-                               const base::string16& text,
-                               const base::string16& help_url);
+                               const std::wstring& text,
+                               const std::u16string& help_url);
   BEGIN_MSG_MAP(CompleteWnd)
     MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
     COMMAND_HANDLER(IDC_GET_HELP, BN_CLICKED, OnClickedGetHelp)
@@ -69,7 +70,7 @@ class CompleteWnd : public OmahaWnd {
 
   HRESULT SetControlState(bool is_success);
 
-  base::string16 help_url_;
+  std::u16string help_url_;
   CompleteWndEvents* events_sink_ = nullptr;
   const DWORD control_classes_;
 };

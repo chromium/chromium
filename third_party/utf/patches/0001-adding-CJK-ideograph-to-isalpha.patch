@@ -1,0 +1,34 @@
+From c7a56e4a83600719e7caf7c4eb7a825d27e198e3 Mon Sep 17 00:00:00 2001
+From: mcrouse <mcrouse@google.com>
+Date: Wed, 3 Mar 2021 17:57:52 -0800
+Subject: [PATCH] adding CJK ideograph to isalpha
+
+---
+ third_party/utf/src/runetype/isalpharune.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/third_party/utf/src/runetype/isalpharune.c b/third_party/utf/src/runetype/isalpharune.c
+index 901433d2e056..2be409b902cc 100644
+--- a/third_party/utf/src/runetype/isalpharune.c
++++ b/third_party/utf/src/runetype/isalpharune.c
+@@ -48,8 +48,6 @@ static Rune singles[][1] = {
+ 	{ 0x2E2F },
+ 	{ 0x3400 },
+ 	{ 0x4DB5 },
+-	{ 0x4E00 },
+-	{ 0x9FD5 },
+ 	{ 0xA9CF },
+ 	{ 0xAA7A },
+ 	{ 0xAC00 },
+@@ -305,6 +303,8 @@ static Rune ranges[][2] = {
+ 	{ 0x3131, 0x318E },
+ 	{ 0x31A0, 0x31BA },
+ 	{ 0x31F0, 0x31FF },
++    // Added manually to handle CJK ideographs, see crbug/1184370
++	{ 0x4E00, 0x9FD5 },
+ 	{ 0xA000, 0xA48C },
+ 	{ 0xA4D0, 0xA4FD },
+ 	{ 0xA500, 0xA60C },
+-- 
+2.30.1.766.gb4fecdf3b7-goog
+

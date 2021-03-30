@@ -59,6 +59,7 @@ class AvatarButtonErrorController {
 
     // SyncServiceObserver:
     void OnStateChanged(syncer::SyncService* sync_service) override;
+    void OnSyncShutdown(syncer::SyncService* sync_service) override;
 
     bool HasSyncError();
 

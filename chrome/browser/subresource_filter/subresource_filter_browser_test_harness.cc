@@ -14,6 +14,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,9 +26,11 @@
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/db/v4_test_util.h"
 #include "components/safe_browsing/core/features.h"
+#include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
 #include "components/subresource_filter/content/browser/test_ruleset_publisher.h"
+#include "components/subresource_filter/content/browser/verified_ruleset_dealer.h"
 #include "components/subresource_filter/core/common/common_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_paths.h"
@@ -58,15 +61,14 @@ void SubresourceFilterBrowserTest::TearDown() {
 }
 
 void SubresourceFilterBrowserTest::SetUpOnMainThread() {
-  base::FilePath test_data_dir;
-  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir));
-  embedded_test_server()->ServeFilesFromDirectory(test_data_dir);
+  embedded_test_server()->ServeFilesFromSourceDirectory("components/test/data");
   host_resolver()->AddSimulatedFailure("host-with-dns-lookup-failure");
 
   host_resolver()->AddRule("*", "127.0.0.1");
   content::SetupCrossSiteRedirector(embedded_test_server());
 
   // Add content/test/data for cross_site_iframe_factory.html
+  base::FilePath test_data_dir;
   ASSERT_TRUE(base::PathService::Get(content::DIR_TEST_DATA, &test_data_dir));
   embedded_test_server()->ServeFilesFromDirectory(test_data_dir);
 
@@ -213,6 +215,18 @@ void SubresourceFilterBrowserTest::SetRulesetToDisallowURLsWithPathSuffix(
       test_ruleset_publisher.SetRuleset(test_ruleset_pair.unindexed));
 }
 
+void SubresourceFilterBrowserTest::SetRulesetToDisallowURLsWithSubstrings(
+    std::vector<base::StringPiece> substrings) {
+  TestRulesetPair test_ruleset_pair;
+  ruleset_creator_.CreateRulesetToDisallowURLWithSubstrings(
+      std::move(substrings), &test_ruleset_pair);
+
+  TestRulesetPublisher test_ruleset_publisher(
+      g_browser_process->subresource_filter_ruleset_service());
+  ASSERT_NO_FATAL_FAILURE(
+      test_ruleset_publisher.SetRuleset(test_ruleset_pair.unindexed));
+}
+
 void SubresourceFilterBrowserTest::SetRulesetWithRules(
     const std::vector<proto::UrlRule>& rules) {
   TestRulesetPair test_ruleset_pair;
@@ -228,20 +242,19 @@ void SubresourceFilterBrowserTest::SetRulesetWithRules(
 void SubresourceFilterBrowserTest::OpenAndPublishRuleset(
     RulesetService* ruleset_service,
     const base::FilePath& indexed_ruleset_path) {
-  base::File index_file;
+  RulesetFilePtr index_file(nullptr, base::OnTaskRunnerDeleter(nullptr));
   base::RunLoop open_loop;
-  auto open_callback = base::BindOnce(
-      [](base::OnceClosure quit_closure, base::File* out, base::File result) {
-        *out = std::move(result);
-        std::move(quit_closure).Run();
-      },
-      open_loop.QuitClosure(), &index_file);
+  auto open_callback = base::BindLambdaForTesting(
+      [&index_file, &open_loop](RulesetFilePtr result) {
+        index_file = std::move(result);
+        open_loop.Quit();
+      });
   IndexedRulesetVersion version =
       ruleset_service->GetMostRecentlyIndexedVersion();
   ruleset_service->GetRulesetDealer()->TryOpenAndSetRulesetFile(
       indexed_ruleset_path, version.checksum, std::move(open_callback));
   open_loop.Run();
-  ASSERT_TRUE(index_file.IsValid());
+  ASSERT_TRUE(index_file->IsValid());
   ruleset_service->OnRulesetSet(std::move(index_file));
 }
 

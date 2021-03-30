@@ -16,6 +16,7 @@ import android.os.RemoteException;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.ChildBindingState;
 import org.chromium.base.Log;
 import org.chromium.base.MemoryPressureLevel;
@@ -193,6 +194,10 @@ public class ChildProcessConnection {
     // This is also used as the initial binding before any priorities are set.
     private ChildServiceConnection mModerateBinding;
 
+    // Uses the BIND_NOT_FOREGROUND flag. This is the same as |mModerateBinding| for memory
+    // management and same as |mWaivedBinding| for CPU scheduling.
+    private ChildServiceConnection mModerateWaiveCpuBinding;
+
     // Low priority binding maintained in the entire lifetime of the connection, i.e. between calls
     // to start() and stop().
     private ChildServiceConnection mWaivedBinding;
@@ -200,6 +205,7 @@ public class ChildProcessConnection {
     // Refcount of bindings.
     private int mStrongBindingCount;
     private int mModerateBindingCount;
+    private int mModerateWaiveCpuBindingCount;
 
     private int mGroup;
     private int mImportanceInGroup;
@@ -255,6 +261,8 @@ public class ChildProcessConnection {
         mFallbackServiceName = fallbackServiceName;
         mServiceBundle = serviceBundle != null ? serviceBundle : new Bundle();
         mServiceBundle.putBoolean(ChildProcessConstants.EXTRA_BIND_TO_CALLER, bindToCaller);
+        mServiceBundle.putString(ChildProcessConstants.EXTRA_BROWSER_PACKAGE_NAME,
+                BuildInfo.getInstance().packageName);
         mBindToCaller = bindToCaller;
         mInstanceName = instanceName;
         mBindAsExternalService = bindAsExternalService;
@@ -309,6 +317,8 @@ public class ChildProcessConnection {
 
         mModerateBinding = mConnectionFactory.createConnection(
                 intent, defaultFlags, mConnectionDelegate, mInstanceName);
+        mModerateWaiveCpuBinding = mConnectionFactory.createConnection(intent,
+                defaultFlags | Context.BIND_NOT_FOREGROUND, mConnectionDelegate, mInstanceName);
         mStrongBinding = mConnectionFactory.createConnection(
                 intent, defaultFlags | Context.BIND_IMPORTANT, mConnectionDelegate, mInstanceName);
         mWaivedBinding = mConnectionFactory.createConnection(intent,
@@ -547,6 +557,7 @@ public class ChildProcessConnection {
         s.append("bindings:");
         s.append(mWaivedBinding.isBound() ? "W" : " ");
         s.append(mModerateBinding.isBound() ? "M" : " ");
+        s.append(mModerateWaiveCpuBinding.isBound() ? "C" : " ");
         s.append(mStrongBinding.isBound() ? "S" : " ");
 
         synchronized (sBindingStateLock) {
@@ -700,13 +711,18 @@ public class ChildProcessConnection {
         sFallbackEnabled = true;
         boolean isStrongBindingBound = mStrongBinding.isBound();
         boolean isModerateBindingBound = mModerateBinding.isBound();
+        boolean isModerateWaiveCpuBindingBound = mModerateWaiveCpuBinding.isBound();
         boolean isWaivedBindingBound = mWaivedBinding.isBound();
         mStrongBinding.retire();
         mModerateBinding.retire();
+        mModerateWaiveCpuBinding.retire();
         mWaivedBinding.retire();
         createBindings(mFallbackServiceName);
         if (isStrongBindingBound) mStrongBinding.bindServiceConnection();
         if (isModerateBindingBound) mModerateBinding.bindServiceConnection();
+        if (isModerateWaiveCpuBindingBound) {
+            mModerateWaiveCpuBinding.bindServiceConnection();
+        }
         if (isWaivedBindingBound) mWaivedBinding.bindServiceConnection();
     }
 
@@ -719,6 +735,7 @@ public class ChildProcessConnection {
         mStrongBinding.unbindServiceConnection();
         mWaivedBinding.unbindServiceConnection();
         mModerateBinding.unbindServiceConnection();
+        mModerateWaiveCpuBinding.unbindServiceConnection();
         updateBindingState();
 
         synchronized (sBindingStateLock) {
@@ -789,13 +806,27 @@ public class ChildProcessConnection {
 
     public boolean isModerateBindingBound() {
         assert isRunningOnLauncherThread();
-        return mModerateBinding.isBound();
+        return mModerateBinding.isBound() || mModerateWaiveCpuBinding.isBound();
     }
 
-    public void addModerateBinding() {
+    /**
+     * @param waiveCpuPriority Normally moderate binding may raise the CPU scheduling priority
+     * as well as the importance for memory management. Pass true to not affect CPU scheduling
+     * priority. Note the refcounts for waiveCpuPriority and not are separate,
+     * so removeModerateBinding parameter must match.
+     */
+    public void addModerateBinding(boolean waiveCpuPriority) {
         assert isRunningOnLauncherThread();
         if (!isConnected()) {
             Log.w(TAG, "The connection is not bound for %d", getPid());
+            return;
+        }
+        if (waiveCpuPriority) {
+            if (mModerateWaiveCpuBindingCount == 0) {
+                mModerateWaiveCpuBinding.bindServiceConnection();
+                updateBindingState();
+            }
+            mModerateWaiveCpuBindingCount++;
             return;
         }
         if (mModerateBindingCount == 0) {
@@ -805,9 +836,21 @@ public class ChildProcessConnection {
         mModerateBindingCount++;
     }
 
-    public void removeModerateBinding() {
+    /**
+     * @param waiveCpuPriority See addModerateBinding.
+     */
+    public void removeModerateBinding(boolean waiveCpuPriority) {
         assert isRunningOnLauncherThread();
         if (!isConnected()) {
+            return;
+        }
+        if (waiveCpuPriority) {
+            assert mModerateWaiveCpuBindingCount > 0;
+            mModerateWaiveCpuBindingCount--;
+            if (mModerateWaiveCpuBindingCount == 0) {
+                mModerateWaiveCpuBinding.unbindServiceConnection();
+                updateBindingState();
+            }
             return;
         }
         assert mModerateBindingCount > 0;
@@ -894,7 +937,7 @@ public class ChildProcessConnection {
             newBindingState = ChildBindingState.UNBOUND;
         } else if (mStrongBinding.isBound()) {
             newBindingState = ChildBindingState.STRONG;
-        } else if (mModerateBinding.isBound()) {
+        } else if (mModerateBinding.isBound() || mModerateWaiveCpuBinding.isBound()) {
             newBindingState = ChildBindingState.MODERATE;
         } else {
             assert mWaivedBinding.isBound();

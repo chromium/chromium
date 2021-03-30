@@ -111,7 +111,7 @@ import java.util.List;
 
     static class TestDownloadInfoBarController extends DownloadInfoBarController {
         public TestDownloadInfoBarController() {
-            super(false);
+            super(/*otrProfileID=*/null);
         }
 
         @Override
@@ -355,9 +355,16 @@ import java.util.List;
     private void openNewTab(String url) {
         Tab oldTab = mDownloadTestRule.getActivity().getActivityTabProvider().get();
         TabCreator tabCreator = mDownloadTestRule.getActivity().getTabCreator(false);
-        Tab newTab = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+        final TabModel model = mDownloadTestRule.getActivity().getCurrentTabModel();
+        final int count = model.getCount();
+        final Tab newTab = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             return tabCreator.createNewTab(
                     new LoadUrlParams(url, PageTransition.LINK), TabLaunchType.FROM_LINK, oldTab);
+        });
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(count + 1, Matchers.is(model.getCount()));
+            Criteria.checkThat(newTab, Matchers.is(model.getTabAt(count)));
+            Criteria.checkThat(ChromeTabUtils.isRendererReady(newTab), Matchers.is(true));
         });
     }
 
@@ -373,7 +380,6 @@ import java.util.List;
     @Test
     @MediumTest
     @Feature({"Downloads"})
-    @DisabledTest(message = "crbug.com/1148568")
     public void testDuplicateHttpDownload_OpenNewTabAndReplace() throws Exception {
         final String url =
                 mTestServer.getURL(TEST_DOWNLOAD_DIRECTORY + "get.html");

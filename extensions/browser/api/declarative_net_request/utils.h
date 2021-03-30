@@ -105,8 +105,8 @@ int GetGlobalStaticRuleLimit();
 // also the maximum number of static rules an extension can enable at any point.
 int GetMaximumRulesPerRuleset();
 
-// Returns the per-extension dynamic rule limit.
-int GetDynamicRuleLimit();
+// Returns the shared rule limit for dynamic and session-scoped rules.
+int GetDynamicAndSessionRuleLimit();
 
 // Returns the per-extension regex rules limit. This is enforced separately for
 // static and dynamic rulesets.
@@ -120,6 +120,8 @@ ScopedRuleLimitOverride CreateScopedStaticGuaranteedMinimumOverrideForTesting(
 ScopedRuleLimitOverride CreateScopedGlobalStaticRuleLimitOverrideForTesting(
     int limit);
 ScopedRuleLimitOverride CreateScopedRegexRuleLimitOverrideForTesting(int limit);
+ScopedRuleLimitOverride
+CreateScopedDynamicAndSessionRuleLimitOverrideForTesting(int limit);
 
 // Helper to convert a flatbufffers::String to a string-like object with type T.
 template <typename T>

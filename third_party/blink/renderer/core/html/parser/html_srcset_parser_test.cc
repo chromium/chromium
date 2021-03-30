@@ -7,10 +7,11 @@
 #include <limits.h>
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_network_state_notifier.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -178,7 +179,13 @@ TEST(HTMLSrcsetParserTest, Basic) {
   }
 }
 
-TEST(HTMLSrcsetParserTest, SaveDataEnabledBasic) {
+#if defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+// https://crbug.com/1189511
+#define MAYBE_SaveDataEnabledBasic DISABLED_SaveDataEnabledBasic
+#else
+#define MAYBE_SaveDataEnabledBasic SaveDataEnabledBasic
+#endif
+TEST(HTMLSrcsetParserTest, MAYBE_SaveDataEnabledBasic) {
   SrcsetParserTestCase test_cases[] = {
       // 0
       {2.0, 0.5, "", "data:,a 1w, data:,b 2x", "data:,a", 2.0, 1},
@@ -325,7 +332,7 @@ TEST(HTMLSrcsetParserTest, SaveDataEnabledBasic) {
 }
 
 TEST(HTMLSrcsetParserTest, MaxDensityEnabled) {
-  RuntimeEnabledFeatures::SetSrcsetMaxDensityEnabled(true);
+  ScopedSrcsetMaxDensityForTest srcset_max_density(true);
   SrcsetParserTestCase test_cases[] = {
       {10.0, -1, "src.gif", "2x.gif 2e1x", "src.gif", 1.0, -1},
       {2.5, -1, "src.gif", "1.5x.gif 1.5x, 3x.gif 3x", "3x.gif", 3.0, -1},

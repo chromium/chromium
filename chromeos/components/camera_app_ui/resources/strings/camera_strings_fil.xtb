@@ -15,6 +15,7 @@
 <translation id="2036868001356139588">Tagal ng timer</translation>
 <translation id="2050339315714019657">Portrait</translation>
 <translation id="2064538373111010176">Aktibo ang <ph name="CAMERA" /></translation>
+<translation id="2144806332417375165">Mga custom na parameter ng video</translation>
 <translation id="229579744168541441">I-export sa disk</translation>
 <translation id="2501278716633472235">Bumalik</translation>
 <translation id="2501853267655415902">Itinigil ang pag-record</translation>
@@ -33,7 +34,6 @@
 <translation id="3259149966178251584">Resolution ng camera</translation>
 <translation id="3517926952904427380">Hindi makakuha ng portrait na larawan</translation>
 <translation id="3569311554794739032">Gusto mo ba talagang alisin ang <ph name="FILE" />?</translation>
-<translation id="3750315947605636967">Ginagamit ng ibang app ang iyong camera</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">I-scan ang barcode</translation>
 <translation id="3892148308691398805">Kopyahin ang text</translation>
@@ -76,10 +76,12 @@ Kung tungkol ang iyong feedback sa kalidad ng larawan o video, mag-attach ng hal
 <translation id="7337660886763914220">Mga error sa file system.</translation>
 <translation id="7450541714075000668">Nakopya ang text</translation>
 <translation id="7557677699350329807">Lumipat sa susunod na camera</translation>
+<translation id="7607002721634913082">I-pause</translation>
 <translation id="7608223098072244877">4 by 4</translation>
 <translation id="7649070708921625228">Tulong</translation>
 <translation id="7658239707568436148">Kanselahin</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7974782136796202581">Ipakita ang mga opsyon sa pag-pan, pag-tilt, at pag-zoom</translation>
 <translation id="7983668134180549431">Na-detect na text.</translation>
 <translation id="8067883171444229417">I-play ang video</translation>
 <translation id="8131740175452115882">Kumpirmahin</translation>

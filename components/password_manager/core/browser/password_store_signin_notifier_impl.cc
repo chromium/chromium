@@ -48,16 +48,21 @@ void PasswordStoreSigninNotifierImpl::NotifySignedOut(
 }
 
 // IdentityManager::Observer implementation.
-void PasswordStoreSigninNotifierImpl::OnPrimaryAccountCleared(
-    const CoreAccountInfo& account_info) {
-  NotifySignedOut(account_info.email, /* primary_account= */ true);
+void PasswordStoreSigninNotifierImpl::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  if (event.GetEventTypeFor(signin::ConsentLevel::kSync) ==
+      signin::PrimaryAccountChangeEvent::Type::kCleared) {
+    NotifySignedOut(event.GetPreviousState().primary_account.email,
+                    /* primary_account= */ true);
+  }
 }
 
 // IdentityManager::Observer implementation.
 void PasswordStoreSigninNotifierImpl::OnExtendedAccountInfoRemoved(
     const AccountInfo& info) {
   // Only reacts to content area (non-primary) Gaia account sign-out event.
-  if (info.account_id != identity_manager_->GetPrimaryAccountId()) {
+  if (info.account_id !=
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync)) {
     NotifySignedOut(info.email, /* primary_account= */ false);
   }
 }

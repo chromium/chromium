@@ -18,15 +18,16 @@ source_set("network_diagnostics_resource_provider") {
   ]
 }
 
-source_set("network_health_localized_strings") {
+source_set("network_health_resource_provider") {
   sources = [
-    "network_health_localized_strings.cc",
-    "network_health_localized_strings.h",
+    "network_health_resource_provider.cc",
+    "network_health_resource_provider.h",
   ]
 
   deps = [
     "//chromeos/strings/",
     "//content/public/browser",
     "//ui/base",
+    "//ui/resources:webui_generated_resources_grd_grit",
   ]
 }

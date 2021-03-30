@@ -10,8 +10,8 @@
 
 #include "base/callback_forward.h"
 #include "base/optional.h"
+#include "base/tracing/perfetto_task_runner.h"
 #include "services/tracing/public/cpp/perfetto/producer_client.h"
-#include "services/tracing/public/cpp/perfetto/task_runner.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_writer.h"
 #include "third_party/perfetto/include/perfetto/protozero/root_message.h"
 #include "third_party/perfetto/include/perfetto/protozero/scattered_stream_null_delegate.h"
@@ -24,9 +24,9 @@ namespace tracing {
 // Test producer client for data source tests.
 class TestProducerClient : public ProducerClient {
  public:
-  explicit TestProducerClient(
-      std::unique_ptr<PerfettoTaskRunner> main_thread_task_runner,
-      bool log_only_main_thread = true);
+  explicit TestProducerClient(std::unique_ptr<base::tracing::PerfettoTaskRunner>
+                                  main_thread_task_runner,
+                              bool log_only_main_thread = true);
   ~TestProducerClient() override;
 
   // ProducerClient implementation:
@@ -68,7 +68,7 @@ class TestProducerClient : public ProducerClient {
   protozero::RootMessage<perfetto::protos::pbzero::TracePacket> trace_packet_;
   protozero::ScatteredStreamWriterNullDelegate delegate_;
   protozero::ScatteredStreamWriter stream_;
-  std::unique_ptr<PerfettoTaskRunner> main_thread_task_runner_;
+  std::unique_ptr<base::tracing::PerfettoTaskRunner> main_thread_task_runner_;
   bool log_only_main_thread_;
 };
 
@@ -88,6 +88,40 @@ class TestTraceWriter : public perfetto::TraceWriter {
 
  private:
   TestProducerClient* producer_client_;
+};
+
+// Wrapper class around TestProducerClient useful for testing a trace data
+// source.
+//
+// Usage:
+//  DataSourceTester tester(source);
+//  tester.BeginTrace();
+//  source.WriteTracePackets();
+//  tester.EndTracing();
+//
+//  EXPECT_TRUE(tester.producer().GetFinalizedPacket());
+class DataSourceTester {
+ public:
+  explicit DataSourceTester(
+      tracing::PerfettoTracedProcess::DataSourceBase* data_source);
+  ~DataSourceTester();
+
+  tracing::TestProducerClient* producer() { return producer_.get(); }
+
+  void BeginTrace() {
+    data_source_->StartTracingWithID(
+        /*data_source_id=*/1, producer_.get(), perfetto::DataSourceConfig());
+  }
+
+  void EndTracing() {
+    base::RunLoop wait_for_end;
+    data_source_->StopTracing(wait_for_end.QuitClosure());
+    wait_for_end.Run();
+  }
+
+ private:
+  std::unique_ptr<tracing::TestProducerClient> producer_;
+  tracing::PerfettoTracedProcess::DataSourceBase* data_source_;
 };
 
 }  // namespace tracing

@@ -8,8 +8,8 @@
 
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/idle/idle_manager.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_idle_options.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -101,7 +101,7 @@ ScriptPromise IdleDetector::start(ScriptState* script_state,
   DCHECK(context->IsContextThread());
 
   if (!context->IsFeatureEnabled(
-          mojom::blink::FeaturePolicyFeature::kIdleDetection,
+          mojom::blink::PermissionsPolicyFeature::kIdleDetection,
           ReportOptions::kReportOnFailure)) {
     exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
     return ScriptPromise();

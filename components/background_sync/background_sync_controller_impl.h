@@ -50,18 +50,6 @@ class BackgroundSyncControllerImpl : public content::BackgroundSyncController,
   static const char kMaxSyncEventDurationName[];
   static const char kMinPeriodicSyncEventsInterval[];
 
-#if !defined(OS_ANDROID)
-  class BackgroundSyncEventKeepAliveImpl : public BackgroundSyncEventKeepAlive {
-   public:
-    ~BackgroundSyncEventKeepAliveImpl() override;
-    BackgroundSyncEventKeepAliveImpl();
-
-   private:
-    std::unique_ptr<ScopedKeepAlive, content::BrowserThread::DeleteOnUIThread>
-        keepalive_ = nullptr;
-  };
-#endif
-
   BackgroundSyncControllerImpl(
       content::BrowserContext* browser_context,
       std::unique_ptr<background_sync::BackgroundSyncDelegate> delegate);

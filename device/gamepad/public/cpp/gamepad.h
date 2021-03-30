@@ -7,11 +7,11 @@
 
 #include <stddef.h>
 #include <cstdint>
+#include <string>
 
 #include <limits>
 
 #include "base/component_export.h"
-#include "base/strings/string16.h"
 
 namespace device {
 
@@ -114,13 +114,13 @@ class COMPONENT_EXPORT(GAMEPAD_PUBLIC) Gamepad {
   // If src is too long, then the contents of id will be truncated to
   // kIdLengthCap-1. id will be null-terminated and any extra space in the
   // buffer will be zeroed out.
-  void SetID(const base::string16& src);
+  void SetID(const std::u16string& src);
 
   // Is there a gamepad connected at this index?
   bool connected;
 
   // Device identifier (based on manufacturer, model, etc.).
-  base::char16 id[kIdLengthCap];
+  char16_t id[kIdLengthCap];
 
   // Time value representing the last time the data for this gamepad was
   // updated. Measured as TimeTicks::Now().since_origin().InMicroseconds().

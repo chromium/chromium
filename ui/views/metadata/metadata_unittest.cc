@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+
 #include "base/bind.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "ui/base/class_property.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/metadata/metadata_types.h"
@@ -97,6 +100,29 @@ BEGIN_METADATA(MetadataTestView, MetadataTestBaseView)
 ADD_PROPERTY_METADATA(float, FloatProperty)
 END_METADATA
 
+// Test view to which class properties are attached.
+class ClassPropertyMetaDataTestView : public views::View {
+ public:
+  ClassPropertyMetaDataTestView() = default;
+  ~ClassPropertyMetaDataTestView() override = default;
+
+  METADATA_HEADER(ClassPropertyMetaDataTestView);
+};
+
+DEFINE_UI_CLASS_PROPERTY_KEY(int, kIntKey, -1)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Insets, kOwnedInsetsKey1, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Insets, kOwnedInsetsKey2, nullptr)
+DEFINE_UI_CLASS_PROPERTY_KEY(gfx::Insets*, kInsetsKey1, nullptr)
+DEFINE_UI_CLASS_PROPERTY_KEY(gfx::Insets*, kInsetsKey2, nullptr)
+
+BEGIN_METADATA(ClassPropertyMetaDataTestView, views::View)
+ADD_CLASS_PROPERTY_METADATA(int, kIntKey)
+ADD_CLASS_PROPERTY_METADATA(gfx::Insets, kOwnedInsetsKey1)
+ADD_CLASS_PROPERTY_METADATA(gfx::Insets*, kOwnedInsetsKey2)
+ADD_CLASS_PROPERTY_METADATA(gfx::Insets, kInsetsKey1)
+ADD_CLASS_PROPERTY_METADATA(gfx::Insets*, kInsetsKey2)
+END_METADATA
+
 TEST_F(MetadataTest, TestFloatMetadataPropertyAccess) {
   const float start_value = 12.34f;
 
@@ -107,7 +133,7 @@ TEST_F(MetadataTest, TestFloatMetadataPropertyAccess) {
       GetMemberMetaData(&test_obj, "FloatProperty");
 
   ASSERT_TRUE(member_data);
-  base::string16 member_value = member_data->GetValueAsString(&test_obj);
+  std::u16string member_value = member_data->GetValueAsString(&test_obj);
   CHECK_EQ(member_value, base::NumberToString16(start_value));
 }
 
@@ -128,7 +154,7 @@ TEST_F(MetadataTest, TestFloatPropertyChangedCallback) {
 
   CHECK(float_property_changed());
 
-  base::string16 member_value = member_data->GetValueAsString(&test_obj);
+  std::u16string member_value = member_data->GetValueAsString(&test_obj);
   CHECK_EQ(member_value, base::NumberToString16(start_value));
 }
 
@@ -185,4 +211,44 @@ TEST_F(MetadataTest, TestMetaDataFile) {
   VM::ClassMetaData* metadata = MetadataTestBaseView::MetaData();
 
   CHECK_EQ(metadata->file(), "ui/views/metadata/metadata_unittest.cc");
+}
+
+TEST_F(MetadataTest, TestClassPropertyMetaData) {
+  ClassPropertyMetaDataTestView view;
+  gfx::Insets insets1(8, 8, 8, 8), insets2 = insets1;
+
+  std::map<std::string, std::u16string> expected_kv = {
+      {"kIntKey", u"-1"},
+      {"kOwnedInsetsKey1", u"(not assigned)"},
+      {"kOwnedInsetsKey2", u"(not assigned)"},
+      {"kInsetsKey1", u"(not assigned)"},
+      {"kInsetsKey2", u"(not assigned)"}};
+
+  auto verify = [&]() {
+    views::metadata::ClassMetaData* metadata = view.GetClassMetaData();
+    for (auto member = metadata->begin(); member != metadata->end(); member++) {
+      std::string key = (*member)->member_name();
+      if (expected_kv.count(key)) {
+        EXPECT_EQ((*member)->GetValueAsString(&view), expected_kv[key]);
+        expected_kv.erase(key);
+      }
+    }
+    EXPECT_EQ(expected_kv.empty(), true);
+  };
+
+  verify();
+
+  view.SetProperty(kIntKey, 1);
+  view.SetProperty(kOwnedInsetsKey1, insets1);
+  view.SetProperty(kOwnedInsetsKey2, insets1);
+  view.SetProperty(kInsetsKey1, &insets1);
+  view.SetProperty(kInsetsKey2, &insets2);
+
+  expected_kv = {{"kIntKey", u"1"},
+                 {"kOwnedInsetsKey1", u"8,8,8,8"},
+                 {"kOwnedInsetsKey2", u"(assigned)"},
+                 {"kInsetsKey1", u"8,8,8,8"},
+                 {"kInsetsKey2", u"(assigned)"}};
+
+  verify();
 }

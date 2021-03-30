@@ -7,6 +7,10 @@ import("//third_party/protobuf/proto_library.gni")
 
 component("gcm") {
   sources = [
+    "base/gcm_constants.cc",
+    "base/gcm_constants.h",
+    "base/gcm_features.cc",
+    "base/gcm_features.h",
     "base/gcm_util.cc",
     "base/gcm_util.h",
     "base/mcs_message.cc",

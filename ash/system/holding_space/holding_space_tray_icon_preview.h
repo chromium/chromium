@@ -69,10 +69,13 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
   void OnShelfAlignmentChanged(ShelfAlignment old_shelf_alignment,
                                ShelfAlignment new_shelf_alignment);
 
+  // Invoked when the `shelf_` configuration has changed.
+  void OnShelfConfigChanged();
+
   // Returns the holding space `item_` visually represented by this preview.
   const HoldingSpaceItem* item() const { return item_; }
 
-  ui::Layer* layer() { return layer_.get(); }
+  ui::Layer* layer() { return layer_owner_.layer(); }
 
   const base::Optional<size_t>& index() const { return index_; }
 
@@ -96,22 +99,29 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
   // representation gets updated.
   void OnHoldingSpaceItemImageChanged();
 
-  // Creates the `layer_` for this preview. Note that `layer_` may be created
-  // multiple times throughout this preview's lifetime as `layer_` will only
-  // exist while in the viewport for the holding space tray `container_`.
-  // |initial_transform| - The transform that should be set on the layer.
+  // Subscription callback for `item_` deletion.
+  void OnHoldingSpaceItemDeleted();
+
+  // Creates a layer for this preview. The layer will be owned by
+  // `layer_owner_`. Note that a layer may be created multiple times throughout
+  // this preview's lifetime as the preview will only have a layer while in the
+  // viewport for the holding space tray `container_`. |initial_transform| - The
+  // transform that should be set on the layer.
   void CreateLayer(const gfx::Transform& initial_transform);
 
+  // Destroys the layer for this preview, if it was previously created.
+  void DestroyLayer();
+
   // Returns whether this preview needs a layer for its current `transform_`.
-  // Since we only maintain `layer_` while it appears in the viewport for the
-  // holding space tray `container_`, this is used to gate creation/deletion of
-  // `layer_`.
+  // Since 'layer_owner_' has a layer only while the preview appears in the
+  // viewport for the holding space tray `container_`, this is used to gate
+  // creation/deletion of the preview layer.
   bool NeedsLayer() const;
 
-  // Schedules repaint of `layer_`, no-oping if it doesn't exist.
+  // Schedules repaint of `layer()`, no-oping if it doesn't exist.
   void InvalidateLayer();
 
-  // Updates the bounds of `layer_`.
+  // Updates the bounds of `layer()`.
   void UpdateLayerBounds();
 
   // Adjusts the specified `vector_2df` for shelf alignment and text direction.
@@ -126,25 +136,30 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
   // icon.
   views::View* const container_;
 
-  // The holding space item this preview represents.
+  // The holding space item this preview represents - may be null if the item
+  // gets deleted before the preview.
   const HoldingSpaceItem* item_;
+
+  // Whether or not this preview is currently using small dimensions. This is
+  // done when in tablet mode and an app is in use.
+  bool use_small_previews_ = false;
 
   // A cached representation of the associated holding space `item_`'s image
   // which has been cropped, resized, and clipped to a circle to be painted at
-  // `layer_`'s contents bounds.
+  // `layer()`'s contents bounds.
   gfx::ImageSkia contents_image_;
 
-  // This is a proxy for `layer_`'s transform and represents the target
-  // position of this preview. Because `layer_` only exists while in
+  // This is a proxy for `layer()`'s transform and represents the target
+  // position of this preview. Because `layer()` only exists while in
   // `container_`'s viewport, we need to manage transform ourselves and continue
-  // to update it even when `layer_` doesn't exist.
+  // to update it even when `layer()` doesn't exist.
   gfx::Transform transform_;
 
   // The layer serving as the visual representation of the associated holding
   // space `item_` in the holding space icon in the shelf. This only exists
   // while in the `container_`s viewport as determined by the current
   // `transform_`.
-  std::unique_ptr<ui::Layer> layer_;
+  ui::LayerOwner layer_owner_;
 
   // Closure to invoke on completion of `AnimateOut()`. It is expected that this
   // preview may be deleted during invocation.
@@ -162,9 +177,12 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
   // `contents_image_`.
   base::CallbackListSubscription image_subscription_;
 
-  // The `layer_` for this preview is parented by `container_`'s layer. It is
+  // Subscription for the associated holding space item deletion.
+  base::CallbackListSubscription item_deletion_subscription_;
+
+  // The `layer()` for this preview is parented by `container_`'s layer. It is
   // necessary to observe and react to bounds changes in `container_` to keep
-  // `layer_`'s bounds in sync.
+  // `layer()`'s bounds in sync.
   base::ScopedObservation<views::View, views::ViewObserver> container_observer_{
       this};
 

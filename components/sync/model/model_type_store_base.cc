@@ -4,7 +4,7 @@
 
 #include "components/sync/model/model_type_store_base.h"
 
-#include "components/sync/model_impl/in_memory_metadata_change_list.h"
+#include "components/sync/model/in_memory_metadata_change_list.h"
 
 namespace syncer {
 

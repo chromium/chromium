@@ -22,7 +22,6 @@ class GPUBindGroupLayout : public DawnObject<WGPUBindGroupLayout> {
       ExceptionState& exception_state);
   explicit GPUBindGroupLayout(GPUDevice* device,
                               WGPUBindGroupLayout bind_group_layout);
-  ~GPUBindGroupLayout() override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(GPUBindGroupLayout);

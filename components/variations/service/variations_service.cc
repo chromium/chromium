@@ -108,6 +108,8 @@ std::string GetPlatformString() {
   return "mac";
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   return "chromeos";
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  return "chromeos_lacros";
 #elif defined(OS_ANDROID)
   return "android";
 #elif defined(OS_FUCHSIA)

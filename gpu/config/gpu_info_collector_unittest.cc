@@ -143,6 +143,10 @@ class GPUInfoCollectorTest
         .WillRepeatedly(Return(reinterpret_cast<const GLubyte*>(
             test_values_.gl_version.c_str())));
 
+    EXPECT_CALL(*gl_, GetString(GL_RENDERER))
+        .WillRepeatedly(Return(reinterpret_cast<const GLubyte*>(
+            test_values_.gl_renderer.c_str())));
+
     // Now that that expectation is set up, we can call this helper function.
     if (gl::WillUseGLGetStringForExtensions()) {
       EXPECT_CALL(*gl_, GetString(GL_EXTENSIONS))

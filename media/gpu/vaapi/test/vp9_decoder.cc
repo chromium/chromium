@@ -103,12 +103,11 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame() {
   Vp9Parser::Result parser_res = ReadNextFrame(frame_hdr, size);
   if (parser_res == Vp9Parser::kEOStream)
     return VideoDecoder::kEOStream;
-  if (parser_res != Vp9Parser::kOk) {
-    LOG(ERROR) << "Failed to parse next frame, got " << parser_res;
-    return VideoDecoder::kFailed;
-  }
+  LOG_ASSERT(parser_res == Vp9Parser::kOk)
+      << "Failed to parse next frame, got " << parser_res;
 
   VLOG_IF(2, !frame_hdr.show_frame) << "not displaying frame";
+  last_decoded_frame_visible_ = frame_hdr.show_frame;
 
   if (frame_hdr.show_existing_frame) {
     last_decoded_surface_ = ref_frames_[frame_hdr.frame_to_show_map_idx];
@@ -128,7 +127,13 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame() {
   }
 
   // [Re]create context for decode.
-  if (!va_context_ || va_context_->size() != size) {
+  // A resolution change may occur on a frame that is neither keyframe nor
+  // intra-only, i.e. may refer to earlier frames. If the earlier referred frame
+  // is larger than the new frame, consequently, do *not* recreate the context.
+  // See also
+  // https://cgit.freedesktop.org/gstreamer/gstreamer-vaapi/tree/gst-libs/gst/vaapi/gstvaapidecoder_vp9.c?h=1.18#n652
+  if (!va_context_ || va_context_->size().width() < size.width() ||
+      va_context_->size().height() < size.height()) {
     va_context_ =
         std::make_unique<ScopedVAContext>(va_device_, *va_config_, size);
   }
@@ -273,6 +278,14 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame() {
 
 void Vp9Decoder::LastDecodedFrameToPNG(const std::string& path) {
   last_decoded_surface_->SaveAsPNG(path);
+}
+
+std::string Vp9Decoder::LastDecodedFrameMD5Sum() {
+  return last_decoded_surface_->GetMD5Sum();
+}
+
+bool Vp9Decoder::LastDecodedFrameVisible() {
+  return last_decoded_frame_visible_;
 }
 
 }  // namespace vaapi_test

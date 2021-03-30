@@ -46,6 +46,13 @@ bool DOMArrayBuffer::Transfer(v8::Isolate* isolate,
     to_transfer = DOMArrayBuffer::Create(Content()->Data(), ByteLength());
   }
 
+  return to_transfer->TransferDetachable(isolate, result);
+}
+
+bool DOMArrayBuffer::TransferDetachable(v8::Isolate* isolate,
+                                        ArrayBufferContents& result) {
+  DCHECK(IsDetachable(isolate));
+
   if (IsDetached()) {
     result.Detach();
     return false;
@@ -61,7 +68,7 @@ bool DOMArrayBuffer::Transfer(v8::Isolate* isolate,
 
   Vector<v8::Local<v8::ArrayBuffer>, 4> buffer_handles;
   v8::HandleScope handle_scope(isolate);
-  AccumulateArrayBuffersForAllWorlds(isolate, to_transfer, buffer_handles);
+  AccumulateArrayBuffersForAllWorlds(isolate, this, buffer_handles);
 
   for (const auto& buffer_handle : buffer_handles)
     buffer_handle->Detach();
@@ -103,11 +110,25 @@ v8::Local<v8::Value> DOMArrayBuffer::Wrap(
   {
     v8::Context::Scope context_scope(creation_context->CreationContext());
     wrapper = v8::ArrayBuffer::New(isolate, Content()->BackingStore());
-
-    wrapper->Externalize(Content()->BackingStore());
   }
 
   return AssociateWithWrapper(isolate, wrapper_type_info, wrapper);
+}
+
+v8::MaybeLocal<v8::Value> DOMArrayBuffer::WrapV2(ScriptState* script_state) {
+  DCHECK(!DOMDataStore::ContainsWrapper(this, script_state->GetIsolate()));
+
+  const WrapperTypeInfo* wrapper_type_info = this->GetWrapperTypeInfo();
+
+  v8::Local<v8::ArrayBuffer> wrapper;
+  {
+    v8::Context::Scope context_scope(script_state->GetContext());
+    wrapper = v8::ArrayBuffer::New(script_state->GetIsolate(),
+                                   Content()->BackingStore());
+  }
+
+  return AssociateWithWrapper(script_state->GetIsolate(), wrapper_type_info,
+                              wrapper);
 }
 
 DOMArrayBuffer* DOMArrayBuffer::Create(

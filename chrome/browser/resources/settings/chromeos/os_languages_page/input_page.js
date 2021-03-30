@@ -41,11 +41,11 @@ Polymer({
     /** @type {!LanguageHelper} */
     languageHelper: Object,
 
-    /** @private {!Array<!LanguageState|!ForcedLanguageState>|undefined} */
+    /** @private {!Array<!LanguageState|!SpellCheckLanguageState>|undefined} */
     spellCheckLanguages_: {
       type: Array,
-      computed:
-          'getSpellCheckLanguages_(languages.enabled.*, languages.forcedSpellCheckLanguages.*)',
+      computed: `getSpellCheckLanguages_(languages.enabled.*,
+          languages.spellCheckOnLanguages.*)`,
     },
 
     /** @private */
@@ -305,7 +305,7 @@ Polymer({
   /**
    * Returns an array of enabled languages that support spell check, plus
    * spellcheck languages that are force-enabled by policy.
-   * @return {!Array<!LanguageState|!ForcedLanguageState>|undefined}
+   * @return {!Array<!LanguageState|!SpellCheckLanguageState>|undefined}
    * @private
    */
   getSpellCheckLanguages_() {
@@ -313,7 +313,7 @@ Polymer({
       return undefined;
     }
     const combinedLanguages =
-        this.languages.enabled.concat(this.languages.forcedSpellCheckLanguages);
+        this.languages.enabled.concat(this.languages.spellCheckOnLanguages);
     const supportedSpellcheckLanguagesSet = new Set();
     const supportedSpellcheckLanguages = [];
 
@@ -372,7 +372,7 @@ Polymer({
   /**
    * Name only supports clicking when language is not managed, supports
    * spellcheck, and the dictionary has been downloaded with no errors.
-   * @param {!LanguageState|!ForcedLanguageState} item
+   * @param {!LanguageState|!SpellCheckLanguageState} item
    * @return {boolean}
    * @private
    */

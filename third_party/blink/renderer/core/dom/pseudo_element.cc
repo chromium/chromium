@@ -121,9 +121,12 @@ PseudoElement::PseudoElement(Element* parent, PseudoId pseudo_id)
   }
 }
 
-scoped_refptr<ComputedStyle> PseudoElement::CustomStyleForLayoutObject() {
-  return ParentOrShadowHostElement()->StyleForPseudoElement(
-      PseudoElementStyleRequest(pseudo_id_));
+scoped_refptr<ComputedStyle> PseudoElement::CustomStyleForLayoutObject(
+    const StyleRecalcContext& style_recalc_context) {
+  Element* parent = ParentOrShadowHostElement();
+  return parent->StyleForPseudoElement(
+      style_recalc_context,
+      StyleRequest(pseudo_id_, parent->GetComputedStyle()));
 }
 
 scoped_refptr<ComputedStyle> PseudoElement::LayoutStyleForDisplayContents(
@@ -131,7 +134,8 @@ scoped_refptr<ComputedStyle> PseudoElement::LayoutStyleForDisplayContents(
   // For display:contents we should not generate a box, but we generate a non-
   // observable inline box for pseudo elements to be able to locate the
   // anonymous layout objects for generated content during DetachLayoutTree().
-  scoped_refptr<ComputedStyle> layout_style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> layout_style =
+      GetDocument().GetStyleResolver().CreateComputedStyle();
   layout_style->InheritFrom(style);
   layout_style->SetContent(style.GetContentData());
   layout_style->SetDisplay(EDisplay::kInline);

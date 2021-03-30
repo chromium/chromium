@@ -85,16 +85,6 @@ class BASE_EXPORT SysInfo {
   struct HardwareInfo {
     std::string manufacturer;
     std::string model;
-    // On Windows, this is the BIOS serial number. Unsupported platforms will be
-    // set to an empty string.
-    // Note: validate any new usage with the privacy team.
-    // TODO(crbug.com/907518): Implement support on other platforms.
-    std::string serial_number;
-
-    bool operator==(const HardwareInfo& rhs) const {
-      return manufacturer == rhs.manufacturer && model == rhs.model &&
-             serial_number == rhs.serial_number;
-    }
   };
   // Returns via |callback| a struct containing descriptive UTF-8 strings for
   // the current machine manufacturer and model, or empty strings if the
@@ -123,6 +113,13 @@ class BASE_EXPORT SysInfo {
   // e.g. a 32-bit x86 kernel on a 64-bit capable CPU will return "x86",
   //      whereas a x86-64 kernel on the same CPU will return "x86_64"
   static std::string OperatingSystemArchitecture();
+
+  // Returns the architecture of the running process, which might be different
+  // than the architecture returned by OperatingSystemArchitecture() (e.g.
+  // macOS Rosetta, a 32-bit binary on a 64-bit OS, etc).
+  // Will return one of: "x86", "x86_64", "ARM", "ARM_64", or an empty string if
+  // none of the above.
+  static std::string ProcessCPUArchitecture();
 
   // Avoid using this. Use base/cpu.h to get information about the CPU instead.
   // http://crbug.com/148884

@@ -18,6 +18,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -60,7 +61,7 @@ ui::ModalType ConfirmSignoutDialog::GetModalType() const {
   return ui::ModalType::MODAL_TYPE_SYSTEM;
 }
 
-base::string16 ConfirmSignoutDialog::GetWindowTitle() const {
+std::u16string ConfirmSignoutDialog::GetWindowTitle() const {
   return l10n_util::GetStringUTF16(IDS_ADD_SUPERVISION_EXIT_DIALOG_TITLE);
 }
 
@@ -86,5 +87,8 @@ void ConfirmSignoutDialog::Show() {
 bool ConfirmSignoutDialog::IsShowing() {
   return ConfirmSignoutDialog::current_instance_ != nullptr;
 }
+
+BEGIN_METADATA(ConfirmSignoutDialog, views::DialogDelegateView)
+END_METADATA
 
 }  // namespace chromeos

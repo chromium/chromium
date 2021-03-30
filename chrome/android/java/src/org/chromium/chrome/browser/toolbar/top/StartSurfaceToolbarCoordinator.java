@@ -12,12 +12,10 @@ import android.view.ViewStub;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CallbackController;
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -45,7 +43,6 @@ public class StartSurfaceToolbarCoordinator {
     private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
     private StartSurfaceToolbarView mView;
     private TabModelSelector mTabModelSelector;
-    private IncognitoSwitchCoordinator mIncognitoSwitchCoordinator;
     private TabSwitcherButtonCoordinator mTabSwitcherButtonCoordinator;
     private TabSwitcherButtonView mTabSwitcherButtonView;
     private TabCountProvider mTabCountProvider;
@@ -60,7 +57,12 @@ public class StartSurfaceToolbarCoordinator {
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             ObservableSupplier<Boolean> identityDiscStateSupplier, ThemeColorProvider provider,
             MenuButtonCoordinator menuButtonCoordinator,
-            Supplier<ButtonData> identityDiscButtonSupplier) {
+            Supplier<ButtonData> identityDiscButtonSupplier, boolean isGridTabSwitcherEnabled,
+            ObservableSupplier<Boolean> homepageEnabledSupplier,
+            ObservableSupplier<Boolean> startSurfaceAsHomepageSupplier,
+            ObservableSupplier<Boolean> homepageManagedByPolicySupplier,
+            OnClickListener homeButtonOnClickHandler,
+            boolean isTabGroupsAndroidContinuationEnabled) {
         mStub = startSurfaceToolbarStub;
 
         layoutStateProviderSupplier.onAvailable(
@@ -70,19 +72,14 @@ public class StartSurfaceToolbarCoordinator {
                 new PropertyModel.Builder(StartSurfaceToolbarProperties.ALL_KEYS)
                         .with(StartSurfaceToolbarProperties.INCOGNITO_SWITCHER_VISIBLE,
                                 !StartSurfaceConfiguration
-                                                .START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB
-                                                .getValue()
-                                        && !StartSurfaceConfiguration
-                                                    .START_SURFACE_HIDE_INCOGNITO_SWITCH.getValue())
+                                         .START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB.getValue())
                         .with(StartSurfaceToolbarProperties.IN_START_SURFACE_MODE, false)
                         .with(StartSurfaceToolbarProperties.MENU_IS_VISIBLE, true)
                         .with(StartSurfaceToolbarProperties.IS_VISIBLE, true)
+                        .with(StartSurfaceToolbarProperties.GRID_TAB_SWITCHER_ENABLED,
+                                isGridTabSwitcherEnabled)
                         .build();
 
-        // START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB and START_SURFACE_SHOW_STACK_TAB_SWITCHER
-        // should not be both true.
-        assert !(StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB.getValue()
-                && StartSurfaceConfiguration.START_SURFACE_SHOW_STACK_TAB_SWITCHER.getValue());
         mToolbarMediator = new StartSurfaceToolbarMediator(mPropertyModel,
                 (iphCommandBuilder)
                         -> {
@@ -93,9 +90,12 @@ public class StartSurfaceToolbarCoordinator {
                             iphCommandBuilder.setAnchorView(mView.getIdentityDiscView()).build());
                 },
                 StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB.getValue(),
-                StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH.getValue(),
-                StartSurfaceConfiguration.START_SURFACE_SHOW_STACK_TAB_SWITCHER.getValue(),
-                menuButtonCoordinator, identityDiscStateSupplier, identityDiscButtonSupplier);
+                StartSurfaceConfiguration.HOME_BUTTON_ON_GRID_TAB_SWITCHER.getValue(),
+                menuButtonCoordinator, identityDiscStateSupplier, identityDiscButtonSupplier,
+                homepageEnabledSupplier, startSurfaceAsHomepageSupplier,
+                homepageManagedByPolicySupplier, homeButtonOnClickHandler,
+                StartSurfaceConfiguration.shouldShowNewSurfaceFromHomeButton(),
+                isTabGroupsAndroidContinuationEnabled);
 
         mThemeColorProvider = provider;
         mMenuButtonCoordinator = menuButtonCoordinator;
@@ -106,7 +106,6 @@ public class StartSurfaceToolbarCoordinator {
      */
     void destroy() {
         mToolbarMediator.destroy();
-        if (mIncognitoSwitchCoordinator != null) mIncognitoSwitchCoordinator.destroy();
         if (mTabSwitcherButtonCoordinator != null) mTabSwitcherButtonCoordinator.destroy();
         if (mMenuButtonCoordinator != null) {
             mMenuButtonCoordinator.destroy();
@@ -184,6 +183,7 @@ public class StartSurfaceToolbarCoordinator {
         } else {
             mTabCountProvider = tabCountProvider;
         }
+        mToolbarMediator.setTabCountProvider(tabCountProvider);
     }
 
     /**
@@ -228,19 +228,17 @@ public class StartSurfaceToolbarCoordinator {
 
     /**
      * @param toolbarHeight The height of start surface toolbar.
-     * @return Whether or not toolbar container view should be hidden.
+     * @return Whether or not toolbar layout view should be hidden.
      */
-    boolean shouldHideToolbarContainer(int toolbarHeight) {
-        return mToolbarMediator.shouldHideToolbarContainer(toolbarHeight);
+    boolean shouldHideToolbarLayout(int toolbarHeight) {
+        return mToolbarMediator.shouldHideToolbarLayout(toolbarHeight);
+    }
+
+    boolean isToolbarOnScreenTop() {
+        return mToolbarMediator.isToolbarOnScreenTop();
     }
 
     void onNativeLibraryReady() {
-        // It is possible that the {@link mIncognitoSwitchCoordinator} isn't created because
-        // inflate() is called when the native library isn't ready. So create it now.
-        if (isInflated()) {
-            assert mTabModelSelector != null;
-            maybeCreateIncognitoSwitchCoordinator();
-        }
         mToolbarMediator.onNativeLibraryReady();
     }
 
@@ -259,11 +257,8 @@ public class StartSurfaceToolbarCoordinator {
                 mPropertyModel.get(StartSurfaceToolbarProperties.MENU_IS_VISIBLE));
         mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
                 mPropertyModel, mView, StartSurfaceToolbarViewBinder::bind);
-        if (LibraryLoader.getInstance().isInitialized()) {
-            maybeCreateIncognitoSwitchCoordinator();
-        }
 
-        if (StartSurfaceConfiguration.START_SURFACE_SHOW_STACK_TAB_SWITCHER.getValue()) {
+        if (StartSurfaceConfiguration.shouldShowNewSurfaceFromHomeButton()) {
             mTabSwitcherButtonView = mView.findViewById(R.id.start_tab_switcher_button);
             if (mTabSwitcherLongClickListener != null) {
                 mTabSwitcherButtonView.setOnLongClickListener(mTabSwitcherLongClickListener);
@@ -272,7 +267,6 @@ public class StartSurfaceToolbarCoordinator {
             mTabSwitcherButtonCoordinator =
                     new TabSwitcherButtonCoordinator(mTabSwitcherButtonView);
             mTabSwitcherButtonCoordinator.setThemeColorProvider(mThemeColorProvider);
-            mTabSwitcherButtonView.setVisibility(View.VISIBLE);
             if (mTabCountProvider != null) {
                 mTabSwitcherButtonCoordinator.setTabCountProvider(mTabCountProvider);
                 mTabCountProvider = null;
@@ -284,23 +278,12 @@ public class StartSurfaceToolbarCoordinator {
         }
     }
 
-    private void maybeCreateIncognitoSwitchCoordinator() {
-        if (mIncognitoSwitchCoordinator != null || mTabModelSelector == null) {
-            return;
-        }
-
-        if (IncognitoUtils.isIncognitoModeEnabled()
-                && !StartSurfaceConfiguration.START_SURFACE_SHOW_STACK_TAB_SWITCHER.getValue()) {
-            mIncognitoSwitchCoordinator = new IncognitoSwitchCoordinator(mView, mTabModelSelector);
-        }
-    }
-
     private boolean isInflated() {
         return mView != null;
     }
 
     @VisibleForTesting
-    public IncognitoSwitchCoordinator getIncognitoSwitchCoordinatorForTesting() {
-        return mIncognitoSwitchCoordinator;
+    public TabCountProvider getIncognitoToggleTabCountProviderForTesting() {
+        return mPropertyModel.get(StartSurfaceToolbarProperties.INCOGNITO_TAB_COUNT_PROVIDER);
     }
 }

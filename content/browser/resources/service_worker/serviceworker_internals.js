@@ -2,15 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.define('serviceworker', function() {
-  'use strict';
+import 'chrome://resources/js/jstemplate_compiled.js';
 
-  function initialize() {
-    update();
-  }
+import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
+
+function initialize() {
+  addWebUIListener('partition-data', onPartitionData);
+  addWebUIListener('running-state-changed', onRunningStateChanged);
+  addWebUIListener('error-reported', onErrorReported);
+  addWebUIListener('console-message-reported', onConsoleMessageReported);
+  addWebUIListener('version-state-changed', onVersionStateChanged);
+  addWebUIListener('registration-completed', onRegistrationCompleted);
+  addWebUIListener('registration-deleted', onRegistrationDeleted);
+  update();
+}
 
   function update() {
-    chrome.send('GetOptions');
+    sendWithPromise('GetOptions').then(onOptions);
     chrome.send('getAllRegistrations');
   }
 
@@ -50,32 +59,12 @@ cr.define('serviceworker', function() {
     return function(event) {
       const link = event.target;
       progressNodeFor(link).style.display = 'inline';
-      sendCommand(command, link.cmdArgs, (function(status) {
-                                           progressNodeFor(link).style.display =
-                                               'none';
-                                         }).bind(null, link));
+      sendWithPromise(command, link.cmdArgs).then(() => {
+        progressNodeFor(link).style.display = 'none';
+        update();
+      });
       return false;
     };
-  }
-
-  const commandCallbacks = [];
-  function sendCommand(command, args, callback) {
-    let callbackId = 0;
-    while (callbackId in commandCallbacks) {
-      callbackId++;
-    }
-    commandCallbacks[callbackId] = callback;
-    chrome.send(command, [callbackId, args]);
-  }
-
-  // Fired from the backend after the command call has completed.
-  function onOperationComplete(status, callbackId) {
-    const callback = commandCallbacks[callbackId];
-    delete commandCallbacks[callbackId];
-    if (callback) {
-      callback(status);
-    }
-    update();
   }
 
   const allLogMessages = {};
@@ -140,14 +129,14 @@ cr.define('serviceworker', function() {
   }
 
   // Fired once per partition from the backend.
-  function onPartitionData(
-      live_registrations, live_versions, stored_registrations, partition_id,
-      partition_path) {
+  function onPartitionData(registrations, partition_id, partition_path) {
     const unregisteredRegistrations = [];
     const unregisteredVersions = [];
+    const storedRegistrations = registrations.storedRegistrations;
     getUnregisteredWorkers(
-        stored_registrations, live_registrations, live_versions,
-        unregisteredRegistrations, unregisteredVersions);
+        storedRegistrations, registrations.liveRegistrations,
+        registrations.liveVersions, unregisteredRegistrations,
+        unregisteredVersions);
     let template;
     const container = $('serviceworker-list');
     // Existing templates are keyed by partition_id. This allows
@@ -164,7 +153,7 @@ cr.define('serviceworker', function() {
       container.appendChild(template);
     }
     const fillLogFunc = fillLogForVersion.bind(this, container, partition_id);
-    stored_registrations.forEach(function(registration) {
+    storedRegistrations.forEach(function(registration) {
       [registration.active, registration.waiting].forEach(fillLogFunc);
     });
     unregisteredRegistrations.forEach(function(registration) {
@@ -173,7 +162,7 @@ cr.define('serviceworker', function() {
     unregisteredVersions.forEach(fillLogFunc);
     jstProcess(
         new JsEvalContext({
-          stored_registrations: stored_registrations,
+          stored_registrations: storedRegistrations,
           unregistered_registrations: unregisteredRegistrations,
           unregistered_versions: unregisteredVersions,
           partition_id: partition_id,
@@ -240,18 +229,4 @@ cr.define('serviceworker', function() {
     }
   }
 
-  return {
-    initialize: initialize,
-    onOptions: onOptions,
-    onOperationComplete: onOperationComplete,
-    onPartitionData: onPartitionData,
-    onRunningStateChanged: onRunningStateChanged,
-    onErrorReported: onErrorReported,
-    onConsoleMessageReported: onConsoleMessageReported,
-    onVersionStateChanged: onVersionStateChanged,
-    onRegistrationCompleted: onRegistrationCompleted,
-    onRegistrationDeleted: onRegistrationDeleted,
-  };
-});
-
-document.addEventListener('DOMContentLoaded', serviceworker.initialize);
+  document.addEventListener('DOMContentLoaded', initialize);

@@ -20,6 +20,7 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 #include "url/gurl.h"
 
 const char kSimplePage[] = "/focus/page_with_focus.html";
@@ -110,11 +111,13 @@ class FocusedViewClassRecorder : public views::FocusChangeListener {
     focus_manager_->AddFocusChangeListener(this);
   }
 
+  FocusedViewClassRecorder(const FocusedViewClassRecorder&) = delete;
+  FocusedViewClassRecorder& operator=(const FocusedViewClassRecorder&) = delete;
   ~FocusedViewClassRecorder() override {
     focus_manager_->RemoveFocusChangeListener(this);
   }
 
-  std::vector<std::string>& GetFocusClasses() { return focus_classes_; }
+  bool GetHasFocusedOnNonWebView() { return has_focused_on_non_webview_; }
 
  private:
   // Inherited from views::FocusChangeListener
@@ -122,16 +125,15 @@ class FocusedViewClassRecorder : public views::FocusChangeListener {
                          views::View* focused_now) override {}
   void OnDidChangeFocus(views::View* focused_before,
                         views::View* focused_now) override {
-    std::string class_name;
     if (focused_now)
-      class_name = focused_now->GetClassName();
-    focus_classes_.push_back(class_name);
+      if (!views::IsViewClass<views::WebView>(focused_now))
+        // Focused views could be destroyed. Track what we want to test for when
+        // OnDidChangeFocus is called.
+        has_focused_on_non_webview_ = true;
   }
 
   views::FocusManager* focus_manager_;
-  std::vector<std::string> focus_classes_;
-
-  DISALLOW_COPY_AND_ASSIGN(FocusedViewClassRecorder);
+  bool has_focused_on_non_webview_ = false;
 };
 
 // Switching tabs does not focus views unexpectedly.
@@ -157,16 +159,6 @@ IN_PROC_BROWSER_TEST_F(BrowserViewFocusTest, TabChangesAvoidSpuriousFocus) {
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_TAB, true,
                                               false, false, false));
 
-  std::vector<std::string>& focused_classes =
-      focus_change_recorder.GetFocusClasses();
-
-  // Everything before the last focus must be either "" (nothing) or a WebView.
-  for (size_t index = 0; index < focused_classes.size() - 1; index++) {
-    EXPECT_THAT(focused_classes[index],
-                testing::AnyOf("", views::WebView::kViewClassName));
-  }
-
-  // Must end up focused on a WebView.
-  ASSERT_FALSE(focused_classes.empty());
-  EXPECT_EQ(views::WebView::kViewClassName, focused_classes.back());
+  // Everything that was focused on must be a WebView.
+  EXPECT_FALSE(focus_change_recorder.GetHasFocusedOnNonWebView());
 }

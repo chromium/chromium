@@ -10,6 +10,7 @@ import android.animation.AnimatorSet;
 import android.content.Context;
 import android.graphics.RectF;
 
+import org.chromium.base.MathUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
@@ -18,7 +19,6 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.BlackHoleEventFilter;
-import org.chromium.chrome.browser.compositor.layouts.phone.stack.Stack;
 import org.chromium.chrome.browser.compositor.scene_layer.TabListSceneLayer;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -65,6 +65,15 @@ public class SimpleAnimationLayout extends Layout {
 
     /** The time duration of the animation */
     protected static final int TAB_CLOSED_ANIMATION_DURATION = 250;
+
+    /** The percentage of the screen to cover for the discarded tab to be fully transparent. */
+    public static final float DISCARD_RANGE_SCREEN = 0.7f;
+
+    /** The minimum scale the tab can reach when being discarded by a click. */
+    private static final float DISCARD_END_SCALE_CLICK = 0.7f;
+
+    /** The minimum scale the tab can reach when being discarded by a swipe. */
+    private static final float DISCARD_END_SCALE_SWIPE = 0.5f;
 
     /**
      * A cached {@link LayoutTab} representation of the currently closing tab. If it's not
@@ -408,7 +417,7 @@ public class SimpleAnimationLayout extends Layout {
     private void setDiscardAmount(float discard) {
         if (mAnimatedTab != null) {
             final float range = getDiscardRange();
-            final float scale = Stack.computeDiscardScale(discard, range, true);
+            final float scale = computeDiscardScale(discard, range, true);
 
             final float deltaX = mAnimatedTab.getOriginalContentWidth();
             final float deltaY = mAnimatedTab.getOriginalContentHeight() / 2.f;
@@ -416,15 +425,44 @@ public class SimpleAnimationLayout extends Layout {
             mAnimatedTab.setY(deltaY * (1.f - scale));
             mAnimatedTab.setScale(scale);
             mAnimatedTab.setBorderScale(scale);
-            mAnimatedTab.setAlpha(Stack.computeDiscardAlpha(discard, range));
+            mAnimatedTab.setAlpha(computeDiscardAlpha(discard, range));
         }
+    }
+
+    /**
+     * Computes the scale of the tab based on its discard status.
+     *
+     * @param amount    The discard amount.
+     * @param range     The range of the absolute value of discard amount.
+     * @param fromClick Whether or not the discard was from a click or a swipe.
+     * @return          The scale of the tab to use to draw the tab.
+     */
+    public static float computeDiscardScale(float amount, float range, boolean fromClick) {
+        if (Math.abs(amount) < 1.0f) return 1.0f;
+        float t = amount / range;
+        float endScale = fromClick ? DISCARD_END_SCALE_CLICK : DISCARD_END_SCALE_SWIPE;
+        return MathUtils.interpolate(1.0f, endScale, Math.abs(t));
+    }
+
+    /**
+     * Computes the alpha value of the tab based on its discard status.
+     *
+     * @param amount The discard amount.
+     * @param range  The range of the absolute value of discard amount.
+     * @return       The alpha value that need to be applied on the tab.
+     */
+    public static float computeDiscardAlpha(float amount, float range) {
+        if (Math.abs(amount) < 1.0f) return 1.0f;
+        float t = amount / range;
+        t = MathUtils.clamp(t, -1.0f, 1.0f);
+        return 1.f - Math.abs(t);
     }
 
     /**
      * @return The range of the discard amount.
      */
     private float getDiscardRange() {
-        return Math.min(getWidth(), getHeight()) * Stack.DISCARD_RANGE_SCREEN;
+        return Math.min(getWidth(), getHeight()) * DISCARD_RANGE_SCREEN;
     }
 
     @Override

@@ -1,4 +1,4 @@
-monorail:  {
-  component:  "UI>Browser>VR"
+monorail: {
+  component: "UI>Browser>VR"
 }
-team_email:  "xr-dev@chromium.org"
+team_email: "xr-dev@chromium.org"

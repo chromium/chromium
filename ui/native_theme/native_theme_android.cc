@@ -41,8 +41,10 @@ gfx::Size NativeThemeAndroid::GetPartSize(Part part,
   return NativeThemeBase::GetPartSize(part, state, extra);
 }
 
-SkColor NativeThemeAndroid::GetSystemColor(ColorId color_id,
-                                           ColorScheme color_scheme) const {
+SkColor NativeThemeAndroid::GetSystemColorDeprecated(
+    ColorId color_id,
+    ColorScheme color_scheme,
+    bool apply_processing) const {
   NOTIMPLEMENTED();
   return SK_ColorBLACK;
 }
@@ -53,6 +55,95 @@ void NativeThemeAndroid::AdjustCheckboxRadioRectForPadding(SkRect* rect) const {
                 static_cast<int>(rect->y()) + 1,
                 static_cast<int>(rect->right()) - 1,
                 static_cast<int>(rect->bottom()) - 1);
+}
+
+float NativeThemeAndroid::AdjustBorderWidthByZoom(float border_width,
+                                                  float zoom_level) const {
+  return border_width * zoom_level;
+}
+
+SkColor NativeThemeAndroid::ControlsAccentColorForState(
+    State state,
+    ColorScheme color_scheme) const {
+  ControlColorId color_id;
+  if (state == kPressed) {
+    color_id = kPressedAccent;
+  } else if (state == kDisabled) {
+    color_id = kDisabledAccent;
+  } else {
+    color_id = kAccent;
+  }
+  return GetControlColor(color_id, color_scheme);
+}
+
+SkColor NativeThemeAndroid::ControlsSliderColorForState(
+    State state,
+    ColorScheme color_scheme) const {
+  ControlColorId color_id;
+  if (state == kPressed) {
+    color_id = kPressedSlider;
+  } else if (state == kDisabled) {
+    color_id = kDisabledSlider;
+  } else {
+    color_id = kSlider;
+  }
+  return GetControlColor(color_id, color_scheme);
+}
+
+SkColor NativeThemeAndroid::ControlsBorderColorForState(
+    State state,
+    ColorScheme color_scheme) const {
+  ControlColorId color_id;
+  if (state == kPressed) {
+    color_id = kPressedBorder;
+  } else if (state == kDisabled) {
+    color_id = kDisabledBorder;
+  } else {
+    color_id = kBorder;
+  }
+  return GetControlColor(color_id, color_scheme);
+}
+
+SkColor NativeThemeAndroid::ButtonBorderColorForState(
+    State state,
+    ColorScheme color_scheme) const {
+  ControlColorId color_id;
+  if (state == kPressed) {
+    color_id = kButtonPressedBorder;
+  } else if (state == kDisabled) {
+    color_id = kButtonDisabledBorder;
+  } else {
+    color_id = kButtonBorder;
+  }
+  return GetControlColor(color_id, color_scheme);
+}
+
+SkColor NativeThemeAndroid::ControlsFillColorForState(
+    State state,
+    ColorScheme color_scheme) const {
+  ControlColorId color_id;
+  if (state == kPressed) {
+    color_id = kPressedFill;
+  } else if (state == kDisabled) {
+    color_id = kDisabledFill;
+  } else {
+    color_id = kFill;
+  }
+  return GetControlColor(color_id, color_scheme);
+}
+
+SkColor NativeThemeAndroid::ButtonFillColorForState(
+    State state,
+    ColorScheme color_scheme) const {
+  ControlColorId color_id;
+  if (state == kPressed) {
+    color_id = kButtonPressedFill;
+  } else if (state == kDisabled) {
+    color_id = kButtonDisabledFill;
+  } else {
+    color_id = kButtonFill;
+  }
+  return GetControlColor(color_id, color_scheme);
 }
 
 NativeThemeAndroid::NativeThemeAndroid() {

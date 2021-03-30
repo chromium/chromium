@@ -100,8 +100,8 @@ NGLayoutResult::NGLayoutResult(
     if (builder->column_spanner_)
       rare_data->column_spanner = builder->column_spanner_;
 
-    bitfields_.initial_break_before =
-        static_cast<unsigned>(builder->initial_break_before_);
+    bitfields_.initial_break_before = static_cast<unsigned>(
+        builder->initial_break_before_.value_or(EBreakBetween::kAuto));
     bitfields_.final_break_after =
         static_cast<unsigned>(builder->previous_break_after_);
     bitfields_.has_forced_break = builder->has_forced_break_;
@@ -110,6 +110,8 @@ NGLayoutResult::NGLayoutResult(
     EnsureRareData()->table_column_count_ = *builder->table_column_count_;
   if (builder->math_data_.has_value())
     EnsureRareData()->math_layout_data_ = builder->math_data_;
+  if (builder->grid_data_)
+    EnsureRareData()->grid_layout_data_ = std::move(builder->grid_data_);
 }
 
 NGLayoutResult::NGLayoutResult(

@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_ANDROID_SEARCH_PERMISSIONS_SEARCH_PERMISSIONS_SERVICE_H_
 #define CHROME_BROWSER_ANDROID_SEARCH_PERMISSIONS_SEARCH_PERMISSIONS_SERVICE_H_
 
+#include <string>
+
 #include "base/callback_forward.h"
 #include "base/memory/singleton.h"
-#include "base/strings/string16.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -39,7 +40,7 @@ class SearchPermissionsService : public KeyedService {
     virtual ~SearchEngineDelegate() {}
 
     // Returns the name of the current DSE.
-    virtual base::string16 GetDSEName() = 0;
+    virtual std::u16string GetDSEName() = 0;
 
     // Returns the origin of the DSE. If the current DSE is Google this will
     // return the current CCTLD.

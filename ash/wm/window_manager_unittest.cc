@@ -5,6 +5,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_window_builder.h"
 #include "ash/wm/test_activation_delegate.h"
 #include "ash/wm/window_util.h"
 #include "ui/aura/client/aura_constants.h"
@@ -133,8 +134,10 @@ TEST_F(WindowManagerTest, Focus) {
   // Supplied ids are negative so as not to collide with shell ids.
   // TODO(beng): maybe introduce a MAKE_SHELL_ID() macro that generates a safe
   //             id beyond shell id max?
-  std::unique_ptr<aura::Window> w1(
-      CreateTestWindowInShell(SK_ColorWHITE, -1, gfx::Rect(10, 10, 500, 500)));
+  std::unique_ptr<aura::Window> w1 = TestWindowBuilder()
+                                         .SetColorWindowDelegate(SK_ColorWHITE)
+                                         .SetBounds(gfx::Rect(10, 10, 500, 500))
+                                         .Build();
   std::unique_ptr<aura::Window> w11(aura::test::CreateTestWindow(
       SK_ColorGREEN, -11, gfx::Rect(5, 5, 100, 100), w1.get()));
   std::unique_ptr<aura::Window> w111(aura::test::CreateTestWindow(
@@ -166,7 +169,7 @@ TEST_F(WindowManagerTest, Focus) {
       aura::client::GetFocusClient(w121.get());
   EXPECT_EQ(w121.get(), focus_client->GetFocusedWindow());
 
-  ui::EventSink* sink = root_window->GetHost()->event_sink();
+  ui::EventSink* sink = root_window->GetHost()->GetEventSink();
 
   // The key press should be sent to the focused sub-window.
   ui::KeyEvent keyev(ui::ET_KEY_PRESSED, ui::VKEY_E, ui::EF_NONE);
@@ -436,7 +439,7 @@ TEST_F(WindowManagerTest, ActivateOnTouch) {
   ui::TouchEvent touchev1(ui::ET_TOUCH_PRESSED, press_point, getTime(),
                           ui::PointerDetails(ui::EventPointerType::kTouch, 0));
 
-  ui::EventSink* sink = root_window->GetHost()->event_sink();
+  ui::EventSink* sink = root_window->GetHost()->GetEventSink();
   ui::EventDispatchDetails details = sink->OnEventFromSource(&touchev1);
   ASSERT_FALSE(details.dispatcher_destroyed);
 
@@ -498,7 +501,7 @@ TEST_F(WindowManagerTest, MouseEventCursors) {
   aura::Window::ConvertPointToTarget(window->parent(), root_window, &point2);
 
   aura::WindowTreeHost* host = root_window->GetHost();
-  ui::EventSink* sink = host->event_sink();
+  ui::EventSink* sink = host->GetEventSink();
 
   // Cursor starts as a pointer (set during Shell::Init()).
   EXPECT_EQ(ui::mojom::CursorType::kPointer, host->last_cursor().type());
@@ -618,7 +621,7 @@ TEST_F(WindowManagerTest, TransformActivate) {
   ui::MouseEvent mouseev1(ui::ET_MOUSE_PRESSED, miss_point, miss_point,
                           ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                           ui::EF_LEFT_MOUSE_BUTTON);
-  ui::EventSink* sink = root_window->GetHost()->event_sink();
+  ui::EventSink* sink = root_window->GetHost()->GetEventSink();
   ui::EventDispatchDetails details = sink->OnEventFromSource(&mouseev1);
   ASSERT_FALSE(details.dispatcher_destroyed);
   EXPECT_EQ(NULL, aura::client::GetFocusClient(w1.get())->GetFocusedWindow());
@@ -647,8 +650,8 @@ TEST_F(WindowManagerTest, AdditionalFilters) {
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
 
   // Creates a window and make it active
-  std::unique_ptr<aura::Window> w1(
-      CreateTestWindowInShell(SK_ColorWHITE, -1, gfx::Rect(0, 0, 100, 100)));
+  std::unique_ptr<aura::Window> w1 =
+      TestWindowBuilder().SetBounds(gfx::Rect(0, 0, 100, 100)).Build();
   wm::ActivateWindow(w1.get());
 
   // Creates two addition filters
@@ -662,7 +665,7 @@ TEST_F(WindowManagerTest, AdditionalFilters) {
 
   // Dispatches mouse and keyboard events.
   ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
-  ui::EventSink* sink = root_window->GetHost()->event_sink();
+  ui::EventSink* sink = root_window->GetHost()->GetEventSink();
   ui::EventDispatchDetails details = sink->OnEventFromSource(&key_event);
   ASSERT_FALSE(details.dispatcher_destroyed);
   ui::MouseEvent mouse_pressed(ui::ET_MOUSE_PRESSED, gfx::Point(0, 0),
@@ -791,8 +794,10 @@ TEST_F(WindowManagerTest, TestCursorClientObserver) {
   ui::test::EventGenerator* generator = GetEventGenerator();
   ::wm::CursorManager* cursor_manager = Shell::Get()->cursor_manager();
 
-  std::unique_ptr<aura::Window> w1(
-      CreateTestWindowInShell(SK_ColorWHITE, -1, gfx::Rect(0, 0, 100, 100)));
+  std::unique_ptr<aura::Window> w1 = TestWindowBuilder()
+                                         .SetColorWindowDelegate(SK_ColorWHITE)
+                                         .SetBounds(gfx::Rect(0, 0, 100, 100))
+                                         .Build();
   wm::ActivateWindow(w1.get());
 
   // Add two observers. Both should have OnCursorVisibilityChanged()

@@ -4,8 +4,9 @@
 
 #include "components/payments/content/android/currency_formatter_android.h"
 
+#include <string>
+
 #include "base/android/jni_string.h"
-#include "base/strings/string16.h"
 #include "components/payments/content/android/jni_headers/CurrencyFormatter_jni.h"
 #include "components/payments/core/currency_formatter.h"
 
@@ -44,7 +45,7 @@ base::android::ScopedJavaLocalRef<jstring> CurrencyFormatterAndroid::Format(
     JNIEnv* env,
     const JavaParamRef<jobject>& jcaller,
     const JavaParamRef<jstring>& amount) {
-  base::string16 result =
+  std::u16string result =
       currency_formatter_->Format(ConvertJavaStringToUTF8(env, amount));
   return base::android::ConvertUTF16ToJavaString(env, result);
 }

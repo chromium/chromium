@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_PARENTAL_HANDOFF_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_PARENTAL_HANDOFF_SCREEN_HANDLER_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
 namespace login {
@@ -26,8 +27,7 @@ class ParentalHandoffScreenView {
   virtual ~ParentalHandoffScreenView() = default;
 
   // Shows the contents of the screen.
-  virtual void Show(const base::string16& title,
-                    const base::string16& subtitle) = 0;
+  virtual void Show(const std::u16string& username) = 0;
 
   // Binds |screen| to the view.
   virtual void Bind(ParentalHandoffScreen* screen) = 0;
@@ -54,8 +54,7 @@ class ParentalHandoffScreenHandler : public BaseScreenHandler,
   void Initialize() override;
 
   // Shows the contents of the screen.
-  void Show(const base::string16& title,
-            const base::string16& subtitle) override;
+  void Show(const std::u16string& username) override;
   void Bind(ParentalHandoffScreen* screen) override;
   void Unbind() override;
 

@@ -97,10 +97,6 @@ FlocComponentInstallerPolicy::GetInstallerAttributes() const {
   return update_client::InstallerAttributes();
 }
 
-std::vector<std::string> FlocComponentInstallerPolicy::GetMimeTypes() const {
-  return std::vector<std::string>();
-}
-
 void RegisterFlocComponent(
     ComponentUpdateService* cus,
     federated_learning::FlocSortingLshClustersService*

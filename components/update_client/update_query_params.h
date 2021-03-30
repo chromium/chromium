@@ -20,10 +20,7 @@ class UpdateQueryParamsDelegate;
 // browser process.
 class UpdateQueryParams {
  public:
-  enum ProdId {
-    CHROME = 0,
-    CRX,
-  };
+  enum ProdId { CHROME = 0, CRX, WEBVIEW };
 
   // Generates a string of URL query parameters for Omaha. Includes the
   // following fields: "os", "arch", "nacl_arch", "prod", "prodchannel",

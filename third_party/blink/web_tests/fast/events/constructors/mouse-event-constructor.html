@@ -94,7 +94,7 @@ shouldBeEqualToNumber("new MouseEvent('eventType', { detail: {valueOf: function 
     shouldBeEqualToNumber("new MouseEvent('eventType', { " + attr + ": 2147483647 })." + attr, 2147483647);
     shouldBeEqualToNumber("new MouseEvent('eventType', { " + attr + ": -2147483648 })." + attr, -2147483648);
     shouldBeEqualToNumber("new MouseEvent('eventType', { " + attr + ": 123.45 })." + attr, 123);
-    shouldBeEqualToNumber("new MouseEvent('eventType', { " + attr + ": -123.45 })." + attr, -123);
+    shouldBeEqualToNumber("new MouseEvent('eventType', { " + attr + ": -123.45 })." + attr, -124);
     shouldThrow("new MouseEvent('eventType', { " + attr + ": NaN })." + attr);
 
     // Non-numeric values.

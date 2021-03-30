@@ -2,23 +2,52 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-(function() {
+import '//resources/js/util.m.js';
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import '//resources/cr_elements/cr_input/cr_input.m.js';
+import '//resources/cr_elements/cr_link_row/cr_link_row.js';
+import '//resources/cr_elements/icons.m.js';
+import '//resources/cr_elements/shared_style_css.m.js';
+import '//resources/cr_elements/shared_vars_css.m.js';
+import '//resources/cr_elements/cr_expand_button/cr_expand_button.m.js';
+import '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import './sync_account_control.js';
+import './sync_encryption_options.js';
+import '../privacy_page/personalization_options.js';
+import '../settings_shared_css.js';
+import '../settings_vars_css.js';
+// <if expr="not chromeos">
+import '//resources/cr_elements/cr_toast/cr_toast.m.js';
+// </if>
+
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {flush, html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../i18n_setup.js';
+import {Route, RouteObserverBehavior, Router} from '../router.js';
+
+import {PageStatus, StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from './sync_browser_proxy.js';
 
 // TODO(rbpotter): Remove this typedef when this file is no longer needed by OS
 // Settings.
 /**
  * @typedef {{
- *   BASIC: !settings.Route,
- *   PEOPLE: !settings.Route,
- *   SYNC: !settings.Route,
- *   SYNC_ADVANCED: !settings.Route,
+ *   BASIC: !Route,
+ *   PEOPLE: !Route,
+ *   SYNC: !Route,
+ *   SYNC_ADVANCED: !Route,
  * }}
  */
 let SyncRoutes;
 
 /** @return {!SyncRoutes} */
 function getSyncRoutes() {
-  const router = settings.Router.getInstance();
+  const router = Router.getInstance();
   return /** @type {!SyncRoutes} */ (router.getRoutes());
 }
 
@@ -29,9 +58,11 @@ function getSyncRoutes() {
 Polymer({
   is: 'settings-sync-page',
 
+  _template: html`{__html_template__}`,
+
   behaviors: [
     WebUIListenerBehavior,
-    settings.RouteObserverBehavior,
+    RouteObserverBehavior,
   ],
 
   properties: {
@@ -52,7 +83,7 @@ Polymer({
     /** @private */
     pages_: {
       type: Object,
-      value: settings.PageStatus,
+      value: PageStatus,
       readOnly: true,
     },
 
@@ -60,11 +91,11 @@ Polymer({
      * The current page status. Defaults to |CONFIGURE| such that the searching
      * algorithm can search useful content when the page is not visible to the
      * user.
-     * @private {?settings.PageStatus}
+     * @private {?PageStatus}
      */
     pageStatus_: {
       type: String,
-      value: settings.PageStatus.CONFIGURE,
+      value: PageStatus.CONFIGURE,
     },
 
     /**
@@ -76,13 +107,13 @@ Polymer({
 
     /**
      * The current sync preferences, supplied by SyncBrowserProxy.
-     * @type {settings.SyncPrefs|undefined}
+     * @type {SyncPrefs|undefined}
      */
     syncPrefs: {
       type: Object,
     },
 
-    /** @type {settings.SyncStatus} */
+    /** @type {SyncStatus} */
     syncStatus: {
       type: Object,
     },
@@ -149,7 +180,7 @@ Polymer({
     'expandEncryptionIfNeeded_(dataEncrypted_, forceEncryptionExpanded)',
   ],
 
-  /** @private {?settings.SyncBrowserProxy} */
+  /** @private {?SyncBrowserProxy} */
   browserProxy_: null,
 
   /**
@@ -196,7 +227,7 @@ Polymer({
 
   /** @override */
   created() {
-    this.browserProxy_ = settings.SyncBrowserProxyImpl.getInstance();
+    this.browserProxy_ = SyncBrowserProxyImpl.getInstance();
   },
 
   /** @override */
@@ -206,7 +237,7 @@ Polymer({
     this.addWebUIListener(
         'sync-prefs-changed', this.handleSyncPrefsChanged_.bind(this));
 
-    const router = settings.Router.getInstance();
+    const router = Router.getInstance();
     if (router.getCurrentRoute() === getSyncRoutes().SYNC) {
       this.onNavigateToPage_();
     }
@@ -214,7 +245,7 @@ Polymer({
 
   /** @override */
   detached() {
-    const router = settings.Router.getInstance();
+    const router = Router.getInstance();
     if (getSyncRoutes().SYNC.contains(router.getCurrentRoute())) {
       this.onNavigateAwayFromPage_();
     }
@@ -264,9 +295,9 @@ Polymer({
         (!this.syncStatus.signedIn || !!this.syncStatus.disabled ||
          (!!this.syncStatus.hasError &&
           this.syncStatus.statusAction !==
-              settings.StatusAction.ENTER_PASSPHRASE &&
+              StatusAction.ENTER_PASSPHRASE &&
           this.syncStatus.statusAction !==
-              settings.StatusAction.RETRIEVE_TRUSTED_VAULT_KEYS));
+              StatusAction.RETRIEVE_TRUSTED_VAULT_KEYS));
   },
 
   /**
@@ -279,9 +310,9 @@ Polymer({
 
   /** @private */
   onFocusConfigChange_() {
-    const router = settings.Router.getInstance();
+    const router = Router.getInstance();
     this.focusConfig.set(getSyncRoutes().SYNC_ADVANCED.path, () => {
-      cr.ui.focusWithoutInk(assert(this.$$('#sync-advanced-row')));
+      focusWithoutInk(assert(this.$$('#sync-advanced-row')));
     });
   },
 
@@ -296,7 +327,7 @@ Polymer({
   onSetupCancelDialogConfirm_() {
     this.setupCancelConfirmed_ = true;
     /** @type {!CrDialogElement} */ (this.$$('#setupCancelDialog')).close();
-    const router = settings.Router.getInstance();
+    const router = Router.getInstance();
     router.navigateTo(getSyncRoutes().BASIC);
     chrome.metricsPrivate.recordUserAction(
         'Signin_Signin_ConfirmCancelAdvancedSyncSettings');
@@ -309,7 +340,7 @@ Polymer({
 
   /** @protected */
   currentRouteChanged() {
-    const router = settings.Router.getInstance();
+    const router = Router.getInstance();
     if (router.getCurrentRoute() === getSyncRoutes().SYNC) {
       this.onNavigateToPage_();
       return;
@@ -320,7 +351,7 @@ Polymer({
     }
 
     const searchParams =
-        settings.Router.getInstance().getQueryParameters().get('search');
+        Router.getInstance().getQueryParameters().get('search');
     if (searchParams) {
       // User navigated away via searching. Cancel sync without showing
       // confirmation dialog.
@@ -342,7 +373,7 @@ Polymer({
         router.navigateTo(getSyncRoutes().SYNC);
         this.showSetupCancelDialog_ = true;
         // Flush to make sure that the setup cancel dialog is attached.
-        Polymer.dom.flush();
+        flush();
         this.$$('#setupCancelDialog').showModal();
       });
       return;
@@ -355,7 +386,7 @@ Polymer({
   },
 
   /**
-   * @param {!settings.PageStatus} expectedPageStatus
+   * @param {!PageStatus} expectedPageStatus
    * @return {boolean}
    * @private
    */
@@ -365,7 +396,7 @@ Polymer({
 
   /** @private */
   onNavigateToPage_() {
-    const router = settings.Router.getInstance();
+    const router = Router.getInstance();
     assert(router.getCurrentRoute() === getSyncRoutes().SYNC);
     if (this.beforeunloadCallback_) {
       return;
@@ -374,7 +405,7 @@ Polymer({
     this.collapsibleSectionsInitialized_ = false;
 
     // Display loading page until the settings have been retrieved.
-    this.pageStatus_ = settings.PageStatus.SPINNER;
+    this.pageStatus_ = PageStatus.SPINNER;
 
     this.browserProxy_.didNavigateToSyncPage();
 
@@ -403,7 +434,7 @@ Polymer({
 
     // Reset the status to CONFIGURE such that the searching algorithm can
     // search useful content when the page is not visible to the user.
-    this.pageStatus_ = settings.PageStatus.CONFIGURE;
+    this.pageStatus_ = PageStatus.CONFIGURE;
 
     this.browserProxy_.didNavigateAwayFromSyncPage(this.didAbort_);
 
@@ -422,7 +453,7 @@ Polymer({
    */
   handleSyncPrefsChanged_(syncPrefs) {
     this.syncPrefs = syncPrefs;
-    this.pageStatus_ = settings.PageStatus.CONFIGURE;
+    this.pageStatus_ = PageStatus.CONFIGURE;
 
     // Hide the new passphrase box if (a) full data encryption is enabled,
     // (b) encrypting all data is not allowed (so far, only applies to
@@ -494,8 +525,8 @@ Polymer({
     this.browserProxy_.setDecryptionPassphrase(this.existingPassphrase_)
         .then(
             sucessfullySet => this.handlePageStatusChanged_(
-                sucessfullySet ? settings.PageStatus.DONE :
-                                 settings.PageStatus.PASSPHRASE_FAILED));
+                sucessfullySet ? PageStatus.DONE :
+                                 PageStatus.PASSPHRASE_FAILED));
 
     this.existingPassphrase_ = '';
   },
@@ -506,28 +537,28 @@ Polymer({
    */
   onPassphraseChanged_(e) {
     this.handlePageStatusChanged_(
-        e.detail.didChange ? settings.PageStatus.DONE :
-                             settings.PageStatus.PASSPHRASE_FAILED);
+        e.detail.didChange ? PageStatus.DONE :
+                             PageStatus.PASSPHRASE_FAILED);
   },
 
   /**
    * Called when the page status updates.
-   * @param {!settings.PageStatus} pageStatus
+   * @param {!PageStatus} pageStatus
    * @private
    */
   handlePageStatusChanged_(pageStatus) {
-    const router = settings.Router.getInstance();
+    const router = Router.getInstance();
     switch (pageStatus) {
-      case settings.PageStatus.SPINNER:
-      case settings.PageStatus.CONFIGURE:
+      case PageStatus.SPINNER:
+      case PageStatus.CONFIGURE:
         this.pageStatus_ = pageStatus;
         return;
-      case settings.PageStatus.DONE:
+      case PageStatus.DONE:
         if (router.getCurrentRoute() === getSyncRoutes().SYNC) {
           router.navigateTo(getSyncRoutes().PEOPLE);
         }
         return;
-      case settings.PageStatus.PASSPHRASE_FAILED:
+      case PageStatus.PASSPHRASE_FAILED:
         if (this.pageStatus_ === this.pages_.CONFIGURE && this.syncPrefs &&
             this.syncPrefs.passphraseRequired) {
           const passphraseInput = /** @type {!CrInputElement} */ (
@@ -578,7 +609,7 @@ Polymer({
 
   /** @private */
   onSyncAdvancedClick_() {
-    const router = settings.Router.getInstance();
+    const router = Router.getInstance();
     router.navigateTo(getSyncRoutes().SYNC_ADVANCED);
   },
 
@@ -597,7 +628,7 @@ Polymer({
       chrome.metricsPrivate.recordUserAction(
           'Signin_Signin_CancelAdvancedSyncSettings');
     }
-    const router = settings.Router.getInstance();
+    const router = Router.getInstance();
     router.navigateTo(getSyncRoutes().BASIC);
   },
 
@@ -609,10 +640,9 @@ Polymer({
   focusPassphraseInput_() {
     const passphraseInput =
         /** @type {!CrInputElement} */ (this.$$('#existingPassphraseInput'));
-    const router = settings.Router.getInstance();
+    const router = Router.getInstance();
     if (passphraseInput && router.getCurrentRoute() === getSyncRoutes().SYNC) {
       passphraseInput.focus();
     }
   },
 });
-})();

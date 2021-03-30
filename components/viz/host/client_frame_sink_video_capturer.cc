@@ -72,11 +72,13 @@ void ClientFrameSinkVideoCapturer::SetAutoThrottlingEnabled(bool enabled) {
 }
 
 void ClientFrameSinkVideoCapturer::ChangeTarget(
-    const base::Optional<FrameSinkId>& frame_sink_id) {
+    const base::Optional<FrameSinkId>& frame_sink_id,
+    SubtreeCaptureId subtree_capture_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   target_ = frame_sink_id;
-  capturer_remote_->ChangeTarget(frame_sink_id);
+  subtree_capture_id_ = subtree_capture_id;
+  capturer_remote_->ChangeTarget(frame_sink_id, subtree_capture_id);
 }
 
 void ClientFrameSinkVideoCapturer::Start(
@@ -192,7 +194,7 @@ void ClientFrameSinkVideoCapturer::EstablishConnection() {
   if (auto_throttling_enabled_)
     capturer_remote_->SetAutoThrottlingEnabled(*auto_throttling_enabled_);
   if (target_)
-    capturer_remote_->ChangeTarget(target_);
+    capturer_remote_->ChangeTarget(target_, subtree_capture_id_);
   for (Overlay* overlay : overlays_)
     overlay->EstablishConnection(capturer_remote_.get());
   if (is_started_)

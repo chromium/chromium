@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 (async function() {
-  await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
   await TestRunner.evaluateInPagePromise(`
   function doActions() {
@@ -13,7 +13,7 @@
   UI.panels.timeline._captureLayersAndPicturesSetting.set(true);
   await PerformanceTestRunner.invokeAsyncWithTimeline('doActions');
   const frames = PerformanceTestRunner.timelineFrameModel().frames();
-  const lastFrame = PerformanceTestRunner.timelineFrameModel().frames().peekLast();
+  const lastFrame = frames[frames.length - 1];
   if (lastFrame) {
     TestRunner.addResult('layerTree: ' + typeof lastFrame.layerTree);
     TestRunner.addResult('mainFrameId: ' + typeof lastFrame._mainFrameId);

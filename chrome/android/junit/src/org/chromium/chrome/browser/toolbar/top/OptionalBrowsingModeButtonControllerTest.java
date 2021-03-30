@@ -21,7 +21,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.toolbar.ButtonData;
+import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 
@@ -45,9 +45,9 @@ public class OptionalBrowsingModeButtonControllerTest {
     @Mock
     Tab mTab;
 
-    ButtonData mButtonData1;
-    ButtonData mButtonData2;
-    ButtonData mButtonData3;
+    ButtonDataImpl mButtonData1;
+    ButtonDataImpl mButtonData2;
+    ButtonDataImpl mButtonData3;
 
     @Captor
     ArgumentCaptor<ButtonDataProvider.ButtonDataObserver> mObserverCaptor1;
@@ -62,9 +62,9 @@ public class OptionalBrowsingModeButtonControllerTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mButtonData1 = new ButtonData(true, null, null, 0, false, null, true);
-        mButtonData2 = new ButtonData(true, null, null, 0, false, null, true);
-        mButtonData3 = new ButtonData(true, null, null, 0, false, null, true);
+        mButtonData1 = createButtonData();
+        mButtonData2 = createButtonData();
+        mButtonData3 = createButtonData();
         doReturn(mButtonData1).when(mButtonDataProvider1).get(mTab);
         doReturn(mButtonData2).when(mButtonDataProvider2).get(mTab);
         doReturn(mButtonData3).when(mButtonDataProvider3).get(mTab);
@@ -86,9 +86,9 @@ public class OptionalBrowsingModeButtonControllerTest {
 
     @Test
     public void noProvidersEligible_noneShown() {
-        mButtonData1.canShow = false;
-        mButtonData2.canShow = false;
-        mButtonData3.canShow = false;
+        mButtonData1.setCanShow(false);
+        mButtonData2.setCanShow(false);
+        mButtonData3.setCanShow(false);
 
         mButtonController.updateButtonVisibility();
         verify(mToolbarLayout, times(0)).updateOptionalButton(any());
@@ -96,44 +96,44 @@ public class OptionalBrowsingModeButtonControllerTest {
 
     @Test
     public void noProvidersEligible_oneBecomesEligible() {
-        mButtonData1.canShow = false;
-        mButtonData2.canShow = false;
-        mButtonData3.canShow = false;
+        mButtonData1.setCanShow(false);
+        mButtonData2.setCanShow(false);
+        mButtonData3.setCanShow(false);
 
         mButtonController.updateButtonVisibility();
         verify(mToolbarLayout, times(0)).updateOptionalButton(any());
 
-        mButtonData2.canShow = true;
+        mButtonData2.setCanShow(true);
         mButtonController.buttonDataProviderChanged(mButtonDataProvider2, true);
         verify(mToolbarLayout, times(1)).updateOptionalButton(mButtonData2);
     }
 
     @Test
     public void higherPrecedenceBecomesEligible() {
-        mButtonData1.canShow = false;
-        mButtonData2.canShow = false;
+        mButtonData1.setCanShow(false);
+        mButtonData2.setCanShow(false);
 
         mButtonController.updateButtonVisibility();
         verify(mToolbarLayout, times(1)).updateOptionalButton(mButtonData3);
 
-        mButtonData2.canShow = true;
+        mButtonData2.setCanShow(true);
         mButtonController.buttonDataProviderChanged(mButtonDataProvider2, true);
         verify(mToolbarLayout, times(1)).updateOptionalButton(mButtonData2);
 
-        mButtonData1.canShow = true;
+        mButtonData1.setCanShow(true);
         mButtonController.buttonDataProviderChanged(mButtonDataProvider1, true);
         verify(mToolbarLayout, times(1)).updateOptionalButton(mButtonData1);
     }
 
     @Test
     public void lowerPrecedenceBecomesEligible() {
-        mButtonData2.canShow = false;
-        mButtonData3.canShow = false;
+        mButtonData2.setCanShow(false);
+        mButtonData3.setCanShow(false);
 
         mButtonController.updateButtonVisibility();
         verify(mToolbarLayout, times(1)).updateOptionalButton(mButtonData1);
 
-        mButtonData2.canShow = true;
+        mButtonData2.setCanShow(true);
         mButtonController.buttonDataProviderChanged(mButtonDataProvider2, true);
         verify(mToolbarLayout, times(0)).updateOptionalButton(mButtonData2);
         verify(mToolbarLayout, times(1)).updateOptionalButton(mButtonData1);
@@ -144,12 +144,12 @@ public class OptionalBrowsingModeButtonControllerTest {
         mButtonController.updateButtonVisibility();
         verify(mToolbarLayout, times(1)).updateOptionalButton(mButtonData1);
 
-        ButtonData newButtonData = new ButtonData(true, null, null, 0, false, null, true);
+        ButtonDataImpl newButtonData = createButtonData();
         doReturn(newButtonData).when(mButtonDataProvider1).get(mTab);
         mButtonController.buttonDataProviderChanged(mButtonDataProvider1, true);
         verify(mToolbarLayout, times(1)).updateOptionalButton(newButtonData);
 
-        newButtonData.canShow = false;
+        newButtonData.setCanShow(false);
         mButtonController.buttonDataProviderChanged(mButtonDataProvider1, false);
         verify(mToolbarLayout, times(1)).updateOptionalButton(mButtonData2);
     }
@@ -159,11 +159,11 @@ public class OptionalBrowsingModeButtonControllerTest {
         mButtonController.updateButtonVisibility();
         verify(mToolbarLayout, times(1)).updateOptionalButton(mButtonData1);
 
-        ButtonData newButtonData = new ButtonData(true, null, null, 0, false, null, true);
+        ButtonDataImpl newButtonData = createButtonData();
         mButtonController.buttonDataProviderChanged(mButtonDataProvider2, true);
         verify(mToolbarLayout, times(0)).updateOptionalButton(newButtonData);
 
-        newButtonData.canShow = false;
+        newButtonData.setCanShow(false);
         mButtonController.buttonDataProviderChanged(mButtonDataProvider1, false);
         verify(mToolbarLayout, times(0)).updateOptionalButton(newButtonData);
     }
@@ -172,9 +172,9 @@ public class OptionalBrowsingModeButtonControllerTest {
     public void noProvidersEligible_hideCalled() {
         mButtonController.updateButtonVisibility();
         verify(mToolbarLayout, times(1)).updateOptionalButton(mButtonData1);
-        mButtonData1.canShow = false;
-        mButtonData2.canShow = false;
-        mButtonData3.canShow = false;
+        mButtonData1.setCanShow(false);
+        mButtonData2.setCanShow(false);
+        mButtonData3.setCanShow(false);
 
         mButtonController.updateButtonVisibility();
         verify(mToolbarLayout, times(1)).hideOptionalButton();
@@ -182,7 +182,7 @@ public class OptionalBrowsingModeButtonControllerTest {
 
     @Test
     public void hintContradictsTrueValue() {
-        mButtonData1.canShow = false;
+        mButtonData1.setCanShow(false);
         mButtonController.updateButtonVisibility();
         verify(mToolbarLayout, times(1)).updateOptionalButton(mButtonData2);
 
@@ -200,8 +200,15 @@ public class OptionalBrowsingModeButtonControllerTest {
 
     @Test
     public void updateOptionalButtonIsOnEnabled() {
-        mButtonData1.isEnabled = false;
+        mButtonData1.setEnabled(false);
         mButtonController.updateButtonVisibility();
         verify(mToolbarLayout, times(1)).updateOptionalButton(mButtonData1);
+    }
+
+    private static ButtonDataImpl createButtonData() {
+        return new ButtonDataImpl(
+                /*canShow=*/true, /*drawable=*/null, /*onClickListener=*/null,
+                /*contentDescriptionResId=*/0, /*supportsTinting=*/false,
+                /*iphCommandBuilder=*/null, /*isEnabled=*/true);
     }
 }

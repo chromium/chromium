@@ -4,10 +4,12 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_transceiver.h"
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_header_extension_capability.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_error_util.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_receiver.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_sender.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -67,6 +69,21 @@ bool TransceiverDirectionFromString(
     return true;
   }
   return false;
+}
+
+bool OptionalTransceiverDirectionFromStringWithStopped(
+    const String& direction_string,
+    absl::optional<webrtc::RtpTransceiverDirection>* direction_out) {
+  if (direction_string == "stopped") {
+    *direction_out = webrtc::RtpTransceiverDirection::kStopped;
+    return true;
+  }
+  base::Optional<webrtc::RtpTransceiverDirection> base_direction;
+  bool result =
+      TransceiverDirectionFromString(direction_string, &base_direction);
+  if (base_direction)
+    *direction_out = *base_direction;
+  return result;
 }
 
 }  // namespace
@@ -266,6 +283,74 @@ void RTCRtpTransceiver::setCodecPreferences(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidModificationError, result.message());
   }
+}
+
+void RTCRtpTransceiver::setOfferedRtpHeaderExtensions(
+    const HeapVector<Member<RTCRtpHeaderExtensionCapability>>&
+        header_extensions_to_offer,
+    ExceptionState& exception_state) {
+  Vector<webrtc::RtpHeaderExtensionCapability> webrtc_hdr_exts;
+  auto webrtc_offered_exts = platform_transceiver_->HeaderExtensionsToOffer();
+  int id = 1;
+  for (const auto& hdr_ext : header_extensions_to_offer) {
+    // Handle invalid requests for mandatory extensions as per
+    // https://w3c.github.io/webrtc-extensions/#rtcrtptransceiver-interface
+    // Step 2.1 (not handled on the WebRTC level).
+    if (hdr_ext->uri().IsEmpty()) {
+      exception_state.ThrowTypeError("The extension URL cannot be empty.");
+      return;
+    }
+
+    absl::optional<webrtc::RtpTransceiverDirection> direction;
+    if (!OptionalTransceiverDirectionFromStringWithStopped(hdr_ext->direction(),
+                                                           &direction) ||
+        !direction) {
+      exception_state.ThrowTypeError("Invalid RTCRtpTransceiverDirection.");
+      return;
+    }
+    const int id_to_store = direction ? id++ : 0;
+    webrtc_hdr_exts.emplace_back(hdr_ext->uri().Ascii(), id_to_store,
+                                 *direction);
+  }
+  webrtc::RTCError status =
+      platform_transceiver_->SetOfferedRtpHeaderExtensions(
+          std::move(webrtc_hdr_exts));
+  if (status.type() == webrtc::RTCErrorType::UNSUPPORTED_PARAMETER) {
+    // TODO(crbug.com/1051821): support DOMExceptionCode::kNotSupportedError in
+    // rtc_error_util.h/cc and get rid of this manually handled case.
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      status.message());
+    return;
+  } else if (status.type() != webrtc::RTCErrorType::NONE) {
+    ThrowExceptionFromRTCError(status, exception_state);
+    return;
+  }
+}
+
+HeapVector<Member<RTCRtpHeaderExtensionCapability>>
+RTCRtpTransceiver::headerExtensionsToOffer() const {
+  auto webrtc_exts = platform_transceiver_->HeaderExtensionsToOffer();
+  HeapVector<Member<RTCRtpHeaderExtensionCapability>> exts;
+  for (const auto& webrtc_ext : webrtc_exts) {
+    auto* ext = MakeGarbageCollected<RTCRtpHeaderExtensionCapability>();
+    ext->setDirection(TransceiverDirectionToString(webrtc_ext.direction));
+    ext->setUri(webrtc_ext.uri.c_str());
+    exts.push_back(ext);
+  }
+  return exts;
+}
+
+HeapVector<Member<RTCRtpHeaderExtensionCapability>>
+RTCRtpTransceiver::headerExtensionsNegotiated() const {
+  auto webrtc_exts = platform_transceiver_->HeaderExtensionsNegotiated();
+  HeapVector<Member<RTCRtpHeaderExtensionCapability>> exts;
+  for (const auto& webrtc_ext : webrtc_exts) {
+    auto* ext = MakeGarbageCollected<RTCRtpHeaderExtensionCapability>();
+    ext->setDirection(TransceiverDirectionToString(webrtc_ext.direction));
+    ext->setUri(webrtc_ext.uri.c_str());
+    exts.push_back(ext);
+  }
+  return exts;
 }
 
 void RTCRtpTransceiver::Trace(Visitor* visitor) const {

@@ -32,6 +32,10 @@ class TooltipAuraTestApi;
 // Implementation of Tooltip that shows the tooltip using a Widget and Label.
 class VIEWS_EXPORT TooltipAura : public Tooltip, public WidgetObserver {
  public:
+  // FIXME: get cursor offset from actual cursor size.
+  static constexpr int kCursorOffsetX = 10;
+  static constexpr int kCursorOffsetY = 15;
+
   TooltipAura() = default;
   ~TooltipAura() override;
 
@@ -44,8 +48,8 @@ class VIEWS_EXPORT TooltipAura : public Tooltip, public WidgetObserver {
 
   // Adjusts the bounds given by the arguments to fit inside the desktop
   // and returns the adjusted bounds.
-  gfx::Rect GetTooltipBounds(const gfx::Point& mouse_pos,
-                             const gfx::Size& tooltip_size);
+  gfx::Rect GetTooltipBounds(const gfx::Size& tooltip_size,
+                             const TooltipPosition& position);
 
   // Sets |widget_| to a new instance of TooltipWidget.
   void CreateTooltipWidget(const gfx::Rect& bounds);
@@ -55,9 +59,9 @@ class VIEWS_EXPORT TooltipAura : public Tooltip, public WidgetObserver {
 
   // Tooltip:
   int GetMaxWidth(const gfx::Point& location) const override;
-  void SetText(aura::Window* window,
-               const base::string16& tooltip_text,
-               const gfx::Point& location) override;
+  void Update(aura::Window* window,
+              const std::u16string& tooltip_text,
+              const TooltipPosition& position) override;
   void Show() override;
   void Hide() override;
   bool IsVisible() override;

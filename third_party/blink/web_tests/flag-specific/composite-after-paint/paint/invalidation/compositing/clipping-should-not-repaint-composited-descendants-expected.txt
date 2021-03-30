@@ -10,6 +10,7 @@
       "name": "LayoutNGBlockFlow (positioned) DIV class='clipping-container'",
       "position": [100, 100],
       "bounds": [100, 100],
+      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 1
     },
@@ -24,6 +25,7 @@
       "name": "LayoutNGBlockFlow (positioned) DIV class='clipping-container with-initial-clipping'",
       "position": [100, 100],
       "bounds": [100, 100],
+      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 2
     },

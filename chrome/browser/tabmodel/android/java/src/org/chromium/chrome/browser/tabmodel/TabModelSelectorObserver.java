@@ -14,25 +14,31 @@ public interface TabModelSelectorObserver {
     /**
      * Called whenever the {@link TabModel} has changed.
      */
-    void onChange();
+    default void onChange() {}
 
     /**
      * Called when a new tab is created.
      * @param tab A new tab being created.
      * @param creationState How the tab was created.
      */
-    void onNewTabCreated(Tab tab, @TabCreationState int creationState);
+    default void onNewTabCreated(Tab tab, @TabCreationState int creationState) {}
+
+    /**
+     * Called when a tab is hidden to switch to another tab.
+     * @param tab The tab that was hidden.
+     */
+    default void onTabHidden(Tab tab) {}
 
     /**
      * Called when a different tab model has been selected.
      * @param newModel The newly selected tab model.
      * @param oldModel The previously selected tab model.
      */
-    void onTabModelSelected(TabModel newModel, TabModel oldModel);
+    default void onTabModelSelected(TabModel newModel, TabModel oldModel) {}
 
     /**
      * Called when the tab state has been initialized and the current tab count and tab model states
      * are reliable.
      */
-    void onTabStateInitialized();
+    default void onTabStateInitialized() {}
 }

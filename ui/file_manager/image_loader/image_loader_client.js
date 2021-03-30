@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {LRUCache} from '../file_manager/common/js/lru_cache.m.js';
+// #import {LRUCache} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/lru_cache.m.js';
 // #import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from './load_image_request.m.js';
 // clang-format on
 

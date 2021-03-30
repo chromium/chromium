@@ -8,7 +8,7 @@
 var EXAMPLE_URL_1 = 'http://example.com/';
 var EXAMPLE_URL_2 = 'http://shmlexample.com/';
 
-GEN('#include "chrome/browser/engagement/site_engagement_service.h"');
+GEN('#include "components/site_engagement/content/site_engagement_service.h"');
 GEN('#include "chrome/browser/engagement/site_engagement_service_factory.h"');
 GEN('#include "chrome/browser/profiles/profile.h"');
 GEN('#include "chrome/browser/ui/browser.h"');

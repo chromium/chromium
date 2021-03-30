@@ -9,6 +9,8 @@
 #include <limits>
 
 #include "base/check.h"
+#include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "url/url_canon_internal.h"
 
 namespace url {
@@ -593,6 +595,105 @@ bool DoCanonicalizeIPv6Address(const CHAR* spec,
   return true;
 }
 
+// Method to check if something looks like a number. Used instead of
+// IPv4ComponentToNumber() so that it counts things that look like bad base-8
+// (e.g. 09).
+//
+// TODO(https://crbug.com/1149194): Remove this once the bug is fixed.
+template <typename CHAR>
+bool LooksLikeANumber(const CHAR* spec, const Component& component) {
+  // Empty components don't look like numbers.
+  if (!component.is_nonempty())
+    return false;
+
+  SharedCharTypes base = CHAR_DEC;
+  size_t start = component.begin;
+  if (component.len >= 2 && spec[start] == '0' &&
+      (spec[start + 1] == 'x' || spec[start + 1] == 'X')) {
+    base = CHAR_HEX;
+    start += 2;
+  }
+  for (int i = start; i < component.end(); i++) {
+    if (!IsCharOfType(spec[i], base))
+      return false;
+  }
+  return true;
+}
+
+// Calculates the "HostSafetyStatus" of the provided hostname.
+//
+// TODO(https://crbug.com/1149194): Remove this once the bug is fixed.
+template <typename CHAR>
+HostSafetyStatus DoCheckHostnameSafety(const CHAR* spec,
+                                       const Component& host) {
+  if (!host.is_nonempty())
+    return HostSafetyStatus::kOk;
+
+  // Find the last two components.
+
+  // Number of identified components. Stops after second component. Does not
+  // include the empty terminal component, if the host ends with a dot.
+  int existing_components = 0;
+  // Parsed component values. Populated last component first.
+  Component components[2];
+
+  // Index of the character after the end of the current component.
+  int cur_component_end = host.end();
+
+  // Ignore terminal dot, if there is one.
+  if (spec[cur_component_end - 1] == '.') {
+    cur_component_end--;
+    // Nothing else to do if the host is just a dot.
+    if (host.begin == cur_component_end)
+      return HostSafetyStatus::kOk;
+  }
+
+  for (int i = cur_component_end; /* nothing */; i--) {
+    DCHECK_GE(i, host.begin);
+
+    // If `i` is not the first character of the component, continue.
+    if (i != host.begin && spec[i - 1] != '.')
+      continue;
+
+    // Otherwise, i is the index of the the start of a component.
+    components[existing_components] = Component(i, cur_component_end - i);
+    existing_components++;
+
+    // Finished parsing last component.
+    if (i == host.begin)
+      break;
+
+    // If there's anything left to parse after the 2th component, nothing more
+    // to do.
+    if (existing_components == 2)
+      break;
+
+    // The next component ends before the dot at spec[i]. `i` will be
+    // decremented when restarting the loop, so no need to modify it.
+    cur_component_end = i - 1;
+  }
+
+  // If the last value doesn't look like a number, no need to do more work, as
+  // IPv6 and hostnames with non-numeric final components are all considered OK.
+  if (!LooksLikeANumber(spec, components[0]))
+    return HostSafetyStatus::kOk;
+
+  url::RawCanonOutputT<char> ignored_output;
+  CanonHostInfo host_info;
+  CanonicalizeIPAddress(spec, host, &ignored_output, &host_info);
+  // Ignore valid IPv4 addresses, and hostnames considered invalid by the IPv4
+  // and IPv6 parsers. The IPv6 check doesn't provide a whole lot, but does mean
+  // things like "].6" will correctly be considered already invalid, so will
+  // return kOk.
+  if (host_info.family != CanonHostInfo::NEUTRAL)
+    return HostSafetyStatus::kOk;
+
+  if (LooksLikeANumber(spec, components[1]))
+    return HostSafetyStatus::kTwoHighestLevelDomainsAreNumeric;
+
+  return HostSafetyStatus::kTopLevelDomainIsNumeric;
+}
+
 }  // namespace
 
 void AppendIPv4Address(const unsigned char address[4], CanonOutput* output) {
@@ -650,11 +751,10 @@ bool FindIPv4Components(const char* spec,
   return DoFindIPv4Components<char, unsigned char>(spec, host, components);
 }
 
-bool FindIPv4Components(const base::char16* spec,
+bool FindIPv4Components(const char16_t* spec,
                         const Component& host,
                         Component components[4]) {
-  return DoFindIPv4Components<base::char16, base::char16>(
-      spec, host, components);
+  return DoFindIPv4Components<char16_t, char16_t>(spec, host, components);
 }
 
 void CanonicalizeIPAddress(const char* spec,
@@ -669,15 +769,15 @@ void CanonicalizeIPAddress(const char* spec,
     return;
 }
 
-void CanonicalizeIPAddress(const base::char16* spec,
+void CanonicalizeIPAddress(const char16_t* spec,
                            const Component& host,
                            CanonOutput* output,
                            CanonHostInfo* host_info) {
-  if (DoCanonicalizeIPv4Address<base::char16, base::char16>(
-          spec, host, output, host_info))
+  if (DoCanonicalizeIPv4Address<char16_t, char16_t>(spec, host, output,
+                                                    host_info))
     return;
-  if (DoCanonicalizeIPv6Address<base::char16, base::char16>(
-          spec, host, output, host_info))
+  if (DoCanonicalizeIPv6Address<char16_t, char16_t>(spec, host, output,
+                                                    host_info))
     return;
 }
 
@@ -688,12 +788,12 @@ CanonHostInfo::Family IPv4AddressToNumber(const char* spec,
   return DoIPv4AddressToNumber<char>(spec, host, address, num_ipv4_components);
 }
 
-CanonHostInfo::Family IPv4AddressToNumber(const base::char16* spec,
+CanonHostInfo::Family IPv4AddressToNumber(const char16_t* spec,
                                           const Component& host,
                                           unsigned char address[4],
                                           int* num_ipv4_components) {
-  return DoIPv4AddressToNumber<base::char16>(
-      spec, host, address, num_ipv4_components);
+  return DoIPv4AddressToNumber<char16_t>(spec, host, address,
+                                         num_ipv4_components);
 }
 
 bool IPv6AddressToNumber(const char* spec,
@@ -702,10 +802,19 @@ bool IPv6AddressToNumber(const char* spec,
   return DoIPv6AddressToNumber<char, unsigned char>(spec, host, address);
 }
 
-bool IPv6AddressToNumber(const base::char16* spec,
+bool IPv6AddressToNumber(const char16_t* spec,
                          const Component& host,
                          unsigned char address[16]) {
-  return DoIPv6AddressToNumber<base::char16, base::char16>(spec, host, address);
+  return DoIPv6AddressToNumber<char16_t, char16_t>(spec, host, address);
+}
+
+HostSafetyStatus CheckHostnameSafety(const char* spec, const Component& host) {
+  return DoCheckHostnameSafety(spec, host);
+}
+
+HostSafetyStatus CheckHostnameSafety(const char16_t* spec,
+                                     const Component& host) {
+  return DoCheckHostnameSafety(spec, host);
 }
 
 }  // namespace url

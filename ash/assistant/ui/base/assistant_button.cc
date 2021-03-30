@@ -14,6 +14,7 @@
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -87,10 +88,6 @@ std::unique_ptr<AssistantButton> AssistantButton::Create(
   return button;
 }
 
-const char* AssistantButton::GetClassName() const {
-  return "AssistantButton";
-}
-
 void AssistantButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   // Note that the current assumption is that button bounds are square.
   DCHECK_EQ(width(), height());
@@ -126,5 +123,8 @@ void AssistantButton::OnButtonPressed() {
   assistant::util::IncrementAssistantButtonClickCount(id_);
   listener_->OnButtonPressed(id_);
 }
+
+BEGIN_METADATA(AssistantButton, views::ImageButton)
+END_METADATA
 
 }  // namespace ash

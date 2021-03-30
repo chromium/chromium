@@ -21,6 +21,7 @@
 #include "components/services/storage/dom_storage/storage_area_test_util.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
+#include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/env_chromium.h"
@@ -41,8 +42,8 @@ std::string Uint8VectorToStdString(const std::vector<uint8_t>& v) {
 
 void GetStorageUsageCallback(
     const base::RepeatingClosure& callback,
-    std::vector<mojom::LocalStorageUsageInfoPtr>* out_result,
-    std::vector<mojom::LocalStorageUsageInfoPtr> result) {
+    std::vector<mojom::StorageUsageInfoPtr>* out_result,
+    std::vector<mojom::StorageUsageInfoPtr> result) {
   *out_result = std::move(result);
   callback.Run();
 }
@@ -199,9 +200,9 @@ class LocalStorageImplTest : public testing::Test {
     return contents;
   }
 
-  std::vector<mojom::LocalStorageUsageInfoPtr> GetStorageUsageSync() {
+  std::vector<mojom::StorageUsageInfoPtr> GetStorageUsageSync() {
     base::RunLoop run_loop;
-    std::vector<mojom::LocalStorageUsageInfoPtr> result;
+    std::vector<mojom::StorageUsageInfoPtr> result;
     context()->GetUsage(base::BindOnce(&GetStorageUsageCallback,
                                        run_loop.QuitClosure(), &result));
     run_loop.Run();
@@ -425,7 +426,7 @@ TEST_F(LocalStorageImplTest, VersionOnlyWrittenOnCommit) {
 }
 
 TEST_F(LocalStorageImplTest, GetStorageUsage_NoData) {
-  std::vector<mojom::LocalStorageUsageInfoPtr> info = GetStorageUsageSync();
+  std::vector<mojom::StorageUsageInfoPtr> info = GetStorageUsageSync();
   EXPECT_EQ(0u, info.size());
 }
 
@@ -454,17 +455,17 @@ TEST_F(LocalStorageImplTest, GetStorageUsage_Data) {
 
   base::Time after_write = base::Time::Now();
 
-  std::vector<mojom::LocalStorageUsageInfoPtr> info = GetStorageUsageSync();
+  std::vector<mojom::StorageUsageInfoPtr> info = GetStorageUsageSync();
   ASSERT_EQ(2u, info.size());
   if (info[0]->origin == origin2)
     std::swap(info[0], info[1]);
   EXPECT_EQ(origin1, info[0]->origin);
   EXPECT_EQ(origin2, info[1]->origin);
-  EXPECT_LE(before_write, info[0]->last_modified_time);
-  EXPECT_LE(before_write, info[1]->last_modified_time);
-  EXPECT_GE(after_write, info[0]->last_modified_time);
-  EXPECT_GE(after_write, info[1]->last_modified_time);
-  EXPECT_GT(info[0]->size_in_bytes, info[1]->size_in_bytes);
+  EXPECT_LE(before_write, info[0]->last_modified);
+  EXPECT_LE(before_write, info[1]->last_modified);
+  EXPECT_GE(after_write, info[0]->last_modified);
+  EXPECT_GE(after_write, info[1]->last_modified);
+  EXPECT_GT(info[0]->total_size_bytes, info[1]->total_size_bytes);
 }
 
 TEST_F(LocalStorageImplTest, MetaDataClearedOnDelete) {
@@ -676,9 +677,9 @@ TEST_F(LocalStorageImplTest, DeleteStorageWithPendingWrites) {
 TEST_F(LocalStorageImplTest, Migration) {
   url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com"));
   url::Origin origin2 = url::Origin::Create(GURL("http://example.com"));
-  base::string16 key = base::ASCIIToUTF16("key");
-  base::string16 value = base::ASCIIToUTF16("value");
-  base::string16 key2 = base::ASCIIToUTF16("key2");
+  std::u16string key = u"key";
+  std::u16string value = u"value";
+  std::u16string key2 = u"key2";
   key2.push_back(0xd83d);
   key2.push_back(0xde00);
 
@@ -695,8 +696,8 @@ TEST_F(LocalStorageImplTest, Migration) {
         old_db_path, std::make_unique<FilesystemProxy>(
                          FilesystemProxy::UNRESTRICTED, local_storage_path));
     LegacyDomStorageValuesMap data;
-    data[key] = base::NullableString16(value, false);
-    data[key2] = base::NullableString16(value, false);
+    data[key] = value;
+    data[key2] = value;
     db.CommitChanges(false, data);
   }
   EXPECT_TRUE(base::PathExists(old_db_path));
@@ -750,12 +751,12 @@ TEST_F(LocalStorageImplTest, Migration) {
 }
 
 static std::string EncodeKeyAsUTF16(const std::string& origin,
-                                    const base::string16& key) {
+                                    const std::u16string& key) {
   std::string result = '_' + origin + '\x00' + '\x00';
-  std::copy(reinterpret_cast<const char*>(key.data()),
-            reinterpret_cast<const char*>(key.data()) +
-                key.size() * sizeof(base::char16),
-            std::back_inserter(result));
+  std::copy(
+      reinterpret_cast<const char*>(key.data()),
+      reinterpret_cast<const char*>(key.data()) + key.size() * sizeof(char16_t),
+      std::back_inserter(result));
   return result;
 }
 
@@ -767,14 +768,10 @@ TEST_F(LocalStorageImplTest, FixUp) {
   // deleted.
   SetDatabaseEntry(std::string("_http://foobar.com") + '\x00' + "\x01key",
                    "value1");
-  SetDatabaseEntry(
-      EncodeKeyAsUTF16("http://foobar.com", base::ASCIIToUTF16("key")),
-      "value2");
+  SetDatabaseEntry(EncodeKeyAsUTF16("http://foobar.com", u"key"), "value2");
   // Also add mock data for the "foo" key, this time only with the incorrec
   // encoding. This should be updated to the correct encoding.
-  SetDatabaseEntry(
-      EncodeKeyAsUTF16("http://foobar.com", base::ASCIIToUTF16("foo")),
-      "value3");
+  SetDatabaseEntry(EncodeKeyAsUTF16("http://foobar.com", u"foo"), "value3");
 
   mojo::Remote<blink::mojom::StorageArea> area;
   mojo::Remote<blink::mojom::StorageArea>
@@ -830,9 +827,9 @@ TEST_F(LocalStorageImplTest, ShutdownClearsData) {
   // Make sure all data gets committed to the DB.
   RunUntilIdle();
 
-  std::vector<mojom::LocalStoragePolicyUpdatePtr> updates;
-  updates.push_back(mojom::LocalStoragePolicyUpdate::New(
-      origin1, /*purge_on_shutdown=*/true));
+  std::vector<mojom::StoragePolicyUpdatePtr> updates;
+  updates.emplace_back(
+      mojom::StoragePolicyUpdate::New(origin1, /*purge_on_shutdown=*/true));
   context()->ApplyPolicyUpdates(std::move(updates));
 
   // Data from origin2 should exist, including meta-data, but nothing should

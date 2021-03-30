@@ -4,11 +4,14 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/read_only_buffer.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/blob/blob.mojom";
 import "third_party/blink/public/mojom/fetch/fetch_api_response.mojom";
 import "third_party/blink/public/mojom/fetch/fetch_api_request.mojom";
-import "mojo/public/mojom/base/string16.mojom";
+import "url/mojom/url.mojom";
 
 // This enum is used in histograms, so do not change the ordering and always
 // append new types to the end.
@@ -151,6 +154,14 @@ interface CacheStorageCache {
   // Perform a batch of operations, used for PUT and DELETE operations.
   Batch(array<BatchOperation> batch_operations, int64 trace_id)
       => (CacheStorageVerboseError result);
+
+  // Writes the side data (ex: V8 code cache) for the specified cache entry.
+  // If it doesn't exist, or the |expected_response_time| differs from the
+  // entry's, blink::mojom::CacheStorageError::kErrorNotFound is returned.
+  WriteSideData(url.mojom.Url url,
+                mojo_base.mojom.Time expected_response_time,
+                mojo_base.mojom.BigBuffer data,
+                int64 trace_id) => (CacheStorageError result);
 };
 
 // Handles global CacheStorage methods, directly relates to methods available on

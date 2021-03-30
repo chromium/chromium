@@ -128,8 +128,8 @@ TEST(CSVPasswordSequenceTest, MissingEolAtEof) {
   ASSERT_EQ(1, std::distance(seq.begin(), seq.end()));
   PasswordForm parsed = seq.begin()->ParseValid();
   EXPECT_EQ(GURL("http://a.com"), parsed.url);
-  EXPECT_EQ(base::ASCIIToUTF16("l"), parsed.username_value);
-  EXPECT_EQ(base::ASCIIToUTF16("p"), parsed.password_value);
+  EXPECT_EQ(u"l", parsed.username_value);
+  EXPECT_EQ(u"p", parsed.password_value);
 }
 
 }  // namespace password_manager

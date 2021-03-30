@@ -4,6 +4,8 @@
 
 #include "ash/system/holding_space/holding_space_tray_icon_preview.h"
 
+#include <algorithm>
+
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
@@ -20,11 +22,15 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_skia_source.h"
+#include "ui/gfx/shadow_util.h"
 #include "ui/gfx/skia_paint_util.h"
 
 namespace ash {
 
 namespace {
+
+// Appearance.
+constexpr int kElevation = 1;
 
 // The duration of each of the preview icon bounce animation.
 constexpr base::TimeDelta kBounceAnimationSegmentDuration =
@@ -41,9 +47,29 @@ constexpr base::TimeDelta kShiftAnimationDuration =
 
 // Helpers ---------------------------------------------------------------------
 
-// Returns the preview icon contents size.
-gfx::Size GetPreviewSize() {
-  return gfx::Size(kTrayItemSize, kTrayItemSize);
+// Returns true if small previews should be used given the current shelf
+// configuration, false otherwise.
+bool ShouldUseSmallPreviews() {
+  ShelfConfig* const shelf_config = ShelfConfig::Get();
+  return shelf_config->in_tablet_mode() && shelf_config->is_in_app();
+}
+
+// Returns the size for previews. If `use_small_previews` is absent it will be
+// determined from the current shelf configuration.
+gfx::Size GetPreviewSize(
+    const base::Optional<bool>& use_small_previews = base::nullopt) {
+  return use_small_previews.value_or(ShouldUseSmallPreviews())
+             ? gfx::Size(kHoldingSpaceTrayIconSmallPreviewSize,
+                         kHoldingSpaceTrayIconSmallPreviewSize)
+             : gfx::Size(kHoldingSpaceTrayIconDefaultPreviewSize,
+                         kHoldingSpaceTrayIconDefaultPreviewSize);
+}
+
+// Returns the shadow details for painting elevation.
+const gfx::ShadowDetails& GetShadowDetails() {
+  const gfx::Size size(GetPreviewSize());
+  const int radius = std::min(size.height(), size.width()) / 2;
+  return gfx::ShadowDetails::Get(kElevation, radius);
 }
 
 // Returns whether the specified `shelf_alignment` is horizontal.
@@ -82,26 +108,12 @@ class ContentsImageSource : public gfx::ImageSkiaSource {
   gfx::ImageSkiaRep GetImageForScale(float scale) override {
     gfx::ImageSkia image = item_image_;
 
-    // Crop to square (if necessary).
-    gfx::Size square_size = image.size();
-    square_size.SetToMin(gfx::Size(square_size.height(), square_size.width()));
-    if (image.size() != square_size) {
-      gfx::Rect square_rect(image.size());
-      square_rect.ClampToCenteredSize(square_size);
-      image = gfx::ImageSkiaOperations::ExtractSubset(image, square_rect);
-    }
-
-    // Resize to contents size (if necessary).
-    gfx::Size contents_size = GetPreviewSize();
-    if (image.size() != contents_size) {
-      image = gfx::ImageSkiaOperations::CreateResizedImage(
-          image, skia::ImageOperations::ResizeMethod::RESIZE_BEST,
-          contents_size);
-    }
+    // The `image` should already be sized appropriately.
+    DCHECK_EQ(image.size(), GetPreviewSize());
 
     // Clip to circle.
-    // NOTE: Since `image` has already been cropped to a square, the center
-    // x-coordinate, center y-coordinate, and radius all equal the same value.
+    // NOTE: Since `image` is a square, the center x-coordinate, center
+    // y-coordinate, and radius all equal the same value.
     const int radius = image.width() / 2;
     gfx::Canvas canvas(image.size(), scale, /*is_opaque=*/false);
     canvas.ClipPath(SkPath::Circle(/*cx=*/radius, /*cy=*/radius, radius),
@@ -121,10 +133,17 @@ HoldingSpaceTrayIconPreview::HoldingSpaceTrayIconPreview(
     Shelf* shelf,
     views::View* container,
     const HoldingSpaceItem* item)
-    : shelf_(shelf), container_(container), item_(item) {
+    : shelf_(shelf),
+      container_(container),
+      item_(item),
+      use_small_previews_(ShouldUseSmallPreviews()) {
+  const gfx::Size size(GetPreviewSize());
   contents_image_ = gfx::ImageSkia(
-      std::make_unique<ContentsImageSource>(item->image().image_skia()),
-      GetPreviewSize());
+      std::make_unique<ContentsImageSource>(item->image().GetImageSkia(size)),
+      size);
+  item_deletion_subscription_ = item->AddDeletionCallback(base::BindRepeating(
+      &HoldingSpaceTrayIconPreview::OnHoldingSpaceItemDeleted,
+      base::Unretained(this)));
   image_subscription_ =
       item->image().AddImageSkiaChangedCallback(base::BindRepeating(
           &HoldingSpaceTrayIconPreview::OnHoldingSpaceItemImageChanged,
@@ -152,16 +171,22 @@ void HoldingSpaceTrayIconPreview::AnimateIn(base::TimeDelta additional_delay) {
   if (!NeedsLayer())
     return;
 
+  int pre_translate_y = -preview_size.height();
+  if (IsHorizontal(shelf_->alignment())) {
+    const gfx::Size& container_size = container_->size();
+    pre_translate_y = -container_size.height() +
+                      (container_size.height() - preview_size.height()) / 2;
+  }
+
   gfx::Transform pre_transform;
-  pre_transform.Translate(transform_.To2dTranslation().x(),
-                          -preview_size.height());
+  pre_transform.Translate(transform_.To2dTranslation().x(), pre_translate_y);
 
   CreateLayer(pre_transform);
 
   gfx::Transform mid_transform(transform_);
   mid_transform.Translate(0, preview_size.height() * 0.25f);
 
-  ui::ScopedLayerAnimationSettings scoped_settings(layer_->GetAnimator());
+  ui::ScopedLayerAnimationSettings scoped_settings(layer()->GetAnimator());
   scoped_settings.SetPreemptionStrategy(
       ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
 
@@ -183,7 +208,7 @@ void HoldingSpaceTrayIconPreview::AnimateIn(base::TimeDelta additional_delay) {
   rebound->set_tween_type(gfx::Tween::FAST_OUT_SLOW_IN_3);
   sequence->AddElement(std::move(rebound));
 
-  layer_->GetAnimator()->StartAnimation(sequence.release());
+  layer()->GetAnimator()->StartAnimation(sequence.release());
 }
 
 void HoldingSpaceTrayIconPreview::AnimateOut(
@@ -192,17 +217,17 @@ void HoldingSpaceTrayIconPreview::AnimateOut(
   pending_index_.reset();
   index_.reset();
 
-  if (!layer_) {
+  if (!layer()) {
     std::move(animate_out_closure_).Run();
     return;
   }
 
-  ui::ScopedLayerAnimationSettings animation_settings(layer_->GetAnimator());
+  ui::ScopedLayerAnimationSettings animation_settings(layer()->GetAnimator());
   SetUpAnimation(&animation_settings);
   animation_settings.AddObserver(this);
 
-  layer_->SetOpacity(0.f);
-  layer_->SetVisible(false);
+  layer()->SetOpacity(0.f);
+  layer()->SetVisible(false);
 }
 
 void HoldingSpaceTrayIconPreview::AnimateShift(base::TimeDelta delay) {
@@ -212,8 +237,11 @@ void HoldingSpaceTrayIconPreview::AnimateShift(base::TimeDelta delay) {
   index_ = *pending_index_;
   pending_index_.reset();
 
-  if (!layer_ && NeedsLayer())
+  bool created_layer = false;
+  if (!layer() && NeedsLayer()) {
     CreateLayer(transform_);
+    created_layer = true;
+  }
 
   // Calculate the target preview transform for the new position in the icon.
   // Avoid adjustments based on relative index change, as the current transform
@@ -224,25 +252,40 @@ void HoldingSpaceTrayIconPreview::AnimateShift(base::TimeDelta delay) {
   AdjustForShelfAlignmentAndTextDirection(&translation);
   transform_.Translate(translation);
 
-  if (!layer_)
+  if (!layer())
     return;
 
-  ui::ScopedLayerAnimationSettings scoped_settings(layer_->GetAnimator());
+  // If the `layer()` has just been created because it is shifting into the
+  // viewport, animate in its opacity.
+  if (created_layer)
+    layer()->SetOpacity(0.f);
+
+  ui::ScopedLayerAnimationSettings scoped_settings(layer()->GetAnimator());
+  scoped_settings.AddObserver(this);
   scoped_settings.SetPreemptionStrategy(
       ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
 
-  std::unique_ptr<ui::LayerAnimationSequence> sequence =
-      std::make_unique<ui::LayerAnimationSequence>();
-  sequence->AddElement(ui::LayerAnimationElement::CreatePauseElement(
+  auto opacity_sequence = std::make_unique<ui::LayerAnimationSequence>();
+  if (created_layer) {
+    opacity_sequence->AddElement(ui::LayerAnimationElement::CreatePauseElement(
+        ui::LayerAnimationElement::OPACITY, delay));
+    opacity_sequence->AddElement(
+        ui::LayerAnimationElement::CreateOpacityElement(
+            1.f, kShiftAnimationDuration));
+  }
+
+  auto transform_sequence = std::make_unique<ui::LayerAnimationSequence>();
+  transform_sequence->AddElement(ui::LayerAnimationElement::CreatePauseElement(
       ui::LayerAnimationElement::TRANSFORM, delay));
 
   std::unique_ptr<ui::LayerAnimationElement> shift =
       ui::LayerAnimationElement::CreateTransformElement(
           transform_, kShiftAnimationDuration);
   shift->set_tween_type(gfx::Tween::FAST_OUT_SLOW_IN);
-  sequence->AddElement(std::move(shift));
+  transform_sequence->AddElement(std::move(shift));
 
-  layer_->GetAnimator()->StartAnimation(sequence.release());
+  layer()->GetAnimator()->StartTogether(
+      {opacity_sequence.release(), transform_sequence.release()});
 }
 
 void HoldingSpaceTrayIconPreview::AdjustTransformForContainerSizeChange(
@@ -268,12 +311,12 @@ void HoldingSpaceTrayIconPreview::OnShelfAlignmentChanged(
   if (IsHorizontal(old_shelf_alignment) == IsHorizontal(new_shelf_alignment))
     return;
 
-  // Since shelf orientation has changed, the target `transform_` needs to be
+  // Because shelf orientation has changed, the target `transform_` needs to be
   // updated. First stop the current animation to immediately advance to target
   // end values.
-  const auto& weak_ptr = weak_factory_.GetWeakPtr();
-  if (layer_ && layer_->GetAnimator()->is_animating())
-    layer_->GetAnimator()->StopAnimating();
+  const auto weak_ptr = weak_factory_.GetWeakPtr();
+  if (layer() && layer()->GetAnimator()->is_animating())
+    layer()->GetAnimator()->StopAnimating();
 
   // This instance may have been deleted as a result of stopping the current
   // animation if it was in the process of animating out.
@@ -298,10 +341,47 @@ void HoldingSpaceTrayIconPreview::OnShelfAlignmentChanged(
   swapped_transform.Translate(translation.y(), translation.x());
   transform_ = swapped_transform;
 
-  if (layer_) {
+  if (layer()) {
     UpdateLayerBounds();
-    layer_->SetTransform(transform_);
+    layer()->SetTransform(transform_);
   }
+}
+
+void HoldingSpaceTrayIconPreview::OnShelfConfigChanged() {
+  // If the change in shelf configuration hasn't affected whether or not small
+  // previews should be used, no action needs to be taken.
+  const bool use_small_previews = ShouldUseSmallPreviews();
+  if (use_small_previews_ == use_small_previews)
+    return;
+
+  use_small_previews_ = use_small_previews;
+
+  // Because the size of previews is changing, the target `transform_` needs to
+  // be updated. First stop the current animation to immediately advance to
+  // target end values.
+  const auto weak_ptr = weak_factory_.GetWeakPtr();
+  if (layer() && layer()->GetAnimator()->is_animating())
+    layer()->GetAnimator()->StopAnimating();
+
+  // This instance may have been deleted as a result of stopping the current
+  // animation if it was in the process of animating out.
+  if (!weak_ptr)
+    return;
+
+  // Adjust `translation` to account for the change in size.
+  DCHECK(index_);
+  gfx::Vector2dF translation(*index_ * GetPreviewSize().width() / 2, 0);
+  AdjustForShelfAlignmentAndTextDirection(&translation);
+  transform_.MakeIdentity();
+  transform_.Translate(translation);
+
+  if (layer()) {
+    UpdateLayerBounds();
+    layer()->SetTransform(transform_);
+  }
+
+  // Invalidate `contents_image_` so it is resized.
+  OnHoldingSpaceItemImageChanged();
 }
 
 // TODO(crbug.com/1142572): Support theming.
@@ -313,15 +393,22 @@ void HoldingSpaceTrayIconPreview::OnPaintLayer(
   gfx::Canvas* canvas = recorder.canvas();
 
   // Background.
+  // NOTE: The background radius is shrunk by a single pixel to avoid being
+  // painted outside `contents_image_` bounds as might otherwise occur due to
+  // pixel rounding. Failure to do so could result in white paint artifacts.
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setColor(SK_ColorWHITE);
+  flags.setLooper(gfx::CreateShadowDrawLooper(GetShadowDetails().values));
   canvas->DrawCircle(
-      contents_bounds.CenterPoint(),
-      std::min(contents_bounds.width(), contents_bounds.height()) / 2, flags);
+      gfx::PointF(contents_bounds.CenterPoint()),
+      std::min(contents_bounds.width(), contents_bounds.height()) / 2 - 0.5,
+      flags);
 
   // Contents.
+  // NOTE: The `contents_image_` should already be resized.
   if (!contents_image_.isNull()) {
+    DCHECK_EQ(contents_image_.size(), contents_bounds.size());
     canvas->DrawImageInt(contents_image_, contents_bounds.x(),
                          contents_bounds.y());
   }
@@ -334,10 +421,8 @@ void HoldingSpaceTrayIconPreview::OnDeviceScaleFactorChanged(
 }
 
 void HoldingSpaceTrayIconPreview::OnImplicitAnimationsCompleted() {
-  if (!NeedsLayer()) {
-    container_->layer()->Remove(layer_.get());
-    layer_.reset();
-  }
+  if (!NeedsLayer())
+    DestroyLayer();
 
   // NOTE: Running `animate_out_closure_` may delete `this`.
   if (animate_out_closure_)
@@ -346,7 +431,7 @@ void HoldingSpaceTrayIconPreview::OnImplicitAnimationsCompleted() {
 
 void HoldingSpaceTrayIconPreview::OnViewBoundsChanged(views::View* view) {
   DCHECK_EQ(container_, view);
-  if (layer_)
+  if (layer())
     UpdateLayerBounds();
 }
 
@@ -356,31 +441,48 @@ void HoldingSpaceTrayIconPreview::OnViewIsDeleting(views::View* view) {
 }
 
 void HoldingSpaceTrayIconPreview::OnHoldingSpaceItemImageChanged() {
-  contents_image_ = gfx::ImageSkia(
-      std::make_unique<ContentsImageSource>(item_->image().image_skia()),
-      GetPreviewSize());
+  const gfx::Size size(GetPreviewSize());
+  if (item_) {
+    contents_image_ = gfx::ImageSkia(std::make_unique<ContentsImageSource>(
+                                         item_->image().GetImageSkia(size)),
+                                     size);
+  } else {
+    contents_image_ = gfx::ImageSkia();
+  }
+
   InvalidateLayer();
+}
+
+void HoldingSpaceTrayIconPreview::OnHoldingSpaceItemDeleted() {
+  item_ = nullptr;
 }
 
 void HoldingSpaceTrayIconPreview::CreateLayer(
     const gfx::Transform& initial_transform) {
-  DCHECK(!layer_);
-  layer_ = std::make_unique<ui::Layer>(ui::LAYER_TEXTURED);
-  layer_->SetFillsBoundsOpaquely(false);
-  layer_->SetTransform(initial_transform);
-  layer_->set_delegate(this);
-  UpdateLayerBounds();
+  DCHECK(!layer());
+  DCHECK(!layer_owner_.OwnsLayer());
+  auto new_layer = std::make_unique<ui::Layer>(ui::LAYER_TEXTURED);
+  new_layer->SetFillsBoundsOpaquely(false);
+  new_layer->SetTransform(initial_transform);
+  new_layer->set_delegate(this);
+  layer_owner_.Reset(std::move(new_layer));
 
-  container_->layer()->Add(layer_.get());
+  UpdateLayerBounds();
+  container_->layer()->Add(layer());
+}
+
+void HoldingSpaceTrayIconPreview::DestroyLayer() {
+  if (layer())
+    layer_owner_.ReleaseLayer();
 }
 
 bool HoldingSpaceTrayIconPreview::NeedsLayer() const {
-  return index_ && *index_ <= kHoldingSpaceTrayIconMaxVisiblePreviews;
+  return index_ && *index_ < kHoldingSpaceTrayIconMaxVisiblePreviews;
 }
 
 void HoldingSpaceTrayIconPreview::InvalidateLayer() {
-  if (layer_)
-    layer_->SchedulePaint(gfx::Rect(layer_->size()));
+  if (layer())
+    layer()->SchedulePaint(gfx::Rect(layer()->size()));
 }
 
 void HoldingSpaceTrayIconPreview::AdjustForShelfAlignmentAndTextDirection(
@@ -398,20 +500,22 @@ void HoldingSpaceTrayIconPreview::AdjustForShelfAlignmentAndTextDirection(
 }
 
 void HoldingSpaceTrayIconPreview::UpdateLayerBounds() {
-  DCHECK(layer_);
-  // With a horizontal shelf in RTL, `layer_` is aligned with its parent layer's
-  // right bound and translated with a negative offset. In all other cases,
-  // `layer_` is aligned with its parent layer's left/top bound and translated
-  // with a positive offset.
+  DCHECK(layer());
+  // With a horizontal shelf in RTL, `layer()` is aligned with its parent
+  // layer's right bound and translated with a negative offset. In all other
+  // cases, `layer()` is aligned with its parent layer's left/top bound and
+  // translated with a positive offset.
   const gfx::Size size = GetPreviewSize();
   gfx::Point origin;
-  if (shelf_->IsHorizontalAlignment() && base::i18n::IsRTL()) {
-    origin = container_->GetLocalBounds().top_right() -
-             gfx::Vector2d(size.width(), 0);
+  if (shelf_->IsHorizontalAlignment()) {
+    gfx::Rect container_bounds = container_->GetLocalBounds();
+    if (base::i18n::IsRTL())
+      origin = container_bounds.top_right() - gfx::Vector2d(size.width(), 0);
+    origin.Offset(0, (container_bounds.height() - size.height()) / 2);
   }
   gfx::Rect bounds(origin, size);
-  if (bounds != layer_->bounds())
-    layer_->SetBounds(bounds);
+  if (bounds != layer()->bounds())
+    layer()->SetBounds(bounds);
 }
 
 }  // namespace ash

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<script type="module">
+import '/resources/testharness.js';
+import '/resources/testharnessreport.js';
+
+import {hid_test} from './resources/hid-test-utils.js';
+
+const kTestVendorId = 0x1234;
+const kTestProductId = 0xabcd;
+
+hid_test(async (t, fake) => {
+  const watcher = new EventWatcher(t, navigator.hid, ['connect', 'disconnect']);
+
+  // Wait for getDevices() to resolve in order to ensure that the Mojo client
+  // interface has been configured.
+  let devices = await navigator.hid.getDevices();
+  assert_equals(devices.length, 0);
+
+  // Connect a device and wait for the connect event.
+  let key = fake.addDevice(fake.makeDevice(kTestVendorId, kTestProductId));
+  let connectEvent = await watcher.wait_for('connect');
+
+  assert_true(connectEvent instanceof HIDConnectionEvent);
+  assert_true(connectEvent.device instanceof HIDDevice);
+  assert_equals(kTestVendorId, connectEvent.device.vendorId);
+  assert_equals(kTestProductId, connectEvent.device.productId);
+
+  // Disconnect the device and wait for the disconnect event.
+  fake.removeDevice(key);
+  let disconnectEvent = await watcher.wait_for('disconnect');
+
+  assert_true(disconnectEvent instanceof HIDConnectionEvent);
+  assert_true(disconnectEvent.device instanceof HIDDevice);
+  assert_equals(kTestVendorId, disconnectEvent.device.vendorId);
+  assert_equals(kTestProductId, disconnectEvent.device.productId);
+}, 'HID dispatches connection and disconnection events');
+
+</script>

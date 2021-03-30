@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/browser_process.h"
@@ -27,6 +28,17 @@ const WebApp* WebAppRegistrar::GetAppById(const AppId& app_id) const {
 
   auto it = registry_.find(app_id);
   return it == registry_.end() ? nullptr : it->second.get();
+}
+
+std::vector<AppId> WebAppRegistrar::GetAppsInSyncInstall() {
+  AppSet apps_in_sync_install = AppSet(
+      this, [](const WebApp& web_app) { return web_app.is_in_sync_install(); });
+
+  std::vector<AppId> app_ids;
+  for (const WebApp& app : apps_in_sync_install)
+    app_ids.push_back(app.app_id());
+
+  return app_ids;
 }
 
 void WebAppRegistrar::Start() {
@@ -53,6 +65,12 @@ bool WebAppRegistrar::IsLocallyInstalled(const AppId& app_id) const {
 bool WebAppRegistrar::WasInstalledByUser(const AppId& app_id) const {
   const WebApp* web_app = GetAppById(app_id);
   return web_app && web_app->WasInstalledByUser();
+}
+
+bool WebAppRegistrar::WasInstalledByOem(const AppId& app_id) const {
+  const WebApp* web_app = GetAppById(app_id);
+  return web_app && web_app->chromeos_data().has_value() &&
+         web_app->chromeos_data()->oem_installed;
 }
 
 int WebAppRegistrar::CountUserInstalledApps() const {
@@ -105,6 +123,19 @@ const apps::ShareTarget* WebAppRegistrar::GetAppShareTarget(
              : nullptr;
 }
 
+blink::mojom::CaptureLinks WebAppRegistrar::GetAppCaptureLinks(
+    const AppId& app_id) const {
+  auto* web_app = GetAppById(app_id);
+  return web_app ? web_app->capture_links()
+                 : blink::mojom::CaptureLinks::kUndefined;
+}
+
+const apps::FileHandlers* WebAppRegistrar::GetAppFileHandlers(
+    const AppId& app_id) const {
+  auto* web_app = GetAppById(app_id);
+  return web_app ? &web_app->file_handlers() : nullptr;
+}
+
 base::Optional<GURL> WebAppRegistrar::GetAppScopeInternal(
     const AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
@@ -136,6 +167,23 @@ std::vector<DisplayMode> WebAppRegistrar::GetAppDisplayModeOverride(
   auto* web_app = GetAppById(app_id);
   return web_app ? web_app->display_mode_override()
                  : std::vector<DisplayMode>();
+}
+
+apps::UrlHandlers WebAppRegistrar::GetAppUrlHandlers(
+    const AppId& app_id) const {
+  auto* web_app = GetAppById(app_id);
+  return web_app ? web_app->url_handlers()
+                 : std::vector<apps::UrlHandlerInfo>();
+}
+
+GURL WebAppRegistrar::GetAppManifestUrl(const AppId& app_id) const {
+  auto* web_app = GetAppById(app_id);
+  return web_app ? web_app->manifest_url() : GURL::EmptyGURL();
+}
+
+base::Time WebAppRegistrar::GetAppLastBadgingTime(const AppId& app_id) const {
+  auto* web_app = GetAppById(app_id);
+  return web_app ? web_app->last_badging_time() : base::Time();
 }
 
 base::Time WebAppRegistrar::GetAppLastLaunchTime(const AppId& app_id) const {
@@ -189,8 +237,7 @@ std::vector<AppId> WebAppRegistrar::GetAppIds() const {
 RunOnOsLoginMode WebAppRegistrar::GetAppRunOnOsLoginMode(
     const AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
-  return web_app ? web_app->run_on_os_login_mode()
-                 : RunOnOsLoginMode::kUndefined;
+  return web_app ? web_app->run_on_os_login_mode() : RunOnOsLoginMode::kNotRun;
 }
 
 WebAppRegistrar* WebAppRegistrar::AsWebAppRegistrar() {

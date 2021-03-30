@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<title>SpeechRecognition grammars attribute</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+test(() => {
+  const sr = new webkitSpeechRecognition();
+  assert_true(sr.grammars instanceof webkitSpeechGrammarList);
+}, 'initial state');
+
+test(() => {
+  for (const value of [null, undefined, {}, "", window]) {
+    const sr = new webkitSpeechRecognition();
+    const grammars = sr.grammars;
+    assert_throws_js(TypeError, () => { sr.grammars = value; } );
+    assert_equals(sr.grammars, grammars);
+  }
+}, 'setting to non-SpeechGrammarList values');
+
+test(() => {
+  const sr = new webkitSpeechRecognition();
+  const grammars = new webkitSpeechGrammarList();
+  sr.grammars = grammars;
+  assert_equals(sr.grammars, grammars);
+}, 'setting to SpeechGrammarList');
+</script>

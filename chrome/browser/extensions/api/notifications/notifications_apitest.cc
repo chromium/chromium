@@ -46,6 +46,7 @@
 #include "base/mac/mac_util.h"
 #endif
 
+using ContextType = extensions::ExtensionBrowserTest::ContextType;
 using extensions::AppWindow;
 using extensions::AppWindowRegistry;
 using extensions::Extension;
@@ -218,28 +219,41 @@ class NotificationsApiTest : public extensions::ExtensionApiTest {
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
 };
 
+// TODO(https://crbug.com/1182305): We should merge this class with the base
+// class once the issues mentioned in the bug are resolved.
+class NotificationsApiTestWithBackgroundType
+    : public NotificationsApiTest,
+      public testing::WithParamInterface<ContextType> {
+ protected:
+  bool RunTest(const char* name) {
+    return RunExtensionTest(
+        {.name = name},
+        {.load_as_service_worker = GetParam() == ContextType::kServiceWorker});
+  }
+};
+
 }  // namespace
 
-// http://crbug.com/691913
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)) && \
-    !defined(NDEBUG)
-#define MAYBE_TestBasicUsage DISABLED_TestBasicUsage
-#else
-#define MAYBE_TestBasicUsage TestBasicUsage
-#endif
-IN_PROC_BROWSER_TEST_F(NotificationsApiTest, MAYBE_TestBasicUsage) {
-  ASSERT_TRUE(RunExtensionTest("notifications/api/basic_usage")) << message_;
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         NotificationsApiTestWithBackgroundType,
+                         testing::Values(ContextType::kPersistentBackground));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         NotificationsApiTestWithBackgroundType,
+                         testing::Values(ContextType::kServiceWorker));
+
+IN_PROC_BROWSER_TEST_P(NotificationsApiTestWithBackgroundType, TestBasicUsage) {
+  ASSERT_TRUE(RunTest("notifications/api/basic_usage")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestEvents) {
-  ASSERT_TRUE(RunExtensionTest("notifications/api/events")) << message_;
+IN_PROC_BROWSER_TEST_P(NotificationsApiTestWithBackgroundType, TestEvents) {
+  ASSERT_TRUE(RunTest("notifications/api/events")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestCSP) {
-  ASSERT_TRUE(RunExtensionTest("notifications/api/csp")) << message_;
+IN_PROC_BROWSER_TEST_P(NotificationsApiTestWithBackgroundType, TestCSP) {
+  ASSERT_TRUE(RunTest("notifications/api/csp")) << message_;
 }
 
-// Native notifications don't support (nor use) observers.
+// Native notifications don't support (or use) observers.
 #if !defined(OS_MAC)
 IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestByUser) {
   const extensions::Extension* extension =
@@ -281,8 +295,9 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestByUser) {
 }
 #endif  // !defined(OS_MAC)
 
-IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestPartialUpdate) {
-  ASSERT_TRUE(RunExtensionTest("notifications/api/partial_update")) << message_;
+IN_PROC_BROWSER_TEST_P(NotificationsApiTestWithBackgroundType,
+                       TestPartialUpdate) {
+  ASSERT_TRUE(RunTest("notifications/api/partial_update")) << message_;
   const extensions::Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
 
@@ -541,3 +556,18 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest,
             notification->fullscreen_visibility());
 }
 #endif  // !defined(OS_MAC)
+
+IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestSmallImage) {
+  ExtensionTestMessageListener notification_created_listener("created", false);
+  const Extension* extension = LoadAppWithWindowState(
+      "notifications/api/basic_app", WindowState::NORMAL);
+  ASSERT_TRUE(extension) << message_;
+  ASSERT_TRUE(notification_created_listener.WaitUntilSatisfied());
+
+  message_center::Notification* notification =
+      GetNotificationForExtension(extension);
+  ASSERT_TRUE(notification);
+
+  EXPECT_FALSE(notification->small_image().IsEmpty());
+  EXPECT_TRUE(notification->small_image_needs_additional_masking());
+}

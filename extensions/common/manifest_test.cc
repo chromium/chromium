@@ -19,6 +19,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
 
+using extensions::mojom::ManifestLocation;
+
 namespace extensions {
 namespace {
 
@@ -107,7 +109,7 @@ base::Value ManifestTest::LoadManifest(char const* manifest_name,
 scoped_refptr<Extension> ManifestTest::LoadExtension(
     const ManifestData& manifest,
     std::string* error,
-    extensions::Manifest::Location location,
+    ManifestLocation location,
     int flags) {
   base::FilePath test_data_dir = GetTestDataDir();
   const base::Value& value = manifest.GetManifest(test_data_dir, error);
@@ -123,7 +125,7 @@ scoped_refptr<Extension> ManifestTest::LoadExtension(
 
 scoped_refptr<Extension> ManifestTest::LoadAndExpectSuccess(
     const ManifestData& manifest,
-    extensions::Manifest::Location location,
+    ManifestLocation location,
     int flags) {
   std::string error;
   scoped_refptr<Extension> extension =
@@ -135,7 +137,7 @@ scoped_refptr<Extension> ManifestTest::LoadAndExpectSuccess(
 
 scoped_refptr<Extension> ManifestTest::LoadAndExpectSuccess(
     char const* manifest_name,
-    extensions::Manifest::Location location,
+    ManifestLocation location,
     int flags) {
   return LoadAndExpectSuccess(ManifestData(manifest_name), location, flags);
 }
@@ -143,7 +145,7 @@ scoped_refptr<Extension> ManifestTest::LoadAndExpectSuccess(
 scoped_refptr<Extension> ManifestTest::LoadAndExpectWarning(
     const ManifestData& manifest,
     const std::string& expected_warning,
-    extensions::Manifest::Location location,
+    ManifestLocation location,
     int flags) {
   std::string error;
   scoped_refptr<Extension> extension =
@@ -158,7 +160,7 @@ scoped_refptr<Extension> ManifestTest::LoadAndExpectWarning(
 scoped_refptr<Extension> ManifestTest::LoadAndExpectWarning(
     char const* manifest_name,
     const std::string& expected_warning,
-    extensions::Manifest::Location location,
+    ManifestLocation location,
     int flags) {
   return LoadAndExpectWarning(
       ManifestData(manifest_name), expected_warning, location, flags);
@@ -167,7 +169,7 @@ scoped_refptr<Extension> ManifestTest::LoadAndExpectWarning(
 scoped_refptr<Extension> ManifestTest::LoadAndExpectWarnings(
     char const* manifest_name,
     const std::vector<std::string>& expected_warnings,
-    extensions::Manifest::Location location,
+    ManifestLocation location,
     int flags) {
   std::string error;
   scoped_refptr<Extension> extension =
@@ -199,11 +201,10 @@ void ManifestTest::VerifyExpectedError(
       << "'";
 }
 
-void ManifestTest::LoadAndExpectError(
-    const ManifestData& manifest,
-    const std::string& expected_error,
-    extensions::Manifest::Location location,
-    int flags) {
+void ManifestTest::LoadAndExpectError(const ManifestData& manifest,
+                                      const std::string& expected_error,
+                                      ManifestLocation location,
+                                      int flags) {
   std::string error;
   scoped_refptr<Extension> extension(
       LoadExtension(manifest, &error, location, flags));
@@ -211,11 +212,10 @@ void ManifestTest::LoadAndExpectError(
                       expected_error);
 }
 
-void ManifestTest::LoadAndExpectError(
-    char const* manifest_name,
-    const std::string& expected_error,
-    extensions::Manifest::Location location,
-    int flags) {
+void ManifestTest::LoadAndExpectError(char const* manifest_name,
+                                      const std::string& expected_error,
+                                      ManifestLocation location,
+                                      int flags) {
   return LoadAndExpectError(
       ManifestData(manifest_name), expected_error, location, flags);
 }
@@ -228,7 +228,7 @@ void ManifestTest::AddPattern(extensions::URLPatternSet* extent,
 
 ManifestTest::Testcase::Testcase(const std::string& manifest_filename,
                                  const std::string& expected_error,
-                                 extensions::Manifest::Location location,
+                                 ManifestLocation location,
                                  int flags)
     : manifest_filename_(manifest_filename),
       expected_error_(expected_error),
@@ -239,16 +239,16 @@ ManifestTest::Testcase::Testcase(const std::string& manifest_filename,
                                  const std::string& expected_error)
     : manifest_filename_(manifest_filename),
       expected_error_(expected_error),
-      location_(extensions::Manifest::INTERNAL),
+      location_(ManifestLocation::kInternal),
       flags_(Extension::NO_FLAGS) {}
 
 ManifestTest::Testcase::Testcase(const std::string& manifest_filename)
     : manifest_filename_(manifest_filename),
-      location_(extensions::Manifest::INTERNAL),
+      location_(ManifestLocation::kInternal),
       flags_(Extension::NO_FLAGS) {}
 
 ManifestTest::Testcase::Testcase(const std::string& manifest_filename,
-                                 extensions::Manifest::Location location,
+                                 ManifestLocation location,
                                  int flags)
     : manifest_filename_(manifest_filename),
       location_(location),

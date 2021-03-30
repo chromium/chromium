@@ -9,13 +9,13 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/sync/glue/synced_tab_delegate_android.h"
 #include "chrome/browser/tab/web_contents_state.h"
@@ -65,6 +65,12 @@ class TabAndroid : public base::SupportsUserData {
   static TabAndroid* GetNativeTab(JNIEnv* env,
                                   const base::android::JavaRef<jobject>& obj);
 
+  // Returns the a vector of native TabAndroid stored in the Java Tab array
+  // represented by |obj_array|.
+  static std::vector<TabAndroid*> GetAllNativeTabs(
+      JNIEnv* env,
+      const base::android::ScopedJavaLocalRef<jobjectArray>& obj_array);
+
   // Function to attach helpers to the contentView.
   static void AttachTabHelpers(content::WebContents* web_contents);
 
@@ -86,7 +92,7 @@ class TabAndroid : public base::SupportsUserData {
   bool IsNativePage() const;
 
   // Return the tab title.
-  base::string16 GetTitle() const;
+  std::u16string GetTitle() const;
 
   // Return the tab url.
   GURL GetURL() const;
@@ -167,7 +173,8 @@ class TabAndroid : public base::SupportsUserData {
       jboolean has_user_gesture,
       jboolean should_clear_history_list,
       jlong omnibox_input_received_timestamp,
-      jlong intent_received_timestamp);
+      jlong intent_received_timestamp,
+      jint ua_override_option);
   void SetActiveNavigationEntryTitleForUrl(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& jurl,

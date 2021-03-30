@@ -57,8 +57,6 @@ const char* StringForAllocatorType(uint32_t type) {
       return "malloc";
     case AllocatorType::kPartitionAlloc:
       return "partition_alloc";
-    case AllocatorType::kOilpan:
-      return "blink_gc";
     default:
       NOTREACHED();
       return "unknown";

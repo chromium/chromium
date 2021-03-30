@@ -5,7 +5,7 @@
 #include "chrome/browser/sync/wifi_configuration_sync_service_factory.h"
 
 #include "base/memory/singleton.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/model_type_store_service_factory.h"
 #include "chrome/common/channel_info.h"

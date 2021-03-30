@@ -20,7 +20,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -61,12 +60,12 @@ static_assert(kMaxPRegFileSize <= std::numeric_limits<ptrdiff_t>::max(),
 const size_t kMaxKeyNameComponents = 1024;
 
 // Constants for PReg file delimiters.
-const base::char16 kDelimBracketOpen = L'[';
-const base::char16 kDelimBracketClose = L']';
-const base::char16 kDelimSemicolon = L';';
+const char16_t kDelimBracketOpen = u'[';
+const char16_t kDelimBracketClose = u']';
+const char16_t kDelimSemicolon = u';';
 
 // Registry path separator.
-const base::char16 kRegistryPathSeparator[] = {L'\\', L'\0'};
+const char16_t kRegistryPathSeparator[] = u"\\";
 
 // Magic strings for the PReg value field to trigger special actions.
 const char kActionTriggerPrefix[] = "**";
@@ -81,14 +80,14 @@ const char kActionTriggerSoft[] = "soft";
 // in which case -1 is returned. The calling code must guarantee that
 // end - *cursor does not overflow ptrdiff_t.
 int NextChar(const uint8_t** cursor, const uint8_t* end) {
-  // Only read the character if a full base::char16 is available.
+  // Only read the character if a full char16_t is available.
   // This comparison makes sure no overflow can happen.
   if (*cursor >= end ||
-      end - *cursor < static_cast<ptrdiff_t>(sizeof(base::char16)))
+      end - *cursor < static_cast<ptrdiff_t>(sizeof(char16_t)))
     return -1;
 
   int result = **cursor | (*(*cursor + 1) << 8);
-  *cursor += sizeof(base::char16);
+  *cursor += sizeof(char16_t);
   return result;
 }
 
@@ -123,7 +122,7 @@ bool ReadField32(const uint8_t** cursor, const uint8_t* end, uint32_t* data) {
 // Reads a string field from a file.
 bool ReadFieldString(const uint8_t** cursor,
                      const uint8_t* end,
-                     base::string16* str) {
+                     std::u16string* str) {
   int current = -1;
   while ((current = NextChar(cursor, end)) > 0x0000)
     *str += current;
@@ -135,15 +134,14 @@ bool ReadFieldString(const uint8_t** cursor,
 // resulting UTF8 string contains invalid characters.
 bool DecodePRegStringValue(const std::vector<uint8_t>& data,
                            std::string* value) {
-  size_t len = data.size() / sizeof(base::char16);
+  size_t len = data.size() / sizeof(char16_t);
   if (len <= 0) {
     value->clear();
     return true;
   }
 
-  const base::char16* chars =
-      reinterpret_cast<const base::char16*>(data.data());
-  base::string16 utf16_str;
+  const char16_t* chars = reinterpret_cast<const char16_t*>(data.data());
+  std::u16string utf16_str;
   std::transform(chars, chars + len - 1, std::back_inserter(utf16_str),
                  base::ByteSwapToLE16);
   // Note: UTF16ToUTF8() only checks whether all chars are valid code points,
@@ -199,7 +197,7 @@ bool DecodePRegValue(uint32_t type,
 
 // Returns true if the registry key |key_name| belongs to the sub-tree specified
 // by the key |root|.
-bool KeyRootEquals(const base::string16& key_name, const base::string16& root) {
+bool KeyRootEquals(const std::u16string& key_name, const std::u16string& root) {
   if (root.empty())
     return true;
 
@@ -216,13 +214,13 @@ bool KeyRootEquals(const base::string16& key_name, const base::string16& root) {
 // by |key_name|. Creates sub-dictionaries if necessary. Also handles special
 // action triggers, see |kActionTrigger*|, that can, for instance, remove an
 // existing value.
-void HandleRecord(const base::string16& key_name,
-                  const base::string16& value,
+void HandleRecord(const std::u16string& key_name,
+                  const std::u16string& value,
                   uint32_t type,
                   const std::vector<uint8_t>& data,
                   RegistryDict* dict) {
   // Locate/create the dictionary to place the value in.
-  std::vector<base::string16> path;
+  std::vector<std::u16string> path;
 
   std::vector<base::StringPiece16> key_name_components =
       base::SplitStringPiece(key_name, kRegistryPathSeparator,
@@ -302,7 +300,7 @@ const char kPRegFileHeader[8] = {'P',    'R',    'e',    'g',
                                  '\x01', '\x00', '\x00', '\x00'};
 
 bool ReadFile(const base::FilePath& file_path,
-              const base::string16& root,
+              const std::u16string& root,
               RegistryDict* dict,
               PolicyLoadStatusSampler* status) {
   base::MemoryMappedFile mapped_file;
@@ -319,7 +317,7 @@ bool ReadFile(const base::FilePath& file_path,
 
 POLICY_EXPORT bool ReadDataInternal(const uint8_t* preg_data,
                                     size_t preg_data_size,
-                                    const base::string16& root,
+                                    const std::u16string& root,
                                     RegistryDict* dict,
                                     PolicyLoadStatusSampler* status,
                                     const std::string& debug_name) {
@@ -355,8 +353,8 @@ POLICY_EXPORT bool ReadDataInternal(const uint8_t* preg_data,
       break;
 
     // Read the record fields.
-    base::string16 key_name;
-    base::string16 value;
+    std::u16string key_name;
+    std::u16string value;
     uint32_t type = 0;
     uint32_t size = 0;
     std::vector<uint8_t> data;

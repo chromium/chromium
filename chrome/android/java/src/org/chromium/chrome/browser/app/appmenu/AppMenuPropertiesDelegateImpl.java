@@ -11,7 +11,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.TextUtils;
-import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -33,7 +32,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.banners.AppBannerManager;
 import org.chromium.chrome.browser.banners.AppMenuVerbiage;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
@@ -43,7 +41,6 @@ import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.flags.StringCachedFieldTrialParameter;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
@@ -64,32 +61,19 @@ import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
+import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.WebappsUtils;
 import org.chromium.net.ConnectionType;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Base implementation of {@link AppMenuPropertiesDelegate} that handles hiding and showing menu
  * items based on activity state.
  */
 public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate {
-    public static final StringCachedFieldTrialParameter ACTION_BAR_VARIATION =
-            new StringCachedFieldTrialParameter(
-                    ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_REGROUP, "action_bar", "");
-    public static final StringCachedFieldTrialParameter THREE_BUTTON_ACTION_BAR_VARIATION =
-            new StringCachedFieldTrialParameter(
-                    ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR,
-                    "three_button_action_bar", "");
-
     private static Boolean sItemBookmarkedForTesting;
 
     protected MenuItem mReloadMenuItem;
@@ -108,14 +92,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     private ShareUtils mShareUtils;
     // Keeps track of which menu item was shown when installable app is detected.
     private int mAddAppTitleShown;
-    private final ModalDialogManager mModalDialogManager;
-
-    // The keys of the Map are menuitem ids, the first elements in the Pair are menuitem ids,
-    // and the second elements in the Pair are AppMenuSimilarSelectionType. If users first
-    // selected the menuitems in the Pair.first, and then selected a menuitem which is the key
-    // if the Map, then users' selection match the pattern Pair.second.
-    private static final Map<Integer, Pair<Set<Integer>, Integer>> sSimilarSelectedMenuItemMap =
-            createSimilarSelectedMap();
 
     @VisibleForTesting
     @IntDef({MenuGroup.INVALID, MenuGroup.PAGE_MENU, MenuGroup.OVERVIEW_MODE_MENU,
@@ -126,39 +102,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         int OVERVIEW_MODE_MENU = 1;
         int START_SURFACE_MODE_MENU = 2;
         int TABLET_EMPTY_MODE_MENU = 3;
-    }
-
-    @IntDef({ActionBarType.STANDARD, ActionBarType.BACKWARD_BUTTON, ActionBarType.SHARE_BUTTON})
-    @interface ActionBarType {
-        int STANDARD = 0;
-        int BACKWARD_BUTTON = 1;
-        int SHARE_BUTTON = 2;
-    }
-
-    @IntDef({ThreeButtonActionBarType.DISABLED, ThreeButtonActionBarType.ACTION_CHIP_VIEW,
-            ThreeButtonActionBarType.DESTINATION_CHIP_VIEW, ThreeButtonActionBarType.ADD_TO_OPTION})
-    @interface ThreeButtonActionBarType {
-        int DISABLED = 0;
-        int ACTION_CHIP_VIEW = 1;
-        int DESTINATION_CHIP_VIEW = 2;
-        int ADD_TO_OPTION = 3;
-    }
-
-    /**
-     * Keep this list sync with AppMenuSimilarSelectionType in enums.xml.
-     */
-    @IntDef({AppMenuSimilarSelectionType.NO_MATCH,
-            AppMenuSimilarSelectionType.BOOKMARK_PAGE_THEN_ALL_BOOKMARKS,
-            AppMenuSimilarSelectionType.ALL_BOOKMARKS_THEN_BOOKMARK_PAGE,
-            AppMenuSimilarSelectionType.DOWNLOAD_PAGE_THEN_ALL_DOWNLOADS,
-            AppMenuSimilarSelectionType.ALL_DOWNLOADS_THEN_DOWNLOAD_PAGE})
-    @interface AppMenuSimilarSelectionType {
-        int NO_MATCH = -1;
-        int BOOKMARK_PAGE_THEN_ALL_BOOKMARKS = 0;
-        int ALL_BOOKMARKS_THEN_BOOKMARK_PAGE = 1;
-        int DOWNLOAD_PAGE_THEN_ALL_DOWNLOADS = 2;
-        int ALL_DOWNLOADS_THEN_DOWNLOAD_PAGE = 3;
-        int NUM_ENTRIES = 4;
     }
 
     protected @Nullable OverviewModeBehavior mOverviewModeBehavior;
@@ -179,15 +122,12 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
      *         {@link OverviewModeBehavior} associated with the containing activity.
      * @param bookmarkBridgeSupplier An {@link ObservableSupplier} for the {@link BookmarkBridge}
      *         associated with the containing activity.
-     * @param modalDialogManager The {@link ModalDialogManager} that should be used to show "Add To"
-     *         dialog.
      */
     public AppMenuPropertiesDelegateImpl(Context context, ActivityTabProvider activityTabProvider,
             MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             TabModelSelector tabModelSelector, ToolbarManager toolbarManager, View decorView,
             @Nullable OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
-            ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier,
-            ModalDialogManager modalDialogManager) {
+            ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier) {
         mContext = context;
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
         mActivityTabProvider = activityTabProvider;
@@ -195,7 +135,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         mTabModelSelector = tabModelSelector;
         mToolbarManager = toolbarManager;
         mDecorView = decorView;
-        mModalDialogManager = modalDialogManager;
 
         if (overviewModeBehaviorSupplier != null) {
             overviewModeBehaviorSupplier.onAvailable(mCallbackController.makeCancelable(
@@ -219,9 +158,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
 
     @Override
     public int getAppMenuLayoutId() {
-        if (shouldShowRegroupedMenu() || shouldShowThreeButtonActionBar()) {
-            return R.menu.main_menu_regroup;
-        }
         return R.menu.main_menu;
     }
 
@@ -232,8 +168,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         customViewBinders.add(new ManagedByMenuItemViewBinder());
         customViewBinders.add(new IncognitoMenuItemViewBinder());
         customViewBinders.add(new DividerLineMenuItemViewBinder());
-        customViewBinders.add(new ChipViewMenuItemViewBinder(getThreeButtonActionBarType()));
-        customViewBinders.add(new AddToMenuItemViewBinder(mContext, mModalDialogManager));
         return customViewBinders;
     }
 
@@ -315,17 +249,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         if (shouldShowIconRow) {
             SubMenu actionBar = menu.findItem(R.id.icon_row_menu_id).getSubMenu();
 
-            @ActionBarType
-            int actionBarType = getActionBarType();
-            MenuItem backwardMenuItem = actionBar.findItem(R.id.backward_menu_id);
-            if (backwardMenuItem != null) {
-                if (actionBarType == ActionBarType.BACKWARD_BUTTON) {
-                    backwardMenuItem.setEnabled(currentTab.canGoBack());
-                } else {
-                    actionBar.removeItem(R.id.backward_menu_id);
-                }
-            }
-
             // Disable the "Forward" menu item if there is no page to go to.
             MenuItem forwardMenuItem = actionBar.findItem(R.id.forward_menu_id);
             forwardMenuItem.setEnabled(currentTab.canGoForward());
@@ -339,39 +262,12 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             loadingStateChanged(currentTab.isLoading());
 
             MenuItem bookmarkMenuItem = actionBar.findItem(R.id.bookmark_this_page_id);
-            if (shouldShowThreeButtonActionBar()) {
-                actionBar.removeItem(R.id.bookmark_this_page_id);
-            } else {
-                updateBookmarkMenuItem(bookmarkMenuItem, currentTab);
-            }
+            updateBookmarkMenuItem(bookmarkMenuItem, currentTab);
 
             MenuItem offlineMenuItem = actionBar.findItem(R.id.offline_page_id);
-            if (offlineMenuItem != null) {
-                if (shouldShowThreeButtonActionBar()) {
-                    actionBar.removeItem(R.id.offline_page_id);
-                } else {
-                    offlineMenuItem.setEnabled(shouldEnableDownloadPage(currentTab));
-                }
-            }
+            offlineMenuItem.setEnabled(shouldEnableDownloadPage(currentTab));
 
-            MenuItem shareMenuItem = actionBar.findItem(R.id.share_menu_button_id);
-            if (shareMenuItem != null) {
-                if (shouldShowShareInMenu()) {
-                    actionBar.removeItem(R.id.share_menu_button_id);
-                } else {
-                    shareMenuItem.setEnabled(mShareUtils.shouldEnableShare(currentTab));
-                }
-            }
-
-            if (shouldShowInfoInMenu()) {
-                actionBar.removeItem(R.id.info_menu_id);
-            }
-
-            if (shouldShowThreeButtonActionBar()) {
-                assert actionBar.size() == 3;
-            } else {
-                assert actionBar.size() == 5;
-            }
+            assert actionBar.size() == 5;
         }
 
         mUpdateMenuItemVisible = shouldShowUpdateMenuItem();
@@ -383,92 +279,8 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
 
         menu.findItem(R.id.move_to_other_window_menu_id).setVisible(shouldShowMoveToOtherWindow());
 
-        @ThreeButtonActionBarType
-        int threeButtonActionBarType = getThreeButtonActionBarType();
-        boolean addToOptionVisible =
-                threeButtonActionBarType == ThreeButtonActionBarType.ADD_TO_OPTION;
-        MenuItem addToDividerLineItem = menu.findItem(R.id.add_to_divider_line_id);
-        if (addToDividerLineItem != null) {
-            addToDividerLineItem.setVisible(addToOptionVisible);
-            addToDividerLineItem.setEnabled(false);
-        }
-        // Duplicating add_to_homescreen/install_app/open_webapk is for
-        // the purpose of experiment,  one of them will be removed once the
-        // experiments are done.
-        MenuItem addToMenuItem = menu.findItem(R.id.add_to_menu_id);
-        if (addToMenuItem != null) {
-            addToMenuItem.setVisible(addToOptionVisible);
-        }
-        MenuItem installAppItem = menu.findItem(R.id.install_app_id);
-        if (installAppItem != null) {
-            // Visible will be changed later by #prepareAddToHomescreenMenuItem.
-            installAppItem.setVisible(addToOptionVisible);
-        }
-        MenuItem menuOpenWebApkItem = menu.findItem(R.id.menu_open_webapk_id);
-        if (menuOpenWebApkItem != null) {
-            // Visible will be changed later by #prepareAddToHomescreenMenuItem.
-            menuOpenWebApkItem.setVisible(addToOptionVisible);
-        }
-
-        if (shouldShowThreeButtonActionBar()) {
-            MenuItem downloadMenuItem =
-                    menu.findItem(R.id.downloads_row_menu_id).getSubMenu().getItem(1);
-            assert downloadMenuItem.getItemId() == R.id.offline_page_chip_id;
-            downloadMenuItem.setEnabled(shouldEnableDownloadPage(currentTab));
-
-            MenuItem bookmarkMenuItem =
-                    menu.findItem(R.id.all_bookmarks_row_menu_id).getSubMenu().getItem(1);
-            assert bookmarkMenuItem.getItemId() == R.id.bookmark_this_page_chip_id;
-            updateBookmarkMenuItem(bookmarkMenuItem, currentTab);
-
-            // Update titles for ChipView menu items.
-            if (threeButtonActionBarType == ThreeButtonActionBarType.ACTION_CHIP_VIEW) {
-                downloadMenuItem.setTitle(R.string.add);
-                if (bookmarkMenuItem.isChecked()) {
-                    bookmarkMenuItem.setTitle(R.string.bookmark_item_edit);
-                } else {
-                    bookmarkMenuItem.setTitle(R.string.add);
-                }
-            } else if (threeButtonActionBarType == ThreeButtonActionBarType.DESTINATION_CHIP_VIEW) {
-                MenuItem allDownloadMenuItem =
-                        menu.findItem(R.id.downloads_row_menu_id).getSubMenu().getItem(0);
-                assert allDownloadMenuItem.getItemId() == R.id.downloads_menu_id;
-                allDownloadMenuItem.setTitle(R.string.all);
-
-                MenuItem allBookmarkMenuItem =
-                        menu.findItem(R.id.all_bookmarks_row_menu_id).getSubMenu().getItem(0);
-                assert allBookmarkMenuItem.getItemId() == R.id.all_bookmarks_menu_id;
-                allBookmarkMenuItem.setTitle(R.string.all);
-            } else if (threeButtonActionBarType == ThreeButtonActionBarType.ADD_TO_OPTION) {
-                MenuItem addToBookmarksMenuItem =
-                        addToMenuItem.getSubMenu().findItem(R.id.add_to_bookmarks_menu_id);
-                updateBookmarkMenuItem(addToBookmarksMenuItem, currentTab);
-
-                MenuItem addToReadingListMenuItem =
-                        addToMenuItem.getSubMenu().findItem(R.id.add_to_reading_list_menu_id);
-                addToReadingListMenuItem.setVisible(
-                        CachedFeatureFlags.isEnabled(ChromeFeatureList.READ_LATER));
-
-                MenuItem addToDownloadsMenuItem =
-                        addToMenuItem.getSubMenu().findItem(R.id.add_to_downloads_menu_id);
-                addToDownloadsMenuItem.setEnabled(shouldEnableDownloadPage(currentTab));
-
-                MenuItem addToHomescreenMenuItem =
-                        addToMenuItem.getSubMenu().findItem(R.id.add_to_homescreen_menu_id);
-                prepareAddToHomescreenMenuItem(addToHomescreenMenuItem, installAppItem,
-                        menuOpenWebApkItem, menu, currentTab,
-                        shouldShowHomeScreenMenuItem(
-                                isChromeScheme, isFileScheme, isContentScheme, isIncognito, url));
-                if (addToHomescreenMenuItem.isVisible()) {
-                    // addToHomescreenMenuItem in "Add to" dialog uses a different string.
-                    addToHomescreenMenuItem.setTitle(R.string.menu_homescreen);
-                }
-            }
-        }
-
         // Don't allow either "chrome://" pages or interstitial pages to be shared.
-        menu.findItem(R.id.share_row_menu_id)
-                .setVisible(mShareUtils.shouldEnableShare(currentTab) && shouldShowShareInMenu());
+        menu.findItem(R.id.share_row_menu_id).setVisible(mShareUtils.shouldEnableShare(currentTab));
 
         ShareHelper.configureDirectShareMenuItem(
                 mContext, menu.findItem(R.id.direct_share_menu_id));
@@ -482,7 +294,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             menu.findItem(R.id.get_image_descriptions_id).setVisible(true);
 
             int titleId = R.string.menu_stop_image_descriptions;
-            Profile profile = Profile.fromWebContents(currentTab.getWebContents());
+            Profile profile = Profile.getLastUsedRegularProfile();
             // If image descriptions are not enabled, then we want the menu item to be "Get".
             if (!ImageDescriptionsController.getInstance().imageDescriptionsEnabled(profile)) {
                 titleId = R.string.menu_get_image_descriptions;
@@ -505,26 +317,14 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         // Prepare translate menu button.
         prepareTranslateMenuItem(menu, currentTab);
 
-        MenuItem homescreenItem = menu.findItem(R.id.add_to_homescreen_id);
-        MenuItem openWebApkItem = menu.findItem(R.id.open_webapk_id);
-        if (addToOptionVisible) {
-            homescreenItem.setVisible(false);
-            openWebApkItem.setVisible(false);
-        } else {
-            prepareAddToHomescreenMenuItem(homescreenItem, null, openWebApkItem, menu, currentTab,
-                    shouldShowHomeScreenMenuItem(
-                            isChromeScheme, isFileScheme, isContentScheme, isIncognito, url));
-        }
+        prepareAddToHomescreenMenuItem(menu, currentTab,
+                shouldShowHomeScreenMenuItem(
+                        isChromeScheme, isFileScheme, isContentScheme, isIncognito, url));
 
         updateRequestDesktopSiteMenuItem(menu, currentTab, true /* can show */);
 
         // Only display reader mode settings menu option if the current page is in reader mode.
         menu.findItem(R.id.reader_mode_prefs_id).setVisible(shouldShowReaderModePrefs(currentTab));
-
-        MenuItem infoMenuItem = menu.findItem(R.id.info_id);
-        if (infoMenuItem != null) {
-            infoMenuItem.setVisible(shouldShowInfoInMenu());
-        }
 
         // Only display the Enter VR button if VR Shell Dev environment is enabled.
         menu.findItem(R.id.enter_vr_id).setVisible(shouldShowEnterVr());
@@ -560,14 +360,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                         && item.getItemId() != R.id.update_menu_id) {
                     item.setIcon(null);
                 }
-                // Remove icons for menu items that have submenus.
-                if (item.getItemId() == R.id.downloads_row_menu_id
-                        || item.getItemId() == R.id.all_bookmarks_row_menu_id
-                        || item.getItemId() == R.id.add_to_menu_id) {
-                    for (int j = 0; j < item.getSubMenu().size(); ++j) {
-                        item.getSubMenu().getItem(j).setIcon(null);
-                    }
-                }
             }
 
             if (item.getItemId() == R.id.new_incognito_tab_menu_id && item.isVisible()) {
@@ -601,10 +393,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             if (item.getItemId() == R.id.track_prices_row_menu_id) {
                 item.setVisible(isPriceTrackingVisible);
                 item.setEnabled(isPriceTrackingEnabled);
-                if (isPriceTrackingVisible) {
-                    menu.findItem(R.id.track_prices_check_id)
-                            .setChecked(PriceTrackingUtilities.isTrackPricesOnTabsEnabled());
-                }
             }
             if (item.getItemId() == R.id.close_all_tabs_menu_id) {
                 boolean hasTabs = mTabModelSelector.getTotalTabCount() > 0;
@@ -739,64 +527,44 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     /**
      * Sets the visibility and labels of the "Add to Home screen" and "Open WebAPK" menu items.
      */
-    protected void prepareAddToHomescreenMenuItem(MenuItem homescreenItem,
-            @Nullable MenuItem installAppItem, MenuItem openWebApkItem, Menu menu, Tab currentTab,
-            boolean shouldShowHomeScreenMenuItem) {
+    protected void prepareAddToHomescreenMenuItem(
+            Menu menu, Tab currentTab, boolean shouldShowHomeScreenMenuItem) {
+        MenuItem homescreenItem = menu.findItem(R.id.add_to_homescreen_id);
+        MenuItem openWebApkItem = menu.findItem(R.id.open_webapk_id);
         mAddAppTitleShown = AppMenuVerbiage.APP_MENU_OPTION_UNKNOWN;
-        if (!shouldShowHomeScreenMenuItem) {
-            homescreenItem.setVisible(false);
-            openWebApkItem.setVisible(false);
-            if (installAppItem != null) {
-                installAppItem.setVisible(false);
-            }
-            return;
-        }
+        if (shouldShowHomeScreenMenuItem) {
+            Context context = ContextUtils.getApplicationContext();
+            long addToHomeScreenStart = SystemClock.elapsedRealtime();
+            ResolveInfo resolveInfo =
+                    WebApkValidator.queryFirstWebApkResolveInfo(context, currentTab.getUrlString());
+            RecordHistogram.recordTimesHistogram("Android.PrepareMenu.OpenWebApkVisibilityCheck",
+                    SystemClock.elapsedRealtime() - addToHomeScreenStart);
 
-        Context context = ContextUtils.getApplicationContext();
-        long addToHomeScreenStart = SystemClock.elapsedRealtime();
-        ResolveInfo resolveInfo =
-                WebApkValidator.queryFirstWebApkResolveInfo(context, currentTab.getUrlString());
-        RecordHistogram.recordTimesHistogram("Android.PrepareMenu.OpenWebApkVisibilityCheck",
-                SystemClock.elapsedRealtime() - addToHomeScreenStart);
+            boolean openWebApkItemVisible =
+                    resolveInfo != null && resolveInfo.activityInfo.packageName != null;
 
-        boolean openWebApkItemVisible =
-                resolveInfo != null && resolveInfo.activityInfo.packageName != null;
+            if (openWebApkItemVisible) {
+                String appName = resolveInfo.loadLabel(context.getPackageManager()).toString();
+                openWebApkItem.setTitle(context.getString(R.string.menu_open_webapk, appName));
 
-        if (openWebApkItemVisible) {
-            String appName = resolveInfo.loadLabel(context.getPackageManager()).toString();
-            openWebApkItem.setTitle(context.getString(R.string.menu_open_webapk, appName));
-
-            homescreenItem.setVisible(false);
-            openWebApkItem.setVisible(true);
-            if (installAppItem != null) {
-                installAppItem.setVisible(false);
-            }
-        } else {
-            AppBannerManager.InstallStringPair installStrings = getAddToHomeScreenTitle(currentTab);
-            // When "Add to" mernu item is enabled for the app menu, if the current webpage is a PWA
-            // then the menu item to "Install app" ({@code installAppItem}) will be shown in the
-            // main menu. If the current webpage is not a PWA "Add to homescreen" will be shown in
-            // the "Add to dialog" instead. If {@code installAppItem} is not null, ensure that only
-            // one of installAppItem or homescreenItem are visible.
-            if (installAppItem != null
-                    && installStrings.titleTextId == AppBannerManager.PWA_PAIR.titleTextId) {
-                installAppItem.setTitle(installStrings.titleTextId);
-                installAppItem.setVisible(true);
                 homescreenItem.setVisible(false);
+                openWebApkItem.setVisible(true);
             } else {
+                AppBannerManager.InstallStringPair installStrings =
+                        getAddToHomeScreenTitle(currentTab);
                 homescreenItem.setTitle(installStrings.titleTextId);
                 homescreenItem.setVisible(true);
-                if (installAppItem != null) {
-                    installAppItem.setVisible(false);
+                openWebApkItem.setVisible(false);
+
+                if (installStrings.titleTextId == AppBannerManager.NON_PWA_PAIR.titleTextId) {
+                    mAddAppTitleShown = AppMenuVerbiage.APP_MENU_OPTION_ADD_TO_HOMESCREEN;
+                } else if (installStrings.titleTextId == AppBannerManager.PWA_PAIR.titleTextId) {
+                    mAddAppTitleShown = AppMenuVerbiage.APP_MENU_OPTION_INSTALL;
                 }
             }
+        } else {
+            homescreenItem.setVisible(false);
             openWebApkItem.setVisible(false);
-
-            if (installStrings.titleTextId == AppBannerManager.NON_PWA_PAIR.titleTextId) {
-                mAddAppTitleShown = AppMenuVerbiage.APP_MENU_OPTION_ADD_TO_HOMESCREEN;
-            } else if (installStrings.titleTextId == AppBannerManager.PWA_PAIR.titleTextId) {
-                mAddAppTitleShown = AppMenuVerbiage.APP_MENU_OPTION_INSTALL;
-            }
         }
     }
 
@@ -808,9 +576,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     @Override
     public Bundle getBundleForMenuItem(MenuItem item) {
         Bundle bundle = new Bundle();
-        if (item.getItemId() == R.id.add_to_homescreen_id
-                || item.getItemId() == R.id.add_to_homescreen_menu_id
-                || item.getItemId() == R.id.install_app_id) {
+        if (item.getItemId() == R.id.add_to_homescreen_id) {
             bundle.putInt(AppBannerManager.MENU_TITLE_KEY, mAddAppTitleShown);
         }
         return bundle;
@@ -971,144 +737,5 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     @VisibleForTesting
     static void setPageBookmarkedForTesting(Boolean bookmarked) {
         sItemBookmarkedForTesting = bookmarked;
-    }
-
-    private boolean shouldShowRegroupedMenu() {
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_REGROUP);
-    }
-
-    private static boolean shouldShowThreeButtonActionBar() {
-        return CachedFeatureFlags.isEnabled(
-                ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR);
-    }
-
-    private boolean shouldShowShareInMenu() {
-        return getActionBarType() != ActionBarType.SHARE_BUTTON;
-    }
-
-    private boolean shouldShowInfoInMenu() {
-        return getActionBarType() != ActionBarType.STANDARD;
-    }
-
-    /**
-     * @return The type of action bar should be shown.
-     */
-    private @ActionBarType int getActionBarType() {
-        if (shouldShowRegroupedMenu()) {
-            if (ACTION_BAR_VARIATION.getValue().equals("backward_button")) {
-                return ActionBarType.BACKWARD_BUTTON;
-            } else if (ACTION_BAR_VARIATION.getValue().equals("share_button")) {
-                return ActionBarType.SHARE_BUTTON;
-            }
-        }
-        return ActionBarType.STANDARD;
-    }
-
-    /**
-     * @return The type of three button action bar should be shown.
-     */
-    private static @ThreeButtonActionBarType int getThreeButtonActionBarType() {
-        if (shouldShowThreeButtonActionBar()) {
-            if (THREE_BUTTON_ACTION_BAR_VARIATION.getValue().equals("action_chip_view")) {
-                return ThreeButtonActionBarType.ACTION_CHIP_VIEW;
-            } else if (THREE_BUTTON_ACTION_BAR_VARIATION.getValue().equals(
-                               "destination_chip_view")) {
-                return ThreeButtonActionBarType.DESTINATION_CHIP_VIEW;
-            } else if (THREE_BUTTON_ACTION_BAR_VARIATION.getValue().equals("add_to_option")) {
-                return ThreeButtonActionBarType.ADD_TO_OPTION;
-            }
-        }
-        return ThreeButtonActionBarType.DISABLED;
-    }
-
-    /**
-     * @return The "download" menu items id in the app menu.
-     */
-    public static int getOfflinePageId() {
-        @ThreeButtonActionBarType
-        int type = getThreeButtonActionBarType();
-        if (type == ThreeButtonActionBarType.ACTION_CHIP_VIEW
-                || type == ThreeButtonActionBarType.DESTINATION_CHIP_VIEW) {
-            return R.id.offline_page_chip_id;
-        } else if (type == ThreeButtonActionBarType.ADD_TO_OPTION) {
-            return R.id.add_to_downloads_menu_id;
-        }
-        return R.id.offline_page_id;
-    }
-
-    /**
-     * @return The "Add to Home screen" menu items id in the app menu.
-     */
-    public static int getAddToHomescreenId() {
-         if (getThreeButtonActionBarType() == ThreeButtonActionBarType.ADD_TO_OPTION) {
-            return R.id.add_to_homescreen_menu_id;
-        }
-        return R.id.add_to_homescreen_id;
-    }
-
-    @Override
-    public boolean recordAppMenuSimilarSelectionIfNeeded(
-            int previousMenuItemId, int currentMenuItemId) {
-        @AppMenuSimilarSelectionType
-        int pattern = findSimilarSelectionPattern(previousMenuItemId, currentMenuItemId);
-        if (pattern == AppMenuSimilarSelectionType.NO_MATCH) {
-            return false;
-        }
-
-        RecordHistogram.recordEnumeratedHistogram("Mobile.AppMenu.SimilarSelection", pattern,
-                AppMenuSimilarSelectionType.NUM_ENTRIES);
-        return true;
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public @AppMenuSimilarSelectionType int findSimilarSelectionPattern(
-            int previousMenuItemId, int currentMenuItemId) {
-        Pair<Set<Integer>, Integer> menuItemToSelectType =
-                sSimilarSelectedMenuItemMap.get(currentMenuItemId);
-        if (menuItemToSelectType != null
-                && menuItemToSelectType.first.contains(previousMenuItemId)) {
-            return menuItemToSelectType.second;
-        }
-
-        return AppMenuSimilarSelectionType.NO_MATCH;
-    }
-
-    private static Map<Integer, Pair<Set<Integer>, Integer>> createSimilarSelectedMap() {
-        Map<Integer, Pair<Set<Integer>, Integer>> map = new LinkedHashMap<>();
-        map.put(R.id.all_bookmarks_menu_id,
-                new Pair<Set<Integer>, Integer>(
-                        new HashSet<>(Arrays.asList(R.id.bookmark_this_page_id,
-                                R.id.bookmark_this_page_chip_id, R.id.add_to_bookmarks_menu_id)),
-                        AppMenuSimilarSelectionType.BOOKMARK_PAGE_THEN_ALL_BOOKMARKS));
-        map.put(R.id.bookmark_this_page_id,
-                new Pair<Set<Integer>, Integer>(
-                        new HashSet<>(Arrays.asList(R.id.all_bookmarks_menu_id)),
-                        AppMenuSimilarSelectionType.ALL_BOOKMARKS_THEN_BOOKMARK_PAGE));
-        map.put(R.id.bookmark_this_page_chip_id,
-                new Pair<Set<Integer>, Integer>(
-                        new HashSet<>(Arrays.asList(R.id.all_bookmarks_menu_id)),
-                        AppMenuSimilarSelectionType.ALL_BOOKMARKS_THEN_BOOKMARK_PAGE));
-        map.put(R.id.add_to_bookmarks_menu_id,
-                new Pair<Set<Integer>, Integer>(
-                        new HashSet<>(Arrays.asList(R.id.all_bookmarks_menu_id)),
-                        AppMenuSimilarSelectionType.ALL_BOOKMARKS_THEN_BOOKMARK_PAGE));
-        map.put(R.id.downloads_menu_id,
-                new Pair<Set<Integer>, Integer>(
-                        new HashSet<>(Arrays.asList(R.id.offline_page_id, R.id.offline_page_chip_id,
-                                R.id.add_to_downloads_menu_id)),
-                        AppMenuSimilarSelectionType.DOWNLOAD_PAGE_THEN_ALL_DOWNLOADS));
-        map.put(R.id.offline_page_id,
-                new Pair<Set<Integer>, Integer>(
-                        new HashSet<>(Arrays.asList(R.id.downloads_menu_id)),
-                        AppMenuSimilarSelectionType.ALL_DOWNLOADS_THEN_DOWNLOAD_PAGE));
-        map.put(R.id.offline_page_chip_id,
-                new Pair<Set<Integer>, Integer>(
-                        new HashSet<>(Arrays.asList(R.id.downloads_menu_id)),
-                        AppMenuSimilarSelectionType.ALL_DOWNLOADS_THEN_DOWNLOAD_PAGE));
-        map.put(R.id.add_to_downloads_menu_id,
-                new Pair<Set<Integer>, Integer>(
-                        new HashSet<>(Arrays.asList(R.id.downloads_menu_id)),
-                        AppMenuSimilarSelectionType.ALL_DOWNLOADS_THEN_DOWNLOAD_PAGE));
-        return map;
     }
 }

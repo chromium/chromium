@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "chrome/browser/chromeos/arc/arc_optin_uma.h"
+#include "chrome/browser/ash/arc/arc_optin_uma.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "components/arc/arc_prefs.h"

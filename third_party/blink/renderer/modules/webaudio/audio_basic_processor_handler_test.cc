@@ -12,9 +12,12 @@
 
 namespace blink {
 
+// Rendering size for these tests.  This is the WebAudio default rendering size.
+const unsigned kRenderQuantumFrames = 128;
+
 class MockAudioProcessor final : public AudioProcessor {
  public:
-  MockAudioProcessor() : AudioProcessor(48000, 2) {}
+  MockAudioProcessor() : AudioProcessor(48000, 2, kRenderQuantumFrames) {}
   void Initialize() override { initialized_ = true; }
   void Uninitialize() override { initialized_ = false; }
   void Process(const AudioBus*, AudioBus*, uint32_t) override {}

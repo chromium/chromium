@@ -22,7 +22,8 @@ enum class OverlayStrategy {
   kUnderlay = 4,
   kUnderlayCast = 5,
   kNoStrategyAllFail = 6,
-  kMaxValue = kNoStrategyAllFail,
+  kNoStrategyFailMin = 7,
+  kMaxValue = kNoStrategyFailMin,
 };
 
 // Parses a comma separated list of overlay strategy types and returns a list

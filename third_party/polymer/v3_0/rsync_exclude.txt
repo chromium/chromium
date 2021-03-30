@@ -31,6 +31,9 @@ package-lock.json
 */site/
 */templates/
 
+# font-roboto
+font-roboto/*
+
 # iron-checked-element-behavior
 iron-checked-element-behavior/*
 
@@ -58,6 +61,7 @@ paper-styles/element-styles/*
 paper-styles/default-theme.js
 paper-styles/paper-styles-classes.js
 paper-styles/paper-styles.js
+paper-styles/typography.js
 
 # neon-animations
 neon-animation/animations/cascaded-animation.js

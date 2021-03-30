@@ -4,11 +4,14 @@
 
 #include "chrome/browser/ui/app_list/search/score_normalizer/score_normalizer.h"
 
+#include <cmath>
+#include <numeric>
 #include <vector>
 
 #include "base/logging.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ui/app_list/search/score_normalizer/balanced_reservoir.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/prefs/pref_service.h"
@@ -17,8 +20,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::DoubleNear;
-using testing::UnorderedElementsAre;
-using testing::UnorderedPointwise;
+using testing::ElementsAre;
+using testing::Pointwise;
 
 namespace app_list {
 
@@ -39,7 +42,8 @@ class ScoreNormalizerTest : public testing::Test {
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
     profile_ = profile_manager_->CreateTestingProfile("Profile 1");
-    normalizer_ = std::make_unique<ScoreNormalizer>("apps", profile_);
+    normalizer_ = std::make_unique<ScoreNormalizer>("apps", profile_,
+                                                    /*reservoir_size=*/5);
   }
 
   void TearDown() override {
@@ -58,22 +62,22 @@ class ScoreNormalizerTest : public testing::Test {
     return results;
   }
 
+  std::vector<double> ConvertResultsToScores(const Results& results) const {
+    std::vector<double> scores;
+    for (const auto& result : results) {
+      scores.push_back(result->relevance());
+    }
+    return scores;
+  }
+
  protected:
-  std::vector<double> ConvertResultsToScores(
-      const ScoreNormalizer::Results& results) {
-    return normalizer_->ConvertResultsToScores(results);
+  std::vector<double> get_dividers() {
+    return normalizer_->reservoir_.get_dividers();
   }
 
-  void UpdateDistribution(const std::vector<double>& scores) {
-    normalizer_->UpdateDistribution(scores);
+  std::vector<double> get_counts() {
+    return normalizer_->reservoir_.get_counts();
   }
-
-  double get_mean() { return normalizer_->mean_; }
-
-  int get_num_results() { return normalizer_->num_results_; }
-
-  // For testing integer overflow.
-  void set_num_results(int num) { normalizer_->num_results_ = num; }
 
   std::unique_ptr<ScoreNormalizer> normalizer_;
 
@@ -82,133 +86,157 @@ class ScoreNormalizerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 };
 
-// Check that get_provider returns the correct provider.
-TEST_F(ScoreNormalizerTest, DefaultGetProvider) {
-  EXPECT_EQ("apps", normalizer_->get_provider());
-}
-
 // Check the conversion of vector of ChromeSearchResult's to scores.
 TEST_F(ScoreNormalizerTest, DefaultConvertResultsToScores) {
   ScoreNormalizer::Results results =
       ScoreNormalizerTest::MakeSearchResults({0.9, 1.0, 1.2, 1.5});
   std::vector<double> scores = ConvertResultsToScores(results);
-  EXPECT_THAT(scores, UnorderedElementsAre(0.9, 1.0, 1.2, 1.5));
+  EXPECT_THAT(scores, ElementsAre(0.9, 1.0, 1.2, 1.5));
 }
 
-// Check if no results are recorded this is empty.
-TEST_F(ScoreNormalizerTest, EmptyConvertResultsToScores) {
-  ScoreNormalizer::Results results = ScoreNormalizerTest::MakeSearchResults({});
+// Check when normalizing a score and no data is present we return 1.
+TEST_F(ScoreNormalizerTest, NormalizeScoreEmpty) {
+  EXPECT_EQ(normalizer_->NormalizeScore(-100), 1);
+}
+
+// Check RecordScore() and NormalizeScore() functions.
+TEST_F(ScoreNormalizerTest, RecordNormalizeScore) {
+  normalizer_->RecordScore(1);
+  EXPECT_THAT(get_dividers(), ElementsAre(1));
+  EXPECT_THAT(get_counts(), ElementsAre(0, 0, 0, 0, 0, 0));
+  EXPECT_EQ(normalizer_->NormalizeScore(10), 1.9 / 2);
+  EXPECT_EQ(normalizer_->NormalizeScore(-10), 1 / 24.0);
+
+  normalizer_->RecordScore(1);
+  EXPECT_THAT(get_dividers(), ElementsAre(1, 1));
+  EXPECT_THAT(get_counts(), ElementsAre(0, 0, 0, 0, 0, 0));
+  EXPECT_EQ(normalizer_->NormalizeScore(1), 2.0 / 3);
+  EXPECT_EQ(normalizer_->NormalizeScore(0.5), 1 / 4.5);
+
+  normalizer_->RecordScore(3);
+  EXPECT_THAT(get_dividers(), ElementsAre(1, 1, 3));
+  EXPECT_THAT(get_counts(), ElementsAre(0, 0, 0, 0, 0, 0));
+  EXPECT_EQ(normalizer_->NormalizeScore(1), 2.0 / 4);
+  EXPECT_EQ(normalizer_->NormalizeScore(-1), 1 / 12.0);
+  EXPECT_EQ(normalizer_->NormalizeScore(10), (3 + 7.0 / 8) / 4);
+
+  normalizer_->RecordScore(-1);
+  EXPECT_THAT(get_dividers(), ElementsAre(-1, 1, 1, 3));
+  EXPECT_THAT(get_counts(), ElementsAre(0, 0, 0, 0, 0, 0));
+  EXPECT_EQ(normalizer_->NormalizeScore(1), 3.0 / 5);
+  EXPECT_EQ(normalizer_->NormalizeScore(-1), 1.0 / 5);
+  EXPECT_EQ(normalizer_->NormalizeScore(10), (4 + 7.0 / 8) / 5);
+  EXPECT_EQ(normalizer_->NormalizeScore(-10), 0.1 / 5);
+
+  normalizer_->RecordScore(5);
+  EXPECT_THAT(get_dividers(), ElementsAre(-1, 1, 1, 3, 5));
+  EXPECT_THAT(get_counts(), ElementsAre(0, 0, 0, 0, 0, 0));
+  EXPECT_EQ(normalizer_->NormalizeScore(1), 3.0 / 6);
+  EXPECT_EQ(normalizer_->NormalizeScore(-1), 1.0 / 6);
+  EXPECT_EQ(normalizer_->NormalizeScore(10), (5 + 5.0 / 6) / 6);
+  EXPECT_EQ(normalizer_->NormalizeScore(-10), 0.1 / 6);
+  EXPECT_EQ(normalizer_->NormalizeScore(3), 4.0 / 6);
+
+  normalizer_->RecordScore(1);
+  EXPECT_THAT(get_dividers(), ElementsAre(1, 1, 1, 3, 5));
+  EXPECT_THAT(get_counts(), ElementsAre(0, 0, 0.5, 0.5, 0, 0));
+
+  normalizer_->RecordScore(-1);
+  EXPECT_THAT(get_dividers(), ElementsAre(-1, 1, 1, 1, 3));
+  EXPECT_THAT(get_counts(), ElementsAre(0.5, 0.5, 0, 0.5, 0.5, 0));
+
+  normalizer_->RecordScore(7);
+  EXPECT_THAT(get_dividers(), ElementsAre(-1, 1, 1, 3, 7));
+  EXPECT_THAT(get_counts(), ElementsAre(0.5, 0.5, 0.5, 0.5, 0.5, 0.5));
+}
+
+// Check record results for results of size < reservoir size.
+TEST_F(ScoreNormalizerTest, SmallRecordResults) {
+  ScoreNormalizer::Results results =
+      ScoreNormalizerTest::MakeSearchResults({1.0});
   std::vector<double> scores = ConvertResultsToScores(results);
-  EXPECT_TRUE(scores.empty());
+  normalizer_->RecordResults(results);
+  EXPECT_THAT(get_dividers(), ElementsAre(1.0));
+  EXPECT_THAT(get_counts(), ElementsAre(0, 0, 0, 0, 0, 0));
 }
 
-// Check that updating the distribution
-// changes the mean and the number of results correctly.
-TEST_F(ScoreNormalizerTest, DefaultUpdateDistribution) {
-  std::vector<double> scores = {-1, 2, 4, 1};
-  UpdateDistribution(scores);
-  EXPECT_DOUBLE_EQ(get_mean(), 1.5);
-  EXPECT_EQ(get_num_results(), 4);
+// Check record results for results of size = reservoir size.
+TEST_F(ScoreNormalizerTest, MediumRecordResults) {
+  ScoreNormalizer::Results results =
+      ScoreNormalizerTest::MakeSearchResults({3.0, 2.0, 3.0, -1.0, 10.0});
+  std::vector<double> scores = ConvertResultsToScores(results);
+  normalizer_->RecordResults(results);
+  EXPECT_THAT(get_dividers(), ElementsAre(-1.0, 2.0, 3.0, 3.0, 10.0));
+  EXPECT_THAT(get_counts(), ElementsAre(0, 0, 0, 0, 0, 0));
 }
 
-// Check that updating the distribution multiple times
-// changes the mean and the number of results correctly.
-TEST_F(ScoreNormalizerTest, MultipleUpdateDistribution) {
-  std::vector<double> scores1 = {-1, 2, 4, 1};
-  std::vector<double> scores2 = {0, 0};
-  std::vector<double> scores3 = {1.1, 2.2, 3.3, 4.4};
-  UpdateDistribution(scores1);
-  UpdateDistribution(scores2);
-  UpdateDistribution(scores3);
-  EXPECT_DOUBLE_EQ(get_mean(), 1.7);
-  EXPECT_EQ(get_num_results(), 10);
+// Check record results for results of size > reservoir size.
+TEST_F(ScoreNormalizerTest, LargeRecordResults) {
+  ScoreNormalizer::Results results = ScoreNormalizerTest::MakeSearchResults(
+      {3.0, 2.0, 3.0, -1.0, 10.0, 5.0, 7.0, 20.0, -2.0});
+  std::vector<double> scores = ConvertResultsToScores(results);
+  normalizer_->RecordResults(results);
+  EXPECT_THAT(get_dividers(), ElementsAre(3.0, 5.0, 7.0, 10.0, 20.0));
+  EXPECT_THAT(get_counts(), ElementsAre(1, 0.5, 0.75, 0.75, 0.5, 0.5));
 }
 
-// Update distribution with no results.
-// This should not change the mean or number of results.
-TEST_F(ScoreNormalizerTest, EmptyUpdateDistribution) {
-  std::vector<double> scores = {};
-  UpdateDistribution(scores);
-  EXPECT_DOUBLE_EQ(get_mean(), 0);
-  EXPECT_EQ(get_num_results(), 0);
-}
-
-// Check that if there is a lot of results, that is enough to cause int
-// overflow. Addition of any further results will not update
-// the distribution.
-TEST_F(ScoreNormalizerTest, OverflowUpdateDistribution) {
-  // set_num_results() is equivalent to adding INT_MAX-2 scores
-  // which are all equal to 0.
-  set_num_results(INT_MAX - 2);
-  // Updating the results with scores1 will cause int overflow
-  // of num_results_. So updating the distribution with scores1
-  // will not actually update the distribution.
-  std::vector<double> scores1 = {1, 1, 1, 1};
-  UpdateDistribution(scores1);
-  // Updating the results with scores2 will not cause int overflow
-  // of num_results_. So this will update the distribution.
-  std::vector<double> scores2 = {1, 1};
-  UpdateDistribution(scores2);
-  EXPECT_DOUBLE_EQ(get_mean(), 2.0 / INT_MAX);
-  EXPECT_EQ(get_num_results(), INT_MAX);
-}
-
-// Check scores are recorded and normalized with the mean.
-TEST_F(ScoreNormalizerTest, DefaultRecordNormalize) {
+// Check normalizing of results for results of size < reservoir size.
+TEST_F(ScoreNormalizerTest, SmallNormalizeScores) {
   ScoreNormalizer::Results results =
       ScoreNormalizerTest::MakeSearchResults({0.9, 1.0, 1.2, 1.5});
-  normalizer_->Record(results);
-  double new_score = normalizer_->NormalizeScore(1.5);
+  normalizer_->RecordResults(results);
   normalizer_->NormalizeResults(&results);
-  std::vector<double> normalized_results{-0.25, -0.15, 0.05, 0.35};
-  EXPECT_DOUBLE_EQ(new_score, 0.35);
-  EXPECT_DOUBLE_EQ(get_mean(), 1.15);
-  EXPECT_EQ(get_num_results(), 4);
+  EXPECT_THAT(get_dividers(), ElementsAre(0.9, 1.0, 1.2, 1.5));
   EXPECT_THAT(ConvertResultsToScores(results),
-              UnorderedPointwise(DoubleNear(1e-10), normalized_results));
+              Pointwise(DoubleNear(1e-10), {0.2, 0.4, 0.6, 0.8}));
 }
 
-// Check multiple score recordings.
-TEST_F(ScoreNormalizerTest, MultipleRecordNormalize) {
-  ScoreNormalizer::Results results1 =
-      ScoreNormalizerTest::MakeSearchResults({0, 1, 2, 3, 4, 5});
-  ScoreNormalizer::Results results2 =
-      ScoreNormalizerTest::MakeSearchResults({0.9, 1.0, 1.2, 1.5});
-  ScoreNormalizer::Results results3 =
-      ScoreNormalizerTest::MakeSearchResults({0, 1.1, 2.2, 3.3, 4.4});
-  normalizer_->Record(results1);
-  normalizer_->Record(results2);
-  normalizer_->Record(results3);
-  normalizer_->NormalizeResults(&results1);
-  normalizer_->NormalizeResults(&results2);
-  normalizer_->NormalizeResults(&results3);
-  std::vector<double> normalized_results1{-2.04, -1.04, -0.04,
-                                          0.96,  1.96,  2.96};
-  std::vector<double> normalized_results2{-1.14, -1.04, -0.84, -0.54};
-  std::vector<double> normalized_results3{-2.04, -0.94, 0.16, 1.26, 2.36};
-  double new_score = normalizer_->NormalizeScore(1.5);
-  EXPECT_DOUBLE_EQ(new_score, -0.54);
-  EXPECT_DOUBLE_EQ(get_mean(), 2.04);
-  EXPECT_EQ(get_num_results(), 15);
-  EXPECT_THAT(ConvertResultsToScores(results1),
-              UnorderedPointwise(DoubleNear(1e-10), normalized_results1));
-  EXPECT_THAT(ConvertResultsToScores(results2),
-              UnorderedPointwise(DoubleNear(1e-10), normalized_results2));
-  EXPECT_THAT(ConvertResultsToScores(results3),
-              UnorderedPointwise(DoubleNear(1e-10), normalized_results3));
-}
-
-// Check that if you record no results.
-// When you normalize it should return the original value.
-TEST_F(ScoreNormalizerTest, EmptyRecordNormalize) {
-  ScoreNormalizer::Results results = ScoreNormalizerTest::MakeSearchResults({});
-  normalizer_->Record(results);
-  double new_score = normalizer_->NormalizeScore(1.5);
+// Check normalizing of results for results of size = reservoir size.
+TEST_F(ScoreNormalizerTest, MediumNormalizeScores) {
+  ScoreNormalizer::Results results =
+      ScoreNormalizerTest::MakeSearchResults({0.9, 1.0, 1.2, 1.5, -0.1, 0.2});
+  normalizer_->RecordResults(results);
   normalizer_->NormalizeResults(&results);
-  EXPECT_DOUBLE_EQ(new_score, 1.5);
-  EXPECT_DOUBLE_EQ(get_mean(), 0);
-  EXPECT_EQ(get_num_results(), 0);
-  EXPECT_TRUE(results.empty());
+  EXPECT_THAT(get_dividers(), ElementsAre(-0.1, 0.2, 0.9, 1.2, 1.5));
+  EXPECT_THAT(get_counts(), ElementsAre(0, 0.5, 0.5, 0, 0, 0));
+  EXPECT_THAT(ConvertResultsToScores(results),
+              Pointwise(DoubleNear(1e-10), {3.0 / 6, (3 + 1.0 / 3) / 6, 4.0 / 6,
+                                            5.0 / 6, 1.0 / 6, 2.0 / 6}));
+}
+
+// Check normalizing of results for results of size > reservoir size.
+TEST_F(ScoreNormalizerTest, LargeNormalizeResults) {
+  ScoreNormalizer::Results results = ScoreNormalizerTest::MakeSearchResults(
+      {0.9, 1.0, 1.2, 1.5, -0.1, 0.2, 0.5, 1.1});
+  normalizer_->RecordResults(results);
+  normalizer_->NormalizeResults(&results);
+  EXPECT_THAT(get_dividers(), ElementsAre(0.2, 0.5, 0.9, 1.1, 1.5));
+  EXPECT_THAT(get_counts(), ElementsAre(0.5, 0.75, 0.75, 0.5, 0.5, 0));
+  EXPECT_THAT(
+      ConvertResultsToScores(results),
+      Pointwise(DoubleNear(1e-10), {3.0 / 6, 3.5 / 6, 4.25 / 6, 5.0 / 6,
+                                    1 / (1.3 * 6), 1.0 / 6, 2.0 / 6, 4.0 / 6}));
+}
+
+// Check record and normalizing of multiple results.
+TEST_F(ScoreNormalizerTest, MultipleRecordAndNormalizeResults) {
+  ScoreNormalizer::Results results1 =
+      ScoreNormalizerTest::MakeSearchResults({0.9, 1.0, 1.2, 1.5, -0.1, 0.2});
+  ScoreNormalizer::Results results2 =
+      ScoreNormalizerTest::MakeSearchResults({0.5, 1.1});
+  normalizer_->RecordResults(results1);
+  normalizer_->NormalizeResults(&results1);
+  EXPECT_THAT(get_dividers(), ElementsAre(-0.1, 0.2, 0.9, 1.2, 1.5));
+  EXPECT_THAT(get_counts(), ElementsAre(0, 0.5, 0.5, 0, 0, 0));
+  normalizer_->RecordResults(results2);
+  normalizer_->NormalizeResults(&results2);
+  EXPECT_THAT(get_dividers(), ElementsAre(0.2, 0.5, 0.9, 1.1, 1.5));
+  EXPECT_THAT(get_counts(), ElementsAre(0.5, 0.75, 0.75, 0.5, 0.5, 0));
+  EXPECT_THAT(ConvertResultsToScores(results1),
+              Pointwise(DoubleNear(1e-10), {3.0 / 6, (3 + 1.0 / 3) / 6, 4.0 / 6,
+                                            5.0 / 6, 1.0 / 6, 2.0 / 6}));
+  EXPECT_THAT(ConvertResultsToScores(results2),
+              Pointwise(DoubleNear(1e-10), {2.0 / 6, 4.0 / 6}));
 }
 
 }  // namespace app_list

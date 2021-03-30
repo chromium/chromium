@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.crash;
 
-import org.chromium.base.BuildConfig;
+import org.chromium.build.BuildConfig;
 import org.chromium.components.version_info.Channel;
 import org.chromium.components.version_info.VersionConstants;
 

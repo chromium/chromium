@@ -10,10 +10,7 @@ import("//components/feed/features.gni")
 # any of the feed targets.
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [
-    "ENABLE_FEED_V1=$enable_feed_v1",
-    "ENABLE_FEED_V2=$enable_feed_v2",
-  ]
+  flags = [ "ENABLE_FEED_V2=$enable_feed_v2" ]
 }
 
 static_library("feature_list") {
@@ -30,13 +27,5 @@ static_library("feature_list") {
 
 source_set("unit_tests") {
   testonly = true
-  deps = [
-    "core:core_unit_tests",
-    "core/v2:core_unit_tests",
-    "//components/feed/core/common:core_common_unit_tests",
-  ]
-
-  if (!is_ios) {
-    deps += [ "content:content_unit_tests" ]
-  }
+  deps = [ "core/v2:core_unit_tests" ]
 }

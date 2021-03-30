@@ -14,13 +14,11 @@ class PrefService;
 namespace chromeos {
 namespace phonehub {
 
-// This class enables the PhoneHub Multidevice feature state when the HostStatus
-// (provided by the MultideviceSetupClient) of the phone is initially
-// |kHostSetLocallyButWaitingForBackendConfirmation|, and becomes either 1)
-// |kHostVerified|, or 2) becomes |kHostSetButNotYetVerified| first, and then
-// later |kHostVerified|. This class also disables the PhoneHubNotification
-// Multidevice feature state when Notification access has been revoked by the
-// phone, provided via NotificationAccessManager.
+// This class waits until a multi-device host phone is verified before enabling
+// the Phone Hub feature. This intent to enable the feature is persisted across
+// restarts. This class also disables the PhoneHubNotification Multidevice
+// feature state when Notification access has been revoked by the phone,
+// provided via NotificationAccessManager.
 class MultideviceSetupStateUpdater
     : public multidevice_setup::MultiDeviceSetupClient::Observer,
       public NotificationAccessManager::Observer {
@@ -38,12 +36,16 @@ class MultideviceSetupStateUpdater
   void OnHostStatusChanged(
       const multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice&
           host_device_with_status) override;
+  void OnFeatureStatesChanged(
+      const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
+          feature_state_map) override;
 
   // NotificationAccessManager::Observer:
   void OnNotificationAccessChanged() override;
 
-  void UpdateIsAwaitingVerifiedHost(
-      multidevice_setup::mojom::HostStatus host_status);
+  bool IsWaitingForAccessToInitiallyEnableNotifications() const;
+  void EnablePhoneHubIfAwaitingVerifiedHost();
+  void UpdateIsAwaitingVerifiedHost();
 
   PrefService* pref_service_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;

@@ -31,8 +31,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) ExtendedAuthenticatorImpl
 
   // ExtendedAuthenticator:
   void SetConsumer(AuthStatusConsumer* consumer) override;
-  void AuthenticateToMount(const UserContext& context,
-                           ResultCallback success_callback) override;
   void AuthenticateToCheck(const UserContext& context,
                            base::OnceClosure success_callback) override;
   void StartFingerprintAuthSession(
@@ -61,8 +59,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) ExtendedAuthenticatorImpl
   void OnSaltObtained(const std::string& system_salt);
 
   // Performs actual operation with fully configured |context|.
-  void DoAuthenticateToMount(ResultCallback success_callback,
-                             const UserContext& context);
   void DoAuthenticateToCheck(base::OnceClosure success_callback,
                              const UserContext& context);
   void DoAddKey(const cryptohome::KeyDefinition& key,
@@ -74,10 +70,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) ExtendedAuthenticatorImpl
                    const UserContext& context);
 
   // Inner operation callbacks.
-  void OnMountComplete(const std::string& time_marker,
-                       const UserContext& context,
-                       ResultCallback success_callback,
-                       base::Optional<cryptohome::BaseReply> reply);
   void OnOperationComplete(const std::string& time_marker,
                            const UserContext& context,
                            base::OnceClosure success_callback,

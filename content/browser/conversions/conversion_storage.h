@@ -60,6 +60,14 @@ class ConversionStorage {
     //  could consider changing this limit to be keyed by a <conversion origin,
     //  reporting origin> tuple.
     virtual int GetMaxConversionsPerOrigin() const = 0;
+
+    struct RateLimitConfig {
+      base::TimeDelta time_window;
+      int max_attributions_per_window;
+    };
+
+    // Returns the rate limits for capping attributions per window.
+    virtual RateLimitConfig GetRateLimits() const = 0;
   };
   virtual ~ConversionStorage() = default;
 

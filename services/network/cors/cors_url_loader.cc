@@ -60,7 +60,6 @@ constexpr const char kTimingAllowOrigin[] = "Timing-Allow-Origin";
 CorsURLLoader::CorsURLLoader(
     mojo::PendingReceiver<mojom::URLLoader> loader_receiver,
     int32_t process_id,
-    int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     DeleteCallback delete_callback,
@@ -71,14 +70,13 @@ CorsURLLoader::CorsURLLoader(
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     mojom::URLLoaderFactory* network_loader_factory,
     const OriginAccessList* origin_access_list,
-    const OriginAccessList* factory_bound_origin_access_list,
     PreflightController* preflight_controller,
     const base::flat_set<std::string>* allowed_exempt_headers,
     bool allow_any_cors_exempt_header,
-    const net::IsolationInfo& isolation_info)
+    const net::IsolationInfo& isolation_info,
+    mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer)
     : receiver_(this, std::move(loader_receiver)),
       process_id_(process_id),
-      routing_id_(routing_id),
       request_id_(request_id),
       options_(options),
       delete_callback_(std::move(delete_callback)),
@@ -87,12 +85,12 @@ CorsURLLoader::CorsURLLoader(
       forwarding_client_(std::move(client)),
       traffic_annotation_(traffic_annotation),
       origin_access_list_(origin_access_list),
-      factory_bound_origin_access_list_(factory_bound_origin_access_list),
       preflight_controller_(preflight_controller),
       allowed_exempt_headers_(allowed_exempt_headers),
       skip_cors_enabled_scheme_check_(skip_cors_enabled_scheme_check),
       allow_any_cors_exempt_header_(allow_any_cors_exempt_header),
-      isolation_info_(isolation_info) {
+      isolation_info_(isolation_info),
+      devtools_observer_(std::move(devtools_observer)) {
   if (ignore_isolated_world_origin)
     request_.isolated_world_origin = base::nullopt;
 
@@ -252,6 +250,15 @@ void CorsURLLoader::PauseReadingBodyFromNet() {
 void CorsURLLoader::ResumeReadingBodyFromNet() {
   if (network_loader_)
     network_loader_->ResumeReadingBodyFromNet();
+}
+
+void CorsURLLoader::OnReceiveEarlyHints(mojom::EarlyHintsPtr early_hints) {
+  DCHECK(network_loader_);
+  DCHECK(forwarding_client_);
+
+  // Only forward Early Hints for navigation.
+  if (request_.mode == mojom::RequestMode::kNavigate)
+    forwarding_client_->OnReceiveEarlyHints(std::move(early_hints));
 }
 
 void CorsURLLoader::OnReceiveResponse(mojom::URLResponseHeadPtr response_head) {
@@ -478,6 +485,14 @@ void CorsURLLoader::StartRequest() {
     return;
   }
 
+  // Clone the devtools observer only if the original request has a
+  // |devtools_request_id|.
+  mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer;
+  if (devtools_observer_ && request_.devtools_request_id) {
+    devtools_observer_->Clone(
+        devtools_observer.InitWithNewPipeAndPassReceiver());
+  }
+
   // Since we're doing a preflight, we won't reuse the original request. Cancel
   // it now to free up the socket.
   network_loader_.reset();
@@ -489,7 +504,7 @@ void CorsURLLoader::StartRequest() {
       PreflightController::WithTrustedHeaderClient(
           options_ & mojom::kURLLoadOptionUseHeaderClient),
       tainted_, net::NetworkTrafficAnnotationTag(traffic_annotation_),
-      network_loader_factory_, process_id_, isolation_info_);
+      network_loader_factory_, isolation_info_, std::move(devtools_observer));
 }
 
 void CorsURLLoader::StartNetworkRequest(
@@ -517,8 +532,8 @@ void CorsURLLoader::StartNetworkRequest(
   // |network_client_receiver_| shares this object's lifetime.
   network_loader_.reset();
   network_loader_factory_->CreateLoaderAndStart(
-      network_loader_.BindNewPipeAndPassReceiver(), routing_id_, request_id_,
-      options_, request_, network_client_receiver_.BindNewPipeAndPassRemote(),
+      network_loader_.BindNewPipeAndPassReceiver(), request_id_, options_,
+      request_, network_client_receiver_.BindNewPipeAndPassRemote(),
       traffic_annotation_);
   network_client_receiver_.set_disconnect_handler(
       base::BindOnce(&CorsURLLoader::OnMojoDisconnect, base::Unretained(this)));
@@ -538,6 +553,12 @@ void CorsURLLoader::HandleComplete(const URLLoaderCompletionStatus& status) {
   if (status.error_code == net::OK) {
     UMA_HISTOGRAM_BOOLEAN("NetworkService.CorsForcedOffForIsolatedWorldOrigin",
                           has_cors_been_affected_by_isolated_world_origin_);
+  }
+
+  if (devtools_observer_ && status.cors_error_status) {
+    devtools_observer_->OnCorsError(request_.devtools_request_id,
+                                    request_.request_initiator, request_.url,
+                                    *status.cors_error_status);
   }
 
   forwarding_client_->OnComplete(status);
@@ -576,10 +597,8 @@ bool CorsURLLoader::HasSpecialAccessToDestination() const {
     case OriginAccessList::AccessState::kAllowed:
       return true;
     case OriginAccessList::AccessState::kBlocked:
-      return false;
     case OriginAccessList::AccessState::kNotListed:
-      return factory_bound_origin_access_list_->CheckAccessState(request_) ==
-             OriginAccessList::AccessState::kAllowed;
+      return false;
   }
 }
 

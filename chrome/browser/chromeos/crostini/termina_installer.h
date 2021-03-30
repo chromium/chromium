@@ -35,6 +35,8 @@ class TerminaInstaller {
     // The install failed because it needed to download an image and the device
     // is offline.
     Offline,
+    // The device must be updated before termina can be installed.
+    NeedUpdate,
   };
 
   // This is really a bool, but std::vector<bool> has weird properties that stop
@@ -44,7 +46,15 @@ class TerminaInstaller {
   // Ensure that termina is installed. This will also attempt to remove any
   // other instances of termina that may be installed, but will not block on or
   // check the result of this.
-  void Install(base::OnceCallback<void(InstallResult)> callback);
+  //
+  // |is_initial_install| should be set to true when this is called from the
+  // crostini installer, and false otherwise. This allows us to fall back to the
+  // cros-termina component if transitioning to DLC fails while still requiring
+  // it for new installs. In the future this may also allow us to force the DLC
+  // to be installed even on tethered connections during the install, as in this
+  // case we can expect the user already knows we will download things.
+  void Install(base::OnceCallback<void(InstallResult)> callback,
+               bool is_initial_install);
 
   // Remove termina entirely. This will also attempt to remove any
   // other instances of termina that may be installed.
@@ -57,9 +67,16 @@ class TerminaInstaller {
   // Get the id of the installed DLC, or nullopt if DLC is not being used.
   base::Optional<std::string> GetDlcId();
 
+  // Attempt to cancel a pending install. Note that neither DLC service nor
+  // component updater support this, but we have some retry logic that can be
+  // aborted.
+  void Cancel();
+
  private:
-  void InstallDlc(base::OnceCallback<void(InstallResult)> callback);
+  void InstallDlc(base::OnceCallback<void(InstallResult)> callback,
+                  bool is_initial_install);
   void OnInstallDlc(base::OnceCallback<void(InstallResult)> callback,
+                    bool is_initial_install,
                     const chromeos::DlcserviceClient::InstallResult& result);
 
   void InstallComponent(base::OnceCallback<void(InstallResult)> callback);

@@ -206,8 +206,6 @@ void SharedImageStub::OnCreateSharedImage(
   SyncToken sync_token(sync_point_client_state_->namespace_id(),
                        sync_point_client_state_->command_buffer_id(),
                        params.release_id);
-  auto* mailbox_manager = channel_->gpu_channel_manager()->mailbox_manager();
-  mailbox_manager->PushTextureUpdates(sync_token);
   sync_point_client_state_->ReleaseFenceSync(params.release_id);
 }
 
@@ -265,8 +263,6 @@ void SharedImageStub::OnCreateSharedImageWithData(
   SyncToken sync_token(sync_point_client_state_->namespace_id(),
                        sync_point_client_state_->command_buffer_id(),
                        params.release_id);
-  auto* mailbox_manager = channel_->gpu_channel_manager()->mailbox_manager();
-  mailbox_manager->PushTextureUpdates(sync_token);
   sync_point_client_state_->ReleaseFenceSync(params.release_id);
 }
 
@@ -286,8 +282,6 @@ void SharedImageStub::OnCreateGMBSharedImage(
   SyncToken sync_token(sync_point_client_state_->namespace_id(),
                        sync_point_client_state_->command_buffer_id(),
                        params.release_id);
-  auto* mailbox_manager = channel_->gpu_channel_manager()->mailbox_manager();
-  mailbox_manager->PushTextureUpdates(sync_token);
   sync_point_client_state_->ReleaseFenceSync(params.release_id);
 }
 
@@ -302,8 +296,6 @@ void SharedImageStub::OnUpdateSharedImage(const Mailbox& mailbox,
   SyncToken sync_token(sync_point_client_state_->namespace_id(),
                        sync_point_client_state_->command_buffer_id(),
                        release_id);
-  auto* mailbox_manager = channel_->gpu_channel_manager()->mailbox_manager();
-  mailbox_manager->PushTextureUpdates(sync_token);
   sync_point_client_state_->ReleaseFenceSync(release_id);
 }
 
@@ -320,8 +312,6 @@ void SharedImageStub::OnCreateSharedImageWithAHB(const Mailbox& out_mailbox,
   SyncToken sync_token(sync_point_client_state_->namespace_id(),
                        sync_point_client_state_->command_buffer_id(),
                        release_id);
-  auto* mailbox_manager = channel_->gpu_channel_manager()->mailbox_manager();
-  mailbox_manager->PushTextureUpdates(sync_token);
   sync_point_client_state_->ReleaseFenceSync(release_id);
 }
 #endif

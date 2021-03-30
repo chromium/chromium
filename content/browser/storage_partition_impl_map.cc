@@ -20,7 +20,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -469,9 +468,6 @@ void StoragePartitionImplMap::PostCreateInitialization(
 
   // Check first to avoid memory leak in unittests.
   if (BrowserThread::IsThreadInitialized(BrowserThread::IO)) {
-    partition->GetCacheStorageContext()->SetBlobParametersForCache(
-        ChromeBlobStorageContext::GetFor(browser_context_));
-
     // Use PostTask() instead of RunOrPostTaskOnThread() because not posting a
     // task causes it to run before the CacheStorageManager has been
     // initialized, and then CacheStorageContextImpl::CacheManager() ends up
@@ -480,10 +476,12 @@ void StoragePartitionImplMap::PostCreateInitialization(
     // BackgroundFetchDataManager::InitializeOnCoreThread().
     // TODO(crbug.com/960012): This workaround should be unnecessary after
     // CacheStorage moves off the IO thread to the thread pool.
-    base::PostTask(
-        FROM_HERE, {ServiceWorkerContext::GetCoreThreadId()},
-        base::BindOnce(&BackgroundFetchContext::InitializeOnCoreThread,
-                       partition->GetBackgroundFetchContext()));
+    BrowserThread::GetTaskRunnerForThread(
+        ServiceWorkerContext::GetCoreThreadId())
+        ->PostTask(
+            FROM_HERE,
+            base::BindOnce(&BackgroundFetchContext::InitializeOnCoreThread,
+                           partition->GetBackgroundFetchContext()));
 
     // We do not call InitializeURLRequestContext() for media contexts because,
     // other than the HTTP cache, the media contexts share the same backing

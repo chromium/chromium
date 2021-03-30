@@ -76,7 +76,7 @@ bool OnlyChangeIsFromHTTPToHTTPS(const GURL& origin, const GURL& destination) {
 
 ChromeOmniboxNavigationObserver::ChromeOmniboxNavigationObserver(
     Profile* profile,
-    const base::string16& text,
+    const std::u16string& text,
     const AutocompleteMatch& match,
     const AutocompleteMatch& alternate_nav_match)
     : text_(text),

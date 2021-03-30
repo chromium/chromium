@@ -11,49 +11,32 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "services/network/public/mojom/content_security_policy.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
-import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/source_location.mojom";
 import "services/network/public/mojom/trust_tokens.mojom";
 import "services/network/public/mojom/url_loader.mojom";
+import "services/network/public/mojom/url_request.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "services/network/public/mojom/web_client_hints_types.mojom";
-import "third_party/blink/public/mojom/feature_policy/feature_policy.mojom";
+import "services/network/public/mojom/web_sandbox_flags.mojom";
 import "third_party/blink/public/mojom/fetch/fetch_api_request.mojom";
 import "third_party/blink/public/mojom/frame/frame_policy.mojom";
+import "third_party/blink/public/mojom/loader/mixed_content.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
+import "third_party/blink/public/mojom/navigation/navigation_policy.mojom";
+import "third_party/blink/public/mojom/page/page.mojom";
+import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
-import "third_party/blink/public/mojom/page/page.mojom";
 
 [Native]
 struct Impression;
-
-[Native]
-enum MixedContentContextType;
-
-[Native]
-struct NavigationDownloadPolicy;
 
 [Native]
 struct PageState;
 
 [Native]
 enum PageTransition;
-
-// Represents the Content Security Policy of the initator of the navigation.
-struct InitiatorCSPInfo {
-  // Whether or not the CSP of the main world should apply. When the navigation
-  // is initiated from a content script in an isolated world, the CSP defined
-  // in the main world should not apply.
-  // TODO(arthursonzogni): Instead of this boolean, the origin of the isolated
-  // world which has initiated the navigation should be passed.
-  // See https://crbug.com/702540
-  network.mojom.CSPDisposition should_check_main_world_csp =
-      network.mojom.CSPDisposition.CHECK;
-
-  // The relevant CSP policies.
-  array<network.mojom.ContentSecurityPolicy> initiator_csp;
-};
 
 enum NavigationType {
   // Reload the page, validating only cache entry for the main resource.
@@ -97,7 +80,7 @@ struct BeginNavigationParams {
   // The token of the RenderFrameHost that initiated the navigation. It might
   // refer to a RenderFrameHost that doesn't exist anymore when the IPC reaches
   // the browser process.
-  mojo_base.mojom.UnguessableToken? initiator_frame_token;
+  blink.mojom.LocalFrameToken? initiator_frame_token;
 
   // Additional HTTP request headers.
   string headers;
@@ -117,10 +100,8 @@ struct BeginNavigationParams {
       network.mojom.RequestDestination.kEmpty;
 
   // The mixed content context type for potential mixed content checks.
-  //
-  // [Native] enums are by default initialized to 0
-  // (i.e. blink::WebMixedContentContextType::kNotMixedContent below).
-  MixedContentContextType mixed_content_context_type;
+  blink.mojom.MixedContentContextType mixed_content_context_type =
+      blink.mojom.MixedContentContextType.kNotMixedContent;
 
   // Whether or not the navigation has been initiated by a form submission.
   bool is_form_submission = false;
@@ -157,6 +138,10 @@ struct BeginNavigationParams {
   // in preparation for navigating. Used for metrics.
   mojo_base.mojom.TimeTicks before_unload_start;
   mojo_base.mojom.TimeTicks before_unload_end;
+
+  // Token to identify a WebBundle. Set on navigation to a resource in a
+  // WebBundle.
+  network.mojom.WebBundleTokenParams? web_bundle_token;
 };
 
 // Provided by the browser or the renderer -------------------------------------
@@ -185,7 +170,7 @@ struct CommonNavigationParams {
   NavigationType navigation_type = DIFFERENT_DOCUMENT;
 
   // Governs how downloads are handled by this navigation.
-  NavigationDownloadPolicy download_policy;
+  blink.mojom.NavigationDownloadPolicy download_policy;
 
   // Informs the RenderView the pending navigation should replace the current
   // history entry when it commits.  This is used by client-side redirects to
@@ -234,8 +219,14 @@ struct CommonNavigationParams {
   // propagated across client redirects.
   bool text_fragment_token = false;
 
-  // We require a copy of the relevant CSP to perform navigation checks.
-  InitiatorCSPInfo initiator_csp_info;
+  // Whether or not the CSP of the main world should apply. When the navigation
+  // is initiated from a content script in an isolated world, the CSP defined
+  // in the main world should not apply.
+  // TODO(arthursonzogni): Instead of this boolean, the origin of the isolated
+  // world which has initiated the navigation should be passed.
+  // See https://crbug.com/702540
+  network.mojom.CSPDisposition should_check_main_world_csp =
+      network.mojom.CSPDisposition.CHECK;
 
   // The origin trial features activated in the initiator that should be applied
   // in the document being navigated to. The int values are blink
@@ -298,6 +289,15 @@ struct CommitNavigationParams {
   // It is specified for session history navigations, for which the origin is
   // known and saved in the FrameNavigationEntry.
   url.mojom.Origin? origin_to_commit;
+
+  // The sandbox flags to apply to the new document. This is the union of:
+  // - the frame's current sandbox, taken when the navigation started.
+  // - the navigation response's CSP sandbox flags.
+  // - the result of CSP embedded enforcement required CSP sandbox flags.
+  // - Various edge cases: MHTML document, error pages, ...
+  // See content/browser/renderer_host/sandbox_flags.md
+  network.mojom.WebSandboxFlags sandbox_flags =
+    network.mojom.WebSandboxFlags.kAll;
 
   // Whether or not the user agent override string should be used.
   bool is_overriding_user_agent = false;
@@ -408,10 +408,14 @@ struct CommitNavigationParams {
   // Whether this navigation was browser initiated.
   bool is_browser_initiated = false;
 
-  // The IP address space into which this document is committing.
-  // https://wicg.github.io/cors-rfc1918/#address-space
-  network.mojom.IPAddressSpace ip_address_space =
-      network.mojom.IPAddressSpace.kUnknown;
+  // Whether this navigation is happening in a prerendering frame tree.
+  // Should not be referred to in the browser process, as it is only guaranteed
+  // to be accurate just before sending it to the renderer process. The browser
+  // process should use the frame tree's `is_prerendering` state instead.
+  // TODO(crbug.com/1189481): With MPArch, the NavigationRequest should be
+  // notified when it transfers frame trees, and commit_params should be updated
+  // then.
+  bool is_prerendering = false;
 
   // The physical URL of Web Bundle from which the document is loaded.
   // Used as an additional identifier for MemoryCache.
@@ -448,22 +452,16 @@ struct CommitNavigationParams {
   // The names of origin trials to be force enabled for this navigation.
   array<string> force_enabled_origin_trials;
 
-  // Whether the page is origin isolated.
-  // https://github.com/WICG/origin-isolation
-  bool origin_isolated = false;
+  // Whether the page is in an origin-keyed agent cluster.
+  // https://html.spec.whatwg.org/C/#origin-keyed-agent-clusters
+  bool origin_agent_cluster = false;
 
   // Client-hints enabled; this is based on the top-level frame and should be
-  // further narrowed down by feature policy.
+  // further narrowed down by permissions policy.
   array<network.mojom.WebClientHintsType> enabled_client_hints;
 
   // Whether this is a cross browsing instance navigation.
   bool is_cross_browsing_instance = false;
-
-  // A list of additional Content Security Policies to be enforced by blink
-  // on the document. This is being used by Content Security Policy: Embedded
-  // Enforcement for enforcing on frames Content Security Policies required by
-  // their embedders.
-  array<string> forced_content_security_policies;
 
   // Should only be set to a valid value for main-frame same-site navigations
   // where we did a proactive BrowsingInstance swap and we're reusing the old

@@ -227,7 +227,7 @@ TEST_F(TrustedVaultRequestTest, ShouldHandleHttpErrors) {
                                    /*response_body=*/""));
 }
 
-TEST_F(TrustedVaultRequestTest, ShouldHandleBadRequestStatus) {
+TEST_F(TrustedVaultRequestTest, ShouldHandleNotFoundStatus) {
   base::MockCallback<TrustedVaultRequest::CompletionCallback>
       completion_callback;
   std::unique_ptr<TrustedVaultRequest> request = StartNewRequestWithAccessToken(
@@ -236,8 +236,22 @@ TEST_F(TrustedVaultRequestTest, ShouldHandleBadRequestStatus) {
 
   // |completion_callback| should be called after receiving response.
   EXPECT_CALL(completion_callback,
-              Run(TrustedVaultRequest::HttpStatus::kBadRequest, _));
-  EXPECT_TRUE(RespondToHttpRequest(net::OK, net::HTTP_BAD_REQUEST,
+              Run(TrustedVaultRequest::HttpStatus::kNotFound, _));
+  EXPECT_TRUE(RespondToHttpRequest(net::OK, net::HTTP_NOT_FOUND,
+                                   /*response_body=*/""));
+}
+
+TEST_F(TrustedVaultRequestTest, ShouldHandlePreconditionFailedStatus) {
+  base::MockCallback<TrustedVaultRequest::CompletionCallback>
+      completion_callback;
+  std::unique_ptr<TrustedVaultRequest> request = StartNewRequestWithAccessToken(
+      kAccessToken, TrustedVaultRequest::HttpMethod::kGet,
+      /*request_body=*/base::nullopt, completion_callback.Get());
+
+  // |completion_callback| should be called after receiving response.
+  EXPECT_CALL(completion_callback,
+              Run(TrustedVaultRequest::HttpStatus::kFailedPrecondition, _));
+  EXPECT_TRUE(RespondToHttpRequest(net::OK, net::HTTP_PRECONDITION_FAILED,
                                    /*response_body=*/""));
 }
 

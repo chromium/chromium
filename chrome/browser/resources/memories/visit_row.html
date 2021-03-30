@@ -1,0 +1,69 @@
+<style include="cr-shared-style">
+  :host {
+    display: block;
+    line-height: var(--visit-row-height);
+    position: relative;
+  }
+
+  #header {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  #start-justtified {
+    color: inherit;
+    display: flex;
+    overflow: hidden;
+    text-decoration: none;
+    z-index: 1;
+  }
+
+  #end-justified {
+    display: flex;
+    flex-shrink: 0;
+  }
+
+  page-favicon {
+    flex-shrink: 0;
+    height: var(--visit-row-favicon-size);
+    margin-inline-end: 16px;
+    width: var(--visit-row-favicon-size);
+  }
+
+  :host([is-top-visit]) page-favicon {
+    background-color: var(--image-background-color);
+    border-radius: var(--image-border-radius);
+  }
+
+  #title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #hostname,
+  #separator,
+  #timestamp {
+    flex-shrink: 0;
+    margin-inline-start: 8px;
+  }
+
+  #hostname,
+  #timestamp {
+    color: var(--cr-secondary-text-color);
+  }
+</style>
+<div id="header">
+  <a id="start-justtified" href="[[visit.url.url]]" on-click="onClick_">
+    <page-favicon url="[[visit.url]]"></page-favicon>
+    <span id="title">[[decodeMojoString16(visit.pageTitle)]]</span>
+    <span id="separator">–</span>
+    <span id="hostname">[[getHostnameFromUrl_(visit.url)]]</span>
+  </a>
+  <div id="end-justified">
+    <div id="timestamp">[[getTimeOfVisit_(visit)]]</div>
+    <cr-icon-button id="action" class="icon-more-vert"
+        hidden="[[visit.relatedVisits.length]]">
+    </cr-icon-button>
+  </div>
+</div>

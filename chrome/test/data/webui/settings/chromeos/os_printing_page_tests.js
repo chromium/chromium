@@ -63,7 +63,6 @@ suite('PrintingPageTests', function() {
   test('Deep link to scanning app', async () => {
     await initializePrintingPage({
       isDeepLinkingEnabled: true,
-      scanningAppEnabled: true,
     });
 
     const params = new URLSearchParams;

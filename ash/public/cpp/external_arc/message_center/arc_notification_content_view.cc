@@ -26,6 +26,7 @@
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/root_view.h"
@@ -554,7 +555,8 @@ void ArcNotificationContentView::UpdateMask(bool force_update) {
   auto mask_painter =
       std::make_unique<message_center::NotificationBackgroundPainter>(
           top_radius_, bottom_radius_,
-          message_center::kNotificationBackgroundColor);
+          GetNativeTheme()->GetSystemColor(
+              ui::NativeTheme::kColorId_NotificationBackground));
   // Set insets to round visible notification corners. https://crbug.com/866777
   mask_painter->set_insets(new_insets);
 
@@ -722,6 +724,13 @@ void ArcNotificationContentView::OnBlur() {
   notification_view->OnContentBlurred();
 }
 
+void ArcNotificationContentView::OnThemeChanged() {
+  View::OnThemeChanged();
+  // OnThemeChanged may be called before container is set.
+  if (GetWidget() && GetNativeViewContainer())
+    UpdateMask(true);
+}
+
 void ArcNotificationContentView::OnRemoteInputActivationChanged(
     bool activated) {
   // Remove the focus from the currently focused view-control in the message
@@ -764,8 +773,7 @@ void ArcNotificationContentView::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
   if (surface_ && surface_->GetAXTreeId() != ui::AXTreeIDUnknown()) {
     node_data->role = ax::mojom::Role::kClient;
-    node_data->AddStringAttribute(ax::mojom::StringAttribute::kChildTreeId,
-                                  surface_->GetAXTreeId().ToString());
+    GetViewAccessibility().OverrideChildTreeID(surface_->GetAXTreeId());
   } else {
     node_data->role = ax::mojom::Role::kButton;
     node_data->AddStringAttribute(

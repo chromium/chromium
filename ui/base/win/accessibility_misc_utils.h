@@ -4,13 +4,14 @@
 #ifndef UI_BASE_WIN_ACCESSIBILITY_MISC_UTILS_H_
 #define UI_BASE_WIN_ACCESSIBILITY_MISC_UTILS_H_
 
+#include <string>
+
 #include "base/win/atl.h"  // Must be before UIAutomationCore.h
 
 #include <UIAutomationCore.h>
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/strings/string16.h"
 
 namespace base {
 namespace win {
@@ -30,7 +31,7 @@ class COMPONENT_EXPORT(UI_BASE) UIATextProvider
 
   // Creates an instance of the UIATextProvider class.
   // Returns true on success
-  static bool CreateTextProvider(const string16& value,
+  static bool CreateTextProvider(const std::u16string& value,
                                  bool editable,
                                  IUnknown** provider);
 
@@ -38,7 +39,7 @@ class COMPONENT_EXPORT(UI_BASE) UIATextProvider
     editable_ = editable;
   }
 
-  void set_value(const string16& value) { value_ = value; }
+  void set_value(const std::u16string& value) { value_ = value; }
 
   //
   // ITextProvider methods.
@@ -60,7 +61,7 @@ class COMPONENT_EXPORT(UI_BASE) UIATextProvider
 
  private:
   bool editable_;
-  string16 value_;
+  std::u16string value_;
 };
 
 }  // win

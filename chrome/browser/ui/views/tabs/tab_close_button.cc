@@ -26,6 +26,7 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/rect_based_targeting_utils.h"
 #include "ui/views/view_class_properties.h"
 
@@ -88,18 +89,21 @@ int TabCloseButton::GetGlyphSize() {
                                                   : kGlyphSize;
 }
 
-void TabCloseButton::SetIconColors(SkColor foreground_color,
-                                   SkColor background_color) {
-  icon_color_ = foreground_color;
-  SetInkDropBaseColor(color_utils::GetColorWithMaxContrast(background_color));
+TabStyle::TabColors TabCloseButton::GetColors() const {
+  return colors_;
+}
+
+void TabCloseButton::SetColors(TabStyle::TabColors colors) {
+  if (colors == colors_)
+    return;
+  colors_ = std::move(colors);
+  SetInkDropBaseColor(
+      color_utils::GetColorWithMaxContrast(colors_.background_color));
+  OnPropertyChanged(&colors_, views::kPropertyEffectsPaint);
 }
 
 void TabCloseButton::SetButtonPadding(const gfx::Insets& padding) {
   *GetProperty(views::kInternalPaddingKey) = padding;
-}
-
-const char* TabCloseButton::GetClassName() const {
-  return "TabCloseButton";
 }
 
 views::View* TabCloseButton::GetTooltipHandlerForPoint(
@@ -157,7 +161,7 @@ void TabCloseButton::PaintButtonContents(gfx::Canvas* canvas) {
   flags.setAntiAlias(true);
   flags.setStrokeWidth(kStrokeWidth);
   flags.setStrokeCap(cc::PaintFlags::kRound_Cap);
-  flags.setColor(icon_color_);
+  flags.setColor(colors_.foreground_color);
   canvas->DrawLine(glyph_bounds.origin(), glyph_bounds.bottom_right(), flags);
   canvas->DrawLine(glyph_bounds.bottom_left(), glyph_bounds.top_right(), flags);
 }
@@ -194,3 +198,7 @@ bool TabCloseButton::GetHitTestMask(SkPath* mask) const {
   mask->addRect(gfx::RectToSkRect(GetMirroredRect(GetContentsBounds())));
   return true;
 }
+
+BEGIN_METADATA(TabCloseButton, views::ImageButton)
+ADD_PROPERTY_METADATA(TabStyle::TabColors, Colors)
+END_METADATA

@@ -224,6 +224,9 @@ class CONTENT_EXPORT ChildThreadImpl : public IPC::Listener,
   scoped_refptr<base::SingleThreadTaskRunner> browser_process_io_runner_;
 
   std::unique_ptr<variations::ChildProcessFieldTrialSyncer> field_trial_syncer_;
+  // Whether we're handling the SetFieldTrialGroup() notification from the
+  // browser process.
+  bool handling_set_field_trial_group_notification_ = false;
 
   std::unique_ptr<base::WeakPtrFactory<ChildThreadImpl>>
       channel_connected_factory_;

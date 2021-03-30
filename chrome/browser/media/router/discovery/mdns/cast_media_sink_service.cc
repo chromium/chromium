@@ -16,6 +16,8 @@
 
 namespace media_router {
 
+constexpr char kLoggerComponent[] = "CastMediaSinkService";
+
 CastMediaSinkService::CastMediaSinkService()
     : impl_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {}
 
@@ -96,7 +98,15 @@ void CastMediaSinkService::StartMdnsDiscovery() {
     dns_sd_registry_ = DnsSdRegistry::GetInstance();
     dns_sd_registry_->AddObserver(this);
     dns_sd_registry_->RegisterDnsSdListener(kCastServiceType);
+    if (logger_impl_) {
+      logger_impl_->LogInfo(mojom::LogCategory::kDiscovery, kLoggerComponent,
+                            "mDNS discovery started.", "", "", "");
+    }
   }
+}
+
+bool CastMediaSinkService::MdnsDiscoveryStarted() {
+  return dns_sd_registry_ != nullptr;
 }
 
 void CastMediaSinkService::OnUserGesture() {
@@ -145,8 +155,16 @@ void CastMediaSinkService::RunSinksDiscoveredCallback(
   sinks_discovered_cb.Run(std::move(sinks));
 }
 
-void CastMediaSinkService::BindLogger(
-    mojo::PendingRemote<mojom::Logger> pending_remote) {
+void CastMediaSinkService::BindLogger(LoggerImpl* logger_impl) {
+  DCHECK(logger_impl);
+  logger_impl_ = logger_impl;
+  if (dns_sd_registry_) {
+    logger_impl->LogInfo(mojom::LogCategory::kDiscovery, kLoggerComponent,
+                         "mDNS service has started.", "", "", "");
+  }
+
+  mojo::PendingRemote<mojom::Logger> pending_remote;
+  logger_impl_->Bind(pending_remote.InitWithNewPipeAndPassReceiver());
   impl_->task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&CastMediaSinkServiceImpl::BindLogger,

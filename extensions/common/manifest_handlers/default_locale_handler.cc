@@ -37,7 +37,7 @@ DefaultLocaleHandler::DefaultLocaleHandler() {
 DefaultLocaleHandler::~DefaultLocaleHandler() {
 }
 
-bool DefaultLocaleHandler::Parse(Extension* extension, base::string16* error) {
+bool DefaultLocaleHandler::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<LocaleInfo> info(new LocaleInfo);
   if (!extension->manifest()->GetString(keys::kDefaultLocale,
                                         &info->default_locale) ||

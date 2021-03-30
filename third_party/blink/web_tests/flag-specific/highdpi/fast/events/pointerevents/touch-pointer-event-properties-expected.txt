@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+PASS Pointer property propagation from touches to PointerEvents
+FAIL Pointer event properties for pointer 1 on pointerdown assert_equals: width expected 1.125 but got 0.75
+FAIL Pointer event properties for pointer 2 on pointerdown assert_equals: width expected 2.125 but got 1.4166667461395264
+FAIL Pointer event properties for pointer 3 on pointerdown assert_equals: width expected 3.125 but got 2.0833334922790527
+FAIL Pointer event properties for pointer 4 on pointerdown assert_equals: width expected 4.125 but got 2.75
+FAIL Pointer event properties for pointer 1 on pointermove assert_equals: width expected 1.125 but got 0.75
+FAIL Pointer event properties for pointer 2 on pointermove assert_equals: width expected 2.125 but got 1.4166667461395264
+FAIL Pointer event properties for pointer 3 on pointermove assert_equals: width expected 3.125 but got 2.0833334922790527
+FAIL Pointer event properties for pointer 4 on pointermove assert_equals: width expected 4.125 but got 2.75
+FAIL Pointer event properties for pointer 1 on pointerup assert_equals: width expected 1.125 but got 0.75
+FAIL Pointer event properties for pointer 2 on pointerup assert_equals: width expected 2.125 but got 1.4166667461395264
+FAIL Pointer event properties for pointer 3 on pointerup assert_equals: width expected 3.125 but got 2.0833334922790527
+FAIL Pointer event properties for pointer 4 on pointerup assert_equals: width expected 4.125 but got 2.75
+PASS Received pointer events
+Harness: the test ran to completion.
+

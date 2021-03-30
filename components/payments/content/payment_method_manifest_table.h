@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "components/webdata/common/web_database_table.h"
 
 class WebDatabase;

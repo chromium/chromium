@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/switch_access_handler.h"
 
 #include "ash/public/cpp/accessibility_controller.h"
+#include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/no_destructor.h"
@@ -14,6 +15,8 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/devices/device_data_manager.h"
+#include "ui/events/devices/input_device.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -50,6 +53,19 @@ std::string GetStringForKeyboardCode(ui::KeyboardCode key_code) {
     return ui::KeycodeConverter::DomKeyToKeyString(dom_key);
   }
   return std::string();
+}
+
+std::string GetSwitchAccessDevice(ui::InputDeviceType source_device_type) {
+  switch (source_device_type) {
+    case ui::INPUT_DEVICE_INTERNAL:
+      return ash::kSwitchAccessInternalDevice;
+    case ui::INPUT_DEVICE_USB:
+      return ash::kSwitchAccessUsbDevice;
+    case ui::INPUT_DEVICE_BLUETOOTH:
+      return ash::kSwitchAccessBluetoothDevice;
+    case ui::INPUT_DEVICE_UNKNOWN:
+      return ash::kSwitchAccessUnknownDevice;
+  }
 }
 
 }  // namespace
@@ -91,17 +107,17 @@ void SwitchAccessHandler::OnJavascriptAllowed() {
   pref_change_registrar_.reset(new PrefChangeRegistrar);
   pref_change_registrar_->Init(prefs_);
   pref_change_registrar_->Add(
-      ash::prefs::kAccessibilitySwitchAccessSelectKeyCodes,
+      ash::prefs::kAccessibilitySwitchAccessSelectDeviceKeyCodes,
       base::BindRepeating(
           &SwitchAccessHandler::OnSwitchAccessAssignmentsUpdated,
           base::Unretained(this)));
   pref_change_registrar_->Add(
-      ash::prefs::kAccessibilitySwitchAccessNextKeyCodes,
+      ash::prefs::kAccessibilitySwitchAccessNextDeviceKeyCodes,
       base::BindRepeating(
           &SwitchAccessHandler::OnSwitchAccessAssignmentsUpdated,
           base::Unretained(this)));
   pref_change_registrar_->Add(
-      ash::prefs::kAccessibilitySwitchAccessPreviousKeyCodes,
+      ash::prefs::kAccessibilitySwitchAccessPreviousDeviceKeyCodes,
       base::BindRepeating(
           &SwitchAccessHandler::OnSwitchAccessAssignmentsUpdated,
           base::Unretained(this)));
@@ -121,10 +137,17 @@ void SwitchAccessHandler::OnKeyEvent(ui::KeyEvent* event) {
   base::DictionaryValue response;
   response.SetIntPath("keyCode", static_cast<int>(event->key_code()));
   response.SetStringPath("key", GetStringForKeyboardCode(event->key_code()));
+  ui::InputDeviceType deviceType = ui::INPUT_DEVICE_UNKNOWN;
 
-  // TODO(accessibility): also include the device type once Switch Access can
-  // distinguish between internal, usb, and bluetooth keyboards for each action
-  // type.
+  int source_device_id = event->source_device_id();
+  for (const auto& keyboard :
+       ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
+    if (source_device_id == keyboard.id) {
+      deviceType = keyboard.type;
+      break;
+    }
+  }
+  response.SetStringPath("device", GetSwitchAccessDevice(deviceType));
 
   FireWebUIListener("switch-access-got-key-press-for-assignment", response);
 }
@@ -155,17 +178,28 @@ void SwitchAccessHandler::OnSwitchAccessAssignmentsUpdated() {
   base::DictionaryValue response;
 
   static base::NoDestructor<std::vector<AssignmentInfo>> kAssignmentInfo({
-      {"select", ash::prefs::kAccessibilitySwitchAccessSelectKeyCodes},
-      {"next", ash::prefs::kAccessibilitySwitchAccessNextKeyCodes},
-      {"previous", ash::prefs::kAccessibilitySwitchAccessPreviousKeyCodes},
+      {"select", ash::prefs::kAccessibilitySwitchAccessSelectDeviceKeyCodes},
+      {"next", ash::prefs::kAccessibilitySwitchAccessNextDeviceKeyCodes},
+      {"previous",
+       ash::prefs::kAccessibilitySwitchAccessPreviousDeviceKeyCodes},
   });
 
   for (const AssignmentInfo& info : *kAssignmentInfo) {
-    auto* keycodes = prefs_->GetList(info.pref_name);
+    auto* keycodes = prefs_->GetDictionary(info.pref_name);
     base::ListValue keys;
-    for (size_t i = 0; i < keycodes->GetList().size(); i++) {
-      keys.Append(GetStringForKeyboardCode(
-          static_cast<ui::KeyboardCode>(keycodes->GetList()[i].GetInt())));
+    for (const auto& item : keycodes->DictItems()) {
+      int key_code;
+      if (!base::StringToInt(item.first, &key_code)) {
+        NOTREACHED();
+        return;
+      }
+      for (const base::Value& device_type : item.second.GetList()) {
+        base::DictionaryValue key;
+        key.SetStringPath("key", GetStringForKeyboardCode(
+                                     static_cast<ui::KeyboardCode>(key_code)));
+        key.SetStringPath("device", device_type.GetString());
+        keys.Append(std::move(key));
+      }
     }
     response.SetPath(info.action_name_for_js, std::move(keys));
   }

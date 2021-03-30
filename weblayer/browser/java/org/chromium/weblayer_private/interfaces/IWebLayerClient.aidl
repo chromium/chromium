@@ -10,8 +10,6 @@ interface IWebLayerClient {
   Intent createIntent() = 0;
   Intent createMediaSessionServiceIntent() = 1;
   int getMediaSessionNotificationId() = 2;
-
-  // Since Version 86.
   Intent createImageDecoderServiceIntent() = 3;
 
   // Since Version 88.

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`This test checks that text editor's revealLine centers line where needed.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
 
   var out = TestRunner.addResult;

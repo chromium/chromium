@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/display/types/display_snapshot.h"
@@ -142,7 +143,7 @@ void DrmThread::CreateBuffer(gfx::AcceleratedWidget widget,
   std::vector<uint64_t> modifiers;
   if (window && window->GetController() && !(flags & GBM_BO_USE_LINEAR) &&
       !(client_flags & GbmPixmap::kFlagNoModifiers)) {
-    modifiers = window->GetController()->GetFormatModifiers(fourcc_format);
+    modifiers = window->GetController()->GetSupportedModifiers(fourcc_format);
   }
 
   CreateBufferWithGbmFlags(drm, fourcc_format, size, framebuffer_size, flags,
@@ -277,10 +278,9 @@ void DrmThread::SetWindowBounds(gfx::AcceleratedWidget widget,
 void DrmThread::SetCursor(gfx::AcceleratedWidget widget,
                           const std::vector<SkBitmap>& bitmaps,
                           const gfx::Point& location,
-                          int32_t frame_delay_ms) {
+                          base::TimeDelta frame_delay) {
   TRACE_EVENT0("drm", "DrmThread::SetCursor");
-  screen_manager_->GetWindow(widget)->SetCursor(bitmaps, location,
-                                                frame_delay_ms);
+  screen_manager_->GetWindow(widget)->SetCursor(bitmaps, location, frame_delay);
 }
 
 void DrmThread::MoveCursor(gfx::AcceleratedWidget widget,
@@ -328,13 +328,11 @@ void DrmThread::RefreshNativeDisplays(
 
 void DrmThread::ConfigureNativeDisplays(
     const std::vector<display::DisplayConfigurationParams>& config_requests,
-    base::OnceCallback<void(const base::flat_map<int64_t, bool>&)> callback) {
+    base::OnceCallback<void(bool)> callback) {
   TRACE_EVENT0("drm", "DrmThread::ConfigureNativeDisplays");
 
-  base::flat_map<int64_t, bool> statuses =
-      display_manager_->ConfigureDisplays(config_requests);
-
-  std::move(callback).Run(statuses);
+  bool config_success = display_manager_->ConfigureDisplays(config_requests);
+  std::move(callback).Run(config_success);
 }
 
 void DrmThread::TakeDisplayControl(base::OnceCallback<void(bool)> callback) {

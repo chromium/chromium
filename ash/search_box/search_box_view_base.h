@@ -5,12 +5,12 @@
 #ifndef ASH_SEARCH_BOX_SEARCH_BOX_VIEW_BASE_H_
 #define ASH_SEARCH_BOX_SEARCH_BOX_VIEW_BASE_H_
 
+#include <string>
 #include <vector>
 
 #include "ash/search_box/search_box_constants.h"
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
@@ -129,7 +129,7 @@ class SearchBoxViewBase : public views::WidgetDelegateView,
 
   // Overridden from views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,
-                       const base::string16& new_contents) override;
+                       const std::u16string& new_contents) override;
   bool HandleMouseEvent(views::Textfield* sender,
                         const ui::MouseEvent& mouse_event) override;
   bool HandleGestureEvent(views::Textfield* sender,

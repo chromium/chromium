@@ -39,7 +39,8 @@ typedef (CSSImageValue or
          HTMLVideoElement or
          HTMLCanvasElement or
          ImageBitmap or
-         OffscreenCanvas) CanvasImageSource;
+         OffscreenCanvas or
+         VideoFrame) CanvasImageSource;
 
 enum CanvasFillRule { "nonzero", "evenodd" };
 enum ImageSmoothingQuality {"low", "medium", "high"};
@@ -50,25 +51,36 @@ interface CanvasRenderingContext2D {
     readonly attribute HTMLCanvasElement canvas;
 
     // state
-    void save(); // push state on state stack
-    void restore(); // pop state stack and restore state
+    [NoAllocDirectCall] void save(); // push state on state stack
+    [NoAllocDirectCall] void restore(); // pop state stack and restore state
     // Clear the canvas and reset the path
     [RuntimeEnabled=NewCanvas2DAPI] void reset();
 
     // transformations (default transform is the identity matrix)
     void scale(unrestricted double x, unrestricted double y);
-    void rotate(unrestricted double angle);
+    [RuntimeEnabled=NewCanvas2DAPI] void scale(unrestricted double x, unrestricted double y, unrestricted double z);
+    [NoAllocDirectCall] void rotate(unrestricted double angle);
+    [RuntimeEnabled=NewCanvas2DAPI, NoAllocDirectCall] void rotate3d(unrestricted double angleX, unrestricted double angleY, unrestricted double angleZ);
+    [RuntimeEnabled=NewCanvas2DAPI, NoAllocDirectCall] void rotateAxis(unrestricted double axisX, unrestricted double axisY, unrestricted double axisZ, unrestricted double angle);
     void translate(unrestricted double x, unrestricted double y);
+    [RuntimeEnabled=NewCanvas2DAPI] void translate(unrestricted double x, unrestricted double y, unrestricted double z);
+    [RuntimeEnabled=NewCanvas2DAPI, NoAllocDirectCall] void perspective(unrestricted double length);
     void transform(unrestricted double a, unrestricted double b, unrestricted double c, unrestricted double d, unrestricted double e, unrestricted double f);
+    [RuntimeEnabled=NewCanvas2DAPI] void transform(
+        unrestricted double m11, unrestricted double m12, unrestricted double m13, unrestricted double m14,
+        unrestricted double m21, unrestricted double m22, unrestricted double m23, unrestricted double m24,
+        unrestricted double m31, unrestricted double m32, unrestricted double m33, unrestricted double m34,
+        unrestricted double m41, unrestricted double m42, unrestricted double m43, unrestricted double m44
+    );
     void setTransform(unrestricted double a, unrestricted double b, unrestricted double c, unrestricted double d, unrestricted double e, unrestricted double f);
-    [RaisesException] void setTransform(optional DOMMatrix2DInit transform = {});
+    [RaisesException] void setTransform(optional DOMMatrixInit transform = {});
     DOMMatrix getTransform();
-    void resetTransform();
+    [NoAllocDirectCall] void resetTransform();
 
     // compositing
     attribute unrestricted double globalAlpha; // (default 1.0)
     attribute DOMString globalCompositeOperation; // (default source-over)
-    [MeasureAs=Canvas2DFilter, SetterCallWith=ExecutionContext] attribute DOMString filter; // (default 'none')
+    [MeasureAs=Canvas2DFilter, SetterCallWith=ExecutionContext] attribute (DOMString or CanvasFilter)? filter; // (default 'none')
 
     // image smoothing
     attribute boolean imageSmoothingEnabled; // (default True)
@@ -89,12 +101,12 @@ interface CanvasRenderingContext2D {
     attribute DOMString shadowColor;
 
     // rects
-    void clearRect(unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
-    void fillRect(unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
-    void strokeRect(unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
+    [NoAllocDirectCall] void clearRect(unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
+    [NoAllocDirectCall] void fillRect(unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
+    [NoAllocDirectCall] void strokeRect(unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
 
     // path API (see also CanvasPath)
-    void beginPath();
+    [NoAllocDirectCall] void beginPath();
     void fill(optional CanvasFillRule winding);
     void fill(Path2D path, optional CanvasFillRule winding);
     void stroke();
@@ -116,6 +128,9 @@ interface CanvasRenderingContext2D {
     void strokeText(DOMString text, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
     TextMetrics measureText(DOMString text);
 
+    // Render entire CanvasFormattedText with line wrapping (one-shot)
+    [RuntimeEnabled=CanvasFormattedText] void fillFormattedText(CanvasFormattedText formattedText, double x, double y, double wrapWidth);
+
     // drawing images
     [CallWith=ScriptState, RaisesException] void drawImage(CanvasImageSource image, unrestricted double x, unrestricted double y);
     [CallWith=ScriptState, RaisesException] void drawImage(CanvasImageSource image, unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
@@ -124,7 +139,7 @@ interface CanvasRenderingContext2D {
     // hit regions
     [RuntimeEnabled=CanvasHitRegion, RaisesException] void addHitRegion(optional HitRegionOptions options = {});
     [RuntimeEnabled=CanvasHitRegion] void removeHitRegion(DOMString id);
-    [RuntimeEnabled=CanvasHitRegion] void clearHitRegions();
+    [RuntimeEnabled=CanvasHitRegion, NoAllocDirectCall] void clearHitRegions();
 
     // pixel manipulation
     [RaisesException] ImageData createImageData(ImageData imagedata);
@@ -139,7 +154,7 @@ interface CanvasRenderingContext2D {
 
     // Context state
     // Should be merged with WebGL counterpart in CanvasRenderingContext, once no-longer experimental
-    [RuntimeEnabled=Canvas2dContextLostRestored] boolean isContextLost();
+    [RuntimeEnabled=NewCanvas2DAPI] boolean isContextLost();
 
     [MeasureAs=GetCanvas2DContextAttributes] CanvasRenderingContext2DSettings getContextAttributes();
 

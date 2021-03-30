@@ -23,12 +23,17 @@
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/network_context.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace chromecast {
 namespace shell {
+
+namespace {
+constexpr char kCookieStoreFile[] = "Cookies";
+}  // namespace
 
 // SharedURLLoaderFactory backed by a CastNetworkContexts and its system
 // NetworkContext. Transparently handles crashes.
@@ -43,7 +48,6 @@ class CastNetworkContexts::URLLoaderFactoryForSystem
   // mojom::URLLoaderFactory implementation:
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& url_request,
@@ -54,7 +58,7 @@ class CastNetworkContexts::URLLoaderFactoryForSystem
     if (!network_context_)
       return;
     network_context_->GetSystemURLLoaderFactory()->CreateLoaderAndStart(
-        std::move(receiver), routing_id, request_id, options, url_request,
+        std::move(receiver), request_id, options, url_request,
         std::move(client), traffic_annotation);
   }
 
@@ -145,7 +149,8 @@ void CastNetworkContexts::ConfigureNetworkContextParams(
     bool in_memory,
     const base::FilePath& relative_partition_path,
     network::mojom::NetworkContextParams* network_context_params,
-    network::mojom::CertVerifierCreationParams* cert_verifier_creation_params) {
+    cert_verifier::mojom::CertVerifierCreationParams*
+        cert_verifier_creation_params) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   ConfigureDefaultNetworkContextParams(network_context_params);
@@ -193,6 +198,13 @@ void CastNetworkContexts::ConfigureDefaultNetworkContextParams(
   network_context_params->accept_language =
       CastHttpUserAgentSettings::AcceptLanguage();
 
+  auto* browser_context = CastBrowserProcess::GetInstance()->browser_context();
+  DCHECK(browser_context);
+  network_context_params->cookie_path =
+      browser_context->GetPath().Append(kCookieStoreFile);
+  network_context_params->restore_old_session_cookies = false;
+  network_context_params->persist_session_cookies = true;
+
   // Disable idle sockets close on memory pressure, if instructed by DCS. On
   // memory constrained devices:
   // 1. if idle sockets are closed when memory pressure happens, cast_shell will
@@ -218,7 +230,7 @@ CastNetworkContexts::CreateSystemNetworkContextParams() {
   network_context_params->context_name = std::string("system");
 
   network_context_params->cert_verifier_params = content::GetCertVerifierParams(
-      network::mojom::CertVerifierCreationParams::New());
+      cert_verifier::mojom::CertVerifierCreationParams::New());
 
   return network_context_params;
 }

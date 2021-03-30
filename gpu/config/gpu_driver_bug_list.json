@@ -480,8 +480,15 @@
     },
     {
       "id": 88,
-      "description": "Always rewrite vec/mat constructors to be consistent",
-      "cr_bugs": [398694],
+      "description": "Rewrite vec/mat constructors on older GLSL ES drivers, Android O and earlier",
+      "cr_bugs": [398694, 1165751],
+      "os": {
+        "type": "android",
+        "version": {
+          "op": "<=",
+          "value": "8.0"
+        }
+      },
       "features": [
         "scalarize_vec_and_mat_constructor_args"
       ]
@@ -516,8 +523,8 @@
       "os": {
         "type": "android"
       },
-      "gl_vendor": "Imagination.*",
-      "gl_renderer": "PowerVR SGX 5.*",
+      "gl_vendor": ".*Imagination.*",
+      "gl_renderer": ".*PowerVR SGX 5.*",
       "features": [
         "etc1_power_of_two_only"
       ]
@@ -2807,18 +2814,6 @@
       ]
     },
     {
-      "id": 297,
-      "cr_bugs": [938678],
-      "description": "Needed to pass dEQP-EGL.functional.robustness.reset_context.shaders.infinite_loop.*",
-      "os": {
-        "type" : "chromeos"
-      },
-      "vendor_id": "0x1002",
-      "features": [
-        "exit_on_context_lost"
-      ]
-    },
-    {
       "id": 299,
       "description": "Context lost recovery often fails on PowerVR Rogue GE8* GPUs on Android.",
       "cr_bugs": [942106],
@@ -2951,19 +2946,6 @@
       ],
       "features": [
           "disable_vp_scaling"
-      ]
-    },
-    {
-      "id": 310,
-      "description": "Context lost recovery often fails on Mali on CrOS.",
-      "cr_bugs": [992286],
-      "os": {
-        "type": "chromeos"
-      },
-      "gl_vendor": "ARM.*",
-      "gl_renderer": ".*Mali-.*",
-      "features": [
-        "exit_on_context_lost"
       ]
     },
     {
@@ -3490,21 +3472,6 @@
       ]
     },
     {
-      "id": 349,
-      "cr_bugs": [1126058],
-      "description": "VP8 decoding hangs on Intel Broadwell",
-      "os": {
-        "type": "chromeos"
-      },
-      "vendor_id": "0x8086",
-      "intel_gpu_series": [
-        "broadwell"
-      ],
-      "features": [
-        "disable_accelerated_vp8_decode"
-      ]
-    },
-    {
       "id": 352,
       "cr_bugs": [1038006],
       "description": "Intel device 0x1066 can't use d3d11 video decoder",
@@ -3633,19 +3600,6 @@
       ]
     },
     {
-      "id": 361,
-      "description": "VP9 Profile 2 decoding doesn't work on ChromeOS AMDs",
-      "cr_bugs": [1147466],
-      "os": {
-        "type": "chromeos"
-      },
-      "vendor_id": "0x1002",
-      "driver_vendor": "Mesa",
-      "features": [
-        "disable_accelerated_vp9_profile2_decode"
-      ]
-    },
-    {
       "id": 362,
       "description": "Promote 2 videos to hardware overlays on Windows Intel platforms",
       "cr_bugs": [1105618],
@@ -3658,6 +3612,137 @@
       ],
       "features": [
         "supports_two_yuv_hardware_overlays"
+      ]
+    },
+    {
+      "id": 363,
+      "description": "VP9 decoding is too slow on Intel Broadwell, Skylake, and CherryTrail",
+      "cr_bugs": [616318, 1163111],
+      "os": {
+        "type": "macosx"
+      },
+      "intel_gpu_series": [
+        "broadwell",
+        "skylake",
+        "cherrytrail"
+      ],
+      "features": [
+        "disable_accelerated_vp9_decode"
+      ]
+    },
+    {
+      "id": 364,
+      "cr_bugs": [1161215, 1160217],
+      "description": "Software overlays fail to work reliably on AMD devices",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x1002",
+      "features": [
+        "disable_direct_composition_sw_video_overlays"
+      ]
+    },
+    {
+      "id": 365,
+      "description": "Context lost recovery often fails on Adreno with SkiaRenderer GL.",
+      "cr_bugs": [1079161],
+      "os": {
+        "type": "android"
+      },
+      "gl_renderer": "Adreno.*",
+      "features": [
+        "exit_on_context_lost"
+      ]
+    },
+    {
+      "id": 366,
+      "cr_bugs": [1179557],
+      "description": "The hardware video encoder on the SC7180 SoC has poor quality.",
+      "os": {
+        "type": "chromeos"
+      },
+      "gl_vendor": "freedreno",
+      "features": [
+          "disable_accelerated_h264_encode",
+          "disable_accelerated_vp8_encode"
+        ]
+    },
+    {
+      "id": 367,
+      "cr_bugs": [1180962],
+      "description": "ANGLE cannot recover from context lost",
+      "os": {
+        "type": "android"
+      },
+      "gl_renderer": "ANGLE.*",
+      "features": [
+        "exit_on_context_lost"
+      ]
+    },
+    {
+      "id": 368,
+      "cr_bugs": [1181358],
+      "description": "High D3D11VideoDecoder error rates for AV1 content on Intel GPUs",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "features": [
+        "disable_accelerated_av1_decode_d3d11"
+      ]
+    },
+    {
+      "id": 369,
+      "cr_bugs": [1184340],
+      "description": "Limit MSAA quality samples to 4 and storage samples 2 on Pollock",
+      "os": {
+        "type" : "chromeos"
+      },
+      "vendor_id": "0x1002",
+      "device_id": ["0x15d8"],
+      "device_revision": ["0xe9", "0xea"],
+      "features": [
+        "max_msaa_sample_count_4",
+        "use_eqaa_storage_samples_2"
+      ]
+    },
+    {
+      "id": 370,
+      "description": "Context loss recovery often fails on Chrome OS",
+      "cr_bugs": [992286, 1177986],
+      "os": {
+        "type": "chromeos"
+      },
+      "features": [
+        "exit_on_context_lost"
+      ]
+    },
+    {
+      "id": 371,
+      "cr_bugs": [1192748],
+      "description": "Disable software overlays for Intel GPUs. All Skylake+ devices support hw overlays, older devices peform poorly.",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "features": [
+        "disable_direct_composition_sw_video_overlays"
+      ]
+    },
+    {
+      "id": 372,
+      "cr_bugs": [1103852],
+      "description": "Check YCbCr_Studio_G22_Left_P709 color space for NV12 overlay support on Intel",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "intel_gpu_generation": {
+        "op": "=",
+        "value": "9"
+      },
+      "features": [
+        "check_ycbcr_studio_g22_left_p709_for_nv12_support"
       ]
     }
   ]

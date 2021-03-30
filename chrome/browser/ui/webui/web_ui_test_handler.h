@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_WEB_UI_TEST_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_WEB_UI_TEST_HANDLER_H_
 
+#include <string>
+
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "chrome/test/data/webui/web_ui_test.mojom-forward.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
@@ -16,7 +17,7 @@ class Value;
 }  // namespace base
 
 namespace content {
-class RenderViewHost;
+class RenderFrameHost;
 }
 
 // This class registers test framework specific handlers on WebUI objects.
@@ -25,17 +26,17 @@ class WebUITestHandler {
   WebUITestHandler();
   virtual ~WebUITestHandler();
 
-  // Sends a message through |preload_host| with the |js_text| to preload at the
-  // appropriate time before the onload call is made.
-  void PreloadJavaScript(const base::string16& js_text,
-                         content::RenderViewHost* preload_host);
+  // Sends a message through |preload_frame| with the |js_text| to preload at
+  // the appropriate time before the onload call is made.
+  void PreloadJavaScript(const std::u16string& js_text,
+                         content::RenderFrameHost* preload_frame);
 
   // Runs |js_text| in this object's WebUI frame. Does not wait for any result.
-  void RunJavaScript(const base::string16& js_text);
+  void RunJavaScript(const std::u16string& js_text);
 
   // Runs |js_text| in this object's WebUI frame. Waits for result, logging an
   // error message on failure. Returns test pass/fail.
-  bool RunJavaScriptTestWithResult(const base::string16& js_text);
+  bool RunJavaScriptTestWithResult(const std::u16string& js_text);
 
  protected:
   virtual content::WebUI* GetWebUI() = 0;
@@ -56,19 +57,19 @@ class WebUITestHandler {
   bool WaitForResult();
 
   // Received test pass/fail;
-  bool test_done_;
+  bool test_done_ = false;
 
   // Pass fail result of current test.
-  bool test_succeeded_;
+  bool test_succeeded_ = false;
 
   // Test code finished trying to execute. This will be set to true when the
   // selected tab is done with this execution request whether it was able to
   // parse/execute the javascript or not.
-  bool run_test_done_;
+  bool run_test_done_ = false;
 
   // Test code was able to execute successfully. This is *NOT* the test
   // pass/fail.
-  bool run_test_succeeded_;
+  bool run_test_succeeded_ = false;
 
   // Quits the currently running RunLoop.
   base::RepeatingClosure quit_closure_;

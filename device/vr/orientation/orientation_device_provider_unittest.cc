@@ -31,6 +31,12 @@
 
 namespace device {
 
+namespace {
+std::unique_ptr<XrFrameSinkClient> FrameSinkClientFactory() {
+  return nullptr;
+}
+}  // namespace
+
 class VROrientationDeviceProviderTest : public testing::Test {
  protected:
   VROrientationDeviceProviderTest() = default;
@@ -162,7 +168,8 @@ TEST_F(VROrientationDeviceProviderTest, InitializationCallbackSuccessTest) {
 
   provider_->Initialize(DeviceAndIdCallbackMustBeCalled(&wait_for_device),
                         DeviceIdCallbackFailIfCalled(),
-                        ClosureMustBeCalled(&wait_for_init));
+                        ClosureMustBeCalled(&wait_for_init),
+                        base::BindRepeating(&FrameSinkClientFactory));
 
   InitializeDevice(FakeInitParams());
 
@@ -177,7 +184,8 @@ TEST_F(VROrientationDeviceProviderTest, InitializationCallbackFailureTest) {
 
   provider_->Initialize(DeviceAndIdCallbackFailIfCalled(),
                         DeviceIdCallbackFailIfCalled(),
-                        ClosureMustBeCalled(&wait_for_init));
+                        ClosureMustBeCalled(&wait_for_init),
+                        base::BindRepeating(&FrameSinkClientFactory));
 
   InitializeDevice(nullptr);
 

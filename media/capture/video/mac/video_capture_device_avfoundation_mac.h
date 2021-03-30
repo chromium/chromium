@@ -7,6 +7,7 @@
 
 #import <AVFoundation/AVFoundation.h>
 #import <Foundation/Foundation.h>
+#include "base/callback_forward.h"
 
 #include "base/mac/scoped_dispatch_object.h"
 #include "base/mac/scoped_nsobject.h"
@@ -18,6 +19,14 @@
 #include "media/capture/video_capture_types.h"
 
 namespace media {
+
+// When this feature is enabled, the capturer can be configured using
+// setScaledResolutions to output scaled versions of the captured frame (in
+// addition to the original frame), whenever NV12 IOSurfaces are available to
+// the capturer. These are available either when the camera supports it and
+// kAVFoundationCaptureV2ZeroCopy is enabled or when kInCaptureConvertToNv12 is
+// used to convert frames to NV12.
+CAPTURE_EXPORT extern const base::Feature kInCapturerScaling;
 
 // Find the best capture format from |formats| for the specified dimensions and
 // frame rate. Returns an element of |formats|, or nil.
@@ -53,6 +62,13 @@ CAPTURE_EXPORT
   base::Lock _lock;
   media::VideoCaptureDeviceAVFoundationFrameReceiver* _frameReceiver
       GUARDED_BY(_lock);  // weak.
+  bool _capturedFirstFrame GUARDED_BY(_lock);
+  bool _capturedFrameSinceLastStallCheck GUARDED_BY(_lock);
+  std::unique_ptr<base::WeakPtrFactory<VideoCaptureDeviceAVFoundation>>
+      _weakPtrFactoryForStallCheck;
+
+  // Used to rate-limit crash reports for https://crbug.com/1168112.
+  bool _hasDumpedForFrameSizeMismatch;
 
   base::scoped_nsobject<AVCaptureSession> _captureSession;
 
@@ -64,6 +80,12 @@ CAPTURE_EXPORT
 
   // When enabled, converts captured frames to NV12.
   std::unique_ptr<media::SampleBufferTransformer> _sampleBufferTransformer;
+  // Transformers used to create downscaled versions of the captured image.
+  // Enabled when setScaledResolutions is called (i.e. media::VideoFrameFeedback
+  // asks for scaled frames on behalf of a consumer in the Renderer process),
+  // NV12 output is enabled and the kInCapturerScaling feature is on.
+  std::vector<std::unique_ptr<media::SampleBufferTransformer>>
+      _scaledFrameTransformers;
 
   // An AVDataOutput specialized for taking pictures out of |captureSession_|.
   base::scoped_nsobject<AVCaptureStillImageOutput> _stillImageOutput;
@@ -86,6 +108,20 @@ CAPTURE_EXPORT
 
 - (void)setOnStillImageOutputStoppedForTesting:
     (base::RepeatingCallback<void()>)onStillImageOutputStopped;
+
+// Use the below only for test.
+- (void)callLocked:(base::OnceClosure)lambda;
+
+- (void)processPixelBufferNV12IOSurface:(CVPixelBufferRef)pixelBuffer
+                          captureFormat:
+                              (const media::VideoCaptureFormat&)captureFormat
+                             colorSpace:(const gfx::ColorSpace&)colorSpace
+                              timestamp:(const base::TimeDelta)timestamp;
+
+- (BOOL)processPixelBufferPlanes:(CVImageBufferRef)pixelBuffer
+                   captureFormat:(const media::VideoCaptureFormat&)captureFormat
+                      colorSpace:(const gfx::ColorSpace&)colorSpace
+                       timestamp:(const base::TimeDelta)timestamp;
 
 @end
 

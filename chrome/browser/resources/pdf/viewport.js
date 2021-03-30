@@ -73,12 +73,8 @@ export class Viewport {
    *     plugin in the viewer.
    * @param {number} scrollbarWidth The width of scrollbars on the page
    * @param {number} defaultZoom The default zoom level.
-   * @param {number} topToolbarHeight The number of pixels that should initially
-   *     be left blank above the document for the toolbar.
    */
-  constructor(
-      scrollParent, sizer, content, scrollbarWidth, defaultZoom,
-      topToolbarHeight) {
+  constructor(scrollParent, sizer, content, scrollbarWidth, defaultZoom) {
     /** @private {!HTMLElement} */
     this.window_ = scrollParent;
 
@@ -93,9 +89,6 @@ export class Viewport {
 
     /** @private {number} */
     this.defaultZoom_ = defaultZoom;
-
-    /** @private {number} */
-    this.topToolbarHeight_ = topToolbarHeight;
 
     /** @private {function():void} */
     this.viewportChangedCallback_ = function() {};
@@ -138,7 +131,7 @@ export class Viewport {
     this.prevScale_ = 1;
 
     /** @private {!PinchPhase} */
-    this.pinchPhase_ = PinchPhase.PINCH_NONE;
+    this.pinchPhase_ = PinchPhase.NONE;
 
     /** @private {?Point} */
     this.pinchPanVector_ = null;
@@ -148,9 +141,6 @@ export class Viewport {
 
     /** @private {?Point} */
     this.firstPinchCenterInFrame_ = null;
-
-    /** @private {number} */
-    this.rotations_ = 0;
 
     /** @private {?Point} */
     this.oldCenterInContent_ = null;
@@ -183,7 +173,7 @@ export class Viewport {
     // Set to a default zoom manager - used in tests.
     this.setZoomManager(new InactiveZoomManager(this.getZoom.bind(this), 1));
 
-    // Case where |chrome_pdf::features::kPDFViewerUpdate| is disabled.
+    // Print Preview
     if (this.window_ === document.documentElement ||
         // Necessary check since during testing a fake DOM element is used.
         !(this.window_ instanceof HTMLElement)) {
@@ -196,7 +186,7 @@ export class Viewport {
       // |resizeCallback| to be called on the mock |window_| object (legacy).
       this.window_.resizeCallback = this.resizeWrapper_.bind(this);
     } else {
-      // Case where |chrome_pdf::features::kPDFViewerUpdate| is enabled.
+      // Standard PDF viewer
       this.window_.addEventListener('scroll', this.updateViewport_.bind(this));
       const resizeObserver = new ResizeObserver(_ => this.resizeWrapper_());
       const target = this.window_.parentElement;
@@ -228,37 +218,19 @@ export class Viewport {
     this.userInitiatedCallback_ = userInitiatedCallback;
   }
 
-  rotateClockwise() {
-    this.rotateBySteps_(1);
-  }
-
-  rotateCounterclockwise() {
-    this.rotateBySteps_(3);
-  }
-
-  /**
-   * @param {number} n The number of clockwise 90-degree rotations to increment
-   *     by.
-   */
-  rotateBySteps_(n) {
-    this.rotations_ = (this.rotations_ + n) % 4;
-  }
-
   /**
    * @return {number} The number of clockwise 90-degree rotations that have been
    *     applied.
    */
   getClockwiseRotations() {
-    return this.rotations_;
+    const options = this.getLayoutOptions();
+    return options ? options.defaultPageOrientation : 0;
   }
 
   /** @return {boolean} Whether viewport is in two-up view mode. */
   twoUpViewEnabled() {
     const options = this.getLayoutOptions();
-    if (options === undefined) {
-      return false;
-    }
-    return options.twoUpViewEnabled;
+    return !!options && options.twoUpViewEnabled;
   }
 
   /**
@@ -297,9 +269,11 @@ export class Viewport {
     const height = dimensions.height;
     const width = dimensions.width;
 
-    const matrix = new DOMMatrix();
+    // TODO(dpapad): Use the no-arg constructor when
+    // https://github.com/google/closure-compiler/issues/3768 is fixed.
+    const matrix = new DOMMatrix([1, 0, 0, 1, 0, 0]);
 
-    const rotation = this.rotations_ * 90;
+    const rotation = this.getClockwiseRotations() * 90;
     // Set origin for rotation.
     if (rotation === 90) {
       matrix.translateSelf(width, 0);
@@ -316,10 +290,8 @@ export class Viewport {
     matrix.scaleSelf(1, -1);
 
     const pointsToPixels = 96 / 72;
-    const result = matrix.transformPoint({
-      x: point.x * pointsToPixels,
-      y: point.y * pointsToPixels,
-    });
+    const result = matrix.transformPoint(
+        new DOMPoint(point.x * pointsToPixels, point.y * pointsToPixels));
     return {
       x: result.x + PAGE_SHADOW.left,
       y: result.y + PAGE_SHADOW.top,
@@ -391,8 +363,7 @@ export class Viewport {
 
     return {
       horizontal: zoomedDimensions.width > this.window_.offsetWidth,
-      vertical: zoomedDimensions.height + this.topToolbarHeight_ >
-          this.window_.offsetHeight
+      vertical: zoomedDimensions.height > this.window_.offsetHeight
     };
   }
 
@@ -413,8 +384,7 @@ export class Viewport {
     const zoomedDimensions = this.getZoomedDocumentDimensions_(this.getZoom());
     if (zoomedDimensions) {
       this.sizer_.style.width = zoomedDimensions.width + 'px';
-      this.sizer_.style.height =
-          zoomedDimensions.height + this.topToolbarHeight_ + 'px';
+      this.sizer_.style.height = zoomedDimensions.height + 'px';
     }
   }
 
@@ -477,10 +447,7 @@ export class Viewport {
 
   /** @return {!Point} The scroll position of the viewport. */
   get position() {
-    return {
-      x: this.window_.scrollLeft,
-      y: this.window_.scrollTop - this.topToolbarHeight_
-    };
+    return {x: this.window_.scrollLeft, y: this.window_.scrollTop};
   }
 
   /**
@@ -488,7 +455,7 @@ export class Viewport {
    * @param {!Point} position The position to scroll to.
    */
   set position(position) {
-    this.window_.scrollTo(position.x, position.y + this.topToolbarHeight_);
+    this.window_.scrollTo(position.x, position.y);
   }
 
   /** @return {!Size} the size of the viewport excluding scrollbars. */
@@ -697,10 +664,7 @@ export class Viewport {
    * @private
    */
   getPageAtY_(y) {
-    if (y < 0) {
-      assert(this.topToolbarHeight_ > 0);
-      return 0;
-    }
+    assert(y >= 0);
 
     // Drop decimal part of |y| otherwise it can appear as larger than the
     // bottom of the last page in the document (even without the presence of a
@@ -1220,8 +1184,8 @@ export class Viewport {
   /**
    * Go to the given y position in the given page index.
    * @param {number} page the index of the page to go to. zero-based.
-   * @param {number} x the x position in the page to go to.
-   * @param {number} y the y position in the page to go to.
+   * @param {number|undefined} x the x position in the page to go to.
+   * @param {number|undefined} y the y position in the page to go to.
    */
   goToPageAndXY(page, x, y) {
     this.mightZoom_(() => {
@@ -1235,16 +1199,21 @@ export class Viewport {
         page = this.pageDimensions_.length - 1;
       }
       const dimensions = this.pageDimensions_[page];
-      let toolbarOffset = 0;
-      // Unless we're in fit to page or fit to height mode, scroll above the
-      // page by |this.topToolbarHeight_| so that the toolbar isn't covering it
-      // initially.
-      if (!this.isPagedMode_()) {
-        toolbarOffset = this.topToolbarHeight_;
+
+      // If `x` or `y` is not a valid number or specified, then that
+      // coordinate of the current viewport position should be retained.
+      const currentCoords =
+          /** @type {!Point} */ (this.retrieveCurrentScreenCoordinates_());
+      if (x === undefined || Number.isNaN(x)) {
+        x = currentCoords.x;
       }
+      if (y === undefined || Number.isNaN(y)) {
+        y = currentCoords.y;
+      }
+
       this.position = {
         x: (dimensions.x + x) * this.getZoom(),
-        y: (dimensions.y + y) * this.getZoom() - toolbarOffset
+        y: (dimensions.y + y) * this.getZoom()
       };
       this.updateViewport_();
     });
@@ -1263,7 +1232,7 @@ export class Viewport {
         this.setZoomInternal_(Math.min(
             this.defaultZoom_,
             this.computeFittingZoom_(this.documentDimensions_, true, false)));
-        this.position = {x: 0, y: -this.topToolbarHeight_};
+        this.position = {x: 0, y: 0};
       }
       this.contentSizeChanged_();
       this.resize_();
@@ -1338,22 +1307,32 @@ export class Viewport {
   }
 
   /**
+   * Retrieves the in-screen coordinates of the current viewport position.
+   * @return {!Point} The current viewport position.
+   * @private
+   */
+  retrieveCurrentScreenCoordinates_() {
+    const currentPage = this.getMostVisiblePage();
+    const dimension = this.pageDimensions_[currentPage];
+    const x = this.position.x / this.getZoom() - dimension.x;
+    const y = this.position.y / this.getZoom() - dimension.y;
+    return {x: x, y: y};
+  }
+
+  /**
    * Handles a navigation request to a destination from the current controller.
    * @param {number} page
-   * @param {number} x
-   * @param {number} y
+   * @param {number|undefined} x The in-screen x coordinate for the destination.
+   *     If `x` is undefined, retain current x coordinate value.
+   * @param {number|undefined} y The in-screen y coordinate for the destination.
+   *     If `y` is undefined, retain current y coordinate value.
    * @param {number} zoom
    */
   handleNavigateToDestination(page, x, y, zoom) {
     if (zoom) {
       this.setZoom(zoom);
     }
-
-    if (x || y) {
-      this.goToPageAndXY(page, x ? x : 0, y ? y : 0);
-    } else {
-      this.goToPage(page);
-    }
+    this.goToPageAndXY(page, x, y);
   }
 
   /**
@@ -1407,9 +1386,8 @@ export class Viewport {
       this.sentPinchEvent_ = false;
       this.mightZoom_(() => {
         const {direction, center, startScaleRatio} = e.detail;
-        this.pinchPhase_ = direction === 'out' ?
-            PinchPhase.PINCH_UPDATE_ZOOM_OUT :
-            PinchPhase.PINCH_UPDATE_ZOOM_IN;
+        this.pinchPhase_ = direction === 'out' ? PinchPhase.UPDATE_ZOOM_OUT :
+                                                 PinchPhase.UPDATE_ZOOM_IN;
 
         const scaleDelta = startScaleRatio / this.prevScale_;
         if (this.firstPinchCenterInFrame_ != null) {
@@ -1461,7 +1439,7 @@ export class Viewport {
     window.requestAnimationFrame(() => {
       this.mightZoom_(() => {
         const {center, startScaleRatio} = e.detail;
-        this.pinchPhase_ = PinchPhase.PINCH_END;
+        this.pinchPhase_ = PinchPhase.END;
         const scaleDelta = startScaleRatio / this.prevScale_;
         this.pinchCenter_ = /** @type {!Point} */ (center);
 
@@ -1470,7 +1448,7 @@ export class Viewport {
         this.updateViewport_();
       });
 
-      this.pinchPhase_ = PinchPhase.PINCH_NONE;
+      this.pinchPhase_ = PinchPhase.NONE;
       this.pinchPanVector_ = null;
       this.pinchCenter_ = null;
       this.firstPinchCenterInFrame_ = null;
@@ -1491,7 +1469,7 @@ export class Viewport {
     // We also use rAF for pinch start, so that if there is a pinch end event
     // scheduled by rAF, this pinch start will be sent after.
     window.requestAnimationFrame(() => {
-      this.pinchPhase_ = PinchPhase.PINCH_START;
+      this.pinchPhase_ = PinchPhase.START;
       this.prevScale_ = 1;
       this.oldCenterInContent_ =
           this.frameToContent_(this.frameToPluginCoordinate_(e.detail.center));
@@ -1512,15 +1490,15 @@ export class Viewport {
 
 /**
  * Enumeration of pinch states.
- * This should match PinchPhase enum in pdf/out_of_process_instance.h
+ * This should match PinchPhase enum in pdf/pdf_view_plugin_base.cc.
  * @enum {number}
  */
 export const PinchPhase = {
-  PINCH_NONE: 0,
-  PINCH_START: 1,
-  PINCH_UPDATE_ZOOM_OUT: 2,
-  PINCH_UPDATE_ZOOM_IN: 3,
-  PINCH_END: 4
+  NONE: 0,
+  START: 1,
+  UPDATE_ZOOM_OUT: 2,
+  UPDATE_ZOOM_IN: 3,
+  END: 4,
 };
 
 /**

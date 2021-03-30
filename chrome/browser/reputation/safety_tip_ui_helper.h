@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_REPUTATION_SAFETY_TIP_UI_HELPER_H_
 #define CHROME_BROWSER_REPUTATION_SAFETY_TIP_UI_HELPER_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "chrome/browser/reputation/safety_tip_ui.h"
 #include "components/security_state/core/security_state.h"
 #include "url/gurl.h"
@@ -26,9 +27,9 @@ void OpenHelpCenterFromSafetyTip(content::WebContents* web_contents);
 // Get the titles, descriptions, and button strings or IDs needed to describe
 // the applicable warning type.  Handles both Android and desktop warnings.
 // |suggested_url| is the suggested URL to navigate to, used in some strings.
-base::string16 GetSafetyTipTitle(security_state::SafetyTipStatus warning_type,
+std::u16string GetSafetyTipTitle(security_state::SafetyTipStatus warning_type,
                                  const GURL& suggested_url);
-base::string16 GetSafetyTipDescription(
+std::u16string GetSafetyTipDescription(
     security_state::SafetyTipStatus warning_type,
     const GURL& suggested_url);
 int GetSafetyTipLeaveButtonId(security_state::SafetyTipStatus warning_type);

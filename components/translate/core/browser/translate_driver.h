@@ -23,6 +23,10 @@ class TranslateDriver {
  public:
   class LanguageDetectionObserver : public base::CheckedObserver {
    public:
+    // Called when the observed instance is being destroyed so that observers
+    // can reset their pointers to the TranslateDriver.
+    virtual void OnTranslateDriverDestroyed(TranslateDriver* driver) {}
+
     // Called when the page language has been detected.
     virtual void OnLanguageDetermined(
         const translate::LanguageDetectionDetails& details) {}

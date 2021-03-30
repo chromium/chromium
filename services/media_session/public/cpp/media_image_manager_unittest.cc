@@ -4,9 +4,10 @@
 
 #include "services/media_session/public/cpp/media_image_manager.h"
 
+#include <string>
+
 #include "base/hash/hash.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -53,12 +54,12 @@ TEST_F(MediaImageManagerTest, CheckExpectedImageTypeHashes) {
                                "image/png", "image/x-icon"};
 
   for (const auto& type : types) {
-    base::string16 type16 = base::ASCIIToUTF16(type);
+    std::u16string type16 = base::ASCIIToUTF16(type);
 
     // Uncomment these lines to print the hashes if new ones need to be added.
     // printf("0x%x %s\n",
     //        base::PersistentHash(type16.data(),
-    //                             type16.size() * sizeof(base::char16)),
+    //                             type16.size() * sizeof(char16_t)),
     //        type.c_str());
 
     EXPECT_TRUE(MediaImageManager::GetImageTypeScore(type16));
@@ -69,12 +70,12 @@ TEST_F(MediaImageManagerTest, PickImageFromMimeType) {
   std::vector<MediaImage> images;
 
   MediaImage image1;
-  image1.type = base::ASCIIToUTF16("image/bmp");
+  image1.type = u"image/bmp";
   image1.sizes.push_back(gfx::Size(kIdealSize, kIdealSize));
   images.push_back(image1);
 
   MediaImage image2;
-  image2.type = base::ASCIIToUTF16("image/png");
+  image2.type = u"image/png";
   image2.sizes.push_back(gfx::Size(kIdealSize, kIdealSize));
   images.push_back(image2);
 
@@ -202,6 +203,19 @@ TEST_F(MediaImageManagerTest, PreferImagesWithNonZeroArea) {
   images.push_back(image4);
 
   EXPECT_EQ(image1, manager()->SelectImage(images));
+}
+
+TEST_F(MediaImageManagerTest, PickImageWithAnySize) {
+  MediaImageManager manager(10, 10);
+
+  std::vector<MediaImage> images;
+
+  // Empty size denotes "any" value.
+  MediaImage image;
+  image.sizes.push_back(gfx::Size());
+  images.push_back(image);
+
+  EXPECT_TRUE(manager.SelectImage(images));
 }
 
 }  // namespace media_session

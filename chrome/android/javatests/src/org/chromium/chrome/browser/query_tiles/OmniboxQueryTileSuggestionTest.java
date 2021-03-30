@@ -270,7 +270,7 @@ public class OmniboxQueryTileSuggestionTest {
             }
         };
         PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
-            ChromeBrowserInitializer.getInstance().handlePreNativeStartup(parts);
+            ChromeBrowserInitializer.getInstance().handlePreNativeStartupAndLoadLibraries(parts);
             ChromeBrowserInitializer.getInstance().handlePostNativeStartup(true, parts);
         });
         CriteriaHelper.pollUiThread(

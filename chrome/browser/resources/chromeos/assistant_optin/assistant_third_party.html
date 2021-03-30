@@ -2,34 +2,36 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+
 <link rel="import" href="/components/oobe_i18n_behavior.html">
-<link rel="import" href="/components/oobe_dialog.html">
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
+<link rel="import" href="/components/oobe_dialog_host_behavior.html">
 
 <dom-module id="assistant-third-party">
   <template>
     <style include="oobe-dialog-host"></style>
     <link rel="stylesheet" href="assistant_shared_styles.css">
     <link rel="stylesheet" href="assistant_third_party.css">
-    <oobe-dialog id="third-party-dialog" role="dialog" has-buttons hide-shadow
-        no-footer-padding no-header>
-      <div slot="footer">
-        <div class="container">
-          <img id="logo" src="assistant_logo.png"
-              aria-label$="[[i18nDynamic(locale, 'assistantLogo')]]">
-          <div class="title" id="title-text"></div>
-          <div class="line"></div>
-          <div id="insertion-point"></div>
-          <div class="sub-title" id="footer-text"></div>
-        </div>
+    <oobe-adaptive-dialog id="third-party-dialog" role="dialog" hide-shadow>
+      <iron-icon slot="icon" icon="assistant-32:assistant"
+          aria-label$="[[i18nDynamic(locale, 'assistantLogo')]]">
+      </iron-icon>
+      <h1 slot="title" id="title-text"></h1>
+      <div slot="content" class="landscape-header-aligned">
+        <div class="line"></div>
+        <div id="insertion-point"></div>
+        <div class="sub-title" id="footer-text"></div>
       </div>
-      <div slot="bottom-buttons" class="flex layout horizontal">
-        <div class="flex"></div>
+      <div slot="bottom-buttons">
         <oobe-next-button id="next-button" inverse on-click="onNextTap_"
             disabled="[[buttonsDisabled]]" hidden="[[moreContents]]">
           <div id="next-button-text" slot="text"></div>
         </oobe-next-button>
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
 
     <cr-dialog id="third-party-overlay">
       <div slot="body">

@@ -78,13 +78,13 @@ bool DnsConfigWatcher::Watch(
 }
 
 // static
-ConfigParsePosixResult DnsConfigWatcher::CheckDnsConfig() {
+bool DnsConfigWatcher::CheckDnsConfig(bool& out_unhandled_options) {
   if (!GetDnsInfoApi().dns_configuration_copy)
-    return CONFIG_PARSE_POSIX_NO_DNSINFO;
+    return false;
   std::unique_ptr<dns_config_t, DnsConfigTDeleter> dns_config(
       GetDnsInfoApi().dns_configuration_copy());
   if (!dns_config)
-    return CONFIG_PARSE_POSIX_NO_DNSINFO;
+    return false;
 
   // TODO(szym): Parse dns_config_t for resolvers rather than res_state.
   // DnsClient can't handle domain-specific unscoped resolvers.
@@ -97,9 +97,9 @@ ConfigParsePosixResult DnsConfigWatcher::CheckDnsConfig() {
       continue;
     ++num_resolvers;
   }
-  if (num_resolvers > 1)
-    return CONFIG_PARSE_POSIX_UNHANDLED_OPTIONS;
-  return CONFIG_PARSE_POSIX_OK;
+
+  out_unhandled_options = num_resolvers > 1;
+  return true;
 }
 
 }  // namespace internal

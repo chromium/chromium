@@ -57,6 +57,7 @@ class PLATFORM_EXPORT ThreadState::StatisticsCollector {
       : thread_state_(thread_state) {}
 
   ThreadState::Statistics CollectStatistics(Statistics::DetailLevel) const;
+  void Verify() const;
 
  private:
   ThreadState* const thread_state_;

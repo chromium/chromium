@@ -33,6 +33,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -41,6 +42,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.cc.input.BrowserControlsState;
+import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -97,6 +99,17 @@ public class TrustedWebActivityTest {
                 ContentSwitches.HOST_RESOLVER_RULES, "MAP * " + mapToUri.getAuthority());
     }
 
+    private void assertLaunchCauseMetrics(boolean launchedTWA) {
+        assertEquals(launchedTWA ? 1 : 0,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM,
+                        LaunchCauseMetrics.LaunchCause.TWA));
+        assertEquals(launchedTWA ? 0 : 1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM,
+                        LaunchCauseMetrics.LaunchCause.CUSTOM_TAB));
+    }
+
     @Test
     @MediumTest
     public void launchesTwa() throws TimeoutException {
@@ -104,6 +117,7 @@ public class TrustedWebActivityTest {
         launchCustomTabActivity(intent);
 
         assertTrue(isTrustedWebActivity(mCustomTabActivityTestRule.getActivity()));
+        assertLaunchCauseMetrics(true);
     }
 
     @Test
@@ -114,6 +128,7 @@ public class TrustedWebActivityTest {
         launchCustomTabActivity(intent);
 
         assertFalse(isTrustedWebActivity(mCustomTabActivityTestRule.getActivity()));
+        assertLaunchCauseMetrics(false);
     }
 
     @Test
@@ -126,6 +141,7 @@ public class TrustedWebActivityTest {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
         assertFalse(isTrustedWebActivity(mCustomTabActivityTestRule.getActivity()));
+        assertLaunchCauseMetrics(true);
     }
 
     /**

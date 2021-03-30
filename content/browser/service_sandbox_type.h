@@ -5,8 +5,8 @@
 #ifndef CONTENT_BROWSER_SERVICE_SANDBOX_TYPE_H_
 #define CONTENT_BROWSER_SERVICE_SANDBOX_TYPE_H_
 
-#include "base/feature_list.h"
 #include "build/build_config.h"
+#include "content/browser/network_service_instance_impl.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/common/content_client.h"
@@ -42,6 +42,20 @@ content::GetServiceSandboxType<media::mojom::CdmService>() {
   return sandbox::policy::SandboxType::kCdm;
 }
 
+#if defined(OS_WIN)
+// media::mojom::MediaService
+namespace media {
+namespace mojom {
+class MediaService;
+}
+}  // namespace media
+template <>
+inline sandbox::policy::SandboxType
+content::GetServiceSandboxType<media::mojom::MediaService>() {
+  return sandbox::policy::SandboxType::kMediaFoundationCdm;
+}
+#endif  // defined(OS_WIN)
+
 // network::mojom::NetworkService
 namespace network {
 namespace mojom {
@@ -51,7 +65,8 @@ class NetworkService;
 template <>
 inline sandbox::policy::SandboxType
 content::GetServiceSandboxType<network::mojom::NetworkService>() {
-  return sandbox::policy::SandboxType::kNetwork;
+  return IsNetworkSandboxEnabled() ? sandbox::policy::SandboxType::kNetwork
+                                   : sandbox::policy::SandboxType::kNoSandbox;
 }
 
 // device::mojom::XRDeviceService

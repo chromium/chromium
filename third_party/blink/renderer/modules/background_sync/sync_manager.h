@@ -47,8 +47,7 @@ class SyncManager final : public ScriptWrappable {
       WTF::Vector<mojom::blink::SyncRegistrationOptionsPtr> registrations);
 
   Member<ServiceWorkerRegistration> registration_;
-  HeapMojoRemote<mojom::blink::OneShotBackgroundSyncService,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
+  HeapMojoRemote<mojom::blink::OneShotBackgroundSyncService>
       background_sync_service_;
 };
 

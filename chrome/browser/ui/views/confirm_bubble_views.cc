@@ -22,12 +22,14 @@
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
 
 ConfirmBubbleViews::ConfirmBubbleViews(
     std::unique_ptr<ConfirmBubbleModel> model)
     : model_(std::move(model)) {
+  SetModalType(ui::MODAL_TYPE_WINDOW);
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  model_->GetButtonLabel(ui::DIALOG_BUTTON_OK));
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
@@ -76,11 +78,7 @@ ConfirmBubbleViews::ConfirmBubbleViews(
 ConfirmBubbleViews::~ConfirmBubbleViews() {
 }
 
-ui::ModalType ConfirmBubbleViews::GetModalType() const {
-  return ui::MODAL_TYPE_WINDOW;
-}
-
-base::string16 ConfirmBubbleViews::GetWindowTitle() const {
+std::u16string ConfirmBubbleViews::GetWindowTitle() const {
   return model_->GetTitle();
 }
 
@@ -92,6 +90,9 @@ void ConfirmBubbleViews::OnDialogInitialized() {
   GetWidget()->GetRootView()->GetViewAccessibility().OverrideDescribedBy(
       label_);
 }
+
+BEGIN_METADATA(ConfirmBubbleViews, views::DialogDelegateView)
+END_METADATA
 
 namespace chrome {
 

@@ -95,6 +95,13 @@ bool HoldingSpaceTestApi::IsShowingInShelf() {
   return holding_space_tray_ && holding_space_tray_->GetVisible();
 }
 
+views::View* HoldingSpaceTestApi::GetDownloadsSectionHeader() {
+  return holding_space_tray_->GetBubbleView()
+             ? holding_space_tray_->GetBubbleView()->GetViewByID(
+                   kHoldingSpaceDownloadsSectionHeaderId)
+             : nullptr;
+}
+
 std::vector<views::View*> HoldingSpaceTestApi::GetDownloadChips() {
   std::vector<views::View*> download_chips;
   if (holding_space_tray_->GetBubbleView()) {
@@ -130,6 +137,10 @@ std::vector<views::View*> HoldingSpaceTestApi::GetScreenCaptureViews() {
 
 views::View* HoldingSpaceTestApi::GetTray() {
   return holding_space_tray_;
+}
+
+views::View* HoldingSpaceTestApi::GetTrayDropTargetOverlay() {
+  return holding_space_tray_->GetViewByID(kHoldingSpaceTrayDropTargetOverlayId);
 }
 
 views::View* HoldingSpaceTestApi::GetDefaultTrayIcon() {

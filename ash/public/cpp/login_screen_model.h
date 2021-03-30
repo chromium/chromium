@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 
 class AccountId;
@@ -52,7 +51,7 @@ class ASH_PUBLIC_EXPORT LoginScreenModel {
   // used to notify users of important messages before they log in to their
   // session. (e.g. Tell the user that an update of the user data will start
   // on login.) If |message| is empty, the banner will be hidden.
-  virtual void UpdateWarningMessage(const base::string16& message) = 0;
+  virtual void UpdateWarningMessage(const std::u16string& message) = 0;
 
   // Update the status of fingerprint for |account_id|.
   virtual void SetFingerprintState(const AccountId& account_id,

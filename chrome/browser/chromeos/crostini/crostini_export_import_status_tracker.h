@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/strings/string16.h"
 
 namespace crostini {
 
@@ -46,7 +45,7 @@ class CrostiniExportImportStatusTracker {
   virtual void SetStatusDoneUI() = 0;
   virtual void SetStatusCancelledUI() = 0;
   virtual void SetStatusFailedWithMessageUI(Status status,
-                                            const base::string16& message) = 0;
+                                            const std::u16string& message) = 0;
 
   void SetStatusRunning(int progress_percent);
   void SetStatusCancelling();
@@ -61,7 +60,7 @@ class CrostiniExportImportStatusTracker {
   void SetStatusFailedConcurrentOperation(
       ExportImportType in_progress_operation_type);
  private:
-  void SetStatusFailedWithMessage(Status status, const base::string16& message);
+  void SetStatusFailedWithMessage(Status status, const std::u16string& message);
 
   ExportImportType type_;
   base::FilePath path_;

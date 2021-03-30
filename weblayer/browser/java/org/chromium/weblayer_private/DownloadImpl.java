@@ -4,11 +4,14 @@
 
 package org.chromium.weblayer_private;
 
+import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.RemoteException;
 import android.text.TextUtils;
 
@@ -25,6 +28,7 @@ import org.chromium.components.browser_ui.notifications.NotificationManagerProxy
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 import org.chromium.components.browser_ui.util.DownloadUtils;
+import org.chromium.url.GURL;
 import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.DownloadError;
 import org.chromium.weblayer_private.interfaces.DownloadState;
@@ -45,6 +49,8 @@ public final class DownloadImpl extends IDownload.Stub {
 
     // These actions have to be synchronized with the receiver defined in AndroidManifest.xml.
     private static final String OPEN_INTENT = DOWNLOADS_PREFIX + ".OPEN";
+    private static final String ACTIVATE_TRANSIENT_INTENT =
+            DOWNLOADS_PREFIX + ".ACTIVATE_TRANSIENT";
     private static final String DELETE_INTENT = DOWNLOADS_PREFIX + ".DELETE";
     private static final String PAUSE_INTENT = DOWNLOADS_PREFIX + ".PAUSE";
     private static final String RESUME_INTENT = DOWNLOADS_PREFIX + ".RESUME";
@@ -59,6 +65,8 @@ public final class DownloadImpl extends IDownload.Stub {
             DOWNLOADS_PREFIX + ".NOTIFICATION_PROFILE";
     private static final String EXTRA_NOTIFICATION_PROFILE_IS_INCOGNITO =
             DOWNLOADS_PREFIX + ".NOTIFICATION_PROFILE_IS_INCOGNITO";
+    private static final String EXTRA_NOTIFICATION_SESSION_ID =
+            DOWNLOADS_PREFIX + ".NOTIFICATION_SESSION_ID";
     // The intent prefix is used as the notification's tag since it's guaranteed not to conflict
     // with intent prefixes used by other subsystems that display notifications.
     private static final String NOTIFICATION_TAG = DOWNLOADS_PREFIX;
@@ -66,11 +74,24 @@ public final class DownloadImpl extends IDownload.Stub {
 
     private final String mProfileName;
     private final boolean mIsIncognito;
+    // The client is only used for downloads to disk, so it will be null for transient downloads.
     private final IDownloadCallbackClient mClient;
     private final IClientDownload mClientDownload;
     // WARNING: DownloadImpl may outlive the native side, in which case this member is set to 0.
     private long mNativeDownloadImpl;
     private boolean mDisableNotification;
+
+    // The time this download started, in milliseconds.
+    private final long mStartTime;
+
+    // A transient download is not persisted to disk, which affects its UI treatment.
+    private final boolean mIsTransient;
+
+    // The originating URL for this download.
+    private final GURL mSourceUrl;
+
+    // The large icon to show. Once this is successfully fetched from native, it won't be updated.
+    private Bitmap mLargeIcon;
 
     private final int mNotificationId;
     private static final HashMap<Integer, DownloadImpl> sMap = new HashMap<Integer, DownloadImpl>();
@@ -144,16 +165,24 @@ public final class DownloadImpl extends IDownload.Stub {
             download.cancel();
         } else if (intent.getAction().equals(DELETE_INTENT)) {
             sMap.remove(id);
+            DownloadImplJni.get().onFinishedImpl(download.mNativeDownloadImpl, /*activated=*/false);
+        } else if (intent.getAction().equals(ACTIVATE_TRANSIENT_INTENT)) {
+            assert download.mIsTransient;
+            DownloadImplJni.get().onFinishedImpl(download.mNativeDownloadImpl, /*activated=*/true);
         }
     }
 
     public DownloadImpl(String profileName, boolean isIncognito, IDownloadCallbackClient client,
-            long nativeDownloadImpl, int id) {
+            long nativeDownloadImpl, int id, boolean isTransient, GURL sourceUrl) {
         mProfileName = profileName;
         mIsIncognito = isIncognito;
-        mClient = client;
+        mClient = isTransient ? null : client;
         mNativeDownloadImpl = nativeDownloadImpl;
         mNotificationId = id;
+        mStartTime = System.currentTimeMillis();
+        mIsTransient = isTransient;
+        mSourceUrl = sourceUrl;
+
         if (mClient == null) {
             mClientDownload = null;
         } else {
@@ -217,28 +246,28 @@ public final class DownloadImpl extends IDownload.Stub {
     public int getState() {
         StrictModeWorkaround.apply();
         throwIfNativeDestroyed();
-        return implStateToJavaType(DownloadImplJni.get().getState(mNativeDownloadImpl));
+        return implStateToJavaType(DownloadImplJni.get().getStateImpl(mNativeDownloadImpl));
     }
 
     @Override
     public long getTotalBytes() {
         StrictModeWorkaround.apply();
         throwIfNativeDestroyed();
-        return DownloadImplJni.get().getTotalBytes(mNativeDownloadImpl);
+        return DownloadImplJni.get().getTotalBytesImpl(mNativeDownloadImpl);
     }
 
     @Override
     public long getReceivedBytes() {
         StrictModeWorkaround.apply();
         throwIfNativeDestroyed();
-        return DownloadImplJni.get().getReceivedBytes(mNativeDownloadImpl);
+        return DownloadImplJni.get().getReceivedBytesImpl(mNativeDownloadImpl);
     }
 
     @Override
     public void pause() {
         StrictModeWorkaround.apply();
         throwIfNativeDestroyed();
-        DownloadImplJni.get().pause(mNativeDownloadImpl);
+        DownloadImplJni.get().pauseImpl(mNativeDownloadImpl);
         updateNotification();
     }
 
@@ -246,7 +275,7 @@ public final class DownloadImpl extends IDownload.Stub {
     public void resume() {
         StrictModeWorkaround.apply();
         throwIfNativeDestroyed();
-        DownloadImplJni.get().resume(mNativeDownloadImpl);
+        DownloadImplJni.get().resumeImpl(mNativeDownloadImpl);
         updateNotification();
     }
 
@@ -254,7 +283,7 @@ public final class DownloadImpl extends IDownload.Stub {
     public void cancel() {
         StrictModeWorkaround.apply();
         throwIfNativeDestroyed();
-        DownloadImplJni.get().cancel(mNativeDownloadImpl);
+        DownloadImplJni.get().cancelImpl(mNativeDownloadImpl);
         updateNotification();
     }
 
@@ -262,14 +291,14 @@ public final class DownloadImpl extends IDownload.Stub {
     public String getLocation() {
         StrictModeWorkaround.apply();
         throwIfNativeDestroyed();
-        return DownloadImplJni.get().getLocation(mNativeDownloadImpl);
+        return DownloadImplJni.get().getLocationImpl(mNativeDownloadImpl);
     }
 
     @Override
     public String getFileNameToReportToUser() {
         StrictModeWorkaround.apply();
         throwIfNativeDestroyed();
-        return DownloadImplJni.get().getFileNameToReportToUser(mNativeDownloadImpl);
+        return DownloadImplJni.get().getFileNameToReportToUserImpl(mNativeDownloadImpl);
     }
 
     @Override
@@ -284,7 +313,7 @@ public final class DownloadImpl extends IDownload.Stub {
     public int getError() {
         StrictModeWorkaround.apply();
         throwIfNativeDestroyed();
-        return implErrorToJavaType(DownloadImplJni.get().getError(mNativeDownloadImpl));
+        return implErrorToJavaType(DownloadImplJni.get().getErrorImpl(mNativeDownloadImpl));
     }
 
     @Override
@@ -344,11 +373,16 @@ public final class DownloadImpl extends IDownload.Stub {
         Context context = ContextUtils.getApplicationContext();
 
         Intent deleteIntent = createIntent(DELETE_INTENT);
-        PendingIntentProvider deletePendingIntent =
-                PendingIntentProvider.getBroadcast(context, mNotificationId, deleteIntent, 0);
+        PendingIntentProvider deletePendingIntent = getPendingIntentProvider(deleteIntent);
 
         @DownloadState
         int state = getState();
+        if (state == DownloadState.CANCELLED) {
+            notificationManager.cancel(NOTIFICATION_TAG, mNotificationId);
+            mDisableNotification = true;
+            return;
+        }
+
         String channelId = state == DownloadState.COMPLETE
                 ? WebLayerNotificationChannels.ChannelId.COMPLETED_DOWNLOADS
                 : WebLayerNotificationChannels.ChannelId.ACTIVE_DOWNLOADS;
@@ -356,6 +390,8 @@ public final class DownloadImpl extends IDownload.Stub {
         WebLayerNotificationWrapperBuilder builder = WebLayerNotificationWrapperBuilder.create(
                 channelId, new NotificationMetadata(0, NOTIFICATION_TAG, mNotificationId));
         builder.setOngoing(true)
+                .setWhen(mStartTime)
+                .setShowWhen(true)
                 .setDeleteIntent(deletePendingIntent)
                 .setPriorityBeforeO(NotificationCompat.PRIORITY_DEFAULT);
 
@@ -365,30 +401,46 @@ public final class DownloadImpl extends IDownload.Stub {
             builder.setContentTitle(name);
         }
 
-        if (state == DownloadState.CANCELLED) {
-            notificationManager.cancel(NOTIFICATION_TAG, mNotificationId);
-            mDisableNotification = true;
-            return;
+        // Set the large icon/thumbnail, except when incognito.
+        if (!mIsIncognito && mLargeIcon == null) {
+            mLargeIcon = DownloadImplJni.get().getLargeIconImpl(mNativeDownloadImpl);
         }
+        if (mLargeIcon != null) {
+            builder.setLargeIcon(mLargeIcon);
+        }
+
+        // As with Chrome, transient downloads "promote" the source URL.
+        if (!mIsIncognito && mIsTransient) {
+            String formattedUrl = DownloadUtils.formatUrlForDisplayInNotification(mSourceUrl);
+            if (formattedUrl != null) setSubText(builder, formattedUrl);
+        }
+        // TODO(estade): In incognito, Chrome uses a subtext of "Incognito tab". Should WL display
+        // something similar?
 
         Resources resources = context.getResources();
 
         if (state == DownloadState.COMPLETE) {
-            Intent openIntent = createIntent(OPEN_INTENT);
-            openIntent.putExtra(EXTRA_NOTIFICATION_LOCATION, getLocation());
-            openIntent.putExtra(EXTRA_NOTIFICATION_MIME_TYPE, getMimeType());
-            PendingIntentProvider openPendingIntent =
-                    PendingIntentProvider.getBroadcast(context, mNotificationId, openIntent, 0);
-
-            String contextText =
-                    resources.getString(R.string.download_notification_completed_with_size,
-                            DownloadUtils.getStringForBytes(context, getTotalBytes()));
-            builder.setContentText(contextText)
-                    .setOngoing(false)
+            builder.setOngoing(false)
                     .setSmallIcon(android.R.drawable.stat_sys_download_done)
-                    .setContentIntent(openPendingIntent)
                     .setAutoCancel(true)
                     .setProgress(0, 0, false);
+
+            Intent openIntent = null;
+
+            if (mIsTransient) {
+                builder.setContentText(
+                        resources.getString(R.string.download_notification_completed));
+                openIntent = createIntent(ACTIVATE_TRANSIENT_INTENT);
+            } else {
+                builder.setContentText(
+                        resources.getString(R.string.download_notification_completed_with_size,
+                                DownloadUtils.getStringForBytes(context, getTotalBytes())));
+
+                openIntent = createIntent(OPEN_INTENT);
+                openIntent.putExtra(EXTRA_NOTIFICATION_LOCATION, getLocation());
+                openIntent.putExtra(EXTRA_NOTIFICATION_MIME_TYPE, getMimeType());
+            }
+            builder.setContentIntent(getPendingIntentProvider(openIntent));
         } else if (state == DownloadState.FAILED) {
             builder.setContentText(resources.getString(R.string.download_notification_failed))
                     .setOngoing(false)
@@ -396,8 +448,7 @@ public final class DownloadImpl extends IDownload.Stub {
                     .setProgress(0, 0, false);
         } else if (state == DownloadState.IN_PROGRESS) {
             Intent pauseIntent = createIntent(PAUSE_INTENT);
-            PendingIntentProvider pausePendingIntent =
-                    PendingIntentProvider.getBroadcast(context, mNotificationId, pauseIntent, 0);
+            PendingIntentProvider pausePendingIntent = getPendingIntentProvider(pauseIntent);
 
             long bytes = getReceivedBytes();
             long totalBytes = getTotalBytes();
@@ -407,26 +458,27 @@ public final class DownloadImpl extends IDownload.Stub {
                 progressCurrent = (int) (bytes * 100 / totalBytes);
             }
 
-            String contentText;
-            String bytesString = DownloadUtils.getStringForBytes(context, bytes);
-            if (indeterminate) {
-                contentText =
-                        resources.getString(R.string.download_ui_indeterminate_bytes, bytesString);
-            } else {
-                String totalString = DownloadUtils.getStringForBytes(context, totalBytes);
-                contentText = resources.getString(
-                        R.string.download_ui_determinate_bytes, bytesString, totalString);
+            if (!mIsTransient) {
+                String contentText;
+                String bytesString = DownloadUtils.getStringForBytes(context, bytes);
+                if (indeterminate) {
+                    contentText = resources.getString(
+                            R.string.download_ui_indeterminate_bytes, bytesString);
+                } else {
+                    String totalString = DownloadUtils.getStringForBytes(context, totalBytes);
+                    contentText = resources.getString(
+                            R.string.download_ui_determinate_bytes, bytesString, totalString);
+                }
+                builder.setContentText(contentText);
             }
-            builder.setContentText(contentText)
-                    .addAction(0 /* no icon */,
-                            resources.getString(R.string.download_notification_pause_button),
-                            pausePendingIntent, 0 /* no action for UMA */)
+            builder.addAction(0 /* no icon */,
+                           resources.getString(R.string.download_notification_pause_button),
+                           pausePendingIntent, 0 /* no action for UMA */)
                     .setSmallIcon(android.R.drawable.stat_sys_download)
                     .setProgress(100, progressCurrent, indeterminate);
         } else if (state == DownloadState.PAUSED) {
             Intent resumeIntent = createIntent(RESUME_INTENT);
-            PendingIntentProvider resumePendingIntent =
-                    PendingIntentProvider.getBroadcast(context, mNotificationId, resumeIntent, 0);
+            PendingIntentProvider resumePendingIntent = getPendingIntentProvider(resumeIntent);
             builder.setContentText(resources.getString(R.string.download_notification_paused))
                     .addAction(0 /* no icon */,
                             resources.getString(R.string.download_notification_resume_button),
@@ -437,14 +489,36 @@ public final class DownloadImpl extends IDownload.Stub {
 
         if (state == DownloadState.IN_PROGRESS || state == DownloadState.PAUSED) {
             Intent cancelIntent = createIntent(CANCEL_INTENT);
-            PendingIntentProvider cancelPendingIntent =
-                    PendingIntentProvider.getBroadcast(context, mNotificationId, cancelIntent, 0);
+            PendingIntentProvider cancelPendingIntent = getPendingIntentProvider(cancelIntent);
             builder.addAction(0 /* no icon */,
                     resources.getString(R.string.download_notification_cancel_button),
                     cancelPendingIntent, 0 /* no action for UMA */);
         }
 
         notificationManager.notify(builder.buildNotificationWrapper());
+    }
+
+    private PendingIntentProvider getPendingIntentProvider(Intent notificationIntent) {
+        // Transient intents use FLAG_CANCEL_CURRENT because the IDs can overlap across sessions.
+        // CANCEL_CURRENT makes sure the PendingIntent is not also reused, and prevents intents from
+        // old sessions from working (e.g. notifications lingering after WebLayer has crashed and
+        // failed to clear them).
+        return PendingIntentProvider.getBroadcast(ContextUtils.getApplicationContext(),
+                mNotificationId, notificationIntent,
+                mIsTransient ? PendingIntent.FLAG_CANCEL_CURRENT : 0);
+    }
+
+    /**
+     * Helper method to set the sub text on different versions of Android.
+     * @param builder The builder to build notification.
+     * @param subText A string shown as sub text on the notification.
+     */
+    private static void setSubText(WebLayerNotificationWrapperBuilder builder, String subText) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            builder.setSubText(subText);
+        } else {
+            builder.setContentInfo(subText);
+        }
     }
 
     /**
@@ -463,21 +537,26 @@ public final class DownloadImpl extends IDownload.Stub {
     private void onNativeDestroyed() {
         mNativeDownloadImpl = 0;
         sMap.remove(mNotificationId);
+        if (mIsTransient) {
+            getNotificationManager().cancel(NOTIFICATION_TAG, mNotificationId);
+        }
         // TODO: this should likely notify delegate in some way.
     }
 
     @NativeMethods
     interface Natives {
         void setJavaDownload(long nativeDownloadImpl, DownloadImpl caller);
-        int getState(long nativeDownloadImpl);
-        long getTotalBytes(long nativeDownloadImpl);
-        long getReceivedBytes(long nativeDownloadImpl);
-        void pause(long nativeDownloadImpl);
-        void resume(long nativeDownloadImpl);
-        void cancel(long nativeDownloadImpl);
-        String getLocation(long nativeDownloadImpl);
-        String getFileNameToReportToUser(long nativeDownloadImpl);
+        int getStateImpl(long nativeDownloadImpl);
+        long getTotalBytesImpl(long nativeDownloadImpl);
+        long getReceivedBytesImpl(long nativeDownloadImpl);
+        void pauseImpl(long nativeDownloadImpl);
+        void resumeImpl(long nativeDownloadImpl);
+        void cancelImpl(long nativeDownloadImpl);
+        void onFinishedImpl(long nativeDownloadImpl, boolean activated);
+        String getLocationImpl(long nativeDownloadImpl);
+        String getFileNameToReportToUserImpl(long nativeDownloadImpl);
         String getMimeTypeImpl(long nativeDownloadImpl);
-        int getError(long nativeDownloadImpl);
+        int getErrorImpl(long nativeDownloadImpl);
+        Bitmap getLargeIconImpl(long nativeDownloadImpl);
     }
 }

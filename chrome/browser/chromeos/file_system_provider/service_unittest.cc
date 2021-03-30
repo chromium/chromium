@@ -15,6 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/file_system_provider/fake_extension_provider.h"
 #include "chrome/browser/chromeos/file_system_provider/fake_provided_file_system.h"
 #include "chrome/browser/chromeos/file_system_provider/fake_registry.h"
@@ -24,7 +25,6 @@
 #include "chrome/browser/chromeos/file_system_provider/observer.h"
 #include "chrome/browser/chromeos/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/chromeos/file_system_provider/registry_interface.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/common/extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -80,8 +80,8 @@ scoped_refptr<extensions::Extension> CreateFakeExtension(
 
   scoped_refptr<extensions::Extension> extension =
       extensions::Extension::Create(
-          base::FilePath(), extensions::Manifest::UNPACKED, manifest,
-          extensions::Extension::NO_FLAGS, extension_id, &error);
+          base::FilePath(), extensions::mojom::ManifestLocation::kUnpacked,
+          manifest, extensions::Extension::NO_FLAGS, extension_id, &error);
   EXPECT_TRUE(extension) << error;
   return extension;
 }

@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/strings/string16.h"
+#include "base/optional.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
@@ -56,14 +56,16 @@ class VIEWS_EXPORT ViewAccessibility {
 
   // Modifies |node_data| to reflect the current accessible state of the
   // associated View, taking any custom overrides into account
-  // (see OverrideRole, etc. below).
+  // (see OverrideFocus, OverrideRole, etc. below).
   virtual void GetAccessibleNodeData(ui::AXNodeData* node_data) const;
 
   //
-  // These override accessibility information, including properties returned
-  // from View::GetAccessibleNodeData().
-  // Note that string attributes are only used if non-empty, so you can't
-  // override a string with the empty string.
+  // The following methods get or set accessibility attributes (in the owning
+  // View's AXNodeData), overrideing any identical attributes which might have
+  // been set by the owning View in its View::GetAccessibleNodeData() method.
+  //
+  // Note that accessibility string attributes are only used if non-empty, so
+  // you can't override a string with the empty string.
   //
 
   // Sets one of our virtual descendants as having the accessibility focus. This
@@ -73,15 +75,67 @@ class VIEWS_EXPORT ViewAccessibility {
   // is illegal to set this to any virtual view that is currently not one of our
   // descendants and this is enforced by a DCHECK.
   void OverrideFocus(AXVirtualView* virtual_view);
+
+  // Returns whether this view is focusable when the user uses an accessibility
+  // aid or the keyboard, even though it may not be normally focusable. Note
+  // that if using the keyboard, on macOS the preference "Full Keyboard Access"
+  // needs to be turned on.
+  virtual bool IsAccessibilityFocusable() const;
+
+  // Used for testing. Returns true if this view is considered focused.
+  virtual bool IsFocusedForTesting() const;
+
+  // Call when this is the active descendant of a popup view that temporarily
+  // takes over focus. It is only necessary to use this for menus like autofill,
+  // where the actual focus is in content.
+  // When the popup closes, call EndPopupFocusOverride().
+  virtual void SetPopupFocusOverride();
+
+  // Call when popup closes, if it used SetPopupFocusOverride().
+  virtual void EndPopupFocusOverride();
+
+  // Call when a menu closes, to restore focus to where it was previously.
+  virtual void FireFocusAfterMenuClose();
+
   void OverrideRole(const ax::mojom::Role role);
   void OverrideName(const std::string& name);
-  void OverrideName(const base::string16& name);
+  void OverrideName(const std::u16string& name);
   void OverrideDescription(const std::string& description);
-  void OverrideDescription(const base::string16& description);
+  void OverrideDescription(const std::u16string& description);
+
+  // Sets whether this View hides all its descendants from the accessibility
+  // tree that is exposed to platform APIs. This is similar, but not exactly
+  // identical to aria-hidden="true".
+  //
+  // Note that this attribute does not cross widget boundaries, i.e. if a sub
+  // widget is a descendant of this View, it will not be marked hidden. This
+  // should not happen in practice as widgets are not children of Views.
   void OverrideIsLeaf(bool value);
+  virtual bool IsLeaf() const;
+
+  // Returns true if an ancestor of this node (not including itself) is a
+  // leaf node, meaning that this node is not actually exposed to any
+  // platform's accessibility layer.
+  virtual bool IsChildOfLeaf() const;
+
+  // Hides this View from the accessibility tree that is exposed to platform
+  // APIs.
   void OverrideIsIgnored(bool value);
-  void OverrideViewEnablingState(bool enabled);
+  virtual bool IsIgnored() const;
+
+  // Marks this View either as enabled or disabled (grayed out) in the
+  // accessibility tree and ignores the View's real enabled state. Does not
+  // affect the View's focusable state (see "IsAccessibilityFocusable()").
+  // Screen readers make a special announcement when an item is disabled.
+  //
+  // It might not be advisable to mark a View as enabled in the accessibility
+  // tree, whilst the real View is actually disabled, because such a View will
+  // not respond to user actions.
+  void OverrideIsEnabled(bool enabled);
+  virtual bool IsAccessibilityEnabled() const;
+
   void OverrideBounds(const gfx::RectF& bounds);
+  void OverrideLabelledBy(View* labelled_by_view);
   void OverrideDescribedBy(View* described_by_view);
   void OverrideHasPopup(const ax::mojom::HasPopup has_popup);
 
@@ -103,6 +157,10 @@ class VIEWS_EXPORT ViewAccessibility {
   Widget* GetNextFocus() const;
   Widget* GetPreviousFocus() const;
 
+  // Override the child tree id.
+  void OverrideChildTreeID(ui::AXTreeID tree_id);
+  ui::AXTreeID GetChildTreeID() const;
+
   // Returns the accessibility object that represents the View whose
   // accessibility is managed by this instance. This may be an AXPlatformNode or
   // it may be a native accessible object implemented by another class.
@@ -112,15 +170,13 @@ class VIEWS_EXPORT ViewAccessibility {
 
   // Causes the screen reader to announce |text|. If the current user is not
   // using a screen reader, has no effect.
-  virtual void AnnounceText(const base::string16& text);
+  virtual void AnnounceText(const std::u16string& text);
 
   virtual const ui::AXUniqueId& GetUniqueId() const;
 
   View* view() const { return view_; }
   AXVirtualView* FocusedVirtualChild() const { return focused_virtual_child_; }
-  virtual bool IsLeaf() const;
   ViewsAXTreeManager* AXTreeManager() const;
-  virtual bool IsIgnored() const;
 
   //
   // Methods for managing virtual views.
@@ -159,21 +215,6 @@ class VIEWS_EXPORT ViewAccessibility {
   // present, or no virtual descendant has been marked as focused, returns the
   // native accessibility object associated with this view.
   gfx::NativeViewAccessible GetFocusedDescendant();
-
-  // Call when this is the active descendant of a popup view that temporarily
-  // takes over focus. It is only necessary to use this for menus like autofill,
-  // where the actual focus is in content.
-  // When the popup closes, call EndPopupFocusOverride().
-  virtual void SetPopupFocusOverride();
-
-  // Call when popup closes, if it used SetPopupFocusOverride().
-  virtual void EndPopupFocusOverride();
-
-  // Return true if this view is considered focused.
-  virtual bool IsFocusedForTesting() const;
-
-  // Call when a menu closes, to restore focus to where it was previously.
-  virtual void FireFocusAfterMenuClose();
 
   // Used for testing. Allows a test to watch accessibility events.
   const AccessibilityEventsCallback& accessibility_events_callback() const;
@@ -218,10 +259,17 @@ class VIEWS_EXPORT ViewAccessibility {
   // "presentational".
   bool is_ignored_;
 
+  // Used to override the View's enabled state in case we need to mark the View
+  // as enabled or disabled only in the accessibility tree.
+  base::Optional<bool> is_enabled_ = base::nullopt;
+
   // Used by the Views system to help some assistive technologies, such as
   // screen readers, transition focus from one widget to another.
   Widget* next_focus_ = nullptr;
   Widget* previous_focus_ = nullptr;
+
+  // This view's child tree id.
+  base::Optional<ui::AXTreeID> child_tree_id_;
 
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // Each instance of ViewAccessibility that's associated with a root View

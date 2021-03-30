@@ -17,6 +17,9 @@
 
     link = document.getElementById("cross_site_new_window_link");
     link.setAttribute("href", "http://foo.com:" + portNumber + "/title2.html");
+
+    link = document.getElementById("cross_site_new_window_no_opener_link");
+    link.setAttribute("href", "http://foo.com:" + portNumber + "/title2.html");
     return true;
   }
 
@@ -34,6 +37,10 @@
 
   function clickCrossSiteNewWindowLink() {
     return simulateClick(document.getElementById("cross_site_new_window_link"));
+  }
+
+  function clickCrossSiteNewWindowNoOpenerLink() {
+    return simulateClick(document.getElementById("cross_site_new_window_no_opener_link"));
   }
 
   function clickViewSourceLink() {
@@ -55,6 +62,7 @@
 <a href="view-source:about:blank" id="view_source_link">view-source:</a><br>
 <a href="title2.html" id="same_site_new_window_link" rel="opener" target="_blank">same-site new window</a>
 <a href="http://foo.com/title2.html" id="cross_site_new_window_link" rel="opener" target="_blank">cross-site new window</a>
+<a href="http://foo.com/title2.html" id="cross_site_new_window_no_opener_link" rel="noopener" target="_blank">cross-site new window no opener</a>
 <a href="" id="linkToSelf" rel="opener" target="_blank">self new window</a>
 <script>
   document.getElementById("linkToSelf").href = window.location.toString();

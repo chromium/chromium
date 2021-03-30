@@ -80,7 +80,7 @@ SigninNotificationInfoBarDelegate::SigninNotificationInfoBarDelegate(
           signin::kSigninNotificationInfobarUsernameInTitle)) {
     title_ = base::SysNSStringToUTF16(l10n_util::GetNSStringF(
         IDS_IOS_SIGNIN_ACCOUNT_NOTIFICATION_TITLE_WITH_USERNAME,
-        base::SysNSStringToUTF16(identity.userFullName)));
+        base::SysNSStringToUTF16(identity.userGivenName)));
   } else {
     title_ = base::SysNSStringToUTF16(
         l10n_util::GetNSString(IDS_IOS_SIGNIN_ACCOUNT_NOTIFICATION_TITLE));
@@ -98,11 +98,11 @@ SigninNotificationInfoBarDelegate::GetIdentifier() const {
   return RE_SIGN_IN_INFOBAR_DELEGATE_IOS;
 }
 
-base::string16 SigninNotificationInfoBarDelegate::GetTitleText() const {
+std::u16string SigninNotificationInfoBarDelegate::GetTitleText() const {
   return title_;
 }
 
-base::string16 SigninNotificationInfoBarDelegate::GetMessageText() const {
+std::u16string SigninNotificationInfoBarDelegate::GetMessageText() const {
   return message_;
 }
 
@@ -110,7 +110,7 @@ int SigninNotificationInfoBarDelegate::GetButtons() const {
   return BUTTON_OK;
 }
 
-base::string16 SigninNotificationInfoBarDelegate::GetButtonLabel(
+std::u16string SigninNotificationInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   DCHECK(button == BUTTON_OK);
   return button_text_;
@@ -129,4 +129,12 @@ bool SigninNotificationInfoBarDelegate::Accept() {
   base::RecordAction(base::UserMetricsAction(
       "Settings.GoogleServices.FromSigninNotificationInfobar"));
   return true;
+}
+
+bool SigninNotificationInfoBarDelegate::ShouldExpire(
+    const NavigationDetails& details) const {
+  // Due to the redirects that occur when navigating to a Google subdomain from
+  // the Omnibox, Chrome ensures that the sign-in infobar is displayed after
+  // restoring Gaia cookies regardless of the navigation type.
+  return false;
 }

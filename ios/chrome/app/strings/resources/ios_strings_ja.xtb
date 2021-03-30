@@ -19,7 +19,6 @@
 <translation id="1125564390852150847">新しいタブを作成。</translation>
 <translation id="1145536944570833626">既存のデータを削除します。</translation>
 <translation id="1147031633655575115"><ph name="USER" /> としてログイン</translation>
-<translation id="1154690515305205900">選択したテキストへのリンクを作成できません。</translation>
 <translation id="1154984953698510061">他のタブを表示</translation>
 <translation id="1157749421655780457">位置情報へのアクセスを許可...</translation>
 <translation id="1165039591588034296">エラー</translation>
@@ -53,7 +52,6 @@
 <translation id="1400642268715879018">過去 4 週間</translation>
 <translation id="1407135791313364759">すべて開く</translation>
 <translation id="1430915738399379752">印刷</translation>
-<translation id="1436290164580597469">同期を開始するにはパスフレーズを入力してください。</translation>
 <translation id="1449835205994625556">パスワードを非表示にします</translation>
 <translation id="145015347812617860"><ph name="COUNT" />個のアイテム</translation>
 <translation id="1491277525950327607">設定を切り替えるにはダブルタップします</translation>
@@ -103,17 +101,16 @@
 <translation id="1952172573699511566">可能な場合、設定した言語でウェブサイトのテキストを表示します。</translation>
 <translation id="1952728750904661634">管理対象アカウントでログインする</translation>
 <translation id="1965935827552890526">開いている別の Chrome ウィンドウでの作業を終了してください。</translation>
+<translation id="1973912524893600642">データを残す</translation>
 <translation id="1974060860693918893">詳細設定</translation>
 <translation id="1989112275319619282">閲覧</translation>
 <translation id="2015722694326466240">パスワードを表示するには、まずデバイスにパスワードを設定する必要があります。</translation>
-<translation id="2047933465321076474">シークレット ブラウジングは組織によって無効にされています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="2073572773299281212">最終同期: <ph name="DAYS" /> 日前</translation>
 <translation id="2074131957428911366">同期する項目はいつでも [<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] で選択できます。</translation>
 <translation id="2079545284768500474">元に戻す</translation>
 <translation id="209018056901015185">PC版サイトをリクエスト</translation>
 <translation id="2103075008456228677">history.google.com を開く</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />件の項目を移動しました</translation>
-<translation id="2118594521750010466">今すぐ修正</translation>
 <translation id="213900355088104901">シークレット モードで閲覧するにはシークレット タブを開きます</translation>
 <translation id="2139867232736819575">コピーしたテキストを検索</translation>
 <translation id="2149973817440762519">ブックマークを編集</translation>
@@ -124,7 +121,6 @@
 <translation id="2239626343334228536">閲覧データを削除しています...</translation>
 <translation id="2257567812274161158">同期が機能していません。</translation>
 <translation id="225943865679747347">エラー コード: <ph name="ERROR_CODE" /></translation>
-<translation id="2262397157440718954">組織がシークレット モードで閲覧するよう求めています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="2267753748892043616">アカウントを追加</translation>
 <translation id="2268044343513325586">絞り込み</translation>
 <translation id="2273327106802955778">その他のメニュー</translation>
@@ -141,7 +137,6 @@
 サイトは、Cookie を使用して別のサイトでのあなたの閲覧アクティビティを確認できず、広告のカスタマイズなどが行えなくなります。</translation>
 <translation id="2381405137052800939">基本設定</translation>
 <translation id="2386793615875593361">1 枚選択されています</translation>
-<translation id="2419661687355878017">シークレット モードは組織によって無効にされています</translation>
 <translation id="2421004566762153674">サードパーティの Cookie をブロック</translation>
 <translation id="2421044535038393232">編集を続ける</translation>
 <translation id="2435457462613246316">パスワードを表示</translation>
@@ -174,6 +169,7 @@
 <translation id="2780046210906776326">メールアカウントなし</translation>
 <translation id="2781331604911854368">オン</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2783054063075604403">リンクを作成できません</translation>
 <translation id="2800683595868705743">タブ切り替え機能を終了</translation>
 <translation id="2815198996063984598">2. [デフォルトのブラウザアプリ] をタップする</translation>
 <translation id="2830972654601096923">住所を管理...</translation>
@@ -191,13 +187,13 @@
 <translation id="291754862089661335">QR コードまたはバーコードをこの枠に合わせてください</translation>
 <translation id="2921219216347069551">ページを共有できない</translation>
 <translation id="2923448633003185837">貼り付けて移動</translation>
-<translation id="2923827943290349720">Chrome を終了するときにシークレット タブをロックする</translation>
 <translation id="292639812446257861">未読にする</translation>
 <translation id="2952581218264071393">1. Chrome の設定を開く</translation>
 <translation id="2958718410589002129">パスワード</translation>
 <translation id="2964349545761222050">サードパーティの Cookie をブロックする</translation>
 <translation id="2969979262385602596">ログインできません。後でもう一度お試しください。</translation>
 <translation id="2975121486251958312">シークレット モードのみ使用できます</translation>
+<translation id="2982481275546140226">データを削除</translation>
 <translation id="298306318844797842">お支払い方法を追加...</translation>
 <translation id="2989805286512600854">新しいタブで開く</translation>
 <translation id="3037605927509011580">エラー</translation>
@@ -239,6 +235,7 @@
 <translation id="3443810440409579745">タブが共有されました。</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />分</translation>
 <translation id="3448016392200048164">分割表示</translation>
+<translation id="3454224729131972583">敬称</translation>
 <translation id="345565170154308620">パスワードを管理...</translation>
 <translation id="3469166899695866866">ダウンロードを中止しますか？</translation>
 <translation id="3470502288861289375">コピーしています...</translation>
@@ -257,6 +254,7 @@
 <translation id="3533436815740441613">新しいタブ</translation>
 <translation id="3551320343578183772">タブを閉じる</translation>
 <translation id="3581564640715911333">他の言語のページで翻訳するかどうかを尋ねる</translation>
+<translation id="3588492282865875287">ログアウトしますか？</translation>
 <translation id="3588820906588687999">新しいタブで画像を開く</translation>
 <translation id="359441731697487922">Chrome をデフォルトのブラウザアプリに設定すると、自動的に Chrome でリンクを開くことができます。
       
@@ -284,10 +282,10 @@
 <translation id="3928666092801078803">データを統合する</translation>
 <translation id="3929457972718048006">住所</translation>
 <translation id="3943492037546055397">パスワード</translation>
+<translation id="3967266340354872733">プライバシー、セキュリティ、データ収集に関連するその他の設定については、<ph name="BEGIN_LINK" />同期<ph name="END_LINK" />と <ph name="BEGIN_LINK" />Google サービス<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="3967822245660637423">ダウンロード完了</translation>
 <translation id="3968505803272650567">興味のあるトピックを管理</translation>
 <translation id="3989635538409502728">ログアウト</translation>
-<translation id="399419089947468503">パスワードの同期中にエラーが発生しました</translation>
 <translation id="3995521777587992544">ページ読み込み状況バー、<ph name="EMAIL" /> 読み込み完了。</translation>
 <translation id="4002066346123236978">タイトル</translation>
 <translation id="4004204301268239848">パスワードは Google アカウントに保存されるため、どのデバイスからでも使用できます。</translation>
@@ -296,6 +294,7 @@
 <translation id="4038354071007134711">このデバイスのアプリケーションではファイルを開けません。</translation>
 <translation id="4042870976416480368">ページ内を検索</translation>
 <translation id="4049507953662678203">ネットワークに接続していることを確認してから、もう一度お試しください。</translation>
+<translation id="4079195788735381731">組織によってログアウトされました</translation>
 <translation id="4082688844002261427">検索、広告などのカスタマイズを目的とした閲覧履歴の使用方法を設定</translation>
 <translation id="408404951701638773">検索バーをより手軽に使用できるようになりました</translation>
 <translation id="411254640334432676">ダウンロードできませんでした。</translation>
@@ -304,7 +303,6 @@
 <translation id="4121993058175073134">エクスポート データのみを送信するには、設定アプリでメール アカウントを設定してください。</translation>
 <translation id="4124987746317609294">期間</translation>
 <translation id="4152011295694446843">ブックマークはここに表示されます</translation>
-<translation id="4152093603141133546">組織によってログアウトされました。</translation>
 <translation id="4172051516777682613">常に表示</translation>
 <translation id="418156467088430727">オフライン版を新しいタブで表示</translation>
 <translation id="4181841719683918333">言語</translation>
@@ -312,7 +310,6 @@
 <translation id="4263576668337963058">利用可能なページ操作を表示</translation>
 <translation id="4267380167363222949">次のタブ</translation>
 <translation id="4272631900155121838">QR コードをスキャンするには、設定でカメラを有効にしてください</translation>
-<translation id="4276041135170112053">今すぐ修正してください。</translation>
 <translation id="4277990410970811858">セーフ ブラウジング</translation>
 <translation id="4281844954008187215">利用規約</translation>
 <translation id="430793432425771671">すべて同期</translation>
@@ -337,6 +334,7 @@
 <translation id="457386861538956877">その他...</translation>
 <translation id="4592368184551360546">キーボード</translation>
 <translation id="461440297010471931">Google 検索エンジンを使用</translation>
+<translation id="4619564267100705184">本人確認</translation>
 <translation id="4619615317237390068">他のデバイスからのタブ</translation>
 <translation id="4620246317052452550">既読のページ</translation>
 <translation id="4630540211544979320">ページの翻訳</translation>
@@ -382,6 +380,7 @@
 <translation id="4979397965658815378">Google アカウントでログインすると、どのデバイスからでも同じブックマーク、パスワード、履歴などの設定を利用できるようになります。</translation>
 <translation id="5005498671520578047">パスワードのコピー</translation>
 <translation id="5010803260590204777">ウェブをプライベートモードで閲覧するにはシークレットタブを開きます。</translation>
+<translation id="5017828934289857214">後で通知する</translation>
 <translation id="5039804452771397117">許可</translation>
 <translation id="5056446788882570708"><ph name="TIME" />に問題が見つかりました。</translation>
 <translation id="5059136629401106827">OK</translation>
@@ -408,16 +407,15 @@
 <translation id="5317780077021120954">保存</translation>
 <translation id="5327248766486351172">名前</translation>
 <translation id="5339316356165661760">同期をオンにする</translation>
+<translation id="5360976571138293719">プライバシー、セキュリティ、データ収集に関連するその他の設定については、<ph name="BEGIN_LINK" />Google サービス<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="5388358297987318779">画像を開く</translation>
 <translation id="5407969256130905701">変更を破棄</translation>
-<translation id="5409365236829784218">このファイルを開くアプリがインストールされていません。</translation>
 <translation id="5416022985862681400">過去 7 日間</translation>
 <translation id="543338862236136125">パスワードを編集</translation>
 <translation id="5433691172869980887">ユーザー名がコピーされました</translation>
 <translation id="54401264925851789">ページのセキュリティ情報</translation>
 <translation id="5443952882982198570">クレジット カード</translation>
 <translation id="5457226814769348910">オフライン版を開く</translation>
-<translation id="5457907402803865181">パスワードの同期中にエラーが発生しました。</translation>
 <translation id="5489208564673669003">すべてのサイトの Cookie を管理するには、<ph name="BEGIN_LINK" />Cookie の設定<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="5490005495580364134">すべての Cookie をブロックする（推奨されません）</translation>
 <translation id="5508435575041083207">ログアウトしてこのデバイスからデータを消去</translation>
@@ -428,7 +426,6 @@
 <translation id="5551897871312988470">翻訳するか尋ねる</translation>
 <translation id="5556459405103347317">再読み込み</translation>
 <translation id="5592679540098330836"><ph name="NAME" /> の同期をオンにします</translation>
-<translation id="5597169624050330492">組織がシークレット モードで閲覧するよう求めています。シークレット モードではタブは保存されません。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="5614553682702429503">パスワードを保存しますか？</translation>
 <translation id="5626245204502895507">今回は、ファイルをダウンロードできませんでした。</translation>
 <translation id="5631164295104953411">お支払い方法を追加</translation>
@@ -463,6 +460,7 @@
 <translation id="5948291296578561264">フォト ライブラリに写真を保存します。</translation>
 <translation id="5955891643922670672">オフライン版を表示しています</translation>
 <translation id="5957613098218939406">その他のオプション</translation>
+<translation id="5963939892571022323">選択箇所へのリンクを作成できません。</translation>
 <translation id="5964480694698977962">新しいシークレット タブを作成。</translation>
 <translation id="5965679971710331625">ログイン中のアカウント</translation>
 <translation id="5979837087407522202">パスワードを検索</translation>
@@ -494,6 +492,7 @@
 <translation id="6254066287920239840">ブラウザの代わりにアプリでリンクを開きます。</translation>
 <translation id="6255097610484507482">クレジットカードの編集</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" />を翻訳するか尋ねる</translation>
+<translation id="6293101329759844770">セーフ ブラウジングをオンにするには、[<ph name="BEGIN_LINK" />Google サービス<ph name="END_LINK" />] を開いて [セーフ ブラウジング] をタップします。</translation>
 <translation id="6303969859164067831">ログアウトして同期をオフにする</translation>
 <translation id="6308436439357671616">写真を撮影してアップロードできます。</translation>
 <translation id="6324528485781869530">同期アカウントの切り替え</translation>
@@ -536,10 +535,13 @@
 <translation id="6524918542306337007">シークレット モードは使用できません</translation>
 <translation id="6561262006871132942">拡大</translation>
 <translation id="6585618849026997638">重要なページは、ブックマークを追加しておくとすぐにアクセスできます</translation>
+<translation id="6603393121510733479">シークレット ブラウジングは組織によって無効にされています。
+<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">翻訳オプション</translation>
 <translation id="6620279676667515405">キャンセル</translation>
 <translation id="6624219055418309072">シークレット モードでブロック</translation>
 <translation id="6628106477656132239">無効な有効期限</translation>
+<translation id="6634432609054530164">シークレット モードは組織によって無効にされています</translation>
 <translation id="6638511529934826365">テキストを拡大…</translation>
 <translation id="6639730758971422557">セーフ ブラウジングをオンにするには、[<ph name="BEGIN_LINK" />同期と Google サービス<ph name="END_LINK" />] を開いて [セーフ ブラウジング] をタップします。</translation>
 <translation id="6642362222295953972">既存のタブに切り替え</translation>
@@ -548,6 +550,7 @@
 <translation id="6656103420185847513">フォルダの編集</translation>
 <translation id="6657585470893396449">パスワード</translation>
 <translation id="6668619169535738264">ブックマークを編集</translation>
+<translation id="6674571176963658787">同期を開始するには、パスフレーズを入力してください</translation>
 <translation id="667999046851023355">ドキュメント</translation>
 <translation id="6691331417640343772">Google ダッシュボードで同期データを管理</translation>
 <translation id="6710079714193676716">組織によって管理されています。一部の機能は使用できません。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
@@ -561,7 +564,6 @@
 <translation id="6807889908376551050">すべて表示...</translation>
 <translation id="681368974849482173">作成済みのアイテム</translation>
 <translation id="6831043979455480757">翻訳</translation>
-<translation id="6841409746189899007">リンクを作成</translation>
 <translation id="6851516051005285358">PC 版サイトを見る</translation>
 <translation id="6858855187367714033">スキャンされました</translation>
 <translation id="6859944681507688231">QR コードまたはクレジット カードをスキャンするには、設定でカメラを有効にしてください。</translation>
@@ -580,6 +582,8 @@
 <translation id="6988572888918530647">Google アカウントを管理する</translation>
 <translation id="6995899638241819463">データ侵害によりパスワードが漏洩した場合に警告する</translation>
 <translation id="6998989275928107238">To</translation>
+<translation id="7004032350256606903">組織がシークレット モードで閲覧するよう求めています。
+<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">最近使ったタブ</translation>
 <translation id="7006788746334555276">コンテンツの設定</translation>
 <translation id="7015203776128479407">最初の同期設定が終了していません。同期は無効です。</translation>
@@ -598,19 +602,22 @@
 <translation id="7189598951263744875">共有...</translation>
 <translation id="7192050974311852563">ログ記録を開始</translation>
 <translation id="7203585745079012652">回答を音声で聞く</translation>
-<translation id="7207383424303353046">新機能: Chrome でサイトを自動的に開くよう、既定のブラウザアプリに設定できます。<ph name="BEGIN_LINK" />設定を開く<ph name="END_LINK" /></translation>
+<translation id="7207383424303353046">新機能: Chrome でサイトを自動的に開くよう、デフォルトのブラウザアプリに設定できます。<ph name="BEGIN_LINK" />設定を開く<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">無効なカード ニックネーム</translation>
 <translation id="7265758999917665941">このサイトでは保存しない</translation>
 <translation id="7272437679830969316">ユーザー認証に失敗しました。パスワードはコピーされませんでした。</translation>
 <translation id="7291368939935408496">パスワードの準備中...</translation>
 <translation id="7293171162284876153">同期を開始するには、[Chrome データを同期] をオンにしてください。</translation>
+<translation id="7299000566397147023">最近使用したタブを開く</translation>
 <translation id="7313347584264171202">シークレット タブはここに表示されます</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" />%ダウンロード</translation>
 <translation id="7340958967809483333">Discover のオプション</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="734758817008927353">カードの保存オプション</translation>
 <translation id="7348502496356775519">ブックマーク</translation>
+<translation id="7353432112255316844">本人確認</translation>
 <translation id="7383797227493018512">リーディング リスト</translation>
+<translation id="7398893703713203428">リンクを作成</translation>
 <translation id="739941347996872055">前のタブ</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> 件の未読記事があります。</translation>
@@ -626,6 +633,7 @@
 <translation id="7481312909269577407">進む</translation>
 <translation id="7483467499335917849">現在地を使用</translation>
 <translation id="750493650310597496">選択されていません</translation>
+<translation id="7508728395076009983">シークレット タブをロックするには、Touch ID、Face ID、またはパスコードを設定してください。</translation>
 <translation id="7514365320538308">ダウンロード</translation>
 <translation id="7537586195939242955">現在、Passbookにパスをインストールできません。</translation>
 <translation id="7554791636758816595">新しいタブ</translation>
@@ -635,12 +643,13 @@
 <translation id="7603852183842204213">ブロックしたポップアップ: <ph name="NUMBER_OF_BLOCKED_POPUPS" /></translation>
 <translation id="7607521702806708809">パスワードを削除</translation>
 <translation id="7638584964844754484">パスフレーズが正しくありません</translation>
+<translation id="7646772052135772216">パスワード同期が機能していません</translation>
 <translation id="7649070708921625228">ヘルプ</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="766891008101699113">ウェブをプライベートに閲覧するには新しいタブを追加してください。</translation>
 <translation id="7671141431838911305">インストール</translation>
-<translation id="7690812411882623730">テキストリンクを作成できません</translation>
 <translation id="7701040980221191251">なし</translation>
+<translation id="7741325291586284254">新しいシークレット タブ ページ</translation>
 <translation id="7765158879357617694">移動</translation>
 <translation id="7771470029643830783">ログアウトすると、ブックマーク、履歴、パスワード、その他の Chrome データは、Google アカウントに同期されなくなります。
 
@@ -648,6 +657,7 @@
 <translation id="7772032839648071052">パスフレーズの確認</translation>
 <translation id="7778472311864276518">このデバイスからアカウントを削除</translation>
 <translation id="7781011649027948662">ページを翻訳しますか？</translation>
+<translation id="7781069478569868053">新しいタブページ</translation>
 <translation id="7781829728241885113">昨日</translation>
 <translation id="778855399387580014">新しい Chrome タブで検索を開始します。</translation>
 <translation id="7791543448312431591">追加</translation>
@@ -685,6 +695,7 @@
 <translation id="8105368624971345109">オフにする</translation>
 <translation id="8114753159095730575">ファイルのダウンロードが利用可能です。画面の下の方にオプションがあります。</translation>
 <translation id="8131740175452115882">確認</translation>
+<translation id="8156478151976189188">パスワード同期が機能していません</translation>
 <translation id="8197543752516192074">ページを翻訳する</translation>
 <translation id="8205564605687841303">キャンセル</translation>
 <translation id="8206354486702514201">この設定は管理者によって制御されています。</translation>
@@ -738,7 +749,10 @@
 <translation id="8756969031206844760">パスワードを更新しますか？</translation>
 <translation id="8775144690796719618">無効なURL</translation>
 <translation id="8803639129939845298">この通信は保護されています</translation>
+<translation id="8806823403540278281">組織がシークレット モードで閲覧するよう求めています。シークレット モードではタブは保存されません。
+<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">ブックマーク</translation>
+<translation id="8823704566850948458">パスワードを自動生成...</translation>
 <translation id="8840513115188359703">Google アカウントへのログイン状態は維持されます。</translation>
 <translation id="8870413625673593573">最近閉じたタブ</translation>
 <translation id="8881801611828450202">この画像を <ph name="SEARCH_ENGINE" /> で検索</translation>

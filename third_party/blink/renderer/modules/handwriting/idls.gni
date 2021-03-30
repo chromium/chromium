@@ -1,0 +1,23 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+modules_idl_files = [
+  "handwriting_drawing.idl",
+  "handwriting_recognizer.idl",
+  "handwriting_stroke.idl",
+]
+
+modules_dictionary_idl_files = [
+  "handwriting_feature_query.idl",
+  "handwriting_feature_query_result.idl",
+  "handwriting_hints.idl",
+  "handwriting_model_constraint.idl",
+  "handwriting_point.idl",
+  "handwriting_prediction.idl",
+  "handwriting_drawing_segment.idl",
+  "handwriting_segment.idl",
+]
+
+modules_dependency_idl_files =
+    [ "navigator_handwriting_recognition_service.idl" ]

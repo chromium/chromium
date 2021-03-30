@@ -9,3 +9,4 @@
 ] interface GPUSwapChain {
     GPUTexture getCurrentTexture();
 };
+GPUSwapChain includes GPUObjectBase;

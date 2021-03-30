@@ -7,12 +7,12 @@
 #include "base/feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"
 #include "chrome/browser/chromeos/crostini/crostini_pref_names.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service_factory.h"
-#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
@@ -28,13 +28,13 @@ namespace crostini {
 
 CrostiniTestHelper::CrostiniTestHelper(TestingProfile* profile,
                                        bool enable_crostini)
-    : profile_(profile), initialized_dbus_(false) {
+    : profile_(profile) {
   scoped_feature_list_.InitAndEnableFeature(features::kCrostini);
 
   chromeos::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
   scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-      std::make_unique<chromeos::FakeChromeUserManager>());
-  auto* fake_user_manager = static_cast<chromeos::FakeChromeUserManager*>(
+      std::make_unique<ash::FakeChromeUserManager>());
+  auto* fake_user_manager = static_cast<ash::FakeChromeUserManager*>(
       user_manager::UserManager::Get());
   auto account = AccountId::FromUserEmailGaiaId("test@example.com", "12345");
   fake_user_manager->AddUserWithAffiliationAndTypeAndProfile(
@@ -51,14 +51,6 @@ CrostiniTestHelper::CrostiniTestHelper(TestingProfile* profile,
 CrostiniTestHelper::~CrostiniTestHelper() {
   chromeos::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(false);
   DisableCrostini(profile_);
-  if (initialized_dbus_) {
-    crostini::CrostiniManager* crostini_manager =
-        crostini::CrostiniManager::GetForProfile(profile_);
-    if (crostini_manager) {
-      crostini_manager->OnDBusShuttingDownForTesting();
-    }
-    chromeos::DBusThreadManager::Shutdown();
-  }
 }
 
 void CrostiniTestHelper::SetupDummyApps() {
@@ -100,13 +92,15 @@ void CrostiniTestHelper::ReInitializeAppServiceIntegration() {
   // IPCs, not just during this method, but also during the actual test code.
   // Those calls have a side effect of executing those icon loading requests.
   //
-  // It is simpler if those RunUntilIdle calls are unconditional, so we also
-  // initialize D-Bus (if it wasn't already initialized) regardless of
-  // whether the App Service is enabled.
-  initialized_dbus_ = !chromeos::DBusThreadManager::IsInitialized();
-  if (initialized_dbus_) {
-    chromeos::DBusThreadManager::Initialize();
-  }
+  // It is simpler if those RunUntilIdle calls are unconditional, so we require
+  // D-Bus to be initialized by this point regardless of whether the App Service
+  // is enabled. Note that we can't initialize it ourselves here because once it
+  // has been initialized it must be shutdown, but it can't be shutdown until
+  // after the profile (and all keyed services) have been destroyed, which we
+  // can't manage because we don't own the profile.
+  CHECK(chromeos::DBusThreadManager::IsInitialized())
+      << "DBusThreadManager must be initialized before calling "
+         "ReInitializeAppServiceIntegration";
 
   // The App Service is originally initialized when the Profile is created,
   // but this class' constructor takes the Profile* as an argument, which

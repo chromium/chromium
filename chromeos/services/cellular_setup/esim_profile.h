@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/dbus/hermes/hermes_response_status.h"
+#include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/services/cellular_setup/public/mojom/esim_manager.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
@@ -16,6 +17,9 @@ class ObjectPath;
 }  // namespace dbus
 
 namespace chromeos {
+
+class CellularESimProfile;
+
 namespace cellular_setup {
 
 class Euicc;
@@ -25,7 +29,7 @@ class ESimManager;
 // eSIM profile installed on an EUICC.
 class ESimProfile : public mojom::ESimProfile {
  public:
-  ESimProfile(const dbus::ObjectPath& path,
+  ESimProfile(const CellularESimProfile& esim_profile_state,
               Euicc* euicc,
               ESimManager* esim_manager);
   ESimProfile(const ESimProfile&) = delete;
@@ -39,11 +43,15 @@ class ESimProfile : public mojom::ESimProfile {
   void UninstallProfile(UninstallProfileCallback callback) override;
   void EnableProfile(EnableProfileCallback callback) override;
   void DisableProfile(DisableProfileCallback callback) override;
-  void SetProfileNickname(const base::string16& nickname,
+  void SetProfileNickname(const std::u16string& nickname,
                           SetProfileNicknameCallback callback) override;
 
   // Update properties for this ESimProfile from D-Bus.
-  void UpdateProperties();
+  void UpdateProperties(const CellularESimProfile& esim_profile_state,
+                        bool notify);
+
+  // Called before profile is removed from the euicc.
+  void OnProfileRemove();
 
   // Returns a new pending remote attached to this instance.
   mojo::PendingRemote<mojom::ESimProfile> CreateRemote();
@@ -60,20 +68,52 @@ class ESimProfile : public mojom::ESimProfile {
   using ESimOperationResultCallback =
       base::OnceCallback<void(mojom::ESimOperationResult)>;
 
-  void OnPendingProfileInstallResult(ProfileInstallResultCallback callback,
-                                     HermesResponseStatus status);
-  void OnProfileInstallResult(ProfileInstallResultCallback callback,
-                              const std::string& eid,
-                              HermesResponseStatus status,
-                              const dbus::ObjectPath* object_path);
+  // Type of callback to be passed to EnsureProfileExists method. The callback
+  // receives a boolean indicating request profile succeess status and inhibit
+  // lock that was passed to the method.
+  using EnsureProfileExistsOnEuiccCallback =
+      base::OnceCallback<void(bool,
+                              std::unique_ptr<CellularInhibitor::InhibitLock>)>;
+
+  void EnsureProfileExistsOnEuicc(
+      EnsureProfileExistsOnEuiccCallback callback,
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
+  void OnRequestProfiles(
+      EnsureProfileExistsOnEuiccCallback callback,
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
+      HermesResponseStatus status);
+  void PerformInstallProfile(
+      const std::string& confirmation_code,
+      bool request_profile_success,
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
+  void PerformSetProfileNickname(
+      const std::u16string& nickname,
+      bool request_profile_success,
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
+  void OnPendingProfileInstallResult(
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
+      HermesResponseStatus status);
+  void OnNewProfileEnableSuccess(const std::string& service_path);
+  void OnNewProfileConnectSuccess();
+  void OnNewProfileConnectFailure(
+      const std::string& error_name,
+      std::unique_ptr<base::DictionaryValue> error_data);
+  void OnProfileUninstallResult(bool success);
   void OnESimOperationResult(ESimOperationResultCallback callback,
                              HermesResponseStatus status);
-  void OnProfilePropertySet(ESimOperationResultCallback callback, bool success);
+  void OnProfileNicknameSet(
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
+      bool success);
+  bool ProfileExistsOnEuicc();
+  bool IsProfileInstalled();
 
   // Reference to Euicc that owns this profile.
   Euicc* euicc_;
   // Reference to ESimManager that owns Euicc of this profile.
   ESimManager* esim_manager_;
+  UninstallProfileCallback uninstall_callback_;
+  SetProfileNicknameCallback set_profile_nickname_callback_;
+  InstallProfileCallback install_callback_;
   mojo::ReceiverSet<mojom::ESimProfile> receiver_set_;
   mojom::ESimProfilePropertiesPtr properties_;
   dbus::ObjectPath path_;

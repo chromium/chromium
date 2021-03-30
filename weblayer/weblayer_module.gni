@@ -5,5 +5,4 @@
 weblayer_module_desc = {
   name = "weblayer"
   android_manifest = "//weblayer/browser/java/AndroidManifest_monochrome.xml"
-  supports_isolated_split = true
 }

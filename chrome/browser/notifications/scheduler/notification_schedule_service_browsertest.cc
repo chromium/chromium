@@ -171,8 +171,8 @@ class NotificationScheduleServiceTest : public InProcessBrowserTest {
     schedule_params.deliver_time_end =
         base::Time::Now() + base::TimeDelta::FromMinutes(5);
     NotificationData data;
-    data.title = base::UTF8ToUTF16("title");
-    data.message = base::UTF8ToUTF16("message");
+    data.title = u"title";
+    data.message = u"message";
     auto params = std::make_unique<notifications::NotificationParams>(
         notifications::SchedulerClientType::kTest1, std::move(data),
         std::move(schedule_params));

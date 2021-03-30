@@ -14,4 +14,5 @@
     <dimen name="photo_picker_seek_bar_edge_radius">2dp</dimen>
     <dimen name="photo_picker_seek_bar_thumb_size">12dp</dimen>
     <dimen name="photo_picker_video_duration_offset">16dp</dimen>
+    <dimen name="photo_picker_zoom_button_size">56dp</dimen>
 </resources>

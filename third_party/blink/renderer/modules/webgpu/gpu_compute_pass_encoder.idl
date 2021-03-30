@@ -16,4 +16,5 @@
     void writeTimestamp(GPUQuerySet querySet, GPUSize32 queryIndex);
     void endPass();
 };
+GPUComputePassEncoder includes GPUObjectBase;
 GPUComputePassEncoder includes GPUProgrammablePassEncoder;

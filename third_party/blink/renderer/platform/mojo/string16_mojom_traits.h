@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MOJO_STRING16_MOJOM_TRAITS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MOJO_STRING16_MOJOM_TRAITS_H_
 
+#include <string>
+
 #include "base/containers/span.h"
-#include "base/strings/string16.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/mojom/base/string16.mojom-blink.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -23,7 +24,7 @@ namespace mojo {
 // that can be used for converting an 8-bit string to a 16-bit string.
 class PLATFORM_EXPORT MaybeOwnedString16 {
  public:
-  explicit MaybeOwnedString16(base::string16 owned_storage);
+  explicit MaybeOwnedString16(std::u16string owned_storage);
   explicit MaybeOwnedString16(base::span<const uint16_t> unowned);
   ~MaybeOwnedString16();
 
@@ -31,7 +32,7 @@ class PLATFORM_EXPORT MaybeOwnedString16 {
   size_t size() const { return unowned_.size(); }
 
  private:
-  base::string16 owned_storage_;
+  std::u16string owned_storage_;
   base::span<const uint16_t> unowned_;
 };
 

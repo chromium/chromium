@@ -85,8 +85,8 @@ const char* AutocompleteProvider::GetName() const {
 
 // static
 ACMatchClassifications AutocompleteProvider::ClassifyAllMatchesInString(
-    const base::string16& find_text,
-    const base::string16& text,
+    const std::u16string& find_text,
+    const std::u16string& text,
     const bool text_is_search_query,
     const ACMatchClassifications& original_class) {
   // TODO (manukh) Move this function to autocomplete_match_classification
@@ -174,7 +174,7 @@ AutocompleteProvider::~AutocompleteProvider() {
 // static
 AutocompleteProvider::FixupReturn AutocompleteProvider::FixupUserInput(
     const AutocompleteInput& input) {
-  const base::string16& input_text = input.text();
+  const std::u16string& input_text = input.text();
   const FixupReturn failed(false, input_text);
 
   // Fixup and canonicalize user input.
@@ -204,11 +204,14 @@ AutocompleteProvider::FixupReturn AutocompleteProvider::FixupUserInput(
     canonical_gurl_str.replace(parts.host.begin, parts.host.len,
                                original_hostname);
   }
-  base::string16 output(base::UTF8ToUTF16(canonical_gurl_str));
+  std::u16string output(base::UTF8ToUTF16(canonical_gurl_str));
   // Don't prepend a scheme when the user didn't have one.  Since the fixer
-  // upper only prepends the "http" scheme, that's all we need to check for.
+  // upper only prepends the "http" scheme that's all we need to check for.
+  // Note that even if Defaulting Typed Omnibox Navigations to HTTPS feature is
+  // enabled, the https upgrade is done in AutocompleteInput::Parse() and not
+  // in the fixer upper, so we don't need to check for that case.
   if (!AutocompleteInput::HasHTTPScheme(input_text))
-    TrimHttpPrefix(&output);
+    TrimSchemePrefix(&output, /*trim_https=*/false);
 
   // Make the number of trailing slashes on the output exactly match the input.
   // Examples of why not doing this would matter:
@@ -224,21 +227,20 @@ AutocompleteProvider::FixupReturn AutocompleteProvider::FixupUserInput(
   // trailing slashes (if the scheme is the only thing in the input).  It's not
   // clear that the result of fixup really matters in this case, but there's no
   // harm in making sure.
-  const size_t last_input_nonslash =
-      input_text.find_last_not_of(base::ASCIIToUTF16("/\\"));
+  const size_t last_input_nonslash = input_text.find_last_not_of(u"/\\");
   size_t num_input_slashes =
-      (last_input_nonslash == base::string16::npos)
+      (last_input_nonslash == std::u16string::npos)
           ? input_text.length()
           : (input_text.length() - 1 - last_input_nonslash);
   // If we appended text, user slashes are irrelevant.
   if (output.length() > input_text.length() &&
       base::StartsWith(output, input_text, base::CompareCase::SENSITIVE))
     num_input_slashes = 0;
-  const size_t last_output_nonslash =
-      output.find_last_not_of(base::ASCIIToUTF16("/\\"));
+  const size_t last_output_nonslash = output.find_last_not_of(u"/\\");
   const size_t num_output_slashes =
-      (last_output_nonslash == base::string16::npos) ?
-      output.length() : (output.length() - 1 - last_output_nonslash);
+      (last_output_nonslash == std::u16string::npos)
+          ? output.length()
+          : (output.length() - 1 - last_output_nonslash);
   if (num_output_slashes < num_input_slashes)
     output.append(num_input_slashes - num_output_slashes, '/');
   else if (num_output_slashes > num_input_slashes)
@@ -250,16 +252,19 @@ AutocompleteProvider::FixupReturn AutocompleteProvider::FixupUserInput(
 }
 
 // static
-size_t AutocompleteProvider::TrimHttpPrefix(base::string16* url) {
-  // Find any "http:".
-  if (!AutocompleteInput::HasHTTPScheme(*url))
+size_t AutocompleteProvider::TrimSchemePrefix(std::u16string* url,
+                                              bool trim_https) {
+  // Find any "http:" or "https:".
+  if (trim_https && !AutocompleteInput::HasHTTPSScheme(*url))
     return 0;
-  size_t scheme_pos =
-      url->find(base::ASCIIToUTF16(url::kHttpScheme) + base::char16(':'));
-  DCHECK_NE(base::string16::npos, scheme_pos);
+  if (!trim_https && !AutocompleteInput::HasHTTPScheme(*url))
+    return 0;
+  const char* scheme = trim_https ? url::kHttpsScheme : url::kHttpScheme;
+  size_t scheme_pos = url->find(base::ASCIIToUTF16(scheme) + u':');
+  DCHECK_NE(std::u16string::npos, scheme_pos);
 
   // Erase scheme plus up to two slashes.
-  size_t prefix_end = scheme_pos + strlen(url::kHttpScheme) + 1;
+  size_t prefix_end = scheme_pos + strlen(scheme) + 1;
   const size_t after_slashes = std::min(url->length(), prefix_end + 2);
   while ((prefix_end < after_slashes) && ((*url)[prefix_end] == '/'))
     ++prefix_end;
@@ -270,7 +275,7 @@ size_t AutocompleteProvider::TrimHttpPrefix(base::string16* url) {
 // static
 bool AutocompleteProvider::InExplicitExperimentalKeywordMode(
     const AutocompleteInput& input,
-    const base::string16& keyword) {
+    const std::u16string& keyword) {
   return OmniboxFieldTrial::IsExperimentalKeywordModeEnabled() &&
          input.prefer_keyword() &&
          base::StartsWith(input.text(), keyword,
@@ -281,7 +286,7 @@ bool AutocompleteProvider::InExplicitExperimentalKeywordMode(
 // static
 bool AutocompleteProvider::IsExplicitlyInKeywordMode(
     const AutocompleteInput& input,
-    const base::string16& keyword) {
+    const std::u16string& keyword) {
   // It is important to this method that we determine if the user entered
   // keyword mode intentionally, as we use this routine to e.g. filter
   // all but keyword results. Currently we assume that the user entered

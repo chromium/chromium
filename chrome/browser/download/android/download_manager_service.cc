@@ -394,7 +394,7 @@ void DownloadManagerService::GetAllDownloadsInternal(ProfileKey* profile_key) {
 
   Java_DownloadManagerService_onAllDownloadsRetrieved(
       env, java_ref_, j_download_item_list,
-      ProfileKeyAndroid(profile_key).GetJavaObject());
+      profile_key->GetProfileKeyAndroid()->GetJavaObject());
 }
 
 void DownloadManagerService::CheckForExternallyRemovedDownloads(
@@ -501,10 +501,15 @@ void DownloadManagerService::OnDownloadRemoved(
   if (java_ref_.is_null() || item->IsTransient())
     return;
 
+  const Profile* profile = Profile::FromBrowserContext(
+      content::DownloadItemUtils::GetBrowserContext(item));
+
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_DownloadManagerService_onDownloadItemRemoved(
       env, java_ref_, ConvertUTF8ToJavaString(env, item->GetGuid()),
-      content::DownloadItemUtils::GetBrowserContext(item)->IsOffTheRecord());
+      profile->IsOffTheRecord()
+          ? profile->GetOTRProfileID().ConvertToJavaOTRProfileID(env)
+          : nullptr);
 }
 
 void DownloadManagerService::ResumeDownloadInternal(

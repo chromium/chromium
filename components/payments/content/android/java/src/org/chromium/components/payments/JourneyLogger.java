@@ -8,6 +8,8 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.WebContents;
 
+import java.util.List;
+
 /**
  * A class used to record journey metrics for the Payment Request feature.
  */
@@ -78,12 +80,46 @@ public class JourneyLogger {
     }
 
     /**
-     * Records that an event occurred.
-     *
-     * @param event The event that occurred.
+     * Records that a payment app has been invoked without any payment UI being shown before that.
      */
-    public void setEventOccurred(int event) {
-        JourneyLoggerJni.get().setEventOccurred(mJourneyLoggerAndroid, JourneyLogger.this, event);
+    public void setSkippedShow() {
+        JourneyLoggerJni.get().setSkippedShow(mJourneyLoggerAndroid, JourneyLogger.this);
+    }
+
+    /** Records that a payment UI has been shown. */
+    public void setShown() {
+        JourneyLoggerJni.get().setShown(mJourneyLoggerAndroid, JourneyLogger.this);
+    }
+
+    /** Records that the instrument details has been received. */
+    public void setReceivedInstrumentDetails() {
+        JourneyLoggerJni.get().setReceivedInstrumentDetails(
+                mJourneyLoggerAndroid, JourneyLogger.this);
+    }
+
+    /** Records that a payment app was invoked. */
+    public void setPayClicked() {
+        JourneyLoggerJni.get().setPayClicked(mJourneyLoggerAndroid, JourneyLogger.this);
+    }
+
+    /**
+     * Records the method that has been selected and invoked.
+     *
+     * @param category The category of the method.
+     */
+    public void setSelectedMethod(@PaymentMethodCategory int category) {
+        JourneyLoggerJni.get().setSelectedMethod(
+                mJourneyLoggerAndroid, JourneyLogger.this, category);
+    }
+
+    /**
+     * Records the method that is supported by the available payment apps.
+     *
+     * @param category The category of the method.
+     */
+    public void setAvailableMethod(@PaymentMethodCategory int category) {
+        JourneyLoggerJni.get().setAvailableMethod(
+                mJourneyLoggerAndroid, JourneyLogger.this, category);
     }
 
     /*
@@ -103,20 +139,20 @@ public class JourneyLogger {
     /*
      * Records what types of payment methods were requested by the merchant in the Payment Request.
      *
-     * @param requestedBasicCard    Whether the merchant requested basic-card.
-     * @param requestedMethodGoogle Whether the merchant requested a Google payment method.
-     * @param requestedMethodOther  Whether the merchant requested a non basic-card, non-Google
-     *                              payment method.
+     * @param methodTypes The list of types of the payment methods, defined in
+     *        {@link PaymentMethodCategories}.
      */
-    public void setRequestedPaymentMethodTypes(boolean requestedBasicCard,
-            boolean requestedMethodGoogle, boolean requestedMethodOther) {
-        JourneyLoggerJni.get().setRequestedPaymentMethodTypes(mJourneyLoggerAndroid,
-                JourneyLogger.this, requestedBasicCard, requestedMethodGoogle,
-                requestedMethodOther);
+    public void setRequestedPaymentMethods(List<Integer> methodTypes) {
+        int[] methods = new int[methodTypes.size()];
+        for (int i = 0; i < methodTypes.size(); i++) {
+            methods[i] = methodTypes.get(i);
+        }
+        JourneyLoggerJni.get().setRequestedPaymentMethods(
+                mJourneyLoggerAndroid, JourneyLogger.this, methods);
     }
 
     /**
-     * Records that the Payment Request was completed sucessfully. Also starts the logging of
+     * Records that the Payment Request was completed successfully. Also starts the logging of
      * all the journey logger metrics.
      */
     public void setCompleted() {
@@ -207,13 +243,19 @@ public class JourneyLogger {
                 long nativeJourneyLoggerAndroid, JourneyLogger caller, boolean value);
         void setHasEnrolledInstrumentValue(
                 long nativeJourneyLoggerAndroid, JourneyLogger caller, boolean value);
-        void setEventOccurred(long nativeJourneyLoggerAndroid, JourneyLogger caller, int event);
+        void setSkippedShow(long nativeJourneyLoggerAndroid, JourneyLogger caller);
+        void setShown(long nativeJourneyLoggerAndroid, JourneyLogger caller);
+        void setReceivedInstrumentDetails(long nativeJourneyLoggerAndroid, JourneyLogger caller);
+        void setPayClicked(long nativeJourneyLoggerAndroid, JourneyLogger caller);
+        void setSelectedMethod(
+                long nativeJourneyLoggerAndroid, JourneyLogger caller, int paymentMethodCategory);
+        void setAvailableMethod(
+                long nativeJourneyLoggerAndroid, JourneyLogger caller, int paymentMethodCategory);
         void setRequestedInformation(long nativeJourneyLoggerAndroid, JourneyLogger caller,
                 boolean requestShipping, boolean requestEmail, boolean requestPhone,
                 boolean requestName);
-        void setRequestedPaymentMethodTypes(long nativeJourneyLoggerAndroid, JourneyLogger caller,
-                boolean requestedBasicCard, boolean requestedMethodGoogle,
-                boolean requestedMethodOther);
+        void setRequestedPaymentMethods(
+                long nativeJourneyLoggerAndroid, JourneyLogger caller, int[] methodTypes);
         void setCompleted(long nativeJourneyLoggerAndroid, JourneyLogger caller);
         void setAborted(long nativeJourneyLoggerAndroid, JourneyLogger caller, int reason);
         void setNotShown(long nativeJourneyLoggerAndroid, JourneyLogger caller, int reason);

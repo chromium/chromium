@@ -8,8 +8,8 @@ import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
 // Stores information about an iframe element from the point of view of the
 // document that hosts the iframe. This is used for purely informational
-// purposes in the performance.measureMemory API to identify an iframe in memory
-// usage reports.
+// purposes in the performance.measureUserAgentSpecificMemory API to identify
+// an iframe in memory usage reports.
 struct IframeAttributionData {
   // The value of the "id" attribute associated with the iframe element.
   string? id;

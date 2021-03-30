@@ -97,6 +97,49 @@
     The identity of this website has not been verified.
   </message>
 
+  <!-- Password Protection strings shared with iOS -->
+  <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_SUMMARY" desc="A one-line summary at the top of the Page Info bubble (which shows when you click the security indicator) if user has reuse their google password on current website.">
+    Your password may be compromised
+  </message>
+  <if expr="_google_chrome">
+    <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SAVED" desc="A short paragraph explaining to a Chrome user that they have reused their saved password on the current website.">
+      You just entered your password on a deceptive site. Chrome recommends changing your password now.
+    </message>
+    <message name="IDS_PAGE_INFO_CHECK_PASSWORD_DETAILS_SAVED_1_DOMAIN" desc="A short paragraph explaining to a Chrome user that they have reused their saved password on the current website and to check their password on one domain.">
+      You just entered your password on a deceptive site. Chrome recommends checking your saved passwords for <ph name="WEBSITE_1">$1<ex>www.google.com</ex></ph> and other sites where you use this password now.
+    </message>
+    <message name="IDS_PAGE_INFO_CHECK_PASSWORD_DETAILS_SAVED_2_DOMAIN" desc="A short paragraph explaining to a Chrome user that they have reused their saved password on the current website and to check their password on two domains.">
+      You just entered your password on a deceptive site. Chrome recommends checking your saved passwords for <ph name="WEBSITE_1">$1<ex>www.google.com</ex></ph>, <ph name="WEBSITE_2">$2<ex>www.reddit.com</ex></ph>, and other sites where you use this password now.
+    </message>
+    <message name="IDS_PAGE_INFO_CHECK_PASSWORD_DETAILS_SAVED_3_DOMAIN" desc="A short paragraph explaining to a Chrome user that they have reused their saved password on the current website and to check their password on three domains.">
+      You just entered your password on a deceptive site. Chrome recommends checking your saved passwords for <ph name="WEBSITE_1">$1<ex>www.google.com</ex></ph>, <ph name="WEBSITE_2">$2<ex>www.reddit.com</ex></ph>, <ph name="WEBSITE_3">$3<ex>www.amazon.com</ex></ph>, and other sites where you use this password now.
+    </message>
+  </if>
+  <if expr="not _google_chrome">
+    <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SAVED" desc="A short paragraph explaining to a Chromium user that they have reused their saved password on the current website.">
+      You just entered your password on a deceptive site. Chromium recommends changing your password now.
+    </message>
+    <message name="IDS_PAGE_INFO_CHECK_PASSWORD_DETAILS_SAVED_1_DOMAIN" desc="A short paragraph explaining to a Chromium user that they have reused their saved password on the current website and to check their password on one domain.">
+      You just entered your password on a deceptive site. Chromium recommends checking your saved passwords for <ph name="WEBSITE_1">$1<ex>www.google.com</ex></ph> and other sites where you use this password now.
+    </message>
+    <message name="IDS_PAGE_INFO_CHECK_PASSWORD_DETAILS_SAVED_2_DOMAIN" desc="A short paragraph explaining to a Chromium user that they have reused their saved password on the current website and to check their password on two domains.">
+      You just entered your password on a deceptive site. Chromium recommends checking your saved passwords for <ph name="WEBSITE_1">$1<ex>www.google.com</ex></ph>, <ph name="WEBSITE_2">$2<ex>www.reddit.com</ex></ph>, and other sites where you use this password now.
+    </message>
+    <message name="IDS_PAGE_INFO_CHECK_PASSWORD_DETAILS_SAVED_3_DOMAIN" desc="A short paragraph explaining to a Chromium user that they have reused their saved password on the current website and to check their password on three domains.">
+      You just entered your password on a deceptive site. Chromium recommends checking your saved passwords for <ph name="WEBSITE_1">$1<ex>www.google.com</ex></ph>, <ph name="WEBSITE_2">$2<ex>www.reddit.com</ex></ph>, <ph name="WEBSITE_3">$3<ex>www.amazon.com</ex></ph>, and other sites where you use this password now.
+    </message>
+  </if>
+  <if expr="use_titlecase">
+    <message name="IDS_PAGE_INFO_CHECK_PASSWORDS_BUTTON" desc="In Title Case: The string used in the page info check passwords button.">
+      Check Passwords
+    </message>
+  </if>
+  <if expr="not use_titlecase">
+    <message name="IDS_PAGE_INFO_CHECK_PASSWORDS_BUTTON" desc="The string used in the page info check passwords button.">
+      Check passwords
+    </message>
+  </if>
+
   <if expr="chromeos">
     <!-- Administrator-provided certificate notifications -->
     <message name="IDS_CERT_POLICY_PROVIDED_CERT_MESSAGE" desc="Text that is displayed in the Page Info popup when using an administrator-provided certificate">
@@ -249,7 +292,7 @@
       Background Sync
     </message>
     <message name="IDS_PAGE_INFO_TYPE_IDLE_DETECTION" desc="The label used for the idle detection permission controlls in the Page Info popup.">
-      Your presence
+      Your device use
     </message>
     <message name="IDS_PAGE_INFO_TYPE_IMAGES" desc="The label used for images permission controls in the Page Info popup.">
       Images
@@ -296,7 +339,7 @@
     <message name="IDS_PAGE_INFO_TYPE_BLUETOOTH" desc="The label used for the Bluetooth permission controls in the Page Info popup.">
       Bluetooth devices
     </message>
-    <message name="IDS_PAGE_INFO_TYPE_NATIVE_FILE_SYSTEM_WRITE" desc="The label used for the native file system write permission controls in the Page Info popup. The write permission determines whether sites are allowed to save to the original file that was selected by the user through the Native File System API.">
+    <message name="IDS_PAGE_INFO_TYPE_FILE_SYSTEM_ACCESS_WRITE" desc="The label used for the File System Access write permission controls in the Page Info popup. The write permission determines whether sites are allowed to save to the original file that was selected by the user through the File System Access API.">
       File editing
     </message>
     <message name="IDS_PAGE_INFO_TYPE_BLUETOOTH_SCANNING" desc="The label used for the Bluetooth scanning controls in the Page Info popup.">
@@ -471,15 +514,9 @@
     </if>
 
     <!-- Password Protection -->
-    <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_SUMMARY" desc="A one-line summary at the top of the Page Info bubble (which shows when you click the security indicator) if user has reuse their google password on current website.">
-      Your password may be compromised
-    </message>
     <if expr="_google_chrome">
       <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS" desc="A short paragraph explaining to the user that they has reuse their google password on current website.">
         You could lose access to your Google Account. Chrome recommends changing your password now. You'll be asked to sign in.
-      </message>
-      <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SAVED" desc="A short paragraph explaining to a Chrome user that they have reused their saved password on the current website.">
-        You just entered your password on a deceptive site. Chrome recommends changing your password now.
       </message>
       <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SAVED_1_DOMAIN" desc="A short paragraph explaining to a Chrome user that they have reused their saved password on the current website and to change their password on one domain.">
         You just entered your password on a deceptive site. Chrome recommends going to <ph name="WEBSITE_1">$1<ex>www.google.com</ex></ph> and other sites where you use this password and changing it now.
@@ -489,15 +526,6 @@
       </message>
       <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SAVED_3_DOMAINS" desc="A short paragraph explaining to a Chrome user that they have reused their saved password on the current website and to change their password on three domains.">
         You just entered your password on a deceptive site. Chrome recommends going to <ph name="WEBSITE_1">$1<ex>www.google.com</ex></ph>, <ph name="WEBSITE_2">$2<ex>www.reddit.com</ex></ph>, <ph name="WEBSITE_3">$3<ex>www.amazon.com</ex></ph>, and other sites where you use this password and changing it now.
-      </message>
-      <message name="IDS_PAGE_INFO_CHECK_PASSWORD_DETAILS_SAVED_1_DOMAIN" desc="A short paragraph explaining to a Chrome user that they have reused their saved password on the current website and to check their password on one domain.">
-        You just entered your password on a deceptive site. Chrome recommends checking your saved passwords for <ph name="WEBSITE_1">$1<ex>www.google.com</ex></ph> and other sites where you use this password now.
-      </message>
-      <message name="IDS_PAGE_INFO_CHECK_PASSWORD_DETAILS_SAVED_2_DOMAIN" desc="A short paragraph explaining to a Chrome user that they have reused their saved password on the current website and to check their password on two domains.">
-        You just entered your password on a deceptive site. Chrome recommends checking your saved passwords for <ph name="WEBSITE_1">$1<ex>www.google.com</ex></ph>, <ph name="WEBSITE_2">$2<ex>www.reddit.com</ex></ph>, and other sites where you use this password now.
-      </message>
-      <message name="IDS_PAGE_INFO_CHECK_PASSWORD_DETAILS_SAVED_3_DOMAIN" desc="A short paragraph explaining to a Chrome user that they have reused their saved password on the current website and to check their password on three domains.">
-        You just entered your password on a deceptive site. Chrome recommends checking your saved passwords for <ph name="WEBSITE_1">$1<ex>www.google.com</ex></ph>, <ph name="WEBSITE_2">$2<ex>www.reddit.com</ex></ph>, <ph name="WEBSITE_3">$3<ex>www.amazon.com</ex></ph>, and other sites where you use this password now.
       </message>
       <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SYNC" desc="A short paragraph explaining to a Chrome sync user that they have reused their Google password on the current website.">
         Chrome can help you protect your Google Account and change your password.
@@ -516,10 +544,7 @@
       <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS" desc="A short paragraph explaining to the user that they has reuse their google password on current website.">
         You could lose access to your Google Account. Chromium recommends changing your password now. You'll be asked to sign in.
       </message>
-      <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SAVED" desc="A short paragraph explaining to a Chromium user that they have reused their saved password on the current website.">
-        You just entered your password on a deceptive site. Chromium recommends changing your password now.
-      </message>
-       <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SAVED_1_DOMAIN" desc="A short paragraph explaining to a Chromium user that they have reused their saved password on the current website and to change their password on one domain.">
+      <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SAVED_1_DOMAIN" desc="A short paragraph explaining to a Chromium user that they have reused their saved password on the current website and to change their password on one domain.">
         You just entered your password on a deceptive site. Chromium recommends going to <ph name="WEBSITE_1">$1<ex>www.google.com</ex></ph> and other sites where you use this password and changing it now.
       </message>
       <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SAVED_2_DOMAINS" desc="A short paragraph explaining to a Chromium user that they have reused their saved password on the current website and to change their password on two domains.">
@@ -527,15 +552,6 @@
       </message>
       <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SAVED_3_DOMAINS" desc="A short paragraph explaining to a Chromium user that they have reused their saved password on the current website and to change their password on three domains.">
         You just entered your password on a deceptive site. Chromium recommends going to <ph name="WEBSITE_1">$1<ex>www.google.com</ex></ph>, <ph name="WEBSITE_2">$2<ex>www.reddit.com</ex></ph>, <ph name="WEBSITE_3">$3<ex>www.amazon.com</ex></ph>, and other sites where you use this password and changing it now.
-      </message>
-      <message name="IDS_PAGE_INFO_CHECK_PASSWORD_DETAILS_SAVED_1_DOMAIN" desc="A short paragraph explaining to a Chromium user that they have reused their saved password on the current website and to check their password on one domain.">
-        You just entered your password on a deceptive site. Chromium recommends checking your saved passwords for <ph name="WEBSITE_1">$1<ex>www.google.com</ex></ph> and other sites where you use this password now.
-      </message>
-      <message name="IDS_PAGE_INFO_CHECK_PASSWORD_DETAILS_SAVED_2_DOMAIN" desc="A short paragraph explaining to a Chromium user that they have reused their saved password on the current website and to check their password on two domains.">
-        You just entered your password on a deceptive site. Chromium recommends checking your saved passwords for <ph name="WEBSITE_1">$1<ex>www.google.com</ex></ph>, <ph name="WEBSITE_2">$2<ex>www.reddit.com</ex></ph>, and other sites where you use this password now.
-      </message>
-      <message name="IDS_PAGE_INFO_CHECK_PASSWORD_DETAILS_SAVED_3_DOMAIN" desc="A short paragraph explaining to a Chromium user that they have reused their saved password on the current website and to check their password on three domains.">
-        You just entered your password on a deceptive site. Chromium recommends checking your saved passwords for <ph name="WEBSITE_1">$1<ex>www.google.com</ex></ph>, <ph name="WEBSITE_2">$2<ex>www.reddit.com</ex></ph>, <ph name="WEBSITE_3">$3<ex>www.amazon.com</ex></ph>, and other sites where you use this password now.
       </message>
       <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SYNC" desc="A short paragraph explaining to a Chrome sync user that they have reused their Google password on the current website.">
         Chromium can help you protect your Google Account and change your password.
@@ -555,9 +571,6 @@
       <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_BUTTON" desc="In Title Case: The string used in the page info change password button.">
         Change Password
       </message>
-      <message name="IDS_PAGE_INFO_CHECK_PASSWORDS_BUTTON" desc="In Title Case: The string used in the page info check passwords button.">
-        Check Passwords
-      </message>
       <message name="IDS_PAGE_INFO_PROTECT_ACCOUNT_BUTTON" desc="In Title Case: The string used in the page info protect account button.">
         Protect Account
       </message>
@@ -568,9 +581,6 @@
     <if expr="not use_titlecase">
       <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_BUTTON" desc="The string used in the page info change password button.">
         Change password
-      </message>
-      <message name="IDS_PAGE_INFO_CHECK_PASSWORDS_BUTTON" desc="The string used in the page info check passwords button.">
-        Check passwords
       </message>
       <message name="IDS_PAGE_INFO_PROTECT_ACCOUNT_BUTTON" desc="The string used in the page info protect account button.">
         Protect account

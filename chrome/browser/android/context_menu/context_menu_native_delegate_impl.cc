@@ -4,6 +4,8 @@
 
 #include "chrome/browser/android/context_menu/context_menu_native_delegate_impl.h"
 
+#include <utility>
+
 #include "base/android/callback_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -169,7 +171,7 @@ void ContextMenuNativeDelegateImpl::RetrieveImageInternal(
       max_width_px * max_height_px, gfx::Size(max_width_px, max_height_px),
       image_format,
       base::BindOnce(
-          std::move(retrieve_callback), base::Passed(&chrome_render_frame),
+          std::move(retrieve_callback), std::move(chrome_render_frame),
           base::android::ScopedJavaGlobalRef<jobject>(env, jcallback)));
 }
 

@@ -65,9 +65,7 @@ class PushMessagingClient final : public GarbageCollected<PushMessagingClient>,
                     mojom::blink::PushRegistrationStatus status,
                     mojom::blink::PushSubscriptionPtr subscription);
 
-  HeapMojoRemote<mojom::blink::PushMessaging,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      push_messaging_manager_;
+  HeapMojoRemote<mojom::blink::PushMessaging> push_messaging_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(PushMessagingClient);
 };

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<title>size-adjust should scale 'ex' correctly under zoom</title>
+
+<style>
+@font-face {
+  font-family: custom-font;
+  src: local(Ahem), url(/fonts/Ahem.ttf);
+  unicode-range: U+20, U+30-39; /* Digits and space */
+}
+
+.test {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 60px;
+}
+
+.target {
+  font-family: custom-font, sans-serif;
+}
+
+.square {
+  display: inline-block;
+  vertical-align: bottom;
+  background-color: black;
+  width: var(--l);
+  height: var(--l);
+}
+</style>
+
+<div class="test">
+
+<p>The computed 'font-size' value (i.e., 'em') should not be affected. But 'ex' should be scaled since it's measured from the actual glyph.</p>
+<div class="target">
+  <span class="square" style="--l: 1em"></span><span class="square" style="--l: 0.4ex"></span>
+</div>
+
+</div>

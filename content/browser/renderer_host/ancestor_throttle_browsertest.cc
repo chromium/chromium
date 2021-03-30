@@ -16,6 +16,7 @@
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/base/escape.h"
+#include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -27,6 +28,11 @@
 namespace content {
 
 namespace {
+
+base::FilePath TestFilePath(const char* filename) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  return GetTestFilePath("", filename);
+}
 
 class AncestorThrottleTest : public ContentBrowserTest,
                              public ::testing::WithParamInterface<bool> {
@@ -128,6 +134,43 @@ IN_PROC_BROWSER_TEST_F(AncestorThrottleTest, Response204CSP) {
   EXPECT_TRUE(NavigateIframeToURL(web_contents, "test_iframe", iframe_url));
 
   // Not crashing means that the test succeeded.
+}
+
+// Tests iframes embedded by local files.
+IN_PROC_BROWSER_TEST_F(AncestorThrottleTest, FrameAncestorsFileURLs) {
+  struct {
+    const char* csp;
+    bool expect_allowed;
+  } testCases[]{
+      {"frame-ancestors 'none'", false},
+      {"frame-ancestors file:", true},
+      {"frame-ancestors 'self'", false},
+  };
+
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  GURL parent_url =
+      net::FilePathToFileURL(TestFilePath("page_with_iframe.html"));
+  for (const auto& testCase : testCases) {
+    GURL iframe_url(embedded_test_server()->GetURL(
+        "foo.com",
+        base::StringPrintf("/set-header?Content-Security-Policy: %s;",
+                           testCase.csp)));
+
+    EXPECT_TRUE(NavigateToURL(web_contents, parent_url));
+    EXPECT_TRUE(NavigateIframeToURL(web_contents, "test_iframe", iframe_url));
+
+    // Check that we have an opaque origin, since the frame was blocked.
+    // TODO(lfg): We can't check last_navigation_succeded because of
+    // https://crbug.com/1000804.
+    bool is_opaque = web_contents->GetFrameTree()
+                         ->root()
+                         ->child_at(0)
+                         ->current_frame_host()
+                         ->GetLastCommittedOrigin()
+                         .opaque();
+    EXPECT_EQ(is_opaque, !(testCase.expect_allowed));
+  }
 }
 
 class AncestorThrottleSXGTest : public AncestorThrottleTest {

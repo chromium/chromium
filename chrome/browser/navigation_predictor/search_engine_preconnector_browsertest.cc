@@ -4,7 +4,9 @@
 
 #include "base/macros.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_tick_clock.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
 #include "chrome/browser/predictors/loading_predictor.h"
@@ -234,6 +236,124 @@ IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorNoDelaysBrowserTest,
 
   // No preconnects should have been issued for the test URL.
   EXPECT_EQ(0, preresolve_counts_[GetTestURL("/").GetOrigin()]);
+}
+
+class SearchEnginePreconnectorForegroundBrowserTest
+    : public SearchEnginePreconnectorBrowserTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  SearchEnginePreconnectorForegroundBrowserTest() {
+    {
+      if (skip_in_background()) {
+        feature_list_.InitWithFeaturesAndParameters(
+            {
+                {features::kPreconnectToSearch,
+                 {{"startup_delay_ms", "1000000"},
+                  {"skip_in_background", "true"}}},
+                {features::kPreconnectToSearchNonGoogle, {{}}},
+            },
+            {});
+      } else {
+        feature_list_.InitWithFeaturesAndParameters(
+            {
+                {features::kPreconnectToSearch,
+                 {{"startup_delay_ms", "1000000"},
+                  {"skip_in_background", "false"}}},
+                {features::kPreconnectToSearchNonGoogle, {{}}},
+            },
+            {});
+      }
+    }
+  }
+
+  bool skip_in_background() const { return std::get<0>(GetParam()); }
+
+  bool load_page() const { return std::get<1>(GetParam()); }
+
+  ~SearchEnginePreconnectorForegroundBrowserTest() override = default;
+
+  base::SimpleTestTickClock tick_clock_;
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(SearchEnginePreconnectorForegroundBrowserTest);
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SearchEnginePreconnectorForegroundBrowserTest,
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool()));
+
+// Test that search engine preconnects are done only if the browser app is
+// likely in foreground.
+IN_PROC_BROWSER_TEST_P(SearchEnginePreconnectorForegroundBrowserTest,
+                       PreconnectOnlyInForeground) {
+  base::HistogramTester histogram_tester;
+  static const char kShortName[] = "test";
+  static const char kSearchURL[] =
+      "/anchors_different_area.html?q={searchTerms}";
+  static const char kSearchURLWithQuery[] =
+      "/anchors_different_area.html?q=porgs";
+
+  TemplateURLService* model =
+      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(model);
+  search_test_utils::WaitForTemplateURLServiceToLoad(model);
+  ASSERT_TRUE(model->loaded());
+
+  TemplateURLData data;
+  data.SetShortName(base::ASCIIToUTF16(kShortName));
+  data.SetKeyword(data.short_name());
+  data.SetURL(GetTestURL(kSearchURL).spec());
+
+  // Set the DSE to the test URL.
+  TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
+  ASSERT_TRUE(template_url);
+  model->SetUserSelectedDefaultSearchProvider(template_url);
+
+  // Ensure that we wait long enough to trigger preconnects.
+  WaitForDelay(base::TimeDelta::FromMilliseconds(200));
+
+  TemplateURLData data_fake_search;
+  data_fake_search.SetShortName(base::ASCIIToUTF16(kShortName));
+  data_fake_search.SetKeyword(data.short_name());
+  data_fake_search.SetURL(FakeSearch().spec());
+
+  template_url = model->Add(std::make_unique<TemplateURL>(data_fake_search));
+  ASSERT_TRUE(template_url);
+  model->SetUserSelectedDefaultSearchProvider(template_url);
+
+  tick_clock_.SetNowTicks(base::TimeTicks::Now());
+  tick_clock_.Advance(base::TimeDelta::FromSeconds(10000));
+
+  NavigationPredictorKeyedServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(browser()->profile()))
+      ->SetTickClockForTesting(&tick_clock_);
+
+  if (load_page()) {
+    ui_test_utils::NavigateToURL(browser(), GetTestURL(kSearchURLWithQuery));
+  }
+
+  // Put the fake search URL to be preconnected in foreground.
+  NavigationPredictorKeyedServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(browser()->profile()))
+      ->search_engine_preconnector()
+      ->StartPreconnecting(/*with_startup_delay=*/false);
+
+  if (!skip_in_background() || load_page()) {
+    WaitForPreresolveCountForURL(FakeSearch(), 2);
+  }
+
+  // If preconnects are skipped in background and no web contents is in
+  // foreground, then no preconnect should happen.
+  EXPECT_EQ(skip_in_background() && !load_page() ? 0 : 2,
+            preresolve_counts_[FakeSearch()]);
+  histogram_tester.ExpectUniqueSample(
+      "NavigationPredictor.SearchEnginePreconnector."
+      "IsBrowserAppLikelyInForeground",
+      load_page() ? true : false, 1);
+
+  EXPECT_EQ(load_page() ? 1 : 0,
+            preresolve_counts_[GetTestURL("/").GetOrigin()]);
 }
 
 class SearchEnginePreconnectorKeepSocketBrowserTest

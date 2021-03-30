@@ -5,7 +5,8 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_AX_ANDROID_CONSTANTS_H_
 #define UI_ACCESSIBILITY_PLATFORM_AX_ANDROID_CONSTANTS_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "ui/accessibility/ax_export.h"
 
 namespace ui {
@@ -41,7 +42,7 @@ AX_EXPORT extern const char kAXToggleButtonClassname[];
 AX_EXPORT extern const char kAXViewClassname[];
 AX_EXPORT extern const char kAXViewGroupClassname[];
 AX_EXPORT extern const char kAXWebViewClassname[];
-AX_EXPORT extern const base::char16 kSecurePasswordBullet;
+AX_EXPORT extern const char16_t kSecurePasswordBullet;
 
 }  // namespace ui
 

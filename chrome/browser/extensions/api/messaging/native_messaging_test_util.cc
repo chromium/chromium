@@ -51,8 +51,8 @@ void WriteTestNativeHostManifest(const base::FilePath& target_dir,
 
 #if defined(OS_WIN)
   HKEY root_key = user_level ? HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE;
-  base::string16 key = L"SOFTWARE\\Google\\Chrome\\NativeMessagingHosts\\" +
-                       base::UTF8ToUTF16(host_name);
+  std::wstring key = L"SOFTWARE\\Google\\Chrome\\NativeMessagingHosts\\" +
+                     base::UTF8ToWide(host_name);
   base::win::RegKey manifest_key(
       root_key, key.c_str(),
       KEY_SET_VALUE | KEY_CREATE_SUB_KEY | KEY_CREATE_LINK);

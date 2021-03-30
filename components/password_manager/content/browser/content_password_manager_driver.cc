@@ -126,14 +126,14 @@ void ContentPasswordManagerDriver::FormEligibleForGenerationFound(
 }
 
 void ContentPasswordManagerDriver::GeneratedPasswordAccepted(
-    const base::string16& password) {
+    const std::u16string& password) {
   GetPasswordGenerationAgent()->GeneratedPasswordAccepted(password);
 }
 
 void ContentPasswordManagerDriver::GeneratedPasswordAccepted(
     const autofill::FormData& form_data,
     autofill::FieldRendererId generation_element_id,
-    const base::string16& password) {
+    const std::u16string& password) {
   GetPasswordManager()->OnGeneratedPasswordAccepted(
       this, form_data, generation_element_id, password);
 }
@@ -144,20 +144,20 @@ void ContentPasswordManagerDriver::TouchToFillClosed(
 }
 
 void ContentPasswordManagerDriver::FillSuggestion(
-    const base::string16& username,
-    const base::string16& password) {
+    const std::u16string& username,
+    const std::u16string& password) {
   GetAutofillAgent()->FillPasswordSuggestion(username, password);
 }
 
 void ContentPasswordManagerDriver::FillIntoFocusedField(
     bool is_password,
-    const base::string16& credential) {
+    const std::u16string& credential) {
   GetPasswordAutofillAgent()->FillIntoFocusedField(is_password, credential);
 }
 
 void ContentPasswordManagerDriver::PreviewSuggestion(
-    const base::string16& username,
-    const base::string16& password) {
+    const std::u16string& username,
+    const std::u16string& password) {
   GetAutofillAgent()->PreviewPasswordSuggestion(username, password);
 }
 
@@ -265,10 +265,10 @@ void ContentPasswordManagerDriver::InformAboutUserInput(
   }
 }
 
-void ContentPasswordManagerDriver::SameDocumentNavigation(
+void ContentPasswordManagerDriver::DynamicFormSubmission(
     autofill::mojom::SubmissionIndicatorEvent submission_indication_event) {
-  GetPasswordManager()->OnPasswordFormSubmittedNoChecks(
-      this, submission_indication_event);
+  GetPasswordManager()->OnDynamicFormSubmission(this,
+                                                submission_indication_event);
   LogSiteIsolationMetricsForSubmittedForm(render_frame_host_);
 }
 
@@ -289,14 +289,14 @@ void ContentPasswordManagerDriver::UserModifiedPasswordField() {
 
 void ContentPasswordManagerDriver::UserModifiedNonPasswordField(
     autofill::FieldRendererId renderer_id,
-    const base::string16& value) {
+    const std::u16string& value) {
   GetPasswordManager()->OnUserModifiedNonPasswordField(this, renderer_id,
                                                        value);
 }
 
 void ContentPasswordManagerDriver::ShowPasswordSuggestions(
     base::i18n::TextDirection text_direction,
-    const base::string16& typed_username,
+    const std::u16string& typed_username,
     int options,
     const gfx::RectF& bounds) {
   GetPasswordAutofillManager()->OnShowPasswordSuggestions(
@@ -322,8 +322,9 @@ void ContentPasswordManagerDriver::CheckSafeBrowsingReputation(
 }
 
 void ContentPasswordManagerDriver::FocusedInputChanged(
+    autofill::FieldRendererId focused_field_id,
     FocusedFieldType focused_field_type) {
-  client_->FocusedInputChanged(this, focused_field_type);
+  client_->FocusedInputChanged(this, focused_field_id, focused_field_type);
 }
 
 void ContentPasswordManagerDriver::LogFirstFillingResult(

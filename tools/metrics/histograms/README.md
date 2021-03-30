@@ -51,7 +51,9 @@ histograms.
 
 It should be quite rare to introduce new top-level categories into the existing
 taxonomy. If you're tempted to do so, please look through the existing
-categories to see whether any matches the metric(s) that you are adding.
+categories to see whether any matches the metric(s) that you are adding. To
+create a new category, the CL must be reviewed by
+chromium-metrics-reviews@google.com.
 
 ## Coding (Emitting to Histograms)
 
@@ -274,15 +276,17 @@ a min, max, and bucket count for your histogram using the advice below.
 #### Count Histograms: Choosing Min and Max
 
 For histogram max, choose a value such that very few emissions to the histogram
-exceed the max. If many emissions hit the max, it can be difficult to compute
-statistics, such as the average. One rule of thumb is at most 1% of samples
-should be in the overflow bucket. This allows analysis of the 99th percentile.
-Err on the side of too large a range versus too short a range. (Remember that
-if you choose poorly, you'll have to wait for another release cycle to fix it.)
+exceed the max. If a metric emission is above the max value, it will get put
+into an "overflow" bucket. If this bucket is too large, it can be difficult to
+compute statistics. One rule of thumb is at most 1% of samples should be in the
+overflow bucket (and ideally, less). This allows analysis of the 99th
+percentile. Err on the side of too large a range versus too short a range.
+(Remember that if you choose poorly, you'll have to wait for another release
+cycle to fix it.)
 
 For histogram min, if you care about all possible values (zero and above),
-choose a min of 1. (All histograms have an underflow bucket for emitted zeros,
-so a min of 1 is appropriate.) Otherwise, choose the min appropriate for your
+choose a min of 1. All histograms have an underflow bucket for emitted zeros,
+so a min of 1 is appropriate. Otherwise, choose the min appropriate for your
 particular situation.
 
 #### Count Histograms: Choosing Number of Buckets
@@ -374,22 +378,20 @@ latter case, the actual expiry date is about 12 weeks after that branch is cut,
 or basically when it is replaced on the "stable" channel by the following
 release.
 
-After a histogram expires, it ceases to be displayed on the dashboard. However,
-the client may continue to send data for that histogram for some time after the
-official expiry date so simply bumping the 'expires_after' date at HEAD may be
-sufficient to resurrect it without any discontinuity. If too much time has
-passed and the client is no longer sending data, it can be re-enabled via Finch:
-see [Expired histogram allowlist](#Expired-histogram-allowlist).
+After a histogram expires, it ceases to be displayed on the dashboard.
+Follow [these directions](#extending) to extend it.
 
 Once a histogram has expired, the code that records it becomes dead code and
 should be removed from the codebase along with marking the histogram definition
 as obsolete.
 
 In **rare** cases, the expiry can be set to "never". This is used to denote
-metrics of critical importance that are, typically, used for other reports.
-For example, all metrics of the "[heartbeat](https://uma.googleplex.com/p/chrome/variations)"
-are set to never expire. All metrics that never expire must have an XML comment
-describing why so that it can be audited in the future.
+metrics of critical importance that are, typically, used for other reports. For
+example, all metrics of the
+"[heartbeat](https://uma.googleplex.com/p/chrome/variations)" are set to never
+expire. All metrics that never expire must have an XML comment describing why so
+that it can be audited in the future. Setting an expiry to "never" must be
+reviewed by chromium-metrics-reviews@google.com.
 
 ```
 <!-- expires-never: "heartbeat" metric (internal: go/uma-heartbeats) -->
@@ -421,6 +423,31 @@ We also have a tool that automatically extends expiry dates. The 80% more
 frequently accessed histograms are pushed out every Tuesday, to 6 months from
 the date of the run. Googlers can view the [design
 doc](https://docs.google.com/document/d/1IEAeBF9UnYQMDfyh2gdvE7WlUKsfIXIZUw7qNoU89A4).
+
+#### How to extend an expired histogram {#extending}
+
+You can revive an expired histogram by setting the expiration date to a
+date in the future.
+
+There's some leeway here. A client may continue to send data for that
+histogram for some time after the official expiry date so simply bumping
+the 'expires_after' date at HEAD may be sufficient to resurrect it without
+any data discontinuity.
+
+If a histogram expired more than a month ago (for histograms with an
+expiration date) or more than one milestone ago (for histograms with
+expiration milestones; this means top-of-tree is two or more milestones away
+from expired milestone), then you may be outside the safety window. In this
+case, when extending the histogram add to the histogram description a
+message: "Warning: this histogram was expired from DATE to DATE; data may be
+missing." (For milestones, write something similar.)
+
+When reviving a histogram outside the safety window, realize the change to
+histograms.xml to revive it rolls out with the binary release. It takes
+some time to get to the stable channel.
+
+It you need to revive it faster, the histogram can be re-enabled via adding to
+the [expired histogram allowlist](#Expired-histogram-allowlist).
 
 ### Expired histogram notifier
 
@@ -468,10 +495,13 @@ not entirely so.
 
 ## Revising Histograms
 
-When changing the semantics of a histogram (when it's emitted, what buckets
-mean, etc.), make it into a new histogram with a new name. Otherwise the
-"Everything" view on the dashboard will mix two different interpretations of the
-data and make no sense.
+When changing the semantics of a histogram (when it's emitted, what the buckets
+represent, the bucket range or number of buckets, etc.), create a new histogram
+with a new name. Otherwise analysis that mixes the data pre- and post- change
+may be misleading. If the histogram name is still the best name choice, the
+recommendation is to simply append a '2' to the name. See [Cleaning Up Histogram
+Entries](#Cleaning-Up-Histogram-Entries) for details on how to handle the XML
+changes.
 
 ## Deleting Histograms
 
@@ -504,15 +534,26 @@ practices and to look for other errors.
 Histogram descriptions should be roughly understandable to someone not familiar
 with your feature. Please add a sentence or two of background if necessary.
 
-It is good practice to note caveats associated with your histogram in this
-section, such as which platforms are supported (if the set of supported
-platforms is surprising). E.g., a desktop feature that happens not to be
-logged on Mac.
+Note any caveats associated with your histogram in the summary. For example, if
+the set of supported platforms is surprising, such as if a desktop feature is
+not available on Mac, the summary should explain where it is recorded. It is
+also common to have caveats along the lines of "this histogram is only recorded
+if X" (e.g., upon a successful connection to a service, a feature is enabled by
+the user).
+
 
 ### State When It Is Recorded
 
 Histogram descriptions should clearly state when the histogram is emitted
 (profile open? network request received? etc.).
+
+Some histograms record error conditions. These should be clear about whether
+all errors are recorded or only the first. If only the first, the histogram
+description should have text like:
+```
+In the case of multiple errors, only the first reason encountered is recorded. Refer
+to Class::FunctionImplementingLogic() for details.
+```
 
 ### Provide Clear Units or Enum Labels
 
@@ -566,9 +607,10 @@ does, then the parent directory's component is used.
 
 ### Cleaning Up Histogram Entries
 
-Do not delete histograms from histograms.xml. Instead, mark unused histograms as
-obsolete and annotate them with the date or milestone in the `<obsolete>` tag
-entry.
+Do not delete histograms from histograms.xml files or move them to
+obsolete_histograms.xml. Instead, mark unused histograms as obsolete and
+annotate them with the date or milestone in the `<obsolete>` tag entry. They
+will later get moved to obsolete_histograms.xml via tooling.
 
 If deprecating only some variants of a
 [patterned histogram](#Patterned-Histograms), mark each deprecated `<variant>`
@@ -607,7 +649,8 @@ the same type of data, with some minor variations. You can declare the metadata
 for these concisely using patterned histograms. For example:
 
 ```xml
-<histogram name="Pokemon.{Character}.EfficacyAgainst{OpponentType}" ...>
+<histogram name="Pokemon.{Character}.EfficacyAgainst{OpponentType}" 
+    units="multiplier" expires_after="M95">
   <owner>individual@chromium.org</owner>
   <owner>team@chromium.org</owner>
   <summary>
@@ -631,7 +674,8 @@ for these concisely using patterned histograms. For example:
 This example defines metadata for 12 (= 3 x 4) concrete histograms, such as
 
 ```xml
-<histogram name="Pokemon.Charizard.EfficacyAgainstWater" ...>
+<histogram name="Pokemon.Charizard.EfficacyAgainstWater"
+    units="multiplier" expires_after="M95">
   <owner>individual@chromium.org</owner>
   <owner>team@chromium.org</owner>
   <summary>
@@ -671,11 +715,11 @@ As [with histogram entries](#Cleaning-Up-Histogram-Entries), never delete
 variants. If the variant expansion is no longer used, mark it as `<obsolete>`.
 
 *** promo
-Tip: You can run `print_expanded_histogram.py --pattern=` to show all generated
+Tip: You can run `print_expanded_histograms.py --pattern=` to show all generated
 histograms by patterned histograms or histogram suffixes including their
 summaries and owners. For example, this can be run (from the repo root) as:
 ```
-./tools/metrics/histograms/print_expanded_histogram.py --pattern=^UMA.A.B
+./tools/metrics/histograms/print_expanded_histograms.py --pattern=^UMA.A.B
 ```
 ***
 
@@ -714,6 +758,11 @@ For more information, see [sparse_histograms.h](https://cs.chromium.org/chromium
 # Team Documentation
 
 ## Reviewing Metrics CLs
+
+If you are a metric OWNER, you have the serious responsibility of ensuring
+Chrome's data collection is following best practices. If there's any concern
+about an incoming metrics changelist, please escalate by assigning to
+chromium-metrics-reviews@google.com.
 
 When reviewing metrics CLs, look at the following, listed in approximate order
 of importance:
@@ -788,7 +837,9 @@ interpretable and what data will have hidden surprises/gotchas.
   * When reviewing a CL that is trying to add many metrics at once, guide the CL
     author toward an appropriate solution for their needs. For example,
     multidimensional metrics can be recorded via UKM, and we are currently
-    building support for structured metrics in UMA.
+    building support for structured metrics in UMA. There's no hard rule, but
+    anything above 20 separate histograms should be escalated by being assigned
+    to chromium-metrics-reviews@google.com.
 
 * Are expiry dates being set
   [appropriately](#How-to-choose-expiry-for-histograms)?

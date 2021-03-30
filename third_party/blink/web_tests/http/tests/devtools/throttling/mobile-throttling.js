@@ -6,13 +6,16 @@
   TestRunner.addResult(`Tests that mobile, network, and CPU throttling interact with each other logically.\n`);
   await TestRunner.showPanel("network");
   await TestRunner.showPanel("timeline");
+  await TestRunner.loadLegacyModule('emulation');
+  await TestRunner.loadLegacyModule('mobile_throttling');
+  await TestRunner.loadLegacyModule('network');
   await UI.viewManager.showView("network.config");
 
   var deviceModeView = new Emulation.DeviceModeView();
 
   var deviceModeThrottling = deviceModeView._toolbar._throttlingConditionsItem;
   var networkPanelThrottling = UI.panels.network.throttlingSelectForTest();
-  var networkConfigView = self.runtime.sharedInstance(Network.NetworkConfigView);
+  var networkConfigView = Network.NetworkConfigView.instance();
   var networkConditionsDrawerThrottlingSelector =
       networkConfigView.contentElement.querySelector('.network-config-throttling select.chrome-select');
   var performancePanelNetworkThrottling = UI.panels.timeline._networkThrottlingSelect;

@@ -970,7 +970,7 @@ TEST_F(LocalCardMigrationManagerTest,
   EXPECT_EQ(local_card_migration_manager_->migratable_credit_cards_[0]
                 .credit_card()
                 .number(),
-            base::ASCIIToUTF16("4111111111111111"));
+            u"4111111111111111");
   EXPECT_TRUE(local_card_migration_manager_->IntermediatePromptWasShown());
 }
 

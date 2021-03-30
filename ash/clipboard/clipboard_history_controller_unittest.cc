@@ -8,7 +8,9 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/clipboard/clipboard_history.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
+#include "ash/public/cpp/session/session_types.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -19,7 +21,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/unguessable_token.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
@@ -67,6 +68,8 @@ class MockClipboardImageModelFactory : public ClipboardImageModelFactory {
   void Activate() override {}
 
   void Deactivate() override {}
+
+  void RenderCurrentPendingRequests() override {}
 
   void OnShutdown() override {}
 };
@@ -187,7 +190,6 @@ TEST_F(ClipboardHistoryControllerTest, VerifyAvailabilityInUserModes) {
   } kTestCases[] = {{user_manager::USER_TYPE_REGULAR, true},
                     {user_manager::USER_TYPE_GUEST, true},
                     {user_manager::USER_TYPE_PUBLIC_ACCOUNT, false},
-                    {user_manager::USER_TYPE_SUPERVISED, true},
                     {user_manager::USER_TYPE_KIOSK_APP, false},
                     {user_manager::USER_TYPE_CHILD, true},
                     {user_manager::USER_TYPE_ARC_KIOSK_APP, false},
@@ -243,6 +245,19 @@ TEST_F(ClipboardHistoryControllerTest, VerifyAvailabilityInUserModes) {
   }
 }
 
+// Verifies that the clipboard history menu is disabled when the screen for
+// user adding shows.
+TEST_F(ClipboardHistoryControllerTest, DisableInUserAddingScreen) {
+  WriteToClipboard("text");
+
+  // Emulate that the user adding screen displays.
+  Shell::Get()->session_controller()->ShowMultiProfileLogin();
+
+  // Try to show the clipboard history menu; verify that the menu does not show.
+  ShowMenu();
+  EXPECT_FALSE(Shell::Get()->clipboard_history_controller()->IsMenuShowing());
+}
+
 // Tests that pressing and holding VKEY_V, then the search key (EF_COMMAND_DOWN)
 // does not show the AppList.
 TEST_F(ClipboardHistoryControllerTest, VThenSearchDoesNotShowLauncher) {
@@ -287,8 +302,14 @@ TEST_F(ClipboardHistoryControllerTest,
   // Write a single item to ClipboardHistory.
   WriteToClipboard("test");
 
+  ASSERT_TRUE(Shell::Get()->cursor_manager()->IsCursorVisible());
+
   ShowMenu();
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+
+  // The cursor is visible after showing the clipboard history menu through
+  // the accelerator.
+  EXPECT_TRUE(Shell::Get()->cursor_manager()->IsCursorVisible());
 
   ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
   FlushMessageLoop();

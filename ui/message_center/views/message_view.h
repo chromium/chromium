@@ -6,11 +6,11 @@
 #define UI_MESSAGE_CENTER_VIEWS_MESSAGE_VIEW_H_
 
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/strings/string16.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/insets.h"
@@ -205,16 +205,17 @@ class MESSAGE_CENTER_EXPORT MessageView
   // Returns if the control buttons should be shown.
   bool ShouldShowControlButtons() const;
 
-  // Sets the border if |is_nested_| is true.
-  void SetNestedBorderIfNecessary();
-
   // Updates the background painter using the themed background color and radii.
   void UpdateBackgroundPainter();
 
   std::string notification_id_;
   views::ScrollView* scroller_ = nullptr;
 
-  base::string16 accessible_name_;
+  std::u16string accessible_name_;
+
+  // Tracks whether background should be drawn as active based on gesture
+  // events.
+  bool is_active_ = false;
 
   // Flag if the notification is set to pinned or not. See the comment in
   // MessageView::Mode for detail.

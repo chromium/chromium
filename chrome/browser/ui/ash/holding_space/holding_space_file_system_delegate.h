@@ -17,6 +17,9 @@
 #include "chrome/browser/chromeos/fileapi/file_change_service_observer.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
+#include "components/arc/mojom/file_system.mojom-forward.h"
+#include "components/arc/session/connection_holder.h"
+#include "components/arc/session/connection_observer.h"
 
 namespace base {
 class FilePath;
@@ -33,6 +36,7 @@ namespace ash {
 class HoldingSpaceFileSystemDelegate
     : public HoldingSpaceKeyedServiceDelegate,
       public chromeos::FileChangeServiceObserver,
+      public arc::ConnectionObserver<arc::mojom::FileSystemInstance>,
       public file_manager::VolumeManagerObserver {
  public:
   HoldingSpaceFileSystemDelegate(Profile* profile, HoldingSpaceModel* model);
@@ -61,8 +65,12 @@ class HoldingSpaceFileSystemDelegate
                          const file_manager::Volume& volume) override;
 
   // chromeos::FileChangeServiceObserver:
+  void OnFileModified(const storage::FileSystemURL& url) override;
   void OnFileMoved(const storage::FileSystemURL& src,
                    const storage::FileSystemURL& dst) override;
+
+  // arc::ConnectionObserver<arc::mojom::FileSystemInstance>:
+  void OnConnectionReady() override;
 
   // Invoked when the specified `file_path` has changed.
   void OnFilePathChanged(const base::FilePath& file_path, bool error);
@@ -129,6 +137,12 @@ class HoldingSpaceFileSystemDelegate
   base::ScopedObservation<file_manager::VolumeManager,
                           file_manager::VolumeManagerObserver>
       volume_manager_observer_{this};
+
+  base::ScopedObservation<
+      arc::ConnectionHolder<arc::mojom::FileSystemInstance,
+                            arc::mojom::FileSystemHost>,
+      arc::ConnectionObserver<arc::mojom::FileSystemInstance>>
+      arc_file_system_observer_{this};
 
   base::WeakPtrFactory<HoldingSpaceFileSystemDelegate> weak_factory_{this};
 };

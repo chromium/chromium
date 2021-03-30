@@ -5,7 +5,8 @@
 #ifndef CHROME_COMMON_IMPORTER_PROFILE_IMPORT_PROCESS_PARAM_TRAITS_H_
 #define CHROME_COMMON_IMPORTER_PROFILE_IMPORT_PROCESS_PARAM_TRAITS_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "chrome/common/importer/importer_data_types.h"
 #include "chrome/common/importer/profile_import.mojom.h"
 #include "chrome/common/importer/profile_import_process_param_traits_macros.h"
@@ -67,22 +68,22 @@ struct StructTraits<chrome::mojom::ImportedPasswordFormDataView,
     return r.action;
   }
 
-  static const base::string16& username_element(
+  static const std::u16string& username_element(
       const importer::ImportedPasswordForm& r) {
     return r.username_element;
   }
 
-  static const base::string16& username_value(
+  static const std::u16string& username_value(
       const importer::ImportedPasswordForm& r) {
     return r.username_value;
   }
 
-  static const base::string16& password_element(
+  static const std::u16string& password_element(
       const importer::ImportedPasswordForm& r) {
     return r.password_element;
   }
 
-  static const base::string16& password_value(
+  static const std::u16string& password_value(
       const importer::ImportedPasswordForm& r) {
     return r.password_value;
   }

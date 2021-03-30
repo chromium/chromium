@@ -36,7 +36,7 @@ class LDBComparator : public leveldb::Comparator {
   int Compare(const leveldb::Slice& a, const leveldb::Slice& b) const override {
     return content::Compare(leveldb_env::MakeStringPiece(a),
                             leveldb_env::MakeStringPiece(b),
-                            false /*index_keys*/);
+                            /*index_keys=*/false);
   }
   const char* Name() const override { return "idb_cmp1"; }
   void FindShortestSeparator(std::string* start,
@@ -218,7 +218,7 @@ template leveldb::Status PutVarInt<LevelDBWriteBatch>(
 template <typename DBOrTransaction>
 Status GetString(DBOrTransaction* db,
                  const StringPiece& key,
-                 base::string16* found_string,
+                 std::u16string* found_string,
                  bool* found) {
   std::string result;
   *found = false;
@@ -236,17 +236,17 @@ Status GetString(DBOrTransaction* db,
 template Status GetString<TransactionalLevelDBTransaction>(
     TransactionalLevelDBTransaction* txn,
     const StringPiece& key,
-    base::string16* found_string,
+    std::u16string* found_string,
     bool* found);
 template Status GetString<TransactionalLevelDBDatabase>(
     TransactionalLevelDBDatabase* db,
     const StringPiece& key,
-    base::string16* found_string,
+    std::u16string* found_string,
     bool* found);
 
 leveldb::Status PutString(TransactionalLevelDBTransaction* transaction,
                           const StringPiece& key,
-                          const base::string16& value) {
+                          const std::u16string& value) {
   std::string buffer;
   EncodeString(value, &buffer);
   return transaction->Put(key, &buffer);
@@ -591,6 +591,42 @@ leveldb::Status SetEarliestSweepTime(Transaction* txn,
   const std::string earliest_sweep_time_key = EarliestSweepKey::Encode();
   int64_t time_micros = (earliest_sweep - base::Time()).InMicroseconds();
   return indexed_db::PutInt(txn, earliest_sweep_time_key, time_micros);
+}
+
+Status GetEarliestCompactionTime(TransactionalLevelDBDatabase* db,
+                                 base::Time* earliest_compaction) {
+  const std::string earliest_compaction_time_key =
+      EarliestCompactionKey::Encode();
+  *earliest_compaction = base::Time();
+  bool found = false;
+  int64_t time_micros = 0;
+  Status s = indexed_db::GetInt(db, earliest_compaction_time_key, &time_micros,
+                                &found);
+  if (!s.ok())
+    return s;
+  if (!found)
+    time_micros = 0;
+
+  DCHECK_GE(time_micros, 0);
+  *earliest_compaction += base::TimeDelta::FromMicroseconds(time_micros);
+
+  return s;
+}
+
+template leveldb::Status SetEarliestCompactionTime<
+    TransactionalLevelDBTransaction>(TransactionalLevelDBTransaction* db,
+                                     base::Time earliest_compaction);
+template leveldb::Status SetEarliestCompactionTime<LevelDBDirectTransaction>(
+    LevelDBDirectTransaction* db,
+    base::Time earliest_compaction);
+
+template <typename Transaction>
+leveldb::Status SetEarliestCompactionTime(Transaction* txn,
+                                          base::Time earliest_compaction) {
+  const std::string earliest_compaction_time_key =
+      EarliestCompactionKey::Encode();
+  int64_t time_micros = (earliest_compaction - base::Time()).InMicroseconds();
+  return indexed_db::PutInt(txn, earliest_compaction_time_key, time_micros);
 }
 
 const leveldb::Comparator* GetDefaultLevelDBComparator() {

@@ -11,7 +11,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/translate/source_language_combobox_model.h"
@@ -115,7 +114,7 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   friend void ::translate::test_utils::PressRevert(::Browser*);
   friend void ::translate::test_utils::SelectTargetLanguageByDisplayName(
       ::Browser*,
-      const ::base::string16&);
+      const ::std::u16string&);
   FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest, TranslateButton);
   FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest,
                            AlwaysTranslateCheckboxShortcut);
@@ -131,6 +130,8 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
                            OptionsMenuNeverTranslateLanguage);
   FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest,
                            OptionsMenuRespectsBlocklistSite);
+  FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest,
+                           MenuOptionsHiddenOnUnknownSource);
   FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest,
                            OptionsMenuNeverTranslateSite);
   FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest,
@@ -240,8 +241,8 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
 
   // Retrieve the names of the from/to languages and reset the language
   // indices.
-  void UpdateLanguageNames(base::string16* original_language_name,
-                           base::string16* target_language_name);
+  void UpdateLanguageNames(std::u16string* source_language_name,
+                           std::u16string* target_language_name);
 
   void UpdateInsets(TranslateBubbleModel::ViewState state);
 

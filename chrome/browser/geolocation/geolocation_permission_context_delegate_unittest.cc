@@ -29,7 +29,7 @@ constexpr char kDSETestUrl[] = "https://www.dsetest.com";
 class TestSearchEngineDelegate
     : public SearchPermissionsService::SearchEngineDelegate {
  public:
-  base::string16 GetDSEName() override { return base::string16(); }
+  std::u16string GetDSEName() override { return std::u16string(); }
 
   url::Origin GetDSEOrigin() override {
     return url::Origin::Create(GURL(kDSETestUrl));
@@ -80,7 +80,7 @@ TEST_F(GeolocationPermissionContextDelegateTests, TabContentSettingIsUpdated) {
       permissions::PermissionRequestManager::FromWebContents(web_contents());
   permissions::MockPermissionPromptFactory mock_prompt_factory(manager);
   NavigateAndCommit(requesting_frame);
-  manager->DocumentOnLoadCompletedInMainFrame();
+  manager->DocumentOnLoadCompletedInMainFrame(main_rfh());
 
   base::RunLoop run_loop;
   PermissionManagerFactory::GetForProfile(profile())->RequestPermission(

@@ -36,12 +36,14 @@ class SnapshotSessionController {
     // |percent| is the number of percent of installed apps among the required
     // ARC apps in range [0..100].
     virtual void OnSnapshotAppInstalled(int percent) = 0;
+    // Called once the snapshot session is compliant with ARC policy.
+    virtual void OnSnapshotSessionPolicyCompliant() = 0;
   };
 
   virtual ~SnapshotSessionController();
 
   static std::unique_ptr<SnapshotSessionController> Create(
-      ArcAppsTracker* apps_tracker);
+      std::unique_ptr<ArcAppsTracker> apps_tracker);
 
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;

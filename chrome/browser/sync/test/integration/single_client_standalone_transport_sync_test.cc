@@ -22,15 +22,15 @@
 #include "content/public/test/browser_test.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/sync/test/integration/os_sync_test.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #endif
 
 namespace {
 
 syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
-  static_assert(41 == syncer::ModelType::NUM_ENTRIES,
+  static_assert(38 == syncer::GetNumModelTypes(),
                 "Add new types below if they run in transport mode");
   // Only some special whitelisted types (and control types) are allowed in
   // standalone transport mode.
@@ -235,8 +235,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-  syncer::SyncPrefs prefs(GetProfile(0)->GetPrefs());
-  const std::string cache_guid = prefs.GetCacheGuid();
+  syncer::SyncTransportDataPrefs transport_data_prefs(
+      GetProfile(0)->GetPrefs());
+  const std::string cache_guid = transport_data_prefs.GetCacheGuid();
   ASSERT_FALSE(cache_guid.empty());
 
   // Save the cache GUID to file to remember after restart, for test
@@ -264,8 +265,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-  syncer::SyncPrefs prefs(GetProfile(0)->GetPrefs());
-  ASSERT_FALSE(prefs.GetCacheGuid().empty());
+  syncer::SyncTransportDataPrefs transport_data_prefs(
+      GetProfile(0)->GetPrefs());
+  ASSERT_FALSE(transport_data_prefs.GetCacheGuid().empty());
 
   std::string old_cache_guid;
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -273,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
       base::ReadFileToString(GetTestFilePathForCacheGuid(), &old_cache_guid));
   ASSERT_FALSE(old_cache_guid.empty());
 
-  EXPECT_EQ(old_cache_guid, prefs.GetCacheGuid());
+  EXPECT_EQ(old_cache_guid, transport_data_prefs.GetCacheGuid());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

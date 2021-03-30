@@ -43,7 +43,7 @@ class PrintDialogGtk : public printing::PrintDialogGtkInterface,
       bool has_selection,
       PrintingContextLinux::PrintSettingsCallback callback) override;
   void PrintDocument(const printing::MetafilePlayer& metafile,
-                     const base::string16& document_name) override;
+                     const std::u16string& document_name) override;
   void AddRefToDialog() override;
   void ReleaseDialog() override;
 
@@ -61,7 +61,7 @@ class PrintDialogGtk : public printing::PrintDialogGtkInterface,
   CHROMEG_CALLBACK_1(PrintDialogGtk, void, OnResponse, GtkWidget*, int);
 
   // Prints document named |document_name|.
-  void SendDocumentToPrinter(const base::string16& document_name);
+  void SendDocumentToPrinter(const std::u16string& document_name);
 
   // Helper function for initializing |context_|'s PrintSettings with a given
   // |settings|.

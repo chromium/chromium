@@ -67,7 +67,7 @@ TEST(URLCanonIcuTest, ICUCharsetConverter) {
     std::string str;
     StdStringCanonOutput output(&str);
 
-    base::string16 input_str(
+    std::u16string input_str(
         test_utils::TruncateWStringToUTF16(icu_cases[i].input));
     int input_len = static_cast<int>(input_str.length());
     converter.ConvertFromUTF16(input_str.c_str(), input_len, &output);
@@ -84,7 +84,7 @@ TEST(URLCanonIcuTest, ICUCharsetConverter) {
   ICUCharsetConverter converter(conv.converter());
   for (int i = static_size - 2; i <= static_size + 2; i++) {
     // Make a string with the appropriate length.
-    base::string16 input;
+    std::u16string input;
     for (int ch = 0; ch < i; ch++)
       input.push_back('a');
 
@@ -138,7 +138,7 @@ TEST(URLCanonIcuTest, QueryWithConverter) {
     }
 
     if (query_cases[i].input16) {
-      base::string16 input16(
+      std::u16string input16(
           test_utils::TruncateWStringToUTF16(query_cases[i].input16));
       int len = static_cast<int>(input16.length());
       Component in_comp(0, len);

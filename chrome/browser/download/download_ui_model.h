@@ -7,11 +7,12 @@
 
 #include <stdint.h>
 
+#include <string>
+
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/sequenced_task_runner.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/download/public/common/download_item.h"
@@ -57,14 +58,14 @@ class DownloadUIModel {
   // "100/200 MB" where the numerator is the transferred size and the
   // denominator is the total size. If the total isn't known, returns the
   // transferred size as a string (e.g.: "100 MB").
-  base::string16 GetProgressSizesString() const;
+  std::u16string GetProgressSizesString() const;
 
   // Returns a long descriptive string for a download that's in the INTERRUPTED
   // state. For other downloads, the returned string will be empty.
-  base::string16 GetInterruptReasonText() const;
+  std::u16string GetInterruptReasonText() const;
 
   // Returns a short one-line status string for the download.
-  base::string16 GetStatusText() const;
+  std::u16string GetStatusText() const;
 
   // Returns a string suitable for use as a tooltip. For a regular download, the
   // tooltip is the filename. For an interrupted download, the string states the
@@ -72,17 +73,17 @@ class DownloadUIModel {
   // example:
   //    Report.pdf
   //    Network disconnected
-  base::string16 GetTooltipText() const;
+  std::u16string GetTooltipText() const;
 
   // Get the warning text to display for a dangerous download. |filename| is the
   // (possibly-elided) filename; if it is present in the resulting string,
   // |offset| will be set to the starting position of the filename.
-  base::string16 GetWarningText(const base::string16& filename,
+  std::u16string GetWarningText(const std::u16string& filename,
                                 size_t* offset) const;
 
   // Get the caption text for a button for confirming a dangerous download
   // warning.
-  base::string16 GetWarningConfirmButtonText() const;
+  std::u16string GetWarningConfirmButtonText() const;
 
   // Returns the profile associated with this download.
   virtual Profile* profile() const;
@@ -92,7 +93,7 @@ class DownloadUIModel {
 
   // Returns the localized status text for an in-progress download. This
   // is the progress status used in the WebUI interface.
-  virtual base::string16 GetTabProgressStatusText() const;
+  virtual std::u16string GetTabProgressStatusText() const;
 
   // Get the number of bytes that has completed so far.
   virtual int64_t GetCompletedBytes() const;
@@ -323,7 +324,7 @@ class DownloadUIModel {
 
  private:
   // Returns a string indicating the status of an in-progress download.
-  base::string16 GetInProgressStatusString() const;
+  std::u16string GetInProgressStatusString() const;
 
   DISALLOW_COPY_AND_ASSIGN(DownloadUIModel);
 };

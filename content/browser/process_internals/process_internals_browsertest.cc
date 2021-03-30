@@ -50,7 +50,7 @@ IN_PROC_BROWSER_TEST_F(ProcessInternalsWebUiBrowserTest, NoProcessBindings) {
 
 IN_PROC_BROWSER_TEST_F(ProcessInternalsWebUiBrowserTest,
                        MojoJsBindingsCorrectlyScoped) {
-  const base::string16 passed_title = base::ASCIIToUTF16("passed");
+  const std::u16string passed_title = u"passed";
 
   GURL url("chrome://process-internals/#web-contents");
   EXPECT_TRUE(NavigateToURL(shell(), url));

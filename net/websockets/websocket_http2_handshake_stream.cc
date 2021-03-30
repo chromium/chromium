@@ -44,7 +44,8 @@ WebSocketHttp2HandshakeStream::WebSocketHttp2HandshakeStream(
     WebSocketStream::ConnectDelegate* connect_delegate,
     std::vector<std::string> requested_sub_protocols,
     std::vector<std::string> requested_extensions,
-    WebSocketStreamRequestAPI* request)
+    WebSocketStreamRequestAPI* request,
+    std::vector<std::string> dns_aliases)
     : result_(HandshakeResult::HTTP2_INCOMPLETE),
       session_(session),
       connect_delegate_(connect_delegate),
@@ -55,7 +56,8 @@ WebSocketHttp2HandshakeStream::WebSocketHttp2HandshakeStream(
       request_info_(nullptr),
       stream_closed_(false),
       stream_error_(OK),
-      response_headers_complete_(false) {
+      response_headers_complete_(false),
+      dns_aliases_(std::move(dns_aliases)) {
   DCHECK(connect_delegate);
   DCHECK(request);
 }
@@ -239,8 +241,11 @@ HttpStream* WebSocketHttp2HandshakeStream::RenewStreamForAuth() {
 
 const std::vector<std::string>& WebSocketHttp2HandshakeStream::GetDnsAliases()
     const {
-  static const base::NoDestructor<std::vector<std::string>> emptyvector_result;
-  return *emptyvector_result;
+  return dns_aliases_;
+}
+
+base::StringPiece WebSocketHttp2HandshakeStream::GetAcceptChViaAlps() const {
+  return {};
 }
 
 std::unique_ptr<WebSocketStream> WebSocketHttp2HandshakeStream::Upgrade() {

@@ -11,7 +11,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/optional.h"
-#include "components/autofill_assistant/browser/client.h"
 #include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
@@ -31,7 +30,7 @@ class TriggerScriptBridgeAndroid : public TriggerScriptCoordinator::Observer {
 
   // Attempts to start a trigger script on |initial_url|. Will communicate with
   // |jdelegate| to show/hide UI as necessary.
-  void StartTriggerScript(Client* client,
+  void StartTriggerScript(content::WebContents* web_contents,
                           const base::android::JavaParamRef<jobject>& jdelegate,
                           const GURL& initial_url,
                           std::unique_ptr<TriggerContext> trigger_context,
@@ -75,12 +74,24 @@ class TriggerScriptBridgeAndroid : public TriggerScriptCoordinator::Observer {
       const base::android::JavaParamRef<jobject>& jcaller,
       jboolean jvisible);
 
+  // Called by the UI when a user interacted with the onboarding UI or when
+  // onboarding is already accepted.
+  void OnOnboardingFinished(JNIEnv* env,
+                            const base::android::JavaParamRef<jobject>& jcaller,
+                            jboolean jonboarding_shown,
+                            jint jresult);
+
  private:
   // From TriggerScriptCoordinator::Observer:
   void OnTriggerScriptShown(const TriggerScriptUIProto& proto) override;
   void OnTriggerScriptHidden() override;
   void OnTriggerScriptFinished(Metrics::LiteScriptFinishedState state) override;
   void OnVisibilityChanged(bool visible) override;
+  void OnOnboardingRequested(bool is_dialog_onboarding_enabled) override;
+
+  // The login manager for fetching login credentials.
+  // TODO(arbesser) move this to the owner of trigger_script_bridge_android.
+  std::unique_ptr<WebsiteLoginManager> website_login_manager_;
 
   // Reference to the Java counterpart to this class.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;

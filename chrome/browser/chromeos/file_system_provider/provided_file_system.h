@@ -55,11 +55,11 @@ class NotificationManagerInterface;
 // in case of shutdown or a crash we get the notifications again.
 class AutoUpdater : public base::RefCounted<AutoUpdater> {
  public:
-  explicit AutoUpdater(const base::Closure& update_callback);
+  explicit AutoUpdater(base::OnceClosure update_callback);
 
   // Creates a new callback which needs to be called before the update callback
   // is called.
-  base::Closure CreateCallback();
+  base::OnceClosure CreateCallback();
 
  private:
   friend class base::RefCounted<AutoUpdater>;
@@ -70,7 +70,7 @@ class AutoUpdater : public base::RefCounted<AutoUpdater> {
 
   virtual ~AutoUpdater();
 
-  base::Closure update_callback_;
+  base::OnceClosure update_callback_;
   int created_callbacks_;
   int pending_callbacks_;
 };

@@ -92,6 +92,7 @@ cr.define('cr.login', function() {
    *   samlAclUrl: string,
    *   isSupervisedUser: boolean,
    *   isDeviceOwner: boolean,
+   *   ssoProfile: string,
    * }}
    */
   /* #export */ let AuthParams;
@@ -174,6 +175,9 @@ cr.define('cr.login', function() {
     'ignoreCrOSIdpSetting',  // If set to true, causes Gaia to ignore 3P
                              // SAML IdP SSO redirection policies (and
                              // redirect to SAML IdPs by default).
+    'ssoProfile',            // An identifier for the device's managing OU's
+                             // SAML SSO setting. Used by the login screen to
+                             // pass to Gaia.
 
     // The email fields allow for the following possibilities:
     //
@@ -661,6 +665,9 @@ cr.define('cr.login', function() {
       if (data.doSamlRedirect) {
         let url = this.idpOrigin_ + SAML_REDIRECTION_PATH;
         url = appendParam(url, 'domain', data.enterpriseEnrollmentDomain);
+        if (data.ssoProfile) {
+          url = appendParam(url, 'sso_profile', data.ssoProfile);
+        }
         url = appendParam(
             url, 'continue',
             data.gaiaUrl + 'programmatic_auth_chromeos?hl=' + data.hl +
@@ -926,7 +933,7 @@ cr.define('cr.login', function() {
       const msg = e.data;
       if (msg.method in messageHandlers) {
         if (this.authCompletedFired_) {
-          console.error(msg.method + ' message sent after auth completed');
+          console.warn(msg.method + ' message sent after auth completed');
         }
         messageHandlers[msg.method].call(this, msg);
       } else if (!IGNORED_MESSAGES_FROM_GAIA.includes(msg.method)) {

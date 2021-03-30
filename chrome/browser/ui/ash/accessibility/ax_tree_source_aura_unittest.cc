@@ -33,8 +33,7 @@ using views::Textfield;
 using views::View;
 using views::Widget;
 
-using AuraAXTreeSerializer = ui::
-    AXTreeSerializer<views::AXAuraObjWrapper*, ui::AXNodeData, ui::AXTreeData>;
+using AuraAXTreeSerializer = ui::AXTreeSerializer<views::AXAuraObjWrapper*>;
 
 // Helper to count the number of nodes in a tree.
 size_t GetSize(AXAuraObjWrapper* tree) {
@@ -68,7 +67,7 @@ class AXTreeSourceAuraTest : public ChromeViewsTestBase {
     content_ = widget_->SetContentsView(std::make_unique<View>());
 
     textfield_ = new Textfield();
-    textfield_->SetText(base::ASCIIToUTF16("Value"));
+    textfield_->SetText(u"Value");
     content_->AddChildView(textfield_);
     widget_->Show();
   }

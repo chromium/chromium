@@ -179,7 +179,7 @@ void VersionUpdaterMac::CheckForUpdate(StatusCallback status_callback,
     // There is no glue, or the application is on a read-only filesystem.
     // Updates and promotions are impossible.
     status_callback_.Run(DISABLED, 0, false, false, std::string(), 0,
-                         base::string16());
+                         std::u16string());
   }
 #endif  // BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
 }
@@ -209,7 +209,7 @@ void VersionUpdaterMac::UpdateStatus(NSDictionary* dictionary) {
           [dictionary objectForKey:kAutoupdateStatusErrorMessages]));
 
   bool enable_promote_button = true;
-  base::string16 message;
+  std::u16string message;
 
   Status status;
   switch (keystone_status) {
@@ -269,7 +269,7 @@ void VersionUpdaterMac::UpdateStatus(NSDictionary* dictionary) {
 
     case kAutoupdateNeedsPromotion: {
       status = FAILED;
-      base::string16 product_name = l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
+      std::u16string product_name = l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
       message =
           l10n_util::GetStringFUTF16(IDS_PROMOTE_INFOBAR_TEXT, product_name);
     } break;
@@ -288,13 +288,13 @@ void VersionUpdaterMac::UpdateStatus(NSDictionary* dictionary) {
 
     if (status == FAILED) {
       if (!message.empty()) {
-        message += base::UTF8ToUTF16("<br/><br/>");
+        message += u"<br/><br/>";
       }
 
       message += l10n_util::GetStringUTF16(IDS_UPGRADE_ERROR_DETAILS);
-      message += base::UTF8ToUTF16("<br/><pre>");
+      message += u"<br/><pre>";
       message += base::UTF8ToUTF16(net::EscapeForHTML(error_messages));
-      message += base::UTF8ToUTF16("</pre>");
+      message += u"</pre>";
     }
   }
 

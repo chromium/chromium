@@ -6,18 +6,17 @@ syntax = "proto2";
 
 package feedwire;
 
+import "components/feed/core/proto/v2/wire/xsurface_container.proto";
+
 option optimize_for = LITE_RUNTIME;
 
-// Contains data to use during client-side rendering of the response, like
-// templates and themes.
 message RenderData {
-  // Enum denoting which extension contains the render data.
   enum RenderDataType {
     UNKNOWN_RENDER_DATA_TYPE = 0;
     XSURFACE = 1;
+    PREFETCH_RESOURCES = 2;
   }
   optional RenderDataType render_data_type = 1;
-
-  message XSurfaceContainer { optional bytes render_data = 1; }
   optional XSurfaceContainer xsurface_container = 1000;
+  optional bytes xsurface_prefetch_resources = 330939752;
 }

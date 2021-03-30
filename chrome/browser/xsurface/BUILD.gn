@@ -12,12 +12,14 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/xsurface/ImagePrefetcher.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/ListContentManager.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/ListContentManagerObserver.java",
+    "android/java/src/org/chromium/chrome/browser/xsurface/PersistentKeyValueCache.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/ProcessScope.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/ProcessScopeDependencyProvider.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/SurfaceActionsHandler.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/SurfaceRenderer.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/SurfaceScope.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/SurfaceScopeDependencyProvider.java",
+    "android/java/src/org/chromium/chrome/browser/xsurface/WebVideoPlayer.java",
   ]
-  deps = [ "//third_party/android_deps:androidx_annotation_annotation_java" ]
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
 }

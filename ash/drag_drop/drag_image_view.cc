@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "skia/ext/image_operations.h"
 #include "ui/aura/window.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/display/display.h"

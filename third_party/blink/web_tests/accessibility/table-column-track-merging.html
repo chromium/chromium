@@ -1,0 +1,124 @@
+<!doctype html>
+<title>Column track merging accesibilty tests</title>
+<script src='../resources/testharness.js'></script>
+<script src='../resources/testharnessreport.js'></script>
+<link rel="author" title="Aleks Totic" href="atotic@chromium.org" />
+<link rel="help" href="https://www.w3.org/TR/css-tables-3/#dimensioning-the-row-column-grid--step2" />
+<style>
+
+main table {
+  border: 10px solid gray;
+  border-spacing: 20px;
+}
+
+main td {
+  width: 50px;
+  height:50px;
+  padding: 0;
+  background:linear-gradient(to right, yellow, orange);
+}
+main caption {
+  background: #EEE;
+}
+main .desc {
+  margin-top: 20px;
+  color: rgb(50,0,0);
+}
+main pre {
+  white-space: pre-wrap;
+
+}
+</style>
+<main>
+<p>Checks accessibility table properties when tracks are merged. a11y part of wpt/css/css-tables/column-track-merging.html</p>
+
+<table id="td_auto">
+<caption>auto</caption>
+<tr>
+  <td colspan=10></td>
+  <td></td>
+</tr>
+<tr>
+  <td colspan=10></td>
+  <td></td>
+</tr>
+</table>
+
+<table id="td_auto_width" style="width:400px">
+<caption>auto 400px</caption>
+<tr>
+  <td colspan=10></td>
+  <td></td>
+</tr>
+<tr>
+  <td colspan=10></td>
+  <td></td>
+</tr>
+</table>
+
+<table id="td_fixed" style="table-layout:fixed; width: 400px">
+<caption>fixed 400px</caption>
+<tr>
+  <td colspan=10></td>
+  <td></td>
+</tr>
+<tr>
+  <td colspan=10></td>
+  <td></td>
+</tr>
+</table>
+
+<table id="col_fixed_130" style="table-layout:fixed; width: 130px">
+<col span=10>
+<caption>col fixed 130px</caption>
+<tr>
+  <td></td>
+  <td></td>
+</tr>
+<tr>
+  <td></td>
+  <td></td>
+</tr>
+</table>
+
+</main>
+<script>
+
+  test(function() {
+    assert_true(!!window.accessibilityController, "accessibilityController exists");
+  }, "accessibilityController exists");
+
+  // a11y tests
+
+  test(function() {
+    let table = accessibilityController.accessibleElementById("td_auto");
+    assert_equals(table.columnCount, 2, "has merged td columns");
+    let cell = table.cellForColumnAndRow(0,0);
+    assert_equals(cell.columnIndexRange(), "{0, 1}", "cell.columnIndexRange");
+  }, "td_auto table props");
+
+  test(function() {
+    let table = accessibilityController.accessibleElementById("td_auto_width");
+    assert_equals(table.columnCount, 2, "has merged td columns");
+    let cell = table.cellForColumnAndRow(0,0);
+    assert_equals(cell.columnIndexRange(), "{0, 1}", "cell.columnIndexRange");
+  }, "td_auto_width table props");
+
+  test(function() {
+    let table = accessibilityController.accessibleElementById("td_fixed");
+    assert_equals(table.columnCount, 11, "has not merged td columns");
+    let cell = table.cellForColumnAndRow(0,0);
+    assert_equals(cell.columnIndexRange(), "{0, 10}", "cell.columnIndexRange");
+  }, "td_fixed table props");
+
+  test(function() {
+    let table = accessibilityController.accessibleElementById("col_fixed_130");
+    assert_equals(table.columnCount, 10, "has not merged td columns");
+    let cell = table.cellForColumnAndRow(0,0);
+    assert_equals(cell.columnIndexRange(), "{0, 1}", "cell.columnIndexRange");
+  }, "col_fixed table props");
+
+ </script>
+
+</body>
+</html>

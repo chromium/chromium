@@ -22,5 +22,9 @@ blink_modules_sources("manifest") {
     "manifest_uma_util.h",
   ]
 
-  deps = [ "//third_party/blink/renderer/modules/navigatorcontentutils:navigatorcontentutils" ]
+  deps = [
+    "//net",
+    "//third_party/blink/renderer/modules/navigatorcontentutils:navigatorcontentutils",
+    "//url",
+  ]
 }

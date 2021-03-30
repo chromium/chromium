@@ -132,6 +132,9 @@
           } else if (charCode == 0xE008) {
             eventSenderKeys = "ShiftLeft";
             modifierValue = "shiftKey";
+          } else if (charCode == 0xE006 || charCode == 0xE007) {
+            eventSenderKeys = "Enter";
+            modifierValue = "enter";
           } else if (charCode >= 0xE000 && charCode <= 0xF8FF) {
             reject(new Error("No support for this code: U+" + charCode.toString(16)));
             return;
@@ -168,7 +171,7 @@
 
   window.test_driver_internal.action_sequence = function(actions) {
     if (window.top !== window) {
-      return Promise.reject(new Error("can only send keys in top-level window"));
+      return Promise.reject(new Error("can only send actions in top-level window"));
     }
 
     var didScrollIntoView = false;
@@ -177,6 +180,12 @@
       var last_y_position = 0;
       var first_pointer_down = false;
       for (let j = 0; j < actions[i].actions.length; j++) {
+        if (actions[i].actions[j].type == "keyDown" ||
+            actions[i].actions[j].type == "keyUp") {
+          return Promise.reject(new Error("we do not support keydown and keyup actions, " +
+                                          "please use test_driver.send_keys"));
+        }
+
         if ('origin' in actions[i].actions[j]) {
           if (typeof(actions[i].actions[j].origin) === 'string') {
              if (actions[i].actions[j].origin == "viewport") {
@@ -222,7 +231,9 @@
           }
         }
 
-        if (actions[i].actions[j].type == "pointerDown" || actions[i].actions[j].type == "pointerMove") {
+        if (actions[i].actions[j].type == "pointerDown" ||
+            actions[i].actions[j].type == "pointerMove" ||
+            actions[i].actions[j].type == "scroll") {
           actions[i].actions[j].x = last_x_position;
           actions[i].actions[j].y = last_y_position;
         }

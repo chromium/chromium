@@ -13,7 +13,6 @@
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
 #include "chrome/common/chrome_features.h"
-#include "content/public/common/content_features.h"
 
 namespace web_app {
 
@@ -67,6 +66,11 @@ void AppRegistrar::NotifyWebAppsWillBeUpdatedFromSync(
 void AppRegistrar::NotifyWebAppUninstalled(const AppId& app_id) {
   for (AppRegistrarObserver& observer : observers_)
     observer.OnWebAppUninstalled(app_id);
+}
+
+void AppRegistrar::NotifyWebAppWillBeUninstalled(const AppId& app_id) {
+  for (AppRegistrarObserver& observer : observers_)
+    observer.OnWebAppWillBeUninstalled(app_id);
   RecordWebAppUninstallation(profile()->GetPrefs(), app_id);
 }
 
@@ -81,6 +85,11 @@ void AppRegistrar::NotifyWebAppDisabledStateChanged(const AppId& app_id,
                                                     bool is_disabled) {
   for (AppRegistrarObserver& observer : observers_)
     observer.OnWebAppDisabledStateChanged(app_id, is_disabled);
+}
+
+void AppRegistrar::NotifyWebAppsDisabledModeChanged() {
+  for (AppRegistrarObserver& observer : observers_)
+    observer.OnWebAppsDisabledModeChanged();
 }
 
 void AppRegistrar::NotifyWebAppLastLaunchTimeChanged(const AppId& app_id,
@@ -298,23 +307,19 @@ DisplayMode AppRegistrar::GetAppEffectiveDisplayMode(
     return DisplayMode::kUndefined;
   }
 
-  std::vector<DisplayMode> display_mode_overrides;
-  if (base::FeatureList::IsEnabled(features::kWebAppManifestDisplayOverride))
-    display_mode_overrides = GetAppDisplayModeOverride(app_id);
-
+  std::vector<DisplayMode> display_mode_overrides =
+      GetAppDisplayModeOverride(app_id);
   return ResolveEffectiveDisplayMode(app_display_mode, display_mode_overrides,
                                      user_display_mode);
 }
 
 DisplayMode AppRegistrar::GetEffectiveDisplayModeFromManifest(
     const AppId& app_id) const {
-  if (base::FeatureList::IsEnabled(features::kWebAppManifestDisplayOverride)) {
-    std::vector<DisplayMode> display_mode_overrides =
-        GetAppDisplayModeOverride(app_id);
+  std::vector<DisplayMode> display_mode_overrides =
+      GetAppDisplayModeOverride(app_id);
 
-    if (!display_mode_overrides.empty())
-      return display_mode_overrides[0];
-  }
+  if (!display_mode_overrides.empty())
+    return display_mode_overrides[0];
 
   return GetAppDisplayMode(app_id);
 }

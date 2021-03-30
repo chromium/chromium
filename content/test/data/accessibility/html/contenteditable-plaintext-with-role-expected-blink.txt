@@ -1,0 +1,6 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++menuItemRadio editable name='x' checkedState=false editableRoot=true
+++++++++staticText editable name='x'
+++++++++++inlineTextBox name='x'

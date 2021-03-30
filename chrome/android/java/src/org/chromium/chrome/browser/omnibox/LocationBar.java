@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.lifecycle.Destroyable;
-import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.tab.Tab;
 
@@ -69,10 +68,10 @@ public interface LocationBar extends Destroyable {
         return null;
     }
     /**
-     * Returns a (@link FakeboxDelegate}.
+     * Returns a (@link OmniboxStub}.
      *
-     * <p>TODO(crbug.com/1140287): Inject FakeboxDelegate where needed and remove this method.
+     * <p>TODO(crbug.com/1140287): Inject OmniboxStub where needed and remove this method.
      */
     @Nullable
-    FakeboxDelegate getFakeboxDelegate();
+    OmniboxStub getOmniboxStub();
 }

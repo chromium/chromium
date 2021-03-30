@@ -12,8 +12,11 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/json/json_writer.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "base/task/current_thread.h"
+#include "base/task/thread_pool.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/features.h"
@@ -540,14 +543,16 @@ TEST_P(TransportSecurityPersisterTest, ExpectCTWithNetworkIsolationKey) {
   }
 }
 
-// Test the case when deserializing a NetworkIsolationKey fails. This happens
-// when data is persisted with kAppendFrameOriginToNetworkIsolationKey, but
-// loaded without it, or vice-versa.
+// Test the case when deserializing a NetworkIsolationKey fails.
 TEST_P(TransportSecurityPersisterTest,
        ExpectCTNetworkIsolationKeyDeserializationFails) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      TransportSecurityState::kDynamicExpectCTFeature);
+  feature_list.InitWithFeatures(
+      // enabled_features
+      {TransportSecurityState::kDynamicExpectCTFeature,
+       features::kPartitionExpectCTStateByNetworkIsolationKey},
+      // disabled_features
+      {});
 
   const GURL report_uri(kReportUri);
   static const char kTestDomain[] = "example.test";
@@ -559,49 +564,42 @@ TEST_P(TransportSecurityPersisterTest,
   const base::Time expiry1 = current_time + base::TimeDelta::FromSeconds(1000);
   const base::Time expiry2 = current_time + base::TimeDelta::FromSeconds(2000);
 
-  // Serialize data with kPartitionExpectCTStateByNetworkIsolationKey and
-  // kAppendFrameOriginToNetworkIsolationKey enabled, and then revert the
-  // features to their previous values.
+  // Serialize data.
   std::string serialized;
-  {
-    base::test::ScopedFeatureList feature_list2;
-    feature_list2.InitWithFeatures(
-        // enabled_features
-        {features::kPartitionExpectCTStateByNetworkIsolationKey,
-         features::kAppendFrameOriginToNetworkIsolationKey},
-        // disabled_features
-        {});
-    TransportSecurityState state2;
-    TransportSecurityPersister persister2(
-        &state2, temp_dir_.GetPath(),
-        std::move(base::ThreadPool::CreateSequencedTaskRunner(
-            {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-             base::TaskShutdownBehavior::BLOCK_SHUTDOWN})));
-    TransportSecurityState::ExpectCTState expect_ct_state;
-    state2.AddExpectCT(kTestDomain, expiry1, true /* enforce */, GURL(),
-                       empty_network_isolation_key);
-    state2.AddExpectCT(kTestDomain, expiry2, true /* enforce */, GURL(),
-                       network_isolation_key);
-    EXPECT_TRUE(persister2.SerializeData(&serialized));
+  TransportSecurityState state2;
+  TransportSecurityPersister persister2(
+      &state2, temp_dir_.GetPath(),
+      std::move(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})));
+  TransportSecurityState::ExpectCTState expect_ct_state;
+  state2.AddExpectCT(kTestDomain, expiry1, true /* enforce */, GURL(),
+                     empty_network_isolation_key);
+  state2.AddExpectCT(kTestDomain, expiry2, true /* enforce */, GURL(),
+                     network_isolation_key);
+  EXPECT_TRUE(persister2.SerializeData(&serialized));
 
-    EXPECT_TRUE(state2.GetDynamicExpectCTState(
-        kTestDomain, empty_network_isolation_key, &expect_ct_state));
-    EXPECT_TRUE(state2.GetDynamicExpectCTState(
-        kTestDomain, network_isolation_key, &expect_ct_state));
-  }
+  EXPECT_TRUE(state2.GetDynamicExpectCTState(
+      kTestDomain, empty_network_isolation_key, &expect_ct_state));
+  EXPECT_TRUE(state2.GetDynamicExpectCTState(kTestDomain, network_isolation_key,
+                                             &expect_ct_state));
 
-  base::test::ScopedFeatureList feature_list3;
-  feature_list3.InitAndDisableFeature(
-      features::kAppendFrameOriginToNetworkIsolationKey);
+  // Replace reference to |network_isolation_key|'s value with an invalid NIK
+  // value.
+  base::Value nik_value;
+  ASSERT_TRUE(network_isolation_key.ToValue(&nik_value));
+  std::string nik_string;
+  ASSERT_TRUE(base::JSONWriter::Write(nik_value, &nik_string));
+  base::ReplaceFirstSubstringAfterOffset(&serialized, 0, nik_string,
+                                         "\"Not a valid NIK\"");
 
   bool data_in_old_format;
   // Load entries into the other persister.
   EXPECT_TRUE(persister_->LoadEntries(serialized, &data_in_old_format));
   EXPECT_FALSE(data_in_old_format);
 
-  // Regardless of whether kPartitionExpectCTStateByNetworkIsolationKey is
-  // enabled or not, the different kAppendFrameOriginToNetworkIsolationKey state
-  // will cause the entry with a non-empty NetworkIsolationKey to be dropped.
+  // The entry with the non-empty NetworkIsolationKey should be dropped, since
+  // its NIK is now invalid. The other entry should be preserved.
   std::set<std::string> expect_ct_saved;
   TransportSecurityState::ExpectCTStateIterator expect_ct_iter(*state_);
   ASSERT_TRUE(expect_ct_iter.HasNext());

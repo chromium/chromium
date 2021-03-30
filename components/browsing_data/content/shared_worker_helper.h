@@ -19,7 +19,6 @@
 
 namespace content {
 class StoragePartition;
-class ResourceContext;
 }  // namespace content
 
 namespace browsing_data {
@@ -48,8 +47,7 @@ class SharedWorkerHelper
   using FetchCallback =
       base::OnceCallback<void(const std::list<SharedWorkerInfo>&)>;
 
-  SharedWorkerHelper(content::StoragePartition* storage_partition,
-                     content::ResourceContext* resource_context);
+  explicit SharedWorkerHelper(content::StoragePartition* storage_partition);
 
   // Starts the fetching process returning the list of shared workers, which
   // will notify its completion via |callback|. This must be called only in the
@@ -68,7 +66,6 @@ class SharedWorkerHelper
   friend class base::RefCountedThreadSafe<SharedWorkerHelper>;
 
   content::StoragePartition* storage_partition_;
-  content::ResourceContext* resource_context_;
 
   DISALLOW_COPY_AND_ASSIGN(SharedWorkerHelper);
 };
@@ -78,8 +75,8 @@ class SharedWorkerHelper
 // info as a parameter.
 class CannedSharedWorkerHelper : public SharedWorkerHelper {
  public:
-  CannedSharedWorkerHelper(content::StoragePartition* storage_partition,
-                           content::ResourceContext* resource_context);
+  explicit CannedSharedWorkerHelper(
+      content::StoragePartition* storage_partition);
 
   // Adds Shared Worker to the set of canned Shared Workers that is returned by
   // this helper.

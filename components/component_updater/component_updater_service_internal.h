@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
@@ -48,8 +49,6 @@ class CrxUpdateService : public ComponentUpdateService,
   bool RegisterComponent(const CrxComponent& component) override;
   bool UnregisterComponent(const std::string& id) override;
   std::vector<std::string> GetComponentIDs() const override;
-  std::unique_ptr<ComponentInfo> GetComponentForMimeType(
-      const std::string& id) const override;
   std::vector<ComponentInfo> GetComponents() const override;
   OnDemandUpdater& GetOnDemandUpdater() override;
   void MaybeThrottle(const std::string& id,
@@ -96,7 +95,7 @@ class CrxUpdateService : public ComponentUpdateService,
   scoped_refptr<UpdateClient> update_client_;
 
   // A collection of every registered component.
-  using Components = std::map<std::string, CrxComponent>;
+  using Components = base::flat_map<std::string, CrxComponent>;
   Components components_;
 
   // Maintains the order in which components have been registered. The position

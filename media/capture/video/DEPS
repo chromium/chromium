@@ -1,5 +1,6 @@
 include_rules = [
   "+chromeos/dbus",
+  "+components/device_event_log",
   "+mojo/public/cpp",
   "+third_party/libyuv",
 ]

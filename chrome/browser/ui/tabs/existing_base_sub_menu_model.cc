@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/tabs/existing_base_sub_menu_model.h"
 
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+
 ExistingBaseSubMenuModel::ExistingBaseSubMenuModel(
     ui::SimpleMenuModel::Delegate* parent_delegate,
     TabStripModel* model,
@@ -12,7 +14,7 @@ ExistingBaseSubMenuModel::ExistingBaseSubMenuModel(
     : SimpleMenuModel(this),
       parent_delegate_(parent_delegate),
       model_(model),
-      context_index_(context_index),
+      context_contents_(model->GetWebContentsAt(context_index)),
       min_command_id_(min_command_id) {}
 
 bool ExistingBaseSubMenuModel::GetAcceleratorForCommandId(
@@ -43,13 +45,13 @@ void ExistingBaseSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
 ExistingBaseSubMenuModel::~ExistingBaseSubMenuModel() = default;
 
 ExistingBaseSubMenuModel::MenuItemInfo::MenuItemInfo(
-    const base::string16 menu_text)
+    const std::u16string menu_text)
     : text(menu_text) {
   image = base::nullopt;
 }
 
 ExistingBaseSubMenuModel::MenuItemInfo::MenuItemInfo(
-    const base::string16& menu_text,
+    const std::u16string& menu_text,
     ui::ImageModel menu_image)
     : text(menu_text) {
   image = base::Optional<ui::ImageModel>{menu_image};
@@ -77,6 +79,8 @@ void ExistingBaseSubMenuModel::Build(
     } else {
       AddItem(group_index, item.text);
     }
+
+    SetMayHaveMnemonicsAt(GetItemCount() - 1, item.may_have_mnemonics);
     group_index++;
   }
 }
@@ -84,3 +88,7 @@ void ExistingBaseSubMenuModel::Build(
 void ExistingBaseSubMenuModel::ExecuteNewCommand(int event_flags) {}
 
 void ExistingBaseSubMenuModel::ExecuteExistingCommand(int command_index) {}
+
+int ExistingBaseSubMenuModel::GetContextIndex() const {
+  return model_->GetIndexOfWebContents(context_contents_);
+}

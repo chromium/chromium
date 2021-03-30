@@ -158,7 +158,7 @@ void RadioInputType::HandleKeydownEvent(KeyboardEvent& event) {
     document.SetFocusedElement(
         input_element, FocusParams(SelectionBehaviorOnFocus::kRestore,
                                    mojom::blink::FocusType::kNone, nullptr));
-    input_element->DispatchSimulatedClick(&event, kSendNoEvents);
+    input_element->DispatchSimulatedClick(&event);
     event.SetDefaultHandled();
     return;
   }

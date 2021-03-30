@@ -27,7 +27,7 @@
 @interface It2MeConfirmationDialogMacController : NSObject {
  @private
   base::scoped_nsobject<NSAlert> _confirmation_alert;
-  base::string16 _username;
+  std::u16string _username;
   remoting::It2MeConfirmationDialog::ResultCallback _dialog_action_callback;
 }
 
@@ -138,7 +138,7 @@ It2MeConfirmationDialogFactory::Create() {
 - (void)show {
   _confirmation_alert.reset([[NSAlert alloc] init]);
 
-  base::string16 dialog_text =
+  std::u16string dialog_text =
       base::i18n::MessageFormatter::FormatWithNumberedArgs(
           l10n_util::GetStringUTF16(
               IDS_SHARE_CONFIRM_DIALOG_MESSAGE_WITH_USERNAME),

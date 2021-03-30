@@ -7,7 +7,7 @@ If this does not work, or if you want to change the default configuration
 in the Makefile.
 
 An up-to-date implementation conforming to this standard is available in a
-Git repository at https://git.xiph.org/opus.git or on a website at:
+Git repository at https://gitlab.xiph.org/xiph/opus.git or on a website at:
 https://opus-codec.org/
 However, although that implementation is expected to remain conformant
 with the standard, it is the code in this RFC that shall remain normative.
@@ -17,7 +17,7 @@ steps:
 1) Clone the repository (latest implementation of this standard at the time
 of publication)
 
-% git clone https://git.xiph.org/opus.git
+% git clone https://gitlab.xiph.org/xiph/opus.git
 % cd opus
 
 2) Compile

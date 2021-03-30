@@ -14,7 +14,7 @@ class TestingSearchTermsData : public SearchTermsData {
   ~TestingSearchTermsData() override;
 
   std::string GoogleBaseURLValue() const override;
-  base::string16 GetRlzParameterValue(bool from_app_list) const override;
+  std::u16string GetRlzParameterValue(bool from_app_list) const override;
   std::string GetSearchClient() const override;
   std::string GetSuggestClient(bool from_ntp) const override;
   std::string GoogleImageSearchSource() const override;

@@ -44,12 +44,14 @@ ios_web_view_public_headers = [
   "public/cwv_autofill_suggestion.h",
   "public/cwv_back_forward_list.h",
   "public/cwv_back_forward_list_item.h",
+  "public/cwv_cert_status.h",
   "public/cwv_credit_card.h",
   "public/cwv_credit_card_expiration_fixer.h",
   "public/cwv_credit_card_name_fixer.h",
   "public/cwv_credit_card_saver.h",
   "public/cwv_credit_card_verifier.h",
   "public/cwv_download_task.h",
+  "public/cwv_defines.h",
   "public/cwv_export.h",
   "public/cwv_favicon.h",
   "public/cwv_flags.h",
@@ -63,8 +65,6 @@ ios_web_view_public_headers = [
   "public/cwv_preferences.h",
   "public/cwv_preview_element_info.h",
   "public/cwv_script_command.h",
-  "public/cwv_scroll_view.h",
-  "public/cwv_scroll_view_delegate.h",
   "public/cwv_ssl_status.h",
   "public/cwv_sync_controller.h",
   "public/cwv_sync_controller_data_source.h",
@@ -142,10 +142,10 @@ source_set("web_view_sources") {
     "internal/cwv_preview_element_info_internal.h",
     "internal/cwv_script_command.mm",
     "internal/cwv_script_command_internal.h",
-    "internal/cwv_scroll_view.mm",
-    "internal/cwv_scroll_view_internal.h",
     "internal/cwv_ssl_status.mm",
     "internal/cwv_ssl_status_internal.h",
+    "internal/cwv_ssl_util.h",
+    "internal/cwv_ssl_util.mm",
     "internal/cwv_user_content_controller.mm",
     "internal/cwv_user_content_controller_internal.h",
     "internal/cwv_user_script.mm",
@@ -333,35 +333,10 @@ source_set("web_view_sources") {
   ]
 }
 
-# Two umbrella headers may be generated:
-# - One that matches ios_web_view_output_name, e.g. CronetChromeWebView.h
-# - Another that is hardcoded as ChromeWebView.h
-#
-# This is needed to fix the issue where the generated .modulemap points to a
-# non-existent umbrella header.
-#
-# TODO(crbug.com/1084855): Remove :web_view_umbrella_header_old after all
-# clients migrate off of it.
-if (ios_web_view_generate_extra_umbrella_header) {
-  action("web_view_umbrella_header") {
-    script = "//build/config/ios/generate_umbrella_header.py"
-
-    full_header_path = target_gen_dir + "/" + ios_web_view_output_name + ".h"
-    outputs = [ full_header_path ]
-
-    args = [
-      "--output-path",
-      rebase_path(full_header_path, root_build_dir),
-    ]
-
-    args += rebase_path(ios_web_view_public_headers, root_build_dir)
-  }
-}
-
-action("web_view_umbrella_header_old") {
+action("web_view_umbrella_header") {
   script = "//build/config/ios/generate_umbrella_header.py"
 
-  full_header_path = target_gen_dir + "/ChromeWebView.h"
+  full_header_path = target_gen_dir + "/" + ios_web_view_output_name + ".h"
   outputs = [ full_header_path ]
 
   args = [
@@ -380,10 +355,7 @@ ios_framework_bundle("web_view") {
   output_name = ios_web_view_output_name
   info_plist_target = ":info_plist"
 
-  public_headers = get_target_outputs(":web_view_umbrella_header_old")
-  if (ios_web_view_generate_extra_umbrella_header) {
-    public_headers += get_target_outputs(":web_view_umbrella_header")
-  }
+  public_headers = get_target_outputs(":web_view_umbrella_header")
   public_headers += ios_web_view_public_headers
   if (ios_web_view_include_cronet) {
     public_headers += [ "//components/cronet/ios/Cronet.h" ]
@@ -403,10 +375,7 @@ ios_framework_bundle("web_view") {
     "//ios/web/public/init",
     "//testing/gtest:ios_coverage_utils",
   ]
-  deps += [ ":web_view_umbrella_header_old" ]
-  if (ios_web_view_generate_extra_umbrella_header) {
-    deps += [ ":web_view_umbrella_header" ]
-  }
+  deps += [ ":web_view_umbrella_header" ]
   if (ios_web_view_include_cronet) {
     deps += [ "//components/cronet/ios:cronet_sources" ]
   }
@@ -450,9 +419,9 @@ test("ios_web_view_unittests") {
     "internal/cwv_html_element_unittest.mm",
     "internal/cwv_preferences_unittest.mm",
     "internal/cwv_preview_element_info_unittest.mm",
-    "internal/cwv_scroll_view_unittest.mm",
     "internal/cwv_ssl_status_unittest.mm",
     "internal/cwv_web_view_configuration_unittest.mm",
+    "internal/cwv_web_view_unittest.mm",
     "internal/metrics/cwv_metrics_provider_unittest.mm",
     "internal/passwords/cwv_password_unittest.mm",
     "internal/passwords/web_view_password_manager_client_unittest.mm",
@@ -555,13 +524,13 @@ repack("repack_resources") {
   visibility = [ ":web_view_resources" ]
   deps = [
     "//components/resources:components_resources",
-    "//components/sync/driver:resources",
+    "//components/sync/driver/resources",
     "//ios/web:resources",
     "//ui/resources",
   ]
   sources = [
     "$root_gen_dir/components/components_resources.pak",
-    "$root_gen_dir/components/sync_driver_resources.pak",
+    "$root_gen_dir/components/sync_driver_sync_internals_resources.pak",
     "$root_gen_dir/ios/web/ios_web_resources.pak",
     "$root_gen_dir/ui/resources/webui_generated_resources.pak",
     "$root_gen_dir/ui/resources/webui_resources.pak",

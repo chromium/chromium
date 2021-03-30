@@ -503,6 +503,18 @@ class BasePage {
 
   void SetAsYoung(bool young) { is_young_ = young; }
 
+  // The number of bytes that allocated on the page and are not freed yet.
+  size_t AllocatedBytes() { return allocated_bytes_; }
+
+  void SetAllocatedBytes(size_t bytes) { allocated_bytes_ = bytes; }
+
+  void IncreaseAllocatedBytes(size_t bytes) { allocated_bytes_ += bytes; }
+
+  void DecreaseAllocatedBytes(size_t bytes) {
+    DCHECK_GE(allocated_bytes_, bytes);
+    allocated_bytes_ -= bytes;
+  }
+
   virtual void VerifyMarking() = 0;
 
  private:
@@ -522,6 +534,11 @@ class BasePage {
   BaseArena* const arena_;
   ThreadState* const thread_state_;
 
+  // The counter is updated by the sweeper and the allocator.
+  // It is the sum of objects marked at the last GC and objects allocated on
+  // the page since the last GC.
+  size_t allocated_bytes_ = 0;
+
   // Track the sweeping state of a page. Set to false at the start of a sweep,
   // true upon completion of sweeping that page.
   bool swept_ = true;
@@ -530,6 +547,7 @@ class BasePage {
   PageType page_type_;
 
   friend class BaseArena;
+  friend class HeapObjectHeader;
   friend class ThreadHeap;
 };
 
@@ -997,6 +1015,7 @@ class PLATFORM_EXPORT BaseArena {
   void CollectStatistics(std::string, ThreadState::Statistics*);
   virtual void CollectFreeListStatistics(
       ThreadState::Statistics::FreeListStatistics*) {}
+  size_t AllocatedBytes();
 
 #if DCHECK_IS_ON()
   BasePage* FindPageFromAddress(ConstAddress) const;
@@ -1195,6 +1214,7 @@ template <HeapObjectHeader::AccessMode mode>
 inline HeapObjectHeader* HeapObjectHeader::FromInnerAddress(
     const void* address) {
   BasePage* const page = PageFromObject(address);
+  page->SynchronizedLoad();
   return page->IsLargeObjectPage()
              ? static_cast<LargeObjectPage*>(page)->ObjectHeader()
              : static_cast<NormalPage*>(page)->FindHeaderFromAddress<mode>(

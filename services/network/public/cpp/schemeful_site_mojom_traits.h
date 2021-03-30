@@ -17,7 +17,7 @@ class Origin;
 namespace mojo {
 
 template <>
-struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
+struct COMPONENT_EXPORT(NETWORK_CPP_SCHEMEFUL)
     StructTraits<network::mojom::SchemefulSiteDataView, net::SchemefulSite> {
   static const url::Origin& site_as_origin(const net::SchemefulSite& input) {
     return input.site_as_origin_;

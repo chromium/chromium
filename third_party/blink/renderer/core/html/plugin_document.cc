@@ -95,8 +95,7 @@ void PluginDocumentParser::CreateDocumentStructure() {
     return;
 
   // FIXME: Why does this check settings?
-  if (!frame->GetSettings() ||
-      !frame->Loader().AllowPlugins(kNotAboutToInstantiatePlugin))
+  if (!frame->GetSettings() || !frame->Loader().AllowPlugins())
     return;
 
   auto* root_element = MakeGarbageCollected<HTMLHtmlElement>(*GetDocument());

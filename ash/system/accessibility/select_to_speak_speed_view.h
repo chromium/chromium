@@ -43,7 +43,7 @@ class SelectToSpeakSpeedView : public views::BoxLayoutView,
 
  private:
   void AddMenuItem(int option_id,
-                   const base::string16& label,
+                   const std::u16string& label,
                    bool is_selected);
 
   // ViewClickListener:
@@ -53,7 +53,6 @@ class SelectToSpeakSpeedView : public views::BoxLayoutView,
   void OnKeyEvent(ui::KeyEvent* key_event) override;
 
   Delegate* delegate_ = nullptr;
-  double default_speech_rate_ = 0.0;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,

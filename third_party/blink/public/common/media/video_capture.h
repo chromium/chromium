@@ -8,9 +8,9 @@
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_MEDIA_VIDEO_CAPTURE_H_
 
 #include "base/callback.h"
-#include "media/base/video_frame_feedback.h"
 #include "media/capture/video_capture_types.h"
 #include "media/capture/video_capturer_source.h"
+#include "media/capture/video_frame_feedback.h"
 
 namespace blink {
 

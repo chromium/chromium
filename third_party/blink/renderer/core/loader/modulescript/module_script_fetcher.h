@@ -46,6 +46,7 @@ class CORE_EXPORT ModuleScriptFetcher : public ResourceClient {
   // Takes a non-const reference to FetchParameters because
   // ScriptResource::Fetch() requires it.
   virtual void Fetch(FetchParameters&,
+                     ModuleType,
                      ResourceFetcher*,
                      ModuleGraphLevel,
                      Client*) = 0;
@@ -55,8 +56,8 @@ class CORE_EXPORT ModuleScriptFetcher : public ResourceClient {
  protected:
   static bool WasModuleLoadSuccessful(
       ScriptResource* resource,
-      HeapVector<Member<ConsoleMessage>>* error_messages,
-      ModuleType* module_type);
+      ModuleType expected_module_type,
+      HeapVector<Member<ConsoleMessage>>* error_messages);
 };
 
 }  // namespace blink

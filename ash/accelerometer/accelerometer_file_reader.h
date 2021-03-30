@@ -9,19 +9,18 @@
 #include <vector>
 
 #include "ash/accelerometer/accelerometer_reader.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/files/file_util.h"
-#include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 
 namespace ash {
 
+enum class State { INITIALIZING, SUCCESS, FAILED };
+
 // Work that runs on a base::TaskRunner. It determines the accelerometer
 // configuration, and reads the data. Upon a successful read it will notify
 // all observers.
-class AccelerometerFileReader : public AccelerometerProviderInterface,
-                                public TabletModeObserver {
+class AccelerometerFileReader : public AccelerometerProviderInterface {
  public:
   AccelerometerFileReader();
   AccelerometerFileReader(const AccelerometerFileReader&) = delete;
@@ -29,24 +28,8 @@ class AccelerometerFileReader : public AccelerometerProviderInterface,
 
   // AccelerometerProviderInterface:
   void PrepareAndInitialize() override;
-  void AddObserver(AccelerometerReader::Observer* observer) override;
-  void RemoveObserver(AccelerometerReader::Observer* observer) override;
-  void StartListenToTabletModeController() override;
-  void StopListenToTabletModeController() override;
-  void SetEmitEvents(bool emit_events) override;
-
-  // Controls accelerometer reading.
-  void EnableAccelerometerReading();
-  void DisableAccelerometerReading();
-
-  // With ChromeOS EC lid angle driver present, it's triggered when the device
-  // is physically used as a tablet (even thought its UI might be in clamshell
-  // mode), cancelled otherwise.
-  void TriggerRead();
-  void CancelRead();
-
-  // TabletModeObserver:
-  void OnTabletPhysicalStateChanged() override;
+  void TriggerRead() override;
+  void CancelRead() override;
 
  private:
   struct InitializationResult {
@@ -97,11 +80,11 @@ class AccelerometerFileReader : public AccelerometerProviderInterface,
 
   ~AccelerometerFileReader() override;
 
-  // Post a task to initialize on |task_runner_| and process the result on the
-  // UI thread. May be called multiple times in the retries.
+  // Post a task to initialize on |blocking_task_runner_| and process the result
+  // on the UI thread. May be called multiple times in the retries.
   void TryScheduleInitialize();
 
-  // Detects the accelerometer configuration in |task_runner_|.
+  // Detects the accelerometer configuration in |blocking_task_runner_|.
   // If an accelerometer is available, it triggers reads.
   // This function MAY be called more than once.
   // This function contains the actual initialization code to be run by the
@@ -130,12 +113,17 @@ class AccelerometerFileReader : public AccelerometerProviderInterface,
   bool InitializeLegacyAccelerometers(const base::FilePath& iio_path,
                                       const base::FilePath& name);
 
-  // Attempts to read the accelerometer data in |task_runner_|. Upon a success,
-  // converts the raw reading to an AccelerometerUpdate and notifies observers.
-  void ReadSample();
-  void NotifyObserversWithUpdate(scoped_refptr<AccelerometerUpdate> update);
+  // Controls accelerometer reading.
+  void EnableAccelerometerReading();
+  void DisableAccelerometerReading();
 
-  bool emit_events_ = true;
+  // The current initialization state of reader.
+  State initialization_state_ = State::INITIALIZING;
+
+  // Attempts to read the accelerometer data in |blocking_task_runner_|. Upon a
+  // success, converts the raw reading to an AccelerometerUpdate and notifies
+  // observers.
+  void ReadSample();
 
   // The time at which initialization re-tries should stop.
   base::TimeTicks initialization_timeout_;
@@ -149,14 +137,8 @@ class AccelerometerFileReader : public AccelerometerProviderInterface,
   base::RepeatingTimer read_refresh_timer_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // The observers to notify of accelerometer updates.
-  base::ObserverList<AccelerometerReader::Observer>::Unchecked observers_;
-
   // The task runner to use for blocking tasks.
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
-
-  // The task runner of the UI thread.
-  scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

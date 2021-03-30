@@ -41,6 +41,10 @@ class SkeletonGenerator {
   // already be decoded to unicode.
   Skeletons GetSkeletons(base::StringPiece16 hostname);
 
+  // Returns true if the diacritics should be removed from |label|. Diacritic
+  // removal is a slow operation and should be avoided when possible.
+  bool ShouldRemoveDiacriticsFromLabel(const icu::UnicodeString& label) const;
+
  private:
   // Adds an additional mapping from |src_char| to |mapped_char| when generating
   // skeletons: If |host| contains |src_char|, |skeletons| will contain a new

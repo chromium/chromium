@@ -18,7 +18,6 @@
 #include "ash/test/ash_test_base.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "components/session_manager/session_manager_types.h"
 
 namespace ash {

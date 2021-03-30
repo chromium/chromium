@@ -119,45 +119,6 @@ TEST(SelectorTest, Comparison_Value) {
               Selector({"a"}).MatchingValue("a", true));
 }
 
-TEST(SelectorTest, Comparison_Proximity) {
-  SelectorProto selector;
-  selector.add_filters()->set_css_selector("button");
-  auto* closest_to_button = selector.add_filters()->mutable_closest();
-  closest_to_button->mutable_target()->Add()->set_css_selector("#label1");
-
-  EXPECT_TRUE(Selector(selector) == Selector(selector));
-
-  // Different relative positions
-  SelectorProto left = selector;
-  left.mutable_filters(0)->mutable_closest()->set_relative_position(
-      SelectorProto::ProximityFilter::LEFT);
-
-  SelectorProto right = selector;
-  right.mutable_filters(0)->mutable_closest()->set_relative_position(
-      SelectorProto::ProximityFilter::RIGHT);
-
-  EXPECT_TRUE(Selector(right) == Selector(right));
-  EXPECT_TRUE(Selector(left) == Selector(left));
-  EXPECT_FALSE(Selector(left) == Selector(right));
-
-  // Different alignment
-  SelectorProto aligned = selector;
-  selector.mutable_filters(0)->mutable_closest()->set_in_alignment(true);
-  EXPECT_TRUE(Selector(aligned) == Selector(aligned));
-  EXPECT_FALSE(Selector(selector) == Selector(aligned));
-
-  // Different targets
-  SelectorProto label2 = selector;
-  label2.mutable_filters(0)
-      ->mutable_closest()
-      ->mutable_target()
-      ->Add()
-      ->set_css_selector("#label2");
-
-  EXPECT_TRUE(Selector(label2) == Selector(label2));
-  EXPECT_FALSE(Selector(selector) == Selector(label2));
-}
-
 TEST(SelectorTest, Comparison_MatchCssSelector) {
   Selector a = Selector({"button"});
   a.proto.add_filters()->set_match_css_selector(".class1");

@@ -39,8 +39,10 @@
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_modes.h"
 #include "chrome/install_static/install_util.h"
+#include "chrome/installer/setup/downgrade_cleanup.h"
 #include "chrome/installer/setup/install_params.h"
 #include "chrome/installer/setup/installer_state.h"
+#include "chrome/installer/setup/last_breaking_installer_version.h"
 #include "chrome/installer/setup/setup_constants.h"
 #include "chrome/installer/setup/setup_util.h"
 #include "chrome/installer/setup/update_active_setup_version_work_item.h"
@@ -59,7 +61,7 @@
 #include "chrome/installer/util/util_constants.h"
 #include "chrome/installer/util/work_item_list.h"
 
-using base::ASCIIToUTF16;
+using base::ASCIIToWide;
 using base::win::RegKey;
 
 namespace installer {
@@ -205,7 +207,7 @@ void AddDeleteUninstallEntryForMSIWorkItems(
       << "This must only be called for MSI installations!";
 
   HKEY reg_root = installer_state.root_key();
-  base::string16 uninstall_reg = install_static::GetUninstallRegistryPath();
+  std::wstring uninstall_reg = install_static::GetUninstallRegistryPath();
 
   WorkItem* delete_reg_key = work_item_list->AddDeleteRegKeyWorkItem(
       reg_root, uninstall_reg, KEY_WOW64_32KEY);
@@ -413,7 +415,7 @@ void AddEnterpriseEnrollmentWorkItems(const InstallerState& installer_state,
     return;
 
   const HKEY root_key = installer_state.root_key();
-  const base::string16 cmd_key(GetCommandKey(kCmdStoreDMToken));
+  const std::wstring cmd_key(GetCommandKey(kCmdStoreDMToken));
 
   if (installer_state.operation() == InstallerState::UNINSTALL) {
     install_list->AddDeleteRegKeyWorkItem(root_key, cmd_key, KEY_WOW64_32KEY)
@@ -430,7 +432,13 @@ void AddEnterpriseEnrollmentWorkItems(const InstallerState& installer_state,
     cmd_line.AppendSwitch(switches::kVerboseLogging);
     InstallUtil::AppendModeAndChannelSwitches(&cmd_line);
 
-    AppCommand cmd(cmd_line.GetCommandLineString());
+    // The substitution for the insert sequence "%1" here is performed safely by
+    // Google Update rather than insecurely by the Windows shell. Disable the
+    // safety check for unsafe insert sequences since the right thing is
+    // happening. Do not blindly copy this pattern in new code. Check with a
+    // member of base/win/OWNERS if in doubt.
+    AppCommand cmd(cmd_line.GetCommandLineStringWithUnsafeInsertSequences());
+
     // TODO(alito): For now setting this command as web accessible is required
     // by Google Update.  Could revisit this should Google Update change the
     // way permissions are handled for commands.
@@ -470,7 +478,7 @@ void AddUninstallShortcutWorkItems(const InstallParams& install_params,
   base::CommandLine uninstall_arguments(base::CommandLine::NO_PROGRAM);
   AppendUninstallCommandLineFlags(installer_state, &uninstall_arguments);
 
-  base::string16 update_state_key(install_static::GetClientStateKeyPath());
+  std::wstring update_state_key(install_static::GetClientStateKeyPath());
   install_list->AddCreateRegKeyWorkItem(reg_root, update_state_key,
                                         KEY_WOW64_32KEY);
   install_list->AddSetRegValueWorkItem(
@@ -488,7 +496,7 @@ void AddUninstallShortcutWorkItems(const InstallParams& install_params,
     DCHECK_EQ(quoted_uninstall_cmd.GetCommandLineString()[0], '"');
     quoted_uninstall_cmd.AppendArguments(uninstall_arguments, false);
 
-    base::string16 uninstall_reg = install_static::GetUninstallRegistryPath();
+    std::wstring uninstall_reg = install_static::GetUninstallRegistryPath();
     install_list->AddCreateRegKeyWorkItem(reg_root, uninstall_reg,
                                           KEY_WOW64_32KEY);
     install_list->AddSetRegValueWorkItem(reg_root, uninstall_reg,
@@ -503,7 +511,7 @@ void AddUninstallShortcutWorkItems(const InstallParams& install_params,
                                          KEY_WOW64_32KEY, L"InstallLocation",
                                          install_path.value(), true);
 
-    base::string16 chrome_icon =
+    std::wstring chrome_icon =
         ShellUtil::FormatIconLocation(install_path.Append(kChromeExe),
                                       install_static::GetIconResourceIndex());
     install_list->AddSetRegValueWorkItem(reg_root, uninstall_reg,
@@ -521,10 +529,10 @@ void AddUninstallShortcutWorkItems(const InstallParams& install_params,
                                          InstallUtil::GetPublisherName(), true);
     install_list->AddSetRegValueWorkItem(
         reg_root, uninstall_reg, KEY_WOW64_32KEY, L"Version",
-        ASCIIToUTF16(new_version.GetString()), true);
+        ASCIIToWide(new_version.GetString()), true);
     install_list->AddSetRegValueWorkItem(
         reg_root, uninstall_reg, KEY_WOW64_32KEY, L"DisplayVersion",
-        ASCIIToUTF16(new_version.GetString()), true);
+        ASCIIToWide(new_version.GetString()), true);
     // TODO(wfh): Ensure that this value is preserved in the 64-bit hive when
     // 64-bit installs place the uninstall information into the 64-bit registry.
     install_list->AddSetRegValueWorkItem(reg_root, uninstall_reg,
@@ -555,7 +563,7 @@ void AddVersionKeyWorkItems(const InstallParams& install_params,
   // language may not be related to a given user's runtime language.
   const bool add_language_identifier = !installer_state.system_install();
 
-  const base::string16 clients_key = install_static::GetClientsKeyPath();
+  const std::wstring clients_key = install_static::GetClientsKeyPath();
   list->AddCreateRegKeyWorkItem(root, clients_key, KEY_WOW64_32KEY);
 
   list->AddSetRegValueWorkItem(root, clients_key, KEY_WOW64_32KEY,
@@ -573,7 +581,7 @@ void AddVersionKeyWorkItems(const InstallParams& install_params,
     // Write the language identifier of the current translation.  Omaha's set of
     // languages is a superset of Chrome's set of translations with this one
     // exception: what Chrome calls "en-us", Omaha calls "en".  sigh.
-    base::string16 language(GetCurrentTranslation());
+    std::wstring language(GetCurrentTranslation());
     if (base::LowerCaseEqualsASCII(language, "en-us"))
       language.resize(2);
     list->AddSetRegValueWorkItem(root, clients_key, KEY_WOW64_32KEY,
@@ -582,18 +590,18 @@ void AddVersionKeyWorkItems(const InstallParams& install_params,
   }
   list->AddSetRegValueWorkItem(
       root, clients_key, KEY_WOW64_32KEY, google_update::kRegVersionField,
-      ASCIIToUTF16(install_params.new_version.GetString()),
+      ASCIIToWide(install_params.new_version.GetString()),
       true);  // overwrite version
 }
 
 void AddUpdateBrandCodeWorkItem(const InstallerState& installer_state,
                                 WorkItemList* install_list) {
   // Only update specific brand codes needed for enterprise.
-  base::string16 brand;
+  std::wstring brand;
   if (!GoogleUpdateSettings::GetBrand(&brand))
     return;
 
-  base::string16 new_brand = GetUpdatedBrandCode(brand);
+  std::wstring new_brand = GetUpdatedBrandCode(brand);
   if (new_brand.empty())
     return;
 
@@ -613,7 +621,7 @@ void AddUpdateBrandCodeWorkItem(const InstallerState& installer_state,
       KEY_WOW64_32KEY, google_update::kRegRLZBrandField, new_brand, true);
 }
 
-base::string16 GetUpdatedBrandCode(const base::string16& brand_code) {
+std::wstring GetUpdatedBrandCode(const std::wstring& brand_code) {
   // Brand codes to be remapped on enterprise installs.
   static constexpr struct EnterpriseBrandRemapping {
     const wchar_t* old_brand;
@@ -627,7 +635,7 @@ base::string16 GetUpdatedBrandCode(const base::string16& brand_code) {
     if (brand_code == mapping.old_brand)
       return mapping.new_brand;
   }
-  return base::string16();
+  return std::wstring();
 }
 
 bool AppendPostInstallTasks(const InstallParams& install_params,
@@ -644,7 +652,11 @@ bool AppendPostInstallTasks(const InstallParams& install_params,
   HKEY root = installer_state.root_key();
   const base::FilePath& target_path = installer_state.target_path();
   base::FilePath new_chrome_exe(target_path.Append(kChromeNewExe));
-  const base::string16 clients_key(install_static::GetClientsKeyPath());
+  const std::wstring clients_key(install_static::GetClientsKeyPath());
+
+  base::FilePath installer_path(
+      installer_state.GetInstallerDirectory(new_version)
+          .Append(setup_path.BaseName()));
 
   // Append work items that will only be executed if this was an in-use update.
   // We update the 'opv' value with the current version that is active,
@@ -660,21 +672,18 @@ bool AppendPostInstallTasks(const InstallParams& install_params,
     // version considered critical relative to the version being updated.
     base::Version critical_version(
         installer_state.DetermineCriticalVersion(current_version, new_version));
-    base::FilePath installer_path(
-        installer_state.GetInstallerDirectory(new_version)
-            .Append(setup_path.BaseName()));
 
     if (current_version.IsValid()) {
       in_use_update_work_items->AddSetRegValueWorkItem(
           root, clients_key, KEY_WOW64_32KEY,
           google_update::kRegOldVersionField,
-          ASCIIToUTF16(current_version.GetString()), true);
+          ASCIIToWide(current_version.GetString()), true);
     }
     if (critical_version.IsValid()) {
       in_use_update_work_items->AddSetRegValueWorkItem(
           root, clients_key, KEY_WOW64_32KEY,
           google_update::kRegCriticalVersionField,
-          ASCIIToUTF16(critical_version.GetString()), true);
+          ASCIIToWide(critical_version.GetString()), true);
     } else {
       in_use_update_work_items->AddDeleteRegValueWorkItem(
           root, clients_key, KEY_WOW64_32KEY,
@@ -708,18 +717,12 @@ bool AppendPostInstallTasks(const InstallParams& install_params,
             new Not(new ConditionRunIfFileExists(new_chrome_exe))));
     regular_update_work_items->set_log_message("RegularUpdateWorkItemList");
 
-    // Convey the channel name to the browser if this installer instance's
-    // channel is enforced by policy. Otherwise, delete the registry value.
-    const auto& install_details = install_static::InstallDetails::Get();
-    if (install_details.channel_origin() ==
-        install_static::ChannelOrigin::kPolicy) {
-      post_install_task_list->AddSetRegValueWorkItem(
-          root, clients_key, KEY_WOW64_32KEY, google_update::kRegChannelField,
-          install_details.channel(), true);
-    } else {
-      regular_update_work_items->AddDeleteRegValueWorkItem(
-          root, clients_key, KEY_WOW64_32KEY, google_update::kRegChannelField);
-    }
+    // If a channel was specified by policy, update the "channel" registry value
+    // with it so that the browser knows which channel to use, otherwise delete
+    // whatever value that key holds.
+    AddChannelWorkItems(root, clients_key, regular_update_work_items.get());
+    AddFinalizeUpdateWorkItems(new_version, installer_state, installer_path,
+                               regular_update_work_items.get());
 
     // Since this was not an in-use-update, delete 'opv', 'cpv',
     // and 'cmd' keys.
@@ -758,7 +761,7 @@ bool AppendPostInstallTasks(const InstallParams& install_params,
   // installs.
 #if BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
   if (installer_state.system_install()) {
-    const base::string16 path = install_static::GetClientStateMediumKeyPath();
+    const std::wstring path = install_static::GetClientStateMediumKeyPath();
     post_install_task_list
         ->AddCreateRegKeyWorkItem(HKEY_LOCAL_MACHINE, path, KEY_WOW64_32KEY)
         ->set_best_effort(true);
@@ -866,8 +869,8 @@ void AddInstallWorkItems(const InstallParams& install_params,
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING
 
-  InstallUtil::AddUpdateDowngradeVersionItem(
-      installer_state.root_key(), current_version, new_version, install_list);
+  AddUpdateDowngradeVersionItem(installer_state.root_key(), current_version,
+                                new_version, install_list);
 
   AddUpdateBrandCodeWorkItem(installer_state, install_list);
 
@@ -884,7 +887,7 @@ void AddNativeNotificationWorkItems(
     return;
   }
 
-  base::string16 toast_activator_reg_path =
+  std::wstring toast_activator_reg_path =
       InstallUtil::GetToastActivatorRegistryPath();
 
   if (toast_activator_reg_path.empty()) {
@@ -909,11 +912,11 @@ void AddNativeNotificationWorkItems(
                      install_static::GetToastActivatorClsid()));
   item->set_best_effort(true);
 
-  base::string16 toast_activator_server_path =
+  std::wstring toast_activator_server_path =
       toast_activator_reg_path + L"\\LocalServer32";
 
   // Command-line featuring the quoted path to the exe.
-  base::string16 command(1, L'"');
+  std::wstring command(1, L'"');
   command.append(notification_helper_path.value()).append(1, L'"');
 
   list->AddCreateRegKeyWorkItem(root, toast_activator_server_path,
@@ -965,7 +968,7 @@ void AddActiveSetupWorkItems(const InstallerState& installer_state,
   DCHECK(installer_state.RequiresActiveSetup());
 
   const HKEY root = HKEY_LOCAL_MACHINE;
-  const base::string16 active_setup_path(install_static::GetActiveSetupPath());
+  const std::wstring active_setup_path(install_static::GetActiveSetupPath());
 
   VLOG(1) << "Adding registration items for Active Setup.";
   list->AddCreateRegKeyWorkItem(root, active_setup_path,
@@ -1017,7 +1020,7 @@ void AddOsUpgradeWorkItems(const InstallerState& installer_state,
                            const base::Version& new_version,
                            WorkItemList* install_list) {
   const HKEY root_key = installer_state.root_key();
-  const base::string16 cmd_key(GetCommandKey(kCmdOnOsUpgrade));
+  const std::wstring cmd_key(GetCommandKey(kCmdOnOsUpgrade));
 
   if (installer_state.operation() == InstallerState::UNINSTALL) {
     install_list->AddDeleteRegKeyWorkItem(root_key, cmd_key, KEY_WOW64_32KEY)
@@ -1040,6 +1043,51 @@ void AddOsUpgradeWorkItems(const InstallerState& installer_state,
     cmd.set_is_auto_run_on_os_upgrade(true);
     cmd.AddWorkItems(installer_state.root_key(), cmd_key, install_list);
   }
+}
+
+void AddChannelWorkItems(HKEY root,
+                         const std::wstring& clients_key,
+                         WorkItemList* list) {
+  const auto& install_details = install_static::InstallDetails::Get();
+  if (install_details.channel_origin() ==
+      install_static::ChannelOrigin::kPolicy) {
+    // Use channel_override rather than simply channel so that extended stable
+    // is differentiated from regular.
+    list->AddSetRegValueWorkItem(root, clients_key, KEY_WOW64_32KEY,
+                                 google_update::kRegChannelField,
+                                 install_details.channel_override(),
+                                 /*overwrite=*/true);
+  } else {
+    list->AddDeleteRegValueWorkItem(root, clients_key, KEY_WOW64_32KEY,
+                                    google_update::kRegChannelField);
+  }
+}
+
+void AddFinalizeUpdateWorkItems(const base::Version& new_version,
+                                const InstallerState& installer_state,
+                                const base::FilePath& setup_path,
+                                WorkItemList* list) {
+  // Cleanup for breaking downgrade first in the post install to avoid
+  // overwriting any of the following post-install tasks.
+  AddDowngradeCleanupItems(new_version, list);
+
+  const std::wstring client_state_key = install_static::GetClientStateKeyPath();
+
+  // Adds the command that needs to be used in order to cleanup any breaking
+  // changes the installer of this version may have added.
+  list->AddSetRegValueWorkItem(
+      installer_state.root_key(), client_state_key, KEY_WOW64_32KEY,
+      google_update::kRegDowngradeCleanupCommandField,
+      GetDowngradeCleanupCommandWithPlaceholders(setup_path, installer_state),
+      true);
+
+  // Write the latest installer's breaking version so that future downgrades
+  // know if they need to do a clean install. This isn't done for in-use since
+  // it is done at the the executable's rename.
+  list->AddSetRegValueWorkItem(
+      installer_state.root_key(), client_state_key, KEY_WOW64_32KEY,
+      google_update::kRegCleanInstallRequiredForVersionBelowField,
+      kLastBreakingInstallerVersion, true);
 }
 
 }  // namespace installer

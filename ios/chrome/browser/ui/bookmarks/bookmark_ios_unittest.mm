@@ -42,7 +42,7 @@ void BookmarkIOSUnitTest::SetUp() {
 
 const BookmarkNode* BookmarkIOSUnitTest::AddBookmark(const BookmarkNode* parent,
                                                      NSString* title) {
-  base::string16 c_title = base::SysNSStringToUTF16(title);
+  std::u16string c_title = base::SysNSStringToUTF16(title);
   GURL url(base::SysNSStringToUTF16(@"http://example.com/bookmark") + c_title);
   return bookmark_model_->AddURL(parent, parent->children().size(), c_title,
                                  url);
@@ -50,12 +50,12 @@ const BookmarkNode* BookmarkIOSUnitTest::AddBookmark(const BookmarkNode* parent,
 
 const BookmarkNode* BookmarkIOSUnitTest::AddFolder(const BookmarkNode* parent,
                                                    NSString* title) {
-  base::string16 c_title = base::SysNSStringToUTF16(title);
+  std::u16string c_title = base::SysNSStringToUTF16(title);
   return bookmark_model_->AddFolder(parent, parent->children().size(), c_title);
 }
 
 void BookmarkIOSUnitTest::ChangeTitle(NSString* title,
                                       const BookmarkNode* node) {
-  base::string16 c_title = base::SysNSStringToUTF16(title);
+  std::u16string c_title = base::SysNSStringToUTF16(title);
   bookmark_model_->SetTitle(node, c_title);
 }

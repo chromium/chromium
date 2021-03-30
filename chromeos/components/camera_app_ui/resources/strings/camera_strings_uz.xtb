@@ -15,6 +15,7 @@
 <translation id="2036868001356139588">Taymer davomiyligi</translation>
 <translation id="2050339315714019657">Bo‘yiga</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> faol</translation>
+<translation id="2144806332417375165">Maxsus video parametrlari</translation>
 <translation id="229579744168541441">Diskka eksport qilish</translation>
 <translation id="2501278716633472235">Ortga qaytish</translation>
 <translation id="2501853267655415902">Yozib olish toʻxtatildi</translation>
@@ -33,7 +34,6 @@ Xotiraga kirishga ruxsati bor ilovalar surat va videolaringiz bilan ishlay oladi
 <translation id="3259149966178251584">Kameraning tasviri aniqligi</translation>
 <translation id="3517926952904427380">Portret rejimida suratga olinmadi</translation>
 <translation id="3569311554794739032"><ph name="FILE" /> olib tashlansinmi?</translation>
-<translation id="3750315947605636967">Kamerangizdan boshqa ilova foydalanmoqda</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Shtrix-kodni skanerlash</translation>
 <translation id="3892148308691398805">Matnni nusxalash</translation>
@@ -76,10 +76,12 @@ Xabaringiz rasm yoki video sifati haqida boʻlsa, namunaviy rasm yoki videoni bi
 <translation id="7337660886763914220">Fayllar tizimiga oid xatoliklar.</translation>
 <translation id="7450541714075000668">Matn nusxalandi</translation>
 <translation id="7557677699350329807">Keyingi kameraga almashtirish</translation>
+<translation id="7607002721634913082">Vaqtincha to‘xtatildi</translation>
 <translation id="7608223098072244877">4 ga 4</translation>
 <translation id="7649070708921625228">Yordam</translation>
 <translation id="7658239707568436148">Bekor qilish</translation>
 <translation id="7670511624014457267">60 kadr/s</translation>
+<translation id="7974782136796202581">Panorama, kamerani qiyalatish va masshtab sozlamalarini chiqarish</translation>
 <translation id="7983668134180549431">Matn aniqlandi.</translation>
 <translation id="8067883171444229417">Videoni ijro qilish</translation>
 <translation id="8131740175452115882">Tasdiqlash</translation>

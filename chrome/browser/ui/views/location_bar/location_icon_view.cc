@@ -25,6 +25,7 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 using content::WebContents;
 using security_state::SecurityLevel;
@@ -113,7 +114,7 @@ void LocationIconView::OnThemeChanged() {
 int LocationIconView::GetMinimumLabelTextWidth() const {
   int width = 0;
 
-  base::string16 text = GetText();
+  std::u16string text = GetText();
   if (text == label()->GetText()) {
     // Optimize this common case by not creating a new label.
     // GetPreferredSize is not dependent on the label's current
@@ -126,7 +127,7 @@ int LocationIconView::GetMinimumLabelTextWidth() const {
   return GetMinimumSizeForPreferredSize(GetSizeForLabelWidth(width)).width();
 }
 
-bool LocationIconView::ShouldShowText() const {
+bool LocationIconView::GetShowText() const {
   if (delegate_->IsEditingOrEmpty())
     return false;
 
@@ -146,9 +147,9 @@ const views::InkDrop* LocationIconView::get_ink_drop_for_testing() {
   return GetInkDrop();
 }
 
-base::string16 LocationIconView::GetText() const {
+std::u16string LocationIconView::GetText() const {
   if (delegate_->IsEditingOrEmpty())
-    return base::string16();
+    return std::u16string();
 
   if (delegate_->GetLocationBarModel()->GetURL().SchemeIs(
           content::kChromeUIScheme))
@@ -168,7 +169,7 @@ base::string16 LocationIconView::GetText() const {
     // TODO(crbug.com/680329) Remove the null check and make
     // SimpleWebViewDialog::GetWebContents return the proper web contents
     // instead.
-    const base::string16 extension_name =
+    const std::u16string extension_name =
         extensions::ui_util::GetEnabledExtensionNameForUrl(
             delegate_->GetLocationBarModel()->GetURL(),
             delegate_->GetWebContents()->GetBrowserContext());
@@ -179,7 +180,7 @@ base::string16 LocationIconView::GetText() const {
   return delegate_->GetLocationBarModel()->GetSecureDisplayText();
 }
 
-bool LocationIconView::ShouldAnimateTextVisibilityChange() const {
+bool LocationIconView::GetAnimateTextVisibilityChange() const {
   if (delegate_->IsEditingOrEmpty())
     return false;
 
@@ -195,8 +196,8 @@ bool LocationIconView::ShouldAnimateTextVisibilityChange() const {
 void LocationIconView::UpdateTextVisibility(bool suppress_animations) {
   SetLabel(GetText());
 
-  bool should_show = ShouldShowText();
-  if (!ShouldAnimateTextVisibilityChange() || suppress_animations)
+  bool should_show = GetShowText();
+  if (!GetAnimateTextVisibilityChange() || suppress_animations)
     ResetSlideAnimation(should_show);
   else if (should_show)
     AnimateIn(base::nullopt);
@@ -231,7 +232,7 @@ void LocationIconView::Update(bool suppress_animations) {
   bool is_editing_or_empty = delegate_->IsEditingOrEmpty();
   // The tooltip should be shown if we are not editing or empty.
   SetTooltipText(is_editing_or_empty
-                     ? base::string16()
+                     ? std::u16string()
                      : l10n_util::GetStringUTF16(IDS_TOOLTIP_LOCATION_ICON));
 
   // We should only enable/disable the InkDrop if the editing state has changed,
@@ -285,3 +286,10 @@ gfx::Size LocationIconView::GetMinimumSizeForPreferredSize(
       GetSizeForLabelWidth(font_list().GetExpectedTextWidth(kMinCharacters)));
   return size;
 }
+
+BEGIN_METADATA(LocationIconView, IconLabelBubbleView)
+ADD_READONLY_PROPERTY_METADATA(int, MinimumLabelTextWidth)
+ADD_READONLY_PROPERTY_METADATA(std::u16string, Text)
+ADD_READONLY_PROPERTY_METADATA(bool, ShowText)
+ADD_READONLY_PROPERTY_METADATA(bool, AnimateTextVisibilityChange)
+END_METADATA

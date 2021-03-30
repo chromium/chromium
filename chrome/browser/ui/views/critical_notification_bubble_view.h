@@ -8,14 +8,20 @@
 #include "base/macros.h"
 #include "base/timer/timer.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 class CriticalNotificationBubbleView : public views::BubbleDialogDelegateView {
  public:
+  METADATA_HEADER(CriticalNotificationBubbleView);
   explicit CriticalNotificationBubbleView(views::View* anchor_view);
+  CriticalNotificationBubbleView(const CriticalNotificationBubbleView&) =
+      delete;
+  CriticalNotificationBubbleView& operator=(
+      const CriticalNotificationBubbleView&) = delete;
   ~CriticalNotificationBubbleView() override;
 
   // views::BubbleDialogDelegateView overrides:
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
   void WindowClosing() override;
   void Init() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
@@ -37,8 +43,6 @@ class CriticalNotificationBubbleView : public views::BubbleDialogDelegateView {
 
   // When the bubble was created.
   base::TimeTicks bubble_created_;
-
-  DISALLOW_COPY_AND_ASSIGN(CriticalNotificationBubbleView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_CRITICAL_NOTIFICATION_BUBBLE_VIEW_H_

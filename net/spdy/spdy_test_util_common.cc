@@ -13,7 +13,9 @@
 #include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/optional.h"
+#include "base/strings/abseil_string_conversions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/http_user_agent_settings.h"
@@ -37,6 +39,7 @@
 #include "net/spdy/buffered_spdy_framer.h"
 #include "net/spdy/spdy_http_utils.h"
 #include "net/spdy/spdy_stream.h"
+#include "net/ssl/ssl_connection_status_flags.h"
 #include "net/test/gtest_util.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_alt_svc_wire_format.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_framer.h"
@@ -348,7 +351,8 @@ SpdySessionDependencies::SpdySessionDependencies(
       net_log(nullptr),
       disable_idle_sockets_close_on_memory_pressure(false),
       enable_early_data(false),
-      key_auth_cache_server_entries_by_network_isolation_key(false) {
+      key_auth_cache_server_entries_by_network_isolation_key(false),
+      enable_priority_update(false) {
   http2_settings[spdy::SETTINGS_INITIAL_WINDOW_SIZE] =
       kDefaultInitialWindowSize;
 }
@@ -406,6 +410,7 @@ HttpNetworkSession::Params SpdySessionDependencies::CreateSessionParams(
   params.enable_early_data = session_deps->enable_early_data;
   params.key_auth_cache_server_entries_by_network_isolation_key =
       session_deps->key_auth_cache_server_entries_by_network_isolation_key;
+  params.enable_priority_update = session_deps->enable_priority_update;
   return params;
 }
 
@@ -517,10 +522,12 @@ base::WeakPtr<SpdySession> CreateSpdySessionHelper(
   rv = callback.GetResult(rv);
   EXPECT_THAT(rv, IsOk());
 
-  base::WeakPtr<SpdySession> spdy_session =
+  base::WeakPtr<SpdySession> spdy_session;
+  rv =
       http_session->spdy_session_pool()->CreateAvailableSessionFromSocketHandle(
-          key, is_trusted_proxy, std::move(connection), net_log);
+          key, is_trusted_proxy, std::move(connection), net_log, &spdy_session);
   // Failure is reported asynchronously.
+  EXPECT_THAT(rv, IsOk());
   EXPECT_TRUE(spdy_session);
   EXPECT_TRUE(HasSpdySession(http_session->spdy_session_pool(), key));
   return spdy_session;
@@ -598,8 +605,11 @@ class FakeSpdySessionClientSocket : public MockClientSocket {
   }
 
   bool GetSSLInfo(SSLInfo* ssl_info) override {
-    ADD_FAILURE();
-    return false;
+    SSLConnectionStatusSetVersion(SSL_CONNECTION_VERSION_TLS1_3,
+                                  &ssl_info->connection_status);
+    SSLConnectionStatusSetCipherSuite(0x1301 /* TLS_CHACHA20_POLY1305_SHA256 */,
+                                      &ssl_info->connection_status);
+    return true;
   }
 
   int64_t GetTotalReceivedBytes() const override {
@@ -620,11 +630,12 @@ base::WeakPtr<SpdySession> CreateFakeSpdySessionHelper(
   auto handle = std::make_unique<ClientSocketHandle>();
   handle->SetSocket(std::make_unique<FakeSpdySessionClientSocket>(
       expected_status == OK ? ERR_IO_PENDING : expected_status));
-  base::WeakPtr<SpdySession> spdy_session =
-      pool->CreateAvailableSessionFromSocketHandle(
-          key,
-          /*is_trusted_proxy=*/false, std::move(handle), NetLogWithSource());
+  base::WeakPtr<SpdySession> spdy_session;
+  int rv = pool->CreateAvailableSessionFromSocketHandle(
+      key, /*is_trusted_proxy=*/false, std::move(handle), NetLogWithSource(),
+      &spdy_session);
   // Failure is reported asynchronously.
+  EXPECT_THAT(rv, IsOk());
   EXPECT_TRUE(spdy_session);
   EXPECT_TRUE(HasSpdySession(pool, key));
   return spdy_session;
@@ -1078,7 +1089,7 @@ spdy::Http2HeaderBlock SpdyTestUtil::ConstructHeaderBlock(
   std::string scheme, host, path;
   ParseUrl(url, &scheme, &host, &path);
   spdy::Http2HeaderBlock headers;
-  headers[spdy::kHttp2MethodHeader] = method.as_string();
+  headers[spdy::kHttp2MethodHeader] = std::string(method);
   headers[spdy::kHttp2AuthorityHeader] = host.c_str();
   headers[spdy::kHttp2SchemeHeader] = scheme.c_str();
   headers[spdy::kHttp2PathHeader] = path.c_str();

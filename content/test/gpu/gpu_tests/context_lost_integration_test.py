@@ -60,12 +60,47 @@ feature_query_script = """
     } else {
       query_result = document.querySelector('.feature-status-list');
     }
-    for (let i=0; i < query_result.childElementCount; i++) {
+    for (let i = 0; i < query_result.childElementCount; i++) {
       let feature_status = query_result.children[i].textContent.split(': ');
       if (feature_status.length == 2 && feature_status[0] == feature_name)
         return feature_status[1];
     }
     return "";
+  }
+"""
+
+vendor_id_query_script = """
+  function GetActiveVendorId(for_hardware_gpu) {
+    let div;
+    if (for_hardware_gpu) {
+      div = document.querySelector('.basic-info-for-hardware-gpu-div');
+    } else {
+      div = document.querySelector('#basic-info');
+    }
+    let trs = div.getElementsByTagName('tr');
+    let vendor_id = 0;
+    // The first four rows are "Initialization time", "In-process GPU",
+    // "Passthrough Command Decoder", and "Sandboxed".
+    for (let i = 4; i < trs.length; i++) {
+      let tds = trs[i].getElementsByTagName('td');
+      let token = tds[0].textContent.trim();
+      if (!token.startsWith('GPU'))
+        break;
+      if (i == 4 && token != 'GPU0')
+        break;
+      let gpu_string = tds[1].textContent.trim();
+      let vendor_info = gpu_string.split(', ')[0].split('= ');
+      if (vendor_info.length != 2 || vendor_info[0] != 'VENDOR')
+        break;
+      let id = parseInt(vendor_info[1]);
+      if (vendor_id == 0)
+        vendor_id = id;
+      if (gpu_string.endsWith('*ACTIVE*')) {
+        vendor_id = id;
+        break;
+      }
+    }
+    return vendor_id;
   }
 """
 
@@ -140,7 +175,9 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
               'webgl2-multisampling-high-power-switch-loses-context.html'),
              ('ContextLost_MacWebGLPreserveDBHighPowerSwitchLosesContext',
               'webgl2-preserve-db-high-power-switch-loses-context.html'),
-             ('GpuCrash_InfoForHardwareGpu', 'simple.html'))
+             ('GpuCrash_InfoForHardwareGpu', 'simple.html'),
+             ('GpuCrash_InfoForDualHardwareGpus', 'webgl-high-perf.html'))
+
     for t in tests:
       yield (t[0], t[1], ('_' + t[0]))
 
@@ -254,6 +291,16 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                                      ('true' if for_hardware_gpu else 'false')))
     tab.Close()
     return status
+
+  def _GetActiveVendorId(self, for_hardware_gpu):
+    tab = self.tab.browser.tabs.New()
+    tab.Navigate('chrome:gpu',
+                 script_to_evaluate_on_commit=vendor_id_query_script)
+    tab.WaitForJavaScriptCondition('window.gpuPagePopulated', timeout=10)
+    vid = (tab.EvaluateJavaScript('GetActiveVendorId(%s)' %
+                                  ('true' if for_hardware_gpu else 'false')))
+    tab.Close()
+    return vid
 
   def _WaitForTabAndCheckCompletion(self):
     tab = self.tab
@@ -499,6 +546,33 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     if webgl_status_for_hardware_gpu != 'Hardware accelerated':
       self.fail('WebGL status for hardware gpu should be "accelerated", '
                 'but got %s' % webgl_status_for_hardware_gpu)
+    self._RestartBrowser('must restart after tests that kill the GPU process')
+
+  def _GpuCrash_InfoForDualHardwareGpus(self, test_path):
+    # Ensure that info displayed in chrome:gpu for hardware gpu is from
+    # the latest active GPU before the crash, after gpu process crashes three
+    # times and falls back to SwiftShader.
+    # Currently the test only works on Mac dual GPU bots.
+    if not self._IsDualGPUMacLaptop():
+      logging.info('Skipping test because not running on dual-GPU Mac laptop')
+      return
+    self.RestartBrowserIfNecessaryWithArgs(
+        [cba.DISABLE_DOMAIN_BLOCKING_FOR_3D_APIS])
+    active_vendor_id = self._GetActiveVendorId(False)
+    # Load WebGL content and switch to discrete GPU.
+    self._NavigateAndWaitForLoad(test_path)
+    new_active_vendor_id = self._GetActiveVendorId(False)
+    if not active_vendor_id or not new_active_vendor_id:
+      self.fail('Fail to query the active GPU vendor id from about:gpu')
+    # After three GPU crashes, check if the active vendor id for hardware GPU
+    # is the new_active_vendor_id.
+    self._KillGPUProcess(3, True)
+    active_vendor_id_for_hardware_gpu = self._GetActiveVendorId(True)
+    if not active_vendor_id_for_hardware_gpu:
+      self.fail('Fail to query the active GPU vendor id for hardware GPU')
+    if active_vendor_id_for_hardware_gpu != new_active_vendor_id:
+      self.fail('vendor id for hw GPU should be 0x%04x, got 0x%04x' %
+                (new_active_vendor_id, active_vendor_id_for_hardware_gpu))
     self._RestartBrowser('must restart after tests that kill the GPU process')
 
   @classmethod

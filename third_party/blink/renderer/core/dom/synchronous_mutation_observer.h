@@ -13,6 +13,7 @@ namespace blink {
 class CharacterData;
 class ContainerNode;
 class Document;
+class Node;
 class NodeWithIndex;
 class Text;
 

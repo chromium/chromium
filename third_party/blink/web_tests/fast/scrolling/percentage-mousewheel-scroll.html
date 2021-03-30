@@ -27,8 +27,8 @@ async function test_scroller(scrollElement, x, y) {
     return Math.abs(scrollElement.scrollTop -
         scrollElement.clientHeight * SCROLL_PERCENTAGE) <= 0.5;
   }
-  await waitFor(isCorrectOffset,
-                "Scrolling by 10% must scroll the correct amount.");
+  await waitForAnimationEndTimeBased(() => { return scrollElement.scrollTop; });
+  assert_true(isCorrectOffset(), "Scrolling by 10% must scroll the correct amount.");
   await conditionHolds(isCorrectOffset,
                 "Scrolling 10% must not scroll past the correct ammount");
 

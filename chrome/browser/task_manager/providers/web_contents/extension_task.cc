@@ -12,11 +12,9 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/process_manager.h"
-#include "extensions/browser/view_type_utils.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
-#include "extensions/common/view_type.h"
 #include "extensions/grit/extensions_browser_resources.h"
 
 namespace task_manager {
@@ -25,7 +23,7 @@ gfx::ImageSkia* ExtensionTask::s_icon_ = nullptr;
 
 ExtensionTask::ExtensionTask(content::WebContents* web_contents,
                              const extensions::Extension* extension,
-                             extensions::ViewType view_type)
+                             extensions::mojom::ViewType view_type)
     : RendererTask(GetExtensionTitle(web_contents, extension, view_type),
                    FetchIcon(IDR_EXTENSIONS_FAVICON, &s_icon_),
                    web_contents),
@@ -53,8 +51,9 @@ void ExtensionTask::Activate() {
   // chrome://extensions page in a tab, and highlight the details for this
   // extension.
   //
-  // TODO(nick): For extensions::VIEW_TYPE_APP_WINDOW, and maybe others, there
-  // may actually be a window we could focus. Special case those here as needed.
+  // TODO(nick): For extensions::mojom::ViewType::kAppWindow, and maybe others,
+  // there may actually be a window we could focus. Special case those here as
+  // needed.
   const extensions::Extension* extension =
       extensions::ProcessManager::Get(web_contents()->GetBrowserContext())
           ->GetExtensionForWebContents(web_contents());
@@ -77,7 +76,7 @@ Task::Type ExtensionTask::GetType() const {
 }
 
 int ExtensionTask::GetKeepaliveCount() const {
-  if (view_type_ != extensions::VIEW_TYPE_EXTENSION_BACKGROUND_PAGE)
+  if (view_type_ != extensions::mojom::ViewType::kExtensionBackgroundPage)
     return -1;
 
   const extensions::Extension* extension =
@@ -97,18 +96,18 @@ void ExtensionTask::OnExtensionIconImageChanged(extensions::IconImage* image) {
     set_icon(image->image_skia());
 }
 
-base::string16 ExtensionTask::GetExtensionTitle(
+std::u16string ExtensionTask::GetExtensionTitle(
     content::WebContents* web_contents,
     const extensions::Extension* extension,
-    extensions::ViewType view_type) const {
+    extensions::mojom::ViewType view_type) const {
   DCHECK(web_contents);
 
-  base::string16 title = extension ?
-      base::UTF8ToUTF16(extension->name()) :
-      RendererTask::GetTitleFromWebContents(web_contents);
+  std::u16string title =
+      extension ? base::UTF8ToUTF16(extension->name())
+                : RendererTask::GetTitleFromWebContents(web_contents);
 
   bool is_background =
-      view_type == extensions::VIEW_TYPE_EXTENSION_BACKGROUND_PAGE;
+      view_type == extensions::mojom::ViewType::kExtensionBackgroundPage;
 
   return RendererTask::PrefixRendererTitle(
       title,

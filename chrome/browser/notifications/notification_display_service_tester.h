@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_DISPLAY_SERVICE_TESTER_H_
 #define CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_DISPLAY_SERVICE_TESTER_H_
 
+#include <string>
 #include <vector>
 
 #include "base/callback_forward.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/stub_notification_display_service.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
@@ -62,7 +62,7 @@ class NotificationDisplayServiceTester {
   void SimulateClick(NotificationHandler::Type notification_type,
                      const std::string& notification_id,
                      base::Optional<int> action_index,
-                     base::Optional<base::string16> reply);
+                     base::Optional<std::u16string> reply);
 
   // Simulates a click on the settings button of the notification identified by
   // |notification_id|.

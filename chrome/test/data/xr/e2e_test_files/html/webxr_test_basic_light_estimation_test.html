@@ -1,0 +1,54 @@
+<!--
+Tests that AR hit test returns results when a plane is present.
+-->
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="../resources/webxr_e2e.css">
+  </head>
+  <body>
+    <canvas id="webgl-canvas"></canvas>
+    <script src="../../../../../../third_party/blink/web_tests/resources/testharness.js"></script>
+    <script src="../resources/webxr_e2e.js"></script>
+    <script>var shouldAutoCreateNonImmersiveSession = false;</script>
+    <script src="../resources/webxr_boilerplate.js"></script>
+    <script>
+      immersiveArSessionInit.requiredFeatures.push('light-estimation');
+
+      setup({single_test: true});
+
+      function stepStartLightEstimationTest() {
+        const FLOAT_EPSILON = 0.001;
+        const isCloseToZero = (coefficient) => Math.abs(coefficient) < FLOAT_EPSILON;
+
+        const sessionInfo = sessionInfos[sessionTypes.AR];
+        const session = sessionInfo.currentSession;
+        const referenceSpace = sessionInfo.currentRefSpace;
+
+        let lightProbe = null;
+        session.requestLightProbe({reflectionFormat: session.preferredReflectionFormat})
+               .then((probe) => {
+          lightProbe = probe;
+        });
+
+        onARFrameCallback = (session, frame) => {
+          if (lightProbe != null) {
+            const lightEstimate = frame.getLightEstimate(lightProbe);
+            if (lightEstimate != null) {
+              assert_not_equals(lightEstimate.primaryLightDirection, null);
+              assert_not_equals(lightEstimate.primaryLightIntensity, null);
+              assert_not_equals(lightEstimate.sphericalHarmonicsCoefficients, null);
+              assert_equals(lightEstimate.sphericalHarmonicsCoefficients.length, 27);
+
+              const foundZero = lightEstimate.sphericalHarmonicsCoefficients.findIndex(isCloseToZero) != -1;
+              if (!foundZero) {
+                // We want to stop the test once we found a frame with all spherical harmonics
+                // coefficients different from 0.0 - our recording is guaranteed to have that.
+                done();
+              }
+            }
+          }
+        };
+      }
+    </script>
+  </body>
+</html>

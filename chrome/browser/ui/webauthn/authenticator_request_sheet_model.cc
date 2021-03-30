@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ui/webauthn/authenticator_request_sheet_model.h"
 
-base::string16 AuthenticatorRequestSheetModel::GetAdditionalDescription()
+std::u16string AuthenticatorRequestSheetModel::GetAdditionalDescription()
     const {
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16 AuthenticatorRequestSheetModel::GetError() const {
-  return base::string16();
+std::u16string AuthenticatorRequestSheetModel::GetError() const {
+  return std::u16string();
 }
 
 ui::MenuModel* AuthenticatorRequestSheetModel::GetOtherTransportsMenuModel() {

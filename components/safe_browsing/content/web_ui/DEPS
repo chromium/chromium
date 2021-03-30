@@ -7,4 +7,5 @@ include_rules = [
   "+components/strings/grit/components_strings.h",
   "+components/grit/components_scaled_resources.h",
   "+components/safe_browsing_db",
+  "+components/sync",
 ]

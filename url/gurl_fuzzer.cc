@@ -52,9 +52,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     CheckReplaceComponentsPreservesSpec(url_from_string_piece);
   }
   // Test for StringPiece16 if size is even.
-  if (size % 2 == 0) {
+  if (size % sizeof(char16_t) == 0) {
     base::StringPiece16 string_piece_input16(
-        reinterpret_cast<const base::char16*>(data), size / 2);
+        reinterpret_cast<const char16_t*>(data), size / sizeof(char16_t));
     const GURL url_from_string_piece16(string_piece_input16);
     CheckIdempotency(url_from_string_piece16);
     CheckReplaceComponentsPreservesSpec(url_from_string_piece16);
@@ -78,10 +78,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
     url_from_string_piece_part.Resolve(relative_string);
 
-    if (relative_size % 2 == 0) {
-      base::string16 relative_string16(
-          reinterpret_cast<const base::char16*>(data + size_t_bytes),
-          relative_size / 2);
+    if (relative_size % sizeof(char16_t) == 0) {
+      std::u16string relative_string16(
+          reinterpret_cast<const char16_t*>(data + size_t_bytes),
+          relative_size / sizeof(char16_t));
       url_from_string_piece_part.Resolve(relative_string16);
     }
   }

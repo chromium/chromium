@@ -136,9 +136,7 @@ class MODULES_EXPORT ImageCapture final
 
   Member<MediaStreamTrack> stream_track_;
   std::unique_ptr<ImageCaptureFrameGrabber> frame_grabber_;
-  HeapMojoRemote<media::mojom::blink::ImageCapture,
-                 HeapMojoWrapperMode::kWithoutContextObserver>
-      service_;
+  HeapMojoRemote<media::mojom::blink::ImageCapture> service_;
 
   // Whether the user has granted permission for the user to control camera PTZ.
   mojom::blink::PermissionStatus pan_tilt_zoom_permission_;

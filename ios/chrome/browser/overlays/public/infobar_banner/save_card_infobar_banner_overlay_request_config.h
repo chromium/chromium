@@ -5,7 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_INFOBAR_BANNER_SAVE_CARD_INFOBAR_BANNER_OVERLAY_REQUEST_CONFIG_H_
 #define IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_INFOBAR_BANNER_SAVE_CARD_INFOBAR_BANNER_OVERLAY_REQUEST_CONFIG_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "ios/chrome/browser/overlays/public/overlay_request_config.h"
 #include "ios/chrome/browser/overlays/public/overlay_user_data.h"
 
@@ -23,24 +24,24 @@ class SaveCardBannerRequestConfig
   ~SaveCardBannerRequestConfig() override;
 
   // The message text.
-  base::string16 message_text() const { return message_text_; }
+  std::u16string message_text() const { return message_text_; }
 
   // The label for the card.
-  base::string16 card_label() const { return card_label_; }
+  std::u16string card_label() const { return card_label_; }
 
   // The card holder name of the card.
-  base::string16 cardholder_name() const { return cardholder_name_; }
+  std::u16string cardholder_name() const { return cardholder_name_; }
 
   // The expiration month of the card.
-  base::string16 expiration_date_month() const {
+  std::u16string expiration_date_month() const {
     return expiration_date_month_;
   }
 
   // The expiration year of the card.
-  base::string16 expiration_date_year() const { return expiration_date_year_; }
+  std::u16string expiration_date_year() const { return expiration_date_year_; }
 
   // The button label text.
-  base::string16 button_label_text() const { return button_label_text_; }
+  std::u16string button_label_text() const { return button_label_text_; }
 
   // The name of the icon image.
   NSString* icon_image_name() const { return icon_image_name_; }
@@ -58,12 +59,12 @@ class SaveCardBannerRequestConfig
   // The InfoBar causing this banner.
   infobars::InfoBar* infobar_ = nullptr;
   // Configuration data extracted from |infobar_|'s save card delegate.
-  base::string16 message_text_;
-  base::string16 card_label_;
-  base::string16 cardholder_name_;
-  base::string16 expiration_date_month_;
-  base::string16 expiration_date_year_;
-  base::string16 button_label_text_;
+  std::u16string message_text_;
+  std::u16string card_label_;
+  std::u16string cardholder_name_;
+  std::u16string expiration_date_month_;
+  std::u16string expiration_date_year_;
+  std::u16string button_label_text_;
   NSString* icon_image_name_ = nil;
   bool should_upload_credentials_ = false;
 };

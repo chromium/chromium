@@ -4,13 +4,13 @@
 
 #include "chrome/renderer/autofill/password_generation_test_utils.h"
 
-#include <base/strings/utf_string_conversions.h>
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/password_generation_agent.h"
 #include "components/autofill/core/common/password_form_generation_data.h"
-#include "components/autofill/core/common/renderer_id.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "net/base/escape.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -62,7 +62,7 @@ void SetFoundFormEligibleForGeneration(
 // |variables_to_check| are set to 1.
 std::string CreateScriptToRegisterListeners(
     const char* const element_name,
-    std::vector<base::string16>* variables_to_check) {
+    std::vector<std::u16string>* variables_to_check) {
   DCHECK(variables_to_check);
   std::string element = element_name;
 

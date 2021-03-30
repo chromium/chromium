@@ -75,7 +75,7 @@ bool DMGIterator::Next() {
   return false;
 }
 
-base::string16 DMGIterator::GetPath() {
+std::u16string DMGIterator::GetPath() {
   return hfs_->GetPath();
 }
 

@@ -35,21 +35,28 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "url/gurl.h"
 
 using metrics::OmniboxEventProto;
 
-namespace {
+// Default relevance for the LocalHistoryZeroSuggestProvider query suggestions
+// for authenticated and unauthenticated scenarios respectively. These values
+// are chosen to place local history zero-prefix suggestions below server
+// provided zps when the user is signed in (e.g., pSuggest) and above server
+// provided zps when the user is signed out (e.g., trending).
+// Server provided relevance for zps is expected to range from 550-1400.
+const int kLocalHistoryZPSAuthenticatedRelevance = 500;
+const int kLocalHistoryZPSUnauthenticatedRelevance = 1450;
 
-// Default relevance for the LocalHistoryZeroSuggestProvider query suggestions.
-const int kLocalHistoryZeroSuggestRelevance = 500;
+namespace {
 
 // Extracts the search terms from |url|. Collapses whitespaces, converts them to
 // lowercase and returns them. |template_url_service| must not be null.
-base::string16 GetSearchTermsFromURL(const GURL& url,
+std::u16string GetSearchTermsFromURL(const GURL& url,
                                      TemplateURLService* template_url_service) {
   DCHECK(template_url_service);
-  base::string16 search_terms;
+  std::u16string search_terms;
   template_url_service->GetDefaultSearchProvider()->ExtractSearchTermsFromURL(
       url, template_url_service->search_terms_data(), &search_terms);
   return base::i18n::ToLower(base::CollapseWhitespace(search_terms, false));
@@ -192,6 +199,13 @@ LocalHistoryZeroSuggestProvider::LocalHistoryZeroSuggestProvider(
 
 LocalHistoryZeroSuggestProvider::~LocalHistoryZeroSuggestProvider() {}
 
+bool LocalHistoryZeroSuggestProvider::IsSignedIn() {
+  const auto* identity_manager = client_->GetIdentityManager();
+  return identity_manager ? identity_manager->HasPrimaryAccount(
+                                signin::ConsentLevel::kSignin)
+                          : false;
+}
+
 void LocalHistoryZeroSuggestProvider::QueryURLDatabase(
     const AutocompleteInput& input) {
   done_ = true;
@@ -232,7 +246,8 @@ void LocalHistoryZeroSuggestProvider::QueryURLDatabase(
   };
   std::sort(results.begin(), results.end(), CompareByFrecency);
 
-  int relevance = kLocalHistoryZeroSuggestRelevance;
+  int relevance = IsSignedIn() ? kLocalHistoryZPSAuthenticatedRelevance
+                               : kLocalHistoryZPSUnauthenticatedRelevance;
   for (const auto& result : results) {
     SearchSuggestionParser::SuggestResult suggestion(
         /*suggestion=*/result.normalized_term,
@@ -265,7 +280,7 @@ void LocalHistoryZeroSuggestProvider::QueryURLDatabase(
 }
 
 void LocalHistoryZeroSuggestProvider::OnHistoryQueryResults(
-    const base::string16& suggestion,
+    const std::u16string& suggestion,
     const base::TimeTicks& query_time,
     history::QueryResults results) {
   history::HistoryService* history_service = client_->GetHistoryService();
@@ -281,7 +296,7 @@ void LocalHistoryZeroSuggestProvider::OnHistoryQueryResults(
   // Delete the matching URLs that would generate |suggestion|.
   std::vector<GURL> urls_to_delete;
   for (const auto& result : results) {
-    base::string16 search_terms =
+    std::u16string search_terms =
         GetSearchTermsFromURL(result.url(), template_url_service);
     if (search_terms == suggestion)
       urls_to_delete.push_back(result.url());

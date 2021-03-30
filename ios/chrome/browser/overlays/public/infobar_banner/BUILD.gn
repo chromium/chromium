@@ -10,6 +10,8 @@ source_set("infobar_banner") {
     "infobar_banner_overlay_responses.h",
     "infobar_banner_placeholder_request_config.h",
     "infobar_banner_placeholder_request_config.mm",
+    "save_address_profile_infobar_banner_overlay_request_config.h",
+    "save_address_profile_infobar_banner_overlay_request_config.mm",
     "save_card_infobar_banner_overlay_request_config.h",
     "save_card_infobar_banner_overlay_request_config.mm",
     "save_password_infobar_banner_overlay.h",

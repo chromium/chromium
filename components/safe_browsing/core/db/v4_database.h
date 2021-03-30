@@ -147,6 +147,10 @@ class V4Database {
       const StoresToCheck& stores_to_check,
       StoreAndHashPrefixes* matched_store_and_full_hashes);
 
+  // Returns the file size of the store in bytes. Returns 0 if the store is not
+  // found.
+  virtual int64_t GetStoreSizeInBytes(const ListIdentifier& store) const;
+
   // Resets the stores in |stores_to_reset| to an empty state. This is done if
   // the checksum doesn't match the expected value.
   void ResetStores(const std::vector<ListIdentifier>& stores_to_reset);

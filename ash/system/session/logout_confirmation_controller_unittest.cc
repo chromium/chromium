@@ -7,6 +7,7 @@
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_window_builder.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -266,7 +267,8 @@ TEST_F(LastWindowClosedTest, PublicSessionComplexHierarchy) {
   std::unique_ptr<aura::Window> window = CreateToplevelTestWindow();
   EXPECT_FALSE(controller->dialog_for_testing());
 
-  std::unique_ptr<aura::Window> window_child = CreateChildWindow(window.get());
+  std::unique_ptr<aura::Window> window_child =
+      ChildTestWindowBuilder(window.get()).Build();
   EXPECT_FALSE(controller->dialog_for_testing());
 
   window_child.reset();
@@ -319,11 +321,13 @@ TEST_F(LastWindowClosedTest, MultipleDisplays) {
   // Create two displays, each with a window.
   UpdateDisplay("1024x768,800x600");
   std::unique_ptr<aura::Window> window1 =
-      CreateChildWindow(Shell::GetAllRootWindows()[0]->GetChildById(
-          desks_util::GetActiveDeskContainerId()));
+      ChildTestWindowBuilder(Shell::GetAllRootWindows()[0]->GetChildById(
+                                 desks_util::GetActiveDeskContainerId()))
+          .Build();
   std::unique_ptr<aura::Window> window2 =
-      CreateChildWindow(Shell::GetAllRootWindows()[1]->GetChildById(
-          desks_util::GetActiveDeskContainerId()));
+      ChildTestWindowBuilder(Shell::GetAllRootWindows()[1]->GetChildById(
+                                 desks_util::GetActiveDeskContainerId()))
+          .Build();
 
   // Closing the last window shows the dialog.
   window1.reset();

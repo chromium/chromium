@@ -44,6 +44,7 @@ PASS childWindow.onauxclick is null
 PASS childWindow.onbeforeinstallprompt is null
 PASS childWindow.onbeforeprint is null
 PASS childWindow.onbeforeunload is null
+PASS childWindow.onbeforexrselect is null
 PASS childWindow.onblur is null
 PASS childWindow.oncancel is null
 PASS childWindow.oncanplay is null
@@ -147,6 +148,7 @@ PASS childWindow.onwebkittransitionend is null
 PASS childWindow.onwheel is null
 PASS childWindow.opener is null
 PASS childWindow.origin is 'file://'
+PASS childWindow.originAgentCluster is false
 PASS childWindow.outerHeight is 0
 PASS childWindow.outerWidth is 0
 PASS childWindow.pageXOffset is 0

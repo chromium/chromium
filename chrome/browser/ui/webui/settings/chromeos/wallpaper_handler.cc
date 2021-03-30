@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/wallpaper_handler.h"
 
 #include "base/bind.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client.h"
+#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "content/public/browser/web_ui.h"
 
 namespace chromeos {
@@ -40,19 +40,19 @@ void WallpaperHandler::HandleIsWallpaperSettingVisible(
   CHECK_EQ(args->GetSize(), 1U);
   ResolveCallback(
       args->GetList()[0],
-      WallpaperControllerClient::Get()->ShouldShowWallpaperSetting());
+      WallpaperControllerClientImpl::Get()->ShouldShowWallpaperSetting());
 }
 
 void WallpaperHandler::HandleIsWallpaperPolicyControlled(
     const base::ListValue* args) {
   CHECK_EQ(args->GetSize(), 1U);
-  bool result = WallpaperControllerClient::Get()
+  bool result = WallpaperControllerClientImpl::Get()
                     ->IsActiveUserWallpaperControlledByPolicy();
   ResolveCallback(args->GetList()[0], result);
 }
 
 void WallpaperHandler::HandleOpenWallpaperManager(const base::ListValue* args) {
-  WallpaperControllerClient::Get()->OpenWallpaperPickerIfAllowed();
+  WallpaperControllerClientImpl::Get()->OpenWallpaperPickerIfAllowed();
 }
 
 void WallpaperHandler::ResolveCallback(const base::Value& callback_id,

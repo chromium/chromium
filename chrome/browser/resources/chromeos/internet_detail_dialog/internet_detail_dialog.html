@@ -1,193 +1,130 @@
-<!doctype html>
-<html dir="$i18n{textdirection}" lang="$i18n{language}">
-
-<head>
-
-<meta charset="utf-8">
-<title>$i18n{title}</title>
-
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/cr_policy_network_behavior_mojo.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/cr_policy_network_indicator_mojo.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_apnlist.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_choose_mobile.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_icon.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_ip_config.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_listener_behavior.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_nameservers.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_property_list_mojo.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_proxy.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_shared_css.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_siminfo.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_page_host_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/load_time_data.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
-
-<script src="strings.js"></script>
-
-</head>
-
-<style>
-  body,
-  html {
-    height: 100%;
-    margin: 0;
-    overflow: hidden;
-    width: 100%;
+<style include="cr-page-host-style cr-shared-style network-shared
+    iron-flex">
+  cr-policy-network-indicator-mojo {
+    margin-inline-end: 10px;
   }
 
-  #content {
-    height: 100%;
-    overflow: auto;
+  .cr-row cr-button + cr-button {
+    margin-inline-start: 8px;
+  }
+
+  .title {
+    font-size: 107.69%;  /* 14px / 13px */
+    font-weight: 500;
+    margin-inline-start: 20px;
+  }
+
+  #networkState[connected] {
+    color: var(--google-green-500);
   }
 </style>
 
-<body>
-
-<dom-module id="internet-detail-dialog">
-  <template>
-    <style include="cr-page-host-style cr-shared-style network-shared
-        iron-flex">
-      cr-policy-network-indicator-mojo {
-        margin-inline-end: 10px;
-      }
-
-      .cr-row cr-button + cr-button {
-        margin-inline-start: 8px;
-      }
-
-      .title {
-        font-size: 107.69%;  /* 14px / 13px */
-        font-weight: 500;
-        margin-inline-start: 20px;
-      }
-
-      #networkState[connected] {
-        color: var(--google-green-500);
-      }
-    </style>
-
-    <!-- Title section: Icon + name + connection state. -->
-    <div id="title" class="cr-row first">
-      <network-icon
-          show-technology-badge="[[showTechnologyBadge_]]"
-          network-state="[[getNetworkState_(managedProperties_)]]">
-      </network-icon>
-      <div id="networkName" class="title">
-        [[getNameText_(managedProperties_)]]
-      </div>
-      <div id="networkState" class="title flex"
-          connected$="[[isConnectedState_(managedProperties_)]]">
-        [[getStateText_(managedProperties_)]]
-      </div>
-      <cr-button on-click="onForgetTap_"
-          hidden$="[[!showForget_(managedProperties_)]]">
-        $i18n{networkButtonForget}
-      </cr-button>
-      <cr-button class="action-button" on-click="onConnectDisconnectClick_"
-          hidden$="[[!showConnectDisconnect_(managedProperties_)]]"
-          disabled="[[!enableConnectDisconnect_(managedProperties_)]]">
-        [[getConnectDisconnectText_(managedProperties_)]]
-      </cr-button>
-    </div>
-
-    <!-- SIM Info (Cellular only). -->
-    <template is="dom-if" if="[[showCellularSim_(managedProperties_)]]"
-        restamp>
-      <div class="cr-row">
-        <network-siminfo class="flex" device-state="[[deviceState_]]">
-        </network-siminfo>
-      </div>
-    </template>
-
-    <!-- Choose Mobile Network (Cellular only) -->
-    <template is="dom-if"
-        if="[[showCellularChooseNetwork_(managedProperties_)]]">
-      <div class="cr-row">
-        <network-choose-mobile class="flex" device-state="[[deviceState_]]"
-            managed-properties="[[managedProperties_]]">
-        </network-choose-mobile>
-      </div>
-    </template>
-
-    <!-- APN (Cellular only) -->
-    <template is="dom-if" if="[[isCellular_(managedProperties_)]]">
-      <div class="cr-row">
-        <network-apnlist class="flex" editable on-apn-change="onApnChange_"
-            managed-properties="[[managedProperties_]]">
-        </network-apnlist>
-      </div>
-    </template>
-
-    <!-- Proxy -->
-    <div class="hr">
-      <template is="dom-if"
-          if="[[shouldShowProxyPolicyIndicator_(managedProperties_)]]">
-        <div class="cr-row continuation">
-          <cr-policy-network-indicator-mojo
-              property="[[managedProperties_.proxySettings.type]]">
-          </cr-policy-network-indicator-mojo>
-          <div>$i18n{networkProxyEnforcedPolicy}</div>
-        </div>
-      </template>
-      <div class="cr-row continuation">
-        <network-proxy class="flex" editable use-shared-proxies
-            on-proxy-change="onProxyChange_"
-            managed-properties="[[managedProperties_]]">
-        </network-proxy>
-      </div>
-    </div>
-
-    <template is="dom-if" if="[[isRememberedOrConnected_(managedProperties_)]]">
-      <!-- IP Config -->
-      <div class="cr-row">
-        <network-ip-config class="flex"
-            editable on-ip-change="onIPConfigChange_"
-            managed-properties="[[managedProperties_]]">
-        </network-ip-config>
-      </div>
-
-      <!-- Nameservers -->
-      <div class="cr-row">
-        <network-nameservers class="flex" editable
-            on-nameservers-change="onIPConfigChange_"
-            managed-properties="[[managedProperties_]]">
-        </network-nameservers>
-      </div>
-    </template>
-
-    <div class="cr-row">
-      <!-- MAC Address. -->
-      <div class="property-box single-column two-line"
-          hidden$="[[!deviceState_.macAddress]]">
-        <div>$i18n{OncMacAddress}</div>
-        <div class="secondary">[[deviceState_.macAddress]]</div>
-      </div>
-    </div>
-
-    <!-- Other properties to show if present. -->
-    <template is="dom-if" if="[[hasInfoFields_(managedProperties_)]]">
-      <div class="cr-row continuation">
-        <network-property-list-mojo class="flex"
-            fields="[[getInfoFields_(managedProperties_)]]"
-            property-dict="[[managedProperties_]]">
-        </network-property-list-mojo>
-      </div>
-    </template>
-  </template>
-  <script src="internet_detail_dialog.js"></script>
-</dom-module>
-
-<div id="content">
-  <internet-detail-dialog></internet-detail-dialog>
+<!-- Title section: Icon + name + connection state. -->
+<div id="title" class="cr-row first">
+  <network-icon
+      show-technology-badge="[[showTechnologyBadge_]]"
+      network-state="[[getNetworkState_(managedProperties_)]]">
+  </network-icon>
+  <div id="networkName" class="title">
+    [[getNameText_(managedProperties_)]]
+  </div>
+  <div id="networkState" class="title flex"
+      connected$="[[isConnectedState_(managedProperties_)]]">
+    [[getStateText_(managedProperties_)]]
+  </div>
+  <cr-button on-click="onForgetTap_"
+      hidden$="[[!showForget_(managedProperties_)]]">
+    $i18n{networkButtonForget}
+  </cr-button>
+  <cr-button class="action-button" on-click="onConnectDisconnectClick_"
+      hidden$="[[!showConnectDisconnect_(managedProperties_)]]"
+      disabled="[[!enableConnectDisconnect_(managedProperties_)]]">
+    [[getConnectDisconnectText_(managedProperties_)]]
+  </cr-button>
 </div>
 
-</body>
+<!-- SIM Info (Cellular only). -->
+<template is="dom-if" if="[[showCellularSim_(managedProperties_)]]"
+    restamp>
+  <div class="cr-row">
+    <network-siminfo class="flex"
+        network-state="[[getNetworkState_(managedProperties_)]]"
+        device-state="[[deviceState_]]">
+    </network-siminfo>
+  </div>
+</template>
 
-</html>
+<!-- Choose Mobile Network (Cellular only) -->
+<template is="dom-if"
+    if="[[showCellularChooseNetwork_(managedProperties_)]]">
+  <div class="cr-row">
+    <network-choose-mobile class="flex" device-state="[[deviceState_]]"
+        managed-properties="[[managedProperties_]]">
+    </network-choose-mobile>
+  </div>
+</template>
+
+<!-- APN (Cellular only) -->
+<template is="dom-if" if="[[isCellular_(managedProperties_)]]">
+  <div class="cr-row">
+    <network-apnlist class="flex" editable on-apn-change="onApnChange_"
+        managed-properties="[[managedProperties_]]">
+    </network-apnlist>
+  </div>
+</template>
+
+<!-- Proxy -->
+<div class="hr">
+  <template is="dom-if"
+      if="[[shouldShowProxyPolicyIndicator_(managedProperties_)]]">
+    <div class="cr-row continuation">
+      <cr-policy-network-indicator-mojo
+          property="[[managedProperties_.proxySettings.type]]">
+      </cr-policy-network-indicator-mojo>
+      <div>$i18n{networkProxyEnforcedPolicy}</div>
+    </div>
+  </template>
+  <div class="cr-row continuation">
+    <network-proxy class="flex" editable use-shared-proxies
+        on-proxy-change="onProxyChange_"
+        managed-properties="[[managedProperties_]]">
+    </network-proxy>
+  </div>
+</div>
+
+<template is="dom-if" if="[[isRememberedOrConnected_(managedProperties_)]]">
+  <!-- IP Config -->
+  <div class="cr-row">
+    <network-ip-config class="flex"
+        editable on-ip-change="onIPConfigChange_"
+        managed-properties="[[managedProperties_]]">
+    </network-ip-config>
+  </div>
+
+  <!-- Nameservers -->
+  <div class="cr-row">
+    <network-nameservers class="flex" editable
+        on-nameservers-change="onIPConfigChange_"
+        managed-properties="[[managedProperties_]]">
+    </network-nameservers>
+  </div>
+</template>
+
+<div class="cr-row">
+  <!-- MAC Address. -->
+  <div class="property-box single-column two-line"
+      hidden$="[[!deviceState_.macAddress]]">
+    <div>$i18n{OncMacAddress}</div>
+    <div class="secondary">[[deviceState_.macAddress]]</div>
+  </div>
+</div>
+
+<!-- Other properties to show if present. -->
+<template is="dom-if" if="[[hasInfoFields_(managedProperties_)]]">
+  <div class="cr-row continuation">
+    <network-property-list-mojo class="flex"
+        fields="[[getInfoFields_(managedProperties_)]]"
+        property-dict="[[managedProperties_]]">
+    </network-property-list-mojo>
+  </div>
+</template>

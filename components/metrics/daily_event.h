@@ -31,7 +31,7 @@ class DailyEvent {
     FIRST_RUN,
     DAY_ELAPSED,
     CLOCK_CHANGED,
-    NUM_TYPES,
+    kMaxValue = CLOCK_CHANGED,
   };
 
   // Observer receives notifications from a DailyEvent.
@@ -55,7 +55,8 @@ class DailyEvent {
   // Caller is responsible for ensuring that |pref_service| and |pref_name|
   // outlive the DailyEvent.
   // |histogram_name| is the name of the UMA metric which record when this
-  // interval fires, and should be registered in histograms.xml
+  // interval fires, and should be registered in histograms.xml. If
+  // |histogram_name| is empty - interval fires are not recorded.
   DailyEvent(PrefService* pref_service,
              const char* pref_name,
              const std::string& histogram_name);
@@ -70,7 +71,8 @@ class DailyEvent {
   void CheckInterval();
 
   // Registers the preference used by this interval.
-  static void RegisterPref(PrefRegistrySimple* registry, const char* pref_name);
+  static void RegisterPref(PrefRegistrySimple* registry,
+                           const std::string& pref_name);
 
  private:
   // Handles an interval elapsing because of |type|.

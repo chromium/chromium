@@ -422,13 +422,6 @@ bool BrowserTabStripController::ToggleTabGroupCollapsedState(
   }
   tabstrip_->ToggleTabGroup(group, !is_currently_collapsed, origin);
 
-  gfx::Range tabs_in_group = ListTabsInGroup(group);
-  for (auto i = tabs_in_group.start(); i < tabs_in_group.end(); ++i) {
-    tabstrip_->tab_at(i)->SetVisible(is_currently_collapsed);
-    if (base::FeatureList::IsEnabled(features::kTabGroupsCollapseFreezing))
-      model_->GetWebContentsAt(i)->SetPageFrozen(!is_currently_collapsed);
-  }
-
   tab_groups::TabGroupVisualData new_data(
       GetGroupTitle(group), GetGroupColorId(group), !is_currently_collapsed);
   model_->group_model()->GetTabGroup(group)->SetVisualData(new_data, true);
@@ -472,7 +465,7 @@ void BrowserTabStripController::CreateNewTab() {
 }
 
 void BrowserTabStripController::CreateNewTabWithLocation(
-    const base::string16& location) {
+    const std::u16string& location) {
   // Use autocomplete to clean up the text, going so far as to turn it into
   // a search query if necessary.
   AutocompleteMatch match;
@@ -532,12 +525,12 @@ void BrowserTabStripController::OnKeyboardFocusedTabChanged(
       index);
 }
 
-base::string16 BrowserTabStripController::GetGroupTitle(
+std::u16string BrowserTabStripController::GetGroupTitle(
     const tab_groups::TabGroupId& group) const {
   return model_->group_model()->GetTabGroup(group)->visual_data()->title();
 }
 
-base::string16 BrowserTabStripController::GetGroupContentString(
+std::u16string BrowserTabStripController::GetGroupContentString(
     const tab_groups::TabGroupId& group) const {
   return model_->group_model()->GetTabGroup(group)->GetContentString();
 }
@@ -612,7 +605,7 @@ base::Optional<int> BrowserTabStripController::GetCustomBackgroundId(
   return GetFrameView()->GetCustomBackgroundId(active_state);
 }
 
-base::string16 BrowserTabStripController::GetAccessibleTabName(
+std::u16string BrowserTabStripController::GetAccessibleTabName(
     const Tab* tab) const {
   return browser_view_->GetAccessibleTabLabel(false /* include_app_name */,
                                               tabstrip_->GetModelIndexOf(tab));
@@ -707,7 +700,34 @@ void BrowserTabStripController::OnTabGroupChanged(
       break;
     }
     case TabGroupChange::kVisualsChanged: {
-      tabstrip_->OnGroupVisualsChanged(change.group);
+      const TabGroupChange::VisualsChange* visuals_delta =
+          change.GetVisualsChange();
+      const tab_groups::TabGroupVisualData* old_visuals =
+          visuals_delta->old_visuals;
+      const tab_groups::TabGroupVisualData* new_visuals =
+          visuals_delta->new_visuals;
+      if (old_visuals &&
+          old_visuals->is_collapsed() != new_visuals->is_collapsed()) {
+        gfx::Range tabs_in_group = ListTabsInGroup(change.group);
+        for (auto i = tabs_in_group.start(); i < tabs_in_group.end(); ++i) {
+          tabstrip_->tab_at(i)->SetVisible(!new_visuals->is_collapsed());
+          if (base::FeatureList::IsEnabled(
+                  features::kTabGroupsCollapseFreezing)) {
+            if (visuals_delta->new_visuals->is_collapsed()) {
+              tabstrip_->tab_at(i)->SetFreezingVoteToken(
+                  performance_manager::freezing::EmitFreezingVoteForWebContents(
+                      model_->GetWebContentsAt(i),
+                      performance_manager::freezing::FreezingVoteValue::
+                          kCanFreeze,
+                      "Collapsed Tab Group"));
+            } else {
+              tabstrip_->tab_at(i)->ReleaseFreezingVoteToken();
+            }
+          }
+        }
+      }
+
+      tabstrip_->OnGroupVisualsChanged(change.group, old_visuals, new_visuals);
       break;
     }
     case TabGroupChange::kMoved: {
@@ -776,12 +796,15 @@ void BrowserTabStripController::AddTab(WebContents* contents,
                       is_active);
 
   // Try to show tab groups IPH if needed.
-  if (tabstrip_->tab_count() >= 6) {
+  if (tabstrip_->GetTabCount() >= 6) {
     feature_engagement_tracker_->NotifyEvent(
         feature_engagement::events::kSixthTabOpened);
 
     browser_view_->feature_promo_controller()->MaybeShowPromo(
         feature_engagement::kIPHDesktopTabGroupsNewGroupFeature);
+
+    browser_view_->feature_promo_controller()->MaybeShowPromo(
+        feature_engagement::kIPHReadingListEntryPointFeature);
   }
 }
 

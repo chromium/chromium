@@ -38,6 +38,10 @@ enum DecodeStatus;
 [Native]
 enum StatusCode;
 
+// See media/base/media_content_type.h for descriptions.
+[Native]
+enum MediaContentType;
+
 // See media/base/media_log_record.h for description.
 [Native]
 struct MediaLogRecord;
@@ -66,6 +70,14 @@ enum VideoCodecProfile;
 [Native]
 enum VideoPixelFormat;
 
+// See media/base/decoder.h for descriptions.
+[Native]
+enum VideoDecoderType;
+
+// See media/base/decoder.h for descriptions.
+[Native]
+enum AudioDecoderType;
+
 // See media/base/video_transformation.h for descriptions.
 enum VideoRotation {
   kVideoRotation0,
@@ -79,6 +91,11 @@ enum CopyMode {
   kCopyToNewTexture,
   kCopyMailboxesOnly,
 };
+
+// see third_party/blink/public/platform/web_fullscreen_video_status.h for
+// descriptions.
+[Native]
+enum FullscreenVideoStatus;
 
 // See media/base/video_transformation.h for descriptions.
 struct VideoTransformation {
@@ -280,8 +297,7 @@ struct VideoFrameMetadata {
 
   bool read_lock_fences_enabled;
 
-  bool has_rotation;
-  VideoRotation rotation;
+  VideoTransformation? transformation;
 
   bool texture_owner;
 
@@ -321,6 +337,8 @@ struct VideoFrameMetadata {
   mojo_base.mojom.TimeTicks? receive_time;
 
   mojo_base.mojom.TimeDelta? wallclock_frame_duration;
+
+  uint32 hw_protected_validation_id;
 };
 
 // This defines a mojo transport format for media::VideoFrame.
@@ -354,7 +372,6 @@ struct VideoFrame {
 union VideoFrameData {
   EosVideoFrameData eos_data;
   SharedBufferVideoFrameData shared_buffer_data;
-  DmabufVideoFrameData dmabuf_data;
   GpuMemoryBufferVideoFrameData gpu_memory_buffer_data;
   MailboxVideoFrameData mailbox_data;
 };
@@ -373,12 +390,6 @@ struct SharedBufferVideoFrameData {
   // of |frame_data|.
   array<int32> strides;
   array<uint32> offsets;
-};
-
-// This defines video frame data stored in dmabuf.
-struct DmabufVideoFrameData {
-  // Size depends on media::VideoFrame::NumPlanes with frame format.
-  array<handle<platform>> dmabuf_fds;
 };
 
 struct GpuMemoryBufferVideoFrameData {
@@ -426,9 +437,16 @@ struct PredictionTargets {
   uint32 frames_power_efficient = 0;
 };
 
-// See media/base/pipeline/status.h for descriptions.
-struct PipelineDecoderInfo {
-  string decoder_name;
+// See media/base/pipeline_status.h for descriptions.
+struct AudioDecoderInfo {
+  AudioDecoderType decoder_type;
+  bool is_platform_decoder = false;
+  bool has_decrypting_demuxer_stream = false;
+};
+
+// See media/base/pipeline_status.h for descriptions.
+struct VideoDecoderInfo {
+  VideoDecoderType decoder_type;
   bool is_platform_decoder = false;
   bool has_decrypting_demuxer_stream = false;
 };
@@ -440,4 +458,16 @@ struct Status {
   array<mojo_base.mojom.Value> frames;
   array<media.mojom.Status> causes;
   mojo_base.mojom.Value? data;
+};
+
+// Types of media stream, categorised by the media stream's source.
+// The enum values are emitted to metrics. Do not reorder.
+enum MediaStreamType {
+  kLocalElementCapture = 0, // The source is a local capture from element.
+  kLocalDeviceCapture = 1, // The source is a local device capture, e.g. webcam.
+  kLocalTabCapture = 2, // The source is a local tab capture.
+  kLocalDesktopCapture = 3, // The source is a local desktop capture.
+  kLocalDisplayCapture = 4, // The source is a local display capture.
+  kRemote = 5, // The source is a remote peer connection.
+  kNone = 6, // Not a media stream.
 };

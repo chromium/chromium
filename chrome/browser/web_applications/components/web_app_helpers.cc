@@ -98,7 +98,7 @@ bool IsValidExtensionUrl(const GURL& app_url) {
 base::Optional<AppId> FindInstalledAppWithUrlInScope(Profile* profile,
                                                      const GURL& url,
                                                      bool window_only) {
-  auto* provider = web_app::WebAppProviderBase::GetProviderBase(profile);
+  auto* provider = WebAppProviderBase::GetProviderBase(profile);
   return provider ? provider->registrar().FindInstalledAppWithUrlInScope(
                         url, window_only)
                   : base::nullopt;

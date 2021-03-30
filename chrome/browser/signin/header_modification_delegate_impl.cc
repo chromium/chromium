@@ -8,7 +8,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/extensions/api/identity/web_auth_flow.h"
-#include "chrome/browser/profiles/profile_io_data.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/chrome_signin_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -21,11 +21,14 @@
 #include "components/sync/driver/sync_service.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/constants/chromeos_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 #endif
 
 namespace signin {
@@ -70,7 +73,7 @@ void HeaderModificationDelegateImpl::ProcessRequest(
   ConsentLevel consent_level = ConsentLevel::kSync;
 #if defined(OS_ANDROID)
   if (base::FeatureList::IsEnabled(kMobileIdentityConsistency))
-    consent_level = ConsentLevel::kNotRequired;
+    consent_level = ConsentLevel::kSignin;
 #endif
 
   IdentityManager* identity_manager =

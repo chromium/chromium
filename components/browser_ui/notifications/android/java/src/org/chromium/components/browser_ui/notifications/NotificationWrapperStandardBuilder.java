@@ -16,12 +16,20 @@ import android.os.Bundle;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.widget.RemoteViews;
 
+import androidx.core.app.NotificationCompat;
+
+import org.chromium.base.Log;
+import org.chromium.base.compat.ApiHelperForM;
+import org.chromium.base.compat.ApiHelperForN;
+import org.chromium.base.compat.ApiHelperForO;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
 
 /**
  * Wraps a {@link Notification.Builder} object.
  */
 public class NotificationWrapperStandardBuilder implements NotificationWrapperBuilder {
+    private static final String TAG = "NotifStandardBuilder";
     private final Notification.Builder mBuilder;
     private final Context mContext;
     private final NotificationMetadata mMetadata;
@@ -32,7 +40,7 @@ public class NotificationWrapperStandardBuilder implements NotificationWrapperBu
         mBuilder = new Notification.Builder(mContext);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             channelsInitializer.safeInitialize(channelId);
-            mBuilder.setChannelId(channelId);
+            ApiHelperForO.setChannelId(mBuilder, channelId);
         }
         mMetadata = metadata;
     }
@@ -76,7 +84,7 @@ public class NotificationWrapperStandardBuilder implements NotificationWrapperBu
     @Override
     public NotificationWrapperBuilder setSmallIcon(Icon icon) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            mBuilder.setSmallIcon(icon);
+            ApiHelperForM.setSmallIcon(mBuilder, icon);
         }
         return this;
     }
@@ -139,11 +147,12 @@ public class NotificationWrapperStandardBuilder implements NotificationWrapperBu
     @SuppressWarnings("deprecation")
     public NotificationWrapperBuilder addAction(
             int icon, CharSequence title, PendingIntent intent) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            mBuilder.addAction(
-                    new Notification.Action
-                            .Builder(Icon.createWithResource(mContext, icon), title, intent)
-                            .build());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && icon != 0) {
+            mBuilder.addAction(ApiHelperForM
+                                       .newNotificationActionBuilder(
+                                               ApiHelperForM.createIconWithResource(mContext, icon),
+                                               title, intent)
+                                       .build());
         } else {
             mBuilder.addAction(icon, title, intent);
         }
@@ -166,9 +175,23 @@ public class NotificationWrapperStandardBuilder implements NotificationWrapperBu
     @Override
     public NotificationWrapperBuilder addAction(
             Notification.Action action, int flags, int actionType) {
+        // TODO(xingliu): Plumb requestCode from action intent.
         action.actionIntent =
-                new PendingIntentProvider(action.actionIntent, flags).getPendingIntent();
+                new PendingIntentProvider(action.actionIntent, flags, 0).getPendingIntent();
         addAction(action);
+        return this;
+    }
+
+    @Override
+    public NotificationWrapperBuilder addAction(NotificationCompat.Action action) {
+        Log.w(TAG, "Ignoring compat action in standard builder.");
+        return this;
+    }
+
+    @Override
+    public NotificationWrapperBuilder addAction(
+            NotificationCompat.Action action, int flags, int actionType) {
+        Log.w(TAG, "Ignoring compat action in standard builder.");
         return this;
     }
 
@@ -241,6 +264,12 @@ public class NotificationWrapperStandardBuilder implements NotificationWrapperBu
     }
 
     @Override
+    public NotificationWrapperBuilder setSilent(boolean silent) {
+        // Not supported on non-compat builders.
+        return this;
+    }
+
+    @Override
     public NotificationWrapperBuilder setDefaults(int defaults) {
         mBuilder.setDefaults(defaults);
         return this;
@@ -262,7 +291,7 @@ public class NotificationWrapperStandardBuilder implements NotificationWrapperBu
     @SuppressWarnings("deprecation")
     public NotificationWrapperBuilder setContent(RemoteViews views) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            mBuilder.setCustomContentView(views);
+            ApiHelperForN.setCustomContentView(mBuilder, views);
         } else {
             mBuilder.setContent(views);
         }
@@ -270,14 +299,22 @@ public class NotificationWrapperStandardBuilder implements NotificationWrapperBu
     }
 
     @Override
-    public NotificationWrapperBuilder setStyle(Notification.BigPictureStyle style) {
+    public NotificationWrapperBuilder setBigPictureStyle(
+            Bitmap bigPicture, CharSequence summaryText) {
+        Notification.BigPictureStyle style =
+                new Notification.BigPictureStyle().bigPicture(bigPicture);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // Android N doesn't show content text when expanded, so duplicate body text as a
+            // summary for the big picture.
+            style.setSummaryText(summaryText);
+        }
         mBuilder.setStyle(style);
         return this;
     }
 
     @Override
-    public NotificationWrapperBuilder setStyle(Notification.BigTextStyle style) {
-        mBuilder.setStyle(style);
+    public NotificationWrapperBuilder setBigTextStyle(CharSequence bigText) {
+        mBuilder.setStyle(new Notification.BigTextStyle().bigText(bigText));
         return this;
     }
 
@@ -302,7 +339,7 @@ public class NotificationWrapperStandardBuilder implements NotificationWrapperBu
         assert mMetadata != null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return new NotificationWrapper(
-                    mBuilder.setCustomBigContentView(view).build(), mMetadata);
+                    ApiHelperForN.setCustomBigContentView(mBuilder, view).build(), mMetadata);
         } else {
             Notification notification = mBuilder.build();
             notification.bigContentView = view;
@@ -322,7 +359,14 @@ public class NotificationWrapperStandardBuilder implements NotificationWrapperBu
 
     @Override
     public Notification build() {
-        return mBuilder.build();
+        boolean success = false;
+        try {
+            Notification notification = mBuilder.build();
+            success = true;
+            return notification;
+        } finally {
+            RecordHistogram.recordBooleanHistogram("Notifications.Android.Build", success);
+        }
     }
 
     @Override

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/accessibility/accessibility_event_recorder.h"
+#include "content/browser/accessibility/accessibility_event_recorder_mac.h"
 
 #import <Cocoa/Cocoa.h>
 
@@ -20,42 +20,6 @@
 
 namespace content {
 
-// Implementation of AccessibilityEventRecorder that uses AXObserver to
-// watch for NSAccessibility events.
-class AccessibilityEventRecorderMac : public AccessibilityEventRecorder {
- public:
-  AccessibilityEventRecorderMac(BrowserAccessibilityManager* manager,
-                                base::ProcessId pid,
-                                AXUIElementRef node);
-  ~AccessibilityEventRecorderMac() override;
-
-  // Callback executed every time we receive an event notification.
-  void EventReceived(AXUIElementRef element,
-                     CFStringRef notification,
-                     CFDictionaryRef user_info);
-  static std::string SerializeTextSelectionChangedProperties(
-      CFDictionaryRef user_info);
-
- private:
-  // Add one notification to the list of notifications monitored by our
-  // observer.
-  void AddNotification(NSString* notification);
-
-  // Convenience function to get the value of an AX attribute from
-  // an AXUIElementRef as a string.
-  std::string GetAXAttributeValue(AXUIElementRef element,
-                                  NSString* attribute_name);
-
-  // The AXUIElement for the Chrome application.
-  base::ScopedCFTypeRef<AXUIElementRef> application_;
-
-  // The AXObserver we use to monitor AX notifications.
-  base::ScopedCFTypeRef<AXObserverRef> observer_ref_;
-  CFRunLoopSourceRef observer_run_loop_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityEventRecorderMac);
-};
-
 // Callback function registered using AXObserverCreate.
 static void EventReceivedThunk(AXObserverRef observer_ref,
                                AXUIElementRef element,
@@ -67,11 +31,11 @@ static void EventReceivedThunk(AXObserverRef observer_ref,
   this_ptr->EventReceived(element, notification, user_info);
 }
 
-// static
-std::unique_ptr<AccessibilityEventRecorder> AccessibilityEventRecorder::Create(
+AccessibilityEventRecorderMac::AccessibilityEventRecorderMac(
     BrowserAccessibilityManager* manager,
     base::ProcessId pid,
-    const AXTreeSelector& selector) {
+    const AXTreeSelector& selector)
+    : AccessibilityEventRecorder(manager), observer_run_loop_source_(nullptr) {
   AXUIElementRef node = nil;
   if (pid) {
     node = AXUIElementCreateApplication(pid);
@@ -85,23 +49,6 @@ std::unique_ptr<AccessibilityEventRecorder> AccessibilityEventRecorder::Create(
     }
   }
 
-  return std::make_unique<AccessibilityEventRecorderMac>(manager, pid, node);
-}
-
-std::vector<AccessibilityEventRecorder::TestPass>
-AccessibilityEventRecorder::GetTestPasses() {
-  // Both the Blink pass and native pass use the same recorder
-  return {
-      {"blink", &AccessibilityEventRecorder::Create},
-      {"mac", &AccessibilityEventRecorder::Create},
-  };
-}
-
-AccessibilityEventRecorderMac::AccessibilityEventRecorderMac(
-    BrowserAccessibilityManager* manager,
-    base::ProcessId pid,
-    AXUIElementRef node)
-    : AccessibilityEventRecorder(manager), observer_run_loop_source_(NULL) {
   if (kAXErrorSuccess !=
       AXObserverCreateWithInfoCallback(pid, EventReceivedThunk,
                                        observer_ref_.InitializeInto())) {

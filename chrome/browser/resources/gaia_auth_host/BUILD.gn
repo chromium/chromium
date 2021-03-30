@@ -76,7 +76,6 @@ if (is_chromeos_ash && include_js_tests) {
 }
 
 js_type_check("closure_compile") {
-  uses_js_modules = true
   closure_flags =
       default_closure_args + [
         "js_module_root=../../chrome/browser/resources/gaia_auth_host/",

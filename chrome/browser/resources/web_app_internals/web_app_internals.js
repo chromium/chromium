@@ -61,6 +61,10 @@ Polymer({
       this.highlightHashedId_();
       this.hashChangeListener_ = () => this.highlightHashedId_();
       window.addEventListener('hashchange', this.hashChangeListener_);
+
+      this.$.saveButton.addEventListener('click', () => this.save());
+      this.$.loadButton.addEventListener(
+          'change', event => this.load(event.target.files[0]));
     })();
   },
 
@@ -93,5 +97,39 @@ Polymer({
 
     highlighted.scrollIntoView();
     highlighted.classList.add('highlight');
+  },
+
+  /**
+   * Saves the data contents of the page to a JSON file.
+   * @private
+   */
+  save() {
+    const data = Object.fromEntries(
+        Object.keys(this.properties).map(key => [key, this[key]]));
+    const file = new Blob(
+        [JSON.stringify(data, null, '  ')], {type: 'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(file);
+    a.download = 'web-app-internals.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  },
+
+  /**
+   * Loads the given JSON file as the data contents of the page.
+   * @param {File} file
+   * @private
+   * @suppress {checkTypes} Closure doesn't know about
+         FileReader.readAsText(File).
+   */
+  load(file) {
+    const reader = new FileReader();
+    reader.addEventListener('load', event => {
+      const json = JSON.parse(event.target.result);
+      for (const key of Object.keys(this.properties)) {
+        this[key] = json[key];
+      }
+    });
+    reader.readAsText(file);
   },
 });

@@ -1,22 +1,4 @@
 {
-  "Linux Builder Goma Canary": {
-    "gn_args": {
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "use_goma": true
-    }
-  },
-  "Linux Builder Goma Latest Client": {
-    "gn_args": {
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "use_goma": true
-    }
-  },
   "Linux Builder Goma RBE Canary": {
     "gn_args": {
       "ffmpeg_branding": "Chrome",
@@ -32,46 +14,6 @@
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "use_goma": true
-    }
-  },
-  "Mac Builder (dbg) Goma Canary": {
-    "gn_args": {
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": true,
-      "is_debug": true,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "use_goma": true
-    }
-  },
-  "Mac Builder (dbg) Goma Canary (clobber)": {
-    "gn_args": {
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": true,
-      "is_debug": true,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "use_goma": true
-    }
-  },
-  "Mac Builder (dbg) Goma Latest Client": {
-    "gn_args": {
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": true,
-      "is_debug": true,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "use_goma": true
-    }
-  },
-  "Mac Builder (dbg) Goma Latest Client (clobber)": {
-    "gn_args": {
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": true,
-      "is_debug": true,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
       "use_goma": true
     }
   },
@@ -95,48 +37,6 @@
       "use_goma": true
     }
   },
-  "Mac Builder Goma Canary": {
-    "gn_args": {
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "use_goma": true
-    }
-  },
-  "Mac Builder Goma Latest Client": {
-    "gn_args": {
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "use_goma": true
-    }
-  },
-  "Win Builder (dbg) Goma Canary": {
-    "gn_args": {
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": true,
-      "is_debug": true,
-      "proprietary_codecs": true,
-      "symbol_level": 0,
-      "target_cpu": "x86",
-      "use_goma": true
-    }
-  },
-  "Win Builder (dbg) Goma Latest Client": {
-    "gn_args": {
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": true,
-      "is_debug": true,
-      "proprietary_codecs": true,
-      "symbol_level": 0,
-      "target_cpu": "x86",
-      "use_goma": true
-    }
-  },
   "Win Builder (dbg) Goma RBE Latest Client": {
     "gn_args": {
       "ffmpeg_branding": "Chrome",
@@ -144,28 +44,6 @@
       "is_debug": true,
       "proprietary_codecs": true,
       "symbol_level": 0,
-      "target_cpu": "x86",
-      "use_goma": true
-    }
-  },
-  "Win Builder Goma Canary": {
-    "gn_args": {
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "target_cpu": "x86",
-      "use_goma": true
-    }
-  },
-  "Win Builder Goma Latest Client": {
-    "gn_args": {
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
       "target_cpu": "x86",
       "use_goma": true
     }
@@ -178,68 +56,6 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_cpu": "x86",
-      "use_goma": true
-    }
-  },
-  "Win7 Builder (dbg) Goma Canary": {
-    "gn_args": {
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": true,
-      "is_debug": true,
-      "proprietary_codecs": true,
-      "symbol_level": 0,
-      "target_cpu": "x86",
-      "use_goma": true
-    }
-  },
-  "Win7 Builder (dbg) Goma Latest Client": {
-    "gn_args": {
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": true,
-      "is_debug": true,
-      "proprietary_codecs": true,
-      "symbol_level": 0,
-      "target_cpu": "x86",
-      "use_goma": true
-    }
-  },
-  "Win7 Builder Goma Canary": {
-    "gn_args": {
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "target_cpu": "x86",
-      "use_goma": true
-    }
-  },
-  "Win7 Builder Goma Latest Client": {
-    "gn_args": {
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "target_cpu": "x86",
-      "use_goma": true
-    }
-  },
-  "android-archive-dbg-goma-canary": {
-    "gn_args": {
-      "is_component_build": true,
-      "is_debug": true,
-      "symbol_level": 1,
-      "target_os": "android",
-      "use_goma": true
-    }
-  },
-  "android-archive-dbg-goma-latest": {
-    "gn_args": {
-      "is_component_build": true,
-      "is_debug": true,
-      "symbol_level": 1,
-      "target_os": "android",
       "use_goma": true
     }
   },
@@ -279,22 +95,6 @@
       "use_goma": true
     }
   },
-  "chromeos-amd64-generic-rel-goma-canary": {
-    "args_file": "//build/args/chromeos/amd64-generic.gni",
-    "gn_args": {
-      "is_chromeos_device": true,
-      "ozone_platform_headless": true,
-      "use_goma": true
-    }
-  },
-  "chromeos-amd64-generic-rel-goma-latest": {
-    "args_file": "//build/args/chromeos/amd64-generic.gni",
-    "gn_args": {
-      "is_chromeos_device": true,
-      "ozone_platform_headless": true,
-      "use_goma": true
-    }
-  },
   "chromeos-amd64-generic-rel-goma-rbe-canary": {
     "args_file": "//build/args/chromeos/amd64-generic.gni",
     "gn_args": {
@@ -311,36 +111,11 @@
       "use_goma": true
     }
   },
-  "ios-device-goma-canary-clobber": {
-    "gn_args": {
-      "ios_code_signing_identity_description": "Apple Development",
-      "ios_enable_code_signing": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 0,
-      "target_cpu": "arm64",
-      "target_environment": "device",
-      "target_os": "ios",
-      "use_goma": true
-    }
-  },
-  "ios-device-goma-latest-clobber": {
-    "gn_args": {
-      "ios_code_signing_identity_description": "Apple Development",
-      "ios_enable_code_signing": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 0,
-      "target_cpu": "arm64",
-      "target_environment": "device",
-      "target_os": "ios",
-      "use_goma": true
-    }
-  },
   "ios-device-goma-rbe-canary-clobber": {
     "gn_args": {
       "ios_code_signing_identity_description": "Apple Development",
       "ios_enable_code_signing": false,
+      "ios_set_attributes_for_xcode_project_generation": false,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
@@ -354,40 +129,13 @@
     "gn_args": {
       "ios_code_signing_identity_description": "Apple Development",
       "ios_enable_code_signing": false,
+      "ios_set_attributes_for_xcode_project_generation": false,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
       "target_cpu": "arm64",
       "target_environment": "device",
       "target_os": "ios",
-      "use_goma": true
-    }
-  },
-  "linux-archive-rel-goma-canary": {
-    "gn_args": {
-      "is_component_build": false,
-      "is_debug": false,
-      "use_goma": true
-    }
-  },
-  "linux-archive-rel-goma-canary-localoutputcache": {
-    "gn_args": {
-      "is_component_build": false,
-      "is_debug": false,
-      "use_goma": true
-    }
-  },
-  "linux-archive-rel-goma-latest": {
-    "gn_args": {
-      "is_component_build": false,
-      "is_debug": false,
-      "use_goma": true
-    }
-  },
-  "linux-archive-rel-goma-latest-localoutputcache": {
-    "gn_args": {
-      "is_component_build": false,
-      "is_debug": false,
       "use_goma": true
     }
   },
@@ -419,42 +167,6 @@
       "use_goma": true
     }
   },
-  "mac-archive-rel-goma-canary": {
-    "gn_args": {
-      "enable_stripping": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 1,
-      "use_goma": true
-    }
-  },
-  "mac-archive-rel-goma-canary-localoutputcache": {
-    "gn_args": {
-      "enable_stripping": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 1,
-      "use_goma": true
-    }
-  },
-  "mac-archive-rel-goma-latest": {
-    "gn_args": {
-      "enable_stripping": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 1,
-      "use_goma": true
-    }
-  },
-  "mac-archive-rel-goma-latest-localoutputcache": {
-    "gn_args": {
-      "enable_stripping": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 1,
-      "use_goma": true
-    }
-  },
   "mac-archive-rel-goma-rbe-canary": {
     "gn_args": {
       "enable_stripping": true,
@@ -470,26 +182,6 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
-      "use_goma": true
-    }
-  },
-  "win32-archive-rel-goma-canary-localoutputcache": {
-    "gn_args": {
-      "is_component_build": false,
-      "is_debug": false,
-      "skip_archive_compression": false,
-      "symbol_level": 1,
-      "target_cpu": "x86",
-      "use_goma": true
-    }
-  },
-  "win32-archive-rel-goma-latest-localoutputcache": {
-    "gn_args": {
-      "is_component_build": false,
-      "is_debug": false,
-      "skip_archive_compression": false,
-      "symbol_level": 1,
-      "target_cpu": "x86",
       "use_goma": true
     }
   }

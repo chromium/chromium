@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">Không thể sử dụng được tệp hoặc thư mục.</translation>
 <translation id="1363028406613469049">Số theo dõi</translation>
 <translation id="1378727793141957596">Chào mừng bạn đến với Google Drive!</translation>
+<translation id="1379911846207762492">Bạn có thể chọn xem các tệp ở chế độ ngoại tuyến khi không có mạng.</translation>
 <translation id="1383876407941801731">Tìm kiếm</translation>
 <translation id="1395262318152388157">Thanh trượt tìm kiếm</translation>
 <translation id="1404323374378969387">Tiếng Na Uy</translation>
@@ -76,6 +77,7 @@
 <translation id="1807938677607439181">Tất cả các tệp</translation>
 <translation id="1810764548349082891">Không có bản xem trước</translation>
 <translation id="1812302367230252929">Tiếng Amhara (chuyển tự)</translation>
+<translation id="1813278315230285598">Dịch vụ</translation>
 <translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Chú ý:<ph name="END_BOLD" /> Các tệp này là tạm thời và có thể tự động bị xóa để giải phóng dung lượng ổ đĩa. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Chim cánh cụt</translation>
 <translation id="183183971458492120">Đang tải thông tin...</translation>
@@ -85,13 +87,14 @@
 <translation id="1853795129690976061">Thư mục này được chia sẻ với Linux</translation>
 <translation id="1864756863218646478">Không thể tìm thấy tệp.</translation>
 <translation id="1920670151694390848">Tiếng Malayalam (chuyển tự)</translation>
+<translation id="1920798810075583923">Dưa hấu</translation>
 <translation id="1924372192547904021">Đã định dạng <ph name="DRIVE_NAME" /></translation>
 <translation id="1931134289871235022">Tiếng Slovak</translation>
 <translation id="1933345018156373194">Không di chuyển được, lỗi ngoài mong đợi: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">Tiếng Phần Lan</translation>
 <translation id="1942765061641586207">Độ phân giải hình ảnh</translation>
-<translation id="1943097386230153518">Cài đặt dịch vụ mới</translation>
 <translation id="1972984168337863910">Mở rộng bảng dữ liệu phản hồi về tệp</translation>
+<translation id="1984456723671657197">Loại tệp này không được hỗ trợ. <ph name="BEGIN_LINK_HELP" />Tìm hiểu thêm<ph name="END_LINK_HELP" /> về cách mở tệp trên Chrome OS.</translation>
 <translation id="1995337122023280937">Chuyển đến vị trí tệp</translation>
 <translation id="2001796770603320721">Quản lý trong Drive</translation>
 <translation id="2009067268969781306">Thao tác định dạng ổ sẽ xóa toàn bộ dữ liệu lưu trữ trên ổ đó. Bạn không thể hủy thao tác này sau khi đã thực hiện.</translation>
@@ -118,6 +121,7 @@
 <translation id="2288278176040912387">Máy quay đĩa hát</translation>
 <translation id="2291538123825441971">Đang mở <ph name="NUMBER_OF_FILES" /> tệp.</translation>
 <translation id="2303301624314357662">Đang mở tệp <ph name="FILE_NAME" />.</translation>
+<translation id="2304820083631266885">Hành tinh</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> đã được đẩy ra.</translation>
 <translation id="2325650632570794183">Loại tệp này không được hỗ trợ. Vui lòng truy cập Cửa hàng Chrome trực tuyến để tìm ứng dụng có thể mở loại tệp này.</translation>
 <translation id="2326539130272988168">Tiếng Bungary</translation>
@@ -142,7 +146,6 @@
 <translation id="255937426064304553">Bàn phím quốc tế Hoa Kỳ</translation>
 <translation id="2562685439590298522">Documents</translation>
 <translation id="2563185590376525700">Ếch</translation>
-<translation id="2572501073504669105">Bạn có thể chọn xem các tệp ở chế độ ngoại tuyến khi không có mạng.</translation>
 <translation id="2578394532502990878">Tiếng Tamil (phiên âm)</translation>
 <translation id="2579959351793446050">Tiếng Odia</translation>
 <translation id="2614589611416690597">Video <ph name="VIDEO_TYPE" /></translation>
@@ -186,6 +189,7 @@
 <translation id="299638574917407533">Tiếng Pháp (Canada)</translation>
 <translation id="3003633581067744647">Chuyển sang chế độ xem hình thu nhỏ</translation>
 <translation id="3007214526293698309">Cố định tỷ lệ</translation>
+<translation id="3029114385395636667">Bật Google Tài liệu ngoại tuyến để sử dụng Tài liệu, Trang tính và Trang trình bày ở chế độ ngoại tuyến.</translation>
 <translation id="303198083543495566">Địa lý</translation>
 <translation id="3047197340186497470">Tiếng Trung (Dayi)</translation>
 <translation id="3057861065630527966">Sao lưu ảnh và video của bạn</translation>
@@ -216,14 +220,17 @@
 <translation id="3335337277364016868">Năm ghi âm</translation>
 <translation id="3353984535370177728">Chọn thư mục để tải lên</translation>
 <translation id="3356580349448036450">Hoàn tất</translation>
+<translation id="3358452157379365236">Đàn ghita</translation>
 <translation id="3382143449143186018">Tiếng Nepal bằng bàn phím InScript</translation>
 <translation id="3408236822532681288">Tiếng Đức (Đức) bằng bàn phím Neo 2</translation>
 <translation id="3414856743105198592">Định dạng phương tiện di động sẽ xóa tất cả dữ liệu. Bạn có muốn tiếp tục không?</translation>
 <translation id="3437801641691368414">Thời gian tạo</translation>
+<translation id="343907260260897561">Máy ảnh chụp lấy ngay</translation>
 <translation id="3455931012307786678">Tiếng Estonia</translation>
 <translation id="3466147780910026086">Đang quét thiết bị truyền thông của bạn...</translation>
 <translation id="3468522857997926824">Đã sao lưu <ph name="FILE_COUNT" /> ảnh vào <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="3475447146579922140">Bảng tính Google</translation>
+<translation id="3479552764303398839">Không phải bây giờ</translation>
 <translation id="3486821258960016770">Tiếng Mông Cổ</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> lỗi.</translation>
 <translation id="3522708245912499433">Tiếng Bồ Đào Nha</translation>
@@ -233,6 +240,7 @@
 <translation id="3553048479571901246">Để mở tệp bằng <ph name="APP_NAME" />, trước tiên, hãy sao chép các tệp đó vào thư mục tệp Windows.</translation>
 <translation id="3556731189587832921">Tiếng Anh (Mỹ) bằng bàn phím quốc tế cho máy tính để bàn</translation>
 <translation id="357479282490346887">Tiếng Lithuania</translation>
+<translation id="3592251141500063301">Không tải được <ph name="FILE_NAME" /> xuống để xem khi không có mạng</translation>
 <translation id="3603385196401704894">Tiếng Pháp ở Canada</translation>
 <translation id="3606220979431771195">Tiếng Thổ Nhĩ Kỳ-F</translation>
 <translation id="3616113530831147358">Âm thanh</translation>
@@ -279,6 +287,7 @@
 <translation id="4124935795427217608">Kỳ lân</translation>
 <translation id="4158739975813877944">Mở danh sách phát</translation>
 <translation id="4159731583141908892">Đã di chuyển <ph name="FILE_NAME" />.</translation>
+<translation id="4186579485882418952">Bật chế độ ngoại tuyến</translation>
 <translation id="4193154014135846272">Tài liệu Google</translation>
 <translation id="4197674956721858839">Chọn file nén zip</translation>
 <translation id="4202378258276439759">Tiếng Tây Ban Nha (Mỹ Latinh)</translation>
@@ -292,6 +301,7 @@
 <translation id="4309915981827077375">Thông tin chung</translation>
 <translation id="432252891123397018">Tiếng Rumani bằng bàn phím chuẩn</translation>
 <translation id="4325128273762811722">Tiếng Sloven</translation>
+<translation id="4326142238881453352">Nhà thực vật học</translation>
 <translation id="4326192123064055915">Cà phê</translation>
 <translation id="4336032328163998280">Thao tác sao chép không thành công. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">Tiếng Soran (Trung Kurd) bằng bàn phím dựa trên tiếng Ả Rập</translation>
@@ -327,7 +337,6 @@
 <translation id="4706042980341760088">Tiếng Tamil bằng bàn phím dạng Máy đánh chữ</translation>
 <translation id="4711094779914110278">Tiếng Thổ Nhĩ Kỳ</translation>
 <translation id="4712283082407695269">Đang mở "<ph name="PATH" />"</translation>
-<translation id="4713544552769165154">Tệp này được thiết kế cho máy tính sử dụng phần mềm Macintosh. Tệp này không tương thích với thiết bị chạy Chrome OS của bạn. Hãy tìm kiếm ứng dụng thay thế phù hợp trên <ph name="BEGIN_LINK" />Cửa hàng Chrome trực tuyến<ph name="END_LINK" />. <ph name="BEGIN_LINK_HELP" />Tìm hiểu thêm<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">Đã sao lưu <ph name="FILE_COUNT" /> ảnh</translation>
 <translation id="4725511304875193254">Chó Corgi</translation>
 <translation id="4732760563705710320">Rất tiếc, video không được thiết bị truyền của bạn hỗ trợ.</translation>
@@ -408,6 +417,7 @@
     <ph name="MARKUP_7" />Chia sẻ, tạo và cộng tác<ph name="MARKUP_8" />
     trên các tệp với những người khác, tất cả tại cùng một địa điểm.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Tệp được khôi phục từ Google Drive</translation>
+<translation id="5288441970121584418">Bánh mì kẹp</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Lưu</translation>
 <translation id="5318819489018851358">Chia sẻ với Linux</translation>
@@ -461,8 +471,6 @@
 <translation id="5833610766403489739">Tệp này đã thất lạc ở đâu đó. Vui lòng kiểm tra cài đặt vị trí tải xuống của bạn và thử lại.</translation>
 <translation id="5838451609423551646">Đã xóa tất cả các mục khỏi lựa chọn.</translation>
 <translation id="5838825566232597749">Bàn phím quốc tế Workman Hoa Kỳ</translation>
-<translation id="5850516540536751549">Loại tệp này không được hỗ trợ. Vui lòng truy cập <ph name="BEGIN_LINK" />Cửa hàng Chrome trực tuyến<ph name="END_LINK" /> để tìm ứng dụng có thể mở loại tệp này.
-    <ph name="BEGIN_LINK_HELP" />Tìm hiểu thêm<ph name="END_LINK_HELP" /></translation>
 <translation id="5851063901794976166">Không có nội dung nào để xem tại đây...</translation>
 <translation id="5911887972742538906">Đã xảy ra lỗi trong quá trình cài đặt ứng dụng Linux.</translation>
 <translation id="5912396950572065471">Định dạng</translation>
@@ -500,10 +508,12 @@
 <translation id="6248400709929739064">Bật phụ đề</translation>
 <translation id="6269630227984243955">Tiếng Malay</translation>
 <translation id="6287852322318138013">Chọn một ứng dụng để mở tệp này</translation>
+<translation id="6321303798550928047">Vẫy tay</translation>
 <translation id="6339145975392024142">Bàn phím quốc tế Hoa Kỳ (PC)</translation>
 <translation id="6346310558342052870">Truy cập bị hạn chế</translation>
 <translation id="6356685157277930264">Cửa sổ phản hồi về tệp</translation>
 <translation id="6358884629796491903">Rồng</translation>
+<translation id="6367976544441405720">Xe tải</translation>
 <translation id="637062427944097960">Tệp này được mở trên máy tính khác. Chuyển sang <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) để xem tệp này.</translation>
 <translation id="6394388407447716302">Chỉ có thể đọc</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> mục</translation>
@@ -527,6 +537,7 @@
 <translation id="6650726141019353908">Bướm màu hồng</translation>
 <translation id="6657585470893396449">Mật khẩu</translation>
 <translation id="6673674183150363784">Tiếng Pháp (Pháp) bằng bàn phím Bépo</translation>
+<translation id="6710022688720561421">Rô bốt</translation>
 <translation id="6710213216561001401">Trước</translation>
 <translation id="6751256176799620176">Đã chọn 1 thư mục</translation>
 <translation id="6790428901817661496">Phát</translation>
@@ -560,6 +571,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6970230597523682626">Tiếng Bungary</translation>
 <translation id="6973630695168034713">Thư mục</translation>
+<translation id="6976795442547527108">Sư tử</translation>
 <translation id="6978611942794658017">Tệp này dành cho PC sử dụng phần mềm Windows. Tệp này không tương thích với thiết bị chạy Chrome OS của bạn. Vui lòng tìm kiếm ứng dụng thay thế phù hợp trong Cửa hàng Chrome trực tuyến.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Tiếng Thụy Điển</translation>
@@ -606,6 +618,7 @@
 <translation id="7532029025027028521">Tiếng Ba Tư (chuyển tự)</translation>
 <translation id="7544830582642184299">Cho phép các ứng dụng Linux truy cập vào tệp trên Google Drive. Các thay đổi sẽ đồng bộ hóa với những thiết bị khác mà bạn có.</translation>
 <translation id="7544853251252956727">Phát ngẫu nhiên</translation>
+<translation id="7547009467130558110">Giày sneaker</translation>
 <translation id="7547780573915868306">Tiếng Lithuania</translation>
 <translation id="7547811415869834682">Tiếng Hà Lan</translation>
 <translation id="7551643184018910560">Ghim vào kệ</translation>
@@ -620,6 +633,7 @@
 <translation id="7628656427739290098">Đã hoàn tất <ph name="PERCENT" />%.</translation>
 <translation id="7649070708921625228">Trợ giúp</translation>
 <translation id="7654209398114106148">Đang di chuyển <ph name="NUMBER_OF_ITEMS" /> mục...</translation>
+<translation id="7655441028674523381">Dễ dàng truy cập vào Google Photos</translation>
 <translation id="7658239707568436148">Hủy</translation>
 <translation id="7663224033570512922">Tiếng Hindi</translation>
 <translation id="7693909743393669729">Thao tác định dạng ổ đĩa sẽ xóa toàn bộ dữ liệu lưu trữ trên ổ đĩa đó, đồng thời xóa tất cả phân vùng hiện có, bao gồm cả những phân vùng có thể không hiển thị. Bạn không thể hủy thao tác này sau khi thực hiện.</translation>
@@ -651,7 +665,6 @@
 <translation id="7839804798877833423">Tìm nạp các tệp này sẽ sử dụng khoảng <ph name="FILE_SIZE" /> dữ liệu di động.</translation>
 <translation id="7846076177841592234">Hủy chọn</translation>
 <translation id="7853966320808728790">BÉPO tiếng Pháp</translation>
-<translation id="7864662577698025113">Thêm dịch vụ mới</translation>
 <translation id="7868774406711971383">Tiếng Ba Lan</translation>
 <translation id="7873831373602885875">Không thể lưu vào <ph name="FOLDER_NAME" />. Tất cả các mục chỉnh sửa sẽ được lưu vào <ph name="DOWNLOADS_FOLDER" /> trong thư mục Tệp đã tải xuống.</translation>
 <translation id="7874321682039004450">Tiếng Philippines</translation>
@@ -666,13 +679,13 @@
 <translation id="7972920761225148017">Tiếng Pháp (Thụy Sĩ)</translation>
 <translation id="7980421588063892270">Tiếng Anh (Mỹ) bằng bàn phím Colemak</translation>
 <translation id="7982283708762922719">Chiều cao</translation>
+<translation id="79907182588096956">Tệp này dành cho máy tính để bàn chạy hệ điều hành Windows. Tệp này không tương thích với thiết bị chạy Chrome OS của bạn. <ph name="BEGIN_LINK_HELP" />Tìm hiểu thêm<ph name="END_LINK_HELP" /> về cách mở tệp trên Chrome OS.</translation>
 <translation id="8008366997883261463">Chó</translation>
 <translation id="8028993641010258682">Kích thước</translation>
 <translation id="803771048473350947">Tệp</translation>
 <translation id="8038111231936746805">(mặc định)</translation>
 <translation id="8042602468072383151">Âm thanh <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">Tiếng Rumani</translation>
-<translation id="8052887694493382350">Tệp này dành cho máy tính để bàn chạy hệ điều hành Windows. Tệp này không tương thích với thiết bị chạy Chrome OS của bạn. <ph name="BEGIN_LINK_HELP" />Tìm hiểu thêm<ph name="END_LINK_HELP" /></translation>
 <translation id="8066773524873206594">Tất cả các mục chỉnh sửa sẽ được lưu vào <ph name="DOWNLOADS_FOLDER" />.</translation>
 <translation id="8079530767338315840">Lặp lại</translation>
 <translation id="8106045200081704138">Được chia sẻ với tôi</translation>
@@ -699,7 +712,7 @@
 <translation id="8299269255470343364">Tiếng Nhật</translation>
 <translation id="8312871300878166382">Dán vào thư mục</translation>
 <translation id="8329978297633540474">Văn bản thuần túy</translation>
-<translation id="8335587457941836791">Bỏ ghim khỏi giá</translation>
+<translation id="8335587457941836791">Bỏ ghim khỏi kệ</translation>
 <translation id="8335837413233998004">Tiếng Belarus</translation>
 <translation id="8336153091935557858">Hôm qua <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Tệp hoặc thư mục có cùng tên đã tồn tại.</translation>
@@ -712,6 +725,7 @@
 <translation id="8466234950814670489">Lưu trữ tar</translation>
 <translation id="8475647382427415476">Google Drive không thể đồng bộ hóa "<ph name="FILENAME" />" ngay bây giờ. Google Drive sẽ thử lại sau.</translation>
 <translation id="8477649328507734757">Hình tròn</translation>
+<translation id="8484284835977497781">Chọn trong số các ảnh gần đây của bạn.</translation>
 <translation id="8487700953926739672">Có thể dùng khi không có mạng</translation>
 <translation id="8521441079177373948">Vương quốc Anh</translation>
 <translation id="8525306231823319788">Toàn màn hình</translation>
@@ -744,8 +758,10 @@
 <translation id="8860454412039442620">Bảng tính Excel</translation>
 <translation id="8866284467018526531">Tiếng Ả Rập (chuyển tự)</translation>
 <translation id="8900820606136623064">Tiếng Hungary</translation>
+<translation id="8903931173357132290">Người tốt nghiệp</translation>
 <translation id="8919081441417203123">Tiếng Đan Mạch</translation>
 <translation id="8965697826696209160">Không có đủ dung lượng.</translation>
+<translation id="8970501467542182729">Tệp này dành cho máy tính chạy hệ điều hành Macintosh. Tệp này không tương thích với thiết bị chạy Chrome OS của bạn. <ph name="BEGIN_LINK_HELP" />Tìm hiểu thêm<ph name="END_LINK_HELP" /> về cách mở tệp trên Chrome OS.</translation>
 <translation id="8997962250644902079">Bính âm tiếng Trung (Phồn thể)</translation>
 <translation id="9017798300203431059">Ngữ âm tiếng Nga</translation>
 <translation id="9034924485347205037">Tệp Linux</translation>

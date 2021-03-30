@@ -75,7 +75,8 @@ class DefaultSearchManager {
     FROM_POLICY,
   };
 
-  typedef base::Callback<void(const TemplateURLData*, Source)> ObserverCallback;
+  using ObserverCallback =
+      base::RepeatingCallback<void(const TemplateURLData*, Source)>;
 
   DefaultSearchManager(PrefService* pref_service,
                        const ObserverCallback& change_observer);

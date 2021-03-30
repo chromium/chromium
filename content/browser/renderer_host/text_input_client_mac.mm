@@ -23,7 +23,7 @@ namespace {
 
 RenderFrameHostImpl* GetFocusedRenderFrameHostImpl(RenderWidgetHost* widget) {
   RenderWidgetHostImpl* rwhi = RenderWidgetHostImpl::From(widget);
-  FrameTree* tree = rwhi->delegate()->GetFrameTree();
+  FrameTree* tree = rwhi->frame_tree();
   FrameTreeNode* focused_node = tree->GetFocusedFrame();
   return focused_node ? focused_node->current_frame_host() : nullptr;
 }

@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <cstdint>
 #include <set>
 #include <tuple>
 #include <utility>
@@ -55,7 +56,6 @@
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/common/frame.mojom.h"
 #include "content/common/frame_messages.h"
-#include "content/common/input_messages.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -70,6 +70,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -165,7 +166,7 @@ bool ExecuteScriptHelper(RenderFrameHost* render_frame_host,
   // TODO(lukasza): Only get messages from the specific |render_frame_host|.
   DOMMessageQueue dom_message_queue(render_frame_host);
 
-  base::string16 script16 = base::UTF8ToUTF16(script);
+  std::u16string script16 = base::UTF8ToUTF16(script);
   if (world_id == ISOLATED_WORLD_ID_GLOBAL && user_gesture) {
     render_frame_host->ExecuteJavaScriptWithUserGestureForTests(script16,
                                                                 world_id);
@@ -564,6 +565,36 @@ class CommitOriginInterceptor : public DidCommitNavigationInterceptor {
   DISALLOW_COPY_AND_ASSIGN(CommitOriginInterceptor);
 };
 
+// Observer which waits for a visual update in a RenderWidgetHost to meet some
+// desired conditions.
+class ResizeObserver : public RenderWidgetHostObserver {
+ public:
+  ResizeObserver(RenderWidgetHost* widget_host,
+                 base::RepeatingCallback<bool()> is_complete_callback)
+      : widget_host_(widget_host),
+        is_complete_callback_(std::move(is_complete_callback)) {
+    widget_host_->AddObserver(this);
+  }
+
+  ~ResizeObserver() override { widget_host_->RemoveObserver(this); }
+
+  // RenderWidgetHostObserver:
+  void RenderWidgetHostDidUpdateVisualProperties(
+      RenderWidgetHost* widget_host) override {
+    if (is_complete_callback_.Run())
+      run_loop_.Quit();
+  }
+
+  void Wait() {
+    run_loop_.Run();
+  }
+
+ private:
+  RenderWidgetHost* widget_host_;
+  base::RunLoop run_loop_;
+  base::RepeatingCallback<bool()> is_complete_callback_;
+};
+
 }  // namespace
 
 bool NavigateToURL(WebContents* web_contents, const GURL& url) {
@@ -637,22 +668,27 @@ bool BeginNavigateIframeToURL(WebContents* web_contents,
       "var iframes = document.getElementById('%s');iframes.src='%s';"
       "\",0)",
       iframe_id.c_str(), url.spec().c_str());
-  return ExecuteScript(web_contents, script);
+  return ExecuteScriptWithoutUserGesture(web_contents, script);
 }
 
-void NavigateToURLBlockUntilNavigationsComplete(WebContents* web_contents,
-                                                const GURL& url,
-                                                int number_of_navigations) {
+void NavigateToURLBlockUntilNavigationsComplete(
+    WebContents* web_contents,
+    const GURL& url,
+    int number_of_navigations,
+    bool ignore_uncommitted_navigations) {
   // Prepare for the navigation.
   WaitForLoadStop(web_contents);
-  TestNavigationObserver same_tab_observer(web_contents, number_of_navigations);
+  TestNavigationObserver same_tab_observer(
+      web_contents, number_of_navigations,
+      MessageLoopRunner::QuitMode::IMMEDIATE,
+      /*ignore_uncommitted_navigations=*/ignore_uncommitted_navigations);
 
   // This mimics behavior of Shell::LoadURL...
   NavigationController::LoadURLParams params(url);
   params.transition_type = ui::PageTransitionFromInt(
       ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
   web_contents->GetController().LoadURLWithParams(params);
-  web_contents->Focus();
+  web_contents->GetOutermostWebContents()->Focus();
 
   // Wait until the expected number of navigations finish.
   same_tab_observer.Wait();
@@ -752,6 +788,7 @@ void WaitForLoadStopWithoutSuccessCheck(WebContents* web_contents) {
 }
 
 bool WaitForLoadStop(WebContents* web_contents) {
+  TRACE_EVENT0("test", "content::WaitForLoadStop");
   WebContentsDestroyedWatcher watcher(web_contents);
   WaitForLoadStopWithoutSuccessCheck(web_contents);
   if (watcher.IsDestroyed()) {
@@ -777,7 +814,7 @@ void PrepContentsForBeforeUnloadTest(WebContents* web_contents,
                                      bool trigger_user_activation) {
   for (auto* frame : web_contents->GetAllFrames()) {
     if (trigger_user_activation)
-      frame->ExecuteJavaScriptWithUserGestureForTests(base::string16());
+      frame->ExecuteJavaScriptWithUserGestureForTests(std::u16string());
 
     // Disable the hang monitor, otherwise there will be a race between the
     // beforeunload dialog and the beforeunload hang timer.
@@ -842,8 +879,8 @@ void WaitForResizeComplete(WebContents* web_contents) {
   RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::From(
       web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget());
   if (!IsResizeComplete(&dispatcher_test, widget_host)) {
-    WindowedNotificationObserver resize_observer(
-        NOTIFICATION_RENDER_WIDGET_HOST_DID_UPDATE_VISUAL_PROPERTIES,
+    ResizeObserver resize_observer(
+        widget_host,
         base::BindRepeating(IsResizeComplete, &dispatcher_test, widget_host));
     resize_observer.Wait();
   }
@@ -857,9 +894,8 @@ void WaitForResizeComplete(WebContents* web_contents) {
   RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::From(
       web_contents->GetRenderViewHost()->GetWidget());
   if (!IsResizeComplete(widget_host)) {
-    WindowedNotificationObserver resize_observer(
-        NOTIFICATION_RENDER_WIDGET_HOST_DID_UPDATE_VISUAL_PROPERTIES,
-        base::BindRepeating(IsResizeComplete, widget_host));
+    ResizeObserver resize_observer(
+        widget_host, base::BindRepeating(IsResizeComplete, widget_host));
     resize_observer.Wait();
   }
 }
@@ -1005,7 +1041,7 @@ void SimulateTouchscreenPinch(WebContents* web_contents,
                               float scale_change,
                               base::OnceClosure on_complete) {
   SyntheticPinchGestureParams params;
-  params.gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
+  params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
   params.scale_factor = scale_change;
   params.anchor = anchor;
 
@@ -1639,11 +1675,6 @@ testing::AssertionResult ExecJs(const ToRenderFrameHost& execution_target,
   CHECK(!(options & EXECUTE_SCRIPT_USE_MANUAL_REPLY))
       << "USE_MANUAL_REPLY does not make sense with ExecJs.";
 
-  // ExecJs() doesn't care about the result, so disable promise resolution.
-  // Instead of using ExecJs() to wait for an async event, callers may use
-  // EvalJs() with a sentinel result value like "success".
-  options |= EXECUTE_SCRIPT_NO_RESOLVE_PROMISES;
-
   // TODO(nick): Do we care enough about folks shooting themselves in the foot
   // here with e.g. ASSERT_TRUE(ExecJs("window == window.top")) -- when they
   // mean EvalJs -- to fail a CHECK() when eval_result.value.is_bool()?
@@ -1660,6 +1691,7 @@ EvalJsResult EvalJs(const ToRenderFrameHost& execution_target,
                     const std::string& script,
                     int options,
                     int32_t world_id) {
+  TRACE_EVENT1("test", "EvalJs", "script", script);
   // The sourceURL= parameter provides a string that replaces <anonymous> in
   // stack traces, if an Error is thrown. 'std::string' is meant to communicate
   // that this is a dynamic argument originating from C++ code.
@@ -1913,7 +1945,8 @@ std::vector<net::CanonicalCookie> GetCanonicalCookies(
 bool SetCookie(BrowserContext* browser_context,
                const GURL& url,
                const std::string& value,
-               net::CookieOptions::SameSiteCookieContext context) {
+               net::CookieOptions::SameSiteCookieContext context,
+               net::CookieOptions::SamePartyCookieContextType party_context) {
   bool result = false;
   base::RunLoop run_loop;
   mojo::Remote<network::mojom::CookieManager> cookie_manager;
@@ -1927,6 +1960,7 @@ bool SetCookie(BrowserContext* browser_context,
   net::CookieOptions options;
   options.set_include_httponly();
   options.set_same_site_cookie_context(context);
+  options.set_same_party_cookie_context_type(party_context);
   cookie_manager->SetCanonicalCookie(
       *cc.get(), url, options,
       base::BindOnce(
@@ -1936,6 +1970,29 @@ bool SetCookie(BrowserContext* browser_context,
             run_loop->Quit();
           },
           &result, &run_loop));
+  run_loop.Run();
+  return result;
+}
+
+uint32_t DeleteCookies(BrowserContext* browser_context,
+                       network::mojom::CookieDeletionFilter filter) {
+  base::RunLoop run_loop;
+  mojo::Remote<network::mojom::CookieManager> cookie_manager;
+  BrowserContext::GetDefaultStoragePartition(browser_context)
+      ->GetNetworkContext()
+      ->GetCookieManager(cookie_manager.BindNewPipeAndPassReceiver());
+
+  uint32_t result = 0U;
+  cookie_manager->DeleteCookies(
+      network::mojom::CookieDeletionFilter::New(filter),
+      base::BindOnce(
+          [](uint32_t* result, base::RunLoop* run_loop,
+             uint32_t cookies_cleared) {
+            *result = cookies_cleared;
+            run_loop->Quit();
+          },
+          &result, &run_loop));
+
   run_loop.Run();
   return result;
 }
@@ -2164,8 +2221,8 @@ void UiaGetPropertyValueVtArrayVtUnknownValidate(
     ASSERT_HRESULT_SUCCEEDED(raw_element_provider_simple->GetPropertyValue(
         UIA_NamePropertyId, name.Receive()));
     ASSERT_EQ(VT_BSTR, name.type());
-    names.push_back(base::UTF16ToUTF8(
-        base::string16(V_BSTR(name.ptr()), SysStringLen(V_BSTR(name.ptr())))));
+    names.push_back(base::WideToUTF8(
+        std::wstring(V_BSTR(name.ptr()), SysStringLen(V_BSTR(name.ptr())))));
   }
 
   ASSERT_THAT(names, testing::UnorderedElementsAreArray(expected_names));
@@ -2259,18 +2316,18 @@ RenderFrameMetadataProviderImpl* RenderFrameMetadataProviderFromWebContents(
 }  // namespace
 
 TitleWatcher::TitleWatcher(WebContents* web_contents,
-                           const base::string16& expected_title)
+                           const std::u16string& expected_title)
     : WebContentsObserver(web_contents) {
   expected_titles_.push_back(expected_title);
 }
 
-void TitleWatcher::AlsoWaitForTitle(const base::string16& expected_title) {
+void TitleWatcher::AlsoWaitForTitle(const std::u16string& expected_title) {
   expected_titles_.push_back(expected_title);
 }
 
 TitleWatcher::~TitleWatcher() = default;
 
-const base::string16& TitleWatcher::WaitAndGetTitle() {
+const std::u16string& TitleWatcher::WaitAndGetTitle() {
   TestTitle();
   run_loop_.Run();
   return observed_title_;
@@ -2289,7 +2346,7 @@ void TitleWatcher::TitleWasSet(NavigationEntry* entry) {
 }
 
 void TitleWatcher::TestTitle() {
-  const base::string16& current_title = web_contents()->GetTitle();
+  const std::u16string& current_title = web_contents()->GetTitle();
   if (base::Contains(expected_titles_, current_title)) {
     observed_title_ = current_title;
     run_loop_.Quit();
@@ -2299,33 +2356,19 @@ void TitleWatcher::TestTitle() {
 RenderProcessHostWatcher::RenderProcessHostWatcher(
     RenderProcessHost* render_process_host,
     WatchType type)
-    : render_process_host_(render_process_host),
-      type_(type),
+    : type_(type),
       did_exit_normally_(true),
       allow_renderer_crashes_(
           std::make_unique<ScopedAllowRendererCrashes>(render_process_host)),
       quit_closure_(run_loop_.QuitClosure()) {
-  render_process_host_->AddObserver(this);
+  observation_.Observe(render_process_host);
 }
 
 RenderProcessHostWatcher::RenderProcessHostWatcher(WebContents* web_contents,
                                                    WatchType type)
     : RenderProcessHostWatcher(web_contents->GetMainFrame()->GetProcess(),
                                type) {}
-
-RenderProcessHostWatcher::~RenderProcessHostWatcher() {
-  ClearProcessHost();
-}
-
-void RenderProcessHostWatcher::ClearProcessHost() {
-  // Although we would like to make it so that from here on, renderer crashes
-  // cause test failures, resetting ScopedAllowRendererCrashes inside the RPH
-  // observers is too soon. The current crash is notified to the testing
-  // framework *after* the observers run and we need this one to be ignored.
-  if (render_process_host_)
-    render_process_host_->RemoveObserver(this);
-  render_process_host_ = nullptr;
-}
+RenderProcessHostWatcher::~RenderProcessHostWatcher() = default;
 
 void RenderProcessHostWatcher::Wait() {
   run_loop_.Run();
@@ -2334,12 +2377,12 @@ void RenderProcessHostWatcher::Wait() {
       << "RenderProcessHostWatcher::Wait() may only be called once";
   allow_renderer_crashes_.reset();
   // Call this here just in case something else quits the RunLoop.
-  ClearProcessHost();
+  observation_.Reset();
 }
 
 void RenderProcessHostWatcher::QuitRunLoop() {
   std::move(quit_closure_).Run();
-  ClearProcessHost();
+  observation_.Reset();
 }
 
 void RenderProcessHostWatcher::RenderProcessReady(RenderProcessHost* host) {
@@ -2358,7 +2401,6 @@ void RenderProcessHostWatcher::RenderProcessExited(
 
 void RenderProcessHostWatcher::RenderProcessHostDestroyed(
     RenderProcessHost* host) {
-  render_process_host_ = nullptr;
   if (type_ == WATCH_FOR_HOST_DESTRUCTION)
     QuitRunLoop();
 }
@@ -2517,28 +2559,6 @@ bool DOMMessageQueue::PopMessage(std::string* message) {
   return true;
 }
 
-class WebContentsAddedObserver::RenderViewCreatedObserver
-    : public WebContentsObserver {
- public:
-  explicit RenderViewCreatedObserver(WebContents* web_contents)
-      : WebContentsObserver(web_contents),
-        render_view_created_called_(false),
-        main_frame_created_called_(false) {}
-
-  // WebContentsObserver:
-  void RenderViewCreated(RenderViewHost* rvh) override {
-    render_view_created_called_ = true;
-  }
-
-  void RenderFrameCreated(RenderFrameHost* rfh) override {
-    if (rfh == web_contents()->GetMainFrame())
-      main_frame_created_called_ = true;
-  }
-
-  bool render_view_created_called_;
-  bool main_frame_created_called_;
-};
-
 WebContentsAddedObserver::WebContentsAddedObserver()
     : web_contents_created_callback_(
           base::BindRepeating(&WebContentsAddedObserver::WebContentsCreated,
@@ -2556,7 +2576,6 @@ WebContentsAddedObserver::~WebContentsAddedObserver() {
 void WebContentsAddedObserver::WebContentsCreated(WebContents* web_contents) {
   DCHECK(!web_contents_);
   web_contents_ = web_contents;
-  child_observer_ = std::make_unique<RenderViewCreatedObserver>(web_contents);
 
   if (quit_closure_)
     std::move(quit_closure_).Run();
@@ -2570,14 +2589,6 @@ WebContents* WebContentsAddedObserver::GetWebContents() {
   quit_closure_ = run_loop.QuitClosure();
   run_loop.Run();
   return web_contents_;
-}
-
-bool WebContentsAddedObserver::RenderViewCreatedCalled() {
-  if (child_observer_) {
-    return child_observer_->render_view_created_called_ &&
-           child_observer_->main_frame_created_called_;
-  }
-  return false;
 }
 
 bool RequestFrame(WebContents* web_contents) {
@@ -2692,8 +2703,8 @@ void RenderFrameSubmissionObserver::
     OnRenderFrameMetadataChangedBeforeActivation(
         const cc::RenderFrameMetadata& metadata) {}
 
-void RenderFrameSubmissionObserver::
-    OnRenderFrameMetadataChangedAfterActivation() {
+void RenderFrameSubmissionObserver::OnRenderFrameMetadataChangedAfterActivation(
+    base::TimeTicks activation_time) {
   Quit();
   if (metadata_change_closure_)
     std::move(metadata_change_closure_).Run();
@@ -3103,10 +3114,10 @@ std::string WebContentsConsoleObserver::GetMessageAt(size_t index) const {
 void WebContentsConsoleObserver::OnDidAddMessageToConsole(
     RenderFrameHost* source_frame,
     blink::mojom::ConsoleMessageLevel log_level,
-    const base::string16& message_contents,
+    const std::u16string& message_contents,
     int32_t line_no,
-    const base::string16& source_id,
-    const base::Optional<base::string16>& untrusted_stack_trace) {
+    const std::u16string& source_id,
+    const base::Optional<std::u16string>& untrusted_stack_trace) {
   Message message(
       {source_frame, log_level, message_contents, line_no, source_id});
   if (filter_ && !filter_.Run(message))
@@ -3175,7 +3186,7 @@ void PwnMessageHelper::FileSystemWrite(RenderProcessHost* process,
 
 void PwnMessageHelper::OpenURL(RenderFrameHost* render_frame_host,
                                const GURL& url) {
-  auto params = content::mojom::OpenURLParams::New();
+  auto params = blink::mojom::OpenURLParams::New();
   params->url = url;
   params->disposition = WindowOpenDisposition::CURRENT_TAB;
   params->should_replace_current_entry = false;
@@ -3260,47 +3271,49 @@ void VerifyStaleContentOnFrameEviction(
 
 #endif  // defined(USE_AURA)
 
-ContextMenuFilter::ContextMenuFilter(ShowBehavior behavior)
-    : BrowserMessageFilter(FrameMsgStart),
-      run_loop_(std::make_unique<base::RunLoop>()),
+ContextMenuInterceptor::ContextMenuInterceptor(ShowBehavior behavior)
+    : run_loop_(std::make_unique<base::RunLoop>()),
       quit_closure_(run_loop_->QuitClosure()),
       show_behavior_(behavior) {}
 
-bool ContextMenuFilter::OnMessageReceived(const IPC::Message& message) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (message.type() == FrameHostMsg_ContextMenu::ID) {
-    FrameHostMsg_ContextMenu::Param params;
-    FrameHostMsg_ContextMenu::Read(&message, &params);
-    UntrustworthyContextMenuParams menu_params = std::get<0>(params);
-    GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ContextMenuFilter::OnContextMenu, this, menu_params));
-    // Returning true here blocks the default action for this message, which
-    // means that the menu will not be shown.
-    return show_behavior_ == ShowBehavior::kPreventShow;
-  }
-  return false;
+void ContextMenuInterceptor::Init(content::RenderFrameHost* render_frame_host) {
+  render_frame_host_ = render_frame_host;
+  impl_ = static_cast<RenderFrameHostImpl*>(render_frame_host_)
+              ->local_frame_host_receiver_for_testing()
+              .SwapImplForTesting(this);
 }
 
-void ContextMenuFilter::Wait() {
+void ContextMenuInterceptor::Wait() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   run_loop_->Run();
   run_loop_ = nullptr;
 }
 
-void ContextMenuFilter::Reset() {
+void ContextMenuInterceptor::Reset() {
   ASSERT_EQ(run_loop_, nullptr);
   run_loop_ = std::make_unique<base::RunLoop>();
   quit_closure_ = run_loop_->QuitClosure();
 }
 
-ContextMenuFilter::~ContextMenuFilter() = default;
+ContextMenuInterceptor::~ContextMenuInterceptor() = default;
 
-void ContextMenuFilter::OnContextMenu(
-    const content::UntrustworthyContextMenuParams& params) {
+blink::mojom::LocalFrameHost* ContextMenuInterceptor::GetForwardingInterface() {
+  return impl_;
+}
+
+void ContextMenuInterceptor::ShowContextMenu(
+    mojo::PendingAssociatedRemote<blink::mojom::ContextMenuClient>
+        context_menu_client,
+    const blink::UntrustworthyContextMenuParams& params) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   last_params_ = params;
   std::move(quit_closure_).Run();
+
+  if (show_behavior_ == ShowBehavior::kPreventShow)
+    return;
+
+  GetForwardingInterface()->ShowContextMenu(std::move(context_menu_client),
+                                            params);
 }
 
 UpdateUserActivationStateInterceptor::UpdateUserActivationStateInterceptor() =
@@ -3348,13 +3361,11 @@ int LoadBasicRequest(
     network::mojom::URLLoaderFactory* url_loader_factory,
     const GURL& url,
     int load_flags,
-    const base::Optional<url::Origin>& request_initiator = base::nullopt,
-    int render_frame_id = MSG_ROUTING_NONE) {
+    const base::Optional<url::Origin>& request_initiator = base::nullopt) {
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = url;
   request->load_flags = load_flags;
   request->request_initiator = request_initiator;
-  request->render_frame_id = render_frame_id;
   // Allow access to SameSite cookies in tests.
   request->site_for_cookies = net::SiteForCookies::FromUrl(url);
 
@@ -3400,8 +3411,7 @@ int LoadBasicRequest(RenderFrameHost* frame, const GURL& url) {
       url_loader_factory.BindNewPipeAndPassReceiver());
   return LoadBasicRequest(
       url_loader_factory.get(), url, 0 /* load_flags */,
-      frame->GetLastCommittedOrigin() /* request_initiator */,
-      frame->GetRoutingID());
+      frame->GetLastCommittedOrigin() /* request_initiator */);
 }
 
 void EnsureCookiesFlushed(BrowserContext* browser_context) {

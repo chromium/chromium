@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="module">
+import {callWithKeyDown, share_test} from './resources/share-test.js';
+import {ShareError} from '/gen/third_party/blink/public/mojom/webshare/share_error.mojom.m.js';
+
+async function assertRejectsWithError(promise, name) {
+  try {
+    await promise;
+    assert_unreached('expected promise to reject with ' + name);
+  } catch (error) {
+    assert_equals(error.name, name);
+  }
+}
+
+share_test(mock => {
+  mock.pushShareResult('the title', 'the message', 'https://example.com/',
+                       ShareError.CANCELED);
+  return callWithKeyDown(() => assertRejectsWithError(
+      navigator.share({
+          title: 'the title',
+          text: 'the message',
+          url: 'https://example.com/'
+      }),
+      'AbortError'));
+}, 'share with user cancellation');
+
+share_test(mock => {
+  mock.pushShareResult('the title', 'the message', 'https://example.com/',
+                       ShareError.INTERNAL_ERROR);
+  return callWithKeyDown(() => assertRejectsWithError(
+      navigator.share({
+          title: 'the title',
+          text: 'the message',
+          url: 'https://example.com/'
+      }),
+      'AbortError'));
+}, 'share with internal error');
+
+share_test(mock => {
+  return callWithKeyDown(() => assertRejectsWithError(
+      navigator.share({
+          title: 'the title',
+          text: 'the message',
+          url: 'data:foo'
+      }),
+      'TypeError'));
+}, 'share with data url');
+
+share_test(mock => {
+  return callWithKeyDown(async () => {
+    await assertRejectsWithError(
+      navigator.share({
+      }),
+      'TypeError');
+
+    return assertRejectsWithError(
+      navigator.share({
+      }),
+      'NotAllowedError');
+  });
+}, 'share consumes user activation');
+
+share_test(mock => {
+  mock.pushShareResult('the title', 'the message', 'https://example.com/',
+                       ShareError.CANCELED);
+  return callWithKeyDown(async () => {
+    const data = {
+          title: 'the title',
+          text: 'the message',
+          url: 'https://example.com/'
+    };
+    const first = navigator.share(data);
+    await assertRejectsWithError(
+          navigator.share(data),
+          'InvalidStateError');
+    await assertRejectsWithError(
+          navigator.share(data),
+          'InvalidStateError');
+    return assertRejectsWithError(
+          first,
+          'AbortError');
+  } );
+}, 'only one share at a time');
+
+
+share_test(mock => {
+  mock.pushShareResult('the title', 'the message', 'https://example.com/',
+                       ShareError.CANCELED);
+  return callWithKeyDown(async () => {
+    const content = ['Hello'];
+    const name = 'hello.txt';
+    const options = {type: 'text/plain'};
+    const excess_file_data = {
+      files: Array(11).fill(new File(content, name, options))
+    };
+    await assertRejectsWithError(
+          navigator.share(excess_file_data),
+          'NotAllowedError');
+    return callWithKeyDown(async () => {
+      const data = {
+            title: 'the title',
+            text: 'the message',
+            url: 'https://example.com/'
+      };
+      return assertRejectsWithError(
+            navigator.share(data),
+            'AbortError');
+    });
+  } );
+}, 'Failed file share does not lead to InvalidStateError');
+
+share_test(mock => {
+  const kMaxTitleLength = 16 * 1024;
+  return callWithKeyDown(() => assertRejectsWithError(
+      navigator.share({
+          title: 'x'.repeat(kMaxTitleLength + 1)
+      }),
+      'NotAllowedError'));
+}, 'share with excessive title');
+
+share_test(mock => {
+  const kMaxTextLength = 1 * 1024 * 1024;
+  return callWithKeyDown(() => assertRejectsWithError(
+      navigator.share({
+          text: 'y'.repeat(kMaxTextLength + 1)
+      }),
+      'NotAllowedError'));
+}, 'share with excessive text');
+
+share_test(mock => {
+  const kMaxUrlLength = 16 * 1024;
+  const prefix = 'https://example.com/?q=';
+  return callWithKeyDown(() => assertRejectsWithError(
+      navigator.share({
+          url: prefix + 'z'.repeat(kMaxUrlLength + 1 - prefix.length)
+      }),
+      'NotAllowedError'));
+}, 'share with excessive url');
+
+</script>

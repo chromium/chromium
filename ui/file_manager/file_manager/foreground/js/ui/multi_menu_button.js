@@ -2,16 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
+// #import {AnchorType, positionPopupAroundElement} from 'chrome://resources/js/cr/ui/position_util.m.js';
+// #import {util} from '../../../common/js/util.m.js';
+// #import {HideType} from 'chrome://resources/js/cr/ui/menu_button.m.js';
+// #import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.m.js';
+// #import {MultiMenu} from './multi_menu.m.js';
+// #import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+// #import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
+// clang-format on
+
 cr.define('cr.ui', () => {
-  /** @const */
-  const HideType = cr.ui.HideType;
+  /* #ignore */ /** @const */ const HideType = cr.ui.HideType;
 
   /**
    * A button that displays a MultiMenu (menu with sub-menus).
    * @extends {HTMLButtonElement}
    * @implements {EventListener}
    */
-  class MultiMenuButton {
+  /* #export */ class MultiMenuButton {
     constructor() {
       /**
        * Property that hosts sub-menus for filling with overflow items.
@@ -445,5 +456,6 @@ cr.define('cr.ui', () => {
   MultiMenuButton.prototype.__proto__ = HTMLButtonElement.prototype;
 
   // Export
+  // #cr_define_end
   return {MultiMenuButton};
 });

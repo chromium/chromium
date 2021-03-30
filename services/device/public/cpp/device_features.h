@@ -17,16 +17,11 @@ namespace features {
 // The features should be documented alongside the definition of their values
 // in the .cc file.
 DEVICE_FEATURES_EXPORT extern const base::Feature kGenericSensorExtraClasses;
-DEVICE_FEATURES_EXPORT extern const base::Feature kWinrtSensorsImplementation;
 DEVICE_FEATURES_EXPORT extern const base::Feature
     kWinrtGeolocationImplementation;
 DEVICE_FEATURES_EXPORT extern const base::Feature
     kMacCoreLocationImplementation;
 DEVICE_FEATURES_EXPORT extern const base::Feature kMacCoreLocationBackend;
-
-#if defined(OS_WIN)
-DEVICE_FEATURES_EXPORT extern const base::Feature kUseSerialBusEnumerator;
-#endif  // defined(OS_WIN)
 
 }  // namespace features
 

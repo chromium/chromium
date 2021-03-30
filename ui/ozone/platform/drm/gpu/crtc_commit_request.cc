@@ -9,6 +9,7 @@ namespace ui {
 CrtcCommitRequest::CrtcCommitRequest(uint32_t crtc_id,
                                      uint32_t connector_id,
                                      drmModeModeInfo mode,
+                                     gfx::Point origin,
                                      HardwareDisplayPlaneList* plane_list,
                                      DrmOverlayPlaneList overlays,
                                      bool should_enable)
@@ -16,6 +17,7 @@ CrtcCommitRequest::CrtcCommitRequest(uint32_t crtc_id,
       crtc_id_(crtc_id),
       connector_id_(connector_id),
       mode_(mode),
+      origin_(origin),
       plane_list_(plane_list),
       overlays_(std::move(overlays)) {
   DCHECK(!should_enable || DrmOverlayPlane::GetPrimaryPlane(overlays_));
@@ -28,6 +30,7 @@ CrtcCommitRequest::CrtcCommitRequest(const CrtcCommitRequest& other)
       crtc_id_(other.crtc_id_),
       connector_id_(other.connector_id_),
       mode_(other.mode_),
+      origin_(other.origin_),
       plane_list_(other.plane_list_),
       overlays_(DrmOverlayPlane::Clone(other.overlays_)) {}
 
@@ -36,11 +39,12 @@ CrtcCommitRequest CrtcCommitRequest::EnableCrtcRequest(
     uint32_t crtc_id,
     uint32_t connector_id,
     drmModeModeInfo mode,
+    gfx::Point origin,
     HardwareDisplayPlaneList* plane_list,
     DrmOverlayPlaneList overlays) {
   DCHECK(plane_list && !overlays.empty());
 
-  return CrtcCommitRequest(crtc_id, connector_id, mode, plane_list,
+  return CrtcCommitRequest(crtc_id, connector_id, mode, origin, plane_list,
                            std::move(overlays), /*should_enable=*/true);
 }
 
@@ -49,7 +53,7 @@ CrtcCommitRequest CrtcCommitRequest::DisableCrtcRequest(
     uint32_t crtc_id,
     uint32_t connector_id,
     HardwareDisplayPlaneList* plane_list) {
-  return CrtcCommitRequest(crtc_id, connector_id, {}, plane_list,
+  return CrtcCommitRequest(crtc_id, connector_id, {}, gfx::Point(), plane_list,
                            DrmOverlayPlaneList(), /*should_enable=*/false);
 }
 

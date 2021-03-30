@@ -9,6 +9,8 @@
 
 #include "base/bind.h"
 #include "base/no_destructor.h"
+#include "base/strings/sys_string_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/keyed_service/core/service_access_type.h"
@@ -30,6 +32,9 @@
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #include "ios/chrome/browser/passwords/ios_password_requirements_service_factory.h"
 #include "ios/chrome/browser/passwords/password_manager_log_router_factory.h"
+#import "ios/chrome/browser/safe_browsing/chrome_password_protection_service.h"
+#import "ios/chrome/browser/safe_browsing/chrome_password_protection_service_factory.h"
+#include "ios/chrome/browser/safe_browsing/features.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
 #include "ios/chrome/browser/sync/profile_sync_service_factory.h"
 #include "ios/chrome/browser/system_flags.h"
@@ -63,6 +68,7 @@ IOSChromePasswordManagerClient::IOSChromePasswordManagerClient(
     : bridge_(bridge),
       password_feature_manager_(GetPrefs(),
                                 GetSyncService(bridge_.browserState)),
+      password_reuse_detection_manager_(this),
       credentials_filter_(
           this,
           base::BindRepeating(&GetSyncService, bridge_.browserState)),
@@ -76,6 +82,12 @@ IOSChromePasswordManagerClient::IOSChromePasswordManagerClient(
       ios::PasswordManagerLogRouterFactory::GetForBrowserState(
           bridge_.browserState),
       base::RepeatingClosure());
+
+  if (IsPasswordReuseDetectionEnabled()) {
+    web_state_observation_.Observe(bridge_.webState);
+    input_event_observation_.Observe(
+        PasswordProtectionJavaScriptFeature::GetInstance());
+  }
 }
 
 IOSChromePasswordManagerClient::~IOSChromePasswordManagerClient() = default;
@@ -137,6 +149,7 @@ void IOSChromePasswordManagerClient::HideManualFallbackForSaving() {
 
 void IOSChromePasswordManagerClient::FocusedInputChanged(
     password_manager::PasswordManagerDriver* driver,
+    autofill::FieldRendererId focused_field_id,
     autofill::mojom::FocusedFieldType focused_field_type) {
   NOTIMPLEMENTED();
 }
@@ -208,7 +221,7 @@ void IOSChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
     password_manager::CredentialLeakType leak_type,
     password_manager::CompromisedSitesCount saved_sites,
     const GURL& origin,
-    const base::string16& username) {
+    const std::u16string& username) {
   [bridge_ showPasswordBreachForLeakType:leak_type URL:origin];
 }
 
@@ -302,9 +315,8 @@ bool IOSChromePasswordManagerClient::IsAutofillAssistantUIVisible() const {
 
 safe_browsing::PasswordProtectionService*
 IOSChromePasswordManagerClient::GetPasswordProtectionService() const {
-  // TODO(crbug.com/1147967): This is no-op until the password protection
-  // service is enabled.
-  return nullptr;
+  return ChromePasswordProtectionServiceFactory::GetForBrowserState(
+      bridge_.browserState);
 }
 
 void IOSChromePasswordManagerClient::CheckProtectedPasswordEntry(
@@ -313,11 +325,53 @@ void IOSChromePasswordManagerClient::CheckProtectedPasswordEntry(
     const std::vector<password_manager::MatchingReusedCredential>&
         matching_reused_credentials,
     bool password_field_exists) {
-  // TODO(crbug.com/1147967): This is no-op until the password protection
-  // service is enabled.
+  safe_browsing::PasswordProtectionService* service =
+      GetPasswordProtectionService();
+  if (service) {
+    auto show_warning_callback = base::BindOnce(
+        &IOSChromePasswordManagerClient::NotifyUserPasswordProtectionWarning,
+        weak_factory_.GetWeakPtr());
+    service->MaybeStartProtectedPasswordEntryRequest(
+        bridge_.webState, bridge_.webState->GetLastCommittedURL(), username,
+        password_type, matching_reused_credentials, password_field_exists,
+        std::move(show_warning_callback));
+  }
 }
 
 void IOSChromePasswordManagerClient::LogPasswordReuseDetectedEvent() {
-  // TODO(crbug.com/1147967): This is no-op until the password protection
-  // service is enabled.
+  safe_browsing::PasswordProtectionService* service =
+      GetPasswordProtectionService();
+  if (service) {
+    service->MaybeLogPasswordReuseDetectedEvent(bridge_.webState);
+  }
+}
+
+void IOSChromePasswordManagerClient::NotifyUserPasswordProtectionWarning(
+    const std::u16string& warning_text,
+    base::OnceCallback<void(safe_browsing::WarningAction)> callback) {
+  __block auto block_callback = std::move(callback);
+  [bridge_
+      showPasswordProtectionWarning:base::SysUTF16ToNSString(warning_text)
+                         completion:^(safe_browsing::WarningAction action) {
+                           std::move(block_callback).Run(action);
+                         }];
+}
+
+void IOSChromePasswordManagerClient::DidFinishNavigation(
+    web::WebState* web_state,
+    web::NavigationContext* navigation_context) {
+  password_reuse_detection_manager_.DidNavigateMainFrame(GetLastCommittedURL());
+}
+
+void IOSChromePasswordManagerClient::OnKeyPressed(std::string text) {
+  password_reuse_detection_manager_.OnKeyPressedCommitted(
+      base::UTF8ToUTF16(text));
+}
+
+void IOSChromePasswordManagerClient::OnPaste(std::string text) {
+  password_reuse_detection_manager_.OnPaste(base::UTF8ToUTF16(text));
+}
+
+web::WebState* IOSChromePasswordManagerClient::web_state() const {
+  return bridge_.webState;
 }

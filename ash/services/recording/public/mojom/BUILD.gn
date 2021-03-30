@@ -9,7 +9,7 @@ mojom("mojom") {
 
   deps = [
     "//media/mojo/mojom",
-    "//services/audio/public/mojom",
     "//services/viz/privileged/mojom/compositing",
+    "//ui/gfx/image/mojom",
   ]
 }

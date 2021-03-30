@@ -8,6 +8,7 @@
 namespace prefs {
 
 extern const char kOfferTranslateEnabled[];
+extern const char kPrefAlwaysTranslateList[];
 
 }  // namespace prefs
 

@@ -6,7 +6,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/strings/string_util.h"
 #include "components/version_info/version_info.h"
-#include "crypto/sha2.h"
 
 namespace autofill_assistant {
 
@@ -26,8 +25,7 @@ ClientContextImpl::ClientContextImpl(const Client* client) : client_(client) {
   }
 
   client_->GetDeviceContext().ToProto(proto_.mutable_device_context());
-  auto empty_trigger_context = TriggerContext::CreateEmpty();
-  Update(*empty_trigger_context);
+  Update(TriggerContext());
 }
 
 void ClientContextImpl::Update(const TriggerContext& trigger_context) {
@@ -38,29 +36,26 @@ void ClientContextImpl::Update(const TriggerContext& trigger_context) {
                                            ? ClientContextProto::NOT_SIGNED_IN
                                            : ClientContextProto::SIGNED_IN);
 
-  std::string experiment_ids = trigger_context.experiment_ids();
+  std::string experiment_ids = trigger_context.GetExperimentIds();
   if (!experiment_ids.empty()) {
     proto_.set_experiment_ids(experiment_ids);
   }
-  if (trigger_context.is_cct()) {
+  if (trigger_context.GetCCT()) {
     proto_.set_is_cct(true);
   }
-  if (trigger_context.is_onboarding_shown()) {
+  if (trigger_context.GetOnboardingShown()) {
     proto_.set_is_onboarding_shown(true);
   }
-  if (trigger_context.is_direct_action()) {
+  if (trigger_context.GetDirectAction()) {
     proto_.set_is_direct_action(true);
   }
 
   // TODO(b/156882027): Add an integration test for accounts handling.
-  std::string chrome_account_sha_bin =
-      crypto::SHA256HashString(chrome_signed_in_email_address);
-  std::string client_account_hash = base::ToLowerASCII(base::HexEncode(
-      chrome_account_sha_bin.data(), chrome_account_sha_bin.size()));
-  if (trigger_context.get_caller_account_hash().empty()) {
+  auto caller_email = trigger_context.GetScriptParameters().GetCallerEmail();
+  if (!caller_email.has_value()) {
     proto_.set_accounts_matching_status(ClientContextProto::UNKNOWN);
   } else {
-    if (trigger_context.get_caller_account_hash() == client_account_hash) {
+    if (chrome_signed_in_email_address == caller_email) {
       proto_.set_accounts_matching_status(
           ClientContextProto::ACCOUNTS_MATCHING);
     } else {
@@ -68,6 +63,16 @@ void ClientContextImpl::Update(const TriggerContext& trigger_context) {
           ClientContextProto::ACCOUNTS_NOT_MATCHING);
     }
   }
+
+  auto window_size = client_->GetWindowSize();
+  if (window_size.has_value()) {
+    proto_.mutable_window_size()->set_width_pixels(window_size.value().first);
+    proto_.mutable_window_size()->set_height_pixels(window_size.value().second);
+  } else {
+    proto_.clear_window_size();
+  }
+
+  proto_.set_screen_orientation(client_->GetScreenOrientation());
 }
 
 ClientContextProto ClientContextImpl::AsProto() const {

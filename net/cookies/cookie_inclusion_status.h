@@ -53,28 +53,30 @@ class NET_EXPORT CookieInclusionStatus {
     EXCLUDE_SAMESITE_NONE_INSECURE = 8,
     // Caller did not allow access to the cookie.
     EXCLUDE_USER_PREFERENCES = 9,
+    // The cookie specified SameParty, but was used in a cross-party context.
+    EXCLUDE_SAMEPARTY_CROSS_PARTY_CONTEXT = 10,
 
     // Statuses only applied when creating/setting cookies:
 
     // Cookie was malformed and could not be stored.
-    EXCLUDE_FAILURE_TO_STORE = 10,
+    EXCLUDE_FAILURE_TO_STORE = 11,
     // Attempted to set a cookie from a scheme that does not support cookies.
-    EXCLUDE_NONCOOKIEABLE_SCHEME = 11,
+    EXCLUDE_NONCOOKIEABLE_SCHEME = 12,
     // Cookie would have overwritten a Secure cookie, and was not allowed to do
     // so. (See "Leave Secure Cookies Alone":
     // https://tools.ietf.org/html/draft-west-leave-secure-cookies-alone-05 )
-    EXCLUDE_OVERWRITE_SECURE = 12,
+    EXCLUDE_OVERWRITE_SECURE = 13,
     // Cookie would have overwritten an HttpOnly cookie, and was not allowed to
     // do so.
-    EXCLUDE_OVERWRITE_HTTP_ONLY = 13,
+    EXCLUDE_OVERWRITE_HTTP_ONLY = 14,
     // Cookie was set with an invalid Domain attribute.
-    EXCLUDE_INVALID_DOMAIN = 14,
+    EXCLUDE_INVALID_DOMAIN = 15,
     // Cookie was set with an invalid __Host- or __Secure- prefix.
-    EXCLUDE_INVALID_PREFIX = 15,
+    EXCLUDE_INVALID_PREFIX = 16,
     // Cookie was set with an invalid SameParty attribute in combination with
     // other attributes. (SameParty is invalid if Secure is not present, or if
     // SameSite=Strict is present.)
-    EXCLUDE_INVALID_SAMEPARTY = 16,
+    EXCLUDE_INVALID_SAMEPARTY = 17,
 
     // This should be kept last.
     NUM_EXCLUSION_REASONS
@@ -149,6 +151,31 @@ class NET_EXPORT CookieInclusionStatus {
     // TODO(chlily): Add metrics for how often and where this occurs.
     WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC = 8,
 
+    // The cookie was treated as SameParty. This is different from looking at
+    // whether the cookie has the SameParty attribute, since we may choose to
+    // ignore that attribute for one reason or another. E.g., we ignore the
+    // SameParty attribute if the site is not a member of a nontrivial
+    // First-Party Set.
+    WARN_TREATED_AS_SAMEPARTY = 9,
+
+    // The cookie was excluded solely for SameParty reasons (i.e. it was in
+    // cross-party context), but would have been included by SameSite. (This can
+    // only occur in cross-party, cross-site contexts, for cookies that are
+    // 'SameParty; SameSite=None'.)
+    WARN_SAMEPARTY_EXCLUSION_OVERRULED_SAMESITE = 10,
+
+    // The cookie was included due to SameParty, even though it would have been
+    // excluded by SameSite. (This can only occur in same-party, cross-site
+    // contexts, for cookies that are 'SameParty; SameSite=Lax'.)
+    WARN_SAMEPARTY_INCLUSION_OVERRULED_SAMESITE = 11,
+
+    // The cookie was SameSite=Lax (or unspecified-treated-as-lax) and was
+    // excluded due to the fix for crbug.com/1166211, i.e. it was accessed by an
+    // HTTP request which was not a main frame navigation, whose initiator was
+    // cross-site and whose site-for-cookies was same-site with the request URL.
+    // TODO(crbug.com/1166211): Remove when no longer needed.
+    WARN_SAMESITE_LAX_EXCLUDED_AFTER_BUGFIX_1166211 = 12,
+
     // This should be kept last.
     NUM_WARNING_REASONS
   };
@@ -207,6 +234,9 @@ class NET_EXPORT CookieInclusionStatus {
 
   // Remove an exclusion reason.
   void RemoveExclusionReason(ExclusionReason reason);
+
+  // Remove multiple exclusion reasons.
+  void RemoveExclusionReasons(const std::vector<ExclusionReason>& reasons);
 
   // If the cookie would have been excluded for reasons other than
   // SAMESITE_UNSPECIFIED_TREATED_AS_LAX or SAMESITE_NONE_INSECURE, don't bother

@@ -36,4 +36,10 @@ interface SubresourceRedirectService {
 interface SubresourceRedirectHintsReceiver {
   // Sends the public image URL hints from the browser to renderers.
   SetCompressPublicImagesHints(CompressPublicImagesHints images_hints);
+
+
+  // Sets whether the current page is determined to be logged in. This guides
+  // whether subresource redirect based compression will be enabled. Sent from
+  // the browser to renderers on navigation commit.
+  SetLoggedInState(bool is_logged_in);
 };

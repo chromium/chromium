@@ -5,17 +5,17 @@
 #include "chrome/browser/ui/webui/help/version_updater_chromeos.h"
 
 #include <cmath>
+#include <string>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/ash/login/startup_utils.h"
+#include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/login/startup_utils.h"
-#include "chrome/browser/chromeos/login/wizard_controller.h"
-#include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos.h"
-#include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos_factory.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/ui/webui/help/help_utils_chromeos.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -32,8 +32,8 @@
 
 using chromeos::CrosSettings;
 using chromeos::DBusThreadManager;
-using chromeos::OwnerSettingsServiceChromeOS;
-using chromeos::OwnerSettingsServiceChromeOSFactory;
+using chromeos::OwnerSettingsServiceAsh;
+using chromeos::OwnerSettingsServiceAshFactory;
 using chromeos::UpdateEngineClient;
 using chromeos::WizardController;
 
@@ -67,7 +67,7 @@ NetworkStatus GetNetworkStatus(bool interactive,
 // Returns true if auto-update is disabled by the system administrator.
 bool IsAutoUpdateDisabled() {
   bool update_disabled = kDefaultAutoUpdateDisabled;
-  chromeos::CrosSettings* settings = chromeos::CrosSettings::Get();
+  ash::CrosSettings* settings = ash::CrosSettings::Get();
   if (!settings)
     return update_disabled;
   const base::Value* update_disabled_value =
@@ -77,7 +77,7 @@ bool IsAutoUpdateDisabled() {
   return update_disabled;
 }
 
-base::string16 GetConnectionTypeAsUTF16(const chromeos::NetworkState* network,
+std::u16string GetConnectionTypeAsUTF16(const chromeos::NetworkState* network,
                                         bool metered) {
   const std::string type = network->type();
   if (chromeos::NetworkTypePattern::WiFi().MatchesType(type)) {
@@ -92,7 +92,7 @@ base::string16 GetConnectionTypeAsUTF16(const chromeos::NetworkState* network,
   if (chromeos::NetworkTypePattern::VPN().MatchesType(type))
     return l10n_util::GetStringUTF16(IDS_NETWORK_TYPE_VPN);
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 // Returns whether an update is allowed. If not, it calls the callback with
@@ -120,7 +120,7 @@ bool EnsureCanUpdate(bool interactive,
                  0, l10n_util::GetStringUTF16(IDS_UPGRADE_OFFLINE));
     return false;
   } else if (status == NETWORK_STATUS_DISALLOWED) {
-    base::string16 message = l10n_util::GetStringFUTF16(
+    std::u16string message = l10n_util::GetStringFUTF16(
         IDS_UPGRADE_DISALLOWED, GetConnectionTypeAsUTF16(network, metered));
     callback.Run(VersionUpdater::FAILED_CONNECTION_TYPE_DISALLOWED, 0, false,
                  false, std::string(), 0, message);
@@ -182,10 +182,10 @@ void VersionUpdaterCros::CheckForUpdate(StatusCallback callback,
 
 void VersionUpdaterCros::SetChannel(const std::string& channel,
                                     bool is_powerwash_allowed) {
-  OwnerSettingsServiceChromeOS* service =
+  OwnerSettingsServiceAsh* service =
       context_
-          ? OwnerSettingsServiceChromeOSFactory::GetInstance()
-                ->GetForBrowserContext(context_)
+          ? OwnerSettingsServiceAshFactory::GetInstance()->GetForBrowserContext(
+                context_)
           : nullptr;
   // For local owner set the field in the policy blob.
   if (service)
@@ -218,7 +218,7 @@ void VersionUpdaterCros::OnSetUpdateOverCellularOneTimePermission(
     // show appropriate error message.
     LOG(ERROR) << "Error setting update over cellular one time permission.";
     callback_.Run(VersionUpdater::FAILED, 0, false, false, std::string(), 0,
-                  base::string16());
+                  std::u16string());
   }
 }
 
@@ -274,7 +274,12 @@ void VersionUpdaterCros::UpdateStatusChanged(
   int progress = 0;
   std::string version = status.new_version();
   int64_t size = status.new_size();
-  base::string16 message;
+  std::u16string message;
+
+  // If the status change is for an installation, this means that DLCs are being
+  // installed and has nothing to with the OS. Ignore this status change.
+  if (status.is_install())
+    return;
 
   // If the updater is currently idle, just show the last operation (unless it
   // was previously checking for an update -- in that case, the system is
@@ -337,5 +342,5 @@ void VersionUpdaterCros::OnUpdateCheck(
   // If version updating is not implemented, this binary is the most up-to-date
   // possible with respect to automatic updating.
   if (result == UpdateEngineClient::UPDATE_RESULT_NOTIMPLEMENTED)
-    callback_.Run(UPDATED, 0, false, false, std::string(), 0, base::string16());
+    callback_.Run(UPDATED, 0, false, false, std::string(), 0, std::u16string());
 }

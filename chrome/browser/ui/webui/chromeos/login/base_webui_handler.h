@@ -12,7 +12,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "chrome/browser/chromeos/login/oobe_screen.h"
+#include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/js_calls_container.h"
 #include "components/login/base_screen_handler_utils.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -83,7 +83,7 @@ class BaseWebUIHandler : public content::WebUIMessageHandler {
     }
 
     // Make the call now if the WebUI is loaded.
-    if (js_calls_container_->is_initialized())
+    if (js_calls_container_->is_initialized() && !javascript_disallowed_)
       web_ui()->CallJavascriptFunctionUnsafe(
           function_name, ::login::MakeValue(args).Clone()...);
   }
@@ -130,6 +130,9 @@ class BaseWebUIHandler : public content::WebUIMessageHandler {
   // Whether page is ready.
   bool page_is_ready() const { return page_is_ready_; }
 
+  // content::WebUIMessageHandler
+  void OnJavascriptDisallowed() override;
+
  private:
   friend class OobeUI;
 
@@ -172,6 +175,12 @@ class BaseWebUIHandler : public content::WebUIMessageHandler {
 
   // Keeps whether page is ready.
   bool page_is_ready_ = false;
+
+  // When there isn't a RenderFrameHost, no JS calls should be made.
+  // This flag becomes true when the renderer is destroyed.
+  // TODO(crbug/1180291) - Remove this custom solution once OOBE's JS
+  // initialisation has been fixed.
+  bool javascript_disallowed_ = false;
 
   JSCallsContainer* js_calls_container_ = nullptr;  // non-owning pointers.
 

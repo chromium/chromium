@@ -58,7 +58,7 @@ source_set("first_run") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/crash_report",
     "//ios/chrome/browser/first_run",
-    "//ios/chrome/browser/geolocation:geolocation_internal",
+    "//ios/chrome/browser/geolocation",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui:feature_flags",

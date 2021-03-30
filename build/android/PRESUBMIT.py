@@ -31,6 +31,7 @@ def CommonChecks(input_api, output_api):
           files_to_skip=[
               r'.*_pb2\.py',
               r'.*list_java_targets\.py',  # crbug.com/1100664
+              r'.*fast_local_dev_server\.py',  # crbug.com/1100664
           ] + build_pys,
           extra_paths_list=[
               J(),
@@ -82,6 +83,7 @@ def CommonChecks(input_api, output_api):
               J('pylib', 'gtest', 'gtest_test_instance_test.py'),
               J('pylib', 'instrumentation',
                 'instrumentation_test_instance_test.py'),
+              J('pylib', 'local', 'device', 'local_device_gtest_run_test.py'),
               J('pylib', 'local', 'device',
                 'local_device_instrumentation_test_run_test.py'),
               J('pylib', 'local', 'device', 'local_device_test_run_test.py'),

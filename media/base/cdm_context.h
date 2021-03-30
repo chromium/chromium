@@ -76,8 +76,9 @@ class MEDIA_EXPORT CdmContext {
   // CallbackRegistration object can be destructed on any thread.
   // - Thread Model: Can be called on any thread. The registered callback will
   // always be called on the thread where RegisterEventCB() is called.
-  // - TODO(xhwang): Not using base::CallbackList because it is not thread-
-  // safe. Consider refactoring base::CallbackList to avoid code duplication.
+  // - TODO(xhwang): Not using base::RepeatingCallbackList because it is not
+  // thread- safe. Consider refactoring base::RepeatingCallbackList to avoid
+  // code duplication.
   virtual std::unique_ptr<CallbackRegistration> RegisterEventCB(
       EventCB event_cb);
 
@@ -85,10 +86,6 @@ class MEDIA_EXPORT CdmContext {
   // CDM does not support a Decryptor (i.e. platform-based CDMs where decryption
   // occurs implicitly along with decoding).
   virtual Decryptor* GetDecryptor();
-
-  // Returns whether the CDM requires Media Foundation-based media Renderer.
-  // Should only return true on Windows.
-  virtual bool RequiresMediaFoundationRenderer();
 
   // Returns an ID that can be used to find a remote CDM, in which case this CDM
   // serves as a proxy to the remote one. Returns base::nullopt when remote CDM
@@ -98,6 +95,11 @@ class MEDIA_EXPORT CdmContext {
   static std::string CdmIdToString(const base::UnguessableToken* cdm_id);
 
 #if defined(OS_WIN)
+  // Returns whether the CDM requires Media Foundation-based media Renderer.
+  // This is separate from GetMediaFoundationCdmProxy() since it needs to be
+  // a sync call called in the render process to setup the media pipeline.
+  virtual bool RequiresMediaFoundationRenderer();
+
   using GetMediaFoundationCdmProxyCB =
       base::OnceCallback<void(Microsoft::WRL::ComPtr<IMFCdmProxy>)>;
   // This allows a CdmContext to expose an IMFTrustedInput instance for use in

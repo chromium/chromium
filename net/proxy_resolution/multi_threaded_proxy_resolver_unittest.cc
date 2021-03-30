@@ -245,8 +245,7 @@ class MultiThreadedProxyResolverTest : public TestWithTaskEnvironment {
 
     // Verify that the script data reaches the synchronous resolver factory.
     ASSERT_EQ(1u, factory_->script_data().size());
-    EXPECT_EQ(ASCIIToUTF16("pac script bytes"),
-              factory_->script_data()[0]->utf16());
+    EXPECT_EQ(u"pac script bytes", factory_->script_data()[0]->utf16());
   }
 
   void ClearResolver() { resolver_.reset(); }
@@ -648,8 +647,7 @@ TEST_F(MultiThreadedProxyResolverTest, ThreeThreads_Basic) {
 
   ASSERT_EQ(3u, factory().script_data().size());
   for (int i = 0; i < 3; ++i) {
-    EXPECT_EQ(ASCIIToUTF16("pac script bytes"),
-              factory().script_data()[i]->utf16())
+    EXPECT_EQ(u"pac script bytes", factory().script_data()[i]->utf16())
         << "i=" << i;
   }
 
@@ -701,8 +699,7 @@ TEST_F(MultiThreadedProxyResolverTest, OneThreadBlocked) {
 
   // One thread has been provisioned (i.e. one ProxyResolver was created).
   ASSERT_EQ(1u, factory().resolvers().size());
-  EXPECT_EQ(ASCIIToUTF16("pac script bytes"),
-            factory().script_data()[0]->utf16());
+  EXPECT_EQ(u"pac script bytes", factory().script_data()[0]->utf16());
 
   const int kNumRequests = 4;
   TestCompletionCallback callback[kNumRequests];

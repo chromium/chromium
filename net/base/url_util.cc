@@ -13,6 +13,7 @@
 #endif
 
 #include "base/check_op.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -43,11 +44,11 @@ bool IsNormalizedLocalhostTLD(const std::string& host) {
 // unescaped" to a valid UTF-8 string, return that string, as UTF-16. Otherwise,
 // convert it as-is to UTF-16. "Safely unescaped" is defined as having no
 // escaped character between '0x00' and '0x1F', inclusive.
-base::string16 UnescapeIdentityString(base::StringPiece escaped_text) {
+std::u16string UnescapeIdentityString(base::StringPiece escaped_text) {
   std::string unescaped_text;
   if (base::UnescapeBinaryURLComponentSafe(
           escaped_text, false /* fail_on_path_separators */, &unescaped_text)) {
-    base::string16 result;
+    std::u16string result;
     if (base::UTF8ToUTF16(unescaped_text.data(), unescaped_text.length(),
                           &result)) {
       return result;
@@ -253,7 +254,7 @@ std::string TrimEndingDot(base::StringPiece host) {
   if (len > 1 && host_trimmed[len - 1] == '.') {
     host_trimmed.remove_suffix(1);
   }
-  return host_trimmed.as_string();
+  return std::string(host_trimmed);
 }
 
 std::string GetHostOrSpecFromURL(const GURL& url) {
@@ -264,7 +265,7 @@ std::string GetSuperdomain(base::StringPiece domain) {
   size_t dot_pos = domain.find('.');
   if (dot_pos == std::string::npos)
     return "";
-  return domain.substr(dot_pos + 1).as_string();
+  return std::string(domain.substr(dot_pos + 1));
 }
 
 bool IsSubdomainOf(base::StringPiece subdomain, base::StringPiece superdomain) {
@@ -419,8 +420,8 @@ bool IsStandardSchemeWithNetworkHost(base::StringPiece scheme) {
 }
 
 void GetIdentityFromURL(const GURL& url,
-                        base::string16* username,
-                        base::string16* password) {
+                        std::u16string* username,
+                        std::u16string* password) {
   *username = UnescapeIdentityString(url.username());
   *password = UnescapeIdentityString(url.password());
 }

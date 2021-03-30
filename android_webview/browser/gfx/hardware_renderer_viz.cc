@@ -12,13 +12,13 @@
 #include "android_webview/browser/gfx/aw_gl_surface.h"
 #include "android_webview/browser/gfx/aw_render_thread_context_provider.h"
 #include "android_webview/browser/gfx/display_scheduler_webview.h"
-#include "android_webview/browser/gfx/gpu_service_web_view.h"
+#include "android_webview/browser/gfx/gpu_service_webview.h"
 #include "android_webview/browser/gfx/parent_compositor_draw_constraints.h"
 #include "android_webview/browser/gfx/render_thread_manager.h"
 #include "android_webview/browser/gfx/root_frame_sink.h"
 #include "android_webview/browser/gfx/skia_output_surface_dependency_webview.h"
 #include "android_webview/browser/gfx/surfaces_instance.h"
-#include "android_webview/browser/gfx/task_queue_web_view.h"
+#include "android_webview/browser/gfx/task_queue_webview.h"
 #include "android_webview/browser/gfx/viz_compositor_thread_runner_webview.h"
 #include "android_webview/common/aw_switches.h"
 #include "base/command_line.h"
@@ -47,13 +47,26 @@
 #include "ui/gfx/transform.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_share_group.h"
+#include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/init/gl_factory.h"
 
 namespace android_webview {
+namespace {
+
+class ContextReleaser {
+ public:
+  explicit ContextReleaser(gpu::SharedContextState* state) : state_(state) {}
+  ~ContextReleaser() { state_->ReleaseCurrent(nullptr); }
+
+ private:
+  gpu::SharedContextState* const state_;
+};
+
+}  // namespace
 
 class HardwareRendererViz::OnViz : public viz::DisplayClient {
  public:
-  OnViz(OutputSurfaceProviderWebview* output_surface_provider,
+  OnViz(OutputSurfaceProviderWebView* output_surface_provider,
         const scoped_refptr<RootFrameSink>& root_frame_sink);
   ~OnViz() override;
 
@@ -88,14 +101,11 @@ class HardwareRendererViz::OnViz : public viz::DisplayClient {
 
   const viz::FrameSinkId frame_sink_id_;
   viz::LocalSurfaceId root_local_surface_id_;
-  viz::ParentLocalSurfaceIdAllocator parent_local_surface_id_allocator_;
   std::unique_ptr<viz::BeginFrameSource> stub_begin_frame_source_;
   std::unique_ptr<viz::Display> display_;
 
   std::unique_ptr<viz::HitTestAggregator> hit_test_aggregator_;
   viz::SurfaceId child_surface_id_;
-  viz::FrameTokenGenerator next_frame_token_;
-  gfx::Size surface_size_;
   const bool viz_frame_submission_;
 
   THREAD_CHECKER(viz_thread_checker_);
@@ -104,7 +114,7 @@ class HardwareRendererViz::OnViz : public viz::DisplayClient {
 };
 
 HardwareRendererViz::OnViz::OnViz(
-    OutputSurfaceProviderWebview* output_surface_provider,
+    OutputSurfaceProviderWebView* output_surface_provider,
     const scoped_refptr<RootFrameSink>& root_frame_sink)
     : without_gpu_(root_frame_sink),
       frame_sink_id_(without_gpu_->root_frame_sink_id()),
@@ -132,8 +142,7 @@ HardwareRendererViz::OnViz::OnViz(
       std::move(display_controller), std::move(output_surface),
       std::move(overlay_processor), std::move(scheduler),
       nullptr /* current_task_runner */);
-  display_->Initialize(this, GetFrameSinkManager()->surface_manager(),
-                       output_surface_provider->enable_shared_image());
+  display_->Initialize(this, GetFrameSinkManager()->surface_manager(), true);
 
   display_->SetVisible(true);
   display_->DisableGPUAccessByDefault();
@@ -141,6 +150,12 @@ HardwareRendererViz::OnViz::OnViz(
 
 HardwareRendererViz::OnViz::~OnViz() {
   DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
+  if (child_surface_id_.is_valid())
+    without_gpu_->EvictChildSurface(child_surface_id_);
+
+  if (root_local_surface_id_.is_valid())
+    without_gpu_->EvictRootSurface(root_local_surface_id_);
+
   GetFrameSinkManager()->surface_manager()->GarbageCollectSurfaces();
 }
 
@@ -207,25 +222,15 @@ void HardwareRendererViz::OnViz::DrawAndSwapOnViz(
       viz::BeginFrameAck::CreateManualAckWithDamage();
   frame.render_pass_list.push_back(std::move(render_pass));
   frame.metadata.device_scale_factor = device_scale_factor;
-  frame.metadata.frame_token = ++next_frame_token_;
 
-  if (!root_local_surface_id_.is_valid() || viewport != surface_size_ ||
-      child_surface_id_ != child_id) {
-    parent_local_surface_id_allocator_.GenerateId();
-    root_local_surface_id_ =
-        parent_local_surface_id_allocator_.GetCurrentLocalSurfaceId();
-    surface_size_ = viewport;
-    display_->SetLocalSurfaceId(root_local_surface_id_, device_scale_factor);
-
-    if (child_surface_id_ != child_id) {
-      if (child_surface_id_.frame_sink_id() != child_id.frame_sink_id()) {
-        hit_test_aggregator_ = std::make_unique<viz::HitTestAggregator>(
-            GetFrameSinkManager()->hit_test_manager(), GetFrameSinkManager(),
-            display_.get(), child_id.frame_sink_id());
-      }
-      child_surface_id_ = child_id;
-      GetFrameSinkManager()->surface_manager()->GarbageCollectSurfaces();
+  if (child_surface_id_ != child_id) {
+    if (child_surface_id_.frame_sink_id() != child_id.frame_sink_id()) {
+      hit_test_aggregator_ = std::make_unique<viz::HitTestAggregator>(
+          GetFrameSinkManager()->hit_test_manager(), GetFrameSinkManager(),
+          display_.get(), child_id.frame_sink_id());
     }
+    child_surface_id_ = child_id;
+    GetFrameSinkManager()->surface_manager()->GarbageCollectSurfaces();
   }
 
   {
@@ -234,8 +239,14 @@ void HardwareRendererViz::OnViz::DrawAndSwapOnViz(
     frame.metadata.referenced_surfaces = std::move(child_ranges);
   }
 
-  without_gpu_->support()->SubmitCompositorFrame(root_local_surface_id_,
-                                                 std::move(frame));
+  const auto& local_surface_id =
+      without_gpu_->SubmitRootCompositorFrame(std::move(frame));
+
+  if (root_local_surface_id_ != local_surface_id) {
+    root_local_surface_id_ = local_surface_id;
+    display_->SetLocalSurfaceId(local_surface_id, device_scale_factor);
+  }
+
   display_->Resize(viewport);
   display_->DrawAndSwap(base::TimeTicks::Now());
 }
@@ -298,14 +309,9 @@ void HardwareRendererViz::InitializeOnViz(
 
 HardwareRendererViz::~HardwareRendererViz() {
   DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
-
+  output_surface_provider_.shared_context_state()->MakeCurrent(nullptr);
   VizCompositorThreadRunnerWebView::GetInstance()->ScheduleOnVizAndBlock(
-      base::BindOnce(&HardwareRendererViz::DestroyOnViz,
-                     base::Unretained(this)));
-}
-
-void HardwareRendererViz::DestroyOnViz() {
-  on_viz_ = nullptr;
+      base::BindOnce([](std::unique_ptr<OnViz>) {}, std::move(on_viz_)));
 }
 
 bool HardwareRendererViz::IsUsingVulkan() const {
@@ -319,6 +325,12 @@ void HardwareRendererViz::DrawAndSwap(const HardwareRendererDrawParams& params,
   TRACE_EVENT1("android_webview", "HardwareRendererViz::Draw", "vulkan",
                IsUsingVulkan());
   DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
+
+  // Release the context before returning, it is required for the external ANGLE
+  // context. For non-ANGLE case, fake context and surface are used, so
+  // releasing current context should be very cheap.
+  ContextReleaser context_releaser(
+      output_surface_provider_.shared_context_state().get());
 
   viz::FrameTimingDetailsMap timing_details;
 
@@ -354,9 +366,13 @@ void HardwareRendererViz::DrawAndSwap(const HardwareRendererDrawParams& params,
   output_surface_provider_.gl_surface()->RecalculateClipAndTransform(
       &viewport, &clip, &transform);
 
-  DCHECK(output_surface_provider_.shared_context_state());
-  output_surface_provider_.shared_context_state()
-      ->PessimisticallyResetGrContext();
+  // ANGLE will restore GL context state for us, so we don't need to call
+  // GrContext::resetContext().
+  if (!gl::GLSurfaceEGL::IsANGLEExternalContextAndSurfaceSupported()) {
+    DCHECK(output_surface_provider_.shared_context_state());
+    output_surface_provider_.shared_context_state()
+        ->PessimisticallyResetGrContext();
+  }
 
   VizCompositorThreadRunnerWebView::GetInstance()->ScheduleOnVizAndBlock(
       base::BindOnce(&HardwareRendererViz::OnViz::DrawAndSwapOnViz,

@@ -165,6 +165,7 @@ static_library("secure_channel") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chromeos",
     "//chromeos/components/multidevice",

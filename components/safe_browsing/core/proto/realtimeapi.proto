@@ -45,6 +45,8 @@ message RTLookupRequest {
   //   * Client supports the |os_type| field.
   //   * Client falls back to hash-based checks if there's a SAFE match in the
   //     cache.
+  // Version 2:
+  //   * Client supports referrer chains.
   optional int32 version = 6 [default = 0];
 
   // The operating system of the client.
@@ -59,6 +61,12 @@ message RTLookupRequest {
     OS_TYPE_WINDOWS = 7;
   }
   optional OSType os_type = 7;
+
+  // If we can find the complete referrer chain, this field will contain URLs
+  // transitions from landing referrer to landing page to current URL in reverse
+  // chronological order, i.e. current URL comes first in this list, and landing
+  // referrer comes last.
+  repeated ReferrerChainEntry referrer_chain = 8;
 }
 
 message RTLookupResponse {

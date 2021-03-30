@@ -84,13 +84,13 @@ class DriveWebContentsManager : public content::WebContentsObserver,
                                 public content::WebContentsDelegate,
                                 public BackgroundContentsServiceObserver {
  public:
-  typedef base::Callback<
-      void(bool, DriveFirstRunController::UMAOutcome)> CompletionCallback;
+  using CompletionCallback =
+      base::OnceCallback<void(bool, DriveFirstRunController::UMAOutcome)>;
 
   DriveWebContentsManager(Profile* profile,
                           const std::string& app_id,
                           const std::string& endpoint_url,
-                          const CompletionCallback& completion_callback);
+                          CompletionCallback completion_callback);
   ~DriveWebContentsManager() override;
 
   // Start loading the WebContents for the endpoint in the context of the Drive
@@ -132,7 +132,7 @@ class DriveWebContentsManager : public content::WebContentsObserver,
       const GURL& opener_url,
       const std::string& frame_name,
       const GURL& target_url,
-      const std::string& partition_id,
+      const content::StoragePartitionId& partition_id,
       content::SessionStorageNamespace* session_storage_namespace) override;
 
   // BackgroundContentsServiceObserver:
@@ -154,11 +154,11 @@ DriveWebContentsManager::DriveWebContentsManager(
     Profile* profile,
     const std::string& app_id,
     const std::string& endpoint_url,
-    const CompletionCallback& completion_callback)
+    CompletionCallback completion_callback)
     : profile_(profile),
       app_id_(app_id),
       endpoint_url_(endpoint_url),
-      completion_callback_(completion_callback) {
+      completion_callback_(std::move(completion_callback)) {
   DCHECK(!completion_callback_.is_null());
   BackgroundContentsServiceFactory::GetForProfile(profile)->AddObserver(this);
 }
@@ -207,7 +207,7 @@ void DriveWebContentsManager::OnOfflineInit(
 void DriveWebContentsManager::RunCompletionCallback(
     bool success,
     DriveFirstRunController::UMAOutcome outcome) {
-  completion_callback_.Run(success, outcome);
+  std::move(completion_callback_).Run(success, outcome);
 }
 
 void DriveWebContentsManager::DidFinishNavigation(
@@ -254,7 +254,7 @@ content::WebContents* DriveWebContentsManager::CreateCustomWebContents(
     const GURL& opener_url,
     const std::string& frame_name,
     const GURL& target_url,
-    const std::string& partition_id,
+    const content::StoragePartitionId& partition_id,
     content::SessionStorageNamespace* session_storage_namespace) {
   // The background contents creation is normally done in Browser, but
   // because we're using a detached WebContents, we need to do it ourselves.
@@ -338,11 +338,9 @@ void DriveFirstRunController::EnableOfflineMode() {
   }
 
   web_contents_manager_.reset(new DriveWebContentsManager(
-      profile_,
-      drive_hosted_app_id_,
-      drive_offline_endpoint_url_,
-      base::Bind(&DriveFirstRunController::OnOfflineInit,
-                 base::Unretained(this))));
+      profile_, drive_hosted_app_id_, drive_offline_endpoint_url_,
+      base::BindOnce(&DriveFirstRunController::OnOfflineInit,
+                     base::Unretained(this))));
   web_contents_manager_->StartLoad();
   web_contents_timer_.Start(
       FROM_HERE,
@@ -427,15 +425,15 @@ void DriveFirstRunController::ShowNotification() {
                 const GURL url = GURL(kDriveOfflineSupportUrl);
 
                 chrome::ScopedTabbedBrowserDisplayer displayer(profile);
-                ShowSingletonTabOverwritingNTP(
-                    displayer.browser(),
+                NavigateParams params(
                     GetSingletonTabNavigateParams(displayer.browser(), url));
+                ShowSingletonTabOverwritingNTP(displayer.browser(), &params);
               },
               profile_));
 
   message_center::Notification notification(
       message_center::NOTIFICATION_TYPE_SIMPLE, kDriveOfflineNotificationId,
-      base::string16(),  // title
+      std::u16string(),  // title
       l10n_util::GetStringUTF16(IDS_DRIVE_OFFLINE_NOTIFICATION_MESSAGE),
       resource_bundle.GetImageNamed(IDR_NOTIFICATION_DRIVE),
       base::UTF8ToUTF16(extension->name()), GURL(),

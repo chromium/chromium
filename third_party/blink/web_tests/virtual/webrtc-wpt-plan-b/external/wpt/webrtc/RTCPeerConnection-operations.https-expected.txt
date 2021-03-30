@@ -4,7 +4,7 @@ PASS promiseStateFinal helper works
 FAIL createOffer must detect InvalidStateError synchronously when chain is empty (prerequisite) assert_equals: expected "InvalidStateError" but got "Error"
 FAIL createAnswer must detect InvalidStateError synchronously when chain is empty (prerequisite) assert_equals: promise rejected on same task expected "rejected" but got "pending"
 FAIL SLD(rollback) must detect InvalidStateError synchronously when chain is empty assert_equals: expected "InvalidStateError" but got "OperationError"
-FAIL addIceCandidate must detect InvalidStateError synchronously when chain is empty assert_equals: expected "InvalidStateError" but got "TypeError"
+FAIL addIceCandidate must detect InvalidStateError synchronously when chain is empty assert_equals: expected "InvalidStateError" but got "Error"
 FAIL replaceTrack must detect InvalidStateError synchronously when chain is empty and transceiver is stopped promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
 FAIL setParameters must detect InvalidStateError synchronously always when transceiver is stopped promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
 FAIL pc.getStats must detect InvalidAccessError synchronously always promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."

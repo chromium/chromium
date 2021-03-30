@@ -193,16 +193,13 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                            <p contentEditable='true'>Text</p>)~~",
                       {"1, 2", "NaN"}, ":2;AXLineForIndex(Argument)=*",
                       R"~~(AXWebArea
-++AXTextArea AXLineForIndex(Argument)=ERROR:FAILED_TO_PARSE_ARGS AXValue='Text'
+++AXTextArea AXLineForIndex(Argument)=ERROR:FAILED_TO_PARSE AXValue='Text'
 ++++AXStaticText AXValue='Text'
 )~~");
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        ParameterizedAttributes_IntArray) {
-  // This line is needed until we turn extra mac nodes back on by default.
-  BrowserAccessibilityManager::AllowExtraMacNodesForTesting();
-
   TestAndCheck(R"~~(data:text/html,
                     <table role="grid"><tr><td>CELL</td></tr></table>)~~",
                {"AXCellForColumnAndRow([0, 0])=*"}, R"~~(AXWebArea
@@ -219,9 +216,6 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        ParameterizedAttributes_IntArray_NilValue) {
-  // This line is needed until we turn extra mac nodes back on by default.
-  BrowserAccessibilityManager::AllowExtraMacNodesForTesting();
-
   TestAndCheck(R"~~(data:text/html,
                     <table role="grid"></table>)~~",
                {"AXCellForColumnAndRow([0, 0])=*"}, R"~~(AXWebArea
@@ -232,14 +226,11 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        ParameterizedAttributes_IntArray_WrongParameters) {
-  // This line is needed until we turn extra mac nodes back on by default.
-  BrowserAccessibilityManager::AllowExtraMacNodesForTesting();
-
   TestWrongParameters(R"~~(data:text/html,
                            <table role="grid"><tr><td>CELL</td></tr></table>)~~",
                       {"0, 0", "{1, 2}", "[1, NaN]", "[NaN, 1]"},
                       "AXCellForColumnAndRow(Argument)=*", R"~~(AXWebArea
-++AXTable AXCellForColumnAndRow(Argument)=ERROR:FAILED_TO_PARSE_ARGS
+++AXTable AXCellForColumnAndRow(Argument)=ERROR:FAILED_TO_PARSE
 ++++AXRow
 ++++++AXCell
 ++++++++AXStaticText AXValue='CELL'
@@ -267,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                       {"1, 2", "[]", "{loc: 1, leno: 2}", "{loco: 1, len: 2}",
                        "{loc: NaN, len: 2}", "{loc: 2, len: NaN}"},
                       ":2;AXStringForRange(Argument)=*", R"~~(AXWebArea
-++AXTextArea AXStringForRange(Argument)=ERROR:FAILED_TO_PARSE_ARGS AXValue='Text'
+++AXTextArea AXStringForRange(Argument)=ERROR:FAILED_TO_PARSE AXValue='Text'
 ++++AXStaticText AXValue='Text'
 )~~");
 }
@@ -289,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                       {"1, 2", "2", ":4"},
                       ":2;AXIndexForChildUIElement(Argument)=*",
                       R"~~(AXWebArea
-++AXTextArea AXIndexForChildUIElement(Argument)=ERROR:FAILED_TO_PARSE_ARGS AXValue='Text'
+++AXTextArea AXIndexForChildUIElement(Argument)=ERROR:FAILED_TO_PARSE AXValue='Text'
 ++++AXStaticText AXValue='Text'
 )~~");
 }
@@ -312,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                            <p>Text</p>)~~",
       {"1, 2", "2", "{2, 1, down}", "{:2, NaN, down}", "{:2, 1, hoho}"},
       ":1;AXIndexForTextMarker(Argument)=*",
-      R"~~(AXWebArea AXIndexForTextMarker(Argument)=ERROR:FAILED_TO_PARSE_ARGS
+      R"~~(AXWebArea AXIndexForTextMarker(Argument)=ERROR:FAILED_TO_PARSE
 ++AXGroup
 ++++AXStaticText AXValue='Text'
 )~~");
@@ -339,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(
       {"1, 2", "2", "{focus: {:2, 1, down}}", "{anchor: {:2, 1, down}}",
        "{anchor: {2, 1, down}, focus: {2, 1, down}}"},
       ":1;AXStringForTextMarkerRange(Argument)=*",
-      R"~~(AXWebArea AXStringForTextMarkerRange(Argument)=ERROR:FAILED_TO_PARSE_ARGS
+      R"~~(AXWebArea AXStringForTextMarkerRange(Argument)=ERROR:FAILED_TO_PARSE
 ++AXGroup
 ++++AXStaticText AXValue='Text'
 )~~");
@@ -360,6 +351,24 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest, Script) {
                     <input aria-label='input'>)~~",
                {{":3.AXRole", SCRIPT}}, {{"*", "*"}},
                R"~~(:3.AXRole='AXTextField'
+)~~");
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_ByDOMId) {
+  TestAndCheck(R"~~(data:text/html,
+                    <input id='textbox' aria-label='input'>)~~",
+               {{"textbox.AXRole", SCRIPT}}, {{"*", "*"}},
+               R"~~(textbox.AXRole='AXTextField'
+)~~");
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_ByDOMId_WrongDOMId) {
+  TestAndCheck(R"~~(data:text/html,
+                    <input id='textbox' aria-label='input'>)~~",
+               {{"textbo.AXRole", SCRIPT}}, {{"*", "*"}},
+               R"~~(textbo.AXRole=ERROR:FAILED_TO_PARSE
 )~~");
 }
 

@@ -235,14 +235,10 @@ SavePackageFilePicker::SavePackageFilePicker(
     select_file_dialog_ = ui::SelectFileDialog::Create(
         this, std::make_unique<ChromeSelectFilePolicy>(web_contents));
     select_file_dialog_->SelectFile(
-        ui::SelectFileDialog::SELECT_SAVEAS_FILE,
-        base::string16(),
-        suggested_path_copy,
-        &file_type_info,
-        file_type_index,
+        ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
+        suggested_path_copy, &file_type_info, file_type_index,
         default_extension_copy,
-        platform_util::GetTopLevel(web_contents->GetNativeView()),
-        NULL);
+        platform_util::GetTopLevel(web_contents->GetNativeView()), NULL);
   } else {
     // Just use 'suggested_path_copy' instead of opening the dialog prompt.
     // Go through FileSelected() for consistency.

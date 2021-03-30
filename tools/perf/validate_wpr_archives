@@ -38,6 +38,7 @@ def GetAllStorySets():
       'leak_detection.cluster_telemetry',
       'generic_trace_ct',
       'ad_tagging.cluster_telemetry',
+      'layout_shift.cluster_telemetry',
   ]
 
   for benchmark in benchmark_finders.GetAllBenchmarks():

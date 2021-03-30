@@ -351,7 +351,7 @@ id<GREYMatcher> ResendPostButtonMatcher() {
 
   // Mimic |web::GetDisplayTitleForUrl| behavior which uses FormatUrl
   // internally. It can't be called directly from the EarlGrey 2 test process.
-  base::string16 title = url_formatter::FormatUrl(destinationURL);
+  std::u16string title = url_formatter::FormatUrl(destinationURL);
   id<GREYMatcher> historyItem = grey_text(base::SysUTF16ToNSString(title));
   [[EarlGrey selectElementWithMatcher:historyItem] performAction:grey_tap()];
   [ChromeEarlGrey waitForPageToFinishLoading];

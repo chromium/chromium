@@ -18,8 +18,7 @@
 #include "base/lazy_instance.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
-#include "base/strings/string16.h"
+#include "base/scoped_observation.h"
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/win_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -159,7 +158,7 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   void SetVisibilityChangedAnimationsEnabled(bool enabled);
 
   // Returns true if the title changed.
-  bool SetTitle(const base::string16& title);
+  bool SetTitle(const std::u16string& title);
 
   void SetCursor(HCURSOR cursor);
 
@@ -819,7 +818,8 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // Populated if the cursor position is being mocked for testing purposes.
   base::Optional<gfx::Point> mock_cursor_position_;
 
-  ScopedObserver<ui::InputMethod, ui::InputMethodObserver> observer_{this};
+  base::ScopedObservation<ui::InputMethod, ui::InputMethodObserver>
+      observation_{this};
 
   // The WeakPtrFactories below (one inside the
   // CR_MSG_MAP_CLASS_DECLARATIONS macro and autohide_factory_) must

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_SAVED_PASSWORDS_PRESENTER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_SAVED_PASSWORDS_PRESENTER_H_
 
+#include <string>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -63,19 +64,31 @@ class SavedPasswordsPresenter : public PasswordStore::Observer,
   // saved passwords.
   void Init();
 
+  // Removes the credential and all its duplicates from the store.
+  void RemovePassword(const PasswordForm& form);
+
   // Tries to edit |password|. After checking whether |form| is present in
   // |passwords_|, this will ask the password store to change the underlying
   // password_value to |new_password| in case it was found. This will also
   // notify clients that an edit event happened in case |form| was present
   // in |passwords_|.
-  bool EditPassword(const PasswordForm& form, base::string16 new_password);
+  bool EditPassword(const PasswordForm& form, std::u16string new_password);
+
+  // Modifies the provided password form and its duplicates
+  // with `new_username` and `new_password`.
+  //
+  // Note: this will only change credentials in the store that `form` comes
+  // from.
+  bool EditSavedPasswords(const PasswordForm& form,
+                          const std::u16string& new_username,
+                          const std::u16string& new_password);
 
   // Modifies provided password forms, with |new_username| and |new_password|.
   // |forms| must represent single credential, with its duplicates, or the
   // same form saved on another store type.
   bool EditSavedPasswords(const SavedPasswordsView forms,
-                          const base::string16& new_username,
-                          const base::string16& new_password);
+                          const std::u16string& new_username,
+                          const std::u16string& new_password);
 
   // Returns a list of the currently saved credentials.
   SavedPasswordsView GetSavedPasswords() const;

@@ -14,10 +14,7 @@
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_timeout.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-
-namespace gfx {
-class Rect;
-}
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace ui {
 class MouseEvent;
@@ -35,7 +32,7 @@ class MdTextButton;
 // a deferred context.
 class FeaturePromoBubbleView : public views::BubbleDialogDelegateView {
  public:
-  // Disallow copy and assign.
+  METADATA_HEADER(FeaturePromoBubbleView);
   FeaturePromoBubbleView(const FeaturePromoBubbleView&) = delete;
   FeaturePromoBubbleView& operator=(const FeaturePromoBubbleView&) = delete;
   ~FeaturePromoBubbleView() override;
@@ -47,9 +44,9 @@ class FeaturePromoBubbleView : public views::BubbleDialogDelegateView {
 
     views::View* anchor_view = nullptr;
 
-    base::string16 body_text;
-    base::Optional<base::string16> title_text;
-    base::Optional<base::string16> screenreader_text;
+    std::u16string body_text;
+    base::Optional<std::u16string> title_text;
+    base::Optional<std::u16string> screenreader_text;
 
     bool snoozable = false;
 
@@ -89,9 +86,8 @@ class FeaturePromoBubbleView : public views::BubbleDialogDelegateView {
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
-  gfx::Rect GetBubbleBounds() override;
   ax::mojom::Role GetAccessibleWindowRole() override;
-  base::string16 GetAccessibleWindowTitle() const override;
+  std::u16string GetAccessibleWindowTitle() const override;
   void UpdateHighlightedButton(bool highlighted) override {
     // Do nothing: the anchor for promo bubbles should not highlight.
   }
@@ -114,7 +110,7 @@ class FeaturePromoBubbleView : public views::BubbleDialogDelegateView {
   views::MdTextButton* dismiss_button_ = nullptr;
   views::MdTextButton* snooze_button_ = nullptr;
 
-  base::string16 accessible_name_;
+  std::u16string accessible_name_;
 
   base::Optional<int> preferred_width_;
 

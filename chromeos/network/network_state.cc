@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "chromeos/network/device_state.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_profile_handler.h"
 #include "chromeos/network/network_type_pattern.h"
@@ -25,12 +26,9 @@
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "net/http/http_status_code.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
+#include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace {
-
-// Cellular Service EID property.
-// TODO(crbug.com/1093185): Use dbus-constants when property is added in shill.
-const char kCellularEidProperty[] = "Cellular.EID";
 
 const char kDefaultCellularNetworkPath[] = "/cellular";
 
@@ -140,9 +138,13 @@ bool NetworkState::PropertyChanged(const std::string& key,
     return GetStringValue(key, value, &bssid_);
   } else if (key == shill::kPriorityProperty) {
     return GetIntegerValue(key, value, &priority_);
+  } else if (key == shill::kWifiHiddenSsid) {
+    return GetBooleanValue(key, value, &hidden_ssid_);
   } else if (key == shill::kOutOfCreditsProperty) {
     return GetBooleanValue(key, value, &cellular_out_of_credits_);
-  } else if (key == kCellularEidProperty) {
+  } else if (key == shill::kIccidProperty) {
+    return GetStringValue(key, value, &iccid_);
+  } else if (key == shill::kEidProperty) {
     return GetStringValue(key, value, &eid_);
   } else if (key == shill::kProxyConfigProperty) {
     std::string proxy_config_str;
@@ -188,8 +190,6 @@ bool NetworkState::PropertyChanged(const std::string& key,
     }
     SetVpnProvider(vpn_provider_id, vpn_provider_type);
     return true;
-  } else if (key == shill::kTetheringProperty) {
-    return GetStringValue(key, value, &tethering_state_);
   } else if (key == shill::kUIDataProperty) {
     std::unique_ptr<NetworkUIData> ui_data =
         chromeos::shill_property_util::GetUIDataFromValue(value);
@@ -291,8 +291,6 @@ void NetworkState::GetStateProperties(base::Value* dictionary) const {
     dictionary->SetKey(shill::kEapMethodProperty, base::Value(eap_method()));
     dictionary->SetKey(shill::kWifiFrequency, base::Value(frequency_));
     dictionary->SetKey(shill::kWifiHexSsid, base::Value(GetHexSsid()));
-    dictionary->SetKey(shill::kTetheringProperty,
-                       base::Value(tethering_state_));
   }
 
   // Mobile properties
@@ -615,12 +613,23 @@ bool NetworkState::ErrorIsValid(const std::string& error) {
 
 // static
 std::unique_ptr<NetworkState> NetworkState::CreateDefaultCellular(
-    const std::string& device_path) {
+    const DeviceState* cellular_device) {
   auto new_state = std::make_unique<NetworkState>(kDefaultCellularNetworkPath);
   new_state->set_type(shill::kTypeCellular);
   new_state->set_update_received();
   new_state->set_visible(true);
-  new_state->device_path_ = device_path;
+  new_state->device_path_ = cellular_device->path();
+  new_state->iccid_ = cellular_device->iccid();
+
+  // The default cellular service corresponds to the primary SIM slot. Copy the
+  // EID value from that SIM to the service.
+  for (const CellularSIMSlotInfo& sim : cellular_device->sim_slot_infos()) {
+    if (sim.primary) {
+      new_state->eid_ = sim.eid;
+      break;
+    }
+  }
+
   return new_state;
 }
 

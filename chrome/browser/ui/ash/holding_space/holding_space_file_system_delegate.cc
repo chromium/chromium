@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/ash/holding_space/holding_space_file_system_delegate.h"
 
+#include <set>
+#include <string>
+
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
@@ -14,11 +17,42 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/chromeos/fileapi/file_change_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/arc/arc_service_manager.h"
+#include "components/arc/session/arc_bridge_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace ash {
+
+namespace {
+
+arc::ConnectionHolder<arc::mojom::FileSystemInstance,
+                      arc::mojom::FileSystemHost>*
+GetArcFileSystem() {
+  if (!arc::ArcServiceManager::Get())
+    return nullptr;
+  return arc::ArcServiceManager::Get()->arc_bridge_service()->file_system();
+}
+
+// Returns whether
+// *   the ARC is enabled for `profile`, and
+// *   connection to ARC file system service is *not* established at the time.
+bool IsArcFileSystemDisconnected(Profile* profile) {
+  return arc::IsArcPlayStoreEnabledForProfile(profile) && GetArcFileSystem() &&
+         !GetArcFileSystem()->IsConnected();
+}
+
+// Returns whether the item is backed by an Android file. Can be used with
+// non-finalized items.
+bool ItemBackedByAndroidFile(const HoldingSpaceItem* item) {
+  return file_manager::util::GetAndroidFilesPath().IsParent(item->file_path());
+}
+
+}  // namespace
 
 // HoldingSpaceFileSystemDelegate::FileSystemWatcher ---------------------------
 
@@ -99,6 +133,19 @@ HoldingSpaceFileSystemDelegate::~HoldingSpaceFileSystemDelegate() {
                                           file_system_watcher_.release());
 }
 
+void HoldingSpaceFileSystemDelegate::OnConnectionReady() {
+  // Schedule validity checks for android items.
+  for (auto& item : model()->items()) {
+    if (!ItemBackedByAndroidFile(item.get()))
+      continue;
+
+    holding_space_util::ValidityRequirement requirements;
+    if (item->type() != HoldingSpaceItem::Type::kPinnedFile)
+      requirements.must_be_newer_than = kMaxFileAge;
+    ScheduleFilePathValidityCheck({item->file_path(), requirements});
+  }
+}
+
 void HoldingSpaceFileSystemDelegate::Init() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   file_system_watcher_ = std::make_unique<FileSystemWatcher>(
@@ -113,6 +160,9 @@ void HoldingSpaceFileSystemDelegate::Init() {
         file_manager::VolumeManager::Get(profile()));
   }
 
+  if (GetArcFileSystem())
+    arc_file_system_observer_.Observe(GetArcFileSystem());
+
   // Schedule a task to clean up items that belong to volumes that haven't been
   // mounted in a reasonable amount of time.
   // The primary goal of handling the delayed volume mount is to support volumes
@@ -126,6 +176,9 @@ void HoldingSpaceFileSystemDelegate::Init() {
 void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemsAdded(
     const std::vector<const HoldingSpaceItem*>& items) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  const bool arc_file_system_disconnected =
+      IsArcFileSystemDisconnected(profile());
   for (const HoldingSpaceItem* item : items) {
     if (item->IsFinalized()) {
       // Watch the directory containing `item`'s backing file. If the directory
@@ -150,6 +203,11 @@ void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemsAdded(
     const GURL file_system_url =
         holding_space_util::ResolveFileSystemUrl(profile(), item->file_path());
     if (file_system_url.is_empty())
+      continue;
+
+    // Defer validity checks (and finalization) for android files if the
+    // ARC file system connection is not yet ready.
+    if (arc_file_system_disconnected && ItemBackedByAndroidFile(item))
       continue;
 
     holding_space_util::ValidityRequirement requirements;
@@ -217,36 +275,84 @@ void HoldingSpaceFileSystemDelegate::OnVolumeUnmounted(
                      weak_factory_.GetWeakPtr(), volume.mount_path()));
 }
 
+void HoldingSpaceFileSystemDelegate::OnFileModified(
+    const storage::FileSystemURL& url) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  model()->InvalidateItemImageIf(base::BindRepeating(
+      [](const base::FilePath& path, const HoldingSpaceItem* item) {
+        return item->file_path() == path;
+      },
+      url.path()));
+}
+
 void HoldingSpaceFileSystemDelegate::OnFileMoved(
     const storage::FileSystemURL& src,
     const storage::FileSystemURL& dst) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // Update backing files for any holding space `item` associated with `src`.
-  bool did_update_backing_file = false;
+
+  // Collect items that should be moved to a new path. This includes:
+  // *   Items whose path matches the source path.
+  // *   Items parented by the source path.
+  // Maps item ID to the item's new file path.
+  std::vector<std::pair<std::string, base::FilePath>> items_to_move;
   for (auto& item : model()->items()) {
-    base::FilePath new_file_path;
     if (src.path() == item->file_path()) {
-      // The file backing `item` has moved to `dst`.
-      new_file_path = dst.path();
-    } else if (src.path().IsParent(item->file_path())) {
-      // A parent directory of the file backing `item` has moved to `dst` so
-      // the file backing `item` needs to be re-parented.
-      new_file_path = dst.path();
-      if (!src.path().AppendRelativePath(item->file_path(), &new_file_path))
-        NOTREACHED();
+      items_to_move.push_back(std::make_pair(item->id(), dst.path()));
+      continue;
     }
-    if (!new_file_path.empty()) {
-      model()->UpdateBackingFileForItem(
-          item->id(), new_file_path,
-          holding_space_util::ResolveFileSystemUrl(profile(), new_file_path));
-      did_update_backing_file = true;
+
+    if (src.path().IsParent(item->file_path())) {
+      base::FilePath target_path = dst.path();
+      if (!src.path().AppendRelativePath(item->file_path(), &target_path)) {
+        NOTREACHED();
+        continue;
+      }
+      items_to_move.push_back(std::make_pair(item->id(), target_path));
     }
   }
+
+  // Handle existing holding space items under the target file path.
+  // Moving an existing item to a new path may create conflict within the
+  // holding space if an item with the target path already exists within the
+  // holding space. If this is the case, assume that the original item was
+  // overwritten, and remove it from the holding space.
+
+  // NOTE: Don't remove items at destination if no holding space items have to
+  // be updated due to the file move. The reason for this is to:
+  // *   Support use case where apps change files by moving temp file with
+  //     modifications to the file path.
+  // *   Handle duplicate file path move notifications.
+  // Instead, update the items as if the target path was modified.
+  if (items_to_move.empty()) {
+    OnFileModified(dst);
+    return;
+  }
+
+  // Resolve conflicts with existing items that arise from the move.
+  std::set<std::string> item_ids_to_remove;
+  for (auto& item : model()->items()) {
+    if (dst.path() == item->file_path() ||
+        dst.path().IsParent(item->file_path())) {
+      item_ids_to_remove.insert(item->id());
+    }
+  }
+  model()->RemoveItems(item_ids_to_remove);
+
+  // Finally, update the files that have been moved.
+  for (const auto& to_move : items_to_move) {
+    if (item_ids_to_remove.count(to_move.first))
+      continue;
+
+    model()->UpdateBackingFileForItem(
+        to_move.first, to_move.second,
+        holding_space_util::ResolveFileSystemUrl(profile(), to_move.second));
+  }
+
   // If a backing file update occurred, it's possible that there are no longer
   // any holding space items associated with `src`. When that is the case, `src`
   // no longer needs to be watched.
-  if (did_update_backing_file)
-    MaybeRemoveWatch(src.path());
+  MaybeRemoveWatch(src.path());
 }
 
 void HoldingSpaceFileSystemDelegate::OnFilePathChanged(
@@ -302,17 +408,32 @@ void HoldingSpaceFileSystemDelegate::OnFilePathValidityChecksComplete(
     std::vector<base::FilePath> valid_paths,
     std::vector<base::FilePath> invalid_paths) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  const bool arc_file_system_disconnected =
+      IsArcFileSystemDisconnected(profile());
+
   // Remove items with invalid paths.
-  // When `file_path` is removed, we need to remove any associated items.
   model()->RemoveIf(base::BindRepeating(
-      [](const std::vector<base::FilePath>* invalid_paths,
+      [](bool arc_file_system_disconnected,
+         const std::vector<base::FilePath>* invalid_paths,
          const HoldingSpaceItem* item) {
+        // Avoid removing Android files if connection to ARC file system has
+        // been lost (e.g. Android container might have crashed). Validity
+        // checks will be re-run once the file system gets connected.
+        if (arc_file_system_disconnected && ItemBackedByAndroidFile(item))
+          return false;
+
         return base::Contains(*invalid_paths, item->file_path());
       },
-      &invalid_paths));
+      arc_file_system_disconnected, &invalid_paths));
 
   std::vector<const HoldingSpaceItem*> items_to_finalize;
   for (auto& item : model()->items()) {
+    // Defer finalization of items backed by android files if the connection to
+    // ARC file system service has been lost.
+    if (arc_file_system_disconnected && ItemBackedByAndroidFile(item.get()))
+      continue;
+
     if (!item->IsFinalized() &&
         base::Contains(valid_paths, item->file_path())) {
       items_to_finalize.push_back(item.get());
@@ -366,7 +487,19 @@ void HoldingSpaceFileSystemDelegate::RemoveItemsParentedByPath(
 void HoldingSpaceFileSystemDelegate::ClearNonFinalizedItems() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   model()->RemoveIf(base::BindRepeating(
-      [](const HoldingSpaceItem* item) { return !item->IsFinalized(); }));
+      [](Profile* profile, const HoldingSpaceItem* item) {
+        if (item->IsFinalized())
+          return false;
+
+        // Do not remove items whose path can be resolved to a file system URL.
+        // In this case, the associated mount point has been mounted, but the
+        // finalization may have been delayed - for example due to issues/delays
+        // with initializing ARC.
+        const GURL url = holding_space_util::ResolveFileSystemUrl(
+            profile, item->file_path());
+        return url.is_empty();
+      },
+      profile()));
 }
 
 }  // namespace ash

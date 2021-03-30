@@ -131,7 +131,7 @@ class MultiToken : public internal::MultiTokenBase<TokenVariant0,
     static constexpr uint32_t kInputTokenTypeIndex =
         Base::template TypeIndex<InputTokenType>::kValue;
     return Base::CompareImpl(std::tie(value_, variant_index_),
-                             std::tie(other.value_, kInputTokenTypeIndex));
+                             std::tie(other.value(), kInputTokenTypeIndex));
   }
   template <typename InputTokenType,
             typename = typename std::enable_if<

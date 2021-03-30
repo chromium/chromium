@@ -8,12 +8,12 @@
 #import <Cocoa/Cocoa.h>
 
 #include <ostream>
+#include <string>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 
 namespace chrome {
 
@@ -28,7 +28,7 @@ namespace chrome {
 // burden.
 void BuildMainMenu(NSApplication* nsapp,
                    id<NSApplicationDelegate> app_delegate,
-                   const base::string16& product_name,
+                   const std::u16string& product_name,
                    bool is_pwa);
 
 // Internal ////////////////////////////////////////////////////////////////////
@@ -84,7 +84,7 @@ class MenuItemBuilder {
 
   // Specifies the string to substitute for the $1 found in the string for
   // |string_id_|.
-  MenuItemBuilder& string_format_1(const base::string16& arg) {
+  MenuItemBuilder& string_format_1(const std::u16string& arg) {
     string_arg1_ = arg;
     return *this;
   }
@@ -126,7 +126,7 @@ class MenuItemBuilder {
   bool is_separator_ = false;
 
   int string_id_ = 0;
-  base::string16 string_arg1_;
+  std::u16string string_arg1_;
 
   int tag_ = 0;
 

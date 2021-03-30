@@ -6,14 +6,14 @@
 
 #include <utility>
 
-#include "chrome/browser/chromeos/settings/cros_settings.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "components/policy/policy_constants.h"
 
 namespace policy {
 
 WallpaperImageExternalDataHandler::WallpaperImageExternalDataHandler(
-    chromeos::CrosSettings* cros_settings,
+    ash::CrosSettings* cros_settings,
     DeviceLocalAccountPolicyService* policy_service)
     : wallpaper_image_observer_(cros_settings,
                                 policy_service,
@@ -28,7 +28,7 @@ WallpaperImageExternalDataHandler::~WallpaperImageExternalDataHandler() =
 void WallpaperImageExternalDataHandler::OnExternalDataCleared(
     const std::string& policy,
     const std::string& user_id) {
-  WallpaperControllerClient::Get()->RemovePolicyWallpaper(
+  WallpaperControllerClientImpl::Get()->RemovePolicyWallpaper(
       CloudExternalDataPolicyHandler::GetAccountId(user_id));
 }
 
@@ -37,13 +37,13 @@ void WallpaperImageExternalDataHandler::OnExternalDataFetched(
     const std::string& user_id,
     std::unique_ptr<std::string> data,
     const base::FilePath& file_path) {
-  WallpaperControllerClient::Get()->SetPolicyWallpaper(
+  WallpaperControllerClientImpl::Get()->SetPolicyWallpaper(
       CloudExternalDataPolicyHandler::GetAccountId(user_id), std::move(data));
 }
 
 void WallpaperImageExternalDataHandler::RemoveForAccountId(
     const AccountId& account_id) {
-  WallpaperControllerClient::Get()->RemoveUserWallpaper(account_id);
+  WallpaperControllerClientImpl::Get()->RemoveUserWallpaper(account_id);
 }
 
 }  // namespace policy

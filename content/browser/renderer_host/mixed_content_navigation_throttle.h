@@ -15,8 +15,8 @@
 #include "content/public/browser/navigation_throttle.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
+#include "third_party/blink/public/mojom/loader/mixed_content.mojom-forward.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
-#include "third_party/blink/public/platform/web_mixed_content_context_type.h"
 
 namespace content {
 
@@ -26,6 +26,11 @@ class FrameTreeNode;
 // only for frame-level resource loads (aka navigation loads). Sub-resources
 // fetches are checked in the renderer process by MixedContentChecker. Changes
 // to this class might need to be reflected on its renderer counterpart.
+//
+// This class handles frame-level resource loads that have certificate errors as
+// well as mixed content. (Resources with certificate errors can be seen as a
+// type of mixed content.) This can happen when a user has previously bypassed a
+// certificate error for the same host as the resource.
 //
 // Current mixed content W3C draft that drives this implementation:
 // https://w3c.github.io/webappsec-mixed-content/
@@ -61,7 +66,11 @@ class MixedContentNavigationThrottle : public NavigationThrottle {
   // is found.
   void ReportBasicMixedContentFeatures(
       blink::mojom::RequestContextType request_context_type,
-      blink::WebMixedContentContextType mixed_content_context_type);
+      blink::mojom::MixedContentContextType mixed_content_context_type);
+
+  // Checks if the request has a certificate error that should adjust the page's
+  // security UI, and does so if applicable.
+  void MaybeHandleCertificateError();
 
   static bool CONTENT_EXPORT IsMixedContentForTesting(const GURL& origin_url,
                                                       const GURL& url);

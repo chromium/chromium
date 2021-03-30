@@ -93,7 +93,7 @@ size_t GetValidDeviceCount(Profile* profile) {
   return devices.size();
 }
 
-base::string16 GetSingleTargetDeviceName(Profile* profile) {
+std::u16string GetSingleTargetDeviceName(Profile* profile) {
   DCHECK_EQ(GetValidDeviceCount(profile), 1u);
   return base::UTF8ToUTF16(
       SendTabToSelfSyncServiceFactory::GetForProfile(profile)

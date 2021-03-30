@@ -89,7 +89,7 @@ void ForwardVerifyContentToIO(const VerifyContentInfo& info) {
 }
 
 // Loads user scripts from the extension who owns these scripts.
-bool LoadScriptContent(const HostID& host_id,
+bool LoadScriptContent(const mojom::HostID& host_id,
                        UserScript::File* script_file,
                        const base::Optional<int>& script_resource_id,
                        const SubstitutionMap* localization_messages,
@@ -123,7 +123,7 @@ bool LoadScriptContent(const HostID& host_id,
               FROM_HERE,
               base::BindOnce(
                   &ForwardVerifyContentToIO,
-                  VerifyContentInfo(verifier, host_id.id(),
+                  VerifyContentInfo(verifier, host_id.id,
                                     script_file->extension_root(),
                                     script_file->relative_path(), content)));
     }
@@ -151,13 +151,13 @@ bool LoadScriptContent(const HostID& host_id,
 
 SubstitutionMap* GetLocalizationMessages(
     const ExtensionUserScriptLoader::HostsInfo& hosts_info,
-    const HostID& host_id) {
+    const mojom::HostID& host_id) {
   auto iter = hosts_info.find(host_id);
   if (iter == hosts_info.end())
     return nullptr;
   const ExtensionUserScriptLoader::PathAndLocaleInfo& info = iter->second;
   return file_util::LoadMessageBundleSubstitutionMap(
-      info.file_path, host_id.id(), info.default_locale, info.gzip_permission);
+      info.file_path, host_id.id, info.default_locale, info.gzip_permission);
 }
 
 void FillScriptFileResourceIds(const UserScript::FileList& script_files,
@@ -233,22 +233,25 @@ void LoadScriptsOnFileTaskRunner(
 
 ExtensionUserScriptLoader::ExtensionUserScriptLoader(
     BrowserContext* browser_context,
-    const HostID& host_id,
+    const ExtensionId& extension_id,
     bool listen_for_extension_system_loaded)
     : ExtensionUserScriptLoader(
           browser_context,
-          host_id,
+          extension_id,
           listen_for_extension_system_loaded,
           ExtensionSystem::Get(browser_context)->content_verifier()) {}
 
 ExtensionUserScriptLoader::ExtensionUserScriptLoader(
     BrowserContext* browser_context,
-    const HostID& host_id,
+    const ExtensionId& extension_id,
     bool listen_for_extension_system_loaded,
     scoped_refptr<ContentVerifier> content_verifier)
-    : UserScriptLoader(browser_context, host_id),
+    : UserScriptLoader(
+          browser_context,
+          mojom::HostID(mojom::HostID::HostType::kExtensions, extension_id)),
       content_verifier_(std::move(content_verifier)) {
-  extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context));
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(browser_context));
   if (listen_for_extension_system_loaded) {
     ExtensionSystem::Get(browser_context)
         ->ready()
@@ -269,7 +272,7 @@ std::unique_ptr<UserScriptList> ExtensionUserScriptLoader::LoadScriptsForTest(
   for (const std::unique_ptr<UserScript>& script : *user_scripts)
     added_script_ids.insert(script->id());
 
-  std::set<HostID> changed_hosts;
+  std::set<mojom::HostID> changed_hosts;
   std::unique_ptr<UserScriptList> result;
 
   // Block until the scripts have been loaded on the file task runner so that
@@ -292,7 +295,7 @@ std::unique_ptr<UserScriptList> ExtensionUserScriptLoader::LoadScriptsForTest(
 
 void ExtensionUserScriptLoader::LoadScripts(
     std::unique_ptr<UserScriptList> user_scripts,
-    const std::set<HostID>& changed_hosts,
+    const std::set<mojom::HostID>& changed_hosts,
     const std::set<std::string>& added_script_ids,
     LoadScriptsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -315,11 +318,11 @@ void ExtensionUserScriptLoader::LoadScripts(
 }
 
 void ExtensionUserScriptLoader::UpdateHostsInfo(
-    const std::set<HostID>& changed_hosts) {
+    const std::set<mojom::HostID>& changed_hosts) {
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context());
-  for (const HostID& host_id : changed_hosts) {
+  for (const mojom::HostID& host_id : changed_hosts) {
     const Extension* extension =
-        registry->GetExtensionById(host_id.id(), ExtensionRegistry::ENABLED);
+        registry->GetExtensionById(host_id.id, ExtensionRegistry::ENABLED);
     // |changed_hosts_| may include hosts that have been removed,
     // which leads to the above lookup failing. In this case, just continue.
     if (!extension)
@@ -337,7 +340,8 @@ void ExtensionUserScriptLoader::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const Extension* extension,
     UnloadedExtensionReason reason) {
-  hosts_info_.erase(HostID(HostID::EXTENSIONS, extension->id()));
+  hosts_info_.erase(
+      mojom::HostID(mojom::HostID::HostType::kExtensions, extension->id()));
 }
 
 void ExtensionUserScriptLoader::OnExtensionSystemReady() {

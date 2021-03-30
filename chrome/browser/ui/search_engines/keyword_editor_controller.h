@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 
 class Profile;
 class TemplateURL;
@@ -24,15 +23,15 @@ class KeywordEditorController {
   // Invoked when the user succesfully fills out the add keyword dialog.
   // Propagates the change to the TemplateURLService and updates the table
   // model.  Returns the index of the added URL.
-  int AddTemplateURL(const base::string16& title,
-                     const base::string16& keyword,
+  int AddTemplateURL(const std::u16string& title,
+                     const std::u16string& keyword,
                      const std::string& url);
 
   // Invoked when the user modifies a TemplateURL. Updates the
   // TemplateURLService and table model appropriately.
   void ModifyTemplateURL(TemplateURL* template_url,
-                         const base::string16& title,
-                         const base::string16& keyword,
+                         const std::u16string& title,
+                         const std::u16string& keyword,
                          const std::string& url);
 
   // Return true if the given |url| can be edited.

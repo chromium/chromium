@@ -4,7 +4,7 @@
 
 module chromeos.tts.mojom;
 
-import "services/audio/public/mojom/stream_factory.mojom";
+import "media/mojo/mojom/audio_stream_factory.mojom";
 
 // The main interface to TTS engines on Chrome OS. Only used by and private to
 // the Chrome OS Google and Espeak TTS engine component extensions. TtsService
@@ -31,7 +31,7 @@ interface TtsService {
   // AudioOutputStream remote which is bound to AudioService in the browser and
   // which pulls audio data for output.
   BindTtsStreamFactory(pending_receiver<TtsStreamFactory> receiver,
-      pending_remote<audio.mojom.StreamFactory> stream_factory);
+      pending_remote<media.mojom.AudioStreamFactory> stream_factory);
 };
 
 // Interface to create various types of tts streams.
@@ -82,9 +82,10 @@ interface GoogleTtsStream {
   SelectVoice(string voice_name) => (bool success);
 
   // Speak text described by a serialized proto.speech.tts.Text proto with the
-  // speaker given by speaker_name. The call will fail if no speaker is given
-  // and the voice model is a multi-speaker model.
-  Speak(array<uint8> text_jspb, string speaker_name)
+  // speaker params described by a serialized proto.speech.tts.SpeakerParams
+  // proto. The call will fail if no speaker name is given and the voice model
+  // is a multi-speaker model.
+  Speak(array<uint8> text_jspb, array<uint8> speaker_params_jspb)
       => (pending_receiver<TtsEventObserver> event_observer);
 
   // Stop speaking the currently speaking text, if any.

@@ -16,6 +16,7 @@
 #include "components/send_tab_to_self/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace send_tab_to_self {
 
@@ -100,11 +101,7 @@ const gfx::VectorIcon& SendTabToSelfIconView::GetVectorIcon() const {
   return kSendTabToSelfIcon;
 }
 
-const char* SendTabToSelfIconView::GetClassName() const {
-  return "SendTabToSelfIconView";
-}
-
-base::string16 SendTabToSelfIconView::GetTextForTooltipAndAccessibleName()
+std::u16string SendTabToSelfIconView::GetTextForTooltipAndAccessibleName()
     const {
   return l10n_util::GetStringUTF16(IDS_OMNIBOX_TOOLTIP_SEND_TAB_TO_SELF);
 }
@@ -158,5 +155,8 @@ void SendTabToSelfIconView::UpdateOpacity() {
   layer()->SetOpacity(GetWidthBetween(0, kLargeNumber) /
                       static_cast<float>(kLargeNumber));
 }
+
+BEGIN_METADATA(SendTabToSelfIconView, PageActionIconView)
+END_METADATA
 
 }  // namespace send_tab_to_self

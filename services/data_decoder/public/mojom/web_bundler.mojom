@@ -9,9 +9,10 @@ import "mojo/public/mojom/base/file.mojom";
 
 enum WebBundlerError {
   kOK,
-  kNotImplemented,
+  kConnectionError,
   kFileOpenFailed,
   kWebBundlerConnectionError,
+  kInvalidInput,
 };
 
 // Bundler interface to generate a web bundle from snapshots.

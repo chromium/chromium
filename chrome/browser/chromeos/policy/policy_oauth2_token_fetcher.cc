@@ -7,12 +7,12 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_access_token_fetcher.h"
@@ -49,11 +49,11 @@ class PolicyOAuth2TokenFetcherImpl : public PolicyOAuth2TokenFetcher,
   void StartWithAuthCode(
       const std::string& auth_code,
       scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory,
-      const TokenCallback& callback) override;
+      TokenCallback callback) override;
   void StartWithRefreshToken(
       const std::string& oauth2_refresh_token,
       scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory,
-      const TokenCallback& callback) override;
+      TokenCallback callback) override;
 
   // Returns true if we have previously attempted to fetch tokens with this
   // class and failed.
@@ -87,7 +87,7 @@ class PolicyOAuth2TokenFetcherImpl : public PolicyOAuth2TokenFetcher,
   // If retry count runs out, or error condition is unrecoverable, it calls
   // Delegate::OnOAuth2TokenFetchFailed().
   void RetryOnError(const GoogleServiceAuthError& error,
-                    const base::Closure& task);
+                    base::OnceClosure task);
 
   // Passes |token| and |error| to the |callback_|.
   void ForwardPolicyToken(const std::string& token,
@@ -128,24 +128,24 @@ PolicyOAuth2TokenFetcherImpl::~PolicyOAuth2TokenFetcherImpl() {}
 void PolicyOAuth2TokenFetcherImpl::StartWithAuthCode(
     const std::string& auth_code,
     scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory,
-    const TokenCallback& callback) {
+    TokenCallback callback) {
   DCHECK(!refresh_token_fetcher_ && !access_token_fetcher_);
 
   auth_code_ = auth_code;
   system_url_loader_factory_ = system_url_loader_factory;
-  callback_ = callback;
+  callback_ = std::move(callback);
   StartFetchingRefreshToken();
 }
 
 void PolicyOAuth2TokenFetcherImpl::StartWithRefreshToken(
     const std::string& oauth2_refresh_token,
     scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory,
-    const TokenCallback& callback) {
+    TokenCallback callback) {
   DCHECK(!refresh_token_fetcher_ && !access_token_fetcher_);
 
   oauth2_refresh_token_ = oauth2_refresh_token;
   system_url_loader_factory_ = system_url_loader_factory;
-  callback_ = callback;
+  callback_ = std::move(callback);
   StartFetchingAccessToken();
 }
 
@@ -169,7 +169,7 @@ void PolicyOAuth2TokenFetcherImpl::StartFetchingRefreshToken() {
 void PolicyOAuth2TokenFetcherImpl::StartFetchingAccessToken() {
   std::vector<std::string> scopes;
   scopes.push_back(GaiaConstants::kDeviceManagementServiceOAuth);
-  scopes.push_back(GaiaConstants::kOAuthWrapBridgeUserInfoScope);
+  scopes.push_back(GaiaConstants::kGoogleUserInfoEmail);
   access_token_fetcher_ =
       GaiaAccessTokenFetcher::CreateExchangeRefreshTokenForAccessTokenInstance(
           this, system_url_loader_factory_, oauth2_refresh_token_);
@@ -193,8 +193,8 @@ void PolicyOAuth2TokenFetcherImpl::OnClientOAuthFailure(
           << error.state() << ")";
   RetryOnError(
       error,
-      base::Bind(&PolicyOAuth2TokenFetcherImpl::StartFetchingRefreshToken,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&PolicyOAuth2TokenFetcherImpl::StartFetchingRefreshToken,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PolicyOAuth2TokenFetcherImpl::OnGetTokenSuccess(
@@ -209,18 +209,19 @@ void PolicyOAuth2TokenFetcherImpl::OnGetTokenFailure(
     const GoogleServiceAuthError& error) {
   LOG(ERROR) << "OAuth2 access token (device management) fetching failed!";
   RetryOnError(
-      error, base::Bind(&PolicyOAuth2TokenFetcherImpl::StartFetchingAccessToken,
-                        weak_ptr_factory_.GetWeakPtr()));
+      error,
+      base::BindOnce(&PolicyOAuth2TokenFetcherImpl::StartFetchingAccessToken,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PolicyOAuth2TokenFetcherImpl::RetryOnError(
     const GoogleServiceAuthError& error,
-    const base::Closure& task) {
+    base::OnceClosure task) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (error.IsTransientError() && retry_count_ < kMaxRequestAttemptCount) {
     retry_count_++;
     content::GetUIThreadTaskRunner({})->PostDelayedTask(
-        FROM_HERE, task,
+        FROM_HERE, std::move(task),
         base::TimeDelta::FromMilliseconds(kRequestRestartDelay));
     return;
   }
@@ -238,7 +239,7 @@ void PolicyOAuth2TokenFetcherImpl::ForwardPolicyToken(
     const std::string& token,
     const GoogleServiceAuthError& error) {
   if (!callback_.is_null())
-    callback_.Run(token, error);
+    std::move(callback_).Run(token, error);
 }
 
 // Fake token fetcher that immediately returns tokens without making network
@@ -252,15 +253,15 @@ class PolicyOAuth2TokenFetcherFake : public PolicyOAuth2TokenFetcher {
   void StartWithAuthCode(
       const std::string& auth_code,
       scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory,
-      const TokenCallback& callback) override {
-    ForwardPolicyToken(callback);
+      TokenCallback callback) override {
+    ForwardPolicyToken(std::move(callback));
   }
 
   void StartWithRefreshToken(
       const std::string& oauth2_refresh_token,
       scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory,
-      const TokenCallback& callback) override {
-    ForwardPolicyToken(callback);
+      TokenCallback callback) override {
+    ForwardPolicyToken(std::move(callback));
   }
 
   bool Failed() const override { return false; }
@@ -272,9 +273,10 @@ class PolicyOAuth2TokenFetcherFake : public PolicyOAuth2TokenFetcher {
   }
 
  private:
-  void ForwardPolicyToken(const TokenCallback& callback) {
+  void ForwardPolicyToken(TokenCallback callback) {
     if (!callback.is_null())
-      callback.Run(access_token_, GoogleServiceAuthError::AuthErrorNone());
+      std::move(callback).Run(access_token_,
+                              GoogleServiceAuthError::AuthErrorNone());
   }
 
   const std::string refresh_token_ = "fake_refresh_token";

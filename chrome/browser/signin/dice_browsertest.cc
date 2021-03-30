@@ -412,7 +412,8 @@ class DiceBrowserTest : public InProcessBrowserTest,
     ASSERT_FALSE(
         GetIdentityManager()->HasAccountWithRefreshTokenInPersistentErrorState(
             GetMainAccountID()));
-    ASSERT_EQ(GetMainAccountID(), GetIdentityManager()->GetPrimaryAccountId());
+    ASSERT_EQ(GetMainAccountID(), GetIdentityManager()->GetPrimaryAccountId(
+                                      signin::ConsentLevel::kSync));
 
     // Add a token for a secondary account.
     AccountInfo secondary_account_info =
@@ -537,9 +538,12 @@ class DiceBrowserTest : public InProcessBrowserTest,
   }
 
   // signin::IdentityManager::Observer
-  void OnPrimaryAccountSet(
-      const CoreAccountInfo& primary_account_info) override {
-    RunClosureIfValid(std::move(on_primary_account_set_quit_closure_));
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override {
+    if (event.GetEventTypeFor(signin::ConsentLevel::kSync) ==
+        signin::PrimaryAccountChangeEvent::Type::kSet) {
+      RunClosureIfValid(std::move(on_primary_account_set_quit_closure_));
+    }
   }
 
   void OnRefreshTokenUpdatedForAccount(
@@ -577,10 +581,13 @@ class DiceBrowserTest : public InProcessBrowserTest,
     EXPECT_EQ(count, reconcilor_unblocked_count_);
   }
 
-  // Waits until the user is authenticated.
+  // Waits until the user consented for sync.
   void WaitForSigninSucceeded() {
-    if (GetIdentityManager()->GetPrimaryAccountId().empty())
+    if (GetIdentityManager()
+            ->GetPrimaryAccountId(signin::ConsentLevel::kSync)
+            .empty()) {
       WaitForClosure(&on_primary_account_set_quit_closure_);
+    }
   }
 
   // Waits for the ENABLE_SYNC request to hit the server, and unblocks the
@@ -690,7 +697,9 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, Signin) {
   EXPECT_TRUE(
       GetIdentityManager()->HasAccountWithRefreshToken(GetMainAccountID()));
   // Sync should not be enabled.
-  EXPECT_TRUE(GetIdentityManager()->GetPrimaryAccountId().empty());
+  EXPECT_TRUE(GetIdentityManager()
+                  ->GetPrimaryAccountId(signin::ConsentLevel::kSync)
+                  .empty());
 
   EXPECT_EQ(1, reconcilor_blocked_count_);
   WaitForReconcilorUnblockedCount(1);
@@ -747,7 +756,8 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, Reauth) {
 
   // Check that the token was requested and added to the token service.
   SendRefreshTokenResponse();
-  EXPECT_EQ(GetMainAccountID(), GetIdentityManager()->GetPrimaryAccountId());
+  EXPECT_EQ(GetMainAccountID(), GetIdentityManager()->GetPrimaryAccountId(
+                                    signin::ConsentLevel::kSync));
 
   // Old token must not be revoked (see http://crbug.com/865189).
   EXPECT_EQ(0, token_revoked_notification_count_);
@@ -766,7 +776,8 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, SignoutMainAccount) {
   SignOutWithDice(kMainAccount);
 
   // Check that the user is in error state.
-  EXPECT_EQ(GetMainAccountID(), GetIdentityManager()->GetPrimaryAccountId());
+  EXPECT_EQ(GetMainAccountID(), GetIdentityManager()->GetPrimaryAccountId(
+                                    signin::ConsentLevel::kSync));
   EXPECT_TRUE(
       GetIdentityManager()->HasAccountWithRefreshToken(GetMainAccountID()));
   EXPECT_TRUE(
@@ -794,7 +805,8 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, SignoutSecondaryAccount) {
 
   // Check that the user is still signed in from main account, but secondary
   // token is deleted.
-  EXPECT_EQ(GetMainAccountID(), GetIdentityManager()->GetPrimaryAccountId());
+  EXPECT_EQ(GetMainAccountID(), GetIdentityManager()->GetPrimaryAccountId(
+                                    signin::ConsentLevel::kSync));
   EXPECT_TRUE(
       GetIdentityManager()->HasAccountWithRefreshToken(GetMainAccountID()));
   EXPECT_FALSE(GetIdentityManager()->HasAccountWithRefreshToken(
@@ -814,7 +826,8 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, SignoutAllAccounts) {
   SignOutWithDice(kAllAccounts);
 
   // Check that the user is in error state.
-  EXPECT_EQ(GetMainAccountID(), GetIdentityManager()->GetPrimaryAccountId());
+  EXPECT_EQ(GetMainAccountID(), GetIdentityManager()->GetPrimaryAccountId(
+                                    signin::ConsentLevel::kSync));
   EXPECT_TRUE(
       GetIdentityManager()->HasAccountWithRefreshToken(GetMainAccountID()));
   EXPECT_TRUE(
@@ -901,7 +914,9 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, DiceExtensionConsent_GetAuthToken) {
             dice_request_header_);
 
   // Sync should not be enabled.
-  EXPECT_TRUE(GetIdentityManager()->GetPrimaryAccountId().empty());
+  EXPECT_TRUE(GetIdentityManager()
+                  ->GetPrimaryAccountId(signin::ConsentLevel::kSync)
+                  .empty());
 
   EXPECT_EQ(1, reconcilor_blocked_count_);
   WaitForReconcilorUnblockedCount(1);
@@ -948,20 +963,14 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, EnableSyncAfterToken) {
         auto url =
             content::Details<content::LoadNotificationDetails>(details)->url;
         // Some test flags (e.g. ForceWebRequestProxyForTest) can change whether
-        // the reported NTP URL is the virtual chrome://newtab or one of the
-        // concrete chrome://new-tab-page or
-        // chrome-search://local-ntp/local-ntp.html. As far as this test is
-        // concerned either URL is fine.
-        auto concrete_ntp_url =
-            base::FeatureList::IsEnabled(ntp_features::kWebUI)
-                ? GURL(chrome::kChromeUINewTabPageURL)
-                : GURL(chrome::kChromeSearchLocalNtpUrl);
-        return url == concrete_ntp_url ||
+        // the reported NTP URL is chrome://newtab or chrome://new-tab-page.
+        return url == GURL(chrome::kChromeUINewTabPageURL) ||
                url == GURL(chrome::kChromeUINewTabURL);
       }));
 
   WaitForSigninSucceeded();
-  EXPECT_EQ(GetMainAccountID(), GetIdentityManager()->GetPrimaryAccountId());
+  EXPECT_EQ(GetMainAccountID(), GetIdentityManager()->GetPrimaryAccountId(
+                                    signin::ConsentLevel::kSync));
 
   EXPECT_EQ(1, reconcilor_blocked_count_);
   WaitForReconcilorUnblockedCount(1);
@@ -1022,7 +1031,8 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, MAYBE_EnableSyncBeforeToken) {
       content::NotificationService::AllSources());
 
   WaitForSigninSucceeded();
-  EXPECT_EQ(GetMainAccountID(), GetIdentityManager()->GetPrimaryAccountId());
+  EXPECT_EQ(GetMainAccountID(), GetIdentityManager()->GetPrimaryAccountId(
+                                    signin::ConsentLevel::kSync));
 
   EXPECT_EQ(1, reconcilor_blocked_count_);
   WaitForReconcilorUnblockedCount(1);
@@ -1045,7 +1055,9 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, PRE_TurnOffDice) {
   EXPECT_TRUE(AccountConsistencyModeManager::IsDiceEnabledForProfile(
       browser()->profile()));
 
-  EXPECT_FALSE(GetIdentityManager()->GetPrimaryAccountId().empty());
+  EXPECT_FALSE(GetIdentityManager()
+                   ->GetPrimaryAccountId(signin::ConsentLevel::kSync)
+                   .empty());
   EXPECT_TRUE(
       GetIdentityManager()->HasAccountWithRefreshToken(GetMainAccountID()));
   EXPECT_FALSE(GetIdentityManager()->GetAccountsWithRefreshTokens().empty());
@@ -1064,7 +1076,9 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, TurnOffDice) {
   EXPECT_FALSE(AccountConsistencyModeManager::IsDiceEnabledForProfile(
       browser()->profile()));
 
-  EXPECT_TRUE(GetIdentityManager()->GetPrimaryAccountId().empty());
+  EXPECT_TRUE(GetIdentityManager()
+                  ->GetPrimaryAccountId(signin::ConsentLevel::kSync)
+                  .empty());
   EXPECT_FALSE(
       GetIdentityManager()->HasAccountWithRefreshToken(GetMainAccountID()));
   EXPECT_TRUE(GetIdentityManager()->GetAccountsWithRefreshTokens().empty());

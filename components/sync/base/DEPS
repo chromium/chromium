@@ -1,11 +1,12 @@
 include_rules = [
-  "+chromeos/constants",
+  "+ash/constants",
   "+components/invalidation",
   "+components/os_crypt",
   "+components/pref_registry",
   "+components/prefs",
   "+components/sync/protocol",
   "+third_party/zlib",  # For UniquePosition compression
-  "+net",
+  "+net/base/net_errors.h",
+  "+net/http/http_status_code.h",
   "+ui/base",
 ]

@@ -25,7 +25,7 @@ class PolicyErrorMap::PendingError {
 
   const std::string& policy_name() const { return policy_name_; }
 
-  virtual base::string16 GetMessage() const = 0;
+  virtual std::u16string GetMessage() const = 0;
 
  private:
   std::string policy_name_;
@@ -45,7 +45,7 @@ class SimplePendingError : public PolicyErrorMap::PendingError {
         replacement_(replacement) {}
   ~SimplePendingError() override {}
 
-  base::string16 GetMessage() const override {
+  std::u16string GetMessage() const override {
     if (message_id_ >= 0) {
       if (replacement_.empty())
         return l10n_util::GetStringUTF16(message_id_);
@@ -72,7 +72,7 @@ class DictSubkeyPendingError : public SimplePendingError {
         subkey_(subkey) {}
   ~DictSubkeyPendingError() override {}
 
-  base::string16 GetMessage() const override {
+  std::u16string GetMessage() const override {
     return l10n_util::GetStringFUTF16(IDS_POLICY_SUBKEY_ERROR,
                                       base::ASCIIToUTF16(subkey_),
                                       SimplePendingError::GetMessage());
@@ -94,7 +94,7 @@ class ListItemPendingError : public SimplePendingError {
         index_(index) {}
   ~ListItemPendingError() override {}
 
-  base::string16 GetMessage() const override {
+  std::u16string GetMessage() const override {
     return l10n_util::GetStringFUTF16(IDS_POLICY_LIST_ENTRY_ERROR,
                                       base::NumberToString16(index_),
                                       SimplePendingError::GetMessage());
@@ -115,7 +115,7 @@ class SchemaValidatingPendingError : public SimplePendingError {
         error_path_(error_path) {}
   ~SchemaValidatingPendingError() override {}
 
-  base::string16 GetMessage() const override {
+  std::u16string GetMessage() const override {
     return l10n_util::GetStringFUTF16(IDS_POLICY_SCHEMA_VALIDATION_ERROR,
                                       base::ASCIIToUTF16(error_path_),
                                       SimplePendingError::GetMessage());
@@ -188,13 +188,25 @@ void PolicyErrorMap::AddError(const std::string& policy,
                                                           message));
 }
 
-base::string16 PolicyErrorMap::GetErrors(const std::string& policy) {
+bool PolicyErrorMap::HasError(const std::string& policy) {
+  if (IsReady()) {
+    CheckReadyAndConvert();
+    return map_.find(policy) != map_.end();
+  } else {
+    return std::find_if(pending_.begin(), pending_.end(),
+                        [policy](const auto& error) {
+                          return error->policy_name() == policy;
+                        }) != pending_.end();
+  }
+}
+
+std::u16string PolicyErrorMap::GetErrors(const std::string& policy) {
   CheckReadyAndConvert();
   std::pair<const_iterator, const_iterator> range = map_.equal_range(policy);
   std::vector<base::StringPiece16> list;
   for (auto it = range.first; it != range.second; ++it)
     list.push_back(it->second);
-  return base::JoinString(list, base::ASCIIToUTF16("\n"));
+  return base::JoinString(list, u"\n");
 }
 
 bool PolicyErrorMap::empty() const {

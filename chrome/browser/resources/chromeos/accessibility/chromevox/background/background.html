@@ -1,13 +1,19 @@
-<!-- Components to load uncompressed ChromeVox -->
-<!--
-  <script src="../../closure/base.js"></script>
-  <script src="../../deps.js"></script>
--->
-
 <!-- ChromeVox -->
-<!-- <script src="loader.js"></script> -->
+
+<!-- ChromeVox compiled script (non-ES6 modules) packed into one file. -->
 <script src="../chromeVoxChromeBackgroundScript.js" charset="utf-8">
 </script>
+
+<!--
+  ChromeVox ES6 module(s).
+
+  During the transition to ES6 modules, this top level module will import all
+  migrated modules. The migration will occur in breadth-first order, starting
+  with background.js. ES6 modules can "depend" on Closure files (since these are
+  global), but not vice versa.
+-->
+<script type="module" src="es6_loader.js"></script>
+
 <!-- Generated at build time -->
 <script type="text/javascript" src="../phonetic_dictionaries.js"
   charset="utf-8"></script>

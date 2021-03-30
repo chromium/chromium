@@ -11,6 +11,8 @@ source_set("broker_service") {
     "//base",
     "//chromecast/external_mojo/public/cpp:common",
     "//chromecast/external_mojo/public/cpp:external_mojo_broker",
+    "//chromecast/external_mojo/public/mojom",
+    "//chromecast/mojo",
     "//services/service_manager/public/cpp",
     "//services/service_manager/public/mojom",
   ]

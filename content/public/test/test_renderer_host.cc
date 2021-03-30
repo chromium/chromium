@@ -24,7 +24,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/navigation_policy.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
@@ -169,6 +168,7 @@ RenderViewHostTestEnabler::~RenderViewHostTestEnabler() {
 // RenderViewHostTestHarness --------------------------------------------------
 
 RenderViewHostTestHarness::~RenderViewHostTestHarness() {
+  DCHECK(!task_environment_) << "TearDown() was not called.";
 }
 
 NavigationController& RenderViewHostTestHarness::controller() {
@@ -198,7 +198,8 @@ RenderFrameHost* RenderViewHostTestHarness::main_rfh() {
 }
 
 RenderFrameHost* RenderViewHostTestHarness::pending_main_rfh() {
-  return static_cast<TestWebContents*>(web_contents())->GetPendingMainFrame();
+  return static_cast<TestWebContents*>(web_contents())
+      ->GetSpeculativePrimaryMainFrame();
 }
 
 BrowserContext* RenderViewHostTestHarness::browser_context() {

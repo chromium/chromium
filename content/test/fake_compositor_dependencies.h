@@ -21,14 +21,12 @@ class FakeCompositorDependencies : public CompositorDependencies {
   ~FakeCompositorDependencies() override;
 
   // CompositorDependencies implementation.
-  bool IsLcdTextEnabled() override;
-  bool IsElasticOverscrollEnabled() override;
   bool IsUseZoomForDSFEnabled() override;
-  bool IsSingleThreaded() override;
   blink::scheduler::WebThreadScheduler* GetWebMainThreadScheduler() override;
   cc::TaskGraphRunner* GetTaskGraphRunner() override;
-  bool IsScrollAnimatorEnabled() override;
   std::unique_ptr<cc::UkmRecorderFactory> CreateUkmRecorderFactory() override;
+  gfx::RenderingPipeline* GetMainThreadPipeline() override;
+  gfx::RenderingPipeline* GetCompositorThreadPipeline() override;
 
   void set_use_zoom_for_dsf_enabled(bool enabled) {
     use_zoom_for_dsf_ = enabled;

@@ -48,13 +48,17 @@ defaults.service_account.set(
 )
 defaults.swarming_tags.set(["vpython:native-python-wrapper"])
 
-def ci_builder(*, name, **kwargs):
+def ci_builder(*, name, resultdb_bigquery_exports = None, **kwargs):
+    resultdb_bigquery_exports = resultdb_bigquery_exports or []
+    resultdb_bigquery_exports.append(
+        resultdb.export_test_results(
+            bq_table = "luci-resultdb-dev.chromium.ci_test_results",
+        ),
+    )
     return builder(
         name = name,
         triggered_by = ["chromium-gitiles-trigger"],
-        resultdb_bigquery_exports = [resultdb.export_test_results(
-            bq_table = "luci-resultdb-dev.chromium.ci_test_results",
-        )],
+        resultdb_bigquery_exports = resultdb_bigquery_exports,
         isolated_server = "https://isolateserver-dev.appspot.com",
         goma_backend = goma.backend.RBE_PROD,
         **kwargs
@@ -71,6 +75,11 @@ ci_builder(
 ci_builder(
     name = "linux-rel-swarming",
     description_html = "Test description. <b>Test HTML</b>.",
+    resultdb_bigquery_exports = [
+        resultdb.export_text_artifacts(
+            bq_table = "luci-resultdb-dev.chromium.ci_text_artifacts",
+        ),
+    ],
 )
 
 ci_builder(

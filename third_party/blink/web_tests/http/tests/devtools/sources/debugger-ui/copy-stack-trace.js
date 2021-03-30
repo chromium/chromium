@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that debugger will copy valid stack trace upon context menu action.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function testFunction()
@@ -32,7 +32,7 @@
 
   function step2() {
     InspectorFrontendHost.copyText = text => TestRunner.addResult(TestRunner.clearSpecificInfoFromStackFrames(text));
-    self.runtime.sharedInstance(Sources.CallStackSidebarPane)._copyStackTrace();
+    Sources.CallStackSidebarPane.instance()._copyStackTrace();
     SourcesTestRunner.completeDebuggerTest();
   }
 })();

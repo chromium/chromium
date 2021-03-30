@@ -64,7 +64,9 @@ bool MediaRouterDialogControllerViews::ShowMediaRouterDialogForPresentation(
     // just doing the same thing here doesn't work.  I suspect that approach
     // will work, though, once the issue causing the blue border is fixed.
     scoped_widget_observations_.AddObservation(
-        MediaDialogView::ShowDialog(media_button, service, profile));
+        MediaDialogView::ShowDialogForPresentationRequest(
+            media_button, service, profile, initiator(),
+            GlobalMediaControlsEntryPoint::kPresentation));
     return true;
   } else {
     // Delegate to the base class, which will show the Cast dialog.

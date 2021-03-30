@@ -16,9 +16,11 @@
 #include "base/trace_event/trace_event.h"
 #include "third_party/libdrm/src/include/drm/drm_fourcc.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_fence.h"
+#include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/swap_result.h"
@@ -58,7 +60,7 @@ void DrawCursor(DrmDumbBuffer* cursor, const SkBitmap& image) {
   // Clear to transparent in case |image| is smaller than the canvas.
   SkCanvas* canvas = cursor->GetCanvas();
   canvas->clear(SK_ColorTRANSPARENT);
-  canvas->drawBitmapRect(image, damage, nullptr);
+  canvas->drawImageRect(image.asImage(), damage, SkSamplingOptions());
 }
 
 }  // namespace
@@ -105,7 +107,7 @@ void HardwareDisplayController::GetModesetPropsForCrtcs(
     overlays.push_back(primary.Clone());
 
     CrtcCommitRequest request = CrtcCommitRequest::EnableCrtcRequest(
-        controller->crtc(), controller->connector(), modeset_mode,
+        controller->crtc(), controller->connector(), modeset_mode, origin_,
         &owned_hardware_planes_, std::move(overlays));
     commit_request->push_back(std::move(request));
   }
@@ -142,6 +144,24 @@ void HardwareDisplayController::SchedulePageFlip(
 
   bool status =
       ScheduleOrTestPageFlip(plane_list, page_flip_request, &out_fence);
+  if (!status) {
+    for (const auto& plane : plane_list) {
+      // If the page flip failed and we see that the buffer has been allocated
+      // before the latest modeset, it could mean it was an in-flight buffer
+      // carrying an obsolete configuration.
+      // Request a buffer reallocation to reflect the new change.
+      if (plane.buffer &&
+          plane.buffer->modeset_sequence_id_at_allocation() <
+              plane.buffer->drm_device()->modeset_sequence_id()) {
+        std::move(submission_callback)
+            .Run(gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS, nullptr);
+        std::move(presentation_callback)
+            .Run(gfx::PresentationFeedback::Failure());
+        return;
+      }
+    }
+  }
+
   CHECK(status) << "SchedulePageFlip failed";
 
   if (page_flip_request->page_flip_count() == 0) {
@@ -200,17 +220,16 @@ bool HardwareDisplayController::ScheduleOrTestPageFlip(
 }
 
 std::vector<uint64_t> HardwareDisplayController::GetFormatModifiers(
-    uint32_t format) const {
-  std::vector<uint64_t> modifiers;
-
+    uint32_t fourcc_format) const {
   if (crtc_controllers_.empty())
-    return modifiers;
+    return std::vector<uint64_t>();
 
-  modifiers = crtc_controllers_[0]->GetFormatModifiers(format);
+  std::vector<uint64_t> modifiers =
+      crtc_controllers_[0]->GetFormatModifiers(fourcc_format);
 
   for (size_t i = 1; i < crtc_controllers_.size(); ++i) {
     std::vector<uint64_t> other =
-        crtc_controllers_[i]->GetFormatModifiers(format);
+        crtc_controllers_[i]->GetFormatModifiers(fourcc_format);
     std::vector<uint64_t> intersection;
 
     std::set_intersection(modifiers.begin(), modifiers.end(), other.begin(),
@@ -221,21 +240,46 @@ std::vector<uint64_t> HardwareDisplayController::GetFormatModifiers(
   return modifiers;
 }
 
-std::vector<uint64_t>
-HardwareDisplayController::GetFormatModifiersForModesetting(
-    uint32_t fourcc_format) const {
-  const auto& modifiers = GetFormatModifiers(fourcc_format);
-  std::vector<uint64_t> filtered_modifiers;
-  for (auto modifier : modifiers) {
+std::vector<uint64_t> HardwareDisplayController::GetSupportedModifiers(
+    uint32_t fourcc_format,
+    bool is_modeset) const {
+  if (preferred_format_modifier_.empty())
+    return std::vector<uint64_t>();
+
+  auto it = preferred_format_modifier_.find(fourcc_format);
+  if (it != preferred_format_modifier_.end()) {
+    uint64_t supported_modifier = it->second;
     // AFBC for modeset buffers doesn't work correctly, as we can't fill it with
-    // a valid AFBC buffer. For now, don't use AFBC for modeset buffers.
-    // TODO: Use AFBC for modeset buffers if it is available.
-    // See https://crbug.com/852675.
-    if (modifier != DRM_FORMAT_MOD_CHROMEOS_ROCKCHIP_AFBC) {
-      filtered_modifiers.push_back(modifier);
+    // a valid AFBC buffer (crbug.com/852675).
+    // For now, don't use AFBC for modeset buffers.
+    if (is_modeset &&
+        supported_modifier == DRM_FORMAT_MOD_CHROMEOS_ROCKCHIP_AFBC) {
+      supported_modifier = DRM_FORMAT_MOD_LINEAR;
     }
+    return std::vector<uint64_t>{supported_modifier};
   }
-  return filtered_modifiers;
+
+  return GetFormatModifiers(fourcc_format);
+}
+
+std::vector<uint64_t>
+HardwareDisplayController::GetFormatModifiersForTestModeset(
+    uint32_t fourcc_format) {
+  // If we're about to test, clear the current preferred modifier.
+  preferred_format_modifier_.clear();
+  return GetFormatModifiers(fourcc_format);
+}
+
+void HardwareDisplayController::UpdatePreferredModiferForFormat(
+    gfx::BufferFormat buffer_format,
+    uint64_t modifier) {
+  uint32_t fourcc_format = GetFourCCFormatFromBufferFormat(buffer_format);
+  base::InsertOrAssign(preferred_format_modifier_, fourcc_format, modifier);
+
+  uint32_t opaque_fourcc_format =
+      GetFourCCFormatForOpaqueFramebuffer(buffer_format);
+  base::InsertOrAssign(preferred_format_modifier_, opaque_fourcc_format,
+                       modifier);
 }
 
 void HardwareDisplayController::MoveCursor(const gfx::Point& location) {

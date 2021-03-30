@@ -4,280 +4,77 @@
 
 #include "chrome/updater/device_management/dm_message.h"
 
+#include <map>
 #include <memory>
 #include <utility>
 
 #include "base/logging.h"
-#include "base/strings/string_util.h"
-#include "chrome/updater/device_management/dm_cached_policy_info.h"
+#include "chrome/updater/device_management/dm_response_validator.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "crypto/signature_verifier.h"
-#include "third_party/boringssl/src/include/openssl/rsa.h"
 
 namespace updater {
 
+constexpr char kGoogleUpdatePolicyType[] = "google/machine-level-omaha";
+
 namespace {
+enterprise_management::PolicyValidationReportRequest::ValidationResultType
+TranslatePolicyValidationResult(PolicyValidationResult::Status status) {
+  using Report = enterprise_management::PolicyValidationReportRequest;
+  static const std::map<PolicyValidationResult::Status,
+                        Report::ValidationResultType>
+      kValidationStatusMap = {
+          {PolicyValidationResult::Status::kValidationOK,
+           Report::VALIDATION_RESULT_TYPE_SUCCESS},
+          {PolicyValidationResult::Status::kValidationBadInitialSignature,
+           Report::VALIDATION_RESULT_TYPE_BAD_INITIAL_SIGNATURE},
+          {PolicyValidationResult::Status::kValidationBadSignature,
+           Report::VALIDATION_RESULT_TYPE_BAD_SIGNATURE},
+          {PolicyValidationResult::Status::kValidationErrorCodePresent,
+           Report::VALIDATION_RESULT_TYPE_ERROR_CODE_PRESENT},
+          {PolicyValidationResult::Status::kValidationPayloadParseError,
+           Report::VALIDATION_RESULT_TYPE_PAYLOAD_PARSE_ERROR},
+          {PolicyValidationResult::Status::kValidationWrongPolicyType,
+           Report::VALIDATION_RESULT_TYPE_WRONG_POLICY_TYPE},
+          {PolicyValidationResult::Status::kValidationWrongSettingsEntityID,
+           Report::VALIDATION_RESULT_TYPE_WRONG_SETTINGS_ENTITY_ID},
+          {PolicyValidationResult::Status::kValidationBadTimestamp,
+           Report::VALIDATION_RESULT_TYPE_BAD_TIMESTAMP},
+          {PolicyValidationResult::Status::kValidationBadDMToken,
+           Report::VALIDATION_RESULT_TYPE_BAD_DM_TOKEN},
+          {PolicyValidationResult::Status::kValidationBadDeviceID,
+           Report::VALIDATION_RESULT_TYPE_BAD_DEVICE_ID},
+          {PolicyValidationResult::Status::kValidationBadUser,
+           Report::VALIDATION_RESULT_TYPE_BAD_USER},
+          {PolicyValidationResult::Status::kValidationPolicyParseError,
+           Report::VALIDATION_RESULT_TYPE_POLICY_PARSE_ERROR},
+          {PolicyValidationResult::Status::
+               kValidationBadKeyVerificationSignature,
+           Report::VALIDATION_RESULT_TYPE_BAD_KEY_VERIFICATION_SIGNATURE},
+          {PolicyValidationResult::Status::kValidationValueWarning,
+           Report::VALIDATION_RESULT_TYPE_VALUE_WARNING},
+          {PolicyValidationResult::Status::kValidationValueError,
+           Report::VALIDATION_RESULT_TYPE_VALUE_ERROR},
+      };
 
-bool VerifySHA256Signature(const std::string& data,
-                           const std::string& key,
-                           const std::string& signature) {
-  crypto::SignatureVerifier verifier;
-  if (!verifier.VerifyInit(crypto::SignatureVerifier::RSA_PKCS1_SHA256,
-                           base::as_bytes(base::make_span(signature)),
-                           base::as_bytes(base::make_span(key)))) {
-    VLOG(1) << "Invalid verification signature/key format.";
-    return false;
-  }
-  verifier.VerifyUpdate(base::as_bytes(base::make_span(data)));
-  return verifier.VerifyFinal();
+  auto mapped_status = kValidationStatusMap.find(status);
+  return mapped_status == kValidationStatusMap.end()
+             ? Report::VALIDATION_RESULT_TYPE_ERROR_UNSPECIFIED
+             : mapped_status->second;
 }
 
-class DMResponseValidator {
- public:
-  DMResponseValidator(const CachedPolicyInfo& policy_info,
-                      const std::string& expected_dm_token,
-                      const std::string& expected_device_id);
-  ~DMResponseValidator() = default;
-
-  static std::unique_ptr<DMResponseValidator> Create(
-      const CachedPolicyInfo& policy_info,
-      const std::string& expected_dm_token,
-      const std::string& expected_device_id,
-      const enterprise_management::DeviceManagementResponse& dm_response);
-
-  // Validates the DM response is correctly signed and intended for this device.
-  bool ValidateResponse(
-      const enterprise_management::DeviceManagementResponse& dm_response) const;
-
-  // Validates a single policy inside the DM response is correctly signed.
-  bool ValidatePolicy(
-      const enterprise_management::PolicyFetchResponse& policy_response) const;
-
- private:
-  // Extracts the public key for for subsequent policy verification. The public
-  // key is either the new key that signed the response, or the existing public
-  // key if key is not rotated. Possible scenarios:
-  // 1) Client sends the first policy fetch request. In this case, there's no
-  //    existing public key on the client side. The server must attach a new
-  //    public key in the response and the new key must be signed by the pinned
-  //    key.
-  // 2) Client sends a policy fetch request with an existing public key, and
-  //    server decides to NOT rotate the key. In this case, the response doesn't
-  //    have a new key. The signing key will continue to be the existing key.
-  // 3) Client sends a policy fetch request with an existing public key, and
-  //    server decides to rotate the key. In this case, the server attaches a
-  //    new public key in the response. The new key must be signed by the pinned
-  //    key AND the existing key.
-  bool ExtractPublicKey(
-      const enterprise_management::DeviceManagementResponse& dm_response);
-
-  bool ValidateDMToken(
-      const enterprise_management::PolicyData& policy_data) const;
-  bool ValidateDeviceId(
-      const enterprise_management::PolicyData& policy_data) const;
-  bool ValidateTimestamp(
-      const enterprise_management::PolicyData& policy_data) const;
-
-  const CachedPolicyInfo policy_info_;
-  const std::string expected_dm_token_;
-  const std::string expected_device_id_;
-
-  std::string signing_public_key_;
-};
-
-DMResponseValidator::DMResponseValidator(const CachedPolicyInfo& policy_info,
-                                         const std::string& expected_dm_token,
-                                         const std::string& expected_device_id)
-    : policy_info_(policy_info),
-      expected_dm_token_(expected_dm_token),
-      expected_device_id_(expected_device_id) {}
-
-// static
-std::unique_ptr<DMResponseValidator> DMResponseValidator::Create(
-    const CachedPolicyInfo& policy_info,
-    const std::string& expected_dm_token,
-    const std::string& expected_device_id,
-    const enterprise_management::DeviceManagementResponse& dm_response) {
-  auto validator = std::make_unique<DMResponseValidator>(
-      policy_info, expected_dm_token, expected_device_id);
-  if (!validator->ExtractPublicKey(dm_response))
-    return nullptr;
-
-  return validator;
-}
-
-bool DMResponseValidator::ExtractPublicKey(
-    const enterprise_management::DeviceManagementResponse& dm_response) {
-  // We should only extract public key once.
-  DCHECK(signing_public_key_.empty());
-
-  if (!dm_response.has_policy_response() ||
-      dm_response.policy_response().responses_size() == 0) {
-    return false;
+enterprise_management::PolicyValueValidationIssue::ValueValidationIssueSeverity
+TranslatePolicyValidationResultSeverity(
+    PolicyValueValidationIssue::Severity severity) {
+  using Issue = enterprise_management::PolicyValueValidationIssue;
+  switch (severity) {
+    case PolicyValueValidationIssue::Severity::kWarning:
+      return Issue::VALUE_VALIDATION_ISSUE_SEVERITY_WARNING;
+    case PolicyValueValidationIssue::Severity::kError:
+      return Issue::VALUE_VALIDATION_ISSUE_SEVERITY_ERROR;
+    default:
+      return Issue::VALUE_VALIDATION_ISSUE_SEVERITY_UNSPECIFIED;
   }
-
-  // We can extract the public key from any of the policy in the response. For
-  // convenience, just use the first policy.
-  const enterprise_management::PolicyFetchResponse& first_policy_response =
-      dm_response.policy_response().responses(0);
-
-  if (!first_policy_response.has_new_public_key_verification_data()) {
-    // No new public key, meaning key is not rotated, so use the existing one.
-    signing_public_key_ = policy_info_.public_key();
-    if (signing_public_key_.empty()) {
-      VLOG(1) << "No existing or new public key, must have one at least.";
-      return false;
-    }
-
-    return true;
-  }
-
-  if (!first_policy_response.has_new_public_key_verification_data_signature()) {
-    VLOG(1) << "New public key doesn't have signature for verification.";
-    return false;
-  }
-
-  // Verifies that the new public key verification data is properly signed
-  // by the pinned key.
-  if (!VerifySHA256Signature(
-          first_policy_response.new_public_key_verification_data(),
-          policy::GetPolicyVerificationKey(),
-          first_policy_response.new_public_key_verification_data_signature())) {
-    VLOG(1) << "Public key verification data is not signed correctly.";
-    return false;
-  }
-
-  // Also validates new public key against the cached public key, if the latter
-  // exists (The server must sign the new key with the previous key).
-  enterprise_management::PublicKeyVerificationData public_key_data;
-  if (!public_key_data.ParseFromString(
-          first_policy_response.new_public_key_verification_data())) {
-    VLOG(1) << "Failed to deserialize new public key.";
-    return false;
-  }
-
-  const std::string existing_key = policy_info_.public_key();
-  if (!existing_key.empty()) {
-    if (!first_policy_response.has_new_public_key_signature() ||
-        !VerifySHA256Signature(
-            public_key_data.new_public_key(), existing_key,
-            first_policy_response.new_public_key_signature())) {
-      VLOG(1) << "Key verification against cached public key failed.";
-      return false;
-    }
-  }
-
-  // Now that the new public key has been successfully verified, we rotate to
-  // use it for future policy data validation.
-  VLOG(1) << "Accepting a public key for domain: " << public_key_data.domain();
-  signing_public_key_ = public_key_data.new_public_key();
-  return true;
-}
-
-bool DMResponseValidator::ValidateDMToken(
-    const enterprise_management::PolicyData& policy_data) const {
-  if (!policy_data.has_request_token()) {
-    VLOG(1) << "No DMToken in PolicyData.";
-    return false;
-  }
-
-  const std::string& received_token = policy_data.request_token();
-  if (!base::EqualsCaseInsensitiveASCII(received_token, expected_dm_token_)) {
-    VLOG(1) << "Unexpected DMToken: expected " << expected_dm_token_
-            << ", received " << received_token;
-    return false;
-  }
-
-  return true;
-}
-
-bool DMResponseValidator::ValidateDeviceId(
-    const enterprise_management::PolicyData& policy_data) const {
-  if (!policy_data.has_device_id()) {
-    VLOG(1) << "No Device Id in PolicyData.";
-    return false;
-  }
-
-  const std::string& received_id = policy_data.device_id();
-  if (!base::EqualsCaseInsensitiveASCII(received_id, expected_device_id_)) {
-    VLOG(1) << "Unexpected Device Id: expected " << expected_device_id_
-            << ", received " << received_id;
-    return false;
-  }
-
-  return true;
-}
-
-bool DMResponseValidator::ValidateTimestamp(
-    const enterprise_management::PolicyData& policy_data) const {
-  if (!policy_data.has_timestamp()) {
-    VLOG(1) << "No timestamp in PolicyData.";
-    return false;
-  }
-
-  if (policy_data.timestamp() < policy_info_.timestamp()) {
-    VLOG(1) << "Unexpected DM response timestamp older than cached timestamp.";
-    return false;
-  }
-
-  return true;
-}
-
-bool DMResponseValidator::ValidateResponse(
-    const enterprise_management::DeviceManagementResponse& dm_response) const {
-  if (!dm_response.has_policy_response() ||
-      dm_response.policy_response().responses_size() == 0) {
-    return false;
-  }
-
-  // We can validate the DM response with any of the policy in it. For
-  // convenience, just use the first policy.
-  const enterprise_management::PolicyFetchResponse& first_policy_response =
-      dm_response.policy_response().responses(0);
-
-  enterprise_management::PolicyData policy_data;
-  if (!policy_data.ParseFromString(first_policy_response.policy_data())) {
-    VLOG(1) << "Failed to deserialize policy data.";
-    return false;
-  }
-
-  return ValidateDMToken(policy_data) && ValidateDeviceId(policy_data) &&
-         ValidateTimestamp(policy_data);
-}
-
-bool DMResponseValidator::ValidatePolicy(
-    const enterprise_management::PolicyFetchResponse& policy_response) const {
-  if (!policy_response.has_policy_data()) {
-    VLOG(1) << "Policy entry does not have data.";
-    return false;
-  }
-
-  if (!policy_response.has_policy_data_signature()) {
-    VLOG(1) << "Policy entry does not have verification signature.";
-    return false;
-  }
-
-  const std::string& policy_data = policy_response.policy_data();
-  if (!VerifySHA256Signature(policy_data, signing_public_key_,
-                             policy_response.policy_data_signature())) {
-    VLOG(1) << "Policy entry are not correctly signed.";
-    return false;
-  }
-
-  // Our signing key signs both the policy data and the previous key. In
-  // theory it is possible to have a cross-protocol attack here: attacker can
-  // take a signed public key and claim it is the policy data. Check that
-  // the policy data is not a public key to defend against such attacks.
-  bssl::UniquePtr<RSA> public_key(RSA_public_key_from_bytes(
-      reinterpret_cast<const uint8_t*>(policy_data.data()),
-      policy_data.length()));
-  if (public_key) {
-    VLOG(1) << "Rejected policy data in public key format.";
-    return false;
-  }
-
-  return true;
 }
 
 }  // namespace
@@ -315,6 +112,56 @@ std::string GetPolicyFetchRequestData(const std::string& policy_type,
   return dm_request.SerializeAsString();
 }
 
+std::string GetPolicyValidationReportRequestData(
+    const PolicyValidationResult& validation_result) {
+  PolicyValidationResult::Status aggregated_status = validation_result.status;
+
+  if (aggregated_status == PolicyValidationResult::Status::kValidationOK) {
+    for (const PolicyValueValidationIssue& issue : validation_result.issues) {
+      switch (issue.severity) {
+        case PolicyValueValidationIssue::Severity::kError:
+          aggregated_status =
+              PolicyValidationResult::Status::kValidationValueError;
+          break;
+
+        case PolicyValueValidationIssue::Severity::kWarning:
+          aggregated_status =
+              PolicyValidationResult::Status::kValidationValueWarning;
+          break;
+      }
+    }
+  }
+
+  if (aggregated_status == PolicyValidationResult::Status::kValidationOK) {
+    return std::string();
+  }
+
+  enterprise_management::DeviceManagementRequest dm_request;
+
+  enterprise_management::PolicyValidationReportRequest*
+      policy_validation_report_request =
+          dm_request.mutable_policy_validation_report_request();
+  policy_validation_report_request->set_validation_result_type(
+      TranslatePolicyValidationResult(aggregated_status));
+  policy_validation_report_request->set_policy_type(
+      validation_result.policy_type);
+  policy_validation_report_request->set_policy_token(
+      validation_result.policy_token);
+
+  for (const PolicyValueValidationIssue& issue : validation_result.issues) {
+    enterprise_management::PolicyValueValidationIssue*
+        policy_value_validation_issue =
+            policy_validation_report_request
+                ->add_policy_value_validation_issues();
+    policy_value_validation_issue->set_policy_name(issue.policy_name);
+    policy_value_validation_issue->set_severity(
+        TranslatePolicyValidationResultSeverity(issue.severity));
+    policy_value_validation_issue->set_debug_message(issue.message);
+  }
+
+  return dm_request.SerializeAsString();
+}
+
 std::string ParseDeviceRegistrationResponse(const std::string& response_data) {
   enterprise_management::DeviceManagementResponse dm_response;
   if (!dm_response.ParseFromString(response_data) ||
@@ -326,10 +173,12 @@ std::string ParseDeviceRegistrationResponse(const std::string& response_data) {
   return dm_response.register_response().device_management_token();
 }
 
-DMPolicyMap ParsePolicyFetchResponse(const std::string& response_data,
-                                     const CachedPolicyInfo& policy_info,
-                                     const std::string& expected_dm_token,
-                                     const std::string& expected_device_id) {
+DMPolicyMap ParsePolicyFetchResponse(
+    const std::string& response_data,
+    const CachedPolicyInfo& policy_info,
+    const std::string& expected_dm_token,
+    const std::string& expected_device_id,
+    std::vector<PolicyValidationResult>& validation_results) {
   enterprise_management::DeviceManagementResponse dm_response;
   if (!dm_response.ParseFromString(response_data) ||
       !dm_response.has_policy_response() ||
@@ -337,32 +186,25 @@ DMPolicyMap ParsePolicyFetchResponse(const std::string& response_data,
     return {};
   }
 
-  std::unique_ptr<DMResponseValidator> validator = DMResponseValidator::Create(
-      policy_info, expected_dm_token, expected_device_id, dm_response);
-  if (!validator || !validator->ValidateResponse(dm_response)) {
-    return {};
-  }
+  DMResponseValidator validator(policy_info, expected_dm_token,
+                                expected_device_id);
 
   // Validate each individual policy and put valid ones into the returned policy
   // map.
   DMPolicyMap responses;
   for (int i = 0; i < dm_response.policy_response().responses_size(); ++i) {
+    PolicyValidationResult validation_result;
     const ::enterprise_management::PolicyFetchResponse& response =
         dm_response.policy_response().responses(i);
-    enterprise_management::PolicyData policy_data;
-    if (!response.has_policy_data() ||
-        !policy_data.ParseFromString(response.policy_data()) ||
-        !policy_data.IsInitialized() || !policy_data.has_policy_type()) {
-      VLOG(1) << "Ignoring invalid PolicyData.";
+
+    if (!validator.ValidatePolicyResponse(response, validation_result)) {
+      VLOG(1) << "Policy " << validation_result.policy_type
+              << " validation failed.";
+      validation_results.push_back(validation_result);
       continue;
     }
 
-    const std::string& policy_type = policy_data.policy_type();
-    if (!validator->ValidatePolicy(response)) {
-      VLOG(1) << "Policy " << policy_type << " validation failed.";
-      continue;
-    }
-
+    const std::string policy_type = validation_result.policy_type;
     if (responses.find(policy_type) != responses.end()) {
       VLOG(1) << "Duplicate PolicyFetchResponse for type " << policy_type;
       continue;

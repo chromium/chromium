@@ -24,7 +24,7 @@ class GLImageMemory;
 // SwapChainPresenter holds a swap chain, direct composition visuals, and other
 // associated resources for a single overlay layer.  It is updated by calling
 // PresentToSwapChain(), and can update or recreate resources as necessary.
-class SwapChainPresenter : public base::PowerObserver {
+class SwapChainPresenter : public base::PowerStateObserver {
  public:
   SwapChainPresenter(DCLayerTree* layer_tree,
                      HWND window,
@@ -176,7 +176,7 @@ class SwapChainPresenter : public base::PowerObserver {
   // decode swap chain.
   void RecordPresentationStatistics();
 
-  // base::PowerObserver
+  // base::PowerStateObserver
   void OnPowerStateChange(bool on_battery_power) override;
 
   // If connected with a power source, let the Intel video processor to do

@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/input/touch_action.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
@@ -27,11 +28,16 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/touch_selection_controller_client_manager.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
+#include "third_party/blink/public/common/widget/visual_properties.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom-forward.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
+
+#if defined(OS_MAC)
+#include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
+#endif  // defined(OS_MAC)
 
 namespace content {
 class CrossProcessFrameConnector;
@@ -95,10 +101,11 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   void InitAsPopup(RenderWidgetHostView* parent_host_view,
                    const gfx::Rect& bounds) override;
   void UpdateCursor(const WebCursor& cursor) override;
+  void SendInitialPropertiesIfNeeded() override;
   void SetIsLoading(bool is_loading) override;
   void RenderProcessGone() override;
   void Destroy() override;
-  void SetTooltipText(const base::string16& tooltip_text) override;
+  void SetTooltipText(const std::u16string& tooltip_text) override;
   void GestureEventAck(const blink::WebGestureEvent& event,
                        blink::mojom::InputEventResultState ack_result) override;
   // Since the URL of content rendered by this class is not displayed in
@@ -137,7 +144,6 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   std::unique_ptr<SyntheticGestureTarget> CreateSyntheticGestureTarget()
       override;
   bool IsRenderWidgetHostViewChildFrame() override;
-  void WillSendScreenRects() override;
 
 #if defined(OS_MAC)
   // RenderWidgetHostView implementation.
@@ -145,6 +151,12 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   void ShowDefinitionForSelection() override;
   void SpeakSelection() override;
   void SetWindowFrameInScreen(const gfx::Rect& rect) override;
+  void ShowSharePicker(
+      const std::string& title,
+      const std::string& text,
+      const std::string& url,
+      const std::vector<std::string>& file_paths,
+      blink::mojom::ShareService::ShareCallback callback) override;
 #endif  // defined(OS_MAC)
 
   blink::mojom::InputEventResultState FilterInputEvent(
@@ -159,14 +171,16 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   // RenderFrameMetadataProvider::Observer implementation.
   void OnRenderFrameMetadataChangedBeforeActivation(
       const cc::RenderFrameMetadata& metadata) override {}
-  void OnRenderFrameMetadataChangedAfterActivation() override;
+  void OnRenderFrameMetadataChangedAfterActivation(
+      base::TimeTicks activation_time) override;
   void OnRenderFrameSubmission() override {}
   void OnLocalSurfaceIdChanged(
       const cc::RenderFrameMetadata& metadata) override {}
 
   // viz::HostFrameSinkClient implementation.
   void OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override;
-  void OnFrameTokenChanged(uint32_t frame_token) override;
+  void OnFrameTokenChanged(uint32_t frame_token,
+                           base::TimeTicks activation_time) override;
 
   CrossProcessFrameConnector* FrameConnectorForTesting() const {
     return frame_connector_;
@@ -181,7 +195,8 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   void UnregisterFrameSinkId();
 
   void UpdateViewportIntersection(
-      const blink::mojom::ViewportIntersectionState& intersection_state);
+      const blink::mojom::ViewportIntersectionState& intersection_state,
+      const base::Optional<blink::VisualProperties>& visual_properties);
 
   // TODO(sunxd): Rename SetIsInert to UpdateIsInert.
   void SetIsInert();
@@ -283,6 +298,11 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
 
   // True if there is currently a scroll sequence being bubbled to our parent.
   bool is_scroll_sequence_bubbling_ = false;
+
+  // If a new RWHVCF is created for a cross-origin navigation, the parent
+  // will typically not notice and will not transmit a full complement of
+  // properties.
+  bool initial_properties_sent_ = false;
 
   // The ScreenInfo information from the parent at the time this class is
   // created, to be used before this view is connected to its FrameDelegate.

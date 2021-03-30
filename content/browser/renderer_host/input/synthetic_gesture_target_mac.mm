@@ -7,6 +7,7 @@
 #import "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/cocoa/cocoa_event_utils.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 
@@ -20,13 +21,13 @@
 @property CGFloat magnification;
 @property NSPoint locationInWindow;
 @property NSEventType type;
+@property NSTimeInterval timestamp;
 @property NSEventPhase phase;
 
 // Filled with default values.
 @property(readonly) CGFloat deltaX;
 @property(readonly) CGFloat deltaY;
 @property(readonly) NSEventModifierFlags modifierFlags;
-@property(readonly) NSTimeInterval timestamp;
 
 @end
 
@@ -35,27 +36,26 @@
 @synthesize magnification = _magnification;
 @synthesize locationInWindow = _locationInWindow;
 @synthesize type = _type;
+@synthesize timestamp = _timestamp;
 @synthesize phase = _phase;
 @synthesize deltaX = _deltaX;
 @synthesize deltaY = _deltaY;
 @synthesize modifierFlags = _modifierFlags;
-@synthesize timestamp = _timestamp;
 
 - (id)initWithMagnification:(float)magnification
-           locationInWindow:(NSPoint)location {
+           locationInWindow:(NSPoint)location
+                  timestamp:(NSTimeInterval)timestamp {
   self = [super init];
   if (self) {
     _type = NSEventTypeMagnify;
     _phase = NSEventPhaseChanged;
     _magnification = magnification;
     _locationInWindow = location;
+    _timestamp = timestamp;
 
     _deltaX = 0;
     _deltaY = 0;
     _modifierFlags = 0;
-
-    // Default timestamp to current time.
-    _timestamp = [[NSDate date] timeIntervalSince1970];
   }
 
   return self;
@@ -63,10 +63,12 @@
 
 + (id)eventWithMagnification:(float)magnification
             locationInWindow:(NSPoint)location
+                   timestamp:(NSTimeInterval)timestamp
                        phase:(NSEventPhase)phase {
   SyntheticPinchEvent* event =
       [[SyntheticPinchEvent alloc] initWithMagnification:magnification
-                                        locationInWindow:location];
+                                        locationInWindow:location
+                                               timestamp:timestamp];
   event.phase = phase;
   return [event autorelease];
 }
@@ -94,12 +96,15 @@ void SyntheticGestureTargetMac::DispatchWebGestureEventToPlatform(
         [cocoa_view_ frame].size.height - web_gesture.PositionInWidget().y());
     NSPoint location_in_window = [cocoa_view_ convertPoint:content_local
                                                     toView:nil];
+    NSTimeInterval timestamp =
+        ui::EventTimeStampToSeconds(web_gesture.TimeStamp());
 
     switch (web_gesture.GetType()) {
       case WebInputEvent::Type::kGesturePinchBegin: {
         id cocoa_event =
             [SyntheticPinchEvent eventWithMagnification:0.0f
                                        locationInWindow:location_in_window
+                                              timestamp:timestamp
                                                   phase:NSEventPhaseBegan];
         [cocoa_view_ handleBeginGestureWithEvent:cocoa_event
                          isSyntheticallyInjected:YES];
@@ -109,6 +114,7 @@ void SyntheticGestureTargetMac::DispatchWebGestureEventToPlatform(
         id cocoa_event =
             [SyntheticPinchEvent eventWithMagnification:0.0f
                                        locationInWindow:location_in_window
+                                              timestamp:timestamp
                                                   phase:NSEventPhaseEnded];
         [cocoa_view_ handleEndGestureWithEvent:cocoa_event];
         return;
@@ -117,6 +123,7 @@ void SyntheticGestureTargetMac::DispatchWebGestureEventToPlatform(
         id cocoa_event = [SyntheticPinchEvent
             eventWithMagnification:web_gesture.data.pinch_update.scale - 1.0f
                   locationInWindow:location_in_window
+                         timestamp:timestamp
                              phase:NSEventPhaseChanged];
         [cocoa_view_ magnifyWithEvent:cocoa_event];
         return;
@@ -168,9 +175,9 @@ void SyntheticGestureTargetMac::DispatchWebMouseEventToPlatform(
   GetView()->RouteOrProcessMouseEvent(web_mouse);
 }
 
-SyntheticGestureParams::GestureSourceType
+content::mojom::GestureSourceType
 SyntheticGestureTargetMac::GetDefaultSyntheticGestureSourceType() const {
-  return SyntheticGestureParams::MOUSE_INPUT;
+  return content::mojom::GestureSourceType::kMouseInput;
 }
 
 float SyntheticGestureTargetMac::GetTouchSlopInDips() const {

@@ -13,7 +13,8 @@
 #include "components/omnibox/browser/omnibox_pedal_concepts.h"
 
 // Returns the full set of encapsulated OmniboxPedal implementations.
+// |with_branding| specifies whether to include Google Chrome branded Pedals.
 std::unordered_map<OmniboxPedalId, std::unique_ptr<OmniboxPedal>>
-GetPedalImplementations();
+GetPedalImplementations(bool with_branding);
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_PEDAL_IMPLEMENTATIONS_H_

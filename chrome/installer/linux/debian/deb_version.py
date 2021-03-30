@@ -3,6 +3,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import sys
+
+if sys.version_info.major != 2:
+  unicode = str
+
+
 def compare_int(left, right):
   if left == right:
     return 0
@@ -114,3 +120,9 @@ class DebVersion:
     if other.debian_revision == None:
       return 1
     return compare_component(self.debian_revision, other.debian_revision)
+
+  def __lt__(self, other):
+    return self.__cmp__(other) == -1
+
+  def __eq__(self, other):
+    return self.__cmp__(other) == 0

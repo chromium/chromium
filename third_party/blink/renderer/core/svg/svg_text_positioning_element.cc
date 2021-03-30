@@ -86,9 +86,11 @@ void SVGTextPositioningElement::SvgAttributeChanged(
     if (!layout_object)
       return;
 
-    if (LayoutSVGText* text_layout_object =
-            LayoutSVGText::LocateLayoutSVGTextAncestor(layout_object))
-      text_layout_object->SetNeedsPositioningValuesUpdate();
+    if (LayoutSVGBlock* text_or_ng_text =
+            LayoutSVGText::LocateLayoutSVGTextAncestor(layout_object)) {
+      if (auto* text_layout_object = DynamicTo<LayoutSVGText>(text_or_ng_text))
+        text_layout_object->SetNeedsPositioningValuesUpdate();
+    }
     MarkForLayoutAndParentResourceInvalidation(*layout_object);
     return;
   }

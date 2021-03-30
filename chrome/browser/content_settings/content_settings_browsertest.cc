@@ -186,10 +186,12 @@ class CookieSettingsTest
       set_secure_scheme();
   }
 
-  void SetUpCommandLine(base::CommandLine* cmd) override {
-    // Get access to CookieStore API.
-    cmd->AppendSwitch(switches::kEnableExperimentalWebPlatformFeatures);
-    ContentSettingsTest::SetUpCommandLine(cmd);
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // TODO(fivedots): Remove this switch once Storage Foundation is enabled
+    // by default.
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "StorageFoundationAPI");
+    ContentSettingsTest::SetUpCommandLine(command_line);
   }
 
   void set_secure_scheme() { secure_scheme_ = true; }
@@ -717,6 +719,94 @@ IN_PROC_BROWSER_TEST_P(CookieSettingsTest, BlockCookiesAlsoBlocksFileSystem) {
   }
 }
 
+IN_PROC_BROWSER_TEST_P(CookieSettingsTest,
+                       BlockCookiesAlsoBlocksStorageFoundation) {
+  set_secure_scheme();
+  ui_test_utils::NavigateToURL(browser(), GetPageURL());
+  content_settings::CookieSettings* settings =
+      CookieSettingsFactory::GetForProfile(browser()->profile()).get();
+  settings->SetCookieSetting(GetPageURL(), CONTENT_SETTING_BLOCK);
+
+  const char kBaseExpected[] = "%s - Storage access is denied";
+
+  const char kBaseScript[] = R"(
+      (async function() {
+        const name = `%s`;
+        try {
+          await %s;
+        } catch(e) {
+          const error = e.toString();
+          const n = error.lastIndexOf(`: `);
+          const message = error.substring(n + 2)
+          return `${name} - ${message}`;
+        }
+        return `${name} - success`;
+      }())
+  )";
+
+  struct TestOp {
+    const char* name;
+    const char* code;
+  };
+
+  // TODO(fivedots): Add test cases for getRemainingCapacity(),
+  // requestCapacity(), releaseCapacity() once they land.
+  const TestOp kTestOps[] = {
+      {.name = "storageFoundation.open()",
+       .code = "storageFoundation.open('foo')"},
+      {.name = "storageFoundation.delete()",
+       .code = "storageFoundation.delete('foo')"},
+      {.name = "storageFoundation.rename()",
+       .code = "storageFoundation.rename('foo', 'bar')"},
+      {.name = "storageFoundation.getAll()",
+       .code = "storageFoundation.getAll()"},
+  };
+
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  for (auto& op : kTestOps) {
+    EXPECT_EQ(base::StringPrintf(kBaseExpected, op.name),
+              EvalJs(tab, base::StringPrintf(kBaseScript, op.name, op.code)));
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(CookieSettingsTest,
+                       BlockCookiesAlsoBlocksSyncStorageFoundation) {
+  set_secure_scheme();
+  GURL url = GetServer()->GetURL("/sync_storage_foundation.html");
+  ui_test_utils::NavigateToURL(browser(), url);
+  content_settings::CookieSettings* settings =
+      CookieSettingsFactory::GetForProfile(browser()->profile()).get();
+  settings->SetCookieSetting(GetPageURL(), CONTENT_SETTING_BLOCK);
+
+  const char kBaseExpected[] = "%s - Storage access is denied";
+  const char kBaseUnexpected[] = "%s - Success";
+  const char kBaseCall[] = "run('%s')";
+
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // TODO(fivedots): Add test cases for getRemainingCapacitySync(),
+  // requestCapacitySync(), releaseCapacitySync() once they land.
+  const char* kTestOps[] = {"openSync", "deleteSync", "renameSync",
+                            "getAllSync"};
+
+  for (auto* op : kTestOps) {
+    EXPECT_TRUE(ExecJs(tab, base::StringPrintf(kBaseCall, op)));
+
+    std::u16string expected_title(
+        base::ASCIIToUTF16(base::StringPrintf(kBaseExpected, op)));
+    content::TitleWatcher title_watcher(tab, expected_title);
+
+    std::u16string unexpected_title(
+        base::ASCIIToUTF16(base::StringPrintf(kBaseUnexpected, op)));
+    title_watcher.AlsoWaitForTitle(unexpected_title);
+
+    EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     CookieSettingsTest,
@@ -815,9 +905,14 @@ class ContentSettingsBackForwardCacheBrowserTest : public ContentSettingsTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        ::features::kBackForwardCache,
-        {{"TimeToLiveInBackForwardCacheInSeconds", "3600"}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kBackForwardCache,
+          {// Set a very long TTL before expiration (longer than the test
+           // timeout) so tests that are expecting deletion don't pass when
+           // they shouldn't.
+           {"TimeToLiveInBackForwardCacheInSeconds", "3600"}}}},
+        // Allow BackForwardCache for all devices regardless of their memory.
+        {features::kBackForwardCacheMemoryControls});
     ContentSettingsTest::SetUpCommandLine(command_line);
   }
 
@@ -925,7 +1020,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsTest, ContentSettingsBlockDataURLs) {
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_EQ(base::UTF8ToUTF16("Data URL"), web_contents->GetTitle());
+  ASSERT_EQ(u"Data URL", web_contents->GetTitle());
 
   EXPECT_TRUE(
       PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame())
@@ -962,13 +1057,6 @@ class ContentSettingsWorkerModulesBrowserTest : public ContentSettingsTest {
  public:
   ContentSettingsWorkerModulesBrowserTest() = default;
   ~ContentSettingsWorkerModulesBrowserTest() override = default;
-
-  void SetUpCommandLine(base::CommandLine* cmd) override {
-    // Module scripts on Dedicated Worker is still an experimental feature.
-    // Likewise for CookieStore.
-    // TODO(crbug/680046,crbug/729800): Remove this after shipping.
-    cmd->AppendSwitch(switches::kEnableExperimentalWebPlatformFeatures);
-  }
 
  protected:
   void RegisterStaticFile(net::EmbeddedTestServer* server,
@@ -1031,9 +1119,9 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWorkerModulesBrowserTest,
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  base::string16 expected_title(base::ASCIIToUTF16("Imported"));
+  std::u16string expected_title(u"Imported");
   content::TitleWatcher title_watcher(web_contents, expected_title);
-  title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16("Failed"));
+  title_watcher.AlsoWaitForTitle(u"Failed");
 
   ui_test_utils::NavigateToURL(browser(), http_url);
 
@@ -1084,9 +1172,9 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWorkerModulesBrowserTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  base::string16 expected_title(base::ASCIIToUTF16("Failed"));
+  std::u16string expected_title(u"Failed");
   content::TitleWatcher title_watcher(web_contents, expected_title);
-  title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16("Imported"));
+  title_watcher.AlsoWaitForTitle(u"Imported");
 
   ui_test_utils::NavigateToURL(browser(), http_url);
 

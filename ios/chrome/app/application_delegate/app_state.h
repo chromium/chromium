@@ -7,7 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
+#include <memory>
+
 #import "ios/chrome/app/application_delegate/app_state_agent.h"
+#import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/browser/ui/main/scene_state_observer.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/ui_blocker_manager.h"
 
@@ -24,25 +27,9 @@ class ChromeBrowserState;
 @protocol TabOpening;
 @protocol TabSwitching;
 
-@protocol AppStateObserver <NSObject>
-
-@optional
-
-// Called when a scene is connected.
-// On iOS 12, called when the mainSceneState is set.
-- (void)appState:(AppState*)appState sceneConnected:(SceneState*)sceneState;
-
-// Called when the first scene initializes its UI.
-- (void)appState:(AppState*)appState
-    firstSceneHasInitializedUI:(SceneState*)sceneState;
-
-// Called after the app exits safe mode.
-- (void)appStateDidExitSafeMode:(AppState*)appState;
-
-// Called when |AppState.lastTappedWindow| changes.
-- (void)appState:(AppState*)appState lastTappedWindowChanged:(UIWindow*)window;
-
-@end
+namespace base {
+class TimeTicks;
+}
 
 // Represents the application state and responds to application state changes
 // and system events.
@@ -77,6 +64,12 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 // shown after the last cold start.
 @property(nonatomic) BOOL shouldShowDefaultBrowserPromo;
 
+// YES if the sign-out prompt should be shown to the user when the scene becomes
+// active and enters the foreground. This can happen if the policies have
+// changed since the last cold start, meaning the user was signed out during
+// startup.
+@property(nonatomic) BOOL shouldShowPolicySignoutPrompt;
+
 // When multiwindow is unavailable, this is the only scene state. It is created
 // by the app delegate.
 @property(nonatomic, strong) SceneState* mainSceneState;
@@ -93,6 +86,12 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 // The SceneSession ID for the last session, where the Device doesn't support
 // multiple windows.
 @property(nonatomic, strong) NSString* previousSingleWindowSessionID;
+
+// Timestamp of when a scene was last becoming active. Can be null.
+@property(nonatomic, assign) base::TimeTicks lastTimeInForeground;
+
+// The initialization stage the app is currently at.
+@property(nonatomic, readonly) InitStage initStage;
 
 // Saves the launchOptions to be used from -newTabFromLaunchOptions. If the
 // application is in background, initialize the browser to basic. If not, launch
@@ -161,6 +160,10 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 // Adds a new agent. Agents are owned by the app state.
 // This automatically sets the app state on the |agent|.
 - (void)addAgent:(id<AppStateAgent>)agent;
+
+// Queue the transition to the next app initialization stage. Will stop
+// transitioning when the Final stage is reached.
+- (void)queueTransitionToNextInitStage;
 
 @end
 

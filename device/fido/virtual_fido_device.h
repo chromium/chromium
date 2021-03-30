@@ -85,6 +85,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
   // authenticator device.
   struct COMPONENT_EXPORT(DEVICE_FIDO) RegistrationData {
     RegistrationData();
+    explicit RegistrationData(const std::string& rp_id);
     RegistrationData(
         std::unique_ptr<PrivateKey> private_key,
         base::span<const uint8_t, kRpIdHashLength> application_parameter,
@@ -95,7 +96,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
 
     ~RegistrationData();
 
-    std::unique_ptr<PrivateKey> private_key;
+    std::unique_ptr<PrivateKey> private_key = PrivateKey::FreshP256Key();
     std::array<uint8_t, kRpIdHashLength> application_parameter;
     uint32_t counter = 0;
     bool is_resident = false;
@@ -158,6 +159,14 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
     // Only valid if |self_attestation| is true. Causes the AAGUID to be non-
     // zero, in violation of the rules for self-attestation.
     bool non_zero_aaguid_with_self_attestation = false;
+
+    // u2f_invalid_signature causes the signature in an assertion response to be
+    // invalid. (U2F only.)
+    bool u2f_invalid_signature = false;
+
+    // u2f_invalid_public_key causes the public key in a registration response
+    // to be invalid. (U2F only.)
+    bool u2f_invalid_public_key = false;
 
     // Number of PIN retries remaining.
     int pin_retries = kMaxPinRetries;
@@ -241,6 +250,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
 
     FidoTransportProtocol transport =
         FidoTransportProtocol::kUsbHumanInterfaceDevice;
+
+    // Adds a new credential to the authenticator. Returns true on success,
+    // false if there already exists a credential with the given ID.
+    bool InjectRegistration(base::span<const uint8_t> credential_id,
+                            RegistrationData registration);
 
     // Adds a registration for the specified credential ID with the application
     // parameter set to be valid for the given relying party ID (which would

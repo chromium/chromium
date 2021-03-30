@@ -108,20 +108,28 @@ void PaintInvalidator::UpdateDirectlyCompositedContainer(
              // This is to exclude some objects (e.g. LayoutText) inheriting
              // stacked style from parent but aren't actually stacked.
              object.HasLayer() &&
-             !To<LayoutBoxModelObject>(object)
-                  .Layer()
-                  ->IsReplacedNormalFlowStacking() &&
              context.directly_composited_container !=
                  context.directly_composited_container_for_stacked_contents) {
-    // The current object is stacked, so we should use
-    // directly_composited_container_for_stacked_contents as its paint
-    // invalidation container on which the current object is painted.
-    context.directly_composited_container =
-        context.directly_composited_container_for_stacked_contents;
-    if (context.subtree_flags &
-        PaintInvalidatorContext::kSubtreeFullInvalidationForStackedContents) {
-      context.subtree_flags |=
-          PaintInvalidatorContext::kSubtreeFullInvalidation;
+    if (To<LayoutBoxModelObject>(object)
+            .Layer()
+            ->IsReplacedNormalFlowStacking()) {
+      DCHECK(object.IsStackingContext());
+      // A ReplacedNormalFlowStacking object doesn't stack into parent stacking
+      // context, while the stacked descendants are stacked into it and inherit
+      // its direct_composited_container.
+      context.directly_composited_container_for_stacked_contents =
+          context.directly_composited_container;
+    } else {
+      // The current object is stacked, so we should use
+      // directly_composited_container_for_stacked_contents as its paint
+      // invalidation container on which the current object is painted.
+      context.directly_composited_container =
+          context.directly_composited_container_for_stacked_contents;
+      if (context.subtree_flags &
+          PaintInvalidatorContext::kSubtreeFullInvalidationForStackedContents) {
+        context.subtree_flags |=
+            PaintInvalidatorContext::kSubtreeFullInvalidation;
+      }
     }
   }
 
@@ -141,9 +149,10 @@ void PaintInvalidator::UpdateDirectlyCompositedContainer(
     }
   }
 
-  DCHECK(context.directly_composited_container ==
-         object.DirectlyCompositableContainer());
-  DCHECK(context.painting_layer == object.PaintingLayer());
+  DCHECK_EQ(context.directly_composited_container,
+            object.DirectlyCompositableContainer())
+      << object;
+  DCHECK_EQ(context.painting_layer, object.PaintingLayer()) << object;
 }
 
 void PaintInvalidator::UpdateFromTreeBuilderContext(
@@ -190,6 +199,20 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
       *tree_builder_context.current.transform,
       *tree_builder_context.current.clip, *tree_builder_context.current_effect);
 
+  // Adjust old_paint_offset so that LayoutShiftTracker will see the change of
+  // offset caused by change of paint offset translations and scroll offset
+  // below the layout shift root. For more details, see
+  // renderer/core/layout/layout-shift-tracker-old-paint-offset.md.
+  PhysicalOffset adjusted_old_paint_offset =
+      context.old_paint_offset -
+      tree_builder_context.current
+          .additional_offset_to_layout_shift_root_delta -
+      PhysicalOffset::FromFloatSizeRound(
+          tree_builder_context.translation_2d_to_layout_shift_root_delta +
+          tree_builder_context.current
+              .scroll_offset_to_layout_shift_root_delta);
+  PhysicalOffset new_paint_offset = tree_builder_context.current.paint_offset;
+
   if (object.IsText()) {
     const auto& text = To<LayoutText>(object);
     LogicalOffset new_starting_point;
@@ -208,11 +231,10 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
 
     layout_shift_tracker.NotifyTextPrePaint(
         text, property_tree_state, old_starting_point, new_starting_point,
-        // Similar to the adjustment of old_paint_offset for LayoutBox.
-        context.old_paint_offset -
-            tree_builder_context.current
-                .additional_offset_to_layout_shift_root_delta,
-        tree_builder_context.current.paint_offset, logical_height);
+        adjusted_old_paint_offset,
+        tree_builder_context.translation_2d_to_layout_shift_root_delta,
+        tree_builder_context.current.scroll_offset_to_layout_shift_root_delta,
+        new_paint_offset, logical_height);
     return;
   }
 
@@ -220,7 +242,23 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
   const auto& box = To<LayoutBox>(object);
 
   PhysicalRect new_rect = box.PhysicalVisualOverflowRect();
+  new_rect.Move(new_paint_offset);
   PhysicalRect old_rect = box.PreviousPhysicalVisualOverflowRect();
+  old_rect.Move(adjusted_old_paint_offset);
+
+  bool should_create_containing_block_scope =
+      // TODO(crbug.com/1178618): Support multiple-fragments when switching to
+      // LayoutNGFragmentTraversal.
+      context.fragment_data == &box.FirstFragment() &&
+      box.IsLayoutBlockFlow() && box.ChildrenInline() && box.SlowFirstChild();
+  if (should_create_containing_block_scope) {
+    // For layout shift tracking of contained LayoutTexts.
+    context.containing_block_scope_ =
+        std::make_unique<LayoutShiftTracker::ContainingBlockScope>(
+            PhysicalSizeToBeNoop(box.PreviousSize()),
+            PhysicalSizeToBeNoop(box.Size()), old_rect, new_rect);
+  }
+
   bool should_report_layout_shift = [&]() -> bool {
     if (box.ShouldSkipNextLayoutShiftTracking()) {
       box.GetMutableForPainting().SetShouldSkipNextLayoutShiftTracking(false);
@@ -237,8 +275,10 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
     if (object.HasLayer() &&
         To<LayoutBoxModelObject>(object).HasSelfPaintingLayer())
       return true;
-    // We don't report shift for anonymous objects but report for the children.
-    if (object.Parent()->IsAnonymous())
+    // Always track if the parent doesn't need to track (e.g. it has visibility:
+    // hidden), while this object needs (e.g. it has visibility: visible).
+    // This also includes non-anonymous child with an anonymous parent.
+    if (object.Parent()->ShouldSkipNextLayoutShiftTracking())
       return true;
     // Report if the parent is in a different transform space.
     const auto* parent_context = context.ParentContext();
@@ -249,41 +289,15 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
     // different from that of the parent).
     return parent_context->fragment_data->PaintOffset() -
                parent_context->old_paint_offset !=
-           tree_builder_context.current.paint_offset - context.old_paint_offset;
+           new_paint_offset - context.old_paint_offset;
   }();
-
-  bool should_create_containing_block_scope =
-      // TODO(crbug.com/1104064): Support multiple-fragments when switching to
-      // LayoutNGFragmentTraversal.
-      context.fragment_data == &box.FirstFragment() &&
-      box.IsLayoutBlockFlow() && box.ChildrenInline() && box.SlowFirstChild();
-  if (!should_report_layout_shift && !should_create_containing_block_scope)
-    return;
-
-  new_rect.Move(tree_builder_context.current.paint_offset);
-  old_rect.Move(context.old_paint_offset);
-  // Adjust old_visual_rect so that LayoutShiftTracker can see the change of
-  // offset caused by change of transforms below the 2d translation root.
-  old_rect.Move(-tree_builder_context.current
-                     .additional_offset_to_layout_shift_root_delta);
-
-  if (should_create_containing_block_scope) {
-    // For layout shift tracking of contained LayoutTexts.
-    context.containing_block_scope_ =
-        std::make_unique<LayoutShiftTracker::ContainingBlockScope>(
-            PhysicalSizeToBeNoop(box.PreviousSize()),
-            PhysicalSizeToBeNoop(box.Size()), old_rect, new_rect);
-    if (!should_report_layout_shift)
-      return;
+  if (should_report_layout_shift) {
+    layout_shift_tracker.NotifyBoxPrePaint(
+        box, property_tree_state, old_rect, new_rect, adjusted_old_paint_offset,
+        tree_builder_context.translation_2d_to_layout_shift_root_delta,
+        tree_builder_context.current.scroll_offset_to_layout_shift_root_delta,
+        new_paint_offset);
   }
-
-  // Adjust old_paint_offset similarly.
-  PhysicalOffset old_paint_offset =
-      context.old_paint_offset -
-      tree_builder_context.current.additional_offset_to_layout_shift_root_delta;
-  layout_shift_tracker.NotifyBoxPrePaint(
-      box, property_tree_state, old_rect, new_rect, old_paint_offset,
-      tree_builder_context.current.paint_offset);
 }
 
 bool PaintInvalidator::InvalidatePaint(
@@ -321,7 +335,9 @@ bool PaintInvalidator::InvalidatePaint(
         PaintInvalidatorContext::kSubtreeInvalidationChecking;
   }
 
-  if (UNLIKELY(object.ContainsInlineWithOutlineAndContinuation())) {
+  if (UNLIKELY(object.ContainsInlineWithOutlineAndContinuation()) &&
+      // Need this only if the subtree needs to check geometry change.
+      PrePaintTreeWalk::ObjectRequiresTreeBuilderContext(object)) {
     // Force subtree invalidation checking to ensure invalidation of focus rings
     // when continuation's geometry changes.
     context.subtree_flags |=
@@ -360,9 +376,10 @@ bool PaintInvalidator::InvalidatePaint(
         UpdateFromTreeBuilderContext(fragment_tree_builder_context, context);
         UpdateLayoutShiftTracking(object, fragment_tree_builder_context,
                                   context);
-        object.GetFrameView()
-            ->GetMobileFriendlinessChecker()
-            .NotifyInvalidatePaint(object);
+
+        if (auto* mf_checker =
+                object.GetFrameView()->GetMobileFriendlinessChecker())
+          mf_checker->NotifyInvalidatePaint(object);
       } else {
         context.old_paint_offset = fragment_data->PaintOffset();
       }

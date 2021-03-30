@@ -348,7 +348,7 @@ TEST_F(PasswordManagerPresenterTest, TestRequestPlaintextPassword) {
   EXPECT_CALL(GetUIController(), SetPasswordList(SizeIs(1)));
   EXPECT_CALL(GetUIController(), SetPasswordExceptionList(IsEmpty()));
   UpdatePasswordLists();
-  base::MockOnceCallback<void(base::Optional<base::string16>)>
+  base::MockOnceCallback<void(base::Optional<std::u16string>)>
       password_callback;
   EXPECT_CALL(password_callback,
               Run(testing::Eq(base::ASCIIToUTF16(kPassword))));
@@ -370,7 +370,7 @@ TEST_F(PasswordManagerPresenterTest, TestRequestPlaintextPasswordEdit) {
   EXPECT_CALL(GetUIController(), SetPasswordList(SizeIs(1)));
   EXPECT_CALL(GetUIController(), SetPasswordExceptionList(IsEmpty()));
   UpdatePasswordLists();
-  base::MockOnceCallback<void(base::Optional<base::string16>)>
+  base::MockOnceCallback<void(base::Optional<std::u16string>)>
       password_callback;
   EXPECT_CALL(password_callback,
               Run(testing::Eq(base::ASCIIToUTF16(kPassword))));

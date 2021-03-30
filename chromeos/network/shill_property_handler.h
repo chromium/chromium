@@ -56,7 +56,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ShillPropertyHandler
         const base::Value& properties) = 0;
 
     // Called when the list of profiles changes.
-    virtual void ProfileListChanged() = 0;
+    virtual void ProfileListChanged(const base::Value& profile_list) = 0;
 
     // Called when a property for a watched network service has changed.
     virtual void UpdateNetworkServiceProperty(

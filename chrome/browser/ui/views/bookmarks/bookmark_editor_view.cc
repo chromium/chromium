@@ -37,6 +37,7 @@
 #include "ui/views/controls/tree/tree_view.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -117,7 +118,7 @@ bool BookmarkEditorView::CanEdit(views::TreeView* tree_view,
 }
 
 void BookmarkEditorView::ContentsChanged(views::Textfield* sender,
-                                         const base::string16& new_contents) {
+                                         const std::u16string& new_contents) {
   UserInputChanged();
 }
 
@@ -213,10 +214,6 @@ void BookmarkEditorView::ShowContextMenuForViewImpl(
                                   source_type);
 }
 
-const char* BookmarkEditorView::GetClassName() const {
-  return "BookmarkEditorView";
-}
-
 void BookmarkEditorView::BookmarkNodeMoved(BookmarkModel* model,
                                            const BookmarkNode* old_parent,
                                            size_t old_index,
@@ -262,7 +259,7 @@ void BookmarkEditorView::BookmarkNodeChildrenReordered(
 void BookmarkEditorView::Init() {
   bb_model_->AddObserver(this);
 
-  base::string16 title;
+  std::u16string title;
   GURL url;
   if (details_.type == EditDetails::EXISTING_NODE) {
     title = details_.existing_node->GetTitle();
@@ -448,7 +445,7 @@ void BookmarkEditorView::ExpandAndSelect() {
 std::unique_ptr<BookmarkEditorView::EditorNode>
 BookmarkEditorView::CreateRootNode() {
   std::unique_ptr<EditorNode> root_node =
-      std::make_unique<EditorNode>(base::string16(), 0);
+      std::make_unique<EditorNode>(std::u16string(), 0);
   const BookmarkNode* bb_root_node = bb_model_->root_node();
   CreateNodes(bb_root_node, root_node.get());
   DCHECK_GE(root_node->children().size(), 2u);
@@ -504,7 +501,7 @@ void BookmarkEditorView::ApplyEdits(EditorNode* parent) {
   bb_model_->RemoveObserver(this);
 
   GURL new_url(GetInputURL());
-  base::string16 new_title(title_tf_->GetText());
+  std::u16string new_title(title_tf_->GetText());
 
   if (!show_tree_) {
     BookmarkEditor::ApplyEditsWithNoFolderChange(
@@ -590,7 +587,11 @@ ui::SimpleMenuModel* BookmarkEditorView::GetMenuModel() {
 
 void BookmarkEditorView::EditorTreeModel::SetTitle(
     ui::TreeModelNode* node,
-    const base::string16& title) {
+    const std::u16string& title) {
   if (!title.empty())
     ui::TreeNodeModel<EditorNode>::SetTitle(node, title);
 }
+
+BEGIN_METADATA(BookmarkEditorView, views::DialogDelegateView)
+ADD_READONLY_PROPERTY_METADATA(GURL, InputURL)
+END_METADATA

@@ -30,7 +30,7 @@ class RuntimeEnabledFeaturesTestHelpers {
 
   {% for feature in features %}
   using Scoped{{feature.name}} = ScopedRuntimeEnabledFeature<
-      RuntimeEnabledFeatures::{{feature.data_member_name}}>;
+      RuntimeEnabledFeaturesBase::{{feature.data_member_name}}>;
   {% endfor %}
 };
 

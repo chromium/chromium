@@ -4,9 +4,10 @@
 
 #include <stddef.h>
 
+#include <string>
+
 #include "base/guid.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -80,7 +81,7 @@ const char* const kEmptyNickname = "";
 // Time moves on. Today is yesterday's tomorrow. Tests don't like time moving
 // on, in particular if Credit Card expiration is compared to local time.
 // Use this function to generate a year in the future.
-base::string16 GetYearInTheFuture() {
+std::u16string GetYearInTheFuture() {
   base::Time::Exploded now;
   AutofillClock::Now().LocalExplode(&now);
   return base::NumberToString16(now.year + 4);
@@ -89,9 +90,9 @@ base::string16 GetYearInTheFuture() {
 }  // namespace
 
 TEST(CreditCardTest, GetObfuscatedStringForCardDigits) {
-  const base::string16 digits = base::ASCIIToUTF16("1235");
-  const base::string16 expected =
-      base::string16() + base::i18n::kLeftToRightEmbeddingMark +
+  const std::u16string digits = u"1235";
+  const std::u16string expected =
+      std::u16string() + base::i18n::kLeftToRightEmbeddingMark +
       kMidlineEllipsis + digits + base::i18n::kPopDirectionalFormatting;
   EXPECT_EQ(expected, internal::GetObfuscatedStringForCardDigits(digits));
 }
@@ -100,34 +101,30 @@ TEST(CreditCardTest, GetObfuscatedStringForCardDigits) {
 // of different possible summary strings.  Variations occur based on the
 // existence of credit card number, month, and year fields.
 TEST(CreditCardTest, PreviewSummaryAndNetworkAndLastFourDigitsStrings) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  base::string16 valid_nickname = ASCIIToUTF16("My Visa Card");
-  // Enable the flag.
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableCardNicknameManagement);
+  std::u16string valid_nickname = u"My Visa Card";
 
   // Case 0: empty credit card.
   CreditCard credit_card0(base::GenerateGUID(), "https://www.example.com/");
-  base::string16 summary0 = credit_card0.Label();
-  EXPECT_EQ(base::string16(), summary0);
-  base::string16 obfuscated0 = credit_card0.NetworkAndLastFourDigits();
+  std::u16string summary0 = credit_card0.Label();
+  EXPECT_EQ(std::u16string(), summary0);
+  std::u16string obfuscated0 = credit_card0.NetworkAndLastFourDigits();
   EXPECT_EQ(ASCIIToUTF16(std::string("Card")), obfuscated0);
 
   // Case 00: Empty credit card with empty strings.
   CreditCard credit_card00(base::GenerateGUID(), "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card00, "John Dillinger", "", "", "", "");
-  base::string16 summary00 = credit_card00.Label();
-  EXPECT_EQ(base::string16(ASCIIToUTF16("John Dillinger")), summary00);
-  base::string16 obfuscated00 = credit_card00.NetworkAndLastFourDigits();
+  std::u16string summary00 = credit_card00.Label();
+  EXPECT_EQ(std::u16string(u"John Dillinger"), summary00);
+  std::u16string obfuscated00 = credit_card00.NetworkAndLastFourDigits();
   EXPECT_EQ(ASCIIToUTF16(std::string("Card")), obfuscated00);
 
   // Case 1: No credit card number.
   CreditCard credit_card1(base::GenerateGUID(), "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card1, "John Dillinger", "", "01", "2010",
                           "1");
-  base::string16 summary1 = credit_card1.Label();
-  EXPECT_EQ(base::string16(ASCIIToUTF16("John Dillinger")), summary1);
-  base::string16 obfuscated1 = credit_card1.NetworkAndLastFourDigits();
+  std::u16string summary1 = credit_card1.Label();
+  EXPECT_EQ(std::u16string(u"John Dillinger"), summary1);
+  std::u16string obfuscated1 = credit_card1.NetworkAndLastFourDigits();
   EXPECT_EQ(ASCIIToUTF16(std::string("Card")), obfuscated1);
 
   // Case 1.1: No credit card number, but has nickname.
@@ -135,20 +132,20 @@ TEST(CreditCardTest, PreviewSummaryAndNetworkAndLastFourDigitsStrings) {
   test::SetCreditCardInfo(&credit_card11, "John Dillinger", "", "01", "2010",
                           "1");
   credit_card11.SetNickname(valid_nickname);
-  base::string16 summary11 = credit_card11.Label();
+  std::u16string summary11 = credit_card11.Label();
   EXPECT_EQ(valid_nickname, summary11);
-  base::string16 obfuscated11 = credit_card11.NetworkAndLastFourDigits();
+  std::u16string obfuscated11 = credit_card11.NetworkAndLastFourDigits();
   EXPECT_EQ(ASCIIToUTF16(std::string("Card")), obfuscated11);
 
   // Case 2: No month.
   CreditCard credit_card2(base::GenerateGUID(), "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card2, "John Dillinger",
                           "5105 1051 0510 5100", "", "2010", "1");
-  base::string16 summary2 = credit_card2.Label();
+  std::u16string summary2 = credit_card2.Label();
   EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
                         test::ObfuscatedCardDigitsAsUTF8("5100")),
             summary2);
-  base::string16 obfuscated2 = credit_card2.NetworkAndLastFourDigits();
+  std::u16string obfuscated2 = credit_card2.NetworkAndLastFourDigits();
   EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
                         test::ObfuscatedCardDigitsAsUTF8("5100")),
             obfuscated2);
@@ -157,11 +154,11 @@ TEST(CreditCardTest, PreviewSummaryAndNetworkAndLastFourDigitsStrings) {
   CreditCard credit_card3(base::GenerateGUID(), "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card3, "John Dillinger",
                           "5105 1051 0510 5100", "01", "", "1");
-  base::string16 summary3 = credit_card3.Label();
+  std::u16string summary3 = credit_card3.Label();
   EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
                         test::ObfuscatedCardDigitsAsUTF8("5100")),
             summary3);
-  base::string16 obfuscated3 = credit_card3.NetworkAndLastFourDigits();
+  std::u16string obfuscated3 = credit_card3.NetworkAndLastFourDigits();
   EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
                         test::ObfuscatedCardDigitsAsUTF8("5100")),
             obfuscated3);
@@ -170,11 +167,11 @@ TEST(CreditCardTest, PreviewSummaryAndNetworkAndLastFourDigitsStrings) {
   CreditCard credit_card4(base::GenerateGUID(), "https://www.example.com/");
   test::SetCreditCardInfo(&credit_card4, "John Dillinger",
                           "5105 1051 0510 5100", "01", "2010", "1");
-  base::string16 summary4 = credit_card4.Label();
+  std::u16string summary4 = credit_card4.Label();
   EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
                         test::ObfuscatedCardDigitsAsUTF8("5100") + ", 01/2010"),
             summary4);
-  base::string16 obfuscated4 = credit_card4.NetworkAndLastFourDigits();
+  std::u16string obfuscated4 = credit_card4.NetworkAndLastFourDigits();
   EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
                         test::ObfuscatedCardDigitsAsUTF8("5100")),
             obfuscated4);
@@ -185,11 +182,11 @@ TEST(CreditCardTest, PreviewSummaryAndNetworkAndLastFourDigitsStrings) {
       &credit_card5, "John Dillinger",
       "0123456789 0123456789 0123456789 5105 1051 0510 5100", "01", "2010",
       "1");
-  base::string16 summary5 = credit_card5.Label();
+  std::u16string summary5 = credit_card5.Label();
   EXPECT_EQ(UTF8ToUTF16(std::string("Card  ") +
                         test::ObfuscatedCardDigitsAsUTF8("5100") + ", 01/2010"),
             summary5);
-  base::string16 obfuscated5 = credit_card5.NetworkAndLastFourDigits();
+  std::u16string obfuscated5 = credit_card5.NetworkAndLastFourDigits();
   EXPECT_EQ(UTF8ToUTF16(std::string("Card  ") +
                         test::ObfuscatedCardDigitsAsUTF8("5100")),
             obfuscated5);
@@ -199,30 +196,16 @@ TEST(CreditCardTest, PreviewSummaryAndNetworkAndLastFourDigitsStrings) {
   test::SetCreditCardInfo(&credit_card6, "John Dillinger",
                           "5105 1051 0510 5100", "01", "2010", "1");
   credit_card6.SetNickname(valid_nickname);
-  base::string16 summary6 = credit_card6.Label();
+  std::u16string summary6 = credit_card6.Label();
   EXPECT_EQ(
       valid_nickname +
           UTF8ToUTF16(std::string("  ") +
                       test::ObfuscatedCardDigitsAsUTF8("5100") + ", 01/2010"),
       summary6);
-
-  // Case 7: No credit card number, has valid nickname, but flag is off.
-  // Reset and disable the nickname feature flags.
-  scoped_feature_list.Reset();
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillEnableCardNicknameManagement);
-  CreditCard credit_card7(base::GenerateGUID(), "https://www.example.com/");
-  test::SetCreditCardInfo(&credit_card7, "John Dillinger", "", "01", "2010",
-                          "1");
-  credit_card7.SetNickname(valid_nickname);
-  base::string16 summary7 = credit_card11.Label();
-  EXPECT_EQ(base::string16(ASCIIToUTF16("John Dillinger")), summary7);
-  base::string16 obfuscated7 = credit_card7.NetworkAndLastFourDigits();
-  EXPECT_EQ(ASCIIToUTF16(std::string("Card")), obfuscated7);
 }
 
 TEST(CreditCardTest, NicknameAndLastFourDigitsStrings) {
-  base::string16 valid_nickname = ASCIIToUTF16("My Visa Card");
+  std::u16string valid_nickname = u"My Visa Card";
 
   // Case 1: No credit card number but has nickname. Only return nickname.
   CreditCard credit_card1(base::GenerateGUID(), "https://www.example.com/");
@@ -244,9 +227,8 @@ TEST(CreditCardTest, NicknameAndLastFourDigitsStrings) {
 
 TEST(CreditCardTest, CardIdentifierStringsForAutofillDisplay) {
   base::test::ScopedFeatureList scoped_feature_list;
-  base::string16 valid_nickname = ASCIIToUTF16("My Visa Card");
-  base::string16 invalid_nickname =
-      ASCIIToUTF16("Nickname length exceeds 25 characters");
+  std::u16string valid_nickname = u"My Visa Card";
+  std::u16string invalid_nickname = u"Nickname length exceeds 25 characters";
 
   // Case 1: Nickname name is invalid -> show network name.
   CreditCard credit_card1(base::GenerateGUID(), "https://www.example.com/");
@@ -283,11 +265,13 @@ TEST(CreditCardTest, CardIdentifierStringForIssuedCard) {
   test::SetCreditCardInfo(&credit_card1, "John Dillinger",
                           "5105 1051 0510 5100" /* Mastercard */, "01", "2020",
                           "1");
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_GOOGLE_ISSUED),
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_GOOGLE_ISSUED) +
+                UTF8ToUTF16(std::string(" Mastercard  ") +
+                            test::ObfuscatedCardDigitsAsUTF8("5100")),
             credit_card1.CardIdentifierStringForAutofillDisplay());
 
   // Case 2: Card Issuer set to GOOGLE with nickname.
-  base::string16 valid_nickname = ASCIIToUTF16("My Visa Card");
+  std::u16string valid_nickname = u"My Visa Card";
   credit_card1.SetNickname(valid_nickname);
   EXPECT_EQ(
       valid_nickname + UTF8ToUTF16(std::string("  ") +
@@ -321,7 +305,7 @@ TEST(CreditCardTest, CardIdentifierStringForIssuedCardExpOff) {
             credit_card1.CardIdentifierStringForAutofillDisplay());
 
   // Case 2: Card Issuer set to GOOGLE with nickname.
-  base::string16 valid_nickname = ASCIIToUTF16("My Visa Card");
+  std::u16string valid_nickname = u"My Visa Card";
   credit_card1.SetNickname(valid_nickname);
   EXPECT_EQ(
       valid_nickname + UTF8ToUTF16(std::string("  ") +
@@ -697,18 +681,18 @@ TEST(CreditCardTest, HasSameNumberAs) {
 
   // Cards with the same number are the same.
   a.set_record_type(CreditCard::LOCAL_CARD);
-  a.SetRawInfo(CREDIT_CARD_NUMBER, ASCIIToUTF16("4111111111111111"));
+  a.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
   b.set_record_type(CreditCard::LOCAL_CARD);
-  b.SetRawInfo(CREDIT_CARD_NUMBER, ASCIIToUTF16("4111111111111111"));
+  b.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
   EXPECT_TRUE(a.HasSameNumberAs(b));
   EXPECT_TRUE(b.HasSameNumberAs(a));
 
   // Local cards with different overall numbers shouldn't match even if the last
   // four digits are the same.
   a.set_record_type(CreditCard::LOCAL_CARD);
-  a.SetRawInfo(CREDIT_CARD_NUMBER, ASCIIToUTF16("4111111111111111"));
+  a.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
   b.set_record_type(CreditCard::LOCAL_CARD);
-  b.SetRawInfo(CREDIT_CARD_NUMBER, ASCIIToUTF16("4111222222221111"));
+  b.SetRawInfo(CREDIT_CARD_NUMBER, u"4111222222221111");
   EXPECT_FALSE(a.HasSameNumberAs(b));
   EXPECT_FALSE(b.HasSameNumberAs(a));
 
@@ -716,66 +700,66 @@ TEST(CreditCardTest, HasSameNumberAs) {
   // cards have different overall numbers but the same last four digits, they
   // should not match.
   a.set_record_type(CreditCard::FULL_SERVER_CARD);
-  a.SetRawInfo(CREDIT_CARD_NUMBER, ASCIIToUTF16("4111111111111111"));
+  a.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
   b.set_record_type(CreditCard::LOCAL_CARD);
-  b.SetRawInfo(CREDIT_CARD_NUMBER, ASCIIToUTF16("4111222222221111"));
+  b.SetRawInfo(CREDIT_CARD_NUMBER, u"4111222222221111");
   EXPECT_FALSE(a.HasSameNumberAs(b));
   EXPECT_FALSE(b.HasSameNumberAs(a));
 
   // When one card is a masked server card, the other is a local card, and the
   // cards have the same last four digits, they should match.
   a.set_record_type(CreditCard::MASKED_SERVER_CARD);
-  a.SetRawInfo(CREDIT_CARD_NUMBER, ASCIIToUTF16("4111111111111111"));
+  a.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
   b.set_record_type(CreditCard::LOCAL_CARD);
-  b.SetRawInfo(CREDIT_CARD_NUMBER, ASCIIToUTF16("4331111111111111"));
+  b.SetRawInfo(CREDIT_CARD_NUMBER, u"4331111111111111");
   EXPECT_TRUE(a.HasSameNumberAs(b));
   EXPECT_TRUE(b.HasSameNumberAs(a));
 
   // When one card is a masked server card, the other is a full server card, and
   // the cards have the same last four digits, they should match.
   a.set_record_type(CreditCard::MASKED_SERVER_CARD);
-  a.SetRawInfo(CREDIT_CARD_NUMBER, ASCIIToUTF16("4111111111111111"));
+  a.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
   b.set_record_type(CreditCard::FULL_SERVER_CARD);
-  b.SetRawInfo(CREDIT_CARD_NUMBER, ASCIIToUTF16("4331111111111111"));
+  b.SetRawInfo(CREDIT_CARD_NUMBER, u"4331111111111111");
   EXPECT_TRUE(a.HasSameNumberAs(b));
   EXPECT_TRUE(b.HasSameNumberAs(a));
 
   // If one card is masked, then partial or missing expiration date information
   // should not prevent the function from returning true.
   a.set_record_type(CreditCard::MASKED_SERVER_CARD);
-  a.SetRawInfo(CREDIT_CARD_NUMBER, ASCIIToUTF16("4111111111111111"));
-  a.SetRawInfo(CREDIT_CARD_EXP_MONTH, ASCIIToUTF16("01"));
-  a.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, ASCIIToUTF16("2025"));
+  a.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
+  a.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"01");
+  a.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"2025");
   b.set_record_type(CreditCard::LOCAL_CARD);
-  b.SetRawInfo(CREDIT_CARD_NUMBER, ASCIIToUTF16("4111111111111111"));
-  b.SetRawInfo(CREDIT_CARD_EXP_MONTH, ASCIIToUTF16(""));
-  b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, ASCIIToUTF16(""));
+  b.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
+  b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"");
+  b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"");
   EXPECT_TRUE(a.HasSameNumberAs(b));
   EXPECT_TRUE(b.HasSameNumberAs(a));
 
   // If one card is masked, then non-matching expiration months should cause the
   // function to return false.
   a.set_record_type(CreditCard::MASKED_SERVER_CARD);
-  a.SetRawInfo(CREDIT_CARD_NUMBER, ASCIIToUTF16("4111111111111111"));
-  a.SetRawInfo(CREDIT_CARD_EXP_MONTH, ASCIIToUTF16("01"));
-  a.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, ASCIIToUTF16(""));
+  a.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
+  a.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"01");
+  a.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"");
   b.set_record_type(CreditCard::LOCAL_CARD);
-  b.SetRawInfo(CREDIT_CARD_NUMBER, ASCIIToUTF16("4111111111111111"));
-  b.SetRawInfo(CREDIT_CARD_EXP_MONTH, ASCIIToUTF16("03"));
-  b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, ASCIIToUTF16(""));
+  b.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
+  b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"03");
+  b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"");
   EXPECT_FALSE(a.HasSameNumberAs(b));
   EXPECT_FALSE(b.HasSameNumberAs(a));
 
   // If one card is masked, then non-matching expiration years should cause the
   // function to return false.
   a.set_record_type(CreditCard::MASKED_SERVER_CARD);
-  a.SetRawInfo(CREDIT_CARD_NUMBER, ASCIIToUTF16("4111111111111111"));
-  a.SetRawInfo(CREDIT_CARD_EXP_MONTH, ASCIIToUTF16(""));
-  a.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, ASCIIToUTF16("2025"));
+  a.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
+  a.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"");
+  a.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"2025");
   b.set_record_type(CreditCard::LOCAL_CARD);
-  b.SetRawInfo(CREDIT_CARD_NUMBER, ASCIIToUTF16("4111111111111111"));
-  b.SetRawInfo(CREDIT_CARD_EXP_MONTH, ASCIIToUTF16(""));
-  b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, ASCIIToUTF16("2026"));
+  b.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
+  b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"");
+  b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"2026");
   EXPECT_FALSE(a.HasSameNumberAs(b));
   EXPECT_FALSE(b.HasSameNumberAs(a));
 }
@@ -803,12 +787,12 @@ TEST(CreditCardTest, Compare) {
   EXPECT_EQ(0, a.Compare(b));
 
   // Difference in nickname counts.
-  a.SetNickname(ASCIIToUTF16("My Visa Card"));
-  b.SetNickname(ASCIIToUTF16("Grocery Cashback Card"));
+  a.SetNickname(u"My Visa Card");
+  b.SetNickname(u"Grocery Cashback Card");
   EXPECT_LT(0, a.Compare(b));
   // Reset the nickname to empty, empty nickname cards are the same.
-  a.SetNickname(ASCIIToUTF16(""));
-  b.SetNickname(ASCIIToUTF16(""));
+  a.SetNickname(u"");
+  b.SetNickname(u"");
   EXPECT_EQ(0, a.Compare(b));
 
   // Local is different from server.
@@ -849,7 +833,7 @@ TEST(CreditCardTest, IconResourceId) {
 }
 
 TEST(CreditCardTest, UpdateFromImportedCard_UpdatedWithNameAndExpirationDate) {
-  const base::string16 kYearInFuture = GetYearInTheFuture();
+  const std::u16string kYearInFuture = GetYearInTheFuture();
 
   CreditCard original_card(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&original_card, "John Dillinger", "123456789012",
@@ -859,21 +843,21 @@ TEST(CreditCardTest, UpdateFromImportedCard_UpdatedWithNameAndExpirationDate) {
   // The new card has a different name, expiration date.
   CreditCard b = a;
   b.set_guid(base::GenerateGUID());
-  b.SetRawInfo(CREDIT_CARD_NAME_FULL, ASCIIToUTF16("J. Dillinger"));
-  b.SetRawInfo(CREDIT_CARD_EXP_MONTH, ASCIIToUTF16("08"));
+  b.SetRawInfo(CREDIT_CARD_NAME_FULL, u"J. Dillinger");
+  b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"08");
   b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, kYearInFuture);
 
   // |a| should be updated with the information from |b|.
   EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
   EXPECT_EQ(test::kEmptyOrigin, a.origin());
-  EXPECT_EQ(ASCIIToUTF16("J. Dillinger"), a.GetRawInfo(CREDIT_CARD_NAME_FULL));
-  EXPECT_EQ(ASCIIToUTF16("08"), a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
+  EXPECT_EQ(u"J. Dillinger", a.GetRawInfo(CREDIT_CARD_NAME_FULL));
+  EXPECT_EQ(u"08", a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
   EXPECT_EQ(kYearInFuture, a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
 }
 
 TEST(CreditCardTest,
      UpdateFromImportedCard_UpdatedWithNameAndInvalidExpirationDateMonth) {
-  const base::string16 kYearInFuture = GetYearInTheFuture();
+  const std::u16string kYearInFuture = GetYearInTheFuture();
 
   CreditCard original_card(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&original_card, "John Dillinger", "123456789012",
@@ -886,15 +870,15 @@ TEST(CreditCardTest,
   // date.
   CreditCard b = a;
   b.set_guid(base::GenerateGUID());
-  b.SetRawInfo(CREDIT_CARD_NAME_FULL, ASCIIToUTF16("J. Dillinger"));
-  b.SetRawInfo(CREDIT_CARD_EXP_MONTH, ASCIIToUTF16("0"));
+  b.SetRawInfo(CREDIT_CARD_NAME_FULL, u"J. Dillinger");
+  b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"0");
   b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, kYearInFuture);
 
   EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
   EXPECT_EQ(test::kEmptyOrigin, a.origin());
-  EXPECT_EQ(ASCIIToUTF16("J. Dillinger"), a.GetRawInfo(CREDIT_CARD_NAME_FULL));
-  EXPECT_EQ(ASCIIToUTF16("09"), a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
-  EXPECT_EQ(ASCIIToUTF16("2017"), a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
+  EXPECT_EQ(u"J. Dillinger", a.GetRawInfo(CREDIT_CARD_NAME_FULL));
+  EXPECT_EQ(u"09", a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
+  EXPECT_EQ(u"2017", a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
 }
 
 TEST(CreditCardTest,
@@ -912,20 +896,20 @@ TEST(CreditCardTest,
   CreditCard b = a;
   b.set_guid(base::GenerateGUID());
   b.set_origin(test::kEmptyOrigin);
-  b.SetRawInfo(CREDIT_CARD_NAME_FULL, ASCIIToUTF16("J. Dillinger"));
-  b.SetRawInfo(CREDIT_CARD_EXP_MONTH, ASCIIToUTF16("09"));
-  b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, ASCIIToUTF16(""));
+  b.SetRawInfo(CREDIT_CARD_NAME_FULL, u"J. Dillinger");
+  b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"09");
+  b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"");
 
   EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
   EXPECT_EQ(test::kEmptyOrigin, a.origin());
-  EXPECT_EQ(ASCIIToUTF16("J. Dillinger"), a.GetRawInfo(CREDIT_CARD_NAME_FULL));
-  EXPECT_EQ(ASCIIToUTF16("09"), a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
-  EXPECT_EQ(ASCIIToUTF16("2017"), a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
+  EXPECT_EQ(u"J. Dillinger", a.GetRawInfo(CREDIT_CARD_NAME_FULL));
+  EXPECT_EQ(u"09", a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
+  EXPECT_EQ(u"2017", a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
 }
 
 TEST(CreditCardTest,
      UpdateFromImportedCard_UpdatedWithEmptyNameAndValidExpirationDate) {
-  const base::string16 kYearInFuture = GetYearInTheFuture();
+  const std::u16string kYearInFuture = GetYearInTheFuture();
 
   CreditCard original_card(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&original_card, "John Dillinger", "123456789012",
@@ -937,22 +921,21 @@ TEST(CreditCardTest,
   // name.
   CreditCard b = a;
   b.set_guid(base::GenerateGUID());
-  b.SetRawInfo(CREDIT_CARD_NAME_FULL, base::string16());
-  b.SetRawInfo(CREDIT_CARD_EXP_MONTH, ASCIIToUTF16("08"));
+  b.SetRawInfo(CREDIT_CARD_NAME_FULL, std::u16string());
+  b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"08");
   b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, kYearInFuture);
 
   EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
   EXPECT_EQ(test::kEmptyOrigin, a.origin());
-  EXPECT_EQ(ASCIIToUTF16("John Dillinger"),
-            a.GetRawInfo(CREDIT_CARD_NAME_FULL));
-  EXPECT_EQ(ASCIIToUTF16("08"), a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
+  EXPECT_EQ(u"John Dillinger", a.GetRawInfo(CREDIT_CARD_NAME_FULL));
+  EXPECT_EQ(u"08", a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
   EXPECT_EQ(kYearInFuture, a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
 }
 
 TEST(
     CreditCardTest,
     UpdateFromImportedCard_VerifiedCardNotUpdatedWithEmptyExpirationDateMonth) {
-  const base::string16 kYearInFuture = GetYearInTheFuture();
+  const std::u16string kYearInFuture = GetYearInTheFuture();
 
   CreditCard original_card(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&original_card, "John Dillinger", "123456789012",
@@ -966,16 +949,15 @@ TEST(
   b.set_guid(base::GenerateGUID());
   a.set_origin("Chrome settings");
   b.set_origin(test::kEmptyOrigin);
-  b.SetRawInfo(CREDIT_CARD_NAME_FULL, ASCIIToUTF16("J. Dillinger"));
-  b.SetRawInfo(CREDIT_CARD_EXP_MONTH, ASCIIToUTF16("0"));
+  b.SetRawInfo(CREDIT_CARD_NAME_FULL, u"J. Dillinger");
+  b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"0");
   b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, kYearInFuture);
 
   EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
   EXPECT_EQ("Chrome settings", a.origin());
-  EXPECT_EQ(ASCIIToUTF16("John Dillinger"),
-            a.GetRawInfo(CREDIT_CARD_NAME_FULL));
-  EXPECT_EQ(ASCIIToUTF16("09"), a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
-  EXPECT_EQ(ASCIIToUTF16("2017"), a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
+  EXPECT_EQ(u"John Dillinger", a.GetRawInfo(CREDIT_CARD_NAME_FULL));
+  EXPECT_EQ(u"09", a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
+  EXPECT_EQ(u"2017", a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
 }
 
 TEST(CreditCardTest,
@@ -991,16 +973,15 @@ TEST(CreditCardTest,
   b.set_guid(base::GenerateGUID());
   a.set_origin("Chrome settings");
   b.set_origin(test::kEmptyOrigin);
-  b.SetRawInfo(CREDIT_CARD_NAME_FULL, ASCIIToUTF16("J. Dillinger"));
-  b.SetRawInfo(CREDIT_CARD_EXP_MONTH, ASCIIToUTF16("09"));
-  b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, ASCIIToUTF16("0"));
+  b.SetRawInfo(CREDIT_CARD_NAME_FULL, u"J. Dillinger");
+  b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"09");
+  b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"0");
 
   EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
   EXPECT_EQ("Chrome settings", a.origin());
-  EXPECT_EQ(ASCIIToUTF16("John Dillinger"),
-            a.GetRawInfo(CREDIT_CARD_NAME_FULL));
-  EXPECT_EQ(ASCIIToUTF16("09"), a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
-  EXPECT_EQ(ASCIIToUTF16("2017"), a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
+  EXPECT_EQ(u"John Dillinger", a.GetRawInfo(CREDIT_CARD_NAME_FULL));
+  EXPECT_EQ(u"09", a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
+  EXPECT_EQ(u"2017", a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
 }
 
 TEST(CreditCardTest,
@@ -1016,21 +997,20 @@ TEST(CreditCardTest,
   b.set_guid(base::GenerateGUID());
   a.set_origin(kSettingsOrigin);
   b.set_origin(test::kEmptyOrigin);
-  b.SetRawInfo(CREDIT_CARD_NAME_FULL, ASCIIToUTF16("J. Dillinger"));
-  b.SetRawInfo(CREDIT_CARD_EXP_MONTH, ASCIIToUTF16("08"));
-  b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, ASCIIToUTF16("2017"));
+  b.SetRawInfo(CREDIT_CARD_NAME_FULL, u"J. Dillinger");
+  b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"08");
+  b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"2017");
 
   EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
   EXPECT_EQ(kSettingsOrigin, a.origin());
-  EXPECT_EQ(ASCIIToUTF16("John Dillinger"),
-            a.GetRawInfo(CREDIT_CARD_NAME_FULL));
-  EXPECT_EQ(ASCIIToUTF16("09"), a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
-  EXPECT_EQ(ASCIIToUTF16("2017"), a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
+  EXPECT_EQ(u"John Dillinger", a.GetRawInfo(CREDIT_CARD_NAME_FULL));
+  EXPECT_EQ(u"09", a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
+  EXPECT_EQ(u"2017", a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
 }
 
 TEST(CreditCardTest,
      UpdateFromImportedCard_ExpiredVerifiedCardNotUpdatedWithDifferentName) {
-  const base::string16 kYearInFuture = GetYearInTheFuture();
+  const std::u16string kYearInFuture = GetYearInTheFuture();
 
   CreditCard original_card(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&original_card, "John Dillinger", "123456789012",
@@ -1045,21 +1025,20 @@ TEST(CreditCardTest,
   a.SetExpirationYear(2010);
   b.set_guid(base::GenerateGUID());
   b.set_origin(test::kEmptyOrigin);
-  b.SetRawInfo(CREDIT_CARD_NAME_FULL, ASCIIToUTF16("J. Dillinger"));
-  b.SetRawInfo(CREDIT_CARD_EXP_MONTH, ASCIIToUTF16("08"));
+  b.SetRawInfo(CREDIT_CARD_NAME_FULL, u"J. Dillinger");
+  b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"08");
   b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, kYearInFuture);
 
   EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
   EXPECT_EQ("Chrome settings", a.origin());
-  EXPECT_EQ(ASCIIToUTF16("John Dillinger"),
-            a.GetRawInfo(CREDIT_CARD_NAME_FULL));
-  EXPECT_EQ(ASCIIToUTF16("09"), a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
-  EXPECT_EQ(ASCIIToUTF16("2010"), a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
+  EXPECT_EQ(u"John Dillinger", a.GetRawInfo(CREDIT_CARD_NAME_FULL));
+  EXPECT_EQ(u"09", a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
+  EXPECT_EQ(u"2010", a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
 }
 
 TEST(CreditCardTest,
      UpdateFromImportedCard_ExpiredVerifiedCardUpdatedWithSameName) {
-  const base::string16 kYearInFuture = GetYearInTheFuture();
+  const std::u16string kYearInFuture = GetYearInTheFuture();
 
   CreditCard original_card(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&original_card, "John Dillinger", "123456789012",
@@ -1074,14 +1053,13 @@ TEST(CreditCardTest,
   a.SetExpirationYear(2010);
   b.set_guid(base::GenerateGUID());
   b.set_origin(test::kEmptyOrigin);
-  b.SetRawInfo(CREDIT_CARD_EXP_MONTH, ASCIIToUTF16("08"));
+  b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"08");
   b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, kYearInFuture);
 
   EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
   EXPECT_EQ("Chrome settings", a.origin());
-  EXPECT_EQ(ASCIIToUTF16("John Dillinger"),
-            a.GetRawInfo(CREDIT_CARD_NAME_FULL));
-  EXPECT_EQ(ASCIIToUTF16("08"), a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
+  EXPECT_EQ(u"John Dillinger", a.GetRawInfo(CREDIT_CARD_NAME_FULL));
+  EXPECT_EQ(u"08", a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
   EXPECT_EQ(kYearInFuture, a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
 }
 
@@ -1100,20 +1078,19 @@ TEST(CreditCardTest,
   a.SetExpirationYear(2010);
   b.set_guid(base::GenerateGUID());
   b.set_origin(test::kEmptyOrigin);
-  b.SetRawInfo(CREDIT_CARD_EXP_MONTH, ASCIIToUTF16("08"));
-  b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, ASCIIToUTF16("2009"));
+  b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"08");
+  b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"2009");
 
   EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
   EXPECT_EQ("Chrome settings", a.origin());
-  EXPECT_EQ(ASCIIToUTF16("John Dillinger"),
-            a.GetRawInfo(CREDIT_CARD_NAME_FULL));
-  EXPECT_EQ(ASCIIToUTF16("09"), a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
-  EXPECT_EQ(ASCIIToUTF16("2010"), a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
+  EXPECT_EQ(u"John Dillinger", a.GetRawInfo(CREDIT_CARD_NAME_FULL));
+  EXPECT_EQ(u"09", a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
+  EXPECT_EQ(u"2010", a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
 }
 
 TEST(CreditCardTest,
      UpdateFromImportedCard_VerifiedCardUpdatedWithVerifiedCard) {
-  const base::string16 kYearInFuture = GetYearInTheFuture();
+  const std::u16string kYearInFuture = GetYearInTheFuture();
 
   CreditCard original_card(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&original_card, "John Dillinger", "123456789012",
@@ -1127,20 +1104,19 @@ TEST(CreditCardTest,
   a.set_origin("Chrome settings");
   b.set_guid(base::GenerateGUID());
   b.set_origin(kSettingsOrigin);
-  b.SetRawInfo(CREDIT_CARD_EXP_MONTH, ASCIIToUTF16("08"));
+  b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"08");
   b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, kYearInFuture);
 
   EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
   EXPECT_EQ("Chrome settings", a.origin());
-  EXPECT_EQ(ASCIIToUTF16("John Dillinger"),
-            a.GetRawInfo(CREDIT_CARD_NAME_FULL));
-  EXPECT_EQ(ASCIIToUTF16("08"), a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
+  EXPECT_EQ(u"John Dillinger", a.GetRawInfo(CREDIT_CARD_NAME_FULL));
+  EXPECT_EQ(u"08", a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
   EXPECT_EQ(kYearInFuture, a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
 }
 
 TEST(CreditCardTest,
      UpdateFromImportedCard_VerifiedCardNotUpdatedWithDifferentCard) {
-  const base::string16 kYearInFuture = GetYearInTheFuture();
+  const std::u16string kYearInFuture = GetYearInTheFuture();
 
   CreditCard original_card(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&original_card, "John Dillinger", "123456789012",
@@ -1154,16 +1130,15 @@ TEST(CreditCardTest,
   a.set_origin("Chrome settings");
   b.set_guid(base::GenerateGUID());
   b.set_origin(kSettingsOrigin);
-  b.SetRawInfo(CREDIT_CARD_NUMBER, ASCIIToUTF16("4111111111111111"));
-  b.SetRawInfo(CREDIT_CARD_EXP_MONTH, ASCIIToUTF16("08"));
+  b.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
+  b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"08");
   b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, kYearInFuture);
 
   EXPECT_FALSE(a.UpdateFromImportedCard(b, "en-US"));
   EXPECT_EQ("Chrome settings", a.origin());
-  EXPECT_EQ(ASCIIToUTF16("John Dillinger"),
-            a.GetRawInfo(CREDIT_CARD_NAME_FULL));
-  EXPECT_EQ(ASCIIToUTF16("09"), a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
-  EXPECT_EQ(ASCIIToUTF16("2017"), a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
+  EXPECT_EQ(u"John Dillinger", a.GetRawInfo(CREDIT_CARD_NAME_FULL));
+  EXPECT_EQ(u"09", a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
+  EXPECT_EQ(u"2017", a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
 }
 
 TEST(CreditCardTest, IsValidCardNumberAndExpiryDate) {
@@ -1176,15 +1151,15 @@ TEST(CreditCardTest, IsValidCardNumberAndExpiryDate) {
                   base::NumberToString16(now_exploded.month));
   card.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR,
                   base::NumberToString16(now_exploded.year - 1));
-  card.SetRawInfo(CREDIT_CARD_NUMBER, ASCIIToUTF16("4111111111111111"));
+  card.SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
   EXPECT_FALSE(card.IsValid());
   EXPECT_FALSE(card.HasValidExpirationDate());
   EXPECT_TRUE(card.HasValidCardNumber());
 
   // Invalid because card number is not complete
-  card.SetRawInfo(CREDIT_CARD_EXP_MONTH, ASCIIToUTF16("12"));
-  card.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, ASCIIToUTF16("2999"));
-  card.SetRawInfo(CREDIT_CARD_NUMBER, ASCIIToUTF16("41111"));
+  card.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"12");
+  card.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"2999");
+  card.SetRawInfo(CREDIT_CARD_NUMBER, u"41111");
   EXPECT_FALSE(card.IsValid());
 
   for (const char* valid_number : kValidNumbers) {
@@ -1251,40 +1226,36 @@ TEST(CreditCardTest, SetRawInfoCreditCardNumber) {
 
   test::SetCreditCardInfo(&card, "Bob Dylan", "4321-5432-6543-xxxx", "07",
                           "2013", "1");
-  EXPECT_EQ(ASCIIToUTF16("4321-5432-6543-xxxx"),
-            card.GetRawInfo(CREDIT_CARD_NUMBER));
+  EXPECT_EQ(u"4321-5432-6543-xxxx", card.GetRawInfo(CREDIT_CARD_NUMBER));
 }
 
 // Verify that we can handle both numeric and named months.
 TEST(CreditCardTest, SetExpirationMonth) {
   CreditCard card(base::GenerateGUID(), "https://www.example.com/");
 
-  card.SetRawInfo(CREDIT_CARD_EXP_MONTH, ASCIIToUTF16("05"));
-  EXPECT_EQ(ASCIIToUTF16("05"), card.GetRawInfo(CREDIT_CARD_EXP_MONTH));
+  card.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"05");
+  EXPECT_EQ(u"05", card.GetRawInfo(CREDIT_CARD_EXP_MONTH));
   EXPECT_EQ(5, card.expiration_month());
 
-  card.SetRawInfo(CREDIT_CARD_EXP_MONTH, ASCIIToUTF16("7"));
-  EXPECT_EQ(ASCIIToUTF16("07"), card.GetRawInfo(CREDIT_CARD_EXP_MONTH));
+  card.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"7");
+  EXPECT_EQ(u"07", card.GetRawInfo(CREDIT_CARD_EXP_MONTH));
   EXPECT_EQ(7, card.expiration_month());
 
   // This should fail, and preserve the previous value.
-  card.SetRawInfo(CREDIT_CARD_EXP_MONTH, ASCIIToUTF16("January"));
-  EXPECT_EQ(ASCIIToUTF16("07"), card.GetRawInfo(CREDIT_CARD_EXP_MONTH));
+  card.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"January");
+  EXPECT_EQ(u"07", card.GetRawInfo(CREDIT_CARD_EXP_MONTH));
   EXPECT_EQ(7, card.expiration_month());
 
-  card.SetInfo(AutofillType(CREDIT_CARD_EXP_MONTH), ASCIIToUTF16("January"),
-               "en-US");
-  EXPECT_EQ(ASCIIToUTF16("01"), card.GetRawInfo(CREDIT_CARD_EXP_MONTH));
+  card.SetInfo(AutofillType(CREDIT_CARD_EXP_MONTH), u"January", "en-US");
+  EXPECT_EQ(u"01", card.GetRawInfo(CREDIT_CARD_EXP_MONTH));
   EXPECT_EQ(1, card.expiration_month());
 
-  card.SetInfo(AutofillType(CREDIT_CARD_EXP_MONTH), ASCIIToUTF16("Apr"),
-               "en-US");
-  EXPECT_EQ(ASCIIToUTF16("04"), card.GetRawInfo(CREDIT_CARD_EXP_MONTH));
+  card.SetInfo(AutofillType(CREDIT_CARD_EXP_MONTH), u"Apr", "en-US");
+  EXPECT_EQ(u"04", card.GetRawInfo(CREDIT_CARD_EXP_MONTH));
   EXPECT_EQ(4, card.expiration_month());
 
-  card.SetInfo(AutofillType(CREDIT_CARD_EXP_MONTH), UTF8ToUTF16("FÉVRIER"),
-               "fr-FR");
-  EXPECT_EQ(ASCIIToUTF16("02"), card.GetRawInfo(CREDIT_CARD_EXP_MONTH));
+  card.SetInfo(AutofillType(CREDIT_CARD_EXP_MONTH), u"FÉVRIER", "fr-FR");
+  EXPECT_EQ(u"02", card.GetRawInfo(CREDIT_CARD_EXP_MONTH));
   EXPECT_EQ(2, card.expiration_month());
 }
 
@@ -1294,44 +1265,44 @@ TEST(CreditCardTest, SetNickname) {
   CreditCard card(base::GenerateGUID(), "https://www.example.com/");
 
   // Normal input nickname.
-  card.SetNickname(ASCIIToUTF16("Grocery card"));
-  EXPECT_EQ(ASCIIToUTF16("Grocery card"), card.nickname());
+  card.SetNickname(u"Grocery card");
+  EXPECT_EQ(u"Grocery card", card.nickname());
 
   // Input nickname has leading and trailing whitespaces.
-  card.SetNickname(ASCIIToUTF16("  Grocery card  "));
-  EXPECT_EQ(ASCIIToUTF16("Grocery card"), card.nickname());
+  card.SetNickname(u"  Grocery card  ");
+  EXPECT_EQ(u"Grocery card", card.nickname());
 
   // Input nickname has newlines.
-  card.SetNickname(ASCIIToUTF16("\r\n Grocery\ncard \r\n"));
-  EXPECT_EQ(ASCIIToUTF16("Grocery card"), card.nickname());
+  card.SetNickname(u"\r\n Grocery\ncard \r\n");
+  EXPECT_EQ(u"Grocery card", card.nickname());
 
   // Input nickname has tabs.
-  card.SetNickname(ASCIIToUTF16(" \tGrocery\t card\t "));
-  EXPECT_EQ(ASCIIToUTF16("Grocery  card"), card.nickname());
+  card.SetNickname(u" \tGrocery\t card\t ");
+  EXPECT_EQ(u"Grocery  card", card.nickname());
 
   // Input nickname has newlines & whitespaces & tabs.
-  card.SetNickname(ASCIIToUTF16("\n\t Grocery \tcard \n \r\n"));
-  EXPECT_EQ(ASCIIToUTF16("Grocery  card"), card.nickname());
+  card.SetNickname(u"\n\t Grocery \tcard \n \r\n");
+  EXPECT_EQ(u"Grocery  card", card.nickname());
 }
 
 TEST(CreditCardTest, CreditCardType) {
   CreditCard card(base::GenerateGUID(), "https://www.example.com/");
 
   // The card type cannot be set directly.
-  card.SetRawInfo(CREDIT_CARD_TYPE, ASCIIToUTF16("Visa"));
-  EXPECT_EQ(base::string16(), card.GetRawInfo(CREDIT_CARD_TYPE));
+  card.SetRawInfo(CREDIT_CARD_TYPE, u"Visa");
+  EXPECT_EQ(std::u16string(), card.GetRawInfo(CREDIT_CARD_TYPE));
 
   // Setting the number should implicitly set the type.
-  card.SetRawInfo(CREDIT_CARD_NUMBER, ASCIIToUTF16("4111 1111 1111 1111"));
-  EXPECT_EQ(ASCIIToUTF16("Visa"), card.GetRawInfo(CREDIT_CARD_TYPE));
+  card.SetRawInfo(CREDIT_CARD_NUMBER, u"4111 1111 1111 1111");
+  EXPECT_EQ(u"Visa", card.GetRawInfo(CREDIT_CARD_TYPE));
 }
 
 TEST(CreditCardTest, CreditCardVerificationCode) {
   CreditCard card(base::GenerateGUID(), "https://www.example.com/");
 
   // The verification code cannot be set, as Chrome does not store this data.
-  card.SetRawInfo(CREDIT_CARD_VERIFICATION_CODE, ASCIIToUTF16("999"));
-  EXPECT_EQ(base::string16(), card.GetRawInfo(CREDIT_CARD_VERIFICATION_CODE));
+  card.SetRawInfo(CREDIT_CARD_VERIFICATION_CODE, u"999");
+  EXPECT_EQ(std::u16string(), card.GetRawInfo(CREDIT_CARD_VERIFICATION_CODE));
 }
 
 // Tests that the card in only deletable if it is expired before the threshold.
@@ -1403,7 +1374,7 @@ TEST_P(CreditCardMatchingTypesTest, Cases) {
   auto test_case = GetParam();
   CreditCard card(base::GenerateGUID(), "https://www.example.com/");
   card.set_record_type(test_case.record_type);
-  card.SetRawInfo(CREDIT_CARD_NUMBER, ASCIIToUTF16("4012888888881881"));
+  card.SetRawInfo(CREDIT_CARD_NUMBER, u"4012888888881881");
   card.SetRawInfo(CREDIT_CARD_EXP_MONTH,
                   ASCIIToUTF16(test_case.card_exp_month));
   card.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR,
@@ -1479,7 +1450,7 @@ class GetCardNetworkTestBatch1
 
 TEST_P(GetCardNetworkTestBatch1, GetCardNetwork) {
   auto test_case = GetParam();
-  base::string16 card_number = ASCIIToUTF16(test_case.card_number);
+  std::u16string card_number = ASCIIToUTF16(test_case.card_number);
   SCOPED_TRACE(card_number);
   EXPECT_EQ(test_case.issuer_network, CreditCard::GetCardNetwork(card_number));
   EXPECT_EQ(test_case.is_valid, IsValidCreditCardNumber(card_number));
@@ -1542,7 +1513,7 @@ class GetCardNetworkTestBatch2
 
 TEST_P(GetCardNetworkTestBatch2, GetCardNetwork) {
   auto test_case = GetParam();
-  base::string16 card_number = ASCIIToUTF16(test_case.card_number);
+  std::u16string card_number = ASCIIToUTF16(test_case.card_number);
   SCOPED_TRACE(card_number);
   EXPECT_EQ(test_case.issuer_network, CreditCard::GetCardNetwork(card_number));
   EXPECT_EQ(test_case.is_valid, IsValidCreditCardNumber(card_number));
@@ -1599,7 +1570,7 @@ class GetCardNetworkTestBatch3
 
 TEST_P(GetCardNetworkTestBatch3, GetCardNetwork) {
   auto test_case = GetParam();
-  base::string16 card_number = ASCIIToUTF16(test_case.card_number);
+  std::u16string card_number = ASCIIToUTF16(test_case.card_number);
   SCOPED_TRACE(card_number);
   EXPECT_EQ(test_case.issuer_network, CreditCard::GetCardNetwork(card_number));
   EXPECT_EQ(test_case.is_valid, IsValidCreditCardNumber(card_number));
@@ -1615,7 +1586,9 @@ INSTANTIATE_TEST_SUITE_P(
         GetCardNetworkTestCase{"2202", kMirCard, false},
         GetCardNetworkTestCase{"2203", kMirCard, false},
         GetCardNetworkTestCase{"2204", kMirCard, false},
-        GetCardNetworkTestCase{"2205", kTroyCard, false},
+        GetCardNetworkTestCase{"22050", kTroyCard, false},
+        GetCardNetworkTestCase{"22051", kTroyCard, false},
+        GetCardNetworkTestCase{"22052", kTroyCard, false},
         GetCardNetworkTestCase{"2221", kMasterCard, false},
         GetCardNetworkTestCase{"2720", kMasterCard, false},
         GetCardNetworkTestCase{"300", kDinersCard, false},
@@ -1661,7 +1634,7 @@ class GetCardNetworkTestBatch4
 
 TEST_P(GetCardNetworkTestBatch4, GetCardNetwork) {
   auto test_case = GetParam();
-  base::string16 card_number = ASCIIToUTF16(test_case.card_number);
+  std::u16string card_number = ASCIIToUTF16(test_case.card_number);
   SCOPED_TRACE(card_number);
   EXPECT_EQ(test_case.issuer_network, CreditCard::GetCardNetwork(card_number));
   EXPECT_EQ(test_case.is_valid, IsValidCreditCardNumber(card_number));
@@ -1686,6 +1659,7 @@ INSTANTIATE_TEST_SUITE_P(
         // Unknown IINs.
         GetCardNetworkTestCase{"0", kGenericCard, false},
         GetCardNetworkTestCase{"1", kGenericCard, false},
+        GetCardNetworkTestCase{"22053", kGenericCard, false},
         GetCardNetworkTestCase{"306", kGenericCard, false},
         GetCardNetworkTestCase{"307", kGenericCard, false},
         GetCardNetworkTestCase{"308", kGenericCard, false},
@@ -1738,28 +1712,25 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST(CreditCardTest, LastFourDigits) {
   CreditCard card(base::GenerateGUID(), "https://www.example.com/");
-  ASSERT_EQ(base::string16(), card.LastFourDigits());
-  ASSERT_EQ(internal::GetObfuscatedStringForCardDigits(base::string16()),
+  ASSERT_EQ(std::u16string(), card.LastFourDigits());
+  ASSERT_EQ(internal::GetObfuscatedStringForCardDigits(std::u16string()),
             card.ObfuscatedLastFourDigits());
 
   test::SetCreditCardInfo(&card, "Baby Face Nelson", "5212341234123489", "01",
                           "2010", "1");
-  ASSERT_EQ(base::ASCIIToUTF16("3489"), card.LastFourDigits());
-  ASSERT_EQ(
-      internal::GetObfuscatedStringForCardDigits(base::ASCIIToUTF16("3489")),
-      card.ObfuscatedLastFourDigits());
+  ASSERT_EQ(u"3489", card.LastFourDigits());
+  ASSERT_EQ(internal::GetObfuscatedStringForCardDigits(u"3489"),
+            card.ObfuscatedLastFourDigits());
 
-  card.SetRawInfo(CREDIT_CARD_NUMBER, ASCIIToUTF16("3489"));
-  ASSERT_EQ(base::ASCIIToUTF16("3489"), card.LastFourDigits());
-  ASSERT_EQ(
-      internal::GetObfuscatedStringForCardDigits(base::ASCIIToUTF16("3489")),
-      card.ObfuscatedLastFourDigits());
+  card.SetRawInfo(CREDIT_CARD_NUMBER, u"3489");
+  ASSERT_EQ(u"3489", card.LastFourDigits());
+  ASSERT_EQ(internal::GetObfuscatedStringForCardDigits(u"3489"),
+            card.ObfuscatedLastFourDigits());
 
-  card.SetRawInfo(CREDIT_CARD_NUMBER, ASCIIToUTF16("489"));
-  ASSERT_EQ(base::ASCIIToUTF16("489"), card.LastFourDigits());
-  ASSERT_EQ(
-      internal::GetObfuscatedStringForCardDigits(base::ASCIIToUTF16("489")),
-      card.ObfuscatedLastFourDigits());
+  card.SetRawInfo(CREDIT_CARD_NUMBER, u"489");
+  ASSERT_EQ(u"489", card.LastFourDigits());
+  ASSERT_EQ(internal::GetObfuscatedStringForCardDigits(u"489"),
+            card.ObfuscatedLastFourDigits());
 }
 
 // Verifies that a credit card should be updated.

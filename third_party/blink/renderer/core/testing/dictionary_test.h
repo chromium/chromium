@@ -56,6 +56,8 @@ class DictionaryTest : public ScriptWrappable {
   // Some members are not wrapped with Optional because:
   //  - |longMemberWithDefault| has a non-null default value
   //  - String and PtrTypes can express whether they are null
+  //  - base::Optional does not work with GarbageCollected types when used on
+  //  heap.
   base::Optional<int> long_member_;
   base::Optional<int> long_member_with_clamp_;
   base::Optional<int> long_member_with_enforce_range_;
@@ -82,11 +84,12 @@ class DictionaryTest : public ScriptWrappable {
   base::Optional<String> enum_or_null_member_;
 #endif
   Member<Element> element_member_;
-  base::Optional<Member<Element>> element_or_null_member_;
+  Member<Element> element_or_null_member_;
+  bool has_element_or_null_member_ = false;
   ScriptValue object_member_;
   ScriptValue object_or_null_member_with_default_;
   DoubleOrString double_or_string_member_;
-  base::Optional<HeapVector<DoubleOrString>> double_or_string_sequence_member_;
+  Member<HeapVector<DoubleOrString>> double_or_string_sequence_or_null_member_;
   Member<EventTarget> event_target_or_null_member_;
   base::Optional<String> derived_string_member_;
   String derived_string_member_with_default_;

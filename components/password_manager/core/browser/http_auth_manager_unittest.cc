@@ -70,7 +70,7 @@ class MockHttpAuthObserver : public HttpAuthObserver {
 
   MOCK_METHOD0(OnLoginModelDestroying, void());
   MOCK_METHOD2(OnAutofillDataAvailable,
-               void(const base::string16&, const base::string16&));
+               void(const std::u16string&, const std::u16string&));
 
   DISALLOW_COPY_AND_ASSIGN(MockHttpAuthObserver);
 };
@@ -226,7 +226,7 @@ TEST_F(HttpAuthManagerTest, DontSaveEmptyPasswords) {
   // Emulate that http auth credentials submitted with an empty password.
   PasswordForm submitted_form = observed_form;
   submitted_form.username_value = ASCIIToUTF16("user");
-  submitted_form.password_value = base::string16();
+  submitted_form.password_value = std::u16string();
   httpauth_manager()->OnPasswordFormSubmitted(submitted_form);
   httpauth_manager()->OnPasswordFormDismissed();
 

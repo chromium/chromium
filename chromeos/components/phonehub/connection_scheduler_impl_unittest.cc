@@ -9,10 +9,9 @@
 #include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chromeos/components/phonehub/connection_manager.h"
-#include "chromeos/components/phonehub/fake_connection_manager.h"
 #include "chromeos/components/phonehub/fake_feature_status_provider.h"
 #include "chromeos/components/phonehub/feature_status.h"
+#include "chromeos/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -27,7 +26,8 @@ class ConnectionSchedulerImplTest : public testing::Test {
   ~ConnectionSchedulerImplTest() override = default;
 
   void SetUp() override {
-    fake_connection_manager_ = std::make_unique<FakeConnectionManager>();
+    fake_connection_manager_ =
+        std::make_unique<secure_channel::FakeConnectionManager>();
     fake_feature_status_provider_ =
         std::make_unique<FakeFeatureStatusProvider>();
   }
@@ -47,7 +47,8 @@ class ConnectionSchedulerImplTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<FakeConnectionManager> fake_connection_manager_;
+  std::unique_ptr<secure_channel::FakeConnectionManager>
+      fake_connection_manager_;
   std::unique_ptr<FakeFeatureStatusProvider> fake_feature_status_provider_;
   std::unique_ptr<ConnectionSchedulerImpl> connection_scheduler_;
 };

@@ -14,8 +14,15 @@
 @implementation TabStripContainerView
 
 - (UIView*)screenshotForAnimation {
+  // The tab strip snapshot should have a clear background color. When using
+  // smooth scrolling, the background color is black, because the web content
+  // extends behind the tab strip. Switch out the background color for the
+  // snapshot and restore it afterwards.
+  UIColor* backgroundColor = self.tabStripView.backgroundColor;
+  self.tabStripView.backgroundColor = UIColor.clearColor;
   UIView* tabStripSnapshot =
       [self.tabStripView snapshotViewAfterScreenUpdates:YES];
+  self.tabStripView.backgroundColor = backgroundColor;
   tabStripSnapshot.transform =
       [self adjustTransformForRTL:tabStripSnapshot.transform];
   return tabStripSnapshot;

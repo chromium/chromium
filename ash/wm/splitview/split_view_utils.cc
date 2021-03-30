@@ -392,21 +392,7 @@ void MaybeRestoreSplitView(bool refresh_snapped_windows) {
   }
 }
 
-bool IsClamshellSplitViewModeEnabled() {
-  return base::FeatureList::IsEnabled(features::kDragToSnapInClamshellMode);
-}
-
-bool AreMultiDisplayOverviewAndSplitViewEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kMultiDisplayOverviewAndSplitView);
-}
-
 bool ShouldAllowSplitView() {
-  if (!Shell::Get()->tablet_mode_controller()->InTabletMode() &&
-      !IsClamshellSplitViewModeEnabled()) {
-    return false;
-  }
-
   // Don't allow split view if we're in pinned mode.
   if (Shell::Get()->screen_pinning_controller()->IsPinned())
     return false;
@@ -423,7 +409,7 @@ void ShowAppCannotSnapToast() {
   Shell::Get()->toast_manager()->Show(ToastData(
       kAppCannotSnapToastId,
       l10n_util::GetStringUTF16(IDS_ASH_SPLIT_VIEW_CANNOT_SNAP),
-      kAppCannotSnapToastDurationMs, base::Optional<base::string16>()));
+      kAppCannotSnapToastDurationMs, base::Optional<std::u16string>()));
 }
 
 SplitViewController::SnapPosition GetSnapPositionForLocation(

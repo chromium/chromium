@@ -16,9 +16,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chromeos/services/assistant/public/cpp/assistant_notification.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_timer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
@@ -35,7 +36,8 @@ using assistant::util::AlarmTimerAction;
 using chromeos::assistant::AssistantNotification;
 using chromeos::assistant::AssistantNotificationButton;
 using chromeos::assistant::AssistantNotificationPriority;
-using chromeos::assistant::features::IsTimersV2Enabled;
+using chromeos::assistant::AssistantTimer;
+using chromeos::assistant::AssistantTimerState;
 
 // Grouping key and ID prefix for timer notifications.
 constexpr char kTimerNotificationGroupingKey[] = "assistant/timer";
@@ -71,15 +73,15 @@ std::string ToFormattedTimeString(base::TimeDelta time,
 
   // We only show |hours| if necessary.
   if (hours)
-    measures.push_back(icu::Measure(hours, createHour(status), status));
+    measures.emplace_back(hours, createHour(status), status);
 
   // We only show |minutes| if necessary or if using numeric format |width|.
   if (minutes || width == UMEASFMT_WIDTH_NUMERIC)
-    measures.push_back(icu::Measure(minutes, createMinute(status), status));
+    measures.emplace_back(minutes, createMinute(status), status);
 
   // We only show |seconds| if necessary or if using numeric format |width|.
   if (seconds || width == UMEASFMT_WIDTH_NUMERIC)
-    measures.push_back(icu::Measure(seconds, createSecond(status), status));
+    measures.emplace_back(seconds, createSecond(status), status);
 
   // Format our |measures| into a |unicode_message|.
   icu::UnicodeString unicode_message;
@@ -134,71 +136,32 @@ std::string CreateTimerNotificationId(const AssistantTimer& timer) {
 
 // Creates a notification title for the given |timer|.
 std::string CreateTimerNotificationTitle(const AssistantTimer& timer) {
-  if (IsTimersV2Enabled())
-    return ToRemainingTimeString(timer);
-  return l10n_util::GetStringUTF8(IDS_ASSISTANT_TIMER_NOTIFICATION_TITLE);
+  return ToRemainingTimeString(timer);
 }
 
 // Creates a notification message for the given |timer|.
 std::string CreateTimerNotificationMessage(const AssistantTimer& timer) {
-  if (IsTimersV2Enabled()) {
-    if (timer.label.empty()) {
-      return base::UTF16ToUTF8(
-          base::i18n::MessageFormatter::FormatWithNumberedArgs(
-              l10n_util::GetStringUTF16(
-                  timer.state == AssistantTimerState::kFired
-                      ? IDS_ASSISTANT_TIMER_NOTIFICATION_MESSAGE_WHEN_FIRED
-                      : IDS_ASSISTANT_TIMER_NOTIFICATION_MESSAGE),
-              ToOriginalDurationString(timer)));
-    }
-    return base::UTF16ToUTF8(base::i18n::MessageFormatter::FormatWithNumberedArgs(
-        l10n_util::GetStringUTF16(
-            timer.state == AssistantTimerState::kFired
-                ? IDS_ASSISTANT_TIMER_NOTIFICATION_MESSAGE_WHEN_FIRED_WITH_LABEL
-                : IDS_ASSISTANT_TIMER_NOTIFICATION_MESSAGE_WITH_LABEL),
-        ToOriginalDurationString(timer), timer.label));
+  if (timer.label.empty()) {
+    return base::UTF16ToUTF8(
+        base::i18n::MessageFormatter::FormatWithNumberedArgs(
+            l10n_util::GetStringUTF16(
+                timer.state == AssistantTimerState::kFired
+                    ? IDS_ASSISTANT_TIMER_NOTIFICATION_MESSAGE_WHEN_FIRED
+                    : IDS_ASSISTANT_TIMER_NOTIFICATION_MESSAGE),
+            ToOriginalDurationString(timer)));
   }
-  return ToRemainingTimeString(timer);
-}
-
-// Creates notification action URL for the given |timer|.
-GURL CreateTimerNotificationActionUrl(const AssistantTimer& timer) {
-  // In timers v2, clicking the notification does nothing.
-  if (IsTimersV2Enabled())
-    return GURL();
-  // In timers v1, clicking the notification removes the |timer|.
-  return assistant::util::CreateAlarmTimerDeepLink(
-             AlarmTimerAction::kRemoveAlarmOrTimer, timer.id)
-      .value();
+  return base::UTF16ToUTF8(base::i18n::MessageFormatter::FormatWithNumberedArgs(
+      l10n_util::GetStringUTF16(
+          timer.state == AssistantTimerState::kFired
+              ? IDS_ASSISTANT_TIMER_NOTIFICATION_MESSAGE_WHEN_FIRED_WITH_LABEL
+              : IDS_ASSISTANT_TIMER_NOTIFICATION_MESSAGE_WITH_LABEL),
+      ToOriginalDurationString(timer), timer.label));
 }
 
 // Creates notification buttons for the given |timer|.
 std::vector<AssistantNotificationButton> CreateTimerNotificationButtons(
     const AssistantTimer& timer) {
   std::vector<AssistantNotificationButton> buttons;
-
-  if (!IsTimersV2Enabled()) {
-    // "STOP" button.
-    buttons.push_back(
-        {l10n_util::GetStringUTF8(IDS_ASSISTANT_TIMER_NOTIFICATION_STOP_BUTTON),
-         assistant::util::CreateAlarmTimerDeepLink(
-             AlarmTimerAction::kRemoveAlarmOrTimer, timer.id)
-             .value(),
-         /*remove_notification_on_click=*/true});
-
-    // "ADD 1 MIN" button.
-    buttons.push_back({l10n_util::GetStringUTF8(
-                           IDS_ASSISTANT_TIMER_NOTIFICATION_ADD_1_MIN_BUTTON),
-                       assistant::util::CreateAlarmTimerDeepLink(
-                           AlarmTimerAction::kAddTimeToTimer, timer.id,
-                           base::TimeDelta::FromMinutes(1))
-                           .value(),
-                       /*remove_notification_on_click=*/true});
-
-    return buttons;
-  }
-
-  DCHECK(IsTimersV2Enabled());
 
   if (timer.state != AssistantTimerState::kFired) {
     if (timer.state == AssistantTimerState::kPaused) {
@@ -253,10 +216,6 @@ std::vector<AssistantNotificationButton> CreateTimerNotificationButtons(
 // Creates a timer notification priority for the given |timer|.
 AssistantNotificationPriority CreateTimerNotificationPriority(
     const AssistantTimer& timer) {
-  // In timers v1, all notifications are |kHigh| priority.
-  if (!IsTimersV2Enabled())
-    return AssistantNotificationPriority::kHigh;
-
   // In timers v2, a notification for a |kFired| timer is |kHigh| priority.
   // This will cause the notification to pop up to the user.
   if (timer.state == AssistantTimerState::kFired)
@@ -283,13 +242,12 @@ AssistantNotification CreateTimerNotification(
   AssistantNotification notification;
   notification.title = CreateTimerNotificationTitle(timer);
   notification.message = CreateTimerNotificationMessage(timer);
-  notification.action_url = CreateTimerNotificationActionUrl(timer);
   notification.buttons = CreateTimerNotificationButtons(timer);
   notification.client_id = CreateTimerNotificationId(timer);
   notification.grouping_key = kTimerNotificationGroupingKey;
   notification.priority = CreateTimerNotificationPriority(timer);
-  notification.remove_on_click = !IsTimersV2Enabled();
-  notification.is_pinned = IsTimersV2Enabled();
+  notification.remove_on_click = false;
+  notification.is_pinned = true;
 
   // If we are creating a notification to replace an |existing_notification| and
   // our new notification has higher priority, we want the system to "renotify"
@@ -310,11 +268,6 @@ bool ShouldAllowUpdateFromLibAssistant(const AssistantTimer& original,
   // If |id| is not equal, then |update| does refer to the |original| timer.
   DCHECK_EQ(original.id, update.id);
 
-  // In v1, LibAssistant updates are always allowed since we only ever manage a
-  // single timer at a time and only as it transitions from firing to removal.
-  if (!IsTimersV2Enabled())
-    return true;
-
   // In v2, updates are only allowed from LibAssistant if they are significant.
   // We may receive an update due to a state change in another timer, and we'd
   // want to discard the update to this timer to avoid introducing UI jank by
@@ -333,7 +286,7 @@ AssistantAlarmTimerControllerImpl::AssistantAlarmTimerControllerImpl(
     AssistantControllerImpl* assistant_controller)
     : assistant_controller_(assistant_controller) {
   model_.AddObserver(this);
-  assistant_controller_observer_.Add(AssistantController::Get());
+  assistant_controller_observation_.Observe(AssistantController::Get());
 }
 
 AssistantAlarmTimerControllerImpl::~AssistantAlarmTimerControllerImpl() {
@@ -351,23 +304,23 @@ const AssistantAlarmTimerModel* AssistantAlarmTimerControllerImpl::GetModel()
 }
 
 void AssistantAlarmTimerControllerImpl::OnTimerStateChanged(
-    std::vector<AssistantTimerPtr> new_or_updated_timers) {
+    const std::vector<AssistantTimer>& new_or_updated_timers) {
   // First we remove all old timers that no longer exist.
   for (const auto* old_timer : model_.GetAllTimers()) {
     if (std::none_of(new_or_updated_timers.begin(), new_or_updated_timers.end(),
                      [&old_timer](const auto& new_or_updated_timer) {
-                       return old_timer->id == new_or_updated_timer->id;
+                       return old_timer->id == new_or_updated_timer.id;
                      })) {
       model_.RemoveTimer(old_timer->id);
     }
   }
 
   // Then we add any new timers and update existing ones (if allowed).
-  for (auto& new_or_updated_timer : new_or_updated_timers) {
-    const auto* original_timer = model_.GetTimerById(new_or_updated_timer->id);
+  for (const auto& new_or_updated_timer : new_or_updated_timers) {
+    const auto* original_timer = model_.GetTimerById(new_or_updated_timer.id);
     const bool is_new_timer = original_timer == nullptr;
     if (is_new_timer || ShouldAllowUpdateFromLibAssistant(
-                            *original_timer, *new_or_updated_timer)) {
+                            *original_timer, new_or_updated_timer)) {
       model_.AddOrUpdateTimer(std::move(new_or_updated_timer));
     }
   }
@@ -526,8 +479,8 @@ void AssistantAlarmTimerControllerImpl::Tick(const std::string& timer_id) {
     return;
 
   // Update |timer| to reflect the new amount of |remaining_time|.
-  AssistantTimerPtr updated_timer = std::make_unique<AssistantTimer>(*timer);
-  updated_timer->remaining_time = updated_timer->fire_time - base::Time::Now();
+  AssistantTimer updated_timer(*timer);
+  updated_timer.remaining_time = updated_timer.fire_time - base::Time::Now();
 
   // If there is no remaining time left on the timer, we ensure that our timer
   // is marked as |kFired|. Since LibAssistant may be a bit slow to notify us of
@@ -535,8 +488,8 @@ void AssistantAlarmTimerControllerImpl::Tick(const std::string& timer_id) {
   // NOTE: We use the rounded value of |remaining_time| since that's what we are
   // displaying to the user and otherwise would be out of sync for ticks
   // occurring at full second boundary values.
-  if (std::round(updated_timer->remaining_time.InSecondsF()) <= 0.f)
-    updated_timer->state = AssistantTimerState::kFired;
+  if (std::round(updated_timer.remaining_time.InSecondsF()) <= 0.f)
+    updated_timer.state = AssistantTimerState::kFired;
 
   model_.AddOrUpdateTimer(std::move(updated_timer));
 }

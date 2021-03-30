@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/html/link_web_bundle.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trials.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -54,8 +55,7 @@ bool RelList::ValidateTokenValue(const AtomicString& token_value,
         token_value == "allowed-alt-sxg") {
       return true;
     }
-    if (RuntimeEnabledFeatures::SubresourceWebBundlesEnabled(
-            GetElement().GetExecutionContext()) &&
+    if (LinkWebBundle::IsFeatureEnabled(GetElement().GetExecutionContext()) &&
         token_value == "webbundle") {
       return true;
     }

@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Verify that in case of complex scenario with both sourceURL and sourceMappingURL in inline stylesheet the sourceMap is resolved properly.\n`);
-  await TestRunner.loadModule('bindings_test_runner');
+  await TestRunner.loadTestModule('bindings_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.evaluateInPagePromise(`
       function addStyleSheet() {

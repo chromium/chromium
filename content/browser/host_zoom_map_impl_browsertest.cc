@@ -34,8 +34,9 @@ void RunTestForURL(const GURL& url,
   HostZoomMapImpl* host_zoom_map = static_cast<HostZoomMapImpl*>(
       HostZoomMap::GetForWebContents(web_contents));
 
-  int view_id = web_contents->GetRenderViewHost()->GetRoutingID();
-  int process_id = web_contents->GetRenderViewHost()->GetProcess()->GetID();
+  int view_id =
+      web_contents->GetMainFrame()->GetRenderViewHost()->GetRoutingID();
+  int process_id = web_contents->GetMainFrame()->GetProcess()->GetID();
 
   // Assume caller has set the zoom level to |host_zoom_level| using
   // either a host or host+scheme entry in the HostZoomMap prior to

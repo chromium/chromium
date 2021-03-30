@@ -94,20 +94,6 @@ ClientNativePixmapDmaBuf::PlaneInfo::~PlaneInfo() {
 bool ClientNativePixmapDmaBuf::IsConfigurationSupported(
     gfx::BufferFormat format,
     gfx::BufferUsage usage) {
-  bool disable_yuv_biplanar = true;
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMECAST)
-  // IsConfigurationSupported(SCANOUT_CPU_READ_WRITE) is used by the renderer
-  // to tell whether the platform supports sampling a given format. Zero-copy
-  // video capture and encoding requires gfx::BufferFormat::YUV_420_BIPLANAR to
-  // be supported by the renderer. Most of Chrome OS platforms support it, so
-  // enable it by default, with a switch that allows an explicit disable on
-  // platforms known to have problems, e.g. the Tegra-based nyan."
-  // TODO(crbug.com/982201): move gfx::BufferFormat::YUV_420_BIPLANAR out
-  // of if defined(ARCH_CPU_X86_FAMLIY) when Tegra is no longer supported.
-  disable_yuv_biplanar = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kDisableYuv420Biplanar);
-#endif
-
   switch (usage) {
     case gfx::BufferUsage::GPU_READ:
       return format == gfx::BufferFormat::BGR_565 ||
@@ -130,10 +116,8 @@ bool ClientNativePixmapDmaBuf::IsConfigurationSupported(
       if (format == gfx::BufferFormat::RG_88 && !AllowCpuMappableBuffers())
         return false;
 
-      if (!disable_yuv_biplanar &&
-          format == gfx::BufferFormat::YUV_420_BIPLANAR) {
+      if (format == gfx::BufferFormat::YUV_420_BIPLANAR)
         return true;
-      }
 
       return
 #if defined(ARCH_CPU_X86_FAMILY)
@@ -158,10 +142,8 @@ bool ClientNativePixmapDmaBuf::IsConfigurationSupported(
       if (!AllowCpuMappableBuffers())
         return false;
 
-      if (!disable_yuv_biplanar &&
-          format == gfx::BufferFormat::YUV_420_BIPLANAR) {
+      if (format == gfx::BufferFormat::YUV_420_BIPLANAR)
         return true;
-      }
 
       return
 #if defined(ARCH_CPU_X86_FAMILY)
@@ -184,7 +166,7 @@ bool ClientNativePixmapDmaBuf::IsConfigurationSupported(
       // R_8 is used as the underlying pixel format for BLOB buffers.
       return format == gfx::BufferFormat::R_8;
     case gfx::BufferUsage::SCANOUT_VEA_CPU_READ:
-    case gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE:
+    case gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE:
       return format == gfx::BufferFormat::YVU_420 ||
              format == gfx::BufferFormat::YUV_420_BIPLANAR;
   }

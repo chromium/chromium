@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <string>
+
 #include "base/check_op.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -15,7 +17,6 @@
 #if defined(OS_WIN)
 #include <objbase.h>
 
-#include "base/strings/string16.h"
 #include "base/win/win_util.h"
 #endif  // defined(OS_WIN)
 
@@ -98,8 +99,7 @@ BluetoothUUID::~BluetoothUUID() = default;
 // static
 GUID BluetoothUUID::GetCanonicalValueAsGUID(base::StringPiece uuid) {
   DCHECK_EQ(36u, uuid.size());
-  base::string16 braced_uuid =
-      STRING16_LITERAL('{') + base::UTF8ToUTF16(uuid) + STRING16_LITERAL('}');
+  std::u16string braced_uuid = u'{' + base::UTF8ToUTF16(uuid) + u'}';
   GUID guid;
   CHECK_EQ(NOERROR, ::CLSIDFromString(base::as_wcstr(braced_uuid), &guid));
   return guid;

@@ -11,12 +11,12 @@ import android.text.TextUtils;
 
 import androidx.annotation.UiThread;
 
-import org.chromium.base.BuildConfig;
 import org.chromium.base.CommandLine;
 import org.chromium.base.JavaExceptionReporter;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.strictmode.KnownViolations;
@@ -160,7 +160,8 @@ public class ChromeStrictMode {
         if (!ChromeStrictModeSwitch.ALLOW_STRICT_MODE_CHECKING) return;
 
         CommandLine commandLine = CommandLine.getInstance();
-        boolean shouldApplyPenalties = BuildConfig.DCHECK_IS_ON || ChromeVersionInfo.isLocalBuild()
+        boolean shouldApplyPenalties = BuildConfig.ENABLE_ASSERTS
+                || ChromeVersionInfo.isLocalBuild()
                 || commandLine.hasSwitch(ChromeSwitches.STRICT_MODE);
 
         // Enroll 1% of dev sessions into StrictMode watch. This is done client-side rather than
@@ -169,7 +170,7 @@ public class ChromeStrictMode {
         // before warming the SharedPreferences (that is a violation in an of itself). We will
         // closely monitor this on dev channel.
         boolean enableStrictModeWatch =
-                (ChromeVersionInfo.isLocalBuild() && !BuildConfig.DCHECK_IS_ON)
+                (ChromeVersionInfo.isLocalBuild() && !BuildConfig.ENABLE_ASSERTS)
                 || (ChromeVersionInfo.isDevBuild() && Math.random() < UPLOAD_PROBABILITY);
         if (!shouldApplyPenalties && !enableStrictModeWatch) return;
 

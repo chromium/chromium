@@ -251,8 +251,8 @@ class TetherConnectorImplTest : public testing::Test {
         tether_network_guid,
         base::BindOnce(&TetherConnectorImplTest::SuccessCallback,
                        base::Unretained(this)),
-        base::Bind(&TetherConnectorImplTest::ErrorCallback,
-                   base::Unretained(this)));
+        base::BindOnce(&TetherConnectorImplTest::ErrorCallback,
+                       base::Unretained(this)));
   }
 
   void VerifyConnectTetheringOperationFails(

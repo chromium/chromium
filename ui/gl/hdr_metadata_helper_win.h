@@ -30,16 +30,19 @@ class GL_EXPORT HDRMetadataHelperWin {
   ~HDRMetadataHelperWin();
 
   // Return the metadata for the display, if available.  Must call
-  // CacheDisplayMetadata first.
+  // UpdateDisplayMetadata first.
   base::Optional<DXGI_HDR_METADATA_HDR10> GetDisplayMetadata();
+
+  // Query the display metadata from all monitors. In the event of monitor
+  // hot plugging, the metadata should be updated again.
+  void UpdateDisplayMetadata(
+      const Microsoft::WRL::ComPtr<ID3D11Device>& d3d11_device);
 
   // Convert |hdr_metadata| to DXGI's metadata format.
   static DXGI_HDR_METADATA_HDR10 HDRMetadataToDXGI(
       const gfx::HDRMetadata& hdr_metadata);
 
  private:
-  void CacheDisplayMetadata(
-      const Microsoft::WRL::ComPtr<ID3D11Device>& d3d11_device);
 
   base::Optional<DXGI_HDR_METADATA_HDR10> hdr_metadata_;
 

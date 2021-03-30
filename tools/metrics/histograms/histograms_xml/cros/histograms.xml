@@ -22,7 +22,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="Cros.CrOSActionRecorderEvent" enum="CrOSActionRecorderEvent"
-    expires_after="2021-03-15">
+    expires_after="2021-09-15">
   <owner>charleszhao@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
@@ -34,7 +34,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CrosDisks.ArchiveType" enum="CrosDisksArchiveType"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>fdegros@chromium.org</owner>
   <owner>chromeos-files-app@google.com</owner>
   <summary>
@@ -44,7 +44,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CrosDisks.DeviceMediaType" enum="CrosDisksDeviceMediaType"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>fdegros@chromium.org</owner>
   <owner>chromeos-files-app@google.com</owner>
   <summary>
@@ -54,7 +54,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CrosDisks.FilesystemType" enum="CrosDisksFilesystemType"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>fdegros@chromium.org</owner>
   <owner>chromeos-files-app@google.com</owner>
   <summary>
@@ -74,7 +74,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CrosDisks.Fuse.Rar2fs" enum="Rar2fsError"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>fdegros@chromium.org</owner>
   <owner>chromeos-files-app@google.com</owner>
   <summary>
@@ -84,7 +84,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CrosDisksClient.FormatCompletedError"
-    enum="CrosDisksClientFormatError" expires_after="2021-05-09">
+    enum="CrosDisksClientFormatError" expires_after="2021-09-12">
   <owner>austinct@chromium.org</owner>
   <summary>
     The error code of disk format signals received from the Chrome OS cros-disks
@@ -93,7 +93,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CrosDisksClient.FormatTime" units="ms"
-    expires_after="2021-06-20">
+    expires_after="2021-08-22">
   <owner>austinct@chromium.org</owner>
   <summary>
     Time taken for the Chrome OS cros-disks daemon to perform a format
@@ -219,6 +219,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="CrosUsb.NotificationClosed" enum="CrosUsbNotificationClosed"
     expires_after="2021-01-31">
+  <obsolete>
+    Removed 01/2021. We haven't been making use of this.
+  </obsolete>
   <owner>clumptini@google.com</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>

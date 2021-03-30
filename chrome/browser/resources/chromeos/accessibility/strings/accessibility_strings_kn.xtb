@@ -6,7 +6,6 @@
 <translation id="1012173283529841972">ಪಟ್ಟಿಯ ಐಟಂ</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">ಎರಡು ಬೆರಳುಗಳಿಂದ ಬಲಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಿ</translation>
-<translation id="1016393160682012902">ಇದರ ಕಾರ್ಯವಿಧಾನವನ್ನು ತಿಳಿದುಕೊಳ್ಳಲು qwerty ಕೀ, ರಿಫ್ರೆಶ್ ಮಾಡಬಹುದಾದ ಬ್ರೇಲ್ ಕೀಯನ್ನು ಒತ್ತಿರಿ ಅಥವಾ ಗೆಸ್ಚರ್ ಅನ್ನು ಸ್ಪರ್ಶಿಸಿ. ನಿರ್ಗಮಿಸಲು control ಜೊತೆಗೆ w ಅಥವಾ escape ಒತ್ತಿರಿ.</translation>
 <translation id="1022586497894531524">ನೀವು ಮೊದಲ ಬಾರಿಗೆ ChromeVox ಮಾತಿನ ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಬಳಸುತ್ತಿರುವಿರಾ? ChromeVox ಪ್ರಾರಂಭಿಸುವ ಮೂಲಭೂತ ಅಂಶಗಳ ಕುರಿತು ಈ ತ್ವರಿತ ಟುಟೋರಿಯಲ್ ವಿವರಿಸುತ್ತದೆ.</translation>
 <translation id="1025074108959230262">ಸ್ಟಿಕಿ ಮೋಡ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="1031961866430398710">ನಂತರ</translation>
@@ -150,6 +149,7 @@
 <translation id="2045055672832940894">ಯಾವುದೇ ಹಿಂದಿನ ನಿಯಂತ್ರಣವಿಲ್ಲ</translation>
 <translation id="2045606329038304310">ಫಾರ್ಮ್ ಫೀಲ್ಡ್ ನಿಯಂತ್ರಣ</translation>
 <translation id="2063539687800151747">ಶಿಲಾಶಾಸನ</translation>
+<translation id="2074531330963286860">ಕ್ರಿಯೆಗಳು ಲಭ್ಯವಿವೆ. ಅವುಗಳನ್ನು ವೀಕ್ಷಿಸಲು Search+Period ಒತ್ತಿರಿ</translation>
 <translation id="2086961585857038472">ಮುಂದಿನ ಪದ</translation>
 <translation id="2087981446621639008">ವಿವರಣೆ ಪಟ್ಟಿ ವಿವರ</translation>
 <translation id="2089387485033699258">kn</translation>
@@ -807,7 +807,7 @@
 <translation id="7039555289296502784">ಆಲಿವ್ ಡ್ರ್ಯಾಬ್</translation>
 <translation id="7041173719775863268">ಆಯ್ಕೆಯನ್ನು ಕೊನೆಗೊಳಿಸಿ</translation>
 <translation id="7043850226734279132">ಗಾಢ ಖಾಕಿ</translation>
-<translation id="7051308646573997571">ಹವಳ</translation>
+<translation id="7051308646573997571">Coral</translation>
 <translation id="7062635574500127092">ಗಾಢ ಹಸಿರು-ನೀಲಿ</translation>
 <translation id="7086377898680121060">ಪ್ರಖರತೆ ಹೆಚ್ಚು ಮಾಡಿ</translation>
 <translation id="7088743565397416204">ಫೋಕಸ್ ಮಾಡಿರುವುದನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ಎರಡು ಬಾರಿ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
@@ -975,6 +975,7 @@
 <translation id="827266600368092403">ಪ್ರಾರಂಭ ಅಥವಾ ಅಂತ್ಯದ ಆಯ್ಕೆ</translation>
 <translation id="827422111966801947">ಇಂಡಿಗೊ</translation>
 <translation id="8276439074553447000">ಹಿಂದೆ ಗಮನಹರಿಸಿದಂತಹ ಐಟಂಗೆ ಹೋಗಿ</translation>
+<translation id="8279039817939141096">ಇದರ ಕಾರ್ಯವಿಧಾನವನ್ನು ತಿಳಿದುಕೊಳ್ಳಲು QWERTY ಕೀ, ರಿಫ್ರೆಶ್ ಮಾಡಬಹುದಾದ ಬ್ರೇಲ್ ಕೀಯನ್ನು ಒತ್ತಿರಿ ಅಥವಾ ಗೆಸ್ಚರ್ ಅನ್ನು ಸ್ಪರ್ಶಿಸಿ. ನಿರ್ಗಮಿಸಲು control ಜೊತೆಗೆ w, space ಜೊತೆಗೆ Z, ಎರಡು ಬೆರಳುಗಳಿಂದ ಎಡಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಿ ಅಥವಾ escape ಒತ್ತಿರಿ.</translation>
 <translation id="8283603667300770666">ಮುಂದಿನ ಫಾರ್ಮ್ ಕ್ಷೇತ್ರ</translation>
 <translation id="8310185481635255431">ಯಾವುದೇ ಮುಂದಿನ ಲಿಂಕ್ ಇಲ್ಲ</translation>
 <translation id="831207808878314375">ವಿವರಣೆ</translation>

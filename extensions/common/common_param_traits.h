@@ -14,6 +14,7 @@
 IPC_ENUM_TRAITS_MAX_VALUE(version_info::Channel, version_info::Channel::STABLE)
 IPC_ENUM_TRAITS_MAX_VALUE(extensions::mojom::FeatureSessionType,
                           extensions::mojom::FeatureSessionType::kMaxValue)
-IPC_ENUM_TRAITS_MIN_MAX_VALUE(extensions::Manifest::Location,
-                              extensions::Manifest::INVALID_LOCATION,
-                              extensions::Manifest::NUM_LOCATIONS - 1)
+IPC_ENUM_TRAITS_MIN_MAX_VALUE(
+    extensions::mojom::ManifestLocation,
+    extensions::mojom::ManifestLocation::kInvalidLocation,
+    extensions::mojom::ManifestLocation::kMaxValue)

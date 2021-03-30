@@ -254,6 +254,31 @@ class, which is a Java wrapper [around C++
 Skia](https://cs.android.com/android/platform/superproject/+/master:frameworks/base/libs/hwui/jni/BitmapFactory.cpp;l=586;drc=864d304156d1ef8985ee39c3c1858349b133b365).
 These APIs are therefore not considered memory-safe under the rule.
 
+## Safe Types
+
+As discussed above in [Normalization](#normalization), there are some types that
+are considered "safe," even though they are deserialized from an untrustworthy
+source, at high privilege, and in an unsafe language. These types are
+fundamental for passing data between processes using IPC, tend to have simpler
+grammar or structure, and/or have been audited or fuzzed heavily.
+
+* `GURL`
+* `SkBitmap`
+* `SkPixmap`
+* Protocol buffers (see above; this is not a preferred option and should be
+  avoided where possible)
+
+There are also classes in //base that internally hold simple values that
+represent potentially complex data, such as:
+
+* `base::FilePath`
+* `base::Token` and `base::UnguessableToken`
+* `base::Time` and `base::TimeDelta`
+
+The deserialization of these is safe, though it is important to remember that
+the value itself is still untrustworthy (e.g. a malicious path trying to escape
+its parent using `../`).
+
 ## Existing Code That Violates The Rule
 
 We still have a lot of code that violates this rule. For example, until very

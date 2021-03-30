@@ -10,11 +10,11 @@
 
 #include "base/threading/thread_checker.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
-#include "content/public/renderer/url_loader_throttle_provider.h"
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/url_loader_throttle_provider.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/renderer/extension_throttle_manager.h"
@@ -24,19 +24,18 @@ class ChromeContentRendererClient;
 
 // Instances must be constructed on the render thread, and then used and
 // destructed on a single thread, which can be different from the render thread.
-class URLLoaderThrottleProviderImpl
-    : public content::URLLoaderThrottleProvider {
+class URLLoaderThrottleProviderImpl : public blink::URLLoaderThrottleProvider {
  public:
   URLLoaderThrottleProviderImpl(
       blink::ThreadSafeBrowserInterfaceBrokerProxy* broker,
-      content::URLLoaderThrottleProviderType type,
+      blink::URLLoaderThrottleProviderType type,
       ChromeContentRendererClient* chrome_content_renderer_client);
 
   ~URLLoaderThrottleProviderImpl() override;
 
-  // content::URLLoaderThrottleProvider implementation.
-  std::unique_ptr<content::URLLoaderThrottleProvider> Clone() override;
-  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> CreateThrottles(
+  // blink::URLLoaderThrottleProvider implementation.
+  std::unique_ptr<blink::URLLoaderThrottleProvider> Clone() override;
+  blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> CreateThrottles(
       int render_frame_id,
       const blink::WebURLRequest& request) override;
   void SetOnline(bool is_online) override;
@@ -46,7 +45,7 @@ class URLLoaderThrottleProviderImpl
   // general use.
   URLLoaderThrottleProviderImpl(const URLLoaderThrottleProviderImpl& other);
 
-  content::URLLoaderThrottleProviderType type_;
+  blink::URLLoaderThrottleProviderType type_;
   ChromeContentRendererClient* const chrome_content_renderer_client_;
 
   mojo::PendingRemote<safe_browsing::mojom::SafeBrowsing> safe_browsing_remote_;

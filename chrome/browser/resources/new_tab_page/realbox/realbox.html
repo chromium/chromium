@@ -1,0 +1,125 @@
+<style>
+  :host {
+    --ntp-realbox-height: 44px;
+    border-radius: calc(0.5 * var(--ntp-realbox-height));
+    box-shadow: 0 1px 6px 0 rgba(32, 33, 36, .28);
+    font-size: 16px;
+    height: var(--ntp-realbox-height);
+  }
+
+  @media (forced-colors: active) {
+    :host {
+      border: 1px solid ActiveBorder;
+    }
+  }
+
+  :host([matches-are-visible]) {
+    box-shadow: none;
+  }
+
+  #inputWrapper {
+    height: 100%;
+    position: relative;
+  }
+
+  input {
+    background-color: var(--search-box-bg, white);
+    border: none;
+    border-radius: calc(0.5 * var(--ntp-realbox-height));
+    color: var(--search-box-text);
+    font-family: inherit;
+    font-size: inherit;
+    height: 100%;
+    outline: none;
+    padding-inline-end:  44px;
+    padding-inline-start: 52px;
+    position: relative;
+    width: 100%;
+  }
+
+  input::-webkit-search-decoration,
+  input::-webkit-search-cancel-button,
+  input::-webkit-search-results-button,
+  input::-webkit-search-results-decoration {
+    display: none;
+  }
+
+  input::placeholder {
+    color: var(--search-box-placeholder, var(--google-grey-refresh-700));
+  }
+
+  input:focus,
+  :host([matches-are-visible]) input {
+    background-color: var(--search-box-results-bg, white);
+  }
+
+  ntp-realbox-icon {
+    height: 100%;
+    left: 12px;
+    position: absolute;
+    top: 0;
+  }
+
+  :host-context([dir='rtl']) ntp-realbox-icon {
+    left: unset;
+    right: 12px;
+  }
+
+  #voiceSearchButton {
+    background: url(icons/googlemic_clr_24px.svg) no-repeat center;
+    background-size: 21px 21px;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    height: 100%;
+    outline: none;
+    padding: 0;
+    pointer-events: auto;
+    position: absolute;
+    right: 16px;
+    width: 26px;
+  }
+
+  :host-context([dir='rtl']) #voiceSearchButton {
+    left: 16px;
+    right: unset;
+  }
+
+  :host-context(.focus-outline-visible) #voiceSearchButton:focus {
+    box-shadow: var(--ntp-focus-shadow);
+  }
+
+  :-webkit-any(input, ntp-realbox-icon, #voiceSearchButton) {
+   z-index: 2;
+  }
+
+  ntp-realbox-dropdown {
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 1;
+  }
+</style>
+<div id="inputWrapper" on-focusout=onInputWrapperFocusout_
+    on-keydown="onInputWrapperKeydown_">
+  <input id="input" type="search" autocomplete="off" spellcheck="false"
+      aria-live="[[inputAriaLive_]]" role="combobox"
+      placeholder="$i18n{searchBoxHint}"
+      on-copy="onInputCutCopy_" on-cut="onInputCutCopy_"
+      on-focus="onInputFocus_" on-blur="onInputBlur_" on-input="onInputInput_"
+      on-keydown="onInputKeydown_" on-keyup="onInputKeyup_"
+      on-mousedown="onInputMouseDown_" on-paste="onInputPaste_">
+  <ntp-realbox-icon id="icon" match="[[selectedMatch_]]"
+      default-icon="[[realboxIcon_]]" in-searchbox>
+  </ntp-realbox-icon>
+  <button id="voiceSearchButton" on-click="onVoiceSearchClick_"
+      title="$i18n{voiceSearchButtonLabel}">
+  </button>
+  <ntp-realbox-dropdown id="matches" role="listbox" theme="[[theme]]"
+      result="[[result_]]" selected-match-index="{{selectedMatchIndex_}}"
+      on-result-repaint="onResultRepaint_" on-match-focusin="onMatchFocusin_"
+      on-match-click="onMatchClick_" on-match-remove="onMatchRemove_"
+      on-header-focusin="onHeaderFocusin_" hidden$="[[!matchesAreVisible]]">
+  </ntp-realbox-dropdown>
+</div>

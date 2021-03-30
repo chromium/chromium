@@ -6,7 +6,7 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
 WakeLockPermissionContext::WakeLockPermissionContext(
     content::BrowserContext* browser_context,
@@ -15,8 +15,8 @@ WakeLockPermissionContext::WakeLockPermissionContext(
           browser_context,
           content_settings_type,
           content_settings_type == ContentSettingsType::WAKE_LOCK_SCREEN
-              ? blink::mojom::FeaturePolicyFeature::kScreenWakeLock
-              : blink::mojom::FeaturePolicyFeature::kNotFound),
+              ? blink::mojom::PermissionsPolicyFeature::kScreenWakeLock
+              : blink::mojom::PermissionsPolicyFeature::kNotFound),
       content_settings_type_(content_settings_type) {
   DCHECK(content_settings_type == ContentSettingsType::WAKE_LOCK_SCREEN ||
          content_settings_type == ContentSettingsType::WAKE_LOCK_SYSTEM);

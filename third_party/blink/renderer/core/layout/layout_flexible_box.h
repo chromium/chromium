@@ -166,11 +166,14 @@ class CORE_EXPORT LayoutFlexibleBox : public LayoutBlock {
   bool UseChildAspectRatio(const LayoutBox& child) const;
   LayoutUnit ComputeMainSizeFromAspectRatioUsing(
       const LayoutBox& child,
-      const Length& cross_size_length) const;
+      const Length& cross_size_length,
+      LayoutUnit main_axis_border_and_padding,
+      LayoutUnit cross_axis_border_and_padding) const;
   void SetFlowAwareLocationForChild(LayoutBox& child, const LayoutPoint&);
   LayoutUnit ComputeInnerFlexBaseSizeForChild(
       LayoutBox& child,
       LayoutUnit main_axis_border_and_padding,
+      LayoutUnit cross_axis_border_and_padding,
       ChildLayoutType = kLayoutIfNeeded);
   void ResetAlignmentForChild(LayoutBox& child, LayoutUnit);
   bool MainAxisLengthIsDefinite(const LayoutBox& child,
@@ -197,10 +200,13 @@ class CORE_EXPORT LayoutFlexibleBox : public LayoutBlock {
   MinMaxSizes ComputeMinAndMaxSizesForChild(
       const FlexLayoutAlgorithm& algorithm,
       const LayoutBox& child,
-      LayoutUnit border_and_padding) const;
+      LayoutUnit border_and_padding,
+      LayoutUnit cross_axis_border_and_padding) const;
   LayoutUnit AdjustChildSizeForAspectRatioCrossAxisMinAndMax(
       const LayoutBox& child,
-      LayoutUnit child_size) const;
+      LayoutUnit child_size,
+      LayoutUnit main_axis_border_and_padding,
+      LayoutUnit cross_axis_border_and_padding) const;
   void ConstructAndAppendFlexItem(FlexLayoutAlgorithm* algorithm,
                                   LayoutBox& child,
                                   ChildLayoutType);

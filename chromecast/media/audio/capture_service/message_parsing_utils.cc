@@ -27,6 +27,10 @@ namespace {
 constexpr size_t kHandshakeHeaderBytes =
     sizeof(HandshakePacket) - sizeof(uint16_t);
 
+static_assert(sizeof(PcmPacketHeader) % 4 == 0,
+              "Size of PCM audio packet header must be a multiple of 4 bytes.");
+static_assert(sizeof(HandshakePacket) % 4 == 0,
+              "Size of handshake packet must be a multiple of 4 bytes.");
 static_assert(kPcmAudioHeaderBytes ==
                   sizeof(PcmPacketHeader) - sizeof(uint16_t),
               "Invalid message header size.");

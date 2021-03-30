@@ -101,20 +101,20 @@ int RecentlyUsedFoldersComboModel::GetItemCount() const {
   return static_cast<int>(items_.size());
 }
 
-base::string16 RecentlyUsedFoldersComboModel::GetItemAt(int index) const {
+std::u16string RecentlyUsedFoldersComboModel::GetItemAt(int index) const {
   switch (items_[index].type) {
     case Item::TYPE_NODE:
       return items_[index].node->GetTitle();
     case Item::TYPE_SEPARATOR:
       // This function should not be called for separators.
       NOTREACHED();
-      return base::string16();
+      return std::u16string();
     case Item::TYPE_CHOOSE_ANOTHER_FOLDER:
       return l10n_util::GetStringUTF16(
           IDS_BOOKMARK_BUBBLE_CHOOSER_ANOTHER_FOLDER);
   }
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 bool RecentlyUsedFoldersComboModel::IsItemSeparatorAt(int index) const {

@@ -68,9 +68,7 @@ class NET_EXPORT_PRIVATE File : public base::RefCounted<File> {
   size_t GetLength();
 
   // Blocks until |num_pending_io| IO operations complete.
-  // TODO(fdoray): Rename to WaitForPendingIOForTesting() since this should only
-  // be called in tests.
-  static void WaitForPendingIO(int* num_pending_io);
+  static void WaitForPendingIOForTesting(int* num_pending_io);
 
   // Drops current pending operations without waiting for them to complete.
   static void DropPendingIO();

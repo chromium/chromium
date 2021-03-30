@@ -158,7 +158,7 @@ class PlatformSensorChromeOSOneChannelTest
 };
 
 TEST_P(PlatformSensorChromeOSOneChannelTest, MissingChannels) {
-  SetChannels(GetParam().second, false);
+  SetChannels(GetParam().second, /*set_first_channel=*/false);
 
   auto client = std::make_unique<testing::NiceMock<MockPlatformSensorClient>>();
   sensor_->AddClient(client.get());
@@ -175,7 +175,7 @@ TEST_P(PlatformSensorChromeOSOneChannelTest, MissingChannels) {
 }
 
 TEST_P(PlatformSensorChromeOSOneChannelTest, GetSamples) {
-  SetChannels(GetParam().second, true);
+  SetChannels(GetParam().second, /*set_first_channel=*/true);
 
   auto client = std::make_unique<testing::NiceMock<MockPlatformSensorClient>>();
   sensor_->AddClient(client.get());
@@ -189,25 +189,58 @@ TEST_P(PlatformSensorChromeOSOneChannelTest, GetSamples) {
   sensor_->StartListening(client.get(), PlatformSensorConfiguration(frequency));
   WaitForAndCheckReading(client.get());
 
-  sensor_device_->ResetObserverRemote(receiver_id_);
-
-  WaitForAndCheckReading(client.get());
-
   DisableFirstChannel();
-  sensor_device_->ResetObserverRemote(receiver_id_);
 
   EXPECT_CALL(*client.get(), OnSensorReadingChanged(GetParam().first)).Times(0);
   // Wait until a sample without the first channel is received.
   base::RunLoop().RunUntilIdle();
   // No reading updated.
 
-  sensor_device_->RemoveReceiver(receiver_id_);
+  sensor_device_->ResetObserverRemote(receiver_id_);
 
   base::RunLoop loop;
   // Wait until the disconnect arrives at |sensor_|.
   EXPECT_CALL(*client.get(), OnSensorError())
       .WillOnce(base::test::RunOnceClosure(loop.QuitClosure()));
   loop.Run();
+
+  sensor_->RemoveClient(client.get());
+}
+
+TEST_P(PlatformSensorChromeOSOneChannelTest, ResetOnTooManyFailures) {
+  SetChannels(GetParam().second, /*set_first_channel=*/true);
+
+  auto client = std::make_unique<testing::NiceMock<MockPlatformSensorClient>>();
+  sensor_->AddClient(client.get());
+  sensor_->StartListening(client.get(),
+                          PlatformSensorConfiguration(
+                              GetSensorMaxAllowedFrequency(GetParam().first)));
+  EXPECT_TRUE(sensor_->IsActiveForTesting());
+
+  WaitForAndCheckReading(client.get());
+
+  EXPECT_CALL(*client.get(), OnSensorError()).Times(0);
+  for (size_t i = 0;
+       i < PlatformSensorChromeOS::kNumFailedReadsBeforeGivingUp - 1; ++i) {
+    sensor_->OnErrorOccurred(
+        chromeos::sensors::mojom::ObserverErrorType::READ_FAILED);
+  }
+
+  base::flat_map<int32_t, int64_t> sample;
+  sample[0] = kFakeSampleData;
+  sample[1] = kFakeTimestampData;
+
+  for (size_t i = 0; i < PlatformSensorChromeOS::kNumRecoveryReads; ++i)
+    sensor_->OnSampleUpdated(sample);
+
+  // |num_failed_reads_| is recovered by 1.
+  sensor_->OnErrorOccurred(
+      chromeos::sensors::mojom::ObserverErrorType::READ_FAILED);
+
+  EXPECT_CALL(*client.get(), OnSensorError()).Times(1);
+
+  sensor_->OnErrorOccurred(
+      chromeos::sensors::mojom::ObserverErrorType::READ_FAILED);
 
   sensor_->RemoveClient(client.get());
 }
@@ -341,12 +374,7 @@ TEST_P(PlatformSensorChromeOSAxesTest, GetSamples) {
   sensor_->StartListening(client.get(), PlatformSensorConfiguration(frequency));
   WaitForAndCheckReading(client.get());
 
-  sensor_device_->ResetObserverRemote(receiver_id_);
-
-  WaitForAndCheckReading(client.get());
-
   DisableFirstChannel();
-  sensor_device_->ResetObserverRemote(receiver_id_);
 
   EXPECT_CALL(*client.get(), OnSensorReadingChanged(GetParam().first)).Times(0);
   // Wait until a sample without the first channel is received.

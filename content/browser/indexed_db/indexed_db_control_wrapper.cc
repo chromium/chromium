@@ -10,39 +10,6 @@
 
 namespace content {
 
-// Observer for the SpecialStoragePolicy on the IO thread.
-class IndexedDBControlWrapper::StoragePolicyObserver
-    : public storage::SpecialStoragePolicy::Observer {
- public:
-  explicit StoragePolicyObserver(
-      scoped_refptr<base::SequencedTaskRunner> reply_task_runner,
-      scoped_refptr<storage::SpecialStoragePolicy> storage_policy,
-      base::WeakPtr<IndexedDBControlWrapper> control_wrapper)
-      : reply_task_runner_(std::move(reply_task_runner)),
-        storage_policy_(std::move(storage_policy)),
-        control_wrapper_(std::move(control_wrapper)) {
-    storage_policy_->AddObserver(this);
-  }
-
-  ~StoragePolicyObserver() override { storage_policy_->RemoveObserver(this); }
-
-  // storage::SpecialStoragePolicy::Observer implementation:
-  void OnPolicyChanged() override {
-    reply_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&IndexedDBControlWrapper::OnSpecialStoragePolicyChanged,
-                       control_wrapper_));
-  }
-
- private:
-  scoped_refptr<base::SequencedTaskRunner> reply_task_runner_;
-  scoped_refptr<storage::SpecialStoragePolicy> storage_policy_;
-
-  // control_wrapper_ is bound to the reply_task_runner sequence,
-  // so should not be checked other than on that sequence.
-  base::WeakPtr<IndexedDBControlWrapper> control_wrapper_;
-};
-
 IndexedDBControlWrapper::IndexedDBControlWrapper(
     const base::FilePath& data_path,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
@@ -50,27 +17,28 @@ IndexedDBControlWrapper::IndexedDBControlWrapper(
     base::Clock* clock,
     mojo::PendingRemote<storage::mojom::BlobStorageContext>
         blob_storage_context,
-    mojo::PendingRemote<storage::mojom::NativeFileSystemContext>
-        native_file_system_context,
+    mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
+        file_system_access_context,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
-    scoped_refptr<base::SequencedTaskRunner> custom_task_runner)
-    : special_storage_policy_(std::move(special_storage_policy)) {
+    scoped_refptr<base::SequencedTaskRunner> custom_task_runner) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   context_ = base::MakeRefCounted<IndexedDBContextImpl>(
       data_path, std::move(quota_manager_proxy), clock,
-      std::move(blob_storage_context), std::move(native_file_system_context),
+      std::move(blob_storage_context), std::move(file_system_access_context),
       io_task_runner, std::move(custom_task_runner));
 
-  if (special_storage_policy_) {
-    storage_policy_observer_ = base::SequenceBound<StoragePolicyObserver>(
-        io_task_runner, base::SequencedTaskRunnerHandle::Get(),
-        special_storage_policy_, weak_factory_.GetWeakPtr());
+  if (special_storage_policy) {
+    storage_policy_observer_.emplace(
+        base::BindRepeating(&IndexedDBControlWrapper::ApplyPolicyUpdates,
+                            weak_factory_.GetWeakPtr()),
+        io_task_runner, std::move(special_storage_policy));
   }
 }
 
 IndexedDBControlWrapper::~IndexedDBControlWrapper() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  context_->Shutdown();
   IndexedDBContextImpl::ReleaseOnIDBSequence(std::move(context_));
 }
 
@@ -79,7 +47,8 @@ void IndexedDBControlWrapper::BindIndexedDB(
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BindRemoteIfNeeded();
-  TrackOriginPolicyState(origin);
+  if (storage_policy_observer_)
+    storage_policy_observer_->StartTrackingOrigin(origin);
   indexed_db_control_->BindIndexedDB(origin, std::move(receiver));
 }
 
@@ -136,8 +105,7 @@ void IndexedDBControlWrapper::SetForceKeepSessionState() {
 }
 
 void IndexedDBControlWrapper::ApplyPolicyUpdates(
-    std::vector<storage::mojom::IndexedDBStoragePolicyUpdatePtr>
-        policy_updates) {
+    std::vector<storage::mojom::StoragePolicyUpdatePtr> policy_updates) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BindRemoteIfNeeded();
   indexed_db_control_->ApplyPolicyUpdates(std::move(policy_updates));
@@ -155,48 +123,6 @@ void IndexedDBControlWrapper::AddObserver(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BindRemoteIfNeeded();
   indexed_db_control_->AddObserver(std::move(observer));
-}
-
-void IndexedDBControlWrapper::OnSpecialStoragePolicyChanged() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  BindRemoteIfNeeded();
-
-  std::vector<storage::mojom::IndexedDBStoragePolicyUpdatePtr> policy_updates;
-  for (auto& entry : origin_state_) {
-    const GURL& origin = entry.first;
-    OriginState& state = entry.second;
-    state.should_purge_on_shutdown = ShouldPurgeOnShutdown(origin);
-
-    if (state.should_purge_on_shutdown != state.will_purge_on_shutdown) {
-      state.will_purge_on_shutdown = state.should_purge_on_shutdown;
-      policy_updates.push_back(
-          storage::mojom::IndexedDBStoragePolicyUpdate::New(
-              url::Origin::Create(origin), state.should_purge_on_shutdown));
-    }
-  }
-  if (!policy_updates.empty())
-    ApplyPolicyUpdates(std::move(policy_updates));
-}
-
-void IndexedDBControlWrapper::TrackOriginPolicyState(
-    const url::Origin& origin) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const GURL origin_url = GURL(origin.Serialize());
-  auto it = origin_state_.find(origin_url);
-  if (it == origin_state_.end())
-    origin_state_[origin_url] = {};
-  OnSpecialStoragePolicyChanged();
-}
-
-bool IndexedDBControlWrapper::ShouldPurgeOnShutdown(const GURL& origin) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!special_storage_policy_)
-    return false;
-  if (!special_storage_policy_->IsStorageSessionOnly(origin))
-    return false;
-  if (special_storage_policy_->IsStorageProtected(origin))
-    return false;
-  return true;
 }
 
 void IndexedDBControlWrapper::BindRemoteIfNeeded() {

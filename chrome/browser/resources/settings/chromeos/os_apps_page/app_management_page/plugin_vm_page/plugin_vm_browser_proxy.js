@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {sendWithPromise, addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+// clang-format on
+
 /**
  * These values should remain consistent with their C++ counterpart
- * (chrome/browser/chromeos/plugin_vm/plugin_vm_manager.h).
+ * (chrome/browser/ash/plugin_vm/plugin_vm_manager.h).
  * @enum {number}
  */
 const PermissionType = {
@@ -19,42 +23,12 @@ const PermissionType = {
 let PermissionSetting;
 
 /**
- * @typedef {{guid: string,
- *            label: string,
- *            shared: boolean,
- *            shareWillReassign: boolean}}
- */
-let PluginVmSharedUsbDevice;
-
-/**
  * @fileoverview A helper object used by the Plugin VM section
  * to manage the Plugin VM.
  */
 cr.define('settings', function() {
   /** @interface */
-  class PluginVmBrowserProxy {
-    /**
-     * @param {!Array<string>} paths Paths to sanitze.
-     * @return {!Promise<!Array<string>>} Text to display in UI.
-     */
-    getPluginVmSharedPathsDisplayText(paths) {}
-
-    /**
-     * @param {string} vmName VM to stop sharing path with.
-     * @param {string} path Path to stop sharing.
-     * @return {!Promise<boolean>} Result of unsharing.
-     */
-    removePluginVmSharedPath(vmName, path) {}
-
-    /** Called when page is ready. */
-    notifyPluginVmSharedUsbDevicesPageReady() {}
-
-    /**
-     * @param {string} guid Unique device identifier.
-     * @param {boolean} shared Whether device is currently shared with Crostini.
-     */
-    setPluginVmUsbDeviceShared(guid, shared) {}
-
+  /* #export */ class PluginVmBrowserProxy {
     /**
      * @return {!Promise<boolean>} Whether Plugin VM needs to be relaunched for
      *     permissions to take effect.
@@ -68,27 +42,7 @@ cr.define('settings', function() {
   }
 
   /** @implements {settings.PluginVmBrowserProxy} */
-  class PluginVmBrowserProxyImpl {
-    /** @override */
-    getPluginVmSharedPathsDisplayText(paths) {
-      return cr.sendWithPromise('getPluginVmSharedPathsDisplayText', paths);
-    }
-
-    /** @override */
-    removePluginVmSharedPath(vmName, path) {
-      return cr.sendWithPromise('removePluginVmSharedPath', vmName, path);
-    }
-
-    /** @override */
-    notifyPluginVmSharedUsbDevicesPageReady() {
-      return cr.sendWithPromise('notifyPluginVmSharedUsbDevicesPageReady');
-    }
-
-    /** @override */
-    setPluginVmUsbDeviceShared(guid, shared) {
-      return chrome.send('setPluginVmUsbDeviceShared', [guid, shared]);
-    }
-
+  /* #export */ class PluginVmBrowserProxyImpl {
     /** @override */
     isRelaunchNeededForNewPermissions() {
       return cr.sendWithPromise('isRelaunchNeededForNewPermissions');

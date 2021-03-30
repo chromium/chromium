@@ -61,18 +61,19 @@ namespace base {
 
 BASE_EXPORT std::string StrCat(span<const StringPiece> pieces)
     WARN_UNUSED_RESULT;
-BASE_EXPORT string16 StrCat(span<const StringPiece16> pieces)
+BASE_EXPORT std::u16string StrCat(span<const StringPiece16> pieces)
     WARN_UNUSED_RESULT;
 BASE_EXPORT std::string StrCat(span<const std::string> pieces)
     WARN_UNUSED_RESULT;
-BASE_EXPORT string16 StrCat(span<const string16> pieces) WARN_UNUSED_RESULT;
+BASE_EXPORT std::u16string StrCat(span<const std::u16string> pieces)
+    WARN_UNUSED_RESULT;
 
 // Initializer list forwards to the array version.
 inline std::string StrCat(std::initializer_list<StringPiece> pieces) {
   return StrCat(make_span(pieces));
 }
 
-inline string16 StrCat(std::initializer_list<StringPiece16> pieces) {
+inline std::u16string StrCat(std::initializer_list<StringPiece16> pieces) {
   return StrCat(make_span(pieces));
 }
 
@@ -85,9 +86,11 @@ inline string16 StrCat(std::initializer_list<StringPiece16> pieces) {
 // because it avoids a temporary string allocation and copy.
 
 BASE_EXPORT void StrAppend(std::string* dest, span<const StringPiece> pieces);
-BASE_EXPORT void StrAppend(string16* dest, span<const StringPiece16> pieces);
+BASE_EXPORT void StrAppend(std::u16string* dest,
+                           span<const StringPiece16> pieces);
 BASE_EXPORT void StrAppend(std::string* dest, span<const std::string> pieces);
-BASE_EXPORT void StrAppend(string16* dest, span<const string16> pieces);
+BASE_EXPORT void StrAppend(std::u16string* dest,
+                           span<const std::u16string> pieces);
 
 // Initializer list forwards to the array version.
 inline void StrAppend(std::string* dest,
@@ -95,7 +98,7 @@ inline void StrAppend(std::string* dest,
   StrAppend(dest, make_span(pieces));
 }
 
-inline void StrAppend(string16* dest,
+inline void StrAppend(std::u16string* dest,
                       std::initializer_list<StringPiece16> pieces) {
   StrAppend(dest, make_span(pieces));
 }

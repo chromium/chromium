@@ -47,8 +47,12 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) InputPredictor {
   virtual bool HasPrediction() const = 0;
 
   // Generate the prediction based on current points.
+  // It can use a latency based on the vsync refresh rate: `frame_interval`.
+  // TODO(crbug.com/1142061): Remove the `frame_interval` arg if the expriment
+  // concludes that a frame-dependent latency isn't better.
   virtual std::unique_ptr<InputData> GeneratePrediction(
-      base::TimeTicks predict_time) const = 0;
+      base::TimeTicks predict_time,
+      base::TimeDelta frame_interval = base::TimeDelta::FromSeconds(0)) = 0;
 
   // Returns the maximum of prediction available for resampling
   // before having side effects (jitter, wrong orientation, etc..)

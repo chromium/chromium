@@ -22,10 +22,17 @@ CWV_EXPORT
 @interface CWVWebViewConfiguration : NSObject
 
 // Configuration with persistent data store which stores all data on disk.
+// Every call returns the same instance.
 + (instancetype)defaultConfiguration;
 
 // Configuration with ephemeral data store that never stores data on disk.
+// Every call returns the same instance.
+// Deprecated. Use |nonPersistentConfiguration| instead.
 + (instancetype)incognitoConfiguration;
+
+// Configuration with non-persistent data store that never stores data on disk.
+// Every call returns a new instance.
++ (instancetype)nonPersistentConfiguration;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -37,16 +44,16 @@ CWV_EXPORT
 @property(nonatomic, readonly) CWVUserContentController* userContentController;
 
 // This web view configuration's sync controller.
-// nil if CWVWebViewConfiguration is created with +incognitoConfiguration.
+// nil if -[CWVWebViewConfiguration isPersistent] is NO.
 @property(nonatomic, readonly, nullable) CWVSyncController* syncController;
 
 // This web view configuration's autofill data manager.
-// nil if CWVWebViewConfiguration is created with +incognitoConfiguration.
+// nil if -[CWVWebViewConfiguration isPersistent] is NO.
 @property(nonatomic, readonly, nullable)
     CWVAutofillDataManager* autofillDataManager;
 
-// YES if it is a configuration with persistent data store which stores all data
-// on disk.
+// YES if this is a configuration with a persistent data store which stores all
+// data on disk, for example cookies.
 @property(nonatomic, readonly, getter=isPersistent) BOOL persistent;
 
 @end

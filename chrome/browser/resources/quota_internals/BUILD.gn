@@ -20,7 +20,6 @@ generate_grd("build_grd") {
 }
 
 js_type_check("closure_compile") {
-  uses_js_modules = true
   deps = [
     ":event_handler",
     ":message_dispatcher",
@@ -41,7 +40,7 @@ js_library("event_handler") {
 js_library("message_dispatcher") {
 }
 
-grit("quota_internals_resources") {
+grit("resources") {
   defines = chrome_grit_defines
 
   # These arguments are needed since the grd is generated at build time.

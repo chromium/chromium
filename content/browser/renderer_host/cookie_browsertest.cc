@@ -335,8 +335,7 @@ class CookieStoreContentBrowserClient : public ContentBrowserClient {
       network::mojom::RestrictedCookieManagerRole role,
       content::BrowserContext* browser_context,
       const url::Origin& origin,
-      const net::SiteForCookies& site_for_cookies,
-      const url::Origin& top_frame_origin,
+      const net::IsolationInfo& isolation_info,
       bool is_service_worker,
       int process_id,
       int routing_id,
@@ -443,6 +442,112 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CrossSiteCookieSecurityEnforcement) {
       "Where A = http://127.0.0.1/\n"
       "      B = http://baz.com/",
       v.DepictFrameTree(tab->GetFrameTree()->root()));
+}
+
+class SamePartyEnabledCookieBrowserTest : public CookieBrowserTest {
+ public:
+  ~SamePartyEnabledCookieBrowserTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    CookieBrowserTest::SetUpCommandLine(command_line);
+    // Set up First-Party Sets and also enables net::Feature::kFirstPartySets.
+    // a.test, b.test and c.test are in the same FPS.
+    command_line->AppendSwitchASCII(
+        "use-first-party-set", "https://a.test,https://b.test,https://c.test");
+  }
+};
+
+// SameParty cookies (that aren't marked as http-only) should be available to
+// JavaScript.
+IN_PROC_BROWSER_TEST_F(SamePartyEnabledCookieBrowserTest, SamePartyCookies) {
+  // Must use HTTPS because SameParty cookies must be Secure.
+  net::EmbeddedTestServer server(net::EmbeddedTestServer::TYPE_HTTPS);
+  server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  server.AddDefaultHandlers(GetTestDataFilePath());
+  SetupCrossSiteRedirector(&server);
+  ASSERT_TRUE(server.Start());
+
+  // The server sets five cookies on a.test/b.test/c.test/d.test.
+  // d.test is not a member site from the same First-Party Sets with others.
+  std::string cookies_to_set =
+      "/set-cookie?unspecified=1;Secure"
+      "&samesite-none-sameparty=1;SameSite=None;SameParty;Secure"
+      "&samesite-lax-sameparty=1;SameSite=Lax;SameParty;Secure"
+      "&sameparty=1;SameParty;Secure"
+      "&sameparty-http=1;SameParty;Secure;httponly";
+
+  GURL url = server.GetURL("a.test", cookies_to_set);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  url = server.GetURL("b.test", cookies_to_set);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  url = server.GetURL("c.test", cookies_to_set);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  // d.test is not in the FPS.
+  url = server.GetURL("d.test", cookies_to_set);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  url = server.GetURL("a.test",
+                      "/cross_site_iframe_factory.html?a.test(a.test(),b.test("
+                      "c.test),d.test(b.test(c.test)))");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  RenderFrameHostImpl* main_frame = web_contents->GetMainFrame();
+  ASSERT_EQ(3u, main_frame->child_count());
+
+  RenderFrameHostImpl* a_iframe = main_frame->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* b_iframe = main_frame->child_at(1)->current_frame_host();
+  RenderFrameHostImpl* d_iframe = main_frame->child_at(2)->current_frame_host();
+
+  EXPECT_EQ("a.test", a_iframe->GetLastCommittedURL().host());
+  EXPECT_EQ("b.test", b_iframe->GetLastCommittedURL().host());
+  EXPECT_EQ("d.test", d_iframe->GetLastCommittedURL().host());
+
+  // The top-level frame should get all cookies.
+  EXPECT_EQ(
+      "unspecified=1; samesite-none-sameparty=1; samesite-lax-sameparty=1; "
+      "sameparty=1",
+      GetCookieFromJS(main_frame));
+
+  // All same-site/SameParty cookies will be delievered to the a.test -> a.test
+  // frame, as it is same-site with its ancestors.
+  EXPECT_EQ(
+      "unspecified=1; samesite-none-sameparty=1; samesite-lax-sameparty=1; "
+      "sameparty=1",
+      GetCookieFromJS(a_iframe));
+
+  // SameParty cookies will be delievered to the a.test -> b.test frame, as it
+  // is in the same First-Party Sets with its ancestors.
+  EXPECT_EQ("samesite-none-sameparty=1; samesite-lax-sameparty=1; sameparty=1",
+            GetCookieFromJS(b_iframe));
+
+  // samesite-none-sameparty cookie will be delivered to the a.test -> d.test
+  // frame, as d.test is not in any FPS.
+  EXPECT_EQ("samesite-none-sameparty=1", GetCookieFromJS(d_iframe));
+
+  ASSERT_EQ(1u, b_iframe->child_count());
+  RenderFrameHostImpl* bc_iframe = b_iframe->child_at(0)->current_frame_host();
+  EXPECT_EQ("c.test", bc_iframe->GetLastCommittedURL().host());
+  // SameParty cookies will be delievered to the a.test -> b.test -> c.test
+  // frame, as it is in the same First-Party Sets with its ancestors.
+  EXPECT_EQ("samesite-none-sameparty=1; samesite-lax-sameparty=1; sameparty=1",
+            GetCookieFromJS(bc_iframe));
+
+  ASSERT_EQ(1u, d_iframe->child_count());
+  RenderFrameHostImpl* db_iframe = d_iframe->child_at(0)->current_frame_host();
+  EXPECT_EQ("b.test", db_iframe->GetLastCommittedURL().host());
+  // No cookies will be delievered to the a.test -> d.test -> b.test frame, as
+  // it is embedded in a non-member site.
+  EXPECT_EQ("", GetCookieFromJS(db_iframe));
+
+  ASSERT_EQ(1u, db_iframe->child_count());
+  RenderFrameHostImpl* dbc_iframe =
+      db_iframe->child_at(0)->current_frame_host();
+  EXPECT_EQ("c.test", dbc_iframe->GetLastCommittedURL().host());
+  // No cookies will be delievered to the a.test -> d.test -> b.test -> c.test
+  // frame, as it's ancestors has non-member site.
+  EXPECT_EQ("", GetCookieFromJS(dbc_iframe));
 }
 
 }  // namespace content

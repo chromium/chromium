@@ -17,12 +17,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/engagement/site_engagement_service.h"
 #include "chrome/browser/notifications/platform_notification_service_factory.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/push_messaging/push_messaging_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -71,7 +71,7 @@ void RecordUserVisibleStatus(blink::mojom::PushUserVisibleStatus status) {
 
 content::StoragePartition* GetStoragePartition(Profile* profile,
                                                const GURL& origin) {
-  return content::BrowserContext::GetStoragePartitionForSite(profile, origin);
+  return content::BrowserContext::GetStoragePartitionForUrl(profile, origin);
 }
 
 NotificationDatabaseData CreateDatabaseData(
@@ -152,9 +152,9 @@ void PushMessagingNotificationManager::DidCountVisibleNotifications(
 
   // Sites with a currently visible tab don't need to show notifications.
 #if defined(OS_ANDROID)
-  for (auto it = TabModelList::begin(); it != TabModelList::end(); ++it) {
-    Profile* profile = (*it)->GetProfile();
-    WebContents* active_web_contents = (*it)->GetActiveWebContents();
+  for (const TabModel* model : TabModelList::models()) {
+    Profile* profile = model->GetProfile();
+    WebContents* active_web_contents = model->GetActiveWebContents();
 #else
   for (auto* browser : *BrowserList::GetInstance()) {
     Profile* profile = browser->profile();

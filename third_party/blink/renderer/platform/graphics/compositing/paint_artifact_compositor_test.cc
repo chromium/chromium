@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "third_party/blink/renderer/platform/testing/fake_display_item_client.h"
+#include "third_party/blink/renderer/platform/testing/fake_graphics_layer_client.h"
 #include "third_party/blink/renderer/platform/testing/layer_tree_host_embedder.h"
 #include "third_party/blink/renderer/platform/testing/paint_property_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
@@ -157,31 +158,14 @@ class PaintArtifactCompositorTest : public testing::Test,
 
   cc::Layer* RootLayer() { return paint_artifact_compositor_->RootLayer(); }
 
-  // CompositeAfterPaint creates scroll hit test data (which create scroll hit
-  // test layers in PaintArtifactCompositor) whereas before CompositeAfterPaint,
-  // scrollable foreign layers are created in ScrollingCoordinator and passed
-  // to PaintArtifactCompositor.
   void CreateScrollableChunk(
       TestPaintArtifact& artifact,
       const TransformPaintPropertyNode& scroll_translation,
       const ClipPaintPropertyNodeOrAlias& clip,
       const EffectPaintPropertyNodeOrAlias& effect) {
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      artifact.Chunk(*scroll_translation.Parent(), clip, effect)
-          .ScrollHitTest(&scroll_translation);
-      return;
-    }
-
-    // Create a foreign layer for scrolling, roughly matching the layer
-    // created by ScrollingCoordinator.
-    const auto* scroll_node = scroll_translation.ScrollNode();
-    auto rect = scroll_node->ContainerRect();
-    scoped_refptr<cc::Layer> layer = cc::Layer::Create();
-    layer->SetBounds(gfx::Size(rect.Size()));
-    layer->SetElementId(scroll_node->GetCompositorElementId());
-    layer->SetHitTestable(true);
-    artifact.Chunk(scroll_translation, clip, effect)
-        .ForeignLayer(layer, rect.Location());
+    artifact.Chunk(*scroll_translation.Parent(), clip, effect)
+        .ScrollHitTest(scroll_translation.ScrollNode()->ContainerRect(),
+                       &scroll_translation);
   }
 
   // Returns the |num|th scrollable layer. In CompositeAfterPaint, this will be
@@ -1177,10 +1161,10 @@ TEST_P(PaintArtifactCompositorTest, OneScrollNodeNonComposited) {
       .RectDrawing(IntRect(-110, 12, 170, 19), Color::kWhite);
 
   Update(artifact.Build());
-  // Node #0 reserved for null; #1 for root render surface. Blink nodes are all
-  // decomposited.
-  EXPECT_EQ(2u, GetPropertyTrees().scroll_tree.size());
-  EXPECT_EQ(2u, GetPropertyTrees().transform_tree.size());
+  // Node #0 reserved for null; #1 for root render surface; #2 is the blink
+  // scroll translation.
+  EXPECT_EQ(3u, GetPropertyTrees().scroll_tree.size());
+  EXPECT_EQ(3u, GetPropertyTrees().transform_tree.size());
   EXPECT_EQ(1u, LayerCount());
 }
 
@@ -1964,6 +1948,30 @@ TEST_P(PaintArtifactCompositorTest, MightOverlap) {
       MightOverlap(pending_layer, PendingLayer(chunks, chunks.begin() + 4)));
 }
 
+TEST_P(PaintArtifactCompositorTest, MightOverlapCommonClipAncestor) {
+  auto common_clip = CreateClip(c0(), t0(), FloatRoundedRect(0, 0, 100, 100));
+  auto c1 = CreateClip(*common_clip, t0(), FloatRoundedRect(0, 100, 100, 100));
+  auto c2 = CreateClip(*common_clip, t0(), FloatRoundedRect(50, 100, 100, 100));
+  auto c3 =
+      CreateClip(*common_clip, t0(), FloatRoundedRect(100, 100, 100, 100));
+
+  TestPaintArtifact artifact;
+  artifact.Chunk(t0(), *c1, e0())
+      .Bounds(IntRect(0, 100, 200, 100))
+      .Chunk(t0(), *c2, e0())
+      .Bounds(IntRect(0, 100, 200, 100))
+      .Chunk(t0(), *c3, e0())
+      .Bounds(IntRect(0, 100, 200, 100));
+  PaintChunkSubset chunks(artifact.Build());
+
+  PendingLayer pending_layer1(chunks, chunks.begin());
+  PendingLayer pending_layer2(chunks, chunks.begin() + 1);
+  PendingLayer pending_layer3(chunks, chunks.begin() + 2);
+  EXPECT_FALSE(MightOverlap(pending_layer1, pending_layer3));
+  EXPECT_TRUE(MightOverlap(pending_layer1, pending_layer2));
+  EXPECT_TRUE(MightOverlap(pending_layer2, pending_layer3));
+}
+
 TEST_P(PaintArtifactCompositorTest, UniteRectsKnownToBeOpaque) {
   // X aligned and intersect: unite.
   EXPECT_EQ(FloatRect(10, 20, 30, 60),
@@ -2213,13 +2221,12 @@ TEST_P(PaintArtifactCompositorTest, EffectWithElementIdWithAlias) {
             ElementIdToEffectNodeIndex(real_effect->GetCompositorElementId()));
 }
 
-TEST_P(PaintArtifactCompositorTest, NonCompositedSimpleLuminanceMask) {
+TEST_P(PaintArtifactCompositorTest, NonCompositedSimpleMask) {
   auto masked = CreateOpacityEffect(
       e0(), 1.0, CompositingReason::kIsolateCompositedDescendants);
   EffectPaintPropertyNode::State masking_state;
   masking_state.local_transform_space = &t0();
   masking_state.output_clip = &c0();
-  masking_state.color_filter = kColorFilterLuminanceToAlpha;
   masking_state.blend_mode = SkBlendMode::kDstIn;
   auto masking =
       EffectPaintPropertyNode::Create(*masked, std::move(masking_state));
@@ -2246,84 +2253,6 @@ TEST_P(PaintArtifactCompositorTest, NonCompositedSimpleLuminanceMask) {
   EXPECT_TRUE(masked_group->filters.IsEmpty());
   // It's the last effect node. |masking| has been decomposited.
   EXPECT_EQ(masked_group, GetPropertyTrees().effect_tree.back());
-}
-
-TEST_P(PaintArtifactCompositorTest, CompositedLuminanceMaskOneChild) {
-  auto masked = CreateOpacityEffect(
-      e0(), 1.0, CompositingReason::kIsolateCompositedDescendants);
-  EffectPaintPropertyNode::State masking_state;
-  masking_state.local_transform_space = &t0();
-  masking_state.output_clip = &c0();
-  masking_state.color_filter = kColorFilterLuminanceToAlpha;
-  masking_state.blend_mode = SkBlendMode::kDstIn;
-  masking_state.direct_compositing_reasons = CompositingReason::kLayerForMask;
-  auto masking =
-      EffectPaintPropertyNode::Create(*masked, std::move(masking_state));
-
-  TestPaintArtifact artifact;
-  artifact.Chunk(t0(), c0(), *masked)
-      .RectDrawing(IntRect(100, 100, 200, 200), Color::kGray);
-  artifact.Chunk(t0(), c0(), *masking)
-      .RectDrawing(IntRect(150, 150, 100, 100), Color::kWhite);
-  Update(artifact.Build());
-  ASSERT_EQ(2u, LayerCount());
-
-  const cc::Layer* masking_layer = LayerAt(1);
-  const cc::EffectNode* masking_group =
-      GetPropertyTrees().effect_tree.Node(masking_layer->effect_tree_index());
-
-  // Render surface is not needed for one child.
-  EXPECT_FALSE(masking_group->HasRenderSurface());
-  ASSERT_EQ(1u, masking_group->filters.size());
-  EXPECT_EQ(cc::FilterOperation::REFERENCE,
-            masking_group->filters.at(0).type());
-  EXPECT_EQ(SkBlendMode::kDstIn, masking_group->blend_mode);
-
-  // The parent also has a render surface to define the scope of the backdrop
-  // of the kDstIn blend mode.
-  EXPECT_TRUE(
-      GetPropertyTrees().effect_tree.parent(masking_group)->HasRenderSurface());
-}
-
-TEST_P(PaintArtifactCompositorTest, CompositedLuminanceMaskTwoChildren) {
-  auto masked = CreateOpacityEffect(
-      e0(), 1.0, CompositingReason::kIsolateCompositedDescendants);
-  EffectPaintPropertyNode::State masking_state;
-  masking_state.local_transform_space = &t0();
-  masking_state.output_clip = &c0();
-  masking_state.color_filter = kColorFilterLuminanceToAlpha;
-  masking_state.blend_mode = SkBlendMode::kDstIn;
-  auto masking =
-      EffectPaintPropertyNode::Create(*masked, std::move(masking_state));
-
-  auto child_of_masked = CreateOpacityEffect(
-      *masking, 1.0, CompositingReason::kIsolateCompositedDescendants);
-
-  TestPaintArtifact artifact;
-  artifact.Chunk(t0(), c0(), *masked)
-      .RectDrawing(IntRect(100, 100, 200, 200), Color::kGray);
-  artifact.Chunk(t0(), c0(), *child_of_masked)
-      .RectDrawing(IntRect(100, 100, 200, 200), Color::kGray);
-  artifact.Chunk(t0(), c0(), *masking)
-      .RectDrawing(IntRect(150, 150, 100, 100), Color::kWhite);
-  Update(artifact.Build());
-  ASSERT_EQ(3u, LayerCount());
-
-  const cc::Layer* masking_layer = LayerAt(2);
-  const cc::EffectNode* masking_group =
-      GetPropertyTrees().effect_tree.Node(masking_layer->effect_tree_index());
-
-  // There is a render surface because there are two children.
-  EXPECT_TRUE(masking_group->HasRenderSurface());
-  ASSERT_EQ(1u, masking_group->filters.size());
-  EXPECT_EQ(cc::FilterOperation::REFERENCE,
-            masking_group->filters.at(0).type());
-  EXPECT_EQ(SkBlendMode::kDstIn, masking_group->blend_mode);
-
-  // The parent also has a render surface to define the scope of the backdrop
-  // of the kDstIn blend mode.
-  EXPECT_TRUE(
-      GetPropertyTrees().effect_tree.parent(masking_group)->HasRenderSurface());
 }
 
 TEST_P(PaintArtifactCompositorTest, CompositedMaskOneChild) {
@@ -5037,6 +4966,39 @@ TEST_P(PaintArtifactCompositorTest, AddNonCompositedScrollNodes) {
   auto* scroll_node = scroll_tree.FindNodeFromElementId(scroll_element_id);
   EXPECT_TRUE(scroll_node);
   EXPECT_FALSE(scroll_node->is_composited);
+}
+
+TEST_P(PaintArtifactCompositorTest, PreCompositedLayerNonCompositedScrolling) {
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    return;
+
+  FakeGraphicsLayerClient client;
+  GraphicsLayer graphics_layer(client);
+  auto parent_scroll_translation = CreateScrollTranslation(
+      t0(), 10, 20, IntRect(0, 0, 100, 100), IntSize(200, 200),
+      CompositingReason::kRootScroller);
+  PropertyTreeState layer_state(*parent_scroll_translation, c0(), e0());
+  graphics_layer.SetLayerState(layer_state, IntPoint());
+  auto scroll_translation = CreateScrollTranslation(
+      *parent_scroll_translation, 10, 20, IntRect(0, 0, 150, 150),
+      IntSize(200, 200), CompositingReason::kNone);
+
+  TestPaintArtifact artifact;
+  CreateScrollableChunk(artifact, *scroll_translation, c0(), e0());
+  Vector<PreCompositedLayerInfo> pre_composited_layers = {
+      {PaintChunkSubset(artifact.Build()), &graphics_layer}};
+  GetPaintArtifactCompositor().SetNeedsUpdate();
+  GetPaintArtifactCompositor().Update(
+      pre_composited_layers, PaintArtifactCompositor::ViewportProperties(), {},
+      {});
+
+  EXPECT_EQ(1u, LayerCount());
+  EXPECT_EQ(&graphics_layer.CcLayer(), LayerAt(0));
+  EXPECT_EQ(gfx::Rect(0, 0, 150, 150),
+            graphics_layer.CcLayer().non_fast_scrollable_region().bounds());
+  EXPECT_EQ(parent_scroll_translation->CcNodeId(
+                graphics_layer.CcLayer().property_tree_sequence_number()),
+            graphics_layer.CcLayer().scroll_tree_index());
 }
 
 }  // namespace blink

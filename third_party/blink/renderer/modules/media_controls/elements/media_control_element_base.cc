@@ -24,6 +24,9 @@ bool MediaControlElementBase::IsWanted() const {
 }
 
 void MediaControlElementBase::SetDoesFit(bool fits) {
+  if (does_fit_ == fits)
+    return;
+
   does_fit_ = fits;
   UpdateShownState();
 }

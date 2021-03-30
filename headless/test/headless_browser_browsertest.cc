@@ -3,15 +3,20 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <tuple>
 
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "components/policy/core/browser/browser_policy_connector_base.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_map.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/permission_controller_delegate.h"
@@ -23,7 +28,9 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "headless/lib/browser/headless_browser_context_impl.h"
+#include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
+#include "headless/lib/browser/policy/headless_mode_policy.h"
 #include "headless/lib/headless_macros.h"
 #include "headless/public/devtools/domains/inspector.h"
 #include "headless/public/devtools/domains/network.h"
@@ -265,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, ClipboardCopyPasteText) {
   // Tests copy-pasting text with the clipboard in headless mode.
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
   ASSERT_TRUE(clipboard);
-  base::string16 paste_text = base::ASCIIToUTF16("Clippy!");
+  std::u16string paste_text = u"Clippy!";
   for (ui::ClipboardBuffer buffer :
        {ui::ClipboardBuffer::kCopyPaste, ui::ClipboardBuffer::kSelection,
         ui::ClipboardBuffer::kDrag}) {
@@ -275,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, ClipboardCopyPasteText) {
       ui::ScopedClipboardWriter writer(buffer);
       writer.WriteText(paste_text);
     }
-    base::string16 copy_text;
+    std::u16string copy_text;
     clipboard->ReadText(buffer, /* data_dst = */ nullptr, &copy_text);
     EXPECT_EQ(paste_text, copy_text);
   }
@@ -755,6 +762,100 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, BadgingAPI) {
       browser_context->CreateWebContentsBuilder().SetInitialURL(url).Build();
 
   EXPECT_TRUE(WaitForLoad(web_contents));
+}
+
+class HeadlessBrowserTestWithPolicy : public HeadlessBrowserTest {
+ protected:
+  // Implement to set policies before headless browser is instantiated.
+  virtual void SetPolicy() {}
+
+  void SetUp() override {
+    mock_provider_ =
+        std::make_unique<policy::MockConfigurationPolicyProvider>();
+    EXPECT_CALL(*mock_provider_.get(), IsInitializationComplete(testing::_))
+        .WillRepeatedly(testing::Return(false));
+    policy::BrowserPolicyConnectorBase::SetPolicyProviderForTesting(
+        mock_provider_.get());
+    SetPolicy();
+    HeadlessBrowserTest::SetUp();
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    HeadlessBrowserTest::SetUpInProcessBrowserTestFixture();
+    CreateTempUserDir();
+  }
+
+  void TearDown() override {
+    HeadlessBrowserTest::TearDown();
+    mock_provider_->Shutdown();
+    policy::BrowserPolicyConnectorBase::SetPolicyProviderForTesting(nullptr);
+  }
+
+  void CreateTempUserDir() {
+    ASSERT_TRUE(user_data_dir_.CreateUniqueTempDir());
+    EXPECT_TRUE(base::IsDirectoryEmpty(user_data_dir()));
+    options()->user_data_dir = user_data_dir();
+  }
+
+  const base::FilePath& user_data_dir() const {
+    return user_data_dir_.GetPath();
+  }
+
+  PrefService* GetPrefs() {
+    return static_cast<HeadlessBrowserImpl*>(browser())->GetPrefs();
+  }
+
+  base::ScopedTempDir user_data_dir_;
+  std::unique_ptr<policy::MockConfigurationPolicyProvider> mock_provider_;
+};
+
+// The following enum values must match HeadlessMode policy template in
+// components/policy/resources/policy_templates.json
+enum {
+  kHeadlessModePolicyEnabled = 1,
+  kHeadlessModePolicyDisabled = 2,
+  kHeadlessModePolicyUnset = -1,  // not in the template
+};
+
+class HeadlessBrowserTestWithHeadlessModePolicy
+    : public HeadlessBrowserTestWithPolicy,
+      public testing::WithParamInterface<std::tuple<int, bool>> {
+ protected:
+  void SetPolicy() override {
+    int headless_mode_policy = std::get<0>(GetParam());
+    if (headless_mode_policy != kHeadlessModePolicyUnset) {
+      SetHeadlessModePolicy(
+          static_cast<policy::HeadlessModePolicy::HeadlessMode>(
+              headless_mode_policy));
+    }
+  }
+
+  void SetHeadlessModePolicy(
+      policy::HeadlessModePolicy::HeadlessMode headless_mode) {
+    policy::PolicyMap policy;
+    policy.Set("HeadlessMode", policy::POLICY_LEVEL_MANDATORY,
+               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+               base::Value(static_cast<int>(headless_mode)),
+               /*external_data_fetcher=*/nullptr);
+    mock_provider_->UpdateChromePolicy(policy);
+  }
+
+  bool expected_enabled() { return std::get<1>(GetParam()); }
+  bool actual_enabled() {
+    return !policy::HeadlessModePolicy::IsHeadlessDisabled(GetPrefs());
+  }
+};
+
+INSTANTIATE_TEST_CASE_P(
+    HeadlessBrowserTestWithHeadlessModePolicy,
+    HeadlessBrowserTestWithHeadlessModePolicy,
+    testing::Values(std::make_tuple(kHeadlessModePolicyEnabled, true),
+                    std::make_tuple(kHeadlessModePolicyDisabled, false),
+                    std::make_tuple(kHeadlessModePolicyUnset, true)));
+
+IN_PROC_BROWSER_TEST_P(HeadlessBrowserTestWithHeadlessModePolicy,
+                       HeadlessModePolicySettings) {
+  EXPECT_EQ(actual_enabled(), expected_enabled());
 }
 
 }  // namespace headless

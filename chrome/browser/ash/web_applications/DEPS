@@ -1,0 +1,8 @@
+specific_include_rules = {
+  "camera_app_integration_browsertest.cc": [
+    "+chrome/browser/ui/views",
+  ],
+  "eche_app_integration_browsertest.cc": [
+    "+chrome/browser/ui/views",
+  ],
+}

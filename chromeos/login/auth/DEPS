@@ -1,13 +1,13 @@
 noparent = True
 
 include_rules = [
+  "+ash/constants",
   "+base",
   "+crypto",
   "+components/account_id",
   "+components/password_manager/core/browser/password_hash_data.h",
   "+components/user_manager",
   "+base/component_export.h",
-  "+chromeos/constants",
   "+chromeos/cryptohome",
   "+chromeos/dbus",
   "+chromeos/login/login_state",

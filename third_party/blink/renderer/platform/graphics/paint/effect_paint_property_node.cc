@@ -60,8 +60,6 @@ std::unique_ptr<JSONObject> EffectPaintPropertyNode::ToJSON() const {
   json->SetString("localTransformSpace",
                   String::Format("%p", state_.local_transform_space.get()));
   json->SetString("outputClip", String::Format("%p", state_.output_clip.get()));
-  if (state_.color_filter != kColorFilterNone)
-    json->SetInteger("colorFilter", state_.color_filter);
   if (!state_.filter.IsEmpty())
     json->SetString("filter", state_.filter.ToString());
   if (!state_.backdrop_filter.IsEmpty())

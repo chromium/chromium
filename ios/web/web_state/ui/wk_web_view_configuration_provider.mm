@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 #import <WebKit/WebKit.h>
+#include <vector>
 
 #include "base/check.h"
 #include "base/ios/ios_util.h"
@@ -15,6 +16,8 @@
 #include "components/safe_browsing/core/features.h"
 #include "ios/web/common/features.h"
 #import "ios/web/js_messaging/crw_wk_script_message_router.h"
+#import "ios/web/js_messaging/java_script_feature_manager.h"
+#include "ios/web/js_messaging/java_script_feature_util_impl.h"
 #import "ios/web/js_messaging/page_script_util.h"
 #include "ios/web/public/browser_state.h"
 #include "ios/web/public/web_client.h"
@@ -40,16 +43,6 @@ WKUserScript* InternalGetDocumentStartScriptForMainFrame(
   return [[WKUserScript alloc]
         initWithSource:GetDocumentStartScriptForMainFrame(browser_state)
          injectionTime:WKUserScriptInjectionTimeAtDocumentStart
-      forMainFrameOnly:YES];
-}
-
-// Returns a WKUserScript for JavsScript injected into the main frame at the
-// end of the document load.
-WKUserScript* InternalGetDocumentEndScriptForMainFrame(
-    BrowserState* browser_state) {
-  return [[WKUserScript alloc]
-        initWithSource:GetDocumentEndScriptForMainFrame(browser_state)
-         injectionTime:WKUserScriptInjectionTimeAtDocumentEnd
       forMainFrameOnly:YES];
 }
 
@@ -125,9 +118,11 @@ void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
       // displayed and also prevents the iOS 13 ContextMenu delegate methods
       // from being called.
       // https://github.com/WebKit/webkit/blob/1233effdb7826a5f03b3cdc0f67d713741e70976/Source/WebKit/UIProcess/API/Cocoa/WKWebViewConfiguration.mm#L307
-      BOOL enable_long_press_action =
-          !web::GetWebClient()->EnableLongPressAndForceTouchHandling();
-      [configuration_ setValue:@(enable_long_press_action)
+      BOOL disable_long_press_system_actions =
+
+          web::GetWebClient()->EnableLongPressAndForceTouchHandling() ||
+          web::GetWebClient()->EnableLongPressUIContextMenu();
+      [configuration_ setValue:@(!disable_long_press_system_actions)
                         forKey:@"longPressActionsEnabled"];
     } @catch (NSException* exception) {
       NOTREACHED() << "Error setting value for longPressActionsEnabled";
@@ -206,6 +201,21 @@ WKWebViewConfigurationProvider::GetContentRuleListProvider() {
 
 void WKWebViewConfigurationProvider::UpdateScripts() {
   [configuration_.userContentController removeAllUserScripts];
+
+  JavaScriptFeatureManager* java_script_feature_manager =
+      JavaScriptFeatureManager::FromBrowserState(browser_state_);
+
+  std::vector<JavaScriptFeature*> features;
+  for (JavaScriptFeature* feature :
+       java_script_features::GetBuiltInJavaScriptFeatures(browser_state_)) {
+    features.push_back(feature);
+  }
+  for (JavaScriptFeature* feature :
+       GetWebClient()->GetJavaScriptFeatures(browser_state_)) {
+    features.push_back(feature);
+  }
+  java_script_feature_manager->ConfigureFeatures(features);
+
   // Main frame script depends upon scripts injected into all frames, so the
   // "AllFrames" scripts must be injected first.
   [configuration_.userContentController
@@ -214,8 +224,6 @@ void WKWebViewConfigurationProvider::UpdateScripts() {
       addUserScript:InternalGetDocumentStartScriptForMainFrame(browser_state_)];
   [configuration_.userContentController
       addUserScript:InternalGetDocumentEndScriptForAllFrames(browser_state_)];
-  [configuration_.userContentController
-      addUserScript:InternalGetDocumentEndScriptForMainFrame(browser_state_)];
 }
 
 void WKWebViewConfigurationProvider::Purge() {

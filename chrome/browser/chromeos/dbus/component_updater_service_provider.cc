@@ -65,16 +65,16 @@ void ComponentUpdaterServiceProvider::Start(
   exported_object->ExportMethod(
       kComponentUpdaterServiceInterface,
       kComponentUpdaterServiceLoadComponentMethod,
-      base::Bind(&ComponentUpdaterServiceProvider::LoadComponent,
-                 weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(&ComponentUpdaterServiceProvider::LoadComponent,
+                          weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&ComponentUpdaterServiceProvider::OnExported,
                      weak_ptr_factory_.GetWeakPtr()));
 
   exported_object->ExportMethod(
       kComponentUpdaterServiceInterface,
       kComponentUpdaterServiceUnloadComponentMethod,
-      base::Bind(&ComponentUpdaterServiceProvider::UnloadComponent,
-                 weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(&ComponentUpdaterServiceProvider::UnloadComponent,
+                          weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&ComponentUpdaterServiceProvider::OnExported,
                      weak_ptr_factory_.GetWeakPtr()));
 

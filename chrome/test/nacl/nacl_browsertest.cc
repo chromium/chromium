@@ -490,10 +490,6 @@ IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnacl,
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnacl, PnaclMimeType) {
-  RunLoadTest(FILE_PATH_LITERAL("pnacl_mime_type.html"));
-}
-
 // TODO(ncbray) support glibc and PNaCl
 // flaky: crbug.com/375894
 IN_PROC_BROWSER_TEST_F(NaClBrowserTestNewlibExtension, DISABLED_MimeHandler) {

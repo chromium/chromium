@@ -5,11 +5,11 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/renderer/subresource_redirect/login_robots_decider_agent.h"
-#include "chrome/renderer/subresource_redirect/login_robots_decider_test_util.h"
 #include "chrome/renderer/subresource_redirect/subresource_redirect_url_loader_throttle.h"
 #include "chrome/renderer/subresource_redirect/subresource_redirect_util.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/subresource_redirect/subresource_redirect_test_util.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_view.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -84,17 +84,13 @@ class LoginRobotsDeciderInfo : public blink::URLLoaderThrottle::Delegate {
     NOTIMPLEMENTED();
   }
 
-  void VerifyRedirectResult(RedirectResult expected_result) {
-    base::HistogramTester histogram_tester;
+  void VerifyWillProcessResponse() {
     network::mojom::URLResponseHeadPtr head =
         network::CreateURLResponseHead(net::HTTP_OK);
     head->headers->SetHeader("Content-Length", "1024");
     bool defer = false;
     throttle_->WillProcessResponse(GURL("https://foo.com/img.jpg"), head.get(),
                                    &defer);
-    histogram_tester.ExpectUniqueSample(
-        "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult",
-        expected_result, 1);
     EXPECT_FALSE(defer);
   }
 
@@ -122,7 +118,7 @@ class SubresourceRedirectLoginRobotsURLLoaderThrottleTest
   }
 
   void SetUpRobotsRules(const std::string& origin,
-                        const std::vector<Rule>& patterns) {
+                        const std::vector<RobotsRule>& patterns) {
     login_robots_decider_agent_->UpdateRobotsRulesForTesting(
         url::Origin::Create(GURL(origin)), GetRobotsRulesProtoString(patterns));
   }
@@ -150,6 +146,10 @@ class SubresourceRedirectLoginRobotsURLLoaderThrottleTest
                  blink::PreviewsTypes::SUBRESOURCE_REDIRECT_ON));
   }
 
+  void SetLoggedInState(bool is_logged_in) {
+    login_robots_decider_agent_->SetLoggedInState(is_logged_in);
+  }
+
  protected:
   void SetUp() override {
     ChromeRenderViewTest::SetUp();
@@ -163,9 +163,10 @@ class SubresourceRedirectLoginRobotsURLLoaderThrottleTest
         &associated_interfaces_, view_->GetMainRenderFrame());
   }
 
- private:
+ protected:
   LoginRobotsDeciderAgent* login_robots_decider_agent_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(SubresourceRedirectLoginRobotsURLLoaderThrottleTest,
@@ -221,6 +222,7 @@ TEST_F(SubresourceRedirectLoginRobotsURLLoaderThrottleTest,
        TestGetSubresourceURL) {
   struct TestCase {
     int previews_state;
+    bool is_logged_in;
     std::string original_url;
     GURL redirected_subresource_url;  // Empty URL means there will be no
                                       // redirect.
@@ -229,17 +231,20 @@ TEST_F(SubresourceRedirectLoginRobotsURLLoaderThrottleTest,
   const TestCase kTestCases[]{
       {
           blink::PreviewsTypes::SUBRESOURCE_REDIRECT_ON,
+          false,
           "https://www.test.com/public_img.jpg",
           GetSubresourceURLForURL(GURL("https://www.test.com/public_img.jpg")),
       },
       {
           blink::PreviewsTypes::SUBRESOURCE_REDIRECT_ON,
+          false,
           "https://www.test.com/public_img.jpg#anchor",
           GetSubresourceURLForURL(
               GURL("https://www.test.com/public_img.jpg#anchor")),
       },
       {
           blink::PreviewsTypes::SUBRESOURCE_REDIRECT_ON,
+          false,
           "https://www.test.com/public_img.jpg?public_arg1=bar&public_arg2",
           GetSubresourceURLForURL(
               GURL("https://www.test.com/"
@@ -248,12 +253,21 @@ TEST_F(SubresourceRedirectLoginRobotsURLLoaderThrottleTest,
       // Private images will not be redirected.
       {
           blink::PreviewsTypes::SUBRESOURCE_REDIRECT_ON,
+          false,
           "https://www.test.com/private_img.jpg",
           GURL(),
       },
       {
           blink::PreviewsTypes::SUBRESOURCE_REDIRECT_ON,
+          false,
           "https://www.test.com/public_img.jpg&private_arg1=foo",
+          GURL(),
+      },
+      // No redirection when logged-in
+      {
+          blink::PreviewsTypes::SUBRESOURCE_REDIRECT_ON,
+          true,
+          "https://www.test.com/public_img.jpg",
           GURL(),
       },
   };
@@ -264,6 +278,7 @@ TEST_F(SubresourceRedirectLoginRobotsURLLoaderThrottleTest,
                                             {kRuleTypeDisallow, ""}});
 
   for (const TestCase& test_case : kTestCases) {
+    SetLoggedInState(test_case.is_logged_in);
     auto throttle = CreateLoginRobotsDecider(
         test_case.original_url, network::mojom::RequestDestination::kImage,
         test_case.previews_state);
@@ -288,6 +303,7 @@ TEST_F(SubresourceRedirectLoginRobotsURLLoaderThrottleTest,
 TEST_F(SubresourceRedirectLoginRobotsURLLoaderThrottleTest,
        TestRobotsRulesSentBeforeThrottle) {
   blink::WebNetworkStateNotifier::SetSaveDataEnabled(true);
+  SetLoggedInState(false);
 
   SetUpRobotsRules("https://www.test.com",
                    {{kRuleTypeAllow, "/public"}, {kRuleTypeDisallow, ""}});
@@ -296,8 +312,6 @@ TEST_F(SubresourceRedirectLoginRobotsURLLoaderThrottleTest,
       CreateURLLoaderThrottleInfo("https://www.test.com/public.jpg");
   auto throttle_info2 =
       CreateURLLoaderThrottleInfo("https://www.test.com/private.jpg");
-  throttle_info1->VerifyRedirectResult(RedirectResult::kRedirectable);
-  throttle_info2->VerifyRedirectResult(RedirectResult::kRedirectable);
 
   throttle_info1->SendStartRequestAndVerifyDeferral(
       WillStartRequestDeferralState::kRedirected);
@@ -307,9 +321,14 @@ TEST_F(SubresourceRedirectLoginRobotsURLLoaderThrottleTest,
   EXPECT_FALSE(throttle_info2->did_resume());
   EXPECT_FALSE(throttle_info1->did_restart_with_url_reset_and_flags());
   EXPECT_FALSE(throttle_info2->did_restart_with_url_reset_and_flags());
-  throttle_info1->VerifyRedirectResult(RedirectResult::kRedirectable);
-  throttle_info2->VerifyRedirectResult(
-      RedirectResult::kIneligibleRobotsDisallowed);
+  histogram_tester_.ExpectTotalCount(
+      "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult", 2);
+  histogram_tester_.ExpectBucketCount(
+      "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult",
+      SubresourceRedirectResult::kRedirectable, 1);
+  histogram_tester_.ExpectBucketCount(
+      "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult",
+      SubresourceRedirectResult::kIneligibleRobotsDisallowed, 1);
 }
 
 // Tests the cases when robots rules are sent, after throttles are
@@ -317,6 +336,7 @@ TEST_F(SubresourceRedirectLoginRobotsURLLoaderThrottleTest,
 TEST_F(SubresourceRedirectLoginRobotsURLLoaderThrottleTest,
        TestRobotsRulesSentAfterThrottle) {
   blink::WebNetworkStateNotifier::SetSaveDataEnabled(true);
+  SetLoggedInState(false);
 
   auto throttle_info1 =
       CreateURLLoaderThrottleInfo("https://www.test.com/public.jpg");
@@ -344,15 +364,23 @@ TEST_F(SubresourceRedirectLoginRobotsURLLoaderThrottleTest,
   EXPECT_TRUE(throttle_info2->did_restart_with_url_reset_and_flags());
   EXPECT_TRUE(throttle_info2->did_resume());
 
-  throttle_info1->VerifyRedirectResult(RedirectResult::kRedirectable);
-  throttle_info2->VerifyRedirectResult(
-      RedirectResult::kIneligibleRobotsDisallowed);
+  throttle_info1->VerifyWillProcessResponse();
+  throttle_info2->VerifyWillProcessResponse();
+  histogram_tester_.ExpectTotalCount(
+      "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult", 2);
+  histogram_tester_.ExpectBucketCount(
+      "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult",
+      SubresourceRedirectResult::kRedirectable, 1);
+  histogram_tester_.ExpectBucketCount(
+      "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult",
+      SubresourceRedirectResult::kIneligibleRobotsDisallowed, 1);
 }
 
 // Tests the cases when robots rules retrieval timesout.
 TEST_F(SubresourceRedirectLoginRobotsURLLoaderThrottleTest,
        TestRobotsRulesTimeout) {
   blink::WebNetworkStateNotifier::SetSaveDataEnabled(true);
+  SetLoggedInState(false);
 
   auto throttle_info1 =
       CreateURLLoaderThrottleInfo("https://www.test.com/public.jpg");
@@ -377,10 +405,13 @@ TEST_F(SubresourceRedirectLoginRobotsURLLoaderThrottleTest,
   EXPECT_TRUE(throttle_info2->did_restart_with_url_reset_and_flags());
   EXPECT_TRUE(throttle_info2->did_resume());
 
-  throttle_info1->VerifyRedirectResult(
-      RedirectResult::kIneligibleRobotsTimeout);
-  throttle_info2->VerifyRedirectResult(
-      RedirectResult::kIneligibleRobotsTimeout);
+  throttle_info1->VerifyWillProcessResponse();
+  throttle_info2->VerifyWillProcessResponse();
+  histogram_tester_.ExpectTotalCount(
+      "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult", 2);
+  histogram_tester_.ExpectBucketCount(
+      "SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult",
+      SubresourceRedirectResult::kIneligibleRobotsTimeout, 2);
 }
 
 }  // namespace subresource_redirect

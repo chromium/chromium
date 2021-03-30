@@ -138,6 +138,15 @@ Polymer({
   },
 
   /**
+   * @return {boolean} whether the additional messages for child user should be
+   *     shown.
+   * @private
+   */
+  showChildMessage_() {
+    return this.isChildUser_ && !this.isAccountManagementFlowsV2Enabled_;
+  },
+
+  /**
    * @return {string} account manager 'add account' label.
    * @private
    */
@@ -158,6 +167,26 @@ Polymer({
       return loadTimeData.getString('accountListHeaderChild');
     }
     return loadTimeData.getString('accountListHeader');
+  },
+
+  /**
+   * @return {string} accounts list description.
+   * @private
+   */
+  getAccountListDescription_() {
+    return this.isChildUser_ ?
+        loadTimeData.getString('accountListChildDescription') :
+        loadTimeData.getString('accountListDescription');
+  },
+
+  /**
+   * @return {boolean} whether 'Secondary Accounts disabled' tooltip should be
+   *     shown.
+   * @private
+   */
+  showSecondaryAccountsDisabledTooltip_() {
+    return this.isAccountManagementFlowsV2Enabled_ &&
+        !this.isSecondaryGoogleAccountSigninAllowed_;
   },
 
   /**
@@ -187,16 +216,6 @@ Polymer({
     return this.isChildUser_ ?
         this.i18n('accountManagerPrimaryAccountChildManagedTooltip') :
         this.i18n('accountManagerPrimaryAccountTooltip');
-  },
-
-  /**
-   * @return {string} tooltip text
-   * @private
-   */
-  getSecondaryAccountsTooltip_() {
-    return this.getAccounts_().length === 0 ?
-        this.i18n('accountListTooltipNoSecondaryAccounts') :
-        this.i18n('accountListTooltip');
   },
 
   /**
@@ -358,22 +377,17 @@ Polymer({
     return this.accounts_;
   },
 
-  /**
-   * @return {boolean} True if secondary accounts description should be shown.
-   * @private
-   */
-  shouldShowNoAccountsMessage_() {
-    return this.isAccountManagementFlowsV2Enabled_ &&
-        this.getAccounts_().length === 0;
-  },
 
   /**
-   * @return {string} class list.
+   * @param {string} classList existing class list.
+   * @return {string} new class list.
    * @private
    */
-  getBottomBorderClassList_() {
-    return this.shouldShowNoAccountsMessage_() ? 'settings-box border-bottom' :
-                                                 'settings-box';
+  getAccountManagerDescriptionClassList_(classList) {
+    if (this.isAccountManagementFlowsV2Enabled_) {
+      return classList + ' full-width';
+    }
+    return classList;
   },
 
   /**
@@ -385,6 +399,14 @@ Polymer({
       this.browserProxy_.migrateAccount(event.model.item.email);
     } else {
       this.browserProxy_.reauthenticateAccount(event.model.item.email);
+    }
+  },
+
+  /** @private */
+  onManagedIconClick_() {
+    if (this.isChildUser_) {
+      parental_controls.ParentalControlsBrowserProxyImpl.getInstance()
+          .launchFamilyLinkSettings();
     }
   },
 
@@ -431,18 +453,6 @@ Polymer({
     this.browserProxy_.removeAccount(
         /** @type {?settings.Account} */ (this.actionMenuAccount_));
     this.closeActionMenu_();
-  },
-
-  /**
-   * @param {Event} event
-   * @private
-   */
-  goToSyncSettings_(event) {
-    event.detail.event.preventDefault();
-    if (loadTimeData.getBoolean('splitSettingsSyncEnabled')) {
-      settings.Router.getInstance().navigateTo(settings.routes.OS_SYNC);
-    } else {
-      settings.Router.getInstance().navigateTo(settings.routes.SYNC_ADVANCED);
-    }
+    this.$$('#add-account-button').focus();
   },
 });

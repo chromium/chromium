@@ -6,10 +6,12 @@
 // #import 'chrome://os-settings/strings.m.js';
 // #import 'chrome://resources/cr_components/chromeos/network/network_config.m.js';
 
+// #import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 // #import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.m.js';
 // #import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
 // #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// #import {eventToPromise} from '../../../test_util.m.js';
 // clang-format on
 
 suite('network-config', function() {
@@ -58,6 +60,17 @@ suite('network-config', function() {
     });
   }
 
+  /**
+   * Simulate an element of id |elementId| fires enter event.
+   * @param {string} elementId
+   */
+  function simulateEnterPressedInElement(elementId) {
+    let element = networkConfig.$$(`#${elementId}`);
+    networkConfig.connectOnEnter = true;
+    assertTrue(!!element);
+    element.fire('enter', {path: [element]});
+  }
+
   suite('New WiFi Config', function() {
     setup(function() {
       mojoApi_.resetForTest();
@@ -95,6 +108,8 @@ suite('network-config', function() {
       wifi1.source = chromeos.networkConfig.mojom.OncSource.kDevice;
       wifi1.typeProperties.wifi.security =
           chromeos.networkConfig.mojom.SecurityType.kWepPsk;
+      wifi1.typeProperties.wifi.ssid.activeValue = '11111111111';
+      wifi1.typeProperties.wifi.passphrase = {activeValue: 'test_passphrase'};
       setNetworkConfig(wifi1);
       initNetworkConfig();
     });
@@ -112,6 +127,27 @@ suite('network-config', function() {
         assertTrue(!!networkConfig.$$('#ssid'));
         assertTrue(!!networkConfig.$$('#security'));
         assertTrue(networkConfig.$$('#security').disabled);
+      });
+    });
+
+    test('WiFi input fires enter event on keydown', function() {
+      return flushAsync().then(() => {
+        assertFalse(networkConfig.propertiesSent_);
+        simulateEnterPressedInElement('ssid');
+        assertTrue(networkConfig.propertiesSent_);
+      });
+    });
+
+    test('Remove error text when input key is pressed', function() {
+      return flushAsync().then(() => {
+        networkConfig.error = 'bad-passphrase';
+        let passwordInput = networkConfig.$$('#wifi-passphrase');
+        assertTrue(!!passwordInput);
+        assertTrue(!!networkConfig.error);
+
+        passwordInput.fire('keypress');
+        Polymer.dom.flush();
+        assertFalse(!!networkConfig.error);
       });
     });
   });
@@ -200,6 +236,26 @@ suite('network-config', function() {
       });
     });
 
+    test('New Config: Authenticated, Not secure to secure', async function() {
+      // set default to insecure network
+      setNetworkType(chromeos.networkConfig.mojom.NetworkType.kWiFi);
+      setAuthenticated();
+      initNetworkConfig();
+      await flushAsync();
+      let share = networkConfig.$$('#share');
+      assertTrue(!!share);
+      assertTrue(share.disabled);
+      assertTrue(share.checked);
+
+      // change to secure network
+      networkConfig.securityType_ =
+          chromeos.networkConfig.mojom.SecurityType.kWepPsk;
+      await flushAsync();
+      assertTrue(!!share);
+      assertFalse(share.disabled);
+      assertFalse(share.checked);
+    });
+
     // Existing networks hide the shared control in the config UI.
     test('Existing Hides Shared', function() {
       const wifi1 = OncMojo.getDefaultManagedProperties(
@@ -262,6 +318,23 @@ suite('network-config', function() {
         assertEquals('PEAP', outer.value);
       });
     });
+
+    test('Ethernet input fires enter event on keydown', function() {
+      const eth = OncMojo.getDefaultManagedProperties(
+          chromeos.networkConfig.mojom.NetworkType.kEthernet, 'eapguid', '');
+      eth.typeProperties.ethernet.authentication =
+          OncMojo.createManagedString('8021x');
+      eth.typeProperties.ethernet.eap = {
+        outer: OncMojo.createManagedString('PEAP')
+      };
+      setNetworkConfig(eth);
+      initNetworkConfig();
+      return flushAsync().then(() => {
+        assertFalse(networkConfig.propertiesSent_);
+        simulateEnterPressedInElement('oncEAPIdentity');
+        assertTrue(networkConfig.propertiesSent_);
+      });
+    });
   });
 
   suite('Certificates', function() {
@@ -292,9 +365,9 @@ suite('network-config', function() {
         return flushAsync().then(() => {
           let outer = networkConfig.$$('#outer');
           assertEquals('EAP-TLS', outer.value);
-          // Check that with no certificates, 'do-not-check' amd 'no-certs'
-          // are selected.
-          assertEquals('do-not-check', networkConfig.selectedServerCaHash_);
+          // Check that with no certificates, 'default' and 'no-certs' are
+          // selected.
+          assertEquals('default', networkConfig.selectedServerCaHash_);
           assertEquals('no-certs', networkConfig.selectedUserCertHash_);
         });
       });
@@ -306,8 +379,18 @@ suite('network-config', function() {
           chromeos.networkConfig.mojom.SecurityType.kWpaEap);
       setAuthenticated();
       mojoApi_.setCertificatesForTest(
-          [{hash: kCaHash, hardwareBacked: true, deviceWide: true}],
-          [{hash: kUserHash1, hardwareBacked: true, deviceWide: false}]);
+          [{
+            hash: kCaHash,
+            availableForNetworkAuth: true,
+            hardwareBacked: true,
+            deviceWide: true
+          }],
+          [{
+            hash: kUserHash1,
+            availableForNetworkAuth: true,
+            hardwareBacked: true,
+            deviceWide: false
+          }]);
       initNetworkConfig();
       networkConfig.shareNetwork_ = false;
       networkConfig.set('eapProperties_.outer', 'EAP-TLS');
@@ -326,9 +409,25 @@ suite('network-config', function() {
           chromeos.networkConfig.mojom.SecurityType.kWpaEap);
       setAuthenticated();
       mojoApi_.setCertificatesForTest(
-          [{hash: kCaHash, hardwareBacked: true, deviceWide: true}], [
-            {hash: kUserHash1, hardwareBacked: true, deviceWide: false},
-            {hash: kUserHash2, hardwareBacked: true, deviceWide: true}
+          [{
+            hash: kCaHash,
+            availableForNetworkAuth: true,
+            hardwareBacked: true,
+            deviceWide: true
+          }],
+          [
+            {
+              hash: kUserHash1,
+              availableForNetworkAuth: true,
+              hardwareBacked: true,
+              deviceWide: false
+            },
+            {
+              hash: kUserHash2,
+              availableForNetworkAuth: true,
+              hardwareBacked: true,
+              deviceWide: true
+            }
           ]);
       initNetworkConfig();
       networkConfig.shareNetwork_ = true;

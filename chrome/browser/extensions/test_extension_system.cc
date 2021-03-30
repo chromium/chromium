@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/test_extension_system.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/command_line.h"
@@ -30,6 +31,7 @@
 #include "extensions/browser/quota_service.h"
 #include "extensions/browser/runtime_data.h"
 #include "extensions/browser/state_store.h"
+#include "extensions/browser/user_script_manager.h"
 #include "extensions/browser/value_store/test_value_store_factory.h"
 #include "extensions/browser/value_store/testing_value_store.h"
 #include "services/data_decoder/data_decoder_service.h"
@@ -53,7 +55,7 @@ TestExtensionSystem::TestExtensionSystem(Profile* profile)
       app_sorting_(new ChromeAppSorting(profile_)) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!user_manager::UserManager::IsInitialized())
-    test_user_manager_.reset(new chromeos::ScopedTestUserManager);
+    test_user_manager_ = std::make_unique<ash::ScopedTestUserManager>();
 #endif
 }
 
@@ -89,6 +91,10 @@ ExtensionService* TestExtensionSystem::CreateExtensionService(
   return extension_service_.get();
 }
 
+void TestExtensionSystem::CreateUserScriptManager() {
+  user_script_manager_ = std::make_unique<UserScriptManager>(profile_);
+}
+
 ExtensionService* TestExtensionSystem::extension_service() {
   return extension_service_.get();
 }
@@ -109,8 +115,8 @@ ServiceWorkerManager* TestExtensionSystem::service_worker_manager() {
   return nullptr;
 }
 
-SharedUserScriptManager* TestExtensionSystem::shared_user_script_manager() {
-  return nullptr;
+UserScriptManager* TestExtensionSystem::user_script_manager() {
+  return user_script_manager_.get();
 }
 
 StateStore* TestExtensionSystem::state_store() {

@@ -106,9 +106,9 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   };
 
   using ResponseCallback =
-      base::RepeatingCallback<void(ResponseType type,
-                                   const base::ListValue& results,
-                                   const std::string& error)>;
+      base::OnceCallback<void(ResponseType type,
+                              const base::ListValue& results,
+                              const std::string& error)>;
 
   ExtensionFunction();
 
@@ -280,8 +280,8 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   extensions::functions::HistogramValue histogram_value() const {
     return histogram_value_; }
 
-  void set_response_callback(const ResponseCallback& callback) {
-    response_callback_ = callback;
+  void set_response_callback(ResponseCallback callback) {
+    response_callback_ = std::move(callback);
   }
 
   void set_source_context_type(extensions::Feature::Context type) {
@@ -483,6 +483,10 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // Call with true to indicate success, false to indicate failure. If this
   // failed, |error_| should be set.
   void SendResponseImpl(bool success);
+
+  // The callback for mojom::Renderer::TransferBlobs().
+  void OnTransferBlobsAck(int process_id,
+                          const std::vector<std::string>& blob_uuids);
 
   base::ElapsedTimer timer_;
 

@@ -33,6 +33,7 @@
       "name": "LayoutNGBlockFlow (relative positioned) DIV class='scrolled'",
       "position": [5, 5],
       "bounds": [60, 172],
+      "contentsOpaqueForText": true,
       "backfaceVisibility": "hidden",
       "transform": 1
     },

@@ -75,12 +75,12 @@ TEST_F(BrowserProcessTaskProviderTest, TestProvidedTask) {
   EXPECT_EQ(Task::BROWSER, provided_task_->GetType());
   EXPECT_EQ(0, provided_task_->GetChildProcessUniqueID());
   const int received_bytes = 1024;
-  EXPECT_EQ(0, provided_task_->network_usage_rate());
+  EXPECT_EQ(0, provided_task_->GetNetworkUsageRate());
   provided_task_->OnNetworkBytesRead(received_bytes);
   // Do a refresh with a 1-second update time.
   provided_task_->Refresh(base::TimeDelta::FromSeconds(1),
                           REFRESH_TYPE_NETWORK_USAGE);
-  EXPECT_EQ(received_bytes, provided_task_->network_usage_rate());
+  EXPECT_EQ(received_bytes, provided_task_->GetNetworkUsageRate());
 }
 
 }  // namespace task_manager

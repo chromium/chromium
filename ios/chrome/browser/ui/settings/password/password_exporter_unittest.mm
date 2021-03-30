@@ -111,8 +111,8 @@ class PasswordExporterTest : public PlatformTest {
   CreatePasswordList() {
     auto password_form = std::make_unique<password_manager::PasswordForm>();
     password_form->url = GURL("http://accounts.google.com/a/LoginAuth");
-    password_form->username_value = base::ASCIIToUTF16("test@testmail.com");
-    password_form->password_value = base::ASCIIToUTF16("test1");
+    password_form->username_value = u"test@testmail.com";
+    password_form->password_value = u"test1";
 
     std::vector<std::unique_ptr<password_manager::PasswordForm>> password_forms;
     password_forms.push_back(std::move(password_form));

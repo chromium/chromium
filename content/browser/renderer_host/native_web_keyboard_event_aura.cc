@@ -125,7 +125,7 @@ NativeWebKeyboardEvent::NativeWebKeyboardEvent(
 }
 
 NativeWebKeyboardEvent::NativeWebKeyboardEvent(const ui::KeyEvent& key_event,
-                                               base::char16 character)
+                                               char16_t character)
     : WebKeyboardEvent(ui::MakeWebKeyboardEvent(key_event)),
       os_event(nullptr),
       skip_in_browser(false) {

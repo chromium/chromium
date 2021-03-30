@@ -84,8 +84,12 @@
 - (void)recordCommandID:(int)commandID;
 
 // Records if a notice card was presented at the time the feed was initially
-// loaded. e.g. Launch time, user refreshes, and acccount switches.
+// loaded. e.g. Launch time, user refreshes, and account switches.
 - (void)recordNoticeCardShown:(BOOL)shown;
+
+// Records if activity logging was enabled at the time the feed was initially
+// loaded. e.g. Launch time, user refreshes, and account switches.
+- (void)recordActivityLoggingEnabled:(BOOL)loggingEnabled;
 
 // Records the |durationInSeconds| it took to Discover feed to Fetch articles.
 // |success| is YES if operation was successful.
@@ -105,6 +109,12 @@
 - (void)recordFeedUploadActionsDurationInSeconds:
             (NSTimeInterval)durationInSeconds
                                          success:(BOOL)success;
+
+// Records the native context menu visibility change.
+- (void)recordNativeContextMenuVisibilityChanged:(BOOL)shown;
+
+// Records the native pull-down menu visibility change.
+- (void)recordNativePulldownMenuVisibilityChanged:(BOOL)shown;
 
 @end
 

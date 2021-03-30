@@ -99,7 +99,7 @@ void ImeModeView::Update() {
   label()->SetText(ime_controller->current_ime().short_name);
   label()->SetEnabledColor(
       TrayIconColor(Shell::Get()->session_controller()->GetSessionState()));
-  base::string16 description =
+  std::u16string description =
       l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_INDICATOR_IME_TOOLTIP,
                                  ime_controller->current_ime().name);
   label()->SetTooltipText(description);

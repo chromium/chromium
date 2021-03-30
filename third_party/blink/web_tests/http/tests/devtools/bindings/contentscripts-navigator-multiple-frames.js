@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Verify that SourceMap bindings are generating UISourceCodes properly.\n`);
-  await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('bindings_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadTestModule('bindings_test_runner');
 
   var contentScriptsNavigator = new Sources.ContentScriptsNavigatorView();
   contentScriptsNavigator.show(UI.inspectorView.element);

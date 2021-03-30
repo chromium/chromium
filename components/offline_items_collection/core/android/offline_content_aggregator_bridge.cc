@@ -300,5 +300,12 @@ void OfflineContentAggregatorBridge::OnItemUpdated(
       OfflineItemBridge::CreateUpdateDelta(env, update_delta));
 }
 
+void OfflineContentAggregatorBridge::OnContentProviderGoingDown() {
+  // TODO(crbug.com/1177397): This event is only needed for desktop Chrome,
+  // so we didn't add an onContentProviderGoingDown() method yet. If Java
+  // observers need to listen for this event in the future, we should add some
+  // plumbing here.
+}
+
 }  // namespace android
 }  // namespace offline_items_collection

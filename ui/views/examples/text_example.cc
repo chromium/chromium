@@ -60,7 +60,7 @@ class TextExample::TextExampleView : public View {
     SchedulePaint();
   }
 
-  void SetText(const base::string16& text) {
+  void SetText(const std::u16string& text) {
     text_ = text;
     SchedulePaint();
   }
@@ -92,7 +92,7 @@ class TextExample::TextExampleView : public View {
   gfx::FontList base_font_;
 
   // The text to draw.
-  base::string16 text_;
+  std::u16string text_;
 
   // Text flags for passing to |DrawStringRect()|.
   int flags_ = 0;
@@ -183,7 +183,7 @@ void TextExample::CreateExampleView(View* container) {
   weight_cb_ = AddCombobox(layout, "Font Weight", kWeightLabels,
                            base::size(kWeightLabels),
                            &TextExample::WeightComboboxChanged);
-  weight_cb_->SelectValue(base::ASCIIToUTF16("Normal"));
+  weight_cb_->SelectValue(u"Normal");
 
   layout->StartRow(0, 0);
   multiline_checkbox_ = AddCheckbox(layout, "Multiline");
@@ -244,8 +244,7 @@ void TextExample::AlignComboboxChanged() {
 void TextExample::TextComboboxChanged() {
   switch (text_cb_->GetSelectedIndex()) {
     case 0:
-      text_view_->SetText(
-          base::ASCIIToUTF16("The quick brown fox jumps over the lazy dog."));
+      text_view_->SetText(u"The quick brown fox jumps over the lazy dog.");
       break;
     case 1:
       text_view_->SetText(base::ASCIIToUTF16(
@@ -264,15 +263,15 @@ void TextExample::TextComboboxChanged() {
           "The quick && &brown fo&x jumps over the lazy dog."));
       break;
     case 3:
-      text_view_->SetText(base::WideToUTF16(
-          L"\x5e9\x5dc\x5d5\x5dd \x5d4\x5e2\x5d5\x5dc\x5dd! "
-          L"\x5e9\x5dc\x5d5\x5dd \x5d4\x5e2\x5d5\x5dc\x5dd! "
-          L"\x5e9\x5dc\x5d5\x5dd \x5d4\x5e2\x5d5\x5dc\x5dd! "
-          L"\x5e9\x5dc\x5d5\x5dd \x5d4\x5e2\x5d5\x5dc\x5dd! "
-          L"\x5e9\x5dc\x5d5\x5dd \x5d4\x5e2\x5d5\x5dc\x5dd! "
-          L"\x5e9\x5dc\x5d5\x5dd \x5d4\x5e2\x5d5\x5dc\x5dd! "
-          L"\x5e9\x5dc\x5d5\x5dd \x5d4\x5e2\x5d5\x5dc\x5dd! "
-          L"\x5e9\x5dc\x5d5\x5dd \x5d4\x5e2\x5d5\x5dc\x5dd!"));
+      text_view_->SetText(
+          u"\x5e9\x5dc\x5d5\x5dd \x5d4\x5e2\x5d5\x5dc\x5dd! "
+          u"\x5e9\x5dc\x5d5\x5dd \x5d4\x5e2\x5d5\x5dc\x5dd! "
+          u"\x5e9\x5dc\x5d5\x5dd \x5d4\x5e2\x5d5\x5dc\x5dd! "
+          u"\x5e9\x5dc\x5d5\x5dd \x5d4\x5e2\x5d5\x5dc\x5dd! "
+          u"\x5e9\x5dc\x5d5\x5dd \x5d4\x5e2\x5d5\x5dc\x5dd! "
+          u"\x5e9\x5dc\x5d5\x5dd \x5d4\x5e2\x5d5\x5dc\x5dd! "
+          u"\x5e9\x5dc\x5d5\x5dd \x5d4\x5e2\x5d5\x5dc\x5dd! "
+          u"\x5e9\x5dc\x5d5\x5dd \x5d4\x5e2\x5d5\x5dc\x5dd!");
       break;
   }
 }

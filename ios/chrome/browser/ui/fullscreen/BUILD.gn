@@ -7,9 +7,11 @@ source_set("fullscreen") {
     "animated_scoped_fullscreen_disabler.h",
     "animated_scoped_fullscreen_disabler.mm",
     "fullscreen_controller.h",
+    "fullscreen_controller.mm",
     "fullscreen_controller_observer.h",
     "fullscreen_ui_updater.h",
     "scoped_fullscreen_disabler.h",
+    "scoped_fullscreen_disabler.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -22,6 +24,7 @@ source_set("fullscreen") {
     "//base",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
+    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ui/fullscreen:feature_flags",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/common",
@@ -39,7 +42,6 @@ source_set("feature_flags") {
   deps = [
     "//base",
     "//components/flags_ui",
-    "//ios/chrome/browser/ui/util:multiwindow_util",
   ]
 }
 

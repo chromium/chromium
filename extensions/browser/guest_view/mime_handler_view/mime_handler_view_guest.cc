@@ -80,11 +80,8 @@ GuestViewBase* MimeHandlerViewGuest::Create(WebContents* owner_web_contents) {
 
 MimeHandlerViewGuest::MimeHandlerViewGuest(WebContents* owner_web_contents)
     : GuestView<MimeHandlerViewGuest>(owner_web_contents),
-      delegate_(
-          ExtensionsAPIClient::Get()->CreateMimeHandlerViewGuestDelegate(this)),
-      embedder_frame_process_id_(content::ChildProcessHost::kInvalidUniqueID),
-      embedder_frame_routing_id_(MSG_ROUTING_NONE),
-      embedder_widget_routing_id_(MSG_ROUTING_NONE) {}
+      delegate_(ExtensionsAPIClient::Get()->CreateMimeHandlerViewGuestDelegate(
+          this)) {}
 
 MimeHandlerViewGuest::~MimeHandlerViewGuest() {
   // Before attaching is complete, the instance ID is not valid.
@@ -106,12 +103,12 @@ MimeHandlerViewGuest::~MimeHandlerViewGuest() {
 
 content::RenderWidgetHost* MimeHandlerViewGuest::GetOwnerRenderWidgetHost() {
   DCHECK_NE(embedder_widget_routing_id_, MSG_ROUTING_NONE);
-  return content::RenderWidgetHost::FromID(embedder_frame_process_id_,
+  return content::RenderWidgetHost::FromID(embedder_frame_id_.child_id,
                                            embedder_widget_routing_id_);
 }
 
 content::SiteInstance* MimeHandlerViewGuest::GetOwnerSiteInstance() {
-  DCHECK_NE(embedder_frame_routing_id_, MSG_ROUTING_NONE);
+  DCHECK_NE(embedder_frame_id_.frame_routing_id, MSG_ROUTING_NONE);
   content::RenderFrameHost* rfh = GetEmbedderFrame();
   return rfh ? rfh->GetSiteInstance() : nullptr;
 }
@@ -120,12 +117,12 @@ bool MimeHandlerViewGuest::CanBeEmbeddedInsideCrossProcessFrames() {
   return true;
 }
 
-void MimeHandlerViewGuest::SetEmbedderFrame(int process_id, int routing_id) {
-  DCHECK_NE(MSG_ROUTING_NONE, routing_id);
-  DCHECK_EQ(MSG_ROUTING_NONE, embedder_frame_routing_id_);
+void MimeHandlerViewGuest::SetEmbedderFrame(
+    content::GlobalFrameRoutingId frame_id) {
+  DCHECK_NE(MSG_ROUTING_NONE, frame_id.frame_routing_id);
+  DCHECK_EQ(MSG_ROUTING_NONE, embedder_frame_id_.frame_routing_id);
 
-  embedder_frame_process_id_ = process_id;
-  embedder_frame_routing_id_ = routing_id;
+  embedder_frame_id_ = frame_id;
 
   content::RenderFrameHost* rfh = GetEmbedderFrame();
 
@@ -217,6 +214,7 @@ void MimeHandlerViewGuest::CreateWebContents(
 }
 
 void MimeHandlerViewGuest::DidAttachToEmbedder() {
+  DCHECK(stream_->handler_url().SchemeIs(extensions::kExtensionScheme));
   web_contents()->GetController().LoadURL(
       stream_->handler_url(), content::Referrer(),
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
@@ -337,18 +335,19 @@ bool MimeHandlerViewGuest::GuestSaveFrame(
 }
 
 bool MimeHandlerViewGuest::SaveFrame(const GURL& url,
-                                     const content::Referrer& referrer) {
+                                     const content::Referrer& referrer,
+                                     content::RenderFrameHost* rfh) {
   if (!attached())
     return false;
 
-  embedder_web_contents()->SaveFrame(stream_->original_url(), referrer);
+  embedder_web_contents()->SaveFrame(stream_->original_url(), referrer, rfh);
   return true;
 }
 
 void MimeHandlerViewGuest::OnRenderFrameHostDeleted(int process_id,
                                                     int routing_id) {
-  if (process_id == embedder_frame_process_id_ &&
-      routing_id == embedder_frame_routing_id_) {
+  if (process_id == embedder_frame_id_.child_id &&
+      routing_id == embedder_frame_id_.frame_routing_id) {
     Destroy(/*also_delete=*/true);
   }
 }
@@ -392,7 +391,7 @@ content::WebContents* MimeHandlerViewGuest::CreateCustomWebContents(
     const GURL& opener_url,
     const std::string& frame_name,
     const GURL& target_url,
-    const std::string& partition_id,
+    const content::StoragePartitionId& partition_id,
     content::SessionStorageNamespace* session_storage_namespace) {
   content::OpenURLParams open_params(target_url, content::Referrer(),
                                      WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -422,7 +421,8 @@ bool MimeHandlerViewGuest::SetFullscreenState(bool is_fullscreen) {
   return true;
 }
 
-void MimeHandlerViewGuest::DocumentOnLoadCompletedInMainFrame() {
+void MimeHandlerViewGuest::DocumentOnLoadCompletedInMainFrame(
+    content::RenderFrameHost* render_frame_host) {
   // Assume the embedder WebContents is valid here.
   DCHECK(embedder_web_contents());
 
@@ -443,6 +443,22 @@ void MimeHandlerViewGuest::ReadyToCommitNavigation(
       stream_->TakeTransferrableURLLoader());
 }
 
+void MimeHandlerViewGuest::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  guest_view::GuestView<MimeHandlerViewGuest>::DidFinishNavigation(
+      navigation_handle);
+
+  if (navigation_handle->IsInMainFrame()) {
+    // We should not navigate the guest away from the handling extension.
+    const url::Origin handler_origin =
+        url::Origin::Create(stream_->handler_url());
+    const GURL& new_url = navigation_handle->GetURL();
+    const url::Origin new_origin = url::Origin::Create(new_url);
+    CHECK(new_origin.IsSameOriginWith(handler_origin) ||
+          new_url.IsAboutBlank());
+  }
+}
+
 void MimeHandlerViewGuest::FuseBeforeUnloadControl(
     mojo::PendingReceiver<mime_handler::BeforeUnloadControl> receiver) {
   if (!pending_before_unload_control_)
@@ -453,8 +469,7 @@ void MimeHandlerViewGuest::FuseBeforeUnloadControl(
 }
 
 content::RenderFrameHost* MimeHandlerViewGuest::GetEmbedderFrame() {
-  return content::RenderFrameHost::FromID(embedder_frame_process_id_,
-                                          embedder_frame_routing_id_);
+  return content::RenderFrameHost::FromID(embedder_frame_id_);
 }
 
 base::WeakPtr<MimeHandlerViewGuest> MimeHandlerViewGuest::GetWeakPtr() {

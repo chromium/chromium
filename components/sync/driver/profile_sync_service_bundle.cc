@@ -24,8 +24,6 @@ ProfileSyncServiceBundle::ProfileSyncServiceBundle()
     : identity_test_env_(&test_url_loader_factory_) {
   SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
   identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
-  identity_provider_ = std::make_unique<invalidation::ProfileIdentityProvider>(
-      identity_manager());
 }
 
 ProfileSyncServiceBundle::~ProfileSyncServiceBundle() {}
@@ -49,7 +47,6 @@ ProfileSyncService::InitParams ProfileSyncServiceBundle::CreateBasicInitParams(
   init_params.start_behavior = start_behavior;
   init_params.sync_client = std::move(sync_client);
   init_params.identity_manager = identity_manager();
-  init_params.invalidations_identity_provider = identity_provider_.get();
   init_params.network_time_update_callback = base::DoNothing();
   init_params.url_loader_factory =
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(

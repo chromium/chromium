@@ -25,10 +25,10 @@ testcase.toolbarDeleteWithMenuItemNoEntrySelected = async () => {
 };
 
 /**
- * Tests Delete button keeps focus after closing confirmation
- * dialog.
+ * Tests that the toolbar Delete button opens the delete confirm dialog and
+ * that the dialog cancel button has the focus by default.
  */
-testcase.toolbarDeleteButtonKeepFocus = async () => {
+testcase.toolbarDeleteButtonOpensDeleteConfirmDialog = async () => {
   // Open Files app.
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.desktop]);
@@ -37,18 +37,69 @@ testcase.toolbarDeleteButtonKeepFocus = async () => {
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'selectFile', appId, [ENTRIES.desktop.nameText]));
 
+  // Click the toolbar Delete button.
   await remoteCall.simulateUiClick(appId, '#delete-button');
 
-  // Confirm that the confirmation dialog is shown.
+  // Check: the delete confirm dialog should appear.
   await remoteCall.waitForElement(appId, '.cr-dialog-container.shown');
 
-  // Press cancel button.
-  await remoteCall.waitAndClickElement(appId, 'button.cr-dialog-cancel');
+  // Check: the dialog 'Cancel' button should be focused by default.
+  const defaultDialogButton =
+      await remoteCall.waitForElement(appId, '.cr-dialog-cancel:focus');
+  chrome.test.assertEq('Cancel', defaultDialogButton.text);
+};
 
-  // Check focused element is Delete button.
-  const focusedElement =
-      await remoteCall.callRemoteTestUtil('getActiveElement', appId, []);
-  chrome.test.assertEq('delete-button', focusedElement.attributes['id']);
+/**
+ * Tests that the toolbar Delete button keeps focus after the delete confirm
+ * dialog is closed.
+ */
+testcase.toolbarDeleteButtonKeepFocus = async () => {
+  // Open Files app.
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+
+  // USB delete never uses trash and always shows the delete dialog.
+  const USB_VOLUME_QUERY = '#directory-tree [volume-type-icon="removable"]';
+
+  // Mount a USB volume.
+  await sendTestMessage({name: 'mountFakeUsb'});
+
+  // Wait for the USB volume to mount.
+  await remoteCall.waitForElement(appId, USB_VOLUME_QUERY);
+
+  // Click to open the USB volume.
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil(
+          'fakeMouseClick', appId, [USB_VOLUME_QUERY]),
+      'fakeMouseClick failed');
+
+  // Check: the USB files should appear in the file list.
+  const files = TestEntryInfo.getExpectedRows(BASIC_FAKE_ENTRY_SET);
+  await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
+
+  // Select hello.txt
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'selectFile', appId, [ENTRIES.hello.nameText]));
+
+  // Click the toolbar Delete button.
+  await remoteCall.simulateUiClick(appId, '#delete-button');
+
+  // Check: the Delete button should lose focus.
+  await remoteCall.waitForElementLost(appId, '#delete-button:focus');
+
+  // Check: the delete confirm dialog should appear.
+  await remoteCall.waitForElement(appId, '.cr-dialog-container.shown');
+
+  // Check: the dialog 'Cancel' button should be focused by default.
+  const defaultDialogButton =
+      await remoteCall.waitForElement(appId, '.cr-dialog-cancel:focus');
+  chrome.test.assertEq('Cancel', defaultDialogButton.text);
+
+  // Click the dialog 'Cancel' button.
+  await remoteCall.waitAndClickElement(appId, '.cr-dialog-cancel');
+
+  // Check: the toolbar Delete button should be focused.
+  await remoteCall.waitForElement(appId, '#delete-button:focus');
 };
 
 /**
@@ -81,10 +132,23 @@ testcase.toolbarDeleteEntry = async () => {
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'selectFile', appId, ['My Desktop Background.png']));
 
-
   // Click delete button in the toolbar.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, ['#delete-button']));
+  if (await sendTestMessage({name: 'isTrashEnabled'}) === 'true') {
+    chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+        'fakeMouseClick', appId, ['#move-to-trash-button']));
+  } else {
+    chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+        'fakeMouseClick', appId, ['#delete-button']));
+
+    // Confirm that the confirmation dialog is shown.
+    await remoteCall.waitForElement(appId, '.cr-dialog-container.shown');
+
+    // Press delete button.
+    chrome.test.assertTrue(
+        !!await remoteCall.callRemoteTestUtil(
+            'fakeMouseClick', appId, ['button.cr-dialog-ok']),
+        'fakeMouseClick failed');
+  }
 
   // Confirm the file is removed.
   await remoteCall.waitForFiles(

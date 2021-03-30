@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -117,7 +118,7 @@ bool IdentifiabilityStudyState::ShouldRecordSurface(
 }
 
 // static
-void IdentifiabilityStudyState::ResetStateForTesting() {
+void IdentifiabilityStudyState::ResetGlobalStudySettingsForTesting() {
   blink::IdentifiabilityStudySettings::ResetStateForTesting();
 }
 
@@ -172,15 +173,45 @@ void IdentifiabilityStudyState::CheckInvariants() const {
         return blink::IdentifiabilityStudySettings::Get()->IsSurfaceAllowed(
             value);
       }));
+  DCHECK_NE(0u, prng_seed_);
 }
 #else   // DCHECK_IS_ON()
 void IdentifiabilityStudyState::CheckInvariants() const {}
 #endif  // DCHECK_IS_ON()
 
+void IdentifiabilityStudyState::ResetPerReportState() {
+  surface_encounters_.Reset();
+}
+
+void IdentifiabilityStudyState::ResetEphemeralState() {
+  ResetPerReportState();
+  recent_surfaces_.Clear();
+}
+
+void IdentifiabilityStudyState::ResetClientState() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ResetEphemeralState();
+  active_surfaces_.clear();
+  retired_surfaces_.clear();
+  pref_service_->ClearPref(prefs::kPrivacyBudgetActiveSurfaces);
+  pref_service_->ClearPref(prefs::kPrivacyBudgetRetiredSurfaces);
+
+  if (LIKELY(!IsStudyActive())) {
+    prng_seed_ = 0;
+    pref_service_->ClearPref(prefs::kPrivacyBudgetSeed);
+    pref_service_->ClearPref(prefs::kPrivacyBudgetGeneration);
+    return;
+  }
+
+  CheckAndResetPrngSeed(0u);
+  pref_service_->SetInteger(prefs::kPrivacyBudgetGeneration, generation_);
+
+  // State should be ready-to-go after resetting, even if the study is disabled.
+  CheckInvariants();
+}
+
 void IdentifiabilityStudyState::InitFromPrefs() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(active_surfaces_.empty());
-  DCHECK(retired_surfaces_.empty());
 
   // None of the parameters should be relied upon if the study is not enabled.
   if (LIKELY(!IsStudyActive()))
@@ -201,21 +232,8 @@ void IdentifiabilityStudyState::InitFromPrefs() {
   retired_surfaces_ =
       DecodeIdentifiabilityFieldTrialParam<IdentifiableSurfaceSet>(
           pref_service_->GetString(prefs::kPrivacyBudgetRetiredSurfaces));
-  prng_seed_ = pref_service_->GetUint64(prefs::kPrivacyBudgetSeed);
+  CheckAndResetPrngSeed(pref_service_->GetUint64(prefs::kPrivacyBudgetSeed));
   ReconcileLoadedPrefs();
-}
-
-void IdentifiabilityStudyState::ResetClientState() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  active_surfaces_.clear();
-  retired_surfaces_.clear();
-
-  pref_service_->ClearPref(prefs::kPrivacyBudgetActiveSurfaces);
-  pref_service_->ClearPref(prefs::kPrivacyBudgetRetiredSurfaces);
-
-  prng_seed_ = base::RandUint64();
-  pref_service_->SetUint64(prefs::kPrivacyBudgetSeed, prng_seed_);
-  pref_service_->SetInteger(prefs::kPrivacyBudgetGeneration, generation_);
 }
 
 void IdentifiabilityStudyState::WriteToPrefs() {
@@ -229,6 +247,20 @@ void IdentifiabilityStudyState::WriteToPrefs() {
   pref_service_->SetString(
       prefs::kPrivacyBudgetRetiredSurfaces,
       EncodeIdentifiabilityFieldTrialParam(retired_surfaces_));
+}
+
+void IdentifiabilityStudyState::CheckAndResetPrngSeed(uint64_t previous_value) {
+  if (previous_value != 0u) {
+    prng_seed_ = previous_value;
+    return;
+  }
+
+  uint64_t new_seed;
+  do {
+    new_seed = base::RandUint64();
+  } while (new_seed == 0u);
+  prng_seed_ = new_seed;
+  pref_service_->SetUint64(prefs::kPrivacyBudgetSeed, new_seed);
 }
 
 void IdentifiabilityStudyState::ReconcileLoadedPrefs() {
@@ -317,9 +349,6 @@ bool IdentifiabilityStudyState::ShouldReportEncounteredSurface(
           blink::IdentifiableSurface::Type::kMeasuredSurface)) {
     return false;
   }
-  return tracked_surfaces_.IsNewEncounter(source_id, surface.ToUkmMetricHash());
-}
-
-void IdentifiabilityStudyState::ResetRecordedSurfaces() {
-  tracked_surfaces_.Reset();
+  return surface_encounters_.IsNewEncounter(source_id,
+                                            surface.ToUkmMetricHash());
 }

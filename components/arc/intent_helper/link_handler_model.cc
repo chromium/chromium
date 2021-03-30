@@ -4,7 +4,6 @@
 
 #include "components/arc/intent_helper/link_handler_model.h"
 
-#include <string>
 #include <utility>
 
 #include "base/bind.h"
@@ -26,7 +25,7 @@ constexpr int kMaxValueLen = 2048;
 
 bool GetQueryValue(const GURL& url,
                    const std::string& key_to_find,
-                   base::string16* out) {
+                   std::u16string* out) {
   const std::string str(url.query());
 
   url::Component query(0, str.length());
@@ -43,7 +42,7 @@ bool GetQueryValue(const GURL& url,
       url::DecodeURLEscapeSequences(str.c_str() + value.begin, value.len,
                                     url::DecodeURLMode::kUTF8OrIsomorphic,
                                     &output);
-      *out = base::string16(output.data(), output.length());
+      *out = std::u16string(output.data(), output.length());
       return true;
     }
   }
@@ -181,7 +180,7 @@ GURL LinkHandlerModel::RewriteUrlFromQueryIfAvailable(const GURL& url) {
   if (!url.has_path() || url.path() != kPathToFind)
     return url;
 
-  base::string16 value;
+  std::u16string value;
   if (!GetQueryValue(url, kKeyToFind, &value))
     return url;
 

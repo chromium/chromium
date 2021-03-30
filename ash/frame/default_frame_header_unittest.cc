@@ -16,11 +16,13 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_back_button.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
+#include "chromeos/ui/frame/frame_header.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/views/test/test_views.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
 #include "ui/wm/core/window_util.h"
@@ -192,8 +194,8 @@ TEST_F(DefaultFrameHeaderTest, DeleteDuringAnimation) {
 
   auto* frame_view = NonClientFrameViewAsh::Get(win0.get());
   auto* animating_layer_holding_view = frame_view->children()[0];
-  EXPECT_TRUE(!std::strcmp(animating_layer_holding_view->GetClassName(),
-                           "FrameAnimatorView"));
+  EXPECT_TRUE(views::IsViewClass<chromeos::FrameHeader::FrameAnimatorView>(
+      animating_layer_holding_view));
   ASSERT_TRUE(animating_layer_holding_view->layer());
   ASSERT_GT(animating_layer_holding_view->layer()->parent()->children().size(),
             2u);
@@ -227,8 +229,8 @@ TEST_F(DefaultFrameHeaderTest, ResizeAndReorderDuringAnimation) {
 
   auto* frame_view_0 = NonClientFrameViewAsh::Get(win_0.get());
   auto* animating_layer_holding_view_0 = frame_view_0->children()[0];
-  EXPECT_TRUE(!std::strcmp(animating_layer_holding_view_0->GetClassName(),
-                           "FrameAnimatorView"));
+  EXPECT_TRUE(views::IsViewClass<chromeos::FrameHeader::FrameAnimatorView>(
+      animating_layer_holding_view_0));
   size_t original_layers_count_0 =
       animating_layer_holding_view_0->layer()->parent()->children().size();
 
@@ -237,8 +239,8 @@ TEST_F(DefaultFrameHeaderTest, ResizeAndReorderDuringAnimation) {
       frame_view_1->AddChildView(std::make_unique<views::View>());
 
   auto* animating_layer_holding_view_1 = frame_view_1->children()[0];
-  EXPECT_TRUE(!std::strcmp(animating_layer_holding_view_1->GetClassName(),
-                           "FrameAnimatorView"));
+  EXPECT_TRUE(views::IsViewClass<chromeos::FrameHeader::FrameAnimatorView>(
+      animating_layer_holding_view_1));
   size_t original_layers_count_1 =
       animating_layer_holding_view_1->layer()->parent()->children().size();
 

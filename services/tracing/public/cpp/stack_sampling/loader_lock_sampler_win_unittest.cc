@@ -4,11 +4,11 @@
 
 #include "services/tracing/public/cpp/stack_sampling/loader_lock_sampler_win.h"
 
+#include <string>
 #include <utility>
 
 #include "base/files/file_path.h"
 #include "base/scoped_native_library.h"
-#include "base/strings/string16.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -24,7 +24,7 @@ namespace {
 
 class TestNamedWaitableEvent : public base::TestWaitableEvent {
  public:
-  TestNamedWaitableEvent(const base::char16* name)
+  TestNamedWaitableEvent(const wchar_t* name)
       : TestWaitableEvent(
             base::win::ScopedHandle(::CreateEvent(nullptr,
                                                   /*bManualReset=*/TRUE,

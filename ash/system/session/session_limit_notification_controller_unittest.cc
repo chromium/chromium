@@ -61,7 +61,7 @@ TEST_F(SessionLimitNotificationControllerTest, Notification) {
   UpdateSessionLengthLimitInMin(15);
   message_center::Notification* notification = GetNotification();
   EXPECT_TRUE(notification);
-  base::string16 first_title = notification->title();
+  std::u16string first_title = notification->title();
   // Should read the content.
   EXPECT_TRUE(notification->rich_notification_data()
                   .should_make_spoken_feedback_for_popup_updates);

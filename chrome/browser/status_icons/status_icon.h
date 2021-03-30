@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_STATUS_ICONS_STATUS_ICON_H_
 
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "chrome/browser/status_icons/status_icon_menu_model.h"
 
@@ -35,14 +35,14 @@ class StatusIcon {
   // for the menu item which is created as a replacement for the status icon
   // click action on platforms that do not support custom click actions for the
   // status icon (e.g. Ubuntu Unity).
-  virtual void SetToolTip(const base::string16& tool_tip) = 0;
+  virtual void SetToolTip(const std::u16string& tool_tip) = 0;
 
   // Displays a notification balloon with the specified contents.
   // Depending on the platform it might not appear by the icon tray.
   virtual void DisplayBalloon(
       const gfx::ImageSkia& icon,
-      const base::string16& title,
-      const base::string16& contents,
+      const std::u16string& title,
+      const std::u16string& contents,
       const message_center::NotifierId& notifier_id) = 0;
 
   // Set the context menu for this icon. The icon takes ownership of the passed

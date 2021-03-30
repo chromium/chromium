@@ -4,8 +4,9 @@
 
 (async function() {
   TestRunner.addResult(`Tests that the changes view highlights diffs correctly.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.loadModule('changes');
+  await TestRunner.loadLegacyModule('changes');
   await TestRunner.showPanel('sources');
   await TestRunner.addStylesheetTag('resources/before.css');
   await TestRunner.addStylesheetTag('resources/after.css');

@@ -29,8 +29,7 @@ int GetMessageIdForTransportOnTransportSelectionSheet(
     case AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy:
       return IDS_WEBAUTHN_TRANSPORT_CABLE;
     case AuthenticatorTransport::kAndroidAccessory:
-      NOTREACHED();
-      return IDS_WEBAUTHN_TRANSPORT_USB;
+      return IDS_WEBAUTHN_TRANSPORT_AOA;
   }
   NOTREACHED();
   return 0;
@@ -52,8 +51,7 @@ int GetMessageIdForTransportOnOtherTransportsPopup(
     case AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy:
       return IDS_WEBAUTHN_TRANSPORT_POPUP_CABLE;
     case AuthenticatorTransport::kAndroidAccessory:
-      NOTREACHED();
-      return IDS_WEBAUTHN_TRANSPORT_POPUP_USB;
+      return IDS_WEBAUTHN_TRANSPORT_POPUP_AOA;
   }
   NOTREACHED();
   return 0;
@@ -61,7 +59,7 @@ int GetMessageIdForTransportOnOtherTransportsPopup(
 
 }  // namespace
 
-base::string16 GetTransportHumanReadableName(
+std::u16string GetTransportHumanReadableName(
     AuthenticatorTransport transport,
     TransportSelectionContext context) {
   int message_id =
@@ -84,12 +82,11 @@ const gfx::VectorIcon* GetTransportVectorIcon(
     case AuthenticatorTransport::kUsbHumanInterfaceDevice:
       return &vector_icons::kUsbIcon;
     case AuthenticatorTransport::kInternal:
-      return &kFingerprintIcon;
+      return &kLaptopIcon;
     case AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy:
       return &kSmartphoneIcon;
     case AuthenticatorTransport::kAndroidAccessory:
-      NOTREACHED();
-      return &kSmartphoneIcon;
+      return &kUsbCableIcon;
   }
   NOTREACHED();
   return &kFingerprintIcon;

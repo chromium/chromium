@@ -6,14 +6,20 @@
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_USER_DATA_UTIL_H_
 
 #include <vector>
+#include "base/callback.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill_assistant/browser/action_value.pb.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/user_data.h"
+#include "components/autofill_assistant/browser/web/element_finder.h"
+#include "components/autofill_assistant/browser/website_login_manager.h"
 
 namespace autofill_assistant {
+
+std::unique_ptr<autofill::AutofillProfile> MakeUniqueFromProfile(
+    const autofill::AutofillProfile& profile);
 
 // Sorts the given autofill profiles based on completeness, and returns a
 // vector of profile indices in sorted order. Full profiles will be ordered
@@ -86,6 +92,17 @@ ClientStatus GetFormattedAutofillValue(
     const AutofillValueRegexp& autofill_value,
     const UserData* user_data,
     std::string* out_value);
+
+void GetPasswordManagerValue(
+    const PasswordManagerValue& password_manager_value,
+    const ElementFinder::Result& target_element,
+    const UserData* user_data,
+    WebsiteLoginManager* website_login_manager,
+    base::OnceCallback<void(const ClientStatus&, const std::string&)> callback);
+
+ClientStatus GetClientMemoryStringValue(const std::string& client_memory_key,
+                                        const UserData* user_data,
+                                        std::string* out_value);
 
 }  // namespace autofill_assistant
 

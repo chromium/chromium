@@ -14,7 +14,7 @@ namespace {
 class LayoutTableTest : public RenderingTest {
  protected:
   LayoutBlock* GetTableByElementId(const char* id) {
-    return To<LayoutTable>(GetLayoutObjectByElementId(id));
+    return To<LayoutBlock>(GetLayoutObjectByElementId(id));
   }
   LayoutNGTableInterface* GetTableInterfaceByElementId(const char* id) {
     return ToInterface<LayoutNGTableInterface>(GetLayoutObjectByElementId(id));
@@ -242,11 +242,7 @@ TEST_F(LayoutTableTest, WidthPercentagesExceedHundred) {
 
   // Table width should be TableLayoutAlgorithm::kMaxTableWidth
   auto* table = GetTableByElementId("onlyTable");
-  // TablesNG will grow up to LayoutUnit::Max()
-  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
-    EXPECT_EQ(2000000, table->OffsetWidth());
-  else
-    EXPECT_EQ(1000000, table->OffsetWidth());
+  EXPECT_EQ(1000000, table->OffsetWidth());
 }
 
 TEST_F(LayoutTableTest, CloseToMaxWidth) {

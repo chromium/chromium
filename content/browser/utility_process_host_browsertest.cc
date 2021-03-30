@@ -64,7 +64,7 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
   void RunUtilityProcessOnIOThread(bool elevated, bool crash) {
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
     UtilityProcessHost* host = new UtilityProcessHost();
-    host->SetName(base::ASCIIToUTF16("TestProcess"));
+    host->SetName(u"TestProcess");
     host->SetMetricsName(kTestProcessName);
 #if defined(OS_WIN)
     if (elevated)

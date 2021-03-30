@@ -12,6 +12,7 @@
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_fence_handle.h"
+#include "ui/gl/gl_bindings.h"
 #include "ui/ozone/common/egl_util.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
 #include "ui/ozone/public/mojom/wayland/wayland_overlay_config.mojom.h"
@@ -181,6 +182,14 @@ bool GbmSurfacelessWayland::SupportsPlaneGpuFences() const {
   return true;
 }
 
+bool GbmSurfacelessWayland::SupportsOverridePlatformSize() const {
+  return true;
+}
+
+bool GbmSurfacelessWayland::SupportsViewporter() const {
+  return buffer_manager_->supports_viewporter();
+}
+
 gfx::SurfaceOrigin GbmSurfacelessWayland::GetOrigin() const {
   // GbmSurfacelessWayland's y-axis is flipped compare to GL - (0,0) is at top
   // left corner.
@@ -235,6 +244,10 @@ void GbmSurfacelessWayland::MaybeSubmitFrames() {
       overlay_configs.back()->buffer_id = plane.first;
       if (plane.second.z_order == 0)
         overlay_configs.back()->damage_region = submitted_frame->damage_region_;
+#if DCHECK_IS_ON()
+      if (plane.second.z_order == INT32_MIN)
+        background_buffer_id_ = plane.first;
+#endif
       plane.second.gpu_fence.reset();
     }
 
@@ -264,7 +277,7 @@ void GbmSurfacelessWayland::OnSubmission(BufferId buffer_id,
                                          const gfx::SwapResult& swap_result) {
   // submitted_frames_ may temporarily have more than one buffer in it if
   // buffers are released out of order by the Wayland server.
-  DCHECK(!submitted_frames_.empty());
+  DCHECK(!submitted_frames_.empty() || background_buffer_id_ == buffer_id);
 
   size_t erased = 0;
   for (auto& submitted_frame : submitted_frames_) {
@@ -311,7 +324,8 @@ void GbmSurfacelessWayland::OnSubmission(BufferId buffer_id,
 void GbmSurfacelessWayland::OnPresentation(
     BufferId buffer_id,
     const gfx::PresentationFeedback& feedback) {
-  DCHECK(!submitted_frames_.empty() || !pending_presentation_frames_.empty());
+  DCHECK(!submitted_frames_.empty() || !pending_presentation_frames_.empty() ||
+         background_buffer_id_ == buffer_id);
 
   size_t erased = 0;
   for (auto& frame : pending_presentation_frames_) {
